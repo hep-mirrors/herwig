@@ -8,7 +8,7 @@
 //
 #ifndef HERWIG_PrototypeVertex_H
 #define HERWIG_PrototypeVertex_H
-#include <queue>
+#include <stack>
 #include "ThePEG/Helicity/Vertex/VertexBase.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -209,13 +209,13 @@ public:
    *  Create a \f$1\to2\f$ prototype
    */
   static  void createPrototypes(tPDPtr inpart, VertexBasePtr vertex,
-				std::queue<PrototypeVertexPtr> & prototypes);
+				std::stack<PrototypeVertexPtr> & prototypes);
 
   /**
    *  Expand the prototypes by adding more legs
    */
   static void expandPrototypes(PrototypeVertexPtr proto, VertexBasePtr vertex,
-			       std::queue<PrototypeVertexPtr> & prototypes,
+			       std::stack<PrototypeVertexPtr> & prototypes,
 			       const set<PDPtr> & excluded);
 
   /**

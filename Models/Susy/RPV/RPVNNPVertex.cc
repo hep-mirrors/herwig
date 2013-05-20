@@ -167,14 +167,11 @@ void RPVNNPVertex::setCoupling(Energy2 q2, tcPDPtr part1,
 			      tcPDPtr part2,tcPDPtr) {
 #endif
   static long chargino[5]={ParticleID::SUSY_chi_1plus,ParticleID::SUSY_chi_2plus,11,13,15};
-  cerr << "testing in set coupling " << part1->PDGName() << " " << part2->PDGName() << " " << part3->PDGName()
-       << "\n";
   int o[2]={1,0};
   long in1 = part1->id();
   long in2 = part2->id();
   Energy Mj = part1->mass();
   Energy Mi = part2->mass();
-  cerr << "testing masses " << Mj/GeV << " " << Mi/GeV << "\n";
   // checks of the particle ids
   assert(part3->id()==ParticleID::gamma);
   assert(in1 == ParticleID::SUSY_chi_10 || in1 == ParticleID::SUSY_chi_20 ||
@@ -297,9 +294,9 @@ void RPVNNPVertex::setCoupling(Energy2 q2, tcPDPtr part1,
 	  ;
       }
     }
-    cerr << "testing sfermion " 
-    	 << 0.25*sqr(weakCoupling(q2))* leftLast_*GeV  << " "
-    	 << 0.25*sqr(weakCoupling(q2))*rightLast_*GeV   << "\n";
+    // cerr << "testing sfermion " 
+    // 	 << 0.25*sqr(weakCoupling(q2))* leftLast_*GeV  << " "
+    // 	 << 0.25*sqr(weakCoupling(q2))*rightLast_*GeV   << "\n";
     //leftLast_ = rightLast_ = ZERO;
 
     // the chargino W contribution
@@ -339,9 +336,9 @@ void RPVNNPVertex::setCoupling(Energy2 q2, tcPDPtr part1,
       leftLast_  += 4.*coup[0];
       rightLast_ += 4.*coup[1];
     }
-    cerr << "testing total chargino " 
-    	 << 0.25*sqr(weakCoupling(q2))* leftLast_*GeV  << " "
-    	 << 0.25*sqr(weakCoupling(q2))*rightLast_*GeV   << "\n";
+    // cerr << "testing total chargino " 
+    // 	 << 0.25*sqr(weakCoupling(q2))* leftLast_*GeV  << " "
+    // 	 << 0.25*sqr(weakCoupling(q2))*rightLast_*GeV   << "\n";
 
 
 

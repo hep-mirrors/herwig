@@ -13,7 +13,7 @@
 using namespace Herwig;
 
 void PrototypeVertex::createPrototypes(tPDPtr inpart, VertexBasePtr vertex,
-				       std::queue<PrototypeVertexPtr> & prototypes) {
+				       std::stack<PrototypeVertexPtr> & prototypes) {
   int id = inpart->id();
   if(!vertex->isIncoming(inpart)) return;
   for(unsigned int list=0;list<vertex->getNpoint();++list) {
@@ -64,7 +64,7 @@ PrototypeVertexPtr PrototypeVertex::replicateTree(PrototypeVertexPtr parent,
 }
 
 void PrototypeVertex::expandPrototypes(PrototypeVertexPtr proto, VertexBasePtr vertex,
-				       std::queue<PrototypeVertexPtr> & prototypes,
+				       std::stack<PrototypeVertexPtr> & prototypes,
 				       const set<PDPtr> & excluded) {
   for(OrderedVertices::const_iterator it = proto->outgoing.begin();
       it!=proto->outgoing.end();++it) {

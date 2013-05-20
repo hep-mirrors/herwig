@@ -179,7 +179,7 @@ protected:
    * Initialise the phase space.
    * @param init Perform the initialization.
    */
-  Energy initializePhaseSpace(bool init);
+  Energy initializePhaseSpace(bool init, bool onShell=false);
 
   /**
    * Set the integration parameters
@@ -266,10 +266,11 @@ protected:
    * @return The weight.
    */
   Energy weight(bool cc,int & ichan, const Particle & in,
-		ParticleVector & particles,bool first) const {
+		ParticleVector & particles,bool first,
+		bool onShell=false) const {
     ichan=0;
     Energy phwgt = (_channels.size()==0) ? 
-      flatPhaseSpace(cc,in,particles) : channelPhaseSpace(cc,ichan,in,particles);
+      flatPhaseSpace(cc,in,particles,onShell) : channelPhaseSpace(cc,ichan,in,particles,onShell);
     // generate the matrix element
     return me2(-1,in,particles,
 	       first ? DecayIntegrator::Initialize : DecayIntegrator::Calculate)*phwgt;
@@ -283,7 +284,8 @@ protected:
    * @param outpart The outgoing particles.
    * @return The weight.
    */
-  Energy flatPhaseSpace(bool cc,const Particle & inpart, ParticleVector & outpart) const;
+  Energy flatPhaseSpace(bool cc,const Particle & inpart, ParticleVector & outpart,
+			bool onShell=false) const;
   
   /**
    * Generate a phase-space point using multichannel phase space.
@@ -295,7 +297,8 @@ protected:
    * @return The weight.
    */
   Energy channelPhaseSpace(bool cc,int & ichan, const Particle & in, 
-			   ParticleVector & particles) const;
+			   ParticleVector & particles,
+			   bool onShell=false) const;
 
   /**
    * Construct the vertex for spin corrections
@@ -310,7 +313,7 @@ protected:
    * @param wgt The weight for the masses.
    * @return The masses.
    */
-  vector<Energy> externalMasses(Energy inmass,double & wgt) const;
+  vector<Energy> externalMasses(Energy inmass,double & wgt, bool onShell) const;
   //@}
 
 public:

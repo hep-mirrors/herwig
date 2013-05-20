@@ -139,31 +139,16 @@ setup ~e_R- 2000011 ~e_R- 500.0 0.0 0.0 0.0 -3 0 1 1
 create ThePEG::ParticleData ~e_R+ 
 setup ~e_R+ -2000011 ~e_R+ 500.0 0.0 0.0 0.0 3 0 1 1
 makeanti ~e_R- ~e_R+ 
-create ThePEG::ParticleData ~nu_eR 
-setup ~nu_eR 2000012 ~nu_eR 500.0 0.0 0.000010 0.0 0 0 1 1
-create ThePEG::ParticleData ~nu_eRbar 
-setup ~nu_eRbar -2000012 ~nu_eRbar 500.0 0.0 0.000010 0.0 0 0 1 1
-makeanti ~nu_eR ~nu_eRbar 
 create ThePEG::ParticleData ~mu_R- 
 setup ~mu_R- 2000013 ~mu_R- 500.0 0.0 0.0 0.0 -3 0 1 1
 create ThePEG::ParticleData ~mu_R+ 
 setup ~mu_R+ -2000013 ~mu_R+ 500.0 0.0 0.0 0.0 3 0 1 1
 makeanti ~mu_R- ~mu_R+ 
-create ThePEG::ParticleData ~nu_muR 
-setup ~nu_muR 2000014 ~nu_muR 500.0 0.0 0.000010 0.0 0 0 1 1
-create ThePEG::ParticleData ~nu_muRbar 
-setup ~nu_muRbar -2000014 ~nu_muRbar 500.0 0.0 0.000010 0.0 0 0 1 1
-makeanti ~nu_muR ~nu_muRbar 
 create ThePEG::ParticleData ~tau_2- 
 setup ~tau_2- 2000015 ~tau_2- 500.0 0.0 0.0 0.0 -3 0 1 1
 create ThePEG::ParticleData ~tau_2+ 
 setup ~tau_2+ -2000015 ~tau_2+ 500.0 0.0 0.0 0.0 3 0 1 1
 makeanti ~tau_2- ~tau_2+ 
-create ThePEG::ParticleData ~nu_tauR 
-setup ~nu_tauR 2000016 ~nu_tauR 500.0 0.0 0.000010 0.0 0 0 1 1
-create ThePEG::ParticleData ~nu_tauRbar 
-setup ~nu_tauRbar -2000016 ~nu_tauRbar 500.0 0.0 0.000010 0.0 0 0 1 1
-makeanti ~nu_tauR ~nu_tauRbar 
 ###################################################
 #
 #  Main directory and model object
@@ -408,12 +393,9 @@ insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000003 #  SUSY_s_R
 insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000004 #  SUSY_c_R 
 insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000005 #  SUSY_b_2 
 insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000006 #  SUSY_t_2 
-insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000011 #  SUSY_e_Rminus 
-insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000012 #  SUSY_nu_eR 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000011 #  SUSY_e_Rminus
 insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000013 #  SUSY_mu_Rminus 
-insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000014 #  SUSY_nu_muR 
-insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000015 #  SUSY_tau_2minus 
-insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000016 #  SUSY_nu_tauR
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000015 #  SUSY_tau_2minus
 insert /Herwig/Shower/ShowerHandler:DecayInShower 0  35      #  H0
 insert /Herwig/Shower/ShowerHandler:DecayInShower 0  36      #  A0
 insert /Herwig/Shower/ShowerHandler:DecayInShower 0  37      #  H+

@@ -29,7 +29,7 @@ public:
    * The default constructor.
    */
   FourBodyDecayConstructor() :
-    interOpt_(0), widthOpt_(1) {}
+    interOpt_(0), widthOpt_(1), particleType_(false) {}
 
   /**
    *  Destructor
@@ -139,6 +139,10 @@ private:
    */
   vector<PDPtr> particles_;
 
+  /**
+   *  Types of particles
+   */
+  bool particleType_;
 };
 
 }
