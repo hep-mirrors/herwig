@@ -9,8 +9,23 @@
 # The second section contains the user settings.
 ###################################################
 
-read RPV.model
+# trilinear RPV
+#read RPV-Tri.model
 cd /Herwig/NewPhysics
+# example with LLE and LQD from SOFTSUSY
+#set TwoBodyDC:CreateDecayModes Yes
+#set ThreeBodyDC:CreateDecayModes Yes
+#set WeakDecayConstructor:CreateDecayModes Yes
+#setup RPV/Model RPV-TRI.slha
+# example with 4-body UDD decays using input from ISASUSY
+#set FourBodyDC:CreateDecayModes Yes
+#insert FourBodyDC:Particles 0 /Herwig/Particles/~tau_1-
+#setup RPV/Model RPV-UDD.slha
+# Bilinear RPV
+read RPV-Bi.model
+cd /Herwig/NewPhysics
+setup RPV/Model RPV-BI.slha
+
 
 ##################################################
 #
@@ -38,13 +53,8 @@ insert HPConstructor:Outgoing 1 /Herwig/Particles/~u_Lbar
 insert HPConstructor:Outgoing 2 /Herwig/Particles/~d_L
 insert HPConstructor:Outgoing 3 /Herwig/Particles/~d_Lbar
 
-# --- Perturbative Decays ---
-# Read in the spectrum file and optional decay table.
-# If a decay table is in a separate file
-# then add another 'setup' line with that
-# file as the argument. The provided
-# spectrum file is an example using SOFTSUSY
-setup RPV/Model RPV-UDD.slha
+erase DecayConstructor:NBodyDecayConstructors 0
+erase DecayConstructor:NBodyDecayConstructors 1
 
 # To disable a particular decay mode, add it's tag to the DisableModes
 # interface of the DecayConstructor object, i.e.

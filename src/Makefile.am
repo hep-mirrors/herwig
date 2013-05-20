@@ -27,8 +27,8 @@ TTBA.model \
 Zprime.model \
 LH.model \
 LHTP.model \
-RPV-LLE.slha \
-RPV-LQD.slha \
+RPV-BI.slha \
+RPV-TRI.slha \
 RPV-UDD.slha
 
 INPUTFILES = \
