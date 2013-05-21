@@ -82,11 +82,11 @@ void TwoBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
 set<TwoBodyDecay> TwoBodyDecayConstructor::
 createModes(tPDPtr inpart, VertexBasePtr vertex,
 	    unsigned int list) {
-  int id = inpart->id();
   if( !vertex->isIncoming(inpart) || vertex->getNpoint() != 3 )
     return set<TwoBodyDecay>();
   Energy m1(inpart->mass());
   tPDPtr ccpart = inpart->CC() ? inpart->CC() : inpart;
+  long id = ccpart->id();
   tPDVector decaylist = vertex->search(list, ccpart);
   set<TwoBodyDecay> decays;
   tPDVector::size_type nd = decaylist.size();
