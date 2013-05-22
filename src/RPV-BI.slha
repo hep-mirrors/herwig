@@ -130,12 +130,7 @@ Block SPhenoRP  # additional RP parameters
         16     2.41533833E+02  # v_u
 Block MASS  # Mass spectrum
 #   PDG code      mass          particle
-         4     1.27000000E+00  # m_c(m_c), MSbar
-         5     4.20000000E+00  # m_b(m_b), MSbar
-         6     1.72900000E+02  # m_t(pole)
-        23     9.11876000E+01  # m_Z(pole)
-        24     8.03102614E+01  # W+
-        35     1.16720986E+02  # leightest neutral scalar
+        35     1.16720986E+02  # lightest neutral scalar
    1000016     4.62082548E+02  # 2nd neutral scalar
    1000014     4.65160230E+02  # 3rd neutral scalar
    1000012     4.65171143E+02  # 4th neutral scalar
