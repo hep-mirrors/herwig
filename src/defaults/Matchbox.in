@@ -186,6 +186,9 @@ cd Amplitudes
 
 create Herwig::SimpleColourBasis SimpleColourBasis
 
+create Herwig::SimpleColourBasis LargeNColourBasis
+set LargeNColourBasis:LargeN On
+
 create Herwig::MatchboxAmplitudellbarqqbar Amplitudellbarqqbar
 set Amplitudellbarqqbar:ColourBasis SimpleColourBasis
 
@@ -227,6 +230,7 @@ create Herwig::FlatInvertiblePhasespace InvertiblePhasespace
 set MECorrectionHandler:Phasespace InvertiblePhasespace
 
 create Herwig::DipoleMatching DipoleMatching
+set DipoleMatching:LargeNBasis /Herwig/MatrixElements/Matchbox/Amplitudes/LargeNColourBasis
 set DipoleMatching:RestrictPhasespace On
 set DipoleMatching:BornScaleInSubtraction BornScale
 set DipoleMatching:RealEmissionScaleInSubtraction BornScale

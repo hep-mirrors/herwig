@@ -783,6 +783,7 @@ double MatchboxMEBase::largeNColourCorrelatedME2(pair<int,int> ij,
 
     if ( matchboxAmplitude()->treeAmplitudes() )
       matchboxAmplitude()->prepareAmplitudes(this);
+    largeNBasis->prepare(mePartonData(),false);
     lastME2(matchboxAmplitude()->largeNColourCorrelatedME2(ij,largeNBasis)*
 	    crossingSign()*
 	    me2Norm());
