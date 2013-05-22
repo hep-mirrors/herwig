@@ -476,6 +476,11 @@ public:
     double lower;
 
     /**
+     * The upper bound
+     */
+    double upper;
+
+    /**
      * The bins, indexed by upper bound.
      */
     map<double,double> bins;
@@ -494,6 +499,16 @@ public:
      * The number of points being nan or inf
      */
     unsigned long nans;
+
+    /**
+     * The overflow
+     */
+    unsigned long overflow;
+
+    /**
+     * The underflow
+     */
+    unsigned long underflow;
 
     /**
      * Constructor

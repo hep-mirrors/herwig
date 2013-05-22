@@ -592,7 +592,9 @@ double MatchboxMEBase::oneLoopInterference() const {
 MatchboxMEBase::AccuracyHistogram::AccuracyHistogram(double low,
 						     double up,
 						     unsigned int nbins) 
-  : lower(low), sameSign(0), oppositeSign(0), nans(0) {
+  : lower(low), upper(up), 
+    sameSign(0), oppositeSign(0), nans(0),
+    overflow(0), underflow(0) {
 
   double step = (up-low)/nbins;
 
@@ -613,9 +615,17 @@ void MatchboxMEBase::AccuracyHistogram::book(double a, double b) {
     ++oppositeSign;
   double r = 1.;
   if ( abs(a) != 0.0 )
-    r = 1.-abs(b/a);
+    r = abs(1.-abs(b/a));
   else if ( abs(b) != 0.0 )
     r = abs(b);
+  if ( log(r) < lower || r == 0.0 ) {
+    ++underflow;
+    return;
+  }
+  if ( log(r) > upper ) {
+    ++overflow;
+    return;
+  }
   map<double,double>::iterator bin =
     bins.upper_bound(log(r));
   if ( bin == bins.end() )
@@ -631,7 +641,9 @@ void MatchboxMEBase::AccuracyHistogram::dump(const std::string& prefix,
     fname << (**p).PDGName();
   ofstream out((prefix+fname.str()+".dat").c_str());
   out << "# same sign : " << sameSign << " opposite sign : "
-      << oppositeSign << " nans : " << nans << "\n";
+      << oppositeSign << " nans : " << nans 
+      << " overflow : " << overflow
+      << " underflow : " << underflow << "\n";
   for ( map<double,double>::const_iterator b = bins.begin();
 	b != bins.end(); ++b ) {
     map<double,double>::const_iterator bp = b; --bp;
@@ -648,11 +660,15 @@ void MatchboxMEBase::AccuracyHistogram::dump(const std::string& prefix,
 }
 
 void MatchboxMEBase::AccuracyHistogram::persistentOutput(PersistentOStream& os) const {
-  os << lower << bins;
+  os << lower << upper << bins
+     << sameSign << oppositeSign << nans
+     << overflow << underflow;
 }
 
 void MatchboxMEBase::AccuracyHistogram::persistentInput(PersistentIStream& is) {
-  is >> lower >> bins;
+  is >> lower >> upper >> bins
+     >> sameSign >> oppositeSign >> nans
+     >> overflow >> underflow;
 }
 
 void MatchboxMEBase::logPoles() const {
