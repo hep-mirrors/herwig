@@ -18,10 +18,10 @@
 #include "Herwig++/MatrixElement/Matchbox/Utility/Tree2toNGenerator.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/ProcessData.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxScaleChoice.h"
-#include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxMECache.h"
 #include "Herwig++/MatrixElement/Matchbox/Phasespace/MatchboxPhasespace.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/SubtractedME.h"
+#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.fh"
 
 namespace Herwig {
 
@@ -110,6 +110,16 @@ public:
    * Set the order in \f$\alpha_{EM}\f$.
    */
   void orderInAlphaEW(unsigned int o) { theOrderInAlphaEW = o; }
+
+  /**
+   * Return true, if all processes up to a maximum order are considered
+   */
+  bool allProcesses() const { return theAllProcesses; }
+
+  /**
+   * Switch on/off inclusino off all processes up to a maximum order
+   */
+  void setAllProcesses(bool on = true) { theAllProcesses = on; }
 
   /**
    * Return true, if Born contributions should be included.
@@ -291,16 +301,6 @@ public:
    */
   vector<Ptr<MatchboxAmplitude>::ptr>& amplitudes() { return theAmplitudes; }
 
-  /**
-   * Set the ME cache object
-   */
-  void cache(Ptr<MatchboxMECache>::ptr c) { theCache = c; }
-
-  /**
-   * Get the ME cache object
-   */
-  Ptr<MatchboxMECache>::tptr cache() const { return theCache; }
-
   //@}
 
   /** @name Matrix element objects. */
@@ -432,7 +432,7 @@ public:
   /**
    * Setup everything
    */
-  void setup();
+  virtual void setup();
 
   //@}
 
@@ -660,11 +660,6 @@ private:
   vector<Ptr<MatchboxAmplitude>::ptr> theAmplitudes;
 
   /**
-   * The ME cache object
-   */
-  Ptr<MatchboxMECache>::ptr theCache;
-
-  /**
    * The Born matrix elements to be considered
    */
   vector<Ptr<MatchboxMEBase>::ptr> theBornMEs;
@@ -763,7 +758,14 @@ private:
   /**
    * Generate subprocesses.
    */
-  set<PDVector> makeSubProcesses(const vector<string>&) const;
+  set<PDVector> makeSubProcesses(const vector<string>&, bool sorted = true) const;
+
+  /**
+   * Generate subprocesses with all permutations of outgoing partons.
+   */
+  set<PDVector> makeUnsortedSubProcesses(const vector<string>& data) const {
+    return makeSubProcesses(data, false);
+  }
 
   /**
    * Generate matrix element objects for the given process.
@@ -785,6 +787,12 @@ private:
    * True, if subtraction scales should be caluclated from real emission kinematics
    */
   bool theRealEmissionScales;
+
+  /**
+   * Consider all processes with order in couplings specifying the
+   * maximum order.
+   */
+  bool theAllProcesses;
 
 private:
 

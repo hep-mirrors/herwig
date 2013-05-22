@@ -169,14 +169,14 @@ public:
    * Return the shower renormalization scale
    */
   Energy2 showerRenormalizationScale() const {
-    return renormalizationScaleFactor()*showerEmissionScale();
+    return sqr(renormalizationScaleFactor())*showerEmissionScale();
   }
 
   /**
    * Return the shower factorization scale
    */
   Energy2 showerFactorizationScale() const {
-    return factorizationScaleFactor()*showerEmissionScale();
+    return sqr(factorizationScaleFactor())*showerEmissionScale();
   }
 
   /**
@@ -296,6 +296,16 @@ public:
    * Get the renormalization scale factor
    */
   double renormalizationScaleFactor() const { return theRenormalizationScaleFactor; }
+
+  /**
+   * Set the factorization scale factor
+   */
+  void factorizationScaleFactor(double f) { theFactorizationScaleFactor = f; }
+
+  /**
+   * Set the renormalization scale factor
+   */
+  void renormalizationScaleFactor(double f) { theRenormalizationScaleFactor = f; }
 
   /**
    * Return true, if the shower was able to generate an emission

@@ -42,8 +42,8 @@ IBPtr DipoleIOperator::fullclone() const {
   return new_ptr(*this);
 }
 
-void DipoleIOperator::setBorn(Ptr<MatchboxMEBase>::tptr me) {
-  MatchboxInsertionOperator::setBorn(me);
+void DipoleIOperator::setXComb(tStdXCombPtr xc) {
+  MatchboxInsertionOperator::setXComb(xc);
   if ( CA < 0. ) {
     CA = SM().Nc();
     CF = (SM().Nc()*SM().Nc()-1.0)/(2.*SM().Nc());

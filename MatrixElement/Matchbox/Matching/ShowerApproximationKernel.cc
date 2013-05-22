@@ -157,20 +157,31 @@ double ShowerApproximationKernel::generate() {
 
 
 void ShowerApproximationKernel::persistentOutput(PersistentOStream & os) const {
-  os << theDipole << theShowerApproximation 
-     << theBornXComb << theRealXComb << theTildeXCombs
-     << thePresamplingPoints << theMaxTry << theFlags << theSupport
-     << theLastParameterPoint << theShowerApproximationGenerator;
-
+  os << theDipole << theShowerApproximation << theBornXComb 
+     << theRealXComb << theTildeXCombs << thePresampling 
+     << thePresamplingPoints << theMaxTry << theFlags 
+     << theSupport << theShowerApproximationGenerator 
+     << theLastParameterPoint << theLastBornPoint
+     << (sampler ? true : false);
+  if ( sampler )
+    sampler->put(os);
 }
 
 void ShowerApproximationKernel::persistentInput(PersistentIStream & is, int) {
-  is >> theDipole >> theShowerApproximation 
-     >> theBornXComb >> theRealXComb >> theTildeXCombs
-     >> thePresamplingPoints >> theMaxTry >> theFlags >> theSupport
-     >> theLastParameterPoint >> theShowerApproximationGenerator;
+  bool haveSampler;
+  is >> theDipole >> theShowerApproximation >> theBornXComb 
+     >> theRealXComb >> theTildeXCombs >> thePresampling 
+     >> thePresamplingPoints >> theMaxTry >> theFlags 
+     >> theSupport >> theShowerApproximationGenerator 
+     >> theLastParameterPoint >> theLastBornPoint
+     >> haveSampler; 
+  if ( haveSampler ) {
+    sampler = new ExponentialGenerator();
+    sampler->get(is);
+    sampler->function(this);
+    sampler->initialize();
+  }
 }
-
 
 // *** Attention *** The following static variable is needed for the type
 // description system in ThePEG. Please check that the template arguments

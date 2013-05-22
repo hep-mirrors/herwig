@@ -117,6 +117,11 @@ public:
    */
   virtual double sumWeights() const;
 
+  /**
+   * Return the sum of the weights squared returned by generate() so far (of
+   * the events that were not rejeted).
+   */
+  virtual double sumWeights2() const;
   //@}
 
 public:

@@ -15,6 +15,8 @@
 #include "ThePEG/Handlers/HandlerBase.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/Handlers/StandardXComb.h"
+#include "Herwig++/PDT/GenericMassGenerator.h"
+#include "Herwig++/MatrixElement/Matchbox/Utility/ProcessData.fh"
 
 namespace Herwig {
 
@@ -59,54 +61,24 @@ public:
   const map<PDVector,vector<Ptr<Tree2toNDiagram>::ptr> >& diagramMap() const { return theDiagramMap; }
 
   /**
-   * Access the amplitude parton data.
+   * Access the mass generators to be used for the given particles
    */
-  map<tStdXCombPtr,cPDVector>& amplitudePartonData() { return theAmplitudePartonData; }
+  map<cPDPtr,tGenericMassGeneratorPtr>& massGenerators() { return theMassGenerators; }
 
   /**
-   * Return the amplitude parton data.
+   * Return the mass generators to be used for the given particles
    */
-  const map<tStdXCombPtr,cPDVector>& amplitudePartonData() const { return theAmplitudePartonData; }
+  const map<cPDPtr,tGenericMassGeneratorPtr>& massGenerators() const { return theMassGenerators; }
 
   /**
-   * Access the colour crossing information.
+   * Return the mass generator (or NULL)
    */
-  map<tStdXCombPtr,map<size_t,size_t> >& amplitudeToColourMap() { return theAmplitudeToColourMap; }
+  tGenericMassGeneratorPtr massGenerator(cPDPtr);
 
   /**
-   * Return the colour crossing information.
+   * Fill the mass generators for the given process
    */
-  const map<tStdXCombPtr,map<size_t,size_t> >& amplitudeToColourMap() const { return theAmplitudeToColourMap; }
-
-  /**
-   * Access the colour crossing information.
-   */
-  map<tStdXCombPtr,map<size_t,size_t> >& colourToAmplitudeMap() { return theColourToAmplitudeMap; }
-
-  /**
-   * Return the colour crossing information.
-   */
-  const map<tStdXCombPtr,map<size_t,size_t> >& colourToAmplitudeMap() const { return theColourToAmplitudeMap; }
-
-  /**
-   * Access the crossing information.
-   */
-  map<tStdXCombPtr,vector<int> >& crossingMap() { return theCrossingMap; }
-
-  /**
-   * Return the crossing information.
-   */
-  const map<tStdXCombPtr,vector<int> >& crossingMap() const { return theCrossingMap; }
-
-  /**
-   * Access the crossing signs.
-   */
-  map<tStdXCombPtr,double>& crossingSigns() { return theCrossingSigns; }
-
-  /**
-   * Return the crossing signs.
-   */
-  const map<tStdXCombPtr,double>& crossingSigns() const { return theCrossingSigns; }
+  void fillMassGenerators(const PDVector&);
 
 public:
 
@@ -163,33 +135,9 @@ private:
   map<PDVector,vector<Ptr<Tree2toNDiagram>::ptr> > theDiagramMap;
 
   /**
-   * The crossing information as filled by the last call to
-   * fillCrossingMap()
+   * The mass generators to be used for the given particles
    */
-  map<tStdXCombPtr,vector<int> > theCrossingMap;
-
-  /**
-   * The colour crossing information as filled by the last call to
-   * fillCrossingMap()
-   */
-  map<tStdXCombPtr,map<size_t,size_t> > theAmplitudeToColourMap;
-
-  /**
-   * The colour crossing information as filled by the last call to
-   * fillCrossingMap()
-   */
-  map<tStdXCombPtr,map<size_t,size_t> > theColourToAmplitudeMap;
-
-  /**
-   * The crossing signs as filled by the last call to
-   * fillCrossingMap()
-   */
-  map<tStdXCombPtr,double> theCrossingSigns;
-
-  /**
-   * The amplitude parton data.
-   */
-  map<tStdXCombPtr,cPDVector> theAmplitudePartonData;
+  map<cPDPtr,tGenericMassGeneratorPtr> theMassGenerators;
 
 private:
 

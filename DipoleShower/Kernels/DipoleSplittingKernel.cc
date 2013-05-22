@@ -58,14 +58,14 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split) const {
 
   Energy2 scale = sqr(pt) + sqr(theScreeningScale);
 
-  double ret = alphaS()->value(theRenormalizationScaleFactor*scale) / (2.*Constants::pi);
+  double ret = alphaS()->value(sqr(theRenormalizationScaleFactor)*scale) / (2.*Constants::pi);
 
   if ( split.index().initialStateEmitter() ) {
     assert(pdfRatio());
     ret *= 
       split.lastEmitterZ() * 
       (*pdfRatio())(split.index().emitterPDF(),
-		    theFactorizationScaleFactor*scale,
+		    sqr(theFactorizationScaleFactor)*scale,
 		    split.index().emitterData(),split.emitterData(),
 		    split.emitterX(),split.lastEmitterZ());
   }
@@ -75,7 +75,7 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split) const {
     ret *= 
       split.lastSpectatorZ() * 
       (*pdfRatio())(split.index().spectatorPDF(),
-		    theFactorizationScaleFactor*scale,
+		    sqr(theFactorizationScaleFactor)*scale,
 		    split.index().spectatorData(),split.spectatorData(),
 		    split.spectatorX(),split.lastSpectatorZ());
   }

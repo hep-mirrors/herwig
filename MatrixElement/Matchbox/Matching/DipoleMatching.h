@@ -13,6 +13,7 @@
 //
 
 #include "Herwig++/MatrixElement/Matchbox/Matching/ShowerApproximation.h"
+#include "Herwig++/MatrixElement/Matchbox/Utility/ColourBasis.h"
 
 namespace Herwig {
 
@@ -114,6 +115,17 @@ private:
    * In fact, it should not even be implemented.
    */
   DipoleMatching & operator=(const DipoleMatching &);
+
+  /**
+   * True, if the shower kernels should be reproduced.
+   */
+  bool theShowerKernels;
+
+  /**
+   * A large-N colour basis to be used when reproducing the shower
+   * kernels.
+   */
+  Ptr<ColourBasis>::ptr theLargeNBasis;
 
 };
 

@@ -118,6 +118,18 @@ namespace exsample {
       os << avg_weight_[k].second;
       ostream_traits<OStream>::separator(os);
     }
+    os << attempted_;
+    ostream_traits<OStream>::separator(os);
+    os << accepted_;
+    ostream_traits<OStream>::separator(os);
+    os << parametric_missing_map_.size();
+    ostream_traits<OStream>::separator(os);
+    for ( std::map<bit_container<parameter_hash_bits>,int>::const_iterator p =
+	    parametric_missing_map_.begin(); p != parametric_missing_map_.end(); ++p ) {
+      p->first.put(os);
+      os << p->second;
+      ostream_traits<OStream>::separator(os);
+    }
   }
 
 
@@ -144,6 +156,12 @@ namespace exsample {
     avg_weight_.resize(dim);
     for (std::size_t k = 0; k < avg_weight_.size(); ++k) {
       is >> avg_weight_[k].first >> avg_weight_[k].second;
+    }
+    is >> attempted_ >> accepted_ >> dim;
+    for ( size_t k = 0; k < dim; ++k ) {
+      bit_container<parameter_hash_bits> in;
+      in.get(is);
+      is >> parametric_missing_map_[in];
     }
   }
 
@@ -192,6 +210,8 @@ namespace exsample {
     ostream_traits<OStream>::separator(os);
     os << integral_;
     ostream_traits<OStream>::separator(os);
+    os << missing_events_;
+    ostream_traits<OStream>::separator(os);
     if (cell_info_) {
       os << "has_cell_info";
       ostream_traits<OStream>::separator(os);
@@ -207,7 +227,8 @@ namespace exsample {
   void cell::get (IStream& is) {
     std::string info_tag;
     is >> split_dimension_ >> split_point_
-       >> integral_ >> info_tag;
+       >> integral_ >> missing_events_ 
+       >> info_tag;
     if (info_tag == "has_cell_info") {
       cell_info_.reset(new cell_info());
       cell_info_->get(is);

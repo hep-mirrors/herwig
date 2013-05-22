@@ -151,8 +151,8 @@ bool IILightKinematics::generateSplitting(double kappa, double xi, double rphi,
   double tau = info.emitterX()*info.spectatorX();
   double s = sqrt(1.-sqr(pt/info.hardPt()));
 
-  double zp = 0.5*(1.+tau-(1.-tau)*s);
-  double zm = 0.5*(1.+tau+(1.-tau)*s);
+  double zp = 0.5*(1.+tau+(1.-tau)*s);
+  double zm = 0.5*(1.+tau-(1.-tau)*s);
 
   if ( z > zp || z < zm ) {
     jacobian(0.0);

@@ -45,15 +45,10 @@ public:
 public:
 
   /**
-   * Prepare a phase space generator for the given xcomb object.
-   */
-  virtual void prepare(tStdXCombPtr, bool verbose = false);
-
-  /**
    * Generate a phase space point and return its weight.
    */
-  virtual double generateKinematics(const double*,
-				    vector<Lorentz5Momentum>& momenta);
+  virtual double generateTwoToNKinematics(const double*,
+					  vector<Lorentz5Momentum>& momenta);
 
   /**
    * Return the number of random numbers required to produce a given
@@ -76,8 +71,10 @@ public:
    * Invert the given phase space point to the random numbers which
    * would have generated it.
    */
-  virtual double invertKinematics(const vector<Lorentz5Momentum>&,
-				  double*) const;
+  virtual double invertTwoToNKinematics(const vector<Lorentz5Momentum>& momenta,
+					double* r) const {
+    return invertKinematics(momenta,(momenta[0]+momenta[1]).m(),r);
+  }
 
 private:
 
