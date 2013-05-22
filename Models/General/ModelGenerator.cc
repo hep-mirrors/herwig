@@ -38,13 +38,13 @@ IBPtr ModelGenerator::fullclone() const {
 
 void ModelGenerator::persistentOutput(PersistentOStream & os) const {
   os << hardProcessConstructors_ << _theDecayConstructor << particles_ 
-     << offshell_ << Offsel_ << BRnorm_ << twoBodyOnly_
+     << offshell_ << Offsel_ << BRnorm_ << twoBodyOnly_ << howOffShell_
      << Npoints_ << Iorder_ << BWshape_ << brMin_ << decayOutput_;
 }
 
 void ModelGenerator::persistentInput(PersistentIStream & is, int) {
   is >> hardProcessConstructors_ >> _theDecayConstructor >> particles_
-     >> offshell_ >> Offsel_ >> BRnorm_ >> twoBodyOnly_
+     >> offshell_ >> Offsel_ >> BRnorm_ >> twoBodyOnly_ >> howOffShell_
      >> Npoints_ >> Iorder_ >> BWshape_ >> brMin_ >> decayOutput_;
 }
 
@@ -210,12 +210,32 @@ void ModelGenerator::Init() {
      &ModelGenerator::minWidth_, 1e-6, 1e-15, 1.,
      false, false, Interface::limited);
 
+  static Parameter<ModelGenerator,double> interfaceHowMucchOffShell
+    ("HowMucchOffShell",
+     "The multiple of the particle's width by which it is allowed to be off-shell",
+     &ModelGenerator::howOffShell_, 5., 0.0, 100.,
+     false, false, Interface::limited);
+
 }
 
 namespace {
   /// Helper function for sorting by mass
   inline bool massIsLess(tcPDPtr a, tcPDPtr b) {
     return a->mass() < b->mass();
+  }
+
+  // Helper function to find minimum possible mass of a particle
+  inline Energy minimumMass(tcPDPtr parent) {
+    Energy output(Constants::MaxEnergy);
+    for(set<tDMPtr>::const_iterator dit = parent->decayModes().begin();
+	dit != parent->decayModes().end(); ++dit) {
+      Energy outMass(ZERO);
+      for(unsigned int ix=0;ix<(**dit).orderedProducts().size();++ix) {
+	outMass += (**dit).orderedProducts()[ix]->massMin();
+      }
+      output = min(output,outMass);
+    }
+    return output;
   }
 }
 
@@ -304,7 +324,13 @@ void ModelGenerator::doinit() {
     }
 
     if( parent->massGenerator() ) {
-      parent->widthCut(5.*parent->width());
+      Energy minMass = minimumMass(parent);
+      Energy offShellNess = howOffShell_*parent->width();
+      if(minMass>parent->mass()-offShellNess) {
+	offShellNess = parent->mass()-minMass;
+      }
+      parent->widthCut(offShellNess);
+
       parent->massGenerator()->reset();
       if(decayOutput_==1)
 	os << "# " <<parent->PDGName() << " will be considered off-shell.\n#\n";
