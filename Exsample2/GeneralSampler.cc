@@ -37,7 +37,7 @@ GeneralSampler::GeneralSampler()
     isSampling(false), theUpdateAfter(1),
     crossSectionCalls(0), gotCrossSections(false),
     theIntegratedXSec(0.), theIntegratedXSecErr(0.),
-    theSumWeights(0.), norm(0.) {}
+    theSumWeights(0.), theSumWeights2(0.), norm(0.) {}
 
 GeneralSampler::~GeneralSampler() {}
 
@@ -174,10 +174,12 @@ double GeneralSampler::generate() {
 
   if ( !eventHandler()->weighted() ) {
     theSumWeights += sign(lastSampler->lastWeight());
+    theSumWeights2 += 1.0;
     return sign(lastSampler->lastWeight());
   } else {
     double w = lastSampler->lastWeight()/(norm*lastSampler->bias());
     theSumWeights += w;
+    theSumWeights2 += sqr(w);
     return w;
   }
   return 0.;
@@ -188,9 +190,11 @@ void GeneralSampler::rejectLast() {
   lastSampler->reject();
   if ( !eventHandler()->weighted() ) {
     theSumWeights -= sign(lastSampler->lastWeight());
+    theSumWeights2 -= 1.0;
   } else {
-    theSumWeights -= 
-      lastSampler->lastWeight()/(norm*lastSampler->bias());
+    double w = lastSampler->lastWeight()/(norm*lastSampler->bias());
+    theSumWeights -= w;
+    theSumWeights2 -= sqr(w);
   }
 }
 
@@ -361,14 +365,14 @@ void GeneralSampler::persistentOutput(PersistentOStream & os) const {
   os << theBinSampler << theSamplingBias << theVerbose << theFlatSubprocesses 
      << samplers << lastSampler << theUpdateAfter
      << theIntegratedXSec << theIntegratedXSecErr
-     << norm;
+     << theSumWeights << theSumWeights2 << norm;
 }
 
 void GeneralSampler::persistentInput(PersistentIStream & is, int) {
   is >> theBinSampler >> theSamplingBias >> theVerbose >> theFlatSubprocesses 
      >> samplers >> lastSampler >> theUpdateAfter
      >> theIntegratedXSec >> theIntegratedXSecErr
-     >> norm;
+     >> theSumWeights >> theSumWeights2 >> norm;
 }
 
 

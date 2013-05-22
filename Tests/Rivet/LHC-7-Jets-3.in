@@ -43,6 +43,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1087342
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1184941
 # strange particles in underlying event
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_PAS_QCD_11_010
+# ATLAS charged particle in min bias
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1125575
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'

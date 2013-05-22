@@ -109,10 +109,17 @@ cluster(const vector<Tree2toNGenerator::Vertex>& children,
 	    v != theVertices.end(); ++v ) {
 	if ( (**v).getNpoint() != 3 )
 	  continue;
-	bool noMatch = !(**v).isIncoming(children[0].parent);
-	noMatch |=
+	bool noMatch =
 	  (**v).orderInGs() != orderInGs ||
-	  (**v).orderInGem() != orderInGem;
+	  (**v).orderInGem() != orderInGem ||
+	  !(**v).isIncoming(children[0].parent);
+	long idij = children[0].parent->id();
+	long idi  = children[2].parent->id();
+	long idj  = children[1].parent->id();
+	if ( externalCluster && children[1].parent->CC() )
+	  idj = -idj;
+	if ( children[0].parent->CC() )
+	  idij = -idij;
 	if ( !externalCluster )
 	  noMatch |=
 	    !(**v).isOutgoing(children[1].parent) ||
@@ -121,6 +128,13 @@ cluster(const vector<Tree2toNGenerator::Vertex>& children,
 	  noMatch |=
 	    !(**v).isIncoming(children[1].parent) ||
 	    !(**v).isOutgoing(children[2].parent);
+	noMatch |=
+	  !( (**v).allowed(idij,idi,idj) ||
+	     (**v).allowed(idj,idij,idi) ||
+	     (**v).allowed(idi,idj,idij) ||
+	     (**v).allowed(idij,idj,idi) ||
+	     (**v).allowed(idi,idij,idj) ||
+	     (**v).allowed(idj,idi,idij) );
 	if ( noMatch )
 	  continue;
 	Vertex last;

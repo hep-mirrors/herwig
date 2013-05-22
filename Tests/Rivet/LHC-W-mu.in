@@ -26,6 +26,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8919674
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I925932
 # ATLAS W+jets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1083318
+# ATLAS W kT scales
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1217867
 
 
 ##################################################

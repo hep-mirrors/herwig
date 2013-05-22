@@ -39,7 +39,7 @@ IBPtr MatchboxAmplitudellbarqqbarqqbar::fullclone() const {
 }
 
 void MatchboxAmplitudellbarqqbarqqbar::doinit() {
-  MatchboxAmplitude::doinit();
+  MatchboxZGammaAmplitude::doinit();
   MZ = getParticleData(ParticleID::Z0)->mass();
   GZ = getParticleData(ParticleID::Z0)->width();
   MW = getParticleData(ParticleID::Wplus)->mass();
@@ -48,7 +48,7 @@ void MatchboxAmplitudellbarqqbarqqbar::doinit() {
 }
 
 void MatchboxAmplitudellbarqqbarqqbar::doinitrun() {
-  MatchboxAmplitude::doinitrun();
+  MatchboxZGammaAmplitude::doinitrun();
   MZ = getParticleData(ParticleID::Z0)->mass();
   GZ = getParticleData(ParticleID::Z0)->width();
   MW = getParticleData(ParticleID::Wplus)->mass();
@@ -141,8 +141,8 @@ inline bool rightNonZero(int heli, int helj, int helk, int hell) {
 
 void MatchboxAmplitudellbarqqbarqqbar::prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr me) {
 
-  if ( !calculateTrees ) {
-    MatchboxAmplitude::prepareAmplitudes(me);
+  if ( !calculateTreeAmplitudes() ) {
+    MatchboxZGammaAmplitude::prepareAmplitudes(me);
     return;
   }
 
@@ -156,7 +156,7 @@ void MatchboxAmplitudellbarqqbarqqbar::prepareAmplitudes(Ptr<MatchboxMEBase>::tc
   momentum(4,amplitudeMomentum(4));
   momentum(5,amplitudeMomentum(5));
 
-  MatchboxAmplitude::prepareAmplitudes(me);
+  MatchboxZGammaAmplitude::prepareAmplitudes(me);
 
 }
 
@@ -169,89 +169,89 @@ Complex MatchboxAmplitudellbarqqbarqqbar::evaluate(size_t a, const vector<int>& 
 
   Complex LL2345 =
     leftNonZero(hel[2],hel[3],hel[4],hel[5]) &&
-    abs(lastAmplitudePartonData()[4]->id()) == abs(lastAmplitudePartonData()[5]->id()) ? 
+    abs(amplitudePartonData()[4]->id()) == abs(amplitudePartonData()[5]->id()) ? 
     leptonLeft.dot(qqbarqqbarLeftCurrent(2,hel[2],3,hel[3],4,hel[4],5,hel[5])) : 0.;
   Complex LL4523 =
     leftNonZero(hel[4],hel[5],hel[2],hel[3]) &&
-    abs(lastAmplitudePartonData()[2]->id()) == abs(lastAmplitudePartonData()[3]->id()) ? 
+    abs(amplitudePartonData()[2]->id()) == abs(amplitudePartonData()[3]->id()) ? 
     leptonLeft.dot(qqbarqqbarLeftCurrent(4,hel[4],5,hel[5],2,hel[2],3,hel[3])) : 0.;
   Complex LL2543 =
     leftNonZero(hel[2],hel[5],hel[4],hel[3]) &&
-    abs(lastAmplitudePartonData()[4]->id()) == abs(lastAmplitudePartonData()[3]->id()) ? 
+    abs(amplitudePartonData()[4]->id()) == abs(amplitudePartonData()[3]->id()) ? 
     -leptonLeft.dot(qqbarqqbarLeftCurrent(2,hel[2],5,hel[5],4,hel[4],3,hel[3])) : 0.;
   Complex LL4325 =
     leftNonZero(hel[4],hel[3],hel[2],hel[5]) &&
-    abs(lastAmplitudePartonData()[2]->id()) == abs(lastAmplitudePartonData()[5]->id()) ? 
+    abs(amplitudePartonData()[2]->id()) == abs(amplitudePartonData()[5]->id()) ? 
     -leptonLeft.dot(qqbarqqbarLeftCurrent(4,hel[4],3,hel[3],2,hel[2],5,hel[5])) : 0.;
 
   Complex LR2345 =
     rightNonZero(hel[2],hel[3],hel[4],hel[5]) &&
-    abs(lastAmplitudePartonData()[4]->id()) == abs(lastAmplitudePartonData()[5]->id()) ? 
+    abs(amplitudePartonData()[4]->id()) == abs(amplitudePartonData()[5]->id()) ? 
     leptonLeft.dot(qqbarqqbarRightCurrent(2,hel[2],3,hel[3],4,hel[4],5,hel[5])) : 0.;
   Complex LR4523 =
     rightNonZero(hel[4],hel[5],hel[2],hel[3]) &&
-    abs(lastAmplitudePartonData()[2]->id()) == abs(lastAmplitudePartonData()[3]->id()) ? 
+    abs(amplitudePartonData()[2]->id()) == abs(amplitudePartonData()[3]->id()) ? 
     leptonLeft.dot(qqbarqqbarRightCurrent(4,hel[4],5,hel[5],2,hel[2],3,hel[3])) : 0.;
   Complex LR2543 =
     rightNonZero(hel[2],hel[5],hel[4],hel[3]) &&
-    abs(lastAmplitudePartonData()[4]->id()) == abs(lastAmplitudePartonData()[3]->id()) ? 
+    abs(amplitudePartonData()[4]->id()) == abs(amplitudePartonData()[3]->id()) ? 
     -leptonLeft.dot(qqbarqqbarRightCurrent(2,hel[2],5,hel[5],4,hel[4],3,hel[3])) : 0.;
   Complex LR4325 =
     rightNonZero(hel[4],hel[3],hel[2],hel[5]) &&
-    abs(lastAmplitudePartonData()[2]->id()) == abs(lastAmplitudePartonData()[5]->id()) ? 
+    abs(amplitudePartonData()[2]->id()) == abs(amplitudePartonData()[5]->id()) ? 
     -leptonLeft.dot(qqbarqqbarRightCurrent(4,hel[4],3,hel[3],2,hel[2],5,hel[5])) : 0.;
 
   Complex RL2345 =
     leftNonZero(hel[2],hel[3],hel[4],hel[5]) &&
-    abs(lastAmplitudePartonData()[4]->id()) == abs(lastAmplitudePartonData()[5]->id()) ? 
+    abs(amplitudePartonData()[4]->id()) == abs(amplitudePartonData()[5]->id()) ? 
     leptonRight.dot(qqbarqqbarLeftCurrent(2,hel[2],3,hel[3],4,hel[4],5,hel[5])) : 0.;
   Complex RL4523 =
     leftNonZero(hel[4],hel[5],hel[2],hel[3]) &&
-    abs(lastAmplitudePartonData()[2]->id()) == abs(lastAmplitudePartonData()[3]->id()) ? 
+    abs(amplitudePartonData()[2]->id()) == abs(amplitudePartonData()[3]->id()) ? 
     leptonRight.dot(qqbarqqbarLeftCurrent(4,hel[4],5,hel[5],2,hel[2],3,hel[3])) : 0.;
   Complex RL2543 =
     leftNonZero(hel[2],hel[5],hel[4],hel[3]) &&
-    abs(lastAmplitudePartonData()[4]->id()) == abs(lastAmplitudePartonData()[3]->id()) ? 
+    abs(amplitudePartonData()[4]->id()) == abs(amplitudePartonData()[3]->id()) ? 
     -leptonRight.dot(qqbarqqbarLeftCurrent(2,hel[2],5,hel[5],4,hel[4],3,hel[3])) : 0.;
   Complex RL4325 =
     leftNonZero(hel[4],hel[3],hel[2],hel[5]) &&
-    abs(lastAmplitudePartonData()[2]->id()) == abs(lastAmplitudePartonData()[5]->id()) ? 
+    abs(amplitudePartonData()[2]->id()) == abs(amplitudePartonData()[5]->id()) ? 
     -leptonRight.dot(qqbarqqbarLeftCurrent(4,hel[4],3,hel[3],2,hel[2],5,hel[5])) : 0.;
 
   Complex RR2345 =
     rightNonZero(hel[2],hel[3],hel[4],hel[5]) &&
-    abs(lastAmplitudePartonData()[4]->id()) == abs(lastAmplitudePartonData()[5]->id()) ? 
+    abs(amplitudePartonData()[4]->id()) == abs(amplitudePartonData()[5]->id()) ? 
     leptonRight.dot(qqbarqqbarRightCurrent(2,hel[2],3,hel[3],4,hel[4],5,hel[5])) : 0.;
   Complex RR4523 =
     rightNonZero(hel[4],hel[5],hel[2],hel[3]) &&
-    abs(lastAmplitudePartonData()[2]->id()) == abs(lastAmplitudePartonData()[3]->id()) ? 
+    abs(amplitudePartonData()[2]->id()) == abs(amplitudePartonData()[3]->id()) ? 
     leptonRight.dot(qqbarqqbarRightCurrent(4,hel[4],5,hel[5],2,hel[2],3,hel[3])) : 0.;
   Complex RR2543 =
     rightNonZero(hel[2],hel[5],hel[4],hel[3]) &&
-    abs(lastAmplitudePartonData()[4]->id()) == abs(lastAmplitudePartonData()[3]->id()) ? 
+    abs(amplitudePartonData()[4]->id()) == abs(amplitudePartonData()[3]->id()) ? 
     -leptonRight.dot(qqbarqqbarRightCurrent(2,hel[2],5,hel[5],4,hel[4],3,hel[3])) : 0.;
   Complex RR4325 =
     rightNonZero(hel[4],hel[3],hel[2],hel[5]) &&
-    abs(lastAmplitudePartonData()[2]->id()) == abs(lastAmplitudePartonData()[5]->id()) ? 
+    abs(amplitudePartonData()[2]->id()) == abs(amplitudePartonData()[5]->id()) ? 
     -leptonRight.dot(qqbarqqbarRightCurrent(4,hel[4],3,hel[3],2,hel[2],5,hel[5])) : 0.;
 
   double bProp = (amplitudeMomentum(0)+amplitudeMomentum(1)).m2()/lastSHat();
 
   Complex gamma2345 =
-    Complex(0.,-1.)*(-lastAmplitudePartonData()[2]->iCharge()/3.)*
+    Complex(0.,-1.)*(-amplitudePartonData()[2]->iCharge()/3.)*
     (LL2345 + RL2345 + LR2345 + RR2345)/bProp;
   Complex gamma2543 =
-    Complex(0.,-1.)*(-lastAmplitudePartonData()[2]->iCharge()/3.)*
+    Complex(0.,-1.)*(-amplitudePartonData()[2]->iCharge()/3.)*
     (LL2543 + RL2543 + LR2543 + RR2543)/bProp;
   Complex gamma4523 =
-    Complex(0.,-1.)*(-lastAmplitudePartonData()[4]->iCharge()/3.)*
+    Complex(0.,-1.)*(-amplitudePartonData()[4]->iCharge()/3.)*
     (LL4523 + RL4523 + LR4523 + RR4523)/bProp;
   Complex gamma4325 =
-    Complex(0.,-1.)*(-lastAmplitudePartonData()[4]->iCharge()/3.)*
+    Complex(0.,-1.)*(-amplitudePartonData()[4]->iCharge()/3.)*
     (LL4325 + RL4325 + LR4325 + RR4325)/bProp;
 
-  bool up2 = abs(lastAmplitudePartonData()[2]->id()) % 2 == 0;
-  bool up4 = abs(lastAmplitudePartonData()[4]->id()) % 2 == 0;
+  bool up2 = abs(amplitudePartonData()[2]->id()) % 2 == 0;
+  bool up4 = abs(amplitudePartonData()[4]->id()) % 2 == 0;
 
   Complex Z2345 =
     Complex(0.,-1.)*
@@ -282,18 +282,32 @@ Complex MatchboxAmplitudellbarqqbarqqbar::evaluate(size_t a, const vector<int>& 
      standardModel()->re()*(up4 ? standardModel()->ru() : standardModel()->rd())*RR4325)/
     Complex(bProp-sqr(MZ)/lastSHat(),MZ*GZ/lastSHat());
 
-  Complex sum2345 = sqr(4.*Constants::pi)*SM().alphaEM()*SM().alphaS()*(gamma2345+Z2345);
-  Complex sum2543 = sqr(4.*Constants::pi)*SM().alphaEM()*SM().alphaS()*(gamma2543+Z2543);
-  Complex sum4523 = sqr(4.*Constants::pi)*SM().alphaEM()*SM().alphaS()*(gamma4523+Z4523);
-  Complex sum4325 = sqr(4.*Constants::pi)*SM().alphaEM()*SM().alphaS()*(gamma4325+Z4325);
+  Complex sum2345 = 0.0;
+  Complex sum2543 = 0.0;
+  Complex sum4523 = 0.0;
+  Complex sum4325 = 0.0;
+
+  if ( includeGamma() ) {
+    sum2345 += sqr(4.*Constants::pi)*SM().alphaEM()*SM().alphaS()*gamma2345;
+    sum2543 += sqr(4.*Constants::pi)*SM().alphaEM()*SM().alphaS()*gamma2543;
+    sum4523 += sqr(4.*Constants::pi)*SM().alphaEM()*SM().alphaS()*gamma4523;
+    sum4325 += sqr(4.*Constants::pi)*SM().alphaEM()*SM().alphaS()*gamma4325;
+  }
+
+  if ( includeZ() ) {
+    sum2345 += sqr(4.*Constants::pi)*SM().alphaEM()*SM().alphaS()*Z2345;
+    sum2543 += sqr(4.*Constants::pi)*SM().alphaEM()*SM().alphaS()*Z2543;
+    sum4523 += sqr(4.*Constants::pi)*SM().alphaEM()*SM().alphaS()*Z4523;
+    sum4325 += sqr(4.*Constants::pi)*SM().alphaEM()*SM().alphaS()*Z4325;
+  }
 
   double Nc = SM().Nc();
 
   Complex resLeading = 0.;
   Complex resSubLeading = 0.;
 
-  if ( lastAmplitudeToColourMap()[2] == 0 && lastAmplitudeToColourMap()[3] == 1 &&
-       lastAmplitudeToColourMap()[4] == 2 && lastAmplitudeToColourMap()[5] == 3 ) {
+  if ( amplitudeToColourMap()[2] == 0 && amplitudeToColourMap()[3] == 1 &&
+       amplitudeToColourMap()[4] == 2 && amplitudeToColourMap()[5] == 3 ) {
     if ( a == 0 ) { //(23)(45)
       resLeading = sum2543 + sum4325;
       resSubLeading = sum2345 + sum4523;
@@ -301,8 +315,8 @@ Complex MatchboxAmplitudellbarqqbarqqbar::evaluate(size_t a, const vector<int>& 
       resLeading = sum2345 + sum4523;
       resSubLeading = sum2543 + sum4325;
     } else assert(false);
-  } else if ( lastAmplitudeToColourMap()[2] == 0 && lastAmplitudeToColourMap()[3] == 3 &&
-	      lastAmplitudeToColourMap()[4] == 2 && lastAmplitudeToColourMap()[5] == 1 ) {
+  } else if ( amplitudeToColourMap()[2] == 0 && amplitudeToColourMap()[3] == 3 &&
+	      amplitudeToColourMap()[4] == 2 && amplitudeToColourMap()[5] == 1 ) {
     if ( a == 0 ) { // (25)(43)
       resLeading = sum2345 + sum4523;
       resSubLeading = sum2543 + sum4325;
@@ -310,8 +324,8 @@ Complex MatchboxAmplitudellbarqqbarqqbar::evaluate(size_t a, const vector<int>& 
       resLeading = sum2543 + sum4325;
       resSubLeading = sum2345 + sum4523;
     } else assert(false);
-  } else if ( lastAmplitudeToColourMap()[2] == 2 && lastAmplitudeToColourMap()[3] == 3 &&
-	      lastAmplitudeToColourMap()[4] == 0 && lastAmplitudeToColourMap()[5] == 1 ) {
+  } else if ( amplitudeToColourMap()[2] == 2 && amplitudeToColourMap()[3] == 3 &&
+	      amplitudeToColourMap()[4] == 0 && amplitudeToColourMap()[5] == 1 ) {
     if ( a == 0 ) { //(23)(45)
       resLeading = sum2543 + sum4325;
       resSubLeading = sum2345 + sum4523;
@@ -319,8 +333,8 @@ Complex MatchboxAmplitudellbarqqbarqqbar::evaluate(size_t a, const vector<int>& 
       resLeading = sum2345 + sum4523;
       resSubLeading = sum2543 + sum4325;
     } else assert(false);
-  } else if ( lastAmplitudeToColourMap()[2] == 2 && lastAmplitudeToColourMap()[3] == 1 &&
-	      lastAmplitudeToColourMap()[4] == 0 && lastAmplitudeToColourMap()[5] == 3 ) {
+  } else if ( amplitudeToColourMap()[2] == 2 && amplitudeToColourMap()[3] == 1 &&
+	      amplitudeToColourMap()[4] == 0 && amplitudeToColourMap()[5] == 3 ) {
     if ( a == 0 ) { //(25)(43)
       resLeading = sum2345 + sum4523;
       resSubLeading = sum2543 + sum4325;
@@ -351,7 +365,7 @@ void MatchboxAmplitudellbarqqbarqqbar::persistentInput(PersistentIStream &, int)
 // are correct (the class and its base class), and that the constructor
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
-DescribeClass<MatchboxAmplitudellbarqqbarqqbar,MatchboxAmplitude>
+DescribeClass<MatchboxAmplitudellbarqqbarqqbar,MatchboxZGammaAmplitude>
   describeHerwigMatchboxAmplitudellbarqqbarqqbar("Herwig::MatchboxAmplitudellbarqqbarqqbar", "HwMatchbox.so");
 
 void MatchboxAmplitudellbarqqbarqqbar::Init() {

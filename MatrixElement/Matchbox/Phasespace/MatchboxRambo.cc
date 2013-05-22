@@ -51,8 +51,8 @@ static double weights[7] = {
 
 };
 
-void MatchboxRambo::prepare(tStdXCombPtr xc, bool) {
-  theLastXComb = xc;
+void MatchboxRambo::setXComb(tStdXCombPtr xc) {
+  MatchboxPhasespace::setXComb(xc);
   needToReshuffle = false;
   if ( xc ) {
     for ( cPDVector::const_iterator d = mePartonData().begin();
@@ -89,13 +89,8 @@ void MatchboxRambo::dumpReference(const vector<Lorentz5Momentum>& momenta, doubl
   *referenceSample << weight*km*(ymax-ymin)/(lastX1()*lastX2()) << "\n" << flush;
 }
 
-double MatchboxRambo::generateKinematics(const double* r,
-					 vector<Lorentz5Momentum>& momenta) {
-
-  cPDVector::const_iterator pd = mePartonData().begin();
-  vector<Lorentz5Momentum>::iterator p = momenta.begin();
-  for ( ; pd != mePartonData().end(); ++pd, ++p )
-    p->setMass((**pd).mass());
+double MatchboxRambo::generateTwoToNKinematics(const double* r,
+					       vector<Lorentz5Momentum>& momenta) {
 
   if ( theMakeReferenceSample ) {
     map<cPDVector,ofstream*>::iterator ref =
@@ -107,7 +102,7 @@ double MatchboxRambo::generateKinematics(const double* r,
 	refname << (**p).PDGName();
       }
       refname << ".rambo";
-      referenceSamples[mePartonData()] = new ofstream(refname.str().c_str());
+      referenceSamples[mePartonData()] = new ofstream(refname.str().c_str(),std::ios_base::app);
       ref = referenceSamples.find(mePartonData());
       *(ref->second) << setprecision(26);
     }
@@ -227,11 +222,11 @@ Energy MatchboxRambo::ReshuffleEquation::operator() (double xi) const {
 
 
 void MatchboxRambo::persistentOutput(PersistentOStream & os) const {
-  os << theMakeReferenceSample;
+  os << needToReshuffle << theMakeReferenceSample;
 }
 
 void MatchboxRambo::persistentInput(PersistentIStream & is, int) {
-  is >> theMakeReferenceSample;
+  is >> needToReshuffle >> theMakeReferenceSample;
 }
 
 
