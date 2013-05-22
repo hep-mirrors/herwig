@@ -466,8 +466,67 @@ public:
   bool checkPoles() const;
 
   /**
-   * Perform the check of epsilon pole cancellation. Results will be
-   * written to the log file, one per phasespace point.
+   * Simple histogram for accuracy checks
+   */
+  struct AccuracyHistogram {
+
+    /**
+     * The lower bound
+     */
+    double lower;
+
+    /**
+     * The bins, indexed by upper bound.
+     */
+    map<double,double> bins;
+
+    /**
+     * The number of points of same sign
+     */
+    unsigned long sameSign;
+
+    /**
+     * The number of points of opposite sign
+     */
+    unsigned long oppositeSign;
+
+    /**
+     * The number of points being nan or inf
+     */
+    unsigned long nans;
+
+    /**
+     * Constructor
+     */
+    AccuracyHistogram(double low = -40.,
+		      double up = 0.,
+		      unsigned int nbins = 80);
+
+    /**
+     * Book two values to be checked for numerical compatibility
+     */
+    void book(double a, double b);
+
+    /**
+     * Write to file.
+     */
+    void dump(const std::string& prefix, 
+	      const cPDVector& proc) const;
+
+    /**
+     * Write to persistent ostream
+     */
+    void persistentOutput(PersistentOStream&) const;
+
+    /**
+     * Read from persistent istream
+     */
+    void persistentInput(PersistentIStream&);
+
+  };
+
+  /**
+   * Perform the check of epsilon pole cancellation.
    */
   void logPoles() const;
 
@@ -754,6 +813,12 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit();
+
+  /**
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
+   */
+  virtual void dofinish();
   //@}
 
 private:
@@ -807,6 +872,16 @@ private:
    */
   bool theOneLoopNoBorn;
 
+  /**
+   * Histograms of epsilon^2 pole cancellation
+   */
+  mutable map<cPDVector,AccuracyHistogram> epsilonSquarePoleHistograms;
+
+  /**
+   * Histograms of epsilon pole cancellation
+   */
+  mutable map<cPDVector,AccuracyHistogram> epsilonPoleHistograms;
+
 private:
 
   /**
@@ -816,6 +891,19 @@ private:
   MatchboxMEBase & operator=(const MatchboxMEBase &);
 
 };
+
+inline PersistentOStream& operator<<(PersistentOStream& os,
+				     const MatchboxMEBase::AccuracyHistogram& h) {
+  h.persistentOutput(os);
+  return os;
+}
+
+inline PersistentIStream& operator>>(PersistentIStream& is,
+				     MatchboxMEBase::AccuracyHistogram& h) {
+  h.persistentInput(is);
+  return is;
+}
+
 
 }
 

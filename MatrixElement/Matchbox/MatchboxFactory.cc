@@ -45,9 +45,8 @@ MatchboxFactory::MatchboxFactory()
     theSubProcessGroups(false), theInclusive(false),
     theFactorizationScaleFactor(1.0), theRenormalizationScaleFactor(1.0),
     theFixedCouplings(false), theFixedQEDCouplings(false), theVetoScales(false),
-    theVerbose(false), theInitVerbose(false), theSubtractionData(""), 
-    theCheckPoles(false), theRealEmissionScales(false),
-    theAllProcesses(false) {}
+    theVerbose(false), theInitVerbose(false), theSubtractionData(""), thePoleData(""),
+    theRealEmissionScales(false), theAllProcesses(false) {}
 
 MatchboxFactory::~MatchboxFactory() {}
 
@@ -430,6 +429,10 @@ void MatchboxFactory::setup() {
     boost::progress_display * progressBar = 
       new boost::progress_display(bornMEs().size(),generator()->log());
 
+    if ( thePoleData != "" )
+      if ( thePoleData[thePoleData.size()-1] != '/' )
+	thePoleData += "/";
+
     for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born
 	    = bornMEs().begin(); born != bornMEs().end(); ++born ) {
 
@@ -793,7 +796,7 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
      << theAmplitudes
      << theBornMEs << theVirtuals << theRealEmissionMEs
      << theBornVirtualMEs << theSubtractedMEs << theFiniteRealMEs
-     << theVerbose << theInitVerbose << theSubtractionData << theCheckPoles
+     << theVerbose << theInitVerbose << theSubtractionData << thePoleData
      << theParticleGroups << process << realEmissionProcess
      << theShowerApproximation << theSplittingDipoles
      << theRealEmissionScales << theAllProcesses;
@@ -810,7 +813,7 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
      >> theAmplitudes
      >> theBornMEs >> theVirtuals >> theRealEmissionMEs
      >> theBornVirtualMEs >> theSubtractedMEs >> theFiniteRealMEs
-     >> theVerbose >> theInitVerbose >> theSubtractionData >> theCheckPoles
+     >> theVerbose >> theInitVerbose >> theSubtractionData >> thePoleData
      >> theParticleGroups >> process >> realEmissionProcess
      >> theShowerApproximation >> theSplittingDipoles
      >> theRealEmissionScales >> theAllProcesses;
@@ -1178,20 +1181,11 @@ void MatchboxFactory::Init() {
      &MatchboxFactory::theSubtractionData, "",
      false, false);
 
-  static Switch<MatchboxFactory,bool> interfaceCheckPoles
-    ("CheckPoles",
-     "Switch on or off checks of epsilon poles.",
-     &MatchboxFactory::theCheckPoles, true, false, false);
-  static SwitchOption interfaceCheckPolesOn
-    (interfaceCheckPoles,
-     "On",
-     "On",
-     true);
-  static SwitchOption interfaceCheckPolesOff
-    (interfaceCheckPoles,
-     "Off",
-     "Off",
-     false);
+  static Parameter<MatchboxFactory,string> interfacePoleData
+    ("PoleData",
+     "Prefix for subtraction check data.",
+     &MatchboxFactory::thePoleData, "",
+     false, false);
 
   static RefVector<MatchboxFactory,ParticleData> interfaceParticleGroup
     ("ParticleGroup",
