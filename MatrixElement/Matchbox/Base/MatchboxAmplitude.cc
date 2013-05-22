@@ -33,23 +33,20 @@ using std::ostream_iterator;
 using namespace Herwig;
 
 MatchboxAmplitude::MatchboxAmplitude() 
-  : Amplitude(), theNLight(0), theColourBasisDim(0),
-    calculateTrees(true), calculateLoops(true) {}
+  : Amplitude() {}
 
 MatchboxAmplitude::~MatchboxAmplitude() {}
 
 void MatchboxAmplitude::persistentOutput(PersistentOStream & os) const {
-  os << theLastXComb << theProcessData << theColourBasis << theColourBasisDim
-     << theNLight;
+  os << theLastXComb << theColourBasis;
 }
 
 void MatchboxAmplitude::persistentInput(PersistentIStream & is, int) {
-  is >> theLastXComb >> theProcessData >> theColourBasis >> theColourBasisDim
-     >> theNLight;
+  is >> theLastXComb >> theColourBasis;
+  lastMatchboxXComb(theLastXComb);
 }
 
-void MatchboxAmplitude::cloneDependencies(const std::string&) {
-}
+void MatchboxAmplitude::cloneDependencies(const std::string&) {}
 
 Ptr<MatchboxMEBase>::ptr MatchboxAmplitude::makeME(const vector<PDVector>&) const {
   return new_ptr(MatchboxMEBase());
@@ -87,37 +84,18 @@ struct orderPartonData {
 
 };
 
-void MatchboxAmplitude::additionalKinematics(const double * r) {
-  if ( nDimAdditional() ) {
-    additionalRandomNumbers.resize(nDimAdditional());
-    copy(r,r+nDimAdditional(),additionalRandomNumbers.begin());
-  }
+void MatchboxAmplitude::setXComb(tStdXCombPtr xc) {
+  theLastXComb = xc;
+  lastMatchboxXComb(xc);
+  fillCrossingMap();
+  for ( size_t k = 0 ; k < meMomenta().size(); ++k )
+    amplitudeMomenta()[k] = amplitudeMomentum(k);
 }
 
 void MatchboxAmplitude::fillCrossingMap(size_t shift) {
 
-  theLastCrossingMap = crossingMap().find(lastXCombPtr());
-
-  if ( theLastCrossingMap != crossingMap().end() ) {
-    assert(amplitudePartonData().find(lastXCombPtr()) != amplitudePartonData().end());
-    assert(amplitudeToColourMap().find(lastXCombPtr()) != amplitudeToColourMap().end());
-    assert(colourToAmplitudeMap().find(lastXCombPtr()) != colourToAmplitudeMap().end());
-    theLastAmplitudePartonData = amplitudePartonData().find(lastXCombPtr());
-    theLastAmplitudeToColourMap = amplitudeToColourMap().find(lastXCombPtr());
-    theLastColourToAmplitudeMap = colourToAmplitudeMap().find(lastXCombPtr());
-    assert(crossingSigns().find(lastXCombPtr()) != crossingSigns().end());
-    theLastCrossingSign = crossingSigns().find(lastXCombPtr())->second;
+  if ( !amplitudePartonData().empty() )
     return;
-  } else {
-    crossingMap()[lastXCombPtr()] = vector<int>(mePartonData().size());
-    amplitudePartonData()[lastXCombPtr()] = cPDVector(mePartonData().size());
-    amplitudeToColourMap()[lastXCombPtr()] = map<size_t,size_t>();
-    colourToAmplitudeMap()[lastXCombPtr()] = map<size_t,size_t>();
-    theLastCrossingMap = crossingMap().find(lastXCombPtr());
-    theLastAmplitudePartonData = amplitudePartonData().find(lastXCombPtr());
-    theLastAmplitudeToColourMap = amplitudeToColourMap().find(lastXCombPtr());
-    theLastColourToAmplitudeMap = colourToAmplitudeMap().find(lastXCombPtr());
-  }
 
   double csign = 1.;
   set<pair<tcPDPtr,int>,orderPartonData > processLegs;
@@ -135,10 +113,12 @@ void MatchboxAmplitude::fillCrossingMap(size_t shift) {
     }
   }
 
-  lastCrossingSign(csign);
-  crossingSigns()[lastXCombPtr()] = csign;
+  crossingSign(csign);
 
   set<pair<tcPDPtr,int> > amplitudeLegs;
+  crossingMap().resize(mePartonData().size());
+  amplitudePartonData().resize(mePartonData().size());
+  amplitudeMomenta().resize(mePartonData().size());
 
   int ampCount = 0;
 
@@ -152,7 +132,7 @@ void MatchboxAmplitude::fillCrossingMap(size_t shift) {
 	break;
     }
     assert(next != processLegs.end());
-    lastCrossingMap()[ampCount] = next->second - shift;
+    crossingMap()[ampCount] = next->second - shift;
     amplitudeLegs.insert(make_pair(next->first,ampCount));
     tcPDPtr check = next->first;
     processLegs.erase(next);
@@ -191,8 +171,15 @@ void MatchboxAmplitude::fillCrossingMap(size_t shift) {
 	    break;
 	}
       }
+      // default to just pick the next available anti-particle
+      if ( checkcc == processLegs.end() ) {
+	checkcc = processLegs.begin();
+	while ( checkcc->first->id() > 0 )
+	  if ( ++checkcc == processLegs.end() )
+	    break;
+      }
       assert(checkcc != processLegs.end());
-      lastCrossingMap()[ampCount] = checkcc->second - shift;
+      crossingMap()[ampCount] = checkcc->second - shift;
       amplitudeLegs.insert(make_pair(checkcc->first,ampCount));
       processLegs.erase(checkcc);
       ++ampCount;
@@ -201,38 +188,49 @@ void MatchboxAmplitude::fillCrossingMap(size_t shift) {
 
   for ( set<pair<tcPDPtr,int> >::const_iterator l = amplitudeLegs.begin();
 	l != amplitudeLegs.end(); ++l )
-    lastAmplitudePartonData()[l->second] = l->first;
+    amplitudePartonData()[l->second] = l->first;
 
   if ( colourBasis() ) {
     assert(colourBasis()->indexMap().find(mePartonData()) !=
 	   colourBasis()->indexMap().end());
     const map<size_t,size_t> colourCross = 
       colourBasis()->indexMap().find(mePartonData())->second;
-    for ( size_t k = 0; k < lastCrossingMap().size(); ++k ) {
-      if ( colourCross.find(lastCrossingMap()[k]) !=
+    for ( size_t k = 0; k < crossingMap().size(); ++k ) {
+      if ( colourCross.find(crossingMap()[k]) !=
 	   colourCross.end() ) {
-	size_t ccross = colourCross.find(lastCrossingMap()[k])->second;
-	lastAmplitudeToColourMap()[k] = ccross;
-	lastColourToAmplitudeMap()[ccross] = k;
+	size_t ccross = colourCross.find(crossingMap()[k])->second;
+	amplitudeToColourMap()[k] = ccross;
+	colourToAmplitudeMap()[ccross] = k;
       }
     }
   }
 
 }
 
-const string& MatchboxAmplitude::colourOrdering(size_t id) const {
+const string& MatchboxAmplitude::colourOrderingString(size_t id) const {
 
   static string empty = "";
   if ( !colourBasis() ) {
     return empty;
   }
 
-  return colourBasis()->ordering(mePartonData(),lastColourToAmplitudeMap(),id);
+  return colourBasis()->orderingString(mePartonData(),colourToAmplitudeMap(),id);
+
+}
+
+const vector<vector<size_t> >& MatchboxAmplitude::colourOrdering(size_t id) const {
+
+  static vector<vector<size_t> > empty;
+  if ( !colourBasis() ) {
+    return empty;
+  }
+
+  return colourBasis()->ordering(mePartonData(),colourToAmplitudeMap(),id);
 
 }
 
 Lorentz5Momentum MatchboxAmplitude::amplitudeMomentum(int i) const {
-  int iCrossed = lastCrossingMap()[i];
+  int iCrossed = crossingMap()[i];
   Lorentz5Momentum res = meMomenta()[iCrossed];
   if ( iCrossed < 2 )
     res = -res;
@@ -243,7 +241,7 @@ Lorentz5Momentum MatchboxAmplitude::amplitudeMomentum(int i) const {
 
 set<vector<int> > MatchboxAmplitude::generateHelicities() const {
   set<vector<int> > res;
-  vector<int> current(lastAmplitudePartonData().size());
+  vector<int> current(amplitudePartonData().size());
   doGenerateHelicities(res,current,0);
   return res;
 }
@@ -252,18 +250,18 @@ void MatchboxAmplitude::doGenerateHelicities(set<vector<int> >& res,
 					     vector<int>& current,
 					     size_t pos) const {
 
-  if ( pos == lastAmplitudePartonData().size() ) {
+  if ( pos == amplitudePartonData().size() ) {
     res.insert(current);
     return;
   }
 
-  if ( lastAmplitudePartonData()[pos]->iSpin() == PDT::Spin0 ||
-       ( lastAmplitudePartonData()[pos]->iSpin() == PDT::Spin1 &&
-	 lastAmplitudePartonData()[pos]->mass() != ZERO ) ) {
+  if ( amplitudePartonData()[pos]->iSpin() == PDT::Spin0 ||
+       ( amplitudePartonData()[pos]->iSpin() == PDT::Spin1 &&
+	 amplitudePartonData()[pos]->mass() != ZERO ) ) {
     current[pos] = 0;
     doGenerateHelicities(res,current,pos+1);
-  } else if ( lastAmplitudePartonData()[pos]->iSpin() == PDT::Spin1Half ||
-	      lastAmplitudePartonData()[pos]->iSpin() == PDT::Spin1 ) {
+  } else if ( amplitudePartonData()[pos]->iSpin() == PDT::Spin1Half ||
+	      amplitudePartonData()[pos]->iSpin() == PDT::Spin1 ) {
     current[pos] = 1;
     doGenerateHelicities(res,current,pos+1);
     current[pos] = -1;
@@ -274,18 +272,12 @@ void MatchboxAmplitude::doGenerateHelicities(set<vector<int> >& res,
 
 void MatchboxAmplitude::prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr) {
 
-  if ( !calculateTrees )
+  if ( !calculateTreeAmplitudes() )
     return;
 
-  theLastAmplitudes = theLastAmplitudeMap.find(lastXCombPtr());
-  theLastLargeNAmplitudes = theLastLargeNAmplitudeMap.find(lastXCombPtr());
-  bool initialized = theLastAmplitudes != theLastAmplitudeMap.end();
+  bool initialized = !lastAmplitudes().empty();
 
   if ( !initialized ) {
-    theLastAmplitudeMap[lastXCombPtr()] = AmplitudeMap();
-    theLastLargeNAmplitudeMap[lastXCombPtr()] = AmplitudeMap();
-    theLastAmplitudes = theLastAmplitudeMap.find(lastXCombPtr());
-    theLastLargeNAmplitudes = theLastLargeNAmplitudeMap.find(lastXCombPtr());
     set<vector<int> > helicities = generateHelicities();
     for ( set<vector<int> >::const_iterator h = helicities.begin();
           h != helicities.end(); ++h ) {
@@ -332,21 +324,18 @@ void MatchboxAmplitude::prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr) {
     lastLargeNAmplitudes() = clean;
   }
 
-  calculateTrees = false;
+  haveTreeAmplitudes();
 
 }
 
 void MatchboxAmplitude::prepareOneLoopAmplitudes(Ptr<MatchboxMEBase>::tcptr) {
 
-  if ( !calculateLoops )
+  if ( !calculateOneLoopAmplitudes() )
     return;
 
-  theLastOneLoopAmplitudes = theLastOneLoopAmplitudeMap.find(lastXCombPtr());
-  bool initialized = theLastOneLoopAmplitudes != theLastOneLoopAmplitudeMap.end();
+  bool initialized = !lastOneLoopAmplitudes().empty();
 
   if ( !initialized ) {
-    theLastOneLoopAmplitudeMap[lastXCombPtr()] = AmplitudeMap();
-    theLastOneLoopAmplitudes = theLastOneLoopAmplitudeMap.find(lastXCombPtr());
     set<vector<int> > helicities = generateHelicities();
     for ( set<vector<int> >::const_iterator h = helicities.begin();
           h != helicities.end(); ++h ) {
@@ -377,7 +366,7 @@ void MatchboxAmplitude::prepareOneLoopAmplitudes(Ptr<MatchboxMEBase>::tcptr) {
     lastOneLoopAmplitudes() = clean;
   }
 
-  calculateLoops = false;
+  haveOneLoopAmplitudes();
 
 }
 
@@ -390,7 +379,25 @@ Complex MatchboxAmplitude::value(const tcPDVector&,
   return 0.;
 }
 
+double MatchboxAmplitude::me2() const {
+  if ( !calculateTreeME2() )
+    return lastTreeME2();
+  lastTreeME2(crossingSign()*colourBasis()->me2(mePartonData(),lastAmplitudes()));
+  return lastTreeME2();
+}
+
+double MatchboxAmplitude::oneLoopInterference() const {
+  if ( !calculateOneLoopInterference() )
+    return lastOneLoopInterference();
+  lastOneLoopInterference(crossingSign()*
+			  colourBasis()->interference(mePartonData(),
+						      lastOneLoopAmplitudes(),lastAmplitudes()));
+  return lastOneLoopInterference();
+}
+
 double MatchboxAmplitude::colourCorrelatedME2(pair<int,int> ij) const {
+  if ( !calculateColourCorrelator(ij) )
+    return lastColourCorrelator(ij);
   double Nc = generator()->standardModel()->Nc();
   double cfac = 1.;
   if ( mePartonData()[ij.first]->iColour() == PDT::Colour8 ) {
@@ -399,8 +406,28 @@ double MatchboxAmplitude::colourCorrelatedME2(pair<int,int> ij) const {
 	      mePartonData()[ij.first]->iColour() == PDT::Colour3bar ) {
     cfac = (sqr(Nc)-1.)/(2.*Nc);
   } else assert(false);
-  return 
-    lastCrossingSign()*colourBasis()->colourCorrelatedME2(ij,mePartonData(),lastAmplitudes())/cfac;
+  double res =
+    crossingSign()*colourBasis()->colourCorrelatedME2(ij,mePartonData(),lastAmplitudes());
+  lastColourCorrelator(ij,res);
+  return res/cfac;
+}
+
+double MatchboxAmplitude::largeNColourCorrelatedME2(pair<int,int> ij,
+						    Ptr<ColourBasis>::tptr largeNBasis) const {
+  if ( !calculateLargeNColourCorrelator(ij) )
+    return lastLargeNColourCorrelator(ij);
+  double Nc = generator()->standardModel()->Nc();
+  double cfac = 1.;
+  if ( mePartonData()[ij.first]->iColour() == PDT::Colour8 ) {
+    cfac = Nc;
+  } else if ( mePartonData()[ij.first]->iColour() == PDT::Colour3 ||
+	      mePartonData()[ij.first]->iColour() == PDT::Colour3bar ) {
+    cfac = Nc/2.;
+  } else assert(false);
+  double res =
+    crossingSign()*largeNBasis->colourCorrelatedME2(ij,mePartonData(),lastLargeNAmplitudes());
+  lastLargeNColourCorrelator(ij,res);
+  return res/cfac;
 }
 
 // compare int vectors modulo certain element
@@ -448,33 +475,40 @@ double MatchboxAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
   double avg =
     colourCorrelatedME2(ij)*(-c.diagonal()+ (c.scale() > ZERO ? 1. : -1.)*norm(pFactor));
 
-  double corr = 0.;
-
   int iCrossed = -1;
-  for ( unsigned int k = 0; k < lastCrossingMap().size(); ++k )
-    if ( lastCrossingMap()[k] == ij.first ) {
+  for ( unsigned int k = 0; k < crossingMap().size(); ++k )
+    if ( crossingMap()[k] == ij.first ) {
       iCrossed = k;
       break;
     }      
   assert(iCrossed >= 0);
 
-  set<const CVector*> done;
-  for ( AmplitudeConstIterator a = lastAmplitudes().begin();
-	a != lastAmplitudes().end(); ++a ) {
-    if ( done.find(&(a->second)) != done.end() )
-      continue;
-    AmplitudeConstIterator b = lastAmplitudes().begin();
-    while ( !equalsModulo(iCrossed,a->first,b->first) )
-      if ( ++b == lastAmplitudes().end() )
-	break;
-    if ( b == lastAmplitudes().end() || done.find(&(b->second)) != done.end() )
-      continue;
-    done.insert(&(a->second)); done.insert(&(b->second));
-    if ( a->first[iCrossed] == 1 )
-      swap(a,b);
-    corr += 
-      2.*real(colourBasis()->colourCorrelatedInterference(ij,mePartonData(),a->second,b->second)*sqr(pFactor));
+  Complex csCorr = 0.0;
+
+  if ( calculateColourSpinCorrelator(ij) ) {
+    set<const CVector*> done;
+    for ( AmplitudeConstIterator a = lastAmplitudes().begin();
+	  a != lastAmplitudes().end(); ++a ) {
+      if ( done.find(&(a->second)) != done.end() )
+	continue;
+      AmplitudeConstIterator b = lastAmplitudes().begin();
+      while ( !equalsModulo(iCrossed,a->first,b->first) )
+	if ( ++b == lastAmplitudes().end() )
+	  break;
+      if ( b == lastAmplitudes().end() || done.find(&(b->second)) != done.end() )
+	continue;
+      done.insert(&(a->second)); done.insert(&(b->second));
+      if ( a->first[iCrossed] == 1 )
+	swap(a,b);
+      csCorr += colourBasis()->colourCorrelatedInterference(ij,mePartonData(),a->second,b->second);
+    }
+    lastColourSpinCorrelator(ij,csCorr);
+  } else {
+    csCorr = lastColourSpinCorrelator(ij);
   }
+
+  double corr = 
+    2.*real(csCorr*sqr(pFactor));
 
   double Nc = generator()->standardModel()->Nc();
   double cfac = 1.;
@@ -486,7 +520,7 @@ double MatchboxAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
   } else assert(false);
 
   return 
-    avg + lastCrossingSign()*(c.scale() > ZERO ? 1. : -1.)*corr/cfac;
+    avg + crossingSign()*(c.scale() > ZERO ? 1. : -1.)*corr/cfac;
 
 }
 
@@ -500,11 +534,6 @@ void MatchboxAmplitude::Init() {
     ("ColourBasis",
      "Set the colour basis implementation.",
      &MatchboxAmplitude::theColourBasis, false, false, true, true, false);
-
-  static Reference<MatchboxAmplitude,ProcessData> interfaceProcessData
-    ("ProcessData",
-     "Set the process data object.",
-     &MatchboxAmplitude::theProcessData, false, false, true, true, false);
 
 }
 

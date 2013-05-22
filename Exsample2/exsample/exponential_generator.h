@@ -86,6 +86,16 @@ namespace exsample {
     /// access the adaption_info object
     adaption_info& sampling_parameters() { return adaption_info_; }
 
+  public:
+
+    /// put to ostream
+    template<class OStream>
+    void put(OStream& os) const;
+
+    /// get from istream
+    template<class IStream>
+    void get(IStream& is);
+
   private:
 
     /// check for and possibly split

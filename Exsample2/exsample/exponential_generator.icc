@@ -321,4 +321,57 @@ namespace exsample {
   }
 
 
+  template<class Function, class Random>
+  template<class OStream>
+  void exponential_generator<Function,Random>::put (OStream& os) const {
+    os << check_events_; ostream_traits<OStream>::separator(os);
+    adaption_info_.put(os);
+    root_cell_.put(os);
+    os << did_split_; ostream_traits<OStream>::separator(os);
+    os << initialized_; ostream_traits<OStream>::separator(os);
+    os << evolution_variable_; ostream_traits<OStream>::separator(os);
+    os << evolution_cutoff_; ostream_traits<OStream>::separator(os);
+    os << sample_variables_; ostream_traits<OStream>::separator(os);
+    os << sample_other_variables_; ostream_traits<OStream>::separator(os);
+    os << parameter_splits_; ostream_traits<OStream>::separator(os);
+    // last_cell_ is selected new so we ignore it here
+    os << last_point_; ostream_traits<OStream>::separator(os);
+    os << last_value_; ostream_traits<OStream>::separator(os);
+    last_parameter_bin_.put(os);
+    os << exponents_.size(); ostream_traits<OStream>::separator(os);
+    for ( std::map<bit_container<parameter_hash_bits>,linear_interpolator >::const_iterator
+	    ex = exponents_.begin(); ex != exponents_.end() ; ++ex ) {
+      ex->first.put(os);
+      ex->second.put(os);
+    }
+    os << last_exponent_integrand_; ostream_traits<OStream>::separator(os);
+    os << compensating_; ostream_traits<OStream>::separator(os);
+    os << attempts_; ostream_traits<OStream>::separator(os);
+    os << accepts_; ostream_traits<OStream>::separator(os);
+    os << splits_; ostream_traits<OStream>::separator(os);
+  }
+
+  template<class Function, class Random>
+  template<class IStream>
+  void exponential_generator<Function,Random>::get (IStream& is) {
+    is >> check_events_;
+    adaption_info_.get(is);
+    root_cell_.get(is);
+    is >> did_split_ >> initialized_ >> evolution_variable_
+       >> evolution_cutoff_ >> sample_variables_ >> sample_other_variables_
+       >> parameter_splits_;
+    // last_cell_ is selected new so we ignore it here
+    is >> last_point_ >> last_value_;
+    last_parameter_bin_.get(is);
+    size_t dim; is >> dim;
+    for ( size_t k = 0; k < dim ; ++k ) {
+      bit_container<parameter_hash_bits> key;
+      key.get(is);
+      exponents_[key].get(is);
+    }
+    is >> last_exponent_integrand_;
+    last_exponent_ = exponents_.find(last_parameter_bin_);
+    is >> compensating_ >> attempts_ >> accepts_ >> splits_;
+  }
+
 }

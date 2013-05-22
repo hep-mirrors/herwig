@@ -419,31 +419,6 @@ protected:
    */
   vector<IdList> particles() const { return particles_; }
 
-  /**
-   *  Methods to set the member variables for inheriting classes
-   */
-  //@{
-  /**
-   *  Method to set the SplittingFunction
-   */
-  void splittingFn(tSplittingFnPtr in) { splittingFn_ = in;}
-
-  /**
-   *  Method to set the coupling
-   */
-  void alpha(tShowerAlphaPtr in) { alpha_ = in; }
-
-  /**
-   *  Method to set the maximum PDF weight
-   */
-  void pdfMax(double in) { pdfmax_ = in;}
-
-  /**
-   *  Get the option for the PDF factor
-   */
-  unsigned int PDFFactor() const { return pdffactor_; }
-  //@}
-
 public:
 
   /**

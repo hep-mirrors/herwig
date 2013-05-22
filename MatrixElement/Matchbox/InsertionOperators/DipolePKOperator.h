@@ -48,10 +48,10 @@ public:
 public:
 
   /**
-   * Set the Born matrix element this class represents 
-   * virtual corrections to.
+   * Set the XComb object steering the Born matrix
+   * element this class represents virtual corrections to.
    */
-  virtual void setBorn(Ptr<MatchboxMEBase>::tptr me);
+  virtual void setXComb(tStdXCombPtr xc);
 
   /**
    * Return the number of additional random variables

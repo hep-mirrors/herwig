@@ -12,7 +12,7 @@
 // This is the declaration of the MatchboxAmplitudellbarqqbarg class.
 //
 
-#include "Herwig++/MatrixElement/Matchbox/Base/MatchboxAmplitude.h"
+#include "Herwig++/MatrixElement/Matchbox/Builtin/Amplitudes/MatchboxZGammaAmplitude.h"
 #include "Herwig++/MatrixElement/Matchbox/Builtin/Amplitudes/MatchboxCurrents.h"
 
 namespace Herwig {
@@ -26,7 +26,7 @@ using namespace ThePEG;
  * \brief MatchboxAmplitudellbarqqbarg
  */
 class MatchboxAmplitudellbarqqbarg: 
-    public MatchboxAmplitude, public MatchboxCurrents {
+    public MatchboxZGammaAmplitude, public MatchboxCurrents {
 
 public:
 
@@ -105,7 +105,7 @@ public:
    */
   virtual void flushCaches() {
     MatchboxCurrents::reset();
-    MatchboxAmplitude::flushCaches();
+    MatchboxZGammaAmplitude::flushCaches();
   }
 
 public:

@@ -76,10 +76,7 @@ double MEMatching::channelWeight() const {
 
 CrossSection MEMatching::dSigHatDR() const {
 
-  double xme2 = 
-    realXComb()->lastME2() > 0.0 ? 
-    realXComb()->lastME2() : 
-    dipole()->realEmissionME()->me2();
+  double xme2 = dipole()->realEmissionME()->me2();
 
   xme2 *= channelWeight();
   xme2 /= 
@@ -88,7 +85,9 @@ CrossSection MEMatching::dSigHatDR() const {
   xme2 *=
     pow(dipole()->underlyingBornME()->lastXComb().lastAlphaS(),
 	(double)(dipole()->underlyingBornME()->orderInAlphaS()));
-  xme2 *= bornPDFWeight(dipole()->underlyingBornME()->lastScale());
+  double bornPDF = bornPDFWeight(dipole()->underlyingBornME()->lastScale());
+  if ( bornPDF == 0.0 )
+    return ZERO;
 
   if ( theScreeningScale != ZERO ) {
     xme2 *= sqr(theScreeningScale) /
@@ -106,9 +105,7 @@ CrossSection MEMatching::dSigHatDR() const {
 
 double MEMatching::me2() const {
 
-  assert(bornXComb()->lastME2() > 0.0);
-
-  double bme2 = bornXComb()->lastME2();
+  double bme2 = bornXComb()->matrixElement()->me2();
   bme2 /=
     pow(dipole()->underlyingBornME()->lastXComb().lastAlphaS(),
 	(double)(dipole()->underlyingBornME()->orderInAlphaS()));

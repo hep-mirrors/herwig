@@ -80,7 +80,10 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_PAS_QCD_11_010
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1087342
 # CMS dijet
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1184941
-
+# ATLAS charged particle in min bias
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1125575
+# ATLAS two particle correlation
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1094061
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################

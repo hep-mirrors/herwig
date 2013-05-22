@@ -7,6 +7,7 @@
 namespace Herwig {
 
 class MatchboxMEBase;
+class MatchboxAmplitude;
 
 }
 

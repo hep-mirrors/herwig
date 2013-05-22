@@ -64,50 +64,88 @@ double SimpleColourBasis::scalarProduct(size_t a, size_t b,
 
   double Nc = SM().Nc();
   double Nc2 = sqr(Nc);
+  double Nc3 = Nc*Nc2;
   double Nc4 = sqr(Nc2);
   double Nc6 = Nc2*Nc4;
 
   if ( a > b )
     swap(a,b);
 
-  if ( abBasis == id88 ) {
-    return ( Nc2 - 1. )/4.;
-  }
+  if ( !largeN() ) {
 
-  if ( abBasis == id33bar ) {
-    return Nc;
-  }
+    if ( abBasis == id88 ) {
+      return ( Nc2 - 1. )/4.;
+    }
 
-  if ( abBasis == id888 ) {
-    if ( a == b )
-      return ( Nc4 - 3.*Nc2 + 2. )/(8.*Nc);
-    return -( Nc2 - 1. )/(4.*Nc);
-  }
+    if ( abBasis == id33bar ) {
+      return Nc;
+    }
 
-  if ( abBasis == id33bar8 ) {
-    return ( Nc2 - 1. )/2.;
-  }
+    if ( abBasis == id888 ) {
+      if ( a == b )
+	return ( Nc4 - 3.*Nc2 + 2. )/(8.*Nc);
+      return -( Nc2 - 1. )/(4.*Nc);
+    }
 
-  if ( abBasis == id8888 ) {
-    if ( a == b )
-      return ( Nc6 - 4.*Nc4 + 6.*Nc2 - 3. )/(16.*Nc2);
-    if ( ( a == 0 && b == 1 ) ||
-	 ( a == 2 && b == 3 ) ||
-	 ( a == 4 && b == 5 ) )
-      return ( Nc4 + 2.*Nc2 - 3. )/(16.*Nc2);
-    return -( Nc2 - 4. + 3./Nc2 )/16.;
-  }
+    if ( abBasis == id33bar8 ) {
+      return ( Nc2 - 1. )/2.;
+    }
 
-  if ( abBasis == id33bar88 ) {
-    if ( a == b )
-      return ( Nc4 - 2.*Nc2 + 1 )/(4.*Nc);
-    return -( Nc2 - 1. )/(4.*Nc);
-  }
+    if ( abBasis == id8888 ) {
+      if ( a == b )
+	return ( Nc6 - 4.*Nc4 + 6.*Nc2 - 3. )/(16.*Nc2);
+      if ( ( a == 0 && b == 1 ) ||
+	   ( a == 2 && b == 3 ) ||
+	   ( a == 4 && b == 5 ) )
+	return ( Nc4 + 2.*Nc2 - 3. )/(16.*Nc2);
+      return -( Nc2 - 4. + 3./Nc2 )/16.;
+    }
 
-  if ( abBasis == id33bar33bar ) {
-    if ( a == b )
+    if ( abBasis == id33bar88 ) {
+      if ( a == b )
+	return ( Nc4 - 2.*Nc2 + 1 )/(4.*Nc);
+      return -( Nc2 - 1. )/(4.*Nc);
+    }
+
+    if ( abBasis == id33bar33bar ) {
+      if ( a == b )
+	return Nc2;
+      return Nc;
+    }
+
+  } else {
+
+    if ( a != b )
+      return 0.;
+
+    if ( abBasis == id88 ) {
+      return Nc2/4.;
+    }
+
+    if ( abBasis == id33bar ) {
+      return Nc;
+    }
+
+    if ( abBasis == id888 ) {
+      return Nc3/8.;
+    }
+
+    if ( abBasis == id33bar8 ) {
+      return Nc2/2.;
+    }
+
+    if ( abBasis == id8888 ) {
+      return Nc4/16.;
+    }
+
+    if ( abBasis == id33bar88 ) {
+      return Nc3/4.;
+    }
+
+    if ( abBasis == id33bar33bar ) {
       return Nc2;
-    return Nc;
+    }
+
   }
 
   throw Exception() << "Cannot handle colour configuration" << Exception::abortnow;
