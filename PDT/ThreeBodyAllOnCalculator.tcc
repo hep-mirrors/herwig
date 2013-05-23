@@ -17,11 +17,11 @@ template <class T>
 void ThreeBodyAllOnCalculator<T>::outerVariables(const double & x, Energy2 & low,
 						 Energy2 & upp) const { 
   // first convert the value of x into the value of souter
-  if(_mapping==0) {
+  if(_mapping[_thechannel]==0) {
     _souter = _channelmass[_thechannel]*(_channelmass[_thechannel]+
 					 _channelwidth[_thechannel]*tan(x));
   }
-  else if(_mapping==1) {
+  else if(_mapping[_thechannel]==1) {
     _souter = sqr(_channelmass[_thechannel])*(1.+1./x);
   }
   else {
@@ -104,21 +104,21 @@ Energy2 ThreeBodyAllOnCalculator<T>::operator ()(Energy2 y) const {
     assert(!isnan(sjac/MeV2));
     InvEnergy2 term; 
 
-    if(_channelmass[ix] > ZERO) {
-      if(_channelwidth[ix] > 1e-8*MeV) {
-	rm2 = sqr(_channelmass[ix]);
-	rw2 = sqr(_channelwidth[ix]);
-	Energy4 tmp = sqr(sjac-rm2) + rw2*rm2;
-	term = _channelweights[ix]*_channelmass[ix]*_channelwidth[ix]/tmp;
-      }
-      else {
-	term = _channelweights[ix]*sqr(_channelmass[ix]/(sjac-sqr(_channelmass[ix])));
-      }
+    if(_mapping[ix]==0) {
+      rm2 = sqr(_channelmass[ix]);
+      rw2 = sqr(_channelwidth[ix]);
+      Energy4 tmp = sqr(sjac-rm2) + rw2*rm2;
+      term = _channelweights[ix]*_channelmass[ix]*_channelwidth[ix]/tmp;
     }
-    else {
+    else if(_mapping[ix]==1) {
+      term = _channelweights[ix]*sqr(_channelmass[ix]/(sjac-sqr(_channelmass[ix])));
+    }
+    else if(_mapping[ix]==2) {
       term = UnitRemoval::InvE2 * _channelweights[ix]*(_channelpower[ix]+1.)*
      	pow(sjac*UnitRemoval::InvE2, _channelpower[ix]);
     }
+    else
+      assert(false);
     jacdem += term;
   }
   // now computer the matrix element
@@ -133,10 +133,11 @@ Energy ThreeBodyAllOnCalculator<T>::partialWidth(Energy2 q2) const {
   _m[0] = sqrt(q2);
   _m2[0]=q2;
   // check the decay is kinematically allowed
-  if(_m[0]<_m[1]+_m[2]+_m[3]){return ZERO;}
-  // perform the integrals for all the different channels
-  Energy4 sum(ZERO);
-  for(unsigned int ix=0,N=_channeltype.size(); ix<N; ++ix) {
+  if(_m[0]<_m[1]+_m[2]+_m[3]) return ZERO;
+  // set up for the different channels
+  unsigned int N = _channeltype.size();
+  vector<double> rupp(N,0.),rlow(N,0.);
+  for(unsigned int ix=0; ix<N; ++ix) {
     Energy2 upp(ZERO),low(ZERO);
     // work out the kinematic limits
     switch(_channeltype[ix]) {
@@ -155,38 +156,41 @@ Energy ThreeBodyAllOnCalculator<T>::partialWidth(Energy2 q2) const {
     default:
       assert(false);
     }
-    double rupp, rlow;
     // transform them
     if(_channelmass[ix] > ZERO) {
       if(_channelwidth[ix] > 1e-8*MeV) {
-	rupp = atan2((upp-_channelmass[ix]*_channelmass[ix]),
-		    _channelmass[ix]*_channelwidth[ix]);
-	rlow =  atan2((low-_channelmass[ix]*_channelmass[ix]),
-		     _channelmass[ix]*_channelwidth[ix]);
-	_mapping = 0;
-	if(rupp/rlow>0.&&_channelwidth[ix]/_channelmass[ix]<1e-6) {
-	  _mapping = 1;
+	rupp[ix] = atan2((upp-_channelmass[ix]*_channelmass[ix]),
+			 _channelmass[ix]*_channelwidth[ix]);
+	rlow[ix] =  atan2((low-_channelmass[ix]*_channelmass[ix]),
+			  _channelmass[ix]*_channelwidth[ix]);
+	_mapping[ix] = 0;
+	if(rupp[ix]/rlow[ix]>0.&&_channelwidth[ix]/_channelmass[ix]<1e-6) {
+	  _mapping[ix] = 1;
 	  Energy2 m2=sqr(_channelmass[ix]);
-	  rupp = m2/(low-m2);
-	  rlow = m2/(upp-m2);
+	  rupp[ix] = m2/(low-m2);
+	  rlow[ix] = m2/(upp-m2);
 	}
       }
       else {
-	_mapping = 1;
+	_mapping[ix] = 1;
 	Energy2 m2=sqr(_channelmass[ix]);
-	rupp = m2/(low-m2);
-	rlow = m2/(upp-m2);
+	rupp[ix] = m2/(low-m2);
+	rlow[ix] = m2/(upp-m2);
       }
     }
     else {
-      _mapping = 2;
-      rupp = pow(upp*UnitRemoval::InvE2, _channelpower[ix]+1.);
-      rlow = pow(low*UnitRemoval::InvE2, _channelpower[ix]+1.);
+      _mapping[ix] = 2;
+      rupp[ix] = pow(upp*UnitRemoval::InvE2, _channelpower[ix]+1.);
+      rlow[ix] = pow(low*UnitRemoval::InvE2, _channelpower[ix]+1.);
     }
+  }
+  // perform the integrals for all the different channels
+  Energy4 sum(ZERO);
+  for(unsigned int ix=0,N=_channeltype.size(); ix<N; ++ix) {
     // perform the integral using GSLIntegrator class
     _thechannel=ix;
     GSLIntegrator intb(1e-35,_relerr,1000);
-    sum +=  _channelweights[ix] * intb.value(outer,rlow,rupp);
+    sum +=  _channelweights[ix] * intb.value(outer,rlow[ix],rupp[ix]);
   }
   // final factors
   Energy3 fact = pow<3,1>(Constants::twopi * _m[0]);
