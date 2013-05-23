@@ -487,7 +487,7 @@ vector<Energy> DecayPhaseSpaceMode::externalMasses(Energy inmass,double & wgt,
     else {
       mass.push_back(ZERO);
       notdone.push_back(ix);
-      mlow+=_extpart[ix]->mass()-_extpart[ix]->widthLoCut();
+      mlow+=max(_extpart[ix]->mass()-_extpart[ix]->widthLoCut(),ZERO);
     }
   }
   if(mlow>inmass) {
@@ -507,10 +507,11 @@ vector<Energy> DecayPhaseSpaceMode::externalMasses(Energy inmass,double & wgt,
   Energy low=ZERO;
   for( ;!notdone.empty();) {
     iloc=long(UseRandom::rnd()*(notdone.size()-1));
-    low=_extpart[notdone[iloc]]->mass()-_extpart[notdone[iloc]]->widthLoCut();
+    low=max(_extpart[notdone[iloc]]->mass()-_extpart[notdone[iloc]]->widthLoCut(),ZERO);
     mlow-=low;
     mass[notdone[iloc]]=
       _massgen[notdone[iloc]]->mass(wgttemp,*_extpart[notdone[iloc]],low,inmass-mlow);
+    assert(mass[notdone[iloc]]>=low&&mass[notdone[iloc]]<=inmass-mlow);
     wgt   *= wgttemp;
     mlow  += mass[notdone[iloc]];
     notdone.erase(notdone.begin()+iloc);

@@ -425,7 +425,7 @@ double MatchboxAmplitude::largeNColourCorrelatedME2(pair<int,int> ij,
     cfac = Nc/2.;
   } else assert(false);
   double res =
-    crossingSign()*largeNBasis->colourCorrelatedME2(ij,mePartonData(),lastAmplitudes());
+    crossingSign()*largeNBasis->colourCorrelatedME2(ij,mePartonData(),lastLargeNAmplitudes());
   lastLargeNColourCorrelator(ij,res);
   return res/cfac;
 }

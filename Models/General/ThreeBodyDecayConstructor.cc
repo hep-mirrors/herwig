@@ -302,6 +302,10 @@ createDecayMode(vector<NBDiagram> & mode,
       }
       // incoming particle is now unstable
       inpart->stable(false);
+      if(Debug::level > 1 ) {
+	generator()->log() << "Calculated partial width for mode "
+			   << tag << " is " << width/GeV << "\n";
+      }
     }
     else
       throw NBodyDecayConstructorError() 
