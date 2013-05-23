@@ -638,7 +638,7 @@ constructIntegratorChannels(vector<int> & intype, vector<Energy> & inmass,
       dm2 -= outgoing()[0]->mass()+outgoing()[1]->mass();
       itype = 1;
     }
-    if(dm1<ZERO||dm2<ZERO) {
+    if((dm1<ZERO||dm2<ZERO)&&getProcessInfo()[ix].intermediate->id()!=ParticleID::gamma) {
       if (imin[itype].first < 0  ||
 	  (dm1<ZERO && imin[itype].second < dm1)  ) {
 	imin[itype] = make_pair(ix,dm1);
