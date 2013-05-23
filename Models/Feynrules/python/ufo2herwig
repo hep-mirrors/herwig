@@ -342,6 +342,9 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
 #    normcalc = aStoStrongCoup(py2cpp(normcontent)[0], paramstoreplace_, paramstoreplace_expressions_)
     normcalc, sym = py2cpp(normcontent)
     symbols |= sym
+    if lorentztag in ['VVS','SSS']:
+        # UFO is GeV by default (?)
+        normcalc = '(%s) * GeV / UnitRemoval::E' % normcalc
     norm = 'norm(' + normcalc + ');'
 
     # define unkown symbols from the model
