@@ -118,7 +118,7 @@ void SSWHHVertex::setCoupling(Energy2 q2, tcPDPtr particle1,
     else 
       coup = Complex(0., 0.5)/theSw;
     if(abs(h2ID) == ParticleID::Hplus ) coup *= -1.;
-    if(gboson<0&&higgs!=ParticleID::A0) coup *= -1.;
+    if(gboson>0&&higgs!=ParticleID::A0) coup *= -1.;
   }
   if( q2 != theq2last || theElast==0.) {
     theq2last = q2;
