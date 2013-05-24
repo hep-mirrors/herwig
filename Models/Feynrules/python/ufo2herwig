@@ -212,6 +212,7 @@ if args.verbose:
 
 ### initial pass to find global sign
 def global_sign():
+    return 1.0
     for v in FR.all_vertices:
         pids = sorted([ p.pdg_code for p in v.particles ])
         if pids != [-11,11,22]: continue
