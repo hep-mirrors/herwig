@@ -230,8 +230,8 @@ void SSWSSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
     _couplast = electroMagneticCoupling(q2);
   }
   if(part2->id()>0) 
-    norm(-_couplast*_factlast);
-  else
     norm( _couplast*_factlast);
+  else
+    norm(-_couplast*_factlast);
 }
 
