@@ -99,7 +99,7 @@ int  GeneralThreeBodyDecayer::
 modeNumber(bool & cc, tcPDPtr in, const tPDVector & outin) const {
   assert( !_reftag.empty() && !_reftagcc.empty() );
   // check number of outgoing particles
-  if( outin.size() != 3 || abs(in->id()) != _incoming->id() ) return -1;
+  if( outin.size() != 3 || abs(in->id()) != abs(_incoming->id()) ) return -1;
   OrderedParticles testmode(outin.begin(), outin.end());
   OrderedParticles::const_iterator dit = testmode.begin();
   string testtag(in->name() + "->");

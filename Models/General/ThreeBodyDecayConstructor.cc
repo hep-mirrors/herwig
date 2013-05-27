@@ -283,6 +283,11 @@ createDecayMode(vector<NBDiagram> & mode,
       generator()->preinitInterface(ndm, "Decayer", "set",
  				    decayer->fullName());
       generator()->preinitInterface(ndm, "OnOff", "set", "On");
+      if(!ndm->decayer()) {
+	generator()->log() << "Can't set the decayer for " 
+			   << tag << " so mode not created \n";
+	return;
+      }
       OrderedParticles::const_iterator pit=outgoing.begin();
       tPDPtr pa = *pit; ++pit;
       tPDPtr pb = *pit; ++pit;
