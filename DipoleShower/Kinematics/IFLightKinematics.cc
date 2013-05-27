@@ -98,7 +98,7 @@ double IFLightKinematics::ptToRandom(Energy pt, Energy,
   return log(pt/IRCutoff()) / log(0.5 * generator()->maximumCMEnergy()/IRCutoff());
 }
 
-bool IFLightKinematics::generateSplitting(double kappar, double xi, double rphi,
+bool IFLightKinematics::generateSplitting(double kappa, double xi, double rphi,
 					  DipoleSplittingInfo& info) {
 
   if ( info.emitterX() < xMin() ) {
@@ -106,9 +106,9 @@ bool IFLightKinematics::generateSplitting(double kappar, double xi, double rphi,
     return false;
   }
 
-  Energy qt = IRCutoff() * pow(0.5 * generator()->maximumCMEnergy()/IRCutoff(),kappar);
+  Energy pt = IRCutoff() * pow(0.5 * generator()->maximumCMEnergy()/IRCutoff(),kappa);
 
-  if ( qt < IRCutoff() || qt > info.hardPt() ) {
+  if ( sqr(pt) > sqr(info.hardPt())/(1.+4.*sqr(info.hardPt()/info.scale())) ) {
     jacobian(0.0);
     return false;
   }
@@ -136,37 +136,36 @@ bool IFLightKinematics::generateSplitting(double kappar, double xi, double rphi,
     }
   }
 
-  double kappa = sqr(qt/info.scale());
+  double ratio = sqr(pt/info.scale());
 
-  double rho = 1. - 4.*kappa*z*(1.-z) / sqr(1. - z + kappa);
-  if ( rho < 0. ) {
-    jacobian(0.0);
-    return false;
-  }
-
-  Energy2 pt2 = (sqr(info.scale())/2.)*(1. - z - kappa)*(1. - sqrt(rho));
-  if ( pt2 < ZERO ) {
-    jacobian(0.0);
-    return false;
-  }
-
-  double ratio = pt2/sqr(info.scale());
-
-  double x = pt2/sqr(qt);
+  double x = ( z*(1.-z) - ratio ) / ( 1. - z - ratio );
   double u = ratio/(1.-z);
 
-  if ( x < 0. || x > 1. || u > 1. || u < 0. ) {
+  if ( x < 0. || x > 1. || u > 1. ) {
     jacobian(0.0);
     return false;
   }
 
   double xe = info.emitterX();
-  double s = sqrt(1.-sqr(qt/info.hardPt()));
 
-  double zp = 0.5*(1.+xe+(1.-xe)*s);
-  double zm = 0.5*(1.+xe-(1.-xe)*s);
+  double zpx = 0.5*( 1.+ xe + 
+		     (1.-xe)*sqrt(1.-sqr(2.*pt/info.scale())/(1.-xe) ) );
+  double zmx = 0.5*( 1.+ xe -
+		     (1.-xe)*sqrt(1.-sqr(2.*pt/info.scale())/(1.-xe) ) );
 
-  if ( z > zp || z < zm ||
+  double xq = sqr(pt/info.hardPt());
+
+  double zpq = 0.5*( 1.+ xq + 
+		     (1.-xq)*sqrt(1.-sqr(2.*pt/info.scale())/(1.-xq) ) );
+  double zmq = 0.5*( 1.+ xq -
+		     (1.-xq)*sqrt(1.-sqr(2.*pt/info.scale())/(1.-xq) ) );
+
+  double zp = min(zpx,zpq);
+  double zm = max(zmx,zmq);
+
+  if ( pt < IRCutoff() || 
+       pt > info.hardPt() ||
+       z > zp || z < zm ||
        x < xe ) {
     jacobian(0.0);
     return false;
@@ -174,24 +173,48 @@ bool IFLightKinematics::generateSplitting(double kappar, double xi, double rphi,
 
   double phi = 2.*Constants::pi*rphi;
 
-  jacobian(2. * mapZJacobian * ((1.-z)*(1.-z-ratio)/(sqr(z*(1.-z)-ratio) + z*(1.-z)*sqr(1.-z))) * 
-	   log(0.5 * generator()->maximumCMEnergy()/IRCutoff()));
+  jacobian(2. * mapZJacobian * (1.-z)/(z*(1.-z)-ratio) * log(0.5 * generator()->maximumCMEnergy()/IRCutoff()));
 
-  lastPt(qt);
+  lastPt(pt);
   lastZ(z);
   lastPhi(phi);
   lastEmitterZ(x);
 
   if ( theMCCheck )
-    theMCCheck->book(info.emitterX(),1.,info.scale(),info.hardPt(),qt,z,jacobian());
+    theMCCheck->book(info.emitterX(),1.,info.scale(),info.hardPt(),pt,z,jacobian());
 
   return true;
 
 }
 
-InvEnergy2 IFLightKinematics::setKinematics(DipoleSplittingInfo&) const {
-  // this is not used anymore
-  return ZERO;
+InvEnergy2 IFLightKinematics::setKinematics(DipoleSplittingInfo& split) const {
+
+  Lorentz5Momentum emitter = split.splitEmitter()->momentum();
+  Lorentz5Momentum emission = split.emission()->momentum();
+  Lorentz5Momentum spectator = split.splitSpectator()->momentum();
+
+  split.splittingKinematics(const_cast<IFLightKinematics*>(this));
+
+  Energy2 scale = 2.*(emission*emitter - emission*spectator + emitter*spectator);
+  split.scale(sqrt(scale));
+
+  double x = 
+    scale / (2.*(emitter*emission + emitter*spectator));
+  double u = emitter*emission / (emitter*emission + emitter*spectator);
+
+  split.lastPt(split.scale() * sqrt(u*(1.-u)*(1.-x)));
+  split.lastZ(u+x*(1.-u));
+
+  split.hardPt(split.lastPt());
+
+  if ( split.hardPt() > IRCutoff() ) {
+    split.continuesEvolving();
+  } else {
+    split.didStopEvolving();
+  }
+
+  return 1./(2.*x*(emitter*emission));
+
 }
 
 double IFLightKinematics::
@@ -205,22 +228,16 @@ void IFLightKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
 					   const Lorentz5Momentum& pSpectator,
 					   const DipoleSplittingInfo& dInfo) {
 
-  Energy qt = dInfo.lastPt();
+  Energy pt = dInfo.lastPt();
+  double ratio = sqr(pt/-(pEmitter-pSpectator).m());
   double z = dInfo.lastZ();
+  double x = (z*(1.-z)-ratio)/(1.-z-ratio);
+  double u = ratio / (1.-z);
 
-  double kappa = sqr(qt)/(-(pEmitter-pSpectator).m2());
-
-  double rho = 1. - 4.*kappa*z*(1.-z) / sqr(1. - z + kappa);
-  Energy2 pt2 = (-(pEmitter-pSpectator).m2()/2.)*(1. - z + kappa)*(1. - sqrt(rho));
-
-  double ratio = pt2/(-(pEmitter-pSpectator).m2());
-
-  double x = pt2/sqr(qt);
-  double u = ratio/(1.-z);
-
+  pt = -(pEmitter-pSpectator).m()*sqrt(u*(1.-u)*(1.-x)/x);
 
   Lorentz5Momentum kt =
-    getKt (pEmitter, pSpectator, qt, dInfo.lastPhi(),true);
+    getKt (pEmitter, pSpectator, pt, dInfo.lastPhi(),true);
 
   Lorentz5Momentum em;
   Lorentz5Momentum emm;
