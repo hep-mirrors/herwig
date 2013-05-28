@@ -462,11 +462,13 @@ SusyBase::readMatrix(CFileLineReader & cfile,
     istringstream is(line);
     unsigned int index1, index2;
     double real(0.), imag(0.);   
-    is >> index1 >> index2 >> real >> imag;
-    values.push_back(MixingElement(index1,index2,Complex(real, imag)));
-    if(index1 > rowmax) rowmax = index1;
-    if(index2 > colmax) colmax = index2;
-
+    line = StringUtils::stripws(line);
+    if(!line.empty()) {
+      is >> index1 >> index2 >> real >> imag;
+      values.push_back(MixingElement(index1,index2,Complex(real, imag)));
+      if(index1 > rowmax) rowmax = index1;
+      if(index2 > colmax) colmax = index2;
+    }
   }
   col=colmax;
   row=rowmax;
