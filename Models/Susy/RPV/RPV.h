@@ -52,6 +52,16 @@ public:
    */
   const vector<Energy> & sneutrinoVEVs() {return vnu_;}
 
+  /**
+   *  Bilinear coupings
+   */
+  const vector<Energy> & epsilon() {return epsilon_;}
+
+  /**
+   *  Blinear soft terms
+   */
+  const vector<Energy> & epsilonB() {return epsB_;}
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -153,6 +163,16 @@ private:
    *  Sneutrino vevs
    */
   vector<Energy> vnu_;
+
+  /**
+   *  The bilinear parameters
+   */
+  vector<Energy> epsilon_;
+
+  /**
+   *  The bilinear soft terms
+   */
+  vector<Energy> epsB_;
 
   /**
    *  Squark mixing matrices

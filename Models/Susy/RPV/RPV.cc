@@ -17,13 +17,15 @@ using namespace Herwig;
 void RPV::persistentOutput(PersistentOStream & os ) const {
   os << lambdaLLE_ << lambdaLQD_ << lambdaUDD_ << ounit(vnu_,GeV)
      << upSquarkMix_ << downSquarkMix_ << triLinearOnly_
-     << LLEVertex_ << LQDVertex_ << UDDVertex_;
+     << LLEVertex_ << LQDVertex_ << UDDVertex_ 
+     << ounit(epsilon_,GeV) << ounit(epsB_,GeV);
 }
 
 void RPV::persistentInput(PersistentIStream & is, int) {
   is >> lambdaLLE_ >> lambdaLQD_ >> lambdaUDD_ >> iunit(vnu_,GeV)
      >> upSquarkMix_ >> downSquarkMix_ >> triLinearOnly_
-     >> LLEVertex_ >> LQDVertex_ >> UDDVertex_;
+     >> LLEVertex_ >> LQDVertex_ >> UDDVertex_ 
+     >> iunit(epsilon_,GeV) >> iunit(epsB_,GeV);
 }
 
 // Static variable needed for the type description system in ThePEG.
@@ -148,6 +150,30 @@ void RPV::extractParameters(bool checkmodel) {
       }
     }
   }
+  // bilinears
+  pit=parameters().find("rvkappa");
+  epsilon_.resize(3);
+  if( pit != parameters().end() ) {
+    for(ParamMap::const_iterator it = pit->second.begin();
+	it!=pit->second.end();++it) {
+      if(it->first>0) {
+	assert(it->first>=1&&it->first<=3);
+	epsilon_[it->first-1] = it->second*GeV;
+      }
+    }
+  }
+  // blinear soft terms
+  pit=parameters().find("rvd");
+  epsB_.resize(3);
+  if( pit != parameters().end() ) {
+    for(ParamMap::const_iterator it = pit->second.begin();
+	it!=pit->second.end();++it) {
+      if(it->first>0) {
+	assert(it->first>=1&&it->first<=3);
+	epsB_[it->first-1] = it->second*GeV;
+      }
+    }
+  }
 }
 
 void RPV::createMixingMatrices() {
@@ -197,7 +223,8 @@ void RPV::createMixingMatrices() {
     massMap[findValue(fit,2000011,"mass","2000011")] = 2000011;
     massMap[findValue(fit,2000013,"mass","2000013")] = 2000013;
     massMap[findValue(fit,2000015,"mass","2000015")] = 2000015;
-    vector<int> move(1,7);
+    massMap[findValue(fit,     24,"mass",     "24")] =      24;
+    vector<int> move;
     for(map<double,long>::iterator mit=massMap.begin();mit!=massMap.end();++mit) {
       if     (mit->second==     37) move.push_back(0);
       else if(mit->second==1000011) move.push_back(1);
@@ -206,6 +233,7 @@ void RPV::createMixingMatrices() {
       else if(mit->second==2000011) move.push_back(4);
       else if(mit->second==2000013) move.push_back(5);
       else if(mit->second==2000015) move.push_back(6);
+      else if(mit->second==     24) move.push_back(7);
     }
     CMatrix oldMat = ChargedHiggsMix()->getMatrix();
     CMatrix newMat(8,vector<Complex>(8,0.));
