@@ -260,9 +260,9 @@ handle(EventHandler & eh, const tPVector &,
 
   for ( set<Ptr<ShowerApproximationKernel>::ptr>::const_iterator k =
 	  kernels.begin(); k != kernels.end(); ++k ) {
-    if ( (**k).generate() != 0. ) {
+    if ( (**k).generate() != 0. && (*k)->dipole()->lastPt() > winnerPt){
       winnerKernel = *k;
-      winnerPt = max(winnerPt,winnerKernel->dipole()->lastPt());
+      winnerPt = winnerKernel->dipole()->lastPt();
     }
   }
 
