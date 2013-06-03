@@ -23,6 +23,7 @@ ResonantProcessConstructor.cc ResonantProcessConstructor.h \
 ResonantProcessConstructor.fh \
 VVSLoopVertex.fh VVSLoopVertex.h VVSLoopVertex.cc \
 GenericHGGVertex.h GenericHGGVertex.cc \
+GenericHPPVertex.h GenericHPPVertex.cc \
 BSMWidthGenerator.h BSMWidthGenerator.fh BSMWidthGenerator.cc \
 PrototypeVertex.h PrototypeVertex.cc \
 TBDiagram.h TwoBodyDecay.h\
