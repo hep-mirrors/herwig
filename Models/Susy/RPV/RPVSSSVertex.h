@@ -6,6 +6,7 @@
 //
 
 #include "ThePEG/Helicity/Vertex/Scalar/SSSVertex.h"
+#include "Herwig++/Models/Susy/MixingMatrix.h"
 
 namespace Herwig {
 
@@ -110,210 +111,96 @@ private:
    * The scale at which the coupling was last evaluated.  
    */
   Energy2 q2Last_;
-
-
-
-
-  //////////////   FROM HSFSF ///////////////////////////////////////////////////
-
-//   /** @name Functions to calculate the coupling based on the sfermion type. */
-//   //@{
-//   /**
-//    * Calculate the coupling for the first higgs 
-//    * @param higgs The ID of the higgs
-//    * @param smID The ID of the SM particle to which it is a partner.
-//    * @param alpha The mass eigenstate of an sfermion
-//    * @param beta  The mass eigenstate of the other sfermion
-//    */
-//   void downSF(long higgs, long smID, unsigned int alpha, unsigned int beta);
   
-//   /**
-//    * Calculate the coupling for the second higgs 
-//    * @param higgs The ID of the higgs
-//    * @param smID The ID of the SM particle to which it is a partner.
-//    * @param alpha The mass eigenstate of an sfermion
-//    * @param beta  The mass eigenstate of the other sfermion
-//    */
-//   void upSF(long higgs, long smID, unsigned int alpha, unsigned int beta);
-  
-//   /**
-//    * Calculate the coupling for the third higgs 
-//    * @param higgs The ID of the higgs
-//    * @param smID The ID of the SM particle to which it is a partner.
-//    * @param alpha The mass eigenstate of an sfermion
-//    * @param beta  The mass eigenstate of the other sfermion
-//    */
-//   void leptonSF(long higgs, long smID, unsigned int alpha, unsigned int beta);
-  
-//   /**
-//    *  Calculate the coupling for the charged higgs 
-//    * @param id1 The ID of the first sfermion
-//    * @param id2 The ID of the second sfermion
-//    */
-//   void chargedHiggs(long id1, long id2);
-  
-//   //@}
-// private:
-  
-//   /**
-//    * A vector containing pointers to the mixing matrices, 0 = stop, 
-//    * 1 = sbottom, 2 = stau 
-//    */
-//   MMPVector theMix;
+  /**
+   * The value of \f$ \sqrt{4\pi\alpha}\f$ when it was last evaluated.
+   */
+  double gLast_;
 
-//   /**
-//    * A vector containing the trilinear couplings, quarks then leptons
-//    */
-//   vector<complex<Energy> > theTriC;
-    
-//   /**
-//    * The value of \f$\sin\alpha\f$.
-//    */
-//   double theSinA;
+  /**
+   *  Sfermion mixing
+   */
+  //@{
+  /**
+   *  Stau mixing
+   */
+  tMixingMatrixPtr stau_;
 
-//   /**
-//    * The value of \f$\cos\alpha\f$.
-//    */
-//   double theCosA;
+  /**
+   *  Sbottom mixing
+   */
+  tMixingMatrixPtr sbottom_;
 
-//   /**
-//    * The value of \f$\sin\beta\f$.
-//    */
-//   double theSinB;
+  /**
+   *  Stop mixing
+   */
+  tMixingMatrixPtr stop_;
+  //@}
 
-//   /**
-//    * The value of \f$\cos\beta\f$.
-//    */
-//   double theCosB;
+  /**
+   *  Couplings of the scalar Higgs bosons to other scalars
+   */
+  vector<vector<vector<complex<Energy> > > > scalarScalarScalar_;
 
-//   /**
-//    * The value of \f$\tan\beta\f$. 
-//    */
-//   double theTanB;
+  /**
+   *  Couplings of the scalar Higgs bosons to pseudoscalars
+   */
+  vector<vector<vector<complex<Energy> > > > scalarPseudoPseudo_;
 
-//   /**
-//    * The value of \f$\sin(\alpha + \beta)\f$.
-//    */
-//   double theSinAB;
+  /**
+   *  Couplings of the neutral scalar Higgs bosons to two charged Higgs bosons
+   */
+  vector<vector<vector<complex<Energy> > > > scalarChargedCharged_;
 
-//   /**
-//    * The value of \f$\cos(\alpha + \beta)\f$.
-//    */
-//   double theCosAB;
+  /**
+   *  Couplings of the neutral pseudoscalar Higgs bosons to two charged Higgs bosons
+   */
+  vector<vector<vector<complex<Energy> > > > pseudoChargedCharged_;
 
-//   /**
-//    * The mass of the \f$W\f$. 
-//    */
-//   Energy theMw;
+  /**
+   *  Couplings of the scalar Higgs bosons to up squarks
+   */
+  vector<vector<vector<vector<complex<Energy> > > > > scalarSup_;
 
-//   /**
-//    * The mass of the \f$Z\f$. 
-//    */
-//   Energy theMz;
-  
-//   /**
-//    * The \f$\mu\f$ parameter. 
-//    */
-//   Energy theMu;
+  /**
+   *  Couplings of the scalar Higgs bosons to down squarks
+   */
+  vector<vector<vector<vector<complex<Energy> > > > > scalarSdown_;
 
-//   /**
-//    * The value of \f$\sin\theta_W\f$
-//    */
-//   double theSw;
+  /**
+   *  Couplings of the pseudo Higgs bosons to up squarks
+   */
+  vector<vector<complex<Energy> > > pseudoSup_;
 
-//   /**
-//    * The value of \f$\cos\theta_W\f$
-//    */
-//   double theCw;
+  /**
+   *  Couplings of the pseudo Higgs bosons to down squarks
+   */
+  vector<vector<complex<Energy> > > pseudoSdown_;
 
-//   /**
-//    * The value of the coupling when it was last evaluated
-//    */
-//   complex<Energy> theCoupLast;
-  
-//   /**
-//    * The value of g coupling when it was last evaluated
-//    */
-//   double thegLast;
-  
-//   /**
-//    * The ID of the higgs when the vertex was last evaluated 
-//    */
-//   long theHLast;
-  
-//   /**
-//    * The ID of the first sfermion when the vertex was last evaluated 
-//    */
-//   long theSF1Last;
-  
-//   /**
-//    * The ID of the second sfermion when the vertex was last evaluated 
-//    */
-//   long theSF2Last;
-  
-////////////////////////// FROM HHH ////////////////////////////////////////////
+  /**
+   *  Couplings of the scalar Higgs bosons to sneutinos
+   */
+  vector<vector<complex<Energy> > > scalarSneutrino_;
 
-// private:
-  
-//   /**
-//    * The mass of the \f$W\f$.
-//    */
-//   Energy theMw;
+  /**
+   *  Couplings of the scalar Higgs bosons to charged sleptons
+   */
+  vector<vector<vector<vector<complex<Energy> > > > > scalarSlepton_;
 
-//   /**
-//    * The factor \f$ \frac{m_Z}{\sin2\theta_W} \f$
-//    */
-//   Energy theZfact;
+  /**
+   *  Couplings of the pseudo Higgs bosons to charged sleptons
+   */
+  vector<vector<complex<Energy> > > pseudoSlepton_;
 
-//   /**
-//    * The value of \f$\sin\theta_W\f$
-//    */
-//   double theSw;
+  /**
+   *  Couplings of the charged Higgs to squarks
+   */
+  vector<vector<vector<vector<complex<Energy> > > > > chargedSquark_;
 
-//   /**
-//    * The value of \f$ \sin(\beta + \alpha) \f$.
-//    */
-//   double theSbpa;
-
-//   /**
-//    * The value of \f$ \cos(\beta + \alpha) \f$.
-//    */
-//   double theCbpa;
-
-//   /**
-//    * The value of \f$ \sin(\beta - \alpha) \f$.
-//    */
-//   double theSbma;
-
-//   /**
-//    * The value of \f$ \cos(\beta - \alpha) \f$.
-//    */
-//   double theCbma;
-  
-//   /**
-//    * The value of \f$ \sin 2\alpha \f$.
-//    */
-//   double theS2a;
-
-//   /**
-//    * The value of \f$ \cos 2\alpha \f$.
-//    */
-//   double theC2a;
-
-//   /**
-//    * The value of \f$ \sin 2\beta \f$.
-//    */
-//   double theS2b;
-
-//   /**
-//    * The value of \f$ \cos 2\beta \f$.
-//    */
-//   double theC2b;
-  
-//   /**
-//    * The value of \f$ \sqrt{4\pi\alpha}\f$ when it was last evaluated.
-//    */
-//   double theElast;
+  /**
+   *  Couplings of the charged Higgs to sleptons
+   */
+  vector<vector<vector<complex<Energy> > > > chargedSlepton_;
 
 };
 
