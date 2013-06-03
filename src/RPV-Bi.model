@@ -179,7 +179,6 @@ create Herwig::SSGFSVertex MSSM_GFS
 create Herwig::SSGSSVertex MSSM_GSS
 create Herwig::SSGGSQSQVertex MSSM_GGSS
 create Herwig::SSGSGSGVertex MSSM_GGOGO
-create Herwig::SSGNGVertex MSSM_GNG
 create Herwig::SSWWHHVertex MSSM_WWHH
 create Herwig::SSGVNHVertex MSSM_GVNH
 create Herwig::SSGVFSVertex MSSM_GVFS
@@ -187,7 +186,6 @@ create Herwig::SSGVNVVertex MSSM_GVNV
 # create RPV MSSM vertices
 mkdir /Herwig/Vertices/RPV
 cd /Herwig/Vertices/RPV
-create Herwig::RPVNNPVertex RPV_NNP
 create Herwig::RPVLLEVertex RPV_LLE
 create Herwig::RPVLQDVertex RPV_LQD
 create Herwig::RPVUDDVertex RPV_UDD
@@ -218,8 +216,26 @@ create Herwig::RPVSSSVertex RPV_HHH
 set RPV_HHH:Interactions 1
 create Herwig::RPVSSSVertex RPV_HSS
 set RPV_HSS:Interactions 2
-create Herwig::RPVHPPVertex RPV_HPP
-create Herwig::RPVHGGVertex RPV_HGG
+create Herwig::GenericHPPVertex RPV_HPP
+insert RPV_HPP:Bosons 0 /Herwig/Particles/h0
+insert RPV_HPP:Bosons 0 /Herwig/Particles/H0
+insert RPV_HPP:Bosons 0 /Herwig/Particles/H_30
+insert RPV_HPP:Bosons 0 /Herwig/Particles/H_40
+insert RPV_HPP:Bosons 0 /Herwig/Particles/H_50
+insert RPV_HPP:Bosons 0 /Herwig/Particles/A_1
+insert RPV_HPP:Bosons 0 /Herwig/Particles/A_2
+insert RPV_HPP:Bosons 0 /Herwig/Particles/A_3
+insert RPV_HPP:Bosons 0 /Herwig/Particles/A_4
+create Herwig::GenericHGGVertex RPV_HGG
+insert RPV_HGG:Bosons 0 /Herwig/Particles/h0
+insert RPV_HGG:Bosons 0 /Herwig/Particles/H0
+insert RPV_HGG:Bosons 0 /Herwig/Particles/H_30
+insert RPV_HGG:Bosons 0 /Herwig/Particles/H_40
+insert RPV_HGG:Bosons 0 /Herwig/Particles/H_50
+insert RPV_HGG:Bosons 0 /Herwig/Particles/A_1
+insert RPV_HGG:Bosons 0 /Herwig/Particles/A_2
+insert RPV_HGG:Bosons 0 /Herwig/Particles/A_3
+insert RPV_HGG:Bosons 0 /Herwig/Particles/A_4
 # set the vertices
 cd /Herwig/NewPhysics/RPV
 # SM vertices
@@ -240,9 +256,7 @@ set Model:Vertex/CFSF   /Herwig/Vertices/RPV/RPV_CFS
 set Model:Vertex/GSFSF  /Herwig/Vertices/MSSM/MSSM_GSS
 set Model:Vertex/GGSQSQ /Herwig/Vertices/MSSM/MSSM_GGSS
 set Model:Vertex/GSGSG  /Herwig/Vertices/MSSM/MSSM_GGOGO
-set Model:Vertex/GNG    /Herwig/Vertices/MSSM/MSSM_GNG
 set Model:Vertex/NNZ    /Herwig/Vertices/RPV/RPV_NNZ
-set Model:Vertex/NNP    /Herwig/Vertices/RPV/RPV_NNP
 set Model:Vertex/CCZ    /Herwig/Vertices/RPV/RPV_CCZ
 set Model:Vertex/CNW    /Herwig/Vertices/RPV/RPV_CNW
 set Model:Vertex/FFH    /Herwig/Vertices/RPV/RPV_FFH
@@ -278,24 +292,18 @@ insert ThreeBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GVFS
 insert ThreeBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GVNV
 insert ThreeBodyDC:ExcludedVertices 0 /Herwig/Vertices/RPV/RPV_HGG
 insert ThreeBodyDC:ExcludedVertices 0 /Herwig/Vertices/RPV/RPV_HPP
-insert ThreeBodyDC:ExcludedVertices 0 /Herwig/Vertices/RPV/RPV_NNP
-insert ThreeBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GNG
 # and four body decays
 insert FourBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GVNH
 insert FourBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GVFS
 insert FourBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GVNV
 insert FourBodyDC:ExcludedVertices 0 /Herwig/Vertices/RPV/RPV_HGG
 insert FourBodyDC:ExcludedVertices 0 /Herwig/Vertices/RPV/RPV_HPP
-insert FourBodyDC:ExcludedVertices 0 /Herwig/Vertices/RPV/RPV_NNP
-insert FourBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GNG
 # and hard processes
 insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GVNH
 insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GVFS
 insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GVNV
 insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/RPV/RPV_HGG
 insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/RPV/RPV_HPP
-insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/RPV/RPV_NNP
-insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GNG
 # exclude intermediate higgs from 4 body decays
 insert FourBodyDC:ExcludedIntermediates 0 /Herwig/Particles/h0
 insert FourBodyDC:ExcludedIntermediates 0 /Herwig/Particles/H0
