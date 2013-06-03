@@ -191,7 +191,7 @@ void SSHGGVertex::setCoupling(Energy2 q2, tcPDPtr particle2,
 	 -theQt1LR*0.5*mt/theMw*(Trit*theCosA + theMu*theSinA)/theSinB : Energy();
 	coup = 0.5*UnitRemoval::InvE*
 	  (theQt1L *( - sqr(mt)*theCosA/theMw/theSinB + theSinApB*brac2) +
-	   theQt1R *( - sqr(mt)*theCosA/theMw/theSinB + theSinApB*brac4+trilinear));
+	   theQt1R *( - sqr(mt)*theCosA/theMw/theSinB + theSinApB*brac4)+trilinear);
 
 	couplings[1] = make_pair(coup, coup);
 	// heavier sbottom
