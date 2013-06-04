@@ -396,16 +396,16 @@ double MatchboxAmplitude::oneLoopInterference() const {
 }
 
 double MatchboxAmplitude::colourCorrelatedME2(pair<int,int> ij) const {
-  if ( !calculateColourCorrelator(ij) )
-    return lastColourCorrelator(ij);
-  double Nc = generator()->standardModel()->Nc();
   double cfac = 1.;
+  double Nc = generator()->standardModel()->Nc();
   if ( mePartonData()[ij.first]->iColour() == PDT::Colour8 ) {
     cfac = Nc;
   } else if ( mePartonData()[ij.first]->iColour() == PDT::Colour3 ||
 	      mePartonData()[ij.first]->iColour() == PDT::Colour3bar ) {
     cfac = (sqr(Nc)-1.)/(2.*Nc);
   } else assert(false);
+  if ( !calculateColourCorrelator(ij) )
+    return lastColourCorrelator(ij)/cfac;
   double res =
     crossingSign()*colourBasis()->colourCorrelatedME2(ij,mePartonData(),lastAmplitudes());
   lastColourCorrelator(ij,res);
@@ -414,16 +414,16 @@ double MatchboxAmplitude::colourCorrelatedME2(pair<int,int> ij) const {
 
 double MatchboxAmplitude::largeNColourCorrelatedME2(pair<int,int> ij,
 						    Ptr<ColourBasis>::tptr largeNBasis) const {
-  if ( !calculateLargeNColourCorrelator(ij) )
-    return lastLargeNColourCorrelator(ij);
-  double Nc = generator()->standardModel()->Nc();
   double cfac = 1.;
+  double Nc = generator()->standardModel()->Nc();
   if ( mePartonData()[ij.first]->iColour() == PDT::Colour8 ) {
     cfac = Nc;
   } else if ( mePartonData()[ij.first]->iColour() == PDT::Colour3 ||
 	      mePartonData()[ij.first]->iColour() == PDT::Colour3bar ) {
     cfac = Nc/2.;
   } else assert(false);
+  if ( !calculateLargeNColourCorrelator(ij) )
+    return lastLargeNColourCorrelator(ij)/cfac;
   double res =
     crossingSign()*largeNBasis->colourCorrelatedME2(ij,mePartonData(),lastLargeNAmplitudes());
   lastLargeNColourCorrelator(ij,res);

@@ -475,14 +475,19 @@ public:
   void subtractionData(const string& s) { theSubtractionData = s; }
 
   /**
-   * Return true, if cancellationn of epsilon poles should be checked.
+   * Return the pole data prefix.
    */
-  bool checkPoles() const { return theCheckPoles; }
+  const string& poleData() const { return thePoleData; }
 
   /**
-   * Switch on checking of epsilon pole cancellation.
+   * Set the pole data prefix.
    */
-  void doCheckPoles() { theCheckPoles = true; }
+  void poleData(const string& s) { thePoleData = s; }
+
+  /**
+   * Return true, if cancellationn of epsilon poles should be checked.
+   */
+  bool checkPoles() const { return poleData() != ""; }
 
   //@}
 
@@ -705,6 +710,11 @@ private:
   string theSubtractionData;
 
   /**
+   * Prefix for pole data.
+   */
+  string thePoleData;
+
+  /**
    * Command to limit the real emission process to be considered.
    */
   string doSingleRealProcess(string);
@@ -714,11 +724,6 @@ private:
    * ones will be considered.
    */
   vector<string> realEmissionProcess;
-
-  /**
-   * True, if cancellationn of epsilon poles should be checked.
-   */
-  bool theCheckPoles;
 
   /**
    * Particle groups.

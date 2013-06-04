@@ -544,6 +544,8 @@ CrossSection MatchboxMEBase::dSigHatDR() const {
       (**v).setXComb(lastXCombPtr());
       res += (**v).dSigHatDR();
     }
+    if ( checkPoles() )
+      logPoles();
   }
 
   double weight = 0.0;
@@ -587,6 +589,88 @@ double MatchboxMEBase::oneLoopInterference() const {
 
 }
 
+MatchboxMEBase::AccuracyHistogram::AccuracyHistogram(double low,
+						     double up,
+						     unsigned int nbins) 
+  : lower(low), upper(up), 
+    sameSign(0), oppositeSign(0), nans(0),
+    overflow(0), underflow(0) {
+
+  double step = (up-low)/nbins;
+
+  for ( unsigned int k = 1; k <= nbins; ++k )
+    bins[lower + k*step] = 0.0;
+
+}
+
+void MatchboxMEBase::AccuracyHistogram::book(double a, double b) {
+  if ( isnan(a) || isnan(b) ||
+       isinf(a) || isinf(b) ) {
+    ++nans;
+    return;
+  }
+  if ( a*b >= 0. )
+    ++sameSign;
+  if ( a*b < 0. )
+    ++oppositeSign;
+  double r = 1.;
+  if ( abs(a) != 0.0 )
+    r = abs(1.-abs(b/a));
+  else if ( abs(b) != 0.0 )
+    r = abs(b);
+  if ( log(r) < lower || r == 0.0 ) {
+    ++underflow;
+    return;
+  }
+  if ( log(r) > upper ) {
+    ++overflow;
+    return;
+  }
+  map<double,double>::iterator bin =
+    bins.upper_bound(log(r));
+  if ( bin == bins.end() )
+    return;
+  bin->second += 1.;
+}
+
+void MatchboxMEBase::AccuracyHistogram::dump(const std::string& prefix, 
+					     const cPDVector& proc) const {
+  ostringstream fname("");
+  for ( cPDVector::const_iterator p = proc.begin();
+	p != proc.end(); ++p )
+    fname << (**p).PDGName();
+  ofstream out((prefix+fname.str()+".dat").c_str());
+  out << "# same sign : " << sameSign << " opposite sign : "
+      << oppositeSign << " nans : " << nans 
+      << " overflow : " << overflow
+      << " underflow : " << underflow << "\n";
+  for ( map<double,double>::const_iterator b = bins.begin();
+	b != bins.end(); ++b ) {
+    map<double,double>::const_iterator bp = b; --bp;
+    if ( b->second != 0. ) {
+      if ( b != bins.begin() )
+	out << bp->first;
+      else
+	out << lower;
+      out << " " << b->first
+	  << " " << b->second
+	  << "\n" << flush;
+    }
+  }
+}
+
+void MatchboxMEBase::AccuracyHistogram::persistentOutput(PersistentOStream& os) const {
+  os << lower << upper << bins
+     << sameSign << oppositeSign << nans
+     << overflow << underflow;
+}
+
+void MatchboxMEBase::AccuracyHistogram::persistentInput(PersistentIStream& is) {
+  is >> lower >> upper >> bins
+     >> sameSign >> oppositeSign >> nans
+     >> overflow >> underflow;
+}
+
 void MatchboxMEBase::logPoles() const {
   double res2me = oneLoopDoublePole();
   double res1me = oneLoopSinglePole();
@@ -597,12 +681,8 @@ void MatchboxMEBase::logPoles() const {
     res2i += (**v).oneLoopDoublePole();
     res1i += (**v).oneLoopSinglePole();
   }
-  double diff2 = abs(res2me) != 0. ? 1.-abs(res2i/res2me) : abs(res2i)-abs(res2me);
-  double diff1 = abs(res1me) != 0. ? 1.-abs(res1i/res1me) : abs(res1i)-abs(res1me);
-  generator()->log() 
-    << "check "
-    << log10(abs(diff2)) << " " << log10(abs(diff1)) << "\n"
-    << flush;
+  epsilonSquarePoleHistograms[mePartonData()].book(res2me,res2i);
+  epsilonPoleHistograms[mePartonData()].book(res1me,res1i);
 }
 
 bool MatchboxMEBase::haveOneLoop() const {
@@ -1158,14 +1238,16 @@ void MatchboxMEBase::persistentOutput(PersistentOStream & os) const {
   os << theLastXComb << theFactory << thePhasespace 
      << theAmplitude << theScaleChoice << theVirtuals 
      << theReweights << theSubprocesses << theOneLoop 
-     << theOneLoopNoBorn;
+     << theOneLoopNoBorn
+     << epsilonSquarePoleHistograms << epsilonPoleHistograms;
 }
 
 void MatchboxMEBase::persistentInput(PersistentIStream & is, int) {
   is >> theLastXComb >> theFactory >> thePhasespace 
      >> theAmplitude >> theScaleChoice >> theVirtuals 
      >> theReweights >> theSubprocesses >> theOneLoop 
-     >> theOneLoopNoBorn;
+     >> theOneLoopNoBorn
+     >> epsilonSquarePoleHistograms >> epsilonPoleHistograms;
   lastMatchboxXComb(theLastXComb);
 }
 
@@ -1189,6 +1271,20 @@ void MatchboxMEBase::doinit() {
   MEBase::doinit();
   if ( !theAmplitude )
     theAmplitude = dynamic_ptr_cast<Ptr<MatchboxAmplitude>::ptr>(amplitude());
+}
+
+void MatchboxMEBase::dofinish() {
+  MEBase::dofinish();
+  for ( map<cPDVector,AccuracyHistogram>::const_iterator
+	  b = epsilonSquarePoleHistograms.begin();
+	b != epsilonSquarePoleHistograms.end(); ++b ) {
+    b->second.dump(factory()->poleData() + "epsilonSquarePoles-",b->first);
+  }
+  for ( map<cPDVector,AccuracyHistogram>::const_iterator
+	  b = epsilonPoleHistograms.begin();
+	b != epsilonPoleHistograms.end(); ++b ) {
+    b->second.dump(factory()->poleData() + "epsilonPoles-",b->first);
+  }
 }
 
 // *** Attention *** The following static variable is needed for the type
