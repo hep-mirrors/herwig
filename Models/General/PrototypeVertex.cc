@@ -14,10 +14,11 @@ using namespace Herwig;
 
 void PrototypeVertex::createPrototypes(tPDPtr inpart, VertexBasePtr vertex,
 				       std::stack<PrototypeVertexPtr> & prototypes) {
-  int id = inpart->id();
   if(!vertex->isIncoming(inpart)) return;
+  tPDPtr ccpart = inpart->CC() ? inpart->CC() : inpart;
+  long id = ccpart->id();
   for(unsigned int list=0;list<vertex->getNpoint();++list) {
-    tPDVector decaylist = vertex->search(list, inpart);
+    tPDVector decaylist = vertex->search(list, ccpart);
     tPDVector::size_type nd = decaylist.size();
     for( tPDVector::size_type i = 0; i < nd; i += vertex->getNpoint() ) {
       tPDVector pout(decaylist.begin()+i,
@@ -25,15 +26,14 @@ void PrototypeVertex::createPrototypes(tPDPtr inpart, VertexBasePtr vertex,
       OrderedVertices out;
       for(unsigned int ix=1;ix<pout.size();++ix) {
 	if(pout[ix]->id() == id ) swap(pout[0], pout[ix]);
-	if(pout[ix]->CC()) pout[ix] = pout[ix]->CC();
 	out.insert(make_pair(pout[ix],PrototypeVertexPtr()));
       }
       if(vertex->getNpoint()==3) {
 	// remove radiation
-	if((pout[0]==pout[1] && (pout[2]->id()==ParticleID::gamma||
+	if((inpart==pout[1] && (pout[2]->id()==ParticleID::gamma||
 				 pout[2]->id()==ParticleID::g||
 				 pout[2]->id()==ParticleID::Z0)) ||
-	   (pout[0]==pout[2] && (pout[1]->id()==ParticleID::gamma||
+	   (inpart==pout[2] && (pout[1]->id()==ParticleID::gamma||
 				 pout[1]->id()==ParticleID::g||
 				 pout[1]->id()==ParticleID::Z0)))
 	  continue;
@@ -76,11 +76,14 @@ void PrototypeVertex::expandPrototypes(PrototypeVertexPtr proto, VertexBasePtr v
       if(excluded.find(it->first)!=excluded.end()) continue;
       if(it->first->CC() && 
 	 excluded.find(it->first->CC())!=excluded.end()) continue;
-      int id = it->first->id();
+
+      tcPDPtr ccpart = it->first->CC() ? it->first->CC() : it->first;
+      long id = ccpart->id();
+
       PrototypeVertexPtr parent=proto;
       while(parent->parent) parent=parent->parent;
       for(unsigned int il = 0; il < vertex->getNpoint(); ++il) {
-	tPDVector decaylist = vertex->search(il,it->first );
+	tPDVector decaylist = vertex->search(il,ccpart);
 	tPDVector::size_type nd = decaylist.size();
 	for( tPDVector::size_type i = 0; i < nd; i += vertex->getNpoint() ) {
 	  tPDVector pout(decaylist.begin()+i,
@@ -88,14 +91,13 @@ void PrototypeVertex::expandPrototypes(PrototypeVertexPtr proto, VertexBasePtr v
 	  OrderedVertices outgoing;
 	  for(unsigned int iy=1;iy<pout.size();++iy) {
 	    if(pout[iy]->id() == id ) swap(pout[0], pout[iy]);
-	    if(pout[iy]->CC()) pout[iy] = pout[iy]->CC();
 	    outgoing.insert(make_pair(pout[iy],PrototypeVertexPtr()));
 	  }
 	  if(vertex->getNpoint()==3) {
-	    if((pout[0]==pout[1] && (pout[2]->id()==ParticleID::gamma||
+	    if((it->first==pout[1] && (pout[2]->id()==ParticleID::gamma||
 				     pout[2]->id()==ParticleID::g||
 				     pout[2]->id()==ParticleID::Z0)) ||
-	       (pout[0]==pout[2] && (pout[1]->id()==ParticleID::gamma||
+	       (it->first==pout[2] && (pout[1]->id()==ParticleID::gamma||
 				     pout[1]->id()==ParticleID::g||
 				     pout[1]->id()==ParticleID::Z0)))
 	      continue;

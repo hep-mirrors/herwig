@@ -168,17 +168,23 @@ void GeneralThreeBodyDecayer::doinit() {
        _diagrams[ix].channelType==TBDiagram::UNDEFINED) continue;
     // create the new channel
     newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
+    int jac = 0;
+    double power = 0.0;
+    if ( _diagrams[ix].intermediate->mass() == ZERO ) {
+      jac = 1;
+      power = -2.0;
+    }
     if(_diagrams[ix].channelType==TBDiagram::channel23) {
       newchannel->addIntermediate(extpart[0],0,0.0,-1,1);
-      newchannel->addIntermediate(_diagrams[ix].intermediate,0,0.0, 2,3);
+      newchannel->addIntermediate(_diagrams[ix].intermediate,jac,power, 2,3);
     }
     else if(_diagrams[ix].channelType==TBDiagram::channel13) {
       newchannel->addIntermediate(extpart[0],0,0.0,-1,2);
-      newchannel->addIntermediate(_diagrams[ix].intermediate,0,0.0, 1,3);
+      newchannel->addIntermediate(_diagrams[ix].intermediate,jac,power, 1,3);
     }
     else if(_diagrams[ix].channelType==TBDiagram::channel12) {
       newchannel->addIntermediate(extpart[0],0,0.0,-1,3);
-      newchannel->addIntermediate(_diagrams[ix].intermediate,0,0.0, 1,2);
+      newchannel->addIntermediate(_diagrams[ix].intermediate,jac,power, 1,2);
     }
     _diagmap.push_back(ix);
     mode->addChannel(newchannel);
