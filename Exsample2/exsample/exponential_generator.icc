@@ -297,7 +297,8 @@ namespace exsample {
       if (last_value_ > last_cell_->info().overestimate()) {
 	if ( std::abs(last_value_)/last_cell_->info().overestimate() > 2. ) {
 	  last_value_ = 
-	    last_value_*(1.+exp(2.*(2.-std::abs(last_value_)/last_cell_->info().overestimate())));
+	    last_cell_->info().overestimate()*
+	    (1.+exp(2.*(2.-std::abs(last_value_)/last_cell_->info().overestimate())));
 	}
 	compensate();
 	throw exponential_regenerate();
