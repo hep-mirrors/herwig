@@ -57,7 +57,7 @@ paramstoreplace_ = []
 paramstoreplace_expressions_ = []
 
 # get external parameters for printing
-parmsubs = dict( [ (p.name, float(p.value)) 
+parmsubs = dict( [ (p.name, p.value) 
                    for p in FR.all_parameters 
                    if p.nature == 'external' ] ) 
 
@@ -116,23 +116,31 @@ interfaceDecls = []
 for p in FR.all_parameters:
     value = parmsubs[p.name]
 
-    if p.nature == 'external':
-        interfaceDecls.append( 
-            interfacedecl_T.format(modelname=modelname,
-                                   pname=p.name,
-                                   value=value,
-                                   type=typemap(p.type)) 
-        )
-
     if p.type == 'real':
         assert( value.imag < 1.0e-16 )
         value = value.real
         if p.nature == 'external':
+            interfaceDecls.append( 
+                interfacedecl_T.format(modelname=modelname,
+                                       pname=p.name,
+                                       value=value,
+                                       type=typemap(p.type)) 
+            )
             parmconstr.append('%s_(%s)' % (p.name, value))
             parmmodelconstr.append('set %s:%s %s' % (modelname, p.name, value))
     elif p.type == 'complex':
         value = complex(value)
         if p.nature == 'external':
+#
+# TODO: WE DO NOT HAVE COMPLEX INTERFACES IN THEPEG (yet?)
+#
+#            interfaceDecls.append( 
+#                interfacedecl_T.format(modelname=modelname,
+#                                       pname=p.name,
+#                                       value='Complex(%s,%s)'%(value.real,value.imag),
+#                                       type=typemap(p.type)) 
+#            )
+#
             parmconstr.append('%s_(%s,%s)' % (p.name, value.real, value.imag))
             parmmodelconstr.append('set %s:%s (%s,%s)' % (modelname, p.name, value.real, value.imag))
     else:
@@ -238,10 +246,10 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
 
     lfactors = { 
         'FFV'  : '-complex(0,1)',  # ok
-        'VVV'  : '-complex(0,1)',   
+        'VVV'  : 'complex(0,1)',   # changed to fix ttbar
         'VVVV' : 'complex(0,1)',
         'VVS'  : '-complex(0,1)',
-        'VSS'  : 'complex(0,1)',
+        'VSS'  : '-complex(0,1)', # changed to minus to fix dL ->x1 W- d
         'SSS'  : '-complex(0,1)',  # ok
         'VVSS' : '-complex(0,1)',  # ok
         'VVT'  : 'complex(0,1)',
@@ -298,11 +306,15 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
                 coup_left.append('(%s) * (%s) * (%s)' % (prefactors,left,coupling.value))
             if right:
                 coup_right.append('(%s) * (%s) * (%s)' % (prefactors,right,coupling.value))
+            if lorentztag == 'FFV':
+                ordering = ('if(p1->id()!=%s) {Complex ltemp=left(), rtemp=right(); left(-rtemp); right(-ltemp);}' 
+                            % vertex.particles[0].pdg_code)
         else:
             if lorentztag == 'VSS':
                 if L.structure == 'P(1,3) - P(1,2)':
                     prefactors += ' * -1'
                 ordering = 'if(p2->id()!=%s){norm(-norm());}'%vertex.particles[1].pdg_code
+
             coup_norm.append('(%s) * (%s)' % (prefactors,coupling.value))
                 
             
@@ -354,6 +366,9 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
     couplingptrs = [',tcPDPtr']*len(lorentztag)
     if lorentztag == 'VSS':
         couplingptrs[1] += ' p2'
+    elif lorentztag == 'FFV':
+        couplingptrs[0] += ' p1'
+        
     ### assemble dictionary and fill template
     subs = { 'lorentztag' : lorentztag,                   # ok
              'classname'  : classname,            # ok
