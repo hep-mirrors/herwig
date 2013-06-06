@@ -81,7 +81,8 @@ void RPVFFWVertex::doinit() {
     }
     // leptons
     for(int ix=11;ix<17;ix+=2) {
-      addToList(-ix, ix+1, -24);
+      int inu = model->majoranaNeutrinos() ? (ix+23)/2 : ix+1;
+      addToList(-ix, inu, -24);
     }
     // particles for outgoing W+
     // quarks
@@ -95,7 +96,8 @@ void RPVFFWVertex::doinit() {
     }
     // leptons
     for(int ix=11;ix<17;ix+=2) {
-      addToList(-ix-1, ix, 24);
+      int inu = model->majoranaNeutrinos() ? (ix+23)/2 : -ix-1;
+      addToList(inu, ix, 24);
     }
   }
   // neutralino and chargino
