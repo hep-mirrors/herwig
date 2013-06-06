@@ -64,3 +64,4 @@ Tests/Rivet-.*
 Tests/plots
 Tests/.*index.html
 Herwig\+\+\-.\..\..
+Models/Feynrules/python/.*\.(cc|h|run|tex|model|spc)
