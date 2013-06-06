@@ -113,10 +113,10 @@ MEvv2ff::vv2ffME(const VBVector & v1, const VBVector & v2,
 	    if(current.channelType == HPDiagram::tChannel && 
 	       offshell->iSpin() == PDT::Spin1Half) {
 	      if(current.ordered.second) {
-		SpinorWaveFunction interF = fermion_[ix].second->
-		  evaluate(q2, 3, offshell, sp[of2], v2[iv2], mass);
-		diag = fermion_[ix].first->
-		  evaluate(q2, interF, sbar[of1], v1[iv1]);
+                SpinorBarWaveFunction interF = fermion_[ix].first->
+                  evaluate(q2, 3, offshell, sbar[of1], v1[iv1], mass);
+                diag = fermion_[ix].second->
+                  evaluate(q2, sp[of2], interF, v2[iv2]);
 	      }
 	      else {
 		SpinorWaveFunction interF = fermion_[ix].second->
