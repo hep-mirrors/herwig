@@ -160,14 +160,16 @@ void SSWSSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
     norm(0.);
   }
   long sf1(abs(part2->id())),sf2(abs(part3->id()));
-  if( (sf1 > 1000006 && sf1 < 1000011 && sf1 > 1000016) ||
-      (sf1 > 2000006 && sf1 < 2000011 && sf1 > 2000016) ||
-      (sf2 > 1000006 && sf2 < 1000011 && sf2 > 1000016) ||
-      (sf2 > 2000006 && sf2 < 2000011 && sf2 > 2000016) )
-    throw HelicityConsistencyError()
-      << "SSWSSVertex::setCoupling() - There are no sfermions in "
-      << "this vertex! " << part2->id() << " " << part3->id() 
-      << Exception::warning;
+
+  assert( (sf1 >= 1000001 && sf1 <= 1000006) 
+	  || (sf1 >= 1000011 && sf1 <= 1000016)
+	  || (sf1 >= 2000001 && sf1 <= 2000006)
+	  || (sf1 >= 2000011 && sf1 <= 2000016) );
+  
+  assert( (sf2 >= 1000001 && sf2 <= 1000006) 
+	  || (sf2 >= 1000011 && sf2 <= 1000016)
+	  || (sf2 >= 2000001 && sf2 <= 2000006)
+	  || (sf2 >= 2000011 && sf2 <= 2000016) );
 
   if( sf1 % 2 != 0 ) swap(sf1, sf2);
   if( sf1 != _ulast || sf2 != _dlast || boson != _gblast) {
