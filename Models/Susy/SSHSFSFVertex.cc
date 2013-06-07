@@ -180,7 +180,7 @@ void SSHSFSFVertex::setCoupling(Energy2 q2, tcPDPtr part1,
   // higgs first
   if(abs(sq1)<100) swap(higgs,sq1);
   if(abs(sq2)<100) swap(higgs,sq2);
-  // squark second
+  // squark second, antisquark third
   if(sq1<0) swap(sq1,sq2);
   assert( higgs == 25 || higgs == 35 || 
 	  higgs == 36 || abs(higgs) == 37 );
@@ -231,7 +231,12 @@ void SSHSFSFVertex::downSF(Energy2 q2, long higgs, long sm,
    
    if( higgs == ParticleID::A0 ) {
      theCoupLast = -Complex(0.,1.)*mfacta*(theTriC[sm - 1]*theTanB + theMu);
-     if(alpha<beta) theCoupLast *= -1.;
+     if(sm == 5) {
+       theCoupLast *= 
+	 (*theMix[1])(alpha, 1) * (*theMix[1])(beta , 0) -
+	 (*theMix[1])(alpha, 0) * (*theMix[1])(beta , 1);
+     }
+     else if(alpha<beta) theCoupLast *= -1.;
      return;
    }
    Energy mfactb = sqr(fmass)/theMw/theCosB;
@@ -276,7 +281,12 @@ void SSHSFSFVertex::upSF(Energy2 q2, long higgs, long sm,
   double mfacta = 0.5*fmass/theMw;
   if( higgs == ParticleID::A0 ){
     theCoupLast = -Complex(0.,1.)*mfacta*(theTriC[sm - 1]/theTanB + theMu);
-    if(alpha<beta) theCoupLast *= -1.;
+    if(sm == 6) {
+      theCoupLast *= 
+	(*theMix[0])(alpha, 1) * (*theMix[0])(beta , 0) -
+	(*theMix[0])(alpha, 0) * (*theMix[0])(beta , 1);
+    }
+    else if(alpha<beta) theCoupLast *= -1.;
     return;
   }
   Energy mfactb = sqr(fmass)/theMw/theSinB;
@@ -329,7 +339,12 @@ void SSHSFSFVertex::leptonSF(Energy2 q2, long higgs, long sm,
   double mfacta = fmass/2./theMw;
   if( higgs == ParticleID::A0 ) {
     theCoupLast = -Complex(0.,1.)*mfacta*(theTriC[(sm + 1)/2]*theTanB + theMu);
-     if(alpha<beta) theCoupLast *= -1.;
+    if(sm == 15) {
+      theCoupLast *= 
+	(*theMix[2])(alpha, 1) * (*theMix[2])(beta , 0) -
+	(*theMix[2])(alpha, 0) * (*theMix[2])(beta , 1);
+    }
+    else if(alpha<beta) theCoupLast *= -1.;
     return;
   }
   Energy mfactb = fmass*fmass/theMw/theCosB;
