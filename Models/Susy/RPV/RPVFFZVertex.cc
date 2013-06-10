@@ -129,7 +129,13 @@ void RPVFFZVertex::doinit() {
     }
     // the leptons
     for(int ix=11;ix<17;ix+=2) {
-      addToList(-ix, ix, 23);
+      if(model->majoranaNeutrinos()&&ix%2==0) {
+	int inu = (ix+22)/2;
+	addToList(inu,inu, 23);
+      }
+      else {
+	addToList(-ix, ix, 23);
+      }
     }
     for(int ix=12;ix<17;ix+=2) {
       if(_theN->size().first==7) 

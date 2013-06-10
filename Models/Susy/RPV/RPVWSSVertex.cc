@@ -34,7 +34,6 @@ IBPtr RPVWSSVertex::fullclone() const {
 }
 
 void RPVWSSVertex::doinit() {
-  Helicity::VSSVertex::doinit();
   // extract the model 
   tRPVPtr model = dynamic_ptr_cast<tRPVPtr>(generator()->standardModel());
   if( !model ) throw InitException() << "RPVWSSVertex::doinit() - The"

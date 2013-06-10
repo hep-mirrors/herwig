@@ -11,8 +11,5 @@ RPVFFWVertex.h RPVFFWVertex.cc\
 RPVWSSVertex.h RPVWSSVertex.cc\
 RPVFFSVertex.h RPVFFSVertex.cc\
 RPVWWHVertex.h RPVWWHVertex.cc\
-RPVSSSVertex.h RPVSSSVertex.cc\
-RPVHPPVertex.h RPVHPPVertex.cc\
-RPVHGGVertex.h RPVHGGVertex.cc\
-RPVNNPVertex.h RPVNNPVertex.cc
+RPVSSSVertex.h RPVSSSVertex.cc
 HwRPV_la_LDFLAGS = -module
