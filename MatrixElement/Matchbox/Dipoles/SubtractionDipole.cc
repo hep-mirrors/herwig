@@ -1090,7 +1090,6 @@ void SubtractionDipole::persistentInput(PersistentIStream & is, int) {
   lastMatchboxXComb(theLastXComb);
   typedef multimap<UnderlyingBornKey,RealEmissionInfo>::const_iterator spit;
   pair<spit,spit> kr = theSplittingMap.equal_range(lastUnderlyingBornKey);
-  assert(kr.first != kr.second);
   lastRealEmissionInfo = kr.first;
   for ( ; lastRealEmissionInfo != kr.second; ++lastRealEmissionInfo )
     if ( process(lastRealEmissionInfo->second.first) == lastXComb().mePartonData() )
