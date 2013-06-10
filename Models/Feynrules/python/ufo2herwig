@@ -193,7 +193,7 @@ MODEL_CC = getTemplate('Model.cc')
 MODEL_HWIN = getTemplate('LHC-FR.in')
 writeFile( '%s.h' % modelname,      MODEL_H.substitute(parmtextsubs) )
 writeFile( '%s.cc' % modelname,     MODEL_CC.substitute(parmtextsubs) )
-# writeFile( 'LHC-%s.in' % modelname, MODEL_HWIN.substitute(parmtextsubs) )
+writeFile( 'LHC-%s.in' % modelname, MODEL_HWIN.substitute(parmtextsubs) )
 
 
 ##################################################
@@ -243,6 +243,13 @@ globalsign = global_sign()
 for vertexnumber,vertex in enumerate(all_vertices,1):
 
     lorentztag = unique_lorentztag(vertex)
+    
+    # remove vertices involving ghost fields
+    if 'U' in lorentztag:
+        vertex.herwig_skip_vertex = True
+        continue
+    else:
+        vertex.herwig_skip_vertex = False
 
     lfactors = { 
         'FFV'  : '-complex(0,1)',  # ok
@@ -270,8 +277,11 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
         plistarray = [ ','.join([ str(p.pdg_code) for p in pl ])
                        for pl in vertex.particles_list ]
 
-    cf = colorfactor(vertex)
-#    print 'Factor:',cf
+    try:
+        cf = colorfactor(vertex)
+    except SkipThisVertex:
+        vertex.herwig_skip_vertex = True
+        continue
     
     ### classname
     classname = 'V_%s' % vertex.name
@@ -428,7 +438,7 @@ insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/V_{vname}
 def get_vertices():
     vlist = ['library %s\n' % libname]
     for v in all_vertices:
-        if 'U' in unique_lorentztag(v): continue
+        if v.herwig_skip_vertex: continue
         vlist.append( vertexline.format(modelname=modelname, vname=v.name) )
     return ''.join(vlist)
 

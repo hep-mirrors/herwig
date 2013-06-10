@@ -15,6 +15,9 @@
 namespace Herwig {
 using namespace ThePEG;
 using ThePEG::Constants::pi;
+
+const Complex ii = Complex(0,1);
+
 /** \ingroup Models
  *  
  *  This is the Herwig++ ${ModelName} class which inherits from ThePEG 

@@ -37,7 +37,7 @@ set LHCGenerator:DebugLevel 1
 set LHCGenerator:EventHandler:StatLevel Full
 set LHCGenerator:PrintEvent 100
 set LHCGenerator:MaxErrors 10000
-set /Herwig/EventHandlers/LHCHandler:CascadeHandler:MPIHandler NULL
+set /Herwig/EventHandlers/LHCHandler:CascadeHandler NULL
 set /Herwig/EventHandlers/LHCHandler:HadronizationHandler NULL
 set /Herwig/EventHandlers/LHCHandler:DecayHandler NULL
 set /Herwig/Analysis/Basics:CheckQuark No

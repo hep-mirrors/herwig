@@ -1,6 +1,6 @@
 from string import Template
 from os import path
-#import re
+import sys
 
 """
 Helper functions for the Herwig++ Feynrules converter
@@ -69,7 +69,7 @@ def get_lorentztag(spin):
     def spinsort(a,b):
         """Helper function for ThePEG's FVST spin tag ordering."""
         if a == b: return 0
-        for letter in 'FVST':
+        for letter in 'UFVST':
             if a == letter: return -1
             if b == letter: return  1
 
@@ -82,7 +82,9 @@ def unique_lorentztag(vertex):
     for l in vertex.lorentz:
         lorentztag = get_lorentztag(l.spins)
         unique( lorentztag )
-        assert( lorentztag == l.name[:len(lorentztag)] )
+        if lorentztag != l.name[:len(lorentztag)]:
+            raise Exception("Lorentztags: %s is not %s in %s" 
+                            % (lorentztag,l.name[:len(lorentztag)],vertex))
     return lorentztag
 
 
@@ -99,13 +101,16 @@ def spindirectory(lt):
     return spin_directory
 
 
-
+class SkipThisVertex(Exception):
+    pass
 
 def colorpositions(struct):
     positions = { 
         1 : [],
         3 : [],
         -3 : [],
+        6 : [],
+        -6 : [],
         8 : [],
     }
     for i,s in enumerate(struct,1):
@@ -139,8 +144,30 @@ def colorfactor(vertex):
         label = ('Identity({},{})'.format(*sorted(nums)),)
         if match(label): return ('1',)
 
+    elif l(6) == l(-6) == 1 and l(1) == L-2:
+        nums = [pos[6][0], pos[-6][0]]
+        label = ('Identity({},{})'.format(*sorted(nums)),)
+        if match(label): return ('1',)
+
+    elif l(6) == l(-6) == 2 and L==4:
+        sys.stderr.write('Warning: skipping colour structure 6 6 6~ 6~ in %s.\n'
+                         % vertex)
+        raise SkipThisVertex()
+
     elif l(8) == l(3) == l(-3) == 1 and l(1) == L-3:
         label = ('T({},{},{})'.format(pos[8][0],pos[3][0],pos[-3][0]),)
+        if match(label): return ('1',)
+
+    elif l(8) == l(6) == l(-6) == 1 and l(1) == L-3:
+        label = ('T6({},{},{})'.format(pos[8][0],pos[6][0],pos[-6][0]),)
+        if match(label): return ('1',)
+
+    elif l(6) == 1 and l(-3) == 2 and L==3:
+        label = ('K6({},{},{})'.format(pos[6][0],pos[-3][0],pos[-3][1]),)
+        if match(label): return ('1',)
+
+    elif l(-6) == 1 and l(3) == 2 and L==3:
+        label = ('K6Bar({},{},{})'.format(pos[-6][0],pos[3][0],pos[3][1]),)
         if match(label): return ('1',)
 
     elif l(8) == L == 3:
@@ -159,7 +186,7 @@ def colorfactor(vertex):
              )
         if match(label): return ('1','1','1')
 
-    elif l(8) == 2 and l(3) == l(-3) == 1:
+    elif l(8) == 2 and l(3) == l(-3) == 1 and L==4:
         subs = {
             'g1' : pos[8][0],
             'g2' : pos[8][1],
@@ -169,7 +196,19 @@ def colorfactor(vertex):
         label = ('T({g1},-1,{qb})*T({g2},{qq},-1)'.format(**subs),
                  'T({g1},{qq},-1)*T({g2},-1,{qb})'.format(**subs))
         if match(label): return ('0.5','0.5')
-
+        
+    elif l(8) == 2 and l(6) == l(-6) == 1 and L==4:
+        subs = {
+            'g1' : pos[8][0],
+            'g2' : pos[8][1],
+            'qq' : pos[6][0],
+            'qb' : pos[-6][0] 
+        }
+        label = ('T6({g1},-1,{qb})*T6({g2},{qq},-1)'.format(**subs),
+                 'T6({g1},{qq},-1)*T6({g2},-1,{qb})'.format(**subs))
+        if match(label): return ('0.5','0.5')
+        
+    print vertex
     raise Exception("Unknown colour tag {}.".format(vertex.color))
 
 

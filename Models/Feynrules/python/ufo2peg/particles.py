@@ -81,7 +81,20 @@ def thepeg_particles(FR,parameters):
     plist = ''
     antis = {}
     for p in FR.all_particles:
-        if p.spin == -1 or p.goldstoneboson:
+        if p.spin == -1:
+            continue
+
+        gsnames = ['goldstone',
+                   'goldstoneboson',
+                   'GoldstoneBoson']
+
+        def gstest(name):
+            try:
+                return getattr(p,name)
+            except AttributeError:
+                return False
+
+        if any(map(gstest, gsnames)):
             continue
 
         if p.pdg_code in SMPARTICLES:

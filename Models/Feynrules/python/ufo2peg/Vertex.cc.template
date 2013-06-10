@@ -12,10 +12,6 @@ ${vertexheaders}
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-namespace {
-  const Complex ii = Complex(0,1);
-}
-
 namespace Herwig 
 {
   using namespace ThePEG;
