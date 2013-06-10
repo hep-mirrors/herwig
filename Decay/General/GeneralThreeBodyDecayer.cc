@@ -984,6 +984,21 @@ bool GeneralThreeBodyDecayer::setColourFactors(double symfac) {
       return false;
     }
   }
+  else if (_incoming->iColour() == PDT::Colour6 ) {
+    generator()->log() << "Unknown colour sextet decay in "
+		       << "GeneralThreeBodyDecayer::setColourFactors()"
+		       << " for " << name << " omitting decay\n";
+    return false;
+  }
+  else if (_incoming->iColour() == PDT::Colour6bar ) {
+    generator()->log() << "Unknown colour anti-sextet decay in "
+		       << "GeneralThreeBodyDecayer::setColourFactors()"
+		       << " for " << name << " omitting decay\n";
+    return false;
+  }
+
+  assert(_nflow != 999);
+
   for(unsigned int ix=0;ix<_nflow;++ix) {
     for(unsigned int iy=0;iy<_nflow;++iy) {
       _colour       [ix][iy] /= symfac;

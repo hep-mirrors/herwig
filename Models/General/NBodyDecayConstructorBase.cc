@@ -601,7 +601,6 @@ void NBodyDecayConstructorBase::DecayList(const set<PDPtr> & particles) {
 	}
       }
       // create the decay
-      createDecayMode(newDiagrams,possibleOnShell,symfac);
       if( Debug::level > 1 ) {
 	generator()->log() << "Mode: ";
 	generator()->log() << (*mit)[0]->incoming->PDGName() << " -> ";
@@ -615,6 +614,7 @@ void NBodyDecayConstructorBase::DecayList(const set<PDPtr> & particles) {
 	  generator()->log() << newDiagrams[iy] << "\n";
 	}
       }
+      createDecayMode(newDiagrams,possibleOnShell,symfac);
     }
   }
 }
