@@ -141,8 +141,8 @@ for p in FR.all_parameters:
 #                                       type=typemap(p.type)) 
 #            )
 #
+#            parmmodelconstr.append('set %s:%s (%s,%s)' % (modelname, p.name, value.real, value.imag))
             parmconstr.append('%s_(%s,%s)' % (p.name, value.real, value.imag))
-            parmmodelconstr.append('set %s:%s (%s,%s)' % (modelname, p.name, value.real, value.imag))
     else:
         raise Exception('Unknown data type "%s".' % p.type)
     parmsubs[p.name] = value
