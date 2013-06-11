@@ -17,6 +17,7 @@
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/Utilities/Throw.h"
 
 using namespace Herwig;
 
@@ -141,13 +142,21 @@ void SextetModel::Init() {
 
   static Command<SextetModel> interfaceEnableParticles
     ("EnableParticles",
-     "Enable specfiic diquarks",
+     "Enable specfic diquarks",
      &SextetModel::doEnable, false);
 
 }
 
 void SextetModel::doinit() {
   StandardModel::doinit();
+  if ( !(enableScalarSingletY43_ || enableScalarSingletY13_ 
+	 || enableScalarSingletY23_ || enableScalarTripletY13_ 
+	 || enableVectorDoubletY16_ || enableVectorDoubletY56_ )) {
+    Throw<Exception>() << "You have not enabled any Sextet diquarks. Use e.g.\n"
+		       << "  do Model:EnableParticles Scalar Triplet Y=1/3\n"
+		       << "to specify the spin, weak isospin and weak hypercharge." 
+		       << Exception::runerror;
+  }
   addVertex(VVVVertex_);
   addVertex(VVVVVertex_);
   addVertex(VSSVertex_);
