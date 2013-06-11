@@ -449,6 +449,12 @@ void MatchboxFactory::setup() {
 				 (**born).matchboxAmplitude(),
 				 ProcessType::oneLoopInterference);
 	nlo->olpProcess(ProcessType::oneLoopInterference,id);
+	if ( !nlo->onlyOneLoop() ) {
+	  id = orderOLPProcess(nlo->subProcess(),
+			       (**born).matchboxAmplitude(),
+			       ProcessType::colourCorrelatedME2);
+	  nlo->olpProcess(ProcessType::colourCorrelatedME2,id);	  
+	}
       }
 
       nlo->cloneDependencies();
