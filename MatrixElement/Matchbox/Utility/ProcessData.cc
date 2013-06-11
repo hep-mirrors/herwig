@@ -26,7 +26,17 @@ using namespace Herwig;
 
 ProcessData::ProcessData() {}
 
-ProcessData::~ProcessData() {}
+ProcessData::~ProcessData() {
+  for ( map<Ptr<Tree2toNDiagram>::tcptr,vector<ColourLines*> >::iterator cl =
+	  theColourFlowMap.begin(); cl != theColourFlowMap.end(); ++cl ) {
+    for ( vector<ColourLines*>::iterator c = cl->second.begin();
+	  c != cl->second.end(); ++c ) {
+      if ( *c )
+	delete *c;
+    }
+  }
+  theColourFlowMap.clear();
+}
 
 IBPtr ProcessData::clone() const {
   return new_ptr(*this);

@@ -75,14 +75,14 @@ public:
   //@{
 
   /**
-   * Return the subprocesses.
+   * Return the subprocess.
    */
-  const vector<PDVector>& subProcesses() const { return theSubprocesses; }
+  const Process& subProcess() const { return theSubprocess; }
 
   /**
-   * Access the subprocesses.
+   * Access the subprocess.
    */
-  vector<PDVector>& subProcesses() { return theSubprocesses; }
+  Process& subProcess() { return theSubprocess; }
 
   /**
    * Return the diagram generator.
@@ -144,6 +144,34 @@ public:
    * element is calculated for.
    */
   virtual unsigned int getNLight() const;
+
+  /**
+   * Return true, if this matrix element is handled by a BLHA one-loop provider
+   */
+  virtual bool isOLPTree() const { 
+    return matchboxAmplitude() ? matchboxAmplitude()->isOLPTree() : false;
+  }
+
+  /**
+   * Return true, if this matrix element is handled by a BLHA one-loop provider
+   */
+  virtual bool isOLPLoop() const { 
+    return matchboxAmplitude() ? matchboxAmplitude()->isOLPLoop() : false;
+  }
+
+  /**
+   * Return the process index, if this is an OLP handled matrix element
+   */
+  const vector<int>& olpProcess() const { return theOLPProcess; }
+
+  /**
+   * Set the process index, if this is an OLP handled matrix element
+   */
+  void olpProcess(int pType, int id) { 
+    if ( theOLPProcess.empty() )
+      theOLPProcess.resize(4,0);
+    theOLPProcess[pType] = id;
+  }
 
   //@}
 
@@ -872,9 +900,9 @@ private:
 private:
 
   /**
-   * The subprocesses to be considered.
+   * The subprocess to be considered.
    */
-  vector<PDVector> theSubprocesses;
+  Process theSubprocess;
 
   /**
    * True, if this matrix element includes one-loop corrections
@@ -886,6 +914,11 @@ private:
    * but no Born contributions
    */
   bool theOneLoopNoBorn;
+
+  /**
+   * The process index, if this is an OLP handled matrix element
+   */
+  vector<int> theOLPProcess;
 
   /**
    * Histograms of epsilon^2 pole cancellation
@@ -918,7 +951,6 @@ inline PersistentIStream& operator>>(PersistentIStream& is,
   h.persistentInput(is);
   return is;
 }
-
 
 }
 

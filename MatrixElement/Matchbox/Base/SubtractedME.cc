@@ -216,15 +216,13 @@ void SubtractedME::getDipoles() {
 
   if ( genDipoles.empty() ) {
     // probably finite real contribution, but warn
-    generator()->log() << "\nWarning: No subtraction dipoles could be found for the processes:\n";
-    for ( vector<PDVector>::const_iterator s = real->subProcesses().begin();
-	  s != real->subProcesses().end(); ++s ) {
-      generator()->log() << (*s)[0]->PDGName() << " " << (*s)[1]->PDGName()
-			 << " -> ";
-      for ( PDVector::const_iterator p = s->begin() + 2; p != s->end(); ++p )
-	generator()->log() << (**p).PDGName() << " ";
-      generator()->log() << "\n" << flush;
-    }
+    generator()->log() << "\nWarning: No subtraction dipoles could be found for the process:\n";
+    generator()->log() << real->subProcess().legs[0]->PDGName() << " " 
+		       << real->subProcess().legs[1]->PDGName() << " -> ";
+    for ( PDVector::const_iterator p = real->subProcess().legs.begin() + 2; 
+	  p != real->subProcess().legs.end(); ++p )
+      generator()->log() << (**p).PDGName() << " ";
+    generator()->log() << "\n" << flush;
     generator()->log() << "Assuming finite tree-level O(alphaS) correction.\n";
   }
 

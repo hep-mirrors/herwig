@@ -272,7 +272,25 @@ namespace Herwig {
      * The last one-loop/tree-level interference.
      */
     void lastOneLoopInterference(double v) { 
-      theLastOneLoopInterference = v; theCalculateOneLoopAmplitudes = false;
+      theLastOneLoopInterference = v; theCalculateOneLoopInterference = false;
+    }
+
+    /**
+     * True, if the one-loop/tree-level interference.
+     * be calculated.
+     */
+    bool calculateOneLoopPoles() const { return theCalculateOneLoopPoles; }
+
+    /**
+     * The last one-loop/tree-level interference.
+     */
+    pair<double,double> lastOneLoopPoles() const { return theLastOneLoopPoles; }
+
+    /**
+     * The last one-loop/tree-level interference.
+     */
+    void lastOneLoopPoles(pair<double,double> v) { 
+      theLastOneLoopPoles = v; theCalculateOneLoopPoles = false;
     }
 
     /**
@@ -500,6 +518,37 @@ namespace Herwig {
      */
     void symmetryFactor(double f) { theSymmetryFactor = f; }
 
+    /**
+     * Return the OLP process ids
+     */
+    const vector<int>& olpId() const { return theOLPId; }
+
+    /**
+     * Set the OLP process ids
+     */
+    void olpId(int pType, int id) {
+      if ( theOLPId.empty() )
+	theOLPId.resize(4,0);
+      theOLPId[pType] = id;
+    }
+
+    /**
+     * Set the OLP process ids
+     */
+    void olpId(const vector<int>& id) { 
+      theOLPId = id;
+    }
+
+    /**
+     * Return the olp momentum vector
+     */
+    double* olpMomenta() { return theOLPMomenta; }
+
+    /**
+     * Fill the olp momentum vector
+     */
+    void fillOLPMomenta(const vector<Lorentz5Momentum>&);
+
   public:
 
     /** @name Functions used by the persistent I/O system. */
@@ -656,6 +705,17 @@ namespace Herwig {
     double theLastOneLoopInterference;
 
     /**
+     * True, if the one-loop/tree-level interference.
+     * be calculated.
+     */
+    bool theCalculateOneLoopPoles;
+
+    /**
+     * The last one-loop/tree-level interference.
+     */
+    pair<double,double> theLastOneLoopPoles;
+
+    /**
      * True, if the indexed colour correlated matrix element needs to be
      * calculated.
      */
@@ -749,6 +809,21 @@ namespace Herwig {
      * The symmetry factor
      */
     double theSymmetryFactor;
+
+    /**
+     * The OLP process id
+     */
+    vector<int> theOLPId;
+
+    /**
+     * Return the olp momentum vector
+     */
+    double* theOLPMomenta;
+
+    /**
+     * True, if olp momenta have been filled
+     */
+    bool filledOLPMomenta;
 
   };
 
