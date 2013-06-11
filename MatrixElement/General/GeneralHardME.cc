@@ -715,7 +715,7 @@ GeneralHardME::colourGeometries(tcDiagPtr diag) const {
 	ColourLines("1 3 4:2, -2 -3 -5:1, 4:1 -5:2"),
 	ColourLines("1 3 4:2, -2 -3 -5:2, 4:1 -5:1"),
 	ColourLines(""), ColourLines(""),
-	ColourLines(""), ColourLines(""),};
+	ColourLines(""), ColourLines("")};
     static ColourLines f33barto66bart[8]
       ={ColourLines(""), ColourLines(""),
 	ColourLines(""), ColourLines(""),
