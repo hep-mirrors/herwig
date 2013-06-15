@@ -128,6 +128,9 @@ class PyToCpp(ast.NodeVisitor):
     def visit_USub(self,node):
         self.result.append('-')
 
+    def visit_UAdd(self,node):
+        self.result.append('+')
+
     def visit_Div(self,node):
         self.result.append('/')
 
