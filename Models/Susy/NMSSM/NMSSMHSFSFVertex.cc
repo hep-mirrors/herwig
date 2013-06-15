@@ -98,7 +98,7 @@ void NMSSMHSFSFVertex::doinit() {
   }
   //charged higgs
   //squarks
-  for(long q = 1; q < 3; ++q ) {
+  for(long q = 1; q < 4; ++q ) {
     //H-
     //LL
     addToList(-37, -2*q - 999999, 2*q + 1000000);
@@ -171,7 +171,6 @@ void NMSSMHSFSFVertex::doinit() {
   _v1 = sqrt(2.)*_mw*_cb;
   _v2 = sqrt(2.)*_mw*_sb;
   SSSVertex::doinit();
-
 }
 
 void NMSSMHSFSFVertex::setCoupling(Energy2 q2,tcPDPtr part1,
@@ -365,9 +364,10 @@ Complex NMSSMHSFSFVertex::chargedHiggs(Energy2 q2, long id1, long id2) {
     }
     // down-type bit
     // sbottom
-    if(utype == 5){
+    if(dtype == 5){
       q1b =  (*_mixBt)(beta, 0) ;
       q2b =  (*_mixBt)(beta, 1);
+      triD = _triBt;
     }
     // light
     else{
