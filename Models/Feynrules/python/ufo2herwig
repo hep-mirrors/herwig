@@ -299,8 +299,23 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
     else:
         items = vertex.couplings
     for (color_idx,lorentz_idx),coupling in items:
-        qed = coupling.order.get('QED',0)
-        qcd = coupling.order.get('QCD',0)
+        # if more  than one take QCD over QED and then lowest order in QED
+        if (type(coupling) is list) :
+            qed = 0
+            qcd = 0
+            for coup in coupling :
+                qed1 = coup.order.get('QED',0)
+                qcd1 = coup.order.get('QCD',0)
+                if(qcd1!=0) :
+                    if(qcd==0 or (qcd1!=0 and qcd1<qcd) ) :
+                        qcd=qcd1
+                        qed=qed1
+                else :
+                    if(qed==0 or (qed1!=0 and qed1<qed) ):
+                        qed=qed1
+        else:
+            qed = coupling.order.get('QED',0)
+            qcd = coupling.order.get('QCD',0)
         # WARNING: FIX FOR CASES WHEN BOTH ARE ZERO
         # Is there a better way to treat this?
         if qed == qcd == 0: qed = 1
@@ -324,8 +339,14 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
                 if L.structure == 'P(1,3) - P(1,2)':
                     prefactors += ' * -1'
                 ordering = 'if(p2->id()!=%s){norm(-norm());}'%vertex.particles[1].pdg_code
-
-            coup_norm.append('(%s) * (%s)' % (prefactors,coupling.value))
+            if(type(coupling) is not list ):
+                value = coupling.value
+            else :
+                value = "("
+                for coup in coupling :
+                    value += '+(%s)' % coup.value
+                value +=")"
+            coup_norm.append('(%s) * (%s)' % (prefactors,value))
                 
             
         #print 'Colour  :',vertex.color[color_idx]
