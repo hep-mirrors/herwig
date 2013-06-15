@@ -156,6 +156,7 @@ for p in FR.all_parameters:
     else:
         expression, symbols = py2cpp(p.value)
         text = add_brackets(expression, symbols)
+        text=text.replace('()()','()')
         parmgetters.append('  %s %s() const { return %s; }' % (typemap(p.type),p.name, text))
 
 ### special treatment
