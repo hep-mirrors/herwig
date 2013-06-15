@@ -178,6 +178,8 @@ def colorfactor(vertex):
         if match(label): return ('-complex(0,1)%s'%factor,)
         label = ('f(3,2,1)',)
         if match(label): return ('complex(0,1)%s'%factor,)
+        label = ('f(2,1,3)',)
+        if match(label): return ('complex(0,1)%s'%factor,)
 
     elif l(8) == L == 4:
         label = ('f(-1,1,2)*f(3,4,-1)',
