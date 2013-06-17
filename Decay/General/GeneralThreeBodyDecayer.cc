@@ -617,6 +617,14 @@ void GeneralThreeBodyDecayer::
 constructIntegratorChannels(vector<int> & intype, vector<Energy> & inmass,
 			    vector<Energy> & inwidth, vector<double> & inpow,
 			    vector<double> & inweights) const {
+  // check if any intermediate photons
+  bool hasPhoton=false;
+  for(unsigned int iy=0;iy<_diagmap.size();++iy) {
+    unsigned int ix=_diagmap[iy];
+    if(getProcessInfo()[ix].intermediate->id()==ParticleID::gamma)
+      hasPhoton = true;
+  }
+  // loop over channels
   Energy min = incoming()->mass();
   int nchannel(0);
   pair<int,Energy> imin[4]={make_pair(-1,-1.*GeV),make_pair(-1,-1.*GeV),
@@ -644,7 +652,7 @@ constructIntegratorChannels(vector<int> & intype, vector<Energy> & inmass,
       dm2 -= outgoing()[0]->mass()+outgoing()[1]->mass();
       itype = 1;
     }
-    if((dm1<ZERO||dm2<ZERO)&&getProcessInfo()[ix].intermediate->id()!=ParticleID::gamma) {
+    if((dm1<ZERO||dm2<ZERO)&&!hasPhoton) {
       if (imin[itype].first < 0  ||
 	  (dm1<ZERO && imin[itype].second < dm1)  ) {
 	imin[itype] = make_pair(ix,dm1);
@@ -676,18 +684,11 @@ constructIntegratorChannels(vector<int> & intype, vector<Energy> & inmass,
     return;
   }
   // use shallowest pole
-  else if(_intOpt==1&&minType>0) {
+  else if(_intOpt==1&&minType>0&&getProcessInfo()[imin[minType].first].intermediate->id()!=ParticleID::gamma) {
     intype.push_back(minType);
-    if(getProcessInfo()[imin[minType].first].intermediate->id()!=ParticleID::gamma) {
-      inpow.push_back(0.);
-      inmass.push_back(getProcessInfo()[imin[minType].first].intermediate->mass());
-      inwidth.push_back(widthOption() ==3 ? ZERO : getProcessInfo()[imin[minType].first].intermediate->width());
-    }
-    else {
-      inpow.push_back(-2.);
-      inmass.push_back(-1.*GeV);
-      inwidth.push_back(-1.*GeV);
-    }
+    inpow.push_back(0.);
+    inmass.push_back(getProcessInfo()[imin[minType].first].intermediate->mass());
+    inwidth.push_back(widthOption() ==3 ? ZERO : getProcessInfo()[imin[minType].first].intermediate->width());
     inweights = vector<double>(1,1.);
     return;
   }
