@@ -117,7 +117,7 @@ def colorpositions(struct):
         positions[s].append(i)
     return positions
         
-def colorfactor(vertex):
+def colors(vertex) :
     try:
         unique = CheckUnique()
         for pl in vertex.particles_list:
@@ -126,14 +126,16 @@ def colorfactor(vertex):
     except:
         struct = [ p.color for p in vertex.particles ]
     pos = colorpositions(struct)
+    L = len(struct)
+    return (L,pos)
 
+def colorfactor(vertex,L,pos):
     def match(patterns):
         result = [ p == t
                    for p,t in zip(patterns,vertex.color) ]
         return all(result)
 
     label = None
-    L = len(struct)
     l = lambda c: len(pos[c])
     if l(1) == L:
         label = ('1',)
@@ -186,7 +188,7 @@ def colorfactor(vertex):
                  'f(-1,1,3)*f(2,4,-1)',
                  'f(-1,1,4)*f(2,3,-1)',
              )
-        if match(label): return ('1','1','1')
+        if match(label): return ('-1./3.','-1./3.','-1./3.')
 
     elif l(8) == 2 and l(3) == l(-3) == 1 and L==4:
         subs = {

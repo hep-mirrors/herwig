@@ -1,7 +1,7 @@
 from .particles import thepeg_particles
 
 from .helpers import CheckUnique, getTemplate, writeFile, def_from_model
-from .helpers import unique_lorentztag, colorfactor, SkipThisVertex
+from .helpers import unique_lorentztag, colors, colorfactor, SkipThisVertex
 from .helpers import spindirectory, add_brackets, typemap
 
 from .converter import py2cpp
