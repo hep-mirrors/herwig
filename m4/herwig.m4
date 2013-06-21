@@ -108,7 +108,7 @@ AC_SUBST(THEPEGINCLUDE)
 AC_MSG_CHECKING([for HepMCAnalysis.so in ThePEG])
 
 
-if test -x "$THEPEGPATH/lib/ThePEG/HepMCAnalysis.so" ; then
+if test -e "$THEPEGPATH/lib/ThePEG/HepMCAnalysis.so" ; then
      	CREATE_HEPMC="create"
 	AC_MSG_RESULT([found])
 else
