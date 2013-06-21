@@ -74,7 +74,19 @@ HERWIG_CHECK_GSL
 
 HERWIG_CHECK_THEPEG
 
-HERWIG_CHECK_BOOST
+BOOST_REQUIRE
+BOOST_FIND_HEADER([boost/array.hpp])
+BOOST_FIND_HEADER([boost/numeric/ublas/io.hpp])
+BOOST_FIND_HEADER([boost/numeric/ublas/matrix.hpp])
+BOOST_FIND_HEADER([boost/numeric/ublas/matrix_proxy.hpp])
+BOOST_FIND_HEADER([boost/numeric/ublas/matrix_sparse.hpp])
+BOOST_FIND_HEADER([boost/numeric/ublas/symmetric.hpp])
+BOOST_FIND_HEADER([boost/numeric/ublas/vector.hpp])
+BOOST_FIND_HEADER([boost/operators.hpp])
+BOOST_FIND_HEADER([boost/progress.hpp])
+BOOST_FIND_HEADER([boost/scoped_array.hpp])
+BOOST_FIND_HEADER([boost/scoped_ptr.hpp])
+BOOST_FIND_HEADER([boost/utility.hpp])
 
 HERWIG_COMPILERFLAGS
 

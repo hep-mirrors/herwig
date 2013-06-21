@@ -22,10 +22,6 @@
 #include "ThePEG/Utilities/StringUtils.h"
 #include "ThePEG/Repository/Repository.h"
 #include "ThePEG/Repository/EventGenerator.h"
-
-#include "ThePEG/Persistency/PersistentOStream.h"
-#include "ThePEG/Persistency/PersistentIStream.h"
-
 #include "Herwig++/MatrixElement/Matchbox/Base/DipoleRepository.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/SU2Helper.h"
 
@@ -74,81 +70,15 @@ void MatchboxFactory::prepareME(Ptr<MatchboxMEBase>::ptr me) const {
 
 }
 
-struct LegIndex {
-
-  int spin;
-  int charge;
-  int colour;
-
-  int isSameAs;
-  int isSameFamilyAs;
-
-  inline bool operator==(const LegIndex& other) const {
-    return 
-      spin == other.spin &&
-      charge == other.charge &&
-      colour == other.colour &&
-      isSameAs == other.isSameAs &&
-      isSameFamilyAs == other.isSameFamilyAs;
-  }
-
-  inline bool operator<(const LegIndex& other) const {
-
-    if ( spin != other.spin )
-      return spin < other.spin;
-
-    if ( charge != other.charge )
-      return charge < other.charge;
-
-    if ( colour != other.colour )
-      return colour < other.colour;
-
-    if ( isSameAs != other.isSameAs )
-      return isSameAs < other.isSameAs;
-
-    if ( isSameFamilyAs != other.isSameFamilyAs )
-      return isSameFamilyAs < other.isSameFamilyAs;
-
-    return false;
-
-  }
-
-};
+typedef string LegIndex;
 
 vector<LegIndex> makeIndex(const PDVector& proc) {
-
-  map<long,int> idMap;
-  map<int,int> familyIdMap;
-  int lastId = 0;
-  int lastFamilyId = 0;
 
   vector<LegIndex> res;
 
   for ( PDVector::const_iterator p = proc.begin();
 	p != proc.end(); ++p ) {
-    int id;
-    if ( idMap.find((**p).id()) != idMap.end() ) {
-      id = idMap[(**p).id()];
-    } else {
-      id = lastId;
-      idMap[(**p).id()] = lastId;
-      ++lastId;
-    }
-    int familyId;
-    if ( familyIdMap.find(SU2Helper::family(*p)) != familyIdMap.end() ) {
-      familyId = familyIdMap[SU2Helper::family(*p)];
-    } else {
-      familyId = lastFamilyId;
-      familyIdMap[SU2Helper::family(*p)] = lastFamilyId;
-      ++lastFamilyId;
-    }
-    LegIndex idx;
-    idx.spin = (**p).iSpin();
-    idx.charge = (**p).iCharge();
-    idx.colour = (**p).iColour();
-    idx.isSameAs = id;
-    idx.isSameFamilyAs = familyId;
-    res.push_back(idx);
+    res.push_back((**p).PDGName());
   }
 
   return res;
@@ -157,16 +87,17 @@ vector<LegIndex> makeIndex(const PDVector& proc) {
 
 string pid(const vector<LegIndex>& key) {
   ostringstream res;
+  res << "[" << key[0] << ","
+      << key[1] << "->";
   for ( vector<LegIndex>::const_iterator k =
-	  key.begin(); k != key.end(); ++k )
-    res << k->spin << k->charge
-	<< k->colour << k->isSameAs
-	<< k->isSameFamilyAs;
+	  key.begin() + 2; k != key.end(); ++k )
+    res << *k << (k != --key.end() ? "," : "");
+  res << "]";
   return res.str();
 }
 
 vector<Ptr<MatchboxMEBase>::ptr> MatchboxFactory::
-makeMEs(const vector<string>& proc, unsigned int orderas) const {
+makeMEs(const vector<string>& proc, unsigned int orderas) {
 
   typedef vector<LegIndex> QNKey;
 
@@ -174,9 +105,22 @@ makeMEs(const vector<string>& proc, unsigned int orderas) const {
   copy(proc.begin(),proc.end(),ostream_iterator<string>(generator()->log()," "));
   generator()->log() << flush;
 
-  map<Ptr<MatchboxAmplitude>::ptr,map<QNKey,vector<PDVector> > > ampProcs;
+  map<Ptr<MatchboxAmplitude>::ptr,map<QNKey,Process> > ampProcs;
   set<PDVector> processes = makeSubProcesses(proc);
-  set<PDVector> unsortedProcesses = makeUnsortedSubProcesses(proc);
+
+  bool needUnsorted = false;
+
+  for ( vector<Ptr<MatchboxAmplitude>::ptr>::const_iterator amp
+	  = amplitudes().begin(); amp != amplitudes().end(); ++amp ) {
+    if ( !(**amp).sortOutgoing() ) {
+      needUnsorted = true;
+      break;
+    }
+  }
+
+  set<PDVector> unsortedProcesses;
+  if ( needUnsorted )
+    unsortedProcesses = makeUnsortedSubProcesses(proc);
 
   vector<Ptr<MatchboxAmplitude>::ptr> matchAmplitudes;
 
@@ -219,20 +163,20 @@ makeMEs(const vector<string>& proc, unsigned int orderas) const {
 	for ( set<PDVector>::const_iterator p = processes.begin();
 	      p != processes.end(); ++p ) {
 	  ++(*progressBar);
-	  if ( !(**amp).canHandle(*p) || !(**amp).sortOutgoing() )
+	  if ( !(**amp).canHandle(*p,this) || !(**amp).sortOutgoing() )
 	    continue;
 	  QNKey key = makeIndex(*p);
 	  ++procCount;
-	  ampProcs[*amp][key].push_back(*p);
+	  ampProcs[*amp][key] = Process(*p,oas,oae);
 	}
 	for ( set<PDVector>::const_iterator p = unsortedProcesses.begin();
 	      p != unsortedProcesses.end(); ++p ) {
 	  ++(*progressBar);
-	  if ( !(**amp).canHandle(*p) || (**amp).sortOutgoing() )
+	  if ( !(**amp).canHandle(*p,this) || (**amp).sortOutgoing() )
 	    continue;
 	  QNKey key = makeIndex(*p);
 	  ++procCount;
-	  ampProcs[*amp][key].push_back(*p);
+	  ampProcs[*amp][key] = Process(*p,oas,oae);
 	}
       }
     }
@@ -242,13 +186,14 @@ makeMEs(const vector<string>& proc, unsigned int orderas) const {
   generator()->log() << flush;
 
   vector<Ptr<MatchboxMEBase>::ptr> res;
-  for ( map<Ptr<MatchboxAmplitude>::ptr,map<QNKey,vector<PDVector> > >::const_iterator
+  for ( map<Ptr<MatchboxAmplitude>::ptr,map<QNKey,Process> >::const_iterator
 	  ap = ampProcs.begin(); ap != ampProcs.end(); ++ap ) {
-  for ( map<QNKey,vector<PDVector> >::const_iterator m = ap->second.begin();
+    for ( map<QNKey,Process >::const_iterator m = ap->second.begin();
 	  m != ap->second.end(); ++m ) {
-      Ptr<MatchboxMEBase>::ptr me = ap->first->makeME(m->second);
-      me->subProcesses() = m->second;
+      Ptr<MatchboxMEBase>::ptr me = ap->first->makeME(m->second.legs);
+      me->subProcess() = m->second;
       me->amplitude(ap->first);
+      me->matchboxAmplitude(ap->first);
       prepareME(me);
       string pname = "ME" + ap->first->name() + pid(m->first);
       if ( ! (generator()->preinitRegister(me,pname) ) )
@@ -268,7 +213,23 @@ makeMEs(const vector<string>& proc, unsigned int orderas) const {
 
 }
 
+int MatchboxFactory::orderOLPProcess(const Process& proc,
+				     Ptr<MatchboxAmplitude>::tptr amp,
+				     int type) {
+  map<pair<Process,int>,int>& procs =
+    olpProcesses()[amp];
+  map<pair<Process,int>,int>::const_iterator it =
+    procs.find(make_pair(proc,type));
+  if ( it != procs.end() )
+    return it->second;
+  int id = procs.size();
+  procs[make_pair(proc,type)] = id + 1;
+  return id + 1;
+}
+
 void MatchboxFactory::setup() {
+
+  olpProcesses().clear();
 
   if ( bornMEs().empty() ) {
 
@@ -416,6 +377,14 @@ void MatchboxFactory::setup() {
 	pname += ".Born";
       if ( ! (generator()->preinitRegister(bornme,pname) ) )
 	throw InitException() << "Matrix element " << pname << " already existing.";
+
+      if ( bornme->isOLPTree() ) {
+	int id = orderOLPProcess(bornme->subProcess(),
+				 (**born).matchboxAmplitude(),
+				 ProcessType::treeME2);
+	bornme->olpProcess(ProcessType::treeME2,id);
+      }
+
       bornme->cloneDependencies();
       MEs().push_back(bornme);
 
@@ -475,6 +444,19 @@ void MatchboxFactory::setup() {
 	nlo->doOneLoop();
       }
 
+      if ( nlo->isOLPLoop() ) {
+	int id = orderOLPProcess(nlo->subProcess(),
+				 (**born).matchboxAmplitude(),
+				 ProcessType::oneLoopInterference);
+	nlo->olpProcess(ProcessType::oneLoopInterference,id);
+	if ( !nlo->onlyOneLoop() ) {
+	  id = orderOLPProcess(nlo->subProcess(),
+			       (**born).matchboxAmplitude(),
+			       ProcessType::colourCorrelatedME2);
+	  nlo->olpProcess(ProcessType::colourCorrelatedME2,id);	  
+	}
+      }
+
       nlo->cloneDependencies();
 
       bornVirtualMEs().push_back(nlo);
@@ -512,6 +494,34 @@ void MatchboxFactory::setup() {
 
     subtractedMEs().clear();    
 
+    for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born
+	    = bornMEs().begin(); born != bornMEs().end(); ++born ) {
+
+      if ( (**born).onlyOneLoop() )
+	continue;
+
+      if ( (**born).isOLPTree() ) {
+	int id = orderOLPProcess((**born).subProcess(),
+				 (**born).matchboxAmplitude(),
+				 ProcessType::colourCorrelatedME2);
+	(**born).olpProcess(ProcessType::colourCorrelatedME2,id);
+	bool haveGluon = false;
+	for ( PDVector::const_iterator p = (**born).subProcess().legs.begin();
+	      p != (**born).subProcess().legs.end(); ++p )
+	  if ( (**p).id() == 21 ) {
+	    haveGluon = true;
+	    break;
+	  }
+	if ( haveGluon ) {
+	  id = orderOLPProcess((**born).subProcess(),
+			       (**born).matchboxAmplitude(),
+			       ProcessType::spinColourCorrelatedME2);
+	  (**born).olpProcess(ProcessType::spinColourCorrelatedME2,id);
+	}
+      }
+
+    }
+
     boost::progress_display * progressBar = 
       new boost::progress_display(realEmissionMEs().size(),generator()->log());
 
@@ -524,6 +534,13 @@ void MatchboxFactory::setup() {
 	throw InitException() << "Subtracted ME " << pname << " already existing.";
 
       sub->factory(this);
+
+      if ( (**real).isOLPTree() ) {
+	int id = orderOLPProcess((**real).subProcess(),
+				 (**real).matchboxAmplitude(),
+				 ProcessType::treeME2);
+	(**real).olpProcess(ProcessType::treeME2,id);
+      }
 
       sub->head(*real);
 
@@ -611,6 +628,28 @@ void MatchboxFactory::setup() {
       }
       sd->second = cloned;
     }
+  }
+
+  if ( !olpProcesses().empty() ) {
+    generator()->log() << "Initializing one-loop provider(s).\n" << flush;
+    map<Ptr<MatchboxAmplitude>::tptr,map<pair<Process,int>,int> > olps;
+    for ( map<Ptr<MatchboxAmplitude>::tptr,map<pair<Process,int>,int> >::const_iterator
+	    oit = olpProcesses().begin(); oit != olpProcesses().end(); ++oit ) {
+      olps[oit->first] = oit->second;
+    }
+    boost::progress_display * progressBar = 
+      new boost::progress_display(olps.size(),generator()->log());
+    for ( map<Ptr<MatchboxAmplitude>::tptr,map<pair<Process,int>,int> >::const_iterator
+	    olpit = olps.begin(); olpit != olps.end(); ++olpit ) {
+      if ( !olpit->first->startOLP(olpit->second) ) {
+	throw InitException() 
+	  << "error: failed to start OLP for amplitude '" << olpit->first->name() << "'\n";
+      }
+      ++(*progressBar);
+    }
+    delete progressBar;
+    generator()->log() << "--------------------------------------------------------------------------------\n"
+		       << flush;
   }
 
   generator()->log() << "Process setup finished.\n" << flush;
@@ -799,7 +838,8 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
      << theVerbose << theInitVerbose << theSubtractionData << thePoleData
      << theParticleGroups << process << realEmissionProcess
      << theShowerApproximation << theSplittingDipoles
-     << theRealEmissionScales << theAllProcesses;
+     << theRealEmissionScales << theAllProcesses
+     << theOLPProcesses;
 }
 
 void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
@@ -816,7 +856,8 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
      >> theVerbose >> theInitVerbose >> theSubtractionData >> thePoleData
      >> theParticleGroups >> process >> realEmissionProcess
      >> theShowerApproximation >> theSplittingDipoles
-     >> theRealEmissionScales >> theAllProcesses;
+     >> theRealEmissionScales >> theAllProcesses
+     >> theOLPProcesses;
 }
 
 string MatchboxFactory::startParticleGroup(string name) {

@@ -133,6 +133,18 @@ public:
   double lastOneLoopInterference() const { return lastMatchboxXComb()->lastOneLoopInterference(); }
 
   /**
+   * True, if the one-loop/tree-level interference.
+   * be calculated.
+   */
+  bool calculateOneLoopPoles() const { return lastMatchboxXComb()->calculateOneLoopPoles(); }
+
+  /**
+   * The last one-loop/tree-level interference.
+   */
+  pair<double,double> lastOneLoopPoles() const { return lastMatchboxXComb()->lastOneLoopPoles(); }
+
+
+  /**
    * True, if the indexed colour correlated matrix element needs to be
    * calculated.
    */
@@ -224,6 +236,23 @@ public:
    * Return the symmetry factor
    */
   double symmetryFactor() const { return lastMatchboxXComb()->symmetryFactor(); }
+   
+  /**
+   * Return the OLP process id
+   */
+  const vector<int>& olpId() const { return lastMatchboxXComb()->olpId(); }
+
+  /**
+   * Return the olp momentum vector
+   */
+  double* olpMomenta() const { return lastMatchboxXComb()->olpMomenta(); }
+
+  /**
+   * Fill the olp momentum vector
+   */
+  void fillOLPMomenta(const vector<Lorentz5Momentum>& mm) const { 
+    lastMatchboxXComb()->fillOLPMomenta(mm);
+  }
 
 protected:
 
@@ -300,6 +329,11 @@ protected:
   void lastOneLoopInterference(double v) const { lastMatchboxXComb()->lastOneLoopInterference(v); }
 
   /**
+   * The last one-loop/tree-level interference.
+   */
+  void lastOneLoopPoles(pair<double,double> v) const { lastMatchboxXComb()->lastOneLoopPoles(v); }
+
+  /**
    * The colour correlated matrix element.
    */
   void lastColourCorrelator(const pair<int,int>& ij, double v) const { lastMatchboxXComb()->lastColourCorrelator(ij,v); }
@@ -373,6 +407,11 @@ protected:
    * Set the symmetry factor
    */
   void symmetryFactor(double f) const { lastMatchboxXComb()->symmetryFactor(f); }
+
+  /**
+   * Set the OLP process id
+   */
+  void olpId(int pType, int id) { lastMatchboxXComb()->olpId(pType,id); }
 
 protected:
 

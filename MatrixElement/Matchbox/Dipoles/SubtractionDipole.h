@@ -77,6 +77,11 @@ public:
   virtual bool apply() const { return theApply; }
 
   /**
+   * Clear the bookkeeping
+   */
+  void clearBookkeeping();
+
+  /**
    * Setup bookkeeping maps.
    */
   void setupBookkeeping();
