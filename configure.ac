@@ -162,6 +162,8 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/Matchbox/Matching/Makefile
                 MatrixElement/Matchbox/Builtin/Makefile
                 MatrixElement/Matchbox/Builtin/Amplitudes/Makefile
+                MatrixElement/Matchbox/External/Makefile
+                MatrixElement/Matchbox/External/BLHAGeneric/Makefile
                 MatrixElement/Matchbox/Tests/Makefile
 		Exsample2/Makefile
 		Shower/SplittingFunctions/Makefile
