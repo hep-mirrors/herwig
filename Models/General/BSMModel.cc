@@ -138,6 +138,7 @@ void BSMModel::decayRead() {
     // start of a block
     if(line.find("decay") == 0) {
       readDecay(cfile, line);
+      if(!cfile.readline()) break;
       continue;
     }
     else if( lesHouches && line.find("</slha") == 0 ) {
@@ -174,6 +175,7 @@ void BSMModel::readDecay(CFileLineReader & cfile,
   unsigned int nmode = 0;
   while(cfile.readline()) {
     string line = cfile.getline();
+    line = StringUtils::stripws(line);
     // skip comments
     if(line[0] == '#') continue;
     // reached the end
