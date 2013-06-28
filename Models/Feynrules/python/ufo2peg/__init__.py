@@ -2,7 +2,8 @@ from .particles import thepeg_particles
 
 from .helpers import CheckUnique, getTemplate, writeFile, def_from_model
 from .helpers import unique_lorentztag, colors, colorfactor, SkipThisVertex
-from .helpers import spindirectory, add_brackets, typemap
+from .helpers import spindirectory, add_brackets, typemap,VVVordering
+from .helpers import tensorCouplings
 
 from .converter import py2cpp
 from .lorentzparser import parse_lorentz

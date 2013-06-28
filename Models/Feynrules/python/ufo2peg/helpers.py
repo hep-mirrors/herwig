@@ -1,6 +1,6 @@
 from string import Template
 from os import path
-import sys
+import sys,itertools,cmath
 
 """
 Helper functions for the Herwig++ Feynrules converter
@@ -211,7 +211,20 @@ def colorfactor(vertex,L,pos):
         label = ('T6({g1},-1,{qb})*T6({g2},{qq},-1)'.format(**subs),
                  'T6({g1},{qq},-1)*T6({g2},-1,{qb})'.format(**subs))
         if match(label): return ('0.5','0.5')
-        
+
+    elif l(8) == 2 and l(8)+l(1)==L :
+        subs = { 'g1' : pos[8][0], 'g2' : pos[8][1] }
+        label = ('Identity({g1},{g2})'.format(**subs),)
+        if match(label) : return ('1.',)
+
+    elif l(8) == 3 and l(1)==1 and L==4 :
+        label = ('f(1,2,3)',)
+        if match(label): return ('-complex(0,1)',)
+        label = ('f(3,2,1)',)
+        if match(label): return ('complex(0,1)',)
+        label = ('f(2,1,3)',)
+        if match(label): return ('complex(0,1)',)
+
     print vertex
     raise Exception("Unknown colour tag {}.".format(vertex.color))
 
@@ -353,3 +366,129 @@ if False:
         if len(v.particles) is 4:                                                                                                                      
             plistarray[1] += ',' + str(scfac[3] * v.particles[3].pdg_code)
         #print 'Conjugate vertex:', plistarray[1]
+
+# ordering for EW VVV vertices
+def VVVordering(vertex) :
+    pattern = "if((p1->id()==%s&&p2->id()==%s&&p3->id()==%s)"+\
+        "||(p1->id()==%s&&p2->id()==%s&&p3->id()==%s)||"+\
+        "(p1->id()==%s&&p2->id()==%s&&p3->id()==%s)) {norm(-norm());}"
+    ordering = pattern%(vertex.particles[1].pdg_code,
+                        vertex.particles[0].pdg_code,
+                        vertex.particles[2].pdg_code,
+                        vertex.particles[0].pdg_code,
+                        vertex.particles[2].pdg_code,
+                        vertex.particles[1].pdg_code,
+                        vertex.particles[2].pdg_code,
+                        vertex.particles[1].pdg_code,
+                        vertex.particles[0].pdg_code)
+    return ordering
+
+def tensorCouplings(vertex,coupling,prefactors,L,lorentztag,pos) :
+    # split the structure into its different terms for analysis
+    ordering=""
+    structure1 = L.structure.split()
+    structures =[]
+    sign=''
+    for struct in structure1 :
+        if(struct=='+') :
+            continue
+        elif(struct=='-') :
+            sign='-'
+        else :
+            structures.append(sign+struct.strip())
+            sign=''
+    lterms=[]
+    rterms=[]
+    if(lorentztag == 'SST') :
+        terms=[['P(1003,2)','P(2003,1)'],
+               ['P(1003,1)','P(2003,2)'],
+               ['P(-1,1)','P(-1,2)','Metric(1003,2003)']]
+        signs=[1.,1.,-1.]
+    elif(lorentztag == 'FFT' ) :
+        terms=[['P(2003,1)','Gamma(1003,2,1)'],
+               ['P(2003,2)','Gamma(1003,2,1)'],
+               ['P(1003,1)','Gamma(2003,2,1)'],
+               ['P(1003,2)','Gamma(2003,2,1)'],
+               ['P(-1,1)','Gamma(-1,2,1)','Metric(1003,2003)'],
+               ['P(-1,2)','Gamma(-1,2,1)','Metric(1003,2003)']]
+        signs=[1.,-1.,1.,-1.,-0.5,0.5]
+    elif(lorentztag == 'VVT' ) :
+        terms=[['P(-1,1)','P(-1,2)','Metric(1,2003)','Metric(2,1003)'],
+               ['P(-1,1)','P(-1,2)','Metric(1,1003)','Metric(2,2003)'],
+               ['P(-1,1)','P(-1,2)','Metric(1,2)','Metric(1003,2003)'],
+               ['P(1,2)','P(2,1)','Metric(1003,2003)'],
+               ['P(1,2)','P(2003,1)','Metric(2,1003)'],
+               ['P(1,2)','P(1003,1)','Metric(2,2003)'],
+               ['P(2,1)','P(2003,2)','Metric(1,1003)'],
+               ['P(2,1)','P(1003,2)','Metric(1,2003)'],
+               ['P(1003,2)','P(2003,1)','Metric(1,2)'],
+               ['P(1003,1)','P(2003,2)','Metric(1,2)']]
+        signs=[1.,1.,-1.,1.,-1.,-1.,-1.,-1.,1.,1.]
+    elif(lorentztag == 'FFVT' ) :
+        terms = [['Gamma(2004,2,1)','Metric(3,1004)'],
+                 ['Gamma(1004,2,1)','Metric(3,2004)'],
+                 ['Gamma(3,2,1)','Metric(1004,2004)']]
+        lterms=[['Gamma(2004,2,-1)','Metric(3,1004)','ProjM(-1,1)'],
+                ['Gamma(1004,2,-1)','Metric(3,2004)','ProjM(-1,1)'],
+                ['Gamma(3,2,-1)','Metric(1004,2004)','ProjM(-1,1)']]
+        rterms=[['Gamma(2004,2,-1)','Metric(3,1004)','ProjP(-1,1)'],
+                ['Gamma(1004,2,-1)','Metric(3,2004)','ProjP(-1,1)'],
+                ['Gamma(3,2,-1)','Metric(1004,2004)','ProjP(-1,1)']]
+        signs=[1.,1.,-0.5]
+    elif(lorentztag == 'VVVT' ) :
+        # the F(mu nu,rho sigma lambda) terms first
+        terms = [['P(2004,2)','Metric(1,1004)','Metric(2,3)'],['P(2004,3)','Metric(1,1004)','Metric(2,3)'],
+                 ['P(1004,2)','Metric(1,2004)','Metric(2,3)'],['P(1004,3)','Metric(1,2004)','Metric(2,3)'],
+                 ['P(2004,3)','Metric(1,3)','Metric(2,1004)'],['P(2004,1)','Metric(1,3)','Metric(2,1004)'],
+                 ['P(1004,3)','Metric(1,3)','Metric(2,2004)'],['P(1004,1)','Metric(1,3)','Metric(2,2004)'],
+                 ['P(2004,1)','Metric(1,2)','Metric(3,1004)'],['P(2004,2)','Metric(1,2)','Metric(3,1004)'],
+                 ['P(1004,1)','Metric(1,2)','Metric(3,2004)'],['P(1004,2)','Metric(1,2)','Metric(3,2004)'],
+                 ['P(3,1)','Metric(1,2004)','Metric(2,1004)'],['P(3,2)','Metric(1,2004)','Metric(2,1004)'], 
+                 ['P(3,1)','Metric(1,1004)','Metric(2,2004)'],['P(3,2)','Metric(1,1004)','Metric(2,2004)'],
+                 ['P(3,1)','Metric(1,2)','Metric(1004,2004)'],['P(3,2)','Metric(1,2)','Metric(1004,2004)'],
+                 ['P(2,3)','Metric(1,2004)','Metric(3,1004)'],['P(2,1)','Metric(1,2004)','Metric(3,1004)'],
+                 ['P(2,3)','Metric(1,1004)','Metric(3,2004)'],['P(2,1)','Metric(1,1004)','Metric(3,2004)'],
+                 ['P(2,3)','Metric(1,3)','Metric(1004,2004)'],['P(2,1)','Metric(1,3)','Metric(1004,2004)'],
+                 ['P(1,2)','Metric(2,2004)','Metric(3,1004)'],['P(1,3)','Metric(2,2004)','Metric(3,1004)'],
+                 ['P(1,2)','Metric(2,1004)','Metric(3,2004)'],['P(1,3)','Metric(2,1004)','Metric(3,2004)'],
+                 ['P(1,2)','Metric(2,3)','Metric(1004,2004)'],['P(1,3)','Metric(2,3)','Metric(1004,2004)']]
+        signs = [1.,-1.,1.,-1.,1.,-1.,1.,-1.,1.,-1.,1.,-1.,
+                 1.,-1.,1.,-1.,-1.,1.,1.,-1.,1.,-1.,-1.,1.,1.,-1.,1.,-1.,-1.,1.]
+        signs = [1.,-1.,1.,-1.,1.,-1.,1.,-1.,1.,-1.,1.,-1.,
+                 1.,-1.,1.,-1.,-1.,1.,1.,-1.,1.,-1.,-1.,1.,1.,-1.,1.,-1.,-1.,1.]
+        l = lambda c: len(pos[c])
+        if l(8)==3 :
+            pass
+        else :
+            ordering = VVVordering(vertex)
+    # unknown
+    else :
+        raise Exception('Unknown data type "%s".' % lorentztag)
+    sum   = [0.,0.,0.]
+    itype = 0
+    for types in (terms,lterms,rterms) :
+        i=0
+        for term in types:
+            for perm in itertools.permutations(term):
+                for j in range(0,len(perm)) :
+                    if(j==0) :
+                        label=perm[j]
+                    else :
+                        label+='*'+perm[j]
+                for struct in structures :
+                    if label in struct :
+                        reminder = struct.replace(label,'1.',1)
+                        sum[itype] += eval(reminder, {'cmath':cmath} )*signs[i]
+            i+=1
+        itype += 1
+        all_coup   = []
+        left_coup  = []
+        right_coup = []
+        if(len(lterms)==0) :
+            all_coup.append('(%s) *(%s) * (%s)' % (sum[0]/float(len(signs)), prefactors,coupling.value))
+        else :
+            sum[1] += sum[0]
+            sum[2] += sum[0]
+            left_coup .append('(%s) * (%s) * (%s)' % (prefactors,sum[1]/float(len(signs)),coupling.value))
+            right_coup.append('(%s) * (%s) * (%s)' % (prefactors,sum[2]/float(len(signs)),coupling.value))
+    return (all_coup,left_coup,right_coup,ordering)
