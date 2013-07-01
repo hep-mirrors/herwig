@@ -64,17 +64,19 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split) const {
 
   Energy2 scale = sqr(pt) + sqr(theScreeningScale);
 
-  Energy2 rScale = scale > sqr(renormalizationScaleFreeze()) ? scale : sqr(renormalizationScaleFreeze());
-  Energy2 fScale = scale > sqr(factorizationScaleFreeze()) ? scale : sqr(factorizationScaleFreeze());
+  Energy2 rScale = sqr(theRenormalizationScaleFactor)*scale;
+  rScale = rScale > sqr(renormalizationScaleFreeze()) ? rScale : sqr(renormalizationScaleFreeze());
 
-  double ret = alphaS()->value(sqr(theRenormalizationScaleFactor)*rScale) / (2.*Constants::pi);
+  Energy2 fScale = sqr(theFactorizationScaleFactor)*scale;
+  fScale = fScale > sqr(factorizationScaleFreeze()) ? fScale : sqr(factorizationScaleFreeze());
+
+  double ret = alphaS()->value(rScale) / (2.*Constants::pi);
 
   if ( split.index().initialStateEmitter() ) {
     assert(pdfRatio());
     ret *= 
       split.lastEmitterZ() * 
-      (*pdfRatio())(split.index().emitterPDF(),
-		    sqr(theFactorizationScaleFactor)*fScale,
+      (*pdfRatio())(split.index().emitterPDF(), fScale,
 		    split.index().emitterData(),split.emitterData(),
 		    split.emitterX(),split.lastEmitterZ());
   }
@@ -83,8 +85,7 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split) const {
     assert(pdfRatio());
     ret *= 
       split.lastSpectatorZ() * 
-      (*pdfRatio())(split.index().spectatorPDF(),
-		    sqr(theFactorizationScaleFactor)*fScale,
+      (*pdfRatio())(split.index().spectatorPDF(), fScale,
 		    split.index().spectatorData(),split.spectatorData(),
 		    split.spectatorX(),split.lastSpectatorZ());
   }
