@@ -487,24 +487,29 @@ double MatchboxMEBase::me2Norm(unsigned int addAlphaS) const {
   // spin-1/2 or massless spin-1 particles
   double fac = 1./4.;
 
+  if ( hasInitialAverage() )
+    fac = 1.;
+
   if ( orderInAlphaS() > 0 || addAlphaS != 0 )
     fac *= pow(lastAlphaS()/SM().alphaS(),double(orderInAlphaS()+addAlphaS));
   if ( orderInAlphaEW() > 0 )
     fac *= pow(lastAlphaEM()/SM().alphaEM(),double(orderInAlphaEW()));
 
-  if ( mePartonData()[0]->iColour() == PDT::Colour3 || 
-       mePartonData()[0]->iColour() == PDT::Colour3bar )
-    fac /= SM().Nc();
-  else if ( mePartonData()[0]->iColour() == PDT::Colour8 )
-    fac /= (SM().Nc()*SM().Nc()-1.);
+  if ( !hasInitialAverage() ) {
+    if ( mePartonData()[0]->iColour() == PDT::Colour3 || 
+	 mePartonData()[0]->iColour() == PDT::Colour3bar )
+      fac /= SM().Nc();
+    else if ( mePartonData()[0]->iColour() == PDT::Colour8 )
+      fac /= (SM().Nc()*SM().Nc()-1.);
 
-  if ( mePartonData()[1]->iColour() == PDT::Colour3 || 
-       mePartonData()[1]->iColour() == PDT::Colour3bar )
-    fac /= SM().Nc();
-  else if ( mePartonData()[1]->iColour() == PDT::Colour8 )
-    fac /= (SM().Nc()*SM().Nc()-1.);
+    if ( mePartonData()[1]->iColour() == PDT::Colour3 || 
+	 mePartonData()[1]->iColour() == PDT::Colour3bar )
+      fac /= SM().Nc();
+    else if ( mePartonData()[1]->iColour() == PDT::Colour8 )
+      fac /= (SM().Nc()*SM().Nc()-1.);
+  }
 
-  return finalStateSymmetry()*fac;
+  return !hasFinalStateSymmetry() ? finalStateSymmetry()*fac : fac;
 
 }
 
