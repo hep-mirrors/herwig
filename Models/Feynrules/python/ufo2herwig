@@ -359,9 +359,9 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
             elif lorentztag == 'VVVV':
                 if(qcd==2) :
                     ordering = 'setType(1);\nsetOrder(0,1,2,3);'
-                # NEED TO THINK MORE ABOUT THIS
                 else :
-                    ordering = 'setType(2);'
+                    (ordering,factor) = EWVVVVCouplings(vertex,L)
+                    prefactors += ' * ' + str(factor)
             elif lorentztag == 'VVV' :
                 l = lambda c: len(pos[c])
                 if l(8)==3 :
@@ -434,6 +434,11 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
         couplingptrs[0] += ' p1'
         couplingptrs[1] += ' p2'
         couplingptrs[2] += ' p3'
+    elif lorentztag == 'VVVV' :
+        couplingptrs[0] += ' p1'
+        couplingptrs[1] += ' p2'
+        couplingptrs[2] += ' p3'
+        couplingptrs[3] += ' p4'
         
     ### assemble dictionary and fill template
     subs = { 'lorentztag' : lorentztag,                   # ok

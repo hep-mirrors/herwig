@@ -492,3 +492,53 @@ def tensorCouplings(vertex,coupling,prefactors,L,lorentztag,pos) :
             left_coup .append('(%s) * (%s) * (%s)' % (prefactors,sum[1]/float(len(signs)),coupling.value))
             right_coup.append('(%s) * (%s) * (%s)' % (prefactors,sum[2]/float(len(signs)),coupling.value))
     return (all_coup,left_coup,right_coup,ordering)
+
+def EWVVVVCouplings(vertex,L) :
+    terms=['Metric(1,2)*Metric(3,4)',
+           'Metric(1,3)*Metric(2,4)',
+           'Metric(1,4)*Metric(2,3)']
+    structure1 = L.structure.split()
+    structures =[]
+    sign=''
+    for struct in structure1 :
+        if(struct=='+') :
+            continue
+        elif(struct=='-') :
+            sign='-'
+        else :
+            structures.append(sign+struct.strip())
+            sign=''
+    factors=[]
+    for term in terms:
+        for struct in structures :
+            if term in struct :
+                reminder = struct.replace(term,'1.',1)
+                factors.append(eval(reminder, {'cmath':cmath} ))
+    factor=0.
+    order=[]
+    if(factors[0]==-2.*factors[1] and factors[0]==-2.*factors[2] ) :
+        order=[0,1,2,3]
+        factor = factors[0]/2.
+    elif(factors[1]==-2.*factors[0] and factors[1]==-2.*factors[2] ) :
+        order=[0,2,1,3]
+        factor = factors[1]/2.
+    elif(factors[2]==-2.*factors[0] and factors[2]==-2.*factors[1] ) :
+        order=[0,3,1,2]
+        factor = factors[2]/2.
+    pattern = \
+        "bool done[4]={false,false,false,false};\n" + \
+        "    tcPDPtr part[4]={p1,p2,p3,p4};\n" + \
+        "    unsigned int iorder[4]={0,0,0,0};\n" + \
+        "    for(unsigned int ix=0;ix<4;++ix) {\n" + \
+        "       if(!done[0] && part[ix]->id()==%s) {done[0]=true; iorder[%s] = ix; continue;}\n" + \
+        "       if(!done[1] && part[ix]->id()==%s) {done[1]=true; iorder[%s] = ix; continue;}\n" + \
+        "       if(!done[2] && part[ix]->id()==%s) {done[2]=true; iorder[%s] = ix; continue;}\n" + \
+        "       if(!done[3] && part[ix]->id()==%s) {done[3]=true; iorder[%s] = ix; continue;}\n" + \
+        "    }\n" + \
+        "    setType(2);\n" + \
+        "    setOrder(iorder[0],iorder[1],iorder[2],iorder[3]);"
+    ordering=pattern % ( vertex.particles[0].pdg_code,order[0],
+                         vertex.particles[1].pdg_code,order[1],
+                         vertex.particles[2].pdg_code,order[2],
+                         vertex.particles[3].pdg_code,order[3] )
+    return (ordering,factor)
