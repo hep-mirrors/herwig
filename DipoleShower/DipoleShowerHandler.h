@@ -344,6 +344,16 @@ private:
 private:
 
   /**
+   * A freezing value for the renormalization scale
+   */
+  Energy theRenormalizationScaleFreeze;
+
+  /**
+   * A freezing value for the factorization scale
+   */
+  Energy theFactorizationScaleFreeze;
+
+  /**
    * The factorization scale factor.
    */
   double theFactorizationScaleFactor;
