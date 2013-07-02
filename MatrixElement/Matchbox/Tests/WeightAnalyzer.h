@@ -152,6 +152,17 @@ private:
    */
   double sumNegativeGroupWeights;
 
+  /**
+   * The maximum deviation of the group weight sum from one
+   */
+  double maxDeviationGroupWeight;
+
+  /**
+   * The maximum deviation of the event weight sum from the overall
+   * event weight
+   */
+  double maxDeviationEventWeight;
+
 private:
 
   /**

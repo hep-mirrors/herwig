@@ -23,7 +23,9 @@ WeightAnalyzer::WeightAnalyzer()
   : sumWeights(0.0), sumPositiveWeights(0.0),
     sumNegativeWeights(0.0),
     sumGroupWeights(0.0), sumPositiveGroupWeights(0.0),
-    sumNegativeGroupWeights(0.0) {}
+    sumNegativeGroupWeights(0.0),
+    maxDeviationGroupWeight(0.0),
+    maxDeviationEventWeight(0.0) {}
 
 WeightAnalyzer::~WeightAnalyzer() {}
 
@@ -49,11 +51,17 @@ void WeightAnalyzer::analyze(tEventPtr event, long ieve, int loop, int state) {
   Ptr<SubProcessGroup>::tptr grp = 
     dynamic_ptr_cast<Ptr<SubProcessGroup>::tptr>(sub);
 
+  double sumEvents = 0.0;
+  double sumGroups = 0.0;
+
   sumGroupWeights += event->weight()*sub->groupWeight();
   if ( event->weight()*sub->groupWeight() > 0.0 )
     sumPositiveGroupWeights += event->weight()*sub->groupWeight();
   if ( event->weight()*sub->groupWeight() < 0.0 )
     sumNegativeGroupWeights += event->weight()*sub->groupWeight();
+
+  sumEvents += event->weight()*sub->groupWeight();
+  sumGroups += sub->groupWeight();
 
   if ( grp ) {
     
@@ -67,9 +75,15 @@ void WeightAnalyzer::analyze(tEventPtr event, long ieve, int loop, int state) {
       if ( event->weight()*(**s).groupWeight() < 0.0 )
 	sumNegativeGroupWeights += event->weight()*(**s).groupWeight();
 
+      sumEvents += event->weight()*(**s).groupWeight();
+      sumGroups += (**s).groupWeight();
+
     }
 
   }
+
+  maxDeviationGroupWeight = max(maxDeviationGroupWeight,abs(sumGroups-1));
+  maxDeviationEventWeight = max(maxDeviationEventWeight,abs(sumEvents/event->weight()-1));
 
 }
 
@@ -80,16 +94,18 @@ void WeightAnalyzer::dofinish() {
 
   weightAnalyzerOut << setprecision(20)
 		    << "--------------------------------------------------------------------------------\n"
-		     << "WeightAnalyzer information\n"
-		     << "--------------------------------------------------------------------------------\n"
-		     << "sum of weights                        : " << sumWeights << "\n"
-		     << "sum of positive weights               : " << sumPositiveWeights << "\n"
-		     << "sum of negative weights               : " << sumNegativeWeights << "\n" 
-		     << "sum of weights (from groups)          : " << sumGroupWeights << "\n"
-		     << "sum of positive weights (from groups) : " << sumPositiveGroupWeights << "\n"
-		     << "sum of negative weights (from groups) : " << sumNegativeGroupWeights << "\n"
-		     << "--------------------------------------------------------------------------------\n"
-		     << flush;
+		    << "WeightAnalyzer information\n"
+		    << "--------------------------------------------------------------------------------\n"
+		    << "sum of weights                        : " << sumWeights << "\n"
+		    << "sum of positive weights               : " << sumPositiveWeights << "\n"
+		    << "sum of negative weights               : " << sumNegativeWeights << "\n" 
+		    << "sum of weights (from groups)          : " << sumGroupWeights << "\n"
+		    << "sum of positive weights (from groups) : " << sumPositiveGroupWeights << "\n"
+		    << "sum of negative weights (from groups) : " << sumNegativeGroupWeights << "\n"
+		    << "maximum devation group weights        : " << maxDeviationGroupWeight << "\n"
+		    << "maximum devation event weights        : " << maxDeviationEventWeight << "\n"
+		    << "--------------------------------------------------------------------------------\n"
+		    << flush;
 
 }
 
