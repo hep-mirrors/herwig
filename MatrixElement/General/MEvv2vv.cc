@@ -116,7 +116,6 @@ MEvv2vv::vv2vvHeME(VBVector & vin1, VBVector & vin2,
 	    Complex diag(0.);
 	    const HPDiagram & current = getProcessInfo()[ix];
 	    tcPDPtr offshell = current.intermediate;
-	    if(!offshell) continue;
 	    if(current.channelType == HPDiagram::sChannel) {
 	      if(offshell->iSpin() == PDT::Spin0) {
 		ScalarWaveFunction interS = 
@@ -169,6 +168,7 @@ MEvv2vv::vv2vvHeME(VBVector & vin1, VBVector & vin2,
 						       vout1[ohel1], vout2[ohel2]);
 		}
 		else {
+		  if(offshell->CC()) offshell = offshell->CC();
 		  VectorWaveFunction interV = vector_[ix].first->
 		    evaluate(q2, 3, offshell, vin2[ihel2],vout1[ohel1], mass);
 		  diag = vector_[ix].second->
