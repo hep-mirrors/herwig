@@ -90,22 +90,24 @@ void WeightAnalyzer::analyze(tEventPtr event, long ieve, int loop, int state) {
 void WeightAnalyzer::dofinish() {
   AnalysisHandler::dofinish();
 
-  ofstream weightAnalyzerOut("weights.dat");
+  string dataName = generator()->filename() + "-weights.dat";
 
-  weightAnalyzerOut << setprecision(20)
-		    << "--------------------------------------------------------------------------------\n"
-		    << "WeightAnalyzer information\n"
-		    << "--------------------------------------------------------------------------------\n"
-		    << "sum of weights                        : " << sumWeights << "\n"
-		    << "sum of positive weights               : " << sumPositiveWeights << "\n"
-		    << "sum of negative weights               : " << sumNegativeWeights << "\n" 
-		    << "sum of weights (from groups)          : " << sumGroupWeights << "\n"
-		    << "sum of positive weights (from groups) : " << sumPositiveGroupWeights << "\n"
-		    << "sum of negative weights (from groups) : " << sumNegativeGroupWeights << "\n"
-		    << "maximum devation group weights        : " << maxDeviationGroupWeight << "\n"
-		    << "maximum devation event weights        : " << maxDeviationEventWeight << "\n"
-		    << "--------------------------------------------------------------------------------\n"
-		    << flush;
+  ofstream data(dataName.c_str());
+
+  data << setprecision(20)
+       << "--------------------------------------------------------------------------------\n"
+       << "WeightAnalyzer information\n"
+       << "--------------------------------------------------------------------------------\n"
+       << "sum of weights                        : " << sumWeights << "\n"
+       << "sum of positive weights               : " << sumPositiveWeights << "\n"
+       << "sum of negative weights               : " << sumNegativeWeights << "\n" 
+       << "sum of weights (from groups)          : " << sumGroupWeights << "\n"
+       << "sum of positive weights (from groups) : " << sumPositiveGroupWeights << "\n"
+       << "sum of negative weights (from groups) : " << sumNegativeGroupWeights << "\n"
+       << "maximum devation group weights        : " << maxDeviationGroupWeight << "\n"
+       << "maximum devation event weights        : " << maxDeviationEventWeight << "\n"
+       << "--------------------------------------------------------------------------------\n"
+       << flush;
 
 }
 

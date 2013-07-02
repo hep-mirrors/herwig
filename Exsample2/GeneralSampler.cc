@@ -340,7 +340,9 @@ void GeneralSampler::dofinish() {
 
   if ( runCombinationData ) {
 
-    ofstream data("sampling.dat");
+    string dataName = generator()->filename() + "-sampling.dat";
+
+    ofstream data(dataName.c_str());
 
     double runXSec =
       theSumWeights/theAttempts;
