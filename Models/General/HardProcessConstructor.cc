@@ -468,11 +468,11 @@ void HardProcessConstructor::sChannelCF(HPDiagram & diag) {
 	}
 	else if(incol && outsex) {
 	  cfv[0].first = 4;
-	  cfv[0].second = -prefact;
+	  cfv[0].second =  prefact;
 	  for(unsigned int ix=1;ix<4;++ix)
-	    cfv.push_back(make_pair(4+ix,-prefact));
+	    cfv.push_back(make_pair(4+ix, prefact));
 	  for(unsigned int ix=0;ix<4;++ix)
-	    cfv.push_back(make_pair(8+ix, prefact));
+	    cfv.push_back(make_pair(8+ix,-prefact));
 	}
 	else {
 	  cfv[0].first = 0;

@@ -63,11 +63,16 @@ void SextetGVVVertex::doinit() {
   VVVVertex::doinit();
 }
 
-void SextetGVVVertex::setCoupling(Energy2 q2, tcPDPtr , tcPDPtr , 
-				  tcPDPtr ) {
+void SextetGVVVertex::setCoupling(Energy2 q2, tcPDPtr p1, tcPDPtr p2, 
+				  tcPDPtr p3) {
   if(q2 != q2Last_ || coupLast_ == 0.) {
     q2Last_ = q2;
     coupLast_ = strongCoupling(q2);
   }
-  norm(coupLast_);
+  if((p1->id()==ParticleID::g&&p2->id()>0&&p3->id()<0)||
+     (p2->id()==ParticleID::g&&p3->id()>0&&p1->id()<0)||
+     (p3->id()==ParticleID::g&&p1->id()>0&&p2->id()<0))
+    norm(-coupLast_);
+  else
+    norm( coupLast_);
 }
