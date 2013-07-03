@@ -129,8 +129,11 @@ MEvv2vv::vv2vvHeME(VBVector & vin1, VBVector & vin2,
 		  evaluate(q2, 1, offshell, vin1[ihel1], vin2[ihel2]);
 		diag = vector_[ix].second->
 		  evaluate(q2, vout1[ohel1], vout2[ohel2], interV);
-		if(colour()==Colour88to88 || colour()==Colour88to66bar)
+		if(colour()==Colour88to88)
 		  diag += fourPointVertex_->evaluate(q2, 0, vout1[ohel1], vin2[ihel2], 
+						     vout2[ohel2], vin1[ihel1]);
+		else if(colour()==Colour88to66bar)
+		  diag -= fourPointVertex_->evaluate(q2, 0, vout1[ohel1], vin2[ihel2], 
 						     vout2[ohel2], vin1[ihel1]);
 	      }
 	      else if(offshell->iSpin() == PDT::Spin2) {
