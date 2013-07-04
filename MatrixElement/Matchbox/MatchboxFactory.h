@@ -825,6 +825,16 @@ private:
    */
   map<Ptr<MatchboxAmplitude>::tptr,map<pair<Process,int>,int> > theOLPProcesses;
 
+  /**
+   * Amplitudes to be selected on clashing responsibilities.
+   */
+  vector<Ptr<MatchboxAmplitude>::ptr> theSelectedAmplitudes;
+
+  /**
+   * Amplitudes to be deselected on clashing responsibilities.
+   */
+  vector<Ptr<MatchboxAmplitude>::ptr> theDeselectedAmplitudes;
+
 private:
 
   /**
