@@ -183,6 +183,11 @@ void TwoToTwoProcessConstructor::Init() {
      "TransverseMass",
      "Always use the transverse mass",
      2);
+  static SwitchOption interfaceScaleChoiceGeometicMean
+    (interfaceScaleChoice,
+     "GeometicMean",
+     "Use the geometic mean of m^2+p_T^2 for the two particles",
+     3);
 
   static Parameter<TwoToTwoProcessConstructor,double> interfaceScaleFactor
     ("ScaleFactor",
