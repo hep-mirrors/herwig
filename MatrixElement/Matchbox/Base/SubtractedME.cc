@@ -206,7 +206,7 @@ void SubtractedME::getDipoles() {
 
   MEVector dipMEs;
   vector<Ptr<SubtractionDipole>::ptr> genDipoles
-    = real->getDipoles(DipoleRepository::dipoles(),borns());
+    = real->getDipoles(DipoleRepository::dipoles(factory()->dipoleSet()),borns());
 
   if ( factory()->subtractionData() != "" ) {
     for ( vector<Ptr<SubtractionDipole>::ptr>::const_iterator d =

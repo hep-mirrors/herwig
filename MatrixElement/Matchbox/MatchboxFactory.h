@@ -368,6 +368,16 @@ public:
   vector<Ptr<MatchboxMEBase>::ptr>& realEmissionMEs() { return theRealEmissionMEs; }
 
   /**
+   * Return, which set of dipoles should be considered
+   */
+  int dipoleSet() const { return theDipoleSet; }
+
+  /**
+   * Return, which set of dipoles should be considered
+   */
+  void dipoleSet(int s) { theDipoleSet = s; }
+
+  /**
    * Return the produced subtracted matrix elements
    */
   const vector<Ptr<SubtractedME>::ptr>& subtractedMEs() const { return theSubtractedMEs; }
@@ -714,6 +724,11 @@ private:
    * The produced finite real emission matrix elements
    */
   vector<Ptr<MatchboxMEBase>::ptr> theFiniteRealMEs;
+
+  /**
+   * Which set of dipoles should be considered
+   */
+  int theDipoleSet;
 
   /**
    * Switch on or off verbosity

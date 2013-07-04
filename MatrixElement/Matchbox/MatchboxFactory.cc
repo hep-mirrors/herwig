@@ -41,7 +41,8 @@ MatchboxFactory::MatchboxFactory()
     theSubProcessGroups(false), theInclusive(false),
     theFactorizationScaleFactor(1.0), theRenormalizationScaleFactor(1.0),
     theFixedCouplings(false), theFixedQEDCouplings(false), theVetoScales(false),
-    theVerbose(false), theInitVerbose(false), theSubtractionData(""), thePoleData(""),
+    theDipoleSet(0), theVerbose(false), theInitVerbose(false), 
+    theSubtractionData(""), thePoleData(""),
     theRealEmissionScales(false), theAllProcesses(false) {}
 
 MatchboxFactory::~MatchboxFactory() {}
@@ -353,8 +354,8 @@ void MatchboxFactory::setup() {
   // prepare dipole insertion operators
   if ( virtualContributions() ) {
     for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt
-	    = DipoleRepository::insertionOperators().begin(); 
-	  virt != DipoleRepository::insertionOperators().end(); ++virt ) {
+	    = DipoleRepository::insertionOperators(dipoleSet()).begin(); 
+	  virt != DipoleRepository::insertionOperators(dipoleSet()).end(); ++virt ) {
       if ( virtualsAreDR )
 	(**virt).useDR();
       else
@@ -447,8 +448,8 @@ void MatchboxFactory::setup() {
 	    nlo->virtuals().push_back(*virt);
 	}
 	for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt
-		= DipoleRepository::insertionOperators().begin(); 
-	      virt != DipoleRepository::insertionOperators().end(); ++virt ) {
+		= DipoleRepository::insertionOperators(dipoleSet()).begin(); 
+	      virt != DipoleRepository::insertionOperators(dipoleSet()).end(); ++virt ) {
 	  if ( (**virt).apply((**born).diagrams().front()->partons()) )
 	    nlo->virtuals().push_back(*virt);
 	}
@@ -864,7 +865,8 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
      << theShowerApproximation << theSplittingDipoles
      << theRealEmissionScales << theAllProcesses
      << theOLPProcesses 
-     << theSelectedAmplitudes << theDeselectedAmplitudes;
+     << theSelectedAmplitudes << theDeselectedAmplitudes
+     << theDipoleSet;
 }
 
 void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
@@ -883,7 +885,8 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
      >> theShowerApproximation >> theSplittingDipoles
      >> theRealEmissionScales >> theAllProcesses
      >> theOLPProcesses
-     >> theSelectedAmplitudes >> theDeselectedAmplitudes;
+     >> theSelectedAmplitudes >> theDeselectedAmplitudes
+     >> theDipoleSet;
 }
 
 string MatchboxFactory::startParticleGroup(string name) {
@@ -1324,6 +1327,16 @@ void MatchboxFactory::Init() {
     ("DeselectAmplitudes",
      "The amplitude objects to be disfavoured in clashing responsibilities.",
      &MatchboxFactory::theDeselectedAmplitudes, -1, false, false, true, true, false);
+
+  static Switch<MatchboxFactory,int> interfaceDipoleSet
+    ("DipoleSet",
+     "The set of subtraction terms to be considered.",
+     &MatchboxFactory::theDipoleSet, 0, false, false);
+  static SwitchOption interfaceDipoleSetCataniSeymour
+    (interfaceDipoleSet,
+     "CataniSeymour",
+     "Use default Catani-Seymour dipoles.",
+     0);
 
 }
 
