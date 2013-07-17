@@ -125,8 +125,10 @@ MEfv2vf::fv2vfHeME(const SpinorVector & spIn,  const VBVector & vecIn,
 	    if(current.channelType == HPDiagram::tChannel) {
 	      //t-chan spin-1/2
 	      if(offshell->iSpin() == PDT::Spin1Half) {
+		if(offshell->CC()) offshell = offshell->CC();
+		unsigned int iopt = abs(offshell->id())==abs(spIn[ifh].particle()->id()) ? 5 : 3;
 		SpinorBarWaveFunction interFB = fermion_[ix].second->
-		  evaluate(q2, 3, offshell, spbOut[ofh], vecIn[ivh]);
+		  evaluate(q2, iopt, offshell, spbOut[ofh], vecIn[ivh]);
 		diag = fermion_[ix].first->
 		  evaluate(q2, spIn[ifh], interFB, vecOut[ovh]);
 	      }
@@ -140,8 +142,10 @@ MEfv2vf::fv2vfHeME(const SpinorVector & spIn,  const VBVector & vecIn,
 		diag = 0.0;
 	    }
 	    else if(current.channelType == HPDiagram::sChannel) {
+	      if(offshell->CC()) offshell = offshell->CC();
+	      unsigned int iopt = abs(offshell->id())==abs(spIn[ifh].particle()->id()) ? 5 : 1;
 	      SpinorBarWaveFunction interFB = fermion_[ix].second->
-		evaluate(q2, 1, offshell, spbOut[ofh], vecOut[ovh]);
+		evaluate(q2, iopt, offshell, spbOut[ofh], vecOut[ovh]);
 	      diag = fermion_[ix].first->
 		evaluate(q2, spIn[ifh], interFB, vecIn[ivh]);
 	    }
