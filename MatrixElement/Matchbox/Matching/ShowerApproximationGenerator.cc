@@ -133,7 +133,7 @@ bool ShowerApproximationGenerator::generate(const vector<double>& r) {
   theLastPartons.first->set5Momentum(p1);
 
   x = generateFraction(theLastPartons.second->dataPtr(),r[1],
-		       lastIncomingXComb->cuts()->x1Min());
+		       lastIncomingXComb->cuts()->x2Min());
   Q = lastIncomingXComb->lastParticles().second->momentum().minus();
   mass = theLastPartons.second->dataPtr()->mass();
   xi = (4.*sqr(x*Q) - sqr(mass))/(4.*sqr(Q)*x);
