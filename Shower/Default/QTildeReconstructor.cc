@@ -645,6 +645,9 @@ reconstructDecayJets(ShowerTreePtr decay) const {
 	    it->parent->set5Momentum(pnew);
 	  }
 	  else {
+	    // rescaling boost can't ever work in this case
+	    if(k2<0. && it->q.mass()==ZERO)
+	      throw KinematicsReconstructionVeto();
 	    Trafo = solveBoost(k2, it->q, it->p);
 	  }
 	}
