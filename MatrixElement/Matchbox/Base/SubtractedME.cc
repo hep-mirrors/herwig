@@ -571,7 +571,7 @@ SubtractionHistogram(double low,
   double c = log10(up/low) / (nbins-1.);
 
   for ( unsigned int k = 1; k < nbins; ++k ) {
-    bins[low*pow(10.0,k*c)] = make_pair(0.,0.);
+    bins[low*pow(10.0,k*c)] = make_pair(Constants::MaxDouble,0.);
   }
 
 }
@@ -597,8 +597,8 @@ dump(const std::string& prefix,
   for ( map<double,pair<double,double> >::const_iterator b = bins.begin();
 	b != bins.end(); ++b ) {
     map<double,pair<double,double> >::const_iterator bp = b; --bp;
-    if ( b->second.first != 0. ||
-	 b->second.second != 0. ) {
+    if ( b->second.first != Constants::MaxDouble ||
+	 b->second.second != 0.0 ) {
       if ( b != bins.begin() )
 	out << bp->first;
       else
@@ -614,14 +614,14 @@ dump(const std::string& prefix,
 	<< "set output '" << fname.str() << "-plot.tex';\n"
 	<< "set log x;\n"
 	<< "set size 0.5,0.6;\n"
-	<< "set yrange [-1:1];\n"
+	<< "set yrange [0:2];\n"
 	<< "set xrange [0.001:10];\n";
   if ( i != j ) {
     gpout << "set xlabel '$\\sqrt{s_{" << i << j << "}}/{\\rm GeV}$'\n";
   } else {
     gpout << "set xlabel '$E_{" << i << "}/{\\rm GeV}$'\n";
   }
-  gpout << "plot 0 w lines lc rgbcolor \"#DDDDDD\" notitle, '" << fname.str() 
+  gpout << "plot 1 w lines lc rgbcolor \"#DDDDDD\" notitle, '" << fname.str() 
 	<< ".dat' u (($1+$2)/2.):3:($4 < 4. ? $4 : 4.) w filledcurves lc rgbcolor \"#00AACC\" t "
 	<< "'$";
   for ( size_t k = 0; k < proc.size(); k++ ) {
@@ -653,14 +653,11 @@ void SubtractedME::lastEventSubtraction() {
     xcdip += (**d).lastCrossSection();
   }
 
-  if ( xcme2 == ZERO &&
-       xcdip == ZERO )
+  // want a real emission safely above the cut
+  if ( xc->cutWeight() < 1.0 )
     return;
 
-  CrossSection num = min(abs(xcdip),abs(xcme2));
-  CrossSection den = max(abs(xcdip),abs(xcme2));
-
-  double delta = 1. - num/den;
+  double delta = abs(xcdip)/abs(xcme2);
 
   if ( theReal->phasespace() ) {
     size_t i = lastSingularLimit()->first;
