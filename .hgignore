@@ -19,6 +19,7 @@ Config/config.h
 Config/config.h.in
 Config/config.sub
 Config/depcomp
+Config/compile
 Config/install-sh
 Config/missing
 Config/stamp-h1
