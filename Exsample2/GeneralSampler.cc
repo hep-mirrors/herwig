@@ -356,7 +356,7 @@ void GeneralSampler::dofinish() {
 	 << (integratedXSec()/nanobarn) << " +/- "
 	 << (integratedXSecErr()/nanobarn) << "\n"
 	 << "CrossSectionRun "
-	 << runXSec << " +/- " << runXSecErr << "\n"
+	 << runXSec << " +/- " << sqrt(runXSecErr) << "\n"
 	 << "PointsAttempted " << theAttempts << "\n"
 	 << "PointsAccepted " << theAccepts << "\n"
 	 << "SumWeights " << theSumWeights << "\n"
