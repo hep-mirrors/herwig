@@ -40,7 +40,9 @@ ShowerApproximation::ShowerApproximation()
     theEmissionScaleInSubtraction(showerScale), 
     theRealEmissionScaleInSplitting(showerScale), 
     theBornScaleInSplitting(showerScale), 
-    theEmissionScaleInSplitting(showerScale) {}
+    theEmissionScaleInSplitting(showerScale),
+    theRenormalizationScaleFreeze(1.*GeV),
+    theFactorizationScaleFreeze(1.*GeV) {}
 
 ShowerApproximation::~ShowerApproximation() {}
 
@@ -141,6 +143,8 @@ double ShowerApproximation::bornPDFWeight(Energy2 muf) const {
   if ( !bornCXComb()->mePartonData()[0]->coloured() &&
        !bornCXComb()->mePartonData()[1]->coloured() )
     return 1.;
+  if ( muf < sqr(theFactorizationScaleFreeze) )
+    muf = sqr(theFactorizationScaleFreeze);
   double pdfweight = 1.;
   if ( bornCXComb()->mePartonData()[0]->coloured() &&
        dipole()->underlyingBornME()->havePDFWeight1() )
@@ -155,6 +159,8 @@ double ShowerApproximation::realPDFWeight(Energy2 muf) const {
   if ( !realCXComb()->mePartonData()[0]->coloured() &&
        !realCXComb()->mePartonData()[1]->coloured() )
     return 1.;
+  if ( muf < sqr(theFactorizationScaleFreeze) )
+    muf = sqr(theFactorizationScaleFreeze);
   double pdfweight = 1.;
   if ( realCXComb()->mePartonData()[0]->coloured() &&
        dipole()->realEmissionME()->havePDFWeight1() )
@@ -169,8 +175,14 @@ double ShowerApproximation::scaleWeight(int rScale, int bScale, int eScale) cons
 
   double emissionAlpha = 1.;
   Energy2 emissionScale = ZERO;
+  Energy2 showerscale = ZERO;
+  if ( eScale == showerScale || bScale == showerScale || eScale == showerScale ) {
+    showerscale = showerRenormalizationScale();
+    if ( showerscale < sqr(theRenormalizationScaleFreeze) )
+      showerscale = sqr(theFactorizationScaleFreeze);
+  }
   if ( eScale == showerScale ) {
-    emissionAlpha = SM().alphaS(showerRenormalizationScale());
+    emissionAlpha = SM().alphaS(showerscale);
     emissionScale = showerFactorizationScale();
   } else if ( eScale == realScale ) {
     emissionAlpha = dipole()->realEmissionME()->lastXComb().lastAlphaS();
@@ -185,7 +197,7 @@ double ShowerApproximation::scaleWeight(int rScale, int bScale, int eScale) cons
   if ( bScale != rScale ) {
     double bornAlpha = 1.;
     if ( bScale == showerScale ) {
-      bornAlpha = SM().alphaS(showerRenormalizationScale());
+      bornAlpha = SM().alphaS(showerscale);
     } else if ( bScale == realScale ) {
       bornAlpha = dipole()->realEmissionME()->lastXComb().lastAlphaS();
     } else if ( bScale == bornScale ) {
@@ -193,7 +205,7 @@ double ShowerApproximation::scaleWeight(int rScale, int bScale, int eScale) cons
     }
     double realAlpha = 1.;
     if ( rScale == showerScale ) {
-      realAlpha = SM().alphaS(showerRenormalizationScale());
+      realAlpha = SM().alphaS(showerscale);
     } else if ( rScale == realScale ) {
       realAlpha = dipole()->realEmissionME()->lastXComb().lastAlphaS();
     } else if ( rScale == bornScale ) {
@@ -236,7 +248,9 @@ void ShowerApproximation::persistentOutput(PersistentOStream & os) const {
      << theExtrapolationX
      << theRealEmissionScaleInSubtraction << theBornScaleInSubtraction
      << theEmissionScaleInSubtraction << theRealEmissionScaleInSplitting
-     << theBornScaleInSplitting << theEmissionScaleInSplitting;
+     << theBornScaleInSplitting << theEmissionScaleInSplitting
+     << ounit(theRenormalizationScaleFreeze,GeV)
+     << ounit(theFactorizationScaleFreeze,GeV);
 }
 
 void ShowerApproximation::persistentInput(PersistentIStream & is, int) {
@@ -249,7 +263,9 @@ void ShowerApproximation::persistentInput(PersistentIStream & is, int) {
      >> theExtrapolationX
      >> theRealEmissionScaleInSubtraction >> theBornScaleInSubtraction
      >> theEmissionScaleInSubtraction >> theRealEmissionScaleInSplitting
-     >> theBornScaleInSplitting >> theEmissionScaleInSplitting;
+     >> theBornScaleInSplitting >> theEmissionScaleInSplitting
+     >> iunit(theRenormalizationScaleFreeze,GeV)
+     >> iunit(theFactorizationScaleFreeze,GeV);
 }
 
 
@@ -461,6 +477,19 @@ void ShowerApproximation::Init() {
      "ShowerScale",
      "Use the shower scale",
      showerScale);
+
+  static Parameter<ShowerApproximation,Energy> interfaceRenormalizationScaleFreeze
+    ("RenormalizationScaleFreeze",
+     "The freezing scale for the renormalization scale.",
+     &ShowerApproximation::theRenormalizationScaleFreeze, GeV, 1.0*GeV, 0.0*GeV, 0*GeV,
+     false, false, Interface::lowerlim);
+
+  static Parameter<ShowerApproximation,Energy> interfaceFactorizationScaleFreeze
+    ("FactorizationScaleFreeze",
+     "The freezing scale for the factorization scale.",
+     &ShowerApproximation::theFactorizationScaleFreeze, GeV, 1.0*GeV, 0.0*GeV, 0*GeV,
+     false, false, Interface::lowerlim);
+
 
 }
 

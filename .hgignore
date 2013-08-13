@@ -20,6 +20,7 @@ Config/config.h
 Config/config.h.in
 Config/config.sub
 Config/depcomp
+Config/compile
 Config/install-sh
 Config/missing
 Config/stamp-h1
@@ -44,6 +45,7 @@ conftest.c
 conftest.err
 include/done-all-links
 libtool
+\.dirstamp
 src/herwigopts.h
 src/herwigopts.c
 src/defaults/Analysis.in

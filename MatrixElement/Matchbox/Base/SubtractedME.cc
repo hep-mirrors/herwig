@@ -60,6 +60,8 @@ const vector<Ptr<MatchboxMEBase>::ptr>& SubtractedME::borns() const {
 
 bool SubtractedME::verbose() const { return factory()->verbose(); }
 
+bool SubtractedME::initVerbose() const { return factory()->initVerbose(); }
+
 IBPtr SubtractedME::clone() const {
   return new_ptr(*this);
 }
@@ -206,7 +208,7 @@ void SubtractedME::getDipoles() {
 
   MEVector dipMEs;
   vector<Ptr<SubtractionDipole>::ptr> genDipoles
-    = real->getDipoles(DipoleRepository::dipoles(),borns());
+    = real->getDipoles(DipoleRepository::dipoles(factory()->dipoleSet()),borns());
 
   if ( factory()->subtractionData() != "" ) {
     for ( vector<Ptr<SubtractionDipole>::ptr>::const_iterator d =
@@ -458,7 +460,7 @@ void SubtractedME::doinit() {
     getDipoles();
   }
 
-  if ( verbose() )
+  if ( initVerbose() )
     print(Repository::clog());
 
   MEGroup::doinit();
@@ -595,8 +597,8 @@ dump(const std::string& prefix,
   for ( map<double,pair<double,double> >::const_iterator b = bins.begin();
 	b != bins.end(); ++b ) {
     map<double,pair<double,double> >::const_iterator bp = b; --bp;
-    if ( b->second.first != Constants::MaxDouble &&
-	 b->second.second != 0. ) {
+    if ( b->second.first != Constants::MaxDouble ||
+	 b->second.second != 0.0 ) {
       if ( b != bins.begin() )
 	out << bp->first;
       else
@@ -640,9 +642,6 @@ void SubtractedME::lastEventSubtraction() {
   CrossSection xcme2 = xc->lastHeadCrossSection();
   CrossSection xcdip = ZERO;
 
-  if ( xcme2 == ZERO )
-    return;
-
   for ( vector<StdXCombPtr>::const_iterator d = xc->dependent().begin();
 	d != xc->dependent().end(); ++d ) {
     if ( !(*d) )
@@ -654,6 +653,12 @@ void SubtractedME::lastEventSubtraction() {
     xcdip += (**d).lastCrossSection();
   }
 
+  // want a real emission safely above the cut
+  if ( xc->cutWeight() < 1.0 )
+    return;
+
+  double delta = abs(xcdip)/abs(xcme2);
+
   if ( theReal->phasespace() ) {
     size_t i = lastSingularLimit()->first;
     size_t j = lastSingularLimit()->second;
@@ -661,14 +666,14 @@ void SubtractedME::lastEventSubtraction() {
 	 softHistograms.find(SoftSubtractionIndex(head()->mePartonData(),i))
 	 != softHistograms.end() ) {
       softHistograms[SoftSubtractionIndex(head()->mePartonData(),i)].
-	book(meMomenta()[i].t()/GeV,abs(xcdip)/abs(xcme2));
+	book(meMomenta()[i].t()/GeV,delta);
     }
     if ( i != j &&
 	 collinearHistograms.find(CollinearSubtractionIndex(head()->mePartonData(),make_pair(i,j))) 
 	 != collinearHistograms.end() ) {
       double s = sqrt(2.*meMomenta()[i]*meMomenta()[j])/GeV;
       collinearHistograms[CollinearSubtractionIndex(head()->mePartonData(),make_pair(i,j))].
-	book(s,abs(xcdip)/abs(xcme2));
+	book(s,delta);
     }
     return;
   }
@@ -678,7 +683,7 @@ void SubtractedME::lastEventSubtraction() {
       if ( softHistograms.find(SoftSubtractionIndex(head()->mePartonData(),i))
 	   != softHistograms.end() ) {
 	softHistograms[SoftSubtractionIndex(head()->mePartonData(),i)].
-	  book(meMomenta()[i].t()/GeV,abs(xcdip)/abs(xcme2));
+	  book(meMomenta()[i].t()/GeV,delta);
       }
     }
     for ( size_t j = i+1; j < meMomenta().size(); ++j ) {
@@ -687,7 +692,7 @@ void SubtractedME::lastEventSubtraction() {
 	continue;
       double s = sqrt(2.*meMomenta()[i]*meMomenta()[j])/GeV;
       collinearHistograms[CollinearSubtractionIndex(head()->mePartonData(),make_pair(i,j))].
-	book(s,abs(xcdip)/abs(xcme2));
+	book(s,delta);
     }
   }
 

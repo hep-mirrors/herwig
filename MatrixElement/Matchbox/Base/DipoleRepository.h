@@ -35,15 +35,15 @@ public:
   /**
    * Return the known dipoles
    */
-  static const vector<Ptr<SubtractionDipole>::ptr>& dipoles() {
-    return theDipoles();
+  static const vector<Ptr<SubtractionDipole>::ptr>& dipoles(int id) {
+    return theDipoles(id);
   }
 
   /**
    * Return the known insertion operators
    */
-  static const vector<Ptr<MatchboxInsertionOperator>::ptr>& insertionOperators() {
-    return theInsertionOperators();
+  static const vector<Ptr<MatchboxInsertionOperator>::ptr>& insertionOperators(int id) {
+    return theInsertionOperators(id);
   }
 
 public:
@@ -51,7 +51,7 @@ public:
   /**
    * Register a dipole with associated tilde kinematics
    */
-  template<class DipoleT, class TildeKinematicsT, class InvertedTildeKinematicsT>
+  template<int id, class DipoleT, class TildeKinematicsT, class InvertedTildeKinematicsT>
   static void registerDipole(string name, string tildeName, string invertedTildeName) {
 
     setup();
@@ -86,7 +86,7 @@ public:
     dip->invertedTildeKinematics(itilde);
     BaseRepository::Register(dip,name);
 
-    theDipoles().push_back(dip);
+    theDipoles(id).push_back(dip);
 
     BaseRepository::PopDirectory();
 
@@ -95,7 +95,7 @@ public:
   /**
    * Register an insertion operator
    */
-  template<class InsertionOperatorT>
+  template<int id, class InsertionOperatorT>
   static void registerInsertionOperator(string name) {
 
     setup();
@@ -104,7 +104,7 @@ public:
     typename Ptr<InsertionOperatorT>::ptr iop = new_ptr(InsertionOperatorT());
     BaseRepository::Register(iop,name);
 
-    theInsertionOperators().push_back(iop);
+    theInsertionOperators(id).push_back(iop);
 
     BaseRepository::PopDirectory();
 
@@ -115,12 +115,12 @@ private:
   /**
    * The known dipoles
    */
-  static vector<Ptr<SubtractionDipole>::ptr>& theDipoles();
+  static vector<Ptr<SubtractionDipole>::ptr>& theDipoles(int id);
 
   /**
    * The known insertion operators
    */
-  static vector<Ptr<MatchboxInsertionOperator>::ptr>& theInsertionOperators();
+  static vector<Ptr<MatchboxInsertionOperator>::ptr>& theInsertionOperators(int id);
 
   /**
    * True, if initialized.

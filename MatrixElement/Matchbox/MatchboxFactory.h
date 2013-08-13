@@ -368,6 +368,16 @@ public:
   vector<Ptr<MatchboxMEBase>::ptr>& realEmissionMEs() { return theRealEmissionMEs; }
 
   /**
+   * Return, which set of dipoles should be considered
+   */
+  int dipoleSet() const { return theDipoleSet; }
+
+  /**
+   * Return, which set of dipoles should be considered
+   */
+  void dipoleSet(int s) { theDipoleSet = s; }
+
+  /**
    * Return the produced subtracted matrix elements
    */
   const vector<Ptr<SubtractedME>::ptr>& subtractedMEs() const { return theSubtractedMEs; }
@@ -716,6 +726,11 @@ private:
   vector<Ptr<MatchboxMEBase>::ptr> theFiniteRealMEs;
 
   /**
+   * Which set of dipoles should be considered
+   */
+  int theDipoleSet;
+
+  /**
    * Switch on or off verbosity
    */
   bool theVerbose;
@@ -824,6 +839,16 @@ private:
    * The processes to be ordered from an OLP
    */
   map<Ptr<MatchboxAmplitude>::tptr,map<pair<Process,int>,int> > theOLPProcesses;
+
+  /**
+   * Amplitudes to be selected on clashing responsibilities.
+   */
+  vector<Ptr<MatchboxAmplitude>::ptr> theSelectedAmplitudes;
+
+  /**
+   * Amplitudes to be deselected on clashing responsibilities.
+   */
+  vector<Ptr<MatchboxAmplitude>::ptr> theDeselectedAmplitudes;
 
 private:
 

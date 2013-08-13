@@ -140,6 +140,23 @@ public:
   using MEBase::orderInAlphaEW;  
 
   /**
+   * Return true, if this amplitude already includes averaging over
+   * incoming parton's quantum numbers.
+   */
+  virtual bool hasInitialAverage() const { 
+    return matchboxAmplitude() ? matchboxAmplitude()->hasInitialAverage() : false;
+  }
+
+  /**
+   * Return true, if this amplitude already includes symmetry factors
+   * for identical outgoing particles.
+   */
+  virtual bool hasFinalStateSymmetry() const { 
+    return matchboxAmplitude() ? matchboxAmplitude()->hasFinalStateSymmetry() : false; 
+  }
+
+
+  /**
    * Return the number of light flavours, this matrix
    * element is calculated for.
    */

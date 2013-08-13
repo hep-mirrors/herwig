@@ -98,6 +98,26 @@ public:
    */
   virtual int nDimAdditional() const { return 0; }
 
+  /**
+   * Set the freezing value for the renormalization scale
+   */
+  void renormalizationScaleFreeze(Energy s) { theRenormalizationScaleFreeze = s; }
+
+  /**
+   * Set the freezing value for the factorization scale
+   */
+  void factorizationScaleFreeze(Energy s) { theFactorizationScaleFreeze = s; }
+
+  /**
+   * Get the freezing value for the renormalization scale
+   */
+  Energy renormalizationScaleFreeze() const { return theRenormalizationScaleFreeze; }
+
+  /**
+   * Get the freezing value for the factorization scale
+   */
+  Energy factorizationScaleFreeze() const { return theFactorizationScaleFreeze; }
+
 public:
 
   /**
@@ -321,6 +341,16 @@ private:
    * The renormalization scale factor.
    */
   double theRenormalizationScaleFactor;
+
+  /**
+   * A freezing value for the renormalization scale
+   */
+  Energy theRenormalizationScaleFreeze;
+
+  /**
+   * A freezing value for the factorization scale
+   */
+  Energy theFactorizationScaleFreeze;
 
 private:
 

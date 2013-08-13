@@ -136,7 +136,7 @@ void FIqqxDipole::Init() {
   static ClassDocumentation<FIqqxDipole> documentation
     ("FIqqxDipole");
 
-  DipoleRepository::registerDipole<FIqqxDipole,FILightTildeKinematics,FILightInvertedTildeKinematics>
+  DipoleRepository::registerDipole<0,FIqqxDipole,FILightTildeKinematics,FILightInvertedTildeKinematics>
     ("FIqqxDipole","FILightTildeKinematics","FILightInvertedTildeKinematics");
 
 }

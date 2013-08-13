@@ -41,7 +41,8 @@ MatchboxFactory::MatchboxFactory()
     theSubProcessGroups(false), theInclusive(false),
     theFactorizationScaleFactor(1.0), theRenormalizationScaleFactor(1.0),
     theFixedCouplings(false), theFixedQEDCouplings(false), theVetoScales(false),
-    theVerbose(false), theInitVerbose(false), theSubtractionData(""), thePoleData(""),
+    theDipoleSet(0), theVerbose(false), theInitVerbose(false), 
+    theSubtractionData(""), thePoleData(""),
     theRealEmissionScales(false), theAllProcesses(false) {}
 
 MatchboxFactory::~MatchboxFactory() {}
@@ -70,28 +71,13 @@ void MatchboxFactory::prepareME(Ptr<MatchboxMEBase>::ptr me) const {
 
 }
 
-typedef string LegIndex;
-
-vector<LegIndex> makeIndex(const PDVector& proc) {
-
-  vector<LegIndex> res;
-
-  for ( PDVector::const_iterator p = proc.begin();
-	p != proc.end(); ++p ) {
-    res.push_back((**p).PDGName());
-  }
-
-  return res;
-
-}
-
-string pid(const vector<LegIndex>& key) {
+string pid(const PDVector& key) {
   ostringstream res;
-  res << "[" << key[0] << ","
-      << key[1] << "->";
-  for ( vector<LegIndex>::const_iterator k =
+  res << "[" << key[0]->PDGName() << ","
+      << key[1]->PDGName() << "->";
+  for ( PDVector::const_iterator k =
 	  key.begin() + 2; k != key.end(); ++k )
-    res << *k << (k != --key.end() ? "," : "");
+    res << (**k).PDGName() << (k != --key.end() ? "," : "");
   res << "]";
   return res.str();
 }
@@ -99,13 +85,12 @@ string pid(const vector<LegIndex>& key) {
 vector<Ptr<MatchboxMEBase>::ptr> MatchboxFactory::
 makeMEs(const vector<string>& proc, unsigned int orderas) {
 
-  typedef vector<LegIndex> QNKey;
-
   generator()->log() << "determining subprocesses for ";
   copy(proc.begin(),proc.end(),ostream_iterator<string>(generator()->log()," "));
   generator()->log() << flush;
 
-  map<Ptr<MatchboxAmplitude>::ptr,map<QNKey,Process> > ampProcs;
+  map<Ptr<MatchboxAmplitude>::ptr,set<Process> > ampProcs;
+  map<Process,set<Ptr<MatchboxAmplitude>::ptr> > procAmps;
   set<PDVector> processes = makeSubProcesses(proc);
 
   bool needUnsorted = false;
@@ -136,6 +121,16 @@ makeMEs(const vector<string>& proc, unsigned int orderas) {
     for ( unsigned int oae = lowestAeOrder; oae <= highestAeOrder; ++oae ) {
       for ( vector<Ptr<MatchboxAmplitude>::ptr>::const_iterator amp
 	      = amplitudes().begin(); amp != amplitudes().end(); ++amp ) {
+	if ( !theSelectedAmplitudes.empty() ) {
+	  if ( find(theSelectedAmplitudes.begin(),theSelectedAmplitudes.end(),*amp)
+	       == theSelectedAmplitudes.end() )
+	    continue;
+	}
+	if ( !theDeselectedAmplitudes.empty() ) {
+	  if ( find(theDeselectedAmplitudes.begin(),theDeselectedAmplitudes.end(),*amp)
+	       != theDeselectedAmplitudes.end() )
+	    continue;
+	}
 	(**amp).orderInGs(oas);
 	(**amp).orderInGem(oae);
 	if ( (**amp).orderInGs() != oas ||
@@ -165,18 +160,20 @@ makeMEs(const vector<string>& proc, unsigned int orderas) {
 	  ++(*progressBar);
 	  if ( !(**amp).canHandle(*p,this) || !(**amp).sortOutgoing() )
 	    continue;
-	  QNKey key = makeIndex(*p);
 	  ++procCount;
-	  ampProcs[*amp][key] = Process(*p,oas,oae);
+	  Process proc(*p,oas,oae);
+	  ampProcs[*amp].insert(proc);
+	  procAmps[proc].insert(*amp);
 	}
 	for ( set<PDVector>::const_iterator p = unsortedProcesses.begin();
 	      p != unsortedProcesses.end(); ++p ) {
 	  ++(*progressBar);
 	  if ( !(**amp).canHandle(*p,this) || (**amp).sortOutgoing() )
 	    continue;
-	  QNKey key = makeIndex(*p);
 	  ++procCount;
-	  ampProcs[*amp][key] = Process(*p,oas,oae);
+	  Process proc(*p,oas,oae);
+	  ampProcs[*amp].insert(proc);
+	  procAmps[proc].insert(*amp);
 	}
       }
     }
@@ -185,17 +182,45 @@ makeMEs(const vector<string>& proc, unsigned int orderas) {
   delete progressBar;
   generator()->log() << flush;
 
+  bool clash = false;
+  for ( map<Process,set<Ptr<MatchboxAmplitude>::ptr> >::const_iterator check = 
+	  procAmps.begin(); check != procAmps.end(); ++check ) {
+    if ( check->second.size() > 1 ) {
+      clash = true;
+      generator()->log() << "Several different amplitudes have been found for: "
+			 << check->first.legs[0]->PDGName() << " "
+			 << check->first.legs[1]->PDGName() << " -> ";
+      for ( PDVector::const_iterator p = check->first.legs.begin() + 2;
+	    p != check->first.legs.end(); ++p )
+	generator()->log() << (**p).PDGName() << " ";
+      generator()->log() << "at alpha_s^" << check->first.orderInAlphaS
+			 << " and alpha_ew^" << check->first.orderInAlphaEW
+			 << "\n";
+      generator()->log() << "The following amplitudes claim responsibility:\n";
+      for ( set<Ptr<MatchboxAmplitude>::ptr>::const_iterator a = check->second.begin();
+	    a != check->second.end(); ++a ) {
+	generator()->log() << (**a).name() << " ";
+      }
+      generator()->log() << "\n";
+    }
+  }
+  if ( clash ) {
+    throw InitException()
+      << "Ambiguous amplitude setup - please check your input files.\n"
+      << "To avoid this problem use the SelectAmplitudes or DeselectAmplitudes interfaces.\n";
+  }
+
   vector<Ptr<MatchboxMEBase>::ptr> res;
-  for ( map<Ptr<MatchboxAmplitude>::ptr,map<QNKey,Process> >::const_iterator
+  for ( map<Ptr<MatchboxAmplitude>::ptr,set<Process> >::const_iterator
 	  ap = ampProcs.begin(); ap != ampProcs.end(); ++ap ) {
-    for ( map<QNKey,Process >::const_iterator m = ap->second.begin();
+    for ( set<Process>::const_iterator m = ap->second.begin();
 	  m != ap->second.end(); ++m ) {
-      Ptr<MatchboxMEBase>::ptr me = ap->first->makeME(m->second.legs);
-      me->subProcess() = m->second;
+      Ptr<MatchboxMEBase>::ptr me = ap->first->makeME(m->legs);
+      me->subProcess() = *m;
       me->amplitude(ap->first);
       me->matchboxAmplitude(ap->first);
       prepareME(me);
-      string pname = "ME" + ap->first->name() + pid(m->first);
+      string pname = "ME" + ap->first->name() + pid(m->legs);
       if ( ! (generator()->preinitRegister(me,pname) ) )
 	throw InitException() << "Matrix element " << pname << " already existing.";
       if ( me->diagrams().empty() )continue;
@@ -329,8 +354,8 @@ void MatchboxFactory::setup() {
   // prepare dipole insertion operators
   if ( virtualContributions() ) {
     for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt
-	    = DipoleRepository::insertionOperators().begin(); 
-	  virt != DipoleRepository::insertionOperators().end(); ++virt ) {
+	    = DipoleRepository::insertionOperators(dipoleSet()).begin(); 
+	  virt != DipoleRepository::insertionOperators(dipoleSet()).end(); ++virt ) {
       if ( virtualsAreDR )
 	(**virt).useDR();
       else
@@ -423,8 +448,8 @@ void MatchboxFactory::setup() {
 	    nlo->virtuals().push_back(*virt);
 	}
 	for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt
-		= DipoleRepository::insertionOperators().begin(); 
-	      virt != DipoleRepository::insertionOperators().end(); ++virt ) {
+		= DipoleRepository::insertionOperators(dipoleSet()).begin(); 
+	      virt != DipoleRepository::insertionOperators(dipoleSet()).end(); ++virt ) {
 	  if ( (**virt).apply((**born).diagrams().front()->partons()) )
 	    nlo->virtuals().push_back(*virt);
 	}
@@ -839,7 +864,9 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
      << theParticleGroups << process << realEmissionProcess
      << theShowerApproximation << theSplittingDipoles
      << theRealEmissionScales << theAllProcesses
-     << theOLPProcesses;
+     << theOLPProcesses 
+     << theSelectedAmplitudes << theDeselectedAmplitudes
+     << theDipoleSet;
 }
 
 void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
@@ -857,7 +884,9 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
      >> theParticleGroups >> process >> realEmissionProcess
      >> theShowerApproximation >> theSplittingDipoles
      >> theRealEmissionScales >> theAllProcesses
-     >> theOLPProcesses;
+     >> theOLPProcesses
+     >> theSelectedAmplitudes >> theDeselectedAmplitudes
+     >> theDipoleSet;
 }
 
 string MatchboxFactory::startParticleGroup(string name) {
@@ -1288,6 +1317,26 @@ void MatchboxFactory::Init() {
      "No",
      "Only consider processes matching the exact order in the couplings.",
      false);
+
+  static RefVector<MatchboxFactory,MatchboxAmplitude> interfaceSelectAmplitudes
+    ("SelectAmplitudes",
+     "The amplitude objects to be favoured in clashing responsibilities.",
+     &MatchboxFactory::theSelectedAmplitudes, -1, false, false, true, true, false);
+
+  static RefVector<MatchboxFactory,MatchboxAmplitude> interfaceDeselectAmplitudes
+    ("DeselectAmplitudes",
+     "The amplitude objects to be disfavoured in clashing responsibilities.",
+     &MatchboxFactory::theDeselectedAmplitudes, -1, false, false, true, true, false);
+
+  static Switch<MatchboxFactory,int> interfaceDipoleSet
+    ("DipoleSet",
+     "The set of subtraction terms to be considered.",
+     &MatchboxFactory::theDipoleSet, 0, false, false);
+  static SwitchOption interfaceDipoleSetCataniSeymour
+    (interfaceDipoleSet,
+     "CataniSeymour",
+     "Use default Catani-Seymour dipoles.",
+     0);
 
 }
 

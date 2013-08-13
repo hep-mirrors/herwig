@@ -201,6 +201,18 @@ public:
   virtual bool sortOutgoing() { return true; }
 
   /**
+   * Return true, if this amplitude already includes averaging over
+   * incoming parton's quantum numbers.
+   */
+  virtual bool hasInitialAverage() const { return false; }
+
+  /**
+   * Return true, if this amplitude already includes symmetry factors
+   * for identical outgoing particles.
+   */
+  virtual bool hasFinalStateSymmetry() const { return false; }
+
+  /**
    * Return true, if this amplitude is handled by a BLHA one-loop provider
    */
   virtual bool isOLPTree() const { return false; }

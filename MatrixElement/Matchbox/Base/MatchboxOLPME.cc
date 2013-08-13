@@ -135,9 +135,10 @@ double MatchboxOLPME::oneLoopInterference() const {
 }
 
 double MatchboxOLPME::largeNColourCorrelatedME2(pair<int,int>,
-						       Ptr<ColourBasis>::tptr) const {
+						Ptr<ColourBasis>::tptr) const {
   throw Exception() << "largeNColourCorrelatedME2 not supported by MatchboxOLPME"
 		    << Exception::abortnow;
+  return 0.;
 }
 
 // If needed, insert default implementations of virtual function defined

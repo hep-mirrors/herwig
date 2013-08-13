@@ -498,6 +498,16 @@ private:
    */
   int theEmissionScaleInSplitting;
 
+  /**
+   * A freezing value for the renormalization scale
+   */
+  Energy theRenormalizationScaleFreeze;
+
+  /**
+   * A freezing value for the factorization scale
+   */
+  Energy theFactorizationScaleFreeze;
+
 private:
 
   /**
