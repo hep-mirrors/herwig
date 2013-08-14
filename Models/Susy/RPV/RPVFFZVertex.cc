@@ -129,17 +129,13 @@ void RPVFFZVertex::doinit() {
     }
     // the leptons
     for(int ix=11;ix<17;ix+=2) {
-      if(model->majoranaNeutrinos()&&ix%2==0) {
-	int inu = (ix+22)/2;
-	addToList(inu,inu, 23);
-      }
-      else {
-	addToList(-ix, ix, 23);
-      }
+      addToList(-ix, ix, 23);
     }
     for(int ix=12;ix<17;ix+=2) {
-      if(_theN->size().first==7) 
-	addToList( ix, ix, 23);
+      if(_theN->size().first==7) {
+	long inu = (ix-12)/2+17;
+	addToList( inu, inu, 23);
+      }
       else
 	addToList(-ix, ix, 23);
     }
@@ -234,12 +230,13 @@ void RPVFFZVertex::setCoupling(Energy2 q2,tcPDPtr part1,
 	_gblast = boson;
 	_id1last = iferm1;
 	_id2last = iferm2;
+	unsigned int ic1(0);
 	if(_theV->size().first==2&&iferm<=16) {
 	  _leftlast  = -_gr[iferm];
 	  _rightlast = -_gl[iferm];
 	}
 	else {
-	  unsigned int ic1 = charginoIndex(iferm1);
+	  ic1 = charginoIndex(iferm1);
 	  unsigned int ic2 = charginoIndex(iferm2);
 	  _leftlast = -(*_theV)(ic1, 0)*conj((*_theV)(ic2, 0)) - 
 	    0.5*(*_theV)(ic1, 1)*conj((*_theV)(ic2, 1));
@@ -255,11 +252,14 @@ void RPVFFZVertex::setCoupling(Energy2 q2,tcPDPtr part1,
 	    }
 	  }
 	}
-	if(iferm1>0) {
+	if((ic1<2&&iferm1>0)||(ic1>=2&&iferm1<0)) {
 	  Complex temp = _leftlast;
 	  _leftlast  = -_rightlast;
 	  _rightlast = -temp;
 	}
+	Complex temp = _leftlast;
+	_leftlast  = -_rightlast;
+	_rightlast = -temp;
 	_leftlast  /= _sw*_cw;
 	_rightlast /= _sw*_cw;
       }

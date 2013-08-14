@@ -168,12 +168,8 @@ void RPVFFWVertex::persistentInput(PersistentIStream & is, int) {
   is >> _sw >> _theN >> _theU >> _theV  >> _diagonal >> _ckm >> _interactions;
 }
 
-
-// *** Attention *** The following static variable is needed for the type
-// description system in ThePEG. Please check that the template arguments
-// are correct (the class and its base class), and that the constructor
-// arguments are correct (the class name and the name of the dynamically
-// loadable library where the class implementation can be found).
+// The following static variable is needed for the type
+// description system in ThePEG. 
 DescribeClass<RPVFFWVertex,Helicity::FFVVertex>
   describeHerwigRPVFFWVertex("Herwig::RPVFFWVertex", "HwSusy.so HwRPV.so");
 
@@ -268,17 +264,17 @@ void RPVFFWVertex::setCoupling(Energy2 q2,tcPDPtr part1,
 	if(_theV->size().first==5) {
 	  for(unsigned int k=0;k<3;++k)
 	    _rightlast += ( conj((*_theN)(eign, 4+k))*(*_theU)(eigc, 2+k)/sqrt(2));
-
 	}
       }
       Complex ltemp = _leftlast;
       Complex rtemp = _rightlast;
+      bool chapart = abs(cha)>1000000 ? cha>0 : cha<0;
       // conjugate if +ve chargino
-      if(cha>0) {
+      if(chapart) {
 	ltemp = conj(ltemp);
 	rtemp = conj(rtemp);
       }
-      if((part1->id()==cha&&cha>0)||(part2->id()==cha&&cha<0)) {
+      if((part1->id()==cha&&chapart)||(part2->id()==cha&&!chapart)) {
 	Complex temp = ltemp;
 	ltemp  = -rtemp;
 	rtemp = -temp;
