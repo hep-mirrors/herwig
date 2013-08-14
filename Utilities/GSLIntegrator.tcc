@@ -98,6 +98,8 @@ GSLIntegrator::value(const T & fn,
 	"interval.\n";
       break;
     case GSL_EDIVERGE:
+      CurrentGenerator::log() << "The integral is divergent, "
+	"or too slowly convergent to be integrated numerically.\n"; 
       break;
     default:
       CurrentGenerator::log() << "A general error occurred with code " 

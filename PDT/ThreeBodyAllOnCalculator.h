@@ -112,8 +112,8 @@ public:
 			   double relerr=1e-3)
     : _channelweights(inweights),_channeltype(intype),_channelmass(inmass),
       _channelwidth(inwidth),_channelpower(inpow),_theME(inme),_mode(mode),
-      _thechannel(0),_souter(ZERO), _integrator(1e-35,relerr,1000),
-      _relerr(relerr) {
+      _thechannel(0),_mapping(inweights.size(),0),_souter(ZERO),
+      _integrator(1e-35,relerr,1000),_relerr(relerr) {
     _m.resize(4);
     _m[1]=m1;_m[2]=m2;_m[3]=m3;
     _m2.resize(4);
@@ -243,7 +243,7 @@ private:
   /**
    *  The mapping currently in used
    */
-  mutable int _mapping;
+  mutable vector<int> _mapping;
 
   /**
    * the value of s for the outer integral

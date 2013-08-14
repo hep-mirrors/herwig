@@ -328,11 +328,11 @@ tcDecayPhaseSpaceModePtr DecayIntegrator::mode(unsigned int ix) const {
   return _modes[ix];
 }
  
-Energy DecayIntegrator::initializePhaseSpaceMode(unsigned int imode,bool init) const{
+Energy DecayIntegrator::initializePhaseSpaceMode(unsigned int imode,bool init, bool onShell) const{
   tcDecayPhaseSpaceModePtr cmodeptr=mode(imode);
   tDecayPhaseSpaceModePtr modeptr = const_ptr_cast<tDecayPhaseSpaceModePtr>(cmodeptr);
   modeptr->init();
-  return modeptr->initializePhaseSpace(init);
+  return modeptr->initializePhaseSpace(init,onShell);
 }
 
 // the matrix element to be integrated for the me

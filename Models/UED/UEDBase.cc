@@ -25,7 +25,8 @@ using namespace Herwig;
 
 UEDBase::UEDBase() : theRadCorr(true), theInvRadius(500.*GeV), 
 		     theLambdaR(20.), theMbarH(), theSinThetaOne(0.),
-		     theVeV(246.*GeV) {}
+		     theVeV(246.*GeV), includeSMMass_(true), fixedCouplings_(false), includeGaugeMixing_(true)
+{}
 
 void UEDBase::doinit() {
   readDecays(false);
@@ -60,7 +61,8 @@ void UEDBase::persistentOutput(PersistentOStream & os) const {
      << theF1F1W0Vertex << theF1F0W1Vertex << theF1F0H1Vertex 
      << theP0H1H1Vertex << theZ0H1H1Vertex << theW0A1H1Vertex 
      << theZ0A1h1Vertex << theW0W1W1Vertex << ounit(theVeV,GeV) 
-     << ounit(theMbarH, GeV) << theSinThetaOne;
+     << ounit(theMbarH, GeV) << theSinThetaOne << includeSMMass_
+     << fixedCouplings_ << includeGaugeMixing_;
 }
 
 void UEDBase::persistentInput(PersistentIStream & is, int) {
@@ -70,8 +72,8 @@ void UEDBase::persistentInput(PersistentIStream & is, int) {
      >> theF1F1W0Vertex >> theF1F0W1Vertex >> theF1F0H1Vertex 
      >> theP0H1H1Vertex >> theZ0H1H1Vertex >> theW0A1H1Vertex 
      >> theZ0A1h1Vertex >> theW0W1W1Vertex >> iunit(theVeV,GeV) 
-     >> iunit(theMbarH, GeV) >> theSinThetaOne;
-
+     >> iunit(theMbarH, GeV) >> theSinThetaOne >> includeSMMass_
+     >> fixedCouplings_ >> includeGaugeMixing_;
 }
 
 ClassDescription<UEDBase> UEDBase::initUEDBase;
@@ -207,6 +209,53 @@ void UEDBase::Init() {
     ("Vertex/W0W1W1",
      "The W0W1W1 UED Vertex",
      &UEDBase::theW0W1W1Vertex, false, false, true, false, false);
+
+  static Switch<UEDBase,bool> interfaceIncludeSMMass
+    ("IncludeSMMass",
+     "Whether or not to include the SM mass in the calculation of the masses of the KK states.",
+     &UEDBase::includeSMMass_, true, false, false);
+  static SwitchOption interfaceIncludeSMMassYes
+    (interfaceIncludeSMMass,
+     "Yes",
+     "Include them",
+     true);
+  static SwitchOption interfaceIncludeSMMassNo
+    (interfaceIncludeSMMass,
+     "No",
+     "Don't include them",
+     false);
+
+  static Switch<UEDBase,bool> interfaceFixedCouplings
+    ("FixedCouplings",
+     "Use fixed or running couplings to calculate the masses.",
+     &UEDBase::fixedCouplings_, false, false, false);
+  static SwitchOption interfaceFixedCouplingsYes
+    (interfaceFixedCouplings,
+     "Yes",
+     "Use fixed couplings",
+     true);
+  static SwitchOption interfaceFixedCouplingsNo
+    (interfaceFixedCouplings,
+     "No",
+     "Use running couplings",
+     false);
+
+  static Switch<UEDBase,bool> interfaceIncludeGaugeMixing
+    ("IncludeGaugeMixing",
+     "Whether or not to include mixing between the KK photon"
+     " and Z in the vertices, always included in the mass",
+     &UEDBase::includeGaugeMixing_, true, false, false);
+  static SwitchOption interfaceIncludeGaugeMixingYes
+    (interfaceIncludeGaugeMixing,
+     "Yes",
+     "Include the mixing",
+     true);
+  static SwitchOption interfaceIncludeGaugeMixingNo
+    (interfaceIncludeGaugeMixing,
+     "No",
+     "Don't include the mixing",
+     false);
+
 }
 
 void UEDBase::calculateKKMasses(const unsigned int n) {
@@ -261,10 +310,12 @@ void UEDBase::calculateKKMasses(const unsigned int n) {
 void UEDBase::bosonMasses(const unsigned int n) {
   // Common constants
   const Energy2 invRad2 = theInvRadius*theInvRadius;
-  const double g_em2 = 4.*Constants::pi*alphaEM(invRad2);
-  const double g_s2 = 4.*Constants::pi*alphaS(invRad2);
+  const double g_em2 = fixedCouplings_ ? 
+    4.*Constants::pi*alphaEMMZ() : 4.*Constants::pi*alphaEM(invRad2);
+  const double g_s2 = fixedCouplings_ ? 
+    4.*Constants::pi*alphaS()    : 4.*Constants::pi*alphaS(invRad2);
   const double g_W2 = g_em2/sin2ThetaW();
-  
+  const double g_P2 = g_em2/(1-sin2ThetaW());
   //Should probably use a function  to calculate zeta.
   const double zeta3 = 1.20206;
   const Energy2 nmass2 = sqr(n*theInvRadius); 
@@ -283,7 +334,7 @@ void UEDBase::bosonMasses(const unsigned int n) {
   resetMass(level + 24, sqrt(mw2 + nmass2 + deltaGW));
 
   //Z and gamma are a mixture of Bn and W3n
-  deltaGB = -g_em2*invRad2*norm*( 39.*zeta3/2./pi2 + nnlogLR/3. );
+  deltaGB = -g_P2*invRad2*norm*( 39.*zeta3/2./pi2 + nnlogLR/3. );
   Energy2 mz2 = sqr(getParticleData(23)->mass());
   Energy2 fp = 0.5*(mz2 + deltaGB + deltaGW + 2.*nmass2);
   Energy2 sp = 0.5*sqrt( sqr(deltaGB - deltaGW - 2.*mw2 + mz2)
@@ -295,15 +346,20 @@ void UEDBase::bosonMasses(const unsigned int n) {
   // 
   // cos^2_theta_N = ( (n/R)^2 + delta_GW + mw^2 - m_gam*^2)/(m_z*^2 - m_gam*^2)
   //
-  double cn2 = (nmass2 + deltaGW + mw2 - fp + sp)/2./sp;
-  double sn = sqrt(1. - cn2);
-  theMixingAngles.insert(make_pair(n, sn));
-  if( n == 1 ) theSinThetaOne = sn;
-  
+  if(includeGaugeMixing_) {
+    double cn2 = (nmass2 + deltaGW + mw2 - fp + sp)/2./sp;
+    double sn = sqrt(1. - cn2);
+    theMixingAngles.insert(make_pair(n, sn));
+    if( n == 1 ) theSinThetaOne = sn;
+  }
+  else {
+    theMixingAngles.insert(make_pair(n,0.));
+    if( n == 1 ) theSinThetaOne = 0.;
+  }
   //scalars
   Energy2 mh2 = sqr(getParticleData(25)->mass());
-  double lambda_H = mh2/theVeV/theVeV;
-  deltaGB = nnlogLR*norm*invRad2*(3.*g_W2 + (3.*g_em2/2.) - 2.*lambda_H) 
+  double lambda_H = mh2/sqr(theVeV);
+  deltaGB = nnlogLR*norm*invRad2*(3.*g_W2 + (3.*g_P2/2.) - 2.*lambda_H) 
     + sqr(theMbarH);
   //H0
   Energy2 new_m2 = nmass2 + deltaGB;
@@ -316,31 +372,34 @@ void UEDBase::bosonMasses(const unsigned int n) {
 
 void UEDBase::fermionMasses(const unsigned int n) {
   const Energy2 invRad2 = theInvRadius*theInvRadius;
-  const double g_em2 = 4.*Constants::pi*alphaEM(invRad2);
-  const double g_s2 = 4.*Constants::pi*alphaS(invRad2);
+  const double g_em2 = fixedCouplings_ ? 
+    4.*Constants::pi*alphaEMMZ() : 4.*Constants::pi*alphaEM(invRad2);
+  const double g_s2 = fixedCouplings_ ? 
+    4.*Constants::pi*alphaS() : 4.*Constants::pi*alphaS(invRad2); 
   const double g_W2 = g_em2/sin2ThetaW();
+  const double g_P2 = g_em2/(1-sin2ThetaW());
   const Energy nmass = n*theInvRadius;
   const Energy norm = 
     nmass*log(theLambdaR)/16./Constants::pi/Constants::pi;
   const Energy topMass = getParticleData(6)->mass();
   const double ht = sqrt(2)*topMass/theVeV;
   //doublets
-  Energy deltaL = norm*(6.*g_s2 + (27.*g_W2/8.) + (g_em2/8.));
+  Energy deltaL = norm*(6.*g_s2 + (27.*g_W2/8.) + (g_P2/8.));
   Energy deltaQ = deltaL;
   Energy2 shift = sqr(nmass + deltaL);
   long level = 5000000 + n*100000;
   for(long i = 1; i < 17; ++i) {
-    if(i == 6)  {
-      i += 5;
-      deltaL = norm*( (27.*g_W2/8.) + (9.*g_em2/8.) );
+    if(i == 5)  {
+      i += 6;
+      deltaL = norm*( (27.*g_W2/8.) + (9.*g_P2/8.) );
       shift = sqr(nmass + deltaL); 
     }
-    Energy2 new_m2 = sqr(getParticleData(i)->mass()) + shift;
+    Energy2 new_m2 = includeSMMass_ ? sqr(getParticleData(i)->mass()) + shift : shift;
     resetMass(level + i, sqrt(new_m2));
   }
   //singlet shifts
-  const  Energy deltaU = norm*(6.*g_s2 + 2.*g_em2);
-  const Energy deltaD = norm*(6.*g_s2 + 0.5*g_em2);
+  const Energy  deltaU = norm*(6.*g_s2 + 2.*g_P2);
+  const Energy  deltaD = norm*(6.*g_s2 + 0.5*g_P2);
   const Energy2 shiftU = sqr(nmass + deltaU);
   const Energy2 shiftD = sqr(nmass + deltaD);
   
@@ -349,38 +408,43 @@ void UEDBase::fermionMasses(const unsigned int n) {
   const Energy delta_Q3 = -3.*ht*ht*norm/2.;
   const Energy deltaTD = deltaQ + delta_Q3;
   const Energy deltaTS = deltaU + 2.*delta_Q3;
-
-  Energy second_term = 
-    0.5*sqrt( sqr(2.*nmass + deltaTS + deltaTD) + 4.*mt2 );
+  Energy second_term = 0.5*sqrt( sqr(2.*nmass + deltaTS + deltaTD) + 4.*mt2 );
   //doublet
-  resetMass(level + 6, abs(0.5*(deltaTD - deltaTS) - second_term) );
+  resetMass(level           + 6, abs(0.5*(deltaTD - deltaTS) - second_term) );
   //singlet
-  level += 1000000;
-  resetMass(level + 6, 0.5*(deltaTD - deltaTS) + second_term);
+  resetMass(level + 1000000 + 6, 0.5*(deltaTD - deltaTS) + second_term);
+  //Bottom quarks
+  const Energy2 mb2 = sqr(getParticleData(5)->mass());
+  const Energy deltaBS = deltaD;
+  second_term = 0.5*sqrt( sqr(2.*nmass + deltaBS + deltaTD) + 4.*mb2 );
+  //doublet
+  resetMass(level + 1000000 + 5, abs(0.5*(deltaTD - deltaBS) - second_term) );
+  //singlet
+  resetMass(level           + 5, 0.5*(deltaTD - deltaBS) + second_term);
   // others
   //lepton 
-  Energy delta = 9.*norm*g_em2/2.;
+  Energy delta = 9.*norm*g_P2/2.;
   shift = sqr(nmass + delta);
 
+  level += 1000000;
   for(long i = 1; i < 17; ) {
-    if(i == 6) i += 5;
+    if(i == 5) i += 6;
     Energy2 smMass2(sqr(getParticleData(i)->mass()));
     if(i < 6) {
-      Energy2 new_m2;
-      if( i % 2 == 0)
-	new_m2 = smMass2 + shiftU;
-      else 
-	new_m2 = smMass2 + shiftD;
+      Energy2 new_m2 = includeSMMass_ ? smMass2 : ZERO;
+      if( i % 2 == 0) new_m2 = shiftU;
+      else            new_m2 = shiftD;
       resetMass(level + i, sqrt(new_m2));
       ++i;
     }
     else {
-      resetMass(level + i, sqrt(smMass2 + shift));
+      if(includeSMMass_)
+	resetMass(level + i, sqrt(smMass2 + shift));
+      else
+	resetMass(level + i, sqrt(shift));
       i += 2;
     }
-
   }
-
 }
 
 void UEDBase::resetMass(long id, Energy mass) {

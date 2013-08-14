@@ -298,6 +298,11 @@ public:
    */
   bool verbose() const;
 
+  /**
+   * Return true, if verbose
+   */
+  bool initVerbose() const;
+
   //@}
 
   /** @name Setup of Subtracted ME objects */
@@ -336,12 +341,12 @@ public:
     /**
      * Book an event.
      */
-    void book(double inv, double ratio) {
+    void book(double inv, double diff) {
       map<double,pair<double,double> >::iterator b =
 	bins.upper_bound(inv);
       if ( b == bins.end() ) return;
-      b->second.first = min(b->second.first,abs(ratio));
-      b->second.second = max(b->second.second,abs(ratio));
+      b->second.first = min(b->second.first,diff);
+      b->second.second = max(b->second.second,diff);
     }
 
     /**

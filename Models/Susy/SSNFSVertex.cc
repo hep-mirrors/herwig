@@ -12,6 +12,7 @@
 //
 
 #include "SSNFSVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -24,7 +25,7 @@ SSNFSVertex::SSNFSVertex() :  _sw(0.), _cw(0.), _mw(),
 			     _sb(0.), _cb(0.), _q2last(), _couplast(0.),
 			     _leftlast(0.), _rightlast(0.), _id1last(0), 
 			     _id2last(0),
-			      yukawa_(true) {
+			      yukawa_(1) {
   orderInGem(1);
   orderInGs(0);
 }
@@ -87,8 +88,9 @@ void SSNFSVertex::doinit() {
   _cb = sqrt(1 - sqr(_sb));
 }
 
-ClassDescription<SSNFSVertex> SSNFSVertex::initSSNFSVertex;
-// Definition of the static class description member.
+// Static variable needed for the type description system in ThePEG.
+DescribeClass<SSNFSVertex,FFSVertex>
+describeHerwigSSNFSVertex("Herwig::SSNFSVertex", "HwSusy.so");
 
 void SSNFSVertex::Init() {
 
@@ -96,20 +98,25 @@ void SSNFSVertex::Init() {
     ("The SSNFSVertex implements the coupling of a neutralino to "
      "a fermion-sfermion");
 
-  static Switch<SSNFSVertex,bool> interfaceYukawa
+  static Switch<SSNFSVertex,unsigned int> interfaceYukawa
     ("Yukawa",
      "Whether or not to include the Yukawa type couplings",
-     &SSNFSVertex::yukawa_, true, false, false);
+     &SSNFSVertex::yukawa_, 1, false, false);
   static SwitchOption interfaceYukawaYes
     (interfaceYukawa,
      "Yes",
      "Include the terms",
-     true);
+     1);
   static SwitchOption interfaceYukawaNo
     (interfaceYukawa,
      "No",
      "Don't include them",
-     false);
+     0);
+  static SwitchOption interfaceYukawa3rdGen
+    (interfaceYukawa,
+     "ThirdGeneration",
+     "Only include for the third generation",
+     2);
 }
 
 void SSNFSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
@@ -159,7 +166,9 @@ void SSNFSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
       tcPDPtr smf = getParticleData(ism);
       double qf = smf->charge()/eplus;
       Complex bracketl = qf*_sw*( conj(n1prime) - _sw*conj(n2prime)/_cw );
-      double y = yukawa_ ? double(_theSS->mass(q2, smf)/2./_mw) : 0.;
+      double y = 0.;
+      if(yukawa_==1 || ((ism==5 || ism==6 || ism==15) && yukawa_==2))
+	y = double(_theSS->mass(q2, smf)/2./_mw);
       double lambda(0.);
       //neutralino mixing element
       Complex nlf(0.);

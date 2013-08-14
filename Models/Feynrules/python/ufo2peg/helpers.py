@@ -1,0 +1,544 @@
+from string import Template
+from os import path
+import sys,itertools,cmath
+
+"""
+Helper functions for the Herwig++ Feynrules converter
+"""
+
+class CheckUnique:
+    """Uniqueness checker.
+    
+    An object of this class remembers the value it was called with first.
+    Any subsequent call to it will only succeed if the same value is passed again.
+    For example,
+
+    >>> f = CheckUnique()
+    >>> f(5)
+    >>> f(5)
+    >>> f(4)
+    Traceback (most recent call last):
+        ...
+    AssertionError
+    """
+    def __init__(self):
+        self.val = None
+
+    def __call__(self,val):
+        """Store value on first call, then compare."""
+        if self.val is None:
+            self.val = val
+        else:
+            assert( val == self.val )
+
+
+
+def is_number(s):
+    """Check if a value is a number."""
+    try:
+        float(s)
+    except ValueError:
+        return False
+    return True
+
+
+
+def getTemplate(name):
+    """Create a template from a file."""
+    templatename = '{}.template'.format(name)
+    # assumes the template files sit next to this script
+    moduledir = path.dirname(path.abspath(__file__))
+    templatepath = path.join(moduledir,templatename)
+    with open(templatepath, 'r') as f:
+        templateText = f.read()
+    return Template( templateText )
+
+
+def writeFile(filename, text):
+    """Write text to a filename."""
+    with open(filename,'w') as f:
+        f.write(text)
+
+
+
+def get_lorentztag(spin):
+    """Produce a ThePEG spin tag for the given numeric FR spins."""
+    spins = { 1 : 'S', 2 : 'F', 3 : 'V', -1 : 'U', 5 : 'T' }
+    result = [ spins[s] for s in spin ]
+
+    def spinsort(a,b):
+        """Helper function for ThePEG's FVST spin tag ordering."""
+        if a == b: return 0
+        for letter in 'UFVST':
+            if a == letter: return -1
+            if b == letter: return  1
+
+    result = sorted(result, cmp=spinsort)
+    return ''.join(result)
+
+def unique_lorentztag(vertex):
+    """Check and return the Lorentz tag of the vertex."""
+    unique = CheckUnique()
+    for l in vertex.lorentz:
+        lorentztag = get_lorentztag(l.spins)
+        unique( lorentztag )
+        if lorentztag != l.name[:len(lorentztag)]:
+            raise Exception("Lorentztags: %s is not %s in %s" 
+                            % (lorentztag,l.name[:len(lorentztag)],vertex))
+    return lorentztag
+
+
+def spindirectory(lt):
+    """Return the spin directory name for a given Lorentz tag."""
+    if 'T' in lt: 
+        spin_directory = 'Tensor'
+    elif 'S' in lt: 
+        spin_directory = 'Scalar'
+    elif 'V' in lt: 
+        spin_directory = 'Vector'
+    else:
+        raise Exception("Unknown Lorentz tag {}.".format(lt))
+    return spin_directory
+
+
+class SkipThisVertex(Exception):
+    pass
+
+def colorpositions(struct):
+    positions = { 
+        1 : [],
+        3 : [],
+        -3 : [],
+        6 : [],
+        -6 : [],
+        8 : [],
+    }
+    for i,s in enumerate(struct,1):
+        positions[s].append(i)
+    return positions
+        
+def colors(vertex) :
+    try:
+        unique = CheckUnique()
+        for pl in vertex.particles_list:
+            struct = [ p.color for p in pl ]
+            unique(struct)
+    except:
+        struct = [ p.color for p in vertex.particles ]
+    pos = colorpositions(struct)
+    L = len(struct)
+    return (L,pos)
+
+def colorfactor(vertex,L,pos):
+    def match(patterns):
+        result = [ p == t
+                   for p,t in zip(patterns,vertex.color) ]
+        return all(result)
+
+    label = None
+    l = lambda c: len(pos[c])
+    if l(1) == L:
+        label = ('1',)
+        if match(label): return ('1',)
+
+    elif l(3) == l(-3) == 1 and l(1) == L-2:
+        nums = [pos[3][0], pos[-3][0]]
+        label = ('Identity({},{})'.format(*sorted(nums)),)
+        if match(label): return ('1',)
+
+    elif l(6) == l(-6) == 1 and l(1) == L-2:
+        nums = [pos[6][0], pos[-6][0]]
+        label = ('Identity({},{})'.format(*sorted(nums)),)
+        if match(label): return ('1',)
+
+    elif l(6) == l(-6) == 2 and L==4:
+        sys.stderr.write('Warning: skipping colour structure 6 6 6~ 6~ in %s.\n'
+                         % vertex)
+        raise SkipThisVertex()
+
+    elif l(8) == l(3) == l(-3) == 1 and l(1) == L-3:
+        label = ('T({},{},{})'.format(pos[8][0],pos[3][0],pos[-3][0]),)
+        if match(label): return ('1',)
+
+    elif l(8) == l(6) == l(-6) == 1 and l(1) == L-3:
+        label = ('T6({},{},{})'.format(pos[8][0],pos[6][0],pos[-6][0]),)
+        if match(label): return ('1',)
+
+    elif l(6) == 1 and l(-3) == 2 and L==3:
+        label = ('K6({},{},{})'.format(pos[6][0],pos[-3][0],pos[-3][1]),)
+        if match(label): return ('1',)
+
+    elif l(-6) == 1 and l(3) == 2 and L==3:
+        label = ('K6Bar({},{},{})'.format(pos[-6][0],pos[3][0],pos[3][1]),)
+        if match(label): return ('1',)
+
+    elif l(8) == L == 3:
+        # if lorentz is FFV get extra minus sign
+        lorentztag = unique_lorentztag(vertex)
+        factor = '*(-1)' if lorentztag in ['FFV'] else ''
+        label = ('f(1,2,3)',)
+        if match(label): return ('-complex(0,1)%s'%factor,)
+        label = ('f(3,2,1)',)
+        if match(label): return ('complex(0,1)%s'%factor,)
+        label = ('f(2,1,3)',)
+        if match(label): return ('complex(0,1)%s'%factor,)
+
+    elif l(8) == L == 4:
+        label = ('f(-1,1,2)*f(3,4,-1)',
+                 'f(-1,1,3)*f(2,4,-1)',
+                 'f(-1,1,4)*f(2,3,-1)',
+             )
+        if match(label): return ('-1./3.','-1./3.','-1./3.')
+
+    elif l(8) == 2 and l(3) == l(-3) == 1 and L==4:
+        subs = {
+            'g1' : pos[8][0],
+            'g2' : pos[8][1],
+            'qq' : pos[3][0],
+            'qb' : pos[-3][0] 
+        }
+        label = ('T({g1},-1,{qb})*T({g2},{qq},-1)'.format(**subs),
+                 'T({g1},{qq},-1)*T({g2},-1,{qb})'.format(**subs))
+        if match(label): return ('0.5','0.5')
+        
+    elif l(8) == 2 and l(6) == l(-6) == 1 and L==4:
+        subs = {
+            'g1' : pos[8][0],
+            'g2' : pos[8][1],
+            'qq' : pos[6][0],
+            'qb' : pos[-6][0] 
+        }
+        label = ('T6({g1},-1,{qb})*T6({g2},{qq},-1)'.format(**subs),
+                 'T6({g1},{qq},-1)*T6({g2},-1,{qb})'.format(**subs))
+        if match(label): return ('0.5','0.5')
+
+    elif l(8) == 2 and l(8)+l(1)==L :
+        subs = { 'g1' : pos[8][0], 'g2' : pos[8][1] }
+        label = ('Identity({g1},{g2})'.format(**subs),)
+        if match(label) : return ('1.',)
+
+    elif l(8) == 3 and l(1)==1 and L==4 :
+        label = ('f(1,2,3)',)
+        if match(label): return ('-complex(0,1)',)
+        label = ('f(3,2,1)',)
+        if match(label): return ('complex(0,1)',)
+        label = ('f(2,1,3)',)
+        if match(label): return ('complex(0,1)',)
+
+    print vertex
+    raise Exception("Unknown colour tag {}.".format(vertex.color))
+
+
+def def_from_model(FR,s):
+    """Return a C++ line that defines parameter s as coming from the model file."""
+    stype = typemap(getattr(FR.parameters,s).type)
+    return '{t} {s} = model_->{s}();'.format(t=stype,s=s)
+
+_typemap = {'complex':'Complex',
+            'real':'double'}
+
+def typemap(s):
+    return _typemap[s]
+
+def add_brackets(expr, syms):
+    result = expr
+    for s in syms:
+        result = result.replace(s,s+'()')
+    return result
+
+
+
+
+def banner():
+    return """\
+===============================================================================================================
+______                  ______        _                 __ _   _                        _                      
+|  ___|                 | ___ \      | |               / /| | | |                      (_)          _      _   
+| |_  ___  _   _  _ __  | |_/ /_   _ | |  ___  ___    / / | |_| |  ___  _ __ __      __ _   __ _  _| |_  _| |_ 
+|  _|/ _ \| | | || \_ \ |    /| | | || | / _ \/ __|  / /  |  _  | / _ \| \__|\ \ /\ / /| | / _` ||_   _||_   _|
+| | |  __/| |_| || | | || |\ \| |_| || ||  __/\__ \ / /   | | | ||  __/| |    \ V  V / | || (_| |  |_|    |_|  
+\_|  \___| \__, ||_| |_|\_| \_|\__,_||_| \___||___//_/    \_| |_/ \___||_|     \_/\_/  |_| \__, |              
+            __/ |                                                                           __/ |              
+           |___/                                                                           |___/               
+===============================================================================================================
+generating model/vertex/.model/.in files
+please be patient!
+===============================================================================================================
+"""
+
+
+
+
+#################### ??? #######################
+
+
+# function that replaces alphaS (aS)-dependent variables
+# with their explicit form which also contains strongCoupling
+def aStoStrongCoup(stringin, paramstoreplace, paramstoreplace_expressions):
+    #print stringin
+    for xx in range(0,len(paramstoreplace)):
+        #print paramstoreplace[xx], paramstoreplace_expressions[xx]
+        stringout = stringin.replace(paramstoreplace[xx], '(' +  PyMathToThePEGMath(paramstoreplace_expressions[xx],allparams) + ')')
+    stringout = stringout.replace('aS', '(sqr(strongCoupling(q2))/(4.0*Constants::pi))')
+    #print 'resulting string', stringout
+    return stringout
+
+
+# function that replaces alphaEW (aEW)-dependent variables
+# with their explicit form which also contains weakCoupling
+def aEWtoWeakCoup(stringin, paramstoreplace, paramstoreplace_expressions):
+    #print stringin
+    for xx in range(0,len(paramstoreplace)):
+        #print paramstoreplace[xx], paramstoreplace_expressions[xx]
+        stringout = stringin.replace(paramstoreplace[xx], '(' +  PyMathToThePEGMath(paramstoreplace_expressions[xx],allparams) + ')')
+    stringout = stringout.replace('aEWM1', '(1/(sqr(electroMagneticCoupling(q2))/(4.0*Constants::pi)))')
+    #print 'resulting string', stringout
+    return stringout
+
+
+
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
+
+
+if False:
+    
+# Check if the Vertex is self-conjugate or not
+    pdgcode = [0,0,0,0]
+    notsmvertex = False
+    vhasw = 0
+    vhasz = 0
+    vhasf = 0
+    vhasg = 0
+    vhash = 0
+    vhasp = 0
+#   print 'printing particles in vertex'
+    for i in range(len(v.particles)):
+#       print v.particles[i].pdg_code
+        pdgcode[i] = v.particles[i].pdg_code
+        if pdgcode[i] == 23:
+            vhasz += 1
+        if pdgcode[i] == 22:
+            vhasp += 1
+        if pdgcode[i] == 25:
+            vhash += 1
+        if pdgcode[i] == 21:
+            vhasg += 1
+        if pdgcode[i] == 24:
+            vhasw += 1
+        if abs(pdgcode[i]) < 7 or (abs(pdgcode[i]) > 10 and abs(pdgcode[i]) < 17):
+            vhasf += 1
+        if pdgcode[i] not in SMPARTICLES:
+            notsmvertex = True
+        
+
+#  treat replacement of SM vertices with BSM vertices?               
+    if notsmvertex == False:
+        if( (vhasf == 2 and vhasz == 1) or (vhasf == 2 and vhasw == 1) or (vhasf == 2 and vhash == 1) or (vhasf == 2 and vhasg == 1) or (vhasf == 2 and vhasp == 0) or (vhasg == 3) or (vhasg == 4) or (vhasw == 2 and vhash == 1) or (vhasw == 3) or (vhasw == 4) or (vhash == 1 and vhasg == 2) or (vhash == 1 and vhasp == 2)):
+            #print 'VERTEX INCLUDED IN STANDARD MODEL!'
+            v.include = 0
+            notincluded += 1
+            #continue
+            
+    
+    selfconjugate = 0
+    for j in range(len(pdgcode)):
+        for k in range(len(pdgcode)):
+               if  j != k and j != 0 and abs(pdgcode[j]) == abs(pdgcode[k]):
+                   selfconjugate = 1
+                   #print 'self-conjugate vertex'
+#        print pdgcode[j]
+
+# if the Vertex is not self-conjugate, then add the conjugate vertex
+# automatically
+    scfac = [1,1,1,1]
+    if selfconjugate == 0:
+        #first find the self-conjugate particles
+        for u in range(len(v.particles)):
+              if v.particles[u].selfconjugate == 0:
+                  scfac[u] = -1
+#                  print 'particle ', v.particles[u].pdg_code, ' found not to be self-conjugate'
+                  
+    if selfconjugate == 0:
+        plistarray[1] += str(scfac[1] * v.particles[1].pdg_code) + ',' + str(scfac[0] * v.particles[0].pdg_code) + ',' + str(scfac[2] * v.particles[2].pdg_code)
+        if len(v.particles) is 4:                                                                                                                      
+            plistarray[1] += ',' + str(scfac[3] * v.particles[3].pdg_code)
+        #print 'Conjugate vertex:', plistarray[1]
+
+# ordering for EW VVV vertices
+def VVVordering(vertex) :
+    pattern = "if((p1->id()==%s&&p2->id()==%s&&p3->id()==%s)"+\
+        "||(p1->id()==%s&&p2->id()==%s&&p3->id()==%s)||"+\
+        "(p1->id()==%s&&p2->id()==%s&&p3->id()==%s)) {norm(-norm());}"
+    ordering = pattern%(vertex.particles[1].pdg_code,
+                        vertex.particles[0].pdg_code,
+                        vertex.particles[2].pdg_code,
+                        vertex.particles[0].pdg_code,
+                        vertex.particles[2].pdg_code,
+                        vertex.particles[1].pdg_code,
+                        vertex.particles[2].pdg_code,
+                        vertex.particles[1].pdg_code,
+                        vertex.particles[0].pdg_code)
+    return ordering
+
+def tensorCouplings(vertex,coupling,prefactors,L,lorentztag,pos) :
+    # split the structure into its different terms for analysis
+    ordering=""
+    structure1 = L.structure.split()
+    structures =[]
+    sign=''
+    for struct in structure1 :
+        if(struct=='+') :
+            continue
+        elif(struct=='-') :
+            sign='-'
+        else :
+            structures.append(sign+struct.strip())
+            sign=''
+    lterms=[]
+    rterms=[]
+    if(lorentztag == 'SST') :
+        terms=[['P(1003,2)','P(2003,1)'],
+               ['P(1003,1)','P(2003,2)'],
+               ['P(-1,1)','P(-1,2)','Metric(1003,2003)']]
+        signs=[1.,1.,-1.]
+    elif(lorentztag == 'FFT' ) :
+        terms=[['P(2003,1)','Gamma(1003,2,1)'],
+               ['P(2003,2)','Gamma(1003,2,1)'],
+               ['P(1003,1)','Gamma(2003,2,1)'],
+               ['P(1003,2)','Gamma(2003,2,1)'],
+               ['P(-1,1)','Gamma(-1,2,1)','Metric(1003,2003)'],
+               ['P(-1,2)','Gamma(-1,2,1)','Metric(1003,2003)']]
+        signs=[1.,-1.,1.,-1.,-0.5,0.5]
+    elif(lorentztag == 'VVT' ) :
+        terms=[['P(-1,1)','P(-1,2)','Metric(1,2003)','Metric(2,1003)'],
+               ['P(-1,1)','P(-1,2)','Metric(1,1003)','Metric(2,2003)'],
+               ['P(-1,1)','P(-1,2)','Metric(1,2)','Metric(1003,2003)'],
+               ['P(1,2)','P(2,1)','Metric(1003,2003)'],
+               ['P(1,2)','P(2003,1)','Metric(2,1003)'],
+               ['P(1,2)','P(1003,1)','Metric(2,2003)'],
+               ['P(2,1)','P(2003,2)','Metric(1,1003)'],
+               ['P(2,1)','P(1003,2)','Metric(1,2003)'],
+               ['P(1003,2)','P(2003,1)','Metric(1,2)'],
+               ['P(1003,1)','P(2003,2)','Metric(1,2)']]
+        signs=[1.,1.,-1.,1.,-1.,-1.,-1.,-1.,1.,1.]
+    elif(lorentztag == 'FFVT' ) :
+        terms = [['Gamma(2004,2,1)','Metric(3,1004)'],
+                 ['Gamma(1004,2,1)','Metric(3,2004)'],
+                 ['Gamma(3,2,1)','Metric(1004,2004)']]
+        lterms=[['Gamma(2004,2,-1)','Metric(3,1004)','ProjM(-1,1)'],
+                ['Gamma(1004,2,-1)','Metric(3,2004)','ProjM(-1,1)'],
+                ['Gamma(3,2,-1)','Metric(1004,2004)','ProjM(-1,1)']]
+        rterms=[['Gamma(2004,2,-1)','Metric(3,1004)','ProjP(-1,1)'],
+                ['Gamma(1004,2,-1)','Metric(3,2004)','ProjP(-1,1)'],
+                ['Gamma(3,2,-1)','Metric(1004,2004)','ProjP(-1,1)']]
+        signs=[1.,1.,-0.5]
+    elif(lorentztag == 'VVVT' ) :
+        # the F(mu nu,rho sigma lambda) terms first
+        terms = [['P(2004,2)','Metric(1,1004)','Metric(2,3)'],['P(2004,3)','Metric(1,1004)','Metric(2,3)'],
+                 ['P(1004,2)','Metric(1,2004)','Metric(2,3)'],['P(1004,3)','Metric(1,2004)','Metric(2,3)'],
+                 ['P(2004,3)','Metric(1,3)','Metric(2,1004)'],['P(2004,1)','Metric(1,3)','Metric(2,1004)'],
+                 ['P(1004,3)','Metric(1,3)','Metric(2,2004)'],['P(1004,1)','Metric(1,3)','Metric(2,2004)'],
+                 ['P(2004,1)','Metric(1,2)','Metric(3,1004)'],['P(2004,2)','Metric(1,2)','Metric(3,1004)'],
+                 ['P(1004,1)','Metric(1,2)','Metric(3,2004)'],['P(1004,2)','Metric(1,2)','Metric(3,2004)'],
+                 ['P(3,1)','Metric(1,2004)','Metric(2,1004)'],['P(3,2)','Metric(1,2004)','Metric(2,1004)'], 
+                 ['P(3,1)','Metric(1,1004)','Metric(2,2004)'],['P(3,2)','Metric(1,1004)','Metric(2,2004)'],
+                 ['P(3,1)','Metric(1,2)','Metric(1004,2004)'],['P(3,2)','Metric(1,2)','Metric(1004,2004)'],
+                 ['P(2,3)','Metric(1,2004)','Metric(3,1004)'],['P(2,1)','Metric(1,2004)','Metric(3,1004)'],
+                 ['P(2,3)','Metric(1,1004)','Metric(3,2004)'],['P(2,1)','Metric(1,1004)','Metric(3,2004)'],
+                 ['P(2,3)','Metric(1,3)','Metric(1004,2004)'],['P(2,1)','Metric(1,3)','Metric(1004,2004)'],
+                 ['P(1,2)','Metric(2,2004)','Metric(3,1004)'],['P(1,3)','Metric(2,2004)','Metric(3,1004)'],
+                 ['P(1,2)','Metric(2,1004)','Metric(3,2004)'],['P(1,3)','Metric(2,1004)','Metric(3,2004)'],
+                 ['P(1,2)','Metric(2,3)','Metric(1004,2004)'],['P(1,3)','Metric(2,3)','Metric(1004,2004)']]
+        signs = [1.,-1.,1.,-1.,1.,-1.,1.,-1.,1.,-1.,1.,-1.,
+                 1.,-1.,1.,-1.,-1.,1.,1.,-1.,1.,-1.,-1.,1.,1.,-1.,1.,-1.,-1.,1.]
+        signs = [1.,-1.,1.,-1.,1.,-1.,1.,-1.,1.,-1.,1.,-1.,
+                 1.,-1.,1.,-1.,-1.,1.,1.,-1.,1.,-1.,-1.,1.,1.,-1.,1.,-1.,-1.,1.]
+        l = lambda c: len(pos[c])
+        if l(8)==3 :
+            pass
+        else :
+            ordering = VVVordering(vertex)
+    # unknown
+    else :
+        raise Exception('Unknown data type "%s".' % lorentztag)
+    sum   = [0.,0.,0.]
+    itype = 0
+    for types in (terms,lterms,rterms) :
+        i=0
+        for term in types:
+            for perm in itertools.permutations(term):
+                for j in range(0,len(perm)) :
+                    if(j==0) :
+                        label=perm[j]
+                    else :
+                        label+='*'+perm[j]
+                for struct in structures :
+                    if label in struct :
+                        reminder = struct.replace(label,'1.',1)
+                        sum[itype] += eval(reminder, {'cmath':cmath} )*signs[i]
+            i+=1
+        itype += 1
+        all_coup   = []
+        left_coup  = []
+        right_coup = []
+        if(len(lterms)==0) :
+            all_coup.append('(%s) *(%s) * (%s)' % (sum[0]/float(len(signs)), prefactors,coupling.value))
+        else :
+            sum[1] += sum[0]
+            sum[2] += sum[0]
+            left_coup .append('(%s) * (%s) * (%s)' % (prefactors,sum[1]/float(len(signs)),coupling.value))
+            right_coup.append('(%s) * (%s) * (%s)' % (prefactors,sum[2]/float(len(signs)),coupling.value))
+    return (all_coup,left_coup,right_coup,ordering)
+
+def EWVVVVCouplings(vertex,L) :
+    terms=['Metric(1,2)*Metric(3,4)',
+           'Metric(1,3)*Metric(2,4)',
+           'Metric(1,4)*Metric(2,3)']
+    structure1 = L.structure.split()
+    structures =[]
+    sign=''
+    for struct in structure1 :
+        if(struct=='+') :
+            continue
+        elif(struct=='-') :
+            sign='-'
+        else :
+            structures.append(sign+struct.strip())
+            sign=''
+    factors=[]
+    for term in terms:
+        for struct in structures :
+            if term in struct :
+                reminder = struct.replace(term,'1.',1)
+                factors.append(eval(reminder, {'cmath':cmath} ))
+    factor=0.
+    order=[]
+    if(factors[0]==-2.*factors[1] and factors[0]==-2.*factors[2] ) :
+        order=[0,1,2,3]
+        factor = factors[0]/2.
+    elif(factors[1]==-2.*factors[0] and factors[1]==-2.*factors[2] ) :
+        order=[0,2,1,3]
+        factor = factors[1]/2.
+    elif(factors[2]==-2.*factors[0] and factors[2]==-2.*factors[1] ) :
+        order=[0,3,1,2]
+        factor = factors[2]/2.
+    pattern = \
+        "bool done[4]={false,false,false,false};\n" + \
+        "    tcPDPtr part[4]={p1,p2,p3,p4};\n" + \
+        "    unsigned int iorder[4]={0,0,0,0};\n" + \
+        "    for(unsigned int ix=0;ix<4;++ix) {\n" + \
+        "       if(!done[0] && part[ix]->id()==%s) {done[0]=true; iorder[%s] = ix; continue;}\n" + \
+        "       if(!done[1] && part[ix]->id()==%s) {done[1]=true; iorder[%s] = ix; continue;}\n" + \
+        "       if(!done[2] && part[ix]->id()==%s) {done[2]=true; iorder[%s] = ix; continue;}\n" + \
+        "       if(!done[3] && part[ix]->id()==%s) {done[3]=true; iorder[%s] = ix; continue;}\n" + \
+        "    }\n" + \
+        "    setType(2);\n" + \
+        "    setOrder(iorder[0],iorder[1],iorder[2],iorder[3]);"
+    ordering=pattern % ( vertex.particles[0].pdg_code,order[0],
+                         vertex.particles[1].pdg_code,order[1],
+                         vertex.particles[2].pdg_code,order[2],
+                         vertex.particles[3].pdg_code,order[3] )
+    return (ordering,factor)

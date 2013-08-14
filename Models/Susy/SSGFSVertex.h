@@ -147,49 +147,12 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<SSGFSVertex> initSSGFSVertex;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
   SSGFSVertex & operator=(const SSGFSVertex &);
 
 };
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of SSGFSVertex. */
-template <>
-struct BaseClassTrait<Herwig::SSGFSVertex,1> {
-  /** Typedef of the first base class of SSGFSVertex. */
-  typedef ThePEG::Helicity::FFSVertex NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the SSGFSVertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::SSGFSVertex>
-  : public ClassTraitsBase<Herwig::SSGFSVertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::SSGFSVertex"; }
-  /** Return the name of the shared library be loaded to get
-   *  access to the SSGFSVertex class and every other class it uses
-   *  (except the base class). */
-  static string library() { return "HwSusy.so"; }
-};
-
-/** @endcond */
-
 }
 
 #endif /* HERWIG_SSGFSVertex_H */

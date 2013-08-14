@@ -1,0 +1,71 @@
+// -*- C++ -*-
+//
+// ${ModelName}.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
+// This is the implementation of the non-inlined, non-templated member
+// functions of the ${ModelName} class.
+//
+
+#include "${ModelName}.h"
+#include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Reference.h"
+#include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/Helicity/Vertex/VertexBase.h"
+#include "ThePEG/Utilities/DescribeClass.h"
+
+//#include "Herwig++/Models/General/ModelGenerator.h"
+
+using namespace ThePEG;
+using namespace Herwig;
+
+${ModelName}::${ModelName}()
+${parmconstr}
+{}
+
+IBPtr ${ModelName}::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr ${ModelName}::fullclone() const {
+  return new_ptr(*this);
+}
+
+void ${ModelName}::doinit() {
+  StandardModel::doinit();
+  ${addVertex}
+
+}
+
+void ${ModelName}::persistentOutput(PersistentOStream & os) const {
+  os << ${ostream} ;
+}
+
+void ${ModelName}::persistentInput(PersistentIStream & is, int) {
+  is >> ${istream} ;
+}
+
+// Static variable needed for the type description system in ThePEG.
+DescribeClass<${ModelName},StandardModel>
+  describeThePEG${ModelName}("Herwig::${ModelName}", "${ModelName}.so");
+
+void ${ModelName}::Init() {
+  ${refs}
+
+
+static ClassDocumentation<${ModelName}> documentation
+  ("The ${ModelName} class inherits from StandardModel"
+   "and supplies additional couplings and access to the ${ModelName}"
+   "vertices for helicity amplitude calculations" );
+
+ ${parmextinter}
+
+}
+
+

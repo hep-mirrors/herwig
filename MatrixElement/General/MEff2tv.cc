@@ -140,6 +140,7 @@ ffb2tvHeME(SpinorVector & sp, SpinorBarVector & sb,
 	    tcPDPtr internal(current.intermediate);	
 	    if(current.channelType == HPDiagram::tChannel) {
 	      if(current.ordered.second) {
+		if(internal->CC()) internal = internal->CC();
 		SpinorBarWaveFunction interFB = fermion_[ix].second->
 		  evaluate(q2,5,internal,sb[if2],vec[iv]);
 		diag = fermion_[ix].first->

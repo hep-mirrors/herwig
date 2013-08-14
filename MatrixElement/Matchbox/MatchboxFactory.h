@@ -317,6 +317,27 @@ public:
   vector<Ptr<MatchboxMEBase>::ptr>& bornMEs() { return theBornMEs; }
 
   /**
+   * Return the processes to be ordered from an OLP
+   */
+  const map<Ptr<MatchboxAmplitude>::tptr,
+	    map<pair<Process,int>,int> >&
+  olpProcesses() const { return theOLPProcesses; }
+
+  /**
+   * Access the processes to be ordered from an OLP
+   */
+  map<Ptr<MatchboxAmplitude>::tptr,
+      map<pair<Process,int>,int> >& 
+  olpProcesses() { return theOLPProcesses; }
+
+  /**
+   * Order an OLP process and return its id
+   */
+  int orderOLPProcess(const Process& p,
+		      Ptr<MatchboxAmplitude>::tptr amp,
+		      int type);
+
+  /**
    * Return the virtual corrections to be considered
    */
   const vector<Ptr<MatchboxInsertionOperator>::ptr>& virtuals() const { return theVirtuals; }
@@ -345,6 +366,16 @@ public:
    * Access the real emission matrix elements to be considered
    */
   vector<Ptr<MatchboxMEBase>::ptr>& realEmissionMEs() { return theRealEmissionMEs; }
+
+  /**
+   * Return, which set of dipoles should be considered
+   */
+  int dipoleSet() const { return theDipoleSet; }
+
+  /**
+   * Return, which set of dipoles should be considered
+   */
+  void dipoleSet(int s) { theDipoleSet = s; }
 
   /**
    * Return the produced subtracted matrix elements
@@ -475,14 +506,19 @@ public:
   void subtractionData(const string& s) { theSubtractionData = s; }
 
   /**
-   * Return true, if cancellationn of epsilon poles should be checked.
+   * Return the pole data prefix.
    */
-  bool checkPoles() const { return theCheckPoles; }
+  const string& poleData() const { return thePoleData; }
 
   /**
-   * Switch on checking of epsilon pole cancellation.
+   * Set the pole data prefix.
    */
-  void doCheckPoles() { theCheckPoles = true; }
+  void poleData(const string& s) { thePoleData = s; }
+
+  /**
+   * Return true, if cancellationn of epsilon poles should be checked.
+   */
+  bool checkPoles() const { return poleData() != ""; }
 
   //@}
 
@@ -690,6 +726,11 @@ private:
   vector<Ptr<MatchboxMEBase>::ptr> theFiniteRealMEs;
 
   /**
+   * Which set of dipoles should be considered
+   */
+  int theDipoleSet;
+
+  /**
    * Switch on or off verbosity
    */
   bool theVerbose;
@@ -705,6 +746,11 @@ private:
   string theSubtractionData;
 
   /**
+   * Prefix for pole data.
+   */
+  string thePoleData;
+
+  /**
    * Command to limit the real emission process to be considered.
    */
   string doSingleRealProcess(string);
@@ -714,11 +760,6 @@ private:
    * ones will be considered.
    */
   vector<string> realEmissionProcess;
-
-  /**
-   * True, if cancellationn of epsilon poles should be checked.
-   */
-  bool theCheckPoles;
 
   /**
    * Particle groups.
@@ -771,7 +812,7 @@ private:
    * Generate matrix element objects for the given process.
    */
   vector<Ptr<MatchboxMEBase>::ptr> makeMEs(const vector<string>&, 
-					   unsigned int orderas) const;
+					   unsigned int orderas);
 
   /**
    * The shower approximation.
@@ -793,6 +834,21 @@ private:
    * maximum order.
    */
   bool theAllProcesses;
+
+  /**
+   * The processes to be ordered from an OLP
+   */
+  map<Ptr<MatchboxAmplitude>::tptr,map<pair<Process,int>,int> > theOLPProcesses;
+
+  /**
+   * Amplitudes to be selected on clashing responsibilities.
+   */
+  vector<Ptr<MatchboxAmplitude>::ptr> theSelectedAmplitudes;
+
+  /**
+   * Amplitudes to be deselected on clashing responsibilities.
+   */
+  vector<Ptr<MatchboxAmplitude>::ptr> theDeselectedAmplitudes;
 
 private:
 

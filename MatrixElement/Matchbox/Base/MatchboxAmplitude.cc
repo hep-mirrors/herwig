@@ -48,9 +48,124 @@ void MatchboxAmplitude::persistentInput(PersistentIStream & is, int) {
 
 void MatchboxAmplitude::cloneDependencies(const std::string&) {}
 
-Ptr<MatchboxMEBase>::ptr MatchboxAmplitude::makeME(const vector<PDVector>&) const {
+Ptr<MatchboxMEBase>::ptr MatchboxAmplitude::makeME(const PDVector&) const {
   return new_ptr(MatchboxMEBase());
 }
+
+Selector<const ColourLines *> MatchboxAmplitude::colourGeometries(tcDiagPtr d) const {
+  if ( haveColourFlows() )
+    return theColourBasis->colourGeometries(d,lastLargeNAmplitudes());
+  return Selector<const ColourLines *>();
+}
+
+void MatchboxAmplitude::olpOrderFileHeader(ostream& os) const {
+
+  os << "# OLP order file created by Herwig++/Matchbox\n\n";
+
+  os << "InterfaceVersion          BLHA2\n\n";
+
+  os << "Model                     SM\n"
+     << "CorrectionType            QCD\n"
+     << "IRregularisation          " << (isDR() ? "DRED" : "CDR") << "\n"
+     << "Extra HelAvgInitial       no\n"
+     << "Extra ColAvgInitial       no\n"
+     << "Extra MCSymmetrizeFinal   yes\n";
+
+  os << "\n";
+
+}
+
+void MatchboxAmplitude::olpOrderFileProcessGroup(ostream& os,
+						 const string& type,
+						 const set<Process>& proc) const {
+
+  unsigned int oas = proc.begin()->orderInAlphaS;
+  unsigned int oae = proc.begin()->orderInAlphaEW;
+  os << "Extra AmplitudeType       " << type << "\n\n"
+     << "AlphasPower               " << oas << "\n"
+     << "AlphaPower                " << oae << "\n\n";
+  for ( set<Process>::const_iterator p = proc.begin();
+	p != proc.end(); ++p ) {
+    if ( oas != p->orderInAlphaS ||
+	 oae != p->orderInAlphaEW ) {
+      oas = p->orderInAlphaS;
+      oae = p->orderInAlphaEW;
+      os << "\n"
+	 << "AlphasPower               " << oas << "\n"
+	 << "AlphaPower                " << oae << "\n\n";
+    }
+    os << p->legs[0]->id() << " "
+       << p->legs[1]->id() << " -> ";
+    for ( PDVector::const_iterator o = p->legs.begin() + 2;
+	  o != p->legs.end(); ++o ) {
+      os << (**o).id() << " ";
+    }
+    os << "\n";
+  }
+
+  os << "\n";
+
+}
+
+void MatchboxAmplitude::olpOrderFileProcesses(ostream& os,
+					      const map<pair<Process,int>,int>& proc) const {
+
+  set<Process> trees;
+  set<Process> loops;
+  set<Process> ccs;
+  set<Process> sccs;
+
+  for ( map<pair<Process,int>,int>::const_iterator p = proc.begin();
+	p != proc.end(); ++p ) {
+    if ( p->first.second == ProcessType::treeME2 ) {
+      trees.insert(p->first.first);
+    } else if ( p->first.second == ProcessType::oneLoopInterference ) {
+      loops.insert(p->first.first);
+    } else if ( p->first.second == ProcessType::colourCorrelatedME2 ) {
+      ccs.insert(p->first.first);
+    } else if ( p->first.second == ProcessType::spinColourCorrelatedME2 ) {
+      sccs.insert(p->first.first);
+    } else assert(false);
+  }
+
+  if ( !trees.empty() )
+    olpOrderFileProcessGroup(os,"Tree",trees);
+
+  if ( !loops.empty() )
+    olpOrderFileProcessGroup(os,"Loop",loops);
+
+  if ( !ccs.empty() )
+    olpOrderFileProcessGroup(os,"ColourCorrelated",ccs);
+
+  if ( !sccs.empty() )
+    olpOrderFileProcessGroup(os,"SpinCorrelated",sccs);
+
+}
+
+bool MatchboxAmplitude::startOLP(const map<pair<Process,int>,int>& procs) {
+
+  string orderFileName = name() + ".OLPOrder.lh";
+  ofstream orderFile(orderFileName.c_str());
+
+  olpOrderFileHeader(orderFile);
+  olpOrderFileProcesses(orderFile,procs);
+
+  string contractFileName = name() + ".OLPContract.lh";
+
+  signOLP(orderFileName, contractFileName);
+
+  // TODO check the contract file
+
+  int status = 0;
+  startOLP(contractFileName, status);
+
+  if ( status != 1 )
+    return false;
+
+  return true;
+
+}
+
 
 struct orderPartonData {
 
@@ -396,16 +511,16 @@ double MatchboxAmplitude::oneLoopInterference() const {
 }
 
 double MatchboxAmplitude::colourCorrelatedME2(pair<int,int> ij) const {
-  if ( !calculateColourCorrelator(ij) )
-    return lastColourCorrelator(ij);
-  double Nc = generator()->standardModel()->Nc();
   double cfac = 1.;
+  double Nc = generator()->standardModel()->Nc();
   if ( mePartonData()[ij.first]->iColour() == PDT::Colour8 ) {
     cfac = Nc;
   } else if ( mePartonData()[ij.first]->iColour() == PDT::Colour3 ||
 	      mePartonData()[ij.first]->iColour() == PDT::Colour3bar ) {
     cfac = (sqr(Nc)-1.)/(2.*Nc);
   } else assert(false);
+  if ( !calculateColourCorrelator(ij) )
+    return lastColourCorrelator(ij)/cfac;
   double res =
     crossingSign()*colourBasis()->colourCorrelatedME2(ij,mePartonData(),lastAmplitudes());
   lastColourCorrelator(ij,res);
@@ -414,16 +529,16 @@ double MatchboxAmplitude::colourCorrelatedME2(pair<int,int> ij) const {
 
 double MatchboxAmplitude::largeNColourCorrelatedME2(pair<int,int> ij,
 						    Ptr<ColourBasis>::tptr largeNBasis) const {
-  if ( !calculateLargeNColourCorrelator(ij) )
-    return lastLargeNColourCorrelator(ij);
-  double Nc = generator()->standardModel()->Nc();
   double cfac = 1.;
+  double Nc = generator()->standardModel()->Nc();
   if ( mePartonData()[ij.first]->iColour() == PDT::Colour8 ) {
     cfac = Nc;
   } else if ( mePartonData()[ij.first]->iColour() == PDT::Colour3 ||
 	      mePartonData()[ij.first]->iColour() == PDT::Colour3bar ) {
     cfac = Nc/2.;
   } else assert(false);
+  if ( !calculateLargeNColourCorrelator(ij) )
+    return lastLargeNColourCorrelator(ij)/cfac;
   double res =
     crossingSign()*largeNBasis->colourCorrelatedME2(ij,mePartonData(),lastLargeNAmplitudes());
   lastLargeNColourCorrelator(ij,res);

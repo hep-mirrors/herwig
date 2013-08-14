@@ -32,13 +32,6 @@ public:
 public:
 
   /**
-   * Mixing matrix for the neutral CP-odd Higgs bosons
-   */
-  const MixingMatrixPtr & CPoddHiggsMix() const {
-    return theHiggsAMix;
-  }
-
-  /**
    *  The NMSSM couplings
    */
   //@{
@@ -162,11 +155,6 @@ private:
   NMSSM & operator=(const NMSSM &);
 
 private:
-
-  /**
-   *  Higgs mixing matrix
-   */
-  MixingMatrixPtr theHiggsAMix;
 
   /**
    *  The NMSSM couplings

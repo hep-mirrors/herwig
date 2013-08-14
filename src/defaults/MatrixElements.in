@@ -100,8 +100,21 @@ create Herwig::MEQCD2to2       MEQCD2to2
 # MinBias
 create Herwig::MEMinBias MEMinBias
 
+###################################
+#  Heavy Quark
+###################################
+
 # qqbar/gg -> t tbar
 create Herwig::MEPP2QQ         MEHeavyQuark     
+
+create Herwig::MEPP2SingleTop MESingleTopTChannel
+set MESingleTopTChannel:Process tChannel
+
+create Herwig::MEPP2SingleTop MESingleTopSChannel
+set MESingleTopSChannel:Process sChannel
+
+create Herwig::MEPP2SingleTop MESingleTopTW
+set MESingleTopTW:Process tW
 
 ###################################
 #  Higgs processes

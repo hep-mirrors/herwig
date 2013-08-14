@@ -127,7 +127,7 @@ void FFggxDipole::Init() {
   static ClassDocumentation<FFggxDipole> documentation
     ("FFggxDipole");
 
-  DipoleRepository::registerDipole<FFggxDipole,FFLightTildeKinematics,FFLightInvertedTildeKinematics>
+  DipoleRepository::registerDipole<0,FFggxDipole,FFLightTildeKinematics,FFLightInvertedTildeKinematics>
     ("FFggxDipole","FFLightTildeKinematics","FFLightInvertedTildeKinematics");
 
 }

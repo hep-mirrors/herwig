@@ -146,6 +146,51 @@ insert Factory:ParticleGroup 0 /Herwig/Particles/ubar
 insert Factory:ParticleGroup 0 /Herwig/Particles/g
 do Factory:EndParticleGroup
 
+do Factory:StartParticleGroup u
+insert Factory:ParticleGroup 0 /Herwig/Particles/u
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup ubar
+insert Factory:ParticleGroup 0 /Herwig/Particles/ubar
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup d
+insert Factory:ParticleGroup 0 /Herwig/Particles/d
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup dbar
+insert Factory:ParticleGroup 0 /Herwig/Particles/dbar
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup s
+insert Factory:ParticleGroup 0 /Herwig/Particles/s
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup sbar
+insert Factory:ParticleGroup 0 /Herwig/Particles/sbar
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup c
+insert Factory:ParticleGroup 0 /Herwig/Particles/c
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup cbar
+insert Factory:ParticleGroup 0 /Herwig/Particles/cbar
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup b
+insert Factory:ParticleGroup 0 /Herwig/Particles/b
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup bbar
+insert Factory:ParticleGroup 0 /Herwig/Particles/bbar
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup g
+insert Factory:ParticleGroup 0 /Herwig/Particles/g
+do Factory:EndParticleGroup
+
+
 do Factory:StartParticleGroup h0
 insert Factory:ParticleGroup 0 /Herwig/Particles/h0
 do Factory:EndParticleGroup
@@ -294,16 +339,19 @@ set JetFinder:ConeRadius 0.7
 create ThePEG::JetRegion FirstJet
 set FirstJet:PtMin 20.*GeV
 do FirstJet:YRange -5.0 5.0
+set FirstJet:Fuzzy Yes
 insert FirstJet:Accepts[0] 1
 
 create ThePEG::JetRegion SecondJet
 set SecondJet:PtMin 20.*GeV
 do SecondJet:YRange -5.0 5.0
+set SecondJet:Fuzzy Yes
 insert SecondJet:Accepts[0] 2
 
 create ThePEG::JetRegion ThirdJet
 set ThirdJet:PtMin 20.*GeV
 do ThirdJet:YRange -5.0 5.0
+set ThirdJet:Fuzzy Yes
 insert ThirdJet:Accepts[0] 3
 
 create ThePEG::NJetsCut NJetsCut

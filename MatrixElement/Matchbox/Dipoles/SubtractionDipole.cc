@@ -42,6 +42,19 @@ SubtractionDipole::SubtractionDipole()
 
 SubtractionDipole::~SubtractionDipole() {}
 
+void SubtractionDipole::clearBookkeeping() {
+  theRealEmitter = -1;
+  theRealEmission = -1;
+  theRealSpectator = -1;
+  theBornEmitter = -1;
+  theBornSpectator = -1;
+  theMergingMap.clear();
+  theSplittingMap.clear();
+  theIndexMap.clear();
+  theUnderlyingBornDiagrams.clear();
+  theRealEmissionDiagrams.clear();
+}
+
 void SubtractionDipole::setupBookkeeping() {
 
   theMergingMap.clear();
@@ -1090,7 +1103,6 @@ void SubtractionDipole::persistentInput(PersistentIStream & is, int) {
   lastMatchboxXComb(theLastXComb);
   typedef multimap<UnderlyingBornKey,RealEmissionInfo>::const_iterator spit;
   pair<spit,spit> kr = theSplittingMap.equal_range(lastUnderlyingBornKey);
-  assert(kr.first != kr.second);
   lastRealEmissionInfo = kr.first;
   for ( ; lastRealEmissionInfo != kr.second; ++lastRealEmissionInfo )
     if ( process(lastRealEmissionInfo->second.first) == lastXComb().mePartonData() )

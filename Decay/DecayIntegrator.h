@@ -368,7 +368,7 @@ protected:
    * @param imode The mode
    * @param init Whether or not to perform the initialization
    */
-  Energy initializePhaseSpaceMode(unsigned int imode,bool init) const;
+  Energy initializePhaseSpaceMode(unsigned int imode,bool init, bool onShell=false) const;
 
   /**
    *  Whether or not the one loop matrix element is implemented

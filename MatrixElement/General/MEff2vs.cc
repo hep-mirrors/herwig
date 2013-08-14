@@ -135,12 +135,14 @@ MEff2vs::ffb2vsHeME(SpinorVector & sp, SpinorBarVector & spbar,
 	  else if( current.channelType == HPDiagram::tChannel ) {
 	    if( offshell->iSpin() == PDT::Spin1Half ) {
 	      if( current.ordered.second ) {
+		if(offshell->CC()) offshell = offshell->CC();
 		SpinorBarWaveFunction interFB = fermion_[ix].second->
 		  evaluate(m2, 3, offshell, spbar[ihel2], sca);
 		diag = fermion_[ix].first->
 		  evaluate(m2, sp[ihel1], interFB, vec[ovhel]);
 	      }
 	      else {
+		if(offshell->CC()) offshell = offshell->CC();
 		SpinorBarWaveFunction interFB = fermion_[ix].first->
 		  evaluate(m2, 3, offshell, spbar[ihel2], vec[ovhel]);
 		diag = fermion_[ix].second->

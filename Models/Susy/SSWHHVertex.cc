@@ -12,6 +12,7 @@
 //
 
 #include "SSWHHVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -69,8 +70,9 @@ void SSWHHVertex::persistentInput(PersistentIStream & is, int) {
   is >> theSw >> theS2w >> theC2w >> thesbma >> thecbma;
 }
 
-ClassDescription<SSWHHVertex> SSWHHVertex::initSSWHHVertex;
-// Definition of the static class description member.
+// Static variable needed for the type description system in ThePEG.
+DescribeClass<SSWHHVertex,VSSVertex>
+describeHerwigSSWHHVertex("Herwig::SSWHHVertex", "HwSusy.so");
 
 void SSWHHVertex::Init() {
 
@@ -114,7 +116,7 @@ void SSWHHVertex::setCoupling(Energy2 q2, tcPDPtr particle1,
     else if( higgs == ParticleID::H0) 
       coup = -0.5*thesbma/theSw;
     else 
-      coup = Complex(0., 0.5)/theSw;
+      coup = -Complex(0., 0.5)/theSw;
     if(abs(h2ID) == ParticleID::Hplus ) coup *= -1.;
     if(gboson<0&&higgs!=ParticleID::A0) coup *= -1.;
   }

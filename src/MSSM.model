@@ -139,31 +139,16 @@ setup ~e_R- 2000011 ~e_R- 500.0 0.0 0.0 0.0 -3 0 1 1
 create ThePEG::ParticleData ~e_R+ 
 setup ~e_R+ -2000011 ~e_R+ 500.0 0.0 0.0 0.0 3 0 1 1
 makeanti ~e_R- ~e_R+ 
-create ThePEG::ParticleData ~nu_eR 
-setup ~nu_eR 2000012 ~nu_eR 500.0 0.0 0.000010 0.0 0 0 1 1
-create ThePEG::ParticleData ~nu_eRbar 
-setup ~nu_eRbar -2000012 ~nu_eRbar 500.0 0.0 0.000010 0.0 0 0 1 1
-makeanti ~nu_eR ~nu_eRbar 
 create ThePEG::ParticleData ~mu_R- 
 setup ~mu_R- 2000013 ~mu_R- 500.0 0.0 0.0 0.0 -3 0 1 1
 create ThePEG::ParticleData ~mu_R+ 
 setup ~mu_R+ -2000013 ~mu_R+ 500.0 0.0 0.0 0.0 3 0 1 1
 makeanti ~mu_R- ~mu_R+ 
-create ThePEG::ParticleData ~nu_muR 
-setup ~nu_muR 2000014 ~nu_muR 500.0 0.0 0.000010 0.0 0 0 1 1
-create ThePEG::ParticleData ~nu_muRbar 
-setup ~nu_muRbar -2000014 ~nu_muRbar 500.0 0.0 0.000010 0.0 0 0 1 1
-makeanti ~nu_muR ~nu_muRbar 
 create ThePEG::ParticleData ~tau_2- 
 setup ~tau_2- 2000015 ~tau_2- 500.0 0.0 0.0 0.0 -3 0 1 1
 create ThePEG::ParticleData ~tau_2+ 
 setup ~tau_2+ -2000015 ~tau_2+ 500.0 0.0 0.0 0.0 3 0 1 1
 makeanti ~tau_2- ~tau_2+ 
-create ThePEG::ParticleData ~nu_tauR 
-setup ~nu_tauR 2000016 ~nu_tauR 500.0 0.0 0.000010 0.0 0 0 1 1
-create ThePEG::ParticleData ~nu_tauRbar 
-setup ~nu_tauRbar -2000016 ~nu_tauRbar 500.0 0.0 0.000010 0.0 0 0 1 1
-makeanti ~nu_tauR ~nu_tauRbar 
 ###################################################
 #
 #  Main directory and model object
@@ -260,6 +245,7 @@ cd /Herwig/NewPhysics
 set TwoBodyDC:CreateDecayModes No
 set ThreeBodyDC:CreateDecayModes No
 set WeakDecayConstructor:CreateDecayModes No
+set FourBodyDC:CreateDecayModes No
 # switch on decays via weak current
 insert DecayConstructor:NBodyDecayConstructors 0 WeakDecayConstructor
 # exclude gravitino and effective vertices from three body decays
@@ -271,6 +257,15 @@ insert ThreeBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_HPP
 insert ThreeBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_NNP
 insert ThreeBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GNG
 insert ThreeBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_NCT
+# and four body decays
+insert FourBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GVNH
+insert FourBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GVFS
+insert FourBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GVNV
+insert FourBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_HGG
+insert FourBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_HPP
+insert FourBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_NNP
+insert FourBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GNG
+insert FourBodyDC:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_NCT
 # and hard processes
 insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GVNH
 insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GVFS
@@ -280,42 +275,47 @@ insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_HPP
 insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_NNP
 insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_GNG
 insert HPConstructor:ExcludedVertices 0 /Herwig/Vertices/MSSM/MSSM_NCT
+# exclude intermediate higgs from 4 body decays
+insert FourBodyDC:ExcludedIntermediates 0 /Herwig/Particles/h0
+insert FourBodyDC:ExcludedIntermediates 0 /Herwig/Particles/H0
+insert FourBodyDC:ExcludedIntermediates 0 /Herwig/Particles/A0
+insert FourBodyDC:ExcludedIntermediates 0 /Herwig/Particles/H+
 
 # which particles get the off-shell treatment
 set NewModel:WhichOffshell All
 # particles for which decays are included
 insert NewModel:DecayParticles 0 /Herwig/Particles/~d_L
-insert NewModel:DecayParticles 1 /Herwig/Particles/~u_L
-insert NewModel:DecayParticles 2 /Herwig/Particles/~s_L
-insert NewModel:DecayParticles 3 /Herwig/Particles/~c_L
-insert NewModel:DecayParticles 4 /Herwig/Particles/~b_1
-insert NewModel:DecayParticles 5 /Herwig/Particles/~t_1
-insert NewModel:DecayParticles 6 /Herwig/Particles/~d_R
-insert NewModel:DecayParticles 7 /Herwig/Particles/~u_R
-insert NewModel:DecayParticles 8 /Herwig/Particles/~s_R
-insert NewModel:DecayParticles 9 /Herwig/Particles/~c_R
-insert NewModel:DecayParticles 10 /Herwig/Particles/~b_2
-insert NewModel:DecayParticles 11 /Herwig/Particles/~t_2
-insert NewModel:DecayParticles 12 /Herwig/Particles/~e_L-
-insert NewModel:DecayParticles 13 /Herwig/Particles/~nu_eL
-insert NewModel:DecayParticles 14 /Herwig/Particles/~mu_L-
-insert NewModel:DecayParticles 15 /Herwig/Particles/~nu_muL
-insert NewModel:DecayParticles 16 /Herwig/Particles/~tau_1-
-insert NewModel:DecayParticles 17 /Herwig/Particles/~nu_tauL
-insert NewModel:DecayParticles 18 /Herwig/Particles/~e_R-
-insert NewModel:DecayParticles 19 /Herwig/Particles/~mu_R-
-insert NewModel:DecayParticles 20 /Herwig/Particles/~tau_2-
-insert NewModel:DecayParticles 21 /Herwig/Particles/~g
-insert NewModel:DecayParticles 22 /Herwig/Particles/~chi_10
-insert NewModel:DecayParticles 23 /Herwig/Particles/~chi_20
-insert NewModel:DecayParticles 24 /Herwig/Particles/~chi_30
-insert NewModel:DecayParticles 25 /Herwig/Particles/~chi_40
-insert NewModel:DecayParticles 26 /Herwig/Particles/~chi_1+
-insert NewModel:DecayParticles 27 /Herwig/Particles/~chi_2+
-insert NewModel:DecayParticles 28 /Herwig/Particles/h0
-insert NewModel:DecayParticles 29 /Herwig/Particles/H0
-insert NewModel:DecayParticles 30 /Herwig/Particles/A0
-insert NewModel:DecayParticles 31 /Herwig/Particles/H+
+insert NewModel:DecayParticles 0 /Herwig/Particles/~u_L
+insert NewModel:DecayParticles 0 /Herwig/Particles/~s_L
+insert NewModel:DecayParticles 0 /Herwig/Particles/~c_L
+insert NewModel:DecayParticles 0 /Herwig/Particles/~b_1
+insert NewModel:DecayParticles 0 /Herwig/Particles/~t_1
+insert NewModel:DecayParticles 0 /Herwig/Particles/~d_R
+insert NewModel:DecayParticles 0 /Herwig/Particles/~u_R
+insert NewModel:DecayParticles 0 /Herwig/Particles/~s_R
+insert NewModel:DecayParticles 0 /Herwig/Particles/~c_R
+insert NewModel:DecayParticles 0 /Herwig/Particles/~b_2
+insert NewModel:DecayParticles 0 /Herwig/Particles/~t_2
+insert NewModel:DecayParticles 0 /Herwig/Particles/~e_L-
+insert NewModel:DecayParticles 0 /Herwig/Particles/~nu_eL
+insert NewModel:DecayParticles 0 /Herwig/Particles/~mu_L-
+insert NewModel:DecayParticles 0 /Herwig/Particles/~nu_muL
+insert NewModel:DecayParticles 0 /Herwig/Particles/~tau_1-
+insert NewModel:DecayParticles 0 /Herwig/Particles/~nu_tauL
+insert NewModel:DecayParticles 0 /Herwig/Particles/~e_R-
+insert NewModel:DecayParticles 0 /Herwig/Particles/~mu_R-
+insert NewModel:DecayParticles 0 /Herwig/Particles/~tau_2-
+insert NewModel:DecayParticles 0 /Herwig/Particles/~g
+insert NewModel:DecayParticles 0 /Herwig/Particles/~chi_10
+insert NewModel:DecayParticles 0 /Herwig/Particles/~chi_20
+insert NewModel:DecayParticles 0 /Herwig/Particles/~chi_30
+insert NewModel:DecayParticles 0 /Herwig/Particles/~chi_40
+insert NewModel:DecayParticles 0 /Herwig/Particles/~chi_1+
+insert NewModel:DecayParticles 0 /Herwig/Particles/~chi_2+
+insert NewModel:DecayParticles 0 /Herwig/Particles/h0
+insert NewModel:DecayParticles 0 /Herwig/Particles/H0
+insert NewModel:DecayParticles 0 /Herwig/Particles/A0
+insert NewModel:DecayParticles 0 /Herwig/Particles/H+
 ###################################################
 #
 #  Shower stuff for coloured sparticles
@@ -395,12 +395,9 @@ insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000003 #  SUSY_s_R
 insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000004 #  SUSY_c_R 
 insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000005 #  SUSY_b_2 
 insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000006 #  SUSY_t_2 
-insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000011 #  SUSY_e_Rminus 
-insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000012 #  SUSY_nu_eR 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000011 #  SUSY_e_Rminus
 insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000013 #  SUSY_mu_Rminus 
-insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000014 #  SUSY_nu_muR 
-insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000015 #  SUSY_tau_2minus 
-insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000016 #  SUSY_nu_tauR
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000015 #  SUSY_tau_2minus
 insert /Herwig/Shower/ShowerHandler:DecayInShower 0  35      #  H0
 insert /Herwig/Shower/ShowerHandler:DecayInShower 0  36      #  A0
 insert /Herwig/Shower/ShowerHandler:DecayInShower 0  37      #  H+

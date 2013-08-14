@@ -20,11 +20,11 @@
 using namespace Herwig;
 
 void MixingMatrix::persistentOutput(PersistentOStream & os) const {
-  os << _theMixingMatrix << _theIds << _theSize;
+  os << mixingMatrix_ << ids_ << size_;
 }
 
 void MixingMatrix::persistentInput(PersistentIStream & is, int) {
-  is >> _theMixingMatrix >> _theIds >> _theSize;
+  is >> mixingMatrix_ >> ids_ >> size_;
 }
 
 // *** Attention *** The following static variable is needed for the type
@@ -45,10 +45,10 @@ void MixingMatrix::Init() {
 
 void MixingMatrix::adjustPhase(long id) { 
   unsigned int irow(0);
-  while(irow < size().first && _theIds[irow] != id) 
+  while(irow < size().first && ids_[irow] != id) 
     ++irow;
-  for(unsigned int c = 0; c < _theSize.second; ++c)
-    _theMixingMatrix[irow][c] *= Complex(0., 1.);
+  for(unsigned int c = 0; c < size_.second; ++c)
+    mixingMatrix_[irow][c] *= Complex(0., 1.);
 }
 
 ostream & Herwig::operator<<(ostream & os,const MixingMatrix & mix) {
