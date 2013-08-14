@@ -115,7 +115,7 @@ public:
     else if(scaleChoice_ ==2) {
       Energy2 scale1 = meMomenta()[2].mass2()+meMomenta()[2].perp2();
       Energy2 scale2 = meMomenta()[3].mass2()+meMomenta()[3].perp2();
-      return scaleFactor_*sqrt(scale1*scale2);
+      return scaleFactor_*max(scale1,scale2);
     }
     else assert(false);
   }

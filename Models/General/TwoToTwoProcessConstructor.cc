@@ -185,8 +185,8 @@ void TwoToTwoProcessConstructor::Init() {
      2);
   static SwitchOption interfaceScaleChoiceGeometicMean
     (interfaceScaleChoice,
-     "GeometicMean",
-     "Use the geometic mean of m^2+p_T^2 for the two particles",
+     "MaxMT",
+     "Use the maximum of m^2+p_T^2 for the two particles",
      3);
 
   static Parameter<TwoToTwoProcessConstructor,double> interfaceScaleFactor
