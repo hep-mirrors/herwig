@@ -144,7 +144,7 @@ void IFMggxDipole::Init() {
   static ClassDocumentation<IFMggxDipole> documentation
     ("IFMggxDipole");
 
-  DipoleRepository::registerDipole<IFMggxDipole,IFLightTildeKinematics,IFLightInvertedTildeKinematics>
+  DipoleRepository::registerDipole<0,IFMggxDipole,IFLightTildeKinematics,IFLightInvertedTildeKinematics>
     ("IFMggxDipole","IFLightTildeKinematics","IFLightInvertedTildeKinematics");
 
 }

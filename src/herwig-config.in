@@ -37,7 +37,7 @@ tmp=$(echo "$*" | egrep -- '--\<includedir\>')
 test -n "$tmp" && echo @includedir@
 
 tmp=$(echo "$*" | egrep -- '--\<cppflags\>')
-test -n "$tmp" && echo -I@includedir@ @THEPEGINCLUDE@ @BOOSTINCLUDE@ @GSLINCLUDE@
+test -n "$tmp" && echo -I@includedir@ @THEPEGINCLUDE@ @BOOST_CPPFLAGS@ @GSLINCLUDE@
 
 tmp=$(echo "$*" | egrep -- '--\<ldflags\>')
 test -n "$tmp" && echo @THEPEGLDFLAGS@

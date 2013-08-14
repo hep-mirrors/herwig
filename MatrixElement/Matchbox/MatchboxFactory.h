@@ -317,6 +317,27 @@ public:
   vector<Ptr<MatchboxMEBase>::ptr>& bornMEs() { return theBornMEs; }
 
   /**
+   * Return the processes to be ordered from an OLP
+   */
+  const map<Ptr<MatchboxAmplitude>::tptr,
+	    map<pair<Process,int>,int> >&
+  olpProcesses() const { return theOLPProcesses; }
+
+  /**
+   * Access the processes to be ordered from an OLP
+   */
+  map<Ptr<MatchboxAmplitude>::tptr,
+      map<pair<Process,int>,int> >& 
+  olpProcesses() { return theOLPProcesses; }
+
+  /**
+   * Order an OLP process and return its id
+   */
+  int orderOLPProcess(const Process& p,
+		      Ptr<MatchboxAmplitude>::tptr amp,
+		      int type);
+
+  /**
    * Return the virtual corrections to be considered
    */
   const vector<Ptr<MatchboxInsertionOperator>::ptr>& virtuals() const { return theVirtuals; }
@@ -345,6 +366,16 @@ public:
    * Access the real emission matrix elements to be considered
    */
   vector<Ptr<MatchboxMEBase>::ptr>& realEmissionMEs() { return theRealEmissionMEs; }
+
+  /**
+   * Return, which set of dipoles should be considered
+   */
+  int dipoleSet() const { return theDipoleSet; }
+
+  /**
+   * Return, which set of dipoles should be considered
+   */
+  void dipoleSet(int s) { theDipoleSet = s; }
 
   /**
    * Return the produced subtracted matrix elements
@@ -695,6 +726,11 @@ private:
   vector<Ptr<MatchboxMEBase>::ptr> theFiniteRealMEs;
 
   /**
+   * Which set of dipoles should be considered
+   */
+  int theDipoleSet;
+
+  /**
    * Switch on or off verbosity
    */
   bool theVerbose;
@@ -776,7 +812,7 @@ private:
    * Generate matrix element objects for the given process.
    */
   vector<Ptr<MatchboxMEBase>::ptr> makeMEs(const vector<string>&, 
-					   unsigned int orderas) const;
+					   unsigned int orderas);
 
   /**
    * The shower approximation.
@@ -798,6 +834,21 @@ private:
    * maximum order.
    */
   bool theAllProcesses;
+
+  /**
+   * The processes to be ordered from an OLP
+   */
+  map<Ptr<MatchboxAmplitude>::tptr,map<pair<Process,int>,int> > theOLPProcesses;
+
+  /**
+   * Amplitudes to be selected on clashing responsibilities.
+   */
+  vector<Ptr<MatchboxAmplitude>::ptr> theSelectedAmplitudes;
+
+  /**
+   * Amplitudes to be deselected on clashing responsibilities.
+   */
+  vector<Ptr<MatchboxAmplitude>::ptr> theDeselectedAmplitudes;
 
 private:
 

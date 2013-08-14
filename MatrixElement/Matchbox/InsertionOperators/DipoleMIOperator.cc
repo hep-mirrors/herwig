@@ -298,7 +298,7 @@ void DipoleMIOperator::Init() {
   static ClassDocumentation<DipoleMIOperator> documentation
     ("DipoleMIOperator");
 
-  DipoleRepository::registerInsertionOperator<DipoleMIOperator>("MassiveIOperator");
+  DipoleRepository::registerInsertionOperator<0,DipoleMIOperator>("MassiveIOperator");
 
 }
 

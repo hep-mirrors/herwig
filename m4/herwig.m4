@@ -108,7 +108,7 @@ AC_SUBST(THEPEGINCLUDE)
 AC_MSG_CHECKING([for HepMCAnalysis.so in ThePEG])
 
 
-if test -x "$THEPEGPATH/lib/ThePEG/HepMCAnalysis.so" ; then
+if test -e "$THEPEGPATH/lib/ThePEG/HepMCAnalysis.so" ; then
      	CREATE_HEPMC="create"
 	AC_MSG_RESULT([found])
 else
@@ -117,50 +117,6 @@ else
 fi
 
 AC_SUBST([CREATE_HEPMC])
-])
-
-dnl ##### boost #####
-AC_DEFUN([HERWIG_CHECK_BOOST],
-[
-AC_MSG_CHECKING([for boost headers])
-BOOSTINCLUDE=""
-
-AC_ARG_WITH(boost,
-        AC_HELP_STRING([--with-boost=DIR],[location of boost]),
-        [],
-	[with_boost=system])
-
-if test "x$with_boost" = "xno"; then
-AC_MSG_ERROR([boost headers are required. Please specify boost installation with --with-boost.])
-fi
-
-boostpath=$with_boost
-
-if test "x$with_boost" == "xsystem" ; then
-   if test -e "/usr/include/boost/array.hpp"; then
-      boostpath="/usr"
-   elif test -e "/usr/local/include/boost/array.hpp"; then
-      boostpath="/usr/local"
-   elif test -e "/opt/include/boost/array.hpp"; then
-      boostpath="/opt"
-   elif test -e "/opt/local/include/boost/array.hpp"; then
-      boostpath="/opt/local"
-   else
-      AC_MSG_RESULT([not found])
-      AC_MSG_ERROR([boost headers are required. Please install boost.])
-   fi
-fi
-
-if test -e "$boostpath/include/boost/array.hpp"; then
-        AC_MSG_RESULT([found in $boostpath])
-else
-	AC_MSG_RESULT([not found])
-	AC_MSG_ERROR([boost headers are required. Please install boost.])
-fi
-
-BOOSTINCLUDE="-I$boostpath/include"
-
-AC_SUBST(BOOSTINCLUDE)
 ])
 
 dnl ##### LOOPTOOLS #####
@@ -288,9 +244,11 @@ AM_CONDITIONAL(USE_SVNVERSION,[test "x$have_svnversion" = "xyes"])
 dnl ##### COMPILERFLAGS #####
 AC_DEFUN([HERWIG_COMPILERFLAGS],
 [
+AC_REQUIRE([HERWIG_CHECK_GSL])
 AC_REQUIRE([HERWIG_CHECK_THEPEG])
+AC_REQUIRE([BOOST_REQUIRE])
 
-AM_CPPFLAGS="-I\$(top_builddir)/include $THEPEGINCLUDE \$(GSLINCLUDE) \$(BOOSTINCLUDE)"
+AM_CPPFLAGS="-I\$(top_builddir)/include $THEPEGINCLUDE \$(GSLINCLUDE) \$(BOOST_CPPFLAGS)"
 
 AC_MSG_CHECKING([for debugging mode])
 AC_ARG_ENABLE(debug,
@@ -401,7 +359,7 @@ cat << _HW_EOF_ > config.herwig
 *** ThePEG headers:	$with_thepeg_headers
 ***
 *** GSL:		$with_gsl
-*** boost:              $with_boost
+*** boost:              ${BOOST_CPPFLAGS:-system}
 *** Fastjet:		${fjconfig}
 ***
 *** Host:		$host

@@ -110,7 +110,7 @@ void FFMggxDipole::Init() {
   static ClassDocumentation<FFMggxDipole> documentation
     ("FFMggxDipole");
 
-  DipoleRepository::registerDipole<FFMggxDipole,FFMassiveTildeKinematics,FFMassiveInvertedTildeKinematics>
+  DipoleRepository::registerDipole<0,FFMggxDipole,FFMassiveTildeKinematics,FFMassiveInvertedTildeKinematics>
     ("FFMggxDipole","FFMassiveTildeKinematics","FFMassiveInvertedTildeKinematics");
 
 }

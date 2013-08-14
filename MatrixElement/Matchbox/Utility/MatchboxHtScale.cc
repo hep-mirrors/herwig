@@ -27,7 +27,7 @@
 using namespace Herwig;
 
 MatchboxHtScale::MatchboxHtScale()
-  : theJetsOnly(true) {}
+  : theJetsOnly(true), theDoAverage(false) {}
 
 MatchboxHtScale::~MatchboxHtScale() {}
 

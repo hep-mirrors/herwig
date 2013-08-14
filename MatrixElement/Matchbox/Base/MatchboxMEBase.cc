@@ -70,16 +70,14 @@ void MatchboxMEBase::getDiagrams() const {
   if ( diagramGenerator() && processData() ) {
 
     vector<Ptr<Tree2toNDiagram>::ptr> diags;
-    for ( vector<PDVector>::const_iterator p = subProcesses().begin();
-	  p != subProcesses().end(); ++p ) {
-      vector<Ptr<Tree2toNDiagram>::ptr>& res =
-	processData()->diagramMap()[*p];
-      if ( res.empty() ) {
-	res = diagramGenerator()->generate(*p,orderInAlphaS(),orderInAlphaEW());
-      }
-      copy(res.begin(),res.end(),back_inserter(diags));
-      processData()->fillMassGenerators(*p);
+
+    vector<Ptr<Tree2toNDiagram>::ptr>& res =
+      processData()->diagramMap()[subProcess().legs];
+    if ( res.empty() ) {
+      res = diagramGenerator()->generate(subProcess().legs,orderInAlphaS(),orderInAlphaEW());
     }
+    copy(res.begin(),res.end(),back_inserter(diags));
+    processData()->fillMassGenerators(subProcess().legs);
 
     if ( diags.empty() )
       return;
@@ -117,39 +115,46 @@ Selector<const ColourLines *>
 MatchboxMEBase::colourGeometries(tcDiagPtr diag) const {
 
   if ( matchboxAmplitude() ) {
-    if ( !matchboxAmplitude()->haveColourFlows() )
-      throw Exception() << "A colour flow implementation is not present."
-			<< Exception::abortnow;
-    if ( matchboxAmplitude()->treeAmplitudes() )
-      matchboxAmplitude()->prepareAmplitudes(this);
-    return matchboxAmplitude()->colourGeometries(diag);
+    if ( matchboxAmplitude()->haveColourFlows() ) {
+      if ( matchboxAmplitude()->treeAmplitudes() )
+	matchboxAmplitude()->prepareAmplitudes(this);
+      return matchboxAmplitude()->colourGeometries(diag);
+    }
   }
 
-  throw Exception()
-    << "MatchboxMEBase::colourGeometries() expects a MatchboxAmplitude object.\n"
-    << "Please check your setup." << Exception::abortnow;
-  return Selector<const ColourLines *>();
+  Ptr<Tree2toNDiagram>::tcptr tdiag =
+    dynamic_ptr_cast<Ptr<Tree2toNDiagram>::tcptr>(diag);
+  assert(diag && processData());
+
+  vector<ColourLines*>& flows = processData()->colourFlowMap()[tdiag];
+
+  if ( flows.empty() ) {
+
+    list<list<list<pair<int,bool> > > > cflows =
+      ColourBasis::colourFlows(tdiag);
+
+    for ( list<list<list<pair<int,bool> > > >::const_iterator fit =
+	    cflows.begin(); fit != cflows.end(); ++fit ) {
+      flows.push_back(new ColourLines(ColourBasis::cfstring(*fit)));
+    }
+
+  }
+
+  Selector<const ColourLines *> res;
+  for ( vector<ColourLines*>::const_iterator f = flows.begin();
+	f != flows.end(); ++f )
+    res.insert(1.0,*f);
+
+  return res;
 
 }
 
 unsigned int MatchboxMEBase::orderInAlphaS() const {
-  if ( matchboxAmplitude() ) {
-    return matchboxAmplitude()->orderInGs();
-  }
-  throw Exception()
-    << "MatchboxMEBase::orderInAlphaS() expects a MatchboxAmplitude object.\n"
-    << "Please check your setup." << Exception::abortnow;
-  return 0;
+  return subProcess().orderInAlphaS;
 }
 
 unsigned int MatchboxMEBase::orderInAlphaEW() const {
-  if ( matchboxAmplitude() ) {
-    return matchboxAmplitude()->orderInGem();
-  }
-  throw Exception()
-    << "MatchboxMEBase::orderInAlphaEW() expects a MatchboxAmplitude object.\n"
-    << "Please check your setup." << Exception::abortnow;
-  return 0;
+  return subProcess().orderInAlphaEW;
 }
 
 void MatchboxMEBase::setXComb(tStdXCombPtr xc) {
@@ -482,24 +487,29 @@ double MatchboxMEBase::me2Norm(unsigned int addAlphaS) const {
   // spin-1/2 or massless spin-1 particles
   double fac = 1./4.;
 
+  if ( hasInitialAverage() )
+    fac = 1.;
+
   if ( orderInAlphaS() > 0 || addAlphaS != 0 )
     fac *= pow(lastAlphaS()/SM().alphaS(),double(orderInAlphaS()+addAlphaS));
   if ( orderInAlphaEW() > 0 )
     fac *= pow(lastAlphaEM()/SM().alphaEM(),double(orderInAlphaEW()));
 
-  if ( mePartonData()[0]->iColour() == PDT::Colour3 || 
-       mePartonData()[0]->iColour() == PDT::Colour3bar )
-    fac /= SM().Nc();
-  else if ( mePartonData()[0]->iColour() == PDT::Colour8 )
-    fac /= (SM().Nc()*SM().Nc()-1.);
+  if ( !hasInitialAverage() ) {
+    if ( mePartonData()[0]->iColour() == PDT::Colour3 || 
+	 mePartonData()[0]->iColour() == PDT::Colour3bar )
+      fac /= SM().Nc();
+    else if ( mePartonData()[0]->iColour() == PDT::Colour8 )
+      fac /= (SM().Nc()*SM().Nc()-1.);
 
-  if ( mePartonData()[1]->iColour() == PDT::Colour3 || 
-       mePartonData()[1]->iColour() == PDT::Colour3bar )
-    fac /= SM().Nc();
-  else if ( mePartonData()[1]->iColour() == PDT::Colour8 )
-    fac /= (SM().Nc()*SM().Nc()-1.);
+    if ( mePartonData()[1]->iColour() == PDT::Colour3 || 
+	 mePartonData()[1]->iColour() == PDT::Colour3bar )
+      fac /= SM().Nc();
+    else if ( mePartonData()[1]->iColour() == PDT::Colour8 )
+      fac /= (SM().Nc()*SM().Nc()-1.);
+  }
 
-  return finalStateSymmetry()*fac;
+  return !hasFinalStateSymmetry() ? finalStateSymmetry()*fac : fac;
 
 }
 
@@ -799,14 +809,15 @@ MatchboxMEBase::getDipoles(const vector<Ptr<SubtractionDipole>::ptr>& dipoles,
 	      continue;
 	    }
 	    // now get to work
-	    Ptr<SubtractionDipole>::ptr nDipole = (**d).cloneMe();
-	    nDipole->realEmitter(emitter);
-	    nDipole->realEmission(emission);
-	    nDipole->realSpectator(spectator);
-	    nDipole->realEmissionME(const_cast<MatchboxMEBase*>(this));
-	    nDipole->underlyingBornME(*b);
-	    nDipole->setupBookkeeping();
-	    if ( !(nDipole->empty()) ) {
+	    (**d).clearBookkeeping();
+	    (**d).realEmitter(emitter);
+	    (**d).realEmission(emission);
+	    (**d).realSpectator(spectator);
+	    (**d).realEmissionME(const_cast<MatchboxMEBase*>(this));
+	    (**d).underlyingBornME(*b);
+	    (**d).setupBookkeeping();
+	    if ( !((**d).empty()) ) {
+	      Ptr<SubtractionDipole>::ptr nDipole = (**d).cloneMe();
 	      res.push_back(nDipole);
 	      done.insert(make_pair(make_pair(make_pair(emitter,emission),spectator),make_pair(*b,*d)));
 	      if ( nDipole->isSymmetric() )
@@ -923,18 +934,16 @@ void MatchboxMEBase::print(ostream& os) const {
 
   os << "--- MatchboxMEBase setup -------------------------------------------------------\n";
 
-  os << " '" << name() << "' for subprocesses:\n";
-  for ( vector<PDVector>::const_iterator p = subProcesses().begin();
-	p != subProcesses().end(); ++p ) {
-    os << "  ";
-    for ( PDVector::const_iterator pp = p->begin();
-	  pp != p->end(); ++pp ) {
-      os << (**pp).PDGName() << " ";
-      if ( pp == p->begin() + 1 )
-	os << "-> ";
-    }
-    os << "\n";
+  os << " '" << name() << "' for subprocess:\n";
+
+  os << "  ";
+  for ( PDVector::const_iterator pp = subProcess().legs.begin();
+	pp != subProcess().legs.end(); ++pp ) {
+    os << (**pp).PDGName() << " ";
+    if ( pp == subProcess().legs.begin() + 1 )
+      os << "-> ";
   }
+  os << "\n";
 
   os << " including " << (oneLoop() ? "" : "no ") << "virtual corrections";
   if ( oneLoopNoBorn() )
@@ -1177,6 +1186,8 @@ void MatchboxMEBase::prepareXComb(MatchboxXCombData& xc) const {
 
   xc.nLight(getNLight());
 
+  xc.olpId(olpProcess());
+
   if ( initVerbose() ) {
     string fname = name() + ".diagrams";
     ifstream test(fname.c_str());
@@ -1237,17 +1248,19 @@ StdXCombPtr MatchboxMEBase::makeXComb(tStdXCombPtr newHead,
 void MatchboxMEBase::persistentOutput(PersistentOStream & os) const {
   os << theLastXComb << theFactory << thePhasespace 
      << theAmplitude << theScaleChoice << theVirtuals 
-     << theReweights << theSubprocesses << theOneLoop 
+     << theReweights << theSubprocess << theOneLoop 
      << theOneLoopNoBorn
-     << epsilonSquarePoleHistograms << epsilonPoleHistograms;
+     << epsilonSquarePoleHistograms << epsilonPoleHistograms
+     << theOLPProcess;
 }
 
 void MatchboxMEBase::persistentInput(PersistentIStream & is, int) {
   is >> theLastXComb >> theFactory >> thePhasespace 
      >> theAmplitude >> theScaleChoice >> theVirtuals 
-     >> theReweights >> theSubprocesses >> theOneLoop 
+     >> theReweights >> theSubprocess >> theOneLoop 
      >> theOneLoopNoBorn
-     >> epsilonSquarePoleHistograms >> epsilonPoleHistograms;
+     >> epsilonSquarePoleHistograms >> epsilonPoleHistograms
+     >> theOLPProcess;
   lastMatchboxXComb(theLastXComb);
 }
 

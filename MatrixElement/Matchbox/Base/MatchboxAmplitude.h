@@ -19,10 +19,78 @@
 #include "Herwig++/MatrixElement/Matchbox/Utility/LastMatchboxXCombInfo.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxXComb.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.fh"
+#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.fh"
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
+
+/**
+ * \ingroup Matchbox
+ * \author Simon Platzer
+ *
+ * \brief Process information with coupling order
+ */
+struct Process {
+
+  PDVector legs;
+  unsigned int orderInAlphaS;
+  unsigned int orderInAlphaEW;
+
+  Process()
+    : orderInAlphaS(0), orderInAlphaEW(0) {}
+
+  Process(const PDVector& p,
+	  unsigned int oas,
+	  unsigned int oae)
+    : legs(p), orderInAlphaS(oas), orderInAlphaEW(oae) {}
+
+  bool operator==(const Process& other) const {
+    return
+      legs == other.legs &&
+      orderInAlphaS == other.orderInAlphaS &&
+      orderInAlphaEW == other.orderInAlphaEW;
+  }
+
+  bool operator<(const Process& other) const {
+    if ( orderInAlphaS != other.orderInAlphaS )
+      return orderInAlphaS < other.orderInAlphaS;
+    if ( orderInAlphaEW != other.orderInAlphaEW )
+      return orderInAlphaEW < other.orderInAlphaEW;
+    return legs < other.legs;
+  }
+
+  void persistentOutput(PersistentOStream & os) const {
+    os << legs << orderInAlphaS << orderInAlphaEW;
+  }
+
+  void persistentInput(PersistentIStream & is) {
+    is >> legs >> orderInAlphaS >> orderInAlphaEW;
+  }
+
+};
+
+/**
+ * \ingroup Matchbox
+ * \author Simon Platzer
+ *
+ * \brief Enumerate the type of calculation required
+ */
+namespace ProcessType {
+
+  enum Types {
+
+    treeME2 = 0,
+    colourCorrelatedME2,
+    spinColourCorrelatedME2,
+    oneLoopInterference
+
+  };
+
+}
+
 
 /**
  * \ingroup Matchbox
@@ -72,6 +140,12 @@ public:
   /**
    * Return true, if this amplitude can handle the given process.
    */
+  virtual bool canHandle(const PDVector& p,
+			 Ptr<MatchboxFactory>::tptr) const { return canHandle(p); }
+
+  /**
+   * Return true, if this amplitude can handle the given process.
+   */
   virtual bool canHandle(const PDVector&) const { return false; }
 
   /**
@@ -84,7 +158,7 @@ public:
    * Return a ME instance appropriate for this amplitude and the given
    * subprocesses
    */
-  virtual Ptr<MatchboxMEBase>::ptr makeME(const vector<PDVector>&) const;
+  virtual Ptr<MatchboxMEBase>::ptr makeME(const PDVector&) const;
 
   /**
    * Set the (tree-level) order in \f$g_S\f$ in which this matrix
@@ -126,6 +200,64 @@ public:
    */
   virtual bool sortOutgoing() { return true; }
 
+  /**
+   * Return true, if this amplitude already includes averaging over
+   * incoming parton's quantum numbers.
+   */
+  virtual bool hasInitialAverage() const { return false; }
+
+  /**
+   * Return true, if this amplitude already includes symmetry factors
+   * for identical outgoing particles.
+   */
+  virtual bool hasFinalStateSymmetry() const { return false; }
+
+  /**
+   * Return true, if this amplitude is handled by a BLHA one-loop provider
+   */
+  virtual bool isOLPTree() const { return false; }
+
+  /**
+   * Return true, if this amplitude is handled by a BLHA one-loop provider
+   */
+  virtual bool isOLPLoop() const { return false; }
+
+  /**
+   * Write the order file header
+   */
+  virtual void olpOrderFileHeader(ostream&) const;
+
+  /**
+   * Write the order file process list
+   */
+  virtual void olpOrderFileProcessGroup(ostream&,
+					const string&,
+					const set<Process>&) const;
+
+  /**
+   * Write the order file process list
+   */
+  virtual void olpOrderFileProcesses(ostream&,
+				     const map<pair<Process,int>,int>& procs) const;
+
+  /**
+   * Start the one loop provider, if appropriate, giving order and
+   * contract files
+   */
+  virtual void signOLP(const string&, const string&) { }
+
+  /**
+   * Start the one loop provider, if appropriate
+   */
+  virtual void startOLP(const string&, int& status) { status = -1; }
+
+  /**
+   * Start the one loop provider, if appropriate. This default
+   * implementation writes an BLHA 2.0 order file and starts the OLP
+   */
+  virtual bool startOLP(const map<pair<Process,int>,int>& procs);
+
+
   //@}
 
   /** @name Colour basis. */
@@ -153,12 +285,7 @@ public:
    * Return a Selector with possible colour geometries for the selected
    * diagram weighted by their relative probabilities.
    */
-  virtual Selector<const ColourLines *> colourGeometries(tcDiagPtr diag) const {
-    return 
-      haveColourFlows() ? 
-      theColourBasis->colourGeometries(diag,lastLargeNAmplitudes()) :
-      Selector<const ColourLines *>();
-  }
+  virtual Selector<const ColourLines *> colourGeometries(tcDiagPtr diag) const;
 
   /**
    * Return an ordering identifier for the current subprocess and
@@ -409,6 +536,18 @@ private:
   MatchboxAmplitude & operator=(const MatchboxAmplitude &);
 
 };
+
+inline PersistentOStream& operator<<(PersistentOStream& os,
+				     const Process& h) {
+  h.persistentOutput(os);
+  return os;
+}
+
+inline PersistentIStream& operator>>(PersistentIStream& is,
+				     Process& h) {
+  h.persistentInput(is);
+  return is;
+}
 
 }
 
