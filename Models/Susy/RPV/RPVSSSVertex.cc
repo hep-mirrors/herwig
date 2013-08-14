@@ -732,6 +732,7 @@ void RPVSSSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
   if(abs(part1->id())>abs(part3->id())) swap(part1,part3);
   if(abs(part2->id())>abs(part3->id())) swap(part2,part3);
   // make sure squarks 2nd and 3rd
+  if(abs(part1->id())%1000000<=6) swap(part1,part2);
   if(abs(part1->id())%1000000<=6) swap(part1,part3);
   // extract particle ids
   long sca1(part1->id()), sca2(part2->id()), sca3(part3->id());
@@ -788,10 +789,10 @@ void RPVSSSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
       return;
     }
     else {
-      if(sca1==36 || sca1>2000000) swap(sca1,sca2);
-      if(sca1==36 || sca1>2000000) swap(sca1,sca3);
+      if(sca1==36 || (sca1>=1000017&&sca2<=1000019)) swap(sca1,sca2);
+      if(sca1==36 || (sca1>=1000017&&sca2<=1000019)) swap(sca1,sca3);
       // 2 pseudoscalar 1 scale
-      if(sca2==36 || (sca1>=1000017&&sca1<=1000019)) {
+      if(sca2==36 || (sca2>=1000017&&sca2<=1000019)) {
 	norm(gLast_*scalarPseudoPseudo_[scalarEigenState(sca1)]
 	     [pseudoEigenState(sca2)][pseudoEigenState(sca3)]*UnitRemoval::InvE);
 	return;

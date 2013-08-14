@@ -724,7 +724,9 @@ void RPVFFSVertex::higgsGauginoCoupling(Energy2, tcPDPtr f1,
       // charginos
       if(f1->charged()) {
 	unsigned int ei = charginoIndex(f1ID);
-	unsigned int ej = charginoIndex(f2ID); 
+	unsigned int ej = charginoIndex(f2ID);
+	if     (ei< 2&&f1ID>0) swap(ei,ej);
+	else if(ei>=2&&f1ID<0) swap(ei,ej);
 	_rightlast  = conj(OCCHL_[ih][ej][ei]);
 	_leftlast   =      OCCHL_[ih][ei][ej] ;
       }
@@ -744,6 +746,8 @@ void RPVFFSVertex::higgsGauginoCoupling(Energy2, tcPDPtr f1,
       if(f1->charged()) {
 	unsigned int ei = charginoIndex(f1ID);
 	unsigned int ej = charginoIndex(f2ID);
+	if     (ei< 2&&f1ID>0) swap(ei,ej);
+	else if(ei>=2&&f1ID<0) swap(ei,ej);
 	_rightlast = -Complex(0.,1.)*conj(OCCAL_[ih][ej][ei]);
 	_leftlast  =  Complex(0.,1.)*     OCCAL_[ih][ei][ej] ;
       }
@@ -765,7 +769,8 @@ void RPVFFSVertex::higgsGauginoCoupling(Energy2, tcPDPtr f1,
       unsigned int ej = charginoIndex(chg);
       _leftlast  = -OCNSL_[ih][ei][ej];
       _rightlast = -OCNSR_[ih][ei][ej];
-      if( isc < 0 ) {
+      bool chargedSwap = abs(isc)<1000000 ? isc<0 : isc>0;
+      if( chargedSwap ) {
 	Complex tmp = _leftlast;
 	_leftlast  = conj(_rightlast);
 	_rightlast = conj(tmp);

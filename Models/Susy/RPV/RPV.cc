@@ -223,7 +223,7 @@ void RPV::createMixingMatrices() {
     massMap[findValue(fit,2000011,"mass","2000011")] = 2000011;
     massMap[findValue(fit,2000013,"mass","2000013")] = 2000013;
     massMap[findValue(fit,2000015,"mass","2000015")] = 2000015;
-    massMap[findValue(fit,     24,"mass",     "24")] =      24;
+    massMap[getParticleData(24)->mass()/GeV        ] =      24;
     vector<int> move;
     for(map<double,long>::iterator mit=massMap.begin();mit!=massMap.end();++mit) {
       if     (mit->second==     37) move.push_back(0);
