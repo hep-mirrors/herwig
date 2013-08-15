@@ -83,10 +83,10 @@ void SMWDecayer::doinit() {
   // loop for the leptons
   for(int ix=11;ix<17;ix+=2) {
     // check that the combination of particles is allowed
-    if(!FFWvertex_->allowed(-ix,ix+1,ParticleID::Wminus))
-      throw InitException() << "SMWDecayer::doinit() the W vertex" 
-			    << "cannot handle all the lepton modes" 
-			    << Exception::abortnow;
+    // if(!FFWvertex_->allowed(-ix,ix+1,ParticleID::Wminus))
+    //   throw InitException() << "SMWDecayer::doinit() the W vertex" 
+    // 			    << "cannot handle all the lepton modes" 
+    // 			    << Exception::abortnow;
     extpart[1] = getParticleData(-ix);
     extpart[2] = getParticleData(ix+1);
     mode = new_ptr(DecayPhaseSpaceMode(extpart,this));

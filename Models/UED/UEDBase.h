@@ -251,6 +251,21 @@ private:
    * The value of the vacuum expectation value of the higgs field.
    */
   Energy theVeV;
+
+  /**
+   *  Include SM masses in calculation of KK masses
+   */
+  bool includeSMMass_;
+
+  /**
+   *  Use fixed couplings for the mass calculation
+   */
+  bool fixedCouplings_;
+
+  /**
+   *  Include gauge boson mixing
+   */
+  bool includeGaugeMixing_;
   
   /** @name The level 1 UED vertices. */
   //@{

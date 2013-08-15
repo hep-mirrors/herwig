@@ -109,6 +109,18 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit();
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
+
+  /**
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
+   */
+  virtual void dofinish();
   //@}
 
 private:
@@ -120,6 +132,16 @@ private:
   SSNNPVertex & operator=(const SSNNPVertex &);
 
 private:
+
+  /**
+   *  Whether of not to include on-shell intermediate states
+   */
+  bool _includeOnShell;
+
+  /**
+   *  Only include the real part of the integral
+   */
+  bool _realIntegral;
 
   /**
    * Pointer to the stop mixing matrix

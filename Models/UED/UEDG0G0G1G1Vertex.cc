@@ -57,21 +57,12 @@ void UEDG0G0G1G1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
     if(particles[i]->id() == ParticleID::g) ++ismg;
     if(particles[i]->id() == 5100021) ++ikkg;
   }
-  if(ismg == 2 && ikkg == 2) { 
-    if(q2 != theq2Last || theCoupLast == 0. ) {
-      theq2Last = q2;
-      theCoupLast = sqr(strongCoupling(q2));
-    }
-    norm(theCoupLast);
-    setType(1);
-    setOrder(0,1,2,3);
+  assert(ismg == 2 && ikkg == 2);
+  if(q2 != theq2Last || theCoupLast == 0. ) {
+    theq2Last = q2;
+    theCoupLast = sqr(strongCoupling(q2));
   }
-  else {
-    throw HelicityLogicalError() << "UEDG0G0G1G1Vertex::setCoupling - "
-				 << "There is an unknown particle in this vertex "
-				 << part1->id() << " " << part2->id() << " " 
-				 << part3->id() << " " << part4->id()
-				 << Exception::warning;
-    norm(0.);
-  }
+  norm(theCoupLast);
+  setType(1);
+  setOrder(0,1,2,3);
 }

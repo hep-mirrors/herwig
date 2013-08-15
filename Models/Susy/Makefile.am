@@ -1,4 +1,4 @@
-SUBDIRS = NMSSM
+SUBDIRS = NMSSM RPV
 if WANT_BSM
 pkglib_LTLIBRARIES = HwSusy.la
 endif

@@ -39,7 +39,8 @@ public:
 		     Offsel_(0), BRnorm_(true),
 		     Npoints_(10), Iorder_(1),
 		     BWshape_(0), brMin_(1e-6), twoBodyOnly_(false), 
-		     decayOutput_(1), minWidth_(1e-6) {}
+		     decayOutput_(1), minWidth_(1e-6),
+		     howOffShell_(5.) {}
 
 public:
 
@@ -212,6 +213,11 @@ private:
    *  treatment
    */
   double minWidth_;
+
+  /**
+   *  How much a particle is allowed to be offshell
+   */
+  double howOffShell_;
 };
 
 }

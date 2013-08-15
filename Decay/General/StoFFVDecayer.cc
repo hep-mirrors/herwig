@@ -213,7 +213,8 @@ double StoFFVDecayer::me2(const int ichan, const Particle & inpart,
 	    unsigned int h1(s1),h2(s2);
 	    if(dit->channelType > iferm) swap(h1, h2);
 	    sign = iferm < dit->channelType ? 1. : -1.;
-	    if(decay[dit->channelType]->id() < 0 && decay[iferm]->id() > 0 ) {
+	    if((decay[dit->channelType]->id() < 0 && decay[iferm]->id() > 0 ) ||
+	       (decay[dit->channelType]->id()*offshell->id()>0)) {
 	      SpinorWaveFunction inters = _fer[idiag].first->
 		evaluate(scale,widthOption(),offshell,
 			 _outspin[dit->channelType].first[h1], _swave);
@@ -227,7 +228,6 @@ double StoFFVDecayer::me2(const int ichan, const Particle & inpart,
 	      diag =  sign*_fer[idiag].second->
 		evaluate(scale,_outspin[iferm].first [h2],inters, _outVector[v1]);
 	    }
-
 	  }
 	  // intermediate vector
 	  else if(offshell->iSpin() == PDT::Spin1) {

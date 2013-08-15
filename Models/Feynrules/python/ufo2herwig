@@ -1,0 +1,532 @@
+#! /usr/bin/env python
+import os, sys, pprint, argparse, re
+from string import strip
+
+from ufo2peg import *
+
+# set up the option parser for command line input 
+parser = argparse.ArgumentParser(
+    description='Create Herwig++ model files from Feynrules UFO input.'
+)
+parser.add_argument(
+    'ufodir', 
+    metavar='UFO_directory', 
+    help='the UFO model directory'
+)
+parser.add_argument(
+    '-v', '--verbose', 
+    action="store_true", 
+    help="print verbose output"
+)
+parser.add_argument(
+    '-n','--name', 
+    default="FRModel", 
+    help="set custom nametag for the model"
+)
+
+args = parser.parse_args()
+
+modeldir = args.ufodir.rstrip('/')
+modelpath, module = os.path.split(modeldir)
+if modelpath:
+    sys.path.append(os.path.abspath(modelpath))
+
+FR = __import__(module)
+
+##################################################
+##################################################
+
+# get the Model name from the arguments
+modelname = args.name
+libname = modelname + '.so'
+
+# copy the Makefile-FR to current directory,
+# replace with the modelname for compilation
+with open('../Makefile-FR','r') as orig:
+    with open('Makefile','w') as dest:
+        dest.write(orig.read().replace("FeynrulesModel.so", libname))
+
+
+# define arrays and variables     
+#allplist = ""
+parmdecls = []
+parmgetters = []
+parmconstr = []
+
+paramstoreplace_ = []
+paramstoreplace_expressions_ = []
+
+# get external parameters for printing
+parmsubs = dict( [ (p.name, p.value) 
+                   for p in FR.all_parameters 
+                   if p.nature == 'external' ] ) 
+
+# evaluate python cmath
+def evaluate(x):
+    import cmath
+    return eval(x, 
+                {'cmath':cmath,
+                 'complexconjugate':FR.function_library.complexconjugate}, 
+                parmsubs)
+
+
+## get internal params into arrays
+internal = ( p for p in FR.all_parameters 
+             if p.nature == 'internal' )
+
+#paramstoreplaceEW_ = []
+#paramstoreplaceEW_expressions_ = []
+
+# calculate internal parameters
+for p in internal:
+    parmsubs.update( { p.name : evaluate(p.value) } )
+#    if 'aS' in p.value and p.name != 'aS':
+#        paramstoreplace_.append(p.name)
+#        paramstoreplace_expressions_.append(p.value)
+#    if 'aEWM1' in p.value and p.name != 'aEWM1':
+#        paramstoreplaceEW_.append(p.name)
+#        paramstoreplaceEW_expressions_.append(p.value)
+
+        
+    
+# more arrays used for substitution in templates 
+paramsforstream = []
+parmmodelconstr = []
+
+# loop over parameters and fill in template stuff according to internal/external and complex/real
+# WARNING: Complex external parameter input not tested!
+if args.verbose:
+    print 'verbose mode on: printing all parameters'
+    print '-'*60
+    paramsstuff = ('name', 'expression', 'default value', 'nature')
+    pprint.pprint(paramsstuff)
+
+
+
+interfacedecl_T = """\
+static Parameter<{modelname}, {type}> interface{pname}
+  ("{pname}",
+   "The interface for parameter {pname}",
+   &{modelname}::{pname}_, {value}, 0, 0,
+   false, false, Interface::nolimits);
+"""
+
+interfaceDecls = []
+
+for p in FR.all_parameters:
+    value = parmsubs[p.name]
+
+    if p.type == 'real':
+        assert( value.imag < 1.0e-16 )
+        value = value.real
+        if p.nature == 'external':
+            interfaceDecls.append( 
+                interfacedecl_T.format(modelname=modelname,
+                                       pname=p.name,
+                                       value=value,
+                                       type=typemap(p.type)) 
+            )
+            parmconstr.append('%s_(%s)' % (p.name, value))
+            parmmodelconstr.append('set %s:%s %s' % (modelname, p.name, value))
+    elif p.type == 'complex':
+        value = complex(value)
+        if p.nature == 'external':
+#
+# TODO: WE DO NOT HAVE COMPLEX INTERFACES IN THEPEG (yet?)
+#
+#            interfaceDecls.append( 
+#                interfacedecl_T.format(modelname=modelname,
+#                                       pname=p.name,
+#                                       value='Complex(%s,%s)'%(value.real,value.imag),
+#                                       type=typemap(p.type)) 
+#            )
+#
+#            parmmodelconstr.append('set %s:%s (%s,%s)' % (modelname, p.name, value.real, value.imag))
+            parmconstr.append('%s_(%s,%s)' % (p.name, value.real, value.imag))
+    else:
+        raise Exception('Unknown data type "%s".' % p.type)
+    parmsubs[p.name] = value
+
+
+    if p.nature == 'external':
+        parmdecls.append('  %s %s_;' % (typemap(p.type), p.name))
+        parmgetters.append('  %s %s() const { return %s_; }' % (typemap(p.type),p.name, p.name))
+        paramsforstream.append('%s_' % p.name)
+        expression, symbols = 'return %s_' % p.name, None
+    else:
+        expression, symbols = py2cpp(p.value)
+        text = add_brackets(expression, symbols)
+        text=text.replace('()()','()')
+        parmgetters.append('  %s %s() const { return %s; }' % (typemap(p.type),p.name, text))
+
+### special treatment
+#    if p.name == 'aS':
+#        expression = '0.25 * sqr(strongCoupling(q2)) / Constants::pi'
+#    elif p.name == 'aEWM1':
+#        expression = '4.0 * Constants::pi / sqr(electroMagneticCoupling(q2))'
+#    elif p.name == 'Gf':
+#        expression = 'generator()->standardModel()->fermiConstant() * GeV2'
+#    elif p.name == 'MZ':
+#        expression = 'getParticleData(ThePEG::ParticleID::Z0)->mass() / GeV'
+
+
+    if args.verbose:
+        pprint.pprint((p.name,p.value, value, p.nature))
+
+parmtextsubs = { 'parmgetters' : '\n'.join(parmgetters),
+                 'parmdecls' : '\n'.join(parmdecls),
+                 'parmconstr' : ': %s' % ','.join(parmconstr),
+                 'getters' : '',
+                 'decls' : '',
+                 'addVertex' : '',
+                 'ostream' : '<< '.join(paramsforstream),
+                 'istream' : '>> '.join(paramsforstream),
+                 'refs' : '',
+                 'parmextinter': ''.join(interfaceDecls),
+                 'ModelName': modelname
+                 }
+
+print '-'*60
+
+# write the files from templates according to the above subs
+MODEL_H  = getTemplate('Model.h')
+MODEL_CC = getTemplate('Model.cc')
+MODEL_HWIN = getTemplate('LHC-FR.in')
+writeFile( '%s.h' % modelname,      MODEL_H.substitute(parmtextsubs) )
+writeFile( '%s.cc' % modelname,     MODEL_CC.substitute(parmtextsubs) )
+writeFile( 'LHC-%s.in' % modelname, MODEL_HWIN.substitute(parmtextsubs) )
+
+
+##################################################
+##################################################
+##################################################
+
+
+# get vertex template
+VERTEX = getTemplate('Vertex.cc')
+VERTEXCLASS = getTemplate('Vertex_class')
+VERTEXHEADER = """\
+#include "ThePEG/Helicity/Vertex/{spindirectory}/{lorentztag}Vertex.h"
+"""
+
+def produce_vertex_file(subs):
+    newname = '%s_Vertices_%03d.cc' % (subs['ModelName'],subs['vertexnumber'])
+    writeFile( newname, VERTEX.substitute(subs) )
+
+if args.verbose:
+    print 'verbose mode on: printing all vertices'
+    print '-'*60
+    labels = ('vertex', 'particles', 'Lorentz', 'C_L', 'C_R', 'norm')
+    pprint.pprint(labels)
+
+### initial pass to find global sign
+def global_sign():
+    return 1.0
+    for v in FR.all_vertices:
+        pids = sorted([ p.pdg_code for p in v.particles ])
+        if pids != [-11,11,22]: continue
+        coup = v.couplings
+        assert( len(coup) == 1 )
+        val = coup.values()[0].value
+        val = evaluate(val)
+        assert( val.real == 0 )
+        return 1 if val.imag > 0 else -1
+
+vertexclasses, vertexheaders = [], set()
+
+ONE_EACH = True
+if ONE_EACH:
+    all_vertices = FR.all_vertices
+else:
+    all_vertices = collapse_vertices(FR.all_vertices)
+
+globalsign = global_sign()
+for vertexnumber,vertex in enumerate(all_vertices,1):
+
+    lorentztag = unique_lorentztag(vertex)
+    
+    # remove vertices involving ghost fields
+    if 'U' in lorentztag:
+        vertex.herwig_skip_vertex = True
+        continue
+    # and with more than 4 external particles
+    elif (len(vertex.particles)>4) :
+        vertex.herwig_skip_vertex = True
+        continue
+    # missing tensor vertices
+    elif (lorentztag=="SSST" or lorentztag=="VVST" or 
+          lorentztag=="FFST" ) : 
+        vertex.herwig_skip_vertex = True
+        continue
+    else:
+        vertex.herwig_skip_vertex = False
+
+    lfactors = { 
+        'FFV'  : '-complex(0,1)',  # ok
+        'VVV'  : 'complex(0,1)',   # changed to fix ttbar
+        'VVVV' : 'complex(0,1)',
+        'VVS'  : '-complex(0,1)',
+        'VSS'  : '-complex(0,1)', # changed to minus to fix dL ->x1 W- d
+        'SSS'  : '-complex(0,1)',  # ok
+        'VVSS' : '-complex(0,1)',  # ok
+        'VVT'  : 'complex(0,2)',
+        'VVVT' : '-complex(0,2)',
+        'SSSS' : '-complex(0,1)',  # ok
+        'FFS'  : '-complex(0,1)',  # ok
+        'SST'  : 'complex(0,2)',
+        'FFT'  : '-complex(0,8)',
+        'FFVT' : '-complex(0,4)',
+    }
+
+    lf = lfactors[lorentztag]
+
+    ### Particle ids
+    if ONE_EACH:
+        plistarray = [ ','.join([ str(p.pdg_code) for p in vertex.particles ]) ]
+    else:
+        plistarray = [ ','.join([ str(p.pdg_code) for p in pl ])
+                       for pl in vertex.particles_list ]
+
+    try:
+        L,pos = colors(vertex)
+        cf = colorfactor(vertex,L,pos)
+    except SkipThisVertex:
+        vertex.herwig_skip_vertex = True
+        continue
+    
+    ### classname
+    classname = 'V_%s' % vertex.name
+
+    ### parse couplings
+    unique_qcd = CheckUnique()
+    unique_qed = CheckUnique()
+    
+    coup_left  = []
+    coup_right = []
+    coup_norm = []
+    
+    if ONE_EACH:
+        items = vertex.couplings.iteritems()
+    else:
+        items = vertex.couplings
+    for (color_idx,lorentz_idx),coupling in items:
+        # if more  than one take QCD over QED and then lowest order in QED
+        if (type(coupling) is list) :
+            qed = 0
+            qcd = 0
+            for coup in coupling :
+                qed1 = coup.order.get('QED',0)
+                qcd1 = coup.order.get('QCD',0)
+                if(qcd1!=0) :
+                    if(qcd==0 or (qcd1!=0 and qcd1<qcd) ) :
+                        qcd=qcd1
+                        qed=qed1
+                else :
+                    if(qed==0 or (qed1!=0 and qed1<qed) ):
+                        qed=qed1
+        else:
+            qed = coupling.order.get('QED',0)
+            qcd = coupling.order.get('QCD',0)
+        # WARNING: FIX FOR CASES WHEN BOTH ARE ZERO
+        # Is there a better way to treat this?
+        if qed + qcd + 2 != len(vertex.particles) :
+            qed = len(vertex.particles)-qcd-2
+        unique_qcd( qcd )
+        unique_qed( qed )
+        L = vertex.lorentz[lorentz_idx]
+        prefactors = '(%s) * (%s) * (%s)' % (globalsign**(len(lorentztag)-2),lf,cf[color_idx])
+
+        ordering = ''
+        if lorentztag in ['FFS','FFV']:
+            left,right = parse_lorentz(L.structure)
+            if left:
+                coup_left.append('(%s) * (%s) * (%s)' % (prefactors,left,coupling.value))
+            if right:
+                coup_right.append('(%s) * (%s) * (%s)' % (prefactors,right,coupling.value))
+            if lorentztag == 'FFV':
+                ordering = ('if(p1->id()!=%s) {Complex ltemp=left(), rtemp=right(); left(-rtemp); right(-ltemp);}' 
+                            % vertex.particles[0].pdg_code)
+        elif 'T' in lorentztag :
+            (all_coup,left_coup,right_coup,ordering) = tensorCouplings(vertex,coupling,prefactors,L,lorentztag,pos)
+            coup_norm  += all_coup
+            coup_left  += left_coup
+            coup_right += right_coup
+        else:
+            if lorentztag == 'VSS':
+                if L.structure == 'P(1,3) - P(1,2)':
+                    prefactors += ' * -1'
+                ordering = 'if(p2->id()!=%s){norm(-norm());}'%vertex.particles[1].pdg_code
+            elif lorentztag == 'VVVV':
+                if(qcd==2) :
+                    ordering = 'setType(1);\nsetOrder(0,1,2,3);'
+                else :
+                    (ordering,factor) = EWVVVVCouplings(vertex,L)
+                    prefactors += ' * ' + str(factor)
+            elif lorentztag == 'VVV' :
+                l = lambda c: len(pos[c])
+                if l(8)==3 :
+                    pass
+                else :
+                    ordering = VVVordering(vertex)
+            if(type(coupling) is not list ):
+                value = coupling.value
+            else :
+                value = "("
+                for coup in coupling :
+                    value += '+(%s)' % coup.value
+                value +=")"
+            coup_norm.append('(%s) * (%s)' % (prefactors,value))
+                
+            
+        #print 'Colour  :',vertex.color[color_idx]
+        #print 'Lorentz %s:'%L.name, L.spins, L.structure
+        #print 'Coupling %s:'%C.name, C.value, '\nQED=%s'%qed, 'QCD=%s'%qcd
+        #print '---------------'
+
+
+    leftcontent  = ' + '.join(coup_left)  if coup_left  else '0'
+    rightcontent = ' + '.join(coup_right) if coup_right else '0'
+    normcontent  = ' + '.join(coup_norm)  if coup_norm  else '1'
+
+#    #print 'Left:',leftcontent
+#    #print 'Right:',rightcontent
+#    #print 'Norm:',normcontent
+#    #print '---------------'
+
+
+#    ### do we need left/right?
+    symbols = set()
+    if 'FF' in lorentztag and lorentztag!="FFT" :
+#        leftcalc = aStoStrongCoup(py2cpp(leftcontent)[0], paramstoreplace_, paramstoreplace_expressions_)
+#        rightcalc = aStoStrongCoup(py2cpp(rightcontent)[0], paramstoreplace_, paramstoreplace_expressions_)
+        leftcalc, sym = py2cpp(leftcontent)
+        symbols |= sym
+        rightcalc, sym = py2cpp(rightcontent)
+        symbols |= sym
+        left = 'left(' + leftcalc + ');'
+        right = 'right(' + rightcalc + ');'
+    else:
+        left = ''
+        right = ''
+        leftcalc = ''
+        rightcalc = ''
+        
+
+#    normcalc = aStoStrongCoup(py2cpp(normcontent)[0], paramstoreplace_, paramstoreplace_expressions_)
+    normcalc, sym = py2cpp(normcontent)
+    symbols |= sym
+    # UFO is GeV by default (?)
+    if lorentztag in ['VVS','SSS']:
+        normcalc = '(%s) * GeV / UnitRemoval::E' % normcalc
+    elif lorentztag in ['FFT','VVT', 'SST', 'FFVT', 'VVVT' ]:
+        normcalc = 'Complex((%s) / GeV * UnitRemoval::E)' % normcalc
+    norm = 'norm(' + normcalc + ');'
+
+    # define unkown symbols from the model
+    symboldefs = [ def_from_model(FR,s) for s in symbols ]
+        
+    couplingptrs = [',tcPDPtr']*len(lorentztag)
+    if lorentztag == 'VSS':
+        couplingptrs[1] += ' p2'
+    elif lorentztag == 'FFV':
+        couplingptrs[0] += ' p1'
+    elif lorentztag == 'VVV' or lorentztag == 'VVVT' :
+        couplingptrs[0] += ' p1'
+        couplingptrs[1] += ' p2'
+        couplingptrs[2] += ' p3'
+    elif lorentztag == 'VVVV' :
+        couplingptrs[0] += ' p1'
+        couplingptrs[1] += ' p2'
+        couplingptrs[2] += ' p3'
+        couplingptrs[3] += ' p4'
+        
+    ### assemble dictionary and fill template
+    subs = { 'lorentztag' : lorentztag,                   # ok
+             'classname'  : classname,            # ok
+             'symbolrefs' : '\n    '.join(symboldefs),
+             'left'       : left,                 # doesn't always exist in base
+             'right'      : right,                 # doesn't always exist in base 
+             'norm'      : norm,                 # needs norm, too
+
+             #################### need survey which different setter methods exist in base classes
+
+             'addToPlist' : '\n'.join([ 'addToList(%s);'%s for s in plistarray]),
+             'parameters' : '',
+             'setCouplings' : '',
+             'qedorder'   : qed,
+             'qcdorder' : qcd,
+             'couplingptrs' : ''.join(couplingptrs),
+             'spindirectory' : spindirectory(lorentztag),
+             'ModelName' : modelname,
+             'ordering' : ordering,
+             }             # ok
+
+    if args.verbose:
+        print '-'*60
+        pprint.pprint(( classname, plistarray, leftcalc, rightcalc, normcalc ))
+        
+    vertexclasses.append(VERTEXCLASS.substitute(subs))
+    vertexheaders.add(VERTEXHEADER.format(**subs))
+
+    WRAP = 25
+    if vertexnumber % WRAP == 0:
+        produce_vertex_file({'classname':classname,
+                             'vertexnumber' : vertexnumber//WRAP,
+                             'vertexclasses' : '\n'.join(vertexclasses),
+                             'vertexheaders' : ''.join(vertexheaders),
+                             'ModelName' : modelname})
+        vertexclasses = []
+        vertexheaders = set()
+        
+if vertexclasses:
+    produce_vertex_file({'classname':classname,
+                         'vertexnumber' : vertexnumber//WRAP + 1,
+                         'vertexclasses' : '\n'.join(vertexclasses),
+                         'vertexheaders' : ''.join(vertexheaders),
+                         'ModelName' : modelname})
+        
+print '='*60
+
+##################################################
+##################################################
+##################################################
+
+vertexline = """\
+create Herwig::{modelname}V_{vname} /Herwig/{modelname}/V_{vname}
+insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/V_{vname}
+"""
+
+def get_vertices():
+    vlist = ['library %s\n' % libname]
+    for v in all_vertices:
+        if v.herwig_skip_vertex: continue
+        vlist.append( vertexline.format(modelname=modelname, vname=v.name) )
+    return ''.join(vlist)
+
+
+modelfilesubs = { 'plist' : thepeg_particles(FR,parmsubs),
+                  'vlist' : get_vertices(),
+                  'setcouplings': '\n'.join(parmmodelconstr),
+                  'ModelName': modelname
+                  }
+
+
+MODELINFILE = getTemplate('FR.model')
+
+writeFile( modelname +'.model', MODELINFILE.substitute(modelfilesubs) )
+
+print 'finished generating model:\t', modelname
+print 'model directory:\t\t', args.ufodir
+print 'generated:\t\t\t', len(FR.all_vertices), 'vertices'
+print '='*60
+print 'library:\t\t\t', libname
+print 'input file:\t\t\t', 'LHC-' + modelname +'.in'
+print 'model file:\t\t\t', modelname +'.model'
+print '='*60
+print """To complete the installation, compile by typing "make", 
+copy the generated .so file, into the Herwig++ lib directory
+and the .model and .in files in the directory that you wish to run in.
+"""
+print 'DONE!'
+print '='*60
+

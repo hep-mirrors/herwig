@@ -13,6 +13,7 @@
 
 #include "UEDF1F1W0Vertex.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/EnumParticles.h"
@@ -20,7 +21,8 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-UEDF1F1W0Vertex::UEDF1F1W0Vertex(): theRadius(ZERO), theQ2Last(ZERO), 
+UEDF1F1W0Vertex::UEDF1F1W0Vertex(): includeMixing_(true),
+				    theRadius(ZERO), theQ2Last(ZERO), 
 				    theCoupLast(0.), 
 				    thefermALast(0), thefermBLast(0) {
   orderInGs(0);
@@ -36,8 +38,10 @@ void UEDF1F1W0Vertex::doinit() {
       addToList(-6100000 - i, 6100000 + i - 1, 24);
     }
   }
-  addToList(-6100006, 5100005, 24);
-  addToList(-5100006, 6100005, 24);
+  if(includeMixing_) {
+    addToList(-6100006, 5100005, 24);
+    addToList(-5100006, 6100005, 24);
+  }
   //outgoing W-
   for( long i = 1; i < 16; i += 2 ) {
     if( i == 6 ) i += 5;
@@ -46,8 +50,10 @@ void UEDF1F1W0Vertex::doinit() {
       addToList(-6100000 - i, 6100001 + i, -24);
     }
   }
-  addToList(-6100005, 5100006, -24);
-  addToList(-5100005, 6100006, -24);
+  if(includeMixing_) {
+    addToList(-6100005, 5100006, -24);
+    addToList(-5100005, 6100006, -24);
+  }
   FFVVertex::doinit();
   tUEDBasePtr model = dynamic_ptr_cast<tUEDBasePtr>(generator()->standardModel());
   if(!model)
@@ -58,11 +64,11 @@ void UEDF1F1W0Vertex::doinit() {
 }
 
 void UEDF1F1W0Vertex::persistentOutput(PersistentOStream & os) const {
-  os << ounit(theRadius,1/GeV);
+  os << ounit(theRadius,1/GeV) << includeMixing_;
 }
 
 void UEDF1F1W0Vertex::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(theRadius,1/GeV);
+  is >> iunit(theRadius,1/GeV) >> includeMixing_;
 }
 
 ClassDescription<UEDF1F1W0Vertex> UEDF1F1W0Vertex::initUEDF1F1W0Vertex;
@@ -73,6 +79,21 @@ void UEDF1F1W0Vertex::Init() {
   static ClassDocumentation<UEDF1F1W0Vertex> documentation
     ("This class implements the coupling of a pair of level-1 KK fermions"
      "to an SM W boson");
+
+  static Switch<UEDF1F1W0Vertex,bool> interfaceIncludeMixing
+    ("IncludeMixing",
+     "Include the mixing",
+     &UEDF1F1W0Vertex::includeMixing_, true, false, false);
+  static SwitchOption interfaceIncludeMixingYes
+    (interfaceIncludeMixing,
+     "Yes",
+     "Include mixing",
+     true);
+  static SwitchOption interfaceIncludeMixingNo
+    (interfaceIncludeMixing,
+     "No",
+     "Don't include mixing",
+     false);
 
 }
 
@@ -109,14 +130,18 @@ void UEDF1F1W0Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
     long sma = (stateA == 6) ? ianti - 6100000 : ianti - 5100000;
     long smb = (stateB == 6) ? iferm - 6100000 : iferm - 5100000;
     double afu(0.), afd(0.);
-    if( sma % 2 == 0 ) {
-      afu = atan(getParticleData(sma)->mass()*theRadius)/2.;
-      afd = atan(getParticleData(smb)->mass()*theRadius)/2.;
+    if(includeMixing_) {
+      if( sma % 2 == 0 ) {
+	afu = atan(getParticleData(sma)->mass()*theRadius)/2.;
+	afd = atan(getParticleData(smb)->mass()*theRadius)/2.;
+      }
+      else {
+	afd = atan(getParticleData(sma)->mass()*theRadius)/2.;
+	afu = atan(getParticleData(smb)->mass()*theRadius)/2.;
+      }
     }
     else {
-      afd = atan(getParticleData(sma)->mass()*theRadius)/2.;
-      afu = atan(getParticleData(smb)->mass()*theRadius)/2.;
-      
+      afd = afu = 0.;
     }
     if( stateA == stateB ) {
       if( stateA == 5 ) {

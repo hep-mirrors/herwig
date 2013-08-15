@@ -454,10 +454,11 @@ void HardProcessConstructor::sChannelCF(HPDiagram & diag) {
       bool outsex  = outa == PDT::Colour6 && outb == PDT::Colour6bar;
       bool outsexb = outa == PDT::Colour6bar && outb == PDT::Colour6;
       if(incol || outcol) {
-	// Require an additional minus sign for a fermion 33bar final state
-	// due to the way the vertex rules are defined.
+	// Require an additional minus sign for a scalar/fermion
+	// 33bar final state due to the way the vertex rules are defined.
 	int prefact(1);
-	if( (pc->iSpin() == PDT::Spin1Half && pd->iSpin() == PDT::Spin1Half) &&
+	if( ((pc->iSpin() == PDT::Spin1Half && pd->iSpin() == PDT::Spin1Half) ||
+	     (pc->iSpin() == PDT::Spin0     && pd->iSpin() == PDT::Spin0    )) &&
 	    (outa        == PDT::Colour3   && outb        == PDT::Colour3bar) )
 	  prefact = -1;
 	if(incol && outcol) {
@@ -467,11 +468,11 @@ void HardProcessConstructor::sChannelCF(HPDiagram & diag) {
 	}
 	else if(incol && outsex) {
 	  cfv[0].first = 4;
-	  cfv[0].second = -prefact;
+	  cfv[0].second =  prefact;
 	  for(unsigned int ix=1;ix<4;++ix)
-	    cfv.push_back(make_pair(4+ix,-prefact));
+	    cfv.push_back(make_pair(4+ix, prefact));
 	  for(unsigned int ix=0;ix<4;++ix)
-	    cfv.push_back(make_pair(8+ix, prefact));
+	    cfv.push_back(make_pair(8+ix,-prefact));
 	}
 	else {
 	  cfv[0].first = 0;

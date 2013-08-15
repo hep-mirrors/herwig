@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.59])
+AC_PREREQ([2.63])
 AC_INIT([Herwig++],[devel],[herwig@projects.hepforge.org],[Herwig++])
 AC_CONFIG_SRCDIR([Utilities/HerwigStrategy.cc])
 AC_CONFIG_AUX_DIR([Config])
@@ -36,7 +36,7 @@ dnl ==========================================
 
 AC_LANG([C++])
 
-AM_INIT_AUTOMAKE([1.9 gnu dist-bzip2 -Wall])
+AM_INIT_AUTOMAKE([1.11 subdir-objects gnu dist-bzip2 -Wall])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 
@@ -61,7 +61,7 @@ AC_COMPILE_IFELSE(
 AC_LANG_POP([Fortran])
 
 
-LT_PREREQ([2.2])
+LT_PREREQ([2.2.6])
 LT_INIT([disable-static dlopen pic-only])
 
 dnl ####################################
@@ -74,7 +74,19 @@ HERWIG_CHECK_GSL
 
 HERWIG_CHECK_THEPEG
 
-HERWIG_CHECK_BOOST
+BOOST_REQUIRE
+BOOST_FIND_HEADER([boost/array.hpp])
+BOOST_FIND_HEADER([boost/numeric/ublas/io.hpp])
+BOOST_FIND_HEADER([boost/numeric/ublas/matrix.hpp])
+BOOST_FIND_HEADER([boost/numeric/ublas/matrix_proxy.hpp])
+BOOST_FIND_HEADER([boost/numeric/ublas/matrix_sparse.hpp])
+BOOST_FIND_HEADER([boost/numeric/ublas/symmetric.hpp])
+BOOST_FIND_HEADER([boost/numeric/ublas/vector.hpp])
+BOOST_FIND_HEADER([boost/operators.hpp])
+BOOST_FIND_HEADER([boost/progress.hpp])
+BOOST_FIND_HEADER([boost/scoped_array.hpp])
+BOOST_FIND_HEADER([boost/scoped_ptr.hpp])
+BOOST_FIND_HEADER([boost/utility.hpp])
 
 HERWIG_COMPILERFLAGS
 
@@ -109,6 +121,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Models/General/Makefile
 		Models/Susy/Makefile
 		Models/Susy/NMSSM/Makefile
+		Models/Susy/RPV/Makefile
 		Models/UED/Makefile
 		Models/LH/Makefile
 		Models/LHTP/Makefile
@@ -116,8 +129,11 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Models/Leptoquarks/Makefile
 		Models/Zprime/Makefile
 		Models/TTbAsymm/Makefile
+		Models/Feynrules/Makefile
+		Models/Feynrules/Makefile-FR
 		Models/ADD/Makefile
 		Models/Sextet/Makefile
+		Models/HiggsPair/Makefile
 		Decay/Makefile
 		Decay/FormFactors/Makefile
 		Decay/Tau/Makefile
@@ -150,6 +166,8 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/Matchbox/Matching/Makefile
                 MatrixElement/Matchbox/Builtin/Makefile
                 MatrixElement/Matchbox/Builtin/Amplitudes/Makefile
+                MatrixElement/Matchbox/External/Makefile
+                MatrixElement/Matchbox/External/BLHAGeneric/Makefile
                 MatrixElement/Matchbox/Tests/Makefile
 		Exsample2/Makefile
 		Shower/SplittingFunctions/Makefile

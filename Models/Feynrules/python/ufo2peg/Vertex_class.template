@@ -1,0 +1,41 @@
+class ${ModelName}${classname}: public ${lorentztag}Vertex {
+ public:
+  ${ModelName}${classname}() {
+    ${addToPlist}
+  }
+  void setCoupling(Energy2 ${couplingptrs}) {
+    ${symbolrefs}
+    //    getParams(q2);
+    ${norm}
+    ${left}
+    ${right}
+    ${ordering}
+  }
+  void persistentOutput(PersistentOStream & os) const { os << model_; }
+  void persistentInput(PersistentIStream & is, int) { is >> model_; }
+  //  static void Init();
+ protected:
+  IBPtr clone() const { return new_ptr(*this); }
+  IBPtr fullclone() const { return new_ptr(*this); }
+  void doinit() {
+    model_ = dynamic_ptr_cast<tcHw${ModelName}Ptr>
+	     (generator()->standardModel());
+    assert(model_);
+    //    getParams(q2);
+    ${parameters}
+    ${setCouplings}
+    orderInGem(${qedorder});
+    orderInGs(${qcdorder});
+    ${lorentztag}Vertex::doinit();
+  }
+  //    void getParams(Energy2);
+ private:
+  ${ModelName}${classname} & operator=(const ${ModelName}${classname} &);
+  //    Complex leftval, rightval, normval;
+  tcHw${ModelName}Ptr model_;
+};
+DescribeClass<${ModelName}${classname},Helicity::${lorentztag}Vertex>
+describeHerwig${ModelName}${classname}("Herwig::${ModelName}${classname}",
+				       "${ModelName}.so");
+// void ${ModelName}${classname}::getParams(Energy2 ) {
+// }

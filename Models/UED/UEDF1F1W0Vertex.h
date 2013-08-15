@@ -115,9 +115,15 @@ private:
 private:
 
   /**
+   *  Whether or not to include mixing
+   */
+  bool includeMixing_;
+
+  /**
    * The value of the inverse radius
    */
   InvEnergy theRadius;
+
   /**
    * The scale at which the coupling was last evaluated.
    */

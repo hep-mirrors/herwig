@@ -12,6 +12,7 @@
 //
 
 #include "SSGFSVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -33,8 +34,9 @@ void SSGFSVertex::persistentInput(PersistentIStream & is, int) {
   is >> _stop >> _sbottom >> gluinoPhase_;
 }
 
-ClassDescription<SSGFSVertex> SSGFSVertex::initSSGFSVertex;
-// Definition of the static class description member.
+// Static variable needed for the type description system in ThePEG.
+DescribeClass<SSGFSVertex,FFSVertex>
+describeHerwigSSGFSVertex("Herwig::SSGFSVertex", "HwSusy.so");
 
 void SSGFSVertex::Init() {
 

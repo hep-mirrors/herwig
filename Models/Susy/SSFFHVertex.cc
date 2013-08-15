@@ -12,6 +12,7 @@
 //
 
 #include "SSFFHVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -79,8 +80,9 @@ void SSFFHVertex::persistentInput(PersistentIStream & is, int) {
      >> theSb >> theCa >> theCb;
 }
 
-ClassDescription<SSFFHVertex> SSFFHVertex::initSSFFHVertex;
-// Definition of the static class description member.
+// Static variable needed for the type description system in ThePEG.
+DescribeClass<SSFFHVertex,FFSVertex>
+describeHerwigSSFFHVertex("Herwig::SSFFHVertex", "HwSusy.so");
 
 void SSFFHVertex::Init() {
 

@@ -36,11 +36,8 @@ void SSGSSVertex::doinit() {
   VSSVertex::doinit();
 }
 
-// *** Attention *** The following static variable is needed for the type
-// description system in ThePEG. Please check that the template arguments
-// are correct (the class and its base class), and that the constructor
-// arguments are correct (the class name and the name of the dynamically
-// loadable library where the class implementation can be found).
+// The following static variable is needed for the type
+// description system in ThePEG.
 DescribeNoPIOClass<SSGSSVertex,Helicity::VSSVertex>
 describeSSGSSVertex("Herwig::SSGSSVertex", "HwSusy.so");
 
@@ -53,14 +50,18 @@ void SSGSSVertex::Init() {
 }
 
 void SSGSSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
-			      tcPDPtr part2, tcPDPtr) {
+			      tcPDPtr part2, tcPDPtr part3) {
   assert(part1->id()==ParticleID::g);
   long isf = abs(part2->id());
   assert( (isf >= 1000001 && isf <= 1000006) || 
 	  (isf >= 2000001 && isf <= 2000006) );
+  assert(part2->id()==-part3->id());
   if(q2 != _q2last || _couplast == 0.) {
     _couplast = strongCoupling(q2);
     _q2last = q2;
   }
-  norm(_couplast);
+  if(part2->id()>0) 
+    norm(-_couplast);
+  else
+    norm( _couplast);
 }

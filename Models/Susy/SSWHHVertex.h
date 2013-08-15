@@ -102,12 +102,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<SSWHHVertex> initSSWHHVertex;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -151,42 +145,6 @@ private:
   double theElast;
 
 };
-
-}
-
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of SSWHHVertex. */
-template <>
-struct BaseClassTrait<Herwig::SSWHHVertex,1> {
-  /** Typedef of the first base class of SSWHHVertex. */
-  typedef ThePEG::Helicity::VSSVertex NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the SSWHHVertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::SSWHHVertex>
-  : public ClassTraitsBase<Herwig::SSWHHVertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::SSWHHVertex"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * SSWHHVertex is implemented. It may also include several, space-separated,
-   * libraries if the class SSWHHVertex depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwSusy.so"; }
-};
-
-/** @endcond */
 
 }
 

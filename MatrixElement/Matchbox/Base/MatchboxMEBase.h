@@ -75,14 +75,14 @@ public:
   //@{
 
   /**
-   * Return the subprocesses.
+   * Return the subprocess.
    */
-  const vector<PDVector>& subProcesses() const { return theSubprocesses; }
+  const Process& subProcess() const { return theSubprocess; }
 
   /**
-   * Access the subprocesses.
+   * Access the subprocess.
    */
-  vector<PDVector>& subProcesses() { return theSubprocesses; }
+  Process& subProcess() { return theSubprocess; }
 
   /**
    * Return the diagram generator.
@@ -140,10 +140,55 @@ public:
   using MEBase::orderInAlphaEW;  
 
   /**
+   * Return true, if this amplitude already includes averaging over
+   * incoming parton's quantum numbers.
+   */
+  virtual bool hasInitialAverage() const { 
+    return matchboxAmplitude() ? matchboxAmplitude()->hasInitialAverage() : false;
+  }
+
+  /**
+   * Return true, if this amplitude already includes symmetry factors
+   * for identical outgoing particles.
+   */
+  virtual bool hasFinalStateSymmetry() const { 
+    return matchboxAmplitude() ? matchboxAmplitude()->hasFinalStateSymmetry() : false; 
+  }
+
+
+  /**
    * Return the number of light flavours, this matrix
    * element is calculated for.
    */
   virtual unsigned int getNLight() const;
+
+  /**
+   * Return true, if this matrix element is handled by a BLHA one-loop provider
+   */
+  virtual bool isOLPTree() const { 
+    return matchboxAmplitude() ? matchboxAmplitude()->isOLPTree() : false;
+  }
+
+  /**
+   * Return true, if this matrix element is handled by a BLHA one-loop provider
+   */
+  virtual bool isOLPLoop() const { 
+    return matchboxAmplitude() ? matchboxAmplitude()->isOLPLoop() : false;
+  }
+
+  /**
+   * Return the process index, if this is an OLP handled matrix element
+   */
+  const vector<int>& olpProcess() const { return theOLPProcess; }
+
+  /**
+   * Set the process index, if this is an OLP handled matrix element
+   */
+  void olpProcess(int pType, int id) { 
+    if ( theOLPProcess.empty() )
+      theOLPProcess.resize(4,0);
+    theOLPProcess[pType] = id;
+  }
 
   //@}
 
@@ -466,8 +511,82 @@ public:
   bool checkPoles() const;
 
   /**
-   * Perform the check of epsilon pole cancellation. Results will be
-   * written to the log file, one per phasespace point.
+   * Simple histogram for accuracy checks
+   */
+  struct AccuracyHistogram {
+
+    /**
+     * The lower bound
+     */
+    double lower;
+
+    /**
+     * The upper bound
+     */
+    double upper;
+
+    /**
+     * The bins, indexed by upper bound.
+     */
+    map<double,double> bins;
+
+    /**
+     * The number of points of same sign
+     */
+    unsigned long sameSign;
+
+    /**
+     * The number of points of opposite sign
+     */
+    unsigned long oppositeSign;
+
+    /**
+     * The number of points being nan or inf
+     */
+    unsigned long nans;
+
+    /**
+     * The overflow
+     */
+    unsigned long overflow;
+
+    /**
+     * The underflow
+     */
+    unsigned long underflow;
+
+    /**
+     * Constructor
+     */
+    AccuracyHistogram(double low = -40.,
+		      double up = 0.,
+		      unsigned int nbins = 80);
+
+    /**
+     * Book two values to be checked for numerical compatibility
+     */
+    void book(double a, double b);
+
+    /**
+     * Write to file.
+     */
+    void dump(const std::string& prefix, 
+	      const cPDVector& proc) const;
+
+    /**
+     * Write to persistent ostream
+     */
+    void persistentOutput(PersistentOStream&) const;
+
+    /**
+     * Read from persistent istream
+     */
+    void persistentInput(PersistentIStream&);
+
+  };
+
+  /**
+   * Perform the check of epsilon pole cancellation.
    */
   void logPoles() const;
 
@@ -754,6 +873,12 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit();
+
+  /**
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
+   */
+  virtual void dofinish();
   //@}
 
 private:
@@ -792,9 +917,9 @@ private:
 private:
 
   /**
-   * The subprocesses to be considered.
+   * The subprocess to be considered.
    */
-  vector<PDVector> theSubprocesses;
+  Process theSubprocess;
 
   /**
    * True, if this matrix element includes one-loop corrections
@@ -807,6 +932,21 @@ private:
    */
   bool theOneLoopNoBorn;
 
+  /**
+   * The process index, if this is an OLP handled matrix element
+   */
+  vector<int> theOLPProcess;
+
+  /**
+   * Histograms of epsilon^2 pole cancellation
+   */
+  mutable map<cPDVector,AccuracyHistogram> epsilonSquarePoleHistograms;
+
+  /**
+   * Histograms of epsilon pole cancellation
+   */
+  mutable map<cPDVector,AccuracyHistogram> epsilonPoleHistograms;
+
 private:
 
   /**
@@ -816,6 +956,18 @@ private:
   MatchboxMEBase & operator=(const MatchboxMEBase &);
 
 };
+
+inline PersistentOStream& operator<<(PersistentOStream& os,
+				     const MatchboxMEBase::AccuracyHistogram& h) {
+  h.persistentOutput(os);
+  return os;
+}
+
+inline PersistentIStream& operator>>(PersistentIStream& is,
+				     MatchboxMEBase::AccuracyHistogram& h) {
+  h.persistentInput(is);
+  return is;
+}
 
 }
 
