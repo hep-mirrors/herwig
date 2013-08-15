@@ -10,10 +10,8 @@
 # The second section contains the user settings.
 ###################################################
 
+# Set emission to POWHEG for radiation in decays
 set /Herwig/Shower/Evolver:HardEmissionMode POWHEG
-#set /Herwig/Shower/Evolver:HardEmissionMode MECorrection
-set /Herwig/Shower/ShowerHandler:MPIHandler NULL
-
 
 read RS.model
 cd /Herwig/NewPhysics
@@ -26,39 +24,17 @@ cd /Herwig/NewPhysics
 # Example hard process: Incoming proton,resonant graviton
 
 insert ResConstructor:Incoming 0 /Herwig/Particles/g
-insert ResConstructor:Incoming 1 /Herwig/Particles/u
-insert ResConstructor:Incoming 2 /Herwig/Particles/ubar
-insert ResConstructor:Incoming 3 /Herwig/Particles/d
-insert ResConstructor:Incoming 4 /Herwig/Particles/dbar
+insert ResConstructor:Incoming 0 /Herwig/Particles/u
+insert ResConstructor:Incoming 0 /Herwig/Particles/ubar
+insert ResConstructor:Incoming 0 /Herwig/Particles/d
+insert ResConstructor:Incoming 0 /Herwig/Particles/dbar
 
 insert ResConstructor:Intermediates 0 /Herwig/Particles/Graviton
-#insert ResConstructor:Intermediates 1 /Herwig/Particles/gamma
-#insert ResConstructor:Intermediates 2 /Herwig/Particles/Z0
 
 insert ResConstructor:Outgoing 0 /Herwig/Particles/e+
 insert ResConstructor:Outgoing 1 /Herwig/Particles/W+
 insert ResConstructor:Outgoing 2 /Herwig/Particles/Z0
 insert ResConstructor:Outgoing 3 /Herwig/Particles/gamma
-insert ResConstructor:Outgoing 4 /Herwig/Particles/ubar
-insert ResConstructor:Outgoing 5 /Herwig/Particles/u
-insert ResConstructor:Outgoing 6 /Herwig/Particles/g
-
-
-#insert HPConstructor:Incoming 0 /Herwig/Particles/g
-#insert HPConstructor:Incoming 1 /Herwig/Particles/u
-#insert HPConstructor:Incoming 2 /Herwig/Particles/ubar
-#insert HPConstructor:Incoming 3 /Herwig/Particles/d
-#insert HPConstructor:Incoming 4 /Herwig/Particles/dbar
-#insert HPConstructor:Incoming 5 /Herwig/Particles/s
-#insert HPConstructor:Incoming 6 /Herwig/Particles/sbar
-#insert HPConstructor:Incoming 7 /Herwig/Particles/c
-#insert HPConstructor:Incoming 8 /Herwig/Particles/cbar
-
-#insert HPConstructor:Outgoing 0 /Herwig/Particles/Z0
-
-#insert HPConstructor:Outgoing 0 /Herwig/Particles/t
-#insert HPConstructor:Outgoing 1 /Herwig/Particles/tbar
-
 
 # coupling
 set RS/Model:Lambda_pi 10000*GeV
@@ -73,6 +49,5 @@ set LHCGenerator:RandomNumberGenerator:Seed 31122001
 set LHCGenerator:PrintEvent 10
 set LHCGenerator:MaxErrors 10000
 set LHCGenerator:EventHandler:LuminosityFunction:Energy 8000.0
-
 
 saverun LHC-RS LHCGenerator

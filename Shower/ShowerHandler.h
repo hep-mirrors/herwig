@@ -222,8 +222,7 @@ protected:
    * @param isHard Whether nay particles in chain are from the hard process
    * @param outgoing The outgoing particles from the hard process
    */
-  PPtr findParent(PPtr parent, bool & isHard, set<PPtr> outgoing,
-		  bool checkStep, tSubProPtr process=SubProPtr()) const;
+  PPtr findParent(PPtr parent, bool & isHard, set<PPtr> outgoing) const;
 
   /**
    * Find the parton extracted from the incoming particle after ISR
@@ -254,7 +253,7 @@ protected:
   /**
    *  Test for decay products
    */
-  bool decayProduct(tPPtr,tSubProPtr process=SubProPtr()) const;
+  bool decayProduct(tPPtr) const;
 
   /**
    *  Boost all the particles in the collision so that the collision always occurs

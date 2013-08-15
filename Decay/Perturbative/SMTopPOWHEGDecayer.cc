@@ -43,11 +43,8 @@ void SMTopPOWHEGDecayer::persistentInput(PersistentIStream & is, int) {
 }
 
 
-// *** Attention *** The following static variable is needed for the type
-// description system in ThePEG. Please check that the template arguments
-// are correct (the class and its base class), and that the constructor
-// arguments are correct (the class name and the name of the dynamically
-// loadable library where the class implementation can be found).
+// The following static variable is needed for the type
+// description system in ThePEG.
 DescribeClass<SMTopPOWHEGDecayer,SMTopDecayer>
 describeHerwigSMTopPOWHEGDecayer("Herwig::SMTopPOWHEGDecayer", "HwPerturbativeDecay.so");
 
@@ -91,44 +88,8 @@ HardTreePtr SMTopPOWHEGDecayer::generateHardest(ShowerTreePtr tree) {
 
   //invert it
   eventFrame.invert();
-  
-  //count number of events which give gluons in the dead region 
-  // ofstream dead("dead.top");
-  // ofstream count("count.top");
-
-  // if ( WProgenitor  ->progenitor()->momentum().mass()/GeV > 80.402 &&
-  //      WProgenitor  ->progenitor()->momentum().mass()/GeV < 80.404){
-  //   cerr <<  WProgenitor  ->progenitor()->momentum().mass()/GeV << endl;
- 
-
-  //   ofstream PS("PS3.top");
-  //   for (unsigned int iy=0; iy<52427; ++iy){   
-  //     vector<Lorentz5Momentum> momenta = hardMomenta();
-  //     if(momenta.empty()) continue;
-  //     double xw = 2.*momenta[2].e()/momenta[0].mass();
-  //     double xg = 2.*momenta[3].e()/momenta[0].mass();
-  //     //   count << "1\n";
-  //     PS << xg << "\t" << xw << "\n";
-  //     //   if(not deadZoneCheck(xw, xg)) continue;
-  //     //   dead << xg << "\t" << xw << "\n";
-  //   }
-  // }
-
-
   //generate the hard emission
   vector<Lorentz5Momentum> momenta = hardMomenta();
-
-  //
-  //if (!momenta.empty()){
-  //ofstream output("PS.top", ios::app);
-  //double xw = 2.*momenta[2].e()/momenta[0].mass();
-  //double xg = 2.*momenta[3].e()/momenta[0].mass();
-  //output << xg << "\t" << xw << "\n";
-  //if (deadZoneCheck(xw, xg)) {
-  //  ofstream dead2("dead2.top", ios::app);
-  //  dead2 << "1\n";
-  //}
-  //}
 
   // if no emission return
   if(momenta.empty()) {
@@ -256,12 +217,6 @@ vector<Lorentz5Momentum>  SMTopPOWHEGDecayer::hardMomenta() {
       //Calculate weight
       weight[j] = meRatio * fabs(sqr(pT)*J) * coupling()->ratio(pT*pT) / C;    
      }
-
-    //ofstream weights;
-    //if (weight[0] + weight[1] > 1.){
-    //weights.open("weights.top", ios::app);
-    //weights << weight[0]+weight[1] << endl;
-    //}
 
     //Accept point if weight > R
     if (weight[0] + weight[1] > UseRandom::rnd()) {

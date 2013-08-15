@@ -18,7 +18,6 @@
 #include "Herwig++/Utilities/Kinematics.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "Herwig++/Shower/Couplings/ShowerAlpha.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;

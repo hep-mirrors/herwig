@@ -13,10 +13,7 @@ using namespace Herwig;
 void HardBranching::setMomenta(LorentzRotation R,double aparent,
 			       Lorentz5Momentum ptparent,
 			       bool setMomentum) {
-  if(setMomentum) {
-    _original=R*_particle->momentum();
-    _showerBoost = R;
-  }
+  if(setMomentum) _original=R*_particle->momentum();
   // compute the shower variables
   Energy2 dot = _n*_p;
   if(dot==ZERO) return;

@@ -230,11 +230,6 @@ private:
    */
   //@{
   /**
-   *  Pointer to the object calculating the strong coupling
-   */
-  ShowerAlphaPtr alphaS_;
-
-  /**
    *  ParticleData object for the gluon
    */
   tcPDPtr gluon_;

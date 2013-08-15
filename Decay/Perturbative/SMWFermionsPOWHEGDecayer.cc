@@ -36,11 +36,11 @@ IBPtr SMWFermionsPOWHEGDecayer::fullclone() const {
 }
 
 void SMWFermionsPOWHEGDecayer::persistentOutput(PersistentOStream & os) const {
-  os << FFGVertex_ << FFWVertex_ << alphaS_ << gluon_ << ounit( pTmin_, GeV );
+  os << FFGVertex_ << FFWVertex_ << gluon_ << ounit( pTmin_, GeV );
 }
 
 void SMWFermionsPOWHEGDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> FFGVertex_ >> FFWVertex_ >> alphaS_ >> gluon_ >> iunit( pTmin_, GeV );
+  is >> FFGVertex_ >> FFWVertex_ >> gluon_ >> iunit( pTmin_, GeV );
 }
 
 ClassDescription<SMWFermionsPOWHEGDecayer> 
@@ -380,11 +380,6 @@ void SMWFermionsPOWHEGDecayer::doinit() {
   FFGVertex_->init();
   SMWDecayer::doinit();
   gluon_ = getParticleData(ParticleID::g);
-  alphaS_ = SMWDecayer::alpha_;
-  // // some testing
-  // Energy wMass = getParticleData(ParticleID::Wplus)->mass();
-  // double aS = SM().alphaS(sqr(wMass));
-  // cerr << "testing (1+aS/pi) " << (1+aS/Constants::pi) << "\n";
 }
 
 bool SMWFermionsPOWHEGDecayer::getEvent(vector<PPtr> hardProcess) {
@@ -419,7 +414,7 @@ bool SMWFermionsPOWHEGDecayer::getEvent(vector<PPtr> hardProcess) {
   pT_ = pTmax;
   // prefactor
   double overEst = 4.;
-  double prefactor = overEst*alphaS_->overestimateValue()*CF_*
+  double prefactor = overEst*alphaS()->overestimateValue()*CF_*
     (ymax-ymin)/Constants::twopi;
   // loop to generate the pt and rapidity
   bool reject;  
@@ -446,7 +441,6 @@ bool SMWFermionsPOWHEGDecayer::getEvent(vector<PPtr> hardProcess) {
       reject = true; 
       // generate pt
       pT[i] *= pow(UseRandom::rnd(),1./prefactor);
-      Energy2 pT2 = sqr(pT[i]);
       if(pT[i]<pTmin_) {
         pT[i] = -GeV;
         break;
@@ -504,7 +498,7 @@ bool SMWFermionsPOWHEGDecayer::getEvent(vector<PPtr> hardProcess) {
       }
       if(!found) continue;
       // alpha S piece
-      double wgt = (probTemp[i][0]+probTemp[i][1])*alphaS_->ratio(sqr(pT[i]));
+      double wgt = (probTemp[i][0]+probTemp[i][1])*alphaS()->ratio(sqr(pT[i]));
       // matrix element weight
       reject = UseRandom::rnd()>wgt;
     }
@@ -513,11 +507,10 @@ bool SMWFermionsPOWHEGDecayer::getEvent(vector<PPtr> hardProcess) {
   // no emission
   if(pT[0]<ZERO&&pT[1]<ZERO) return false;
   //pick the spectator and x1 x2 values
-  double x1,x2,x3,y;
+  double x1,x2,y;
   // particle 1 emits, particle 2 spectates
   unsigned int iemit=0;
   if(pT[0]>pT[1]){ 
-    x3  = x3Solution[0];
     pT_ = pT[0];
     y=yTemp[0];
     if(probTemp[0][0]>UseRandom::rnd()*(probTemp[0][0]+probTemp[0][1])) {
@@ -532,7 +525,6 @@ bool SMWFermionsPOWHEGDecayer::getEvent(vector<PPtr> hardProcess) {
   // particle 2 emits, particle 1 spectates
   else {
     iemit=1;
-    x3  = x3Solution[1];
     pT_ = pT[1];
     y=yTemp[1];
     if(probTemp[1][0]>UseRandom::rnd()*(probTemp[1][0]+probTemp[1][1])) {

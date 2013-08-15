@@ -19,7 +19,6 @@
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
-#include "Herwig++/Shower/Couplings/ShowerAlpha.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;

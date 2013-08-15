@@ -6,14 +6,6 @@
 ##################################################
 # Technical parameters for this run
 ##################################################
-#cd /Herwig/EventHandlers
-#set LHCHandler:HadronizationHandler NULL
-#set LHCHandler:DecayHandler NULL
-
-#cd /Herwig/Analysis
-#set Basics:CheckQuark 0
-
-
 cd /Herwig/Generators
 set LHCGenerator:NumberOfEvents 10000000
 set LHCGenerator:RandomNumberGenerator:Seed 31122001
@@ -26,15 +18,11 @@ set LHCGenerator:MaxErrors 10000
 
 # Intrinsic pT tune extrapolated to LHC energy
 set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
-set /Herwig/Shower/ShowerHandler:MPIHandler NULL
 
 ########################
 ## sqrt(s) = 8000 GeV ##
 ########################
 set LHCGenerator:EventHandler:LuminosityFunction:Energy 8000.0
-
-set /Herwig/Shower/Evolver:HardEmissionMode POWHEG
-
 
 ##################################################
 # Matrix Elements for hadron-hadron collisions 
@@ -47,37 +35,33 @@ cd /Herwig/MatrixElements/
 #
 # Drell-Yan Z/gamma
 insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff
-set MEqq2gZ2ff:Process Quarks
-
 #
 # Drell-Yan W
-#insert SimpleQCD:MatrixElements[0] MEqq2W2ff
-#set MEqq2W2ff:Process Quarks
-
+# insert SimpleQCD:MatrixElements[0] MEqq2W2ff
 #
 # W+jet
-#insert SimpleQCD:MatrixElements[0] MEWJet
+# insert SimpleQCD:MatrixElements[0] MEWJet
 #
 # Z+jet
-#insert SimpleQCD:MatrixElements[0] MEZJet
+# insert SimpleQCD:MatrixElements[0] MEZJet
 #
 # WW/WZ/ZZ
-#insert SimpleQCD:MatrixElements[0] MEPP2VV
+# insert SimpleQCD:MatrixElements[0] MEPP2VV
 #
 # Wgamma/Zgamma
-#insert SimpleQCD:MatrixElements[0] MEPP2VGamma
+# insert SimpleQCD:MatrixElements[0] MEPP2VGamma
 
 #
 #  QCD and gamma processes
 #
 # QCD 2-2 scattering
-#insert SimpleQCD:MatrixElements[0] MEQCD2to2
+# insert SimpleQCD:MatrixElements[0] MEQCD2to2
 #
 # gamma+jet
-#insert SimpleQCD:MatrixElements[0] MEGammaJet
+# insert SimpleQCD:MatrixElements[0] MEGammaJet
 #
 # gamma-gamma
-#insert SimpleQCD:MatrixElements[0] MEGammaGamma
+# insert SimpleQCD:MatrixElements[0] MEGammaGamma
 
 #
 #  Heavy quark processes
@@ -92,43 +76,40 @@ set MEqq2gZ2ff:Process Quarks
 # s-channel
 # insert SimpleQCD:MatrixElements[0] MESingleTopSChannel
 # tW
-#insert SimpleQCD:MatrixElements[0] MESingleTopTW
+# insert SimpleQCD:MatrixElements[0] MESingleTopTW
 #
 #  Higgs Processes
 #
 #
 # gg/qqbar -> Higgs (recommend including q qbar->Hg as not in ME correction)
-#insert SimpleQCD:MatrixElements[0] MEHiggs
-#insert SimpleQCD:MatrixElements[0] MEHiggsJet
-#set MEHiggsJet:Process qqbar
-#set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
+# insert SimpleQCD:MatrixElements[0] MEHiggs
+# insert SimpleQCD:MatrixElements[0] MEHiggsJet
+# set MEHiggsJet:Process qqbar
+# set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
 #
 # higgs+jet
-#insert SimpleQCD:MatrixElements[0] MEHiggsJet
+# insert SimpleQCD:MatrixElements[0] MEHiggsJet
 #
 # higgs + W (N.B. if considering all W decay modes useful to set )
 #           (jet pT cut to zero so no cut on W decay products    )
-#insert SimpleQCD:MatrixElements[0] MEPP2WH
-#set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
+# insert SimpleQCD:MatrixElements[0] MEPP2WH
+# set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
 #
 # higgs + Z (N.B. if considering all Z decay modes useful to set )
 #           (jet pT cut to zero so no cut on Z decay products    )
-#insert SimpleQCD:MatrixElements[0] MEPP2ZH
-#set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
+# insert SimpleQCD:MatrixElements[0] MEPP2ZH
+# set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
 #
 # VBF Higgs
-#insert SimpleQCD:MatrixElements[0] MEPP2HiggsVBF
+# insert SimpleQCD:MatrixElements[0] MEPP2HiggsVBF
 #
 # t tbar Higgs
-#insert SimpleQCD:MatrixElements[0] MEPP2ttbarH
+# insert SimpleQCD:MatrixElements[0] MEPP2ttbarH
 #
 # b bbar Higgs
-#insert SimpleQCD:MatrixElements[0] MEPP2bbbarH
+# insert SimpleQCD:MatrixElements[0] MEPP2bbbarH
 
 cd /Herwig/Generators
-
-insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/Plot
-set /Herwig/Analysis/Plot:EventNumber 2299
 
 ##################################################
 #  Useful analysis handlers for hadron-hadron physics

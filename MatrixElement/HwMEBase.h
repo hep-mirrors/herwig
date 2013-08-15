@@ -128,12 +128,6 @@ public:
   virtual HardTreePtr generateHardest(ShowerTreePtr);
   //@}
 
-  /**
-   *  rescale the momenta for the computation of the helicity matrix element
-   */
-  bool rescaleMomenta(const vector<Lorentz5Momentum> &,
-		      const cPDVector &);
-
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -218,6 +212,12 @@ protected:
   void rescalingOption(unsigned int iopt) {
     rescaleOption_=iopt;
   }
+
+  /**
+   *  rescale the momenta for the computation of the helicity matrix element
+   */
+  bool rescaleMomenta(const vector<Lorentz5Momentum> &,
+		      const cPDVector &);
 
   /**
    *  Access to the rescaled momenta

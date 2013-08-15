@@ -164,11 +164,6 @@ protected:
 protected:
 
   /**
-   *  Pointer to the coupling
-   */
-  ShowerAlphaPtr alpha_;
-
-  /**
    *  Apply the hard matrix element
    */
   vector<Lorentz5Momentum> applyHard(const ParticleVector &p);
@@ -274,6 +269,11 @@ protected:
    * @param x2 \f$x_2\f$
    */
   double PS(double x1, double x2);
+
+  /**
+   *  Access to the strong coupling
+   */
+  ShowerAlphaPtr alphaS() const {return alpha_;}
   //@}
 
 private:
@@ -367,6 +367,10 @@ private:
    */
   static const double EPS_;
 
+  /**
+   *  Pointer to the coupling
+   */
+  ShowerAlphaPtr alpha_;
 };
 
 }

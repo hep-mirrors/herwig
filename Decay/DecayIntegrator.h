@@ -90,10 +90,9 @@ public:
    */
   virtual bool accept(tcPDPtr parent, const tPDVector & children) const {
     bool cc;
-
     return modeNumber(cc,parent,children)>=0;
   }
- 
+  
   /**
    * For a given decay mode and a given particle instance, perform the
    * decay and return the decay products. As this is the base class this

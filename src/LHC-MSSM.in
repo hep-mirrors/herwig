@@ -9,19 +9,12 @@
 # The second section contains the user settings.
 ###################################################
 
-
-##################################################
-
-
+# Set emission to POWHEG for radiation in decays
 set /Herwig/Shower/Evolver:HardEmissionMode POWHEG
-set /Herwig/Shower/ShowerHandler:MPIHandler NULL
-
-#testing
-#set /Herwig/Shower/Evolver:HardOnly Yes
-#set /Herwig/Shower/Evolver:LimitEmissions HardOnly
 
 read MSSM.model
 cd /Herwig/NewPhysics
+
 ##################################################
 #
 # This section contains the user defined settings
@@ -36,30 +29,17 @@ cd /Herwig/NewPhysics
 # hard process (On by default)
 set HPConstructor:IncludeEW No
 
-
 # Example hard process: Incoming proton, outgoing squarks
 insert HPConstructor:Incoming 0 /Herwig/Particles/g
-insert HPConstructor:Incoming 0 /Herwig/Particles/u
-insert HPConstructor:Incoming 1 /Herwig/Particles/ubar
+insert HPConstructor:Incoming 1 /Herwig/Particles/u
+insert HPConstructor:Incoming 2 /Herwig/Particles/ubar
 insert HPConstructor:Incoming 3 /Herwig/Particles/d
 insert HPConstructor:Incoming 4 /Herwig/Particles/dbar
 
-#insert HPConstructor:Outgoing 0 /Herwig/Particles/~u_L
-#insert HPConstructor:Outgoing 1 /Herwig/Particles/~u_Lbar
-#insert HPConstructor:Outgoing 2 /Herwig/Particles/~d_L
-#insert HPConstructor:Outgoing 3 /Herwig/Particles/~d_Lbar
-#insert HPConstructor:Outgoing 4 /Herwig/Particles/~g
-
-set HPConstructor:Processes Exclusive
-#insert HPConstructor:Outgoing 0 /Herwig/Particles/~g
-#insert HPConstructor:Outgoing 1 /Herwig/Particles/~g
-
 insert HPConstructor:Outgoing 0 /Herwig/Particles/~u_L
 insert HPConstructor:Outgoing 1 /Herwig/Particles/~u_Lbar
-
-
-#set /Herwig/Particles/p+:PDF /Herwig/Partons/NoPDF
-
+insert HPConstructor:Outgoing 2 /Herwig/Particles/~d_L
+insert HPConstructor:Outgoing 3 /Herwig/Particles/~d_Lbar
 
 # --- Perturbative Decays ---
 # Read in the spectrum file and optional decay table.
@@ -82,16 +62,12 @@ setup MSSM/Model CMSSM40.1.1.slha
 # Intrinsic pT tune extrapolated to LHC energy
 set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
 
-
 # Other parameters for run
 cd /Herwig/Generators
-#insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/Plot
-#set /Herwig/Analysis/Plot:EventNumber 82584
-
 set LHCGenerator:NumberOfEvents 10000000
-set LHCGenerator:RandomNumberGenerator:Seed 31122012
+set LHCGenerator:RandomNumberGenerator:Seed 31122001
 set LHCGenerator:PrintEvent 10
-set LHCGenerator:MaxErrors 100000
+set LHCGenerator:MaxErrors 10000
 set LHCGenerator:EventHandler:LuminosityFunction:Energy 8000.0
 
 saverun LHC-MSSM LHCGenerator

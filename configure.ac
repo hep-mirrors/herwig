@@ -173,7 +173,6 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Shower/SplittingFunctions/Makefile
 		Shower/Default/Makefile
 		Shower/Base/Makefile
-		Shower/Matching/Makefile
                 Shower/Makefile
 		DipoleShower/Makefile
 		DipoleShower/Base/Makefile

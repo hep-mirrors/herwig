@@ -20,7 +20,6 @@
 #include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
 #include "Herwig++/Utilities/Kinematics.h"
 #include "ThePEG/Helicity/LorentzTensor.h"
-#include "Herwig++/Shower/Couplings/ShowerAlpha.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;

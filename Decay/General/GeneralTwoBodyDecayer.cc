@@ -672,8 +672,8 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
   return hardtree;
 }
 
-double GeneralTwoBodyDecayer::threeBodyME(const int , const Particle & inpart,
-					  const ParticleVector & decay,MEOption meopt) {
+double GeneralTwoBodyDecayer::threeBodyME(const int , const Particle &,
+					  const ParticleVector &,MEOption) {
   throw Exception() << "Base class  GeneralTwoBodyDecayer::threeBodyME() "
 		    << "called, should have an implementation in the inheriting class"
 		    << Exception::runerror;

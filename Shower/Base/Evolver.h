@@ -26,7 +26,6 @@
 #include "Evolver.fh"
 #include "Herwig++/MatrixElement/HwMEBase.h"
 #include "Herwig++/Decay/HwDecayerBase.h"
-#include "Herwig++/Models/General/HPDiagram.h"
 
 namespace Herwig {
 

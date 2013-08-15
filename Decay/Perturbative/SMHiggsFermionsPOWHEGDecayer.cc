@@ -326,7 +326,6 @@ void SMHiggsFermionsPOWHEGDecayer::doinit() {
 }
 
 bool SMHiggsFermionsPOWHEGDecayer::getEvent() {
-  cerr << "higgs" << endl;
   // max pT
   Energy pTmax = 0.5*sqrt(mh2_);
   // Define over valued y_max & y_min according to the associated pt_min cut.
@@ -388,7 +387,6 @@ bool SMHiggsFermionsPOWHEGDecayer::getEvent() {
           InvEnergy2 D1 = dipoleSubtractionTerm( x1Solution[i][j], x2Solution[i][j]); 
           InvEnergy2 D2 = dipoleSubtractionTerm( x2Solution[i][j], x1Solution[i][j]);
 	  double dipoleFactor = abs(D1)/(abs(D1) + abs(D2));
-	            
 	  probTemp[i][j] = weightPrefactor*pT[i]*dipoleFactor*
             calculateJacobian(x1Solution[i][j], x2Solution[i][j], pT[i])*
             calculateRealEmission(x1Solution[i][j], x2Solution[i][j]);

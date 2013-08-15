@@ -28,52 +28,52 @@ void SSWGSSVertex::doinit() {
   //W-
   //LL-squarks
   for(long ix=1000001;ix<1000006;ix+=2) {
-    addToList(-24,ix+1,-ix,21);
+    addToList(-24,21,ix+1,-ix);
   }
   //1-2 stop sbottom
-  addToList(-24,1000006,-2000005,21);
+  addToList(-24,21,1000006,-2000005);
   //2-1 stop sbottom
-  addToList(-24,2000006,-1000005,21);
+  addToList(-24,21,2000006,-1000005);
   //2-2 stop sbottom
-  addToList(-24,2000006,-2000005,21);
+  addToList(-24,21,2000006,-2000005);
 
   //W+
   for(long ix=1000001;ix<1000006;ix+=2) {
-    addToList(24,-(ix+1),ix,21);
+    addToList(24,21,-(ix+1),ix);
   }
   //1-2 stop sbottom
-  addToList(24,-1000006,2000005,21);
+  addToList(24,21,-1000006,2000005);
   //2-1 stop sbottom
-  addToList(24,-2000006,1000005,21);
+  addToList(24,21,-2000006,1000005);
   //2-2 stop sbottom
-  addToList(24,-2000006,2000005,21);
+  addToList(24,21,-2000006,2000005);
   
   //---Z0----   
   //LL squarks
   for(long ix=1000001;ix<1000007;++ix) {
-    addToList(23,ix,-ix,21);
+    addToList(23,21,ix,-ix);
   }
   //RR squarks
   for(long ix=2000001;ix<2000007;++ix) {
-    addToList(23,ix,-ix,21);
+    addToList(23,21,ix,-ix);
   }
   //L-Rbar stop
-  addToList(23,1000006,-2000006,21);
+  addToList(23,21,1000006,-2000006);
   //Lbar-R stop
-  addToList(23,-1000006,2000006,21);
+  addToList(23,21,-1000006,2000006);
 
   //L-Rbar sbottom
-  addToList(23,1000005,-2000005,21);
+  addToList(23,21,1000005,-2000005);
   //Lbar-R sbottom
-  addToList(23,-1000005,2000005,21);
+  addToList(23,21,-1000005,2000005);
   
   //----gamma----
   //squarks
   for(long ix=1000001;ix<1000007;++ix) {
-    addToList(22,ix,-ix,21);
+    addToList(22,21,ix,-ix);
   }
   for(long ix=2000001;ix<2000007;++ix) {
-    addToList(22,ix,-ix,21);
+    addToList(22,21,ix,-ix);
   }
   orderInGem(1);
   orderInGs(1);

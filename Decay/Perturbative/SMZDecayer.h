@@ -11,7 +11,6 @@
 //
 // This is the declaration of the SMZDecayer class.
 //
-
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
@@ -30,7 +29,7 @@ using namespace ThePEG::Helicity;
  * @see DecayIntegrator
  * 
  */
-  class SMZDecayer: public DecayIntegrator {
+class SMZDecayer: public DecayIntegrator {
 
 public:
 
@@ -204,11 +203,6 @@ protected:
   vector<Lorentz5Momentum> applyHard(const ParticleVector &p);
 
   /**
-   *  Pointer to the coupling
-   */
-  ShowerAlphaPtr alpha_;
-
-  /**
    *  Get the weight for hard emission
    */
   double getHard(double &, double &);
@@ -309,6 +303,11 @@ protected:
    * @param x2 \f$x_2\f$
    */
   double PS(double x1, double x2);
+
+  /**
+   *  Access to the strong coupling
+   */
+  ShowerAlphaPtr alphaS() const {return alpha_;}
   //@}
 
 private:
@@ -323,7 +322,7 @@ private:
    */
   SMZDecayer & operator=(const SMZDecayer &);
 
- private:
+private:
 
   /**
    * Pointer to the Z vertex
@@ -406,6 +405,11 @@ private:
    *  Cut-off parameter
    */
   static const double EPS_;
+
+  /**
+   *  Pointer to the coupling
+   */
+  ShowerAlphaPtr alpha_;
 };
 
 }
