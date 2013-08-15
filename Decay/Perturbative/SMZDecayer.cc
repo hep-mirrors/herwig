@@ -82,11 +82,6 @@ void SMZDecayer::doinit() {
     for(int ix=1;ix<7;++ix) {
       int iy=istep+ix;
       if(iy==6) continue;
-      // check that the combination of particles is allowed
-      if(!FFZvertex_->allowed(-iy,iy,ParticleID::Z0))
-	throw InitException() << "SMZDecayer::doinit() the Z vertex " 
-			      << "cannot handle all the modes" 
-			      << Exception::abortnow;
       extpart[1] = getParticleData(-iy);
       extpart[2] = getParticleData( iy);
       mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
@@ -330,7 +325,7 @@ realEmissionME(unsigned int,const Particle &parent,
 	      (children[iferm]->momentum()*children[2]->momentum());
 	    // sum and difference
 	    SpinorBarWaveFunction foff =
-	      FFPvertex_->evaluateSmall(ZERO,3,children[iferm]->dataPtr(),
+	      FFPvertex_->evaluateSmall(ZERO,3,children[iferm]->dataPtr()->CC(),
 					wfb[ifm],photon[2*phel],
 					ifm,2*phel,ctheta,phi,stheta,false);
 	    diff[0] = FFZvertex_->evaluate(scale,wf[ia],foff,vec1[vhel]) +
@@ -343,7 +338,7 @@ realEmissionME(unsigned int,const Particle &parent,
 	  // special if fermion backwards
 	  else {
 	    SpinorBarWaveFunction foff = 
-	      FFPvertex_->evaluate(ZERO,3,children[iferm]->dataPtr(),
+	      FFPvertex_->evaluate(ZERO,3,children[iferm]->dataPtr()->CC(),
 				   wfb[ifm],photon[2*phel]);
 	    Complex diag = 
 	      FFZvertex_->evaluate(scale,wf[ia],foff,vec1[vhel]);
@@ -364,7 +359,7 @@ realEmissionME(unsigned int,const Particle &parent,
 	      (children[ianti]->momentum()*children[2]->momentum());
 	    // sum and difference
 	    SpinorWaveFunction foff =
-	      FFPvertex_->evaluateSmall(ZERO,3,children[ianti]->dataPtr(),
+	      FFPvertex_->evaluateSmall(ZERO,3,children[ianti]->dataPtr()->CC(),
 					wf[ia],photon[2*phel],
 					ia,2*phel,ctheta,phi,stheta,false);
 	    diff[1] = FFZvertex_->evaluate(scale,foff ,wfb[ifm],vec1[vhel]) +
@@ -377,7 +372,7 @@ realEmissionME(unsigned int,const Particle &parent,
 	  // special if fermion backwards after radiation
 	  else {
 	    SpinorWaveFunction foff = 
-	      FFPvertex_->evaluate(ZERO,3,children[ianti]->dataPtr(),
+	      FFPvertex_->evaluate(ZERO,3,children[ianti]->dataPtr()->CC(),
 				   wf[ia],photon[2*phel]);
 	    Complex diag = 
 	      FFZvertex_->evaluate(scale,foff ,wfb[ifm],vec1[vhel]);

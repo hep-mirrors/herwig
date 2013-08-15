@@ -146,9 +146,12 @@ void NMSSMHHHVertex::setCoupling(Energy2 q2,tcPDPtr p1,tcPDPtr p2,
   double rt = sqrt(0.5);
   Energy _mtpole = getParticleData(6)->mass();
   Energy2 Qstsb = _MQ3*_MU2;
-  double temp = Qstsb/sqr(_mtpole);
-  assert(temp!=0.);
-  double radlog = log(temp);
+  double radlog(0.);
+  if(_includeRadiative) {
+    radlog = Qstsb/sqr(_mtpole);
+    assert(radlog!=0.);
+    radlog = log(radlog);
+  }
   complex<Energy> coupling;
   //CP even Higgs
   if( ns == 3 ) {

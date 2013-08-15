@@ -117,46 +117,15 @@ void UEDF1F0W1Vertex::Init() {
 void UEDF1F0W1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
 				  tcPDPtr part3) {
   long id1(abs(part1->id())), id2(abs(part2->id())),
-    id3(abs(part3->id())), kkparticle(0), gboson(0), smID(0);
-  if( id1 == 5100022 || id1 == 5100023 || id1 == 5100024 ) {
-    gboson = id1;
-    if( id2 > 5000000 ) {
-      kkparticle = id2;
-      smID = id3;
-    }
-    else {
-      kkparticle = id3;
-      smID = id2;
-    }
-  }
-  else if( id2 == 5100022  || id2 == 5100023 || id2 == 5100024 ) {
-    gboson = id2;
-    if( id1 > 5000000 ) {
-      kkparticle = id1;
-      smID = id3;
-    }
-    else {
-      kkparticle = id3;
-      smID = id1;
-    }
-  }
-  else if( id3 == 5100022  || id3 == 5100023 || id3 == 5100024 ) {
-    gboson = id3;
-    if( id1 > 5000000 ) {
-      kkparticle = id1;
-      smID = id2;
-    }
-    else {
-      kkparticle = id2;
-      smID = id1;
-    }
-
+    gboson(abs(part3->id())), kkparticle(0), smID(0);
+  assert( gboson == 5100022  || gboson == 5100023 || gboson == 5100024 );
+  if( id1 > 5000000 ) {
+    kkparticle = id1;
+    smID = id2;
   }
   else {
-    throw HelicityLogicalError() 
-      << "UEDF1F0W1Vertex::setCoupling - There is no KK gauge boson "
-      << "in this vertex." << Exception::warning;
-    return;
+    kkparticle = id2;
+    smID = id1;
   }
   if( (kkparticle >= 5100001 && kkparticle <= 5100006) ||
       (kkparticle >= 6100001 && kkparticle <= 6100006) ||

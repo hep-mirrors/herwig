@@ -361,7 +361,7 @@ void DecayPhaseSpaceChannel::doinit() {
       massmax -= _mode->externalParticles(ix)->massMin();
   }
   for(unsigned int ix=0;ix<_intpart.size();++ix) {
-    if(_intwidth.back()==ZERO && ix>0 && _jactype[ix]==0 ) {
+    if(_intwidth[ix]==ZERO && ix>0 && _jactype[ix]==0 ) {
       Energy massmin(ZERO);
       for(unsigned int iy=0;iy<_intext[ix].size();++iy)
 	massmin += _mode->testOnShell() ? 
@@ -402,7 +402,7 @@ void DecayPhaseSpaceChannel::doinitrun() {
   for(unsigned int ix=1;ix<_mode->numberofParticles();++ix) 
     massmax -= _mode->externalParticles(ix)->massMin();
   for(unsigned int ix=0;ix<_intpart.size();++ix) {
-    if(_intwidth.back()==0.*MeV && ix>0 && _jactype[ix]==0 ) {
+    if(_intwidth[ix]==0.*MeV && ix>0 && _jactype[ix]==0 ) {
       Energy massmin(0.*GeV);
       for(unsigned int iy=0;iy<_intext[ix].size();++iy)
 	massmin += _mode->externalParticles(_intext[ix][iy])->massMin();
@@ -472,9 +472,9 @@ InvEnergy2 DecayPhaseSpaceChannel::massWeight(int ires, Energy moff,
 					      Energy lower,Energy upper) {
   InvEnergy2 wgt = ZERO;
   if(lower>upper) {
-    throw DecayPhaseSpaceError() << "DecayPhaseSpaceChannel::massWeight not allowed" 
+    throw DecayPhaseSpaceError() << "DecayPhaseSpaceChannel::massWeight not allowed " 
 				 << ires << "   " << _intpart[ires]->id() << "   " 
-				 << moff/GeV << Exception::eventerror;
+				 << moff/GeV << " " << lower/GeV << " " << upper/GeV << Exception::eventerror;
   } 
   // use a Breit-Wigner 
   if ( _jactype[ires] == 0 ) {
@@ -553,8 +553,8 @@ Energy DecayPhaseSpaceChannel::generateMass(int ires,Energy lower,Energy upper) 
 				 << "DecayPhaseSpaceChannel::generateMass" 
 				 << Exception::eventerror;
   }
-  if(mass<lower)      mass=lower+1e-10*(lower+upper);
-  else if(mass>upper) mass=upper-1e-10*(lower+upper);
+  if(mass<lower+1e-10*(lower+upper))      mass=lower+1e-10*(lower+upper);
+  else if(mass>upper-1e-10*(lower+upper)) mass=upper-1e-10*(lower+upper);
   return mass;
 }
 
@@ -567,7 +567,7 @@ void DecayPhaseSpaceChannel::twoBodyDecay(const Lorentz5Momentum & p,
   Kinematics::generateAngles(ctheta,phi);
   Axis unitDir1=Kinematics::unitDirection(ctheta,phi);
   Momentum3 pstarVector;
-  Energy min=p.m();
+  Energy min=p.mass();
   if ( min >= m1 + m2  &&  m1 >= ZERO  &&  m2 >= ZERO  ) {
     pstarVector = unitDir1 * Kinematics::pstarTwoBodyDecay(min,m1,m2);
   }

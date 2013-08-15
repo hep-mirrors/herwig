@@ -144,7 +144,7 @@ void IIqqxDipole::Init() {
   static ClassDocumentation<IIqqxDipole> documentation
     ("IIqqxDipole");
 
-  DipoleRepository::registerDipole<IIqqxDipole,IILightTildeKinematics,IILightInvertedTildeKinematics>
+  DipoleRepository::registerDipole<0,IIqqxDipole,IILightTildeKinematics,IILightInvertedTildeKinematics>
     ("IIqqxDipole","IILightTildeKinematics","IILightInvertedTildeKinematics");
 
 }

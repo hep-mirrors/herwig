@@ -37,7 +37,9 @@ GeneralSampler::GeneralSampler()
     isSampling(false), theUpdateAfter(1),
     crossSectionCalls(0), gotCrossSections(false),
     theIntegratedXSec(0.), theIntegratedXSecErr(0.),
-    theSumWeights(0.), theSumWeights2(0.), norm(0.) {}
+    theSumWeights(0.), theSumWeights2(0.), 
+    theAttempts(0), theAccepts(0),
+    norm(0.), runCombinationData(false) {}
 
 GeneralSampler::~GeneralSampler() {}
 
@@ -150,6 +152,8 @@ double GeneralSampler::generate() {
       continue;
     }
 
+    ++theAttempts;
+
     if ( eventHandler()->weighted() && lastSampler->lastWeight() == 0.0 ) {
       lastSampler->accept();
       lastSampler = samplers.upper_bound(UseRandom::rnd())->second;
@@ -159,10 +163,12 @@ double GeneralSampler::generate() {
       continue;
     }
 
-    // revisit unweighting at this point later
+    // revisit unweighting weighted samplers at this point later
     break;
 
   }
+
+  ++theAccepts;
 
   if ( excptTries == eventHandler()->maxLoop() )
     throw Exception()
@@ -177,7 +183,7 @@ double GeneralSampler::generate() {
     theSumWeights2 += 1.0;
     return sign(lastSampler->lastWeight());
   } else {
-    double w = lastSampler->lastWeight()/(norm*lastSampler->bias());
+    double w = lastSampler->lastWeight()/lastSampler->bias();
     theSumWeights += w;
     theSumWeights2 += sqr(w);
     return w;
@@ -192,10 +198,12 @@ void GeneralSampler::rejectLast() {
     theSumWeights -= sign(lastSampler->lastWeight());
     theSumWeights2 -= 1.0;
   } else {
-    double w = lastSampler->lastWeight()/(norm*lastSampler->bias());
+    double w = lastSampler->lastWeight()/lastSampler->bias();
     theSumWeights -= w;
     theSumWeights2 -= sqr(w);
   }
+  --theAttempts;
+  --theAccepts;
 }
 
 void GeneralSampler::currentCrossSections() const {
@@ -277,7 +285,7 @@ void GeneralSampler::updateCrossSections(bool) {
       s->second->bias(abssw/sumbias);
       current += abssw;
     } else {
-      s->second->bias(1.);
+      s->second->bias(1./sumbias);
       current += 1.;
     }
     newSamplers[current/sumbias] = s->second;
@@ -330,7 +338,35 @@ void GeneralSampler::dofinish() {
 			    << Exception::warning);
   }
 
+  if ( runCombinationData ) {
+
+    string dataName = generator()->filename() + "-sampling.dat";
+
+    ofstream data(dataName.c_str());
+
+    double runXSec =
+      theSumWeights/theAttempts;
+    double runXSecErr =
+      (1./theAttempts)*(1./(theAttempts-1.))*
+      abs(theSumWeights2 - sqr(theSumWeights)/theAttempts);
+      
+    data << setprecision(20);
+
+    data << "CrossSectionCombined "
+	 << (integratedXSec()/nanobarn) << " +/- "
+	 << (integratedXSecErr()/nanobarn) << "\n"
+	 << "CrossSectionRun "
+	 << runXSec << " +/- " << sqrt(runXSecErr) << "\n"
+	 << "PointsAttempted " << theAttempts << "\n"
+	 << "PointsAccepted " << theAccepts << "\n"
+	 << "SumWeights " << theSumWeights << "\n"
+	 << "SumWeights2 " << theSumWeights2 << "\n"
+	 << flush;
+
+  }
+
   SamplerBase::dofinish();
+
 }
 
 void GeneralSampler::doinitrun() {
@@ -365,14 +401,18 @@ void GeneralSampler::persistentOutput(PersistentOStream & os) const {
   os << theBinSampler << theSamplingBias << theVerbose << theFlatSubprocesses 
      << samplers << lastSampler << theUpdateAfter
      << theIntegratedXSec << theIntegratedXSecErr
-     << theSumWeights << theSumWeights2 << norm;
+     << theSumWeights << theSumWeights2 
+     << theAttempts << theAccepts
+     << norm << runCombinationData;
 }
 
 void GeneralSampler::persistentInput(PersistentIStream & is, int) {
   is >> theBinSampler >> theSamplingBias >> theVerbose >> theFlatSubprocesses 
      >> samplers >> lastSampler >> theUpdateAfter
      >> theIntegratedXSec >> theIntegratedXSecErr
-     >> theSumWeights >> theSumWeights2 >> norm;
+     >> theSumWeights >> theSumWeights2 
+     >> theAttempts >> theAccepts
+     >> norm >> runCombinationData;
 }
 
 
@@ -440,6 +480,23 @@ void GeneralSampler::Init() {
      false);
 
   interfaceFlatSubprocesses.rank(-1);
+
+  static Switch<GeneralSampler,bool> interfaceRunCombinationData
+    ("RunCombinationData",
+     "",
+     &GeneralSampler::runCombinationData, false, false, false);
+  static SwitchOption interfaceRunCombinationDataOn
+    (interfaceRunCombinationData,
+     "On",
+     "",
+     true);
+  static SwitchOption interfaceRunCombinationDataOff
+    (interfaceRunCombinationData,
+     "Off",
+     "",
+     false);
+
+  interfaceRunCombinationData.rank(-1);
 
 }
 

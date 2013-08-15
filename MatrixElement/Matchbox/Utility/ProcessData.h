@@ -61,6 +61,16 @@ public:
   const map<PDVector,vector<Ptr<Tree2toNDiagram>::ptr> >& diagramMap() const { return theDiagramMap; }
 
   /**
+   * Access colour flows contributing to a given diagram
+   */
+  map<Ptr<Tree2toNDiagram>::tcptr,vector<ColourLines*> >& colourFlowMap() { return theColourFlowMap; }
+
+  /**
+   * Return colour flows contributing to a given diagram
+   */
+  const map<Ptr<Tree2toNDiagram>::tcptr,vector<ColourLines*> >& colourFlowMap() const { return theColourFlowMap; }
+
+  /**
    * Access the mass generators to be used for the given particles
    */
   map<cPDPtr,tGenericMassGeneratorPtr>& massGenerators() { return theMassGenerators; }
@@ -133,6 +143,11 @@ private:
    * The diagrams contributing to a subprocess
    */
   map<PDVector,vector<Ptr<Tree2toNDiagram>::ptr> > theDiagramMap;
+
+  /**
+   * Colour flows contributing to a given diagram
+   */
+  map<Ptr<Tree2toNDiagram>::tcptr,vector<ColourLines*> > theColourFlowMap;
 
   /**
    * The mass generators to be used for the given particles

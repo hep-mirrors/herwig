@@ -164,6 +164,7 @@ double  FtoFVVDecayer::me2(const int ichan, const Particle & inpart,
   // outgoing, keep track of fermion and first occurrence of vector positions
   int isp(-1), ivec(-1);
   // outgoing particles
+  pair<bool,bool> mass = make_pair(false,false);
   for(int ix = 0; ix < 3; ++ix) {
     tPPtr p = decay[ix];
     if( p->dataPtr()->iSpin() == PDT::Spin1Half ) {
@@ -186,14 +187,17 @@ double  FtoFVVDecayer::me2(const int ichan, const Particle & inpart,
       }
     }
     else if( p->dataPtr()->iSpin() == PDT::Spin1 ) {
+      bool massless = p->id() == ParticleID::gamma || p->id() == ParticleID::g;
       if( ivec < 0 ) {
 	ivec = ix;
 	VectorWaveFunction::
-	  calculateWaveFunctions(_vwave.first , p, Helicity::outgoing, false);
+	  calculateWaveFunctions(_vwave.first , p, Helicity::outgoing, massless);
+	mass.first = massless;
       }
       else {
 	VectorWaveFunction::
-	  calculateWaveFunctions(_vwave.second, p, Helicity::outgoing, false);
+	  calculateWaveFunctions(_vwave.second, p, Helicity::outgoing, massless);
+	mass.second = massless;
       }
     }
   }
@@ -217,8 +221,10 @@ double  FtoFVVDecayer::me2(const int ichan, const Particle & inpart,
   for( unsigned int if1 = 0; if1 < 2; ++if1 ) {
     for( unsigned int if2 = 0; if2 < 2; ++if2 ) {
       for( unsigned int iv1 = 0; iv1 < 3; ++iv1 ) {
+	if ( mass.first && iv1 == 1 ) continue;
 	for( unsigned int iv2 = 0; iv2 < 3; ++iv2 ) {
-	flows = vector<Complex>(ncf, Complex(0.));
+	  if ( mass.second && iv2 == 1 ) continue;
+	  flows = vector<Complex>(ncf, Complex(0.));
 	largeflows = vector<Complex>(ncf, Complex(0.));
 	unsigned int idiag(0);
 	for(vector<TBDiagram>::const_iterator dit = getProcessInfo().begin();

@@ -7,6 +7,8 @@ DipoleRepository.cc \
 DipoleRepository.h \
 MatchboxAmplitude.cc \
 MatchboxAmplitude.h \
+MatchboxOLPME.cc \
+MatchboxOLPME.h \
 MatchboxMEBase.cc \
 MatchboxMEBase.fh \
 MatchboxMEBase.h \

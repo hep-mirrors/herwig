@@ -242,6 +242,7 @@ for f in aidafiles:
            h.fullPath().find("I1087342")>0 or
            h.fullPath().find("I9035664")>0 or
            h.fullPath().find("I1125575")>0 or
+           h.fullPath().find("I1094564")>0 or
            h.fullPath().find("CMS_2012_PAS_QCD_11_010")>0) :
            if not inhistos_pt.has_key(h.fullPath()):
                inhistos_pt[h.fullPath()] = {}
@@ -315,11 +316,12 @@ for hpath,hsets in inhistos_pt.iteritems():
         hpath.find("1082936")>0 or 
         hpath.find("8941262")>0 or 
         hpath.find("1118269")>0 or 
-        hpath.find("1087342")>0  or 
+        hpath.find("1087342")>0 or 
         hpath.find("1188891")>0 or
         hpath.find("919017")>0  or
-        hpath.find("9035664")>0  or
+        hpath.find("9035664")>0 or
         hpath.find("1125575")>0 or
+        hpath.find("1094564")>0 or
         hpath.find("CMS_2012_PAS_QCD_11_010")>0) :
         workhisto = copy.deepcopy(hsets.values()[0].values()[0])
         outhistos[hpath] = workhisto
@@ -1408,6 +1410,44 @@ useOnePt("/ATLAS_2012_I1125575/d06-x05-y17",  "7000", "30" )
 useOnePt("/ATLAS_2012_I1125575/d06-x05-y18",  "7000", "30" )
 useOnePt("/ATLAS_2012_I1125575/d06-x05-y19",  "7000", "40" )
 useOnePt("/ATLAS_2012_I1125575/d06-x05-y20",  "7000", "40" )
+
+# ATLAS_2012_I1094564
+useOnePt("/ATLAS_2012_I1094564/d01-x01-y01",  "7000", "210" )
+useOnePt("/ATLAS_2012_I1094564/d02-x01-y01",  "7000", "260" )
+useOnePt("/ATLAS_2012_I1094564/d03-x01-y01",  "7000", "400" )
+useOnePt("/ATLAS_2012_I1094564/d04-x01-y01",  "7000", "400" )
+useOnePt("/ATLAS_2012_I1094564/d05-x01-y01",  "7000", "210" )
+useOnePt("/ATLAS_2012_I1094564/d06-x01-y01",  "7000", "260" )
+useOnePt("/ATLAS_2012_I1094564/d07-x01-y01",  "7000", "400" )
+useOnePt("/ATLAS_2012_I1094564/d08-x01-y01",  "7000", "400" )
+useOnePt("/ATLAS_2012_I1094564/d09-x01-y01",  "7000", "210" )
+useOnePt("/ATLAS_2012_I1094564/d10-x01-y01",  "7000", "260" )
+useOnePt("/ATLAS_2012_I1094564/d11-x01-y01",  "7000", "400" )
+useOnePt("/ATLAS_2012_I1094564/d12-x01-y01",  "7000", "400" )
+useOnePt("/ATLAS_2012_I1094564/d13-x01-y01",  "7000", "210" )
+useOnePt("/ATLAS_2012_I1094564/d14-x01-y01",  "7000", "260" )
+useOnePt("/ATLAS_2012_I1094564/d15-x01-y01",  "7000", "400" )
+useOnePt("/ATLAS_2012_I1094564/d16-x01-y01",  "7000", "400" )
+useOnePt("/ATLAS_2012_I1094564/d17-x01-y01",  "7000", "210" )
+useOnePt("/ATLAS_2012_I1094564/d18-x01-y01",  "7000", "260" )
+useOnePt("/ATLAS_2012_I1094564/d19-x01-y01",  "7000", "400" )
+useOnePt("/ATLAS_2012_I1094564/d20-x01-y01",  "7000", "400" )
+useOnePt("/ATLAS_2012_I1094564/d21-x01-y01",  "7000", "210" )
+useOnePt("/ATLAS_2012_I1094564/d22-x01-y01",  "7000", "260" )
+useOnePt("/ATLAS_2012_I1094564/d23-x01-y01",  "7000", "400" )
+useOnePt("/ATLAS_2012_I1094564/d24-x01-y01",  "7000", "400" )
+useOnePt("/ATLAS_2012_I1094564/d25-x01-y01",  "7000", "210" )
+useOnePt("/ATLAS_2012_I1094564/d26-x01-y01",  "7000", "260" )
+useOnePt("/ATLAS_2012_I1094564/d27-x01-y01",  "7000", "400" )
+useOnePt("/ATLAS_2012_I1094564/d28-x01-y01",  "7000", "400" )
+useOnePt("/ATLAS_2012_I1094564/d29-x01-y01",  "7000", "210" )
+useOnePt("/ATLAS_2012_I1094564/d30-x01-y01",  "7000", "260" )
+useOnePt("/ATLAS_2012_I1094564/d31-x01-y01",  "7000", "400" )
+useOnePt("/ATLAS_2012_I1094564/d32-x01-y01",  "7000", "400" )
+useOnePt("/ATLAS_2012_I1094564/d33-x01-y01",  "7000", "210" )
+useOnePt("/ATLAS_2012_I1094564/d34-x01-y01",  "7000", "260" )
+useOnePt("/ATLAS_2012_I1094564/d35-x01-y01",  "7000", "400" )
+useOnePt("/ATLAS_2012_I1094564/d36-x01-y01",  "7000", "400" )
 
 # Choose output file
 name = "LHC"+"-Jets.aida"

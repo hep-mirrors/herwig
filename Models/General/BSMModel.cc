@@ -36,7 +36,7 @@ void BSMModel::persistentInput(PersistentIStream & is, int) {
 }
 
 DescribeAbstractClass<BSMModel,Herwig::StandardModel>
-  describeHerwigBSMModel("Herwig::BSMModel", "");
+describeHerwigBSMModel("Herwig::BSMModel", "Herwig.so");
 
 void BSMModel::Init() {
 
@@ -138,6 +138,7 @@ void BSMModel::decayRead() {
     // start of a block
     if(line.find("decay") == 0) {
       readDecay(cfile, line);
+      if(!cfile) break;
       continue;
     }
     else if( lesHouches && line.find("</slha") == 0 ) {
@@ -155,7 +156,7 @@ void BSMModel::readDecay(CFileLineReader & cfile,
   istringstream iss(decay);
   string dummy;
   iss >> dummy >> parent >> iunit(width, GeV);
-  PDPtr inpart = getParticleData(parent);
+  PDPtr inpart = getBSMParticleData(parent);
   if(!topModesFromFile_&&abs(parent)==ParticleID::t) {
     cfile.readline();
     return;
@@ -174,6 +175,7 @@ void BSMModel::readDecay(CFileLineReader & cfile,
   unsigned int nmode = 0;
   while(cfile.readline()) {
     string line = cfile.getline();
+    line = StringUtils::stripws(line);
     // skip comments
     if(line[0] == '#') continue;
     // reached the end
@@ -204,14 +206,14 @@ void BSMModel::readDecay(CFileLineReader & cfile,
   	  << "as the parent particle. Please check the SLHA file.\n"
   	  << Exception::runerror;
       }
-      tcPDPtr p = getParticleData(t);
-      charge += p->iCharge();
+      tcPDPtr p = getBSMParticleData(t);
       if( !p ) {
   	throw SetupException()
   	  << "BSMModel::readDecay() - An unknown PDG code has been encounterd "
   	  << "while reading a decay mode. ID: " << t
   	  << Exception::runerror;
       }
+      charge += p->iCharge();
       ++npr;
       tag += p->name() + ",";
       Energy mass =  p->mass();

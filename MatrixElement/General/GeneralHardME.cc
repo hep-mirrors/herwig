@@ -16,6 +16,7 @@
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/Utilities/EnumIO.h"
 #include "ThePEG/PDF/PolarizedBeamParticleData.h"
+#include "ThePEG/Utilities/Debug.h"
 #include <numeric>
 
 using namespace Herwig;
@@ -296,6 +297,28 @@ void GeneralHardME::setProcessInfo(const vector<HPDiagram> & alldiagrams,
     break;
   default:
     assert(false);
+  }
+  if(Debug::level > 1 )  {
+    generator()->log() << "Set up 2->2 ME for " 
+		       << getParticleData(incoming_.first )->PDGName() << " " 
+		       << getParticleData(incoming_.second)->PDGName() << " -> "
+		       << getParticleData(outgoing_.first )->PDGName() << " " 
+		       << getParticleData(outgoing_.second)->PDGName() << "\n";
+    for(unsigned int ix=0;ix<alldiagrams.size();++ix) {
+      generator()->log() << "Diagram " << ix << " has "
+			 << alldiagrams[ix].incoming.first  << " " 
+			 << alldiagrams[ix].incoming.second << " -> "
+			 << alldiagrams[ix].outgoing.first  << " " 
+			 << alldiagrams[ix].outgoing.second << "\n";
+      generator()->log() << "Type " << alldiagrams[ix].channelType << " " 
+			 << alldiagrams[ix].ordered.first  << " " 
+			 << alldiagrams[ix].ordered.second << "\n";
+      if(alldiagrams[ix].intermediate)
+	generator()->log() << "Intermediate " << alldiagrams[ix].intermediate->PDGName() << "\n";
+      generator()->log() << "vertices " 
+			 << alldiagrams[ix].vertices.first ->fullName() << " " 
+			 << alldiagrams[ix].vertices.second->fullName() << "\n";
+    }
   }
 }
 
@@ -715,7 +738,7 @@ GeneralHardME::colourGeometries(tcDiagPtr diag) const {
 	ColourLines("1 3 4:2, -2 -3 -5:1, 4:1 -5:2"),
 	ColourLines("1 3 4:2, -2 -3 -5:2, 4:1 -5:1"),
 	ColourLines(""), ColourLines(""),
-	ColourLines(""), ColourLines(""),};
+	ColourLines(""), ColourLines("")};
     static ColourLines f33barto66bart[8]
       ={ColourLines(""), ColourLines(""),
 	ColourLines(""), ColourLines(""),

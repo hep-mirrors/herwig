@@ -120,6 +120,21 @@ public:
   virtual double sumWeights2() const {
     return theSumWeights2;
   }
+
+  /**
+   * Return the number of attempts
+   */
+  unsigned long attempts() const {
+    return theAttempts;
+  }
+
+  /**
+   * Return the number of accepts
+   */
+  unsigned long accepts() const {
+    return theAccepts;
+  }
+
   //@}
 
 protected:
@@ -294,9 +309,25 @@ private:
   double theSumWeights2;
 
   /**
+   * The number of attempts
+   */
+  unsigned long theAttempts;
+
+  /**
+   * The number of accepts
+   */
+  unsigned long theAccepts;
+
+  /**
    * The sum of absolute cross section.
    */ 
   double norm;
+
+  /**
+   * True, if information for combining unnormalized runs should be
+   * printed out
+   */
+  bool runCombinationData;
 
 private:
 

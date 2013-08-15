@@ -77,6 +77,11 @@ public:
   virtual bool apply() const { return theApply; }
 
   /**
+   * Clear the bookkeeping
+   */
+  void clearBookkeeping();
+
+  /**
    * Setup bookkeeping maps.
    */
   void setupBookkeeping();
@@ -814,15 +819,6 @@ public:
   virtual void generateSubCollision(SubProcess & sub);
 
   //@}
-
-protected:
-
-  /**
-   * Handle integer powers appearing downstream.
-   */
-  double pow(double x, unsigned int p) const {
-    return std::pow(x,(double)p);
-  }
 
 public:
 

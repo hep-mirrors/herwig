@@ -52,7 +52,7 @@ CrossSection DipoleMatching::dSigHatDR() const {
 		     dipole()->bornSpectator());
     double ccme2 = 
       dipole()->underlyingBornME()->largeNColourCorrelatedME2(ij,theLargeNBasis);
-    xme2 = dipole()->me2Avg(-ccme2);
+    xme2 = dipole()->me2Avg(ccme2);
   }
 
   xme2 /= dipole()->underlyingBornME()->lastXComb().lastAlphaS();

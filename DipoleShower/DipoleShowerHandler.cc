@@ -44,6 +44,8 @@ DipoleShowerHandler::DipoleShowerHandler()
     hardFirstEmission(false),
     verbosity(0), printEvent(0), nTries(0), 
     didRadiate(false), didRealign(false),
+    theRenormalizationScaleFreeze(1.*GeV), 
+    theFactorizationScaleFreeze(1.*GeV),
     theFactorizationScaleFactor(1.0),
     theRenormalizationScaleFactor(1.0),
     theHardScaleFactor(1.0) {}
@@ -575,8 +577,11 @@ bool DipoleShowerHandler::realign() {
 void DipoleShowerHandler::resetAlphaS(Ptr<AlphaSBase>::tptr as) {
 
   for ( vector<Ptr<DipoleSplittingKernel>::ptr>::iterator k = kernels.begin();
-	k != kernels.end(); ++k )
+	k != kernels.end(); ++k ) {
     (**k).alphaS(as);
+    (**k).renormalizationScaleFreeze(theRenormalizationScaleFreeze);
+    (**k).factorizationScaleFreeze(theFactorizationScaleFreeze);
+  }
 
   // clear the generators to be rebuild
   // actually, there shouldn't be any generators
@@ -690,6 +695,8 @@ void DipoleShowerHandler::persistentOutput(PersistentOStream & os) const {
      << theGlobalAlphaS << chainOrderVetoScales
      << nEmissions << discardNoEmissions << firstMCatNLOEmission << doFSR << doISR
      << realignmentScheme << hardFirstEmission << verbosity << printEvent
+     << ounit(theRenormalizationScaleFreeze,GeV)
+     << ounit(theFactorizationScaleFreeze,GeV)
      << theFactorizationScaleFactor << theRenormalizationScaleFactor
      << theHardScaleFactor;
 }
@@ -700,6 +707,8 @@ void DipoleShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> theGlobalAlphaS >> chainOrderVetoScales
      >> nEmissions >> discardNoEmissions >> firstMCatNLOEmission >> doFSR >> doISR
      >> realignmentScheme >> hardFirstEmission >> verbosity >> printEvent
+     >> iunit(theRenormalizationScaleFreeze,GeV)
+     >> iunit(theFactorizationScaleFreeze,GeV)
      >> theFactorizationScaleFactor >> theRenormalizationScaleFactor
      >> theHardScaleFactor;
 }
@@ -919,6 +928,18 @@ void DipoleShowerHandler::Init() {
     ("HardScaleFactor",
      "The hard scale factor.",
      &DipoleShowerHandler::theHardScaleFactor, 1.0, 0.0, 0,
+     false, false, Interface::lowerlim);
+
+  static Parameter<DipoleShowerHandler,Energy> interfaceRenormalizationScaleFreeze
+    ("RenormalizationScaleFreeze",
+     "The freezing scale for the renormalization scale.",
+     &DipoleShowerHandler::theRenormalizationScaleFreeze, GeV, 1.0*GeV, 0.0*GeV, 0*GeV,
+     false, false, Interface::lowerlim);
+
+  static Parameter<DipoleShowerHandler,Energy> interfaceFactorizationScaleFreeze
+    ("FactorizationScaleFreeze",
+     "The freezing scale for the factorization scale.",
+     &DipoleShowerHandler::theFactorizationScaleFreeze, GeV, 1.0*GeV, 0.0*GeV, 0*GeV,
      false, false, Interface::lowerlim);
 
 }

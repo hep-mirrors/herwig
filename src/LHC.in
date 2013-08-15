@@ -57,15 +57,26 @@ insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff
 # QCD 2-2 scattering
 # insert SimpleQCD:MatrixElements[0] MEQCD2to2
 #
-# top-antitop production
-# insert SimpleQCD:MatrixElements[0] MEHeavyQuark
-#
 # gamma+jet
 # insert SimpleQCD:MatrixElements[0] MEGammaJet
 #
 # gamma-gamma
 # insert SimpleQCD:MatrixElements[0] MEGammaGamma
 
+#
+#  Heavy quark processes
+#
+#
+# top-antitop production
+# insert SimpleQCD:MatrixElements[0] MEHeavyQuark
+#
+# single-top
+# t-channel
+# insert SimpleQCD:MatrixElements[0] MESingleTopTChannel
+# s-channel
+# insert SimpleQCD:MatrixElements[0] MESingleTopSChannel
+# tW
+#insert SimpleQCD:MatrixElements[0] MESingleTopTW
 #
 #  Higgs Processes
 #

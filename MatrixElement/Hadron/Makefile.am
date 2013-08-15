@@ -16,6 +16,7 @@ MEPP2ZJet.cc MEPP2ZJet.h  \
 MEPP2VV.cc   MEPP2VV.h  \
 MEPP2VGamma.cc   MEPP2VGamma.h  \
 MEPP2HiggsVBF.cc   MEPP2HiggsVBF.h  \
+MEPP2SingleTop.cc   MEPP2SingleTop.h  \
 MEMinBias.h MEMinBias.cc \
 MEPP2VGammaJet.h MEPP2VGammaJet.cc
 
