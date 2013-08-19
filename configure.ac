@@ -152,9 +152,6 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/Matchbox/Builtin/Processes/Makefile
                 MatrixElement/Matchbox/Builtin/Amplitudes/Makefile
 		Exsample2/Makefile
-		Shower/SplittingFunctions/Makefile
-		Shower/Default/Makefile
-		Shower/Base/Makefile
                 Shower/Makefile
 		DipoleShower/Makefile
 		DipoleShower/Base/Makefile
