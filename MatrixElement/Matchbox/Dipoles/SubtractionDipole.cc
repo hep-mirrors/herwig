@@ -696,20 +696,30 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
     return ZERO;
   }
 
+  double coupl = lastMECouplings();
+  coupl *= underlyingBornME()->lastXComb().lastAlphaS();
+
   if ( realEmissionScales() ) {
 
-    xme2 *=
+    double rws =
       pow(realEmissionME()->lastXComb().lastAlphaS()/
 	  underlyingBornME()->lastXComb().lastAlphaS(),
 	  realEmissionME()->orderInAlphaS());
 
-    xme2 *=
+    xme2 *= rws;
+    coupl *= rws;
+
+    double rwe =
       pow(realEmissionME()->lastXComb().lastAlphaEM()/
 	  underlyingBornME()->lastXComb().lastAlphaEM(),
 	  underlyingBornME()->orderInAlphaEW());
 
+    xme2 *= rwe;
+    coupl *= rwe;
+
   }
 
+  lastMECouplings(coupl);
   lastME2(xme2);
 
   CrossSection res = 
