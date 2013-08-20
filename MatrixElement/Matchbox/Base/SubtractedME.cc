@@ -231,6 +231,22 @@ void SubtractedME::getDipoles() {
   dipMEs.resize(genDipoles.size());
   copy(genDipoles.begin(),genDipoles.end(),dipMEs.begin());
 
+  if ( !factory()->reweighters().empty() ) {
+    for ( MEVector::const_iterator d = dipMEs.begin(); d != dipMEs.end(); ++d ) {
+      for ( vector<ReweightPtr>::const_iterator rw = factory()->reweighters().begin();
+	    rw != factory()->reweighters().end(); ++rw )
+	(**d).addReweighter(*rw);
+    }
+  }
+
+  if ( !factory()->preweighters().empty() ) {
+    for ( MEVector::const_iterator d = dipMEs.begin(); d != dipMEs.end(); ++d ) {
+      for ( vector<ReweightPtr>::const_iterator rw = factory()->preweighters().begin();
+	    rw != factory()->preweighters().end(); ++rw )
+	(**d).addPreweighter(*rw);
+    }
+  }
+
   dependent() = dipMEs;
 
 }
@@ -351,6 +367,10 @@ void SubtractedME::fillProjectors() {
 
 double SubtractedME::reweightHead(const vector<tStdXCombPtr>& dep) {
 
+  if ( head()->reweighted() ) {
+    return head()->reWeight();
+  }
+
   if ( inclusive() && !lastXComb().lastProjector() )
     return 1.;
 
@@ -405,6 +425,9 @@ double SubtractedME::reweightHead(const vector<tStdXCombPtr>& dep) {
 }
 
 double SubtractedME::reweightDependent(tStdXCombPtr xc, const vector<tStdXCombPtr>& dep) {
+
+  if ( xc->matrixElement()->reweighted() )
+    return xc->matrixElement()->reWeight();
 
   if ( inclusive() && !lastXComb().lastProjector() )
     return 0.;

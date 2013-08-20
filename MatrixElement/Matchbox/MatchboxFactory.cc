@@ -69,6 +69,18 @@ void MatchboxFactory::prepareME(Ptr<MatchboxMEBase>::ptr me) const {
   if ( scaleChoice() && !me->scaleChoice() )
     me->scaleChoice(scaleChoice());
 
+  if ( !reweighters().empty() ) {
+    for ( vector<ReweightPtr>::const_iterator rw = reweighters().begin();
+	  rw != reweighters().end(); ++rw )
+      me->addReweighter(*rw);
+  }
+
+  if ( !preweighters().empty() ) {
+    for ( vector<ReweightPtr>::const_iterator rw = preweighters().begin();
+	  rw != preweighters().end(); ++rw )
+      me->addPreweighter(*rw);
+  }
+
 }
 
 string pid(const PDVector& key) {
@@ -866,7 +878,7 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
      << theRealEmissionScales << theAllProcesses
      << theOLPProcesses 
      << theSelectedAmplitudes << theDeselectedAmplitudes
-     << theDipoleSet;
+     << theDipoleSet << theReweighters << thePreweighters;
 }
 
 void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
@@ -886,7 +898,7 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
      >> theRealEmissionScales >> theAllProcesses
      >> theOLPProcesses
      >> theSelectedAmplitudes >> theDeselectedAmplitudes
-     >> theDipoleSet;
+     >> theDipoleSet >> theReweighters >> thePreweighters;
 }
 
 string MatchboxFactory::startParticleGroup(string name) {
@@ -1337,6 +1349,16 @@ void MatchboxFactory::Init() {
      "CataniSeymour",
      "Use default Catani-Seymour dipoles.",
      0);
+
+  static RefVector<MatchboxFactory,ReweightBase> interfaceReweighters
+    ("Reweighters",
+     "Reweight objects for matrix elements.",
+     &MatchboxFactory::theReweighters, -1, false, false, true, false, false);
+
+  static RefVector<MatchboxFactory,ReweightBase> interfacePreweighters
+    ("Preweighters",
+     "Preweight objects for matrix elements.",
+     &MatchboxFactory::thePreweighters, -1, false, false, true, false, false);
 
 }
 

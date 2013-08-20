@@ -148,7 +148,9 @@ public:
    * Return true, if this MEGroup will reweight the contributing cross
    * sections.
    */
-  virtual bool groupReweighted() const { return inclusive() || showerApproximation(); }
+  virtual bool groupReweighted() const { 
+    return inclusive() || showerApproximation() || head()->reweighted();
+  }
 
   /**
    * Reweight the head cross section

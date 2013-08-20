@@ -490,10 +490,16 @@ double MatchboxMEBase::me2Norm(unsigned int addAlphaS) const {
   if ( hasInitialAverage() )
     fac = 1.;
 
-  if ( orderInAlphaS() > 0 || addAlphaS != 0 )
+  double couplings = 1.0;
+  if ( orderInAlphaS() > 0 || addAlphaS != 0 ) {
     fac *= pow(lastAlphaS()/SM().alphaS(),double(orderInAlphaS()+addAlphaS));
-  if ( orderInAlphaEW() > 0 )
+    couplings *= pow(lastAlphaS(),double(orderInAlphaS()+addAlphaS));
+  }
+  if ( orderInAlphaEW() > 0 ) {
     fac *= pow(lastAlphaEM()/SM().alphaEM(),double(orderInAlphaEW()));
+    couplings *= pow(lastAlphaEM(),double(orderInAlphaEW()));
+  }
+  lastMECouplings(couplings);
 
   if ( !hasInitialAverage() ) {
     if ( mePartonData()[0]->iColour() == PDT::Colour3 || 

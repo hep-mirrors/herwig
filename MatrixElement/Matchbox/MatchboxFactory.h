@@ -442,6 +442,26 @@ public:
    */
   list<SplittingChannel> getSplittingChannels(tStdXCombPtr xc) const;
 
+  /**
+   * Return the reweight objects for matrix elements
+   */
+  const vector<ReweightPtr>& reweighters() const { return theReweighters; }
+
+  /**
+   * Access the reweight objects for matrix elements
+   */
+  vector<ReweightPtr>& reweighters() { return theReweighters; }
+
+  /**
+   * Return the preweight objects for matrix elements
+   */
+  const vector<ReweightPtr>& preweighters() const { return thePreweighters; }
+
+  /**
+   * Access the preweight objects for matrix elements
+   */
+  vector<ReweightPtr>& preweighters() { return thePreweighters; }
+
   //@}
 
   /** @name Setup the matrix elements */
@@ -849,6 +869,16 @@ private:
    * Amplitudes to be deselected on clashing responsibilities.
    */
   vector<Ptr<MatchboxAmplitude>::ptr> theDeselectedAmplitudes;
+
+  /**
+   * Reweight objects for matrix elements
+   */
+  vector<ReweightPtr> theReweighters;
+
+  /**
+   * Preweight objects for matrix elements
+   */
+  vector<ReweightPtr> thePreweighters;
 
 private:
 
