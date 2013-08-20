@@ -561,7 +561,8 @@ bool equalsModulo(unsigned int i, const vector<int>& a, const vector<int>& b) {
 }
 
 LorentzVector<Complex> MatchboxAmplitude::plusPolarization(const Lorentz5Momentum& p,
-							   const Lorentz5Momentum& n) const {
+							   const Lorentz5Momentum& n,
+							   int) const {
 
   using namespace SpinorHelicity;
 
@@ -583,7 +584,7 @@ double MatchboxAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
   Lorentz5Momentum p = meMomenta()[ij.first];
   Lorentz5Momentum n = meMomenta()[ij.second];
 
-  LorentzVector<Complex> polarization = plusPolarization(p,n);
+  LorentzVector<Complex> polarization = plusPolarization(p,n,ij.first);
 
   Complex pFactor = (polarization*c.momentum())/sqrt(abs(c.scale()));
 

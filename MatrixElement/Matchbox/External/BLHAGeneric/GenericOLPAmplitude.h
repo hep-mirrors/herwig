@@ -70,7 +70,8 @@ public:
    * spin correlations.
    */
   virtual LorentzVector<Complex> plusPolarization(const Lorentz5Momentum& p,
-						  const Lorentz5Momentum& n) const;
+						  const Lorentz5Momentum& n,
+						  int id = -1) const;
 
   /**
    * Fill in results for the given colour/spin correlator
