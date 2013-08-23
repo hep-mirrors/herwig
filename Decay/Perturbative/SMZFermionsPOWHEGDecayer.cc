@@ -207,43 +207,49 @@ me2(const int ichan, const Particle & part,
   // temporary storage of the different diagrams
   // sum over helicities to get the matrix element
   double total=0.;
-  LorentzPolarizationVector momDiff = 
-    (decay[0]->momentum()-decay[1]->momentum())/2./
-    (decay[0]->momentum().mass()+decay[1]->momentum().mass());
-  // scalars
-  Complex scalar1 = zin.wave().dot(momDiff);
-  for(unsigned int outhel1=0;outhel1<2;++outhel1) {
-    for(unsigned int outhel2=0;outhel2<2;++outhel2) {		
-      for(unsigned int inhel=0;inhel<3;++inhel) {
-	// first the LO bit
-	Complex diag1 = FFZVertex()->evaluate(scale_,aout[outhel2],fout[outhel1],vin[inhel]);
-	// extra stuff for NLO 
-	LorentzPolarizationVector left  = 
-	  aout[outhel2].wave().leftCurrent(fout[outhel1].wave());
-	LorentzPolarizationVector right = 
-	  aout[outhel2].wave().rightCurrent(fout[outhel1].wave());
-	Complex scalar = 
-	  aout[outhel2].wave().scalar(fout[outhel1].wave());
-	// nlo specific pieces
-	Complex diag3 =
-	  Complex(0.,1.)*Zvertex->norm()*
-	  (Zvertex->right()*( left.dot(zin.wave())) +
-	   Zvertex-> left()*(right.dot(zin.wave())) -
-	   ( Zvertex-> left()+Zvertex->right())*scalar1*scalar);
-	// nlo piece
-	total += real(diag1*conj(diag3) + diag3*conj(diag1));
+  if(mu_!=0.) {
+    LorentzPolarizationVector momDiff = 
+      (decay[0]->momentum()-decay[1]->momentum())/2./
+      (decay[0]->momentum().mass()+decay[1]->momentum().mass());
+    // scalars
+    Complex scalar1 = zin.wave().dot(momDiff);
+    for(unsigned int outhel1=0;outhel1<2;++outhel1) {
+      for(unsigned int outhel2=0;outhel2<2;++outhel2) {		
+	for(unsigned int inhel=0;inhel<3;++inhel) {
+	  // first the LO bit
+	  Complex diag1 = FFZVertex()->evaluate(scale_,aout[outhel2],fout[outhel1],vin[inhel]);
+	  // extra stuff for NLO 
+	  LorentzPolarizationVector left  = 
+	    aout[outhel2].wave().leftCurrent(fout[outhel1].wave());
+	  LorentzPolarizationVector right = 
+	    aout[outhel2].wave().rightCurrent(fout[outhel1].wave());
+	  Complex scalar = 
+	    aout[outhel2].wave().scalar(fout[outhel1].wave());
+	  // nlo specific pieces
+	  Complex diag3 =
+	    Complex(0.,1.)*Zvertex->norm()*
+	    (Zvertex->right()*( left.dot(zin.wave())) +
+	     Zvertex-> left()*(right.dot(zin.wave())) -
+	     ( Zvertex-> left()+Zvertex->right())*scalar1*scalar);
+	  // nlo piece
+	  total += real(diag1*conj(diag3) + diag3*conj(diag1));
+	}
       }
     }
+    // rescale
+    total *= UnitRemoval::E2/scale_;
   }
-  // rescale
-  total *= UnitRemoval::E2/scale_;
+  else {
+    total = ZERO;
+  }
   // now for the NLO bit
   double mu4 = sqr(mu2_);
-  double lmu = log(mu_);
+  double lmu = mu_!=0. ? log(mu_) : 0.;
   double v = sqrt(1.-4.*mu2_),v2(sqr(v));
   double omv = 4.*mu2_/(1.+v);
   double f1,f2,fNS,VNS;
-  double r = omv/(1.+v),lr(log(r));
+  double r = omv/(1.+v);
+  double lr = mu_!=0. ? log(r) : 0.;
   // normal form
   if(mu_>1e-4) {
     f1 = CF_*aS_/Constants::pi*
