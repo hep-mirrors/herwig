@@ -201,14 +201,14 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
   VectorWaveFunction::calculateWaveFunctions(_vector3,decay[ivect],outgoing,false);
   VectorWaveFunction::calculateWaveFunctions(_gluon,  decay[iglu ],outgoing,true );
 
-  // gauge test
+  // // gauge invariance test
   // _gluon.clear();
   // for(unsigned int ix=0;ix<3;++ix) {
   //   if(ix==1) _gluon.push_back(VectorWaveFunction());
   //   else {
-  //   _gluon.push_back(VectorWaveFunction(decay[iglu ]->momentum(),
-  // 					decay[iglu ]->dataPtr(),10,
-  // 					outgoing));
+  //     _gluon.push_back(VectorWaveFunction(decay[iglu ]->momentum(),
+  // 					  decay[iglu ]->dataPtr(),10,
+  // 					  outgoing));
   //   }
   // }
 
@@ -219,11 +219,6 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
       << "Invalid vertices for QCD radiation in SSV decay in SSVDecayer::threeBodyME"
       << Exception::runerror;
 
-  // // prohibit 0->3 3bar, 3->83 and 8->3 3bar
-  // if (_abstractOutgoingVertexS &&  _abstractOutgoingVertexV)
-  //   throw Exception()
-  //     << "Invalid vertices for QCD radiation in SSV decay in SSVDecayer::threeBodyME"
-  //     << Exception::runerror;
 
   // sort out colour flows
   int S(1), V(2);
@@ -251,7 +246,7 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
 	    << Exception::runerror;
 	
 	double gs    = _abstractIncomingVertex->strongCoupling(scale);
-	double sign  = inpart.dataPtr()->id()>0 ? 1:-1;	
+	double sign  = 1.;//inpart.dataPtr()->id()>0 ? 1:-1;	
 	Complex diag = sign * _abstractVertex->evaluate(scale,_vector3[iv],_scal,scalarInter)/gs;
 	for(unsigned int ix=0;ix<colourFlows(inpart, decay)[0].size();++ix) {
 	  ME[colourFlows(inpart, decay)[0][ix].first](0, 0, iv, ig) += 
@@ -274,7 +269,7 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
 	    << Exception::runerror;
 
 	double gs    = _abstractOutgoingVertexS->strongCoupling(scale);
-	double sign  = decay[iscal]->dataPtr()->id()>0 ? -1:1;
+	double sign  = 1.;//decay[iscal]->dataPtr()->id()>0 ? -1:1;
 	Complex diag = sign*_abstractVertex->evaluate(scale,_vector3[iv],scalarInter,_swave3)/gs;
 	for(unsigned int ix=0;ix<colourFlows(inpart, decay)[S].size();++ix) {
 	  ME[colourFlows(inpart, decay)[S][ix].first](0, 0, iv, ig) += 
@@ -298,7 +293,7 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
 	    << vectorInter. particle()->PDGName() << " in SSVDecayer::threeBodyME"
 	    << Exception::runerror; 
 
-	double sign  =  decay[iscal]->id()>0 ? -1:1;
+	double sign  =  1.;//decay[iscal]->id()>0 ? -1:1;
 	double gs    = _abstractOutgoingVertexV->strongCoupling(scale);	
 	Complex diag =  sign*_abstractVertex->evaluate(scale,vectorInter,_scal,_swave3)/gs;
 	for(unsigned int ix=0;ix<colourFlows(inpart, decay)[V].size();++ix) {
@@ -309,7 +304,7 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
       // radiation from 4 point vertex
       if (_abstractFourPointVertex){
 	double gs    = _abstractFourPointVertex->strongCoupling(scale);
-	double sign  =  decay[iscal]->id()>0 ? 1:-1;
+	double sign  =  decay[iscal]->id()>0 ? -1:-1;
 	Complex diag =  sign*_abstractFourPointVertex->evaluate(scale, _gluon[2*ig], _vector3[iv],
 							       _scal, _swave3)/gs;
 	for(unsigned int ix=0;ix<colourFlows(inpart, decay)[3].size();++ix) {
@@ -328,7 +323,6 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
     }
   }
   output*=(4.*Constants::pi);
-
   // return the answer
   return output;
 }

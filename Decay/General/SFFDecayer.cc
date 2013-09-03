@@ -191,16 +191,16 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
   VectorWaveFunction::
     calculateWaveFunctions(_gluon   , decay[iglu ],outgoing,true);
 
-  // gauge test
-  //_gluon.clear();
-  //for(unsigned int ix=0;ix<3;++ix) {
-  //if(ix==1) _gluon.push_back(VectorWaveFunction());
-  //else {
-  //  _gluon.push_back(VectorWaveFunction(decay[iglu ]->momentum(),
-  //				          decay[iglu ]->dataPtr(),10,
-  //					  outgoing));
-  //}
-  //}
+  // // gauge invariance test
+  // _gluon.clear();
+  // for(unsigned int ix=0;ix<3;++ix) {
+  //   if(ix==1) _gluon.push_back(VectorWaveFunction());
+  //   else {
+  //     _gluon.push_back(VectorWaveFunction(decay[iglu ]->momentum(),
+  // 				          decay[iglu ]->dataPtr(),10,
+  // 					  outgoing));
+  //   }
+  // }
 
   // identify fermion and/or anti-fermion vertex
   AbstractFFVVertexPtr abstractOutgoingVertexF;
@@ -226,8 +226,7 @@ double SFFDecayer::threeBodyME(const int , const Particle & inpart,
 	      << Exception::runerror;
 
 	  double gs    = _abstractIncomingVertex->strongCoupling(scale);
-	  double sign  = inpart.dataPtr()->id()>0 ? 1:-1;
-	  Complex diag = sign * _abstractVertex->evaluate(scale,_wave3[ia], _wavebar3[ifm],
+	  Complex diag = _abstractVertex->evaluate(scale,_wave3[ia], _wavebar3[ifm],
 							  scalarInter)/gs;
 	  for(unsigned int ix=0;ix<colourFlows(inpart, decay)[0].size();++ix) {
 	    ME[colourFlows(inpart, decay)[0][ix].first](0, ia, ifm, ig) += 
@@ -384,13 +383,5 @@ void SFFDecayer::identifyVertices(const int iferm, const int ianti,
     throw Exception()
     << "Invalid vertices for QCD radiation in SFF decay in SFFDecayer::identifyVertices"
     << Exception::runerror;
-
-  // //prohibit 8->3 3bar (unchecked)
-  //   if (inpart.dataPtr()       ->iColour()==PDT::Colour8 &&
-  // 	decay[iferm]->dataPtr()->iColour()==PDT::Colour3 && 
-  // 	decay[ianti]->dataPtr()->iColour()==PDT::Colour3bar)
-  //   throw Exception()
-  //   << "Invalid vertices for QCD radiation in SFF decay in SFFDecayer::identifyVertices"
-  //   << Exception::runerror;
 
 }

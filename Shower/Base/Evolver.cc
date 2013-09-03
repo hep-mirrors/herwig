@@ -1054,18 +1054,20 @@ void Evolver::hardestEmission(bool hard) {
     else
       _hardtree = _decayme->generateHardest( currentTree() );
     // store initial state POWHEG radiation
-    if(_hardtree && _hardme && _hardme->hasPOWHEGCorrection()==1) ISRTree=_hardtree;
+    if(_hardtree && _hardme && _hardme->hasPOWHEGCorrection()==1) 
+      ISRTree=_hardtree;
   }
 
   else {
     _hardtree = ShowerHandler::currentHandler()->generateCKKW(currentTree());
   }
 
-  // if hard me doesn't have a FSR powheg correction use decay powheg correction
+  // if hard me doesn't have a FSR powheg 
+  // correction use decay powheg correction
   if (_hardme && _hardme->hasPOWHEGCorrection()<2) {      
     // check for intermediate colour singlet resonance
-    ParticleVector inter =  _hardme->subProcess()->intermediates();
-    if (inter.empty() || 
+    const ParticleVector inter =  _hardme->subProcess()->intermediates();
+    if (inter.size()!=1 || 
 	inter[0]->momentum().m2()/GeV2 < 0 || 
 	inter[0]->dataPtr()->iColour()!=PDT::Colour0){
       if(_hardtree) connectTrees(currentTree(),_hardtree,hard);
@@ -1073,7 +1075,7 @@ void Evolver::hardestEmission(bool hard) {
     }
    
     map<ShowerProgenitorPtr, tShowerParticlePtr > out = currentTree()->outgoingLines();
-    // ignore cases where outgoing particles not coloured
+    // ignore cases where outgoing particles are not coloured
     if (out.size()!=2 ||
 	out. begin()->second->dataPtr()->iColour()==PDT::Colour0 ||
     	out.rbegin()->second->dataPtr()->iColour()==PDT::Colour0) {
@@ -1086,8 +1088,8 @@ void Evolver::hardestEmission(bool hard) {
     string tag;
     string inParticle = inter[0]->dataPtr()->name() + "->";
     vector<string> outParticles;
-    outParticles .push_back(out.begin ()->first->progenitor()->dataPtr()->name());
-    outParticles .push_back(out.rbegin()->first->progenitor()->dataPtr()->name());
+    outParticles.push_back(out.begin ()->first->progenitor()->dataPtr()->name());
+    outParticles.push_back(out.rbegin()->first->progenitor()->dataPtr()->name());
     for (int it=0; it<2; ++it){
       tag = inParticle + outParticles[it] + "," + outParticles[(it+1)%2] + ";";
       dm = generator()->findDecayMode(tag);
@@ -1097,105 +1099,114 @@ void Evolver::hardestEmission(bool hard) {
     // get the decayer
     HwDecayerBasePtr decayer;   
     if(dm) decayer = dynamic_ptr_cast<HwDecayerBasePtr>(dm->decayer());   
-    // check if decayer has a POWHEG correction and if it does generate the hardest emission
+    // check if decayer has a FSR POWHEG correction 
     if (!decayer || decayer->hasPOWHEGCorrection()<2){
       if(_hardtree) connectTrees(currentTree(),_hardtree,hard);
       return;
     }
     
+    // generate the hardest emission
     ShowerDecayMap decay;
-    ShowerTreePtr  decayTree = new_ptr(ShowerTree(inter[0], decay));
-    HardTreePtr   POWHEGTree = decayer->generateHardest(decayTree);
-    if (!POWHEGTree) {
+    PPtr in = new_ptr(*inter[0]);
+    ShowerTreePtr decayTree = new_ptr(ShowerTree(in, decay));
+    HardTreePtr     FSRTree = decayer->generateHardest(decayTree); 
+    if (!FSRTree) {
       if(_hardtree) connectTrees(currentTree(),_hardtree,hard);
       return;
     }
-    
-    // if there is no ISR radiation make _hardtree from FSR radiation in POWHEG tree
+
+    // if there is no ISRTree make _hardtree from FSRTree
     if (!ISRTree){
       vector<HardBranchingPtr> inBranch,hardBranch;
       for(map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator
 	  cit =currentTree()->incomingLines().begin();
 	  cit!=currentTree()->incomingLines().end();++cit ) {
 	inBranch.push_back(new_ptr(HardBranching(cit->second,SudakovPtr(),
-						 HardBranchingPtr(),HardBranching::Incoming)));
+						 HardBranchingPtr(),
+						 HardBranching::Incoming)));
 	inBranch.back()->beam(cit->first->original()->parents()[0]);
 	hardBranch.push_back(inBranch.back());
       }
-      
       if(inBranch[0]->branchingParticle()->dataPtr()->coloured()) {
 	inBranch[0]->colourPartner(inBranch[1]);
 	inBranch[1]->colourPartner(inBranch[0]);
       }
-
-      for(set<HardBranchingPtr>::iterator it =POWHEGTree->branchings().begin();
-	  it!=POWHEGTree->branchings().end();++it) {
-	if((**it).branchingParticle()->id()!=inter[0]->id()) hardBranch.push_back(*it);
+      for(set<HardBranchingPtr>::iterator it=FSRTree->branchings().begin();
+	  it!=FSRTree->branchings().end();++it) {
+	if((**it).branchingParticle()->id()!=in->id()) 
+	  hardBranch.push_back(*it);
       } 
       hardBranch[2]->colourPartner(hardBranch[3]);
       hardBranch[3]->colourPartner(hardBranch[2]);
-      
-      HardTreePtr newTree = new_ptr(HardTree(hardBranch,inBranch,ShowerInteraction::QCD));      
+      HardTreePtr newTree = new_ptr(HardTree(hardBranch,inBranch,
+					     ShowerInteraction::QCD));            
       _hardtree = newTree;    
     }
 
-    // Otherwise modify the ISRTree to include FSR radiation from POWHEG tree
+    // Otherwise modify the ISRTree to include the emission in FSRTree
     else {    
-      vector<tShowerParticlePtr> POWHEGOut, ISROut;   
-      set<HardBranchingPtr>::iterator itPO, itISR;
-
+      vector<tShowerParticlePtr> FSROut, ISROut;   
+      set<HardBranchingPtr>::iterator itFSR, itISR;
       // get outgoing particles 
-      for(itPO =POWHEGTree->branchings().begin();itPO!=POWHEGTree->branchings().end();++itPO){	
-	if ((**itPO).status()==HardBranching::Outgoing) 
-	  POWHEGOut.push_back((*itPO)->branchingParticle());
+      for(itFSR =FSRTree->branchings().begin();
+	  itFSR!=FSRTree->branchings().end();++itFSR){
+	if ((**itFSR).status()==HardBranching::Outgoing) 
+	  FSROut.push_back((*itFSR)->branchingParticle());
       }     
-      for(itISR =ISRTree->branchings().begin();itISR!=ISRTree->branchings().end();++itISR){
+      for(itISR =ISRTree->branchings().begin();
+	  itISR!=ISRTree->branchings().end();++itISR){
 	if ((**itISR).status()==HardBranching::Outgoing) 
 	  ISROut.push_back((*itISR)->branchingParticle());
       }
 
       // find COM frame formed by outgoing particles
-      LorentzRotation eventFramePO, eventFrameISR;
-      eventFramePO =  ((POWHEGOut[0]->momentum()+POWHEGOut[1]->momentum()).findBoostToCM());  
-      eventFrameISR = ((ISROut[0]   ->momentum()+ISROut[1]   ->momentum()).findBoostToCM() );
+      LorentzRotation eventFrameFSR, eventFrameISR;
+      eventFrameFSR = ((FSROut[0]->momentum()+FSROut[1]->momentum()).findBoostToCM());  
+      eventFrameISR = ((ISROut[0]->momentum()+ISROut[1]->momentum()).findBoostToCM());
 
-      // find rotation between ISR and POWHEG frames
+      // find rotation between ISR and FSR frames
       int j=0;
-      if (ISROut[0]->id()!=POWHEGOut[0]->id()) j=1;
-      eventFrameISR.rotateZ( (eventFramePO *POWHEGOut[0]->momentum()).phi()-
-			     (eventFrameISR*ISROut   [j]->momentum()).phi() );
-      eventFrameISR.rotateY( (eventFramePO *POWHEGOut[0]->momentum()).theta()-
-			     (eventFrameISR*ISROut   [j]->momentum()).theta() );
+      if (ISROut[0]->id()!=FSROut[0]->id()) j=1;
+      eventFrameISR.rotateZ( (eventFrameFSR*FSROut[0]->momentum()).phi()-
+			     (eventFrameISR*ISROut[j]->momentum()).phi() );
+      eventFrameISR.rotateY( (eventFrameFSR*FSROut[0]->momentum()).theta()-
+			     (eventFrameISR*ISROut[j]->momentum()).theta() );
       eventFrameISR.invert();
 
-      for (itPO =POWHEGTree->branchings().begin();itPO!=POWHEGTree->branchings().end();++itPO){
-	if ((**itPO).branchingParticle()->id()==inter[0]->id()) continue;
-	for (itISR =ISRTree->branchings().begin();itISR!=ISRTree->branchings().end();++itISR){
+      for (itFSR=FSRTree->branchings().begin();
+	   itFSR!=FSRTree->branchings().end();++itFSR){
+	if ((**itFSR).branchingParticle()->id()==in->id()) continue;
+	for (itISR =ISRTree->branchings().begin();
+	     itISR!=ISRTree->branchings().end();++itISR){
 	  if ((**itISR).status()==HardBranching::Incoming) continue;
-	  if ((**itPO).branchingParticle()->id()==(**itISR).branchingParticle()->id()){
-	    // rotate POWHEG tree particle to ISR tree event frame
-	    (**itISR).branchingParticle()->setMomentum(eventFrameISR*eventFramePO*
-						      (**itPO).branchingParticle()->momentum());
+	  if ((**itFSR).branchingParticle()->id()==
+	      (**itISR).branchingParticle()->id()){
+	    // rotate FSRTree particle to ISRTree event frame
+	    (**itISR).branchingParticle()->setMomentum(eventFrameISR*
+						       eventFrameFSR*
+			  (**itFSR).branchingParticle()->momentum());
 	    (**itISR).branchingParticle()->rescaleMass();
-	    // add the children of the POWHEG tree particle to ISR tree
-	    if(!(**itPO).children().empty()){
-	      (**itISR).addChild((**itPO).children()[0]);
-	      (**itISR).addChild((**itPO).children()[1]);
-	      // rotate momenta to ISR tree event frame
+	    // add the children of the FSRTree particles to the ISRTree
+	    if(!(**itFSR).children().empty()){
+	      (**itISR).addChild((**itFSR).children()[0]);
+	      (**itISR).addChild((**itFSR).children()[1]);
+	      // rotate momenta to ISRTree event frame
 	      (**itISR).children()[0]->branchingParticle()->setMomentum(eventFrameISR*
-									eventFramePO*
-				       (**itPO).children()[0]->branchingParticle()->momentum());
+									eventFrameFSR*
+			    (**itFSR).children()[0]->branchingParticle()->momentum());
 	      (**itISR).children()[1]->branchingParticle()->setMomentum(eventFrameISR*
-									eventFramePO*
-				       (**itPO).children()[1]->branchingParticle()->momentum());
+									eventFrameFSR*
+			    (**itFSR).children()[1]->branchingParticle()->momentum());
 	    }
 	  }
-	}
+	}	
       }
       _hardtree = ISRTree;
     }
   }
-  if(_hardtree)  connectTrees(currentTree(),_hardtree,hard); 
+  if(_hardtree){
+    connectTrees(currentTree(),_hardtree,hard); 
+  }
 }
 
 bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,

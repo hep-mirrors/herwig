@@ -156,16 +156,16 @@ double SSSDecayer::threeBodyME(const int , const Particle & inpart,
   ScalarWaveFunction anti(decay[ianti]->momentum(), decay[ianti]->dataPtr(),outgoing);
   VectorWaveFunction::calculateWaveFunctions(_gluon,decay[iglu ],outgoing,true);
 
-  // gauge test
-  //_gluon.clear();
-  //for(unsigned int ix=0;ix<3;++ix) {
-  //if(ix==1) _gluon.push_back(VectorWaveFunction());
-  //else {
-  //  _gluon.push_back(VectorWaveFunction(decay[iglu ]->momentum(),
-  //					  decay[iglu ]->dataPtr(),10,
-  //					  outgoing));
-  //}
-  //}
+  // // gauge invariance test
+  // _gluon.clear();
+  // for(unsigned int ix=0;ix<3;++ix) {
+  //   if(ix==1) _gluon.push_back(VectorWaveFunction());
+  //   else {
+  //     _gluon.push_back(VectorWaveFunction(decay[iglu ]->momentum(),
+  // 					  decay[iglu ]->dataPtr(),10,
+  // 					  outgoing));
+  //   }
+  // }
 
   AbstractVSSVertexPtr abstractOutgoingVertexS;
   AbstractVSSVertexPtr abstractOutgoingVertexA;
@@ -187,8 +187,7 @@ double SSSDecayer::threeBodyME(const int , const Particle & inpart,
 	  << Exception::runerror;
 
       double gs    = _abstractIncomingVertex->strongCoupling(scale);
-      double sign  = inpart.dataPtr()->id()>0 ? 1:-1;
-      Complex diag = sign * _abstractVertex->evaluate(scale,scal,anti,scalarInter)/gs;
+      Complex diag = _abstractVertex->evaluate(scale,scal,anti,scalarInter)/gs;
       for(unsigned int ix=0;ix<colourFlows(inpart, decay)[0].size();++ix) {
 	ME[colourFlows(inpart, decay)[0][ix].first](0, 0, 0, ig) += 
 	   colourFlows(inpart, decay)[0][ix].second*diag; 
@@ -210,7 +209,7 @@ double SSSDecayer::threeBodyME(const int , const Particle & inpart,
 	  << Exception::runerror;
 
       double gs    =  abstractOutgoingVertexS->strongCoupling(scale);
-      Complex diag = -1.*_abstractVertex->evaluate(scale,_swave3,anti,scalarInter)/gs;
+      Complex diag = _abstractVertex->evaluate(scale,_swave3,anti,scalarInter)/gs;
       for(unsigned int ix=0;ix<colourFlows(inpart, decay)[1].size();++ix) {
 	ME[colourFlows(inpart, decay)[1][ix].first](0, 0, 0, ig) += 
 	   colourFlows(inpart, decay)[1][ix].second*diag;
@@ -338,11 +337,5 @@ void SSSDecayer::identifyVertices(const int iscal, const int ianti,
     throw Exception()
       << "Invalid vertices for QCD radiation in SSS decay in SSSDecayer::identifyVertices"
       << Exception::runerror;
-
-  // // prohibit 8->3 3bar and 3->8 3 
-  // if (_abstractIncomingVertex && abstractOutgoingVertexS && abstractOutgoingVertexA)
-  //   throw Exception()
-  //     << "Invalid vertices for QCD radiation in SSS decay in SSSDecayer::identifyVertices"
-  //     << Exception::runerror;
 
 }

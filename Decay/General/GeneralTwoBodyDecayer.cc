@@ -539,12 +539,9 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
   // get the decaying particle
   ShowerProgenitorPtr bProgenitor = tree->incomingLines().begin()->first;
 
-  // don't generate POWHEG correction for effective vertex
-  if (   bProgenitor->progenitor()->id()==ParticleID::SUSY_g &&
-       ((cProgenitor->progenitor()->id()==ParticleID::g &&
-	 aProgenitor->progenitor()->id()==ParticleID::SUSY_chi_10) ||
-	(aProgenitor->progenitor()->id()==ParticleID::g &&
-	 cProgenitor->progenitor()->id()==ParticleID::SUSY_chi_10))) return HardTreePtr();
+  // ignore effective vertices
+  if (vertex_ && (vertex_->orderInGem()+vertex_->orderInGs())>1) 
+    return HardTreePtr();
 
   // identify which dipoles are required
   vector<dipoleType> dipoles;
@@ -570,19 +567,21 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
     }
 
     // find rotation from lab to frame with the spectator along -z
-    LorentzRotation trialEventFrame = ( bProgenitor->progenitor()->momentum().findBoostToCM() );
-    Lorentz5Momentum pspectator = trialEventFrame*trialSpectator->progenitor()->momentum();
+    LorentzRotation trialEventFrame = ( bProgenitor->progenitor()->momentum()
+					.findBoostToCM() );
+    Lorentz5Momentum pspectator = (trialEventFrame*
+				   trialSpectator->progenitor()->momentum());
     trialEventFrame.rotateZ( -pspectator.phi() );
     trialEventFrame.rotateY( -pspectator.theta() - Constants::pi );
     // invert it
     trialEventFrame.invert();
 
-    // try to generate a branching
+    // try to generate an emission
     pT_ = pTmin_;
     vector<Lorentz5Momentum> trialMomenta 
       = hardMomenta(bProgenitor, trialEmitter, trialSpectator, dipoles, i);
     
-    // select dipole which gives highest pT branching
+    // select dipole which gives highest pT emission
     if(pT_>trialpT){
       trialpT        = pT_;
       momenta        = trialMomenta;
@@ -595,9 +594,9 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
 
   // if no emission return
   if(momenta.empty()) {
-    bProgenitor   ->maximumpT(pTmin_);
-    aProgenitor   ->maximumpT(pTmin_);
-    cProgenitor   ->maximumpT(pTmin_);
+    bProgenitor->maximumpT(pTmin_);
+    aProgenitor->maximumpT(pTmin_);
+    cProgenitor->maximumpT(pTmin_);
     return HardTreePtr();
   }
 
@@ -691,17 +690,17 @@ vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta(const ShowerProgeni
 
   // get masses of the particles
   mb_  = in       ->progenitor()->momentum().mass();
-  e_   = emitter  ->progenitor()->momentum().mass() / mb_;
-  s_   = spectator->progenitor()->momentum().mass() / mb_;
+  e_   = emitter  ->progenitor()->momentum().mass()/mb_;
+  s_   = spectator->progenitor()->momentum().mass()/mb_;
   e2_  = sqr(e_);
   s2_  = sqr(s_);
   
   vector<Lorentz5Momentum> particleMomenta (4);
-  Energy2 lambda = sqr(mb_)* sqrt( 1. + sqr(s2_) + sqr(e2_) - 2.*s2_ - 2.*e2_ - 2.*s2_*e2_);    
+  Energy2 lambda = sqr(mb_)*sqrt(1.+sqr(s2_)+sqr(e2_)-2.*s2_-2.*e2_-2.*s2_*e2_);    
 
   // calculate A
-  double A = (ymax - ymin) * C * (coupling()->overestimateValue() / (2.*Constants::pi)); 
-  Energy pTmax = mb_* (sqr(1.-s_) - e2_) / (2.*(1.-s_));
+  double A = (ymax-ymin)*C*(coupling()->overestimateValue()/(2.*Constants::pi)); 
+  Energy pTmax = mb_*(sqr(1.-s_)-e2_)/(2.*(1.-s_));
   
   // if no possible branching return
   if ( pTmax < pTmin_ ) {
@@ -711,11 +710,14 @@ vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta(const ShowerProgeni
 
   while (pTmax >= pTmin_) {  
     // generate pT, y and phi values
-    Energy pT = pTmax * pow(UseRandom::rnd() , (1./A)); 
-    if (pT < pTmin_) {particleMomenta.clear(); break;}
+    Energy pT = pTmax*pow(UseRandom::rnd(),(1./A)); 
+    if (pT < pTmin_) {
+      particleMomenta.clear(); 
+      break;
+    }
 
-    double phi = UseRandom::rnd() * Constants::twopi;
-    double y   = ymin + UseRandom::rnd() * (ymax-ymin);
+    double phi = UseRandom::rnd()*Constants::twopi;
+    double y   = ymin+UseRandom::rnd()*(ymax-ymin);
 
     double weight[2] = {0.,0.};
     double xs[2], xe[2], xe_z[2], xg;
@@ -723,12 +725,12 @@ vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta(const ShowerProgeni
     for (unsigned int j=0; j<2; j++) {
 
       // check if the momenta are physical
-      bool physical = calcMomenta(j, pT, y, phi, xg, xs[j], xe[j], xe_z[j], particleMomenta);
-      if (!physical) continue;
+      if (!calcMomenta(j, pT, y, phi, xg, xs[j], xe[j], xe_z[j], particleMomenta)) 
+	continue;
       
       // check if point lies within phase space
-      bool inPS = psCheck(xg, xs[j]);
-      if (!inPS) continue;
+      if (!psCheck(xg, xs[j])) 
+	continue;
    
       // decay products for 3 body decay
       PPtr inpart   = in        ->progenitor()->dataPtr()->produceParticle(particleMomenta[0]);     
@@ -753,18 +755,18 @@ vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta(const ShowerProgeni
       InvEnergy2 dipoleSum = ZERO;
       InvEnergy2 numerator = ZERO;
       for (int k=0; k<int(dipoles.size()); ++k){
-	InvEnergy2 dipole = abs(calculateDipole(dipoles[k], *inpart, decay3, dipoles[i]));
+	InvEnergy2 dipole = abs(calculateDipole(dipoles[k],*inpart,decay3,dipoles[i]));
 	dipoleSum += dipole;
 	if (k==i) numerator = dipole;
       }
       meRatio *= numerator/dipoleSum;
    
       // calculate jacobian
-      Energy2 denom = (mb_ - particleMomenta[3].e()) * particleMomenta[2].vect().mag() -
-		       particleMomenta[2].e() * particleMomenta[3].z(); 
-      InvEnergy2  J  = (particleMomenta[2].vect().mag2()) / (lambda * denom);     
+      Energy2 denom = (mb_-particleMomenta[3].e())*particleMomenta[2].vect().mag() -
+		       particleMomenta[2].e()*particleMomenta[3].z(); 
+      InvEnergy2  J  = (particleMomenta[2].vect().mag2())/(lambda*denom);     
       // calculate weight
-      weight[j] = meRatio * fabs(sqr(pT)*J) * coupling()->ratio(pT*pT) / C / Constants::twopi; 
+      weight[j] = meRatio*fabs(sqr(pT)*J)*coupling()->ratio(pT*pT)/C/Constants::twopi; 
     }
     // accept point if weight > R
     if (weight[0] + weight[1] > UseRandom::rnd()) {
@@ -802,8 +804,8 @@ double GeneralTwoBodyDecayer::matrixElementRatio(const Particle & inpart,
 }
 
 bool GeneralTwoBodyDecayer::calcMomenta(int j, Energy pT, double y, double phi,
-   		        double& xg, double& xs, double& xe, double& xe_z,
-			vector<Lorentz5Momentum>& particleMomenta){
+					double& xg, double& xs, double& xe, double& xe_z,
+					vector<Lorentz5Momentum>& particleMomenta){
   
   // calculate xg
   xg = 2.*pT*cosh(y) / mb_;
@@ -811,35 +813,35 @@ bool GeneralTwoBodyDecayer::calcMomenta(int j, Energy pT, double y, double phi,
 
   // calculate the two values of xs
   double xT  = 2.*pT / mb_;
-  double A   = 4. - 4.*xg + sqr(xT);
-  double B   = 4.*(3.*xg - 2. + 2.*e2_ - 2.*s2_ - sqr(xg) - xg*e2_ + xg*s2_);
-  double L   = 1. + sqr(s2_) + sqr(e2_) - 2.*s2_ - 2.*e2_ - 2.*s2_*e2_;
-  double det = 16.*( -L*sqr(xT) + pow(xT,4)*s2_ + 2.*xg*sqr(xT)*(1.-s2_-e2_) + 
-		      L*sqr(xg) - sqr(xg*xT)*(1. + s2_) + pow(xg,4) + 
-		      2.*pow(xg,3)*(- 1. + s2_ + e2_) );
+  double A   = 4.-4.*xg+sqr(xT);
+  double B   = 4.*(3.*xg-2.+2.*e2_-2.*s2_-sqr(xg)-xg*e2_+xg*s2_);
+  double L   = 1.+sqr(s2_)+sqr(e2_)-2.*s2_-2.*e2_-2.*s2_*e2_;
+  double det = 16.*( -L*sqr(xT)+pow(xT,4)*s2_+2.*xg*sqr(xT)*(1.-s2_-e2_)+ 
+		      L*sqr(xg)-sqr(xg*xT)*(1.+s2_)+pow(xg,4)+ 
+		      2.*pow(xg,3)*(-1.+s2_+e2_) );
 
   if (det<0.) return false;
-  if (j==0) xs = (-B + sqrt(det))/(2.*A);
-  if (j==1) xs = (-B - sqrt(det))/(2.*A);  
+  if (j==0) xs = (-B+sqrt(det))/(2.*A);
+  if (j==1) xs = (-B-sqrt(det))/(2.*A);  
   // check value of xs is physical
-  if (xs>(1. + s2_ - e2_) || xs<2.*s_) return false;
+  if (xs>(1.+s2_-e2_) || xs<2.*s_) return false;
 
   // calculate xe
-  xe = 2. - xs - xg;     
+  xe = 2.-xs-xg;     
   // check value of xe is physical
-  if (xe>(1. + e2_ - s2_) || xe<2.*e_) return false;       
+  if (xe>(1.+e2_-s2_) || xe<2.*e_) return false;       
 
   // calculate xe_z  
-  double epsilon_p =  -sqrt(sqr(xs) - 4.*s2_) + xT*sinh(y) + sqrt(sqr(xe) - 4.*e2_ - sqr(xT));
-  double epsilon_m =  -sqrt(sqr(xs) - 4.*s2_) + xT*sinh(y) - sqrt(sqr(xe) - 4.*e2_ - sqr(xT));
+  double epsilon_p =  -sqrt(sqr(xs)-4.*s2_)+xT*sinh(y)+sqrt(sqr(xe)-4.*e2_-sqr(xT));
+  double epsilon_m =  -sqrt(sqr(xs)-4.*s2_)+xT*sinh(y)-sqrt(sqr(xe)-4.*e2_-sqr(xT));
 
   // find direction of emitter
-  if      (fabs(epsilon_p) < 1.e-10) xe_z =  sqrt(sqr(xe) - 4.*e2_ - sqr(xT));
-  else if (fabs(epsilon_m) < 1.e-10) xe_z = -sqrt(sqr(xe) - 4.*e2_ - sqr(xT));
+  if      (fabs(epsilon_p) < 1.e-10) xe_z =  sqrt(sqr(xe)-4.*e2_-sqr(xT));
+  else if (fabs(epsilon_m) < 1.e-10) xe_z = -sqrt(sqr(xe)-4.*e2_-sqr(xT));
   else return false;
 
-  // check b is on shell
-  if (fabs((sqr(xe) - sqr(xT) - sqr(xe_z) - 4.*e2_))>1.e-10) return false;
+  // check the emitter is on shell
+  if (fabs((sqr(xe)-sqr(xT)-sqr(xe_z)-4.*e2_))>1.e-10) return false;
 
   // calculate 4 momenta
   particleMomenta[0].setE   ( mb_);
@@ -857,7 +859,7 @@ bool GeneralTwoBodyDecayer::calcMomenta(int j, Energy pT, double y, double phi,
   particleMomenta[2].setE   ( mb_*xs/2.);
   particleMomenta[2].setX   ( ZERO);
   particleMomenta[2].setY   ( ZERO);
-  particleMomenta[2].setZ   (-mb_*sqrt(sqr(xs) - 4.*s2_)/2.);
+  particleMomenta[2].setZ   (-mb_*sqrt(sqr(xs)-4.*s2_)/2.);
   particleMomenta[2].setMass( mb_*s_);
 
   particleMomenta[3].setE   ( pT*cosh(y));
@@ -873,19 +875,46 @@ bool GeneralTwoBodyDecayer::calcMomenta(int j, Energy pT, double y, double phi,
 bool GeneralTwoBodyDecayer::psCheck(const double xg, const double xs) {
   
   // check is point is in allowed region of phase space
-  double xe_star = (1. - s2_ + e2_ - xg) / sqrt(1. - xg);
-  double xg_star = xg / sqrt(1. - xg);
+  double xe_star = (1.-s2_+e2_-xg)/sqrt(1.-xg);
+  double xg_star = xg/sqrt(1.-xg);
 
-  if ((sqr(xe_star) - 4.*e2_) < 1e-10) return false;
-  double xs_max = (4. + 4.*s2_ - sqr(xe_star + xg_star) + 
-		   sqr(sqrt(sqr(xe_star) - 4.*e2_) + xg_star)) / 4.;
-  double xs_min = (4. + 4.*s2_ - sqr(xe_star + xg_star) + 
-		   sqr(sqrt(sqr(xe_star) - 4.*e2_) - xg_star)) / 4.;
+  if ((sqr(xe_star)-4.*e2_) < 1e-10) return false;
+  double xs_max = (4.+4.*s2_-sqr(xe_star+xg_star)+ 
+		   sqr(sqrt(sqr(xe_star)-4.*e2_)+xg_star))/ 4.;
+  double xs_min = (4.+4.*s2_-sqr(xe_star+xg_star)+ 
+		   sqr(sqrt(sqr(xe_star)-4.*e2_)-xg_star))/ 4.;
 
   if (xs < xs_min || xs > xs_max) return false;
 
   return true;
 }
+
+
+double GeneralTwoBodyDecayer::colourCoeff(const PDT::Colour emitter,
+					  const PDT::Colour spectator,
+					  const PDT::Colour other){
+
+  // calculate the colour factor of the dipole
+  double numerator=1.;
+  double denominator=1.;
+  if (emitter!=PDT::Colour0 && spectator!=PDT::Colour0 && other!=PDT::Colour0){
+    if      (emitter  ==PDT::Colour3 || emitter  ==PDT::Colour3bar) numerator=-4./3;
+    else if (emitter  ==PDT::Colour8)                               numerator=-3. ;
+    denominator=-1.*numerator;
+    if      (spectator==PDT::Colour3 || spectator==PDT::Colour3bar) numerator-=4./3;
+    else if (spectator==PDT::Colour8)                               numerator-=3. ;
+    if      (other    ==PDT::Colour3 || other    ==PDT::Colour3bar) numerator+=4./3;
+    else if (other    ==PDT::Colour8)                               numerator+=3. ;
+    numerator*=(-1./2.);				  
+  }
+
+  if      (emitter==PDT::Colour3 || emitter==  PDT::Colour3bar) numerator*=4./3.;
+  else if (emitter==PDT::Colour8 && spectator!=PDT::Colour8)    numerator*=3.;
+  else if (emitter==PDT::Colour8 && spectator==PDT::Colour8)    numerator*=6.;
+  
+  return (numerator/denominator);
+}
+
 
 InvEnergy2 GeneralTwoBodyDecayer::calculateDipole(const dipoleType & dipoleId,  
 						  const Particle & inpart,
@@ -900,59 +929,57 @@ InvEnergy2 GeneralTwoBodyDecayer::calculateDipole(const dipoleType & dipoleId,
 
   // radiation from b with initial-final connection 
   if (dipoleId==IFba || dipoleId==IFbc){
-    dipole = -2./ sqr(mb_*xg);
-    if      (inpart.dataPtr()->iColour()==PDT::Colour3 ||
-	     inpart.dataPtr()->iColour()==PDT::Colour3bar) coeff*=4./3.;
-    else if (inpart.dataPtr()->iColour()==PDT::Colour8)    coeff*=6.;
+    dipole  = -2./sqr(mb_*xg);
+    dipole *= colourCoeff(inpart.dataPtr()->iColour(), decay3[0]->dataPtr()->iColour(),
+			  decay3[1]->dataPtr()->iColour());
   }
+
   // radiation from a/c with initial-final connection
-  else if ((dipoleId==IFa && (emittingDipole==IFba || emittingDipole==IFa || emittingDipole==FFa)) || 
-	   (dipoleId==IFc && (emittingDipole==IFbc || emittingDipole==IFc || emittingDipole==FFc))){
-    double z  = 1. - xg/(1. - s2_ + e2_);    
+  else if ((dipoleId==IFa && 
+	    (emittingDipole==IFba || emittingDipole==IFa || emittingDipole==FFa)) || 
+	   (dipoleId==IFc && 
+	    (emittingDipole==IFbc || emittingDipole==IFc || emittingDipole==FFc))){
+    double z  = 1. - xg/(1.-s2_+e2_);    
     dipole = (-2.*e2_/sqr(1.-xs+s2_-e2_)/sqr(mb_) + (1./(1.-xs+s2_-e2_)/sqr(mb_))*
 	      (2./(1.-z)-dipoleSpinFactor(decay3[0],z)));
 
-    if      (decay3[0]->dataPtr()->iColour()==PDT::Colour3 ||
-	     decay3[0]->dataPtr()->iColour()==PDT::Colour3bar) coeff*=4./3.;
-    else if (decay3[0]->dataPtr()->iColour()==PDT::Colour8)    coeff*=6.;
+    dipole *= colourCoeff(decay3[0]->dataPtr()->iColour(),inpart.dataPtr()->iColour(), 
+			  decay3[1]->dataPtr()->iColour());
   }
   else if (dipoleId==IFa || dipoleId==IFc){
-    double z  = 1. - xg/(1. - e2_ + s2_);
-    dipole = (-2.*s2_/sqr(1.-xe+e2_-s2_)/sqr(mb_) + (1./(1.-xe+e2_-s2_)/sqr(mb_))*
+    double z  = 1. - xg/(1.-e2_+s2_);
+    dipole = (-2.*s2_/sqr(1.-xe+e2_-s2_)/sqr(mb_)+(1./(1.-xe+e2_-s2_)/sqr(mb_))*
 	      (2./(1.-z)-dipoleSpinFactor(decay3[1],z)));
-
-    if      (decay3[1]->dataPtr()->iColour()==PDT::Colour3 ||
-	     decay3[1]->dataPtr()->iColour()==PDT::Colour3bar) coeff*=4./3.;
-    else if (decay3[1]->dataPtr()->iColour()==PDT::Colour8)    coeff*=6.;
+    dipole *= colourCoeff(decay3[1]->dataPtr()->iColour(),inpart.dataPtr()->iColour(), 
+			  decay3[0]->dataPtr()->iColour());  
   }
   // radiation from a/c with final-final connection
-  else if ((dipoleId==FFa && (emittingDipole==IFba || emittingDipole==IFa || emittingDipole==FFa)) || 
-	   (dipoleId==FFc && (emittingDipole==IFbc || emittingDipole==IFc || emittingDipole==FFc))){
+  else if ((dipoleId==FFa && 
+	    (emittingDipole==IFba || emittingDipole==IFa || emittingDipole==FFa)) || 
+	   (dipoleId==FFc && 
+	    (emittingDipole==IFbc || emittingDipole==IFc || emittingDipole==FFc))){
     double z = 1. + ((xe-1.+s2_-e2_)/(xs-2.*s2_));
-    dipole = (1./(1.-xs+s2_-e2_)/sqr(mb_))*( (2./(1.-z)) - dipoleSpinFactor(decay3[0], z) +
+    dipole = (1./(1.-xs+s2_-e2_)/sqr(mb_))*((2./(1.-z))-dipoleSpinFactor(decay3[0],z)-
 					     (2.*e2_/(1.+s2_-e2_-xs)) );
-
-    if      (decay3[0]->dataPtr()->iColour()==PDT::Colour3 ||
-	     decay3[0]->dataPtr()->iColour()==PDT::Colour3bar) coeff*=4./3.;
-    else if (decay3[0]->dataPtr()->iColour()==PDT::Colour8)    coeff*=6.;
-    
+    dipole *= colourCoeff(decay3[0]->dataPtr()->iColour(), 
+			  decay3[1]->dataPtr()->iColour(),
+			  inpart.dataPtr()->iColour());
   }
   else if (dipoleId==FFa || dipoleId==FFc) { 
     double z = 1. + ((xs-1.+e2_-s2_)/(xe-2.*e2_));
-    dipole = (1./(1.-xe+e2_-s2_)/sqr(mb_))*( (2./(1.-z)) - dipoleSpinFactor(decay3[1], z) +
+    dipole = (1./(1.-xe+e2_-s2_)/sqr(mb_))*((2./(1.-z))-dipoleSpinFactor(decay3[1],z)-
 					     (2.*s2_/(1.+e2_-s2_-xe)) );
-  
-    if      (decay3[1]->dataPtr()->iColour()==PDT::Colour3 ||
-	     decay3[1]->dataPtr()->iColour()==PDT::Colour3bar) coeff*=4./3.;
-    else if (decay3[1]->dataPtr()->iColour()==PDT::Colour8)    coeff*=6.;
-  }  
+    dipole *= colourCoeff(decay3[1]->dataPtr()->iColour(), 
+			  decay3[0]->dataPtr()->iColour(),
+			  inpart.dataPtr()->iColour());
+  }
+
   dipole *= coeff;
   return dipole;
 }
 
 double GeneralTwoBodyDecayer::dipoleSpinFactor(const PPtr & emitter, double z){
-  // calculate the spin dependent component of the dipole
-  
+  // calculate the spin dependent component of the dipole  
   if      (emitter->dataPtr()->iSpin()==PDT::Spin0)
     return 2.;
   else if (emitter->dataPtr()->iSpin()==PDT::Spin1Half)
@@ -966,6 +993,7 @@ double GeneralTwoBodyDecayer::dipoleSpinFactor(const PPtr & emitter, double z){
 const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle & inpart, 
 								const ParticleVector & decay,
 								unsigned int & nflow){  
+  // calculate the colour factors for the three-body decay
   vector<int> sing,trip,atrip,oct;
   for(unsigned int it=0;it<decay.size();++it) {
     if     (decay[it]->dataPtr()->iColour() == PDT::Colour0    ) sing. push_back(it);
@@ -988,7 +1016,7 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
 	   decay[oct[0]]->id()==decay[oct[2]]->id())
     symFactor/=6.;
   
-  colour_ = vector<DVector>(1,DVector(1,symFactor*1));
+  colour_ = vector<DVector>(1,DVector(1,symFactor*1.));
   
   // decaying colour singlet   
   if(inpart.dataPtr()->iColour() == PDT::Colour0) {
@@ -1088,44 +1116,41 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
 }
 
 
-void GeneralTwoBodyDecayer::identifyDipoles(vector<dipoleType> & dipoles,
+void GeneralTwoBodyDecayer::identifyDipoles(vector<dipoleType>  & dipoles,
 					    ShowerProgenitorPtr & aProgenitor,
 					    ShowerProgenitorPtr & bProgenitor,
 					    ShowerProgenitorPtr & cProgenitor) const {
 
+  PDT::Colour bColour = bProgenitor->progenitor()->dataPtr()->iColour();
+  PDT::Colour cColour = cProgenitor->progenitor()->dataPtr()->iColour();
+  PDT::Colour aColour = aProgenitor->progenitor()->dataPtr()->iColour();
+
   // decaying colour singlet
-  if (bProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0 ) {
-    if ((cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3     &&
-	 aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar) ||
-	(cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar  &&
-	 aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3)    ||
-	(cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour8     &&
-	 aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour8)){
+  if    (bColour==PDT::Colour0 ) {
+    if ((cColour==PDT::Colour3    && aColour==PDT::Colour3bar) ||
+	(cColour==PDT::Colour3bar && aColour==PDT::Colour3)    ||
+	(cColour==PDT::Colour8    && aColour==PDT::Colour8)){
       dipoles.push_back(FFa);
       dipoles.push_back(FFc);
     }
   }
   // decaying colour triplet
-  else if (bProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3 ) {
-    if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3 &&
-	aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0){
+  else if (bColour==PDT::Colour3 ) {
+    if (cColour==PDT::Colour3 && aColour==PDT::Colour0){
       dipoles.push_back(IFbc);
       dipoles.push_back(IFc );
     }
-    else if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0 &&
-	     aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3){
+    else if (cColour==PDT::Colour0 && aColour==PDT::Colour3){
       dipoles.push_back(IFba);
       dipoles.push_back(IFa );
     }
-    else if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour8 &&
-	     aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3){
+    else if (cColour==PDT::Colour8 && aColour==PDT::Colour3){
       dipoles.push_back(IFbc);
       dipoles.push_back(IFc );
       dipoles.push_back(FFc );
       dipoles.push_back(FFa );
     }
-    else if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3 &&
-	     aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour8){
+    else if (cColour==PDT::Colour3 && aColour==PDT::Colour8){
       dipoles.push_back(IFba);
       dipoles.push_back(IFa );
       dipoles.push_back(FFc );
@@ -1133,26 +1158,22 @@ void GeneralTwoBodyDecayer::identifyDipoles(vector<dipoleType> & dipoles,
     }
   }
   // decaying colour anti-triplet 
-  else if (bProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar) {
-    if ((cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar &&
-	 aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0)){
+  else if (bColour==PDT::Colour3bar) {
+    if ((cColour==PDT::Colour3bar && aColour==PDT::Colour0)){
       dipoles.push_back(IFbc);
       dipoles.push_back(IFc );
     }
-    else if ((cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0 &&
-	      aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar)){
+    else if ((cColour==PDT::Colour0 && aColour==PDT::Colour3bar)){
       dipoles.push_back(IFba);
       dipoles.push_back(IFa );      
     }
-    else if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour8 &&
-	     aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar){
+    else if (cColour==PDT::Colour8 && aColour==PDT::Colour3bar){
       dipoles.push_back(IFbc);
       dipoles.push_back(IFc );
       dipoles.push_back(FFc );
       dipoles.push_back(FFa );
     }
-    else if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar &&
-	     aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour8){
+    else if (cColour==PDT::Colour3bar && aColour==PDT::Colour8){
       dipoles.push_back(IFba);
       dipoles.push_back(IFa );
       dipoles.push_back(FFc );
@@ -1160,23 +1181,19 @@ void GeneralTwoBodyDecayer::identifyDipoles(vector<dipoleType> & dipoles,
     }
   }
   // decaying colour octet
-  else if (bProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour8){
-    if ((cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3 &&
-	 aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar) ||
-	(cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar &&
-	 aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3)){
+  else if (bColour==PDT::Colour8){
+    if ((cColour==PDT::Colour3    && aColour==PDT::Colour3bar) ||
+	(cColour==PDT::Colour3bar && aColour==PDT::Colour3)){
       dipoles.push_back(IFba);
       dipoles.push_back(IFbc);
       dipoles.push_back(IFa);
       dipoles.push_back(IFc);
     }
-    else if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour8 &&
-	     aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0){
+    else if (cColour==PDT::Colour8 && aColour==PDT::Colour0){
       dipoles.push_back(IFbc);
       dipoles.push_back(IFc);
     }
-    else if (cProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0 &&
-	     aProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour8){
+    else if (cColour==PDT::Colour0 && aColour==PDT::Colour8){
       dipoles.push_back(IFba);
       dipoles.push_back(IFa);
     }
@@ -1189,10 +1206,9 @@ void GeneralTwoBodyDecayer::identifyDipoles(vector<dipoleType> & dipoles,
 }
 
 vector<vector<pair<int,double > > > & GeneralTwoBodyDecayer::colourFlows(const Particle & inpart,
-								      const ParticleVector & decay){
+							      const ParticleVector & decay){
 
   vector<int> sing,trip,atrip,oct;
-
   for(unsigned int it=0;it<decay.size();++it) {
     if     (decay[it]->dataPtr()->iColour() == PDT::Colour0    ) sing. push_back(it);
     else if(decay[it]->dataPtr()->iColour() == PDT::Colour3    ) trip. push_back(it);
@@ -1231,7 +1247,9 @@ vector<vector<pair<int,double > > > & GeneralTwoBodyDecayer::colourFlows(const P
  
   // if a 4 point vertex exists, add a colour flow for it
   if(fourPointVertex_){
-    if (colourFlows_[0].size()>1 || colourFlows_[1].size()>1 || colourFlows_[2].size()>1)   
+    if (colourFlows_[0].size()>1 || 
+	colourFlows_[1].size()>1 || 
+	colourFlows_[2].size()>1)   
       throw Exception() << "Unknown colour flows for 4 point vertex in "
 			<< "GeneralTwoBodyDecayer::colourFlows()"
 			<< Exception::runerror;
@@ -1245,20 +1263,21 @@ vector<vector<pair<int,double > > > & GeneralTwoBodyDecayer::colourFlows(const P
   return colourFlows_;
 }
 
-void GeneralTwoBodyDecayer::getColourLines(vector<ColinePtr> & newline,const HardTreePtr & hardtree, 
+void GeneralTwoBodyDecayer::getColourLines(vector<ColinePtr> & newline,
+					   const HardTreePtr & hardtree, 
 					   const ShowerProgenitorPtr & bProgenitor){
-
+  // set up the colour lines
   vector<ShowerParticlePtr> branchingPart;
   for(set<HardBranchingPtr>::const_iterator cit=hardtree->branchings().begin();
-      cit!=hardtree->branchings().end();++cit) {
+      cit!=hardtree->branchings().end();++cit)
     branchingPart.push_back((**cit).branchingParticle());
-  }
+
   vector<int> sing,trip,atrip,oct;
-  for (size_t sp=0;sp<branchingPart.size();++sp){
-    if     (branchingPart[sp]->dataPtr()->iColour()==PDT::Colour0   ) sing. push_back(sp);
-    else if(branchingPart[sp]->dataPtr()->iColour()==PDT::Colour3   ) trip. push_back(sp);
-    else if(branchingPart[sp]->dataPtr()->iColour()==PDT::Colour3bar) atrip.push_back(sp);
-    else if(branchingPart[sp]->dataPtr()->iColour()==PDT::Colour8   ) oct.  push_back(sp);
+  for (size_t ib=0;ib<branchingPart.size();++ib){
+    if     (branchingPart[ib]->dataPtr()->iColour()==PDT::Colour0   ) sing. push_back(ib);
+    else if(branchingPart[ib]->dataPtr()->iColour()==PDT::Colour3   ) trip. push_back(ib);
+    else if(branchingPart[ib]->dataPtr()->iColour()==PDT::Colour3bar) atrip.push_back(ib);
+    else if(branchingPart[ib]->dataPtr()->iColour()==PDT::Colour8   ) oct.  push_back(ib);
   }
   // decaying colour singlet
   if (bProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0){

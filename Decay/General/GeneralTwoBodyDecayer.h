@@ -249,6 +249,12 @@ protected:
 
 
   /**
+   *  Return the colour coefficient of the dipole
+   */
+  double colourCoeff(const PDT::Colour emitter, const PDT::Colour spectator,
+		     const PDT::Colour other);
+
+  /**
    *  Coupling for the generation of hard radiation
    */
   ShowerAlphaPtr coupling() {return coupling_;}

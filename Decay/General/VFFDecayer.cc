@@ -192,16 +192,16 @@ double VFFDecayer::threeBodyME(const int , const Particle & inpart,
   VectorWaveFunction::
     calculateWaveFunctions(_gluon   , decay[iglu ],outgoing,true);
 
-  // gauge test
-  //_gluon.clear();
-  //for(unsigned int ix=0;ix<3;++ix) {
-  //if(ix==1) _gluon.push_back(VectorWaveFunction());
-  //else {
-  //  _gluon.push_back(VectorWaveFunction(decay[iglu ]->momentum(),
-  //				          decay[iglu ]->dataPtr(),10,
-  //					  outgoing));
-  //}
-  //}
+  // // gauge invariance test
+  // _gluon.clear();
+  // for(unsigned int ix=0;ix<3;++ix) {
+  //   if(ix==1) _gluon.push_back(VectorWaveFunction());
+  //   else {
+  //     _gluon.push_back(VectorWaveFunction(decay[iglu ]->momentum(),
+  // 				          decay[iglu ]->dataPtr(),10,
+  // 					  outgoing));
+  //   }
+  // }
 
   // identify fermion and/or anti-fermion vertex
   AbstractFFVVertexPtr abstractOutgoingVertexF;
@@ -388,13 +388,6 @@ void VFFDecayer::identifyVertices(const int iferm, const int ianti,
     throw Exception()
     << "Invalid vertices for QCD radiation in VFF decay in VFFDecayer::identifyVertices"
     << Exception::runerror;
-
-  // // prohibit 3->8 3 and 3->0 3 (unchecked)
-  // if (inpart.dataPtr()->iColour()==PDT::Colour3 || 
-  //     inpart.dataPtr()->iColour()==PDT::Colour3bar)
-  //   throw Exception()
-  //     << "Invalid vertices for QCD radiation in VFF decay in VFFDecayer::identifyVertices"
-  //     << Exception::runerror;
   
 }
 

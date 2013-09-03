@@ -184,7 +184,7 @@ double TVVDecayer::threeBodyME(const int , const Particle & inpart,
   VectorWaveFunction::
       calculateWaveFunctions(_gluon       ,decay[iglu ],outgoing,true);
 
-  // gauge test
+  // // gauge test
   // _gluon.clear();
   // for(unsigned int ix=0;ix<3;++ix) {
   //   if(ix==1) _gluon.push_back(VectorWaveFunction());
@@ -293,8 +293,8 @@ double TVVDecayer::threeBodyME(const int , const Particle & inpart,
       output+=cfactors[ix][iy]*(ME[ix].contract(ME[iy],_rho3)).real();
     }
   }
-  output*=(4.*Constants::pi);
-   
+  output*=(4.*Constants::pi); 
+
   // return the answer
   return output;
 }

@@ -217,9 +217,7 @@ double VSSDecayer::threeBodyME(const int , const Particle & inpart,
 	    << Exception::runerror;
 	
 	double gs    = abstractOutgoingVertexS->strongCoupling(scale);
-	double sign  = decay[iscal]->dataPtr()->id()>0 ? -1:1;
-
-	Complex diag = sign*_abstractVertex->evaluate(scale,_vector3[iv],anti,scalarInter)/gs;
+	Complex diag =_abstractVertex->evaluate(scale,_vector3[iv],anti,scalarInter)/gs;
 	for(unsigned int ix=0;ix<colourFlows(inpart, decay)[1].size();++ix) {
 	  ME[colourFlows(inpart, decay)[1][ix].first](iv, 0, 0, ig) += 
 	    colourFlows(inpart, decay)[1][ix].second*diag;
@@ -241,8 +239,7 @@ double VSSDecayer::threeBodyME(const int , const Particle & inpart,
 	    << Exception::runerror;
 	
 	double gs    = abstractOutgoingVertexA->strongCoupling(scale);
-	double sign  = decay[ianti]->dataPtr()->id()>0 ? 1:-1;
-	Complex diag = sign*_abstractVertex->evaluate(scale,_vector3[iv],scal,scalarInter)/gs;
+	Complex diag =_abstractVertex->evaluate(scale,_vector3[iv],scal,scalarInter)/gs;
 	
 	for(unsigned int ix=0;ix<colourFlows(inpart, decay)[2].size();++ix) {
 	  ME[colourFlows(inpart, decay)[2][ix].first](iv, 0, 0, ig) += 
