@@ -225,7 +225,13 @@ double ShowerApproximation::scaleWeight(int rScale, int bScale, int eScale) cons
   }
   double bornPDF = bornPDFWeight(hardScale);
 
-  if ( emissionPDF == 0.0 )
+  if ( bornPDF < 1e-8 )
+    bornPDF = 0.0;
+
+  if ( emissionPDF < 1e-8 )
+    emissionPDF = 0.0;
+
+  if ( emissionPDF == 0.0 || bornPDF == 0.0 )
     return 0.0;
 
   return

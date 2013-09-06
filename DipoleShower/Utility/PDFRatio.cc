@@ -79,7 +79,7 @@ double PDFRatio::operator() (const PDF& pdf,
     pdf.xfx(from,scale,x) :
     ((1.-x)/(1.-exFrom)) * pdf.xfx(from,scale,exFrom);
 
-  if ( abs(fromPDF) < 1e-8 )
+  if ( fromPDF < 1e-8 )
     fromPDF = 0.0;
 
   double toPDF =
@@ -87,7 +87,7 @@ double PDFRatio::operator() (const PDF& pdf,
     pdf.xfx(to,scale,xTo) :
     ((1.-xTo)/(1.-exTo)) * pdf.xfx(to,scale,exTo);
 
-  if ( abs(toPDF) < 1e-8 )
+  if ( toPDF < 1e-8 )
     toPDF = 0.0;
 
   if ( toPDF == 0.0 || fromPDF == 0.0 )
