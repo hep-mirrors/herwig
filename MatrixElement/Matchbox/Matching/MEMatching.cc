@@ -124,7 +124,8 @@ double MEMatching::me2() const {
   }
 
   return
-    channelWeight() * (rme2/bme2) *
+    channelWeight() * (rme2/bme2) * 
+    (bornXComb()->lastSHat()/realXComb()->lastSHat()) *
     splittingScaleWeight();
 
 }
