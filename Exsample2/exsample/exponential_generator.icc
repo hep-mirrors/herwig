@@ -176,7 +176,7 @@ namespace exsample {
       double new_norm = 1. - std::exp(-(new_exp->second)(adaption_info_.lower_left[evolution_variable_]));
       for (binary_tree<cell>::iterator it = root_cell_.begin();
 	   it != root_cell_.end(); ++it) {
-	if ( !it->info().contains_parameter(last_point_,sample_other_variables_) )
+	if ( !it->info().contains_parameter(last_point_,sample_variables_) )
 	  continue;
 	double old_int = 0.;
 	double new_int = 0.;
