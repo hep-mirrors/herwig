@@ -331,6 +331,11 @@ protected:
   map<Ptr<Tree2toNDiagram>::tcptr,vector<ColourLines*> >&
   colourLineMap();
 
+  /**
+   * Update the colour line map for a given diagram.
+   */
+  void updateColourLines(Ptr<Tree2toNDiagram>::tcptr);
+
 public:
 
   /** @name Functions used by the persistent I/O system. */

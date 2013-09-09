@@ -142,6 +142,16 @@ public:
   void setVirtualContributions(bool on = true) { theVirtualContributions = on; }
 
   /**
+   * Produce matrix element corrections, but no NLO
+   */
+  bool meCorrectionsOnly() const { return theMECorrectionsOnly; }
+
+  /**
+   * Switch to produce matrix element corrections, but no NLO
+   */
+  void setMECorrectionsOnly(bool on = true) { theMECorrectionsOnly = on; }
+
+  /**
    * Return true, if subtracted real emission contributions should be included.
    */
   bool realContributions() const { return theRealContributions; }
@@ -879,6 +889,11 @@ private:
    * Preweight objects for matrix elements
    */
   vector<ReweightPtr> thePreweighters;
+
+  /**
+   * Produce matrix element corrections, but no NLO
+   */
+  bool theMECorrectionsOnly;
 
 private:
 

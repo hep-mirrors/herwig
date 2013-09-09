@@ -43,7 +43,8 @@ MatchboxFactory::MatchboxFactory()
     theFixedCouplings(false), theFixedQEDCouplings(false), theVetoScales(false),
     theDipoleSet(0), theVerbose(false), theInitVerbose(false), 
     theSubtractionData(""), thePoleData(""),
-    theRealEmissionScales(false), theAllProcesses(false) {}
+    theRealEmissionScales(false), theAllProcesses(false),
+    theMECorrectionsOnly(false) {}
 
 MatchboxFactory::~MatchboxFactory() {}
 
@@ -428,7 +429,7 @@ void MatchboxFactory::setup() {
     }
   }
 
-  if ( virtualContributions() ) {
+  if ( virtualContributions() && !meCorrectionsOnly() ) {
 
     bornVirtualMEs().clear();
 
@@ -521,7 +522,7 @@ void MatchboxFactory::setup() {
 	  bornProcs.insert((**d).partons());
     }
 
-  if ( realContributions() ) {
+  if ( realContributions() || meCorrectionsOnly() ) {
 
     generator()->log() << "preparing real emission matrix elements.\n" << flush;
 
@@ -602,10 +603,11 @@ void MatchboxFactory::setup() {
 	sub->doRealEmissionScales();
 
       subtractedMEs().push_back(sub);
-      MEs().push_back(sub);
+      if ( !meCorrectionsOnly() )
+	MEs().push_back(sub);
 
       if ( showerApproximation() ) {
-	if ( virtualContributions() ) {
+	if ( virtualContributions() && !meCorrectionsOnly() ) {
 	  Ptr<SubtractedME>::ptr subv = new_ptr(*sub);
 	  string vname = sub->fullName() + ".SubtractionIntegral";
 	  if ( ! (generator()->preinitRegister(subv,vname) ) )
@@ -615,7 +617,8 @@ void MatchboxFactory::setup() {
 	  subtractedMEs().push_back(subv);
 	  MEs().push_back(subv);
 	}
-	sub->doRealShowerSubtraction();
+	if ( !meCorrectionsOnly() )
+	  sub->doRealShowerSubtraction();
 	if ( showerApproximation()->needsSplittingGenerator() )
 	  for ( set<cPDVector>::const_iterator p = bornProcs.begin();
 		p != bornProcs.end(); ++p ) {
@@ -878,7 +881,8 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
      << theRealEmissionScales << theAllProcesses
      << theOLPProcesses 
      << theSelectedAmplitudes << theDeselectedAmplitudes
-     << theDipoleSet << theReweighters << thePreweighters;
+     << theDipoleSet << theReweighters << thePreweighters
+     << theMECorrectionsOnly;
 }
 
 void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
@@ -898,7 +902,8 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
      >> theRealEmissionScales >> theAllProcesses
      >> theOLPProcesses
      >> theSelectedAmplitudes >> theDeselectedAmplitudes
-     >> theDipoleSet >> theReweighters >> thePreweighters;
+     >> theDipoleSet >> theReweighters >> thePreweighters
+     >> theMECorrectionsOnly;
 }
 
 string MatchboxFactory::startParticleGroup(string name) {
@@ -1359,6 +1364,22 @@ void MatchboxFactory::Init() {
     ("Preweighters",
      "Preweight objects for matrix elements.",
      &MatchboxFactory::thePreweighters, -1, false, false, true, false, false);
+
+  static Switch<MatchboxFactory,bool> interfaceMECorrectionsOnly
+    ("MECorrectionsOnly",
+     "Prepare only ME corrections, but no NLO calculation.",
+     &MatchboxFactory::theMECorrectionsOnly, false, false, false);
+  static SwitchOption interfaceMECorrectionsOnlyYes
+    (interfaceMECorrectionsOnly,
+     "Yes",
+     "Produce only ME corrections.",
+     true);
+  static SwitchOption interfaceMECorrectionsOnlyNo
+    (interfaceMECorrectionsOnly,
+     "No",
+     "Produce full NLO.",
+     false);
+
 
 }
 
