@@ -246,10 +246,40 @@ set Amplitudellbarqqbargg:ColourBasis SimpleColourBasis
 create Herwig::MatchboxAmplitudellbarqqbarqqbar Amplitudellbarqqbarqqbar
 set Amplitudellbarqqbarqqbar:ColourBasis SimpleColourBasis
 
+create Herwig::MatchboxAmplitudelnuqqbar Amplitudelnuqqbar
+set Amplitudelnuqqbar:ColourBasis SimpleColourBasis
+
+create Herwig::MatchboxAmplitudelnuqqbarg Amplitudelnuqqbarg
+set Amplitudelnuqqbarg:ColourBasis SimpleColourBasis
+
+create Herwig::MatchboxAmplitudelnuqqbargg Amplitudelnuqqbargg
+set Amplitudelnuqqbargg:ColourBasis SimpleColourBasis
+
+create Herwig::MatchboxAmplitudelnuqqbarqqbar Amplitudelnuqqbarqqbar
+set Amplitudelnuqqbarqqbar:ColourBasis SimpleColourBasis
+
+create Herwig::MatchboxAmplitudehgg Amplitudehgg
+set Amplitudehgg:ColourBasis SimpleColourBasis
+
+create Herwig::MatchboxAmplitudehggg Amplitudehggg
+set Amplitudehggg:ColourBasis SimpleColourBasis
+
+create Herwig::MatchboxAmplitudehqqbarg Amplitudehqqbarg
+set Amplitudehqqbarg:ColourBasis SimpleColourBasis
+
 insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudellbarqqbar
 insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudellbarqqbarg
 insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudellbarqqbargg
 insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudellbarqqbarqqbar
+
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudelnuqqbar
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudelnuqqbarg
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudelnuqqbargg
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudelnuqqbarqqbar
+
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudehgg
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudehggg
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudehqqbarg
 
 ################################################################################
 # Setup utilities for matching
