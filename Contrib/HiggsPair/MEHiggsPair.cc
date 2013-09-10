@@ -164,7 +164,7 @@ void MEHiggsPair::Init() {
 
 CrossSection MEHiggsPair::dSigHatDR() const {
   using Constants::pi;
-  return me2()/(16.0*sqr(pi)*sHat())*sqr(hbarc);
+  return me2()/(16.0*pi*sqr(sHat())/GeV/GeV)*sqr(hbarc);
 }
 
 
@@ -218,7 +218,7 @@ MEHiggsPair::colourGeometries(tcDiagPtr diag) const {
 //the matrix element squared with the appropriate factors
 double MEHiggsPair::me2() const {
   using Constants::pi;
-  double mesq = 0.;
+  double mesq(0.);
 
   //get the masses and Mandestam variables
   Energy mh(_mh);
@@ -237,9 +237,9 @@ double MEHiggsPair::me2() const {
   double XLAM=sqrt(sqr(s+sqr(Mc)-sqr(Md))-4.*s*sqr(Mc));
   //the jacobian is jacobian()*XLAM
   mesq *= jacobian()*XLAM; 
-  //  mesq *= QCD * SM().fermiConstant()*GeV*GeV / (128 * sqrt(2) * sqr(pi)  );
-  mesq *= QCD * SM().fermiConstant()*GeV*GeV / (512 * sqrt(2) * pi);
-  return mesq/s;    
+  mesq *= QCD / (2048.*sqr(pi));
+
+  return mesq;    
 }
 
 bool MEHiggsPair::generateKinematics(const double * r) { 
@@ -428,12 +428,12 @@ double MEHiggsPair::MATRIX(double S, double T,double U, double M1, double M2) co
   F2 = Complex(0.,0.);
   //triangle
   if(_process==0||_process==1||_process==3) { 
-    F1 = F1 + AMT*(form_.H1*(GHT*GHHH/PROH));
+    F1 = F1 + (form_.H1*(GHT*GHHH/PROH));
   }
   //box
   if(_process==0||_process==2||_process==3) { 
-    F1 = F1 + AMT*(form_.HH1*GHT*GHT);
-    F2 = F2 + AMT*(form_.HH2*GHT*GHT);
+    F1 = F1 + (form_.HH1*GHT*GHT);
+    F2 = F2 + (form_.HH2*GHT*GHT);
   }
 
   //form factors for bottom quark contributions
@@ -451,12 +451,12 @@ double MEHiggsPair::MATRIX(double S, double T,double U, double M1, double M2) co
   formfac_(amq, ss, tt, uu, m1, m2, C0AB, C0AC, C0AD, C0BC, C0BD, C0CD, D0ABC, D0BAC, D0ACB);
   //triangle 
   if(_process==0||_process==1||_process==3) { 
-    F1 = F1 + AMB*(form_.H1*(GHB*GHHH/PROH));
+    F1 = F1 + (form_.H1*(GHB*GHHH/PROH));
   }
   //box
   if(_process==0||_process==2||_process==3) { 
-    F1 = F1 + AMB*(form_.HH1*GHB*GHB);
-    F2 = F2 + AMB*(form_.HH2*GHB*GHB);
+    F1 = F1 + (form_.HH1*GHB*GHB);
+    F2 = F2 + (form_.HH2*GHB*GHB);
   }
   
   
@@ -475,7 +475,7 @@ double MEHiggsPair::MATRIX(double S, double T,double U, double M1, double M2) co
     D0BAC[0] = ScalFacs[7];
     D0ACB[0] = ScalFacs[8];
     formfac_(amq, ss, tt, uu, m1, m2, C0AB, C0AC, C0AD, C0BC, C0BD, C0CD, D0ABC, D0BAC, D0ACB);
-    F1 = F1 + AMT*(form_.H1*(GHT*GHhh/PROHEAVY));
+    F1 = F1 + (form_.H1*(GHT*GHhh/PROHEAVY));
     ScalFacs = iniscal(AMB, S, T, U, M1, M2);
     amq[0] = AMB;
     C0AB[0] = ScalFacs[0];
@@ -488,7 +488,7 @@ double MEHiggsPair::MATRIX(double S, double T,double U, double M1, double M2) co
     D0BAC[0] = ScalFacs[7];
     D0ACB[0] = ScalFacs[8];
     formfac_(amq, ss, tt, uu, m1, m2, C0AB, C0AC, C0AD, C0BC, C0BD, C0CD, D0ABC, D0BAC, D0ACB);
-    F1 = F1 + AMB*(form_.H1*(GHB*GHhh/PROHEAVY));
+    F1 = F1 + (form_.H1*(GHB*GHhh/PROHEAVY));
   }
   
   //square
