@@ -18,15 +18,17 @@ bin_SCRIPTS = herwig-config
 HELPERFILES = CMSSM40.1.1.slha RPV3.1.slha NMSSM.spc \
 ADD.model \
 Leptoquark.model \
+LH.model \
+LHTP.model \
 MSSM.model \
 MUED.model \
 NMSSM.model \
+RPV-Bi.model \
+RPV-Tri.model \
 RS.model \
 Sextet.model \
 TTBA.model \
 Zprime.model \
-LH.model \
-LHTP.model \
 RPV-BI.slha \
 RPV-TRI.slha \
 RPV-UDD.slha
