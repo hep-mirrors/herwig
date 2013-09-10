@@ -49,7 +49,7 @@ bool MatchboxAmplitudelnuqqbarqqbar::canHandle(const PDVector& proc) const {
     xproc[0] = xproc[0]->CC();
   if ( xproc[1]->CC() )
     xproc[1] = xproc[1]->CC();
-  Charge charge(ZERO);
+  //  Charge charge(ZERO);
   PDVector::iterator elektron = xproc.begin();
   for ( ; elektron != xproc.end(); ++elektron ) 
     if ( abs((*elektron)->id()) >= 11 && abs((*elektron)->id()) <= 16 && abs((*elektron)->id()) % 2 == 1 ) break;
