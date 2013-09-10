@@ -2,6 +2,10 @@
 import os, sys, pprint, argparse, re
 from string import strip
 
+# add path to the ufo conversion modules
+modulepath = os.path.join("@PKGLIBDIR@",'python')
+sys.path.append(modulepath)
+
 from ufo2peg import *
 
 # set up the option parser for command line input 
@@ -42,7 +46,7 @@ libname = modelname + '.so'
 
 # copy the Makefile-FR to current directory,
 # replace with the modelname for compilation
-with open('../Makefile-FR','r') as orig:
+with open(os.path.join(modulepath,'Makefile-FR'),'r') as orig:
     with open('Makefile','w') as dest:
         dest.write(orig.read().replace("FeynrulesModel.so", libname))
 
@@ -523,9 +527,10 @@ print 'library:\t\t\t', libname
 print 'input file:\t\t\t', 'LHC-' + modelname +'.in'
 print 'model file:\t\t\t', modelname +'.model'
 print '='*60
-print """To complete the installation, compile by typing "make", 
-copy the generated .so file, into the Herwig++ lib directory
-and the .model and .in files in the directory that you wish to run in.
+print """\
+To complete the installation, compile by typing "make".
+An example input file is provided as LHC-FRModel.in, 
+you'll need to change the required particles in there.
 """
 print 'DONE!'
 print '='*60
