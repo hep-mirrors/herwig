@@ -259,7 +259,7 @@ AC_ARG_ENABLE(debug,
 AC_MSG_RESULT([$enable_debug])
 
 if test "x$enable_debug" = "xno"; then
-	AM_CPPFLAGS="$AM_CPPFLAGS -DNDEBUG"
+	debugflags=""
 else
 	debugflags="-g"
 fi
