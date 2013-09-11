@@ -34,6 +34,7 @@
 #include "Herwig++/DipoleShower/Utility/DipolePartonSplitter.h"
 
 #include "Herwig++/MatrixElement/Matchbox/Base/SubtractedME.h"
+#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
 
 using namespace Herwig;
 
@@ -48,7 +49,9 @@ DipoleShowerHandler::DipoleShowerHandler()
     theFactorizationScaleFreeze(1.*GeV),
     theFactorizationScaleFactor(1.0),
     theRenormalizationScaleFactor(1.0),
-    theHardScaleFactor(1.0) {}
+    theHardScaleFactor(1.0),
+    isMCatNLOSEvent(false),
+  isMCatNLOHEvent(false) {}
 
 DipoleShowerHandler::~DipoleShowerHandler() {}
 
@@ -86,6 +89,32 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr) {
       didRadiate = false;
       didRealign = false;
 
+      isMCatNLOSEvent = false;
+      isMCatNLOHEvent = false;
+
+      Ptr<SubtractedME>::tptr subme =
+	dynamic_ptr_cast<Ptr<SubtractedME>::tptr>(eventRecord().xcombPtr()->matrixElement());
+      Ptr<MatchboxMEBase>::tptr me =
+	dynamic_ptr_cast<Ptr<MatchboxMEBase>::tptr>(eventRecord().xcombPtr()->matrixElement());
+
+      if ( subme ) {
+	if ( subme->showerApproximation() ) {
+	  theShowerApproximation = subme->showerApproximation();
+	  if ( subme->realShowerSubtraction() )
+	    isMCatNLOHEvent = true;
+	  else if ( subme->virtualShowerSubtraction() )
+	    isMCatNLOSEvent = true;
+	}
+      } else if ( me ) {
+	if ( me->factory()->showerApproximation() )
+	  theShowerApproximation = me->factory()->showerApproximation();
+	isMCatNLOSEvent = true;
+      }
+
+      if ( theShowerApproximation ) {
+	theHardScaleFactor = theShowerApproximation->hardScaleFactor();
+      }
+
       hardScales();
 
       if ( verbosity > 1 ) {
@@ -98,13 +127,7 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr) {
 
       if ( firstMCatNLOEmission ) {
 
-	bool mcatnloReal = false;
-	Ptr<SubtractedME>::tptr subme =
-	  dynamic_ptr_cast<Ptr<SubtractedME>::tptr>(eventRecord().xcombPtr()->matrixElement());
-	if ( subme )
-	  if ( subme->realShowerSubtraction() )
-	    mcatnloReal = true;
-        if ( !mcatnloReal )
+        if ( !isMCatNLOSEvent )
 	  nEmissions = 1;
 	else
 	  nEmissions = 0;
@@ -352,10 +375,26 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
 
     candidate.scale(dScale);
     candidate.continuesEvolving();
-    candidate.hardPt(evolutionOrdering()->maxPt(startScale,candidate,*(gen->second->splittingKernel())));
+    Energy hardScale = evolutionOrdering()->maxPt(startScale,candidate,*(gen->second->splittingKernel()));
+    candidate.hardPt(hardScale);
 
     gen->second->generate(candidate);
     Energy nextScale = evolutionOrdering()->evolutionScale(gen->second->lastSplitting(),*(gen->second->splittingKernel()));
+
+    if ( isMCatNLOSEvent ) {
+      assert(theShowerApproximation);
+      if ( theShowerApproximation->restrictPhasespace() ) {
+	while ( UseRandom::rnd() > theShowerApproximation->hardScaleProfile(hardScale,nextScale) ) {
+	  candidate.continuesEvolving();
+	  Energy nextHardScale = evolutionOrdering()->maxPt(nextScale,candidate,*(gen->second->splittingKernel()));
+	  candidate.hardPt(nextHardScale);
+	  gen->second->generate(candidate);
+	  nextScale = evolutionOrdering()->evolutionScale(gen->second->lastSplitting(),*(gen->second->splittingKernel()));
+	  if ( nextScale == ZERO || candidate.stoppedEvolving() )
+	    break;
+	}
+      }
+    }
 
     if ( nextScale > winnerScale ) {
       winner = candidate;
@@ -448,6 +487,9 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone) {
     // otherwise perform the splitting
 
     didRadiate = true;
+
+    isMCatNLOSEvent = false;
+    isMCatNLOHEvent = false;
 
     pair<list<Dipole>::iterator,list<Dipole>::iterator> children;
 
@@ -698,7 +740,8 @@ void DipoleShowerHandler::persistentOutput(PersistentOStream & os) const {
      << ounit(theRenormalizationScaleFreeze,GeV)
      << ounit(theFactorizationScaleFreeze,GeV)
      << theFactorizationScaleFactor << theRenormalizationScaleFactor
-     << theHardScaleFactor;
+     << theHardScaleFactor
+     << isMCatNLOSEvent << isMCatNLOHEvent << theShowerApproximation;
 }
 
 void DipoleShowerHandler::persistentInput(PersistentIStream & is, int) {
@@ -710,7 +753,8 @@ void DipoleShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> iunit(theRenormalizationScaleFreeze,GeV)
      >> iunit(theFactorizationScaleFreeze,GeV)
      >> theFactorizationScaleFactor >> theRenormalizationScaleFactor
-     >> theHardScaleFactor;
+     >> theHardScaleFactor
+     >> isMCatNLOSEvent >> isMCatNLOHEvent >> theShowerApproximation;
 }
 
 ClassDescription<DipoleShowerHandler> DipoleShowerHandler::initDipoleShowerHandler;

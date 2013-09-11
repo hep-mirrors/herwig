@@ -288,6 +288,16 @@ public:
   double hardScaleFactor() const { return theHardScaleFactor; }
 
   /**
+   * Return the relevant hard scale
+   */
+  virtual Energy hardScale() const;
+
+  /**
+   * Return a scale profile towards the hard scale
+   */
+  virtual double hardScaleProfile(Energy hard, Energy soft) const;
+
+  /**
    * Get the factorization scale factor
    */
   double factorizationScaleFactor() const { return theFactorizationScaleFactor; }
@@ -507,6 +517,16 @@ private:
    * A freezing value for the factorization scale
    */
   Energy theFactorizationScaleFreeze;
+
+  /**
+   * True if we are to use profile scales
+   */
+  bool theProfileScales;
+
+  /**
+   * The profile scale parameter
+   */
+  double theProfileRho;
 
 private:
 

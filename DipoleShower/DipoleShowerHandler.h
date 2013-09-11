@@ -22,6 +22,7 @@
 #include "Herwig++/DipoleShower/Base/DipoleEvolutionOrdering.h"
 #include "Herwig++/DipoleShower/Utility/ConstituentReshuffler.h"
 #include "Herwig++/DipoleShower/Utility/IntrinsicPtGenerator.h"
+#include "Herwig++/MatrixElement/Matchbox/Matching/ShowerApproximation.h"
 
 namespace Herwig {
 
@@ -367,6 +368,21 @@ private:
    * The scale factor for the hard scale
    */
   double theHardScaleFactor;
+
+  /**
+   * True, if we are showering on a MC@NLO S event
+   */
+  bool isMCatNLOSEvent;
+
+  /**
+   * True, if we are showering on a MC@NLO H event
+   */
+  bool isMCatNLOHEvent;
+
+  /**
+   * The matching subtraction, if appropriate
+   */
+  Ptr<ShowerApproximation>::tptr theShowerApproximation;
 
 private:
 
