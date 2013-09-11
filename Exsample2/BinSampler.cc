@@ -62,6 +62,22 @@ string BinSampler::process() const {
   return os.str();
 }
 
+string BinSampler::id() const {
+  ostringstream os("");
+  const StandardEventHandler& eh = *theEventHandler;
+  const StandardXComb& xc = *eh.xCombs()[theBin];
+  string name = xc.matrixElement()->name();
+  string::size_type i = name.find_first_of("[");
+  name = name.substr(0,i);
+  os << name << ":";
+  for ( cPDVector::const_iterator pid =
+	  xc.mePartonData().begin();
+	pid != xc.mePartonData().end(); ++pid )
+    os << (**pid).id() << (pid != (--xc.mePartonData().end()) ? "," : "");
+  return os.str();
+}
+
+
 void BinSampler::generate(bool noMaxInfo) {
   double w = 1.;
   for ( size_t k = 0; k < lastPoint().size(); ++k ) {
