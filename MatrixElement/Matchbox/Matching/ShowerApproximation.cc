@@ -84,6 +84,7 @@ Energy ShowerApproximation::hardScale() const {
   if ( maxPt == generator()->maximumCMEnergy() )
     maxPt = (bornCXComb()->meMomenta()[0] + bornCXComb()->meMomenta()[1]).m();
   maxPt *= hardScaleFactor();
+  return maxPt;
 }
 
 double ShowerApproximation::hardScaleProfile(Energy hard, Energy soft) const {
