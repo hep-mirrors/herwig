@@ -80,6 +80,7 @@ class ParticleConverter:
 def thepeg_particles(FR,parameters):
     plist = ''
     antis = {}
+    names = []
     for p in FR.all_particles:
         if p.spin == -1:
             continue
@@ -98,25 +99,28 @@ def thepeg_particles(FR,parameters):
             continue
 
         if p.pdg_code in SMPARTICLES:
-            #add stuff to plist to set params
-            pass
-        else:
-            if p.pdg_code == 25:
-                plist += """
+            continue
+
+        if p.pdg_code == 25:
+            plist += \
+"""
 set /Herwig/Particles/h0:Mass_generator NULL
 set /Herwig/Particles/h0:Width_generator NULL
 rm /Herwig/Masses/HiggsMass
 rm /Herwig/Widths/HiggsWidth
 """
-            subs = ParticleConverter(p,parameters).subs()
-            plist += particleT.substitute(subs)
+        subs = ParticleConverter(p,parameters).subs()
+        plist += particleT.substitute(subs)
 
-            pdg, name = subs['pdg_code'],  subs['name']
-            if -pdg in antis:
-                plist += 'makeanti %s %s\n' % (antis[-pdg], name)
-                
-            else:
-                plist += 'insert /Herwig/NewPhysics/NewModel:DecayParticles 0 %s\n' % name
-                antis[pdg] = name
-                selfconjugate = 1
-    return plist
+        pdg, name = subs['pdg_code'],  subs['name']
+
+        names.append(name)
+
+        if -pdg in antis:
+            plist += 'makeanti %s %s\n' % (antis[-pdg], name)
+
+        else:
+            plist += 'insert /Herwig/NewPhysics/NewModel:DecayParticles 0 %s\n' % name
+            antis[pdg] = name
+            selfconjugate = 1
+    return plist, names

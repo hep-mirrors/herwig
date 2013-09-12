@@ -195,10 +195,8 @@ print '-'*60
 # write the files from templates according to the above subs
 MODEL_H  = getTemplate('Model.h')
 MODEL_CC = getTemplate('Model.cc')
-MODEL_HWIN = getTemplate('LHC-FR.in')
 writeFile( '%s.h' % modelname,      MODEL_H.substitute(parmtextsubs) )
 writeFile( '%s.cc' % modelname,     MODEL_CC.substitute(parmtextsubs) )
-writeFile( 'LHC-%s.in' % modelname, MODEL_HWIN.substitute(parmtextsubs) )
 
 
 ##################################################
@@ -508,7 +506,23 @@ def get_vertices():
     return ''.join(vlist)
 
 
-modelfilesubs = { 'plist' : thepeg_particles(FR,parmsubs),
+plist, names = thepeg_particles(FR,parmsubs)
+
+particlelist = [
+    "# insert HPConstructor:Outgoing 0 /Herwig/{}/Particles/{}".format(modelname,p)
+    for p in names
+]
+# make the first one active to have something runnable in the example .in file
+particlelist[0] = particlelist[0][2:]
+particlelist = '\n'.join(particlelist)
+
+MODEL_HWIN = getTemplate('LHC-FR.in')
+writeFile( 'LHC-%s.in' % modelname, 
+           MODEL_HWIN.substitute({ 'ModelName' : modelname,
+                                   'Particles' : particlelist,
+}))
+
+modelfilesubs = { 'plist' : plist,
                   'vlist' : get_vertices(),
                   'setcouplings': '\n'.join(parmmodelconstr),
                   'ModelName': modelname

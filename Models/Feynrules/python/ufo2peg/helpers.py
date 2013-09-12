@@ -44,7 +44,7 @@ def is_number(s):
 
 
 def getTemplate(name):
-    """Create a template from a file."""
+    """Create a python string template from a file."""
     templatename = '{}.template'.format(name)
     # assumes the template files sit next to this script
     moduledir = path.dirname(path.abspath(__file__))
