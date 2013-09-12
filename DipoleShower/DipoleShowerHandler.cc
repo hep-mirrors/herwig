@@ -127,7 +127,7 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr) {
 
       if ( firstMCatNLOEmission ) {
 
-        if ( !isMCatNLOSEvent )
+        if ( !isMCatNLOHEvent )
 	  nEmissions = 1;
 	else
 	  nEmissions = 0;
