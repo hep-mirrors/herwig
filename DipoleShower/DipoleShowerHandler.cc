@@ -383,7 +383,8 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
 
     if ( isMCatNLOSEvent ) {
       assert(theShowerApproximation);
-      if ( theShowerApproximation->restrictPhasespace() ) {
+      if ( theShowerApproximation->restrictPhasespace() &&
+	   theShowerApproximation->profileScales() ) {
 	while ( UseRandom::rnd() > theShowerApproximation->hardScaleProfile(hardScale,nextScale) ) {
 	  candidate.continuesEvolving();
 	  Energy nextHardScale = evolutionOrdering()->maxPt(nextScale,candidate,*(gen->second->splittingKernel()));

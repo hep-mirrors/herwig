@@ -283,6 +283,11 @@ public:
   bool restrictPhasespace() const { return theRestrictPhasespace; }
 
   /**
+   * Return true if we are to use profile scales
+   */
+  bool profileScales() const { return theProfileScales; }
+
+  /**
    * Return the scale factor for the hard scale
    */
   double hardScaleFactor() const { return theHardScaleFactor; }
