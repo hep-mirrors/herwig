@@ -106,9 +106,10 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr) {
 	    isMCatNLOSEvent = true;
 	}
       } else if ( me ) {
-	if ( me->factory()->showerApproximation() )
+	if ( me->factory()->showerApproximation() ) {
 	  theShowerApproximation = me->factory()->showerApproximation();
-	isMCatNLOSEvent = true;
+	  isMCatNLOSEvent = true;
+	}
       }
 
       if ( theShowerApproximation ) {
