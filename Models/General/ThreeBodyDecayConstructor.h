@@ -34,6 +34,7 @@ public:
    * The default constructor.
    */
   ThreeBodyDecayConstructor() : 
+    includeIntermediatePhotons_(false),
     interOpt_(0), widthOpt_(1), weakMassCut_(-GeV),
     intOpt_(1), relErr_(1e-2) {}
 
@@ -135,6 +136,11 @@ private:
   ThreeBodyDecayConstructor & operator=(const ThreeBodyDecayConstructor &);
 
 private:
+
+  /**
+   *  Option for intermediate photons
+   */
+  bool includeIntermediatePhotons_;
 
   /**
    *  Option for the inclusion of intermediates
