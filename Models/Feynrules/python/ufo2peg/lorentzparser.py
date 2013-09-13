@@ -42,6 +42,10 @@ def cleaner(text):
         left = helper(text,'m')
     elif 'p' in text:
         right = helper(text,'p')
+    elif 'y' in text:
+        val = helper(text,'y')
+        left = -val
+        right = val
     return (left,right)
 
 
@@ -83,6 +87,7 @@ class LorentzParser(ast.NodeVisitor):
     def visit_Call(self,node):
         subs = { 
             'Gamma' : 'g',
+            'Gamma5' : 'y',
             'Identity' : 'i',
             'ProjM' : 'm',
             'ProjP' : 'p',
