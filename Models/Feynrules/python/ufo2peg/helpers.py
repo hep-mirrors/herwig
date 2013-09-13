@@ -88,6 +88,34 @@ def unique_lorentztag(vertex):
     return lorentztag
 
 
+def qcd_qed_orders(vertex, coupling):
+    # if more  than one take QCD over QED and then lowest order in QED
+    if type(coupling) is list:
+        qed = 0
+        qcd = 0
+        for coup in coupling :
+            qed1 = coup.order.get('QED',0)
+            qcd1 = coup.order.get('QCD',0)
+            if qcd1 != 0:
+                if qcd == 0 or (qcd1 != 0 and qcd1 < qcd):
+                    qcd=qcd1
+                    qed=qed1
+            else:
+                if qed == 0 or (qed1 != 0 and qed1 < qed):
+                    qed=qed1
+    else:
+        qed = coupling.order.get('QED',0)
+        qcd = coupling.order.get('QCD',0)
+    # WARNING: FIX FOR CASES WHEN BOTH ARE ZERO
+    # Is there a better way to treat this?
+    if qed + qcd + 2 != len(vertex.particles):
+        qed = len(vertex.particles) - qcd - 2
+
+    return qcd, qed
+    
+
+
+
 def spindirectory(lt):
     """Return the spin directory name for a given Lorentz tag."""
     if 'T' in lt: 
@@ -497,7 +525,14 @@ def EWVVVVCouplings(vertex,L) :
     terms=['Metric(1,2)*Metric(3,4)',
            'Metric(1,3)*Metric(2,4)',
            'Metric(1,4)*Metric(2,3)']
+
     structure1 = L.structure.split()
+
+    if 'P(' in L.structure:
+        sys.stderr.write('Warning: unsupported {} Lorentz structure in {}:\n{}\n'
+                         .format(unique_lorentztag(vertex), vertex.name, L.structure))
+        raise SkipThisVertex()
+
     structures =[]
     sign=''
     for struct in structure1 :
