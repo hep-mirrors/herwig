@@ -253,8 +253,9 @@ def colorfactor(vertex,L,pos):
         label = ('f(2,1,3)',)
         if match(label): return ('complex(0,1)',)
 
-    print vertex
-    raise Exception("Unknown colour tag {}.".format(vertex.color))
+    sys.stderr.write("Warning: Unknown colour structure {v.color} in {v.name}.\n"
+                     .format(v=vertex))
+    raise SkipThisVertex()
 
 
 def def_from_model(FR,s):
@@ -528,11 +529,6 @@ def EWVVVVCouplings(vertex,L) :
 
     structure1 = L.structure.split()
 
-    if 'P(' in L.structure:
-        sys.stderr.write('Warning: unsupported {} Lorentz structure in {}:\n{}\n'
-                         .format(unique_lorentztag(vertex), vertex.name, L.structure))
-        raise SkipThisVertex()
-
     structures =[]
     sign=''
     for struct in structure1 :
@@ -549,6 +545,12 @@ def EWVVVVCouplings(vertex,L) :
             if term in struct :
                 reminder = struct.replace(term,'1.',1)
                 factors.append(eval(reminder, {'cmath':cmath} ))
+
+    if len(factors) != 3:
+        sys.stderr.write('Warning: unsupported {} Lorentz structure in {}:\n{}\n'
+                         .format(unique_lorentztag(vertex), vertex.name, L.structure))
+        raise SkipThisVertex()
+
     factor=0.
     order=[]
     if(factors[0]==-2.*factors[1] and factors[0]==-2.*factors[2] ) :
@@ -560,6 +562,12 @@ def EWVVVVCouplings(vertex,L) :
     elif(factors[2]==-2.*factors[0] and factors[2]==-2.*factors[1] ) :
         order=[0,3,1,2]
         factor = factors[2]/2.
+    else:
+        sys.stderr.write('Warning: unsupported {} Lorentz structure in {}:\n{}\n'
+                         .format(unique_lorentztag(vertex), vertex.name, L.structure))
+        raise SkipThisVertex()
+
+
     pattern = \
         "bool done[4]={false,false,false,false};\n" + \
         "    tcPDPtr part[4]={p1,p2,p3,p4};\n" + \
