@@ -248,21 +248,12 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
 
     lorentztag = unique_lorentztag(vertex)
     
+    vertex.herwig_skip_vertex = False
+
     # remove vertices involving ghost fields
     if 'U' in lorentztag:
         vertex.herwig_skip_vertex = True
         continue
-    # and with more than 4 external particles
-    elif (len(vertex.particles)>4) :
-        vertex.herwig_skip_vertex = True
-        continue
-    # missing tensor vertices
-    elif (lorentztag=="SSST" or lorentztag=="VVST" or 
-          lorentztag=="FFST" ) : 
-        vertex.herwig_skip_vertex = True
-        continue
-    else:
-        vertex.herwig_skip_vertex = False
 
     lfactors = { 
         'FFV'  : '-complex(0,1)',  # ok
@@ -281,7 +272,14 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
         'FFVT' : '-complex(0,4)',
     }
 
-    lf = lfactors[lorentztag]
+    try:
+        lf = lfactors[lorentztag]
+    except KeyError:
+        msg = 'Warning: Lorentz structure {} ' \
+              'is not supported in {}.\n'.format(lorentztag, vertex.name)
+        sys.stderr.write(msg)
+        vertex.herwig_skip_vertex = True
+        continue
 
     ### Particle ids
     if ONE_EACH:
