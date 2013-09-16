@@ -377,6 +377,7 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
     candidate.scale(dScale);
     candidate.continuesEvolving();
     Energy hardScale = evolutionOrdering()->maxPt(startScale,candidate,*(gen->second->splittingKernel()));
+
     Energy maxPossible = 
       gen->second->splittingKinematics()->ptMax(candidate.scale(),
 						candidate.emitterX(), candidate.spectatorX(),
@@ -389,13 +390,15 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
 
     if ( maxPossible >= hardScale )
       candidate.hardPt(hardScale);
-    else
+    else {
+      hardScale = maxPossible;
       candidate.hardPt(maxPossible);
+    }
 
     gen->second->generate(candidate);
     Energy nextScale = evolutionOrdering()->evolutionScale(gen->second->lastSplitting(),*(gen->second->splittingKernel()));
 
-    if ( isMCatNLOSEvent ) {
+    if ( isMCatNLOSEvent && nextScale > gen->second->splittingKinematics()->IRCutoff() ) {
       if ( eventRecord().incoming().first->coloured() ||
 	   eventRecord().incoming().second->coloured() ) {
 	assert(theShowerApproximation);
@@ -407,7 +410,7 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
 	    candidate.hardPt(nextHardScale);
 	    gen->second->generate(candidate);
 	    nextScale = evolutionOrdering()->evolutionScale(gen->second->lastSplitting(),*(gen->second->splittingKernel()));
-	    if ( nextScale == ZERO || candidate.stoppedEvolving() )
+	    if ( nextScale <= gen->second->splittingKinematics()->IRCutoff() || candidate.stoppedEvolving() )
 	      break;
 	  }
 	}
