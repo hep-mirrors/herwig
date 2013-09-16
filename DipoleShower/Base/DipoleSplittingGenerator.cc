@@ -99,19 +99,13 @@ void DipoleSplittingGenerator::fixParameters(const DipoleSplittingInfo& sp) {
   generatedSplitting.scale(sp.scale());
   parameters[3] = sp.scale()/generator()->maximumCMEnergy();
 
-  Energy maxPossible = 
-    generatedSplitting.splittingKinematics()->ptMax(sp.scale(),
+  generatedSplitting.hardPt(sp.hardPt());
+
+  parameters[0] = splittingKinematics()->ptToRandom(generatedSplitting.hardPt(),
+						    sp.scale(),
 						    sp.emitterX(), sp.spectatorX(),
 						    generatedSplitting.index(),
 						    *splittingKernel());
-
-  if ( maxPossible >= sp.hardPt() )
-    generatedSplitting.hardPt(sp.hardPt());
-  else
-    generatedSplitting.hardPt(maxPossible);
-
-  parameters[0] = splittingKinematics()->ptToRandom(generatedSplitting.hardPt(),
-						    sp.scale(),generatedSplitting.index());
 
   size_t shift = 4;
 
@@ -263,7 +257,8 @@ bool DipoleSplittingGenerator::overestimate(const vector<double>& point) {
   assert(haveOverestimate());
 
   if ( ! generatedSplitting.splittingKinematics()->generateSplitting(point[0],point[1],point[2],
-								     generatedSplitting) )
+								     generatedSplitting,
+								     *splittingKernel()) )
     return 0.;
 
   generatedSplitting.splittingKinematics()->prepareSplitting(generatedSplitting);
@@ -337,7 +332,7 @@ double DipoleSplittingGenerator::evaluate(const vector<double>& point) {
 
   }
 
-  if ( ! split.splittingKinematics()->generateSplitting(point[0],point[1],point[2],split) ) {
+  if ( ! split.splittingKinematics()->generateSplitting(point[0],point[1],point[2],split,*splittingKernel()) ) {
     split.lastValue(0.);
     return 0.;
   }

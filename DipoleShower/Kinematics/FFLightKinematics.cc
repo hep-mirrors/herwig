@@ -36,26 +36,6 @@ IBPtr FFLightKinematics::fullclone() const {
   return new_ptr(*this);
 }
 
-pair<double,double> FFLightKinematics::kappaSupport(const DipoleSplittingInfo&) const {
-  return make_pair(0.0,1.0);
-}
-
-pair<double,double> FFLightKinematics::xiSupport(const DipoleSplittingInfo& split) const {
-  double c = sqrt(1.-4.*sqr(IRCutoff()/generator()->maximumCMEnergy()));
-  if ( split.index().emitterData()->id() == ParticleID::g ) {
-    if ( split.emissionData()->id() != ParticleID::g )
-      return make_pair(0.5*(1.-c),0.5*(1.+c));
-    double b = log((1.+c)/(1.-c));
-    return make_pair(-b,b);
-  }
-  return make_pair(-log(0.5*(1.+c)),-log(0.5*(1.-c)));
-}
-
-Energy FFLightKinematics::dipoleScale(const Lorentz5Momentum& pEmitter,
-				      const Lorentz5Momentum& pSpectator) const {
-  return sqrt(2.*(pEmitter*pSpectator));
-}
-
 Energy FFLightKinematics::ptMax(Energy dScale, 
 				double, double,
 				const DipoleIndex&,
@@ -65,7 +45,8 @@ Energy FFLightKinematics::ptMax(Energy dScale,
 
 Energy FFLightKinematics::QMax(Energy dScale, 
 			       double, double,
-			       const DipoleIndex&) const {
+			       const DipoleIndex&,
+			       const DipoleSplittingKernel&) const {
   return dScale;
 }
 
@@ -79,52 +60,55 @@ Energy FFLightKinematics::QFromPt(Energy scale, const DipoleSplittingInfo& split
   return scale/sqrt(z*(1.-z));
 }
 
-double FFLightKinematics::ptToRandom(Energy pt, Energy,
-				     const DipoleIndex&) const {
-  return log(pt/IRCutoff()) / log(0.5 * generator()->maximumCMEnergy()/IRCutoff());
+pair<double,double> FFLightKinematics::zBoundaries(Energy pt,
+						   const DipoleSplittingInfo& dInfo,
+						   const DipoleSplittingKernel&) const {
+  double s = sqrt(1.-sqr(pt/dInfo.hardPt()));
+  return make_pair(0.5*(1.-s),0.5*(1.+s));
 }
 
 bool FFLightKinematics::generateSplitting(double kappa, double xi, double rphi,
-					  DipoleSplittingInfo& info) {
+					  DipoleSplittingInfo& info,
+					  const DipoleSplittingKernel& split) {
 
-  Energy pt = IRCutoff() * pow(0.5 * generator()->maximumCMEnergy()/IRCutoff(),kappa);
+  double weight = 1.0;
 
-  if ( pt > info.hardPt() ) {
+  Energy pt = generatePt(kappa,info.scale(),
+			 info.emitterX(),info.spectatorX(),
+			 info.index(),split,
+			 weight);
+
+  if ( pt < IRCutoff() || pt > info.hardPt() ) {
     jacobian(0.0);
     return false;
   }
 
-  double z;
-  double mapZJacobian;
+  double z = 0.0;
 
   if ( info.index().emitterData()->id() == ParticleID::g ) {
     if ( info.emissionData()->id() != ParticleID::g ) {
-      z = xi;
-      mapZJacobian = 1.;
+      z = generateZ(xi,pt,FlatZ,
+		    info,split,weight);
     } else {
-      z = exp(xi)/(1.+exp(xi));
-      mapZJacobian = z*(1.-z);
+      z = generateZ(xi,pt,OneOverZOneMinusZ,
+		    info,split,weight);
     }
   } else {
-    z = 1.-exp(-xi);
-    mapZJacobian = 1.-z;
+    z = generateZ(xi,pt,OneOverOneMinusZ,
+		  info,split,weight);
   }
 
-  double s = z*(1.-z);
-  double zp = 0.5*(1.+sqrt(1.-sqr(pt/info.hardPt())));
-  double zm = 0.5*(1.-sqrt(1.-sqr(pt/info.hardPt())));
+  double y = sqr(pt/info.scale())/(z*(1.-z));
 
-  if ( pt < IRCutoff() || 
-       pt > info.hardPt() ||
-       z > zp || z < zm ) {
+  if ( z < 0.0 || z > 1.0 ||
+       y < 0.0 || y > 1.0 ) {
     jacobian(0.0);
     return false;
   }
 
   double phi = 2.*Constants::pi*rphi;
 
-  jacobian( 2. * mapZJacobian * (1. - sqr(pt) / (s * sqr(info.scale())) ) * 
-	    log(0.5 * generator()->maximumCMEnergy()/IRCutoff()) );
+  jacobian(weight*(1.-y));
 
   lastPt(pt);
   lastZ(z);
@@ -136,56 +120,6 @@ bool FFLightKinematics::generateSplitting(double kappa, double xi, double rphi,
   return true;
 
 }
-
-InvEnergy2 FFLightKinematics::setKinematics(DipoleSplittingInfo& split) const {
-
-  Lorentz5Momentum emitter = split.splitEmitter()->momentum();
-  Lorentz5Momentum emission = split.emission()->momentum();
-  Lorentz5Momentum spectator = split.splitSpectator()->momentum();
-
-  split.splittingKinematics(const_cast<FFLightKinematics*>(this));
-
-  Energy2 scale = 2.*(emission*emitter + emission*spectator + emitter*spectator);
-  split.scale(sqrt(scale));
-
-  double y = 2.*emission*emitter / scale;
-  double z = emitter*spectator / (emitter*spectator + emission*spectator);
-
-  split.lastPt(split.scale() * sqrt(y*z*(1.-z)));
-  split.lastZ(z);
-
-  split.hardPt(split.lastPt());
-
-  if ( split.hardPt() > IRCutoff() ) {
-    split.continuesEvolving();
-  } else {
-    split.didStopEvolving();
-  }
-  
-  return 1./(2.*(emitter*emission));
-
-}
-
-double FFLightKinematics::
-jacobianTimesPropagator(const DipoleSplittingInfo& split,
-			Energy scale) const {
-
-  Energy pt = split.lastPt();
-  double z = split.lastZ();
-  double s = z*(1.-z);
-  double zp = 0.5*(1.+sqrt(1.-sqr(pt/split.hardPt())));
-  double zm = 0.5*(1.-sqrt(1.-sqr(pt/split.hardPt())));
-
-  if ( pt < IRCutoff() || 
-       pt > split.hardPt() ||
-       z > zp || z < zm ) {
-    return 0.;
-  }
-
-  return (2.*scale/pt)*(1.-sqr(pt)/(s*sqr(scale)));
-  
-}
-
 
 void FFLightKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
 					   const Lorentz5Momentum& pSpectator,

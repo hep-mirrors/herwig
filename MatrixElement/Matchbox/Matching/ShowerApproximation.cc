@@ -73,6 +73,12 @@ bool ShowerApproximation::isAboveCutoff() const {
 }
 
 Energy ShowerApproximation::hardScale() const {
+  if ( !bornCXComb()->mePartonData()[0]->coloured() &&
+       !bornCXComb()->mePartonData()[1]->coloured() ) {
+    Energy maxPt = (bornCXComb()->meMomenta()[0] + bornCXComb()->meMomenta()[1]).m();
+    maxPt *= hardScaleFactor();
+    return maxPt;
+  }
   Energy maxPt = generator()->maximumCMEnergy();
   vector<Lorentz5Momentum>::const_iterator p = 
     bornCXComb()->meMomenta().begin() + 2;
@@ -88,6 +94,9 @@ Energy ShowerApproximation::hardScale() const {
 }
 
 double ShowerApproximation::hardScaleProfile(Energy hard, Energy soft) const {
+  if ( !bornCXComb()->mePartonData()[0]->coloured() &&
+       !bornCXComb()->mePartonData()[1]->coloured() )
+    return 1;
   double x = soft/hard;
   if ( theProfileScales ) {
     if ( x > 1. ) {

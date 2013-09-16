@@ -59,13 +59,17 @@ public:
    * variable random number is to be sampled; the lower
    * cuoff is assumed to correspond to the infrared cutoff.
    */
-  virtual pair<double,double> kappaSupport(const DipoleSplittingInfo& dIndex) const = 0;
+  virtual pair<double,double> kappaSupport(const DipoleSplittingInfo&) const {
+    return make_pair(0.0,1.0);
+  }
 
   /**
    * Return the boundaries in between the momentum
    * fraction random number is to be sampled.
    */
-  virtual pair<double,double> xiSupport(const DipoleSplittingInfo& dIndex) const = 0;
+  virtual pair<double,double> xiSupport(const DipoleSplittingInfo&) const {
+    return make_pair(0.0,1.0);
+  }
 
   /**
    * Return the dipole scale associated to the
@@ -76,7 +80,9 @@ public:
    * final/initial dipoles.
    */
   virtual Energy dipoleScale(const Lorentz5Momentum& pEmitter,
-			     const Lorentz5Momentum& pSpectator) const = 0;
+			     const Lorentz5Momentum& pSpectator) const {
+    return sqrt(2.*pEmitter*pSpectator);
+  }
 
   /**
    * Return the maximum pt for the given dipole scale.
@@ -91,7 +97,8 @@ public:
    */
   virtual Energy QMax(Energy dScale, 
 		      double emX, double specX,
-		      const DipoleIndex& dIndex) const = 0;
+		      const DipoleIndex& dIndex,
+		      const DipoleSplittingKernel& split) const = 0;
 
   /**
    * Return the pt given a virtuality.
@@ -115,11 +122,49 @@ public:
   double xMin() const { return theXMin; }
 
   /**
+   * Generate a pt
+   */
+  Energy generatePt(double r, Energy dScale,
+		    double emX, double specX,
+		    const DipoleIndex& dIndex,
+		    const DipoleSplittingKernel& split,
+		    double& weight) const;
+
+  /**
    * Return the random number associated to
    * the given pt.
    */
   virtual double ptToRandom(Energy pt, Energy dScale,
-			    const DipoleIndex& dIndex) const = 0;
+			    double emX, double specX,
+			    const DipoleIndex& dIndex,
+			    const DipoleSplittingKernel& split) const;
+
+  /**
+   * Return the boundaries on the momentum fraction
+   */
+  virtual pair<double,double> zBoundaries(Energy pt,
+					  const DipoleSplittingInfo& dInfo,
+					  const DipoleSplittingKernel& split) const = 0;
+
+  /**
+   * Enumerate the variants of sampling z
+   */
+  enum ZSamplingOptions {
+
+    FlatZ = 0,
+    OneOverZ,
+    OneOverOneMinusZ,
+    OneOverZOneMinusZ
+
+  };
+
+  /**
+   * Generate a z value flat
+   */
+  double generateZ(double r, Energy pt, int sampling,
+		   const DipoleSplittingInfo& dInfo,
+		   const DipoleSplittingKernel& split,
+		   double& weight) const;
 
   /**
    * Generate splitting variables given three random numbers
@@ -127,22 +172,8 @@ public:
    * Return true on success.
    */
   virtual bool generateSplitting(double kappa, double xi, double phi,
-				 DipoleSplittingInfo& dIndex) = 0;
-
-  /**
-   * For the splitting products present in the given dipole splitting
-   * info object calculate the kinematics parameters and return the
-   * propagator factor.
-   */
-  virtual InvEnergy2 setKinematics(DipoleSplittingInfo&) const = 0;
-
-  /**
-   * For the splitting parameters given in the dipole splitting info
-   * object, calculate the phasespace Jacobian times the propagator
-   * factor.
-   */
-  virtual double jacobianTimesPropagator(const DipoleSplittingInfo&,
-					 Energy) const = 0;
+				 DipoleSplittingInfo& dIndex,
+				 const DipoleSplittingKernel&) = 0;
 
   /**
    * Get the splitting phasespace weight associated to

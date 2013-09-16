@@ -46,30 +46,6 @@ public:
 public:
 
   /**
-   * Return the boundaries in between the evolution
-   * variable random number is to be sampled; the lower
-   * cuoff is assumed to correspond to the infrared cutoff.
-   */
-  virtual pair<double,double> kappaSupport(const DipoleSplittingInfo& dIndex) const;
-
-  /**
-   * Return the boundaries in between the momentum
-   * fraction random number is to be sampled.
-   */
-  virtual pair<double,double> xiSupport(const DipoleSplittingInfo& dIndex) const;
-
-  /**
-   * Return the dipole scale associated to the
-   * given pair of emitter and spectator. This
-   * should be the invariant mass or absolute value
-   * final/final or initial/initial and the absolute
-   * value of the momentum transfer for intial/final or
-   * final/initial dipoles.
-   */
-  virtual Energy dipoleScale(const Lorentz5Momentum& pEmitter,
-			     const Lorentz5Momentum& pSpectator) const;
-
-  /**
    * Return the maximum pt for the given dipole scale.
    */
   virtual Energy ptMax(Energy dScale, 
@@ -82,7 +58,8 @@ public:
    */
   virtual Energy QMax(Energy dScale, 
 		      double emX, double specX,
-		      const DipoleIndex& dIndex) const;
+		      const DipoleIndex& dIndex,
+		      const DipoleSplittingKernel&) const;
 
   /**
    * Return the pt given a virtuality.
@@ -95,11 +72,11 @@ public:
   virtual Energy QFromPt(Energy scale, const DipoleSplittingInfo&) const;
 
   /**
-   * Return the random number associated to
-   * the given pt.
+   * Return the boundaries on the momentum fraction
    */
-  virtual double ptToRandom(Energy pt, Energy dScale,
-			    const DipoleIndex& dIndex) const;
+  virtual pair<double,double> zBoundaries(Energy pt,
+					  const DipoleSplittingInfo& dInfo,
+					  const DipoleSplittingKernel& split) const;
 
   /**
    * Generate splitting variables given three random numbers
@@ -107,22 +84,8 @@ public:
    * Return true on success.
    */
   virtual bool generateSplitting(double kappa, double xi, double phi,
-				 DipoleSplittingInfo& dIndex);
-
-  /**
-   * For the splitting products present in the given dipole splitting
-   * info object calculate the kinematics parameters and return the
-   * propagator factor.
-   */
-  virtual InvEnergy2 setKinematics(DipoleSplittingInfo&) const;
-
-  /**
-   * For the splitting parameters given in the dipole splitting info
-   * object, calculate the phasespace Jacobian times the propagator
-   * factor.
-   */
-  virtual double jacobianTimesPropagator(const DipoleSplittingInfo&,
-					 Energy) const;
+				 DipoleSplittingInfo& dIndex,
+				 const DipoleSplittingKernel&);
 
   /**
    * Generate the full kinematics given emitter and

@@ -37,26 +37,6 @@ IBPtr FILightKinematics::fullclone() const {
   return new_ptr(*this);
 }
 
-pair<double,double> FILightKinematics::kappaSupport(const DipoleSplittingInfo&) const {
-  return make_pair(0.0,1.0);
-}
-
-pair<double,double> FILightKinematics::xiSupport(const DipoleSplittingInfo& split) const {
-  double c = sqrt(1.-4.*sqr(IRCutoff()/generator()->maximumCMEnergy()));
-  if ( split.index().emitterData()->id() == ParticleID::g ) {
-    if ( split.emissionData()->id() != ParticleID::g )
-      return make_pair(0.5*(1.-c),0.5*(1.+c));
-    double b = log((1.+c)/(1.-c));
-    return make_pair(-b,b);
-  }
-  return make_pair(-log(0.5*(1.+c)),-log(0.5*(1.-c)));
-}
-
-Energy FILightKinematics::dipoleScale(const Lorentz5Momentum& pEmitter,
-				      const Lorentz5Momentum& pSpectator) const {
-  return sqrt(2.*(pEmitter*pSpectator));
-}
-
 Energy FILightKinematics::ptMax(Energy dScale, 
 				double, double specX,
 				const DipoleIndex&,
@@ -66,7 +46,8 @@ Energy FILightKinematics::ptMax(Energy dScale,
 
 Energy FILightKinematics::QMax(Energy dScale, 
 			       double, double specX,
-			       const DipoleIndex&) const {
+			       const DipoleIndex&,
+			       const DipoleSplittingKernel&) const {
   return dScale * sqrt((1.-specX)/specX);
 }
 
@@ -80,63 +61,60 @@ Energy FILightKinematics::QFromPt(Energy scale, const DipoleSplittingInfo& split
   return scale/sqrt(z*(1.-z));
 }
 
-
-double FILightKinematics::ptToRandom(Energy pt, Energy,
-				     const DipoleIndex&) const {
-  return log(pt/IRCutoff()) / log(0.5 * generator()->maximumCMEnergy()/IRCutoff());
+pair<double,double> FILightKinematics::zBoundaries(Energy pt,
+						   const DipoleSplittingInfo& dInfo,
+						   const DipoleSplittingKernel&) const {
+  double s = sqrt(1.-sqr(pt/dInfo.hardPt()));
+  return make_pair(0.5*(1.-s),0.5*(1.+s));
 }
 
 bool FILightKinematics::generateSplitting(double kappa, double xi, double rphi,
-					  DipoleSplittingInfo& info) {
+					  DipoleSplittingInfo& info,
+					  const DipoleSplittingKernel& split) {
 
   if ( info.spectatorX() < xMin() ) {
     jacobian(0.0);
     return false;
   }
 
-  Energy pt = IRCutoff() * pow(0.5 * generator()->maximumCMEnergy()/IRCutoff(),kappa);
+  double weight = 1.0;
 
-  if ( pt > info.hardPt() ) {
+  Energy pt = generatePt(kappa,info.scale(),
+			 info.emitterX(),info.spectatorX(),
+			 info.index(),split,
+			 weight);
+
+  if ( pt < IRCutoff() || pt > info.hardPt() ) {
     jacobian(0.0);
     return false;
   }
 
-  double z;
-  double mapZJacobian;
+  double z = 0.0;
 
   if ( info.index().emitterData()->id() == ParticleID::g ) {
     if ( info.emissionData()->id() != ParticleID::g ) {
-      z = xi;
-      mapZJacobian = 1.;
+      z = generateZ(xi,pt,FlatZ,
+		    info,split,weight);
     } else {
-      z = exp(xi)/(1.+exp(xi));
-      mapZJacobian = z*(1.-z);
+      z = generateZ(xi,pt,OneOverZOneMinusZ,
+		    info,split,weight);
     }
   } else {
-    z = 1.-exp(-xi);
-    mapZJacobian = 1.-z;
+    z = generateZ(xi,pt,OneOverOneMinusZ,
+		  info,split,weight);
   }
 
-  double s = z*(1.-z);
+  double x = 1./(1.+sqr(pt/info.scale())/(z*(1.-z)));
 
-  double xs = info.spectatorX();
-
-  double x = 1. / ( 1. + sqr(pt/info.scale()) / s );
-
-  double zp = 0.5*(1.+sqrt(1.-sqr(pt/info.hardPt())));
-  double zm = 0.5*(1.-sqrt(1.-sqr(pt/info.hardPt())));
-
-  if ( pt < IRCutoff() || 
-       pt > info.hardPt() ||
-       z > zp || z < zm ||
-       x < xs ) {
+  if ( z < 0.0 || z > 1.0 ||
+       x < info.spectatorX() || x > 1.0 ) {
     jacobian(0.0);
     return false;
   }
 
   double phi = 2.*Constants::pi*rphi;
 
-  jacobian( 2. * mapZJacobian * log(0.5 * generator()->maximumCMEnergy()/IRCutoff()));
+  jacobian(weight);
 
   lastPt(pt);
   lastZ(z);
@@ -150,66 +128,26 @@ bool FILightKinematics::generateSplitting(double kappa, double xi, double rphi,
 
 }
 
-InvEnergy2 FILightKinematics::setKinematics(DipoleSplittingInfo& split) const {
-
-  Lorentz5Momentum emitter = split.splitEmitter()->momentum();
-  Lorentz5Momentum emission = split.emission()->momentum();
-  Lorentz5Momentum spectator = split.splitSpectator()->momentum();
-
-  split.splittingKinematics(const_cast<FILightKinematics*>(this));
-
-  Energy2 scale = 2.*(- emission*emitter + emission*spectator + emitter*spectator);
-  split.scale(sqrt(scale));
-
-  double x = 
-    scale / (2.*(emitter*spectator + emission*spectator));
-  double z = emitter*spectator / (emitter*spectator + emission*spectator);
-
-  split.lastPt(split.scale() * sqrt(z*(1.-z)*(1.-x)/x));
-  split.lastZ(z);
-
-  split.hardPt(split.lastPt());
-
-  if ( split.hardPt() > IRCutoff() ) {
-    split.continuesEvolving();
-  } else {
-    split.didStopEvolving();
-  }
-
-  return 1./(2.*x*(emitter*emission));
-
-}
-
-double FILightKinematics::
-jacobianTimesPropagator(const DipoleSplittingInfo&,
-			Energy) const {
-  assert(false && "implementation missing");
-  return 0.;
-}
-
-
 void FILightKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
 					   const Lorentz5Momentum& pSpectator,
 					   const DipoleSplittingInfo& dInfo) {
 
   Energy pt = dInfo.lastPt();
   double z = dInfo.lastZ();
+  double x = 1./(1.+sqr(pt/dInfo.scale())/(z*(1.-z)));
 
   Lorentz5Momentum kt =
     getKt (pSpectator, pEmitter, pt, dInfo.lastPhi(),true);
 
-  double ratio = sqr(pt/(-(pEmitter-pSpectator).m()));
-  double xInv = (1.+ratio/(z*(1.-z)));
-
-  Lorentz5Momentum em = z*pEmitter + (ratio/z)*pSpectator + kt;
+  Lorentz5Momentum em = z*pEmitter + (1.-z)*((1.-x)/x)*pSpectator + kt;
   em.setMass(0.*GeV);
   em.rescaleEnergy();
 
-  Lorentz5Momentum emm = (1.-z)*pEmitter + (ratio/(1.-z))*pSpectator - kt;
+  Lorentz5Momentum emm = (1.-z)*pEmitter + z*((1.-x)/x)*pSpectator - kt;
   emm.setMass(0.*GeV);
   emm.rescaleEnergy();
 
-  Lorentz5Momentum spe = xInv*pSpectator;
+  Lorentz5Momentum spe = (1./x)*pSpectator;
   spe.setMass(0.*GeV);
   spe.rescaleEnergy();
 
