@@ -1,6 +1,7 @@
 from string import Template
 from os import path
 import sys,itertools,cmath
+import re
 
 """
 Helper functions for the Herwig++ Feynrules converter
@@ -272,7 +273,8 @@ def typemap(s):
 def add_brackets(expr, syms):
     result = expr
     for s in syms:
-        result = result.replace(s,s+'()')
+        pattern = r'({})(\W|$)'.format(s)
+        result = re.sub(pattern, r'\1()\2', result)
     return result
 
 
