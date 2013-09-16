@@ -377,23 +377,39 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
     candidate.scale(dScale);
     candidate.continuesEvolving();
     Energy hardScale = evolutionOrdering()->maxPt(startScale,candidate,*(gen->second->splittingKernel()));
-    candidate.hardPt(hardScale);
+    Energy maxPossible = 
+      gen->second->splittingKinematics()->ptMax(candidate.scale(),
+						candidate.emitterX(), candidate.spectatorX(),
+						candidate.index(),
+						*gen->second->splittingKernel());
+
+    if ( maxPossible <= gen->second->splittingKinematics()->IRCutoff() ) {
+      continue;
+    }
+
+    if ( maxPossible >= hardScale )
+      candidate.hardPt(hardScale);
+    else
+      candidate.hardPt(maxPossible);
 
     gen->second->generate(candidate);
     Energy nextScale = evolutionOrdering()->evolutionScale(gen->second->lastSplitting(),*(gen->second->splittingKernel()));
 
     if ( isMCatNLOSEvent ) {
-      assert(theShowerApproximation);
-      if ( theShowerApproximation->restrictPhasespace() &&
-	   theShowerApproximation->profileScales() ) {
-	while ( UseRandom::rnd() > theShowerApproximation->hardScaleProfile(hardScale,nextScale) ) {
-	  candidate.continuesEvolving();
-	  Energy nextHardScale = evolutionOrdering()->maxPt(nextScale,candidate,*(gen->second->splittingKernel()));
-	  candidate.hardPt(nextHardScale);
-	  gen->second->generate(candidate);
-	  nextScale = evolutionOrdering()->evolutionScale(gen->second->lastSplitting(),*(gen->second->splittingKernel()));
-	  if ( nextScale == ZERO || candidate.stoppedEvolving() )
-	    break;
+      if ( eventRecord().incoming().first->coloured() ||
+	   eventRecord().incoming().second->coloured() ) {
+	assert(theShowerApproximation);
+	if ( theShowerApproximation->restrictPhasespace() &&
+	     theShowerApproximation->profileScales() ) {
+	  while ( UseRandom::rnd() > theShowerApproximation->hardScaleProfile(hardScale,nextScale) ) {
+	    candidate.continuesEvolving();
+	    Energy nextHardScale = evolutionOrdering()->maxPt(nextScale,candidate,*(gen->second->splittingKernel()));
+	    candidate.hardPt(nextHardScale);
+	    gen->second->generate(candidate);
+	    nextScale = evolutionOrdering()->evolutionScale(gen->second->lastSplitting(),*(gen->second->splittingKernel()));
+	    if ( nextScale == ZERO || candidate.stoppedEvolving() )
+	      break;
+	  }
 	}
       }
     }

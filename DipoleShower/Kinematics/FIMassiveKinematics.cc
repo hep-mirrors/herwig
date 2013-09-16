@@ -79,7 +79,8 @@ Energy FIMassiveKinematics::ptMax(Energy dScale,
 // what is this? in FF it is given by y+*dScale = sqrt( 2qi*q / bar )->max
 Energy FIMassiveKinematics::QMax(Energy dScale, 
 			       double, double specX,
-			       const DipoleIndex&) const {
+			       const DipoleIndex&,
+				const DipoleSplittingKernel&) const {
   assert(false && "implementation missing");
   cout << "FIMassiveKinematics::QMax called.\n" << flush;
   // this is sqrt( 2qi*q ) -> max;
@@ -98,12 +99,15 @@ Energy FIMassiveKinematics::QFromPt(Energy, const DipoleSplittingInfo&) const {
 
 
 double FIMassiveKinematics::ptToRandom(Energy pt, Energy,
-				     const DipoleIndex&) const {
+				       double,double,
+				       const DipoleIndex&,
+				       const DipoleSplittingKernel&) const {
   return log(pt/IRCutoff()) / log(0.5 * generator()->maximumCMEnergy()/IRCutoff());
 }
 
 bool FIMassiveKinematics::generateSplitting(double kappa, double xi, double rphi,
-					  DipoleSplittingInfo& info) {
+					  DipoleSplittingInfo& info,
+					    const DipoleSplittingKernel&) {
 
   if ( info.spectatorX() < xMin() ) {
     jacobian(0.0);
@@ -200,51 +204,6 @@ bool FIMassiveKinematics::generateSplitting(double kappa, double xi, double rphi
 
   return true;
 
-}
-
-InvEnergy2 FIMassiveKinematics::setKinematics(DipoleSplittingInfo& split) const {
-
-  Energy2 mi2 = sqr(split.emitterData()->mass());
-  Energy2 m2  = sqr(split.emissionData()->mass());
-  Energy2 Mi2 = split.emitterData()->id() + split.emissionData()->id() == 0 ?
-    0.*GeV2 : mi2;
-
-  Lorentz5Momentum emitter = split.splitEmitter()->momentum();
-  Lorentz5Momentum emission = split.emission()->momentum();
-  Lorentz5Momentum spectator = split.splitSpectator()->momentum();
-
-  split.splittingKinematics(const_cast<FIMassiveKinematics*>(this));
-
-  // sbar is the relevant scale
-  // Energy2 scale = 2.*(- emission*emitter + emission*spectator + emitter*spectator);
-  Energy2 scale = Mi2 - (emitter+emission-spectator).m2();
-  split.scale(sqrt(scale));
-
-  double x = 
-    scale / (2.*(emitter*spectator + emission*spectator));
-  double z = emitter*spectator / (emitter*spectator + emission*spectator);
-
-  split.lastPt( sqrt( z*(1.-z)*(1.-x)/x*scale -
-				     ((1.-z)*mi2+z*m2-z*(1.-z)*Mi2) ) );
-  split.lastZ(z);
-
-  split.hardPt(split.lastPt());
-
-  if ( split.hardPt() > IRCutoff() ) {
-    split.continuesEvolving();
-  } else {
-    split.didStopEvolving();
-  }
-
-  return 1./(2.*x*((emitter+emission).m2()-Mi2));
-
-}
-
-double FIMassiveKinematics::
-jacobianTimesPropagator(const DipoleSplittingInfo&,
-			Energy) const {
-  assert(false && "implementation missing");
-  return 0.;
 }
 
 void FIMassiveKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
