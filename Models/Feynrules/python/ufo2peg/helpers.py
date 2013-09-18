@@ -493,9 +493,7 @@ def tensorCouplings(vertex,coupling,prefactors,L,lorentztag,pos) :
         signs = [1.,-1.,1.,-1.,1.,-1.,1.,-1.,1.,-1.,1.,-1.,
                  1.,-1.,1.,-1.,-1.,1.,1.,-1.,1.,-1.,-1.,1.,1.,-1.,1.,-1.,-1.,1.]
         l = lambda c: len(pos[c])
-        if l(8)==3 :
-            pass
-        else :
+        if l(8)!=3 :
             ordering = VVVordering(vertex)
     # unknown
     else :

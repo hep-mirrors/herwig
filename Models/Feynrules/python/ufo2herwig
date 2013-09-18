@@ -427,7 +427,7 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
         couplingptrs[0] += ' p1'
         couplingptrs[1] += ' p2'
         couplingptrs[2] += ' p3'
-    elif lorentztag == 'VVVT' :
+    elif lorentztag == 'VVVT' and ordering != '':
         couplingptrs[0] += ' p1'
         couplingptrs[1] += ' p2'
         couplingptrs[2] += ' p3'
