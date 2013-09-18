@@ -181,8 +181,10 @@ def colorfactor(vertex,L,pos):
         if match(label): return ('1',)
 
     elif l(6) == l(-6) == 2 and L==4:
-        sys.stderr.write('Warning: skipping colour structure 6 6 6~ 6~ in %s.\n'
-                         % vertex)
+        sys.stderr.write(
+            'Warning: Unknown colour structure 6 6 6~ 6~ ( {ps} ) in {name}.\n'
+            .format(name=vertex.name, ps=' '.join(map(str,vertex.particles)))
+        )
         raise SkipThisVertex()
 
     elif l(8) == l(3) == l(-3) == 1 and l(1) == L-3:
@@ -254,8 +256,11 @@ def colorfactor(vertex,L,pos):
         label = ('f(2,1,3)',)
         if match(label): return ('complex(0,1)',)
 
-    sys.stderr.write("Warning: Unknown colour structure {v.color} in {v.name}.\n"
-                     .format(v=vertex))
+    sys.stderr.write(
+        "Warning: Unknown colour structure {color} ( {ps} ) in {name}.\n"
+        .format(color = ' '.join(vertex.color), name = vertex.name,
+                ps = ' '.join(map(str,vertex.particles)))
+    )
     raise SkipThisVertex()
 
 
@@ -549,8 +554,11 @@ def EWVVVVCouplings(vertex,L) :
                 factors.append(eval(reminder, {'cmath':cmath} ))
 
     if len(factors) != 3:
-        sys.stderr.write('Warning: unsupported {} Lorentz structure in {}:\n{}\n'
-                         .format(unique_lorentztag(vertex), vertex.name, L.structure))
+        sys.stderr.write(
+            'Warning: unsupported {tag} ( {ps} ) Lorentz structure in {name}:\n{lstr}\n'
+            .format(tag=unique_lorentztag(vertex), name=vertex.name, 
+                    lstr=L.structure, ps=' '.join(map(str,vertex.particles)))
+        )
         raise SkipThisVertex()
 
     factor=0.
@@ -565,8 +573,11 @@ def EWVVVVCouplings(vertex,L) :
         order=[0,3,1,2]
         factor = factors[2]/2.
     else:
-        sys.stderr.write('Warning: unsupported {} Lorentz structure in {}:\n{}\n'
-                         .format(unique_lorentztag(vertex), vertex.name, L.structure))
+        sys.stderr.write(
+            'Warning: unsupported {tag} ( {ps} ) Lorentz structure in {name}:\n{lstr}\n'
+            .format(tag=unique_lorentztag(vertex), name=vertex.name, 
+                    lstr=L.structure, ps=' '.join(map(str,vertex.particles)))
+        )
         raise SkipThisVertex()
 
 

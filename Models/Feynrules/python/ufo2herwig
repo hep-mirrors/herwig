@@ -28,8 +28,18 @@ parser.add_argument(
     default="FRModel", 
     help="set custom nametag for the model"
 )
+parser.add_argument(
+    '--ignore-skipped', 
+    action="store_true", 
+    help="ignore skipped vertices and produce output anyway"
+)
+
+vertex_skipped = False
 
 args = parser.parse_args()
+
+def should_print():
+    return not vertex_skipped or args.ignore_skipped
 
 modeldir = args.ufodir.rstrip('/')
 modelpath, module = os.path.split(modeldir)
@@ -45,11 +55,6 @@ FR = __import__(module)
 modelname = args.name
 libname = modelname + '.so'
 
-# copy the Makefile-FR to current directory,
-# replace with the modelname for compilation
-with open(os.path.join(modulepath,'Makefile-FR'),'r') as orig:
-    with open('Makefile','w') as dest:
-        dest.write(orig.read().replace("FeynrulesModel.so", libname))
 
 
 # define arrays and variables     
@@ -191,13 +196,8 @@ parmtextsubs = { 'parmgetters' : '\n'.join(parmgetters),
                  'ModelName': modelname
                  }
 
-print '-'*60
+print
 
-# write the files from templates according to the above subs
-MODEL_H  = getTemplate('Model.h')
-MODEL_CC = getTemplate('Model.cc')
-writeFile( '%s.h' % modelname,      MODEL_H.substitute(parmtextsubs) )
-writeFile( '%s.cc' % modelname,     MODEL_CC.substitute(parmtextsubs) )
 
 
 ##################################################
@@ -212,7 +212,7 @@ VERTEXHEADER = """\
 #include "ThePEG/Helicity/Vertex/{spindirectory}/{lorentztag}Vertex.h"
 """
 
-def produce_vertex_file(subs):
+def write_vertex_file(subs):
     newname = '%s_Vertices_%03d.cc' % (subs['ModelName'],subs['vertexnumber'])
     writeFile( newname, VERTEX.substitute(subs) )
 
@@ -275,10 +275,12 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
     try:
         lf = lfactors[lorentztag]
     except KeyError:
-        msg = 'Warning: Lorentz structure {} ' \
-              'is not supported in {}.\n'.format(lorentztag, vertex.name)
+        msg = 'Warning: Lorentz structure {tag} ( {ps} ) in {name} ' \
+              'is not supported.\n'.format(tag=lorentztag, name=vertex.name, 
+                                           ps=' '.join(map(str,vertex.particles)))
         sys.stderr.write(msg)
         vertex.herwig_skip_vertex = True
+        vertex_skipped = True
         continue
 
     ### Particle ids
@@ -293,6 +295,7 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
         cf = colorfactor(vertex,L,pos)
     except SkipThisVertex:
         vertex.herwig_skip_vertex = True
+        vertex_skipped = True
         continue
     
     ### classname
@@ -370,6 +373,7 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
             #print '---------------'
     except SkipThisVertex:
         vertex.herwig_skip_vertex = True
+        vertex_skipped = True
         continue
 
 
@@ -459,20 +463,34 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
 
     WRAP = 25
     if vertexnumber % WRAP == 0:
-        produce_vertex_file({'classname':classname,
-                             'vertexnumber' : vertexnumber//WRAP,
-                             'vertexclasses' : '\n'.join(vertexclasses),
-                             'vertexheaders' : ''.join(vertexheaders),
-                             'ModelName' : modelname})
+        write_vertex_file({'classname':classname,
+                           'vertexnumber' : vertexnumber//WRAP,
+                           'vertexclasses' : '\n'.join(vertexclasses),
+                           'vertexheaders' : ''.join(vertexheaders),
+                           'ModelName' : modelname})
         vertexclasses = []
         vertexheaders = set()
+
+
+if not should_print():
+    sys.stderr.write(
+"""
+Error: The conversion was unsuccessful, some vertices could not be
+       generated. If you think the missing vertices are not important 
+       and want to go ahead anyway, use --ignore-skipped. 
+       Herwig++ may not give correct results, though.
+
+"""
+    )
+    
+    sys.exit(1)
         
 if vertexclasses:
-    produce_vertex_file({'classname':classname,
-                         'vertexnumber' : vertexnumber//WRAP + 1,
-                         'vertexclasses' : '\n'.join(vertexclasses),
-                         'vertexheaders' : ''.join(vertexheaders),
-                         'ModelName' : modelname})
+    write_vertex_file({'classname':classname,
+                       'vertexnumber' : vertexnumber//WRAP + 1,
+                       'vertexclasses' : '\n'.join(vertexclasses),
+                       'vertexheaders' : ''.join(vertexheaders),
+                       'ModelName' : modelname})
         
 print '='*60
 
@@ -503,22 +521,31 @@ particlelist = [
 particlelist[0] = particlelist[0][2:]
 particlelist = '\n'.join(particlelist)
 
-MODEL_HWIN = getTemplate('LHC-FR.in')
-writeFile( 'LHC-%s.in' % modelname, 
-           MODEL_HWIN.substitute({ 'ModelName' : modelname,
-                                   'Particles' : particlelist,
-}))
-
 modelfilesubs = { 'plist' : plist,
                   'vlist' : get_vertices(),
                   'setcouplings': '\n'.join(parmmodelconstr),
                   'ModelName': modelname
                   }
 
+# write the files from templates according to the above subs
+if should_print():
+    MODEL_HWIN = getTemplate('LHC-FR.in')
+    MODEL_H  = getTemplate('Model.h')
+    MODEL_CC = getTemplate('Model.cc')
+    MODELINFILE = getTemplate('FR.model')
+    writeFile( 'LHC-%s.in' % modelname, 
+               MODEL_HWIN.substitute({ 'ModelName' : modelname,
+                                       'Particles' : particlelist })
+    )
+    writeFile( '%s.h' % modelname,      MODEL_H.substitute(parmtextsubs) )
+    writeFile( '%s.cc' % modelname,     MODEL_CC.substitute(parmtextsubs) )
+    writeFile( modelname +'.model', MODELINFILE.substitute(modelfilesubs) )
+    # copy the Makefile-FR to current directory,
+    # replace with the modelname for compilation
+    with open(os.path.join(modulepath,'Makefile-FR'),'r') as orig:
+        with open('Makefile','w') as dest:
+            dest.write(orig.read().replace("FeynrulesModel.so", libname))
 
-MODELINFILE = getTemplate('FR.model')
-
-writeFile( modelname +'.model', MODELINFILE.substitute(modelfilesubs) )
 
 print 'finished generating model:\t', modelname
 print 'model directory:\t\t', args.ufodir
