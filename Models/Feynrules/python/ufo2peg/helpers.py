@@ -549,9 +549,14 @@ def EWVVVVCouplings(vertex,L) :
         for struct in structures :
             if term in struct :
                 reminder = struct.replace(term,'1.',1)
-                factors.append(eval(reminder, {'cmath':cmath} ))
+                try:
+                    factors.append(eval(reminder, {'cmath':cmath} ))
+                except NameError:
+                    name_error = True
+                else:
+                    name_error = False
 
-    if len(factors) != 3:
+    if len(factors) != 3 or name_error:
         sys.stderr.write(
             'Warning: unsupported {tag} ( {ps} ) Lorentz structure in {name}:\n{lstr}\n'
             .format(tag=unique_lorentztag(vertex), name=vertex.name, 
