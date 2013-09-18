@@ -431,7 +431,7 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
         couplingptrs[0] += ' p1'
         couplingptrs[1] += ' p2'
         couplingptrs[2] += ' p3'
-    elif lorentztag == 'VVVV' :
+    elif lorentztag == 'VVVV' and qcd != 2:
         couplingptrs[0] += ' p1'
         couplingptrs[1] += ' p2'
         couplingptrs[2] += ' p3'
