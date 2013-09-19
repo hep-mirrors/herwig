@@ -504,27 +504,23 @@ def tensorCouplings(vertex,coupling,prefactors,L,lorentztag,pos) :
         i=0
         for term in types:
             for perm in itertools.permutations(term):
-                for j in range(0,len(perm)) :
-                    if(j==0) :
-                        label=perm[j]
-                    else :
-                        label+='*'+perm[j]
+                label = '*'.join(perm)
                 for struct in structures :
                     if label in struct :
                         reminder = struct.replace(label,'1.',1)
                         sum[itype] += eval(reminder, {'cmath':cmath} )*signs[i]
             i+=1
         itype += 1
-        all_coup   = []
-        left_coup  = []
-        right_coup = []
-        if(len(lterms)==0) :
-            all_coup.append('(%s) *(%s) * (%s)' % (sum[0]/float(len(signs)), prefactors,coupling.value))
-        else :
-            sum[1] += sum[0]
-            sum[2] += sum[0]
-            left_coup .append('(%s) * (%s) * (%s)' % (prefactors,sum[1]/float(len(signs)),coupling.value))
-            right_coup.append('(%s) * (%s) * (%s)' % (prefactors,sum[2]/float(len(signs)),coupling.value))
+    all_coup   = []
+    left_coup  = []
+    right_coup = []
+    if(len(lterms)==0) :
+        all_coup.append('(%s) *(%s) * (%s)' % (sum[0]/float(len(signs)), prefactors,coupling.value))
+    else :
+        sum[1] += sum[0]
+        sum[2] += sum[0]
+        left_coup .append('(%s) * (%s) * (%s)' % (prefactors,sum[1]/float(len(signs)),coupling.value))
+        right_coup.append('(%s) * (%s) * (%s)' % (prefactors,sum[2]/float(len(signs)),coupling.value))
     return (all_coup,left_coup,right_coup,ordering)
 
 def EWVVVVCouplings(vertex,L) :
