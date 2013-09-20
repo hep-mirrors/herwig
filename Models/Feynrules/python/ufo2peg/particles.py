@@ -78,7 +78,7 @@ class ParticleConverter:
 
 
 def thepeg_particles(FR,parameters,modelname):
-    plist = ''
+    plist = []
     antis = {}
     names = []
     for p in FR.all_particles:
@@ -102,25 +102,26 @@ def thepeg_particles(FR,parameters,modelname):
             continue
 
         if p.pdg_code == 25:
-            plist += \
+            plist.append(
 """
 set /Herwig/Particles/h0:Mass_generator NULL
 set /Herwig/Particles/h0:Width_generator NULL
 rm /Herwig/Masses/HiggsMass
 rm /Herwig/Widths/HiggsWidth
 """
+)
         subs = ParticleConverter(p,parameters).subs()
-        plist += particleT.substitute(subs)
+        plist.append( particleT.substitute(subs) )
 
         pdg, name = subs['pdg_code'],  subs['name']
 
         names.append(name)
 
         if -pdg in antis:
-            plist += 'makeanti %s %s\n' % (antis[-pdg], name)
+            plist.append( 'makeanti %s %s\n' % (antis[-pdg], name) )
 
         else:
-            plist += 'insert /Herwig/NewPhysics/NewModel:DecayParticles 0 %s\n' % name
+            plist.append( 'insert /Herwig/NewPhysics/NewModel:DecayParticles 0 %s\n' % name )
             antis[pdg] = name
             selfconjugate = 1
 
@@ -145,25 +146,27 @@ rm /Herwig/Widths/HiggsWidth
         try:
             if p.color in [3,6,8]: # which colors?
                 splitname = '{name}SplitFn'.format(name=p.name)
-                plist += 'create Herwig::{s}{s}OneSplitFn {name}\n' \
-                         .format(s=spin_name(p.spin), name=splitname)
-                plist += 'set {name}:InteractionType QCD\n'.format(name=splitname)
-                plist += 'set {name}:ColourStructure {c}{c}Octet\n' \
-                         .format(name=splitname, c=col_name(p.color))
                 sudname = '{name}Sudakov'.format(name=p.name)
-                plist += 'cp /Herwig/Shower/SudakovCommon {name}\n'.format(name=sudname)
-                plist += 'set {}:SplittingFunction {}\n'.format(sudname,splitname)
-                plist += 'do /Herwig/Shower/SplittingGenerator:AddFinalSplitting ' \
-                         '{pname}->{pname},g; {sudname}\n\n' \
-                         .format(pname=p.name, sudname=sudname)
+                plist.append(
+"""
+create Herwig::{s}{s}OneSplitFn {name}
+set {name}:InteractionType QCD
+set {name}:ColourStructure {c}{c}Octet
+cp /Herwig/Shower/SudakovCommon {sudname}
+set {sudname}:SplittingFunction {name}
+do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},g; {sudname}
+""".format(s=spin_name(p.spin), name=splitname,
+           c=col_name(p.color), pname=p.name, sudname=sudname)
+                )
         except SkipMe:
             pass
 
         if p.charge == 0 and p.color == 1 and p.spin == 1:
-            plist += \
+            plist.append(
 """
 insert /Herwig/{ModelName}/V_GenericHPP:Bosons 0 {pname}
 insert /Herwig/{ModelName}/V_GenericHGG:Bosons 0 {pname}
 """.format(pname=p.name, ModelName=modelname)
+            )
 
-    return plist, names
+    return ''.join(plist), names
