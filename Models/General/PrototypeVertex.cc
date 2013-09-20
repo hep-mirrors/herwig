@@ -30,12 +30,17 @@ void PrototypeVertex::createPrototypes(tPDPtr inpart, VertexBasePtr vertex,
       }
       if(vertex->getNpoint()==3) {
 	// remove radiation
-	if((inpart==pout[1] && (pout[2]->id()==ParticleID::gamma||
-				 pout[2]->id()==ParticleID::g||
-				 pout[2]->id()==ParticleID::Z0)) ||
+	if(
+	   (inpart==pout[1] && (pout[2]->id()==ParticleID::gamma||
+				pout[2]->id()==ParticleID::g||
+				pout[2]->id()==ParticleID::Z0)) 
+	   ||
 	   (inpart==pout[2] && (pout[1]->id()==ParticleID::gamma||
-				 pout[1]->id()==ParticleID::g||
-				 pout[1]->id()==ParticleID::Z0)))
+				pout[1]->id()==ParticleID::g||
+				pout[1]->id()==ParticleID::Z0)) 
+	   ||
+	   (inpart->id()==ParticleID::g && pout[1]->CC() && pout[1]->CC() == pout[2])
+	   )
 	  continue;
       }
       prototypes.push(new_ptr(PrototypeVertex(inpart,out,vertex,
@@ -95,11 +100,15 @@ void PrototypeVertex::expandPrototypes(PrototypeVertexPtr proto, VertexBasePtr v
 	  }
 	  if(vertex->getNpoint()==3) {
 	    if((it->first==pout[1] && (pout[2]->id()==ParticleID::gamma||
-				     pout[2]->id()==ParticleID::g||
-				     pout[2]->id()==ParticleID::Z0)) ||
+				       pout[2]->id()==ParticleID::g||
+				       pout[2]->id()==ParticleID::Z0)) 
+	       ||
 	       (it->first==pout[2] && (pout[1]->id()==ParticleID::gamma||
-				     pout[1]->id()==ParticleID::g||
-				     pout[1]->id()==ParticleID::Z0)))
+				       pout[1]->id()==ParticleID::g||
+				       pout[1]->id()==ParticleID::Z0))
+	       ||
+	       (it->first->id()==ParticleID::g && pout[1]->CC() && pout[1]->CC() == pout[2])
+	       )
 	      continue;
 	    // remove weak decays of quarks other than top
 	    if(StandardQCDPartonMatcher::Check(pout[0]->id()) &&

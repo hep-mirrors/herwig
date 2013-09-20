@@ -63,7 +63,7 @@ IBPtr DipoleShowerHandler::fullclone() const {
   return new_ptr(*this);
 }
 
-tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr) {
+tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr, Energy optCutoff) {
 
   prepareCascade(sub);
 
@@ -137,7 +137,7 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr) {
 
       if ( !firstMCatNLOEmission ) {
 
-	doCascade(nEmitted);
+	doCascade(nEmitted,optCutoff);
 
 	if ( discardNoEmissions ) {
 	  if ( !didRadiate )
@@ -150,7 +150,7 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr) {
       } else {
 
 	if ( nEmissions == 1 )
-	  doCascade(nEmitted);
+	  doCascade(nEmitted,optCutoff);
 
       }
 
@@ -311,7 +311,8 @@ void DipoleShowerHandler::hardScales() {
 
 Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
 				      const Dipole& dip,
-				      pair<bool,bool> conf) {
+				      pair<bool,bool> conf,
+				      Energy optCutoff) {
 
   if ( !dip.index(conf).initialStateEmitter() &&
        !doFSR ) {
@@ -384,7 +385,12 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
 						candidate.index(),
 						*gen->second->splittingKernel());
 
-    if ( maxPossible <= gen->second->splittingKinematics()->IRCutoff() ) {
+    Energy ircutoff =
+      optCutoff < gen->second->splittingKinematics()->IRCutoff() ?
+      gen->second->splittingKinematics()->IRCutoff() :
+      optCutoff;
+
+    if ( maxPossible <= ircutoff ) {
       continue;
     }
 
@@ -395,10 +401,10 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
       candidate.hardPt(maxPossible);
     }
 
-    gen->second->generate(candidate);
+    gen->second->generate(candidate,optCutoff);
     Energy nextScale = evolutionOrdering()->evolutionScale(gen->second->lastSplitting(),*(gen->second->splittingKernel()));
 
-    if ( isMCatNLOSEvent && nextScale > gen->second->splittingKinematics()->IRCutoff() ) {
+    if ( isMCatNLOSEvent && nextScale > ircutoff ) {
       if ( eventRecord().incoming().first->coloured() ||
 	   eventRecord().incoming().second->coloured() ) {
 	assert(theShowerApproximation);
@@ -408,9 +414,9 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
 	    candidate.continuesEvolving();
 	    Energy nextHardScale = evolutionOrdering()->maxPt(nextScale,candidate,*(gen->second->splittingKernel()));
 	    candidate.hardPt(nextHardScale);
-	    gen->second->generate(candidate);
+	    gen->second->generate(candidate,optCutoff);
 	    nextScale = evolutionOrdering()->evolutionScale(gen->second->lastSplitting(),*(gen->second->splittingKernel()));
-	    if ( nextScale <= gen->second->splittingKinematics()->IRCutoff() || candidate.stoppedEvolving() )
+	    if ( nextScale <= ircutoff || candidate.stoppedEvolving() )
 	      break;
 	  }
 	}
@@ -438,7 +444,8 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
 
 }
 
-void DipoleShowerHandler::doCascade(unsigned int& emDone) {
+void DipoleShowerHandler::doCascade(unsigned int& emDone,
+				    Energy optCutoff) {
 
   if ( nEmissions )
     if ( emDone == nEmissions )
@@ -463,7 +470,7 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone) {
     for ( list<Dipole>::iterator dip = eventRecord().currentChain().dipoles().begin();
 	  dip != eventRecord().currentChain().dipoles().end(); ++dip ) {
       
-      nextLeftScale = getWinner(dipoleWinner,*dip,make_pair(true,false));
+      nextLeftScale = getWinner(dipoleWinner,*dip,make_pair(true,false),optCutoff);
 
       if ( nextLeftScale > winnerScale ) {
 	winnerScale = nextLeftScale;
@@ -471,7 +478,7 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone) {
 	winnerDip = dip;
       }
 
-      nextRightScale = getWinner(dipoleWinner,*dip,make_pair(false,true));
+      nextRightScale = getWinner(dipoleWinner,*dip,make_pair(false,true),optCutoff);
 
       if ( nextRightScale > winnerScale ) {
 	winnerScale = nextRightScale;

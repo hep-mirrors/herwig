@@ -123,4 +123,40 @@ rm /Herwig/Widths/HiggsWidth
             plist += 'insert /Herwig/NewPhysics/NewModel:DecayParticles 0 %s\n' % name
             antis[pdg] = name
             selfconjugate = 1
+
+        class SkipMe(Exception):
+            pass
+
+        def spin_name(s):
+            spins = { 1 : 'Zero',
+                      2 : 'Half',
+                      3 : 'One' }
+            if s not in spins:
+                raise SkipMe()
+            else:
+                return spins[s]
+            
+        def col_name(c):
+            cols = { 3 : 'Triplet',
+                     6 : 'Sextet',
+                     8 : 'Octet' }
+            return cols[c]
+
+        try:
+            if p.color in [3,6,8]: # which colors?
+                splitname = '{name}SplitFn'.format(name=p.name)
+                plist += 'create Herwig::{s}{s}OneSplitFn {name}\n' \
+                         .format(s=spin_name(p.spin), name=splitname)
+                plist += 'set {name}:InteractionType QCD\n'.format(name=splitname)
+                plist += 'set {name}:ColourStructure {c}{c}Octet\n' \
+                         .format(name=splitname, c=col_name(p.color))
+                sudname = '{name}Sudakov'.format(name=p.name)
+                plist += 'cp /Herwig/Shower/SudakovCommon {name}\n'.format(name=sudname)
+                plist += 'set {}:SplittingFunction {}\n'.format(sudname,splitname)
+                plist += 'do /Herwig/Shower/SplittingGenerator:AddFinalSplitting ' \
+                         '{pname}->{pname},g; {sudname}\n\n' \
+                         .format(pname=p.name, sudname=sudname)
+        except SkipMe:
+            pass
+
     return plist, names
