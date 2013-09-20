@@ -69,7 +69,7 @@ double MEfv2tf::me2() const {
     }
     if(i!=1 &&i<3) {
       vec[i] = VectorWaveFunction(rescaledMomenta()[1], mePartonData()[1],i , 
- 				  incoming);
+      				  incoming);
     }
   }
   // calculate the ME
@@ -157,6 +157,7 @@ ProductionMatrixElement MEfv2tf::fv2tfHeME(const SpinorVector & sp,
  		evaluate(q2,interF,sb[if2],ten[it]);
  	    }
  	    else if(current.channelType == HPDiagram::tChannel) {
+	      if(internal->CC()) internal=internal->CC();
  	      if(internal->iSpin()==PDT::Spin1Half) {
  		SpinorBarWaveFunction interFB = fermion_[ix].second->
  		  evaluate(q2,5,internal,sb[if2],vec[iv]);
