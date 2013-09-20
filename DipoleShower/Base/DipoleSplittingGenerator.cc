@@ -362,17 +362,30 @@ double DipoleSplittingGenerator::evaluate(const vector<double>& point) {
 
 }
 
-void DipoleSplittingGenerator::doGenerate() {
+void DipoleSplittingGenerator::doGenerate(Energy optCutoff) {
 
   assert(!wrapping());
 
   double res = 0.;
 
   Energy startPt = generatedSplitting.hardPt();
+  double optKappaCutoff = 0.0;
+  if ( optCutoff > splittingKinematics()->IRCutoff() ) {
+    optKappaCutoff = splittingKinematics()->ptToRandom(optCutoff,
+						       generatedSplitting.scale(),
+						       generatedSplitting.emitterX(), 
+						       generatedSplitting.spectatorX(),
+						       generatedSplitting.index(),
+						       *splittingKernel());
+  }
 
   while (true) {
     try {
-      res = theExponentialGenerator->generate();
+      if ( optKappaCutoff == 0.0 ) {
+	res = theExponentialGenerator->generate();
+      } else {
+	res = theExponentialGenerator->generate(optKappaCutoff);
+      }
     } catch (exsample::exponential_regenerate&) {
       generatedSplitting.hardPt(startPt);
       continue;
@@ -404,21 +417,23 @@ void DipoleSplittingGenerator::doGenerate() {
 
 }
 
-Energy DipoleSplittingGenerator::generate(const DipoleSplittingInfo& split) {
+Energy DipoleSplittingGenerator::generate(const DipoleSplittingInfo& split,
+					  Energy optCutoff) {
 
   fixParameters(split);
 
   if ( wrapping() ) {
-    return theOtherGenerator->generateWrapped(generatedSplitting);
+    return theOtherGenerator->generateWrapped(generatedSplitting,optCutoff);
   }
 
-  doGenerate();
+  doGenerate(optCutoff);
 
   return generatedSplitting.lastPt();
 
 }
 
-Energy DipoleSplittingGenerator::generateWrapped(DipoleSplittingInfo& split) {
+Energy DipoleSplittingGenerator::generateWrapped(DipoleSplittingInfo& split,
+						 Energy optCutoff) {
 
   assert(!wrapping());
 
@@ -428,7 +443,7 @@ Energy DipoleSplittingGenerator::generateWrapped(DipoleSplittingInfo& split) {
   fixParameters(split);
 
   try {
-    doGenerate();
+    doGenerate(optCutoff);
   } catch (...) {
     split = generatedSplitting;
     generatedSplitting = backup;
