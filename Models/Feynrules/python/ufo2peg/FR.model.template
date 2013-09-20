@@ -7,6 +7,10 @@ mkdir /Herwig/${ModelName}
 
 mkdir /Herwig/${ModelName}/Particles
 cd /Herwig/${ModelName}/Particles
+
+create Herwig::GenericHPPVertex /Herwig/${ModelName}/V_GenericHPP
+create Herwig::GenericHGGVertex /Herwig/${ModelName}/V_GenericHGG
+
 ${plist}
 
 
@@ -56,6 +60,8 @@ set ${ModelName}:Vertex/HGG /Herwig/Vertices/HGGVertex
 set ${ModelName}:Vertex/HPP /Herwig/Vertices/HPPVertex
 
 ${vlist}
+
+
 
 ###################################################
 #

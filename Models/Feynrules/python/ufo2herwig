@@ -512,10 +512,12 @@ def get_vertices():
     for v in all_vertices:
         if v.herwig_skip_vertex: continue
         vlist.append( vertexline.format(modelname=modelname, vname=v.name) )
+    vlist.append('insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/V_GenericHPP\n'.format(modelname=modelname) )
+    vlist.append('insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/V_GenericHGG\n'.format(modelname=modelname) )
     return ''.join(vlist)
 
 
-plist, names = thepeg_particles(FR,parmsubs)
+plist, names = thepeg_particles(FR,parmsubs,modelname)
 
 particlelist = [
     "# insert HPConstructor:Outgoing 0 /Herwig/{}/Particles/{}".format(modelname,p)

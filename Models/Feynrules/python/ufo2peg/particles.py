@@ -77,7 +77,7 @@ class ParticleConverter:
 
 
 
-def thepeg_particles(FR,parameters):
+def thepeg_particles(FR,parameters,modelname):
     plist = ''
     antis = {}
     names = []
@@ -158,5 +158,12 @@ rm /Herwig/Widths/HiggsWidth
                          .format(pname=p.name, sudname=sudname)
         except SkipMe:
             pass
+
+        if p.charge == 0 and p.color == 1 and p.spin == 1:
+            plist += \
+"""
+insert /Herwig/{ModelName}/V_GenericHPP:Bosons 0 {pname}
+insert /Herwig/{ModelName}/V_GenericHGG:Bosons 0 {pname}
+""".format(pname=p.name, ModelName=modelname)
 
     return plist, names
