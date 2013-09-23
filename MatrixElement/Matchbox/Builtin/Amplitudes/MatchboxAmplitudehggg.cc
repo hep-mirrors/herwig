@@ -53,10 +53,10 @@ void MatchboxAmplitudehggg::doinitrun() {
 }
 
 bool MatchboxAmplitudehggg::canHandle(const PDVector& proc) const {
-  //cout<<"Amplitudehgg::canHandle"<<endl;
+
   if ( proc.size() != 4 ) return false;
   PDVector xproc = proc;
-  //for (int i=0;i<3;i++){cout<<proc[i]->id();}
+
   for (PDVector::iterator g=xproc.begin(); g!=xproc.end(); ++g){
       if ((**g).id()==21) {xproc.erase(g); --g;}
   }   
@@ -65,140 +65,104 @@ bool MatchboxAmplitudehggg::canHandle(const PDVector& proc) const {
 }
 
 void MatchboxAmplitudehggg::prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr me) {
-  //cout<<"\nprepare erreicht"<<endl;
+
   if ( !calculateTreeAmplitudes() ) {
     MatchboxAmplitude::prepareAmplitudes(me);
     return;
   }
 
   amplitudeScale(sqrt(lastSHat()));
-  //cout<<"momenta werden gesetzt"<<endl;
+
   momentum(0,amplitudeMomentum(0));
   momentum(1,amplitudeMomentum(1));
   momentum(2,amplitudeMomentum(2));
   momentum(3,amplitudeMomentum(3));
-  //cout<<"prepareAmplitudes wird aufgerufen"<<endl;
+
   MatchboxAmplitude::prepareAmplitudes(me);
-  //cout<<"prepare ueberlebt"<<endl;
+
 }
 
 Complex MatchboxAmplitudehggg::evaluate(size_t a, const vector<int>& hel, Complex& largeN) {
- //cout<<"\nAmplitudehggg::evaluate"<<a<<"\n"<<hel[0]<<hel[1]<<hel[2]<<hel[3];
+  
+  unsigned int p=0;
+  unsigned int q=0;
+  unsigned int r=0;
+  cPDVector x=amplitudePartonData();
+  for (;p<amplitudePartonData().size();++p){
+    if (x[p]->id()==21) {
+      for (q=p+1;q<amplitudePartonData().size();++q){
+        if (x[q]->id()==21){
+         for (r=q+1;r<amplitudePartonData().size();++r){if (x[r]->id()==21) break;}
+          } 
+        break;}
+      break;
+    }
+  }
+  // Wrong particle assignment. There have to be three distinct Gluons p, q and r.
+  assert(!((p==q) || (p==r) || (q==r)));
  
- 
- unsigned int p=0;
- unsigned int q=0;
- unsigned int r=0;
- cPDVector x=amplitudePartonData();
- for (;p<amplitudePartonData().size();++p){
-   if (x[p]->id()==21) {
-     for (q=p+1;q<amplitudePartonData().size();++q){
-       if (x[q]->id()==21){
-        for (r=q+1;r<amplitudePartonData().size();++r){if (x[r]->id()==21) break;}
-         } 
-       break;}
-     break;
-   }
- }
-// cout<<"p: "<<p<<endl; //immer 1
-// cout<<"q: "<<q<<endl; //immer 2
-// cout<<"r: "<<r<<endl; //immer 3
+  double gw = sqrt(4*Constants::pi*SM().alphaEM()) / sqrt(SM().sin2ThetaW());
+  double gs = sqrt(4*Constants::pi*SM().alphaS());
+  double v= 2*MW/gw/sqrt(lastSHat()) ;
+  Complex c = Complex (0.,0.);                                                                                                                    
+  
+  // Assertion makes sure that there is no crossing, which causes a relative minus sign. If Assert -> new, more general code is needed                                                                                                                                    
+  assert(amplitudeToColourMap()[1]==0 && amplitudeToColourMap()[2]==1 && amplitudeToColourMap()[3]==2 );
 
-// Test: vertauschung von p und q
-// p=2; q=1; 
- if ((p==q) || (p==r) || (q==r)) cout<<"Fehler bei der Teilchenzuordnung!!!"<<endl;
- double gw = sqrt(4*Constants::pi*SM().alphaEM()) / sqrt(SM().sin2ThetaW());
- double gs = sqrt(4*Constants::pi*SM().alphaS());
- double v= 2*MW/gw/sqrt(lastSHat()) ; //Auf mu normierter VakuumErwartungswert
- /*cout<<"sin2ThetaW(): "<<SM().sin2ThetaW()<<endl;
- cout<<"a^(-1): "<<1/SM().alphaEM()<<endl;
- cout<<"gw: "<<gw<<endl;
- cout<<"MW: "<<ounit(MW,GeV)<<endl;
- cout<<"v: "<<ounit(v,GeV)<<endl;*/
- Complex c = Complex (0.,0.);
-
-// AmplitudeToColourmap-Ausgabe                                                                                                     
-// for(int i=0; i<4; ++i){cout<<"i="<<i<<":  PartonData[i]: "<<x[i]->id()<<"  Map[i]: "<<amplitudeToColourMap()[i]<<endl;}       
-// cout<<"i=5:  "<<"  Map[i]: "<<amplitudeToColourMap()[5]<<endl;                                                                
-// cout<<endl;                                                                                                                       
-
-// Assertion makes sure that there is no crossing, which causes a relative minus sign. If Assert -> new, more general code is needed                                                                                                                                    
- assert(amplitudeToColourMap()[1]==0 && amplitudeToColourMap()[2]==1 && amplitudeToColourMap()[3]==2 );
-
-// CrossingMap Ausgabe:
-// for(int i=0; i<4; ++i){cout<<"i="<<i<<":  PartonData[i]: "<<x[i]->id()<<"  Map[i]: "<<crossingMap()[i]<<endl;}       
-// cout<<"i=5:  "<<"  Map[i]: "<<crossingMap()[5]<<endl;                                                                
-// cout<<endl; 
-
- if (a==0){
-    c = Complex (0.,-1.)*sqrt(2.)*SM().alphaS()/3./Constants::pi/v*gs ; // *-2*I wegen TraceBasis
- } 
- else {
-   if (a==1){
-     c = Complex (0.,+1.)*sqrt(2.)*SM().alphaS()/3./Constants::pi/v*gs ; // *2*I
-   }
-   else{ 
-     cout<<"Farbbasis von MatchboxAmplitudehggg::evaluate nimmt unmoeglichen Wert an"<<a<<flush<<endl;
-   }
- }
- //cout<<c<<flush<<endl;
- // hgggppp
- if(hel[p]==+1 && hel[q]==+1 && hel[r]==+1){
+  if (a==0){
+    c = Complex (0.,-1.)*sqrt(2.)*SM().alphaS()/3./Constants::pi/v*gs ; 
+  } 
+  else {
+    if (a==1){
+      c = Complex (0.,+1.)*sqrt(2.)*SM().alphaS()/3./Constants::pi/v*gs ; 
+    }
+    else{ 
+      //The Colourbasis a is not appropriate for this process. 
+      //  hggg ~ f^{abc} -> ~ tr(t^a,t^b,t^c) - tr(t^a,t^c,t^b) -> a in {0,1}
+      assert(true);
+    }
+  }
+  if(hel[p]==+1 && hel[q]==+1 && hel[r]==+1){
     largeN = c*(invariant(p,q)*invariant(p,q)+2*invariant(p,q)*invariant(p,r)
             +invariant(p,r)*invariant(p,r)+2*invariant(p,q)*invariant(q,r)
             +2*invariant(p,r)*invariant(q,r)+invariant(q,r)*invariant(q,r))
             /plusProduct(p,q)/plusProduct(p,r)/plusProduct(q,r);
- //  cout<<"hel[p]"<<hel[p]<<"  hel[q]"<<hel[q]<<"  hel[r]"<<hel[r]<<" largeN = "<<largeN<<endl;
     return(largeN);
- }
- // hgggppm
- if(hel[p]==+1 && hel[q]==+1 && hel[r]==-1){
+  }
+  if(hel[p]==+1 && hel[q]==+1 && hel[r]==-1){
     largeN = -c*minusProduct(p,q)*minusProduct(p,q)*minusProduct(p,q)/minusProduct(p,r)/minusProduct(q,r);
- //   cout<<"hel[p]"<<hel[p]<<"  hel[q]"<<hel[q]<<"  hel[r]"<<hel[r]<<" largeN = "<<largeN<<endl;
     return(largeN);
- }
- // hgggpmp
- if(hel[p]==+1 && hel[q]==-1 && hel[r]==+1){
+  }
+  if(hel[p]==+1 && hel[q]==-1 && hel[r]==+1){
     largeN = -c*minusProduct(p,r)*minusProduct(p,r)*minusProduct(p,r)/minusProduct(p,q)/minusProduct(q,r);
- //   cout<<"hel[p]"<<hel[p]<<"  hel[q]"<<hel[q]<<"  hel[r]"<<hel[r]<<" largeN = "<<largeN<<endl;
     return(largeN);
- }
- // hgggpmm
- if(hel[p]==+1 && hel[q]==-1 && hel[r]==-1){
+  }
+  if(hel[p]==+1 && hel[q]==-1 && hel[r]==-1){
     largeN = c*plusProduct(q,r)*plusProduct(q,r)*plusProduct(q,r)/plusProduct(p,q)/plusProduct(p,r);
- //   cout<<"hel[p]"<<hel[p]<<"  hel[q]"<<hel[q]<<"  hel[r]"<<hel[r]<<" largeN = "<<largeN<<endl;
     return(largeN);
- }
- // hgggmpp
- if(hel[p]==-1 && hel[q]==+1 && hel[r]==+1){
+  }
+  if(hel[p]==-1 && hel[q]==+1 && hel[r]==+1){
     largeN = -c*minusProduct(q,r)*minusProduct(q,r)*minusProduct(q,r)/minusProduct(p,q)/minusProduct(p,r);
- //   cout<<"hel[p]"<<hel[p]<<"  hel[q]"<<hel[q]<<"  hel[r]"<<hel[r]<<" largeN = "<<largeN<<endl;
     return(largeN);
- }
- // hgggmpm 
- if(hel[p]==-1 && hel[q]==+1 && hel[r]==-1){
+  }
+  if(hel[p]==-1 && hel[q]==+1 && hel[r]==-1){
     largeN = c*plusProduct(p,r)*plusProduct(p,r)*plusProduct(p,r)/plusProduct(p,q)/plusProduct(q,r);
- //   cout<<"hel[p]"<<hel[p]<<"  hel[q]"<<hel[q]<<"  hel[r]"<<hel[r]<<" largeN = "<<largeN<<endl;
     return(largeN);
- }
- // hgggmmp
- if(hel[p]==-1 && hel[q]==-1 && hel[r]==+1){
+  }
+  if(hel[p]==-1 && hel[q]==-1 && hel[r]==+1){
     largeN = c*plusProduct(p,q)*plusProduct(p,q)*plusProduct(p,q)/plusProduct(p,r)/plusProduct(q,r);
- //   cout<<"hel[p]"<<hel[p]<<"  hel[q]"<<hel[q]<<"  hel[r]"<<hel[r]<<" largeN = "<<largeN<<endl;
     return(largeN);
- }
- // hgggmmm
- if(hel[p]==-1 && hel[q]==-1 && hel[r]==-1){
+  }
+  if(hel[p]==-1 && hel[q]==-1 && hel[r]==-1){
     largeN = -c*(invariant(p,q)*invariant(p,q)+2*invariant(p,q)*invariant(p,r)
             +invariant(p,r)*invariant(p,r)+2*invariant(p,q)*invariant(q,r)
             +2*invariant(p,r)*invariant(q,r)+invariant(q,r)*invariant(q,r))
             /plusProduct(p,q)/plusProduct(p,r)/plusProduct(q,r);
- //   cout<<"hel[p]"<<hel[p]<<"  hel[q]"<<hel[q]<<"  hel[r]"<<hel[r]<<" largeN = "<<largeN<<endl;
     return(largeN);
- }
- cout<<"Error: unknown Helizity configuration"<<flush<<endl;
- cout<<"hel[p]"<<hel[p]<<"  hel[q]"<<hel[q]<<"  hel[r]"<<hel[r]<<endl;
- return 0;
+  }
+  // Unknown helicity configuration
+  assert(false);
+  return(0.);
 }
 
 /*Complex MatchboxAmplitudehggg::evaluateOneLoop(size_t, const vector<int>& hel) {
@@ -210,11 +174,11 @@ Complex MatchboxAmplitudehggg::evaluate(size_t a, const vector<int>& hel, Comple
 
 
 void MatchboxAmplitudehggg::persistentOutput(PersistentOStream &os) const {
-    os << ounit(interfaceTHooft,GeV);
+  os << ounit(interfaceTHooft,GeV);
 }
 
 void MatchboxAmplitudehggg::persistentInput(PersistentIStream &is, int) {
-    is >> iunit(interfaceTHooft,GeV);
+  is >> iunit(interfaceTHooft,GeV);
 }
 
 // *** Attention *** The following static variable is needed for the type

@@ -55,76 +55,62 @@ void MatchboxAmplitudehgg::doinitrun() {
 }
 
 bool MatchboxAmplitudehgg::canHandle(const PDVector& proc) const {
-  //cout<<"Amplitudehgg::canHandle";
   if ( proc.size() != 3 ) return false;
   PDVector xproc = proc;
-  //for (int i=0;i<3;i++){cout<<proc[i]->id();}
   for (PDVector::iterator g=xproc.begin(); g!=xproc.end(); ++g){
-      if ((**g).id()==21) {xproc.erase(g); --g;}
+    if ((**g).id()==21) {xproc.erase(g); --g;}
   }   
   if (xproc.size()==1 && (**xproc.begin()).id()==25) {return true;}
   return false;
 }
 
 void MatchboxAmplitudehgg::prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr me) {
-  //cout<<"prepare erreicht"<<endl;
   if ( !calculateTreeAmplitudes() ) {
     MatchboxAmplitude::prepareAmplitudes(me);
     return;
   }
 
   amplitudeScale(sqrt(lastSHat()));
-  //cout<<"momenta werden gesetzt"<<endl;
   momentum(0,amplitudeMomentum(0));
   momentum(1,amplitudeMomentum(1));
   momentum(2,amplitudeMomentum(2));
-  
 
   MatchboxAmplitude::prepareAmplitudes(me);
 
 }
 
 Complex MatchboxAmplitudehgg::evaluate(size_t, const vector<int>& hel, Complex& largeN) {
- //cout<<"Amplitudehgg::evaluate";
- unsigned int g1=0;
- unsigned int g2=0;
- cPDVector x=amplitudePartonData();
- for (;g1<amplitudePartonData().size();++g1){
-   if (x[g1]->id()==21) {
-     for (g2=g1+1;g2<amplitudePartonData().size();++g2){if (x[g2]->id()==21) break;}
-     break;
-   }
- }
- //cout<<"g1: "<<g1<<endl;
- //cout<<"g2: "<<g2<<endl;
- if (g1==g2) cout<<"Fehler bei der Teilchenzuordnung!!!"<<endl;
- // double gw = sqrt(4*Constants::pi*0.00775855) / sqrt(SM().sin2ThetaW());
- double gw = sqrt(4*Constants::pi*SM().alphaEM()) / sqrt(SM().sin2ThetaW());
- double v= 2*MW/gw/sqrt(lastSHat()); // Eigentlich invEnergy aber alles auf Shat normiert. -> die amplitude ist double statt Energy!
 
-// CrossingMap Ausgabe:
-// for(int i=0; i<3; ++i){cout<<"i="<<i<<":  PartonData[i]: "<<x[i]->id()<<"  Map[i]: "<<lastCrossingMap()[i]<<endl;}       
-// cout<<"i=4:  "<<"  Map[i]: "<<lastCrossingMap()[4]<<endl;                                                                
-// cout<<endl; 
-
- double c = SM().alphaS()/3/Constants::pi/v; // nur /3 statt /6 weil vermutlich 1/2 in die farbbasis gezogen wird
-// cout<<"hel[g1]"<<hel[g1]<<"  hel[g2]"<<hel[g2]<<endl<<flush;
- if (hel[g1]==-hel[g2]){
-     largeN=0;
-     return largeN;
- }
- if (hel[g1]==hel[g2] && hel[g1]==1){
-     largeN=c*plusProduct(g1,g2)*plusProduct(g1,g2);
-//     cout<<"hel[g1]"<<hel[g1]<<"  hel[g2]"<<hel[g2]<<" hgg largeN = "<<largeN<<endl;
-     return largeN;
- }
- if (hel[g1]==hel[g2] && hel[g1]==-1){
-     largeN=c*minusProduct(g1,g2)*minusProduct(g1,g2);
-//     cout<<"hel[g1]"<<hel[g1]<<"  hel[g2]"<<hel[g2]<<" hgg largeN = "<<largeN<<endl;
-     return largeN;
- }
- cout<<"unbedachte Helizitaetskonfiguration"<<flush;
- return 0;
+  unsigned int g1=0;
+  unsigned int g2=0;
+  cPDVector x=amplitudePartonData();
+  for (;g1<amplitudePartonData().size();++g1){
+    if (x[g1]->id()==21) {
+      for (g2=g1+1;g2<amplitudePartonData().size();++g2){if (x[g2]->id()==21) break;}
+      break;
+    }
+  }
+  // wrong assignement of the particles. g1 and g2 have to be different gluons.
+  assert(g1!=g2);
+  double gw = sqrt(4*Constants::pi*SM().alphaEM()) / sqrt(SM().sin2ThetaW());
+  double v= 2*MW/gw/sqrt(lastSHat()); 
+  Complex c = Complex (0.,-1.*SM().alphaS()/3/Constants::pi/v); 
+ 
+  if (hel[g1]==-hel[g2]){
+    largeN=0;
+    return largeN;
+  }
+  if (hel[g1]==hel[g2] && hel[g1]==-1){
+    largeN=c*plusProduct(g1,g2)*plusProduct(g1,g2);
+    return largeN;
+  }
+  if (hel[g1]==hel[g2] && hel[g1]==1){
+    largeN=c*minusProduct(g1,g2)*minusProduct(g1,g2);
+    return largeN;
+  }
+  // unknown helicity configuration
+  assert(false);
+  return(0.);
 }
 
 Complex MatchboxAmplitudehgg::evaluateOneLoop(size_t a , const vector<int>& Hel) {
@@ -138,11 +124,11 @@ Complex MatchboxAmplitudehgg::evaluateOneLoop(size_t a , const vector<int>& Hel)
 
 
 void MatchboxAmplitudehgg::persistentOutput(PersistentOStream &os) const {
-    os << ounit(interfaceTHooft,GeV);
+  os << ounit(interfaceTHooft,GeV);
 }
 
 void MatchboxAmplitudehgg::persistentInput(PersistentIStream &is, int) {
-    is >> iunit(interfaceTHooft,GeV);
+  is >> iunit(interfaceTHooft,GeV);
 }
 
 // *** Attention *** The following static variable is needed for the type

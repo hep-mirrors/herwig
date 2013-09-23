@@ -21,7 +21,7 @@ using namespace ThePEG;
 
 /**
  * \ingroup Matchbox
- * 
+ * \author Benedikt Zimmermann
  *
  * \brief MatchboxAmplitudehgg
  */

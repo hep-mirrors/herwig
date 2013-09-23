@@ -54,7 +54,6 @@ void MatchboxAmplitudehqqbarg::doinitrun() {
 }
 
 bool MatchboxAmplitudehqqbarg::canHandle(const PDVector& proc) const {
-   // cout<<"MatchboxAmplitudehqqbarg::canHandle aufgerufen"<<flush<<endl;
   if ( proc.size() != 4 )
     return false;
   PDVector xproc = proc;
@@ -62,28 +61,23 @@ bool MatchboxAmplitudehqqbarg::canHandle(const PDVector& proc) const {
     xproc[0] = xproc[0]->CC();
   if ( xproc[1]->CC() )
     xproc[1] = xproc[1]->CC();
-  /*for (PDVector::iterator x=xproc.begin(); x!=xproc.end();  ++x){
-    cout<<"xproc: "<<(**x).id()<<endl;
-  }
-  cout<<endl;*/
   PDVector::iterator q=xproc.begin();
   for (; q!=xproc.end(); ++q){
-      if ((**q).id()==1 || 
-          (**q).id()==2 ||
-          (**q).id()==3 ||
-          (**q).id()==4 ||
-          (**q).id()==5) 
-          break;
-      //cout<<"kein Quark gefunden";
+    if ((**q).id()==1 || 
+        (**q).id()==2 ||
+        (**q).id()==3 ||
+        (**q).id()==4 ||
+        (**q).id()==5) 
+    break;
   }
   if(q==xproc.end()) return false;
-  int qid = (**q).id(); //cout<<"qid ="<<qid<<endl;
+  int qid = (**q).id(); 
   xproc.erase(q);
   PDVector::iterator qb=xproc.begin();
   for (; qb!=xproc.end(); ++qb){
-      if ((**qb).id()==-qid /*|| (**qb).id()==qid*/ ){/*cout<<"qbid = "<<(**qb).id()<<endl; cout<<"kein antiquark gefunden!"<<endl;*/ break;}
+    if ((**qb).id()==-qid ){break;}
   }
-  if(qb==xproc.end()){/*cout<<"kein antiquark gefunden"<<endl;*/ return false;}
+  if(qb==xproc.end()){ return false;}
   xproc.erase(qb);
   for (PDVector::iterator g=xproc.begin(); g!=xproc.end(); ++g){
       if ((**g).id()==21){xproc.erase(g); break; }
@@ -100,10 +94,7 @@ void MatchboxAmplitudehqqbarg::prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr me) 
   }
 
   amplitudeScale(sqrt(lastSHat()));
-
-  /*setupLeptons(0,amplitudeMomentum(0),
-	       1,amplitudeMomentum(1));*/
-
+ 
   momentum(0,amplitudeMomentum(0));
   momentum(1,amplitudeMomentum(1));
   momentum(2,amplitudeMomentum(2));
@@ -117,14 +108,14 @@ Complex MatchboxAmplitudehqqbarg::evaluate(size_t, const vector<int>& hel, Compl
   unsigned int q=0;
   unsigned int qbar=0;
   unsigned int g=0;
-  cPDVector x=amplitudePartonData(); // anscheinend nach hqqbarg sortiert
+  cPDVector x=amplitudePartonData();
   for (;q<amplitudePartonData().size();++q){if (x[q]->id()!= 25 && x[q]->id()>0 ) break;} 
   for (;qbar<amplitudePartonData().size();++qbar){if (x[qbar]->id() ==-x[q]->id()) break;}
   for (;g<amplitudePartonData().size();++g){if (x[g]->id() == 21) break;}
   double gw = sqrt(4*Constants::pi*SM().alphaEM()) / sqrt(SM().sin2ThetaW());
   double gs = sqrt(4*Constants::pi*SM().alphaS());
   double alphaS = SM().alphaS();
-  double v= 2*MW/gw/sqrt(lastSHat()) ; //Auf mu normierter VakuumErwartungswert
+  double v= 2*MW/gw/sqrt(lastSHat()) ;
   double c = gs*alphaS/3/sqrt(2.)/Constants::pi/v;
   
   if(hel[qbar]==hel[q]){
@@ -132,29 +123,25 @@ Complex MatchboxAmplitudehqqbarg::evaluate(size_t, const vector<int>& hel, Compl
     return(largeN);
   }
   
-  //mpm verdrehte vorzeichen wegen simons spinordef
   if(hel[qbar]==+1 && hel[q]==-1 && hel[g]==-1){
-      largeN = -c*plusProduct(qbar,g)*plusProduct(qbar,g)/(plusProduct(q,qbar));
-      return(largeN);
+    largeN = -c*plusProduct(qbar,g)*plusProduct(qbar,g)/(plusProduct(q,qbar));
+    return(largeN);
   }
-  //mpp
   if(hel[qbar]==1 && hel[q]==-1 && hel[g]==1){
-      largeN = -c*minusProduct(q,g)*minusProduct(q,g)/(minusProduct(q,qbar));
-      return(largeN);
+    largeN = -c*minusProduct(q,g)*minusProduct(q,g)/(minusProduct(q,qbar));
+    return(largeN);
   }
-  //pmm
   if(hel[qbar]==-1 && hel[q]==1 && hel[g]==-1){
-      largeN = c*plusProduct(q,g)*plusProduct(q,g)/(plusProduct(q,qbar));
-      return(largeN);
+    largeN = c*plusProduct(q,g)*plusProduct(q,g)/(plusProduct(q,qbar));
+    return(largeN);
   }
-  //pmp
   if(hel[qbar]==-1 && hel[q]==1 && hel[g]==1){
-      largeN = c*minusProduct(qbar,g)*minusProduct(qbar,g)/(minusProduct(q,qbar));
-      return(largeN);
+    largeN = c*minusProduct(qbar,g)*minusProduct(qbar,g)/(minusProduct(q,qbar));
+    return(largeN);
   }
-  cout<<"Error: unknown Helizity configuration"<<endl<<flush;
-  largeN=0;
-  return(largeN);
+  // Unknown helicity configuration
+  assert(false);
+  return(0.);
 }
 
 /*Complex MatchboxAmplitudehqqbarg::evaluateOneLoop(size_t, const vector<int>& hel) {
@@ -166,11 +153,11 @@ Complex MatchboxAmplitudehqqbarg::evaluate(size_t, const vector<int>& hel, Compl
 
 
 void MatchboxAmplitudehqqbarg::persistentOutput(PersistentOStream &os) const {
-    os << ounit(interfaceTHooft,GeV);
+  os << ounit(interfaceTHooft,GeV);
 }
 
 void MatchboxAmplitudehqqbarg::persistentInput(PersistentIStream &is, int) {
-    is >> iunit(interfaceTHooft,GeV);
+  is >> iunit(interfaceTHooft,GeV);
 }
 
 
