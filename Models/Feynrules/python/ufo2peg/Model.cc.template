@@ -38,6 +38,7 @@ IBPtr ${ModelName}::fullclone() const {
 }
 
 void ${ModelName}::doinit() {
+  ${doinit}
   StandardModel::doinit();
   ${addVertex}
 

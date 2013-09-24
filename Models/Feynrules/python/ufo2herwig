@@ -62,6 +62,7 @@ libname = modelname + '.so'
 parmdecls = []
 parmgetters = []
 parmconstr = []
+doinit = []
 
 paramstoreplace_ = []
 paramstoreplace_expressions_ = []
@@ -136,8 +137,10 @@ for p in FR.all_parameters:
                                        value=value,
                                        type=typemap(p.type)) 
             )
-            parmconstr.append('%s_(%s)' % (p.name, value))
             parmmodelconstr.append('set %s:%s %s' % (modelname, p.name, value))
+            parmconstr.append('%s_(%s)' % (p.name, value))
+        else :
+            parmconstr.append('%s_(%s)' % (p.name, 0.))
     elif p.type == 'complex':
         value = complex(value)
         if p.nature == 'external':
@@ -153,21 +156,23 @@ for p in FR.all_parameters:
 #
 #            parmmodelconstr.append('set %s:%s (%s,%s)' % (modelname, p.name, value.real, value.imag))
             parmconstr.append('%s_(%s,%s)' % (p.name, value.real, value.imag))
+        else :
+            parmconstr.append('%s_(%s,%s)' % (p.name, 0.,0.))
     else:
         raise Exception('Unknown data type "%s".' % p.type)
     parmsubs[p.name] = value
 
 
-    if p.nature == 'external':
-        parmdecls.append('  %s %s_;' % (typemap(p.type), p.name))
-        parmgetters.append('  %s %s() const { return %s_; }' % (typemap(p.type),p.name, p.name))
-        paramsforstream.append('%s_' % p.name)
-        expression, symbols = 'return %s_' % p.name, None
-    else:
+    parmdecls.append('  %s %s_;' % (typemap(p.type), p.name))
+    parmgetters.append('  %s %s() const { return %s_; }' % (typemap(p.type),p.name, p.name))
+    paramsforstream.append('%s_' % p.name)
+    expression, symbols = 'return %s_' % p.name, None
+    if p.nature != 'external':
         expression, symbols = py2cpp(p.value)
         text = add_brackets(expression, symbols)
         text=text.replace('()()','()')
-        parmgetters.append('  %s %s() const { return %s; }' % (typemap(p.type),p.name, text))
+        #parmgetters.append('  %s %s() const { return %s; }' % (typemap(p.type),p.name, text))
+        doinit.append('   %s_ = %s;'  % (p.name, text) )
 
 ### special treatment
 #    if p.name == 'aS':
@@ -189,6 +194,7 @@ parmtextsubs = { 'parmgetters' : '\n'.join(parmgetters),
                  'getters' : '',
                  'decls' : '',
                  'addVertex' : '',
+                 'doinit' : '\n'.join(doinit),
                  'ostream' : '<< '.join(paramsforstream),
                  'istream' : '>> '.join(paramsforstream),
                  'refs' : '',
