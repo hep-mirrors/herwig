@@ -383,7 +383,6 @@ void SMWFermionsPOWHEGDecayer::doinit() {
 }
 
 bool SMWFermionsPOWHEGDecayer::getEvent(vector<PPtr> hardProcess) {
- 
   vector<Energy> particleMass;
   for(unsigned int ix=0;ix<hardProcess.size();++ix) {
     if(abs(hardProcess[ix]->id())==ParticleID::Wplus) {
@@ -404,9 +403,9 @@ bool SMWFermionsPOWHEGDecayer::getEvent(vector<PPtr> hardProcess) {
   mu2_ = particleMass[1]/mW_;
   // scale
   scale_ = sqr(mW_);
- 
   // max pT
   Energy pTmax = 0.5*sqrt(mw2_);
+  if(pTmax<pTmin_) return false;
   // Define over valued y_max & y_min according to the associated pt_min cut.
   double ymax  =  acosh(pTmax/pTmin_);
   double ymin  = -ymax;

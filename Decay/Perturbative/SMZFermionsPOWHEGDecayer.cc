@@ -490,6 +490,7 @@ bool SMZFermionsPOWHEGDecayer::getEvent(vector<PPtr> hardProcess) {
   scale_ = sqr(mZ_);
   // max pT
   Energy pTmax = 0.5*sqrt(mz2_);
+  if(pTmax<pTmin_) return false;
   // Define over valued y_max & y_min according to the associated pt_min cut.
   double ymax  =  acosh(pTmax/pTmin_);
   double ymin  = -ymax;
