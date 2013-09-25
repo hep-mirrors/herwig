@@ -14,8 +14,7 @@ set AlphaS:freezing_scale 0.0*GeV
 
 set /Herwig/Model:QCD/RunningAlphaS AlphaS
 
-set /Herwig/Particles/p+:PDF    /Herwig/Partons/MRST-NLO
-set /Herwig/Particles/pbar-:PDF /Herwig/Partons/MRST-NLO
+set /Herwig/Partons/PDFSet:PDFName CT10.LHgrid
 
 ################################################################################
 # matching parameters

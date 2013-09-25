@@ -46,7 +46,7 @@ DipoleShowerHandler::DipoleShowerHandler()
     verbosity(0), printEvent(0), nTries(0), 
     didRadiate(false), didRealign(false),
     theRenormalizationScaleFreeze(1.*GeV), 
-    theFactorizationScaleFreeze(1.*GeV),
+    theFactorizationScaleFreeze(2.*GeV),
     theFactorizationScaleFactor(1.0),
     theRenormalizationScaleFactor(1.0),
     theHardScaleFactor(1.0),
@@ -422,6 +422,8 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
 	}
       }
     }
+
+    // ATTENTION other profiles go here
 
     if ( nextScale > winnerScale ) {
       winner = candidate;
@@ -1011,7 +1013,7 @@ void DipoleShowerHandler::Init() {
   static Parameter<DipoleShowerHandler,Energy> interfaceFactorizationScaleFreeze
     ("FactorizationScaleFreeze",
      "The freezing scale for the factorization scale.",
-     &DipoleShowerHandler::theFactorizationScaleFreeze, GeV, 1.0*GeV, 0.0*GeV, 0*GeV,
+     &DipoleShowerHandler::theFactorizationScaleFreeze, GeV, 2.0*GeV, 0.0*GeV, 0*GeV,
      false, false, Interface::lowerlim);
 
 }
