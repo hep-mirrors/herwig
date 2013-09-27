@@ -9,6 +9,7 @@ mkdir /Herwig/Matchers
 cd /Herwig/Matchers
 
 create ThePEG::Matcher<Lepton> Lepton
+create ThePEG::Matcher<ChargedLepton> ChargedLepton
 create ThePEG::Matcher<LightQuark> LightQuark
 create ThePEG::Matcher<LightAntiQuark> LightAntiQuark
 create ThePEG::Matcher<StandardQCDParton> StandardQCDParton
@@ -48,6 +49,11 @@ newdef PhotonKtCut:MaxEta  3.
 create ThePEG::SimpleKTCut LeptonKtCut SimpleKTCut.so
 newdef LeptonKtCut:Matcher /Herwig/Matchers/Lepton
 newdef LeptonKtCut:MinKT 0.0*GeV
+
+# cut on charged leptons
+create ThePEG::SimpleKTCut ChargedLeptonKtCut SimpleKTCut.so
+newdef ChargedLeptonKtCut:Matcher /Herwig/Matchers/ChargedLepton
+newdef ChargedLeptonKtCut:MinKT 0.0*GeV
 
 # cut on top quarks
 create ThePEG::KTRapidityCut TopKtCut KTRapidityCut.so
@@ -97,6 +103,7 @@ insert QCDCuts:OneCuts[3] TopKtCut
 insert QCDCuts:OneCuts[4] WBosonKtCut
 insert QCDCuts:OneCuts[5] ZBosonKtCut
 insert QCDCuts:OneCuts[6] HiggsBosonKtCut
+insert QCDCuts:OneCuts[7] ChargedLeptonKtCut
 insert QCDCuts:MultiCuts[0] MassCut
 
 # cuts for DIS
