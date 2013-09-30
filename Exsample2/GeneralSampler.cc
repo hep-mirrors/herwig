@@ -74,6 +74,9 @@ void GeneralSampler::initialize() {
   if ( !samplers.empty() )
     return;
 
+  if ( theAlmostUnweighted )
+    theFlatSubprocesses = true;
+
   boost::progress_display* progressBar = 0;
   if ( !theVerbose ) {
     cout << "integrating subprocesses";
@@ -162,16 +165,22 @@ double GeneralSampler::generate() {
     }
 
     if ( theAlmostUnweighted ) {
-      double w = abs(lastSampler->lastWeight()/lastSampler->bias());
-      if ( w <= theMaxWeight ) {
-	if ( UseRandom::rnd() > w/theMaxWeight ) {
+      double w = abs(lastSampler->lastWeight());
+      double wmax = abs(lastSampler->iterations().back().maxWeight());
+      if ( w <= wmax ) {
+	if ( UseRandom::rnd() > w/wmax ) {
 	  if ( ++excptTries == eventHandler()->maxLoop() )
 	    break;
 	  continue;
 	}
       } else {
 	++maximumExceeds;
-	maximumExceededBy += 1. - w/theMaxWeight;
+	maximumExceededBy += abs(1. - w/wmax);
+      }
+      if ( UseRandom::rnd() > wmax/theMaxWeight ) {
+	if ( ++excptTries == eventHandler()->maxLoop() )
+	  break;
+	continue;
       }
     }
 
@@ -196,8 +205,8 @@ double GeneralSampler::generate() {
   } else {
     double w = lastSampler->lastWeight()/lastSampler->bias();
     if ( theAlmostUnweighted ) {
-      if ( abs(w) <= theMaxWeight )
-	w = theMaxWeight*sign(w);
+      if ( abs(w) <= abs(lastSampler->iterations().back().maxWeight()) )
+	w = theMaxWeight*sign(w)/lastSampler->bias();
     }
     theSumWeights += w;
     theSumWeights2 += sqr(w);
@@ -215,8 +224,8 @@ void GeneralSampler::rejectLast() {
   } else {
     double w = lastSampler->lastWeight()/lastSampler->bias();
     if ( theAlmostUnweighted ) {
-      if ( abs(w) <= theMaxWeight )
-	w = theMaxWeight*sign(w);
+      if ( abs(w) <= abs(lastSampler->iterations().back().maxWeight()) )
+	w = theMaxWeight*sign(w)/lastSampler->bias();
     }
     theSumWeights -= w;
     theSumWeights2 -= sqr(w);
@@ -298,15 +307,12 @@ void GeneralSampler::updateCrossSections(bool) {
   map<double,Ptr<BinSampler>::ptr> newSamplers;
   double current = 0.;
 
-  double minBias = !theFlatSubprocesses ? -1.0 : 1/sumbias;
-
   for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers.begin();
 	s != samplers.end(); ++s ) {
     double abssw = s->second->averageAbsWeight() * s->second->oversamplingFactor();
     if ( abssw == 0.0 )
       continue;
     if ( !theFlatSubprocesses ) {
-      minBias = minBias > 0.0 ? min(minBias,abssw/sumbias) : abssw/sumbias;
       s->second->bias(abssw/sumbias);
       current += abssw;
     } else {
@@ -315,8 +321,6 @@ void GeneralSampler::updateCrossSections(bool) {
     }
     newSamplers[current/sumbias] = s->second;
   }
-
-  theMaxWeight /= minBias;
 
   samplers = newSamplers;
 
@@ -539,7 +543,7 @@ void GeneralSampler::Init() {
   static Switch<GeneralSampler,bool> interfaceAlmostUnweighted
     ("AlmostUnweighted",
      "",
-     &GeneralSampler::runCombinationData, false, false, false);
+     &GeneralSampler::theAlmostUnweighted, false, false, false);
   static SwitchOption interfaceAlmostUnweightedOn
     (interfaceAlmostUnweighted,
      "On",
