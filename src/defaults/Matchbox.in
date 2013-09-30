@@ -190,7 +190,6 @@ do Factory:StartParticleGroup g
 insert Factory:ParticleGroup 0 /Herwig/Particles/g
 do Factory:EndParticleGroup
 
-
 do Factory:StartParticleGroup h0
 insert Factory:ParticleGroup 0 /Herwig/Particles/h0
 do Factory:EndParticleGroup
@@ -203,12 +202,18 @@ do Factory:StartParticleGroup e-
 insert Factory:ParticleGroup 0 /Herwig/Particles/e-
 do Factory:EndParticleGroup
 
-do Factory:StartParticleGroup mu+
+do Factory:StartParticleGroup l
+insert Factory:ParticleGroup 0 /Herwig/Particles/e+
 insert Factory:ParticleGroup 0 /Herwig/Particles/mu+
+insert Factory:ParticleGroup 0 /Herwig/Particles/e-
+insert Factory:ParticleGroup 0 /Herwig/Particles/mu-
 do Factory:EndParticleGroup
 
-do Factory:StartParticleGroup mu-
-insert Factory:ParticleGroup 0 /Herwig/Particles/mu-
+do Factory:StartParticleGroup nu
+insert Factory:ParticleGroup 0 /Herwig/Particles/nu_e
+insert Factory:ParticleGroup 0 /Herwig/Particles/nu_mu
+insert Factory:ParticleGroup 0 /Herwig/Particles/nu_ebar
+insert Factory:ParticleGroup 0 /Herwig/Particles/nu_mubar
 do Factory:EndParticleGroup
 
 do Factory:StartParticleGroup l+
