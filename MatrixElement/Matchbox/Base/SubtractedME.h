@@ -145,6 +145,11 @@ public:
   virtual void fillProjectors();
 
   /**
+   * Return true, if projectors will be used
+   */
+  virtual bool willProject() const { return inclusive() || virtualShowerSubtraction(); }
+
+  /**
    * Return true, if this MEGroup will reweight the contributing cross
    * sections.
    */

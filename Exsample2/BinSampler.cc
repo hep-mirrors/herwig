@@ -68,8 +68,10 @@ string BinSampler::id() const {
   const StandardXComb& xc = *eh.xCombs()[theBin];
   string name = xc.matrixElement()->name();
   string::size_type i = name.find_first_of("[");
-  name = name.substr(0,i);
-  os << name << ":";
+  string nameFirst = name.substr(0,i);
+  i = name.find_first_of("]");
+  string nameSecond = name.substr(i+1);
+  os << nameFirst << nameSecond << ":";
   for ( cPDVector::const_iterator pid =
 	  xc.mePartonData().begin();
 	pid != xc.mePartonData().end(); ++pid )

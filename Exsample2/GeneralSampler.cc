@@ -39,7 +39,8 @@ GeneralSampler::GeneralSampler()
     theIntegratedXSec(0.), theIntegratedXSecErr(0.),
     theSumWeights(0.), theSumWeights2(0.), 
     theAttempts(0), theAccepts(0),
-    norm(0.), runCombinationData(false) {}
+    norm(0.), runCombinationData(false),
+    theMaxWeight(0.0), theAlmostUnweighted(false) {}
 
 GeneralSampler::~GeneralSampler() {}
 
@@ -120,7 +121,6 @@ void GeneralSampler::initialize() {
 
 double GeneralSampler::generate() {
 
-  long tries = 0;
   long excptTries = 0;
 
   gotCrossSections = false;
@@ -136,7 +136,6 @@ double GeneralSampler::generate() {
     } catch(BinSampler::UpdateCrossSections) {
       updateCrossSections();
       lastSampler = samplers.upper_bound(UseRandom::rnd())->second;
-      tries = 0;
       if ( ++excptTries == eventHandler()->maxLoop() )
 	break;
       continue;
@@ -146,7 +145,6 @@ double GeneralSampler::generate() {
 
     if ( isnan(lastSampler->lastWeight()) || isinf(lastSampler->lastWeight()) ) {
       lastSampler = samplers.upper_bound(UseRandom::rnd())->second;
-      tries = 0;
       if ( ++excptTries == eventHandler()->maxLoop() )
 	break;
       continue;
@@ -157,13 +155,22 @@ double GeneralSampler::generate() {
     if ( eventHandler()->weighted() && lastSampler->lastWeight() == 0.0 ) {
       lastSampler->accept();
       lastSampler = samplers.upper_bound(UseRandom::rnd())->second;
-      tries = 0;
       if ( ++excptTries == eventHandler()->maxLoop() )
 	break;
       continue;
     }
 
-    // revisit unweighting weighted samplers at this point later
+    if ( theAlmostUnweighted ) {
+      double w = abs(lastSampler->lastWeight()/lastSampler->bias());
+      if ( w <= theMaxWeight ) {
+	if ( UseRandom::rnd() > w/theMaxWeight ) {
+	  if ( ++excptTries == eventHandler()->maxLoop() )
+	    break;
+	  continue;
+	}
+      }
+    }
+
     break;
 
   }
@@ -184,6 +191,10 @@ double GeneralSampler::generate() {
     return sign(lastSampler->lastWeight());
   } else {
     double w = lastSampler->lastWeight()/lastSampler->bias();
+    if ( theAlmostUnweighted ) {
+      if ( w <= theMaxWeight )
+	w = theMaxWeight*sign(lastSampler->lastWeight()/lastSampler->bias());
+    }
     theSumWeights += w;
     theSumWeights2 += sqr(w);
     return w;
@@ -199,6 +210,10 @@ void GeneralSampler::rejectLast() {
     theSumWeights2 -= 1.0;
   } else {
     double w = lastSampler->lastWeight()/lastSampler->bias();
+    if ( theAlmostUnweighted ) {
+      if ( w <= theMaxWeight )
+	w = theMaxWeight*sign(lastSampler->lastWeight()/lastSampler->bias());
+    }
     theSumWeights -= w;
     theSumWeights2 -= sqr(w);
   }
@@ -244,11 +259,14 @@ void GeneralSampler::updateCrossSections(bool) {
   double var = 0.;
   double sumbias = 0.;
 
+  theMaxWeight = 0.0;
+
   for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers.begin();
 	s != samplers.end(); ++s ) {
     if ( (isSampling && s->second == lastSampler) ||
 	 !isSampling )
       s->second->nextIteration();
+    theMaxWeight = max(theMaxWeight,abs(s->second->iterations().back().maxWeight()));
     if ( isSampling && s->second == lastSampler ) {
       s->second->maxWeight(s->second->iterations().back().maxWeight());
       s->second->minWeight(s->second->iterations().back().minWeight());
@@ -276,12 +294,15 @@ void GeneralSampler::updateCrossSections(bool) {
   map<double,Ptr<BinSampler>::ptr> newSamplers;
   double current = 0.;
 
+  double minBias = !theFlatSubprocesses ? -1.0 : 1/sumbias;
+
   for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers.begin();
 	s != samplers.end(); ++s ) {
     double abssw = s->second->averageAbsWeight() * s->second->oversamplingFactor();
     if ( abssw == 0.0 )
       continue;
     if ( !theFlatSubprocesses ) {
+      minBias = minBias > 0.0 ? min(minBias,abssw/sumbias) : abssw/sumbias;
       s->second->bias(abssw/sumbias);
       current += abssw;
     } else {
@@ -290,6 +311,8 @@ void GeneralSampler::updateCrossSections(bool) {
     }
     newSamplers[current/sumbias] = s->second;
   }
+
+  theMaxWeight /= minBias;
 
   samplers = newSamplers;
 
@@ -403,7 +426,8 @@ void GeneralSampler::persistentOutput(PersistentOStream & os) const {
      << theIntegratedXSec << theIntegratedXSecErr
      << theSumWeights << theSumWeights2 
      << theAttempts << theAccepts
-     << norm << runCombinationData;
+     << norm << runCombinationData << theMaxWeight
+     << theAlmostUnweighted;
 }
 
 void GeneralSampler::persistentInput(PersistentIStream & is, int) {
@@ -412,7 +436,8 @@ void GeneralSampler::persistentInput(PersistentIStream & is, int) {
      >> theIntegratedXSec >> theIntegratedXSecErr
      >> theSumWeights >> theSumWeights2 
      >> theAttempts >> theAccepts
-     >> norm >> runCombinationData;
+     >> norm >> runCombinationData >> theMaxWeight
+     >> theAlmostUnweighted;
 }
 
 
@@ -497,6 +522,23 @@ void GeneralSampler::Init() {
      false);
 
   interfaceRunCombinationData.rank(-1);
+
+  static Switch<GeneralSampler,bool> interfaceAlmostUnweighted
+    ("AlmostUnweighted",
+     "",
+     &GeneralSampler::runCombinationData, false, false, false);
+  static SwitchOption interfaceAlmostUnweightedOn
+    (interfaceAlmostUnweighted,
+     "On",
+     "",
+     true);
+  static SwitchOption interfaceAlmostUnweightedOff
+    (interfaceAlmostUnweighted,
+     "Off",
+     "",
+     false);
+
+  interfaceAlmostUnweighted.rank(-1);
 
 }
 
