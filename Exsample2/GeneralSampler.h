@@ -339,6 +339,16 @@ private:
    */
   bool theAlmostUnweighted;
 
+  /**
+   * Number of points which exceeded the maximum
+   */
+  unsigned long maximumExceeds;
+
+  /**
+   * The average relative deviation from the maximum weight
+   */
+  double maximumExceededBy;
+
 private:
 
   /**

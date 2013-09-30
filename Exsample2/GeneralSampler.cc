@@ -40,7 +40,8 @@ GeneralSampler::GeneralSampler()
     theSumWeights(0.), theSumWeights2(0.), 
     theAttempts(0), theAccepts(0),
     norm(0.), runCombinationData(false),
-    theMaxWeight(0.0), theAlmostUnweighted(false) {}
+    theMaxWeight(0.0), theAlmostUnweighted(false),
+    maximumExceeds(0), maximumExceededBy(0.0) {}
 
 GeneralSampler::~GeneralSampler() {}
 
@@ -168,6 +169,9 @@ double GeneralSampler::generate() {
 	    break;
 	  continue;
 	}
+      } else {
+	++maximumExceeds;
+	maximumExceededBy += 1. - w/theMaxWeight;
       }
     }
 
@@ -192,8 +196,8 @@ double GeneralSampler::generate() {
   } else {
     double w = lastSampler->lastWeight()/lastSampler->bias();
     if ( theAlmostUnweighted ) {
-      if ( w <= theMaxWeight )
-	w = theMaxWeight*sign(lastSampler->lastWeight()/lastSampler->bias());
+      if ( abs(w) <= theMaxWeight )
+	w = theMaxWeight*sign(w);
     }
     theSumWeights += w;
     theSumWeights2 += sqr(w);
@@ -211,8 +215,8 @@ void GeneralSampler::rejectLast() {
   } else {
     double w = lastSampler->lastWeight()/lastSampler->bias();
     if ( theAlmostUnweighted ) {
-      if ( w <= theMaxWeight )
-	w = theMaxWeight*sign(lastSampler->lastWeight()/lastSampler->bias());
+      if ( abs(w) <= theMaxWeight )
+	w = theMaxWeight*sign(w);
     }
     theSumWeights -= w;
     theSumWeights2 -= sqr(w);
@@ -361,6 +365,13 @@ void GeneralSampler::dofinish() {
 			    << Exception::warning);
   }
 
+  if ( theAlmostUnweighted && maximumExceeds != 0 ) {
+    cout << maximumExceeds << " of " << theAttempts
+	 << " attempted points exceeded the guessed maximum weight\n"
+	 << "with an average relative deviation of "
+	 << maximumExceededBy/maximumExceeds << "\n";
+  }
+
   if ( runCombinationData ) {
 
     string dataName = generator()->filename() + "-sampling.dat";
@@ -427,7 +438,8 @@ void GeneralSampler::persistentOutput(PersistentOStream & os) const {
      << theSumWeights << theSumWeights2 
      << theAttempts << theAccepts
      << norm << runCombinationData << theMaxWeight
-     << theAlmostUnweighted;
+     << theAlmostUnweighted << maximumExceeds
+     << maximumExceededBy;
 }
 
 void GeneralSampler::persistentInput(PersistentIStream & is, int) {
@@ -437,7 +449,8 @@ void GeneralSampler::persistentInput(PersistentIStream & is, int) {
      >> theSumWeights >> theSumWeights2 
      >> theAttempts >> theAccepts
      >> norm >> runCombinationData >> theMaxWeight
-     >> theAlmostUnweighted;
+     >> theAlmostUnweighted >> maximumExceeds
+     >> maximumExceededBy;
 }
 
 
