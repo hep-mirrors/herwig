@@ -348,8 +348,8 @@ create Herwig::FlatInvertiblePhasespace DetPhasespace
 create Herwig::TreePhasespaceChannels TreePhasespaceChannels
 create Herwig::TreePhasespace TreePhasespace
 set TreePhasespace:ChannelMap TreePhasespaceChannels
-set TreePhasespace:M0 1*GeV
-set TreePhasespace:MC 0.01*GeV
+set TreePhasespace:M0 0.0001*GeV
+set TreePhasespace:MC 0.0000001*GeV
 
 set /Herwig/MatrixElements/Matchbox/Factory:Phasespace TreePhasespace
 
@@ -370,18 +370,24 @@ create ThePEG::JetRegion FirstJet
 set FirstJet:PtMin 20.*GeV
 do FirstJet:YRange -5.0 5.0
 set FirstJet:Fuzzy Yes
+set FirstJet:EnergyCutWidth 4.0*GeV
+set FirstJet:RapidityCutWidth 0.4
 insert FirstJet:Accepts[0] 1
 
 create ThePEG::JetRegion SecondJet
 set SecondJet:PtMin 20.*GeV
 do SecondJet:YRange -5.0 5.0
 set SecondJet:Fuzzy Yes
+set FirstJet:EnergyCutWidth 4.0*GeV
+set FirstJet:RapidityCutWidth 0.4
 insert SecondJet:Accepts[0] 2
 
 create ThePEG::JetRegion ThirdJet
 set ThirdJet:PtMin 20.*GeV
 do ThirdJet:YRange -5.0 5.0
 set ThirdJet:Fuzzy Yes
+set FirstJet:EnergyCutWidth 4.0*GeV
+set FirstJet:RapidityCutWidth 0.4
 insert ThirdJet:Accepts[0] 3
 
 create ThePEG::NJetsCut NJetsCut
