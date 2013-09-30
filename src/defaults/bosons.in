@@ -4,7 +4,7 @@
 create ThePEG::BeamParticleData gamma
 setup gamma 22 gamma 0 0.  0 0 0 0 3 1 
 create ThePEG::ParticleData h0
-setup h0 25 h0 115 0.003196 0.03196 0 0 0 1 0 
+setup h0 25 h0 125.9 0.004541 0.04541 0 0 0 1 0 
 newdef h0:VariableRatio 1
 create ThePEG::ConstituentParticleData g
 setup g 21 g 0 0.  0 0 0 8 3 1  0.95
