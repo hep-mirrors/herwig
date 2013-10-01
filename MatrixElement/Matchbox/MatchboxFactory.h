@@ -56,6 +56,14 @@ public:
 
 public:
 
+  /**
+   * Return the current factory
+   */
+  static MatchboxFactory* currentFactory() { 
+    assert(theCurrentFactory());
+    return theCurrentFactory();
+  }
+
   /** @name Process and diagram information */
   //@{
 
@@ -620,6 +628,12 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit();
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
   //@}
 
 private:
@@ -894,6 +908,11 @@ private:
    * Produce matrix element corrections, but no NLO
    */
   bool theMECorrectionsOnly;
+
+  /**
+   * The current factory
+   */
+  static MatchboxFactory*& theCurrentFactory();
 
 private:
 

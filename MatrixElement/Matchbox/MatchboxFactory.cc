@@ -48,6 +48,11 @@ MatchboxFactory::MatchboxFactory()
 
 MatchboxFactory::~MatchboxFactory() {}
 
+MatchboxFactory*& MatchboxFactory::theCurrentFactory() {
+  static MatchboxFactory* sCurrentFactory = 0;
+  return sCurrentFactory;
+}
+
 IBPtr MatchboxFactory::clone() const {
   return new_ptr(*this);
 }
@@ -857,10 +862,16 @@ void MatchboxFactory::print(ostream& os) const {
 }
 
 void MatchboxFactory::doinit() {
+  theCurrentFactory() = this;
   setup();
   if ( initVerbose() )
     print(Repository::clog());
   SubProcessHandler::doinit();
+}
+
+void MatchboxFactory::doinitrun() {
+  theCurrentFactory() = this;
+  SubProcessHandler::doinitrun();
 }
 
 
