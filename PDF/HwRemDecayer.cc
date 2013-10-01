@@ -115,7 +115,7 @@ void HwRemDecayer::split(tPPtr parton, HadronContent & content,
     else                   theanti.second = anti;
     // add the x and return
     if(rem==theRems.first) theX.first  += currentx;
-    else                   theX.second += currentx; 
+    else                   theX.second += currentx;
     return;
   }
   //or gluon for secondaries
@@ -209,8 +209,6 @@ void HwRemDecayer::doSplit(pair<tPPtr, tPPtr> partons,
 	    theUsed.first, theMaps.first, pdfs.first, first);
     }
     catch(ShowerHandler::ExtraScatterVeto) {
-      theX.first -= partons.first->momentum().rho()/
-	parent(theRems.first)->momentum().rho();
       throw ShowerHandler::ExtraScatterVeto();
     }
   }
@@ -226,7 +224,7 @@ void HwRemDecayer::doSplit(pair<tPPtr, tPPtr> partons,
 	Lorentz5Momentum pnew[2]=
 	  {theRems.first->momentum()  - theUsed.first  - partons.first->momentum(),
 	   theRems.second->momentum() - theUsed.second - partons.second->momentum()};
-	
+
 	pnew[0].setMass(getParticleData(theContent.first.RemID())->constituentMass());
 	pnew[0].rescaleEnergy();
 	pnew[1].setMass(getParticleData(theContent.second.RemID())->constituentMass());
@@ -241,7 +239,7 @@ void HwRemDecayer::doSplit(pair<tPPtr, tPPtr> partons,
 	Lorentz5Momentum ptotal=
 	  theRems.first ->momentum()-partons.first ->momentum()+
 	  theRems.second->momentum()-partons.second->momentum();
-     
+	// add x limits
 	if(ptotal.m() < (pnew[0].m() + pnew[1].m()) ) {
 	  if(partons.second->id() != ParticleID::g){
 	    if(partons.second==theMaps.second.back().first) 
@@ -253,6 +251,8 @@ void HwRemDecayer::doSplit(pair<tPPtr, tPPtr> partons,
 	    thestep->removeParticle(theMaps.second.back().second);
 	  }
 	  theMaps.second.pop_back();
+	  theX.second -= partons.second->momentum().rho()/
+	    parent(theRems.second)->momentum().rho();
 	  throw ShowerHandler::ExtraScatterVeto();
 	}
       }
@@ -264,8 +264,6 @@ void HwRemDecayer::doSplit(pair<tPPtr, tPPtr> partons,
       //case of the first forcedSplitting worked fine
       theX.first -= partons.first->momentum().rho()/
 	parent(theRems.first)->momentum().rho();
-      theX.second -= partons.second->momentum().rho()/
-	parent(theRems.second)->momentum().rho();
 
       //case of the first interaction
       //throw veto immediately, because event get rejected anyway.
@@ -431,7 +429,9 @@ PPtr HwRemDecayer::forceSplit(const tRemPPtr rem, long child, Energy &lastQ,
   // Q0 (Qmax/Q0)^R
   Energy q;
   unsigned int ntry=0,maxtry=100;
-  double zmin=  lastx ,zmax,yy;
+  double xExtracted = rem==theRems.first ? theX.first : theX.second;
+  double zmin=  lastx/(1.-xExtracted) ,zmax,yy;
+
   if(1-lastx<eps) throw ShowerHandler::ExtraScatterVeto();
   do {
     q = minQ*pow(lastQ/minQ,UseRandom::rnd());
@@ -440,11 +440,7 @@ PPtr HwRemDecayer::forceSplit(const tRemPPtr rem, long child, Energy &lastQ,
     ++ntry;
   }
   while(zmax<zmin&&ntry<maxtry);
-  if(ntry==maxtry) {
-    throw Exception() << "Can't set scale and z for forced splitting in " 
-		      << "HwRemDecayer::forceSplit() " 
-		      << Exception::eventerror;
-  }
+  if(ntry==maxtry) throw ShowerHandler::ExtraScatterVeto();
   if(zmax-zmin<eps) throw ShowerHandler::ExtraScatterVeto();
   // now generate z as in FORTRAN HERWIG
   // use y = ln(z/(1-z)) as integration variable
