@@ -230,13 +230,6 @@ public:
   /**
    * Write the order file process list
    */
-  virtual void olpOrderFileProcessGroup(ostream&,
-					const string&,
-					const set<Process>&) const;
-
-  /**
-   * Write the order file process list
-   */
   virtual void olpOrderFileProcesses(ostream&,
 				     const map<pair<Process,int>,int>& procs) const;
 

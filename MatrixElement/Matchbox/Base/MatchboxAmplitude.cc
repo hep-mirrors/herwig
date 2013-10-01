@@ -75,70 +75,70 @@ void MatchboxAmplitude::olpOrderFileHeader(ostream& os) const {
 
 }
 
-void MatchboxAmplitude::olpOrderFileProcessGroup(ostream& os,
-						 const string& type,
-						 const set<Process>& proc) const {
-
-  unsigned int oas = proc.begin()->orderInAlphaS;
-  unsigned int oae = proc.begin()->orderInAlphaEW;
-  os << "AmplitudeType             " << type << "\n\n"
-     << "AlphasPower               " << oas << "\n"
-     << "AlphaPower                " << oae << "\n\n";
-  for ( set<Process>::const_iterator p = proc.begin();
-	p != proc.end(); ++p ) {
-    if ( oas != p->orderInAlphaS ||
-	 oae != p->orderInAlphaEW ) {
-      oas = p->orderInAlphaS;
-      oae = p->orderInAlphaEW;
-      os << "\n"
-	 << "AlphasPower               " << oas << "\n"
-	 << "AlphaPower                " << oae << "\n\n";
-    }
-    os << p->legs[0]->id() << " "
-       << p->legs[1]->id() << " -> ";
-    for ( PDVector::const_iterator o = p->legs.begin() + 2;
-	  o != p->legs.end(); ++o ) {
-      os << (**o).id() << " ";
-    }
-    os << "\n";
-  }
-
-  os << "\n";
-
-}
-
 void MatchboxAmplitude::olpOrderFileProcesses(ostream& os,
 					      const map<pair<Process,int>,int>& proc) const {
 
-  set<Process> trees;
-  set<Process> loops;
-  set<Process> ccs;
-  set<Process> sccs;
+  map<int,pair<Process,int> > sorted;
 
   for ( map<pair<Process,int>,int>::const_iterator p = proc.begin();
 	p != proc.end(); ++p ) {
-    if ( p->first.second == ProcessType::treeME2 ) {
-      trees.insert(p->first.first);
-    } else if ( p->first.second == ProcessType::oneLoopInterference ) {
-      loops.insert(p->first.first);
-    } else if ( p->first.second == ProcessType::colourCorrelatedME2 ) {
-      ccs.insert(p->first.first);
-    } else if ( p->first.second == ProcessType::spinColourCorrelatedME2 ) {
-      sccs.insert(p->first.first);
-    } else assert(false);
+    sorted[p->second] = p->first;
   }
 
-  if ( !trees.empty() )
-    olpOrderFileProcessGroup(os,"tree",trees);
+  unsigned int currentOrderInAlphaS = sorted.begin()->second.first.orderInAlphaS;
+  unsigned int currentOrderInAlphaEW = sorted.begin()->second.first.orderInAlphaEW;
+  int currentType = sorted.begin()->second.second;
 
-  if ( !loops.empty() )
-    olpOrderFileProcessGroup(os,"loop",loops);
+  os << "AlphasPower               " << currentOrderInAlphaS << "\n"
+     << "AlphaPower                " << currentOrderInAlphaEW << "\n"
+     << "AmplitudeType             ";
+  if ( currentType == ProcessType::treeME2 ) {
+    os << "tree\n";
+  } else if ( currentType == ProcessType::oneLoopInterference ) {
+    os << "loop\n";
+  } else if ( currentType == ProcessType::colourCorrelatedME2 ) {
+    os << "cctree\n";
+  } else if ( currentType == ProcessType::spinColourCorrelatedME2 ) {
+    os << "sctree\n";
+  } else assert(false);
 
-  if ( !ccs.empty() )
-    olpOrderFileProcessGroup(os,"cctree",ccs);
 
-  if ( !sccs.empty() )
-    olpOrderFileProcessGroup(os,"sctree",sccs);
+  for ( map<int,pair<Process,int> >::const_iterator p = sorted.begin();
+	p != sorted.end(); ++p ) {
+
+    if ( currentOrderInAlphaS != p->second.first.orderInAlphaS ) {
+      currentOrderInAlphaS = p->second.first.orderInAlphaS;
+      os << "AlphasPower               " << currentOrderInAlphaS << "\n";
+    }
+
+    if ( currentOrderInAlphaEW != p->second.first.orderInAlphaEW ) {
+      currentOrderInAlphaEW = p->second.first.orderInAlphaEW;
+      os << "AlphaPower                " << currentOrderInAlphaEW << "\n";
+    }
+
+    if ( currentType != p->second.second ) {
+      currentType = p->second.second;
+      os << "AmplitudeType             ";
+      if ( currentType == ProcessType::treeME2 ) {
+	os << "tree\n";
+      } else if ( currentType == ProcessType::oneLoopInterference ) {
+	os << "loop\n";
+      } else if ( currentType == ProcessType::colourCorrelatedME2 ) {
+	os << "cctree\n";
+      } else if ( currentType == ProcessType::spinColourCorrelatedME2 ) {
+	os << "sctree\n";
+      } else assert(false);
+    }
+
+    os << p->second.first.legs[0]->id() << " "
+       << p->second.first.legs[1]->id() << " -> ";
+    for ( PDVector::const_iterator o = p->second.first.legs.begin() + 2;
+	  o != p->second.first.legs.end(); ++o ) {
+      os << (**o).id() << " ";
+    }
+    os << "\n";
+
+  }
 
 }
 
