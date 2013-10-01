@@ -209,6 +209,9 @@ ClusterPtr ColourReconnector::_findRecoPartner(ClusterPtr cl,
   Energy minMass = 1*TeV;
   for (CluVecIt cit=cv.begin(); cit != cv.end(); ++cit) {
 
+    // don't even look at original cluster
+    if(*cit==cl) continue;
+
     // don't allow colour octet clusters
     if ( isColour8( cl->colParticle(),
 	            (*cit)->antiColParticle() )  ||
@@ -216,6 +219,9 @@ ClusterPtr ColourReconnector::_findRecoPartner(ClusterPtr cl,
 	            cl->antiColParticle() ) ) {
       continue;
     }
+
+    // stop it putting beam remnants together
+    if(cl->isBeamCluster() && (**cit).isBeamCluster()) continue;
 
     // momenta of the old clusters
     Lorentz5Momentum p1 = cl->colParticle()->momentum() + 
