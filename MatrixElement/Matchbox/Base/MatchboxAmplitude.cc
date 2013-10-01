@@ -69,7 +69,7 @@ void MatchboxAmplitude::olpOrderFileHeader(ostream& os) const {
      << "IRregularisation          " << (isDR() ? "DRED" : "CDR") << "\n"
      << "Extra HelAvgInitial       no\n"
      << "Extra ColAvgInitial       no\n"
-     << "Extra MCSymmetrizeFinal   yes\n";
+     << "Extra MCSymmetrizeFinal   no\n";
 
   os << "\n";
 
@@ -81,7 +81,7 @@ void MatchboxAmplitude::olpOrderFileProcessGroup(ostream& os,
 
   unsigned int oas = proc.begin()->orderInAlphaS;
   unsigned int oae = proc.begin()->orderInAlphaEW;
-  os << "Extra AmplitudeType       " << type << "\n\n"
+  os << "AmplitudeType             " << type << "\n\n"
      << "AlphasPower               " << oas << "\n"
      << "AlphaPower                " << oae << "\n\n";
   for ( set<Process>::const_iterator p = proc.begin();
@@ -129,16 +129,16 @@ void MatchboxAmplitude::olpOrderFileProcesses(ostream& os,
   }
 
   if ( !trees.empty() )
-    olpOrderFileProcessGroup(os,"Tree",trees);
+    olpOrderFileProcessGroup(os,"tree",trees);
 
   if ( !loops.empty() )
-    olpOrderFileProcessGroup(os,"Loop",loops);
+    olpOrderFileProcessGroup(os,"loop",loops);
 
   if ( !ccs.empty() )
-    olpOrderFileProcessGroup(os,"ColourCorrelated",ccs);
+    olpOrderFileProcessGroup(os,"cctree",ccs);
 
   if ( !sccs.empty() )
-    olpOrderFileProcessGroup(os,"SpinCorrelated",sccs);
+    olpOrderFileProcessGroup(os,"sctree",sccs);
 
 }
 
