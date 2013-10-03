@@ -170,8 +170,8 @@ Complex MatchboxAmplitudelnuqqbarqqbar::evaluate(size_t a, const vector<int>& he
     ckmelement23 = theCKM[tmp23.first][tmp23.second];
     ckmelement45 = theCKM[tmp45.first][tmp45.second];
     if ( !wPlus ) {
-      ckmelement23.imag() = -ckmelement23.imag();
-      ckmelement45.imag() = -ckmelement45.imag();
+      ckmelement23 = conj(ckmelement23);
+      ckmelement45 = conj(ckmelement45);
     }
   }
   Complex wPropergator =

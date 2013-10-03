@@ -114,7 +114,7 @@ Complex MatchboxAmplitudelnuqqbar::evaluate(size_t, const vector<int>& hel, Comp
       SU2Helper::family(amplitudePartonData()[3]));
     if ( amplitudePartonData()[3]->id() < 0 ) swap(tmp.first,tmp.second);
     ckmelement = theCKM[tmp.first][tmp.second];
-    if ( !wPlus ) ckmelement.imag() = -ckmelement.imag();
+    if ( !wPlus ) ckmelement = conj(ckmelement);
   }
   Complex wPropergator =
           1./Complex(((amplitudeMomentum(0)+amplitudeMomentum(1)).m2()-sqr(MW))/lastSHat(),MW*GW/lastSHat());
@@ -140,7 +140,7 @@ Complex MatchboxAmplitudelnuqqbar::evaluateOneLoop(size_t, const vector<int>& he
       SU2Helper::family(amplitudePartonData()[3]));
     if ( amplitudePartonData()[3]->id() < 0 ) swap(tmp.first,tmp.second);
     ckmelement = theCKM[tmp.first][tmp.second];
-    if ( !wPlus ) ckmelement.imag() = -ckmelement.imag();
+    if ( !wPlus ) ckmelement = conj(ckmelement);
   }
   Complex wPropergator =
           1./Complex(((amplitudeMomentum(0)+amplitudeMomentum(1)).m2()-sqr(MW))/lastSHat(),MW*GW/lastSHat());
