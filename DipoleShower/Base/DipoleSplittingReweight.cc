@@ -11,6 +11,7 @@
 // functions of the DipoleSplittingReweight class.
 //
 
+#include <config.h>
 #include "DipoleSplittingReweight.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Reference.h"

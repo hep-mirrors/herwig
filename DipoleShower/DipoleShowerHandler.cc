@@ -11,6 +11,7 @@
 // functions of the DipoleShowerHandler class.
 //
 
+#include <config.h>
 #include "DipoleShowerHandler.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Reference.h"

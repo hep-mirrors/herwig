@@ -11,6 +11,7 @@
 // functions of the ConstituentReshuffler class.
 //
 
+#include <config.h>
 #include "ConstituentReshuffler.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 

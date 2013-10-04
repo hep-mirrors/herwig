@@ -10,7 +10,7 @@
 // This is the implementation of the non-inlined, non-templated member
 // functions of the DipoleSplittingGenerator class.
 //
-
+#include <config.h>
 #include "DipoleSplittingGenerator.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Reference.h"
