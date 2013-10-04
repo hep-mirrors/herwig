@@ -379,6 +379,8 @@ cat << _HW_EOF_ > config.herwig
 *** CC:			$CCSTRING
 *** CXX:		$CXXSTRING
 *** FC:			$FCSTRING
+***
+*** CXXFLAGS:		$CXXFLAGS
 *****************************************************
 _HW_EOF_
 ])
