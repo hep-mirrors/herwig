@@ -422,13 +422,12 @@ double MatchboxMEBase::me2() const {
     if ( matchboxAmplitude()->treeAmplitudes() )
       matchboxAmplitude()->prepareAmplitudes(this);
 
-    lastME2(matchboxAmplitude()->me2()*
-	    crossingSign()*
-	    me2Norm());
+    double res = 
+      matchboxAmplitude()->me2()*
+      crossingSign()*
+      me2Norm();
 
-    logME2();
-    
-    return lastME2();
+    return res;
 
   }
 
@@ -533,7 +532,6 @@ CrossSection MatchboxMEBase::dSigHatDR() const {
   lastME2(xme2);
 
   if ( xme2 == 0. && !oneLoopNoBorn() ) {
-    lastME2(0.0);
     lastMECrossSection(ZERO);
     return lastMECrossSection();
   }
@@ -588,13 +586,13 @@ double MatchboxMEBase::oneLoopInterference() const {
 
     if ( matchboxAmplitude()->oneLoopAmplitudes() )
       matchboxAmplitude()->prepareOneLoopAmplitudes(this);
-    lastME2(matchboxAmplitude()->oneLoopInterference()*
-	    crossingSign()*
-	    me2Norm(1));
 
-    logME2();
-    
-    return lastME2();
+    double res = 
+      matchboxAmplitude()->oneLoopInterference()*
+      crossingSign()*
+      me2Norm(1);
+
+    return res;
 
   }
 
@@ -866,13 +864,13 @@ double MatchboxMEBase::colourCorrelatedME2(pair<int,int> ij) const {
 
     if ( matchboxAmplitude()->treeAmplitudes() )
       matchboxAmplitude()->prepareAmplitudes(this);
-    lastME2(matchboxAmplitude()->colourCorrelatedME2(ij)*
-	    crossingSign()*
-	    me2Norm());
 
-    logME2();
-    
-    return lastME2();
+    double res = 
+      matchboxAmplitude()->colourCorrelatedME2(ij)*
+      crossingSign()*
+      me2Norm();
+
+    return res;
 
   }
 
@@ -891,13 +889,13 @@ double MatchboxMEBase::largeNColourCorrelatedME2(pair<int,int> ij,
     if ( matchboxAmplitude()->treeAmplitudes() )
       matchboxAmplitude()->prepareAmplitudes(this);
     largeNBasis->prepare(mePartonData(),false);
-    lastME2(matchboxAmplitude()->largeNColourCorrelatedME2(ij,largeNBasis)*
-	    crossingSign()*
-	    me2Norm());
 
-    logME2();
-    
-    return lastME2();
+    double res = 
+      matchboxAmplitude()->largeNColourCorrelatedME2(ij,largeNBasis)*
+      crossingSign()*
+      me2Norm();
+
+    return res;
 
   }
 
@@ -915,13 +913,13 @@ double MatchboxMEBase::spinColourCorrelatedME2(pair<int,int> ij,
 
     if ( matchboxAmplitude()->treeAmplitudes() )
       matchboxAmplitude()->prepareAmplitudes(this);
-    lastME2(matchboxAmplitude()->spinColourCorrelatedME2(ij,c)*
-	    crossingSign()*
-	    me2Norm());
 
-    logME2();
-    
-    return lastME2();
+    double res = 
+      matchboxAmplitude()->spinColourCorrelatedME2(ij,c)*
+      crossingSign()*
+      me2Norm();
+
+    return res;
 
   }
 
