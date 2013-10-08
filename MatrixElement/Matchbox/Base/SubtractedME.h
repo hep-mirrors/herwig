@@ -154,7 +154,7 @@ public:
    * sections.
    */
   virtual bool groupReweighted() const { 
-    return inclusive() || showerApproximation() || head()->reweighted();
+    return inclusive() || showerApproximation();
   }
 
   /**

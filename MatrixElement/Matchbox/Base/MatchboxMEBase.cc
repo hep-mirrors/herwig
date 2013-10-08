@@ -834,6 +834,16 @@ MatchboxMEBase::getDipoles(const vector<Ptr<SubtractionDipole>::ptr>& dipoles,
 		    << emitter << "," << emission << ")," << spectator << "]";
 	      if ( ! (generator()->preinitRegister(nDipole,dname.str()) ) )
 		throw InitException() << "Dipole " << dname.str() << " already existing.";
+	      if ( !factory()->reweighters().empty() ) {
+		for ( vector<ReweightPtr>::const_iterator rw = factory()->reweighters().begin();
+		      rw != factory()->reweighters().end(); ++rw )
+		  nDipole->addReweighter(*rw);
+	      }
+	      if ( !factory()->preweighters().empty() ) {
+		for ( vector<ReweightPtr>::const_iterator rw = factory()->preweighters().begin();
+		      rw != factory()->preweighters().end(); ++rw )
+		  nDipole->addPreweighter(*rw);
+	      }
 	      nDipole->cloneDependencies(dname.str());
 	    }
 	  }

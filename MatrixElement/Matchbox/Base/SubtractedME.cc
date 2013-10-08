@@ -367,10 +367,6 @@ void SubtractedME::fillProjectors() {
 
 double SubtractedME::reweightHead(const vector<tStdXCombPtr>& dep) {
 
-  if ( head()->reweighted() ) {
-    return head()->reWeight();
-  }
-
   if ( inclusive() && !lastXComb().lastProjector() )
     return 1.;
 
@@ -425,9 +421,6 @@ double SubtractedME::reweightHead(const vector<tStdXCombPtr>& dep) {
 }
 
 double SubtractedME::reweightDependent(tStdXCombPtr xc, const vector<tStdXCombPtr>& dep) {
-
-  if ( xc->matrixElement()->reweighted() )
-    return xc->matrixElement()->reWeight();
 
   if ( inclusive() && !lastXComb().lastProjector() )
     return 0.;
