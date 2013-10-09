@@ -9,7 +9,7 @@ cd /Herwig/DipoleShower
 ################################################################################
 
 cp LOAlphaS AlphaS
-set AlphaS:input_alpha_s 0.1131785
+set AlphaS:input_alpha_s 0.1283827
 set AlphaS:freezing_scale 0.0*GeV
 
 set /Herwig/Model:QCD/RunningAlphaS AlphaS
@@ -29,7 +29,7 @@ set IntrinsicPtGenerator:SeaIntrinsicPtScale 1.29001*GeV
 
 cd /Herwig/DipoleShower/Kinematics
 
-set FFLightKinematics:IRCutoff  1.416023*GeV
+set FFLightKinematics:IRCutoff  0.9491221*GeV
 set FILightKinematics:IRCutoff  1.0*GeV
 
 set IFLightKinematics:IRCutoff  1.0*GeV
@@ -39,7 +39,7 @@ set IILightKinematics:IRCutoff  1.0*GeV
 # shower parameters at boundary to non-perturbative domain
 ################################################################################
 
-set /Herwig/Particles/g:ConstituentMass 1.080386*GeV
+set /Herwig/Particles/g:ConstituentMass 0.7*GeV
 
 cd /Herwig/DipoleShower/Kernels
 
@@ -101,22 +101,22 @@ set IIgx2bbarbxDipoleKernel:ScreeningScale  0.0*GeV
 
 cd /Herwig/Hadronization
 
-set ClusterFissioner:ClMaxLight                  4.17032*GeV
-set ClusterFissioner:ClPowLight                  5.734681
-set ClusterFissioner:PSplitLight                 0.7651726
+set ClusterFissioner:ClMaxLight                  3.363988*GeV
+set ClusterFissioner:ClPowLight                  4.913532
+set ClusterFissioner:PSplitLight                 0.7637084
 set ClusterDecayer:ClDirLight                    1
 set ClusterDecayer:ClSmrLight                    4.548755
 
-set ClusterFissioner:ClMaxCharm                  4.17032*GeV
-set ClusterFissioner:ClPowCharm                  5.734681
-set ClusterFissioner:PSplitCharm                 0.7651726
+set ClusterFissioner:ClMaxCharm                  3.363988*GeV
+set ClusterFissioner:ClPowCharm                  4.913532
+set ClusterFissioner:PSplitCharm                 0.7637084
 set ClusterDecayer:ClDirCharm                    1
 set ClusterDecayer:ClSmrCharm                    4.548755
 set LightClusterDecayer:SingleHadronLimitCharm   0.0
 
-set ClusterFissioner:ClMaxBottom                 4.17032*GeV
-set ClusterFissioner:ClPowBottom                 5.734681
-set ClusterFissioner:PSplitBottom                0.7651726
+set ClusterFissioner:ClMaxBottom                 3.363988*GeV
+set ClusterFissioner:ClPowBottom                 4.913532
+set ClusterFissioner:PSplitBottom                0.7637084
 set ClusterDecayer:ClDirBottom                   1
 set ClusterDecayer:ClSmrBottom                   4.548755
 set LightClusterDecayer:SingleHadronLimitBottom  0.0
