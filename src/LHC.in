@@ -34,7 +34,7 @@ cd /Herwig/MatrixElements/
 #  Electroweak boson W/Z processes
 #
 # Drell-Yan Z/gamma
-#insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff
+insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff
 #
 # Drell-Yan W
 # insert SimpleQCD:MatrixElements[0] MEqq2W2ff
@@ -55,8 +55,7 @@ cd /Herwig/MatrixElements/
 #  QCD and gamma processes
 #
 # QCD 2-2 scattering
-insert SimpleQCD:MatrixElements[0] MEQCD2to2
-set MEQCD2to2:Process qg2qg
+# insert SimpleQCD:MatrixElements[0] MEQCD2to2
 #
 # gamma+jet
 # insert SimpleQCD:MatrixElements[0] MEGammaJet
@@ -141,16 +140,6 @@ cd /Herwig/Generators
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################
-
-create ThePEG::RivetAnalysis Rivet RivetAnalysis.so
-insert Rivet:Analyses 0 MC_JETS
-insert LHCGenerator:AnalysisHandlers 0 Rivet
-
-set LHCGenerator:EventHandler:CascadeHandler NULL
-set LHCGenerator:EventHandler:HadronizationHandler NULL
-set LHCGenerator:EventHandler:DecayHandler NULL
-set /Herwig/Analysis/Basics:CheckQuark No
-
 saverun LHC LHCGenerator
 
 ##################################################
