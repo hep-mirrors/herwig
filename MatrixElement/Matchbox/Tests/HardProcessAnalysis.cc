@@ -117,9 +117,9 @@ void HardProcessAnalysis::Histograms::finalize(ostream& dat,
 
 }
 
-struct SortedInId {
+struct SortedInPt {
   bool partonsAreJets;
-  explicit SortedInId(bool newPartonsAreJets = false)
+  explicit SortedInPt(bool newPartonsAreJets = false)
     : partonsAreJets(newPartonsAreJets) {}
   inline bool operator()(PPtr a, PPtr b) const {
     long aId = a->id();
@@ -128,7 +128,9 @@ struct SortedInId {
     long bId = b->id();
     if ( partonsAreJets && b->coloured() )
       bId = 21;
-    return ( aId < bId );
+    if ( aId != bId )
+      return ( aId < bId );
+    return a->momentum().perp() > b->momentum().perp();
   }
 };
 
@@ -155,7 +157,7 @@ struct GetName {
 };
 
 void HardProcessAnalysis::fill(PPair in, ParticleVector out, double weight) {
-  sort(out.begin(),out.end(),SortedInId(thePartonsAreJets));
+  sort(out.begin(),out.end(),SortedInPt(thePartonsAreJets));
   vector<string> proc;
   if ( theSplitInitialStates ) {
     proc.push_back(GetName()(in.first));
@@ -193,8 +195,8 @@ void HardProcessAnalysis::fill(PPair in, ParticleVector out, double weight) {
   Energy2 shat = (in.first->momentum() + in.second->momentum()).m2();
   data.sshat->addWeighted(sqrt(shat)/GeV,weight);
   double tau = shat/sqr(generator()->maximumCMEnergy());
-  double x1 = tau*exp(y);
-  double x2 = tau*exp(-y);
+  double x1 = sqrt(tau)*exp(y);
+  double x2 = sqrt(tau)*exp(-y);
   data.x1->addWeighted(x1,weight);
   data.x2->addWeighted(x2,weight);
   data.sumWeights += weight;
