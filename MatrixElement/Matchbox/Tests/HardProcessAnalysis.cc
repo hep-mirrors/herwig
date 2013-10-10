@@ -130,7 +130,7 @@ struct SortedInPt {
       bId = 21;
     if ( aId != bId )
       return ( aId < bId );
-    return ( a->momentum().perp() > b->momentum().perp() );
+    return ( a->momentum().perp() >= b->momentum().perp() );
   }
 };
 
@@ -157,7 +157,7 @@ struct GetName {
 };
 
 void HardProcessAnalysis::fill(PPair in, ParticleVector out, double weight) {
-  sort(out.begin(),out.end(),SortedInPt());
+  sort(out.begin(),out.end(),SortedInPt(thePartonsAreJets));
   vector<string> proc;
   if ( theSplitInitialStates ) {
     proc.push_back(GetName()(in.first));
