@@ -117,9 +117,9 @@ void HardProcessAnalysis::Histograms::finalize(ostream& dat,
 
 }
 
-struct SortedInPt {
+struct SortedInId {
   bool partonsAreJets;
-  explicit SortedInPt(bool newPartonsAreJets = false)
+  explicit SortedInId(bool newPartonsAreJets = false)
     : partonsAreJets(newPartonsAreJets) {}
   inline bool operator()(PPtr a, PPtr b) const {
     long aId = a->id();
@@ -128,9 +128,7 @@ struct SortedInPt {
     long bId = b->id();
     if ( partonsAreJets && b->coloured() )
       bId = 21;
-    if ( aId != bId )
-      return ( aId < bId );
-    return ( a->momentum().perp() >= b->momentum().perp() );
+    return ( aId < bId );
   }
 };
 
@@ -157,7 +155,7 @@ struct GetName {
 };
 
 void HardProcessAnalysis::fill(PPair in, ParticleVector out, double weight) {
-  sort(out.begin(),out.end(),SortedInPt(thePartonsAreJets));
+  sort(out.begin(),out.end(),SortedInId(thePartonsAreJets));
   vector<string> proc;
   if ( theSplitInitialStates ) {
     proc.push_back(GetName()(in.first));
