@@ -13,6 +13,7 @@
 
 #include "MatchboxHybridAmplitude.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Reference.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -91,6 +92,17 @@ void MatchboxHybridAmplitude::Init() {
   static ClassDocumentation<MatchboxHybridAmplitude> documentation
     ("MatchboxHybridAmplitude unifies two amplitude objects to "
      "provide tree and one-loop matrix elements.");
+
+
+  static Reference<MatchboxHybridAmplitude,MatchboxAmplitude> interfaceTreeLevelAmplitude
+    ("TreeLevelAmplitude",
+     "Set the tree level amplitude to be used.",
+     &MatchboxHybridAmplitude::theTreeLevelAmplitude, false, false, true, false, false);
+
+  static Reference<MatchboxHybridAmplitude,MatchboxAmplitude> interfaceOneLoopAmplitude
+    ("OneLoopAmplitude",
+     "Set the tree level amplitude to be used.",
+     &MatchboxHybridAmplitude::theOneLoopAmplitude, false, false, true, false, false);
 
 }
 
