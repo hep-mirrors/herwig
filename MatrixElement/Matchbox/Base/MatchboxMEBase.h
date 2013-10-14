@@ -177,6 +177,14 @@ public:
   }
 
   /**
+   * Return true, if colour and spin correlated matrix elements should
+   * be ordered from the OLP
+   */
+  virtual bool needsOLPCorrelators() const { 
+    return matchboxAmplitude() ? matchboxAmplitude()->needsOLPCorrelators() : true;
+  }
+
+  /**
    * Return the process index, if this is an OLP handled matrix element
    */
   const vector<int>& olpProcess() const { return theOLPProcess; }

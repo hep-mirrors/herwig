@@ -54,7 +54,7 @@ Ptr<MatchboxMEBase>::ptr MatchboxAmplitude::makeME(const PDVector&) const {
 
 Selector<const ColourLines *> MatchboxAmplitude::colourGeometries(tcDiagPtr d) const {
   if ( haveColourFlows() )
-    return theColourBasis->colourGeometries(d,lastLargeNAmplitudes());
+    return colourBasis()->colourGeometries(d,lastLargeNAmplitudes());
   return Selector<const ColourLines *>();
 }
 
@@ -203,8 +203,9 @@ void MatchboxAmplitude::setXComb(tStdXCombPtr xc) {
   theLastXComb = xc;
   lastMatchboxXComb(xc);
   fillCrossingMap();
-  for ( size_t k = 0 ; k < meMomenta().size(); ++k )
-    amplitudeMomenta()[k] = amplitudeMomentum(k);
+  if ( treeAmplitudes() || oneLoopAmplitudes() )
+    for ( size_t k = 0 ; k < meMomenta().size(); ++k )
+      amplitudeMomenta()[k] = amplitudeMomentum(k);
 }
 
 void MatchboxAmplitude::fillCrossingMap(size_t shift) {
