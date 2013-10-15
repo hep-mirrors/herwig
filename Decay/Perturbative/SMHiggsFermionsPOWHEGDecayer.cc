@@ -344,9 +344,9 @@ bool SMHiggsFermionsPOWHEGDecayer::getEvent() {
   probTemp[0][0]=probTemp[0][1]=probTemp[1][0]=probTemp[1][1]=0.;
   double x1Solution[2][2] = {{0.,0.},{0.,0.}};
   double x2Solution[2][2] = {{0.,0.},{0.,0.}};
-  double x3Solution[2]     = {0.,0.};
-  Energy pT[2]                 = {pTmax,pTmax};
-  double yTemp[2]           ={0.,0.};
+  double x3Solution[2]    =  {0.,0.};
+  Energy pT[2]            =  {pTmax,pTmax};
+  double yTemp[2]         =  {0.,0.};
   for(int i=0; i<2; i++) {
     do {
       // reject the emission
@@ -386,8 +386,8 @@ bool SMHiggsFermionsPOWHEGDecayer::getEvent() {
            checkZMomenta(x1Solution[i][j], x2Solution[i][j], x3Solution[i], yTemp[i], pT[i])) {
           InvEnergy2 D1 = dipoleSubtractionTerm( x1Solution[i][j], x2Solution[i][j]); 
           InvEnergy2 D2 = dipoleSubtractionTerm( x2Solution[i][j], x1Solution[i][j]);
-          double dipoleFactor = abs(D1)/(abs(D1) + abs(D2));
-          probTemp[i][j] = weightPrefactor*pT[i]*dipoleFactor*
+	  double dipoleFactor = abs(D1)/(abs(D1) + abs(D2));
+	  probTemp[i][j] = weightPrefactor*pT[i]*dipoleFactor*
             calculateJacobian(x1Solution[i][j], x2Solution[i][j], pT[i])*
             calculateRealEmission(x1Solution[i][j], x2Solution[i][j]);
           

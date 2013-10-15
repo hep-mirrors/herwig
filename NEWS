@@ -1,6 +1,26 @@
 Herwig++ News				(emacs -*- outline -*- format)
 
+* Herwig++-2.7.0 release: 2013-10-XX
 
+** Shower uncertainties
+   A first set of scaling parameters to estimate shower uncertainties
+   is provided for both the angular ordered as well as the dipole
+   shower.
+
+** Rewrite of Matchbox NLO matching
+   The NLO matching implementation has been rewritten and is now more
+   flexible and consistent. Profile scales are provided for the
+   hardest emission both for the dipole shower and matrix element
+   correction matching.
+
+** BLHA2 Interface and new processes
+   Matchbox now features a generic BLHA2 interface to one-loop
+   amplitude codes and now also includes W and W+jet production as
+   well as Higss production in gluon fusion as builtin processes.
+
+** Impoved dipole shower kinematics parametrization
+   The kinematics parametrization for emissions in the dipole shower
+   has been made more efficient.
 
 * Herwig++-2.6.3 release: 2013-02-22
 

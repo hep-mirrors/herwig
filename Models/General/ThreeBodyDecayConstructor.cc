@@ -32,11 +32,13 @@ IBPtr ThreeBodyDecayConstructor::fullclone() const {
 }
 
 void ThreeBodyDecayConstructor::persistentOutput(PersistentOStream & os) const {
-  os << interOpt_ << widthOpt_ << intOpt_ << relErr_;
+  os << interOpt_ << widthOpt_ << intOpt_ << relErr_
+     << includeIntermediatePhotons_;
 }
 
 void ThreeBodyDecayConstructor::persistentInput(PersistentIStream & is, int) {
-  is  >> interOpt_ >> widthOpt_ >> intOpt_ >> relErr_;
+  is  >> interOpt_ >> widthOpt_ >> intOpt_ >> relErr_
+      >> includeIntermediatePhotons_;
 }
 
 ClassDescription<ThreeBodyDecayConstructor> 
@@ -47,6 +49,21 @@ void ThreeBodyDecayConstructor::Init() {
 
   static ClassDocumentation<ThreeBodyDecayConstructor> documentation
     ("The ThreeBodyDecayConstructor class constructs the three body decay modes");
+
+  static Switch<ThreeBodyDecayConstructor,bool> interfaceIncludeIntermediatePhotons
+    ("IncludeIntermediatePhotons",
+     "Whether or not ot allow intermediate photons",
+     &ThreeBodyDecayConstructor::includeIntermediatePhotons_, false, false, false);
+  static SwitchOption interfaceIncludeIntermediatePhotonsYes
+    (interfaceIncludeIntermediatePhotons,
+     "Yes",
+     "Include them",
+     true);
+  static SwitchOption interfaceIncludeIntermediatePhotonsNo
+    (interfaceIncludeIntermediatePhotons,
+     "No",
+     "Don't include them",
+     false);
 
   static Switch<ThreeBodyDecayConstructor,unsigned int> interfaceWidthOption
     ("WidthOption",
@@ -227,6 +244,11 @@ createDecayMode(vector<NBDiagram> & mode,
     	getParticleData(diagrams.back().outgoing)->mass();
       if(deltaM<weakMassCut_) diagrams.pop_back();
     }
+    // remove intermediate photons
+    else if(!includeIntermediatePhotons_ && 
+	    diagrams.back().intermediate &&
+    	    abs(diagrams.back().intermediate->id())==ParticleID::gamma)
+      diagrams.pop_back();
   }
   if(diagrams.empty()) return;
   // check if possible on-shell internal particles

@@ -300,8 +300,14 @@ void HardProcessConstructor::tChannelCF(HPDiagram & diag) {
   else if(diag.intermediate->iColour() == PDT::Colour3 ||
 	  diag.intermediate->iColour() == PDT::Colour3bar) {
     if(outa == PDT::Colour0 || outb == PDT::Colour0) {
-      cfv[0] = make_pair(0,1.);
-      // cfv.push_back(make_pair(1,1.));
+      if( outa != PDT::Colour6    && outb != PDT::Colour6   &&
+	  outa != PDT::Colour6bar && outb != PDT::Colour6bar) {
+	cfv[0] = make_pair(0,1.);
+      }
+      else {
+	cfv[0] = make_pair(0,0.5);
+	cfv.push_back(make_pair(1,0.5));
+      }
     }
     else if(outa==PDT::Colour6 && outb==PDT::Colour3bar) {
       cfv[0] = make_pair(4,1.);
@@ -339,7 +345,7 @@ void HardProcessConstructor::tChannelCF(HPDiagram & diag) {
   diag.colourFlow = cfv;
 }
  
-void HardProcessConstructor::uChannelCF(HPDiagram & diag) {
+void HardProcessConstructor::uChannelCF(HPDiagram & diag) { 
   PDT::Colour offshell = diag.intermediate->iColour();
   PDT::Colour ina  = getParticleData(diag.incoming.first )->iColour();
   PDT::Colour inb  = getParticleData(diag.incoming.second)->iColour();
@@ -364,7 +370,14 @@ void HardProcessConstructor::uChannelCF(HPDiagram & diag) {
   }
   else if(offshell == PDT::Colour3 || offshell == PDT::Colour3bar) {
     if( outa == PDT::Colour0 || outb == PDT::Colour0 ) {
-      cfv[0] = make_pair(0,1.);
+      if( outa != PDT::Colour6    && outb != PDT::Colour6   &&
+	  outa != PDT::Colour6bar && outb != PDT::Colour6bar) {
+	cfv[0] = make_pair(0,1.);
+      }
+      else {
+	cfv[0] = make_pair(0,0.5);
+	cfv.push_back(make_pair(1,0.5));
+      }
     }
     else if(outa==PDT::Colour3bar && outb==PDT::Colour6) {
       cfv[0] = make_pair(4,1.);
@@ -542,8 +555,24 @@ void HardProcessConstructor::sChannelCF(HPDiagram & diag) {
     }
   }
   else if( offshell == PDT::Colour6 || offshell == PDT::Colour6bar) {
-    cfv[0]      = make_pair(2,0.5);
-    cfv.push_back(make_pair(3,0.5));
+    if((ina  == PDT::Colour3    && inb  == PDT::Colour3    &&
+	outa == PDT::Colour3    && outb == PDT::Colour3   ) ||
+       (ina  == PDT::Colour3bar && inb  == PDT::Colour3bar &&
+	outa == PDT::Colour3bar && outb == PDT::Colour3bar)) {
+      cfv[0]      = make_pair(2,0.5);
+      cfv.push_back(make_pair(3,0.5));
+    }
+    else if((ina  == PDT::Colour3    && inb  == PDT::Colour3    &&
+	     ((outa == PDT::Colour6    && outb == PDT::Colour0)||
+	      (outb == PDT::Colour6    && outa == PDT::Colour0))) ||
+	    (ina  == PDT::Colour3bar && inb  == PDT::Colour3bar &&
+	     ((outa == PDT::Colour6bar && outb == PDT::Colour0)||
+	      (outb == PDT::Colour6bar && outa == PDT::Colour0)))) {
+      cfv[0]      = make_pair(0,0.5);
+      cfv.push_back(make_pair(1,0.5));
+    }
+    else
+      assert(false);
   }
   else {
     if(outa == PDT::Colour0 || outb == PDT::Colour0)

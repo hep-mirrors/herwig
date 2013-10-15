@@ -191,9 +191,16 @@ ClusterVector ClusterFinder::formClusters(const PVector & partons)
       // is the case then inform the cluster.   
       // this will only work for baryon collisions  
       for (int i=0; i<iElement; ++i) {
-	if(!connected[i]->parents().empty()&&
-	   connected[i]->parents()[0]->id()==ParticleID::Remnant&&
-	   DiquarkMatcher::Check(connected[i]->id()))
+	bool fromRemnant = false;
+	tPPtr parent=connected[i];
+	while(parent) {
+	  if(parent->id()==ParticleID::Remnant) {
+	    fromRemnant = true;
+	    break;
+	  }
+	  parent = parent->parents().empty() ? tPPtr() : parent->parents()[0];
+	}
+	if(fromRemnant&&DiquarkMatcher::Check(connected[i]->id()))
 	  cluPtr->isBeamCluster(connected[i]);
       }
     }

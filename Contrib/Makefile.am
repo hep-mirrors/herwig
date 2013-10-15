@@ -1,15 +1,16 @@
 EXTRA_DIST = \
 AcerDetInterface \
+AlpGen \
 Analysis2 \
 AnomalousHVV \
 DecayAnalysis \
+HiggsPair \
 LeptonME \
 MCPWNLO \
 PGSInterface \
 RadiativeZPrime \
 TauAnalysis \
-AlpGen
-
+VBFTest
 
 dist-hook:
 	rm -rf `find $(distdir) -name '.svn' -or -name 'Makefile'`

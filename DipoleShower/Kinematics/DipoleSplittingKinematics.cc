@@ -20,6 +20,8 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
+#include "Herwig++/MatrixElement/Matchbox/Phasespace/RandomHelpers.h"
+
 #include <limits>
 
 using namespace Herwig;
@@ -60,6 +62,75 @@ void DipoleSplittingKinematics::prepareSplitting(DipoleSplittingInfo& dInfo) {
   copy(lastSplittingParameters().begin(),lastSplittingParameters().end(),
        dInfo.splittingParameters().begin());
   
+}
+
+Energy DipoleSplittingKinematics::generatePt(double r, Energy dScale,
+					     double emX, double specX,
+					     const DipoleIndex& dIndex,
+					     const DipoleSplittingKernel& split,
+					     double& weight) const {
+
+  Energy maxPt = ptMax(dScale,emX,specX,dIndex,split);
+  if ( maxPt <= IRCutoff() ) {
+    weight = 0.0;
+    return ZERO;
+  }
+
+  weight *= log(sqr(maxPt/IRCutoff()));
+
+  return IRCutoff()*pow(maxPt/IRCutoff(),r);
+
+}
+
+double DipoleSplittingKinematics::ptToRandom(Energy pt, Energy dScale,
+					     double emX, double specX,
+					     const DipoleIndex& dIndex,
+					     const DipoleSplittingKernel& split) const {
+
+  Energy maxPt = ptMax(dScale,emX,specX,dIndex,split);
+  assert(pt >= IRCutoff() && pt <= maxPt);
+
+  return log(pt/IRCutoff())/log(maxPt/IRCutoff());
+
+}
+
+double DipoleSplittingKinematics::generateZ(double r, Energy pt, int sampling,
+					    const DipoleSplittingInfo& dInfo,
+					    const DipoleSplittingKernel& split,
+					    double& weight) const {
+
+  pair<double,double> zLims = zBoundaries(pt,dInfo,split);
+
+  using namespace RandomHelpers;
+
+  if ( sampling == FlatZ ) {
+    pair<double,double> kw = generate(flat(zLims.first,zLims.second),r);
+    weight *= kw.second;
+    return kw.first;
+  }
+
+  if ( sampling == OneOverZ ) {
+    pair<double,double> kw = generate(inverse(0.0,zLims.first,zLims.second),r);
+    weight *= kw.second;
+    return kw.first;
+  }
+
+  if ( sampling == OneOverOneMinusZ ) {
+    pair<double,double> kw = generate(inverse(1.0,zLims.first,zLims.second),r);
+    weight *= kw.second;
+    return kw.first;
+  }
+
+  if ( sampling == OneOverZOneMinusZ ) {
+    pair<double,double> kw = generate(inverse(0.0,zLims.first,zLims.second) + 
+				      inverse(1.0,zLims.first,zLims.second),r);
+    weight *= kw.second;
+    return kw.first;
+  }
+
+  weight = 0.0;
+  return 0.0;
+
 }
 
 Lorentz5Momentum DipoleSplittingKinematics::getKt(const Lorentz5Momentum& p1,

@@ -38,18 +38,11 @@ public:
    */
   SMZDecayer();
 
-public:
-
   /**
    *  Virtual members to be overridden by inheriting classes
    *  which implement hard corrections 
    */
   //@{
-  /**
-   *  Has a POWHEG style correction
-   */
-  virtual bool hasPOWHEGCorrection() {return true;}
-
   /**
    *  Has an old fashioned ME correction
    */
@@ -315,6 +308,11 @@ protected:
    * @param x2 \f$x_2\f$
    */
   double PS(double x1, double x2);
+
+  /**
+   *  Access to the strong coupling
+   */
+  ShowerAlphaPtr alphaS() const {return alpha_;}
   //@}
 
 protected:
@@ -393,7 +391,6 @@ private:
    * Private and non-existent assignment operator.
    */
   SMZDecayer & operator=(const SMZDecayer &);
-
 
 private:
 

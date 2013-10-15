@@ -9,6 +9,8 @@ MatchboxAmplitude.cc \
 MatchboxAmplitude.h \
 MatchboxOLPME.cc \
 MatchboxOLPME.h \
+MatchboxHybridAmplitude.cc \
+MatchboxHybridAmplitude.h \
 MatchboxMEBase.cc \
 MatchboxMEBase.fh \
 MatchboxMEBase.h \

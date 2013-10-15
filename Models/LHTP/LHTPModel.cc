@@ -159,9 +159,9 @@ void LHTPModel::doinit() {
   // compute the parameters of the model
   // W and Z masses
   Energy mw(getParticleData(ParticleID::Wplus)->mass());
-  Energy mz(getParticleData(ParticleID::Z0)->mass());
+  // Energy mz(getParticleData(ParticleID::Z0)->mass());
   // couplings g and g'
-//   double ee = sqrt(4.*pi*alphaEM(sqr(mz)));
+  // double ee = sqrt(4.*pi*alphaEM(sqr(mz)));
   double ee = sqrt(4.*pi*alphaEMMZ());
   double sw(sqrt(sin2ThetaW())),cw(sqrt(1.-sin2ThetaW()));
   g_  = ee/sw;

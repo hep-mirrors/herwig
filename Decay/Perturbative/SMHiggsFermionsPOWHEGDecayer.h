@@ -36,7 +36,7 @@ public:
   /**
    *  Has a POWHEG style correction
    */
-  virtual bool hasPOWHEGCorrection() {return true;}
+  virtual POWHEGType hasPOWHEGCorrection() {return FSR;}
 
   /**
    *  Apply the POWHEG style correction

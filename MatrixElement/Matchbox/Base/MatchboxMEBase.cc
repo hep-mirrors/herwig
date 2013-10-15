@@ -422,13 +422,12 @@ double MatchboxMEBase::me2() const {
     if ( matchboxAmplitude()->treeAmplitudes() )
       matchboxAmplitude()->prepareAmplitudes(this);
 
-    lastME2(matchboxAmplitude()->me2()*
-	    crossingSign()*
-	    me2Norm());
+    double res = 
+      matchboxAmplitude()->me2()*
+      crossingSign()*
+      me2Norm();
 
-    logME2();
-    
-    return lastME2();
+    return res;
 
   }
 
@@ -490,10 +489,16 @@ double MatchboxMEBase::me2Norm(unsigned int addAlphaS) const {
   if ( hasInitialAverage() )
     fac = 1.;
 
-  if ( orderInAlphaS() > 0 || addAlphaS != 0 )
+  double couplings = 1.0;
+  if ( orderInAlphaS() > 0 || addAlphaS != 0 ) {
     fac *= pow(lastAlphaS()/SM().alphaS(),double(orderInAlphaS()+addAlphaS));
-  if ( orderInAlphaEW() > 0 )
+    couplings *= pow(lastAlphaS(),double(orderInAlphaS()+addAlphaS));
+  }
+  if ( orderInAlphaEW() > 0 ) {
     fac *= pow(lastAlphaEM()/SM().alphaEM(),double(orderInAlphaEW()));
+    couplings *= pow(lastAlphaEM(),double(orderInAlphaEW()));
+  }
+  lastMECouplings(couplings);
 
   if ( !hasInitialAverage() ) {
     if ( mePartonData()[0]->iColour() == PDT::Colour3 || 
@@ -527,7 +532,6 @@ CrossSection MatchboxMEBase::dSigHatDR() const {
   lastME2(xme2);
 
   if ( xme2 == 0. && !oneLoopNoBorn() ) {
-    lastME2(0.0);
     lastMECrossSection(ZERO);
     return lastMECrossSection();
   }
@@ -582,13 +586,13 @@ double MatchboxMEBase::oneLoopInterference() const {
 
     if ( matchboxAmplitude()->oneLoopAmplitudes() )
       matchboxAmplitude()->prepareOneLoopAmplitudes(this);
-    lastME2(matchboxAmplitude()->oneLoopInterference()*
-	    crossingSign()*
-	    me2Norm(1));
 
-    logME2();
-    
-    return lastME2();
+    double res = 
+      matchboxAmplitude()->oneLoopInterference()*
+      crossingSign()*
+      me2Norm(1);
+
+    return res;
 
   }
 
@@ -828,6 +832,16 @@ MatchboxMEBase::getDipoles(const vector<Ptr<SubtractionDipole>::ptr>& dipoles,
 		    << emitter << "," << emission << ")," << spectator << "]";
 	      if ( ! (generator()->preinitRegister(nDipole,dname.str()) ) )
 		throw InitException() << "Dipole " << dname.str() << " already existing.";
+	      if ( !factory()->reweighters().empty() ) {
+		for ( vector<ReweightPtr>::const_iterator rw = factory()->reweighters().begin();
+		      rw != factory()->reweighters().end(); ++rw )
+		  nDipole->addReweighter(*rw);
+	      }
+	      if ( !factory()->preweighters().empty() ) {
+		for ( vector<ReweightPtr>::const_iterator rw = factory()->preweighters().begin();
+		      rw != factory()->preweighters().end(); ++rw )
+		  nDipole->addPreweighter(*rw);
+	      }
 	      nDipole->cloneDependencies(dname.str());
 	    }
 	  }
@@ -850,13 +864,13 @@ double MatchboxMEBase::colourCorrelatedME2(pair<int,int> ij) const {
 
     if ( matchboxAmplitude()->treeAmplitudes() )
       matchboxAmplitude()->prepareAmplitudes(this);
-    lastME2(matchboxAmplitude()->colourCorrelatedME2(ij)*
-	    crossingSign()*
-	    me2Norm());
 
-    logME2();
-    
-    return lastME2();
+    double res = 
+      matchboxAmplitude()->colourCorrelatedME2(ij)*
+      crossingSign()*
+      me2Norm();
+
+    return res;
 
   }
 
@@ -875,13 +889,13 @@ double MatchboxMEBase::largeNColourCorrelatedME2(pair<int,int> ij,
     if ( matchboxAmplitude()->treeAmplitudes() )
       matchboxAmplitude()->prepareAmplitudes(this);
     largeNBasis->prepare(mePartonData(),false);
-    lastME2(matchboxAmplitude()->largeNColourCorrelatedME2(ij,largeNBasis)*
-	    crossingSign()*
-	    me2Norm());
 
-    logME2();
-    
-    return lastME2();
+    double res = 
+      matchboxAmplitude()->largeNColourCorrelatedME2(ij,largeNBasis)*
+      crossingSign()*
+      me2Norm();
+
+    return res;
 
   }
 
@@ -899,13 +913,13 @@ double MatchboxMEBase::spinColourCorrelatedME2(pair<int,int> ij,
 
     if ( matchboxAmplitude()->treeAmplitudes() )
       matchboxAmplitude()->prepareAmplitudes(this);
-    lastME2(matchboxAmplitude()->spinColourCorrelatedME2(ij,c)*
-	    crossingSign()*
-	    me2Norm());
 
-    logME2();
-    
-    return lastME2();
+    double res = 
+      matchboxAmplitude()->spinColourCorrelatedME2(ij,c)*
+      crossingSign()*
+      me2Norm();
+
+    return res;
 
   }
 

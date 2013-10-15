@@ -13,8 +13,6 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/EventRecord/StandardSelectors.h"
-#include "ThePEG/Persistency/PersistentOStream.h"
-#include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Handlers/StandardEventHandler.h"
 #include "Herwig++/Utilities/EnumParticles.h"
 
@@ -69,14 +67,8 @@ IBPtr BranchingRatioReweighter::fullclone() const {
   return new_ptr(*this);
 }
 
-void BranchingRatioReweighter::persistentOutput(PersistentOStream & os) const {
-}
-
-void BranchingRatioReweighter::persistentInput(PersistentIStream & is, int) {
-}
-
 // The following static variable is needed for the type description system in ThePEG.
-DescribeClass<BranchingRatioReweighter,StepHandler>
+DescribeNoPIOClass<BranchingRatioReweighter,StepHandler>
 describeHerwigBranchingRatioReweighter("Herwig::BranchingRatioReweighter", "Herwig.so");
 
 void BranchingRatioReweighter::Init() {

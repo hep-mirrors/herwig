@@ -38,14 +38,14 @@ insert MPIHandler:Cuts 0 UECuts
 
 # energy extrapolation for the MinKT cut
 newdef MPIHandler:EnergyExtrapolation Power
-newdef MPIHandler:Power 0.21
-newdef MPIHandler:pTmin0 3.11*GeV
+newdef MPIHandler:Power 0.314
+newdef MPIHandler:pTmin0 4.62*GeV
 newdef MPIHandler:ReferenceScale 7000.*GeV
 newdef MPIHandler:EEparamA 0.585*GeV
 newdef MPIHandler:EEparamB 37.45*GeV
 
 # The inverse hadron radius
-newdef MPIHandler:InvRadius 1.11
+newdef MPIHandler:InvRadius 2.24
 
 # Set the details of the soft model
 

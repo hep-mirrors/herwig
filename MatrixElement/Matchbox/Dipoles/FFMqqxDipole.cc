@@ -95,10 +95,6 @@ double FFMqqxDipole::me2() const {
     realEmissionME()->finalStateSymmetry() /
     underlyingBornME()->finalStateSymmetry();
 
-  lastME2(res);
-
-  logME2();
-  
   return res;
 
 }

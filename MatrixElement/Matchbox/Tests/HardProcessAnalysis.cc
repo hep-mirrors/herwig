@@ -130,7 +130,7 @@ struct SortedInPt {
       bId = 21;
     if ( aId != bId )
       return ( aId < bId );
-    return ( a->momentum().perp() > b->momentum().perp() );
+    return a->momentum().perp() > b->momentum().perp();
   }
 };
 
@@ -157,7 +157,7 @@ struct GetName {
 };
 
 void HardProcessAnalysis::fill(PPair in, ParticleVector out, double weight) {
-  sort(out.begin(),out.end(),SortedInPt());
+  sort(out.begin(),out.end(),SortedInPt(thePartonsAreJets));
   vector<string> proc;
   if ( theSplitInitialStates ) {
     proc.push_back(GetName()(in.first));
@@ -186,17 +186,30 @@ void HardProcessAnalysis::fill(PPair in, ParticleVector out, double weight) {
     data.rapidity = new_ptr(Histogram(-7.,7.,theNBins));
     data.sumWeights = 0.;
   }
-  ParticleVector::const_iterator p = out.begin();
-  vector<Histograms>::iterator h = data.outgoing.begin();
-  for ( ; p != out.end(); ++p, ++h )
-    h->fill((**p).momentum(),weight);
+  bool twoIdentical = false;
+  if ( out.size() == 2 ) {
+    if ( out[0]->id() == out[1]->id() ||
+	 (out[0]->coloured() && out[1]->coloured() && thePartonsAreJets) )
+      twoIdentical = true;
+  }
+  if ( !twoIdentical ) {
+    ParticleVector::const_iterator p = out.begin();
+    vector<Histograms>::iterator h = data.outgoing.begin();
+    for ( ; p != out.end(); ++p, ++h )
+      h->fill((**p).momentum(),weight);
+  } else {
+    data.outgoing[0].fill(out[0]->momentum(),weight/2.);
+    data.outgoing[0].fill(out[1]->momentum(),weight/2.);
+    data.outgoing[1].fill(out[0]->momentum(),weight/2.);
+    data.outgoing[1].fill(out[1]->momentum(),weight/2.);
+  }
   double y = (in.first->momentum() + in.second->momentum()).rapidity();
   data.rapidity->addWeighted(y,weight);
   Energy2 shat = (in.first->momentum() + in.second->momentum()).m2();
   data.sshat->addWeighted(sqrt(shat)/GeV,weight);
   double tau = shat/sqr(generator()->maximumCMEnergy());
-  double x1 = tau*exp(y);
-  double x2 = tau*exp(-y);
+  double x1 = sqrt(tau)*exp(y);
+  double x2 = sqrt(tau)*exp(-y);
   data.x1->addWeighted(x1,weight);
   data.x2->addWeighted(x2,weight);
   data.sumWeights += weight;

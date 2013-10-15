@@ -1,6 +1,11 @@
 #! /usr/bin/env python
+from __future__ import division
 import os, sys, pprint, argparse, re
 from string import strip
+
+# add path to the ufo conversion modules
+modulepath = os.path.join("@PKGLIBDIR@",'python')
+sys.path.append(modulepath)
 
 from ufo2peg import *
 
@@ -23,8 +28,18 @@ parser.add_argument(
     default="FRModel", 
     help="set custom nametag for the model"
 )
+parser.add_argument(
+    '--ignore-skipped', 
+    action="store_true", 
+    help="ignore skipped vertices and produce output anyway"
+)
+
+vertex_skipped = False
 
 args = parser.parse_args()
+
+def should_print():
+    return not vertex_skipped or args.ignore_skipped
 
 modeldir = args.ufodir.rstrip('/')
 modelpath, module = os.path.split(modeldir)
@@ -40,11 +55,6 @@ FR = __import__(module)
 modelname = args.name
 libname = modelname + '.so'
 
-# copy the Makefile-FR to current directory,
-# replace with the modelname for compilation
-with open('../Makefile-FR','r') as orig:
-    with open('Makefile','w') as dest:
-        dest.write(orig.read().replace("FeynrulesModel.so", libname))
 
 
 # define arrays and variables     
@@ -52,6 +62,7 @@ with open('../Makefile-FR','r') as orig:
 parmdecls = []
 parmgetters = []
 parmconstr = []
+doinit = []
 
 paramstoreplace_ = []
 paramstoreplace_expressions_ = []
@@ -126,8 +137,10 @@ for p in FR.all_parameters:
                                        value=value,
                                        type=typemap(p.type)) 
             )
-            parmconstr.append('%s_(%s)' % (p.name, value))
             parmmodelconstr.append('set %s:%s %s' % (modelname, p.name, value))
+            parmconstr.append('%s_(%s)' % (p.name, value))
+        else :
+            parmconstr.append('%s_(%s)' % (p.name, 0.))
     elif p.type == 'complex':
         value = complex(value)
         if p.nature == 'external':
@@ -143,21 +156,23 @@ for p in FR.all_parameters:
 #
 #            parmmodelconstr.append('set %s:%s (%s,%s)' % (modelname, p.name, value.real, value.imag))
             parmconstr.append('%s_(%s,%s)' % (p.name, value.real, value.imag))
+        else :
+            parmconstr.append('%s_(%s,%s)' % (p.name, 0.,0.))
     else:
         raise Exception('Unknown data type "%s".' % p.type)
     parmsubs[p.name] = value
 
 
-    if p.nature == 'external':
-        parmdecls.append('  %s %s_;' % (typemap(p.type), p.name))
-        parmgetters.append('  %s %s() const { return %s_; }' % (typemap(p.type),p.name, p.name))
-        paramsforstream.append('%s_' % p.name)
-        expression, symbols = 'return %s_' % p.name, None
-    else:
+    parmdecls.append('  %s %s_;' % (typemap(p.type), p.name))
+    parmgetters.append('  %s %s() const { return %s_; }' % (typemap(p.type),p.name, p.name))
+    paramsforstream.append('%s_' % p.name)
+    expression, symbols = 'return %s_' % p.name, None
+    if p.nature != 'external':
         expression, symbols = py2cpp(p.value)
         text = add_brackets(expression, symbols)
         text=text.replace('()()','()')
-        parmgetters.append('  %s %s() const { return %s; }' % (typemap(p.type),p.name, text))
+        #parmgetters.append('  %s %s() const { return %s; }' % (typemap(p.type),p.name, text))
+        doinit.append('   %s_ = %s;'  % (p.name, text) )
 
 ### special treatment
 #    if p.name == 'aS':
@@ -179,23 +194,13 @@ parmtextsubs = { 'parmgetters' : '\n'.join(parmgetters),
                  'getters' : '',
                  'decls' : '',
                  'addVertex' : '',
+                 'doinit' : '\n'.join(doinit),
                  'ostream' : '<< '.join(paramsforstream),
                  'istream' : '>> '.join(paramsforstream),
                  'refs' : '',
                  'parmextinter': ''.join(interfaceDecls),
                  'ModelName': modelname
                  }
-
-print '-'*60
-
-# write the files from templates according to the above subs
-MODEL_H  = getTemplate('Model.h')
-MODEL_CC = getTemplate('Model.cc')
-MODEL_HWIN = getTemplate('LHC-FR.in')
-writeFile( '%s.h' % modelname,      MODEL_H.substitute(parmtextsubs) )
-writeFile( '%s.cc' % modelname,     MODEL_CC.substitute(parmtextsubs) )
-writeFile( 'LHC-%s.in' % modelname, MODEL_HWIN.substitute(parmtextsubs) )
-
 
 ##################################################
 ##################################################
@@ -209,7 +214,7 @@ VERTEXHEADER = """\
 #include "ThePEG/Helicity/Vertex/{spindirectory}/{lorentztag}Vertex.h"
 """
 
-def produce_vertex_file(subs):
+def write_vertex_file(subs):
     newname = '%s_Vertices_%03d.cc' % (subs['ModelName'],subs['vertexnumber'])
     writeFile( newname, VERTEX.substitute(subs) )
 
@@ -245,21 +250,12 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
 
     lorentztag = unique_lorentztag(vertex)
     
+    vertex.herwig_skip_vertex = False
+
     # remove vertices involving ghost fields
     if 'U' in lorentztag:
         vertex.herwig_skip_vertex = True
         continue
-    # and with more than 4 external particles
-    elif (len(vertex.particles)>4) :
-        vertex.herwig_skip_vertex = True
-        continue
-    # missing tensor vertices
-    elif (lorentztag=="SSST" or lorentztag=="VVST" or 
-          lorentztag=="FFST" ) : 
-        vertex.herwig_skip_vertex = True
-        continue
-    else:
-        vertex.herwig_skip_vertex = False
 
     lfactors = { 
         'FFV'  : '-complex(0,1)',  # ok
@@ -278,7 +274,16 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
         'FFVT' : '-complex(0,4)',
     }
 
-    lf = lfactors[lorentztag]
+    try:
+        lf = lfactors[lorentztag]
+    except KeyError:
+        msg = 'Warning: Lorentz structure {tag} ( {ps} ) in {name} ' \
+              'is not supported.\n'.format(tag=lorentztag, name=vertex.name, 
+                                           ps=' '.join(map(str,vertex.particles)))
+        sys.stderr.write(msg)
+        vertex.herwig_skip_vertex = True
+        vertex_skipped = True
+        continue
 
     ### Particle ids
     if ONE_EACH:
@@ -292,6 +297,7 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
         cf = colorfactor(vertex,L,pos)
     except SkipThisVertex:
         vertex.herwig_skip_vertex = True
+        vertex_skipped = True
         continue
     
     ### classname
@@ -309,79 +315,68 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
         items = vertex.couplings.iteritems()
     else:
         items = vertex.couplings
-    for (color_idx,lorentz_idx),coupling in items:
-        # if more  than one take QCD over QED and then lowest order in QED
-        if (type(coupling) is list) :
-            qed = 0
-            qcd = 0
-            for coup in coupling :
-                qed1 = coup.order.get('QED',0)
-                qcd1 = coup.order.get('QCD',0)
-                if(qcd1!=0) :
-                    if(qcd==0 or (qcd1!=0 and qcd1<qcd) ) :
-                        qcd=qcd1
-                        qed=qed1
-                else :
-                    if(qed==0 or (qed1!=0 and qed1<qed) ):
-                        qed=qed1
-        else:
-            qed = coupling.order.get('QED',0)
-            qcd = coupling.order.get('QCD',0)
-        # WARNING: FIX FOR CASES WHEN BOTH ARE ZERO
-        # Is there a better way to treat this?
-        if qed + qcd + 2 != len(vertex.particles) :
-            qed = len(vertex.particles)-qcd-2
-        unique_qcd( qcd )
-        unique_qed( qed )
-        L = vertex.lorentz[lorentz_idx]
-        prefactors = '(%s) * (%s) * (%s)' % (globalsign**(len(lorentztag)-2),lf,cf[color_idx])
 
-        ordering = ''
-        if lorentztag in ['FFS','FFV']:
-            left,right = parse_lorentz(L.structure)
-            if left:
-                coup_left.append('(%s) * (%s) * (%s)' % (prefactors,left,coupling.value))
-            if right:
-                coup_right.append('(%s) * (%s) * (%s)' % (prefactors,right,coupling.value))
-            if lorentztag == 'FFV':
-                ordering = ('if(p1->id()!=%s) {Complex ltemp=left(), rtemp=right(); left(-rtemp); right(-ltemp);}' 
-                            % vertex.particles[0].pdg_code)
-        elif 'T' in lorentztag :
-            (all_coup,left_coup,right_coup,ordering) = tensorCouplings(vertex,coupling,prefactors,L,lorentztag,pos)
-            coup_norm  += all_coup
-            coup_left  += left_coup
-            coup_right += right_coup
-        else:
-            if lorentztag == 'VSS':
-                if L.structure == 'P(1,3) - P(1,2)':
-                    prefactors += ' * -1'
-                ordering = 'if(p2->id()!=%s){norm(-norm());}'%vertex.particles[1].pdg_code
-            elif lorentztag == 'VVVV':
-                if(qcd==2) :
-                    ordering = 'setType(1);\nsetOrder(0,1,2,3);'
-                else :
-                    (ordering,factor) = EWVVVVCouplings(vertex,L)
-                    prefactors += ' * ' + str(factor)
-            elif lorentztag == 'VVV' :
-                l = lambda c: len(pos[c])
-                if l(8)==3 :
-                    pass
-                else :
-                    ordering = VVVordering(vertex)
-            if(type(coupling) is not list ):
-                value = coupling.value
-            else :
-                value = "("
-                for coup in coupling :
-                    value += '+(%s)' % coup.value
-                value +=")"
-            coup_norm.append('(%s) * (%s)' % (prefactors,value))
-                
-            
-        #print 'Colour  :',vertex.color[color_idx]
-        #print 'Lorentz %s:'%L.name, L.spins, L.structure
-        #print 'Coupling %s:'%C.name, C.value, '\nQED=%s'%qed, 'QCD=%s'%qcd
-        #print '---------------'
+    try:
+        for (color_idx,lorentz_idx),coupling in items:
+
+            qcd, qed = qcd_qed_orders(vertex, coupling)
+            unique_qcd( qcd )
+            unique_qed( qed )
+
+            L = vertex.lorentz[lorentz_idx]
+            prefactors = '(%s) * (%s) * (%s)' \
+                            % (globalsign**(len(lorentztag)-2),lf,cf[color_idx])
+
+            ordering = ''
+            if lorentztag in ['FFS','FFV']:
+                left,right = parse_lorentz(L.structure)
+                if left:
+                    coup_left.append('(%s) * (%s) * (%s)' % (prefactors,left,coupling.value))
+                if right:
+                    coup_right.append('(%s) * (%s) * (%s)' % (prefactors,right,coupling.value))
+                if lorentztag == 'FFV':
+                    ordering = ('if(p1->id()!=%s) {Complex ltemp=left(), rtemp=right(); left(-rtemp); right(-ltemp);}' 
+                                % vertex.particles[0].pdg_code)
+            elif 'T' in lorentztag :
+                all_coup, left_coup, right_coup, ordering = \
+                    tensorCouplings(vertex,coupling,prefactors,L,lorentztag,pos)
+                coup_norm  += all_coup
+                coup_left  += left_coup
+                coup_right += right_coup
+            else:
+                if lorentztag == 'VSS':
+                    if L.structure == 'P(1,3) - P(1,2)':
+                        prefactors += ' * (-1)'
+                    ordering = 'if(p2->id()!=%s){norm(-norm());}' \
+                                   % vertex.particles[1].pdg_code
+                elif lorentztag == 'VVVV':
+                    if qcd==2:
+                        ordering = 'setType(1);\nsetOrder(0,1,2,3);'
+                    else:
+                        ordering, factor = EWVVVVCouplings(vertex,L)
+                        prefactors += ' * (%s)' % factor
+                elif lorentztag == 'VVV':
+                    if len(pos[8]) != 3:
+                        ordering = VVVordering(vertex)
+
+                if type(coupling) is not list:
+                    value = coupling.value
+                else:
+                    value = "("
+                    for coup in coupling :
+                        value += '+(%s)' % coup.value
+                    value +=")"
+                coup_norm.append('(%s) * (%s)' % (prefactors,value))
+
+
+            #print 'Colour  :',vertex.color[color_idx]
+            #print 'Lorentz %s:'%L.name, L.spins, L.structure
+            #print 'Coupling %s:'%C.name, C.value, '\nQED=%s'%qed, 'QCD=%s'%qcd
+            #print '---------------'
+    except SkipThisVertex:
+        vertex.herwig_skip_vertex = True
+        vertex_skipped = True
+        continue
 
 
     leftcontent  = ' + '.join(coup_left)  if coup_left  else '0'
@@ -396,7 +391,7 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
 
 #    ### do we need left/right?
     symbols = set()
-    if 'FF' in lorentztag and lorentztag!="FFT" :
+    if 'FF' in lorentztag and lorentztag != "FFT":
 #        leftcalc = aStoStrongCoup(py2cpp(leftcontent)[0], paramstoreplace_, paramstoreplace_expressions_)
 #        rightcalc = aStoStrongCoup(py2cpp(rightcontent)[0], paramstoreplace_, paramstoreplace_expressions_)
         leftcalc, sym = py2cpp(leftcontent)
@@ -430,11 +425,15 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
         couplingptrs[1] += ' p2'
     elif lorentztag == 'FFV':
         couplingptrs[0] += ' p1'
-    elif lorentztag == 'VVV' or lorentztag == 'VVVT' :
+    elif lorentztag == 'VVV' and ordering != '':
         couplingptrs[0] += ' p1'
         couplingptrs[1] += ' p2'
         couplingptrs[2] += ' p3'
-    elif lorentztag == 'VVVV' :
+    elif lorentztag == 'VVVT' and ordering != '':
+        couplingptrs[0] += ' p1'
+        couplingptrs[1] += ' p2'
+        couplingptrs[2] += ' p3'
+    elif lorentztag == 'VVVV' and qcd != 2:
         couplingptrs[0] += ' p1'
         couplingptrs[1] += ' p2'
         couplingptrs[2] += ' p3'
@@ -470,20 +469,34 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
 
     WRAP = 25
     if vertexnumber % WRAP == 0:
-        produce_vertex_file({'classname':classname,
-                             'vertexnumber' : vertexnumber//WRAP,
-                             'vertexclasses' : '\n'.join(vertexclasses),
-                             'vertexheaders' : ''.join(vertexheaders),
-                             'ModelName' : modelname})
+        write_vertex_file({'classname':classname,
+                           'vertexnumber' : vertexnumber//WRAP,
+                           'vertexclasses' : '\n'.join(vertexclasses),
+                           'vertexheaders' : ''.join(vertexheaders),
+                           'ModelName' : modelname})
         vertexclasses = []
         vertexheaders = set()
+
+
+if not should_print():
+    sys.stderr.write(
+"""
+Error: The conversion was unsuccessful, some vertices could not be
+       generated. If you think the missing vertices are not important 
+       and want to go ahead anyway, use --ignore-skipped. 
+       Herwig++ may not give correct results, though.
+
+"""
+    )
+    
+    sys.exit(1)
         
 if vertexclasses:
-    produce_vertex_file({'classname':classname,
-                         'vertexnumber' : vertexnumber//WRAP + 1,
-                         'vertexclasses' : '\n'.join(vertexclasses),
-                         'vertexheaders' : ''.join(vertexheaders),
-                         'ModelName' : modelname})
+    write_vertex_file({'classname':classname,
+                       'vertexnumber' : vertexnumber//WRAP + 1,
+                       'vertexclasses' : '\n'.join(vertexclasses),
+                       'vertexheaders' : ''.join(vertexheaders),
+                       'ModelName' : modelname})
         
 print '='*60
 
@@ -501,19 +514,46 @@ def get_vertices():
     for v in all_vertices:
         if v.herwig_skip_vertex: continue
         vlist.append( vertexline.format(modelname=modelname, vname=v.name) )
+    vlist.append('insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/V_GenericHPP\n'.format(modelname=modelname) )
+    vlist.append('insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/V_GenericHGG\n'.format(modelname=modelname) )
     return ''.join(vlist)
 
 
-modelfilesubs = { 'plist' : thepeg_particles(FR,parmsubs),
+plist, names = thepeg_particles(FR,parmsubs,modelname)
+
+particlelist = [
+    "# insert HPConstructor:Outgoing 0 /Herwig/{}/Particles/{}".format(modelname,p)
+    for p in names
+]
+# make the first one active to have something runnable in the example .in file
+particlelist[0] = particlelist[0][2:]
+particlelist = '\n'.join(particlelist)
+
+modelfilesubs = { 'plist' : plist,
                   'vlist' : get_vertices(),
                   'setcouplings': '\n'.join(parmmodelconstr),
                   'ModelName': modelname
                   }
 
+# write the files from templates according to the above subs
+if should_print():
+    MODEL_HWIN = getTemplate('LHC-FR.in')
+    MODEL_H  = getTemplate('Model.h')
+    MODEL_CC = getTemplate('Model.cc')
+    MODELINFILE = getTemplate('FR.model')
+    writeFile( 'LHC-%s.in' % modelname, 
+               MODEL_HWIN.substitute({ 'ModelName' : modelname,
+                                       'Particles' : particlelist })
+    )
+    writeFile( '%s.h' % modelname,      MODEL_H.substitute(parmtextsubs) )
+    writeFile( '%s.cc' % modelname,     MODEL_CC.substitute(parmtextsubs) )
+    writeFile( modelname +'.model', MODELINFILE.substitute(modelfilesubs) )
+    # copy the Makefile-FR to current directory,
+    # replace with the modelname for compilation
+    with open(os.path.join(modulepath,'Makefile-FR'),'r') as orig:
+        with open('Makefile','w') as dest:
+            dest.write(orig.read().replace("FeynrulesModel.so", libname))
 
-MODELINFILE = getTemplate('FR.model')
-
-writeFile( modelname +'.model', MODELINFILE.substitute(modelfilesubs) )
 
 print 'finished generating model:\t', modelname
 print 'model directory:\t\t', args.ufodir
@@ -523,9 +563,10 @@ print 'library:\t\t\t', libname
 print 'input file:\t\t\t', 'LHC-' + modelname +'.in'
 print 'model file:\t\t\t', modelname +'.model'
 print '='*60
-print """To complete the installation, compile by typing "make", 
-copy the generated .so file, into the Herwig++ lib directory
-and the .model and .in files in the directory that you wish to run in.
+print """\
+To complete the installation, compile by typing "make".
+An example input file is provided as LHC-FRModel.in, 
+you'll need to change the required particles in there.
 """
 print 'DONE!'
 print '='*60

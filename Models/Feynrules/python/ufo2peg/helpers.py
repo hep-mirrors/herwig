@@ -1,6 +1,7 @@
 from string import Template
 from os import path
 import sys,itertools,cmath
+import re
 
 """
 Helper functions for the Herwig++ Feynrules converter
@@ -44,7 +45,7 @@ def is_number(s):
 
 
 def getTemplate(name):
-    """Create a template from a file."""
+    """Create a python string template from a file."""
     templatename = '{}.template'.format(name)
     # assumes the template files sit next to this script
     moduledir = path.dirname(path.abspath(__file__))
@@ -86,6 +87,34 @@ def unique_lorentztag(vertex):
             raise Exception("Lorentztags: %s is not %s in %s" 
                             % (lorentztag,l.name[:len(lorentztag)],vertex))
     return lorentztag
+
+
+def qcd_qed_orders(vertex, coupling):
+    # if more  than one take QCD over QED and then lowest order in QED
+    if type(coupling) is list:
+        qed = 0
+        qcd = 0
+        for coup in coupling :
+            qed1 = coup.order.get('QED',0)
+            qcd1 = coup.order.get('QCD',0)
+            if qcd1 != 0:
+                if qcd == 0 or (qcd1 != 0 and qcd1 < qcd):
+                    qcd=qcd1
+                    qed=qed1
+            else:
+                if qed == 0 or (qed1 != 0 and qed1 < qed):
+                    qed=qed1
+    else:
+        qed = coupling.order.get('QED',0)
+        qcd = coupling.order.get('QCD',0)
+    # WARNING: FIX FOR CASES WHEN BOTH ARE ZERO
+    # Is there a better way to treat this?
+    if qed + qcd + 2 != len(vertex.particles):
+        qed = len(vertex.particles) - qcd - 2
+
+    return qcd, qed
+    
+
 
 
 def spindirectory(lt):
@@ -152,8 +181,10 @@ def colorfactor(vertex,L,pos):
         if match(label): return ('1',)
 
     elif l(6) == l(-6) == 2 and L==4:
-        sys.stderr.write('Warning: skipping colour structure 6 6 6~ 6~ in %s.\n'
-                         % vertex)
+        sys.stderr.write(
+            'Warning: Unknown colour structure 6 6 6~ 6~ ( {ps} ) in {name}.\n'
+            .format(name=vertex.name, ps=' '.join(map(str,vertex.particles)))
+        )
         raise SkipThisVertex()
 
     elif l(8) == l(3) == l(-3) == 1 and l(1) == L-3:
@@ -225,8 +256,12 @@ def colorfactor(vertex,L,pos):
         label = ('f(2,1,3)',)
         if match(label): return ('complex(0,1)',)
 
-    print vertex
-    raise Exception("Unknown colour tag {}.".format(vertex.color))
+    sys.stderr.write(
+        "Warning: Unknown colour structure {color} ( {ps} ) in {name}.\n"
+        .format(color = ' '.join(vertex.color), name = vertex.name,
+                ps = ' '.join(map(str,vertex.particles)))
+    )
+    raise SkipThisVertex()
 
 
 def def_from_model(FR,s):
@@ -243,7 +278,8 @@ def typemap(s):
 def add_brackets(expr, syms):
     result = expr
     for s in syms:
-        result = result.replace(s,s+'()')
+        pattern = r'({})(\W|$)'.format(s)
+        result = re.sub(pattern, r'\1()\2', result)
     return result
 
 
@@ -457,9 +493,7 @@ def tensorCouplings(vertex,coupling,prefactors,L,lorentztag,pos) :
         signs = [1.,-1.,1.,-1.,1.,-1.,1.,-1.,1.,-1.,1.,-1.,
                  1.,-1.,1.,-1.,-1.,1.,1.,-1.,1.,-1.,-1.,1.,1.,-1.,1.,-1.,-1.,1.]
         l = lambda c: len(pos[c])
-        if l(8)==3 :
-            pass
-        else :
+        if l(8)!=3 :
             ordering = VVVordering(vertex)
     # unknown
     else :
@@ -470,34 +504,32 @@ def tensorCouplings(vertex,coupling,prefactors,L,lorentztag,pos) :
         i=0
         for term in types:
             for perm in itertools.permutations(term):
-                for j in range(0,len(perm)) :
-                    if(j==0) :
-                        label=perm[j]
-                    else :
-                        label+='*'+perm[j]
+                label = '*'.join(perm)
                 for struct in structures :
                     if label in struct :
                         reminder = struct.replace(label,'1.',1)
                         sum[itype] += eval(reminder, {'cmath':cmath} )*signs[i]
             i+=1
         itype += 1
-        all_coup   = []
-        left_coup  = []
-        right_coup = []
-        if(len(lterms)==0) :
-            all_coup.append('(%s) *(%s) * (%s)' % (sum[0]/float(len(signs)), prefactors,coupling.value))
-        else :
-            sum[1] += sum[0]
-            sum[2] += sum[0]
-            left_coup .append('(%s) * (%s) * (%s)' % (prefactors,sum[1]/float(len(signs)),coupling.value))
-            right_coup.append('(%s) * (%s) * (%s)' % (prefactors,sum[2]/float(len(signs)),coupling.value))
+    all_coup   = []
+    left_coup  = []
+    right_coup = []
+    if(len(lterms)==0) :
+        all_coup.append('(%s) *(%s) * (%s)' % (sum[0]/float(len(signs)), prefactors,coupling.value))
+    else :
+        sum[1] += sum[0]
+        sum[2] += sum[0]
+        left_coup .append('(%s) * (%s) * (%s)' % (prefactors,sum[1]/float(len(signs)),coupling.value))
+        right_coup.append('(%s) * (%s) * (%s)' % (prefactors,sum[2]/float(len(signs)),coupling.value))
     return (all_coup,left_coup,right_coup,ordering)
 
 def EWVVVVCouplings(vertex,L) :
     terms=['Metric(1,2)*Metric(3,4)',
            'Metric(1,3)*Metric(2,4)',
            'Metric(1,4)*Metric(2,3)']
+
     structure1 = L.structure.split()
+
     structures =[]
     sign=''
     for struct in structure1 :
@@ -513,7 +545,21 @@ def EWVVVVCouplings(vertex,L) :
         for struct in structures :
             if term in struct :
                 reminder = struct.replace(term,'1.',1)
-                factors.append(eval(reminder, {'cmath':cmath} ))
+                try:
+                    factors.append(eval(reminder, {'cmath':cmath} ))
+                except NameError:
+                    name_error = True
+                else:
+                    name_error = False
+
+    if len(factors) != 3 or name_error:
+        sys.stderr.write(
+            'Warning: unsupported {tag} ( {ps} ) Lorentz structure in {name}:\n{lstr}\n'
+            .format(tag=unique_lorentztag(vertex), name=vertex.name, 
+                    lstr=L.structure, ps=' '.join(map(str,vertex.particles)))
+        )
+        raise SkipThisVertex()
+
     factor=0.
     order=[]
     if(factors[0]==-2.*factors[1] and factors[0]==-2.*factors[2] ) :
@@ -525,6 +571,15 @@ def EWVVVVCouplings(vertex,L) :
     elif(factors[2]==-2.*factors[0] and factors[2]==-2.*factors[1] ) :
         order=[0,3,1,2]
         factor = factors[2]/2.
+    else:
+        sys.stderr.write(
+            'Warning: unsupported {tag} ( {ps} ) Lorentz structure in {name}:\n{lstr}\n'
+            .format(tag=unique_lorentztag(vertex), name=vertex.name, 
+                    lstr=L.structure, ps=' '.join(map(str,vertex.particles)))
+        )
+        raise SkipThisVertex()
+
+
     pattern = \
         "bool done[4]={false,false,false,false};\n" + \
         "    tcPDPtr part[4]={p1,p2,p3,p4};\n" + \

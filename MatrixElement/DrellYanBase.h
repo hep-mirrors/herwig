@@ -33,7 +33,10 @@ public:
   /**
    *  Has a POWHEG style correction
    */
-  virtual bool hasPOWHEGCorrection() {return _alpha;}
+  //virtual bool hasPOWHEGCorrection() {return _alpha;}
+
+  virtual POWHEGType hasPOWHEGCorrection() {return ISR;}
+
 
   /**
    *  Has an old fashioned ME correction

@@ -328,6 +328,11 @@ protected:
    */
   double me(double xw, double xg);
 
+  /**
+   *  Access to the strong coupling
+   */
+  ShowerAlphaPtr coupling() { return _alpha;}
+
 private:
 
   /**

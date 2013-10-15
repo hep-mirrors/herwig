@@ -211,19 +211,32 @@ GeneralTwoBodyDecayerPtr TwoBodyDecayConstructor::createDecayer(TwoBodyDecay dec
   if(!decayer) 
     Throw<NBodyDecayConstructorError>() 
       << "Error: Cannot assign " << decay.vertex_->fullName() << " to a decayer. " 
-      <<  "Decay is " << decay.parent_->PDGName() << " -> "
+      << "Decay is " << decay.parent_->PDGName() << " -> "
       << decay.children_.first ->PDGName() << " " 
       << decay.children_.second->PDGName();
-  decayer->setDecayInfo(decay.parent_,decay.children_,decay.vertex_);
-  decayer->init();
+  // set the strong coupling for radiation
+  generator()->preinitInterface(decayer, "Coupling", "set", showerAlpha_);
+ 
+  // get the vertices for radiation from the external legs
+  VertexBasePtr inRad = radiationVertex(decay.parent_);
+  vector<VertexBasePtr> outRad;  
+  outRad.push_back(radiationVertex(decay.children_.first ));
+  outRad.push_back(radiationVertex(decay.children_.second));
+  // get any contributing 4 point vertices
+  VertexBasePtr fourRad = radiationVertex(decay.parent_, decay.children_);
+
+  // set info on decay
+  decayer->setDecayInfo(decay.parent_,decay.children_,decay.vertex_,
+  			inRad,outRad,fourRad);
+  // initialised the decayer
   setDecayerInterfaces(fullname.str());
+  decayer->init();
   return decayer;
 }
 
 void TwoBodyDecayConstructor::
 createDecayMode(set<TwoBodyDecay> & decays) {
   tPDPtr inpart = decays.begin()->parent_;
-  tEGPtr eg = generator();
   set<TwoBodyDecay>::iterator dend = decays.end();
   for( set<TwoBodyDecay>::iterator dit = decays.begin();
        dit != dend; ++dit ) {
@@ -231,27 +244,27 @@ createDecayMode(set<TwoBodyDecay> & decays) {
     string tag = inpart->name() + "->" + pb->name() + "," + 
       pc->name() + ";";
     // Does it exist already ?
-    tDMPtr dm = eg->findDecayMode(tag);
+    tDMPtr dm = generator()->findDecayMode(tag);
     // Check if tag is one that should be disabled
     if( decayConstructor()->disableDecayMode(tag) ) {
       // If mode alread exists, ie has been read from file, 
       // disable it
       if( dm ) {
-	eg->preinitInterface(dm, "BranchingRatio", "set", "0.0");
-	eg->preinitInterface(dm, "OnOff", "set", "Off");
+	generator()->preinitInterface(dm, "BranchingRatio", "set", "0.0");
+	generator()->preinitInterface(dm, "OnOff", "set", "Off");
       }
       continue;
     }
     // now create DecayMode objects that do not already exist      
     if( createDecayModes() && (!dm || inpart->id() == ParticleID::h0) ) {
-      tDMPtr ndm = eg->preinitCreateDecayMode(tag);
+      tDMPtr ndm = generator()->preinitCreateDecayMode(tag);
       if(ndm) {
 	inpart->stable(false);
 	GeneralTwoBodyDecayerPtr decayer=createDecayer(*dit);
 	if(!decayer) continue;
-	eg->preinitInterface(ndm, "Decayer", "set",
+	generator()->preinitInterface(ndm, "Decayer", "set",
 			     decayer->fullName());
-	eg->preinitInterface(ndm, "OnOff", "set", "On");
+	generator()->preinitInterface(ndm, "OnOff", "set", "On");
 	Energy width = 
 	  decayer->partialWidth(make_pair(inpart,inpart->mass()),
 				make_pair(pb,pb->mass()) , 
@@ -276,11 +289,77 @@ createDecayMode(set<TwoBodyDecay> & decays) {
 	inpart->stable(false);
 	GeneralTwoBodyDecayerPtr decayer=createDecayer(*dit);
 	if(!decayer) continue;
-	eg->preinitInterface(dm, "Decayer", "set", 
-			     decayer->fullName());
+	generator()->preinitInterface(dm, "Decayer", "set", 
+				      decayer->fullName());
       }
     }
   }
   // update CC mode if it exists
   if( inpart->CC() ) inpart->CC()->synchronize();
 }
+
+
+VertexBasePtr TwoBodyDecayConstructor::radiationVertex(tPDPtr particle, tPDPair children) {
+  tHwSMPtr model = dynamic_ptr_cast<tHwSMPtr>(generator()->standardModel());
+  map<tPDPtr,VertexBasePtr>::iterator rit = radiationVertices_.find(particle);
+  tPDPtr cc = particle->CC() ? particle->CC() : particle;
+  if(children==tPDPair() && rit!=radiationVertices_.end()) return rit->second;
+  unsigned int nv(model->numberOfVertices());
+  tPDPtr gluon = getParticleData(ParticleID::g);
+
+  // look for radiation vertices for incoming and outgoing particles
+  for(unsigned int iv=0;iv<nv;++iv) {
+    VertexBasePtr vertex = model->vertex(iv);
+    // look for 3 point vertices
+    if (children==tPDPair()){
+      if( !vertex->isIncoming(particle) ||  vertex->getNpoint() != 3 ||
+	  !vertex->isOutgoing(particle) || !vertex->isOutgoing(gluon)) continue;      
+      for(unsigned int list=0;list<3;++list) {
+	tPDVector decaylist = vertex->search(list, particle);
+	for( tPDVector::size_type i = 0; i < decaylist.size(); i += 3 ) {
+	  tPDPtr pa(decaylist[i]), pb(decaylist[i + 1]), pc(decaylist[i + 2]);
+	  if( pb->id() == ParticleID::g ) swap(pa, pb);
+	  if( pc->id() == ParticleID::g ) swap(pa, pc);
+	  if( pb->id() != particle->id()) swap(pb, pc);
+	  if( pa->id() != ParticleID::g) continue;
+	  if( pb       != particle)      continue;
+	  if( pc       != cc)            continue;
+	  radiationVertices_[particle] = vertex; 
+	  return vertex;
+	}
+      }
+    }
+    // look for 4 point vertex including a gluon
+    else {           
+      if( !vertex->isIncoming(particle)       ||  vertex->getNpoint()!=4              ||
+      	  !vertex->isOutgoing(children.first) || !vertex->isOutgoing(children.second) || 
+	  !vertex->isOutgoing(gluon)) continue;
+      
+      for(unsigned int list=0;list<4;++list) {
+	tPDVector decaylist = vertex->search(list, particle);
+	for( tPDVector::size_type i = 0; i < decaylist.size(); i += 4 ) {
+	  tPDPtr pa(decaylist[i]), pb(decaylist[i+1]), pc(decaylist[i+2]), pd(decaylist[i+3]);
+	  // order so that a = g, b = parent
+	  if( pb->id() == ParticleID::g ) swap(pa, pb);
+	  if( pc->id() == ParticleID::g ) swap(pa, pc);
+	  if( pd->id() == ParticleID::g ) swap(pa, pd);
+	  if( pc->id() == particle->id()) swap(pb, pc);
+	  if( pd->id() == particle->id()) swap(pb, pd);
+	  if( pa->id() != ParticleID::g)  continue;
+	  if( pb->id() != particle->id()) continue;
+
+	  if( !((abs(pd->id()) == abs(children. first->id()) &&
+		 abs(pc->id()) == abs(children.second->id())) ||
+		(abs(pc->id()) == abs(children. first->id()) &&
+		 abs(pd->id()) == abs(children.second->id()))))
+	    continue;
+
+	  return vertex;
+	}
+      }
+    }
+  }
+  return VertexBasePtr();
+}
+
+

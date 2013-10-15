@@ -164,6 +164,27 @@ struct HiggsBosonMatcher: public MatcherType {
  * Gives a MatcherBase class based on HiggsBosonMatcher. 
  */
 typedef Matcher<HiggsBosonMatcher> MatchHiggsBoson;
+
+/**
+ * A Matcher class which matches any charged lepton.
+ */
+struct ChargedLeptonMatcher: public MatcherType {
+  /** Typedef the class matching the complex conjugate particles. */
+  typedef ChargedLeptonMatcher CC;
+  /** The main static function to check if a given particle type \a pd
+      matches. */
+  static bool Check(const ParticleData & pd) {
+    return Check(pd.id());
+  }
+  static bool Check(long id) {
+    return abs(id) > 10 && abs(id) <= 20 && abs(id)%2!=0;
+  }
+
+  /** A simplified but unique class name. */
+  static string className() { return "ChargedLepton"; }
+};
+/** Gives a MatcherBase class based on ChargedLeptonMatcher. */
+typedef Matcher<ChargedLeptonMatcher> MatchChargedLepton;
 }
 
 #endif /* Herwig_StandardMatchers_H */

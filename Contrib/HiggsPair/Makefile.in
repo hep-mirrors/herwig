@@ -1,0 +1,39 @@
+# -*- Makefile -*- (for emacs)
+
+#
+# This Makefile is intended for compiling Herwig++ plugins
+#
+# This Makefile received very little testing, 
+# any bug reports are very welcome!
+#
+
+# location of include files
+THEPEGINCLUDE =
+HERWIGINCLUDE =
+GSLINCLUDE    = 
+LDFLAGS = 
+SHARED_FLAG = 
+INCLUDE = $(THEPEGINCLUDE) $(HERWIGINCLUDE) $(GSLINCLUDE)
+#
+# C++ flags
+# 
+CXX =
+CXXFLAGS =
+FC =
+FCFLAGS =
+FCLIBS =
+
+default : MEHiggsPair.so
+
+%.o : %.cc %.h
+	$(CXX) -fPIC $(CPPFLAGS) $(INCLUDE) $(CXXFLAGS) -c $< -o $@  
+
+%.o : %.f
+	$(FC) -fPIC $(CPPFLAGS) $(INCLUDE) $(FCFLAGS) -c $< -o $@  
+
+MEHiggsPair.so : MEHiggsPair.o scalint.o
+	$(CXX) -fPIC $(CPPFLAGS) $(INCLUDE) $(CXXFLAGS) $(SHARED_FLAG) $(LDFLAGS) \
+	$(FCLIBS) $^ -o $@
+
+clean:
+	rm -f MEHiggsPair.so MEHiggsPair.o scalint.o

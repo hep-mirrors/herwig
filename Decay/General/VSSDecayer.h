@@ -14,6 +14,7 @@
 
 #include "GeneralTwoBodyDecayer.h"
 #include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
 #include "ThePEG/Repository/EventGenerator.h"
 
 namespace Herwig {
@@ -60,6 +61,24 @@ public:
    */
   virtual Energy partialWidth(PMPair inpart, PMPair outa, 
 			      PMPair outb) const;
+  /**
+   *  Has a POWHEG style correction
+   */
+  virtual POWHEGType hasPOWHEGCorrection() {return FSR;}
+
+  /**
+   *  Three-body matrix element including additional QCD radiation
+   */
+  virtual double threeBodyME(const int , const Particle & inpart,
+			     const ParticleVector & decay,MEOption meopt);
+
+  /**
+   * Indentify outgoing vertices for the fermion and antifermion
+   */
+  void identifyVertices(const int iscal, const int ianti,
+			const Particle & inpart, const ParticleVector & decay,
+			AbstractVSSVertexPtr & abstractOutgoingVertexS, 
+			AbstractVSSVertexPtr & abstractOutgoingVertexA);
   //@}
 
 public:
@@ -144,6 +163,21 @@ private:
   VSSVertexPtr _perturbativeVertex;
 
   /**
+   *  Abstract pointer to AbstractVVVVertex for QCD radiation from incoming vector
+   */
+  AbstractVVVVertexPtr _abstractIncomingVertex;
+
+  /**
+   *  Abstract pointer to AbstractFFVVertex for QCD radiation from outgoing scalar
+   */
+  AbstractVSSVertexPtr _abstractOutgoingVertex1;
+
+  /**
+   *  Abstract pointer to AbstractFFVVertex for QCD radiation from outgoing scalar
+   */
+  AbstractVSSVertexPtr _abstractOutgoingVertex2;
+
+  /**
    *  Spin density matrix
    */
   mutable RhoDMatrix _rho;
@@ -152,6 +186,22 @@ private:
    *  Polarization vectors for the decaying particle
    */
   mutable vector<Helicity::VectorWaveFunction> _vectors;
+
+ /**
+   *  Spin density matrix for 3 body decay
+   */
+  mutable RhoDMatrix _rho3;
+
+  /**
+   *  Vector wavefunction for 3 body decay
+   */
+  mutable vector<Helicity::VectorWaveFunction> _vector3;
+
+    /**
+   *  Vector wavefunction for 3 body decay
+   */
+  mutable vector<Helicity::VectorWaveFunction> _gluon;
+
 };
 
 }

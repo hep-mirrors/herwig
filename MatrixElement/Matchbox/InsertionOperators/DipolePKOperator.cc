@@ -308,6 +308,7 @@ double DipolePKOperator::sumParton(int id) const {
   double thePgg = 0.0;
 
   double ifCorrelated = 0.0;
+  double fiCorrelated = 0.0;
 
   int idi = 2;
   vector<Lorentz5Momentum>::const_iterator Pi = meMomenta().begin() + 2;
@@ -321,7 +322,8 @@ double DipolePKOperator::sumParton(int id) const {
     if ( !apply(*i) || lastBorn()->noDipole(idi,id) )
       continue;
 
-    ifCorrelated = lastBorn()->colourCorrelatedME2(make_pair(idi,id));
+    fiCorrelated = lastBorn()->colourCorrelatedME2(make_pair(idi,id));
+    ifCorrelated = lastBorn()->colourCorrelatedME2(make_pair(id,idi));
 
     if ( theGammaSoft == 0.0 )
       theGammaSoft = gammaSoft();
@@ -342,7 +344,7 @@ double DipolePKOperator::sumParton(int id) const {
 
     res +=
       ( (**i).id() == ParticleID::g ? gammaGluon : gammaQuark ) *
-      theGammaSoft * ifCorrelated;
+      theGammaSoft * fiCorrelated;
 
     if ( mePartonData()[id]->id() == ParticleID::g ) {
       res +=
@@ -364,7 +366,7 @@ double DipolePKOperator::sumParton(int id) const {
 	disFinite = CF*PDFxByz(parton)*(1.+3.*z/2.)/z;
       }
       if ( z > x )
-	res -= disFinite*ifCorrelated;
+	res -= disFinite*fiCorrelated;
     }
 
     if ( mePartonData()[idi]->id() == ParticleID::g ) {
@@ -372,7 +374,7 @@ double DipolePKOperator::sumParton(int id) const {
 	glueFinite = 2.*CA*PDFxByz(parton)*(1.+z/6.)/z;
       }
       if ( z > x )
-	res -= glueFinite*ifCorrelated;
+	res -= glueFinite*fiCorrelated;
     }
 
   }

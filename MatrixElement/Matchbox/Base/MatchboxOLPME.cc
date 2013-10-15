@@ -82,7 +82,7 @@ double MatchboxOLPME::spinColourCorrelatedME2(pair<int,int> ij,
   Lorentz5Momentum p = meMomenta()[ij.first];
   Lorentz5Momentum n = meMomenta()[ij.second];
 
-  LorentzVector<Complex> polarization = plusPolarization(p,n);
+  LorentzVector<Complex> polarization = plusPolarization(p,n,ij.first);
 
   Complex pFactor = (polarization*c.momentum())/sqrt(abs(c.scale()));
 

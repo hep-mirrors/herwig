@@ -18,15 +18,17 @@ bin_SCRIPTS = herwig-config
 HELPERFILES = CMSSM40.1.1.slha RPV3.1.slha NMSSM.spc \
 ADD.model \
 Leptoquark.model \
+LH.model \
+LHTP.model \
 MSSM.model \
 MUED.model \
 NMSSM.model \
+RPV-Bi.model \
+RPV-Tri.model \
 RS.model \
 Sextet.model \
 TTBA.model \
 Zprime.model \
-LH.model \
-LHTP.model \
 RPV-BI.slha \
 RPV-TRI.slha \
 RPV-UDD.slha
@@ -150,6 +152,7 @@ THEPEGREPO=$(THEPEGPATH)/lib/ThePEG/ThePEGDefaults.rpo
 install-data-hook:
 	@echo Creating repository
 	@./Herwig++ init -L$(DESTDIR)$(pkglibdir) -i$(DESTDIR)$(pkgdatadir) $(DESTDIR)$(defaultsdir)/HerwigDefaults.in --repo=$(DESTDIR)$(pkgdatadir)/HerwigDefaults.rpo
+	@if test -n "$(DESTDIR)"; then sed -i -e "s@$(DESTDIR)@@g" $(DESTDIR)$(pkgdatadir)/HerwigDefaults.rpo; fi
 
 uninstall-hook:
 	rm -f $(DESTDIR)$(pkgdatadir)/HerwigDefaults.rpo
@@ -164,6 +167,8 @@ register-with-thepeg-repo:
 		-r "$(THEPEGREPO)" -o "$(THEPEGREPO)" \
 		-i $(DESTDIR)$(pkgdatadir) \
 		-l$(DESTDIR)$(pkglibdir) ; \
+		if test -n "$(DESTDIR)"; \
+		then sed -i -e "s@$(DESTDIR)@@g" "$(THEPEGREPO)" ; fi ; \
 	fi
 
 

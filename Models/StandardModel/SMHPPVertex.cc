@@ -159,7 +159,8 @@ void SMHPPVertex::setCoupling(Energy2 q2, tcPDPtr part2,
     // W
     type.push_back(PDT::Spin1);
     masses.push_back(_mw);
-    couplings.push_back(make_pair(UnitRemoval::InvE*_mw, UnitRemoval::InvE*_mw));
+    const double mw = UnitRemoval::InvE*_mw;
+    couplings.push_back(make_pair(mw,mw));
     setNParticles(delta+2);
     VVSLoopVertex::setCoupling(q2, part1, part2, part3);
     break;

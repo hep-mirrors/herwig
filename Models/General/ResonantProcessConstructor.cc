@@ -31,12 +31,12 @@ IBPtr ResonantProcessConstructor::fullclone() const {
 
 void ResonantProcessConstructor::persistentOutput(PersistentOStream & os) const {
   os << incoming_ << intermediates_ << outgoing_ 
-     << processOption_ << scaleFactor_;
+     << processOption_ << scaleChoice_ << scaleFactor_;
 }
 
 void ResonantProcessConstructor::persistentInput(PersistentIStream & is, int) {
   is >> incoming_ >> intermediates_ >> outgoing_ 
-     >> processOption_ >> scaleFactor_;
+     >> processOption_ >> scaleChoice_ >> scaleFactor_;
 }
 
 ClassDescription<ResonantProcessConstructor> 
@@ -93,6 +93,26 @@ void ResonantProcessConstructor::Init() {
     (interfaceProcesses,
      "Inclusive",
      "Generate all modes which are allowed for the on-shell intermediate particle",
+     3);
+
+  static Switch<ResonantProcessConstructor,unsigned int> interfaceScaleChoice
+    ("ScaleChoice",
+     "&ResonantProcessConstructor::scaleChoice_",
+     &ResonantProcessConstructor::scaleChoice_, 1, false, false);
+  static SwitchOption interfaceScaleChoicesHat
+    (interfaceScaleChoice,
+     "sHat",
+     "Always use sHat",
+     1);
+  static SwitchOption interfaceScaleChoiceTransverseMass
+    (interfaceScaleChoice,
+     "TransverseMass",
+     "Always use the transverse mass",
+     2);
+  static SwitchOption interfaceScaleChoiceGeometicMean
+    (interfaceScaleChoice,
+     "MaxMT",
+     "Use the maximum of m^2+p_T^2 for the two particles",
      3);
 
   static Parameter<ResonantProcessConstructor,double> interfaceScaleFactor
@@ -338,7 +358,7 @@ createMatrixElement(const HPDiagram & diag) const {
     return;
   }
   matrixElement->setProcessInfo(HPDVector(1, diag),
-				colourFlow(extpart), debug(),0,scaleFactor_);
+				colourFlow(extpart), debug(),scaleChoice_-1,scaleFactor_);
   generator()->preinitInterface(subProcess(), "MatrixElements", 
 				subProcess()->MEs().size(),
 				"insert", matrixElement->fullName()); 

@@ -831,14 +831,18 @@ GeneralHardME::colourGeometries(tcDiagPtr diag) const {
     static ColourLines f33to61u[2]
       ={ColourLines("1 2 4:1, 3 4:2"),
         ColourLines("1 2 4:2, 3 4:1")};
+    static ColourLines f33to61s[2]
+      ={ColourLines("1 3:1 4:1, 2 3:2 4:2"),
+        ColourLines("1 3:2 4:2, 2 3:1 4:1")};
     if(current.channelType == HPDiagram::tChannel) {
       if(current.ordered.second) 
         sel.insert(1., &f33to61t[flow_]);
       else 
         sel.insert(1., &f33to61u[flow_]);
     }
-    else
-      assert(false);
+    else {
+      sel.insert(1., &f33to61s[flow_]);
+    }
     break;
   case Colour33to16:
     static ColourLines f33to16t[2]
@@ -847,14 +851,18 @@ GeneralHardME::colourGeometries(tcDiagPtr diag) const {
     static ColourLines f33to16u[2]
       ={ColourLines("1 5:1, 3 2 5:2"),
         ColourLines("1 5:2, 3 2 5:1")};
+    static ColourLines f33to16s[2]
+      ={ColourLines("1 3:1 5:1, 2 3:2 5:2"),
+        ColourLines("1 3:2 5:2, 2 3:1 5:1")};
     if(current.channelType == HPDiagram::tChannel) {
       if(current.ordered.second)
         sel.insert(1., &f33to16t[flow_]);
       else 
         sel.insert(1., &f33to16u[flow_]);
     }
-    else
-      assert(false);
+    else {
+      sel.insert(1., &f33to16s[flow_]);
+    }
     break;
   case Colour3bar3barto6bar1:
     static ColourLines f3bar3barto6bar1t[2]
@@ -863,11 +871,17 @@ GeneralHardME::colourGeometries(tcDiagPtr diag) const {
     static ColourLines f3bar3barto6bar1u[2]
       ={ColourLines("-1 -2 -4:1, -3 -4:2"),
         ColourLines("-1 -2 -4:2, -3 -4:1")};
+    static ColourLines f3bar3barto6bar1s[2]
+      ={ColourLines("-1 -3:1 -4:1, -2 -3:2 -4:2"),
+        ColourLines("-1 -3:2 -4:2, -2 -3:1 -4:1")};
     if(current.channelType == HPDiagram::tChannel) {
       if(current.ordered.second) 
         sel.insert(1., &f3bar3barto6bar1t[flow_]);
       else 
         sel.insert(1., &f3bar3barto6bar1u[flow_]);
+    }
+    else {
+      sel.insert(1., &f3bar3barto6bar1s[flow_]);
     }
     break;
   case Colour3bar3barto16bar:
@@ -877,11 +891,17 @@ GeneralHardME::colourGeometries(tcDiagPtr diag) const {
     static ColourLines f3bar3barto16baru[2]
       ={ColourLines("-1 -5:1, -3 -2 -5:2"),
         ColourLines("-1 -5:2, -3 -2 -5:1")};
+    static ColourLines f3bar3barto16bars[2]
+      ={ColourLines("-1 -3:1 -5:1, -2 -3:2 -5:2"),
+        ColourLines("-1 -3:2 -5:2, -2 -3:1 -5:1")};
     if(current.channelType == HPDiagram::tChannel) {
       if(current.ordered.second) 
         sel.insert(1., &f3bar3barto16bart[flow_]);
       else 
         sel.insert(1., &f3bar3barto16baru[flow_]);
+    }
+    else {
+      sel.insert(1., &f3bar3barto16bars[flow_]);
     }
     break;
   case Colour38to3bar6:

@@ -145,7 +145,7 @@ double DipoleIOperator::me2() const {
 
   Energy2 muR2 = 
     lastBorn()->renormalizationScale()*
-    lastBorn()->renormalizationScaleFactor();
+    sqr(lastBorn()->renormalizationScaleFactor());
   if ( muR2 != mu2 ) {
     res -=
       betaZero *

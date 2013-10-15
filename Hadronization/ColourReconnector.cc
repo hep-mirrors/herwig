@@ -209,6 +209,9 @@ ClusterPtr ColourReconnector::_findRecoPartner(ClusterPtr cl,
   Energy minMass = 1*TeV;
   for (CluVecIt cit=cv.begin(); cit != cv.end(); ++cit) {
 
+    // don't even look at original cluster
+    if(*cit==cl) continue;
+
     // don't allow colour octet clusters
     if ( isColour8( cl->colParticle(),
 	            (*cit)->antiColParticle() )  ||
@@ -216,6 +219,9 @@ ClusterPtr ColourReconnector::_findRecoPartner(ClusterPtr cl,
 	            cl->antiColParticle() ) ) {
       continue;
     }
+
+    // stop it putting beam remnants together
+    if(cl->isBeamCluster() && (**cit).isBeamCluster()) continue;
 
     // momenta of the old clusters
     Lorentz5Momentum p1 = cl->colParticle()->momentum() + 
@@ -246,10 +252,26 @@ ColourReconnector::_reconnect(ClusterPtr c1, ClusterPtr c2) const {
 
   // choose the other possibility to form two clusters from the given
   // constituents
+  assert(c1->numComponents()==2);
+  assert(c2->numComponents()==2);
+  int c1_col(-1),c1_anti(-1),c2_col(-1),c2_anti(-1);
+  for(unsigned int ix=0;ix<2;++ix) {
+    if     (c1->particle(ix)->hasColour(false)) c1_col  = ix;
+    else if(c1->particle(ix)->hasColour(true )) c1_anti = ix;
+    if     (c2->particle(ix)->hasColour(false)) c2_col  = ix;
+    else if(c2->particle(ix)->hasColour(true )) c2_anti = ix;
+  }
+  assert(c1_col>=0&&c2_col>=0&&c1_anti>=0&&c2_anti>=0);
+
   ClusterPtr newCluster1
     = new_ptr( Cluster( c1->colParticle(), c2->antiColParticle() ) );
+  if(c1->isBeamRemnant(c1_col )) newCluster1->setBeamRemnant(0,true);
+  if(c2->isBeamRemnant(c2_anti)) newCluster1->setBeamRemnant(1,true);
+  
   ClusterPtr newCluster2
     = new_ptr( Cluster( c2->colParticle(), c1->antiColParticle() ) );
+  if(c2->isBeamRemnant(c2_col )) newCluster2->setBeamRemnant(0,true);
+  if(c1->isBeamRemnant(c1_anti)) newCluster2->setBeamRemnant(1,true);
 
   return pair <ClusterPtr,ClusterPtr> (newCluster1, newCluster2);
 }

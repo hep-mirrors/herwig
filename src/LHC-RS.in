@@ -10,6 +10,9 @@
 # The second section contains the user settings.
 ###################################################
 
+# Set emission to POWHEG for radiation in decays
+set /Herwig/Shower/Evolver:HardEmissionMode POWHEG
+
 read RS.model
 cd /Herwig/NewPhysics
 
@@ -18,7 +21,7 @@ cd /Herwig/NewPhysics
 # This section contains the user defined settings
 #
 ##################################################
-# Example hard process: Incoming proton,resonant gravition
+# Example hard process: Incoming proton,resonant graviton
 
 insert ResConstructor:Incoming 0 /Herwig/Particles/g
 insert ResConstructor:Incoming 0 /Herwig/Particles/u
@@ -45,5 +48,6 @@ set LHCGenerator:NumberOfEvents 10000000
 set LHCGenerator:RandomNumberGenerator:Seed 31122001
 set LHCGenerator:PrintEvent 10
 set LHCGenerator:MaxErrors 10000
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 8000.0
 
 saverun LHC-RS LHCGenerator

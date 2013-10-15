@@ -37,6 +37,7 @@ newdef ShowerModel:PartnerFinder PartnerFinder
 newdef ShowerModel:KinematicsReconstructor KinematicsReconstructor
 newdef Evolver:ShowerModel ShowerModel
 newdef Evolver:SplittingGenerator SplittingGenerator
+newdef Evolver:HardScaleFactor 1.0
 
 ##################################################################
 # Intrinsic pT
@@ -72,6 +73,7 @@ newdef SplittingGenerator:FSR Yes
 # a few default values
 newdef Evolver:MECorrMode 1
 newdef AlphaQCD:ScaleFactor 1.0
+newdef AlphaQCD:RenormalizationScaleFactor 1.0
 newdef AlphaQCD:NPAlphaS 2
 newdef AlphaQCD:Qmin 0.935
 newdef AlphaQCD:NumberOfLoops 3

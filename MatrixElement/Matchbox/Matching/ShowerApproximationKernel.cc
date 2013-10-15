@@ -11,6 +11,7 @@
 // functions of the ShowerApproximationKernel class.
 //
 
+#include <config.h>
 #include "ShowerApproximationKernel.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/EventRecord/Particle.h"

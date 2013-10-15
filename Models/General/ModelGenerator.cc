@@ -299,6 +299,7 @@ void ModelGenerator::doinit() {
     if( parent->decaySelector().empty() ) {
       parent->stable(true);
       parent->width(ZERO);
+      parent->widthCut(ZERO);
       parent->massGenerator(tGenericMassGeneratorPtr());
       parent->widthGenerator(tGenericWidthGeneratorPtr());
     }

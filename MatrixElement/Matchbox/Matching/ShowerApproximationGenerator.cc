@@ -11,6 +11,7 @@
 // functions of the ShowerApproximationGenerator class.
 //
 
+#include <config.h>
 #include "ShowerApproximationGenerator.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Reference.h"

@@ -82,8 +82,8 @@ double MatchboxPhasespace::generateKinematics(const double* r,
 	gmass = (**pd).mass();
       }
       maxMass -= gmass;
+      p->setMass(gmass);
     }
-    p->setMass(gmass);
   } else {
     for ( ; pd != mePartonData().end(); ++pd, ++p )
       p->setMass((**pd).mass());

@@ -12,4 +12,22 @@ MatchboxAmplitudellbarqqbargg.h \
 MatchboxAmplitudellbarqqbarg.h \
 MatchboxAmplitudellbarqqbar.h \
 MatchboxAmplitudellbarqqbarqqbar.cc \
-MatchboxAmplitudellbarqqbarqqbar.h
+MatchboxAmplitudellbarqqbarqqbar.h \
+MatchboxAmplitudelnuqqbar.cc \
+MatchboxAmplitudelnuqqbarg.cc \
+MatchboxAmplitudelnuqqbargg.cc \
+MatchboxAmplitudelnuqqbargg.h \
+MatchboxAmplitudelnuqqbarg.h \
+MatchboxAmplitudelnuqqbar.h \
+MatchboxAmplitudelnuqqbarqqbar.cc \
+MatchboxAmplitudelnuqqbarqqbar.h \
+MatchboxAmplitudehbbbar.cc \
+MatchboxAmplitudehbbbarg.cc \
+MatchboxAmplitudehbbbarg.h \
+MatchboxAmplitudehbbbar.h \
+MatchboxAmplitudehgg.cc \
+MatchboxAmplitudehggg.cc \
+MatchboxAmplitudehggg.h \
+MatchboxAmplitudehgg.h \
+MatchboxAmplitudehqqbarg.cc \
+MatchboxAmplitudehqqbarg.h

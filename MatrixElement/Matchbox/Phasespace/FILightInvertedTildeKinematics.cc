@@ -49,12 +49,13 @@ bool FILightInvertedTildeKinematics::doMap(const double * r) {
   }
 
   Energy pt = ptz.first;
-  double z = ptz.second;
 
+  double z = ptz.second;
   double y = sqr(pt/lastScale())/(z*(1.-z));
   double x = 1./(1.+y);
 
-  if ( x < spectatorX() ) {
+  if ( x < spectatorX() || x > 1. ||
+       z < 0. || z > 1. ) {
     jacobian(0.0);
     return false;
   }
@@ -70,9 +71,9 @@ bool FILightInvertedTildeKinematics::doMap(const double * r) {
   subtractionParameters()[0] = x;
   subtractionParameters()[1] = z;
 
-  realEmitterMomentum() = z*emitter + y*(1.-z)*spectator + kt;
-  realEmissionMomentum() = (1.-z)*emitter + y*z*spectator - kt;
-  realSpectatorMomentum() = (1.+y)*spectator;
+  realEmitterMomentum() = z*emitter + (1.-z)*((1.-x)/x)*spectator + kt;
+  realEmissionMomentum() = (1.-z)*emitter + z*((1.-x)/x)*spectator - kt;
+  realSpectatorMomentum() = (1./x)*spectator;
 
   realEmitterMomentum().setMass(ZERO);
   realEmitterMomentum().rescaleEnergy();

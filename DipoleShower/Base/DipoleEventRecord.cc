@@ -19,7 +19,13 @@
 #include "ThePEG/PDF/PartonExtractor.h"
 
 #include <boost/utility.hpp>
+
+#include <config.h>
+#ifdef HAVE_CXX11
+using std::next;
+#else
 using boost::next;
+#endif
 using boost::prior;
 
 #include <algorithm>

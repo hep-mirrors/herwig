@@ -9,6 +9,7 @@ create Herwig::ModelGenerator NewModel
 create Herwig::ResonantProcessConstructor ResConstructor
 create Herwig::TwoToTwoProcessConstructor HPConstructor
 create Herwig::HiggsVectorBosonProcessConstructor HVConstructor
+set HVConstructor:AlphaQCD /Herwig/Shower/AlphaQCD
 create Herwig::HiggsVBFProcessConstructor HiggsVBFConstructor
 create Herwig::QQHiggsProcessConstructor QQHiggsConstructor
 create Herwig::DecayConstructor DecayConstructor

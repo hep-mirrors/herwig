@@ -53,6 +53,7 @@ src/defaults/Analysis.in
 src/herwig-config
 src/.*\.(run|tex|out|log|rpo|spc|top|dump|dot|aux|pdf|ps|png|svg|hepmc|dvi)
 lib/done-all-links
+lib/apple-fixes
 src/Herwig\+\+
 src/defaults/PDF.in
 src/defaults/done-all-links

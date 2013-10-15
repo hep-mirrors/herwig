@@ -329,6 +329,26 @@ private:
    */
   bool runCombinationData;
 
+  /**
+   * The maximum weight encountered
+   */
+  double theMaxWeight;
+
+  /**
+   * True, if we should perform an almost unweighted sampling
+   */
+  bool theAlmostUnweighted;
+
+  /**
+   * Number of points which exceeded the maximum
+   */
+  unsigned long maximumExceeds;
+
+  /**
+   * The average relative deviation from the maximum weight
+   */
+  double maximumExceededBy;
+
 private:
 
   /**

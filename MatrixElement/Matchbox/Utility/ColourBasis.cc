@@ -659,6 +659,21 @@ ColourBasis::colourFlows(Ptr<Tree2toNDiagram>::tcptr diag) {
 
 }
 
+void ColourBasis::updateColourLines(Ptr<Tree2toNDiagram>::tcptr dd) {
+  map<Ptr<Tree2toNDiagram>::tcptr,vector<string> >::const_iterator cl =
+    theFlowMap.find(dd);
+  assert(cl != theFlowMap.end());
+  vector<ColourLines*> clines(cl->second.size());
+  for ( size_t k = 0; k < cl->second.size(); ++k ) {
+    if ( cl->second[k] == "" ) {
+      clines[k] = 0;
+      continue;
+    }
+    clines[k] = new ColourLines(cl->second[k]);
+  }
+  theColourLineMap[cl->first] = clines;
+}
+
 map<Ptr<Tree2toNDiagram>::tcptr,vector<ColourLines*> >&
 ColourBasis::colourLineMap() {
   
@@ -687,7 +702,12 @@ Selector<const ColourLines *> ColourBasis::colourGeometries(tcDiagPtr diag,
   Ptr<Tree2toNDiagram>::tcptr dd = 
     dynamic_ptr_cast<Ptr<Tree2toNDiagram>::tcptr>(diag);
   assert(dd && theFlowMap.find(dd) != theFlowMap.end());
-  const vector<ColourLines*>& cl = colourLineMap()[dd];
+  map<Ptr<Tree2toNDiagram>::tcptr,vector<ColourLines*> >::const_iterator colit =
+    colourLineMap().find(dd);
+  if ( colit == colourLineMap().end() )
+    updateColourLines(dd);
+  colit = colourLineMap().find(dd);
+  const vector<ColourLines*>& cl = colit->second;
 
   Selector<const ColourLines *> sel;
   size_t dim = amps.begin()->second.size();
