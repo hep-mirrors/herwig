@@ -39,14 +39,16 @@ void ShowerAlphaQCD::persistentOutput(PersistentOStream & os) const {
   os << _asType << _asMaxNP << ounit(_qmin,GeV) << _nloop << _lambdaopt << _thresopt 
      << ounit(_lambdain,GeV) << _alphain << _inopt
      << _tolerance << _maxtry << _alphamin
-     << ounit(_thresholds,GeV) << ounit(_lambda,GeV);
+     << ounit(_thresholds,GeV) << ounit(_lambda,GeV)
+     << _renormalizationScaleFactor;
 }
 
 void ShowerAlphaQCD::persistentInput(PersistentIStream & is, int) {
   is >> _asType >> _asMaxNP >> iunit(_qmin,GeV) >> _nloop >> _lambdaopt >> _thresopt
      >> iunit(_lambdain,GeV) >> _alphain >> _inopt
      >> _tolerance >> _maxtry >> _alphamin
-     >> iunit(_thresholds,GeV) >> iunit(_lambda,GeV);
+     >> iunit(_thresholds,GeV) >> iunit(_lambda,GeV)
+     >> _renormalizationScaleFactor;
 }
 
 void ShowerAlphaQCD::Init() {
@@ -165,6 +167,13 @@ void ShowerAlphaQCD::Init() {
      "",
      &ShowerAlphaQCD::value, false);
 
+
+  static Parameter<ShowerAlphaQCD,double> interfaceRenormalizationScaleFactor
+    ("RenormalizationScaleFactor",
+     "A factor to multiply the argument of the coupling.",
+     &ShowerAlphaQCD::_renormalizationScaleFactor, 1.0, 0.0, 0,
+     false, false, Interface::lowerlim);
+
 }
 
 void ShowerAlphaQCD::doinit() {
@@ -210,6 +219,7 @@ void ShowerAlphaQCD::doinit() {
 double ShowerAlphaQCD::value(const Energy2 scale) const {
   pair<short,Energy> nflam;
   Energy q = sqrt(scale);
+  q *= renormalizationScaleFactor();
   double val(0.);
   // special handling if the scale is less than Qmin
   if (q < _qmin) {
@@ -256,6 +266,7 @@ double ShowerAlphaQCD::overestimateValue() const {
 double ShowerAlphaQCD::ratio(const Energy2 scale) const {
   pair<short,Energy> nflam;
   Energy q = sqrt(scale);
+  q *= renormalizationScaleFactor();
   double val(0.);
   // special handling if the scale is less than Qmin
   if (q < _qmin) {
@@ -336,6 +347,7 @@ Energy ShowerAlphaQCD::computeLambda(Energy match,
 double ShowerAlphaQCD::derivativealphaS(Energy q, Energy lam, int nf) const
 {
   using Constants::pi;
+  q *= renormalizationScaleFactor();
   double lx = log(sqr(q/lam));
   double b0 = 11. - 2./3.*nf;
   double b1 = 51. - 19./3.*nf;
@@ -357,6 +369,7 @@ double ShowerAlphaQCD::derivativealphaS(Energy q, Energy lam, int nf) const
 
 double ShowerAlphaQCD::alphaS(Energy q, Energy lam, int nf) const {
   using Constants::pi;
+  q *= renormalizationScaleFactor();
   double lx(log(sqr(q/lam)));
   double b0 = 11. - 2./3.*nf;
   double b1 = 51. - 19./3.*nf;

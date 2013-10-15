@@ -68,11 +68,11 @@ double IFgx2ggxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
 
   double z = split.lastZ();
   double ratio = sqr(split.lastPt()/split.scale());
-  double x = ( z*(1.-z) - ratio ) / ( 1. - z - ratio );
-  double u = ratio / (1.-z);
 
-  //double rho = (1.+x+u)/x;
-  //ret *= 6. * ( 1./(1.-x+u) + (1.-x)/x - 1. + x*(1.-x) +u/rho );
+  double rho = 1. - 4.*ratio*z*(1.-z)/(1.-z+ratio);
+  double x = 0.5*((1.-z+ratio)/ratio)*(1.+sqrt(rho));
+  double u = 0.5*((1.-z+ratio)/(1.-z))*(1.+sqrt(rho));
+
   ret *= 3. * ( 1./(1.-x+u) + (1.-x)/x - 1. + x*(1.-x) );
 
   return ret;

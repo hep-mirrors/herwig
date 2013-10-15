@@ -51,12 +51,17 @@ bool FFLightInvertedTildeKinematics::doMap(const double * r) {
   }
 
   Energy pt = ptz.first;
+
   double z = ptz.second;
-
   double y = sqr(pt/lastScale())/(z*(1.-z));
+  if ( y < 0. || y > 1. ||
+       z < 0. || z > 1. ) {
+    jacobian(0.0);
+    return false;
+  }
 
-  mapping /= z*(1.-z);
-  jacobian(mapping*(1.-y)*(sqr(lastScale())/sHat())/(16.*sqr(Constants::pi)));
+  mapping *= (1.-y)/(z*(1.-z));
+  jacobian(mapping*(sqr(lastScale())/sHat())/(16.*sqr(Constants::pi)));
 
   double phi = 2.*Constants::pi*r[2];
   Lorentz5Momentum kt

@@ -76,7 +76,7 @@ insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff
 # s-channel
 # insert SimpleQCD:MatrixElements[0] MESingleTopSChannel
 # tW
-#insert SimpleQCD:MatrixElements[0] MESingleTopTW
+# insert SimpleQCD:MatrixElements[0] MESingleTopTW
 #
 #  Higgs Processes
 #

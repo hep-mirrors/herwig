@@ -54,7 +54,7 @@ Ptr<MatchboxMEBase>::ptr MatchboxAmplitude::makeME(const PDVector&) const {
 
 Selector<const ColourLines *> MatchboxAmplitude::colourGeometries(tcDiagPtr d) const {
   if ( haveColourFlows() )
-    return theColourBasis->colourGeometries(d,lastLargeNAmplitudes());
+    return colourBasis()->colourGeometries(d,lastLargeNAmplitudes());
   return Selector<const ColourLines *>();
 }
 
@@ -69,39 +69,7 @@ void MatchboxAmplitude::olpOrderFileHeader(ostream& os) const {
      << "IRregularisation          " << (isDR() ? "DRED" : "CDR") << "\n"
      << "Extra HelAvgInitial       no\n"
      << "Extra ColAvgInitial       no\n"
-     << "Extra MCSymmetrizeFinal   yes\n";
-
-  os << "\n";
-
-}
-
-void MatchboxAmplitude::olpOrderFileProcessGroup(ostream& os,
-						 const string& type,
-						 const set<Process>& proc) const {
-
-  unsigned int oas = proc.begin()->orderInAlphaS;
-  unsigned int oae = proc.begin()->orderInAlphaEW;
-  os << "Extra AmplitudeType       " << type << "\n\n"
-     << "AlphasPower               " << oas << "\n"
-     << "AlphaPower                " << oae << "\n\n";
-  for ( set<Process>::const_iterator p = proc.begin();
-	p != proc.end(); ++p ) {
-    if ( oas != p->orderInAlphaS ||
-	 oae != p->orderInAlphaEW ) {
-      oas = p->orderInAlphaS;
-      oae = p->orderInAlphaEW;
-      os << "\n"
-	 << "AlphasPower               " << oas << "\n"
-	 << "AlphaPower                " << oae << "\n\n";
-    }
-    os << p->legs[0]->id() << " "
-       << p->legs[1]->id() << " -> ";
-    for ( PDVector::const_iterator o = p->legs.begin() + 2;
-	  o != p->legs.end(); ++o ) {
-      os << (**o).id() << " ";
-    }
-    os << "\n";
-  }
+     << "Extra MCSymmetrizeFinal   no\n";
 
   os << "\n";
 
@@ -110,35 +78,67 @@ void MatchboxAmplitude::olpOrderFileProcessGroup(ostream& os,
 void MatchboxAmplitude::olpOrderFileProcesses(ostream& os,
 					      const map<pair<Process,int>,int>& proc) const {
 
-  set<Process> trees;
-  set<Process> loops;
-  set<Process> ccs;
-  set<Process> sccs;
+  map<int,pair<Process,int> > sorted;
 
   for ( map<pair<Process,int>,int>::const_iterator p = proc.begin();
 	p != proc.end(); ++p ) {
-    if ( p->first.second == ProcessType::treeME2 ) {
-      trees.insert(p->first.first);
-    } else if ( p->first.second == ProcessType::oneLoopInterference ) {
-      loops.insert(p->first.first);
-    } else if ( p->first.second == ProcessType::colourCorrelatedME2 ) {
-      ccs.insert(p->first.first);
-    } else if ( p->first.second == ProcessType::spinColourCorrelatedME2 ) {
-      sccs.insert(p->first.first);
-    } else assert(false);
+    sorted[p->second] = p->first;
   }
 
-  if ( !trees.empty() )
-    olpOrderFileProcessGroup(os,"Tree",trees);
+  unsigned int currentOrderInAlphaS = sorted.begin()->second.first.orderInAlphaS;
+  unsigned int currentOrderInAlphaEW = sorted.begin()->second.first.orderInAlphaEW;
+  int currentType = sorted.begin()->second.second;
 
-  if ( !loops.empty() )
-    olpOrderFileProcessGroup(os,"Loop",loops);
+  os << "AlphasPower               " << currentOrderInAlphaS << "\n"
+     << "AlphaPower                " << currentOrderInAlphaEW << "\n"
+     << "AmplitudeType             ";
+  if ( currentType == ProcessType::treeME2 ) {
+    os << "tree\n";
+  } else if ( currentType == ProcessType::oneLoopInterference ) {
+    os << "loop\n";
+  } else if ( currentType == ProcessType::colourCorrelatedME2 ) {
+    os << "cctree\n";
+  } else if ( currentType == ProcessType::spinColourCorrelatedME2 ) {
+    os << "sctree\n";
+  } else assert(false);
 
-  if ( !ccs.empty() )
-    olpOrderFileProcessGroup(os,"ColourCorrelated",ccs);
 
-  if ( !sccs.empty() )
-    olpOrderFileProcessGroup(os,"SpinCorrelated",sccs);
+  for ( map<int,pair<Process,int> >::const_iterator p = sorted.begin();
+	p != sorted.end(); ++p ) {
+
+    if ( currentOrderInAlphaS != p->second.first.orderInAlphaS ) {
+      currentOrderInAlphaS = p->second.first.orderInAlphaS;
+      os << "AlphasPower               " << currentOrderInAlphaS << "\n";
+    }
+
+    if ( currentOrderInAlphaEW != p->second.first.orderInAlphaEW ) {
+      currentOrderInAlphaEW = p->second.first.orderInAlphaEW;
+      os << "AlphaPower                " << currentOrderInAlphaEW << "\n";
+    }
+
+    if ( currentType != p->second.second ) {
+      currentType = p->second.second;
+      os << "AmplitudeType             ";
+      if ( currentType == ProcessType::treeME2 ) {
+	os << "tree\n";
+      } else if ( currentType == ProcessType::oneLoopInterference ) {
+	os << "loop\n";
+      } else if ( currentType == ProcessType::colourCorrelatedME2 ) {
+	os << "cctree\n";
+      } else if ( currentType == ProcessType::spinColourCorrelatedME2 ) {
+	os << "sctree\n";
+      } else assert(false);
+    }
+
+    os << p->second.first.legs[0]->id() << " "
+       << p->second.first.legs[1]->id() << " -> ";
+    for ( PDVector::const_iterator o = p->second.first.legs.begin() + 2;
+	  o != p->second.first.legs.end(); ++o ) {
+      os << (**o).id() << " ";
+    }
+    os << "\n";
+
+  }
 
 }
 
@@ -203,8 +203,9 @@ void MatchboxAmplitude::setXComb(tStdXCombPtr xc) {
   theLastXComb = xc;
   lastMatchboxXComb(xc);
   fillCrossingMap();
-  for ( size_t k = 0 ; k < meMomenta().size(); ++k )
-    amplitudeMomenta()[k] = amplitudeMomentum(k);
+  if ( treeAmplitudes() || oneLoopAmplitudes() )
+    for ( size_t k = 0 ; k < meMomenta().size(); ++k )
+      amplitudeMomenta()[k] = amplitudeMomentum(k);
 }
 
 void MatchboxAmplitude::fillCrossingMap(size_t shift) {
@@ -561,7 +562,8 @@ bool equalsModulo(unsigned int i, const vector<int>& a, const vector<int>& b) {
 }
 
 LorentzVector<Complex> MatchboxAmplitude::plusPolarization(const Lorentz5Momentum& p,
-							   const Lorentz5Momentum& n) const {
+							   const Lorentz5Momentum& n,
+							   int) const {
 
   using namespace SpinorHelicity;
 
@@ -583,7 +585,7 @@ double MatchboxAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
   Lorentz5Momentum p = meMomenta()[ij.first];
   Lorentz5Momentum n = meMomenta()[ij.second];
 
-  LorentzVector<Complex> polarization = plusPolarization(p,n);
+  LorentzVector<Complex> polarization = plusPolarization(p,n,ij.first);
 
   Complex pFactor = (polarization*c.momentum())/sqrt(abs(c.scale()));
 

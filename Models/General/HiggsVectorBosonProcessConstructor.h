@@ -6,6 +6,7 @@
 //
 
 #include "HardProcessConstructor.h"
+#include "Herwig++/Shower/Couplings/ShowerAlpha.h"
 
 namespace Herwig {
 
@@ -112,6 +113,11 @@ private:
    *  Treatment of the Higgs width
    */
   unsigned int _shapeOpt;
+
+  /**
+   *  The shower coupling for the Matrix Element corrections
+   */
+  ShowerAlphaPtr _alpha;
 };
 
 }

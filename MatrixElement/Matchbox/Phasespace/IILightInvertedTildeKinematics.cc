@@ -58,7 +58,7 @@ bool IILightInvertedTildeKinematics::doMap(const double * r) {
   double v = ratio * z / ( 1. - z + ratio );
 
   if ( x < emitterX() || x > 1. ||
-       v > 1. || v > 1.-x ) {
+       v < 0. || v > 1.-x ) {
     jacobian(0.0);
     return false;
   }

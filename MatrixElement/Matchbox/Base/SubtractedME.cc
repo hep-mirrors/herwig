@@ -231,6 +231,22 @@ void SubtractedME::getDipoles() {
   dipMEs.resize(genDipoles.size());
   copy(genDipoles.begin(),genDipoles.end(),dipMEs.begin());
 
+  if ( !factory()->reweighters().empty() ) {
+    for ( MEVector::const_iterator d = dipMEs.begin(); d != dipMEs.end(); ++d ) {
+      for ( vector<ReweightPtr>::const_iterator rw = factory()->reweighters().begin();
+	    rw != factory()->reweighters().end(); ++rw )
+	(**d).addReweighter(*rw);
+    }
+  }
+
+  if ( !factory()->preweighters().empty() ) {
+    for ( MEVector::const_iterator d = dipMEs.begin(); d != dipMEs.end(); ++d ) {
+      for ( vector<ReweightPtr>::const_iterator rw = factory()->preweighters().begin();
+	    rw != factory()->preweighters().end(); ++rw )
+	(**d).addPreweighter(*rw);
+    }
+  }
+
   dependent() = dipMEs;
 
 }
@@ -345,7 +361,7 @@ void SubtractedME::fillProjectors() {
 	 !(**d).kinematicsGenerated() )
       continue;
     if ( (**d).willPassCuts() )
-      lastXCombPtr()->projectors().insert(1.,*d);
+      lastXCombPtr()->projectors().insert((**d).cutWeight(),*d);
   }
 }
 
@@ -361,20 +377,17 @@ double SubtractedME::reweightHead(const vector<tStdXCombPtr>& dep) {
   if ( realShowerSubtraction() ) {
     assert(showerApproximation());
     bool below = showerApproximation()->belowCutoff();
-    bool haveDipole = false;
+    double haveNoDipole = 1.0;
     for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d ) {
       if ( !(**d).matrixElement()->apply() ||
 	   !(**d).kinematicsGenerated() )
 	continue;
-      if ( (**d).willPassCuts() ) {
-	haveDipole = true;
+      haveNoDipole *= 1. - (**d).cutWeight();
+      if ( haveNoDipole == 0.0 )
 	break;
-      }
     }
-    if ( !haveDipole )
-      return 1.;
     if ( below )
-      return 0.;
+      return haveNoDipole;
     return 1.;
   }
 
@@ -386,18 +399,20 @@ double SubtractedME::reweightHead(const vector<tStdXCombPtr>& dep) {
 	return 0.;
     }
     double sum = 0.;
-    size_t n = 0;
+    double n = 0.;
+    double haveNoDipole = 1.0;
     for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d ) {
       if ( !(**d).matrixElement()->apply() ||
 	   !(**d).kinematicsGenerated() )
 	continue;
       if ( (**d).willPassCuts() ) {
-	sum += (**d).lastME2();
-	++n;
+	sum += (**d).lastME2() * (**d).cutWeight();
+	n += (**d).cutWeight();
+	haveNoDipole *= 1. - (**d).cutWeight();
       }
     }
     return
-      n * lastXComb().lastProjector()->lastME2() / sum;
+      n * (1.-haveNoDipole) * lastXComb().lastProjector()->lastME2() * lastXComb().lastProjector()->cutWeight() / sum;
   }
 
   return 1.;
@@ -416,30 +431,30 @@ double SubtractedME::reweightDependent(tStdXCombPtr xc, const vector<tStdXCombPt
   if ( virtualShowerSubtraction() || inclusive() ) {
     if ( xc != lastXComb().lastProjector() )
       return 0.;
-    size_t n = 0;
+    double n = 0.;
+    double haveNoDipole = 1.0;
     for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d ) {
       if ( !(**d).matrixElement()->apply() ||
 	   !(**d).kinematicsGenerated() )
 	continue;
       if ( (**d).willPassCuts() ) {
-	++n;
+	n += (**d).cutWeight();
+	haveNoDipole *= 1. - (**d).cutWeight();
       }
     }
-    return n;
+    return n * (1. - haveNoDipole);
   }
 
   if ( realShowerSubtraction() ) {
-    bool haveDipole = false;
+    double haveNoDipole = 1.0;
     for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d ) {
       if ( !(**d).kinematicsGenerated() )
 	continue;
-      if ( (**d).willPassCuts() ) {
-	haveDipole = true;
+      haveNoDipole *= 1. - (**d).cutWeight();
+      if ( haveNoDipole == 0.0 )
 	break;
-      }
     }
-    if ( !haveDipole )
-      return 0.;
+    return 1. - haveNoDipole;
   }
 
   return 1.;

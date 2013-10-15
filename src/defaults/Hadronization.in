@@ -50,7 +50,7 @@ newdef LightClusterDecayer:HadronSelector HadronSelector
 newdef ClusterDecayer:HadronSelector HadronSelector
 
 newdef ColourReconnector:ColourReconnection Yes
-newdef ColourReconnector:ReconnectionProbability 0.54
+newdef ColourReconnector:ReconnectionProbability 0.42
 newdef ColourReconnector:Algorithm Plain
 newdef ColourReconnector:InitialTemperature 0.01
 newdef ColourReconnector:AnnealingFactor 0.21

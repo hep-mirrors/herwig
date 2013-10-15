@@ -68,7 +68,7 @@ public:
 	      _iptrms(ZERO), _beta(0.), _gamma(ZERO), _iptmax(),
 	      _limitEmissions(0), _initialenhance(1.), _finalenhance(1.),
 	       interaction_(1), _trunc_Mode(true), _hardEmissionMode(0),
-	      _colourEvolutionMethod(0)
+	      _colourEvolutionMethod(0), _hardScaleFactor(1.0)
   {}
 
   /**
@@ -441,6 +441,16 @@ protected:
    */
   void setupMaximumScales(const vector<ShowerProgenitorPtr> &,XCPtr);
 
+  /**
+   * Return the factor to multiply the hard veto scale
+   */
+  double hardScaleFactor() const { return _hardScaleFactor; }
+
+  /**
+   * Set the factor to multiply the hard veto scale
+   */
+  void hardScaleFactor(double f) { _hardScaleFactor = f; };
+
 protected:
 
   /**
@@ -722,6 +732,12 @@ private:
    * Colour evolution method
    */
   int _colourEvolutionMethod;
+
+  /**
+   * A factor to multiply the hard veto scale
+   */
+  double _hardScaleFactor;
+
 };
 
 }

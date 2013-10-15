@@ -178,6 +178,7 @@ library HwSusy.so
 create Herwig::SSGFSVertex MSSM_GFS
 create Herwig::SSGSSVertex MSSM_GSS
 create Herwig::SSGGSQSQVertex MSSM_GGSS
+create Herwig::SSWGSSVertex MSSM_WGSS
 create Herwig::SSGSGSGVertex MSSM_GGOGO
 create Herwig::SSWWHHVertex MSSM_WWHH
 create Herwig::SSGVNHVertex MSSM_GVNH
@@ -255,6 +256,7 @@ set Model:Vertex/HSFSF  /Herwig/Vertices/RPV/RPV_HSS
 set Model:Vertex/CFSF   /Herwig/Vertices/RPV/RPV_CFS
 set Model:Vertex/GSFSF  /Herwig/Vertices/MSSM/MSSM_GSS
 set Model:Vertex/GGSQSQ /Herwig/Vertices/MSSM/MSSM_GGSS
+set Model:Vertex/WGSQSQ /Herwig/Vertices/MSSM/MSSM_WGSS
 set Model:Vertex/GSGSG  /Herwig/Vertices/MSSM/MSSM_GGOGO
 set Model:Vertex/NNZ    /Herwig/Vertices/RPV/RPV_NNZ
 set Model:Vertex/CCZ    /Herwig/Vertices/RPV/RPV_CCZ

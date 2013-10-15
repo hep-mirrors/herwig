@@ -78,7 +78,8 @@ Energy FFMassiveKinematics::ptMax(Energy dScale,
 
 Energy FFMassiveKinematics::QMax(Energy dScale, 
 			       double, double,
-			       const DipoleIndex& ind) const {
+			       const DipoleIndex& ind,
+				const DipoleSplittingKernel&) const {
   assert(false && "implementation missing");
   double Muj = ind.spectatorData()->mass() / dScale;
   return dScale * ( 1.-2.*Muj+sqr(Muj) );
@@ -95,13 +96,16 @@ Energy FFMassiveKinematics::QFromPt(Energy, const DipoleSplittingInfo&) const {
 }
 
 double FFMassiveKinematics::ptToRandom(Energy pt, Energy,
-				     const DipoleIndex&) const {
+				       double,double,
+				       const DipoleIndex&,
+				       const DipoleSplittingKernel&) const {
   return log(pt/IRCutoff()) / log(0.5 * generator()->maximumCMEnergy()/IRCutoff());
 }
 
 // own kinematics close to Dinsdale,Ternick,Weinzierl
 bool FFMassiveKinematics::generateSplitting(double kappa, double xi, double rphi,
-					  DipoleSplittingInfo& info) {
+					    DipoleSplittingInfo& info,
+					    const DipoleSplittingKernel&) {
   
   Energy pt = IRCutoff() * pow(0.5 * generator()->maximumCMEnergy()/IRCutoff(),kappa);
 
@@ -203,51 +207,6 @@ bool FFMassiveKinematics::generateSplitting(double kappa, double xi, double rphi
   return true;
 
 }
-
-InvEnergy2 FFMassiveKinematics::setKinematics(DipoleSplittingInfo& split) const {
-
-  // masses
-  double mui2 = sqr( split.emitterData()->mass() / split.scale() );
-  double mu2  = sqr( split.emissionData()->mass() / split.scale() );
-  double muj2 = sqr( split.spectatorData()->mass() / split.scale() );
-  double Mui2 = 0.;
-  if ( split.emitterData()->id() + split.emissionData()->id() == 0 ) Mui2 = 0.; // gluon
-  else Mui2   = mui2; // (anti)quark
-
-  split.splittingKinematics(const_cast<FFMassiveKinematics*>(this));
-
-  Lorentz5Momentum emitter = split.splitEmitter()->momentum();
-  Lorentz5Momentum emission = split.emission()->momentum();
-  Lorentz5Momentum spectator = split.splitSpectator()->momentum();
-
-  Energy2 scale = (emitter+emission+spectator).m2();
-  split.scale(sqrt(scale));
-
-  double y = 2.*emission*emitter / scale / (1.-mui2-mu2-muj2);
-  double z = emitter*spectator / (emitter*spectator + emission*spectator);
-
-  split.lastPt( split.scale() * sqrt( y * (1.-mui2-mu2-muj2) * z*(1.-z) - sqr(1.-z)*mui2 - sqr(z)*mu2 ) );
-  split.lastZ(z);
-
-  split.hardPt(split.lastPt());
-
-  if ( split.hardPt() > IRCutoff() ) {
-    split.continuesEvolving();
-  } else {
-    split.didStopEvolving();
-  }
-
-  return 1./((emitter+emission).m2()-Mui2*sqr(split.scale()));
-
-}
-
-double FFMassiveKinematics::
-jacobianTimesPropagator(const DipoleSplittingInfo&,
-			Energy) const {
-  assert(false && "implementation missing");
-  return 0.;
-}
-
 
 // kinematics close to Dinsdale,Ternick,Weinzierl
 // revised 2011-08-22

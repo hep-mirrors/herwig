@@ -65,8 +65,15 @@ if test "x$with_thepeg" = "xno"; then
 fi
 
 THEPEGLDFLAGS="-L${with_thepeg}/lib/ThePEG"
+THEPEGHASLHAPDF="no"
+if test -e ${with_thepeg}/lib/ThePEG/ThePEGLHAPDF.so ; then
+   THEPEGHASLHAPDF="yes"
+fi
 if test "${host_cpu}" == "x86_64" -a -e ${with_thepeg}/lib64/ThePEG/libThePEG.so ; then
   THEPEGLDFLAGS="-L${with_thepeg}/lib64/ThePEG"
+  if test -e ${with_thepeg}/lib64/ThePEG/ThePEGLHAPDF.so ; then
+      THEPEGHASLHAPDF="yes"
+  fi
 fi
 THEPEGPATH="${with_thepeg}"
 
@@ -80,6 +87,7 @@ AC_CHECK_LIB([ThePEG],[debugThePEG],[],
 AC_SUBST([THEPEGLIB],[-lThePEG])
 AC_SUBST(THEPEGLDFLAGS)
 AC_SUBST(THEPEGPATH)
+AC_SUBST(THEPEGHASLHAPDF)
 
 LIBS="$oldlibs"
 LDFLAGS="$oldldflags"
@@ -259,7 +267,7 @@ AC_ARG_ENABLE(debug,
 AC_MSG_RESULT([$enable_debug])
 
 if test "x$enable_debug" = "xno"; then
-	AM_CPPFLAGS="$AM_CPPFLAGS -DNDEBUG"
+	debugflags=""
 else
 	debugflags="-g"
 fi
@@ -326,6 +334,11 @@ LOAD_DIPOLE=""
 LOAD_DIPOLE_ALPHAS=""
 LOAD_MATCHBOX=""
 if test "$enable_dipole" = "yes"; then
+WARNLHAPDF=""
+if test "x$THEPEGHASLHAPDF" = "xno" ; then
+   AC_MSG_WARN([Dipole shower defaults require LHAPDF])
+   WARNLHAPDF=" * warning: LHAPDF disabled * "
+fi
 LOAD_DIPOLE="library HwDipoleShower.so"
 LOAD_DIPOLE_ALPHAS="library HwDipoleShowerAlphaS.so"
 LOAD_MATCHBOX="library HwMatchbox.so"
@@ -351,7 +364,7 @@ cat << _HW_EOF_ > config.herwig
 *** Prefix:		$prefix
 ***
 *** BSM models:		$enable_models
-*** Dipole shower:	$enable_dipole
+*** Dipole shower:	$enable_dipole $WARNLHAPDF
 ***
 *** Herwig debug mode:	$enable_debug
 ***
@@ -366,6 +379,8 @@ cat << _HW_EOF_ > config.herwig
 *** CC:			$CCSTRING
 *** CXX:		$CXXSTRING
 *** FC:			$FCSTRING
+***
+*** CXXFLAGS:		$CXXFLAGS
 *****************************************************
 _HW_EOF_
 ])

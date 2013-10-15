@@ -190,7 +190,6 @@ do Factory:StartParticleGroup g
 insert Factory:ParticleGroup 0 /Herwig/Particles/g
 do Factory:EndParticleGroup
 
-
 do Factory:StartParticleGroup h0
 insert Factory:ParticleGroup 0 /Herwig/Particles/h0
 do Factory:EndParticleGroup
@@ -203,12 +202,18 @@ do Factory:StartParticleGroup e-
 insert Factory:ParticleGroup 0 /Herwig/Particles/e-
 do Factory:EndParticleGroup
 
-do Factory:StartParticleGroup mu+
+do Factory:StartParticleGroup l
+insert Factory:ParticleGroup 0 /Herwig/Particles/e+
 insert Factory:ParticleGroup 0 /Herwig/Particles/mu+
+insert Factory:ParticleGroup 0 /Herwig/Particles/e-
+insert Factory:ParticleGroup 0 /Herwig/Particles/mu-
 do Factory:EndParticleGroup
 
-do Factory:StartParticleGroup mu-
-insert Factory:ParticleGroup 0 /Herwig/Particles/mu-
+do Factory:StartParticleGroup nu
+insert Factory:ParticleGroup 0 /Herwig/Particles/nu_e
+insert Factory:ParticleGroup 0 /Herwig/Particles/nu_mu
+insert Factory:ParticleGroup 0 /Herwig/Particles/nu_ebar
+insert Factory:ParticleGroup 0 /Herwig/Particles/nu_mubar
 do Factory:EndParticleGroup
 
 do Factory:StartParticleGroup l+
@@ -246,10 +251,40 @@ set Amplitudellbarqqbargg:ColourBasis SimpleColourBasis
 create Herwig::MatchboxAmplitudellbarqqbarqqbar Amplitudellbarqqbarqqbar
 set Amplitudellbarqqbarqqbar:ColourBasis SimpleColourBasis
 
+create Herwig::MatchboxAmplitudelnuqqbar Amplitudelnuqqbar
+set Amplitudelnuqqbar:ColourBasis SimpleColourBasis
+
+create Herwig::MatchboxAmplitudelnuqqbarg Amplitudelnuqqbarg
+set Amplitudelnuqqbarg:ColourBasis SimpleColourBasis
+
+create Herwig::MatchboxAmplitudelnuqqbargg Amplitudelnuqqbargg
+set Amplitudelnuqqbargg:ColourBasis SimpleColourBasis
+
+create Herwig::MatchboxAmplitudelnuqqbarqqbar Amplitudelnuqqbarqqbar
+set Amplitudelnuqqbarqqbar:ColourBasis SimpleColourBasis
+
+create Herwig::MatchboxAmplitudehgg Amplitudehgg
+set Amplitudehgg:ColourBasis SimpleColourBasis
+
+create Herwig::MatchboxAmplitudehggg Amplitudehggg
+set Amplitudehggg:ColourBasis SimpleColourBasis
+
+create Herwig::MatchboxAmplitudehqqbarg Amplitudehqqbarg
+set Amplitudehqqbarg:ColourBasis SimpleColourBasis
+
 insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudellbarqqbar
 insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudellbarqqbarg
 insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudellbarqqbargg
 insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudellbarqqbarqqbar
+
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudelnuqqbar
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudelnuqqbarg
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudelnuqqbargg
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudelnuqqbarqqbar
+
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudehgg
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudehggg
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudehqqbarg
 
 ################################################################################
 # Setup utilities for matching
@@ -318,8 +353,8 @@ create Herwig::FlatInvertiblePhasespace DetPhasespace
 create Herwig::TreePhasespaceChannels TreePhasespaceChannels
 create Herwig::TreePhasespace TreePhasespace
 set TreePhasespace:ChannelMap TreePhasespaceChannels
-set TreePhasespace:M0 1*GeV
-set TreePhasespace:MC 0.01*GeV
+set TreePhasespace:M0 0.0001*GeV
+set TreePhasespace:MC 0.0000001*GeV
 
 set /Herwig/MatrixElements/Matchbox/Factory:Phasespace TreePhasespace
 
@@ -340,18 +375,24 @@ create ThePEG::JetRegion FirstJet
 set FirstJet:PtMin 20.*GeV
 do FirstJet:YRange -5.0 5.0
 set FirstJet:Fuzzy Yes
+set FirstJet:EnergyCutWidth 4.0*GeV
+set FirstJet:RapidityCutWidth 0.4
 insert FirstJet:Accepts[0] 1
 
 create ThePEG::JetRegion SecondJet
 set SecondJet:PtMin 20.*GeV
 do SecondJet:YRange -5.0 5.0
 set SecondJet:Fuzzy Yes
+set FirstJet:EnergyCutWidth 4.0*GeV
+set FirstJet:RapidityCutWidth 0.4
 insert SecondJet:Accepts[0] 2
 
 create ThePEG::JetRegion ThirdJet
 set ThirdJet:PtMin 20.*GeV
 do ThirdJet:YRange -5.0 5.0
 set ThirdJet:Fuzzy Yes
+set FirstJet:EnergyCutWidth 4.0*GeV
+set FirstJet:RapidityCutWidth 0.4
 insert ThirdJet:Accepts[0] 3
 
 create ThePEG::NJetsCut NJetsCut

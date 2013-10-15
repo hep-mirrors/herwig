@@ -80,8 +80,6 @@ double IIqqxDipole::me2Avg(double ccme2) const {
     realEmissionME()->finalStateSymmetry() /
     underlyingBornME()->finalStateSymmetry();
 
-  lastME2(res);
-
   return res;
 
 }
@@ -124,10 +122,6 @@ double IIqqxDipole::me2() const {
   res *=
     realEmissionME()->finalStateSymmetry() /
     underlyingBornME()->finalStateSymmetry();
-
-  lastME2(res);
-
-  logME2();
 
   return res;
 

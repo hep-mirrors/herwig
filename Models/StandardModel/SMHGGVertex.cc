@@ -189,7 +189,8 @@ void SMHGGVertex::setCoupling(Energy2 q2, tcPDPtr part2, tcPDPtr part3, tcPDPtr 
       tcPDPtr q = getParticleData(_minloop+i);
       type[i] = PDT::Spin1Half;
       masses[i] = (2 == massopt) ? _theSM->mass(q2,q) : q->mass();
-      couplings.push_back(make_pair(masses[i]/_mw, masses[i]/_mw));
+      const double ratio = masses[i]/_mw;
+      couplings.push_back(make_pair(ratio, ratio));
     }
     setNParticles(delta);
     VVSLoopVertex::setCoupling(q2, part1, part2, part3);

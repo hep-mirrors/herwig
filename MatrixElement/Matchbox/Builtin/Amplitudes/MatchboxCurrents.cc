@@ -1181,7 +1181,7 @@ Complex MatchboxCurrents::box6(int i, int j, int k) {
   double sjk = invariant(j,k);
 
   return
-    -( Li2(sik+sjk,sij) + Li2(sik+sij,sjk) + 0.5*csqr(log(1.,sij,sjk)) + sqr(pi)/6. )/4.;
+    -( Li2(sik+sjk,sij) + Li2(sik+sij,sjk) + 0.5*csqr(log(1.,sij,sjk)) + sqr(pi)/6. )/8.;
       
 }
 

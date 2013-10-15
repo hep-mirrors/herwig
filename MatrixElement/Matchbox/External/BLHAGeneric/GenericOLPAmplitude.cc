@@ -43,7 +43,8 @@ void GenericOLPAmplitude::startOLP(const string&, int& status) {
 }
 
 LorentzVector<Complex> GenericOLPAmplitude::plusPolarization(const Lorentz5Momentum&,
-							     const Lorentz5Momentum&) const {
+							     const Lorentz5Momentum&,
+							     int) const {
 
   return LorentzVector<Complex>(0.0,0.0,0.0,0.0);
 

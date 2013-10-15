@@ -56,6 +56,14 @@ public:
 
 public:
 
+  /**
+   * Return the current factory
+   */
+  static MatchboxFactory* currentFactory() { 
+    assert(theCurrentFactory());
+    return theCurrentFactory();
+  }
+
   /** @name Process and diagram information */
   //@{
 
@@ -140,6 +148,16 @@ public:
    * Switch on or off virtual contributions
    */
   void setVirtualContributions(bool on = true) { theVirtualContributions = on; }
+
+  /**
+   * Produce matrix element corrections, but no NLO
+   */
+  bool meCorrectionsOnly() const { return theMECorrectionsOnly; }
+
+  /**
+   * Switch to produce matrix element corrections, but no NLO
+   */
+  void setMECorrectionsOnly(bool on = true) { theMECorrectionsOnly = on; }
 
   /**
    * Return true, if subtracted real emission contributions should be included.
@@ -442,6 +460,26 @@ public:
    */
   list<SplittingChannel> getSplittingChannels(tStdXCombPtr xc) const;
 
+  /**
+   * Return the reweight objects for matrix elements
+   */
+  const vector<ReweightPtr>& reweighters() const { return theReweighters; }
+
+  /**
+   * Access the reweight objects for matrix elements
+   */
+  vector<ReweightPtr>& reweighters() { return theReweighters; }
+
+  /**
+   * Return the preweight objects for matrix elements
+   */
+  const vector<ReweightPtr>& preweighters() const { return thePreweighters; }
+
+  /**
+   * Access the preweight objects for matrix elements
+   */
+  vector<ReweightPtr>& preweighters() { return thePreweighters; }
+
   //@}
 
   /** @name Setup the matrix elements */
@@ -590,6 +628,12 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit();
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
   //@}
 
 private:
@@ -849,6 +893,26 @@ private:
    * Amplitudes to be deselected on clashing responsibilities.
    */
   vector<Ptr<MatchboxAmplitude>::ptr> theDeselectedAmplitudes;
+
+  /**
+   * Reweight objects for matrix elements
+   */
+  vector<ReweightPtr> theReweighters;
+
+  /**
+   * Preweight objects for matrix elements
+   */
+  vector<ReweightPtr> thePreweighters;
+
+  /**
+   * Produce matrix element corrections, but no NLO
+   */
+  bool theMECorrectionsOnly;
+
+  /**
+   * The current factory
+   */
+  static MatchboxFactory*& theCurrentFactory();
 
 private:
 

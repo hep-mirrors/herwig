@@ -40,5 +40,5 @@ MatchboxXCombGroup.h \
 MatchboxXCombGroup.cc \
 MatchboxXCombData.h \
 MatchboxXCombData.cc \
-LastMatchboxXComb.h
+LastMatchboxXCombInfo.h
 

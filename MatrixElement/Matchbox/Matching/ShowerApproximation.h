@@ -283,9 +283,24 @@ public:
   bool restrictPhasespace() const { return theRestrictPhasespace; }
 
   /**
+   * Return true if we are to use profile scales
+   */
+  bool profileScales() const { return theProfileScales; }
+
+  /**
    * Return the scale factor for the hard scale
    */
   double hardScaleFactor() const { return theHardScaleFactor; }
+
+  /**
+   * Return the relevant hard scale
+   */
+  virtual Energy hardScale() const;
+
+  /**
+   * Return a scale profile towards the hard scale
+   */
+  virtual double hardScaleProfile(Energy hard, Energy soft) const;
 
   /**
    * Get the factorization scale factor
@@ -507,6 +522,16 @@ private:
    * A freezing value for the factorization scale
    */
   Energy theFactorizationScaleFreeze;
+
+  /**
+   * True if we are to use profile scales
+   */
+  bool theProfileScales;
+
+  /**
+   * The profile scale parameter
+   */
+  double theProfileRho;
 
 private:
 

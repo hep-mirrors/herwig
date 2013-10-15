@@ -94,6 +94,9 @@ CrossSection MEMatching::dSigHatDR() const {
       ( sqr(dipole()->lastPt()) + sqr(theScreeningScale) );
   }
 
+  if ( restrictPhasespace() )
+    xme2 *= hardScaleProfile(hardScale(),dipole()->lastPt());
+
   return
     sqr(hbarc) * 
     realXComb()->jacobian() * 
@@ -123,8 +126,12 @@ double MEMatching::me2() const {
       ( sqr(dipole()->lastPt()) + sqr(theScreeningScale) );
   }
 
+  if ( restrictPhasespace() )
+    rme2 *= hardScaleProfile(hardScale(),dipole()->lastPt());
+
   return
-    channelWeight() * (rme2/bme2) *
+    channelWeight() * (rme2/bme2) * 
+    (bornXComb()->lastSHat()/realXComb()->lastSHat()) *
     splittingScaleWeight();
 
 }

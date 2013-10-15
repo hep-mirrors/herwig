@@ -31,14 +31,17 @@ insert /Herwig/Generators/LHCGenerator:EventHandler:SubProcessHandlers[0] PPFact
 ################################################################################
 
 set PPFactory:OrderInAlphaS 0
-do PPFactory:Process p p e+ e-
+
+do PPFactory:Process p p l l
+# do PPFactory:Process p p l nu
 
 ################################################################################
-# Z+1 jet
+# Z/W+1 jet
 ################################################################################
 
 # set PPFactory:OrderInAlphaS 1
-# do PPFactory:Process p p e+ e- j
+# do PPFactory:Process p p l l j
+# do PPFactory:Process p p l nu j
 
 # set PPFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPtScale
 
@@ -48,16 +51,41 @@ do PPFactory:Process p p e+ e-
 # insert /Herwig/Cuts/QCDCuts:MultiCuts 0 /Herwig/Cuts/JetCuts
 
 ################################################################################
-# Z+2 jets (leading order only)
+# Z/W+2 jets (leading order only)
 ################################################################################
 
 # set PPFactory:OrderInAlphaS 2
-# do PPFactory:Process p p e+ e- j j
+# do PPFactory:Process p p l l j j
+# do PPFactory:Process p p l nu j j
 
 # set PPFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPtScale
 
 # insert /Herwig/Cuts/JetCuts:JetRegions 0 /Herwig/Cuts/FirstJet
 # insert /Herwig/Cuts/JetCuts:JetRegions 1 /Herwig/Cuts/SecondJet
+
+# set /Herwig/Cuts/QCDCuts:JetFinder /Herwig/Cuts/JetFinder
+# insert /Herwig/Cuts/QCDCuts:MultiCuts 0 /Herwig/Cuts/JetCuts
+
+################################################################################
+# Inclusive QCD Higgs production
+################################################################################
+
+# set PPFactory:OrderInAlphaS 2
+# set PPFactory:OrderInAlphaEW 1
+# do PPFactory:Process p p h0
+# set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 115*GeV
+# set PPFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale
+
+################################################################################
+# QCD Higgs+1 jet (leading order only)
+################################################################################
+
+# set PPFactory:OrderInAlphaS 3
+# do PPFactory:Process p p h0 j
+
+# set PPFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/MaxPtScale
+
+# insert /Herwig/Cuts/JetCuts:JetRegions 0 /Herwig/Cuts/FirstJet
 
 # set /Herwig/Cuts/QCDCuts:JetFinder /Herwig/Cuts/JetFinder
 # insert /Herwig/Cuts/QCDCuts:MultiCuts 0 /Herwig/Cuts/JetCuts

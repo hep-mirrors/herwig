@@ -9,6 +9,9 @@
 # The second section contains the user settings.
 ###################################################
 
+# Set emission to POWHEG for radiation in decays
+set /Herwig/Shower/Evolver:HardEmissionMode POWHEG
+
 read MSSM.model
 cd /Herwig/NewPhysics
 
@@ -65,5 +68,6 @@ set LHCGenerator:NumberOfEvents 10000000
 set LHCGenerator:RandomNumberGenerator:Seed 31122001
 set LHCGenerator:PrintEvent 10
 set LHCGenerator:MaxErrors 10000
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 8000.0
 
 saverun LHC-MSSM LHCGenerator

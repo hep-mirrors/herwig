@@ -77,7 +77,7 @@ public:
   /**
    *  Has a POWHEG style correction
    */
-  virtual bool hasPOWHEGCorrection() {return true;}
+  virtual POWHEGType hasPOWHEGCorrection() {return Both;}
 
   /**
    *  Has an old fashioned ME correction

@@ -962,8 +962,9 @@ double MEee2gZ2qq::meRatio(vector<cPDPtr> partons,
     double muj = momenta[2+iemit ].mass()/sqrt(Q2);
     double muk = momenta[2+ispect].mass()/sqrt(Q2);
     double vt = sqrt((1.-sqr(muj+muk))*(1.-sqr(muj-muk)))/(1.-sqr(muj)-sqr(muk));
-    double v  = sqrt(sqr(2.*sqr(muk)+(1.-sqr(muj)-sqr(muk))*(1.-y))-4.*sqr(muk))
-      /(1.-y)/(1.-sqr(muj)-sqr(muk));
+    double v = sqr(2.*sqr(muk)+(1.-sqr(muj)-sqr(muk))*(1.-y))-4.*sqr(muk);
+    if(v<=0.) return 0.;
+    v  = sqrt(v)/(1.-y)/(1.-sqr(muj)-sqr(muk));
     // dipole term
     D[iemit] = 0.5/pipj*(2./(1.-(1.-z)*(1.-y))
 			 -vt/v*(2.-z+sqr(momenta[2+iemit].mass())/pipj));

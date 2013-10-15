@@ -86,6 +86,11 @@ public:
   string process() const;
 
   /**
+   * Return a string identifying the process handled by this sampler.
+   */
+  string id() const;
+
+  /**
    * Return the last generated point.
    */
   const vector<double>& lastPoint() const { return theLastPoint; }

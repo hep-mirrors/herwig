@@ -42,7 +42,9 @@ ShowerApproximation::ShowerApproximation()
     theBornScaleInSplitting(showerScale), 
     theEmissionScaleInSplitting(showerScale),
     theRenormalizationScaleFreeze(1.*GeV),
-    theFactorizationScaleFreeze(1.*GeV) {}
+    theFactorizationScaleFreeze(1.*GeV),
+    theProfileScales(true),
+    theProfileRho(0.3) {}
 
 ShowerApproximation::~ShowerApproximation() {}
 
@@ -70,13 +72,13 @@ bool ShowerApproximation::isAboveCutoff() const {
 
 }
 
-bool ShowerApproximation::isInShowerPhasespace() const {
-
-  if ( !isAboveCutoff() )
-    return false;
-  if ( !restrictPhasespace() )
-    return true;
-
+Energy ShowerApproximation::hardScale() const {
+  if ( !bornCXComb()->mePartonData()[0]->coloured() &&
+       !bornCXComb()->mePartonData()[1]->coloured() ) {
+    Energy maxPt = (bornCXComb()->meMomenta()[0] + bornCXComb()->meMomenta()[1]).m();
+    maxPt *= hardScaleFactor();
+    return maxPt;
+  }
   Energy maxPt = generator()->maximumCMEnergy();
   vector<Lorentz5Momentum>::const_iterator p = 
     bornCXComb()->meMomenta().begin() + 2;
@@ -88,8 +90,39 @@ bool ShowerApproximation::isInShowerPhasespace() const {
   if ( maxPt == generator()->maximumCMEnergy() )
     maxPt = (bornCXComb()->meMomenta()[0] + bornCXComb()->meMomenta()[1]).m();
   maxPt *= hardScaleFactor();
+  return maxPt;
+}
 
-  return dipole()->lastPt() <= maxPt;
+double ShowerApproximation::hardScaleProfile(Energy hard, Energy soft) const {
+  if ( !bornCXComb()->mePartonData()[0]->coloured() &&
+       !bornCXComb()->mePartonData()[1]->coloured() )
+    return 1;
+  double x = soft/hard;
+  if ( theProfileScales ) {
+    if ( x > 1. ) {
+      return 0.;
+    } else if ( x <= 1. && x > 1. - theProfileRho ) {
+      return sqr(1.-x)/(2.*sqr(theProfileRho));
+    } else if ( x <= 1. - theProfileRho &&
+		x > 1. - 2.*theProfileRho ) {
+      return 1. - sqr(1.-2.*theProfileRho-x)/(2.*sqr(theProfileRho));
+    } else {
+      return 1.;
+    }
+  }
+  if ( x <= 1. )
+    return 1.;
+  return 0.;
+}
+
+bool ShowerApproximation::isInShowerPhasespace() const {
+
+  if ( !isAboveCutoff() )
+    return false;
+  if ( !restrictPhasespace() )
+    return true;
+
+  return dipole()->lastPt() <= hardScale();
 
 }
 
@@ -225,7 +258,13 @@ double ShowerApproximation::scaleWeight(int rScale, int bScale, int eScale) cons
   }
   double bornPDF = bornPDFWeight(hardScale);
 
-  if ( emissionPDF == 0.0 )
+  if ( bornPDF < 1e-8 )
+    bornPDF = 0.0;
+
+  if ( emissionPDF < 1e-8 )
+    emissionPDF = 0.0;
+
+  if ( emissionPDF == 0.0 || bornPDF == 0.0 )
     return 0.0;
 
   return
@@ -250,7 +289,8 @@ void ShowerApproximation::persistentOutput(PersistentOStream & os) const {
      << theEmissionScaleInSubtraction << theRealEmissionScaleInSplitting
      << theBornScaleInSplitting << theEmissionScaleInSplitting
      << ounit(theRenormalizationScaleFreeze,GeV)
-     << ounit(theFactorizationScaleFreeze,GeV);
+     << ounit(theFactorizationScaleFreeze,GeV)
+     << theProfileScales << theProfileRho;
 }
 
 void ShowerApproximation::persistentInput(PersistentIStream & is, int) {
@@ -265,7 +305,8 @@ void ShowerApproximation::persistentInput(PersistentIStream & is, int) {
      >> theEmissionScaleInSubtraction >> theRealEmissionScaleInSplitting
      >> theBornScaleInSplitting >> theEmissionScaleInSplitting
      >> iunit(theRenormalizationScaleFreeze,GeV)
-     >> iunit(theFactorizationScaleFreeze,GeV);
+     >> iunit(theFactorizationScaleFreeze,GeV)
+     >> theProfileScales >> theProfileRho;
 }
 
 
@@ -490,6 +531,26 @@ void ShowerApproximation::Init() {
      &ShowerApproximation::theFactorizationScaleFreeze, GeV, 1.0*GeV, 0.0*GeV, 0*GeV,
      false, false, Interface::lowerlim);
 
+  static Switch<ShowerApproximation,bool> interfaceProfileScales
+    ("ProfileScales",
+     "Switch on or off use of profile scales.",
+     &ShowerApproximation::theProfileScales, true, false, false);
+  static SwitchOption interfaceProfileScalesYes
+    (interfaceProfileScales,
+     "Yes",
+     "Use profile scales.",
+     true);
+  static SwitchOption interfaceProfileScalesNo
+    (interfaceProfileScales,
+     "No",
+     "Use a hard cutoff.",
+     false);
+
+  static Parameter<ShowerApproximation,double> interfaceProfileRho
+    ("ProfileRho",
+     "The rho parameter of the profile scales.",
+     &ShowerApproximation::theProfileRho, 0.3, 0.0, 1.0,
+     false, false, Interface::limited);
 
 }
 

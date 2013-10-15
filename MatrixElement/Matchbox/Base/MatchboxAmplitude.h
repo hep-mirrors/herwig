@@ -223,16 +223,15 @@ public:
   virtual bool isOLPLoop() const { return false; }
 
   /**
+   * Return true, if colour and spin correlated matrix elements should
+   * be ordered from the OLP
+   */
+  virtual bool needsOLPCorrelators() const { return true; }
+
+  /**
    * Write the order file header
    */
   virtual void olpOrderFileHeader(ostream&) const;
-
-  /**
-   * Write the order file process list
-   */
-  virtual void olpOrderFileProcessGroup(ostream&,
-					const string&,
-					const set<Process>&) const;
 
   /**
    * Write the order file process list
@@ -266,7 +265,7 @@ public:
   /**
    * Return the colour basis.
    */
-  Ptr<ColourBasis>::tptr colourBasis() const { return theColourBasis; }
+  virtual Ptr<ColourBasis>::tptr colourBasis() const { return theColourBasis; }
 
   /**
    * Return true, if this amplitude will not require colour correlations.
@@ -360,7 +359,8 @@ public:
    * spin correlations.
    */
   virtual LorentzVector<Complex> plusPolarization(const Lorentz5Momentum& p,
-						  const Lorentz5Momentum& n) const;
+						  const Lorentz5Momentum& n,
+						  int id = -1) const;
 
   /**
    * Return the colour and spin correlated matrix element.

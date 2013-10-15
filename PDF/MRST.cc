@@ -20,10 +20,8 @@
 #include <sstream>
 #include <string>
 
-using namespace std;
 using namespace ThePEG;
 using namespace Herwig;
-
 
 /**
  *  Minimum value of \f$x\f$

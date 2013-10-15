@@ -77,9 +77,10 @@ class ParticleConverter:
 
 
 
-def thepeg_particles(FR,parameters):
-    plist = ''
+def thepeg_particles(FR,parameters,modelname):
+    plist = []
     antis = {}
+    names = []
     for p in FR.all_particles:
         if p.spin == -1:
             continue
@@ -98,25 +99,74 @@ def thepeg_particles(FR,parameters):
             continue
 
         if p.pdg_code in SMPARTICLES:
-            #add stuff to plist to set params
-            pass
-        else:
-            if p.pdg_code == 25:
-                plist += """
+            continue
+
+        if p.pdg_code == 25:
+            plist.append(
+"""
 set /Herwig/Particles/h0:Mass_generator NULL
 set /Herwig/Particles/h0:Width_generator NULL
 rm /Herwig/Masses/HiggsMass
 rm /Herwig/Widths/HiggsWidth
 """
-            subs = ParticleConverter(p,parameters).subs()
-            plist += particleT.substitute(subs)
+)
+        subs = ParticleConverter(p,parameters).subs()
+        plist.append( particleT.substitute(subs) )
 
-            pdg, name = subs['pdg_code'],  subs['name']
-            if -pdg in antis:
-                plist += 'makeanti %s %s\n' % (antis[-pdg], name)
-                
+        pdg, name = subs['pdg_code'],  subs['name']
+
+        names.append(name)
+
+        if -pdg in antis:
+            plist.append( 'makeanti %s %s\n' % (antis[-pdg], name) )
+
+        else:
+            plist.append( 'insert /Herwig/NewPhysics/NewModel:DecayParticles 0 %s\n' % name )
+            antis[pdg] = name
+            selfconjugate = 1
+
+        class SkipMe(Exception):
+            pass
+
+        def spin_name(s):
+            spins = { 1 : 'Zero',
+                      2 : 'Half',
+                      3 : 'One' }
+            if s not in spins:
+                raise SkipMe()
             else:
-                plist += 'insert /Herwig/NewPhysics/NewModel:DecayParticles 0 %s\n' % name
-                antis[pdg] = name
-                selfconjugate = 1
-    return plist
+                return spins[s]
+            
+        def col_name(c):
+            cols = { 3 : 'Triplet',
+                     6 : 'Sextet',
+                     8 : 'Octet' }
+            return cols[c]
+
+        try:
+            if p.color in [3,6,8]: # which colors?
+                splitname = '{name}SplitFn'.format(name=p.name)
+                sudname = '{name}Sudakov'.format(name=p.name)
+                plist.append(
+"""
+create Herwig::{s}{s}OneSplitFn {name}
+set {name}:InteractionType QCD
+set {name}:ColourStructure {c}{c}Octet
+cp /Herwig/Shower/SudakovCommon {sudname}
+set {sudname}:SplittingFunction {name}
+do /Herwig/Shower/SplittingGenerator:AddFinalSplitting {pname}->{pname},g; {sudname}
+""".format(s=spin_name(p.spin), name=splitname,
+           c=col_name(p.color), pname=p.name, sudname=sudname)
+                )
+        except SkipMe:
+            pass
+
+        if p.charge == 0 and p.color == 1 and p.spin == 1:
+            plist.append(
+"""
+insert /Herwig/{ModelName}/V_GenericHPP:Bosons 0 {pname}
+insert /Herwig/{ModelName}/V_GenericHGG:Bosons 0 {pname}
+""".format(pname=p.name, ModelName=modelname)
+            )
+
+    return ''.join(plist), names

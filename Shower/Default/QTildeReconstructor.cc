@@ -1889,6 +1889,7 @@ deconstructFinalStateSystem(const LorentzRotation &   toRest,
   pin.rescaleMass();
   // rescaling factor
   double lambda=inverseRescalingFactor(pout,mon,pin.mass());
+  if (lambda< 1.e-10) throw KinematicsReconstructionVeto(); 
   // now calculate the p reference vectors 
   for(cit=jets.begin();cit!=jets.end();++cit){
     Lorentz5Momentum pvect = (*cit)->branchingParticle()->momentum();

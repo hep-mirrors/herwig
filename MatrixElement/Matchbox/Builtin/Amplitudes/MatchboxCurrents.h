@@ -14,6 +14,8 @@
 
 #include "Herwig++/MatrixElement/Matchbox/Utility/AmplitudeCache.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/SpinorHelicity.h"
+#include "Herwig++/Models/StandardModel/StandardCKM.h"
+#include "ThePEG/StandardModel/StandardModelBase.h"
 
 namespace Herwig {
 
@@ -28,6 +30,22 @@ using namespace SpinorHelicity;
  */
 struct MatchboxCurrents
   : public AmplitudeCache<pair<size_t,size_t> > {
+
+    
+  /**
+   * The Herwig++ StandardCKM object
+   */
+  Ptr<StandardCKM>::tcptr theStandardCKM;
+  
+  /**
+   * Return the Herwig++ StandardCKM object
+   */
+  Ptr<StandardCKM>::tcptr standardCKM(const StandardModelBase& SM) {
+    if ( !theStandardCKM )
+      theStandardCKM = dynamic_ptr_cast<Ptr<StandardCKM>::tcptr>(SM.CKM());
+    assert(theStandardCKM);
+    return theStandardCKM;
+  }
 
   /**
    * The Z mass

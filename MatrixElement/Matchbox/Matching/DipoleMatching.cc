@@ -61,6 +61,9 @@ CrossSection DipoleMatching::dSigHatDR() const {
     return ZERO;
   xme2 *= bornPDF;
 
+  if ( restrictPhasespace() )
+    xme2 *= hardScaleProfile(hardScale(),dipole()->lastPt());
+
   CrossSection res = 
     sqr(hbarc) * 
     realXComb()->jacobian() * 
