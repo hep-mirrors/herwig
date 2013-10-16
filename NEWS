@@ -2,6 +2,46 @@ Herwig++ News				(emacs -*- outline -*- format)
 
 * Herwig++-2.7.0 release: 2013-10-XX
 
+** Miscellaneous additions
+*** HiggsPair matrix element in Contrib
+*** higgs mass from PDG 2013 update
+
+** TODO Decayer
+*** on/offshell flag in initPhaseSpace
+*** Many General-Decayer improvements, three-body ME, 4-body decayer
+*** Powheg in General decayers??
+*** SM Top / WZ Powheg decayers now on by default
+
+** TODO Hadronization
+*** improved treatment of beam remnants -> reduced error rate at TVT,
+*** new option VeryHard to have no special treatment of BeamRem
+
+** TODO MEs
+*** Vertex sign fixes for BSM
+*** HwMEBase Powheg Type change to enum
+*** Single top ME
+
+** TODO Feynrules
+
+** TODO BSM 
+*** id map
+*** 4-body decays
+*** colour6 handling
+*** HowMuchOffShell parameter
+*** many control flags moved to nbody dec constr
+
+** TODO Shower
+*** HardScaleFactor parameter
+*** RenormalizationScaleFactor parameter
+*** cleaned header structure, cleaned parameter references
+
+** TODO new tune
+*** TODO discuss performance
+
+** TODO improved Tests, more Rivet analyses
+
+** TODO C++-11 blurb
+
 ** Shower uncertainties
    A first set of scaling parameters to estimate shower uncertainties
    is provided for both the angular ordered as well as the dipole
@@ -21,6 +61,11 @@ Herwig++ News				(emacs -*- outline -*- format)
 ** Impoved dipole shower kinematics parametrization
    The kinematics parametrization for emissions in the dipole shower
    has been made more efficient.
+
+
+
+
+
 
 * Herwig++-2.6.3 release: 2013-02-22
 
