@@ -139,7 +139,7 @@ void  RPVSSSVertex::doinit() {
     // one neutral scalar two charged scalars
     for(unsigned int i1=0;i1<scalar.size();++i1) {
       for(unsigned int i2=0;i2<charged.size();++i2) {
-	for(unsigned int i3=0;i3<=charged.size();++i3) {
+	for(unsigned int i3=0;i3<charged.size();++i3) {
 	  if(!(abs(charged[i2])>1000000&&abs(charged[i3])>1000000&&
 	     abs(charged[i2])%1000000==abs(charged[i3])%1000000))
 	    addToList(scalar[i1],charged[i2],-charged[i3]);
@@ -150,7 +150,7 @@ void  RPVSSSVertex::doinit() {
     if(charged.size()>1) {
       for(unsigned int i1=0;i1<pseudo.size();++i1) {
 	for(unsigned int i2=0;i2<charged.size();++i2) {
-	  for(unsigned int i3=0;i3<=charged.size();++i3) {
+	  for(unsigned int i3=0;i3<charged.size();++i3) {
 	    if(i2==i3) continue;
 	    if(!(abs(charged[i2])>1000000&&abs(charged[i3])>1000000&&
 		 abs(charged[i2])%1000000==abs(charged[i3])%1000000))
