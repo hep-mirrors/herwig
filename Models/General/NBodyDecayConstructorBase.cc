@@ -371,10 +371,11 @@ void identicalFromSameDecay(unsigned int & loc, const NBVertex & vertex,
     if(it->first->id()!=id) continue;
     sameDecay.push_back(vector<unsigned int>());
     sameDecay.back().push_back(loc-1);
-    while(!it->second.incoming&&it->first->id()==id) {
+    while(it != vertex.vertices.end() 
+	  && !it->second.incoming
+	  && it->first->id()==id) {
       ++loc;
       ++it;
-      if(it == vertex.vertices.end()) break;
       sameDecay.back().push_back(loc-1);
     }
   };
