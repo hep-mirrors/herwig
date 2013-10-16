@@ -6,11 +6,9 @@ AnomalousHVV \
 DecayAnalysis \
 HiggsPair \
 LeptonME \
-MCPWNLO \
 PGSInterface \
 RadiativeZPrime \
-TauAnalysis \
-VBFTest
+TauAnalysis
 
 dist-hook:
 	rm -rf `find $(distdir) -name '.svn' -or -name 'Makefile'`
