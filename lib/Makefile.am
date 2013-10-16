@@ -19,7 +19,7 @@ $(top_builddir)/Looptools/libHwLooptools.la \
 $(top_builddir)/Shower/libHwShower.la \
 $(THEPEGLIB) -ldl
 
-dist_noinst_SCRIPT = fix-osx-path
+dist_noinst_SCRIPTS = fix-osx-path
 
 
 POSTPROCESSING = done-all-links
