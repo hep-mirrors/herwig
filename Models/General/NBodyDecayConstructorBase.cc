@@ -366,6 +366,7 @@ void identicalFromSameDecay(unsigned int & loc, const NBVertex & vertex,
     ++loc;
     long id = it->first->id();
     ++it;
+    if(it == vertex.vertices.end()) break;
     if(it->second.incoming) continue;
     if(it->first->id()!=id) continue;
     sameDecay.push_back(vector<unsigned int>());
@@ -373,6 +374,7 @@ void identicalFromSameDecay(unsigned int & loc, const NBVertex & vertex,
     while(!it->second.incoming&&it->first->id()==id) {
       ++loc;
       ++it;
+      if(it == vertex.vertices.end()) break;
       sameDecay.back().push_back(loc-1);
     }
   };
