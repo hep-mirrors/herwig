@@ -1,5 +1,5 @@
 pkglib_LTLIBRARIES = HwPowhegMEHadron.la HwPowhegMELepton.la
-HwPowhegMEHadron_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 5:1:1
+HwPowhegMEHadron_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 6:0:0
 HwPowhegMEHadron_la_SOURCES = \
 MEqq2gZ2ffPowheg.cc MEqq2gZ2ffPowheg.h \
 MEqq2W2ffPowheg.cc  MEqq2W2ffPowheg.h \

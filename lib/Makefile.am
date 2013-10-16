@@ -1,7 +1,7 @@
 pkglib_LTLIBRARIES = Herwig.la
 Herwig_la_SOURCES =
 Herwig_la_LIBTOOLFLAGS = --tag=CXX
-Herwig_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 13:1:0
+Herwig_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 14:0:0
 Herwig_la_LDFLAGS += $(THEPEGLDFLAGS) $(FCLIBS)
 Herwig_la_LIBADD = \
 $(top_builddir)/Hadronization/libHwHadronization.la \
@@ -19,7 +19,7 @@ $(top_builddir)/Looptools/libHwLooptools.la \
 $(top_builddir)/Shower/libHwShower.la \
 $(THEPEGLIB) -ldl
 
-noinst_SCRIPT = fix-osx-path
+dist_noinst_SCRIPT = fix-osx-path
 
 
 POSTPROCESSING = done-all-links

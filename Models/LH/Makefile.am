@@ -13,4 +13,4 @@ LHFFHVertex.h  LHFFHVertex.cc  \
 LHWWHVertex.h  LHWWHVertex.cc  \
 LHWHHVertex.h  LHWHHVertex.cc  \
 LHWWHHVertex.h LHWWHHVertex.cc  
-HwLHModel_la_LDFLAGS = -module -version-info 3:0:0
+HwLHModel_la_LDFLAGS = -module -version-info 3:1:0
