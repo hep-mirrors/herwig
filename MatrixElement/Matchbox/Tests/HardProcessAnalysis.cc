@@ -186,10 +186,23 @@ void HardProcessAnalysis::fill(PPair in, ParticleVector out, double weight) {
     data.rapidity = new_ptr(Histogram(-7.,7.,theNBins));
     data.sumWeights = 0.;
   }
-  ParticleVector::const_iterator p = out.begin();
-  vector<Histograms>::iterator h = data.outgoing.begin();
-  for ( ; p != out.end(); ++p, ++h )
-    h->fill((**p).momentum(),weight);
+  bool twoIdentical = false;
+  if ( out.size() == 2 ) {
+    if ( out[0]->id() == out[1]->id() ||
+	 (out[0]->coloured() && out[1]->coloured() && thePartonsAreJets) )
+      twoIdentical = true;
+  }
+  if ( !twoIdentical ) {
+    ParticleVector::const_iterator p = out.begin();
+    vector<Histograms>::iterator h = data.outgoing.begin();
+    for ( ; p != out.end(); ++p, ++h )
+      h->fill((**p).momentum(),weight);
+  } else {
+    data.outgoing[0].fill(out[0]->momentum(),weight/2.);
+    data.outgoing[0].fill(out[1]->momentum(),weight/2.);
+    data.outgoing[1].fill(out[0]->momentum(),weight/2.);
+    data.outgoing[1].fill(out[1]->momentum(),weight/2.);
+  }
   double y = (in.first->momentum() + in.second->momentum()).rapidity();
   data.rapidity->addWeighted(y,weight);
   Energy2 shat = (in.first->momentum() + in.second->momentum()).m2();

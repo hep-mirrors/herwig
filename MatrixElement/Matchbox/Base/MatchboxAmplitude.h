@@ -223,6 +223,12 @@ public:
   virtual bool isOLPLoop() const { return false; }
 
   /**
+   * Return true, if colour and spin correlated matrix elements should
+   * be ordered from the OLP
+   */
+  virtual bool needsOLPCorrelators() const { return true; }
+
+  /**
    * Write the order file header
    */
   virtual void olpOrderFileHeader(ostream&) const;
@@ -259,7 +265,7 @@ public:
   /**
    * Return the colour basis.
    */
-  Ptr<ColourBasis>::tptr colourBasis() const { return theColourBasis; }
+  virtual Ptr<ColourBasis>::tptr colourBasis() const { return theColourBasis; }
 
   /**
    * Return true, if this amplitude will not require colour correlations.
