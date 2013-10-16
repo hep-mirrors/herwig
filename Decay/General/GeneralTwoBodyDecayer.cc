@@ -1046,7 +1046,8 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
     }
     else if(trip.size()==1 && oct.size()==2) {
       nflow = 2;
-      colour_ .resize(2,DVector(2,0.));
+      colour_.clear();
+      colour_.resize(2,DVector(2,0.));
       colour_[0][0] =  symFactor*16./9.; colour_[0][1] = -symFactor*2./9.;
       colour_[1][0] = -symFactor*2./9.;  colour_[1][1] =  symFactor*16./9.;
     }
@@ -1068,6 +1069,7 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
     }
     else if(atrip.size()==1 && oct.size()==2){
       nflow = 2;
+      colour_.clear();
       colour_ .resize(2,DVector(2,0.));
       colour_[0][0] =  symFactor*16./9.; colour_[0][1] = -symFactor*2./9.;
       colour_[1][0] = -symFactor*2./9.;  colour_[1][1] =  symFactor*16./9.;
@@ -1086,7 +1088,8 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
   else if(inpart.dataPtr()->iColour() == PDT::Colour8) {
     if(oct.size()==1 && trip.size()==1 && atrip.size()==1) {
       nflow = 2;
-      colour_ .resize(2,DVector(2,0.));
+      colour_.clear();
+      colour_.resize(2,DVector(2,0.));
       colour_[0][0] =  symFactor*2./3. ; colour_[0][1] = -symFactor*1./12.;
       colour_[1][0] = -symFactor*1./12.; colour_[1][1] =  symFactor*2./3. ;
     }
