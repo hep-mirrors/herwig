@@ -12,4 +12,4 @@ NMSSMHHHVertex.h   NMSSMHHHVertex.cc   \
 NMSSMGGHVertex.h   NMSSMGGHVertex.cc \
 NMSSMPPHVertex.h   NMSSMPPHVertex.cc  \
 NMSSMWWHHVertex.h  NMSSMWWHHVertex.cc 
-HwNMSSM_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 2:1:0
+HwNMSSM_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 3:0:0

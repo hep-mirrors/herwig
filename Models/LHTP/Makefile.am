@@ -12,6 +12,6 @@ LHTPWWWVertex.cc  LHTPWWWVertex.h \
 LHTPHHHVertex.cc  LHTPHHHVertex.h \
 LHTPWHHVertex.cc  LHTPWHHVertex.h \
 LHTPFFHVertex.cc  LHTPFFHVertex.h
-HwLHTPModel_la_LDFLAGS = -module -version-info 3:0:0
+HwLHTPModel_la_LDFLAGS = -module -version-info 3:1:0
 HwLHTPModel_la_LIBADD= $(GSLLIBS)
 HwLHTPModel_la_CPPFLAGS= $(AM_CPPFLAGS) $(GSLINCLUDE)

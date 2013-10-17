@@ -4,7 +4,7 @@ if WANT_DIPOLE
 pkglib_LTLIBRARIES += HwExsampleMatchbox.la
 endif
 
-HwExsample2_la_LDFLAGS = -module -version-info 2:0:0
+HwExsample2_la_LDFLAGS = -module -version-info 3:0:0
 HwExsample2_la_SOURCES = \
 GeneralStatistics.h GeneralStatistics.cc \
 BinnedStatistics.h BinnedStatistics.cc \
@@ -32,7 +32,7 @@ exsample/utility.h \
 exsample/binary_tree.h \
 exsample/statistics.icc
 
-HwExsampleMatchbox_la_LDFLAGS = -module -version-info 2:0:0
+HwExsampleMatchbox_la_LDFLAGS = -module -version-info 3:0:0
 
 HwExsampleMatchbox_la_SOURCES =  \
 EnhanceNLOContributions.h EnhanceNLOContributions.cc

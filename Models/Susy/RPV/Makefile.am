@@ -12,4 +12,4 @@ RPVWSSVertex.h RPVWSSVertex.cc\
 RPVFFSVertex.h RPVFFSVertex.cc\
 RPVWWHVertex.h RPVWWHVertex.cc\
 RPVSSSVertex.h RPVSSSVertex.cc
-HwRPV_la_LDFLAGS = -module
+HwRPV_la_LDFLAGS =  $(AM_LDFLAGS) -module -version-info 1:0:0
