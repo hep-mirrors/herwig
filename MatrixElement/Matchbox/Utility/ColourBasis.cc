@@ -33,7 +33,12 @@ using std::ostream_iterator;
 using namespace Herwig;
 
 using boost::numeric::ublas::trans;
-using boost::numeric::ublas::conj;
+
+// default gcc on SLC6 confuses this with std::conj, 
+// use explicit namespacing in the code instead
+//
+// using boost::numeric::ublas::conj;
+
 using boost::numeric::ublas::row;
 using boost::numeric::ublas::column;
 using boost::numeric::ublas::prod;
@@ -823,7 +828,7 @@ double ColourBasis::me2(const cPDVector& sub,
 
   for ( map<vector<int>,CVector>::const_iterator a = amps.begin();
 	a != amps.end(); ++a ) {
-    res += real(inner_prod(conj(a->second),prod(sp,a->second)));
+    res += real(inner_prod(boost::numeric::ublas::conj(a->second),prod(sp,a->second)));
   }
 
   return res;
@@ -842,7 +847,7 @@ double ColourBasis::interference(const cPDVector& sub,
   map<vector<int>,CVector>::const_iterator b = amps2.begin();
   for ( ; a != amps1.end(); ++a, ++b ) {
     assert(a->first == b->first);
-    res += 2.*real(inner_prod(conj(a->second),prod(sp,b->second)));
+    res += 2.*real(inner_prod(boost::numeric::ublas::conj(a->second),prod(sp,b->second)));
   }
 
   assert(!isnan(res));
@@ -861,7 +866,7 @@ double ColourBasis::colourCorrelatedME2(const pair<size_t,size_t>& ij,
 
   for ( map<vector<int>,CVector>::const_iterator a = amps.begin();
 	a != amps.end(); ++a ) {
-    res += real(inner_prod(conj(a->second),prod(cij,a->second)));
+    res += real(inner_prod(boost::numeric::ublas::conj(a->second),prod(cij,a->second)));
   }
 
   return res;
@@ -873,7 +878,7 @@ Complex ColourBasis::interference(const cPDVector& sub,
 				  const CVector& right) const {
 
   const symmetric_matrix<double,upper>& sp = scalarProducts(sub);
-  return inner_prod(conj(left),prod(sp,right));
+  return inner_prod(boost::numeric::ublas::conj(left),prod(sp,right));
 
 }
 
@@ -883,7 +888,7 @@ Complex ColourBasis::colourCorrelatedInterference(const pair<size_t,size_t>& ij,
 						  const CVector& right) const {
 
   const symmetric_matrix<double,upper>& cij = correlator(sub,ij);
-  return inner_prod(conj(left),prod(cij,right));
+  return inner_prod(boost::numeric::ublas::conj(left),prod(cij,right));
 
 }
 
