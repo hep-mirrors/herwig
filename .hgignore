@@ -57,8 +57,8 @@ Makefile\.in$
 ^src/Herwig\+\+
 ^src/defaults/PDF.in$
 ^src/defaults/done-all-links$
-src/tune
-src/tests/.*\.(time|mult|Bmult|chisq)
+^src/tune$
+^src/tests/.*\.(time|mult|Bmult|chisq)$
 ^Tests/.*/.*\.(top|ps|pyc|info|dat|pdf|png)$
 ^Tests/.*\.(top|ps|pyc|info|dat|pdf|png)$
 ^Tests/.*\.(top|run|tex|mult|Bmult|aida|yoda)$
