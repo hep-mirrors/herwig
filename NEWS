@@ -1,51 +1,22 @@
 Herwig++ News				(emacs -*- outline -*- format)
 
-* Herwig++-2.7.0 release: 2013-10-XX
+* Herwig++-2.7.0 release: 2013-10-21
 
-** Miscellaneous additions
-*** HiggsPair matrix element in Contrib
-*** higgs mass from PDG 2013 update
-
-** TODO Decayer
-*** on/offshell flag in initPhaseSpace
-*** Many General-Decayer improvements, three-body ME, 4-body decayer
-*** Powheg in General decayers??
-*** SM Top / WZ Powheg decayers now on by default
-
-** TODO Hadronization
-*** improved treatment of beam remnants -> reduced error rate at TVT,
-*** new option VeryHard to have no special treatment of BeamRem
-
-** TODO MEs
-*** Vertex sign fixes for BSM
-*** HwMEBase Powheg Type change to enum
-*** Single top ME
-
-** TODO Feynrules
-
-** TODO BSM 
-*** id map
-*** 4-body decays
-*** colour6 handling
-*** HowMuchOffShell parameter
-*** many control flags moved to nbody dec constr
-
-** TODO Shower
-*** HardScaleFactor parameter
-*** RenormalizationScaleFactor parameter
-*** cleaned header structure, cleaned parameter references
-
-** TODO new tune
-*** TODO discuss performance
-
-** TODO improved Tests, more Rivet analyses
-
-** TODO C++-11 blurb
+** UFO interface to Feynman rules generators
+   Herwig++ now includes "ufo2herwig", a tool that automatically
+   creates all required files to run a BSM model from a UFO
+   directory. The conversion has been extensively tested against
+   Feynrules models ***TODO***, and less extensively with most of the
+   other models in the Feynrules model database.
+   We expect that following this release there will be no further
+   hard-coded new physics models added to Herwig++ and that future
+   models will be included using the UFO interface.
 
 ** Shower uncertainties
    A first set of scaling parameters to estimate shower uncertainties
    is provided for both the angular ordered as well as the dipole
-   shower.
+   shower; they are Evolver:HardScaleFactor and ShowerAlphaQCD:
+   RenormalizationScaleFactor. 
 
 ** Rewrite of Matchbox NLO matching
    The NLO matching implementation has been rewritten and is now more
@@ -62,7 +33,45 @@ Herwig++ News				(emacs -*- outline -*- format)
    The kinematics parametrization for emissions in the dipole shower
    has been made more efficient.
 
+** W and Z Powheg decays
+   Decays of W and Z bosons now use the Powheg decayers by default. 
+   ***TODO***
 
+** Improved treatment of beam remnants
+   The handling of beam remnants has been improved in multiple
+   contexts, leading to a much lower error rate at p+/p- collisions.
+   An additional value "VeryHard" for ClusterFissioner:RemnantOption
+   can be used to disable any special treatment of beam remnant
+   clusters.
+
+** New underlying event tune
+   Herwig++ now uses tune UE-EE-5-MRST by default. Other related tunes
+   can be obtained from the Herwig++ tunes page
+
+** Improvements in BSM code
+   The UFO development identified many sign fixes in rarely used BSM
+   vertices; many improvements were made to general decayers, allowing
+   four-body decays in BSM for the first time; Powheg is enabled in
+   General decayers ***TODO CHECK***; and the handling of colour
+   sextets has been improved.
+
+** A new HiggsPair matrix element in Contrib.
+
+** A new matrix element for single top production.
+
+** The Higgs mass is now set to 125.9 GeV (from PDG 2013 update).
+
+** C++-11 testing
+   To help with the coming transition to C++-11, we provide the new
+   --enable-stdcxx11 configure flag. Please try to test builds with
+   this flag enabled and let us know any problems, but do not use this
+   in production code yet. In future releases, this flag will be on by
+   default.
+
+** Other changes
+*** Many new Rivet analyses have been included in the Tests directory.
+*** Cleaned Shower header structure; grouped shower parameters into one struct.
+*** The boolean Powheg flag in HwMEBase changed to an enumeration.
 
 
 
