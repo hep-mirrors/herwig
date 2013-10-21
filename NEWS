@@ -6,7 +6,8 @@ Herwig++ News				(emacs -*- outline -*- format)
    Herwig++ now includes "ufo2herwig", a tool that automatically
    creates all required files to run a BSM model from a UFO
    directory. The conversion has been extensively tested against
-   Feynrules models ***TODO***, and less extensively with most of the
+   Feynrules models MSSM, NMSSM, RS, Technicolor,
+   and less extensively with most of the
    other models in the Feynrules model database.
    We expect that following this release there will be no further
    hard-coded new physics models added to Herwig++ and that future
@@ -34,8 +35,7 @@ Herwig++ News				(emacs -*- outline -*- format)
    has been made more efficient.
 
 ** W and Z Powheg decays
-   Decays of W and Z bosons now use the Powheg decayers by default. 
-   ***TODO***
+   Decays of W and Z bosons now use the Powheg decayers by default.
 
 ** Improved treatment of beam remnants
    The handling of beam remnants has been improved in multiple
@@ -52,7 +52,7 @@ Herwig++ News				(emacs -*- outline -*- format)
    The UFO development identified many sign fixes in rarely used BSM
    vertices; many improvements were made to general decayers, allowing
    four-body decays in BSM for the first time; Powheg is enabled in
-   General decayers ***TODO CHECK***; and the handling of colour
+   General two-body decayers; and the handling of colour
    sextets has been improved.
 
 ** A new HiggsPair matrix element in Contrib.
