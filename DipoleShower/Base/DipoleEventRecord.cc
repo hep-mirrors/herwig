@@ -773,7 +773,11 @@ tPPair DipoleEventRecord::fillEventRecord(StepPtr step, bool firstInteraction, b
     PPtr outSubPro = theOriginals.begin()->first;
     PPtr outParton = theOriginals.begin()->second;
     // workaround for OS X Mavericks LLVM libc++
+#ifdef _LIBCPP_VERSION
     map<PPtr,PPtr>::const_iterator beg = theOriginals.begin();
+#else
+    map<PPtr,PPtr>::iterator beg = theOriginals.begin();
+#endif
     theOriginals.erase(beg);
     updateColour(outParton);
     outSubPro->addChild(outParton);
