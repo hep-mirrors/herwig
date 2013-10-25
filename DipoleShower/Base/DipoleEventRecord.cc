@@ -20,14 +20,6 @@
 
 #include <boost/utility.hpp>
 
-#include <config.h>
-#ifdef HAVE_CXX11
-using std::next;
-#else
-using boost::next;
-#endif
-using boost::prior;
-
 #include <algorithm>
 
 using namespace Herwig;
@@ -231,7 +223,7 @@ void DipoleEventRecord::findChains(const PList& ordered) {
 	 p != ordered.end(); ++p) {
 
       PList::const_iterator next_it =
-	p != --ordered.end() ? next(p) : ordered.begin();
+	p != --ordered.end() ? boost::next(p) : ordered.begin();
 
       if (!DipolePartonSplitter::colourConnected(*p,*next_it)) {
 	current_chain.check();
@@ -780,7 +772,9 @@ tPPair DipoleEventRecord::fillEventRecord(StepPtr step, bool firstInteraction, b
   while ( !theOriginals.empty() ) {
     PPtr outSubPro = theOriginals.begin()->first;
     PPtr outParton = theOriginals.begin()->second;
-    theOriginals.erase(theOriginals.begin());
+    // workaround for OS X Mavericks LLVM libc++
+    map<PPtr,PPtr>::const_iterator beg = theOriginals.begin();
+    theOriginals.erase(beg);
     updateColour(outParton);
     outSubPro->addChild(outParton);
     theIntermediates.push_back(outSubPro);
