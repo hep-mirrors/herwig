@@ -1,5 +1,5 @@
 ============
-Herwig++ 2.6
+Herwig++ 2.7
 ============
 
 Please contact <herwig@projects.hepforge.org> for any queries.
@@ -8,7 +8,8 @@ Please contact <herwig@projects.hepforge.org> for any queries.
 Authors:
 ========
 Ken Arnold
-Luca d'Errico
+Johannes Bellm
+Nadine Fischer
 Stefan Gieseke
 David Grellscheid
 Keith Hamilton
@@ -17,16 +18,18 @@ Simon Plätzer
 Peter Richardson
 Christian Röhr
 Alex Schofield
+Thomas Schuh
 Mike Seymour
 Andrzej Siódmok
 Martin Stoll
-Bryan Webber
 David Winn
+Benedikt Zimmermann
 
 ===============
 Former authors:
 ===============
 Manuel Bähr
+Luca d'Errico
 Martyn Gigg
 Seyi Latunde-Dada
 Alberto Ribon
@@ -35,3 +38,4 @@ Alexander Sherstnev
 Philip Stephens
 Louise Suter
 Jon Tully
+Bryan Webber

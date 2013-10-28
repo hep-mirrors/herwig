@@ -52,9 +52,9 @@ namespace exsample {
     }
     assert(upper != interpolation_.begin() &&
 	   upper != interpolation_.end());
-    return ((upper->second-prior(upper)->second)*x +
-	    prior(upper)->second*upper->first - upper->second*prior(upper)->first)/
-      (upper->first - prior(upper)->first);
+    return ((upper->second-boost::prior(upper)->second)*x +
+	    boost::prior(upper)->second*upper->first - upper->second*boost::prior(upper)->first)/
+      (upper->first - boost::prior(upper)->first);
   }
 
   
@@ -63,18 +63,18 @@ namespace exsample {
     std::map<double, double>::const_iterator lower = interpolation_.begin();
     bool gotone = false;
     for (; lower != --interpolation_.end(); ++lower)
-      if ((lower->second >= f && next(lower)->second <= f) ||
-	  (lower->second <= f && next(lower)->second >= f)) {
+      if ((lower->second >= f && boost::next(lower)->second <= f) ||
+	  (lower->second <= f && boost::next(lower)->second >= f)) {
 	gotone = true;
 	break;
       }
     if(!gotone) throw inversion_has_no_solution();
-    if (lower->second == next(lower)->second) {
-      throw constant_interpolation(lower->first,next(lower)->first,lower->second);
+    if (lower->second == boost::next(lower)->second) {
+      throw constant_interpolation(lower->first,boost::next(lower)->first,lower->second);
     }
-    double xdiff = next(lower)->first - lower->first;
-    double wdiff = next(lower)->second - lower->second;
-    double woffset = lower->second * next(lower)->first - next(lower)->second * lower->first;
+    double xdiff = boost::next(lower)->first - lower->first;
+    double wdiff = boost::next(lower)->second - lower->second;
+    double woffset = lower->second * boost::next(lower)->first - boost::next(lower)->second * lower->first;
     return (xdiff/wdiff)*(f - woffset/xdiff);
   }
 

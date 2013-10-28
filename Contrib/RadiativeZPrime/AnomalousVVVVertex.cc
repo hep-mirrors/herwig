@@ -41,7 +41,8 @@ Complex AnomalousVVVVertex::evaluate(Energy2 q2, const VectorWaveFunction & vec1
 VectorWaveFunction AnomalousVVVVertex::evaluate(Energy2, int, tcPDPtr,
 						const VectorWaveFunction & ,
 						const VectorWaveFunction &,
-						Energy, Energy) {
+						complex<Energy>,
+						complex<Energy>) {
   throw Exception() << "AnomalousVVVVertex::evaluate() only implemented "
 		    << "for the evaluation of the vertex, not for the "
 		    << "evaluation of the off-shell vector wavefunction"
