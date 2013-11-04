@@ -350,7 +350,7 @@ MEee2VV::diagrams(const DiagramVector & diags) const {
   }
   Selector<DiagramIndex> sel;
   for ( DiagramIndex i = 0; i < diags.size(); ++i ) {
-    if(diags[i]->id() >= -3 ) sel.insert(last[-diags[i]->id()],i);
+    if(diags[i]->id() >= -3 ) sel.insert(last[-diags[i]->id() - 1],i);
   }
   return sel;
 }

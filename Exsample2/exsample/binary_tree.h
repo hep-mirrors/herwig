@@ -37,15 +37,15 @@ namespace exsample {
 
     /// default constructor
     binary_tree()
-      : neighbours_(0,0),
-	parent_(0), value_(),
+      : neighbours_(),
+	parent_(), value_(),
 	children_()
     { }
 
     /// construct giving key/cell and parent
     binary_tree(const value_type& thevalue,
 		binary_tree * theparent = 0)
-      : neighbours_(0,0), parent_(theparent),
+      : neighbours_(), parent_(theparent),
 	value_(new value_type(thevalue)),
 	children_()
     { }

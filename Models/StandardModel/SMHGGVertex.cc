@@ -184,7 +184,7 @@ void SMHGGVertex::setCoupling(Energy2 q2, tcPDPtr part2, tcPDPtr part3, tcPDPtr 
     int delta = Qmaxloop - Qminloop + 1;
     type.resize(delta,PDT::SpinUnknown);
     masses.resize(delta,ZERO);
-    couplings.resize(0);
+    couplings.clear();
     for (int i = 0; i < delta; ++i) {
       tcPDPtr q = getParticleData(_minloop+i);
       type[i] = PDT::Spin1Half;

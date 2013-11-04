@@ -803,7 +803,7 @@ private:
    * The real emission process to be included; if empty, all possible
    * ones will be considered.
    */
-  vector<string> realEmissionProcess;
+  vector<vector<string> > realEmissionProcesses;
 
   /**
    * Particle groups.
@@ -838,7 +838,7 @@ private:
   /**
    * The process to consider in terms of particle groups.
    */
-  vector<string> process;
+  vector<vector<string> > processes;
 
   /**
    * Generate subprocesses.

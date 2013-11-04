@@ -83,9 +83,9 @@ void GenericHGGVertex::setCoupling (Energy2 q2, tcPDPtr part1, tcPDPtr part2,
     idLast_ = part3->id();
     coupLast_ = sqr(strongCoupling(q2));
     // loop over the loop particles
-    masses.resize(0);
-    type.resize(0);
-    couplings.resize(0);
+    masses.clear();
+    type.clear();
+    couplings.clear();
     setNParticles(it->second.size());
     for(unsigned int ix=0;ix<it->second.size();++ix) {
       masses.push_back(model_->mass(q2,it->second[ix].particle));

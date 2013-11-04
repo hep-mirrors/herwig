@@ -1077,8 +1077,7 @@ inverseRescalingFactor(vector<Lorentz5Momentum> pout,
       pmag.push_back(pout[ix].vect().mag2());
     }
     // Newton-Raphson for the rescaling
-    vector<Energy> root;
-    root.resize(pout.size());
+    vector<Energy> root(pout.size());
     do {
       // compute new energies
       Energy sum(ZERO);

@@ -41,7 +41,7 @@ ZAnalysis.so : ZAnalysis.cc ZAnalysis.h
 	$(PGSLIB) $(HEPMCLIBS) -lHepMC -lHepMCfio $(FCLIBS)
 
 PGSInterface.o: PGSInterface.f
-	$(FC) -c -fno-second-underscore PGSInterface.f 
+	$(FC) -c -fPIC -fno-second-underscore PGSInterface.f 
 
 clean:
 	rm -f *.o *.so

@@ -565,13 +565,14 @@ MEee2gZ2qq::generateHard(ShowerTreePtr tree,
   // get the order right 
   if(emProgenitor->id()<0) swap(emProgenitor,epProgenitor);
   if(qkProgenitor->id()<0) swap(qkProgenitor,qbProgenitor);
-  loMomenta_.resize(0);
+  loMomenta_.clear();
   // extract the momenta 
   loMomenta_.push_back(emProgenitor->progenitor()->momentum());
   loMomenta_.push_back(epProgenitor->progenitor()->momentum());
   loMomenta_.push_back(qkProgenitor->progenitor()->momentum());
   loMomenta_.push_back(qbProgenitor->progenitor()->momentum());
   // and ParticleData objects
+  partons_.clear();
   partons_.resize(5);
   partons_[0]=emProgenitor->progenitor()->dataPtr();
   partons_[1]=epProgenitor->progenitor()->dataPtr();

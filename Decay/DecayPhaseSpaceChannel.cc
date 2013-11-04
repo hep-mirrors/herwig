@@ -100,8 +100,7 @@ DecayPhaseSpaceChannel::generateMomenta(const Lorentz5Momentum & pin,
   pexternal.resize(_mode->numberofParticles());
   pinter.resize(_intpart.size());
   // masses of the intermediate particles
-  vector<Energy> massint; 
-  massint.resize(_intpart.size());
+  vector<Energy> massint(_intpart.size());
   massint[0]=pin.mass();
   // generate all the decays in the chain
   Energy lower,upper,lowerb[2];

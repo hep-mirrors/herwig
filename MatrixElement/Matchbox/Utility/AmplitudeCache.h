@@ -121,7 +121,7 @@ class AmplitudeCache {
    * Helper to reset flags
    */
   struct boolResetter {
-    void operator()(std::_Bit_reference flag) const {
+    void operator()(vector<bool>::reference flag) const {
       flag = true;
     }
     void operator()(pair<const AmplitudeKey,pair<bool,Complex> >& flag) const {

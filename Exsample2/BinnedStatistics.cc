@@ -13,10 +13,6 @@
 
 #include "BinnedStatistics.h"
 
-#include <boost/utility.hpp>
-using boost::next;
-using boost::prior;
-
 using namespace Herwig;
 
 BinnedStatistics::~BinnedStatistics() {}

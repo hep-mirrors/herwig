@@ -94,16 +94,16 @@ namespace exsample {
     double old_evo = last_point_[evolution_variable_];
     std::vector<double>::iterator exp_it = last_exponent_integrand_.begin();
     for (std::vector<double>::iterator esp = parameter_splits_[evolution_variable_].begin();
-	 esp < prior(parameter_splits_[evolution_variable_].end()); ++esp, ++exp_it) {
-      last_point_[evolution_variable_] = (*esp + *next(esp))/2.;
+	 esp < boost::prior(parameter_splits_[evolution_variable_].end()); ++esp, ++exp_it) {
+      last_point_[evolution_variable_] = (*esp + *boost::next(esp))/2.;
       *exp_it = root_cell_.accumulate(parametric_selector_,integral_accessor_,std::plus<double>());
     }
-    exp_it = prior(last_exponent_integrand_.end());
+    exp_it = boost::prior(last_exponent_integrand_.end());
     double total = 0.;
-    for (std::vector<double>::iterator esp = prior(parameter_splits_[evolution_variable_].end());
+    for (std::vector<double>::iterator esp = boost::prior(parameter_splits_[evolution_variable_].end());
 	 esp > parameter_splits_[evolution_variable_].begin(); --esp, --exp_it) {
       last_exponent_->second.set_interpolation(*esp,total);
-      total += (*exp_it) * ((*esp) - (*prior(esp)));
+      total += (*exp_it) * ((*esp) - (*boost::prior(esp)));
     }
     last_exponent_->second.set_interpolation(parameter_splits_[evolution_variable_].front(),total);
     last_point_[evolution_variable_] = old_evo;
@@ -133,8 +133,8 @@ namespace exsample {
     }
     for ( std::vector<double>::const_iterator sp =
 	    parameter_splits_[current].begin(); 
-	  sp != prior(parameter_splits_[current].end()); ++sp ) {
-      pt[current] = (*sp + *next(sp))/2.;
+	  sp != boost::prior(parameter_splits_[current].end()); ++sp ) {
+      pt[current] = (*sp + *boost::next(sp))/2.;
       recursive_parameter_points(res,pt,current+1);
     }
   }
@@ -181,11 +181,11 @@ namespace exsample {
 	double old_int = 0.;
 	double new_int = 0.;
 	for ( std::vector<double>::const_iterator sp = parameter_splits_[evolution_variable_].begin();
-	      sp != prior(parameter_splits_[evolution_variable_].end()); ++sp ) {
+	      sp != boost::prior(parameter_splits_[evolution_variable_].end()); ++sp ) {
 	  if ( *sp >= it->info().lower_left()[evolution_variable_] &&
 	       *sp < it->info().upper_right()[evolution_variable_] ) {
 	    double xl = *sp;
-	    double xxl = *next(sp);
+	    double xxl = *boost::next(sp);
 	    double old_al = 
 	      (old_exp->second.interpolation()[xxl] - old_exp->second.interpolation()[xl]) /
 	      (xxl-xl);

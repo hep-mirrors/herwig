@@ -299,18 +299,28 @@ void MatchboxFactory::setup() {
 	++nl;
     nLight(nl/2);
 
-    vector<Ptr<MatchboxMEBase>::ptr> ames = makeMEs(process,orderInAlphaS());
-    copy(ames.begin(),ames.end(),back_inserter(bornMEs()));
-
-    if ( realContributions() && realEmissionMEs().empty() ) {
-      vector<string> rproc = process;
-      if ( realEmissionProcess.empty() ) {
-	rproc.push_back("j");
-      } else {
-	rproc = realEmissionProcess;
+    vector<Ptr<MatchboxMEBase>::ptr> mes;
+    for ( vector<vector<string> >::const_iterator p = processes.begin();
+	  p != processes.end(); ++p ) {
+      mes = makeMEs(*p,orderInAlphaS());
+      copy(mes.begin(),mes.end(),back_inserter(bornMEs()));
+      if ( realContributions() && realEmissionMEs().empty() ) {
+	if ( realEmissionProcesses.empty() ) {
+	  vector<string> rproc = *p;
+	  rproc.push_back("j");
+	  mes = makeMEs(rproc,orderInAlphaS()+1);
+	  copy(mes.begin(),mes.end(),back_inserter(realEmissionMEs()));
+	}
       }
-      ames = makeMEs(rproc,orderInAlphaS()+1);
-      copy(ames.begin(),ames.end(),back_inserter(realEmissionMEs()));
+    }
+    if ( realContributions() && realEmissionMEs().empty() ) {
+      if ( !realEmissionProcesses.empty() ) {
+	for ( vector<vector<string> >::const_iterator q =
+		realEmissionProcesses.begin(); q != realEmissionProcesses.end(); ++q ) {
+	  mes = makeMEs(*q,orderInAlphaS()+1);
+	  copy(mes.begin(),mes.end(),back_inserter(realEmissionMEs()));
+	}
+      }
     }
 
   }
@@ -887,7 +897,7 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
      << theBornMEs << theVirtuals << theRealEmissionMEs
      << theBornVirtualMEs << theSubtractedMEs << theFiniteRealMEs
      << theVerbose << theInitVerbose << theSubtractionData << thePoleData
-     << theParticleGroups << process << realEmissionProcess
+     << theParticleGroups << processes << realEmissionProcesses
      << theShowerApproximation << theSplittingDipoles
      << theRealEmissionScales << theAllProcesses
      << theOLPProcesses 
@@ -908,7 +918,7 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
      >> theBornMEs >> theVirtuals >> theRealEmissionMEs
      >> theBornVirtualMEs >> theSubtractedMEs >> theFiniteRealMEs
      >> theVerbose >> theInitVerbose >> theSubtractionData >> thePoleData
-     >> theParticleGroups >> process >> realEmissionProcess
+     >> theParticleGroups >> processes >> realEmissionProcesses
      >> theShowerApproximation >> theSplittingDipoles
      >> theRealEmissionScales >> theAllProcesses
      >> theOLPProcesses
@@ -932,24 +942,26 @@ string MatchboxFactory::endParticleGroup(string) {
 }
 
 string MatchboxFactory::doProcess(string in) {
-  process = StringUtils::split(in);
+  vector<string> process = StringUtils::split(in);
   if ( process.size() < 3 )
     throw InitException() << "Invalid process.";
   for ( vector<string>::iterator p = process.begin();
 	p != process.end(); ++p ) {
     *p = StringUtils::stripws(*p);
   }
+  processes.push_back(process);
   return "";
 }
 
 string MatchboxFactory::doSingleRealProcess(string in) {
-  realEmissionProcess = StringUtils::split(in);
+  vector<string> realEmissionProcess = StringUtils::split(in);
   if ( realEmissionProcess.size() < 3 )
     throw InitException() << "Invalid process.";
   for ( vector<string>::iterator p = realEmissionProcess.begin();
 	p != realEmissionProcess.end(); ++p ) {
     *p = StringUtils::stripws(*p);
   }
+  realEmissionProcesses.push_back(realEmissionProcess);
   return "";
 }
 

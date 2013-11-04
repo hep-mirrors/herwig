@@ -95,11 +95,13 @@ void MSSM::createMixingMatrices() {
     double beta = atan(tanBeta());
     hmix.push_back(MixingElement(1,1,sin(beta)));
     hmix.push_back(MixingElement(1,2,cos(beta)));
+    ids.clear();
     ids.resize(1,37);
     HiggsPMix_ = new_ptr(MixingMatrix(1,2));
     (*HiggsPMix_).setIds(ids);
     for(unsigned int ix=0; ix < hmix.size(); ++ix)
       (*HiggsPMix_)(hmix[ix].row-1,hmix[ix].col-1) = hmix[ix].value;
+    ids.clear();
     ids.resize(1,36);
     HiggsAMix_ = new_ptr(MixingMatrix(1,2));
     (*HiggsAMix_).setIds(ids);
