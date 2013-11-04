@@ -249,8 +249,7 @@ ClusterVector ClusterFinder::formClusters(const PVector & partons)
 }
 
 
-void ClusterFinder::reduceToTwoComponents(ClusterVector & clusters) 
-  {
+void ClusterFinder::reduceToTwoComponents(ClusterVector & clusters) {
 
   // In order to preserve all of the information, we do not modify the 
   // directly the 3-component clusters, but instead we define new clusters,
@@ -261,32 +260,48 @@ void ClusterFinder::reduceToTwoComponents(ClusterVector & clusters)
   // this vector will be copied in  collecCluPtr  (the reason is that it is not 
   // allowed to modify a STL container while iterating over it).
   vector<tClusterPtr> redefinedClusters; 
-  tParticleVector vec(3);
   for(ClusterVector::iterator cluIter = clusters.begin() ; 
       cluIter != clusters.end() ; ++cluIter) {
+    tParticleVector vec;
 
     if ( ! (*cluIter)->isAvailable()  
 	 ||  (*cluIter)->numComponents() != 3 ) continue;
     
-    for(int i = 0; i<(*cluIter)->numComponents(); i++)
-	  vec[i] = (*cluIter)->particle(i);
-    
+    tPPtr other;
+    int iCharge1(0);
+    for(int i = 0; i<(*cluIter)->numComponents(); i++) {
+      tPPtr part = (*cluIter)->particle(i);
+      if(!DiquarkMatcher::Check(*(part->dataPtr())))
+	vec.push_back(part);
+      else
+	other = part;
+      iCharge1 += part->dataPtr()->iCharge();
+    }
+    if(vec.size()<2) {
+      throw Exception() << "Could not make a diquark for a baryonic cluster decay from "
+			<< (*cluIter)->particle(0)->PDGName() << " "
+			<< (*cluIter)->particle(1)->PDGName() << " "
+			<< (*cluIter)->particle(2)->PDGName() << " "
+			<< " in ClusterFinder::reduceToTwoComponents()."
+			<< Exception::eventerror;
+    }
+
     // Randomly selects two components to be considered as a (anti)diquark
-    // and place them as the second and third element of  vec.
-    int choice = UseRandom::rnd3(1.0, 1.0, 1.0);
+    // and place them as the first and second element of  vec.
+    int choice = vec.size()==2 ? 0 : UseRandom::rnd3(1.0, 1.0, 1.0);
     switch (choice) {
     case 0: 
       break; 
     case 1:
-      swap(vec[0],vec[1]);
+      swap(vec[2],vec[0]);
       break;
     case 2:
-      swap(vec[0],vec[2]);
+      swap(vec[2],vec[1]);
       break;
     }
-
-    tcPDPtr temp1  = vec[1]->dataPtr();
-    tcPDPtr temp2  = vec[2]->dataPtr();
+    tcPDPtr temp1  = vec[0]->dataPtr();
+    tcPDPtr temp2  = vec[1]->dataPtr();
+    if(!other) other = vec[2];
 
     tcPDPtr dataDiquark  = CheckId::makeDiquark(temp1,temp2);
     
@@ -315,9 +330,9 @@ void ClusterFinder::reduceToTwoComponents(ClusterVector & clusters)
     // a similar situation), but it is not harmful.
     
     PPtr diquark = dataDiquark->produceParticle();
+    vec[0]->addChild(diquark);
     vec[1]->addChild(diquark);
-    vec[2]->addChild(diquark);
-    ClusterPtr nclus = new_ptr(Cluster(vec[0],diquark));
+    ClusterPtr nclus = new_ptr(Cluster(other,diquark));
 
     //vec[0]->addChild(nclus);
     //diquark->addChild(nclus);
@@ -327,10 +342,10 @@ void ClusterFinder::reduceToTwoComponents(ClusterVector & clusters)
     nclus->setVertex((*cluIter)->vertex());
     for(int i = 0; i<nclus->numComponents(); i++) {
       if(nclus->particle(i)->id() == dataDiquark->id()) {
-	nclus->particle(i)->set5Momentum(Lorentz5Momentum(vec[1]->momentum()
-	                     + vec[2]->momentum(), dataDiquark->constituentMass()));
-        nclus->particle(i)->setVertex(0.5*(vec[1]->vertex() 
-			     + vec[2]->vertex()));
+	nclus->particle(i)->set5Momentum(Lorentz5Momentum(vec[0]->momentum()
+	                     + vec[1]->momentum(), dataDiquark->constituentMass()));
+        nclus->particle(i)->setVertex(0.5*(vec[0]->vertex()
+			     + vec[1]->vertex()));
       }
     }
     // Set the parent/children relationship between the original cluster 
