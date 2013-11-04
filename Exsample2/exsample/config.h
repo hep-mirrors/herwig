@@ -40,13 +40,6 @@ namespace exsample {
 
   static const unsigned long parameter_hash_bits = 512;
 
-#ifdef HAVE_CXX11
-  using std::next;
-#else
-  using boost::next;
-#endif
-  using boost::prior;
-
 }
 
 #endif // EXSAMPLE_config_h_included

@@ -1,6 +1,6 @@
 Herwig++ News				(emacs -*- outline -*- format)
 
-* Herwig++-2.7.0 release: 2013-10-21
+* Herwig++-2.7.0 release: 2013-10-28
 
 ** UFO interface to Feynman rules generators
    Herwig++ now includes "ufo2herwig", a tool that automatically

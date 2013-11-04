@@ -21,6 +21,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/DipoleRepository.h"
+#include "ThePEG/PDT/DecayMode.h"
 
 #include <gsl/gsl_sf_dilog.h>
 // TODO: remove
