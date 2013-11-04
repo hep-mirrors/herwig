@@ -105,14 +105,19 @@ public:
     if(scaleChoice_==0) {
       return scaleFactor_*sHat();
     }
-    else {
-      assert( scaleChoice_== 1 );
+    else if(scaleChoice_==1) {
       Energy2 mbar = 0.5*(meMomenta()[2].mass2()+meMomenta()[3].mass2());
       Energy2 t = 0.5*(tHat()-mbar);
       Energy2 u = 0.5*(uHat()-mbar);
       Energy2 s = 0.5*sHat();
       return scaleFactor_*4.*s*t*u/(s*s+t*t+u*u);
     }
+    else if(scaleChoice_ ==2) {
+      Energy2 scale1 = meMomenta()[2].mass2()+meMomenta()[2].perp2();
+      Energy2 scale2 = meMomenta()[3].mass2()+meMomenta()[3].perp2();
+      return scaleFactor_*max(scale1,scale2);
+    }
+    else assert(false);
   }
 
   /**
@@ -257,7 +262,6 @@ protected:
     return debug_;
   }
 
-
   /**
    *  Set/Get Info on the selected diagram and colour flow
    */
@@ -356,6 +360,17 @@ protected:
       }
       spin->productionVertex(hardvertex);
     }
+  }
+
+  /**
+   *  Initialize the storage of the helicity matrix elements
+   */
+  void initializeMatrixElements(PDT::Spin  in1, PDT::Spin in2,
+				PDT::Spin out1, PDT::Spin out2) {
+    flowME().resize(numberOfFlows(),
+		    ProductionMatrixElement(in1,in2,out1,out2));
+    diagramME().resize(numberOfDiags(),
+		       ProductionMatrixElement(in1,in2,out1,out2));
   }
 
 private:

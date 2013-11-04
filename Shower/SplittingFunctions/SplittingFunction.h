@@ -14,9 +14,9 @@
 
 #include "ThePEG/Interface/Interfaced.h"
 #include "Herwig++/Shower/ShowerConfig.h"
-#include "ThePEG/EventRecord/ColourLine.h"
 #include "ThePEG/EventRecord/RhoDMatrix.h"
 #include "Herwig++/Decay/DecayMatrixElement.h"
+#include "Herwig++/Shower/Base/ShowerKinematics.fh"
 #include "SplittingFunction.fh"
 
 namespace Herwig {
@@ -261,12 +261,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an abstract class without persistent data.
-   */
-  static AbstractClassDescription<SplittingFunction> initSplittingFunction;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -305,33 +299,6 @@ private:
    */
    int _splittingColourMethod;
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of SplittingFunction. */
-template <>
-struct BaseClassTrait<Herwig::SplittingFunction,1> {
-  /** Typedef of the first base class of SplittingFunction. */
-  typedef Interfaced NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the SplittingFunction class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::SplittingFunction>
-  : public ClassTraitsBase<Herwig::SplittingFunction> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::SplittingFunction"; }
-};
-
-/** @endcond */
 
 }
 

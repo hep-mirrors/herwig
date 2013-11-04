@@ -28,12 +28,8 @@ void MEff2ss::doinit() {
   scalar_ .resize(numberOfDiags());
   vector_ .resize(numberOfDiags());
   tensor_ .resize(numberOfDiags());
-  flowME().resize(numberOfFlows(),
-		  ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1Half, 
-					  PDT::Spin0    , PDT::Spin0    ));
-  diagramME().resize(numberOfDiags(),
-		     ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1Half, 
-					     PDT::Spin0    , PDT::Spin0    ));
+  initializeMatrixElements(PDT::Spin1Half, PDT::Spin1Half, 
+			   PDT::Spin0    , PDT::Spin0    );
   for(HPCount i = 0; i < numberOfDiags(); ++i) {
     const HPDiagram & current = getProcessInfo()[i];
     if(current.channelType == HPDiagram::tChannel) {
@@ -69,16 +65,6 @@ void MEff2ss::doinit() {
 			    << "channel from diagram. Vertex not cast! "
 			    << Exception::runerror;
   }
-}
-
-void MEff2ss::doinitrun() {
-  GeneralHardME::doinitrun();
-  flowME().resize(numberOfFlows(),
-		  ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1Half, 
-					  PDT::Spin0    , PDT::Spin0    ));
-  diagramME().resize(numberOfDiags(),
-		     ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1Half, 
-					     PDT::Spin0    , PDT::Spin0    ));
 }
 
 double MEff2ss::me2() const {
@@ -127,14 +113,30 @@ MEff2ss::ff2ssME(const SpinorVector & sp, const SpinorBarVector & sbar,
 	tcPDPtr internal(current.intermediate);	
 	if(current.channelType == HPDiagram::tChannel &&
 	   internal->iSpin() == PDT::Spin1Half) {
+	  if(internal->CC()) internal=internal->CC();
+	  unsigned int iopt = ( abs(sbar[if2].particle()->id()) == abs(internal->id()) ||
+	  			abs(sp[if1]  .particle()->id()) == abs(internal->id())) ? 5 : 3;
+	  SpinorBarWaveFunction interFB;
 	  if(current.ordered.second) {
-	    SpinorBarWaveFunction interFB = fermion_[ix].second->
-	      evaluate(q2, 3, internal, sbar[if2], sca2);
+	    if(iopt==3) { 
+	      interFB = fermion_[ix].second->
+		evaluate(q2, iopt, internal, sbar[if2], sca2);
+	    }
+	    else {
+	      interFB = fermion_[ix].second->
+		evaluate(q2, iopt, internal, sbar[if2], sca2, 0.*GeV, 0.*GeV);
+	    }
 	    diag = fermion_[ix].first->evaluate(q2, sp[if1], interFB, sca1);
 	  }
 	  else {
-	    SpinorBarWaveFunction interFB = fermion_[ix].second->
-	      evaluate(q2, 3, internal, sbar[if2], sca1);
+	    if(iopt==3) { 
+	      interFB = fermion_[ix].second->
+		evaluate(q2, iopt, internal, sbar[if2], sca1);
+	    }
+	    else {
+	      interFB = fermion_[ix].second->
+		evaluate(q2, iopt, internal, sbar[if2], sca1, 0.*GeV, 0.*GeV);
+	    }
 	    diag = fermion_[ix].first->evaluate(q2, sp[if1], interFB, sca2);
 	  }
 	}
@@ -191,6 +193,8 @@ void MEff2ss::persistentOutput(PersistentOStream & os) const {
 
 void MEff2ss::persistentInput(PersistentIStream & is, int) {
   is >> fermion_ >> scalar_ >> vector_ >> tensor_;
+  initializeMatrixElements(PDT::Spin1Half, PDT::Spin1Half, 
+			   PDT::Spin0    , PDT::Spin0    );
 }
 
 ClassDescription<MEff2ss> MEff2ss::initMEff2ss;

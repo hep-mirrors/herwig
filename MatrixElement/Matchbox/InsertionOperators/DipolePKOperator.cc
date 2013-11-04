@@ -30,8 +30,7 @@ DipolePKOperator::DipolePKOperator()
   : MatchboxInsertionOperator(),
     CA(-1.0), CF(-1.0), 
     gammaQuark(-1.0), gammaGluon(-1.0),
-    KQuark(-1.0), KGluon(-1.0),
-    theUseDR(false), theUseCS(false) {}
+    KQuark(-1.0), KGluon(-1.0) {}
 
 DipolePKOperator::~DipolePKOperator() {}
 
@@ -43,23 +42,8 @@ IBPtr DipolePKOperator::fullclone() const {
   return new_ptr(*this);
 }
 
-void DipolePKOperator::dumpInfo(const string& prefix) const {
-  generator()->log() << prefix << fullName()
-		     << " [" << this << "]\n";
-  generator()->log() << prefix << "  | XComb " << lastXCombPtr()
-		     << " for ";
-  if ( lastXCombPtr() ) {
-    for ( cPDVector::const_iterator p = lastXComb().mePartonData().begin();
-	  p != lastXComb().mePartonData().end(); ++p ) {
-      generator()->log() << (**p).PDGName() << " ";
-    }
-  }
-  generator()->log() << "  | Born ME\n";
-  lastBorn()->dumpInfo(prefix+"  | ");
-}
-
-void DipolePKOperator::setBorn(Ptr<MatchboxMEBase>::tptr me) {
-  MatchboxInsertionOperator::setBorn(me);
+void DipolePKOperator::setXComb(tStdXCombPtr xc) {
+  MatchboxInsertionOperator::setXComb(xc);
   if ( CA < 0. ) {
     CA = SM().Nc();
     CF = (SM().Nc()*SM().Nc()-1.0)/(2.*SM().Nc());
@@ -291,7 +275,7 @@ double DipolePKOperator::sumParton(int id) const {
 
   using namespace RandomHelpers;
 
-  double r = additionalRandomNumbers.front();
+  double r = insertionRandomNumbers().front();
   double eps = 1e-3;
 
   pair<double,double> zw =
@@ -324,11 +308,13 @@ double DipolePKOperator::sumParton(int id) const {
   double thePgg = 0.0;
 
   double ifCorrelated = 0.0;
+  double fiCorrelated = 0.0;
 
   int idi = 2;
   vector<Lorentz5Momentum>::const_iterator Pi = meMomenta().begin() + 2;
 
   double disFinite = 0.0;
+  double glueFinite = 0.0;
 
   for ( cPDVector::const_iterator i = mePartonData().begin() + 2;
 	i != mePartonData().end(); ++i, ++Pi, ++idi ) {
@@ -336,7 +322,8 @@ double DipolePKOperator::sumParton(int id) const {
     if ( !apply(*i) || lastBorn()->noDipole(idi,id) )
       continue;
 
-    ifCorrelated = lastBorn()->colourCorrelatedME2(make_pair(idi,id));
+    fiCorrelated = lastBorn()->colourCorrelatedME2(make_pair(idi,id));
+    ifCorrelated = lastBorn()->colourCorrelatedME2(make_pair(id,idi));
 
     if ( theGammaSoft == 0.0 )
       theGammaSoft = gammaSoft();
@@ -357,7 +344,7 @@ double DipolePKOperator::sumParton(int id) const {
 
     res +=
       ( (**i).id() == ParticleID::g ? gammaGluon : gammaQuark ) *
-      theGammaSoft * ifCorrelated;
+      theGammaSoft * fiCorrelated;
 
     if ( mePartonData()[id]->id() == ParticleID::g ) {
       res +=
@@ -379,7 +366,15 @@ double DipolePKOperator::sumParton(int id) const {
 	disFinite = CF*PDFxByz(parton)*(1.+3.*z/2.)/z;
       }
       if ( z > x )
-	res -= disFinite*ifCorrelated;
+	res -= disFinite*fiCorrelated;
+    }
+
+    if ( mePartonData()[idi]->id() == ParticleID::g ) {
+      if ( glueFinite == 0.0 && z > x ) {
+	glueFinite = 2.*CA*PDFxByz(parton)*(1.+z/6.)/z;
+      }
+      if ( z > x )
+	res -= glueFinite*fiCorrelated;
     }
 
   }
@@ -455,13 +450,11 @@ double DipolePKOperator::me2() const {
 
 void DipolePKOperator::persistentOutput(PersistentOStream & os) const {
   os << CA << CF << gammaQuark << gammaGluon << KQuark << KGluon
-     << theUseDR << theUseCS
      << ounit(scale,GeV2) << pdf << particle << x << z << pdfCache << parton;
 }
 
 void DipolePKOperator::persistentInput(PersistentIStream & is, int) {
   is >> CA >> CF >> gammaQuark >> gammaGluon >> KQuark >> KGluon
-     >> theUseDR >> theUseCS
      >> iunit(scale,GeV2) >> pdf >> particle >> x >> z >> pdfCache >> parton;
 }
 
@@ -478,7 +471,7 @@ void DipolePKOperator::Init() {
   static ClassDocumentation<DipolePKOperator> documentation
     ("DipolePKOperator");
 
-  DipoleRepository::registerInsertionOperator<DipolePKOperator>("LightPKOperator");
+  DipoleRepository::registerInsertionOperator<0,DipolePKOperator>("LightPKOperator");
 
 }
 

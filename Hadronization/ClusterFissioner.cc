@@ -149,6 +149,11 @@ void ClusterFissioner::Init() {
      "Hard",
      "Only the cluster containing the remnant is treated as a soft cluster.",
      1);
+  static SwitchOption interfaceRemnantOptionVeryHard
+    (interfaceRemnantOption,
+     "VeryHard",
+     "Even remnant clusters are treated as hard, i.e. all clusters the same",
+     2);
 
   static Parameter<ClusterFissioner,Energy> interfaceBTCLM
     ("SoftClusterFactor",
@@ -292,8 +297,17 @@ ClusterFissioner::cutType ClusterFissioner::cut(ClusterPtr & cluster,
   bool rem1 = cluster->isBeamRemnant(0);
   bool rem2 = cluster->isBeamRemnant(1);
   // workout which distribution to use
-  bool soft1 = rem1 || (_iopRem==0 && rem2);
-  bool soft2 = rem2 || (_iopRem==0 && rem1);
+  bool soft1(false),soft2(false);
+  switch (_iopRem) {
+  case 0:
+    soft1 = rem1 || rem2;
+    soft2 = rem2 || rem1;
+    break;
+  case 1:
+    soft1 = rem1;
+    soft2 = rem2;
+    break;
+  }
   // Initialization for the exponential ("soft") mass distribution.
   static const int max_loop = 1000;
   int counter = 0;

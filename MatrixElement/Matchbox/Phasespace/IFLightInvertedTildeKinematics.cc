@@ -54,16 +54,22 @@ bool IFLightInvertedTildeKinematics::doMap(const double * r) {
   double z = ptz.second;
 
   double ratio = sqr(pt/lastScale());
-  double x = ( z*(1.-z) - ratio ) / ( 1. - z - ratio );
-  double u = ratio / (1.-z);
-  pt = lastScale()*sqrt(u*(1.-u)*(1.-x)/x);
-
-  if ( x < emitterX() || x > 1. || u > 1. ) {
+  double rho = 1. - 4.*ratio*z*(1.-z) / sqr(1. - z + ratio);
+  if ( rho < 0. ) {
     jacobian(0.0);
     return false;
   }
 
-  mapping /= sqr(z*(1.-z)-ratio)/(1.-z-ratio);
+  double x = 0.5*(1./ratio)*(1.-z+ratio)*sqrt(rho);
+  double u = 0.5*(1./(1.-z))*(1.-z+ratio)*sqrt(rho);
+
+  if ( x < emitterX() || x > 1. || 
+       u < 0. || u > 1. ) {
+    jacobian(0.0);
+    return false;
+  }
+
+  mapping *= (1.-x)/((1.-z)*(z*(1.-z)+sqr(x-z)));
   jacobian(mapping*(sqr(lastScale())/sHat())/(16.*sqr(Constants::pi)));
 
   double phi = 2.*Constants::pi*r[2];
@@ -93,13 +99,13 @@ Energy IFLightInvertedTildeKinematics::lastPt() const {
   Energy scale = sqrt(2.*(bornEmitterMomentum()*bornSpectatorMomentum()));
   double x = subtractionParameters()[0];
   double u = subtractionParameters()[1];
-  return scale * sqrt(u*(1.-u)*(1.-x));
+  return scale * sqrt(u*(1.-u)*(1.-x)/x);
 
 }
 
 Energy IFLightInvertedTildeKinematics::ptMax() const {
   double x = emitterX();
-  return sqrt(1.-x)*lastScale()/2.;
+  return sqrt((1.-x)/x)*lastScale()/2.;
 }
 
 pair<double,double> IFLightInvertedTildeKinematics::zBounds(Energy pt) const {

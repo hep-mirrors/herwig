@@ -1,0 +1,189 @@
+#! /usr/bin/env python
+import lighthisto
+import logging
+import sys
+
+if sys.version_info[:3] < (2,4,0):
+    print "rivet scripts require Python version >= 2.4.0... exiting"
+    sys.exit(1)
+
+import os, copy, re
+from math import sqrt
+
+## Try to load faster but non-standard cElementTree module
+try:
+    import xml.etree.cElementTree as ET
+except ImportError:
+    try:
+        import cElementTree as ET
+    except ImportError:
+        try:
+            import xml.etree.ElementTree as ET
+        except:
+            sys.stderr.write("Can't load the ElementTree XML parser: please install it!\n")
+            sys.exit(1)
+
+# #############################################
+
+def fillAbove(desthisto, sourcehistosbyptmin):
+    for i,b in enumerate(desthisto.getBins()):
+        ## Fill bins with pT-ordered histos (so that 'highest always wins')
+        for ptmin, h in sorted(sourcehistosbyptmin.iteritems()):
+            newb = h.getBin(i)
+            if newb.xlow >= ptmin:
+                b.val =  newb.val
+                b.errplus =  newb.errplus
+                b.errminus =  newb.errminus
+                b._focus= newb._focus
+
+def mergeByPt(hpath, sqrts):
+    global inhistos
+    global outhistos
+    try:
+        fillAbove(outhistos[hpath], inhistos[hpath][float(sqrts)])
+    except:
+        pass
+
+def useOnePt(hpath, sqrts, ptmin):
+    global inhistos
+    global outhistos
+    try:
+       ## Find best pT_min match
+        ptmins = inhistos[hpath][float(sqrts)].keys()
+        closest_ptmin = None
+        for ptm in ptmins:
+            if closest_ptmin is None or \
+                    abs(ptm-float(ptmin)) < abs(closest_ptmin-float(ptmin)):
+                closest_ptmin = ptm
+        if closest_ptmin != float(ptmin):
+            logging.warning("Inexact match for requested pTmin=%s: " % ptmin + \
+                                "using pTmin=%e instead" % closest_ptmin)
+        outhistos[hpath] =  inhistos[hpath][float(sqrts)][closest_ptmin]
+    except:
+        pass
+
+# #######################################
+
+if __name__ == "__main__":
+    import logging
+    from optparse import OptionParser, OptionGroup
+    parser = OptionParser(usage="%prog name")
+    verbgroup = OptionGroup(parser, "Verbosity control")
+    verbgroup.add_option("-v", "--verbose", action="store_const", const=logging.DEBUG, dest="LOGLEVEL",
+                         default=logging.INFO, help="print debug (very verbose) messages")
+    verbgroup.add_option("-q", "--quiet", action="store_const", const=logging.WARNING, dest="LOGLEVEL",
+                         default=logging.INFO, help="be very quiet")
+    parser.add_option_group(verbgroup)
+    (opts, args) = parser.parse_args()
+    logging.basicConfig(level=opts.LOGLEVEL, format="%(message)s")
+
+
+    ## Prefix used in dat file headers
+    headerprefix = "# "
+
+
+    ## Check args
+    if len(args) < 1:
+        logging.error("Must specify at least the name of the files")
+        sys.exit(1)
+
+aidafiles=["-Run-II-UE.aida","-Run-II-Jets-0.aida",
+           "-300-UE.aida"   ,"-300-Jets-1.aida"  ,
+           "-900-UE.aida"   ,"-900-Jets-1.aida"  ]
+
+## Get histos
+inhistos = {}
+outhistos={}
+weights = {}
+for f in aidafiles:
+    file=args[0]+f
+    if(file.find("Run-II-UE")>0) :
+        sqrts=1960
+        ptmin=0.
+    elif(file.find("Run-II-Jets-0")>0) :
+        sqrts=1960
+        ptmin=15
+    elif(file.find("300-UE")>0) :
+        sqrts=300
+        ptmin=0.
+    elif(file.find("300-Jets-1")>0) :
+        sqrts=300
+        ptmin=6.
+    elif(file.find("900-UE")>0) :
+        sqrts=900
+        ptmin=0.
+    elif(file.find("900-Jets-1")>0) :
+        sqrts=900
+        ptmin=10.
+    if not os.access(file, os.R_OK):
+        logging.error("%s can not be read" % file)
+        break
+    try:
+        tree = ET.parse(file)
+    except:
+        logging.error("%s can not be parsed as XML" % file)
+        break
+    tree = ET.parse(file)
+    ## Get histos from this AIDA file
+    for dps in tree.findall("dataPointSet"):
+        h = lighthisto.Histo.fromDPS(dps)
+        # di-jet decorrelations
+        # jet shapes
+        if(h.fullPath().find("NOTE10874")<0) : continue
+        if not inhistos.has_key(h.fullPath()):
+            inhistos[h.fullPath()] = {}
+        tmpE = inhistos[h.fullPath()]
+        if not tmpE.has_key(sqrts):
+            tmpE[sqrts] = {}
+        tmpP = tmpE[sqrts]
+        if not tmpP.has_key(ptmin):
+            tmpP[ptmin] = h
+        else:
+            raise Exception("A set with ptmin = %s already exists" % ( ptmin))
+
+## Make empty output histos if needed
+for hpath,hsets in inhistos.iteritems():
+    workhisto = copy.deepcopy(hsets.values()[0].values()[0])
+    outhistos[hpath] = workhisto
+    ## Empty the bin set for histos which we're going to merge
+    for b in outhistos[hpath]:
+        b.val = 0
+        b.errplus = 0
+        b.errminus = 0
+        b._focus= None
+
+## Field analysis
+logging.info("Processing CDF_2012_NOTE10874")
+## Angular distributions in different pT bins
+mergeByPt("/CDF_2012_NOTE10874/d01-x01-y01", "300")
+mergeByPt("/CDF_2012_NOTE10874/d01-x01-y02", "900")
+mergeByPt("/CDF_2012_NOTE10874/d01-x01-y03","1960")
+mergeByPt("/CDF_2012_NOTE10874/d02-x01-y01", "300")
+mergeByPt("/CDF_2012_NOTE10874/d02-x01-y02", "900")
+mergeByPt("/CDF_2012_NOTE10874/d02-x01-y03","1960")
+mergeByPt("/CDF_2012_NOTE10874/d03-x01-y01", "300")
+mergeByPt("/CDF_2012_NOTE10874/d03-x01-y02", "900")
+mergeByPt("/CDF_2012_NOTE10874/d03-x01-y03","1960")
+
+# Choose output file
+for i in range(1,4) :
+    print i
+    if(i==1) : 
+        name = args[0]+"-300-Energy.aida"
+    elif(i==2) :
+        name = args[0]+"-900-Energy.aida"
+    elif(i==3) :
+        name = args[0]+"-1960-Energy.aida"
+    out = open(name, "w")
+    ## Write out merged histos
+    out.write('<?xml version="1.0" encoding="ISO-8859-1" ?>\n')
+    out.write('<!DOCTYPE aida SYSTEM "http://aida.freehep.org/schemas/3.3/aida.dtd">\n')
+    out.write('<aida version="3.3">\n')
+    out.write('  <implementation version="1.1" package="FreeHEP"/>\n')
+    for hpath, h in sorted(outhistos.iteritems()):
+        if(hpath.find("d0"+str(i))>0) :
+            logging.debug("hpath = %s" % hpath)
+            out.write(h.asAIDA() + "\n\n")
+    out.write('</aida>\n')
+
+sys.exit(0)

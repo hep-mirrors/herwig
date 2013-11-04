@@ -1,14 +1,10 @@
+if WANT_DIPOLE
 noinst_LTLIBRARIES = libHwMatchboxDipoles.la
+endif
 
 libHwMatchboxDipoles_la_SOURCES = \
 FFggxDipole.cc \
 FFggxDipole.h \
-FFMggxDipole.cc \
-FFMggxDipole.h \
-FFMqgxDipole.cc \
-FFMqgxDipole.h \
-FFMqqxDipole.cc \
-FFMqqxDipole.h \
 FFqgxDipole.cc \
 FFqgxDipole.h \
 FFqqxDipole.cc \
@@ -35,5 +31,24 @@ IIqgxDipole.cc \
 IIqgxDipole.h \
 IIqqxDipole.cc \
 IIqqxDipole.h \
+FFMggxDipole.cc \
+FFMggxDipole.h \
+FFMqgxDipole.cc \
+FFMqgxDipole.h \
+FFMqqxDipole.cc \
+FFMqqxDipole.h \
+FIMqgxDipole.cc \
+FIMqgxDipole.h \
+FIMqqxDipole.cc \
+FIMqqxDipole.h \
+IFMggxDipole.cc \
+IFMggxDipole.h \
+IFMgqxDipole.cc \
+IFMgqxDipole.h \
+IFMqgxDipole.cc \
+IFMqgxDipole.h \
+IFMqqxDipole.cc \
+IFMqqxDipole.h \
 SubtractionDipole.cc \
+SubtractionDipole.fh \
 SubtractionDipole.h

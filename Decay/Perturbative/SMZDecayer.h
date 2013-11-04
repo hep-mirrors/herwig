@@ -14,6 +14,7 @@
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
+#include "Herwig++/Shower/Couplings/ShowerAlpha.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -36,8 +37,6 @@ public:
    * Default constructor.
    */
   SMZDecayer();
-
-public:
 
   /**
    *  Virtual members to be overridden by inheriting classes
@@ -304,6 +303,11 @@ protected:
    * @param x2 \f$x_2\f$
    */
   double PS(double x1, double x2);
+
+  /**
+   *  Access to the strong coupling
+   */
+  ShowerAlphaPtr alphaS() const {return alpha_;}
   //@}
 
 private:
@@ -318,7 +322,7 @@ private:
    */
   SMZDecayer & operator=(const SMZDecayer &);
 
- private:
+private:
 
   /**
    * Pointer to the Z vertex

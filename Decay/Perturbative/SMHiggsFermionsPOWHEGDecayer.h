@@ -7,6 +7,7 @@
 
 #include "SMHiggsFermionsDecayer.h"
 #include "Herwig++/Utilities/Maths.h"
+#include "Herwig++/Shower/Couplings/ShowerAlpha.fh"
 
 namespace Herwig {
 
@@ -35,7 +36,7 @@ public:
   /**
    *  Has a POWHEG style correction
    */
-  virtual bool hasPOWHEGCorrection() {return true;}
+  virtual POWHEGType hasPOWHEGCorrection() {return FSR;}
 
   /**
    *  Apply the POWHEG style correction

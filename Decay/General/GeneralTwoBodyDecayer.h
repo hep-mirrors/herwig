@@ -16,6 +16,7 @@
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "ThePEG/Helicity/Vertex/VertexBase.h"
 #include "GeneralTwoBodyDecayer.fh"
+#include "Herwig++/Shower/Couplings/ShowerAlpha.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -47,7 +48,11 @@ public:
   /**
    * The default constructor.
    */
-  GeneralTwoBodyDecayer() : _maxweight(1.) {}
+  GeneralTwoBodyDecayer() : _maxweight(1.), mb_(ZERO), e_(0.), s_(0.), e2_(0.), s2_(0.), 
+			    pTmin_(GeV), pT_(ZERO), colour_(1,DVector(1,1.)), 
+			    colourFlows_(3,vector<pair<int,double > >(1,make_pair(0,1.)))
+{}
+
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -76,7 +81,7 @@ public:
    * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  virtual double me2(const int ichan, const Particle & part,
+  virtual double me2(const int , const Particle & part,
 		     const ParticleVector & decay, MEOption meopt) const = 0;
   
   /**
@@ -110,12 +115,30 @@ public:
    */
   virtual double brat(const DecayMode & dm, const Particle & p,
 		      double oldbrat) const;
+
+  /**
+   *  Has a POWHEG style correction
+   */
+  virtual POWHEGType hasPOWHEGCorrection() {return No;}
+
+  /**
+   *  Member to generate the hardest emission in the POWHEG scheme
+   */
+  virtual HardTreePtr generateHardest(ShowerTreePtr);
+
+  /**
+   *  Three-body matrix element including additional QCD radiation
+   */
+  virtual double threeBodyME(const int , const Particle & inpart,
+			     const ParticleVector & decay, MEOption meopt);
   //@}
 
   /**
    *  Set the information on the decay
    */
   void setDecayInfo(PDPtr incoming,PDPair outgoing,
+		    VertexBasePtr,VertexBasePtr,
+		    const vector<VertexBasePtr> &,
 		    VertexBasePtr);
 
 protected:
@@ -127,7 +150,26 @@ protected:
    * Get vertex pointer
    * @return a pointer to the vertex
    */
-  VertexBasePtr getVertex() const { return _theVertex; }
+  VertexBasePtr getVertex() const { return vertex_; }
+
+  /**
+   * Get vertex pointer
+   * @return a pointer to the vertex for QCD radiation off the decaying particle
+   */
+  VertexBasePtr getIncomingVertex() const { return  incomingVertex_; }
+
+  /**
+   * Get vertex pointer
+   * @return a pointer to the vertex for QCD radiation off the decay products
+   */
+  vector<VertexBasePtr> getOutgoingVertices() const { return outgoingVertices_; }
+
+  /**
+   * Get vertex pointer
+   * @return a pointer to the vertex for QCD radiation from 4 point vertex
+   */
+  VertexBasePtr getFourPointVertex() const { return fourPointVertex_; }
+
 
   /**
    * Set integration weight
@@ -145,9 +187,77 @@ protected:
 			 const ParticleVector & out) const;
 
   /**
+   * Type of dipole
+   */
+  enum dipoleType {FFa, FFc, IFa, IFc, IFba, IFbc};
+
+  /**
    *  Compute the spin and colour factor
    */
   double colourFactor(tcPDPtr in, tcPDPtr out1, tcPDPtr out2) const;
+
+  /**
+   *  Calculate matrix element ratio R/B
+   */
+  double matrixElementRatio(const Particle & inpart, const ParticleVector & decay2,
+			    const ParticleVector & decay3, MEOption meopt);
+
+  /**
+   *  Calculate momenta of all the particles
+   */
+  bool calcMomenta(int j, Energy pT, double y, double phi, double& xg, 
+		   double& xs, double& xe, double& xe_z, 
+		   vector<Lorentz5Momentum>& particleMomenta);
+
+  /**
+   *  Check the calculated momenta are physical
+   */
+  bool psCheck(const double xg, const double xs);
+
+  /**
+   *  Return the momenta including the hard emission
+   */
+  vector<Lorentz5Momentum> hardMomenta(const ShowerProgenitorPtr &in, 
+				       const ShowerProgenitorPtr &emitter, 
+				       const ShowerProgenitorPtr &spectator, 
+				       const vector<dipoleType>  &dipoles, int i);
+
+  /**
+   * Return dipole corresponding to the dipoleType dipoleId
+   */
+  InvEnergy2 calculateDipole(const dipoleType & dipoleId,   const Particle & inpart,
+			     const ParticleVector & decay3, const dipoleType & emittingDipole);
+
+  /**
+   * Return contribution to dipole that depends on the spin of the emitter
+   */
+  double dipoleSpinFactor(const PPtr & emitter, double z);
+
+  /**
+   *  Work out the type of process
+   */
+  void identifyDipoles(vector<dipoleType> & dipoles,
+		       ShowerProgenitorPtr & aProgenitor,
+		       ShowerProgenitorPtr & bProgenitor,
+		       ShowerProgenitorPtr & cProgenitor) const;
+
+  /**
+   * Set up the colour lines
+   */
+  void getColourLines(vector<ColinePtr> & newline, const HardTreePtr & hardtree, 
+		      const ShowerProgenitorPtr & bProgenitor);
+
+
+  /**
+   *  Return the colour coefficient of the dipole
+   */
+  double colourCoeff(const PDT::Colour emitter, const PDT::Colour spectator,
+		     const PDT::Colour other);
+
+  /**
+   *  Coupling for the generation of hard radiation
+   */
+  ShowerAlphaPtr coupling() {return coupling_;}
   //@}
 
 public:
@@ -194,6 +304,25 @@ protected:
   virtual void doinitrun();
   //@}
 
+protected:
+
+  /**
+   *  Member for the generation of additional hard radiation
+   */
+  //@{
+  /**
+   * Return the matrix of colour factors 
+   */
+
+  const vector<DVector> & getColourFactors(const Particle & inpart, 
+					   const ParticleVector & decay, 
+					   unsigned int & nflow); 
+ 
+  vector<vector<pair<int,double > > > & colourFlows(const Particle & inpart,
+							  const ParticleVector & decay);
+
+  //@}
+
 private:
 
   /**
@@ -223,12 +352,79 @@ private:
   /**
    * Pointer to vertex
    */
-  VertexBasePtr _theVertex;
- 
+  VertexBasePtr vertex_;
+
+  /**
+   *  Pointer to vertex for radiation from the incoming particle
+   */
+  VertexBasePtr incomingVertex_;
+
+  /**
+   *  Pointer to the vertices for radiation from the outgoing particles
+   */
+  vector<VertexBasePtr> outgoingVertices_; 
+
+  /**
+   *  Pointer to vertex for radiation coming from 4 point vertex
+   */
+  VertexBasePtr fourPointVertex_;
+
+
   /**
    * Maximum weight for integration
    */
   double _maxweight;
+
+  /**
+   *  Mass of decaying particle
+   */
+  Energy mb_;
+
+  /**
+   *  Reduced mass of emitter child particle
+   */
+  double e_;
+
+  /**
+   * Reduced mass of spectator child particle
+   */
+  double s_;
+
+  /**
+   *  Reduced mass of emitter child particle squared
+   */
+  double e2_;
+
+  /**
+   * Reduced mass of spectator child particle squared
+   */
+  double s2_;
+
+  /**
+   *  Minimum \f$p_T\f$
+   */
+  Energy pTmin_;
+
+  /**
+   *  Transverse momentum of the emission
+   */
+  Energy pT_;
+
+  /**
+   *  Coupling for the generation of hard radiation
+   */
+  ShowerAlphaPtr coupling_;
+
+  /**
+   * Store colour factors for ME calc.
+   */
+  vector<DVector> colour_;
+
+  /**
+   *  Mapping for which colour flows a diagram conributes to
+   */
+  vector<vector<pair<int,double > > > colourFlows_;
+
 };
 
 }

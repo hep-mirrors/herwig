@@ -12,6 +12,8 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "Herwig++/PDT/GenericMassGenerator.h"
 #include "ThePEG/Cuts/Cuts.h"
+#include "Herwig++/Shower/Base/HardTree.h"
+#include "Herwig++/Shower/Base/Branching.h"
 
 using namespace Herwig;
 
@@ -57,6 +59,7 @@ bool HwMEBase::generateMasses(vector<Energy> & masses, double & mjac,
 			      const double *r) {
   assert(massOption_.size()+2==mePartonData().size());
   mjac = 1.;
+  masses.clear();
   masses.resize(massOption_.size(),ZERO);
   Energy ecm = sqrt(sHat());
   Energy emin(ZERO);
@@ -173,7 +176,7 @@ bool HwMEBase::generateKinematics(const double * r) {
   
   if ( ctmin >= ctmax ) return false;
     
-  double cth = getCosTheta(ctmin, ctmax, r);
+  double cth = getCosTheta(ctmin, ctmax, r[0]);
   Energy pt = q*sqrt(1.0-sqr(cth));
   phi(rnd(2.0*Constants::pi));
   meMomenta()[2].setVect(Momentum3( pt*sin(phi()),  pt*cos(phi()),  q*cth));
@@ -238,24 +241,24 @@ bool HwMEBase::rescaleMomenta(const vector<Lorentz5Momentum> & momenta,
   return true;
 }
 
-double HwMEBase::getCosTheta(double ctmin, double ctmax, const double * r) {
+double HwMEBase::getCosTheta(double ctmin, double ctmax, const double r) {
   double cth = 0.0;
   static const double eps = 1.0e-6;
   if ( 1.0 + ctmin <= eps && 1.0 - ctmax <= eps ) {
     jacobian(jacobian()*(ctmax - ctmin));
-    cth = ctmin + (*r)*(ctmax - ctmin);
+    cth = ctmin + r*(ctmax - ctmin);
   } else if (  1.0 + ctmin <= eps ) {
-    cth = 1.0 - (1.0 - ctmax)*pow((1.0 - ctmin)/(1.0 - ctmax), *r);
+    cth = 1.0 - (1.0 - ctmax)*pow((1.0 - ctmin)/(1.0 - ctmax), r);
     jacobian(jacobian()*log((1.0 - ctmin)/(1.0 - ctmax))*(1.0 - cth));
   } else if (  1.0 - ctmax <= eps ) {
-    cth = -1.0 + (1.0 + ctmin)*pow((1.0 + ctmax)/(1.0 + ctmin), *r);
+    cth = -1.0 + (1.0 + ctmin)*pow((1.0 + ctmax)/(1.0 + ctmin), r);
     jacobian(jacobian()*log((1.0 + ctmax)/(1.0 + ctmin))*(1.0 + cth));
   } else {
     double zmin = 0.5*(1.0 - ctmax);
     double zmax = 0.5*(1.0 - ctmin);
     double A1 = -ctmin/(zmax*(1.0-zmax));
     double A0 = -ctmax/(zmin*(1.0-zmin));
-    double A = *r*(A1 - A0) + A0;
+    double A = r*(A1 - A0) + A0;
     double z = A < 2.0? 2.0/(sqrt(sqr(A) + 4.0) + 2 - A):
       0.5*(A - 2.0 + sqrt(sqr(A) + 4.0))/A;
     cth = 1.0 - 2.0*z;
@@ -267,4 +270,8 @@ double HwMEBase::getCosTheta(double ctmin, double ctmax, const double * r) {
 bool HwMEBase::softMatrixElementVeto(ShowerProgenitorPtr,
 				     ShowerParticlePtr,Branching) {
   return false;
+}
+
+HardTreePtr HwMEBase::generateHardest(ShowerTreePtr) {
+    return HardTreePtr();
 }

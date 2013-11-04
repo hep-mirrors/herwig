@@ -97,6 +97,12 @@ public:
    */
   static void Init();
 
+protected:
+  /**
+   * Should the default vertices be considered for generic diagrams
+   */
+  virtual bool registerDefaultVertices() const { return true; }
+
 public:
   
   /**
@@ -266,14 +272,18 @@ public:
    *  Total number of vertices
    */
   unsigned int numberOfVertices() const {
-    return vertexList_.size();
+    return vertexList_.size() + extraVertices_.size();
   }
 
   /**
    * Access to a vertex from the list
    */
-  tVertexBasePtr vertex(unsigned int ix) const {
-    return vertexList_[ix];
+  tVertexBasePtr vertex(size_t ix) const {
+    const size_t S = vertexList_.size();
+    if ( ix < S )
+      return vertexList_[ix];
+    else
+      return extraVertices_[ix - S];
   }
   //@}  
 
@@ -326,8 +336,15 @@ protected:
    *  Add a vertex to the list
    */
   void addVertex(VertexBasePtr in) {
-    vertexList_.push_back(in);
+    if ( in )
+      vertexList_.push_back(in);
   }
+
+  /**
+   *  Helper function to reset the mass of a ParticleData object
+   *  in BSM models.
+   */
+  void resetMass(long id, Energy mass,tPDPtr particle=tPDPtr());
 
 private:
   
@@ -422,6 +439,11 @@ private:
    *  Full list of vertices as a vector to allow searching
    */
   vector<VertexBasePtr> vertexList_;
+
+  /**
+   * Additional vertices to be considered in automatic ME construction
+   */
+  vector<VertexBasePtr> extraVertices_;
   //@}
 
   /**

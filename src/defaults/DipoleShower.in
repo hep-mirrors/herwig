@@ -1,12 +1,8 @@
 ################################################################################
 # Setup the dipole shower
 ################################################################################
-library HwDipoleShower.so
 
-mkdir /Herwig/DipoleShower
-cd /Herwig/DipoleShower
 
-create Herwig::DipoleShowerHandler DipoleShowerHandler
 
 ################################################################################
 #
@@ -32,8 +28,13 @@ create Herwig::DipoleShowerHandler DipoleShowerHandler
 
 
 
+library HwMatchbox.so
+library HwDipoleShower.so
 
+mkdir /Herwig/DipoleShower
+cd /Herwig/DipoleShower
 
+create Herwig::DipoleShowerHandler DipoleShowerHandler
 
 ################################################################################
 # zero quark masses for the time being
@@ -77,6 +78,21 @@ set DipoleShowerHandler:ConstituentReshuffler ConstituentReshuffler
 
 create Herwig::IntrinsicPtGenerator IntrinsicPtGenerator
 set DipoleShowerHandler:IntrinsicPtGenerator IntrinsicPtGenerator
+
+################################################################################
+# Setup the PDFs
+################################################################################
+
+cd /Herwig/Partons
+create ThePEG::LHAPDF PDFSet ThePEGLHAPDF.so
+set PDFSet:RemnantHandler HadronRemnants
+set /Herwig/Particles/p+:PDF PDFSet
+set /Herwig/Particles/pbar-:PDF PDFSet
+
+set /Herwig/Particles/p+:PDF    PDFSet
+set /Herwig/Particles/pbar-:PDF PDFSet
+
+cd /Herwig/DipoleShower
 
 ################################################################################
 # Setup the alphas

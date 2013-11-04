@@ -14,15 +14,83 @@
 
 #include "ThePEG/MatrixElement/Amplitude.h"
 #include "ThePEG/Handlers/LastXCombInfo.h"
-#include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/ColourBasis.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/SpinCorrelationTensor.h"
+#include "Herwig++/MatrixElement/Matchbox/Utility/LastMatchboxXCombInfo.h"
+#include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxXComb.h"
+#include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.fh"
+#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.fh"
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
-class MatchboxMEBase;
+/**
+ * \ingroup Matchbox
+ * \author Simon Platzer
+ *
+ * \brief Process information with coupling order
+ */
+struct Process {
+
+  PDVector legs;
+  unsigned int orderInAlphaS;
+  unsigned int orderInAlphaEW;
+
+  Process()
+    : orderInAlphaS(0), orderInAlphaEW(0) {}
+
+  Process(const PDVector& p,
+	  unsigned int oas,
+	  unsigned int oae)
+    : legs(p), orderInAlphaS(oas), orderInAlphaEW(oae) {}
+
+  bool operator==(const Process& other) const {
+    return
+      legs == other.legs &&
+      orderInAlphaS == other.orderInAlphaS &&
+      orderInAlphaEW == other.orderInAlphaEW;
+  }
+
+  bool operator<(const Process& other) const {
+    if ( orderInAlphaS != other.orderInAlphaS )
+      return orderInAlphaS < other.orderInAlphaS;
+    if ( orderInAlphaEW != other.orderInAlphaEW )
+      return orderInAlphaEW < other.orderInAlphaEW;
+    return legs < other.legs;
+  }
+
+  void persistentOutput(PersistentOStream & os) const {
+    os << legs << orderInAlphaS << orderInAlphaEW;
+  }
+
+  void persistentInput(PersistentIStream & is) {
+    is >> legs >> orderInAlphaS >> orderInAlphaEW;
+  }
+
+};
+
+/**
+ * \ingroup Matchbox
+ * \author Simon Platzer
+ *
+ * \brief Enumerate the type of calculation required
+ */
+namespace ProcessType {
+
+  enum Types {
+
+    treeME2 = 0,
+    colourCorrelatedME2,
+    spinColourCorrelatedME2,
+    oneLoopInterference
+
+  };
+
+}
+
 
 /**
  * \ingroup Matchbox
@@ -34,7 +102,10 @@ class MatchboxMEBase;
  * @see \ref MatchboxAmplitudeInterfaces "The interfaces"
  * defined for MatchboxAmplitude.
  */
-class MatchboxAmplitude: public Amplitude, public LastXCombInfo<StandardXComb> {
+class MatchboxAmplitude: 
+    public Amplitude, 
+    public LastXCombInfo<StandardXComb>, 
+    public LastMatchboxXCombInfo {
 
 public:
 
@@ -53,10 +124,6 @@ public:
 
 public:
 
-  typedef map<vector<int>,CVector> AmplitudeMap;
-  typedef map<vector<int>,CVector>::iterator AmplitudeIterator;
-  typedef map<vector<int>,CVector>::const_iterator AmplitudeConstIterator;
-
   /**
    * Return the amplitude. Needs to be implemented from
    * ThePEG::Amplitude but is actually ill-defined, as colours of the
@@ -73,38 +140,25 @@ public:
   /**
    * Return true, if this amplitude can handle the given process.
    */
+  virtual bool canHandle(const PDVector& p,
+			 Ptr<MatchboxFactory>::tptr) const { return canHandle(p); }
+
+  /**
+   * Return true, if this amplitude can handle the given process.
+   */
   virtual bool canHandle(const PDVector&) const { return false; }
+
+  /**
+   * Return the number of random numbers required to evaluate this
+   * amplitude at a fixed phase space point.
+   */
+  virtual int nDimAdditional() const { return 0; }
 
   /**
    * Return a ME instance appropriate for this amplitude and the given
    * subprocesses
    */
-  virtual Ptr<MatchboxMEBase>::ptr makeME(const vector<PDVector>&) const;
-
-  /**
-   * Return the amplitude parton data.
-   */
-  const cPDVector& lastAmplitudePartonData() const { return theLastAmplitudePartonData->second; }
-
-  /**
-   * Access the amplitude parton data.
-   */
-  cPDVector& lastAmplitudePartonData() { return theLastAmplitudePartonData->second; }
-
-  /**
-   * Access the amplitude parton data.
-   */
-  map<tStdXCombPtr,cPDVector>& amplitudePartonData() { return theAmplitudePartonData; }
-
-  /**
-   * Return the number of light flavours
-   */
-  unsigned int nLight() const { return theNLight; }
-
-  /**
-   * Set the number of light flavours
-   */
-  void nLight(unsigned int n) { theNLight = n; }
+  virtual Ptr<MatchboxMEBase>::ptr makeME(const PDVector&) const;
 
   /**
    * Set the (tree-level) order in \f$g_S\f$ in which this matrix
@@ -134,11 +188,74 @@ public:
    * Return the Herwig++ StandardModel object
    */
   Ptr<StandardModel>::tcptr standardModel() { 
-    if ( !theStandardModel )
-      theStandardModel = 
-	dynamic_ptr_cast<Ptr<StandardModel>::tcptr>(HandlerBase::standardModel());
-    return theStandardModel;
+    if ( !hwStandardModel() )
+      hwStandardModel(dynamic_ptr_cast<Ptr<StandardModel>::tcptr>(HandlerBase::standardModel()));
+    return hwStandardModel();
   }
+
+  /**
+   * Tell whether the outgoing partons should be sorted when determining
+   * allowed subprocesses. Otherwise, all permutations are counted as
+   * separate subprocesses.
+   */
+  virtual bool sortOutgoing() { return true; }
+
+  /**
+   * Return true, if this amplitude already includes averaging over
+   * incoming parton's quantum numbers.
+   */
+  virtual bool hasInitialAverage() const { return false; }
+
+  /**
+   * Return true, if this amplitude already includes symmetry factors
+   * for identical outgoing particles.
+   */
+  virtual bool hasFinalStateSymmetry() const { return false; }
+
+  /**
+   * Return true, if this amplitude is handled by a BLHA one-loop provider
+   */
+  virtual bool isOLPTree() const { return false; }
+
+  /**
+   * Return true, if this amplitude is handled by a BLHA one-loop provider
+   */
+  virtual bool isOLPLoop() const { return false; }
+
+  /**
+   * Return true, if colour and spin correlated matrix elements should
+   * be ordered from the OLP
+   */
+  virtual bool needsOLPCorrelators() const { return true; }
+
+  /**
+   * Write the order file header
+   */
+  virtual void olpOrderFileHeader(ostream&) const;
+
+  /**
+   * Write the order file process list
+   */
+  virtual void olpOrderFileProcesses(ostream&,
+				     const map<pair<Process,int>,int>& procs) const;
+
+  /**
+   * Start the one loop provider, if appropriate, giving order and
+   * contract files
+   */
+  virtual void signOLP(const string&, const string&) { }
+
+  /**
+   * Start the one loop provider, if appropriate
+   */
+  virtual void startOLP(const string&, int& status) { status = -1; }
+
+  /**
+   * Start the one loop provider, if appropriate. This default
+   * implementation writes an BLHA 2.0 order file and starts the OLP
+   */
+  virtual bool startOLP(const map<pair<Process,int>,int>& procs);
+
 
   //@}
 
@@ -148,17 +265,7 @@ public:
   /**
    * Return the colour basis.
    */
-  Ptr<ColourBasis>::tptr colourBasis() const { return theColourBasis; }
-
-  /**
-   * Set the colour basis dimensionality.
-   */
-  void colourBasisDim(size_t dim) { theColourBasisDim = dim; }
-
-  /**
-   * Get the colour basis dimensionality.
-   */
-  size_t colourBasisDim() const { return theColourBasisDim; }
+  virtual Ptr<ColourBasis>::tptr colourBasis() const { return theColourBasis; }
 
   /**
    * Return true, if this amplitude will not require colour correlations.
@@ -177,28 +284,19 @@ public:
    * Return a Selector with possible colour geometries for the selected
    * diagram weighted by their relative probabilities.
    */
-  virtual Selector<const ColourLines *> colourGeometries(tcDiagPtr diag) const {
-    return 
-      haveColourFlows() ? 
-      theColourBasis->colourGeometries(diag,lastLargeNAmplitudes()) :
-      Selector<const ColourLines *>();
-  }
+  virtual Selector<const ColourLines *> colourGeometries(tcDiagPtr diag) const;
 
   /**
-   * Return the colour crossing information as filled by the last call to
-   * fillCrossingMap(...), mapping amplitude ids to colour basis ids.
+   * Return an ordering identifier for the current subprocess and
+   * colour absis tensor index.
    */
-  const map<size_t,size_t>& lastColourMap() const { return theLastColourMap->second; }
+  const string& colourOrderingString(size_t id) const;
 
   /**
-   * Access the colour crossing information.
+   * Return an ordering identifier for the current subprocess and
+   * colour absis tensor index.
    */
-  map<size_t,size_t>& lastColourMap() { return theLastColourMap->second; }  
-
-  /**
-   * Access the colour crossing information.
-   */
-  map<tStdXCombPtr,map<size_t,size_t> >& colourMap() { return theColourMap; }
+  const vector<vector<size_t> >& colourOrdering(size_t id) const;
 
   //@}
 
@@ -208,10 +306,7 @@ public:
   /**
    * Set the xcomb object.
    */
-  virtual void setXComb(tStdXCombPtr xc) {
-    theLastXComb = xc;
-    fillCrossingMap();
-  }
+  virtual void setXComb(tStdXCombPtr xc);
 
   /**
    * Return the momentum as crossed appropriate for this amplitude.
@@ -227,37 +322,6 @@ public:
   virtual void fillCrossingMap(size_t shift = 0);
 
   /**
-   * Return the crossing sign.
-   */
-  double lastCrossingSign() const { return theLastCrossingSign; }
-
-  /**
-   * Set the crossing sign.
-   */
-  void lastCrossingSign(double s) { theLastCrossingSign = s; }
-
-  /**
-   * Return the crossing information as filled by the last call to
-   * fillCrossingMap(...), mapping amplitude ids to process ids.
-   */
-  const vector<int>& lastCrossingMap() const { return theLastCrossingMap->second; }
-
-  /**
-   * Access the crossing information.
-   */
-  vector<int>& lastCrossingMap() { return theLastCrossingMap->second; }  
-
-  /**
-   * Access the crossing information.
-   */
-  map<tStdXCombPtr,vector<int> >& crossingMap() { return theCrossingMap; }
-
-  /**
-   * Access the crossing signs.
-   */
-  map<tStdXCombPtr,double>& crossingSigns() { return theCrossingSigns; }
-
-  /**
    * Generate the helicity combinations.
    */
   virtual set<vector<int> > generateHelicities() const;
@@ -271,35 +335,12 @@ public:
    * Calculate the tree level amplitudes for the phasespace point
    * stored in lastXComb.
    */
-  virtual void prepareAmplitudes();
-
-  /**
-   * Return last evaluated helicity amplitudes.
-   */
-  const AmplitudeMap& lastAmplitudes() const { return theLastAmplitudes; }
-
-  /**
-   * Access the last evaluated helicity amplitudes.
-   */
-  AmplitudeMap& lastAmplitudes() { return theLastAmplitudes; }
-
-  /**
-   * Return last evaluated, leading colour helicity amplitudes.
-   */
-  const AmplitudeMap& lastLargeNAmplitudes() const { return theLastLargeNAmplitudes; }
-
-  /**
-   * Access the last evaluated, leading colour helicity amplitudes.
-   */
-  AmplitudeMap& lastLargeNAmplitudes() { return theLastLargeNAmplitudes; }
+  virtual void prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr);
 
   /**
    * Return the matrix element squared.
    */
-  virtual double me2() const {
-    return 
-      lastCrossingSign()*colourBasis()->me2(mePartonData(),lastAmplitudes());
-  }
+  virtual double me2() const;
 
   /**
    * Return the colour correlated matrix element.
@@ -307,11 +348,31 @@ public:
   virtual double colourCorrelatedME2(pair<int,int> ij) const;
 
   /**
+   * Return the large-N colour correlated matrix element.
+   */
+  virtual double largeNColourCorrelatedME2(pair<int,int> ij,
+					   Ptr<ColourBasis>::tptr largeNBasis) const;
+
+  /**
+   * Return a positive helicity polarization vector for a gluon of
+   * momentum p (with reference vector n) to be used when evaluating
+   * spin correlations.
+   */
+  virtual LorentzVector<Complex> plusPolarization(const Lorentz5Momentum& p,
+						  const Lorentz5Momentum& n,
+						  int id = -1) const;
+
+  /**
    * Return the colour and spin correlated matrix element.
    */
   virtual double spinColourCorrelatedME2(pair<int,int> emitterSpectator,
 					 const SpinCorrelationTensor& c) const;
 
+
+  /**
+   * Return true, if tree-level contributions will be evaluated at amplitude level.
+   */
+  virtual bool treeAmplitudes() const { return true; }
 
   /**
    * Evaluate the amplitude for the given colour tensor id and
@@ -337,18 +398,35 @@ public:
   virtual bool onlyOneLoop() const { return false; }
 
   /**
+   * Return true, if one-loop contributions will be evaluated at amplitude level.
+   */
+  virtual bool oneLoopAmplitudes() const { return true; }
+
+  /**
    * Return true, if one loop corrections have been calculated in
    * dimensional reduction. Otherwise conventional dimensional
    * regularization is assumed. Note that renormalization is always
    * assumed to be MSbar.
    */
-  bool isDR() const { return false; }
+  virtual bool isDR() const { return false; }
 
   /**
    * Return true, if one loop corrections are given in the conventions
    * of the integrated dipoles.
    */
-  bool isCS() const { return false; }
+  virtual bool isCS() const { return false; }
+
+  /**
+   * Return true, if one loop corrections are given in the conventions
+   * of BDK.
+   */
+  virtual bool isBDK() const { return false; }
+
+  /**
+   * Return true, if one loop corrections are given in the conventions
+   * of everything expanded.
+   */
+  virtual bool isExpanded() const { return false; }
 
   /**
    * Return the value of the dimensional regularization
@@ -358,29 +436,25 @@ public:
   virtual Energy2 mu2() const { return 0.*GeV2; }
 
   /**
+   * If defined, return the coefficient of the pole in epsilon^2
+   */
+  virtual double oneLoopDoublePole() const { return 0.; }
+
+  /**
+   * If defined, return the coefficient of the pole in epsilon
+   */
+  virtual double oneLoopSinglePole() const { return 0.; }
+
+  /**
    * Calculate the one-loop amplitudes for the phasespace point
    * stored in lastXComb, if provided.
    */
-  virtual void prepareOneLoopAmplitudes();
-
-  /**
-   * Return last evaluated one-loop helicity amplitudes.
-   */
-  const AmplitudeMap& lastOneLoopAmplitudes() const { return theLastOneLoopAmplitudes; }
-
-  /**
-   * Access the last evaluated one-loop helicity amplitudes.
-   */
-  AmplitudeMap& lastOneLoopAmplitudes() { return theLastOneLoopAmplitudes; }
+  virtual void prepareOneLoopAmplitudes(Ptr<MatchboxMEBase>::tcptr);
 
   /**
    * Return the one-loop/tree interference.
    */
-  virtual double oneLoopInterference() const {
-    return 
-      lastCrossingSign()*colourBasis()->interference(mePartonData(),
-						     lastOneLoopAmplitudes(),lastAmplitudes());
-  }
+  virtual double oneLoopInterference() const;
 
   /**
    * Evaluate the amplitude for the given colour tensor id and
@@ -396,10 +470,7 @@ public:
   /**
    * Flush all cashes.
    */
-  virtual void flushCaches() {
-    calculateTrees = true;
-    calculateLoops = true;
-  }
+  virtual void flushCaches() {}
 
   /**
    * Clone this amplitude.
@@ -412,16 +483,6 @@ public:
    * Clone the dependencies, using a given prefix.
    */
   virtual void cloneDependencies(const std::string& prefix = "");
-
-  //@}
-
-  /** @name Diagnostic information */
-  //@{
-
-  /**
-   * Dump xcomb hierarchies.
-   */
-  void dumpInfo(const string& prefix = "") const;
 
   //@}
 
@@ -454,7 +515,6 @@ public:
 // If needed, insert declarations of virtual function defined in the
 // InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
 
-
 private:
 
   /**
@@ -465,98 +525,9 @@ private:
 			    size_t pos) const;
 
   /**
-   * The Herwig++ StandardModel object
-   */
-  Ptr<StandardModel>::tcptr theStandardModel;
-
-  /**
-   * The number of light flavours to be used.
-   */
-  unsigned int theNLight;
-
-  /**
    * The colour basis implementation to be used.
    */
   Ptr<ColourBasis>::ptr theColourBasis;
-
-  /**
-   * The dimensionality of the colour basis for the processes covered
-   * by the colour basis.
-   */
-  size_t theColourBasisDim;
-
-  /**
-   * References to the amplitude values which have been contributing
-   * to the last call of prepareAmplitudes.
-   */
-  map<vector<int>,CVector> theLastAmplitudes;
-
-  /**
-   * References to the leading N amplitude values which have been
-   * contributing to the last call of prepareAmplitudes.
-   */
-  map<vector<int>,CVector> theLastLargeNAmplitudes;
-
-  /**
-   * References to the one-loop amplitude values which have been contributing
-   * to the last call of prepareAmplitudes.
-   */
-  map<vector<int>,CVector> theLastOneLoopAmplitudes;
-
-  /**
-   * The crossing information as filled by the last call to
-   * fillCrossingMap()
-   */
-  map<tStdXCombPtr,vector<int> > theCrossingMap;
-
-  /**
-   * The colour crossing information as filled by the last call to
-   * fillCrossingMap()
-   */
-  map<tStdXCombPtr,map<size_t,size_t> > theColourMap;
-
-  /**
-   * The crossing signs as filled by the last call to
-   * fillCrossingMap()
-   */
-  map<tStdXCombPtr,double> theCrossingSigns;
-
-  /**
-   * The amplitude parton data.
-   */
-  map<tStdXCombPtr,cPDVector> theAmplitudePartonData;
-
-  /**
-   * The crossing information as filled by the last call to
-   * fillCrossingMap()
-   */
-  map<tStdXCombPtr,vector<int> >::iterator theLastCrossingMap;
-
-  /**
-   * The colour crossing information as filled by the last call to
-   * fillCrossingMap()
-   */
-  map<tStdXCombPtr,map<size_t,size_t> >::iterator theLastColourMap;
-
-  /**
-   * The amplitude parton data.
-   */
-  map<tStdXCombPtr,cPDVector>::iterator theLastAmplitudePartonData;
-
-  /**
-   * The crossing sign.
-   */
-  double theLastCrossingSign;
-
-  /**
-   * True, if tree amplitudes need to be recalculated.
-   */
-  bool calculateTrees;
-
-  /**
-   * True, if loop amplitudes need to be recalculated.
-   */
-  bool calculateLoops;
 
   /**
    * The assignment operator is private and must never be called.
@@ -565,6 +536,18 @@ private:
   MatchboxAmplitude & operator=(const MatchboxAmplitude &);
 
 };
+
+inline PersistentOStream& operator<<(PersistentOStream& os,
+				     const Process& h) {
+  h.persistentOutput(os);
+  return os;
+}
+
+inline PersistentIStream& operator>>(PersistentIStream& is,
+				     Process& h) {
+  h.persistentInput(is);
+  return is;
+}
 
 }
 

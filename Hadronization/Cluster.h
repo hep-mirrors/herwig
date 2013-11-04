@@ -14,6 +14,7 @@
 #include "CluHadConfig.h"
 #include "ClusterHadronizationHandler.fh"
 #include "Cluster.fh"
+#include "ThePEG/Utilities/ClassDescription.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -58,15 +59,22 @@ using namespace ThePEG;
  */ 
 class Cluster : public Particle {
   
-public:
+protected:
 
   /** @name Standard constructors and destructors. */
   //@{
   /**
-   * Default constructor.
+   * Default constructor. Only used in PersistentIStream
    */
   Cluster();
-  
+
+  /**
+   * The ClassTraits<Cluster> class must be a friend to be able to
+   * use the private default constructor.
+   */
+  friend struct ClassTraits<Cluster>;
+
+public:
   /**
    * Constructor with a particleData pointer
    */
@@ -82,12 +90,6 @@ public:
    */
   Cluster(const Particle &);
   //@}
-
-  /**
-   * Set the static pointer to the ClusterHadronizationHandler object.
-   * The pointer is set in ClusterHadronizationHandler::doinitrun().
-   */ 
-  static void setPointerClusterHadHandler(tcCluHadHdlPtr gp);
   
   /**
    * Number of quark (diquark) constituents (normally two).    
@@ -227,6 +229,20 @@ protected:
   virtual PPtr fullclone() const;
   //@}
 
+public:
+
+  /** @name Input and output functions. */
+  //@{
+  /**
+   * Standard function for writing to a persistent stream.
+   */
+  void persistentOutput(PersistentOStream &) const;
+
+  /**
+   * Standard function for reading from a persistent stream.
+   */
+  void persistentInput(PersistentIStream &, int);
+
 private:   
   /**
    * Private and non-existent assignment operator.
@@ -262,23 +278,19 @@ private:
   /**
    * Determines whether constituent p is perturbative or not.
    */
-  bool initPerturbative(tPPtr p)
-  { return p->scale() > _mg2; }
-  
+  bool initPerturbative(tPPtr p);
+
   /**
-   * This is needed to determine if a cluster is from a perturbative quark.
+   * Describe an abstract base class with persistent data.
    */
-  static tcCluHadHdlPtr _clusterHadHandler;
-  
-  /**
-   *  The gluon mass is needed to determine if a cluster is from a perturbative quark
-   */
-  static Energy2 _mg2;
-  
+  static ClassDescription<Cluster> initCluster; 
+
+
+
   bool        _isAvailable;        //!< Whether the cluster is hadronizing
   bool        _hasReshuffled;      //!< Whether the cluster has been reshuffled
   ParticleVector _component;       //!< The constituent partons
-  tParticleVector _original;       //!< The original components
+  tParticleVector _original;        //!< The original components
   vector<bool> _isBeamRemnant;     //!< Whether a parton is a beam remnant
   vector<bool> _isPerturbative;    //!< Whether a parton is perturbative
   int _numComp;                    //!< The number of constituents
@@ -286,5 +298,41 @@ private:
 };
   
 } // end namespace Herwig  
+
+#include "ThePEG/Utilities/ClassTraits.h"
+
+namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
+
+/**
+ * The following template specialization informs ThePEG about the
+ * base class of Cluster.
+ */
+template <>
+struct BaseClassTrait<Herwig::Cluster,1> {
+  /** Typedef of the base class of Cluster. */
+  typedef Particle NthBase;
+};
+
+/**
+ * The following template specialization informs ThePEG about the
+ * name of this class and the shared object where it is defined.
+ */ 
+template <>
+struct ClassTraits<Herwig::Cluster>:
+  public ClassTraitsBase<Herwig::Cluster> {
+  /** Return the class name. */
+  static string className() { return "Herwig::Cluster"; }
+  /** Create a Particle object. */
+  static TPtr create() { return TPtr::Create(Herwig::Cluster()); }
+};
+
+/** @endcond */
+
+}
+
+
+
 
 #endif // HERWIG_Cluster_H 

@@ -47,10 +47,12 @@ bool FFMqqxDipole::canHandle(const cPDVector& partons,
     abs(partons[emission]->id()) < 6 &&
     abs(partons[emitter]->id()) < 6 &&
     partons[emission]->id() + partons[emitter]->id() == 0 &&
-    partons[emission]->mass() != ZERO &&
-    partons[emitter]->mass() != ZERO;
+    !(partons[emission]->mass() == ZERO &&
+      partons[emitter]->mass() == ZERO &&
+      partons[spectator]->mass() == ZERO);
 }
 
+// TODO: (5.18)
 double FFMqqxDipole::me2Avg(double) const {
   assert(false && "implementation missing");
   return 0.;
@@ -87,16 +89,12 @@ double FFMqqxDipole::me2() const {
 							    corr);
 
   res *= 4.*Constants::pi*(realEmissionME()->lastXComb().lastSHat())*
-    (realEmissionME()->lastXComb().lastAlphaS())/ (prop+2.*mQ2);
+    (underlyingBornME()->lastXComb().lastAlphaS())/ (prop+2.*mQ2);
 
   res *=
     realEmissionME()->finalStateSymmetry() /
     underlyingBornME()->finalStateSymmetry();
 
-  lastME2(res);
-
-  logME2();
-  
   return res;
 
 }
@@ -112,7 +110,7 @@ void FFMqqxDipole::Init() {
   static ClassDocumentation<FFMqqxDipole> documentation
     ("FFMqqxDipole");
 
-  DipoleRepository::registerDipole<FFMqqxDipole,FFMassiveTildeKinematics,FFMassiveInvertedTildeKinematics>
+  DipoleRepository::registerDipole<0,FFMqqxDipole,FFMassiveTildeKinematics,FFMassiveInvertedTildeKinematics>
     ("FFMqqxDipole","FFMassiveTildeKinematics","FFMassiveInvertedTildeKinematics");
 
 }

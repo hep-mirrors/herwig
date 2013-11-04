@@ -22,6 +22,7 @@
 #include "Herwig++/DipoleShower/Base/DipoleEvolutionOrdering.h"
 #include "Herwig++/DipoleShower/Utility/ConstituentReshuffler.h"
 #include "Herwig++/DipoleShower/Utility/IntrinsicPtGenerator.h"
+#include "Herwig++/MatrixElement/Matchbox/Matching/ShowerApproximation.h"
 
 namespace Herwig {
 
@@ -85,7 +86,14 @@ protected:
   /**
    * The main method which manages the showering of a subprocess.
    */
-  virtual tPPair cascade(tSubProPtr sub, XCPtr xcomb);
+  virtual tPPair cascade(tSubProPtr sub, XCPtr xcomb) {
+    return cascade(sub,xcomb,ZERO);
+  }
+
+  /**
+   * The main method which manages the showering of a subprocess.
+   */
+  tPPair cascade(tSubProPtr sub, XCPtr xcomb, Energy optCutoff);
 
   /**
    * Build splitting generators for the given
@@ -143,7 +151,8 @@ private:
   /**
    * Perform the cascade.
    */
-  void doCascade(unsigned int& emDone);
+  void doCascade(unsigned int& emDone,
+		 Energy optCutoff = ZERO);
 
   /**
    * Get the winning splitting for the
@@ -151,7 +160,8 @@ private:
    */
   Energy getWinner(DipoleSplittingInfo& winner,
 		   const Dipole& dip,
-		   pair<bool,bool> conf);
+		   pair<bool,bool> conf,
+		   Energy optCutoff = ZERO);
 
 public:
 
@@ -271,6 +281,11 @@ private:
   bool discardNoEmissions;
 
   /**
+   * Perform the first MC@NLO emission only.
+   */
+  bool firstMCatNLOEmission;
+
+  /**
    * Switch on or off final state radiation.
    */
   bool doFSR;
@@ -339,6 +354,16 @@ private:
 private:
 
   /**
+   * A freezing value for the renormalization scale
+   */
+  Energy theRenormalizationScaleFreeze;
+
+  /**
+   * A freezing value for the factorization scale
+   */
+  Energy theFactorizationScaleFreeze;
+
+  /**
    * The factorization scale factor.
    */
   double theFactorizationScaleFactor;
@@ -347,6 +372,26 @@ private:
    * The renormalization scale factor.
    */
   double theRenormalizationScaleFactor;
+
+  /**
+   * The scale factor for the hard scale
+   */
+  double theHardScaleFactor;
+
+  /**
+   * True, if we are showering on a MC@NLO S event
+   */
+  bool isMCatNLOSEvent;
+
+  /**
+   * True, if we are showering on a MC@NLO H event
+   */
+  bool isMCatNLOHEvent;
+
+  /**
+   * The matching subtraction, if appropriate
+   */
+  Ptr<ShowerApproximation>::tptr theShowerApproximation;
 
 private:
 
@@ -394,7 +439,7 @@ struct ClassTraits<Herwig::DipoleShowerHandler>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwDipoleShower.so"; }
+  static string library() { return "HwMatchbox.so HwDipoleShower.so"; }
 };
 
 /** @endcond */

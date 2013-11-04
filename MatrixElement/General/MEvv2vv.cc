@@ -28,12 +28,8 @@ void MEvv2vv::doinit() {
   scalar_.resize(numberOfDiags());
   vector_.resize(numberOfDiags());
   tensor_.resize(numberOfDiags());
-  flowME().resize(numberOfFlows(),
-		  ProductionMatrixElement(PDT::Spin1, PDT::Spin1,
-					  PDT::Spin1, PDT::Spin1));
-  diagramME().resize(numberOfDiags(),
-		     ProductionMatrixElement(PDT::Spin1, PDT::Spin1,
-					     PDT::Spin1, PDT::Spin1));
+  initializeMatrixElements(PDT::Spin1, PDT::Spin1,
+			   PDT::Spin1, PDT::Spin1);
   for(size_t i = 0; i < numberOfDiags(); ++i) {
     HPDiagram diag = getProcessInfo()[i];
     tcPDPtr offshell = diag.intermediate;
@@ -62,15 +58,6 @@ void MEvv2vv::doinit() {
       tensor_[i] = make_pair(vert1, vert2);
     }
   }
-}
-void MEvv2vv::doinitrun() {
-  GeneralHardME::doinitrun();
-  flowME().resize(numberOfFlows(),
-		  ProductionMatrixElement(PDT::Spin1, PDT::Spin1,
-					  PDT::Spin1, PDT::Spin1));
-  diagramME().resize(numberOfDiags(),
-		     ProductionMatrixElement(PDT::Spin1, PDT::Spin1,
-					     PDT::Spin1, PDT::Spin1));
 }
 
 double MEvv2vv::me2() const {
@@ -129,7 +116,6 @@ MEvv2vv::vv2vvHeME(VBVector & vin1, VBVector & vin2,
 	    Complex diag(0.);
 	    const HPDiagram & current = getProcessInfo()[ix];
 	    tcPDPtr offshell = current.intermediate;
-	    if(!offshell) continue;
 	    if(current.channelType == HPDiagram::sChannel) {
 	      if(offshell->iSpin() == PDT::Spin0) {
 		ScalarWaveFunction interS = 
@@ -143,8 +129,11 @@ MEvv2vv::vv2vvHeME(VBVector & vin1, VBVector & vin2,
 		  evaluate(q2, 1, offshell, vin1[ihel1], vin2[ihel2]);
 		diag = vector_[ix].second->
 		  evaluate(q2, vout1[ohel1], vout2[ohel2], interV);
-		if(colour()==Colour88to88 || colour()==Colour88to66bar)
+		if(colour()==Colour88to88)
 		  diag += fourPointVertex_->evaluate(q2, 0, vout1[ohel1], vin2[ihel2], 
+						     vout2[ohel2], vin1[ihel1]);
+		else if(colour()==Colour88to66bar)
+		  diag -= fourPointVertex_->evaluate(q2, 0, vout1[ohel1], vin2[ihel2], 
 						     vout2[ohel2], vin1[ihel1]);
 	      }
 	      else if(offshell->iSpin() == PDT::Spin2) {
@@ -182,6 +171,7 @@ MEvv2vv::vv2vvHeME(VBVector & vin1, VBVector & vin2,
 						       vout1[ohel1], vout2[ohel2]);
 		}
 		else {
+		  if(offshell->CC()) offshell = offshell->CC();
 		  VectorWaveFunction interV = vector_[ix].first->
 		    evaluate(q2, 3, offshell, vin2[ihel2],vout1[ohel1], mass);
 		  diag = vector_[ix].second->
@@ -255,6 +245,8 @@ void MEvv2vv::persistentOutput(PersistentOStream & os) const {
 
 void MEvv2vv::persistentInput(PersistentIStream & is, int) {
   is >> scalar_ >> vector_ >> tensor_ >> fourPointVertex_;
+  initializeMatrixElements(PDT::Spin1, PDT::Spin1,
+			   PDT::Spin1, PDT::Spin1);
 }
 
 ClassDescription<MEvv2vv> MEvv2vv::initMEvv2vv;

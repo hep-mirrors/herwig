@@ -14,6 +14,8 @@
 #include "TreePhasespace.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Reference.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -27,9 +29,12 @@ using namespace Herwig;
 using namespace Herwig::PhasespaceHelpers;
 
 TreePhasespace::TreePhasespace() 
-  : x0(0.01), xc(1e-4) {
+  : x0(0.01), xc(1e-4), M0(ZERO), Mc(ZERO) {
   lastPhasespaceInfo.x0 = x0;
   lastPhasespaceInfo.xc = xc;
+  lastPhasespaceInfo.M0 = M0;
+  lastPhasespaceInfo.Mc = Mc;
+  theIncludeMirrored = true;
 }
 
 TreePhasespace::~TreePhasespace() {}
@@ -42,37 +47,41 @@ IBPtr TreePhasespace::fullclone() const {
   return new_ptr(*this);
 }
 
-void TreePhasespace::prepare(tStdXCombPtr xco, bool) {
+void TreePhasespace::setXComb(tStdXCombPtr xco) {
 
-  theLastXComb = xco;
+  MatchboxPhasespace::setXComb(xco);
 
-  lastChannelsIterator = channelMap.find(lastXCombPtr());
+  lastChannelsIterator = channelMap().find(lastXCombPtr());
 
-  if ( lastChannelsIterator == channelMap.end() ) {
-    map<Ptr<Tree2toNDiagram>::ptr,PhasespaceTree> channels;
+  if ( lastChannelsIterator == channelMap().end() ) {
+    map<Ptr<Tree2toNDiagram>::ptr,pair<PhasespaceTree, PhasespaceTree> > channels;
     for ( StandardXComb::DiagramVector::const_iterator d =
 	    lastXComb().diagrams().begin(); d != lastXComb().diagrams().end(); ++d ) {
       PhasespaceTree tree;
       Ptr<Tree2toNDiagram>::ptr diag =
 	dynamic_ptr_cast<Ptr<Tree2toNDiagram>::ptr>(*d);
       tree.setup(*diag);
-      channels[diag] = tree;
+      PhasespaceTree treeMirror;
+      treeMirror.setupMirrored(*diag, diag->nSpace() - 1);
+      channels[diag] = make_pair(tree,treeMirror);
     }
-    channelMap[lastXCombPtr()] = channels;
-    lastChannelsIterator = channelMap.find(lastXCombPtr());
+    channelMap()[lastXCombPtr()] = channels;
+    lastChannelsIterator = channelMap().find(lastXCombPtr());
   }
-
+    
   lastPhasespaceInfo.sHat = lastXComb().lastSHat();
   lastPhasespaceInfo.sqrtSHat = sqrt(lastXComb().lastSHat());
   lastPhasespaceInfo.weight = 1.;
 
 }
 
-double TreePhasespace::generateKinematics(const double* random,
-					  vector<Lorentz5Momentum>& momenta) {
+double TreePhasespace::generateTwoToNKinematics(const double* random,
+						vector<Lorentz5Momentum>& momenta) {
 
   size_t nchannels = lastXComb().diagrams().size();
-  map<Ptr<Tree2toNDiagram>::ptr,PhasespaceHelpers::PhasespaceTree>::iterator ds =
+  bool doMirror = (UseRandom::rnd() < 0.5) && theIncludeMirrored;
+  map<Ptr<Tree2toNDiagram>::ptr,
+      pair <PhasespaceHelpers::PhasespaceTree, PhasespaceHelpers::PhasespaceTree> >::iterator ds =
     lastChannels().begin();
   advance(ds,(size_t)(random[0]*nchannels));
   Ptr<Tree2toNDiagram>::ptr channel = ds->first;
@@ -80,26 +89,36 @@ double TreePhasespace::generateKinematics(const double* random,
 
   lastPhasespaceInfo.rnd.numbers = random;
   lastPhasespaceInfo.rnd.nRnd = 3*momenta.size() - 10;
-
-  cPDVector::const_iterator pd = mePartonData().begin();
-  vector<Lorentz5Momentum>::iterator p = momenta.begin();
-  for ( ; pd != mePartonData().end(); ++pd, ++p )
-    p->setMass((**pd).mass());
-
+    
   try {
-    lastChannels()[channel].generateKinematics(lastPhasespaceInfo,momenta);
+    if ( !doMirror )
+      lastChannels()[channel].first.generateKinematics(lastPhasespaceInfo,momenta);
+    else 
+      lastChannels()[channel].second.generateKinematics(lastPhasespaceInfo,momenta);
   } catch (Veto) {
     return 0.;
   }
+    
+  if ( !matchConstraints(momenta) )
+    return 0.;
 
-  fillDiagramWeights();
+  double flatCut = x0;
+  if ( M0 != ZERO )
+    flatCut = M0/sqrt(lastSHat());
+
+  fillDiagramWeights(flatCut);
 
   double sum = 0.;
-  for ( map<Ptr<Tree2toNDiagram>::ptr,PhasespaceHelpers::PhasespaceTree>::const_iterator d
+  for ( map<Ptr<Tree2toNDiagram>::ptr,
+	  pair <PhasespaceHelpers::PhasespaceTree, PhasespaceHelpers::PhasespaceTree> >::const_iterator d
 	  = lastChannels().begin(); d != lastChannels().end(); ++d )
     sum += diagramWeight(*(d->first));
 
   double piWeight = pow(2.*Constants::pi,(double)(3*(momenta.size()-2)-4));
+
+  for ( vector<Lorentz5Momentum>::iterator k = momenta.begin();
+	k != momenta.end(); ++k )
+    k->rescaleRho();
 
   return nchannels*lastPhasespaceInfo.weight*diagramWeight(*channel)/(sum*piWeight);
 
@@ -112,42 +131,35 @@ void TreePhasespace::doinit() {
   MatchboxPhasespace::doinit();
   lastPhasespaceInfo.x0 = x0;
   lastPhasespaceInfo.xc = xc;
+  lastPhasespaceInfo.M0 = M0;
+  lastPhasespaceInfo.Mc = Mc;
 }
 
 void TreePhasespace::doinitrun() {
   MatchboxPhasespace::doinitrun();
   lastPhasespaceInfo.x0 = x0;
   lastPhasespaceInfo.xc = xc;
+  lastPhasespaceInfo.M0 = M0;
+  lastPhasespaceInfo.Mc = Mc;
 }
 
 void TreePhasespace::persistentOutput(PersistentOStream & os) const {
-  os << channelMap.size();
-  for ( map<tStdXCombPtr,map<Ptr<Tree2toNDiagram>::ptr,PhasespaceTree> >::const_iterator k =
-	  channelMap.begin(); k != channelMap.end(); ++k ) {
-    os << k->first << k->second.size();
-    for ( map<Ptr<Tree2toNDiagram>::ptr,PhasespaceTree>::const_iterator l = 
-	    k->second.begin(); l != k->second.end(); ++l ) {
-      os << l->first;
-      l->second.put(os);
-    }
-  }
-  os << x0 << xc;
+  os << theChannelMap << x0 << xc 
+     << ounit(M0,GeV) << ounit(Mc,GeV)
+     << theIncludeMirrored
+     << theLastXComb;
 }
 
 void TreePhasespace::persistentInput(PersistentIStream & is, int) {
-  size_t nk; is >> nk;
-  for ( size_t k = 0; k < nk; ++k ) {
-    tStdXCombPtr xc; is >> xc;
-    size_t nl; is >> nl;
-    map<Ptr<Tree2toNDiagram>::ptr,PhasespaceTree> cm;
-    for ( size_t l = 0; l < nl; ++l ) {
-      Ptr<Tree2toNDiagram>::ptr ci; is >> ci;
-      PhasespaceTree cp; cp.get(is);
-      cm[ci] = cp;
-    }
-    channelMap[xc] = cm;
-  }
-  is >> x0 >> xc;
+  is >> theChannelMap >> x0 >> xc 
+     >> iunit(M0,GeV) >> iunit(Mc,GeV)
+     >> theIncludeMirrored
+     >> theLastXComb;
+  lastPhasespaceInfo.x0 = x0;
+  lastPhasespaceInfo.xc = xc;
+  lastPhasespaceInfo.M0 = M0;
+  lastPhasespaceInfo.Mc = Mc;
+  lastChannelsIterator = channelMap().find(lastXCombPtr());
 }
 
 
@@ -167,6 +179,12 @@ void TreePhasespace::Init() {
      "elements diagrams.");
 
 
+  static Reference<TreePhasespace,TreePhasespaceChannels> interfaceChannelMap
+    ("ChannelMap",
+     "Set the object storing the channels.",
+     &TreePhasespace::theChannelMap, false, false, true, false, false);
+
+
   static Parameter<TreePhasespace,double> interfaceX0
     ("X0",
      "Set the cut below which flat virtuality sampling is imposed.",
@@ -180,6 +198,33 @@ void TreePhasespace::Init() {
      &TreePhasespace::xc, 1e-4, 0.0, 0,
      false, false, Interface::lowerlim);
 
+
+  static Parameter<TreePhasespace,Energy> interfaceM0
+    ("M0",
+     "Set the cut below which flat virtuality sammpling is imposed.",
+     &TreePhasespace::M0, GeV, 0.0*GeV, 0.0*GeV, 0*GeV,
+     false, false, Interface::lowerlim);
+
+  static Parameter<TreePhasespace,Energy> interfaceMC
+    ("MC",
+     "Set the cut below which no virtualities are generated.",
+     &TreePhasespace::Mc, GeV, 0.0*GeV, 0.0*GeV, 0*GeV,
+     false, false, Interface::lowerlim);
+
+  static Switch<TreePhasespace,bool> interfaceIncludeMirrored
+    ("IncludeMirrored",
+     "Choose whether to include mirrored diagrams for PS generation",
+     &TreePhasespace::theIncludeMirrored, true, true, false);
+  static SwitchOption interfaceIncludeMirroredTrue
+    (interfaceIncludeMirrored,
+     "True",
+     "Use unmirrored and mirrored diagrams",
+     true);
+  static SwitchOption interfaceIncludeMirroredFalse
+    (interfaceIncludeMirrored,
+     "False",
+     "Use only unmirrored diagrams",
+     false);
 
 }
 

@@ -62,7 +62,7 @@ public:
 	      _iptrms(ZERO), _beta(0.), _gamma(ZERO), _iptmax(),
 	      _limitEmissions(0), _initialenhance(1.), _finalenhance(1.),
 	      _hardonly(false), _trunc_Mode(true), _hardEmissionMode(0),
-	      _colourEvolutionMethod(0)
+	      _colourEvolutionMethod(0), _hardScaleFactor(1.0)
   {}
 
   /**
@@ -427,7 +427,17 @@ protected:
   /**
    *  find the maximally allowed pt acc to the hard process. 
    */
-  void setupMaximumScales(ShowerTreePtr, vector<ShowerProgenitorPtr>);
+  void setupMaximumScales(ShowerTreePtr, const vector<ShowerProgenitorPtr> &,XCPtr);
+
+  /**
+   * Return the factor to multiply the hard veto scale
+   */
+  double hardScaleFactor() const { return _hardScaleFactor; }
+
+  /**
+   * Set the factor to multiply the hard veto scale
+   */
+  void hardScaleFactor(double f) { _hardScaleFactor = f; };
 
 protected:
 
@@ -495,12 +505,6 @@ private:
    * Get the octet -> octet octet reduction factor.
    */
   double getReductionFactor(tShowerParticlePtr particle);
-
-  /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<Evolver> initEvolver;
 
   /**
    * The assignment operator is private and must never be called.
@@ -670,42 +674,13 @@ private:
    * Colour evolution method
    */
   int _colourEvolutionMethod;
-};
 
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of Evolver. */
-template <>
-struct BaseClassTrait<Herwig::Evolver,1> {
-  /** Typedef of the first base class of Evolver. */
-  typedef Interfaced NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the Evolver class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::Evolver>
-  : public ClassTraitsBase<Herwig::Evolver> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::Evolver"; }
   /**
-   * The name of a file containing the dynamic library where the class
-   * Evolver is implemented. It may also include several, space-separated,
-   * libraries if the class Evolver depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
+   * A factor to multiply the hard veto scale
    */
-  static string library() { return "HwShower.so"; }
-};
+  double _hardScaleFactor;
 
-/** @endcond */
+};
 
 }
 

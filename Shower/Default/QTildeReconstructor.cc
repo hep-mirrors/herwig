@@ -24,9 +24,15 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Shower/SplittingFunctions/SplittingFunction.h"
+#include "ThePEG/Repository/UseRandom.h"
+#include "ThePEG/EventRecord/ColourLine.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include <cassert>
 
 using namespace Herwig;
+
+DescribeClass<QTildeReconstructor,KinematicsReconstructor>
+describeQTildeReconstructor("Herwig::QTildeReconstructor", "HwShower.so");
 
 namespace {
 
@@ -69,6 +75,51 @@ struct ColourSingletShower {
 
 };
 
+
+/**
+ * Return colour line progenitor pointer for ShowerProgenitor
+ */ 
+Ptr<ThePEG::ColourLine>::transient_pointer
+CL(ShowerProgenitorPtr a, unsigned int index=0) {
+  return const_ptr_cast<ThePEG::tColinePtr>(a->progenitor()->colourInfo()->colourLines()[index]);
+}
+
+/**
+ * Return progenitor colour line size for ShowerProgenitor
+ */
+unsigned int CLSIZE(ShowerProgenitorPtr a) {
+  return a->progenitor()->colourInfo()->colourLines().size();
+}
+
+/**
+ * Return anti-colour line progenitor pointer for ShowerProgenitor
+ */
+Ptr<ThePEG::ColourLine>::transient_pointer 
+ACL(ShowerProgenitorPtr a, unsigned int index=0) {
+  return const_ptr_cast<ThePEG::tColinePtr>(a->progenitor()->colourInfo()->antiColourLines()[index]);
+}
+
+/**
+ * Return progenitor anti-colour line size for ShowerProgenitor
+ */
+unsigned int ACLSIZE(ShowerProgenitorPtr a) {
+  return a->progenitor()->colourInfo()->antiColourLines().size();
+}
+
+/**
+ * Return colour line size
+ */
+unsigned int CLSIZE(set<HardBranchingPtr>::const_iterator & a) {
+  return (*a)->branchingParticle()->colourInfo()->colourLines().size();
+}  
+
+/**
+ * Return anti-colour line size
+ */
+unsigned int ACLSIZE(set<HardBranchingPtr>::const_iterator & a) {
+  return (*a)->branchingParticle()->colourInfo()->antiColourLines().size();
+}
+
 }
 
 void QTildeReconstructor::persistentOutput(PersistentOStream & os) const {
@@ -80,9 +131,6 @@ void QTildeReconstructor::persistentInput(PersistentIStream & is, int) {
   is >> _reconopt >> _initialBoost >> iunit(_minQ,GeV) >> _noRescale 
      >> _noRescaleVector;  
 }
-
-ClassDescription<QTildeReconstructor> QTildeReconstructor::initQTildeReconstructor;
-// Definition of the static class description member.
 
 void QTildeReconstructor::Init() {
 
@@ -597,6 +645,9 @@ reconstructDecayJets(ShowerTreePtr decay) const {
 	    it->parent->set5Momentum(pnew);
 	  }
 	  else {
+	    // rescaling boost can't ever work in this case
+	    if(k2<0. && it->q.mass()==ZERO)
+	      throw KinematicsReconstructionVeto();
 	    Trafo = solveBoost(k2, it->q, it->p);
 	  }
 	}
@@ -972,8 +1023,7 @@ inverseRescalingFactor(vector<Lorentz5Momentum> pout,
       pmag.push_back(pout[ix].vect().mag2());
     }
     // Newton-Raphson for the rescaling
-    vector<Energy> root;
-    root.resize(pout.size());
+    vector<Energy> root(pout.size());
     do {
       // compute new energies
       Energy sum(ZERO);
@@ -1346,23 +1396,45 @@ solveBoost(const double k, const Lorentz5Momentum & newq,
   Energy2 kps = sqr(kp);
   double betam = (q*newq.e() - kp*sqrt(kps + Q2))/(kps + qs + Q2); 
   Boost beta = -betam*(k/kp)*oldp.vect();
+  double gamma = 0.;
+  if(Q2/sqr(oldp.e())>1e-4) {
+    if(betam<0.5) { 
+      gamma = 1./sqrt(1.-sqr(betam));
+    }
+    else {
+      gamma = ( kps+ qs + Q2)/
+	sqrt(2.*kps*qs + kps*Q2 + qs*Q2 + sqr(Q2) + 2.*q*newq.e()*kp*sqrt(kps + Q2));
+    }
+  }
+  else {
+    if(k>0) {
+      gamma = 4.*kps*qs/sqr(kps +qs)  + 2.*sqr(kps-qs)*Q2/pow<3,1>(kps +qs) 
+  	- 0.25*( sqr(kps) + 14.*kps*qs + sqr(qs))*sqr(kps-qs)/(pow<4,1>(kps +qs)*kps*qs)*sqr(Q2);
+    }
+    else { 
+      gamma = 0.25*sqr(Q2)/(kps*qs)*(1. - 0.5*(kps+qs)/(kps*qs)*Q2);
+    }
+    gamma = 1./sqrt(gamma);
+  }
   // note that (k/kp)*oldp.vect() = oldp.vect()/oldp.vect().mag() but cheaper. 
   ThreeVector<Energy2> ax = newq.vect().cross( oldp.vect() ); 
   double delta = newq.vect().angle( oldp.vect() );
   LorentzRotation R;
   using Constants::pi;
-  if ( ax.mag2()/GeV2/MeV2 > 1e-16 ) {
-    R.rotate( delta, unitVector(ax) ).boost( beta );
+  Energy2 scale1 = sqr(newq.x())+ sqr(newq.y())+sqr(newq.z());
+  Energy2 scale2 = sqr(oldp.x())+ sqr(oldp.y())+sqr(oldp.z());
+  if ( ax.mag2()/scale1/scale2 > 1e-28 ) {
+    R.rotate( delta, unitVector(ax) ).boost( beta , gamma );
   } 
   else if(abs(delta-pi)/pi < 0.001) {
     double phi=2.*pi*UseRandom::rnd();
     Axis axis(cos(phi),sin(phi),0.);
     axis.rotateUz(newq.vect().unit());
-    R.rotate(delta,axis).boost( beta );
+    R.rotate(delta,axis).boost( beta , gamma );
   }
   else {
-    R.boost( beta );
-  } 
+    R.boost( beta , gamma );
+  }
   return R;
 }
 
@@ -1609,7 +1681,8 @@ deconstructInitialInitialSystem(bool & applyBoost,
   // hadron level cmf
   Energy2 s  = (pq[0] +pq[1] ).m2();
   // calculate the x values 
-  double x[2]={sqrt(pcm.mass2()/s*exp(2.*rap)),pcm.mass2()/s/x[0]};
+  double x0 = sqrt(pcm.mass2()/s*exp(2.*rap));
+  double x[2]={x0, pcm.mass2()/s/x0};
   if(pq[0].z()<ZERO) swap(x[0],x[1]);
   double k1=alpha[0]/x[0],k2=beta[1]/x[1];
   double alphanew[2]={alpha[0]/k1,alpha[1]*k2};
@@ -1740,6 +1813,7 @@ deconstructFinalStateSystem(const LorentzRotation &   toRest,
   pin.rescaleMass();
   // rescaling factor
   double lambda=inverseRescalingFactor(pout,mon,pin.mass());
+  if (lambda< 1.e-10) throw KinematicsReconstructionVeto(); 
   // now calculate the p reference vectors 
   for(cit=jets.begin();cit!=jets.end();++cit){
     Lorentz5Momentum pvect = (*cit)->branchingParticle()->momentum();

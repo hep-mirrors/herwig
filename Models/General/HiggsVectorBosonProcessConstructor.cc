@@ -6,6 +6,7 @@
 
 #include "HiggsVectorBosonProcessConstructor.h"
 #include "ThePEG/Interface/Switch.h"
+#include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/RefVector.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -27,11 +28,11 @@ IBPtr HiggsVectorBosonProcessConstructor::fullclone() const {
 }
 
 void HiggsVectorBosonProcessConstructor::persistentOutput(PersistentOStream & os) const {
-  os << _vector << _higgs << _type << _shapeOpt;
+  os << _vector << _higgs << _type << _shapeOpt << _alpha;
 }
 
 void HiggsVectorBosonProcessConstructor::persistentInput(PersistentIStream & is, int) {
-  is >> _vector >> _higgs >> _type >> _shapeOpt;
+  is >> _vector >> _higgs >> _type >> _shapeOpt >> _alpha;
 }
 
 ClassDescription<HiggsVectorBosonProcessConstructor> 
@@ -88,6 +89,11 @@ void HiggsVectorBosonProcessConstructor::Init() {
      "Hadron",
      "Hadron-Hadron collisions",
      true);
+
+  static Reference<HiggsVectorBosonProcessConstructor,ShowerAlpha> interfaceAlphaQCD
+    ("AlphaQCD",
+     "The strong coupling used in the shower for MME or POWHEG corrections.",
+     &HiggsVectorBosonProcessConstructor::_alpha, false, false, true, false, false);
 
 }
 
@@ -147,6 +153,9 @@ void HiggsVectorBosonProcessConstructor::constructDiagrams() {
 	  else if((**iv).id()==ParticleID::Wminus)
 	    process = GeneralfftoVH::HadronWminus;
 	}
+	// set the coupling
+	generator()->preinitInterface(matrixElement, "Coupling", 
+				      "set", _alpha->fullName()); 
 	// set the information
 	matrixElement->setProcessInfo( process, *ih, svert,_shapeOpt);
 	// insert it

@@ -67,13 +67,11 @@ double FFggxDipole::me2Avg(double ccme2) const {
   res *= -ccme2;
 
   res *= 16.*Constants::pi*SM().Nc()*(realEmissionME()->lastXComb().lastSHat())*
-    (realEmissionME()->lastXComb().lastAlphaS())/prop;
+    (underlyingBornME()->lastXComb().lastAlphaS())/prop;
 
   res *=
     realEmissionME()->finalStateSymmetry() /
     underlyingBornME()->finalStateSymmetry();
-
-  lastME2(res);
 
   return res;
 
@@ -102,15 +100,11 @@ double FFggxDipole::me2() const {
 							    corr);
 
   res *= 16.*Constants::pi*SM().Nc()*(realEmissionME()->lastXComb().lastSHat())*
-    (realEmissionME()->lastXComb().lastAlphaS())/prop;
+    (underlyingBornME()->lastXComb().lastAlphaS())/prop;
 
   res *=
     realEmissionME()->finalStateSymmetry() /
     underlyingBornME()->finalStateSymmetry();
-
-  lastME2(res);
-
-  logME2();
 
   return res;
 
@@ -127,7 +121,7 @@ void FFggxDipole::Init() {
   static ClassDocumentation<FFggxDipole> documentation
     ("FFggxDipole");
 
-  DipoleRepository::registerDipole<FFggxDipole,FFLightTildeKinematics,FFLightInvertedTildeKinematics>
+  DipoleRepository::registerDipole<0,FFggxDipole,FFLightTildeKinematics,FFLightInvertedTildeKinematics>
     ("FFggxDipole","FFLightTildeKinematics","FFLightInvertedTildeKinematics");
 
 }

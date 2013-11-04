@@ -18,13 +18,20 @@ bin_SCRIPTS = herwig-config
 HELPERFILES = CMSSM40.1.1.slha RPV3.1.slha NMSSM.spc \
 ADD.model \
 Leptoquark.model \
+LH.model \
+LHTP.model \
 MSSM.model \
 MUED.model \
 NMSSM.model \
+RPV-Bi.model \
+RPV-Tri.model \
 RS.model \
 Sextet.model \
 TTBA.model \
-Zprime.model
+Zprime.model \
+RPV-BI.slha \
+RPV-TRI.slha \
+RPV-UDD.slha
 
 INPUTFILES = \
 DIS.in \
@@ -56,7 +63,9 @@ LHC-ZP.in \
 TVT.in \
 TVT-Matchbox.in \
 TVT-Powheg.in \
-TVT-TTBA.in
+TVT-TTBA.in \
+LHC-LH.in \
+LHC-LHTP.in
 
 dist_pkgdata_DATA = $(INPUTFILES) $(HELPERFILES)
 pkgdata_DATA = Makefile-UserModules
@@ -69,52 +78,59 @@ CLEANFILES = HerwigDefaults.rpo \
 ## checking targets ##
 
 HerwigDefaults.rpo: Herwig++ $(srcdir)/defaults/*.in defaults/PDF.in defaults/Analysis.in $(top_builddir)/lib/*.so
-	./Herwig++ init -L$(top_builddir)/lib -i defaults/HerwigDefaults.in -D
+	./Herwig++ init -L$(top_builddir)/lib defaults/HerwigDefaults.in -D
 
 check_BSM_Full=
 check_BSM=
-if WANT_MSSM
-check_BSM += check-LHC-RPV
-check_BSM_Full += check-LHC-RPV check-LHC-MSSM
-endif
-if WANT_NMSSM
-check_BSM_Full += check-LHC-NMSSM
-endif
-if WANT_UED
-check_BSM += check-LHC-MUED
-check_BSM_Full += check-LHC-MUED
-endif
-if WANT_RS
-check_BSM += check-LHC-RS
-check_BSM_Full += check-LHC-RS
-endif
-if WANT_TRP
-check_BSM_Full += check-LHC-TRP
-endif
-if WANT_ADD
-check_BSM_Full += check-LHC-ADD
-endif
-if WANT_TTBA
-check_BSM_Full += check-LHC-TTBA
-endif
-if WANT_ZPRIME
-check_BSM_Full += check-LHC-ZP
+
+if WANT_BSM
+
+check_BSM += check-LHC-RPV check-LHC-RS
+
+check_BSM_Full += \
+check-LHC-RPV check-LHC-MSSM check-ILC-MSSM \
+check-LHC-NMSSM \
+check-LHC-MUED check-ILC-MUED \
+check-LHC-RS check-ILC-RS check-LHC-ADD \
+check-LHC-LH check-LHC-LHTP \
+check-LHC-TRP \
+check-LHC-TTBA check-TVT-TTBA \
+check-LHC-ZP \
+check-LHC-LQ \
+check-LHC-Sextet
+
 endif
 
-check-local: check-LHC check-LEP check-DIS check-ILC check-GammaGamma $(check_BSM) check-LHC-Powheg 
+check-local: check-LEP check-LHC $(check_BSM) check-DIS check-ILC check-GammaGamma check-LHC-Powheg
 
 check-Powheg: check-LHC-Powheg check-TVT-Powheg
 
 check-BSM: $(check_BSM_Full)
+
+check_Matchbox= 
+if WANT_DIPOLE
+check_Matchbox += \
+check-LEP-Matchbox check-DIS-Matchbox check-LHC-Matchbox check-TVT-Matchbox
+endif
+
+check-Matchbox: $(check_Matchbox)
+
+check-extra: check-LHC-diffractive check-LHC-GammaGamma check-LHC-MB check-TVT
+
+check-all: check-local check-Powheg check-BSM check-Matchbox check-extra
 
 link-helper-files:
 	@for i in $(HELPERFILES); do \
 	if test -f $(srcdir)/$$i -a ! -e $$i; then \
 	$(LN_S) -f $(srcdir)/$$i; fi; done
 
+CHECKCOMMAND = ./Herwig++ run  $(notdir $(subst .in,.run,$<)) -N500 -d1 -D
+
 check-%: $(srcdir)/%.in HerwigDefaults.rpo link-helper-files
 	./Herwig++ read $< -D
-	./Herwig++ run  $(notdir $(subst .in,.run,$<)) -N500 -d1 -D
+	@echo $(CHECKCOMMAND)
+	@$(CHECKCOMMAND) && echo "# $@ OK #" \
+			 || (echo "###### $@ BAD ######"; false)
 
 ## valgrind targets ##
 
@@ -123,7 +139,7 @@ VALGRIND=valgrind --leak-check=full --num-callers=25 --freelist-vol=100000000 --
 valgrind: valgrind-init valgrind-read valgrind-run
 
 valgrind-init:
-	$(VALGRIND) ./Herwig++ init -d1 -D -L$(top_builddir)/lib -i defaults/HerwigDefaults.in \
+	$(VALGRIND) ./Herwig++ init -d1 -D -L$(top_builddir)/lib defaults/HerwigDefaults.in \
 &> /tmp/valgrind-init.log
 valgrind-read:
 	$(VALGRIND) ./Herwig++ read -d1 -D LHC.in &> /tmp/valgrind-read.log
@@ -135,7 +151,11 @@ THEPEGREPO=$(THEPEGPATH)/lib/ThePEG/ThePEGDefaults.rpo
 
 install-data-hook:
 	@echo Creating repository
-	@./Herwig++ init -L$(DESTDIR)$(pkglibdir) -i $(DESTDIR)$(defaultsdir)/HerwigDefaults.in -r $(DESTDIR)$(pkgdatadir)/HerwigDefaults.rpo
+	@./Herwig++ init -L$(DESTDIR)$(pkglibdir) -i$(DESTDIR)$(pkgdatadir) $(DESTDIR)$(defaultsdir)/HerwigDefaults.in --repo=$(DESTDIR)$(pkgdatadir)/HerwigDefaults.rpo
+	@if test -n "$(DESTDIR)"; \
+        then sed -i.bak -e "s@$(DESTDIR)@@g" $(DESTDIR)$(pkgdatadir)/HerwigDefaults.rpo; \
+	rm -f $(DESTDIR)$(pkgdatadir)/HerwigDefaults.rpo.bak; \
+        fi
 
 uninstall-hook:
 	rm -f $(DESTDIR)$(pkgdatadir)/HerwigDefaults.rpo
@@ -148,7 +168,10 @@ register-with-thepeg-repo:
 		"$(SETUPTHEPEG)" --init \
 		$(DESTDIR)$(defaultsdir)/HerwigDefaults.in \
 		-r "$(THEPEGREPO)" -o "$(THEPEGREPO)" \
+		-i $(DESTDIR)$(pkgdatadir) \
 		-l$(DESTDIR)$(pkglibdir) ; \
+		if test -n "$(DESTDIR)"; \
+		then sed -i -e "s@$(DESTDIR)@@g" "$(THEPEGREPO)" ; fi ; \
 	fi
 
 

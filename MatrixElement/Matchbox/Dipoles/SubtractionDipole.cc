@@ -26,7 +26,6 @@
 #include "ThePEG/PDF/PartonExtractor.h"
 #include "Herwig++/MatrixElement/Matchbox/Phasespace/TildeKinematics.h"
 #include "Herwig++/MatrixElement/Matchbox/Phasespace/InvertedTildeKinematics.h"
-#include "ThePEG/Handlers/StdDependentXComb.h"
 
 #include <iterator>
 using std::ostream_iterator;
@@ -35,10 +34,26 @@ using namespace Herwig;
 
 SubtractionDipole::SubtractionDipole() 
   : MEBase(), theSplitting(false), theApply(true), theSubtractionTest(false),
+    theIgnoreCuts(false), theShowerKernel(false),
     theRealEmitter(-1), theRealEmission(-1), theRealSpectator(-1), 
-    theBornEmitter(-1), theBornSpectator(-1) {}
+    theBornEmitter(-1), theBornSpectator(-1),
+    theRealShowerSubtraction(false), theVirtualShowerSubtraction(false),
+    theRealEmissionScales(false) {}
 
 SubtractionDipole::~SubtractionDipole() {}
+
+void SubtractionDipole::clearBookkeeping() {
+  theRealEmitter = -1;
+  theRealEmission = -1;
+  theRealSpectator = -1;
+  theBornEmitter = -1;
+  theBornSpectator = -1;
+  theMergingMap.clear();
+  theSplittingMap.clear();
+  theIndexMap.clear();
+  theUnderlyingBornDiagrams.clear();
+  theRealEmissionDiagrams.clear();
+}
 
 void SubtractionDipole::setupBookkeeping() {
 
@@ -117,8 +132,17 @@ void SubtractionDipole::setupBookkeeping() {
     UnderlyingBornKey bornKey = underlyingBornKey((**bd).partons(),xemitter,xspectator);
     if ( theMergingMap.find(realKey) == theMergingMap.end() )
       theMergingMap.insert(make_pair(realKey,make_pair(bornKey,realBornMap)));
-    if ( theSplittingMap.find(bornKey) == theSplittingMap.end() )
-      theSplittingMap.insert(make_pair(bornKey,make_pair(realKey,bornRealMap)));
+    RealEmissionInfo realInfo = make_pair(realKey,bornRealMap);
+    bool gotit = false;
+    typedef multimap<UnderlyingBornKey,RealEmissionInfo>::const_iterator spIterator;
+    pair<spIterator,spIterator> range = theSplittingMap.equal_range(bornKey);
+    for ( ; range.first != range.second; ++range.first )
+      if ( range.first->second == realInfo ) {
+	gotit = true;
+	break;
+      }
+    if ( !gotit )
+      theSplittingMap.insert(make_pair(bornKey,realInfo));
 
   }
 
@@ -127,7 +151,7 @@ void SubtractionDipole::setupBookkeeping() {
 
   theIndexMap.clear();
 
-  for ( map<UnderlyingBornKey,RealEmissionInfo>::const_iterator s =
+  for ( multimap<UnderlyingBornKey,RealEmissionInfo>::const_iterator s =
 	  theSplittingMap.begin(); s != theSplittingMap.end(); ++s ) {
     theIndexMap[process(s->first)] = make_pair(emitter(s->first),spectator(s->first));
   }
@@ -145,7 +169,7 @@ void SubtractionDipole::setupBookkeeping() {
   }
 
   theRealEmissionDiagrams.clear();
-  for ( map<UnderlyingBornKey,RealEmissionInfo>::const_iterator r =
+  for ( multimap<UnderlyingBornKey,RealEmissionInfo>::const_iterator r =
 	  theSplittingMap.begin(); r != theSplittingMap.end(); ++r ) {
     DiagramVector reals;
     for ( DiagramVector::const_iterator d = theRealEmissionME->diagrams().begin();
@@ -189,23 +213,83 @@ void SubtractionDipole::splittingBookkeeping() {
   bornEmitter(es.first);
   bornSpectator(es.second);
   lastUnderlyingBornKey = underlyingBornKey(lastHeadXComb().mePartonData(),bornEmitter(),bornSpectator());
-  map<UnderlyingBornKey,RealEmissionInfo>::const_iterator k =
-    theSplittingMap.find(lastUnderlyingBornKey);
-  assert(k != theSplittingMap.end());
-  lastRealEmissionKey = k->second.first;
+  typedef multimap<UnderlyingBornKey,RealEmissionInfo>::const_iterator spit;
+  pair<spit,spit> kr = theSplittingMap.equal_range(lastUnderlyingBornKey);
+  assert(kr.first != kr.second);
+  lastRealEmissionInfo = kr.first;
+  for ( ; lastRealEmissionInfo != kr.second; ++lastRealEmissionInfo )
+    if ( process(lastRealEmissionInfo->second.first) == lastXComb().mePartonData() )
+      break;
+  assert(lastRealEmissionInfo != kr.second);
+  lastRealEmissionKey = lastRealEmissionInfo->second.first;
   realEmitter(emitter(lastRealEmissionKey));
   realEmission(emission(lastRealEmissionKey));
   realSpectator(spectator(lastRealEmissionKey));
 }
 
-StdDependentXCombPtr SubtractionDipole::makeBornXComb(tStdXCombPtr realXC) {
+StdXCombPtr SubtractionDipole::makeXComb(Energy newMaxEnergy, const cPDPair & inc,
+					 tEHPtr newEventHandler,tSubHdlPtr newSubProcessHandler,
+					 tPExtrPtr newExtractor,	tCascHdlPtr newCKKW,
+					 const PBPair & newPartonBins, tCutsPtr newCuts,
+					 const DiagramVector & newDiagrams, bool mir,
+					 const PartonPairVec& allBins,
+					 tStdXCombPtr newHead,
+					 tMEPtr newME) {
+
+  if ( !newME )
+    newME = this;
+
+  if ( !splitting() ) {
+    return
+      underlyingBornME()->makeXComb(newMaxEnergy, inc,
+				    newEventHandler, newSubProcessHandler,
+				    newExtractor, newCKKW,
+				    newPartonBins, newCuts,
+				    newDiagrams, mir, allBins,
+				    newHead, newME);
+  }
+
+  return
+    realEmissionME()->makeXComb(newMaxEnergy, inc,
+				newEventHandler, newSubProcessHandler,
+				newExtractor, newCKKW,
+				newPartonBins, newCuts,
+				newDiagrams, mir, allBins,
+				newHead, newME);
+
+}
+
+StdXCombPtr SubtractionDipole::makeXComb(tStdXCombPtr newHead,
+					 const PBPair & newPartonBins,
+					 const DiagramVector & newDiagrams,
+					 tMEPtr newME) {
+
+  if ( !newME )
+    newME = this;
+
+  if ( !splitting() ) {
+    return
+      underlyingBornME()->makeXComb(newHead, newPartonBins,
+				    newDiagrams, newME);
+  }
+
+  return
+    realEmissionME()->makeXComb(newHead, newPartonBins,
+				newDiagrams, newME);
+
+}
+
+StdXCombPtr SubtractionDipole::makeBornXComb(tStdXCombPtr realXC) {
 
   const cPDVector& proc = const_cast<const StandardXComb&>(*realXC).mePartonData();
 
-  if ( theMergingMap.find(realEmissionKey(proc,realEmitter(),
-					  realEmission(),realSpectator())) ==
-       theMergingMap.end() )
-    return StdDependentXCombPtr();
+  lastRealEmissionKey = 
+    realEmissionKey(proc,realEmitter(),realEmission(),realSpectator());
+  map<RealEmissionKey,UnderlyingBornInfo>::const_iterator k =
+    theMergingMap.find(lastRealEmissionKey);
+
+  if ( k == theMergingMap.end() )
+    return StdXCombPtr();
 
   PartonPairVec pbs = realXC->pExtractor()->getPartons(realXC->maxEnergy(), 
 						       realXC->particles(),
@@ -223,20 +307,25 @@ StdDependentXCombPtr SubtractionDipole::makeBornXComb(tStdXCombPtr realXC) {
 
   assert(ppit != pbs.end());
 
-  StdDependentXCombPtr res =
-    new_ptr(StdDependentXComb(realXC,*ppit,this,bornDiags));
-
-  return res;
+  return
+    underlyingBornME()->makeXComb(realXC,*ppit,bornDiags,this);
 
 }
 
-StdDependentXCombPtr SubtractionDipole::makeRealXComb(tStdXCombPtr bornXC) {
+vector<StdXCombPtr> SubtractionDipole::makeRealXCombs(tStdXCombPtr bornXC) {
 
   const cPDVector& proc = const_cast<const StandardXComb&>(*bornXC).mePartonData();
 
-  if ( theSplittingMap.find(underlyingBornKey(proc,bornEmitter(),bornSpectator())) ==
-       theSplittingMap.end() )
-    return StdDependentXCombPtr();
+  map<cPDVector,pair<int,int> >::const_iterator esit = theIndexMap.find(proc);
+  if ( esit == theIndexMap.end() ) 
+    return vector<StdXCombPtr>();
+  pair<int,int> es = esit->second;
+  bornEmitter(es.first);
+  bornSpectator(es.second);
+  lastUnderlyingBornKey = underlyingBornKey(proc,bornEmitter(),bornSpectator());
+
+  if ( theSplittingMap.find(lastUnderlyingBornKey) == theSplittingMap.end() )
+    return vector<StdXCombPtr>();
 
   PartonPairVec pbs = bornXC->pExtractor()->getPartons(bornXC->maxEnergy(), 
 						       bornXC->particles(),
@@ -245,17 +334,33 @@ StdDependentXCombPtr SubtractionDipole::makeRealXComb(tStdXCombPtr bornXC) {
   DiagramVector realDiags = realEmissionDiagrams(proc);
   assert(!realDiags.empty());
 
-  PartonPairVec::iterator ppit = pbs.begin();
-  for ( ; ppit != pbs.end(); ++ppit ) {
-    if ( ppit->first->parton() == realDiags.front()->partons()[0] &&
-	 ppit->second->parton() == realDiags.front()->partons()[1] )
-      break;
+  vector<StdXCombPtr> res;
+
+  map<cPDVector,DiagramVector> realProcs;
+
+  for ( MEBase::DiagramVector::const_iterator d = realDiags.begin();
+	d != realDiags.end(); ++d ) {
+    realProcs[(**d).partons()].push_back(*d);
   }
 
-  assert(ppit != pbs.end());
+  for ( map<cPDVector,DiagramVector>::const_iterator pr =
+	  realProcs.begin(); pr != realProcs.end(); ++pr ) {
 
-  StdDependentXCombPtr res =
-    new_ptr(StdDependentXComb(bornXC,*ppit,this,realDiags));
+    PartonPairVec::iterator ppit = pbs.begin();
+    for ( ; ppit != pbs.end(); ++ppit ) {
+      if ( ppit->first->parton() == pr->second.front()->partons()[0] &&
+	   ppit->second->parton() == pr->second.front()->partons()[1] )
+	break;
+    }
+
+    assert(ppit != pbs.end());
+
+    StdXCombPtr rxc =
+      realEmissionME()->makeXComb(bornXC,*ppit,pr->second,this);
+
+    res.push_back(rxc);
+
+  }
 
   return res;
 
@@ -293,7 +398,7 @@ Selector<MEBase::DiagramIndex> SubtractionDipole::diagrams(const DiagramVector &
     realEmissionME() :
     underlyingBornME();
   if ( me->phasespace() ) {
-    me->phasespace()->prepare(lastXCombPtr());
+    me->phasespace()->setXComb(lastXCombPtr());
     me->phasespace()->fillDiagramWeights();
   }
   return 
@@ -306,7 +411,7 @@ MEBase::DiagramIndex SubtractionDipole::diagram(const DiagramVector & dv) const 
     realEmissionME() :
     underlyingBornME();
   if ( me->phasespace() ) {
-    me->phasespace()->prepare(lastXCombPtr());
+    me->phasespace()->setXComb(lastXCombPtr());
     me->phasespace()->fillDiagramWeights();
   }
   return 
@@ -329,6 +434,15 @@ SubtractionDipole::selectColourGeometry(tcDiagPtr diag) const {
     underlyingBornME()->selectColourGeometry(diag);
 }
 
+void SubtractionDipole::flushCaches() {
+  theUnderlyingBornME->flushCaches();
+  theRealEmissionME->flushCaches();
+  for ( vector<Ptr<MatchboxReweightBase>::ptr>::iterator r =
+	  reweights().begin(); r != reweights().end(); ++r ) {
+    (**r).flushCaches();
+  }
+}
+
 void SubtractionDipole::setXComb(tStdXCombPtr xc) {
   if ( !xc ) {
     theApply = false;
@@ -336,6 +450,7 @@ void SubtractionDipole::setXComb(tStdXCombPtr xc) {
   } else {
     theApply = true;
   }
+  lastMatchboxXComb(xc);
   MEBase::setXComb(xc); 
   if ( splitting() ) {
     realEmissionME()->setXComb(xc);
@@ -348,9 +463,6 @@ void SubtractionDipole::setXComb(tStdXCombPtr xc) {
   }
   if ( !apply() )
     return;
-  for ( vector<Ptr<MatchboxReweightBase>::ptr>::iterator rw =
-	  theReweights.begin(); rw != theReweights.end(); ++rw )
-    (**rw).setXComb(theRealEmissionME->lastXCombPtr());
 }
 
 void SubtractionDipole::setKinematics() {
@@ -362,35 +474,34 @@ void SubtractionDipole::setKinematics() {
 }
 
 bool SubtractionDipole::generateKinematics(const double * r) {
+  if ( lastXCombPtr()->kinematicsGenerated() )
+    return true;
   if ( splitting() ) {
     if ( !generateRadiationKinematics(r) )
       return false;
-    assert(dynamic_ptr_cast<tStdDependentXCombPtr>(realEmissionME()->lastXCombPtr()));
-    dynamic_ptr_cast<tStdDependentXCombPtr>(realEmissionME()->lastXCombPtr())->setIncomingPartons();
+    realEmissionME()->lastXCombPtr()->setIncomingPartons();
     realEmissionME()->setScale();
+    double jac = jacobian();
+    jac *= pow(underlyingBornME()->lastXComb().lastSHat() / realEmissionME()->lastXComb().lastSHat(),
+	       realEmissionME()->lastXComb().mePartonData().size()-4.);
+    jacobian(jac);
     assert(lastXCombPtr() == realEmissionME()->lastXCombPtr());
+    lastXCombPtr()->didGenerateKinematics();
     return true;
   }
   if ( !generateTildeKinematics() )
     return false;
   underlyingBornME()->setScale();
   assert(lastXCombPtr() == underlyingBornME()->lastXCombPtr());
-  assert(dynamic_ptr_cast<tStdDependentXCombPtr>(underlyingBornME()->lastXCombPtr()));
-  dynamic_ptr_cast<tStdDependentXCombPtr>(underlyingBornME()->lastXCombPtr())->setIncomingPartons();
+  underlyingBornME()->lastXCombPtr()->setIncomingPartons();
+  lastXCombPtr()->didGenerateKinematics();
   return true;
 }
 
 int SubtractionDipole::nDim() const {
   if ( !splitting() )
     return underlyingBornME()->nDim();
-  int alldim =
-    underlyingBornME()->nDim() + nDimRadiation();
-  // don't mess with random number for collinear remainders
-  // see MEGroup.cc:55 and MatchboxNLOME
-  if ( underlyingBornME()->diagrams().front()->partons()[0]->coloured() ||
-       underlyingBornME()->diagrams().front()->partons()[1]->coloured() )
-    ++alldim;
-  return alldim;
+  return underlyingBornME()->nDim() + nDimRadiation();
 }
 
 void SubtractionDipole::clearKinematics() {
@@ -441,6 +552,13 @@ bool SubtractionDipole::generateTildeKinematics() {
   meMomenta()[bornEmitter()] = tildeKinematics()->bornEmitterMomentum();
   meMomenta()[bornSpectator()] = tildeKinematics()->bornSpectatorMomentum();
 
+  cPDVector::const_iterator pd = mePartonData().begin();
+  vector<Lorentz5Momentum>::iterator p = meMomenta().begin();
+  for ( ; pd != mePartonData().end(); ++pd, ++p ) {
+    p->setMass((**pd).mass());
+    p->rescaleRho();
+  }
+
   jacobian(realEmissionME()->lastXComb().jacobian());
 
   logGenerateTildeKinematics();
@@ -481,7 +599,7 @@ bool SubtractionDipole::generateRadiationKinematics(const double * r) {
   meMomenta().resize(lastHeadXComb().meMomenta().size() + 1);
 
   assert(splittingMap().find(lastUnderlyingBornKey) != splittingMap().end());
-  map<int,int>& trans = theSplittingMap[lastUnderlyingBornKey].second;
+  map<int,int>& trans = const_cast<map<int,int>&>(lastRealEmissionInfo->second.second);
 
   int n = lastHeadXComb().meMomenta().size();
   for ( int k = 0; k < n; ++k ) {
@@ -496,6 +614,13 @@ bool SubtractionDipole::generateRadiationKinematics(const double * r) {
   meMomenta()[realEmission()] = invertedTildeKinematics()->realEmissionMomentum();
   meMomenta()[realSpectator()] = invertedTildeKinematics()->realSpectatorMomentum();
 
+  cPDVector::const_iterator pd = mePartonData().begin();
+  vector<Lorentz5Momentum>::iterator p = meMomenta().begin();
+  for ( ; pd != mePartonData().end(); ++pd, ++p ) {
+    p->setMass((**pd).mass());
+    p->rescaleRho();
+  }
+
   jacobian(underlyingBornME()->lastXComb().jacobian() *
 	   invertedTildeKinematics()->jacobian());
 
@@ -509,73 +634,57 @@ void SubtractionDipole::ptCut(Energy cut) {
   theInvertedTildeKinematics->ptCut(cut);
 }
 
-CrossSection SubtractionDipole::dSigAvgDR(Energy2 factorizationScale) const {
-
-  assert(splitting());
-
-  double jac = jacobian();
-
-  if ( jac == 0.0 )
-    return ZERO;
-
-  jac *= pow(underlyingBornME()->lastXComb().lastSHat() / realEmissionME()->lastXComb().lastSHat(),
-	     realEmissionME()->lastXComb().mePartonData().size()-4.);
-
-  if ( havePDFWeight1() || havePDFWeight2() ) {
-    realEmissionME()->getPDFWeight(factorizationScale);
-  }
-
-  assert(lastHeadXComb().hasMeta(MatchboxMetaKeys::ColourCorrelatedMEs));
-
-  map<pair<int,int>,double>& ccmap = 
-    lastHeadXComb().meta<map<pair<int,int>,double> >(MatchboxMetaKeys::ColourCorrelatedMEs);
-
-  pair<int,int> cfg(bornEmitter(),bornSpectator());
-  if ( cfg.first > cfg.second )
-    swap(cfg.first,cfg.second);
-
-  assert(ccmap.find(cfg) != ccmap.end());
-
-  double ccme2 = ccmap[cfg];
-  double xme2 = me2Avg(ccme2);
-
-  if ( xme2 == 0.0 ) {
-    lastMECrossSection(ZERO);
-    lastME2(0.0);
-    return ZERO;
-  }
-
-  CrossSection res = 
-    sqr(hbarc) * jac * lastMEPDFWeight() * xme2 /
-    (2. * lastSHat());
-
-  lastMECrossSection(res);
-
-  return lastMECrossSection();
-
-}
-
 CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
 
   double pdfweight = 1.;
 
   double jac = jacobian();
 
-  if ( splitting() && jac == 0.0 )
+  if ( splitting() && jac == 0.0 ) {
+    lastMECrossSection(ZERO);
+    lastME2(0.0);
     return ZERO;
-
-  if ( splitting() )
-    jac *= pow(underlyingBornME()->lastXComb().lastSHat() / realEmissionME()->lastXComb().lastSHat(),
-	       realEmissionME()->lastXComb().mePartonData().size()-4.);
-
-  if ( havePDFWeight1() || havePDFWeight2() ) {
-    if ( splitting() )
-      realEmissionME()->getPDFWeight(factorizationScale);
-    pdfweight = realEmissionME()->lastXComb().lastMEPDFWeight();
-    lastMEPDFWeight(pdfweight);
   }
 
-  double xme2 = me2();
+  if ( factorizationScale == ZERO ) {
+    if ( realEmissionScales() )
+      factorizationScale = realEmissionME()->lastScale();
+    else
+      factorizationScale = underlyingBornME()->lastScale();
+  }
+
+  if ( havePDFWeight1() ) {
+    pdfweight *= realEmissionME()->pdf1(factorizationScale);
+  }
+ 
+  if ( havePDFWeight2() ) {
+    pdfweight *= realEmissionME()->pdf2(factorizationScale);
+  }
+
+  lastMEPDFWeight(pdfweight);
+
+  if ( showerApproximation() && realShowerSubtraction() ) {
+    assert(!splitting());
+    showerApproximation()->setBornXComb(lastXCombPtr());
+    showerApproximation()->setRealXComb(realEmissionME()->lastXCombPtr());
+    showerApproximation()->setDipole(this);
+    if ( !showerApproximation()->isAboveCutoff() )
+      showerApproximation()->wasBelowCutoff();
+    if ( !showerApproximation()->isInShowerPhasespace() ) {
+      lastMECrossSection(ZERO);
+      lastME2(0.0);
+      return ZERO;   
+    }
+    lastMECrossSection(-showerApproximation()->dSigHatDR());
+    return lastMECrossSection();
+  }
+
+  double xme2 = 0.0;
+
+  if ( !showerKernel() )
+    xme2 = me2();
+  else
+    xme2 = me2Avg(-underlyingBornME()->me2());
 
   if ( xme2 == 0.0 ) {
     lastMECrossSection(ZERO);
@@ -583,26 +692,67 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
     return ZERO;
   }
 
-  if ( splitting() )
-    xme2 = abs(xme2);
+  double coupl = lastMECouplings();
+  coupl *= underlyingBornME()->lastXComb().lastAlphaS();
+
+  if ( realEmissionScales() ) {
+
+    double rws =
+      pow(realEmissionME()->lastXComb().lastAlphaS()/
+	  underlyingBornME()->lastXComb().lastAlphaS(),
+	  realEmissionME()->orderInAlphaS());
+
+    xme2 *= rws;
+    coupl *= rws;
+
+    double rwe =
+      pow(realEmissionME()->lastXComb().lastAlphaEM()/
+	  underlyingBornME()->lastXComb().lastAlphaEM(),
+	  underlyingBornME()->orderInAlphaEW());
+
+    xme2 *= rwe;
+    coupl *= rwe;
+
+  }
+
+  lastMECouplings(coupl);
+  lastME2(xme2);
 
   CrossSection res = 
     sqr(hbarc) * jac * pdfweight * xme2 /
     (2. * realEmissionME()->lastXComb().lastSHat());
 
-  double weight = 0.0;
-  for ( vector<Ptr<MatchboxReweightBase>::ptr>::const_iterator rw =
-	  theReweights.begin(); rw != theReweights.end(); ++rw )
-    weight += (**rw).evaluate();
-
-  if ( !theReweights.empty() ) {
-    res *= weight;
+  if ( !showerApproximation() ) {
+    double weight = 0.0;
+    bool applied = false;
+    for ( vector<Ptr<MatchboxReweightBase>::ptr>::const_iterator rw =
+	    theReweights.begin(); rw != theReweights.end(); ++rw ) {
+      (**rw).setXComb(theRealEmissionME->lastXCombPtr());
+      if ( !(**rw).apply() )
+	continue;
+      weight += (**rw).evaluate();
+      applied = true;
+    }
+    if ( applied )
+      res *= weight;
   }
 
-  if ( splitting() )
-    lastMECrossSection(res);
-  else
-    lastMECrossSection(-res);
+  if ( showerApproximation() && virtualShowerSubtraction() ) {
+    assert(!splitting());
+    showerApproximation()->setBornXComb(lastXCombPtr());
+    showerApproximation()->setRealXComb(realEmissionME()->lastXCombPtr());
+    showerApproximation()->setDipole(this);
+    if ( !showerApproximation()->isAboveCutoff() )
+      showerApproximation()->wasBelowCutoff();
+    else
+      lastME2(0.0);
+    CrossSection shower = ZERO;
+    if ( showerApproximation()->isInShowerPhasespace() )
+      shower = showerApproximation()->dSigHatDR();
+    res -= shower;
+  }
+
+  lastMECrossSection(-res);
 
   logDSigHatDR(jac);
 
@@ -751,42 +901,6 @@ void SubtractionDipole::logDSigHatDR(double effectiveJac) const {
 		     << (lastMECrossSection()/nanobarn) << "\n" << flush;
 
 }
-
-void SubtractionDipole::dumpInfo(const string& prefix) const {
-  generator()->log() << prefix << fullName()
-		     << " [" << this << "]\n";
-  generator()->log() << prefix << "  | XComb " << lastXCombPtr()
-		     << " for ";
-  if ( lastXCombPtr() ) {
-    for ( cPDVector::const_iterator p = lastXComb().mePartonData().begin();
-	  p != lastXComb().mePartonData().end(); ++p ) {
-      generator()->log() << (**p).PDGName() << " ";
-    }
-  }
-  generator()->log() << "\n";
-  generator()->log() << prefix << "  | Applies? "
-		     << (apply() ? "yes" : "no")
-		     << "\n";
-  generator()->log() << prefix << "  | Splitting? "
-		     << (splitting() ? "yes" : "no")
-		     << "\n";
-  generator()->log() << prefix << "  | Real emission ME\n";
-  realEmissionME()->dumpInfo(prefix+"  | ");
-  generator()->log() << prefix << "  | Born ME\n";
-  underlyingBornME()->dumpInfo(prefix+"  | ");
-  generator()->log() << prefix << "  | Tilde kinematics\n";
-  tildeKinematics()->dumpInfo(prefix+"  | ");
-  generator()->log() << prefix << "  | Inverted tilde kinematics\n";
-  invertedTildeKinematics()->dumpInfo(prefix+"  | ");
-  if ( !reweights().empty() ) {
-    generator()->log() << prefix << "  | Reweights\n";
-    for ( vector<Ptr<MatchboxReweightBase>::ptr>::const_iterator r =
-	    reweights().begin(); r != reweights().end(); ++r ) {
-      (**r).dumpInfo(prefix+"  | ");
-    }
-  }
-}
-
 
 void SubtractionDipole::logGenerateTildeKinematics() const {
 
@@ -965,25 +1079,40 @@ void SubtractionDipole::generateSubCollision(SubProcess & sub) {
 }
 
 void SubtractionDipole::persistentOutput(PersistentOStream & os) const {
-  os << theSplitting << theApply << theSubtractionTest << theRealEmissionME << theUnderlyingBornME
-     << theTildeKinematics << theInvertedTildeKinematics << theReweights
-     << theRealEmitter << theRealEmission << theRealSpectator
-     << theSubtractionParameters
-     << theMergingMap << theSplittingMap << theIndexMap
-     << theUnderlyingBornDiagrams << theRealEmissionDiagrams
-     << lastRealEmissionKey << lastUnderlyingBornKey
-     << theBornEmitter << theBornSpectator;
+  os << theLastXComb << theSplitting << theApply << theSubtractionTest 
+     << theIgnoreCuts << theShowerKernel << theRealEmissionME << theUnderlyingBornME 
+     << thePartners << theTildeKinematics << theInvertedTildeKinematics 
+     << theReweights << theRealEmitter << theRealEmission << theRealSpectator 
+     << theSubtractionParameters << theMergingMap << theSplittingMap 
+     << theIndexMap << theUnderlyingBornDiagrams << theRealEmissionDiagrams 
+     << lastRealEmissionKey << lastUnderlyingBornKey 
+     << theBornEmitter << theBornSpectator << ounit(theLastSubtractionScale,GeV) 
+     << ounit(theLastSplittingScale,GeV) << ounit(theLastSubtractionPt,GeV) 
+     << ounit(theLastSplittingPt,GeV) << theShowerApproximation 
+     << theRealShowerSubtraction << theVirtualShowerSubtraction 
+     << theRealEmissionScales;
 }
 
 void SubtractionDipole::persistentInput(PersistentIStream & is, int) {
-  is >> theSplitting >> theApply >> theSubtractionTest >> theRealEmissionME >> theUnderlyingBornME
-     >> theTildeKinematics >> theInvertedTildeKinematics >> theReweights
-     >> theRealEmitter >> theRealEmission >> theRealSpectator
-     >> theSubtractionParameters
-     >> theMergingMap >> theSplittingMap >> theIndexMap
-     >> theUnderlyingBornDiagrams >> theRealEmissionDiagrams
-     >> lastRealEmissionKey >> lastUnderlyingBornKey
-     >> theBornEmitter >> theBornSpectator;
+  is >> theLastXComb >> theSplitting >> theApply >> theSubtractionTest 
+     >> theIgnoreCuts >> theShowerKernel >> theRealEmissionME >> theUnderlyingBornME 
+     >> thePartners >> theTildeKinematics >> theInvertedTildeKinematics 
+     >> theReweights >> theRealEmitter >> theRealEmission >> theRealSpectator 
+     >> theSubtractionParameters >> theMergingMap >> theSplittingMap 
+     >> theIndexMap >> theUnderlyingBornDiagrams >> theRealEmissionDiagrams 
+     >> lastRealEmissionKey >> lastUnderlyingBornKey 
+     >> theBornEmitter >> theBornSpectator >> iunit(theLastSubtractionScale,GeV) 
+     >> iunit(theLastSplittingScale,GeV) >> iunit(theLastSubtractionPt,GeV) 
+     >> iunit(theLastSplittingPt,GeV) >> theShowerApproximation 
+     >> theRealShowerSubtraction >> theVirtualShowerSubtraction 
+     >> theRealEmissionScales;
+  lastMatchboxXComb(theLastXComb);
+  typedef multimap<UnderlyingBornKey,RealEmissionInfo>::const_iterator spit;
+  pair<spit,spit> kr = theSplittingMap.equal_range(lastUnderlyingBornKey);
+  lastRealEmissionInfo = kr.first;
+  for ( ; lastRealEmissionInfo != kr.second; ++lastRealEmissionInfo )
+    if ( process(lastRealEmissionInfo->second.first) == lastXComb().mePartonData() )
+      break;
 }
 
 void SubtractionDipole::Init() {
@@ -991,32 +1120,6 @@ void SubtractionDipole::Init() {
   static ClassDocumentation<SubtractionDipole> documentation
     ("SubtractionDipole represents a dipole subtraction "
      "term in the formalism of Catani and Seymour.");
-
-  static Reference<SubtractionDipole,MatchboxMEBase> interfaceUnderlyingBornME
-    ("UnderlyingBornME",
-     "The underlying Born matrix element.",
-     &SubtractionDipole::theUnderlyingBornME, false, false, true, true, false);
-
-  static Reference<SubtractionDipole,MatchboxMEBase> interfaceRealEmissionME
-    ("RealEmissionME",
-     "The real emission matrix element.",
-     &SubtractionDipole::theRealEmissionME, false, false, true, true, false);
-
-
-  static Reference<SubtractionDipole,TildeKinematics> interfaceTildeKinematics
-    ("TildeKinematics",
-     "Set the TildeKinematics object to be used.",
-     &SubtractionDipole::theTildeKinematics, false, false, true, false, false);
-
-  static Reference<SubtractionDipole,InvertedTildeKinematics> interfaceInvertedTildeKinematics
-    ("InvertedTildeKinematics",
-     "Set the InvertedTildeKinematics object to be used.",
-     &SubtractionDipole::theInvertedTildeKinematics, false, false, true, true, false);
-
-  static RefVector<SubtractionDipole,MatchboxReweightBase> interfaceReweights
-    ("Reweights",
-     "Reweight objects to be applied to this matrix element.",
-     &SubtractionDipole::theReweights, -1, false, false, true, true, false);
 
 }
 

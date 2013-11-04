@@ -22,20 +22,17 @@ using namespace Herwig;
 void MSSM::persistentOutput(PersistentOStream & os) const {
   os << theStopMix << theSbotMix << theStauMix << theAlpha 
      << ounit(theAtop,GeV) << ounit(theAbottom,GeV) << ounit(theAtau,GeV) 
-     << theHiggsMix;
+     << theHiggsMix << HiggsAMix_ << HiggsPMix_;
 }
 
 void MSSM::persistentInput(PersistentIStream & is, int) {
   is >> theStopMix >> theSbotMix >> theStauMix >> theAlpha 
      >> iunit(theAtop,GeV) >> iunit(theAbottom,GeV) >> iunit(theAtau,GeV) 
-     >> theHiggsMix;
+     >> theHiggsMix >> HiggsAMix_ >> HiggsPMix_;
 }
 
-// *** Attention *** The following static variable is needed for the type
-// description system in ThePEG. Please check that the template arguments
-// are correct (the class and its base class), and that the constructor
-// arguments are correct (the class name and the name of the dynamically
-// loadable library where the class implementation can be found).
+// The following static variable is needed for the type
+// description system in ThePEG.
 DescribeClass<MSSM,SusyBase>
 describeMSSM("Herwig::MSSM", "HwSusy.so");
 
@@ -77,21 +74,39 @@ void MSSM::createMixingMatrices() {
       createMixingMatrix(theStauMix,name,it->second.second,it->second.first);
     }
     // Higgs mixing matrix in extended models
-    else if (name == "nmhmix") {
+    else if (name == "nmhmix" || name == "rvhmix") {
       createMixingMatrix(theHiggsMix,name,it->second.second,it->second.first);
     }
   }
   // neutral higgs mixing if not already set
   if(!theHiggsMix) {
     MixingVector hmix;
-    hmix.push_back(MixingElement(1,1, cos(theAlpha)));
-    hmix.push_back(MixingElement(1,2, sin(theAlpha)));
-    hmix.push_back(MixingElement(2,1,-sin(theAlpha)));
-    hmix.push_back(MixingElement(2,2, cos(theAlpha)));
+    hmix.push_back(MixingElement(2,1, cos(theAlpha)));
+    hmix.push_back(MixingElement(2,2, sin(theAlpha)));
+    hmix.push_back(MixingElement(1,1,-sin(theAlpha)));
+    hmix.push_back(MixingElement(1,2, cos(theAlpha)));
     vector<long> ids(2);
     ids[0] = 25; ids[1] = 35;
     theHiggsMix = new_ptr(MixingMatrix(2,2));
     (*theHiggsMix).setIds(ids);
+    for(unsigned int ix=0; ix < hmix.size(); ++ix)
+      (*theHiggsMix)(hmix[ix].row-1,hmix[ix].col-1) = hmix[ix].value;
+    hmix.clear();
+    double beta = atan(tanBeta());
+    hmix.push_back(MixingElement(1,1,sin(beta)));
+    hmix.push_back(MixingElement(1,2,cos(beta)));
+    ids.clear();
+    ids.resize(1,37);
+    HiggsPMix_ = new_ptr(MixingMatrix(1,2));
+    (*HiggsPMix_).setIds(ids);
+    for(unsigned int ix=0; ix < hmix.size(); ++ix)
+      (*HiggsPMix_)(hmix[ix].row-1,hmix[ix].col-1) = hmix[ix].value;
+    ids.clear();
+    ids.resize(1,36);
+    HiggsAMix_ = new_ptr(MixingMatrix(1,2));
+    (*HiggsAMix_).setIds(ids);
+    for(unsigned int ix=0; ix < hmix.size(); ++ix)
+      (*HiggsAMix_)(hmix[ix].row-1,hmix[ix].col-1) = hmix[ix].value;
   }
   // base class for neutralinos and charginos
   SusyBase::createMixingMatrices();
@@ -176,16 +191,21 @@ void MSSM::extractParameters(bool checkmodel) {
   // flavour violation
   jt = pit->second.find(6);
   int ifv = jt!=pit->second.end() ? int(jt->second) : 0;
-  // the higgs mixing angle if not NMSSM
+  // the higgs mixing angle 
   theAlpha=0.;
-  if(inmssm==0) {
-    map<string,ParamMap>::const_iterator pit;
-    pit=parameters().find("alpha");
-    if(pit!=parameters().end()) {
-      ParamMap::const_iterator it = pit->second.find(1);
-      if(it!=pit->second.end()) theAlpha=it->second;
+  bool readAlpha = false;
+  pit=parameters().find("alpha");
+  if(pit!=parameters().end()) {
+    ParamMap::const_iterator it = pit->second.find(1);
+    if(it!=pit->second.end()) {
+      readAlpha = true;
+      theAlpha=it->second;
     }
   }
+  if(inmssm==0&&irpv==0&&!readAlpha) 
+    throw Exception() << "In the MSSM model BLOCK ALPHA which must be"
+		      << " present in the SLHA file is missing"
+		      << Exception::runerror;
   if(checkmodel) {
     if(inmssm!=0) throw Exception() << "R-parity, CP and flavour conserving MSSM model"
 				    << " used but NMSSM read in " 

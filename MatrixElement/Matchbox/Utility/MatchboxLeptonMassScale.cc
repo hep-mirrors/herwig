@@ -68,6 +68,10 @@ Energy2 MatchboxLeptonMassScale::factorizationScale() const {
   return renormalizationScale();
 }
 
+Energy2 MatchboxLeptonMassScale::renormalizationScaleQED() const {
+  return renormalizationScale();
+}
+
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 

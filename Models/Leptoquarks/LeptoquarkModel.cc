@@ -24,7 +24,23 @@ void LeptoquarkModel::doinit()  {
   BSMModel::doinit();
 }
 
-LeptoquarkModel::LeptoquarkModel() :  _CouplFF(0.312), _leftcoup(1.0), _rightcoup(1.0), _rightcouptilde(1.0), _leftcoup1(1.0) , _leftcoup12(1.0), _rightcoup12(1.0), _leftcoup12t(1.0), _dleftcoup(1.0), _drightcoup(1.0), _drightcouptilde(1.0), _dleftcoup1(1.0) , _dleftcoup12(1.0), _drightcoup12(1.0), _dleftcoup12t(1.0), _derivscalef(500.0) {}
+LeptoquarkModel::LeptoquarkModel() :  _CouplFF(0.312), 
+				      _leftcoup(1.0), 
+				      _rightcoup(1.0), 
+				      _rightcouptilde(1.0), 
+				      _leftcoup1(1.0) , 
+				      _leftcoup12(1.0), 
+				      _rightcoup12(1.0), 
+				      _leftcoup12t(1.0), 
+				      _dleftcoup(1.0), 
+				      _drightcoup(1.0), 
+				      _drightcouptilde(1.0), 
+				      _dleftcoup1(1.0) , 
+				      _dleftcoup12(1.0), 
+				      _drightcoup12(1.0), 
+				      _dleftcoup12t(1.0), 
+				      _derivscalef(500.0*GeV) 
+{}
 
 
 IBPtr LeptoquarkModel::clone() const {
@@ -58,7 +74,7 @@ void LeptoquarkModel::persistentOutput(PersistentOStream & os) const {
      << _dleftcoup12
      << _drightcoup12
      << _dleftcoup12t
-     << _derivscalef;
+     << ounit(_derivscalef,GeV);
 
     
   
@@ -83,7 +99,7 @@ void LeptoquarkModel::persistentInput(PersistentIStream & is, int) {
      >> _dleftcoup12
      >> _drightcoup12
      >> _dleftcoup12t
-     >> _derivscalef;
+     >> iunit(_derivscalef,GeV);
     
   
 }
@@ -199,10 +215,10 @@ void LeptoquarkModel::Init() {
      &LeptoquarkModel::_dleftcoup12t, 1.0, 0., 1.0,
      false, false, Interface::limited);
 
-  static Parameter<LeptoquarkModel, double> interfaceDerivativeScale
+  static Parameter<LeptoquarkModel, Energy> interfaceDerivativeScale
     ("derivscale",
      "The suppression scale for the derivatively coupled leptoquarks",
-     &LeptoquarkModel::_derivscalef, 500.0, 0., 10000.0,
+     &LeptoquarkModel::_derivscalef, GeV, 500.0*GeV, ZERO, 10000.0*GeV,
      false, false, Interface::limited);
 
 

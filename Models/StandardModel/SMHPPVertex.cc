@@ -159,7 +159,8 @@ void SMHPPVertex::setCoupling(Energy2 q2, tcPDPtr part2,
     // W
     type.push_back(PDT::Spin1);
     masses.push_back(_mw);
-    couplings.push_back(make_pair(UnitRemoval::InvE*_mw, UnitRemoval::InvE*_mw));
+    const double mw = UnitRemoval::InvE*_mw;
+    couplings.push_back(make_pair(mw,mw));
     setNParticles(delta+2);
     VVSLoopVertex::setCoupling(q2, part1, part2, part3);
     break;
@@ -276,6 +277,6 @@ void SMHPPVertex::doinit() {
 //   Energy width = sqr(weakCoupling(sqr(mh))*sqr(electroMagneticCoupling(sqr(mh))))
 //     /1024./pow(Constants::pi,5)/16.*sqr(mh/_mw)*mh*std::norm(I);
 //   cerr << "testing anal " << width/GeV << "\n";
-  Looptools::ltexi();
+  if(loopToolsInitialized()) Looptools::ltexi();
 }
 

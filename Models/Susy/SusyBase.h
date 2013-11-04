@@ -31,6 +31,11 @@ using namespace ThePEG;
    * Map to hold key, parameter pairs. 
    */
   typedef map<long, double> ParamMap;
+
+  /**
+   * Map to hold key, string pairs
+   */
+  typedef map<long,string> StringMap;
   //@}
 
 /** \ingroup Models
@@ -92,6 +97,11 @@ public:
    */
   const Complex & gluinoPhase() const {return gluinoPhase_;}
   //@}
+
+  /**
+   *  Treatment of neutrinos
+   */
+  bool majoranaNeutrinos() const {return majoranaNeutrinos_;}
 
 public:
 
@@ -249,7 +259,8 @@ private:
    * @param name The name of the block
    * @param line The line defining the block
    */
-  void readBlock(CFileLineReader & ifs,string name,string line);
+  void readBlock(CFileLineReader & ifs,string name,string line,
+		 bool stringBlock);
 
   /**
    * Function to read mixing matrix from LHA file
@@ -307,6 +318,13 @@ protected:
   }
 
   /**
+   *  Info blocks
+   */
+  const map<string,StringMap> & info() const {
+    return info_;
+  }
+
+  /**
    *  Mixing blocks
    */
   const map<string,pair<MatrixSize,MixingVector> > & mixings() const {
@@ -328,6 +346,29 @@ protected:
    *  Reset the V-type chargino mixing matrix
    */
   void charginoVMix(MixingMatrixPtr vm) { VMix_ = vm; }
+
+  /**
+   *  Read a parameter from a block, checking that the
+   *  entry exists
+   */
+  double findValue(const map<string,ParamMap>::const_iterator pit,
+		   int iloc, const string & block,
+		   const string & name) {
+    ParamMap::const_iterator it = pit->second.find(iloc);
+    if(it!=pit->second.end()) {
+      return it->second;
+    }
+    else {
+      ostringstream message;
+      message << "SusyBase::findValue() Parameter " << name << " = " << iloc 
+      	      << " not found in BLOCK " << block << "\n"; 
+      if(generator()) 
+	generator()->logWarning( Exception(message.str(), Exception::warning) );
+      else
+	cerr << message.str();
+      return 0.;
+    }
+  }
   
 protected:
 
@@ -361,12 +402,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<SusyBase> initSusyBase;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -375,7 +410,7 @@ private:
 private:
 
   /**
-   *  Whether or not the SLHA fiel has been read
+   *  Whether or not the SLHA file has been read
    */
   bool readFile_;
 
@@ -389,6 +424,11 @@ private:
    */
   bool gravitino_;
 
+  /**
+   *  Treatment of the neutrinos
+   */
+  bool majoranaNeutrinos_;
+ 
   /*
    * Storage of the parameters.
    */
@@ -397,6 +437,11 @@ private:
    *  Parameter blocks
    */
   map<string,ParamMap> parameters_;
+
+  /**
+   *  Info blocks
+   */
+  map<string,StringMap> info_;
 
   /**
    *  Mixing blocks
@@ -586,6 +631,11 @@ private:
   AbstractVVSSVertexPtr GGSQSQVertex_;
 
   /**
+   * Pointer to the gauge boson-gluon-squark-squark vertex;
+   */
+  AbstractVVSSVertexPtr WGSQSQVertex_;
+
+  /**
    * Pointer to the gluon-gluino-gluino vertex
    */
   AbstractFFVVertexPtr GSGSGVertex_; 
@@ -648,41 +698,5 @@ private:
 };
 
 }
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of SusyBase. */
-template <>
-struct BaseClassTrait<Herwig::SusyBase,1> {
-  /** Typedef of the first base class of SusyBase. */
-  typedef Herwig::BSMModel NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the SusyBase class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::SusyBase>
-  : public ClassTraitsBase<Herwig::SusyBase> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::SusyBase"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * SusyBase is implemented. It may also include several, space-separated,
-   * libraries if the class SusyBase depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwSusy.so"; }
-};
-
-/** @endcond */
-
-}
-
 
 #endif /* HERWIG_SusyBase_H */

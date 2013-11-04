@@ -27,12 +27,8 @@ void MEfv2vf::doinit() {
   GeneralHardME::doinit();
   fermion_.resize(numberOfDiags());
   vector_.resize(numberOfDiags());
-  flowME().resize(numberOfFlows(),
-		  ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1, 
-					  PDT::Spin1, PDT::Spin1Half));
-  diagramME().resize(numberOfDiags(),
-		     ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1, 
-					     PDT::Spin1, PDT::Spin1Half));
+  initializeMatrixElements(PDT::Spin1Half, PDT::Spin1, 
+			   PDT::Spin1, PDT::Spin1Half);
   for(HPCount ix = 0; ix < numberOfDiags(); ++ix) {
     HPDiagram diagram = getProcessInfo()[ix];
     PDT::Spin offspin = diagram.intermediate->iSpin();
@@ -55,16 +51,6 @@ void MEfv2vf::doinit() {
       }
     }
   }
-}
-
-void MEfv2vf::doinitrun() {
-  GeneralHardME::doinitrun();
-  flowME().resize(numberOfFlows(),
-		  ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1, 
-					  PDT::Spin1, PDT::Spin1Half));
-  diagramME().resize(numberOfDiags(),
-		     ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1, 
-					     PDT::Spin1, PDT::Spin1Half));
 }
 
 double MEfv2vf::me2() const {
@@ -139,8 +125,10 @@ MEfv2vf::fv2vfHeME(const SpinorVector & spIn,  const VBVector & vecIn,
 	    if(current.channelType == HPDiagram::tChannel) {
 	      //t-chan spin-1/2
 	      if(offshell->iSpin() == PDT::Spin1Half) {
+		if(offshell->CC()) offshell = offshell->CC();
+		unsigned int iopt = abs(offshell->id())==abs(spIn[ifh].particle()->id()) ? 5 : 3;
 		SpinorBarWaveFunction interFB = fermion_[ix].second->
-		  evaluate(q2, 3, offshell, spbOut[ofh], vecIn[ivh]);
+		  evaluate(q2, iopt, offshell, spbOut[ofh], vecIn[ivh]);
 		diag = fermion_[ix].first->
 		  evaluate(q2, spIn[ifh], interFB, vecOut[ovh]);
 	      }
@@ -154,8 +142,10 @@ MEfv2vf::fv2vfHeME(const SpinorVector & spIn,  const VBVector & vecIn,
 		diag = 0.0;
 	    }
 	    else if(current.channelType == HPDiagram::sChannel) {
+	      if(offshell->CC()) offshell = offshell->CC();
+	      unsigned int iopt = abs(offshell->id())==abs(spIn[ifh].particle()->id()) ? 5 : 1;
 	      SpinorBarWaveFunction interFB = fermion_[ix].second->
-		evaluate(q2, 1, offshell, spbOut[ofh], vecOut[ovh]);
+		evaluate(q2, iopt, offshell, spbOut[ofh], vecOut[ovh]);
 	      diag = fermion_[ix].first->
 		evaluate(q2, spIn[ifh], interFB, vecIn[ivh]);
 	    }
@@ -270,6 +260,8 @@ void MEfv2vf::persistentOutput(PersistentOStream & os) const {
 
 void MEfv2vf::persistentInput(PersistentIStream & is, int) {
   is >> fermion_ >> vector_;
+  initializeMatrixElements(PDT::Spin1Half, PDT::Spin1, 
+			   PDT::Spin1, PDT::Spin1Half);
 }
 
 ClassDescription<MEfv2vf> MEfv2vf::initMEfv2vf;

@@ -59,7 +59,7 @@ void SMHGGVertex::doinit() {
 //   Energy width = sqr(weakCoupling(sqr(mh))*sqr(strongCoupling(sqr(mh))))/36./8.*sqr(mh/_mw)*mh
 //     /sqr(4.*sqr(Constants::pi))*std::norm(I)/Constants::pi;
 //   cerr << "testing anal " << width/GeV << "\n";
-  Looptools::ltexi();
+  if(loopToolsInitialized()) Looptools::ltexi();
 }
 
 void SMHGGVertex::persistentOutput(PersistentOStream & os) const {
@@ -184,11 +184,13 @@ void SMHGGVertex::setCoupling(Energy2 q2, tcPDPtr part2, tcPDPtr part3, tcPDPtr 
     int delta = Qmaxloop - Qminloop + 1;
     type.resize(delta,PDT::SpinUnknown);
     masses.resize(delta,ZERO);
+    couplings.clear();
     for (int i = 0; i < delta; ++i) {
       tcPDPtr q = getParticleData(_minloop+i);
       type[i] = PDT::Spin1Half;
       masses[i] = (2 == massopt) ? _theSM->mass(q2,q) : q->mass();
-      couplings.push_back(make_pair(masses[i]/_mw, masses[i]/_mw));
+      const double ratio = masses[i]/_mw;
+      couplings.push_back(make_pair(ratio, ratio));
     }
     setNParticles(delta);
     VVSLoopVertex::setCoupling(q2, part1, part2, part3);

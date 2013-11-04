@@ -20,7 +20,7 @@ using namespace ThePEG;
 
 /**
  * \ingroup DipoleShower
- * \author Simon Platzer and Martin Stoll
+ * \author Simon Platzer
  *
  * \brief FFMassiveKinematics implements massive splittings
  * off a final-final dipole.
@@ -59,6 +59,15 @@ public:
   virtual pair<double,double> xiSupport(const DipoleSplittingInfo& dIndex) const;
 
   /**
+   * Return the boundaries on the momentum fraction
+   */
+  virtual pair<double,double> zBoundaries(Energy,
+					  const DipoleSplittingInfo&,
+					  const DipoleSplittingKernel&) const {
+    return make_pair(0.0,1.0);
+  }
+
+  /**
    * Return the dipole scale associated to the
    * given pair of emitter and spectator. This
    * should be the invariant mass or absolute value
@@ -82,7 +91,8 @@ public:
    */
   virtual Energy QMax(Energy dScale, 
 		      double emX, double specX,
-		      const DipoleIndex& dIndex) const;
+		      const DipoleIndex& dIndex,
+		      const DipoleSplittingKernel& split) const;
 
   /**
    * Return the pt given a virtuality.
@@ -99,7 +109,9 @@ public:
    * the given pt.
    */
   virtual double ptToRandom(Energy pt, Energy dScale,
-			    const DipoleIndex& dIndex) const;
+			    double emX, double specX,
+			    const DipoleIndex& dIndex,
+			    const DipoleSplittingKernel& split) const;
 
   /**
    * Generate splitting variables given three random numbers
@@ -107,22 +119,8 @@ public:
    * Return true on success.
    */
   virtual bool generateSplitting(double kappa, double xi, double phi,
-				 DipoleSplittingInfo& dIndex);
-
-  /**
-   * For the splitting products present in the given dipole splitting
-   * info object calculate the kinematics parameters and return the
-   * propagator factor.
-   */
-  virtual InvEnergy2 setKinematics(DipoleSplittingInfo&) const;
-
-  /**
-   * For the splitting parameters given in the dipole splitting info
-   * object, calculate the phasespace Jacobian times the propagator
-   * factor.
-   */
-  virtual double jacobianTimesPropagator(const DipoleSplittingInfo&,
-					 Energy) const;
+				 DipoleSplittingInfo& dIndex,
+				 const DipoleSplittingKernel& split);
 
   /**
    * Generate the full kinematics given emitter and
@@ -141,6 +139,23 @@ public:
   template <class T>
   inline double rootOfKallen (T a, T b, T c) const {
     return sqrt( a*a + b*b + c*c - 2.*( a*b+a*c+b*c ) ); }
+  
+  /**
+   * Perform a rotation on both momenta such that the first one will
+   * point along the (positive) z axis. Rotate back to the original
+   * reference frame by applying rotateUz(returnedVector) to each momentum.
+   */
+  ThreeVector<double> rotateToZ (Lorentz5Momentum& pTarget, Lorentz5Momentum& p1){
+    ThreeVector<double> oldAxis = pTarget.vect().unit();
+    double ct = oldAxis.z(); double st = sqrt( 1.-sqr(ct) ); // cos,sin(theta)
+    double cp = oldAxis.x()/st; double sp = oldAxis.y()/st; // cos,sin(phi)
+    pTarget.setZ( pTarget.vect().mag() ); pTarget.setX( 0.*GeV ); pTarget.setY( 0.*GeV );
+    Lorentz5Momentum p1old = p1;
+    p1.setX(    sp*p1old.x() -    cp*p1old.y()                );
+    p1.setY( ct*cp*p1old.x() + ct*sp*p1old.y() - st*p1old.z() );
+    p1.setZ( st*cp*p1old.x() + st*sp*p1old.y() + ct*p1old.z() );
+    return oldAxis;
+  }
 
 public:
 

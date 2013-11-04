@@ -105,6 +105,22 @@ protected:
    */ 
   void readDecays(bool in) {readDecays_=in;}
 
+  /**
+   *  Map of PDG ids from file to those used internally
+   */
+  map<long,long> & idMap() {return idMap_;}
+
+  /**
+   *  Get ParticleData object with Id mapping
+   */
+  PDPtr getBSMParticleData(PID id) const {
+    map<long,long>::const_iterator it = idMap_.find(id);
+    if(it==idMap_.end())
+      return getParticleData(id);
+    else
+      return getParticleData(it->second);
+  }
+
 protected:
 
   /** @name Standard Interfaced functions. */
@@ -154,6 +170,11 @@ private:
    *  Tolerance for branching ratios
    */
   double tolerance_;
+
+  /**
+   *  Map of ids from files to those used by Herwig++
+   */
+  map<long,long> idMap_;
 
 };
 

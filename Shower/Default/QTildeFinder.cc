@@ -19,11 +19,12 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "ThePEG/Repository/UseRandom.h" 
+#include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig;
 
-ClassDescription<QTildeFinder> QTildeFinder::initQTildeFinder;
-// Definition of the static class description member.
+DescribeClass<QTildeFinder,Herwig::PartnerFinder>
+describeQTildeFinder ("Herwig::QTildeFinder","HwShower.so");
 
 void QTildeFinder::persistentOutput(PersistentOStream & os) const {
   os << _finalFinalConditions << _initialFinalDecayConditions

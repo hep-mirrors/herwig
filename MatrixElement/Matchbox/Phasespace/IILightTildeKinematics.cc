@@ -74,7 +74,7 @@ Energy IILightTildeKinematics::lastPt() const {
   Energy scale = sqrt(2.*(bornEmitterMomentum()*bornSpectatorMomentum()));
   double x = subtractionParameters()[0];
   double v = subtractionParameters()[1];
-  return scale * sqrt(v*(1.-x-v));
+  return scale * sqrt(v*(1.-x-v)/x);
 
 }
 
@@ -83,10 +83,12 @@ Energy IILightTildeKinematics::lastPt() const {
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 
-void IILightTildeKinematics::persistentOutput(PersistentOStream &) const {
+void IILightTildeKinematics::persistentOutput(PersistentOStream & os) const {
+  os << ounit(K,GeV) << ounit(Ktilde,GeV);
 }
 
-void IILightTildeKinematics::persistentInput(PersistentIStream &, int) {
+void IILightTildeKinematics::persistentInput(PersistentIStream & is, int) {
+  is >> iunit(K,GeV) >> iunit(Ktilde,GeV);
 }
 
 void IILightTildeKinematics::Init() {

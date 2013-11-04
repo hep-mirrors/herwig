@@ -1,12 +1,6 @@
 read Matchbox.in
 
 ################################################################################
-# setup the sampler
-################################################################################
-
-set /Herwig/EventHandlers/DISHandler:Sampler /Herwig/MatrixElements/Matchbox/Samplers/Sampler
-
-################################################################################
 # setup the shower
 #
 # use -LO.in or -NLO.in for LO/NLO simulations, respectively.
@@ -15,7 +9,7 @@ set /Herwig/EventHandlers/DISHandler:Sampler /Herwig/MatrixElements/Matchbox/Sam
 
 read DipoleShower.in
 # read DipoleShowerParameters-LO.in
-# read DipoleShowerParameters-NLO.in
+read DipoleShowerParameters-NLO.in
 
 ################################################################################
 # setup matrix element and matching
@@ -31,42 +25,119 @@ set DISLuminosity:BeamEMaxA 27.5.*GeV
 set DISHandler:BeamB /Herwig/Particles/p+
 set DISLuminosity:BeamEMaxB 820.*GeV
 
-# the only infrared safe cut in this case is a Q^2 cut
-# leave all other cuts as set in here
+cd /Herwig/MatrixElements/Matchbox
 
-set /Herwig/Cuts/NeutralCurrentCut:MinQ2 20.0*GeV2
-set /Herwig/Cuts/NeutralCurrentCut:MinW2 0.0*GeV2
-set /Herwig/Cuts/DISCuts:MHatMin 0.0*GeV
+insert /Herwig/Generators/DISGenerator:EventHandler:SubProcessHandlers[0] DISFactory
 
-cd /Herwig/MatrixElements/Matchbox/Builtin
+################################################################################
+# 1+1 jets
+################################################################################
+
+set DISFactory:OrderInAlphaS 0
+do DISFactory:Process e+ p e+ j 
+
+################################################################################
+# 2+1 jets
+################################################################################
+
+# set DISFactory:OrderInAlphaS 1
+# do DISFactory:Process e+ p e+ j j
+
+# set DISFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/MaxPtScale
+
+# set /Herwig/Cuts/JetFinder:Variant SphericalKt
+# set /Herwig/Cuts/JetFinder:RecombinationScheme E
+# set /Herwig/Cuts/JetFinder:Mode Inclusive
+# set /Herwig/Cuts/JetFinder:ConeRadius 0.7
+
+# insert /Herwig/Cuts/JetCuts:JetRegions 0 /Herwig/Cuts/FirstJet
+# insert /Herwig/Cuts/JetCuts:JetRegions 1 /Herwig/Cuts/SecondJet
+
+# set /Herwig/Cuts/DISCuts:JetFinder /Herwig/Cuts/JetFinder
+# insert /Herwig/Cuts/DISCuts:MultiCuts 0 /Herwig/Cuts/JetCuts
+
+################################################################################
+# 3+1 jets (leading order only)
+################################################################################
+
+# set DISFactory:OrderInAlphaS 2
+# do DISFactory:Process e+ p e+ j j j
+
+# set DISFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/MaxPtScale
+
+# set /Herwig/Cuts/JetFinder:Variant SphericalKt
+# set /Herwig/Cuts/JetFinder:RecombinationScheme E
+# set /Herwig/Cuts/JetFinder:Mode Inclusive
+# set /Herwig/Cuts/JetFinder:ConeRadius 0.7
+
+# insert /Herwig/Cuts/JetCuts:JetRegions 0 /Herwig/Cuts/FirstJet
+# insert /Herwig/Cuts/JetCuts:JetRegions 1 /Herwig/Cuts/SecondJet
+# insert /Herwig/Cuts/JetCuts:JetRegions 1 /Herwig/Cuts/ThirdJet
+
+# set /Herwig/Cuts/DISCuts:JetFinder /Herwig/Cuts/JetFinder
+# insert /Herwig/Cuts/DISCuts:MultiCuts 0 /Herwig/Cuts/JetCuts
 
 ################################################################################
 # leading order
 ################################################################################
 
-# insert /Herwig/Generators/DISGenerator:EventHandler:SubProcessHandlers[0] MElP2lJetLO
+# set DISFactory:VirtualContributions Off
+# set DISFactory:RealContributions Off
 
 ################################################################################
 # MC@NLO-type next-to-leading order
 ################################################################################
 
-# set /Herwig/Particles/p+:PDF    /Herwig/Partons/MRST-NLO
-# set /Herwig/Particles/pbar-:PDF /Herwig/Partons/MRST-NLO
-# insert /Herwig/Generators/DISGenerator:EventHandler:SubProcessHandlers[0] MElP2lJetNLO
-# uncomment to run plain NLO calculation (no consistent analysis yet)
-# set MElP2lJetNLO:SubProcessGroups On
+set DISFactory:ShowerApproximation DipoleMatching
 
 ################################################################################
 # POWHEG-type next-to-leading order
 ################################################################################
 
-# set /Herwig/Particles/p+:PDF    /Herwig/Partons/MRST-NLO
-# set /Herwig/Particles/pbar-:PDF /Herwig/Partons/MRST-NLO
-# insert /Herwig/Generators/DISGenerator:EventHandler:SubProcessHandlers[0] MElP2lJetNLOInclusive
-# set MElP2lJetNLOInclusive:BornScreening Off
+# set DISFactory:ShowerApproximation MEMatching
+# set MECorrectionHandler:Factory DISFactory
+# insert /Herwig/Generators/DISGenerator:EventHandler:PostSubProcessHandlers[0] MECorrectionHandler
+
+################################################################################
+# scale variations
+#
+# see Matchbox.in for different scale choices
+#
+################################################################################
+
+################################################################################
+# hard process scale variations
+################################################################################
+
+set DISFactory:RenormalizationScaleFactor 1.0
+set DISFactory:FactorizationScaleFactor 1.0
+
+################################################################################
+# matching scale variations 
+#  - HardScaleFactor has to equal the one for the shower!
+################################################################################
+
+set DipoleMatching:RenormalizationScaleFactor 1.0
+set DipoleMatching:FactorizationScaleFactor 1.0
+set DipoleMatching:HardScaleFactor 1.0
+
+set MEMatching:RenormalizationScaleFactor 1.0
+set MEMatching:FactorizationScaleFactor 1.0
+set MEMatching:ScreeningScale 10.0*GeV
+
+################################################################################
+# shower scale variations
+################################################################################
+
+set /Herwig/DipoleShower/DipoleShowerHandler:RenormalizationScaleFactor 1.0
+set /Herwig/DipoleShower/DipoleShowerHandler:FactorizationScaleFactor 1.0
+set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleFactor 1.0
 
 ################################################################################
 # setup generator and analysis
+#
+#
+#
 ################################################################################
 
 cd /Herwig/Generators

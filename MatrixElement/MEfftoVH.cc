@@ -191,14 +191,13 @@ double MEfftoVH::helicityME(vector<SpinorWaveFunction>    & fin ,
     for(ihel2=0;ihel2<2;++ihel2) {
       // wavefunction for the intermediate 1st vector
       inter[0] = vertex->evaluate(mb2,1,vec,fin[ihel1],ain[ihel2]);
-      // after the emission of the higgs
-      inter[1] = _vertexWWH->evaluate(mb2,1,vec,inter[0],higgs);
       // boson decay piece
       for(ohel1=0;ohel1<2;++ohel1) {
 	for(ohel2=0;ohel2<2;++ohel2) {
-	  diag = vertex->evaluate(sqr(inter[1].particle()->mass()),
-				  aout[ohel2],fout[ohel1],inter[1]);
-	  me += norm(diag);
+	  inter[1] = vertex->evaluate(sqr(vec->mass()),1,vec,
+				      aout[ohel2],fout[ohel1]);
+      	  diag = _vertexWWH->evaluate(mb2,inter[1],inter[0],higgs);
+      	  me += norm(diag);
 	  menew(ihel1,ihel2,0,ohel1,ohel2) = diag;
 	}
       }
@@ -356,7 +355,7 @@ bool MEfftoVH::generateKinematics(const double * r) {
   }
 
   if ( ctmin >= ctmax ) return false;
-    
+  jacobian(1.);
   double cth = getCosTheta(ctmin, ctmax, r[0]);
   
   Energy pt = q*sqrt(1.0-sqr(cth));
@@ -420,28 +419,3 @@ CrossSection MEfftoVH::dSigHatDR() const {
   // answer
   return jac1*me2()*jacobian()/(16.0*sqr(pi)*sHat())*sqr(hbarc);
 }
-
-double MEfftoVH::getCosTheta(double ctmin, double ctmax, double r) {
-  double cth = 0.0;
-  if ( ctmin <= -1.0 && ctmax >= 1.0 ) {
-    jacobian((ctmax - ctmin));
-    cth = ctmin + r*jacobian();
-  } else if ( ctmin <= -1.0 ) {
-    cth = 1.0 - (1.0 - ctmax)*pow((1.0 - ctmin)/(1.0 - ctmax), r);
-    jacobian(log((1.0 - ctmin)/(1.0 - ctmax))*(1.0 - cth));
-  } else if ( ctmax >= 1.0 ) {
-    cth = -1.0 + (1.0 + ctmin)*pow((1.0 + ctmax)/(1.0 + ctmin), r);
-    jacobian(log((1.0 + ctmax)/(1.0 + ctmin))*(1.0 + cth));
-  } else {
-    double zmin = 0.5*(1.0 - ctmax);
-    double zmax = 0.5*(1.0 - ctmin);
-    double A1 = (2.0*zmax - 1.0)/(zmax*(1.0-zmax));
-    double A0 = (2.0*zmin - 1.0)/(zmin*(1.0-zmin));
-    double A = r*(A1 - A0) + A0;
-    double z = A < 2.0? 2.0/(sqrt(sqr(A) + 4.0) + 2 - A):
-      0.5*(A - 2.0 + sqrt(sqr(A) + 4.0))/A;
-    cth = 1.0 - 2.0*z;
-    jacobian(2.0*(A1 - A0)*sqr(z)*sqr(1.0 - z)/(sqr(z) + sqr(1.0 - z)));
-  }
-  return cth;
-} 

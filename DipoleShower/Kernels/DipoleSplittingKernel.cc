@@ -27,7 +27,9 @@ DipoleSplittingKernel::DipoleSplittingKernel()
     thePresamplingPoints(10000), theMaxtry(100000),
     theStrictLargeN(false), 
     theFactorizationScaleFactor(1.0),
-    theRenormalizationScaleFactor(1.0) {}
+    theRenormalizationScaleFactor(1.0),
+    theRenormalizationScaleFreeze(1.*GeV), 
+    theFactorizationScaleFreeze(1.*GeV) {}
 
 DipoleSplittingKernel::~DipoleSplittingKernel() {}
 
@@ -41,7 +43,9 @@ void DipoleSplittingKernel::persistentOutput(PersistentOStream & os) const {
      << thePresamplingPoints << theMaxtry
      << theFlavour << theMCCheck << theStrictLargeN
      << theFactorizationScaleFactor
-     << theRenormalizationScaleFactor;
+     << theRenormalizationScaleFactor
+     << ounit(theRenormalizationScaleFreeze,GeV)
+     << ounit(theFactorizationScaleFreeze,GeV);
 }
 
 void DipoleSplittingKernel::persistentInput(PersistentIStream & is, int) {
@@ -49,7 +53,9 @@ void DipoleSplittingKernel::persistentInput(PersistentIStream & is, int) {
      >> thePresamplingPoints >> theMaxtry
      >> theFlavour >> theMCCheck >> theStrictLargeN
      >> theFactorizationScaleFactor
-     >> theRenormalizationScaleFactor;
+     >> theRenormalizationScaleFactor
+     >> iunit(theRenormalizationScaleFreeze,GeV)
+     >> iunit(theFactorizationScaleFreeze,GeV);
 }
 
 double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split) const {
@@ -58,14 +64,19 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split) const {
 
   Energy2 scale = sqr(pt) + sqr(theScreeningScale);
 
-  double ret = alphaS()->value(theRenormalizationScaleFactor*scale) / (2.*Constants::pi);
+  Energy2 rScale = sqr(theRenormalizationScaleFactor)*scale;
+  rScale = rScale > sqr(renormalizationScaleFreeze()) ? rScale : sqr(renormalizationScaleFreeze());
+
+  Energy2 fScale = sqr(theFactorizationScaleFactor)*scale;
+  fScale = fScale > sqr(factorizationScaleFreeze()) ? fScale : sqr(factorizationScaleFreeze());
+
+  double ret = alphaS()->value(rScale) / (2.*Constants::pi);
 
   if ( split.index().initialStateEmitter() ) {
     assert(pdfRatio());
     ret *= 
       split.lastEmitterZ() * 
-      (*pdfRatio())(split.index().emitterPDF(),
-		    theFactorizationScaleFactor*scale,
+      (*pdfRatio())(split.index().emitterPDF(), fScale,
 		    split.index().emitterData(),split.emitterData(),
 		    split.emitterX(),split.lastEmitterZ());
   }
@@ -74,8 +85,7 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split) const {
     assert(pdfRatio());
     ret *= 
       split.lastSpectatorZ() * 
-      (*pdfRatio())(split.index().spectatorPDF(),
-		    theFactorizationScaleFactor*scale,
+      (*pdfRatio())(split.index().spectatorPDF(), fScale,
 		    split.index().spectatorData(),split.spectatorData(),
 		    split.spectatorX(),split.lastSpectatorZ());
   }
@@ -177,6 +187,19 @@ void DipoleSplittingKernel::Init() {
      false, false, Interface::lowerlim);
 
   interfaceRenormalizationScaleFactor.rank(-2);
+
+  static Parameter<DipoleSplittingKernel,Energy> interfaceRenormalizationScaleFreeze
+    ("RenormalizationScaleFreeze",
+     "The freezing scale for the renormalization scale.",
+     &DipoleSplittingKernel::theRenormalizationScaleFreeze, GeV, 1.0*GeV, 0.0*GeV, 0*GeV,
+     false, false, Interface::lowerlim);
+
+  static Parameter<DipoleSplittingKernel,Energy> interfaceFactorizationScaleFreeze
+    ("FactorizationScaleFreeze",
+     "The freezing scale for the factorization scale.",
+     &DipoleSplittingKernel::theFactorizationScaleFreeze, GeV, 1.0*GeV, 0.0*GeV, 0*GeV,
+     false, false, Interface::lowerlim);
+
 
 }
 

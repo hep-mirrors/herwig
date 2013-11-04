@@ -236,6 +236,18 @@ ParticleVector FFDipole::generatePhotons(const Particle & p,
   _m[2] = children[1]->mass();
   // set the maximum photon energy (exact - no approximations here).
   _emax=(0.5*(_m[0]-sqr(_m[1]+_m[2])/_m[0]))*_m[0]/(_m[1]+_m[2]);
+  // check masses non-zero
+  for(unsigned int ix=0;ix<2;++ix) {
+    if(children[ix]->mass()<1e-4*GeV) { 
+      ostringstream message;
+      message << "FFDipole::generatePhotons() trying to generate QED radiation from "
+	      << children[ix]->dataPtr()->PDGName() << "\n with mass " << children[ix]->mass()/GeV
+	      << "which is much smaller than the mass of the electron.\n"
+	      << "This is probably due to reading events from a LHEF,\nskipping radiation in this case.\n";
+      generator()->logWarning( Exception(message.str(), Exception::warning));
+      return children;
+    }
+  }
   // momenta before radiation in lab
   for(unsigned int ix=0;ix<2;++ix)
     _qlab[ix]=children[ix]->momentum();

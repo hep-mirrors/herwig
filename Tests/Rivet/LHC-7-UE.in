@@ -50,6 +50,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S9120041
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I919017
 # LHCB phi production
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2011_I919315
+# LHCB promt hadron productiom
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2012_I1119400
 # ATLAS rap gap
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1084540
 # CMS forward energy flow
@@ -58,8 +60,30 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S9215166
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_QCD_10_024
 # LHC K0s/Lambda
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2011_I917009
-
-
+# TOTEM at large rapidity
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TOTEM_2012_I1115294
+# ATLAS Azimuthal ordering of charged hadrons
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1091481
+# ALICE single/double diffractive and inelastic sigma
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2012_I1181770
+# ATLAS inelastic cross section
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I894867
+# CMS inelastic cross section
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1193338
+# total transverse energy
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1183818
+# underlying event forward rapidities
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_PAS_FWD_11_003
+# strange particles in underlying event
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_PAS_QCD_11_010
+# CMS central and forward jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1087342
+# CMS dijet
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1184941
+# ATLAS charged particle in min bias
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1125575
+# ATLAS two particle correlation
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1094061
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################

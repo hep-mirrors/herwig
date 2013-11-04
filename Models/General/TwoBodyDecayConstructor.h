@@ -40,7 +40,7 @@ public:
   /**
    * The default constructor.
    */
-  TwoBodyDecayConstructor() {}
+  TwoBodyDecayConstructor() : showerAlpha_("/Herwig/Shower/AlphaQCD") {}
 
   /**
    * Function used to determine allowed decaymodes
@@ -124,6 +124,24 @@ private:
    */
   void createDecayMode(set<TwoBodyDecay> & decays);
   //@}
+
+  /**
+   * Get the vertex for QCD radiation
+   */
+  VertexBasePtr radiationVertex(tPDPtr particle,tPDPair children = tPDPair ());
+
+private:
+
+  /**
+   *  Map of particles and the vertices which generate their QCD
+   *  radiation
+   */
+  map<tPDPtr,VertexBasePtr> radiationVertices_;
+
+  /**
+   *  Default choice for the strong coupling object for hard radiation
+   */
+  string showerAlpha_;
 };
   
 }

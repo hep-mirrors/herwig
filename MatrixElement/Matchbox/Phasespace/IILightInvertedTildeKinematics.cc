@@ -54,17 +54,16 @@ bool IILightInvertedTildeKinematics::doMap(const double * r) {
   double z = ptz.second;
 
   double ratio = sqr(pt/lastScale());
-  double x = ( z*(1.-z) - ratio ) / ( 1. - z );
-  double v = ratio / (1.-z);
-  pt = lastScale()*sqrt(v*(1.-x-v)/x);
+  double x = z*(1.-z) / ( 1. - z + ratio );
+  double v = ratio * z / ( 1. - z + ratio );
 
   if ( x < emitterX() || x > 1. ||
-       v > 1. || v > 1.-x ) {
+       v < 0. || v > 1.-x ) {
     jacobian(0.0);
     return false;
   }
 
-  mapping /= sqr(z*(1.-z)-ratio)/(1.-z);
+  mapping /= z*(1.-z);
   jacobian(mapping*(sqr(lastScale())/sHat())/(16.*sqr(Constants::pi)));
 
   subtractionParameters().resize(2);
@@ -102,13 +101,13 @@ Energy IILightInvertedTildeKinematics::lastPt() const {
   Energy scale = sqrt(2.*(bornEmitterMomentum()*bornSpectatorMomentum()));
   double x = subtractionParameters()[0];
   double v = subtractionParameters()[1];
-  return scale * sqrt(v*(1.-x-v));
+  return scale * sqrt(v*(1.-x-v)/x);
 
 }
 
 Energy IILightInvertedTildeKinematics::ptMax() const {
   double tau = emitterX()*spectatorX();
-  return (1.-tau)*lastScale()/2.;
+  return (1.-tau)*lastScale()/(2.*sqrt(tau));
 }
 
 pair<double,double> IILightInvertedTildeKinematics::zBounds(Energy pt) const {
@@ -122,10 +121,14 @@ pair<double,double> IILightInvertedTildeKinematics::zBounds(Energy pt) const {
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 
-void IILightInvertedTildeKinematics::persistentOutput(PersistentOStream &) const {
+void IILightInvertedTildeKinematics::persistentOutput(PersistentOStream & os) const {
+  os << ounit(K,GeV) << ounit(K2,GeV2) << ounit(Ktilde,GeV)
+     << ounit(KplusKtilde,GeV) << ounit(KplusKtilde2,GeV2);
 }
 
-void IILightInvertedTildeKinematics::persistentInput(PersistentIStream &, int) {
+void IILightInvertedTildeKinematics::persistentInput(PersistentIStream & is, int) {
+  is >> iunit(K,GeV) >> iunit(K2,GeV2) >> iunit(Ktilde,GeV)
+     >> iunit(KplusKtilde,GeV) >> iunit(KplusKtilde2,GeV2);
 }
 
 void IILightInvertedTildeKinematics::Init() {

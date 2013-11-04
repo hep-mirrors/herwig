@@ -12,14 +12,14 @@
 using namespace Herwig;
 
 
-vector<Ptr<SubtractionDipole>::ptr>& DipoleRepository::theDipoles() {
-  static vector<Ptr<SubtractionDipole>::ptr> theDipoles_;
-  return theDipoles_;
+vector<Ptr<SubtractionDipole>::ptr>& DipoleRepository::theDipoles(int id) {
+  static map<int,vector<Ptr<SubtractionDipole>::ptr> > theDipoles_;
+  return theDipoles_[id];
 }
 
-vector<Ptr<MatchboxInsertionOperator>::ptr>& DipoleRepository::theInsertionOperators() {
-  static vector<Ptr<MatchboxInsertionOperator>::ptr> theInsertionOperators_;
-  return theInsertionOperators_;
+vector<Ptr<MatchboxInsertionOperator>::ptr>& DipoleRepository::theInsertionOperators(int id) {
+  static map<int,vector<Ptr<MatchboxInsertionOperator>::ptr> > theInsertionOperators_;
+  return theInsertionOperators_[id];
 }
 
 

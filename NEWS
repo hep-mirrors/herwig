@@ -1,5 +1,182 @@
 Herwig++ News				(emacs -*- outline -*- format)
 
+* Herwig++-2.7.0 release: 2013-10-28
+
+** UFO interface to Feynman rules generators
+   Herwig++ now includes "ufo2herwig", a tool that automatically
+   creates all required files to run a BSM model from a UFO
+   directory. The conversion has been extensively tested against
+   Feynrules models MSSM, NMSSM, RS, Technicolor,
+   and less extensively with most of the
+   other models in the Feynrules model database.
+   We expect that following this release there will be no further
+   hard-coded new physics models added to Herwig++ and that future
+   models will be included using the UFO interface.
+
+** Shower uncertainties
+   A first set of scaling parameters to estimate shower uncertainties
+   is provided for both the angular ordered as well as the dipole
+   shower; they are Evolver:HardScaleFactor and ShowerAlphaQCD:
+   RenormalizationScaleFactor. 
+
+** Rewrite of Matchbox NLO matching
+   The NLO matching implementation has been rewritten and is now more
+   flexible and consistent. Profile scales are provided for the
+   hardest emission both for the dipole shower and matrix element
+   correction matching.
+
+** BLHA2 Interface and new processes
+   Matchbox now features a generic BLHA2 interface to one-loop
+   amplitude codes and now also includes W and W+jet production as
+   well as Higss production in gluon fusion as builtin processes.
+
+** Impoved dipole shower kinematics parametrization
+   The kinematics parametrization for emissions in the dipole shower
+   has been made more efficient.
+
+** W and Z Powheg decays
+   Decays of W and Z bosons now use the Powheg decayers by default.
+
+** Improved treatment of beam remnants
+   The handling of beam remnants has been improved in multiple
+   contexts, leading to a much lower error rate at p+/p- collisions.
+   An additional value "VeryHard" for ClusterFissioner:RemnantOption
+   can be used to disable any special treatment of beam remnant
+   clusters.
+
+** New underlying event tune
+   Herwig++ now uses tune UE-EE-5-MRST by default. Other related tunes
+   can be obtained from the Herwig++ tunes page
+
+** Improvements in BSM code
+   The UFO development identified many sign fixes in rarely used BSM
+   vertices; many improvements were made to general decayers, allowing
+   four-body decays in BSM for the first time; Powheg is enabled in
+   General two-body decayers; and the handling of colour
+   sextets has been improved.
+
+** A new HiggsPair matrix element in Contrib.
+
+** A new matrix element for single top production.
+
+** The Higgs mass is now set to 125.9 GeV (from PDG 2013 update).
+
+** C++-11 testing
+   To help with the coming transition to C++-11, we provide the new
+   --enable-stdcxx11 configure flag. Please try to test builds with
+   this flag enabled and let us know any problems, but do not use this
+   in production code yet. In future releases, this flag will be on by
+   default.
+
+** Other changes
+*** Many new Rivet analyses have been included in the Tests directory.
+*** Cleaned Shower header structure; grouped shower parameters into one struct.
+*** The boolean Powheg flag in HwMEBase changed to an enumeration.
+
+
+
+
+* Herwig++-2.6.3 release: 2013-02-22
+
+** Decay vertex positioning in HepMC output
+   Pseudo-vertices that Herwig++ inserts for technical reasons will
+   now not contribute to the Lorentz positions of downstream vertices.
+   Thanks to ATLAS for the bug report!
+
+** Updated Rivet tests 
+   Herwig's library of Rivet test runs has been brought up-to-date
+   with new analyses that were recently published by the Rivet
+   collaboration.
+
+
+
+* Herwig++-2.6.2 release: 2013-01-30
+
+** Fixes for PDF and scale choices in POWHEG events
+   Scale settings for MPI and the regular shower are now correct in
+   POWHEG events. This should fix reported anomalies in POWHEG jet rates.
+   NLO PDFs are now also set consistently in the example input files.
+
+** Ticket #373: Branching ratio factors in cross-section
+   If any decay modes are selectively disabled, setting the following
+   post-handler will cause all reported cross-sections to include the
+   branching ratio factor(s) from the previous stages correctly:
+
+   create Herwig::BranchingRatioReweighter BRreweight
+   insert LHCGenerator:EventHandler:PostDecayHandlers 0 BRreweight
+
+** Anomalous vertices now possible in MEfftoVH
+
+** Interactive shell does not quit on error
+
+** Better warning messages for events from inconsistent LHEF files
+
+** Possible division by zero error fixed in BSM branching ratio calculations
+
+** Decayer and ME changes to improve checkpointing
+   The checkpointing changes in ThePEG 1.8.2 are implemented here, too. Regular
+   dump files are consistent now.
+
+
+
+* Herwig++-2.6.1 release: 2012-10-16
+
+** Configure switches
+   The various switches to turn off compilation of BSM models have
+   been unified into a single '--disable-models'. A new flag
+   '--disable-dipole' can be used to turn off the compilation of the
+   Dipole and Matchbox codes.
+
+** Ticket #348: Search path for repository 'read' command
+   The search path for the 'read' command is configurable on the
+   command line with the -i and -I switches. By default, the
+   installation location is now included in the search path, so that
+   'Herwig++ read LEP.in' will work in an empty directory. The current
+   working directory will always be searched first. 
+   The rarely used "Herwig++ init" command has been made consistent
+   with 'read' and 'run' and should now be used without the '-i' flag.
+
+** Width treatment in BSM
+   The width treatment in BSM decay chains has been greatly improved
+   and is now switched on by default in the .model files. To get the
+   old behaviour, use 
+     set /Herwig/NewPhysics/NewModel:WhichOffshell Selected
+
+** New BSM models
+   Little Higgs models with and without T-parity are now available.
+
+** Resonance photon lifetime
+   A lifetime bug affecting decays of pi0 to e+e-X was fixed. The
+   virtual photon is not part of the event record anymore.
+
+** Ticket #371: Hard diffraction FPE
+   Herwig++ 2.6.0 introduced a bug into the diffraction code which
+   would abort any runs. This is now fixed.
+
+** O2AlphaS
+   Support for setting quark masses different from the particle data
+   objects as introduced in ThePEG 1.8.1 has been enabled.
+
+** Matchbox
+   Several improvements and bug fixes are included for
+   Matchbox. Amplitudes relevant to pp -> Z+jet and crossed processes
+   at NLO are now available, and various scale choices have been added
+   in a more flexible way. All subtraction dipoles for massive quarks
+   are now included.
+
+** Dipole shower
+   Parameters to perform scale variations in the shower have been
+   added to estimate uncertainties. A bug in showering off gg -> h has
+   been fixed.
+
+** Minor fixes
+*** Two broken colour structures in GeneralHardME
+*** Susy Higgs mixing matrix
+*** BaryonFactorizedDecayer out-of-bounds access
+*** Mass values in SimpleLHCAnalysis
+
+
+
 * Herwig++-2.6.0 release: 2012-05-21 (tagged at SVN r7407)
 
 ** New NLO framework

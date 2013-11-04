@@ -32,7 +32,7 @@ using namespace ThePEG;
  * @see \ref BinSamplerInterfaces "The interfaces"
  * defined for BinSampler.
  */
-class BinSampler: public Interfaced, public Herwig::MultiIterationStatistics {
+class BinSampler: public Herwig::MultiIterationStatistics {
 
 public:
 
@@ -84,6 +84,11 @@ public:
    * Return a string describing the process handled by this sampler.
    */
   string process() const;
+
+  /**
+   * Return a string identifying the process handled by this sampler.
+   */
+  string id() const;
 
   /**
    * Return the last generated point.
@@ -164,7 +169,27 @@ public:
   /**
    * Return the number of points to be used for initial integration.
    */
-  unsigned long initialPoints() const { return theInitialPoints; }
+  unsigned long initialPoints() const { return (unsigned long)(theEnhanceInitialPoints*theInitialPoints); }
+
+  /**
+   * Set an enhancement factor for the number of initial points.
+   */
+  void enhanceInitialPoints(double f) { theEnhanceInitialPoints = f; }
+
+  /**
+   * Set an oversampling factor for this sampler.
+   */
+  void oversamplingFactor(double f) { theOversamplingFactor = f; }
+
+  /**
+   * Return enhancement factor for the number of initial points.
+   */
+  double enhanceInitialPoints() const { return theEnhanceInitialPoints; }
+
+  /**
+   * Return the oversampling factor for this sampler.
+   */
+  double oversamplingFactor() const { return theOversamplingFactor; }
 
 public:
 
@@ -219,6 +244,16 @@ private:
    * The number of points to use for initial integration.
    */
   unsigned long theInitialPoints;
+
+  /**
+   * An enhancement factor for the number of initial points.
+   */
+  double theEnhanceInitialPoints;
+
+  /**
+   * An oversampling factor for this sampler.
+   */
+  double theOversamplingFactor;
 
   /**
    * The bin to be sampled.

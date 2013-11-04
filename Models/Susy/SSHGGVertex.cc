@@ -12,6 +12,7 @@
 //
 
 #include "SSHGGVertex.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -22,7 +23,9 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-SSHGGVertex::SSHGGVertex() : theSw(0.), theMw(), theZfact(),
+SSHGGVertex::SSHGGVertex() : theIncludeTriLinear(true),
+			     thePseudoScalarTreatment(false),
+			     theSw(0.), theMw(), theZfact(),
 			     theQt1L(0.), theQt1R(0.), theQt1LR(0.), 
 			     theQt2L(0.), theQt2R(0.), theQt2LR(0.),
 			     theQb1L(0.), theQb1R(0.), theQb1LR(0.), 
@@ -50,7 +53,7 @@ void SSHGGVertex::doinit() {
   thetop = getParticleData(ParticleID::t);
   thebot = getParticleData(ParticleID::b);
   theSw = sqrt(sin2ThetaW());
-  theZfact = getParticleData(ParticleID::Z0)->mass()/sqrt(1. - sqr(theSw));
+  theZfact = getParticleData(ParticleID::Wplus)->mass()/(1. - sqr(theSw));
   
   theSinA = sin(theMSSM->higgsMixingAngle());
   theCosA = sqrt(1. - sqr(theSinA));
@@ -82,7 +85,7 @@ void SSHGGVertex::doinit() {
   theSqmass[3] = getParticleData(ParticleID::SUSY_t_2)->mass();
 
   VVSLoopVertex::doinit();
-  Looptools::ltexi();
+  if(loopToolsInitialized()) Looptools::ltexi();
 }
 
 
@@ -90,18 +93,18 @@ void SSHGGVertex::persistentOutput(PersistentOStream & os) const {
   os << theMSSM << theSw << ounit(theMw,GeV) << ounit(theZfact,GeV) 
      << theQt1L << theQt1R << theQt1LR << theQt2L << theQt2R << theQt2LR
      << theQb1L << theQb1R << theQb1LR << theQb2L << theQb2R << theQb2LR
-     << thetop << thebot << theTanB
+     << thetop << thebot << theTanB << theIncludeTriLinear
      << theSinA << theCosA << theSinB << theCosB << theSinApB << theCosApB
-     << ounit(theSqmass, GeV);
+     << ounit(theSqmass, GeV) << thePseudoScalarTreatment;
 }
 
 void SSHGGVertex::persistentInput(PersistentIStream & is, int) {
   is >> theMSSM >> theSw >> iunit(theMw,GeV) >> iunit(theZfact,GeV) 
      >> theQt1L >> theQt1R >> theQt1LR >> theQt2L >> theQt2R >> theQt2LR 
      >> theQb1L >> theQb1R >> theQb1LR >> theQb2L >> theQb2R >> theQb2LR 
-     >> thetop >> thebot >> theTanB
+     >> thetop >> thebot >> theTanB >> theIncludeTriLinear
      >> theSinA >> theCosA >> theSinB >> theCosB >> theSinApB >> theCosApB
-     >> iunit(theSqmass, GeV);
+     >> iunit(theSqmass, GeV) >> thePseudoScalarTreatment;
 }
 
 ClassDescription<SSHGGVertex> SSHGGVertex::initSSHGGVertex;
@@ -114,6 +117,35 @@ void SSHGGVertex::Init() {
      "vertex in the MSSM including stop, sbottom and top quarks " 
      "loops.");
 
+  static Switch<SSHGGVertex,bool> interfaceIncludeTriLinear
+    ("IncludeTriLinear",
+     "Whether or not to include the A term squark trilinear couplings",
+     &SSHGGVertex::theIncludeTriLinear, true, false, false);
+  static SwitchOption interfaceIncludeTriLinearYes
+    (interfaceIncludeTriLinear,
+     "Yes",
+     "Include them",
+     true);
+  static SwitchOption interfaceIncludeTriLinearNo
+    (interfaceIncludeTriLinear,
+     "No",
+     "Don't include them",
+     false);
+
+  static Switch<SSHGGVertex,bool> interfacePseudoScalarTreatment
+    ("PseudoScalarTreatment",
+     "Whether to treat the pseudoscalar as pseudoscalar or scalar, for testing only",
+     &SSHGGVertex::thePseudoScalarTreatment, false, false, false);
+  static SwitchOption interfacePseudoScalarTreatmentPseudoScalar
+    (interfacePseudoScalarTreatment,
+     "PseudoScalar",
+     "Treat as a pseudoscalar, the right physics",
+     false);
+  static SwitchOption interfacePseudoScalarTreatmentScalar
+    (interfacePseudoScalarTreatment,
+     "Scalar",
+     "Treat as a scalar for testing",
+     true);
 }
   
 void SSHGGVertex::setCoupling(Energy2 q2, tcPDPtr particle2,
@@ -127,8 +159,8 @@ void SSHGGVertex::setCoupling(Energy2 q2, tcPDPtr particle2,
     theCouplast = weakCoupling(q2)*sqr(strongCoupling(q2));
     Energy mt = theMSSM->mass(q2, thetop);    
     Energy mb = theMSSM->mass(q2, thebot);
-    masses.resize(0);
-    type.resize(0);
+    masses.clear();
+    type.clear();
     if( higgs == ParticleID::h0 || higgs == ParticleID::H0 ) {
       setNParticles(6);
       masses.insert(masses.begin(), theSqmass.begin(), theSqmass.end());
@@ -147,31 +179,35 @@ void SSHGGVertex::setCoupling(Energy2 q2, tcPDPtr particle2,
       Energy theMu = theMSSM->muParameter();
       if( higgs == ParticleID::h0 ) {
 	// lightest sbottom
+	complex<Energy> trilinear = theIncludeTriLinear ? 
+	  theQb1LR*0.5*mb/theMw*(Trib*theSinA + theMu*theCosA)/theCosB : Energy();
 	Complex coup = 0.5*UnitRemoval::InvE*
 	  (theQb1L *(   sqr(mb)*theSinA/theMw/theCosB - theSinApB*brac1) +
-	   theQb1R *(   sqr(mb)*theSinA/theMw/theCosB + theSinApB*brac3) +
-	   theQb1LR*0.5*mb/theMw*(Trib*theSinA + theMu*theCosA)/theCosB);
+	   theQb1R *(   sqr(mb)*theSinA/theMw/theCosB + theSinApB*brac3)+trilinear);
 
 	couplings[0] = make_pair(coup, coup);
 	// lightest stop
+	trilinear = theIncludeTriLinear ? 
+	 -theQt1LR*0.5*mt/theMw*(Trit*theCosA + theMu*theSinA)/theSinB : Energy();
 	coup = 0.5*UnitRemoval::InvE*
 	  (theQt1L *( - sqr(mt)*theCosA/theMw/theSinB + theSinApB*brac2) +
-	   theQt1R *( - sqr(mt)*theCosA/theMw/theSinB + theSinApB*brac4) -
-	   theQt1LR*0.5*mt/theMw*(Trit*theCosA + theMu*theSinA)/theSinB);
+	   theQt1R *( - sqr(mt)*theCosA/theMw/theSinB + theSinApB*brac4)+trilinear);
 
 	couplings[1] = make_pair(coup, coup);
 	// heavier sbottom
+	trilinear = theIncludeTriLinear ? 
+	  theQb2LR*0.5*mb/theMw*(Trib*theSinA + theMu*theCosA)/theCosB : Energy();
 	coup = 0.5*UnitRemoval::InvE*
 	  (theQb2L *(   sqr(mb)*theSinA/theMw/theCosB - theSinApB*brac1) +
-	   theQb2R *(   sqr(mb)*theSinA/theMw/theCosB + theSinApB*brac3)+
-	   theQb2LR*0.5*mb/theMw*(Trib*theSinA + theMu*theCosA)/theCosB);
+	   theQb2R *(   sqr(mb)*theSinA/theMw/theCosB + theSinApB*brac3)+trilinear);
 
 	couplings[2] = make_pair(coup, coup);
 	// heavier stop
+	trilinear = theIncludeTriLinear ? 
+	  -theQt2LR*0.5*mt/theMw*(Trit*theCosA + theMu*theSinA)/theSinB : Energy();
 	coup = 0.5*UnitRemoval::InvE*
 	  (theQt2L *( - sqr(mt)*theCosA/theMw/theSinB + theSinApB*brac2) +
-	   theQt2R *( - sqr(mt)*theCosA/theMw/theSinB + theSinApB*brac4) -
-	   theQt2LR*0.5*mt/theMw*(Trit*theCosA + theMu*theSinA)/theSinB);
+	   theQt2R *( - sqr(mt)*theCosA/theMw/theSinB + theSinApB*brac4)+trilinear);
 	   		
 	couplings[3] = make_pair(coup, coup);
 	// top
@@ -185,31 +221,35 @@ void SSHGGVertex::setCoupling(Energy2 q2, tcPDPtr particle2,
       }
       else {
 	// lightest sbottom
+	complex<Energy> trilinear = theIncludeTriLinear ? 
+	   theQb1LR*0.5*mb/theMw*(theMu*theSinA - Trib*theCosA)/theCosB: Energy();
 	Complex coup = 0.5*UnitRemoval::InvE*
 	  (theQb1L *( - sqr(mb)*theCosA/theMw/theCosB + theCosApB*brac1) +
-	   theQb1R *( - sqr(mb)*theCosA/theMw/theCosB - theCosApB*brac3) +
-	   theQb1LR*0.5*mb/theMw*(theMu*theSinA - Trib*theCosA)/theCosB);
+	   theQb1R *( - sqr(mb)*theCosA/theMw/theCosB - theCosApB*brac3)+trilinear);
 
 	couplings[0] = make_pair(coup, coup);
 	// lightest stop
+	trilinear = theIncludeTriLinear ? 
+	   -theQt1LR*0.5*mt/theMw*(-theMu*theCosA + Trit*theSinA)/theSinB: Energy();
 	coup = 0.5*UnitRemoval::InvE*
 	  (theQt1L *( - sqr(mt)*theSinA/theMw/theSinB - theCosApB*brac2) +
-	   theQt1R *( - sqr(mt)*theSinA/theMw/theSinB - theCosApB*brac4) -
-	   theQt1LR*0.5*mt/theMw*(-theMu*theCosA + Trit*theSinA)/theSinB);
+	   theQt1R *( - sqr(mt)*theSinA/theMw/theSinB - theCosApB*brac4)+trilinear);
 
 	couplings[1] = make_pair(coup, coup);
 	// heavier sbottom
+	trilinear = theIncludeTriLinear ? 
+	   theQb2LR*0.5*mb/theMw*(theMu*theSinA - Trib*theCosA)/theCosB: Energy();
 	coup = 0.5*UnitRemoval::InvE*
 	  (theQb2L *( - sqr(mb)*theCosA/theMw/theCosB + theCosApB*brac1) +
-	   theQb2R *( - sqr(mb)*theCosA/theMw/theCosB - theCosApB*brac3) +
-	   theQb2LR*0.5*mb/theMw*(theMu*theSinA - Trib*theCosA)/theCosB); 
+	   theQb2R *( - sqr(mb)*theCosA/theMw/theCosB - theCosApB*brac3)+trilinear); 
 	
 	couplings[2] = make_pair(coup, coup);
 	// heavier stop
+	trilinear = theIncludeTriLinear ? 
+	   -theQt2LR*0.5*mt/theMw*(-theMu*theCosA + Trit*theSinA)/theSinB: Energy();
 	coup = 0.5*UnitRemoval::InvE*
 	  (theQt2L *( - sqr(mt)*theSinA/theMw/theSinB - theCosApB*brac2) +
-	   theQt2R *( - sqr(mt)*theSinA/theMw/theSinB - theCosApB*brac4) -
-	   theQt2LR*0.5*mt/theMw*(-theMu*theCosA + Trit*theSinA)/theSinB);
+	   theQt2R *( - sqr(mt)*theSinA/theMw/theSinB - theCosApB*brac4)+trilinear);
 	
 	couplings[3] = make_pair(coup, coup);
 	// top
@@ -229,10 +269,10 @@ void SSHGGVertex::setCoupling(Energy2 q2, tcPDPtr particle2,
       type.resize(2,PDT::Spin1Half);
       Complex coup = 0.25*Complex(0., 1.)*mt/theMw/theTanB;
 	  	
-      couplings[0] = make_pair(coup, -coup);
+      couplings[0] = make_pair(coup, thePseudoScalarTreatment ? coup : -coup);
       coup = 0.25*Complex(0., 1.)*mb/theMw*theTanB;
 	 
-      couplings[1] = make_pair(coup, -coup);
+      couplings[1] = make_pair(coup, thePseudoScalarTreatment ? coup : -coup);
     }
     theq2last = q2;
     theLastID = higgs;

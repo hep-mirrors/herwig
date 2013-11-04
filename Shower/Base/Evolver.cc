@@ -31,8 +31,12 @@
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "Herwig++/Shower/ShowerHandler.h" 
+#include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig;
+
+DescribeClass<Evolver,Interfaced>
+describeEvolver ("Herwig::Evolver","HwShower.so");
 
 IBPtr Evolver::clone() const {
   return new_ptr(*this);
@@ -48,7 +52,7 @@ void Evolver::persistentOutput(PersistentOStream & os) const {
      << _limitEmissions
      << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << ounit(_iptmax,GeV) 
      << _vetoes << _hardonly << _trunc_Mode << _hardEmissionMode 
-     << _colourEvolutionMethod << _reconOpt;
+     << _colourEvolutionMethod << _reconOpt << _hardScaleFactor;
 }
 
 void Evolver::persistentInput(PersistentIStream & is, int) {
@@ -57,11 +61,8 @@ void Evolver::persistentInput(PersistentIStream & is, int) {
      >> _limitEmissions
      >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> iunit(_iptmax,GeV) 
      >> _vetoes >> _hardonly >> _trunc_Mode >> _hardEmissionMode
-     >> _colourEvolutionMethod >> _reconOpt;
+     >> _colourEvolutionMethod >> _reconOpt >> _hardScaleFactor;
 }
-
-ClassDescription<Evolver> Evolver::initEvolver;
-// Definition of the static class description member.
 
 void Evolver::Init() {
   
@@ -274,6 +275,12 @@ void Evolver::Init() {
      "Use the off-shell masses in the calculation",
      1);
 
+  static Parameter<Evolver,double> interfaceHardScaleFactor
+    ("HardScaleFactor",
+     "Set the factor to multiply the hard veto scale.",
+     &Evolver::_hardScaleFactor, 1.0, 0.0, 0,
+     false, false, Interface::lowerlim);
+
 }
 
 void Evolver::generateIntrinsicpT(vector<ShowerProgenitorPtr> particlesToShower) {
@@ -299,7 +306,14 @@ void Evolver::generateIntrinsicpT(vector<ShowerProgenitorPtr> particlesToShower)
 }
 
 void Evolver::setupMaximumScales(ShowerTreePtr hard, 
-				 vector<ShowerProgenitorPtr> p) {
+				 const vector<ShowerProgenitorPtr> & p,
+				 XCPtr xcomb) {
+  // let POWHEG events radiate freely
+  if(_hardEmissionMode==1&&hardTree()) {
+    vector<ShowerProgenitorPtr>::const_iterator ckt = p.begin();
+    for (; ckt != p.end(); ckt++) (*ckt)->maxHardPt(Constants::MaxEnergy);
+    return;
+  }
   // find out if hard partonic subprocess.
   bool isPartonic(false); 
   map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator 
@@ -320,6 +334,7 @@ void Evolver::setupMaximumScales(ShowerTreePtr hard,
        !ShowerHandler::currentHandler()->firstInteraction())) {
     // scattering process
     if(hard->isHard()) {
+      assert(xcomb);
       // coloured incoming particles
       if (isPartonic) {
 	map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator 
@@ -332,8 +347,7 @@ void Evolver::setupMaximumScales(ShowerTreePtr hard,
       if (ptmax < ZERO) ptmax = pcm.m();
       if(hardVetoXComb()&&hardVetoReadOption()&&
 	 !ShowerHandler::currentHandler()->firstInteraction()) {
-	ptmax=min(ptmax,sqrt(ShowerHandler::currentHandler()
-			     ->lastXCombPtr()->lastScale()));
+	ptmax=min(ptmax,sqrt(xcomb->lastScale()));
       }
     } 
     // decay, incoming() is the decaying particle.
@@ -346,9 +360,16 @@ void Evolver::setupMaximumScales(ShowerTreePtr hard,
   // LesHouchesReader itself - use this by user's choice. 
   // Can be more general than this. 
   else {
-    ptmax = sqrt( ShowerHandler::currentHandler()
-		  ->lastXCombPtr()->lastScale() );
+    if(hard->isHard()) {
+      assert(xcomb);
+      ptmax = sqrt( xcomb->lastScale() );
+    }
+    else {
+      ptmax = hard->incomingLines().begin()->first
+	->progenitor()->momentum().mass(); 
+    }
   }
+  ptmax *= hardScaleFactor();
   // set maxHardPt for all progenitors.  For partonic processes this
   // is now the max pt in the FS, for non-partonic processes or
   // processes with no coloured FS the invariant mass of the IS
@@ -371,7 +392,7 @@ void Evolver::showerHardProcess(ShowerTreePtr hard, XCPtr xcomb) {
   // extract particles to shower
   vector<ShowerProgenitorPtr> particlesToShower=setupShower(true);
   // setup the maximum scales for the shower, given by the hard process
-  if (hardVetoOn()) setupMaximumScales(currentTree(), particlesToShower);
+  if (hardVetoOn()) setupMaximumScales(currentTree(), particlesToShower,xcomb);
   // generate the intrinsic p_T once and for all
   generateIntrinsicpT(particlesToShower);
   // main shower loop
@@ -660,13 +681,15 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
   // extract particles to be shower, set scales and 
   // perform hard matrix element correction
   vector<ShowerProgenitorPtr> particlesToShower=setupShower(false);
-  setupMaximumScales(currentTree(), particlesToShower);
+  setupMaximumScales(currentTree(), particlesToShower,XCPtr());
   // compute the minimum mass of the final-state
   Energy minmass(ZERO), mIn(ZERO);
   for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
     if(particlesToShower[ix]->progenitor()->isFinalState()) {
-      minmass += max( particlesToShower[ix]->progenitor()->mass(),
-		      particlesToShower[ix]->progenitor()->dataPtr()->constituentMass() );
+      if(particlesToShower[ix]->progenitor()->dataPtr()->stable()) 
+	minmass += particlesToShower[ix]->progenitor()->dataPtr()->constituentMass();
+      else
+	minmass += particlesToShower[ix]->progenitor()->mass();
     }
     else {
       mIn = particlesToShower[ix]->progenitor()->mass();
@@ -1030,18 +1053,166 @@ bool Evolver::spaceLikeDecayVetoed( const Branching & fb,
 }
 
 void Evolver::hardestEmission(bool hard) {
-  if( ( _hardme &&  _hardme->hasPOWHEGCorrection()) ||
-      (_decayme && _decayme->hasPOWHEGCorrection())) {
+  HardTreePtr ISRTree;
+  if( ( _hardme  &&  _hardme->hasPOWHEGCorrection()!=0) ||
+      ( _decayme && _decayme->hasPOWHEGCorrection()!=0)) {
     if(_hardme)
       _hardtree =  _hardme->generateHardest( currentTree() );
     else
       _hardtree = _decayme->generateHardest( currentTree() );
-    if(!_hardtree) return;
-    // join up the two tree
-    connectTrees(currentTree(),_hardtree,hard);
+    // store initial state POWHEG radiation
+    if(_hardtree && _hardme && _hardme->hasPOWHEGCorrection()==1) 
+      ISRTree=_hardtree;
   }
+
   else {
     _hardtree = ShowerHandler::currentHandler()->generateCKKW(currentTree());
+  }
+
+  // if hard me doesn't have a FSR powheg 
+  // correction use decay powheg correction
+  if (_hardme && _hardme->hasPOWHEGCorrection()<2) {      
+    // check for intermediate colour singlet resonance
+    const ParticleVector inter =  _hardme->subProcess()->intermediates();
+    if (inter.size()!=1 || 
+	inter[0]->momentum().m2()/GeV2 < 0 || 
+	inter[0]->dataPtr()->iColour()!=PDT::Colour0){
+      if(_hardtree) connectTrees(currentTree(),_hardtree,hard);
+      return;
+    }
+   
+    map<ShowerProgenitorPtr, tShowerParticlePtr > out = currentTree()->outgoingLines();
+    // ignore cases where outgoing particles are not coloured
+    if (out.size()!=2 ||
+	out. begin()->second->dataPtr()->iColour()==PDT::Colour0 ||
+    	out.rbegin()->second->dataPtr()->iColour()==PDT::Colour0) {
+      if(_hardtree) connectTrees(currentTree(),_hardtree,hard);
+      return;
+    }
+    
+    // look up decay mode
+    tDMPtr dm;
+    string tag;
+    string inParticle = inter[0]->dataPtr()->name() + "->";
+    vector<string> outParticles;
+    outParticles.push_back(out.begin ()->first->progenitor()->dataPtr()->name());
+    outParticles.push_back(out.rbegin()->first->progenitor()->dataPtr()->name());
+    for (int it=0; it<2; ++it){
+      tag = inParticle + outParticles[it] + "," + outParticles[(it+1)%2] + ";";
+      dm = generator()->findDecayMode(tag);
+      if(dm) break;
+    }     
+
+    // get the decayer
+    HwDecayerBasePtr decayer;   
+    if(dm) decayer = dynamic_ptr_cast<HwDecayerBasePtr>(dm->decayer());   
+    // check if decayer has a FSR POWHEG correction 
+    if (!decayer || decayer->hasPOWHEGCorrection()<2){
+      if(_hardtree) connectTrees(currentTree(),_hardtree,hard);
+      return;
+    }
+    
+    // generate the hardest emission
+    ShowerDecayMap decay;
+    PPtr in = new_ptr(*inter[0]);
+    ShowerTreePtr decayTree = new_ptr(ShowerTree(in, decay));
+    HardTreePtr     FSRTree = decayer->generateHardest(decayTree); 
+    if (!FSRTree) {
+      if(_hardtree) connectTrees(currentTree(),_hardtree,hard);
+      return;
+    }
+
+    // if there is no ISRTree make _hardtree from FSRTree
+    if (!ISRTree){
+      vector<HardBranchingPtr> inBranch,hardBranch;
+      for(map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator
+	  cit =currentTree()->incomingLines().begin();
+	  cit!=currentTree()->incomingLines().end();++cit ) {
+	inBranch.push_back(new_ptr(HardBranching(cit->second,SudakovPtr(),
+						 HardBranchingPtr(),
+						 HardBranching::Incoming)));
+	inBranch.back()->beam(cit->first->original()->parents()[0]);
+	hardBranch.push_back(inBranch.back());
+      }
+      if(inBranch[0]->branchingParticle()->dataPtr()->coloured()) {
+	inBranch[0]->colourPartner(inBranch[1]);
+	inBranch[1]->colourPartner(inBranch[0]);
+      }
+      for(set<HardBranchingPtr>::iterator it=FSRTree->branchings().begin();
+	  it!=FSRTree->branchings().end();++it) {
+	if((**it).branchingParticle()->id()!=in->id()) 
+	  hardBranch.push_back(*it);
+      } 
+      hardBranch[2]->colourPartner(hardBranch[3]);
+      hardBranch[3]->colourPartner(hardBranch[2]);
+      HardTreePtr newTree = new_ptr(HardTree(hardBranch,inBranch,
+					     ShowerInteraction::QCD));            
+      _hardtree = newTree;    
+    }
+
+    // Otherwise modify the ISRTree to include the emission in FSRTree
+    else {    
+      vector<tShowerParticlePtr> FSROut, ISROut;   
+      set<HardBranchingPtr>::iterator itFSR, itISR;
+      // get outgoing particles 
+      for(itFSR =FSRTree->branchings().begin();
+	  itFSR!=FSRTree->branchings().end();++itFSR){
+	if ((**itFSR).status()==HardBranching::Outgoing) 
+	  FSROut.push_back((*itFSR)->branchingParticle());
+      }     
+      for(itISR =ISRTree->branchings().begin();
+	  itISR!=ISRTree->branchings().end();++itISR){
+	if ((**itISR).status()==HardBranching::Outgoing) 
+	  ISROut.push_back((*itISR)->branchingParticle());
+      }
+
+      // find COM frame formed by outgoing particles
+      LorentzRotation eventFrameFSR, eventFrameISR;
+      eventFrameFSR = ((FSROut[0]->momentum()+FSROut[1]->momentum()).findBoostToCM());  
+      eventFrameISR = ((ISROut[0]->momentum()+ISROut[1]->momentum()).findBoostToCM());
+
+      // find rotation between ISR and FSR frames
+      int j=0;
+      if (ISROut[0]->id()!=FSROut[0]->id()) j=1;
+      eventFrameISR.rotateZ( (eventFrameFSR*FSROut[0]->momentum()).phi()-
+			     (eventFrameISR*ISROut[j]->momentum()).phi() );
+      eventFrameISR.rotateY( (eventFrameFSR*FSROut[0]->momentum()).theta()-
+			     (eventFrameISR*ISROut[j]->momentum()).theta() );
+      eventFrameISR.invert();
+
+      for (itFSR=FSRTree->branchings().begin();
+	   itFSR!=FSRTree->branchings().end();++itFSR){
+	if ((**itFSR).branchingParticle()->id()==in->id()) continue;
+	for (itISR =ISRTree->branchings().begin();
+	     itISR!=ISRTree->branchings().end();++itISR){
+	  if ((**itISR).status()==HardBranching::Incoming) continue;
+	  if ((**itFSR).branchingParticle()->id()==
+	      (**itISR).branchingParticle()->id()){
+	    // rotate FSRTree particle to ISRTree event frame
+	    (**itISR).branchingParticle()->setMomentum(eventFrameISR*
+						       eventFrameFSR*
+			  (**itFSR).branchingParticle()->momentum());
+	    (**itISR).branchingParticle()->rescaleMass();
+	    // add the children of the FSRTree particles to the ISRTree
+	    if(!(**itFSR).children().empty()){
+	      (**itISR).addChild((**itFSR).children()[0]);
+	      (**itISR).addChild((**itFSR).children()[1]);
+	      // rotate momenta to ISRTree event frame
+	      (**itISR).children()[0]->branchingParticle()->setMomentum(eventFrameISR*
+									eventFrameFSR*
+			    (**itFSR).children()[0]->branchingParticle()->momentum());
+	      (**itISR).children()[1]->branchingParticle()->setMomentum(eventFrameISR*
+									eventFrameFSR*
+			    (**itFSR).children()[1]->branchingParticle()->momentum());
+	    }
+	  }
+	}	
+      }
+      _hardtree = ISRTree;
+    }
+  }
+  if(_hardtree){
+    connectTrees(currentTree(),_hardtree,hard); 
   }
 }
 

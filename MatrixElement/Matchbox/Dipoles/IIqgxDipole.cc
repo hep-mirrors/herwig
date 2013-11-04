@@ -64,7 +64,7 @@ double IIqgxDipole::me2Avg(double ccme2) const {
 
   double res =
     8.*Constants::pi*CF*(realEmissionME()->lastXComb().lastSHat())*
-    (realEmissionME()->lastXComb().lastAlphaS())/prop;
+    (underlyingBornME()->lastXComb().lastAlphaS())/prop;
 
   res *= 2./(1.-x) - (1.+x);
 
@@ -77,8 +77,6 @@ double IIqgxDipole::me2Avg(double ccme2) const {
   res *=
     realEmissionME()->finalStateSymmetry() /
     underlyingBornME()->finalStateSymmetry();
-
-  lastME2(res);
 
   return res;
 
@@ -99,7 +97,7 @@ double IIqgxDipole::me2() const {
 
   double res =
     8.*Constants::pi*CF*(realEmissionME()->lastXComb().lastSHat())*
-    (realEmissionME()->lastXComb().lastAlphaS())/prop;
+    (underlyingBornME()->lastXComb().lastAlphaS())/prop;
 
   res *= 2./(1.-x) - (1.+x);
 
@@ -112,10 +110,6 @@ double IIqgxDipole::me2() const {
   res *=
     realEmissionME()->finalStateSymmetry() /
     underlyingBornME()->finalStateSymmetry();
-
-  lastME2(res);
-
-  logME2();
 
   return res;
 
@@ -132,7 +126,7 @@ void IIqgxDipole::Init() {
   static ClassDocumentation<IIqgxDipole> documentation
     ("IIqgxDipole");
 
-  DipoleRepository::registerDipole<IIqgxDipole,IILightTildeKinematics,IILightInvertedTildeKinematics>
+  DipoleRepository::registerDipole<0,IIqgxDipole,IILightTildeKinematics,IILightInvertedTildeKinematics>
     ("IIqgxDipole","IILightTildeKinematics","IILightInvertedTildeKinematics");
 
 }

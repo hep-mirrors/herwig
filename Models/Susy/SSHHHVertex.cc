@@ -12,6 +12,7 @@
 //
 
 #include "SSHHHVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -85,8 +86,9 @@ void SSHHHVertex::persistentInput(PersistentIStream & is, int) {
      >> theS2b >> theC2b;
 }
 
-ClassDescription<SSHHHVertex> SSHHHVertex::initSSHHHVertex;
-// Definition of the static class description member.
+// Static variable needed for the type description system in ThePEG.
+DescribeClass<SSHHHVertex,SSSVertex>
+describeHerwigSSHHHVertex("Herwig::SSHHHVertex", "HwSusy.so");
 
 void SSHHHVertex::Init() {
 

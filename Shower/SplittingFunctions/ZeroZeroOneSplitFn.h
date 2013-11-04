@@ -42,7 +42,7 @@ public:
   /**
    * The default constructor.
    */
-  inline ZeroZeroOneSplitFn() : SplittingFunction(1) {}
+  ZeroZeroOneSplitFn() : SplittingFunction(1) {}
 
   /**
    *  Concrete implementation of the method to determine whether this splitting
@@ -127,22 +127,16 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
-
-  /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static NoPIOClassDescription<ZeroZeroOneSplitFn> initZeroZeroOneSplitFn;
 
   /**
    * The assignment operator is private and must never be called.
@@ -151,41 +145,6 @@ private:
   ZeroZeroOneSplitFn & operator=(const ZeroZeroOneSplitFn &);
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of ZeroZeroOneSplitFn. */
-template <>
-struct BaseClassTrait<Herwig::ZeroZeroOneSplitFn,1> {
-  /** Typedef of the first base class of ZeroZeroOneSplitFn. */
-  typedef Herwig::SplittingFunction NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the ZeroZeroOneSplitFn class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::ZeroZeroOneSplitFn>
-  : public ClassTraitsBase<Herwig::ZeroZeroOneSplitFn> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::ZeroZeroOneSplitFn"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * ZeroZeroOneSplitFn is implemented. It may also include several, space-separated,
-   * libraries if the class ZeroZeroOneSplitFn depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwShower.so"; }
-};
-
-/** @endcond */
 
 }
 

@@ -13,6 +13,7 @@
 //
 
 #include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxScaleChoice.h"
+#include "ThePEG/Cuts/JetFinder.h"
 
 namespace Herwig {
 
@@ -45,14 +46,12 @@ public:
 public:
 
   /**
-   * Return the renormalization scale. This default version returns
-   * shat.
+   * Return the renormalization scale.
    */
   virtual Energy2 renormalizationScale() const;
 
   /**
-   * Return the factorization scale. This default version returns
-   * shat.
+   * Return the factorization scale.
    */
   virtual Energy2 factorizationScale() const;
 
@@ -99,6 +98,12 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
+private:
+
+  /**
+   * Reference to the jet finder
+   */
+  Ptr<JetFinder>::ptr theJetFinder;
 
 // If needed, insert declarations of virtual function defined in the
 // InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).

@@ -15,6 +15,9 @@
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Handlers/HandlerBase.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
+#include "Herwig++/MatrixElement/Matchbox/Utility/LastMatchboxXCombInfo.h"
+#include "Herwig++/MatrixElement/Matchbox/Utility/ProcessData.fh"
+#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.fh"
 
 namespace Herwig {
 
@@ -73,7 +76,9 @@ struct StreamingRnd {
  *
  */
 class MatchboxPhasespace: 
-    public HandlerBase, public LastXCombInfo<StandardXComb> {
+    public HandlerBase, 
+    public LastXCombInfo<StandardXComb>,
+    public LastMatchboxXCombInfo {
 
 public:
 
@@ -93,15 +98,41 @@ public:
 public:
 
   /**
-   * Prepare a phase space generator for the given xcomb object.
+   * Set the XComb object steering the Born matrix
+   * element this class represents virtual corrections to.
    */
-  virtual void prepare(tStdXCombPtr, bool verbose = false) = 0;
+  virtual void setXComb(tStdXCombPtr xc) { 
+    theLastXComb = xc;
+    lastMatchboxXComb(xc);
+  }
+
+  /**
+   * Return the factory object
+   */
+  Ptr<MatchboxFactory>::tcptr factory() const;
+
+  /**
+   * Return the process data object
+   */
+  Ptr<ProcessData>::tptr processData() const;
 
   /**
    * Generate a phase space point and return its weight.
    */
-  virtual double generateKinematics(const double*,
-				    vector<Lorentz5Momentum>& momenta) = 0;
+  virtual double generateKinematics(const double* r,
+				    vector<Lorentz5Momentum>& momenta);
+
+  /**
+   * Generate a phase space point and return its weight.
+   */
+  virtual double generateTwoToNKinematics(const double*,
+					  vector<Lorentz5Momentum>& momenta) = 0;
+
+  /**
+   * Generate a 2 -> 1 phase space point and return its weight.
+   */
+  virtual double generateTwoToOneKinematics(const double*,
+					    vector<Lorentz5Momentum>& momenta);
 
   /**
    * Return the number of random numbers required to produce a given
@@ -122,6 +153,11 @@ public:
   virtual bool wantCMS() const { return true; }
 
   /**
+   * True, if mass generators should be used instead of fixed masses
+   */
+  bool useMassGenerators() const { return theUseMassGenerators; }
+
+  /**
    * Fill a diagram selector for the last phase space point.
    */
   virtual Selector<MEBase::DiagramIndex> selectDiagrams(const MEBase::DiagramVector&) const;
@@ -131,7 +167,7 @@ public:
    * branch of the diagram.
    */
   pair<double,Lorentz5Momentum> timeLikeWeight(const Tree2toNDiagram& diag,
-					       int branch) const;
+					       int branch, double flatCut) const;
 
   /**
    * Return the weight appropriate to the given spacelike branch of
@@ -139,20 +175,20 @@ public:
    */
   double spaceLikeWeight(const Tree2toNDiagram& diag,
 			 const Lorentz5Momentum& incoming,
-			 int branch) const;
+			 int branch, double flatCut) const;
 
   /**
    * Return the weight appropriate to the given diagram.
    */
   double diagramWeight(const Tree2toNDiagram& diag) const {
-    assert( !diagramWeights.empty() );
-    return diagramWeights.find(diag.id())->second;
+    assert( !diagramWeights().empty() );
+    return diagramWeights().find(diag.id())->second;
   }
 
   /**
    * Fill the diagram weights.
    */
-  void fillDiagramWeights();
+  void fillDiagramWeights(double flatCut = 0.0);
 
   /**
    * Clone this phase space generator.
@@ -166,10 +202,76 @@ public:
    */
   virtual void cloneDependencies(const std::string& prefix = "");
 
+public:
+
   /**
-   * Dump xcomb hierarchies.
+   * Return true, if this phase space generator is invertible
    */
-  void dumpInfo(const string& prefix = "") const;
+  virtual bool isInvertible() const { return false; }
+
+  /**
+   * Invert the given phase space point to the random numbers which
+   * would have generated it.
+   */
+  virtual double invertKinematics(const vector<Lorentz5Momentum>& momenta,
+				  double* r) const;
+
+  /**
+   * Invert the given phase space point to the random numbers which
+   * would have generated it.
+   */
+  virtual double invertTwoToNKinematics(const vector<Lorentz5Momentum>&,
+					double*) const {
+    return 0.;
+  }
+
+  /**
+   * Invert the given 2 -> 1 phase space point to the random numbers which
+   * would have generated it.
+   */
+  virtual double invertTwoToOneKinematics(const vector<Lorentz5Momentum>&, double*) const;
+
+public:
+
+  /**
+   * Limit phasespace generation to a given collinear or soft limit.
+   */
+  void singularLimit(size_t i, size_t j) {
+    if ( i > j )
+      swap(i,j);
+    singularLimits().insert(make_pair(i,j));
+  }
+
+  /**
+   * Return the last matched singular limit.
+   */
+  const pair<size_t,size_t>& lastSingularIndices() const {
+    assert(lastSingularLimit() != singularLimits().end());
+    return *lastSingularLimit();
+  }
+
+  /**
+   * Return true, if constraints on phasespace generation have been met.
+   */
+  bool matchConstraints(const vector<Lorentz5Momentum>& momenta);
+
+public:
+
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
 
 public:
 
@@ -189,9 +291,14 @@ public:
 private:
 
   /**
-   * The diagram weights indexed by diagram id.
+   * A cutoff below which a region is considered singular.
    */
-  map<int,double> diagramWeights;
+  Energy singularCutoff;
+
+  /**
+   * True, if mass generators should be used instead of fixed masses
+   */
+  bool theUseMassGenerators;
 
   /**
    * The assignment operator is private and must never be called.

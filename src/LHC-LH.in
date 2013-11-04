@@ -1,0 +1,59 @@
+##################################################
+# Example generator for the Little Higgs model
+# The best way to use this is to make your own 
+# copy of this file and edit that as you require.
+#
+# The first section loads the model file which 
+# does not contain anything that users need to touch.
+#
+# The second section contains the user settings.
+###################################################
+
+read LH.model
+cd /Herwig/NewPhysics
+set LH/Model:f 1*TeV
+set LH/Model:VEVRatio 0.01
+
+##################################################
+#
+# This section contains the user defined settings
+#
+##################################################
+# --- Hard Process ----
+# The particle name can be found in the relevant model file
+# by searching for its PDG code and noting the text 
+# '/Herwig/Particles/###' where the hashes denote the name
+
+
+# Example hard process: Incoming proton, outgoing T quark
+set HPConstructor:IncludeEW No
+insert HPConstructor:Incoming 0 /Herwig/Particles/g
+insert HPConstructor:Incoming 0 /Herwig/Particles/u
+insert HPConstructor:Incoming 0 /Herwig/Particles/ubar
+insert HPConstructor:Incoming 0 /Herwig/Particles/d
+insert HPConstructor:Incoming 0 /Herwig/Particles/dbar
+
+insert HPConstructor:Outgoing 0 /Herwig/Particles/T
+
+# Example hard process: Incoming proton, outgoing leptons via Z_H
+insert ResConstructor:Incoming 0 /Herwig/Particles/g
+insert ResConstructor:Incoming 0 /Herwig/Particles/u
+insert ResConstructor:Incoming 0 /Herwig/Particles/ubar
+insert ResConstructor:Incoming 0 /Herwig/Particles/d
+insert ResConstructor:Incoming 0 /Herwig/Particles/dbar
+insert ResConstructor:Intermediates 0 /Herwig/Particles/Z_H
+insert ResConstructor:Outgoing 0 /Herwig/Particles/e-
+insert ResConstructor:Outgoing 0 /Herwig/Particles/mu-
+
+# Intrinsic pT tune extrapolated to LHC energy
+set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
+
+# Other parameters for run
+cd /Herwig/Generators
+set LHCGenerator:NumberOfEvents 10000000
+set LHCGenerator:RandomNumberGenerator:Seed 31122001
+set LHCGenerator:DebugLevel 0
+set LHCGenerator:PrintEvent 10
+set LHCGenerator:MaxErrors 10000
+
+saverun LHC-LH LHCGenerator

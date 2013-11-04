@@ -20,7 +20,7 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * This class implements the coupling of a photon to a pair of neutralinos
+ * This class implements the coupling of a gluon to a gluino and a neutralino
  * via loop diagrams
  * It inherits from GeneralFFVertex and implements the setCoupling method.
  *
@@ -109,15 +109,21 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit();
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
+
+  /**
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
+   */
+  virtual void dofinish();
   //@}
 
 private:
-
-  /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<SSGNGVertex> initSSGNGVertex;
 
   /**
    * The assignment operator is private and must never be called.
@@ -126,6 +132,21 @@ private:
   SSGNGVertex & operator=(const SSGNGVertex &);
 
 private:
+
+  /**
+   *  Whether of not to include on-shell intermediate states
+   */
+  bool _includeOnShell;
+
+  /**
+   *  Only include the real part of the integral
+   */
+  bool _realIntegral;
+
+  /**
+   *  Option to omit light quark yukawas 
+   */
+  bool _omitLightQuarkYukawas;
 
   /**
    * Pointer to the stop mixing matrix
@@ -192,42 +213,6 @@ private:
    */
   complex<InvEnergy> _rightlast;
 };
-}
-
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of SSGNGVertex. */
-template <>
-struct BaseClassTrait<Herwig::SSGNGVertex,1> {
-  /** Typedef of the first base class of SSGNGVertex. */
-  typedef ThePEG::Helicity::GeneralFFVVertex NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the SSGNGVertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::SSGNGVertex>
-  : public ClassTraitsBase<Herwig::SSGNGVertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::SSGNGVertex"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * SSGNGVertex is implemented. It may also include several, space-separated,
-   * libraries if the class SSGNGVertex depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwSusy.so"; }
-};
-
-/** @endcond */
-
 }
 
 #endif /* HERWIG_SSGNGVertex_H */

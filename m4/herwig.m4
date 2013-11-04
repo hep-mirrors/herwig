@@ -65,8 +65,15 @@ if test "x$with_thepeg" = "xno"; then
 fi
 
 THEPEGLDFLAGS="-L${with_thepeg}/lib/ThePEG"
+THEPEGHASLHAPDF="no"
+if test -e ${with_thepeg}/lib/ThePEG/ThePEGLHAPDF.so ; then
+   THEPEGHASLHAPDF="yes"
+fi
 if test "${host_cpu}" == "x86_64" -a -e ${with_thepeg}/lib64/ThePEG/libThePEG.so ; then
   THEPEGLDFLAGS="-L${with_thepeg}/lib64/ThePEG"
+  if test -e ${with_thepeg}/lib64/ThePEG/ThePEGLHAPDF.so ; then
+      THEPEGHASLHAPDF="yes"
+  fi
 fi
 THEPEGPATH="${with_thepeg}"
 
@@ -80,6 +87,7 @@ AC_CHECK_LIB([ThePEG],[debugThePEG],[],
 AC_SUBST([THEPEGLIB],[-lThePEG])
 AC_SUBST(THEPEGLDFLAGS)
 AC_SUBST(THEPEGPATH)
+AC_SUBST(THEPEGHASLHAPDF)
 
 LIBS="$oldlibs"
 LDFLAGS="$oldldflags"
@@ -108,7 +116,7 @@ AC_SUBST(THEPEGINCLUDE)
 AC_MSG_CHECKING([for HepMCAnalysis.so in ThePEG])
 
 
-if test -x "$THEPEGPATH/lib/ThePEG/HepMCAnalysis.so" ; then
+if test -e "$THEPEGPATH/lib/ThePEG/HepMCAnalysis.so" ; then
      	CREATE_HEPMC="create"
 	AC_MSG_RESULT([found])
 else
@@ -117,50 +125,6 @@ else
 fi
 
 AC_SUBST([CREATE_HEPMC])
-])
-
-dnl ##### boost #####
-AC_DEFUN([HERWIG_CHECK_BOOST],
-[
-AC_MSG_CHECKING([for boost headers])
-BOOSTINCLUDE=""
-
-AC_ARG_WITH(boost,
-        AC_HELP_STRING([--with-boost=DIR],[location of boost]),
-        [],
-	[with_boost=system])
-
-if test "x$with_boost" = "xno"; then
-AC_MSG_ERROR([boost headers are required. Please specify boost installation with --with-boost.])
-fi
-
-boostpath=$with_boost
-
-if test "x$with_boost" == "xsystem" ; then
-   if test -e "/usr/include/boost/array.hpp"; then
-      boostpath="/usr"
-   elif test -e "/usr/local/include/boost/array.hpp"; then
-      boostpath="/usr/local"
-   elif test -e "/opt/include/boost/array.hpp"; then
-      boostpath="/opt"
-   elif test -e "/opt/local/include/boost/array.hpp"; then
-      boostpath="/opt/local"
-   else
-      AC_MSG_RESULT([not found])
-      AC_MSG_ERROR([boost headers are required. Please install boost.])
-   fi
-fi
-
-if test -e "$boostpath/include/boost/array.hpp"; then
-        AC_MSG_RESULT([found in $boostpath])
-else
-	AC_MSG_RESULT([not found])
-	AC_MSG_ERROR([boost headers are required. Please install boost.])
-fi
-
-BOOSTINCLUDE="-I$boostpath/include"
-
-AC_SUBST(BOOSTINCLUDE)
 ])
 
 dnl ##### LOOPTOOLS #####
@@ -288,9 +252,11 @@ AM_CONDITIONAL(USE_SVNVERSION,[test "x$have_svnversion" = "xyes"])
 dnl ##### COMPILERFLAGS #####
 AC_DEFUN([HERWIG_COMPILERFLAGS],
 [
+AC_REQUIRE([HERWIG_CHECK_GSL])
 AC_REQUIRE([HERWIG_CHECK_THEPEG])
+AC_REQUIRE([BOOST_REQUIRE])
 
-AM_CPPFLAGS="-I\$(top_builddir)/include $THEPEGINCLUDE \$(GSLINCLUDE) \$(BOOSTINCLUDE)"
+AM_CPPFLAGS="-I\$(top_builddir)/include $THEPEGINCLUDE \$(GSLINCLUDE) \$(BOOST_CPPFLAGS)"
 
 AC_MSG_CHECKING([for debugging mode])
 AC_ARG_ENABLE(debug,
@@ -301,14 +267,14 @@ AC_ARG_ENABLE(debug,
 AC_MSG_RESULT([$enable_debug])
 
 if test "x$enable_debug" = "xno"; then
-	AM_CPPFLAGS="$AM_CPPFLAGS -DNDEBUG"
+	debugflags=""
 else
 	debugflags="-g"
 fi
 
 dnl -Wfloat-equal -fvisibility-inlines-hidden -Wctor-dtor-privacy -Weffc++
 if test -n "$GCC"; then
-	warnflags="-ansi -pedantic -Wall -W"
+	warnflags="-ansi -pedantic -Wall -Wextra -Wno-overloaded-virtual"
 
 	if test "x$enable_debug" = "xslow"; then
 		debugflags="$debugflags -fno-inline"
@@ -334,99 +300,56 @@ AC_SUBST(AM_LDFLAGS)
 
 AC_DEFUN([HERWIG_ENABLE_MODELS],
 [
-AC_MSG_CHECKING([for BSM models to include])
-
-LOAD_RS=""
-LOAD_SUSY=""
-LOAD_NMSSM=""
-LOAD_TRP=""
-LOAD_UED=""
-LOAD_ADD=""
-LOAD_SEXTET=""
-LOAD_TTBA=""
-LOAD_ZPRIME=""
+AC_MSG_CHECKING([if BSM models should be built])
 
 AC_ARG_ENABLE(models,
-        AC_HELP_STRING([--enable-models=LIST],[Comma-separated list of BSM models to enable. Options are (mssm nmssm ued rs trp add leptoquarks sextet) or --disable-models to turn them all off.]),
+        AC_HELP_STRING([--disable-models],[Turn off compilation of BSM models.]),
         [],
-        [enable_models=all]
+        [enable_models=yes]
         )
-if test "x$enable_models" = "xyes" -o "x$enable_models" = "xall"; then
-   all=yes
-fi
 AC_MSG_RESULT([$enable_models])
 
-if test ! "$all"; then
-   oldIFS="$IFS"
-   IFS=","
-   for i in $enable_models; do
-       declare $i=yes
-   done
-   IFS="$oldIFS"
+LOAD_BSM=""
+if test "$enable_models" = "yes"; then
+LOAD_BSM="read BSMlibs.in"
 fi
+AC_SUBST(LOAD_BSM)
 
-if test "$nmssm" -o "$all"; then
-   LOAD_NMSSM="library HwNMSSM.so"
-   mssm=yes
-fi
-AC_SUBST(LOAD_NMSSM)
-
-if test "$rs" -o "$all" ; then
-   LOAD_RS="library HwRSModel.so"
-fi
-AC_SUBST(LOAD_RS)
-
-if test "$mssm" -o "$all"; then
-   LOAD_SUSY="library HwSusy.so"
-fi
-AC_SUBST(LOAD_SUSY)
-
-if test "$trp" -o "$all"; then
-   LOAD_TRP="library HwTransplanck.so"
-fi
-AC_SUBST(LOAD_TRP)
-
-if test "$ued" -o "$all"; then
-   LOAD_UED="library HwUED.so"
-fi
-AC_SUBST(LOAD_UED)
-
-if test "$add" -o "$all"; then
-   LOAD_ADD="library HwADDModel.so"
-fi
-AC_SUBST(LOAD_ADD)
-
-if test "$leptoquarks" -o "$all"; then
-   LOAD_LEPTOQUARKS="library HwLeptoquarkModel.so"
-fi
-AC_SUBST(LOAD_LEPTOQUARKS)
-
-if test "$sextet" -o "$all"; then
-   LOAD_SEXTET="library HwSextetModel.so"
-fi
-AC_SUBST(LOAD_SEXTET)
-
-if test "$ttba" -o "$all"; then
-   LOAD_TTBA="library HwTTbAModel.so"
-fi
-AC_SUBST(LOAD_TTBA)
-
-if test "$zprime" -o "$all"; then
-   LOAD_SEXTET="library HwZprimeModel.so"
-fi
-AC_SUBST(LOAD_ZPRIME)
-
-AM_CONDITIONAL(WANT_MSSM,[test "$mssm" -o "$all"])
-AM_CONDITIONAL(WANT_NMSSM,[test "$nmssm" -o "$all"])
-AM_CONDITIONAL(WANT_UED,[test "$ued" -o "$all"])
-AM_CONDITIONAL(WANT_RS,[test "$rs" -o "$all"])
-AM_CONDITIONAL(WANT_Leptoquark,[test "$leptoquarks" -o "$all"])
-AM_CONDITIONAL(WANT_TRP,[test "$trp" -o "$all"])
-AM_CONDITIONAL(WANT_ADD,[test "$add" -o "$all"])
-AM_CONDITIONAL(WANT_SEXTET,[test "$sextet" -o "$all"])
-AM_CONDITIONAL(WANT_TTBA,[test "$ttba" -o "$all"])
-AM_CONDITIONAL(WANT_ZPRIME,[test "$zprime" -o "$all"])
+AM_CONDITIONAL(WANT_BSM,[test "$enable_models" = "yes"])
 ])
+
+
+AC_DEFUN([HERWIG_ENABLE_DIPOLE],
+[
+AC_MSG_CHECKING([if dipole shower should be built])
+
+AC_ARG_ENABLE(dipole,
+        AC_HELP_STRING([--disable-dipole],[Turn off compilation of dipole shower.]),
+        [],
+        [enable_dipole=yes]
+        )
+AC_MSG_RESULT([$enable_dipole])
+
+LOAD_DIPOLE=""
+LOAD_DIPOLE_ALPHAS=""
+LOAD_MATCHBOX=""
+if test "$enable_dipole" = "yes"; then
+WARNLHAPDF=""
+if test "x$THEPEGHASLHAPDF" = "xno" ; then
+   AC_MSG_WARN([Dipole shower defaults require LHAPDF])
+   WARNLHAPDF=" * warning: LHAPDF disabled * "
+fi
+LOAD_DIPOLE="library HwDipoleShower.so"
+LOAD_DIPOLE_ALPHAS="library HwDipoleShowerAlphaS.so"
+LOAD_MATCHBOX="library HwMatchbox.so"
+fi
+AC_SUBST(LOAD_DIPOLE)
+AC_SUBST(LOAD_DIPOLE_ALPHAS)
+AC_SUBST(LOAD_MATCHBOX)
+
+AM_CONDITIONAL(WANT_DIPOLE,[test "$enable_dipole" = "yes"])
+])
+
 
 AC_DEFUN([HERWIG_OVERVIEW],
 [
@@ -441,21 +364,23 @@ cat << _HW_EOF_ > config.herwig
 *** Prefix:		$prefix
 ***
 *** BSM models:		$enable_models
-*** Herwig debug mode:	$enable_debug
+*** Dipole shower:	$enable_dipole $WARNLHAPDF
 ***
-*** GSL:		$with_gsl
+*** Herwig debug mode:	$enable_debug
 ***
 *** ThePEG:		$with_thepeg
 *** ThePEG headers:	$with_thepeg_headers
 ***
-*** boost:              $with_boost
-***
+*** GSL:		$with_gsl
+*** boost:              ${BOOST_CPPFLAGS:-system}
 *** Fastjet:		${fjconfig}
 ***
 *** Host:		$host
+*** CC:			$CCSTRING
 *** CXX:		$CXXSTRING
 *** FC:			$FCSTRING
-*** CC:			$CCSTRING
+***
+*** CXXFLAGS:		$CXXFLAGS
 *****************************************************
 _HW_EOF_
 ])

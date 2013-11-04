@@ -44,7 +44,7 @@ Energy DipoleChainOrdering::hardScale(tPPtr emitter, tPPtr spectator,
 
   return 
     virtualityOrdering ?
-    split.splittingKinematics()->QMax(scale,emitterX,spectatorX,index) :
+    split.splittingKinematics()->QMax(scale,emitterX,spectatorX,index,split) :
     split.splittingKinematics()->ptMax(scale,emitterX,spectatorX,index,split);
 
 }

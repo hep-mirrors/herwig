@@ -29,9 +29,9 @@ IBPtr FFMgx2ggxDipoleKernel::fullclone() const {
 bool FFMgx2ggxDipoleKernel::canHandle(const DipoleIndex& ind) const {
   return
     ind.emitterData()->id() == ParticleID::g &&
-    !ind.initialStateEmitter() && !ind.initialStateSpectator() &&
-    // massless quarks shall be treated by massless FFgx2ggxDipoleKernel
-    !( abs(ind.spectatorData()->id()) < 6 && ind.spectatorData()->mass() == ZERO );
+    ind.spectatorData()->mass() != ZERO &&
+    !ind.initialStateEmitter() && !ind.initialStateSpectator();
+
 }
 
 bool FFMgx2ggxDipoleKernel::canHandleEquivalent(const DipoleIndex& a,
@@ -46,7 +46,7 @@ bool FFMgx2ggxDipoleKernel::canHandleEquivalent(const DipoleIndex& a,
   return
     sk.emitter(b)->id() == ParticleID::g &&
     sk.emission(b)->id() == ParticleID::g &&
-    abs(spectator(a)->id()) == abs(sk.spectator(b)->id());
+    abs(spectator(a)->mass()) == abs(sk.spectator(b)->mass());
 
 }
 
@@ -78,7 +78,7 @@ double FFMgx2ggxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
   double zp = 0.5*(1.+viji*vijk);
   double zm = 0.5*(1.-viji*vijk);
 
-  // free parameter of the subtraction scheme
+  // how to choose kappa?
   double kappa = 0.;
 
   ret *= 3.*(1./(1.-z*(1.-y))+1./(1.-(1.-z)*(1.-y)) + (z*(1.-z)-(1.-kappa)*zp*zm-2.)/vijk);

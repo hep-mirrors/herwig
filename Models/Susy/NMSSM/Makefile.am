@@ -1,4 +1,4 @@
-if WANT_NMSSM
+if WANT_BSM
 pkglib_LTLIBRARIES = HwNMSSM.la
 endif
 HwNMSSM_la_SOURCES =  \
@@ -12,4 +12,4 @@ NMSSMHHHVertex.h   NMSSMHHHVertex.cc   \
 NMSSMGGHVertex.h   NMSSMGGHVertex.cc \
 NMSSMPPHVertex.h   NMSSMPPHVertex.cc  \
 NMSSMWWHHVertex.h  NMSSMWWHHVertex.cc 
-HwNMSSM_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 2:0:0
+HwNMSSM_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 3:0:0

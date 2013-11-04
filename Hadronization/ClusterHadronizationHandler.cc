@@ -32,6 +32,8 @@
 
 using namespace Herwig;
 
+ClusterHadronizationHandler * ClusterHadronizationHandler::currentHandler_ = 0;
+
 DescribeClass<ClusterHadronizationHandler,HadronizationHandler>
 describeClusterHadronizationHandler("Herwig::ClusterHadronizationHandler","");
 
@@ -138,13 +140,6 @@ void ClusterHadronizationHandler::Init() {
      &ClusterHadronizationHandler::_underlyingEventHandler, false, false, true, true, false);
 }
 
-void ClusterHadronizationHandler::doinitrun() {
-  HadronizationHandler::doinitrun();
-  // The run initialization is used here to all Cluster to have access to the
-  // ClusterHadronizationHandler class instance, via a static pointer.
-  Cluster::setPointerClusterHadHandler(this);
-}
-
 namespace {
   void extractChildren(tPPtr p, set<PPtr> & all) {
     if (p->children().empty()) return;
@@ -161,6 +156,7 @@ void ClusterHadronizationHandler::
 handle(EventHandler & ch, const tPVector & tagged,
        const Hint &) {
   useMe();
+  currentHandler_ = this;
   PVector currentlist(tagged.begin(),tagged.end());
   // set the scale for coloured particles to just above the gluon mass squared
   // if less than this so they are classed as perturbative
@@ -228,9 +224,11 @@ handle(EventHandler & ch, const tPVector & tagged,
 	       mem_fun(&Particle::undecay));
     }
   } 
-  if (!lightOK)
+  if (!lightOK) {
+    //    currentHandler_ = 0;
     throw Exception("CluHad::handle(): tried LightClusterDecayer 10 times!", 
 		    Exception::eventerror);
+  }
 
 
   // decay the remaining clusters
@@ -268,26 +266,43 @@ handle(EventHandler & ch, const tPVector & tagged,
     assert(_underlyingEventHandler);
     ch.performStep(_underlyingEventHandler,Hint::Default());
   }
-  // zero all positions
+  // calculate positions
   // extract all particles from the event
   tEventPtr event=ch.currentEvent();
   vector<tPPtr> particles;
   particles.reserve(256);
   event->select(back_inserter(particles), ThePEG::AllSelector());
-  // and the final-state particles
-  set<tPPtr> finalstate;
-  event->selectFinalState(inserter(finalstate));
   for(vector<tPPtr>::const_iterator pit=particles.begin();
-      pit!=particles.end();++pit) {
-    // if a final-state particle just zero production
-    if(finalstate.find(*pit)!=finalstate.end()) {
-      (**pit).setVertex(LorentzPoint());
+      pit!=particles.end(); ++pit) {
+    if ((**pit).parents().empty()) 
+      continue;
+    tPPtr parent = (**pit).parents()[0];
+    // fudged fix for the shower's technical vertices:
+    // make lifelength for 1-1 vertices zero
+    // \todo sort out shower inserted vertices properly
+    if ( (**pit).id() == parent->id() 
+	 && (**pit).parents().size() == 1
+	 && parent->children().size() == 1 ) {
+      parent->setLifeLength(LorentzDistance());
+      // ??? (**pit).setVertex( parent->vertex() );
     }
-    // if not zero the lot
-    else {
-      (**pit).setVertex(LorentzPoint());
-      (**pit).setLifeLength(LorentzDistance());
+    // fix the vertex position for particles from clusters
+    bool inClusters = false;
+    bool newVertex  = false;
+    // iterate up the ancestry to find the origin of the parent cluster
+    while( !parent->parents().empty() ) {
+      bool parentIsCluster = parent->id() == ParticleID::Cluster;
+      if ( !inClusters && parentIsCluster ) {
+	inClusters = true;
+      }
+      else if ( inClusters && !parentIsCluster ) {
+	newVertex = true;
+	break;
+      }
+      parent = parent->parents()[0]; 
     }
+    // parent is now the ancestor of the cluster chain
+    if ( newVertex ) (**pit).setVertex( parent->vertex() );
   }
 }
 

@@ -21,6 +21,7 @@
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
 #include "Herwig++/PDT/GenericMassGenerator.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
+#include "Herwig++/Shower/Couplings/ShowerAlpha.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -67,7 +68,7 @@ public:
   /**
    *  Has a POWHEG style correction
    */
-  virtual bool hasPOWHEGCorrection() {return true;}
+  virtual POWHEGType hasPOWHEGCorrection() {return ISR;}
 
   /**
    *  Has an old fashioned ME correction
@@ -78,11 +79,7 @@ public:
    *  Initialize the ME correction
    */
   virtual void initializeMECorrection(ShowerTreePtr tree, double & initial,
-				      double & final) {
-    final   = 1.;
-    initial = tree->incomingLines().begin()->second->id()==ParticleID::g ?
-      enhance_ : 1.;
-  }
+				      double & final);
 
   /**
    *  Apply the hard matrix element correction to a given hard process or decay

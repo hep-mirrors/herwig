@@ -15,7 +15,8 @@
 #include "ThePEG/Handlers/HandlerBase.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Handlers/LastXCombInfo.h"
-#include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.h"
+#include "Herwig++/MatrixElement/Matchbox/Utility/LastMatchboxXCombInfo.h"
+#include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.fh"
 
 namespace Herwig {
 
@@ -30,7 +31,10 @@ using namespace ThePEG;
  * @see \ref MatchboxInsertionOperatorInterfaces "The interfaces"
  * defined for MatchboxInsertionOperator.
  */
-class MatchboxInsertionOperator: public HandlerBase, public LastXCombInfo<StandardXComb> {
+class MatchboxInsertionOperator: 
+    public HandlerBase, 
+    public LastXCombInfo<StandardXComb>,
+    public LastMatchboxXCombInfo {
 
 public:
 
@@ -59,22 +63,12 @@ public:
   virtual bool apply(const cPDVector&) const = 0;
 
   /**
-   * Set the Born matrix element this class represents 
-   * virtual corrections to.
-   */
-  virtual void setBorn(Ptr<MatchboxMEBase>::tptr me) { theLastBorn = me; }
-
-  /**
    * Return the Born matrix element this class represents 
    * virtual corrections to.
    */
-  Ptr<MatchboxMEBase>::tptr lastBorn() { return theLastBorn; }
-
-  /**
-   * Return the Born matrix element this class represents 
-   * virtual corrections to.
-   */
-  Ptr<MatchboxMEBase>::tcptr lastBorn() const { return theLastBorn; }
+  Ptr<MatchboxMEBase>::tptr lastBorn() const {
+    return lastMatchboxXComb()->matchboxME();
+  }
 
   /**
    * Set the XComb object steering the Born matrix
@@ -82,12 +76,8 @@ public:
    */
   virtual void setXComb(tStdXCombPtr xc) { 
     theLastXComb = xc;
+    lastMatchboxXComb(xc);
   }
-
-  /**
-   * Provide the additional random numbers
-   */
-  void additionalKinematics(const double *);
 
   /**
    * Return the number of additional random variables
@@ -103,35 +93,62 @@ public:
   /**
    * Change from CDR to DR
    */
-  virtual void useDR() { }
+  virtual void useDR() { theUseDR = true; }
 
   /**
    * Change from DR to CDR
    */
-  virtual void useCDR() { }
+  virtual void useCDR() { theUseDR = false; }
 
   /**
-   * Change to the simple convention
+   * Change to the CS conventions
    */
-  virtual void useCS() { }
+  virtual void useCS() { theUseCS = true; }
 
   /**
-   * Change to the standard convention
+   * Change to the BDK conventions
    */
-  virtual void useNonCS() { }
+  virtual void useBDK() { theUseBDK = true; }
+
+  /**
+   * Change to the Expanded conventions
+   */
+  virtual void useExpanded() { theUseExpanded = true; }
 
   /**
    * Return true, if this virtual correction
    * has been calculated using dimensional reduction.
    * CDR is assumed otherwise.
    */
-  virtual bool isDR() const { return false; }
+  virtual bool isDR() const { return theUseDR; }
 
   /**
    * Return true, if the virtual correction has been calculated in the
    * dipole convention.
    */
-  virtual bool isCS() const { return false; }
+  virtual bool isCS() const { return theUseCS; }
+
+  /**
+   * Return true, if the virtual correction has been calculated in the
+   * BDK convention.
+   */
+  virtual bool isBDK() const { return theUseBDK; }
+
+  /**
+   * Return true, if the virtual correction has been calculated in the
+   * expanded convention.
+   */
+  virtual bool isExpanded() const { return theUseExpanded; }
+
+  /**
+   * If defined, return the coefficient of the pole in epsilon^2
+   */
+  virtual double oneLoopDoublePole() const { return 0.; }
+
+  /**
+   * If defined, return the coefficient of the pole in epsilon
+   */
+  virtual double oneLoopSinglePole() const { return 0.; }
 
   //@}
 
@@ -150,13 +167,7 @@ public:
    * variables supplied through the Born XComb object
    * and possible additional random numbers.
    */
-  virtual CrossSection dSigHatDR() const {
-    return
-      sqr(hbarc) * me2() *
-      lastBorn()->lastXComb().jacobian() * 
-      lastMEPDFWeight() /
-      (2.*lastSHat());
-  }
+  virtual CrossSection dSigHatDR() const;
 
   //@}
 
@@ -171,16 +182,16 @@ public:
   virtual void flushCaches() {}
 
   /**
-   * Clone this matrix element.
+   * Clone this insertion operator.
    */
   Ptr<MatchboxInsertionOperator>::ptr cloneMe() const {
     return dynamic_ptr_cast<Ptr<MatchboxInsertionOperator>::ptr>(clone());
   }
 
   /**
-   * Dump xcomb hierarchies.
+   * Clone the dependencies, using a given prefix.
    */
-  virtual void dumpInfo(const string& prefix = "") const = 0;
+  virtual void cloneDependencies(const std::string& prefix = "");
 
   //@}
 
@@ -214,44 +225,32 @@ public:
 // If needed, insert declarations of virtual function defined in the
 // InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
 
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given
-   * pointer.
-   */
-  virtual void rebind(const TranslationMap & trans);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in this
-   * object.
-   * @return a vector of pointers.
-   */
-  virtual IVector getReferences();
-  //@}
-
-protected:
-
-  /**
-   * The additional random numbers requested by
-   * this virtual correction.
-   */
-  vector<double> additionalRandomNumbers;
-
 private:
 
   /**
-   * The Born matrix element this class represents 
-   * virtual corrections to.
+   * True, if this virtual correction
+   * has been calculated using dimensional reduction.
+   * CDR is assumed otherwise.
    */
-  Ptr<MatchboxMEBase>::tptr theLastBorn;
+  bool theUseDR;
+
+  /**
+   * True, if the virtual correction has been calculated in the
+   * dipole convention.
+   */
+  bool theUseCS;
+
+  /**
+   * True, if the virtual correction has been calculated in the
+   * BDK convention.
+   */
+  bool theUseBDK;
+
+  /**
+   * True, if the virtual correction has been calculated in the
+   * expanded convention.
+   */
+  bool theUseExpanded;
 
 private:
 

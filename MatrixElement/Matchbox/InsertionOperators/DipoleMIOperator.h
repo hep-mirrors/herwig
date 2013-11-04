@@ -13,6 +13,7 @@
 //
 
 #include "Herwig++/MatrixElement/Matchbox/InsertionOperators/MatchboxInsertionOperator.h"
+#include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.h"
 
 namespace Herwig {
 
@@ -46,10 +47,10 @@ public:
 public:
 
   /**
-   * Set the Born matrix element this class represents 
-   * virtual corrections to.
+   * Set the XComb object steering the Born matrix
+   * element this class represents virtual corrections to.
    */
-  virtual void setBorn(Ptr<MatchboxMEBase>::tptr me);
+  virtual void setXComb(tStdXCombPtr xc);
 
   /**
    * Evaluate the finite virtual correction for the
@@ -60,36 +61,15 @@ public:
 
   /**
    * Return true, if contributions exist to
-   * the given parton.
+   * the given parton pair.
    */
-  bool apply(tcPDPtr,bool=false) const;
+  bool apply(tcPDPtr, tcPDPtr) const;
 
   /**
    * Return true, if this virtual correction
    * applies to the given process.
    */
   virtual bool apply(const cPDVector&) const;
-
-  /**
-   * Change from CDR to DR
-   */
-  virtual void useDR() { theUseDR = true; }
-
-  /**
-   * Change from DR to CDR
-   */
-  virtual void useCDR() { theUseDR = false; }
-
-  /**
-   * Return true, if dimensional reduction
-   * is used.
-   */
-  virtual bool isDR() const { return theUseDR; }
-
-  /**
-   * Dump xcomb hierarchies.
-   */
-  void dumpInfo(const string& prefix = "") const;
 
 public:
   
@@ -169,7 +149,7 @@ private:
   /**
    * \Gamma_q
    */
-  double GammaQuark(const ParticleData&) const;
+  double GammaQuark(const ParticleData&,Energy2) const;
   
   /**
    * \Gamma_g
@@ -190,11 +170,6 @@ private:
    * V_j
    */
   double Vj(const ParticleData&, const ParticleData&, Energy2,double,bool=false) const;
-
-  /**
-   * True, if dimensional reduction is used.
-   */
-  bool theUseDR;
 
 private:
 

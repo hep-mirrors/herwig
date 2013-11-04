@@ -16,6 +16,7 @@
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/Utilities/EnumIO.h"
 #include "ThePEG/PDF/PolarizedBeamParticleData.h"
+#include "ThePEG/Utilities/Debug.h"
 #include <numeric>
 
 using namespace Herwig;
@@ -296,6 +297,28 @@ void GeneralHardME::setProcessInfo(const vector<HPDiagram> & alldiagrams,
     break;
   default:
     assert(false);
+  }
+  if(Debug::level > 1 )  {
+    generator()->log() << "Set up 2->2 ME for " 
+		       << getParticleData(incoming_.first )->PDGName() << " " 
+		       << getParticleData(incoming_.second)->PDGName() << " -> "
+		       << getParticleData(outgoing_.first )->PDGName() << " " 
+		       << getParticleData(outgoing_.second)->PDGName() << "\n";
+    for(unsigned int ix=0;ix<alldiagrams.size();++ix) {
+      generator()->log() << "Diagram " << ix << " has "
+			 << alldiagrams[ix].incoming.first  << " " 
+			 << alldiagrams[ix].incoming.second << " -> "
+			 << alldiagrams[ix].outgoing.first  << " " 
+			 << alldiagrams[ix].outgoing.second << "\n";
+      generator()->log() << "Type " << alldiagrams[ix].channelType << " " 
+			 << alldiagrams[ix].ordered.first  << " " 
+			 << alldiagrams[ix].ordered.second << "\n";
+      if(alldiagrams[ix].intermediate)
+	generator()->log() << "Intermediate " << alldiagrams[ix].intermediate->PDGName() << "\n";
+      generator()->log() << "vertices " 
+			 << alldiagrams[ix].vertices.first ->fullName() << " " 
+			 << alldiagrams[ix].vertices.second->fullName() << "\n";
+    }
   }
 }
 
@@ -588,15 +611,17 @@ GeneralHardME::colourGeometries(tcDiagPtr diag) const {
     break;
   case Colour38to13:
     static ColourLines f38to13[2]={ColourLines("1 2 -3, 3 5"),
-				   ColourLines("1-2, 2 3 5" )};
-    if(current.channelType == HPDiagram::tChannel)
+				   ColourLines("1 -2, 2 3 5")};
+    if(current.channelType == HPDiagram::tChannel) {
       sel.insert(1.,&f38to13[0]);
-    else
+    }
+    else {
       sel.insert(1.,&f38to13[1]);
+    }
     break;
   case Colour38to31:
     static ColourLines f38to31[2]={ColourLines("1 2 -3, 3 4"),
-				   ColourLines("1-2, 2 3 4 ")};
+				   ColourLines("1 -2, 2 3 4 ")};
     if(current.channelType == HPDiagram::tChannel)
       sel.insert(1.,&f38to31[0]);
     else	        
@@ -713,7 +738,7 @@ GeneralHardME::colourGeometries(tcDiagPtr diag) const {
 	ColourLines("1 3 4:2, -2 -3 -5:1, 4:1 -5:2"),
 	ColourLines("1 3 4:2, -2 -3 -5:2, 4:1 -5:1"),
 	ColourLines(""), ColourLines(""),
-	ColourLines(""), ColourLines(""),};
+	ColourLines(""), ColourLines("")};
     static ColourLines f33barto66bart[8]
       ={ColourLines(""), ColourLines(""),
 	ColourLines(""), ColourLines(""),
@@ -806,14 +831,18 @@ GeneralHardME::colourGeometries(tcDiagPtr diag) const {
     static ColourLines f33to61u[2]
       ={ColourLines("1 2 4:1, 3 4:2"),
         ColourLines("1 2 4:2, 3 4:1")};
+    static ColourLines f33to61s[2]
+      ={ColourLines("1 3:1 4:1, 2 3:2 4:2"),
+        ColourLines("1 3:2 4:2, 2 3:1 4:1")};
     if(current.channelType == HPDiagram::tChannel) {
       if(current.ordered.second) 
         sel.insert(1., &f33to61t[flow_]);
       else 
         sel.insert(1., &f33to61u[flow_]);
     }
-    else
-      assert(false);
+    else {
+      sel.insert(1., &f33to61s[flow_]);
+    }
     break;
   case Colour33to16:
     static ColourLines f33to16t[2]
@@ -822,14 +851,18 @@ GeneralHardME::colourGeometries(tcDiagPtr diag) const {
     static ColourLines f33to16u[2]
       ={ColourLines("1 5:1, 3 2 5:2"),
         ColourLines("1 5:2, 3 2 5:1")};
+    static ColourLines f33to16s[2]
+      ={ColourLines("1 3:1 5:1, 2 3:2 5:2"),
+        ColourLines("1 3:2 5:2, 2 3:1 5:1")};
     if(current.channelType == HPDiagram::tChannel) {
       if(current.ordered.second)
         sel.insert(1., &f33to16t[flow_]);
       else 
         sel.insert(1., &f33to16u[flow_]);
     }
-    else
-      assert(false);
+    else {
+      sel.insert(1., &f33to16s[flow_]);
+    }
     break;
   case Colour3bar3barto6bar1:
     static ColourLines f3bar3barto6bar1t[2]
@@ -838,11 +871,17 @@ GeneralHardME::colourGeometries(tcDiagPtr diag) const {
     static ColourLines f3bar3barto6bar1u[2]
       ={ColourLines("-1 -2 -4:1, -3 -4:2"),
         ColourLines("-1 -2 -4:2, -3 -4:1")};
+    static ColourLines f3bar3barto6bar1s[2]
+      ={ColourLines("-1 -3:1 -4:1, -2 -3:2 -4:2"),
+        ColourLines("-1 -3:2 -4:2, -2 -3:1 -4:1")};
     if(current.channelType == HPDiagram::tChannel) {
       if(current.ordered.second) 
         sel.insert(1., &f3bar3barto6bar1t[flow_]);
       else 
         sel.insert(1., &f3bar3barto6bar1u[flow_]);
+    }
+    else {
+      sel.insert(1., &f3bar3barto6bar1s[flow_]);
     }
     break;
   case Colour3bar3barto16bar:
@@ -852,11 +891,17 @@ GeneralHardME::colourGeometries(tcDiagPtr diag) const {
     static ColourLines f3bar3barto16baru[2]
       ={ColourLines("-1 -5:1, -3 -2 -5:2"),
         ColourLines("-1 -5:2, -3 -2 -5:1")};
+    static ColourLines f3bar3barto16bars[2]
+      ={ColourLines("-1 -3:1 -5:1, -2 -3:2 -5:2"),
+        ColourLines("-1 -3:2 -5:2, -2 -3:1 -5:1")};
     if(current.channelType == HPDiagram::tChannel) {
       if(current.ordered.second) 
         sel.insert(1., &f3bar3barto16bart[flow_]);
       else 
         sel.insert(1., &f3bar3barto16baru[flow_]);
+    }
+    else {
+      sel.insert(1., &f3bar3barto16bars[flow_]);
     }
     break;
   case Colour38to3bar6:

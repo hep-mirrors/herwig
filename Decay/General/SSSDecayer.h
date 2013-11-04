@@ -15,6 +15,7 @@
 #include "GeneralTwoBodyDecayer.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Helicity/Vertex/Scalar/SSSVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -59,6 +60,25 @@ public:
    */
   virtual Energy partialWidth(PMPair inpart, PMPair outa, 
 			      PMPair outb) const;
+
+  /**
+   *  Has a POWHEG style correction
+   */
+  virtual POWHEGType hasPOWHEGCorrection() {return FSR;}
+
+  /**
+   *  Three-body matrix element including additional QCD radiation
+   */
+  virtual double threeBodyME(const int , const Particle & inpart,
+			     const ParticleVector & decay,MEOption meopt);
+
+  /**
+   * Indentify outgoing vertices for the scalar and anti scalar
+   */
+  void identifyVertices(const int iscal, const int ianti,
+			const Particle & inpart, const ParticleVector & decay,
+			AbstractVSSVertexPtr & abstractOutgoingVertexS, 
+			AbstractVSSVertexPtr & abstractOutgoingVertexA);
   //@}
 
 public:
@@ -143,6 +163,21 @@ private:
   SSSVertexPtr _perturbativeVertex;
 
   /**
+   *  Abstract pointer to AbstractVSSVertex for QCD radiation from incoming scalar
+   */
+  AbstractVSSVertexPtr _abstractIncomingVertex;
+
+  /**
+   *  Abstract pointer to AbstractVSSVertex for QCD radiation from outgoing scalar
+   */
+  AbstractVSSVertexPtr _abstractOutgoingVertex1;
+
+  /**
+   *  Abstract pointer to AbstractVSSVertex for QCD radiation from outgoing scalar
+   */
+  AbstractVSSVertexPtr _abstractOutgoingVertex2;
+
+  /**
    *  Spin density matrix
    */
   mutable RhoDMatrix _rho;
@@ -151,6 +186,22 @@ private:
    *  Scalar wavefunctions
    */
   mutable Helicity::ScalarWaveFunction _swave;
+
+ /**
+   *  Spin density matrix for 3 body decay
+   */
+  mutable RhoDMatrix _rho3;
+
+  /**
+   *  Scalar wavefunction for 3 body decay
+   */
+  mutable Helicity::ScalarWaveFunction _swave3;
+
+    /**
+   *  Vector wavefunction for 3 body decay
+   */
+  mutable vector<Helicity::VectorWaveFunction> _gluon;
+
 };
 
 }

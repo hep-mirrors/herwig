@@ -65,7 +65,7 @@ double FIqgxDipole::me2Avg(double ccme2) const {
 
   double res =
     8.*Constants::pi*CF*(realEmissionME()->lastXComb().lastSHat())*
-    (realEmissionME()->lastXComb().lastAlphaS())/prop;
+    (underlyingBornME()->lastXComb().lastAlphaS())/prop;
 
   res *= ( 2./(1.-z+(1.-x)) -(1.+z) +(1.-x)*(1.+3.*x*z) );
 
@@ -78,8 +78,6 @@ double FIqgxDipole::me2Avg(double ccme2) const {
   res *=
     realEmissionME()->finalStateSymmetry() /
     underlyingBornME()->finalStateSymmetry();
-
-  lastME2(res);
 
   return res;
 
@@ -101,7 +99,7 @@ double FIqgxDipole::me2() const {
 
   double res =
     8.*Constants::pi*CF*(realEmissionME()->lastXComb().lastSHat())*
-    (realEmissionME()->lastXComb().lastAlphaS())/prop;
+    (underlyingBornME()->lastXComb().lastAlphaS())/prop;
 
   res *= ( 2./(1.-z+(1.-x)) -(1.+z) +(1.-x)*(1.+3.*x*z) );
 
@@ -114,10 +112,6 @@ double FIqgxDipole::me2() const {
   res *=
     realEmissionME()->finalStateSymmetry() /
     underlyingBornME()->finalStateSymmetry();
-
-  lastME2(res);
-
-  logME2();
 
   return res;
 
@@ -134,7 +128,7 @@ void FIqgxDipole::Init() {
   static ClassDocumentation<FIqgxDipole> documentation
     ("FIqgxDipole");
 
-  DipoleRepository::registerDipole<FIqgxDipole,FILightTildeKinematics,FILightInvertedTildeKinematics>
+  DipoleRepository::registerDipole<0,FIqgxDipole,FILightTildeKinematics,FILightInvertedTildeKinematics>
     ("FIqgxDipole","FILightTildeKinematics","FILightInvertedTildeKinematics");
 
 }

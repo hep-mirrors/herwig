@@ -1,0 +1,92 @@
+###################################################
+#
+#  Particle Data objects
+#
+###################################################
+mkdir /Herwig/${ModelName}
+
+mkdir /Herwig/${ModelName}/Particles
+cd /Herwig/${ModelName}/Particles
+
+create Herwig::GenericHPPVertex /Herwig/${ModelName}/V_GenericHPP
+create Herwig::GenericHGGVertex /Herwig/${ModelName}/V_GenericHGG
+
+${plist}
+
+
+
+###################################################
+#
+#  Main directory and model object
+#
+###################################################
+mkdir /Herwig/${ModelName}
+cd /Herwig/${ModelName}
+
+library ${ModelName}.so
+
+#### create Herwig::${ModelName} ${ModelName}
+create Herwig::${ModelName} ${ModelName}
+# cp /Herwig/Model ${ModelName}
+
+# SM couplings
+
+set ${ModelName}:QCD/RunningAlphaS /Herwig/AlphaS
+set ${ModelName}:EW/RunningAlphaEM /Herwig/AlphaEM
+set ${ModelName}:EW/CKM /Herwig/CKM
+set ${ModelName}:RunningMass /Herwig/RunningMass
+
+${setcouplings}
+
+###################################################
+#
+#  Vertices
+#
+###################################################
+# create FR model vertices
+
+# SM vertices
+set ${ModelName}:Vertex/FFZ /Herwig/Vertices/FFZVertex
+set ${ModelName}:Vertex/FFW /Herwig/Vertices/FFWVertex
+set ${ModelName}:Vertex/FFH /Herwig/Vertices/FFHVertex
+set ${ModelName}:Vertex/FFG /Herwig/Vertices/FFGVertex
+set ${ModelName}:Vertex/FFP /Herwig/Vertices/FFPVertex
+set ${ModelName}:Vertex/GGG /Herwig/Vertices/GGGVertex
+set ${ModelName}:Vertex/GGGG /Herwig/Vertices/GGGGVertex
+set ${ModelName}:Vertex/WWH /Herwig/Vertices/WWHVertex
+set ${ModelName}:Vertex/WWW /Herwig/Vertices/WWWVertex
+set ${ModelName}:Vertex/WWWW /Herwig/Vertices/WWWWVertex
+set ${ModelName}:Vertex/HGG /Herwig/Vertices/HGGVertex
+set ${ModelName}:Vertex/HPP /Herwig/Vertices/HPPVertex
+
+${vlist}
+
+
+
+###################################################
+#
+#  Set up spin correlation Decayers
+#
+###################################################
+cd /Herwig/NewPhysics
+
+set TwoBodyDC:CreateDecayModes Yes
+set ThreeBodyDC:CreateDecayModes Yes
+set WeakDecayConstructor:CreateDecayModes Yes
+
+###################################################
+# Set up the model framework
+###################################################
+set /Herwig/${ModelName}/${ModelName}:ModelGenerator NewModel
+###################################################
+#
+#  Choose FR over SM
+#
+###################################################
+cd /Herwig/Generators
+
+erase DefaultStrategy:DefaultParticlesDirs[0]
+insert DefaultStrategy:DefaultParticlesDirs[0] /Herwig/${ModelName}/Particles
+
+set LEPGenerator:StandardModelParameters  /Herwig/${ModelName}/${ModelName}
+set LHCGenerator:StandardModelParameters  /Herwig/${ModelName}/${ModelName}

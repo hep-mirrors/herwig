@@ -17,10 +17,7 @@
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/MatrixElement/MEBase.h"
 
-#include <boost/numeric/ublas/matrix.hpp>
-#include <boost/numeric/ublas/matrix_sparse.hpp>
-#include <boost/numeric/ublas/symmetric.hpp>
-#include <boost/numeric/ublas/vector.hpp>
+#include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxXComb.h"
 
 #include <iterator>
 
@@ -35,16 +32,6 @@ using boost::numeric::ublas::matrix;
 using boost::numeric::ublas::symmetric_matrix;
 using boost::numeric::ublas::compressed_matrix;
 using boost::numeric::ublas::upper;
-
-/**
- * \ingroup Matchbox
- * \author Simon Platzer
- *
- * \brief Define compolex vector from boost::uBLAS
- *
- */
-typedef boost::numeric::ublas::vector<Complex> CVector;
-
 
 /**
  * \ingroup Matchbox
@@ -88,6 +75,37 @@ public:
    * Return the index map.
    */
   const map<cPDVector,map<size_t,size_t> >& indexMap() const { return theIndexMap; }
+
+  /**
+   * Return a map of basis tensor indices to vectors identifying a
+   * certain ordering corresponding to the given colour structure. May
+   * not be supported by all colour basis implementations.
+   */
+  virtual map<size_t,vector<vector<size_t> > > basisList(const vector<PDT::Colour>&) const {
+    return map<size_t,vector<vector<size_t> > >();
+  }
+
+  /**
+   * Given a physical subprocess, a colour to amplitude label map and
+   * a basis tensor index, return an identifier of the ordering
+   * coresponding to the given colour structure. This will only return
+   * sensible results for colour bases which implement the basisList
+   * query.
+   */
+  const string& orderingString(const cPDVector& sub, 
+			       const map<size_t,size_t>& colourToAmplitude,
+			       size_t tensorId);
+
+  /**
+   * Given a physical subprocess, a colour to amplitude label map and
+   * a basis tensor index, return an identifier of the ordering
+   * coresponding to the given colour structure. This will only return
+   * sensible results for colour bases which implement the basisList
+   * query.
+   */
+  const vector<vector<size_t> >& ordering(const cPDVector& sub, 
+					  const map<size_t,size_t>& colourToAmplitude,
+					  size_t tensorId);
 
   /**
    * For the given subprocess and amplitude vectors
@@ -189,7 +207,7 @@ public:
   /**
    * Return true, if this basis is running in large-N mode
    */
-  virtual bool largeN() const { return false; }
+  virtual bool largeN() const { return theLargeN; }
 
   /**
    * Convert particle data to colour information
@@ -208,6 +226,11 @@ public:
    * normal ordered vector of colour indices
    */
   vector<PDT::Colour> normalOrderMap(const cPDVector& sub);
+
+  /**
+   * Get the normal ordered legs
+   */
+  const vector<PDT::Colour>& normalOrderedLegs(const cPDVector& sub) const;
 
   /**
    * Convert the legs to a string.
@@ -286,7 +309,14 @@ protected:
 			       const vector<PDT::Colour>&,
 			       const pair<int,bool>&, 
 			       const pair<int,bool>&, 
-			       size_t) const {
+			       size_t) const;
+
+  /**
+   * Return true, if a large-N colour connection exists for the
+   * given external legs and basis tensor.
+   */
+  virtual bool colourConnected(const vector<PDT::Colour>&,
+			       int, int, size_t) const {
     return false;
   }
 
@@ -300,6 +330,11 @@ protected:
    */
   map<Ptr<Tree2toNDiagram>::tcptr,vector<ColourLines*> >&
   colourLineMap();
+
+  /**
+   * Update the colour line map for a given diagram.
+   */
+  void updateColourLines(Ptr<Tree2toNDiagram>::tcptr);
 
 public:
 
@@ -367,6 +402,11 @@ private:
   typedef map<vector<PDT::Colour>,map<pair<size_t,size_t>,symmetric_matrix<double,upper> > > CorrelatorMap;
 
   /**
+   * True, if this basis is running in large-N mode
+   */
+  bool theLargeN;
+
+  /**
    * A search path for already calculated and stored matrices.
    */
   string theSearchPath;
@@ -417,6 +457,16 @@ private:
   map<Ptr<Tree2toNDiagram>::tcptr,vector<ColourLines*> > theColourLineMap;
 
   /**
+   * Store ordering identifiers
+   */
+  map<vector<PDT::Colour>,map<map<size_t,size_t>,map<size_t,string> > > theOrderingStringIdentifiers;
+
+  /**
+   * Store ordering identifiers
+   */
+  map<vector<PDT::Colour>,map<map<size_t,size_t>,map<size_t,vector<vector<size_t> > > > > theOrderingIdentifiers;
+
+  /**
    * Write out yet unknown basis computations.
    */
   void writeBasis(const string& prefix = "") const;
@@ -430,6 +480,11 @@ private:
    * Read in the basis computation which are supposed to be known.
    */
   bool readBasis(const vector<PDT::Colour>&);
+
+  /**
+   * Gather any implementation dependend details when reading a basis
+   */
+  virtual void readBasisDetails(const vector<PDT::Colour>&) {}
 
   /**
    * Write out symmetric matrices.

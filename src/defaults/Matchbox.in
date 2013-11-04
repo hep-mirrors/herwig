@@ -33,7 +33,19 @@
 
 
 
+
+
+
+
+################################################################################
+# Load libraries
+################################################################################
+
+library HwExsample2.so
 library HwMatchbox.so
+library JetCuts.so
+library FastJetFinder.so
+
 mkdir /Herwig/MatrixElements/Matchbox
 cd /Herwig/MatrixElements/Matchbox
 
@@ -53,7 +65,281 @@ set /Herwig/Particles/b:NominalMass 0*GeV
 set /Herwig/Particles/bbar:NominalMass 0*GeV
 
 ################################################################################
-# Phasespace generators
+# Cleanup some Herwig++ defaults
+################################################################################
+
+set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
+set /Herwig/Cuts/QCDCuts:MHatMin 0.0*GeV
+set /Herwig/Cuts/NeutralCurrentCut:MinW2 0.0*GeV2
+set /Herwig/Cuts/DISCuts:MHatMin 0.0*GeV
+
+set /Herwig/Generators/LEPGenerator:EventHandler:CollisionCuts Off
+set /Herwig/Generators/DISGenerator:EventHandler:CollisionCuts Off
+set /Herwig/Generators/LHCGenerator:EventHandler:CollisionCuts Off
+
+################################################################################
+# Integration/sampling
+################################################################################
+
+mkdir /Herwig/Samplers
+cd /Herwig/Samplers
+
+create Herwig::ExSampler ExBinSampler
+create Herwig::GeneralSampler ExSampler
+set ExBinSampler:presampling_points 10000
+set ExSampler:BinSampler ExBinSampler
+set ExSampler:Verbose On
+
+create Herwig::BinSampler FlatBinSampler
+set FlatBinSampler:InitialPoints 10000
+
+create Herwig::ProjectingSampler ProjectingBinSampler
+set ProjectingBinSampler:InitialPoints 1250
+set ProjectingBinSampler:NIterations 4
+set ProjectingBinSampler:EnhancementFactor 4.0 
+set ProjectingBinSampler:NBins 8
+
+create Herwig::GeneralSampler Sampler
+set Sampler:BinSampler ExBinSampler
+set Sampler:UpdateAfter 1000
+
+set /Herwig/EventHandlers/LEPHandler:Sampler Sampler
+set /Herwig/EventHandlers/DISHandler:Sampler Sampler
+set /Herwig/EventHandlers/LHCHandler:Sampler Sampler
+
+################################################################################
+# Setup the factory object
+################################################################################
+
+cd /Herwig/MatrixElements/Matchbox
+
+create Herwig::MatchboxFactory Factory
+
+set Factory:OrderInAlphaEW 2
+set Factory:OrderInAlphaS 0
+
+do Factory:StartParticleGroup p
+insert Factory:ParticleGroup 0 /Herwig/Particles/b
+insert Factory:ParticleGroup 0 /Herwig/Particles/bbar
+insert Factory:ParticleGroup 0 /Herwig/Particles/c
+insert Factory:ParticleGroup 0 /Herwig/Particles/cbar
+insert Factory:ParticleGroup 0 /Herwig/Particles/s
+insert Factory:ParticleGroup 0 /Herwig/Particles/sbar
+insert Factory:ParticleGroup 0 /Herwig/Particles/d
+insert Factory:ParticleGroup 0 /Herwig/Particles/dbar
+insert Factory:ParticleGroup 0 /Herwig/Particles/u
+insert Factory:ParticleGroup 0 /Herwig/Particles/ubar
+insert Factory:ParticleGroup 0 /Herwig/Particles/g
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup j
+insert Factory:ParticleGroup 0 /Herwig/Particles/b
+insert Factory:ParticleGroup 0 /Herwig/Particles/bbar
+insert Factory:ParticleGroup 0 /Herwig/Particles/c
+insert Factory:ParticleGroup 0 /Herwig/Particles/cbar
+insert Factory:ParticleGroup 0 /Herwig/Particles/s
+insert Factory:ParticleGroup 0 /Herwig/Particles/sbar
+insert Factory:ParticleGroup 0 /Herwig/Particles/d
+insert Factory:ParticleGroup 0 /Herwig/Particles/dbar
+insert Factory:ParticleGroup 0 /Herwig/Particles/u
+insert Factory:ParticleGroup 0 /Herwig/Particles/ubar
+insert Factory:ParticleGroup 0 /Herwig/Particles/g
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup u
+insert Factory:ParticleGroup 0 /Herwig/Particles/u
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup ubar
+insert Factory:ParticleGroup 0 /Herwig/Particles/ubar
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup d
+insert Factory:ParticleGroup 0 /Herwig/Particles/d
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup dbar
+insert Factory:ParticleGroup 0 /Herwig/Particles/dbar
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup s
+insert Factory:ParticleGroup 0 /Herwig/Particles/s
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup sbar
+insert Factory:ParticleGroup 0 /Herwig/Particles/sbar
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup c
+insert Factory:ParticleGroup 0 /Herwig/Particles/c
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup cbar
+insert Factory:ParticleGroup 0 /Herwig/Particles/cbar
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup b
+insert Factory:ParticleGroup 0 /Herwig/Particles/b
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup bbar
+insert Factory:ParticleGroup 0 /Herwig/Particles/bbar
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup g
+insert Factory:ParticleGroup 0 /Herwig/Particles/g
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup h0
+insert Factory:ParticleGroup 0 /Herwig/Particles/h0
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup e+
+insert Factory:ParticleGroup 0 /Herwig/Particles/e+
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup e-
+insert Factory:ParticleGroup 0 /Herwig/Particles/e-
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup l
+insert Factory:ParticleGroup 0 /Herwig/Particles/e+
+insert Factory:ParticleGroup 0 /Herwig/Particles/mu+
+insert Factory:ParticleGroup 0 /Herwig/Particles/e-
+insert Factory:ParticleGroup 0 /Herwig/Particles/mu-
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup nu
+insert Factory:ParticleGroup 0 /Herwig/Particles/nu_e
+insert Factory:ParticleGroup 0 /Herwig/Particles/nu_mu
+insert Factory:ParticleGroup 0 /Herwig/Particles/nu_ebar
+insert Factory:ParticleGroup 0 /Herwig/Particles/nu_mubar
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup l+
+insert Factory:ParticleGroup 0 /Herwig/Particles/e+
+insert Factory:ParticleGroup 0 /Herwig/Particles/mu+
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup l-
+insert Factory:ParticleGroup 0 /Herwig/Particles/e-
+insert Factory:ParticleGroup 0 /Herwig/Particles/mu-
+do Factory:EndParticleGroup
+
+################################################################################
+# Setup amplitudes
+################################################################################
+
+cd /Herwig/MatrixElements/Matchbox
+mkdir Amplitudes
+cd Amplitudes
+
+create Herwig::SimpleColourBasis SimpleColourBasis
+
+create Herwig::SimpleColourBasis LargeNColourBasis
+set LargeNColourBasis:LargeN On
+
+create Herwig::MatchboxAmplitudellbarqqbar Amplitudellbarqqbar
+set Amplitudellbarqqbar:ColourBasis SimpleColourBasis
+
+create Herwig::MatchboxAmplitudellbarqqbarg Amplitudellbarqqbarg
+set Amplitudellbarqqbarg:ColourBasis SimpleColourBasis
+
+create Herwig::MatchboxAmplitudellbarqqbargg Amplitudellbarqqbargg
+set Amplitudellbarqqbargg:ColourBasis SimpleColourBasis
+
+create Herwig::MatchboxAmplitudellbarqqbarqqbar Amplitudellbarqqbarqqbar
+set Amplitudellbarqqbarqqbar:ColourBasis SimpleColourBasis
+
+create Herwig::MatchboxAmplitudelnuqqbar Amplitudelnuqqbar
+set Amplitudelnuqqbar:ColourBasis SimpleColourBasis
+
+create Herwig::MatchboxAmplitudelnuqqbarg Amplitudelnuqqbarg
+set Amplitudelnuqqbarg:ColourBasis SimpleColourBasis
+
+create Herwig::MatchboxAmplitudelnuqqbargg Amplitudelnuqqbargg
+set Amplitudelnuqqbargg:ColourBasis SimpleColourBasis
+
+create Herwig::MatchboxAmplitudelnuqqbarqqbar Amplitudelnuqqbarqqbar
+set Amplitudelnuqqbarqqbar:ColourBasis SimpleColourBasis
+
+create Herwig::MatchboxAmplitudehgg Amplitudehgg
+set Amplitudehgg:ColourBasis SimpleColourBasis
+
+create Herwig::MatchboxAmplitudehggg Amplitudehggg
+set Amplitudehggg:ColourBasis SimpleColourBasis
+
+create Herwig::MatchboxAmplitudehqqbarg Amplitudehqqbarg
+set Amplitudehqqbarg:ColourBasis SimpleColourBasis
+
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudellbarqqbar
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudellbarqqbarg
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudellbarqqbargg
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudellbarqqbarqqbar
+
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudelnuqqbar
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudelnuqqbarg
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudelnuqqbargg
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudelnuqqbarqqbar
+
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudehgg
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudehggg
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudehqqbarg
+
+################################################################################
+# Setup utilities for matching
+################################################################################
+
+cd /Herwig/MatrixElements/Matchbox
+
+create Herwig::MEMatching MEMatching
+set MEMatching:RestrictPhasespace Off
+set MEMatching:BornScaleInSubtraction RealScale
+set MEMatching:RealEmissionScaleInSubtraction RealScale
+set MEMatching:EmissionScaleInSubtraction RealScale
+set MEMatching:BornScaleInSplitting ShowerScale
+set MEMatching:RealEmissionScaleInSplitting ShowerScale
+set MEMatching:EmissionScaleInSplitting ShowerScale
+set MEMatching:FFPtCut 1.0*GeV
+set MEMatching:FIPtCut 1.0*GeV
+set MEMatching:IIPtCut 1.0*GeV
+
+create Herwig::ShowerApproximationGenerator MECorrectionHandler
+set MECorrectionHandler:ShowerApproximation MEMatching
+create Herwig::FlatInvertiblePhasespace InvertiblePhasespace
+set MECorrectionHandler:Phasespace InvertiblePhasespace
+
+create Herwig::DipoleMatching DipoleMatching
+set DipoleMatching:LargeNBasis /Herwig/MatrixElements/Matchbox/Amplitudes/LargeNColourBasis
+set DipoleMatching:RestrictPhasespace On
+set DipoleMatching:BornScaleInSubtraction BornScale
+set DipoleMatching:RealEmissionScaleInSubtraction BornScale
+set DipoleMatching:EmissionScaleInSubtraction BornScale
+set DipoleMatching:FFPtCut 1.0*GeV
+set DipoleMatching:FIPtCut 1.0*GeV
+set DipoleMatching:IIPtCut 1.0*GeV
+
+################################################################################
+# Setup utilities for process generation
+################################################################################
+
+cd /Herwig/MatrixElements/Matchbox
+mkdir Utility
+cd Utility
+
+create Herwig::Tree2toNGenerator DiagramGenerator
+insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFGVertex
+insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFPVertex
+insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFZVertex
+insert DiagramGenerator:Vertices 0 /Herwig/Vertices/GGGVertex
+
+create Herwig::ProcessData ProcessData
+
+set /Herwig/MatrixElements/Matchbox/Factory:DiagramGenerator DiagramGenerator
+set /Herwig/MatrixElements/Matchbox/Factory:ProcessData ProcessData 
+
+################################################################################
+# Setup phasespace generators
 ################################################################################
 
 cd /Herwig/MatrixElements/Matchbox
@@ -61,10 +347,64 @@ mkdir Phasespace
 cd Phasespace
 
 create Herwig::MatchboxRambo Rambo
+
+create Herwig::FlatInvertiblePhasespace DetPhasespace
+
+create Herwig::TreePhasespaceChannels TreePhasespaceChannels
 create Herwig::TreePhasespace TreePhasespace
+set TreePhasespace:ChannelMap TreePhasespaceChannels
+set TreePhasespace:M0 0.0001*GeV
+set TreePhasespace:MC 0.0000001*GeV
+
+set /Herwig/MatrixElements/Matchbox/Factory:Phasespace TreePhasespace
 
 ################################################################################
-# Scale choices
+# Setup cuts
+################################################################################
+
+cd /Herwig/Cuts
+
+create ThePEG::FastJetFinder JetFinder
+set JetFinder:UnresolvedMatcher /Herwig/Matchers/StandardQCDParton
+set JetFinder:Variant AntiKt
+set JetFinder:RecombinationScheme E
+set JetFinder:Mode Inclusive
+set JetFinder:ConeRadius 0.7
+
+create ThePEG::JetRegion FirstJet
+set FirstJet:PtMin 20.*GeV
+do FirstJet:YRange -5.0 5.0
+set FirstJet:Fuzzy Yes
+set FirstJet:EnergyCutWidth 4.0*GeV
+set FirstJet:RapidityCutWidth 0.4
+insert FirstJet:Accepts[0] 1
+
+create ThePEG::JetRegion SecondJet
+set SecondJet:PtMin 20.*GeV
+do SecondJet:YRange -5.0 5.0
+set SecondJet:Fuzzy Yes
+set FirstJet:EnergyCutWidth 4.0*GeV
+set FirstJet:RapidityCutWidth 0.4
+insert SecondJet:Accepts[0] 2
+
+create ThePEG::JetRegion ThirdJet
+set ThirdJet:PtMin 20.*GeV
+do ThirdJet:YRange -5.0 5.0
+set ThirdJet:Fuzzy Yes
+set FirstJet:EnergyCutWidth 4.0*GeV
+set FirstJet:RapidityCutWidth 0.4
+insert ThirdJet:Accepts[0] 3
+
+create ThePEG::NJetsCut NJetsCut
+set NJetsCut:UnresolvedMatcher /Herwig/Matchers/StandardQCDParton
+set NJetsCut:NJetsMin 2
+
+create ThePEG::JetCuts JetCuts
+set JetCuts:UnresolvedMatcher  /Herwig/Matchers/StandardQCDParton
+set JetCuts:Ordering OrderPt
+
+################################################################################
+# Setup scale choices
 ################################################################################
 
 cd /Herwig/MatrixElements/Matchbox
@@ -75,7 +415,11 @@ create Herwig::MatchboxScaleChoice SHatScale
 cp SHatScale FixedScale
 set FixedScale:FixedScale 100.*GeV
 create Herwig::MatchboxPtScale MaxPtScale
+set MaxPtScale:JetFinder /Herwig/Cuts/JetFinder
 create Herwig::MatchboxLeptonMassScale LeptonMassScale
+create Herwig::MatchboxLeptonPtScale LeptonPtScale
+
+set /Herwig/MatrixElements/Matchbox/Factory:ScaleChoice LeptonMassScale
 
 ################################################################################
 # AlphaS
@@ -94,353 +438,24 @@ set NLOAlphaS:exact_evaluation large_scale
 set NLOAlphaS:min_active_flavours 5
 
 ################################################################################
-# Utilities
+# Factories for different colliders
 ################################################################################
 
 cd /Herwig/MatrixElements/Matchbox
-mkdir Utility
-cd Utility
 
-create Herwig::PowhegSplittingGenerator MECorrectionHandler
+cp Factory EEFactory
+set EEFactory:PartonExtractor /Herwig/Partons/EEExtractor
+set EEFactory:Cuts /Herwig/Cuts/EECuts
 
-set MECorrectionHandler:FFPtCut 1.0*GeV
-set MECorrectionHandler:FFScreeningScale 0.0*GeV
+cp Factory DISFactory
 
-set MECorrectionHandler:FIPtCut 1.0*GeV
-set MECorrectionHandler:FIScreeningScale 0.0*GeV
+set DISFactory:PartonExtractor /Herwig/Partons/DISExtractor
+set DISFactory:Cuts /Herwig/Cuts/DISCuts
 
-set MECorrectionHandler:IIPtCut 1.0*GeV
-set MECorrectionHandler:IIScreeningScale 0.0*GeV
+cp Factory PPFactory
 
-create Herwig::SimpleColourBasis SimpleColourBasis
-
-create Herwig::Tree2toNGenerator DiagramGenerator
-insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFGVertex
-insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFHVertex
-insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFPVertex
-insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFWVertex
-insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFZVertex
-insert DiagramGenerator:Vertices 0 /Herwig/Vertices/GGGVertex
-insert DiagramGenerator:Vertices 0 /Herwig/Vertices/HGGVertex
-insert DiagramGenerator:Vertices 0 /Herwig/Vertices/HHHVertex
-insert DiagramGenerator:Vertices 0 /Herwig/Vertices/HPPVertex
-insert DiagramGenerator:Vertices 0 /Herwig/Vertices/WWHVertex
-insert DiagramGenerator:Vertices 0 /Herwig/Vertices/WWWVertex
-
-create Herwig::MatchboxMECache Cache
-
-create Herwig::MatchboxFactory Factory
-
-set Factory:DiagramGenerator /Herwig/MatrixElements/Matchbox/Utility/DiagramGenerator
-set Factory:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/TreePhasespace
-set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/SHatScale
-set Factory:Cache /Herwig/MatrixElements/Matchbox/Utility/Cache
-
-do Factory:StartParticleGroup p
-insert Factory:ParticleGroup 0 /Herwig/Particles/u
-insert Factory:ParticleGroup 0 /Herwig/Particles/ubar
-insert Factory:ParticleGroup 0 /Herwig/Particles/d
-insert Factory:ParticleGroup 0 /Herwig/Particles/dbar
-insert Factory:ParticleGroup 0 /Herwig/Particles/s
-insert Factory:ParticleGroup 0 /Herwig/Particles/sbar
-insert Factory:ParticleGroup 0 /Herwig/Particles/c
-insert Factory:ParticleGroup 0 /Herwig/Particles/cbar
-insert Factory:ParticleGroup 0 /Herwig/Particles/b
-insert Factory:ParticleGroup 0 /Herwig/Particles/bbar
-insert Factory:ParticleGroup 0 /Herwig/Particles/g
-do Factory:EndParticleGroup
-
-do Factory:StartParticleGroup j
-insert Factory:ParticleGroup 0 /Herwig/Particles/u
-insert Factory:ParticleGroup 0 /Herwig/Particles/ubar
-insert Factory:ParticleGroup 0 /Herwig/Particles/d
-insert Factory:ParticleGroup 0 /Herwig/Particles/dbar
-insert Factory:ParticleGroup 0 /Herwig/Particles/s
-insert Factory:ParticleGroup 0 /Herwig/Particles/sbar
-insert Factory:ParticleGroup 0 /Herwig/Particles/c
-insert Factory:ParticleGroup 0 /Herwig/Particles/cbar
-insert Factory:ParticleGroup 0 /Herwig/Particles/b
-insert Factory:ParticleGroup 0 /Herwig/Particles/bbar
-insert Factory:ParticleGroup 0 /Herwig/Particles/g
-do Factory:EndParticleGroup
-
-do Factory:StartParticleGroup e+
-insert Factory:ParticleGroup 0 /Herwig/Particles/e+
-do Factory:EndParticleGroup
-
-do Factory:StartParticleGroup e-
-insert Factory:ParticleGroup 0 /Herwig/Particles/e-
-do Factory:EndParticleGroup
-
-do Factory:StartParticleGroup mu+
-insert Factory:ParticleGroup 0 /Herwig/Particles/mu+
-do Factory:EndParticleGroup
-
-do Factory:StartParticleGroup mu-
-insert Factory:ParticleGroup 0 /Herwig/Particles/mu-
-do Factory:EndParticleGroup
-
-do Factory:StartParticleGroup l+
-insert Factory:ParticleGroup 0 /Herwig/Particles/e+
-insert Factory:ParticleGroup 0 /Herwig/Particles/mu+
-do Factory:EndParticleGroup
-
-do Factory:StartParticleGroup l-
-insert Factory:ParticleGroup 0 /Herwig/Particles/e-
-insert Factory:ParticleGroup 0 /Herwig/Particles/mu-
-do Factory:EndParticleGroup
-
-################################################################################
-# Integrators and samplers
-################################################################################
-
-cd /Herwig/MatrixElements/Matchbox
-mkdir Samplers
-cd Samplers
-
-library HwExsample2.so
-
-create Herwig::ExSampler ExSampler
-create Herwig::BinSampler FlatSampler
-create Herwig::ProjectingSampler ProjectingSampler
-
-create Herwig::GeneralSampler Sampler
-set Sampler:BinSampler ExSampler
-
-################################################################################
-# Builtin simple matrix elements
-################################################################################
-
-cd /Herwig/MatrixElements/Matchbox
-mkdir Builtin
-cd Builtin
-
-################################################################################
-# e+e- to jj
-################################################################################
-
-create Herwig::MatchboxMEllbar2qqbar MEllbar2qqbar
-set MEllbar2qqbar:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/TreePhasespace
-insert MEllbar2qqbar:LeptonFlavours[0] /Herwig/Particles/e-
-insert MEllbar2qqbar:QuarkFlavours[0] /Herwig/Particles/d
-insert MEllbar2qqbar:QuarkFlavours[1] /Herwig/Particles/u
-insert MEllbar2qqbar:QuarkFlavours[2] /Herwig/Particles/s
-insert MEllbar2qqbar:QuarkFlavours[3] /Herwig/Particles/c
-insert MEllbar2qqbar:QuarkFlavours[4] /Herwig/Particles/b
-
-create Herwig::MatchboxMEllbar2qqbarg MEllbar2qqbarg
-set MEllbar2qqbarg:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/TreePhasespace
-insert MEllbar2qqbarg:LeptonFlavours[0] /Herwig/Particles/e-
-insert MEllbar2qqbarg:QuarkFlavours[0] /Herwig/Particles/d
-insert MEllbar2qqbarg:QuarkFlavours[1] /Herwig/Particles/u
-insert MEllbar2qqbarg:QuarkFlavours[2] /Herwig/Particles/s
-insert MEllbar2qqbarg:QuarkFlavours[3] /Herwig/Particles/c
-insert MEllbar2qqbarg:QuarkFlavours[4] /Herwig/Particles/b
-
-#-------------------------------------------------------------------------------
-
-create ThePEG::SubProcessHandler MEllbar2JetJetLO
-set MEllbar2JetJetLO:PartonExtractor /Herwig/Partons/EEExtractor
-set MEllbar2JetJetLO:Cuts /Herwig/Cuts/EECuts
-insert MEllbar2JetJetLO:MatrixElements[0] MEllbar2qqbar
-
-create ThePEG::SubProcessHandler MEllbar2JetJetJetLO
-set MEllbar2JetJetJetLO:PartonExtractor /Herwig/Partons/EEExtractor
-set MEllbar2JetJetJetLO:Cuts /Herwig/Cuts/EECuts
-insert MEllbar2JetJetJetLO:MatrixElements[0] MEllbar2qqbarg
-
-create Herwig::MatchboxFactory MEllbar2JetJetNLO
-set MEllbar2JetJetNLO:PartonExtractor /Herwig/Partons/EEExtractor
-set MEllbar2JetJetNLO:Cuts /Herwig/Cuts/EECuts
-insert MEllbar2JetJetNLO:BornMEs[0] MEllbar2qqbar
-insert MEllbar2JetJetNLO:RealEmissionMEs[0] MEllbar2qqbarg
-
-create Herwig::PowhegFactory MEllbar2JetJetNLOInclusive
-set MEllbar2JetJetNLOInclusive:PartonExtractor /Herwig/Partons/EEExtractor
-set MEllbar2JetJetNLOInclusive:Cuts /Herwig/Cuts/EECuts
-set MEllbar2JetJetNLOInclusive:MatchboxFactory MEllbar2JetJetNLO
-set MEllbar2JetJetNLOInclusive:BornScreening Off
-
-################################################################################
-# DIS
-################################################################################
-
-create Herwig::MatchboxMElP2lJet MElq2lq
-set MElq2lq:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/TreePhasespace
-insert MElq2lq:LeptonFlavours[0] /Herwig/Particles/e+
-insert MElq2lq:LeptonFlavours[1] /Herwig/Particles/e-
-insert MElq2lq:QuarkFlavours[0] /Herwig/Particles/d
-insert MElq2lq:QuarkFlavours[1] /Herwig/Particles/u
-insert MElq2lq:QuarkFlavours[2] /Herwig/Particles/s
-insert MElq2lq:QuarkFlavours[3] /Herwig/Particles/c
-insert MElq2lq:QuarkFlavours[4] /Herwig/Particles/b
-
-create Herwig::MatchboxMElP2lJet MElqbar2lqbar
-set MElqbar2lqbar:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/TreePhasespace
-insert MElqbar2lqbar:LeptonFlavours[0] /Herwig/Particles/e+
-insert MElqbar2lqbar:LeptonFlavours[1] /Herwig/Particles/e-
-insert MElqbar2lqbar:QuarkFlavours[0] /Herwig/Particles/dbar
-insert MElqbar2lqbar:QuarkFlavours[1] /Herwig/Particles/ubar
-insert MElqbar2lqbar:QuarkFlavours[2] /Herwig/Particles/sbar
-insert MElqbar2lqbar:QuarkFlavours[3] /Herwig/Particles/cbar
-insert MElqbar2lqbar:QuarkFlavours[4] /Herwig/Particles/bbar
-
-create Herwig::MatchboxMElq2lqg MElq2lqg
-set MElq2lqg:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/TreePhasespace
-insert MElq2lqg:LeptonFlavours[0] /Herwig/Particles/e+
-insert MElq2lqg:LeptonFlavours[1] /Herwig/Particles/e-
-insert MElq2lqg:QuarkFlavours[0] /Herwig/Particles/d
-insert MElq2lqg:QuarkFlavours[1] /Herwig/Particles/u
-insert MElq2lqg:QuarkFlavours[2] /Herwig/Particles/s
-insert MElq2lqg:QuarkFlavours[3] /Herwig/Particles/c
-insert MElq2lqg:QuarkFlavours[4] /Herwig/Particles/b
-
-create Herwig::MatchboxMElq2lqg MElqbar2lqbarg
-set MElqbar2lqbarg:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/TreePhasespace
-insert MElqbar2lqbarg:LeptonFlavours[0] /Herwig/Particles/e+
-insert MElqbar2lqbarg:LeptonFlavours[1] /Herwig/Particles/e-
-insert MElqbar2lqbarg:QuarkFlavours[0] /Herwig/Particles/dbar
-insert MElqbar2lqbarg:QuarkFlavours[1] /Herwig/Particles/ubar
-insert MElqbar2lqbarg:QuarkFlavours[2] /Herwig/Particles/sbar
-insert MElqbar2lqbarg:QuarkFlavours[3] /Herwig/Particles/cbar
-insert MElqbar2lqbarg:QuarkFlavours[4] /Herwig/Particles/bbar
-
-create Herwig::MatchboxMElg2lqqbar MElg2lqqbar
-set MElg2lqqbar:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/TreePhasespace
-insert MElg2lqqbar:LeptonFlavours[0] /Herwig/Particles/e+
-insert MElg2lqqbar:LeptonFlavours[1] /Herwig/Particles/e-
-insert MElg2lqqbar:QuarkFlavours[0] /Herwig/Particles/d
-insert MElg2lqqbar:QuarkFlavours[1] /Herwig/Particles/u
-insert MElg2lqqbar:QuarkFlavours[2] /Herwig/Particles/s
-insert MElg2lqqbar:QuarkFlavours[3] /Herwig/Particles/c
-insert MElg2lqqbar:QuarkFlavours[4] /Herwig/Particles/b
-
-#-------------------------------------------------------------------------------
-
-create ThePEG::SubProcessHandler MElP2lJetLO
-set MElP2lJetLO:PartonExtractor /Herwig/Partons/DISExtractor
-set MElP2lJetLO:Cuts /Herwig/Cuts/DISCuts
-insert MElP2lJetLO:MatrixElements[0] MElq2lq
-insert MElP2lJetLO:MatrixElements[1] MElqbar2lqbar
-
-create Herwig::MatchboxFactory MElP2lJetNLO
-set MElP2lJetNLO:PartonExtractor /Herwig/Partons/DISExtractor
-set MElP2lJetNLO:Cuts /Herwig/Cuts/DISCuts
-insert MElP2lJetNLO:BornMEs[0] MElq2lq
-insert MElP2lJetNLO:BornMEs[1] MElqbar2lqbar
-insert MElP2lJetNLO:RealEmissionMEs[0] MElq2lqg
-insert MElP2lJetNLO:RealEmissionMEs[1] MElqbar2lqbarg
-insert MElP2lJetNLO:RealEmissionMEs[2] MElg2lqqbar
-
-create Herwig::PowhegFactory MElP2lJetNLOInclusive
-set MElP2lJetNLOInclusive:PartonExtractor /Herwig/Partons/DISExtractor
-set MElP2lJetNLOInclusive:Cuts /Herwig/Cuts/DISCuts
-set MElP2lJetNLOInclusive:MatchboxFactory MElP2lJetNLO
-
-################################################################################
-# DY
-################################################################################
-
-create Herwig::MatchboxMEPP2llbar MEqqbar2llbar
-set MEqqbar2llbar:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/TreePhasespace
-insert MEqqbar2llbar:LeptonFlavours[0] /Herwig/Particles/e-
-insert MEqqbar2llbar:QuarkFlavours[0] /Herwig/Particles/d
-insert MEqqbar2llbar:QuarkFlavours[1] /Herwig/Particles/u
-insert MEqqbar2llbar:QuarkFlavours[2] /Herwig/Particles/s
-insert MEqqbar2llbar:QuarkFlavours[3] /Herwig/Particles/c
-insert MEqqbar2llbar:QuarkFlavours[4] /Herwig/Particles/b
-
-create Herwig::MatchboxMEPP2llbar MEqbarq2llbar
-set MEqbarq2llbar:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/TreePhasespace
-insert MEqbarq2llbar:LeptonFlavours[0] /Herwig/Particles/e-
-insert MEqbarq2llbar:QuarkFlavours[0] /Herwig/Particles/dbar
-insert MEqbarq2llbar:QuarkFlavours[1] /Herwig/Particles/ubar
-insert MEqbarq2llbar:QuarkFlavours[2] /Herwig/Particles/sbar
-insert MEqbarq2llbar:QuarkFlavours[3] /Herwig/Particles/cbar
-insert MEqbarq2llbar:QuarkFlavours[4] /Herwig/Particles/bbar
-
-create Herwig::MatchboxMEqqbar2llbarg MEqqbar2llbarg
-set MEqqbar2llbarg:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/TreePhasespace
-insert MEqqbar2llbarg:LeptonFlavours[0] /Herwig/Particles/e-
-insert MEqqbar2llbarg:QuarkFlavours[0] /Herwig/Particles/d
-insert MEqqbar2llbarg:QuarkFlavours[1] /Herwig/Particles/u
-insert MEqqbar2llbarg:QuarkFlavours[2] /Herwig/Particles/s
-insert MEqqbar2llbarg:QuarkFlavours[3] /Herwig/Particles/c
-insert MEqqbar2llbarg:QuarkFlavours[4] /Herwig/Particles/b
-
-create Herwig::MatchboxMEqqbar2llbarg MEqbarq2llbarg
-set MEqbarq2llbarg:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/TreePhasespace
-insert MEqbarq2llbarg:LeptonFlavours[0] /Herwig/Particles/e-
-insert MEqbarq2llbarg:QuarkFlavours[0] /Herwig/Particles/dbar
-insert MEqbarq2llbarg:QuarkFlavours[1] /Herwig/Particles/ubar
-insert MEqbarq2llbarg:QuarkFlavours[2] /Herwig/Particles/sbar
-insert MEqbarq2llbarg:QuarkFlavours[3] /Herwig/Particles/cbar
-insert MEqbarq2llbarg:QuarkFlavours[4] /Herwig/Particles/bbar
-
-create Herwig::MatchboxMEqg2llbarq MEqg2llbarq
-set MEqg2llbarq:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/TreePhasespace
-set MEqg2llbarq:WhichGluon 1
-insert MEqg2llbarq:LeptonFlavours[0] /Herwig/Particles/e-
-insert MEqg2llbarq:QuarkFlavours[0] /Herwig/Particles/d
-insert MEqg2llbarq:QuarkFlavours[1] /Herwig/Particles/u
-insert MEqg2llbarq:QuarkFlavours[2] /Herwig/Particles/s
-insert MEqg2llbarq:QuarkFlavours[3] /Herwig/Particles/c
-insert MEqg2llbarq:QuarkFlavours[4] /Herwig/Particles/b
-
-create Herwig::MatchboxMEqg2llbarq MEgq2llbarq
-set MEgq2llbarq:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/TreePhasespace
-set MEgq2llbarq:WhichGluon 0
-insert MEgq2llbarq:LeptonFlavours[0] /Herwig/Particles/e-
-insert MEgq2llbarq:QuarkFlavours[0] /Herwig/Particles/d
-insert MEgq2llbarq:QuarkFlavours[1] /Herwig/Particles/u
-insert MEgq2llbarq:QuarkFlavours[2] /Herwig/Particles/s
-insert MEgq2llbarq:QuarkFlavours[3] /Herwig/Particles/c
-insert MEgq2llbarq:QuarkFlavours[4] /Herwig/Particles/b
-
-create Herwig::MatchboxMEqg2llbarq MEqbarg2llbarqbar
-set MEqbarg2llbarqbar:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/TreePhasespace
-set MEqbarg2llbarqbar:WhichGluon 1
-insert MEqbarg2llbarqbar:LeptonFlavours[0] /Herwig/Particles/e-
-insert MEqbarg2llbarqbar:QuarkFlavours[0] /Herwig/Particles/dbar
-insert MEqbarg2llbarqbar:QuarkFlavours[1] /Herwig/Particles/ubar
-insert MEqbarg2llbarqbar:QuarkFlavours[2] /Herwig/Particles/sbar
-insert MEqbarg2llbarqbar:QuarkFlavours[3] /Herwig/Particles/cbar
-insert MEqbarg2llbarqbar:QuarkFlavours[4] /Herwig/Particles/bbar
-
-create Herwig::MatchboxMEqg2llbarq MEgqbar2llbarqbar
-set MEgqbar2llbarqbar:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/TreePhasespace
-set MEgqbar2llbarqbar:WhichGluon 0
-insert MEgqbar2llbarqbar:LeptonFlavours[0] /Herwig/Particles/e-
-insert MEgqbar2llbarqbar:QuarkFlavours[0] /Herwig/Particles/dbar
-insert MEgqbar2llbarqbar:QuarkFlavours[1] /Herwig/Particles/ubar
-insert MEgqbar2llbarqbar:QuarkFlavours[2] /Herwig/Particles/sbar
-insert MEgqbar2llbarqbar:QuarkFlavours[3] /Herwig/Particles/cbar
-insert MEgqbar2llbarqbar:QuarkFlavours[4] /Herwig/Particles/bbar
-
-#-------------------------------------------------------------------------------
-
-create ThePEG::SubProcessHandler MEPP2llbarLO
-set MEPP2llbarLO:PartonExtractor /Herwig/Partons/QCDExtractor
-set MEPP2llbarLO:Cuts /Herwig/Cuts/QCDCuts
-insert MEPP2llbarLO:MatrixElements[0] MEqqbar2llbar
-insert MEPP2llbarLO:MatrixElements[1] MEqbarq2llbar
-
-create Herwig::MatchboxFactory MEPP2llbarNLO
-set MEPP2llbarNLO:PartonExtractor /Herwig/Partons/QCDExtractor
-set MEPP2llbarNLO:Cuts /Herwig/Cuts/QCDCuts
-insert MEPP2llbarNLO:BornMEs[0] MEqqbar2llbar
-insert MEPP2llbarNLO:BornMEs[1] MEqbarq2llbar
-insert MEPP2llbarNLO:RealEmissionMEs[0] MEqqbar2llbarg
-insert MEPP2llbarNLO:RealEmissionMEs[1] MEqbarq2llbarg
-insert MEPP2llbarNLO:RealEmissionMEs[2] MEqg2llbarq
-insert MEPP2llbarNLO:RealEmissionMEs[3] MEgq2llbarq
-insert MEPP2llbarNLO:RealEmissionMEs[4] MEqbarg2llbarqbar
-insert MEPP2llbarNLO:RealEmissionMEs[5] MEgqbar2llbarqbar
-
-create Herwig::PowhegFactory MEPP2llbarNLOInclusive
-set MEPP2llbarNLOInclusive:PartonExtractor /Herwig/Partons/QCDExtractor
-set MEPP2llbarNLOInclusive:Cuts /Herwig/Cuts/QCDCuts
-set MEPP2llbarNLOInclusive:MatchboxFactory MEPP2llbarNLO
+set PPFactory:PartonExtractor /Herwig/Partons/QCDExtractor
+set PPFactory:Cuts /Herwig/Cuts/QCDCuts
 
 cd /
 

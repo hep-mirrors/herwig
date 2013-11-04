@@ -29,12 +29,8 @@ void MEff2ff::doinit() {
   scalar_.resize(numberOfDiags());
   vector_.resize(numberOfDiags());
   tensor_.resize(numberOfDiags());
-  flowME().resize(numberOfFlows(),
-		  ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1Half, 
-					  PDT::Spin1Half, PDT::Spin1Half));
-  diagramME().resize(numberOfDiags(),
-		     ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1Half, 
-					     PDT::Spin1Half, PDT::Spin1Half));
+  initializeMatrixElements(PDT::Spin1Half, PDT::Spin1Half, 
+			   PDT::Spin1Half, PDT::Spin1Half);
   for(size_t ix = 0;ix < numberOfDiags(); ++ix) {
     const HPDiagram & current = getProcessInfo()[ix];
     tcPDPtr offshell = current.intermediate;
@@ -60,16 +56,6 @@ void MEff2ff::doinit() {
       tensor_[ix] = make_pair(vert1, vert2);
     }
   }
-}
-
-void MEff2ff::doinitrun() {
-  GeneralHardME::doinitrun();
-  flowME().resize(numberOfFlows(),
-		  ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1Half, 
-					  PDT::Spin1Half, PDT::Spin1Half));
-  diagramME().resize(numberOfDiags(),
-		     ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1Half, 
-					     PDT::Spin1Half, PDT::Spin1Half));
 }
 
 double MEff2ff::me2() const {
@@ -135,7 +121,7 @@ MEff2ff::ffb2ffbHeME(double & me2, bool first) const {
 	      if(offshell->iSpin() == PDT::Spin0) {
 		ScalarWaveFunction interS = scalar_[ix].second->
 		  evaluate(q2, 3, offshell,spin_[3][ofhel2], sbar_[1][ifhel2]);
-		diag = scalar_[ix].first->
+		diag = -scalar_[ix].first->
 		  evaluate(q2, spin_[0][ifhel1], sbar_[2][ofhel1], interS);
 	      }
 	      else if(offshell->iSpin() == PDT::Spin1) {
@@ -147,7 +133,7 @@ MEff2ff::ffb2ffbHeME(double & me2, bool first) const {
 	      else if(offshell->iSpin() == PDT::Spin2) {
 		TensorWaveFunction interT = tensor_[ix].second->
 		  evaluate(q2, 3, offshell,spin_[3][ofhel2], sbar_[1][ifhel2]);
-		diag = tensor_[ix].first->
+		diag = -tensor_[ix].first->
 		  evaluate(q2, spin_[0][ifhel1], sbar_[2][ofhel1], interT);
 	      }
 	    }
@@ -232,7 +218,7 @@ MEff2ff:: ff2ffHeME(double & me2, bool first) const {
 		else {
 		  ScalarWaveFunction interS = scalar_[ix].second->
 		    evaluate(q2, 3, offshell,spin_[1][ifhel2],sbar_[2][ofhel1]);
-		  diag = scalar_[ix].first->
+		  diag = -scalar_[ix].first->
 		    evaluate(q2, spin_[0][ifhel1], sbar_[3][ofhel2], interS);
 		}
 	      }
@@ -260,7 +246,7 @@ MEff2ff:: ff2ffHeME(double & me2, bool first) const {
 		else {
 		  TensorWaveFunction interT = tensor_[ix].second->
 		    evaluate(q2, 3, offshell,spin_[1][ifhel2],sbar_[2][ofhel1]);
-		  diag = tensor_[ix].first->
+		  diag = -tensor_[ix].first->
 		    evaluate(q2, spin_[0][ifhel1], sbar_[3][ofhel2], interT);
 		}
 	      }
@@ -453,13 +439,13 @@ MEff2ff::ffb2mfmfHeME(double & me2, bool first) const {
 		if(current.ordered.second) {
 		  ScalarWaveFunction interS = scalar_[ix].second->
 		    evaluate(q2, 3, offshell,spin_[3][ofhel2],sbar_[1][ifhel2]);
-		  diag = scalar_[ix].first->
+		  diag = -scalar_[ix].first->
 		    evaluate(q2, spin_[0][ifhel1],sbar_[2][ofhel1],interS);
 		}
 		else {
 		  ScalarWaveFunction interS = scalar_[ix].second->
 		    evaluate(q2, 3, offshell,spin_[2][ofhel1],sbar_[1][ifhel2]);
-		  diag = -scalar_[ix].first->
+		  diag = scalar_[ix].first->
 		    evaluate(q2, spin_[0][ifhel1],sbar_[3][ofhel2],interS);
 		}
 	      }
@@ -467,7 +453,7 @@ MEff2ff::ffb2mfmfHeME(double & me2, bool first) const {
 		if(current.ordered.second) {
 		  VectorWaveFunction interV = vector_[ix].second->
 		    evaluate(q2, 3, offshell,spin_[3][ofhel2],sbar_[1][ifhel2]);
-		  diag = vector_[ix].first->
+		  diag = -vector_[ix].first->
 		    evaluate(q2, spin_[0][ifhel1], sbar_[2][ofhel1], interV);
 		}
 		else {
@@ -481,7 +467,7 @@ MEff2ff::ffb2mfmfHeME(double & me2, bool first) const {
 		if(current.ordered.second) {
 		  TensorWaveFunction interT = tensor_[ix].second->
 		    evaluate(q2, 3, offshell,spin_[3][ofhel2],sbar_[1][ifhel2]);
-		  diag = tensor_[ix].first->
+		  diag = -tensor_[ix].first->
 		    evaluate(q2, spin_[0][ifhel1], sbar_[2][ofhel1], interT);
 		}
 		else {
@@ -597,6 +583,8 @@ void MEff2ff::persistentOutput(PersistentOStream & os) const {
 
 void MEff2ff::persistentInput(PersistentIStream & is, int) {
   is >> scalar_ >> vector_ >> tensor_;
+  initializeMatrixElements(PDT::Spin1Half, PDT::Spin1Half, 
+			   PDT::Spin1Half, PDT::Spin1Half);
 }
 
 ClassDescription<MEff2ff> MEff2ff::initMEff2ff;

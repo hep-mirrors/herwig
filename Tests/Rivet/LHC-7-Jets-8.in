@@ -31,6 +31,12 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S9086218
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S9088458
 # ATLAS track jet
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I919017
+# CMS central and forward jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1087342
+# CMS dijet
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1184941
+# ATLAS subjets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1094564
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'

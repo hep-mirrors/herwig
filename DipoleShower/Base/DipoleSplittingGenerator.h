@@ -100,7 +100,8 @@ public:
    * and generate the next splitting. Return the
    * pt selected for the next splitting.
    */
-  Energy generate(const DipoleSplittingInfo&);
+  Energy generate(const DipoleSplittingInfo&,
+		  Energy optCutoff = ZERO);
 
   /**
    * Fix parameters from the fiven DipoleSplittingInfo
@@ -108,7 +109,8 @@ public:
    * pt selected for the next splitting when called
    * from a wrapping generator.
    */
-  Energy generateWrapped(DipoleSplittingInfo&);
+  Energy generateWrapped(DipoleSplittingInfo&,
+			 Energy optCutoff = ZERO);
 
   /**
    * Complete the given splitting.
@@ -146,7 +148,7 @@ protected:
    * through fixParameters generate the next
    * splitting.
    */
-  void doGenerate();
+  void doGenerate(Energy optCutoff = ZERO);
 
 public:
 

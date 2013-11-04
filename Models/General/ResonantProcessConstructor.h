@@ -46,7 +46,7 @@ public:
    * The default constructor.
    */
   ResonantProcessConstructor() :
-    processOption_(0), scaleFactor_(1.),
+    processOption_(0), scaleChoice_(1), scaleFactor_(1.),
     incoming_(0), intermediates_(0),
     outgoing_(0), diagrams_(0)
   {}
@@ -176,6 +176,11 @@ private:
    * Which types of processes to generate
    */
   unsigned int processOption_;
+
+  /**
+   *  Scale choice
+   */
+  unsigned int scaleChoice_;
 
   /**
    *  Prefactor for the scale calculation

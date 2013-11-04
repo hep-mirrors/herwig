@@ -13,6 +13,7 @@
 
 #include "SSHPPVertex.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/EnumParticles.h"
@@ -22,7 +23,9 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-SSHPPVertex::SSHPPVertex() : theSw(0.), theMw(), theZfact(),
+SSHPPVertex::SSHPPVertex() : theIncludeTriLinear(true),
+			     thePseudoScalarTreatment(false),
+			     theSw(0.), theMw(), theZfact(),
 			     theQt1L(0.), theQt1R(0.), theQt1LR(0.),
 			     theQt2L(0.), theQt2R(0.), theQt2LR(0.),
 			     theQb1L(0.), theQb1R(0.), theQb1LR(0.),
@@ -45,9 +48,9 @@ void SSHPPVertex::persistentOutput(PersistentOStream & os) const {
      << theQt1L << theQt1R << theQt1LR << theQt2L << theQt2R << theQt2LR
      << theQb1L << theQb1R << theQb1LR << theQb2L << theQb2R << theQb2LR
      << theLt1L << theLt1R << theLt1LR << theLt2L << theLt2R << theLt2LR
-     << thetop << thebot << thetau << theTanB
+     << thetop << thebot << thetau << theTanB << theIncludeTriLinear
      << theSinA << theCosA << theSinB << theCosB << theSinApB << theCosApB
-     << theSinBmA << theCosBmA
+     << theSinBmA << theCosBmA << thePseudoScalarTreatment
      << ounit(theSfmass, GeV) << theU << theV;
 }
 
@@ -56,9 +59,9 @@ void SSHPPVertex::persistentInput(PersistentIStream & is, int) {
      >> theQt1L >> theQt1R >> theQt1LR >> theQt2L >> theQt2R >> theQt2LR 
      >> theQb1L >> theQb1R >> theQb1LR >> theQb2L >> theQb2R >> theQb2LR
      >> theLt1L >> theLt1R >> theLt1LR >> theLt2L >> theLt2R >> theLt2LR
-     >> thetop >> thebot >> thetau >> theTanB
+     >> thetop >> thebot >> thetau >> theTanB >> theIncludeTriLinear
      >> theSinA >> theCosA >> theSinB >> theCosB >> theSinApB >> theCosApB
-     >> theSinBmA >> theCosBmA
+     >> theSinBmA >> theCosBmA >> thePseudoScalarTreatment
      >> iunit(theSfmass, GeV) >> theU >> theV;
 }
 
@@ -71,6 +74,36 @@ void SSHPPVertex::Init() {
     ("This class implements the higgs-gluon-gluon effective "
      "vertex in the MSSM including stop, sbottom and top quarks " 
      "loops.");
+
+  static Switch<SSHPPVertex,bool> interfaceIncludeTriLinear
+    ("IncludeTriLinear",
+     "Whether or not to include the A term squark trilinear couplings",
+     &SSHPPVertex::theIncludeTriLinear, true, false, false);
+  static SwitchOption interfaceIncludeTriLinearYes
+    (interfaceIncludeTriLinear,
+     "Yes",
+     "Include them",
+     true);
+  static SwitchOption interfaceIncludeTriLinearNo
+    (interfaceIncludeTriLinear,
+     "No",
+     "Don't include them",
+     false);
+
+  static Switch<SSHPPVertex,bool> interfacePseudoScalarTreatment
+    ("PseudoScalarTreatment",
+     "Whether to treat the pseudoscalar as pseudoscalar or scalar, for testing only",
+     &SSHPPVertex::thePseudoScalarTreatment, false, false, false);
+  static SwitchOption interfacePseudoScalarTreatmentPseudoScalar
+    (interfacePseudoScalarTreatment,
+     "PseudoScalar",
+     "Treat as a pseudoscalar, the right physics",
+     false);
+  static SwitchOption interfacePseudoScalarTreatmentScalar
+    (interfacePseudoScalarTreatment,
+     "Scalar",
+     "Treat as a scalar for testing",
+     true);
 
 }
   
@@ -89,8 +122,8 @@ void SSHPPVertex::setCoupling(Energy2 q2, tcPDPtr particle2,
     Energy mt   = theMSSM->mass(q2, thetop);    
     Energy mb   = theMSSM->mass(q2, thebot);
     Energy mtau = theMSSM->mass(q2, thetau);
-    masses.resize(0);
-    type.resize(0);
+    masses.clear();
+    type.clear();
     if( higgs == ParticleID::h0 || higgs == ParticleID::H0 ) {
       setNParticles(13);
       masses.insert(masses.begin(), theSfmass.begin(), theSfmass.end());
@@ -122,40 +155,52 @@ void SSHPPVertex::setCoupling(Energy2 q2, tcPDPtr particle2,
       Energy theMu = theMSSM->muParameter();
       if( higgs == ParticleID::h0 ) {
 	// lightest sbottom
+	complex<Energy> trilinear = theIncludeTriLinear ? 
+	  theQb1LR*0.5*mb/theMw*(Trib*theSinA + theMu*theCosA)/theCosB : Energy();
 	Complex coup = 3.*UnitRemoval::InvE*sqr(theMSSM->ed())*
 	  (theQb1L *(   sqr(mb)*theSinA/theMw/theCosB - theSinApB*brac1) +
 	   theQb1R *(   sqr(mb)*theSinA/theMw/theCosB + theSinApB*brac3) +
-	   theQb1LR*0.5*mb/theMw*(Trib*theSinA + theMu*theCosA)/theCosB);
+	   trilinear);
 	couplings[0] = make_pair(coup, coup);
 	// lightest stop
+	trilinear = theIncludeTriLinear ?
+	  theQt1LR*0.5*mt/theMw*(Trit*theCosA + theMu*theSinA)/theSinB : Energy();
 	coup = 3.*UnitRemoval::InvE*sqr(theMSSM->eu())*
 	  (theQt1L *( - sqr(mt)*theCosA/theMw/theSinB + theSinApB*brac2) +
 	   theQt1R *( - sqr(mt)*theCosA/theMw/theSinB + theSinApB*brac4) -
-	   theQt1LR*0.5*mt/theMw*(Trit*theCosA + theMu*theSinA)/theSinB);
+	   trilinear);
 	couplings[1] = make_pair(coup, coup);
 	// lightest stau
+	trilinear = theIncludeTriLinear ?
+	  theLt1LR*0.5*mtau/theMw*(Trita*theSinA + theMu*theCosA)/theCosB : Energy();
 	coup = UnitRemoval::InvE*sqr(theMSSM->ee())*
 	  (theLt1L *(   sqr(mtau)*theSinA/theMw/theCosB - theSinApB*brac5) +
 	   theLt1R *(   sqr(mtau)*theSinA/theMw/theCosB + theSinApB*brac6) +
-	   theLt1LR*0.5*mtau/theMw*(Trita*theSinA + theMu*theCosA)/theCosB);
+	   trilinear);
 	couplings[2] = make_pair(coup, coup);
 	// heavier sbottom
+	trilinear = theIncludeTriLinear ? 
+	   theQb2LR*0.5*mb/theMw*(Trib*theSinA + theMu*theCosA)/theCosB : Energy();
 	coup = 3.*UnitRemoval::InvE*sqr(theMSSM->ed())*
 	  (theQb2L *(   sqr(mb)*theSinA/theMw/theCosB - theSinApB*brac1) +
 	   theQb2R *(   sqr(mb)*theSinA/theMw/theCosB + theSinApB*brac3) +
-	   theQb2LR*0.5*mb/theMw*(Trib*theSinA + theMu*theCosA)/theCosB);
+	   trilinear);
 	couplings[3] = make_pair(coup, coup);
 	// heavier stop
+	trilinear = theIncludeTriLinear ? 
+	  theQt2LR*0.5*mt/theMw*(Trit*theCosA + theMu*theSinA)/theSinB : Energy();
 	coup = 3.*UnitRemoval::InvE*sqr(theMSSM->eu())*
 	  (theQt2L*( - sqr(mt)*theCosA/theMw/theSinB + theSinApB*brac2) +
 	   theQt2R*( - sqr(mt)*theCosA/theMw/theSinB + theSinApB*brac4) -
-	   theQt2LR*0.5*mt/theMw*(Trit*theCosA + theMu*theSinA)/theSinB);
+	   trilinear);
 	couplings[4] = make_pair(coup, coup);
 	// heavier stau
+	trilinear = theIncludeTriLinear ? 
+	  theLt2LR*0.5*mtau/theMw*(Trita*theSinA + theMu*theCosA)/theCosB : Energy();
 	coup = UnitRemoval::InvE*sqr(theMSSM->ee())*
 	  (theLt2L *(   sqr(mtau)*theSinA/theMw/theCosB - theSinApB*brac5) +
 	   theLt2R *(   sqr(mtau)*theSinA/theMw/theCosB + theSinApB*brac6)+
-	   theLt2LR*0.5*mtau/theMw*(Trita*theSinA + theMu*theCosA)/theCosB);
+	   trilinear);
 	couplings[5] = make_pair(coup, coup);
 	// top
 	coup = - 3.*mt*sqr(theMSSM->eu())*theCosA/2./theMw/theSinB;
@@ -183,40 +228,46 @@ void SSHPPVertex::setCoupling(Energy2 q2, tcPDPtr particle2,
       }
       else {
 	// lightest sbottom
+	complex<Energy> trilinear = theIncludeTriLinear ? 
+	  theQb1LR*0.5*mb/theMw*(theMu*theSinA - Trib*theCosA)/theCosB: Energy();
 	Complex coup = 3.*UnitRemoval::InvE*sqr(theMSSM->ed())*
 	  (theQb1L *( - sqr(mb)*theCosA/theMw/theCosB + theCosApB*brac1) +
-	   theQb1R *( - sqr(mb)*theCosA/theMw/theCosB - theCosApB*brac3)+
-	   theQb1LR*0.5*mb/theMw*(theMu*theSinA - Trib*theCosA)/theCosB);
+	   theQb1R *( - sqr(mb)*theCosA/theMw/theCosB - theCosApB*brac3)+trilinear);
 	couplings[0] = make_pair(coup, coup);
 	// lightest stop
+	trilinear = theIncludeTriLinear ? 
+	   -theQt1LR*0.5*mt/theMw*(-theMu*theCosA + Trit*theSinA)/theSinB: Energy();
 	coup = 3.*UnitRemoval::InvE*sqr(theMSSM->eu())*
 	  (theQt1L *( - sqr(mt)*theSinA/theMw/theSinB - theCosApB*brac2) +
-	   theQt1R *( - sqr(mt)*theSinA/theMw/theSinB - theCosApB*brac4)-
-	   theQt1LR*0.5*mt/theMw*(-theMu*theCosA + Trit*theSinA)/theSinB);
+	   theQt1R *( - sqr(mt)*theSinA/theMw/theSinB - theCosApB*brac4)+trilinear);
 	couplings[1] = make_pair(coup, coup);
 	// lightest stau
+	trilinear = theIncludeTriLinear ? 
+	   theLt1LR*0.5*mtau/theMw*(theMu*theSinA - Trita*theCosA)/theCosB: Energy();
 	coup = UnitRemoval::InvE*sqr(theMSSM->ee())*
 	  (theLt1L *( - sqr(mtau)*theCosA/theMw/theCosB + theCosApB*brac5) +
-	   theLt1R *( - sqr(mtau)*theCosA/theMw/theCosB - theCosApB*brac6)+
-	   theLt1LR*0.5*mtau/theMw*(theMu*theSinA - Trita*theCosA)/theCosB);
+	   theLt1R *( - sqr(mtau)*theCosA/theMw/theCosB - theCosApB*brac6)+trilinear);
 	couplings[2] = make_pair(coup, coup);
 	// heavier sbottom
+	trilinear = theIncludeTriLinear ? 
+	   theQb2LR*0.5*mb/theMw*(theMu*theSinA - Trib*theCosA)/theCosB: Energy();
 	coup = 3.*UnitRemoval::InvE*sqr(theMSSM->ed())*
 	  (theQb2L *( - sqr(mb)*theCosA/theMw/theCosB + theCosApB*brac1) +
-	   theQb2R *( - sqr(mb)*theCosA/theMw/theCosB - theCosApB*brac3)+
-	   theQb2LR*0.5*mb/theMw*(theMu*theSinA - Trib*theCosA)/theCosB); 
+	   theQb2R *( - sqr(mb)*theCosA/theMw/theCosB - theCosApB*brac3)+trilinear); 
 	couplings[3] = make_pair(coup, coup);
 	// heavier stop
+	trilinear = theIncludeTriLinear ? 
+	  -theQt2LR*0.5*mt/theMw*(-theMu*theCosA + Trit*theSinA)/theSinB: Energy();
 	coup = 3.*UnitRemoval::InvE*sqr(theMSSM->eu())*
 	  (theQt2L *( - sqr(mt)*theSinA/theMw/theSinB - theCosApB*brac2) +
-	   theQt2R *( - sqr(mt)*theSinA/theMw/theSinB - theCosApB*brac4)-
-	   theQt2LR*0.5*mt/theMw*(-theMu*theCosA + Trit*theSinA)/theSinB);
+	   theQt2R *( - sqr(mt)*theSinA/theMw/theSinB - theCosApB*brac4)+trilinear);
 	couplings[4] = make_pair(coup, coup);
 	// heavier stau
+	trilinear = theIncludeTriLinear ? 
+	   theLt2LR*0.5*mtau/theMw*(theMu*theSinA - Trita*theCosA)/theCosB: Energy();
 	coup = UnitRemoval::InvE*sqr(theMSSM->ee())*
 	  (theLt2L *( - sqr(mtau)*theCosA/theMw/theCosB + theCosApB*brac5) +
-	   theLt2R *( - sqr(mtau)*theCosA/theMw/theCosB - theCosApB*brac6)+
-	   theLt2LR*0.5*mtau/theMw*(theMu*theSinA - Trita*theCosA)/theCosB);
+	   theLt2R *( - sqr(mtau)*theCosA/theMw/theCosB - theCosApB*brac6)+trilinear);
 	couplings[5] = make_pair(coup, coup);
 	// top
 	coup = -3.*mt*sqr(theMSSM->eu())*theSinA/2./theMw/theSinB;
@@ -224,7 +275,7 @@ void SSHPPVertex::setCoupling(Energy2 q2, tcPDPtr particle2,
 	// bottom
 	coup = -3.*mb*sqr(theMSSM->ed())*theCosA/2./theMw/theCosB;
 	couplings[7] = make_pair(coup, coup);
-	// bottom
+	// tau
 	coup = -mtau*sqr(theMSSM->ee())*theCosA/2./theMw/theCosB;
 	couplings[8] = make_pair(coup, coup);
 	// charged higgs
@@ -239,7 +290,7 @@ void SSHPPVertex::setCoupling(Energy2 q2, tcPDPtr particle2,
 	  Complex Q = sqrt(0.5)*(*theV)(ix,0)*(*theU)(ix,1);
 	  Complex S = sqrt(0.5)*(*theV)(ix,1)*(*theU)(ix,0);
 	  coup = -Q*theCosA-S*theSinA;
-	  couplings[11+ix] = make_pair(conj(coup), coup); 
+	  couplings[11+ix] = make_pair(conj(coup), coup);
 	}
       }
     }
@@ -255,19 +306,19 @@ void SSHPPVertex::setCoupling(Energy2 q2, tcPDPtr particle2,
       type.resize(5,PDT::Spin1Half);
       // top
       Complex coup = 3.*Complex(0., 1.)*sqr(theMSSM->eu())*mt/2./theMw/theTanB;
-      couplings[0] = make_pair(coup, -coup);
+      couplings[0] = make_pair(coup, thePseudoScalarTreatment ? coup : -coup);
       // bottom
       coup = 3.*Complex(0., 1.)*sqr(theMSSM->ed())*mb/2./theMw*theTanB;
-      couplings[1] = make_pair(coup, -coup);
+      couplings[1] = make_pair(coup, thePseudoScalarTreatment ? coup : -coup);
       // tau
       coup = Complex(0., 1.)*sqr(theMSSM->ee())*mtau/2./theMw*theTanB;
-      couplings[2] = make_pair(coup, -coup);
+      couplings[2] = make_pair(coup, thePseudoScalarTreatment ? coup : -coup);
       // charginos
       for(unsigned int ix=0;ix<2;++ix) {
 	Complex Q = sqrt(0.5)*(*theV)(ix,0)*(*theU)(ix,1);
 	Complex S = sqrt(0.5)*(*theV)(ix,1)*(*theU)(ix,0);
 	coup = - Complex(0., 1.)*(Q*theSinB+S*theCosB);
-	couplings[3+ix] = make_pair(coup, - coup);
+	couplings[3+ix] = make_pair(coup, thePseudoScalarTreatment ? coup : -coup);
       }
     }
     theq2last = q2;
@@ -337,7 +388,7 @@ void SSHPPVertex::doinit() {
   thebot = getParticleData(ParticleID::b);
   thetau = getParticleData(ParticleID::tauminus);
   theSw = sqrt(sin2ThetaW());
-  theZfact = getParticleData(ParticleID::Z0)->mass()/sqrt(1. - sqr(theSw));
+  theZfact = getParticleData(ParticleID::Wplus)->mass()/(1. - sqr(theSw));
   
   theSinA = sin(theMSSM->higgsMixingAngle());
   theCosA = sqrt(1. - sqr(theSinA));
@@ -574,6 +625,6 @@ void SSHPPVertex::doinit() {
 // 	 << pre*std::norm(Isb1+Isb2+Ist1+Ist2+Istau1+Istau2+
 // 			  Itop+Ibot+Itau+Ih+IW+IC[0]+IC[1])/GeV << "\n";
 //   }
-  Looptools::ltexi();
+  if(loopToolsInitialized()) Looptools::ltexi();
 }
  

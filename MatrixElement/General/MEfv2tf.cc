@@ -25,6 +25,8 @@ void MEfv2tf::persistentOutput(PersistentOStream & os) const {
 
 void MEfv2tf::persistentInput(PersistentIStream & is, int) {
   is >> fermion_ >> vector_ >> fourPoint_;
+  initializeMatrixElements(PDT::Spin1Half, PDT::Spin1    , 
+			   PDT::Spin2    , PDT::Spin1Half);
 }
 
 ClassDescription<MEfv2tf> MEfv2tf::initMEfv2tf;
@@ -67,7 +69,7 @@ double MEfv2tf::me2() const {
     }
     if(i!=1 &&i<3) {
       vec[i] = VectorWaveFunction(rescaledMomenta()[1], mePartonData()[1],i , 
- 				  incoming);
+      				  incoming);
     }
   }
   // calculate the ME
@@ -91,12 +93,8 @@ void MEfv2tf::doinit() {
   fermion_   .resize(numberOfDiags());
   vector_    .resize(numberOfDiags());
   fourPoint_ .resize(numberOfDiags());
-  flowME().resize(numberOfFlows(),
-		  ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1    , 
-					  PDT::Spin2    , PDT::Spin1Half));
-  diagramME().resize(numberOfDiags(),
-		     ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1    , 
-					     PDT::Spin2    , PDT::Spin1Half));
+  initializeMatrixElements(PDT::Spin1Half, PDT::Spin1    , 
+			   PDT::Spin2    , PDT::Spin1Half);
   for(HPCount i = 0; i < numberOfDiags(); ++i) {
     const HPDiagram & current = getProcessInfo()[i];
     if(current.channelType == HPDiagram::sChannel) {
@@ -129,16 +127,6 @@ void MEfv2tf::doinit() {
   }
 }
 
-void MEfv2tf::doinitrun() {
-  GeneralHardME::doinitrun();
-  flowME().resize(numberOfFlows(),
-		  ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1    , 
-					  PDT::Spin2    , PDT::Spin1Half));
-  diagramME().resize(numberOfDiags(),
-		     ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1    , 
-					     PDT::Spin2    , PDT::Spin1Half));
-}
-
 ProductionMatrixElement MEfv2tf::fv2tfHeME(const SpinorVector & sp, 
 					   const VBVector & vec,
 					   const TBVector & ten,
@@ -169,9 +157,11 @@ ProductionMatrixElement MEfv2tf::fv2tfHeME(const SpinorVector & sp,
  		evaluate(q2,interF,sb[if2],ten[it]);
  	    }
  	    else if(current.channelType == HPDiagram::tChannel) {
+	      if(internal->CC()) internal=internal->CC();
  	      if(internal->iSpin()==PDT::Spin1Half) {
+		unsigned int iopt = abs(internal->id())==abs(sb[if2].particle()->id()) ? 5 : 3;
  		SpinorBarWaveFunction interFB = fermion_[ix].second->
- 		  evaluate(q2,5,internal,sb[if2],vec[iv]);
+ 		  evaluate(q2,iopt,internal,sb[if2],vec[iv]);
  		diag = fermion_[ix].first->
  		  evaluate(q2,sp[if1],interFB,ten[it]);
  	      }

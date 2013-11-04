@@ -17,7 +17,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Helicity/epsilon.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
-
+#include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig;
 using namespace ThePEG;
@@ -40,9 +40,11 @@ ThreeMesonCurrentBase::ThreeMesonCurrentBase() {
   setInitialModes(12);
 }
 
-AbstractNoPIOClassDescription<ThreeMesonCurrentBase> 
-ThreeMesonCurrentBase::initThreeMesonCurrentBase;
-// Definition of the static class description member.
+DescribeAbstractNoPIOClass<ThreeMesonCurrentBase,WeakDecayCurrent>
+describeHerwigThreeMesonCurrentBase("Herwig::ThreeMesonCurrentBase",
+				    "HwWeakCurrents.so");
+
+
 
 void ThreeMesonCurrentBase::Init() {
     
@@ -85,7 +87,7 @@ ThreeMesonCurrentBase::current(const int imode, const int ichan,
   complex<InvEnergy> dot=(vect*q)/q2;
   // scalar and parity violating terms
   vect += (F.F4-dot)*q;
-  if(F.F5!=InvEnergy3()) 
+  if(F.F5!=complex<InvEnergy3>()) 
     vect += Complex(0.,1.)*F.F5*Helicity::epsilon(decay[0]->momentum(),
 							       decay[1]->momentum(),
 							       decay[2]->momentum());

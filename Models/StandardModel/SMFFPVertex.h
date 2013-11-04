@@ -93,11 +93,6 @@ protected:
 private:
   
   /**
-   * Describe a concrete class with persistent data.
-   */
-  static ClassDescription<SMFFPVertex> initSMFFPVertex;
-  
-  /**
    * Private and non-existent assignment operator.
    */
   SMFFPVertex & operator=(const SMFFPVertex &);
@@ -126,39 +121,5 @@ private:
 
 };
 }
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * The following template specialization informs ThePEG about the
- * base class of SMFFPVertex.
- */ 
-template <>
-struct BaseClassTrait<Herwig::SMFFPVertex,1> {
-  /** Typedef of the base class of SMFFPVertex. */
-  typedef ThePEG::Helicity::FFVVertex NthBase;
-};
-  
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<Herwig::SMFFPVertex>
-  : public ClassTraitsBase<Herwig::SMFFPVertex> {
-  
-  /**
-   * Return the class name.
-   */
-  static string className() { return "Herwig::SMFFPVertex"; }
-  
-};
-
-/** @endcond */
-  
-}
-
 
 #endif /* HERWIG_SMFFPVertex_H */

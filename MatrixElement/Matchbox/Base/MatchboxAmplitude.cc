@@ -25,46 +25,147 @@
 #include "Herwig++/MatrixElement/Matchbox/Utility/SU2Helper.h"
 #include "MatchboxMEBase.h"
 
+#include <boost/numeric/ublas/io.hpp>
+#include <boost/numeric/ublas/matrix_proxy.hpp>
+#include <iterator>
+using std::ostream_iterator;
+
 using namespace Herwig;
 
 MatchboxAmplitude::MatchboxAmplitude() 
-  : Amplitude(), theColourBasisDim(0),
-    calculateTrees(true), calculateLoops(true) {}
+  : Amplitude() {}
 
 MatchboxAmplitude::~MatchboxAmplitude() {}
 
 void MatchboxAmplitude::persistentOutput(PersistentOStream & os) const {
-  os << theLastXComb << theColourBasis << theColourBasisDim
-     << theCrossingMap << theColourMap << theCrossingSigns 
-     << theAmplitudePartonData << theNLight;
+  os << theLastXComb << theColourBasis;
 }
 
 void MatchboxAmplitude::persistentInput(PersistentIStream & is, int) {
-  is >> theLastXComb >> theColourBasis >> theColourBasisDim
-     >> theCrossingMap >> theColourMap >> theCrossingSigns
-     >> theAmplitudePartonData >> theNLight;
+  is >> theLastXComb >> theColourBasis;
+  lastMatchboxXComb(theLastXComb);
 }
 
-void MatchboxAmplitude::cloneDependencies(const std::string&) {
-}
+void MatchboxAmplitude::cloneDependencies(const std::string&) {}
 
-Ptr<MatchboxMEBase>::ptr MatchboxAmplitude::makeME(const vector<PDVector>&) const {
+Ptr<MatchboxMEBase>::ptr MatchboxAmplitude::makeME(const PDVector&) const {
   return new_ptr(MatchboxMEBase());
 }
 
-void MatchboxAmplitude::dumpInfo(const string& prefix) const {
-  generator()->log() << prefix << fullName()
-		     << " [" << this << "]\n";
-  generator()->log() << prefix << "  | XComb " << lastXCombPtr()
-		     << " for ";
-  if ( lastXCombPtr() ) {
-    for ( cPDVector::const_iterator p = lastXComb().mePartonData().begin();
-	  p != lastXComb().mePartonData().end(); ++p ) {
-      generator()->log() << (**p).PDGName() << " ";
-    }
-  }
-  generator()->log() << "\n";
+Selector<const ColourLines *> MatchboxAmplitude::colourGeometries(tcDiagPtr d) const {
+  if ( haveColourFlows() )
+    return colourBasis()->colourGeometries(d,lastLargeNAmplitudes());
+  return Selector<const ColourLines *>();
 }
+
+void MatchboxAmplitude::olpOrderFileHeader(ostream& os) const {
+
+  os << "# OLP order file created by Herwig++/Matchbox\n\n";
+
+  os << "InterfaceVersion          BLHA2\n\n";
+
+  os << "Model                     SM\n"
+     << "CorrectionType            QCD\n"
+     << "IRregularisation          " << (isDR() ? "DRED" : "CDR") << "\n"
+     << "Extra HelAvgInitial       no\n"
+     << "Extra ColAvgInitial       no\n"
+     << "Extra MCSymmetrizeFinal   no\n";
+
+  os << "\n";
+
+}
+
+void MatchboxAmplitude::olpOrderFileProcesses(ostream& os,
+					      const map<pair<Process,int>,int>& proc) const {
+
+  map<int,pair<Process,int> > sorted;
+
+  for ( map<pair<Process,int>,int>::const_iterator p = proc.begin();
+	p != proc.end(); ++p ) {
+    sorted[p->second] = p->first;
+  }
+
+  unsigned int currentOrderInAlphaS = sorted.begin()->second.first.orderInAlphaS;
+  unsigned int currentOrderInAlphaEW = sorted.begin()->second.first.orderInAlphaEW;
+  int currentType = sorted.begin()->second.second;
+
+  os << "AlphasPower               " << currentOrderInAlphaS << "\n"
+     << "AlphaPower                " << currentOrderInAlphaEW << "\n"
+     << "AmplitudeType             ";
+  if ( currentType == ProcessType::treeME2 ) {
+    os << "tree\n";
+  } else if ( currentType == ProcessType::oneLoopInterference ) {
+    os << "loop\n";
+  } else if ( currentType == ProcessType::colourCorrelatedME2 ) {
+    os << "cctree\n";
+  } else if ( currentType == ProcessType::spinColourCorrelatedME2 ) {
+    os << "sctree\n";
+  } else assert(false);
+
+
+  for ( map<int,pair<Process,int> >::const_iterator p = sorted.begin();
+	p != sorted.end(); ++p ) {
+
+    if ( currentOrderInAlphaS != p->second.first.orderInAlphaS ) {
+      currentOrderInAlphaS = p->second.first.orderInAlphaS;
+      os << "AlphasPower               " << currentOrderInAlphaS << "\n";
+    }
+
+    if ( currentOrderInAlphaEW != p->second.first.orderInAlphaEW ) {
+      currentOrderInAlphaEW = p->second.first.orderInAlphaEW;
+      os << "AlphaPower                " << currentOrderInAlphaEW << "\n";
+    }
+
+    if ( currentType != p->second.second ) {
+      currentType = p->second.second;
+      os << "AmplitudeType             ";
+      if ( currentType == ProcessType::treeME2 ) {
+	os << "tree\n";
+      } else if ( currentType == ProcessType::oneLoopInterference ) {
+	os << "loop\n";
+      } else if ( currentType == ProcessType::colourCorrelatedME2 ) {
+	os << "cctree\n";
+      } else if ( currentType == ProcessType::spinColourCorrelatedME2 ) {
+	os << "sctree\n";
+      } else assert(false);
+    }
+
+    os << p->second.first.legs[0]->id() << " "
+       << p->second.first.legs[1]->id() << " -> ";
+    for ( PDVector::const_iterator o = p->second.first.legs.begin() + 2;
+	  o != p->second.first.legs.end(); ++o ) {
+      os << (**o).id() << " ";
+    }
+    os << "\n";
+
+  }
+
+}
+
+bool MatchboxAmplitude::startOLP(const map<pair<Process,int>,int>& procs) {
+
+  string orderFileName = name() + ".OLPOrder.lh";
+  ofstream orderFile(orderFileName.c_str());
+
+  olpOrderFileHeader(orderFile);
+  olpOrderFileProcesses(orderFile,procs);
+
+  string contractFileName = name() + ".OLPContract.lh";
+
+  signOLP(orderFileName, contractFileName);
+
+  // TODO check the contract file
+
+  int status = 0;
+  startOLP(contractFileName, status);
+
+  if ( status != 1 )
+    return false;
+
+  return true;
+
+}
+
 
 struct orderPartonData {
 
@@ -98,26 +199,19 @@ struct orderPartonData {
 
 };
 
+void MatchboxAmplitude::setXComb(tStdXCombPtr xc) {
+  theLastXComb = xc;
+  lastMatchboxXComb(xc);
+  fillCrossingMap();
+  if ( treeAmplitudes() || oneLoopAmplitudes() )
+    for ( size_t k = 0 ; k < meMomenta().size(); ++k )
+      amplitudeMomenta()[k] = amplitudeMomentum(k);
+}
+
 void MatchboxAmplitude::fillCrossingMap(size_t shift) {
 
-  theLastCrossingMap = crossingMap().find(lastXCombPtr());
-
-  if ( theLastCrossingMap != crossingMap().end() ) {
-    assert(amplitudePartonData().find(lastXCombPtr()) != amplitudePartonData().end());
-    assert(colourMap().find(lastXCombPtr()) != colourMap().end());
-    theLastAmplitudePartonData = amplitudePartonData().find(lastXCombPtr());
-    theLastColourMap = colourMap().find(lastXCombPtr());
-    assert(crossingSigns().find(lastXCombPtr()) != crossingSigns().end());
-    theLastCrossingSign = crossingSigns().find(lastXCombPtr())->second;
+  if ( !amplitudePartonData().empty() )
     return;
-  } else {
-    crossingMap()[lastXCombPtr()] = vector<int>(mePartonData().size());
-    amplitudePartonData()[lastXCombPtr()] = cPDVector(mePartonData().size());
-    colourMap()[lastXCombPtr()] = map<size_t,size_t>();
-    theLastCrossingMap = crossingMap().find(lastXCombPtr());
-    theLastAmplitudePartonData = amplitudePartonData().find(lastXCombPtr());
-    theLastColourMap = colourMap().find(lastXCombPtr());
-  }
 
   double csign = 1.;
   set<pair<tcPDPtr,int>,orderPartonData > processLegs;
@@ -135,10 +229,12 @@ void MatchboxAmplitude::fillCrossingMap(size_t shift) {
     }
   }
 
-  lastCrossingSign(csign);
-  crossingSigns()[lastXCombPtr()] = csign;
+  crossingSign(csign);
 
   set<pair<tcPDPtr,int> > amplitudeLegs;
+  crossingMap().resize(mePartonData().size());
+  amplitudePartonData().resize(mePartonData().size());
+  amplitudeMomenta().resize(mePartonData().size());
 
   int ampCount = 0;
 
@@ -152,7 +248,7 @@ void MatchboxAmplitude::fillCrossingMap(size_t shift) {
 	break;
     }
     assert(next != processLegs.end());
-    lastCrossingMap()[ampCount] = next->second - shift;
+    crossingMap()[ampCount] = next->second - shift;
     amplitudeLegs.insert(make_pair(next->first,ampCount));
     tcPDPtr check = next->first;
     processLegs.erase(next);
@@ -169,13 +265,37 @@ void MatchboxAmplitude::fillCrossingMap(size_t shift) {
       if ( checkcc == processLegs.end() )
 	for ( set<pair<tcPDPtr,int>,orderPartonData>::iterator c = processLegs.begin();
 	      c != processLegs.end(); ++c ) {
-	  assert(SU2Helper::SU2CC(check)->CC());
+	  if ( !SU2Helper::SU2CC(check) )
+	    continue;
 	  if ( c->first == SU2Helper::SU2CC(check)->CC() ) {
 	    checkcc = c; break;
 	  }
 	}
+      if ( checkcc == processLegs.end() ) {
+	int f = SU2Helper::family(check);
+	for ( int i = 1 - f; i < 5 - f; i++ ) {
+	  bool gotone = false;
+	  for ( set<pair<tcPDPtr,int>,orderPartonData>::iterator c = processLegs.begin();
+		c != processLegs.end(); ++c ) {
+	    if ( !SU2Helper::SU2CC(check,i) )
+	      continue;
+	    if ( c->first == SU2Helper::SU2CC(check,i)->CC() ) {
+	      checkcc = c; gotone = true; break;
+	    }
+	  }
+	  if ( gotone )
+	    break;
+	}
+      }
+      // default to just pick the next available anti-particle
+      if ( checkcc == processLegs.end() ) {
+	checkcc = processLegs.begin();
+	while ( checkcc->first->id() > 0 )
+	  if ( ++checkcc == processLegs.end() )
+	    break;
+      }
       assert(checkcc != processLegs.end());
-      lastCrossingMap()[ampCount] = checkcc->second - shift;
+      crossingMap()[ampCount] = checkcc->second - shift;
       amplitudeLegs.insert(make_pair(checkcc->first,ampCount));
       processLegs.erase(checkcc);
       ++ampCount;
@@ -184,32 +304,60 @@ void MatchboxAmplitude::fillCrossingMap(size_t shift) {
 
   for ( set<pair<tcPDPtr,int> >::const_iterator l = amplitudeLegs.begin();
 	l != amplitudeLegs.end(); ++l )
-    lastAmplitudePartonData()[l->second] = l->first;
+    amplitudePartonData()[l->second] = l->first;
 
   if ( colourBasis() ) {
     assert(colourBasis()->indexMap().find(mePartonData()) !=
 	   colourBasis()->indexMap().end());
     const map<size_t,size_t> colourCross = 
       colourBasis()->indexMap().find(mePartonData())->second;
-    for ( size_t k = 0; k < lastCrossingMap().size(); ++k ) {
-      if ( colourCross.find(lastCrossingMap()[k]) !=
+    for ( size_t k = 0; k < crossingMap().size(); ++k ) {
+      if ( colourCross.find(crossingMap()[k]) !=
 	   colourCross.end() ) {
-	lastColourMap()[k] = colourCross.find(lastCrossingMap()[k])->second;
+	size_t ccross = colourCross.find(crossingMap()[k])->second;
+	amplitudeToColourMap()[k] = ccross;
+	colourToAmplitudeMap()[ccross] = k;
       }
     }
   }
 
 }
 
+const string& MatchboxAmplitude::colourOrderingString(size_t id) const {
+
+  static string empty = "";
+  if ( !colourBasis() ) {
+    return empty;
+  }
+
+  return colourBasis()->orderingString(mePartonData(),colourToAmplitudeMap(),id);
+
+}
+
+const vector<vector<size_t> >& MatchboxAmplitude::colourOrdering(size_t id) const {
+
+  static vector<vector<size_t> > empty;
+  if ( !colourBasis() ) {
+    return empty;
+  }
+
+  return colourBasis()->ordering(mePartonData(),colourToAmplitudeMap(),id);
+
+}
+
 Lorentz5Momentum MatchboxAmplitude::amplitudeMomentum(int i) const {
-  int iCrossed = lastCrossingMap()[i];
+  int iCrossed = crossingMap()[i];
   Lorentz5Momentum res = meMomenta()[iCrossed];
-  return iCrossed > 1 ? res : -res;
+  if ( iCrossed < 2 )
+    res = -res;
+  res.setMass(meMomenta()[iCrossed].mass());
+  res.rescaleRho();
+  return res;
 }
 
 set<vector<int> > MatchboxAmplitude::generateHelicities() const {
   set<vector<int> > res;
-  vector<int> current(lastAmplitudePartonData().size());
+  vector<int> current(amplitudePartonData().size());
   doGenerateHelicities(res,current,0);
   return res;
 }
@@ -218,18 +366,18 @@ void MatchboxAmplitude::doGenerateHelicities(set<vector<int> >& res,
 					     vector<int>& current,
 					     size_t pos) const {
 
-  if ( pos == lastAmplitudePartonData().size() ) {
+  if ( pos == amplitudePartonData().size() ) {
     res.insert(current);
     return;
   }
 
-  if ( lastAmplitudePartonData()[pos]->iSpin() == PDT::Spin0 ||
-       ( lastAmplitudePartonData()[pos]->iSpin() == PDT::Spin1 &&
-	 lastAmplitudePartonData()[pos]->mass() != ZERO ) ) {
+  if ( amplitudePartonData()[pos]->iSpin() == PDT::Spin0 ||
+       ( amplitudePartonData()[pos]->iSpin() == PDT::Spin1 &&
+	 amplitudePartonData()[pos]->mass() != ZERO ) ) {
     current[pos] = 0;
     doGenerateHelicities(res,current,pos+1);
-  } else if ( lastAmplitudePartonData()[pos]->iSpin() == PDT::Spin1Half ||
-	      lastAmplitudePartonData()[pos]->iSpin() == PDT::Spin1 ) {
+  } else if ( amplitudePartonData()[pos]->iSpin() == PDT::Spin1Half ||
+	      amplitudePartonData()[pos]->iSpin() == PDT::Spin1 ) {
     current[pos] = 1;
     doGenerateHelicities(res,current,pos+1);
     current[pos] = -1;
@@ -238,17 +386,20 @@ void MatchboxAmplitude::doGenerateHelicities(set<vector<int> >& res,
 
 }
 
-void MatchboxAmplitude::prepareAmplitudes() {
+void MatchboxAmplitude::prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr) {
 
-  if ( !calculateTrees )
+  if ( !calculateTreeAmplitudes() )
     return;
 
-  if ( lastAmplitudes().empty() ) {
+  bool initialized = !lastAmplitudes().empty();
+
+  if ( !initialized ) {
     set<vector<int> > helicities = generateHelicities();
     for ( set<vector<int> >::const_iterator h = helicities.begin();
-	  h != helicities.end(); ++h )
+          h != helicities.end(); ++h ) {
       lastAmplitudes().insert(make_pair(*h,CVector(colourBasisDim())));
-    lastLargeNAmplitudes() = lastAmplitudes();
+      lastLargeNAmplitudes().insert(make_pair(*h,CVector(colourBasisDim())));
+    }
   }
 
   AmplitudeIterator amp = lastAmplitudes().begin();
@@ -258,20 +409,54 @@ void MatchboxAmplitude::prepareAmplitudes() {
       amp->second(k) = evaluate(k,amp->first,lamp->second(k));
   }
 
-  calculateTrees = false;
+  if ( !initialized ) {
+    map<vector<int>,CVector> clean;
+    for ( map<vector<int>,CVector>::const_iterator amp = lastAmplitudes().begin();
+          amp != lastAmplitudes().end(); ++amp ) {
+      bool nonZero = false;
+      for ( size_t k = 0; k < colourBasisDim(); ++k ) {
+        if ( amp->second(k) != Complex(0.0) ) {
+          nonZero = true;
+          break;
+        }
+      }
+      if ( nonZero )
+        clean.insert(*amp);
+    }
+    lastAmplitudes() = clean;
+    clean.clear();
+    for ( map<vector<int>,CVector>::const_iterator amp = lastLargeNAmplitudes().begin();
+          amp != lastLargeNAmplitudes().end(); ++amp ) {
+      bool nonZero = false;
+      for ( size_t k = 0; k < colourBasisDim(); ++k ) {
+        if ( amp->second(k) != Complex(0.0) ) {
+          nonZero = true;
+          break;
+        }
+      }
+      if ( nonZero )
+        clean.insert(*amp);
+    }
+    lastLargeNAmplitudes() = clean;
+  }
+
+  haveTreeAmplitudes();
 
 }
 
-void MatchboxAmplitude::prepareOneLoopAmplitudes() {
+void MatchboxAmplitude::prepareOneLoopAmplitudes(Ptr<MatchboxMEBase>::tcptr) {
 
-  if ( !calculateLoops )
+  if ( !calculateOneLoopAmplitudes() )
     return;
 
-  if ( lastOneLoopAmplitudes().empty() ) {
+  bool initialized = !lastOneLoopAmplitudes().empty();
+
+  if ( !initialized ) {
     set<vector<int> > helicities = generateHelicities();
     for ( set<vector<int> >::const_iterator h = helicities.begin();
-	  h != helicities.end(); ++h )
+          h != helicities.end(); ++h ) {
       lastOneLoopAmplitudes().insert(make_pair(*h,CVector(colourBasisDim())));
+    }
   }
 
   for ( AmplitudeIterator amp = lastOneLoopAmplitudes().begin();
@@ -280,7 +465,24 @@ void MatchboxAmplitude::prepareOneLoopAmplitudes() {
       amp->second(k) = evaluateOneLoop(k,amp->first);
   }
 
-  calculateLoops = false;
+  if ( !initialized ) {
+    map<vector<int>,CVector> clean;
+    for ( map<vector<int>,CVector>::const_iterator amp = lastOneLoopAmplitudes().begin();
+          amp != lastOneLoopAmplitudes().end(); ++amp ) {
+      bool nonZero = false;
+      for ( size_t k = 0; k < colourBasisDim(); ++k ) {
+        if ( amp->second(k) != Complex(0.0) ) {
+          nonZero = true;
+          break;
+        }
+      }
+      if ( nonZero )
+        clean.insert(*amp);
+    }
+    lastOneLoopAmplitudes() = clean;
+  }
+
+  haveOneLoopAmplitudes();
 
 }
 
@@ -293,11 +495,55 @@ Complex MatchboxAmplitude::value(const tcPDVector&,
   return 0.;
 }
 
+double MatchboxAmplitude::me2() const {
+  if ( !calculateTreeME2() )
+    return lastTreeME2();
+  lastTreeME2(crossingSign()*colourBasis()->me2(mePartonData(),lastAmplitudes()));
+  return lastTreeME2();
+}
+
+double MatchboxAmplitude::oneLoopInterference() const {
+  if ( !calculateOneLoopInterference() )
+    return lastOneLoopInterference();
+  lastOneLoopInterference(crossingSign()*
+			  colourBasis()->interference(mePartonData(),
+						      lastOneLoopAmplitudes(),lastAmplitudes()));
+  return lastOneLoopInterference();
+}
+
 double MatchboxAmplitude::colourCorrelatedME2(pair<int,int> ij) const {
+  double cfac = 1.;
   double Nc = generator()->standardModel()->Nc();
-  double cfac = mePartonData()[ij.first]->id() == ParticleID::g ? Nc : (sqr(Nc)-1.)/(2.*Nc);
-  return 
-    lastCrossingSign()*colourBasis()->colourCorrelatedME2(ij,mePartonData(),lastAmplitudes())/cfac;
+  if ( mePartonData()[ij.first]->iColour() == PDT::Colour8 ) {
+    cfac = Nc;
+  } else if ( mePartonData()[ij.first]->iColour() == PDT::Colour3 ||
+	      mePartonData()[ij.first]->iColour() == PDT::Colour3bar ) {
+    cfac = (sqr(Nc)-1.)/(2.*Nc);
+  } else assert(false);
+  if ( !calculateColourCorrelator(ij) )
+    return lastColourCorrelator(ij)/cfac;
+  double res =
+    crossingSign()*colourBasis()->colourCorrelatedME2(ij,mePartonData(),lastAmplitudes());
+  lastColourCorrelator(ij,res);
+  return res/cfac;
+}
+
+double MatchboxAmplitude::largeNColourCorrelatedME2(pair<int,int> ij,
+						    Ptr<ColourBasis>::tptr largeNBasis) const {
+  double cfac = 1.;
+  double Nc = generator()->standardModel()->Nc();
+  if ( mePartonData()[ij.first]->iColour() == PDT::Colour8 ) {
+    cfac = Nc;
+  } else if ( mePartonData()[ij.first]->iColour() == PDT::Colour3 ||
+	      mePartonData()[ij.first]->iColour() == PDT::Colour3bar ) {
+    cfac = Nc/2.;
+  } else assert(false);
+  if ( !calculateLargeNColourCorrelator(ij) )
+    return lastLargeNColourCorrelator(ij)/cfac;
+  double res =
+    crossingSign()*largeNBasis->colourCorrelatedME2(ij,mePartonData(),lastLargeNAmplitudes());
+  lastLargeNColourCorrelator(ij,res);
+  return res/cfac;
 }
 
 // compare int vectors modulo certain element
@@ -315,13 +561,11 @@ bool equalsModulo(unsigned int i, const vector<int>& a, const vector<int>& b) {
   return true;
 }
 
-double MatchboxAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
-						  const SpinCorrelationTensor& c) const {
+LorentzVector<Complex> MatchboxAmplitude::plusPolarization(const Lorentz5Momentum& p,
+							   const Lorentz5Momentum& n,
+							   int) const {
 
   using namespace SpinorHelicity;
-
-  Lorentz5Momentum p = meMomenta()[ij.first];
-  Lorentz5Momentum n = meMomenta()[ij.second];
 
   LorentzVector<complex<Energy> > num =
     PlusSpinorCurrent(PlusConjugateSpinor(n),MinusSpinor(p)).eval();
@@ -331,43 +575,69 @@ double MatchboxAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
 
   LorentzVector<Complex> polarization(num.x()/den,num.y()/den,num.z()/den,num.t()/den);
 
+  return polarization;
+
+}
+
+double MatchboxAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
+						  const SpinCorrelationTensor& c) const {
+
+  Lorentz5Momentum p = meMomenta()[ij.first];
+  Lorentz5Momentum n = meMomenta()[ij.second];
+
+  LorentzVector<Complex> polarization = plusPolarization(p,n,ij.first);
+
   Complex pFactor = (polarization*c.momentum())/sqrt(abs(c.scale()));
 
   double avg =
     colourCorrelatedME2(ij)*(-c.diagonal()+ (c.scale() > ZERO ? 1. : -1.)*norm(pFactor));
 
-  Complex corr = 0.;
-
   int iCrossed = -1;
-  for ( unsigned int k = 0; k < lastCrossingMap().size(); ++k )
-    if ( lastCrossingMap()[k] == ij.first ) {
+  for ( unsigned int k = 0; k < crossingMap().size(); ++k )
+    if ( crossingMap()[k] == ij.first ) {
       iCrossed = k;
       break;
     }      
   assert(iCrossed >= 0);
 
-  set<const CVector*> done;
-  for ( AmplitudeConstIterator a = theLastAmplitudes.begin();
-	a != theLastAmplitudes.end(); ++a ) {
-    if ( done.find(&(a->second)) != done.end() )
-      continue;
-    AmplitudeConstIterator b = theLastAmplitudes.begin();
-    while ( !equalsModulo(iCrossed,a->first,b->first) )
-      if ( ++b == theLastAmplitudes.end() )
-	break;
-    if ( b == theLastAmplitudes.end() || done.find(&(b->second)) != done.end() )
-      continue;
-    done.insert(&(a->second)); done.insert(&(b->second));
-    if ( a->first[iCrossed] == 1 )
-      swap(a,b);
-    corr += colourBasis()->interference(mePartonData(),a->second,b->second);
+  Complex csCorr = 0.0;
+
+  if ( calculateColourSpinCorrelator(ij) ) {
+    set<const CVector*> done;
+    for ( AmplitudeConstIterator a = lastAmplitudes().begin();
+	  a != lastAmplitudes().end(); ++a ) {
+      if ( done.find(&(a->second)) != done.end() )
+	continue;
+      AmplitudeConstIterator b = lastAmplitudes().begin();
+      while ( !equalsModulo(iCrossed,a->first,b->first) )
+	if ( ++b == lastAmplitudes().end() )
+	  break;
+      if ( b == lastAmplitudes().end() || done.find(&(b->second)) != done.end() )
+	continue;
+      done.insert(&(a->second)); done.insert(&(b->second));
+      if ( a->first[iCrossed] == 1 )
+	swap(a,b);
+      csCorr += colourBasis()->colourCorrelatedInterference(ij,mePartonData(),a->second,b->second);
+    }
+    lastColourSpinCorrelator(ij,csCorr);
+  } else {
+    csCorr = lastColourSpinCorrelator(ij);
   }
 
+  double corr = 
+    2.*real(csCorr*sqr(pFactor));
+
   double Nc = generator()->standardModel()->Nc();
-  double cfac = mePartonData()[ij.first]->id() == ParticleID::g ? Nc : (sqr(Nc)-1.)/(2.*Nc);
+  double cfac = 1.;
+  if ( mePartonData()[ij.first]->iColour() == PDT::Colour8 ) {
+    cfac = Nc;
+  } else if ( mePartonData()[ij.first]->iColour() == PDT::Colour3 ||
+	      mePartonData()[ij.first]->iColour() == PDT::Colour3bar ) {
+    cfac = (sqr(Nc)-1.)/(2.*Nc);
+  } else assert(false);
 
   return 
-    avg + 2.*lastCrossingSign()*(c.scale() > ZERO ? 1. : -1.)*real(corr*sqr(pFactor))/cfac;
+    avg + crossingSign()*(c.scale() > ZERO ? 1. : -1.)*corr/cfac;
 
 }
 

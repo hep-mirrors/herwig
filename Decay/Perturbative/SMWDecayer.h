@@ -15,6 +15,7 @@
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
+#include "Herwig++/Shower/Couplings/ShowerAlpha.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -268,6 +269,11 @@ protected:
    * @param x2 \f$x_2\f$
    */
   double PS(double x1, double x2);
+
+  /**
+   *  Access to the strong coupling
+   */
+  ShowerAlphaPtr alphaS() const {return alpha_;}
   //@}
 
 private:

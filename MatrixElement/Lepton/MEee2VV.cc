@@ -350,13 +350,13 @@ MEee2VV::diagrams(const DiagramVector & diags) const {
   }
   Selector<DiagramIndex> sel;
   for ( DiagramIndex i = 0; i < diags.size(); ++i ) {
-    if(diags[i]->id() >= -3 ) sel.insert(last[-diags[i]->id()],i);
+    if(diags[i]->id() >= -3 ) sel.insert(last[-diags[i]->id() - 1],i);
   }
   return sel;
 }
 
-double MEee2VV::getCosTheta(double ctmin, double ctmax, const double * r) {
-  double rand = *r;
+double MEee2VV::getCosTheta(double ctmin, double ctmax, const double r) {
+  double rand = r;
   Energy2 m12 = sqr(meMomenta()[2].mass());
   Energy2 m22 = sqr(meMomenta()[3].mass());
   Energy2 D1 = sHat()-m12-m22;

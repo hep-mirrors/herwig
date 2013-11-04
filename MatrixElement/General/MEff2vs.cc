@@ -25,12 +25,8 @@ void MEff2vs::doinit() {
   scalar_.resize(numberOfDiags());
   vector_.resize(numberOfDiags());
   fermion_.resize(numberOfDiags());
-  flowME().resize(numberOfFlows(),
-		  ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1Half,
-					  PDT::Spin1,PDT::Spin0));
-  diagramME().resize(numberOfDiags(),
-		     ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1Half,
-					     PDT::Spin1,PDT::Spin0));
+  initializeMatrixElements(PDT::Spin1Half, PDT::Spin1Half,
+			   PDT::Spin1,PDT::Spin0);
   for(HPCount i = 0; i < numberOfDiags(); ++i) {
     const HPDiagram & current = getProcessInfo()[i];
     if( current.channelType == HPDiagram::sChannel ) {
@@ -58,22 +54,14 @@ void MEff2vs::doinit() {
   }
 }
 
-void MEff2vs::doinitrun() {
-  GeneralHardME::doinitrun();
-  flowME().resize(numberOfFlows(),
-		  ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1Half,
-					  PDT::Spin1,PDT::Spin0));
-  diagramME().resize(numberOfDiags(),
-		     ProductionMatrixElement(PDT::Spin1Half, PDT::Spin1Half,
-					     PDT::Spin1,PDT::Spin0));
-}
-
 void MEff2vs::persistentOutput(PersistentOStream & os) const {
   os << scalar_ << vector_ << fermion_;
 }
 
 void MEff2vs::persistentInput(PersistentIStream & is, int) {
   is >> scalar_ >> vector_ >> fermion_;
+  initializeMatrixElements(PDT::Spin1Half, PDT::Spin1Half,
+			   PDT::Spin1,PDT::Spin0);
 }
 
 ClassDescription<MEff2vs> MEff2vs::initMEff2vs;
@@ -147,12 +135,14 @@ MEff2vs::ffb2vsHeME(SpinorVector & sp, SpinorBarVector & spbar,
 	  else if( current.channelType == HPDiagram::tChannel ) {
 	    if( offshell->iSpin() == PDT::Spin1Half ) {
 	      if( current.ordered.second ) {
+		if(offshell->CC()) offshell = offshell->CC();
 		SpinorBarWaveFunction interFB = fermion_[ix].second->
 		  evaluate(m2, 3, offshell, spbar[ihel2], sca);
 		diag = fermion_[ix].first->
 		  evaluate(m2, sp[ihel1], interFB, vec[ovhel]);
 	      }
 	      else {
+		if(offshell->CC()) offshell = offshell->CC();
 		SpinorBarWaveFunction interFB = fermion_[ix].first->
 		  evaluate(m2, 3, offshell, spbar[ihel2], vec[ovhel]);
 		diag = fermion_[ix].second->

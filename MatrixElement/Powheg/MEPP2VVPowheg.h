@@ -6,10 +6,10 @@
 //
 
 #include "Herwig++/MatrixElement/Hadron/MEPP2VV.h"
-#include "ThePEG/PDF/BeamParticleData.h"
 #include "Herwig++/MatrixElement/Powheg/VVKinematics.h"
 #include "Herwig++/Utilities/Maths.h"
 #include "Herwig++/Models/StandardModel/StandardCKM.h"
+#include "Herwig++/Shower/Couplings/ShowerAlpha.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -24,11 +24,6 @@ using Constants::pi;
  */
 class MEPP2VVPowheg: public MEPP2VV {
 
-  /**
-   * Typedef for the BeamParticleData object
-   */
-  typedef Ptr<BeamParticleData>::transient_const_pointer tcBeamPtr;
-
 public:
 
   /**
@@ -41,7 +36,7 @@ public:
   /**
    *  Has a POWHEG style correction
    */
-  virtual bool hasPOWHEGCorrection() {return true;}
+  virtual POWHEGType hasPOWHEGCorrection() {return ISR;}
 
   /**
    *  Apply the POWHEG style correction

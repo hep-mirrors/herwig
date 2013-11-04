@@ -6,15 +6,21 @@
 //
 
 #include "ThePEG/MatrixElement/MEBase.h"
-#include "Herwig++/Shower/Base/Branching.h"
-#include "Herwig++/Shower/Base/ShowerKinematics.h"
-#include "Herwig++/Shower/Base/ShowerTree.h"
-#include "Herwig++/Shower/Base/HardTree.h"
+#include "Herwig++/Shower/Base/ShowerParticle.fh"
+#include "Herwig++/Shower/Base/ShowerProgenitor.fh"
+#include "Herwig++/Shower/Base/ShowerTree.fh"
+#include "Herwig++/Shower/Base/HardTree.fh"
+#include "Herwig++/Shower/ShowerConfig.h"
+#include "ThePEG/PDF/BeamParticleData.h"
 #include "HwMEBase.fh"
 
 namespace Herwig {
 
+struct Branching;
+
 using namespace ThePEG;
+
+typedef Ptr<BeamParticleData>::transient_const_pointer tcBeamPtr;
 
 /**
  * The HwMEBase class serves a number of purposes
@@ -77,10 +83,16 @@ public:
    *  which implement hard corrections 
    */
   //@{
+
+  /**
+   * Type of POWHEG correction
+   */
+  enum POWHEGType {No, ISR, FSR, Both};
+
   /**
    *  Has a POWHEG style correction
    */
-  virtual bool hasPOWHEGCorrection() {return false;}
+  virtual POWHEGType  hasPOWHEGCorrection() {return No;}
 
   /**
    *  Has an old fashioned ME correction
@@ -113,9 +125,7 @@ public:
   /**
    *  Apply the POWHEG style correction
    */
-  virtual HardTreePtr generateHardest(ShowerTreePtr) {
-    return HardTreePtr();
-  }
+  virtual HardTreePtr generateHardest(ShowerTreePtr);
   //@}
 
 public:
@@ -227,7 +237,7 @@ protected:
    * Used internally by generateKinematics, after calculating the
    * limits on cos(theta).
    */
-  virtual double getCosTheta(double cthmin, double cthmax, const double * r);
+  virtual double getCosTheta(double cthmin, double cthmax, const double r);
 
 private:
 

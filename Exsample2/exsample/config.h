@@ -40,9 +40,6 @@ namespace exsample {
 
   static const unsigned long parameter_hash_bits = 512;
 
-  using boost::next;
-  using boost::prior;
-
 }
 
 #endif // EXSAMPLE_config_h_included

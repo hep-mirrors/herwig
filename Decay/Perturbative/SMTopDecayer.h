@@ -16,6 +16,7 @@
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "Herwig++/Shower/Couplings/ShowerAlpha.fh"
 
 namespace Herwig {
   using namespace ThePEG;
@@ -326,6 +327,11 @@ protected:
    * @param xg The momentum fraction of the gluon.
    */
   double me(double xw, double xg);
+
+  /**
+   *  Access to the strong coupling
+   */
+  ShowerAlphaPtr coupling() { return _alpha;}
 
 private:
 

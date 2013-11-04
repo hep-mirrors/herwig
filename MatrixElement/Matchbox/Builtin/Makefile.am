@@ -1,2 +1,2 @@
 SUBDIRS = \
-Processes
+Amplitudes

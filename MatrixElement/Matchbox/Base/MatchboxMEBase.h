@@ -16,31 +16,20 @@
 #include "Herwig++/MatrixElement/Matchbox/Utility/SpinCorrelationTensor.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/Tree2toNGenerator.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxScaleChoice.h"
-#include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxMECache.h"
+#include "Herwig++/MatrixElement/Matchbox/Utility/ProcessData.h"
 #include "Herwig++/MatrixElement/Matchbox/Phasespace/MatchboxPhasespace.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxAmplitude.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxReweightBase.h"
+#include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.fh"
+#include "Herwig++/MatrixElement/Matchbox/Dipoles/SubtractionDipole.fh"
+#include "Herwig++/MatrixElement/Matchbox/InsertionOperators/MatchboxInsertionOperator.h"
+#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.fh"
+#include "Herwig++/MatrixElement/Matchbox/Utility/LastMatchboxXCombInfo.h"
+#include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxXComb.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
-
-class SubtractionDipole;
-
-/**
- * \ingroup Matchbox
- * \author Simon Platzer
- *
- * \brief Keys for XComb meta information
- */
-struct MatchboxMetaKeys {
-
-  enum Keys {
-    BornME,
-    ColourCorrelatedMEs
-  };
-
-};
 
 /**
  * \ingroup Matchbox
@@ -52,7 +41,8 @@ struct MatchboxMetaKeys {
  * @see \ref MatchboxMEBaseInterfaces "The interfaces"
  * defined for MatchboxMEBase.
  */
-class MatchboxMEBase: public MEBase {
+class MatchboxMEBase: 
+    public MEBase, public LastMatchboxXCombInfo {
 
 public:
 
@@ -71,28 +61,38 @@ public:
 
 public:
 
+  /**
+   * Return the factory which produced this matrix element
+   */
+  Ptr<MatchboxFactory>::tcptr factory() const;
+
+  /**
+   * Set the factory which produced this matrix element
+   */
+  void factory(Ptr<MatchboxFactory>::tcptr f);
+
   /** @name Subprocess and diagram information. */
   //@{
 
   /**
-   * Return the subprocesses.
+   * Return the subprocess.
    */
-  const vector<PDVector>& subProcesses() const { return theSubprocesses; }
+  const Process& subProcess() const { return theSubprocess; }
 
   /**
-   * Access the subprocesses.
+   * Access the subprocess.
    */
-  vector<PDVector>& subProcesses() { return theSubprocesses; }
+  Process& subProcess() { return theSubprocess; }
 
   /**
    * Return the diagram generator.
    */
-  Ptr<Tree2toNGenerator>::tptr diagramGenerator() const { return theDiagramGenerator; }
+  Ptr<Tree2toNGenerator>::tptr diagramGenerator() const;
 
   /**
-   * Set the diagram generator.
+   * Return the process data.
    */
-  void diagramGenerator(Ptr<Tree2toNGenerator>::ptr gen) { theDiagramGenerator = gen; }
+  Ptr<ProcessData>::tptr processData() const;
 
   /**
    * Return true, if this matrix element does not want to
@@ -140,16 +140,63 @@ public:
   using MEBase::orderInAlphaEW;  
 
   /**
+   * Return true, if this amplitude already includes averaging over
+   * incoming parton's quantum numbers.
+   */
+  virtual bool hasInitialAverage() const { 
+    return matchboxAmplitude() ? matchboxAmplitude()->hasInitialAverage() : false;
+  }
+
+  /**
+   * Return true, if this amplitude already includes symmetry factors
+   * for identical outgoing particles.
+   */
+  virtual bool hasFinalStateSymmetry() const { 
+    return matchboxAmplitude() ? matchboxAmplitude()->hasFinalStateSymmetry() : false; 
+  }
+
+
+  /**
    * Return the number of light flavours, this matrix
    * element is calculated for.
    */
-  virtual unsigned int nLight() const { return theNLight; }
+  virtual unsigned int getNLight() const;
 
   /**
-   * Set the number of light flavours, this matrix
-   * element is calculated for.
+   * Return true, if this matrix element is handled by a BLHA one-loop provider
    */
-  void nLight(unsigned int n) { theNLight = n; }
+  virtual bool isOLPTree() const { 
+    return matchboxAmplitude() ? matchboxAmplitude()->isOLPTree() : false;
+  }
+
+  /**
+   * Return true, if this matrix element is handled by a BLHA one-loop provider
+   */
+  virtual bool isOLPLoop() const { 
+    return matchboxAmplitude() ? matchboxAmplitude()->isOLPLoop() : false;
+  }
+
+  /**
+   * Return true, if colour and spin correlated matrix elements should
+   * be ordered from the OLP
+   */
+  virtual bool needsOLPCorrelators() const { 
+    return matchboxAmplitude() ? matchboxAmplitude()->needsOLPCorrelators() : true;
+  }
+
+  /**
+   * Return the process index, if this is an OLP handled matrix element
+   */
+  const vector<int>& olpProcess() const { return theOLPProcess; }
+
+  /**
+   * Set the process index, if this is an OLP handled matrix element
+   */
+  void olpProcess(int pType, int id) { 
+    if ( theOLPProcess.empty() )
+      theOLPProcess.resize(4,0);
+    theOLPProcess[pType] = id;
+  }
 
   //@}
 
@@ -171,6 +218,13 @@ public:
    * generateKinematics() and dSigHatDR().
    */
   virtual void setXComb(tStdXCombPtr xc);
+
+  /**
+   * Return true, if the XComb steering this matrix element
+   * should keep track of the random numbers used to generate
+   * the last phase space point
+   */
+  virtual bool keepRandomNumbers() const { return true; }
 
   /**
    * Generate incoming parton momenta. This default
@@ -201,6 +255,12 @@ public:
   virtual int nDim() const;
 
   /**
+   * The number of internal degrees of freedom used in the matrix
+   * element for generating a Born phase space point
+   */
+  virtual int nDimBorn() const;
+
+  /**
    * Return true, if this matrix element will generate momenta for the
    * incoming partons itself.  The matrix element is required to store
    * the incoming parton momenta in meMomenta()[0,1]. No mapping in
@@ -208,20 +268,20 @@ public:
    * derived class returns true here. The phase space jacobian is to
    * include a factor 1/(x1 x2).
    */
-  virtual bool haveX1X2() const { return (phasespace() ? phasespace()->haveX1X2() : false); }
+  virtual bool haveX1X2() const { 
+    return 
+      (phasespace() ? phasespace()->haveX1X2() : false) ||
+      diagrams().front()->partons().size() == 3;
+  }
 
   /**
    * Return true, if this matrix element expects
    * the incoming partons in their center-of-mass system
    */
-  virtual bool wantCMS() const { return phasespace() ? phasespace()->wantCMS() : true; }
-
-  /**
-   * Return true, if the XComb steering this matrix element
-   * should keep track of the random numbers used to generate
-   * the last phase space point
-   */
-  virtual bool keepRandomNumbers() const { return true; }
+  virtual bool wantCMS() const { 
+    return 
+      (phasespace() ? phasespace()->wantCMS() : true) &&
+      diagrams().front()->partons().size() != 3; }
 
   /**
    * Return the meMomenta as generated at the last
@@ -268,27 +328,22 @@ public:
   /**
    * Get the factorization scale factor
    */
-  virtual double factorizationScaleFactor() const { return theFactorizationScaleFactor; }
+  virtual double factorizationScaleFactor() const;
 
   /**
-   * Set the factorization scale factor
-   */
-  void factorizationScaleFactor(double f) { theFactorizationScaleFactor = f; }
-
-  /**
-   * Return the renormalization scale for the last generated phasespace point.
+   * Return the (QCD) renormalization scale for the last generated phasespace point.
    */
   virtual Energy2 renormalizationScale() const;
 
   /**
    * Get the renormalization scale factor
    */
-  virtual double renormalizationScaleFactor() const { return theRenormalizationScaleFactor; }
+  virtual double renormalizationScaleFactor() const;
 
   /**
-   * Set the renormalization scale factor
+   * Return the QED renormalization scale for the last generated phasespace point.
    */
-  void renormalizationScaleFactor(double f) { theRenormalizationScaleFactor = f; }
+  virtual Energy2 renormalizationScaleQED() const;
 
   /**
    * Set veto scales on the particles at the given
@@ -300,12 +355,12 @@ public:
   /**
    * Return true, if fixed couplings are used.
    */
-  bool fixedCouplings() const { return theFixedCouplings; }
+  bool fixedCouplings() const;
 
   /**
-   * Switch on fixed couplings.
+   * Return true, if fixed couplings are used.
    */
-  void setFixedCouplings(bool on = true) { theFixedCouplings = on; }
+  bool fixedQEDCouplings() const;
 
   /**
    * Return the value of \f$\alpha_S\f$ associated with the phase
@@ -345,12 +400,14 @@ public:
   /**
    * Supply the PDF weight for the first incoming parton.
    */
-  double pdf1(Energy2 factorizationScale = ZERO) const;
+  double pdf1(Energy2 factorizationScale = ZERO,
+	      double xEx = 1.) const;
 
   /**
    * Supply the PDF weight for the second incoming parton.
    */
-  double pdf2(Energy2 factorizationScale = ZERO) const;
+  double pdf2(Energy2 factorizationScale = ZERO,
+	      double xEx = 1.) const;
 
   //@}
 
@@ -427,6 +484,156 @@ public:
    */
   virtual bool isCS() const;
 
+  /**
+   * Return true, if one loop corrections are given in the conventions
+   * of BDK.
+   */
+  virtual bool isBDK() const;
+
+  /**
+   * Return true, if one loop corrections are given in the conventions
+   * of everything expanded.
+   */
+  virtual bool isExpanded() const;
+
+  /**
+   * Return the value of the dimensional regularization
+   * parameter. Note that renormalization scale dependence is fully
+   * restored in DipoleIOperator.
+   */
+  virtual Energy2 mu2() const;
+
+  /**
+   * If defined, return the coefficient of the pole in epsilon^2
+   */
+  virtual double oneLoopDoublePole() const;
+
+  /**
+   * If defined, return the coefficient of the pole in epsilon
+   */
+  virtual double oneLoopSinglePole() const;
+
+  /**
+   * Return true, if cancellationn of epsilon poles should be checked.
+   */
+  bool checkPoles() const;
+
+  /**
+   * Simple histogram for accuracy checks
+   */
+  struct AccuracyHistogram {
+
+    /**
+     * The lower bound
+     */
+    double lower;
+
+    /**
+     * The upper bound
+     */
+    double upper;
+
+    /**
+     * The bins, indexed by upper bound.
+     */
+    map<double,double> bins;
+
+    /**
+     * The number of points of same sign
+     */
+    unsigned long sameSign;
+
+    /**
+     * The number of points of opposite sign
+     */
+    unsigned long oppositeSign;
+
+    /**
+     * The number of points being nan or inf
+     */
+    unsigned long nans;
+
+    /**
+     * The overflow
+     */
+    unsigned long overflow;
+
+    /**
+     * The underflow
+     */
+    unsigned long underflow;
+
+    /**
+     * Constructor
+     */
+    AccuracyHistogram(double low = -40.,
+		      double up = 0.,
+		      unsigned int nbins = 80);
+
+    /**
+     * Book two values to be checked for numerical compatibility
+     */
+    void book(double a, double b);
+
+    /**
+     * Write to file.
+     */
+    void dump(const std::string& prefix, 
+	      const cPDVector& proc) const;
+
+    /**
+     * Write to persistent ostream
+     */
+    void persistentOutput(PersistentOStream&) const;
+
+    /**
+     * Read from persistent istream
+     */
+    void persistentInput(PersistentIStream&);
+
+  };
+
+  /**
+   * Perform the check of epsilon pole cancellation.
+   */
+  void logPoles() const;
+
+  /**
+   * Return the virtual corrections
+   */
+  const vector<Ptr<MatchboxInsertionOperator>::ptr>& virtuals() const {
+    return theVirtuals;
+  }
+
+  /**
+   * Return the virtual corrections
+   */
+  vector<Ptr<MatchboxInsertionOperator>::ptr>& virtuals() {
+    return theVirtuals;
+  }
+
+  /**
+   * Instruct this matrix element to include one-loop corrections
+   */
+  void doOneLoop() { theOneLoop = true; }
+
+  /**
+   * Return true, if this matrix element includes one-loop corrections
+   */
+  bool oneLoop() const { return theOneLoop; }
+
+  /**
+   * Instruct this matrix element to include one-loop corrections but
+   * no Born contributions
+   */
+  void doOneLoopNoBorn() { theOneLoop = true; theOneLoopNoBorn = true; }
+
+  /**
+   * Return true, if this matrix element includes one-loop corrections
+   * but no Born contributions
+   */
+  bool oneLoopNoBorn() const { return theOneLoopNoBorn || onlyOneLoop(); }
+
   //@}
 
   /** @name Dipole subtraction */
@@ -469,6 +676,15 @@ public:
   virtual double colourCorrelatedME2(pair<int,int>) const;
 
   /**
+   * Return the colour correlated matrix element squared in the
+   * large-N approximation with respect to the given two partons as
+   * appearing in mePartonData(), suitably scaled by sHat() to give a
+   * dimension-less number.
+   */
+  virtual double largeNColourCorrelatedME2(pair<int,int> ij,
+					   Ptr<ColourBasis>::tptr largeNBasis) const;
+
+  /**
    * Return the colour and spin correlated matrix element squared for
    * the gluon indexed by the first argument using the given
    * correlation tensor.
@@ -476,37 +692,10 @@ public:
   virtual double spinColourCorrelatedME2(pair<int,int> emitterSpectator,
 					 const SpinCorrelationTensor& c) const;
 
-  /**
-   * Return true, if colour correlated matrix elements should be calculated
-   * for later use
-   */
-  bool getColourCorrelatedMEs() const { return theGetColourCorrelatedMEs; }
-
-  /**
-   * Switch on calculation of colour correlated matrix elements for
-   * later use
-   */
-  void doColourCorrelatedMEs() { theGetColourCorrelatedMEs = true; }
-
-  /**
-   * Calculate colour correlated matrix elements for later use
-   */
-  void storeColourCorrelatedMEs(double xme2 = -1.) const;
-
   //@}
 
   /** @name Caching and diagnostic information */
   //@{
-
-  /**
-   * Set the ME cache object
-   */
-  void cache(Ptr<MatchboxMECache>::ptr c) { theCache = c; }
-
-  /**
-   * Get the ME cache object
-   */
-  Ptr<MatchboxMECache>::tptr cache() const { return theCache; }
 
   /**
    * Inform this matrix element that a new phase space
@@ -516,40 +705,19 @@ public:
   virtual void flushCaches();
 
   /**
-   * Return true, if the matrix element needs to be 
-   * recalculated for the given phase space point.
-   * If not, return the cached value in the given reference.
+   * Return true, if verbose
    */
-  bool calculateME2(double& xme2,
-		    const pair<int,int>& corr = make_pair(0,0)) const {
-    if ( !cache() ) {
-      xme2 = 0.;
-      return true;
-    }
-    cache()->setXComb(lastXCombPtr());
-    return cache()->calculateME2(xme2,corr);
-  }
-
-  /**
-   * Cache a calculated matrix element
-   * for the last phase space point.
-   */
-  void cacheME2(double xme2,
-		const pair<int,int>& corr = make_pair(0,0)) const {
-    if ( !cache() )
-      return;
-    cache()->cacheME2(xme2,corr);
-  }
+  bool verbose() const;
 
   /**
    * Return true, if verbose
    */
-  bool verbose() const { return theVerbose; }
+  bool initVerbose() const;
 
   /**
-   * Switch on diagnostic information.
+   * Dump the setup to an ostream
    */
-  void setVerbose(bool on = true) { theVerbose = on; }
+  void print(ostream&) const;
 
   /**
    * Print debug information on the last event
@@ -585,11 +753,6 @@ public:
    * for dsigdr evaluation
    */
   void logDSigHatDR() const;
-
-  /**
-   * Dump xcomb hierarchies.
-   */
-  void dumpInfo(const string& prefix = "") const;
 
   //@}
 
@@ -635,6 +798,33 @@ public:
    * Clone the dependencies, using a given prefix.
    */
   void cloneDependencies(const std::string& prefix = "");
+
+  /**
+   * Prepare an xcomb
+   */
+  void prepareXComb(MatchboxXCombData&) const;
+
+  /**
+   * For the given event generation setup return a xcomb object
+   * appropriate to this matrix element.
+   */
+  virtual StdXCombPtr makeXComb(Energy newMaxEnergy, const cPDPair & inc,
+				tEHPtr newEventHandler,tSubHdlPtr newSubProcessHandler,
+				tPExtrPtr newExtractor,	tCascHdlPtr newCKKW,
+				const PBPair & newPartonBins, tCutsPtr newCuts,
+				const DiagramVector & newDiagrams, bool mir,
+				const PartonPairVec& allPBins,
+				tStdXCombPtr newHead = tStdXCombPtr(),
+				tMEPtr newME = tMEPtr());
+
+  /**
+   * For the given event generation setup return a dependent xcomb object
+   * appropriate to this matrix element.
+   */
+  virtual StdXCombPtr makeXComb(tStdXCombPtr newHead,
+				const PBPair & newPartonBins,
+				const DiagramVector & newDiagrams,
+				tMEPtr newME = tMEPtr());
 
   //@}
 
@@ -691,22 +881,20 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit();
-  //@}
-
-protected:
 
   /**
-   * The final state symmetry factors.
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
    */
-  mutable map<tStdXCombPtr,double> symmetryFactors;
+  virtual void dofinish();
+  //@}
 
 private:
 
   /**
-   * A vector of reweight objects the sum of which
-   * should be applied to reweight this matrix element
+   * The factory which produced this matrix element
    */
-  vector<Ptr<MatchboxReweightBase>::ptr> theReweights;
+  Ptr<MatchboxFactory>::tcptr theFactory;
 
   /**
    * The phase space generator to be used.
@@ -719,68 +907,53 @@ private:
   Ptr<MatchboxAmplitude>::ptr theAmplitude;
 
   /**
-   * The diagram generator to be used.
-   */
-  Ptr<Tree2toNGenerator>::ptr theDiagramGenerator;
-
-  /**
    * The scale choice object
    */
   Ptr<MatchboxScaleChoice>::ptr theScaleChoice;
 
   /**
-   * The ME cache object
+   * The virtual corrections.
    */
-  Ptr<MatchboxMECache>::ptr theCache;
+  vector<Ptr<MatchboxInsertionOperator>::ptr> theVirtuals;
 
   /**
-   * The subprocesses to be considered, if a diagram generator is
-   * present.
+   * A vector of reweight objects the sum of which
+   * should be applied to reweight this matrix element
    */
-  vector<PDVector> theSubprocesses;
+  vector<Ptr<MatchboxReweightBase>::ptr> theReweights;
+
+private:
 
   /**
-   * The factorization scale factor.
+   * The subprocess to be considered.
    */
-  double theFactorizationScaleFactor;
+  Process theSubprocess;
 
   /**
-   * The renormalization scale factor.
+   * True, if this matrix element includes one-loop corrections
    */
-  double theRenormalizationScaleFactor;
+  bool theOneLoop;
 
   /**
-   * Wether or not diagnostic information
-   * should be written to the generator log
+   * True, if this matrix element includes one-loop corrections
+   * but no Born contributions
    */
-  bool theVerbose;
+  bool theOneLoopNoBorn;
 
   /**
-   * Use non-running couplings.
+   * The process index, if this is an OLP handled matrix element
    */
-  bool theFixedCouplings;
+  vector<int> theOLPProcess;
 
   /**
-   * The number of light flavours, this matrix
-   * element is calculated for.
+   * Histograms of epsilon^2 pole cancellation
    */
-  unsigned int theNLight;
+  mutable map<cPDVector,AccuracyHistogram> epsilonSquarePoleHistograms;
 
   /**
-   * True, if colour correlated matrix elements should be calculated
-   * for later use
+   * Histograms of epsilon pole cancellation
    */
-  bool theGetColourCorrelatedMEs;
-
-  /**
-   * Map xcomb's to storage of Born matrix elements squared.
-   */
-  mutable map<tStdXCombPtr,double> bornMEs;
-
-  /**
-   * Map xcomb's to storage of colour correlated matrix elements.
-   */
-  mutable map<tStdXCombPtr,map<pair<int,int>,double> > colourCorrelatedMEs;
+  mutable map<cPDVector,AccuracyHistogram> epsilonPoleHistograms;
 
 private:
 
@@ -791,6 +964,18 @@ private:
   MatchboxMEBase & operator=(const MatchboxMEBase &);
 
 };
+
+inline PersistentOStream& operator<<(PersistentOStream& os,
+				     const MatchboxMEBase::AccuracyHistogram& h) {
+  h.persistentOutput(os);
+  return os;
+}
+
+inline PersistentIStream& operator>>(PersistentIStream& is,
+				     MatchboxMEBase::AccuracyHistogram& h) {
+  h.persistentInput(is);
+  return is;
+}
 
 }
 

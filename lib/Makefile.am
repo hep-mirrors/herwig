@@ -1,7 +1,7 @@
 pkglib_LTLIBRARIES = Herwig.la
 Herwig_la_SOURCES =
 Herwig_la_LIBTOOLFLAGS = --tag=CXX
-Herwig_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 11:0:0
+Herwig_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 14:0:0
 Herwig_la_LDFLAGS += $(THEPEGLDFLAGS) $(FCLIBS)
 Herwig_la_LIBADD = \
 $(top_builddir)/Hadronization/libHwHadronization.la \
@@ -19,14 +19,30 @@ $(top_builddir)/Looptools/libHwLooptools.la \
 $(top_builddir)/Shower/libHwShower.la \
 $(THEPEGLIB) -ldl
 
-all-local: done-all-links
+dist_noinst_SCRIPTS = fix-osx-path
+
+
+POSTPROCESSING = done-all-links
+
+if NEED_APPLE_FIXES
+POSTPROCESSING += apple-fixes
+endif
+
+
+
+all-local: $(POSTPROCESSING)
 
 done-all-links: Herwig.la
 	if test ! -L Herwig++ ; then $(LN_S) -f . Herwig++ ; fi
 	find $(top_builddir) \( -name '*.so.*' -or -name '*.so' \) \
--not -name 'lib*' -not -path '$(top_builddir)/lib/*' -exec $(LN_S) -f \{\} \;
+  -not -name 'lib*' -not -path '$(top_builddir)/lib/*' \
+  -not -path '$(top_builddir)/.hg/*' -exec $(LN_S) -f \{\} \;
 	$(LN_S) -f .libs/Herwig*so* .
-	echo "stamp" > done-all-links
+	echo "stamp" > $@
+
+apple-fixes: fix-osx-path done-all-links
+	./$<
+	echo "stamp" > $@
 
 clean-local:
-	rm -f *.so *.so.* done-all-links
+	rm -f *.so *.so.* done-all-links apple-fixes

@@ -6,6 +6,7 @@
 //
 
 #include "Herwig++/MatrixElement/HwMEBase.h"
+#include "Herwig++/Shower/Couplings/ShowerAlpha.h"
 
 namespace Herwig {
 
@@ -72,7 +73,7 @@ public:
   /**
    *  Has a POWHEG style correction
    */
-  virtual bool hasPOWHEGCorrection() {return true;}
+  virtual POWHEGType hasPOWHEGCorrection() {return Both;}
 
   /**
    *  Apply the POWHEG style correction

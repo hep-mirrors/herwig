@@ -15,6 +15,8 @@
 #include "ThePEG/MatrixElement/MEGroup.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.h"
 #include "Herwig++/MatrixElement/Matchbox/Dipoles/SubtractionDipole.h"
+#include "Herwig++/MatrixElement/Matchbox/Utility/LastMatchboxXCombInfo.h"
+#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.fh"
 
 namespace Herwig {
 
@@ -29,7 +31,9 @@ using namespace ThePEG;
  * @see \ref SubtractedMEInterfaces "The interfaces"
  * defined for SubtractedME.
  */
-class SubtractedME: public MEGroup {
+class SubtractedME: 
+    public MEGroup, 
+    public LastMatchboxXCombInfo {
 
 public:
 
@@ -48,8 +52,32 @@ public:
 
 public:
 
+  /**
+   * Return the factory which produced this matrix element
+   */
+  Ptr<MatchboxFactory>::tcptr factory() const;
+
+  /**
+   * Set the factory which produced this matrix element
+   */
+  void factory(Ptr<MatchboxFactory>::tcptr f);
+
   /** @name Phasespace and subprocess information */
   //@{
+
+  /**
+   * For the given event generation setup return an xcomb object
+   * appropriate to this matrix element.
+   */
+  virtual StdXCombPtr makeXComb(Energy newMaxEnergy, const cPDPair & inc,
+				tEHPtr newEventHandler,tSubHdlPtr newSubProcessHandler,
+				tPExtrPtr newExtractor,	tCascHdlPtr newCKKW,
+				const PBPair & newPartonBins, tCutsPtr newCuts,
+				const DiagramVector & newDiagrams, bool mir,
+				const PartonPairVec& allPBins,
+				tStdXCombPtr newHead = tStdXCombPtr(),
+				tMEPtr newME = tMEPtr());
+
   /**
    * Set the XComb object to be used in the next call to
    * generateKinematics() and dSigHatDR().
@@ -62,6 +90,13 @@ public:
    * matrix elements.
    */
   virtual bool uniformAdditional() const { return true; }
+
+  /**
+   * Return true, if the XComb steering this matrix element
+   * should keep track of the random numbers used to generate
+   * the last phase space point
+   */
+  virtual bool keepRandomNumbers() const { return true; }
 
   /**
    * Given a process from the head matrix element,
@@ -77,12 +112,106 @@ public:
    * is constructed from the data provided by the
    * head matrix element.
    */
-  virtual bool subProcessGroups() const { return theSubProcessGroups; }
+  virtual bool subProcessGroups() const;
 
   /**
-   * Switch on or off producing subprocess groups.
+   * Switch on subprocess groups
    */
   void setSubProcessGroups(bool on = true) { theSubProcessGroups = on; }
+
+  /**
+   * Return true, if one of the dependent subprocesses should be
+   * constructed in place of the one driven by the head matrix element
+   * or a full subprocess group.
+   */
+  virtual bool selectDependentSubProcess() const { return inclusive(); }
+
+  /**
+   * Return true, if the integral over the unresolved emission should be
+   * calculated.
+   */
+  bool inclusive() const;
+
+  /**
+   * Switch on calculating the integral over the unresolved emission should be
+   * calculated.
+   */
+  void setInclusive(bool on = true) { theInclusive = on; }
+
+  /**
+   * Fill the projectors object of xcombs to choose subprocesses
+   * different than the one currently integrated.
+   */
+  virtual void fillProjectors();
+
+  /**
+   * Return true, if projectors will be used
+   */
+  virtual bool willProject() const { return inclusive() || virtualShowerSubtraction(); }
+
+  /**
+   * Return true, if this MEGroup will reweight the contributing cross
+   * sections.
+   */
+  virtual bool groupReweighted() const { 
+    return inclusive() || showerApproximation();
+  }
+
+  /**
+   * Reweight the head cross section
+   */
+  virtual double reweightHead(const vector<tStdXCombPtr>&);
+
+  /**
+   * Reweight the dependent cross section
+   */
+  virtual double reweightDependent(tStdXCombPtr, const vector<tStdXCombPtr>&);
+
+  /**
+   * Switch on or off that scales should be calculated from real emission kinematics
+   */
+  void doRealEmissionScales();
+
+  //@}
+
+  /** @name Methods relevant to matching */
+  //@{
+
+  /**
+   * Inform this matrix element that a new phase space
+   * point is about to be generated, so all caches should
+   * be flushed.
+   */
+  virtual void flushCaches() { 
+    MEGroup::flushCaches();
+    if ( showerApproximation() )
+      showerApproximation()->resetBelowCutoff();
+  }
+
+  /**
+   * Return the shower approximation.
+   */
+  Ptr<ShowerApproximation>::tptr showerApproximation() const;
+
+  /**
+   * Indicate that the shower real emission contribution should be subtracted.
+   */
+  void doRealShowerSubtraction();
+
+  /**
+   * Return true, if the shower real emission contribution should be subtracted.
+   */
+  bool realShowerSubtraction() const { return theRealShowerSubtraction; }
+
+  /**
+   * Indicate that the shower virtual contribution should be subtracted.
+   */
+  void doVirtualShowerSubtraction();
+
+  /**
+   * Return true, if the shower virtual contribution should be subtracted.
+   */
+  bool virtualShowerSubtraction() const { return theVirtualShowerSubtraction; }
 
   //@}
 
@@ -97,12 +226,13 @@ public:
   /**
    * Return the underlying born matrix elements.
    */
-  const vector<Ptr<MatchboxMEBase>::ptr>& borns() const { return theBorns; }
+  const vector<Ptr<MatchboxMEBase>::ptr>& borns() const;
 
   /**
-   * Access the underlying born matrix elements.
+   * Access the underlying born matrix elements,
+   * overriding the ones contained in the factory object.
    */
-  vector<Ptr<MatchboxMEBase>::ptr>& borns() { return theBorns; }
+  void setBorns(const vector<Ptr<MatchboxMEBase>::ptr>& newBorns) { theBorns = newBorns; }
 
   /**
    * Build up dipoles needed.
@@ -110,19 +240,27 @@ public:
   void getDipoles();
 
   /**
+   * Clone all dipoles.
+   */
+  void cloneDipoles(const string& prefix = "");
+
+  /**
+   * Clone the real emission matrix element.
+   */
+  void cloneRealME(const string& prefix = "");
+
+  /**
+   * Clone all dependencies.
+   */
+  void cloneDependencies(const string& prefix = "") {
+    cloneDipoles(prefix);
+    cloneRealME(prefix);
+  }
+
+  /**
    * Return all dipoles matching the given Born process
    */
   vector<Ptr<SubtractionDipole>::ptr> splitDipoles(const cPDVector&);
-
-  /**
-   * Return the subtraction dipoles.
-   */
-  const vector<Ptr<SubtractionDipole>::ptr>& allDipoles() const { return theDipoles; }
-
-  /**
-   * Access the subtraction dipoles.
-   */
-  vector<Ptr<SubtractionDipole>::ptr>& allDipoles() { return theDipoles; }
 
   //@}
 
@@ -134,22 +272,6 @@ public:
    * matrix element.
    */
   virtual void setVetoScales(tSubProPtr) const;
-
-  /**
-   * Return true, if veto scales should be set
-   * for the real emission
-   */
-  bool vetoScales() const { return theVetoScales; }
-
-  /**
-   * Switch on setting veto scales
-   */
-  void doVetoScales() { theVetoScales = true; }
-
-  /**
-   * Switch off setting veto scales
-   */
-  void noVetoScales() { theVetoScales = true; }
   //@}
 
   /** @name Diagnostic information */
@@ -179,24 +301,14 @@ public:
   void lastEventSubtraction();
 
   /**
-   * Set a file to print subtraction check to
+   * Return true, if verbose
    */
-  void subtractionData(string n) { theSubtractionData = n; }
+  bool verbose() const;
 
   /**
    * Return true, if verbose
    */
-  bool verbose() const { return theVerbose; }
-
-  /**
-   * Switch on or off verbosity for this subtracted ME
-   */
-  void setVerbose(bool on = true) { theVerbose = on; }
-
-  /**
-   * Dump xcomb hierarchies.
-   */
-  void dumpInfo(const string& prefix = "") const;
+  bool initVerbose() const;
 
   //@}
 
@@ -210,6 +322,58 @@ public:
    * may override it to return true.
    */
   virtual bool preInitialize() const { return true; }
+
+  /**
+   * Simple envelope histogram to keep track of subtraction
+   */
+  struct SubtractionHistogram {
+
+    /**
+     * The lower bound
+     */
+    double lower;
+
+    /**
+     * The bins, indexed by upper bound.
+     */
+    map<double,pair<double,double> > bins;
+
+    /**
+     * Constructor
+     */
+    SubtractionHistogram(double low = 0.001, 
+			 double up = 10., 
+			 unsigned int nbins = 100);
+
+    /**
+     * Book an event.
+     */
+    void book(double inv, double diff) {
+      map<double,pair<double,double> >::iterator b =
+	bins.upper_bound(inv);
+      if ( b == bins.end() ) return;
+      b->second.first = min(b->second.first,diff);
+      b->second.second = max(b->second.second,diff);
+    }
+
+    /**
+     * Write to file given name and invariant.
+     */
+    void dump(const std::string& prefix, 
+	      const cPDVector& proc,
+	      int i, int j) const;
+
+    /**
+     * Write to persistent ostream
+     */
+    void persistentOutput(PersistentOStream&) const;
+
+    /**
+     * Read from persistent istream
+     */
+    void persistentInput(PersistentIStream&);
+
+  };
 
   //@}
 
@@ -284,85 +448,26 @@ protected:
    */
   virtual void dofinish();
 
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given
-   * pointer.
-   */
-  virtual void rebind(const TranslationMap & trans);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in this
-   * object.
-   * @return a vector of pointers.
-   */
-  virtual IVector getReferences();
   //@}
 
 private:
 
   /**
-   * The dipoles to be considered; the dipoles generated
-   * can be accessed throught the dependent() matrxi element
-   * vector, provided the head() is a MatchboxMEBase object.
+   * The factory which produced this matrix element
    */
-  vector<Ptr<SubtractionDipole>::ptr> theDipoles;
+  Ptr<MatchboxFactory>::tcptr theFactory;
 
   /**
-   * The underlying Born matrix elements to be considered
+   * The underlying born matrix elements, overriding the ones
+   * contained in the factory object.
    */
   vector<Ptr<MatchboxMEBase>::ptr> theBorns;
 
   /**
-   * File name to dump subtraction check to
+   * Pointer to the head real emission ME casted to a MatchboxMEBase
+   * object.
    */
-  string theSubtractionData;
-
-  /**
-   * Simple envelope histogram to keep track of subtraction
-   */
-  struct SubtractionHistogram {
-
-    /**
-     * The lower bound
-     */
-    double lower;
-
-    /**
-     * The bins, indexed by upper bound.
-     */
-    map<double,pair<double,double> > bins;
-
-    /**
-     * Constructor
-     */
-    SubtractionHistogram(double low = 0.01, 
-			 double up = 100., 
-			 unsigned int nbins = 100);
-
-    /**
-     * Book an event.
-     */
-    void book(double inv, double ratio) {
-      map<double,pair<double,double> >::iterator b =
-	bins.upper_bound(inv);
-      if ( b == bins.end() ) return;
-      b->second.first = min(b->second.first,abs(ratio));
-      b->second.second = max(b->second.second,abs(ratio));
-    }
-
-    /**
-     * Write to file given name and invariant.
-     */
-    void dump(const std::string& prefix, 
-	      const cPDVector& proc,
-	      int i, int j) const;
-
-  };
+  Ptr<MatchboxMEBase>::ptr theReal;
 
   /**
    * Define the key for the collinear subtraction data.
@@ -385,24 +490,25 @@ private:
   map<SoftSubtractionIndex,SubtractionHistogram> softHistograms;
 
   /**
-   * Switch to print full information on the
-   * last phase space point.
+   * True, if the shower real emission contribution should be subtracted.
    */
-  bool theVerbose;
+  bool theRealShowerSubtraction;
 
   /**
-   * True, if SubProcessGroups should be
-   * setup from this MEGroup. If not, a single SubProcess
-   * is constructed from the data provided by the
-   * head matrix element.
+   * True, if the shower virtual contribution should be subtracted.
+   */
+  bool theVirtualShowerSubtraction;
+
+  /**
+   * Switch on subprocess groups
    */
   bool theSubProcessGroups;
 
   /**
-   * True, if veto scales should be set
-   * for the real emission
+   * True, if the integral over the unresolved emission should be
+   * calculated.
    */
-  bool theVetoScales;
+  bool theInclusive;
 
 private:
 
@@ -413,6 +519,18 @@ private:
   SubtractedME & operator=(const SubtractedME &);
 
 };
+
+inline PersistentOStream& operator<<(PersistentOStream& os,
+				     const SubtractedME::SubtractionHistogram& h) {
+  h.persistentOutput(os);
+  return os;
+}
+
+inline PersistentIStream& operator>>(PersistentIStream& is,
+				     SubtractedME::SubtractionHistogram& h) {
+  h.persistentInput(is);
+  return is;
+}
 
 }
 

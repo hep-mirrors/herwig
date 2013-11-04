@@ -20,7 +20,7 @@ using namespace ThePEG;
 
 /**
  * \ingroup Matchbox
- * \author SDimon Platzer
+ * \author Simon Platzer
  *
  * \brief MatchboxRambo implements RAMBO phase space generation.
  *
@@ -47,13 +47,13 @@ public:
   /**
    * Prepare a phase space generator for the given xcomb object.
    */
-  virtual void prepare(tStdXCombPtr, bool verbose = false);
+  virtual void setXComb(tStdXCombPtr);
 
   /**
    * Generate a phase space point and return its weight.
    */
-  virtual double generateKinematics(const double*,
-				    vector<Lorentz5Momentum>& momenta);
+  virtual double generateTwoToNKinematics(const double*,
+					  vector<Lorentz5Momentum>& momenta);
 
   /**
    * Return the number of random numbers required to produce a given
@@ -157,6 +157,27 @@ private:
    * Whether or not we need to reshuffle.
    */
   bool needToReshuffle;
+
+  /**
+   * True, if a reference sample of phasespace points should be
+   * generated.
+   */
+  bool theMakeReferenceSample;
+
+  /**
+   * Map processes to streams for reference samples
+   */
+  map<cPDVector,ofstream*> referenceSamples;
+
+  /**
+   * The stream to fill for the reference sample
+   */
+  ofstream* referenceSample;
+
+  /**
+   * Write the generated point to the reference sample
+   */
+  void dumpReference(const vector<Lorentz5Momentum>&, double) const;
 
 };
 

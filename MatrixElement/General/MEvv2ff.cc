@@ -27,12 +27,8 @@ void MEvv2ff::doinit() {
   fermion_.resize(numberOfDiags());
   vector_ .resize(numberOfDiags());
   tensor_ .resize(numberOfDiags());
-  flowME().resize(numberOfFlows(),
-		  ProductionMatrixElement(PDT::Spin1    , PDT::Spin1, 
-					  PDT::Spin1Half, PDT::Spin1Half));
-  diagramME().resize(numberOfDiags(),
-		     ProductionMatrixElement(PDT::Spin1    , PDT::Spin1, 
-					     PDT::Spin1Half, PDT::Spin1Half));
+  initializeMatrixElements(PDT::Spin1    , PDT::Spin1, 
+			   PDT::Spin1Half, PDT::Spin1Half);
 
   for( size_t i = 0; i < numberOfDiags(); ++i ) {
     HPDiagram dg = getProcessInfo()[i];
@@ -67,16 +63,6 @@ void MEvv2ff::doinit() {
       }
     }
   }
-}
-
-void MEvv2ff::doinitrun() {
-  GeneralHardME::doinitrun();
-  flowME().resize(numberOfFlows(),
-		  ProductionMatrixElement(PDT::Spin1, PDT::Spin1, 
-					  PDT::Spin1Half, PDT::Spin1Half));
-  diagramME().resize(numberOfDiags(),
-		     ProductionMatrixElement(PDT::Spin1, PDT::Spin1, 
-					     PDT::Spin1Half, PDT::Spin1Half));
 }
 
 double MEvv2ff::me2() const {
@@ -127,10 +113,10 @@ MEvv2ff::vv2ffME(const VBVector & v1, const VBVector & v2,
 	    if(current.channelType == HPDiagram::tChannel && 
 	       offshell->iSpin() == PDT::Spin1Half) {
 	      if(current.ordered.second) {
-		SpinorWaveFunction interF = fermion_[ix].second->
-		  evaluate(q2, 3, offshell, sp[of2], v2[iv2], mass);
-		diag = fermion_[ix].first->
-		  evaluate(q2, interF, sbar[of1], v1[iv1]);
+                SpinorBarWaveFunction interF = fermion_[ix].first->
+                  evaluate(q2, 3, offshell, sbar[of1], v1[iv1], mass);
+                diag = fermion_[ix].second->
+                  evaluate(q2, sp[of2], interF, v2[iv2]);
 	      }
 	      else {
 		SpinorWaveFunction interF = fermion_[ix].second->
@@ -196,6 +182,8 @@ void MEvv2ff::persistentOutput(PersistentOStream & os) const {
 
 void MEvv2ff::persistentInput(PersistentIStream & is, int) {
   is >> scalar_ >> fermion_ >> vector_ >> tensor_;
+  initializeMatrixElements(PDT::Spin1    , PDT::Spin1, 
+			   PDT::Spin1Half, PDT::Spin1Half);
 }
 
 ClassDescription<MEvv2ff> MEvv2ff::initMEvv2ff;

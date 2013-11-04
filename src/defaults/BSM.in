@@ -9,12 +9,15 @@ create Herwig::ModelGenerator NewModel
 create Herwig::ResonantProcessConstructor ResConstructor
 create Herwig::TwoToTwoProcessConstructor HPConstructor
 create Herwig::HiggsVectorBosonProcessConstructor HVConstructor
+set HVConstructor:AlphaQCD /Herwig/Shower/AlphaQCD
 create Herwig::HiggsVBFProcessConstructor HiggsVBFConstructor
 create Herwig::QQHiggsProcessConstructor QQHiggsConstructor
 create Herwig::DecayConstructor DecayConstructor
 newdef DecayConstructor:QEDGenerator /Herwig/QEDRadiation/SOPHTY
 create Herwig::TwoBodyDecayConstructor TwoBodyDC
+set TwoBodyDC:ExcludeEffectiveVertices No
 create Herwig::ThreeBodyDecayConstructor ThreeBodyDC
+create Herwig::FourBodyDecayConstructor FourBodyDC
 
 create Herwig::WeakCurrentDecayConstructor WeakDecayConstructor
 set  WeakDecayConstructor:InitPoints 10000
@@ -120,6 +123,7 @@ insert NewModel:HardProcessConstructors[4] QQHiggsConstructor
 newdef NewModel:DecayConstructor DecayConstructor
 insert DecayConstructor:NBodyDecayConstructors[0] TwoBodyDC
 insert DecayConstructor:NBodyDecayConstructors[1] ThreeBodyDC
+insert DecayConstructor:NBodyDecayConstructors[2] FourBodyDC
 
 # Required to decay the particles before showering so as to keep
 # the spin correlations in the decay

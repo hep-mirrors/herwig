@@ -24,7 +24,7 @@ public:
   /**
    * The default constructor.
    */
-  inline GammaZPrimeZVertex();
+  GammaZPrimeZVertex();
 
   /**
    * Calculate the couplings. This method is virtual and must be implemented in 

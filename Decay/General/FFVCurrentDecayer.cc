@@ -194,5 +194,5 @@ Energy FFVCurrentDecayer::partialWidth(tPDPtr inpart, tPDPtr outa,
   bool cc;
   int mode=modeNumber(cc,id);
   imode(mode);
-  return initializePhaseSpaceMode(mode,true);  
+  return initializePhaseSpaceMode(mode,true,true);  
 }

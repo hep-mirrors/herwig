@@ -16,12 +16,12 @@
 
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxAmplitude.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/Tree2toNGenerator.h"
+#include "Herwig++/MatrixElement/Matchbox/Utility/ProcessData.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxScaleChoice.h"
-#include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxMECache.h"
 #include "Herwig++/MatrixElement/Matchbox/Phasespace/MatchboxPhasespace.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.h"
-#include "Herwig++/MatrixElement/Matchbox/Base/MatchboxNLOME.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/SubtractedME.h"
+#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.fh"
 
 namespace Herwig {
 
@@ -56,6 +56,14 @@ public:
 
 public:
 
+  /**
+   * Return the current factory
+   */
+  static MatchboxFactory* currentFactory() { 
+    assert(theCurrentFactory());
+    return theCurrentFactory();
+  }
+
   /** @name Process and diagram information */
   //@{
 
@@ -68,6 +76,16 @@ public:
    * Set the diagram generator.
    */
   void diagramGenerator(Ptr<Tree2toNGenerator>::ptr dg) { theDiagramGenerator = dg; }
+
+  /**
+   * Return the process data.
+   */
+  Ptr<ProcessData>::tptr processData() const { return theProcessData; }
+
+  /**
+   * Set the process data.
+   */
+  void processData(Ptr<ProcessData>::ptr pd) { theProcessData = pd; }
 
   /**
    * Return the number of light flavours, this matrix
@@ -102,6 +120,16 @@ public:
   void orderInAlphaEW(unsigned int o) { theOrderInAlphaEW = o; }
 
   /**
+   * Return true, if all processes up to a maximum order are considered
+   */
+  bool allProcesses() const { return theAllProcesses; }
+
+  /**
+   * Switch on/off inclusino off all processes up to a maximum order
+   */
+  void setAllProcesses(bool on = true) { theAllProcesses = on; }
+
+  /**
    * Return true, if Born contributions should be included.
    */
   bool bornContributions() const { return theBornContributions; }
@@ -122,6 +150,16 @@ public:
   void setVirtualContributions(bool on = true) { theVirtualContributions = on; }
 
   /**
+   * Produce matrix element corrections, but no NLO
+   */
+  bool meCorrectionsOnly() const { return theMECorrectionsOnly; }
+
+  /**
+   * Switch to produce matrix element corrections, but no NLO
+   */
+  void setMECorrectionsOnly(bool on = true) { theMECorrectionsOnly = on; }
+
+  /**
    * Return true, if subtracted real emission contributions should be included.
    */
   bool realContributions() const { return theRealContributions; }
@@ -130,6 +168,16 @@ public:
    * Switch on or off subtracted real emission contributions
    */
   void setRealContributions(bool on = true) { theRealContributions = on; }
+
+  /**
+   * Return true, if virtual contributions should be treated as independent subprocesses
+   */
+  bool independentVirtuals() const { return theIndependentVirtuals; }
+
+  /**
+   * Switch on/off virtual contributions should be treated as independent subprocesses
+   */
+  void setIndependentVirtuals(bool on = true) { theIndependentVirtuals = on; }
 
   /**
    * Return true, if SubProcessGroups should be
@@ -143,6 +191,37 @@ public:
    * Switch on or off producing subprocess groups.
    */
   void setSubProcessGroups(bool on = true) { theSubProcessGroups = on; }
+
+  /**
+   * Return true, if subtraction scales should be caluclated from real emission kinematics
+   */
+  bool realEmissionScales() const { return theRealEmissionScales; }
+
+  /**
+   * Switch on/off that subtraction scales should be caluclated from real emission kinematics
+   */
+  void setRealEmissionScales(bool on = true) { theRealEmissionScales = on; }
+
+  /**
+   * Return true, if the integral over the unresolved emission should be
+   * calculated.
+   */
+  bool inclusive() const { return theInclusive; }
+
+  /**
+   * Switch on or off inclusive mode.
+   */
+  void setInclusive(bool on = true) { theInclusive = on; }
+
+  /**
+   * Set the shower approximation.
+   */
+  void showerApproximation(Ptr<ShowerApproximation>::tptr app) { theShowerApproximation = app; }
+
+  /**
+   * Return the shower approximation.
+   */
+  Ptr<ShowerApproximation>::tptr showerApproximation() const { return theShowerApproximation; }
 
   //@}
 
@@ -200,6 +279,16 @@ public:
   void setFixedCouplings(bool on = true) { theFixedCouplings = on; }
 
   /**
+   * Return true, if fixed couplings are used.
+   */
+  bool fixedQEDCouplings() const { return theFixedQEDCouplings; }
+
+  /**
+   * Switch on fixed couplings.
+   */
+  void setFixedQEDCouplings(bool on = true) { theFixedQEDCouplings = on; }
+
+  /**
    * Return true, if veto scales should be set
    * for the real emission
    */
@@ -230,16 +319,6 @@ public:
    */
   vector<Ptr<MatchboxAmplitude>::ptr>& amplitudes() { return theAmplitudes; }
 
-  /**
-   * Set the ME cache object
-   */
-  void cache(Ptr<MatchboxMECache>::ptr c) { theCache = c; }
-
-  /**
-   * Get the ME cache object
-   */
-  Ptr<MatchboxMECache>::tptr cache() const { return theCache; }
-
   //@}
 
   /** @name Matrix element objects. */
@@ -256,6 +335,27 @@ public:
   vector<Ptr<MatchboxMEBase>::ptr>& bornMEs() { return theBornMEs; }
 
   /**
+   * Return the processes to be ordered from an OLP
+   */
+  const map<Ptr<MatchboxAmplitude>::tptr,
+	    map<pair<Process,int>,int> >&
+  olpProcesses() const { return theOLPProcesses; }
+
+  /**
+   * Access the processes to be ordered from an OLP
+   */
+  map<Ptr<MatchboxAmplitude>::tptr,
+      map<pair<Process,int>,int> >& 
+  olpProcesses() { return theOLPProcesses; }
+
+  /**
+   * Order an OLP process and return its id
+   */
+  int orderOLPProcess(const Process& p,
+		      Ptr<MatchboxAmplitude>::tptr amp,
+		      int type);
+
+  /**
    * Return the virtual corrections to be considered
    */
   const vector<Ptr<MatchboxInsertionOperator>::ptr>& virtuals() const { return theVirtuals; }
@@ -268,12 +368,12 @@ public:
   /**
    * Return the produced NLO matrix elements
    */
-  const vector<Ptr<MatchboxNLOME>::ptr>& bornVirtualMEs() const { return theBornVirtualMEs; }
+  const vector<Ptr<MatchboxMEBase>::ptr>& bornVirtualMEs() const { return theBornVirtualMEs; }
 
   /**
    * Access the produced NLO matrix elements
    */
-  vector<Ptr<MatchboxNLOME>::ptr>& bornVirtualMEs() { return theBornVirtualMEs; }
+  vector<Ptr<MatchboxMEBase>::ptr>& bornVirtualMEs() { return theBornVirtualMEs; }
 
   /**
    * Return the real emission matrix elements to be considered
@@ -286,6 +386,16 @@ public:
   vector<Ptr<MatchboxMEBase>::ptr>& realEmissionMEs() { return theRealEmissionMEs; }
 
   /**
+   * Return, which set of dipoles should be considered
+   */
+  int dipoleSet() const { return theDipoleSet; }
+
+  /**
+   * Return, which set of dipoles should be considered
+   */
+  void dipoleSet(int s) { theDipoleSet = s; }
+
+  /**
    * Return the produced subtracted matrix elements
    */
   const vector<Ptr<SubtractedME>::ptr>& subtractedMEs() const { return theSubtractedMEs; }
@@ -294,6 +404,81 @@ public:
    * Access the produced subtracted matrix elements
    */
   vector<Ptr<SubtractedME>::ptr>& subtractedMEs() { return theSubtractedMEs; }
+
+  /**
+   * Return the produced finite real emission matrix elements
+   */
+  const vector<Ptr<MatchboxMEBase>::ptr>& finiteRealMEs() const { return theFiniteRealMEs; }
+
+  /**
+   * Access the produced finite real emission elements
+   */
+  vector<Ptr<MatchboxMEBase>::ptr>& finiteRealMEs() { return theFiniteRealMEs; }
+
+  /**
+   * Return the map of Born processes to splitting dipoles
+   */
+  const map<cPDVector,set<Ptr<SubtractionDipole>::ptr> >& splittingDipoles() const {
+    return theSplittingDipoles;
+  }
+
+  /**
+   * Identify a splitting channel
+   */
+  struct SplittingChannel {
+
+    /**
+     * The Born XComb
+     */
+    StdXCombPtr bornXComb;
+
+    /**
+     * The real XComb
+     */
+    StdXCombPtr realXComb;
+
+    /**
+     * The set of tilde XCombs to consider for the real xcomb
+     */
+    vector<StdXCombPtr> tildeXCombs;
+
+    /**
+     * The dipole in charge of the splitting
+     */
+    Ptr<SubtractionDipole>::ptr dipole;
+
+    /**
+     * Dump the setup
+     */
+    void print(ostream&) const;
+
+  };
+
+  /**
+   * Generate all splitting channels for the Born process handled by
+   * the given XComb
+   */
+  list<SplittingChannel> getSplittingChannels(tStdXCombPtr xc) const;
+
+  /**
+   * Return the reweight objects for matrix elements
+   */
+  const vector<ReweightPtr>& reweighters() const { return theReweighters; }
+
+  /**
+   * Access the reweight objects for matrix elements
+   */
+  vector<ReweightPtr>& reweighters() { return theReweighters; }
+
+  /**
+   * Return the preweight objects for matrix elements
+   */
+  const vector<ReweightPtr>& preweighters() const { return thePreweighters; }
+
+  /**
+   * Access the preweight objects for matrix elements
+   */
+  vector<ReweightPtr>& preweighters() { return thePreweighters; }
 
   //@}
 
@@ -316,7 +501,7 @@ public:
   /**
    * Setup everything
    */
-  void setup();
+  virtual void setup();
 
   //@}
 
@@ -334,6 +519,16 @@ public:
   void setVerbose(bool on = true) { theVerbose = on; }
 
   /**
+   * Return true, if verbose while initializing
+   */
+  bool initVerbose() const { return theInitVerbose || verbose(); }
+
+  /**
+   * Switch on diagnostic information while initializing
+   */
+  void setInitVerbose(bool on = true) { theInitVerbose = on; }
+
+  /**
    * Dump the setup
    */
   void print(ostream&) const;
@@ -347,6 +542,21 @@ public:
    * Set the subtraction data prefix.
    */
   void subtractionData(const string& s) { theSubtractionData = s; }
+
+  /**
+   * Return the pole data prefix.
+   */
+  const string& poleData() const { return thePoleData; }
+
+  /**
+   * Set the pole data prefix.
+   */
+  void poleData(const string& s) { thePoleData = s; }
+
+  /**
+   * Return true, if cancellationn of epsilon poles should be checked.
+   */
+  bool checkPoles() const { return poleData() != ""; }
 
   //@}
 
@@ -418,6 +628,12 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit();
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
   //@}
 
 private:
@@ -426,6 +642,11 @@ private:
    * The diagram generator.
    */
   Ptr<Tree2toNGenerator>::ptr theDiagramGenerator;
+
+  /**
+   * The process data object to be used
+   */
+  Ptr<ProcessData>::ptr theProcessData;
 
   /**
    * The number of light flavours, this matrix
@@ -459,12 +680,23 @@ private:
   bool theRealContributions;
 
   /**
+   * True if virtual contributions should be treated as independent subprocesses
+   */
+  bool theIndependentVirtuals;
+
+  /**
    * True, if SubProcessGroups should be
    * setup from this MEGroup. If not, a single SubProcess
    * is constructed from the data provided by the
    * head matrix element.
    */
   bool theSubProcessGroups;
+
+  /**
+   * True, if the integral over the unresolved emission should be
+   * calculated.
+   */
+  bool theInclusive;
 
   /**
    * The phase space generator to be used.
@@ -492,6 +724,11 @@ private:
   bool theFixedCouplings;
 
   /**
+   * Use non-running couplings.
+   */
+  bool theFixedQEDCouplings;
+
+  /**
    * True, if veto scales should be set
    * for the real emission
    */
@@ -501,11 +738,6 @@ private:
    * The amplitudes to be considered
    */
   vector<Ptr<MatchboxAmplitude>::ptr> theAmplitudes;
-
-  /**
-   * The ME cache object
-   */
-  Ptr<MatchboxMECache>::ptr theCache;
 
   /**
    * The Born matrix elements to be considered
@@ -525,7 +757,7 @@ private:
   /**
    * The produced NLO matrix elements
    */
-  vector<Ptr<MatchboxNLOME>::ptr> theBornVirtualMEs;
+  vector<Ptr<MatchboxMEBase>::ptr> theBornVirtualMEs;
 
   /**
    * The produced subtracted matrix elements
@@ -533,14 +765,45 @@ private:
   vector<Ptr<SubtractedME>::ptr> theSubtractedMEs;
 
   /**
+   * The produced finite real emission matrix elements
+   */
+  vector<Ptr<MatchboxMEBase>::ptr> theFiniteRealMEs;
+
+  /**
+   * Which set of dipoles should be considered
+   */
+  int theDipoleSet;
+
+  /**
    * Switch on or off verbosity
    */
   bool theVerbose;
 
   /**
+   * True, if verbose while initializing
+   */
+  bool theInitVerbose;
+
+  /**
    * Prefix for subtraction data
    */
   string theSubtractionData;
+
+  /**
+   * Prefix for pole data.
+   */
+  string thePoleData;
+
+  /**
+   * Command to limit the real emission process to be considered.
+   */
+  string doSingleRealProcess(string);
+
+  /**
+   * The real emission process to be included; if empty, all possible
+   * ones will be considered.
+   */
+  vector<vector<string> > realEmissionProcesses;
 
   /**
    * Particle groups.
@@ -575,18 +838,81 @@ private:
   /**
    * The process to consider in terms of particle groups.
    */
-  vector<string> process;
+  vector<vector<string> > processes;
 
   /**
    * Generate subprocesses.
    */
-  set<PDVector> makeSubProcesses(const vector<string>&) const;
+  set<PDVector> makeSubProcesses(const vector<string>&, bool sorted = true) const;
+
+  /**
+   * Generate subprocesses with all permutations of outgoing partons.
+   */
+  set<PDVector> makeUnsortedSubProcesses(const vector<string>& data) const {
+    return makeSubProcesses(data, false);
+  }
 
   /**
    * Generate matrix element objects for the given process.
    */
   vector<Ptr<MatchboxMEBase>::ptr> makeMEs(const vector<string>&, 
-					   unsigned int orderas) const;
+					   unsigned int orderas);
+
+  /**
+   * The shower approximation.
+   */
+  Ptr<ShowerApproximation>::ptr theShowerApproximation;
+
+  /**
+   * The map of Born processes to splitting dipoles
+   */
+  map<cPDVector,set<Ptr<SubtractionDipole>::ptr> > theSplittingDipoles;
+
+  /**
+   * True, if subtraction scales should be caluclated from real emission kinematics
+   */
+  bool theRealEmissionScales;
+
+  /**
+   * Consider all processes with order in couplings specifying the
+   * maximum order.
+   */
+  bool theAllProcesses;
+
+  /**
+   * The processes to be ordered from an OLP
+   */
+  map<Ptr<MatchboxAmplitude>::tptr,map<pair<Process,int>,int> > theOLPProcesses;
+
+  /**
+   * Amplitudes to be selected on clashing responsibilities.
+   */
+  vector<Ptr<MatchboxAmplitude>::ptr> theSelectedAmplitudes;
+
+  /**
+   * Amplitudes to be deselected on clashing responsibilities.
+   */
+  vector<Ptr<MatchboxAmplitude>::ptr> theDeselectedAmplitudes;
+
+  /**
+   * Reweight objects for matrix elements
+   */
+  vector<ReweightPtr> theReweighters;
+
+  /**
+   * Preweight objects for matrix elements
+   */
+  vector<ReweightPtr> thePreweighters;
+
+  /**
+   * Produce matrix element corrections, but no NLO
+   */
+  bool theMECorrectionsOnly;
+
+  /**
+   * The current factory
+   */
+  static MatchboxFactory*& theCurrentFactory();
 
 private:
 

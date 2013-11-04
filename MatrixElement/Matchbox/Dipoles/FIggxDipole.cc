@@ -62,10 +62,10 @@ double FIggxDipole::me2Avg(double ccme2) const {
 	(realEmissionME()->lastXComb().meMomenta()[realEmission()]))*x;
 
 
-  double res = 1./((1.-z)+(1.-x))+1./(z+(1.-x))-2.+z*(1.-z);
+  double res = 1./((1.-z)+(1.-x))+1./(z+(1.-x))-2.+z*(1.-z)+(1.-x)*(1.+x*z*(1.-z));
 
   res *= 16.*Constants::pi*SM().Nc()*(realEmissionME()->lastXComb().lastSHat())*
-    (realEmissionME()->lastXComb().lastAlphaS())/prop;
+    (underlyingBornME()->lastXComb().lastAlphaS())/prop;
 
   res *= -ccme2;
 
@@ -76,8 +76,6 @@ double FIggxDipole::me2Avg(double ccme2) const {
   res *=
     realEmissionME()->finalStateSymmetry() /
     underlyingBornME()->finalStateSymmetry();
-
-  lastME2(res);
 
   return res;
 
@@ -95,7 +93,7 @@ double FIggxDipole::me2() const {
     2.*((realEmissionME()->lastXComb().meMomenta()[realEmitter()])*
 	(realEmissionME()->lastXComb().meMomenta()[realEmission()]))*x;
 
-  double diag = 1./(1.-z+1.-x)+1./(z+1.-x)-2.;
+  double diag = 1./(1.-z+1.-x)+1./(z+1.-x)-2.+(1.-x)*(1.+x*z*(1.-z));
   Lorentz5Momentum pc = 
     z*realEmissionME()->lastXComb().meMomenta()[realEmitter()] -
     (1.-z)*realEmissionME()->lastXComb().meMomenta()[realEmission()];
@@ -106,7 +104,7 @@ double FIggxDipole::me2() const {
 							    corr);
 
   res *= 16.*Constants::pi*SM().Nc()*(realEmissionME()->lastXComb().lastSHat())*
-    (realEmissionME()->lastXComb().lastAlphaS())/prop;
+    (underlyingBornME()->lastXComb().lastAlphaS())/prop;
 
   res *= 
     pow(realEmissionME()->lastXComb().lastSHat() / underlyingBornME()->lastXComb().lastSHat(),
@@ -115,10 +113,6 @@ double FIggxDipole::me2() const {
   res *=
     realEmissionME()->finalStateSymmetry() /
     underlyingBornME()->finalStateSymmetry();
-
-  lastME2(res);
-
-  logME2();
 
   return res;
 
@@ -135,7 +129,7 @@ void FIggxDipole::Init() {
   static ClassDocumentation<FIggxDipole> documentation
     ("FIggxDipole");
 
-  DipoleRepository::registerDipole<FIggxDipole,FILightTildeKinematics,FILightInvertedTildeKinematics>
+  DipoleRepository::registerDipole<0,FIggxDipole,FILightTildeKinematics,FILightInvertedTildeKinematics>
     ("FIggxDipole","FILightTildeKinematics","FILightInvertedTildeKinematics");
 
 }

@@ -37,9 +37,10 @@ public:
    */
   ModelGenerator() : particles_(0), offshell_(0),
 		     Offsel_(0), BRnorm_(true),
-		     Npoints_(50), Iorder_(1),
-		     BWshape_(0), brMin_(1e-6),
-		     decayOutput_(1) {}
+		     Npoints_(10), Iorder_(1),
+		     BWshape_(0), brMin_(1e-6), twoBodyOnly_(false), 
+		     decayOutput_(1), minWidth_(1e-6),
+		     howOffShell_(5.) {}
 
 public:
 
@@ -195,12 +196,28 @@ private:
    * The minimum branching ratio to use 
    */
   double brMin_;
+
+  /**
+   *  Whether to use only two-body or all modes for running width
+   */
+  bool twoBodyOnly_;
   //@}
 
   /**
    *   Option for the outputs of the decays to a file
    */
   unsigned int decayOutput_;
+
+  /**
+   *  Minimum fraction of particle's mass width can be for off-shell
+   *  treatment
+   */
+  double minWidth_;
+
+  /**
+   *  How much a particle is allowed to be offshell
+   */
+  double howOffShell_;
 };
 
 }

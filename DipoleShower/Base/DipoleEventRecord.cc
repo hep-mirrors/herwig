@@ -19,8 +19,6 @@
 #include "ThePEG/PDF/PartonExtractor.h"
 
 #include <boost/utility.hpp>
-using boost::next;
-using boost::prior;
 
 #include <algorithm>
 
@@ -209,13 +207,23 @@ void DipoleEventRecord::findChains(const PList& ordered) {
 
   DipoleChain current_chain;
 
-  if (ordered.size() > 2) {
+  bool startIsTriplet =
+    (ordered.front()->hasColour() && !ordered.front()->hasAntiColour()) ||
+    (!ordered.front()->hasColour() && ordered.front()->hasAntiColour());
+  bool endIsTriplet =
+    (ordered.back()->hasColour() && !ordered.back()->hasAntiColour()) ||
+    (!ordered.back()->hasColour() && ordered.back()->hasAntiColour());
+
+  bool is33bar =
+    ordered.size() == 2 && startIsTriplet && endIsTriplet;
+
+  if (!is33bar) {
 
     for (PList::const_iterator p = ordered.begin();
 	 p != ordered.end(); ++p) {
 
       PList::const_iterator next_it =
-	p != --ordered.end() ? next(p) : ordered.begin();
+	p != --ordered.end() ? boost::next(p) : ordered.begin();
 
       if (!DipolePartonSplitter::colourConnected(*p,*next_it)) {
 	current_chain.check();
@@ -764,7 +772,13 @@ tPPair DipoleEventRecord::fillEventRecord(StepPtr step, bool firstInteraction, b
   while ( !theOriginals.empty() ) {
     PPtr outSubPro = theOriginals.begin()->first;
     PPtr outParton = theOriginals.begin()->second;
-    theOriginals.erase(theOriginals.begin());
+    // workaround for OS X Mavericks LLVM libc++
+#ifdef _LIBCPP_VERSION
+    map<PPtr,PPtr>::const_iterator beg = theOriginals.begin();
+#else
+    map<PPtr,PPtr>::iterator beg = theOriginals.begin();
+#endif
+    theOriginals.erase(beg);
     updateColour(outParton);
     outSubPro->addChild(outParton);
     theIntermediates.push_back(outSubPro);

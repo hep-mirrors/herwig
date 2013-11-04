@@ -28,16 +28,39 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/MatrixElement/Matchbox/Dipoles/SubtractionDipole.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/DipoleRepository.h"
+#include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxXCombGroup.h"
+#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
 
 using namespace Herwig;
 
 SubtractedME::SubtractedME() 
   : MEGroup(), 
-    theSubtractionData(""), 
-    theVerbose(false), theSubProcessGroups(false),
-    theVetoScales(false) {}
+    theRealShowerSubtraction(false), theVirtualShowerSubtraction(false),
+    theSubProcessGroups(false), theInclusive(false) {}
 
 SubtractedME::~SubtractedME() {}
+
+Ptr<MatchboxFactory>::tcptr SubtractedME::factory() const { return theFactory; }
+
+void SubtractedME::factory(Ptr<MatchboxFactory>::tcptr f) { theFactory = f; }
+
+bool SubtractedME::subProcessGroups() const { 
+  return 
+    (factory()->subProcessGroups() && !(showerApproximation() || inclusive())) ||
+    factory()->subtractionData() != "" || theSubProcessGroups;
+}
+
+bool SubtractedME::inclusive() const { return factory()->inclusive() || theInclusive; }
+
+Ptr<ShowerApproximation>::tptr SubtractedME::showerApproximation() const { return factory()->showerApproximation(); }
+
+const vector<Ptr<MatchboxMEBase>::ptr>& SubtractedME::borns() const { 
+  return theBorns.empty() ? factory()->bornMEs() : theBorns;
+}
+
+bool SubtractedME::verbose() const { return factory()->verbose(); }
+
+bool SubtractedME::initVerbose() const { return factory()->initVerbose(); }
 
 IBPtr SubtractedME::clone() const {
   return new_ptr(*this);
@@ -47,25 +70,90 @@ IBPtr SubtractedME::fullclone() const {
   return new_ptr(*this);
 }
 
-void SubtractedME::setXComb(tStdXCombPtr xc) {
+StdXCombPtr SubtractedME::makeXComb(Energy newMaxEnergy, const cPDPair & inc,
+				    tEHPtr newEventHandler,tSubHdlPtr newSubProcessHandler,
+				    tPExtrPtr newExtractor,	tCascHdlPtr newCKKW,
+				    const PBPair & newPartonBins, tCutsPtr newCuts,
+				    const DiagramVector & newDiagrams, bool mir,
+				    const PartonPairVec& allPBins,
+				    tStdXCombPtr newHead,
+				    tMEPtr newME) {
 
-  MEGroup::setXComb(xc);
+  tMEGroupPtr newMEGroup = dynamic_ptr_cast<tMEGroupPtr>(newME);
+  if ( !newMEGroup )
+    newMEGroup = this;
+  Ptr<MatchboxXCombGroup>::ptr res =  
+    new_ptr(MatchboxXCombGroup(newMaxEnergy, inc,
+			       newEventHandler, newSubProcessHandler,
+			       newExtractor, newCKKW,
+			       newPartonBins, newCuts, newMEGroup,
+			       newDiagrams, mir,
+			       newHead));
+  res->build(allPBins);
 
-  // only cluster real emission
+  theReal->prepareXComb(*res);
 
-  if ( lastCuts().jetFinder() )
-    lastCuts().jetFinder()->minOutgoing(lastXComb().mePartonData().size()-2);
-
-  if ( verbose() ) {
-    generator()->log() 
-      << "=== SubtractedME XComb hierarchies =============================================\n";
-    dumpInfo();
-    generator()->log() 
-      << "================================================================================\n";
+  if ( factory()->subtractionData() != "" ) {
+    set<cPDVector> procs;
+    for ( DiagramVector::const_iterator d = head()->diagrams().begin();
+	  d != head()->diagrams().end(); ++d ) {
+      if ( procs.find((**d).partons()) == procs.end() )
+	procs.insert((**d).partons());
+    }
+    for ( set<cPDVector>::const_iterator p = procs.begin();
+	  p != procs.end(); ++p ) {
+      for ( size_t i = 0; i < (*p).size(); ++i ) {
+	if ( !(*p)[i]->coloured() )
+	  continue;
+	if ( i > 1 && 
+	     (*p)[i]->id() == ParticleID::g ) {
+	  softHistograms[SoftSubtractionIndex(*p,i)] = SubtractionHistogram(0.001,10.);
+	  if ( theReal->phasespace() )
+	    res->singularLimits().insert(make_pair(i,i));
+	}
+	for ( size_t j = i+1; j < (*p).size(); ++j ) {
+	  if ( !(*p)[j]->coloured() )
+	    continue;
+	  long iid = (*p)[i]->id();
+	  long jid = (*p)[j]->id();
+	  if ( i < 2 && j < 2 )
+	    continue;
+	  if ( i < 2 && j > 1 ) {
+	    if ( abs(iid) < 7 && abs(jid) < 7 && iid != jid )
+	      continue;
+	  }
+	  if ( i > 1 && j > 1 ) {
+	    if ( abs(iid) < 7 && abs(jid) < 7 && iid + jid != 0 )
+	      continue;
+	  }
+	  bool haveDipole = false;
+	  for ( MEVector::const_iterator k = dependent().begin();
+		k != dependent().end(); ++k ) {
+	    const SubtractionDipole& dip = dynamic_cast<const SubtractionDipole&>(**k);
+	    if ( ( (size_t)(dip.realEmitter()) == i && (size_t)(dip.realEmission()) == j ) ||
+		 ( (size_t)(dip.realEmitter()) == j && (size_t)(dip.realEmission()) == i ) ) {
+	      haveDipole = true;
+	      break;
+	    }
+	  }
+	  if ( !haveDipole )
+	    continue;
+	  collinearHistograms[CollinearSubtractionIndex(*p,make_pair(i,j))] = SubtractionHistogram(0.001,20.);
+	  if ( theReal->phasespace() )
+	    res->singularLimits().insert(make_pair(i,j));
+	}
+      }
+    }
   }
+
+  return res;
 
 }
 
+void SubtractedME::setXComb(tStdXCombPtr xc) {
+  MEGroup::setXComb(xc);
+  lastMatchboxXComb(xc);
+}
 
 MEBase::DiagramVector SubtractedME::dependentDiagrams(const cPDVector& proc,
 						      tMEPtr depME) const {
@@ -85,10 +173,6 @@ MEBase::DiagramVector SubtractedME::dependentDiagrams(const cPDVector& proc,
 
 vector<Ptr<SubtractionDipole>::ptr> SubtractedME::dipoles() {
 
-  if ( allDipoles().empty() ) {
-    allDipoles() = DipoleRepository::dipoles();
-  }
-
   if ( dependent().empty() )
     getDipoles();
   vector<Ptr<SubtractionDipole>::ptr> res;
@@ -103,14 +187,10 @@ void SubtractedME::getDipoles() {
   if ( !dependent().empty() )
     return;
 
-  if ( allDipoles().empty() ) {
-    allDipoles() = DipoleRepository::dipoles();
-  }
-
   Ptr<MatchboxMEBase>::tptr real =
     dynamic_ptr_cast<Ptr<MatchboxMEBase>::tptr>(head());
 
-  if ( allDipoles().empty() || theBorns.empty() || !real )
+  if ( borns().empty() || !real )
     Throw<InitException>() << "The SubtractedME '"
 			   << name() << "' could not generate "
 			   << "subtraction terms for the real emission "
@@ -128,28 +208,91 @@ void SubtractedME::getDipoles() {
 
   MEVector dipMEs;
   vector<Ptr<SubtractionDipole>::ptr> genDipoles
-    = real->getDipoles(allDipoles(),theBorns);
+    = real->getDipoles(DipoleRepository::dipoles(factory()->dipoleSet()),borns());
 
-  if ( theSubtractionData != "" ) {
-    theSubProcessGroups = true;
+  if ( factory()->subtractionData() != "" ) {
     for ( vector<Ptr<SubtractionDipole>::ptr>::const_iterator d =
 	    genDipoles.begin(); d != genDipoles.end(); ++d )
-      (**d).testSubtraction();
+      (**d).doTestSubtraction();
   }
 
-  if ( genDipoles.empty() )
-    Throw<InitException>() << "The SubtractedME '"
-			   << name() << "' could not generate "
-			   << "subtraction terms for the real emission "
-			   << "matrix element '" << real->name() << "'. "
-			   << "Please check the corresponding input file.";
+  if ( genDipoles.empty() ) {
+    // probably finite real contribution, but warn
+    generator()->log() << "\nWarning: No subtraction dipoles could be found for the process:\n";
+    generator()->log() << real->subProcess().legs[0]->PDGName() << " " 
+		       << real->subProcess().legs[1]->PDGName() << " -> ";
+    for ( PDVector::const_iterator p = real->subProcess().legs.begin() + 2; 
+	  p != real->subProcess().legs.end(); ++p )
+      generator()->log() << (**p).PDGName() << " ";
+    generator()->log() << "\n" << flush;
+    generator()->log() << "Assuming finite tree-level O(alphaS) correction.\n";
+  }
 
   dipMEs.resize(genDipoles.size());
   copy(genDipoles.begin(),genDipoles.end(),dipMEs.begin());
 
+  if ( !factory()->reweighters().empty() ) {
+    for ( MEVector::const_iterator d = dipMEs.begin(); d != dipMEs.end(); ++d ) {
+      for ( vector<ReweightPtr>::const_iterator rw = factory()->reweighters().begin();
+	    rw != factory()->reweighters().end(); ++rw )
+	(**d).addReweighter(*rw);
+    }
+  }
+
+  if ( !factory()->preweighters().empty() ) {
+    for ( MEVector::const_iterator d = dipMEs.begin(); d != dipMEs.end(); ++d ) {
+      for ( vector<ReweightPtr>::const_iterator rw = factory()->preweighters().begin();
+	    rw != factory()->preweighters().end(); ++rw )
+	(**d).addPreweighter(*rw);
+    }
+  }
+
   dependent() = dipMEs;
 
 }
+
+void SubtractedME::cloneRealME(const string& prefix) {
+
+  theReal = dynamic_ptr_cast<Ptr<MatchboxMEBase>::tptr>(head());
+
+  if ( theReal ) {
+    Ptr<MatchboxMEBase>::ptr myRealEmissionME = theReal->cloneMe();
+    ostringstream pname;
+    pname << (prefix == "" ? fullName() : prefix) << "/" << myRealEmissionME->name();
+    if ( ! (generator()->preinitRegister(myRealEmissionME,pname.str()) ) )
+      throw InitException() << "Matrix element " << pname.str() << " already existing.";
+    myRealEmissionME->cloneDependencies(pname.str());
+    theReal = myRealEmissionME;
+  }
+
+  head(theReal);
+
+}
+
+void SubtractedME::cloneDipoles(const string& prefix) {
+
+  MEVector dipMEs;
+
+  for ( MEVector::const_iterator m = dependent().begin();
+	m != dependent().end(); ++m ) {
+    Ptr<SubtractionDipole>::tptr dip = 
+      dynamic_ptr_cast<Ptr<SubtractionDipole>::tptr>(*m);
+    assert(dip);
+
+    Ptr<SubtractionDipole>::ptr cloned = dip->cloneMe();
+    ostringstream pname;
+    pname << (prefix == "" ? fullName() : prefix) << "/" << cloned->name();
+    if ( ! (generator()->preinitRegister(cloned,pname.str()) ) )
+      throw InitException() << "Subtraction dipole " << pname.str() << " already existing.";
+    cloned->cloneDependencies(pname.str());
+    dipMEs.push_back(cloned);
+
+  }
+
+  dependent() = dipMEs;
+
+}
+
 
 vector<Ptr<SubtractionDipole>::ptr> SubtractedME::splitDipoles(const cPDVector& born) {
 
@@ -171,119 +314,202 @@ vector<Ptr<SubtractionDipole>::ptr> SubtractedME::splitDipoles(const cPDVector& 
 
 }
 
-void SubtractedME::setVetoScales(tSubProPtr subpro) const {
-
-  if ( !vetoScales() )
-    return;
-
-  Ptr<SubtractionDipole>::tptr dipole;
-  Energy pt;
-
-  assert(head()->noMirror());
-
-  for ( MEVector::const_iterator d = dependent().begin();
-	d != dependent().end(); ++d ) {
-
-    dipole = dynamic_ptr_cast<Ptr<SubtractionDipole>::ptr>(*d);
-    assert(dipole);
-    pt = dipole->lastPt();
-
-    if ( dipole->realEmitter() == 0 ||
-	 dipole->realSpectator() == 0 ) {
-      if ( subpro->incoming().first->vetoScale() < 0.0*GeV2 ||
-	   subpro->incoming().first->vetoScale() > sqr(pt) )
-	subpro->incoming().first->vetoScale(sqr(pt));
-    }
-
-    if ( dipole->realEmitter() == 1 ||
-	 dipole->realSpectator() == 1 ) {
-      if ( subpro->incoming().second->vetoScale() < 0.0*GeV2 ||
-	   subpro->incoming().second->vetoScale() > sqr(pt) )
-	subpro->incoming().second->vetoScale(sqr(pt));
-    }
-
-    if ( dipole->realEmitter() > 1 ) {
-      if ( subpro->outgoing()[dipole->realEmitter()-2]->vetoScale() < 0.0*GeV2 ||
-	   subpro->outgoing()[dipole->realEmitter()-2]->vetoScale() > sqr(pt) )
-	subpro->outgoing()[dipole->realEmitter()-2]->vetoScale(sqr(pt));
-    }
-
-    if ( dipole->realSpectator() > 1 ) {
-      if ( subpro->outgoing()[dipole->realSpectator()-2]->vetoScale() < 0.0*GeV2 ||
-	   subpro->outgoing()[dipole->realSpectator()-2]->vetoScale() > sqr(pt) )
-	subpro->outgoing()[dipole->realSpectator()-2]->vetoScale(sqr(pt));
-    }
-
-    if ( subpro->outgoing()[dipole->realEmission()-2]->vetoScale() < 0.0*GeV2 ||
-	 subpro->outgoing()[dipole->realEmission()-2]->vetoScale() > sqr(pt) )
-      subpro->outgoing()[dipole->realEmission()-2]->vetoScale(sqr(pt));  
-
+void SubtractedME::doRealEmissionScales() { 
+  for ( MEVector::const_iterator m = dependent().begin();
+	m != dependent().end(); ++m ) {
+    Ptr<SubtractionDipole>::tptr dip = 
+      dynamic_ptr_cast<Ptr<SubtractionDipole>::tptr>(*m);
+    assert(dip);
+    dip->doRealEmissionScales();
   }
+}
+
+void SubtractedME::doRealShowerSubtraction() { 
+  theRealShowerSubtraction = true;
+  for ( MEVector::const_iterator m = dependent().begin();
+	m != dependent().end(); ++m ) {
+    Ptr<SubtractionDipole>::tptr dip = 
+      dynamic_ptr_cast<Ptr<SubtractionDipole>::tptr>(*m);
+    assert(dip);
+    dip->showerApproximation(showerApproximation());
+    dip->doRealShowerSubtraction();
+  }
+}
+
+void SubtractedME::doVirtualShowerSubtraction() { 
+  theVirtualShowerSubtraction = true; 
+  for ( MEVector::const_iterator m = dependent().begin();
+	m != dependent().end(); ++m ) {
+    Ptr<SubtractionDipole>::tptr dip = 
+      dynamic_ptr_cast<Ptr<SubtractionDipole>::tptr>(*m);
+    assert(dip);
+    dip->showerApproximation(showerApproximation());
+    dip->doVirtualShowerSubtraction();
+  }
+}
+
+void SubtractedME::setVetoScales(tSubProPtr) const {}
+
+void SubtractedME::fillProjectors() {
+  if ( !inclusive() && !virtualShowerSubtraction() )
+    return;
+  Ptr<StdXCombGroup>::tptr group = 
+    dynamic_ptr_cast<Ptr<StdXCombGroup>::tptr>(lastXCombPtr());
+  for ( vector<StdXCombPtr>::const_iterator d = group->dependent().begin();
+	d != group->dependent().end(); ++d ) {
+    if ( !(**d).matrixElement()->apply() ||
+	 !(**d).kinematicsGenerated() )
+      continue;
+    if ( (**d).willPassCuts() )
+      lastXCombPtr()->projectors().insert((**d).cutWeight(),*d);
+  }
+}
+
+double SubtractedME::reweightHead(const vector<tStdXCombPtr>& dep) {
+
+  if ( inclusive() && !lastXComb().lastProjector() )
+    return 1.;
+
+  if ( virtualShowerSubtraction() && !lastXComb().lastProjector() ) {
+    return 0.;
+  }
+
+  if ( realShowerSubtraction() ) {
+    assert(showerApproximation());
+    bool below = showerApproximation()->belowCutoff();
+    double haveNoDipole = 1.0;
+    for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d ) {
+      if ( !(**d).matrixElement()->apply() ||
+	   !(**d).kinematicsGenerated() )
+	continue;
+      haveNoDipole *= 1. - (**d).cutWeight();
+      if ( haveNoDipole == 0.0 )
+	break;
+    }
+    if ( below )
+      return haveNoDipole;
+    return 1.;
+  }
+
+  if ( virtualShowerSubtraction() || inclusive() ) {
+    if ( virtualShowerSubtraction() ) {
+      assert(showerApproximation());
+      bool above = !showerApproximation()->belowCutoff();
+      if ( above )
+	return 0.;
+    }
+    double sum = 0.;
+    double n = 0.;
+    double haveNoDipole = 1.0;
+    for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d ) {
+      if ( !(**d).matrixElement()->apply() ||
+	   !(**d).kinematicsGenerated() )
+	continue;
+      if ( (**d).willPassCuts() ) {
+	sum += (**d).lastME2() * (**d).cutWeight();
+	n += (**d).cutWeight();
+	haveNoDipole *= 1. - (**d).cutWeight();
+      }
+    }
+    return
+      n * (1.-haveNoDipole) * lastXComb().lastProjector()->lastME2() * lastXComb().lastProjector()->cutWeight() / sum;
+  }
+
+  return 1.;
+
+}
+
+double SubtractedME::reweightDependent(tStdXCombPtr xc, const vector<tStdXCombPtr>& dep) {
+
+  if ( inclusive() && !lastXComb().lastProjector() )
+    return 0.;
+
+  if ( virtualShowerSubtraction() && !lastXComb().lastProjector() ) {
+    return 0.;
+  }
+
+  if ( virtualShowerSubtraction() || inclusive() ) {
+    if ( xc != lastXComb().lastProjector() )
+      return 0.;
+    double n = 0.;
+    double haveNoDipole = 1.0;
+    for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d ) {
+      if ( !(**d).matrixElement()->apply() ||
+	   !(**d).kinematicsGenerated() )
+	continue;
+      if ( (**d).willPassCuts() ) {
+	n += (**d).cutWeight();
+	haveNoDipole *= 1. - (**d).cutWeight();
+      }
+    }
+    return n * (1. - haveNoDipole);
+  }
+
+  if ( realShowerSubtraction() ) {
+    double haveNoDipole = 1.0;
+    for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d ) {
+      if ( !(**d).kinematicsGenerated() )
+	continue;
+      haveNoDipole *= 1. - (**d).cutWeight();
+      if ( haveNoDipole == 0.0 )
+	break;
+    }
+    return 1. - haveNoDipole;
+  }
+
+  return 1.;
 
 }
 
 void SubtractedME::doinit() {
 
-  if ( dynamic_ptr_cast<Ptr<MatchboxMEBase>::tptr>(head()) ) {
+  // has been deactivated by the factory
+  if ( !head() ) {
+    MEBase::doinit();
+    return;
+  }
+
+  theReal = dynamic_ptr_cast<Ptr<MatchboxMEBase>::tptr>(head());
+
+  if ( theReal ) {
     getDipoles();
   }
 
-  if ( theVerbose )
+  if ( initVerbose() )
     print(Repository::clog());
 
   MEGroup::doinit();
+
 }
 
 void SubtractedME::doinitrun() {
 
+  // has been deactivated by the factory
+  if ( !head() ) {
+    MEBase::doinitrun();
+    return;
+  }
+
   MEGroup::doinitrun();
 
-  if ( theSubtractionData != "" ) {
-    set<cPDVector> procs;
-    for ( DiagramVector::const_iterator d = head()->diagrams().begin();
-	  d != head()->diagrams().end(); ++d ) {
-      if ( procs.find((**d).partons()) == procs.end() )
-	procs.insert((**d).partons());
-    }
-    for ( set<cPDVector>::const_iterator p = procs.begin();
-	  p != procs.end(); ++p ) {
-      for ( size_t i = 0; i < (*p).size(); ++i ) {
-	if ( !(*p)[i]->coloured() )
-	  continue;
-	if ( i > 1 && 
-	     (*p)[i]->id() == ParticleID::g )
-	  softHistograms[SoftSubtractionIndex(*p,i)] = SubtractionHistogram(0.001,20.);
-	for ( size_t j = i+1; j < (*p).size(); ++j ) {
-	  if ( !(*p)[j]->coloured() )
-	    continue;
-	  long iid = (*p)[i]->id();
-	  long jid = (*p)[j]->id();
-	  if ( i < 2 && j < 2 )
-	    continue;
-	  if ( i < 2 && j > 1 ) {
-	    if ( abs(iid) < 7 && abs(jid) < 7 && iid != jid )
-	      continue;
-	  }
-	  if ( i > 1 && j > 1 ) {
-	    if ( abs(iid) < 7 && abs(jid) < 7 && iid + jid != 0 )
-	      continue;
-	  }
-	  collinearHistograms[CollinearSubtractionIndex(*p,make_pair(i,j))] = SubtractionHistogram(0.001,20.);
-	}
-      }
-    }
-  }
+  theReal = dynamic_ptr_cast<Ptr<MatchboxMEBase>::tptr>(head());
 
 }
 
 void SubtractedME::dofinish() {
+
+  // has been deactivated by the factory
+  if ( !head() ) {
+    MEBase::dofinish();
+    return;
+  }
 
   MEGroup::dofinish();
 
   for ( map<CollinearSubtractionIndex,SubtractionHistogram>::
 	  const_iterator b = collinearHistograms.begin();
 	b != collinearHistograms.end(); ++b ) {
-    b->second.dump(theSubtractionData,
+    b->second.dump(factory()->subtractionData(),
 		   b->first.first,
 		   b->first.second.first,
 		   b->first.second.second);
@@ -292,29 +518,13 @@ void SubtractedME::dofinish() {
   for ( map<SoftSubtractionIndex,SubtractionHistogram>::
 	  const_iterator b = softHistograms.begin();
 	b != softHistograms.end(); ++b ) {
-    b->second.dump(theSubtractionData,
+    b->second.dump(factory()->subtractionData(),
 		   b->first.first,
 		   b->first.second,
 		   b->first.second);
   }
 
 }
-
-void SubtractedME::rebind(const TranslationMap & trans) {
-  for ( vector<Ptr<SubtractionDipole>::ptr>::iterator d =
-	  theDipoles.begin(); d != theDipoles.end(); ++d )
-    *d = trans.translate(*d);
-  MEGroup::rebind(trans);
-}
-
-IVector SubtractedME::getReferences() {
-  IVector ret = MEGroup::getReferences();
-  for ( vector<Ptr<SubtractionDipole>::ptr>::const_iterator d =
-	  theDipoles.begin(); d != theDipoles.end(); ++d )
-    ret.push_back(*d);
-  return ret;
-}
-
 
 void SubtractedME::print(ostream& os) const {
 
@@ -359,7 +569,7 @@ void SubtractedME::lastEventStatistics() {
   if ( !generator() )
     return;
   /*
-  if ( theVerbose )
+  if ( verbose() )
     printLastEvent(generator()->log());
   */
   if ( !collinearHistograms.empty() )
@@ -381,6 +591,14 @@ SubtractionHistogram(double low,
 
 }
 
+void SubtractedME::SubtractionHistogram::persistentOutput(PersistentOStream& os) const {
+  os << lower << bins;
+}
+
+void SubtractedME::SubtractionHistogram::persistentInput(PersistentIStream& is) {
+  is >> lower >> bins;
+}
+
 void SubtractedME::SubtractionHistogram::
 dump(const std::string& prefix, 
      const cPDVector& proc,
@@ -394,8 +612,8 @@ dump(const std::string& prefix,
   for ( map<double,pair<double,double> >::const_iterator b = bins.begin();
 	b != bins.end(); ++b ) {
     map<double,pair<double,double> >::const_iterator bp = b; --bp;
-    if ( b->second.first != Constants::MaxDouble &&
-	 b->second.second != 0. ) {
+    if ( b->second.first != Constants::MaxDouble ||
+	 b->second.second != 0.0 ) {
       if ( b != bins.begin() )
 	out << bp->first;
       else
@@ -411,14 +629,14 @@ dump(const std::string& prefix,
 	<< "set output '" << fname.str() << "-plot.tex';\n"
 	<< "set log x;\n"
 	<< "set size 0.5,0.6;\n"
-	<< "set yrange [0:5];\n"
-	<< "set xrange [0.01:100];\n";
+	<< "set yrange [0:2];\n"
+	<< "set xrange [0.001:10];\n";
   if ( i != j ) {
     gpout << "set xlabel '$\\sqrt{s_{" << i << j << "}}/{\\rm GeV}$'\n";
   } else {
     gpout << "set xlabel '$E_{" << i << "}/{\\rm GeV}$'\n";
   }
-  gpout << "plot 1 w lines lc rgbcolor \"#000000\" notitle, '" << fname.str() 
+  gpout << "plot 1 w lines lc rgbcolor \"#DDDDDD\" notitle, '" << fname.str() 
 	<< ".dat' u (($1+$2)/2.):3:($4 < 4. ? $4 : 4.) w filledcurves lc rgbcolor \"#00AACC\" t "
 	<< "'$";
   for ( size_t k = 0; k < proc.size(); k++ ) {
@@ -439,16 +657,40 @@ void SubtractedME::lastEventSubtraction() {
   CrossSection xcme2 = xc->lastHeadCrossSection();
   CrossSection xcdip = ZERO;
 
-  if ( xcme2 == ZERO )
-    return;
-
-  for ( StdDepXCVector::const_iterator d = xc->dependent().begin();
+  for ( vector<StdXCombPtr>::const_iterator d = xc->dependent().begin();
 	d != xc->dependent().end(); ++d ) {
     if ( !(*d) )
       continue;
     if ( !(**d).matrixElement()->apply() )
       continue;
+    if ( !(**d).willPassCuts() )
+      continue;
     xcdip += (**d).lastCrossSection();
+  }
+
+  // want a real emission safely above the cut
+  if ( xc->cutWeight() < 1.0 )
+    return;
+
+  double delta = abs(xcdip)/abs(xcme2);
+
+  if ( theReal->phasespace() ) {
+    size_t i = lastSingularLimit()->first;
+    size_t j = lastSingularLimit()->second;
+    if ( i == j && 
+	 softHistograms.find(SoftSubtractionIndex(head()->mePartonData(),i))
+	 != softHistograms.end() ) {
+      softHistograms[SoftSubtractionIndex(head()->mePartonData(),i)].
+	book(meMomenta()[i].t()/GeV,delta);
+    }
+    if ( i != j &&
+	 collinearHistograms.find(CollinearSubtractionIndex(head()->mePartonData(),make_pair(i,j))) 
+	 != collinearHistograms.end() ) {
+      double s = sqrt(2.*meMomenta()[i]*meMomenta()[j])/GeV;
+      collinearHistograms[CollinearSubtractionIndex(head()->mePartonData(),make_pair(i,j))].
+	book(s,delta);
+    }
+    return;
   }
 
   for ( size_t i = 0; i < meMomenta().size(); ++i ) {
@@ -456,7 +698,7 @@ void SubtractedME::lastEventSubtraction() {
       if ( softHistograms.find(SoftSubtractionIndex(head()->mePartonData(),i))
 	   != softHistograms.end() ) {
 	softHistograms[SoftSubtractionIndex(head()->mePartonData(),i)].
-	  book(meMomenta()[i].t()/GeV,abs(xcdip)/abs(xcme2));
+	  book(meMomenta()[i].t()/GeV,delta);
       }
     }
     for ( size_t j = i+1; j < meMomenta().size(); ++j ) {
@@ -465,107 +707,31 @@ void SubtractedME::lastEventSubtraction() {
 	continue;
       double s = sqrt(2.*meMomenta()[i]*meMomenta()[j])/GeV;
       collinearHistograms[CollinearSubtractionIndex(head()->mePartonData(),make_pair(i,j))].
-	book(s,abs(xcdip)/abs(xcme2));
+	book(s,delta);
     }
   }
 
 }
-
-void SubtractedME::dumpInfo(const string& prefix) const {
-  generator()->log() << prefix << fullName()
-		     << " [" << this << "]\n";
-  generator()->log() << prefix << "  | XComb " << lastXCombPtr()
-		     << " for ";
-  if ( lastXCombPtr() ) {
-    for ( cPDVector::const_iterator p = lastXComb().mePartonData().begin();
-	  p != lastXComb().mePartonData().end(); ++p ) {
-      generator()->log() << (**p).PDGName() << " ";
-    }
-  }
-  generator()->log() << "\n";
-  generator()->log() << prefix << "  | Real emission ME\n";
-  dynamic_ptr_cast<Ptr<MatchboxMEBase>::tptr>(head())->dumpInfo(prefix+"  | ");
-  generator()->log() << prefix << "  | Dipoles\n";
-  for ( MEVector::const_iterator k = dependent().begin();
-	k != dependent().end(); ++k ) {
-    dynamic_ptr_cast<Ptr<SubtractionDipole>::ptr>(*k)->dumpInfo(prefix+"  | ");
-  }
-}
-
 
 void SubtractedME::persistentOutput(PersistentOStream & os) const {
-  os << theDipoles << theBorns << theSubtractionData 
-     << theVerbose << theSubProcessGroups << theVetoScales;
+  os << theLastXComb << theFactory << theBorns << theReal 
+     << collinearHistograms << softHistograms 
+     << theRealShowerSubtraction << theVirtualShowerSubtraction
+     << theSubProcessGroups << theInclusive;
 }
 
 void SubtractedME::persistentInput(PersistentIStream & is, int) {
-  is >> theDipoles >> theBorns >> theSubtractionData 
-     >> theVerbose >> theSubProcessGroups >> theVetoScales;
+  is >> theLastXComb >> theFactory >> theBorns >> theReal 
+     >> collinearHistograms >> softHistograms 
+     >> theRealShowerSubtraction >> theVirtualShowerSubtraction
+     >> theSubProcessGroups >> theInclusive;
+  lastMatchboxXComb(theLastXComb);
 }
 
 void SubtractedME::Init() {
 
   static ClassDocumentation<SubtractedME> documentation
     ("SubtractedME represents a subtracted real emission matrix element.");
-
-  static RefVector<SubtractedME,MatchboxMEBase> interfaceBorns
-    ("Borns",
-     "The underlying Born matrix elements to be considered",
-     &SubtractedME::theBorns, -1, false, false, true, true, false);
-
-
-  static Parameter<SubtractedME,string> interfaceSubtractionData
-    ("SubtractionData",
-     "File to dump subtraction check to.",
-     &SubtractedME::theSubtractionData, "",
-     false, false);
-
-
-  static Switch<SubtractedME,bool> interfaceVerbose
-    ("Verbose",
-     "Print full infomation on each evaluated phase space point.",
-     &SubtractedME::theVerbose, false, false, false);
-  static SwitchOption interfaceVerboseOn
-    (interfaceVerbose,
-     "On",
-     "On",
-     true);
-  static SwitchOption interfaceVerboseOff
-    (interfaceVerbose,
-     "Off",
-     "Off",
-     false);
-
-  static Switch<SubtractedME,bool> interfaceSubProcessGroups
-    ("SubProcessGroups",
-     "Switch on or off production of sub-process groups.",
-     &SubtractedME::theSubProcessGroups, false, false, false);
-  static SwitchOption interfaceSubProcessGroupsOn
-    (interfaceSubProcessGroups,
-     "On",
-     "On",
-     true);
-  static SwitchOption interfaceSubProcessGroupsOff
-    (interfaceSubProcessGroups,
-     "Off",
-     "Off",
-     false);
-
-  static Switch<SubtractedME,bool> interfaceVetoScales
-    ("VetoScales",
-     "Switch on or off production of sub-process groups.",
-     &SubtractedME::theVetoScales, true, false, false);
-  static SwitchOption interfaceVetoScalesOn
-    (interfaceVetoScales,
-     "On",
-     "On",
-     true);
-  static SwitchOption interfaceVetoScalesOff
-    (interfaceVetoScales,
-     "Off",
-     "Off",
-     false);
-
 
 }
 

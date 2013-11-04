@@ -300,8 +300,14 @@ void HardProcessConstructor::tChannelCF(HPDiagram & diag) {
   else if(diag.intermediate->iColour() == PDT::Colour3 ||
 	  diag.intermediate->iColour() == PDT::Colour3bar) {
     if(outa == PDT::Colour0 || outb == PDT::Colour0) {
-      cfv[0] = make_pair(0,1.);
-      // cfv.push_back(make_pair(1,1.));
+      if( outa != PDT::Colour6    && outb != PDT::Colour6   &&
+	  outa != PDT::Colour6bar && outb != PDT::Colour6bar) {
+	cfv[0] = make_pair(0,1.);
+      }
+      else {
+	cfv[0] = make_pair(0,0.5);
+	cfv.push_back(make_pair(1,0.5));
+      }
     }
     else if(outa==PDT::Colour6 && outb==PDT::Colour3bar) {
       cfv[0] = make_pair(4,1.);
@@ -315,13 +321,6 @@ void HardProcessConstructor::tChannelCF(HPDiagram & diag) {
     else if(outa==PDT::Colour6 || outa ==PDT::Colour6bar ||
 	    outb==PDT::Colour6 || outb ==PDT::Colour6bar ) {
       assert(false);
-      //       cfv[0] = make_pair(0,1.);
-      // should this start a 0 or one i.e. 4 or 5 flows
-      //       for(int ix=0; ix<4;++ix)
-      // 	cfv.push_back(make_pair(ix,1.));
-    }
-    else {
-      cfv[0] = make_pair(0,1.);
     }
   }
   else if(diag.intermediate->iColour() == PDT::Colour6 ||
@@ -346,7 +345,7 @@ void HardProcessConstructor::tChannelCF(HPDiagram & diag) {
   diag.colourFlow = cfv;
 }
  
-void HardProcessConstructor::uChannelCF(HPDiagram & diag) {
+void HardProcessConstructor::uChannelCF(HPDiagram & diag) { 
   PDT::Colour offshell = diag.intermediate->iColour();
   PDT::Colour ina  = getParticleData(diag.incoming.first )->iColour();
   PDT::Colour inb  = getParticleData(diag.incoming.second)->iColour();
@@ -369,74 +368,76 @@ void HardProcessConstructor::uChannelCF(HPDiagram & diag) {
       cfv.push_back(make_pair(2, 1.));
     }
   }
-  else {
-    if(offshell == PDT::Colour3 || offshell == PDT::Colour3bar) {
-      if( outa == PDT::Colour0 || outb == PDT::Colour0 ) {
+  else if(offshell == PDT::Colour3 || offshell == PDT::Colour3bar) {
+    if( outa == PDT::Colour0 || outb == PDT::Colour0 ) {
+      if( outa != PDT::Colour6    && outb != PDT::Colour6   &&
+	  outa != PDT::Colour6bar && outb != PDT::Colour6bar) {
 	cfv[0] = make_pair(0,1.);
-	// cfv.push_back(make_pair(1,1.));
       }
-      else if(outa==PDT::Colour3bar && outb==PDT::Colour6) {
-	cfv[0] = make_pair(4,1.);
-	cfv.push_back(make_pair(5,1.));
+      else {
+	cfv[0] = make_pair(0,0.5);
+	cfv.push_back(make_pair(1,0.5));
       }
-      else if(outa==PDT::Colour6 && outb==PDT::Colour3bar) {
-	cfv[0] = make_pair(0,1.);
-	for(int ix=0; ix<4;++ix)
-	  cfv.push_back(make_pair(ix,1.));
-      }
-      else if(outa==PDT::Colour6bar && outb==PDT::Colour6) {
-	cfv[0] = make_pair(4,1.);
-	for(int ix=5; ix<8;++ix)
-	  cfv.push_back(make_pair(ix,1.));
-      }
-      else
-	cfv[0].first = 0;
     }
-    else if( offshell == PDT::Colour0 ) {
-      if(ina==PDT::Colour0) {
+    else if(outa==PDT::Colour3bar && outb==PDT::Colour6) {
+      cfv[0] = make_pair(4,1.);
+      cfv.push_back(make_pair(5,1.));
+    }
+    else if(outa==PDT::Colour6 && outb==PDT::Colour3bar) {
+      cfv[0] = make_pair(0,1.);
+      for(int ix=0; ix<4;++ix)
+	cfv.push_back(make_pair(ix,1.));
+    }
+    else if(outa==PDT::Colour6bar && outb==PDT::Colour6) {
+      cfv[0] = make_pair(4,1.);
+      for(int ix=5; ix<8;++ix)
+	cfv.push_back(make_pair(ix,1.));
+    }
+  }
+  else if( offshell == PDT::Colour0 ) {
+    if(ina==PDT::Colour0) {
+      cfv[0] = make_pair(0, 1);
+    }
+    else if(ina==PDT::Colour3 || ina==PDT::Colour3bar) {
+      if( inb == PDT::Colour0 ) {
 	cfv[0] = make_pair(0, 1);
       }
-      else if(ina==PDT::Colour3 || ina==PDT::Colour3bar) {
-	if( inb == PDT::Colour0 ) {
-	  cfv[0] = make_pair(0, 1);
-	}
-	else if(inb==PDT::Colour3 || outb==PDT::Colour3bar) {
-	  cfv[0] = make_pair(3, 1);
-	}
-	else if(inb==PDT::Colour8) {
-	  cfv[0] = make_pair(2, 1);
-	}
+      else if(inb==PDT::Colour3 || outb==PDT::Colour3bar) {
+	cfv[0] = make_pair(3, 1);
       }
-      else if(ina==PDT::Colour8) {
-	if( inb == PDT::Colour0 ) {
-	  cfv[0] = make_pair(0, 1);
-	}
-	else if(inb==PDT::Colour3 || outb==PDT::Colour3bar) {
-	  cfv[0] = make_pair(2, 1);
-	}
-	else if(inb==PDT::Colour8) {
-	  cfv[0] = make_pair(4, 1);
-	}
+      else if(inb==PDT::Colour8) {
+	cfv[0] = make_pair(2, 1);
       }
     }
-    else if(diag.intermediate->iColour() == PDT::Colour6 ||
-	    diag.intermediate->iColour() == PDT::Colour6bar) {
-      if(ina==PDT::Colour8 && inb==PDT::Colour8) {
-	cfv[0] = make_pair(0, 1.);
-	for(unsigned int ix=1;ix<4;++ix)
-	  cfv.push_back(make_pair(ix,1.));
-	for(unsigned int ix=8;ix<12;++ix)
-	  cfv.push_back(make_pair(ix,1.));
+    else if(ina==PDT::Colour8) {
+      if( inb == PDT::Colour0 ) {
+	cfv[0] = make_pair(0, 1);
       }
-      else if(outa==PDT::Colour3bar && outa==PDT::Colour6) {
-	cfv[0] = make_pair(4, 1.);
-	cfv.push_back(make_pair(5,1.));
+      else if(inb==PDT::Colour3 || outb==PDT::Colour3bar) {
+	cfv[0] = make_pair(2, 1);
       }
-      else if(outa==PDT::Colour6 && outa==PDT::Colour3bar) {
-	cfv[0] = make_pair(0, 1.);
-	for(unsigned int ix=1;ix<4;++ix)
-	  cfv.push_back(make_pair(ix,1.));
+      else if(inb==PDT::Colour8) {
+	cfv[0] = make_pair(4, 1);
       }
+    }
+  }
+  else if(diag.intermediate->iColour() == PDT::Colour6 ||
+	  diag.intermediate->iColour() == PDT::Colour6bar) {
+    if(ina==PDT::Colour8 && inb==PDT::Colour8) {
+      cfv[0] = make_pair(0, 1.);
+      for(unsigned int ix=1;ix<4;++ix)
+	cfv.push_back(make_pair(ix,1.));
+      for(unsigned int ix=8;ix<12;++ix)
+	cfv.push_back(make_pair(ix,1.));
+    }
+    else if(outa==PDT::Colour3bar && outa==PDT::Colour6) {
+      cfv[0] = make_pair(4, 1.);
+      cfv.push_back(make_pair(5,1.));
+    }
+    else if(outa==PDT::Colour6 && outa==PDT::Colour3bar) {
+      cfv[0] = make_pair(0, 1.);
+      for(unsigned int ix=1;ix<4;++ix)
+	cfv.push_back(make_pair(ix,1.));
     }
   }
   diag.colourFlow = cfv;
@@ -466,10 +467,11 @@ void HardProcessConstructor::sChannelCF(HPDiagram & diag) {
       bool outsex  = outa == PDT::Colour6 && outb == PDT::Colour6bar;
       bool outsexb = outa == PDT::Colour6bar && outb == PDT::Colour6;
       if(incol || outcol) {
-	// Require an additional minus sign for a fermion 33bar final state
-	// due to the way the vertex rules are defined.
+	// Require an additional minus sign for a scalar/fermion
+	// 33bar final state due to the way the vertex rules are defined.
 	int prefact(1);
-	if( (pc->iSpin() == PDT::Spin1Half && pd->iSpin() == PDT::Spin1Half) &&
+	if( ((pc->iSpin() == PDT::Spin1Half && pd->iSpin() == PDT::Spin1Half) ||
+	     (pc->iSpin() == PDT::Spin0     && pd->iSpin() == PDT::Spin0    )) &&
 	    (outa        == PDT::Colour3   && outb        == PDT::Colour3bar) )
 	  prefact = -1;
 	if(incol && outcol) {
@@ -479,11 +481,11 @@ void HardProcessConstructor::sChannelCF(HPDiagram & diag) {
 	}
 	else if(incol && outsex) {
 	  cfv[0].first = 4;
-	  cfv[0].second = -prefact;
+	  cfv[0].second =  prefact;
 	  for(unsigned int ix=1;ix<4;++ix)
-	    cfv.push_back(make_pair(4+ix,-prefact));
+	    cfv.push_back(make_pair(4+ix, prefact));
 	  for(unsigned int ix=0;ix<4;++ix)
-	    cfv.push_back(make_pair(8+ix, prefact));
+	    cfv.push_back(make_pair(8+ix,-prefact));
 	}
 	else {
 	  cfv[0].first = 0;
@@ -524,6 +526,8 @@ void HardProcessConstructor::sChannelCF(HPDiagram & diag) {
       else if(outa==PDT::Colour8) {
 	cfv[0] = make_pair(2, 1);
       }
+      else
+	assert(false);
     }
     else if(ina==PDT::Colour8) {
       if( outa == PDT::Colour0 ) {
@@ -543,10 +547,32 @@ void HardProcessConstructor::sChannelCF(HPDiagram & diag) {
       cfv[0] = make_pair(6, 1.);
       cfv.push_back(make_pair(7,1.));
     }
+    else {
+      if(outa == PDT::Colour0 || outb == PDT::Colour0)
+	cfv[0] = make_pair(0, 1);
+      else
+	cfv[0] = make_pair(1, 1);
+    }
   }
   else if( offshell == PDT::Colour6 || offshell == PDT::Colour6bar) {
-    cfv[0]      = make_pair(2,0.5);
-    cfv.push_back(make_pair(3,0.5));
+    if((ina  == PDT::Colour3    && inb  == PDT::Colour3    &&
+	outa == PDT::Colour3    && outb == PDT::Colour3   ) ||
+       (ina  == PDT::Colour3bar && inb  == PDT::Colour3bar &&
+	outa == PDT::Colour3bar && outb == PDT::Colour3bar)) {
+      cfv[0]      = make_pair(2,0.5);
+      cfv.push_back(make_pair(3,0.5));
+    }
+    else if((ina  == PDT::Colour3    && inb  == PDT::Colour3    &&
+	     ((outa == PDT::Colour6    && outb == PDT::Colour0)||
+	      (outb == PDT::Colour6    && outa == PDT::Colour0))) ||
+	    (ina  == PDT::Colour3bar && inb  == PDT::Colour3bar &&
+	     ((outa == PDT::Colour6bar && outb == PDT::Colour0)||
+	      (outb == PDT::Colour6bar && outa == PDT::Colour0)))) {
+      cfv[0]      = make_pair(0,0.5);
+      cfv.push_back(make_pair(1,0.5));
+    }
+    else
+      assert(false);
   }
   else {
     if(outa == PDT::Colour0 || outb == PDT::Colour0)

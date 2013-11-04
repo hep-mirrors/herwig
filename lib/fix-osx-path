@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# We need to swap out the potentially broken c++ lib path in Herwig.so
+# that was erroneously set to be the same as the the fortran lib path
+# for a good C++ lib path. 
+
+# tool to do the swapping
+TOOL=install_name_tool
+
+# the broken lib
+HWlib=.libs/Herwig.so
+
+# a good lib (any without fortran dependencies will do)
+goodlib=HwShower.so
+
+# extract the current paths
+local=$(otool  -L "$HWlib" | awk '/c\+\+/ {print $1}')
+good=$(otool -L "$goodlib" | awk '/c\+\+/ {print $1}')
+
+# swap if necessary
+[ "x$local" != "x$good" ] && $TOOL -change "$local" "$good" "$HWlib"
+
+# check they're the same now
+local=$(otool  -L "$HWlib" | awk '/c\+\+/ {print $1}')
+[ "x$local" = "x$good" ] || exit 1

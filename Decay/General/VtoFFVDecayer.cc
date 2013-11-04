@@ -136,11 +136,13 @@ double VtoFFVDecayer::me2(const int ichan, const Particle & inpart,
     }
   }
   unsigned int ivec(0);
+  bool massless = false;
   for(unsigned int ix = 0; ix < decay.size();++ix) {
     if(decay[ix]->dataPtr()->iSpin() == PDT::Spin1) {
+      massless = decay[ix]->id()==ParticleID::g || decay[ix]->id()==ParticleID::gamma;
       ivec = ix;
       VectorWaveFunction::
-	calculateWaveFunctions(_outVector, decay[ix], Helicity::outgoing,false);
+	calculateWaveFunctions(_outVector, decay[ix], Helicity::outgoing, massless );
     }
     else {
       SpinorWaveFunction::
@@ -184,6 +186,7 @@ double VtoFFVDecayer::me2(const int ichan, const Particle & inpart,
     for(unsigned int s1 = 0; s1 < 2; ++s1) {
       for(unsigned int s2 = 0; s2 < 2; ++s2) {
 	for(unsigned int v1 = 0; v1 < 3; ++v1) {
+	  if ( massless && v1 == 1 ) continue; 
 	  flows = vector<Complex>(ncf, Complex(0.));
 	  largeflows = vector<Complex>(ncf, Complex(0.));
 	  unsigned int idiag(0);

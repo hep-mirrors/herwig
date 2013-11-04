@@ -40,6 +40,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2010_S8591881_QCD
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0  D0_2004_S5992206
 # inclusive jet cross section
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0  D0_2008_S7662670
+# D0 three-jets analysis
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0  D0_2011_I895662
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'

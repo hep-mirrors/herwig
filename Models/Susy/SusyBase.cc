@@ -12,6 +12,7 @@
 //
 
 #include "SusyBase.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -22,14 +23,12 @@
 #include "ThePEG/Utilities/StringUtils.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "ThePEG/PDT/MassGenerator.h"
-#include "ThePEG/PDT/WidthGenerator.h"
 #include "ThePEG/PDT/DecayMode.h"
 
 using namespace Herwig;
 
 SusyBase::SusyBase() : readFile_(false), MPlanck_(2.4e18*GeV),
-		       gravitino_(false),
+		       gravitino_(false), majoranaNeutrinos_(false),
 		       tanBeta_(0), mu_(ZERO), 
 		       M1_(ZERO), M2_(ZERO), M3_(ZERO),
 		       mH12_(ZERO),mH22_(ZERO),
@@ -57,6 +56,7 @@ void SusyBase::doinit() {
   addVertex(CFSFVertex_);
   addVertex(GSFSFVertex_);
   addVertex(GGSQSQVertex_);
+  addVertex(WGSQSQVertex_);
   addVertex(GSGSGVertex_);
   addVertex(NNZVertex_);
   if(NNPVertex_) addVertex(NNPVertex_);
@@ -65,11 +65,16 @@ void SusyBase::doinit() {
   addVertex(CNWVertex_);
   addVertex(GOGOHVertex_);
   addVertex(WHHVertex_);
-  addVertex(NCTVertex_);
+  if(NCTVertex_) addVertex(NCTVertex_);
   if(gravitino_) {
     if(GVNHVertex_) addVertex(GVNHVertex_);
     if(GVNVVertex_) addVertex(GVNVVertex_);
     if(GVFSVertex_) addVertex(GVFSVertex_);
+  }
+  if(majoranaNeutrinos()) {
+    idMap().insert(make_pair(12,17));
+    idMap().insert(make_pair(14,18));
+    idMap().insert(make_pair(16,19));
   }
   BSMModel::doinit();
 }
@@ -78,7 +83,7 @@ void SusyBase::persistentOutput(PersistentOStream & os) const {
   os << readFile_ << gravitino_
      << NMix_ << UMix_ << VMix_ << WSFSFVertex_ 
      << NFSFVertex_ << GFSFVertex_ << HSFSFVertex_ << CFSFVertex_ 
-     << GSFSFVertex_ << GGSQSQVertex_ << GSGSGVertex_ 
+     << GSFSFVertex_ << GGSQSQVertex_ << WGSQSQVertex_ << GSGSGVertex_ 
      << NNZVertex_ << NNPVertex_ << CCZVertex_ << CNWVertex_ 
      << GOGOHVertex_ << WHHVertex_ << GNGVertex_ << NCTVertex_
      << GVNHVertex_ << GVNVVertex_ << GVFSVertex_
@@ -97,7 +102,7 @@ void SusyBase::persistentInput(PersistentIStream & is, int) {
   is >> readFile_  >> gravitino_
      >> NMix_ >> UMix_ >> VMix_ >> WSFSFVertex_ 
      >> NFSFVertex_ >> GFSFVertex_ >> HSFSFVertex_ >> CFSFVertex_ 
-     >> GSFSFVertex_ >> GGSQSQVertex_ >> GSGSGVertex_ 
+     >> GSFSFVertex_ >> GGSQSQVertex_ >> WGSQSQVertex_ >> GSGSGVertex_ 
      >> NNZVertex_ >> NNPVertex_ >> CCZVertex_ >> CNWVertex_
      >> GOGOHVertex_ >> WHHVertex_ >> GNGVertex_ >> NCTVertex_
      >> GVNHVertex_ >> GVNVVertex_ >> GVFSVertex_
@@ -112,8 +117,9 @@ void SusyBase::persistentInput(PersistentIStream & is, int) {
      >> gluinoPhase_ >> iunit(MPlanck_,GeV);
 }
 
-ClassDescription<SusyBase> SusyBase::initSusyBase;
-// Definition of the static class description member.
+// Static variable needed for the type description system in ThePEG.
+DescribeClass<SusyBase,BSMModel>
+describeHerwigSusyBase("Herwig::SusyBase", "HwSusy.so");
 
 void SusyBase::Init() {
 
@@ -174,6 +180,11 @@ void SusyBase::Init() {
       "Reference to the gluon-gluon-squark-squark vertex",
       &SusyBase::GGSQSQVertex_, false, false, true, false);
 
+   static Reference<SusyBase,Helicity::AbstractVVSSVertex> interfaceVertexWGSS
+     ("Vertex/WGSQSQ",
+      "Reference to the gauge boson-gluon-squark-squark vertex",
+      &SusyBase::WGSQSQVertex_, false, false, true, false);
+
    static Reference<SusyBase,Helicity::AbstractFFVVertex> interfaceVertexGSGSG
      ("Vertex/GSGSG",
       "Reference to the gluon-gluino-gluino vertex",
@@ -218,7 +229,7 @@ void SusyBase::Init() {
     ("Vertex/NCT",
      "Vertex for the flavour violating coupling of the top squark "
      "to the neutralino and charm quark.",
-     &SusyBase::NCTVertex_, false, false, true, false, false);
+     &SusyBase::NCTVertex_, false, false, true, true, false);
 
   static Reference<SusyBase,AbstractRFSVertex> interfaceVertexGVNH
     ("Vertex/GVNH",
@@ -244,10 +255,30 @@ void SusyBase::Init() {
      &SusyBase::MPlanck_, GeV, 2.4e18*GeV, 1.e16*GeV, 1.e20*GeV,
      false, false, Interface::limited);
 
+  static Switch<SusyBase,bool> interfaceMajoranaNeutrinos
+    ("MajoranaNeutrinos",
+     "Whether or not the neutrinos should be treated as Majorana particles",
+     &SusyBase::majoranaNeutrinos_, false, false, false);
+  static SwitchOption interfaceMajoranaNeutrinosYes
+    (interfaceMajoranaNeutrinos,
+     "Yes",
+     "Neutrinos are Majorana",
+     true);
+  static SwitchOption interfaceMajoranaNeutrinosNo
+    (interfaceMajoranaNeutrinos,
+     "No",
+     "Neutrinos are Dirac fermions",
+     false);
+
 }
 
 void SusyBase::readSetup(istream & is) {
   string filename = dynamic_ptr_cast<istringstream*>(&is)->str();
+  if(majoranaNeutrinos()) {
+    idMap().insert(make_pair(12,17));
+    idMap().insert(make_pair(14,18));
+    idMap().insert(make_pair(16,19));
+  }
   filename = StringUtils::stripws(filename);
   if(readFile_)
     throw SetupException() 
@@ -310,8 +341,11 @@ void SusyBase::readSetup(istream & is) {
 	if(scale>1e10) continue;
 	mixings_[name] = make_pair(make_pair(row,col),vals);
       }
+      else if( name == "spinfo" ) {
+	readBlock(cfile,name,line,true);
+      }
       else if( name.find("info") == string::npos) {
-	readBlock(cfile,name,line);
+	readBlock(cfile,name,line,false);
       }
       else {
 	if(!cfile.readline()) break;
@@ -319,7 +353,6 @@ void SusyBase::readSetup(istream & is) {
       continue;
     }
     else if( lesHouches && line.find("</slha") == 0 ) {
-      reading = false;
       break;
     }
     if(!cfile.readline()) break;
@@ -337,14 +370,16 @@ void SusyBase::readSetup(istream & is) {
   readFile_=true;
 }
 
-void SusyBase::readBlock(CFileLineReader & cfile,string name,string linein) {
+void SusyBase::readBlock(CFileLineReader & cfile,string name,string linein,
+			 bool stringBlock) {
   if(!cfile)
     throw SetupException() 
-      << "SusyBase::readBlock() - The input stream is in a bad state"
-      << Exception::runerror;
+				    << "SusyBase::readBlock() - The input stream is in a bad state"
+				    << Exception::runerror;
   // storage or the parameters
   string test = StringUtils::car(linein, "#");
-  ParamMap store;
+  ParamMap  storeParam;
+  StringMap storeString;
   bool set = true;
   // special for the alpha block
   if(name.find("alpha") == 0 ) {
@@ -353,43 +388,61 @@ void SusyBase::readBlock(CFileLineReader & cfile,string name,string linein) {
     string line = cfile.getline();
     istringstream iss(line);
     iss >> alpha;
-    store.insert(make_pair(1,alpha));
+    storeParam.insert(make_pair(1,alpha));
+    parameters_[name]=storeParam;
+    return;
   }
-  else {
-    // extract the scale from the block if present
-    if(test.find("=")!= string::npos) { 
-      while(test.find("=")!=string::npos)
-	test= StringUtils::cdr(test,"=");
-      istringstream is(test);
-      double scale;
-      is >> scale;
-      // only store the lowest scale block
-      if(parameters_.find(name)!=parameters_.end()) {
-	set = scale < parameters_[name][-1];
+  // extract the scale from the block if present
+  if(test.find("=")!= string::npos) { 
+    while(test.find("=")!=string::npos)
+      test= StringUtils::cdr(test,"=");
+    istringstream is(test);
+    double scale;
+    is >> scale;
+    // only store the lowest scale block
+    if(parameters_.find(name)!=parameters_.end()) {
+      set = scale < parameters_[name][-1];
+    }
+    else {
+      storeParam.insert(make_pair(-1,scale));
+    }
+  }
+  while(cfile.readline()) {
+    string line = cfile.getline();
+    // skip comments
+    if(line[0] == '#') continue;
+    // reached the end
+    if( line[0] == 'B' || line[0] == 'b' ||
+	line[0] == 'D' || line[0] == 'd' ||
+	line[0] == '<' ) {
+      cfile.resetline();
+      break;
+    }
+    istringstream is(line);
+    long index;
+    if(!stringBlock) {
+      double value;
+      if(name.find("rvlam")!= string::npos||
+	 name=="rvt" || name=="rvtp" || name=="rvtpp") {
+	int i,j,k;
+	is >> i >> j >> k >> value;
+	index = i*100+j*10+k;
       }
       else {
-	store.insert(make_pair(-1,scale));
+	is >> index >> value;
       }
+      storeParam.insert(make_pair(index, value));
     }
-    while(cfile.readline()) {
-      string line = cfile.getline();
-      // skip comments
-      if(line[0] == '#') continue;
-      // reached the end
-      if( line[0] == 'B' || line[0] == 'b' ||
-	  line[0] == 'D' || line[0] == 'd' ||
-	  line[0] == '<' ) {
-	cfile.resetline();
-	break;
-      }
-      istringstream is(line);
-      long index;
-      double value;   
+    else {
+      string value;
       is >> index >> value;
-      store.insert(make_pair(index, value));
+      storeString.insert(make_pair(index,value));
     }
   }
-  if(set) parameters_[name]=store;
+  if(set) {
+    if(stringBlock) info_      [name] = storeString;
+    else            parameters_[name] = storeParam ;
+  }
 }
 
 const MixingVector
@@ -415,11 +468,13 @@ SusyBase::readMatrix(CFileLineReader & cfile,
     istringstream is(line);
     unsigned int index1, index2;
     double real(0.), imag(0.);   
-    is >> index1 >> index2 >> real >> imag;
-    values.push_back(MixingElement(index1,index2,Complex(real, imag)));
-    if(index1 > rowmax) rowmax = index1;
-    if(index2 > colmax) colmax = index2;
-
+    line = StringUtils::stripws(line);
+    if(!line.empty()) {
+      is >> index1 >> index2 >> real >> imag;
+      values.push_back(MixingElement(index1,index2,Complex(real, imag)));
+      if(index1 > rowmax) rowmax = index1;
+      if(index2 > colmax) colmax = index2;
+    }
   }
   col=colmax;
   row=rowmax;
@@ -432,58 +487,141 @@ void SusyBase::createMixingMatrix(MixingMatrixPtr & matrix,
   matrix = new_ptr(MixingMatrix(size.first,size.second));
   for(unsigned int ix=0; ix < values.size(); ++ix)
     (*matrix)(values[ix].row-1,values[ix].col-1) = values[ix].value;
-  
+  // test against stupid mixing matrices  
+  for(unsigned int ix=0;ix<matrix->size().first;++ix) {
+    Complex sum(0.);
+    for(unsigned int iy=0;iy<matrix->size().second;++iy) {
+      sum += norm((*matrix)(ix,iy));
+    }
+    if(abs(sum-1.)>1e-4) {
+      cerr << "The sum of the mod squares of row " << ix+1
+	   << " of the " << name << " block does not sum to 1. \n"
+	   << "sum = " << sum.real() << ". We strongly suggest you check your SLHA file.\n";
+    }
+  }
+
+  vector<long> ids;
   if(name == "nmix") {
-    vector<long> ids(4);
+    ids.resize(4);
     ids[0] = 1000022; ids[1] = 1000023; 
     ids[2] = 1000025; ids[3] = 1000035; 
-    matrix->setIds(ids);
   }
   else if(name == "nmnmix") {
-    vector<long> ids(5);
+    ids.resize(5);
     ids[0] = 1000022; ids[1] = 1000023; 
     ids[2] = 1000025; ids[3] = 1000035;
-    ids[4] = 1000045; 
-    matrix->setIds(ids);
+    ids[4] = 1000045;
   }
-  else if(name == "umix") {
-    vector<long> ids(2);
-    ids[0] = 1000024; ids[1] = 1000037; 
-    matrix->setIds(ids);
+  else if(name == "rvnmix") {
+    ids.resize(7);
+    ids[0] = 1000022; ids[1] = 1000023; 
+    ids[2] = 1000025; ids[3] = 1000035;
+    if(!majoranaNeutrinos()) {
+      ids[4] = 12; ids[5] = 14; ids[6] = 16;
+    }
+    else { 
+      ids[4] = 17; ids[5] = 18; ids[6] = 19;
+    }
   }
-  else if(name == "vmix") {
-    vector<long> ids(2);
-    ids[0] = 1000024; ids[1] = 1000037; 
-    matrix->setIds(ids);
+  else if(name == "rpvmix") {
+    ids.resize(5);
+    ids[0] = 1000022; ids[1] = 1000023; 
+    ids[2] = 1000025; ids[3] = 1000035;
+    ids[4] = 1000045;
+  }
+  else if(name == "umix" || name == "vmix") {
+    ids.resize(2);
+    ids[0] = 1000024; ids[1] = 1000037;
+  }
+  else if(name == "rvumix" || name == "rvvmix" ) {
+    ids.resize(5);
+    ids[3] = 1000024; ids[4] = 1000037; 
+    ids[0] = -11; ids[1] = -13; ids[2] = -15;
   }
   else if(name == "stopmix") {
-    vector<long> ids(2);
-    ids[0] = 1000006; ids[1] = 2000006; 
-    matrix->setIds(ids);
+    ids.resize(2);
+    ids[0] = 1000006; ids[1] = 2000006;
   }
   else if(name == "sbotmix") {
-    vector<long> ids(2);
-    ids[0] = 1000005; ids[1] = 2000005; 
-    matrix->setIds(ids);
+    ids.resize(2);
+    ids[0] = 1000005; ids[1] = 2000005;
   }
   else if(name == "staumix") {
-    vector<long> ids(2);
-    ids[0] = 1000015; ids[1] = 2000015; 
-    matrix->setIds(ids);
+    ids.resize(2);
+    ids[0] = 1000015; ids[1] = 2000015;
   }
   else if(name == "nmhmix") {
-    vector<long> ids(3);
+    ids.resize(3);
     ids[0] = 25; ids[1] = 35; ids[2] = 45;
-    matrix->setIds(ids);
   }
   else if(name == "nmamix") {
-    vector<long> ids(2);
+    ids.resize(2);
     ids[0] = 36; ids[1] = 46;
-    matrix->setIds(ids);
   }
-  else
-    throw SetupException() << "Cannot find correct title for mixing matrix "
+  else if(name == "rvamix") {
+    // some programs, i.e. spheno include the goldstone even though the standard says they shouldn't
+    // obeys standard
+    if(size.first==4) {
+      ids.resize(4);
+    }
+    // includes goldstone
+    else if(size.first==5) {
+      ids.resize(5);
+      ids[4] = 0;
+    }
+    else {
+      throw Exception() << "SusyBase::createMixingMatrix() "
+			<< "rvamix matrix must have either 4 rows (obeying standard) "
+			<< "or 5 including the goldstone, not " << size.first << Exception::runerror;
+    }
+    ids[0] = 36     ; ids[1] = 1000017;
+    ids[2] = 1000018; ids[3] = 1000019;
+  }
+  else if(name == "rvhmix") {
+    ids.resize(5);
+    ids[0] = 25; ids[1] = 35;
+    ids[2] = 1000012; ids[3] = 1000014; ids[4] = 1000016;
+  }
+  else if(name == "rvlmix") {
+    // some programs, i.e. spheno include the goldstone even though the standard says they shouldn't
+    // obeys standard
+    if(size.first==7) {
+      ids.resize(7);
+    }
+    // includes goldstone
+    else if(size.first==8) {
+      ids.resize(8);
+      ids[7] = 0;
+    }
+    else {
+      throw Exception() << "SusyBase::createMixingMatrix() "
+			<< "rvlmix matrix must have either 7 rows (obeying standard) "
+			<< "or 8 including the goldstone, not " << size.first << Exception::runerror;
+    }
+    ids[0] = 37;
+    ids[1] = -1000011;
+    ids[2] = -1000013;
+    ids[3] = -1000015;
+    ids[4] = -2000011;
+    ids[5] = -2000013;
+    ids[6] = -2000015;
+  }
+  else if(name == "usqmix" ) {
+    ids.resize(6);
+    ids[0] = 1000002; ids[1] = 1000004; ids[2] = 1000006;
+    ids[3] = 2000002; ids[4] = 2000004; ids[5] = 2000006;
+  }
+  else if(name == "dsqmix" ) {
+    ids.resize(6);
+    ids[0] = 1000001; ids[1] = 1000003; ids[2] = 1000005;
+    ids[3] = 2000001; ids[4] = 2000003; ids[5] = 2000005;
+  }
+  else {
+    throw SetupException() << "SusyBase::createMixingMatrix() "
+			   << "cannot find correct title for mixing matrix "
 			   << name << Exception::runerror;
+  }
+  matrix->setIds(ids);
 }
 
 void SusyBase::resetRepositoryMasses() {
@@ -496,6 +634,8 @@ void SusyBase::resetRepositoryMasses() {
   for(ParamMap::iterator it = theMasses.begin(); it != theMasses.end(); 
       ++it) {
     long id = it->first;
+    map<long,long>::const_iterator dit = idMap().find(id);
+    if(dit!=idMap().end()) id = dit->second;
     double mass = it->second;
     //a negative mass requires an adjustment to the 
     //associated mixing matrix by a factor of i
@@ -504,17 +644,15 @@ void SusyBase::resetRepositoryMasses() {
     if(!part) throw SetupException() 
       << "SusyBase::resetRepositoryMasses() - Particle with PDG code " << id  
       << " not found." << Exception::warning;
-    if(abs(id)<=5||abs(id)==23||abs(id)==24)
+    if(abs(id)<=5||abs(id)==23||abs(id)==24||
+       (abs(id)>=11&&abs(id)<=16))
       cerr << "SusyBase::resetRepositoryMasses() Resetting mass of " 
 	   << part->PDGName() << " using SLHA "
 	   << "file,\nthis can affect parts of the Standard Model simulation and"
 	   << " is strongly discouraged.\n";
-    //Find interface nominal mass interface
-    const InterfaceBase * ifb = BaseRepository::FindInterface(part, "NominalMass");
-    ostringstream os;
-    os.precision(12);
-    os << abs(it->second);
-    ifb->exec(*part, "set", os.str());
+    // reset the masses
+    resetMass(it->first,it->second*GeV,part);
+
     // switch on gravitino interactions?
     gravitino_ |= id== ParticleID::SUSY_Gravitino;
   }
@@ -531,9 +669,14 @@ void SusyBase::adjustMixingMatrix(long id) {
   case 1000023 :
   case 1000025 :
   case 1000035 : 
-  case 1000045 : 
-    if(NMix_)
-      NMix_->adjustPhase(id);
+  case 1000045 :
+  case 12 : case 17 : 
+  case 14 : case 18 : 
+  case 16 : case 19 :
+    if(NMix_) {
+      if(id>20||(id<=16&&NMix_->size().first>4))
+	 NMix_->adjustPhase(id);
+    }
     else 
       throw SetupException() << "SusyBase::adjustMixingMatrix - "
 			     << "The neutralino mixing matrix pointer "
@@ -547,8 +690,7 @@ void SusyBase::adjustMixingMatrix(long id) {
       throw SetupException() << "SusyBase::adjustMixingMatrix - "
 			     << "The U-Type chargino mixing matrix pointer "
 			     << "is null!" << Exception::runerror;
-    if(VMix_)
-      VMix_->adjustPhase(id);
+    if(VMix_) VMix_->adjustPhase(id);
     else 
       throw SetupException() << "SusyBase::adjustMixingMatrix - "
 			     << "The V-Type chargino mixing matrix pointer "
@@ -569,13 +711,13 @@ void SusyBase::createMixingMatrices() {
   for(it=mixings_.begin();it!=mixings_.end();++it) {
     string name=it->first;
     // create the gaugino mixing matrices
-    if(name == "nmix" || name == "nmnmix" ){
+    if(name == "nmix" || name == "nmnmix" || name == "rvnmix" ) {
       createMixingMatrix(NMix_,name,it->second.second,it->second.first);
     }
-    else if (name == "umix" ) {
+    else if (name == "umix" || name == "rvumix" ) {
       createMixingMatrix(UMix_,name,it->second.second,it->second.first);
     }
-    else if (name == "vmix") {
+    else if (name == "vmix" || name == "rvvmix" ) {
       createMixingMatrix(VMix_,name,it->second.second,it->second.first);
     }
   }
@@ -584,13 +726,22 @@ void SusyBase::createMixingMatrices() {
 void SusyBase::extractParameters(bool checkmodel) {
   map<string,ParamMap>::const_iterator pit;
   ParamMap::const_iterator it;
-  // try and get tan beta from extpar first
-  pit=parameters_.find("extpar");
+  // try and get tan beta from hmin and extpar first
   // extract tan beta
   tanBeta_ = -1.;
-  if(pit!=parameters_.end()) {
-    it = pit->second.find(25);
-    if(it!=pit->second.end()) tanBeta_ = it->second;
+  if(tanBeta_<0.) {
+    pit=parameters_.find("hmix");
+    if(pit!=parameters_.end()) {
+      it = pit->second.find(2);
+      if(it!=pit->second.end()) tanBeta_ = it->second;
+    }
+  }
+  if(tanBeta_<0.) {
+    pit=parameters_.find("extpar");
+    if(pit!=parameters_.end()) {
+      it = pit->second.find(25);
+      if(it!=pit->second.end()) tanBeta_ = it->second;
+    }
   }
   // otherwise from minpar
   if(tanBeta_<0.) {
@@ -601,7 +752,8 @@ void SusyBase::extractParameters(bool checkmodel) {
     }
   }
   if(tanBeta_<0.) 
-    throw Exception() << "Can't find tan beta in BLOCK MINPAR"
+    throw Exception() << "SusyBase::extractParameters() "
+		      << "Can't find tan beta in BLOCK MINPAR"
 		      << " or BLOCK EXTPAR " << Exception::runerror;
   if(tanBeta_==0.)
     throw Exception() << "Tan(beta) = 0 in SusyBase::extractParameters()"
@@ -609,43 +761,42 @@ void SusyBase::extractParameters(bool checkmodel) {
   // extract parameters from hmix
   pit=parameters_.find("hmix");
   if(pit==parameters_.end()) {
-    cerr << "BLOCK HMIX not found setting mu to zero\n";
-    mu_=ZERO;
+    if(generator())
+      generator()->logWarning(Exception("SusyBase::extractParameters() BLOCK HMIX not found setting mu to zero\n",
+					Exception::warning));
+    else
+      cerr << "SusyBase::extractParameters() BLOCK HMIX not found setting mu to zero\n";
+     mu_=ZERO;
   }
   else {
-    it = pit->second.find(1);
-    if(it==pit->second.end()) {
-      cerr << "mu not found in BLOCK HMIX setting to zero\n";
-    }
-    else {
-      mu_=it->second*GeV;
-    }
+    mu_=findValue(pit,1,"HMIX","mu")*GeV;
   }
   pit = parameters_.find("msoft");
   if( pit == parameters_.end() )
-    throw Exception() << "BLOCK MSOFT not found in " 
+    throw Exception() << "SusyBase::extractParameters() "
+		      << "BLOCK MSOFT not found in " 
 		      << "SusyBase::extractParameters()"
 		      << Exception::runerror;
-  M1_    = pit->second.find(1 )->second*GeV;
-  M2_    = pit->second.find(2 )->second*GeV;
-  M3_    = pit->second.find(3 )->second*GeV;
-  mH12_  = pit->second.find(21)->second*GeV2;
-  mH22_  = pit->second.find(22)->second*GeV2;
-  meL_   = pit->second.find(31)->second*GeV;
-  mmuL_  = pit->second.find(32)->second*GeV;
-  mtauL_ = pit->second.find(33)->second*GeV; 
-  meR_   = pit->second.find(34)->second*GeV;
-  mmuR_  = pit->second.find(35)->second*GeV;
-  mtauR_ = pit->second.find(36)->second*GeV; 
-  mq1L_  = pit->second.find(41)->second*GeV;
-  mq2L_  = pit->second.find(42)->second*GeV;
-  mq3L_  = pit->second.find(43)->second*GeV; 
-  muR_   = pit->second.find(44)->second*GeV;
-  mcR_   = pit->second.find(45)->second*GeV;
-  mtR_   = pit->second.find(46)->second*GeV;
-  mdR_   = pit->second.find(47)->second*GeV;
-  msR_   = pit->second.find(48)->second*GeV;
-  mbR_   = pit->second.find(49)->second*GeV;
+  M1_    = findValue(pit,1 ,"MSOFT","M_1"   )*GeV;
+  M2_    = findValue(pit,2 ,"MSOFT","M_2"   )*GeV;
+  M3_    = findValue(pit,3 ,"MSOFT","M_3"   )*GeV;
+  mH12_  = findValue(pit,21,"MSOFT","m_H1^2")*GeV2;
+  mH22_  = findValue(pit,22,"MSOFT","m_H2^2")*GeV2;
+  meL_   = findValue(pit,31,"MSOFT","M_eL"  )*GeV;
+  mmuL_  = findValue(pit,32,"MSOFT","M_muL" )*GeV;
+  mtauL_ = findValue(pit,33,"MSOFT","M_tauL")*GeV; 
+  meR_   = findValue(pit,34,"MSOFT","M_eR"  )*GeV;
+  mmuR_  = findValue(pit,35,"MSOFT","M_muR" )*GeV;
+  mtauR_ = findValue(pit,36,"MSOFT","M_tauR")*GeV; 
+  mq1L_  = findValue(pit,41,"MSOFT","M_q1L" )*GeV;
+  mq2L_  = findValue(pit,42,"MSOFT","M_q2L" )*GeV;
+  mq3L_  = findValue(pit,43,"MSOFT","M_q3L" )*GeV; 
+  muR_   = findValue(pit,44,"MSOFT","M_uR"  )*GeV;
+  mcR_   = findValue(pit,45,"MSOFT","M_cR"  )*GeV;
+  mtR_   = findValue(pit,46,"MSOFT","M_tR"  )*GeV;
+  mdR_   = findValue(pit,47,"MSOFT","M_dR"  )*GeV;
+  msR_   = findValue(pit,48,"MSOFT","M_sR"  )*GeV;
+  mbR_   = findValue(pit,49,"MSOFT","M_bR"  )*GeV;
   if(checkmodel) {
     throw Exception() << "The SusyBase class should not be used as a "
 		      << "Model class, use one of the models which inherit"

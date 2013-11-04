@@ -1,6 +1,6 @@
 pkglib_LTLIBRARIES = HwBaryonDecay.la
 
-HwBaryonDecay_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 7:0:0
+HwBaryonDecay_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 7:1:0
 HwBaryonDecay_la_LIBADD = $(top_builddir)/PDT/libHwBaryonWidth.la
 HwBaryonDecay_la_SOURCES = \
 Baryon1MesonDecayerBase.cc             Baryon1MesonDecayerBase.h   \

@@ -53,6 +53,24 @@ generate(const PDVector& legs,
 	  prog.begin(); d != prog.end(); ++d ) {
     assert(d->size() == 1);
     Tree2toNDiagram diag = d->front().generate(count);
+    bool internalVeto = false;
+    set<int> external;
+    int nex = diag.partons().size();
+    for ( int i = 0; i < nex; ++i ) {
+      external.insert(diag.diagramId(i));
+    }
+    int n = diag.allPartons().size();
+    for ( int i = 0; i < n; ++i ) {
+      if ( external.find(i) != external.end() )
+	continue;
+      if ( find(excludeInternal().begin(), excludeInternal().end(), diag.allPartons()[i])
+	   != excludeInternal().end() ) {
+	internalVeto = true;
+	break;
+      }
+    }
+    if ( internalVeto )
+      continue;
     bool gotit = false;
     for ( vector<Ptr<Tree2toNDiagram>::ptr>::const_iterator
 	    d = res.begin(); d != res.end(); ++d ) {
@@ -91,10 +109,17 @@ cluster(const vector<Tree2toNGenerator::Vertex>& children,
 	    v != theVertices.end(); ++v ) {
 	if ( (**v).getNpoint() != 3 )
 	  continue;
-	bool noMatch = !(**v).isIncoming(children[0].parent);
-	noMatch |=
+	bool noMatch =
 	  (**v).orderInGs() != orderInGs ||
-	  (**v).orderInGem() != orderInGem;
+	  (**v).orderInGem() != orderInGem ||
+	  !(**v).isIncoming(children[0].parent);
+	long idij = children[0].parent->id();
+	long idi  = children[2].parent->id();
+	long idj  = children[1].parent->id();
+	if ( externalCluster && children[1].parent->CC() )
+	  idj = -idj;
+	if ( children[0].parent->CC() )
+	  idij = -idij;
 	if ( !externalCluster )
 	  noMatch |=
 	    !(**v).isOutgoing(children[1].parent) ||
@@ -103,6 +128,13 @@ cluster(const vector<Tree2toNGenerator::Vertex>& children,
 	  noMatch |=
 	    !(**v).isIncoming(children[1].parent) ||
 	    !(**v).isOutgoing(children[2].parent);
+	noMatch |=
+	  !( (**v).allowed(idij,idi,idj) ||
+	     (**v).allowed(idj,idij,idi) ||
+	     (**v).allowed(idi,idj,idij) ||
+	     (**v).allowed(idij,idj,idi) ||
+	     (**v).allowed(idi,idij,idj) ||
+	     (**v).allowed(idj,idi,idij) );
 	if ( noMatch )
 	  continue;
 	Vertex last;
@@ -292,11 +324,11 @@ clusterAll(const PDVector& external,
 
 
 void Tree2toNGenerator::persistentOutput(PersistentOStream & os) const {
-  os << theVertices << maxOrderGs << maxOrderGem << prepared;
+  os << theVertices << theExcludeInternal << maxOrderGs << maxOrderGem << prepared;
 }
 
 void Tree2toNGenerator::persistentInput(PersistentIStream & is, int) {
-  is >> theVertices >> maxOrderGs >> maxOrderGem >> prepared;
+  is >> theVertices >> theExcludeInternal >> maxOrderGs >> maxOrderGem >> prepared;
 }
 
 
@@ -318,6 +350,11 @@ void Tree2toNGenerator::Init() {
     ("Vertices",
      "The vertices to consider.",
      &Tree2toNGenerator::theVertices, -1, false, false, true, false, false);
+
+  static RefVector<Tree2toNGenerator,ParticleData> interfaceExcludeInternal
+    ("ExcludeInternal",
+     "Particles to be exluded from becoming internal lines.",
+     &Tree2toNGenerator::theExcludeInternal, -1, false, false, true, false, false);
 
 }
 

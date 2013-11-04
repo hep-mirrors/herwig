@@ -26,7 +26,7 @@
 using namespace Herwig;
 
 MatchboxScaleChoice::MatchboxScaleChoice() 
-  : theFixedScale(ZERO) {}
+  : theFixedScale(ZERO), theFixedQEDScale(ZERO) {}
 
 MatchboxScaleChoice::~MatchboxScaleChoice() {}
 
@@ -44,11 +44,11 @@ IBPtr MatchboxScaleChoice::fullclone() const {
 
 
 void MatchboxScaleChoice::persistentOutput(PersistentOStream & os) const {
-  os << theLastXComb << ounit(theFixedScale,GeV);
+  os << theLastXComb << ounit(theFixedScale,GeV) << ounit(theFixedQEDScale,GeV);
 }
 
 void MatchboxScaleChoice::persistentInput(PersistentIStream & is, int) {
-  is >> theLastXComb >> iunit(theFixedScale,GeV);
+  is >> theLastXComb >> iunit(theFixedScale,GeV) >> iunit(theFixedQEDScale,GeV);
 }
 
 
@@ -71,6 +71,12 @@ void MatchboxScaleChoice::Init() {
     ("FixedScale",
      "Set a fixed scale.",
      &MatchboxScaleChoice::theFixedScale, GeV, 0.0*GeV, 0.0*GeV, 0*GeV,
+     false, false, Interface::lowerlim);
+
+  static Parameter<MatchboxScaleChoice,Energy> interfaceFixedQEDScale
+    ("FixedQEDScale",
+     "Set a fixed QED scale.",
+     &MatchboxScaleChoice::theFixedQEDScale, GeV, 0.0*GeV, 0.0*GeV, 0*GeV,
      false, false, Interface::lowerlim);
 
 }

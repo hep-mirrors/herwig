@@ -22,11 +22,13 @@
 #include "ThePEG/Utilities/StringUtils.h"
 #include "ThePEG/Repository/Repository.h"
 #include "ThePEG/Repository/EventGenerator.h"
-
-#include "ThePEG/Persistency/PersistentOStream.h"
-#include "ThePEG/Persistency/PersistentIStream.h"
-
 #include "Herwig++/MatrixElement/Matchbox/Base/DipoleRepository.h"
+#include "Herwig++/MatrixElement/Matchbox/Utility/SU2Helper.h"
+
+#include <boost/progress.hpp>
+
+#include <iterator>
+using std::ostream_iterator;
 
 using namespace Herwig;
 using std::ostream_iterator;
@@ -35,12 +37,21 @@ MatchboxFactory::MatchboxFactory()
   : SubProcessHandler(), theNLight(0),
     theOrderInAlphaS(0), theOrderInAlphaEW(0),
     theBornContributions(true), theVirtualContributions(true),
-    theRealContributions(true), theSubProcessGroups(false),
+    theRealContributions(true), theIndependentVirtuals(false),
+    theSubProcessGroups(false), theInclusive(false),
     theFactorizationScaleFactor(1.0), theRenormalizationScaleFactor(1.0),
-    theFixedCouplings(false), theVetoScales(false),
-    theVerbose(false), theSubtractionData("") {}
+    theFixedCouplings(false), theFixedQEDCouplings(false), theVetoScales(false),
+    theDipoleSet(0), theVerbose(false), theInitVerbose(false), 
+    theSubtractionData(""), thePoleData(""),
+    theRealEmissionScales(false), theAllProcesses(false),
+    theMECorrectionsOnly(false) {}
 
 MatchboxFactory::~MatchboxFactory() {}
+
+MatchboxFactory*& MatchboxFactory::theCurrentFactory() {
+  static MatchboxFactory* sCurrentFactory = 0;
+  return sCurrentFactory;
+}
 
 IBPtr MatchboxFactory::clone() const {
   return new_ptr(*this);
@@ -56,11 +67,7 @@ void MatchboxFactory::prepareME(Ptr<MatchboxMEBase>::ptr me) const {
     dynamic_ptr_cast<Ptr<MatchboxAmplitude>::ptr>((*me).amplitude());
   me->matchboxAmplitude(amp);
 
-  if ( diagramGenerator() && !me->diagramGenerator() )
-    me->diagramGenerator(diagramGenerator());
-
-  if ( me->nLight() == 0 )
-    me->nLight(nLight());
+  me->factory(this);
 
   if ( phasespace() && !me->phasespace() )
     me->phasespace(phasespace());
@@ -68,86 +75,206 @@ void MatchboxFactory::prepareME(Ptr<MatchboxMEBase>::ptr me) const {
   if ( scaleChoice() && !me->scaleChoice() )
     me->scaleChoice(scaleChoice());
 
-  if ( me->factorizationScaleFactor() == 1.0 )
-    me->factorizationScaleFactor(factorizationScaleFactor());
+  if ( !reweighters().empty() ) {
+    for ( vector<ReweightPtr>::const_iterator rw = reweighters().begin();
+	  rw != reweighters().end(); ++rw )
+      me->addReweighter(*rw);
+  }
 
-  if ( me->renormalizationScaleFactor() == 1.0 )
-    me->renormalizationScaleFactor(renormalizationScaleFactor());
-
-  if ( fixedCouplings() )
-    me->setFixedCouplings();
-
-  if ( cache() && !me->cache() )
-    me->cache(cache());
-
-  if ( verbose() )
-    me->setVerbose();
+  if ( !preweighters().empty() ) {
+    for ( vector<ReweightPtr>::const_iterator rw = preweighters().begin();
+	  rw != preweighters().end(); ++rw )
+      me->addPreweighter(*rw);
+  }
 
 }
 
-struct ProjectQN {
-  inline pair<int,pair<int,int> > operator()(PDPtr p) const {
-    return
-      pair<int,pair<int,int> >((*p).iSpin(),pair<int,int>((*p).iCharge(),(*p).iColour()));
-  }
-};
-
-string pid(const vector<pair<int,pair<int,int> > >& key) {
+string pid(const PDVector& key) {
   ostringstream res;
-  for ( vector<pair<int,pair<int,int> > >::const_iterator k =
-	  key.begin(); k != key.end(); ++k )
-    res << k->first << k->second.first
-	<< k->second.second;
+  res << "[" << key[0]->PDGName() << ","
+      << key[1]->PDGName() << "->";
+  for ( PDVector::const_iterator k =
+	  key.begin() + 2; k != key.end(); ++k )
+    res << (**k).PDGName() << (k != --key.end() ? "," : "");
+  res << "]";
   return res.str();
 }
 
 vector<Ptr<MatchboxMEBase>::ptr> MatchboxFactory::
-makeMEs(const vector<string>& proc, unsigned int orderas) const {
+makeMEs(const vector<string>& proc, unsigned int orderas) {
 
-  typedef vector<pair<int,pair<int,int> > > QNKey;
+  generator()->log() << "determining subprocesses for ";
+  copy(proc.begin(),proc.end(),ostream_iterator<string>(generator()->log()," "));
+  generator()->log() << flush;
 
-  map<Ptr<MatchboxAmplitude>::ptr,map<QNKey,vector<PDVector> > > ampProcs;
+  map<Ptr<MatchboxAmplitude>::ptr,set<Process> > ampProcs;
+  map<Process,set<Ptr<MatchboxAmplitude>::ptr> > procAmps;
   set<PDVector> processes = makeSubProcesses(proc);
+
+  bool needUnsorted = false;
 
   for ( vector<Ptr<MatchboxAmplitude>::ptr>::const_iterator amp
 	  = amplitudes().begin(); amp != amplitudes().end(); ++amp ) {
-    (**amp).orderInGs(orderas);
-    (**amp).orderInGem(orderInAlphaEW());
-    if ( (**amp).orderInGs() != orderas ||
-	 (**amp).orderInGem() != orderInAlphaEW() )
-      continue;
-    for ( set<PDVector>::const_iterator p = processes.begin();
-	  p != processes.end(); ++p ) {
-      if ( !(**amp).canHandle(*p) )
-	continue;
-      QNKey key;
-      transform(p->begin(),p->end(),back_inserter(key),ProjectQN());
-      ampProcs[*amp][key].push_back(*p);
+    if ( !(**amp).sortOutgoing() ) {
+      needUnsorted = true;
+      break;
     }
   }
 
+  set<PDVector> unsortedProcesses;
+  if ( needUnsorted )
+    unsortedProcesses = makeUnsortedSubProcesses(proc);
+
+  vector<Ptr<MatchboxAmplitude>::ptr> matchAmplitudes;
+
+  unsigned int lowestAsOrder =
+    allProcesses() ? 0 : orderas;
+  unsigned int highestAsOrder = orderas;
+
+  unsigned int lowestAeOrder =
+    allProcesses() ? 0 : orderInAlphaEW();
+  unsigned int highestAeOrder = orderInAlphaEW();
+
+  for ( unsigned int oas = lowestAsOrder; oas <= highestAsOrder; ++oas ) {
+    for ( unsigned int oae = lowestAeOrder; oae <= highestAeOrder; ++oae ) {
+      for ( vector<Ptr<MatchboxAmplitude>::ptr>::const_iterator amp
+	      = amplitudes().begin(); amp != amplitudes().end(); ++amp ) {
+	if ( !theSelectedAmplitudes.empty() ) {
+	  if ( find(theSelectedAmplitudes.begin(),theSelectedAmplitudes.end(),*amp)
+	       == theSelectedAmplitudes.end() )
+	    continue;
+	}
+	if ( !theDeselectedAmplitudes.empty() ) {
+	  if ( find(theDeselectedAmplitudes.begin(),theDeselectedAmplitudes.end(),*amp)
+	       != theDeselectedAmplitudes.end() )
+	    continue;
+	}
+	(**amp).orderInGs(oas);
+	(**amp).orderInGem(oae);
+	if ( (**amp).orderInGs() != oas ||
+	     (**amp).orderInGem() != oae ) {
+	  continue;
+	}
+	matchAmplitudes.push_back(*amp);
+      }
+    }
+  }
+
+  size_t combinations =  processes.size()*matchAmplitudes.size()
+    + unsortedProcesses.size()*matchAmplitudes.size();
+  size_t procCount = 0;
+
+  boost::progress_display * progressBar = 
+    new boost::progress_display(combinations,generator()->log());
+
+  for ( unsigned int oas = lowestAsOrder; oas <= highestAsOrder; ++oas ) {
+    for ( unsigned int oae = lowestAeOrder; oae <= highestAeOrder; ++oae ) {
+      for ( vector<Ptr<MatchboxAmplitude>::ptr>::const_iterator amp
+	      = matchAmplitudes.begin(); amp != matchAmplitudes.end(); ++amp ) {
+	(**amp).orderInGs(oas);
+	(**amp).orderInGem(oae);
+	for ( set<PDVector>::const_iterator p = processes.begin();
+	      p != processes.end(); ++p ) {
+	  ++(*progressBar);
+	  if ( !(**amp).canHandle(*p,this) || !(**amp).sortOutgoing() )
+	    continue;
+	  ++procCount;
+	  Process proc(*p,oas,oae);
+	  ampProcs[*amp].insert(proc);
+	  procAmps[proc].insert(*amp);
+	}
+	for ( set<PDVector>::const_iterator p = unsortedProcesses.begin();
+	      p != unsortedProcesses.end(); ++p ) {
+	  ++(*progressBar);
+	  if ( !(**amp).canHandle(*p,this) || (**amp).sortOutgoing() )
+	    continue;
+	  ++procCount;
+	  Process proc(*p,oas,oae);
+	  ampProcs[*amp].insert(proc);
+	  procAmps[proc].insert(*amp);
+	}
+      }
+    }
+  }
+
+  delete progressBar;
+  generator()->log() << flush;
+
+  bool clash = false;
+  for ( map<Process,set<Ptr<MatchboxAmplitude>::ptr> >::const_iterator check = 
+	  procAmps.begin(); check != procAmps.end(); ++check ) {
+    if ( check->second.size() > 1 ) {
+      clash = true;
+      generator()->log() << "Several different amplitudes have been found for: "
+			 << check->first.legs[0]->PDGName() << " "
+			 << check->first.legs[1]->PDGName() << " -> ";
+      for ( PDVector::const_iterator p = check->first.legs.begin() + 2;
+	    p != check->first.legs.end(); ++p )
+	generator()->log() << (**p).PDGName() << " ";
+      generator()->log() << "at alpha_s^" << check->first.orderInAlphaS
+			 << " and alpha_ew^" << check->first.orderInAlphaEW
+			 << "\n";
+      generator()->log() << "The following amplitudes claim responsibility:\n";
+      for ( set<Ptr<MatchboxAmplitude>::ptr>::const_iterator a = check->second.begin();
+	    a != check->second.end(); ++a ) {
+	generator()->log() << (**a).name() << " ";
+      }
+      generator()->log() << "\n";
+    }
+  }
+  if ( clash ) {
+    throw InitException()
+      << "Ambiguous amplitude setup - please check your input files.\n"
+      << "To avoid this problem use the SelectAmplitudes or DeselectAmplitudes interfaces.\n";
+  }
+
   vector<Ptr<MatchboxMEBase>::ptr> res;
-  for ( map<Ptr<MatchboxAmplitude>::ptr,map<QNKey,vector<PDVector> > >::const_iterator
+  for ( map<Ptr<MatchboxAmplitude>::ptr,set<Process> >::const_iterator
 	  ap = ampProcs.begin(); ap != ampProcs.end(); ++ap ) {
-    for ( map<QNKey,vector<PDVector> >::const_iterator m = ap->second.begin();
+    for ( set<Process>::const_iterator m = ap->second.begin();
 	  m != ap->second.end(); ++m ) {
-      Ptr<MatchboxMEBase>::ptr me = ap->first->makeME(m->second);
-      me->subProcesses() = m->second;
+      Ptr<MatchboxMEBase>::ptr me = ap->first->makeME(m->legs);
+      me->subProcess() = *m;
       me->amplitude(ap->first);
-      string pname = "ME" + ap->first->name() + pid(m->first);
+      me->matchboxAmplitude(ap->first);
+      prepareME(me);
+      string pname = "ME" + ap->first->name() + pid(m->legs);
       if ( ! (generator()->preinitRegister(me,pname) ) )
 	throw InitException() << "Matrix element " << pname << " already existing.";
+      if ( me->diagrams().empty() )continue;
       res.push_back(me);
     }
   }
+
+  generator()->log() << "created " << res.size()
+		     << " matrix element objects for "
+		     << procCount << " subprocesses.\n";
+  generator()->log() << "--------------------------------------------------------------------------------\n"
+		     << flush;
 
   return res;
 
 }
 
+int MatchboxFactory::orderOLPProcess(const Process& proc,
+				     Ptr<MatchboxAmplitude>::tptr amp,
+				     int type) {
+  map<pair<Process,int>,int>& procs =
+    olpProcesses()[amp];
+  map<pair<Process,int>,int>::const_iterator it =
+    procs.find(make_pair(proc,type));
+  if ( it != procs.end() )
+    return it->second;
+  int id = procs.size();
+  procs[make_pair(proc,type)] = id + 1;
+  return id + 1;
+}
+
 void MatchboxFactory::setup() {
 
-  if ( !amplitudes().empty() ) {
+  olpProcesses().clear();
+
+  if ( bornMEs().empty() ) {
 
     if ( particleGroups().find("j") == particleGroups().end() )
       throw InitException() << "Could not find a jet particle group named 'j'";
@@ -172,14 +299,28 @@ void MatchboxFactory::setup() {
 	++nl;
     nLight(nl/2);
 
-    vector<Ptr<MatchboxMEBase>::ptr> ames = makeMEs(process,orderInAlphaS());
-    copy(ames.begin(),ames.end(),back_inserter(bornMEs()));
-
-    if ( realContributions() ) {
-      vector<string> rproc = process;
-      rproc.push_back("j");
-      ames = makeMEs(rproc,orderInAlphaS()+1);
-      copy(ames.begin(),ames.end(),back_inserter(realEmissionMEs()));
+    vector<Ptr<MatchboxMEBase>::ptr> mes;
+    for ( vector<vector<string> >::const_iterator p = processes.begin();
+	  p != processes.end(); ++p ) {
+      mes = makeMEs(*p,orderInAlphaS());
+      copy(mes.begin(),mes.end(),back_inserter(bornMEs()));
+      if ( realContributions() && realEmissionMEs().empty() ) {
+	if ( realEmissionProcesses.empty() ) {
+	  vector<string> rproc = *p;
+	  rproc.push_back("j");
+	  mes = makeMEs(rproc,orderInAlphaS()+1);
+	  copy(mes.begin(),mes.end(),back_inserter(realEmissionMEs()));
+	}
+      }
+    }
+    if ( realContributions() && realEmissionMEs().empty() ) {
+      if ( !realEmissionProcesses.empty() ) {
+	for ( vector<vector<string> >::const_iterator q =
+		realEmissionProcesses.begin(); q != realEmissionProcesses.end(); ++q ) {
+	  mes = makeMEs(*q,orderInAlphaS()+1);
+	  copy(mes.begin(),mes.end(),back_inserter(realEmissionMEs()));
+	}
+      }
     }
 
   }
@@ -193,7 +334,8 @@ void MatchboxFactory::setup() {
 
   // check finite term conventions of virtual contributions
   bool virtualsAreCS = false;
-  bool virtualsAreStandard = false;
+  bool virtualsAreBDK = false;
+  bool virtualsAreExpanded = false;
 
   // check and prepare the Born and virtual matrix elements
   for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born
@@ -204,7 +346,8 @@ void MatchboxFactory::setup() {
       virtualsAreDR |= (**born).isDR();
       virtualsAreCDR |= !(**born).isDR();
       virtualsAreCS |= (**born).isCS();
-      virtualsAreStandard |= !(**born).isCS();
+      virtualsAreBDK |= (**born).isBDK();
+      virtualsAreExpanded |= (**born).isExpanded();
     }
   }
 
@@ -216,7 +359,8 @@ void MatchboxFactory::setup() {
     virtualsAreDR |= (**virt).isDR();
     virtualsAreCDR |= !(**virt).isDR();
     virtualsAreCS |= (**virt).isCS();
-    virtualsAreStandard |= !(**virt).isCS();
+    virtualsAreBDK |= (**virt).isBDK();
+    virtualsAreExpanded |= (**virt).isExpanded();
   }
 
   // check for consistent conventions on virtuals, if we are to include them
@@ -224,7 +368,10 @@ void MatchboxFactory::setup() {
     if ( virtualsAreDR && virtualsAreCDR ) {
       throw InitException() << "Virtual corrections use inconsistent regularization schemes.\n";
     }
-    if ( virtualsAreCS && virtualsAreStandard ) {
+    if ( (virtualsAreCS && virtualsAreBDK) ||
+	 (virtualsAreCS && virtualsAreExpanded) ||
+	 (virtualsAreBDK && virtualsAreExpanded) ||
+	 (!virtualsAreCS && !virtualsAreBDK && !virtualsAreExpanded) ) {
       throw InitException() << "Virtual corrections use inconsistent conventions on finite terms.\n";
     }
     if ( !haveVirtuals ) {
@@ -235,16 +382,18 @@ void MatchboxFactory::setup() {
   // prepare dipole insertion operators
   if ( virtualContributions() ) {
     for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt
-	    = DipoleRepository::insertionOperators().begin(); 
-	  virt != DipoleRepository::insertionOperators().end(); ++virt ) {
+	    = DipoleRepository::insertionOperators(dipoleSet()).begin(); 
+	  virt != DipoleRepository::insertionOperators(dipoleSet()).end(); ++virt ) {
       if ( virtualsAreDR )
 	(**virt).useDR();
       else
 	(**virt).useCDR();
       if ( virtualsAreCS )
 	(**virt).useCS();
-      else
-	(**virt).useNonCS();
+      if ( virtualsAreBDK )
+	(**virt).useBDK();
+      if ( virtualsAreExpanded )
+	(**virt).useExpanded();
     }
   }
 
@@ -261,11 +410,14 @@ void MatchboxFactory::setup() {
 
   // setup born and virtual contributions
 
-  if ( !bornContributions() && virtualContributions() ) {
-    throw InitException() << "Virtual corrections without Born contributions not yet supported.\n";
+  if ( bornContributions() || virtualContributions() ) {
+    generator()->log() << "preparing Born"
+		       << (virtualContributions() ? " and virtual" : "")
+		       << " matrix elements.\n" << flush;
   }
 
-  if ( bornContributions() && !virtualContributions() ) {
+  if ( (bornContributions() && !virtualContributions()) || 
+       (bornContributions() && virtualContributions() && independentVirtuals()) ) {
     for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born
 	    = bornMEs().begin(); born != bornMEs().end(); ++born ) {
 
@@ -274,44 +426,88 @@ void MatchboxFactory::setup() {
 
       Ptr<MatchboxMEBase>::ptr bornme = (**born).cloneMe();
       string pname = fullName() + "/" + (**born).name();
+      if ( independentVirtuals() )
+	pname += ".Born";
       if ( ! (generator()->preinitRegister(bornme,pname) ) )
 	throw InitException() << "Matrix element " << pname << " already existing.";
+
+      if ( bornme->isOLPTree() ) {
+	int id = orderOLPProcess(bornme->subProcess(),
+				 (**born).matchboxAmplitude(),
+				 ProcessType::treeME2);
+	bornme->olpProcess(ProcessType::treeME2,id);
+      }
+
       bornme->cloneDependencies();
       MEs().push_back(bornme);
 
     }
   }
 
-  if ( bornContributions() && virtualContributions() ) {
+  if ( virtualContributions() && !meCorrectionsOnly() ) {
 
     bornVirtualMEs().clear();
+
+    boost::progress_display * progressBar = 
+      new boost::progress_display(bornMEs().size(),generator()->log());
+
+    if ( thePoleData != "" )
+      if ( thePoleData[thePoleData.size()-1] != '/' )
+	thePoleData += "/";
 
     for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born
 	    = bornMEs().begin(); born != bornMEs().end(); ++born ) {
 
-      Ptr<MatchboxNLOME>::ptr nlo = new_ptr(MatchboxNLOME());
+      Ptr<MatchboxMEBase>::ptr nlo = (**born).cloneMe();
       string pname = fullName() + "/" + (**born).name();
+      if ( !independentVirtuals() )
+	pname += ".BornVirtual";
+      else
+	pname += ".Virtual";
       if ( ! (generator()->preinitRegister(nlo,pname) ) )
 	throw InitException() << "NLO ME " << pname << " already existing.";
 
-      nlo->matrixElement(*born);
       nlo->virtuals().clear();
 
-      if ( !nlo->matrixElement()->onlyOneLoop() ) {
+      if ( !nlo->onlyOneLoop() ) {
 	for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt
 		= virtuals().begin(); virt != virtuals().end(); ++virt ) {
 	  if ( (**virt).apply((**born).diagrams().front()->partons()) )
 	    nlo->virtuals().push_back(*virt);
 	}
 	for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt
-		= DipoleRepository::insertionOperators().begin(); 
-	      virt != DipoleRepository::insertionOperators().end(); ++virt ) {
+		= DipoleRepository::insertionOperators(dipoleSet()).begin(); 
+	      virt != DipoleRepository::insertionOperators(dipoleSet()).end(); ++virt ) {
 	  if ( (**virt).apply((**born).diagrams().front()->partons()) )
 	    nlo->virtuals().push_back(*virt);
 	}
 	if ( nlo->virtuals().empty() )
 	  throw InitException() << "No insertion operators have been found for "
 				<< (**born).name() << "\n";
+	if ( checkPoles() ) {
+	  if ( !virtualsAreExpanded ) {
+	    throw InitException() << "Cannot check epsilon poles if virtuals are not in `expanded' convention.\n";
+	  }
+	}
+      }
+
+      if ( !bornContributions() || independentVirtuals() ) {
+	nlo->doOneLoopNoBorn();
+      } else {
+	nlo->doOneLoop();
+      }
+
+      if ( nlo->isOLPLoop() ) {
+	int id = orderOLPProcess(nlo->subProcess(),
+				 (**born).matchboxAmplitude(),
+				 ProcessType::oneLoopInterference);
+	nlo->olpProcess(ProcessType::oneLoopInterference,id);
+	if ( !nlo->onlyOneLoop() && nlo->needsOLPCorrelators() ) {
+	  id = orderOLPProcess(nlo->subProcess(),
+			       (**born).matchboxAmplitude(),
+			       ProcessType::colourCorrelatedME2);
+	  nlo->olpProcess(ProcessType::colourCorrelatedME2,id);	  
+	}
       }
 
       nlo->cloneDependencies();
@@ -319,11 +515,31 @@ void MatchboxFactory::setup() {
       bornVirtualMEs().push_back(nlo);
       MEs().push_back(nlo);
 
+      ++(*progressBar);
+
     }
+
+    delete progressBar;
+
+    generator()->log() << "--------------------------------------------------------------------------------\n"
+		       << flush;
 
   }
 
-  if ( realContributions() ) {
+  theSplittingDipoles.clear();
+  set<cPDVector> bornProcs;
+  if ( showerApproximation() ) 
+    if ( showerApproximation()->needsSplittingGenerator() ) {
+      for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born
+	      = bornMEs().begin(); born != bornMEs().end(); ++born )
+	for ( MEBase::DiagramVector::const_iterator d = (**born).diagrams().begin();
+	      d != (**born).diagrams().end(); ++d )
+	  bornProcs.insert((**d).partons());
+    }
+
+  if ( realContributions() || meCorrectionsOnly() ) {
+
+    generator()->log() << "preparing real emission matrix elements.\n" << flush;
 
     if ( theSubtractionData != "" )
       if ( theSubtractionData[theSubtractionData.size()-1] != '/' )
@@ -331,41 +547,288 @@ void MatchboxFactory::setup() {
 
     subtractedMEs().clear();    
 
+    for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born
+	    = bornMEs().begin(); born != bornMEs().end(); ++born ) {
+
+      if ( (**born).onlyOneLoop() )
+	continue;
+
+      if ( (**born).isOLPTree() ) {
+	int id = orderOLPProcess((**born).subProcess(),
+				 (**born).matchboxAmplitude(),
+				 ProcessType::colourCorrelatedME2);
+	(**born).olpProcess(ProcessType::colourCorrelatedME2,id);
+	bool haveGluon = false;
+	for ( PDVector::const_iterator p = (**born).subProcess().legs.begin();
+	      p != (**born).subProcess().legs.end(); ++p )
+	  if ( (**p).id() == 21 ) {
+	    haveGluon = true;
+	    break;
+	  }
+	if ( haveGluon ) {
+	  id = orderOLPProcess((**born).subProcess(),
+			       (**born).matchboxAmplitude(),
+			       ProcessType::spinColourCorrelatedME2);
+	  (**born).olpProcess(ProcessType::spinColourCorrelatedME2,id);
+	}
+      }
+
+    }
+
+    boost::progress_display * progressBar = 
+      new boost::progress_display(realEmissionMEs().size(),generator()->log());
+
     for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator real
 	    = realEmissionMEs().begin(); real != realEmissionMEs().end(); ++real ) {
 
       Ptr<SubtractedME>::ptr sub = new_ptr(SubtractedME());
-      string pname = fullName() + "/" + (**real).name();
+      string pname = fullName() + "/" + (**real).name() + ".SubtractedReal";
       if ( ! (generator()->preinitRegister(sub,pname) ) )
 	throw InitException() << "Subtracted ME " << pname << " already existing.";
 
-      sub->borns() = bornMEs();
+      sub->factory(this);
+
+      if ( (**real).isOLPTree() ) {
+	int id = orderOLPProcess((**real).subProcess(),
+				 (**real).matchboxAmplitude(),
+				 ProcessType::treeME2);
+	(**real).olpProcess(ProcessType::treeME2,id);
+      }
+
       sub->head(*real);
 
-      sub->allDipoles().clear();
       sub->dependent().clear();
 
       sub->getDipoles();
 
-      if ( verbose() )
-	sub->setVerbose();
+      if ( sub->dependent().empty() ) {
+	// finite real contribution
+	Ptr<MatchboxMEBase>::ptr fme = 
+	  dynamic_ptr_cast<Ptr<MatchboxMEBase>::ptr>(sub->head())->cloneMe();
+	string qname = fullName() + "/" + (**real).name() + ".FiniteReal";
+	if ( ! (generator()->preinitRegister(fme,qname) ) )
+	  throw InitException() << "ME " << qname << " already existing.";
+	MEs().push_back(fme);	
+        finiteRealMEs().push_back(fme);
+	sub->head(tMEPtr());
+	continue;
+      }
 
-      if ( subProcessGroups() )
-	sub->setSubProcessGroups();
-
-      if ( vetoScales() )
-	sub->doVetoScales();
-
-      if ( subtractionData() != "" )
-	sub->subtractionData(subtractionData());
+      if ( realEmissionScales() )
+	sub->doRealEmissionScales();
 
       subtractedMEs().push_back(sub);
+      if ( !meCorrectionsOnly() )
+	MEs().push_back(sub);
 
-      MEs().push_back(sub);
+      if ( showerApproximation() ) {
+	if ( virtualContributions() && !meCorrectionsOnly() ) {
+	  Ptr<SubtractedME>::ptr subv = new_ptr(*sub);
+	  string vname = sub->fullName() + ".SubtractionIntegral";
+	  if ( ! (generator()->preinitRegister(subv,vname) ) )
+	    throw InitException() << "Subtracted ME " << vname << " already existing.";
+	  subv->cloneDependencies(vname);
+	  subv->doVirtualShowerSubtraction();
+	  subtractedMEs().push_back(subv);
+	  MEs().push_back(subv);
+	}
+	if ( !meCorrectionsOnly() )
+	  sub->doRealShowerSubtraction();
+	if ( showerApproximation()->needsSplittingGenerator() )
+	  for ( set<cPDVector>::const_iterator p = bornProcs.begin();
+		p != bornProcs.end(); ++p ) {
+	    vector<Ptr<SubtractionDipole>::ptr> sdip = sub->splitDipoles(*p);
+	    set<Ptr<SubtractionDipole>::ptr>& dips = theSplittingDipoles[*p];
+	    copy(sdip.begin(),sdip.end(),inserter(dips,dips.begin()));
+	  }
+      }
+
+      ++(*progressBar);
 
     }
 
+    delete progressBar;
+
+    generator()->log() << "--------------------------------------------------------------------------------\n"
+		       << flush;
+
   }
+
+  if ( !theSplittingDipoles.empty() ) {
+    map<Ptr<SubtractionDipole>::ptr,Ptr<SubtractionDipole>::ptr> cloneMap;
+    for ( map<cPDVector,set<Ptr<SubtractionDipole>::ptr> >::const_iterator sd = theSplittingDipoles.begin();
+	  sd != theSplittingDipoles.end(); ++sd ) {
+      for ( set<Ptr<SubtractionDipole>::ptr>::const_iterator d = sd->second.begin();
+	    d != sd->second.end(); ++d ) {
+	cloneMap[*d] = Ptr<SubtractionDipole>::ptr();
+      }
+    }
+    for ( map<Ptr<SubtractionDipole>::ptr,Ptr<SubtractionDipole>::ptr>::iterator cd =
+	    cloneMap.begin(); cd != cloneMap.end(); ++cd ) {
+      Ptr<SubtractionDipole>::ptr cloned = cd->first->cloneMe();
+      string dname = cd->first->fullName() + ".splitting";
+      if ( ! (generator()->preinitRegister(cloned,dname)) )
+	throw InitException() << "Dipole '" << dname << "' already existing.";
+      cloned->cloneDependencies();
+      cloned->showerApproximation(Ptr<ShowerApproximation>::tptr());
+      cloned->doSplitting();
+      cd->second = cloned;
+    }
+    for ( map<cPDVector,set<Ptr<SubtractionDipole>::ptr> >::iterator sd = theSplittingDipoles.begin();
+	  sd != theSplittingDipoles.end(); ++sd ) {
+      set<Ptr<SubtractionDipole>::ptr> cloned;
+      for ( set<Ptr<SubtractionDipole>::ptr>::iterator d = sd->second.begin();
+	    d != sd->second.end(); ++d ) {
+	cloned.insert(cloneMap[*d]);
+      }
+      sd->second = cloned;
+    }
+  }
+
+  if ( !olpProcesses().empty() ) {
+    generator()->log() << "Initializing one-loop provider(s).\n" << flush;
+    map<Ptr<MatchboxAmplitude>::tptr,map<pair<Process,int>,int> > olps;
+    for ( map<Ptr<MatchboxAmplitude>::tptr,map<pair<Process,int>,int> >::const_iterator
+	    oit = olpProcesses().begin(); oit != olpProcesses().end(); ++oit ) {
+      olps[oit->first] = oit->second;
+    }
+    boost::progress_display * progressBar = 
+      new boost::progress_display(olps.size(),generator()->log());
+    for ( map<Ptr<MatchboxAmplitude>::tptr,map<pair<Process,int>,int> >::const_iterator
+	    olpit = olps.begin(); olpit != olps.end(); ++olpit ) {
+      if ( !olpit->first->startOLP(olpit->second) ) {
+	throw InitException() 
+	  << "error: failed to start OLP for amplitude '" << olpit->first->name() << "'\n";
+      }
+      ++(*progressBar);
+    }
+    delete progressBar;
+    generator()->log() << "--------------------------------------------------------------------------------\n"
+		       << flush;
+  }
+
+  generator()->log() << "Process setup finished.\n" << flush;
+
+}
+
+void MatchboxFactory::SplittingChannel::print(ostream& os) const {
+
+  os << "--- SplittingChannel setup -----------------------------------------------------\n";
+
+  os << " Born process ";
+  const StandardXComb& bxc = *bornXComb;
+  os << bxc.mePartonData()[0]->PDGName() << " "
+     << bxc.mePartonData()[1]->PDGName() << " -> ";
+  for ( cPDVector::const_iterator p = bxc.mePartonData().begin() + 2;
+	p != bxc.mePartonData().end(); ++p ) {
+    os << (**p).PDGName() << " ";
+  }
+  os << "\n";
+
+  os << " to real emission process ";
+  const StandardXComb& rxc = *realXComb;
+  os << rxc.mePartonData()[0]->PDGName() << " "
+     << rxc.mePartonData()[1]->PDGName() << " -> ";
+  for ( cPDVector::const_iterator p = rxc.mePartonData().begin() + 2;
+	p != rxc.mePartonData().end(); ++p ) {
+    os << (**p).PDGName() << " ";
+  }
+  os << "\n";
+
+  os << " with dipole:\n";
+  dipole->print(os);
+
+  os << "--------------------------------------------------------------------------------\n";
+
+  os << flush;
+
+}
+
+list<MatchboxFactory::SplittingChannel> 
+MatchboxFactory::getSplittingChannels(tStdXCombPtr xcptr) const {
+
+  if ( xcptr->lastProjector() )
+    xcptr = xcptr->lastProjector();
+
+  const StandardXComb& xc = *xcptr;
+
+  cPDVector proc = xc.mePartonData();
+
+  map<cPDVector,set<Ptr<SubtractionDipole>::ptr> >::const_iterator splitEntries
+    = splittingDipoles().find(proc);
+
+  list<SplittingChannel> res;
+  if ( splitEntries == splittingDipoles().end() )
+    return res;
+
+  const set<Ptr<SubtractionDipole>::ptr>& splitDipoles = splitEntries->second;
+
+  SplittingChannel channel;
+  if ( !splitDipoles.empty() ) {
+    Ptr<MatchboxMEBase>::tptr bornME = 
+      const_ptr_cast<Ptr<MatchboxMEBase>::tptr>((**splitDipoles.begin()).underlyingBornME());
+    channel.bornXComb =
+      bornME->makeXComb(xc.maxEnergy(),xc.particles(),xc.eventHandlerPtr(),
+			const_ptr_cast<tSubHdlPtr>(xc.subProcessHandler()),
+			xc.pExtractor(),xc.CKKWHandler(),
+			xc.partonBins(),xc.cuts(),xc.diagrams(),xc.mirror(),
+			PartonPairVec());
+  }
+
+  for ( set<Ptr<SubtractionDipole>::ptr>::const_iterator sd =
+	  splitDipoles.begin(); sd != splitDipoles.end(); ++sd ) {
+
+    channel.dipole = *sd;
+
+    vector<StdXCombPtr> realXCombs = (**sd).makeRealXCombs(channel.bornXComb);
+
+    for ( vector<StdXCombPtr>::const_iterator rxc = realXCombs.begin();
+	  rxc != realXCombs.end(); ++rxc ) {
+      channel.realXComb = *rxc;
+      if ( showerApproximation()->needsTildeXCombs() ) {
+	channel.tildeXCombs.clear();
+	assert(!channel.dipole->partnerDipoles().empty());
+	for ( vector<Ptr<SubtractionDipole>::ptr>::const_iterator p =
+		channel.dipole->partnerDipoles().begin();
+	      p != channel.dipole->partnerDipoles().end(); ++p ) {
+	  StdXCombPtr txc = channel.dipole->makeBornXComb(channel.realXComb);
+	  if ( txc )
+	    channel.tildeXCombs.push_back(txc);
+	}
+      }
+      res.push_back(channel);
+    }
+
+  }
+
+  if ( initVerbose() ) {
+
+    generator()->log()
+      << "--- MatchboxFactory splitting channels ----------------------------------------------\n";
+
+    const StandardXComb& bxc = *xcptr;
+
+    generator()->log() << " hard process handled is: ";
+    generator()->log() << bxc.mePartonData()[0]->PDGName() << " "
+		       << bxc.mePartonData()[1]->PDGName() << " -> ";
+    for ( cPDVector::const_iterator p = bxc.mePartonData().begin() + 2;
+	  p != bxc.mePartonData().end(); ++p ) {
+      generator()->log() << (**p).PDGName() << " ";
+    }
+    generator()->log() << "\n";
+
+    for ( list<MatchboxFactory::SplittingChannel>::const_iterator sp =
+	    res.begin(); sp != res.end(); ++sp ) {
+      sp->print(generator()->log());
+    }
+
+    generator()->log()
+      << "-------------------------------------------------------------------------------------\n"
+      << flush;
+
+  }
+
+  return res;
 
 }
 
@@ -377,42 +840,20 @@ void MatchboxFactory::print(ostream& os) const {
     os << " generated Born matrix elements:\n";
     for ( vector<Ptr<MatchboxMEBase>::ptr>::const_iterator m = bornMEs().begin();
 	  m != bornMEs().end(); ++m ) {
-      os << " '" << (**m).name() << "' for subprocesses:\n";
-      for ( vector<PDVector>::const_iterator p = (**m).subProcesses().begin();
-	    p != (**m).subProcesses().end(); ++p ) {
-	os << "  ";
-	for ( PDVector::const_iterator pp = p->begin();
-	      pp != p->end(); ++pp ) {
-	  os << (**pp).PDGName() << " ";
-	  if ( pp == p->begin() + 1 )
-	    os << "-> ";
-	}
-	os << "\n";
-      }
+      (**m).print(os);
     }
     os << flush;
     os << " generated real emission matrix elements:\n";
     for ( vector<Ptr<MatchboxMEBase>::ptr>::const_iterator m = realEmissionMEs().begin();
 	  m != realEmissionMEs().end(); ++m ) {
-      os << " '" << (**m).name() << "' for subprocesses:\n";
-      for ( vector<PDVector>::const_iterator p = (**m).subProcesses().begin();
-	    p != (**m).subProcesses().end(); ++p ) {
-	os << "  ";
-	for ( PDVector::const_iterator pp = p->begin();
-	      pp != p->end(); ++pp ) {
-	  os << (**pp).PDGName() << " ";
-	  if ( pp == p->begin() + 1 )
-	    os << "-> ";
-	}
-	os << "\n";
-      }
+      (**m).print(os);
     }
     os << flush;
   }
 
   os << " generated Born+virtual matrix elements:\n";
 
-  for ( vector<Ptr<MatchboxNLOME>::ptr>::const_iterator bv
+  for ( vector<Ptr<MatchboxMEBase>::ptr>::const_iterator bv
 	  = bornVirtualMEs().begin(); bv != bornVirtualMEs().end(); ++bv ) {
     (**bv).print(os);
   }
@@ -431,41 +872,59 @@ void MatchboxFactory::print(ostream& os) const {
 }
 
 void MatchboxFactory::doinit() {
+  theCurrentFactory() = this;
   setup();
-  if ( theVerbose )
+  if ( initVerbose() )
     print(Repository::clog());
   SubProcessHandler::doinit();
 }
 
+void MatchboxFactory::doinitrun() {
+  theCurrentFactory() = this;
+  SubProcessHandler::doinitrun();
+}
+
 
 void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
-  os << theDiagramGenerator 
+  os << theDiagramGenerator << theProcessData
      << theNLight << theOrderInAlphaS << theOrderInAlphaEW 
      << theBornContributions << theVirtualContributions
-     << theRealContributions << theSubProcessGroups
+     << theRealContributions << theIndependentVirtuals << theSubProcessGroups << theInclusive
      << thePhasespace << theScaleChoice
      << theFactorizationScaleFactor << theRenormalizationScaleFactor
-     << theFixedCouplings << theVetoScales
-     << theAmplitudes << theCache
+     << theFixedCouplings << theFixedQEDCouplings << theVetoScales
+     << theAmplitudes
      << theBornMEs << theVirtuals << theRealEmissionMEs
-     << theBornVirtualMEs << theSubtractedMEs
-     << theVerbose << theSubtractionData
-     << theParticleGroups << process;
+     << theBornVirtualMEs << theSubtractedMEs << theFiniteRealMEs
+     << theVerbose << theInitVerbose << theSubtractionData << thePoleData
+     << theParticleGroups << processes << realEmissionProcesses
+     << theShowerApproximation << theSplittingDipoles
+     << theRealEmissionScales << theAllProcesses
+     << theOLPProcesses 
+     << theSelectedAmplitudes << theDeselectedAmplitudes
+     << theDipoleSet << theReweighters << thePreweighters
+     << theMECorrectionsOnly;
 }
 
 void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
-  is >> theDiagramGenerator 
+  is >> theDiagramGenerator >> theProcessData
      >> theNLight >> theOrderInAlphaS >> theOrderInAlphaEW 
      >> theBornContributions >> theVirtualContributions
-     >> theRealContributions >> theSubProcessGroups
+     >> theRealContributions >> theIndependentVirtuals >> theSubProcessGroups >> theInclusive
      >> thePhasespace >> theScaleChoice
      >> theFactorizationScaleFactor >> theRenormalizationScaleFactor
-     >> theFixedCouplings >> theVetoScales
-     >> theAmplitudes >> theCache
+     >> theFixedCouplings >> theFixedQEDCouplings >> theVetoScales
+     >> theAmplitudes
      >> theBornMEs >> theVirtuals >> theRealEmissionMEs
-     >> theBornVirtualMEs >> theSubtractedMEs
-     >> theVerbose >> theSubtractionData
-     >> theParticleGroups >> process;
+     >> theBornVirtualMEs >> theSubtractedMEs >> theFiniteRealMEs
+     >> theVerbose >> theInitVerbose >> theSubtractionData >> thePoleData
+     >> theParticleGroups >> processes >> realEmissionProcesses
+     >> theShowerApproximation >> theSplittingDipoles
+     >> theRealEmissionScales >> theAllProcesses
+     >> theOLPProcesses
+     >> theSelectedAmplitudes >> theDeselectedAmplitudes
+     >> theDipoleSet >> theReweighters >> thePreweighters
+     >> theMECorrectionsOnly;
 }
 
 string MatchboxFactory::startParticleGroup(string name) {
@@ -483,13 +942,26 @@ string MatchboxFactory::endParticleGroup(string) {
 }
 
 string MatchboxFactory::doProcess(string in) {
-  process = StringUtils::split(in);
+  vector<string> process = StringUtils::split(in);
   if ( process.size() < 3 )
     throw InitException() << "Invalid process.";
   for ( vector<string>::iterator p = process.begin();
 	p != process.end(); ++p ) {
     *p = StringUtils::stripws(*p);
   }
+  processes.push_back(process);
+  return "";
+}
+
+string MatchboxFactory::doSingleRealProcess(string in) {
+  vector<string> realEmissionProcess = StringUtils::split(in);
+  if ( realEmissionProcess.size() < 3 )
+    throw InitException() << "Invalid process.";
+  for ( vector<string>::iterator p = realEmissionProcess.begin();
+	p != realEmissionProcess.end(); ++p ) {
+    *p = StringUtils::stripws(*p);
+  }
+  realEmissionProcesses.push_back(realEmissionProcess);
   return "";
 }
 
@@ -500,7 +972,7 @@ struct SortPID {
 };
 
 set<PDVector> MatchboxFactory::
-makeSubProcesses(const vector<string>& proc) const {
+makeSubProcesses(const vector<string>& proc, bool sorted) const {
 
   if ( proc.empty() )
     throw InitException() << "No process specified.";
@@ -545,7 +1017,8 @@ makeSubProcesses(const vector<string>& proc) const {
     if ( charge != 0 )
       continue;
     PDVector pr = *p;
-    sort(pr.begin()+2,pr.end(),SortPID());
+    if ( sorted )
+      sort(pr.begin()+2,pr.end(),SortPID());
     allCheckedProcs.insert(pr);
   }
 
@@ -572,6 +1045,10 @@ void MatchboxFactory::Init() {
      "Set the diagram generator.",
      &MatchboxFactory::theDiagramGenerator, false, false, true, true, false);
 
+  static Reference<MatchboxFactory,ProcessData> interfaceProcessData
+    ("ProcessData",
+     "Set the process data object to be used.",
+     &MatchboxFactory::theProcessData, false, false, true, true, false);
 
   static Parameter<MatchboxFactory,unsigned int> interfaceOrderInAlphaS
     ("OrderInAlphaS",
@@ -630,6 +1107,21 @@ void MatchboxFactory::Init() {
      "Switch off real contributions.",
      false);
 
+  static Switch<MatchboxFactory,bool> interfaceIndependentVirtuals
+    ("IndependentVirtuals",
+     "Switch on or off virtual contributions as separate subprocesses.",
+     &MatchboxFactory::theIndependentVirtuals, true, false, false);
+  static SwitchOption interfaceIndependentVirtualsOn
+    (interfaceIndependentVirtuals,
+     "On",
+     "Switch on virtual contributions as separate subprocesses.",
+     true);
+  static SwitchOption interfaceIndependentVirtualsOff
+    (interfaceIndependentVirtuals,
+     "Off",
+     "Switch off virtual contributions as separate subprocesses.",
+     false);
+
   static Switch<MatchboxFactory,bool> interfaceSubProcessGroups
     ("SubProcessGroups",
      "Switch on or off production of sub-process groups.",
@@ -641,6 +1133,21 @@ void MatchboxFactory::Init() {
      true);
   static SwitchOption interfaceSubProcessGroupsOff
     (interfaceSubProcessGroups,
+     "Off",
+     "Off",
+     false);
+
+  static Switch<MatchboxFactory,bool> interfaceInclusive
+    ("Inclusive",
+     "Switch on or off production of inclusive cross section.",
+     &MatchboxFactory::theInclusive, false, false, false);
+  static SwitchOption interfaceInclusiveOn
+    (interfaceInclusive,
+     "On",
+     "On",
+     true);
+  static SwitchOption interfaceInclusiveOff
+    (interfaceInclusive,
      "Off",
      "Off",
      false);
@@ -682,10 +1189,25 @@ void MatchboxFactory::Init() {
      "Off",
      false);
 
+  static Switch<MatchboxFactory,bool> interfaceFixedQEDCouplings
+    ("FixedQEDCouplings",
+     "Switch on or off fixed QED couplings.",
+     &MatchboxFactory::theFixedQEDCouplings, true, false, false);
+  static SwitchOption interfaceFixedQEDCouplingsOn
+    (interfaceFixedQEDCouplings,
+     "On",
+     "On",
+     true);
+  static SwitchOption interfaceFixedQEDCouplingsOff
+    (interfaceFixedQEDCouplings,
+     "Off",
+     "Off",
+     false);
+
   static Switch<MatchboxFactory,bool> interfaceVetoScales
     ("VetoScales",
      "Switch on or setting veto scales.",
-     &MatchboxFactory::theVetoScales, true, false, false);
+     &MatchboxFactory::theVetoScales, false, false, false);
   static SwitchOption interfaceVetoScalesOn
     (interfaceVetoScales,
      "On",
@@ -701,11 +1223,6 @@ void MatchboxFactory::Init() {
     ("Amplitudes",
      "The amplitude objects.",
      &MatchboxFactory::theAmplitudes, -1, false, false, true, true, false);
-
-  static Reference<MatchboxFactory,MatchboxMECache> interfaceCache
-    ("Cache",
-     "Set the matrix element cache object.",
-     &MatchboxFactory::theCache, false, false, true, true, false);
 
   static RefVector<MatchboxFactory,MatchboxMEBase> interfaceBornMEs
     ("BornMEs",
@@ -723,16 +1240,20 @@ void MatchboxFactory::Init() {
      "The RealEmission matrix elements to be used",
      &MatchboxFactory::theRealEmissionMEs, -1, false, false, true, true, false);
 
-
-  static RefVector<MatchboxFactory,MatchboxNLOME> interfaceBornVirtuals
+  static RefVector<MatchboxFactory,MatchboxMEBase> interfaceBornVirtuals
     ("BornVirtualMEs",
      "The generated Born/virtual contributions",
      &MatchboxFactory::theBornVirtualMEs, -1, false, true, true, true, false);
 
   static RefVector<MatchboxFactory,SubtractedME> interfaceSubtractedMEs
     ("SubtractedMEs",
-     "The generated Born/virtual contributions",
+     "The generated subtracted real emission contributions",
      &MatchboxFactory::theSubtractedMEs, -1, false, true, true, true, false);
+
+  static RefVector<MatchboxFactory,MatchboxMEBase> interfaceFiniteRealMEs
+    ("FiniteRealMEs",
+     "The generated finite real contributions",
+     &MatchboxFactory::theFiniteRealMEs, -1, false, true, true, true, false);
 
   static Switch<MatchboxFactory,bool> interfaceVerbose
     ("Verbose",
@@ -749,12 +1270,32 @@ void MatchboxFactory::Init() {
      "Off",
      false);
 
+  static Switch<MatchboxFactory,bool> interfaceInitVerbose
+    ("InitVerbose",
+     "Print setup information.",
+     &MatchboxFactory::theInitVerbose, false, false, false);
+  static SwitchOption interfaceInitVerboseOn
+    (interfaceInitVerbose,
+     "On",
+     "On",
+     true);
+  static SwitchOption interfaceInitVerboseOff
+    (interfaceInitVerbose,
+     "Off",
+     "Off",
+     false);
+
   static Parameter<MatchboxFactory,string> interfaceSubtractionData
     ("SubtractionData",
      "Prefix for subtraction check data.",
      &MatchboxFactory::theSubtractionData, "",
      false, false);
 
+  static Parameter<MatchboxFactory,string> interfacePoleData
+    ("PoleData",
+     "Prefix for subtraction check data.",
+     &MatchboxFactory::thePoleData, "",
+     false, false);
 
   static RefVector<MatchboxFactory,ParticleData> interfaceParticleGroup
     ("ParticleGroup",
@@ -776,6 +1317,92 @@ void MatchboxFactory::Init() {
     ("Process",
      "Set the process to consider.",
      &MatchboxFactory::doProcess, false);
+
+  static Command<MatchboxFactory> interfaceSingleRealProcess
+    ("SingleRealProcess",
+     "Set the process to consider.",
+     &MatchboxFactory::doSingleRealProcess, false);
+
+  static Reference<MatchboxFactory,ShowerApproximation> interfaceShowerApproximation
+    ("ShowerApproximation",
+     "Set the shower approximation to be considered.",
+     &MatchboxFactory::theShowerApproximation, false, false, true, true, false);
+
+  static Switch<MatchboxFactory,bool> interfaceRealEmissionScales
+    ("RealEmissionScales",
+     "Switch on or off calculation of subtraction scales from real emission kinematics.",
+     &MatchboxFactory::theRealEmissionScales, false, false, false);
+  static SwitchOption interfaceRealEmissionScalesOn
+    (interfaceRealEmissionScales,
+     "On",
+     "On",
+     true);
+  static SwitchOption interfaceRealEmissionScalesOff
+    (interfaceRealEmissionScales,
+     "Off",
+     "Off",
+     false);
+
+  static Switch<MatchboxFactory,bool> interfaceAllProcesses
+    ("AllProcesses",
+     "Consider all processes up to a maximum coupling order specified by the coupling order interfaces.",
+     &MatchboxFactory::theAllProcesses, false, false, false);
+  static SwitchOption interfaceAllProcessesYes
+    (interfaceAllProcesses,
+     "Yes",
+     "Include all processes.",
+     true);
+  static SwitchOption interfaceAllProcessesNo
+    (interfaceAllProcesses,
+     "No",
+     "Only consider processes matching the exact order in the couplings.",
+     false);
+
+  static RefVector<MatchboxFactory,MatchboxAmplitude> interfaceSelectAmplitudes
+    ("SelectAmplitudes",
+     "The amplitude objects to be favoured in clashing responsibilities.",
+     &MatchboxFactory::theSelectedAmplitudes, -1, false, false, true, true, false);
+
+  static RefVector<MatchboxFactory,MatchboxAmplitude> interfaceDeselectAmplitudes
+    ("DeselectAmplitudes",
+     "The amplitude objects to be disfavoured in clashing responsibilities.",
+     &MatchboxFactory::theDeselectedAmplitudes, -1, false, false, true, true, false);
+
+  static Switch<MatchboxFactory,int> interfaceDipoleSet
+    ("DipoleSet",
+     "The set of subtraction terms to be considered.",
+     &MatchboxFactory::theDipoleSet, 0, false, false);
+  static SwitchOption interfaceDipoleSetCataniSeymour
+    (interfaceDipoleSet,
+     "CataniSeymour",
+     "Use default Catani-Seymour dipoles.",
+     0);
+
+  static RefVector<MatchboxFactory,ReweightBase> interfaceReweighters
+    ("Reweighters",
+     "Reweight objects for matrix elements.",
+     &MatchboxFactory::theReweighters, -1, false, false, true, false, false);
+
+  static RefVector<MatchboxFactory,ReweightBase> interfacePreweighters
+    ("Preweighters",
+     "Preweight objects for matrix elements.",
+     &MatchboxFactory::thePreweighters, -1, false, false, true, false, false);
+
+  static Switch<MatchboxFactory,bool> interfaceMECorrectionsOnly
+    ("MECorrectionsOnly",
+     "Prepare only ME corrections, but no NLO calculation.",
+     &MatchboxFactory::theMECorrectionsOnly, false, false, false);
+  static SwitchOption interfaceMECorrectionsOnlyYes
+    (interfaceMECorrectionsOnly,
+     "Yes",
+     "Produce only ME corrections.",
+     true);
+  static SwitchOption interfaceMECorrectionsOnlyNo
+    (interfaceMECorrectionsOnly,
+     "No",
+     "Produce full NLO.",
+     false);
+
 
 }
 

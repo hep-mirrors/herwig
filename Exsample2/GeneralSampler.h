@@ -14,6 +14,7 @@
 
 #include "ThePEG/Handlers/SamplerBase.h"
 #include "BinSampler.h"
+#include "SamplingBias.h"
 
 namespace Herwig {
 
@@ -111,6 +112,29 @@ public:
   virtual double sumWeights() const {
     return theSumWeights;
   }
+
+  /**
+   * Return the sum of the weights squaredreturned by generate() so far (of
+   * the events that were not rejeted).
+   */
+  virtual double sumWeights2() const {
+    return theSumWeights2;
+  }
+
+  /**
+   * Return the number of attempts
+   */
+  unsigned long attempts() const {
+    return theAttempts;
+  }
+
+  /**
+   * Return the number of accepts
+   */
+  unsigned long accepts() const {
+    return theAccepts;
+  }
+
   //@}
 
 protected:
@@ -214,6 +238,11 @@ private:
   Ptr<BinSampler>::ptr theBinSampler;
 
   /**
+   * The sampling bias to apply
+   */
+  Ptr<SamplingBias>::ptr theSamplingBias;
+
+  /**
    * Whether or not additional information should be printed to cout.
    */
   bool theVerbose;
@@ -241,6 +270,25 @@ private:
   Ptr<BinSampler>::tptr lastSampler;
 
   /**
+   * The number of events after which cross sections should truly be
+   * updated. This is used to prevent exhaustive combination of
+   * statistics when HepMC events are written out.
+   */
+  size_t theUpdateAfter;
+
+  /**
+   * The number of calls to currentCrossSections since the last
+   * update.
+   */
+  mutable size_t crossSectionCalls;
+
+  /**
+   * True, if currentCrossSections has been called since the last call
+   * to generate.
+   */
+  mutable bool gotCrossSections;
+
+  /**
    * The integrated cross section in nanobarn
    */
   mutable double theIntegratedXSec;
@@ -256,15 +304,50 @@ private:
   double theSumWeights;
 
   /**
+   * The sum of weights squared
+   */
+  double theSumWeights2;
+
+  /**
+   * The number of attempts
+   */
+  unsigned long theAttempts;
+
+  /**
+   * The number of accepts
+   */
+  unsigned long theAccepts;
+
+  /**
    * The sum of absolute cross section.
    */ 
   double norm;
 
   /**
-   * Map samplers to events to be skipped owing to encounter of a new
-   * maximum.
+   * True, if information for combining unnormalized runs should be
+   * printed out
    */
-  map<Ptr<BinSampler>::tptr,unsigned long> skipMap;
+  bool runCombinationData;
+
+  /**
+   * The maximum weight encountered
+   */
+  double theMaxWeight;
+
+  /**
+   * True, if we should perform an almost unweighted sampling
+   */
+  bool theAlmostUnweighted;
+
+  /**
+   * Number of points which exceeded the maximum
+   */
+  unsigned long maximumExceeds;
+
+  /**
+   * The average relative deviation from the maximum weight
+   */
+  double maximumExceededBy;
 
 private:
 

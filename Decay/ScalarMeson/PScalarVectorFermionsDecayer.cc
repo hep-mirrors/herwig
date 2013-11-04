@@ -116,7 +116,7 @@ int PScalarVectorFermionsDecayer::modeNumber(bool & cc,tcPDPtr parent,
   // must be three outgoing particles
   if(children.size()!=3) return imode;
   // ids of the particles
-  int id0(parent->id()),idf[2],idv(0);
+  int id0(parent->id()),idf[2]={0,0},idv(0);
   unsigned int nf(0);
   tPDVector::const_iterator pit = children.begin();
   for( ;pit!=children.end();++pit) {
@@ -320,7 +320,7 @@ PScalarVectorFermionsDecayer::threeBodyMEIntegrator(const DecayMode & dm) const 
   // workout which mode we are doing
   int imode(-1);
   // ids of the particles
-  int id0(dm.parent()->id()),idf[2],idv(0);
+  int id0(dm.parent()->id()),idf[2]={0,0},idv(0);
   unsigned int nf(0);
   ParticleMSet::const_iterator pit = dm.products().begin();
   for( ;pit!=dm.products().end();++pit) {

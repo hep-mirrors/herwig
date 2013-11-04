@@ -58,6 +58,23 @@ namespace exsample {
     /// for an event below the evolution cutoff
     double generate();
 
+    /// generate an event, returning
+    /// the sign of the weight or zero
+    /// for an event below the evolution cutoff
+    double generate(double cutoff) {
+      double oldcut = evolution_cutoff_;
+      evolution_cutoff_ = cutoff;
+      double w = 0.0;
+      try {
+	w = generate();
+      } catch(...) {
+	evolution_cutoff_ = oldcut;
+	throw;
+      }
+      evolution_cutoff_ = oldcut;
+      return w;
+    }
+
     /// return the last sampled phase space point
     const std::vector<double>& last_point() const { return last_point_; }
 
@@ -85,6 +102,16 @@ namespace exsample {
 
     /// access the adaption_info object
     adaption_info& sampling_parameters() { return adaption_info_; }
+
+  public:
+
+    /// put to ostream
+    template<class OStream>
+    void put(OStream& os) const;
+
+    /// get from istream
+    template<class IStream>
+    void get(IStream& is);
 
   private:
 

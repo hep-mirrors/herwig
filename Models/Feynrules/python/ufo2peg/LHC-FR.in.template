@@ -1,0 +1,71 @@
+read ${ModelName}.model
+
+cd /Herwig/NewPhysics
+
+####################################
+#
+# Modify the required process here
+#
+####################################
+
+insert HPConstructor:Incoming 0 /Herwig/Particles/u
+insert HPConstructor:Incoming 1 /Herwig/Particles/ubar
+
+${Particles}
+
+set HPConstructor:Processes SingleParticleInclusive
+
+#############################################################
+## Additionally, you can use new particles as intermediates
+## with the ResConstructor:
+#############################################################
+# insert ResConstructor:Incoming 0 /Herwig/Particles/u
+# insert ResConstructor:Incoming 0 /Herwig/Particles/ubar
+#
+# insert ResConstructor:Intermediates 0 [PARTICLE_NAME]
+#
+# insert ResConstructor:Outgoing 0 /Herwig/Particles/e+
+# insert ResConstructor:Outgoing 1 /Herwig/Particles/W+
+# insert ResConstructor:Outgoing 2 /Herwig/Particles/Z0
+# insert ResConstructor:Outgoing 3 /Herwig/Particles/gamma
+
+###########################################################
+# Specialized 2->3 higgs constructors are also available,
+# where incoming lines don't need to be set.
+###########################################################
+## Higgs + t tbar
+# set /Herwig/NewPhysics/QQHiggsConstructor:QuarkType Top
+# insert /Herwig/NewPhysics/QQHiggsConstructor:HiggsBoson  0 [HIGGS_NAME]
+#
+## Higgs VBF
+# insert /Herwig/NewPhysics/HiggsVBFConstructor:HiggsBoson  0 [HIGGS_NAME]
+#
+## Higgs + W/Z, with full 2->3 ME
+# set /Herwig/NewPhysics/HVConstructor:CollisionType Hadron
+# insert /Herwig/NewPhysics/HVConstructor:VectorBoson 0 /Herwig/Particles/Z0
+# insert /Herwig/NewPhysics/HVConstructor:HiggsBoson  0 [HIGGS_NAME]
+
+
+
+####################################
+####################################
+####################################
+
+# Intrinsic pT tune extrapolated to LHC energy
+set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
+
+# disable default cuts if required
+# cd /Herwig/EventHandlers
+# create ThePEG::Cuts   /Herwig/Cuts/NoCuts
+# set /Herwig/EventHandlers/LHCHandler:Cuts /Herwig/Cuts/NoCuts
+
+# Other parameters for run
+cd /Herwig/Generators
+set LHCGenerator:NumberOfEvents 10000000
+set LHCGenerator:RandomNumberGenerator:Seed 31122001
+set LHCGenerator:DebugLevel 0
+set LHCGenerator:EventHandler:StatLevel Full
+set LHCGenerator:PrintEvent 100
+set LHCGenerator:MaxErrors 10000
+
+saverun LHC-${ModelName} LHCGenerator

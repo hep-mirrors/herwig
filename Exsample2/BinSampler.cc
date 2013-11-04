@@ -31,8 +31,11 @@
 using namespace Herwig;
 
 BinSampler::BinSampler() 
-  : Interfaced(), MultiIterationStatistics(), 
-    theInitialPoints(1000000), theBin(-1),
+  : MultiIterationStatistics(), 
+    theInitialPoints(1000000), 
+    theEnhanceInitialPoints(1.0),
+    theOversamplingFactor(1.0),
+    theBin(-1),
     theInitialized(false) {}
 
 BinSampler::~BinSampler() {}
@@ -58,6 +61,24 @@ string BinSampler::process() const {
     os << (**pid).PDGName() << " ";
   return os.str();
 }
+
+string BinSampler::id() const {
+  ostringstream os("");
+  const StandardEventHandler& eh = *theEventHandler;
+  const StandardXComb& xc = *eh.xCombs()[theBin];
+  string name = xc.matrixElement()->name();
+  string::size_type i = name.find_first_of("[");
+  string nameFirst = name.substr(0,i);
+  i = name.find_first_of("]");
+  string nameSecond = name.substr(i+1);
+  os << nameFirst << nameSecond << ":";
+  for ( cPDVector::const_iterator pid =
+	  xc.mePartonData().begin();
+	pid != xc.mePartonData().end(); ++pid )
+    os << (**pid).id() << (pid != (--xc.mePartonData().end()) ? "," : "");
+  return os.str();
+}
+
 
 void BinSampler::generate(bool noMaxInfo) {
   double w = 1.;
@@ -128,12 +149,14 @@ void BinSampler::initialize(bool progress) {
 
 void BinSampler::persistentOutput(PersistentOStream & os) const {
   MultiIterationStatistics::put(os);
-  os << theInitialPoints << theBin << theInitialized << theLastPoint;
+  os << theInitialPoints << theEnhanceInitialPoints 
+     << theOversamplingFactor << theBin << theInitialized << theLastPoint;
 }
 
 void BinSampler::persistentInput(PersistentIStream & is, int) {
   MultiIterationStatistics::get(is);
-  is >> theInitialPoints >> theBin >> theInitialized >> theLastPoint;
+  is >> theInitialPoints >> theEnhanceInitialPoints 
+     >> theOversamplingFactor >> theBin >> theInitialized >> theLastPoint;
 }
 
 
@@ -142,7 +165,7 @@ void BinSampler::persistentInput(PersistentIStream & is, int) {
 // are correct (the class and its base class), and that the constructor
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
-DescribeClass<BinSampler,Interfaced>
+DescribeClass<BinSampler,MultiIterationStatistics>
   describeHerwigBinSampler("Herwig::BinSampler", "HwExsample2.so");
 
 void BinSampler::Init() {

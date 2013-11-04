@@ -96,12 +96,13 @@ namespace SpinorHelicity {
 	res.second *= Complex(0.,1.);
 	return res;
       }
-      if ( abs(p.plus()) == ZERO ) {
+      Energy pPlus = p.t() + p.x();
+      if ( abs(pPlus) < 1.e-10 * GeV ) {
 	return make_pair(complex<Value>(ZERO),
 			 complex<Value>(sqrt(2.*p.t())));
       }
-      return make_pair(complex<Value>(sqrt(p.plus())),
-		       complex<Value>(p.x()/sqrt(p.plus()),p.y()/sqrt(p.plus())));
+      return make_pair(complex<Value>(sqrt(pPlus)),
+		       complex<Value>(p.z()/sqrt(pPlus),p.y()/sqrt(pPlus)));
     }
 
   };
@@ -120,12 +121,13 @@ namespace SpinorHelicity {
 	res.second *= Complex(0.,1.);
 	return res;
       }
-      if ( abs(p.plus()) == ZERO ) {
+      Energy pPlus = p.t() + p.x();
+      if ( abs(pPlus) < 1.e-10 * GeV ) {
 	return make_pair(complex<Value>(sqrt(2.*p.t())),
 			 complex<Value>(ZERO));
       }
-      return make_pair(complex<Value>(p.x()/sqrt(p.plus()),-p.y()/sqrt(p.plus())),
-		       -complex<Value>(sqrt(p.plus())));
+      return make_pair(complex<Value>(p.z()/sqrt(pPlus),-p.y()/sqrt(pPlus)),
+		       -complex<Value>(sqrt(pPlus)));
     }
 
   };
@@ -347,9 +349,9 @@ namespace SpinorHelicity {
     ResultType evaluate(const WeylSpinor<MinusConjugateSpinorTag,Value>& left,
 			const WeylSpinor<PlusSpinorTag,Value>& right) {
       return 
-	ResultType(right.s1()*left.s2()+right.s2()*left.s1(),
+	ResultType(right.s1()*left.s1()-right.s2()*left.s2(),
 		   complex<double>(0.,1.)*(right.s1()*left.s2()-right.s2()*left.s1()),
-		   right.s1()*left.s1()-right.s2()*left.s2(),
+		   right.s1()*left.s2()+right.s2()*left.s1(),
 		   right.s1()*left.s1()+right.s2()*left.s2());
     }
 
@@ -359,9 +361,9 @@ namespace SpinorHelicity {
     ResultType evaluate(const WeylSpinor<PlusConjugateSpinorTag,Value>& left,
 			const WeylSpinor<MinusSpinorTag,Value>& right) {
       return 
-	ResultType(-right.s1()*left.s2()-right.s2()*left.s1(),
+	ResultType(-right.s1()*left.s1()+right.s2()*left.s2(),
 		   -complex<double>(0.,1.)*(right.s1()*left.s2()-right.s2()*left.s1()),
-		   -right.s1()*left.s1()+right.s2()*left.s2(),
+		   -right.s1()*left.s2()-right.s2()*left.s1(),
 		   right.s1()*left.s1()+right.s2()*left.s2());
     }
 

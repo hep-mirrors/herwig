@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the GeneralFourBodyDecayer class.
+//
+#ifndef HERWIG_GeneralFourBodyDecayer_FH
+#define HERWIG_GeneralFourBodyDecayer_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class GeneralFourBodyDecayer;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::GeneralFourBodyDecayer,GeneralFourBodyDecayerPtr);
+
+}
+
+#endif

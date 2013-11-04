@@ -70,6 +70,20 @@ public:
    */
   const MixingMatrixPtr & CPevenHiggsMix() const {return theHiggsMix;}
 
+  /**
+   * Mixing matrix for the neutral CP-odd Higgs bosons
+   */
+  const MixingMatrixPtr & CPoddHiggsMix() const {
+    return HiggsAMix_;
+  }
+
+  /**
+   * Mixing matrix for the charged Higgs bosons
+   */
+  const MixingMatrixPtr & ChargedHiggsMix() const {
+    return HiggsPMix_;
+  }
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -131,6 +145,41 @@ protected:
    */
   virtual void adjustMixingMatrix(long id);
 
+  /**
+   * Mixing matrix for the neutral CP-even Higgs bosons
+   */
+  void CPevenHiggsMix(MixingMatrixPtr in) {theHiggsMix = in;}
+
+  /**
+   * Mixing matrix for the neutral CP-odd Higgs bosons
+   */
+  void CPoddHiggsMix(MixingMatrixPtr in) {HiggsAMix_ = in;}
+
+  /**
+   * Mixing matrix for the charged Higgs bosons
+   */
+  void ChargedHiggsMix(MixingMatrixPtr in) {HiggsPMix_ = in;}
+
+  /**
+   * Set the stop mixing matrix
+   */
+  void stopMix(MixingMatrixPtr in) {theStopMix =in;}
+
+  /**
+   * The sbottom chargino mixing matrix
+   */
+  void sbottomMix(MixingMatrixPtr in) {theSbotMix = in;}
+
+  /**
+   * The stau mixing matrix
+   */
+  void stauMix(MixingMatrixPtr in) {theStauMix = in;}
+
+  /**
+   * Value of Higgs mixing angle \f$\alpha\f$.
+   */
+  void higgsMixingAngle(double in) {theAlpha = in;}
+
 private:
 
   /**
@@ -188,9 +237,23 @@ private:
   double theAlpha;
 
   /**
-   *  Higgs mixing matrix
+   *  Higgs boson mixing matrices
+   */
+  //@{
+  /**
+   *  Scalar Higgs mixing matrix
    */
   MixingMatrixPtr theHiggsMix;
+  /**
+   *  Pseudoscalar Higgs mixing
+   */
+  MixingMatrixPtr HiggsAMix_;
+
+  /**
+   *  Charged Higgs mixing
+   */
+  MixingMatrixPtr HiggsPMix_;
+  //@}
 
 };
 

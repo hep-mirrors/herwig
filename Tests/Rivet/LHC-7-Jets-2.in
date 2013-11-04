@@ -33,6 +33,17 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S9088458
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I919017
 # CMS UE
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S9120041
+# CMS central and forward jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1087342
+# CMS dijets with large rapidity intervals
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1102908
+# CMS dijet
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1184941
+# strange particles in underlying event
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_PAS_QCD_11_010
+# ATLAS charged particle in min bias
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1125575
+
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################

@@ -17,6 +17,10 @@
 #include "Herwig++/Utilities/Maths.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
+#include "Herwig++/Shower/Base/ShowerProgenitor.h"
+#include "Herwig++/Shower/Base/ShowerTree.h"
+#include "Herwig++/Shower/Base/Branching.h"
+#include "Herwig++/Shower/Base/HardTree.h"
 
 using namespace Herwig;
 

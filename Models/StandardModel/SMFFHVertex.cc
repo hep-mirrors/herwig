@@ -83,7 +83,7 @@ void SMFFHVertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr, tcPDPtr) {
   left (1.);
   right(1.);
   // first the overall normalisation
-  if(q2!=_q2last||_couplast==0./GeV) {
+  if(q2!=_q2last||_couplast==complex<InvEnergy>()) {
     _couplast = -0.5*weakCoupling(q2)/_mw;
     _q2last=q2;
     _idlast=iferm;

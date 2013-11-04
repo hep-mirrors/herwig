@@ -12,6 +12,11 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/EnumParticles.h"
+#include "Herwig++/Shower/Base/ShowerTree.h"
+#include "Herwig++/Shower/Base/HardTree.h"
+#include "Herwig++/Shower/Base/ShowerProgenitor.h"
+#include "Herwig++/Shower/Base/ShowerParticle.h"
+#include "Herwig++/Shower/Base/Branching.h"
 
 using namespace Herwig;
 
@@ -391,7 +396,7 @@ bool DrellYanBase::applyHard(ShowerParticleVector quarks,
   double kappa[2]={1.,1.};
   // get the momentum fractions for the leading order process
   // and the values of the PDF's
-  double x[2],fx[2];
+  double x[2]={-99.99e99,-99.99e99}, fx[2]={-99.99e99,-99.99e99};
   tcPDFPtr pdf[2];
   for(unsigned int ix=0;ix<quarks.size();++ix) {
     x[ix]=quarks[ix]->x();
@@ -689,8 +694,8 @@ HardTreePtr DrellYanBase::generateHardest(ShowerTreePtr tree) {
   int emission_type(-1);
   // generate the hard emission and return if no emission
   if(!getEvent(pnew,emission_type)) {
-//     for(unsigned int ix=0;ix<particlesToShower.size();++ix)
-//       particlesToShower[ix]->maximumpT(_min_pt);
+    for(unsigned int ix=0;ix<particlesToShower.size();++ix)
+      particlesToShower[ix]->maximumpT(_min_pt);
     return HardTreePtr();
   }
   // construct the HardTree object needed to perform the showers
@@ -704,7 +709,7 @@ HardTreePtr DrellYanBase::generateHardest(ShowerTreePtr tree) {
     newparticles.push_back(new_ptr(ShowerParticle(_partons[0]      ,false)));
     newparticles.push_back(new_ptr(ShowerParticle(_partons[1]      ,false)));
     newparticles.push_back(new_ptr(ShowerParticle(gluon            , true)));
-    iemit = pnew[0].z()/pnew[2].rapidity()>ZERO ? 0 : 1;
+    iemit = (pnew[0]-pnew[2]).m2()>(pnew[1]-pnew[2]).m2() ? 0 : 1;
   }
   // q g    -> q V
   else if(emission_type==1) {
@@ -847,7 +852,7 @@ double DrellYanBase::getResult(int emis_type, Energy pt, double yj) {
   else {
     res*=pdf[2]*pdf[3]/pdf[0]/pdf[1]*m2/sh;
   }
-  res*=_alpha->ratio(scale);
+  res*=_alpha->ratio(sqr(pt));
   return res;
 } 
 

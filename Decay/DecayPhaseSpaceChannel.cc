@@ -100,8 +100,7 @@ DecayPhaseSpaceChannel::generateMomenta(const Lorentz5Momentum & pin,
   pexternal.resize(_mode->numberofParticles());
   pinter.resize(_intpart.size());
   // masses of the intermediate particles
-  vector<Energy> massint; 
-  massint.resize(_intpart.size());
+  vector<Energy> massint(_intpart.size());
   massint[0]=pin.mass();
   // generate all the decays in the chain
   Energy lower,upper,lowerb[2];
@@ -361,7 +360,7 @@ void DecayPhaseSpaceChannel::doinit() {
       massmax -= _mode->externalParticles(ix)->massMin();
   }
   for(unsigned int ix=0;ix<_intpart.size();++ix) {
-    if(_intwidth.back()==ZERO && ix>0 && _jactype[ix]==0 ) {
+    if(_intwidth[ix]==ZERO && ix>0 && _jactype[ix]==0 ) {
       Energy massmin(ZERO);
       for(unsigned int iy=0;iy<_intext[ix].size();++iy)
 	massmin += _mode->testOnShell() ? 
@@ -402,7 +401,7 @@ void DecayPhaseSpaceChannel::doinitrun() {
   for(unsigned int ix=1;ix<_mode->numberofParticles();++ix) 
     massmax -= _mode->externalParticles(ix)->massMin();
   for(unsigned int ix=0;ix<_intpart.size();++ix) {
-    if(_intwidth.back()==0.*MeV && ix>0 && _jactype[ix]==0 ) {
+    if(_intwidth[ix]==0.*MeV && ix>0 && _jactype[ix]==0 ) {
       Energy massmin(0.*GeV);
       for(unsigned int iy=0;iy<_intext[ix].size();++iy)
 	massmin += _mode->externalParticles(_intext[ix][iy])->massMin();
@@ -434,7 +433,8 @@ void DecayPhaseSpaceChannel::generateIntermediates(bool cc, const Particle & in,
   for(ix=0;ix<out.size();++ix) external.push_back(out[ix]);
   out.clear();
   // now create the intermediates
-  ParticleVector resonance; resonance.push_back(external[0]);
+  ParticleVector resonance;
+  resonance.push_back(external[0]);
   PPtr respart;
   tcPDPtr parttemp;
   Lorentz5Momentum pinter;
@@ -454,6 +454,8 @@ void DecayPhaseSpaceChannel::generateIntermediates(bool cc, const Particle & in,
 			     resonance[-_intdau1[ix]] : external[_intdau1[ix]]);
     resonance[ix]->addChild( _intdau2[ix]<0 ? 
 			     resonance[-_intdau2[ix]] : external[_intdau2[ix]]);
+    if(resonance[ix]->dataPtr()->stable())
+      resonance[ix]->setLifeLength(Lorentz5Distance());
   }
   // construct the output with the particles in the first step
   out.push_back( _intdau1[0]>0 ? external[_intdau1[0]] : resonance[-_intdau1[0]]);
@@ -469,9 +471,9 @@ InvEnergy2 DecayPhaseSpaceChannel::massWeight(int ires, Energy moff,
 					      Energy lower,Energy upper) {
   InvEnergy2 wgt = ZERO;
   if(lower>upper) {
-    throw DecayPhaseSpaceError() << "DecayPhaseSpaceChannel::massWeight not allowed" 
+    throw DecayPhaseSpaceError() << "DecayPhaseSpaceChannel::massWeight not allowed " 
 				 << ires << "   " << _intpart[ires]->id() << "   " 
-				 << moff/GeV << Exception::eventerror;
+				 << moff/GeV << " " << lower/GeV << " " << upper/GeV << Exception::eventerror;
   } 
   // use a Breit-Wigner 
   if ( _jactype[ires] == 0 ) {
@@ -550,8 +552,8 @@ Energy DecayPhaseSpaceChannel::generateMass(int ires,Energy lower,Energy upper) 
 				 << "DecayPhaseSpaceChannel::generateMass" 
 				 << Exception::eventerror;
   }
-  if(mass<lower)      mass=lower+1e-10*(lower+upper);
-  else if(mass>upper) mass=upper-1e-10*(lower+upper);
+  if(mass<lower+1e-10*(lower+upper))      mass=lower+1e-10*(lower+upper);
+  else if(mass>upper-1e-10*(lower+upper)) mass=upper-1e-10*(lower+upper);
   return mass;
 }
 
@@ -564,7 +566,7 @@ void DecayPhaseSpaceChannel::twoBodyDecay(const Lorentz5Momentum & p,
   Kinematics::generateAngles(ctheta,phi);
   Axis unitDir1=Kinematics::unitDirection(ctheta,phi);
   Momentum3 pstarVector;
-  Energy min=p.m();
+  Energy min=p.mass();
   if ( min >= m1 + m2  &&  m1 >= ZERO  &&  m2 >= ZERO  ) {
     pstarVector = unitDir1 * Kinematics::pstarTwoBodyDecay(min,m1,m2);
   }

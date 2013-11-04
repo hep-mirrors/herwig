@@ -12,10 +12,12 @@
 // This is the declaration of the SubtractionDipole class.
 //
 
+#include "Herwig++/MatrixElement/Matchbox/Dipoles/SubtractionDipole.fh"
+
 #include "ThePEG/MatrixElement/MEBase.h"
 #include "ThePEG/Handlers/StandardXComb.h"
-#include "ThePEG/Handlers/StdDependentXComb.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.h"
+#include "Herwig++/MatrixElement/Matchbox/Matching/ShowerApproximation.h"
 
 namespace Herwig {
 
@@ -32,7 +34,8 @@ class InvertedTildeKinematics;
  * term in the formalism of Catani and Seymour.
  *
  */
-class SubtractionDipole: public MEBase {
+class SubtractionDipole: 
+    public MEBase,  public LastMatchboxXCombInfo {
 
 public:
 
@@ -74,6 +77,11 @@ public:
   virtual bool apply() const { return theApply; }
 
   /**
+   * Clear the bookkeeping
+   */
+  void clearBookkeeping();
+
+  /**
    * Setup bookkeeping maps.
    */
   void setupBookkeeping();
@@ -92,16 +100,38 @@ public:
   void splittingBookkeeping();
 
   /**
-   * Create a StdDependentXComb object for the underlying
-   * Born process, given a XComb driving the real emission
+   * For the given event generation setup return a xcomb object
+   * appropriate to this matrix element.
    */
-  StdDependentXCombPtr makeBornXComb(tStdXCombPtr realXC);
+  virtual StdXCombPtr makeXComb(Energy newMaxEnergy, const cPDPair & inc,
+				tEHPtr newEventHandler,tSubHdlPtr newSubProcessHandler,
+				tPExtrPtr newExtractor,	tCascHdlPtr newCKKW,
+				const PBPair & newPartonBins, tCutsPtr newCuts,
+				const DiagramVector & newDiagrams, bool mir,
+				const PartonPairVec& allPBins,
+				tStdXCombPtr newHead = tStdXCombPtr(),
+				tMEPtr newME = tMEPtr());
 
   /**
-   * Create a StdDependentXComb object for the real emission process,
+   * For the given event generation setup return a dependent xcomb object
+   * appropriate to this matrix element.
+   */
+  virtual StdXCombPtr makeXComb(tStdXCombPtr newHead,
+				const PBPair & newPartonBins,
+				const DiagramVector & newDiagrams,
+				tMEPtr newME = tMEPtr());
+
+  /**
+   * Create a dependent xcomb object for the underlying
+   * Born process, given a XComb driving the real emission
+   */
+  StdXCombPtr makeBornXComb(tStdXCombPtr realXC);
+
+  /**
+   * Create dependent xcomb objects for the real emission process,
    * given a XComb driving the underlying Born
    */
-  StdDependentXCombPtr makeRealXComb(tStdXCombPtr bornXC);
+  vector<StdXCombPtr> makeRealXCombs(tStdXCombPtr bornXC);
 
   /**
    * Return true, if bookkeeping did not find a non-trivial setup.
@@ -263,7 +293,7 @@ public:
   /**
    * Return the splitting map
    */
-  const map<UnderlyingBornKey,RealEmissionInfo>& splittingMap() const { return theSplittingMap; }
+  const multimap<UnderlyingBornKey,RealEmissionInfo>& splittingMap() const { return theSplittingMap; }
 
   /**
    * Return the underlying Born diagrams to be considered
@@ -377,24 +407,21 @@ public:
   virtual bool wantCMS () const { return realEmissionME()->wantCMS(); }
 
   /**
-   * If this is a dependent matrix element in a ME group, return true,
-   * if cuts should be inherited from the head matrix element, i.e. no
-   * cut is being applied to the dependent matrix element if the head
-   * configuration has passed the cuts.
+   * Clear the information previously provided by a call to
+   * setKinematics(...).
    */
-  virtual bool headCuts() const { return testSubtraction(); }
+  virtual void clearKinematics();
 
   /**
    * If this is a dependent matrix element in a ME group, return true,
    * if cuts should be ignored.
    */
-  virtual bool ignoreCuts() const { return splitting(); }
+  virtual bool ignoreCuts() const { return theIgnoreCuts; }
 
   /**
-   * Clear the information previously provided by a call to
-   * setKinematics(...).
+   * Indicate that cuts should be ignored
    */
-  virtual void clearKinematics();
+  void doIgnoreCuts(bool is = true) { theIgnoreCuts = is; }
 
   //@}
 
@@ -498,24 +525,46 @@ public:
   //@{
 
   /**
+   * Return true, if scales should be calculated from real emission kinematics
+   */
+  bool realEmissionScales() const { return theRealEmissionScales; }
+
+  /**
+   * Switch on or off that scales should be calculated from real emission kinematics
+   */
+  void doRealEmissionScales(bool on = true) { theRealEmissionScales = on; }
+
+  /**
    * Return the scale associated with the phase space point provided
    * by the last call to setKinematics().
    */
-  virtual Energy2 scale() const { return realEmissionME()->scale(); }
+  virtual Energy2 scale() const { 
+    return realEmissionScales() ? 
+      realEmissionME()->scale() :
+      underlyingBornME()->scale();
+  }
 
   /**
    * Return the value of \f$\alpha_S\f$ associated with the phase
    * space point provided by the last call to setKinematics(). This
    * versions returns SM().alphaS(scale()).
    */
-  virtual double alphaS() const { return realEmissionME()->lastAlphaS(); }
+  virtual double alphaS() const { 
+    return realEmissionScales() ? 
+      realEmissionME()->alphaS() :
+      underlyingBornME()->alphaS();
+  }
 
   /**
    * Return the value of \f$\alpha_EM\f$ associated with the phase
    * space point provided by the last call to setKinematics(). This
    * versions returns SM().alphaEM(scale()).
    */
-  virtual double alphaEM() const { return realEmissionME()->lastAlphaEM(); }
+  virtual double alphaEM() const { 
+    return realEmissionScales() ? 
+      realEmissionME()->alphaEM() :
+      underlyingBornME()->alphaEM();
+  }
 
   /**
    * Return true, if this matrix element provides the PDF
@@ -573,14 +622,35 @@ public:
   void underlyingBornME(Ptr<MatchboxMEBase>::tptr me) { theUnderlyingBornME = me; }
 
   /**
+   * Set the dipoles which have been found along with this dipole
+   */
+  void partnerDipoles(const vector<Ptr<SubtractionDipole>::ptr>& p) {
+    thePartners = p;
+  }
+
+  /**
+   * Return the dipoles which have been found along with this dipole
+   */
+  const vector<Ptr<SubtractionDipole>::ptr>& partnerDipoles() const {
+    return thePartners;
+  }
+
+  /**
    * Return the matrix element averaged over spin correlations.
    */
   virtual double me2Avg(double ccme2) const = 0;
 
   /**
-   * Return the matrix element averaged over spin correlations.
+   * Return true, if the cross section should actually return the spin
+   * averaged splitting function times the Born matrix element squared.
    */
-  virtual CrossSection dSigAvgDR(Energy2 factorizationScale) const;
+  bool showerKernel() const { return theShowerKernel; }
+
+  /**
+   * Indicate that the cross section should actually return the spin
+   * averaged splitting function times the Born matrix element squared.
+   */
+  void doShowerKernel(bool is = true) { theShowerKernel = is; }
 
   /**
    * Return the matrix element squared differential in the variables
@@ -596,6 +666,43 @@ public:
 
   //@}
 
+  /** @name Methods relevant to matching */
+  //@{
+
+  /**
+   * Set the shower approximation.
+   */
+  void showerApproximation(Ptr<ShowerApproximation>::tptr app) {
+    theShowerApproximation = app;
+  }
+
+  /**
+   * Return the shower approximation.
+   */
+  Ptr<ShowerApproximation>::tptr showerApproximation() const { return theShowerApproximation; }
+
+  /**
+   * Indicate that the shower real emission contribution should be subtracted.
+   */
+  void doRealShowerSubtraction() { theRealShowerSubtraction = true; }
+
+  /**
+   * Return true, if the shower real emission contribution should be subtracted.
+   */
+  bool realShowerSubtraction() const { return theRealShowerSubtraction; }
+
+  /**
+   * Indicate that the shower virtual contribution should be subtracted.
+   */
+  void doVirtualShowerSubtraction() { theVirtualShowerSubtraction = true; }
+
+  /**
+   * Return true, if the shower virtual contribution should be subtracted.
+   */
+  bool virtualShowerSubtraction() const { return theVirtualShowerSubtraction; }
+
+  //@}
+
   /** @name Caching and diagnostic information */
   //@{
 
@@ -604,15 +711,12 @@ public:
    * point is about to be generated, so all caches should
    * be flushed.
    */
-  virtual void flushCaches() {
-    theUnderlyingBornME->flushCaches();
-    theRealEmissionME->flushCaches();
-  }  
+  virtual void flushCaches();
 
   /**
    * Indicate that the subtraction is being tested.
    */
-  void testSubtraction() { theSubtractionTest = true; }
+  void doTestSubtraction() { theSubtractionTest = true; }
 
   /**
    * Return true, if the subtraction is being tested.
@@ -657,11 +761,6 @@ public:
    * for dsigdr evaluation
    */
   void logDSigHatDR(double effectiveJac) const;
-
-  /**
-   * Dump xcomb hierarchies.
-   */
-  void dumpInfo(const string& prefix = "") const;
 
   //@}
 
@@ -765,6 +864,17 @@ private:
   bool theSubtractionTest;
 
   /**
+   * True if cuts should be ignored
+   */
+  bool theIgnoreCuts;
+
+  /**
+   * True, if the cross section should actually return the spin
+   * averaged splitting function times the Born matrix element squared.
+   */
+  bool theShowerKernel;
+
+  /**
    * The real emission matrix element to be considered
    */
   Ptr<MatchboxMEBase>::ptr theRealEmissionME;
@@ -773,6 +883,11 @@ private:
    * The underlying Born matrix element
    */
   Ptr<MatchboxMEBase>::ptr theUnderlyingBornME;
+
+  /**
+   * The dipoles which have been found along with this dipole
+   */
+  vector<Ptr<SubtractionDipole>::ptr> thePartners;
 
   /**
    * The TildeKinematics to be used.
@@ -823,7 +938,7 @@ private:
    * Map underlying Born diagrams and tilde emitter/spectator
    * to real emission diagram containing the splitting.
    */
-  map<UnderlyingBornKey,RealEmissionInfo> theSplittingMap;
+  multimap<UnderlyingBornKey,RealEmissionInfo> theSplittingMap;
 
   /**
    * Map underlying Born diagrams to emitter/spectator pairs
@@ -849,6 +964,11 @@ private:
    * The last underlying Born key encountered
    */
   UnderlyingBornKey lastUnderlyingBornKey;
+
+  /**
+   * The last real emission info encountered
+   */
+  multimap<UnderlyingBornKey,RealEmissionInfo>::const_iterator lastRealEmissionInfo;
 
   /**
    * The emitter as referred to by the underlying Born
@@ -881,6 +1001,26 @@ private:
    * The last pt as generated from the splitting mapping
    */
   Energy theLastSplittingPt;
+
+  /**
+   * The shower approximation.
+   */
+  Ptr<ShowerApproximation>::ptr theShowerApproximation;
+
+  /**
+   * True, if the shower real emission contribution should be subtracted.
+   */
+  bool theRealShowerSubtraction;
+
+  /**
+   * True, if the shower virtual contribution should be subtracted.
+   */
+  bool theVirtualShowerSubtraction;
+
+  /**
+   * True, if scales should be calculated from real emission kinematics
+   */
+  bool theRealEmissionScales;
 
 private:
 

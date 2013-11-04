@@ -6,6 +6,7 @@
 //
 
 #include "HwMEBase.h"
+#include "Herwig++/Shower/ShowerConfig.h"
 #include "Herwig++/Shower/Couplings/ShowerAlpha.h"
 
 namespace Herwig {
@@ -32,7 +33,10 @@ public:
   /**
    *  Has a POWHEG style correction
    */
-  virtual bool hasPOWHEGCorrection() {return _alpha;}
+  //virtual bool hasPOWHEGCorrection() {return _alpha;}
+
+  virtual POWHEGType hasPOWHEGCorrection() {return ISR;}
+
 
   /**
    *  Has an old fashioned ME correction
