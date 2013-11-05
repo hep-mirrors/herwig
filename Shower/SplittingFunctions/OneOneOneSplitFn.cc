@@ -50,7 +50,6 @@ double OneOneOneSplitFn::invIntegOverP(const double r, const IdList & ,
 				       unsigned int PDFfactor) const {
   switch(PDFfactor) {
   case 0:
-    assert(z>0.&&z<1.);
     return 1./(1.+exp(-r/colourFactor())); 
   case 1:
   case 2:
