@@ -574,7 +574,7 @@ MEee2gZ2qq::generateHard(ShowerTreePtr tree,
   // get the order right 
   if(emProgenitor->id()<0) swap(emProgenitor,epProgenitor);
   if(qkProgenitor->id()<0) swap(qkProgenitor,qbProgenitor);
-  loMomenta_.resize(0);
+  loMomenta_.clear();
   // extract the momenta 
   loMomenta_.push_back(emProgenitor->progenitor()->momentum());
   loMomenta_.push_back(epProgenitor->progenitor()->momentum());
@@ -586,6 +586,7 @@ MEee2gZ2qq::generateHard(ShowerTreePtr tree,
   partons_[1]=epProgenitor->progenitor()->dataPtr();
   partons_[2]=qkProgenitor->progenitor()->dataPtr();
   partons_[3]=qbProgenitor->progenitor()->dataPtr();
+  partons_[4]=cPDPtr();
   // boost from lab to CMS frame with outgoing particles
   // along the z axis
   LorentzRotation eventFrame( ( loMomenta_[2] + loMomenta_[3] ).findBoostToCM() );

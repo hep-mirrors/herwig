@@ -210,8 +210,8 @@ void ModelGenerator::Init() {
      &ModelGenerator::minWidth_, 1e-6, 1e-15, 1.,
      false, false, Interface::limited);
 
-  static Parameter<ModelGenerator,double> interfaceHowMucchOffShell
-    ("HowMucchOffShell",
+  static Parameter<ModelGenerator,double> interfaceHowMuchOffShell
+    ("HowMuchOffShell",
      "The multiple of the particle's width by which it is allowed to be off-shell",
      &ModelGenerator::howOffShell_, 5., 0.0, 100.,
      false, false, Interface::limited);

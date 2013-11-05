@@ -627,6 +627,7 @@ void RPV::createMixingMatrices() {
       double beta = atan(tanBeta());
       hmix.push_back(MixingElement(1,1,sin(beta)));
       hmix.push_back(MixingElement(1,2,cos(beta)));
+      ids.clear();
       ids.resize(1,37);
       MixingMatrixPtr newMix = new_ptr(MixingMatrix(1,2));
       (*newMix).setIds(ids);

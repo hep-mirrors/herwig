@@ -225,7 +225,7 @@ void EtaPiPiGammaDecayer::doinit() {
     }
   }
   // set up the modes
-  tPDVector extpart;extpart.resize(4);
+  tPDVector extpart(4);
   extpart[1] = getParticleData(ParticleID::piplus);
   extpart[2] = getParticleData(ParticleID::piminus);
   extpart[3] = getParticleData(ParticleID::gamma);

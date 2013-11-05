@@ -59,6 +59,7 @@ bool HwMEBase::generateMasses(vector<Energy> & masses, double & mjac,
 			      const double *r) {
   assert(massOption_.size()+2==mePartonData().size());
   mjac = 1.;
+  masses.clear();
   masses.resize(massOption_.size(),ZERO);
   Energy ecm = sqrt(sHat());
   Energy emin(ZERO);

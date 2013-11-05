@@ -16,8 +16,6 @@
 #include "ThePEG/Repository/UseRandom.h"
 
 #include <boost/utility.hpp>
-using boost::next;
-using boost::prior;
 
 namespace Herwig {
 
@@ -138,7 +136,7 @@ public:
       weightMap[s->first] = weight;
       norm += 
 	weight *
-	(s != statisticsMap.begin() ? (s->first - prior(s)->first) : s->first);
+	(s != statisticsMap.begin() ? (s->first - boost::prior(s)->first) : s->first);
     }
     selectorMap.clear();
     double current = 0.;
@@ -146,7 +144,7 @@ public:
 	  bw != weightMap.end(); ++bw ) {
       bw->second /= norm;
       pair<double,double> range = 
-	make_pair(bw != weightMap.begin() ? prior(bw)->first : 0.,
+	make_pair(bw != weightMap.begin() ? boost::prior(bw)->first : 0.,
 		  bw->first);
       current += bw->second*(range.second-range.first);
       selectorMap[current] = range;
@@ -166,7 +164,7 @@ public:
       newBins[b->first] = GeneralStatistics();
       if ( ap.adapt(b->second) ) {
 	double bound =
-	  b != statisticsMap.begin() ? (prior(b)->first + b->first)/2. : b->first/2.;
+	  b != statisticsMap.begin() ? (boost::prior(b)->first + b->first)/2. : b->first/2.;
 	newBins[bound] = GeneralStatistics();
       }
     }

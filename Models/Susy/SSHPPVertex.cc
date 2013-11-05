@@ -122,8 +122,8 @@ void SSHPPVertex::setCoupling(Energy2 q2, tcPDPtr particle2,
     Energy mt   = theMSSM->mass(q2, thetop);    
     Energy mb   = theMSSM->mass(q2, thebot);
     Energy mtau = theMSSM->mass(q2, thetau);
-    masses.resize(0);
-    type.resize(0);
+    masses.clear();
+    type.clear();
     if( higgs == ParticleID::h0 || higgs == ParticleID::H0 ) {
       setNParticles(13);
       masses.insert(masses.begin(), theSfmass.begin(), theSfmass.end());

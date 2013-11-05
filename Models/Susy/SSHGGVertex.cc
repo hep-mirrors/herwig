@@ -159,8 +159,8 @@ void SSHGGVertex::setCoupling(Energy2 q2, tcPDPtr particle2,
     theCouplast = weakCoupling(q2)*sqr(strongCoupling(q2));
     Energy mt = theMSSM->mass(q2, thetop);    
     Energy mb = theMSSM->mass(q2, thebot);
-    masses.resize(0);
-    type.resize(0);
+    masses.clear();
+    type.clear();
     if( higgs == ParticleID::h0 || higgs == ParticleID::H0 ) {
       setNParticles(6);
       masses.insert(masses.begin(), theSqmass.begin(), theSqmass.end());

@@ -87,7 +87,7 @@ ThreeMesonCurrentBase::current(const int imode, const int ichan,
   complex<InvEnergy> dot=(vect*q)/q2;
   // scalar and parity violating terms
   vect += (F.F4-dot)*q;
-  if(F.F5!=InvEnergy3()) 
+  if(F.F5!=complex<InvEnergy3>()) 
     vect += Complex(0.,1.)*F.F5*Helicity::epsilon(decay[0]->momentum(),
 							       decay[1]->momentum(),
 							       decay[2]->momentum());

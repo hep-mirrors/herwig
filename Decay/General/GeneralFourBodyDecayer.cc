@@ -383,9 +383,11 @@ bool GeneralFourBodyDecayer::setColourFactors(double symfac) {
     }
     else if(trip.size()==2&&atrip.size()==2) {
       _nflow = 2;
+      _colour.clear();
       _colour.resize(2,DVector(2,0.));
       _colour[0][0] = 9.; _colour[0][1] = 3.;
       _colour[1][0] = 3.; _colour[1][1] = 9.;
+      _colourLargeNC.clear();
       _colourLargeNC.resize(2,DVector(2,0.));
       _colourLargeNC[0][0] = 9.; _colourLargeNC[1][1] = 9.;
       // find potential colour connected pairs
@@ -573,9 +575,11 @@ bool GeneralFourBodyDecayer::setColourFactors(double symfac) {
     }
     else if(trip.size()==2&&atrip.size()==1&&sng.size()==1) {
       _nflow = 2;
+      _colour.clear();
       _colour.resize(2,DVector(2,0.));
       _colour[0][0] = 3.; _colour[0][1] = 1.;
       _colour[1][0] = 1.; _colour[1][1] = 3.;
+      _colourLargeNC.clear();
       _colourLargeNC.resize(2,DVector(2,0.));
       _colourLargeNC[0][0] = 3.; _colourLargeNC[1][1] = 3.;
       // particle connect to incoming in first flow
@@ -713,9 +717,11 @@ bool GeneralFourBodyDecayer::setColourFactors(double symfac) {
     }
     else if(atrip.size()==2&&trip.size()==1&&sng.size()==1) {
       _nflow = 2;
+      _colour.clear();
       _colour.resize(2,DVector(2,0.));
       _colour[0][0] = 3.; _colour[0][1] = 1.;
       _colour[1][0] = 1.; _colour[1][1] = 3.;
+      _colourLargeNC.clear();
       _colourLargeNC.resize(2,DVector(2,0.));
       // particle connect to incoming in first flow
       unsigned int ifirst(0);
