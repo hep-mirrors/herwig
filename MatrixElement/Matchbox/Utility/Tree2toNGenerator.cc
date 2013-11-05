@@ -14,11 +14,14 @@
 #include "Tree2toNGenerator.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/RefVector.h"
+#include "ThePEG/Interface/Reference.h"
+#include "ThePEG/Interface/Command.h"
+#include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
-
+#include "ThePEG/Utilities/StringUtils.h"
 
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -53,6 +56,72 @@ generate(const PDVector& legs,
 	  prog.begin(); d != prog.end(); ++d ) {
     assert(d->size() == 1);
     Tree2toNDiagram diag = d->front().generate(count);
+
+
+    if ( !spaceLikeAllowed.empty() ) {
+      map<tcPDPtr,int> counts;
+      for ( int k = 1; k < diag.nSpace()-1; ++k ) {
+	if ( counts.find(diag.allPartons()[k]) != counts.end() ) {
+	  counts[diag.allPartons()[k]] += 1;
+	} else {
+	  counts[diag.allPartons()[k]] += 1;
+	}
+      }
+      bool failed = false;
+      for ( map<tcPDPtr,int>::const_iterator i =
+	      counts.begin(); i != counts.end(); ++i ) {
+	map<tcPDPtr,pair<int,int> >::const_iterator range =
+	  spaceLikeAllowed.find((*i).first);
+	if ( range != spaceLikeAllowed.end() ) {
+	  if ( i->second < range->second.first ) {
+	    failed= true;
+	    break;
+	  }
+	  if ( i->second > range->second.second &&
+	       range->second.second >= 0 ) {
+	    failed= true;
+	    break;
+	  }
+	}
+      }
+      if ( failed )
+	continue;
+    }
+
+    if ( !timeLikeAllowed.empty() ) {
+      map<tcPDPtr,int> counts;
+      int all = diag.allPartons().size();
+      for ( int k = diag.nSpace(); k < all; ++k ) {
+	if ( diag.children(k).first < 0 )
+	  continue;
+	if ( counts.find(diag.allPartons()[k]) != counts.end() ) {
+	  counts[diag.allPartons()[k]] += 1;
+	} else {
+	  counts[diag.allPartons()[k]] += 1;
+	}
+      }
+      bool failed = false;
+      for ( map<tcPDPtr,int>::const_iterator i =
+	      counts.begin(); i != counts.end(); ++i ) {
+	map<tcPDPtr,pair<int,int> >::const_iterator range =
+	  timeLikeAllowed.find((*i).first);
+	if ( range != timeLikeAllowed.end() ) {
+	  if ( i->second < range->second.first ) {
+	    failed= true;
+	    break;
+	  }
+	  if ( i->second > range->second.second &&
+	       range->second.second >= 0 ) {
+	    failed= true;
+	    break;
+	  }
+	}
+      }
+      if ( failed )
+	continue;
+    }
+
+
     bool internalVeto = false;
     set<int> external;
     int nex = diag.partons().size();
@@ -109,6 +178,9 @@ cluster(const vector<Tree2toNGenerator::Vertex>& children,
 	    v != theVertices.end(); ++v ) {
 	if ( (**v).getNpoint() != 3 )
 	  continue;
+	if ( find(theExcludeVertices.begin(), theExcludeVertices.end(), *v) !=
+	     theExcludeVertices.end() )
+	  continue;
 	bool noMatch =
 	  (**v).orderInGs() != orderInGs ||
 	  (**v).orderInGem() != orderInGem ||
@@ -155,6 +227,9 @@ cluster(const vector<Tree2toNGenerator::Vertex>& children,
     for ( VertexVector::const_iterator v = theVertices.begin();
 	  v != theVertices.end(); ++v ) {
       if ( (**v).getNpoint() != 3 )
+	continue;
+      if ( find(theExcludeVertices.begin(), theExcludeVertices.end(), *v) !=
+	   theExcludeVertices.end() )
 	continue;
       bool noMatch = false;
       noMatch |=
@@ -211,6 +286,9 @@ cluster(const vector<Tree2toNGenerator::Vertex>& children,
       for ( VertexVector::const_iterator v = theVertices.begin();
 	    v != theVertices.end(); ++v ) {
 	if ( (**v).getNpoint() != 3 )
+	  continue;
+	if ( find(theExcludeVertices.begin(), theExcludeVertices.end(), *v) !=
+	     theExcludeVertices.end() )
 	  continue;
 	if ( (**v).orderInGs() != orderInGs ||
 	     (**v).orderInGem() != orderInGem ||
@@ -293,9 +371,24 @@ clusterAll(const PDVector& external,
   if ( !prepared ) {
     for ( VertexVector::iterator v = theVertices.begin();
 	  v != theVertices.end(); ++v ) {
+      if ( find(theExcludeVertices.begin(), theExcludeVertices.end(), *v) !=
+	   theExcludeVertices.end() )
+	continue;
       (**v).init();
       maxOrderGs = max(maxOrderGs,(**v).orderInGs());
       maxOrderGem = max(maxOrderGem,(**v).orderInGem());
+    }
+    map<tcPDPtr,pair<int,int> > oldSpaceAllowed = spaceLikeAllowed;
+    spaceLikeAllowed.clear();
+    for ( map<tcPDPtr,pair<int,int> >::const_iterator d = oldSpaceAllowed.begin();
+	  d != oldSpaceAllowed.end(); ++d ) {
+      spaceLikeAllowed[getParticleData(d->first->id())] = d->second;
+    }
+    map<tcPDPtr,pair<int,int> > oldTimeAllowed = timeLikeAllowed;
+    timeLikeAllowed.clear();
+    for ( map<tcPDPtr,pair<int,int> >::const_iterator d = oldTimeAllowed.begin();
+	  d != oldTimeAllowed.end(); ++d ) {
+      timeLikeAllowed[getParticleData(d->first->id())] = d->second;
     }
     prepared = true;
   }
@@ -317,18 +410,65 @@ clusterAll(const PDVector& external,
 
 }
 
+string Tree2toNGenerator::doSpaceLikeRange(string range) {
+  if ( theRestrictLines.empty() )
+    return "No particle data specified to restrict internal lines.";
+  vector<string> bounds = StringUtils::split(range);
+  if ( bounds.empty() || bounds.size() > 2 )
+    return "Need to specify a minimum, or a minimum and maximum number of internal lines.";
+  pair<int,int> irange(0,-1);
+  istringstream in1(bounds[0]);
+  in1 >> irange.first;
+  if ( bounds.size() == 2 ) {
+    istringstream in2(bounds[1]);
+    in2 >> irange.second;
+  }
+  if ( irange.second >= 0 && irange.first > irange.second )
+    return "invalid range specified";
+  for ( PDVector::const_iterator p = theRestrictLines.begin();
+	p != theRestrictLines.end(); ++p )
+    spaceLikeAllowed[*p] = irange;
+  return "";
+}
 
+string Tree2toNGenerator::doTimeLikeRange(string range) {
+  if ( theRestrictLines.empty() )
+    return "No particle data specified to restrict internal lines.";
+  vector<string> bounds = StringUtils::split(range);
+  if ( bounds.empty() || bounds.size() > 2 )
+    return "Need to specify a minimum, or a minimum and maximum number of internal lines.";
+  pair<int,int> irange(0,-1);
+  istringstream in1(bounds[0]);
+  in1 >> irange.first;
+  if ( bounds.size() == 2 ) {
+    istringstream in2(bounds[1]);
+    in2 >> irange.second;
+  }
+  if ( irange.second >= 0 && irange.first > irange.second )
+    return "invalid range specified";
+  for ( PDVector::const_iterator p = theRestrictLines.begin();
+	p != theRestrictLines.end(); ++p )
+    timeLikeAllowed[*p] = irange;
+  return "";
+}
+
+string Tree2toNGenerator::doClearRestrictLines(string) {
+  theRestrictLines.clear();
+  return "";
+}
 
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 
 void Tree2toNGenerator::persistentOutput(PersistentOStream & os) const {
-  os << theVertices << theExcludeInternal << maxOrderGs << maxOrderGem << prepared;
+  os << theVertices << theExcludeInternal << maxOrderGs << maxOrderGem << prepared
+     << theExcludeVertices << spaceLikeAllowed << timeLikeAllowed;
 }
 
 void Tree2toNGenerator::persistentInput(PersistentIStream & is, int) {
-  is >> theVertices >> theExcludeInternal >> maxOrderGs >> maxOrderGem >> prepared;
+  is >> theVertices >> theExcludeInternal >> maxOrderGs >> maxOrderGem >> prepared
+     >> theExcludeVertices >> spaceLikeAllowed >> timeLikeAllowed;
 }
 
 
@@ -348,13 +488,38 @@ void Tree2toNGenerator::Init() {
 
   static RefVector<Tree2toNGenerator,Helicity::VertexBase> interfaceVertices
     ("Vertices",
-     "The vertices to consider.",
+     "All vertices to consider.",
      &Tree2toNGenerator::theVertices, -1, false, false, true, false, false);
+
+  static RefVector<Tree2toNGenerator,Helicity::VertexBase> interfaceExcludeVertices
+    ("ExcludeVertices",
+     "The vertices to exclude.",
+     &Tree2toNGenerator::theExcludeVertices, -1, false, false, true, false, false);
 
   static RefVector<Tree2toNGenerator,ParticleData> interfaceExcludeInternal
     ("ExcludeInternal",
      "Particles to be exluded from becoming internal lines.",
      &Tree2toNGenerator::theExcludeInternal, -1, false, false, true, false, false);
+
+  static RefVector<Tree2toNGenerator,ParticleData> interfaceRestrictLines
+    ("RestrictLines",
+     "Particles to be exluded from becoming internal lines.",
+     &Tree2toNGenerator::theRestrictLines, -1, false, false, true, false, false);
+
+  static Command<Tree2toNGenerator> interfaceSpaceLikeRange
+    ("SpaceLikeRange",
+     "Limit the number of spacelike occurences of the specified particle.",
+     &Tree2toNGenerator::doSpaceLikeRange, false);
+
+  static Command<Tree2toNGenerator> interfaceTimeLikeRange
+    ("TimeLikeRange",
+     "Limit the number of timelike occurences of the specified particle.",
+     &Tree2toNGenerator::doTimeLikeRange, false);
+
+  static Command<Tree2toNGenerator> interfaceClearRestrictLines
+    ("ClearRestrictLines",
+     "Clear the container of lines to be considered for restrictions.",
+     &Tree2toNGenerator::doClearRestrictLines, false);
 
 }
 
