@@ -351,7 +351,7 @@ struct NBVertex {
 };
 
 /**
- * The NBDiagram struct contains information about a \f$1\ton\f$ decay
+ * The NBDiagram struct contains information about a \f$1\to n\f$ decay
  * that has been automatically generated.
  */
   struct NBDiagram : public NBVertex {

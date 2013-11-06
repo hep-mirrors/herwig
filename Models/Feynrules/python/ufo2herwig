@@ -522,7 +522,7 @@ def get_vertices():
 plist, names = thepeg_particles(FR,parmsubs,modelname)
 
 particlelist = [
-    "# insert HPConstructor:Outgoing 0 /Herwig/{}/Particles/{}".format(modelname,p)
+    "# insert HPConstructor:Outgoing 0 /Herwig/{n}/Particles/{p}".format(n=modelname,p=p)
     for p in names
 ]
 # make the first one active to have something runnable in the example .in file
