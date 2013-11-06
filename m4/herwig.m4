@@ -356,6 +356,12 @@ AC_DEFUN([HERWIG_OVERVIEW],
 FCSTRING=`$FC --version | head -1`
 CXXSTRING=`$CXX --version | head -1`
 CCSTRING=`$CC --version | head -1`
+if test "x$PYTHON" != "x:"
+then
+   python_was_found="yes, using Python $PYTHON_VERSION"
+else
+   python_was_found="no, requires Python >= 2.6"
+fi
 cat << _HW_EOF_ > config.herwig
 *****************************************************
 *** $PACKAGE_STRING configuration summary
@@ -365,6 +371,7 @@ cat << _HW_EOF_ > config.herwig
 ***
 *** BSM models:		$enable_models
 *** Dipole shower:	$enable_dipole $WARNLHAPDF
+*** UFO converter:	${python_was_found}
 ***
 *** Herwig debug mode:	$enable_debug
 ***
