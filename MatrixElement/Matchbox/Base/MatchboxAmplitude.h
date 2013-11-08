@@ -411,6 +411,12 @@ public:
   virtual bool isDR() const { return false; }
 
   /**
+   * Return true, if the amplitude is DRbar renormalized, otherwise
+   * MSbar is assumed.
+   */
+  virtual bool isDRbar() const { return false; }
+
+  /**
    * Return true, if one loop corrections are given in the conventions
    * of the integrated dipoles.
    */
