@@ -36,20 +36,6 @@
 
 using namespace Herwig;
 
-namespace {
-
-void findChildren(tShowerParticlePtr parent,set<ShowerParticlePtr> & fs) {
-  for(unsigned int ix=0;ix<parent->children().size();++ix) {
-    tShowerParticlePtr child=
-      dynamic_ptr_cast<tShowerParticlePtr>(parent->children()[ix]);
-    if(child) findChildren(child,fs);
-  }
-  if(parent->children().empty()) {
-    if(parent->isFinalState()) fs.insert(parent);
-  }
-}
-}
-
 DescribeClass<Evolver,Interfaced>
 describeEvolver ("Herwig::Evolver","HwShower.so");
 
