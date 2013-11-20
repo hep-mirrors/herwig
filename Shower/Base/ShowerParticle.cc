@@ -13,7 +13,6 @@
 
 #include "ShowerParticle.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 

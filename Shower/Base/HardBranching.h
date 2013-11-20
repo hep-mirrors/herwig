@@ -64,11 +64,6 @@ public:
 		  bool setMomentum=true);
 
   /**
-   *  Use the Sudakov to fix the colours
-   */
-  void fixColours();
-
-  /**
    *  Set and get members for the private member variables
    */
   //@{

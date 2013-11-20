@@ -1568,6 +1568,8 @@ truncatedSpaceLikeDecayShower(tShowerParticlePtr particle,
     idlist[0] = particle->id();
     idlist[1] = branch->children()[0]->branchingParticle()->id();
     idlist[2] = branch->children()[1]->branchingParticle()->id();
+    // TODO fix this
+    // why is this here, does this ever happen???
     assert(false);
     fb = Branching( showerKin, idlist, branch->sudakov(),ShowerPartnerType::QCDColourLine  );
     // Assign the shower kinematics to the emitting particle.
@@ -2147,7 +2149,7 @@ void Evolver::doShowering(bool hard,XCPtr xcomb) {
   vector<ShowerProgenitorPtr> particlesToShower(setupShower(hard));
   // setup the maximum scales for the shower
   if (hardVetoOn()) setupMaximumScales(particlesToShower,xcomb);
-  // specifc stuff for hard processes and decays
+  // specific stuff for hard processes and decays
   Energy minmass(ZERO), mIn(ZERO);
   // hard process generate the intrinsic p_T once and for all
   if(hard) {

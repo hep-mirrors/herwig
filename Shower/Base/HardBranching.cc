@@ -104,20 +104,3 @@ HardBranching::HardBranching(ShowerParticlePtr particle, SudakovPtr sudakov,
     _status(status), _scale(ZERO), _z(0.),_phi(0.), _parent(parent),
     _sudakov(sudakov), type_(ShowerPartnerType::Undefined)
 {}
-
-void HardBranching::fixColours() {
-  if(_status!=Incoming && !_sudakov) return;
-  if(_status==Outgoing && _children.empty()) return;
-  if(_status==Incoming && !_parent) return;
-  assert(false);
-  if(_status==Incoming)
-    _parent->sudakov()->splittingFn()->
-      colourConnection(_parent->_particle,_particle,
-		       _parent->children()[1]->_particle,
-		       ShowerPartnerType::Undefined,true);
-  else
-    _sudakov->splittingFn()->
-      colourConnection(_particle,_children[0]->_particle,
-		       _children[1]->_particle,
-		       ShowerPartnerType::Undefined,false);
-}

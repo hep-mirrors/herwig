@@ -253,8 +253,8 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
      	// other g -> q qbar
      	else {
      	  Energy startingScale = angularOrdered ? 
-	    max(particle.scales().QCD_c     , particle.scales().QCD_ac    ) : 
-	    max(particle.scales().QCD_c_noAO, particle.scales().QCD_c_noAO);
+	    max(particle.scales().QCD_c     , particle.scales().QCD_ac     ) : 
+	    max(particle.scales().QCD_c_noAO, particle.scales().QCD_ac_noAO);
     	  newKin= cit->second.first->
     	    generateNextTimeBranching(startingScale, cit->second.second,
 				      particle.id()!=cit->first,enhance);
@@ -475,7 +475,7 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr beamparticle,
 	else {
      	  Energy startingScale = angularOrdered ? 
 	    max(particle.scales().QCD_c     , particle.scales().QCD_ac    ) : 
-	    max(particle.scales().QCD_c_noAO, particle.scales().QCD_c_noAO);
+	    max(particle.scales().QCD_c_noAO, particle.scales().QCD_ac_noAO);
 	  type = UseRandom::rndbool() ? 
 	    ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine;
 	  newKin=cit->second.first->
