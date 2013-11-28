@@ -296,7 +296,7 @@ public:
    * Return an ordering identifier for the current subprocess and
    * colour absis tensor index.
    */
-  const vector<vector<size_t> >& colourOrdering(size_t id) const;
+  const set<vector<size_t> >& colourOrdering(size_t id) const;
 
   //@}
 

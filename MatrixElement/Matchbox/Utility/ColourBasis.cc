@@ -86,57 +86,68 @@ const string& ColourBasis::orderingString(const cPDVector& sub,
 					  const map<size_t,size_t>& colourToAmplitude,
 					  size_t tensorId) {
 
-  const vector<PDT::Colour>& basis = normalOrderedLegs(sub);
+  map<size_t,string>& tensors = theOrderingStringIdentifiers[sub];
+  if ( !tensors.empty() ) {
+    assert(tensors.find(tensorId) != tensors.end());
+    return tensors[tensorId];
+  }
 
-  map<size_t,string>& orderings = theOrderingStringIdentifiers[basis][colourToAmplitude];
+  const set<vector<size_t> >& xordering = ordering(sub,colourToAmplitude,tensorId);
 
-  if ( orderings.empty() ) {
-    map<size_t,vector<vector<size_t> > > tensors =
-      basisList(basis);
-    for ( map<size_t,vector<vector<size_t> > >::const_iterator t =
-	    tensors.begin(); t != tensors.end(); ++t ) {
-      ostringstream oid;
-      for ( vector<vector<size_t> >::const_iterator s = t->second.begin();
-	    s != t->second.end(); ++s ) {
-	oid << "[";
-	for ( vector<size_t>::const_iterator l = s->begin();
-	      l != s->end(); ++l ) {
-	  map<size_t,size_t>::const_iterator trans = 
-	    colourToAmplitude.find(*l);
-	  assert(trans != colourToAmplitude.end());
-	  oid << trans->second << (l != --(s->end()) ? "," : "");
-	}
-	oid << "]";
+  ostringstream os;
+  os << "[";
+  for ( set<vector<size_t> >::const_iterator t = xordering.begin();
+	t != xordering.end(); ++t ) {
+    os << "[";
+    for ( vector<size_t>::const_iterator s = t->begin();
+	  s != t->end(); ++s ) {
+      os << *s << (s != --t->end() ? "," : "");
+    }
+    os << "]" << (t != --xordering.end() ? "," : "");
+  }
+  os << "]";
+
+  tensors[tensorId] = os.str();
+  return tensors[tensorId];
+
+}
+
+const set<vector<size_t> >& ColourBasis::ordering(const cPDVector& sub, 
+						  const map<size_t,size_t>& colourToAmplitude,
+						  size_t tensorId) {
+
+  map<size_t,set<vector<size_t> > >& tensors = theOrderingIdentifiers[sub];
+  if ( !tensors.empty() ) {
+    assert(tensors.find(tensorId) != tensors.end());
+    return tensors[tensorId];
+  }
+
+  const vector<PDT::Colour>& basisId = normalOrderedLegs(sub);
+
+  map<size_t,vector<vector<size_t> > > labels = basisList(basisId);
+
+  for ( map<size_t,vector<vector<size_t> > >::const_iterator t =
+	  labels.begin(); t != labels.end(); ++t ) {
+    set<vector<size_t> > xordering;
+    for ( vector<vector<size_t> >::const_iterator s = t->second.begin();
+	  s != t->second.end(); ++s ) {
+      vector<size_t> crossed;
+      for ( vector<size_t>::const_iterator l = s->begin();
+	    l != s->end(); ++l ) {
+	map<size_t,size_t>::const_iterator trans = 
+	  colourToAmplitude.find(*l);
+	assert(trans != colourToAmplitude.end());
+	crossed.push_back(trans->second);
       }
-      orderings[t->first] = oid.str();
+      xordering.insert(crossed);
     }
+    tensors[t->first] = xordering;
   }
 
-  return orderings[tensorId];
+  assert(tensors.find(tensorId) != tensors.end());
+  return tensors[tensorId];
 
 }
-
-const vector<vector<size_t> >& ColourBasis::ordering(const cPDVector& sub, 
-						     const map<size_t,size_t>& colourToAmplitude,
-						     size_t tensorId) {
-
-  const vector<PDT::Colour>& basis = normalOrderedLegs(sub);
-
-  map<size_t,vector<vector<size_t> > >& orderings = theOrderingIdentifiers[basis][colourToAmplitude];
-
-  if ( orderings.empty() ) {
-    map<size_t,vector<vector<size_t> > > tensors =
-      basisList(basis);
-    for ( map<size_t,vector<vector<size_t> > >::const_iterator t =
-	    tensors.begin(); t != tensors.end(); ++t ) {
-      orderings[t->first] = t->second;
-    }
-  }
-
-  return orderings[tensorId];
-
-}
-
 
 vector<PDT::Colour> ColourBasis::normalOrderMap(const cPDVector& sub) {
 
