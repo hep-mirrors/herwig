@@ -1208,62 +1208,87 @@ void GeneralTwoBodyDecayer::identifyDipoles(vector<dipoleType>  & dipoles,
 		      << Exception::runerror;
 }
 
-vector<vector<pair<int,double > > > & GeneralTwoBodyDecayer::colourFlows(const Particle & inpart,
-							      const ParticleVector & decay){
+const GeneralTwoBodyDecayer::CFlow & 
+GeneralTwoBodyDecayer::colourFlows(const Particle & inpart,
+				   const ParticleVector & decay) {
 
-  vector<int> sing,trip,atrip,oct;
-  for(unsigned int it=0;it<decay.size();++it) {
-    if     (decay[it]->dataPtr()->iColour() == PDT::Colour0    ) sing. push_back(it);
-    else if(decay[it]->dataPtr()->iColour() == PDT::Colour3    ) trip. push_back(it);
-    else if(decay[it]->dataPtr()->iColour() == PDT::Colour3bar ) atrip.push_back(it);
-    else if(decay[it]->dataPtr()->iColour() == PDT::Colour8    ) oct.  push_back(it);
+  // static initialization of commonly used colour structures
+  static const CFlow init = CFlow(3, CFlowPairVec(1, make_pair(0, 1.)));
+  static CFlow tripflow = init;
+  static CFlow atripflow = init;
+  static CFlow octflow = init;
+  static const CFlow fpflow = CFlow(4, CFlowPairVec(1, make_pair(0, 1.)));
+
+  static bool initialized = false;
+
+  if (! initialized) {
+    tripflow[2].resize(2, make_pair(0,1.));
+    tripflow[2][0] = make_pair(0, 1.);
+    tripflow[2][1] = make_pair(1,-1.);
+    tripflow[1][0] = make_pair(1, 1.);
+    
+    atripflow[1].resize(2, make_pair(0,1.));
+    atripflow[1][0] = make_pair(0, 1.);
+    atripflow[1][1] = make_pair(1,-1.);
+    atripflow[2][0] = make_pair(1, 1.);
+    
+    octflow[0].resize(2, make_pair(0,1.));   
+    octflow[0][0] = make_pair(0,-1.);
+    octflow[0][1] = make_pair(1, 1.);
+    octflow[2][0] = make_pair(1, 1.);
+
+    initialized = true;
   }
-  // require a gluon
-  assert(oct.size()>=1);
-  colourFlows_ = vector<vector<pair<int,double> > >
-    (3, vector<pair<int,double > > (1, make_pair(0, 1.)));
+  
 
+  // main function body
+  int sing=0,trip=0,atrip=0,oct=0;
+  for (size_t it=0; it<decay.size(); ++it) {
+    switch ( decay[it]->dataPtr()->iColour() ) {
+        case PDT::Colour0:     ++sing; break;
+        case PDT::Colour3:     ++trip; break;
+        case PDT::Colour3bar: ++atrip; break;
+        case PDT::Colour8:      ++oct; break;
+    }
+  }
+
+  // require a gluon
+  assert(oct>=1);
+
+  const CFlow * retval = 0;
+  bool inconsistent4PV = true;
   // decaying colour triplet
   if(inpart.dataPtr()->iColour() == PDT::Colour3 &&
-     trip.size()==1 && oct.size()==2) {
-    colourFlows_[2].resize(2, make_pair(0,1.));
-    colourFlows_[2][0] = make_pair(0, 1.);
-    colourFlows_[2][1] = make_pair(1,-1.);
-    colourFlows_[1][0] = make_pair(1, 1.);
+     trip==1 && oct==2) {
+    retval = &tripflow;
   }
   // decaying colour anti-triplet
   else if(inpart.dataPtr()->iColour() == PDT::Colour3bar &&
-	  atrip.size()==1 && oct.size()==2){
-    colourFlows_[1].resize(2, make_pair(0,1.));
-    colourFlows_[1][0] = make_pair(0, 1.);
-    colourFlows_[1][1] = make_pair(1,-1.);
-    colourFlows_[2][0] = make_pair(1, 1.);
+	  atrip==1 && oct==2){
+    retval = &atripflow;
   }
   // decaying colour octet
   else if(inpart.dataPtr()->iColour() == PDT::Colour8 &&
-          oct.size()==1 && trip.size()==1 && atrip.size()==1) {
-    colourFlows_[0].resize(2, make_pair(0,1.));   
-    colourFlows_[0][0] = make_pair(0,-1.);
-    colourFlows_[0][1] = make_pair(1, 1.);
-    colourFlows_[2][0] = make_pair(1, 1.);
+          oct==1 && trip==1 && atrip==1) {
+    retval = &octflow;
   }  
+  else {
+    inconsistent4PV = false;
+    retval = &init;  
+  }
  
   // if a 4 point vertex exists, add a colour flow for it
-  if(fourPointVertex_){
-    if (colourFlows_[0].size()>1 || 
-	colourFlows_[1].size()>1 || 
-	colourFlows_[2].size()>1)   
+  if ( fourPointVertex_ ) {
+    if ( inconsistent4PV )   
       throw Exception() << "Unknown colour flows for 4 point vertex in "
 			<< "GeneralTwoBodyDecayer::colourFlows()"
 			<< Exception::runerror;
     else {
-      colourFlows_.clear();
-      colourFlows_ = vector<vector<pair<int,double> > >
-	(4, vector<pair<int,double > > (1, make_pair(0, 1.)));
+      retval = &fpflow;
     }
   }
 
-  return colourFlows_;
+  return *retval;
 }
 
 void GeneralTwoBodyDecayer::getColourLines(vector<ColinePtr> & newline,
@@ -1275,7 +1300,8 @@ void GeneralTwoBodyDecayer::getColourLines(vector<ColinePtr> & newline,
       cit!=hardtree->branchings().end();++cit)
     branchingPart.push_back((**cit).branchingParticle());
 
-  vector<int> sing,trip,atrip,oct;
+  static vector<int> sing,trip,atrip,oct;
+  sing.clear(); trip.clear(); atrip.clear(); oct.clear();
   for (size_t ib=0;ib<branchingPart.size();++ib){
     if     (branchingPart[ib]->dataPtr()->iColour()==PDT::Colour0   ) sing. push_back(ib);
     else if(branchingPart[ib]->dataPtr()->iColour()==PDT::Colour3   ) trip. push_back(ib);
