@@ -71,7 +71,7 @@ private:
    * @arguments q, aq vectors containing the quarks and antiquarks respectively
    * @return    Sum of cluster squared masses M^2_{q[i],aq[i]}.
    */
-  Energy2 _clusterMassSum(const PVector q, const PVector aq) const;
+  Energy2 _clusterMassSum(const PVector & q, const PVector & aq) const;
 
   
   /**
@@ -81,7 +81,7 @@ private:
    * @param  P  Permutation, a vector of permutated indices from 0 to
    *            cv.size()-1
    */
-  bool _containsColour8(const ClusterVector cv, const vector<size_t> P) const;
+  bool _containsColour8(const ClusterVector & cv, const vector<size_t> & P) const;
 
   /**
    * @brief     A Metropolis-type algorithm which finds a local minimum in the
@@ -106,7 +106,7 @@ private:
    * @return    pointer to the found cluster, or the original cluster pointer if
    *            no mass-reducing combination can be found
    */
-  ClusterPtr _findRecoPartner(ClusterPtr cl, ClusterVector cv) const;
+  ClusterPtr _findRecoPartner(ClusterPtr cl, const ClusterVector & cv) const;
 
   /**
    * @brief     Reconnects the constituents of the given clusters to the (only)
@@ -126,7 +126,7 @@ private:
    *            found after maxtries trials
    */
   pair <int,int>
-    _shuffle(const PVector q, const PVector aq, unsigned maxtries = 10) const;
+    _shuffle(const PVector & q, const PVector & aq, unsigned maxtries = 10) const;
 
 
   /** DATA MEMBERS */
