@@ -1,3 +1,5 @@
+SUBDIRS = CellGridSampling
+
 pkglib_LTLIBRARIES = HwExsample2.la
 
 if WANT_DIPOLE
@@ -14,6 +16,8 @@ ProjectingSampler.h ProjectingSampler.cc \
 GeneralSampler.h GeneralSampler.cc \
 ExSampler2.h ExSampler2.cc \
 SamplingBias.h SamplingBias.cc \
+SimpleCellGridSampler.h SimpleCellGridSampler.cc \
+CellGridSampler.h CellGridSampler.cc \
 exsample/cell.icc \
 exsample/generator.h \
 exsample/linear_interpolator.icc \
@@ -31,6 +35,9 @@ exsample/cell.h \
 exsample/utility.h \
 exsample/binary_tree.h \
 exsample/statistics.icc
+
+HwExsample2_la_LIBADD = \
+CellGridSampling/libHwCellGridSampling.la
 
 HwExsampleMatchbox_la_LDFLAGS = -module -version-info 3:0:0
 
