@@ -417,7 +417,7 @@ protected:
   /**
    *  Access the potential branchings
    */
-  vector<IdList> particles() const { return particles_; }
+  const vector<IdList> & particles() const { return particles_; }
 
 public:
 
@@ -466,7 +466,7 @@ public:
   /**
    *  Calculate the virtual masses for a branchings
    */
-  vector<Energy> virtualMasses(const IdList & ids);
+  const vector<Energy> & virtualMasses(const IdList & ids);
   //@}
 
   /**
