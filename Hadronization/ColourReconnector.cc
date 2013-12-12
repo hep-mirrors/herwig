@@ -26,7 +26,7 @@
 
 using namespace Herwig;
 
-typedef ClusterVector::const_iterator CluVecIt;
+typedef ClusterVector::iterator CluVecIt;
 
 DescribeClass<ColourReconnector,Interfaced>
 describeColourReconnector("Herwig::ColourReconnector","");
@@ -176,24 +176,24 @@ void ColourReconnector::_doRecoPlain(ClusterVector & cv) const {
     // find the cluster which, if reconnected with *cit, would result in the
     // smallest sum of cluster masses
     // NB this method returns *cit if no reconnection partner can be found
-    ClusterPtr candidate = _findRecoPartner(*cit, newcv);
+    CluVecIt candidate = _findRecoPartner(cit, newcv);
 
     // skip this cluster if no possible reshuffling partner can be found
-    if (candidate == *cit) continue;
+    if (candidate == cit) continue;
 
     // accept the reconnection with probability _preco.
     if (UseRandom::rnd() < _preco) {
 
-      pair <ClusterPtr,ClusterPtr> reconnected = _reconnect(*cit, candidate);
+      pair <ClusterPtr,ClusterPtr> reconnected = _reconnect(*cit, *candidate);
 
       // Replace the clusters in the ClusterVector. The order of the
       // colour-triplet partons in the cluster vector is retained here.
 
       // replace *cit by reconnected.first
-      replace( newcv.begin(), newcv.end(), *cit, reconnected.first ); 
+      *cit = reconnected.first;
 
       // replace candidate by reconnected.second
-      replace( newcv.begin(), newcv.end(), candidate, reconnected.second ); 
+      *candidate = reconnected.second;
     }
   }
 
@@ -202,45 +202,45 @@ void ColourReconnector::_doRecoPlain(ClusterVector & cv) const {
 }
 
 
-ClusterPtr ColourReconnector::_findRecoPartner(ClusterPtr cl,
-                                               const ClusterVector & cv) const {
+CluVecIt ColourReconnector::_findRecoPartner(CluVecIt cl,
+                                             ClusterVector & cv) const {
 
-  ClusterPtr candidate = cl;
+  CluVecIt candidate = cl;
   Energy minMass = 1*TeV;
   for (CluVecIt cit=cv.begin(); cit != cv.end(); ++cit) {
 
     // don't even look at original cluster
-    if(*cit==cl) continue;
+    if(cit==cl) continue;
 
     // don't allow colour octet clusters
-    if ( isColour8( cl->colParticle(),
+    if ( isColour8( (*cl)->colParticle(),
 	            (*cit)->antiColParticle() )  ||
          isColour8( (*cit)->colParticle(),
-	            cl->antiColParticle() ) ) {
+	            (*cl)->antiColParticle() ) ) {
       continue;
     }
 
     // stop it putting beam remnants together
-    if(cl->isBeamCluster() && (**cit).isBeamCluster()) continue;
+    if((*cl)->isBeamCluster() && (*cit)->isBeamCluster()) continue;
 
     // momenta of the old clusters
-    Lorentz5Momentum p1 = cl->colParticle()->momentum() + 
-                          cl->antiColParticle()->momentum();
+    Lorentz5Momentum p1 = (*cl)->colParticle()->momentum() + 
+                          (*cl)->antiColParticle()->momentum();
     Lorentz5Momentum p2 = (*cit)->colParticle()->momentum() + 
                           (*cit)->antiColParticle()->momentum();
 
     // momenta of the new clusters
-    Lorentz5Momentum p3 = cl->colParticle()->momentum() + 
+    Lorentz5Momentum p3 = (*cl)->colParticle()->momentum() + 
                           (*cit)->antiColParticle()->momentum();
     Lorentz5Momentum p4 = (*cit)->colParticle()->momentum() + 
-                          cl->antiColParticle()->momentum();
+                          (*cl)->antiColParticle()->momentum();
 
     Energy oldMass = abs( p1.m() ) + abs( p2.m() );
     Energy newMass = abs( p3.m() ) + abs( p4.m() );
 
     if ( newMass < oldMass && newMass < minMass ) {
       minMass = newMass;
-      candidate = *cit;
+      candidate = cit;
     }
   }
   return candidate;

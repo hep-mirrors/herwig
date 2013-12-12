@@ -102,11 +102,12 @@ private:
    *            If no reconnection partner can be found, a pointer to the
    *            original Cluster cl is returned.
    * @arguments cv cluster vector
-   *            cl cluster which wants to have a reconnection partner
-   * @return    pointer to the found cluster, or the original cluster pointer if
+   *            cl cluster iterator (must be from cv) which wants to have a reconnection partner
+   * @return    iterator to the found cluster, or the original cluster pointer if
    *            no mass-reducing combination can be found
    */
-  ClusterPtr _findRecoPartner(ClusterPtr cl, const ClusterVector & cv) const;
+  ClusterVector::iterator _findRecoPartner(ClusterVector::iterator cl,
+                                           ClusterVector & cv) const;
 
   /**
    * @brief     Reconnects the constituents of the given clusters to the (only)
