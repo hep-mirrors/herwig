@@ -352,7 +352,7 @@ void HadronSelector::Init() {
 
 }
 
-double HadronSelector::mixingStateWeight(long id) {
+double HadronSelector::mixingStateWeight(long id) const {
   switch(id) {
   case ParticleID::eta:      return 0.5*probabilityMixing(_etamix  ,1);
   case ParticleID::etaprime: return 0.5*probabilityMixing(_etamix  ,2);
@@ -632,7 +632,7 @@ void HadronSelector::constructHadronTable() {
   }
 }
 
-double HadronSelector::specialWeight(long id) {
+double HadronSelector::specialWeight(long id) const {
   const int pspin = id % 10;  
   // Only K0L and K0S have pspin == 0, should
   // not get them until Decay step

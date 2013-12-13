@@ -82,7 +82,7 @@ void HwppSelector::Init() {
 }
 
 pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPtr par1, 
-						     tcPDPtr par2,tcPDPtr )
+						     tcPDPtr par2,tcPDPtr ) const
   {
   // if either of the input partons is a diquark don't allow diquarks to be 
   // produced

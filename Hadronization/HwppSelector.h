@@ -65,7 +65,7 @@ public:
    *     the singlet-decuplet weight factor.
    */
   pair<tcPDPtr,tcPDPtr> chooseHadronPair(const Energy cluMass,tcPDPtr par1, 
-						   tcPDPtr par2,tcPDPtr par3 = PDPtr()) 
+						   tcPDPtr par2,tcPDPtr par3 = PDPtr()) const
    ;
 
 public:

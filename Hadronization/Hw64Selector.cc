@@ -39,7 +39,7 @@ void Hw64Selector::Init() {
 }
 
 pair<tcPDPtr,tcPDPtr> Hw64Selector::chooseHadronPair(const Energy cluMass,tcPDPtr par1, 
-						     tcPDPtr par2,tcPDPtr)						    
+						     tcPDPtr par2,tcPDPtr) const
   {
   bool diquark = !(DiquarkMatcher::Check(par1->id()) || DiquarkMatcher::Check(par2->id()));
 
@@ -64,22 +64,25 @@ pair<tcPDPtr,tcPDPtr> Hw64Selector::chooseHadronPair(const Energy cluMass,tcPDPt
   do {
     quark = partons()[UseRandom::irnd(partons().size())];
     if(diquark && DiquarkMatcher::Check(quark->id())) continue;
-    KupcoData::const_iterator it1,it2;
     if(pwt(quark->id()) <= UseRandom::rnd()) continue;
     pair<long,long> pid(abs(par1->id()),quark->id());
+    KupcoData::const_iterator it1,it2;
+    const HadronTable::const_iterator tit = table().find(pid);
+    assert(tit != table().end());
+    const KupcoData & hdata = tit->second;    
     do {
-      it1 = table()[pid].begin();
-      advance(it1,int(double(table()[pid].size())*UseRandom::rnd()));
+      it1 = hdata.begin();
+      advance(it1,int(hdata.size()*UseRandom::rnd()));
     } 
-    while(it1 != table()[pid].end() && it1->overallWeight < UseRandom::rnd());
+    while(it1 != hdata.end() && it1->overallWeight < UseRandom::rnd());
     
     had1 = it1->ptrData;
     pid = make_pair(quark->id(),abs(par2->id())); 
     do {
-      it2 = table()[pid].begin();
-      advance(it2,int(double(table()[pid].size())*UseRandom::rnd()));
+      it2 = hdata.begin();
+      advance(it2,int(hdata.size()*UseRandom::rnd()));
     }
-    while(it2 != table()[pid].end() && it2->overallWeight < UseRandom::rnd());
+    while(it2 != hdata.end() && it2->overallWeight < UseRandom::rnd());
     had2 = it2->ptrData;
     if(had1 && had2) {
       p = Kinematics::pstarTwoBodyDecay(cluMass, it1->mass, it2->mass);
