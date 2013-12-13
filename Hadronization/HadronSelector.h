@@ -520,10 +520,8 @@ protected:
   /**
    *  Access the parton weights
    */
-   double pwt(tcPDPtr p) {
-    assert(p);
-    if ( p->id() < 0 ) p = p->CC();
-    map<tcPDPtr,double>::iterator it = _pwt.find(p);
+   double pwt(long pid) {
+    map<long,double>::iterator it = _pwt.find(abs(pid));
     assert( it != _pwt.end() );
     return it->second;
   }
@@ -642,7 +640,7 @@ private:
   /**
    * Weights for quarks and diquarks.
    */
-  map<tcPDPtr,double> _pwt;
+  map<long,double> _pwt;
   //@}
 
   /**
