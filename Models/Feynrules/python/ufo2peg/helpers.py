@@ -83,9 +83,14 @@ def unique_lorentztag(vertex):
     for l in vertex.lorentz:
         lorentztag = get_lorentztag(l.spins)
         unique( lorentztag )
-        if lorentztag != l.name[:len(lorentztag)]:
+        lname = l.name[:len(lorentztag)]
+        if sorted(lorentztag) != sorted(lname):
             raise Exception("Lorentztags: %s is not %s in %s" 
-                            % (lorentztag,l.name[:len(lorentztag)],vertex))
+                            % (lorentztag,lname,vertex))
+#        if lorentztag != lname:
+#            sys.stderr.write("Warning: Lorentz tag ordering: %s is not %s in %s\n"
+#                             % (lorentztag,lname,vertex))
+
     return lorentztag
 
 
