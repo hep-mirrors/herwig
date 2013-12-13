@@ -104,8 +104,8 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPt
   // weights for the different possibilities
   Energy weight, wgtsum(ZERO);
   // loop over all hadron pairs with the allowed flavours
-  vector<Kupco> hadrons;
-  hadrons.reserve(partons().size());
+  static vector<Kupco> hadrons;
+  hadrons.clear();
   for(unsigned int ix=0;ix<partons().size();++ix) {
     tcPDPtr quarktopick  = partons()[ix];
     if(!quark  &&  abs(int(quarktopick->iColour())) == 3
