@@ -64,18 +64,19 @@ if test "x$with_thepeg" = "xno"; then
 	AC_MSG_ERROR([Cannot build Herwig++ without ThePEG. Please set --with-thepeg.])
 fi
 
-THEPEGLDFLAGS="-L${with_thepeg}/lib/ThePEG"
+THEPEGPATH="${with_thepeg}"
+
+THEPEGLIBPATH="${with_thepeg}/lib/ThePEG"
+if test "${host_cpu}" == "x86_64" -a -e ${with_thepeg}/lib64/ThePEG/libThePEG.so ; then
+  THEPEGLIBPATH="${with_thepeg}/lib64/ThePEG"
+fi
+
 THEPEGHASLHAPDF="no"
-if test -e ${with_thepeg}/lib/ThePEG/ThePEGLHAPDF.so ; then
+if test -e $THEPEGLIBPATH/ThePEGLHAPDF.so ; then
    THEPEGHASLHAPDF="yes"
 fi
-if test "${host_cpu}" == "x86_64" -a -e ${with_thepeg}/lib64/ThePEG/libThePEG.so ; then
-  THEPEGLDFLAGS="-L${with_thepeg}/lib64/ThePEG"
-  if test -e ${with_thepeg}/lib64/ThePEG/ThePEGLHAPDF.so ; then
-      THEPEGHASLHAPDF="yes"
-  fi
-fi
-THEPEGPATH="${with_thepeg}"
+
+THEPEGLDFLAGS="-L$THEPEGLIBPATH"
 
 oldldflags="$LDFLAGS"
 oldlibs="$LIBS"
@@ -87,6 +88,7 @@ AC_CHECK_LIB([ThePEG],[debugThePEG],[],
 AC_SUBST([THEPEGLIB],[-lThePEG])
 AC_SUBST(THEPEGLDFLAGS)
 AC_SUBST(THEPEGPATH)
+AC_SUBST(THEPEGLIBPATH)
 AC_SUBST(THEPEGHASLHAPDF)
 
 LIBS="$oldlibs"
@@ -115,8 +117,7 @@ AC_SUBST(THEPEGINCLUDE)
 
 AC_MSG_CHECKING([for HepMCAnalysis.so in ThePEG])
 
-
-if test -e "$THEPEGPATH/lib/ThePEG/HepMCAnalysis.so" ; then
+if test -e "$THEPEGLIBPATH/HepMCAnalysis.so" ; then
      	CREATE_HEPMC="create"
 	AC_MSG_RESULT([found])
 else

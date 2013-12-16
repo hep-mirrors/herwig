@@ -186,17 +186,16 @@ double DecayPhaseSpaceChannel::generateWeight(const vector<Lorentz5Momentum> & o
   // include the prefactor due to the weight of the channel
   double wgt=1.;
   // work out the masses of the intermediate particles
-  vector<Energy2> intmass2(_intpart.size());
-  vector<Energy> intmass(_intpart.size());
+  static vector<Energy> intmass;
+  intmass.clear();
   Lorentz5Momentum pinter;
   for(ix=0;ix<_intpart.size();++ix) {
     pinter=output[_intext[ix][0]];
     for(iz=1;iz<_intext[ix].size();++iz) pinter+=output[_intext[ix][iz]];
     pinter.rescaleMass();
-    intmass[ix]  = pinter.mass();
-    intmass2[ix] = sqr(intmass[ix]);
+    intmass.push_back( pinter.mass() );
   }
-  Energy2 scale(intmass2[0]);
+  Energy2 scale(sqr(intmass[0]));
   // calculate the terms for each of the decays
   Energy lower,upper,lowerb[2];
   for(ix=0;ix<_intpart.size();++ix) {

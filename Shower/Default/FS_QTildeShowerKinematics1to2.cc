@@ -158,7 +158,7 @@ void FS_QTildeShowerKinematics1to2::updateParent(const tShowerParticlePtr parent
   ids[0] = parent->id();
   ids[1] = children[0]->id();
   ids[2] = children[1]->id();
-  vector<Energy> virtualMasses = SudakovFormFactor()->virtualMasses(ids);
+  const vector<Energy> & virtualMasses = SudakovFormFactor()->virtualMasses(ids);
   if(children[0]->children().empty()) children[0]->setVirtualMass(virtualMasses[1]);
   if(children[1]->children().empty()) children[1]->setVirtualMass(virtualMasses[2]);
   // compute the new pT of the branching
