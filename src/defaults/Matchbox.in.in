@@ -45,6 +45,8 @@ library HwExsample2.so
 library HwMatchbox.so
 library JetCuts.so
 library FastJetFinder.so
+@LOAD_NLOJET@ HwMatchboxNLOJet.so
+@LOAD_VBFNLO@ HwMatchboxVBFNLO.so
 
 mkdir /Herwig/MatrixElements/Matchbox
 cd /Herwig/MatrixElements/Matchbox
@@ -226,6 +228,7 @@ insert Factory:ParticleGroup 0 /Herwig/Particles/e-
 insert Factory:ParticleGroup 0 /Herwig/Particles/mu-
 do Factory:EndParticleGroup
 
+
 ################################################################################
 # Setup amplitudes
 ################################################################################
@@ -272,6 +275,22 @@ set Amplitudehggg:ColourBasis SimpleColourBasis
 create Herwig::MatchboxAmplitudehqqbarg Amplitudehqqbarg
 set Amplitudehqqbarg:ColourBasis SimpleColourBasis
 
+create Herwig::MatchboxAmplitudehbbbar Amplitudehbbbar
+set Amplitudehbbbar:ColourBasis SimpleColourBasis
+set Amplitudehbbbar:interfaceUMass 0.004*GeV
+set Amplitudehbbbar:interfaceDMass 0.007*GeV
+set Amplitudehbbbar:interfaceCMass 1.5*GeV
+set Amplitudehbbbar:interfaceSMass 0.135*GeV
+set Amplitudehbbbar:interfaceBMass 5*GeV
+
+create Herwig::MatchboxAmplitudehbbbarg Amplitudehbbbarg
+set Amplitudehbbbarg:ColourBasis SimpleColourBasis
+set Amplitudehbbbarg:interfaceUMass 0.004*GeV
+set Amplitudehbbbarg:interfaceDMass 0.007*GeV
+set Amplitudehbbbarg:interfaceCMass 1.5*GeV
+set Amplitudehbbbarg:interfaceSMass 0.135*GeV
+set Amplitudehbbbarg:interfaceBMass 5*GeV
+
 insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudellbarqqbar
 insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudellbarqqbarg
 insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudellbarqqbargg
@@ -284,7 +303,88 @@ insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudelnuqqbarqqb
 
 insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudehgg
 insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudehggg
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudehbbbar
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudehbbbarg
 insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudehqqbarg
+
+mkdir NLOJet
+cd NLOJet
+
+@CREATE_NLOJET@ Herwig::NLOJetAmplitudeg4 Amplitudegggg
+@CREATE_NLOJET@ Herwig::NLOJetAmplitudeg5 Amplitudeggggg
+@CREATE_NLOJET@ Herwig::NLOJetAmplitudeg6 Amplitudegggggg
+@CREATE_NLOJET@ Herwig::NLOJetAmplitudeq2g2 Amplitudeqqbargg
+@CREATE_NLOJET@ Herwig::NLOJetAmplitudeq2g3 Amplitudeqqbarggg
+@CREATE_NLOJET@ Herwig::NLOJetAmplitudeq2g4 Amplitudeqqbargggg
+@CREATE_NLOJET@ Herwig::NLOJetAmplitudeq4 Amplitudeqqbarqqbar
+@CREATE_NLOJET@ Herwig::NLOJetAmplitudeq4g1 Amplitudeqqbarqqbarg
+@CREATE_NLOJET@ Herwig::NLOJetAmplitudeq4g2 Amplitudeqqbarqqbargg
+@CREATE_NLOJET@ Herwig::NLOJetAmplitudeq6 Amplitudeqqbarqqbarqqbar
+
+@INSERT_NLOJET@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudegggg
+@INSERT_NLOJET@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeggggg
+@INSERT_NLOJET@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudegggggg
+@INSERT_NLOJET@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqqbargg
+@INSERT_NLOJET@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqqbarggg
+@INSERT_NLOJET@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqqbargggg
+@INSERT_NLOJET@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqqbarqqbar
+@INSERT_NLOJET@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqqbarqqbarg
+@INSERT_NLOJET@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqqbarqqbargg
+@INSERT_NLOJET@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqqbarqqbarqqbar
+
+cd /Herwig/MatrixElements/Matchbox/Amplitudes
+
+@MKDIR_VBFNLO@ VBFNLO
+
+@CREATE_VBFNLO@ Herwig::VBFNLOAmplitudePP2hJetJet Amplitudeqq2hqqWExchange
+@SET_VBFNLO@ Amplitudeqq2hqqWExchange:Current Charged
+@SET_VBFNLO@ Amplitudeqq2hqqWExchange:Incoming1 Particle
+@SET_VBFNLO@ Amplitudeqq2hqqWExchange:Incoming2 Particle
+
+@CREATE_VBFNLO@ Herwig::VBFNLOAmplitudePP2hJetJet Amplitudeqqbar2hqqbarWExchange
+@SET_VBFNLO@ Amplitudeqqbar2hqqbarWExchange:Current Charged
+@SET_VBFNLO@ Amplitudeqqbar2hqqbarWExchange:Incoming1 Particle
+@SET_VBFNLO@ Amplitudeqqbar2hqqbarWExchange:Incoming2 Antiparticle
+
+@CREATE_VBFNLO@ Herwig::VBFNLOAmplitudePP2hJetJet Amplitudeqbarq2hqbarqWExchange
+@SET_VBFNLO@ Amplitudeqbarq2hqbarqWExchange:Current Charged
+@SET_VBFNLO@ Amplitudeqbarq2hqbarqWExchange:Incoming1 Antiparticle
+@SET_VBFNLO@ Amplitudeqbarq2hqbarqWExchange:Incoming2 Particle
+
+@CREATE_VBFNLO@ Herwig::VBFNLOAmplitudePP2hJetJet Amplitudeqbarqbar2hqbarqbarWExchange
+@SET_VBFNLO@ Amplitudeqbarqbar2hqbarqbarWExchange:Current Charged
+@SET_VBFNLO@ Amplitudeqbarqbar2hqbarqbarWExchange:Incoming1 Antiparticle
+@SET_VBFNLO@ Amplitudeqbarqbar2hqbarqbarWExchange:Incoming2 Antiparticle
+
+@CREATE_VBFNLO@ Herwig::VBFNLOAmplitudePP2hJetJet Amplitudeqq2hqqZExchange
+@SET_VBFNLO@ Amplitudeqq2hqqZExchange:Current Neutral
+@SET_VBFNLO@ Amplitudeqq2hqqZExchange:Incoming1 Particle
+@SET_VBFNLO@ Amplitudeqq2hqqZExchange:Incoming2 Particle
+
+@CREATE_VBFNLO@ Herwig::VBFNLOAmplitudePP2hJetJet Amplitudeqqbar2hqqbarZExchange
+@SET_VBFNLO@ Amplitudeqqbar2hqqbarZExchange:Current Neutral
+@SET_VBFNLO@ Amplitudeqqbar2hqqbarZExchange:Incoming1 Particle
+@SET_VBFNLO@ Amplitudeqqbar2hqqbarZExchange:Incoming2 Antiparticle
+
+@CREATE_VBFNLO@ Herwig::VBFNLOAmplitudePP2hJetJet Amplitudeqbarq2hqbarqZExchange
+@SET_VBFNLO@ Amplitudeqbarq2hqbarqZExchange:Current Neutral
+@SET_VBFNLO@ Amplitudeqbarq2hqbarqZExchange:Incoming1 Antiparticle
+@SET_VBFNLO@ Amplitudeqbarq2hqbarqZExchange:Incoming2 Particle
+
+@CREATE_VBFNLO@ Herwig::VBFNLOAmplitudePP2hJetJet Amplitudeqbarqbar2hqbarqbarZExchange
+@SET_VBFNLO@ Amplitudeqbarqbar2hqbarqbarZExchange:Current Neutral
+@SET_VBFNLO@ Amplitudeqbarqbar2hqbarqbarZExchange:Incoming1 Antiparticle
+@SET_VBFNLO@ Amplitudeqbarqbar2hqbarqbarZExchange:Incoming2 Antiparticle
+
+@INSERT_VBFNLO@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqq2hqqWExchange
+@INSERT_VBFNLO@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqqbar2hqqbarWExchange
+@INSERT_VBFNLO@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqbarq2hqbarqWExchange
+@INSERT_VBFNLO@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqbarqbar2hqbarqbarWExchange
+
+@INSERT_VBFNLO@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqq2hqqZExchange
+@INSERT_VBFNLO@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqqbar2hqqbarZExchange
+@INSERT_VBFNLO@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqbarq2hqbarqZExchange
+@INSERT_VBFNLO@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqbarqbar2hqbarqbarZExchange
 
 ################################################################################
 # Setup utilities for matching
@@ -329,9 +429,27 @@ cd Utility
 
 create Herwig::Tree2toNGenerator DiagramGenerator
 insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFGVertex
+insert DiagramGenerator:Vertices 0 /Herwig/Vertices/GGGVertex
+
 insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFPVertex
 insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFZVertex
-insert DiagramGenerator:Vertices 0 /Herwig/Vertices/GGGVertex
+
+insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFWVertex
+
+# comment out the previous, and comment in the next 
+# three lines for a diagonal CKM matrix
+
+# cp /Herwig/Vertices/FFWVertex /Herwig/Vertices/FFWDiagonalVertex
+# set /Herwig/Vertices/FFWDiagonalVertex:Diagonal Yes
+# insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFWDiagonalVertex
+
+insert DiagramGenerator:Vertices 0 /Herwig/Vertices/WWHVertex
+insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFHVertex
+insert DiagramGenerator:Vertices 0 /Herwig/Vertices/HGGVertex
+
+# for the processes considered so far, we have no internal Higgs lines
+# and need to prevent them from popping up in Z/gamma exchanges as well
+insert DiagramGenerator:ExcludeInternal 0 /Herwig/Particles/h0
 
 create Herwig::ProcessData ProcessData
 
@@ -394,6 +512,11 @@ set ThirdJet:Fuzzy Yes
 set FirstJet:EnergyCutWidth 4.0*GeV
 set FirstJet:RapidityCutWidth 0.4
 insert ThirdJet:Accepts[0] 3
+
+create ThePEG::JetRegion FourthJet
+set FourthJet:PtMin 20.*GeV
+do FourthJet:YRange -5.0 5.0
+insert FourthJet:Accepts[0] 4
 
 create ThePEG::NJetsCut NJetsCut
 set NJetsCut:UnresolvedMatcher /Herwig/Matchers/StandardQCDParton

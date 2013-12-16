@@ -1,0 +1,183 @@
+// -*- C++ -*-
+//
+// arHistogram.icc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
+// This is the implementation of the inlined member functions of
+// the arHistogram class.
+//
+
+#include <cassert>
+
+namespace arnold {
+
+  inline ar2DHistogram::ar2DHistogram(double lowerx, double upperx, double lowery, double uppery, unsigned int nbinx, unsigned int nbiny, bool smearing, bool cyclic)
+    : theLowerX(lowerx), theUpperX(upperx), theLowerY(lowery), theUpperY(uppery), thNBinX(nbinx), theNBinY(nbiny) {
+    for ( size_t i = 0; i < nbiny; i++ ){
+      histo.push_back(arHistogramPtr::Create(arHistogram(lowerx,upperx,nbinx,smearing,cyclic)));
+    }
+  }
+
+  inline void ar2DHistogram::addWeighted(double datax, double datay, double weight){
+
+    if (theUpperY<theLowerY)
+    swap(theUpperY,theLowerY);
+    double stepy = theUpperY / (double) theNBinY;
+
+    if ( datay > theLowerY ) {
+      for ( size_t i = 1; i < theNBinY+1; i++ ){
+	double lowerlimit = i * stepy;
+	if ( lowerlimit > datay) {
+	  //	  cerr << "x= " << datax << " y= " << datay << " bin[y]=[" << lowerlimit-stepy << ".." << lowerlimit << "\n" << flush;
+	  (*histo[i-1]).addWeighted(datax,weight);
+	  //	  cerr << "numpoints=" <<  histo[i-1]->_globalStats.numberOfPoints() << " visibleEntries= " << (*histo[i]).visibleEntries() << "\n" << flush;
+    
+	  break;
+	}
+      }
+    }
+  }
+
+  inline IBPtr ar2DHistogram::clone() const {
+    return new_ptr(*this);
+  }
+  
+  inline IBPtr ar2DHistogram::fullclone() const {
+    return new_ptr(*this);
+  }
+
+
+  inline arHistogram::arHistogram(double lower, double upper, unsigned int nbin, bool smearing, bool cyclic) 
+    : _globalStats(), _havedata(false), _bins(nbin+2),_prefactor(1.),_total(0.),
+      doSmearing(smearing && nbin > 1),isCyclic(cyclic)
+{
+  if (upper<lower)
+    swap(upper,lower);
+
+  _bins[0].limit=-1.e100;
+  double limit(lower);
+  double width((upper-lower)/nbin);
+  for(unsigned int ix=1; ix <= nbin; ++ix)
+    {
+      _bins[ix].limit=limit;
+      limit += width;
+    }
+  _bins.back().limit=limit;
+}
+
+inline arHistogram::arHistogram(vector<double> limits)
+  : _globalStats(), _havedata(false), _bins(limits.size()+1), _prefactor(1.),_total(0.)
+{
+  _bins[0].limit=-1.e100;
+  for (size_t i=1; i<=limits.size(); ++i)
+    _bins[i].limit=limits[i-1];
+}
+
+inline arHistogram::arHistogram(vector<double> limits, vector<double> data,
+			    vector<double> dataerror)
+  : _globalStats(), _havedata(true), _bins(limits.size()+1), _prefactor(1.),_total(0.)
+{
+  _bins[0].limit=-1.e100;
+  for (size_t i=1; i<=limits.size(); ++i)
+    _bins[i].limit=limits[i-1];
+
+  // no data goes into _bins[0] or _bins.back()!
+  for (size_t i=1; i<=min(limits.size()-1,data.size()); ++i)
+    _bins[i].data=data[i-1];
+
+  for (size_t i=1; i<=min(limits.size()-1,dataerror.size()); ++i)
+    _bins[i].dataerror=dataerror[i-1];
+}
+
+inline IBPtr arHistogram::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr arHistogram::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void arHistogram::operator+=(double input) {
+  addWeighted(input,1.0);
+}
+
+inline void arHistogram::addWeighted(double input, double weight) {
+  if(isnan(input)) return;
+  unsigned int ibin;
+  for(ibin=1; ibin<_bins.size(); ++ibin) {
+    if(input<_bins[ibin].limit)
+      break;
+  };
+
+  if (doSmearing) { 
+    // double drb=0.49; 
+    // tdrbi = 0.5/drb;
+    //I assume all bins have the same width here, as the smearing option
+    //is only accessible by the equal-width-constructor
+    double width = (_bins[_bins.size()-1].limit-_bins[1].limit)/(numberOfBins()); 
+    //(_bins[ibin].limit-width) == _bins[ibin-1] for each but the underflow-bin, 
+    //so the next statement evaluates to false for the largest part of the underflow-bin 
+    if (ibin < _bins.size() && ibin > 1) {
+      if ( (input-(_bins[ibin].limit-width)) / (width) > 0.5) { 
+	// upper half of bin
+	double ratioL = (_bins[ibin].limit - input + width/2.0) / width; 
+	double ratioU = ( input + width/2.0 - _bins[ibin].limit ) / width; 
+	assert(abs(1.0-ratioL-ratioU < 0.000001)); 
+	// _bins[ibin].contents += weight*(1.0-ratioL); 
+	// _bins[ibin].contentsSq += sqr(weight*(1-ratioL)); 
+	_bins[((isCyclic && ibin==_bins.size()-1) ? 1 : ibin)].contents += weight*(1.0-ratioL);  
+	_bins[((isCyclic && ibin==_bins.size()-1) ? 1 : ibin)].contentsSq += sqr(weight*(1-ratioL));
+	_bins[ibin-1].contents += weight*ratioL;
+	_bins[ibin-1].contentsSq += sqr(weight*ratioL); 
+      }
+      else {
+	// lower half of bin
+	if ( ibin > 1 ) {
+	  double ratioL = (_bins[ibin-1].limit - input + width/2.0 ) / width;
+	  double ratioU = ( input + width/2.0 - _bins[ibin-1].limit ) / width;
+	  assert(abs(1.0-ratioL-ratioU < 0.000001));
+	  // _bins[ibin-2].contents += weight*ratioL;
+	  // _bins[ibin-2].contentsSq += sqr(weight*ratioL); 
+	  _bins[((isCyclic && ibin==2) ? _bins.size()-2 : ibin-2)].contents += weight*ratioL;
+	  _bins[((isCyclic && ibin==2) ? _bins.size()-2 : ibin-2)].contentsSq += sqr(weight*ratioL); 
+	  _bins[ibin-1].contents += weight*(1.0-ratioL); 
+	  _bins[ibin-1].contentsSq += sqr(weight*(1.0-ratioL));
+	} 
+      }
+    }	
+    else {
+      assert(ibin == _bins.size() || ibin == 1);
+      _bins[ibin-1].contents += weight; 
+      _bins[ibin-1].contentsSq += sqr(weight);
+    }
+  } 
+
+  else {
+    _bins[ibin-1].contents   += weight;
+    _bins[ibin-1].contentsSq += sqr(weight);
+  }
+    _globalStats += weight * input;
+    _total += weight;
+}
+
+inline unsigned int arHistogram::numberOfBins() const { 
+  return _bins.size()-2;
+}
+
+inline double arHistogram::prefactor() const {
+  return _prefactor;
+}
+
+inline void   arHistogram::prefactor(double in) {
+  _prefactor=in;
+}
+
+inline const Statistic & arHistogram::globalStatistics() const {
+  return _globalStats;
+}
+}
+

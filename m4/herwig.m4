@@ -165,6 +165,277 @@ AC_SUBST([AM_FFLAGS],[$AM_FCFLAGS])
 AC_SUBST([FLIBS],[$FCLIBS])
 ])
 
+dnl ##### VBFNLO #####
+AC_DEFUN([HERWIG_CHECK_VBFNLO],
+[
+AC_MSG_CHECKING([for VBFNLO])
+
+AC_ARG_WITH([vbfnlo],
+    AS_HELP_STRING([--with-vbfnlo=DIR], [Installation path of VBFNLO]),
+    [],
+    [with_vbfnlo=no]    
+
+)
+
+AC_MSG_RESULT([$with_vbfnlo])
+
+AS_IF([test "x$with_vbfnlo" != "xno"],
+      [AC_CHECK_FILES(
+      ${with_vbfnlo}/lib/VBFNLO/libVBFNLO.so,
+      [have_vbfnlo=lib], [have_vbfnlo=no])],
+      [have_vbfnlo=no])
+
+AS_IF([test "x$with_vbfnlo" != "xno" -a "x$have_vbfnlo" = "xno" ],
+      [AC_CHECK_FILES(
+      ${with_vbfnlo}/lib64/VBFNLO/libVBFNLO.so,
+      [have_vbfnlo=lib64], [have_vbfnlo=no])])
+
+AS_IF([test "x$have_vbfnlo" = "xlib"],
+      [VBFNLOLIBS=${with_vbfnlo}/lib/VBFNLO
+      AC_SUBST(VBFNLOLIBS)
+      ])
+
+AS_IF([test "x$have_vbfnlo" = "xlib64"],
+      [VBFNLOLIBS=${with_vbfnlo}/lib64/VBFNLO
+      AC_SUBST(VBFNLOLIBS)
+      ])
+
+AS_IF([test "x$with_vbfnlo" != "xno" -a "x$have_vbfnlo" = "xno"],
+      [AC_MSG_ERROR([vbfnlo requested but not found])])
+
+AM_CONDITIONAL(HAVE_VBFNLO,[test "x$have_vbfnlo" = "xlib" -o "x$have_vbfnlo" = "xlib64"])
+
+if test "x$have_vbfnlo" = "xlib" -o "x$have_vbfnlo" = "xlib64" ; then
+        VBFNLOINCLUDE=${with_vbfnlo}/include
+	AC_SUBST(VBFNLOINCLUDE)
+     	LOAD_VBFNLO="library"
+     	CREATE_VBFNLO="create"
+     	INSERT_VBFNLO="insert"
+     	SET_VBFNLO="set"
+     	MKDIR_VBFNLO="mkdir"
+else
+     	LOAD_VBFNLO="# library"
+	CREATE_VBFNLO="# create"
+     	INSERT_VBFNLO="# insert"
+     	SET_VBFNLO="# set"
+     	MKDIR_VBFNLO="# mkdir"
+fi
+
+AC_SUBST([LOAD_VBFNLO])
+AC_SUBST([CREATE_VBFNLO])
+AC_SUBST([INSERT_VBFNLO])
+AC_SUBST([SET_VBFNLO])
+AC_SUBST([MKDIR_VBFNLO])
+
+])
+
+dnl ##### nlojet #####
+AC_DEFUN([HERWIG_CHECK_NLOJET],
+[
+AC_MSG_CHECKING([for nlojet])
+
+AC_ARG_WITH([nlojet],
+    AS_HELP_STRING([--with-nlojet=DIR], [Installation path of nlojet]),
+    [],
+    [with_nlojet=no]    
+
+)
+
+AC_MSG_RESULT([$with_nlojet])
+
+AS_IF([test "x$with_nlojet" != "xno"],
+      [AC_CHECK_FILES(
+      ${with_nlojet}/lib/libnlo++.so,
+      [have_nlojet=lib], [have_nlojet=no])],
+      [have_nlojet=no])
+
+AS_IF([test "x$with_nlojet" != "xno" -a "x$have_nlojet" = "xno" ],
+      [AC_CHECK_FILES(
+      ${with_nlojet}/lib64/libnlo++.so,
+      [have_nlojet=lib64], [have_nlojet=no])])
+
+AS_IF([test "x$have_nlojet" = "xlib"],
+      [NLOJETLIBPATH=${with_nlojet}/lib
+      AC_SUBST(NLOJETLIBPATH)
+      NLOJETINCLUDEPATH=${with_nlojet}/include
+      AC_SUBST(NLOJETINCLUDEPATH)
+      ])
+
+AS_IF([test "x$have_nlojet" = "xlib64"],
+      [NLOJETLIBPATH=${with_nlojet}/lib64
+      AC_SUBST(NLOJETLIBPATH)
+      NLOJETINCLUDEPATH=${with_nlojet}/include
+      AC_SUBST(NLOJETINCLUDEPATH)
+      ])
+
+AS_IF([test "x$with_nlojet" != "xno"  -a "x$have_nlojet" = "xno"],
+      [AC_MSG_ERROR([nlojet requested but not found])])
+
+AM_CONDITIONAL(HAVE_NLOJET,[test "x$have_nlojet" = "xlib" -o "x$have_nlojet" = "xlib64"])
+
+if test "x$have_nlojet" = "xlib" -o "x$have_nlojet" = "xlib64" ; then
+     	LOAD_NLOJET="library"
+     	CREATE_NLOJET="create"
+     	INSERT_NLOJET="insert"
+else
+     	LOAD_NLOJET="# library"
+	CREATE_NLOJET="# create"
+     	INSERT_NLOJET="# insert"
+fi
+
+AC_SUBST([LOAD_NLOJET])
+AC_SUBST([CREATE_NLOJET])
+AC_SUBST([INSERT_NLOJET])
+
+])
+
+dnl ##### njet #####
+AC_DEFUN([HERWIG_CHECK_NJET],
+[
+AC_MSG_CHECKING([for njet])
+
+AC_ARG_WITH([njet],
+    AS_HELP_STRING([--with-njet=DIR], [Installation path of njet]),
+    [],
+    [with_njet=no]    
+
+)
+
+AC_MSG_RESULT([$with_njet])
+
+AS_IF([test "x$with_njet" != "xno"],
+      [AC_CHECK_FILES(
+      ${with_njet}/lib/libnjet2.so,
+      [have_njet=lib], [have_njet=no])],
+      [have_njet=no])
+
+AS_IF([test "x$with_njet" != "xno" -a "x$have_njet" = "xno" ],
+      [AC_CHECK_FILES(
+      ${with_njet}/lib64/libnjet2.so,
+      [have_njet=lib64], [have_njet=no])])
+
+AS_IF([test "x$have_njet" = "xlib"],
+      [NJETLIBPATH=${with_njet}/lib
+      AC_SUBST(NJETLIBPATH)
+      NJETINCLUDEPATH=${with_njet}/include
+      AC_SUBST(NJETINCLUDEPATH)
+      NJETPREFIX=${with_njet}
+      AC_SUBST(NJETPREFIX)
+      ])
+
+AS_IF([test "x$have_njet" = "xlib64"],
+      [NJETLIBPATH=${with_njet}/lib64
+      AC_SUBST(NJETLIBPATH)
+      NJETINCLUDEPATH=${with_njet}/include
+      AC_SUBST(NJETINCLUDEPATH)
+      NJETPREFIX=${with_njet}
+      AC_SUBST(NJETPREFIX)
+      ])
+
+AS_IF([test "x$with_njet" != "xno"  -a "x$have_njet" = "xno"],
+      [AC_MSG_ERROR([njet requested but not found])])
+
+AM_CONDITIONAL(HAVE_NJET,[test "x$have_njet" = "xlib" -o "x$have_njet" = "xlib64"])
+
+if test "x$have_njet" = "xlib" -o "x$have_njet" = "xlib64" ; then
+     	LOAD_NJET="library"
+     	CREATE_NJET="create"
+     	INSERT_NJET="insert"
+else
+     	LOAD_NJET="# library"
+	CREATE_NJET="# create"
+     	INSERT_NJET="# insert"
+fi
+
+AC_SUBST([LOAD_NJET])
+AC_SUBST([CREATE_NJET])
+AC_SUBST([INSERT_NJET])
+
+])
+
+
+
+dnl ##### gosam #####
+AC_DEFUN([HERWIG_CHECK_GOSAM],
+[
+AC_MSG_CHECKING([for gosam])
+
+AC_ARG_WITH([gosam],
+    AS_HELP_STRING([--with-gosam=DIR], [Installation path of gosam]),
+    [],
+    [with_gosam=no]    
+)
+
+AC_MSG_RESULT([$with_gosam])
+
+AS_IF([test "x$with_gosam" != "xno"],
+      [AC_CHECK_FILES(
+      ${with_gosam}/bin/gosam.py,
+      [have_gosam=lib], [have_gosam=no])],
+      [have_gosam=no])
+
+AS_IF([test "x$have_gosam" = "xlib"],
+      [GOSAMPREFIX=${with_gosam}
+      AC_SUBST(GOSAMPREFIX)
+      ])
+
+AS_IF([test "x$with_gosam" != "xno"  -a "x$have_gosam" = "xno"],
+      [AC_MSG_ERROR([GoSam requested but not found])])
+
+AM_CONDITIONAL(HAVE_GOSAM,[test "x$have_gosam" = "xlib" ])
+
+if test "x$have_gosam" = "xlib"  ; then
+     	LOAD_GOSAM="library"
+     	CREATE_GOSAM="create"
+     	INSERT_GOSAM="insert"
+else
+     	LOAD_GOSAM="# library"
+	CREATE_GOSAM="# create"
+     	INSERT_GOSAM="# insert"
+fi
+
+AC_SUBST([LOAD_GOSAM])
+AC_SUBST([CREATE_GOSAM])
+AC_SUBST([INSERT_GOSAM])
+
+
+])
+
+
+dnl ##### hej #####
+AC_DEFUN([HERWIG_CHECK_HEJ],
+[
+AC_MSG_CHECKING([for hej])
+
+AC_ARG_WITH([hej],
+    AS_HELP_STRING([--with-hej=DIR], [Installation path of HEJ]),
+    [],
+    [with_hej=no]    
+
+)
+
+AC_MSG_RESULT([$with_hej])
+
+AS_IF([test "x$with_hej" != "xno"],
+      [AC_CHECK_FILES(
+      ${with_hej}/lib/libJets.so
+      ${with_hej}/include/HEJ/Jets.h,
+      [have_hej=yes], [have_hej=no])],
+      [have_hej=no])
+
+AS_IF([test "x$have_hej" = "xyes"],
+      [HEJLIBPATH=${with_hej}/lib
+      AC_SUBST(HEJLIBPATH)
+      HEJCPPFLAGS=`${with_hej}/bin/hej-config --cppflags`
+      AC_SUBST(HEJCPPFLAGS)
+      ],
+      [AS_IF([test "x$with_hej" != "xno"],
+             [AC_MSG_ERROR([hej requested but not found])
+      ])
+      ])    
+AM_CONDITIONAL(HAVE_HEJ,[test "x$have_hej" = "xyes"])
+])
+
 dnl ##### PDF PATH #####
 AC_DEFUN([HERWIG_PDF_PATH],
 [
@@ -377,6 +648,12 @@ cat << _HW_EOF_ > config.herwig
 ***
 *** ThePEG:		$with_thepeg
 *** ThePEG headers:	$with_thepeg_headers
+***
+*** VBFNLO:		$with_vbfnlo
+*** nlojet:		$with_nlojet
+*** njet:		$with_njet
+*** GoSam:		$with_gosam
+*** HEJ:		$with_hej
 ***
 *** GSL:		$with_gsl
 *** boost:              ${BOOST_CPPFLAGS:-system}

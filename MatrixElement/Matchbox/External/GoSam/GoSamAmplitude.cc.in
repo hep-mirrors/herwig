@@ -1,0 +1,391 @@
+// -*- C++ -*-
+//
+// GoSamAmplitude.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2012 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
+// This is the implementation of the non-inlined, non-templated member
+// functions of the GoSamAmplitude class.
+//
+
+#include "GoSamAmplitude.h"
+#include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/EventRecord/Particle.h"
+#include "ThePEG/Repository/UseRandom.h"
+#include "ThePEG/Repository/EventGenerator.h"
+#include "ThePEG/Utilities/DescribeClass.h"
+#include "ThePEG/Interface/Reference.h"
+#include "ThePEG/Interface/RefVector.h"
+#include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Switch.h"
+
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <cstdlib>
+
+using namespace Herwig;
+
+GoSamAmplitude::GoSamAmplitude() {theCodeExists=false;
+}
+
+GoSamAmplitude::~GoSamAmplitude() {
+}
+
+IBPtr GoSamAmplitude::clone() const {
+	return new_ptr(*this);
+}
+
+IBPtr GoSamAmplitude::fullclone() const {
+	return new_ptr(*this);
+}
+
+void GoSamAmplitude::signOLP(const string& order, const string& contract) {
+	if(!theCodeExists){
+	string cmd = "@GOSAMPREFIX@/bin/gosam.py --olp  -o " + contract + "  --config=../setup.in  " + order;
+	std::system(cmd.c_str());
+	if (gosamInstallPath!=""){
+	cmd = "cp "+ contract +" "+ order+" "+gosamInstallPath+"/";
+	std::system(cmd.c_str());
+	}
+	}
+}
+
+bool GoSamAmplitude::buildGoSam() {
+	if(!theCodeExists){
+	char cwd[256];
+	string cmd = "sh autogen.sh FCFLAGS=-g --prefix=";
+	if (gosamInstallPath=="")cmd+= string(getcwd(cwd, sizeof(cwd)));
+	else cmd +=  gosamInstallPath;
+	std::system(cmd.c_str());
+	cmd = "make install";
+	std::system(cmd.c_str());
+	}
+	theCodeExists=true;
+	return 1;
+}
+
+extern "C" void OLP_Start(const char*, int* i);
+void GoSamAmplitude::startOLP(const string& contract, int& status) {
+	string tempcontract=contract;
+	if (gosamInstallPath==""){if ( !DynamicLoader::load("lib64/libgolem_olp.so") ) assert(0);}
+	else {if ( !DynamicLoader::load(gosamInstallPath+"/lib64/libgolem_olp.so") ) assert(0);
+		tempcontract=gosamInstallPath+"/"+tempcontract;}
+	OLP_Start(tempcontract.c_str(), &status);
+}
+
+void GoSamAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs) {
+	string orderFileName = name() + ".OLPOrder.lh";
+	ofstream orderFile(orderFileName.c_str());
+	int asPower = 100;
+	int minlegs = 100;
+	int maxlegs = -1;
+
+	for ( map<pair<Process, int>, int>::const_iterator t = procs.begin() ; t != procs.end() ; ++t ) {
+		asPower = min(asPower, t->first.first.orderInAlphaS);
+		minlegs = min(minlegs, t->first.first.legs.size());
+		maxlegs = max(maxlegs, t->first.first.legs.size());
+	}
+
+	orderFile << "# OLP order file created by Herwig++/Matchbox for GoSam\n\n";
+	orderFile << "MatrixElementSquareType  CHsummed\n";
+	orderFile << "CorrectionType           QCD\n";
+	orderFile << "IRregularisation         " << (isDR() ? "DRED" : "CDR") << "\n";
+	orderFile << "\n";
+
+	for ( map<pair<Process, int>, int>::const_iterator p = procs.begin() ; p != procs.end() ; ++p ) {
+		std::stringstream Processstr;
+		std::stringstream Typestr;
+		Processstr << (*p).first.first.legs[0]->id() << " " << (*p).first.first.legs[1]->id() << " -> ";
+		for ( PDVector::const_iterator o = (*p).first.first.legs.begin() + 2 ; o != (*p).first.first.legs.end() ; ++o )
+			Processstr << (**o).id() << " ";
+		if ( (*p).first.second == ProcessType::treeME2 ) {
+			Typestr << "Tree";
+		} else if ( (*p).first.second == ProcessType::colourCorrelatedME2 ) {
+			Typestr << "ccTree";
+		} else if ( (*p).first.second == ProcessType::spinColourCorrelatedME2 ) {
+			Typestr << "scTree";
+		} else if ( (*p).first.second == ProcessType::oneLoopInterference ) {
+			Typestr << "Loop";
+		}
+		gosamprocinfo pro = gosamprocinfo((*p).second, -1, Processstr.str(), Typestr.str());
+		pro.setOAs(p->first.first.orderInAlphaS);
+		processmap[(*p).second] = pro;
+	}
+
+	vector < string > types;
+	types.push_back("Tree");
+	types.push_back("ccTree");
+	types.push_back("scTree");
+	types.push_back("Loop");
+	for ( int i = asPower ; i != asPower + maxlegs - minlegs + 1 ; i++ ) {
+		orderFile << "\n\nAlphasPower              " << i;
+		for ( vector<string>::iterator it = types.begin() ; it != types.end() ; it++ ) {
+			for ( map<int, gosamprocinfo>::iterator p = processmap.begin() ; p != processmap.end() ; ++p )
+				if ( (*p).second.Tstr() == *it && i == (*p).second.orderAs() ) {
+					orderFile << "\nAmplitudeType " << *it << "\n";
+					break;
+				}
+			for ( map<int, gosamprocinfo>::iterator p = processmap.begin() ; p != processmap.end() ; ++p )
+				if ( (*p).second.Tstr() == *it && i == (*p).second.orderAs() ) {
+					orderFile << (*p).second.Pstr() << "\n";
+				}
+		}
+	}
+	orderFile << flush;
+}
+
+bool GoSamAmplitude::checkOLPContract() {
+	string contractFileName = name() + ".OLPContract.lh";
+        if(theCodeExists && gosamInstallPath!="")contractFileName=gosamInstallPath+"/"+contractFileName;
+	ifstream infile(contractFileName.c_str());
+	string line;
+	vector < string > contractfile;
+	while (std::getline(infile, line)) {
+		contractfile.push_back(line);
+	}
+	for ( map<int, gosamprocinfo>::iterator p = processmap.begin() ; p != processmap.end() ; p++ ) {
+		bool righttype = false;
+		for ( vector<string>::iterator linex = contractfile.begin() ; linex != contractfile.end() ; ++linex ) {
+			if ( (*linex).find("AmplitudeType ")!= std::string::npos ) {
+				if ( (*linex).find(" " + (*p).second.Tstr() + " ")!= std::string::npos ) {
+					righttype = true;
+				} else {
+					righttype = false;
+				}
+			}
+			if ( righttype ) {
+				if ( (*linex).find((*p).second.Pstr()) != std::string::npos && (*p).second.Pstr().length() == (*linex).find("|") ) {
+					string sub = (*linex).substr((*linex).find("|") + 1, (*linex).find("#") - (*linex).find("|") - 1); // | 1 23 # buggy??
+					if ( sub.find(" 1 ") != 0 ) assert(0);
+					string subx = sub.substr(3);
+					int subint;
+					istringstream(subx) >> subint;
+					(*p).second.setGID(subint);
+				}
+			}
+		}
+
+	}
+
+	string ids = "ids.dat";
+	ofstream IDS(ids.c_str());
+
+	for ( map<int, gosamprocinfo>::iterator p = processmap.begin() ; p != processmap.end() ; p++ ) {
+	    idpair.insert ( std::pair<int,int>((*p).second.HID(),(*p).second.GID()) );
+	    IDS << (*p).second.HID() << " " << (*p).second.GID() << "\n";
+	    if ( (*p).second.GID() == -1 ) return 0;
+	}
+	IDS << flush;
+	
+	ids = "installpath.dat";
+	ofstream Install(ids.c_str());
+	Install<<gosamInstallPath << flush;
+	
+
+	return 1;
+}
+void GoSamAmplitude::getids() const{
+	string line = "ids.dat";
+	ifstream infile(line.c_str());
+	int hid;
+	int gid;
+	while (std::getline(infile, line)) {
+	   istringstream(line) >> hid>>gid;
+	   idpair.insert ( std::pair<int,int>(hid,gid) );
+	}
+	line ="installpath.dat";
+	ifstream infile2(line.c_str());
+	std::getline(infile2, line);
+	gosamInstallPath=line;
+}
+bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
+	cout << "\nWriting the olp-order file." << flush;
+	string contractFileName = name() + ".OLPContract.lh";
+	string orderFileName = name() + ".OLPOrder.lh";
+	fillOrderFile(procs);
+	cout << "\nGoSam: Sign the order file." << flush;
+	signOLP(orderFileName, contractFileName);
+
+	if ( !checkOLPContract() ) {
+		cout << "\n\n!!!!!!!!!!!!!Checking the olp-contract failed!!!!!!!!!!!\n\n" << flush;
+		assert(0);
+	} else cout << "\nChecked the olp-contract! Everything is OK! Let's build!\n" << flush;
+
+	buildGoSam();
+	int status = -1;
+	startOLP(contractFileName, status);
+
+	if ( status != 1 ) return false;
+
+	return true;
+
+}
+extern "C" void OLP_Polvec(double*,double*,double*);
+LorentzVector<Complex> GoSamAmplitude::plusPolarization(const Lorentz5Momentum& p, const Lorentz5Momentum& n, int inc) const {
+
+	double pvec[4] = {p.t()/GeV,p.x()/GeV,p.y()/GeV,p.z()/GeV};
+	double nvec[4] = {n.t()/GeV,n.x()/GeV,n.y()/GeV,n.z()/GeV};
+	double out[8] ={ };
+	 OLP_Polvec(pvec,nvec,out);
+
+	LorentzVector<Complex> res;
+	Complex a(out[0],out[1]);
+	res.setT(a);
+	Complex b(out[2],out[3]);
+	res.setX(b);
+	Complex c(out[4],out[5]);
+	res.setY(c);
+	Complex d(out[6],out[7]);
+	res.setZ(d);
+	
+	if (inc<2)
+	  return res.conjugate();
+	else 
+	  return res;
+
+}
+extern "C" void OLP_EvalSubProcess(int, double*, double, double*, double*);
+extern "C" void OLP_EvalSubProcess2(int, double*, double, double*, double*);
+
+void GoSamAmplitude::evalSubProcess() const {
+	double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
+	units *= pow(4. * Constants::pi * SM().alphaEM(), orderInGem());
+	units *= pow(4. * Constants::pi * SM().alphaS(), orderInGs());
+	fillOLPMomenta(lastXComb().meMomenta());
+	double as =   SM().alphaS();
+	double scale = sqrt(mu2() / GeV2);
+
+	double out[7] = { };
+	
+	int id = olpId()[ProcessType::oneLoopInterference] ? olpId()[ProcessType::oneLoopInterference] : olpId()[ProcessType::treeME2];
+        
+	if ( idpair.size() == 0 ) {
+		getids();
+	}
+
+
+	OLP_EvalSubProcess((*(idpair.find(id))).second, olpMomenta(), scale, &as, out);
+	
+
+	
+	if ( olpId()[ProcessType::oneLoopInterference] ) {
+		
+		lastTreeME2(out[3] * units);
+		lastOneLoopInterference((out[2])* units);
+		lastOneLoopPoles(pair<double, double>(out[0] * units, out[1] * units));
+	} else if ( olpId()[ProcessType::treeME2] ) {
+		lastTreeME2(out[3] * units);
+	}
+	
+	
+}
+
+void GoSamAmplitude::evalColourCorrelator(pair<int, int> ) const {
+	double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
+	units *= pow(4. * Constants::pi * SM().alphaEM(), orderInGem());
+	units *= pow(4. * Constants::pi * SM().alphaS(), orderInGs());
+	fillOLPMomenta(lastXComb().meMomenta());
+	double as = SM().alphaS();
+	as =  1.0;
+	double scale = sqrt(mu2() / GeV2);
+	int n = lastXComb().meMomenta().size();
+	colourCorrelatorResults.resize(n * (n - 1) / 2);
+	if ( idpair.size() == 0 ) {
+		getids();
+	}
+	OLP_EvalSubProcess((*(idpair.find(olpId()[ProcessType::colourCorrelatedME2]))).second, olpMomenta(), scale, &as, &colourCorrelatorResults[0]);
+
+	
+	cPDVector particles = lastXComb().matrixElement()->mePartonData();
+	
+	
+	for ( int i = 0 ; i < n ; ++i ){
+	    for ( int j = i + 1 ; j < n ; ++j ) {
+			lastColourCorrelator(make_pair(i, j), colourCorrelatorResults[i+j*(j-1)/2] * units);
+
+	    }
+	}
+}
+
+void GoSamAmplitude::evalSpinColourCorrelator(pair<int , int > ) const {
+	double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
+	units *= pow(4. * Constants::pi * SM().alphaEM(), orderInGem());
+	units *= pow(4. * Constants::pi * SM().alphaS(), orderInGs());
+	fillOLPMomenta(lastXComb().meMomenta());
+	double as = SM().alphaS();
+	double scale = sqrt(mu2() / GeV2);
+
+	int n = lastXComb().meMomenta().size();
+	spinColourCorrelatorResults.resize(2*n*n);
+	
+	if ( idpair.size() == 0 ) {
+		getids();
+	}
+
+	OLP_EvalSubProcess((*(idpair.find(olpId()[ProcessType::spinColourCorrelatedME2]))).second, olpMomenta(), scale, &as, &spinColourCorrelatorResults[0]);
+
+	 
+   for ( int i = 0; i < n; ++i )
+     for ( int j = 0; j < n; ++j ) {
+       	  Complex scc(spinColourCorrelatorResults[2*i+2*n*j]*units,
+ 		  spinColourCorrelatorResults[2*i+2*n*j+1]*units);
+	  lastColourSpinCorrelator(make_pair(i,j),scc);
+     }
+}
+
+
+
+
+
+// If needed, insert default implementations of virtual function defined
+// in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
+
+void GoSamAmplitude::persistentOutput(PersistentOStream & os) const {
+	os << idpair <<theCodeExists;
+}
+
+void GoSamAmplitude::persistentInput(PersistentIStream & is, int) {
+	is >> idpair >>theCodeExists;
+}
+
+// *** Attention *** The following static variable is needed for the type
+// description system in ThePEG. Please check that the template arguments
+// are correct (the class and its base class), and that the constructor
+// arguments are correct (the class name and the name of the dynamically
+// loadable library where the class implementation can be found).
+DescribeClass<GoSamAmplitude, MatchboxOLPME> describeHerwigGoSamAmplitude("Herwig::GoSamAmplitude", "HwMatchboxGoSam.so");
+
+void GoSamAmplitude::Init() {
+
+  static ClassDocumentation<GoSamAmplitude> documentation("GoSamAmplitude implements an interface to GoSam.");  
+  static Parameter<GoSamAmplitude,string> interfaceInstallPath
+    	("InstallPath",
+     	"Prefix for the GoSam produced code.",
+     	&GoSamAmplitude::gosamInstallPath, "",
+     	false, false);
+
+  static Switch<GoSamAmplitude,bool> interfaceCodeExists
+    ("CodeExists",
+     "Switch on or off if Code already exists/not exists.",
+     &GoSamAmplitude::theCodeExists, true, false, false);
+  static SwitchOption interfaceCodeExistsOn
+    (interfaceCodeExists,
+     "True",
+     "Switch True if Code already exists.",
+     true);
+  static SwitchOption interfaceCodeExistsOff
+    (interfaceCodeExists,
+     "False",
+     "Switch False if Code has to be build.",
+     false);
+
+
+}
+

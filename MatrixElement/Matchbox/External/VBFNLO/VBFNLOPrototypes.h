@@ -1,0 +1,273 @@
+// -*- C++ -*-
+//
+// VBFNLOPrototypes.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+#ifndef HERWIG_VBFNLOPrototypes_H
+#define HERWIG_VBFNLOPrototypes_H
+
+#include "cfortran.h"
+#include "ThePEG/Vectors/Lorentz5Vector.h"
+
+/**
+ * Fix compiler warnings for unused functions
+ */
+struct DUMMY_TO_SUPPRESS_WARNINGS{
+  char * a;
+  char * b;
+  int i,j;
+  char x;
+  unsigned int u;
+  char * dummya() {return c2fstrv(a,b,i,j);}
+  char * dummyb() {return f2cstrv(a,b,i,j);}
+  char * dummyc() {return kill_trailing(a,x);}
+  char * dummyd() {return vkill_trailing(a,i,j,x);}
+  int dummye() {return num_elem(a,u,i,j);}
+};
+
+/**
+ * COMMON BLOCKs
+ */
+
+struct BLIPSIVNJ_DEF{  
+  mutable double RM2,RMG,RM2MIN,RM2MAX,S,M2MIN;
+  mutable double YJMIN[4],YJMAX[4],PTJMIN[4],EJMIN[4];
+  mutable int INFOJ[4];
+};
+#define BLIPSIVNJ COMMON_BLOCK(BLIPSIVNJ,blipsivnj)
+COMMON_BLOCK_DEF(BLIPSIVNJ_DEF,BLIPSIVNJ);
+
+struct BLIPSIVVNJ_DEF{  
+  mutable double RM2[3],RMG[3],RM2MIN[3],RM2MAX[3],S,M2MIN;
+  mutable double YJMIN[4],YJMAX[4],PTJMIN[4],EJMIN[4];
+  mutable int INFOJ[4], IWIDTH[3];
+};
+#define BLIPSIVVNJ COMMON_BLOCK(BLIPSIVVNJ,blipsivvnj)
+COMMON_BLOCK_DEF(BLIPSIVVNJ_DEF,BLIPSIVVNJ);
+
+struct BKOPOU_DEF{
+  mutable double CLR[3][5][4],XM2[6],XMG[6],B[6][6][6],V[5][4],A[5][4];
+};
+#define BKOPOU COMMON_BLOCK(BKOPOU,bkopou)
+COMMON_BLOCK_DEF(BKOPOU_DEF,BKOPOU);
+
+struct BKOPIN_DEF{
+  mutable double ALFAS,XMT,ALFA,XMZ,XMW,SIN2W,XMH,GF,ALFAS_LO;
+};
+#define BKOPIN COMMON_BLOCK(BKOPIN,bkopin)
+COMMON_BLOCK_DEF(BKOPIN_DEF,BKOPIN);
+
+struct QUARKMASSES_DEF{
+  mutable double XMB,BMASS_H,XMC,XMASS_H;
+};
+#define QUARKMASSES COMMON_BLOCK(QUARKMASSES,quarkmasses)
+COMMON_BLOCK_DEF(QUARKMASSES_DEF,QUARKMASSES);
+
+struct CGLOBALD_DEF{
+  mutable double ECM;
+};
+#define CGLOBALD COMMON_BLOCK(CGLOBALD,cglobald)
+COMMON_BLOCK_DEF(CGLOBALD_DEF,CGLOBALD);
+
+struct CGLOBALL_DEF{
+  mutable bool FEYNH_SWITCH,SLHA_SWITCH,EWCOR_SWITCH;
+  mutable bool LOOPSQR_SWITCH,LOOPSQR_SWITCHIN;
+  mutable bool HASNLO,HASFLOOPS;
+  mutable bool DOBORN,DOVIRTUALS,DOEMISSIONS,DOFLOOPS;
+  mutable bool INFLOOPS;
+};
+#define CGLOBALL COMMON_BLOCK(CGLOBALL,cgloball)
+COMMON_BLOCK_DEF(CGLOBALL_DEF,CGLOBALL);
+
+struct CGLOBALI_DEF{
+  mutable int EWAPPROX,MODEL,HIGGSTYPE,EWSCHEME,FLOOPS;
+  mutable int SECTOR,MHLOOPS,PROCID;
+  mutable int N_ITERATIONS1,N_ITERATIONS2;
+  mutable int N_POINTS[7];
+  mutable int N_P,N_V;
+  mutable int SIGN1,SIGN2,NLO_LOOPS,PS_DIMENSION;
+  mutable int PARTICLE_IDS[10];
+  mutable int PS_LOOPS,SUB_NUMBER,LOOPS_SUB_LO,LOOPS_SUB_NLO;
+};
+#define CGLOBALI COMMON_BLOCK(CGLOBALI,cglobali)
+COMMON_BLOCK_DEF(CGLOBALI_DEF,CGLOBALI);
+
+struct CGLOBAL2_DEF{
+  mutable int N_KIN,N_QED;
+};
+#define CGLOBAL2 COMMON_BLOCK(CGLOBAL2,cglobal2)
+COMMON_BLOCK_DEF(CGLOBAL2_DEF,CGLOBAL2);
+
+struct ANOM_SWITCH_DEF{
+  mutable bool WITH_ANOM;
+};
+#define ANOM_SWITCH COMMON_BLOCK(ANOM_SWITCH,anom_switch)
+COMMON_BLOCK_DEF(ANOM_SWITCH_DEF,ANOM_SWITCH);
+
+struct ANOMHIGGS_DEF{
+  mutable bool WITH_ANOMHIGGS;
+};
+#define ANOMHIGGS COMMON_BLOCK(ANOMHIGGS,anomhiggs)
+COMMON_BLOCK_DEF(ANOMHIGGS_DEF,ANOMHIGGS);
+
+struct KK_SWITCH_DEF{
+  mutable bool WITH_KK;
+};
+#define KK_SWITCH COMMON_BLOCK(KK_SWITCH,kk_switch)
+COMMON_BLOCK_DEF(KK_SWITCH_DEF,KK_SWITCH);
+
+struct CSCALES_DEF{
+  mutable double MUFSQ[25][2],MURSQ[25][2],ALS[25][3],XIR,XIF;
+  mutable double MUR_USER,MUF_USER;
+  mutable int ID_MUR,ID_MUF;
+};
+#define CSCALES COMMON_BLOCK(CSCALES,cscales)
+COMMON_BLOCK_DEF(CSCALES_DEF,CSCALES);
+
+struct BRANCH_DEF{
+  mutable double BWNE,BWUD,BWTB,BZNN,BZEE,BZUU,BZDD,BZTT;
+  mutable double BHWW,BHZZ,BHGG,BHTT,BHBB,BHCC,BHTAU,BHMU;
+  mutable double BHGAM, BHGAMZ, XGW, XGZ, XGH, GAMT;
+};
+#define BRANCH COMMON_BLOCK(BRANCH,branch)
+COMMON_BLOCK_DEF(BRANCH_DEF,BRANCH);
+
+
+struct SPLITCB_DEF{
+  mutable int SUBPROCID,PARTICLEID[10],IHACK,SUBPROCCOUNTER,GLUONID;
+  mutable bool PRINTOUTPUT, ALLSUBPROCS;
+};
+#define SPLITCB COMMON_BLOCK(SPLITCB,splitcb)
+COMMON_BLOCK_DEF(SPLITCB_DEF,SPLITCB);
+
+struct CQQHQQA_DEF{
+  mutable double FCPLA[2][6][4],FCPLA1[2][4][4],FCPLA2[2][4][4],FCPLA3[2][4][4];
+  mutable int V2INI1[4],V3INI1[4],V2INI2[4],V3INI2[4],V2INI3[4],V3INI3[4];
+};
+#define CQQHQQA COMMON_BLOCK(CQQHQQA,cqqhqqa)
+COMMON_BLOCK_DEF(CQQHQQA_DEF,CQQHQQA);
+
+struct LHCOUP_DEF{
+  mutable double TREEFACW,TREEFACZ,LOOPFAC;
+};
+#define LHCOUP COMMON_BLOCK(LHCOUP,lhcoup)
+COMMON_BLOCK_DEF(LHCOUP_DEF,LHCOUP);
+
+
+namespace Herwig{
+
+using namespace ThePEG;
+
+/**
+ * Initialization related stuff
+ */
+PROTOCCALLSFSUB0(INITCOUPLINGS,initcouplings)
+#define INITCOUPLINGS() CCALLSFSUB0(INITCOUPLINGS,initcouplings)
+
+PROTOCCALLSFSUB9(KOPPLN,koppln,INT,DOUBLE,DOUBLE,DOUBLE,DOUBLE,DOUBLE,DOUBLE,DOUBLE,DOUBLE)
+#define KOPPLN(INFO,e,g2,s,c,z,w,q,g) CCALLSFSUB9(KOPPLN,koppln,INT,DOUBLE,DOUBLE,DOUBLE,DOUBLE,DOUBLE,DOUBLE,DOUBLE,DOUBLE,INFO,e,g2,s,c,z,w,q,g)
+
+PROTOCCALLSFSUB8(SETEWPARA,setewpara,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE)
+#define SETEWPARA(e,g2,s,c,z,w,q,g) CCALLSFSUB8(SETEWPARA,setewpara,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE,e,g2,s,c,z,w,q,g)
+
+PROTOCCALLSFSUB1(CTRANS,ctrans,DOUBLE)
+#define CTRANS(xmb) CCALLSFSUB1(CTRANS,ctrans,DOUBLE,xmb)
+
+PROTOCCALLSFSUB0(CLEARWIDTHS,clearwidths)
+#define CLEARWIDTHS() CCALLSFSUB0(CLEARWIDTHS,clearwidths)
+
+/**
+ * Phasespace related stuff
+ */
+PROTOCCALLSFSUB6(DEF_PS_VVNJ,def_ps_vvnj,INT,INT,INT,INT,INT,INT)
+#define DEF_PS_VVNJ(bos0,bos1,bos2,iwidth0,iwidth1,iwidth2) CCALLSFSUB6(DEF_PS_VVNJ,def_ps_vvnj,INT,INT,INT,INT,INT,INT,bos0,bos1,bos2,iwidth0,iwidth1,iwidth2)
+
+PROTOCCALLSFSUB10(LIPSNVV,lipsnvv,INT,DOUBLEV,DOUBLE,DOUBLEV,DOUBLEV,DOUBLEVV,DOUBLEVV,PDOUBLE,PDOUBLE,PDOUBLE)
+#define LIPSNVV(N,RD,RN,K1,K2,D,P,X1,X2,W) CCALLSFSUB10(LIPSNVV,lipsnvv,INT,DOUBLEV,DOUBLE,DOUBLEV,DOUBLEV,DOUBLEVV,DOUBLEVV,PDOUBLE,PDOUBLE,PDOUBLE,N,RD,RN,K1,K2,D,P,X1,X2,W)
+
+PROTOCCALLSFSUB1(DEF_PS_VNJ,def_ps_vnj,INT)
+#define DEF_PS_VNJ(bos) CCALLSFSUB1(DEF_PS_VNJ,def_ps_vnj,INT,bos)
+
+PROTOCCALLSFSUB13(LIPSN,lipsn,INT,DOUBLEV,DOUBLE,DOUBLEV,DOUBLEV,DOUBLEV,DOUBLEV,DOUBLEV,DOUBLEVV,PDOUBLE,PDOUBLE,PDOUBLE,LOGICAL)
+#define LIPSN(N,RD,RN,K1,K2,Q,D1,D2,P,X1,X2,W,NW) CCALLSFSUB13(LIPSN,lipsn,INT,DOUBLEV,DOUBLE,DOUBLEV,DOUBLEV,DOUBLEV,DOUBLEV,DOUBLEV,DOUBLEVV,PDOUBLE,PDOUBLE,PDOUBLE,LOGICAL,N,RD,RN,K1,K2,Q,D1,D2,P,X1,X2,W,NW)
+
+PROTOCCALLSFSUB10(LIPSN0,lipsn0,INT,DOUBLEV,DOUBLE,DOUBLEV,DOUBLEV,DOUBLEV,DOUBLEVV,PDOUBLE,PDOUBLE,PDOUBLE)
+#define LIPSN0(N,RD,RN,K1,K2,Q,P,X1,X2,W) CCALLSFSUB10(LIPSN0,lipsn0,INT,DOUBLEV,DOUBLE,DOUBLEV,DOUBLEV,DOUBLEV,DOUBLEVV,PDOUBLE,PDOUBLE,PDOUBLE,N,RD,RN,K1,K2,Q,P,X1,X2,W)
+
+
+/**
+ * Monaco and related stuff
+ */
+
+PROTOCCALLSFSUB3(MONACO_INIT,monaco_init,INT,INT,INT)
+#define MONACO_INIT(PS_dimension,Ncall,seed) CCALLSFSUB3(MONACO_INIT,monaco_init,INT,INT,INT,PS_dimension,Ncall,seed)
+
+/**
+ * Amplitude related stuff
+ */
+
+//*****************
+//*      VVJJ     *
+//*****************
+
+//amplitude for Higgs decay to vector bosons
+PROTOCCALLSFSUB6(M2S_VVSUM,m2s_vvsum,DOUBLEVV,INT,INT,INT,INT,PDOUBLE)
+#define M2S_VVSUM(L,bos1,bos2,flav1,flav3,m2s) CCALLSFSUB6(M2S_VVSUM,m2s_vvsum,DOUBLEVV,INT,INT,INT,INT,PDOUBLE,L,bos1,bos2,flav1,flav3,m2s)
+
+//m2s_wbfvv
+PROTOCCALLSFSUB7(M2S_WBFVV,m2s_wbfvv,INT,INT,INT,DOUBLEV,DOUBLEVV,DOUBLEVV,DOUBLEV)
+#define M2S_WBFVV(bos,bosdec,nlo,xi,p,v,rn) CCALLSFSUB7(M2S_WBFVV,m2s_wbfvv,INT,INT,INT,DOUBLEV,DOUBLEVV,DOUBLEVV,DOUBLEV,bos,bosdec,nlo,xi,p,v,rn)
+
+//wbf_zh
+PROTOCCALLSFSUB12(WBF_ZH,wbf_zh,DOUBLEVV,DOUBLEVV,DOUBLEVV,INTV,INTV,INT,INT,INT,DOUBLEVV,DOUBLEV,INT,INT)
+#define WBF_ZH(xi,p,v,physToDiag,fsign,bos,bosdec,nlo,pdf,res,nmin,nmax) CCALLSFSUB12(WBF_ZH,wbf_zh,DOUBLEVV,DOUBLEVV,DOUBLEVV,INTV,INTV,INT,INT,INT,DOUBLEVV,DOUBLEV,INT,INT,xi,p,v,physToDiag,fsign,bos,bosdec,nlo,pdf,res,nmin,nmax)
+
+//new version:
+PROTOCCALLSFSUB10(QQHQQ,qqhqq,DOUBLEVV,INTV,INT,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE,DOUBLEV)
+#define QQHQQ(pbar,sign,nlo,uucc,uuss,ddcc,ddss,udsc,ducs,tree) CCALLSFSUB10(QQHQQ,qqhqq,DOUBLEVV,INTV,INT,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE,DOUBLEV,pbar,sign,nlo,uucc,uuss,ddcc,ddss,udsc,ducs,tree)
+
+//may this be deleted?
+PROTOCCALLSFSUB11(QQHQQJ_C,qqhqqj_c,DOUBLEVV,INTV,DOUBLEV,INT,INT,DOUBLEV,DOUBLEV,DOUBLEV,DOUBLEV,DOUBLEV,DOUBLEV)
+#define QQHQQJ_C(pbar,fsign,qbar,gsign,bosdec,uucc,uuss,ddcc,ddss,udsc,ducs) CCALLSFSUB11(QQHQQJ_C,qqhqqj_c,DOUBLEVV,INTV,DOUBLEV,INT,INT,DOUBLEV,DOUBLEV,DOUBLEV,DOUBLEV,DOUBLEV,DOUBLEV,pbar,fsign,qbar,gsign,bosdec,uucc,uuss,ddcc,ddss,udsc,ducs)
+
+PROTOCCALLSFSUB10(QQHQQJ,qqhqqj,DOUBLEVV,INTV,DOUBLEV,INT,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE)
+#define QQHQQJ(pbar,fsign,qbar,gsign,uucc,uuss,ddcc,ddss,udsc,ducs) CCALLSFSUB10(QQHQQJ,qqhqqj,DOUBLEVV,INTV,DOUBLEV,INT,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE,pbar,fsign,qbar,gsign,uucc,uuss,ddcc,ddss,udsc,ducs)
+
+
+PROTOCCALLSFSUB9(QQZQQ,qqzqq,DOUBLEVV,INTV,INT,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE)
+#define QQZQQ(pbar,fsign,nlo,uucc,uuss,ddcc,ddss,udsc,ducs) CCALLSFSUB9(QQZQQ,qqzqq,DOUBLEVV,INTV,INT,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE,pbar,fsign,nlo,uucc,uuss,ddcc,ddss,udsc,ducs)
+
+PROTOCCALLSFSUB7(QQWPQQ,qqwpqq,DOUBLEVV,INTV,INT,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE)
+#define QQWPQQ(pbar,fsign,nlo,uucs,ddcs,udcc,udss) CCALLSFSUB7(QQWPQQ,qqwpqq,DOUBLEVV,INTV,INT,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE,pbar,fsign,nlo,uucs,ddcs,udcc,udss)
+
+PROTOCCALLSFSUB7(QQWMQQ,qqwmqq,DOUBLEVV,INTV,INT,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE)
+#define QQWMQQ(pbar,fsign,nlo,uusc,ddsc,ducc,duss) CCALLSFSUB7(QQWMQQ,qqwmqq,DOUBLEVV,INTV,INT,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE,pbar,fsign,nlo,uusc,ddsc,ducc,duss)
+
+PROTOCCALLSFSUB10(QQZQQJ,qqzqqj,DOUBLEVV,INTV,DOUBLEV,INT,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE)
+#define QQZQQJ(pbar,fsign,qbar,gsign,uucc,uuss,ddcc,ddss,udsc,ducs) CCALLSFSUB10(QQZQQJ,qqzqqj,DOUBLEVV,INTV,DOUBLEV,INT,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE,PDOUBLE,pbar,fsign,qbar,gsign,uucc,uuss,ddcc,ddss,udsc,ducs)
+
+
+
+//Initializations
+PROTOCCALLSFSUB1(QQHQQGI,qqhqqgi,INT)
+#define QQHQQGI(bosdec) CCALLSFSUB1(QQHQQGI,qqhqqgi,INT,bosdec)
+
+PROTOCCALLSFSUB1(QQHQQI,qqhqqi,INT)
+#define QQHQQI(bosdec) CCALLSFSUB1(QQHQQI,qqhqqi,INT,bosdec)
+
+PROTOCCALLSFSUB2(QQBQQI,qqbqqi,INT,INTV)
+#define QQBQQI(bosdec,lflavr) CCALLSFSUB2(QQBQQI,qqbqqi,INT,INTV,bosdec,lflavr)
+
+//define_leptens
+PROTOCCALLSFSUB5(DEFINE_LEPTENS,define_leptens,INT,INT,INT,DOUBLEVV,DOUBLEVV)
+#define DEFINE_LEPTENS(bos,bosdec,nlo,p,v) CCALLSFSUB5(DEFINE_LEPTENS,define_leptens,INT,INT,INT,DOUBLEVV,DOUBLEVV,bos,bosdec,nlo,p,v)
+
+
+}
+
+
+
+#endif // HERWIG_VBFNLOPrototypes_H

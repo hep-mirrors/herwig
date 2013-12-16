@@ -115,6 +115,16 @@ BOOST_FIND_HEADER([boost/scoped_array.hpp])
 BOOST_FIND_HEADER([boost/scoped_ptr.hpp])
 BOOST_FIND_HEADER([boost/utility.hpp])
 
+HERWIG_CHECK_VBFNLO
+
+HERWIG_CHECK_NLOJET
+
+HERWIG_CHECK_NJET
+
+HERWIG_CHECK_GOSAM
+
+HERWIG_CHECK_HEJ
+
 HERWIG_COMPILERFLAGS
 
 HERWIG_LOOPTOOLS
@@ -195,6 +205,17 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/Matchbox/External/Makefile
                 MatrixElement/Matchbox/External/BLHAGeneric/Makefile
                 MatrixElement/Matchbox/Tests/Makefile
+                MatrixElement/Matchbox/External/NLOJet/Makefile
+                MatrixElement/Matchbox/External/NLOJet/Amplitudes/Makefile
+                MatrixElement/Matchbox/External/NLOJet/PP2Jets/Makefile
+                MatrixElement/Matchbox/External/VBFNLO/Makefile
+                MatrixElement/Matchbox/External/VBFNLO/Diagrams/Makefile
+                MatrixElement/Matchbox/External/VBFNLO/VBFAnalysis/Makefile
+                MatrixElement/Matchbox/External/HEJ/Makefile
+                MatrixElement/Matchbox/External/NJet/Makefile
+                MatrixElement/Matchbox/External/NJet/NJetsAmplitude.cc
+		MatrixElement/Matchbox/External/GoSam/Makefile
+                MatrixElement/Matchbox/External/GoSam/GoSamAmplitude.cc
 		Exsample2/Makefile
 		Exsample2/CellGridSampling/Makefile
                 Shower/Makefile
@@ -218,6 +239,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Analysis/Makefile
 		src/Makefile-UserModules
 		src/defaults/Analysis.in
+		src/defaults/Matchbox.in
 		Contrib/Makefile
 		Contrib/make_makefiles.sh
 		Tests/Makefile

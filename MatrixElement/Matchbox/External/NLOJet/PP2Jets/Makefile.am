@@ -1,0 +1,124 @@
+noinst_LTLIBRARIES = libHwNLOJetPP2Jets.la
+
+libHwNLOJetPP2Jets_la_CPPFLAGS = $(AM_CPPFLAGS)
+libHwNLOJetPP2Jets_la_CPPFLAGS += -I$(NLOJETINCLUDEPATH) -I$(NLOJETINCLUDEPATH)/nlo++
+
+libHwNLOJetPP2Jets_la_CXXFLAGS = $(AM_CXXFLAGS)
+libHwNLOJetPP2Jets_la_CXXFLAGS += -fno-var-tracking
+
+libHwNLOJetPP2Jets_la_SOURCES = \
+NLOJetMEgg2gggg.h \
+NLOJetMEgg2ggg.h \
+NLOJetMEgg2gg.h \
+NLOJetMEgg2kqkbqb.h \
+NLOJetMEgg2qqbgg.h \
+NLOJetMEgg2qqbg.h \
+NLOJetMEgg2qqb.h \
+NLOJetMEgq2kqkbg.h \
+NLOJetMEgq2kqkb.h \
+NLOJetMEgq2qggg.h \
+NLOJetMEgq2qgg.h \
+NLOJetMEgq2qg.h \
+NLOJetMEgqb2kkbqbg.h \
+NLOJetMEgqb2kkbqb.h \
+NLOJetMEgqb2qbggg.h \
+NLOJetMEgqb2qbgg.h \
+NLOJetMEgqb2qbg.h \
+NLOJetMEkbq2qkbgg.h \
+NLOJetMEkbq2qkbg.h \
+NLOJetMEkbq2qkb.h \
+NLOJetMEkbq2rqrbkb.h \
+NLOJetMEkbqb2kbqbgg.h \
+NLOJetMEkbqb2kbqbg.h \
+NLOJetMEkbqb2kbqb.h \
+NLOJetMEkbqb2rrbkbqb.h \
+NLOJetMEkq2kqgg.h \
+NLOJetMEkq2kqg.h \
+NLOJetMEkq2kq.h \
+NLOJetMEkq2rkqrb.h \
+NLOJetMEkqb2kqbgg.h \
+NLOJetMEkqb2kqbg.h \
+NLOJetMEkqb2kqb.h \
+NLOJetMEkqb2rkrbqb.h \
+NLOJetMEqbg2kkbqbg.h \
+NLOJetMEqbg2kkbqb.h \
+NLOJetMEqbg2qbggg.h \
+NLOJetMEqbg2qbgg.h \
+NLOJetMEqbg2qbg.h \
+NLOJetMEqbq2gggg.h \
+NLOJetMEqbq2ggg.h \
+NLOJetMEqbq2gg.h \
+NLOJetMEqbq2kkbgg.h \
+NLOJetMEqbq2kkbg.h \
+NLOJetMEqbq2kkb.h \
+NLOJetMEqbq2rkrbkb.h \
+NLOJetMEqg2kqkbg.h \
+NLOJetMEqg2kqkb.h \
+NLOJetMEqg2qggg.h \
+NLOJetMEqg2qgg.h \
+NLOJetMEqg2qg.h \
+NLOJetMEqqb2gggg.h \
+NLOJetMEqqb2ggg.h \
+NLOJetMEqqb2gg.h \
+NLOJetMEqqb2kkbgg.h \
+NLOJetMEqqb2kkbg.h \
+NLOJetMEqqb2kkb.h \
+NLOJetMEqqb2rkrbkb.h \
+NLOJetMEgg2gggg.cc \
+NLOJetMEgg2ggg.cc \
+NLOJetMEgg2gg.cc \
+NLOJetMEgg2kqkbqb.cc \
+NLOJetMEgg2qqbgg.cc \
+NLOJetMEgg2qqbg.cc \
+NLOJetMEgg2qqb.cc \
+NLOJetMEgq2kqkbg.cc \
+NLOJetMEgq2kqkb.cc \
+NLOJetMEgq2qggg.cc \
+NLOJetMEgq2qgg.cc \
+NLOJetMEgq2qg.cc \
+NLOJetMEgqb2kkbqbg.cc \
+NLOJetMEgqb2kkbqb.cc \
+NLOJetMEgqb2qbggg.cc \
+NLOJetMEgqb2qbgg.cc \
+NLOJetMEgqb2qbg.cc \
+NLOJetMEkbq2qkbgg.cc \
+NLOJetMEkbq2qkbg.cc \
+NLOJetMEkbq2qkb.cc \
+NLOJetMEkbq2rqrbkb.cc \
+NLOJetMEkbqb2kbqbgg.cc \
+NLOJetMEkbqb2kbqbg.cc \
+NLOJetMEkbqb2kbqb.cc \
+NLOJetMEkbqb2rrbkbqb.cc \
+NLOJetMEkq2kqgg.cc \
+NLOJetMEkq2kqg.cc \
+NLOJetMEkq2kq.cc \
+NLOJetMEkq2rkqrb.cc \
+NLOJetMEkqb2kqbgg.cc \
+NLOJetMEkqb2kqbg.cc \
+NLOJetMEkqb2kqb.cc \
+NLOJetMEkqb2rkrbqb.cc \
+NLOJetMEqbg2kkbqbg.cc \
+NLOJetMEqbg2kkbqb.cc \
+NLOJetMEqbg2qbggg.cc \
+NLOJetMEqbg2qbgg.cc \
+NLOJetMEqbg2qbg.cc \
+NLOJetMEqbq2gggg.cc \
+NLOJetMEqbq2ggg.cc \
+NLOJetMEqbq2gg.cc \
+NLOJetMEqbq2kkbgg.cc \
+NLOJetMEqbq2kkbg.cc \
+NLOJetMEqbq2kkb.cc \
+NLOJetMEqbq2rkrbkb.cc \
+NLOJetMEqg2kqkbg.cc \
+NLOJetMEqg2kqkb.cc \
+NLOJetMEqg2qggg.cc \
+NLOJetMEqg2qgg.cc \
+NLOJetMEqg2qg.cc \
+NLOJetMEqqb2gggg.cc \
+NLOJetMEqqb2ggg.cc \
+NLOJetMEqqb2gg.cc \
+NLOJetMEqqb2kkbgg.cc \
+NLOJetMEqqb2kkbg.cc \
+NLOJetMEqqb2kkb.cc \
+NLOJetMEqqb2rkrbkb.cc
+
