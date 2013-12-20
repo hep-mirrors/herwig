@@ -64,19 +64,18 @@ if test "x$with_thepeg" = "xno"; then
 	AC_MSG_ERROR([Cannot build Herwig++ without ThePEG. Please set --with-thepeg.])
 fi
 
-THEPEGPATH="${with_thepeg}"
-
-THEPEGLIBPATH="${with_thepeg}/lib/ThePEG"
-if test "${host_cpu}" == "x86_64" -a -e ${with_thepeg}/lib64/ThePEG/libThePEG.so ; then
-  THEPEGLIBPATH="${with_thepeg}/lib64/ThePEG"
-fi
-
+THEPEGLDFLAGS="-L${with_thepeg}/lib/ThePEG"
 THEPEGHASLHAPDF="no"
-if test -e $THEPEGLIBPATH/ThePEGLHAPDF.so ; then
+if test -e ${with_thepeg}/lib/ThePEG/ThePEGLHAPDF.so ; then
    THEPEGHASLHAPDF="yes"
 fi
-
-THEPEGLDFLAGS="-L$THEPEGLIBPATH"
+if test "${host_cpu}" == "x86_64" -a -e ${with_thepeg}/lib64/ThePEG/libThePEG.so ; then
+  THEPEGLDFLAGS="-L${with_thepeg}/lib64/ThePEG"
+  if test -e ${with_thepeg}/lib64/ThePEG/ThePEGLHAPDF.so ; then
+      THEPEGHASLHAPDF="yes"
+  fi
+fi
+THEPEGPATH="${with_thepeg}"
 
 oldldflags="$LDFLAGS"
 oldlibs="$LIBS"
@@ -88,7 +87,6 @@ AC_CHECK_LIB([ThePEG],[debugThePEG],[],
 AC_SUBST([THEPEGLIB],[-lThePEG])
 AC_SUBST(THEPEGLDFLAGS)
 AC_SUBST(THEPEGPATH)
-AC_SUBST(THEPEGLIBPATH)
 AC_SUBST(THEPEGHASLHAPDF)
 
 LIBS="$oldlibs"
@@ -117,7 +115,8 @@ AC_SUBST(THEPEGINCLUDE)
 
 AC_MSG_CHECKING([for HepMCAnalysis.so in ThePEG])
 
-if test -e "$THEPEGLIBPATH/HepMCAnalysis.so" ; then
+
+if test -e "$THEPEGPATH/lib/ThePEG/HepMCAnalysis.so" ; then
      	CREATE_HEPMC="create"
 	AC_MSG_RESULT([found])
 else
@@ -364,7 +363,7 @@ AC_MSG_CHECKING([for gosam])
 AC_ARG_WITH([gosam],
     AS_HELP_STRING([--with-gosam=DIR], [Installation path of gosam]),
     [],
-    [with_gosam=no]    
+    [with_gosam=no]
 )
 
 AC_MSG_RESULT([$with_gosam])
@@ -398,6 +397,54 @@ fi
 AC_SUBST([LOAD_GOSAM])
 AC_SUBST([CREATE_GOSAM])
 AC_SUBST([INSERT_GOSAM])
+
+
+])
+
+
+
+dnl ##### openloops #####
+AC_DEFUN([HERWIG_CHECK_OPENLOOPS],
+[
+AC_MSG_CHECKING([for openloops])
+
+AC_ARG_WITH([openloops],
+    AS_HELP_STRING([--with-openloops=DIR], [Installation path of openloops]),
+    [],
+    [with_openloops=no]
+)
+
+AC_MSG_RESULT([$with_openloops])
+
+AS_IF([test "x$with_openloops" != "xno"],
+      [AC_CHECK_FILES(
+      ${with_openloops}/lib/libopenloops.so,
+      [have_openloops=lib], [have_openloops=no])],
+      [have_openloops=no])
+
+AS_IF([test "x$have_openloops" = "xlib"],
+      [OPENLOOPSPREFIX=${with_openloops}
+      AC_SUBST(OPENLOOPSPREFIX)
+      ])
+
+AS_IF([test "x$with_openloops" != "xno"  -a "x$have_openloops" = "xno"],
+      [AC_MSG_ERROR([openloops requested but not found])])
+
+AM_CONDITIONAL(HAVE_OPENLOOPS,[test "x$have_openloops" = "xlib" ])
+
+if test "x$have_openloops" = "xlib"  ; then
+     	LOAD_OPENLOOPS="library"
+     	CREATE_OPENLOOPS="create"
+     	INSERT_OPENLOOPS="insert"
+else
+     	LOAD_OPENLOOPS="# library"
+	CREATE_OPENLOOPS="# create"
+     	INSERT_OPENLOOPS="# insert"
+fi
+
+AC_SUBST([LOAD_OPENLOOPS])
+AC_SUBST([CREATE_OPENLOOPS])
+AC_SUBST([INSERT_OPENLOOPS])
 
 
 ])
@@ -654,6 +701,7 @@ cat << _HW_EOF_ > config.herwig
 *** nlojet:		$with_nlojet
 *** njet:		$with_njet
 *** GoSam:		$with_gosam
+*** OpenLoops:		$with_openloops
 *** HEJ:		$with_hej
 ***
 *** GSL:		$with_gsl

@@ -20,3 +20,7 @@ endif
 if HAVE_GOSAM
 SUBDIRS += GoSam
 endif
+
+if HAVE_OPENLOOPS
+SUBDIRS += OpenLoops
+endif

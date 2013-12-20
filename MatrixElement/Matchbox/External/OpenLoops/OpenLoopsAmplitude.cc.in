@@ -1,0 +1,404 @@
+// -*- C++ -*-
+//
+// OpenLoopsAmplitude.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2012 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
+// This is the implementation of the non-inlined, non-templated member
+// functions of the OpenLoopsAmplitude class.
+//
+
+#include "OpenLoopsAmplitude.h"
+#include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/EventRecord/Particle.h"
+#include "ThePEG/Repository/UseRandom.h"
+#include "ThePEG/Repository/EventGenerator.h"
+#include "ThePEG/Utilities/DescribeClass.h"
+#include "ThePEG/Interface/Reference.h"
+#include "ThePEG/Interface/RefVector.h"
+#include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Switch.h"
+
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <cstdlib>
+
+using namespace Herwig;
+
+OpenLoopsAmplitude::OpenLoopsAmplitude() {theCodeExists=false;
+}
+
+OpenLoopsAmplitude::~OpenLoopsAmplitude() {
+}
+
+IBPtr OpenLoopsAmplitude::clone() const {
+	return new_ptr(*this);
+}
+
+IBPtr OpenLoopsAmplitude::fullclone() const {
+	return new_ptr(*this);
+}
+
+extern "C" void OLP_Start(const char*, int* i);
+extern "C" void OLP_SetParameter(const char* ,double* ,double*,int*);
+extern "C" void OLP_PrintParameter(const char*);
+extern "C" void OLP_EvalSubProcess(int*, double*, double*, double*, double*);
+extern "C" void OLP_EvalSubProcess2(int*, double*, double*, double*, double*);
+                                  // id  ps-point polvec  emitter  res    acc
+extern "C" void OLP_SpinCorrelator(int*, double*, double*, int*, double*,double*);
+extern "C" void OLP_Polvec(double*,double*,double*);
+
+
+
+
+
+
+
+
+
+
+
+void OpenLoopsAmplitude::startOLP(const string& contract, int& status) {
+	string tempcontract=contract;
+
+	assert(DynamicLoader::load("@OPENLOOPSPREFIX@/lib/libopenloops.so"));
+
+	OLP_Start(tempcontract.c_str(), &status);
+	int a=0;double null=0.0;double one=1.0;
+	int part[7]={1,2,3,4,5,23,24};string stri;
+	for (int i=0;i<7;i++){
+	 double mass=getParticleData(part[i])->mass()/GeV;
+	 double width=getParticleData(part[i])->width()/GeV;
+	 std::stringstream ss;
+	 ss << part[i];
+	 string str = ss.str();
+	 stri="mass("+str+")";
+	 OLP_SetParameter(stri.c_str(),&mass,&null,&a);
+	 stri="width("+str+")";
+	  OLP_SetParameter(stri.c_str(),&width,&null,&a);
+	}
+	stri="alphas";
+	OLP_SetParameter( stri.c_str(),&one ,&null,&a);
+	stri="alpha";
+	OLP_SetParameter(stri.c_str(),&one ,&null,&a);
+}
+
+void OpenLoopsAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs) {
+	string orderFileName = "OLP_order.lh";
+	ofstream orderFile(orderFileName.c_str());
+	size_t asPower = 100;
+	size_t minlegs = 100;
+	size_t maxlegs = 0;
+
+	for ( map<pair<Process, int>, int>::const_iterator t = procs.begin() ; t != procs.end() ; ++t ) {
+		asPower = min(asPower, t->first.first.orderInAlphaS);
+		minlegs = min(minlegs, t->first.first.legs.size());
+		maxlegs = max(maxlegs, t->first.first.legs.size());
+	}
+
+	orderFile << "# OLP order file created by Herwig++/Matchbox for OpenLoops\n\n";
+	//orderFile << "MatrixElementSquareType  CHsummed\n";
+	orderFile << "CorrectionType           QCD\n";
+	orderFile << "IRregularization         " << (isDR() ? "DRED" : "CDR") << "\n";
+	orderFile << "extra answerfile      " << "OLP_answer.lh" << "\n";
+	orderFile << "\n";
+
+	if (extraOpenLoopsPath!="")
+	    orderFile << "Extra OpenLoopsPath  " << extraOpenLoopsPath << "\n";
+	for ( map<pair<Process, int>, int>::const_iterator p = procs.begin() ; p != procs.end() ; ++p ) {
+		std::stringstream Processstr;
+		std::stringstream Typestr;
+		Processstr << (*p).first.first.legs[0]->id() << " " << (*p).first.first.legs[1]->id() << " -> ";
+		for ( PDVector::const_iterator o = (*p).first.first.legs.begin() + 2 ; o != (*p).first.first.legs.end() ; ++o )
+			Processstr << (**o).id() << " ";
+		if ( (*p).first.second == ProcessType::treeME2 ) {
+			Typestr << "Tree";
+		} else if ( (*p).first.second == ProcessType::colourCorrelatedME2 ) {
+			Typestr << "ccTree";
+		} else if ( (*p).first.second == ProcessType::spinColourCorrelatedME2 ) {
+			Typestr << "sctree_polvect";
+		} else if ( (*p).first.second == ProcessType::oneLoopInterference ) {
+			Typestr << "Loop";
+		}
+		openloopsprocinfo pro = openloopsprocinfo((*p).second, -1, Processstr.str(), Typestr.str());
+		pro.setOAs(p->first.first.orderInAlphaS);
+		processmap[(*p).second] = pro;
+	}
+
+	vector < string > types;
+	types.push_back("Tree");
+	types.push_back("ccTree");
+	types.push_back("sctree_polvect");
+	types.push_back("Loop");
+	for ( size_t i = asPower ; i != asPower + maxlegs - minlegs + 1 ; i++ ) {
+		orderFile << "\n\nCouplingPower QCD       " << i;
+		orderFile << "\n\n#AlphasPower            " << i;
+		for ( vector<string>::iterator it = types.begin() ; it != types.end() ; it++ ) {
+			for ( map<int, openloopsprocinfo>::iterator p = processmap.begin() ; p != processmap.end() ; ++p )
+				if ( (*p).second.Tstr() == *it && i == (*p).second.orderAs() ) {
+					orderFile << "\nAmplitudeType " << *it << "\n";
+					break;
+				}
+			for ( map<int, openloopsprocinfo>::iterator p = processmap.begin() ; p != processmap.end() ; ++p )
+				if ( (*p).second.Tstr() == *it && i == (*p).second.orderAs() ) {
+					orderFile << (*p).second.Pstr() << "\n";
+				}
+		}
+	}
+	orderFile << flush;
+}
+
+bool OpenLoopsAmplitude::checkOLPContract() {
+	string contractFileName = "OLP_answer.lh";
+        //string contractFileName =  "OLP_order.lh";
+        ifstream infile(contractFileName.c_str());
+	string line;
+	vector < string > contractfile;
+	while (std::getline(infile, line)) {
+		contractfile.push_back(line);
+	}
+	for ( map<int, openloopsprocinfo>::iterator p = processmap.begin() ; p != processmap.end() ; p++ ) {
+		bool righttype = false;
+		for ( vector<string>::iterator linex = contractfile.begin() ; linex != contractfile.end() ; ++linex ) {
+			if ( (*linex).find("AmplitudeType ")!= std::string::npos ) {
+				if ( (*linex).find(" " + (*p).second.Tstr() + " ")!= std::string::npos ) {
+					righttype = true;
+				} else {
+					righttype = false;
+				}
+			}
+			if ( righttype ) {
+					if ( (*linex).find((*p).second.Pstr()) != std::string::npos ){
+					//cout<<"\n "<<(*p).second.Pstr().length()<<((*linex).find("|")-2)<<flush;
+					if( (*p).second.Pstr().length() == (*linex).find("|") ) {
+					string sub = (*linex).substr((*linex).find("|") + 1, (*linex).find("#") - (*linex).find("|") - 1); // | 1 23 # buggy??
+
+					int subint;
+					int subint2;
+					istringstream(sub) >> subint >> subint2;
+					assert(subint==1);
+					(*p).second.setGID(subint2);
+				}
+}
+			}
+		}
+	}
+	string ids = "ids.dat";
+	ofstream IDS(ids.c_str());
+
+	for ( map<int, openloopsprocinfo>::iterator p = processmap.begin() ; p != processmap.end() ; p++ ) {
+	    idpair.insert ( std::pair<int,int>((*p).second.HID(),(*p).second.GID()) );
+	    IDS << (*p).second.HID() << " " << (*p).second.GID() << "\n";
+	    if ( (*p).second.GID() == -1 ) return 0;
+	}
+	IDS << flush;
+	ids = "installpath.dat";
+	ofstream Install(ids.c_str());
+	Install<<openloopsInstallPath << flush;
+	return 1;
+}
+
+void OpenLoopsAmplitude::getids() const{
+	string line = "ids.dat";
+	ifstream infile(line.c_str());
+	int hid;
+	int gid;
+	while (std::getline(infile, line)) {
+	   istringstream(line) >> hid>>gid;
+	   idpair.insert ( std::pair<int,int>(hid,gid) );
+	}
+	line ="installpath.dat";
+	ifstream infile2(line.c_str());
+	std::getline(infile2, line);
+	openloopsInstallPath=line;
+}
+bool OpenLoopsAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
+	cout << "\nWriting the olp-order file." << flush;
+	string contractFileName =  "OLP_answer.lh";
+        //string contractFileName =  "OLP_order.lh";
+	string orderFileName = "OLP_order.lh";
+	fillOrderFile(procs);
+	cout << "\nOpenLoops: Sign the order file." << flush;
+
+ 	int status = -1;
+	startOLP(orderFileName, status);
+	//signOLP(orderFileName, contractFileName);
+	if ( !checkOLPContract() ) {
+		cout << "\n\n!!!!!!!!!!!!!Checking the olp-contract failed!!!!!!!!!!!\n\n" << flush;
+		assert(0);
+	} else cout << "\nChecked the olp-contract! Everything is OK! Let's build!\n" << flush;
+	if ( status != 1 ) return false;
+	return true;
+
+}
+
+
+void OpenLoopsAmplitude::evalSubProcess() const {
+	double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
+	units *= pow( SM().alphaEM() , orderInGem());
+	units *= pow( SM().alphaS(), orderInGs());
+	fillOLPMomenta(lastXComb().meMomenta());
+	double acc ;
+	double scale = sqrt(mu2() / GeV2);
+
+       int n = lastXComb().meMomenta().size();
+        double * out =new double[2*n*n];
+
+	int id = olpId()[ProcessType::oneLoopInterference] ? olpId()[ProcessType::oneLoopInterference] : olpId()[ProcessType::treeME2];
+
+	if ( idpair.size() == 0 ) {
+		getids();
+		string parfile="params.dat";
+	        OLP_PrintParameter(parfile.c_str());
+		remove( "initrun.dat" );
+	}
+
+	OLP_EvalSubProcess2(&((*(idpair.find(id))).second), olpMomenta(), &scale, out,&acc );
+	
+	if ( olpId()[ProcessType::oneLoopInterference] ) {
+		lastTreeME2(out[3] * units);
+		lastOneLoopInterference((out[2])* units*SM().alphaS());
+		lastOneLoopPoles(pair<double, double>(out[0] * units*SM().alphaS(), out[1] * units*SM().alphaS()));
+	} else if ( olpId()[ProcessType::treeME2] ) {
+		lastTreeME2(out[0] * units);
+	}
+}
+
+void OpenLoopsAmplitude::evalColourCorrelator(pair<int, int>  ) const {
+	double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
+	units *= pow( SM().alphaEM() , orderInGem());
+	units *= pow( SM().alphaS(), orderInGs());
+	fillOLPMomenta(lastXComb().meMomenta());
+	double acc ;
+	double scale = sqrt(mu2() / GeV2);
+	int n = lastXComb().meMomenta().size();
+	double * out =new double[2*n*n];
+	colourCorrelatorResults.resize(n * (n - 1) / 2);
+	if ( idpair.size() == 0 ) {
+		getids();
+		string parfile="params.dat";
+	        OLP_PrintParameter(parfile.c_str());
+		remove( "initrun.dat" );
+	}
+
+
+	int id = olpId()[ProcessType::colourCorrelatedME2];
+
+	OLP_EvalSubProcess2(&((*(idpair.find(id))).second), olpMomenta(), &scale, out,&acc );
+	for ( int i = 0 ; i < n ; ++i ){
+	    for ( int j = i + 1 ; j < n ; ++j ) {
+			lastColourCorrelator(make_pair(i, j), out[i+j*(j-1)/2] * units);
+			colourCorrelatorResults[i+j*(j-1)/2]=out[i+j*(j-1)/2];
+
+	    }
+	}
+}
+
+void OpenLoopsAmplitude::evalSpinColourCorrelator(pair<int , int > ) const {
+        assert(false);
+}
+
+
+double OpenLoopsAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
+					 const SpinCorrelationTensor& c) const{
+
+	double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
+	units *= pow( SM().alphaEM(), orderInGem());
+	units *= pow( SM().alphaS(), orderInGs());
+	fillOLPMomenta(lastXComb().meMomenta());
+
+	double acc =1.;
+	int emitter=ij.first+1;
+	int n = lastXComb().meMomenta().size();
+
+	if ( idpair.size() == 0 ) {
+		getids();
+		string parfile="params.dat";
+	        OLP_PrintParameter(parfile.c_str());
+		remove( "initrun.dat" );
+	}
+	int id = (*(idpair.find(olpId()[ProcessType::spinColourCorrelatedME2]))).second;
+	double * outx =new double[n];
+        double polvec[4];
+
+	polvec[0]=c.momentum().e()/GeV;
+	polvec[1]=c.momentum().x()/GeV;
+	polvec[2]=c.momentum().y()/GeV;
+	polvec[3]=c.momentum().z()/GeV;
+        double avg= colourCorrelatedME2(ij)*(-c.diagonal());
+
+	OLP_SpinCorrelator(&id, olpMomenta(),polvec, &emitter,outx ,&acc);
+
+        double corr =-1.*units * outx[ij.second]/c.scale()*c.momentum().dot(c.momentum());
+
+
+  double Nc = generator()->standardModel()->Nc();
+  double cfac = 1.;
+  if ( mePartonData()[ij.first]->iColour() == PDT::Colour8 ) {
+    cfac = Nc;
+  } else if ( mePartonData()[ij.first]->iColour() == PDT::Colour3 ||
+	      mePartonData()[ij.first]->iColour() == PDT::Colour3bar ) {
+    cfac = (sqr(Nc)-1.)/(2.*Nc);
+  } else assert(false);
+
+
+  return
+    avg +crossingSign()* corr/cfac;
+
+}
+
+
+
+
+// If needed, insert default implementations of virtual function defined
+// in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
+
+void OpenLoopsAmplitude::persistentOutput(PersistentOStream & os) const {
+	os << idpair <<theCodeExists;
+}
+
+void OpenLoopsAmplitude::persistentInput(PersistentIStream & is, int) {
+	is >> idpair >>theCodeExists;
+}
+
+// *** Attention *** The following static variable is needed for the type
+// description system in ThePEG. Please check that the template arguments
+// are correct (the class and its base class), and that the constructor
+// arguments are correct (the class name and the name of the dynamically
+// loadable library where the class implementation can be found).
+DescribeClass<OpenLoopsAmplitude, MatchboxOLPME> describeHerwigOpenLoopsAmplitude("Herwig::OpenLoopsAmplitude", "HwMatchboxOpenLoops.so");
+
+void OpenLoopsAmplitude::Init() {
+
+  static ClassDocumentation<OpenLoopsAmplitude> documentation("OpenLoopsAmplitude implements an interface to OpenLoops.");
+  static Parameter<OpenLoopsAmplitude,string> interfaceInstallPath
+    	("InstallPath",
+     	"Prefix for the OpenLoops produced code.",
+     	&OpenLoopsAmplitude::openloopsInstallPath, "",
+     	false, false);
+
+  static Switch<OpenLoopsAmplitude,bool> interfaceCodeExists
+    ("CodeExists",
+     "Switch on or off if Code already exists/not exists.",
+     &OpenLoopsAmplitude::theCodeExists, true, false, false);
+  static SwitchOption interfaceCodeExistsOn
+    (interfaceCodeExists,
+     "True",
+     "Switch True if Code already exists.",
+     true);
+  static SwitchOption interfaceCodeExistsOff
+    (interfaceCodeExists,
+     "False",
+     "Switch False if Code has to be build.",
+     false);
+
+
+}
+

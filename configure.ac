@@ -123,6 +123,8 @@ HERWIG_CHECK_NJET
 
 HERWIG_CHECK_GOSAM
 
+HERWIG_CHECK_OPENLOOPS
+
 HERWIG_CHECK_HEJ
 
 HERWIG_COMPILERFLAGS
@@ -202,9 +204,9 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/Matchbox/Matching/Makefile
                 MatrixElement/Matchbox/Builtin/Makefile
                 MatrixElement/Matchbox/Builtin/Amplitudes/Makefile
+                MatrixElement/Matchbox/Tests/Makefile
                 MatrixElement/Matchbox/External/Makefile
                 MatrixElement/Matchbox/External/BLHAGeneric/Makefile
-                MatrixElement/Matchbox/Tests/Makefile
                 MatrixElement/Matchbox/External/NLOJet/Makefile
                 MatrixElement/Matchbox/External/NLOJet/Amplitudes/Makefile
                 MatrixElement/Matchbox/External/NLOJet/PP2Jets/Makefile
@@ -216,6 +218,8 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/Matchbox/External/NJet/NJetsAmplitude.cc
 		MatrixElement/Matchbox/External/GoSam/Makefile
                 MatrixElement/Matchbox/External/GoSam/GoSamAmplitude.cc
+                MatrixElement/Matchbox/External/OpenLoops/Makefile
+                MatrixElement/Matchbox/External/OpenLoops/OpenLoopsAmplitude.cc
 		Exsample2/Makefile
 		Exsample2/CellGridSampling/Makefile
                 Shower/Makefile
