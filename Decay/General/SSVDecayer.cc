@@ -230,6 +230,10 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
     swap(S,V);
 
   Energy2 scale(sqr(inpart.mass()));
+
+  const GeneralTwoBodyDecayer::CFlow & colourFlow
+        = colourFlows(inpart, decay);
+
   for(unsigned int iv = 0; iv < 3; ++iv) {
     for(unsigned int ig = 0; ig < 2; ++ig) {
       // radiation from the incoming scalar
@@ -248,9 +252,9 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
 	double gs    = _abstractIncomingVertex->strongCoupling(scale);
 	double sign  = 1.;//inpart.dataPtr()->id()>0 ? 1:-1;	
 	Complex diag = sign * _abstractVertex->evaluate(scale,_vector3[iv],_scal,scalarInter)/gs;
-	for(unsigned int ix=0;ix<colourFlows(inpart, decay)[0].size();++ix) {
-	  ME[colourFlows(inpart, decay)[0][ix].first](0, 0, iv, ig) += 
-	    colourFlows(inpart, decay)[0][ix].second*diag; 
+	for(unsigned int ix=0;ix<colourFlow[0].size();++ix) {
+	  ME[colourFlow[0][ix].first](0, 0, iv, ig) += 
+	    colourFlow[0][ix].second*diag; 
 	}
       }
       // radiation from the outgoing scalar
@@ -271,9 +275,9 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
 	double gs    = _abstractOutgoingVertexS->strongCoupling(scale);
 	double sign  = 1.;//decay[iscal]->dataPtr()->id()>0 ? -1:1;
 	Complex diag = sign*_abstractVertex->evaluate(scale,_vector3[iv],scalarInter,_swave3)/gs;
-	for(unsigned int ix=0;ix<colourFlows(inpart, decay)[S].size();++ix) {
-	  ME[colourFlows(inpart, decay)[S][ix].first](0, 0, iv, ig) += 
-	    colourFlows(inpart, decay)[S][ix].second*diag;
+	for(unsigned int ix=0;ix<colourFlow[S].size();++ix) {
+	  ME[colourFlow[S][ix].first](0, 0, iv, ig) += 
+	    colourFlow[S][ix].second*diag;
 	}
       }
 
@@ -296,9 +300,9 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
 	double sign  =  1.;//decay[iscal]->id()>0 ? -1:1;
 	double gs    = _abstractOutgoingVertexV->strongCoupling(scale);	
 	Complex diag =  sign*_abstractVertex->evaluate(scale,vectorInter,_scal,_swave3)/gs;
-	for(unsigned int ix=0;ix<colourFlows(inpart, decay)[V].size();++ix) {
-	  ME[colourFlows(inpart, decay)[V][ix].first](0, 0, iv, ig) += 
-	    colourFlows(inpart, decay)[V][ix].second*diag;
+	for(unsigned int ix=0;ix<colourFlow[V].size();++ix) {
+	  ME[colourFlow[V][ix].first](0, 0, iv, ig) += 
+	    colourFlow[V][ix].second*diag;
 	}
       }
       // radiation from 4 point vertex
@@ -307,9 +311,9 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
 	double sign  =  decay[iscal]->id()>0 ? -1:-1;
 	Complex diag =  sign*_abstractFourPointVertex->evaluate(scale, _gluon[2*ig], _vector3[iv],
 							       _scal, _swave3)/gs;
-	for(unsigned int ix=0;ix<colourFlows(inpart, decay)[3].size();++ix) {
-	  ME[colourFlows(inpart, decay)[3][ix].first](0, 0, iv, ig) += 
-	     colourFlows(inpart, decay)[3][ix].second*diag;
+	for(unsigned int ix=0;ix<colourFlow[3].size();++ix) {
+	  ME[colourFlow[3][ix].first](0, 0, iv, ig) += 
+	     colourFlow[3][ix].second*diag;
 	}
       }
     }

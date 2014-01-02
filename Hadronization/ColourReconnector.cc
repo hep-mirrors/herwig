@@ -26,7 +26,7 @@
 
 using namespace Herwig;
 
-typedef ClusterVector::const_iterator CluVecIt;
+typedef ClusterVector::iterator CluVecIt;
 
 DescribeClass<ColourReconnector,Interfaced>
 describeColourReconnector("Herwig::ColourReconnector","");
@@ -57,23 +57,23 @@ void ColourReconnector::rearrange(ClusterVector & clusters) {
 }
 
 
-Energy2 ColourReconnector::_clusterMassSum(const PVector q, 
-                                           const PVector aq) const {
+Energy2 ColourReconnector::_clusterMassSum(const PVector & q, 
+                                           const PVector & aq) const {
   const size_t nclusters = q.size();
   assert (aq.size() == nclusters);
   Energy2 sum = ZERO;
   for (size_t i = 0; i < nclusters; i++)
-    sum += ( q.at(i)->momentum() + aq.at(i)->momentum() ).m2();
+    sum += ( q[i]->momentum() + aq[i]->momentum() ).m2();
   return sum;
 }
 
 
-bool ColourReconnector::_containsColour8(const ClusterVector cv,
-                                         const vector<size_t> P) const {
+bool ColourReconnector::_containsColour8(const ClusterVector & cv,
+                                         const vector<size_t> & P) const {
   assert (P.size() == cv.size());
   for (size_t i = 0; i < cv.size(); i++) {
-    tcPPtr p = cv.at(i)->colParticle();
-    tcPPtr q = cv.at(P[i])->antiColParticle();
+    tcPPtr p = cv[i]->colParticle();
+    tcPPtr q = cv[P[i]]->antiColParticle();
     if (isColour8(p, q)) return true;
   }
   return false;
@@ -87,8 +87,8 @@ void ColourReconnector::_doRecoStatistical(ClusterVector & cv) const {
   // initially, enumerate (anti)quarks as given in the cluster vector
   ParticleVector q, aq;
   for (size_t i = 0; i < nclusters; i++) {
-    q.push_back( cv.at(i)->colParticle() );
-    aq.push_back( cv.at(i)->antiColParticle() );
+    q.push_back( cv[i]->colParticle() );
+    aq.push_back( cv[i]->antiColParticle() );
   }
 
   // annealing scheme
@@ -154,7 +154,7 @@ void ColourReconnector::_doRecoStatistical(ClusterVector & cv) const {
   // construct the new cluster vector
   ClusterVector newclusters;
   for (size_t i = 0; i < nclusters; i++) {
-    ClusterPtr cl = new_ptr( Cluster( q.at(i), aq.at(i) ) );
+    ClusterPtr cl = new_ptr( Cluster( q[i], aq[i] ) );
     newclusters.push_back(cl);
   }
   swap(newclusters,cv);
@@ -176,24 +176,24 @@ void ColourReconnector::_doRecoPlain(ClusterVector & cv) const {
     // find the cluster which, if reconnected with *cit, would result in the
     // smallest sum of cluster masses
     // NB this method returns *cit if no reconnection partner can be found
-    ClusterPtr candidate = _findRecoPartner(*cit, newcv);
+    CluVecIt candidate = _findRecoPartner(cit, newcv);
 
     // skip this cluster if no possible reshuffling partner can be found
-    if (candidate == *cit) continue;
+    if (candidate == cit) continue;
 
     // accept the reconnection with probability _preco.
     if (UseRandom::rnd() < _preco) {
 
-      pair <ClusterPtr,ClusterPtr> reconnected = _reconnect(*cit, candidate);
+      pair <ClusterPtr,ClusterPtr> reconnected = _reconnect(*cit, *candidate);
 
       // Replace the clusters in the ClusterVector. The order of the
       // colour-triplet partons in the cluster vector is retained here.
 
       // replace *cit by reconnected.first
-      replace( newcv.begin(), newcv.end(), *cit, reconnected.first ); 
+      *cit = reconnected.first;
 
       // replace candidate by reconnected.second
-      replace( newcv.begin(), newcv.end(), candidate, reconnected.second ); 
+      *candidate = reconnected.second;
     }
   }
 
@@ -202,45 +202,45 @@ void ColourReconnector::_doRecoPlain(ClusterVector & cv) const {
 }
 
 
-ClusterPtr ColourReconnector::_findRecoPartner(ClusterPtr cl,
-                                               ClusterVector cv) const {
+CluVecIt ColourReconnector::_findRecoPartner(CluVecIt cl,
+                                             ClusterVector & cv) const {
 
-  ClusterPtr candidate = cl;
+  CluVecIt candidate = cl;
   Energy minMass = 1*TeV;
   for (CluVecIt cit=cv.begin(); cit != cv.end(); ++cit) {
 
     // don't even look at original cluster
-    if(*cit==cl) continue;
+    if(cit==cl) continue;
 
     // don't allow colour octet clusters
-    if ( isColour8( cl->colParticle(),
+    if ( isColour8( (*cl)->colParticle(),
 	            (*cit)->antiColParticle() )  ||
          isColour8( (*cit)->colParticle(),
-	            cl->antiColParticle() ) ) {
+	            (*cl)->antiColParticle() ) ) {
       continue;
     }
 
     // stop it putting beam remnants together
-    if(cl->isBeamCluster() && (**cit).isBeamCluster()) continue;
+    if((*cl)->isBeamCluster() && (*cit)->isBeamCluster()) continue;
 
     // momenta of the old clusters
-    Lorentz5Momentum p1 = cl->colParticle()->momentum() + 
-                          cl->antiColParticle()->momentum();
+    Lorentz5Momentum p1 = (*cl)->colParticle()->momentum() + 
+                          (*cl)->antiColParticle()->momentum();
     Lorentz5Momentum p2 = (*cit)->colParticle()->momentum() + 
                           (*cit)->antiColParticle()->momentum();
 
     // momenta of the new clusters
-    Lorentz5Momentum p3 = cl->colParticle()->momentum() + 
+    Lorentz5Momentum p3 = (*cl)->colParticle()->momentum() + 
                           (*cit)->antiColParticle()->momentum();
     Lorentz5Momentum p4 = (*cit)->colParticle()->momentum() + 
-                          cl->antiColParticle()->momentum();
+                          (*cl)->antiColParticle()->momentum();
 
     Energy oldMass = abs( p1.m() ) + abs( p2.m() );
     Energy newMass = abs( p3.m() ) + abs( p4.m() );
 
     if ( newMass < oldMass && newMass < minMass ) {
       minMass = newMass;
-      candidate = *cit;
+      candidate = cit;
     }
   }
   return candidate;
@@ -278,7 +278,7 @@ ColourReconnector::_reconnect(ClusterPtr c1, ClusterPtr c2) const {
 
 
 pair <int,int> ColourReconnector::_shuffle
-  (const PVector q, const PVector aq, unsigned maxtries) const {
+  (const PVector & q, const PVector & aq, unsigned maxtries) const {
 
   const size_t nclusters = q.size();
   assert (nclusters > 1);
@@ -294,7 +294,7 @@ pair <int,int> ColourReconnector::_shuffle
     do { j = UseRandom::irnd( nclusters ); } while (i == j);
 
     // check if one of the two potential clusters would be a colour octet state
-    octet = isColour8( q.at(i), aq.at(j) ) || isColour8( q.at(j), aq.at(i) ) ;
+    octet = isColour8( q[i], aq[j] ) || isColour8( q[j], aq[i] ) ;
     tries++;
   } while (octet && tries < maxtries);
 
