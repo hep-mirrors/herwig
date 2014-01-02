@@ -1,40 +1,35 @@
 ##################################################
 # Rivet analyses at the Z pole
 ##################################################
-read LHCBase-Powheg.in
+read LHCBase.in
 
 ##################################################
 # LEP physics parameters (override defaults) 
 ##################################################
 cd /Herwig/Generators
+
 ##################################################
 #  Use the q qbar matrix element
 ##################################################
 cd /Herwig/MatrixElements
 # Drell-Yan Z/gamma
-insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff
-set PowhegMEqq2gZ2ff:Process Electron
+insert SimpleQCD:MatrixElements[0] MEZJet
+set MEZJet:ZDecay Electron
 
 # No QED radiation
 #erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
+
+set /Herwig/Cuts/ZBosonKtCut:MinKT 270.0*GeV
 
 ##################################################
 # select the analyses
 ##################################################
 
-# General analysis
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_ZJETS
-# ATLAS pT
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S9131140
-# ATLAS Z+jets
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I945498
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1230812
-# ATLAS phi*
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1204784
-
+# CMS jet mass
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1224539_ZJET
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################
 cd /Herwig/Generators
-saverun LHC-Powheg-Z-e LHCGenerator
+saverun LHC-7-Z-Jet-3-e LHCGenerator

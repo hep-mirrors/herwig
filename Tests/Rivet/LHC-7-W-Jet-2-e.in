@@ -8,28 +8,23 @@ read LHCBase.in
 ##################################################
 cd /Herwig/MatrixElements
 # Drell-Yan Z/gamma
-insert SimpleQCD:MatrixElements[0] MEGammaJet
-
-# photon cuts
-set /Herwig/Cuts/PhotonKtCut:MinKT 5.
+insert SimpleQCD:MatrixElements[0] MEWJet
+set MEWJet:WDecay Electron
 
 # No QED radiation
 erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
+
+set /Herwig/Cuts/WBosonKtCut:MinKT 190.0*GeV
 
 ##################################################
 # select the analyses
 ##################################################
 
-# ATLAS prompt photon
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8914702
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1093738
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_PHOTONJETS
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_PHOTONJETUE
-# CMS
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1258128
+# CMS jet mass
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1224539_WJET
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################
 cd /Herwig/Generators
-saverun LHC-7-PromptPhoton LHCGenerator
+saverun LHC-7-W-Jet-2-e LHCGenerator

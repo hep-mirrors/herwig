@@ -43,6 +43,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1184941
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1119557
 # ATLAS subjets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1094564
+# CMS jet structure
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1224539_DIJET
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'

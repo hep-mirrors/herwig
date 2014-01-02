@@ -28,6 +28,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S9131140
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I945498
 # CMS underlying event in Z events
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1107658
+# ATLAS phi*
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1204784
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'

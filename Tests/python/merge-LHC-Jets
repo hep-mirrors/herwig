@@ -143,7 +143,8 @@ aidafiles=["-900-UE.aida"   ,"-2360-UE.aida"    ,"-2760-UE.aida"    ,
            "-7-Jets-3.aida","-7-Jets-4.aida","-7-Jets-5.aida",
            "-7-Jets-6.aida","-7-Jets-7.aida","-7-Jets-8.aida",
            "-7-Heavy-0.aida","-7-Heavy-1.aida","-7-Heavy-2.aida",
-           "-7-Heavy-3.aida","-7-Heavy-4.aida","-7-Heavy-5.aida"]
+           "-7-Heavy-3.aida","-7-Heavy-4.aida","-7-Heavy-5.aida",
+           "-7-Top-SL.aida","-7-Top-L.aida"]
 ## Get histos
 inhistos_pt   = {}
 inhistos_mass = {}
@@ -184,15 +185,15 @@ for f in aidafiles:
     elif(file.find("-7-Heavy-0.aida")>0) :
         ptmin=0.
     elif(file.find("-7-Heavy-1.aida")>0) :
-        ptmin=5.
+        ptmin=10.
     elif(file.find("-7-Heavy-2.aida")>0) :
-        ptmin=20.
+        ptmin=30.
     elif(file.find("-7-Heavy-3.aida")>0) :
-        ptmin=50.
+        ptmin=70.
     elif(file.find("-7-Heavy-4.aida")>0) :
-        ptmin=80.
+        ptmin=100.
     elif(file.find("-7-Heavy-5.aida")>0) :
-        ptmin=110.
+        ptmin=130.
     elif(file.find("-7-Top-SL.aida")>0 or file.find("-7-Top-L.aida")>0):
         ptmin=0.
     elif(file.find("-7-Jets-All-1")>0) :
@@ -243,6 +244,8 @@ for f in aidafiles:
            h.fullPath().find("I9035664")>0 or
            h.fullPath().find("I1125575")>0 or
            h.fullPath().find("I1094564")>0 or
+           h.fullPath().find("I930220")>0 or
+           h.fullPath().find("I1224539")>0 or
            h.fullPath().find("CMS_2012_PAS_QCD_11_010")>0) :
            if not inhistos_pt.has_key(h.fullPath()):
                inhistos_pt[h.fullPath()] = {}
@@ -254,10 +257,17 @@ for f in aidafiles:
            else:
                 raise Exception("A set with ptmin = %s already exists" % ( ptmin))
         else :
-            outhistos[h.fullPath()] = h
+            if(h.fullPath().find("I1243871")>0) :
+                if(h.fullPath().find("x01")>0 and file.find("-7-Top-L.aida")>0 ) :
+                    outhistos[h.fullPath()] = h
+                elif(h.fullPath().find("x02")>0 and file.find("-7-Top-SL.aida")>0 ) :
+                    outhistos[h.fullPath()] = h
+            else :
+                outhistos[h.fullPath()] = h
 
 aidafiles=["-7-Jets-9.aida" ,"-7-Jets-10.aida",
-           "-7-Jets-11.aida","-7-Jets-12.aida","-7-Jets-13.aida"]
+           "-7-Jets-11.aida","-7-Jets-12.aida","-7-Jets-13.aida",
+           "-7-Heavy-6.aida","-7-Heavy-7.aida","-7-Heavy-8.aida"]
 
 for f in aidafiles:
     file="LHC"+f
@@ -276,6 +286,15 @@ for f in aidafiles:
     elif(file.find("-7-Jets-13.aida")>0) :
         sqrts=7000
         mass=2000
+    elif(file.find("-7-Heavy-6.aida")>0) :
+        sqrts=7000
+        mass=110
+    elif(file.find("-7-Heavy-7.aida")>0) :
+        sqrts=7000
+        mass=370
+    elif(file.find("-7-Heavy-8.aida")>0) :
+        sqrts=7000
+        mass=550
     if not os.access(file, os.R_OK):
         logging.error("%s can not be read" % file)
         break
@@ -290,6 +309,7 @@ for f in aidafiles:
         h = lighthisto.Histo.fromDPS(dps)
         if(h.fullPath().find("8817804")>0 or
            h.fullPath().find("1082936")>0 or
+           h.fullPath().find("I930220")>0 or
            h.fullPath().find("8968497")>0) :
            if not inhistos_mass.has_key(h.fullPath()):
                inhistos_mass[h.fullPath()] = {}
@@ -322,6 +342,7 @@ for hpath,hsets in inhistos_pt.iteritems():
         hpath.find("9035664")>0 or
         hpath.find("1125575")>0 or
         hpath.find("1094564")>0 or
+        hpath.find("I930220")>0 or
         hpath.find("CMS_2012_PAS_QCD_11_010")>0) :
         workhisto = copy.deepcopy(hsets.values()[0].values()[0])
         outhistos[hpath] = workhisto
@@ -643,6 +664,19 @@ useOneMass("/ATLAS_2010_S8817804/d23-x01-y01", "7000", "800" )
 useOneMass("/ATLAS_2010_S8817804/d24-x01-y01", "7000", "300" )
 useOneMass("/ATLAS_2010_S8817804/d25-x01-y01", "7000", "300" )
 useOneMass("/ATLAS_2010_S8817804/d26-x01-y01", "7000", "800" )
+
+
+logging.info("Processing ATLAS_2011_I930220")
+mergeByPt("/ATLAS_2011_I930220/d01-x01-y01",  "7000" )
+mergeByPt("/ATLAS_2011_I930220/d02-x01-y01",  "7000" )
+mergeByPt("/ATLAS_2011_I930220/d03-x01-y01",  "7000" )
+mergeByPt("/ATLAS_2011_I930220/d04-x01-y01",  "7000" )
+mergeByPt("/ATLAS_2011_I930220/d05-x01-y01",  "7000" )
+mergeByPt("/ATLAS_2011_I930220/d06-x01-y01",  "7000" )
+mergeByMass("/ATLAS_2011_I930220/d07-x01-y01", "7000")
+useOneMass("/ATLAS_2011_I930220/d08-x01-y01", "7000", "110" )
+useOneMass("/ATLAS_2011_I930220/d09-x01-y01", "7000", "110" )
+useOneMass("/ATLAS_2011_I930220/d10-x01-y01", "7000", "370" )
 
 logging.info("Processing ATLAS_2012_I1082936")
 mergeByPt("/ATLAS_2012_I1082936/d01-x01-y01", "7000")
@@ -1023,17 +1057,17 @@ mergeByPt("/ATLAS_2011_I926145/d02-x01-y01", "7000")
 mergeByPt("/ATLAS_2011_I926145/d03-x01-y01", "7000")
 
 logging.info("Processing CMS_2011_S8941262")
-useOnePt("/CMS_2011_S8941262/d01-x01-y01",  "7000", "5" )
-useOnePt("/CMS_2011_S8941262/d03-x01-y01",  "7000", "5" )
+useOnePt("/CMS_2011_S8941262/d01-x01-y01",  "7000", "10" )
+useOnePt("/CMS_2011_S8941262/d03-x01-y01",  "7000", "10" )
 mergeByPt("/CMS_2011_S8941262/d02-x01-y01", "7000")
 
 logging.info("Processing CMS_2011_S8973270")
-useOnePt("/CMS_2011_S8973270/d01-x01-y01",  "7000", "50" )
-useOnePt("/CMS_2011_S8973270/d02-x01-y01",  "7000", "80" )
-useOnePt("/CMS_2011_S8973270/d03-x01-y01",  "7000", "110" )
-useOnePt("/CMS_2011_S8973270/d04-x01-y01",  "7000", "50" )
-useOnePt("/CMS_2011_S8973270/d05-x01-y01",  "7000", "80" )
-useOnePt("/CMS_2011_S8973270/d06-x01-y01",  "7000", "110" )
+useOnePt("/CMS_2011_S8973270/d01-x01-y01",  "7000", "70" )
+useOnePt("/CMS_2011_S8973270/d02-x01-y01",  "7000", "100" )
+useOnePt("/CMS_2011_S8973270/d03-x01-y01",  "7000", "130" )
+useOnePt("/CMS_2011_S8973270/d04-x01-y01",  "7000", "70" )
+useOnePt("/CMS_2011_S8973270/d05-x01-y01",  "7000", "100" )
+useOnePt("/CMS_2011_S8973270/d06-x01-y01",  "7000", "130" )
 
 logging.info("Processing ATLAS_2012_I1082009")
 useOnePt("/ATLAS_2012_I1082009/d08-x01-y01", "7000", "25" )
@@ -1045,7 +1079,7 @@ useOnePt("/ATLAS_2012_I1082009/d13-x01-y01", "7000", "25" )
 
 logging.info("Processing ATLAS_2012_I1118269")
 mergeByPt("/ATLAS_2012_I1118269/d01-x01-y01", "7000")
-useOnePt("/ATLAS_2012_I1118269/d02-x01-y01", "7000", "5" )
+useOnePt("/ATLAS_2012_I1118269/d02-x01-y01", "7000", "10" )
 
 logging.info("Processing ATLAS_2012_I1188891")
 mergeByPt("/ATLAS_2012_I1188891/d01-x01-y01", "7000")
@@ -1448,6 +1482,36 @@ useOnePt("/ATLAS_2012_I1094564/d33-x01-y01",  "7000", "210" )
 useOnePt("/ATLAS_2012_I1094564/d34-x01-y01",  "7000", "260" )
 useOnePt("/ATLAS_2012_I1094564/d35-x01-y01",  "7000", "400" )
 useOnePt("/ATLAS_2012_I1094564/d36-x01-y01",  "7000", "400" )
+
+logging.info("Processing CMS_2013_I1224539_DIJET")
+useOnePt("/CMS_2013_I1224539_DIJET/d01-x01-y01",  "7000", "210" )
+useOnePt("/CMS_2013_I1224539_DIJET/d02-x01-y01",  "7000", "260" )
+useOnePt("/CMS_2013_I1224539_DIJET/d03-x01-y01",  "7000", "400" )
+useOnePt("/CMS_2013_I1224539_DIJET/d04-x01-y01",  "7000", "400" )
+useOnePt("/CMS_2013_I1224539_DIJET/d05-x01-y01",  "7000", "600" )
+useOnePt("/CMS_2013_I1224539_DIJET/d06-x01-y01",  "7000", "600" )
+useOnePt("/CMS_2013_I1224539_DIJET/d07-x01-y01",  "7000", "600" )
+useOnePt("/CMS_2013_I1224539_DIJET/d08-x01-y01",  "7000", "210" )
+useOnePt("/CMS_2013_I1224539_DIJET/d09-x01-y01",  "7000", "260" )
+useOnePt("/CMS_2013_I1224539_DIJET/d10-x01-y01",  "7000", "400" )
+useOnePt("/CMS_2013_I1224539_DIJET/d11-x01-y01",  "7000", "400" )
+useOnePt("/CMS_2013_I1224539_DIJET/d12-x01-y01",  "7000", "600" )
+useOnePt("/CMS_2013_I1224539_DIJET/d13-x01-y01",  "7000", "600" )
+useOnePt("/CMS_2013_I1224539_DIJET/d14-x01-y01",  "7000", "600" )
+useOnePt("/CMS_2013_I1224539_DIJET/d15-x01-y01",  "7000", "210" )
+useOnePt("/CMS_2013_I1224539_DIJET/d16-x01-y01",  "7000", "260" )
+useOnePt("/CMS_2013_I1224539_DIJET/d17-x01-y01",  "7000", "400" )
+useOnePt("/CMS_2013_I1224539_DIJET/d18-x01-y01",  "7000", "400" )
+useOnePt("/CMS_2013_I1224539_DIJET/d19-x01-y01",  "7000", "600" )
+useOnePt("/CMS_2013_I1224539_DIJET/d20-x01-y01",  "7000", "600" )
+useOnePt("/CMS_2013_I1224539_DIJET/d21-x01-y01",  "7000", "600" )
+useOnePt("/CMS_2013_I1224539_DIJET/d22-x01-y01",  "7000", "210" )
+useOnePt("/CMS_2013_I1224539_DIJET/d23-x01-y01",  "7000", "260" )
+useOnePt("/CMS_2013_I1224539_DIJET/d24-x01-y01",  "7000", "400" )
+useOnePt("/CMS_2013_I1224539_DIJET/d25-x01-y01",  "7000", "600" )
+useOnePt("/CMS_2013_I1224539_DIJET/d26-x01-y01",  "7000", "600" )
+useOnePt("/CMS_2013_I1224539_DIJET/d27-x01-y01",  "7000", "600" )
+useOnePt("/CMS_2013_I1224539_DIJET/d28-x01-y01",  "7000", "600" )
 
 # Choose output file
 name = "LHC"+"-Jets.aida"
