@@ -234,7 +234,7 @@ public:
    * @param par3 The third constituent
    */
   virtual pair<tcPDPtr,tcPDPtr> chooseHadronPair(const Energy cluMass, tcPDPtr par1, 
-						 tcPDPtr par2,tcPDPtr par3 = PDPtr())
+						 tcPDPtr par2,tcPDPtr par3 = PDPtr()) const
     = 0;
 
   /**
@@ -506,24 +506,22 @@ protected:
   /**
    *  Access to the table of hadrons
    */
-   HadronTable & table() {
+   const HadronTable & table() const {
     return _table;
   }
   
   /**
    *  Access to the list of partons
    */
-   vector<PDPtr> & partons() {
+   const vector<PDPtr> & partons() const {
     return _partons;
   }
 
   /**
    *  Access the parton weights
    */
-   double pwt(tcPDPtr p) {
-    assert(p);
-    if ( p->id() < 0 ) p = p->CC();
-    map<tcPDPtr,double>::iterator it = _pwt.find(p);
+   double pwt(long pid) const {
+    map<long,double>::const_iterator it = _pwt.find(abs(pid));
     assert( it != _pwt.end() );
     return it->second;
   }
@@ -555,7 +553,7 @@ protected:
    * \left[|u\bar{u}\rangle + |d\bar{d}\rangle - 2|s\bar{s}\rangle\right]\f]
    */
    double probabilityMixing(const double angleMix,
-				  const int order) {
+				  const int order) const {
     static double convert=Constants::pi/180.0;
     if (order == 1)      
       return sqr( cos( angleMix*convert + atan( sqrt(2.0) ) ) );
@@ -569,14 +567,14 @@ protected:
    * Returns the weight of given mixing state.
    * @param id The PDG code of the meson
    */
-  virtual double mixingStateWeight(long id); 
+  virtual double mixingStateWeight(long id) const; 
   //@}
 
   /**
    * Calculates a special weight specific to  a given hadron.
    * @param id The PDG code of the hadron
    */
-  double specialWeight(long id);
+  double specialWeight(long id) const;
 
   /**
    * This method returns the proper sign ( > 0 hadron; < 0 anti-hadron )
@@ -642,7 +640,7 @@ private:
   /**
    * Weights for quarks and diquarks.
    */
-  map<tcPDPtr,double> _pwt;
+  map<long,double> _pwt;
   //@}
 
   /**

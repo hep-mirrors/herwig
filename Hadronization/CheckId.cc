@@ -15,6 +15,32 @@
 
 using namespace Herwig;
 
+namespace {
+  
+  /**
+   * Return true if the particle pointer corresponds to a diquark 
+   * or anti-diquark carrying b flavour; false otherwise.
+   */
+  inline bool isDiquarkWithB(tcPDPtr par1) {
+    if (!par1) return false;
+    long id1 = par1->id();
+    return DiquarkMatcher::Check(id1)  &&  (abs(id1)/1000)%10 == ParticleID::b;
+  }
+  
+  /**
+   * Return true if the particle pointer corresponds to a diquark
+   *  or anti-diquark carrying c flavour; false otherwise.
+   */
+  inline bool isDiquarkWithC(tcPDPtr par1) {
+    if (!par1) return false;
+    long id1 = par1->id();
+    return ( DiquarkMatcher::Check(id1)  &&  
+       ( (abs(id1)/1000)%10 == ParticleID::c  
+         || (abs(id1)/100)%10 == ParticleID::c ) );
+  }
+
+}
+
 long CheckId::makeDiquarkID(long id1, long id2) {
 
   assert( id1 * id2 > 0  
@@ -33,6 +59,46 @@ long CheckId::makeDiquarkID(long id1, long id2) {
   return id1 > 0 ? idnew : -idnew;
 }
 
+PDPtr CheckId::makeDiquark(tcPDPtr par1, tcPDPtr par2) {
+    long id1 = par1->id();
+    long id2 = par2->id();
+    long idnew = makeDiquarkID(id1,id2);
+    assert(!CurrentGenerator::isVoid());
+    return CurrentGenerator::current().getParticleData(idnew);
+}
+
+bool CheckId::canBeMeson(tcPDPtr par1,tcPDPtr par2) {
+  assert(par1 && par2);
+  long id1 = par1->id();
+  long id2 = par2->id();
+  // a Meson must not have any diquarks
+  if(DiquarkMatcher::Check(id1) || DiquarkMatcher::Check(id2)) return false;
+  return ( abs(int(par1->iColour()))== 3  && 
+     abs(int(par2->iColour())) == 3 &&  
+     id1*id2 < 0);
+}
+
+
+
+bool CheckId::canBeBaryon(tcPDPtr par1, tcPDPtr par2 , tcPDPtr par3) {
+  assert(par1 && par2);
+  long id1 = par1->id(), id2 = par2->id();
+  if (!par3) {
+    if( id1*id2 < 0) return false;
+    if(DiquarkMatcher::Check(id1))
+return abs(int(par2->iColour())) == 3 && !DiquarkMatcher::Check(id2); 
+    if(DiquarkMatcher::Check(id2))
+return abs(int(par1->iColour())) == 3;
+    return false;
+  } 
+  else {
+    // In this case, to be a baryon, all three components must be (anti-)quarks
+    // and with the same sign.
+    return (par1->iColour() == 3 && par2->iColour() == 3 && par3->iColour() == 3) ||
+(par1->iColour() == -3 && par2->iColour() == -3 && par3->iColour() == -3);
+  }
+}
+  
 
 
 bool CheckId::hasBottom(tcPDPtr par1, tcPDPtr par2, tcPDPtr par3) {
