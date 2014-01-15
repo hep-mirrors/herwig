@@ -88,12 +88,13 @@ void GoSamAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs) {
 	int maxlegs = -1;
 
 	for ( map<pair<Process, int>, int>::const_iterator t = procs.begin() ; t != procs.end() ; ++t ) {
-		asPower = min(asPower, t->first.first.orderInAlphaS);
-		minlegs = min(minlegs, t->first.first.legs.size());
-		maxlegs = max(maxlegs, t->first.first.legs.size());
+	        asPower = min(asPower, static_cast<int>(t->first.first.orderInAlphaS));
+		minlegs = min(minlegs, static_cast<int>(t->first.first.legs.size()));
+		maxlegs = max(maxlegs, static_cast<int>(t->first.first.legs.size()));
 	}
 
 	orderFile << "# OLP order file created by Herwig++/Matchbox for GoSam\n\n";
+	orderFile << "InterfaceVersion         BLHA2\n";
 	orderFile << "MatrixElementSquareType  CHsummed\n";
 	orderFile << "CorrectionType           QCD\n";
 	orderFile << "IRregularisation         " << (isDR() ? "DRED" : "CDR") << "\n";
