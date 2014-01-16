@@ -31,7 +31,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I945498
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1107658
 # ATLAS phi*
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1204784
-
+# Z and real photon + jet
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1258128
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################
