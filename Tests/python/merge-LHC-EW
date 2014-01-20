@@ -62,7 +62,6 @@ if __name__ == "__main__":
         except:
             logging.error("%s can not be parsed as XML" % file)
             break
-        print file
         tree = ET.parse(file)
         ## Get histos from this AIDA file
         for dps in tree.findall("dataPointSet"):
@@ -106,7 +105,6 @@ if __name__ == "__main__":
                        ((h.fullPath().find("d01")>0 or h.fullPath().find("d02")>0) and h.fullPath().find("y02")>0))) : 
                     outhistos[h.fullPath()] = h
             elif (h.fullPath().find("CMS_2013_I1224539_WJET" )>0) :
-                print 'found A',h.fullPath()
                 if(file.find("-1-e")>0 and (h.fullPath().find("d52")>0 or h.fullPath().find("d53")>0 or h.fullPath().find("d56")>0 or h.fullPath().find("d57")>0 or h.fullPath().find("d60")>0 or h.fullPath().find("d61")>0 or h.fullPath().find("d64")>0 or h.fullPath().find("d65")>0 or h.fullPath().find("d68")>0 or h.fullPath().find("d69")>0 or h.fullPath().find("d72")>0)) :
                     outhistos[h.fullPath()] = h
                 elif(file.find("-2-e")>0 and (h.fullPath().find("d54")>0 or h.fullPath().find("d58")>0 or h.fullPath().find("d62")>0 or h.fullPath().find("d66")>0 or h.fullPath().find("d70")>0 or h.fullPath().find("d73")>0)) :
@@ -114,7 +112,6 @@ if __name__ == "__main__":
                 elif(file.find("-3-e")>0 and (h.fullPath().find("d55")>0 or h.fullPath().find("d59")>0 or h.fullPath().find("d63")>0 or h.fullPath().find("d67")>0 or h.fullPath().find("d71")>0 or h.fullPath().find("d74")>0)) :
                     outhistos[h.fullPath()] = h
             elif (h.fullPath().find("CMS_2013_I1224539_ZJET" )>0) :
-                print 'found B',h.fullPath()
                 if(file.find("-1-e")>0 and (h.fullPath().find("d29")>0 or h.fullPath().find("d30")>0 or h.fullPath().find("d33")>0 or h.fullPath().find("d34")>0 or h.fullPath().find("d37")>0 or h.fullPath().find("d38")>0 or h.fullPath().find("d41")>0 or h.fullPath().find("d42")>0 or h.fullPath().find("d45")>0 or h.fullPath().find("d46")>0 or h.fullPath().find("d49")>0)) :
                     outhistos[h.fullPath()] = h
                 elif(file.find("-2-e")>0 and (h.fullPath().find("d31")>0 or h.fullPath().find("d35")>0 or h.fullPath().find("d39")>0 or h.fullPath().find("d43")>0 or h.fullPath().find("d47")>0 or h.fullPath().find("d50")>0)) :

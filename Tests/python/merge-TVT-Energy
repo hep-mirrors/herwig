@@ -167,7 +167,6 @@ mergeByPt("/CDF_2012_NOTE10874/d03-x01-y03","1960")
 
 # Choose output file
 for i in range(1,4) :
-    print i
     if(i==1) : 
         name = args[0]+"-300-Energy.aida"
     elif(i==2) :
@@ -181,7 +180,7 @@ for i in range(1,4) :
     out.write('<aida version="3.3">\n')
     out.write('  <implementation version="1.1" package="FreeHEP"/>\n')
     for hpath, h in sorted(outhistos.iteritems()):
-        if(hpath.find("d0"+str(i))>0) :
+        if(hpath.find("y0"+str(i))>0) :
             logging.debug("hpath = %s" % hpath)
             out.write(h.asAIDA() + "\n\n")
     out.write('</aida>\n')

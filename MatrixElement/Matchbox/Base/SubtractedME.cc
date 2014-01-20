@@ -411,6 +411,7 @@ double SubtractedME::reweightHead(const vector<tStdXCombPtr>& dep) {
 	haveNoDipole *= 1. - (**d).cutWeight();
       }
     }
+    n /= lastXComb().lastProjector()->cutWeight();
     return
       n * (1.-haveNoDipole) * lastXComb().lastProjector()->lastME2() * lastXComb().lastProjector()->cutWeight() / sum;
   }
@@ -442,7 +443,7 @@ double SubtractedME::reweightDependent(tStdXCombPtr xc, const vector<tStdXCombPt
 	haveNoDipole *= 1. - (**d).cutWeight();
       }
     }
-    return n * (1. - haveNoDipole);
+    return n * (1. - haveNoDipole) / lastXComb().lastProjector()->cutWeight();
   }
 
   if ( realShowerSubtraction() ) {
