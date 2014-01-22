@@ -74,8 +74,8 @@ bool GoSamAmplitude::buildGoSam() {
 extern "C" void OLP_Start(const char*, int* i);
 void GoSamAmplitude::startOLP(const string& contract, int& status) {
 	string tempcontract=contract;
-	if (gosamInstallPath==""){if ( !DynamicLoader::load("lib64/libgolem_olp.so") ) assert(0);}
-	else {if ( !DynamicLoader::load(gosamInstallPath+"/lib64/libgolem_olp.so") ) assert(0);
+	if (gosamInstallPath==""){if ( !( DynamicLoader::load("lib/libgolem_olp.so") || DynamicLoader::load("lib64/libgolem_olp.so") ) ) assert(0);}
+	else {if ( !( DynamicLoader::load(gosamInstallPath+"/lib/libgolem_olp.so") || DynamicLoader::load(gosamInstallPath+"/lib64/libgolem_olp.so") ) ) assert(0);
 		tempcontract=gosamInstallPath+"/"+tempcontract;}
 	OLP_Start(tempcontract.c_str(), &status);
 }
