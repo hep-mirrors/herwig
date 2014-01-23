@@ -211,8 +211,6 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/Matchbox/External/NLOJet/Amplitudes/Makefile
                 MatrixElement/Matchbox/External/NLOJet/PP2Jets/Makefile
                 MatrixElement/Matchbox/External/VBFNLO/Makefile
-                MatrixElement/Matchbox/External/VBFNLO/Diagrams/Makefile
-                MatrixElement/Matchbox/External/VBFNLO/VBFAnalysis/Makefile
                 MatrixElement/Matchbox/External/HEJ/Makefile
                 MatrixElement/Matchbox/External/NJet/Makefile
                 MatrixElement/Matchbox/External/NJet/NJetsAmplitude.cc

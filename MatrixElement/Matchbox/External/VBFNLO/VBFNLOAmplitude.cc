@@ -237,7 +237,7 @@ void VBFNLOAmplitude::persistentInput(PersistentIStream & is, int) {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<VBFNLOAmplitude,MatchboxOLPME>
-  describeHerwigVBFNLOAmplitude("Herwig::VBFNLOAmplitude", "HwMatchboxVBFNLO2.so");
+  describeHerwigVBFNLOAmplitude("Herwig::VBFNLOAmplitude", "HwMatchboxVBFNLO.so");
 
 void VBFNLOAmplitude::Init() {
 
