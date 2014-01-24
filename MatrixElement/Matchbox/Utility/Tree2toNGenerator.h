@@ -16,6 +16,9 @@
 #include "ThePEG/Helicity/Vertex/VertexBase.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+
 namespace Herwig {
 
 using namespace ThePEG;
@@ -103,7 +106,7 @@ public:
    */
   static void Init();
 
-protected:
+public:
 
   /**
    * A node in internally used trees.
@@ -254,6 +257,78 @@ protected:
   list<vector<Vertex> > clusterAll(const PDVector& external,
 				   unsigned int orderInGs,
 				   unsigned int orderInGem);
+
+  /**
+   * Helper for topology restrictions
+   */
+  struct LineMatcher {
+
+    /**
+     * The group of lines to be considered
+     */
+    set<tcPDPtr> particles;
+
+    /**
+     * The range allowed
+     */
+    pair<int,int> range;
+
+    /**
+     * The current count
+     */
+    int count;
+
+    /**
+     * Default constructor
+     */
+    LineMatcher()
+      : range(0,0), count(0) {}
+
+    /**
+     * Construct given particles and a range
+     */
+    LineMatcher(const PDVector& p,
+		const pair<int,int>& r)
+      : range(r), count(0) {
+      copy(p.begin(),p.end(),inserter(particles,particles.begin()));
+    }
+
+    /**
+     * Rebind the particle data pointers
+     */
+    void rebind(Tree2toNGenerator* g) {
+      set<tcPDPtr> oldp = particles;
+      particles.clear();
+      for ( set<tcPDPtr>::const_iterator p = oldp.begin();
+	    p != oldp.end(); ++p )
+	particles.insert(g->getParticleData((**p).id()));
+    }
+
+    /**
+     * Reset this matcher
+     */
+    void reset() {
+      count = 0;
+    }
+
+    /**
+     * Count the given multiplicity
+     */
+    void add(tcPDPtr p, int n) {
+      if ( particles.find(p) == particles.end() )
+	return;
+      count += n;
+    }
+
+    /**
+     * Ceck if restrictions are met
+     */
+    bool check() const {
+      return
+	count >= range.first && count <= range.second;
+    }
+
+  };
   
 protected:
 
@@ -311,12 +386,12 @@ private:
   /**
    * Minimal and maximal occurences of spacelike internal lines
    */
-  map<tcPDPtr,pair<int,int> > spaceLikeAllowed;
+  vector<LineMatcher> spaceLikeAllowed;
 
   /**
    * Minimal and maximal occurences of timelike internal lines
    */
-  map<tcPDPtr,pair<int,int> > timeLikeAllowed;
+  vector<LineMatcher> timeLikeAllowed;
 
   /**
    * The next particle for which internal lines need to be restricted
@@ -347,6 +422,16 @@ private:
   Tree2toNGenerator & operator=(const Tree2toNGenerator &);
 
 };
+
+inline PersistentOStream& operator<<(PersistentOStream& os, const Tree2toNGenerator::LineMatcher& m) {
+  os << m.particles << m.range << m.count;
+  return os;
+}
+
+inline PersistentIStream& operator>>(PersistentIStream& is, Tree2toNGenerator::LineMatcher& m) {
+  is >> m.particles >> m.range >> m.count;
+  return is;
+}
 
 }
 

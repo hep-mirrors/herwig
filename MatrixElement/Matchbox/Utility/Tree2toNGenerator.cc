@@ -23,9 +23,6 @@
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Utilities/StringUtils.h"
 
-#include "ThePEG/Persistency/PersistentOStream.h"
-#include "ThePEG/Persistency/PersistentIStream.h"
-
 using namespace Herwig;
 
 Tree2toNGenerator::Tree2toNGenerator() 
@@ -67,21 +64,19 @@ generate(const PDVector& legs,
 	  counts[diag.allPartons()[k]] += 1;
 	}
       }
+      for ( vector<LineMatcher>::iterator m = spaceLikeAllowed.begin();
+	    m != spaceLikeAllowed.end(); ++m ) {
+	m->reset();
+	for ( map<tcPDPtr,int>::const_iterator c = counts.begin();
+	      c != counts.end(); ++c )
+	  m->add(c->first,c->second);
+      }
       bool failed = false;
-      for ( map<tcPDPtr,int>::const_iterator i =
-	      counts.begin(); i != counts.end(); ++i ) {
-	map<tcPDPtr,pair<int,int> >::const_iterator range =
-	  spaceLikeAllowed.find((*i).first);
-	if ( range != spaceLikeAllowed.end() ) {
-	  if ( i->second < range->second.first ) {
-	    failed= true;
-	    break;
-	  }
-	  if ( i->second > range->second.second &&
-	       range->second.second >= 0 ) {
-	    failed= true;
-	    break;
-	  }
+      for ( vector<LineMatcher>::iterator m = spaceLikeAllowed.begin();
+	    m != spaceLikeAllowed.end(); ++m ) {
+	if ( !m->check() ) {
+	  failed = true;
+	  break;
 	}
       }
       if ( failed )
@@ -100,21 +95,19 @@ generate(const PDVector& legs,
 	  counts[diag.allPartons()[k]] += 1;
 	}
       }
+      for ( vector<LineMatcher>::iterator m = timeLikeAllowed.begin();
+	    m != timeLikeAllowed.end(); ++m ) {
+	m->reset();
+	for ( map<tcPDPtr,int>::const_iterator c = counts.begin();
+	      c != counts.end(); ++c )
+	  m->add(c->first,c->second);
+      }
       bool failed = false;
-      for ( map<tcPDPtr,int>::const_iterator i =
-	      counts.begin(); i != counts.end(); ++i ) {
-	map<tcPDPtr,pair<int,int> >::const_iterator range =
-	  timeLikeAllowed.find((*i).first);
-	if ( range != timeLikeAllowed.end() ) {
-	  if ( i->second < range->second.first ) {
-	    failed= true;
-	    break;
-	  }
-	  if ( i->second > range->second.second &&
-	       range->second.second >= 0 ) {
-	    failed= true;
-	    break;
-	  }
+      for ( vector<LineMatcher>::iterator m = timeLikeAllowed.begin();
+	    m != timeLikeAllowed.end(); ++m ) {
+	if ( !m->check() ) {
+	  failed = true;
+	  break;
 	}
       }
       if ( failed )
@@ -378,17 +371,13 @@ clusterAll(const PDVector& external,
       maxOrderGs = max(maxOrderGs,(**v).orderInGs());
       maxOrderGem = max(maxOrderGem,(**v).orderInGem());
     }
-    map<tcPDPtr,pair<int,int> > oldSpaceAllowed = spaceLikeAllowed;
-    spaceLikeAllowed.clear();
-    for ( map<tcPDPtr,pair<int,int> >::const_iterator d = oldSpaceAllowed.begin();
-	  d != oldSpaceAllowed.end(); ++d ) {
-      spaceLikeAllowed[getParticleData(d->first->id())] = d->second;
+    for ( vector<LineMatcher>::iterator m = spaceLikeAllowed.begin();
+	  m != spaceLikeAllowed.end(); ++m ) {
+      m->rebind(this);
     }
-    map<tcPDPtr,pair<int,int> > oldTimeAllowed = timeLikeAllowed;
-    timeLikeAllowed.clear();
-    for ( map<tcPDPtr,pair<int,int> >::const_iterator d = oldTimeAllowed.begin();
-	  d != oldTimeAllowed.end(); ++d ) {
-      timeLikeAllowed[getParticleData(d->first->id())] = d->second;
+    for ( vector<LineMatcher>::iterator m = timeLikeAllowed.begin();
+	  m != timeLikeAllowed.end(); ++m ) {
+      m->rebind(this);
     }
     prepared = true;
   }
@@ -425,9 +414,7 @@ string Tree2toNGenerator::doSpaceLikeRange(string range) {
   }
   if ( irange.second >= 0 && irange.first > irange.second )
     return "invalid range specified";
-  for ( PDVector::const_iterator p = theRestrictLines.begin();
-	p != theRestrictLines.end(); ++p )
-    spaceLikeAllowed[*p] = irange;
+  spaceLikeAllowed.push_back(LineMatcher(theRestrictLines,irange));
   return "";
 }
 
@@ -446,9 +433,7 @@ string Tree2toNGenerator::doTimeLikeRange(string range) {
   }
   if ( irange.second >= 0 && irange.first > irange.second )
     return "invalid range specified";
-  for ( PDVector::const_iterator p = theRestrictLines.begin();
-	p != theRestrictLines.end(); ++p )
-    timeLikeAllowed[*p] = irange;
+  timeLikeAllowed.push_back(LineMatcher(theRestrictLines,irange));
   return "";
 }
 
