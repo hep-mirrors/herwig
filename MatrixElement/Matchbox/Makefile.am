@@ -1,7 +1,7 @@
 SUBDIRS = \
 Base Utility Phasespace \
 Dipoles InsertionOperators Matching \
-Builtin External Tests
+Cuts Scales Builtin External Tests
 
 if WANT_DIPOLE
 pkglib_LTLIBRARIES = HwMatchbox.la

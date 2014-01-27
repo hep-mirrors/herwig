@@ -43,6 +43,7 @@
 
 library HwExsample2.so
 library HwMatchbox.so
+library HwMatchboxScales.so
 library JetCuts.so
 library FastJetFinder.so
 @LOAD_NLOJET@ HwMatchboxNLOJet.so

@@ -86,7 +86,7 @@ void MatchboxParticlePtScale::persistentInput(PersistentIStream & is, int) {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<MatchboxParticlePtScale,MatchboxScaleChoice>
-  describeHerwigMatchboxParticlePtScale("Herwig::MatchboxParticlePtScale", "HwMatchbox.so");
+  describeHerwigMatchboxParticlePtScale("Herwig::MatchboxParticlePtScale", "HwMatchboxScales.so");
 
 void MatchboxParticlePtScale::Init() {
 

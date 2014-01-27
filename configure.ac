@@ -202,6 +202,8 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/Matchbox/Dipoles/Makefile
                 MatrixElement/Matchbox/InsertionOperators/Makefile
                 MatrixElement/Matchbox/Matching/Makefile
+                MatrixElement/Matchbox/Cuts/Makefile
+                MatrixElement/Matchbox/Scales/Makefile
                 MatrixElement/Matchbox/Builtin/Makefile
                 MatrixElement/Matchbox/Builtin/Amplitudes/Makefile
                 MatrixElement/Matchbox/Tests/Makefile
