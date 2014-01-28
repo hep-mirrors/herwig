@@ -1,4 +1,4 @@
-SUBDIRS = XML
+SUBDIRS = XML Statistics
 noinst_LTLIBRARIES = libHwUtils.la
 libHwUtils_la_SOURCES = \
 EnumParticles.h \
@@ -15,7 +15,8 @@ GSLIntegrator.h GSLIntegrator.tcc \
 GSLBisection.h GSLBisection.tcc GSLHelper.h
 
 libHwUtils_la_LIBADD = \
-XML/libHwXML.la
+XML/libHwXML.la \
+Statistics/libHwStatistics.la
 
 CLEANFILES=
 include $(srcdir)/Makefile.am.versionstring
