@@ -94,7 +94,7 @@ void GoSamAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs) {
 	}
 
 	orderFile << "# OLP order file created by Herwig++/Matchbox for GoSam\n\n";
-	orderFile << "InterfaceVersion         BLHA2\n";
+// 	orderFile << "InterfaceVersion         BLHA2\n";
 	orderFile << "MatrixElementSquareType  CHsummed\n";
 	orderFile << "CorrectionType           QCD\n";
 	orderFile << "IRregularisation         " << (isDR() ? "DRED" : "CDR") << "\n";
