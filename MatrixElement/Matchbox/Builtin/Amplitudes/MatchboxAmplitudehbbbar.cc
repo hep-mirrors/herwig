@@ -108,7 +108,7 @@ Complex MatchboxAmplitudehbbbar::evaluate(size_t, const vector<int>& hel, Comple
   //cout<<"teilchenidentifizierung";
   for (;q<amplitudePartonData().size();++q){if (x[q]->id()!= 25 && x[q]->id()>0 ) break;} //cout<<"x[q]"<<x[q]->id()<<" hel: "<<hel[q]<<endl;
   for (;qbar<amplitudePartonData().size();++qbar){if (x[qbar]->id() ==-x[q]->id()) break;} //cout<<"x[qbar]"<<x[qbar]->id()<<" hel: "<<hel[qbar]<<endl;
-  double gw = sqrt(4*Constants::pi*SM().alphaEM()) / sqrt(SM().sin2ThetaW());
+  double gw = sqrt(4*Constants::pi*SM().alphaEMMZ()) / sqrt(SM().sin2ThetaW());
   
   long id=x[q]->id();
   Energy Mf = 0*GeV;
@@ -158,7 +158,7 @@ Complex MatchboxAmplitudehbbbar::evaluateOneLoop(size_t, const vector<int>& hel)
   
   for (;q<3;++q){if (x[q]->id()!= 25 && x[q]->id()>0 ) break;} 
   for (;qbar<3;++qbar){if (x[qbar]->id() ==-x[q]->id()) break;} 
-  double gw = sqrt(4*Constants::pi*SM().alphaEM()) / sqrt(SM().sin2ThetaW());
+  double gw = sqrt(4*Constants::pi*SM().alphaEMMZ()) / sqrt(SM().sin2ThetaW());
   
   long id=x[q]->id();
   Energy Mf = 0*GeV;

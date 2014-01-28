@@ -112,7 +112,7 @@ Complex MatchboxAmplitudehqqbarg::evaluate(size_t, const vector<int>& hel, Compl
   for (;q<amplitudePartonData().size();++q){if (x[q]->id()!= 25 && x[q]->id()>0 ) break;} 
   for (;qbar<amplitudePartonData().size();++qbar){if (x[qbar]->id() ==-x[q]->id()) break;}
   for (;g<amplitudePartonData().size();++g){if (x[g]->id() == 21) break;}
-  double gw = sqrt(4*Constants::pi*SM().alphaEM()) / sqrt(SM().sin2ThetaW());
+  double gw = sqrt(4*Constants::pi*SM().alphaEMMZ()) / sqrt(SM().sin2ThetaW());
   double gs = sqrt(4*Constants::pi*SM().alphaS());
   double alphaS = SM().alphaS();
   double v= 2*MW/gw/sqrt(lastSHat()) ;

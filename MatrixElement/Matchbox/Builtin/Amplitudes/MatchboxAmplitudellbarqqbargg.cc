@@ -192,7 +192,7 @@ Complex MatchboxAmplitudellbarqqbargg::evaluate(size_t a, const vector<int>& hel
        standardModel()->re()*(up ? standardModel()->ru() : standardModel()->rd())*RR)/
       Complex(bProp-sqr(MZ)/lastSHat(),MZ*GZ/lastSHat());
 
-  Complex res = sqr(4.*Constants::pi)*SM().alphaEM()*SM().alphaS()*(gamma+Z);
+  Complex res = sqr(4.*Constants::pi)*SM().alphaEMMZ()*SM().alphaS()*(gamma+Z);
   largeN = res;
   return res;
 

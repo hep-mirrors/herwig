@@ -288,17 +288,17 @@ Complex MatchboxAmplitudellbarqqbarqqbar::evaluate(size_t a, const vector<int>& 
   Complex sum4325 = 0.0;
 
   if ( includeGamma() ) {
-    sum2345 += sqr(4.*Constants::pi)*SM().alphaEM()*SM().alphaS()*gamma2345;
-    sum2543 += sqr(4.*Constants::pi)*SM().alphaEM()*SM().alphaS()*gamma2543;
-    sum4523 += sqr(4.*Constants::pi)*SM().alphaEM()*SM().alphaS()*gamma4523;
-    sum4325 += sqr(4.*Constants::pi)*SM().alphaEM()*SM().alphaS()*gamma4325;
+    sum2345 += sqr(4.*Constants::pi)*SM().alphaEMMZ()*SM().alphaS()*gamma2345;
+    sum2543 += sqr(4.*Constants::pi)*SM().alphaEMMZ()*SM().alphaS()*gamma2543;
+    sum4523 += sqr(4.*Constants::pi)*SM().alphaEMMZ()*SM().alphaS()*gamma4523;
+    sum4325 += sqr(4.*Constants::pi)*SM().alphaEMMZ()*SM().alphaS()*gamma4325;
   }
 
   if ( includeZ() ) {
-    sum2345 += sqr(4.*Constants::pi)*SM().alphaEM()*SM().alphaS()*Z2345;
-    sum2543 += sqr(4.*Constants::pi)*SM().alphaEM()*SM().alphaS()*Z2543;
-    sum4523 += sqr(4.*Constants::pi)*SM().alphaEM()*SM().alphaS()*Z4523;
-    sum4325 += sqr(4.*Constants::pi)*SM().alphaEM()*SM().alphaS()*Z4325;
+    sum2345 += sqr(4.*Constants::pi)*SM().alphaEMMZ()*SM().alphaS()*Z2345;
+    sum2543 += sqr(4.*Constants::pi)*SM().alphaEMMZ()*SM().alphaS()*Z2543;
+    sum4523 += sqr(4.*Constants::pi)*SM().alphaEMMZ()*SM().alphaS()*Z4523;
+    sum4325 += sqr(4.*Constants::pi)*SM().alphaEMMZ()*SM().alphaS()*Z4325;
   }
 
   double Nc = SM().Nc();

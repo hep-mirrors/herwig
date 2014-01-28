@@ -101,7 +101,7 @@ Complex MatchboxAmplitudehggg::evaluate(size_t a, const vector<int>& hel, Comple
   // Wrong particle assignment. There have to be three distinct Gluons p, q and r.
   assert(!((p==q) || (p==r) || (q==r)));
  
-  double gw = sqrt(4*Constants::pi*SM().alphaEM()) / sqrt(SM().sin2ThetaW());
+  double gw = sqrt(4*Constants::pi*SM().alphaEMMZ()) / sqrt(SM().sin2ThetaW());
   double gs = sqrt(4*Constants::pi*SM().alphaS());
   double v= 2*MW/gw/sqrt(lastSHat()) ;
   Complex c = Complex (0.,0.);                                                                                                                    

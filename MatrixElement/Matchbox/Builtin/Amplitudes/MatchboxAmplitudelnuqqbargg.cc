@@ -150,7 +150,7 @@ Complex MatchboxAmplitudelnuqqbargg::evaluate(size_t a, const vector<int>& hel, 
   Complex wPropergator =
           1./Complex(((amplitudeMomentum(0)+amplitudeMomentum(1)).m2()-sqr(MW))/lastSHat(),MW*GW/lastSHat());
   Complex wVertices = 
-          2.*SM().alphaEM()*Constants::pi/SM().sin2ThetaW()*ckmelement;
+          2.*SM().alphaEMMZ()*Constants::pi/SM().sin2ThetaW()*ckmelement;
   Complex sVertices =
           4.*Constants::pi*SM().alphaS();
   const LorentzVector<Complex>& leptonCurrent = llbarLeftCurrent(0,hel[0],1,hel[1]); 

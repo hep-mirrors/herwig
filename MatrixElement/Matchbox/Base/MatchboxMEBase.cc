@@ -311,7 +311,7 @@ void MatchboxMEBase::setScale() const {
     lastXCombPtr()->lastAlphaS(SM().alphaS());
   }
   if ( !fixedQEDCouplings() ) {
-    lastXCombPtr()->lastAlphaEM(SM().alphaEM(ewrscale));
+    lastXCombPtr()->lastAlphaEM(SM().alphaEMME(ewrscale));
   } else {
     lastXCombPtr()->lastAlphaEM(SM().alphaEMMZ());
   }
@@ -495,7 +495,7 @@ double MatchboxMEBase::me2Norm(unsigned int addAlphaS) const {
     couplings *= pow(lastAlphaS(),double(orderInAlphaS()+addAlphaS));
   }
   if ( orderInAlphaEW() > 0 ) {
-    fac *= pow(lastAlphaEM()/SM().alphaEM(),double(orderInAlphaEW()));
+    fac *= pow(lastAlphaEM()/SM().alphaEMMZ(),double(orderInAlphaEW()));
     couplings *= pow(lastAlphaEM(),double(orderInAlphaEW()));
   }
   lastMECouplings(couplings);

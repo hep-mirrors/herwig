@@ -92,7 +92,7 @@ Complex MatchboxAmplitudehgg::evaluate(size_t, const vector<int>& hel, Complex& 
   }
   // wrong assignement of the particles. g1 and g2 have to be different gluons.
   assert(g1!=g2);
-  double gw = sqrt(4*Constants::pi*SM().alphaEM()) / sqrt(SM().sin2ThetaW());
+  double gw = sqrt(4*Constants::pi*SM().alphaEMMZ()) / sqrt(SM().sin2ThetaW());
   double v= 2*MW/gw/sqrt(lastSHat()); 
   Complex c = Complex (0.,-1.*SM().alphaS()/3/Constants::pi/v); 
  

@@ -177,9 +177,9 @@ Complex MatchboxAmplitudelnuqqbarqqbar::evaluate(size_t a, const vector<int>& he
   Complex wPropergator =
           1./Complex(((amplitudeMomentum(0)+amplitudeMomentum(1)).m2()-sqr(MW))/lastSHat(),MW*GW/lastSHat());
   Complex wVertices23 = 
-          2.*SM().alphaEM()*Constants::pi/SM().sin2ThetaW()*ckmelement23;
+          2.*SM().alphaEMMZ()*Constants::pi/SM().sin2ThetaW()*ckmelement23;
   Complex wVertices45 = 
-          2.*SM().alphaEM()*Constants::pi/SM().sin2ThetaW()*ckmelement45;
+          2.*SM().alphaEMMZ()*Constants::pi/SM().sin2ThetaW()*ckmelement45;
   Complex sVertices =
           4.*Constants::pi*SM().alphaS();
   Complex res2345 =

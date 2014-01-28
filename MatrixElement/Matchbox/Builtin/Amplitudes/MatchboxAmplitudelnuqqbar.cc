@@ -119,7 +119,7 @@ Complex MatchboxAmplitudelnuqqbar::evaluate(size_t, const vector<int>& hel, Comp
   Complex wPropergator =
           1./Complex(((amplitudeMomentum(0)+amplitudeMomentum(1)).m2()-sqr(MW))/lastSHat(),MW*GW/lastSHat());
   Complex wVertices = 
-          2.*SM().alphaEM()*Constants::pi/SM().sin2ThetaW()*ckmelement;
+          2.*SM().alphaEMMZ()*Constants::pi/SM().sin2ThetaW()*ckmelement;
   const LorentzVector<Complex>& leptonCurrent = llbarLeftCurrent(0,hel[0],1,hel[1]); 
   const LorentzVector<Complex>& quarkCurrent = qqbarLeftCurrent(2,hel[2],3,hel[3]); 
   Complex current = hel[2] == 1 ? Complex(0.,-1)*leptonCurrent.dot(quarkCurrent): 0.;
@@ -145,7 +145,7 @@ Complex MatchboxAmplitudelnuqqbar::evaluateOneLoop(size_t, const vector<int>& he
   Complex wPropergator =
           1./Complex(((amplitudeMomentum(0)+amplitudeMomentum(1)).m2()-sqr(MW))/lastSHat(),MW*GW/lastSHat());
   Complex wVertices = 
-          2.*SM().alphaEM()*Constants::pi/SM().sin2ThetaW()*ckmelement;
+          2.*SM().alphaEMMZ()*Constants::pi/SM().sin2ThetaW()*ckmelement;
   const LorentzVector<Complex>& leptonCurrent = llbarLeftCurrent(0,hel[0],1,hel[1]); 
   const LorentzVector<Complex>& quarkCurrent = qqbarLeftOneLoopCurrent(2,hel[2],3,hel[3]); 
   Complex current = hel[2] == 1 ? Complex(0.,-1)*leptonCurrent.dot(quarkCurrent): 0.;

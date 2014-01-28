@@ -168,7 +168,7 @@ Complex MatchboxAmplitudellbarqqbar::evaluate(size_t, const vector<int>& hel, Co
        standardModel()->re()*(up ? standardModel()->ru() : standardModel()->rd())*RR)/
       Complex(bProp-sqr(MZ)/lastSHat(),MZ*GZ/lastSHat());
   
-  Complex res = 4.*Constants::pi*SM().alphaEM()*(gamma+Z);
+  Complex res = 4.*Constants::pi*SM().alphaEMMZ()*(gamma+Z);
   largeN = res;
   return res;
 
@@ -211,7 +211,7 @@ Complex MatchboxAmplitudellbarqqbar::evaluateOneLoop(size_t, const vector<int>& 
        standardModel()->re()*(up ? standardModel()->ru() : standardModel()->rd())*RR)/
       Complex(bProp-sqr(MZ)/lastSHat(),MZ*GZ/lastSHat());
 
-  Complex res = (SM().alphaS()/(2.*Constants::pi))*4.*Constants::pi*SM().alphaEM()*(gamma+Z);
+  Complex res = (SM().alphaS()/(2.*Constants::pi))*4.*Constants::pi*SM().alphaEMMZ()*(gamma+Z);
   return res;
 
 }

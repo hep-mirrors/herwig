@@ -257,7 +257,7 @@ extern "C" void OLP_EvalSubProcess2(int, double*, double, double*, double*);
 
 void GoSamAmplitude::evalSubProcess() const {
 	double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
-	units *= pow(4. * Constants::pi * SM().alphaEM(), orderInGem());
+	units *= pow(4. * Constants::pi * SM().alphaEMMZ(), orderInGem());
 	units *= pow(4. * Constants::pi * SM().alphaS(), orderInGs());
 	fillOLPMomenta(lastXComb().meMomenta());
 	double as =   SM().alphaS();
@@ -290,7 +290,7 @@ void GoSamAmplitude::evalSubProcess() const {
 
 void GoSamAmplitude::evalColourCorrelator(pair<int, int> ) const {
 	double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
-	units *= pow(4. * Constants::pi * SM().alphaEM(), orderInGem());
+	units *= pow(4. * Constants::pi * SM().alphaEMMZ(), orderInGem());
 	units *= pow(4. * Constants::pi * SM().alphaS(), orderInGs());
 	fillOLPMomenta(lastXComb().meMomenta());
 	double as = SM().alphaS();
@@ -317,7 +317,7 @@ void GoSamAmplitude::evalColourCorrelator(pair<int, int> ) const {
 
 void GoSamAmplitude::evalSpinColourCorrelator(pair<int , int > ) const {
 	double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
-	units *= pow(4. * Constants::pi * SM().alphaEM(), orderInGem());
+	units *= pow(4. * Constants::pi * SM().alphaEMMZ(), orderInGem());
 	units *= pow(4. * Constants::pi * SM().alphaS(), orderInGs());
 	fillOLPMomenta(lastXComb().meMomenta());
 	double as = SM().alphaS();
