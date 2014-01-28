@@ -54,7 +54,7 @@ bool IdentifiedParticleCut::passCuts(tcCutsPtr parent,
     return false;
   }
 
-  double y = p.rapidity();
+  double y = p.rapidity() + parent->currentYHat();
   for ( vector<pair<double,double> >::const_iterator dy = yRanges().begin();
 	dy != yRanges().end(); ++dy ) {
     if ( !parent->isInside<CutTypes::Rapidity>(y,dy->first,dy->second,weight) ) {
