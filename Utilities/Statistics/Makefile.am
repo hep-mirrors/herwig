@@ -16,23 +16,24 @@ Run.cc
 
 bin_PROGRAMS = combineDistributions combineRuns makeDistributions
 
+combineDistributions_LDADD = \
+$(top_builddir)/Utilities/XML/libHwXML.la \
+libHwStatistics.la
+
 combineDistributions_SOURCES = \
 combineDistributions.cc
 
-combineDistributions_LDADD = \
+combineRuns_LDADD = \
 $(top_builddir)/Utilities/XML/libHwXML.la \
-$(top_builddir)/Utilities/Statistics/libHwStatistics.la
+libHwStatistics.la
 
 combineRuns_SOURCES = \
 combineRuns.cc
 
-combineRuns_LDADD = \
+makeDistributions_LDADD = \
 $(top_builddir)/Utilities/XML/libHwXML.la \
-$(top_builddir)/Utilities/Statistics/libHwStatistics.la
+libHwStatistics.la
 
 makeDistributions_SOURCES = \
 makeDistributions.cc
 
-makeDistributions_LDADD = \
-$(top_builddir)/Utilities/XML/libHwXML.la \
-$(top_builddir)/Utilities/Statistics/libHwStatistics.la
