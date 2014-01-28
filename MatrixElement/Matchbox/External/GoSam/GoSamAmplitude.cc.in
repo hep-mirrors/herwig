@@ -77,7 +77,40 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
 	if (gosamInstallPath==""){if ( !( DynamicLoader::load("lib/libgolem_olp.so") || DynamicLoader::load("lib64/libgolem_olp.so") ) ) assert(0);}
 	else {if ( !( DynamicLoader::load(gosamInstallPath+"/lib/libgolem_olp.so") || DynamicLoader::load(gosamInstallPath+"/lib64/libgolem_olp.so") ) ) assert(0);
 		tempcontract=gosamInstallPath+"/"+tempcontract;}
+
 	OLP_Start(tempcontract.c_str(), &status);
+
+	// hand over input parameters for EW scheme considered
+	/*
+	int pStatus = 0;
+	double zero = 0.0;
+	if ( SM().ewScheme() == 0 || SM().ewScheme() == 6 ) {
+	  throw Exception() << "`Best value' schemes are not supported by GoSam"
+			    << Exception::abortnow;
+	} else if ( SM().ewScheme() == 1 ) {
+	  OLP_SetParameter("mass(23)",getParticleData(ParticleID::Z0)->mass()/GeV,&zero,&pStatus);
+	  OLP_SetParameter("mass(24)",getParticleData(ParticleID::Wplus)->mass()/GeV,&zero,&pStatus);
+	  OLP_SetParameter("Gf",SM().fermiConstant()*GeV2,&zero,&pStatus);
+	} else if ( SM().ewScheme() == 2 ) {
+	  OLP_SetParameter("mass(23)",getParticleData(ParticleID::Z0)->mass()/GeV,&zero,&pStatus);
+	  OLP_SetParameter("mass(24)",getParticleData(ParticleID::Wplus)->mass()/GeV,&zero,&pStatus);
+	  OLP_SetParameter("alpha",SM().alphaEMMZ(),&zero,&pStatus);
+	} else if ( SM().ewScheme() == 3 ) {
+	  OLP_SetParameter("Gf",SM().fermiConstant()*GeV2,&zero,&pStatus);
+	  OLP_SetParameter("alpha",SM().alphaEMMZ(),&zero,&pStatus);
+	  OLP_SetParameter("sw2",SM().sin2ThetaW(),&zero,&pStatus);
+	} else if ( SM().ewScheme() == 4 ) {
+	  OLP_SetParameter("mass(24)",getParticleData(ParticleID::Wplus)->mass()/GeV,&zero,&pStatus);
+	  OLP_SetParameter("Gf",SM().fermiConstant()*GeV2,&zero,&pStatus);
+	  OLP_SetParameter("sw2",SM().sin2ThetaW(),&zero,&pStatus);
+	} else if ( SM().ewScheme() == 5 ) {
+	  OLP_SetParameter("mass(23)",getParticleData(ParticleID::Z0)->mass()/GeV,&zero,&pStatus);
+	  OLP_SetParameter("alpha",SM().alphaEMMZ(),&zero,&pStatus);
+	  OLP_SetParameter("sw2",SM().sin2ThetaW(),&zero,&pStatus);
+	}
+	*/
+
+
 }
 
 void GoSamAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs) {
