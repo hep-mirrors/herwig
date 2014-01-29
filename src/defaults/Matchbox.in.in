@@ -47,7 +47,6 @@ library HwMatchboxScales.so
 library JetCuts.so
 library FastJetFinder.so
 @LOAD_NLOJET@ HwMatchboxNLOJet.so
-@LOAD_VBFNLO@ HwMatchboxVBFNLO.so
 
 mkdir /Herwig/MatrixElements/Matchbox
 cd /Herwig/MatrixElements/Matchbox
@@ -332,60 +331,6 @@ cd NLOJet
 @INSERT_NLOJET@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqqbarqqbarg
 @INSERT_NLOJET@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqqbarqqbargg
 @INSERT_NLOJET@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqqbarqqbarqqbar
-
-cd /Herwig/MatrixElements/Matchbox/Amplitudes
-
-@MKDIR_VBFNLO@ VBFNLO
-
-@CREATE_VBFNLO@ Herwig::VBFNLOAmplitudePP2hJetJet Amplitudeqq2hqqWExchange
-@SET_VBFNLO@ Amplitudeqq2hqqWExchange:Current Charged
-@SET_VBFNLO@ Amplitudeqq2hqqWExchange:Incoming1 Particle
-@SET_VBFNLO@ Amplitudeqq2hqqWExchange:Incoming2 Particle
-
-@CREATE_VBFNLO@ Herwig::VBFNLOAmplitudePP2hJetJet Amplitudeqqbar2hqqbarWExchange
-@SET_VBFNLO@ Amplitudeqqbar2hqqbarWExchange:Current Charged
-@SET_VBFNLO@ Amplitudeqqbar2hqqbarWExchange:Incoming1 Particle
-@SET_VBFNLO@ Amplitudeqqbar2hqqbarWExchange:Incoming2 Antiparticle
-
-@CREATE_VBFNLO@ Herwig::VBFNLOAmplitudePP2hJetJet Amplitudeqbarq2hqbarqWExchange
-@SET_VBFNLO@ Amplitudeqbarq2hqbarqWExchange:Current Charged
-@SET_VBFNLO@ Amplitudeqbarq2hqbarqWExchange:Incoming1 Antiparticle
-@SET_VBFNLO@ Amplitudeqbarq2hqbarqWExchange:Incoming2 Particle
-
-@CREATE_VBFNLO@ Herwig::VBFNLOAmplitudePP2hJetJet Amplitudeqbarqbar2hqbarqbarWExchange
-@SET_VBFNLO@ Amplitudeqbarqbar2hqbarqbarWExchange:Current Charged
-@SET_VBFNLO@ Amplitudeqbarqbar2hqbarqbarWExchange:Incoming1 Antiparticle
-@SET_VBFNLO@ Amplitudeqbarqbar2hqbarqbarWExchange:Incoming2 Antiparticle
-
-@CREATE_VBFNLO@ Herwig::VBFNLOAmplitudePP2hJetJet Amplitudeqq2hqqZExchange
-@SET_VBFNLO@ Amplitudeqq2hqqZExchange:Current Neutral
-@SET_VBFNLO@ Amplitudeqq2hqqZExchange:Incoming1 Particle
-@SET_VBFNLO@ Amplitudeqq2hqqZExchange:Incoming2 Particle
-
-@CREATE_VBFNLO@ Herwig::VBFNLOAmplitudePP2hJetJet Amplitudeqqbar2hqqbarZExchange
-@SET_VBFNLO@ Amplitudeqqbar2hqqbarZExchange:Current Neutral
-@SET_VBFNLO@ Amplitudeqqbar2hqqbarZExchange:Incoming1 Particle
-@SET_VBFNLO@ Amplitudeqqbar2hqqbarZExchange:Incoming2 Antiparticle
-
-@CREATE_VBFNLO@ Herwig::VBFNLOAmplitudePP2hJetJet Amplitudeqbarq2hqbarqZExchange
-@SET_VBFNLO@ Amplitudeqbarq2hqbarqZExchange:Current Neutral
-@SET_VBFNLO@ Amplitudeqbarq2hqbarqZExchange:Incoming1 Antiparticle
-@SET_VBFNLO@ Amplitudeqbarq2hqbarqZExchange:Incoming2 Particle
-
-@CREATE_VBFNLO@ Herwig::VBFNLOAmplitudePP2hJetJet Amplitudeqbarqbar2hqbarqbarZExchange
-@SET_VBFNLO@ Amplitudeqbarqbar2hqbarqbarZExchange:Current Neutral
-@SET_VBFNLO@ Amplitudeqbarqbar2hqbarqbarZExchange:Incoming1 Antiparticle
-@SET_VBFNLO@ Amplitudeqbarqbar2hqbarqbarZExchange:Incoming2 Antiparticle
-
-@INSERT_VBFNLO@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqq2hqqWExchange
-@INSERT_VBFNLO@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqqbar2hqqbarWExchange
-@INSERT_VBFNLO@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqbarq2hqbarqWExchange
-@INSERT_VBFNLO@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqbarqbar2hqbarqbarWExchange
-
-@INSERT_VBFNLO@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqq2hqqZExchange
-@INSERT_VBFNLO@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqqbar2hqqbarZExchange
-@INSERT_VBFNLO@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqbarq2hqbarqZExchange
-@INSERT_VBFNLO@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqbarqbar2hqbarqbarZExchange
 
 ################################################################################
 # Setup utilities for matching
