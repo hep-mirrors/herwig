@@ -91,11 +91,15 @@ template<unsigned int N, unsigned int I, unsigned int F>
 double NLOJetAmplitude<N,I,F>::colourCorrelatedME2(pair<int,int> ij) const {
   double Nc = generator()->standardModel()->Nc();
   double cfac = mePartonData()[ij.first]->id() == ParticleID::g ? Nc : (sqr(Nc)-1.)/(2.*Nc);
+  if ( !calculateColourCorrelator(ij) )
+    return lastColourCorrelator(ij)/cfac;
   pair<int,int> ijp(ij.first-1,ij.second-1);
-  return 
+  double res = 
     pow(4.*Constants::pi*SM().alphaS(),double(orderInAlphaS()))*
     pow(lastSHat()/GeV2,double(mePartonData().size()-4))*
-    treeLevelCC(ijp,crossingMap())/cfac;
+    treeLevelCC(ijp,crossingMap());
+  lastColourCorrelator(ij,res);
+  return res/cfac;
 }
 
 template<unsigned int N, unsigned int I, unsigned int F>

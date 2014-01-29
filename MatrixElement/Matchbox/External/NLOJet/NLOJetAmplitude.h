@@ -113,23 +113,29 @@ public:
    * Return the matrix element squared.
    */
   virtual double me2() const { 
-    return 
+    if ( !calculateTreeME2() )
+      return lastTreeME2();
+    double res = 
       pow(4.*Constants::pi*SM().alphaS(),double(orderInAlphaS()))*
       pow(lastSHat()/GeV2,double(mePartonData().size()-4))*
       treeLevel2(crossingMap());
+    lastTreeME2(res);
+    return lastTreeME2();
   }
 
   /**
    * Return the one-loop/tree interference.
    */
   virtual double oneLoopInterference() const { 
-    // JK
-    //    return 0.0;
-    return 
+    if ( !calculateOneLoopInterference() )
+      return lastOneLoopInterference();
+    double res = 
       pow(4.*Constants::pi*SM().alphaS(),double(orderInAlphaS()))*
       (SM().alphaS()/(2.*Constants::pi))*
       pow(lastSHat()/GeV2,double(mePartonData().size()-4))*
       treeOneLoop(crossingMap());
+    lastOneLoopInterference(res);
+    return lastOneLoopInterference();
   }
 
   /**
