@@ -107,7 +107,7 @@ StdXCombPtr SubtractedME::makeXComb(Energy newMaxEnergy, const cPDPair & inc,
 	  continue;
 	if ( i > 1 && 
 	     (*p)[i]->id() == ParticleID::g ) {
-	  softHistograms[SoftSubtractionIndex(*p,i)] = SubtractionHistogram(0.001,10.);
+	  softHistograms[SoftSubtractionIndex(*p,i)] = SubtractionHistogram(0.00001,1000.);
 	  if ( theReal->phasespace() )
 	    res->singularLimits().insert(make_pair(i,i));
 	}
@@ -138,7 +138,7 @@ StdXCombPtr SubtractedME::makeXComb(Energy newMaxEnergy, const cPDPair & inc,
 	  }
 	  if ( !haveDipole )
 	    continue;
-	  collinearHistograms[CollinearSubtractionIndex(*p,make_pair(i,j))] = SubtractionHistogram(0.001,20.);
+	  collinearHistograms[CollinearSubtractionIndex(*p,make_pair(i,j))] = SubtractionHistogram(0.00001,1000.);
 	  if ( theReal->phasespace() )
 	    res->singularLimits().insert(make_pair(i,j));
 	}
@@ -604,6 +604,9 @@ void SubtractedME::SubtractionHistogram::
 dump(const std::string& prefix, 
      const cPDVector& proc,
      int i, int j) const {
+  bool bbmin = true;
+  float bmin = bins.begin()->first;
+  float bmax = bins.begin()->first;
   ostringstream fname("");
   for ( cPDVector::const_iterator p = proc.begin();
 	p != proc.end(); ++p )
@@ -615,31 +618,48 @@ dump(const std::string& prefix,
     map<double,pair<double,double> >::const_iterator bp = b; --bp;
     if ( b->second.first != Constants::MaxDouble ||
 	 b->second.second != 0.0 ) {
-      if ( b != bins.begin() )
-	out << bp->first;
-      else
-	out << lower;
+      if ( b != bins.begin() ){
+        out << bp->first;
+        if (bbmin){
+          bmin = bp->first;
+          bbmin = false;
+        }
+      }
+      else {
+        out << lower;
+        if (bbmin){
+          bmin = lower;
+          bbmin = false;
+        }
+      }
+      bmax = b->first;
       out << " " << b->first
 	  << " " << b->second.first
 	  << " " << b->second.second
 	  << "\n" << flush;
     }
   }
+  float xmin = pow(10.0, floor(log10(bmin)));
+  float xmax = pow(10.0, ceil(log10(bmax)));
   ofstream gpout((prefix+fname.str()+".gp").c_str());
-  gpout << "set terminal epslatex color solid;\n"
-	<< "set output '" << fname.str() << "-plot.tex';\n"
-	<< "set log x;\n"
-	<< "set size 0.5,0.6;\n"
-	<< "set yrange [0:2];\n"
-	<< "set xrange [0.001:10];\n";
+  gpout << "set terminal epslatex color solid\n"
+	<< "set output '" << fname.str() << "-plot.tex'\n"
+	<< "set key left top Left reverse\n"
+	<< "set logscale x\n"
+	<< "set logscale y\n"
+	<< "set format x '$10^{%T}$'\n"
+  << "set format y '$10^{%T}$'\n"
+	<< "set size 0.7,0.8\n"
+	<< "set xrange [" << xmin << ":" << xmax << "]\n"
+  << "set yrange [1e-6:1e1]\n";
   if ( i != j ) {
     gpout << "set xlabel '$\\sqrt{s_{" << i << j << "}}/{\\rm GeV}$'\n";
   } else {
     gpout << "set xlabel '$E_{" << i << "}/{\\rm GeV}$'\n";
   }
-  gpout << "plot 1 w lines lc rgbcolor \"#DDDDDD\" notitle, '" << fname.str() 
-	<< ".dat' u (($1+$2)/2.):3:($4 < 4. ? $4 : 4.) w filledcurves lc rgbcolor \"#00AACC\" t "
-	<< "'$";
+  gpout << "set ylabel '$\\max\\left\\{\\left|\\mathcal{D}-\\mathcal{M}\\right|/\\left|\\mathcal{M}\\right|\\right\\}$'\n"
+  << "unset bars\n"
+  << "plot '" << fname.str() << ".dat' u (($1+$2)/2.):4 w lines lw 4 lc rgbcolor \"#00AACC\" t '$";
   for ( size_t k = 0; k < proc.size(); k++ ) {
     if ( k == 2 )
       gpout << "\\to ";
@@ -647,8 +667,8 @@ dump(const std::string& prefix,
 	  << (proc[k]->id() < 0 ? proc[k]->CC()->PDGName() : proc[k]->PDGName())
 	  << (proc[k]->id() < 0 ? "}" : "") << " ";
   }
-  gpout << "$';\n";
-  gpout << "reset;\n";
+  gpout << "$'\n";
+  gpout << "reset\n";
 }
 
 void SubtractedME::lastEventSubtraction() {
@@ -673,7 +693,7 @@ void SubtractedME::lastEventSubtraction() {
   if ( xc->cutWeight() < 1.0 )
     return;
 
-  double delta = abs(xcdip)/abs(xcme2);
+  double delta = fabs(xcdip+xcme2)/fabs(xcme2);
 
   if ( theReal->phasespace() ) {
     size_t i = lastSingularLimit()->first;
