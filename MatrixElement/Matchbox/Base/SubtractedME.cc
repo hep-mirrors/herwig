@@ -605,8 +605,8 @@ dump(const std::string& prefix,
      const cPDVector& proc,
      int i, int j) const {
   bool bbmin = true;
-  float bmin = bins.begin()->first;
-  float bmax = bins.begin()->first;
+  double bmin = bins.begin()->first;
+  double bmax = bins.begin()->first;
   ostringstream fname("");
   for ( cPDVector::const_iterator p = proc.begin();
 	p != proc.end(); ++p )
@@ -639,8 +639,8 @@ dump(const std::string& prefix,
 	  << "\n" << flush;
     }
   }
-  float xmin = pow(10.0, floor(log10(bmin)));
-  float xmax = pow(10.0, ceil(log10(bmax)));
+  double xmin = pow(10.0, floor(log10(bmin)));
+  double xmax = pow(10.0, ceil(log10(bmax)));
   ofstream gpout((prefix+fname.str()+".gp").c_str());
   gpout << "set terminal epslatex color solid\n"
 	<< "set output '" << fname.str() << "-plot.tex'\n"
