@@ -693,7 +693,7 @@ void SubtractedME::lastEventSubtraction() {
   if ( xc->cutWeight() < 1.0 )
     return;
 
-  double delta = fabs(xcdip+xcme2)/fabs(xcme2);
+  double delta = abs(xcdip+xcme2)/abs(xcme2);
 
   if ( theReal->phasespace() ) {
     size_t i = lastSingularLimit()->first;
