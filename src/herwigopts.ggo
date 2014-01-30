@@ -36,6 +36,9 @@ option "debug-fpe" D "Enable floating point exceptions."
 option "quiet" q "Disable event counter."
   flag off
 
+option "jobs" j "Number of jobs to run in parallel (max 10)."
+  int  optional
+
 section "Repository options"
 text ""
 
