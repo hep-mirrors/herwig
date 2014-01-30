@@ -85,20 +85,27 @@ bool NJetsAmplitude::startOLP(const map<pair<Process,int>,int>& procs) {
 
 LorentzVector<Complex> NJetsAmplitude::plusPolarization(const Lorentz5Momentum& p,
 							const Lorentz5Momentum& n,
-							int) const {
+							int inc) const {
 
-  Lorentz5Momentum pSwap = p;
-  Lorentz5Momentum nSwap = n;
+  double pvec[4] = {p.t()/GeV,p.x()/GeV,p.y()/GeV,p.z()/GeV};
+  double nvec[4] = {n.t()/GeV,n.x()/GeV,n.y()/GeV,n.z()/GeV};
+  double out[8] ={ };
+  NJet::LH_OLP::OLP_Polvec(pvec,nvec,out);
 
-  Energy py = pSwap.y();
-  pSwap.setY(pSwap.x());
-  pSwap.setX(py);
-
-  py = nSwap.y();
-  nSwap.setY(nSwap.x());
-  nSwap.setX(py);
-
-  return MatchboxAmplitude::plusPolarization(pSwap,nSwap);
+  LorentzVector<Complex> res;
+  Complex a(out[0],out[1]);
+  res.setT(a);
+  Complex b(out[2],out[3]);
+  res.setX(b);
+  Complex c(out[4],out[5]);
+  res.setY(c);
+  Complex d(out[6],out[7]);
+  res.setZ(d);
+	
+  if (inc<2)
+    return res.conjugate();
+  else 
+    return res;
 
 }
 
