@@ -511,6 +511,7 @@ void SubtractedME::dofinish() {
 	  const_iterator b = collinearHistograms.begin();
 	b != collinearHistograms.end(); ++b ) {
     b->second.dump(factory()->subtractionData(),
+       factory()->subtractionPlotType(),
 		   b->first.first,
 		   b->first.second.first,
 		   b->first.second.second);
@@ -520,6 +521,7 @@ void SubtractedME::dofinish() {
 	  const_iterator b = softHistograms.begin();
 	b != softHistograms.end(); ++b ) {
     b->second.dump(factory()->subtractionData(),
+       factory()->subtractionPlotType(),
 		   b->first.first,
 		   b->first.second,
 		   b->first.second);
@@ -602,6 +604,7 @@ void SubtractedME::SubtractionHistogram::persistentInput(PersistentIStream& is) 
 
 void SubtractedME::SubtractionHistogram::
 dump(const std::string& prefix, 
+     const int& plottype,
      const cPDVector& proc,
      int i, int j) const {
   bool bbmin = true;
@@ -643,29 +646,37 @@ dump(const std::string& prefix,
   double xmax = pow(10.0, ceil(log10(bmax)));
   ofstream gpout((prefix+fname.str()+".gp").c_str());
   gpout << "set terminal epslatex color solid\n"
-	<< "set output '" << fname.str() << "-plot.tex'\n"
-	<< "set key left top Left reverse\n"
-	<< "set logscale x\n"
-	<< "set logscale y\n"
-	<< "set format x '$10^{%T}$'\n"
-  << "set format y '$10^{%T}$'\n"
-	<< "set size 0.7,0.8\n"
-	<< "set xrange [" << xmin << ":" << xmax << "]\n"
-  << "set yrange [1e-6:1e1]\n";
+      << "set output '" << fname.str() << "-plot.tex'\n"
+      << "set format x '$10^{%T}$'\n"
+      << "set logscale x\n"
+      << "set xrange [" << xmin << ":" << xmax << "]\n";
   if ( i != j ) {
     gpout << "set xlabel '$\\sqrt{s_{" << i << j << "}}/{\\rm GeV}$'\n";
   } else {
     gpout << "set xlabel '$E_{" << i << "}/{\\rm GeV}$'\n";
   }
-  gpout << "set ylabel '$\\max\\left\\{\\left|\\mathcal{D}-\\mathcal{M}\\right|/\\left|\\mathcal{M}\\right|\\right\\}$'\n"
-  << "unset bars\n"
-  << "plot '" << fname.str() << ".dat' u (($1+$2)/2.):4 w lines lw 4 lc rgbcolor \"#00AACC\" t '$";
+  if (plottype == 1){
+    gpout << "set size 0.5,0.6\n"
+    << "set yrange [0:2]\n";
+    gpout << "plot 1 w lines lc rgbcolor \"#DDDDDD\" notitle, '" << fname.str()
+    << ".dat' u (($1+$2)/2.):3:($4 < 4. ? $4 : 4.) w filledcurves lc rgbcolor \"#00AACC\" t '$";
+  }
+  else if (plottype == 2){
+    gpout << "set key left top Left reverse\n"
+        << "set logscale y\n"
+        << "set format y '$10^{%T}$'\n"
+        << "set size 0.7,0.8\n"
+        << "set yrange [1e-6:1e1]\n"
+        << "set ylabel '$\\max\\left\\{\\left|\\mathcal{D}-\\mathcal{M}\\right|/\\left|\\mathcal{M}\\right|\\right\\}$'\n"
+        << "unset bars\n";
+    gpout << "plot '" << fname.str() << ".dat' u (($1+$2)/2.):4 w lines lw 4 lc rgbcolor \"#00AACC\" t '$";
+  }
   for ( size_t k = 0; k < proc.size(); k++ ) {
     if ( k == 2 )
       gpout << "\\to ";
     gpout << (proc[k]->id() < 0 ? "\\bar{" : "")
-	  << (proc[k]->id() < 0 ? proc[k]->CC()->PDGName() : proc[k]->PDGName())
-	  << (proc[k]->id() < 0 ? "}" : "") << " ";
+    << (proc[k]->id() < 0 ? proc[k]->CC()->PDGName() : proc[k]->PDGName())
+    << (proc[k]->id() < 0 ? "}" : "") << " ";
   }
   gpout << "$'\n";
   gpout << "reset\n";
@@ -693,7 +704,9 @@ void SubtractedME::lastEventSubtraction() {
   if ( xc->cutWeight() < 1.0 )
     return;
 
-  double delta = abs(xcdip+xcme2)/abs(xcme2);
+  double delta;
+  if (factory()->subtractionPlotType() == 2) delta = abs(xcdip+xcme2)/abs(xcme2);
+  else delta = abs(xcdip)/abs(xcme2);
 
   if ( theReal->phasespace() ) {
     size_t i = lastSingularLimit()->first;

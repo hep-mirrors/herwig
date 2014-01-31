@@ -544,6 +544,16 @@ public:
   void subtractionData(const string& s) { theSubtractionData = s; }
 
   /**
+   * Return the subtraction plot type.
+   */
+  const int& subtractionPlotType() const { return theSubtractionPlotType; }
+
+  /**
+   * Set the subtraction plot type.
+   */
+  void subtractionPlotType(const int& t) { theSubtractionPlotType = t; }
+
+  /**
    * Return the pole data prefix.
    */
   const string& poleData() const { return thePoleData; }
@@ -788,6 +798,11 @@ private:
    * Prefix for subtraction data
    */
   string theSubtractionData;
+
+  /**
+   * Set the type of plot that is to be generated for subtraction checking
+   */
+  int theSubtractionPlotType;
 
   /**
    * Prefix for pole data.

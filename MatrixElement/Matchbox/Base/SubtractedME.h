@@ -360,6 +360,7 @@ public:
      * Write to file given name and invariant.
      */
     void dump(const std::string& prefix, 
+        const int& plottype,
 	      const cPDVector& proc,
 	      int i, int j) const;
 

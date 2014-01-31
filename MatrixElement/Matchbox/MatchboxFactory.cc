@@ -42,7 +42,7 @@ MatchboxFactory::MatchboxFactory()
     theFactorizationScaleFactor(1.0), theRenormalizationScaleFactor(1.0),
     theFixedCouplings(false), theFixedQEDCouplings(false), theVetoScales(false),
     theDipoleSet(0), theVerbose(false), theInitVerbose(false), 
-    theSubtractionData(""), thePoleData(""),
+    theSubtractionData(""), theSubtractionPlotType(1), thePoleData(""),
     theRealEmissionScales(false), theAllProcesses(false),
     theMECorrectionsOnly(false) {}
 
@@ -903,7 +903,7 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
      << theAmplitudes
      << theBornMEs << theVirtuals << theRealEmissionMEs
      << theBornVirtualMEs << theSubtractedMEs << theFiniteRealMEs
-     << theVerbose << theInitVerbose << theSubtractionData << thePoleData
+     << theVerbose << theInitVerbose << theSubtractionData << theSubtractionPlotType << thePoleData
      << theParticleGroups << processes << realEmissionProcesses
      << theShowerApproximation << theSplittingDipoles
      << theRealEmissionScales << theAllProcesses
@@ -924,7 +924,7 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
      >> theAmplitudes
      >> theBornMEs >> theVirtuals >> theRealEmissionMEs
      >> theBornVirtualMEs >> theSubtractedMEs >> theFiniteRealMEs
-     >> theVerbose >> theInitVerbose >> theSubtractionData >> thePoleData
+     >> theVerbose >> theInitVerbose >> theSubtractionData >> theSubtractionPlotType >> thePoleData
      >> theParticleGroups >> processes >> realEmissionProcesses
      >> theShowerApproximation >> theSplittingDipoles
      >> theRealEmissionScales >> theAllProcesses
@@ -1298,6 +1298,21 @@ void MatchboxFactory::Init() {
      &MatchboxFactory::theSubtractionData, "",
      false, false);
 
+  static Switch<MatchboxFactory,int> interfaceSubtractionPlotType
+    ("SubtractionPlotType",
+     "Switch for controlling what kind of plot is generated for checking the subtraction",
+     &MatchboxFactory::theSubtractionPlotType, 1, false, false);
+  static SwitchOption interfaceSubtractionPlotTypeLinearRatio
+    (interfaceSubtractionPlotType,
+     "LinRatio",
+     "Switch on the linear plot of the ratio",
+     1);
+  static SwitchOption interfaceSubtractionPlotTypeLogRelDiff
+    (interfaceSubtractionPlotType,
+     "LogRelDiff",
+     "Switch on the logarithmic plot of the relative difference",
+     2);
+
   static Parameter<MatchboxFactory,string> interfacePoleData
     ("PoleData",
      "Prefix for subtraction check data.",
@@ -1409,7 +1424,6 @@ void MatchboxFactory::Init() {
      "No",
      "Produce full NLO.",
      false);
-
 
 }
 
