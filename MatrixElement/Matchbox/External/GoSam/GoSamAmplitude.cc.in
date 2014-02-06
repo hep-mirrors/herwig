@@ -46,32 +46,38 @@ IBPtr GoSamAmplitude::fullclone() const {
 	return new_ptr(*this);
 }
 
+extern "C" void OLP_Start(const char*, int* i);
+extern "C" void OLP_Polvec(double*, double*, double*);
+// extern "C" void OLP_EvalSubProcess(int, double*, double, double*, double*);
+
+extern "C" void OLP_SetParameter(char*, double*, double*, int*);
+extern "C" void OLP_EvalSubProcess2(int*, double*, double*, double*, double*);
+
 void GoSamAmplitude::signOLP(const string& order, const string& contract) {
 	if(!theCodeExists){
-	string cmd = "@GOSAMPREFIX@/bin/gosam.py --olp  -o " + contract + "  --config=../setup.in  " + order;
-	std::system(cmd.c_str());
-	if (gosamInstallPath!=""){
-	cmd = "cp "+ contract +" "+ order+" "+gosamInstallPath+"/";
-	std::system(cmd.c_str());
-	}
+	  string cmd = "@GOSAMPREFIX@/bin/gosam.py --olp  -o " + contract + "  --config=../setup.in  " + order;
+	  std::system(cmd.c_str());
+	  if (gosamInstallPath!=""){
+	    cmd = "cp "+ contract +" "+ order+" "+gosamInstallPath+"/";
+	    std::system(cmd.c_str());
+	  }
 	}
 }
 
 bool GoSamAmplitude::buildGoSam() {
 	if(!theCodeExists){
-	char cwd[256];
-	string cmd = "sh autogen.sh FCFLAGS=-g --prefix=";
-	if (gosamInstallPath=="")cmd+= string(getcwd(cwd, sizeof(cwd)));
-	else cmd +=  gosamInstallPath;
-	std::system(cmd.c_str());
-	cmd = "make install";
-	std::system(cmd.c_str());
+	  char cwd[256];
+	  string cmd = "sh autogen.sh FCFLAGS=-g --prefix=";
+	  if (gosamInstallPath=="")cmd+= string(getcwd(cwd, sizeof(cwd)));
+	  else cmd +=  gosamInstallPath;
+	  std::system(cmd.c_str());
+	  cmd = "make install";
+	  std::system(cmd.c_str());
 	}
 	theCodeExists=true;
 	return 1;
 }
 
-extern "C" void OLP_Start(const char*, int* i);
 void GoSamAmplitude::startOLP(const string& contract, int& status) {
 	string tempcontract=contract;
 	if (gosamInstallPath==""){if ( !( DynamicLoader::load("lib/libgolem_olp.so") || DynamicLoader::load("lib64/libgolem_olp.so") ) ) assert(0);}
@@ -81,35 +87,68 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
 	OLP_Start(tempcontract.c_str(), &status);
 
 	// hand over input parameters for EW scheme considered
-	/*
+	
 	int pStatus = 0;
 	double zero = 0.0;
 	if ( SM().ewScheme() == 0 || SM().ewScheme() == 6 ) {
 	  throw Exception() << "`Best value' schemes are not supported by GoSam"
 			    << Exception::abortnow;
 	} else if ( SM().ewScheme() == 1 ) {
-	  OLP_SetParameter("mass(23)",getParticleData(ParticleID::Z0)->mass()/GeV,&zero,&pStatus);
-	  OLP_SetParameter("mass(24)",getParticleData(ParticleID::Wplus)->mass()/GeV,&zero,&pStatus);
-	  OLP_SetParameter("Gf",SM().fermiConstant()*GeV2,&zero,&pStatus);
+	  double in1=getParticleData(ParticleID::Z0)->mass()/GeV;
+	  double in2=getParticleData(ParticleID::Wplus)->mass()/GeV;
+	  double in3=SM().fermiConstant()*GeV2;
+	  OLP_SetParameter((char *)"mass(23)",&in1,&zero,&pStatus);
+	  OLP_SetParameter((char *)"mass(24)",&in2,&zero,&pStatus);
+	  OLP_SetParameter((char *)"Gf",&in3,&zero,&pStatus);
+	  // OLP_SetParameter("mass(23)",getParticleData(ParticleID::Z0)->mass()/GeV,&zero,&pStatus);
+	  // OLP_SetParameter("mass(24)",getParticleData(ParticleID::Wplus)->mass()/GeV,&zero,&pStatus);
+	  // OLP_SetParameter("Gf",SM().fermiConstant()*GeV2,&zero,&pStatus);
 	} else if ( SM().ewScheme() == 2 ) {
-	  OLP_SetParameter("mass(23)",getParticleData(ParticleID::Z0)->mass()/GeV,&zero,&pStatus);
-	  OLP_SetParameter("mass(24)",getParticleData(ParticleID::Wplus)->mass()/GeV,&zero,&pStatus);
-	  OLP_SetParameter("alpha",SM().alphaEMMZ(),&zero,&pStatus);
+	  double in1=getParticleData(ParticleID::Z0)->mass()/GeV;
+	  double in2=getParticleData(ParticleID::Wplus)->mass()/GeV;
+	  double in3=SM().alphaEMMZ();
+	  OLP_SetParameter((char *)"mass(23)",&in1,&zero,&pStatus);
+	  OLP_SetParameter((char *)"mass(24)",&in2,&zero,&pStatus);
+	  OLP_SetParameter((char *)"alpha",&in3,&zero,&pStatus);
+	  // OLP_SetParameter("mass(23)",getParticleData(ParticleID::Z0)->mass()/GeV,&zero,&pStatus);
+	  // OLP_SetParameter("mass(24)",getParticleData(ParticleID::Wplus)->mass()/GeV,&zero,&pStatus);
+	  // OLP_SetParameter("alpha",SM().alphaEMMZ(),&zero,&pStatus);
 	} else if ( SM().ewScheme() == 3 ) {
-	  OLP_SetParameter("Gf",SM().fermiConstant()*GeV2,&zero,&pStatus);
-	  OLP_SetParameter("alpha",SM().alphaEMMZ(),&zero,&pStatus);
-	  OLP_SetParameter("sw2",SM().sin2ThetaW(),&zero,&pStatus);
+	  double in1=SM().fermiConstant()*GeV2;
+	  double in2=SM().alphaEMMZ();
+	  double in3=SM().sin2ThetaW();
+	  OLP_SetParameter((char *)"Gf",&in1,&zero,&pStatus);
+	  OLP_SetParameter((char *)"alpha",&in2,&zero,&pStatus);
+	  OLP_SetParameter((char *)"sw2",&in3,&zero,&pStatus);
+	  // OLP_SetParameter("Gf",SM().fermiConstant()*GeV2,&zero,&pStatus);
+	  // OLP_SetParameter("alpha",SM().alphaEMMZ(),&zero,&pStatus);
+	  // OLP_SetParameter("sw2",SM().sin2ThetaW(),&zero,&pStatus);
 	} else if ( SM().ewScheme() == 4 ) {
-	  OLP_SetParameter("mass(24)",getParticleData(ParticleID::Wplus)->mass()/GeV,&zero,&pStatus);
-	  OLP_SetParameter("Gf",SM().fermiConstant()*GeV2,&zero,&pStatus);
-	  OLP_SetParameter("sw2",SM().sin2ThetaW(),&zero,&pStatus);
+	  double in1=getParticleData(ParticleID::Wplus)->mass()/GeV;
+	  double in2=SM().fermiConstant()*GeV2;
+	  double in3=SM().sin2ThetaW();
+	  OLP_SetParameter((char *)"mass(24)",&in1,&zero,&pStatus);
+	  OLP_SetParameter((char *)"Gf",&in2,&zero,&pStatus);
+	  OLP_SetParameter((char *)"sw2",&in3,&zero,&pStatus);
+	  // OLP_SetParameter("mass(24)",getParticleData(ParticleID::Wplus)->mass()/GeV,&zero,&pStatus);
+	  // OLP_SetParameter("Gf",SM().fermiConstant()*GeV2,&zero,&pStatus);
+	  // OLP_SetParameter("sw2",SM().sin2ThetaW(),&zero,&pStatus);
 	} else if ( SM().ewScheme() == 5 ) {
-	  OLP_SetParameter("mass(23)",getParticleData(ParticleID::Z0)->mass()/GeV,&zero,&pStatus);
-	  OLP_SetParameter("alpha",SM().alphaEMMZ(),&zero,&pStatus);
-	  OLP_SetParameter("sw2",SM().sin2ThetaW(),&zero,&pStatus);
+	  double in1=getParticleData(ParticleID::Z0)->mass()/GeV;
+	  double in2=SM().alphaEMMZ();
+	  double in3=SM().sin2ThetaW();
+	  OLP_SetParameter((char *)"mass(23)",&in1,&zero,&pStatus);
+	  OLP_SetParameter((char *)"alpha",&in2,&zero,&pStatus);
+	  OLP_SetParameter((char *)"sw2",&in3,&zero,&pStatus);
+	  // OLP_SetParameter("mass(23)",getParticleData(ParticleID::Z0)->mass()/GeV,&zero,&pStatus);
+	  // OLP_SetParameter("alpha",SM().alphaEMMZ(),&zero,&pStatus);
+	  // OLP_SetParameter("sw2",SM().sin2ThetaW(),&zero,&pStatus);
 	}
-	*/
+	
+	// hand over input parameter for alphaS
 
+	double as = SM().alphaS();
+	OLP_SetParameter((char *)"alphaS", &as, &zero, &pStatus);
 
 }
 
@@ -121,36 +160,36 @@ void GoSamAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs) {
 	int maxlegs = -1;
 
 	for ( map<pair<Process, int>, int>::const_iterator t = procs.begin() ; t != procs.end() ; ++t ) {
-	        asPower = min(asPower, static_cast<int>(t->first.first.orderInAlphaS));
-		minlegs = min(minlegs, static_cast<int>(t->first.first.legs.size()));
-		maxlegs = max(maxlegs, static_cast<int>(t->first.first.legs.size()));
+	  asPower = min(asPower, static_cast<int>(t->first.first.orderInAlphaS));
+	  minlegs = min(minlegs, static_cast<int>(t->first.first.legs.size()));
+	  maxlegs = max(maxlegs, static_cast<int>(t->first.first.legs.size()));
 	}
 
 	orderFile << "# OLP order file created by Herwig++/Matchbox for GoSam\n\n";
-// 	orderFile << "InterfaceVersion         BLHA2\n";
+	orderFile << "InterfaceVersion         BLHA2\n";
 	orderFile << "MatrixElementSquareType  CHsummed\n";
 	orderFile << "CorrectionType           QCD\n";
 	orderFile << "IRregularisation         " << (isDR() ? "DRED" : "CDR") << "\n";
 	orderFile << "\n";
 
 	for ( map<pair<Process, int>, int>::const_iterator p = procs.begin() ; p != procs.end() ; ++p ) {
-		std::stringstream Processstr;
-		std::stringstream Typestr;
-		Processstr << (*p).first.first.legs[0]->id() << " " << (*p).first.first.legs[1]->id() << " -> ";
-		for ( PDVector::const_iterator o = (*p).first.first.legs.begin() + 2 ; o != (*p).first.first.legs.end() ; ++o )
-			Processstr << (**o).id() << " ";
-		if ( (*p).first.second == ProcessType::treeME2 ) {
-			Typestr << "Tree";
-		} else if ( (*p).first.second == ProcessType::colourCorrelatedME2 ) {
-			Typestr << "ccTree";
-		} else if ( (*p).first.second == ProcessType::spinColourCorrelatedME2 ) {
-			Typestr << "scTree";
-		} else if ( (*p).first.second == ProcessType::oneLoopInterference ) {
-			Typestr << "Loop";
-		}
-		gosamprocinfo pro = gosamprocinfo((*p).second, -1, Processstr.str(), Typestr.str());
-		pro.setOAs(p->first.first.orderInAlphaS);
-		processmap[(*p).second] = pro;
+	  std::stringstream Processstr;
+	  std::stringstream Typestr;
+	  Processstr << (*p).first.first.legs[0]->id() << " " << (*p).first.first.legs[1]->id() << " -> ";
+	  for ( PDVector::const_iterator o = (*p).first.first.legs.begin() + 2 ; o != (*p).first.first.legs.end() ; ++o )
+	    Processstr << (**o).id() << " ";
+	  if ( (*p).first.second == ProcessType::treeME2 ) {
+	    Typestr << "Tree";
+	  } else if ( (*p).first.second == ProcessType::colourCorrelatedME2 ) {
+	    Typestr << "ccTree";
+	  } else if ( (*p).first.second == ProcessType::spinColourCorrelatedME2 ) {
+	    Typestr << "scTree";
+	  } else if ( (*p).first.second == ProcessType::oneLoopInterference ) {
+	    Typestr << "Loop";
+	  }
+	  gosamprocinfo pro = gosamprocinfo((*p).second, -1, Processstr.str(), Typestr.str());
+	  pro.setOAs(p->first.first.orderInAlphaS);
+	  processmap[(*p).second] = pro;
 	}
 
 	vector < string > types;
@@ -159,20 +198,21 @@ void GoSamAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs) {
 	types.push_back("scTree");
 	types.push_back("Loop");
 	for ( int i = asPower ; i != asPower + maxlegs - minlegs + 1 ; i++ ) {
-		orderFile << "\n\nAlphasPower              " << i;
-		for ( vector<string>::iterator it = types.begin() ; it != types.end() ; it++ ) {
-			for ( map<int, gosamprocinfo>::iterator p = processmap.begin() ; p != processmap.end() ; ++p )
-				if ( (*p).second.Tstr() == *it && i == (*p).second.orderAs() ) {
-					orderFile << "\nAmplitudeType " << *it << "\n";
-					break;
-				}
-			for ( map<int, gosamprocinfo>::iterator p = processmap.begin() ; p != processmap.end() ; ++p )
-				if ( (*p).second.Tstr() == *it && i == (*p).second.orderAs() ) {
-					orderFile << (*p).second.Pstr() << "\n";
-				}
-		}
+	  orderFile << "\n\nAlphasPower              " << i;
+	  for ( vector<string>::iterator it = types.begin() ; it != types.end() ; it++ ) {
+	    for ( map<int, gosamprocinfo>::iterator p = processmap.begin() ; p != processmap.end() ; ++p )
+	      if ( (*p).second.Tstr() == *it && i == (*p).second.orderAs() ) {
+	        orderFile << "\nAmplitudeType " << *it << "\n";
+		break;
+	      }
+	    for ( map<int, gosamprocinfo>::iterator p = processmap.begin() ; p != processmap.end() ; ++p )
+	      if ( (*p).second.Tstr() == *it && i == (*p).second.orderAs() ) {
+	        orderFile << (*p).second.Pstr() << "\n";
+	      }
+	  }
 	}
 	orderFile << flush;
+
 }
 
 bool GoSamAmplitude::checkOLPContract() {
@@ -185,27 +225,26 @@ bool GoSamAmplitude::checkOLPContract() {
 		contractfile.push_back(line);
 	}
 	for ( map<int, gosamprocinfo>::iterator p = processmap.begin() ; p != processmap.end() ; p++ ) {
-		bool righttype = false;
-		for ( vector<string>::iterator linex = contractfile.begin() ; linex != contractfile.end() ; ++linex ) {
-			if ( (*linex).find("AmplitudeType ")!= std::string::npos ) {
-				if ( (*linex).find(" " + (*p).second.Tstr() + " ")!= std::string::npos ) {
-					righttype = true;
-				} else {
-					righttype = false;
-				}
-			}
-			if ( righttype ) {
-				if ( (*linex).find((*p).second.Pstr()) != std::string::npos && (*p).second.Pstr().length() == (*linex).find("|") ) {
-					string sub = (*linex).substr((*linex).find("|") + 1, (*linex).find("#") - (*linex).find("|") - 1); // | 1 23 # buggy??
-					if ( sub.find(" 1 ") != 0 ) assert(0);
-					string subx = sub.substr(3);
-					int subint;
-					istringstream(subx) >> subint;
-					(*p).second.setGID(subint);
-				}
-			}
-		}
-
+	  bool righttype = false;
+	  for ( vector<string>::iterator linex = contractfile.begin() ; linex != contractfile.end() ; ++linex ) {
+	    if ( (*linex).find("AmplitudeType ")!= std::string::npos ) {
+	      if ( (*linex).find(" " + (*p).second.Tstr() + " ")!= std::string::npos ) {
+	        righttype = true;
+	      } else {
+	        righttype = false;
+	      }
+	    }
+	    if ( righttype ) {
+	      if ( (*linex).find((*p).second.Pstr()) != std::string::npos && (*p).second.Pstr().length() == (*linex).find("|") ) {
+	        string sub = (*linex).substr((*linex).find("|") + 1, (*linex).find("#") - (*linex).find("|") - 1); // | 1 23 # buggy??
+		if ( sub.find(" 1 ") != 0 ) assert(0);
+		string subx = sub.substr(3);
+		int subint;
+		istringstream(subx) >> subint;
+		(*p).second.setGID(subint);
+	      }
+	    }
+	  }
 	}
 
 	string ids = "ids.dat";
@@ -221,24 +260,26 @@ bool GoSamAmplitude::checkOLPContract() {
 	ids = "installpath.dat";
 	ofstream Install(ids.c_str());
 	Install<<gosamInstallPath << flush;
-	
 
 	return 1;
+
 }
+
 void GoSamAmplitude::getids() const{
 	string line = "ids.dat";
 	ifstream infile(line.c_str());
 	int hid;
 	int gid;
 	while (std::getline(infile, line)) {
-	   istringstream(line) >> hid>>gid;
-	   idpair.insert ( std::pair<int,int>(hid,gid) );
+	 istringstream(line) >> hid>>gid;
+	 idpair.insert ( std::pair<int,int>(hid,gid) );
 	}
 	line ="installpath.dat";
 	ifstream infile2(line.c_str());
 	std::getline(infile2, line);
 	gosamInstallPath=line;
 }
+
 bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
 	cout << "\nWriting the olp-order file." << flush;
 	string contractFileName = name() + ".OLPContract.lh";
@@ -248,8 +289,8 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
 	signOLP(orderFileName, contractFileName);
 
 	if ( !checkOLPContract() ) {
-		cout << "\n\n!!!!!!!!!!!!!Checking the olp-contract failed!!!!!!!!!!!\n\n" << flush;
-		assert(0);
+	  cout << "\n\n!!!!!!!!!!!!!Checking the olp-contract failed!!!!!!!!!!!\n\n" << flush;
+	  assert(0);
 	} else cout << "\nChecked the olp-contract! Everything is OK! Let's build!\n" << flush;
 
 	buildGoSam();
@@ -261,13 +302,13 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
 	return true;
 
 }
-extern "C" void OLP_Polvec(double*,double*,double*);
+
 LorentzVector<Complex> GoSamAmplitude::plusPolarization(const Lorentz5Momentum& p, const Lorentz5Momentum& n, int inc) const {
 
 	double pvec[4] = {p.t()/GeV,p.x()/GeV,p.y()/GeV,p.z()/GeV};
 	double nvec[4] = {n.t()/GeV,n.x()/GeV,n.y()/GeV,n.z()/GeV};
 	double out[8] ={ };
-	 OLP_Polvec(pvec,nvec,out);
+	OLP_Polvec(pvec,nvec,out);
 
 	LorentzVector<Complex> res;
 	Complex a(out[0],out[1]);
@@ -285,15 +326,15 @@ LorentzVector<Complex> GoSamAmplitude::plusPolarization(const Lorentz5Momentum& 
 	  return res;
 
 }
-extern "C" void OLP_EvalSubProcess(int, double*, double, double*, double*);
-extern "C" void OLP_EvalSubProcess2(int, double*, double, double*, double*);
 
 void GoSamAmplitude::evalSubProcess() const {
 	double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
-	units *= pow(4. * Constants::pi * SM().alphaEMMZ(), orderInGem());
-	units *= pow(4. * Constants::pi * SM().alphaS(), orderInGs());
+	// // units *= pow(4. * Constants::pi * SM().alphaEMMZ(), orderInGem());
+	// // units *= pow(4. * Constants::pi * SM().alphaS(), orderInGs());
 	fillOLPMomenta(lastXComb().meMomenta());
-	double as =   SM().alphaS();
+
+	// double as = SM().alphaS();
+	// // double as = 1.0;
 	double scale = sqrt(mu2() / GeV2);
 
 	double out[7] = { };
@@ -301,85 +342,102 @@ void GoSamAmplitude::evalSubProcess() const {
 	int id = olpId()[ProcessType::oneLoopInterference] ? olpId()[ProcessType::oneLoopInterference] : olpId()[ProcessType::treeME2];
         
 	if ( idpair.size() == 0 ) {
-		getids();
+	  getids();
 	}
 
+	// OLP_EvalSubProcess((*(idpair.find(id))).second, olpMomenta(), scale, &as, out);
 
-	OLP_EvalSubProcess((*(idpair.find(id))).second, olpMomenta(), scale, &as, out);
-	
-
+        // Use OLP_EvalSubProcess2 now
+        double acc;
+	// int pStatus=0;
+	// double zero=0.0;
+	// OLP_SetParameter((char *)"alphaS", &as, &zero, &pStatus);
+	OLP_EvalSubProcess2(&((*(idpair.find(id))).second), olpMomenta(), &scale, out, &acc);
 	
 	if ( olpId()[ProcessType::oneLoopInterference] ) {
-		
-		lastTreeME2(out[3] * units);
-		lastOneLoopInterference((out[2])* units);
-		lastOneLoopPoles(pair<double, double>(out[0] * units, out[1] * units));
+	  lastTreeME2(out[3] * units);
+	  lastOneLoopInterference((out[2])* units);
+	  lastOneLoopPoles(pair<double, double>(out[0] * units, out[1] * units));
 	} else if ( olpId()[ProcessType::treeME2] ) {
-		lastTreeME2(out[3] * units);
+	  lastTreeME2(out[3] * units);
 	}
-	
 	
 }
 
 void GoSamAmplitude::evalColourCorrelator(pair<int, int> ) const {
 	double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
-	units *= pow(4. * Constants::pi * SM().alphaEMMZ(), orderInGem());
-	units *= pow(4. * Constants::pi * SM().alphaS(), orderInGs());
+	// // units *= pow(4. * Constants::pi * SM().alphaEMMZ(), orderInGem());
+	// // units *= pow(4. * Constants::pi * SM().alphaS(), orderInGs());
 	fillOLPMomenta(lastXComb().meMomenta());
-	double as = SM().alphaS();
-	as =  1.0;
+
+	// double as = SM().alphaS();
+	// // double as = 1.0;
 	double scale = sqrt(mu2() / GeV2);
+
 	int n = lastXComb().meMomenta().size();
 	colourCorrelatorResults.resize(n * (n - 1) / 2);
+	
 	if ( idpair.size() == 0 ) {
-		getids();
+	  getids();
 	}
-	OLP_EvalSubProcess((*(idpair.find(olpId()[ProcessType::colourCorrelatedME2]))).second, olpMomenta(), scale, &as, &colourCorrelatorResults[0]);
 
+	// OLP_EvalSubProcess((*(idpair.find(olpId()[ProcessType::colourCorrelatedME2]))).second, olpMomenta(), scale, &as, &colourCorrelatorResults[0]);
+
+        // Use OLP_EvalSubProcess2 now
+        double acc;
+	// int pStatus=0;
+	// double zero=0.0;
+	// OLP_SetParameter((char *)"alphaS", &as, &zero, &pStatus);
+	OLP_EvalSubProcess2(&((*(idpair.find(olpId()[ProcessType::colourCorrelatedME2]))).second), olpMomenta(), &scale, &colourCorrelatorResults[0], &acc);
 	
 	cPDVector particles = lastXComb().matrixElement()->mePartonData();
 	
-	
-	for ( int i = 0 ; i < n ; ++i ){
-	    for ( int j = i + 1 ; j < n ; ++j ) {
-			lastColourCorrelator(make_pair(i, j), colourCorrelatorResults[i+j*(j-1)/2] * units);
-
-	    }
+	for ( int i = 0 ; i < n ; ++i ) {
+	  for ( int j = i + 1 ; j < n ; ++j ) {
+	    lastColourCorrelator(make_pair(i, j), colourCorrelatorResults[i+j*(j-1)/2] * units);
+          }
 	}
+
 }
 
 void GoSamAmplitude::evalSpinColourCorrelator(pair<int , int > ) const {
 	double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
-	units *= pow(4. * Constants::pi * SM().alphaEMMZ(), orderInGem());
-	units *= pow(4. * Constants::pi * SM().alphaS(), orderInGs());
+	// // units *= pow(4. * Constants::pi * SM().alphaEMMZ(), orderInGem());
+	// // units *= pow(4. * Constants::pi * SM().alphaS(), orderInGs());
 	fillOLPMomenta(lastXComb().meMomenta());
-	double as = SM().alphaS();
+
+	// double as = SM().alphaS();
+	// // double as = 1.0;
 	double scale = sqrt(mu2() / GeV2);
 
 	int n = lastXComb().meMomenta().size();
 	spinColourCorrelatorResults.resize(2*n*n);
 	
 	if ( idpair.size() == 0 ) {
-		getids();
+	  getids();
 	}
 
-	OLP_EvalSubProcess((*(idpair.find(olpId()[ProcessType::spinColourCorrelatedME2]))).second, olpMomenta(), scale, &as, &spinColourCorrelatorResults[0]);
+	// OLP_EvalSubProcess((*(idpair.find(olpId()[ProcessType::spinColourCorrelatedME2]))).second, olpMomenta(), scale, &as, &spinColourCorrelatorResults[0]);
 
+        // Use OLP_EvalSubProcess2 now
+        double acc;
+	// int pStatus=0;
+	// double zero=0.0;
+	// OLP_SetParameter((char *)"alphaS", &as, &zero, &pStatus);
+	OLP_EvalSubProcess2(&((*(idpair.find(olpId()[ProcessType::spinColourCorrelatedME2]))).second), olpMomenta(), &scale, &spinColourCorrelatorResults[0], &acc);
 	 
-   for ( int i = 0; i < n; ++i )
-     for ( int j = 0; j < n; ++j ) {
-       	  Complex scc(spinColourCorrelatorResults[2*i+2*n*j]*units,
- 		  spinColourCorrelatorResults[2*i+2*n*j+1]*units);
+        for ( int i = 0; i < n; ++i )
+        for ( int j = 0; j < n; ++j ) {
+       	  Complex scc(spinColourCorrelatorResults[2*i+2*n*j]*units, spinColourCorrelatorResults[2*i+2*n*j+1]*units);
 	  lastColourSpinCorrelator(make_pair(i,j),scc);
-     }
+        }
+
 }
-
-
-
 
 
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
+
 
 void GoSamAmplitude::persistentOutput(PersistentOStream & os) const {
 	os << idpair <<theCodeExists;
@@ -398,28 +456,30 @@ DescribeClass<GoSamAmplitude, MatchboxOLPME> describeHerwigGoSamAmplitude("Herwi
 
 void GoSamAmplitude::Init() {
 
-  static ClassDocumentation<GoSamAmplitude> documentation("GoSamAmplitude implements an interface to GoSam.");  
+  static ClassDocumentation<GoSamAmplitude> documentation("GoSamAmplitude implements an interface to GoSam.");
+
   static Parameter<GoSamAmplitude,string> interfaceInstallPath
-    	("InstallPath",
-     	"Prefix for the GoSam produced code.",
-     	&GoSamAmplitude::gosamInstallPath, "",
-     	false, false);
+    	 ("InstallPath",
+     	  "Prefix for the GoSam produced code.",
+     	  &GoSamAmplitude::gosamInstallPath, "",
+     	  false, false);
 
   static Switch<GoSamAmplitude,bool> interfaceCodeExists
-    ("CodeExists",
-     "Switch on or off if Code already exists/not exists.",
-     &GoSamAmplitude::theCodeExists, true, false, false);
-  static SwitchOption interfaceCodeExistsOn
-    (interfaceCodeExists,
-     "True",
-     "Switch True if Code already exists.",
-     true);
-  static SwitchOption interfaceCodeExistsOff
-    (interfaceCodeExists,
-     "False",
-     "Switch False if Code has to be build.",
-     false);
+         ("CodeExists",
+          "Switch on or off if Code already exists/not exists.",
+          &GoSamAmplitude::theCodeExists, true, false, false);
 
+  static SwitchOption interfaceCodeExistsOn
+         (interfaceCodeExists,
+          "True",
+          "Switch True if Code already exists.",
+          true);
+
+  static SwitchOption interfaceCodeExistsOff
+         (interfaceCodeExists,
+          "False",
+          "Switch False if Code has to be build.",
+          false);
 
 }
 

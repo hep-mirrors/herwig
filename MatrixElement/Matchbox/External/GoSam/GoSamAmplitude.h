@@ -16,12 +16,9 @@
 #include "ThePEG/Utilities/DynamicLoader.h"
 
 
-
-
 namespace Herwig {
 
 using namespace ThePEG;
-
 
 class gosamprocinfo{
 
@@ -48,11 +45,12 @@ class gosamprocinfo{
 		void persistentOutput(PersistentOStream & os) const{os<<theHOlpId<<theGOlpId<<theProcstr<<theTypestr<<orderAlphas;}
 		void persistentInput(PersistentIStream &is) {is>>theHOlpId>>theGOlpId>>theProcstr>>theTypestr>>orderAlphas;}
 };
+
 /**
  * \ingroup Matchbox
  * \author Simon Platzer
  *
- * \brief GoSamAmplitude implements an interface to NJets
+ * \brief GoSamAmplitude implements an interface to GoSam
  */
 class GoSamAmplitude: public MatchboxOLPME {
 
@@ -60,6 +58,7 @@ public:
 
   /** @name Standard constructors and destructors. */
   //@{
+
   /**
    * The default constructor.
    */
@@ -69,18 +68,18 @@ public:
    * The destructor.
    */
   virtual ~GoSamAmplitude();
+
   //@}
 
 public:
 
-
   virtual void fillOrderFile(const map<pair<Process,int>,int>& procs);
-
   
   virtual bool isCS() const { return false; }
   virtual bool isExpanded() const { return true; }
   virtual bool isBDK() const { return false; }
   //virtual bool isDR() const { return true; }
+
   /**
    * Start the one loop provider, if appropriate, giving order and
    * contract files
@@ -89,7 +88,6 @@ public:
 
   virtual bool checkOLPContract();
 
-
   /**
    * Return true, if this amplitude already includes symmetry factors
    * for identical outgoing particles.
@@ -97,13 +95,16 @@ public:
   virtual bool hasFinalStateSymmetry() const { return true; }
   
   virtual bool buildGoSam();
+
   /**
    * Start the one loop provider, if appropriate
    */
   virtual void startOLP(const string&, int& status);
+
   virtual void getids() const ;
   
   virtual Energy2 mu2() const { return lastSHat(); }
+
   /**
    * Start the one loop provider, if appropriate. This default
    * implementation writes an BLHA 2.0 order file and starts the OLP
@@ -133,11 +134,11 @@ public:
    */
   virtual void evalSpinColourCorrelator(pair<int,int> ij) const;
 
-
 public:
 
   /** @name Functions used by the persistent I/O system. */
   //@{
+
   /**
    * Function used to write out object persistently.
    * @param os the persistent output stream written to.
@@ -150,6 +151,7 @@ public:
    * @param version the version number of the object when written.
    */
   void persistentInput(PersistentIStream & is, int version);
+
   //@}
 
   /**
@@ -164,6 +166,7 @@ protected:
 
   /** @name Clone Methods. */
   //@{
+
   /**
    * Make a simple clone of this object.
    * @return a pointer to the new object.
@@ -175,6 +178,7 @@ protected:
    * @return a pointer to the new object.
    */
   virtual IBPtr fullclone() const;
+
   //@}
 
 
@@ -200,7 +204,6 @@ private:
    */
   mutable vector<double> spinColourCorrelatorResults;
 
-
   /**
    * first is the olp id from herwig, second the answer from gosam
    */
@@ -212,8 +215,8 @@ private:
 
   bool theCodeExists;
 
+}; // end "class GoSamAmplitude: public MatchboxOLPME"
 
-};
 //inline PersistentOStream& operator<<(PersistentOStream& os,
 //				     const gosamprocinfo& h) {
 //  h.persistentOutput(os);
@@ -223,9 +226,9 @@ private:
 //inline PersistentIStream& operator>>(PersistentIStream& is,
 //		gosamprocinfo& h) {
 //  h.persistentInput(is);
-//
-//return is;
+//  return is;
 //}
-}
+
+} // end "namespace Herwig"
 
 #endif /* Herwig_GoSamAmplitude_H */
