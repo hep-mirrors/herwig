@@ -257,7 +257,7 @@ void OpenLoopsAmplitude::evalSubProcess() const {
 		getids();
 		string parfile="params.dat";
 	        OLP_PrintParameter(parfile.c_str());
-		remove( "initrun.dat" );
+		
 	}
 
 	OLP_EvalSubProcess2(&((*(idpair.find(id))).second), olpMomenta(), &scale, out,&acc );
@@ -285,7 +285,7 @@ void OpenLoopsAmplitude::evalColourCorrelator(pair<int, int>  ) const {
 		getids();
 		string parfile="params.dat";
 	        OLP_PrintParameter(parfile.c_str());
-		remove( "initrun.dat" );
+		
 	}
 
 
@@ -322,7 +322,7 @@ double OpenLoopsAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
 		getids();
 		string parfile="params.dat";
 	        OLP_PrintParameter(parfile.c_str());
-		remove( "initrun.dat" );
+		
 	}
 	int id = (*(idpair.find(olpId()[ProcessType::spinColourCorrelatedME2]))).second;
 	double * outx =new double[n];
@@ -353,6 +353,7 @@ double OpenLoopsAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
     avg +crossingSign()* corr/cfac;
 
 }
+
 
 
 

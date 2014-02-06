@@ -16,9 +16,12 @@
 #include "ThePEG/Utilities/DynamicLoader.h"
 
 
+
+
 namespace Herwig {
 
 using namespace ThePEG;
+
 
 class gosamprocinfo{
 
@@ -78,7 +81,9 @@ public:
   virtual bool isCS() const { return false; }
   virtual bool isExpanded() const { return true; }
   virtual bool isBDK() const { return false; }
-  //virtual bool isDR() const { return true; }
+  virtual bool isDR() const { return isitDR; }
+  virtual bool isDRbar() const {return false;}
+
 
   /**
    * Start the one loop provider, if appropriate, giving order and
@@ -87,6 +92,7 @@ public:
   virtual void signOLP(const string&, const string&);
 
   virtual bool checkOLPContract();
+
 
   /**
    * Return true, if this amplitude already includes symmetry factors
@@ -133,6 +139,7 @@ public:
    * Fill in results for the given colour/spin correlator
    */
   virtual void evalSpinColourCorrelator(pair<int,int> ij) const;
+
 
 public:
 
@@ -204,6 +211,7 @@ private:
    */
   mutable vector<double> spinColourCorrelatorResults;
 
+
   /**
    * first is the olp id from herwig, second the answer from gosam
    */
@@ -214,6 +222,9 @@ private:
   mutable string gosamInstallPath;
 
   bool theCodeExists;
+
+  bool isitDR;
+
 
 }; // end "class GoSamAmplitude: public MatchboxOLPME"
 

@@ -32,7 +32,7 @@
 
 using namespace Herwig;
 
-GoSamAmplitude::GoSamAmplitude() {theCodeExists=false;
+GoSamAmplitude::GoSamAmplitude() {theCodeExists=false;isitDR=false;
 }
 
 GoSamAmplitude::~GoSamAmplitude() {
@@ -116,27 +116,27 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
 	} else if ( SM().ewScheme() == 3 ) {
 	  double in1=SM().fermiConstant()*GeV2;
 	  double in2=SM().alphaEMMZ();
-	  double in3=SM().sin2ThetaW();
+	  double in3=sqrt(SM().sin2ThetaW());
 	  OLP_SetParameter((char *)"Gf",&in1,&zero,&pStatus);
 	  OLP_SetParameter((char *)"alpha",&in2,&zero,&pStatus);
-	  OLP_SetParameter((char *)"sw2",&in3,&zero,&pStatus);
+	  OLP_SetParameter((char *)"sw",&in3,&zero,&pStatus);
 	  // OLP_SetParameter("Gf",SM().fermiConstant()*GeV2,&zero,&pStatus);
 	  // OLP_SetParameter("alpha",SM().alphaEMMZ(),&zero,&pStatus);
 	  // OLP_SetParameter("sw2",SM().sin2ThetaW(),&zero,&pStatus);
 	} else if ( SM().ewScheme() == 4 ) {
 	  double in1=getParticleData(ParticleID::Wplus)->mass()/GeV;
 	  double in2=SM().fermiConstant()*GeV2;
-	  double in3=SM().sin2ThetaW();
+	  double in3=sqrt(SM().sin2ThetaW());
 	  OLP_SetParameter((char *)"mass(24)",&in1,&zero,&pStatus);
 	  OLP_SetParameter((char *)"Gf",&in2,&zero,&pStatus);
-	  OLP_SetParameter((char *)"sw2",&in3,&zero,&pStatus);
+	  OLP_SetParameter((char *)"sw",&in3,&zero,&pStatus);
 	  // OLP_SetParameter("mass(24)",getParticleData(ParticleID::Wplus)->mass()/GeV,&zero,&pStatus);
 	  // OLP_SetParameter("Gf",SM().fermiConstant()*GeV2,&zero,&pStatus);
 	  // OLP_SetParameter("sw2",SM().sin2ThetaW(),&zero,&pStatus);
 	} else if ( SM().ewScheme() == 5 ) {
 	  double in1=getParticleData(ParticleID::Z0)->mass()/GeV;
 	  double in2=SM().alphaEMMZ();
-	  double in3=SM().sin2ThetaW();
+	  double in3=sqrt(SM().sin2ThetaW());
 	  OLP_SetParameter((char *)"mass(23)",&in1,&zero,&pStatus);
 	  OLP_SetParameter((char *)"alpha",&in2,&zero,&pStatus);
 	  OLP_SetParameter((char *)"sw2",&in3,&zero,&pStatus);
@@ -260,6 +260,7 @@ bool GoSamAmplitude::checkOLPContract() {
 	ids = "installpath.dat";
 	ofstream Install(ids.c_str());
 	Install<<gosamInstallPath << flush;
+	
 
 	return 1;
 
@@ -285,15 +286,23 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
 	string contractFileName = name() + ".OLPContract.lh";
 	string orderFileName = name() + ".OLPOrder.lh";
 	fillOrderFile(procs);
+	ifstream ifile(contractFileName.c_str());
+    if( !ifile){
 	cout << "\nGoSam: Sign the order file." << flush;
 	signOLP(orderFileName, contractFileName);
-
+	}
+	
 	if ( !checkOLPContract() ) {
 	  cout << "\n\n!!!!!!!!!!!!!Checking the olp-contract failed!!!!!!!!!!!\n\n" << flush;
 	  assert(0);
 	} else cout << "\nChecked the olp-contract! Everything is OK! Let's build!\n" << flush;
-
-	buildGoSam();
+	
+	if (gosamInstallPath==""){
+		if ( !( DynamicLoader::load("lib/libgolem_olp.so") || DynamicLoader::load("lib64/libgolem_olp.so") ) ) buildGoSam();;}
+	else {
+		if ( !( DynamicLoader::load(gosamInstallPath+"/lib/libgolem_olp.so") || DynamicLoader::load(gosamInstallPath+"/lib64/libgolem_olp.so") ) ) buildGoSam();
+	}
+	
 	int status = -1;
 	startOLP(contractFileName, status);
 
@@ -326,6 +335,7 @@ LorentzVector<Complex> GoSamAmplitude::plusPolarization(const Lorentz5Momentum& 
 	  return res;
 
 }
+
 
 void GoSamAmplitude::evalSubProcess() const {
 	double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
@@ -361,6 +371,7 @@ void GoSamAmplitude::evalSubProcess() const {
 	} else if ( olpId()[ProcessType::treeME2] ) {
 	  lastTreeME2(out[3] * units);
 	}
+	
 	
 }
 
@@ -435,6 +446,9 @@ void GoSamAmplitude::evalSpinColourCorrelator(pair<int , int > ) const {
 }
 
 
+
+
+
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
@@ -480,6 +494,25 @@ void GoSamAmplitude::Init() {
           "False",
           "Switch False if Code has to be build.",
           false);
+          
+  static Switch<GoSamAmplitude,bool> interfaceisitDR
+         ("isDR",
+          "Switch on or off DR.",
+          &GoSamAmplitude::isitDR, false, false, false);
+
+  static SwitchOption interfaceisitDROn
+         (interfaceisitDR,
+          "True",
+          "Switch True.",
+          true);
+
+  static SwitchOption interfaceisitDROff
+         (interfaceisitDR,
+          "False",
+          "Switch False.",
+          false);
+                  
+   
 
 }
 
