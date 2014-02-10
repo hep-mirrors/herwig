@@ -9,12 +9,10 @@ read LHCBase.in
 cd /Herwig/MatrixElements
 cp MEHeavyQuark MEBottom 
 set MEBottom:QuarkType Bottom
-cp MEHeavyQuark MECharm
-set MECharm:QuarkType Charm
 insert SimpleQCD:MatrixElements[0] MEBottom
-insert SimpleQCD:MatrixElements[0] MECharm
 set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0
-set /Herwig/Cuts/JetKtCut:MinKT 5.
+set /Herwig/Cuts/JetKtCut:MinKT 30.
+set /Herwig/Cuts/QCDCuts:MHatMin 340.*GeV
 
 # No QED radiation
 erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
@@ -23,19 +21,10 @@ erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
 # select the analyses
 ##################################################
 
-# ATLAS inclusive lepton
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I926145
-# CMS inclusive lepton
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S8941262
-# b-hadron cross section
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1118269
-# J/Psi production
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I9035664
 # b-jet cross section
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I930220
-
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################
 cd /Herwig/Generators
-saverun LHC-7-Heavy-1 LHCGenerator
+saverun LHC-7-Heavy-7 LHCGenerator

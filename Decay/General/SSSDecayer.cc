@@ -172,6 +172,10 @@ double SSSDecayer::threeBodyME(const int , const Particle & inpart,
   identifyVertices(iscal, ianti, inpart, decay, abstractOutgoingVertexS, abstractOutgoingVertexA);
 
   Energy2 scale(sqr(inpart.mass()));
+
+  const GeneralTwoBodyDecayer::CFlow & colourFlow
+        = colourFlows(inpart, decay);
+
   for(unsigned int ig = 0; ig < 2; ++ig) {
     // radiation from the incoming scalar
     if(inpart.dataPtr()->coloured()) {
@@ -188,9 +192,9 @@ double SSSDecayer::threeBodyME(const int , const Particle & inpart,
 
       double gs    = _abstractIncomingVertex->strongCoupling(scale);
       Complex diag = _abstractVertex->evaluate(scale,scal,anti,scalarInter)/gs;
-      for(unsigned int ix=0;ix<colourFlows(inpart, decay)[0].size();++ix) {
-	ME[colourFlows(inpart, decay)[0][ix].first](0, 0, 0, ig) += 
-	   colourFlows(inpart, decay)[0][ix].second*diag; 
+      for(unsigned int ix=0;ix<colourFlow[0].size();++ix) {
+	ME[colourFlow[0][ix].first](0, 0, 0, ig) += 
+	   colourFlow[0][ix].second*diag; 
       }
     }
     // radiation from the outgoing scalar
@@ -210,9 +214,9 @@ double SSSDecayer::threeBodyME(const int , const Particle & inpart,
 
       double gs    =  abstractOutgoingVertexS->strongCoupling(scale);
       Complex diag = _abstractVertex->evaluate(scale,_swave3,anti,scalarInter)/gs;
-      for(unsigned int ix=0;ix<colourFlows(inpart, decay)[1].size();++ix) {
-	ME[colourFlows(inpart, decay)[1][ix].first](0, 0, 0, ig) += 
-	   colourFlows(inpart, decay)[1][ix].second*diag;
+      for(unsigned int ix=0;ix<colourFlow[1].size();++ix) {
+	ME[colourFlow[1][ix].first](0, 0, 0, ig) += 
+	   colourFlow[1][ix].second*diag;
       }
     }
     // radiation from the outgoing anti scalar
@@ -232,9 +236,9 @@ double SSSDecayer::threeBodyME(const int , const Particle & inpart,
 
       double gs    =  abstractOutgoingVertexA->strongCoupling(scale);
       Complex diag = _abstractVertex->evaluate(scale,_swave3,scal,scalarInter)/gs;
-      for(unsigned int ix=0;ix<colourFlows(inpart, decay)[2].size();++ix) {
-	ME[colourFlows(inpart, decay)[2][ix].first](0, 0, 0, ig) += 
-	   colourFlows(inpart, decay)[2][ix].second*diag;
+      for(unsigned int ix=0;ix<colourFlow[2].size();++ix) {
+	ME[colourFlow[2][ix].first](0, 0, 0, ig) += 
+	   colourFlow[2][ix].second*diag;
       }
     }
   }

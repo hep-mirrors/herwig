@@ -297,6 +297,10 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
 
   Complex diag;
   Energy2 scale(sqr(inpart.mass()));
+
+  const GeneralTwoBodyDecayer::CFlow & colourFlow
+        = colourFlows(inpart, decay);
+
   for(unsigned int ifi = 0; ifi < 2; ++ifi) {
     for(unsigned int ifo = 0; ifo < 2; ++ifo) {
       for(unsigned int iv = 0; iv < 3; ++iv) {
@@ -329,9 +333,9 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
 		  << Exception::runerror;
 	      diag = _abstractVertex->evaluate(scale,_wave3[ifo], spinorBarInter,_vector3[iv])/gs;
 	    }
-	    for(unsigned int ix=0;ix<colourFlows(inpart, decay)[0].size();++ix) {
-	      ME[colourFlows(inpart, decay)[0][ix].first](ifi, ifo, iv, ig) += 
-		colourFlows(inpart, decay)[0][ix].second*diag;
+	    for(unsigned int ix=0;ix<colourFlow[0].size();++ix) {
+	      ME[colourFlow[0][ix].first](ifi, ifo, iv, ig) += 
+		colourFlow[0][ix].second*diag;
 	    }
 	  }
 
@@ -367,9 +371,9 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
 		  << Exception::runerror;
 	      diag = _abstractVertex->evaluate(scale,spinorInter,_wavebar3[ifi],_vector3[iv])/gs;
 	    }
-	    for(unsigned int ix=0;ix<colourFlows(inpart, decay)[F].size();++ix) {
-	      ME[colourFlows(inpart, decay)[F][ix].first](ifi, ifo, iv, ig) += 
-		 colourFlows(inpart, decay)[F][ix].second*diag;
+	    for(unsigned int ix=0;ix<colourFlow[F].size();++ix) {
+	      ME[colourFlow[F][ix].first](ifi, ifo, iv, ig) += 
+		 colourFlow[F][ix].second*diag;
 	    }
 	  }
 	  
@@ -397,9 +401,9 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
 	    else {
 	      diag = sign*_abstractVertex->evaluate(scale,_wave3[ifo],_wavebar3[ifi],vectorInter)/gs;
 	    }
-	    for(unsigned int ix=0;ix<colourFlows(inpart, decay)[V].size();++ix) {
-	      ME[colourFlows(inpart, decay)[V][ix].first](ifi, ifo, iv, ig) += 
-		 colourFlows(inpart, decay)[V][ix].second*diag;
+	    for(unsigned int ix=0;ix<colourFlow[V].size();++ix) {
+	      ME[colourFlow[V][ix].first](ifi, ifo, iv, ig) += 
+		 colourFlow[V][ix].second*diag;
 	    }
 	  }
 	}

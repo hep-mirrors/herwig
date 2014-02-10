@@ -2,6 +2,8 @@ EXTRA_DIST = \
 exampleInputs \
 python
 
+if HAVE_PYTHON
+
 install-data-local:
 	for i in `find $(srcdir)/python -type f`; \
 	do \
@@ -15,5 +17,7 @@ install-exec-local:
 uninstall-local:
 	rm -rf $(DESTDIR)$(pkglibdir)/python
 	rm -f  $(DESTDIR)$(bindir)/ufo2herwig
+
+endif
 
 ## pkgdata_DATA = Makefile-FR

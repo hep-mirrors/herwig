@@ -296,7 +296,7 @@ public:
    * Return an ordering identifier for the current subprocess and
    * colour absis tensor index.
    */
-  const vector<vector<size_t> >& colourOrdering(size_t id) const;
+  const set<vector<size_t> >& colourOrdering(size_t id) const;
 
   //@}
 
@@ -409,6 +409,12 @@ public:
    * assumed to be MSbar.
    */
   virtual bool isDR() const { return false; }
+
+  /**
+   * Return true, if the amplitude is DRbar renormalized, otherwise
+   * MSbar is assumed.
+   */
+  virtual bool isDRbar() const { return true; }
 
   /**
    * Return true, if one loop corrections are given in the conventions

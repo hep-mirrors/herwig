@@ -66,6 +66,7 @@ double OneOneOneSplitFn::integOverP(const double z, const IdList & ids,
 				    unsigned int PDFfactor) const {
   switch(PDFfactor) {
   case 0:
+    assert(z>0.&&z<1.);
     return colourFactor(ids)*log(z/(1.-z)); 
   case 1:
   case 2:

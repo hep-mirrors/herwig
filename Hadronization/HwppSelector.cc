@@ -82,7 +82,7 @@ void HwppSelector::Init() {
 }
 
 pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPtr par1, 
-						     tcPDPtr par2,tcPDPtr )
+						     tcPDPtr par2,tcPDPtr ) const
   {
   // if either of the input partons is a diquark don't allow diquarks to be 
   // produced
@@ -104,7 +104,8 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPt
   // weights for the different possibilities
   Energy weight, wgtsum(ZERO);
   // loop over all hadron pairs with the allowed flavours
-  vector<Kupco> hadrons;
+  static vector<Kupco> hadrons;
+  hadrons.clear();
   for(unsigned int ix=0;ix<partons().size();++ix) {
     tcPDPtr quarktopick  = partons()[ix];
     if(!quark  &&  abs(int(quarktopick->iColour())) == 3
@@ -118,18 +119,20 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPt
     // If not in table skip
     if(tit1 == table().end()||tit2==table().end()) continue;
     // tables empty skip
-    if(tit1->second.empty()||tit2->second.empty()) continue;
+    const KupcoData & T1 = tit1->second;
+    const KupcoData & T2 = tit2->second;
+    if(T1.empty()||T2.empty()) continue;
     // if too massive skip
-    if(cluMass <= tit1->second.begin()->mass + 
-                  tit2->second.begin()->mass) continue; 
+    if(cluMass <= T1.begin()->mass + 
+                  T2.begin()->mass) continue; 
     // loop over the hadrons
-    KupcoData::iterator H1,H2;
-    for(H1 = tit1->second.begin();H1 != tit1->second.end(); ++H1) {
-      for(H2 = tit2->second.begin();H2 != tit2->second.end(); ++H2) {
+    KupcoData::const_iterator H1,H2;
+    for(H1 = T1.begin();H1 != T1.end(); ++H1) {
+      for(H2 = T2.begin();H2 != T2.end(); ++H2) {
  	// break if cluster too light
  	if(cluMass < H1->mass + H2->mass) break;
  	// calculate the weight
- 	weight = pwt(quarktopick) * H1->overallWeight * H2->overallWeight *
+ 	weight = pwt(quarktopick->id()) * H1->overallWeight * H2->overallWeight *
  	  Kinematics::pstarTwoBodyDecay(cluMass, H1->mass, H2->mass );
 	int signQ = 0;
 	assert (par1 && quarktopick);
@@ -174,14 +177,7 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPt
   assert(hadrons[ix].idQ);
   int signHad1 = signHadron(par1, hadrons[ix].idQ->CC(), hadrons[ix].hadron1);
   int signHad2 = signHadron(par2, hadrons[ix].idQ, hadrons[ix].hadron2);
-  assert(!( signHad1 == 0 || signHad2 == 0));
-//     throw Exception() << "HwppSelector::selectPair " 
-// 		      << "***Inconsistent Hadron " 
-// 		      << hadrons[ix].idQ->id() << " " 
-// 		      << hadrons[ix].hadron1->id() << " " 
-// 		      << hadrons[ix].hadron2->id() << " " 
-// 		      << signHad1 << " " << signHad2
-// 		      << Exception::runerror;
+  assert( signHad1 != 0 && signHad2 != 0 );
   return make_pair
     ( signHad1 > 0 ? hadrons[ix].hadron1 : tcPDPtr(hadrons[ix].hadron1->CC()),
       signHad2 > 0 ? hadrons[ix].hadron2 : tcPDPtr(hadrons[ix].hadron2->CC()));

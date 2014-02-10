@@ -66,7 +66,12 @@ if __name__ == "__main__":
         ## Get histos from this AIDA file
         for dps in tree.findall("dataPointSet"):
             h = lighthisto.Histo.fromDPS(dps)
-            outhistos[h.fullPath()] = h
+            if (h.fullPath().find("CMS_2013_I1258128")>0) :
+                if(h.fullPath().find("d05")>0 or h.fullPath().find("d06")>0 or
+                   h.fullPath().find("d07")>0 or h.fullPath().find("d08")>0) :
+                    outhistos[h.fullPath()] = h
+            else :
+                outhistos[h.fullPath()] = h
 
     ## Choose output file
     out = None

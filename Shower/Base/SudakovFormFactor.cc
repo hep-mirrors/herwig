@@ -280,8 +280,9 @@ void SudakovFormFactor::doinit() {
   pT2min_ = cutOffOption()==2 ? sqr(pTmin_) : ZERO; 
 }
 
-vector<Energy> SudakovFormFactor::virtualMasses(const IdList & ids) {
-  vector<Energy> output;
+const vector<Energy> & SudakovFormFactor::virtualMasses(const IdList & ids) {
+  static vector<Energy> output;
+  output.clear();
   if(cutOffOption() == 0) {
     for(unsigned int ix=0;ix<ids.size();++ix)
       output.push_back(getParticleData(ids[ix])->mass());

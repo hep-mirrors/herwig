@@ -711,6 +711,12 @@ bool MatchboxMEBase::onlyOneLoop() const {
   return false;
 }
 
+bool MatchboxMEBase::isDRbar() const {
+  if ( matchboxAmplitude() )
+    return matchboxAmplitude()->isDRbar();
+  return false;
+}
+
 bool MatchboxMEBase::isDR() const {
   if ( matchboxAmplitude() )
     return matchboxAmplitude()->isDR();

@@ -337,12 +337,16 @@ void MatchboxFactory::setup() {
   bool virtualsAreBDK = false;
   bool virtualsAreExpanded = false;
 
+  // renormalization scheme
+  bool virtualsAreDRbar = false;
+
   // check and prepare the Born and virtual matrix elements
   for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born
 	  = bornMEs().begin(); born != bornMEs().end(); ++born ) {
     prepareME(*born);
     haveVirtuals &= (**born).haveOneLoop();
     if ( (**born).haveOneLoop() ) {
+      virtualsAreDRbar |= (**born).isDRbar();
       virtualsAreDR |= (**born).isDR();
       virtualsAreCDR |= !(**born).isDR();
       virtualsAreCS |= (**born).isCS();
@@ -356,6 +360,7 @@ void MatchboxFactory::setup() {
     haveVirtuals = true;    
   for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt
 	  = virtuals().begin(); virt != virtuals().end(); ++virt ) {
+    virtualsAreDRbar |= (**virt).isDRbar();
     virtualsAreDR |= (**virt).isDR();
     virtualsAreCDR |= !(**virt).isDR();
     virtualsAreCS |= (**virt).isCS();
@@ -384,6 +389,8 @@ void MatchboxFactory::setup() {
     for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt
 	    = DipoleRepository::insertionOperators(dipoleSet()).begin(); 
 	  virt != DipoleRepository::insertionOperators(dipoleSet()).end(); ++virt ) {
+      if ( virtualsAreDRbar )
+	(**virt).useDRbar();
       if ( virtualsAreDR )
 	(**virt).useDR();
       else

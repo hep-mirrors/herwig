@@ -1950,7 +1950,7 @@ deconstructFinalStateSystem(const LorentzRotation &   toRest,
       continue;
     }
     // both outgoing
-    else if(!(**cjt).status()==HardBranching::Incoming&&
+    else if((**cjt).status()!=HardBranching::Incoming&&
 	    branch->status()==HardBranching::Outgoing) {
       Boost boost=((*cjt)->pVector()+branch->pVector()).findBoostToCM();
       Lorentz5Momentum pcm = branch->pVector();

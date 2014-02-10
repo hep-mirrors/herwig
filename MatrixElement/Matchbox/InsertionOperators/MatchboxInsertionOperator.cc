@@ -24,6 +24,7 @@ using namespace Herwig;
 
 MatchboxInsertionOperator::MatchboxInsertionOperator() 
   : HandlerBase(),
+    theUseDRbar(false),
     theUseDR(false), theUseCS(false), theUseBDK(false), theUseExpanded(false) {}
 
 MatchboxInsertionOperator::~MatchboxInsertionOperator() {}
@@ -39,12 +40,12 @@ CrossSection MatchboxInsertionOperator::dSigHatDR() const {
 }
 
 void MatchboxInsertionOperator::persistentOutput(PersistentOStream & os) const {
-  os << theLastXComb
+  os << theLastXComb << theUseDRbar
      << theUseDR << theUseCS << theUseBDK << theUseExpanded;
 }
 
 void MatchboxInsertionOperator::persistentInput(PersistentIStream & is, int) {
-  is >> theLastXComb
+  is >> theLastXComb >> theUseDRbar
      >> theUseDR >> theUseCS >> theUseBDK >> theUseExpanded;
   lastMatchboxXComb(theLastXComb);
 }
