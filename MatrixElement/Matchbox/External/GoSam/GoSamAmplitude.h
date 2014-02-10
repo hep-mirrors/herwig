@@ -16,8 +16,6 @@
 #include "ThePEG/Utilities/DynamicLoader.h"
 
 
-
-
 namespace Herwig {
 
 using namespace ThePEG;
@@ -84,7 +82,6 @@ public:
   virtual bool isDR() const { return isitDR; }
   virtual bool isDRbar() const {return false;}
 
-
   /**
    * Start the one loop provider, if appropriate, giving order and
    * contract files
@@ -92,7 +89,6 @@ public:
   virtual void signOLP(const string&, const string&);
 
   virtual bool checkOLPContract();
-
 
   /**
    * Return true, if this amplitude already includes symmetry factors
@@ -139,7 +135,6 @@ public:
    * Fill in results for the given colour/spin correlator
    */
   virtual void evalSpinColourCorrelator(pair<int,int> ij) const;
-
 
 public:
 
@@ -211,7 +206,6 @@ private:
    */
   mutable vector<double> spinColourCorrelatorResults;
 
-
   /**
    * first is the olp id from herwig, second the answer from gosam
    */
@@ -224,21 +218,42 @@ private:
   bool theCodeExists;
 
   bool isitDR;
+  
+  /**
+   * Return the PDG codes of those quarks with mass
+   */
+  const vector<int>& massiveParticles() const { return theMassiveParticles; }
 
+  /**
+   * Command to insert the PDG code of a quark with mass
+   */
+  string doMassiveParticles(string);
+
+  /**
+   * The PDG codes of those quarks with mass
+   */
+  vector<int> theMassiveParticles;
+
+  /**
+   * Switch to print parameters
+   */
+  bool thePrintParameter;
 
 }; // end "class GoSamAmplitude: public MatchboxOLPME"
 
+
 //inline PersistentOStream& operator<<(PersistentOStream& os,
-//				     const gosamprocinfo& h) {
+//	                                   const gosamprocinfo& h) {
 //  h.persistentOutput(os);
 //  return os;
 //}
 
 //inline PersistentIStream& operator>>(PersistentIStream& is,
-//		gosamprocinfo& h) {
+//	                                   gosamprocinfo& h) {
 //  h.persistentInput(is);
 //  return is;
 //}
+
 
 } // end "namespace Herwig"
 

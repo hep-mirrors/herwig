@@ -21,6 +21,7 @@
 #include "ThePEG/Interface/RefVector.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
+#include "ThePEG/Interface/Command.h"
 
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -48,9 +49,8 @@ IBPtr GoSamAmplitude::fullclone() const {
 
 extern "C" void OLP_Start(const char*, int* i);
 extern "C" void OLP_Polvec(double*, double*, double*);
-// extern "C" void OLP_EvalSubProcess(int, double*, double, double*, double*);
-
 extern "C" void OLP_SetParameter(char*, double*, double*, int*);
+extern "C" void OLP_PrintParameter(char*);
 extern "C" void OLP_EvalSubProcess2(int*, double*, double*, double*, double*);
 
 void GoSamAmplitude::signOLP(const string& order, const string& contract) {
@@ -90,65 +90,76 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
 	
 	int pStatus = 0;
 	double zero = 0.0;
-	if ( SM().ewScheme() == 0 || SM().ewScheme() == 6 ) {
+	if ( SM().ewScheme() == 0 || SM().ewScheme() == 6 ) { // EW/Scheme Default and EW/Scheme Independent
 	  throw Exception() << "`Best value' schemes are not supported by GoSam"
 			    << Exception::abortnow;
-	} else if ( SM().ewScheme() == 1 ) {
+	} else if ( SM().ewScheme() == 4 ) { // EW/Scheme mW (uses mW,GF,sin2thetaW) seems not to be supported by GoSam
+	  throw Exception() << "`mW' scheme is not supported by GoSam"
+			    << Exception::abortnow;
+	} else if ( SM().ewScheme() == 1 ) { // EW/Scheme GMuScheme (uses mW,mZ,GF)
 	  double in1=getParticleData(ParticleID::Z0)->mass()/GeV;
 	  double in2=getParticleData(ParticleID::Wplus)->mass()/GeV;
 	  double in3=SM().fermiConstant()*GeV2;
 	  OLP_SetParameter((char *)"mass(23)",&in1,&zero,&pStatus);
 	  OLP_SetParameter((char *)"mass(24)",&in2,&zero,&pStatus);
 	  OLP_SetParameter((char *)"Gf",&in3,&zero,&pStatus);
-	  // OLP_SetParameter("mass(23)",getParticleData(ParticleID::Z0)->mass()/GeV,&zero,&pStatus);
-	  // OLP_SetParameter("mass(24)",getParticleData(ParticleID::Wplus)->mass()/GeV,&zero,&pStatus);
-	  // OLP_SetParameter("Gf",SM().fermiConstant()*GeV2,&zero,&pStatus);
-	} else if ( SM().ewScheme() == 2 ) {
+	} else if ( SM().ewScheme() == 2 ) { // EW/Scheme alphaMZScheme (uses mW,mZ,alpha(mZ))
 	  double in1=getParticleData(ParticleID::Z0)->mass()/GeV;
 	  double in2=getParticleData(ParticleID::Wplus)->mass()/GeV;
 	  double in3=SM().alphaEMMZ();
 	  OLP_SetParameter((char *)"mass(23)",&in1,&zero,&pStatus);
 	  OLP_SetParameter((char *)"mass(24)",&in2,&zero,&pStatus);
 	  OLP_SetParameter((char *)"alpha",&in3,&zero,&pStatus);
-	  // OLP_SetParameter("mass(23)",getParticleData(ParticleID::Z0)->mass()/GeV,&zero,&pStatus);
-	  // OLP_SetParameter("mass(24)",getParticleData(ParticleID::Wplus)->mass()/GeV,&zero,&pStatus);
-	  // OLP_SetParameter("alpha",SM().alphaEMMZ(),&zero,&pStatus);
-	} else if ( SM().ewScheme() == 3 ) {
+	} else if ( SM().ewScheme() == 3 ) { // EW/Scheme NoMass (uses alpha(mZ),GF,sin2thetaW)
 	  double in1=SM().fermiConstant()*GeV2;
 	  double in2=SM().alphaEMMZ();
-	  double in3=sqrt(SM().sin2ThetaW());
+	  double in3=SM().sin2ThetaW();
 	  OLP_SetParameter((char *)"Gf",&in1,&zero,&pStatus);
 	  OLP_SetParameter((char *)"alpha",&in2,&zero,&pStatus);
-	  OLP_SetParameter((char *)"sw",&in3,&zero,&pStatus);
-	  // OLP_SetParameter("Gf",SM().fermiConstant()*GeV2,&zero,&pStatus);
-	  // OLP_SetParameter("alpha",SM().alphaEMMZ(),&zero,&pStatus);
-	  // OLP_SetParameter("sw2",SM().sin2ThetaW(),&zero,&pStatus);
-	} else if ( SM().ewScheme() == 4 ) {
-	  double in1=getParticleData(ParticleID::Wplus)->mass()/GeV;
-	  double in2=SM().fermiConstant()*GeV2;
-	  double in3=sqrt(SM().sin2ThetaW());
-	  OLP_SetParameter((char *)"mass(24)",&in1,&zero,&pStatus);
-	  OLP_SetParameter((char *)"Gf",&in2,&zero,&pStatus);
-	  OLP_SetParameter((char *)"sw",&in3,&zero,&pStatus);
-	  // OLP_SetParameter("mass(24)",getParticleData(ParticleID::Wplus)->mass()/GeV,&zero,&pStatus);
-	  // OLP_SetParameter("Gf",SM().fermiConstant()*GeV2,&zero,&pStatus);
-	  // OLP_SetParameter("sw2",SM().sin2ThetaW(),&zero,&pStatus);
-	} else if ( SM().ewScheme() == 5 ) {
+	  OLP_SetParameter((char *)"sw2",&in3,&zero,&pStatus);
+	} else if ( SM().ewScheme() == 5 ) { // EW/Scheme mZ (uses mZ,alphaEM,sin2thetaW)
 	  double in1=getParticleData(ParticleID::Z0)->mass()/GeV;
 	  double in2=SM().alphaEMMZ();
-	  double in3=sqrt(SM().sin2ThetaW());
+	  double in3=SM().sin2ThetaW();
 	  OLP_SetParameter((char *)"mass(23)",&in1,&zero,&pStatus);
 	  OLP_SetParameter((char *)"alpha",&in2,&zero,&pStatus);
 	  OLP_SetParameter((char *)"sw2",&in3,&zero,&pStatus);
-	  // OLP_SetParameter("mass(23)",getParticleData(ParticleID::Z0)->mass()/GeV,&zero,&pStatus);
-	  // OLP_SetParameter("alpha",SM().alphaEMMZ(),&zero,&pStatus);
-	  // OLP_SetParameter("sw2",SM().sin2ThetaW(),&zero,&pStatus);
 	}
 	
 	// hand over input parameter for alphaS
 
 	double as = SM().alphaS();
 	OLP_SetParameter((char *)"alphaS", &as, &zero, &pStatus);
+
+    // hand over quark masses
+
+	string mstr;
+	if ( massiveParticles().size() != 0 ) {
+	  for ( vector<int>::const_iterator mID = massiveParticles().begin(); mID != massiveParticles().end(); ++mID ) {
+	    int mInt = *mID;
+	    double mass=getParticleData(mInt)->mass()/GeV;
+	    std::stringstream ss;
+	    ss << mInt;
+	    string str = ss.str();
+	    mstr="mass("+str+")";
+	    char * mchar = new char[mstr.size()+1];
+	    std::copy(mstr.begin(),mstr.end(),mchar);
+	    mchar[mstr.size()] = '\0';
+	    OLP_SetParameter( mchar, &mass, &zero, &pStatus );
+	    delete[] mchar;
+      }
+	}
+
+    // print OLP parameters
+
+	if (thePrintParameter) {
+	  string ppstr = name() + ".OLPParameters.lh";
+	  char * ppchar = new char[ppstr.size()+1];
+	  std::copy(ppstr.begin(),ppstr.end(),ppchar);
+	  ppchar[ppstr.size()] = '\0';
+	  OLP_PrintParameter(ppchar);
+	  delete[] ppchar;
+	}
 
 }
 
@@ -170,6 +181,14 @@ void GoSamAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs) {
 	orderFile << "MatrixElementSquareType  CHsummed\n";
 	orderFile << "CorrectionType           QCD\n";
 	orderFile << "IRregularisation         " << (isDR() ? "DRED" : "CDR") << "\n";
+	if ( massiveParticles().size() != 0 ) {
+	  orderFile << "MassiveParticles         ";
+	  for ( vector<int>::const_iterator mID = massiveParticles().begin(); mID != massiveParticles().end(); ++mID ) {
+	    int mInt = *mID;
+	    orderFile << mInt << " ";
+      }
+	  orderFile << "\n";
+    }
 	orderFile << "\n";
 
 	for ( map<pair<Process, int>, int>::const_iterator p = procs.begin() ; p != procs.end() ; ++p ) {
@@ -260,7 +279,6 @@ bool GoSamAmplitude::checkOLPContract() {
 	ids = "installpath.dat";
 	ofstream Install(ids.c_str());
 	Install<<gosamInstallPath << flush;
-	
 
 	return 1;
 
@@ -336,15 +354,10 @@ LorentzVector<Complex> GoSamAmplitude::plusPolarization(const Lorentz5Momentum& 
 
 }
 
-
 void GoSamAmplitude::evalSubProcess() const {
 	double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
-	// // units *= pow(4. * Constants::pi * SM().alphaEMMZ(), orderInGem());
-	// // units *= pow(4. * Constants::pi * SM().alphaS(), orderInGs());
 	fillOLPMomenta(lastXComb().meMomenta());
 
-	// double as = SM().alphaS();
-	// // double as = 1.0;
 	double scale = sqrt(mu2() / GeV2);
 
 	double out[7] = { };
@@ -355,15 +368,9 @@ void GoSamAmplitude::evalSubProcess() const {
 	  getids();
 	}
 
-	// OLP_EvalSubProcess((*(idpair.find(id))).second, olpMomenta(), scale, &as, out);
-
-        // Use OLP_EvalSubProcess2 now
-        double acc;
-	// int pStatus=0;
-	// double zero=0.0;
-	// OLP_SetParameter((char *)"alphaS", &as, &zero, &pStatus);
+    double acc;
 	OLP_EvalSubProcess2(&((*(idpair.find(id))).second), olpMomenta(), &scale, out, &acc);
-	
+
 	if ( olpId()[ProcessType::oneLoopInterference] ) {
 	  lastTreeME2(out[3] * units);
 	  lastOneLoopInterference((out[2])* units);
@@ -371,18 +378,13 @@ void GoSamAmplitude::evalSubProcess() const {
 	} else if ( olpId()[ProcessType::treeME2] ) {
 	  lastTreeME2(out[3] * units);
 	}
-	
-	
+
 }
 
 void GoSamAmplitude::evalColourCorrelator(pair<int, int> ) const {
 	double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
-	// // units *= pow(4. * Constants::pi * SM().alphaEMMZ(), orderInGem());
-	// // units *= pow(4. * Constants::pi * SM().alphaS(), orderInGs());
 	fillOLPMomenta(lastXComb().meMomenta());
 
-	// double as = SM().alphaS();
-	// // double as = 1.0;
 	double scale = sqrt(mu2() / GeV2);
 
 	int n = lastXComb().meMomenta().size();
@@ -392,15 +394,9 @@ void GoSamAmplitude::evalColourCorrelator(pair<int, int> ) const {
 	  getids();
 	}
 
-	// OLP_EvalSubProcess((*(idpair.find(olpId()[ProcessType::colourCorrelatedME2]))).second, olpMomenta(), scale, &as, &colourCorrelatorResults[0]);
-
-        // Use OLP_EvalSubProcess2 now
-        double acc;
-	// int pStatus=0;
-	// double zero=0.0;
-	// OLP_SetParameter((char *)"alphaS", &as, &zero, &pStatus);
+    double acc;
 	OLP_EvalSubProcess2(&((*(idpair.find(olpId()[ProcessType::colourCorrelatedME2]))).second), olpMomenta(), &scale, &colourCorrelatorResults[0], &acc);
-	
+
 	cPDVector particles = lastXComb().matrixElement()->mePartonData();
 	
 	for ( int i = 0 ; i < n ; ++i ) {
@@ -413,12 +409,8 @@ void GoSamAmplitude::evalColourCorrelator(pair<int, int> ) const {
 
 void GoSamAmplitude::evalSpinColourCorrelator(pair<int , int > ) const {
 	double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
-	// // units *= pow(4. * Constants::pi * SM().alphaEMMZ(), orderInGem());
-	// // units *= pow(4. * Constants::pi * SM().alphaS(), orderInGs());
 	fillOLPMomenta(lastXComb().meMomenta());
 
-	// double as = SM().alphaS();
-	// // double as = 1.0;
 	double scale = sqrt(mu2() / GeV2);
 
 	int n = lastXComb().meMomenta().size();
@@ -428,15 +420,9 @@ void GoSamAmplitude::evalSpinColourCorrelator(pair<int , int > ) const {
 	  getids();
 	}
 
-	// OLP_EvalSubProcess((*(idpair.find(olpId()[ProcessType::spinColourCorrelatedME2]))).second, olpMomenta(), scale, &as, &spinColourCorrelatorResults[0]);
-
-        // Use OLP_EvalSubProcess2 now
-        double acc;
-	// int pStatus=0;
-	// double zero=0.0;
-	// OLP_SetParameter((char *)"alphaS", &as, &zero, &pStatus);
+    double acc;
 	OLP_EvalSubProcess2(&((*(idpair.find(olpId()[ProcessType::spinColourCorrelatedME2]))).second), olpMomenta(), &scale, &spinColourCorrelatorResults[0], &acc);
-	 
+
         for ( int i = 0; i < n; ++i )
         for ( int j = 0; j < n; ++j ) {
        	  Complex scc(spinColourCorrelatorResults[2*i+2*n*j]*units, spinColourCorrelatorResults[2*i+2*n*j+1]*units);
@@ -445,8 +431,13 @@ void GoSamAmplitude::evalSpinColourCorrelator(pair<int , int > ) const {
 
 }
 
-
-
+string GoSamAmplitude::doMassiveParticles(string in) {
+  istringstream ins(in);
+  int first;
+  ins >> first;
+  theMassiveParticles.push_back(first);
+  return "";
+}
 
 
 // If needed, insert default implementations of virtual function defined
@@ -454,11 +445,11 @@ void GoSamAmplitude::evalSpinColourCorrelator(pair<int , int > ) const {
 
 
 void GoSamAmplitude::persistentOutput(PersistentOStream & os) const {
-	os << idpair <<theCodeExists;
+	os << idpair << theCodeExists << theMassiveParticles << thePrintParameter;
 }
 
 void GoSamAmplitude::persistentInput(PersistentIStream & is, int) {
-	is >> idpair >>theCodeExists;
+	is >> idpair >> theCodeExists >> theMassiveParticles >> thePrintParameter;
 }
 
 // *** Attention *** The following static variable is needed for the type
@@ -494,25 +485,42 @@ void GoSamAmplitude::Init() {
           "False",
           "Switch False if Code has to be build.",
           false);
-          
+
   static Switch<GoSamAmplitude,bool> interfaceisitDR
          ("isDR",
           "Switch on or off DR.",
           &GoSamAmplitude::isitDR, false, false, false);
-
   static SwitchOption interfaceisitDROn
          (interfaceisitDR,
           "True",
           "Switch True.",
           true);
-
   static SwitchOption interfaceisitDROff
          (interfaceisitDR,
           "False",
           "Switch False.",
           false);
-                  
-   
+  
+  static Command<GoSamAmplitude> interfaceMassiveParticles
+    ("MassiveParticles",
+     "Insert the PDG code of a quark with mass.",
+     &GoSamAmplitude::doMassiveParticles, false);
+
+  static Switch<GoSamAmplitude,bool> interfacePrintParameter
+         ("PrintParameter",
+          "Switch On if OLP parameters are to be printed into an output file"
+	  "'GoSamAmplitude'.OLPParameters.lh, otherwise Off. Default is Off.",
+          &GoSamAmplitude::thePrintParameter, false, false, false);
+  static SwitchOption interfacePrintParameterOn
+         (interfacePrintParameter,
+          "On",
+          "On",
+          true);
+  static SwitchOption interfacePrintParameterOff
+         (interfacePrintParameter,
+          "Off",
+          "Off",
+          false);
 
 }
 
