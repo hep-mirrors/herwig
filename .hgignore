@@ -63,7 +63,7 @@ Makefile\.in$
 ^src/tune$
 ^src/tests/.*\.(time|mult|Bmult|chisq)$
 ^Tests/.*/.*\.(top|ps|pyc|info|dat|pdf|png)$
-^Tests/.*\.(top|ps|pyc|info|dat|pdf|png)$
+^Tests/.*\.(top|ps|pyc|info|dat|pdf|png|log|out)$
 ^Tests/.*\.(top|run|tex|mult|Bmult|aida|yoda)$
 ^Tests/Rivet-.*$
 ^Tests/plots$
