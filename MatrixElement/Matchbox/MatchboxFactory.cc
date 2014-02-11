@@ -42,8 +42,8 @@ MatchboxFactory::MatchboxFactory()
     theFactorizationScaleFactor(1.0), theRenormalizationScaleFactor(1.0),
     theFixedCouplings(false), theFixedQEDCouplings(false), theVetoScales(false),
     theDipoleSet(0), theVerbose(false), theInitVerbose(false), 
-    theSubtractionData(""), theSubtractionPlotType(1), thePoleData(""),
-    theRealEmissionScales(false), theAllProcesses(false),
+    theSubtractionData(""), theSubtractionPlotType(1), theSubtractionScatterPlot(false),
+    thePoleData(""), theRealEmissionScales(false), theAllProcesses(false),
     theMECorrectionsOnly(false) {}
 
 MatchboxFactory::~MatchboxFactory() {}
@@ -903,7 +903,8 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
      << theAmplitudes
      << theBornMEs << theVirtuals << theRealEmissionMEs
      << theBornVirtualMEs << theSubtractedMEs << theFiniteRealMEs
-     << theVerbose << theInitVerbose << theSubtractionData << theSubtractionPlotType << thePoleData
+     << theVerbose << theInitVerbose << theSubtractionData << theSubtractionPlotType
+     << theSubtractionScatterPlot << thePoleData
      << theParticleGroups << processes << realEmissionProcesses
      << theShowerApproximation << theSplittingDipoles
      << theRealEmissionScales << theAllProcesses
@@ -924,7 +925,8 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
      >> theAmplitudes
      >> theBornMEs >> theVirtuals >> theRealEmissionMEs
      >> theBornVirtualMEs >> theSubtractedMEs >> theFiniteRealMEs
-     >> theVerbose >> theInitVerbose >> theSubtractionData >> theSubtractionPlotType >> thePoleData
+     >> theVerbose >> theInitVerbose >> theSubtractionData >> theSubtractionPlotType
+     >> theSubtractionScatterPlot >> thePoleData
      >> theParticleGroups >> processes >> realEmissionProcesses
      >> theShowerApproximation >> theSplittingDipoles
      >> theRealEmissionScales >> theAllProcesses
@@ -1312,6 +1314,17 @@ void MatchboxFactory::Init() {
      "LogRelDiff",
      "Switch on the logarithmic plot of the relative difference",
      2);
+  
+  static Switch<MatchboxFactory,bool> interfaceSubtractionScatterPlot
+    ("SubtractionScatterPlot",
+     "Switch for controlling whether subtraction data should be plotted for each phase space point individually",
+     &MatchboxFactory::theSubtractionScatterPlot, false, false, false);
+  static SwitchOption interfaceSubtractionScatterPlotOff
+    (interfaceSubtractionScatterPlot,
+     "Off", "Switch off the scatter plot", false);
+  static SwitchOption interfaceSubtractionScatterPlotOn
+    (interfaceSubtractionScatterPlot,
+     "On", "Switch on the scatter plot", true);
 
   static Parameter<MatchboxFactory,string> interfacePoleData
     ("PoleData",

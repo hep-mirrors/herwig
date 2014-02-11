@@ -361,6 +361,7 @@ public:
      */
     void dump(const std::string& prefix, 
         const int& plottype,
+        const bool& scatterplot,
 	      const cPDVector& proc,
 	      int i, int j) const;
 
@@ -481,6 +482,11 @@ private:
   map<CollinearSubtractionIndex,SubtractionHistogram> collinearHistograms;
 
   /**
+   * names of files to which subtraction data is written for all phase space points individually
+   */
+  map<CollinearSubtractionIndex,string> fnamesCollinearSubtraction;
+
+  /**
    * Define the key for the soft subtraction data.
    */
   typedef pair<cPDVector,size_t> SoftSubtractionIndex;
@@ -489,6 +495,11 @@ private:
    * subtraction data for soft limits.
    */
   map<SoftSubtractionIndex,SubtractionHistogram> softHistograms;
+
+  /**
+   * names of files to which subtraction data is written for all phase space points individually
+   */
+  map<SoftSubtractionIndex,string> fnamesSoftSubtraction;
 
   /**
    * True, if the shower real emission contribution should be subtracted.

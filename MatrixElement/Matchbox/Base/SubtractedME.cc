@@ -108,6 +108,12 @@ StdXCombPtr SubtractedME::makeXComb(Energy newMaxEnergy, const cPDPair & inc,
 	if ( i > 1 && 
 	     (*p)[i]->id() == ParticleID::g ) {
 	  softHistograms[SoftSubtractionIndex(*p,i)] = SubtractionHistogram(0.00001,1000.);
+	  ostringstream fname("");
+	  fname << factory()->subtractionData();
+	  const cPDVector& myproc = SoftSubtractionIndex(*p,i).first;
+	  for (cPDVector::const_iterator pp = myproc.begin(); pp != myproc.end(); ++pp) fname << (**pp).PDGName();
+	  fname << "-" << i << "-" << i << "-scatter.dat";
+	  fnamesSoftSubtraction[SoftSubtractionIndex(*p,i)] = fname.str();
 	  if ( theReal->phasespace() )
 	    res->singularLimits().insert(make_pair(i,i));
 	}
@@ -139,6 +145,12 @@ StdXCombPtr SubtractedME::makeXComb(Energy newMaxEnergy, const cPDPair & inc,
 	  if ( !haveDipole )
 	    continue;
 	  collinearHistograms[CollinearSubtractionIndex(*p,make_pair(i,j))] = SubtractionHistogram(0.00001,1000.);
+    ostringstream fname("");
+    fname << factory()->subtractionData();
+    const cPDVector& myproc = CollinearSubtractionIndex(*p,make_pair(i,j)).first;
+    for (cPDVector::const_iterator pp = myproc.begin(); pp != myproc.end(); ++pp) fname << (**pp).PDGName();
+    fname << "-" << i << "-" << j << "-scatter.dat";
+    fnamesCollinearSubtraction[CollinearSubtractionIndex(*p,make_pair(i,j))] = fname.str();
 	  if ( theReal->phasespace() )
 	    res->singularLimits().insert(make_pair(i,j));
 	}
@@ -512,6 +524,7 @@ void SubtractedME::dofinish() {
 	b != collinearHistograms.end(); ++b ) {
     b->second.dump(factory()->subtractionData(),
        factory()->subtractionPlotType(),
+       factory()->subtractionScatterPlot(),
 		   b->first.first,
 		   b->first.second.first,
 		   b->first.second.second);
@@ -522,6 +535,7 @@ void SubtractedME::dofinish() {
 	b != softHistograms.end(); ++b ) {
     b->second.dump(factory()->subtractionData(),
        factory()->subtractionPlotType(),
+       factory()->subtractionScatterPlot(),
 		   b->first.first,
 		   b->first.second,
 		   b->first.second);
@@ -605,6 +619,7 @@ void SubtractedME::SubtractionHistogram::persistentInput(PersistentIStream& is) 
 void SubtractedME::SubtractionHistogram::
 dump(const std::string& prefix, 
      const int& plottype,
+     const bool& scatterplot,
      const cPDVector& proc,
      int i, int j) const {
   bool bbmin = true;
@@ -669,7 +684,9 @@ dump(const std::string& prefix,
         << "set yrange [1e-6:1e1]\n"
         << "set ylabel '$\\max\\left\\{\\left|\\mathcal{D}-\\mathcal{M}\\right|/\\left|\\mathcal{M}\\right|\\right\\}$'\n"
         << "unset bars\n";
-    gpout << "plot '" << fname.str() << ".dat' u (($1+$2)/2.):4 w lines lw 4 lc rgbcolor \"#00AACC\" t '$";
+    gpout << "plot '";
+    if (scatterplot) gpout << fname.str() << "-scatter.dat' w points pt 7 ps 0.5 lc rgbcolor \"#00AACC\" not, \\\n'";
+    gpout << fname.str() << ".dat' u (($1+$2)/2.):4 w lines lw 4 lc rgbcolor \"#00AACC\" t '$";
   }
   for ( size_t k = 0; k < proc.size(); k++ ) {
     if ( k == 2 )
@@ -716,6 +733,10 @@ void SubtractedME::lastEventSubtraction() {
 	 != softHistograms.end() ) {
       softHistograms[SoftSubtractionIndex(head()->mePartonData(),i)].
 	book(meMomenta()[i].t()/GeV,delta);
+	   if ( factory()->subtractionScatterPlot() ){
+	     ofstream outstream((fnamesSoftSubtraction[SoftSubtractionIndex(head()->mePartonData(),i)]).c_str(),ofstream::app);
+	     outstream << meMomenta()[i].t()/GeV << " " << delta << "\n";
+	   }
     }
     if ( i != j &&
 	 collinearHistograms.find(CollinearSubtractionIndex(head()->mePartonData(),make_pair(i,j))) 
@@ -723,6 +744,10 @@ void SubtractedME::lastEventSubtraction() {
       double s = sqrt(2.*meMomenta()[i]*meMomenta()[j])/GeV;
       collinearHistograms[CollinearSubtractionIndex(head()->mePartonData(),make_pair(i,j))].
 	book(s,delta);
+      if ( factory()->subtractionScatterPlot() ){
+        ofstream outstream((fnamesCollinearSubtraction[CollinearSubtractionIndex(head()->mePartonData(),make_pair(i,j))]).c_str(),ofstream::app);
+        outstream << s << " " << delta << "\n";
+      }
     }
     return;
   }
@@ -733,6 +758,10 @@ void SubtractedME::lastEventSubtraction() {
 	   != softHistograms.end() ) {
 	softHistograms[SoftSubtractionIndex(head()->mePartonData(),i)].
 	  book(meMomenta()[i].t()/GeV,delta);
+  if ( factory()->subtractionScatterPlot() ){
+    ofstream outstream((fnamesSoftSubtraction[SoftSubtractionIndex(head()->mePartonData(),i)]).c_str(),ofstream::app);
+    outstream << meMomenta()[i].t()/GeV << " " << delta << "\n";
+  }
       }
     }
     for ( size_t j = i+1; j < meMomenta().size(); ++j ) {
@@ -742,6 +771,10 @@ void SubtractedME::lastEventSubtraction() {
       double s = sqrt(2.*meMomenta()[i]*meMomenta()[j])/GeV;
       collinearHistograms[CollinearSubtractionIndex(head()->mePartonData(),make_pair(i,j))].
 	book(s,delta);
+      if ( factory()->subtractionScatterPlot() ){
+        ofstream outstream((fnamesCollinearSubtraction[CollinearSubtractionIndex(head()->mePartonData(),make_pair(i,j))]).c_str(),ofstream::app);
+        outstream << s << " " << delta << "\n";
+      }
     }
   }
 
@@ -750,6 +783,7 @@ void SubtractedME::lastEventSubtraction() {
 void SubtractedME::persistentOutput(PersistentOStream & os) const {
   os << theLastXComb << theFactory << theBorns << theReal 
      << collinearHistograms << softHistograms 
+     << fnamesSoftSubtraction
      << theRealShowerSubtraction << theVirtualShowerSubtraction
      << theSubProcessGroups << theInclusive;
 }
@@ -757,6 +791,7 @@ void SubtractedME::persistentOutput(PersistentOStream & os) const {
 void SubtractedME::persistentInput(PersistentIStream & is, int) {
   is >> theLastXComb >> theFactory >> theBorns >> theReal 
      >> collinearHistograms >> softHistograms 
+     >> fnamesSoftSubtraction
      >> theRealShowerSubtraction >> theVirtualShowerSubtraction
      >> theSubProcessGroups >> theInclusive;
   lastMatchboxXComb(theLastXComb);

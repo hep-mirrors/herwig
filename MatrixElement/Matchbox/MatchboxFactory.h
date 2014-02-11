@@ -552,7 +552,17 @@ public:
    * Set the subtraction plot type.
    */
   void subtractionPlotType(const int& t) { theSubtractionPlotType = t; }
-
+  
+  /**
+   * Return whether subtraction data should be plotted for all phase space points individually
+   */
+  const bool& subtractionScatterPlot() const { return theSubtractionScatterPlot; }
+  
+  /**
+   * Set whether subtraction data should be plotted for all phase space points individually
+   */
+  void subtractionScatterPlot(const bool& s) { theSubtractionScatterPlot = s; }
+  
   /**
    * Return the pole data prefix.
    */
@@ -803,7 +813,12 @@ private:
    * Set the type of plot that is to be generated for subtraction checking
    */
   int theSubtractionPlotType;
-
+  
+  /**
+   * Set whether subtraction data should be plotted for all phase space points individually
+   */
+  bool theSubtractionScatterPlot;
+  
   /**
    * Prefix for pole data.
    */
