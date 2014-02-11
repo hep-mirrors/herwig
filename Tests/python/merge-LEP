@@ -79,7 +79,7 @@ if __name__ == "__main__":
 # #######################################
 
 aidafiles=["-130.aida","-133.aida","-136.aida","-177.aida","-192.aida",
-           "-196.aida","-202.aida","-206.aida","-91.aida" ,\
+           "-196.aida","-202.aida","-206.aida","-91.aida" ,"-91-nopi.aida" ,\
            "-161.aida","-183.aida","-197.aida","-35.aida" ,"-172.aida",\
            "-189.aida","-200.aida","-44.aida","-14.aida","-22.aida","-10.aida" ]
 
