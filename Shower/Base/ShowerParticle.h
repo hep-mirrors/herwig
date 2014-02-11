@@ -17,6 +17,7 @@
 #include "Herwig++/Shower/ShowerConfig.h"
 #include "ShowerKinematics.h"
 #include "ShowerParticle.fh"
+#include <iosfwd>
 
 namespace Herwig {
 
@@ -405,6 +406,8 @@ private:
   vector<EvolutionPartner> partners_;
     
 };
+
+ostream & operator<<(ostream & os, const ShowerParticle::EvolutionScales & es);
 
 }
 

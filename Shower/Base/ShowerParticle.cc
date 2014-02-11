@@ -15,6 +15,7 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include <ostream>
 
 using namespace Herwig;
 
@@ -40,4 +41,14 @@ void ShowerParticle::vetoEmission(ShowerPartnerType::Type type, Energy scale) {
 
 void ShowerParticle::addPartner(EvolutionPartner in ) {
   partners_.push_back(in); 
+}
+
+ostream & operator<<(ostream & os, const ShowerParticle::EvolutionScales & es) {
+  os << "Scales: QED=" << es.QED / GeV
+     << " QCD_c=" << es.QCD_c / GeV
+     << " QCD_ac=" << es.QCD_ac / GeV
+     << " QED_noAO=" << es.QED_noAO / GeV
+     << " QCD_c_noAO" << es.QCD_c_noAO / GeV
+     << " QCD_ac_noAO" << es.QCD_ac_noAO / GeV
+     << '\n';
 }

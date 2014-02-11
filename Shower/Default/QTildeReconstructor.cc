@@ -1363,23 +1363,22 @@ findPartners(unsigned int iloc ,
 void QTildeReconstructor::
 reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
   Lorentz5Momentum pin[2],pout[2];
-  bool atLeastOnce(false);
   for(unsigned int ix=0;ix<jets.size();++ix) {
     // final-state parton
     if(jets[ix]->progenitor()->isFinalState()) {
       pout[0] +=jets[ix]->progenitor()->momentum();
       _progenitor = jets[ix]->progenitor();
-      atLeastOnce |= reconstructTimeLikeJet(jets[ix]->progenitor(),0);
+      reconstructTimeLikeJet(jets[ix]->progenitor(),0);
     }
     // initial-state parton
     else {
       pin[0]  +=jets[ix]->progenitor()->momentum();
-      atLeastOnce |= reconstructSpaceLikeJet(jets[ix]->progenitor());
+      reconstructSpaceLikeJet(jets[ix]->progenitor());
       assert(!jets[ix]->original()->parents().empty());
     }
   }
   // add intrinsic pt if needed
-  atLeastOnce |= addIntrinsicPt(jets);
+  addIntrinsicPt(jets);
   // momenta after showering
   for(unsigned int ix=0;ix<jets.size();++ix) {
     if(jets[ix]->progenitor()->isFinalState())

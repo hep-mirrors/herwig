@@ -106,7 +106,6 @@ sudakov2Momentum(double alpha, double beta, Energy px,
 void QTildeShowerKinematics1to2::printScales(tShowerParticlePtr parent,
 					     tShowerParticlePtr child1,
 					     tShowerParticlePtr child2) const {
-  assert(false);
   // CurrentGenerator::log() << *parent << "\n" << *child1 << " "
   // 			  << *child2 << "\n";
   // CurrentGenerator::log() << "testing parent\n";
