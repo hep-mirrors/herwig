@@ -137,6 +137,8 @@ for p in FR.all_parameters:
                                        value=value,
                                        type=typemap(p.type)) 
             )
+            if hasattr(p,'lhablock'):
+              parmmodelconstr.append('# SLHA # {lhablock}_{lhacode}'.format(lhablock=p.lhablock,lhacode='_'.join(map(str,p.lhacode))))
             parmmodelconstr.append('set %s:%s %s' % (modelname, p.name, value))
             parmconstr.append('%s_(%s)' % (p.name, value))
         else :

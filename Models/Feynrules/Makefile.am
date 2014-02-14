@@ -13,10 +13,12 @@ install-data-local:
 install-exec-local:
 	$(install_sh_SCRIPT) $(srcdir)/python/ufo2herwig $(DESTDIR)$(bindir)/ufo2herwig
 	sed -e's!@PKGLIBDIR@!$(pkglibdir)!' $(srcdir)/python/ufo2herwig > $(DESTDIR)$(bindir)/ufo2herwig
+	$(install_sh_SCRIPT) $(srcdir)/python/slha2herwig $(DESTDIR)$(bindir)/slha2herwig
 
 uninstall-local:
 	rm -rf $(DESTDIR)$(pkglibdir)/python
 	rm -f  $(DESTDIR)$(bindir)/ufo2herwig
+	rm -f  $(DESTDIR)$(bindir)/slha2herwig
 
 endif
 
