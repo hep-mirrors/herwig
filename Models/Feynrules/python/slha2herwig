@@ -5,17 +5,23 @@ import os, sys, argparse, re, string
 slha_pat   = re.compile('^# SLHA # (.*)')
 setter_pat = re.compile('^set ([:\w]+) (.+)')
 comment_pat = re.compile('\s*#.*$')
-block_pat = re.compile('^block\s+(\w+)',flags=re.I)
+block_pat = re.compile('^\s*block\s+(\w+)',flags=re.I)
+decay_pat = re.compile('^\s*decay',flags=re.I)
+
+data_pat = re.compile('^\s*((\d+\s+)+)(-?\d\S*)\s*$')
+whitespace = re.compile('\s+')
+
 
 PARAMS = {}
 
 TEMPLATE = []
 
 def process_setter_line(line, label):
+	label = label.upper()
 	m = setter_pat.match(line)
 	if not m: raise Exception('Unexpected SLHA line: %s' % line)
 	param, value = m.groups()
-	PARAMS[label] = value
+	PARAMS[label] = float(value)
 	TEMPLATE.append('set {} ${{{}}}'.format(param,label))
 
 # set up the option parser for command line input 
@@ -49,14 +55,38 @@ with open(args.modelfile) as f:
 		else:
 			TEMPLATE.append(line)
 
+
 template = string.Template('\n'.join(TEMPLATE))
+
+with open('tmp1','w') as f:
+	f.write(template.substitute(PARAMS))
+	f.write('\n')
 
 ################### TEMPLATE created ######################
 
 with open(args.slhafile) as f:
+	currentblock = None
 	for line in f:
 		line = comment_pat.sub('',line.rstrip())
 		if not line: continue
-		if block_pat.match(line):
-			print line
+		m = block_pat.match(line)
+		if m:
+			currentblock = m.group(1).upper()
+		elif decay_pat.match(line):
+			currentblock = None
+		elif currentblock is not None:
+			d = data_pat.match(line)
+			if d:
+				index = whitespace.sub('_',d.group(1).rstrip())
+				try:
+					data  = float(d.group(3))
+				except ValueError:
+					continue
+				label = '%s_%s' % (currentblock, index)
+				if label in PARAMS:
+					PARAMS[label] = data
 
+
+with open('tmp2','w') as f:
+	f.write(template.substitute(PARAMS))
+	f.write('\n')
