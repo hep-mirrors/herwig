@@ -8,5 +8,7 @@ HwMatchboxCuts_la_SOURCES = \
 IdentifiedParticleCut.cc \
 IdentifiedParticleCut.h \
 MatchboxDeltaRCut.cc \
-MatchboxDeltaRCut.h
+MatchboxDeltaRCut.h \
+MissingPtCut.cc \
+MissingPtCut.h
 
