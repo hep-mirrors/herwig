@@ -47,16 +47,16 @@ bool MissingPtCut::passCuts(tcCutsPtr parent, const tcPDVector & ptype,
                             const vector<LorentzMomentum> & p) const {
 
   Energy ptMissSum = 0.0*GeV;
-  bool nonu = false;
+  bool nonu = true;
 
   for ( int i = 0, N = ptype.size(); i < N; ++i ) {
     if ( abs(ptype[i]->id())==ParticleID::nu_e || abs(ptype[i]->id())==ParticleID::nu_mu || abs(ptype[i]->id())==ParticleID::nu_tau ) {
       ptMissSum = ptMissSum + p[i].perp();
-      nonu = true;
+      nonu = false;
     }
   }
 
-  if ( !nonu ) return true;
+  if ( nonu ) return true;
 
   double weight = 1.0;
 
@@ -106,8 +106,9 @@ DescribeClass<MissingPtCut,MultiCutBase>
 void MissingPtCut::Init() {
 
   static ClassDocumentation<MissingPtCut> documentation
-    ("MissingPtCut implements a cut on the total missing transverse momentum, "
-     "i.e. for now the total transverse momentum of all neutrinos.");
+    ("MissingPtCut implements a cut on the total missing transverse momentum "
+     "of a set of outgoing particles, i.e. for now the total transverse momentum "
+     "of all outgoing neutrinos in an event.");
 
   static Parameter<MissingPtCut,Energy> interfacePtMissMin
     ("PtMissMin",

@@ -23,7 +23,7 @@ using namespace ThePEG;
  * \ingroup Matchbox
  * \author Christian Reuschle
  *
- * \brief MissingPtCut implements a cut on the total missing transverse momentum, i.e. for now the total transverse momentum of all neutrinos.
+ * \brief MissingPtCut implements a cut on the total missing transverse momentum of a set of outgoing particles, i.e. for now the total transverse momentum of all outgoing neutrinos in an event.
  *
  * @see \ref MissingPtCutInterfaces "The interfaces"
  * defined for MissingPtCut.
