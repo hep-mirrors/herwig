@@ -411,6 +411,8 @@ string Tree2toNGenerator::doSpaceLikeRange(string range) {
   if ( bounds.size() == 2 ) {
     istringstream in2(bounds[1]);
     in2 >> irange.second;
+  } else {
+    irange.second = irange.first;
   }
   if ( irange.second >= 0 && irange.first > irange.second )
     return "invalid range specified";
@@ -430,6 +432,8 @@ string Tree2toNGenerator::doTimeLikeRange(string range) {
   if ( bounds.size() == 2 ) {
     istringstream in2(bounds[1]);
     in2 >> irange.second;
+  } else {
+    irange.second = irange.first;
   }
   if ( irange.second >= 0 && irange.first > irange.second )
     return "invalid range specified";
