@@ -124,14 +124,14 @@ public:
   /**
    * Return the number of attempts
    */
-  unsigned long attempts() const {
+  double attempts() const {
     return theAttempts;
   }
 
   /**
    * Return the number of accepts
    */
-  unsigned long accepts() const {
+  double accepts() const {
     return theAccepts;
   }
 
@@ -311,12 +311,12 @@ private:
   /**
    * The number of attempts
    */
-  unsigned long theAttempts;
+  double theAttempts;
 
   /**
    * The number of accepts
    */
-  unsigned long theAccepts;
+  double theAccepts;
 
   /**
    * The sum of absolute cross section.

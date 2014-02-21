@@ -154,7 +154,7 @@ double GeneralSampler::generate() {
       continue;
     }
 
-    ++theAttempts;
+    theAttempts += 1;
 
     if ( eventHandler()->weighted() && lastSampler->lastWeight() == 0.0 ) {
       lastSampler->accept();
@@ -188,7 +188,7 @@ double GeneralSampler::generate() {
 
   }
 
-  ++theAccepts;
+  theAccepts += 1;
 
   if ( excptTries == eventHandler()->maxLoop() )
     throw Exception()
@@ -230,8 +230,8 @@ void GeneralSampler::rejectLast() {
     theSumWeights -= w;
     theSumWeights2 -= sqr(w);
   }
-  --theAttempts;
-  --theAccepts;
+  theAttempts -= 1;
+  theAccepts -= 1;
 }
 
 void GeneralSampler::currentCrossSections() const {
