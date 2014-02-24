@@ -154,7 +154,7 @@ void MultiIterationStatistics::Init() {
 
   static ThePEG::Parameter<MultiIterationStatistics,unsigned int> interfaceMinNumEventsPerIteration
     ("MinNumEventsPerIteration",
-     "Set the number of presampling points per cell",
+     "Discard iterations with less than the given number of points.",
      &MultiIterationStatistics::theMinNumEventsPerIteration, 100, 2, 0,
      false, false, ThePEG::Interface::lowerlim);
 
