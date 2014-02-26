@@ -112,6 +112,16 @@ public:
   void bias(double b) { theBias = b; }
 
   /**
+   * Return the reference weight to be used
+   */
+  double referenceWeight() const { return theReferenceWeight; }
+
+  /**
+   * Set the reference weight to be used
+   */
+  void referenceWeight(double w) { theReferenceWeight = w; }
+
+  /**
    * Return true, if this sampler can provide unweighted events; if
    * the proposal density is not an overestimate, weights larger than
    * one can be generated, the handling of these points being subject
@@ -277,6 +287,11 @@ private:
    * The bias with which this sampler is selected.
    */
   double theBias;
+
+  /**
+   * The reference weight to be used
+   */
+  double theReferenceWeight;
 
   /**
    * The bin to be sampled.

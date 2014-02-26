@@ -35,6 +35,7 @@ BinSampler::BinSampler()
     theWeighted(false),
     theInitialPoints(1000000),
     theBias(1.0),
+    theReferenceWeight(1.0),
     theBin(-1),
     theInitialized(false) {}
 
@@ -80,7 +81,6 @@ string BinSampler::id() const {
 }
 
 double BinSampler::generate() {
-  assert(maxWeight() != 0.0);
   double w = 1.;
   for ( size_t k = 0; k < lastPoint().size(); ++k ) {
     lastPoint()[k] = UseRandom::rnd();
@@ -93,19 +93,17 @@ double BinSampler::generate() {
     throw;
   }
   if ( !weighted() && initialized() ) {
-    double p = min(abs(w),maxWeight())/maxWeight();
+    double p = min(abs(w),referenceWeight())/referenceWeight();
     double sign = w >= 0. ? 1. : -1.;
     if ( p < 1 && UseRandom::rnd() > p )
       w = 0.;
     else
-      w = sign*max(abs(w),maxWeight());
+      w = sign*max(abs(w),referenceWeight());
   }
   select(w);
   if ( w != 0.0 )
     accept();
-  if ( initialized() )
-    return w/maxWeight();
-  return w;
+  return w/referenceWeight();
 }
 
 void BinSampler::runIteration(unsigned long points, bool progress) {
@@ -157,14 +155,14 @@ void BinSampler::initialize(bool progress) {
 
 void BinSampler::persistentOutput(PersistentOStream & os) const {
   MultiIterationStatistics::put(os);
-  os << theWeighted << theInitialPoints << theBias
+  os << theWeighted << theInitialPoints << theBias << theReferenceWeight
      << theBin << theInitialized << theLastPoint
      << theEventHandler;
 }
 
 void BinSampler::persistentInput(PersistentIStream & is, int) {
   MultiIterationStatistics::get(is);
-  is >> theWeighted >> theInitialPoints >> theBias
+  is >> theWeighted >> theInitialPoints >> theBias >> theReferenceWeight
      >> theBin >> theInitialized >> theLastPoint
      >> theEventHandler;
 }
