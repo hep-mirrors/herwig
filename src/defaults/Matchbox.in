@@ -383,17 +383,25 @@ create ThePEG::JetRegion SecondJet
 set SecondJet:PtMin 20.*GeV
 do SecondJet:YRange -5.0 5.0
 set SecondJet:Fuzzy Yes
-set FirstJet:EnergyCutWidth 4.0*GeV
-set FirstJet:RapidityCutWidth 0.4
+set SecondJet:EnergyCutWidth 4.0*GeV
+set SecondJet:RapidityCutWidth 0.4
 insert SecondJet:Accepts[0] 2
 
 create ThePEG::JetRegion ThirdJet
 set ThirdJet:PtMin 20.*GeV
 do ThirdJet:YRange -5.0 5.0
 set ThirdJet:Fuzzy Yes
-set FirstJet:EnergyCutWidth 4.0*GeV
-set FirstJet:RapidityCutWidth 0.4
+set ThirdJet:EnergyCutWidth 4.0*GeV
+set ThirdJet:RapidityCutWidth 0.4
 insert ThirdJet:Accepts[0] 3
+
+create ThePEG::JetRegion FourthJet
+set FourthJet:PtMin 20.*GeV
+do FourthJet:YRange -5.0 5.0
+set FourthJet:Fuzzy Yes
+set FourthJet:EnergyCutWidth 4.0*GeV
+set FourthJet:RapidityCutWidth 0.4
+insert FourthJet:Accepts[0] 3
 
 create ThePEG::NJetsCut NJetsCut
 set NJetsCut:UnresolvedMatcher /Herwig/Matchers/StandardQCDParton
