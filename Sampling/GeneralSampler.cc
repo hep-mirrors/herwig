@@ -411,6 +411,7 @@ void GeneralSampler::dofinish() {
 }
 
 void GeneralSampler::doinitrun() {
+  eventHandler()->initrun();
   readGrids();
   isSampling = true;
   SamplerBase::doinitrun();
