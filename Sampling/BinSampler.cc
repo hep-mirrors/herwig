@@ -17,6 +17,7 @@
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
+#include "ThePEG/Repository/Repository.h"
 
 #include "ThePEG/Interface/Parameter.h"
 
@@ -28,12 +29,16 @@
 
 #include <boost/progress.hpp>
 
+#include "GeneralSampler.h"
+
 using namespace Herwig;
 
 BinSampler::BinSampler() 
   : MultiIterationStatistics(), 
     theWeighted(false),
     theInitialPoints(1000000),
+    theNIterations(1),
+    theEnhancementFactor(1.0),
     theBias(1.0),
     theReferenceWeight(1.0),
     theBin(-1),
@@ -47,6 +52,14 @@ IBPtr BinSampler::clone() const {
 
 IBPtr BinSampler::fullclone() const {
   return new_ptr(*this);
+}
+
+void BinSampler::sampler(Ptr<GeneralSampler>::tptr s) {
+  theSampler = s;
+}
+
+Ptr<GeneralSampler>::tptr BinSampler::sampler() const {
+  return theSampler;
 }
 
 string BinSampler::process() const {
@@ -80,7 +93,7 @@ string BinSampler::id() const {
   return os.str();
 }
 
-double BinSampler::generate() {
+void BinSampler::generate() {
   double w = 1.;
   for ( size_t k = 0; k < lastPoint().size(); ++k ) {
     lastPoint()[k] = UseRandom::rnd();
@@ -103,16 +116,15 @@ double BinSampler::generate() {
   select(w);
   if ( w != 0.0 )
     accept();
-  return w/referenceWeight();
 }
 
 void BinSampler::runIteration(unsigned long points, bool progress) {
 
   boost::progress_display* progressBar = 0;
   if ( progress ) {
-    cout << "integrating " << process() << " , iteration "
-	 << (iterations().size() + 1);
-    progressBar = new boost::progress_display(points,cout);
+    Repository::clog() << "integrating " << process() << " , iteration "
+		       << (iterations().size() + 1);
+    progressBar = new boost::progress_display(points,Repository::clog());
   }
 
   for ( unsigned long k = 0; k < points; ++k ) {
@@ -126,14 +138,14 @@ void BinSampler::runIteration(unsigned long points, bool progress) {
   }
 
   if ( progress ) {
-    cout << "integrated ( " 
-	 << averageWeight() << " +/- " << sqrt(averageWeightVariance())
-	 << " ) nb\nepsilon = "
-	 << (abs(maxWeight()) != 0. ? averageAbsWeight()/abs(maxWeight()) : 0.);
+    Repository::clog() << "integrated ( " 
+		       << averageWeight() << " +/- " << sqrt(averageWeightVariance())
+		       << " ) nb\nepsilon = "
+		       << (abs(maxWeight()) != 0. ? averageAbsWeight()/abs(maxWeight()) : 0.);
     if ( !iterations().empty() )
-      cout << " chi2 = " << chi2();
-    cout << "\n";
-    cout << "--------------------------------------------------------------------------------\n";
+      Repository::clog() << " chi2 = " << chi2();
+    Repository::clog() << "\n";
+    Repository::clog() << "--------------------------------------------------------------------------------\n";
   }
 
   if ( progressBar )
@@ -144,8 +156,19 @@ void BinSampler::runIteration(unsigned long points, bool progress) {
 void BinSampler::initialize(bool progress) {
   if ( initialized() )
     return;
+  if ( !sampler()->grids().children().empty() ) {
+    nIterations(1);
+  }
   lastPoint().resize(dimension());
-  runIteration(initialPoints(),progress);
+  unsigned long points = initialPoints();
+  for ( unsigned long k = 0; k < nIterations(); ++k ) {
+    runIteration(points,progress);
+    if ( k < nIterations() - 1 ) {
+      points = (unsigned long)(points*enhancementFactor());
+      adapt();
+      nextIteration();
+    }
+  }
   isInitialized();
 }
 
@@ -155,16 +178,18 @@ void BinSampler::initialize(bool progress) {
 
 void BinSampler::persistentOutput(PersistentOStream & os) const {
   MultiIterationStatistics::put(os);
-  os << theWeighted << theInitialPoints << theBias << theReferenceWeight
+  os << theWeighted << theInitialPoints << theNIterations 
+     << theEnhancementFactor << theBias << theReferenceWeight
      << theBin << theInitialized << theLastPoint
-     << theEventHandler;
+     << theEventHandler << theSampler;
 }
 
 void BinSampler::persistentInput(PersistentIStream & is, int) {
   MultiIterationStatistics::get(is);
-  is >> theWeighted >> theInitialPoints >> theBias >> theReferenceWeight
+  is >> theWeighted >> theInitialPoints >> theNIterations 
+     >> theEnhancementFactor >> theBias >> theReferenceWeight
      >> theBin >> theInitialized >> theLastPoint
-     >> theEventHandler;
+     >> theEventHandler >> theSampler;
 }
 
 
@@ -186,6 +211,19 @@ void BinSampler::Init() {
      "The number of points to use for initial integration.",
      &BinSampler::theInitialPoints, 1000000, 1, 0,
      false, false, Interface::lowerlim);
+
+  static Parameter<BinSampler,size_t> interfaceNIterations
+    ("NIterations",
+     "The number of iterations to perform initially.",
+     &BinSampler::theNIterations, 1, 1, 0,
+     false, false, Interface::lowerlim);
+
+  static Parameter<BinSampler,double> interfaceEnhancementFactor
+    ("EnhancementFactor",
+     "The enhancement factor for the number of points in the next iteration.",
+     &BinSampler::theEnhancementFactor, 2.0, 1.0, 0,
+     false, false, Interface::lowerlim);
+
 
 }
 

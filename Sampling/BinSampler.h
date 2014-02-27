@@ -22,6 +22,8 @@ namespace Herwig {
 
 using namespace ThePEG;
 
+class GeneralSampler;
+
 /**
  * \ingroup Matchbox
  * \author Simon Platzer
@@ -69,6 +71,16 @@ public:
    * Return the event handler
    */
   tStdEHPtr eventHandler() const { return theEventHandler; }
+
+  /**
+   * Set the containing sampler
+   */
+  void sampler(Ptr<GeneralSampler>::tptr);
+
+  /**
+   * Get the containing sampler
+   */
+  Ptr<GeneralSampler>::tptr sampler() const;
 
   /**
    * Return the bin
@@ -130,13 +142,11 @@ public:
   virtual bool canUnweight() const { return true; }
 
   /**
-   * Return true, if this sampler features a compensation algorithm
-   * when encountering new maximum weights. Such a sampler can throw
-   * NextIteration exceptions, and cross sections in the
-   * GeneralSampler class are calculated from adding up the cross
-   * sections quoted by individual samplers.
+   * Return true, if this sampler adapts on the fly while generating
+   * events. Cross sections in the GeneralSampler class are calculated
+   * from adding up the cross sections quoted by individual samplers.
    */
-  virtual bool hasCompensation() const { return false; }
+  virtual bool adaptsOnTheFly() const { return false; }
 
   /**
    * If this sampler features a compensation algorithm, return true if
@@ -163,13 +173,18 @@ public:
    * Generate the next point and return its weight; store the point in
    * lastPoint().
    */
-  virtual double generate();
+  virtual void generate();
 
   /**
    * Run a single iteration of n points, optionally printing a
    * progress bar to cout. Calls generate n times.
    */
   void runIteration(unsigned long n, bool progress);
+
+  /**
+   * Adapt this sampler after an iteration has been run
+   */
+  virtual void adapt() {}
 
   /**
    * Initialize this bin sampler. This default version calls runIteration.
@@ -189,7 +204,7 @@ public:
   /**
    * Finalize this sampler.
    */
-  virtual void finalize() {}
+  virtual void finalize(bool) {}
 
   /**
    * Return the total integrated cross section determined from the
@@ -223,6 +238,28 @@ public:
    * Set the number of points to be used for initial integration.
    */
   void initialPoints(unsigned long n) { theInitialPoints = n; }
+
+  /**
+   * Return the number of iterations to be considered for initialization.
+   */
+  size_t nIterations() const { return theNIterations; }
+
+  /**
+   * Set the number of iterations to be considered for initialization.
+   */
+  void nIterations(size_t n) { theNIterations = n; }
+
+  /**
+   * Set the factor to enhance the number of points for the next
+   * iteration.
+   */
+  void enhancementFactor(double f) { theEnhancementFactor = f; }
+
+  /**
+   * Return the factor to enhance the number of points for the next
+   * iteration.
+   */
+  double enhancementFactor() const { return theEnhancementFactor; }
 
 public:
 
@@ -284,6 +321,16 @@ private:
   unsigned long theInitialPoints;
 
   /**
+   * The number of iterations to be considered for initialization.
+   */
+  size_t theNIterations;
+
+  /**
+   * Factor to enhance the number of points for the next iteration.
+   */
+  double theEnhancementFactor;
+
+  /**
    * The bias with which this sampler is selected.
    */
   double theBias;
@@ -312,6 +359,11 @@ private:
    * The event handler to be used.
    */
   tStdEHPtr theEventHandler;
+
+  /**
+   * The containing sampler
+   */
+  Ptr<GeneralSampler>::tptr theSampler;
 
 private:
 
