@@ -98,14 +98,6 @@ public:
   }
 
   /**
-   * Return the overestimated integrated cross section.
-   */
-  virtual CrossSection maxXSec() const {
-    currentCrossSections();
-    return abs(theIntegratedXSec) * nanobarn;
-  }
-
-  /**
    * Return the sum of the weights returned by generate() so far (of
    * the events that were not rejeted).
    */
@@ -124,7 +116,7 @@ public:
   /**
    * Return the number of attempts
    */
-  double attempts() const {
+  unsigned long getAttempts() const {
     return theAttempts;
   }
 
@@ -311,7 +303,7 @@ private:
   /**
    * The number of attempts
    */
-  double theAttempts;
+  unsigned long theAttempts;
 
   /**
    * The number of accepts

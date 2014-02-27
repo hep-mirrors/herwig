@@ -116,7 +116,7 @@ public:
   /**
    * Return the number of attempts
    */
-  double attempts() const { 
+  virtual double attempts() const { 
     if ( theAddUpSamplers )
       return SamplerBase::attempts();
     return theAttempts;
