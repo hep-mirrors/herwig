@@ -40,7 +40,7 @@ public:
       theSumWeights(0.), theSumSquaredWeights(0.), theSumAbsWeights(0.), 
       theSelectedPoints(0), theAcceptedPoints(0),
       theNanPoints(0), theAllPoints(0),
-      theLastWeight(0.) {}
+      theLastWeight(0.), theBias(1.) {}
 
   /**
    * The destructor.
@@ -63,6 +63,17 @@ public:
   }
 
 public:
+
+  /**
+   * Return the bias with which this sampler is selected. The sampler
+   * needs to divide out this bias in its weight calculation.
+   */
+  double bias() const { return theBias; }
+
+  /**
+   * Set the bias with which this sampler is selected.
+   */
+  void bias(double b) { theBias = b; }
 
   /**
    * Return the last weight encountered.
@@ -92,17 +103,17 @@ public:
   /**
    * Return the sum of weights
    */
-  double sumWeights() const { return theSumWeights; }
+  double sumWeights() const { return bias()*theSumWeights; }
 
   /**
    * Return the sum of squared weights 
    */
-  double sumSquaredWeights() const { return theSumSquaredWeights; }
+  double sumSquaredWeights() const { return bias()*theSumSquaredWeights; }
 
   /**
    * Return the sum of absolute weights 
    */
-  double sumAbsWeights() const { return theSumAbsWeights; }
+  double sumAbsWeights() const { return bias()*theSumAbsWeights; }
 
   /**
    * Return the number of selected points.
@@ -286,6 +297,11 @@ private:
    * The last weight encountered
    */
   double theLastWeight;
+
+  /**
+   * The bias with which this sampler is selected.
+   */
+  double theBias;
 
 };
 

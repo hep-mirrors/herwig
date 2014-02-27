@@ -39,7 +39,6 @@ BinSampler::BinSampler()
     theInitialPoints(1000000),
     theNIterations(1),
     theEnhancementFactor(1.0),
-    theBias(1.0),
     theReferenceWeight(1.0),
     theBin(-1),
     theInitialized(false) {}
@@ -179,7 +178,7 @@ void BinSampler::initialize(bool progress) {
 void BinSampler::persistentOutput(PersistentOStream & os) const {
   MultiIterationStatistics::put(os);
   os << theWeighted << theInitialPoints << theNIterations 
-     << theEnhancementFactor << theBias << theReferenceWeight
+     << theEnhancementFactor << theReferenceWeight
      << theBin << theInitialized << theLastPoint
      << theEventHandler << theSampler;
 }
@@ -187,7 +186,7 @@ void BinSampler::persistentOutput(PersistentOStream & os) const {
 void BinSampler::persistentInput(PersistentIStream & is, int) {
   MultiIterationStatistics::get(is);
   is >> theWeighted >> theInitialPoints >> theNIterations 
-     >> theEnhancementFactor >> theBias >> theReferenceWeight
+     >> theEnhancementFactor >> theReferenceWeight
      >> theBin >> theInitialized >> theLastPoint
      >> theEventHandler >> theSampler;
 }

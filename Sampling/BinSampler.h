@@ -113,17 +113,6 @@ public:
   vector<double>& lastPoint() { return theLastPoint; }
 
   /**
-   * Return the bias with which this sampler is selected. The sampler
-   * needs to divide out this bias in its weight calculation.
-   */
-  double bias() const { return theBias; }
-
-  /**
-   * Set the bias with which this sampler is selected.
-   */
-  void bias(double b) { theBias = b; }
-
-  /**
    * Return the reference weight to be used
    */
   double referenceWeight() const { return theReferenceWeight; }
@@ -211,7 +200,7 @@ public:
    * Monte Carlo sampling so far.
    */
   virtual CrossSection integratedXSec() const {
-    return averageWeight()*bias()*nanobarn;
+    return averageWeight()*nanobarn;
   }
 
   /**
@@ -219,7 +208,7 @@ public:
    * from the Monte Carlo sampling so far.
    */
   virtual CrossSection integratedXSecErr() const {
-    return sqrt(abs(averageWeightVariance()))*bias()*nanobarn;
+    return sqrt(abs(averageWeightVariance()))*nanobarn;
   }
 
 public:
@@ -329,11 +318,6 @@ private:
    * Factor to enhance the number of points for the next iteration.
    */
   double theEnhancementFactor;
-
-  /**
-   * The bias with which this sampler is selected.
-   */
-  double theBias;
 
   /**
    * The reference weight to be used

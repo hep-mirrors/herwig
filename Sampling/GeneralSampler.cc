@@ -92,6 +92,7 @@ void GeneralSampler::initialize() {
   for ( int b = 0; b < eventHandler()->nBins(); ++b ) {
     Ptr<BinSampler>::ptr s = theBinSampler->cloneMe();
     s->eventHandler(eventHandler());
+    s->sampler(this);
     s->bin(b);
     lastSampler(s);
     s->doWeighted(eventHandler()->weighted());
@@ -107,13 +108,6 @@ void GeneralSampler::initialize() {
     }
   }
 
-  updateSamplers();
-
-  if ( samplers().empty() ) {
-    throw Exception() << "No processes with non-zero cross section present."
-		      << Exception::abortnow;
-  }
-
   if ( theVerbose ) {
     bool oldAdd = theAddUpSamplers;
     theAddUpSamplers = true;
@@ -126,6 +120,13 @@ void GeneralSampler::initialize() {
       throw;
     }
     theAddUpSamplers = oldAdd;
+  }
+
+  updateSamplers();
+
+  if ( samplers().empty() ) {
+    throw Exception() << "No processes with non-zero cross section present."
+		      << Exception::abortnow;
   }
 
   writeGrids();
@@ -224,9 +225,6 @@ void GeneralSampler::updateSamplers() {
   for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers().begin();
 	s != samplers().end(); ++s ) {
     theMaxWeight = max(theMaxWeight,s->second->maxWeight());
-    if ( (isSampling && s->second == lastSampler()) ||
-	 !isSampling )
-      s->second->nextIteration();
   }
 
   double sumbias = 0.;
@@ -244,6 +242,9 @@ void GeneralSampler::updateSamplers() {
     }
     s->second->bias(bias);
     sumbias += bias;
+    if ( (isSampling && s->second == lastSampler()) ||
+	 !isSampling )
+      s->second->nextIteration();
   }
 
   if ( !theFlatSubprocesses && theMinSelection > 0.0 ) {
