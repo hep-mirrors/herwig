@@ -144,20 +144,19 @@ double MatchboxOLPME::largeNColourCorrelatedME2(pair<int,int>,
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
-bool didstartOLP=false;
+bool didstartOLP = false;
 
 void MatchboxOLPME::doinitrun() {
-  string contractFileName = name() + ".OLPContract.lh";
-  int status = -1;
-  if (didstartOLP==false){
-	  startOLP(contractFileName,status);
-	  didstartOLP=true;
-
-  if ( status != 1 ) {
-    throw Exception()
-      << "Failed to restart one loop provider for amplitude '"
-      << name() << "'\n" << Exception::abortnow;
-  }
+  if ( !didstartOLP ) {
+    string contractFileName = name() + ".OLPContract.lh";
+    int status = -1;
+    startOLP(contractFileName,status);
+    didstartOLP=true;
+    if ( status != 1 ) {
+      throw Exception()
+	<< "Failed to restart one loop provider for amplitude '"
+	<< name() << "'\n" << Exception::abortnow;
+    }
   }
   MatchboxAmplitude::doinitrun();
 }
