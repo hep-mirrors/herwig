@@ -62,6 +62,18 @@ public:
 
 public:
 
+
+  /**
+   * Return the bias with which this sampler is selected. The sampler
+   * needs to divide out this bias in its weight calculation.
+   */
+  double bias() const { return theBias; }
+
+  /**
+   * Set the bias with which this sampler is selected.
+   */
+  void bias(double b) { theBias = b; }
+
   /**
    * Set the event handler
    */
@@ -162,7 +174,7 @@ public:
    * Generate the next point and return its weight; store the point in
    * lastPoint().
    */
-  virtual void generate();
+  virtual double generate();
 
   /**
    * Run a single iteration of n points, optionally printing a
@@ -298,6 +310,11 @@ protected:
 // InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
 
 private:
+
+  /**
+   * The bias with which this sampler is selected.
+   */
+  double theBias;
 
   /**
    * True, if weighted events should be generated

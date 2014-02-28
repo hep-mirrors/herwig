@@ -35,6 +35,7 @@ using namespace Herwig;
 
 BinSampler::BinSampler() 
   : MultiIterationStatistics(), 
+    theBias(1.),
     theWeighted(false),
     theInitialPoints(1000000),
     theNIterations(1),
@@ -92,13 +93,13 @@ string BinSampler::id() const {
   return os.str();
 }
 
-void BinSampler::generate() {
+double BinSampler::generate() {
   double w = 1.;
   for ( size_t k = 0; k < lastPoint().size(); ++k ) {
     lastPoint()[k] = UseRandom::rnd();
   }
   try {
-    w = theEventHandler->dSigDR(lastPoint()) / nanobarn / bias();
+    w = theEventHandler->dSigDR(lastPoint()) / nanobarn;
   } catch (Veto&) {
     w = 0.0;
   } catch (...) {
@@ -115,6 +116,7 @@ void BinSampler::generate() {
   select(w);
   if ( w != 0.0 )
     accept();
+  return w;
 }
 
 void BinSampler::runIteration(unsigned long points, bool progress) {
@@ -177,7 +179,7 @@ void BinSampler::initialize(bool progress) {
 
 void BinSampler::persistentOutput(PersistentOStream & os) const {
   MultiIterationStatistics::put(os);
-  os << theWeighted << theInitialPoints << theNIterations 
+  os << theBias << theWeighted << theInitialPoints << theNIterations 
      << theEnhancementFactor << theReferenceWeight
      << theBin << theInitialized << theLastPoint
      << theEventHandler << theSampler;
@@ -185,7 +187,7 @@ void BinSampler::persistentOutput(PersistentOStream & os) const {
 
 void BinSampler::persistentInput(PersistentIStream & is, int) {
   MultiIterationStatistics::get(is);
-  is >> theWeighted >> theInitialPoints >> theNIterations 
+  is >> theBias >> theWeighted >> theInitialPoints >> theNIterations 
      >> theEnhancementFactor >> theReferenceWeight
      >> theBin >> theInitialized >> theLastPoint
      >> theEventHandler >> theSampler;

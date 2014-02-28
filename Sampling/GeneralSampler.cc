@@ -37,8 +37,8 @@ using namespace Herwig;
 
 GeneralSampler::GeneralSampler() 
   : theVerbose(false),
-    theUpdateAfter(1), crossSectionCalls(0), gotCrossSections(false), 
     theIntegratedXSec(ZERO), theIntegratedXSecErr(ZERO),
+    theUpdateAfter(1), crossSectionCalls(0), gotCrossSections(false),
     theSumWeights(0.), theSumWeights2(0.), 
     theAttempts(0), theAccepts(0),
     theMaxWeight(0.0), theAddUpSamplers(false),
@@ -146,7 +146,12 @@ double GeneralSampler::generate() {
   while ( true ) {
 
     try {
-      lastSampler()->generate();
+      weight = lastSampler()->generate()/lastSampler()->referenceWeight();
+      double p = lastSampler()->referenceWeight()/lastSampler()->bias()/theMaxWeight;
+      if ( weighted() )
+	weight *= p;
+      else if ( p < UseRandom::rnd() )
+	weight = 0.0;
     } catch(BinSampler::NextIteration) {
       updateSamplers();
       lastSampler(samplers().upper_bound(UseRandom::rnd())->second);
@@ -165,8 +170,6 @@ double GeneralSampler::generate() {
     }
 
     theAttempts += 1;
-
-    weight = lastSampler()->lastWeight()/lastSampler()->referenceWeight();
 
     if ( abs(weight) == 0.0 ) {
       lastSampler(samplers().upper_bound(UseRandom::rnd())->second);
@@ -210,8 +213,11 @@ double GeneralSampler::generate() {
 void GeneralSampler::rejectLast() {
   if ( !lastSampler() )
     return;
-  double w = 
-    lastSampler()->lastWeight()/lastSampler()->referenceWeight();
+  double w = 0.0;
+  if ( weighted() )
+    w = lastSampler()->lastWeight()/lastSampler()->bias()/theMaxWeight;
+  else
+    w = lastSampler()->lastWeight()/lastSampler()->referenceWeight();
   lastSampler()->reject();
   theSumWeights -= w;
   theSumWeights2 -= sqr(w);
@@ -221,51 +227,52 @@ void GeneralSampler::rejectLast() {
 
 void GeneralSampler::updateSamplers() {
 
-  theMaxWeight = 0.0;
-  for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers().begin();
-	s != samplers().end(); ++s ) {
-    theMaxWeight = max(theMaxWeight,s->second->maxWeight());
-  }
+  double allMax = 0.0;
 
   double sumbias = 0.;
   for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers().begin();
 	s != samplers().end(); ++s ) {
     double bias = 1.;
-    if ( !theFlatSubprocesses ) {
+    if ( !theFlatSubprocesses )
       bias *= s->second->averageAbsWeight();
-      if ( theGlobalMaximumWeight ) {
-	s->second->referenceWeight(theMaxWeight);
-      } else {
-	s->second->referenceWeight(s->second->maxWeight());
-	bias *= s->second->maxWeight()/theMaxWeight;
-      }
-    }
     s->second->bias(bias);
     sumbias += bias;
+    allMax = max(allMax,s->second->maxWeight());
+  }
+
+  if ( sumbias == 0.0 )
+    sumbias = 1.0;
+
+  double nsumbias = 0.0;
+  bool needAdjust = false;
+  for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers().begin();
+	s != samplers().end(); ++s ) {
+    needAdjust |= s->second->bias()/sumbias < theMinSelection;
+    s->second->bias(max(s->second->bias()/sumbias,theMinSelection));
+    nsumbias += s->second->bias();
+  }
+
+  if ( nsumbias == 0.0 ) {
+    samplers().clear();
+    return;
+  }
+
+  if ( needAdjust ) {
+    for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers().begin();
+	  s != samplers().end(); ++s ) {
+      s->second->bias(s->second->bias()/nsumbias);
+    }
+  }
+
+  theMaxWeight = 0.0;
+  for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers().begin();
+	s != samplers().end(); ++s ) {
+    double wref = theGlobalMaximumWeight ? allMax : s->second->maxWeight();
+    s->second->referenceWeight(wref);
+    theMaxWeight = max(theMaxWeight,wref/s->second->bias());
     if ( (isSampling && s->second == lastSampler()) ||
 	 !isSampling )
       s->second->nextIteration();
-  }
-
-  if ( !theFlatSubprocesses && theMinSelection > 0.0 ) {
-    sumbias = 0.0;
-    bool needAdjust = false;
-    for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers().begin();
-	  s != samplers().end(); ++s ) {
-      needAdjust |= s->second->bias() < theMinSelection;
-      s->second->bias(max(s->second->bias(),theMinSelection));
-      sumbias += s->second->bias();
-    }
-    if ( needAdjust )
-      for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers().begin();
-	    s != samplers().end(); ++s ) {
-	s->second->bias(s->second->bias()/sumbias);
-      }
-  }
-
-  if ( sumbias == 0.0 ) {
-    samplers().clear();
-    return;
   }
 
   map<double,Ptr<BinSampler>::ptr> newSamplers;
@@ -285,18 +292,6 @@ void GeneralSampler::updateSamplers() {
 
 void GeneralSampler::currentCrossSections() const {
 
-  if ( gotCrossSections )
-    return;
-
-  if ( crossSectionCalls > 0 ) {
-    if ( ++crossSectionCalls == theUpdateAfter ) {
-      crossSectionCalls = 0;
-    } else return;
-  }
-
-  ++crossSectionCalls;
-  gotCrossSections = true;
-
   if ( !theAddUpSamplers ) {
     double n = attempts();
     if ( n > 1 ) {
@@ -309,6 +304,18 @@ void GeneralSampler::currentCrossSections() const {
     }
     return;
   }
+
+  if ( gotCrossSections )
+    return;
+
+  if ( crossSectionCalls > 0 ) {
+    if ( ++crossSectionCalls == theUpdateAfter ) {
+      crossSectionCalls = 0;
+    } else return;
+  }
+
+  ++crossSectionCalls;
+  gotCrossSections = true;
 
   theIntegratedXSec = ZERO;
   double var = 0.0;
@@ -384,9 +391,9 @@ void GeneralSampler::dofinish() {
     ofstream data(dataName.c_str());
 
     double runXSec =
-      theSumWeights/theAttempts;
+      theMaxWeight*theSumWeights/theAttempts;
     double runXSecErr =
-      (1./theAttempts)*(1./(theAttempts-1.))*
+      sqr(theMaxWeight)*(1./theAttempts)*(1./(theAttempts-1.))*
       abs(theSumWeights2 - sqr(theSumWeights)/theAttempts);
       
     data << setprecision(20);

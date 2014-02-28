@@ -308,6 +308,16 @@ private:
   Ptr<BinSampler>::tptr theLastSampler;
 
   /**
+   * The integrated cross section
+   */
+  mutable CrossSection theIntegratedXSec;
+
+  /**
+   * The integrated cross section
+   */
+  mutable CrossSection theIntegratedXSecErr;
+
+  /**
    * The number of events after which cross sections should truly be
    * updated. This is used to prevent exhaustive combination of
    * statistics when HepMC events are written out.
@@ -325,16 +335,6 @@ private:
    * to generate.
    */
   mutable bool gotCrossSections;
-
-  /**
-   * The integrated cross section
-   */
-  mutable CrossSection theIntegratedXSec;
-
-  /**
-   * The integrated cross section
-   */
-  mutable CrossSection theIntegratedXSecErr;
 
   /**
    * The sum of weights
