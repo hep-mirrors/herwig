@@ -98,9 +98,9 @@ void OpenLoopsAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs
 	size_t maxlegs = 0;
 
 	for ( map<pair<Process, int>, int>::const_iterator t = procs.begin() ; t != procs.end() ; ++t ) {
-		asPower = min(asPower, t->first.first.orderInAlphaS);
-		minlegs = min(minlegs, t->first.first.legs.size());
-		maxlegs = max(maxlegs, t->first.first.legs.size());
+		asPower = min(asPower, static_cast<size_t>(t->first.first.orderInAlphaS));
+		minlegs = min(minlegs, static_cast<size_t>(t->first.first.legs.size()));
+		maxlegs = max(maxlegs, static_cast<size_t>(t->first.first.legs.size()));
 	}
 
 	orderFile << "# OLP order file created by Herwig++/Matchbox for OpenLoops\n\n";
