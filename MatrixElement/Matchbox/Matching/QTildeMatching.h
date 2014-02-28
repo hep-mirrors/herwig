@@ -1,15 +1,15 @@
 // -*- C++ -*-
 //
-// DipoleMatching.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// QTildeMatching.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef Herwig_DipoleMatching_H
-#define Herwig_DipoleMatching_H
+#ifndef Herwig_QTildeMatching_H
+#define Herwig_QTildeMatching_H
 //
-// This is the declaration of the DipoleMatching class.
+// This is the declaration of the QTildeMatching class.
 //
 
 #include "Herwig++/MatrixElement/Matchbox/Matching/ShowerApproximation.h"
@@ -23,10 +23,10 @@ using namespace ThePEG;
  * \ingroup Matchbox
  * \author Simon Platzer
  *
- * \brief DipoleMatching implements NLO matching with the dipole shower.
+ * \brief QTildeMatching implements NLO matching with the default shower.
  *
  */
-class DipoleMatching: public Herwig::ShowerApproximation {
+class QTildeMatching: public Herwig::ShowerApproximation {
 
 public:
 
@@ -35,15 +35,38 @@ public:
   /**
    * The default constructor.
    */
-  DipoleMatching();
+  QTildeMatching();
 
   /**
    * The destructor.
    */
-  virtual ~DipoleMatching();
+  virtual ~QTildeMatching();
   //@}
 
 public:
+
+  /**
+   * Return the relevant hard scale
+   */
+  virtual Energy hardScale() const;
+
+  /**
+   * Return a scale profile towards the hard scale
+   */
+  virtual double hardScaleProfile(Energy hard, Energy soft) const;
+
+  /**
+   * Return true, if the shower was able to generate an emission
+   * leading from the given Born to the given real emission process.
+   */
+  virtual bool isInShowerPhasespace() const;
+
+  /**
+   * Return true, if the shower emission leading from the given Born
+   * to the given real emission process would have been generated
+   * above the shower's infrared cutoff.
+   */
+  virtual bool isAboveCutoff() const;
 
   /**
    * Return the shower approximation to the real emission cross
@@ -114,12 +137,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  DipoleMatching & operator=(const DipoleMatching &);
-
-  /**
-   * True, if the shower kernels should be reproduced.
-   */
-  bool theShowerKernels;
+  QTildeMatching & operator=(const QTildeMatching &);
 
   /**
    * A large-N colour basis to be used when reproducing the shower
@@ -131,4 +149,4 @@ private:
 
 }
 
-#endif /* Herwig_DipoleMatching_H */
+#endif /* Herwig_QTildeMatching_H */
