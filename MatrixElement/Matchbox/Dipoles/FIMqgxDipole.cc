@@ -21,8 +21,10 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 #include "Herwig++/MatrixElement/Matchbox/Base/DipoleRepository.h"
-#include "Herwig++/MatrixElement/Matchbox/Phasespace/FILightTildeKinematics.h"
-#include "Herwig++/MatrixElement/Matchbox/Phasespace/FILightInvertedTildeKinematics.h"
+//#include "Herwig++/MatrixElement/Matchbox/Phasespace/FILightTildeKinematics.h"
+//#include "Herwig++/MatrixElement/Matchbox/Phasespace/FILightInvertedTildeKinematics.h"
+#include "Herwig++/MatrixElement/Matchbox/Phasespace/FIMassiveTildeKinematics.h"
+#include "Herwig++/MatrixElement/Matchbox/Phasespace/FIMassiveInvertedTildeKinematics.h"
 
 using namespace Herwig;
 
@@ -44,9 +46,9 @@ bool FIMqgxDipole::canHandle(const cPDVector& partons,
   return
     emitter > 1 && spectator < 2 &&
     partons[emission]->id() == ParticleID::g &&
-    abs(partons[emitter]->id()) < 6 &&
-    !(partons[emitter]->mass() == ZERO &&
-      partons[spectator]->mass() == ZERO);
+    abs(partons[emitter]->id()) < 7 &&
+    partons[emitter]->mass() != ZERO &&
+    partons[spectator]->mass() == ZERO;
 }
 
 double FIMqgxDipole::me2Avg(double ccme2) const {
@@ -70,7 +72,7 @@ double FIMqgxDipole::me2Avg(double ccme2) const {
 
   // NOTE: extra term taken from FIqgxDipole implementation
   res *= ( 2./(1.-z+(1.-x)) -(1.+z) +(1.-x)*(1.+3.*x*z) -
-	   sqr(realEmissionME()->lastXComb().mePartonData()[realEmission()]->mass()) / prop * 2.*x);
+     sqr(realEmissionME()->lastXComb().mePartonData()[realEmitter()]->mass()) / prop * 2.*x);
 
   res *= -ccme2;
 
@@ -107,7 +109,7 @@ double FIMqgxDipole::me2() const {
 
   // NOTE: extra term taken from FIqgxDipole implementation
   res *= ( 2./(1.-z+(1.-x)) -(1.+z) +(1.-x)*(1.+3.*x*z) -
-	   sqr(realEmissionME()->lastXComb().mePartonData()[realEmission()]->mass()) / prop * 2.*x);
+     sqr(realEmissionME()->lastXComb().mePartonData()[realEmitter()]->mass()) / prop * 2.*x);
 
   res *= -underlyingBornME()->colourCorrelatedME2(make_pair(bornEmitter(),bornSpectator()));
 
@@ -134,8 +136,10 @@ void FIMqgxDipole::Init() {
   static ClassDocumentation<FIMqgxDipole> documentation
     ("FIMqgxDipole");
 
-  DipoleRepository::registerDipole<0,FIMqgxDipole,FILightTildeKinematics,FILightInvertedTildeKinematics>
-    ("FIMqgxDipole","FILightTildeKinematics","FILightInvertedTildeKinematics");
+//  DipoleRepository::registerDipole<0,FIMqgxDipole,FILightTildeKinematics,FILightInvertedTildeKinematics>
+//    ("FIMqgxDipole","FILightTildeKinematics","FILightInvertedTildeKinematics");
+  DipoleRepository::registerDipole<0,FIMqgxDipole,FIMassiveTildeKinematics,FIMassiveInvertedTildeKinematics>
+    ("FIMqgxDipole","FIMassiveTildeKinematics","FIMassiveInvertedTildeKinematics");
 
 }
 
