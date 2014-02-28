@@ -49,10 +49,41 @@ bool FFMqgxDipole::canHandle(const cPDVector& partons,
       partons[spectator]->mass() == ZERO);
 }
 
-// TODO: (5.16)
-double FFMqgxDipole::me2Avg(double) const {
-  assert(false && "implementation missing");
-  return 0.;
+double FFMqgxDipole::me2Avg(double ccme2) const {
+
+  if ( jacobian() == 0.0 )
+    return 0.0;
+
+  double y = subtractionParameters()[0];
+  double z = subtractionParameters()[1];
+
+  // masses
+  double muQ2 = sqr( realEmissionME()->lastXComb().mePartonData()[realEmitter()]->mass() / lastDipoleScale() );
+  double muj2 = sqr( realEmissionME()->lastXComb().mePartonData()[realSpectator()]->mass() / lastDipoleScale() );
+  // massive extra terms
+  double vijk = sqrt( sqr(2.*muj2+(1.-muQ2-muj2)*(1.-y))-4.*muj2 ) / ((1.-muQ2-muj2)*(1.-y));
+  double vbar = sqrt( 1.+sqr(muQ2)+sqr(muj2)-2.*(muQ2+muj2+muQ2*muj2) ) / (1.-muQ2-muj2);
+
+  Energy2 prop =
+    2.*((realEmissionME()->lastXComb().meMomenta()[realEmitter()])*
+  (realEmissionME()->lastXComb().meMomenta()[realEmission()]));
+
+  double CF = (SM().Nc()*SM().Nc()-1.)/(2.*SM().Nc());
+
+  // extra mass terms cancel: mi2+m2-Mi2 = mQ2+0-mQ2
+  double res =
+    8.*Constants::pi*CF*(realEmissionME()->lastXComb().lastSHat())*
+    (underlyingBornME()->lastXComb().lastAlphaS())/prop;
+
+  res *= ( 2./(1.-z*(1.-y)) - vbar/vijk * ( (1.+z) + muQ2*sqr(lastDipoleScale())*2./prop ) );
+
+  res *= -ccme2;
+
+  res *=
+    realEmissionME()->finalStateSymmetry() /
+    underlyingBornME()->finalStateSymmetry();
+
+  return res;
 }
 
 double FFMqgxDipole::me2() const {
