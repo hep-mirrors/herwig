@@ -1,3 +1,5 @@
+SUBDIRS = CellGrids
+
 pkglib_LTLIBRARIES = HwSampling.la
 
 HwSampling_la_LDFLAGS = -module -version-info 1:0:0
@@ -6,3 +8,6 @@ GeneralStatistics.h GeneralStatistics.cc \
 MultiIterationStatistics.h MultiIterationStatistics.cc \
 BinSampler.h BinSampler.cc \
 GeneralSampler.h GeneralSampler.cc
+
+HwSampling_la_LIBADD = \
+CellGrids/libHwCellGrids.la

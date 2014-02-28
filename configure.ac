@@ -223,6 +223,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Exsample2/Makefile
 		Exsample2/CellGridSampling/Makefile
 		Sampling/Makefile
+		Sampling/CellGrids/Makefile
                 Shower/Makefile
 		DipoleShower/Makefile
 		DipoleShower/Base/Makefile

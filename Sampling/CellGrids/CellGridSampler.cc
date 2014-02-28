@@ -1,0 +1,228 @@
+// -*- C++ -*-
+//
+// CellGridSampler.cpp is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2012 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
+// This is the implementation of the non-inlined, non-templated member
+// functions of the CellGridSampler class.
+//
+
+#include "CellGridSampler.h"
+#include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/EventRecord/Particle.h"
+#include "ThePEG/Repository/UseRandom.h"
+#include "ThePEG/Repository/EventGenerator.h"
+#include "ThePEG/Repository/Repository.h"
+#include "ThePEG/Utilities/DescribeClass.h"
+
+#include "ThePEG/Interface/Parameter.h"
+
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+
+#include "ThePEG/Handlers/StandardEventHandler.h"
+#include "ThePEG/Handlers/StandardXComb.h"
+
+#include <boost/progress.hpp>
+
+#include "CellGridSampler.h"
+#include "Herwig++/Sampling/GeneralSampler.h"
+
+using namespace Herwig;
+using namespace ExSample;
+
+CellGridSampler::CellGridSampler() 
+  : BinSampler(), SimpleCellGrid(),
+    theExplorationPoints(5000), theExplorationSteps(10),
+    theGain(0.5), theMinimumSelection(0.1) {}
+
+CellGridSampler::~CellGridSampler() {}
+
+IBPtr CellGridSampler::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr CellGridSampler::fullclone() const {
+  return new_ptr(*this);
+}
+
+double CellGridSampler::generate() {
+  UseRandom rnd;
+  pair<double,double> weights = SimpleCellGrid::generate(rnd,*this,lastPoint());
+  double w = SimpleCellGrid::integral()*weights.first/weights.second;
+  if ( !weighted() && initialized() ) {
+    double p = min(abs(w),referenceWeight())/referenceWeight();
+    double sign = w >= 0. ? 1. : -1.;
+    if ( p < 1 && UseRandom::rnd() > p )
+      w = 0.;
+    else
+      w = sign*max(abs(w),referenceWeight());
+  }
+  select(w);
+  if ( w != 0.0 )
+    accept();
+  return w;
+}
+
+void CellGridSampler::adapt() {
+  UseRandom rnd;
+  set<SimpleCellGrid*> newCells;
+  SimpleCellGrid::adapt(theGain,newCells);
+  SimpleCellGrid::explore(theExplorationPoints,rnd,*this,newCells);
+  SimpleCellGrid::updateIntegral();
+  SimpleCellGrid::minimumSelection(theMinimumSelection);
+}
+
+void CellGridSampler::initialize(bool progress) {
+
+  bool haveGrid = false;
+  list<XML::Element>::iterator git = sampler()->grids().children().begin();
+  for ( ; git != sampler()->grids().children().end(); ++git ) {
+    if ( git->type() != XML::ElementTypes::Element )
+      continue;
+    if ( git->name() != "CellGrid" )
+      continue;
+    string proc;
+    git->getFromAttribute("process",proc);
+    if ( proc == id() ) {
+      haveGrid = true;
+      break;
+    }
+  }
+
+  if ( haveGrid ) {
+    SimpleCellGrid::fromXML(*git);
+    sampler()->grids().erase(git);
+  }
+
+  lastPoint().resize(dimension());
+
+  if ( initialized() ) {
+    if ( !haveGrid )
+      throw Exception() << "CellGridSampler: Require existing grid when starting to run."
+			<< Exception::abortnow;
+    return;
+  }
+
+  if ( haveGrid ) {
+    runIteration(initialPoints(),progress);
+    isInitialized();
+    XML::Element grid = SimpleCellGrid::toXML();
+    grid.appendAttribute("process",id());
+    sampler()->grids().append(grid);
+    return;
+  }
+
+  SimpleCellGrid::boundaries(vector<double>(dimension(),0.0),vector<double>(dimension(),1.0));
+  SimpleCellGrid::weightInformation().resize(dimension());
+
+  UseRandom rnd;
+  boost::progress_display* progressBar = 0;
+  if ( progress ) {
+    Repository::clog() << "exploring " << process() << "\n"
+		       << "(id " << id() << ")";
+    progressBar = new boost::progress_display(theExplorationSteps,cout);
+  }
+
+  std::set<SimpleCellGrid*> newCells;
+  bool notAll = false;
+  for ( std::size_t step = 0; step < theExplorationSteps; ++step ) {
+    SimpleCellGrid::explore(theExplorationPoints,rnd,*this,newCells);
+    if ( progressBar )
+      ++(*progressBar);
+    newCells.clear();
+    SimpleCellGrid::adapt(theGain,newCells);
+    if ( newCells.empty() ) {
+      notAll = true;
+      break;
+    }
+  }
+  SimpleCellGrid::updateIntegral();
+  SimpleCellGrid::minimumSelection(theMinimumSelection);
+
+  if ( progressBar ) {
+    if ( notAll )
+      cout << "\n" << flush;
+    delete progressBar;
+  }
+
+  lastPoint().resize(dimension());
+  unsigned long points = initialPoints();
+  for ( unsigned long k = 0; k < nIterations(); ++k ) {
+    runIteration(points,progress);
+    if ( k < nIterations() - 1 ) {
+      points = (unsigned long)(points*enhancementFactor());
+      adapt();
+      nextIteration();
+    }
+  }
+  isInitialized();
+
+  XML::Element grid = SimpleCellGrid::toXML();
+  grid.appendAttribute("process",id());
+  sampler()->grids().append(grid);
+
+}
+
+void CellGridSampler::finalize(bool) {
+  XML::Element grid = SimpleCellGrid::toXML();
+  grid.appendAttribute("process",id());
+  sampler()->grids().append(grid);
+}
+
+// If needed, insert default implementations of virtual function defined
+// in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
+
+void CellGridSampler::persistentOutput(PersistentOStream & os) const {
+  os << theExplorationPoints << theExplorationSteps
+     << theGain << theMinimumSelection;
+}
+
+void CellGridSampler::persistentInput(PersistentIStream & is, int) {
+  is >> theExplorationPoints >> theExplorationSteps
+     >> theGain >> theMinimumSelection;
+}
+
+// *** Attention *** The following static variable is needed for the type
+// description system in ThePEG. Please check that the template arguments
+// are correct (the class and its base class), and that the constructor
+// arguments are correct (the class name and the name of the dynamically
+// loadable library where the class implementation can be found).
+DescribeClass<CellGridSampler,BinSampler>
+  describeHerwigCellGridSampler("Herwig::CellGridSampler", "HwSampling.so");
+
+void CellGridSampler::Init() {
+
+  static ClassDocumentation<CellGridSampler> documentation
+    ("CellGridSampler samples XCombs bins using CellGrids.");
+
+  static Parameter<CellGridSampler,size_t> interfaceExplorationPoints
+    ("ExplorationPoints",
+     "The number of points to use for cell exploration.",
+     &CellGridSampler::theExplorationPoints, 5000, 1, 0,
+     false, false, Interface::lowerlim);
+
+  static Parameter<CellGridSampler,size_t> interfaceExplorationSteps
+    ("ExplorationSteps",
+     "The number of exploration steps to perform.",
+     &CellGridSampler::theExplorationSteps, 10, 1, 0,
+     false, false, Interface::lowerlim);
+
+  static Parameter<CellGridSampler,double> interfaceGain
+    ("Gain",
+     "The gain factor used for adaption.",
+     &CellGridSampler::theGain, 0.5, 0.0, 1.0,
+     false, false, Interface::limited);
+
+  static Parameter<CellGridSampler,double> interfaceMinimumSelection
+    ("MinimumSelection",
+     "The minimum cell selection probability.",
+     &CellGridSampler::theMinimumSelection, 0.1, 0.0, 1.0,
+     false, false, Interface::limited);
+
+}
+

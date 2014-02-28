@@ -99,7 +99,7 @@ double BinSampler::generate() {
     lastPoint()[k] = UseRandom::rnd();
   }
   try {
-    w = theEventHandler->dSigDR(lastPoint()) / nanobarn;
+    w = eventHandler()->dSigDR(lastPoint()) / nanobarn;
   } catch (Veto&) {
     w = 0.0;
   } catch (...) {
