@@ -11,5 +11,7 @@ ShowerApproximationGenerator.h \
 ShowerApproximationGenerator.cc \
 DipoleMatching.h \
 DipoleMatching.cc \
+QTildeMatching.h \
+QTildeMatching.cc \
 MEMatching.h \
 MEMatching.cc
