@@ -155,12 +155,12 @@ void BinSampler::runIteration(unsigned long points, bool progress) {
 }
 
 void BinSampler::initialize(bool progress) {
+  lastPoint().resize(dimension());
   if ( initialized() )
     return;
   if ( !sampler()->grids().children().empty() ) {
     nIterations(1);
   }
-  lastPoint().resize(dimension());
   unsigned long points = initialPoints();
   for ( unsigned long k = 0; k < nIterations(); ++k ) {
     runIteration(points,progress);

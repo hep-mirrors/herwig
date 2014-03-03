@@ -347,17 +347,10 @@ void GeneralSampler::dofinish() {
       compensating.insert(s->second->process());
     }
     if ( s->second->nanPoints() ) {
-      generator()->logWarning(Exception()
-			      << "warning: " 
-			      << s->second->nanPoints() << " of "
-			      << s->second->allPoints() << " points with nan or inf weight\n"
-			      << "in " << s->second->process() << Exception::warning);
-      if ( theVerbose ) {
-	generator()->log() << "warning: " 
-			   << s->second->nanPoints() << " of "
-			   << s->second->allPoints() << " points with nan or inf weight\n"
-			   << "in " << s->second->process() << "\n";
-      }
+      generator()->log() << "warning: " 
+			 << s->second->nanPoints() << " of "
+			 << s->second->allPoints() << " points with nan or inf weight\n"
+			 << "in " << s->second->process() << "\n" << flush;
     }
     s->second->finalize(theVerbose);
   }
@@ -373,15 +366,13 @@ void GeneralSampler::dofinish() {
 		       << integratedXSecErr()/nanobarn << " ) nb\n" << flush;
   }
   if ( !compensating.empty() ) {
-    generator()->logWarning(Exception()
-			    << "Warning: Some samplers are still in compensating mode."
-			    << Exception::warning);
+    generator()->log() << "Warning: Some samplers are still in compensating mode.\n" << flush;
   }
   if ( maximumExceeds != 0 ) {
-    generator()->logWarning(Exception() << maximumExceeds << " of " << theAttempts
+    generator()->log() << maximumExceeds << " of " << theAttempts
 			    << " attempted points exceeded the guessed maximum weight\n"
 			    << "with an average relative deviation of "
-			    << maximumExceededBy/maximumExceeds << "\n");
+		       << maximumExceededBy/maximumExceeds << "\n" << flush;
   }
 
   if ( runCombinationData ) {
@@ -418,9 +409,13 @@ void GeneralSampler::dofinish() {
 }
 
 void GeneralSampler::doinitrun() {
-  eventHandler()->initrun();
   readGrids();
   isSampling = true;
+  eventHandler()->initrun();
+  for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers().begin();
+	s != samplers().end(); ++s ) {
+    s->second->initialize(theVerbose);
+  }
   SamplerBase::doinitrun();
 }
 
