@@ -77,8 +77,8 @@ void SimpleCellGrid::setWeights() {
   }
   if ( weightInformation().empty() )
     throw runtime_error("[ExSample::SimpleCellGrid] Cannot set weights without weight information.");
-  weight(std::max(weightInformation().front().first.maxWeight,
-		  weightInformation().front().second.maxWeight));
+  weight(0.5*(weightInformation().front().first.averageWeight() +
+	      weightInformation().front().second.averageWeight()));
 }
 
 void SimpleCellGrid::updateWeightInformation(const vector<double>& point,
