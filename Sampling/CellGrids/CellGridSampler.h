@@ -165,6 +165,11 @@ private:
   double theGain;
 
   /**
+   * The adaption threshold.
+   */
+  double theEpsilon;
+
+  /**
    * The minimum probability for cell selection.
    */
   double theMinimumSelection;

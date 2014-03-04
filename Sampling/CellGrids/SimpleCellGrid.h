@@ -166,7 +166,8 @@ namespace ExSample {
      * which shows up the largest difference in average weights; if
      * this exceeds gain, perform the split.
      */
-    virtual void adapt(double gain, std::set<SimpleCellGrid*>& newCells);
+    virtual void adapt(double gain, double epsilon,
+		       std::set<SimpleCellGrid*>& newCells);
 
     /**
      * Update the weights of the cells from information accumulated so

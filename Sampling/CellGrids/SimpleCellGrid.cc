@@ -40,14 +40,26 @@ CellGrid* SimpleCellGrid::makeInstance(const std::vector<double>& newLowerLeft,
   return new SimpleCellGrid(newLowerLeft,newUpperRight,!weightInformation().empty(),newWeight);
 }
 
-void SimpleCellGrid::adapt(double gain, set<SimpleCellGrid*>& newCells) {
+void SimpleCellGrid::adapt(double gain, double epsilon,
+			   set<SimpleCellGrid*>& newCells) {
   if ( !isLeaf() ) {
-    firstChild().adapt(gain,newCells);
-    secondChild().adapt(gain,newCells);
+    firstChild().adapt(gain,epsilon,newCells);
+    secondChild().adapt(gain,epsilon,newCells);
     return;
   }
   if ( weightInformation().empty() )
     throw runtime_error("[ExSample::SimpleCellGrid] Cannot adapt without weight information.");
+  double avg =
+    (weightInformation().front().first.sumOfWeights +
+     weightInformation().front().second.sumOfWeights)/
+    (weightInformation().front().first.nPoints +
+     weightInformation().front().second.nPoints);
+  double maxw =
+    std::max(weightInformation().front().first.maxWeight,
+	     weightInformation().front().second.maxWeight);
+  if ( maxw != 0.0 )
+    if ( avg/maxw > epsilon )
+      return;
   double max = 0.0;
   size_t maxdim = 0;
   for ( size_t k = 0; k < lowerLeft().size(); ++k ) {
@@ -77,8 +89,12 @@ void SimpleCellGrid::setWeights() {
   }
   if ( weightInformation().empty() )
     throw runtime_error("[ExSample::SimpleCellGrid] Cannot set weights without weight information.");
-  weight(0.5*(weightInformation().front().first.averageWeight() +
-	      weightInformation().front().second.averageWeight()));
+  double avg =
+    (weightInformation().front().first.sumOfWeights +
+     weightInformation().front().second.sumOfWeights)/
+    (weightInformation().front().first.nPoints +
+     weightInformation().front().second.nPoints);
+  weight(avg);
 }
 
 void SimpleCellGrid::updateWeightInformation(const vector<double>& point,

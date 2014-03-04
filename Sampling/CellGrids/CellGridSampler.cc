@@ -38,7 +38,8 @@ using namespace ExSample;
 CellGridSampler::CellGridSampler() 
   : BinSampler(), SimpleCellGrid(),
     theExplorationPoints(1000), theExplorationSteps(8),
-    theGain(0.3), theMinimumSelection(0.0001) {}
+    theGain(0.3), theEpsilon(0.01),
+    theMinimumSelection(0.0001) {}
 
 CellGridSampler::~CellGridSampler() {}
 
@@ -71,7 +72,7 @@ double CellGridSampler::generate() {
 void CellGridSampler::adapt() {
   UseRandom rnd;
   set<SimpleCellGrid*> newCells;
-  SimpleCellGrid::adapt(theGain,newCells);
+  SimpleCellGrid::adapt(theGain,theEpsilon,newCells);
   SimpleCellGrid::explore(theExplorationPoints,rnd,*this,newCells);
   SimpleCellGrid::setWeights();
   SimpleCellGrid::updateIntegral();
@@ -122,10 +123,10 @@ void CellGridSampler::initialize(bool progress) {
   SimpleCellGrid::weightInformation().resize(dimension());
 
   UseRandom rnd;
+
   boost::progress_display* progressBar = 0;
   if ( progress ) {
-    Repository::clog() << "exploring " << process() << "\n"
-		       << "(id " << id() << ")";
+    Repository::clog() << "exploring " << process();
     progressBar = new boost::progress_display(theExplorationSteps,cout);
   }
 
@@ -134,7 +135,7 @@ void CellGridSampler::initialize(bool progress) {
   bool notAll = false;
   for ( std::size_t step = 1; step < theExplorationSteps; ++step ) {
     newCells.clear();
-    SimpleCellGrid::adapt(theGain,newCells);
+    SimpleCellGrid::adapt(theGain,theEpsilon,newCells);
     if ( progressBar )
       ++(*progressBar);
     if ( newCells.empty() ) {
@@ -143,6 +144,7 @@ void CellGridSampler::initialize(bool progress) {
     }
     SimpleCellGrid::explore(theExplorationPoints,rnd,*this,newCells);
   }
+
   if ( progressBar )
     ++(*progressBar);
 
@@ -156,7 +158,6 @@ void CellGridSampler::initialize(bool progress) {
     delete progressBar;
   }
 
-  lastPoint().resize(dimension());
   unsigned long points = initialPoints();
   for ( unsigned long k = 0; k < nIterations(); ++k ) {
     runIteration(points,progress);
@@ -185,12 +186,12 @@ void CellGridSampler::finalize(bool) {
 
 void CellGridSampler::persistentOutput(PersistentOStream & os) const {
   os << theExplorationPoints << theExplorationSteps
-     << theGain << theMinimumSelection;
+     << theGain << theEpsilon << theMinimumSelection;
 }
 
 void CellGridSampler::persistentInput(PersistentIStream & is, int) {
   is >> theExplorationPoints >> theExplorationSteps
-     >> theGain >> theMinimumSelection;
+     >> theGain >> theEpsilon >> theMinimumSelection;
 }
 
 // *** Attention *** The following static variable is needed for the type
@@ -209,25 +210,31 @@ void CellGridSampler::Init() {
   static Parameter<CellGridSampler,size_t> interfaceExplorationPoints
     ("ExplorationPoints",
      "The number of points to use for cell exploration.",
-     &CellGridSampler::theExplorationPoints, 5000, 1, 0,
+     &CellGridSampler::theExplorationPoints, 1000, 1, 0,
      false, false, Interface::lowerlim);
 
   static Parameter<CellGridSampler,size_t> interfaceExplorationSteps
     ("ExplorationSteps",
      "The number of exploration steps to perform.",
-     &CellGridSampler::theExplorationSteps, 10, 1, 0,
+     &CellGridSampler::theExplorationSteps, 8, 1, 0,
      false, false, Interface::lowerlim);
 
   static Parameter<CellGridSampler,double> interfaceGain
     ("Gain",
      "The gain factor used for adaption.",
-     &CellGridSampler::theGain, 0.5, 0.0, 1.0,
+     &CellGridSampler::theGain, 0.3, 0.0, 1.0,
+     false, false, Interface::limited);
+
+  static Parameter<CellGridSampler,double> interfaceEpsilon
+    ("Epsilon",
+     "The efficieny threshold used for adaption.",
+     &CellGridSampler::theEpsilon, 0.01, 0.0, 1.0,
      false, false, Interface::limited);
 
   static Parameter<CellGridSampler,double> interfaceMinimumSelection
     ("MinimumSelection",
      "The minimum cell selection probability.",
-     &CellGridSampler::theMinimumSelection, 0.1, 0.0, 1.0,
+     &CellGridSampler::theMinimumSelection, 0.0001, 0.0, 1.0,
      false, false, Interface::limited);
 
 }
