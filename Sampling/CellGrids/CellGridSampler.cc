@@ -37,8 +37,8 @@ using namespace ExSample;
 
 CellGridSampler::CellGridSampler() 
   : BinSampler(), SimpleCellGrid(),
-    theExplorationPoints(5000), theExplorationSteps(10),
-    theGain(0.5), theMinimumSelection(0.1) {}
+    theExplorationPoints(1000), theExplorationSteps(8),
+    theGain(0.3), theMinimumSelection(0.0001) {}
 
 CellGridSampler::~CellGridSampler() {}
 
@@ -73,6 +73,7 @@ void CellGridSampler::adapt() {
   set<SimpleCellGrid*> newCells;
   SimpleCellGrid::adapt(theGain,newCells);
   SimpleCellGrid::explore(theExplorationPoints,rnd,*this,newCells);
+  SimpleCellGrid::setWeights();
   SimpleCellGrid::updateIntegral();
   SimpleCellGrid::minimumSelection(theMinimumSelection);
 }
@@ -129,18 +130,23 @@ void CellGridSampler::initialize(bool progress) {
   }
 
   std::set<SimpleCellGrid*> newCells;
+  SimpleCellGrid::explore(theExplorationPoints,rnd,*this,newCells);
   bool notAll = false;
-  for ( std::size_t step = 0; step < theExplorationSteps; ++step ) {
-    SimpleCellGrid::explore(theExplorationPoints,rnd,*this,newCells);
-    if ( progressBar )
-      ++(*progressBar);
+  for ( std::size_t step = 1; step < theExplorationSteps; ++step ) {
     newCells.clear();
     SimpleCellGrid::adapt(theGain,newCells);
+    if ( progressBar )
+      ++(*progressBar);
     if ( newCells.empty() ) {
       notAll = true;
       break;
     }
+    SimpleCellGrid::explore(theExplorationPoints,rnd,*this,newCells);
   }
+  if ( progressBar )
+    ++(*progressBar);
+
+  SimpleCellGrid::setWeights();
   SimpleCellGrid::updateIntegral();
   SimpleCellGrid::minimumSelection(theMinimumSelection);
 

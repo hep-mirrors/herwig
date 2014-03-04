@@ -96,7 +96,8 @@ namespace ExSample {
        */
       Counter()
 	: nPoints(0.0), sumOfWeights(0.0), 
-	  sumOfSquaredWeights(0.0) {}
+	  sumOfSquaredWeights(0.0),
+	  maxWeight(0.0) {}
 
       /**
        * The number of points
@@ -114,12 +115,18 @@ namespace ExSample {
       double sumOfSquaredWeights;
 
       /**
+       * The maximum weight
+       */
+      double maxWeight;
+
+      /**
        * Book a point
        */
       void book(double weight) {
 	nPoints += 1.0;
-	sumOfWeights += abs(weight);
+	sumOfWeights += std::abs(weight);
 	sumOfSquaredWeights += sqr(weight);
+	maxWeight = std::max(std::abs(weight),maxWeight);
       }
 
       /**
@@ -160,6 +167,12 @@ namespace ExSample {
      * this exceeds gain, perform the split.
      */
     virtual void adapt(double gain, std::set<SimpleCellGrid*>& newCells);
+
+    /**
+     * Update the weights of the cells from information accumulated so
+     * far
+     */
+    virtual void setWeights();
 
   public:
 
@@ -210,39 +223,12 @@ namespace ExSample {
 	if ( newCells.find(this) == newCells.end() )
 	  return;
       }
-      double avg = 0.0;
       std::vector<double> point(lowerLeft().size());
       for ( std::size_t k = 0; k < nPoints; ++k ) {
 	sampleFlatPoint(point,rnd);
 	double w = f.evaluate(point);
-	avg += abs(w);
-	updateWeightInformation(point,abs(w));
+	updateWeightInformation(point,std::abs(w));
       }
-      weight(avg/nPoints);
-    }
-
-    /**
-     * Perform a number of exploration and adaption steps. Less steps
-     * may be performed, if no split has been encountered while
-     * adapting.
-     */
-    template<class RndGenerator, class Function>
-    void exploreAndAdapt(std::size_t nSteps,
-			 std::size_t nPoints,
-			 double gain,
-			 double minProb,
-			 RndGenerator& rnd,
-			 Function& f) {
-      std::set<SimpleCellGrid*> newCells;
-      for ( std::size_t step = 0; step < nSteps; ++step ) {
-	explore(nPoints,rnd,f,newCells);
-	newCells.clear();
-	adapt(gain,newCells);
-	if ( newCells.empty() )
-	  break;
-      }
-      updateIntegral();
-      minimumSelection(minProb);
     }
 
     /**

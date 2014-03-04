@@ -69,6 +69,18 @@ void SimpleCellGrid::adapt(double gain, set<SimpleCellGrid*>& newCells) {
   }
 }
 
+void SimpleCellGrid::setWeights() {
+  if ( !isLeaf() ) {
+    firstChild().setWeights();
+    secondChild().setWeights();
+    return;
+  }
+  if ( weightInformation().empty() )
+    throw runtime_error("[ExSample::SimpleCellGrid] Cannot set weights without weight information.");
+  weight(std::max(weightInformation().front().first.maxWeight,
+		  weightInformation().front().second.maxWeight));
+}
+
 void SimpleCellGrid::updateWeightInformation(const vector<double>& point,
 					     double w) {
   if ( !isLeaf() )
