@@ -110,6 +110,50 @@ set /Herwig/EventHandlers/DISHandler:Sampler Sampler
 set /Herwig/EventHandlers/LHCHandler:Sampler Sampler
 
 ################################################################################
+# Integration/sampling -- new sampling library (rewmove the above section)
+################################################################################
+
+# mkdir /Herwig/Samplers
+# cd /Herwig/Samplers
+
+# library HwSampling.so
+
+# create Herwig::BinSampler FlatBinSampler
+# set FlatBinSampler:InitialPoints 1000
+# set FlatBinSampler:UseAllIterations No
+
+# create Herwig::CellGridSampler CellGridSampler
+# set CellGridSampler:InitialPoints 10000
+# set CellGridSampler:ExplorationPoints 1000
+# set CellGridSampler:ExplorationSteps 8
+# set CellGridSampler:Gain 0.3
+# set CellGridSampler:Epsilon 1.0
+# set CellGridSampler:MinimumSelection 0.000001
+# set CellGridSampler:NIterations 1
+# set CellGridSampler:EnhancementFactor 1
+# set CellGridSampler:UseAllIterations No
+
+# create Herwig::GeneralSampler Sampler
+# set Sampler:UpdateAfter 1000
+# set Sampler:Verbose On
+
+# set Sampler:BinSampler CellGridSampler
+
+# set Sampler:AddUpSamplers Off
+# set Sampler:GlobalMaximumWeight Off
+# set Sampler:FlatSubprocesses Off
+# set Sampler:MinSelection 0.000001
+# set Sampler:AlmostUnweighted Off
+# set Sampler:RunCombinationData On
+
+# cd /Herwig/EventHandlers
+
+# set LHCHandler:Weighted Off
+# set LHCHandler:Sampler /Herwig/Samplers/Sampler
+# set /Herwig/EventHandlers/LEPHandler:Sampler Sampler
+# set /Herwig/EventHandlers/DISHandler:Sampler Sampler
+
+################################################################################
 # Setup the factory object
 ################################################################################
 
