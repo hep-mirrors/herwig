@@ -41,7 +41,6 @@
 # Load libraries
 ################################################################################
 
-library HwExsample2.so
 library HwMatchbox.so
 library HwMatchboxScales.so
 library JetCuts.so
@@ -85,6 +84,8 @@ set /Herwig/Generators/LHCGenerator:EventHandler:CollisionCuts Off
 
 mkdir /Herwig/Samplers
 cd /Herwig/Samplers
+
+library HwExsample2.so
 
 create Herwig::ExSampler ExBinSampler
 create Herwig::GeneralSampler ExSampler
