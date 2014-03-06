@@ -60,7 +60,10 @@ bool QTildeMatching::isInShowerPhasespace() const {
     return false;
 
   Energy qtildeHard = ZERO;
-  Energy qtilde = sqrt(getShowerVariables().first);
+
+  pair<Energy2,double> vars = getShowerVariables();
+  Energy qtilde = sqrt(vars.first);
+  double z = vars.second;
 
   // FF
   if ( dipole()->bornEmitter() > 1 && dipole()->bornSpectator() > 1 ) {
@@ -85,6 +88,8 @@ bool QTildeMatching::isInShowerPhasespace() const {
       theQTildeFinder->
       calculateInitialFinalScales(bornCXComb()->meMomenta()[dipole()->bornEmitter()],
 				  bornCXComb()->meMomenta()[dipole()->bornSpectator()],false).first;
+    if ( z < (dipole()->bornEmitter() == 0 ? bornCXComb()->lastX1() : bornCXComb()->lastX2()) )
+      return false;
   }
 
   // II
@@ -93,6 +98,8 @@ bool QTildeMatching::isInShowerPhasespace() const {
       theQTildeFinder->
       calculateInitialInitialScales(bornCXComb()->meMomenta()[dipole()->bornEmitter()],
 				    bornCXComb()->meMomenta()[dipole()->bornSpectator()]).first;
+    if ( z < (dipole()->bornEmitter() == 0 ? bornCXComb()->lastX1() : bornCXComb()->lastX2()) )
+      return false;
   }
 
   return qtilde <= qtildeHard;
@@ -100,6 +107,22 @@ bool QTildeMatching::isInShowerPhasespace() const {
 }
 
 bool QTildeMatching::isAboveCutoff() const {
+  assert(theQTildeSudakov->cutOffOption() == 0 && "implementation only provided for default cutoff");
+  pair<Energy2,double> vars = getShowerVariables();
+  Energy qtilde = sqrt(vars.first);
+  double z = vars.second;
+  Energy Qg = theQTildeSudakov->kinScale();
+  if ( dipole()->bornEmitter() > 1 ) {
+    Energy mu = max(Qg,realCXComb()->meMomenta()[dipole()->realEmitter()].mass());
+    if ( abs(realCXComb()->mePartonData()[dipole()->realEmission()]->id()) < 7 &&
+	 bornCXComb()->mePartonData()[dipole()->bornEmitter()]->id() == ParticleID::g )
+      mu = realCXComb()->meMomenta()[dipole()->realEmitter()].mass();
+    return sqr(z*(1.-z)*qtilde) >= sqr((1.-z)*mu)+z*sqr(Qg);
+  }
+  if ( dipole()->bornEmitter() < 2 ) {
+    return
+      z <= 1.+Qg/(2.*qtilde) - sqrt(sqr(1.+Qg/(2.*qtilde))-1.);
+  }
   return false;
 }
 
@@ -253,11 +276,11 @@ double QTildeMatching::splitFn(const pair<Energy2,double>& vars) const {
 
 
 void QTildeMatching::persistentOutput(PersistentOStream & os) const {
-  os << theLargeNBasis << theQTildeFinder;
+  os << theLargeNBasis << theQTildeFinder << theQTildeSudakov;
 }
 
 void QTildeMatching::persistentInput(PersistentIStream & is, int) {
-  is >> theLargeNBasis >> theQTildeFinder;
+  is >> theLargeNBasis >> theQTildeFinder >> theQTildeSudakov;
 }
 
 
@@ -283,6 +306,11 @@ void QTildeMatching::Init() {
     ("QTildeFinder",
      "Set the partner finder to calculate hard scales.",
      &QTildeMatching::theQTildeFinder, false, false, true, false, false);
+
+  static Reference<QTildeMatching,QTildeSudakov> interfaceQTildeSudakov
+    ("QTildeSudakov",
+     "Set the partner finder to calculate hard scales.",
+     &QTildeMatching::theQTildeSudakov, false, false, true, false, false);
 
 }
 
