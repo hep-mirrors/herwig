@@ -144,6 +144,10 @@ set MEMatching:RenormalizationScaleFactor 1.0
 set MEMatching:FactorizationScaleFactor 1.0
 set MEMatching:ScreeningScale 10.0*GeV
 
+set QTildeMatching:RenormalizationScaleFactor 1.0
+set QTildeMatching:FactorizationScaleFactor 1.0
+set QTildeMatching:HardScaleFactor 1.0
+
 ################################################################################
 # shower scale variations
 ################################################################################
@@ -151,6 +155,9 @@ set MEMatching:ScreeningScale 10.0*GeV
 set /Herwig/DipoleShower/DipoleShowerHandler:RenormalizationScaleFactor 1.0
 set /Herwig/DipoleShower/DipoleShowerHandler:FactorizationScaleFactor 1.0
 set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleFactor 1.0
+
+set /Herwig/Shower/AlphaQCD:RenormalizationScaleFactor 1.0
+set /Herwig/Shower/Evolver:HardScaleFactor 1.0
 
 ################################################################################
 # setup generator and analysis
