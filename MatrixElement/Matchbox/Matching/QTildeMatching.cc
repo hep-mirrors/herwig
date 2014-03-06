@@ -56,7 +56,46 @@ bool QTildeMatching::isInShowerPhasespace() const {
   if ( !isAboveCutoff() )
     return false;
 
-  return false;
+  if ( dipole()->lastPt() > hardScale() )
+    return false;
+
+  Energy qtildeHard = ZERO;
+  Energy qtilde = sqrt(getShowerVariables().first);
+
+  // FF
+  if ( dipole()->bornEmitter() > 1 && dipole()->bornSpectator() > 1 ) {
+    qtildeHard = 
+      theQTildeFinder->
+      calculateFinalFinalScales(bornCXComb()->meMomenta()[dipole()->bornEmitter()],
+				bornCXComb()->meMomenta()[dipole()->bornSpectator()],
+				bornCXComb()->mePartonData()[dipole()->bornEmitter()]->iColour() == PDT::Colour3).first;
+  }
+
+  // FI
+  if ( dipole()->bornEmitter() > 1 && dipole()->bornSpectator() < 2 ) {
+    qtildeHard = 
+      theQTildeFinder->
+      calculateInitialFinalScales(bornCXComb()->meMomenta()[dipole()->bornSpectator()],
+				  bornCXComb()->meMomenta()[dipole()->bornEmitter()],false).second;
+  }
+
+  // IF
+  if ( dipole()->bornEmitter() < 2 && dipole()->bornSpectator() > 1 ) {
+    qtildeHard = 
+      theQTildeFinder->
+      calculateInitialFinalScales(bornCXComb()->meMomenta()[dipole()->bornEmitter()],
+				  bornCXComb()->meMomenta()[dipole()->bornSpectator()],false).first;
+  }
+
+  // II
+  if ( dipole()->bornEmitter() < 2 && dipole()->bornSpectator() < 2 ) {
+    qtildeHard = 
+      theQTildeFinder->
+      calculateInitialInitialScales(bornCXComb()->meMomenta()[dipole()->bornEmitter()],
+				    bornCXComb()->meMomenta()[dipole()->bornSpectator()]).first;
+  }
+
+  return qtilde <= qtildeHard;
 
 }
 
