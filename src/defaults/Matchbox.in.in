@@ -365,6 +365,16 @@ set DipoleMatching:FFPtCut 1.0*GeV
 set DipoleMatching:FIPtCut 1.0*GeV
 set DipoleMatching:IIPtCut 1.0*GeV
 
+create Herwig::QTildeMatching QTildeMatching HwQTildeMatching.so
+set QTildeMatching:LargeNBasis /Herwig/MatrixElements/Matchbox/Amplitudes/LargeNColourBasis
+# set this to off, if the shower pt veto is off
+set QTildeMatching:RestrictPhasespace On
+set QTildeMatching:BornScaleInSubtraction BornScale
+set QTildeMatching:RealEmissionScaleInSubtraction BornScale
+set QTildeMatching:EmissionScaleInSubtraction BornScale
+set QTildeMatching:QTildeFinder /Herwig/Shower/PartnerFinder
+set QTildeMatching:QTildeSudakov /Herwig/Shower/SudakovCommon
+
 ################################################################################
 # Setup utilities for process generation
 ################################################################################
