@@ -71,10 +71,16 @@ do PPFactory:Process p p e+ e-
 # set PPFactory:RealContributions Off
 
 ################################################################################
-# MC@NLO-type next-to-leading order
+# MC@NLO-type next-to-leading order for use with dipole shower
 ################################################################################
 
 set PPFactory:ShowerApproximation DipoleMatching
+
+################################################################################
+# MC@NLO-type next-to-leading order for use with default shower
+################################################################################
+
+# set PPFactory:ShowerApproximation QTildeMatching
 
 ################################################################################
 # POWHEG-type next-to-leading order
@@ -98,12 +104,32 @@ set /Herwig/MatrixElements/Matchbox/PPFactory:RenormalizationScaleFactor 1.0
 set /Herwig/MatrixElements/Matchbox/PPFactory:FactorizationScaleFactor 1.0
 
 ################################################################################
+# matching scale variations 
+#  - HardScaleFactor has to equal the one for the shower!
+################################################################################
+
+set DipoleMatching:RenormalizationScaleFactor 1.0
+set DipoleMatching:FactorizationScaleFactor 1.0
+set DipoleMatching:HardScaleFactor 1.0
+
+set MEMatching:RenormalizationScaleFactor 1.0
+set MEMatching:FactorizationScaleFactor 1.0
+set MEMatching:ScreeningScale 10.0*GeV
+
+set QTildeMatching:RenormalizationScaleFactor 1.0
+set QTildeMatching:FactorizationScaleFactor 1.0
+set QTildeMatching:HardScaleFactor 1.0
+
+################################################################################
 # shower scale variations
 ################################################################################
 
 set /Herwig/DipoleShower/DipoleShowerHandler:RenormalizationScaleFactor 1.0
 set /Herwig/DipoleShower/DipoleShowerHandler:FactorizationScaleFactor 1.0
 set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleFactor 1.0
+
+set /Herwig/Shower/AlphaQCD:RenormalizationScaleFactor 1.0
+set /Herwig/Shower/Evolver:HardScaleFactor 1.0
 
 ################################################################################
 # setup generator and analysis
