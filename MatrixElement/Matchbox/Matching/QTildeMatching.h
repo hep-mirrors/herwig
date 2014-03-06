@@ -83,6 +83,19 @@ public:
    */
   virtual double me2() const;
 
+protected:
+
+  /**
+   * Calculate qtilde^2 and z for the splitting considered
+   */
+  pair<Energy2,double> getShowerVariables() const;
+
+  /**
+   * Return the splitting function as a function of the kinematic
+   * variables
+   */
+  double splitFn(const pair<Energy2,double>&) const; 
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
