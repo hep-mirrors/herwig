@@ -147,10 +147,8 @@ set /Herwig/EventHandlers/LHCHandler:Sampler Sampler
 # set Sampler:AlmostUnweighted Off
 # set Sampler:RunCombinationData On
 
-# cd /Herwig/EventHandlers
-
-# set LHCHandler:Weighted Off
-# set LHCHandler:Sampler /Herwig/Samplers/Sampler
+# set /Herwig/EventHandlers/LHCHandler:Weighted Off
+# set /Herwig/EventHandlers/LHCHandler:Sampler Sampler
 # set /Herwig/EventHandlers/LEPHandler:Sampler Sampler
 # set /Herwig/EventHandlers/DISHandler:Sampler Sampler
 
@@ -418,7 +416,9 @@ set QTildeMatching:BornScaleInSubtraction BornScale
 set QTildeMatching:RealEmissionScaleInSubtraction BornScale
 set QTildeMatching:EmissionScaleInSubtraction BornScale
 set QTildeMatching:QTildeFinder /Herwig/Shower/PartnerFinder
-set QTildeMatching:QTildeSudakov /Herwig/Shower/SudakovCommon
+# just a dummy, since SudakovCommonn can't be used
+# it's only used to get the value of the kinCutoffScale
+set QTildeMatching:QTildeSudakov /Herwig/Shower/QtoQGSudakov
 
 ################################################################################
 # Setup utilities for process generation

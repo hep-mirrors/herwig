@@ -181,9 +181,9 @@ double QTildeMatching::me2() const {
 pair<Energy2,double> QTildeMatching::getShowerVariables() const {
 
   Energy2 qtilde2 = ZERO;
-  double z =
+  double z = 1. -
     (bornCXComb()->meMomenta()[dipole()->bornSpectator()]*
-     realCXComb()->meMomenta()[dipole()->realEmitter()]) / 
+     realCXComb()->meMomenta()[dipole()->realEmission()]) / 
     (bornCXComb()->meMomenta()[dipole()->bornSpectator()]*
      bornCXComb()->meMomenta()[dipole()->bornEmitter()]);
 
