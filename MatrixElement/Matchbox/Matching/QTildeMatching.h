@@ -14,6 +14,7 @@
 
 #include "Herwig++/MatrixElement/Matchbox/Matching/ShowerApproximation.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/ColourBasis.h"
+#include "Herwig++/Shower/Default/QTildeFinder.h"
 
 namespace Herwig {
 
@@ -157,6 +158,11 @@ private:
    * kernels.
    */
   Ptr<ColourBasis>::ptr theLargeNBasis;
+
+  /**
+   * The qtilde partner finder for calculating the hard scales
+   */
+  Ptr<QTildeFinder>::ptr theQTildeFinder;
 
 };
 

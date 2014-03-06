@@ -43,7 +43,6 @@ IBPtr QTildeMatching::fullclone() const {
 Energy QTildeMatching::hardScale() const {
   // should be the same as for the dipole shower but needs checking;
   // NB this is the pt veto scale as the `hard' scale is anyway fixed
-  // from the dipole mass
   return ShowerApproximation::hardScale();
 }
 
@@ -53,7 +52,12 @@ double QTildeMatching::hardScaleProfile(Energy, Energy) const {
 }
 
 bool QTildeMatching::isInShowerPhasespace() const {
+
+  if ( !isAboveCutoff() )
+    return false;
+
   return false;
+
 }
 
 bool QTildeMatching::isAboveCutoff() const {
@@ -210,11 +214,11 @@ double QTildeMatching::splitFn(const pair<Energy2,double>& vars) const {
 
 
 void QTildeMatching::persistentOutput(PersistentOStream & os) const {
-  os << theLargeNBasis;
+  os << theLargeNBasis << theQTildeFinder;
 }
 
 void QTildeMatching::persistentInput(PersistentIStream & is, int) {
-  is >> theLargeNBasis;
+  is >> theLargeNBasis >> theQTildeFinder;
 }
 
 
@@ -224,7 +228,7 @@ void QTildeMatching::persistentInput(PersistentIStream & is, int) {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<QTildeMatching,Herwig::ShowerApproximation>
-  describeHerwigQTildeMatching("Herwig::QTildeMatching", "HwMatchbox.so");
+  describeHerwigQTildeMatching("Herwig::QTildeMatching", "HwQTildeMatching.so HwShower.so");
 
 void QTildeMatching::Init() {
 
@@ -235,6 +239,11 @@ void QTildeMatching::Init() {
     ("LargeNBasis",
      "Set the large-N colour basis implementation.",
      &QTildeMatching::theLargeNBasis, false, false, true, true, false);
+
+  static Reference<QTildeMatching,QTildeFinder> interfaceQTildeFinder
+    ("QTildeFinder",
+     "Set the partner finder to calculate hard scales.",
+     &QTildeMatching::theQTildeFinder, false, false, true, false, false);
 
 }
 
