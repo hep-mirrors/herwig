@@ -112,7 +112,7 @@ void QTildeFinder::Init() {
 }
 
 pair<Energy,Energy> QTildeFinder::
-calculateInitialFinalScales(const ShowerPPair &ppair, const bool isDecayCase) {
+calculateInitialFinalScales(const PPair &ppair, const bool isDecayCase) {
   Lorentz5Momentum pb = ppair.first->momentum();
   Lorentz5Momentum pc = ppair.second->momentum();
   if(!isDecayCase) { 
@@ -172,7 +172,7 @@ calculateInitialFinalScales(const ShowerPPair &ppair, const bool isDecayCase) {
 }
 
 pair<Energy,Energy> QTildeFinder::
-calculateInitialInitialScales(const ShowerPPair &ppair) {
+calculateInitialInitialScales(const PPair &ppair) {
   // This case is quite simple. From JHEP 12(2003)045 we find the condition
   // that ktilde_b = ktilde_c = 1. In this case we have the process
   // b+c->a so we need merely boost to the CM frame of the two incoming
@@ -190,7 +190,7 @@ calculateInitialInitialScales(const ShowerPPair &ppair) {
 }
 
 pair<Energy,Energy> QTildeFinder::
-calculateFinalFinalScales(const ShowerPPair &particlePair) {
+calculateFinalFinalScales(const PPair &particlePair) {
   static const double eps=1e-8;
   // Using JHEP 12(2003)045 we find that we need ktilde = 1/2(1+b-c+lambda)
   // ktilde = qtilde^2/Q^2 therefore qtilde = sqrt(ktilde*Q^2)

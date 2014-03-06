@@ -140,18 +140,18 @@ protected:
   /**
    *  Calculate the initial evolution scales for two final-state particles
    */
-  virtual pair<Energy,Energy> calculateFinalFinalScales(const ShowerPPair &)=0;
+  virtual pair<Energy,Energy> calculateFinalFinalScales(const PPair &)=0;
 
   /**
    *  Calculate the initial evolution scales for two initial-state particles
    */
-  virtual pair<Energy,Energy> calculateInitialInitialScales(const ShowerPPair &)=0;
+  virtual pair<Energy,Energy> calculateInitialInitialScales(const PPair &)=0;
 
   /**
    *  Calculate the initial evolution scales for one initial 
    *  and one final-state particles
    */
-  virtual pair<Energy,Energy> calculateInitialFinalScales(const ShowerPPair &,
+  virtual pair<Energy,Energy> calculateInitialFinalScales(const PPair &,
 							  const bool isDecayCase)=0;
   //@}
 
