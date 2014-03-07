@@ -225,6 +225,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/Matchbox/External/MadGraph/Makefile
                 MatrixElement/Matchbox/External/MadGraph/MadGraphAmplitude.cc
                 MatrixElement/Matchbox/External/MadGraph/mg2Matchbox.py
+                MatrixElement/Matchbox/External/MadGraph/Makefile-MG.in
 		Exsample2/Makefile
 		Exsample2/CellGridSampling/Makefile
 		Sampling/Makefile
