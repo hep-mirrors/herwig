@@ -1,0 +1,473 @@
+// -*- C++ -*-
+//
+// MadGraphAmplitude.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2012 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
+// This is the implementation of the non-inlined, non-templated member
+// functions of the MadGraphAmplitude class.
+//
+
+#include "MadGraphAmplitude.h"
+#include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/EventRecord/Particle.h"
+#include "ThePEG/Repository/UseRandom.h"
+#include "ThePEG/Repository/EventGenerator.h"
+#include "ThePEG/Utilities/DescribeClass.h"
+#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
+#include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+
+#include "ThePEG/PDT/EnumParticles.h"
+#include <cstdlib>
+#include <dlfcn.h>
+#include <errno.h>
+using namespace Herwig;
+
+void MG_InitProc(int);
+void MG_Calculate_wavefunctions(const int a[] , const int b[],int,int );
+void MG_SetMomenta(vector<double*>,int,int );
+complex<double> MG_Jamp(int ,int );
+int MG_NCol(int  );
+void MG_vxxxxx(double p[4],double n[4],int inc,complex<double> vc[6]);
+int MG_Colour(int str, int i, int j);
+
+MadGraphAmplitude::MadGraphAmplitude()
+  : theMG5Path("@MADGRAPHPREFIX@"), theProcessPath(".") {}
+
+MadGraphAmplitude::~MadGraphAmplitude() {}
+
+IBPtr MadGraphAmplitude::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr MadGraphAmplitude::fullclone() const {
+  return new_ptr(*this);
+}
+
+void MadGraphAmplitude::doinit() {
+  
+  
+  MatchboxAmplitude::doinit();
+  
+  
+ // std::cout.precision(15);
+  //cout<<"                 WH = "<<  getParticleData(ParticleID::H0)->width()   /GeV     <<flush;
+  // cout<<"\n                 WW = "<<  getParticleData(ParticleID::Wplus)->width()    /GeV   <<flush;
+  // cout<<"\n                 WZ = "<<  getParticleData(ParticleID::Z0)->width()     /GeV    <<flush;
+  // cout<<"\n                 WT = "<<  getParticleData(ParticleID::t)->width()    /GeV     <<flush;
+  // 
+  // cout<<"\n                 aS = "<<   SM().alphaS()       <<flush;
+  // cout<<"\n                 Gf = "<<    SM().fermiConstant()*GeV2      <<flush;
+  // cout<<"\n             1/ aEWM1 = "<<     1/SM().alphaEM()     <<flush;
+  // cout<<"\n             1/ aEWMZrunn = "<<1/SM().alphaEM(sqr(91.1876*GeV)) <<flush;
+  // cout<<"\n              aEWMZrunn = "<<SM().alphaEM(sqr(91.1876*GeV)) <<flush;
+  // cout<<"\n              aEWMZ = "<<     1/SM().alphaEMMZ()     <<flush;
+  // cout<<"\n                 MZ = "<<     getParticleData(ParticleID::Z0)->mass() /GeV      <<flush;
+  // cout<<"\n                MTA = "<<     getParticleData(ParticleID::tauplus)->mass() /GeV      <<flush;
+  // cout<<"\n                 MT = "<<     getParticleData(ParticleID::t)->mass()  /GeV     <<flush;
+  // cout<<"\n                 MB = "<<     getParticleData(ParticleID::b)->mass()  /GeV     <<flush;
+  // cout<<"\n                aEW = "<<    SM().alphaEM()       <<flush;
+  // cout<<"\n                 MW = "<<     getParticleData(ParticleID::Wplus)->mass()  /GeV     <<flush;
+  // cout<<"\n                 ee = "<<      2. * sqrt(SM().alphaEMMZ()) * sqrt(M_PI)     <<flush;
+  // cout<<"\n                sw2 = "<<        SM().sin2ThetaW()  <<flush;
+ 
+  string para= "params.dat";
+  ofstream params(para.c_str());
+  params<<"$WZ$ "    <<setiosflags(ios::scientific)  <<getParticleData(ParticleID::Z0)->width()     /GeV;
+  params<<"\n$WW$ "    <<setiosflags(ios::scientific)   <<getParticleData(ParticleID::Wplus)->width()/GeV;
+  params<<"\n$alphas$ " <<setiosflags(ios::scientific)  <<SM().alphaS();
+  params<<"\n$GF$ "     <<setiosflags(ios::scientific)  <<SM().fermiConstant()*GeV2   ;
+  params<<"\n$alphaMZ$ " <<setiosflags(ios::scientific) <<1/SM().alphaEMMZ();
+  params<<"\n$MZ$ "     <<setiosflags(ios::scientific)  <<getParticleData(ParticleID::Z0)->mass() /GeV<<flush;
+  params<<"\n$MW$ "    <<setiosflags(ios::scientific)   <<getParticleData(ParticleID::Wplus)->mass() /GeV<<flush;
+  params<<"\n$sw2$ "    <<setiosflags(ios::scientific)   << SM().sin2ThetaW() <<flush;
+ 
+  string line = theProcessPath+"/"+"processmap.dat";
+  ifstream infile(line.c_str());
+  string process;
+  int id;
+  while (std::getline(infile, line)) {
+    std::stringstream ss(line);
+    getline( ss, process, ' ' );
+    ss>> id;
+    processmap.insert ( std::pair<string,std::pair<int,bool> >(process,make_pair(id,false)));
+  }
+  
+  
+  
+}
+
+void MadGraphAmplitude::doinitrun() {
+  MatchboxAmplitude::doinitrun();
+  string line = theProcessPath+"/"+"processmap.dat";
+  ifstream infile(line.c_str());
+  string process;
+  int id;
+  while (std::getline(infile, line)) {
+    std::stringstream ss(line);
+    getline( ss, process, ' ' );
+    ss>> id;
+    processmap.insert ( std::pair<string,std::pair<int,bool> >(process,make_pair(id,false)));
+  }
+  
+}
+
+bool MadGraphAmplitude::canHandle (const PDVector& p,
+				    Ptr<MatchboxFactory>::tptr factory) 
+const
+{
+  if ( factory->processData()->diagramMap().find(p) !=
+    factory->processData()->diagramMap().end() )
+    return true;
+  vector<Ptr<Tree2toNDiagram>::ptr> diags =
+  factory->diagramGenerator()->generate(p,orderInGs(),orderInGem());
+  if ( diags.empty() )
+    return false;
+  factory->processData()->diagramMap()[p] = diags;
+  string orderFileName =  "";
+  for (PDVector::const_iterator it=p.begin();it!=p.end();it++)
+    orderFileName +=(*it)->PDGName();
+  orderFileName+=".MG";
+  orderFileName=theProcessPath+"/"+orderFileName;
+  ofstream orderFile(orderFileName.c_str());
+  int k=0;
+  for (PDVector::const_iterator it=p.begin();it!=p.end();it++){
+    orderFile <<(*it)->PDGName()<<" ";k+=1;if (k==2)orderFile<<" > ";
+  }
+  orderFile << flush;
+  
+  return true;
+  
+}
+				   
+void MadGraphAmplitude::prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr me) {
+   
+   
+  if ( !calculateTreeAmplitudes() ) {
+    MatchboxAmplitude::prepareAmplitudes(me);
+    return;
+  }
+  string orderFileName =  "";
+  for (cPDVector::const_iterator it=mePartonData().begin();it!=mePartonData().end();it++)
+    orderFileName +=(*it)->PDGName();
+  orderFileName+=".MG";
+  if (processmap.find(orderFileName)!= processmap.end()){
+  }
+  else{
+    assert(theMG5Path!="");
+    string cmd = "python @prefix@/bin/mg2Matchbox.py ";
+    
+    cmd +=theMG5Path+"/bin "+theProcessPath;
+    std::system(cmd.c_str());
+    
+    string line = theProcessPath+"/processmap.dat";
+    ifstream infile(line.c_str());
+    string process;
+    int id;
+    while (std::getline(infile, line)) {
+      std::stringstream ss(line);
+      getline( ss, process, ' ' );
+      ss>> id;
+      processmap.insert ( std::pair<string,std::pair<int,bool> >(process,make_pair(id,false)));
+    }
+  }
+
+  tmpid=processmap.find(orderFileName)->second.first;
+  vector<double*> p;
+  p.push_back(mom0);  p.push_back(mom1);  p.push_back(mom2);  p.push_back(mom3);
+  p.push_back(mom4);  p.push_back(mom5);  p.push_back(mom6);  p.push_back(mom7);
+  p.push_back(mom8);  p.push_back(mom9);  p.push_back(mom10);  p.push_back(mom11);
+
+  for(int j=0;j<mePartonData().size();j++){
+    p[j][0] = double(meMomenta()[j].e()/GeV);
+    p[j][1] = double(meMomenta()[j].x()/GeV);
+    p[j][2] = double(meMomenta()[j].y()/GeV);
+    p[j][3] = double(meMomenta()[j].z()/GeV);
+  }
+
+
+
+  if (!processmap.find(orderFileName)->second.second){
+    if ( !DynamicLoader::load(theProcessPath+"/InterfaceMadGraph.so") ) assert(0);
+    MG_InitProc(tmpid);
+    processmap.find(orderFileName)->second.second=true;
+  }
+  MG_SetMomenta(p,mePartonData().size(),tmpid); 
+  
+  MatchboxAmplitude::prepareAmplitudes(me);
+}
+
+bool equals(  vector<size_t> a,  vector<int> b) {
+  if(a.size()!=b.size())return false;
+
+  for ( unsigned int k = 0; k < a.size(); ++k ) {
+    if ( a[k] != b[k] )
+      return false;
+  }
+  return true;
+}
+
+
+Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& largeN)
+{
+  
+  double units = pow(sqrt(lastSHat())/GeV,hel.size()-4) ;
+  units *= pow( sqrt(SM().alphaEM()/SM().alphaEMMZ()), orderInGem())*pow(sqrt(SM().alphaS()/0.2), orderInGs());
+  int perm[hel.size()];
+  int heltmp[hel.size()];
+  
+   for(int j=0;j<hel.size();j++){
+
+    perm[j] = j;
+    heltmp[j]=hel[j];
+  }
+  MG_Calculate_wavefunctions(perm, heltmp,hel.size(),tmpid);
+  int ii=-1;
+  if (colourindexmap.find(i)!= colourindexmap.end())ii=colourindexmap.find(i)->second;
+  else{
+   
+    colourBasis()->prepare(theLastXComb->diagrams(),noCorrelations());
+    set<vector<size_t> > a =colourOrdering(i);
+    
+    for(int it=0; it<MG_NCol(tmpid);it++){
+      
+      int n=0;
+      for (cPDVector::const_iterator nx=mePartonData().begin();nx!=mePartonData().end();nx++)
+	if ((*nx)->coloured())n++;
+      set<vector<size_t> > tmpset;
+      vector<size_t> tmpvek;
+      for(int it2=0; it2<n;it2++){
+	 int ret=MG_Colour(tmpid,it,it2);
+	if (ret==0){
+	  n++;
+	  tmpset.insert(tmpvek);
+	  tmpvek.clear();
+	}else{
+	  tmpvek.push_back(ret-1);
+	}
+	if( it2==n-1)tmpset.insert(tmpvek);
+      }
+
+      bool found_all=true;
+      for(set<vector<size_t> >::iterator it3=a.begin();it3!=a.end();it3++){
+	bool found_it3=false;
+	for(set<vector<size_t> >::iterator it4=tmpset.begin();it4!=tmpset.end();it4++){
+          vector<size_t> it3tmp=gluons_first_please(*it3);
+	  vector<size_t> it4tmp=(*it4);
+	  if (it3tmp.size()!=it4tmp.size())continue;
+	  if (it3tmp==it4tmp)found_it3=true;
+	}
+	found_all=found_all&&found_it3;
+      }
+
+      if (found_all){
+	colourindexmap.insert(pair<int,int>(i,it) );
+	ii=it;
+      }
+
+      
+    }
+  }
+  if (ii==-1)return Complex(0.0);
+  
+  Complex d=MG_Jamp(ii,tmpid);
+  largeN=d*units;
+  return d*units;
+}
+
+
+
+
+
+vector<vector<size_t> > MadGraphAmplitude::getpermutations(vector<size_t> ordered){
+vector<vector<size_t> > res;
+res.push_back(ordered);
+bool foundnew=true;
+while (foundnew){
+  foundnew=false;
+  for (vector<vector<size_t> >::iterator it1= res.begin();it1!= res.end();it1++){
+    
+  }
+}
+
+return res;
+
+}
+
+
+
+
+
+
+
+LorentzVector<Complex> MadGraphAmplitude::plusPolarization
+(const Lorentz5Momentum& p,
+ const Lorentz5Momentum& n,
+ int i) const 
+ {
+   complex<double> pol[6];
+   complex<double> ii(0.0,1.0);
+   double pg[4];double ng[4];
+   pg[0]=p.e()/GeV;pg[1]=p.x()/GeV;pg[2]=p.y()/GeV;pg[3]=p.z()/GeV;
+   ng[0]=n.e()/GeV;ng[1]=n.x()/GeV;ng[2]=n.y()/GeV;ng[3]=n.z()/GeV;
+   MG_vxxxxx(pg,ng,i,pol);
+   LorentzVector<Complex> polarization(pol[3],pol[4],pol[5],pol[2]);
+   if (i<2)
+   return polarization;  
+   return polarization.conjugate();
+ }
+ 
+ 
+ // compare int vectors modulo certain element
+// which needs to differe between the two
+bool equalsModulo(unsigned int i, const vector<int>& a, const vector<int>& b) {
+  assert(a.size()==b.size());
+  if ( a[i] == b[i] )
+    return false;
+  for ( unsigned int k = 0; k < a.size(); ++k ) {
+    if ( k == i )
+      continue;
+    if ( a[k] != b[k] )
+      return false;
+  }
+  return true;
+}
+
+
+
+
+
+
+
+ 
+ 
+ vector<size_t> MadGraphAmplitude::gluons_first_please(vector<size_t> vec){
+   vector<size_t> vecout;
+    for(vector<size_t>::iterator it= vec.begin();it!= vec.end();++it)
+      if ( mePartonData()[crossingMap()[*it]]->id()==21)
+	vecout.push_back(crossingMap()[*it]);
+
+    for(vector<size_t>::iterator it= vec.begin();it!= vec.end();++it)
+      if ( mePartonData()[crossingMap()[*it]]->id()!=21)
+	vecout.push_back(crossingMap()[*it]);
+
+  return vecout;
+
+   
+ }
+ 
+ double MadGraphAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
+						  const SpinCorrelationTensor& c) const {
+
+  Lorentz5Momentum p = meMomenta()[ij.first];
+  Lorentz5Momentum n = meMomenta()[ij.second];
+
+  LorentzVector<Complex> polarization = plusPolarization(p,n,ij.first);
+  Complex pFactor = (polarization*c.momentum())/sqrt(abs(c.scale()));
+  double avg =
+    colourCorrelatedME2(ij)*(-c.diagonal()+ (c.scale() > ZERO ? 1. : -1.)*norm(pFactor));
+  int iCrossed = ij.first;
+  int invcross[crossingMap().size()];
+   for ( unsigned int k = 0; k < crossingMap().size(); ++k )
+     invcross[crossingMap()[k]]=k;
+  Complex csCorr = 0.0;
+
+  if ( calculateColourSpinCorrelator(ij) ) {
+    set<const CVector*> done;
+
+    for ( AmplitudeConstIterator a = lastAmplitudes().begin();
+	  a != lastAmplitudes().end(); ++a ) {
+      if ( done.find(&(a->second)) != done.end() )
+	continue;
+      AmplitudeConstIterator b = lastAmplitudes().begin();
+      while ( !equalsModulo(iCrossed,a->first,b->first) )
+	if ( ++b == lastAmplitudes().end() )
+	  break;
+      if ( b == lastAmplitudes().end() || done.find(&(b->second)) != done.end() )
+	continue;
+
+      done.insert(&(a->second)); done.insert(&(b->second));
+      if ( a->first[iCrossed] == 1 ){
+	swap(a,b);
+
+      }
+      csCorr -= colourBasis()->colourCorrelatedInterference(ij,mePartonData(),a->second,b->second);
+  }
+    lastColourSpinCorrelator(ij,csCorr);
+  } else {
+    csCorr = lastColourSpinCorrelator(ij);
+  }
+  double corr =
+    2.*real(csCorr*sqr(pFactor));
+
+  double Nc = generator()->standardModel()->Nc();
+  double cfac = 1.;
+  if ( mePartonData()[ij.first]->iColour() == PDT::Colour8 ) {
+    cfac = Nc;
+  } else if ( mePartonData()[ij.first]->iColour() == PDT::Colour3 ||
+	      mePartonData()[ij.first]->iColour() == PDT::Colour3bar ) {
+    cfac = (sqr(Nc)-1.)/(2.*Nc);
+  } else assert(false);
+  return
+   ( avg + crossingSign()*(c.scale() > ZERO ? 1. : -1.)*corr/cfac);
+
+}
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ Complex MadGraphAmplitude::evaluateOneLoop(size_t, const vector<int>& hel) {
+   assert(false);
+   return 0.;
+ }
+ 
+ // If needed, insert default implementations of virtual function defined
+ // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
+ 
+ 
+ 
+ void MadGraphAmplitude::persistentOutput(PersistentOStream & os) const {
+   os <<theMG5Path<<theProcessPath<< theOrderInGs << theOrderInGem;
+ }
+ 
+ void MadGraphAmplitude::persistentInput(PersistentIStream & is, int) {
+   is >>theMG5Path>>theProcessPath>> theOrderInGs >> theOrderInGem;
+ }
+ 
+ // *** Attention *** The following static variable is needed for the type
+ // description system in ThePEG. Please check that the template arguments
+ // are correct (the class and its base class), and that the constructor
+ // arguments are correct (the class name and the name of the dynamically
+ // loadable library where the class implementation can be found).
+ DescribeClass<MadGraphAmplitude,MatchboxAmplitude>  describeHerwigMadGraphAmplitude("Herwig::MadGraphAmplitude", "HwMatchboxMadGraph.so");
+ 
+ void MadGraphAmplitude::Init() {
+   
+   static ClassDocumentation<MadGraphAmplitude> documentation  ("MadGraphAmplitude");
+   
+   static Parameter<MadGraphAmplitude,string> interfaceMGPath
+   ("MG5Path",
+    "The MG5 Path.",
+    &MadGraphAmplitude::theMG5Path, "@MADGRAPHPREFIX@",
+    false, false);
+   
+   static Parameter<MadGraphAmplitude,string> interfaceProcessPath
+   ("ProcessPath",
+    "The Process Path.",
+    &MadGraphAmplitude::theProcessPath, ".",
+    false, false);
+   
+   
+   
+ }
+ 
+ 

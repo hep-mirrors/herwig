@@ -449,6 +449,51 @@ AC_SUBST([INSERT_OPENLOOPS])
 
 ])
 
+dnl ##### madgraph #####
+AC_DEFUN([HERWIG_CHECK_MADGRAPH],
+[
+AC_MSG_CHECKING([for MadGraph])
+
+AC_ARG_WITH([madgraph],
+    AS_HELP_STRING([--with-madgraph=DIR], [Installation path of MadGraph]),
+    [],
+    [with_madgraph=no]
+)
+
+AC_MSG_RESULT([$with_madgraph])
+
+AS_IF([test "x$with_madgraph" != "xno"],
+      [AC_CHECK_FILES(
+      ${with_madgraph}/bin/mg5_aMC,
+      [have_madgraph=yes], [have_madgraph=no])],
+      [have_madgraph=no])
+
+AS_IF([test "x$have_madgraph" = "xyes"],
+      [MADGRAPHPREFIX=${with_madgraph}
+      AC_SUBST(MADGRAPHPREFIX)
+      ])
+
+AS_IF([test "x$with_madgraph" != "xno"  -a "x$have_madgraph" = "xno"],
+      [AC_MSG_ERROR([MadGraph requested but not found])])
+
+AM_CONDITIONAL(HAVE_MADGRAPH,[test "x$have_madgraph" = "xyes" ])
+
+if test "x$have_madgraph" = "xyes"  ; then
+     	LOAD_MADGRAPH="library"
+     	CREATE_MADGRAPH="create"
+     	INSERT_MADGRAPH="insert"
+else
+     	LOAD_MADGRAPH="# library"
+	CREATE_MADGRAPH="# create"
+     	INSERT_MADGRAPH="# insert"
+fi
+
+AC_SUBST([LOAD_MADGRAPH])
+AC_SUBST([CREATE_MADGRAPH])
+AC_SUBST([INSERT_MADGRAPH])
+
+])
+
 
 dnl ##### hej #####
 AC_DEFUN([HERWIG_CHECK_HEJ],
@@ -702,6 +747,7 @@ cat << _HW_EOF_ > config.herwig
 *** njet:		$with_njet
 *** GoSam:		$with_gosam
 *** OpenLoops:		$with_openloops
+*** MadGraph: 		$with_madgraph
 *** HEJ:		$with_hej
 ***
 *** GSL:		$with_gsl

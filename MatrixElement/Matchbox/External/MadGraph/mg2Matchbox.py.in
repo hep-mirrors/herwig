@@ -1,0 +1,249 @@
+#! /usr/bin/env python
+
+import os,re,sys,fileinput,random,time,math,glob,functools
+from multiprocessing import Pool
+
+
+
+
+
+parameterdat="{\n  // Define \"zero\"\n  zero = 0;"+                		\
+             "\n  ZERO = 0;  \n // Prepare a vector for indices\n"+             \
+	     "vector<int> indices(2, 0); \n"+ 					\
+	     "WH = slha.get_block_entry(\"decay\", 25, 5.753088e-03); \n"+ \
+	     "WW = slha.get_block_entry(\"decay\", 24, 2.047600e+00); \n"+ \
+	     "WZ = slha.get_block_entry(\"decay\", 23, 2.441404e+00); \n"+ \
+	     "WT = slha.get_block_entry(\"decay\", 6, 1.491500e+00); \n "+ \
+	     "ymtau = slha.get_block_entry(\"yukawa\", 15, 1.777000e+00);\n "+ \
+	     "ymt = slha.get_block_entry(\"yukawa\", 6, 1.730000e+02);\n "+ \
+	     "ymb = slha.get_block_entry(\"yukawa\", 5, 4.700000e+00); \n "+ \
+	     "aS = slha.get_block_entry(\"sminputs\", 3, 1.180000e-01);\n "+ \
+	     "Gf = slha.get_block_entry(\"sminputs\", 2, 1.166390e-05); \n "+\
+	     "aEWM1 = slha.get_block_entry(\"sminputs\", 1, 1.325070e+02); \n "+ \
+	     "MH = slha.get_block_entry(\"mass\", 25, 1.200000e+02); \n "+ \
+	     "MZ = slha.get_block_entry(\"mass\", 23, 9.118800e+01); \n "+ \
+	     "MTA = slha.get_block_entry(\"mass\", 15, 1.777000e+00); \n "+ \
+	     "MT = slha.get_block_entry(\"mass\", 6, 1.730000e+02); \n "+ \
+	     "MB = slha.get_block_entry(\"mass\", 5,4.700000e+00); \n "+ \
+	     "MW = slha.get_block_entry(\"mass\", 24,80.419002); \n "+ \
+	     "sw2 = slha.get_block_entry(\"sminputs\", 4,-1000.1); \n "+ \
+	     "conjg__CKM1x1 = 1.;\n "+ \
+	     "conjg__CKM3x3 = 1.;\n  "+\
+	     "CKM3x3 = 1.;\n "+ \
+	     "complexi = std::complex<double> (0., 1.);\n "+ \
+	     "MZ__exp__2 = pow(MZ, 2.);\n  "+ \
+	     "MZ__exp__4 = pow(MZ, 4.);\n "+ \
+	     "sqrt__2 = sqrt(2.);\n "+ \
+	     "MH__exp__2 = pow(MH, 2.);\n "+ \
+	     "aEW = 1./aEWM1;\n "+ \
+	     "sqrt__aEW = sqrt(aEW);\n "+ \
+	     "ee = 2. * sqrt__aEW * sqrt(M_PI);\n "+ \
+	     "MW__exp__2 = pow(MW, 2.);\n  "+ \
+	     "cw = sqrt(1. - sw2);\n "+ \
+	     "sqrt__sw2 = sqrt(sw2);\n  "+ \
+	     "sw = sqrt__sw2;\n "+ \
+	     "g1 = ee/cw;\n "+ \
+	     "gw = ee/sw;\n "+\
+	     "vev = (2. * MW * sw)/ee;\n "+ \
+	     "vev__exp__2 = pow(vev, 2.);\n "+ \
+	     "lam = MH__exp__2/(2. * vev__exp__2);\n "+ \
+	     "yb = (ymb * sqrt__2)/vev;\n "+ \
+	     "yt = (ymt * sqrt__2)/vev;\n "+\
+	     "ytau = (ymtau * sqrt__2)/vev;\n "+ \
+	     "muH = sqrt(lam * vev__exp__2);\n "+ \
+	     "I1x33 = yb * conjg__CKM3x3;\n "+ \
+	     "I2x33 = yt * conjg__CKM3x3;\n "+ \
+	     "I3x33 = CKM3x3 * yt;\n  "+ \
+	     "I4x33 = CKM3x3 * yb;\n "+ \
+	     "ee__exp__2 = pow(ee, 2.);\n "+ \
+	     "sw__exp__2 = pow(sw, 2.);\n "+ \
+	     "cw__exp__2 = pow(cw, 2.);\n }\n"+ \
+	     "void Parameters_sm::setIndependentCouplings()\n "
+
+
+
+
+def replacemachine(fileName, sourceText, replaceText):
+    file = open(fileName, "r") 
+    text = file.read() 
+    file.close()
+    file = open(fileName, "w")
+    file.write(text.replace(sourceText, replaceText))
+    file.close() 
+    
+def addjamp(fileName):
+    file = open(fileName+".cc", "r")
+    text = file.read()
+    file.close()
+    file = open(fileName+".cc", "w")
+    file.write(text.replace("pars->print","//pars->print").replace("pars->setIndependentCouplings();","pars->setIndependentCouplings();\n\tpars->setDependentParameters();\n\tpars->setDependentCouplings(); " ))
+    file.close()     
+
+def fillprocs():
+  fileproc=open("proc.dat","w")
+  fileproc.write("import model sm\n")
+  fileproc.write("define ubar =u~\n")
+  fileproc.write("define dbar =d~\n")
+  fileproc.write("define nu_mubar =vm~\n")
+  fileproc.write("define nu_mu =vm\n")
+  fileproc.write("define sbar =s~\n")
+  fileproc.write("define cbar =c~\n")
+  fileproc.write("define bbar =b~\n")
+  fileproc.write("define tbar =t~\n")
+  fileproc.write("define Z0 =Z\n")
+  files=glob.glob('*.MG')
+  first=True
+  processmap=""
+  procnr=0
+  for filei in files:
+    processmap+=filei+" "
+    file = open(filei, "r")
+    for line in file:
+      linetmp=line
+      procnr+=1
+      processmap+=str(procnr) +"\n"
+      if first:
+	fileproc.write("generate "+linetmp+"@"+str(procnr)+"\n")
+	first=False
+      else:
+	fileproc.write("add process "+linetmp+"@"+str(procnr)+"\n")
+  fileproc.write("output standalone_cpp MGout")
+  fileproc.close()
+  fileprocessmap=open("processmap.dat","w")
+  fileprocessmap.write(processmap)
+  fileprocessmap.close()
+
+def replacefromto(xfile, xfrom,xto,repltext):
+    file = open(xfile, "r") 
+    text=""
+    replace=False
+    for line in file:
+      if not replace:
+	text+=line
+      if xfrom in line:
+	replace=True
+	text+=repltext
+      if replace and (xto in line):
+	replace=False
+    file.close() 
+    file = open(xfile, "w")
+    file.write(text)
+    file.close() 
+  
+
+  
+  
+  
+file = open("@prefix@/share/Herwig++/MadGraphInterface/param_card.dat.in", "r") 
+text = file.read() 
+file.close()
+file = open("param_card.dat", "w")
+params=open("params.dat", "r")
+for line in params:
+  a=line.split()
+  #print a[0],"-->",a[1]
+  text=text.replace(a[0],a[1])
+params.close()
+file.write(text)
+file.close()   
+pwdxx=os.getcwd() 
+os.chdir(sys.argv[2])
+if os.path.isfile("InterfaceMadGraph.so"):
+  files=glob.glob('*.MG')
+  containsall=True
+  for file in files:
+     contains=False
+     fileprocessmap=open("processmap.dat","r")
+     for line in fileprocessmap:
+       if file in line:
+	 contains=True
+     containsall=(containsall and contains)
+  if containsall:
+    exit()    
+  
+ 
+fillprocs()
+os.system("python "+sys.argv[1]+"/mg5_aMC proc.dat")
+list=[]
+pwd1=os.getcwd()
+os.chdir(pwd1+"/"+"MGout/SubProcesses")
+a=os.listdir('./')
+pwd=os.getcwd()
+text1h ="//#include \"MGout/SubProcesses/PN_Sigma_sm_xxprocessxx/PN_Sigma_sm_xxprocessxx.h\"\n"
+text2h ="//static PN_Sigma_sm_xxprocessxx    xxprocessxx     ;\n"
+text1cc="//PN_Sigma_sm_xxprocessxx             InterfaceMadGraph::xxprocessxx ;\n"
+text2cc="//case N:  InterfaceMadGraph::xxprocessxx.calculate_wavefunctions(perm,hel);break;\n"
+text3cc="//case N:  InterfaceMadGraph::xxprocessxx.setMomenta(p); break;\n"
+text4cc="//case N:  return InterfaceMadGraph::xxprocessxx.jamp(T); break;\n"
+text5cc="//case N:  InterfaceMadGraph::xxprocessxx.initProc(\"param_card.dat\"); break;\n"
+text6cc="//case N: return InterfaceMadGraph::xxprocessxx.NCol(); break;\n"
+text7cc="//case N: return InterfaceMadGraph::xxprocessxx.Colour(); break;\n"
+makefile=""
+
+for i in a:
+
+  if os.path.isdir(pwd+"/"+i):
+    N=re.findall('([0-9]+)', i)
+    text1h +="#include \"MGout/SubProcesses/"+i+"/"+i+".h\"\n"
+    text2h +="static "+i+"    obj_"+i+"     ;\n"
+    text1cc+=i+"             InterfaceMadGraph::obj_"+i+" ;\n"
+    text2cc+="case "+N[0]+":  InterfaceMadGraph::obj_"+i+".calculate_wavefunctions(perm,hel);break;\n"
+    text3cc+="case "+N[0]+":  InterfaceMadGraph::obj_"+i+".setMomenta(p); break;\n"
+    text4cc+="case "+N[0]+":  return InterfaceMadGraph::obj_"+i+".jamp(T); break;\n"
+    text5cc+="case "+N[0]+":  InterfaceMadGraph::obj_"+i+".initProc(\""+pwd1+"/"+"MGout/Cards/"+"param_card.dat\"); break;\n"
+    text6cc+="case "+N[0]+": return InterfaceMadGraph::obj_"+i+".NCol(); break;\n"
+    text7cc+="case "+N[0]+": return InterfaceMadGraph::obj_"+i+".colorstring(i,j); break;\n"
+    makefile+=" MGout/SubProcesses/"+i+"/"+i+".cc "
+    os.chdir(pwd+"/"+i)
+    replacemachine("CPPProcess.h","CPPProcess" , i)
+    replacemachine("CPPProcess.cc","CPPProcess" , i)
+    os.system("mv CPPProcess.h "+i+".h")
+    os.system("mv CPPProcess.cc "+i+".cc")
+    #replacemachine(i+".h","virtual void sigmaKin();", "virtual void sigmaKin();\n\tstd::complex<double> jamp(int T);\n\tint NCol();\n\tint colorstring(int i,int j);")
+    addjamp(i)
+    os.system("rm Makefile")
+    file = open(i+".h", "r")
+    onlyoneprocess = file.read()
+    if "static const int nprocesses = 1;" not in onlyoneprocess:
+       sys.exit()
+    file.close()
+    replacemachine(i+".h","private:" , "//private:")
+
+os.chdir(pwd1)
+file = open("@prefix@/share/Herwig++/MadGraphInterface/InterfaceMadGraph.h.in", "r")
+text = file.read()
+file.close()
+file = open("InterfaceMadGraph.h", "w")
+text=text.replace("#include \"MGout/SubProcesses/PN_Sigma_sm_xxprocessxx/PN_Sigma_sm_xxprocessxx.h\"", text1h)
+text=text.replace("static PN_Sigma_sm_xxprocessxx    xxprocessxx     ;", text2h)
+file.write(text)
+file.close()
+
+file = open("@prefix@/share/Herwig++/MadGraphInterface/InterfaceMadGraph.cc.in", "r")
+text = file.read()
+file.close()
+file = open("InterfaceMadGraph.cc", "w")
+text=text.replace("PN_Sigma_sm_xxprocessxx             InterfaceMadGraph::xxprocessxx ;",text1cc)
+text=text.replace("case N:  InterfaceMadGraph::xxprocessxx.calculate_wavefunctions(perm,hel);break;",text2cc)
+text=text.replace("case N:  InterfaceMadGraph::xxprocessxx.setMomenta(p); break;",text3cc)
+text=text.replace("case N:  return InterfaceMadGraph::xxprocessxx.jamp(T); break;",text4cc)
+text=text.replace("case N:  InterfaceMadGraph::xxprocessxx.initProc(\"param_card.dat\"); break;",text5cc)
+text=text.replace("case N: return InterfaceMadGraph::xxprocessxx.NCol(); break;",text6cc)
+text=text.replace("case N: return InterfaceMadGraph::xxprocessxx.colorstring(i,j); break;",text7cc)
+file.write(text)
+file.close()
+
+file = open("@prefix@/share/Herwig++/MadGraphInterface/Makefile-MG.in", "r")
+text = file.read()
+file.close()
+file = open("Makefile", "w")
+file.write(text)
+file.write(makefile)
+file.close()
+
+replacefromto(sys.argv[2]+"/MGout/src/Parameters_sm.cc", "void Parameters_sm::setIndependentParameters(SLHAReader& slha)","void Parameters_sm::setIndependentCouplings()",parameterdat)
+replacemachine(sys.argv[2]+"/MGout/src/read_slha.cc","cout << \"Opened slha fil", "//cout << \"Opened slha fil")
+
+os.system("make")
+os.chdir(pwdxx)
+os.system("cp param_card.dat "+sys.argv[2]+"/MGout/Cards/")

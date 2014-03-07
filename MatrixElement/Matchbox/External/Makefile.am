@@ -24,3 +24,7 @@ endif
 if HAVE_OPENLOOPS
 SUBDIRS += OpenLoops
 endif
+
+if HAVE_MADGRAPH
+SUBDIRS += MadGraph
+endif

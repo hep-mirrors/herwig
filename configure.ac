@@ -127,6 +127,8 @@ HERWIG_CHECK_OPENLOOPS
 
 HERWIG_CHECK_HEJ
 
+HERWIG_CHECK_MADGRAPH
+
 HERWIG_COMPILERFLAGS
 
 HERWIG_LOOPTOOLS
@@ -220,6 +222,9 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/Matchbox/External/GoSam/GoSamAmplitude.cc
                 MatrixElement/Matchbox/External/OpenLoops/Makefile
                 MatrixElement/Matchbox/External/OpenLoops/OpenLoopsAmplitude.cc
+                MatrixElement/Matchbox/External/MadGraph/Makefile
+                MatrixElement/Matchbox/External/MadGraph/MadGraphAmplitude.cc
+                MatrixElement/Matchbox/External/MadGraph/mg2Matchbox.py
 		Exsample2/Makefile
 		Exsample2/CellGridSampling/Makefile
 		Sampling/Makefile
