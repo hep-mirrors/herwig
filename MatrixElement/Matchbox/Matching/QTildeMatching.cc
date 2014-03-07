@@ -121,7 +121,7 @@ bool QTildeMatching::isAboveCutoff() const {
   }
   if ( dipole()->bornEmitter() < 2 ) {
     return
-      z <= 1.+Qg/(2.*qtilde) - sqrt(sqr(1.+Qg/(2.*qtilde))-1.);
+      z <= 1.+sqr(Qg)/(2.*sqr(qtilde)) - sqrt(sqr(1.+sqr(Qg)/(2.*sqr(qtilde)))-1.);
   }
   return false;
 }
