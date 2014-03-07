@@ -148,7 +148,7 @@ CrossSection QTildeMatching::dSigHatDR() const {
   }
 
   // note alphas included downstream from subtractionScaleWeight()
-  double xme2 = 8.*Constants::pi*ccme2*splitFn(vars)*realXComb()->lastSHat()/prop;
+  double xme2 = -8.*Constants::pi*ccme2*splitFn(vars)*realXComb()->lastSHat()/prop;
   xme2 *= 
     pow(realCXComb()->lastSHat() / bornCXComb()->lastSHat(),
 	bornCXComb()->mePartonData().size()-4.);
