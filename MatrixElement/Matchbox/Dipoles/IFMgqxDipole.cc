@@ -46,7 +46,7 @@ bool IFMgqxDipole::canHandle(const cPDVector& partons,
     partons[emitter]->id() == ParticleID::g &&
     abs(partons[emission]->id()) < 6 &&
     !(partons[emission]->mass() == ZERO &&
-      partons[spectator]->mass() == ZERO));
+      partons[spectator]->mass() == ZERO);
 }
 
 double IFMgqxDipole::me2Avg(double ccme2) const {
