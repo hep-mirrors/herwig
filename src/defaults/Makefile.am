@@ -12,7 +12,7 @@ masses.in MatrixElements.in meson_decays.in mesons.in Model.in BSM.in \
 Particles.in QEDRadiation.in quark_decays.in quarks.in \
 Shower.in StandardModelVertices.in UnderlyingEvent.in widths.in Partons.in \
 DipoleShower.in DipoleShowerParameters-LO.in DipoleShowerParameters-NLO.in \
-Matchbox.in
+Matchbox.in MatchboxDefaults.in
 
 dist_defaults_DATA = $(INPUTFILES)
 

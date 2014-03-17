@@ -77,6 +77,8 @@ read Hadronization.in
 read Decays.in
 read BSM.in
 
+read MatchboxDefaults.in
+
 #######################################################################
 # The EventHandler is the most important object in a run. It 
 # (directly or indirectly) owns most of the objects that have been 

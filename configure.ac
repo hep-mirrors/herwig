@@ -253,6 +253,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		src/Makefile-UserModules
 		src/defaults/Analysis.in
 		src/defaults/Matchbox.in
+		src/defaults/MatchboxDefaults.in
 		Contrib/Makefile
 		Contrib/make_makefiles.sh
 		Tests/Makefile
