@@ -47,11 +47,7 @@ bool FIMsqgxDipole::canHandle(const cPDVector& partons,
     ((abs(partons[emitter]->id())> 1000000 && abs(partons[emitter]->id())< 1000007) ||
      (abs(partons[emitter]->id())> 2000000 && abs(partons[emitter]->id())< 2000007)) &&
     !(partons[emitter]->mass() == ZERO &&
-      partons[spectator]->mass() == ZERO) &&
-    (partons[emitter]->iColour()==partons[spectator]->iColour() ||
-     partons[spectator]->iColour()==8);
-
-
+      partons[spectator]->mass() == ZERO);
 }
 
 double FIMsqgxDipole::me2Avg(double ccme2) const {

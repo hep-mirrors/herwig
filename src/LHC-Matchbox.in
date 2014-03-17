@@ -1,4 +1,4 @@
-read defaults/Matchbox.in
+read Matchbox.in
 
 ################################################################################
 # setup the shower
@@ -7,9 +7,9 @@ read defaults/Matchbox.in
 #
 ################################################################################
 
-#read DipoleShower.in
+read DipoleShower.in
 # read DipoleShowerParameters-LO.in
-#read DipoleShowerParameters-NLO.in
+read DipoleShowerParameters-NLO.in
 
 ################################################################################
 # setup matrix element and matching
@@ -20,7 +20,7 @@ read defaults/Matchbox.in
 
 cd /Herwig/EventHandlers
 
-set LHCHandler:LuminosityFunction:Energy 7000.0*GeV
+set LHCHandler:LuminosityFunction:Energy 8000.0*GeV
 
 cd /Herwig/MatrixElements/Matchbox
 
@@ -30,10 +30,9 @@ insert /Herwig/Generators/LHCGenerator:EventHandler:SubProcessHandlers[0] PPFact
 # inclusive Drell-Yan
 ################################################################################
 
-set PPFactory:OrderInAlphaS 2
-set PPFactory:OrderInAlphaEW 0
+set PPFactory:OrderInAlphaS 0
 
-do PPFactory:Process p p t tbar
+do PPFactory:Process p p l l
 # do PPFactory:Process p p l nu
 
 ################################################################################
@@ -95,15 +94,14 @@ do PPFactory:Process p p t tbar
 # leading order
 ################################################################################
 
-set PPFactory:VirtualContributions Off
+# set PPFactory:VirtualContributions Off
 # set PPFactory:RealContributions Off
-set PPFactory:MECorrectionsOnly Yes
 
 ################################################################################
 # MC@NLO-type next-to-leading order for use with dipole shower
 ################################################################################
 
-#set PPFactory:ShowerApproximation DipoleMatching
+set PPFactory:ShowerApproximation DipoleMatching
 
 ################################################################################
 # MC@NLO-type next-to-leading order for use with default shower
@@ -115,10 +113,9 @@ set PPFactory:MECorrectionsOnly Yes
 # POWHEG-type next-to-leading order
 ################################################################################
 
-set PPFactory:ShowerApproximation MEMatching
-set MECorrectionHandler:Factory PPFactory
-insert /Herwig/Generators/LHCGenerator:EventHandler:PostSubProcessHandlers[0] MECorrectionHandler
-#set PPFactory:Verbose On
+# set PPFactory:ShowerApproximation MEMatching
+# set MECorrectionHandler:Factory PPFactory
+# insert /Herwig/Generators/LHCGenerator:EventHandler:PostSubProcessHandlers[0] MECorrectionHandler
 
 ################################################################################
 # scale variations
@@ -145,7 +142,7 @@ set DipoleMatching:HardScaleFactor 1.0
 
 set MEMatching:RenormalizationScaleFactor 1.0
 set MEMatching:FactorizationScaleFactor 1.0
-set MEMatching:ScreeningScale 0.0*GeV
+set MEMatching:ScreeningScale 10.0*GeV
 
 set QTildeMatching:RenormalizationScaleFactor 1.0
 set QTildeMatching:FactorizationScaleFactor 1.0
@@ -155,9 +152,9 @@ set QTildeMatching:HardScaleFactor 1.0
 # shower scale variations
 ################################################################################
 
-#set /Herwig/DipoleShower/DipoleShowerHandler:RenormalizationScaleFactor 1.0
-#set /Herwig/DipoleShower/DipoleShowerHandler:FactorizationScaleFactor 1.0
-#set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleFactor 1.0
+set /Herwig/DipoleShower/DipoleShowerHandler:RenormalizationScaleFactor 1.0
+set /Herwig/DipoleShower/DipoleShowerHandler:FactorizationScaleFactor 1.0
+set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleFactor 1.0
 
 set /Herwig/Shower/AlphaQCD:RenormalizationScaleFactor 1.0
 set /Herwig/Shower/Evolver:HardScaleFactor 1.0
@@ -171,7 +168,7 @@ set /Herwig/Shower/Evolver:HardScaleFactor 1.0
 
 cd /Herwig/Generators
 
-#set LHCGenerator:EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
+set LHCGenerator:EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
 
 set LHCGenerator:NumberOfEvents 100000000
 set LHCGenerator:RandomNumberGenerator:Seed 31122001
@@ -182,9 +179,9 @@ set LHCGenerator:MaxErrors 4000000
 cd /Herwig/Generators
 
 #insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
-#set /Herwig/Analysis/HepMCFile:PrintEvent 10000000
-#set /Herwig/Analysis/HepMCFile:Format GenEvent
-#set /Herwig/Analysis/HepMCFile:Units GeV_mm
-#set /Herwig/Analysis/HepMCFile:Filename events.fifo
+set /Herwig/Analysis/HepMCFile:PrintEvent 10000000
+set /Herwig/Analysis/HepMCFile:Format GenEvent
+set /Herwig/Analysis/HepMCFile:Units GeV_mm
+set /Herwig/Analysis/HepMCFile:Filename events.fifo
 
-saverun LHC-Matchbox-ttbar LHCGenerator
+saverun LHC LHCGenerator
