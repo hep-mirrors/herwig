@@ -53,8 +53,38 @@ bool FFMsqgxDipole::canHandle(const cPDVector& partons,
 
 double FFMsqgxDipole::me2Avg(double ccme2) const {
 
-  assert(false && "implementation missing");
-  return 0.;
+  if ( jacobian() == 0.0 )
+    return 0.0;
+
+  double y = subtractionParameters()[0];
+  double z = subtractionParameters()[1];
+
+  // masses
+  double muSQ2 = sqr( realEmissionME()->lastXComb().mePartonData()[realEmitter()]->mass() / lastDipoleScale() );
+  double muj2 = sqr( realEmissionME()->lastXComb().mePartonData()[realSpectator()]->mass() / lastDipoleScale() );
+  // massive extra terms
+  double vijk = sqrt( sqr(2.*muj2+(1.-muSQ2-muj2)*(1.-y))-4.*muj2 ) / ((1.-muSQ2-muj2)*(1.-y));
+  double vbar = sqrt( 1.+sqr(muSQ2)+sqr(muj2)-2.*(muSQ2+muj2+muSQ2*muj2) ) / (1.-muSQ2-muj2);
+
+  Energy2 prop = 
+    2.*((realEmissionME()->lastXComb().meMomenta()[realEmitter()])*
+	(realEmissionME()->lastXComb().meMomenta()[realEmission()]));
+
+  double CF = (SM().Nc()*SM().Nc()-1.)/(2.*SM().Nc());
+
+  double res =
+    8.*Constants::pi*CF*(realEmissionME()->lastXComb().lastSHat())*
+    (underlyingBornME()->lastXComb().lastAlphaS())/prop;
+
+  res *= ( 2./(1.-z*(1.-y)) - vbar/vijk * ( 2. + muSQ2*sqr(lastDipoleScale())*2./prop ));
+
+  res *= -ccme2;
+
+  res *=
+    realEmissionME()->finalStateSymmetry() /
+    underlyingBornME()->finalStateSymmetry();
+
+  return res;
 
 
 }
