@@ -207,4 +207,9 @@ read Analysis.in
 ##########################################
 read MatchboxDefaults.in
 
+##########################################
+# setup the dipole shower
+##########################################
+read DipoleShowerDefaults.in
+
 cd /
