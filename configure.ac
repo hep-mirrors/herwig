@@ -206,6 +206,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/Matchbox/Matching/Makefile
                 MatrixElement/Matchbox/Cuts/Makefile
                 MatrixElement/Matchbox/Scales/Makefile
+                MatrixElement/Matchbox/ColorFull/Makefile
                 MatrixElement/Matchbox/Builtin/Makefile
                 MatrixElement/Matchbox/Builtin/Amplitudes/Makefile
 		MatrixElement/Matchbox/Builtin/MadgraphAmplitudes/Makefile
@@ -254,7 +255,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Analysis/Makefile
 		src/Makefile-UserModules
 		src/defaults/Analysis.in
-		src/defaults/Matchbox.in
+		src/defaults/MatchboxDefaults.in
 		Contrib/Makefile
 		Contrib/make_makefiles.sh
 		Tests/Makefile

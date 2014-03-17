@@ -71,13 +71,15 @@ def replacemachine(fileName, sourceText, replaceText):
     file.write(text.replace(sourceText, replaceText))
     file.close() 
     
-def addjamp(fileName):
-    file = open(fileName+".cc", "r")
-    text = file.read()
-    file.close()
-    file = open(fileName+".cc", "w")
-    file.write(text.replace("pars->print","//pars->print").replace("pars->setIndependentCouplings();","pars->setIndependentCouplings();\n\tpars->setDependentParameters();\n\tpars->setDependentCouplings(); " ))
-    file.close()     
+#def addjamp(fileName):
+    #file = open(fileName+".cc", "r")
+    #text = file.read()
+    #file.close()
+    #file = open(fileName+".cc", "w")
+
+    ## Fix this.
+    #file.write(text.replace("pars->print","//pars->print").replace("pars->setIndependentCouplings();","pars->setIndependentCouplings();\n\tpars->setDependentParameters();\n\tpars->setDependentCouplings(); " ))
+    #file.close()     
 
 def fillprocs():
   fileproc=open("proc.dat","w")
@@ -107,7 +109,7 @@ def fillprocs():
 	first=False
       else:
 	fileproc.write("add process "+linetmp+"@"+str(procnr)+"\n")
-  fileproc.write("output standalone_cpp MGout")
+  fileproc.write("output matchbox MGout")
   fileproc.close()
   fileprocessmap=open("processmap.dat","w")
   fileprocessmap.write(processmap)
@@ -199,15 +201,15 @@ for i in a:
     replacemachine("CPPProcess.cc","CPPProcess" , i)
     os.system("mv CPPProcess.h "+i+".h")
     os.system("mv CPPProcess.cc "+i+".cc")
-    #replacemachine(i+".h","virtual void sigmaKin();", "virtual void sigmaKin();\n\tstd::complex<double> jamp(int T);\n\tint NCol();\n\tint colorstring(int i,int j);")
-    addjamp(i)
+   # replacemachine(i+".h","virtual void sigmaKin();", "virtual void sigmaKin();\n\tstd::complex<double> jamp(int T);\n\tint NCol();\n\tint colorstring(int i,int j);")
+    #addjamp(i)
     os.system("rm Makefile")
     file = open(i+".h", "r")
     onlyoneprocess = file.read()
     if "static const int nprocesses = 1;" not in onlyoneprocess:
        sys.exit()
     file.close()
-    replacemachine(i+".h","private:" , "//private:")
+    #replacemachine(i+".h","private:" , "//private:")
 
 os.chdir(pwd1)
 file = open("@prefix@/share/Herwig++/MadGraphInterface/InterfaceMadGraph.h.in", "r")

@@ -202,4 +202,14 @@ newdef DISGenerator:EventHandler:Cuts /Herwig/Cuts/DISCuts
 ##########################################
 read Analysis.in
 
+##########################################
+# setup the matchbox framework
+##########################################
+read MatchboxDefaults.in
+
+##########################################
+# setup the dipole shower
+##########################################
+read DipoleShowerDefaults.in
+
 cd /

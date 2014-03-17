@@ -1,7 +1,7 @@
 THEPEG=@THEPEGPATH@
 HERWIG=@prefix@
 INCLUDE=-I $(THEPEG)/include -I $(HERWIG)/include -I $(HERWIG)/share/Herwig++/MadGraphInterface -I MGout/src
-LIBPATH=@THEPGELDFLAGS@ -L MGout/lib
+LIBPATH=@THEPEGLDFLAGS@ -L MGout/lib
 
 
 all:

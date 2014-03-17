@@ -1,82 +1,22 @@
 ################################################################################
-# Input file to setup Matchbox NLO matrix elements
-################################################################################
-
-
-
-
-
-################################################################################
 #
-# /!\  Nothing to be done below here, except you exactly know
-#      what you're doing.
-#
-#      Really.
+# Default setup for Matchbox matrix element generation.
+# You do not need to make any change in here; processes of
+# interest can be chosen in the standard input files.
 #
 ################################################################################
-
-# .....
-# ....
-# ...
-# ..
-# .
-#
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ################################################################################
 # Load libraries
 ################################################################################
 
-library HwMatchbox.so
-library HwMatchboxScales.so
 library JetCuts.so
 library FastJetFinder.so
-@LOAD_NLOJET@ HwMatchboxNLOJet.so
-
-mkdir /Herwig/MatrixElements/Matchbox
-cd /Herwig/MatrixElements/Matchbox
-
-################################################################################
-# For the moment, we can only deal with massless partons
-################################################################################
-
-set /Herwig/Particles/d:NominalMass 0*GeV
-set /Herwig/Particles/dbar:NominalMass 0*GeV
-set /Herwig/Particles/u:NominalMass 0*GeV
-set /Herwig/Particles/ubar:NominalMass 0*GeV
-set /Herwig/Particles/s:NominalMass 0*GeV
-set /Herwig/Particles/sbar:NominalMass 0*GeV
-set /Herwig/Particles/c:NominalMass 0*GeV
-set /Herwig/Particles/cbar:NominalMass 0*GeV
-set /Herwig/Particles/b:NominalMass 0*GeV
-set /Herwig/Particles/bbar:NominalMass 0*GeV
-
-################################################################################
-# Cleanup some Herwig++ defaults
-################################################################################
-
-set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
-set /Herwig/Cuts/QCDCuts:MHatMin 0.0*GeV
-set /Herwig/Cuts/NeutralCurrentCut:MinW2 0.0*GeV2
-set /Herwig/Cuts/DISCuts:MHatMin 0.0*GeV
-
-set /Herwig/Generators/LEPGenerator:EventHandler:CollisionCuts Off
-set /Herwig/Generators/DISGenerator:EventHandler:CollisionCuts Off
-set /Herwig/Generators/LHCGenerator:EventHandler:CollisionCuts Off
+library HwMatchbox.so
+library HwMatchboxScales.so
+library HwMatchboxCuts.so
+library HwSampling.so
+library HwColorFull.so
 
 ################################################################################
 # Integration/sampling
@@ -85,83 +25,42 @@ set /Herwig/Generators/LHCGenerator:EventHandler:CollisionCuts Off
 mkdir /Herwig/Samplers
 cd /Herwig/Samplers
 
-library HwExsample2.so
-
-create Herwig::ExSampler ExBinSampler
-create Herwig::GeneralSampler ExSampler
-set ExBinSampler:presampling_points 10000
-set ExSampler:BinSampler ExBinSampler
-set ExSampler:Verbose On
-
 create Herwig::BinSampler FlatBinSampler
-set FlatBinSampler:InitialPoints 10000
+set FlatBinSampler:InitialPoints 1000
+set FlatBinSampler:UseAllIterations No
 
-create Herwig::ProjectingSampler ProjectingBinSampler
-set ProjectingBinSampler:InitialPoints 1250
-set ProjectingBinSampler:NIterations 4
-set ProjectingBinSampler:EnhancementFactor 4.0 
-set ProjectingBinSampler:NBins 8
+create Herwig::CellGridSampler CellGridSampler
+set CellGridSampler:InitialPoints 10000
+set CellGridSampler:ExplorationPoints 1000
+set CellGridSampler:ExplorationSteps 8
+set CellGridSampler:Gain 0.3
+set CellGridSampler:Epsilon 1.0
+set CellGridSampler:MinimumSelection 0.000001
+set CellGridSampler:NIterations 1
+set CellGridSampler:EnhancementFactor 1
+set CellGridSampler:UseAllIterations No
 
 create Herwig::GeneralSampler Sampler
-set Sampler:BinSampler ExBinSampler
 set Sampler:UpdateAfter 1000
+set Sampler:Verbose On
 
-set /Herwig/EventHandlers/LEPHandler:Sampler Sampler
-set /Herwig/EventHandlers/DISHandler:Sampler Sampler
-set /Herwig/EventHandlers/LHCHandler:Sampler Sampler
+set Sampler:BinSampler CellGridSampler
 
-################################################################################
-# Integration/sampling -- new sampling library (rewmove the above section)
-################################################################################
-
-# mkdir /Herwig/Samplers
-# cd /Herwig/Samplers
-
-# library HwSampling.so
-
-# create Herwig::BinSampler FlatBinSampler
-# set FlatBinSampler:InitialPoints 1000
-# set FlatBinSampler:UseAllIterations No
-
-# create Herwig::CellGridSampler CellGridSampler
-# set CellGridSampler:InitialPoints 10000
-# set CellGridSampler:ExplorationPoints 1000
-# set CellGridSampler:ExplorationSteps 8
-# set CellGridSampler:Gain 0.3
-# set CellGridSampler:Epsilon 1.0
-# set CellGridSampler:MinimumSelection 0.000001
-# set CellGridSampler:NIterations 1
-# set CellGridSampler:EnhancementFactor 1
-# set CellGridSampler:UseAllIterations No
-
-# create Herwig::GeneralSampler Sampler
-# set Sampler:UpdateAfter 1000
-# set Sampler:Verbose On
-
-# set Sampler:BinSampler CellGridSampler
-
-# set Sampler:AddUpSamplers Off
-# set Sampler:GlobalMaximumWeight Off
-# set Sampler:FlatSubprocesses Off
-# set Sampler:MinSelection 0.000001
-# set Sampler:AlmostUnweighted Off
-# set Sampler:RunCombinationData On
-
-# set /Herwig/EventHandlers/LHCHandler:Weighted Off
-# set /Herwig/EventHandlers/LHCHandler:Sampler Sampler
-# set /Herwig/EventHandlers/LEPHandler:Sampler Sampler
-# set /Herwig/EventHandlers/DISHandler:Sampler Sampler
+set Sampler:AddUpSamplers Off
+set Sampler:GlobalMaximumWeight Off
+set Sampler:FlatSubprocesses Off
+set Sampler:MinSelection 0.000001
+set Sampler:AlmostUnweighted Off
+set Sampler:RunCombinationData On
 
 ################################################################################
 # Setup the factory object
 ################################################################################
 
+mkdir /Herwig/MatrixElements/Matchbox
 cd /Herwig/MatrixElements/Matchbox
 
 create Herwig::MatchboxFactory Factory
-
-set Factory:OrderInAlphaEW 2
-set Factory:OrderInAlphaS 0
 
 do Factory:StartParticleGroup p
 insert Factory:ParticleGroup 0 /Herwig/Particles/b
@@ -271,7 +170,6 @@ insert Factory:ParticleGroup 0 /Herwig/Particles/e-
 insert Factory:ParticleGroup 0 /Herwig/Particles/mu-
 do Factory:EndParticleGroup
 
-
 ################################################################################
 # Setup amplitudes
 ################################################################################
@@ -279,6 +177,12 @@ do Factory:EndParticleGroup
 cd /Herwig/MatrixElements/Matchbox
 mkdir Amplitudes
 cd Amplitudes
+
+create ColorFull::TraceBasis TraceBasis
+cp TraceBasis LargeNTraceBasis
+
+mkdir Builtin
+cd Builtin
 
 create Herwig::SimpleColourBasis SimpleColourBasis
 
@@ -318,40 +222,12 @@ set Amplitudehggg:ColourBasis SimpleColourBasis
 create Herwig::MatchboxAmplitudehqqbarg Amplitudehqqbarg
 set Amplitudehqqbarg:ColourBasis SimpleColourBasis
 
-create Herwig::MatchboxAmplitudehbbbar Amplitudehbbbar
-set Amplitudehbbbar:ColourBasis SimpleColourBasis
-set Amplitudehbbbar:interfaceUMass 0.004*GeV
-set Amplitudehbbbar:interfaceDMass 0.007*GeV
-set Amplitudehbbbar:interfaceCMass 1.5*GeV
-set Amplitudehbbbar:interfaceSMass 0.135*GeV
-set Amplitudehbbbar:interfaceBMass 5*GeV
-
-create Herwig::MatchboxAmplitudehbbbarg Amplitudehbbbarg
-set Amplitudehbbbarg:ColourBasis SimpleColourBasis
-set Amplitudehbbbarg:interfaceUMass 0.004*GeV
-set Amplitudehbbbarg:interfaceDMass 0.007*GeV
-set Amplitudehbbbarg:interfaceCMass 1.5*GeV
-set Amplitudehbbbarg:interfaceSMass 0.135*GeV
-set Amplitudehbbbarg:interfaceBMass 5*GeV
-
-insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudellbarqqbar
-insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudellbarqqbarg
-insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudellbarqqbargg
-insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudellbarqqbarqqbar
-
-insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudelnuqqbar
-insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudelnuqqbarg
-insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudelnuqqbargg
-insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudelnuqqbarqqbar
-
-insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudehgg
-insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudehggg
-insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudehbbbar
-insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudehbbbarg
-insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudehqqbarg
+cd /Herwig/MatrixElements/Matchbox/Amplitudes
 
 mkdir NLOJet
 cd NLOJet
+
+@LOAD_NLOJET@ HwMatchboxNLOJet.so
 
 @CREATE_NLOJET@ Herwig::NLOJetAmplitudeg4 Amplitudegggg
 @CREATE_NLOJET@ Herwig::NLOJetAmplitudeg5 Amplitudeggggg
@@ -364,16 +240,23 @@ cd NLOJet
 @CREATE_NLOJET@ Herwig::NLOJetAmplitudeq4g2 Amplitudeqqbarqqbargg
 @CREATE_NLOJET@ Herwig::NLOJetAmplitudeq6 Amplitudeqqbarqqbarqqbar
 
-@INSERT_NLOJET@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudegggg
-@INSERT_NLOJET@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeggggg
-@INSERT_NLOJET@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudegggggg
-@INSERT_NLOJET@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqqbargg
-@INSERT_NLOJET@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqqbarggg
-@INSERT_NLOJET@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqqbargggg
-@INSERT_NLOJET@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqqbarqqbar
-@INSERT_NLOJET@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqqbarqqbarg
-@INSERT_NLOJET@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqqbarqqbargg
-@INSERT_NLOJET@ /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqqbarqqbarqqbar
+cd /Herwig/MatrixElements/Matchbox/Amplitudes
+
+@LOAD_NJET@ HwMatchboxNJet.so
+@CREATE_NJET@ Herwig::NJetsAmplitude NJetAmplitude
+
+@LOAD_GOSAM@ HwMatchboxGoSam.so
+@CREATE_GOSAM@ Herwig::GoSamAmplitude GoSamAmplitude
+
+@LOAD_OPENLOOPS@ HwMatchboxOpenLoops.so
+@CREATE_OPENLOOPS@ Herwig::OpenLoopsAmplitude OpenLoopsAmplitude
+
+@LOAD_OPENLOOPS@ HwMatchboxVBFNLO.so
+@CREATE_OPENLOOPS@ Herwig::VBFNLOAmplitude VBFNLOAmplitude
+
+@LOAD_MADGRAPH@ HwMatchboxMadGraph.so
+@CREATE_MADGRAPH@ Herwig::MadGraphAmplitude MadGraphAmplitude
+@SET_MADGRAPH@ MadGraphAmplitude:ColourBasis TraceBasis
 
 ################################################################################
 # Setup utilities for matching
@@ -399,7 +282,7 @@ create Herwig::FlatInvertiblePhasespace InvertiblePhasespace
 set MECorrectionHandler:Phasespace InvertiblePhasespace
 
 create Herwig::DipoleMatching DipoleMatching
-set DipoleMatching:LargeNBasis /Herwig/MatrixElements/Matchbox/Amplitudes/LargeNColourBasis
+set DipoleMatching:LargeNBasis /Herwig/MatrixElements/Matchbox/Amplitudes/Builtin/LargeNColourBasis
 set DipoleMatching:RestrictPhasespace On
 set DipoleMatching:BornScaleInSubtraction BornScale
 set DipoleMatching:RealEmissionScaleInSubtraction BornScale
@@ -409,7 +292,7 @@ set DipoleMatching:FIPtCut 1.0*GeV
 set DipoleMatching:IIPtCut 1.0*GeV
 
 create Herwig::QTildeMatching QTildeMatching HwQTildeMatching.so
-set QTildeMatching:LargeNBasis /Herwig/MatrixElements/Matchbox/Amplitudes/LargeNColourBasis
+set QTildeMatching:LargeNBasis /Herwig/MatrixElements/Matchbox/Amplitudes/Builtin/LargeNColourBasis
 # set this to off, if the shower pt veto is off
 set QTildeMatching:RestrictPhasespace On
 set QTildeMatching:BornScaleInSubtraction BornScale
@@ -435,22 +318,13 @@ insert DiagramGenerator:Vertices 0 /Herwig/Vertices/GGGVertex
 insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFPVertex
 insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFZVertex
 
-insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFWVertex
-
-# comment out the previous, and comment in the next 
-# three lines for a diagonal CKM matrix
-
-# cp /Herwig/Vertices/FFWVertex /Herwig/Vertices/FFWDiagonalVertex
-# set /Herwig/Vertices/FFWDiagonalVertex:Diagonal Yes
-# insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFWDiagonalVertex
+cp /Herwig/Vertices/FFWVertex /Herwig/Vertices/FFWDiagonalVertex
+set /Herwig/Vertices/FFWDiagonalVertex:Diagonal Yes
+insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFWDiagonalVertex
 
 insert DiagramGenerator:Vertices 0 /Herwig/Vertices/WWHVertex
 insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFHVertex
 insert DiagramGenerator:Vertices 0 /Herwig/Vertices/HGGVertex
-
-# for the processes considered so far, we have no internal Higgs lines
-# and need to prevent them from popping up in Z/gamma exchanges as well
-insert DiagramGenerator:ExcludeInternal 0 /Herwig/Particles/h0
 
 create Herwig::ProcessData ProcessData
 
@@ -478,7 +352,7 @@ set TreePhasespace:MC 0.0000001*GeV
 set /Herwig/MatrixElements/Matchbox/Factory:Phasespace TreePhasespace
 
 ################################################################################
-# Setup cuts
+# Setup jet cuts
 ################################################################################
 
 cd /Herwig/Cuts
