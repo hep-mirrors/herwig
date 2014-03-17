@@ -10,12 +10,12 @@
 # Load libraries
 ################################################################################
 
+library JetCuts.so
+library FastJetFinder.so
 library HwMatchbox.so
 library HwMatchboxScales.so
 library HwMatchboxCuts.so
 library HwSampling.so
-library JetCuts.so
-library FastJetFinder.so
 
 ################################################################################
 # Integration/sampling
@@ -343,7 +343,7 @@ set TreePhasespace:MC 0.0000001*GeV
 set /Herwig/MatrixElements/Matchbox/Factory:Phasespace TreePhasespace
 
 ################################################################################
-# Setup cuts
+# Setup jet cuts
 ################################################################################
 
 cd /Herwig/Cuts
