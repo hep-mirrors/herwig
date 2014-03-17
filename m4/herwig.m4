@@ -482,10 +482,12 @@ if test "x$have_madgraph" = "xyes"  ; then
      	LOAD_MADGRAPH="library"
      	CREATE_MADGRAPH="create"
      	INSERT_MADGRAPH="insert"
+     	SET_MADGRAPH="set"
 else
      	LOAD_MADGRAPH="# library"
 	CREATE_MADGRAPH="# create"
      	INSERT_MADGRAPH="# insert"
+     	SET_MADGRAPH="# set"
 fi
 
 AC_SUBST([LOAD_MADGRAPH])

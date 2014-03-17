@@ -182,6 +182,7 @@ create ColorFull::TraceBasis TraceBasis
 cp TraceBasis LargeNTraceBasis
 
 mkdir Builtin
+cd Builtin
 
 create Herwig::SimpleColourBasis SimpleColourBasis
 
@@ -253,6 +254,10 @@ cd /Herwig/MatrixElements/Matchbox/Amplitudes
 @LOAD_OPENLOOPS@ HwMatchboxVBFNLO.so
 @CREATE_OPENLOOPS@ Herwig::VBFNLOAmplitude VBFNLOAmplitude
 
+@LOAD_MADGRAPH@ HwMatchboxMadGraph.so
+@CREATE_MADGRAPH@ Herwig::MadGraphAmplitude MadGraphAmplitude
+@SET_MADGRAPH@ set MadGraphAmplitude:ColourBasis TraceBasis
+
 ################################################################################
 # Setup utilities for matching
 ################################################################################
@@ -277,7 +282,7 @@ create Herwig::FlatInvertiblePhasespace InvertiblePhasespace
 set MECorrectionHandler:Phasespace InvertiblePhasespace
 
 create Herwig::DipoleMatching DipoleMatching
-set DipoleMatching:LargeNBasis /Herwig/MatrixElements/Matchbox/Amplitudes/LargeNColourBasis
+set DipoleMatching:LargeNBasis /Herwig/MatrixElements/Matchbox/Amplitudes/Builtin/LargeNColourBasis
 set DipoleMatching:RestrictPhasespace On
 set DipoleMatching:BornScaleInSubtraction BornScale
 set DipoleMatching:RealEmissionScaleInSubtraction BornScale
@@ -287,7 +292,7 @@ set DipoleMatching:FIPtCut 1.0*GeV
 set DipoleMatching:IIPtCut 1.0*GeV
 
 create Herwig::QTildeMatching QTildeMatching HwQTildeMatching.so
-set QTildeMatching:LargeNBasis /Herwig/MatrixElements/Matchbox/Amplitudes/LargeNColourBasis
+set QTildeMatching:LargeNBasis /Herwig/MatrixElements/Matchbox/Amplitudes/Builtin/LargeNColourBasis
 # set this to off, if the shower pt veto is off
 set QTildeMatching:RestrictPhasespace On
 set QTildeMatching:BornScaleInSubtraction BornScale
