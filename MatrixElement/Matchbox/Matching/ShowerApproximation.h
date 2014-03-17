@@ -15,6 +15,7 @@
 #include "ThePEG/Handlers/HandlerBase.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "Herwig++/MatrixElement/Matchbox/Dipoles/SubtractionDipole.fh"
+#include "Herwig++/MatrixElement/Matchbox/Utility/ColourBasis.h"
 
 namespace Herwig {
 
@@ -389,6 +390,19 @@ public:
 
 // If needed, insert declarations of virtual function defined in the
 // InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
+
+protected:
+
+  /**
+   * True, if the shower kernels should be reproduced.
+   */
+  bool theShowerKernels;
+
+  /**
+   * A large-N colour basis to be used when reproducing the shower
+   * kernels.
+   */
+  Ptr<ColourBasis>::ptr theLargeNBasis;
 
 private:
 

@@ -28,7 +28,8 @@
 using namespace Herwig;
 
 ShowerApproximation::ShowerApproximation() 
-  : HandlerBase(), theBelowCutoff(false),
+  : HandlerBase(), theShowerKernels(true),
+    theBelowCutoff(false),
     theFFPtCut(1.0*GeV), theFFScreeningScale(ZERO),
     theFIPtCut(1.0*GeV), theFIScreeningScale(ZERO),
     theIIPtCut(1.0*GeV), theIIScreeningScale(ZERO),
@@ -278,7 +279,8 @@ double ShowerApproximation::scaleWeight(int rScale, int bScale, int eScale) cons
 
 
 void ShowerApproximation::persistentOutput(PersistentOStream & os) const {
-  os << theBornXComb << theRealXComb << theTildeXCombs << theDipole << theBelowCutoff
+  os << theShowerKernels << theLargeNBasis
+     << theBornXComb << theRealXComb << theTildeXCombs << theDipole << theBelowCutoff
      << ounit(theFFPtCut,GeV) << ounit(theFFScreeningScale,GeV) 
      << ounit(theFIPtCut,GeV) << ounit(theFIScreeningScale,GeV) 
      << ounit(theIIPtCut,GeV) << ounit(theIIScreeningScale,GeV) 
@@ -294,7 +296,8 @@ void ShowerApproximation::persistentOutput(PersistentOStream & os) const {
 }
 
 void ShowerApproximation::persistentInput(PersistentIStream & is, int) {
-  is >> theBornXComb >> theRealXComb >> theTildeXCombs >> theDipole >> theBelowCutoff
+  is >> theShowerKernels >> theLargeNBasis
+     >> theBornXComb >> theRealXComb >> theTildeXCombs >> theDipole >> theBelowCutoff
      >> iunit(theFFPtCut,GeV) >> iunit(theFFScreeningScale,GeV) 
      >> iunit(theFIPtCut,GeV) >> iunit(theFIScreeningScale,GeV) 
      >> iunit(theIIPtCut,GeV) >> iunit(theIIScreeningScale,GeV) 
@@ -551,6 +554,26 @@ void ShowerApproximation::Init() {
      "The rho parameter of the profile scales.",
      &ShowerApproximation::theProfileRho, 0.3, 0.0, 1.0,
      false, false, Interface::limited);
+
+  static Reference<ShowerApproximation,ColourBasis> interfaceLargeNBasis
+    ("LargeNBasis",
+     "Set the large-N colour basis implementation.",
+     &ShowerApproximation::theLargeNBasis, false, false, true, true, false);
+
+  static Switch<ShowerApproximation,bool> interfaceShowerKernels
+    ("ShowerKernels",
+     "Switch between exact and shower approximated dipole functions.",
+     &ShowerApproximation::theShowerKernels, true, false, false);
+  static SwitchOption interfaceShowerKernelsOn
+    (interfaceShowerKernels,
+     "On",
+     "Switch to shower approximated dipole functions.",
+     true);
+  static SwitchOption interfaceShowerKernelsOff
+    (interfaceShowerKernels,
+     "Off",
+     "Switch to full dipole functions.",
+     false);
 
 }
 

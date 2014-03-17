@@ -133,7 +133,9 @@ CrossSection QTildeMatching::dSigHatDR() const {
   pair<int,int> ij(dipole()->bornEmitter(),
 		   dipole()->bornSpectator());
   double ccme2 = 
-    dipole()->underlyingBornME()->largeNColourCorrelatedME2(ij,theLargeNBasis);
+    theShowerKernels ?
+    dipole()->underlyingBornME()->largeNColourCorrelatedME2(ij,theLargeNBasis) :
+    dipole()->underlyingBornME()->colourCorrelatedME2(ij);
 
   Energy2 prop = ZERO;
   if ( dipole()->bornEmitter() > 1 ) {
@@ -276,11 +278,11 @@ double QTildeMatching::splitFn(const pair<Energy2,double>& vars) const {
 
 
 void QTildeMatching::persistentOutput(PersistentOStream & os) const {
-  os << theLargeNBasis << theQTildeFinder << theQTildeSudakov;
+  os << theQTildeFinder << theQTildeSudakov;
 }
 
 void QTildeMatching::persistentInput(PersistentIStream & is, int) {
-  is >> theLargeNBasis >> theQTildeFinder >> theQTildeSudakov;
+  is >> theQTildeFinder >> theQTildeSudakov;
 }
 
 
@@ -296,11 +298,6 @@ void QTildeMatching::Init() {
 
   static ClassDocumentation<QTildeMatching> documentation
     ("QTildeMatching implements NLO matching with the default shower.");
-
-  static Reference<QTildeMatching,ColourBasis> interfaceLargeNBasis
-    ("LargeNBasis",
-     "Set the large-N colour basis implementation.",
-     &QTildeMatching::theLargeNBasis, false, false, true, true, false);
 
   static Reference<QTildeMatching,QTildeFinder> interfaceQTildeFinder
     ("QTildeFinder",
