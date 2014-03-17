@@ -1,2 +1,2 @@
 SUBDIRS = \
-Amplitudes
+Amplitudes MadgraphAmplitudes

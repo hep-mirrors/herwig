@@ -44,9 +44,11 @@ bool FIMqgxDipole::canHandle(const cPDVector& partons,
   return
     emitter > 1 && spectator < 2 &&
     partons[emission]->id() == ParticleID::g &&
-    abs(partons[emitter]->id()) < 6 &&
+    abs(partons[emitter]->id()) < 7 &&
     !(partons[emitter]->mass() == ZERO &&
-      partons[spectator]->mass() == ZERO);
+      partons[spectator]->mass() == ZERO)&&
+    (partons[emitter]->iColour()==partons[spectator]->iColour() ||
+     partons[spectator]->iColour()==8);
 }
 
 double FIMqgxDipole::me2Avg(double ccme2) const {

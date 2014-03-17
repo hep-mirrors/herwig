@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// IFMgqxDipole.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// FIqgxDipole.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
@@ -8,10 +8,10 @@
 //
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the IFgqxDipole class.
+// functions of the FIMsqgxDipole class.
 //
 
-#include "IFMgqxDipole.h"
+#include "FIMsqgxDipole.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
@@ -21,51 +21,60 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 #include "Herwig++/MatrixElement/Matchbox/Base/DipoleRepository.h"
-#include "Herwig++/MatrixElement/Matchbox/Phasespace/IFLightTildeKinematics.h"
-#include "Herwig++/MatrixElement/Matchbox/Phasespace/IFLightInvertedTildeKinematics.h"
+#include "Herwig++/MatrixElement/Matchbox/Phasespace/FIMassiveTildeKinematics.h"
+#include "Herwig++/MatrixElement/Matchbox/Phasespace/FIMassiveInvertedTildeKinematics.h"
 
 using namespace Herwig;
 
-IFMgqxDipole::IFMgqxDipole() 
+FIMsqgxDipole::FIMsqgxDipole() 
   : SubtractionDipole() {}
 
-IFMgqxDipole::~IFMgqxDipole() {}
+FIMsqgxDipole::~FIMsqgxDipole() {}
 
-IBPtr IFMgqxDipole::clone() const {
+IBPtr FIMsqgxDipole::clone() const {
   return new_ptr(*this);
 }
 
-IBPtr IFMgqxDipole::fullclone() const {
+IBPtr FIMsqgxDipole::fullclone() const {
   return new_ptr(*this);
 }
 
-bool IFMgqxDipole::canHandle(const cPDVector& partons,
+bool FIMsqgxDipole::canHandle(const cPDVector& partons,
 			    int emitter, int emission, int spectator) const {
   return
-    emitter < 2 && spectator > 1 &&
-    partons[emitter]->id() == ParticleID::g &&
-    abs(partons[emission]->id()) < 6 &&
-    !(partons[emission]->mass() == ZERO &&
-      partons[spectator]->mass() == ZERO)&& 
-    (partons[emission ]->iColour()== partons[spectator]->iColour());
+    emitter > 1 && spectator < 2 &&
+    partons[emission]->id() == ParticleID::g &&
+    ((abs(partons[emitter]->id())> 1000000 && abs(partons[emitter]->id())< 1000007) ||
+     (abs(partons[emitter]->id())> 2000000 && abs(partons[emitter]->id())< 2000007)) &&
+    !(partons[emitter]->mass() == ZERO &&
+      partons[spectator]->mass() == ZERO) &&
+    (partons[emitter]->iColour()==partons[spectator]->iColour() ||
+     partons[spectator]->iColour()==8);
+
+
 }
 
-double IFMgqxDipole::me2Avg(double ccme2) const {
-
+double FIMsqgxDipole::me2Avg(double ccme2) const {
   if ( jacobian() == 0.0 )
     return 0.0;
 
   double x = subtractionParameters()[0];
+  double z = subtractionParameters()[1];
 
   Energy2 prop = 
     2.*((realEmissionME()->lastXComb().meMomenta()[realEmitter()])*
 	(realEmissionME()->lastXComb().meMomenta()[realEmission()]))*x;
 
+  double CF = (SM().Nc()*SM().Nc()-1.)/(2.*SM().Nc());
+
+  // extra mass terms cancel
   double res =
-    8.*Constants::pi*(realEmissionME()->lastXComb().lastSHat())*
+    8.*Constants::pi*CF*(realEmissionME()->lastXComb().lastSHat())*
     (underlyingBornME()->lastXComb().lastAlphaS())/prop;
 
-  res *= .5 * ( 1.-2.*x*(1.-x) );
+  // NOTE: extra term taken from FIqgxDipole implementation
+  res *= ( 2./(1.-z+(1.-x)) - 2. +(1.-x)*(1.+3.*x*z) -
+  	   sqr(realEmissionME()->lastXComb().mePartonData()[realEmission()]->mass()) / prop * 2.*x);
 
   res *= -ccme2;
 
@@ -77,26 +86,33 @@ double IFMgqxDipole::me2Avg(double ccme2) const {
     realEmissionME()->finalStateSymmetry() /
     underlyingBornME()->finalStateSymmetry();
 
+  lastME2(res);
+
   return res;
 
 }
 
-double IFMgqxDipole::me2() const {
-
+double FIMsqgxDipole::me2() const {
   if ( jacobian() == 0.0 )
     return 0.0;
 
   double x = subtractionParameters()[0];
+  double z = subtractionParameters()[1];
 
   Energy2 prop = 
     2.*((realEmissionME()->lastXComb().meMomenta()[realEmitter()])*
 	(realEmissionME()->lastXComb().meMomenta()[realEmission()]))*x;
 
+  double CF = (SM().Nc()*SM().Nc()-1.)/(2.*SM().Nc());
+
+  // extra mass terms cancel
   double res =
-    8.*Constants::pi*(realEmissionME()->lastXComb().lastSHat())*
+    8.*Constants::pi*CF*(realEmissionME()->lastXComb().lastSHat())*
     (underlyingBornME()->lastXComb().lastAlphaS())/prop;
 
-  res *= .5 * ( 1.-2.*x*(1.-x) );
+  // NOTE: extra term taken from FIqgxDipole implementation
+  res *= ( 2./(1.-z+(1.-x)) -2. +(1.-x)*(1.+3.*x*z) -
+  	   sqr(realEmissionME()->lastXComb().mePartonData()[realEmission()]->mass()) / prop * 2.*x);
 
   res *= -underlyingBornME()->colourCorrelatedME2(make_pair(bornEmitter(),bornSpectator()));
 
@@ -112,19 +128,19 @@ double IFMgqxDipole::me2() const {
 
 }
 
-void IFMgqxDipole::persistentOutput(PersistentOStream &) const {
+void FIMsqgxDipole::persistentOutput(PersistentOStream &) const {
 }
 
-void IFMgqxDipole::persistentInput(PersistentIStream &, int) {
+void FIMsqgxDipole::persistentInput(PersistentIStream &, int) {
 }
 
-void IFMgqxDipole::Init() {
+void FIMsqgxDipole::Init() {
 
-  static ClassDocumentation<IFMgqxDipole> documentation
-    ("IFMgqxDipole");
+  static ClassDocumentation<FIMsqgxDipole> documentation
+    ("FIMsqgxDipole");
 
-  DipoleRepository::registerDipole<0,IFMgqxDipole,IFLightTildeKinematics,IFLightInvertedTildeKinematics>
-    ("IFMgqxDipole","IFLightTildeKinematics","IFLightInvertedTildeKinematics");
+  DipoleRepository::registerDipole<0,FIMsqgxDipole,FIMassiveTildeKinematics,FIMassiveInvertedTildeKinematics>
+    ("FIMsqgxDipole","FIMassiveTildeKinematics","FIMassiveInvertedTildeKinematics");
 
 }
 
@@ -133,5 +149,5 @@ void IFMgqxDipole::Init() {
 // are correct (the class and its base class), and that the constructor
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
-DescribeClass<IFMgqxDipole,SubtractionDipole>
-describeHerwigIFMgqxDipole("Herwig::IFMgqxDipole", "HwMatchbox.so");
+DescribeClass<FIMsqgxDipole,SubtractionDipole>
+describeHerwigFIMsqgxDipole("Herwig::FIMsqgxDipole", "HwMatchbox.so");

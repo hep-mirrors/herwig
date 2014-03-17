@@ -35,10 +35,14 @@ FFMggxDipole.cc \
 FFMggxDipole.h \
 FFMqgxDipole.cc \
 FFMqgxDipole.h \
+FFMsqgxDipole.cc \
+FFMsqgxDipole.h \
 FFMqqxDipole.cc \
 FFMqqxDipole.h \
 FIMqgxDipole.cc \
 FIMqgxDipole.h \
+FIMsqgxDipole.cc \
+FIMsqgxDipole.h \
 FIMqqxDipole.cc \
 FIMqqxDipole.h \
 IFMggxDipole.cc \
