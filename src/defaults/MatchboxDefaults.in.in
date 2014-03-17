@@ -16,6 +16,7 @@ library HwMatchbox.so
 library HwMatchboxScales.so
 library HwMatchboxCuts.so
 library HwSampling.so
+library HwColorFull.so
 
 ################################################################################
 # Integration/sampling
@@ -176,6 +177,9 @@ do Factory:EndParticleGroup
 cd /Herwig/MatrixElements/Matchbox
 mkdir Amplitudes
 cd Amplitudes
+
+create ColorFull::TraceBasis TraceBasis
+cp TraceBasis LargeNTraceBasis
 
 mkdir Builtin
 
