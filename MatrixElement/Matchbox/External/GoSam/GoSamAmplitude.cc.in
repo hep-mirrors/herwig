@@ -57,10 +57,6 @@ void GoSamAmplitude::signOLP(const string& order, const string& contract) {
 	if(!theCodeExists){
 	  string cmd = "@GOSAMPREFIX@/bin/gosam.py --olp  -o " + contract + "  --config=../setup.in  " + order;
 	  std::system(cmd.c_str());
-	  if (gosamInstallPath!=""){
-	    cmd = "cp "+ contract +" "+ order+" "+gosamInstallPath+"/";
-	    std::system(cmd.c_str());
-	  }
 	}
 }
 
@@ -79,10 +75,14 @@ bool GoSamAmplitude::buildGoSam() {
 }
 
 void GoSamAmplitude::startOLP(const string& contract, int& status) {
-	string tempcontract=contract;
-	if (gosamInstallPath==""){if ( !( DynamicLoader::load("lib/libgolem_olp.so") || DynamicLoader::load("lib64/libgolem_olp.so") ) ) assert(0);}
-	else {if ( !( DynamicLoader::load(gosamInstallPath+"/lib/libgolem_olp.so") || DynamicLoader::load(gosamInstallPath+"/lib64/libgolem_olp.so") ) ) assert(0);
-		tempcontract=gosamInstallPath+"/"+tempcontract;}
+	string tempcontract = contract;
+	if (gosamInstallPath==""){
+	  if ( !( DynamicLoader::load("lib/libgolem_olp.so") || DynamicLoader::load("lib64/libgolem_olp.so") ) ) assert(0);
+	}
+	else {
+	  if ( !( DynamicLoader::load(gosamInstallPath+"/lib/libgolem_olp.so") || DynamicLoader::load(gosamInstallPath+"/lib64/libgolem_olp.so") ) ) assert(0);
+		tempcontract = gosamInstallPath + "/" + tempcontract;
+	}
 
 	OLP_Start(tempcontract.c_str(), &status);
 
@@ -163,8 +163,33 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
 
 }
 
-void GoSamAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs) {
-	string orderFileName = name() + ".OLPOrder.lh";
+void GoSamAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs, string orderFileName) {
+
+  for ( map<pair<Process, int>, int>::const_iterator p = procs.begin() ; p != procs.end() ; ++p ) {
+    std::stringstream Processstr;
+    std::stringstream Typestr;
+    Processstr << (*p).first.first.legs[0]->id() << " " << (*p).first.first.legs[1]->id() << " -> ";
+    for ( PDVector::const_iterator o = (*p).first.first.legs.begin() + 2 ; o != (*p).first.first.legs.end() ; ++o )
+      Processstr << (**o).id() << " ";
+    if ( (*p).first.second == ProcessType::treeME2 ) {
+      Typestr << "Tree";
+    } else if ( (*p).first.second == ProcessType::colourCorrelatedME2 ) {
+      Typestr << "ccTree";
+    } else if ( (*p).first.second == ProcessType::spinColourCorrelatedME2 ) {
+      Typestr << "scTree";
+    } else if ( (*p).first.second == ProcessType::oneLoopInterference ) {
+      Typestr << "Loop";
+    }
+    gosamprocinfo pro = gosamprocinfo((*p).second, -1, Processstr.str(), Typestr.str());
+    pro.setOAs(p->first.first.orderInAlphaS);
+    processmap[(*p).second] = pro;
+  }
+
+  ifstream oldOrderFileStream(orderFileName.c_str());
+  if (oldOrderFileStream){
+    oldOrderFileStream.close();
+    return;
+  }
 	ofstream orderFile(orderFileName.c_str());
 	int asPower = 100;
 	int minlegs = 100;
@@ -191,26 +216,6 @@ void GoSamAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs) {
     }
 	orderFile << "\n";
 
-	for ( map<pair<Process, int>, int>::const_iterator p = procs.begin() ; p != procs.end() ; ++p ) {
-	  std::stringstream Processstr;
-	  std::stringstream Typestr;
-	  Processstr << (*p).first.first.legs[0]->id() << " " << (*p).first.first.legs[1]->id() << " -> ";
-	  for ( PDVector::const_iterator o = (*p).first.first.legs.begin() + 2 ; o != (*p).first.first.legs.end() ; ++o )
-	    Processstr << (**o).id() << " ";
-	  if ( (*p).first.second == ProcessType::treeME2 ) {
-	    Typestr << "Tree";
-	  } else if ( (*p).first.second == ProcessType::colourCorrelatedME2 ) {
-	    Typestr << "ccTree";
-	  } else if ( (*p).first.second == ProcessType::spinColourCorrelatedME2 ) {
-	    Typestr << "scTree";
-	  } else if ( (*p).first.second == ProcessType::oneLoopInterference ) {
-	    Typestr << "Loop";
-	  }
-	  gosamprocinfo pro = gosamprocinfo((*p).second, -1, Processstr.str(), Typestr.str());
-	  pro.setOAs(p->first.first.orderInAlphaS);
-	  processmap[(*p).second] = pro;
-	}
-
 	vector < string > types;
 	types.push_back("Tree");
 	types.push_back("ccTree");
@@ -234,9 +239,7 @@ void GoSamAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs) {
 
 }
 
-bool GoSamAmplitude::checkOLPContract() {
-	string contractFileName = name() + ".OLPContract.lh";
-        if(theCodeExists && gosamInstallPath!="")contractFileName=gosamInstallPath+"/"+contractFileName;
+bool GoSamAmplitude::checkOLPContract(string contractFileName) {
 	ifstream infile(contractFileName.c_str());
 	string line;
 	vector < string > contractfile;
@@ -301,16 +304,21 @@ void GoSamAmplitude::getids() const{
 
 bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
 	cout << "\nWriting the olp-order file." << flush;
-	string contractFileName = name() + ".OLPContract.lh";
-	string orderFileName = name() + ".OLPOrder.lh";
-	fillOrderFile(procs);
+	if(gosamInstallPath != ""){
+	  string cmd = "mkdir " + gosamInstallPath;
+	  std::system(cmd.c_str());
+	}
+	string contractFileTitle = name() + ".OLPContract.lh";
+	string contractFileName = gosamInstallPath == "" ? contractFileTitle : gosamInstallPath + "/" + contractFileTitle;
+	string orderFileName = gosamInstallPath == "" ? name() + ".OLPOrder.lh" : gosamInstallPath + "/" + name() + ".OLPOrder.lh";
+	fillOrderFile(procs, orderFileName);
 	ifstream ifile(contractFileName.c_str());
-    if( !ifile){
-	cout << "\nGoSam: Sign the order file." << flush;
-	signOLP(orderFileName, contractFileName);
+  if(!ifile){
+    cout << "\nGoSam: Sign the order file." << flush;
+    signOLP(orderFileName, contractFileName);
 	}
 	
-	if ( !checkOLPContract() ) {
+	if ( !checkOLPContract(contractFileName) ) {
 	  cout << "\n\n!!!!!!!!!!!!!Checking the olp-contract failed!!!!!!!!!!!\n\n" << flush;
 	  assert(0);
 	} else cout << "\nChecked the olp-contract! Everything is OK! Let's build!\n" << flush;
@@ -322,7 +330,7 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
 	}
 	
 	int status = -1;
-	startOLP(contractFileName, status);
+	startOLP(contractFileTitle, status);
 
 	if ( status != 1 ) return false;
 
@@ -445,11 +453,11 @@ string GoSamAmplitude::doMassiveParticles(string in) {
 
 
 void GoSamAmplitude::persistentOutput(PersistentOStream & os) const {
-	os << idpair << theCodeExists << theMassiveParticles << thePrintParameter;
+	os << idpair << theCodeExists << theMassiveParticles << thePrintParameter << gosamInstallPath;
 }
 
 void GoSamAmplitude::persistentInput(PersistentIStream & is, int) {
-	is >> idpair >> theCodeExists >> theMassiveParticles >> thePrintParameter;
+	is >> idpair >> theCodeExists >> theMassiveParticles >> thePrintParameter >> gosamInstallPath;
 }
 
 // *** Attention *** The following static variable is needed for the type

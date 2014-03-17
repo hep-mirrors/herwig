@@ -74,7 +74,7 @@ public:
 
 public:
 
-  virtual void fillOrderFile(const map<pair<Process,int>,int>& procs);
+  virtual void fillOrderFile(const map<pair<Process,int>,int>& procs, string OrderFileName);
   
   virtual bool isCS() const { return false; }
   virtual bool isExpanded() const { return true; }
@@ -88,7 +88,7 @@ public:
    */
   virtual void signOLP(const string&, const string&);
 
-  virtual bool checkOLPContract();
+  virtual bool checkOLPContract(string contractFileName);
 
   /**
    * Return true, if this amplitude already includes symmetry factors
