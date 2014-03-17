@@ -256,7 +256,7 @@ cd /Herwig/MatrixElements/Matchbox/Amplitudes
 
 @LOAD_MADGRAPH@ HwMatchboxMadGraph.so
 @CREATE_MADGRAPH@ Herwig::MadGraphAmplitude MadGraphAmplitude
-@SET_MADGRAPH@ set MadGraphAmplitude:ColourBasis TraceBasis
+@SET_MADGRAPH@ MadGraphAmplitude:ColourBasis TraceBasis
 
 ################################################################################
 # Setup utilities for matching
