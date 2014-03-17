@@ -14,6 +14,7 @@
 #include "ShowerApproximation.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
+#include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
