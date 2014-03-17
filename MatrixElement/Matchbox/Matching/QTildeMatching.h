@@ -13,7 +13,6 @@
 //
 
 #include "Herwig++/MatrixElement/Matchbox/Matching/ShowerApproximation.h"
-#include "Herwig++/MatrixElement/Matchbox/Utility/ColourBasis.h"
 #include "Herwig++/Shower/Default/QTildeFinder.h"
 #include "Herwig++/Shower/Default/QTildeSudakov.h"
 
@@ -153,12 +152,6 @@ private:
    * In fact, it should not even be implemented.
    */
   QTildeMatching & operator=(const QTildeMatching &);
-
-  /**
-   * A large-N colour basis to be used when reproducing the shower
-   * kernels.
-   */
-  Ptr<ColourBasis>::ptr theLargeNBasis;
 
   /**
    * The qtilde partner finder for calculating the hard scales

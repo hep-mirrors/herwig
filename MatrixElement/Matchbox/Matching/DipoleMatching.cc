@@ -28,8 +28,7 @@
 
 using namespace Herwig;
 
-DipoleMatching::DipoleMatching() 
-  : theShowerKernels(true) {}
+DipoleMatching::DipoleMatching() {}
 
 DipoleMatching::~DipoleMatching() {}
 
@@ -85,13 +84,9 @@ double DipoleMatching::me2() const {
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 
-void DipoleMatching::persistentOutput(PersistentOStream & os) const {
-  os << theShowerKernels << theLargeNBasis;
-}
+void DipoleMatching::persistentOutput(PersistentOStream &) const {}
 
-void DipoleMatching::persistentInput(PersistentIStream & is, int) {
-  is >> theShowerKernels >> theLargeNBasis;
-}
+void DipoleMatching::persistentInput(PersistentIStream &, int) {}
 
 
 // *** Attention *** The following static variable is needed for the type
@@ -106,27 +101,6 @@ void DipoleMatching::Init() {
 
   static ClassDocumentation<DipoleMatching> documentation
     ("DipoleMatching implements NLO matching with the dipole shower.");
-
-  static Reference<DipoleMatching,ColourBasis> interfaceLargeNBasis
-    ("LargeNBasis",
-     "Set the large-N colour basis implementation.",
-     &DipoleMatching::theLargeNBasis, false, false, true, true, false);
-
-
-  static Switch<DipoleMatching,bool> interfaceShowerKernels
-    ("ShowerKernels",
-     "Switch between exact and shower approximated dipole functions.",
-     &DipoleMatching::theShowerKernels, true, false, false);
-  static SwitchOption interfaceShowerKernelsOn
-    (interfaceShowerKernels,
-     "On",
-     "Switch to shower approximated dipole functions.",
-     true);
-  static SwitchOption interfaceShowerKernelsOff
-    (interfaceShowerKernels,
-     "Off",
-     "Switch to full dipole functions.",
-     false);
 
 }
 
