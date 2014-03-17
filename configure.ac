@@ -209,8 +209,6 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/Matchbox/ColorFull/Makefile
                 MatrixElement/Matchbox/Builtin/Makefile
                 MatrixElement/Matchbox/Builtin/Amplitudes/Makefile
-		MatrixElement/Matchbox/Builtin/MadgraphAmplitudes/Makefile
-                MatrixElement/Matchbox/Builtin/MadgraphAmplitudes/topNLO/Makefile
                 MatrixElement/Matchbox/Tests/Makefile
                 MatrixElement/Matchbox/External/Makefile
                 MatrixElement/Matchbox/External/BLHAGeneric/Makefile

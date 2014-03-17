@@ -49,6 +49,12 @@ ShowerApproximation::ShowerApproximation()
 
 ShowerApproximation::~ShowerApproximation() {}
 
+void ShowerApproximation::setLargeNBasis() {
+  if ( theShowerKernels ) {
+    
+  }
+}
+
 void ShowerApproximation::setDipole(Ptr<SubtractionDipole>::tcptr dip) { theDipole = dip; }
 
 Ptr<SubtractionDipole>::tcptr ShowerApproximation::dipole() const { return theDipole; }

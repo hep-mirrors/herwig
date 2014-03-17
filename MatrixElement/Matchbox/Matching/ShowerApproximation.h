@@ -404,6 +404,11 @@ protected:
    */
   Ptr<ColourBasis>::ptr theLargeNBasis;
 
+  /**
+   * Set the large-N basis
+   */
+  void setLargeNBasis();
+
 private:
 
   /**
