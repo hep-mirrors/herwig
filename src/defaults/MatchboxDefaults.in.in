@@ -248,8 +248,8 @@ cd /Herwig/MatrixElements/Matchbox/Amplitudes
 @LOAD_OPENLOOPS@ HwMatchboxOpenLoops.so
 @CREATE_OPENLOOPS@ Herwig::OpenLoopsAmplitude OpenLoopsAmplitude
 
-@LOAD_OPENLOOPS@ HwMatchboxVBFNLO.so
-@CREATE_OPENLOOPS@ Herwig::VBFNLOAmplitude VBFNLOAmplitude
+@LOAD_VBFNLO@ HwMatchboxVBFNLO.so
+@CREATE_VBFNLO@ Herwig::VBFNLOAmplitude VBFNLOAmplitude
 
 @LOAD_MADGRAPH@ HwMatchboxMadGraph.so
 @CREATE_MADGRAPH@ Herwig::MadGraphAmplitude MadGraphAmplitude
