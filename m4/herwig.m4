@@ -75,6 +75,22 @@ if test "${host_cpu}" == "x86_64" -a -e ${with_thepeg}/lib64/ThePEG/libThePEG.so
       THEPEGHASLHAPDF="yes"
   fi
 fi
+
+THEPEGHASFASTJET="no"
+if test -e ${with_thepeg}/lib/ThePEG/FastJetFinder.so ; then
+   THEPEGHASFASTJET="yes"
+fi
+if test "${host_cpu}" == "x86_64" -a -e ${with_thepeg}/lib64/ThePEG/libThePEG.so ; then
+  THEPEGLDFLAGS="-L${with_thepeg}/lib64/ThePEG"
+  if test -e ${with_thepeg}/lib64/ThePEG/FastJetFinder.so ; then
+      THEPEGHASFASTJET="yes"
+  fi
+fi
+
+if test "x$THEPEGHASFASTJET" == "xno" ; then
+   AC_MSG_ERROR([Herwig++ requires ThePEG to be build with FastJet.])
+fi
+
 THEPEGPATH="${with_thepeg}"
 
 oldldflags="$LDFLAGS"
