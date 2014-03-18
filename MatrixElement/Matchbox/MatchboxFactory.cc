@@ -541,7 +541,7 @@ void MatchboxFactory::setup() {
   theSplittingDipoles.clear();
   set<cPDVector> bornProcs;
   if ( showerApproximation() && !virtualContributions() && !realContributions() ) {
-    generator()->log() << "Warning: Matching requested for LO run.\n" << flush;
+    generator()->log() << "Warning: Matching requested for LO run. Matching disabled.\n" << flush;
     showerApproximation(Ptr<ShowerApproximation>::tptr());
   }
   if ( showerApproximation() ) {
