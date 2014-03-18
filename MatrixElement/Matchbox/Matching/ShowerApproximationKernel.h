@@ -17,7 +17,7 @@
 #include "Herwig++/MatrixElement/Matchbox/Matching/ShowerApproximation.h"
 #include "Herwig++/MatrixElement/Matchbox/Phasespace/InvertedTildeKinematics.h"
 #include "Herwig++/MatrixElement/Matchbox/Dipoles/SubtractionDipole.h"
-#include "Herwig++/Exsample2/exsample/exponential_generator.h"
+#include "Herwig++/Sampling/exsample/exponential_generator.h"
 
 namespace Herwig {
 
