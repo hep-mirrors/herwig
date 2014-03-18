@@ -171,6 +171,13 @@ set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleFactor 1.0
 set /Herwig/Shower/AlphaQCD:RenormalizationScaleFactor 1.0
 set /Herwig/Shower/Evolver:HardScaleFactor 1.0
 
+#==================================================================================
+#                     :::::SAMPLER:::::
+#==================================================================================
+
+
+set /Herwig/EventHandlers/DISHandler:Weighted Off
+set /Herwig/EventHandlers/DISHandler:Sampler  /Herwig/Samplers/Sampler
 
 
 #==================================================================================
