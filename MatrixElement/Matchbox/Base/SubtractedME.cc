@@ -228,7 +228,7 @@ void SubtractedME::getDipoles() {
       (**d).doTestSubtraction();
   }
 
-  if ( genDipoles.empty() ) {
+  if ( genDipoles.empty() && factory()->initVerbose() ) {
     // probably finite real contribution, but warn
     generator()->log() << "\nWarning: No subtraction dipoles could be found for the process:\n";
     generator()->log() << real->subProcess().legs[0]->PDGName() << " " 
