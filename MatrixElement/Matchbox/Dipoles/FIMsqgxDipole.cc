@@ -46,8 +46,8 @@ bool FIMsqgxDipole::canHandle(const cPDVector& partons,
     partons[emission]->id() == ParticleID::g &&
     ((abs(partons[emitter]->id())> 1000000 && abs(partons[emitter]->id())< 1000007) ||
      (abs(partons[emitter]->id())> 2000000 && abs(partons[emitter]->id())< 2000007)) &&
-    !(partons[emitter]->mass() == ZERO &&
-      partons[spectator]->mass() == ZERO);
+    partons[emitter]->mass() != ZERO &&
+    partons[spectator]->mass() == ZERO;
 }
 
 double FIMsqgxDipole::me2Avg(double ccme2) const {
@@ -68,9 +68,8 @@ double FIMsqgxDipole::me2Avg(double ccme2) const {
     8.*Constants::pi*CF*(realEmissionME()->lastXComb().lastSHat())*
     (underlyingBornME()->lastXComb().lastAlphaS())/prop;
 
-  // NOTE: extra term taken from FIqgxDipole implementation
-  res *= ( 2./(1.-z+(1.-x)) - 2. +(1.-x)*(1.+3.*x*z) -
-  	   sqr(realEmissionME()->lastXComb().mePartonData()[realEmission()]->mass()) / prop * 2.*x);
+  res *= ( 2./(1.-z+(1.-x)) - 2. -
+  	   sqr(realEmissionME()->lastXComb().mePartonData()[realEmitter()]->mass()) / prop * 2.*x);
 
   res *= -ccme2;
 
@@ -106,9 +105,8 @@ double FIMsqgxDipole::me2() const {
     8.*Constants::pi*CF*(realEmissionME()->lastXComb().lastSHat())*
     (underlyingBornME()->lastXComb().lastAlphaS())/prop;
 
-  // NOTE: extra term taken from FIqgxDipole implementation
-  res *= ( 2./(1.-z+(1.-x)) -2. +(1.-x)*(1.+3.*x*z) -
-  	   sqr(realEmissionME()->lastXComb().mePartonData()[realEmission()]->mass()) / prop * 2.*x);
+  res *= ( 2./(1.-z+(1.-x)) -2. -
+  	   sqr(realEmissionME()->lastXComb().mePartonData()[realEmitter()]->mass()) / prop * 2.*x);
 
   res *= -underlyingBornME()->colourCorrelatedME2(make_pair(bornEmitter(),bornSpectator()));
 
