@@ -535,7 +535,11 @@ void MatchboxFactory::setup() {
 
   theSplittingDipoles.clear();
   set<cPDVector> bornProcs;
-  if ( showerApproximation() ) 
+  if ( showerApproximation() && !virtualContributions() && !realContributions() ) {
+    generator()->log() << "Warning: Matching requested for LO run.\n" << flush;
+    showerApproximation(Ptr<ShowerApproximation>::tptr());
+  }
+  if ( showerApproximation() ) {
     if ( showerApproximation()->needsSplittingGenerator() ) {
       for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born
 	      = bornMEs().begin(); born != bornMEs().end(); ++born )
@@ -543,6 +547,7 @@ void MatchboxFactory::setup() {
 	      d != (**born).diagrams().end(); ++d )
 	  bornProcs.insert((**d).partons());
     }
+  }
 
   if ( realContributions() || meCorrectionsOnly() ) {
 
