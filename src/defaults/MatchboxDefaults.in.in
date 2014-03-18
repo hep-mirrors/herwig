@@ -42,7 +42,6 @@ set CellGridSampler:UseAllIterations No
 
 create Herwig::GeneralSampler Sampler
 set Sampler:UpdateAfter 1000
-set Sampler:Verbose On
 
 set Sampler:BinSampler CellGridSampler
 
