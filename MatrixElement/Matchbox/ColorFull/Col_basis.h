@@ -77,7 +77,7 @@ public:
 	bool  is_Tree_level_gluon_basis() const {return tree_level_gluon_basis;}
 
 	/// Returns the number of basis vectors.
-	const uint size() const {return cb.size();}
+	uint size() const {return cb.size();}
 
 	/// Returns the Col_amp (basis vector) at place i.
 	const Col_amp & at( const int i ) const{return cb.at(i);}

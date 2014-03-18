@@ -173,10 +173,10 @@ double TraceBasis::tMatrixElement(size_t m, size_t i, size_t j,
 
   pair<int,int> newNumbers = ABasis.new_vector_numbers(BBasis.cb.at(j).at(0),m);
 
-  if ( newNumbers.first == i )
+  if ( (size_t) newNumbers.first == i )
     return 1.;
 
-  if ( newNumbers.second == i )
+  if ( (size_t) newNumbers.second == i )
     return -1.;
 
   return 0.;
