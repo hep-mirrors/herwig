@@ -180,6 +180,8 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
+  virtual void doinitrun();
+
 
 // If needed, insert declarations of virtual function defined in the
 // InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).

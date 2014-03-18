@@ -142,7 +142,8 @@ cd /Herwig/MatrixElements/Matchbox
 #==================================================================================
 
 
-
+set /Herwig/Cuts/MassCut:MinM 66*GeV
+set /Herwig/Cuts/MassCut:MaxM 116*GeV
 # insert /Herwig/Cuts/JetCuts:JetRegions 0 /Herwig/Cuts/FirstJet
 # insert /Herwig/Cuts/JetCuts:JetRegions 1 /Herwig/Cuts/SecondJet
 # set /Herwig/Cuts/QCDCuts:JetFinder /Herwig/Cuts/JetFinder
