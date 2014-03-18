@@ -16,7 +16,6 @@ Phasespace/libHwMatchboxPhasespace.la \
 Dipoles/libHwMatchboxDipoles.la \
 InsertionOperators/libHwMatchboxInsertionOperators.la \
 Matching/libHwMatchboxMatching.la \
-Builtin/Amplitudes/libHwMatchboxBuiltinAmplitudes.la \
 External/BLHAGeneric/libHwMatchboxExternalBLHAGeneric.la \
 Tests/libHwMatchboxTests.la
 

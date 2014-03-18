@@ -17,6 +17,7 @@ library HwMatchboxScales.so
 library HwMatchboxCuts.so
 library HwSampling.so
 library HwColorFull.so
+library HwMatchboxBuiltin.so
 
 ################################################################################
 # Integration/sampling
