@@ -419,15 +419,16 @@ AC_SUBST([INSERT_GOSAM])
 
 
 
-dnl ##### openloops #####
+dnl ##### OpenLoops #####
 AC_DEFUN([HERWIG_CHECK_OPENLOOPS],
 [
-AC_MSG_CHECKING([for openloops])
+AC_MSG_CHECKING([for OpenLoops])
 
 AC_ARG_WITH([openloops],
-    AS_HELP_STRING([--with-openloops=DIR], [Installation path of openloops]),
+    AS_HELP_STRING([--with-openloops=DIR], [Installation path of OpenLoops]),
     [],
-    [with_openloops=no]
+    [with_openloops=no]    
+
 )
 
 AC_MSG_RESULT([$with_openloops])
@@ -438,32 +439,49 @@ AS_IF([test "x$with_openloops" != "xno"],
       [have_openloops=lib], [have_openloops=no])],
       [have_openloops=no])
 
+AS_IF([test "x$with_openloops" != "xno" -a "x$have_openloops" = "xno" ],
+      [AC_CHECK_FILES(
+      ${with_openloops}/lib64/libopenloops.so,
+      [have_openloops=lib64], [have_openloops=no])])
+
 AS_IF([test "x$have_openloops" = "xlib"],
-      [OPENLOOPSPREFIX=${with_openloops}
-      AC_SUBST(OPENLOOPSPREFIX)
+      [OPENLOOPSLIBS=${with_openloops}/lib
+      AC_SUBST(OPENLOOPSLIBS)
       ])
 
-AS_IF([test "x$with_openloops" != "xno"  -a "x$have_openloops" = "xno"],
-      [AC_MSG_ERROR([openloops requested but not found])])
+AS_IF([test "x$have_openloops" = "xlib64"],
+      [OPENLOOPSLIBS=${with_openloops}/lib64
+      AC_SUBST(OPENLOOPSLIBS)
+      ])
 
-AM_CONDITIONAL(HAVE_OPENLOOPS,[test "x$have_openloops" = "xlib" ])
+AS_IF([test "x$with_openloops" != "xno" -a "x$have_openloops" = "xno"],
+      [AC_MSG_ERROR([OpenLoops requested but not found])])
 
-if test "x$have_openloops" = "xlib"  ; then
+AM_CONDITIONAL(HAVE_OPENLOOPS,[test "x$have_openloops" = "xlib" -o "x$have_openloops" = "xlib64"])
+
+if test "x$have_openloops" = "xlib" -o "x$have_openloops" = "xlib64" ; then
      	LOAD_OPENLOOPS="library"
      	CREATE_OPENLOOPS="create"
      	INSERT_OPENLOOPS="insert"
+     	SET_OPENLOOPS="set"
+     	MKDIR_OPENLOOPS="mkdir"
 else
      	LOAD_OPENLOOPS="# library"
 	CREATE_OPENLOOPS="# create"
      	INSERT_OPENLOOPS="# insert"
+     	SET_OPENLOOPS="# set"
+     	MKDIR_OPENLOOPS="# mkdir"
 fi
 
 AC_SUBST([LOAD_OPENLOOPS])
 AC_SUBST([CREATE_OPENLOOPS])
 AC_SUBST([INSERT_OPENLOOPS])
-
+AC_SUBST([SET_OPENLOOPS])
+AC_SUBST([MKDIR_OPENLOOPS])
 
 ])
+
+#########################################
 
 dnl ##### madgraph #####
 AC_DEFUN([HERWIG_CHECK_MADGRAPH],

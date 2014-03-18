@@ -142,12 +142,12 @@ void OpenLoopsAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs
 		orderFile << "\n\n#AlphasPower            " << i;
 		for ( vector<string>::iterator it = types.begin() ; it != types.end() ; it++ ) {
 			for ( map<int, openloopsprocinfo>::iterator p = processmap.begin() ; p != processmap.end() ; ++p )
-				if ( (*p).second.Tstr() == *it && i == (*p).second.orderAs() ) {
+			  if ( (*p).second.Tstr() == *it && i == (unsigned int) (*p).second.orderAs() ) {
 					orderFile << "\nAmplitudeType " << *it << "\n";
 					break;
 				}
 			for ( map<int, openloopsprocinfo>::iterator p = processmap.begin() ; p != processmap.end() ; ++p )
-				if ( (*p).second.Tstr() == *it && i == (*p).second.orderAs() ) {
+			  if ( (*p).second.Tstr() == *it && i == (unsigned int) (*p).second.orderAs() ) {
 					orderFile << (*p).second.Pstr() << "\n";
 				}
 		}

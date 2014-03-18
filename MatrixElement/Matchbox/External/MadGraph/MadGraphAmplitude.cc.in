@@ -183,7 +183,7 @@ void MadGraphAmplitude::prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr me) {
   p.push_back(mom4);  p.push_back(mom5);  p.push_back(mom6);  p.push_back(mom7);
   p.push_back(mom8);  p.push_back(mom9);  p.push_back(mom10);  p.push_back(mom11);
 
-  for(int j=0;j<mePartonData().size();j++){
+  for(unsigned int j=0;j<mePartonData().size();j++){
     p[j][0] = double(meMomenta()[j].e()/GeV);
     p[j][1] = double(meMomenta()[j].x()/GeV);
     p[j][2] = double(meMomenta()[j].y()/GeV);
@@ -206,7 +206,7 @@ bool equals(  vector<size_t> a,  vector<int> b) {
   if(a.size()!=b.size())return false;
 
   for ( unsigned int k = 0; k < a.size(); ++k ) {
-    if ( a[k] != b[k] )
+    if ( a[k] != (size_t) b[k] )
       return false;
   }
   return true;

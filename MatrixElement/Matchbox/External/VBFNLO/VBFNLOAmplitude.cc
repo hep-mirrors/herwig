@@ -199,7 +199,7 @@ void VBFNLOAmplitude::evalSpinColourCorrelator(pair<int,int>) const {
 
   double units = pow(lastSHat()/GeV2,mePartonData().size()-4.);
   fillOLPMomenta(lastXComb().meMomenta());
-  double scale = sqrt(mu2()/GeV2);
+  // double scale = sqrt(mu2()/GeV2); // not used
 
   int n = lastXComb().meMomenta().size();
   spinColourCorrelatorResults.resize(2*n*n);
