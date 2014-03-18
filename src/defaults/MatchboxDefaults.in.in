@@ -260,7 +260,7 @@ set MECorrectionHandler:ShowerApproximation MEMatching
 create Herwig::FlatInvertiblePhasespace InvertiblePhasespace
 set MECorrectionHandler:Phasespace InvertiblePhasespace
 
-create Herwig::DipoleMatching DipoleMatching
+create Herwig::DipoleMatching DipoleMatching HwDipoleMatching.so
 set DipoleMatching:LargeNBasis /Herwig/MatrixElements/Matchbox/Amplitudes/Builtin/LargeNColourBasis
 set DipoleMatching:RestrictPhasespace On
 set DipoleMatching:BornScaleInSubtraction BornScale

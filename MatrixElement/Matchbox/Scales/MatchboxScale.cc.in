@@ -52,23 +52,21 @@ IBPtr MatchboxScale::fullclone() const {
 string MatchboxScale::doFunction(string in) {
   string cmd = "Makefile";
   ofstream makeFile(cmd.c_str());
-  cmd = "Scale.h";
+  cmd = "Scale.cc";
   ofstream scaleFile(cmd.c_str());
   scaleFile<< "#include Herwig++/MatrixElement/Matchbox/Scales/MatchboxScale.h\n" ;
-  scaleFile<< "namespace Herwig {\n" ;
-  scaleFile<< "using namespace ThePEG;\n" ;
+  scaleFile<< "using namespace Herwig ;\n" ;
   scaleFile<< "Energy2 renScale(vector<Lorentz5Momentum> jet,  vector<Lorentz5Momentum> lepton,  vector<Lorentz5Momentum> boson){\n" ;
   scaleFile<< "return \n"<< in.c_str();
   scaleFile<< ";}\n" ;
-  scaleFile<< "}\n" ;
   scaleFile<< flush ;
 
-  makeFile<< "THEPEG=@THEPEGPATH@                              \n" ;
-  makeFile<< "HERWIG=@prefix@                                  \n" ;
+  makeFile<< "THEPEG=@THEPEGPATH@\n" ;
+  makeFile<< "HERWIG=@prefix@\n" ;
   makeFile<< "INCLUDE=-I $(THEPEG)/include -I $(HERWIG)/include\n" ;
-  makeFile<< "LIBPATH=@THEPEGLDFLAGS@                          \n" ;
+  makeFile<< "LIBPATH=@THEPEGLDFLAGS@\n" ;
   makeFile<< "all:                                             \n" ;
-  makeFile<< "    g++ --shared -g3  -fPIC -o "<<scalePath<<"Scale.so $(INCLUDE) $(LIBPATH) @THEPEGLIB@   Scale.h\n" ;
+  makeFile<< "\tg++ --shared -g3  -fPIC -o "<<scalePath<<"Scale.so $(INCLUDE) $(LIBPATH) @THEPEGLIB@   Scale.cc\n" ;
   makeFile<< flush ;	  
 
 
