@@ -95,7 +95,7 @@ void DipoleMatching::persistentInput(PersistentIStream &, int) {}
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<DipoleMatching,Herwig::ShowerApproximation>
-  describeHerwigDipoleMatching("Herwig::DipoleMatching", "HwMatchbox.so");
+  describeHerwigDipoleMatching("Herwig::DipoleMatching", "HwDipoleMatching.so");
 
 void DipoleMatching::Init() {
 
