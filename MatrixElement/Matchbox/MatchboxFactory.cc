@@ -322,6 +322,11 @@ void MatchboxFactory::setup() {
 	}
       }
     }
+ 
+    if(bornMEs().empty()&&realEmissionMEs().empty() )
+      throw InitException() << "No matrix elements have been found.\n\
+      Please check if your order of Alpha_s and Alpha_ew have the right value.\n";
+      
 
   }
 
