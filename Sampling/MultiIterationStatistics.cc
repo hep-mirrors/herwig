@@ -151,7 +151,7 @@ double MultiIterationStatistics::averageAbsWeightVariance(bool useAll) const {
   return invSigmaBar != 0.0 ? 1./invSigmaBar : 0.0;
 }
 
-DescribeClass<MultiIterationStatistics,Herwig::GeneralStatistics>
+DescribeClass<MultiIterationStatistics,Interfaced>
   describeHerwigMultiIterationStatistics("Herwig::MultiIterationStatistics", "HwSampling.so");
 
 void MultiIterationStatistics::Init() {
