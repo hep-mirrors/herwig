@@ -12,7 +12,6 @@
 
 library JetCuts.so
 library FastJetFinder.so
-library HwMatchbox.so
 library HwMatchboxScales.so
 library HwMatchboxCuts.so
 library HwSampling.so

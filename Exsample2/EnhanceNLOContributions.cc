@@ -90,7 +90,7 @@ void EnhanceNLOContributions::persistentInput(PersistentIStream & is, int) {
 // loadable library where the class implementation can be found).
 DescribeClass<EnhanceNLOContributions,Herwig::SamplingBias>
   describeHerwigEnhanceNLOContributions("Herwig::EnhanceNLOContributions", 
-				       "HwMatchbox.so HwExsample2.so HwExsampleMatchbox.so");
+				       "HwExsample2.so HwExsampleMatchbox.so");
 
 void EnhanceNLOContributions::Init() {
 

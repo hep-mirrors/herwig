@@ -439,7 +439,7 @@ struct ClassTraits<Herwig::DipoleShowerHandler>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMatchbox.so HwDipoleShower.so"; }
+  static string library() { return "HwDipoleShower.so"; }
 };
 
 /** @endcond */

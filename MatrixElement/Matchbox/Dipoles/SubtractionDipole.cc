@@ -1169,4 +1169,4 @@ void SubtractionDipole::Init() {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeAbstractClass<SubtractionDipole,MEBase>
-describeSubtractionDipole("Herwig::SubtractionDipole", "HwMatchbox.so");
+describeSubtractionDipole("Herwig::SubtractionDipole", "Herwig.so");

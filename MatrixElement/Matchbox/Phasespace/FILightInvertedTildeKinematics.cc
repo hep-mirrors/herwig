@@ -130,4 +130,4 @@ void FILightInvertedTildeKinematics::Init() {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<FILightInvertedTildeKinematics,InvertedTildeKinematics>
-describeHerwigFILightInvertedTildeKinematics("Herwig::FILightInvertedTildeKinematics", "HwMatchbox.so");
+describeHerwigFILightInvertedTildeKinematics("Herwig::FILightInvertedTildeKinematics", "Herwig.so");

@@ -292,7 +292,7 @@ void DipoleMIOperator::persistentInput(PersistentIStream & is, int) {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<DipoleMIOperator,MatchboxInsertionOperator>
-describeHerwigDipoleMIOperator("Herwig::DipoleMIOperator", "HwMatchbox.so");
+describeHerwigDipoleMIOperator("Herwig::DipoleMIOperator", "Herwig.so");
 
 void DipoleMIOperator::Init() {
 

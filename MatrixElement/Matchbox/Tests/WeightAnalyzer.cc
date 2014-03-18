@@ -140,7 +140,7 @@ void WeightAnalyzer::persistentInput(PersistentIStream &, int) {}
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<WeightAnalyzer,AnalysisHandler>
-  describeHerwigWeightAnalyzer("Herwig::WeightAnalyzer", "HwMatchbox.so");
+  describeHerwigWeightAnalyzer("Herwig::WeightAnalyzer", "Herwig.so");
 
 void WeightAnalyzer::Init() {
 

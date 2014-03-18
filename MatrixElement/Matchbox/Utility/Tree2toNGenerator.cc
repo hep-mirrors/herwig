@@ -467,7 +467,7 @@ void Tree2toNGenerator::persistentInput(PersistentIStream & is, int) {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<Tree2toNGenerator,HandlerBase>
-  describeHerwigTree2toNGenerator("Herwig::Tree2toNGenerator", "HwMatchbox.so");
+  describeHerwigTree2toNGenerator("Herwig::Tree2toNGenerator", "Herwig.so");
 
 void Tree2toNGenerator::Init() {
 

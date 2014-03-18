@@ -336,7 +336,7 @@ void MatchboxPhasespace::persistentInput(PersistentIStream & is, int) {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeAbstractClass<MatchboxPhasespace,HandlerBase>
-  describeMatchboxPhasespace("Herwig::MatchboxPhasespace", "HwMatchbox.so");
+  describeMatchboxPhasespace("Herwig::MatchboxPhasespace", "Herwig.so");
 
 void MatchboxPhasespace::Init() {
 

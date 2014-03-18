@@ -245,7 +245,7 @@ Energy2 HEJMEBase::renormalizationScale() const {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeAbstractClass<HEJMEBase,Herwig::MatchboxMEBase>
-  describeHerwigHEJMEBase("Herwig::HEJMEBase", "HwMatchbox.so HwHEJ.so");
+  describeHerwigHEJMEBase("Herwig::HEJMEBase", "HwHEJ.so");
 
 void HEJMEBase::Init() {
 

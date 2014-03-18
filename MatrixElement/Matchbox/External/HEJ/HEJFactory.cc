@@ -167,7 +167,7 @@ void HEJFactory::persistentInput(PersistentIStream & is, int) {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<HEJFactory,SubProcessHandler>
-  describeHerwigHEJFactory("Herwig::HEJFactory", "HwMatchbox.so HwHEJ.so");
+  describeHerwigHEJFactory("Herwig::HEJFactory", "HwHEJ.so");
 
 void HEJFactory::Init() {
 

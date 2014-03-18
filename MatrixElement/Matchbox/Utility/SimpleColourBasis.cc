@@ -383,7 +383,7 @@ void SimpleColourBasis::persistentInput(PersistentIStream &, int) {}
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<SimpleColourBasis,ColourBasis>
-  describeHerwigSimpleColourBasis("Herwig::SimpleColourBasis", "HwMatchbox.so");
+  describeHerwigSimpleColourBasis("Herwig::SimpleColourBasis", "Herwig.so");
 
 void SimpleColourBasis::Init() {
 

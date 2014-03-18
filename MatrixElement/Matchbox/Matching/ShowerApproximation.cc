@@ -337,7 +337,7 @@ void ShowerApproximation::persistentInput(PersistentIStream & is, int) {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeAbstractClass<ShowerApproximation,HandlerBase>
-  describeHerwigShowerApproximation("Herwig::ShowerApproximation", "HwMatchbox.so");
+  describeHerwigShowerApproximation("Herwig::ShowerApproximation", "Herwig.so");
 
 void ShowerApproximation::Init() {
 

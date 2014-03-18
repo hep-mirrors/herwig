@@ -75,4 +75,4 @@ void TildeKinematics::Init() {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeAbstractClass<TildeKinematics,HandlerBase>
-describeTildeKinematics("Herwig::TildeKinematics", "HwMatchbox.so");
+describeTildeKinematics("Herwig::TildeKinematics", "Herwig.so");

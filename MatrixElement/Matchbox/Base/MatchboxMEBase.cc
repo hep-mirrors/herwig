@@ -1358,5 +1358,5 @@ void MatchboxMEBase::dofinish() {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<MatchboxMEBase,MEBase>
-describeHerwigMatchboxMEBase("Herwig::MatchboxMEBase", "HwMatchbox.so");
+describeHerwigMatchboxMEBase("Herwig::MatchboxMEBase", "Herwig.so");
 

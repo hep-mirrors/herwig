@@ -810,4 +810,4 @@ void SubtractedME::Init() {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<SubtractedME,MEGroup>
-describeHerwigSubtractedME("Herwig::SubtractedME", "HwMatchbox.so");
+describeHerwigSubtractedME("Herwig::SubtractedME", "Herwig.so");

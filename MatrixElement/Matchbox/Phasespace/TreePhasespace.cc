@@ -169,7 +169,7 @@ void TreePhasespace::persistentInput(PersistentIStream & is, int) {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<TreePhasespace,MatchboxPhasespace>
-  describeHerwigTreePhasespace("Herwig::TreePhasespace", "HwMatchbox.so");
+  describeHerwigTreePhasespace("Herwig::TreePhasespace", "Herwig.so");
 
 void TreePhasespace::Init() {
 

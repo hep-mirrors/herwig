@@ -64,5 +64,5 @@ void MatchboxInsertionOperator::Init() {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeAbstractClass<MatchboxInsertionOperator,HandlerBase>
-describeMatchboxInsertionOperator("Herwig::MatchboxInsertionOperator", "HwMatchbox.so");
+describeMatchboxInsertionOperator("Herwig::MatchboxInsertionOperator", "Herwig.so");
 
