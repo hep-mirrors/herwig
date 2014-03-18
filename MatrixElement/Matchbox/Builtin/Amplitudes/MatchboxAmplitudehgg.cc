@@ -137,7 +137,7 @@ void MatchboxAmplitudehgg::persistentInput(PersistentIStream &is, int) {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<MatchboxAmplitudehgg,MatchboxAmplitude>
-  describeHerwigMatchboxAmplitudehgg("Herwig::MatchboxAmplitudehgg", "HwMatchbox.so");
+  describeHerwigMatchboxAmplitudehgg("Herwig::MatchboxAmplitudehgg", "HwMatchboxBuiltin.so");
 
 void MatchboxAmplitudehgg::Init() {
 

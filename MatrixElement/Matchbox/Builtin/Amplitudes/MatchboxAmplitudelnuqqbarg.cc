@@ -172,7 +172,7 @@ void MatchboxAmplitudelnuqqbarg::persistentInput(PersistentIStream & is, int) {
 }
 
 DescribeClass<MatchboxAmplitudelnuqqbarg,MatchboxAmplitude>
-  describeHerwigMatchboxAmplitudelnuqqbarg("Herwig::MatchboxAmplitudelnuqqbarg", "HwMatchbox.so");
+  describeHerwigMatchboxAmplitudelnuqqbarg("Herwig::MatchboxAmplitudelnuqqbarg", "HwMatchboxBuiltin.so");
 
 void MatchboxAmplitudelnuqqbarg::Init() {
   static ClassDocumentation<MatchboxAmplitudelnuqqbarg> documentation
