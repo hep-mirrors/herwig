@@ -58,7 +58,23 @@ extern "C" void OLP_Polvec(double*,double*,double*);
 
 
 
+bool didstartOLP=false;
 
+void OpenLoopsAmplitude::doinitrun() {
+  string contractFileName = "OLP_order.lh";
+  int status = -1;
+  if (didstartOLP==false){
+	  startOLP(contractFileName,status);
+	  didstartOLP=true;
+
+  if ( status != 1 ) {
+    throw Exception()
+      << "Failed to restart one loop provider for amplitude '"
+      << name() << "'\n" << Exception::abortnow;
+  }
+  }
+  MatchboxAmplitude::doinitrun();
+}
 
 
 
@@ -248,8 +264,9 @@ void OpenLoopsAmplitude::evalSubProcess() const {
 	double acc ;
 	double scale = sqrt(mu2() / GeV2);
 
-       int n = lastXComb().meMomenta().size();
-        double * out =new double[2*n*n];
+        //int n = lastXComb().meMomenta().size();
+        double out[7]={};
+        //double * out =new double[2*n*n];
 
 	int id = olpId()[ProcessType::oneLoopInterference] ? olpId()[ProcessType::oneLoopInterference] : olpId()[ProcessType::treeME2];
 
@@ -279,7 +296,7 @@ void OpenLoopsAmplitude::evalColourCorrelator(pair<int, int>  ) const {
 	double acc ;
 	double scale = sqrt(mu2() / GeV2);
 	int n = lastXComb().meMomenta().size();
-	double * out =new double[2*n*n];
+
 	colourCorrelatorResults.resize(n * (n - 1) / 2);
 	if ( idpair.size() == 0 ) {
 		getids();
@@ -291,11 +308,11 @@ void OpenLoopsAmplitude::evalColourCorrelator(pair<int, int>  ) const {
 
 	int id = olpId()[ProcessType::colourCorrelatedME2];
 
-	OLP_EvalSubProcess2(&((*(idpair.find(id))).second), olpMomenta(), &scale, out,&acc );
+	OLP_EvalSubProcess2(&((*(idpair.find(id))).second), olpMomenta(), &scale, &colourCorrelatorResults[0],&acc );
 	for ( int i = 0 ; i < n ; ++i ){
 	    for ( int j = i + 1 ; j < n ; ++j ) {
-			lastColourCorrelator(make_pair(i, j), out[i+j*(j-1)/2] * units);
-			colourCorrelatorResults[i+j*(j-1)/2]=out[i+j*(j-1)/2];
+			lastColourCorrelator(make_pair(i, j), colourCorrelatorResults[i+j*(j-1)/2] * units);
+			//colourCorrelatorResults[i+j*(j-1)/2]=out[i+j*(j-1)/2];
 
 	    }
 	}
@@ -325,7 +342,8 @@ double OpenLoopsAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
 		
 	}
 	int id = (*(idpair.find(olpId()[ProcessType::spinColourCorrelatedME2]))).second;
-	double * outx =new double[n];
+	//double * outx =new double[n];
+	spinColourCorrelatorResults.resize(n);
         double polvec[4];
 
 	polvec[0]=c.momentum().e()/GeV;
@@ -334,9 +352,9 @@ double OpenLoopsAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
 	polvec[3]=c.momentum().z()/GeV;
         double avg= colourCorrelatedME2(ij)*(-c.diagonal());
 
-	OLP_SpinCorrelator(&id, olpMomenta(),polvec, &emitter,outx ,&acc);
+	OLP_SpinCorrelator(&id, olpMomenta(),polvec, &emitter,&spinColourCorrelatorResults[0] ,&acc);
 
-        double corr =-1.*units * outx[ij.second]/c.scale()*c.momentum().dot(c.momentum());
+        double corr =-1.*units * spinColourCorrelatorResults[ij.second]/c.scale()*c.momentum().dot(c.momentum());
 
 
   double Nc = generator()->standardModel()->Nc();
