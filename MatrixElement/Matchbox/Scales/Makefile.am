@@ -14,5 +14,6 @@ MatchboxHtScale.cc \
 MatchboxLeptonMassScale.cc \
 MatchboxLeptonPtScale.cc \
 MatchboxParticlePtScale.cc \
-MatchboxPtScale.cc
-
+MatchboxPtScale.cc\
+MatchboxScale.h \
+MatchboxScale.cc

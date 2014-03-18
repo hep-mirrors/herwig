@@ -1,115 +1,152 @@
-read Matchbox.in
 
-################################################################################
-# setup the shower
-#
-# use -LO.in or -NLO.in for LO/NLO simulations, respectively.
-#
-################################################################################
+#=================================================================================#
+#.................................................................................#
+#....##...##....#....#####..###.#...#.###...##..#...#...##.....##.................#
+#....#.#.#.#...#.#.....#...#....#...#.#..#.#..#..#.#...#..#...#..#................#
+#....#..#..#..#####....#...#....#####.###..#..#...#......#....#..#................#
+#....#.....#.#.....#...#...#....#...#.#..#.#..#..#.#....#.....#..#................#
+#....#.....#.#.....#...#....###.#...#.###...##..#...#..####.#..##.....@LEP........#
+#.................................................................................#
+#=================================================================================#
+#.................e+\........./\<<<<<<............................................#
+#....................>~~~~~~~<  |.................................................#
+#.................e-/.........\/<<<<<<............................................#
+#=================================================================================#
 
-read DipoleShower.in
-# read DipoleShowerParameters-LO.in
-read DipoleShowerParameters-NLO.in
+set /Herwig/Generators/LEPGenerator:EventHandler:LuminosityFunction:Energy 91.2
+set /Herwig/Generators/LEPGenerator:NumberOfEvents 100000000
 
-################################################################################
-# setup matrix element and matching
-#
-# uncomment the desired calculation
-#
-################################################################################
+#==================================================================================
+#                    :::::MATRIX ELEMENT:::::
+#==================================================================================
+
+cd  /Herwig/MatrixElements/Matchbox
+insert /Herwig/Generators/LEPGenerator:EventHandler:SubProcessHandlers[0] EEFactory
+
+#>>>>>>>>>> Set the order of the couplings
+set EEFactory:OrderInAlphaS 0
+set EEFactory:OrderInAlphaEW 2
+
+
+#>>>>>>>>>> uncomment the desired calculation  
+
+#>>>>>>>>>> two jets (build in):
+do EEFactory:Process e- e+ j j 
+
+#>>>>>>>>>> three jets (build in)                    ---- set OrderInAlphaS 1 above:
+# do EEFactory:Process e- e+ j j j
+
+#>>>>>>>>>> four jets (leading order only)(build in) ---- set OrderInAlphaS 2 above:
+# do EEFactory:Process e- e+ j j j j
+
+
+
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+#>>>>>>>>>> for external matrix elements uncomment the following line
+#>>>>>>>>>> and the amplitude which is able to produce your desired calculation
+
+#erase /Herwig/MatrixElements/Matchbox/EEFactory:Amplitudes
+
+cd /Herwig/MatrixElements/Matchbox/Amplitudes
+
+#GoSam
+#library HwMatchboxGoSam.so
+#create Herwig::GoSamAmplitude GoSamAmplitude
+#insert /Herwig/MatrixElements/Matchbox/EEFactory:Amplitudes 0 GoSamAmplitude
+
+#MadGraph   (until now only Born type matrix elements: Born, Real, Subtraction, Insertions)
+#library HwMatchboxMadGraph.so
+#create Herwig::MadGraphAmplitude MadGraphAmplitude
+#set MadGraphAmplitude:ColourBasis TraceBasis
+#insert /Herwig/MatrixElements/Matchbox/EEFactory:Amplitudes 0 MadGraphAmplitude
+
+#NJet:
+#library HwMatchboxNJet.so
+#create Herwig::NJetsAmplitude NJetAmplitude
+#insert /Herwig/MatrixElements/Matchbox/EEFactory:Amplitudes 0 NJetAmplitude
+
+
+#OpenLoops
+#library HwMatchboxOpenLoops.so
+#create Herwig::OpenLoopsAmplitude OpenLoopsAmplitude
+#insert /Herwig/MatrixElements/Matchbox/EEFactory:Amplitudes 0 OpenLoopsAmplitude
+
 
 cd /Herwig/MatrixElements/Matchbox
 
-insert /Herwig/Generators/LEPGenerator:EventHandler:SubProcessHandlers[0] EEFactory
+#==================================================================================
+#>>>>>>>>>> Choose here your favorite external process (replace the X):
+# set EEFactory:OrderInAlphaS   X
+# set EEFactory:OrderInAlphaEW  X
+# do EEFactory:Process e+ e- XXXXXX
+#==================================================================================
 
-################################################################################
-# two jets
-################################################################################
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-set EEFactory:OrderInAlphaS 0
-do EEFactory:Process e- e+ j j 
 
-################################################################################
-# three jets
-################################################################################
 
-# set EEFactory:OrderInAlphaS 1
-# do EEFactory:Process e- e+ j j j
+
+#==================================================================================
+#                   :::::LO/NLO CALCULATIONS:::::
+#==================================================================================
+# read DipoleShowerParameters-LO.in
+# set EEFactory:VirtualContributions On                               # default: On
+# set EEFactory:RealContributions On                                  # default: On
+
+
+#==================================================================================
+#                     :::::CUTS:::::
+# for finite calculations make resonable cuts!
+#==================================================================================
 
 # set /Herwig/Cuts/JetFinder:Variant SphericalKt
 # set /Herwig/Cuts/JetFinder:RecombinationScheme E
 # set /Herwig/Cuts/JetFinder:Mode Exclusive
 # set /Herwig/Cuts/JetFinder:ConeRadius 6.283185307
 # set /Herwig/Cuts/JetFinder:DCut 50*GeV2
-
 # set /Herwig/Cuts/NJetsCut:NJetsMin 3
-
 # set /Herwig/Cuts/EECuts:JetFinder /Herwig/Cuts/JetFinder
 # insert /Herwig/Cuts/EECuts:MultiCuts 0 /Herwig/Cuts/NJetsCut
 
-################################################################################
-# four jets (leading order only)
-################################################################################
 
-# set EEFactory:OrderInAlphaS 2
-# do EEFactory:Process e- e+ j j j
+#==================================================================================
+#                     :::::MATCHING:::::
+#==================================================================================
 
-# set /Herwig/Cuts/JetFinder:Variant SphericalKt
-# set /Herwig/Cuts/JetFinder:RecombinationScheme E
-# set /Herwig/Cuts/JetFinder:Mode Exclusive
-# set /Herwig/Cuts/JetFinder:ConeRadius 6.283185307
-# set /Herwig/Cuts/JetFinder:DCut 50*GeV2
-
-# set /Herwig/Cuts/NJetsCut:NJetsMin 4
-
-# set /Herwig/Cuts/EECuts:JetFinder /Herwig/Cuts/JetFinder
-# insert /Herwig/Cuts/EECuts:MultiCuts 0 /Herwig/Cuts/NJetsCut
-
-################################################################################
-# leading order
-################################################################################
-
-# set EEFactory:VirtualContributions Off
-# set EEFactory:RealContributions Off
-
-################################################################################
-# MC@NLO-type next-to-leading order for use with dipole shower
-################################################################################
+#>>>>>>>>>> MC@NLO-type next-to-leading order for use with dipole shower
 
 set EEFactory:ShowerApproximation DipoleMatching
-
-################################################################################
-# MC@NLO-type next-to-leading order for use with default shower
-################################################################################
-
 # set EEFactory:ShowerApproximation QTildeMatching
 
-################################################################################
-# POWHEG-type next-to-leading order
-################################################################################
+#>>>>>>>>>> POWHEG-type next-to-leading order
 
 # set EEFactory:ShowerApproximation MEMatching
 # set MECorrectionHandler:Factory EEFactory
-# insert /Herwig/Generators/LEPGenerator:EventHandler:PostSubProcessHandlers[0] MECorrectionHandler
+#cd /Herwig/Generators
+# insert LEPGenerator:EventHandler:PostSubProcessHandlers[0] MECorrectionHandler
+#cd /Herwig/MatrixElements/Matchbox
 
-################################################################################
-# scale variations
-#
-# see Matchbox.in for different scale choices
-#
-################################################################################
+#==================================================================================
+#                     :::::SCALES VARIATIONS:::::
+#==================================================================================
 
-################################################################################
-# hard process scale variations
-################################################################################
+#>>>>>>>>>> SCALE CHOICE
+set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 91.2*GeV
+set PPFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale
 
+# set EEFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPtScale
+# set EEFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/MaxPtScale
+# set EEFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonMassScale
+
+
+#>>>>>>>>>> HARD PROCESS SCALE VARIATION
 set EEFactory:RenormalizationScaleFactor 1.0
 set EEFactory:FactorizationScaleFactor 1.0
 
-################################################################################
-# matching scale variations 
-#  - HardScaleFactor has to equal the one for the shower!
-################################################################################
+#>>>>>>>>>> MATCHING SCALE VARIATION - HardScaleFactor has to equal the one for the shower!
 
 set DipoleMatching:RenormalizationScaleFactor 1.0
 set DipoleMatching:FactorizationScaleFactor 1.0
@@ -123,9 +160,7 @@ set QTildeMatching:RenormalizationScaleFactor 1.0
 set QTildeMatching:FactorizationScaleFactor 1.0
 set QTildeMatching:HardScaleFactor 1.0
 
-################################################################################
-# shower scale variations
-################################################################################
+#>>>>>>>>>> SHOWER SCALE VARIATION
 
 set /Herwig/DipoleShower/DipoleShowerHandler:RenormalizationScaleFactor 1.0
 set /Herwig/DipoleShower/DipoleShowerHandler:FactorizationScaleFactor 1.0
@@ -134,27 +169,21 @@ set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleFactor 1.0
 set /Herwig/Shower/AlphaQCD:RenormalizationScaleFactor 1.0
 set /Herwig/Shower/Evolver:HardScaleFactor 1.0
 
-################################################################################
-# setup generator and analysis
-#
-#
-#
-################################################################################
+
+
+#==================================================================================
+#                     :::::GENERATOR:::::
+#==================================================================================
 
 cd /Herwig/Generators
 
 set LEPGenerator:EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
 set LEPGenerator:EventHandler:CascadeHandler:MPIHandler NULL
 
-set LEPGenerator:NumberOfEvents 100000000
 set LEPGenerator:RandomNumberGenerator:Seed 31122001
 set LEPGenerator:DebugLevel 1
 set LEPGenerator:PrintEvent 10
 set LEPGenerator:MaxErrors 10000
-
-set LEPGenerator:EventHandler:LuminosityFunction:Energy 91.2
-
-cd /Herwig/Generators
 
 #insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
 set /Herwig/Analysis/HepMCFile:PrintEvent 1000000
@@ -162,4 +191,23 @@ set /Herwig/Analysis/HepMCFile:Format GenEvent
 set /Herwig/Analysis/HepMCFile:Units GeV_mm
 set /Herwig/Analysis/HepMCFile:Filename events.fifo
 
+#==================================================================================
+#                     :::::CLEANUP:::::
+# Change only if you know what you are doing.
+# For the moment, we can only deal with massless partons
+#==================================================================================
+set /Herwig/Particles/d:NominalMass 0*GeV
+set /Herwig/Particles/dbar:NominalMass 0*GeV
+set /Herwig/Particles/u:NominalMass 0*GeV
+set /Herwig/Particles/ubar:NominalMass 0*GeV
+set /Herwig/Particles/s:NominalMass 0*GeV
+set /Herwig/Particles/sbar:NominalMass 0*GeV
+set /Herwig/Particles/c:NominalMass 0*GeV
+set /Herwig/Particles/cbar:NominalMass 0*GeV
+set /Herwig/Particles/b:NominalMass 0*GeV
+set /Herwig/Particles/bbar:NominalMass 0*GeV
+set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
+set /Herwig/Generators/LEPGenerator:EventHandler:CollisionCuts Off
+
+#==================================================================================
 saverun LEP LEPGenerator

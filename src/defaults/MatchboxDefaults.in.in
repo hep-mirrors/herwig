@@ -179,11 +179,15 @@ mkdir Amplitudes
 cd Amplitudes
 
 create ColorFull::TraceBasis TraceBasis
+cp TraceBasis LargeNTraceBasis
 
 mkdir Builtin
 cd Builtin
 
 create Herwig::SimpleColourBasis SimpleColourBasis
+
+create Herwig::SimpleColourBasis LargeNColourBasis
+set LargeNColourBasis:LargeN On
 
 create Herwig::MatchboxAmplitudellbarqqbar Amplitudellbarqqbar
 set Amplitudellbarqqbar:ColourBasis SimpleColourBasis
@@ -218,41 +222,20 @@ set Amplitudehggg:ColourBasis SimpleColourBasis
 create Herwig::MatchboxAmplitudehqqbarg Amplitudehqqbarg
 set Amplitudehqqbarg:ColourBasis SimpleColourBasis
 
-cd /Herwig/MatrixElements/Matchbox/Amplitudes
 
-mkdir NLOJet
-cd NLOJet
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudellbarqqbar
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudellbarqqbarg
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudellbarqqbargg
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudellbarqqbarqqbar
 
-@LOAD_NLOJET@ HwMatchboxNLOJet.so
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudelnuqqbar
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudelnuqqbarg
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudelnuqqbargg
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudelnuqqbarqqbar
 
-@CREATE_NLOJET@ Herwig::NLOJetAmplitudeg4 Amplitudegggg
-@CREATE_NLOJET@ Herwig::NLOJetAmplitudeg5 Amplitudeggggg
-@CREATE_NLOJET@ Herwig::NLOJetAmplitudeg6 Amplitudegggggg
-@CREATE_NLOJET@ Herwig::NLOJetAmplitudeq2g2 Amplitudeqqbargg
-@CREATE_NLOJET@ Herwig::NLOJetAmplitudeq2g3 Amplitudeqqbarggg
-@CREATE_NLOJET@ Herwig::NLOJetAmplitudeq2g4 Amplitudeqqbargggg
-@CREATE_NLOJET@ Herwig::NLOJetAmplitudeq4 Amplitudeqqbarqqbar
-@CREATE_NLOJET@ Herwig::NLOJetAmplitudeq4g1 Amplitudeqqbarqqbarg
-@CREATE_NLOJET@ Herwig::NLOJetAmplitudeq4g2 Amplitudeqqbarqqbargg
-@CREATE_NLOJET@ Herwig::NLOJetAmplitudeq6 Amplitudeqqbarqqbarqqbar
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudehgg
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudehggg
 
-cd /Herwig/MatrixElements/Matchbox/Amplitudes
-
-@LOAD_NJET@ HwMatchboxNJet.so
-@CREATE_NJET@ Herwig::NJetsAmplitude NJetAmplitude
-
-@LOAD_GOSAM@ HwMatchboxGoSam.so
-@CREATE_GOSAM@ Herwig::GoSamAmplitude GoSamAmplitude
-
-@LOAD_OPENLOOPS@ HwMatchboxOpenLoops.so
-@CREATE_OPENLOOPS@ Herwig::OpenLoopsAmplitude OpenLoopsAmplitude
-
-@LOAD_VBFNLO@ HwMatchboxVBFNLO.so
-@CREATE_VBFNLO@ Herwig::VBFNLOAmplitude VBFNLOAmplitude
-
-@LOAD_MADGRAPH@ HwMatchboxMadGraph.so
-@CREATE_MADGRAPH@ Herwig::MadGraphAmplitude MadGraphAmplitude
-@SET_MADGRAPH@ MadGraphAmplitude:ColourBasis TraceBasis
 
 ################################################################################
 # Setup utilities for matching
@@ -277,7 +260,8 @@ set MECorrectionHandler:ShowerApproximation MEMatching
 create Herwig::FlatInvertiblePhasespace InvertiblePhasespace
 set MECorrectionHandler:Phasespace InvertiblePhasespace
 
-create Herwig::DipoleMatching DipoleMatching HwDipoleMatching.so
+create Herwig::DipoleMatching DipoleMatching
+set DipoleMatching:LargeNBasis /Herwig/MatrixElements/Matchbox/Amplitudes/Builtin/LargeNColourBasis
 set DipoleMatching:RestrictPhasespace On
 set DipoleMatching:BornScaleInSubtraction BornScale
 set DipoleMatching:RealEmissionScaleInSubtraction BornScale
@@ -287,6 +271,7 @@ set DipoleMatching:FIPtCut 1.0*GeV
 set DipoleMatching:IIPtCut 1.0*GeV
 
 create Herwig::QTildeMatching QTildeMatching HwQTildeMatching.so
+set QTildeMatching:LargeNBasis /Herwig/MatrixElements/Matchbox/Amplitudes/Builtin/LargeNColourBasis
 # set this to off, if the shower pt veto is off
 set QTildeMatching:RestrictPhasespace On
 set QTildeMatching:BornScaleInSubtraction BornScale
@@ -317,6 +302,7 @@ set /Herwig/Vertices/FFWDiagonalVertex:Diagonal Yes
 insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFWDiagonalVertex
 
 insert DiagramGenerator:Vertices 0 /Herwig/Vertices/WWHVertex
+insert DiagramGenerator:Vertices 0 /Herwig/Vertices/WWWVertex
 insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFHVertex
 insert DiagramGenerator:Vertices 0 /Herwig/Vertices/HGGVertex
 
