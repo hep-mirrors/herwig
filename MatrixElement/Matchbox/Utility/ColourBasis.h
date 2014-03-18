@@ -61,6 +61,13 @@ public:
 public:
 
   /**
+   * Clone this colour basis.
+   */
+  Ptr<ColourBasis>::ptr cloneMe() const {
+    return dynamic_ptr_cast<Ptr<ColourBasis>::ptr>(clone());
+  }
+
+  /**
    * Prepare for the given sub process and return the basis
    * dimensionality.
    */
@@ -208,6 +215,11 @@ public:
    * Return true, if this basis is running in large-N mode
    */
   virtual bool largeN() const { return theLargeN; }
+
+  /**
+   * Switch to large n
+   */
+  void doLargeN(bool yes = true) { theLargeN = yes; }
 
   /**
    * Convert particle data to colour information

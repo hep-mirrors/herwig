@@ -51,12 +51,23 @@ ShowerApproximation::ShowerApproximation()
 ShowerApproximation::~ShowerApproximation() {}
 
 void ShowerApproximation::setLargeNBasis() {
-  if ( theShowerKernels ) {
-    
+  if ( theShowerKernels && !theLargeNBasis ) {
+    if ( !dipole()->realEmissionME()->matchboxAmplitude() )
+      throw Exception() << "expecting an amplitude object"
+			<< Exception::abortnow;
+    if ( !dipole()->realEmissionME()->matchboxAmplitude()->colourBasis() )
+      throw Exception() << "expecting a colour basis object"
+			<< Exception::abortnow;
+    theLargeNBasis = 
+      dipole()->realEmissionME()->matchboxAmplitude()->colourBasis()->cloneMe();
+    theLargeNBasis->doLargeN();
   }
 }
 
-void ShowerApproximation::setDipole(Ptr<SubtractionDipole>::tcptr dip) { theDipole = dip; }
+void ShowerApproximation::setDipole(Ptr<SubtractionDipole>::tcptr dip) { 
+  theDipole = dip;
+  setLargeNBasis();
+}
 
 Ptr<SubtractionDipole>::tcptr ShowerApproximation::dipole() const { return theDipole; }
 
