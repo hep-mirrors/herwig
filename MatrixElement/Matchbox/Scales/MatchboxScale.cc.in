@@ -54,7 +54,7 @@ string MatchboxScale::doFunction(string in) {
   ofstream makeFile(cmd.c_str());
   cmd = "Scale.cc";
   ofstream scaleFile(cmd.c_str());
-  scaleFile<< "#include Herwig++/MatrixElement/Matchbox/Scales/MatchboxScale.h\n" ;
+  scaleFile<< "#include \"Herwig++/MatrixElement/Matchbox/Scales/MatchboxScale.h\"\n" ;
   scaleFile<< "using namespace Herwig ;\n" ;
   scaleFile<< "Energy2 renScale(vector<Lorentz5Momentum> jet,  vector<Lorentz5Momentum> lepton,  vector<Lorentz5Momentum> boson){\n" ;
   scaleFile<< "return \n"<< in.c_str();
