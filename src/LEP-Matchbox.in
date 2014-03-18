@@ -92,7 +92,6 @@ cd /Herwig/MatrixElements/Matchbox
 #==================================================================================
 #                   :::::LO/NLO CALCULATIONS:::::
 #==================================================================================
-# read DipoleShowerParameters-LO.in
 # set EEFactory:VirtualContributions On                               # default: On
 # set EEFactory:RealContributions On                                  # default: On
 

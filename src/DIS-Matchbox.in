@@ -90,7 +90,6 @@ cd /Herwig/MatrixElements/Matchbox
 #==================================================================================
 #                   :::::LO/NLO CALCULATIONS:::::
 #==================================================================================
-# read DipoleShowerParameters-LO.in
 # set DISFactory:VirtualContributions Off
 # set DISFactory:RealContributions Off
 
