@@ -410,13 +410,24 @@ cd /Herwig/MatrixElements/Matchbox
 mkdir AlphaS
 cd AlphaS
 
-library HwDipoleShowerAlphaS.so
-create matchbox::lo_alpha_s LOAlphaS
-set LOAlphaS:min_active_flavours 5
 
-create matchbox::nlo_alpha_s NLOAlphaS
-set NLOAlphaS:exact_evaluation large_scale
-set NLOAlphaS:min_active_flavours 5
+create Herwig::O2AlphaS NLOAlphaS
+insert NLOAlphaS:QuarkMasses 0 0.005
+insert NLOAlphaS:QuarkMasses 0 0.0023
+insert NLOAlphaS:QuarkMasses 0 0.095
+insert NLOAlphaS:QuarkMasses 0 1.25
+insert NLOAlphaS:QuarkMasses 0 4.2
+insert NLOAlphaS:QuarkMasses 0 174.2
+
+create ThePEG::O1AlphaS LOAlphaS  O1AlphaS.so
+insert LOAlphaS:QuarkMasses 0 0.005
+insert LOAlphaS:QuarkMasses 0 0.0023
+insert LOAlphaS:QuarkMasses 0 0.095
+insert LOAlphaS:QuarkMasses 0 1.25
+insert LOAlphaS:QuarkMasses 0 4.2
+insert LOAlphaS:QuarkMasses 0 174.2
+
+
 
 ################################################################################
 # Factories for different colliders
