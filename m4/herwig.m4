@@ -418,7 +418,68 @@ AC_SUBST([INSERT_GOSAM])
 ])
 
 
+dnl ##### gosam-contrib #####
+AC_DEFUN([HERWIG_CHECK_GOSAM_CONTRIB],
+[
+AC_MSG_CHECKING([for gosam-contrib])
 
+AC_ARG_WITH([gosam-contrib],
+    AS_HELP_STRING([--with-gosam-contrib=DIR], [Installation path of gosam-contrib]),
+    [],
+    [with_gosam_contrib=no]
+)
+
+AC_MSG_RESULT([$with_gosam_contrib])
+
+AS_IF([test "x$with_gosam_contrib" != "xno"],
+      [AC_CHECK_FILES(
+      ${with_gosam_contrib}/lib/libsamurai.so,
+      [have_gosam_contrib=lib], [have_gosam_contrib=no])],
+      [have_gosam_contrib=no])
+
+AS_IF([test "x$with_gosam_contrib" != "xno" -a "x$have_gosam_contrib" = "xno" ],
+      [AC_CHECK_FILES(
+      ${with_gosam_contrib}/lib64/libsamurai.so,
+      [have_gosam_contrib=lib64], [have_gosam_contrib=no])])
+
+AS_IF([test "x$have_gosam_contrib" != "xno"],
+      [GOSAMCONTRIBPREFIX=${with_gosam_contrib}
+      AC_SUBST(GOSAMCONTRIBPREFIX)
+      ])
+
+AS_IF([test "x$have_gosam_contrib" = "xlib"],
+      [GOSAMCONTRIBLIBS=${with_gosam_contrib}/lib
+      AC_SUBST(GOSAMCONTRIBLIBS)
+      ])
+
+AS_IF([test "x$have_gosam_contrib" = "xlib64"],
+      [GOSAMCONTRIBLIBS=${with_gosam_contrib}/lib64
+      AC_SUBST(GOSAMCONTRIBLIBS)
+      ])
+
+AS_IF([test "x$with_gosam_contrib" != "xno"  -a "x$have_gosam_contrib" = "xno"],
+      [AC_MSG_ERROR([GoSam-Contrib requested but not found])])
+
+AM_CONDITIONAL(HAVE_GOSAM_CONTRIB,[test "x$have_gosam_contrib" = "xlib" -o "x$have_gosam_contrib" = "xlib64"])
+
+if test "x$have_gosam_contrib" = "xlib" -o "x$have_gosam_contrib" = "xlib64" ; then
+        LOAD_GOSAM_CONTRIB="library"
+        CREATE_GOSAM_CONTRIB="create"
+        INSERT_GOSAM_CONTRIB="insert"
+else
+        LOAD_GOSAM_CONTRIB="# library"
+        CREATE_GOSAM_CONTRIB="# create"
+        INSERT_GOSAM_CONTRIB="# insert"
+fi
+
+AC_SUBST([LOAD_GOSAM_CONTRIB])
+AC_SUBST([CREATE_GOSAM_CONTRIB])
+AC_SUBST([INSERT_GOSAM_CONTRIB])
+
+
+])
+
+      
 dnl ##### OpenLoops #####
 AC_DEFUN([HERWIG_CHECK_OPENLOOPS],
 [
@@ -783,6 +844,7 @@ cat << _HW_EOF_ > config.herwig
 *** nlojet:		$with_nlojet
 *** njet:		$with_njet
 *** GoSam:		$with_gosam
+*** GoSam-Contrib:      $with_gosam_contrib
 *** OpenLoops:		$with_openloops
 *** MadGraph: 		$with_madgraph
 *** HEJ:		$with_hej

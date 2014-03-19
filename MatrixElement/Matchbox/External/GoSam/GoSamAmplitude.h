@@ -86,7 +86,7 @@ public:
    * Start the one loop provider, if appropriate, giving order and
    * contract files
    */
-  virtual void signOLP(const string&, const string&);
+  virtual void signOLP(const string&, const string&, const string&);
 
   virtual bool checkOLPContract(string contractFileName);
 
@@ -215,6 +215,8 @@ private:
 
   mutable string gosamInstallPath;
 
+  mutable string gosamSetupInPath;
+
   bool theCodeExists;
 
   bool isitDR;
@@ -238,6 +240,11 @@ private:
    * Switch to print parameters
    */
   bool thePrintParameter;
+
+  /**
+   * Method to create the setup.in file for GoSam
+   */
+  void setupGoSamIn(string setupGoSamInFile);
 
 }; // end "class GoSamAmplitude: public MatchboxOLPME"
 
