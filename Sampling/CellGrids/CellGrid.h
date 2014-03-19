@@ -234,7 +234,7 @@ namespace ExSample {
     /**
      * Fill CellGrid data from an XML element
      */
-    virtual void fromXML(XML::Element);
+    virtual void fromXML(const XML::Element&);
 
     /**
      * Return an XML element for the data of this CellGrid

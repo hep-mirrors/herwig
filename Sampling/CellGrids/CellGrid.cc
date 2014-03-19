@@ -321,7 +321,7 @@ CellGrid::project(pair<double,double> interval,
   return res;
 }
 
-void CellGrid::fromXML(XML::Element grid) {
+void CellGrid::fromXML(const XML::Element& grid) {
 
   size_t dimension = 0;
   bool branching = false;

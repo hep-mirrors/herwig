@@ -109,7 +109,7 @@ void SimpleCellGrid::updateWeightInformation(const vector<double>& point,
   }
 }
 
-void SimpleCellGrid::fromXML(XML::Element grid) {
+void SimpleCellGrid::fromXML(const XML::Element& grid) {
 
   CellGrid::fromXML(grid);
   if ( !grid.hasAttribute("keepWeightInformation") )
