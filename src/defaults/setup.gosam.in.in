@@ -5,8 +5,8 @@ symmetries=family,generation
 qgraf.options=onshell,notadpole,nosnail
 qgraf.verbatim=true=iprop[phim,phip,chi,H,0,0];
 
-filter.lo= lambda d: d.vertices([H,chi,phip,phim], [em,mum,ne,nmu,U,D,S,C,B], [ep,mup,nebar,nmubar,Ubar,Dbar,Sbar,Cbar,Bbar]) == 0
-filter.nlo= lambda d: d.vertices([H,chi,phip,phim], [em,mum,ne,nmu,U,D,S,C,B], [ep,mup,nebar,nmubar,Ubar,Dbar,Sbar,Cbar,Bbar]) == 0
+# filter.lo= lambda d: d.vertices([H,chi,phip,phim], [em,mum,ne,nmu,U,D,S,C,B], [ep,mup,nebar,nmubar,Ubar,Dbar,Sbar,Cbar,Bbar]) == 0
+# filter.nlo= lambda d: d.vertices([H,chi,phip,phim], [em,mum,ne,nmu,U,D,S,C,B], [ep,mup,nebar,nmubar,Ubar,Dbar,Sbar,Cbar,Bbar]) == 0
 
 PSP_check=False
 PSP_verbosity=1
