@@ -293,15 +293,8 @@ bool Col_str::neighbor(int p1,int p2) const{
 
 bool Col_str::right_neighbor(int p1,int p2) const{
 
-	// The places
-  std::pair<int, int> place1 = find_parton(p1);
-  std::pair<int, int> place2 = find_parton(p2);
+  return left_neighbor(p2,p1);
 
-	// First make sure the partons are in the same Quark_line
-	if( place1.first!=place2.first ) return false;
-	if( place2.second!=place1.second + 1 ) return false;
-
-	return true;
 }
 
 
@@ -313,7 +306,10 @@ bool Col_str::left_neighbor(int p1,int p2) const{
 
 	// First make sure the partons are in the same Quark_line
 	if( place1.first!=place2.first ) return false;
-	if( place2.second!=place1.second - 1 ) return false;
+	bool closed = !at(place1.first).open;
+	int length = at(place1.first).size();
+	if ( !(place1.second-place2.second == 1 ||
+	       (place1.second-place2.second == 1 - length && closed)) ) return false;
 
 	return true;
 }
