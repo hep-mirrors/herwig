@@ -25,6 +25,7 @@
 
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/Utilities/StringUtils.h"
 
 #include <fstream>
 #include <sstream>
@@ -53,9 +54,9 @@ extern "C" void OLP_SetParameter(char*, double*, double*, int*);
 extern "C" void OLP_PrintParameter(char*);
 extern "C" void OLP_EvalSubProcess2(int*, double*, double*, double*, double*);
 
-void GoSamAmplitude::signOLP(const string& order, const string& contract) {
+void GoSamAmplitude::signOLP(const string& order, const string& contract, const string& setupin) {
 	if(!theCodeExists){
-	  string cmd = "@GOSAMPREFIX@/bin/gosam.py --olp  -o " + contract + "  --config=../setup.in  " + order;
+	  string cmd = "@GOSAMPREFIX@/bin/gosam.py --olp  -o " + contract + "  --config=" + setupin + " " + order;
 	  std::system(cmd.c_str());
 	}
 }
@@ -83,7 +84,6 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
 	  if ( !( DynamicLoader::load(gosamInstallPath+"/lib/libgolem_olp.so") || DynamicLoader::load(gosamInstallPath+"/lib64/libgolem_olp.so") ) ) assert(0);
 		tempcontract = gosamInstallPath + "/" + tempcontract;
 	}
-
 	OLP_Start(tempcontract.c_str(), &status);
 
 	// hand over input parameters for EW scheme considered
@@ -312,10 +312,34 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
 	string contractFileName = gosamInstallPath == "" ? contractFileTitle : gosamInstallPath + "/" + contractFileTitle;
 	string orderFileName = gosamInstallPath == "" ? name() + ".OLPOrder.lh" : gosamInstallPath + "/" + name() + ".OLPOrder.lh";
 	fillOrderFile(procs, orderFileName);
-	ifstream ifile(contractFileName.c_str());
+	string gosamSetupInFileName = "";
+	if (gosamSetupInPath != ""){
+	  gosamSetupInFileName = gosamSetupInPath + "/";
+	}
+	else {
+	  if (gosamInstallPath != "") gosamSetupInFileName = gosamInstallPath + "/";
+	}
+	gosamSetupInFileName += "setup.gosam.in";
+
+  // check if setup.gosam.in exists
+  ifstream infile(gosamSetupInFileName.c_str());
+  if (!infile) {
+    // if it doesn't get it from src/defaults
+    string cmd = "cp @prefix@/share/Herwig++/defaults/setup.gosam.in " + gosamSetupInFileName;
+    std::system(cmd.c_str());
+    // use sed to set form's tempdir to the current working directory
+    char cwd[256];
+    getcwd(cwd, sizeof(cwd));
+    string workdir = StringUtils::replace(string(cwd), string("/"), string("\\/"));
+    cmd = "sed -i 's/@FORMTEMPDIR@/" + workdir + "/g' " + gosamSetupInFileName;
+    std::system(cmd.c_str());
+  }
+  infile.close();
+
+  ifstream ifile(contractFileName.c_str());
   if(!ifile){
     cout << "\nGoSam: Sign the order file." << flush;
-    signOLP(orderFileName, contractFileName);
+    signOLP(orderFileName, contractFileName, gosamSetupInFileName);
 	}
 	
 	if ( !checkOLPContract(contractFileName) ) {
@@ -447,17 +471,16 @@ string GoSamAmplitude::doMassiveParticles(string in) {
   return "";
 }
 
-
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 
 void GoSamAmplitude::persistentOutput(PersistentOStream & os) const {
-	os << idpair << theCodeExists << theMassiveParticles << thePrintParameter << gosamInstallPath;
+	os << idpair << theCodeExists << theMassiveParticles << thePrintParameter << gosamInstallPath << gosamSetupInPath;
 }
 
 void GoSamAmplitude::persistentInput(PersistentIStream & is, int) {
-	is >> idpair >> theCodeExists >> theMassiveParticles >> thePrintParameter >> gosamInstallPath;
+	is >> idpair >> theCodeExists >> theMassiveParticles >> thePrintParameter >> gosamInstallPath >> gosamSetupInPath;
 }
 
 // *** Attention *** The following static variable is needed for the type
@@ -476,6 +499,12 @@ void GoSamAmplitude::Init() {
      	  "Prefix for the GoSam produced code.",
      	  &GoSamAmplitude::gosamInstallPath, "",
      	  false, false);
+
+  static Parameter<GoSamAmplitude,string> interfaceSetupInPath
+       ("SetupInPath",
+        "Path of the setup.gosam.in to be used. If left empty a new setup.gosam.in is created in the location specified in InstallPath",
+        &GoSamAmplitude::gosamSetupInPath, "",
+        false, false);
 
   static Switch<GoSamAmplitude,bool> interfaceCodeExists
          ("CodeExists",

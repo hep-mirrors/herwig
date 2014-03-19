@@ -123,6 +123,8 @@ HERWIG_CHECK_NJET
 
 HERWIG_CHECK_GOSAM
 
+HERWIG_CHECK_GOSAM_CONTRIB
+
 HERWIG_CHECK_OPENLOOPS
 
 HERWIG_CHECK_HEJ
@@ -253,6 +255,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		src/Makefile-UserModules
 		src/defaults/Analysis.in
 		src/defaults/MatchboxDefaults.in
+		src/defaults/setup.gosam.in
 		Contrib/Makefile
 		Contrib/make_makefiles.sh
 		Tests/Makefile
