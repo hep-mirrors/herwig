@@ -649,7 +649,7 @@ void MatchboxFactory::setup() {
 	  subtractedMEs().push_back(subv);
 	  MEs().push_back(subv);
 	}
-	if ( !meCorrectionsOnly() )
+	if ( !meCorrectionsOnly() || (meCorrectionsOnly() && showerApproximation()->restrictPhasespace()) )
 	  sub->doRealShowerSubtraction();
 	if ( showerApproximation()->needsSplittingGenerator() )
 	  for ( set<cPDVector>::const_iterator p = bornProcs.begin();
