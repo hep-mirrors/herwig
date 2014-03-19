@@ -347,29 +347,15 @@ void CellGrid::fromXML(const XML::Element& grid) {
     throw runtime_error("[ExSample::CellGrid] Expected a Boundaries element.");
 
   const XML::Element& boundaries = *cit;
-
-  cit = boundaries.findFirst(XML::ElementTypes::EmptyElement,"LowerLeft");
-  if ( cit == boundaries.children().end() )
-    throw runtime_error("[ExSample::CellGrid] Expected a LowerLeft element.");
-  const XML::Element& lowerLeftBoundary = *cit;
-
-  cit = boundaries.findFirst(XML::ElementTypes::EmptyElement,"UpperRight");
-  if ( cit == boundaries.children().end() )
-    throw runtime_error("[ExSample::CellGrid] Expected an UpperRight element.");
-  const XML::Element& upperRightBoundary = *cit;
-
-  cit = boundaries.findFirst(XML::ElementTypes::EmptyElement,"UpperBoundInclusive");
-  if ( cit == boundaries.children().end() )
-    throw runtime_error("[ExSample::CellGrid] Expected an UpperBoundInclusive element.");
-  const XML::Element& upperInclusive = *cit;
+  cit = boundaries.findFirst(XML::ElementTypes::ParsedCharacterData,"");
+  if ( cit == grid.children().end() )
+    throw runtime_error("[ExSample::CellGrid] Expected boundary data.");
+  istringstream bdata(cit->content());
 
   for ( size_t k = 0; k < lowerLeft().size(); ++k ) {
-    ostringstream id; id << "x" << k;
-    lowerLeftBoundary.getFromAttribute(id.str(),theLowerLeft[k]);
-    upperRightBoundary.getFromAttribute(id.str(),theUpperRight[k]);
-    bool flag = false;
-    upperInclusive.getFromAttribute(id.str(),flag);
-    theUpperBoundInclusive[k] = flag;
+    bdata >> theLowerLeft[k] >> theUpperRight[k];
+    bool x; bdata >> x;
+    theUpperBoundInclusive[k] = x;
   }
 
   if ( branching ) {
@@ -417,20 +403,14 @@ XML::Element CellGrid::toXML() const {
 
   XML::Element boundaries(XML::ElementTypes::Element,"Boundaries");
 
-  XML::Element lowerLeftBoundary(XML::ElementTypes::EmptyElement,"LowerLeft");
-  XML::Element upperRightBoundary(XML::ElementTypes::EmptyElement,"UpperRight");
-  XML::Element upperInclusive(XML::ElementTypes::EmptyElement,"UpperBoundInclusive");
-  for ( size_t k = 0; k < lowerLeft().size(); ++k ) {
-    ostringstream id; id << "x" << k;
-    ostringstream xl; xl << setprecision(20) << lowerLeft()[k];
-    lowerLeftBoundary.appendAttribute(id.str(),xl.str());
-    ostringstream xu; xu << setprecision(20) << upperRight()[k];
-    upperRightBoundary.appendAttribute(id.str(),xu.str());
-    upperInclusive.appendAttribute(id.str(),upperBoundInclusive()[k]);
-  }
-  boundaries.append(lowerLeftBoundary);
-  boundaries.append(upperRightBoundary);
-  boundaries.append(upperInclusive);
+  ostringstream bdata;
+  bdata << setprecision(20);
+  for ( size_t k = 0; k < lowerLeft().size(); ++k )
+    bdata << lowerLeft()[k] << " " << upperRight()[k] << " "
+	  << upperBoundInclusive()[k] << " ";
+
+  XML::Element belem(XML::ElementTypes::ParsedCharacterData,bdata.str());
+  boundaries.append(belem);
 
   grid.append(boundaries);
 
