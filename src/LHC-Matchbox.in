@@ -70,6 +70,7 @@ cd /Herwig/MatrixElements/Matchbox/Amplitudes
 #library HwMatchboxMadGraph.so
 #create Herwig::MadGraphAmplitude MadGraphAmplitude
 #set MadGraphAmplitude:ColourBasis TraceBasis
+#set MadGraphAmplitude:ProcessPath /Desired/Install/Path
 #insert /Herwig/MatrixElements/Matchbox/PPFactory:Amplitudes 0 MadGraphAmplitude
 
 #NJet:
@@ -237,10 +238,10 @@ set LHCGenerator:MaxErrors 10000
 
 
 #insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
-set /Herwig/Analysis/HepMCFile:PrintEvent 1000000
-set /Herwig/Analysis/HepMCFile:Format GenEvent
-set /Herwig/Analysis/HepMCFile:Units GeV_mm
-set /Herwig/Analysis/HepMCFile:Filename events.fifo
+#set /Herwig/Analysis/HepMCFile:PrintEvent 1000000
+#set /Herwig/Analysis/HepMCFile:Format GenEvent
+#set /Herwig/Analysis/HepMCFile:Units GeV_mm
+#set /Herwig/Analysis/HepMCFile:Filename events.fifo
 
 #==================================================================================
 #                     :::::CLEANUP:::::

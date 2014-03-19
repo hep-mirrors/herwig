@@ -17,7 +17,7 @@
 #include "ThePEG/Utilities/DynamicLoader.h"
 
 namespace Herwig {
-  static void  *plugin_handle;
+
 
 using namespace ThePEG;
 

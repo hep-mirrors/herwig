@@ -12,11 +12,11 @@
 ## INFORMATION FOR MASS
 ###################################
 Block mass 
-    5 4.700000e+00 # MB 
-    6 1.730000e+02 # MT 
-   15 1.777000e+00 # MTA 
+    5 $MB$ # MB
+    6 $MT$ # MT
+   15 $MTA$ # MTA
    23 $MZ$  # MZ 
-   25 1.200000e+02 # MH 
+   25 $MH$ # MH
 ## Dependent parameters, given by model restrictions.
 ## Those values should be edited following the 
 ## analytical expression. MG5 ignores those values 
@@ -54,10 +54,10 @@ Block yukawa
 ###################################
 ## INFORMATION FOR DECAY
 ###################################
-DECAY   6 1.491500e+00 # WT 
+DECAY   6 $WT$ # WT
 DECAY  23 $WZ$ # WZ 
 DECAY  24 $WW$ # WW 
-DECAY  25 5.753088e-03 # WH 
+DECAY  25 $WH$ # WH
 ## Dependent parameters, given by model restrictions.
 ## Those values should be edited following the 
 ## analytical expression. MG5 ignores those values 

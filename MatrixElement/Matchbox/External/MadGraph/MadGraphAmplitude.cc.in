@@ -86,7 +86,15 @@ void MadGraphAmplitude::doinit() {
   params<<"\n$MZ$ "     <<setiosflags(ios::scientific)  <<getParticleData(ParticleID::Z0)->mass() /GeV<<flush;
   params<<"\n$MW$ "    <<setiosflags(ios::scientific)   <<getParticleData(ParticleID::Wplus)->mass() /GeV<<flush;
   params<<"\n$sw2$ "    <<setiosflags(ios::scientific)   << SM().sin2ThetaW() <<flush;
- 
+  params<<"\n$MT$ "    <<setiosflags(ios::scientific)   << getParticleData(ParticleID::t)->mass() /GeV <<flush;
+  params<<"\n$WT$ "    <<setiosflags(ios::scientific)   << getParticleData(ParticleID::t)->width() /GeV <<flush;
+  params<<"\n$MB$ "    <<setiosflags(ios::scientific)   << getParticleData(ParticleID::b)->mass() /GeV <<flush;
+  params<<"\n$MH$ "    <<setiosflags(ios::scientific)   << getParticleData(ParticleID::h0)->mass() /GeV <<flush;
+  params<<"\n$WH$ "    <<setiosflags(ios::scientific)   << getParticleData(ParticleID::h0)->width() /GeV <<flush;
+  params<<"\n$MTA$ "    <<setiosflags(ios::scientific)   << getParticleData(ParticleID::tauplus)->mass() /GeV <<flush;
+
+  
+  
   string line = theProcessPath+"/"+"processmap.dat";
   ifstream infile(line.c_str());
   string process;
@@ -221,7 +229,7 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
   int perm[hel.size()];
   int heltmp[hel.size()];
   
-   for(int j=0;j<hel.size();j++){
+   for(size_t j=0;j<hel.size();j++){
 
     perm[j] = j;
     heltmp[j]=hel[j];
@@ -372,9 +380,9 @@ bool equalsModulo(unsigned int i, const vector<int>& a, const vector<int>& b) {
   double avg =
     colourCorrelatedME2(ij)*(-c.diagonal()+ (c.scale() > ZERO ? 1. : -1.)*norm(pFactor));
   int iCrossed = ij.first;
-  int invcross[crossingMap().size()];
-   for ( unsigned int k = 0; k < crossingMap().size(); ++k )
-     invcross[crossingMap()[k]]=k;
+//   int invcross[crossingMap().size()];
+//    for ( unsigned int k = 0; k < crossingMap().size(); ++k )
+//      invcross[crossingMap()[k]]=k;
   Complex csCorr = 0.0;
 
   if ( calculateColourSpinCorrelator(ij) ) {

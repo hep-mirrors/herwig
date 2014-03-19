@@ -94,7 +94,7 @@ Energy2 MatchboxScale::renormalizationScale() const {
   vector<Lorentz5Momentum> boson;
 
   
-  Energy res = ZERO;
+  
   tcPDVector::const_iterator itpd = pd.begin();
   for (vector<LorentzMomentum>::const_iterator itp = p.begin() ;
        itp != p.end(); ++itp, ++itpd ) {
