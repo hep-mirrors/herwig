@@ -50,7 +50,7 @@ set Sampler:GlobalMaximumWeight Off
 set Sampler:FlatSubprocesses Off
 set Sampler:MinSelection 0.000001
 set Sampler:AlmostUnweighted Off
-set Sampler:RunCombinationData On
+set Sampler:RunCombinationData Off
 
 ################################################################################
 # Setup the factory object
