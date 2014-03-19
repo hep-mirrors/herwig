@@ -1,0 +1,38 @@
+model=smdiag
+model.options=ewchoose
+symmetries=family,generation
+
+qgraf.options=onshell,notadpole,nosnail
+qgraf.verbatim=true=iprop[phim,phip,chi,H,0,0];
+
+filter.lo= lambda d: d.vertices([H,chi,phip,phim], [em,mum,ne,nmu,U,D,S,C,B], [ep,mup,nebar,nmubar,Ubar,Dbar,Sbar,Cbar,Bbar]) == 0
+filter.nlo= lambda d: d.vertices([H,chi,phip,phim], [em,mum,ne,nmu,U,D,S,C,B], [ep,mup,nebar,nmubar,Ubar,Dbar,Sbar,Cbar,Bbar]) == 0
+
+PSP_check=False
+PSP_verbosity=1
+PSP_chk_threshold1=4
+PSP_chk_threshold2=3
+PSP_chk_kfactor=1000
+
+r2=implicit
+abbrev.level=diagram
+
+###################
+# program options #
+###################
+
+extensions=samurai, golem95, autotools, formopt, derive, numpolvec
+
+diagsum=True
+
+form.bin=tform
+form.tempdir=@FORMTEMPDIR@
+
+qgraf.bin=qgraf
+
+fc.bin=gfortran -O2
+
+samurai.fcflags=-I@GOSAMCONTRIBPREFIX@/include/gosam-contrib
+samurai.ldflags=-L@GOSAMCONTRIBLIBS@ -lgolem -lsamurai -lavh_olo -lqcdloop -lff
+golem95.fcflags=-I@GOSAMCONTRIBPREFIX@/include/gosam-contrib
+golem95.ldflags=-L@GOSAMCONTRIBLIBS@ -lgolem -lsamurai -lavh_olo -lqcdloop -lff
