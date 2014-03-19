@@ -974,7 +974,7 @@ vector<PDT::Colour> ColourBasis::normalOrder(const vector<PDT::Colour>& legs) co
 
 string ColourBasis::file(const vector<PDT::Colour>& sub) const {
 
-  string res = "";
+  string res = name() + "-";
 
   for ( vector<PDT::Colour>::const_iterator lit = sub.begin();
 	lit != sub.end(); ++lit ) {
