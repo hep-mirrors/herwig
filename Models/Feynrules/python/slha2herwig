@@ -1,0 +1,93 @@
+#! /usr/bin/env python
+from __future__ import division
+import os, sys, argparse, re, string
+
+comment_pat = re.compile('\s*#.*$')
+block_pat = re.compile('^\s*block\s+(\w+)',flags=re.I)
+decay_pat = re.compile('^\s*decay\s+(\w+)\s+([-+\.\w]+)',flags=re.I)
+
+data_pat = re.compile('^\s*((\d+\s+)+)(-?\d\S*)\s*$')
+whitespace = re.compile('\s+')
+
+
+PARAMS = {}
+
+# set up the option parser for command line input 
+parser = argparse.ArgumentParser(
+	description='Modify a ThePEG model file with parameters from a matching SLHA file.'
+)
+parser.add_argument(
+	'modelfile', 
+	metavar='ThePEG_model', 
+	help='ThePEG model file to use as template. Must have "# SLHA #"" annotations.'
+)
+parser.add_argument(
+	'slhafile', 
+	metavar='SLHA_file', 
+	help='SLHA spectrum file.'
+)
+
+args = parser.parse_args()
+
+with open(args.modelfile) as f:
+	template = string.Template(f.read())
+
+
+with open(args.slhafile) as f:
+	currentblock = None
+	for line in f:
+		line = comment_pat.sub('',line.rstrip())
+		if not line: continue
+		m = block_pat.match(line)
+		d = decay_pat.match(line)
+		if m:
+			currentblock = m.group(1).upper()
+		elif d:
+			currentblock = None
+			label = 'DECAY_%s' % d.group(1)
+			data = float(d.group(2))
+			PARAMS[label] = data
+		elif currentblock is not None:
+			d = data_pat.match(line)
+			if d:
+				index = whitespace.sub('_',d.group(1).rstrip())
+				try:
+					data  = float(d.group(3))
+				except ValueError:
+					continue
+				label = '%s_%s' % (currentblock, index)
+				#if label in PARAMS:
+				PARAMS[label] = data
+
+
+while True:
+	try:
+		newcontent = template.substitute(PARAMS)
+	except KeyError as e:
+		problemkey = e.args[0]
+		name, suffix = problemkey.rsplit('_',1)
+		if suffix == 'ABS':
+			mass = PARAMS[name]
+			try:
+				mass = mass.real
+			except:
+				pass
+			PARAMS[problemkey] = abs(mass)
+		elif suffix == 'CTAU':
+			hbarc = 197.3269631e-15
+			width = PARAMS[name]
+			ctau = (hbarc / width) if width != 0 else 0
+			PARAMS[problemkey] = ctau
+		elif suffix == 'WCUT':
+			width = PARAMS[name]
+			wcut = 10.0 * width
+			PARAMS[problemkey] = wcut
+		else:
+			PARAMS[problemkey] = 0.0
+	else:
+		break
+
+
+with open('tmp2','w') as f:
+	f.write(newcontent)
+	f.write('\n')

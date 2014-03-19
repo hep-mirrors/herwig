@@ -423,8 +423,8 @@ void  RPVSSSVertex::doinit() {
 	    pseudoChargedCharged_[i1][i2][i3] += (Al[il]*(*mixP)(i1,0)-mu*yl[il]*(*mixP)(i1,1))*
 	      ((*mixC)(i2,il+2)*(*mixC)(i3,il+5)-(*mixC)(i2,il+5)*(*mixC)(i3,il+2));
 	  }
-	  // normalization
-	  pseudoChargedCharged_[i1][i2][i3] *= Complex(0.,-1.)*sqrt(0.5)/g;
+	  // normalization // do not revert to *= , breaks with XCode 5.1
+	  pseudoChargedCharged_[i1][i2][i3] = pseudoChargedCharged_[i1][i2][i3] * Complex(0.,-1.)*sqrt(0.5)/g;
 	}
       }
     }
