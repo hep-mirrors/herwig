@@ -56,7 +56,7 @@ do PPFactory:Process p p l l
 #>>>>>>>>>> for external matrix elements uncomment the following line 
 #>>>>>>>>>> and the amplitude which is able to produce your desired calculation
 
-#erase /Herwig/MatrixElements/Matchbox/PPFactory:Amplitudes
+#clear /Herwig/MatrixElements/Matchbox/PPFactory:Amplitudes
 
 cd /Herwig/MatrixElements/Matchbox/Amplitudes
 
@@ -157,6 +157,9 @@ set /Herwig/Cuts/MassCut:MaxM 116*GeV
 #>>>>>>>>>> MC@NLO-type next-to-leading order for use with dipole shower
 
 set PPFactory:ShowerApproximation DipoleMatching
+
+#>>>>>>>>>> MC@NLO-type next-to-leading order for use with default shower
+
 # set PPFactory:ShowerApproximation QTildeMatching
 
 #>>>>>>>>>> POWHEG-type next-to-leading order

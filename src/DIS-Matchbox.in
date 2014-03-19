@@ -49,7 +49,7 @@ do DISFactory:Process e+ p e+ j
 #>>>>>>>>>> for external matrix elements uncomment the following line
 #>>>>>>>>>> and the amplitude which is able to produce your desired calculation
 
-#erase /Herwig/MatrixElements/Matchbox/DISFactory:Amplitudes
+#clear /Herwig/MatrixElements/Matchbox/DISFactory:Amplitudes
 
 cd /Herwig/MatrixElements/Matchbox/Amplitudes
 
@@ -120,6 +120,9 @@ cd /Herwig/MatrixElements/Matchbox
 #>>>>>>>>>> MC@NLO-type next-to-leading order for use with dipole shower
 
 set DISFactory:ShowerApproximation DipoleMatching
+
+#>>>>>>>>>> MC@NLO-type next-to-leading order for use with default shower
+
 # set DISFactory:ShowerApproximation QTildeMatching
 
 #>>>>>>>>>> POWHEG-type next-to-leading order
