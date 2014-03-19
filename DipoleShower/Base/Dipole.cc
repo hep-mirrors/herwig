@@ -27,7 +27,8 @@ Dipole::Dipole(const pair<PPtr,PPtr>& newParticles,
   : theParticles(newParticles), 
     thePDFs(newPDFs),
     theFractions(newFractions), theIndices(),
-    theScales(ZERO,ZERO) {
+    theScales(sqrt(abs(newParticles.first->scale())),
+	      sqrt(abs(newParticles.second->scale()))) {
   theIndices.first = DipoleIndex(theParticles.first->dataPtr(),
 				 theParticles.second->dataPtr(),
 				 newPDFs.first,newPDFs.second);
