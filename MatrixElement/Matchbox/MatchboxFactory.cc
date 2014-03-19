@@ -544,6 +544,10 @@ void MatchboxFactory::setup() {
     generator()->log() << "Warning: Matching requested for LO run. Matching disabled.\n" << flush;
     showerApproximation(Ptr<ShowerApproximation>::tptr());
   }
+  if ( showerApproximation() && (subtractionData() != "" || subProcessGroups()) ) {
+    generator()->log() << "Warning: Matching requested for plain NLO run. Matching disabled.\n" << flush;
+    showerApproximation(Ptr<ShowerApproximation>::tptr());
+  }
   if ( showerApproximation() ) {
     if ( showerApproximation()->needsSplittingGenerator() ) {
       for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born
