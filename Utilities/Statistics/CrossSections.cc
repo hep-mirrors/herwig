@@ -53,7 +53,7 @@ CrossSections& CrossSections::operator+=(const CrossSections& other) {
   return *this;
 }
 
-void CrossSections::fromXML(XML::Element elem) {
+void CrossSections::fromXML(const XML::Element& elem) {
 
   elem.getFromAttribute("name",theName);
   elem.getFromAttribute("integral",theIntegral);

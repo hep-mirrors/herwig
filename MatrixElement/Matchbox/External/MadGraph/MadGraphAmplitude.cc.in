@@ -54,28 +54,6 @@ void MadGraphAmplitude::doinit() {
   
   MatchboxAmplitude::doinit();
   
-  
- // std::cout.precision(15);
-  //cout<<"                 WH = "<<  getParticleData(ParticleID::H0)->width()   /GeV     <<flush;
-  // cout<<"\n                 WW = "<<  getParticleData(ParticleID::Wplus)->width()    /GeV   <<flush;
-  // cout<<"\n                 WZ = "<<  getParticleData(ParticleID::Z0)->width()     /GeV    <<flush;
-  // cout<<"\n                 WT = "<<  getParticleData(ParticleID::t)->width()    /GeV     <<flush;
-  // 
-  // cout<<"\n                 aS = "<<   SM().alphaS()       <<flush;
-  // cout<<"\n                 Gf = "<<    SM().fermiConstant()*GeV2      <<flush;
-  // cout<<"\n             1/ aEWM1 = "<<     1/SM().alphaEM()     <<flush;
-  // cout<<"\n             1/ aEWMZrunn = "<<1/SM().alphaEM(sqr(91.1876*GeV)) <<flush;
-  // cout<<"\n              aEWMZrunn = "<<SM().alphaEM(sqr(91.1876*GeV)) <<flush;
-  // cout<<"\n              aEWMZ = "<<     1/SM().alphaEMMZ()     <<flush;
-  // cout<<"\n                 MZ = "<<     getParticleData(ParticleID::Z0)->mass() /GeV      <<flush;
-  // cout<<"\n                MTA = "<<     getParticleData(ParticleID::tauplus)->mass() /GeV      <<flush;
-  // cout<<"\n                 MT = "<<     getParticleData(ParticleID::t)->mass()  /GeV     <<flush;
-  // cout<<"\n                 MB = "<<     getParticleData(ParticleID::b)->mass()  /GeV     <<flush;
-  // cout<<"\n                aEW = "<<    SM().alphaEM()       <<flush;
-  // cout<<"\n                 MW = "<<     getParticleData(ParticleID::Wplus)->mass()  /GeV     <<flush;
-  // cout<<"\n                 ee = "<<      2. * sqrt(SM().alphaEMMZ()) * sqrt(M_PI)     <<flush;
-  // cout<<"\n                sw2 = "<<        SM().sin2ThetaW()  <<flush;
- 
   string para= "params.dat";
   ofstream params(para.c_str());
   params<<"$WZ$ "    <<setiosflags(ios::scientific)  <<getParticleData(ParticleID::Z0)->width()     /GeV;
@@ -141,6 +119,7 @@ const
   for (PDVector::const_iterator it=p.begin();it!=p.end();it++)
     orderFileName +=(*it)->PDGName();
   orderFileName+=".MG";
+  
   orderFileName=theProcessPath+"/"+orderFileName;
   ofstream orderFile(orderFileName.c_str());
   int k=0;
@@ -148,6 +127,20 @@ const
     orderFile <<(*it)->PDGName()<<" ";k+=1;if (k==2)orderFile<<" > ";
   }
   orderFile << flush;
+
+
+  ifstream ifile(orderFileName.c_str());
+  if (!ifile) {
+     string cmd = "mkdir -p " + theProcessPath;
+     std::system(cmd.c_str());
+     ofstream orderFile2(orderFileName.c_str());
+     int k=0;
+     for (PDVector::const_iterator it=p.begin();it!=p.end();it++){
+        orderFile2 <<(*it)->PDGName()<<" ";k+=1;if (k==2)orderFile2<<" > ";
+     }
+     orderFile2 << flush;
+  }
+
   
   return true;
   
@@ -172,6 +165,12 @@ void MadGraphAmplitude::prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr me) {
     
     cmd +=theMG5Path+"/bin "+theProcessPath;
     std::system(cmd.c_str());
+
+    ifstream ifile((theProcessPath+"/"+orderFileName).c_str());
+    if (!ifile) {
+	throw InitException()
+      << "see above...\n";
+    }
     
     string line = theProcessPath+"/processmap.dat";
     ifstream infile(line.c_str());

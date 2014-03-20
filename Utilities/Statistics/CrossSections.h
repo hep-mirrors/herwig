@@ -89,7 +89,7 @@ namespace Statistics {
     /**
      * Fill run data from an XML element
      */
-    void fromXML(XML::Element);
+    void fromXML(const XML::Element&);
 
     /**
      * Return an XML element for the data of this run
