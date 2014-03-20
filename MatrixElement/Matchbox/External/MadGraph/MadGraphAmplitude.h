@@ -78,6 +78,12 @@ public:
   virtual bool noCorrelations() const { return false; }  
 
   /**
+   * Return true, if this amplitude is capable of calculating one-loop
+   * (QCD) corrections.
+   */
+  virtual bool haveOneLoop() const { return false; }
+
+  /**
    * Calculate the tree level amplitudes for the phasespace point
    * stored in lastXComb.
    */
