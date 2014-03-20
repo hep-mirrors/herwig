@@ -227,6 +227,31 @@ void GeneralSampler::rejectLast() {
 
 void GeneralSampler::updateSamplers() {
 
+  map<double,Ptr<BinSampler>::ptr> checkedSamplers;
+  for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers().begin();
+	s != samplers().end(); ++s ) {
+    if ( s->second->averageAbsWeight() == 0.0 ) {
+      generator()->log() << "Warning: no phase space points with non-zero cross section\n"
+			 << "could be obtained for the process: "
+			 << s->second->process() << "\n"
+			 << "This process will not be considered. Try increasing InitialPoints.\n"
+			 << flush;
+      if ( s->second->nanPoints() ) {
+	generator()->log() << "Warning: " 
+			   << s->second->nanPoints() << " of "
+			   << s->second->allPoints() << " points with nan or inf weight\n"
+			   << "in " << s->second->process() << "\n" << flush;
+      }
+      continue;
+    }
+    checkedSamplers.insert(*s);
+  }
+
+  theSamplers = checkedSamplers;
+
+  if ( samplers().empty() )
+    return;
+
   double allMax = 0.0;
 
   double sumbias = 0.;
@@ -239,9 +264,6 @@ void GeneralSampler::updateSamplers() {
     sumbias += bias;
     allMax = max(allMax,s->second->maxWeight());
   }
-
-  if ( sumbias == 0.0 )
-    sumbias = 1.0;
 
   double nsumbias = 0.0;
   bool needAdjust = false;
