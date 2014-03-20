@@ -73,10 +73,9 @@ public:
   virtual unsigned int orderInGem() const { return theOrderInGem; }
 
   /**
-   * Return true, if this amplitude is capable of calculating one-loop
-   * (QCD) corrections.
+   * Return true, if this amplitude will not require colour correlations.
    */
-  virtual bool haveOneLoop() const { return true; }
+  virtual bool noCorrelations() const { return false; }  
 
   /**
    * Calculate the tree level amplitudes for the phasespace point
