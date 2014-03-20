@@ -1,32 +1,106 @@
+###################
+# model           #
+###################
 model=smdiag
+
+###################
+# needed to pick  #
+# EW scheme auto- #
+# matically       #
+###################
 model.options=ewchoose
+
+###################
+# if model=smdiag #
+# need symmetries #
+# =generation     #
+###################
 symmetries=family,generation
 
+###################
+# qgraf options   #
+# for loop topo-  #
+# logies          #
+###################
 qgraf.options=onshell,notadpole,nosnail
+
+###################
+# qgraf options   #
+# to pick propa-  #
+# gators          #
+###################
+
+# iprop is for all
+# propagators
+# bridge only for
+# tree-level
+# chord only for
+# loop-propagators
+
 qgraf.verbatim=true=iprop[phim,phip,chi,H,0,0];
+# qgraf.verbatim=true=iprop[A,Z,C,S,B,T,phim,phip,chi,H,0,0];
+# qgraf.verbatim=true=iprop[C,S,B,T,phim,phip,chi,H,0,0];
+
+# qgraf.verbatim=true=bridge[ep,mup,taup,ne,nmu,ntau,A,chi,phip,phim,H,0, 0];\n\
+# qgraf.verbatim=true=bridge[ep,mup,taup,ne,nmu,ntau, 0, 0];\n\
+# true=bridge[Wp,Wm,2,10];\n\
+# true=iprop[Z,1,10];
+
+# qgraf.verbatim.lo=
+# qgraf.verbatim.nlo=
+
+###################
+# filter options  #
+# in diagram ge-  #
+# neration        #
+###################
+
+filter.nlo= lambda d: not d.isScaleless()
 
 # filter.lo= lambda d: d.vertices([H,chi,phip,phim], [em,mum,ne,nmu,U,D,S,C,B], [ep,mup,nebar,nmubar,Ubar,Dbar,Sbar,Cbar,Bbar]) == 0
 # filter.nlo= lambda d: d.vertices([H,chi,phip,phim], [em,mum,ne,nmu,U,D,S,C,B], [ep,mup,nebar,nmubar,Ubar,Dbar,Sbar,Cbar,Bbar]) == 0
+
+# filter.lo=lambda d: d.vertices([H,chi,phip,phim], [em,mum,ne,nmu,U,D,S,C,B], [ep,mup,nebar,nmubar,Ubar,Dbar,Sbar,Cbar,Bbar]) == 0\
+# and d.vertices(A,[em,mum,ne,nmu], [ep,mup,nebar,nmubar])==0
+# filter.nlo=lambda d: d.vertices([H,chi,phip,phim], [em,mum,ne,nmu,U,D,S,C,B], [ep,mup,nebar,nmubar,Ubar,Dbar,Sbar,Cbar,Bbar]) == 0\
+# and d.vertices(A,[em,mum,ne,nmu], [ep,mup,nebar,nmubar])==0
+
+# filter.nlo= lambda d: d.loopvertices(...)==0
+# filter.nlo= lambda d: d.iprop(...)==0
+# filter.nlo= lambda d: d.isNf()==0
+
+###################
+# program options #
+###################
 
 PSP_check=False
 PSP_verbosity=1
 PSP_chk_threshold1=4
 PSP_chk_threshold2=3
 PSP_chk_kfactor=1000
+# PSP_verbosity=2
+# PSP_chk_kfactor=10000
 
 r2=implicit
 abbrev.level=diagram
 
-###################
-# program options #
-###################
+# debug=all
 
-extensions=samurai, golem95, autotools, formopt, derive, numpolvec
+extensions=samurai, golem95, autotools, derive, numpolvec, formopt
+# extensions=samurai, golem95, autotools, derive, numpolvec
+# extensions=samurai, golem95, autotools, derive
 
 diagsum=True
 
+# group=True
+
+###################
+# contrib options #
+###################
+
 form.bin=tform
 form.tempdir=@FORMTEMPDIR@
+#form.threads=1
 
 qgraf.bin=qgraf
 
