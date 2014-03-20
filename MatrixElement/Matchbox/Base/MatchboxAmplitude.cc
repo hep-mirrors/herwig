@@ -363,7 +363,8 @@ Lorentz5Momentum MatchboxAmplitude::amplitudeMomentum(int i) const {
   if ( iCrossed < 2 )
     res = -res;
   res.setMass(meMomenta()[iCrossed].mass());
-  res.rescaleRho();
+  Energy2 rho = res.t()*res.t() - res.mass2();
+  res.setRho(sqrt(abs(rho)));
   return res;
 }
 
