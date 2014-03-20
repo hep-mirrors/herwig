@@ -119,7 +119,6 @@ const
   for (PDVector::const_iterator it=p.begin();it!=p.end();it++)
     orderFileName +=(*it)->PDGName();
   orderFileName+=".MG";
-  
   orderFileName=theProcessPath+"/"+orderFileName;
   ofstream orderFile(orderFileName.c_str());
   int k=0;
@@ -127,20 +126,6 @@ const
     orderFile <<(*it)->PDGName()<<" ";k+=1;if (k==2)orderFile<<" > ";
   }
   orderFile << flush;
-
-
-  ifstream ifile(orderFileName.c_str());
-  if (!ifile) {
-     string cmd = "mkdir -p " + theProcessPath;
-     std::system(cmd.c_str());
-     ofstream orderFile2(orderFileName.c_str());
-     int k=0;
-     for (PDVector::const_iterator it=p.begin();it!=p.end();it++){
-        orderFile2 <<(*it)->PDGName()<<" ";k+=1;if (k==2)orderFile2<<" > ";
-     }
-     orderFile2 << flush;
-  }
-
   
   return true;
   
@@ -224,7 +209,7 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
 {
   
   double units = pow(sqrt(lastSHat())/GeV,hel.size()-4) ;
-  units *= pow( sqrt(SM().alphaEM()/SM().alphaEMMZ()), orderInGem())*pow(sqrt(SM().alphaS()/0.2), orderInGs());
+  //units *= pow( sqrt(SM().alphaEM()/SM().alphaEMMZ()), orderInGem())*pow(sqrt(SM().alphaS()/0.2), orderInGs());
   int perm[hel.size()];
   int heltmp[hel.size()];
   
@@ -238,6 +223,7 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
   if (colourindexmap.find(i)!= colourindexmap.end())ii=colourindexmap.find(i)->second;
   else{
    
+    colourBasis()->prepare(theLastXComb->diagrams(),noCorrelations());
     set<vector<size_t> > a =colourOrdering(i);
     
     for(int it=0; it<MG_NCol(tmpid);it++){
