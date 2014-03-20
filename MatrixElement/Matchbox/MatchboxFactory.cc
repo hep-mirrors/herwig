@@ -375,6 +375,9 @@ void MatchboxFactory::setup() {
 
   // check for consistent conventions on virtuals, if we are to include them
   if ( virtualContributions() ) {
+    if ( !haveVirtuals ) {
+      throw InitException() << "Could not find amplitudes for all virtual contributions needed.\n";
+    }
     if ( virtualsAreDR && virtualsAreCDR ) {
       throw InitException() << "Virtual corrections use inconsistent regularization schemes.\n";
     }
@@ -383,9 +386,6 @@ void MatchboxFactory::setup() {
 	 (virtualsAreBDK && virtualsAreExpanded) ||
 	 (!virtualsAreCS && !virtualsAreBDK && !virtualsAreExpanded) ) {
       throw InitException() << "Virtual corrections use inconsistent conventions on finite terms.\n";
-    }
-    if ( !haveVirtuals ) {
-      throw InitException() << "Could not find amplitudes for all virtual contributions needed.\n";
     }
   }
 
