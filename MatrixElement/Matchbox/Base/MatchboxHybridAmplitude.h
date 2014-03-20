@@ -232,6 +232,7 @@ public:
   virtual void setXComb(tStdXCombPtr xc) {
     treeLevelAmplitude()->setXComb(xc);
     oneLoopAmplitude()->setXComb(xc);
+    lastMatchboxXComb(xc);
   }
 
   /**
