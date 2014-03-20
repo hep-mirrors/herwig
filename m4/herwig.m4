@@ -521,6 +521,7 @@ AS_IF([test "x$with_openloops" != "xno" -a "x$have_openloops" = "xno"],
 AM_CONDITIONAL(HAVE_OPENLOOPS,[test "x$have_openloops" = "xlib" -o "x$have_openloops" = "xlib64"])
 
 if test "x$have_openloops" = "xlib" -o "x$have_openloops" = "xlib64" ; then
+        OPENLOOPSPREFIX=${with_openloops}
      	LOAD_OPENLOOPS="library"
      	CREATE_OPENLOOPS="create"
      	INSERT_OPENLOOPS="insert"
@@ -534,6 +535,7 @@ else
      	MKDIR_OPENLOOPS="# mkdir"
 fi
 
+AC_SUBST([OPENLOOPSPREFIX])
 AC_SUBST([LOAD_OPENLOOPS])
 AC_SUBST([CREATE_OPENLOOPS])
 AC_SUBST([INSERT_OPENLOOPS])
