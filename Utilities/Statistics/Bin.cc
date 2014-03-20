@@ -34,7 +34,7 @@ Bin& Bin::operator-=(const Bin& other) {
   return *this;
 }
 
-void Bin::fromXML(XML::Element elem) {
+void Bin::fromXML(const XML::Element& elem) {
 
   elem.getFromAttribute("lowerBound",theBoundaries.first);
   elem.getFromAttribute("upperBound",theBoundaries.second);
