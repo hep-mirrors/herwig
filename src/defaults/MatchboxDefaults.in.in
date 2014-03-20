@@ -339,6 +339,8 @@ insert DiagramGenerator:Vertices 0 /Herwig/Vertices/WWWVertex
 insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFHVertex
 insert DiagramGenerator:Vertices 0 /Herwig/Vertices/HGGVertex
 
+insert DiagramGenerator:ExcludeInternal 0 /Herwig/Particles/h0
+
 create Herwig::ProcessData ProcessData
 
 set /Herwig/MatrixElements/Matchbox/Factory:DiagramGenerator DiagramGenerator
