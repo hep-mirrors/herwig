@@ -65,6 +65,8 @@ cd /Herwig/MatrixElements/Matchbox/Amplitudes
 #create Herwig::GoSamAmplitude GoSamAmplitude
 #set GoSamAmplitude:InstallPath /Desired/Install/Path
 #insert /Herwig/MatrixElements/Matchbox/PPFactory:Amplitudes 0 GoSamAmplitude
+#set /Herwig/Model:EW/Scheme alphaMZScheme
+#set /Herwig/Model:EW/RecalculateEW On
 
 #MadGraph   (until now only Born type matrix elements: Born, Real, Subtraction, Insertions)
 #library HwMatchboxMadGraph.so
