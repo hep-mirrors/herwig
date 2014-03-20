@@ -431,6 +431,9 @@ AC_ARG_WITH([gosam-contrib],
 
 AC_MSG_RESULT([$with_gosam_contrib])
 
+AS_IF([test "x$with_gosam_contrib" = "xno" -a "x$with_gosam" != "xno"],
+      [AC_MSG_ERROR([GoSam requested without requesting GoSam-Contrib])])
+
 AS_IF([test "x$with_gosam_contrib" != "xno"],
       [AC_CHECK_FILES(
       ${with_gosam_contrib}/lib/libsamurai.so,
@@ -521,6 +524,7 @@ AS_IF([test "x$with_openloops" != "xno" -a "x$have_openloops" = "xno"],
 AM_CONDITIONAL(HAVE_OPENLOOPS,[test "x$have_openloops" = "xlib" -o "x$have_openloops" = "xlib64"])
 
 if test "x$have_openloops" = "xlib" -o "x$have_openloops" = "xlib64" ; then
+        OPENLOOPSPREFIX=${with_openloops}
      	LOAD_OPENLOOPS="library"
      	CREATE_OPENLOOPS="create"
      	INSERT_OPENLOOPS="insert"
@@ -534,6 +538,7 @@ else
      	MKDIR_OPENLOOPS="# mkdir"
 fi
 
+AC_SUBST([OPENLOOPSPREFIX])
 AC_SUBST([LOAD_OPENLOOPS])
 AC_SUBST([CREATE_OPENLOOPS])
 AC_SUBST([INSERT_OPENLOOPS])
