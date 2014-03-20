@@ -431,6 +431,9 @@ AC_ARG_WITH([gosam-contrib],
 
 AC_MSG_RESULT([$with_gosam_contrib])
 
+AS_IF([test "x$with_gosam_contrib" = "xno" -a "x$with_gosam" != "xno"],
+      [AC_MSG_ERROR([GoSam requested without requesting GoSam-Contrib])])
+
 AS_IF([test "x$with_gosam_contrib" != "xno"],
       [AC_CHECK_FILES(
       ${with_gosam_contrib}/lib/libsamurai.so,
