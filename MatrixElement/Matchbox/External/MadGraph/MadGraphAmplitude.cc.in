@@ -119,6 +119,7 @@ const
   for (PDVector::const_iterator it=p.begin();it!=p.end();it++)
     orderFileName +=(*it)->PDGName();
   orderFileName+=".MG";
+  
   orderFileName=theProcessPath+"/"+orderFileName;
   ofstream orderFile(orderFileName.c_str());
   int k=0;
@@ -126,6 +127,20 @@ const
     orderFile <<(*it)->PDGName()<<" ";k+=1;if (k==2)orderFile<<" > ";
   }
   orderFile << flush;
+
+
+  ifstream ifile(orderFileName.c_str());
+  if (!ifile) {
+     string cmd = "mkdir -p " + theProcessPath;
+     std::system(cmd.c_str());
+     ofstream orderFile2(orderFileName.c_str());
+     int k=0;
+     for (PDVector::const_iterator it=p.begin();it!=p.end();it++){
+        orderFile2 <<(*it)->PDGName()<<" ";k+=1;if (k==2)orderFile2<<" > ";
+     }
+     orderFile2 << flush;
+  }
+
   
   return true;
   
