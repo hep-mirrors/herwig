@@ -1,8 +1,10 @@
 if WANT_DIPOLE
-noinst_LTLIBRARIES = libHwMatchboxBuiltinAmplitudes.la
+pkglib_LTLIBRARIES = HwMatchboxBuiltin.la
 endif
 
-libHwMatchboxBuiltinAmplitudes_la_SOURCES = \
+HwMatchboxBuiltin_la_LDFLAGS = -module -version-info 1:0:0
+
+HwMatchboxBuiltin_la_SOURCES = \
 MatchboxCurrents.h MatchboxCurrents.cc \
 MatchboxZGammaAmplitude.h MatchboxZGammaAmplitude.cc \
 MatchboxAmplitudellbarqqbar.cc \

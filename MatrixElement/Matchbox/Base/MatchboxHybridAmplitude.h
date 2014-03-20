@@ -232,6 +232,7 @@ public:
   virtual void setXComb(tStdXCombPtr xc) {
     treeLevelAmplitude()->setXComb(xc);
     oneLoopAmplitude()->setXComb(xc);
+    lastMatchboxXComb(xc);
   }
 
   /**
@@ -388,17 +389,23 @@ public:
   }
 
   /**
+   * Adjust the virtual symmetry factor conventions to the tree level
+   * one
+   */
+  double symmetryRatio() const;
+
+  /**
    * If defined, return the coefficient of the pole in epsilon^2
    */
   virtual double oneLoopDoublePole() const { 
-    return oneLoopAmplitude()->oneLoopDoublePole();
+    return symmetryRatio()*oneLoopAmplitude()->oneLoopDoublePole();
   }
 
   /**
    * If defined, return the coefficient of the pole in epsilon
    */
   virtual double oneLoopSinglePole() const { 
-    return oneLoopAmplitude()->oneLoopSinglePole();
+    return symmetryRatio()*oneLoopAmplitude()->oneLoopSinglePole();
   }
 
   /**
@@ -411,7 +418,7 @@ public:
    * Return the one-loop/tree interference.
    */
   virtual double oneLoopInterference() const {
-    return oneLoopAmplitude()->oneLoopInterference();
+    return symmetryRatio()*oneLoopAmplitude()->oneLoopInterference();
   }
 
   /**

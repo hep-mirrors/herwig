@@ -155,7 +155,7 @@ void MEMatching::persistentInput(PersistentIStream & is, int) {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<MEMatching,Herwig::ShowerApproximation>
-  describeHerwigMEMatching("Herwig::MEMatching", "HwMatchbox.so");
+  describeHerwigMEMatching("Herwig::MEMatching", "Herwig.so");
 
 void MEMatching::Init() {
 

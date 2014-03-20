@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 from __future__ import division
 import os, sys, pprint, argparse, re
-from string import strip
+from string import strip, Template
 
 # add path to the ufo conversion modules
 modulepath = os.path.join("@PKGLIBDIR@",'python')
@@ -123,6 +123,7 @@ static Parameter<{modelname}, {type}> interface{pname}
 """
 
 interfaceDecls = []
+modelparameters = {}
 
 for p in FR.all_parameters:
     value = parmsubs[p.name]
@@ -137,10 +138,18 @@ for p in FR.all_parameters:
                                        value=value,
                                        type=typemap(p.type)) 
             )
-            parmmodelconstr.append('set %s:%s %s' % (modelname, p.name, value))
+            if hasattr(p,'lhablock'):
+                lhalabel = '{lhablock}_{lhacode}'.format( lhablock=p.lhablock, lhacode='_'.join(map(str,p.lhacode)) )
+                parmmodelconstr.append('set %s:%s ${%s}' % (modelname, p.name, lhalabel))
+                modelparameters[lhalabel] = value
+                parmsubs[p.name] = lhalabel
+            else:
+                parmmodelconstr.append('set %s:%s %s' % (modelname, p.name, value))
+                parmsubs[p.name] = value
             parmconstr.append('%s_(%s)' % (p.name, value))
         else :
-            parmconstr.append('%s_(%s)' % (p.name, 0.))
+            parmconstr.append('%s_()' % p.name)
+            parmsubs[p.name] = value
     elif p.type == 'complex':
         value = complex(value)
         if p.nature == 'external':
@@ -158,10 +167,9 @@ for p in FR.all_parameters:
             parmconstr.append('%s_(%s,%s)' % (p.name, value.real, value.imag))
         else :
             parmconstr.append('%s_(%s,%s)' % (p.name, 0.,0.))
+        parmsubs[p.name] = value
     else:
         raise Exception('Unknown data type "%s".' % p.type)
-    parmsubs[p.name] = value
-
 
     parmdecls.append('  %s %s_;' % (typemap(p.type), p.name))
     parmgetters.append('  %s %s() const { return %s_; }' % (typemap(p.type),p.name, p.name))
@@ -519,7 +527,7 @@ def get_vertices():
     return ''.join(vlist)
 
 
-plist, names = thepeg_particles(FR,parmsubs,modelname)
+plist, names = thepeg_particles(FR,parmsubs,modelname,modelparameters)
 
 particlelist = [
     "# insert HPConstructor:Outgoing 0 /Herwig/{n}/Particles/{p}".format(n=modelname,p=p)
@@ -545,9 +553,13 @@ if should_print():
                MODEL_HWIN.substitute({ 'ModelName' : modelname,
                                        'Particles' : particlelist })
     )
+
+    modeltemplate = Template( MODELINFILE.substitute(modelfilesubs) )
+
     writeFile( '%s.h' % modelname,      MODEL_H.substitute(parmtextsubs) )
     writeFile( '%s.cc' % modelname,     MODEL_CC.substitute(parmtextsubs) )
-    writeFile( modelname +'.model', MODELINFILE.substitute(modelfilesubs) )
+    writeFile( modelname +'.template', modeltemplate.template )
+    writeFile( modelname +'.model', modeltemplate.substitute( modelparameters ) )
     # copy the Makefile-FR to current directory,
     # replace with the modelname for compilation
     with open(os.path.join(modulepath,'Makefile-FR'),'r') as orig:

@@ -117,7 +117,7 @@ double DipolePKOperator::KBarqg() const {
   double res = 0.0;
   double factor = CF * ( ( (1.+sqr(1.-z)) / z ) * log((1.-z)/z) + z ) / z;
   int nl= lastBorn()->nLight();
-  for ( int f = -lastBorn()->nLight(); f < nl; ++f ) {
+  for ( int f = -lastBorn()->nLight(); f <= nl; ++f ) {
     if ( f == 0 )
       continue;
     res += PDFxByz(getParticleData(f))*factor;
@@ -138,7 +138,7 @@ double DipolePKOperator::Pqg() const {
   double res = 0.0;
   double factor = CF * ( 1. + sqr(1.-z) ) / sqr(z);
   int nl = lastBorn()->nLight();
-  for ( int f = -lastBorn()->nLight(); f < nl; ++f ) {
+  for ( int f = -lastBorn()->nLight(); f <= nl; ++f ) {
     if ( f == 0 )
       continue;
     res += PDFxByz(getParticleData(f))*factor;
@@ -464,7 +464,7 @@ void DipolePKOperator::persistentInput(PersistentIStream & is, int) {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<DipolePKOperator,MatchboxInsertionOperator>
-describeHerwigDipolePKOperator("Herwig::DipolePKOperator", "HwMatchbox.so");
+describeHerwigDipolePKOperator("Herwig::DipolePKOperator", "Herwig.so");
 
 void DipolePKOperator::Init() {
 

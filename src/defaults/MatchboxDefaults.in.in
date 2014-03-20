@@ -1,0 +1,485 @@
+################################################################################
+#
+# Default setup for Matchbox matrix element generation.
+# You do not need to make any change in here; processes of
+# interest can be chosen in the standard input files.
+#
+################################################################################
+
+################################################################################
+# Load libraries
+################################################################################
+
+library JetCuts.so
+library FastJetFinder.so
+library HwMatchboxScales.so
+library HwMatchboxCuts.so
+library HwSampling.so
+library HwColorFull.so
+library HwMatchboxBuiltin.so
+
+################################################################################
+# Integration/sampling
+################################################################################
+
+mkdir /Herwig/Samplers
+cd /Herwig/Samplers
+
+create Herwig::BinSampler FlatBinSampler
+set FlatBinSampler:InitialPoints 1000
+set FlatBinSampler:UseAllIterations No
+
+create Herwig::CellGridSampler CellGridSampler
+set CellGridSampler:InitialPoints 10000
+set CellGridSampler:ExplorationPoints 1000
+set CellGridSampler:ExplorationSteps 8
+set CellGridSampler:Gain 0.3
+set CellGridSampler:Epsilon 1.0
+set CellGridSampler:MinimumSelection 0.000001
+set CellGridSampler:NIterations 1
+set CellGridSampler:EnhancementFactor 1
+set CellGridSampler:UseAllIterations No
+
+create Herwig::GeneralSampler Sampler
+set Sampler:UpdateAfter 1000
+
+set Sampler:BinSampler CellGridSampler
+
+set Sampler:AddUpSamplers Off
+set Sampler:GlobalMaximumWeight Off
+set Sampler:FlatSubprocesses Off
+set Sampler:MinSelection 0.000001
+set Sampler:AlmostUnweighted Off
+set Sampler:RunCombinationData Off
+
+################################################################################
+# Setup the factory object
+################################################################################
+
+mkdir /Herwig/MatrixElements/Matchbox
+cd /Herwig/MatrixElements/Matchbox
+
+create Herwig::MatchboxFactory Factory
+
+do Factory:StartParticleGroup p
+insert Factory:ParticleGroup 0 /Herwig/Particles/b
+insert Factory:ParticleGroup 0 /Herwig/Particles/bbar
+insert Factory:ParticleGroup 0 /Herwig/Particles/c
+insert Factory:ParticleGroup 0 /Herwig/Particles/cbar
+insert Factory:ParticleGroup 0 /Herwig/Particles/s
+insert Factory:ParticleGroup 0 /Herwig/Particles/sbar
+insert Factory:ParticleGroup 0 /Herwig/Particles/d
+insert Factory:ParticleGroup 0 /Herwig/Particles/dbar
+insert Factory:ParticleGroup 0 /Herwig/Particles/u
+insert Factory:ParticleGroup 0 /Herwig/Particles/ubar
+insert Factory:ParticleGroup 0 /Herwig/Particles/g
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup j
+insert Factory:ParticleGroup 0 /Herwig/Particles/b
+insert Factory:ParticleGroup 0 /Herwig/Particles/bbar
+insert Factory:ParticleGroup 0 /Herwig/Particles/c
+insert Factory:ParticleGroup 0 /Herwig/Particles/cbar
+insert Factory:ParticleGroup 0 /Herwig/Particles/s
+insert Factory:ParticleGroup 0 /Herwig/Particles/sbar
+insert Factory:ParticleGroup 0 /Herwig/Particles/d
+insert Factory:ParticleGroup 0 /Herwig/Particles/dbar
+insert Factory:ParticleGroup 0 /Herwig/Particles/u
+insert Factory:ParticleGroup 0 /Herwig/Particles/ubar
+insert Factory:ParticleGroup 0 /Herwig/Particles/g
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup u
+insert Factory:ParticleGroup 0 /Herwig/Particles/u
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup ubar
+insert Factory:ParticleGroup 0 /Herwig/Particles/ubar
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup d
+insert Factory:ParticleGroup 0 /Herwig/Particles/d
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup dbar
+insert Factory:ParticleGroup 0 /Herwig/Particles/dbar
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup s
+insert Factory:ParticleGroup 0 /Herwig/Particles/s
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup sbar
+insert Factory:ParticleGroup 0 /Herwig/Particles/sbar
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup c
+insert Factory:ParticleGroup 0 /Herwig/Particles/c
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup cbar
+insert Factory:ParticleGroup 0 /Herwig/Particles/cbar
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup b
+insert Factory:ParticleGroup 0 /Herwig/Particles/b
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup bbar
+insert Factory:ParticleGroup 0 /Herwig/Particles/bbar
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup g
+insert Factory:ParticleGroup 0 /Herwig/Particles/g
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup gamma
+insert Factory:ParticleGroup 0 /Herwig/Particles/gamma
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup h0
+insert Factory:ParticleGroup 0 /Herwig/Particles/h0
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup W+
+insert Factory:ParticleGroup 0 /Herwig/Particles/W+
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup W-
+insert Factory:ParticleGroup 0 /Herwig/Particles/W-
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup Z0
+insert Factory:ParticleGroup 0 /Herwig/Particles/Z0
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup e+
+insert Factory:ParticleGroup 0 /Herwig/Particles/e+
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup e-
+insert Factory:ParticleGroup 0 /Herwig/Particles/e-
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup mu+
+insert Factory:ParticleGroup 0 /Herwig/Particles/mu+
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup mu-
+insert Factory:ParticleGroup 0 /Herwig/Particles/mu-
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup tau+
+insert Factory:ParticleGroup 0 /Herwig/Particles/tau+
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup tau-
+insert Factory:ParticleGroup 0 /Herwig/Particles/tau-
+do Factory:EndParticleGroup
+
+
+
+do Factory:StartParticleGroup l
+insert Factory:ParticleGroup 0 /Herwig/Particles/e+
+insert Factory:ParticleGroup 0 /Herwig/Particles/mu+
+insert Factory:ParticleGroup 0 /Herwig/Particles/e-
+insert Factory:ParticleGroup 0 /Herwig/Particles/mu-
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup nu
+insert Factory:ParticleGroup 0 /Herwig/Particles/nu_e
+insert Factory:ParticleGroup 0 /Herwig/Particles/nu_mu
+insert Factory:ParticleGroup 0 /Herwig/Particles/nu_ebar
+insert Factory:ParticleGroup 0 /Herwig/Particles/nu_mubar
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup l+
+insert Factory:ParticleGroup 0 /Herwig/Particles/e+
+insert Factory:ParticleGroup 0 /Herwig/Particles/mu+
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup l-
+insert Factory:ParticleGroup 0 /Herwig/Particles/e-
+insert Factory:ParticleGroup 0 /Herwig/Particles/mu-
+do Factory:EndParticleGroup
+
+################################################################################
+# Setup amplitudes
+################################################################################
+
+cd /Herwig/MatrixElements/Matchbox
+mkdir Amplitudes
+cd Amplitudes
+
+create ColorFull::TraceBasis TraceBasis
+cp TraceBasis LargeNTraceBasis
+
+mkdir Builtin
+cd Builtin
+
+create Herwig::SimpleColourBasis SimpleColourBasis
+
+create Herwig::SimpleColourBasis LargeNColourBasis
+set LargeNColourBasis:LargeN On
+
+create Herwig::MatchboxAmplitudellbarqqbar Amplitudellbarqqbar
+set Amplitudellbarqqbar:ColourBasis SimpleColourBasis
+
+create Herwig::MatchboxAmplitudellbarqqbarg Amplitudellbarqqbarg
+set Amplitudellbarqqbarg:ColourBasis SimpleColourBasis
+
+create Herwig::MatchboxAmplitudellbarqqbargg Amplitudellbarqqbargg
+set Amplitudellbarqqbargg:ColourBasis SimpleColourBasis
+
+create Herwig::MatchboxAmplitudellbarqqbarqqbar Amplitudellbarqqbarqqbar
+set Amplitudellbarqqbarqqbar:ColourBasis SimpleColourBasis
+
+create Herwig::MatchboxAmplitudelnuqqbar Amplitudelnuqqbar
+set Amplitudelnuqqbar:ColourBasis SimpleColourBasis
+
+create Herwig::MatchboxAmplitudelnuqqbarg Amplitudelnuqqbarg
+set Amplitudelnuqqbarg:ColourBasis SimpleColourBasis
+
+create Herwig::MatchboxAmplitudelnuqqbargg Amplitudelnuqqbargg
+set Amplitudelnuqqbargg:ColourBasis SimpleColourBasis
+
+create Herwig::MatchboxAmplitudelnuqqbarqqbar Amplitudelnuqqbarqqbar
+set Amplitudelnuqqbarqqbar:ColourBasis SimpleColourBasis
+
+create Herwig::MatchboxAmplitudehgg Amplitudehgg
+set Amplitudehgg:ColourBasis SimpleColourBasis
+
+create Herwig::MatchboxAmplitudehggg Amplitudehggg
+set Amplitudehggg:ColourBasis SimpleColourBasis
+
+create Herwig::MatchboxAmplitudehqqbarg Amplitudehqqbarg
+set Amplitudehqqbarg:ColourBasis SimpleColourBasis
+
+
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudellbarqqbar
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudellbarqqbarg
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudellbarqqbargg
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudellbarqqbarqqbar
+
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudelnuqqbar
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudelnuqqbarg
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudelnuqqbargg
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudelnuqqbarqqbar
+
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudehgg
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudehggg
+
+
+################################################################################
+# Setup utilities for matching
+################################################################################
+
+cd /Herwig/MatrixElements/Matchbox
+
+create Herwig::MEMatching MEMatching
+set MEMatching:RestrictPhasespace Off
+set MEMatching:BornScaleInSubtraction RealScale
+set MEMatching:RealEmissionScaleInSubtraction RealScale
+set MEMatching:EmissionScaleInSubtraction RealScale
+set MEMatching:BornScaleInSplitting ShowerScale
+set MEMatching:RealEmissionScaleInSplitting ShowerScale
+set MEMatching:EmissionScaleInSplitting ShowerScale
+set MEMatching:FFPtCut 1.0*GeV
+set MEMatching:FIPtCut 1.0*GeV
+set MEMatching:IIPtCut 1.0*GeV
+
+create Herwig::ShowerApproximationGenerator MECorrectionHandler
+set MECorrectionHandler:ShowerApproximation MEMatching
+create Herwig::FlatInvertiblePhasespace InvertiblePhasespace
+set MECorrectionHandler:Phasespace InvertiblePhasespace
+
+create Herwig::DipoleMatching DipoleMatching HwDipoleMatching.so
+set DipoleMatching:LargeNBasis /Herwig/MatrixElements/Matchbox/Amplitudes/Builtin/LargeNColourBasis
+set DipoleMatching:RestrictPhasespace On
+set DipoleMatching:BornScaleInSubtraction BornScale
+set DipoleMatching:RealEmissionScaleInSubtraction BornScale
+set DipoleMatching:EmissionScaleInSubtraction BornScale
+set DipoleMatching:FFPtCut 1.0*GeV
+set DipoleMatching:FIPtCut 1.0*GeV
+set DipoleMatching:IIPtCut 1.0*GeV
+
+create Herwig::QTildeMatching QTildeMatching HwQTildeMatching.so
+set QTildeMatching:LargeNBasis /Herwig/MatrixElements/Matchbox/Amplitudes/Builtin/LargeNColourBasis
+# set this to off, if the shower pt veto is off
+set QTildeMatching:RestrictPhasespace On
+set QTildeMatching:BornScaleInSubtraction BornScale
+set QTildeMatching:RealEmissionScaleInSubtraction BornScale
+set QTildeMatching:EmissionScaleInSubtraction BornScale
+set QTildeMatching:QTildeFinder /Herwig/Shower/PartnerFinder
+# just a dummy, since SudakovCommonn can't be used
+# it's only used to get the value of the kinCutoffScale
+set QTildeMatching:QTildeSudakov /Herwig/Shower/QtoQGSudakov
+
+################################################################################
+# Setup utilities for process generation
+################################################################################
+
+cd /Herwig/MatrixElements/Matchbox
+mkdir Utility
+cd Utility
+
+create Herwig::Tree2toNGenerator DiagramGenerator
+insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFGVertex
+insert DiagramGenerator:Vertices 0 /Herwig/Vertices/GGGVertex
+
+insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFPVertex
+insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFZVertex
+
+cp /Herwig/Vertices/FFWVertex /Herwig/Vertices/FFWDiagonalVertex
+set /Herwig/Vertices/FFWDiagonalVertex:Diagonal Yes
+insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFWDiagonalVertex
+
+insert DiagramGenerator:Vertices 0 /Herwig/Vertices/WWHVertex
+insert DiagramGenerator:Vertices 0 /Herwig/Vertices/WWWVertex
+insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFHVertex
+insert DiagramGenerator:Vertices 0 /Herwig/Vertices/HGGVertex
+
+insert DiagramGenerator:ExcludeInternal 0 /Herwig/Particles/h0
+
+create Herwig::ProcessData ProcessData
+
+set /Herwig/MatrixElements/Matchbox/Factory:DiagramGenerator DiagramGenerator
+set /Herwig/MatrixElements/Matchbox/Factory:ProcessData ProcessData 
+
+################################################################################
+# Setup phasespace generators
+################################################################################
+
+cd /Herwig/MatrixElements/Matchbox
+mkdir Phasespace
+cd Phasespace
+
+create Herwig::MatchboxRambo Rambo
+
+create Herwig::FlatInvertiblePhasespace DetPhasespace
+
+create Herwig::TreePhasespaceChannels TreePhasespaceChannels
+create Herwig::TreePhasespace TreePhasespace
+set TreePhasespace:ChannelMap TreePhasespaceChannels
+set TreePhasespace:M0 0.0001*GeV
+set TreePhasespace:MC 0.0000001*GeV
+
+set /Herwig/MatrixElements/Matchbox/Factory:Phasespace TreePhasespace
+
+################################################################################
+# Setup jet cuts
+################################################################################
+
+cd /Herwig/Cuts
+
+create ThePEG::FastJetFinder JetFinder
+set JetFinder:UnresolvedMatcher /Herwig/Matchers/StandardQCDParton
+set JetFinder:Variant AntiKt
+set JetFinder:RecombinationScheme E
+set JetFinder:Mode Inclusive
+set JetFinder:ConeRadius 0.7
+
+create ThePEG::JetRegion FirstJet
+set FirstJet:PtMin 20.*GeV
+do FirstJet:YRange -5.0 5.0
+set FirstJet:Fuzzy Yes
+set FirstJet:EnergyCutWidth 4.0*GeV
+set FirstJet:RapidityCutWidth 0.4
+insert FirstJet:Accepts[0] 1
+
+create ThePEG::JetRegion SecondJet
+set SecondJet:PtMin 20.*GeV
+do SecondJet:YRange -5.0 5.0
+set SecondJet:Fuzzy Yes
+set SecondJet:EnergyCutWidth 4.0*GeV
+set SecondJet:RapidityCutWidth 0.4
+insert SecondJet:Accepts[0] 2
+
+create ThePEG::JetRegion ThirdJet
+set ThirdJet:PtMin 20.*GeV
+do ThirdJet:YRange -5.0 5.0
+set ThirdJet:Fuzzy Yes
+set ThirdJet:EnergyCutWidth 4.0*GeV
+set ThirdJet:RapidityCutWidth 0.4
+insert ThirdJet:Accepts[0] 3
+
+create ThePEG::JetRegion FourthJet
+set FourthJet:PtMin 20.*GeV
+do FourthJet:YRange -5.0 5.0
+set FourthJet:Fuzzy Yes
+set FourthJet:EnergyCutWidth 4.0*GeV
+set FourthJet:RapidityCutWidth 0.4
+insert FourthJet:Accepts[0] 4
+
+create ThePEG::NJetsCut NJetsCut
+set NJetsCut:UnresolvedMatcher /Herwig/Matchers/StandardQCDParton
+set NJetsCut:NJetsMin 2
+
+create ThePEG::JetCuts JetCuts
+set JetCuts:UnresolvedMatcher  /Herwig/Matchers/StandardQCDParton
+set JetCuts:Ordering OrderPt
+
+################################################################################
+# Setup scale choices
+################################################################################
+
+cd /Herwig/MatrixElements/Matchbox
+mkdir Scales
+cd Scales
+
+create Herwig::MatchboxScaleChoice SHatScale
+cp SHatScale FixedScale
+set FixedScale:FixedScale 100.*GeV
+create Herwig::MatchboxPtScale MaxPtScale
+set MaxPtScale:JetFinder /Herwig/Cuts/JetFinder
+create Herwig::MatchboxLeptonMassScale LeptonMassScale
+create Herwig::MatchboxLeptonPtScale LeptonPtScale
+
+set /Herwig/MatrixElements/Matchbox/Factory:ScaleChoice LeptonMassScale
+
+################################################################################
+# AlphaS
+################################################################################
+
+cd /Herwig/MatrixElements/Matchbox
+mkdir AlphaS
+cd AlphaS
+
+create Herwig::O2AlphaS NLOAlphaS
+insert NLOAlphaS:QuarkMasses 0 0.005
+insert NLOAlphaS:QuarkMasses 0 0.0023
+insert NLOAlphaS:QuarkMasses 0 0.095
+insert NLOAlphaS:QuarkMasses 0 1.25
+insert NLOAlphaS:QuarkMasses 0 4.2
+insert NLOAlphaS:QuarkMasses 0 174.2
+
+create ThePEG::O1AlphaS LOAlphaS  O1AlphaS.so
+insert LOAlphaS:QuarkMasses 0 0.005
+insert LOAlphaS:QuarkMasses 0 0.0023
+insert LOAlphaS:QuarkMasses 0 0.095
+insert LOAlphaS:QuarkMasses 0 1.25
+insert LOAlphaS:QuarkMasses 0 4.2
+insert LOAlphaS:QuarkMasses 0 174.2
+
+################################################################################
+# Factories for different colliders
+################################################################################
+
+cd /Herwig/MatrixElements/Matchbox
+
+cp Factory EEFactory
+set EEFactory:PartonExtractor /Herwig/Partons/EEExtractor
+set EEFactory:Cuts /Herwig/Cuts/EECuts
+
+cp Factory DISFactory
+
+set DISFactory:PartonExtractor /Herwig/Partons/DISExtractor
+set DISFactory:Cuts /Herwig/Cuts/DISCuts
+
+cp Factory PPFactory
+
+set PPFactory:PartonExtractor /Herwig/Partons/QCDExtractor
+set PPFactory:Cuts /Herwig/Cuts/QCDCuts
+
+cd /
+

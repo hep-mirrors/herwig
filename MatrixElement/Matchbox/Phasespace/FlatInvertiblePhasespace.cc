@@ -296,7 +296,7 @@ void FlatInvertiblePhasespace::persistentInput(PersistentIStream &, int) {}
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<FlatInvertiblePhasespace,MatchboxPhasespace>
-  describeHerwigFlatInvertiblePhasespace("Herwig::FlatInvertiblePhasespace", "HwMatchbox.so");
+  describeHerwigFlatInvertiblePhasespace("Herwig::FlatInvertiblePhasespace", "Herwig.so");
 
 void FlatInvertiblePhasespace::Init() {
 

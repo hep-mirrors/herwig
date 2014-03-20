@@ -113,8 +113,13 @@ void QTildeFinder::Init() {
 
 pair<Energy,Energy> QTildeFinder::
 calculateInitialFinalScales(const ShowerPPair &ppair, const bool isDecayCase) {
-  Lorentz5Momentum pb = ppair.first->momentum();
-  Lorentz5Momentum pc = ppair.second->momentum();
+  return
+    calculateInitialFinalScales(ppair.first->momentum(),ppair.second->momentum(),isDecayCase);
+}
+
+pair<Energy,Energy> QTildeFinder::
+calculateInitialFinalScales(const Lorentz5Momentum& pb, const Lorentz5Momentum& pc,
+			    const bool isDecayCase) {
   if(!isDecayCase) { 
     // In this case from JHEP 12(2003)045 we find the conditions
     // ktilde_b = (1+c) and ktilde_c = (1+2c)
@@ -124,7 +129,7 @@ calculateInitialFinalScales(const ShowerPPair &ppair, const bool isDecayCase) {
     // q_c = sqrt(Q^2+2 m_c^2)
     // We also assume that the first particle in the pair is the initial
     // state particle and the second is the final state one c 
-    Energy2  mc2 = sqr(ppair.second->mass());
+    Energy2  mc2 = sqr(pc.mass());
     Energy2  Q2  = -(pb-pc).m2();
     return pair<Energy,Energy>(sqrt(Q2+mc2), sqrt(Q2+2*mc2));
   }
@@ -140,9 +145,9 @@ calculateInitialFinalScales(const ShowerPPair &ppair, const bool isDecayCase) {
     //    occurs for (ktilde_b-1)=(ktilde_c-c)=(1/2)*(1-a+c+lambda) 
     //  - We find the most 'smooth' way to populate the phase space
     //    occurs for...
-    Energy2 mb2(sqr(ppair.first->mass()));
+    Energy2 mb2(sqr(pb.mass()));
     double a=(pb-pc).m2()/mb2;
-    double c=sqr(ppair.second->mass())/mb2;
+    double c=sqr(pc.mass())/mb2;
     double lambda   = sqrt(1. + a*a + c*c - 2.*a - 2.*c - 2.*a*c);
     double PROD     = 0.25*sqr(1. - a + c + lambda);
     double ktilde_b, ktilde_c,cosi(0.);
@@ -173,11 +178,18 @@ calculateInitialFinalScales(const ShowerPPair &ppair, const bool isDecayCase) {
 
 pair<Energy,Energy> QTildeFinder::
 calculateInitialInitialScales(const ShowerPPair &ppair) {
+  return
+    calculateInitialInitialScales(ppair.first->momentum(),
+				  ppair.second->momentum());
+}
+
+pair<Energy,Energy> QTildeFinder::
+calculateInitialInitialScales(const Lorentz5Momentum& p1, const Lorentz5Momentum& p2) {
   // This case is quite simple. From JHEP 12(2003)045 we find the condition
   // that ktilde_b = ktilde_c = 1. In this case we have the process
   // b+c->a so we need merely boost to the CM frame of the two incoming
   // particles and then qtilde is equal to the energy in that frame
-  Lorentz5Momentum p(ppair.first->momentum()+ppair.second->momentum());
+  Lorentz5Momentum p(p1+p2);
   p.boost(p.findBoostToCM());
   Energy Q = sqrt(p.m2());
   if(_initialInitialConditions==1) {
@@ -190,13 +202,21 @@ calculateInitialInitialScales(const ShowerPPair &ppair) {
 }
 
 pair<Energy,Energy> QTildeFinder::
-calculateFinalFinalScales(const ShowerPPair &particlePair) {
+calculateFinalFinalScales(const ShowerPPair & pp) {
+  bool colouredFirst =
+    pp.first->colourLine()&&
+    pp.first->colourLine()==pp.second->antiColourLine();
+  return calculateFinalFinalScales(pp.first->momentum(),pp.second->momentum(),
+				   colouredFirst);
+}
+
+pair<Energy,Energy> QTildeFinder::
+calculateFinalFinalScales(Lorentz5Momentum p1, Lorentz5Momentum p2,
+			  bool colouredFirst) {
   static const double eps=1e-8;
   // Using JHEP 12(2003)045 we find that we need ktilde = 1/2(1+b-c+lambda)
   // ktilde = qtilde^2/Q^2 therefore qtilde = sqrt(ktilde*Q^2)
   // find momenta in rest frame of system
-  Lorentz5Momentum p1= particlePair.first->momentum(); 
-  Lorentz5Momentum p2 = particlePair.second->momentum(); 
   Lorentz5Momentum p12(p1+p2);
   Boost boostv=p12.findBoostToCM();
   p1.boost(boostv);
@@ -234,9 +254,6 @@ calculateFinalFinalScales(const ShowerPPair &particlePair) {
   // assymetric choice
   else {
     double kappab,kappac;
-    // find if first particle is coloured
-    bool colouredFirst=particlePair.first->colourLine()&&
-      particlePair.first->colourLine()==particlePair.second->antiColourLine();
     // calculate kappa with coloured line getting maximum
     if((iopt==1&&colouredFirst)|| // first particle coloured+maximal for coloured
        (iopt==2&&!colouredFirst)|| // first particle anticoloured+maximal for acoloured

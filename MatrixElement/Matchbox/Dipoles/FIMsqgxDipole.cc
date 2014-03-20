@@ -46,19 +46,11 @@ bool FIMsqgxDipole::canHandle(const cPDVector& partons,
     partons[emission]->id() == ParticleID::g &&
     ((abs(partons[emitter]->id())> 1000000 && abs(partons[emitter]->id())< 1000007) ||
      (abs(partons[emitter]->id())> 2000000 && abs(partons[emitter]->id())< 2000007)) &&
-//     !(partons[emitter]->mass() == ZERO &&
-//       partons[spectator]->mass() == ZERO) &&
-//     (partons[emitter]->iColour()==partons[spectator]->iColour() ||
-//      partons[spectator]->iColour()==8);
     partons[emitter]->mass() != ZERO &&
     partons[spectator]->mass() == ZERO;
-
-  //return false;
-
 }
 
 double FIMsqgxDipole::me2Avg(double ccme2) const {
-
   if ( jacobian() == 0.0 )
     return 0.0;
 
@@ -94,14 +86,11 @@ double FIMsqgxDipole::me2Avg(double ccme2) const {
     realEmissionME()->finalStateSymmetry() /
     underlyingBornME()->finalStateSymmetry();
 
-//   lastME2(res);
-
   return res;
 
 }
 
 double FIMsqgxDipole::me2() const {
-
   if ( jacobian() == 0.0 )
     return 0.0;
 
@@ -137,10 +126,6 @@ double FIMsqgxDipole::me2() const {
     realEmissionME()->finalStateSymmetry() /
     underlyingBornME()->finalStateSymmetry();
 
-//   lastME2(res);
-
-//   logME2();
-
   return res;
 
 }
@@ -167,4 +152,4 @@ void FIMsqgxDipole::Init() {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<FIMsqgxDipole,SubtractionDipole>
-describeHerwigFIMsqgxDipole("Herwig::FIMsqgxDipole", "HwMatchbox.so");
+describeHerwigFIMsqgxDipole("Herwig::FIMsqgxDipole", "Herwig.so");

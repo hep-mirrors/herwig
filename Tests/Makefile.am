@@ -130,6 +130,7 @@ Rivet-LEP: Rivet-LEP-22  Rivet-LEP-35  Rivet-LEP-44  Rivet-LEP-91  \
            Rivet-LEP-172 Rivet-LEP-177 Rivet-LEP-183 Rivet-LEP-189 \
            Rivet-LEP-192 Rivet-LEP-196 Rivet-LEP-197 Rivet-LEP-200 \
            Rivet-LEP-202 Rivet-LEP-206 Rivet-LEP-14  Rivet-LEP-10\
+           Rivet-LEP-91-nopi \
            Rivet-LEP-Powheg-14  Rivet-LEP-Powheg-22 \
            Rivet-LEP-Powheg-35  Rivet-LEP-Powheg-44  \
            Rivet-LEP-Powheg-91  Rivet-LEP-Powheg-130 \
@@ -139,7 +140,8 @@ Rivet-LEP: Rivet-LEP-22  Rivet-LEP-35  Rivet-LEP-44  Rivet-LEP-91  \
            Rivet-LEP-Powheg-189 Rivet-LEP-Powheg-192 \
            Rivet-LEP-Powheg-196 Rivet-LEP-Powheg-197 \
            Rivet-LEP-Powheg-200 Rivet-LEP-Powheg-202 \
-           Rivet-LEP-Powheg-206 Rivet-LEP-Powheg-10
+           Rivet-LEP-Powheg-206 Rivet-LEP-Powheg-10 \
+           Rivet-LEP-Powheg-91-nopi
 	for i in LEP-*.aida; do rivet-rmgaps $$i; done;
 	rm -rf Rivet-LEP
 	python/merge-LEP LEP

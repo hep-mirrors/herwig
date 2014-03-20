@@ -322,6 +322,11 @@ void MatchboxFactory::setup() {
 	}
       }
     }
+ 
+    if(bornMEs().empty()&&realEmissionMEs().empty() )
+      throw InitException() << "No matrix elements have been found.\n\
+      Please check if your order of Alpha_s and Alpha_ew have the right value.\n";
+      
 
   }
 
@@ -370,6 +375,9 @@ void MatchboxFactory::setup() {
 
   // check for consistent conventions on virtuals, if we are to include them
   if ( virtualContributions() ) {
+    if ( !haveVirtuals ) {
+      throw InitException() << "Could not find amplitudes for all virtual contributions needed.\n";
+    }
     if ( virtualsAreDR && virtualsAreCDR ) {
       throw InitException() << "Virtual corrections use inconsistent regularization schemes.\n";
     }
@@ -378,9 +386,6 @@ void MatchboxFactory::setup() {
 	 (virtualsAreBDK && virtualsAreExpanded) ||
 	 (!virtualsAreCS && !virtualsAreBDK && !virtualsAreExpanded) ) {
       throw InitException() << "Virtual corrections use inconsistent conventions on finite terms.\n";
-    }
-    if ( !haveVirtuals ) {
-      throw InitException() << "Could not find amplitudes for all virtual contributions needed.\n";
     }
   }
 
@@ -535,7 +540,15 @@ void MatchboxFactory::setup() {
 
   theSplittingDipoles.clear();
   set<cPDVector> bornProcs;
-  if ( showerApproximation() ) 
+  if ( showerApproximation() && !virtualContributions() && !realContributions() ) {
+    generator()->log() << "Warning: Matching requested for LO run. Matching disabled.\n" << flush;
+    showerApproximation(Ptr<ShowerApproximation>::tptr());
+  }
+  if ( showerApproximation() && (subtractionData() != "" || subProcessGroups()) ) {
+    generator()->log() << "Warning: Matching requested for plain NLO run. Matching disabled.\n" << flush;
+    showerApproximation(Ptr<ShowerApproximation>::tptr());
+  }
+  if ( showerApproximation() ) {
     if ( showerApproximation()->needsSplittingGenerator() ) {
       for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born
 	      = bornMEs().begin(); born != bornMEs().end(); ++born )
@@ -543,6 +556,7 @@ void MatchboxFactory::setup() {
 	      d != (**born).diagrams().end(); ++d )
 	  bornProcs.insert((**d).partons());
     }
+  }
 
   if ( realContributions() || meCorrectionsOnly() ) {
 
@@ -639,7 +653,7 @@ void MatchboxFactory::setup() {
 	  subtractedMEs().push_back(subv);
 	  MEs().push_back(subv);
 	}
-	if ( !meCorrectionsOnly() )
+	if ( !meCorrectionsOnly() || (meCorrectionsOnly() && showerApproximation()->restrictPhasespace()) )
 	  sub->doRealShowerSubtraction();
 	if ( showerApproximation()->needsSplittingGenerator() )
 	  for ( set<cPDVector>::const_iterator p = bornProcs.begin();
@@ -1446,4 +1460,4 @@ void MatchboxFactory::Init() {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<MatchboxFactory,SubProcessHandler>
-describeHerwigMatchboxFactory("Herwig::MatchboxFactory", "HwMatchbox.so");
+describeHerwigMatchboxFactory("Herwig::MatchboxFactory", "Herwig.so");

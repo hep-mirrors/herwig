@@ -1,0 +1,257 @@
+// -*- C++ -*-
+//
+// MadGraphAmplitude.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2012 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+#ifndef Herwig_MadGraphAmplitude_H
+#define Herwig_MadGraphAmplitude_H
+//
+// This is the declaration of the MadGraphAmplitude class.
+//
+
+#include "Herwig++/MatrixElement/Matchbox/Base/MatchboxAmplitude.h"
+#include "Herwig++/MatrixElement/Matchbox/Builtin/Amplitudes/MatchboxCurrents.h"
+#include "ThePEG/Utilities/DynamicLoader.h"
+
+namespace Herwig {
+
+
+using namespace ThePEG;
+
+
+class MadGraphAmplitude: 
+    public MatchboxAmplitude {
+
+public:
+
+  /** @name Standard constructors and destructors. */
+  //@{
+  /**
+   * The default constructor.
+   */
+  MadGraphAmplitude();
+
+  /**
+   * The destructor.
+   */
+  virtual ~MadGraphAmplitude();
+  //@}
+
+public:
+
+  /**
+   * Return true, if this amplitude can handle the given process.
+   */
+  virtual bool canHandle(const PDVector&,
+			 Ptr<MatchboxFactory>::tptr) const;
+
+  /**
+   * Set the (tree-level) order in \f$g_S\f$ in which this matrix
+   * element should be evaluated.
+   */
+  virtual void orderInGs(unsigned int ogs) { theOrderInGs = ogs; }
+
+  /**
+   * Return the (tree-level) order in \f$g_S\f$ in which this matrix
+   * element is given.
+   */
+  virtual unsigned int orderInGs() const { return theOrderInGs; }
+
+  /**
+   * Set the (tree-level) order in \f$g_{EM}\f$ in which this matrix
+   * element should be evaluated.
+   */
+  virtual void orderInGem(unsigned int oge) { theOrderInGem = oge; }
+
+  /**
+   * Return the (tree-level) order in \f$g_{EM}\f$ in which this matrix
+   * element is given.
+   */
+  virtual unsigned int orderInGem() const { return theOrderInGem; }
+
+  /**
+   * Return true, if this amplitude will not require colour correlations.
+   */
+  virtual bool noCorrelations() const { return false; }  
+
+  /**
+   * Return true, if this amplitude is capable of calculating one-loop
+   * (QCD) corrections.
+   */
+  virtual bool haveOneLoop() const { return false; }
+
+  /**
+   * Calculate the tree level amplitudes for the phasespace point
+   * stored in lastXComb.
+   */
+  virtual void prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr);
+
+  /**
+   * Evaluate the amplitude for the given colour tensor id and
+   * helicity assignment
+   */
+  virtual Complex evaluate(size_t, const vector<int>&, Complex&);
+
+  /**
+   * Evaluate the amplitude for the given colour tensor id and
+   * helicity assignment
+   */
+  virtual Complex evaluateOneLoop(size_t, const vector<int>&);
+
+  /**
+   * Return true, if one loop corrections are given in the conventions
+   * of BDK.
+   */
+  virtual bool isBDK() const { return true; }
+
+  /**
+   * Return the value of the dimensional regularization
+   * parameter. Note that renormalization scale dependence is fully
+   * restored in DipoleIOperator.
+   */
+  virtual Energy2 mu2() const { return lastSHat(); }
+  
+  
+  virtual LorentzVector<Complex> plusPolarization(const Lorentz5Momentum& p,
+						  const Lorentz5Momentum& n,
+						  int id = -1) const;
+  /**
+   * Return the colour and spin correlated matrix element.
+   */
+  virtual double spinColourCorrelatedME2(pair<int,int> emitterSpectator,
+					 const SpinCorrelationTensor& c) const;
+						  
+						  
+						  
+  
+  vector<size_t> gluons_first_please(vector<size_t> i);
+
+
+  vector<vector<size_t> > getpermutations(vector<size_t> ordered);
+						  /**
+   * Flush all cashes.
+   */
+  virtual void flushCaches() {
+    MatchboxAmplitude::flushCaches();
+  }
+
+public:
+
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
+
+  /**
+   * The standard Init function used to initialize the interfaces.
+   * Called exactly once for each class by the class description system
+   * before the main function starts or
+   * when this class is dynamically loaded.
+   */
+  static void Init();
+
+protected:
+
+  /** @name Clone Methods. */
+  //@{
+  /**
+   * Make a simple clone of this object.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr clone() const;
+
+  /** Make a clone of this object, possibly modifying the cloned object
+   * to make it sane.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr fullclone() const;
+  //@}
+
+
+// If needed, insert declarations of virtual function defined in the
+// InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+
+
+  double mom0 [4];
+  double mom1 [4];
+  double mom2 [4];
+  double mom3 [4];
+  double mom4 [4];
+  double mom5 [4];
+  double mom6 [4];
+  double mom7 [4];
+    double mom8 [4];
+  double mom9 [4];
+  double mom10 [4];
+  double mom11 [4];
+  string theMG5Path;
+  
+  string theProcessPath;
+  
+  int tmpid;
+
+  map<int,int> colourindexmap;
+  
+  //void  *plugin_handle;
+
+  map<string,pair<int,bool> > processmap;
+ 
+  /**
+   * The (tree-level) order in \f$g_S\f$ in which this matrix
+   * element is given.
+   */
+  unsigned int theOrderInGs;
+
+  /**
+   * The (tree-level) order in \f$g_{EM}\f$ in which this matrix
+   * element is given.
+   */
+  unsigned int theOrderInGem;
+
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
+  //@}
+
+private:
+
+  /**
+   * The assignment operator is private and must never be called.
+   * In fact, it should not even be implemented.
+   */
+  MadGraphAmplitude & operator=(const MadGraphAmplitude &);
+
+
+};
+
+}
+
+#endif /* Herwig_MadGraphAmplitude_H */

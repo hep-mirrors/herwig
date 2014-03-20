@@ -84,15 +84,12 @@ double FFMsqgxDipole::me2Avg(double ccme2) const {
     realEmissionME()->finalStateSymmetry() /
     underlyingBornME()->finalStateSymmetry();
 
-//   lastME2(res);
-
   return res;
 
 
 }
 
 double FFMsqgxDipole::me2() const {
-
   if ( jacobian() == 0.0 )
     return 0.0;
 
@@ -125,9 +122,6 @@ double FFMsqgxDipole::me2() const {
     realEmissionME()->finalStateSymmetry() /
     underlyingBornME()->finalStateSymmetry();
 
-//   lastME2(res);
-
-//   logME2();
   
   return res;
 
@@ -155,4 +149,4 @@ void FFMsqgxDipole::Init() {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<FFMsqgxDipole,SubtractionDipole>
-describeHerwigFFMsqgxDipole("Herwig::FFMsqgxDipole", "HwMatchbox.so");
+describeHerwigFFMsqgxDipole("Herwig::FFMsqgxDipole", "Herwig.so");

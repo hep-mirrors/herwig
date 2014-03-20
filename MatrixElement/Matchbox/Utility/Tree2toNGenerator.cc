@@ -411,6 +411,8 @@ string Tree2toNGenerator::doSpaceLikeRange(string range) {
   if ( bounds.size() == 2 ) {
     istringstream in2(bounds[1]);
     in2 >> irange.second;
+  } else {
+    irange.second = irange.first;
   }
   if ( irange.second >= 0 && irange.first > irange.second )
     return "invalid range specified";
@@ -430,6 +432,8 @@ string Tree2toNGenerator::doTimeLikeRange(string range) {
   if ( bounds.size() == 2 ) {
     istringstream in2(bounds[1]);
     in2 >> irange.second;
+  } else {
+    irange.second = irange.first;
   }
   if ( irange.second >= 0 && irange.first > irange.second )
     return "invalid range specified";
@@ -463,7 +467,7 @@ void Tree2toNGenerator::persistentInput(PersistentIStream & is, int) {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<Tree2toNGenerator,HandlerBase>
-  describeHerwigTree2toNGenerator("Herwig::Tree2toNGenerator", "HwMatchbox.so");
+  describeHerwigTree2toNGenerator("Herwig::Tree2toNGenerator", "Herwig.so");
 
 void Tree2toNGenerator::Init() {
 

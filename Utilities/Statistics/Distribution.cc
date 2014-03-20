@@ -69,7 +69,7 @@ Distribution::DistributionBin::operator/=
   return *this;
 }
 
-void Distribution::DistributionBin::fromXML(XML::Element elem) {
+void Distribution::DistributionBin::fromXML(const XML::Element& elem) {
 
   elem.getFromAttribute("lowerBound",boundaries.first);
   elem.getFromAttribute("upperBound",boundaries.second);
@@ -157,7 +157,7 @@ Distribution& Distribution::operator/=(const Distribution& other) {
   return *this;
 }
 
-void Distribution::fromXML(XML::Element elem) {
+void Distribution::fromXML(const XML::Element& elem) {
 
   elem.getFromAttribute("name",theName);
 

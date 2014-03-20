@@ -42,4 +42,4 @@ void MatchboxReweightBase::Init() {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeAbstractClass<MatchboxReweightBase,HandlerBase>
-describeMatchboxReweightBase("Herwig::MatchboxReweightBase", "HwMatchbox.so");
+describeMatchboxReweightBase("Herwig::MatchboxReweightBase", "Herwig.so");

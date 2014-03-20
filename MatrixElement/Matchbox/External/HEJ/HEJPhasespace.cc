@@ -115,7 +115,7 @@ void HEJPhasespace::persistentInput(PersistentIStream &, int) {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<HEJPhasespace,Herwig::MatchboxPhasespace>
-  describeHerwigHEJPhasespace("Herwig::HEJPhasespace", "HwMatchbox.so HwHEJ.so");
+  describeHerwigHEJPhasespace("Herwig::HEJPhasespace", "HwHEJ.so");
 
 void HEJPhasespace::Init() {
 

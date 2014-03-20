@@ -96,7 +96,7 @@ void MatchboxReference::persistentInput(PersistentIStream &, int) {}
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<MatchboxReference,MatchboxPhasespace>
-  describeHerwigMatchboxReference("Herwig::MatchboxReference", "HwMatchbox.so");
+  describeHerwigMatchboxReference("Herwig::MatchboxReference", "Herwig.so");
 
 void MatchboxReference::Init() {
 

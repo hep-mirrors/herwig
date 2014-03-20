@@ -93,4 +93,4 @@ void IFLightTildeKinematics::Init() {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<IFLightTildeKinematics,TildeKinematics>
-describeHerwigIFLightTildeKinematics("Herwig::IFLightTildeKinematics", "HwMatchbox.so");
+describeHerwigIFLightTildeKinematics("Herwig::IFLightTildeKinematics", "Herwig.so");

@@ -63,6 +63,26 @@ public:
    */
   static void Init();
 
+public:
+
+  /**
+   *  Calculate the initial evolution scales given momenta
+   */
+  pair<Energy,Energy> calculateFinalFinalScales(Lorentz5Momentum p1, Lorentz5Momentum p2,
+						bool colouredfirst);
+
+  /**
+   *  Calculate the initial evolution scales given momenta
+   */
+  pair<Energy,Energy> calculateInitialInitialScales(const Lorentz5Momentum& p1, 
+						    const Lorentz5Momentum& p2);
+
+  /**
+   *  Calculate the initial evolution scales given momenta
+   */
+  pair<Energy,Energy> calculateInitialFinalScales(const Lorentz5Momentum& pb, const Lorentz5Momentum& pc,
+						  const bool isDecayCase);
+
 protected:
 
   /**

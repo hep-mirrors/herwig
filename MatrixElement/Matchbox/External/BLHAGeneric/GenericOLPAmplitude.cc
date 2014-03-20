@@ -101,7 +101,7 @@ void GenericOLPAmplitude::persistentInput(PersistentIStream &, int) {}
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<GenericOLPAmplitude,MatchboxOLPME>
-  describeHerwigGenericOLPAmplitude("Herwig::GenericOLPAmplitude", "HwMatchbox.so");
+  describeHerwigGenericOLPAmplitude("Herwig::GenericOLPAmplitude", "Herwig.so");
 
 void GenericOLPAmplitude::Init() {
 

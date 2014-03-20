@@ -58,7 +58,7 @@ void MatchboxXCombGroup::persistentInput(PersistentIStream & is, int version) {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<MatchboxXCombGroup,StdXCombGroup>
-  describeHerwigMatchboxXCombGroup("Herwig::MatchboxXCombGroup", "HwMatchbox.so");
+  describeHerwigMatchboxXCombGroup("Herwig::MatchboxXCombGroup", "Herwig.so");
 
 void MatchboxXCombGroup::Init() {
 

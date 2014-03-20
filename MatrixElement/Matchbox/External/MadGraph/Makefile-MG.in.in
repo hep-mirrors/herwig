@@ -1,0 +1,8 @@
+THEPEG=@THEPEGPATH@
+HERWIG=@prefix@
+INCLUDE=-I $(THEPEG)/include -I $(HERWIG)/include -I $(HERWIG)/share/Herwig++/MadGraphInterface -I MGout/src
+LIBPATH=@THEPEGLDFLAGS@ -L MGout/lib
+
+
+all:
+	g++ --shared -g3  -fPIC -o InterfaceMadGraph.so $(INCLUDE) $(LIBPATH) @THEPEGLIB@ -lmodel_sm  InterfaceMadGraph.cc MGout/src/Parameters_sm.cc MGout/src/HelAmps_sm.cc  MGout/src/read_slha.cc \
