@@ -152,7 +152,7 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
 	  char char_cwd[256];
 	  getcwd(char_cwd, sizeof(char_cwd));
 	  gosamPath = gosamPathInterface == "" ? string(char_cwd) + "/GoSam" : gosamPathInterface;
-	  string ppstr = gosamPath + "/" + parametersFileTitle; //name() + ".OLPParameters.lh";
+	  string ppstr = gosamPath + "/" + name() + ".OLPParameters.lh";
 	  char * ppchar = new char[ppstr.size()+1];
 	  std::copy(ppstr.begin(),ppstr.end(),ppchar);
 	  ppchar[ppstr.size()] = '\0';
