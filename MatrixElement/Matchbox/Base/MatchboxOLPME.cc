@@ -56,9 +56,9 @@ void MatchboxOLPME::setXComb(tStdXCombPtr xc) {
 
 double MatchboxOLPME::me2() const {
   if ( !calculateTreeME2() )
-    return crossingSign()*lastTreeME2();
+    return lastTreeME2();
   evalSubProcess();
-  return crossingSign()*lastTreeME2();
+  return lastTreeME2();
 }
 
 double MatchboxOLPME::colourCorrelatedME2(pair<int,int> ij) const {
@@ -71,9 +71,9 @@ double MatchboxOLPME::colourCorrelatedME2(pair<int,int> ij) const {
     cfac = (sqr(Nc)-1.)/(2.*Nc);
   } else assert(false);
   if ( !calculateColourCorrelator(ij) )
-    return crossingSign()*lastColourCorrelator(ij)/cfac;
+    return lastColourCorrelator(ij)/cfac;
   evalColourCorrelator(ij);
-  return crossingSign()*lastColourCorrelator(ij)/cfac;
+  return lastColourCorrelator(ij)/cfac;
 }
 
 double MatchboxOLPME::spinColourCorrelatedME2(pair<int,int> ij,
@@ -109,29 +109,29 @@ double MatchboxOLPME::spinColourCorrelatedME2(pair<int,int> ij,
   } else assert(false);
 
   return 
-    avg + crossingSign()*(c.scale() > ZERO ? 1. : -1.)*corr/cfac;
+    avg + (c.scale() > ZERO ? 1. : -1.)*corr/cfac;
 
 }
 
 double MatchboxOLPME::oneLoopDoublePole() const {
   if ( !calculateOneLoopPoles() )
-    return crossingSign()*lastOneLoopPoles().first;
+    return lastOneLoopPoles().first;
   evalSubProcess();
-  return crossingSign()*lastOneLoopPoles().first;
+  return lastOneLoopPoles().first;
 }
 
 double MatchboxOLPME::oneLoopSinglePole() const {
   if ( !calculateOneLoopPoles() )
-    return crossingSign()*lastOneLoopPoles().second;
+    return lastOneLoopPoles().second;
   evalSubProcess();
-  return crossingSign()*lastOneLoopPoles().second;
+  return lastOneLoopPoles().second;
 }
 
 double MatchboxOLPME::oneLoopInterference() const {
   if ( !calculateOneLoopInterference() )
-    return crossingSign()*lastOneLoopInterference();
+    return lastOneLoopInterference();
   evalSubProcess();
-  return crossingSign()*lastOneLoopInterference();
+  return lastOneLoopInterference();
 }
 
 double MatchboxOLPME::largeNColourCorrelatedME2(pair<int,int>,

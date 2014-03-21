@@ -368,7 +368,7 @@ double OpenLoopsAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
 
 
   return
-    avg +crossingSign()* corr/cfac;
+    avg + corr/cfac;
 
 }
 

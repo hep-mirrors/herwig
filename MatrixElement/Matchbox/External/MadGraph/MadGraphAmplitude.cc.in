@@ -406,7 +406,7 @@ bool equalsModulo(unsigned int i, const vector<int>& a, const vector<int>& b) {
     cfac = (sqr(Nc)-1.)/(2.*Nc);
   } else assert(false);
   return
-   ( avg + crossingSign()*(c.scale() > ZERO ? 1. : -1.)*corr/cfac);
+   ( avg + (c.scale() > ZERO ? 1. : -1.)*corr/cfac);
 
 }
 

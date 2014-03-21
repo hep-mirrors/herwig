@@ -424,7 +424,6 @@ double MatchboxMEBase::me2() const {
 
     double res = 
       matchboxAmplitude()->me2()*
-      crossingSign()*
       me2Norm();
 
     return res;
@@ -589,7 +588,6 @@ double MatchboxMEBase::oneLoopInterference() const {
 
     double res = 
       matchboxAmplitude()->oneLoopInterference()*
-      crossingSign()*
       me2Norm(1);
 
     return res;
@@ -753,7 +751,6 @@ double MatchboxMEBase::oneLoopDoublePole() const {
 
     return
       matchboxAmplitude()->oneLoopDoublePole()*
-      crossingSign()*
       me2Norm(1);
 
   }
@@ -768,7 +765,6 @@ double MatchboxMEBase::oneLoopSinglePole() const {
 
     return 
       matchboxAmplitude()->oneLoopSinglePole()*
-      crossingSign()*
       me2Norm(1);
 
   }
@@ -873,7 +869,6 @@ double MatchboxMEBase::colourCorrelatedME2(pair<int,int> ij) const {
 
     double res = 
       matchboxAmplitude()->colourCorrelatedME2(ij)*
-      crossingSign()*
       me2Norm();
 
     return res;
@@ -898,7 +893,6 @@ double MatchboxMEBase::largeNColourCorrelatedME2(pair<int,int> ij,
 
     double res = 
       matchboxAmplitude()->largeNColourCorrelatedME2(ij,largeNBasis)*
-      crossingSign()*
       me2Norm();
 
     return res;
@@ -922,7 +916,6 @@ double MatchboxMEBase::spinColourCorrelatedME2(pair<int,int> ij,
 
     double res = 
       matchboxAmplitude()->spinColourCorrelatedME2(ij,c)*
-      crossingSign()*
       me2Norm();
 
     return res;

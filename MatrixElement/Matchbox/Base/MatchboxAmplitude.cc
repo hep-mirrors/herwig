@@ -511,15 +511,14 @@ Complex MatchboxAmplitude::value(const tcPDVector&,
 double MatchboxAmplitude::me2() const {
   if ( !calculateTreeME2() )
     return lastTreeME2();
-  lastTreeME2(crossingSign()*colourBasis()->me2(mePartonData(),lastAmplitudes()));
+  lastTreeME2(colourBasis()->me2(mePartonData(),lastAmplitudes()));
   return lastTreeME2();
 }
 
 double MatchboxAmplitude::oneLoopInterference() const {
   if ( !calculateOneLoopInterference() )
     return lastOneLoopInterference();
-  lastOneLoopInterference(crossingSign()*
-			  colourBasis()->interference(mePartonData(),
+  lastOneLoopInterference(colourBasis()->interference(mePartonData(),
 						      lastOneLoopAmplitudes(),lastAmplitudes()));
   return lastOneLoopInterference();
 }
@@ -536,7 +535,7 @@ double MatchboxAmplitude::colourCorrelatedME2(pair<int,int> ij) const {
   if ( !calculateColourCorrelator(ij) )
     return lastColourCorrelator(ij)/cfac;
   double res =
-    crossingSign()*colourBasis()->colourCorrelatedME2(ij,mePartonData(),lastAmplitudes());
+    colourBasis()->colourCorrelatedME2(ij,mePartonData(),lastAmplitudes());
   lastColourCorrelator(ij,res);
   return res/cfac;
 }
@@ -554,7 +553,7 @@ double MatchboxAmplitude::largeNColourCorrelatedME2(pair<int,int> ij,
   if ( !calculateLargeNColourCorrelator(ij) )
     return lastLargeNColourCorrelator(ij)/cfac;
   double res =
-    crossingSign()*largeNBasis->colourCorrelatedME2(ij,mePartonData(),lastLargeNAmplitudes());
+    largeNBasis->colourCorrelatedME2(ij,mePartonData(),lastLargeNAmplitudes());
   lastLargeNColourCorrelator(ij,res);
   return res/cfac;
 }
@@ -650,7 +649,7 @@ double MatchboxAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
   } else assert(false);
 
   return 
-    avg + crossingSign()*(c.scale() > ZERO ? 1. : -1.)*corr/cfac;
+    avg + (c.scale() > ZERO ? 1. : -1.)*corr/cfac;
 
 }
 
