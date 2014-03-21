@@ -84,7 +84,13 @@ void OpenLoopsAmplitude::doinitrun() {
 void OpenLoopsAmplitude::startOLP(const string& contract, int& status) {
 	string tempcontract=contract;
 
-	assert(DynamicLoader::load("@OPENLOOPSLIBS@/libopenloops.so"));
+	bool success = DynamicLoader::load("@OPENLOOPSLIBS@/libopenloops.so");
+
+	if ( !success ) {
+	  throw Exception() << "Failed to load libopenloops.so\n"
+			    << DynamicLoader::lastErrorMessage
+			    << Exception::abortnow;
+	}
 
 	OLP_Start(tempcontract.c_str(), &status);
 	int a=0;double null=0.0;double one=1.0;
