@@ -78,7 +78,7 @@ bool DipoleIOperator::apply(const cPDVector& pd) const {
 bool DipoleIOperator::apply(tcPDPtr pd) const {
   return
     pd->mass() == ZERO &&
-    (abs(pd->id()) < 6 || pd->id() == ParticleID::g);
+    (abs(pd->id()) < 7 || pd->id() == ParticleID::g);
 }
 
 double DipoleIOperator::me2() const {

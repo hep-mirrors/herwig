@@ -21,10 +21,30 @@ using namespace ThePEG;
 
 /**
  * \ingroup Matchbox
- * \author Simon Platzer, Martin Stoll
+ * \author Simon Platzer, Martin Stoll, Christian Reuschle
  *
- * \brief DipoleMIOperator implements the I(\epsilon)
- * insertion operator.
+ * \brief DipoleMIOperator implements the massive I operator.
+ *
+ * It is lim_{m->0}I(m)->I(m=0)
+ *
+ * More precisely: DipoleIOperator applies only for massless
+ * partons while DipoleMIOperator applies for massless AND
+ * massive partons. In the sum over emitter and spectator,
+ * if both are massless, the difference between the massive
+ * and massless I operator is returned. However, if at least
+ * one is massive, the massive I operator is returned. If both
+ * are incoming, then there will be no associated contribution
+ * from DipoleMIOperator.
+ *
+ * In the case of g->QQbar, which is emitter=g and maybe mass-
+ * less spectator, the additional terms through the sums over
+ * massive flavours should be correctly accounted for.
+ *
+ * DipoleMIOperator does only apply in the expanded convention,
+ * and also not for dimensional reduction.
+ *
+ * DipoleMIOperator trusts that initial state particles are not
+ * massive.
  *
  */
 class DipoleMIOperator: public MatchboxInsertionOperator {
@@ -60,10 +80,26 @@ public:
   virtual double me2() const;
 
   /**
-   * Return true, if contributions exist to
-   * the given parton pair.
+   * If defined, return the coefficient of the pole in epsilon^2
    */
-  bool apply(tcPDPtr, tcPDPtr) const;
+  virtual double oneLoopDoublePole() const;
+
+  /**
+   * If defined, return the coefficient of the pole in epsilon
+   */
+  virtual double oneLoopSinglePole() const;
+
+//   /**
+//    * Return true, if contributions exist to
+//    * the given parton pair.
+//    */
+//   bool apply(tcPDPtr, tcPDPtr) const;
+
+  /**
+   * Return true, if contributions exist to
+   * the given parton.
+   */
+  bool apply(tcPDPtr) const;
 
   /**
    * Return true, if this virtual correction
@@ -147,12 +183,19 @@ private:
   double gammaGluon;
   
   /**
-   * \Gamma_q
+   * \beta_0
+   * The Matchbox convention is \beta_0=\gamma_g with the counterterm part as n/\epsilon*\beta_0.
+   * However, usually \beta_0 is defined as \beta_0=2*\gamma_g, and instead the counterterm part as n/\epsilon*1/2*\beta_0.
+   */
+  double betaZero;
+
+  /**
+   * \Gamma_q, finite term
    */
   double GammaQuark(const ParticleData&,Energy2) const;
   
   /**
-   * \Gamma_g
+   * \Gamma_g, finite term
    */
   double GammaGluon() const;
 

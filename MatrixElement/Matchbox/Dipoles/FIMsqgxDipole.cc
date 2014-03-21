@@ -72,7 +72,7 @@ double FIMsqgxDipole::me2Avg(double ccme2) const {
 //   res *= ( 2./(1.-z+(1.-x)) - 2. +(1.-x)*(1.+3.*x*z) -
 //   	   sqr(realEmissionME()->lastXComb().mePartonData()[realEmission()]->mass()) / prop * 2.*x);
   // NOTE: CR: extra term switched off in massive implementation for the moment,
-  //           mass of realEmission chenged to mass of realEmitter
+  //           mass of realEmission changed to mass of realEmitter
   res *= ( 2./(1.-z+(1.-x)) - 2. -
   	   sqr(realEmissionME()->lastXComb().mePartonData()[realEmitter()]->mass()) / prop * 2.*x);
 
@@ -112,7 +112,7 @@ double FIMsqgxDipole::me2() const {
 //   res *= ( 2./(1.-z+(1.-x)) -2. +(1.-x)*(1.+3.*x*z) -
 //   	   sqr(realEmissionME()->lastXComb().mePartonData()[realEmission()]->mass()) / prop * 2.*x);
   // NOTE: CR: extra term switched off in massive implementation for the moment,
-  //           mass of realEmission chenged to mass of realEmitter
+  //           mass of realEmission changed to mass of realEmitter
   res *= ( 2./(1.-z+(1.-x)) - 2. -
   	   sqr(realEmissionME()->lastXComb().mePartonData()[realEmitter()]->mass()) / prop * 2.*x);
 
