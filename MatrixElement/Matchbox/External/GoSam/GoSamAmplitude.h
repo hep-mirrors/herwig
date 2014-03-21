@@ -86,7 +86,7 @@ public:
    * Start the one loop provider, if appropriate, giving order and
    * contract files
    */
-  virtual void signOLP(const string&, const string&, const string&);
+  virtual void signOLP(const string&, const string&);
 
   virtual bool checkOLPContract(string contractFileName);
 
@@ -103,7 +103,7 @@ public:
    */
   virtual void startOLP(const string&, int& status);
 
-  virtual void getids() const ;
+  //virtual void getids() const ;
   
   virtual Energy2 mu2() const { return lastSHat(); }
 
@@ -213,9 +213,18 @@ private:
 
   map<int , gosamprocinfo > processmap;
 
-  mutable string gosamInstallPath;
+  mutable string gosamPathInterface;
+  mutable string gosamSetupInFilenameInterface;
 
-  mutable string gosamSetupInPath;
+  mutable string gosamPath;
+  mutable string gosamSourcePath;
+  mutable string gosamInstallPath;
+  mutable string gosamSetupInFileName;
+
+  mutable string orderFileTitle;
+  mutable string contractFileTitle;
+  mutable string parametersFileTitle;
+  mutable string contractFileName;
 
   bool theCodeExists;
 
