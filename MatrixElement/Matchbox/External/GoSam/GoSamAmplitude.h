@@ -227,6 +227,7 @@ private:
   mutable string contractFileName;
 
   bool theCodeExists;
+  bool theFormOpt;
 
   bool isitDR;
   

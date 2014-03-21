@@ -318,6 +318,8 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
     // set form's tempdir to the current working directory
     cmd = "sed -i 's/@FORMTEMPDIR@/" + StringUtils::replace(gosamSourcePath, string("/"), string("\\/")) + "/g' " + gosamSetupInFileName;
     std::system(cmd.c_str());
+    cmd = "sed -i 's/@FORMOPT@/" + (theFormOpt ? string(", formopt") : string("")) + "/g' " + gosamSetupInFileName;
+    std::system(cmd.c_str());
   }
   infile.close();
 
@@ -524,6 +526,21 @@ void GoSamAmplitude::Init() {
           true);
   static SwitchOption interfacePrintParameterOff
          (interfacePrintParameter,
+          "Off",
+          "Off",
+          false);
+
+  static Switch<GoSamAmplitude,bool> interfaceFormOpt
+         ("FormOpt",
+          "Switch On/Off formopt",
+          &GoSamAmplitude::theFormOpt, true, false, false);
+  static SwitchOption interfaceFormOptOn
+         (interfaceFormOpt,
+          "On",
+          "On",
+          true);
+  static SwitchOption interfaceFormOptOff
+         (interfaceFormOpt,
           "Off",
           "Off",
           false);
