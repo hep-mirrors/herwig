@@ -233,7 +233,7 @@ private:
   /**
    * Return the PDG codes of those quarks with mass
    */
-  const vector<int>& massiveParticles() const { return theMassiveParticles; }
+  //const vector<int>& massiveParticles() const { return theMassiveParticles; }
 
   /**
    * Command to insert the PDG code of a quark with mass
@@ -243,7 +243,7 @@ private:
   /**
    * The PDG codes of those quarks with mass
    */
-  vector<int> theMassiveParticles;
+  vector<int> massiveParticles; //theMassiveParticles;
 
   /**
    * Switch to print parameters

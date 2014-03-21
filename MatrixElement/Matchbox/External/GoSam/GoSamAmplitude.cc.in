@@ -130,8 +130,8 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
     // hand over quark masses
 
 	string mstr;
-	if ( massiveParticles().size() != 0 ) {
-	  for ( vector<int>::const_iterator mID = massiveParticles().begin(); mID != massiveParticles().end(); ++mID ) {
+	if ( massiveParticles.size() != 0 ) {
+	  for ( vector<int>::const_iterator mID = massiveParticles.begin(); mID != massiveParticles.end(); ++mID ) {
 	    int mInt = *mID;
 	    double mass=getParticleData(mInt)->mass()/GeV;
 	    std::stringstream ss;
@@ -149,6 +149,9 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
     // print OLP parameters
 
 	if (thePrintParameter) {
+	  char char_cwd[256];
+	  getcwd(char_cwd, sizeof(char_cwd));
+	  gosamPath = gosamPathInterface == "" ? string(char_cwd) + "/GoSam" : gosamPathInterface;
 	  string ppstr = gosamPath + "/" + parametersFileTitle; //name() + ".OLPParameters.lh";
 	  char * ppchar = new char[ppstr.size()+1];
 	  std::copy(ppstr.begin(),ppstr.end(),ppchar);
@@ -202,9 +205,13 @@ void GoSamAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs, st
 	orderFile << "MatrixElementSquareType  CHsummed\n";
 	orderFile << "CorrectionType           QCD\n";
 	orderFile << "IRregularisation         " << (isDR() ? "DRED" : "CDR") << "\n";
-	if ( massiveParticles().size() != 0 ) {
+  // loop over quarks to check if they have non-zero masses
+  for (int i=1; i<=6; ++i){
+    if (getParticleData(i)->mass()/GeV > 0.0) massiveParticles.push_back(i);
+  }
+	if ( massiveParticles.size() != 0 ) {
 	  orderFile << "MassiveParticles         ";
-	  for ( vector<int>::const_iterator mID = massiveParticles().begin(); mID != massiveParticles().end(); ++mID ) {
+	  for ( vector<int>::const_iterator mID = massiveParticles.begin(); mID != massiveParticles.end(); ++mID ) {
 	    int mInt = *mID;
 	    orderFile << mInt << " ";
       }
@@ -287,9 +294,9 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
   std::system(("mkdir " + gosamSourcePath).c_str());
   std::system(("mkdir " + gosamInstallPath).c_str());
 
-	contractFileTitle = name() + ".OLPOrder.lh";
+	contractFileTitle = name() + ".OLPContract.lh";
 	parametersFileTitle = name() + ".OLPParameters.lh";
-  string orderFileName = gosamPath + "/" + name() + ".OLPContract.lh";
+  string orderFileName = gosamPath + "/" + name() + ".OLPOrder.lh";
 	contractFileName = gosamPath  + "/" + contractFileTitle;
   gosamSetupInFileName = gosamSetupInFilenameInterface == "" ? gosamPath + "/setup.gosam.in" : gosamSetupInFilenameInterface;
 
@@ -420,11 +427,11 @@ void GoSamAmplitude::evalSpinColourCorrelator(pair<int , int > ) const {
 }
 
 string GoSamAmplitude::doMassiveParticles(string in) {
-  istringstream ins(in);
+  /*istringstream ins(in);
   int first;
   ins >> first;
-  theMassiveParticles.push_back(first);
-  return "";
+  massiveParticles.push_back(first);
+  return "";*/
 }
 
 // If needed, insert default implementations of virtual function defined
@@ -432,11 +439,11 @@ string GoSamAmplitude::doMassiveParticles(string in) {
 
 
 void GoSamAmplitude::persistentOutput(PersistentOStream & os) const {
-	os << idpair << theCodeExists << theMassiveParticles << thePrintParameter << gosamPathInterface << gosamSetupInFilenameInterface;
+	os << idpair << theCodeExists << massiveParticles << thePrintParameter << gosamPathInterface << gosamSetupInFilenameInterface;
 }
 
 void GoSamAmplitude::persistentInput(PersistentIStream & is, int) {
-	is >> idpair >> theCodeExists >> theMassiveParticles >> thePrintParameter >> gosamPathInterface >> gosamSetupInFilenameInterface;
+	is >> idpair >> theCodeExists >> massiveParticles >> thePrintParameter >> gosamPathInterface >> gosamSetupInFilenameInterface;
 }
 
 // *** Attention *** The following static variable is needed for the type
