@@ -232,16 +232,6 @@ private:
   bool isitDR;
   
   /**
-   * Return the PDG codes of those quarks with mass
-   */
-  //const vector<int>& massiveParticles() const { return theMassiveParticles; }
-
-  /**
-   * Command to insert the PDG code of a quark with mass
-   */
-  string doMassiveParticles(string);
-
-  /**
    * The PDG codes of those quarks with mass
    */
   vector<int> massiveParticles; //theMassiveParticles;

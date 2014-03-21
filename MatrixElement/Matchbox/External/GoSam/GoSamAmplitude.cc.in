@@ -212,9 +212,7 @@ void GoSamAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs, st
 	orderFile << "CorrectionType           QCD\n";
 	orderFile << "IRregularisation         " << (isDR() ? "DRED" : "CDR") << "\n";
   // loop over quarks to check if they have non-zero masses
-  for (int i=1; i<=6; ++i){
-    if (getParticleData(i)->mass()/GeV > 0.0) massiveParticles.push_back(i);
-  }
+  for (int i=1; i<=6; ++i) if (getParticleData(i)->mass()/GeV > 0.0) massiveParticles.push_back(i);
 	if ( massiveParticles.size() != 0 ) {
 	  orderFile << "MassiveParticles         ";
 	  for ( vector<int>::const_iterator mID = massiveParticles.begin(); mID != massiveParticles.end(); ++mID ) {
@@ -434,14 +432,6 @@ void GoSamAmplitude::evalSpinColourCorrelator(pair<int , int > ) const {
 
 }
 
-string GoSamAmplitude::doMassiveParticles(string in) {
-  /*istringstream ins(in);
-  int first;
-  ins >> first;
-  massiveParticles.push_back(first);
-  return "";*/
-}
-
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
@@ -509,11 +499,6 @@ void GoSamAmplitude::Init() {
           "Switch False.",
           false);
   
-  static Command<GoSamAmplitude> interfaceMassiveParticles
-    ("MassiveParticles",
-     "Insert the PDG code of a quark with mass.",
-     &GoSamAmplitude::doMassiveParticles, false);
-
   static Switch<GoSamAmplitude,bool> interfacePrintParameter
          ("PrintParameter",
           "Switch On if OLP parameters are to be printed into an output file"
