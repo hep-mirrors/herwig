@@ -639,7 +639,7 @@ void MatchboxFactory::setup() {
 	sub->doRealEmissionScales();
 
       subtractedMEs().push_back(sub);
-      if ( !meCorrectionsOnly() )
+      if ( !meCorrectionsOnly() || (meCorrectionsOnly() && showerApproximation()->restrictPhasespace()) )
 	MEs().push_back(sub);
 
       if ( showerApproximation() ) {
