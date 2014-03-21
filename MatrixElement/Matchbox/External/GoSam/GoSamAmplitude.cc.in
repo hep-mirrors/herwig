@@ -146,6 +146,12 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
       }
 	}
 
+  // hand over b- and t-quark widths
+  double wB = getParticleData(5)->width()/GeV;
+  double wT = getParticleData(6)->width()/GeV;
+  OLP_SetParameter((char*)"width(5)",&wB,&zero,&pStatus);
+  OLP_SetParameter((char*)"width(6)",&wT,&zero,&pStatus);
+
     // print OLP parameters
 
 	if (thePrintParameter) {
