@@ -84,7 +84,7 @@ void OpenLoopsAmplitude::doinitrun() {
 void OpenLoopsAmplitude::startOLP(const string& contract, int& status) {
 	string tempcontract=contract;
 
-	assert(DynamicLoader::load("@OPENLOOPSPREFIX@/lib/libopenloops.so"));
+	assert(DynamicLoader::load("@OPENLOOPSLIBS@/libopenloops.so"));
 
 	OLP_Start(tempcontract.c_str(), &status);
 	int a=0;double null=0.0;double one=1.0;
