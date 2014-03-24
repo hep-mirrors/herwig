@@ -213,6 +213,8 @@ cd Amplitudes
 
 create ColorFull::TraceBasis TraceBasis
 
+create Herwig::MatchboxHybridAmplitude MatchboxAmplitude
+
 mkdir Builtin
 cd Builtin
 

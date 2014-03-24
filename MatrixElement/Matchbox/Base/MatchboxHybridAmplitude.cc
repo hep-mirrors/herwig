@@ -90,6 +90,32 @@ double MatchboxHybridAmplitude::symmetryRatio() const {
 
 }
 
+void MatchboxHybridAmplitude::cloneDependencies(const std::string& prefix) {
+
+  if ( treeLevelAmplitude() ) {
+    Ptr<MatchboxAmplitude>::ptr myTreeLevelAmplitude = treeLevelAmplitude()->cloneMe();
+    ostringstream pname;
+    pname << (prefix == "" ? fullName() : prefix) << "/" << myTreeLevelAmplitude->name();
+    if ( ! (generator()->preinitRegister(myTreeLevelAmplitude,pname.str()) ) )
+      throw InitException() << "Amplitude " << pname.str() << " already existing.";
+    myTreeLevelAmplitude->cloneDependencies(pname.str());
+    treeLevelAmplitude(myTreeLevelAmplitude);
+  }
+
+  if ( oneLoopAmplitude() ) {
+    Ptr<MatchboxAmplitude>::ptr myOneLoopAmplitude = oneLoopAmplitude()->cloneMe();
+    ostringstream pname;
+    pname << (prefix == "" ? fullName() : prefix) << "/" << myOneLoopAmplitude->name();
+    if ( ! (generator()->preinitRegister(myOneLoopAmplitude,pname.str()) ) )
+      throw InitException() << "Amplitude " << pname.str() << " already existing.";
+    myOneLoopAmplitude->cloneDependencies(pname.str());
+    oneLoopAmplitude(myOneLoopAmplitude);
+  }
+
+  MatchboxAmplitude::cloneDependencies(prefix);
+
+}
+
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 

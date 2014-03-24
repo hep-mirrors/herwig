@@ -442,6 +442,11 @@ public:
     oneLoopAmplitude()->flushCaches();
   }
 
+  /**
+   * Clone the dependencies, using a given prefix.
+   */
+  virtual void cloneDependencies(const std::string& prefix = "");
+
   //@}
 
 public:
