@@ -1297,6 +1297,8 @@ void MatchboxMEBase::doinit() {
   MEBase::doinit();
   if ( !theAmplitude )
     theAmplitude = dynamic_ptr_cast<Ptr<MatchboxAmplitude>::ptr>(amplitude());
+  if ( matchboxAmplitude() )
+    matchboxAmplitude()->init();
   if ( phasespace() ) {
     phasespace()->init();
   }
@@ -1315,6 +1317,8 @@ void MatchboxMEBase::doinit() {
 
 void MatchboxMEBase::doinitrun() {
   MEBase::doinitrun();
+  if ( matchboxAmplitude() )
+    matchboxAmplitude()->initrun();
   if ( phasespace() ) {
     phasespace()->initrun();
   }

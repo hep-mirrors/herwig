@@ -116,6 +116,22 @@ void MatchboxHybridAmplitude::cloneDependencies(const std::string& prefix) {
 
 }
 
+void MatchboxHybridAmplitude::doinit() {
+  MatchboxAmplitude::doinit();
+  if ( treeLevelAmplitude() )
+    treeLevelAmplitude()->init();
+  if ( oneLoopAmplitude() )
+    oneLoopAmplitude()->init();
+}
+
+void MatchboxHybridAmplitude::doinitrun() {
+  MatchboxAmplitude::doinitrun();
+  if ( treeLevelAmplitude() )
+    treeLevelAmplitude()->initrun();
+  if ( oneLoopAmplitude() )
+    oneLoopAmplitude()->initrun();
+}
+
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
