@@ -119,7 +119,7 @@ double MEMatching::me2() const {
 	(double)(dipole()->realEmissionME()->orderInAlphaS()));
   rme2 *= 
     pow(bornXComb()->lastSHat()/realXComb()->lastSHat(),
-	2.*(realCXComb()->mePartonData().size())-8.);
+	realCXComb()->mePartonData().size()-4.);
 
   if ( theScreeningScale != ZERO ) {
     rme2 *= sqr(theScreeningScale) /
