@@ -18,6 +18,8 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 
+#include "ThePEG/Utilities/DynamicLoader.h"
+
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -51,6 +53,11 @@ void NJetsAmplitude::startOLP(const string& contract, int& status) {
 }
 
 bool NJetsAmplitude::startOLP(const map<pair<Process,int>,int>& procs) {
+
+  if ( !DynamicLoader::load("libnjet2.so") )
+    throw Exception() << "failed to load libnjet2.so\n"
+		      << DynamicLoader::lastErrorMessage
+		      << Exception::abortnow;
 
   string orderFileName = name() + ".OLPOrder.lh";
   ofstream orderFile(orderFileName.c_str());
@@ -179,6 +186,21 @@ void NJetsAmplitude::evalSpinColourCorrelator(pair<int,int>) const {
 
 }
 
+void NJetsAmplitude::doinit() {
+  if ( !DynamicLoader::load("libnjet2.so") )
+    throw Exception() << "failed to load libnjet2.so\n"
+		      << DynamicLoader::lastErrorMessage
+		      << Exception::abortnow;
+  MatchboxOLPME::doinit();
+}
+
+void NJetsAmplitude::doinitrun() {
+  if ( !DynamicLoader::load("libnjet2.so") )
+    throw Exception() << "failed to load libnjet2.so\n"
+		      << DynamicLoader::lastErrorMessage
+		      << Exception::abortnow;
+  MatchboxOLPME::doinitrun();
+}
 
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
