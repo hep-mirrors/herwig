@@ -193,6 +193,28 @@ public:
     return oneLoopAmplitude()->startOLP(procs);
   }
 
+  /**
+   * Return true, if this amplitude needs to initialize an external
+   * code.
+   */
+  virtual bool isExternal() const { 
+    return treeLevelAmplitude()->isExternal();
+  }
+
+  /**
+   * Initialize this amplitude
+   */
+  virtual bool initializeExternal() {
+    return treeLevelAmplitude()->initializeExternal();
+  }
+
+  /**
+   * Return a generic process id for the given process
+   */
+  virtual int externalId(const cPDVector& proc) { 
+    return treeLevelAmplitude()->externalId(proc);
+  }
+
   //@}
 
   /** @name Colour basis. */

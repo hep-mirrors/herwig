@@ -549,6 +549,16 @@ namespace Herwig {
      */
     void fillOLPMomenta(const vector<Lorentz5Momentum>&);
 
+    /**
+     * Return a generic process id to communicate with external codes
+     */
+    int externalId() const { return theExternalId; }
+
+    /**
+     * Set a generic process id to communicate with external codes
+     */
+    void externalId(int id) { theExternalId = id; }
+
   public:
 
     /** @name Functions used by the persistent I/O system. */
@@ -824,6 +834,11 @@ namespace Herwig {
      * True, if olp momenta have been filled
      */
     bool filledOLPMomenta;
+
+    /**
+     * A generic process id to communicate with external codes
+     */
+    int theExternalId;
 
   };
 

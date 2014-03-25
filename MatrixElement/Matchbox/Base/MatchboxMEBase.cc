@@ -1176,6 +1176,9 @@ void MatchboxMEBase::cloneDependencies(const std::string& prefix) {
 
 void MatchboxMEBase::prepareXComb(MatchboxXCombData& xc) const {
 
+  // fixme We need to pass on the partons from the xcmob here, not
+  // assuming one subprocess per matrix element
+
   if ( phasespace() ) {
     size_t nout = diagrams().front()->partons().size()-2;
     xc.nDimPhasespace(phasespace()->nDim(nout));
@@ -1187,6 +1190,9 @@ void MatchboxMEBase::prepareXComb(MatchboxXCombData& xc) const {
       size_t cdim = 
  	matchboxAmplitude()->colourBasis()->prepare(diagrams(),matchboxAmplitude()->noCorrelations());
       xc.colourBasisDim(cdim);
+    }
+    if ( matchboxAmplitude()->isExternal() ) {
+      xc.externalId(matchboxAmplitude()->externalId(diagrams().front()->partons()));
     }
   }
 

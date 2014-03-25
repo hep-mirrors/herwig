@@ -31,7 +31,7 @@ MatchboxXCombData::MatchboxXCombData()
     theColourBasisDim(0), theNDimPhasespace(0), 
     theNDimAmplitude(0), theNDimInsertions(0), 
     theSymmetryFactor(0.0), theOLPMomenta(0),
-    filledOLPMomenta(false) {
+    filledOLPMomenta(false), theExternalId(0) {
   flushCaches();
 }
 
@@ -51,7 +51,7 @@ MatchboxXCombData::MatchboxXCombData(tMEPtr newME)
     theColourBasisDim(0), theNDimPhasespace(0), 
     theNDimAmplitude(0), theNDimInsertions(0), 
     theSymmetryFactor(0.0), theOLPMomenta(0),
-    filledOLPMomenta(false) {
+    filledOLPMomenta(false), theExternalId(0) {
   flushCaches();
   theMatchboxME = dynamic_ptr_cast<Ptr<MatchboxMEBase>::tptr>(newME);
   theSubtractionDipole = dynamic_ptr_cast<Ptr<SubtractionDipole>::tptr>(newME);
@@ -156,7 +156,7 @@ void MatchboxXCombData::persistentOutput(PersistentOStream & os) const {
      << theAmplitudeRandomNumbers << theInsertionRandomNumbers 
      << theDiagramWeights << theSingularLimits// << theLastSingularLimit 
      << theStandardModel << theSymmetryFactor
-     << theOLPId;
+     << theOLPId << theExternalId;
   putAmplitudeMap(os,theLastAmplitudes);
   putAmplitudeMap(os,theLastLargeNAmplitudes);
   putAmplitudeMap(os,theLastOneLoopAmplitudes);
@@ -178,7 +178,7 @@ void MatchboxXCombData::persistentInput(PersistentIStream & is, int) {
      >> theAmplitudeRandomNumbers >> theInsertionRandomNumbers 
      >> theDiagramWeights >> theSingularLimits// >> theLastSingularLimit 
      >> theStandardModel >> theSymmetryFactor
-     >> theOLPId;
+     >> theOLPId >> theExternalId;
   getAmplitudeMap(is,theLastAmplitudes);
   getAmplitudeMap(is,theLastLargeNAmplitudes);
   getAmplitudeMap(is,theLastOneLoopAmplitudes);

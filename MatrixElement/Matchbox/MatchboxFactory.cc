@@ -178,6 +178,8 @@ makeMEs(const vector<string>& proc, unsigned int orderas) {
 	  ++(*progressBar);
 	  if ( !(**amp).canHandle(*p,this) || !(**amp).sortOutgoing() )
 	    continue;
+	  if ( (**amp).isExternal() )
+	    externalAmplitudes().insert(*amp);
 	  ++procCount;
 	  Process proc(*p,oas,oae);
 	  ampProcs[*amp].insert(proc);
@@ -188,6 +190,8 @@ makeMEs(const vector<string>& proc, unsigned int orderas) {
 	  ++(*progressBar);
 	  if ( !(**amp).canHandle(*p,this) || (**amp).sortOutgoing() )
 	    continue;
+	  if ( (**amp).isExternal() )
+	    externalAmplitudes().insert(*amp);
 	  ++procCount;
 	  Process proc(*p,oas,oae);
 	  ampProcs[*amp].insert(proc);
@@ -272,6 +276,7 @@ int MatchboxFactory::orderOLPProcess(const Process& proc,
 void MatchboxFactory::setup() {
 
   olpProcesses().clear();
+  externalAmplitudes().clear();
 
   if ( bornMEs().empty() ) {
 
@@ -705,6 +710,23 @@ void MatchboxFactory::setup() {
     }
   }
 
+  if ( !externalAmplitudes().empty() ) {
+    generator()->log() << "Initializing external amplitudes.\n" << flush;
+    boost::progress_display * progressBar = 
+      new boost::progress_display(externalAmplitudes().size(),generator()->log());
+    for ( set<Ptr<MatchboxAmplitude>::tptr>::const_iterator ext =
+	    externalAmplitudes().begin(); ext != externalAmplitudes().end(); ++ext ) {
+      if ( !(**ext).initializeExternal() ) {
+	throw InitException() 
+	  << "error: failed to initialize amplitude '" << (**ext).name() << "'\n";
+      }
+      ++(*progressBar);
+    }
+    delete progressBar;
+    generator()->log() << "--------------------------------------------------------------------------------\n"
+		       << flush;
+  }
+
   if ( !olpProcesses().empty() ) {
     generator()->log() << "Initializing one-loop provider(s).\n" << flush;
     map<Ptr<MatchboxAmplitude>::tptr,map<pair<Process,int>,int> > olps;
@@ -921,7 +943,7 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
      << theParticleGroups << processes << realEmissionProcesses
      << theShowerApproximation << theSplittingDipoles
      << theRealEmissionScales << theAllProcesses
-     << theOLPProcesses 
+     << theOLPProcesses << theExternalAmplitudes
      << theSelectedAmplitudes << theDeselectedAmplitudes
      << theDipoleSet << theReweighters << thePreweighters
      << theMECorrectionsOnly;
@@ -943,7 +965,7 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
      >> theParticleGroups >> processes >> realEmissionProcesses
      >> theShowerApproximation >> theSplittingDipoles
      >> theRealEmissionScales >> theAllProcesses
-     >> theOLPProcesses
+     >> theOLPProcesses >> theExternalAmplitudes
      >> theSelectedAmplitudes >> theDeselectedAmplitudes
      >> theDipoleSet >> theReweighters >> thePreweighters
      >> theMECorrectionsOnly;
