@@ -150,7 +150,11 @@ void MadGraphAmplitude::prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr me) {
     if ( !getcwd(cwd,sizeof(cwd)) )
       throw Exception() << "failed to determine current working directory\n"
 			<< Exception::abortnow;
-    cmd += theMG5Path + "/bin " + cwd + "/" + theProcessPath;
+    cmd += theMG5Path + "/bin " + cwd + "/" + theProcessPath
+      + " > " + cwd + "/" + theProcessPath + "/MG.log 2>&1";
+    generator()->log() << "Compiling MadGraph amplitudes. This may take some time -- please be patient.\n"
+		       << "In case of problems see " << theProcessPath << "/MG.log for details.\n"
+		       << flush;
     std::system(cmd.c_str());
 
     ifstream ifile((theProcessPath+"/"+orderFileName).c_str());
@@ -187,7 +191,10 @@ void MadGraphAmplitude::prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr me) {
 
 
   if (!processmap.find(orderFileName)->second.second){
-    if ( !DynamicLoader::load(theProcessPath+"/InterfaceMadGraph.so") ) assert(0);
+    if ( !DynamicLoader::load(theProcessPath+"/InterfaceMadGraph.so") )
+      throw Exception() << "Failed to load MadGraph amplitudes\n"
+			<< DynamicLoader::lastErrorMessage
+			<< Exception::abortnow;
     MG_InitProc(tmpid);
     processmap.find(orderFileName)->second.second=true;
   }
