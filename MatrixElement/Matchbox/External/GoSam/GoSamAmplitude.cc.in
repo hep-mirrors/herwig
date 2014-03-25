@@ -432,6 +432,17 @@ void GoSamAmplitude::evalSpinColourCorrelator(pair<int , int > ) const {
 
 }
 
+void GoSamAmplitude::doinit() {
+  HandlerBase::standardModel()->ewScheme(1);
+  HandlerBase::standardModel()->init();
+  MatchboxOLPME::doinit();
+}
+
+void GoSamAmplitude::doinitrun() {
+  MatchboxOLPME::doinitrun();
+}
+
+
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
