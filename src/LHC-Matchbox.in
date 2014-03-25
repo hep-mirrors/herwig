@@ -94,6 +94,7 @@ cd /Herwig/MatrixElements/Matchbox/Amplitudes
 
 #>>>>>>>>>> enable HJets++ : requires installation of HJets++
 # clear /Herwig/MatrixElements/Matchbox/PPFactory:Amplitudes
+# library HJets.so
 # read HJetsProcesses.in
 # insert PPFactory:Amplitudes 0 HJetsProcesses
 
@@ -114,6 +115,7 @@ cd /Herwig/MatrixElements/Matchbox/Amplitudes
 #>>>>>>>>>> MC@NLO-type next-to-leading order for use with dipole shower
 
 set PPFactory:ShowerApproximation DipoleMatching
+set /Herwig/EventHandlers/LHCHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
 
 #>>>>>>>>>> MC@NLO-type next-to-leading order for use with default shower
 
@@ -181,8 +183,6 @@ set /Herwig/EventHandlers/LHCHandler:Sampler  /Herwig/Samplers/Sampler
 
 cd /Herwig/Generators
 
-set LHCGenerator:EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
-
 set LHCGenerator:RandomNumberGenerator:Seed 31122001
 set LHCGenerator:DebugLevel 1
 set LHCGenerator:PrintEvent 10
@@ -190,6 +190,7 @@ set LHCGenerator:MaxErrors 10000
 
 #==================================================================================
 #                     :::::CLEANUP:::::
+#
 # Change only if you know what you are doing.
 # For the moment, we can only deal with massless partons
 #==================================================================================
@@ -207,4 +208,33 @@ set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
 set /Herwig/Generators/LHCGenerator:EventHandler:CollisionCuts Off
 set /Herwig/Model:QCD/RunningAlphaS /Herwig/MatrixElements/Matchbox/AlphaS/NLOAlphaS
 
-saverun LHC LHCGenerator
+#==================================================================================
+#                     :::::SAMPLER TWEAKING:::::
+#
+# Change only if you know what you are doing.
+#==================================================================================
+
+cd /Herwig/Samplers
+set CellGridSampler:InitialPoints 10000
+set CellGridSampler:ExplorationPoints 500
+set CellGridSampler:ExplorationSteps 4
+set CellGridSampler:Gain 0.3
+set CellGridSampler:Epsilon 1.0
+set CellGridSampler:MinimumSelection 0.000001
+set CellGridSampler:NIterations 1
+set CellGridSampler:EnhancementFactor 1
+set CellGridSampler:UseAllIterations No
+set Sampler:UpdateAfter 1000
+set Sampler:AddUpSamplers Off
+set Sampler:GlobalMaximumWeight Off
+set Sampler:FlatSubprocesses Off
+set Sampler:MinSelection 0.000001
+set Sampler:AlmostUnweighted Off
+set Sampler:RunCombinationData Off
+
+#==================================================================================
+#                     :::::SAVE THE GENERATOR:::::
+#==================================================================================
+
+cd /Herwig/Generators
+saverun LHC-Matchbox LHCGenerator
