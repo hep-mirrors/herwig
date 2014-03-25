@@ -472,20 +472,20 @@ mkdir AlphaS
 cd AlphaS
 
 create Herwig::O2AlphaS NLOAlphaS
-insert NLOAlphaS:QuarkMasses 0 0.005
-insert NLOAlphaS:QuarkMasses 0 0.0023
-insert NLOAlphaS:QuarkMasses 0 0.095
-insert NLOAlphaS:QuarkMasses 0 1.25
-insert NLOAlphaS:QuarkMasses 0 4.2
-insert NLOAlphaS:QuarkMasses 0 174.2
+insert NLOAlphaS:QuarkMasses[0] 0.005
+insert NLOAlphaS:QuarkMasses[1] 0.0023
+insert NLOAlphaS:QuarkMasses[2] 0.095
+insert NLOAlphaS:QuarkMasses[3] 1.25
+insert NLOAlphaS:QuarkMasses[4] 4.2
+insert NLOAlphaS:QuarkMasses[5] 174.2
 
 create ThePEG::O1AlphaS LOAlphaS  O1AlphaS.so
-insert LOAlphaS:QuarkMasses 0 0.005
-insert LOAlphaS:QuarkMasses 0 0.0023
-insert LOAlphaS:QuarkMasses 0 0.095
-insert LOAlphaS:QuarkMasses 0 1.25
-insert LOAlphaS:QuarkMasses 0 4.2
-insert LOAlphaS:QuarkMasses 0 174.2
+insert LOAlphaS:QuarkMasses[0] 0.005
+insert LOAlphaS:QuarkMasses[1] 0.0023
+insert LOAlphaS:QuarkMasses[2] 0.095
+insert LOAlphaS:QuarkMasses[3] 1.25
+insert LOAlphaS:QuarkMasses[4] 4.2
+insert LOAlphaS:QuarkMasses[5] 174.2
 
 ################################################################################
 # Factories for different colliders
