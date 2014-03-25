@@ -48,14 +48,9 @@ cd /Herwig/DipoleShower
 ################################################################################
 # Setup the alphas
 ################################################################################
-library HwDipoleShowerAlphaS.so
 
-create matchbox::lo_alpha_s LOAlphaS
-set LOAlphaS:min_active_flavours 5
-
-create matchbox::nlo_alpha_s NLOAlphaS
-set NLOAlphaS:exact_evaluation large_scale
-set NLOAlphaS:min_active_flavours 5
+cp /Herwig/MatrixElements/Matchbox/LOAlphaS LOAlphaS
+cp /Herwig/MatrixElements/Matchbox/NLOAlphaS NLOAlphaS
 
 ################################################################################
 # Setup the splitting kinematics.
@@ -278,7 +273,6 @@ cp IIgx2qqxDipoleKernel IIgx2bbarbxDipoleKernel
 set IIgx2bbarbxDipoleKernel:Flavour /Herwig/Particles/bbar
 insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IIgx2bbarbxDipoleKernel
 
-
 cd /
 
 ################################################################################
@@ -286,16 +280,6 @@ cd /
 ################################################################################
 
 cd /Herwig/DipoleShower
-
-################################################################################
-# setup alphas and PDFs
-################################################################################
-
-cp NLOAlphaS AlphaS
-set AlphaS:input_alpha_s 0.1271103
-set AlphaS:freezing_scale 0.0*GeV
-
-set /Herwig/Model:QCD/RunningAlphaS AlphaS
 
 ################################################################################
 # matching parameters
@@ -323,7 +307,7 @@ set /Herwig/MatrixElements/Matchbox/DipoleMatching:IIScreeningScale 0.0*GeV
 # shower parameters
 ################################################################################
 
-set DipoleShowerHandler:GlobalAlphaS AlphaS
+set DipoleShowerHandler:GlobalAlphaS NLOAlphaS
 
 set DipoleShowerHandler:EvolutionOrdering ChainPtOrdering
 

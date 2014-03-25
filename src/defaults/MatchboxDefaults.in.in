@@ -31,8 +31,8 @@ set FlatBinSampler:UseAllIterations No
 
 create Herwig::CellGridSampler CellGridSampler
 set CellGridSampler:InitialPoints 10000
-set CellGridSampler:ExplorationPoints 1000
-set CellGridSampler:ExplorationSteps 8
+set CellGridSampler:ExplorationPoints 500
+set CellGridSampler:ExplorationSteps 4
 set CellGridSampler:Gain 0.3
 set CellGridSampler:Epsilon 1.0
 set CellGridSampler:MinimumSelection 0.000001
@@ -62,6 +62,20 @@ cd /Herwig/MatrixElements/Matchbox
 create Herwig::MatchboxFactory Factory
 
 do Factory:StartParticleGroup p
+insert Factory:ParticleGroup 0 /Herwig/Particles/b
+insert Factory:ParticleGroup 0 /Herwig/Particles/bbar
+insert Factory:ParticleGroup 0 /Herwig/Particles/c
+insert Factory:ParticleGroup 0 /Herwig/Particles/cbar
+insert Factory:ParticleGroup 0 /Herwig/Particles/s
+insert Factory:ParticleGroup 0 /Herwig/Particles/sbar
+insert Factory:ParticleGroup 0 /Herwig/Particles/d
+insert Factory:ParticleGroup 0 /Herwig/Particles/dbar
+insert Factory:ParticleGroup 0 /Herwig/Particles/u
+insert Factory:ParticleGroup 0 /Herwig/Particles/ubar
+insert Factory:ParticleGroup 0 /Herwig/Particles/g
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup pbar
 insert Factory:ParticleGroup 0 /Herwig/Particles/b
 insert Factory:ParticleGroup 0 /Herwig/Particles/bbar
 insert Factory:ParticleGroup 0 /Herwig/Particles/c
@@ -213,7 +227,23 @@ cd Amplitudes
 
 create ColorFull::TraceBasis TraceBasis
 
-create Herwig::MatchboxHybridAmplitude MatchboxAmplitude
+create Herwig::MatchboxHybridAmplitude GenericProcesses
+
+@LOAD_MADGRAPH@ HwMatchboxMadGraph.so
+@CREATE_MADGRAPH@ Herwig::MadGraphAmplitude MadGraph
+@SET_MADGRAPH@ MadGraphAmplitude:ColourBasis TraceBasis
+
+@LOAD_GOSAM@ HwMatchboxGoSam.so
+@CREATE_GOSAM@ Herwig::GoSamAmplitude GoSam
+
+@LOAD_NJET@ HwMatchboxNJet.so
+@CREATE_NJET@ Herwig::NJetsAmplitude NJet
+
+@LOAD_OPENLOOPS@ HwMatchboxOpenLoops.so
+@CREATE_OPENLOOPS@ Herwig::OpenLoopsAmplitude OpenLoops
+
+@LOAD_VBFNLO@ HwMatchboxVBFNLO.so
+@CREATE_VBFNLO@ Herwig::VBFNLOAmplitude VBFNLOProcesses
 
 mkdir Builtin
 cd Builtin
