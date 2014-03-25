@@ -278,7 +278,7 @@ void OpenLoopsAmplitude::evalSubProcess() const {
 
 	if ( idpair.size() == 0 ) {
 		getids();
-		string parfile="params.dat";
+		string parfile="OpenLoops-Parameter.dat";
 	        OLP_PrintParameter(parfile.c_str());
 		
 	}
@@ -306,7 +306,7 @@ void OpenLoopsAmplitude::evalColourCorrelator(pair<int, int>  ) const {
 	colourCorrelatorResults.resize(n * (n - 1) / 2);
 	if ( idpair.size() == 0 ) {
 		getids();
-		string parfile="params.dat";
+		string parfile="OpenLoops-Parameter.dat";
 	        OLP_PrintParameter(parfile.c_str());
 		
 	}
@@ -343,7 +343,7 @@ double OpenLoopsAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
 
 	if ( idpair.size() == 0 ) {
 		getids();
-		string parfile="params.dat";
+		string parfile="OpenLoops-Parameter.dat";
 	        OLP_PrintParameter(parfile.c_str());
 		
 	}

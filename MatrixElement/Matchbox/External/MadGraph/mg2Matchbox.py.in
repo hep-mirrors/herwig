@@ -162,7 +162,7 @@ file = open("@prefix@/share/Herwig++/MadGraphInterface/param_card.dat.in", "r")
 text = file.read() 
 file.close()
 file = open("param_card.dat", "w")
-params=open("params.dat", "r")
+params=open("MG-parameters.dat", "r")
 for line in params:
   a=line.split()
   #print a[0],"-->",a[1]

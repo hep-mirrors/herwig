@@ -54,7 +54,7 @@ void MadGraphAmplitude::doinit() {
   
   MatchboxAmplitude::doinit();
   
-  string para= "params.dat";
+  string para= "MG-Parameter.dat";
   ofstream params(para.c_str());
   params<<"$WZ$ "    <<setiosflags(ios::scientific)  <<getParticleData(ParticleID::Z0)->width()     /GeV;
   params<<"\n$WW$ "    <<setiosflags(ios::scientific)   <<getParticleData(ParticleID::Wplus)->width()/GeV;
