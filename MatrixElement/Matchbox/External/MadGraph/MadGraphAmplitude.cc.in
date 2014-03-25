@@ -137,17 +137,20 @@ void MadGraphAmplitude::prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr me) {
     MatchboxAmplitude::prepareAmplitudes(me);
     return;
   }
+  // TODO can we get rid of this overhead and just use cPDVector's to index the map?!
   string orderFileName =  "";
   for (cPDVector::const_iterator it=mePartonData().begin();it!=mePartonData().end();it++)
     orderFileName +=(*it)->PDGName();
   orderFileName+=".MG";
-  if (processmap.find(orderFileName)!= processmap.end()){
-  }
-  else{
+  if (processmap.find(orderFileName)== processmap.end()) {
     assert(theMG5Path!="");
     string cmd = "python @prefix@/bin/mg2Matchbox.py ";
-    
-    cmd +=theMG5Path+"/bin "+theProcessPath;
+    // TODO move to boost::system
+    char cwd[1024];
+    if ( !getcwd(cwd,sizeof(cwd)) )
+      throw Exception() << "failed to determine current working directory\n"
+			<< Exception::abortnow;
+    cmd += theMG5Path + "/bin " + cwd + "/" + theProcessPath;
     std::system(cmd.c_str());
 
     ifstream ifile((theProcessPath+"/"+orderFileName).c_str());
