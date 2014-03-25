@@ -71,8 +71,6 @@ void MadGraphAmplitude::doinit() {
   params<<"\n$WH$ "    <<setiosflags(ios::scientific)   << getParticleData(ParticleID::h0)->width() /GeV <<flush;
   params<<"\n$MTA$ "    <<setiosflags(ios::scientific)   << getParticleData(ParticleID::tauplus)->mass() /GeV <<flush;
 
-  std::system(("mkdir -p " + theProcessPath).c_str());
-  
   string line = theProcessPath+"/"+"processmap.dat";
   ifstream infile(line.c_str());
   string process;
@@ -119,6 +117,7 @@ const
   for (PDVector::const_iterator it=p.begin();it!=p.end();it++)
     orderFileName +=(*it)->PDGName();
   orderFileName+=".MG";
+  std::system(("mkdir -p " + theProcessPath).c_str());
   orderFileName=theProcessPath+"/"+orderFileName;
   ofstream orderFile(orderFileName.c_str());
   int k=0;
