@@ -37,7 +37,7 @@ void MG_vxxxxx(double p[4],double n[4],int inc,complex<double> vc[6]);
 int MG_Colour(int str, int i, int j);
 
 MadGraphAmplitude::MadGraphAmplitude()
-  : theMG5Path("@MADGRAPHPREFIX@"), theProcessPath(".") {}
+  : theMG5Path("@MADGRAPHPREFIX@"), theProcessPath("./MadGraphAmplitudes") {}
 
 MadGraphAmplitude::~MadGraphAmplitude() {}
 
@@ -71,7 +71,7 @@ void MadGraphAmplitude::doinit() {
   params<<"\n$WH$ "    <<setiosflags(ios::scientific)   << getParticleData(ParticleID::h0)->width() /GeV <<flush;
   params<<"\n$MTA$ "    <<setiosflags(ios::scientific)   << getParticleData(ParticleID::tauplus)->mass() /GeV <<flush;
 
-  
+  std::system(("mkdir -p " + theProcessPath).c_str());
   
   string line = theProcessPath+"/"+"processmap.dat";
   ifstream infile(line.c_str());
