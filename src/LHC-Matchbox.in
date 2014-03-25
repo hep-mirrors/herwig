@@ -98,7 +98,6 @@ cd /Herwig/MatrixElements/Matchbox/Amplitudes
 # clear /Herwig/MatrixElements/Matchbox/PPFactory:Amplitudes
 # library HJets.so
 # read HJetsProcesses.in
-# insert /Herwig/MatrixElements/Matchbox/PPFactory:Amplitudes 0 HJetsProcesses
 
 #>>>>>>>>>> enable VBFNLO : requires --with-vbfnlo
 
