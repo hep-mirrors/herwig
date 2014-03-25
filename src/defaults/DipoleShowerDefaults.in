@@ -49,8 +49,8 @@ cd /Herwig/DipoleShower
 # Setup the alphas
 ################################################################################
 
-cp /Herwig/MatrixElements/Matchbox/LOAlphaS LOAlphaS
-cp /Herwig/MatrixElements/Matchbox/NLOAlphaS NLOAlphaS
+cp /Herwig/MatrixElements/Matchbox/AlphaS/LOAlphaS LOAlphaS
+cp /Herwig/MatrixElements/Matchbox/AlphaS/NLOAlphaS NLOAlphaS
 
 ################################################################################
 # Setup the splitting kinematics.
