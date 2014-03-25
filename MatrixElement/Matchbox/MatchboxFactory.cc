@@ -246,8 +246,7 @@ makeMEs(const vector<string>& proc, unsigned int orderas) {
     }
   }
 
-  generator()->log() << "created " << res.size()
-		     << " matrix element objects for "
+  generator()->log() << "created "
 		     << procCount << " subprocesses.\n";
   generator()->log() << "--------------------------------------------------------------------------------\n"
 		     << flush;
