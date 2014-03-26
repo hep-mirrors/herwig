@@ -14,6 +14,7 @@
 #include "MatchboxHybridAmplitude.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Reference.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -26,7 +27,8 @@
 
 using namespace Herwig;
 
-MatchboxHybridAmplitude::MatchboxHybridAmplitude() {}
+MatchboxHybridAmplitude::MatchboxHybridAmplitude() 
+  : theUseOLPCorrelators(false) {}
 
 MatchboxHybridAmplitude::~MatchboxHybridAmplitude() {}
 
@@ -137,11 +139,11 @@ void MatchboxHybridAmplitude::doinitrun() {
 
 
 void MatchboxHybridAmplitude::persistentOutput(PersistentOStream & os) const {
-  os << theTreeLevelAmplitude << theOneLoopAmplitude;
+  os << theTreeLevelAmplitude << theOneLoopAmplitude << theUseOLPCorrelators;
 }
 
 void MatchboxHybridAmplitude::persistentInput(PersistentIStream & is, int) {
-  is >> theTreeLevelAmplitude >> theOneLoopAmplitude;
+  is >> theTreeLevelAmplitude >> theOneLoopAmplitude >> theUseOLPCorrelators;
 }
 
 
@@ -169,6 +171,22 @@ void MatchboxHybridAmplitude::Init() {
     ("OneLoopAmplitude",
      "Set the tree level amplitude to be used.",
      &MatchboxHybridAmplitude::theOneLoopAmplitude, false, false, true, false, false);
+
+
+  static Switch<MatchboxHybridAmplitude,bool> interfaceUseOLPCorrelators
+    ("UseOLPCorrelators",
+     "",
+     &MatchboxHybridAmplitude::theUseOLPCorrelators, false, false, false);
+  static SwitchOption interfaceUseOLPCorrelatorsYes
+    (interfaceUseOLPCorrelators,
+     "Yes",
+     "",
+     true);
+  static SwitchOption interfaceUseOLPCorrelatorsNo
+    (interfaceUseOLPCorrelators,
+     "No",
+     "",
+     false);
 
 }
 
