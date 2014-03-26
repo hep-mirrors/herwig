@@ -559,6 +559,26 @@ namespace Herwig {
      */
     void externalId(int id) { theExternalId = id; }
 
+    /**
+     * True if the process has been initialized
+     */
+    bool initialized() const { return theInitialized; }
+
+    /**
+     * True if the process has been initialized
+     */
+    void isInitialized(bool is = true) { theInitialized = is; }
+
+    /**
+     * Return the external momentum vector
+     */
+    const vector<double*>& externalMomenta() const { return theExternalMomenta; }
+
+    /**
+     * Fill the external momentum vector
+     */
+    void fillExternalMomenta(const vector<Lorentz5Momentum>&);
+
   public:
 
     /** @name Functions used by the persistent I/O system. */
@@ -839,6 +859,21 @@ namespace Herwig {
      * A generic process id to communicate with external codes
      */
     int theExternalId;
+
+    /**
+     * True if the process has been initialized
+     */
+    bool theInitialized;
+
+    /**
+     * The external momenta
+     */
+    vector<double*> theExternalMomenta;
+
+    /**
+     * True, if external momenta have been filled
+     */
+    bool filledExternalMomenta;
 
   };
 

@@ -123,20 +123,34 @@ public:
    */
   virtual double spinColourCorrelatedME2(pair<int,int> emitterSpectator,
 					 const SpinCorrelationTensor& c) const;
-						  
-						  
-						  
-  
-  vector<size_t> gluons_first_please(vector<size_t> i);
 
+  /**
+   * Order process in MadGraph conventions
+   */						  
+  vector<size_t> gluonsFirst(vector<size_t> i);
 
-  vector<vector<size_t> > getpermutations(vector<size_t> ordered);
-						  /**
+  /**
    * Flush all cashes.
    */
   virtual void flushCaches() {
     MatchboxAmplitude::flushCaches();
   }
+
+  /**
+   * Return true, if this amplitude needs to initialize an external
+   * code.
+   */
+  virtual bool isExternal() const { return true; }
+
+  /**
+   * Initialize this amplitude
+   */
+  virtual bool initializeExternal();
+
+  /**
+   * Return a generic process id for the given process
+   */
+  virtual int externalId(const cPDVector&);
 
 public:
 
@@ -196,31 +210,12 @@ protected:
    */
   virtual void doinit();
 
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
 
-  double mom0 [4];
-  double mom1 [4];
-  double mom2 [4];
-  double mom3 [4];
-  double mom4 [4];
-  double mom5 [4];
-  double mom6 [4];
-  double mom7 [4];
-    double mom8 [4];
-  double mom9 [4];
-  double mom10 [4];
-  double mom11 [4];
-  string theMG5Path;
-  
-  string theProcessPath;
-  
-  int tmpid;
-
-  map<int,int> colourindexmap;
-  
-  //void  *plugin_handle;
-
-  map<string,pair<int,bool> > processmap;
- 
   /**
    * The (tree-level) order in \f$g_S\f$ in which this matrix
    * element is given.
@@ -233,12 +228,33 @@ protected:
    */
   unsigned int theOrderInGem;
 
+  /**
+   * The path to the MadGraph installation
+   */
+  string theMG5Path;
+  
+  /**
+   * The path to generate amplitudes in.
+   */
+  string theProcessPath;
 
   /**
-   * Initialize this object. Called in the run phase just before
-   * a run begins.
+   * The process map.
    */
-  virtual void doinitrun();
+  static map<string,int>& processmap();
+
+  /**
+   * Load the process map
+   */
+  void loadProcessMap();
+
+  /**
+   * Initialize the given process
+   */
+  void initProcess(const cPDVector&);
+
+  map<int,int> colourindexmap;
+
   //@}
 
 private:
