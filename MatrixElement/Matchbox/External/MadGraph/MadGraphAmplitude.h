@@ -21,7 +21,12 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-
+/**
+ * \ingroup Matchbox
+ * \author Johannes Bellm, Simon Platzer
+ *
+ * \brief MadGraphAmplitude implements an interface to MadGraph
+ */
 class MadGraphAmplitude: 
     public MatchboxAmplitude {
 
@@ -253,7 +258,20 @@ protected:
    */
   void initProcess(const cPDVector&);
 
+  /**
+   * Map colour legs to colour basis
+   */
   map<int,int> colourindexmap;
+
+  /**
+   * Temporary container for permutations
+   */
+  int * perm;
+
+  /**
+   * Temporary container for helicities
+   */
+  int * heltmp;
 
   //@}
 

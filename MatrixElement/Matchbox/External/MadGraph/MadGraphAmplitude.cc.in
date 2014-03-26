@@ -37,9 +37,17 @@ void MG_vxxxxx(double p[4],double n[4],int inc,complex<double> vc[6]);
 int MG_Colour(int str, int i, int j);
 
 MadGraphAmplitude::MadGraphAmplitude()
-  : theMG5Path("@MADGRAPHPREFIX@"), theProcessPath("./MadGraphAmplitudes") {}
+  : theMG5Path("@MADGRAPHPREFIX@"), theProcessPath("./MadGraphAmplitudes"),
+    perm(0), heltmp(0) {}
 
-MadGraphAmplitude::~MadGraphAmplitude() {}
+MadGraphAmplitude::~MadGraphAmplitude() {
+  if ( perm ) {
+    delete[] perm; perm = 0;
+  }
+  if ( heltmp ) {
+    delete[] heltmp; heltmp = 0;
+  }
+}
 
 IBPtr MadGraphAmplitude::clone() const {
   return new_ptr(*this);
@@ -112,8 +120,8 @@ bool MadGraphAmplitude::initializeExternal() {
 		      << Exception::abortnow;
   cmd += theMG5Path + "/bin " + cwd + "/" + theProcessPath
     + " > " + cwd + "/" + theProcessPath + "/MG.log 2>&1";
-  generator()->log() << "Compiling MadGraph amplitudes. This may take some time -- please be patient.\n"
-		     << "In case of problems see " << theProcessPath << "/MG.log for details.\n"
+  generator()->log() << "\n\nCompiling MadGraph amplitudes. This may take some time -- please be patient.\n"
+		     << "In case of problems see " << theProcessPath << "/MG.log for details.\n\n"
 		     << flush;
   std::system(cmd.c_str());
 
@@ -199,9 +207,13 @@ void MadGraphAmplitude::prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr me) {
 
 Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& largeN) {
   
-  double units = pow(sqrt(lastSHat())/GeV,hel.size()-4) ;
-  int perm[hel.size()];
-  int heltmp[hel.size()];
+  double units = pow(sqrt(lastSHat())/GeV,hel.size()-4);
+
+  if ( !perm )
+    perm = new int[hel.size()];
+
+  if ( !heltmp )
+    heltmp = new int[hel.size()];
   
   for(size_t j=0;j<hel.size();j++){
     perm[j] = j;
