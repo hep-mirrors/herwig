@@ -69,11 +69,33 @@ double MatchboxHybridAmplitude::symmetryRatio() const {
   if ( treeLevelAmplitude()->hasInitialAverage() &&
        !oneLoopAmplitude()->hasInitialAverage() ) {
     ifact = 1./4.;
+    if (lastMatchboxXComb()->matchboxME()->mePartonData()[0]->iColour() == PDT::Colour3 ||
+	 lastMatchboxXComb()->matchboxME()->mePartonData()[0]->iColour() == PDT::Colour3bar )
+      ifact /= SM().Nc();
+    else if ( lastMatchboxXComb()->matchboxME()->mePartonData()[0]->iColour() == PDT::Colour8 )
+      ifact /= (SM().Nc()*SM().Nc()-1.);
+
+    if ( lastMatchboxXComb()->matchboxME()->mePartonData()[1]->iColour() == PDT::Colour3 ||
+	 lastMatchboxXComb()->matchboxME()->mePartonData()[1]->iColour() == PDT::Colour3bar )
+      ifact /= SM().Nc();
+    else if ( mePartonData()[1]->iColour() == PDT::Colour8 )
+      ifact /= (SM().Nc()*SM().Nc()-1.);
   }
 
   if ( !treeLevelAmplitude()->hasInitialAverage() &&
        oneLoopAmplitude()->hasInitialAverage() ) {
     ifact = 4.;
+    if ( lastMatchboxXComb()->matchboxME()->mePartonData()[0]->iColour() == PDT::Colour3 ||
+	 lastMatchboxXComb()->matchboxME()->mePartonData()[0]->iColour() == PDT::Colour3bar )
+      ifact *= SM().Nc();
+    else if ( lastMatchboxXComb()->matchboxME()->mePartonData()[0]->iColour() == PDT::Colour8 )
+      ifact *= (SM().Nc()*SM().Nc()-1.);
+
+    if ( lastMatchboxXComb()->matchboxME()->mePartonData()[1]->iColour() == PDT::Colour3 ||
+	 lastMatchboxXComb()->matchboxME()->mePartonData()[1]->iColour() == PDT::Colour3bar )
+      ifact *= SM().Nc();
+    else if ( lastMatchboxXComb()->matchboxME()->mePartonData()[1]->iColour() == PDT::Colour8 )
+      ifact *= (SM().Nc()*SM().Nc()-1.);
   }
 
   if ( treeLevelAmplitude()->hasFinalStateSymmetry() &&

@@ -381,7 +381,7 @@ void GoSamAmplitude::evalSubProcess() const {
 	OLP_EvalSubProcess2(&((*(idpair.find(id))).second), olpMomenta(), &scale, out, &acc);
 
 	if ( olpId()[ProcessType::oneLoopInterference] ) {
-	  lastTreeME2(out[3] * units);
+	  if(calculateTreeME2())lastTreeME2(out[3] * units);
 	  lastOneLoopInterference((out[2])* units);
 	  lastOneLoopPoles(pair<double, double>(out[0] * units, out[1] * units));
 	} else if ( olpId()[ProcessType::treeME2] ) {

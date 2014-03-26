@@ -133,7 +133,7 @@ void NJetsAmplitude::evalSubProcess() const {
   NJet::LH_OLP::OLP_EvalSubProcess(id, olpMomenta(), scale, &as, out);
 
   if ( olpId()[ProcessType::oneLoopInterference] ) {
-    lastTreeME2(out[3]*units);
+    if(calculateTreeME2())lastTreeME2(out[3]*units);
     lastOneLoopInterference(out[2]*units);
     lastOneLoopPoles(pair<double,double>(out[0]*units,out[1]*units));
   } else if ( olpId()[ProcessType::treeME2] ) {

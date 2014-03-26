@@ -106,9 +106,9 @@ void OpenLoopsAmplitude::startOLP(const string& contract, int& status) {
 	 stri="width("+str+")";
 	  OLP_SetParameter(stri.c_str(),&width,&null,&a);
 	}
-	stri="alphas";
+	stri="alphas";one=SM().alphaS();
 	OLP_SetParameter( stri.c_str(),&one ,&null,&a);
-	stri="alpha";
+	stri="alpha";one=SM().alphaEMMZ();
 	OLP_SetParameter(stri.c_str(),&one ,&null,&a);
 }
 
@@ -126,7 +126,6 @@ void OpenLoopsAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs
 	}
 
 	orderFile << "# OLP order file created by Herwig++/Matchbox for OpenLoops\n\n";
-	//orderFile << "MatrixElementSquareType  CHsummed\n";
 	orderFile << "CorrectionType           QCD\n";
 	orderFile << "IRregularization         " << (isDR() ? "DRED" : "CDR") << "\n";
 	orderFile << "extra answerfile      " << "OLP_answer.lh" << "\n";
@@ -179,7 +178,6 @@ void OpenLoopsAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs
 
 bool OpenLoopsAmplitude::checkOLPContract() {
 	string contractFileName = "OLP_answer.lh";
-        //string contractFileName =  "OLP_order.lh";
         ifstream infile(contractFileName.c_str());
 	string line;
 	vector < string > contractfile;
@@ -198,7 +196,6 @@ bool OpenLoopsAmplitude::checkOLPContract() {
 			}
 			if ( righttype ) {
 					if ( (*linex).find((*p).second.Pstr()) != std::string::npos ){
-					//cout<<"\n "<<(*p).second.Pstr().length()<<((*linex).find("|")-2)<<flush;
 					if( (*p).second.Pstr().length() == (*linex).find("|") ) {
 					string sub = (*linex).substr((*linex).find("|") + 1, (*linex).find("#") - (*linex).find("|") - 1); // | 1 23 # buggy??
 
@@ -244,14 +241,12 @@ void OpenLoopsAmplitude::getids() const{
 bool OpenLoopsAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
 	cout << "\nWriting the olp-order file." << flush;
 	string contractFileName =  "OLP_answer.lh";
-        //string contractFileName =  "OLP_order.lh";
 	string orderFileName = "OLP_order.lh";
 	fillOrderFile(procs);
 	cout << "\nOpenLoops: Sign the order file." << flush;
 
  	int status = -1;
 	startOLP(orderFileName, status);
-	//signOLP(orderFileName, contractFileName);
 	if ( !checkOLPContract() ) {
 		cout << "\n\n!!!!!!!!!!!!!Checking the olp-contract failed!!!!!!!!!!!\n\n" << flush;
 		assert(0);
@@ -264,15 +259,10 @@ bool OpenLoopsAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
 
 void OpenLoopsAmplitude::evalSubProcess() const {
 	double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
-	units *= pow( SM().alphaEMMZ() , orderInGem());
-	units *= pow( SM().alphaS(), orderInGs());
 	fillOLPMomenta(lastXComb().meMomenta());
 	double acc ;
 	double scale = sqrt(mu2() / GeV2);
-
-        //int n = lastXComb().meMomenta().size();
         double out[7]={};
-        //double * out =new double[2*n*n];
 
 	int id = olpId()[ProcessType::oneLoopInterference] ? olpId()[ProcessType::oneLoopInterference] : olpId()[ProcessType::treeME2];
 
@@ -284,11 +274,10 @@ void OpenLoopsAmplitude::evalSubProcess() const {
 	}
 
 	OLP_EvalSubProcess2(&((*(idpair.find(id))).second), olpMomenta(), &scale, out,&acc );
-	
 	if ( olpId()[ProcessType::oneLoopInterference] ) {
-		lastTreeME2(out[3] * units);
-		lastOneLoopInterference((out[2])* units*SM().alphaS());
-		lastOneLoopPoles(pair<double, double>(out[0] * units*SM().alphaS(), out[1] * units*SM().alphaS()));
+		if(calculateTreeME2())lastTreeME2(out[3] * units);
+		lastOneLoopInterference((out[2])* units);
+		lastOneLoopPoles(pair<double, double>(out[0] * units, out[1] * units));
 	} else if ( olpId()[ProcessType::treeME2] ) {
 		lastTreeME2(out[0] * units);
 	}
@@ -296,8 +285,6 @@ void OpenLoopsAmplitude::evalSubProcess() const {
 
 void OpenLoopsAmplitude::evalColourCorrelator(pair<int, int>  ) const {
 	double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
-	units *= pow( SM().alphaEMMZ() , orderInGem());
-	units *= pow( SM().alphaS(), orderInGs());
 	fillOLPMomenta(lastXComb().meMomenta());
 	double acc ;
 	double scale = sqrt(mu2() / GeV2);
@@ -318,8 +305,6 @@ void OpenLoopsAmplitude::evalColourCorrelator(pair<int, int>  ) const {
 	for ( int i = 0 ; i < n ; ++i ){
 	    for ( int j = i + 1 ; j < n ; ++j ) {
 			lastColourCorrelator(make_pair(i, j), colourCorrelatorResults[i+j*(j-1)/2] * units);
-			//colourCorrelatorResults[i+j*(j-1)/2]=out[i+j*(j-1)/2];
-
 	    }
 	}
 }
@@ -333,8 +318,6 @@ double OpenLoopsAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
 					 const SpinCorrelationTensor& c) const{
 
 	double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
-	units *= pow( SM().alphaEMMZ(), orderInGem());
-	units *= pow( SM().alphaS(), orderInGs());
 	fillOLPMomenta(lastXComb().meMomenta());
 
 	double acc =1.;
