@@ -454,6 +454,8 @@ void MatchboxFactory::setup() {
 	bornme->olpProcess(ProcessType::treeME2,id);
       }
 
+      bornme->needsNoCorrelations();
+
       bornme->cloneDependencies();
       MEs().push_back(bornme);
 
@@ -526,6 +528,8 @@ void MatchboxFactory::setup() {
 	}
       }
 
+      nlo->needsCorrelations();
+
       nlo->cloneDependencies();
 
       bornVirtualMEs().push_back(nlo);
@@ -578,6 +582,8 @@ void MatchboxFactory::setup() {
       if ( (**born).onlyOneLoop() )
 	continue;
 
+      (**born).needsCorrelations();
+
       if ( (**born).isOLPTree() ) {
 	int id = orderOLPProcess((**born).subProcess(),
 				 (**born).matchboxAmplitude(),
@@ -612,6 +618,8 @@ void MatchboxFactory::setup() {
 	throw InitException() << "Subtracted ME " << pname << " already existing.";
 
       sub->factory(this);
+
+      (**real).needsNoCorrelations();
 
       if ( (**real).isOLPTree() ) {
 	int id = orderOLPProcess((**real).subProcess(),

@@ -37,7 +37,8 @@ using namespace Herwig;
 MatchboxMEBase::MatchboxMEBase() 
   : MEBase(), 
     theOneLoop(false),
-    theOneLoopNoBorn(false) {}
+    theOneLoopNoBorn(false),
+    theNoCorrelations(false) {}
 
 MatchboxMEBase::~MatchboxMEBase() {}
 
@@ -1188,7 +1189,7 @@ void MatchboxMEBase::prepareXComb(MatchboxXCombData& xc) const {
     xc.nDimAmplitude(matchboxAmplitude()->nDimAdditional());
     if ( matchboxAmplitude()->colourBasis() ) {
       size_t cdim = 
- 	matchboxAmplitude()->colourBasis()->prepare(diagrams(),matchboxAmplitude()->noCorrelations());
+ 	matchboxAmplitude()->colourBasis()->prepare(diagrams(),noCorrelations());
       xc.colourBasisDim(cdim);
     }
     if ( matchboxAmplitude()->isExternal() ) {
@@ -1270,7 +1271,7 @@ void MatchboxMEBase::persistentOutput(PersistentOStream & os) const {
      << theReweights << theSubprocess << theOneLoop 
      << theOneLoopNoBorn
      << epsilonSquarePoleHistograms << epsilonPoleHistograms
-     << theOLPProcess;
+     << theOLPProcess << theNoCorrelations;
 }
 
 void MatchboxMEBase::persistentInput(PersistentIStream & is, int) {
@@ -1279,7 +1280,7 @@ void MatchboxMEBase::persistentInput(PersistentIStream & is, int) {
      >> theReweights >> theSubprocess >> theOneLoop 
      >> theOneLoopNoBorn
      >> epsilonSquarePoleHistograms >> epsilonPoleHistograms
-     >> theOLPProcess;
+     >> theOLPProcess >> theNoCorrelations;
   lastMatchboxXComb(theLastXComb);
 }
 

@@ -283,11 +283,6 @@ public:
   virtual Ptr<ColourBasis>::tptr colourBasis() const { return theColourBasis; }
 
   /**
-   * Return true, if this amplitude will not require colour correlations.
-   */
-  virtual bool noCorrelations() const { return !haveOneLoop(); }  
-
-  /**
    * Return true, if the colour basis is capable of assigning colour
    * flows.
    */

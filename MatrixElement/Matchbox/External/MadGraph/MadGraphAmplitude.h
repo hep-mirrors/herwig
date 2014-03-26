@@ -78,11 +78,6 @@ public:
   virtual unsigned int orderInGem() const { return theOrderInGem; }
 
   /**
-   * Return true, if this amplitude will not require colour correlations.
-   */
-  virtual bool noCorrelations() const { return false; }  
-
-  /**
    * Return true, if this amplitude is capable of calculating one-loop
    * (QCD) corrections.
    */

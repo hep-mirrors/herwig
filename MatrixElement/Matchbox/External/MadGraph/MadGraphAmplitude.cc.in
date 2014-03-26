@@ -227,7 +227,6 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
     ii = colourindexmap.find(i)->second;
   } else {
    
-    colourBasis()->prepare(theLastXComb->diagrams(),noCorrelations());
     set<vector<size_t> > a = colourOrdering(i);
     
     for( int it = 0; it < MG_NCol(lastMatchboxXComb()->externalId()); it++ ){
