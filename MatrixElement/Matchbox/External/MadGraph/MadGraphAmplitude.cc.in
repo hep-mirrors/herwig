@@ -225,7 +225,10 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
   int ii = -1;
   if ( colourindexmap.find(i)!= colourindexmap.end() ) {
     ii = colourindexmap.find(i)->second;
-    if (ii==-1) return Complex(0.0);
+    if (ii==-1) {
+      largeN = Complex(0.0);
+      return Complex(0.0);
+    }
   } else {
    
     set<vector<size_t> > a = colourOrdering(i);
@@ -262,27 +265,14 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
       }
 
       if ( found_all ) {
-// 	cout<<"\nCould find Amplitude for: ";
-//         for ( set<vector<size_t> >::iterator it3 = a.begin(); it3 != a.end(); it3++ ) {
-//           cout << "[";
-// 	  for (size_t i=0; i<(*it3).size();i++){cout << (*it3)[i]; }
-//           cout << "]";
-//         }
-    
 	colourindexmap.insert(pair<int,int>(i,it) );
 	ii=it;
       }
     }
   }
   if ( ii == -1 ){
-//     set<vector<size_t> > a = colourOrdering(i);
-//     cout<<"\nCould not find Amplitude for: ";
-//     for ( set<vector<size_t> >::iterator it3 = a.begin(); it3 != a.end(); it3++ ) {
-//         cout << "[";
-// 	for (size_t i=0; i<(*it3).size();i++){cout << (*it3)[i]; }
-//         cout << "]";
-//     }
     colourindexmap.insert(pair<int,int>(i,ii) );
+    largeN = Complex(0.0);
     return Complex(0.0);
   }
   Complex d = MG_Jamp(ii,lastMatchboxXComb()->externalId());
