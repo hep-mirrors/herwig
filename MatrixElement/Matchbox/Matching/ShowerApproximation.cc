@@ -14,6 +14,7 @@
 #include "ShowerApproximation.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
+#include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
@@ -28,7 +29,8 @@
 using namespace Herwig;
 
 ShowerApproximation::ShowerApproximation() 
-  : HandlerBase(), theBelowCutoff(false),
+  : HandlerBase(), theShowerKernels(true),
+    theBelowCutoff(false),
     theFFPtCut(1.0*GeV), theFFScreeningScale(ZERO),
     theFIPtCut(1.0*GeV), theFIScreeningScale(ZERO),
     theIIPtCut(1.0*GeV), theIIScreeningScale(ZERO),
@@ -48,7 +50,24 @@ ShowerApproximation::ShowerApproximation()
 
 ShowerApproximation::~ShowerApproximation() {}
 
-void ShowerApproximation::setDipole(Ptr<SubtractionDipole>::tcptr dip) { theDipole = dip; }
+void ShowerApproximation::setLargeNBasis() {
+  if ( theShowerKernels && !theLargeNBasis ) {
+    if ( !dipole()->realEmissionME()->matchboxAmplitude() )
+      throw Exception() << "expecting an amplitude object"
+			<< Exception::abortnow;
+    if ( !dipole()->realEmissionME()->matchboxAmplitude()->colourBasis() )
+      throw Exception() << "expecting a colour basis object"
+			<< Exception::abortnow;
+    theLargeNBasis = 
+      dipole()->realEmissionME()->matchboxAmplitude()->colourBasis()->cloneMe();
+    theLargeNBasis->doLargeN();
+  }
+}
+
+void ShowerApproximation::setDipole(Ptr<SubtractionDipole>::tcptr dip) { 
+  theDipole = dip;
+  setLargeNBasis();
+}
 
 Ptr<SubtractionDipole>::tcptr ShowerApproximation::dipole() const { return theDipole; }
 
@@ -278,7 +297,8 @@ double ShowerApproximation::scaleWeight(int rScale, int bScale, int eScale) cons
 
 
 void ShowerApproximation::persistentOutput(PersistentOStream & os) const {
-  os << theBornXComb << theRealXComb << theTildeXCombs << theDipole << theBelowCutoff
+  os << theShowerKernels << theLargeNBasis
+     << theBornXComb << theRealXComb << theTildeXCombs << theDipole << theBelowCutoff
      << ounit(theFFPtCut,GeV) << ounit(theFFScreeningScale,GeV) 
      << ounit(theFIPtCut,GeV) << ounit(theFIScreeningScale,GeV) 
      << ounit(theIIPtCut,GeV) << ounit(theIIScreeningScale,GeV) 
@@ -294,7 +314,8 @@ void ShowerApproximation::persistentOutput(PersistentOStream & os) const {
 }
 
 void ShowerApproximation::persistentInput(PersistentIStream & is, int) {
-  is >> theBornXComb >> theRealXComb >> theTildeXCombs >> theDipole >> theBelowCutoff
+  is >> theShowerKernels >> theLargeNBasis
+     >> theBornXComb >> theRealXComb >> theTildeXCombs >> theDipole >> theBelowCutoff
      >> iunit(theFFPtCut,GeV) >> iunit(theFFScreeningScale,GeV) 
      >> iunit(theFIPtCut,GeV) >> iunit(theFIScreeningScale,GeV) 
      >> iunit(theIIPtCut,GeV) >> iunit(theIIScreeningScale,GeV) 
@@ -316,7 +337,7 @@ void ShowerApproximation::persistentInput(PersistentIStream & is, int) {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeAbstractClass<ShowerApproximation,HandlerBase>
-  describeHerwigShowerApproximation("Herwig::ShowerApproximation", "HwMatchbox.so");
+  describeHerwigShowerApproximation("Herwig::ShowerApproximation", "Herwig.so");
 
 void ShowerApproximation::Init() {
 
@@ -551,6 +572,26 @@ void ShowerApproximation::Init() {
      "The rho parameter of the profile scales.",
      &ShowerApproximation::theProfileRho, 0.3, 0.0, 1.0,
      false, false, Interface::limited);
+
+  static Reference<ShowerApproximation,ColourBasis> interfaceLargeNBasis
+    ("LargeNBasis",
+     "Set the large-N colour basis implementation.",
+     &ShowerApproximation::theLargeNBasis, false, false, true, true, false);
+
+  static Switch<ShowerApproximation,bool> interfaceShowerKernels
+    ("ShowerKernels",
+     "Switch between exact and shower approximated dipole functions.",
+     &ShowerApproximation::theShowerKernels, true, false, false);
+  static SwitchOption interfaceShowerKernelsOn
+    (interfaceShowerKernels,
+     "On",
+     "Switch to shower approximated dipole functions.",
+     true);
+  static SwitchOption interfaceShowerKernelsOff
+    (interfaceShowerKernels,
+     "Off",
+     "Switch to full dipole functions.",
+     false);
 
 }
 

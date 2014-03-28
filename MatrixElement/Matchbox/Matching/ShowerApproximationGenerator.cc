@@ -363,7 +363,7 @@ void ShowerApproximationGenerator::persistentInput(PersistentIStream & is, int) 
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<ShowerApproximationGenerator,StepHandler>
-  describeHerwigShowerApproximationGenerator("Herwig::ShowerApproximationGenerator", "HwMatchbox.so");
+  describeHerwigShowerApproximationGenerator("Herwig::ShowerApproximationGenerator", "Herwig.so");
 
 void ShowerApproximationGenerator::Init() {
 

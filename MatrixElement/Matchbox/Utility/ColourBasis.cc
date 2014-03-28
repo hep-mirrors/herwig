@@ -974,7 +974,7 @@ vector<PDT::Colour> ColourBasis::normalOrder(const vector<PDT::Colour>& legs) co
 
 string ColourBasis::file(const vector<PDT::Colour>& sub) const {
 
-  string res = "";
+  string res = name() + "-";
 
   for ( vector<PDT::Colour>::const_iterator lit = sub.begin();
 	lit != sub.end(); ++lit ) {
@@ -1192,7 +1192,7 @@ void ColourBasis::persistentInput(PersistentIStream & is, int) {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeAbstractClass<ColourBasis,HandlerBase>
-describeColourBasis("Herwig::ColourBasis", "HwMatchbox.so");
+describeColourBasis("Herwig::ColourBasis", "Herwig.so");
 
 void ColourBasis::Init() {
 

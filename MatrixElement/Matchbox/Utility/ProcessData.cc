@@ -88,7 +88,7 @@ void ProcessData::persistentInput(PersistentIStream & is, int) {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<ProcessData,HandlerBase>
-  describeHerwigProcessData("Herwig::ProcessData", "HwMatchbox.so");
+  describeHerwigProcessData("Herwig::ProcessData", "Herwig.so");
 
 void ProcessData::Init() {
 

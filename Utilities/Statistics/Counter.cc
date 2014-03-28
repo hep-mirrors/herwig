@@ -80,7 +80,7 @@ double Counter::varianceOfAverage(double nPoints) const {
     abs(sumOfSquaredWeights()/nPoints - sqr(sumOfWeights()/nPoints))/(nPoints-1);
 }
 
-void Counter::fromXML(XML::Element elem) {
+void Counter::fromXML(const XML::Element& elem) {
 
   elem.getFromAttribute("sumOfWeights",theSumOfWeights);
   elem.getFromAttribute("sumOfSquaredWeights",theSumOfSquaredWeights);

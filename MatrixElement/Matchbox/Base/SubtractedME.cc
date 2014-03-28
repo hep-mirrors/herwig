@@ -228,7 +228,7 @@ void SubtractedME::getDipoles() {
       (**d).doTestSubtraction();
   }
 
-  if ( genDipoles.empty() ) {
+  if ( genDipoles.empty() && factory()->initVerbose() ) {
     // probably finite real contribution, but warn
     generator()->log() << "\nWarning: No subtraction dipoles could be found for the process:\n";
     generator()->log() << real->subProcess().legs[0]->PDGName() << " " 
@@ -810,4 +810,4 @@ void SubtractedME::Init() {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<SubtractedME,MEGroup>
-describeHerwigSubtractedME("Herwig::SubtractedME", "HwMatchbox.so");
+describeHerwigSubtractedME("Herwig::SubtractedME", "Herwig.so");

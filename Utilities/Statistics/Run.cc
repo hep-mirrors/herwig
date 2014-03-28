@@ -82,7 +82,7 @@ Run& Run::operator+=(const Run& other) {
   return *this;
 }
 
-void Run::fromXML(XML::Element elem) {
+void Run::fromXML(const XML::Element& elem) {
 
   elem.getFromAttribute("name",theName);
   elem.getFromAttribute("attemptedPoints",theAttemptedPoints);

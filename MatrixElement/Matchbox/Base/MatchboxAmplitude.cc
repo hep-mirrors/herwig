@@ -46,6 +46,18 @@ void MatchboxAmplitude::persistentInput(PersistentIStream & is, int) {
   lastMatchboxXComb(theLastXComb);
 }
 
+void MatchboxAmplitude::doinit() {
+  Amplitude::doinit();
+  if ( colourBasis() )
+    colourBasis()->init();
+}
+
+void MatchboxAmplitude::doinitrun() {
+  Amplitude::doinitrun();
+  if ( colourBasis() )
+    colourBasis()->initrun();
+}
+
 void MatchboxAmplitude::cloneDependencies(const std::string&) {}
 
 Ptr<MatchboxMEBase>::ptr MatchboxAmplitude::makeME(const PDVector&) const {
@@ -351,7 +363,8 @@ Lorentz5Momentum MatchboxAmplitude::amplitudeMomentum(int i) const {
   if ( iCrossed < 2 )
     res = -res;
   res.setMass(meMomenta()[iCrossed].mass());
-  res.rescaleRho();
+  Energy2 rho = res.t()*res.t() - res.mass2();
+  res.setRho(sqrt(abs(rho)));
   return res;
 }
 
@@ -660,4 +673,4 @@ void MatchboxAmplitude::Init() {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeAbstractClass<MatchboxAmplitude,Amplitude>
-describeMatchboxAmplitude("Herwig::MatchboxAmplitude", "HwMatchbox.so");
+describeMatchboxAmplitude("Herwig::MatchboxAmplitude", "Herwig.so");

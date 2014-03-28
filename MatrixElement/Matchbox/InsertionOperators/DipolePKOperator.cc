@@ -51,6 +51,10 @@ void DipolePKOperator::setXComb(tStdXCombPtr xc) {
     gammaGluon = (11./6.)*CA - (1./3.)*lastBorn()->nLight();
     KQuark = (7./2.-sqr(pi)/6.)*CF;
     KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*lastBorn()->nLight();
+    if ( isDR() ) {
+      gammaQuark -= CF/2.;
+      gammaGluon -= CA/6.;
+    }
   }
 }
 
@@ -80,7 +84,7 @@ double DipolePKOperator::softLog(tcPDPtr p) const {
 }
 
 double DipolePKOperator::KBarqq() const {
-  assert(abs(parton->id()) < 6);
+  assert(abs(parton->id()) < 7);
   double res = 
     2.*softLogByz(parton) +
     (sqr(pi) - 5.)*PDFx(parton);
@@ -91,7 +95,7 @@ double DipolePKOperator::KBarqq() const {
 }
 
 double DipolePKOperator::KTildeqq() const {
-  assert(abs(parton->id()) < 6);
+  assert(abs(parton->id()) < 7);
   double res =
     2.*CF*softLog(parton) - CF*(sqr(pi)/3.)*PDFx(parton);
   if ( z > x ) {
@@ -101,7 +105,7 @@ double DipolePKOperator::KTildeqq() const {
 }
 
 double DipolePKOperator::Pqq() const {
-  assert(abs(parton->id()) < 6);
+  assert(abs(parton->id()) < 7);
   double res = (3./2.+2.*log(1.-x)) * PDFx(parton);
   if ( z > x ) {
     res += 2.*(PDFxByz(parton) - z*PDFx(parton))/(z*(1.-z));
@@ -117,7 +121,7 @@ double DipolePKOperator::KBarqg() const {
   double res = 0.0;
   double factor = CF * ( ( (1.+sqr(1.-z)) / z ) * log((1.-z)/z) + z ) / z;
   int nl= lastBorn()->nLight();
-  for ( int f = -lastBorn()->nLight(); f < nl; ++f ) {
+  for ( int f = -lastBorn()->nLight(); f <= nl; ++f ) {
     if ( f == 0 )
       continue;
     res += PDFxByz(getParticleData(f))*factor;
@@ -138,7 +142,7 @@ double DipolePKOperator::Pqg() const {
   double res = 0.0;
   double factor = CF * ( 1. + sqr(1.-z) ) / sqr(z);
   int nl = lastBorn()->nLight();
-  for ( int f = -lastBorn()->nLight(); f < nl; ++f ) {
+  for ( int f = -lastBorn()->nLight(); f <= nl; ++f ) {
     if ( f == 0 )
       continue;
     res += PDFxByz(getParticleData(f))*factor;
@@ -147,7 +151,7 @@ double DipolePKOperator::Pqg() const {
 }
 
 double DipolePKOperator::KBargq() const {
-  assert(abs(parton->id()) < 6);
+  assert(abs(parton->id()) < 7);
   if ( z < x )
     return 0.0;
   return
@@ -156,14 +160,14 @@ double DipolePKOperator::KBargq() const {
 }
 
 double DipolePKOperator::KTildegq() const {
-  assert(abs(parton->id()) < 6);
+  assert(abs(parton->id()) < 7);
   if ( z < x )
     return 0.0;
   return Pgq() * log(1.-z);
 }
 
 double DipolePKOperator::Pgq() const {
-  assert(abs(parton->id()) < 6);
+  assert(abs(parton->id()) < 7);
   if ( z < x )
     return 0.0;
   return 0.5 * ( sqr(z) + sqr(1.-z) ) * PDFxByz(getParticleData(ParticleID::g)) / z;
@@ -230,7 +234,7 @@ double DipolePKOperator::PDFxByz(tcPDPtr pd) const {
 bool DipolePKOperator::apply(tcPDPtr pd) const {
   return
     pd->mass() == ZERO &&
-    (abs(pd->id()) < 6 || pd->id() == ParticleID::g);
+    (abs(pd->id()) < 7 || pd->id() == ParticleID::g);
 }
 
 bool DipolePKOperator::apply(const cPDVector& pd) const {
@@ -294,11 +298,18 @@ double DipolePKOperator::sumParton(int id) const {
 
   double res = 0.;
 
+  ////////////////////////////
+  // K operator             //
+  // non-color correlated   //
+  ////////////////////////////
+
   if ( mePartonData()[id]->id() == ParticleID::g )
     res += (KBargg() + KBarqg())*lastBorn()->me2();
 
-  if ( abs(mePartonData()[id]->id()) < 6 )
+  if ( abs(mePartonData()[id]->id()) < 7 )
     res += (KBarqq() + KBargq())*lastBorn()->me2();
+
+  ////////////////////////////
 
   double theGammaSoft = 0.0;
 
@@ -315,6 +326,10 @@ double DipolePKOperator::sumParton(int id) const {
 
   double disFinite = 0.0;
   double glueFinite = 0.0;
+
+  //////////////////////////////////////////////////////////
+  // Initial-Final and Final-Initial contributions        //
+  //////////////////////////////////////////////////////////
 
   for ( cPDVector::const_iterator i = mePartonData().begin() + 2;
 	i != mePartonData().end(); ++i, ++Pi, ++idi ) {
@@ -334,24 +349,37 @@ double DipolePKOperator::sumParton(int id) const {
       thePgg = Pgg();
     }
 
-    if ( abs(mePartonData()[id]->id()) < 6 &&
+    if ( abs(mePartonData()[id]->id()) < 7 &&
 	 thePqq == 0.0 ) {
       thePgq = Pgq();
       thePqq = Pqq();
     }
 
-    double theLog = log(scale/(2.*((*Pi)*meMomenta()[id])));
+    ////////////////
+    // K operator //
+    ////////////////
 
+    // Last term in massless K operator in (C.31) in massless paper
     res +=
       ( (**i).id() == ParticleID::g ? gammaGluon : gammaQuark ) *
       theGammaSoft * fiCorrelated;
+
+    ////////////////
+    // P operator //
+    ////////////////
+
+    // The extra terms, which render the dipole kernels
+    // positive definite, are subtracted here again in
+    // integrated form (disfinite and gluefinite).
+
+    double theLog = log(scale/(2.*((*Pi)*meMomenta()[id])));
 
     if ( mePartonData()[id]->id() == ParticleID::g ) {
       res +=
 	( thePgg + thePqg ) * theLog * ifCorrelated;
     }
 
-    if ( abs(mePartonData()[id]->id()) < 6 ) {
+    if ( abs(mePartonData()[id]->id()) < 7 ) {
       res +=
 	( thePqq + thePgq ) * theLog * ifCorrelated;
       if ( disFinite == 0.0 && z > x ) {
@@ -361,7 +389,7 @@ double DipolePKOperator::sumParton(int id) const {
 	res -= disFinite*ifCorrelated;
     }
 
-    if ( abs(mePartonData()[idi]->id()) < 6 ) {
+    if ( abs(mePartonData()[idi]->id()) < 7 ) {
       if ( disFinite == 0.0 && z > x ) {
 	disFinite = CF*PDFxByz(parton)*(1.+3.*z/2.)/z;
       }
@@ -379,6 +407,10 @@ double DipolePKOperator::sumParton(int id) const {
 
   }
 
+  //////////////////////////////////////////////////////////
+  // Initial-Initial contributions                        //
+  //////////////////////////////////////////////////////////
+
   if ( mePartonData()[ id == 0 ? 1 : 0 ]->coloured() &&
        !lastBorn()->noDipole(id == 0 ? 0 : 1,
 			     id == 0 ? 1 : 0) ) {
@@ -389,7 +421,7 @@ double DipolePKOperator::sumParton(int id) const {
       thePgg = Pgg();
     }
 
-    if ( abs(mePartonData()[id]->id()) < 6 &&
+    if ( abs(mePartonData()[id]->id()) < 7 &&
 	 thePqq == 0.0 ) {
       thePgq = Pgq();
       thePqq = Pqq();
@@ -407,7 +439,7 @@ double DipolePKOperator::sumParton(int id) const {
 	( KTildegg() + KTildeqg() ) * iiCorrelated;
     }    
 
-    if ( abs(mePartonData()[id]->id()) < 6 ) {
+    if ( abs(mePartonData()[id]->id()) < 7 ) {
       res +=
 	( thePqq + thePgq ) * theLog * iiCorrelated;
       res -=
@@ -415,6 +447,8 @@ double DipolePKOperator::sumParton(int id) const {
     }
 
   }
+
+  //////////////////////////////////////////////////////////
 
   return res * mapz;
 
@@ -464,7 +498,7 @@ void DipolePKOperator::persistentInput(PersistentIStream & is, int) {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<DipolePKOperator,MatchboxInsertionOperator>
-describeHerwigDipolePKOperator("Herwig::DipolePKOperator", "HwMatchbox.so");
+describeHerwigDipolePKOperator("Herwig::DipolePKOperator", "Herwig.so");
 
 void DipolePKOperator::Init() {
 

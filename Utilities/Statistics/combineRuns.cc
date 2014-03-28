@@ -32,13 +32,15 @@ int main(int argc, char* argv[]) {
 
   Run combined;
   ifstream firstIn(argv[2]);
-  combined.fromXML(ElementIO::get(firstIn));
+  XML::Element elem = ElementIO::get(firstIn);
+  combined.fromXML(elem);
   combined.name(outName);
 
   for ( int k = 3; k < argc; ++k ) {
     Run next;
     ifstream nextIn(argv[k]);
-    next.fromXML(ElementIO::get(nextIn));
+    elem = ElementIO::get(nextIn);
+    next.fromXML(elem);
     combined += next;
   }
 

@@ -9,5 +9,7 @@ DipolePKOperator.cc \
 DipolePKOperator.h \
 DipoleMIOperator.cc \
 DipoleMIOperator.h \
+DipoleMPKOperator.cc \
+DipoleMPKOperator.h \
 MatchboxInsertionOperator.cc \
 MatchboxInsertionOperator.h

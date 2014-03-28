@@ -123,9 +123,13 @@ HERWIG_CHECK_NJET
 
 HERWIG_CHECK_GOSAM
 
+HERWIG_CHECK_GOSAM_CONTRIB
+
 HERWIG_CHECK_OPENLOOPS
 
 HERWIG_CHECK_HEJ
+
+HERWIG_CHECK_MADGRAPH
 
 HERWIG_COMPILERFLAGS
 
@@ -204,6 +208,8 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/Matchbox/Matching/Makefile
                 MatrixElement/Matchbox/Cuts/Makefile
                 MatrixElement/Matchbox/Scales/Makefile
+                MatrixElement/Matchbox/Scales/MatchboxScale.cc
+                MatrixElement/Matchbox/ColorFull/Makefile
                 MatrixElement/Matchbox/Builtin/Makefile
                 MatrixElement/Matchbox/Builtin/Amplitudes/Makefile
                 MatrixElement/Matchbox/Tests/Makefile
@@ -220,8 +226,12 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/Matchbox/External/GoSam/GoSamAmplitude.cc
                 MatrixElement/Matchbox/External/OpenLoops/Makefile
                 MatrixElement/Matchbox/External/OpenLoops/OpenLoopsAmplitude.cc
-		Exsample2/Makefile
-		Exsample2/CellGridSampling/Makefile
+                MatrixElement/Matchbox/External/MadGraph/Makefile
+                MatrixElement/Matchbox/External/MadGraph/MadGraphAmplitude.cc
+                MatrixElement/Matchbox/External/MadGraph/mg2Matchbox.py
+                MatrixElement/Matchbox/External/MadGraph/Makefile-MG.in
+		Sampling/Makefile
+		Sampling/CellGrids/Makefile
                 Shower/Makefile
 		DipoleShower/Makefile
 		DipoleShower/Base/Makefile
@@ -244,7 +254,8 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Analysis/Makefile
 		src/Makefile-UserModules
 		src/defaults/Analysis.in
-		src/defaults/Matchbox.in
+		src/defaults/MatchboxDefaults.in
+		src/defaults/setup.gosam.in
 		Contrib/Makefile
 		Contrib/make_makefiles.sh
 		Tests/Makefile

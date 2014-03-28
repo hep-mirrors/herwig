@@ -42,10 +42,6 @@ bool MatchboxHybridAmplitude::isConsistent() const {
   return
     treeLevelAmplitude()->sortOutgoing() == 
     oneLoopAmplitude()->sortOutgoing() &&
-    treeLevelAmplitude()->hasInitialAverage() == 
-    oneLoopAmplitude()->hasInitialAverage() &&
-    treeLevelAmplitude()->hasFinalStateSymmetry() == 
-    oneLoopAmplitude()->hasFinalStateSymmetry() &&
     !treeLevelAmplitude()->isOLPTree() &&
     !treeLevelAmplitude()->isOLPLoop() &&
     oneLoopAmplitude()->haveOneLoop() &&
@@ -65,6 +61,34 @@ void MatchboxHybridAmplitude::prepareOneLoopAmplitudes(Ptr<MatchboxMEBase>::tcpt
   oneLoopAmplitude()->prepareOneLoopAmplitudes(me);
 }
 
+double MatchboxHybridAmplitude::symmetryRatio() const {
+
+  double ifact = 1.;
+  if ( treeLevelAmplitude()->hasInitialAverage() &&
+       !oneLoopAmplitude()->hasInitialAverage() ) {
+    ifact = 1./4.;
+  }
+
+  if ( !treeLevelAmplitude()->hasInitialAverage() &&
+       oneLoopAmplitude()->hasInitialAverage() ) {
+    ifact = 4.;
+  }
+
+  if ( treeLevelAmplitude()->hasFinalStateSymmetry() &&
+       !oneLoopAmplitude()->hasFinalStateSymmetry() ) {
+    assert(lastMatchboxXComb()->matchboxME());
+    ifact *= lastMatchboxXComb()->matchboxME()->finalStateSymmetry();
+  }
+
+  if ( !treeLevelAmplitude()->hasFinalStateSymmetry() &&
+       oneLoopAmplitude()->hasFinalStateSymmetry() ) {
+    assert(lastMatchboxXComb()->matchboxME());
+    ifact /= lastMatchboxXComb()->matchboxME()->finalStateSymmetry();
+  }
+
+  return ifact;
+
+}
 
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
@@ -85,7 +109,7 @@ void MatchboxHybridAmplitude::persistentInput(PersistentIStream & is, int) {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<MatchboxHybridAmplitude,Herwig::MatchboxAmplitude>
-  describeHerwigMatchboxHybridAmplitude("Herwig::MatchboxHybridAmplitude", "HwMatchbox.so");
+  describeHerwigMatchboxHybridAmplitude("Herwig::MatchboxHybridAmplitude", "Herwig.so");
 
 void MatchboxHybridAmplitude::Init() {
 

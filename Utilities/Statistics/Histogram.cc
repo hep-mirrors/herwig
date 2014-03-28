@@ -218,7 +218,7 @@ Histogram& Histogram::operator-=(const Histogram& other) {
   return *this;
 }
 
-void Histogram::fromXML(XML::Element elem) {
+void Histogram::fromXML(const XML::Element& elem) {
 
   elem.getFromAttribute("name",theName);
   elem.getFromAttribute("isPeriodic",theIsPeriodic);

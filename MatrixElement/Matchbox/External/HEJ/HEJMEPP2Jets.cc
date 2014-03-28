@@ -86,7 +86,7 @@ void HEJMEPP2Jets::persistentInput(PersistentIStream &, int) {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<HEJMEPP2Jets,Herwig::HEJMEBase>
-  describeHerwigHEJMEPP2Jets("Herwig::HEJMEPP2Jets", "HwMatchbox.so HwHEJ.so");
+  describeHerwigHEJMEPP2Jets("Herwig::HEJMEPP2Jets", "HwHEJ.so");
 
 void HEJMEPP2Jets::Init() {
 

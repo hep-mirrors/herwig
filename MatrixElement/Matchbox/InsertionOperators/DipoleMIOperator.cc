@@ -24,9 +24,6 @@
 #include "ThePEG/PDT/DecayMode.h"
 
 #include <gsl/gsl_sf_dilog.h>
-// TODO: remove
-// only for checking for NaN or inf
-#include <gsl/gsl_math.h>
 
 using namespace Herwig;
 using Constants::pi;
@@ -35,6 +32,7 @@ DipoleMIOperator::DipoleMIOperator()
   : MatchboxInsertionOperator(),
     CA(-1.0), CF(-1.0), 
     gammaQuark(-1.0), gammaGluon(-1.0),
+    betaZero(-1.),
     KQuark(-1.0), KGluon(-1.0) {}
 
 DipoleMIOperator::~DipoleMIOperator() {}
@@ -49,53 +47,64 @@ IBPtr DipoleMIOperator::fullclone() const {
 
 void DipoleMIOperator::setXComb(tStdXCombPtr xc) {
   MatchboxInsertionOperator::setXComb(xc);
-  CA = SM().Nc();
-  CF = (SM().Nc()*SM().Nc()-1.0)/(2.*SM().Nc());
-  gammaQuark = (3./2.)*CF;
-  gammaGluon = (11./6.)*CA - (1./3.)*lastBorn()->nLight();
-  KQuark = (7./2.-sqr(pi)/6.)*CF;
-  KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*lastBorn()->nLight();
-  if ( isDR() ) {
-    gammaQuark -= CF/2.;
-    gammaGluon -= CA/6.;
+  if ( CA < 0. ) {
+    CA = SM().Nc();
+    CF = (SM().Nc()*SM().Nc()-1.0)/(2.*SM().Nc());
+    gammaQuark = (3./2.)*CF;
+    gammaGluon = (11./6.)*CA - (1./3.)*lastBorn()->nLight();
+    betaZero = gammaGluon;
+    KQuark = (7./2.-sqr(pi)/6.)*CF;
+    KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*lastBorn()->nLight();
   }
 }
 
 bool DipoleMIOperator::apply(const cPDVector& pd) const {
+  bool first = false;
+  bool second = false;
   for ( cPDVector::const_iterator p = pd.begin();
 	p != pd.end(); ++p ) {
-    for ( cPDVector::const_iterator q = pd.begin();
-	  q != pd.end(); ++q ) {
-      if ( p == q )
-	continue;
-      if ( apply(*p,*q) )
-	return true;
+    if ( !first ) {
+      if ( apply(*p) )
+	first = true;
+    } else {
+      if ( apply(*p) )
+	second = true;
     }
   }
-  return false;
+  return first && second;
 }
 
-bool DipoleMIOperator::apply(tcPDPtr pd1, tcPDPtr pd2) const {
+bool DipoleMIOperator::apply(tcPDPtr pd) const {
+  // DipoleMIOperator has to apply also to massive partons
   return
-    (abs(pd1->id()) < 7 || pd1->id() == ParticleID::g) &&
-    (abs(pd2->id()) < 7 || pd2->id() == ParticleID::g) &&
-    (pd1->mass() != ZERO || pd2->mass() != ZERO);
+    (abs(pd->id()) < 7 || pd->id() == ParticleID::g);
 }
 
 double DipoleMIOperator::me2() const {
 
-  if ( !isCS() )
-    throw InitException() <<
-      "DipoleMIOperator only implemented in the Catani-Seymour scheme.";
+  if ( !isExpanded() )
+    throw InitException() << "DipoleMIOperator only implemented in the expanded convention.";
+
+  if ( isDR() )
+    throw InitException() << "DipoleMIOperator not implemented for dimensional reduction.";
+
+  Energy2 mu2 = lastBorn()->mu2();
+
+  double kappa=0.;
 
   double res = 0.;
 
   int idj = 0; int idk = 0;
 
+  // j is emitter, k is spectator
+
   for ( cPDVector::const_iterator j = mePartonData().begin();
 	j != mePartonData().end(); ++j, ++idj ) {
 
     idk = 0;
+
+    if ( !apply(*j) )
+      continue;
 
     for ( cPDVector::const_iterator k = mePartonData().begin();
 	  k != mePartonData().end(); ++k, ++idk ) {
@@ -103,47 +112,353 @@ double DipoleMIOperator::me2() const {
       if ( j == k || lastBorn()->noDipole(idj,idk) )
 	continue;
 
-      if ( !apply(*j,*k) )
-	continue;
-
-      // NOTE: massless dipoles handled by DipoleIOperator
-      // sum over massive flavours occurs in j==gluon contribution
-      if ( abs((*j)->id()) < 6 && (*j)->mass() == ZERO &&
-	   (*k)->mass() == ZERO )
- 	continue;
-      // NOTE: j,k = incoming same contribution as in DipoleIOperator
+      // If j and k are incoming, handled by the DipoleIOperator.
+      // Prevents us from having to implement the Initial-Initial
+      // contribution which is anyway the same as in the massless
+      // case -- incoming particles are only massless and the cor-
+      // responding apply check should be true in DipoleIOperator,
+      // and I(m)-I(m=0) = 0 for the Initial-Initial contribution.
       if ( idj < 2 && idk < 2 )
-	continue;
+        continue;
+
+      if ( !apply(*k) )
+        continue;
       
       Energy2 sjk = 2.*meMomenta()[idj]*meMomenta()[idk];
-      double kappa=0.;
       
       res +=
 	( ((**j).id() == ParticleID::g ? CA : CF) *
 	  ( ( idj >= 2 ? Vj(**j,**k,sjk,kappa) : Vj(**j,**k,sjk,2./3.,true) )
 	    - sqr(pi)/3. ) +
 	  ((**j).id() == ParticleID::g ? GammaGluon() : GammaQuark(**j,sjk)) +
-	  // factor (1.+log(mu2/sjk)) absorbed in Gamma_j
-	  ((**j).id() == ParticleID::g ? gammaGluon : gammaQuark) +
+	  ((**j).id() == ParticleID::g ? gammaGluon : gammaQuark) * (1 + log(mu2/sjk)) +
 	  ((**j).id() == ParticleID::g ? KGluon : KQuark) ) *
 	lastBorn()->colourCorrelatedME2(make_pair(idj,idk));
-      // contributions counted here AND in DipoleIOperator if j,k, massless
-      // (here only if j==gluon)
-      // subtract DipoleIOperator contribution.
-      if ( (**j).mass() == ZERO && (**k).mass() == ZERO )
-	res -=
-	  ( ((**j).id() == ParticleID::g ? CA : CF) * (-sqr(pi)/3.) +
-	    ((**j).id() == ParticleID::g ? gammaGluon : gammaQuark) +
-	    ((**j).id() == ParticleID::g ? KGluon : KQuark) ) *
-	  lastBorn()->colourCorrelatedME2(make_pair(idj,idk));
-      
+
+      if ( (**j).mass() == ZERO && (**k).mass() == ZERO ) {
+        // Take the difference between the massive and the massless I operator.
+	// This should result in a zero contribution here.
+        double theLog = log(mu2/(2.*(meMomenta()[idj]*meMomenta()[idk])));
+        double deltaExpanded = 
+          ((**j).id() == ParticleID::g ? CA : CF) * 0.5 * sqr(theLog) +
+          ((**j).id() == ParticleID::g ? gammaGluon : gammaQuark) * theLog;
+        double zeroMassI = 
+          ( ((**j).id() == ParticleID::g ? CA : CF) * (-sqr(pi)/3.) +
+            ((**j).id() == ParticleID::g ? gammaGluon : gammaQuark) +
+            ((**j).id() == ParticleID::g ? KGluon : KQuark) +
+            deltaExpanded ) *
+          lastBorn()->colourCorrelatedME2(make_pair(idj,idk));
+        res -= zeroMassI;
+      }
+
+    }
+  }
+
+// NOTE: The difference between massive and massless contribution above should
+// be zero in the case of no masses, such that effectively only DipoleIOperator
+// contributes. In DipoleIOperator, which applies only in the case of no masses,
+// we account additionally for alpha_s renormalization. In the case of non-zero 
+// masses this has yet to be clarified.
+
+//   Energy2 muR2 = 
+//     lastBorn()->renormalizationScale()*
+//     sqr(lastBorn()->renormalizationScaleFactor());
+//   if ( muR2 != mu2 ) {
+//     res -=
+//       betaZero *
+//       lastBorn()->orderInAlphaS() * log(muR2/mu2) *
+//       lastBorn()->me2();
+//   }
+
+//   // include the finite renormalization for DR here; ATTENTION this
+//   // has to be mentioned in the manual!  see hep-ph/9305239 for
+//   // details; this guarantees an expansion in alpha_s^\bar{MS} when
+//   // using dimensional reduction
+//   if ( isDR() && isDRbar() )
+//     res -= (CA/6.)*lastBorn()->orderInAlphaS()*lastBorn()->me2();
+
+  res *= ( - lastBorn()->lastAlphaS() / (2.*pi) );
+  
+  return res;
+
+}
+
+double DipoleMIOperator::oneLoopDoublePole() const {
+
+  if ( !isExpanded() )
+    throw InitException() << "DipoleMIOperator only implemented in the expanded convention.";
+
+  if ( isDR() )
+    throw InitException() << "DipoleMIOperator not implemented for dimensional reduction.";
+
+  Energy2 mu2 = lastBorn()->mu2();
+
+  double kappa=0.;
+
+  double res = 0.;
+
+  int idj = 0; int idk = 0;
+
+  // j is emitter, k is spectator
+
+  for ( cPDVector::const_iterator j = mePartonData().begin();
+	j != mePartonData().end(); ++j, ++idj ) {
+
+    idk = 0;
+
+    if ( !apply(*j) )
+      continue;
+
+    for ( cPDVector::const_iterator k = mePartonData().begin();
+	  k != mePartonData().end(); ++k, ++idk ) {
+
+      if ( j == k || lastBorn()->noDipole(idj,idk) )
+	continue;
+
+      if ( idj < 2 && idk < 2 )
+        continue;
+
+      if ( !apply(*k) )
+        continue;
+
+      Energy2 sjk = 2.*meMomenta()[idj]*meMomenta()[idk];
+
+      Energy2 mj2 = sqr((**j).mass()), mk2 = sqr((**k).mass());
+      Energy mj = (**j).mass(), mk = (**k).mass();
+      Energy2 Qjk2 = sjk + mj2 + mk2;
+      Energy Qjk = sqrt(Qjk2);
+
+      double vjk = rootOfKallen(Qjk2,mj2,mk2) / sjk;
+      double rho = sqrt( abs(1.-vjk)/(1.+vjk) ); // abs() because for small mass 1.-vjk can get O(-1.e-16)
+      double rhoj = sqrt( ( 1. - vjk + 2.*mj2/Qjk2 / (1.-mj2/Qjk2-mk2/Qjk2) ) /
+        ( 1. + vjk + 2.*mj2/Qjk2 / (1.-mj2/Qjk2-mk2/Qjk2) ) );
+      double rhok = sqrt( ( 1. - vjk + 2.*mk2/Qjk2 / (1.-mj2/Qjk2-mk2/Qjk2) ) /
+        ( 1. + vjk + 2.*mk2/Qjk2 / (1.-mj2/Qjk2-mk2/Qjk2) ) );
+
+//       ParticleData l = ( mj2 == ZERO ? k : j );
+//       Energy2 m2 = sqr(l.mass());
+
+      Energy2 m2;
+      if (mj2 == ZERO) m2 = sqr((**k).mass());
+      else m2 = sqr((**j).mass());
+
+      double VSTwoMassDoublePole = 0.0;
+      double VSOneMassDoublePole = 1./2.;
+      double VSZeroMassDoublePole = 1.0;
+
+      double GammaGluonDoublePole = 0.0;
+      double GammaQuarkLightDoublePole = 0.0;
+      double GammaQuarkHeavyDoublePole = 0.0;
+
+      if (idj >=2 ) {
+
+        // both masses zero
+        if( mj2 == ZERO && mk2 == ZERO ) {
+          res += VSTwoMassDoublePole;
+	}
+        // one mass zero
+        else if( mj2 == ZERO || mk2 == ZERO ) {
+          res += VSOneMassDoublePole;
+        }
+        // no mass zero
+        else if( mj2 != ZERO && mk2 != ZERO ) {
+          res += VSZeroMassDoublePole;
+        }
+
+        if ( (**j).id() == ParticleID::g ) {
+	  res += GammaGluonDoublePole;
+        }
+        if ( abs((*j)->id()) < 7 && (*j)->mass() == ZERO ) {
+	  res += GammaQuarkLightDoublePole;
+        }
+        if ( abs((*j)->id()) < 7 && (*j)->mass() != ZERO ) {
+	  res += GammaQuarkHeavyDoublePole;
+        }
+
+      }
+
+      else {
+
+        // both masses zero
+        if( mj2 == ZERO && mk2 == ZERO ) {
+          res += VSTwoMassDoublePole;
+	}
+        // one mass zero
+        else if( mj2 == ZERO || mk2 == ZERO ) {
+          res += VSOneMassDoublePole;
+        }
+        // no mass zero
+        else if( mj2 != ZERO && mk2 != ZERO ) {
+          res += VSZeroMassDoublePole;
+        }
+
+        if ( (**j).id() == ParticleID::g ) {
+	  res += GammaGluonDoublePole;
+        }
+        if ( abs((*j)->id()) < 7 && (*j)->mass() == ZERO ) {
+	  res += GammaQuarkLightDoublePole;
+        }
+        if ( abs((*j)->id()) < 7 && (*j)->mass() != ZERO ) {
+	  res += GammaQuarkHeavyDoublePole;
+        }
+
+      }
+
+      res *= lastBorn()->colourCorrelatedME2(make_pair(idj,idk));
+
+      if ( (**j).mass() == ZERO && (**k).mass() == ZERO ) {
+        // Take the difference between the massive and the massless I operator
+        double zeroMassI = 
+          ( (**j).id() == ParticleID::g ? CA : CF ) * ( - lastBorn()->me2() );
+        res -= zeroMassI;
+      }
+
     }
   }
 
   res *= ( - lastBorn()->lastAlphaS() / (2.*pi) );
   
-  if( gsl_isnan(res) ) cout << "DipoleMIOperator::me2 nan" << endl;
-  if( gsl_isinf(res) ) cout << "DipoleMIOperator::me2 inf" << endl;
+  return res;
+
+}
+
+double DipoleMIOperator::oneLoopSinglePole() const {
+
+  if ( !isExpanded() )
+    throw InitException() << "DipoleMIOperator only implemented in the expanded convention.";
+
+  if ( isDR() )
+    throw InitException() << "DipoleMIOperator not implemented for dimensional reduction.";
+
+  Energy2 mu2 = lastBorn()->mu2();
+
+  double kappa=0.;
+
+  double res = 0.;
+
+  int idj = 0; int idk = 0;
+
+  // j is emitter, k is spectator
+
+  for ( cPDVector::const_iterator j = mePartonData().begin();
+	j != mePartonData().end(); ++j, ++idj ) {
+
+    idk = 0;
+
+    if ( !apply(*j) )
+      continue;
+
+    for ( cPDVector::const_iterator k = mePartonData().begin();
+	  k != mePartonData().end(); ++k, ++idk ) {
+
+      if ( j == k || lastBorn()->noDipole(idj,idk) )
+	continue;
+
+      if ( idj < 2 && idk < 2 )
+        continue;
+
+      if ( !apply(*k) )
+        continue;
+
+      Energy2 sjk = 2.*meMomenta()[idj]*meMomenta()[idk];
+
+      Energy2 mj2 = sqr((**j).mass()), mk2 = sqr((**k).mass());
+      Energy mj = (**j).mass(), mk = (**k).mass();
+      Energy2 Qjk2 = sjk + mj2 + mk2;
+      Energy Qjk = sqrt(Qjk2);
+
+      double vjk = rootOfKallen(Qjk2,mj2,mk2) / sjk;
+      double rho = sqrt( abs(1.-vjk)/(1.+vjk) ); // abs() because for small mass 1.-vjk can get O(-1.e-16)
+      double rhoj = sqrt( ( 1. - vjk + 2.*mj2/Qjk2 / (1.-mj2/Qjk2-mk2/Qjk2) ) /
+        ( 1. + vjk + 2.*mj2/Qjk2 / (1.-mj2/Qjk2-mk2/Qjk2) ) );
+      double rhok = sqrt( ( 1. - vjk + 2.*mk2/Qjk2 / (1.-mj2/Qjk2-mk2/Qjk2) ) /
+        ( 1. + vjk + 2.*mk2/Qjk2 / (1.-mj2/Qjk2-mk2/Qjk2) ) );
+
+//       ParticleData l = ( mj2 == ZERO ? k : j );
+//       Energy2 m2 = sqr(l.mass());
+
+      Energy2 m2;
+      if (mj2 == ZERO) m2 = sqr((**k).mass());
+      else m2 = sqr((**j).mass());
+
+      double VSTwoMassSinglePole = 1./vjk * ( rho==0. ? 0. : log(rho) );
+      double VSOneMassSinglePole = 1./2. * (log(m2/sjk) + log(mu2/sjk));
+      double VSZeroMassSinglePole = log(mu2/sjk);
+
+      double GammaGluonSinglePole = gammaGluon;
+      double GammaQuarkLightSinglePole = gammaQuark;
+      double GammaQuarkHeavySinglePole = CF;
+
+      if (idj >=2 ) {
+
+        // both masses zero
+        if( mj2 == ZERO && mk2 == ZERO ) {
+          res += VSTwoMassSinglePole;
+	}
+        // one mass zero
+        else if( mj2 == ZERO || mk2 == ZERO ) {
+          res += VSOneMassSinglePole;
+        }
+        // no mass zero
+        else if( mj2 != ZERO && mk2 != ZERO ) {
+          res += VSZeroMassSinglePole;
+        }
+
+        if ( (**j).id() == ParticleID::g ) {
+	  res += GammaGluonSinglePole;
+        }
+        if ( abs((*j)->id()) < 7 && (*j)->mass() == ZERO ) {
+	  res += GammaQuarkLightSinglePole;
+        }
+        if ( abs((*j)->id()) < 7 && (*j)->mass() != ZERO ) {
+	  res += GammaQuarkHeavySinglePole;
+        }
+
+      }
+      else {
+
+        // both masses zero
+        if( mj2 == ZERO && mk2 == ZERO ) {
+          res += VSTwoMassSinglePole;
+	}
+        // one mass zero
+        else if( mj2 == ZERO || mk2 == ZERO ) {
+          res += VSOneMassSinglePole;
+        }
+        // no mass zero
+        else if( mj2 != ZERO && mk2 != ZERO ) {
+          res += VSZeroMassSinglePole;
+        }
+
+        if ( (**j).id() == ParticleID::g ) {
+	  res += GammaGluonSinglePole;
+        }
+        if ( abs((*j)->id()) < 7 && (*j)->mass() == ZERO ) {
+	  res += GammaQuarkLightSinglePole;
+        }
+        if ( abs((*j)->id()) < 7 && (*j)->mass() != ZERO ) {
+	  res += GammaQuarkHeavySinglePole;
+        }
+
+      }
+
+      res *= lastBorn()->colourCorrelatedME2(make_pair(idj,idk));
+
+      if ( (**j).mass() == ZERO && (**k).mass() == ZERO ) {
+        // Take the difference between the massive and the massless I operator
+        double theLog = log(mu2/(2.*(meMomenta()[idj]*meMomenta()[idk])));
+        double deltaExpanded = 
+          ((**j).id() == ParticleID::g ? CA : CF) * theLog +
+          ((**j).id() == ParticleID::g ? gammaGluon : gammaQuark);
+        double zeroMassI =
+          deltaExpanded * lastBorn()->colourCorrelatedME2(make_pair(idj,idk));
+        res -= zeroMassI;
+      }
+
+    }
+  }
+
+  res *= ( - lastBorn()->lastAlphaS() / (2.*pi) );
   
   return res;
 
@@ -152,27 +467,31 @@ double DipoleMIOperator::me2() const {
 double DipoleMIOperator::GammaQuark(const ParticleData& j, Energy2 sjk) const {
   if ( j.mass() == ZERO )
     return 0.;
-  // massive quark, last term see above!
-  // CF * (-log(mu2/sjk) + 1/2 log(mj2/mu2) - 2) + 3/2 CF * log(mu2/sjk)
-  return CF * ( 0.5*log(sqr(j.mass())/sjk) - 2. );
+  Energy2 mu2 = lastBorn()->mu2();
+  return CF * ( 0.5*log(sqr(j.mass())/mu2) - 2. );
 }
 
-// TODO: kill
 double DipoleMIOperator::GammaGluon() const {
-  // main contribution cancels with VjNS, only finite 1/eps remainder
+  // Finite contribution cancels with similar contribution in VjNS.
   return 0.;
 }
 
-// NOTE: no finite remainder of epsilon poles here.
 double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k,
 			    Energy2 sjk, double kappa, bool mFSetEmpty) const {
   
+  int NLight = lastBorn()->nLight();
+
+  Energy2 mu2 = lastBorn()->mu2();
+
   double res = 0.;
   
+  // sjk is being handed over as input parameter to DipoleMIOperator::Vj()
+  // kappa is being handed over as input parameter to DipoleMIOperator::Vj()
+
   Energy2 mj2 = sqr(j.mass()), mk2 = sqr(k.mass());
+  Energy mj = j.mass(), mk = k.mass();
   Energy2 Qjk2 = sjk + mj2 + mk2;
   Energy Qjk = sqrt(Qjk2);
-  Energy mj = j.mass(), mk = k.mass();
   
   double vjk = rootOfKallen(Qjk2,mj2,mk2) / sjk;
   double rho = sqrt( abs(1.-vjk)/(1.+vjk) ); // abs() because for small mass 1.-vjk can get O(-1.e-16)
@@ -181,31 +500,49 @@ double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k,
   double rhok = sqrt( ( 1. - vjk + 2.*mk2/Qjk2 / (1.-mj2/Qjk2-mk2/Qjk2) ) /
     ( 1. + vjk + 2.*mk2/Qjk2 / (1.-mj2/Qjk2-mk2/Qjk2) ) );
   
+  //////////////////////////////////////
+  // Finite terms of S part (6.20)    //
+  //////////////////////////////////////
+  
   ParticleData l = ( mj2 == ZERO ? k : j );
   
-  // S part (6.20)
-  
   // both masses zero
-  if( mj2 == ZERO && mk2 == ZERO );
+  if( mj2 == ZERO && mk2 == ZERO ) {
+    res += 0.0;
+    // Expanded
+    res += 1./2.*log(mu2/sjk)*log(mu2/sjk);
+  }
+
   // one mass zero
   else if( mj2 == ZERO || mk2 == ZERO ) {
     Energy2 m2 = sqr(l.mass());
     res += -1./4.*sqr(log(m2/sjk)) - sqr(pi)/12. -
       1./2.*log(m2/sjk)*log(sjk/Qjk2) - 1./2.*log(m2/Qjk2)*log(sjk/Qjk2);
+    // Expanded
+    res += 1./2.*log(mu2/sjk)*log(m2/sjk) +
+        1./4.*log(mu2/sjk)*log(mu2/sjk);
   }
+
   // no mass zero
   else if( mj2 != ZERO && mk2 != ZERO ) {
     res += 1./vjk * ( -1./4.*sqr(log(rhoj*rhoj)) - 1./4.*sqr(log(rhok*rhok)) -
       sqr(pi)/6. + ( rho==0. ? 0. : log(rho)*log(Qjk2/sjk) ) );
+    // Expanded
+    res += 1./vjk * ( rho==0. ? 0. : log(rho)*log(mu2/sjk) );
   }
 
-  // NS part (6.21)-(6.26)
+  //////////////////////////////////////
+  // NS part (6.21)-(6.26)            //
+  //////////////////////////////////////
   
   // V_q (j is quark)
+
   // j is massive quark
   if( mj2 != ZERO ) {
+
     assert( abs(j.id()) < 7);
-    res += gammaQuark/CF * log(sjk/Qjk2); // iff j and/or k is massive quark (6.21),(6.22)
+    res += gammaQuark/CF * log(sjk/Qjk2); // iff j is massive quark and k either massive quark or massless parton (6.21),(6.22)
+
     // k is massive quark (6.21)
     if( mk2 != ZERO ) {
       assert( abs(k.id()) < 7);
@@ -214,22 +551,26 @@ double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k,
 	log((Qjk-mk)/Qjk) - 2.*log((sqr(Qjk-mk)-mj2)/Qjk2) - 2.*mj2/sjk*log(mj/(Qjk-mk)) -
 	mk/(Qjk-mk) + 2.*mk*(2.*mk-Qjk)/sjk + sqr(pi)/2.;
     }
+
     // k is massless parton (6.22)
     else {
       res += sqr(pi)/6. - gsl_sf_dilog(sjk/Qjk2) -
 	2.*log(sjk/Qjk2) - mj2/sjk*log(mj2/Qjk2);
     }
+
   }
-  // V_q / V_g (j is massless parton)
+
+  // V_j (j either massless quark (6.23) or gluon (6.24),(6.26))
+
   else {
+
     // k is massless parton
     if( mk == ZERO ) {
-      // only contribution if j is gluon
+      // only contributes if j is gluon
       if( j.id() == ParticleID::g ) {
 	// sum over all quark flavours
 	if( !mFSetEmpty )
-	  // TODO: make fmax depend on matrix element
-	  for( int f=1; f< 6; ++f ) {
+	  for( int f=1; f<=NLight; ++f ) {
 	    Energy2 mF2 = sqr( getParticleData(f)->mass() );
 	    // only heavy quarks
 	    if( mF2 == ZERO ) continue;
@@ -241,6 +582,7 @@ double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k,
 	  }
       }
     }
+
     // k is massive quark
     else {
       assert( abs(k.id()) < 7);
@@ -256,8 +598,7 @@ double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k,
 	  (kappa-2./3.) * mk2/sjk * (1./CA*lastBorn()->nLight()-1.) * log(2.*mk/(Qjk+mk));
 	// part containing other heavy quark flavours
 	if( !mFSetEmpty )
-	  // TODO: make fmax dependent on matrix element
-	  for( int f=1; f< 6; ++f ) {
+	  for( int f=1; f<=NLight; ++f ) {
 	    Energy2 mF2 = sqr( getParticleData(f)->mass() );
 	    // only heavy quarks
 	    if( mF2 == ZERO ) continue;
@@ -269,7 +610,7 @@ double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k,
 	    res += 2./3./CA * ( log((Qjk-mk)/Qjk) + mk*rho1*rho1*rho1/(Qjk+mk) + log((1.+rho1)/2.) -
 	      rho1/3.*(3.+sqr(rho1)) - 1./2.*log(mF2/Qjk2) ) +
 	      1./CA * ( rho2*rho2*rho2*log((rho2-rho1)/(rho2+rho1)) - log((1.-rho1)/(1.+rho1)) -
-	      8.*rho1*mF2/sjk );
+	      8.*rho1*mF2/sjk ) * (kappa-2./3.) * mk2/sjk;
 	  }
       }
     }
@@ -279,11 +620,11 @@ double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k,
 }
   
 void DipoleMIOperator::persistentOutput(PersistentOStream & os) const {
-  os << CA << CF << gammaQuark << gammaGluon << KQuark << KGluon;
+  os << CA << CF << gammaQuark << gammaGluon << betaZero << KQuark << KGluon;
 }
 
 void DipoleMIOperator::persistentInput(PersistentIStream & is, int) {
-  is >> CA >> CF >> gammaQuark >> gammaGluon >> KQuark >> KGluon;
+  is >> CA >> CF >> gammaQuark >> gammaGluon >> betaZero >> KQuark >> KGluon;
 }
 
 // *** Attention *** The following static variable is needed for the type
@@ -292,7 +633,7 @@ void DipoleMIOperator::persistentInput(PersistentIStream & is, int) {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<DipoleMIOperator,MatchboxInsertionOperator>
-describeHerwigDipoleMIOperator("Herwig::DipoleMIOperator", "HwMatchbox.so");
+describeHerwigDipoleMIOperator("Herwig::DipoleMIOperator", "Herwig.so");
 
 void DipoleMIOperator::Init() {
 

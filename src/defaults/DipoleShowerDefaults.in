@@ -1,0 +1,437 @@
+################################################################################
+#
+# Default setup for the dipole shower.
+#
+################################################################################
+
+################################################################################
+# Load libraries
+################################################################################
+
+library HwDipoleShower.so
+
+mkdir /Herwig/DipoleShower
+cd /Herwig/DipoleShower
+
+create Herwig::DipoleShowerHandler DipoleShowerHandler
+
+################################################################################
+# Setup the underlying event and fix missing reference.
+################################################################################
+
+set DipoleShowerHandler:MPIHandler /Herwig/UnderlyingEvent/MPIHandler
+set DipoleShowerHandler:RemDecayer /Herwig/Partons/RemnantDecayer
+set DipoleShowerHandler:Evolver /Herwig/Shower/Evolver
+
+################################################################################
+# Setup the ordering.
+################################################################################
+
+create Herwig::DipoleChainOrdering ChainPtOrdering
+
+################################################################################
+# Setup the reshuffler.
+################################################################################
+
+create Herwig::ConstituentReshuffler ConstituentReshuffler
+set DipoleShowerHandler:ConstituentReshuffler ConstituentReshuffler
+
+################################################################################
+# Setup intrinsic pt.
+################################################################################
+
+create Herwig::IntrinsicPtGenerator IntrinsicPtGenerator
+set DipoleShowerHandler:IntrinsicPtGenerator IntrinsicPtGenerator
+
+cd /Herwig/DipoleShower
+
+################################################################################
+# Setup the alphas
+################################################################################
+library HwDipoleShowerAlphaS.so
+
+create matchbox::lo_alpha_s LOAlphaS
+set LOAlphaS:min_active_flavours 5
+
+create matchbox::nlo_alpha_s NLOAlphaS
+set NLOAlphaS:exact_evaluation large_scale
+set NLOAlphaS:min_active_flavours 5
+
+################################################################################
+# Setup the splitting kinematics.
+################################################################################
+mkdir /Herwig/DipoleShower/Kinematics
+cd /Herwig/DipoleShower/Kinematics
+
+create Herwig::FFLightKinematics FFLightKinematics
+create Herwig::FILightKinematics FILightKinematics
+create Herwig::IFLightKinematics IFLightKinematics
+create Herwig::IILightKinematics IILightKinematics
+
+################################################################################
+# Setup the kernels.
+################################################################################
+mkdir /Herwig/DipoleShower/Kernels
+cd /Herwig/DipoleShower/Kernels
+
+################################################################################
+# FF
+################################################################################
+
+create Herwig::FFgx2ggxDipoleKernel FFgx2ggxDipoleKernel
+set FFgx2ggxDipoleKernel:SplittingKinematics /Herwig/DipoleShower/Kinematics/FFLightKinematics
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FFgx2ggxDipoleKernel
+
+create Herwig::FFqx2qgxDipoleKernel FFqx2qgxDipoleKernel
+set FFqx2qgxDipoleKernel:SplittingKinematics /Herwig/DipoleShower/Kinematics/FFLightKinematics
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FFqx2qgxDipoleKernel
+
+create Herwig::FFgx2qqxDipoleKernel FFgx2qqxDipoleKernel
+set FFgx2qqxDipoleKernel:SplittingKinematics /Herwig/DipoleShower/Kinematics/FFLightKinematics
+
+cp FFgx2qqxDipoleKernel FFgx2ddxDipoleKernel
+set FFgx2ddxDipoleKernel:Flavour /Herwig/Particles/d
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FFgx2ddxDipoleKernel
+
+cp FFgx2qqxDipoleKernel FFgx2uuxDipoleKernel
+set FFgx2uuxDipoleKernel:Flavour /Herwig/Particles/u
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FFgx2uuxDipoleKernel
+
+cp FFgx2qqxDipoleKernel FFgx2ccxDipoleKernel
+set FFgx2ccxDipoleKernel:Flavour /Herwig/Particles/c
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FFgx2ccxDipoleKernel
+
+cp FFgx2qqxDipoleKernel FFgx2ssxDipoleKernel
+set FFgx2ssxDipoleKernel:Flavour /Herwig/Particles/s
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FFgx2ssxDipoleKernel
+
+cp FFgx2qqxDipoleKernel FFgx2bbxDipoleKernel
+set FFgx2bbxDipoleKernel:Flavour /Herwig/Particles/b
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FFgx2bbxDipoleKernel
+
+################################################################################
+# create the pdf ratio object
+################################################################################
+create Herwig::PDFRatio PDFRatio
+
+################################################################################
+# FI
+################################################################################
+
+create Herwig::FIgx2ggxDipoleKernel FIgx2ggxDipoleKernel
+set FIgx2ggxDipoleKernel:PDFRatio PDFRatio
+set FIgx2ggxDipoleKernel:SplittingKinematics /Herwig/DipoleShower/Kinematics/FILightKinematics
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FIgx2ggxDipoleKernel
+
+create Herwig::FIqx2qgxDipoleKernel FIqx2qgxDipoleKernel
+set FIqx2qgxDipoleKernel:PDFRatio PDFRatio
+set FIqx2qgxDipoleKernel:SplittingKinematics /Herwig/DipoleShower/Kinematics/FILightKinematics
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FIqx2qgxDipoleKernel
+
+create Herwig::FIgx2qqxDipoleKernel FIgx2qqxDipoleKernel
+set FIgx2qqxDipoleKernel:PDFRatio PDFRatio
+set FIgx2qqxDipoleKernel:SplittingKinematics /Herwig/DipoleShower/Kinematics/FILightKinematics
+
+cp FIgx2qqxDipoleKernel FIgx2ddxDipoleKernel
+set FIgx2ddxDipoleKernel:Flavour /Herwig/Particles/d
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FIgx2ddxDipoleKernel
+
+cp FIgx2qqxDipoleKernel FIgx2uuxDipoleKernel
+set FIgx2uuxDipoleKernel:Flavour /Herwig/Particles/u
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FIgx2uuxDipoleKernel
+
+cp FIgx2qqxDipoleKernel FIgx2ccxDipoleKernel
+set FIgx2ccxDipoleKernel:Flavour /Herwig/Particles/c
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FIgx2ccxDipoleKernel
+
+cp FIgx2qqxDipoleKernel FIgx2ssxDipoleKernel
+set FIgx2ssxDipoleKernel:Flavour /Herwig/Particles/s
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FIgx2ssxDipoleKernel
+
+cp FIgx2qqxDipoleKernel FIgx2bbxDipoleKernel
+set FIgx2bbxDipoleKernel:Flavour /Herwig/Particles/b
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FIgx2bbxDipoleKernel
+
+################################################################################
+# IF
+################################################################################
+
+create Herwig::IFgx2ggxDipoleKernel IFgx2ggxDipoleKernel
+set IFgx2ggxDipoleKernel:PDFRatio PDFRatio
+set IFgx2ggxDipoleKernel:SplittingKinematics /Herwig/DipoleShower/Kinematics/IFLightKinematics
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IFgx2ggxDipoleKernel
+
+create Herwig::IFqx2qgxDipoleKernel IFqx2qgxDipoleKernel
+set IFqx2qgxDipoleKernel:PDFRatio PDFRatio
+set IFqx2qgxDipoleKernel:SplittingKinematics /Herwig/DipoleShower/Kinematics/IFLightKinematics
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IFqx2qgxDipoleKernel
+
+create Herwig::IFqx2gqxDipoleKernel IFqx2gqxDipoleKernel
+set IFqx2gqxDipoleKernel:PDFRatio PDFRatio
+set IFqx2gqxDipoleKernel:SplittingKinematics /Herwig/DipoleShower/Kinematics/IFLightKinematics
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IFqx2gqxDipoleKernel
+
+create Herwig::IFgx2qqxDipoleKernel IFgx2qqxDipoleKernel
+set IFgx2qqxDipoleKernel:PDFRatio PDFRatio
+set IFgx2qqxDipoleKernel:SplittingKinematics /Herwig/DipoleShower/Kinematics/IFLightKinematics
+
+cp IFgx2qqxDipoleKernel IFgx2ddbarxDipoleKernel
+set IFgx2ddbarxDipoleKernel:Flavour /Herwig/Particles/d
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IFgx2ddbarxDipoleKernel
+
+cp IFgx2qqxDipoleKernel IFgx2dbardxDipoleKernel
+set IFgx2dbardxDipoleKernel:Flavour /Herwig/Particles/dbar
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IFgx2dbardxDipoleKernel
+
+cp IFgx2qqxDipoleKernel IFgx2uubarxDipoleKernel
+set IFgx2uubarxDipoleKernel:Flavour /Herwig/Particles/u
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IFgx2uubarxDipoleKernel
+
+cp IFgx2qqxDipoleKernel IFgx2ubaruxDipoleKernel
+set IFgx2ubaruxDipoleKernel:Flavour /Herwig/Particles/ubar
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IFgx2ubaruxDipoleKernel
+
+cp IFgx2qqxDipoleKernel IFgx2ccbarxDipoleKernel
+set IFgx2ccbarxDipoleKernel:Flavour /Herwig/Particles/c
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IFgx2ccbarxDipoleKernel
+
+cp IFgx2qqxDipoleKernel IFgx2cbarcxDipoleKernel
+set IFgx2cbarcxDipoleKernel:Flavour /Herwig/Particles/cbar
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IFgx2cbarcxDipoleKernel
+
+cp IFgx2qqxDipoleKernel IFgx2ssbarxDipoleKernel
+set IFgx2ssbarxDipoleKernel:Flavour /Herwig/Particles/s
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IFgx2ssbarxDipoleKernel
+
+cp IFgx2qqxDipoleKernel IFgx2sbarsxDipoleKernel
+set IFgx2sbarsxDipoleKernel:Flavour /Herwig/Particles/sbar
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IFgx2sbarsxDipoleKernel
+
+cp IFgx2qqxDipoleKernel IFgx2bbbarxDipoleKernel
+set IFgx2bbbarxDipoleKernel:Flavour /Herwig/Particles/b
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IFgx2bbbarxDipoleKernel
+
+cp IFgx2qqxDipoleKernel IFgx2bbarbxDipoleKernel
+set IFgx2bbarbxDipoleKernel:Flavour /Herwig/Particles/bbar
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IFgx2bbarbxDipoleKernel
+
+################################################################################
+# II
+################################################################################
+
+create Herwig::IIgx2ggxDipoleKernel IIgx2ggxDipoleKernel
+set IIgx2ggxDipoleKernel:PDFRatio PDFRatio
+set IIgx2ggxDipoleKernel:SplittingKinematics /Herwig/DipoleShower/Kinematics/IILightKinematics
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IIgx2ggxDipoleKernel
+
+create Herwig::IIqx2qgxDipoleKernel IIqx2qgxDipoleKernel
+set IIqx2qgxDipoleKernel:PDFRatio PDFRatio
+set IIqx2qgxDipoleKernel:SplittingKinematics /Herwig/DipoleShower/Kinematics/IILightKinematics
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IIqx2qgxDipoleKernel
+
+create Herwig::IIqx2gqxDipoleKernel IIqx2gqxDipoleKernel
+set IIqx2gqxDipoleKernel:PDFRatio PDFRatio
+set IIqx2gqxDipoleKernel:SplittingKinematics /Herwig/DipoleShower/Kinematics/IILightKinematics
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IIqx2gqxDipoleKernel
+
+create Herwig::IIgx2qqxDipoleKernel IIgx2qqxDipoleKernel
+set IIgx2qqxDipoleKernel:PDFRatio PDFRatio
+set IIgx2qqxDipoleKernel:SplittingKinematics /Herwig/DipoleShower/Kinematics/IILightKinematics
+
+cp IIgx2qqxDipoleKernel IIgx2ddbarxDipoleKernel
+set IIgx2ddbarxDipoleKernel:Flavour /Herwig/Particles/d
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IIgx2ddbarxDipoleKernel
+
+cp IIgx2qqxDipoleKernel IIgx2dbardxDipoleKernel
+set IIgx2dbardxDipoleKernel:Flavour /Herwig/Particles/dbar
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IIgx2dbardxDipoleKernel
+
+cp IIgx2qqxDipoleKernel IIgx2uubarxDipoleKernel
+set IIgx2uubarxDipoleKernel:Flavour /Herwig/Particles/u
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IIgx2uubarxDipoleKernel
+
+cp IIgx2qqxDipoleKernel IIgx2ubaruxDipoleKernel
+set IIgx2ubaruxDipoleKernel:Flavour /Herwig/Particles/ubar
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IIgx2ubaruxDipoleKernel
+
+cp IIgx2qqxDipoleKernel IIgx2ccbarxDipoleKernel
+set IIgx2ccbarxDipoleKernel:Flavour /Herwig/Particles/c
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IIgx2ccbarxDipoleKernel
+
+cp IIgx2qqxDipoleKernel IIgx2cbarcxDipoleKernel
+set IIgx2cbarcxDipoleKernel:Flavour /Herwig/Particles/cbar
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IIgx2cbarcxDipoleKernel
+
+cp IIgx2qqxDipoleKernel IIgx2ssbarxDipoleKernel
+set IIgx2ssbarxDipoleKernel:Flavour /Herwig/Particles/s
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IIgx2ssbarxDipoleKernel
+
+cp IIgx2qqxDipoleKernel IIgx2sbarsxDipoleKernel
+set IIgx2sbarsxDipoleKernel:Flavour /Herwig/Particles/sbar
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IIgx2sbarsxDipoleKernel
+
+cp IIgx2qqxDipoleKernel IIgx2bbbarxDipoleKernel
+set IIgx2bbbarxDipoleKernel:Flavour /Herwig/Particles/b
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IIgx2bbbarxDipoleKernel
+
+cp IIgx2qqxDipoleKernel IIgx2bbarbxDipoleKernel
+set IIgx2bbarbxDipoleKernel:Flavour /Herwig/Particles/bbar
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IIgx2bbarbxDipoleKernel
+
+
+cd /
+
+################################################################################
+# Setup the dipole shower parameters
+################################################################################
+
+cd /Herwig/DipoleShower
+
+################################################################################
+# setup alphas and PDFs
+################################################################################
+
+cp NLOAlphaS AlphaS
+set AlphaS:input_alpha_s 0.1271103
+set AlphaS:freezing_scale 0.0*GeV
+
+set /Herwig/Model:QCD/RunningAlphaS AlphaS
+
+################################################################################
+# matching parameters
+################################################################################
+
+set /Herwig/MatrixElements/Matchbox/MEMatching:FFPtCut 1.014259*GeV
+set /Herwig/MatrixElements/Matchbox/MEMatching:FFScreeningScale 0.0*GeV
+
+set /Herwig/MatrixElements/Matchbox/MEMatching:FIPtCut 1.0*GeV
+set /Herwig/MatrixElements/Matchbox/MEMatching:FIScreeningScale 0.0*GeV
+
+set /Herwig/MatrixElements/Matchbox/MEMatching:IIPtCut 1.0*GeV
+set /Herwig/MatrixElements/Matchbox/MEMatching:IIScreeningScale 0.0*GeV
+
+set /Herwig/MatrixElements/Matchbox/DipoleMatching:FFPtCut 1.014259*GeV
+set /Herwig/MatrixElements/Matchbox/DipoleMatching:FFScreeningScale 0.0*GeV
+
+set /Herwig/MatrixElements/Matchbox/DipoleMatching:FIPtCut 1.0*GeV
+set /Herwig/MatrixElements/Matchbox/DipoleMatching:FIScreeningScale 0.0*GeV
+
+set /Herwig/MatrixElements/Matchbox/DipoleMatching:IIPtCut 1.0*GeV
+set /Herwig/MatrixElements/Matchbox/DipoleMatching:IIScreeningScale 0.0*GeV
+
+################################################################################
+# shower parameters
+################################################################################
+
+set DipoleShowerHandler:GlobalAlphaS AlphaS
+
+set DipoleShowerHandler:EvolutionOrdering ChainPtOrdering
+
+set IntrinsicPtGenerator:ValenceIntrinsicPtScale 1.26905*GeV
+set IntrinsicPtGenerator:SeaIntrinsicPtScale 1.1613*GeV
+
+cd /Herwig/DipoleShower/Kinematics
+
+set FFLightKinematics:IRCutoff  1.014259*GeV
+set FILightKinematics:IRCutoff  1.0*GeV
+
+set IFLightKinematics:IRCutoff  1.0*GeV
+set IILightKinematics:IRCutoff  1.0*GeV
+
+################################################################################
+# shower parameters at boundary to non-perturbative domain
+################################################################################
+
+set /Herwig/Particles/g:ConstituentMass 0.7899848*GeV
+
+cd /Herwig/DipoleShower/Kernels
+
+set FFgx2ggxDipoleKernel:ScreeningScale     0.0*GeV
+set FFqx2qgxDipoleKernel:ScreeningScale     0.0*GeV
+
+set FFgx2uuxDipoleKernel:ScreeningScale     0.0*GeV
+set FFgx2ddxDipoleKernel:ScreeningScale     0.0*GeV
+set FFgx2ssxDipoleKernel:ScreeningScale     0.0*GeV
+
+set FFgx2ccxDipoleKernel:ScreeningScale     0.0*GeV
+set FFgx2bbxDipoleKernel:ScreeningScale     0.0*GeV
+
+set FIgx2ggxDipoleKernel:ScreeningScale     0.0*GeV
+set FIqx2qgxDipoleKernel:ScreeningScale     0.0*GeV
+
+set FIgx2uuxDipoleKernel:ScreeningScale     0.0*GeV
+set FIgx2ddxDipoleKernel:ScreeningScale     0.0*GeV
+set FIgx2ssxDipoleKernel:ScreeningScale     0.0*GeV
+
+set FIgx2ccxDipoleKernel:ScreeningScale     0.0*GeV
+set FIgx2bbxDipoleKernel:ScreeningScale     0.0*GeV
+
+set IFgx2ggxDipoleKernel:ScreeningScale     0.0*GeV
+set IFqx2qgxDipoleKernel:ScreeningScale     0.0*GeV
+set IFqx2gqxDipoleKernel:ScreeningScale     0.0*GeV
+
+set IFgx2uubarxDipoleKernel:ScreeningScale  0.0*GeV
+set IFgx2ubaruxDipoleKernel:ScreeningScale  0.0*GeV
+set IFgx2ddbarxDipoleKernel:ScreeningScale  0.0*GeV
+set IFgx2dbardxDipoleKernel:ScreeningScale  0.0*GeV
+set IFgx2ssbarxDipoleKernel:ScreeningScale  0.0*GeV
+set IFgx2sbarsxDipoleKernel:ScreeningScale  0.0*GeV
+
+set IFgx2ccbarxDipoleKernel:ScreeningScale  0.0*GeV
+set IFgx2cbarcxDipoleKernel:ScreeningScale  0.0*GeV
+set IFgx2bbbarxDipoleKernel:ScreeningScale  0.0*GeV
+set IFgx2bbarbxDipoleKernel:ScreeningScale  0.0*GeV
+
+set IIgx2ggxDipoleKernel:ScreeningScale     0.0*GeV
+set IIqx2qgxDipoleKernel:ScreeningScale     0.0*GeV
+set IIqx2gqxDipoleKernel:ScreeningScale     0.0*GeV
+
+set IIgx2uubarxDipoleKernel:ScreeningScale  0.0*GeV
+set IIgx2ubaruxDipoleKernel:ScreeningScale  0.0*GeV
+set IIgx2ddbarxDipoleKernel:ScreeningScale  0.0*GeV
+set IIgx2dbardxDipoleKernel:ScreeningScale  0.0*GeV
+set IIgx2ssbarxDipoleKernel:ScreeningScale  0.0*GeV
+set IIgx2sbarsxDipoleKernel:ScreeningScale  0.0*GeV
+
+set IIgx2ccbarxDipoleKernel:ScreeningScale  0.0*GeV
+set IIgx2cbarcxDipoleKernel:ScreeningScale  0.0*GeV
+set IIgx2bbbarxDipoleKernel:ScreeningScale  0.0*GeV
+set IIgx2bbarbxDipoleKernel:ScreeningScale  0.0*GeV
+
+################################################################################
+# hadronization parameters
+################################################################################
+
+cd /Herwig/Hadronization
+
+set ClusterFissioner:ClMaxLight                  3.274090*GeV
+set ClusterFissioner:ClPowLight                  10.0
+set ClusterFissioner:PSplitLight                 0.7183601
+set ClusterDecayer:ClDirLight                    1
+set ClusterDecayer:ClSmrLight                    3.118342
+
+set ClusterFissioner:ClMaxCharm                  3.274090*GeV
+set ClusterFissioner:ClPowCharm                  10.0
+set ClusterFissioner:PSplitCharm                 0.7183601
+set ClusterDecayer:ClDirCharm                    1
+set ClusterDecayer:ClSmrCharm                    3.118342
+set LightClusterDecayer:SingleHadronLimitCharm   0.0
+
+set ClusterFissioner:ClMaxBottom                 3.274090*GeV
+set ClusterFissioner:ClPowBottom                 10.0
+set ClusterFissioner:PSplitBottom                0.7183601
+set ClusterDecayer:ClDirBottom                   1
+set ClusterDecayer:ClSmrBottom                   3.118342
+set LightClusterDecayer:SingleHadronLimitBottom  0.0
+
+set HadronSelector:PwtUquark                     1.0
+set HadronSelector:PwtDquark                     1.0
+set HadronSelector:PwtSquark                     1.0
+set HadronSelector:PwtCquark                     1.0
+set HadronSelector:PwtBquark                     1.0
+set HadronSelector:PwtDIquark                    1.0
+set HadronSelector:SngWt                         1.0
+set HadronSelector:DecWt                         1.0
+
+cd /
+

@@ -78,7 +78,7 @@ void TwoBodyDecayConstructor::DecayList(const set<PDPtr> & particles) {
     }
   }
 }
-  
+
 set<TwoBodyDecay> TwoBodyDecayConstructor::
 createModes(tPDPtr inpart, VertexBasePtr vertex,
 	    unsigned int list) {
@@ -192,14 +192,14 @@ GeneralTwoBodyDecayerPtr TwoBodyDecayConstructor::createDecayer(TwoBodyDecay dec
       << "Error: Cannot assign " << decay.vertex_->fullName() << " to a decayer. " 
       <<  "Decay is " << decay.parent_->PDGName() << " -> "
       << decay.children_.first ->PDGName() << " " 
-      << decay.children_.second->PDGName();
+      << decay.children_.second->PDGName() << Exception::runerror;
   }
   if(name=="Unknown") 
     Throw<NBodyDecayConstructorError>() 
       << "Error: Cannot assign " << decay.vertex_->fullName() << " to a decayer. " 
       <<  "Decay is " << decay.parent_->PDGName() << " -> "
       << decay.children_.first ->PDGName() << " " 
-      << decay.children_.second->PDGName();
+      << decay.children_.second->PDGName() << Exception::runerror;
   ostringstream fullname;
   fullname << "/Herwig/Decays/" << name << "_" << decay.parent_->PDGName() 
 	   << "_" << decay.children_.first ->PDGName() 
@@ -213,7 +213,7 @@ GeneralTwoBodyDecayerPtr TwoBodyDecayConstructor::createDecayer(TwoBodyDecay dec
       << "Error: Cannot assign " << decay.vertex_->fullName() << " to a decayer. " 
       << "Decay is " << decay.parent_->PDGName() << " -> "
       << decay.children_.first ->PDGName() << " " 
-      << decay.children_.second->PDGName();
+      << decay.children_.second->PDGName() << Exception::runerror;
   // set the strong coupling for radiation
   generator()->preinitInterface(decayer, "Coupling", "set", showerAlpha_);
  
@@ -276,7 +276,7 @@ createDecayMode(set<TwoBodyDecay> & decays) {
 	}
       }
       else
-	throw NBodyDecayConstructorError() 
+	Throw<NBodyDecayConstructorError>() 
 	  << "TwoBodyDecayConstructor::createDecayMode - Needed to create "
 	  << "new decaymode but one could not be created for the tag " 
 	  << tag << Exception::warning;

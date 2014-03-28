@@ -10,5 +10,6 @@ IdentifiedParticleCut.h \
 MatchboxDeltaRCut.cc \
 MatchboxDeltaRCut.h \
 MissingPtCut.cc \
-MissingPtCut.h
-
+MissingPtCut.h \
+FrixionePhotonSeparationCut.cc \
+FrixionePhotonSeparationCut.h

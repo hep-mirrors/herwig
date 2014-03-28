@@ -78,7 +78,7 @@ bool DipoleIOperator::apply(const cPDVector& pd) const {
 bool DipoleIOperator::apply(tcPDPtr pd) const {
   return
     pd->mass() == ZERO &&
-    (abs(pd->id()) < 6 || pd->id() == ParticleID::g);
+    (abs(pd->id()) < 7 || pd->id() == ParticleID::g);
 }
 
 double DipoleIOperator::me2() const {
@@ -257,7 +257,7 @@ void DipoleIOperator::persistentInput(PersistentIStream & is, int) {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<DipoleIOperator,MatchboxInsertionOperator>
-describeHerwigDipoleIOperator("Herwig::DipoleIOperator", "HwMatchbox.so");
+describeHerwigDipoleIOperator("Herwig::DipoleIOperator", "Herwig.so");
 
 void DipoleIOperator::Init() {
 

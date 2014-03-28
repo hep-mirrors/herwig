@@ -131,4 +131,4 @@ void FFqgxDipole::Init() {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<FFqgxDipole,SubtractionDipole>
-describeHerwigFFqgxDipole("Herwig::FFqgxDipole", "HwMatchbox.so");
+describeHerwigFFqgxDipole("Herwig::FFqgxDipole", "Herwig.so");

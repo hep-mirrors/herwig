@@ -103,4 +103,4 @@ void FIMassiveTildeKinematics::Init() {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<FIMassiveTildeKinematics,TildeKinematics>
-describeHerwigFIMassiveTildeKinematics("Herwig::FIMassiveTildeKinematics", "HwMatchbox.so");
+describeHerwigFIMassiveTildeKinematics("Herwig::FIMassiveTildeKinematics", "Herwig.so");

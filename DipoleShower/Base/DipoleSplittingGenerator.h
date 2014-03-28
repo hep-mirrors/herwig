@@ -17,7 +17,7 @@
 #include "Herwig++/DipoleShower/Kernels/DipoleSplittingKernel.h"
 #include "DipoleSplittingReweight.h"
 #include "Herwig++/DipoleShower/Utility/DipoleMCCheck.h"
-#include "Herwig++/Exsample2/exsample/exponential_generator.h"
+#include "Herwig++/Sampling/exsample/exponential_generator.h"
 
 namespace Herwig {
 
