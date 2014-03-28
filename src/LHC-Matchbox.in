@@ -103,6 +103,14 @@ cd /Herwig/MatrixElements/Matchbox/Amplitudes
 
 # clear /Herwig/MatrixElements/Matchbox/PPFactory:Amplitudes
 # insert /Herwig/MatrixElements/Matchbox/PPFactory:Amplitudes 0 VBFNLOProcesses
+# >>> need to restrict topologies according to VBF approximation,
+# >>> see the manual for details; here we only consider VBF Higgs production,
+# >>> allowing for only spacelike (t-channel) EW boson propagators
+# cd /Herwig/MatrixElements/Matchbox
+# insert PPFactory:DiagramGenerator:RestrictLines /Herwig/Particles/Z0
+# insert PPFactory:DiagramGenerator:RestrictLines /Herwig/Particles/Wplus
+# insert PPFactory:DiagramGenerator:RestrictLines /Herwig/Particles/Wminus
+# do PPFactory:DiagramGenerator:TimeLikeRange 0 0
 
 #==================================================================================
 #                   :::::LO/NLO CALCULATIONS:::::
