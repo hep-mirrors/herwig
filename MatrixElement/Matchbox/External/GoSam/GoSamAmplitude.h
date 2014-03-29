@@ -136,6 +136,10 @@ public:
    */
   virtual void evalSpinColourCorrelator(pair<int,int> ij) const;
 
+
+
+  void getids() const;
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
