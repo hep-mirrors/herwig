@@ -217,7 +217,9 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
   
   for(size_t j=0;j<hel.size();j++){
     perm[j] = j;
-    heltmp[j]=hel[j];
+    if( (crossingMap()[j]>1&&j<=1)||(crossingMap()[j]<=1&&j>1)){
+    heltmp[j]=-1*hel[crossingMap()[j]];}
+    else{heltmp[j]=hel[crossingMap()[j]];}
   }
 
   MG_Calculate_wavefunctions(perm, heltmp,hel.size(),lastMatchboxXComb()->externalId());
@@ -275,6 +277,7 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
     largeN = Complex(0.0);
     return Complex(0.0);
   }
+ 
   Complex d = MG_Jamp(ii,lastMatchboxXComb()->externalId());
   largeN = d*units;
   return d*units;
@@ -292,8 +295,8 @@ LorentzVector<Complex> MadGraphAmplitude::plusPolarization(const Lorentz5Momentu
   MG_vxxxxx(pg,ng,i,pol);
   LorentzVector<Complex> polarization(pol[3],pol[4],pol[5],pol[2]);
   if (i<2)
-    return polarization;  
-  return polarization.conjugate();
+    return polarization.conjugate();  
+  return polarization;
 }
  
 bool equalsModulo(unsigned int i, const vector<int>& a, const vector<int>& b) {
@@ -330,15 +333,19 @@ double MadGraphAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
   Lorentz5Momentum n = meMomenta()[ij.second];
 
   LorentzVector<Complex> polarization = plusPolarization(p,n,ij.first);
+
   Complex pFactor = (polarization*c.momentum())/sqrt(abs(c.scale()));
+
   double avg =
     colourCorrelatedME2(ij)*(-c.diagonal()+ (c.scale() > ZERO ? 1. : -1.)*norm(pFactor));
-  int iCrossed = ij.first;
+  int iCrossed = crossingMap()[ij.first];
+
+
+  
   Complex csCorr = 0.0;
 
   if ( calculateColourSpinCorrelator(ij) ) {
     set<const CVector*> done;
-
     for ( AmplitudeConstIterator a = lastAmplitudes().begin();
 	  a != lastAmplitudes().end(); ++a ) {
       if ( done.find(&(a->second)) != done.end() )
@@ -349,12 +356,9 @@ double MadGraphAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
 	  break;
       if ( b == lastAmplitudes().end() || done.find(&(b->second)) != done.end() )
 	continue;
-
       done.insert(&(a->second)); done.insert(&(b->second));
-      if ( a->first[iCrossed] == 1 ){
+      if ( a->first[iCrossed] == 1 )
 	swap(a,b);
-
-      }
       csCorr -= colourBasis()->colourCorrelatedInterference(ij,mePartonData(),a->second,b->second);
     }
     lastColourSpinCorrelator(ij,csCorr);
