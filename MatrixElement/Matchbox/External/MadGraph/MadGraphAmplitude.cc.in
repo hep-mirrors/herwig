@@ -218,8 +218,8 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
   for(size_t j=0;j<hel.size();j++){
     perm[j] = j;
     if( (crossingMap()[j]>1&&j<=1)||(crossingMap()[j]<=1&&j>1)){
-    heltmp[j]=-1*hel[crossingMap()[j]];}
-    else{heltmp[j]=hel[crossingMap()[j]];}
+    heltmp[crossingMap()[j]]=-1*hel[j];}
+    else{heltmp[crossingMap()[j]]=hel[j];}
   }
 
   MG_Calculate_wavefunctions(perm, heltmp,hel.size(),lastMatchboxXComb()->externalId());
@@ -295,8 +295,8 @@ LorentzVector<Complex> MadGraphAmplitude::plusPolarization(const Lorentz5Momentu
   MG_vxxxxx(pg,ng,i,pol);
   LorentzVector<Complex> polarization(pol[3],pol[4],pol[5],pol[2]);
   if (i<2)
-    return polarization.conjugate();  
-  return polarization;
+    return polarization.conjugate();
+  return polarization.conjugate();
 }
  
 bool equalsModulo(unsigned int i, const vector<int>& a, const vector<int>& b) {
@@ -339,8 +339,12 @@ double MadGraphAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
   double avg =
     colourCorrelatedME2(ij)*(-c.diagonal()+ (c.scale() > ZERO ? 1. : -1.)*norm(pFactor));
   int iCrossed = crossingMap()[ij.first];
-
-
+  iCrossed = ij.first;
+  for ( unsigned int k = 0; k < crossingMap().size(); ++k )
+    if ( crossingMap()[k] == ij.first ) {
+      iCrossed = k;
+      break;
+    }   
   
   Complex csCorr = 0.0;
 
@@ -376,8 +380,10 @@ double MadGraphAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
 	      mePartonData()[ij.first]->iColour() == PDT::Colour3bar ) {
     cfac = (sqr(Nc)-1.)/(2.*Nc);
   } else assert(false);
+
+
   return
-    ( avg + (c.scale() > ZERO ? 1. : -1.)*corr/cfac);
+    ( avg +(c.scale() > ZERO ? 1. : -1.)*corr/cfac);
 
 }
  
