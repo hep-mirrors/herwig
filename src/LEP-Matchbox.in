@@ -55,6 +55,8 @@ cd /Herwig/MatrixElements/Matchbox/Amplitudes
 #library HwMatchboxGoSam.so
 #create Herwig::GoSamAmplitude GoSamAmplitude
 #insert /Herwig/MatrixElements/Matchbox/EEFactory:Amplitudes 0 GoSamAmplitude
+#set GoSamAmplitude:Path /Desired/Path/for/Gosam/Code
+#set GoSamAmplitude:SetupInFilename /Complete/Filename/of/the/Gosam/Infile
 #set /Herwig/Model:EW/Scheme alphaMZScheme
 #set /Herwig/Model:EW/RecalculateEW On
 
@@ -140,7 +142,7 @@ set EEFactory:ShowerApproximation DipoleMatching
 
 #>>>>>>>>>> SCALE CHOICE
 set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 91.2*GeV
-set PPFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale
+set EEFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale
 
 # set EEFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPtScale
 # set EEFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/MaxPtScale

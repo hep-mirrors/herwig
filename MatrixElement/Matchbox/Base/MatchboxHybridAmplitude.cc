@@ -14,6 +14,7 @@
 #include "MatchboxHybridAmplitude.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Reference.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -26,7 +27,8 @@
 
 using namespace Herwig;
 
-MatchboxHybridAmplitude::MatchboxHybridAmplitude() {}
+MatchboxHybridAmplitude::MatchboxHybridAmplitude() 
+  : theUseOLPCorrelators(false) {}
 
 MatchboxHybridAmplitude::~MatchboxHybridAmplitude() {}
 
@@ -67,11 +69,33 @@ double MatchboxHybridAmplitude::symmetryRatio() const {
   if ( treeLevelAmplitude()->hasInitialAverage() &&
        !oneLoopAmplitude()->hasInitialAverage() ) {
     ifact = 1./4.;
+    if (lastMatchboxXComb()->matchboxME()->mePartonData()[0]->iColour() == PDT::Colour3 ||
+	 lastMatchboxXComb()->matchboxME()->mePartonData()[0]->iColour() == PDT::Colour3bar )
+      ifact /= SM().Nc();
+    else if ( lastMatchboxXComb()->matchboxME()->mePartonData()[0]->iColour() == PDT::Colour8 )
+      ifact /= (SM().Nc()*SM().Nc()-1.);
+
+    if ( lastMatchboxXComb()->matchboxME()->mePartonData()[1]->iColour() == PDT::Colour3 ||
+	 lastMatchboxXComb()->matchboxME()->mePartonData()[1]->iColour() == PDT::Colour3bar )
+      ifact /= SM().Nc();
+    else if ( mePartonData()[1]->iColour() == PDT::Colour8 )
+      ifact /= (SM().Nc()*SM().Nc()-1.);
   }
 
   if ( !treeLevelAmplitude()->hasInitialAverage() &&
        oneLoopAmplitude()->hasInitialAverage() ) {
     ifact = 4.;
+    if ( lastMatchboxXComb()->matchboxME()->mePartonData()[0]->iColour() == PDT::Colour3 ||
+	 lastMatchboxXComb()->matchboxME()->mePartonData()[0]->iColour() == PDT::Colour3bar )
+      ifact *= SM().Nc();
+    else if ( lastMatchboxXComb()->matchboxME()->mePartonData()[0]->iColour() == PDT::Colour8 )
+      ifact *= (SM().Nc()*SM().Nc()-1.);
+
+    if ( lastMatchboxXComb()->matchboxME()->mePartonData()[1]->iColour() == PDT::Colour3 ||
+	 lastMatchboxXComb()->matchboxME()->mePartonData()[1]->iColour() == PDT::Colour3bar )
+      ifact *= SM().Nc();
+    else if ( lastMatchboxXComb()->matchboxME()->mePartonData()[1]->iColour() == PDT::Colour8 )
+      ifact *= (SM().Nc()*SM().Nc()-1.);
   }
 
   if ( treeLevelAmplitude()->hasFinalStateSymmetry() &&
@@ -90,16 +114,58 @@ double MatchboxHybridAmplitude::symmetryRatio() const {
 
 }
 
+void MatchboxHybridAmplitude::cloneDependencies(const std::string& prefix) {
+
+  if ( treeLevelAmplitude() ) {
+    Ptr<MatchboxAmplitude>::ptr myTreeLevelAmplitude = treeLevelAmplitude()->cloneMe();
+    ostringstream pname;
+    pname << (prefix == "" ? fullName() : prefix) << "/" << myTreeLevelAmplitude->name();
+    if ( ! (generator()->preinitRegister(myTreeLevelAmplitude,pname.str()) ) )
+      throw InitException() << "Amplitude " << pname.str() << " already existing.";
+    myTreeLevelAmplitude->cloneDependencies(pname.str());
+    treeLevelAmplitude(myTreeLevelAmplitude);
+  }
+
+  if ( oneLoopAmplitude() ) {
+    Ptr<MatchboxAmplitude>::ptr myOneLoopAmplitude = oneLoopAmplitude()->cloneMe();
+    ostringstream pname;
+    pname << (prefix == "" ? fullName() : prefix) << "/" << myOneLoopAmplitude->name();
+    if ( ! (generator()->preinitRegister(myOneLoopAmplitude,pname.str()) ) )
+      throw InitException() << "Amplitude " << pname.str() << " already existing.";
+    myOneLoopAmplitude->cloneDependencies(pname.str());
+    oneLoopAmplitude(myOneLoopAmplitude);
+  }
+
+  MatchboxAmplitude::cloneDependencies(prefix);
+
+}
+
+void MatchboxHybridAmplitude::doinit() {
+  MatchboxAmplitude::doinit();
+  if ( treeLevelAmplitude() )
+    treeLevelAmplitude()->init();
+  if ( oneLoopAmplitude() )
+    oneLoopAmplitude()->init();
+}
+
+void MatchboxHybridAmplitude::doinitrun() {
+  MatchboxAmplitude::doinitrun();
+  if ( treeLevelAmplitude() )
+    treeLevelAmplitude()->initrun();
+  if ( oneLoopAmplitude() )
+    oneLoopAmplitude()->initrun();
+}
+
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 
 void MatchboxHybridAmplitude::persistentOutput(PersistentOStream & os) const {
-  os << theTreeLevelAmplitude << theOneLoopAmplitude;
+  os << theTreeLevelAmplitude << theOneLoopAmplitude << theUseOLPCorrelators;
 }
 
 void MatchboxHybridAmplitude::persistentInput(PersistentIStream & is, int) {
-  is >> theTreeLevelAmplitude >> theOneLoopAmplitude;
+  is >> theTreeLevelAmplitude >> theOneLoopAmplitude >> theUseOLPCorrelators;
 }
 
 
@@ -127,6 +193,22 @@ void MatchboxHybridAmplitude::Init() {
     ("OneLoopAmplitude",
      "Set the tree level amplitude to be used.",
      &MatchboxHybridAmplitude::theOneLoopAmplitude, false, false, true, false, false);
+
+
+  static Switch<MatchboxHybridAmplitude,bool> interfaceUseOLPCorrelators
+    ("UseOLPCorrelators",
+     "",
+     &MatchboxHybridAmplitude::theUseOLPCorrelators, false, false, false);
+  static SwitchOption interfaceUseOLPCorrelatorsYes
+    (interfaceUseOLPCorrelators,
+     "Yes",
+     "",
+     true);
+  static SwitchOption interfaceUseOLPCorrelatorsNo
+    (interfaceUseOLPCorrelators,
+     "No",
+     "",
+     false);
 
 }
 

@@ -198,6 +198,30 @@ public:
     theOLPProcess[pType] = id;
   }
 
+  /**
+   * Return true, if this is a real emission matrix element which does
+   * not require colour correlators.
+   */
+  bool noCorrelations() const {
+    return theNoCorrelations;
+  }
+
+  /**
+   * Indicate that this is a real emission matrix element which does
+   * not require colour correlators.
+   */
+  void needsNoCorrelations() {
+    theNoCorrelations = true;
+  }
+
+  /**
+   * Indicate that this is a virtual matrix element which does
+   * require colour correlators.
+   */
+  void needsCorrelations() {
+    theNoCorrelations = false;
+  }
+
   //@}
 
   /** @name Phasespace generation */
@@ -966,6 +990,12 @@ private:
    * Histograms of epsilon pole cancellation
    */
   mutable map<cPDVector,AccuracyHistogram> epsilonPoleHistograms;
+
+  /**
+   * True, if this is a real emission matrix element which does
+   * not require colour correlators.
+   */
+  bool theNoCorrelations;
 
 private:
 

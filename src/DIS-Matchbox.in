@@ -57,6 +57,8 @@ cd /Herwig/MatrixElements/Matchbox/Amplitudes
 #library HwMatchboxGoSam.so
 #create Herwig::GoSamAmplitude GoSamAmplitude
 #insert /Herwig/MatrixElements/Matchbox/DISFactory:Amplitudes 0 GoSamAmplitude
+#set GoSamAmplitude:Path /Desired/Path/for/Gosam/Code
+#set GoSamAmplitude:SetupInFilename /Complete/Filename/of/the/Gosam/Infile
 #set /Herwig/Model:EW/Scheme alphaMZScheme
 #set /Herwig/Model:EW/RecalculateEW On
 

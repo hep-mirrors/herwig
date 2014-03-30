@@ -91,6 +91,16 @@ vector<Energy> RunningMass::mass() const {
   for ( long f = 1; f <= long(_theMaxFlav); ++f ) {
     PDPtr p = getParticleData(f);
     Energy massf = p ? p->mass() : ZERO;
+    if ( !_theStandardModel->alphaSPtr()->quarkMasses().empty() ) {
+      if ( f < 3 ) {
+	massf = 
+	  f == 1 ?
+	  _theStandardModel->alphaSPtr()->quarkMasses()[1] :
+	  _theStandardModel->alphaSPtr()->quarkMasses()[0];
+      } else {
+	massf = _theStandardModel->alphaSPtr()->quarkMasses()[f-1];
+      }
+    }
     if((f<=3&&_lightOption==0) ||
        (f>3 &&_heavyOption==0)) {
       double coeff = _theQCDOrder==2 ? _theCoefficient[f-1]+4./3./pi : 0.;

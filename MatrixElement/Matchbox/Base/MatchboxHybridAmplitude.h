@@ -183,7 +183,9 @@ public:
    * Return true, if colour and spin correlated matrix elements should
    * be ordered from the OLP
    */
-  virtual bool needsOLPCorrelators() const { return false; }
+  virtual bool needsOLPCorrelators() const { 
+    return theUseOLPCorrelators;
+  }
 
   /**
    * Start the one loop provider, if appropriate. This default
@@ -191,6 +193,28 @@ public:
    */
   virtual bool startOLP(const map<pair<Process,int>,int>& procs) {
     return oneLoopAmplitude()->startOLP(procs);
+  }
+
+  /**
+   * Return true, if this amplitude needs to initialize an external
+   * code.
+   */
+  virtual bool isExternal() const { 
+    return treeLevelAmplitude()->isExternal();
+  }
+
+  /**
+   * Initialize this amplitude
+   */
+  virtual bool initializeExternal() {
+    return treeLevelAmplitude()->initializeExternal();
+  }
+
+  /**
+   * Return a generic process id for the given process
+   */
+  virtual int externalId(const cPDVector& proc) { 
+    return treeLevelAmplitude()->externalId(proc);
   }
 
   //@}
@@ -267,7 +291,10 @@ public:
    * Return the colour correlated matrix element.
    */
   virtual double colourCorrelatedME2(pair<int,int> ij) const {
-    return treeLevelAmplitude()->colourCorrelatedME2(ij);
+    return 
+      theUseOLPCorrelators ?
+      oneLoopAmplitude()->colourCorrelatedME2(ij) :
+      treeLevelAmplitude()->colourCorrelatedME2(ij);
   }
 
   /**
@@ -286,7 +313,10 @@ public:
   virtual LorentzVector<Complex> plusPolarization(const Lorentz5Momentum& p,
 						  const Lorentz5Momentum& n,
 						  int id = -1) const {
-    return treeLevelAmplitude()->plusPolarization(p,n,id);
+    return 
+      theUseOLPCorrelators ?
+      oneLoopAmplitude()->plusPolarization(p,n,id) :
+      treeLevelAmplitude()->plusPolarization(p,n,id);
   }
 
   /**
@@ -294,7 +324,10 @@ public:
    */
   virtual double spinColourCorrelatedME2(pair<int,int> emitterSpectator,
 					 const SpinCorrelationTensor& c) const {
-    return treeLevelAmplitude()->spinColourCorrelatedME2(emitterSpectator,c);
+    return 
+      theUseOLPCorrelators ?
+      oneLoopAmplitude()->spinColourCorrelatedME2(emitterSpectator,c) :
+      treeLevelAmplitude()->spinColourCorrelatedME2(emitterSpectator,c);
   }
 
 
@@ -442,6 +475,30 @@ public:
     oneLoopAmplitude()->flushCaches();
   }
 
+  /**
+   * Clone the dependencies, using a given prefix.
+   */
+  virtual void cloneDependencies(const std::string& prefix = "");
+
+  //@}
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
   //@}
 
 public:
@@ -503,6 +560,11 @@ private:
    * The amplitude object to provide one-loop amplitudes.
    */
   Ptr<MatchboxAmplitude>::ptr theOneLoopAmplitude;
+
+  /**
+   * True, if correlators should be used from the OLP amplitude
+   */
+  bool theUseOLPCorrelators;
 
   /**
    * The assignment operator is private and must never be called.

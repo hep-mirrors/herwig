@@ -356,6 +356,20 @@ public:
 		      int type);
 
   /**
+   * Return the amplitudes which need external initialization
+   */
+  const set<Ptr<MatchboxAmplitude>::tptr>& externalAmplitudes() const {
+    return theExternalAmplitudes;
+  }
+
+  /**
+   * Access the amplitudes which need external initialization
+   */
+  set<Ptr<MatchboxAmplitude>::tptr>& externalAmplitudes() {
+    return theExternalAmplitudes;
+  }
+
+  /**
    * Return the virtual corrections to be considered
    */
   const vector<Ptr<MatchboxInsertionOperator>::ptr>& virtuals() const { return theVirtuals; }
@@ -913,6 +927,11 @@ private:
    * The processes to be ordered from an OLP
    */
   map<Ptr<MatchboxAmplitude>::tptr,map<pair<Process,int>,int> > theOLPProcesses;
+
+  /**
+   * Amplitudes which need external initialization
+   */
+  set<Ptr<MatchboxAmplitude>::tptr> theExternalAmplitudes;
 
   /**
    * Amplitudes to be selected on clashing responsibilities.

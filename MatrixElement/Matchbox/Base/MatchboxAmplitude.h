@@ -256,6 +256,21 @@ public:
    */
   virtual bool startOLP(const map<pair<Process,int>,int>& procs);
 
+  /**
+   * Return true, if this amplitude needs to initialize an external
+   * code.
+   */
+  virtual bool isExternal() const { return false; }
+
+  /**
+   * Initialize this amplitude
+   */
+  virtual bool initializeExternal() { return false; }
+
+  /**
+   * Return a generic process id for the given process
+   */
+  virtual int externalId(const cPDVector&) { return 0; }
 
   //@}
 
@@ -266,11 +281,6 @@ public:
    * Return the colour basis.
    */
   virtual Ptr<ColourBasis>::tptr colourBasis() const { return theColourBasis; }
-
-  /**
-   * Return true, if this amplitude will not require colour correlations.
-   */
-  virtual bool noCorrelations() const { return !haveOneLoop(); }  
 
   /**
    * Return true, if the colour basis is capable of assigning colour

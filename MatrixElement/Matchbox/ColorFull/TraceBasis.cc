@@ -123,23 +123,7 @@ double TraceBasis::scalarProduct(size_t i, size_t j,
 
   // Add result to map
   if ( pit == theScalarProducts.end() ) {
-    Polynomial p; // to contain result
-    // In the case of both quarks and gluons
-    if ( Basis.nq != 0 ) {
-      p = colorFunctions.scalar_product(Cs1, Cs2);
-    }
-    // For gluons with implicitly added topology
-    // In the case of only gluons the conjugated topology is needed as well
-    // Note that the full result is saved in the local map
-    else {
-      unsigned int Ng = Basis.ng;
-      int sign = (Ng % 2 ? -1 : 1);
-      Col_str Cs2_conj=Cs2;
-      Cs2_conj.conjugate();
-      p = 2 * colorFunctions.scalar_product(Cs1, Cs2) + 
-	2 * sign * colorFunctions.scalar_product(Cs1, Cs2_conj);
-      p.simplify();
-    }
+    Polynomial p = colorFunctions.scalar_product(Cs1, Cs2);
     theScalarProducts.insert(make_pair(Cs_string.str(), p));
     pit = theScalarProducts.find(Cs_string.str());
   }

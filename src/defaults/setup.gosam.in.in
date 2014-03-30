@@ -86,7 +86,7 @@ abbrev.level=diagram
 
 # debug=all
 
-extensions=samurai, golem95, autotools, derive, numpolvec, formopt
+extensions=samurai, golem95, autotools, derive, numpolvec @FORMOPT@
 # extensions=samurai, golem95, autotools, derive, numpolvec
 # extensions=samurai, golem95, autotools, derive
 

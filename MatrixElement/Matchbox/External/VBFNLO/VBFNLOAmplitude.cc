@@ -21,6 +21,8 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
+#include "ThePEG/Utilities/DynamicLoader.h"
+
 #include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
 
 #include <cstdlib>
@@ -86,6 +88,11 @@ void VBFNLOAmplitude::startOLP(const string& contract, int& status) {
 }
 
 bool VBFNLOAmplitude::startOLP(const map<pair<Process,int>,int>& procs) {
+
+  if ( !DynamicLoader::load("VBFNLO.so") )
+    throw Exception() << "failed to load VBFNLO.so\n"
+		      << DynamicLoader::lastErrorMessage
+		      << Exception::abortnow;
 
   string orderFileName = name() + ".OLPOrder.lh";
   ofstream orderFile(orderFileName.c_str());
@@ -215,6 +222,22 @@ void VBFNLOAmplitude::evalSpinColourCorrelator(pair<int,int>) const {
       lastColourSpinCorrelator(make_pair(i,j),scc);
     }
 
+}
+
+void VBFNLOAmplitude::doinit() {
+  if ( !DynamicLoader::load("VBFNLO.so") )
+    throw Exception() << "failed to load VBFNLO.so\n"
+		      << DynamicLoader::lastErrorMessage
+		      << Exception::abortnow;
+  MatchboxOLPME::doinit();
+}
+
+void VBFNLOAmplitude::doinitrun() {
+  if ( !DynamicLoader::load("VBFNLO.so") )
+    throw Exception() << "failed to load VBFNLO.so\n"
+		      << DynamicLoader::lastErrorMessage
+		      << Exception::abortnow;
+  MatchboxOLPME::doinitrun();
 }
 
 

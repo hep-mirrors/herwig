@@ -31,7 +31,8 @@ MatchboxXCombData::MatchboxXCombData()
     theColourBasisDim(0), theNDimPhasespace(0), 
     theNDimAmplitude(0), theNDimInsertions(0), 
     theSymmetryFactor(0.0), theOLPMomenta(0),
-    filledOLPMomenta(false) {
+    filledOLPMomenta(false), theExternalId(0),
+    theInitialized(false), filledExternalMomenta(false) {
   flushCaches();
 }
 
@@ -40,6 +41,12 @@ MatchboxXCombData::~MatchboxXCombData() {
     delete[] theOLPMomenta;
     theOLPMomenta = 0;
   }
+  for ( vector<double*>::iterator k = theExternalMomenta.begin();
+	k != theExternalMomenta.end(); ++k ) {
+    delete[] *k;
+    *k = 0;
+  }
+  theExternalMomenta.clear();
 }
 
 MatchboxXCombData::MatchboxXCombData(tMEPtr newME) 
@@ -51,7 +58,8 @@ MatchboxXCombData::MatchboxXCombData(tMEPtr newME)
     theColourBasisDim(0), theNDimPhasespace(0), 
     theNDimAmplitude(0), theNDimInsertions(0), 
     theSymmetryFactor(0.0), theOLPMomenta(0),
-    filledOLPMomenta(false) {
+    filledOLPMomenta(false), theExternalId(0),
+    theInitialized(false), filledExternalMomenta(false) {
   flushCaches();
   theMatchboxME = dynamic_ptr_cast<Ptr<MatchboxMEBase>::tptr>(newME);
   theSubtractionDipole = dynamic_ptr_cast<Ptr<SubtractionDipole>::tptr>(newME);
@@ -75,6 +83,23 @@ void MatchboxXCombData::fillOLPMomenta(const vector<Lorentz5Momentum>& memomenta
     theOLPMomenta[5*p+4] = memomenta[p].mass()/GeV;
   }
   filledOLPMomenta = true;
+}
+
+void MatchboxXCombData::fillExternalMomenta(const vector<Lorentz5Momentum>& memomenta) {
+  if ( filledExternalMomenta )
+    return;
+  if ( theExternalMomenta.empty() ) {
+    theExternalMomenta.resize(memomenta.size());
+    for ( size_t k = 0; k < memomenta.size(); ++k )
+      theExternalMomenta[k] = new double[4];
+  }
+  for ( size_t p = 0; p < memomenta.size(); ++p ) {
+    theExternalMomenta[p][0] = memomenta[p].t()/GeV;
+    theExternalMomenta[p][1] = memomenta[p].x()/GeV;
+    theExternalMomenta[p][2] = memomenta[p].y()/GeV;
+    theExternalMomenta[p][3] = memomenta[p].z()/GeV;
+  }
+  filledExternalMomenta = true;
 }
 
 Ptr<MatchboxFactory>::tcptr MatchboxXCombData::factory() const {
@@ -105,6 +130,7 @@ void MatchboxXCombData::flushCaches() {
 	f != theCalculateColourSpinCorrelators.end(); ++f )
     f->second = true;
   filledOLPMomenta = false;
+  filledExternalMomenta = false;
 }
 
 void MatchboxXCombData::putCVector(PersistentOStream& os, const CVector& v) {
@@ -156,7 +182,7 @@ void MatchboxXCombData::persistentOutput(PersistentOStream & os) const {
      << theAmplitudeRandomNumbers << theInsertionRandomNumbers 
      << theDiagramWeights << theSingularLimits// << theLastSingularLimit 
      << theStandardModel << theSymmetryFactor
-     << theOLPId;
+     << theOLPId << theExternalId;
   putAmplitudeMap(os,theLastAmplitudes);
   putAmplitudeMap(os,theLastLargeNAmplitudes);
   putAmplitudeMap(os,theLastOneLoopAmplitudes);
@@ -178,7 +204,7 @@ void MatchboxXCombData::persistentInput(PersistentIStream & is, int) {
      >> theAmplitudeRandomNumbers >> theInsertionRandomNumbers 
      >> theDiagramWeights >> theSingularLimits// >> theLastSingularLimit 
      >> theStandardModel >> theSymmetryFactor
-     >> theOLPId;
+     >> theOLPId >> theExternalId;
   getAmplitudeMap(is,theLastAmplitudes);
   getAmplitudeMap(is,theLastLargeNAmplitudes);
   getAmplitudeMap(is,theLastOneLoopAmplitudes);

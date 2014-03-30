@@ -86,7 +86,7 @@ public:
    * Start the one loop provider, if appropriate, giving order and
    * contract files
    */
-  virtual void signOLP(const string&, const string&, const string&);
+  virtual void signOLP(const string&, const string&);
 
   virtual bool checkOLPContract(string contractFileName);
 
@@ -103,7 +103,7 @@ public:
    */
   virtual void startOLP(const string&, int& status);
 
-  virtual void getids() const ;
+  //virtual void getids() const ;
   
   virtual Energy2 mu2() const { return lastSHat(); }
 
@@ -136,6 +136,10 @@ public:
    */
   virtual void evalSpinColourCorrelator(pair<int,int> ij) const;
 
+
+
+  void getids() const;
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -163,6 +167,25 @@ public:
    * when this class is dynamically loaded.
    */
   static void Init();
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
+  //@}
 
 protected:
 
@@ -213,28 +236,28 @@ private:
 
   map<int , gosamprocinfo > processmap;
 
-  mutable string gosamInstallPath;
+  mutable string gosamPathInterface;
+  mutable string gosamSetupInFilenameInterface;
 
-  mutable string gosamSetupInPath;
+  mutable string gosamPath;
+  mutable string gosamSourcePath;
+  mutable string gosamInstallPath;
+  mutable string gosamSetupInFileName;
+
+  mutable string orderFileTitle;
+  mutable string contractFileTitle;
+  mutable string parametersFileTitle;
+  mutable string contractFileName;
 
   bool theCodeExists;
+  bool theFormOpt;
 
   bool isitDR;
   
   /**
-   * Return the PDG codes of those quarks with mass
-   */
-  const vector<int>& massiveParticles() const { return theMassiveParticles; }
-
-  /**
-   * Command to insert the PDG code of a quark with mass
-   */
-  string doMassiveParticles(string);
-
-  /**
    * The PDG codes of those quarks with mass
    */
-  vector<int> theMassiveParticles;
+  vector<int> massiveParticles; //theMassiveParticles;
 
   /**
    * Switch to print parameters

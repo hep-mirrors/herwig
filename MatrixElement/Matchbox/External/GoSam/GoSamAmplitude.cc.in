@@ -54,21 +54,16 @@ extern "C" void OLP_SetParameter(char*, double*, double*, int*);
 extern "C" void OLP_PrintParameter(char*);
 extern "C" void OLP_EvalSubProcess2(int*, double*, double*, double*, double*);
 
-void GoSamAmplitude::signOLP(const string& order, const string& contract, const string& setupin) {
+void GoSamAmplitude::signOLP(const string& order, const string& contract) {
 	if(!theCodeExists){
-	  string cmd = "@GOSAMPREFIX@/bin/gosam.py --olp  -o " + contract + "  --config=" + setupin + " " + order;
+	  string cmd = "@GOSAMPREFIX@/bin/gosam.py --olp  -o " + contract + "  --config=" + gosamSetupInFileName + " --destination=" + gosamSourcePath + " " + order;
 	  std::system(cmd.c_str());
 	}
 }
 
 bool GoSamAmplitude::buildGoSam() {
 	if(!theCodeExists){
-	  char cwd[256];
-	  string cmd = "sh autogen.sh FCFLAGS=-g --prefix=";
-	  if (gosamInstallPath=="")cmd+= string(getcwd(cwd, sizeof(cwd)));
-	  else cmd +=  gosamInstallPath;
-	  std::system(cmd.c_str());
-	  cmd = "make install";
+	  string cmd = "cd " + gosamSourcePath + "; sh autogen.sh FCFLAGS=-g --prefix=" + gosamInstallPath + "; make install";
 	  std::system(cmd.c_str());
 	}
 	theCodeExists=true;
@@ -77,12 +72,13 @@ bool GoSamAmplitude::buildGoSam() {
 
 void GoSamAmplitude::startOLP(const string& contract, int& status) {
 	string tempcontract = contract;
-	if (gosamInstallPath==""){
-	  if ( !( DynamicLoader::load("lib/libgolem_olp.so") || DynamicLoader::load("lib64/libgolem_olp.so") ) ) assert(0);
+	if (gosamPathInterface==""){
+	  if ( !( DynamicLoader::load("GoSam/build/lib/libgolem_olp.so") || DynamicLoader::load("GoSam/build/lib64/libgolem_olp.so") ) ) assert(0);
+	  tempcontract = "GoSam/" + tempcontract;
 	}
 	else {
-	  if ( !( DynamicLoader::load(gosamInstallPath+"/lib/libgolem_olp.so") || DynamicLoader::load(gosamInstallPath+"/lib64/libgolem_olp.so") ) ) assert(0);
-		tempcontract = gosamInstallPath + "/" + tempcontract;
+	  if ( !( DynamicLoader::load(gosamPathInterface+"/build/lib/libgolem_olp.so") || DynamicLoader::load(gosamPathInterface+"/build/lib64/libgolem_olp.so") ) ) assert(0);
+		tempcontract = gosamPathInterface + "/" + tempcontract;
 	}
 	OLP_Start(tempcontract.c_str(), &status);
 
@@ -134,8 +130,8 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
     // hand over quark masses
 
 	string mstr;
-	if ( massiveParticles().size() != 0 ) {
-	  for ( vector<int>::const_iterator mID = massiveParticles().begin(); mID != massiveParticles().end(); ++mID ) {
+	if ( massiveParticles.size() != 0 ) {
+	  for ( vector<int>::const_iterator mID = massiveParticles.begin(); mID != massiveParticles.end(); ++mID ) {
 	    int mInt = *mID;
 	    double mass=getParticleData(mInt)->mass()/GeV;
 	    std::stringstream ss;
@@ -150,10 +146,19 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
       }
 	}
 
+  // hand over b- and t-quark widths
+  double wB = getParticleData(5)->width()/GeV;
+  double wT = getParticleData(6)->width()/GeV;
+  OLP_SetParameter((char*)"width(5)",&wB,&zero,&pStatus);
+  OLP_SetParameter((char*)"width(6)",&wT,&zero,&pStatus);
+
     // print OLP parameters
 
 	if (thePrintParameter) {
-	  string ppstr = name() + ".OLPParameters.lh";
+	  char char_cwd[256];
+	  getcwd(char_cwd, sizeof(char_cwd));
+	  gosamPath = gosamPathInterface == "" ? string(char_cwd) + "/GoSam" : gosamPathInterface;
+	  string ppstr = gosamPath + "/" + name() + ".OLPParameters.lh";
 	  char * ppchar = new char[ppstr.size()+1];
 	  std::copy(ppstr.begin(),ppstr.end(),ppchar);
 	  ppchar[ppstr.size()] = '\0';
@@ -206,9 +211,11 @@ void GoSamAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs, st
 	orderFile << "MatrixElementSquareType  CHsummed\n";
 	orderFile << "CorrectionType           QCD\n";
 	orderFile << "IRregularisation         " << (isDR() ? "DRED" : "CDR") << "\n";
-	if ( massiveParticles().size() != 0 ) {
+  // loop over quarks to check if they have non-zero masses
+  for (int i=1; i<=6; ++i) if (getParticleData(i)->mass()/GeV > 0.0) massiveParticles.push_back(i);
+	if ( massiveParticles.size() != 0 ) {
 	  orderFile << "MassiveParticles         ";
-	  for ( vector<int>::const_iterator mID = massiveParticles().begin(); mID != massiveParticles().end(); ++mID ) {
+	  for ( vector<int>::const_iterator mID = massiveParticles.begin(); mID != massiveParticles.end(); ++mID ) {
 	    int mInt = *mID;
 	    orderFile << mInt << " ";
       }
@@ -268,8 +275,7 @@ bool GoSamAmplitude::checkOLPContract(string contractFileName) {
 	    }
 	  }
 	}
-
-	string ids = "ids.dat";
+	string ids = "GoSam_ids.dat";
 	ofstream IDS(ids.c_str());
 
 	for ( map<int, gosamprocinfo>::iterator p = processmap.begin() ; p != processmap.end() ; p++ ) {
@@ -278,17 +284,13 @@ bool GoSamAmplitude::checkOLPContract(string contractFileName) {
 	    if ( (*p).second.GID() == -1 ) return 0;
 	}
 	IDS << flush;
-	
-	ids = "installpath.dat";
-	ofstream Install(ids.c_str());
-	Install<<gosamInstallPath << flush;
 
 	return 1;
 
 }
 
-void GoSamAmplitude::getids() const{
-	string line = "ids.dat";
+void GoSamAmplitude::getids() const {
+	string line = "GoSam_ids.dat";
 	ifstream infile(line.c_str());
 	int hid;
 	int gid;
@@ -296,30 +298,35 @@ void GoSamAmplitude::getids() const{
 	 istringstream(line) >> hid>>gid;
 	 idpair.insert ( std::pair<int,int>(hid,gid) );
 	}
-	line ="installpath.dat";
-	ifstream infile2(line.c_str());
-	std::getline(infile2, line);
-	gosamInstallPath=line;
 }
+
 
 bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
 	cout << "\nWriting the olp-order file." << flush;
-	if(gosamInstallPath != ""){
-	  string cmd = "mkdir " + gosamInstallPath;
-	  std::system(cmd.c_str());
-	}
-	string contractFileTitle = name() + ".OLPContract.lh";
-	string contractFileName = gosamInstallPath == "" ? contractFileTitle : gosamInstallPath + "/" + contractFileTitle;
-	string orderFileName = gosamInstallPath == "" ? name() + ".OLPOrder.lh" : gosamInstallPath + "/" + name() + ".OLPOrder.lh";
+
+  string cmd = "";
+  char char_cwd[256];
+  getcwd(char_cwd, sizeof(char_cwd));
+  string cwd = string(char_cwd);
+
+  // set all necessary path and file names
+  gosamPath = gosamPathInterface == "" ? cwd + "/GoSam" : gosamPathInterface;
+  gosamSourcePath = gosamPath + "/source";
+  gosamInstallPath = gosamPath + "/build";
+
+  // create all the directories
+  std::system(("mkdir " + gosamPath).c_str());
+  std::system(("mkdir " + gosamSourcePath).c_str());
+  std::system(("mkdir " + gosamInstallPath).c_str());
+
+	contractFileTitle = name() + ".OLPContract.lh";
+	parametersFileTitle = name() + ".OLPParameters.lh";
+  string orderFileName = gosamPath + "/" + name() + ".OLPOrder.lh";
+	contractFileName = gosamPath  + "/" + contractFileTitle;
+  gosamSetupInFileName = gosamSetupInFilenameInterface == "" ? gosamPath + "/setup.gosam.in" : gosamSetupInFilenameInterface;
+
+	// check for old order file and create it if it doesn't already exist
 	fillOrderFile(procs, orderFileName);
-	string gosamSetupInFileName = "";
-	if (gosamSetupInPath != ""){
-	  gosamSetupInFileName = gosamSetupInPath + "/";
-	}
-	else {
-	  if (gosamInstallPath != "") gosamSetupInFileName = gosamInstallPath + "/";
-	}
-	gosamSetupInFileName += "setup.gosam.in";
 
   // check if setup.gosam.in exists
   ifstream infile(gosamSetupInFileName.c_str());
@@ -327,11 +334,10 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
     // if it doesn't get it from src/defaults
     string cmd = "cp @prefix@/share/Herwig++/defaults/setup.gosam.in " + gosamSetupInFileName;
     std::system(cmd.c_str());
-    // use sed to set form's tempdir to the current working directory
-    char cwd[256];
-    getcwd(cwd, sizeof(cwd));
-    string workdir = StringUtils::replace(string(cwd), string("/"), string("\\/"));
-    cmd = "sed -i 's/@FORMTEMPDIR@/" + workdir + "/g' " + gosamSetupInFileName;
+    // set form's tempdir to the current working directory
+    cmd = "sed -i 's/@FORMTEMPDIR@/" + StringUtils::replace(gosamSourcePath, string("/"), string("\\/")) + "/g' " + gosamSetupInFileName;
+    std::system(cmd.c_str());
+    cmd = "sed -i 's/@FORMOPT@/" + (theFormOpt ? string(", formopt") : string("")) + "/g' " + gosamSetupInFileName;
     std::system(cmd.c_str());
   }
   infile.close();
@@ -339,7 +345,7 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
   ifstream ifile(contractFileName.c_str());
   if(!ifile){
     cout << "\nGoSam: Sign the order file." << flush;
-    signOLP(orderFileName, contractFileName, gosamSetupInFileName);
+    signOLP(orderFileName, contractFileName);
 	}
 	
 	if ( !checkOLPContract(contractFileName) ) {
@@ -347,11 +353,7 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
 	  assert(0);
 	} else cout << "\nChecked the olp-contract! Everything is OK! Let's build!\n" << flush;
 	
-	if (gosamInstallPath==""){
-		if ( !( DynamicLoader::load("lib/libgolem_olp.so") || DynamicLoader::load("lib64/libgolem_olp.so") ) ) buildGoSam();;}
-	else {
-		if ( !( DynamicLoader::load(gosamInstallPath+"/lib/libgolem_olp.so") || DynamicLoader::load(gosamInstallPath+"/lib64/libgolem_olp.so") ) ) buildGoSam();
-	}
+	if (!( DynamicLoader::load(gosamInstallPath+"/lib/libgolem_olp.so") || DynamicLoader::load(gosamInstallPath+"/lib64/libgolem_olp.so"))) buildGoSam();
 	
 	int status = -1;
 	startOLP(contractFileTitle, status);
@@ -393,18 +395,17 @@ void GoSamAmplitude::evalSubProcess() const {
 	double scale = sqrt(mu2() / GeV2);
 
 	double out[7] = { };
-	
-	int id = olpId()[ProcessType::oneLoopInterference] ? olpId()[ProcessType::oneLoopInterference] : olpId()[ProcessType::treeME2];
-        
 	if ( idpair.size() == 0 ) {
 	  getids();
 	}
-
-    double acc;
-	OLP_EvalSubProcess2(&((*(idpair.find(id))).second), olpMomenta(), &scale, out, &acc);
+	int id = olpId()[ProcessType::oneLoopInterference] ? olpId()[ProcessType::oneLoopInterference] : olpId()[ProcessType::treeME2];
+         //cout<<"\n"<<id<<" "<<idpair[id];
+	 int callid(idpair.find(id)->second);
+         double acc;
+	OLP_EvalSubProcess2(&(callid), olpMomenta(), &scale, out, &acc);
 
 	if ( olpId()[ProcessType::oneLoopInterference] ) {
-	  lastTreeME2(out[3] * units);
+	  if(calculateTreeME2())lastTreeME2(out[3] * units);
 	  lastOneLoopInterference((out[2])* units);
 	  lastOneLoopPoles(pair<double, double>(out[0] * units, out[1] * units));
 	} else if ( olpId()[ProcessType::treeME2] ) {
@@ -421,13 +422,12 @@ void GoSamAmplitude::evalColourCorrelator(pair<int, int> ) const {
 
 	int n = lastXComb().meMomenta().size();
 	colourCorrelatorResults.resize(n * (n - 1) / 2);
-	
 	if ( idpair.size() == 0 ) {
 	  getids();
 	}
-
+	int callid((*(idpair.find(olpId()[ProcessType::colourCorrelatedME2]))).second);
     double acc;
-	OLP_EvalSubProcess2(&((*(idpair.find(olpId()[ProcessType::colourCorrelatedME2]))).second), olpMomenta(), &scale, &colourCorrelatorResults[0], &acc);
+	OLP_EvalSubProcess2(&(callid), olpMomenta(), &scale, &colourCorrelatorResults[0], &acc);
 
 	cPDVector particles = lastXComb().matrixElement()->mePartonData();
 	
@@ -447,13 +447,12 @@ void GoSamAmplitude::evalSpinColourCorrelator(pair<int , int > ) const {
 
 	int n = lastXComb().meMomenta().size();
 	spinColourCorrelatorResults.resize(2*n*n);
-	
 	if ( idpair.size() == 0 ) {
 	  getids();
 	}
-
     double acc;
-	OLP_EvalSubProcess2(&((*(idpair.find(olpId()[ProcessType::spinColourCorrelatedME2]))).second), olpMomenta(), &scale, &spinColourCorrelatorResults[0], &acc);
+	int callid((*(idpair.find(olpId()[ProcessType::spinColourCorrelatedME2]))).second);
+	OLP_EvalSubProcess2(&(callid), olpMomenta(), &scale, &spinColourCorrelatorResults[0], &acc);
 
         for ( int i = 0; i < n; ++i )
         for ( int j = 0; j < n; ++j ) {
@@ -463,24 +462,27 @@ void GoSamAmplitude::evalSpinColourCorrelator(pair<int , int > ) const {
 
 }
 
-string GoSamAmplitude::doMassiveParticles(string in) {
-  istringstream ins(in);
-  int first;
-  ins >> first;
-  theMassiveParticles.push_back(first);
-  return "";
+void GoSamAmplitude::doinit() {
+  HandlerBase::standardModel()->ewScheme(1);
+  HandlerBase::standardModel()->init();
+  MatchboxOLPME::doinit();
 }
+
+void GoSamAmplitude::doinitrun() {
+  MatchboxOLPME::doinitrun();
+}
+
 
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 
 void GoSamAmplitude::persistentOutput(PersistentOStream & os) const {
-	os << idpair << theCodeExists << theMassiveParticles << thePrintParameter << gosamInstallPath << gosamSetupInPath;
+	os << idpair << theCodeExists << massiveParticles << thePrintParameter << gosamPathInterface << gosamSetupInFilenameInterface;
 }
 
 void GoSamAmplitude::persistentInput(PersistentIStream & is, int) {
-	is >> idpair >> theCodeExists >> theMassiveParticles >> thePrintParameter >> gosamInstallPath >> gosamSetupInPath;
+	is >> idpair >> theCodeExists >> massiveParticles >> thePrintParameter >> gosamPathInterface >> gosamSetupInFilenameInterface;
 }
 
 // *** Attention *** The following static variable is needed for the type
@@ -494,16 +496,16 @@ void GoSamAmplitude::Init() {
 
   static ClassDocumentation<GoSamAmplitude> documentation("GoSamAmplitude implements an interface to GoSam.");
 
-  static Parameter<GoSamAmplitude,string> interfaceInstallPath
-    	 ("InstallPath",
-     	  "Prefix for the GoSam produced code.",
-     	  &GoSamAmplitude::gosamInstallPath, "",
-     	  false, false);
+  static Parameter<GoSamAmplitude,string> interfacePath
+       ("Path",
+        "Prefix for the source code, include files and library produced by GoSam.",
+        &GoSamAmplitude::gosamPathInterface, "",
+        false, false);
 
-  static Parameter<GoSamAmplitude,string> interfaceSetupInPath
-       ("SetupInPath",
-        "Path of the setup.gosam.in to be used. If left empty a new setup.gosam.in is created in the location specified in InstallPath",
-        &GoSamAmplitude::gosamSetupInPath, "",
+  static Parameter<GoSamAmplitude,string> interfaceSetupInFilename
+       ("SetupInFilename",
+        "File name of the GoSam infile (typically setup.gosam.in) to be used. If left empty a new setup.gosam.in is created in the location specified in Path",
+        &GoSamAmplitude::gosamSetupInFilenameInterface, "",
         false, false);
 
   static Switch<GoSamAmplitude,bool> interfaceCodeExists
@@ -538,11 +540,6 @@ void GoSamAmplitude::Init() {
           "Switch False.",
           false);
   
-  static Command<GoSamAmplitude> interfaceMassiveParticles
-    ("MassiveParticles",
-     "Insert the PDG code of a quark with mass.",
-     &GoSamAmplitude::doMassiveParticles, false);
-
   static Switch<GoSamAmplitude,bool> interfacePrintParameter
          ("PrintParameter",
           "Switch On if OLP parameters are to be printed into an output file"
@@ -555,6 +552,21 @@ void GoSamAmplitude::Init() {
           true);
   static SwitchOption interfacePrintParameterOff
          (interfacePrintParameter,
+          "Off",
+          "Off",
+          false);
+
+  static Switch<GoSamAmplitude,bool> interfaceFormOpt
+         ("FormOpt",
+          "Switch On/Off formopt",
+          &GoSamAmplitude::theFormOpt, true, false, false);
+  static SwitchOption interfaceFormOptOn
+         (interfaceFormOpt,
+          "On",
+          "On",
+          true);
+  static SwitchOption interfaceFormOptOff
+         (interfaceFormOpt,
           "Off",
           "Off",
           false);

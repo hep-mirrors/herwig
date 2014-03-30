@@ -37,7 +37,8 @@ using namespace Herwig;
 MatchboxMEBase::MatchboxMEBase() 
   : MEBase(), 
     theOneLoop(false),
-    theOneLoopNoBorn(false) {}
+    theOneLoopNoBorn(false),
+    theNoCorrelations(false) {}
 
 MatchboxMEBase::~MatchboxMEBase() {}
 
@@ -424,7 +425,6 @@ double MatchboxMEBase::me2() const {
 
     double res = 
       matchboxAmplitude()->me2()*
-      crossingSign()*
       me2Norm();
 
     return res;
@@ -589,7 +589,6 @@ double MatchboxMEBase::oneLoopInterference() const {
 
     double res = 
       matchboxAmplitude()->oneLoopInterference()*
-      crossingSign()*
       me2Norm(1);
 
     return res;
@@ -753,7 +752,6 @@ double MatchboxMEBase::oneLoopDoublePole() const {
 
     return
       matchboxAmplitude()->oneLoopDoublePole()*
-      crossingSign()*
       me2Norm(1);
 
   }
@@ -768,7 +766,6 @@ double MatchboxMEBase::oneLoopSinglePole() const {
 
     return 
       matchboxAmplitude()->oneLoopSinglePole()*
-      crossingSign()*
       me2Norm(1);
 
   }
@@ -873,7 +870,6 @@ double MatchboxMEBase::colourCorrelatedME2(pair<int,int> ij) const {
 
     double res = 
       matchboxAmplitude()->colourCorrelatedME2(ij)*
-      crossingSign()*
       me2Norm();
 
     return res;
@@ -898,7 +894,6 @@ double MatchboxMEBase::largeNColourCorrelatedME2(pair<int,int> ij,
 
     double res = 
       matchboxAmplitude()->largeNColourCorrelatedME2(ij,largeNBasis)*
-      crossingSign()*
       me2Norm();
 
     return res;
@@ -922,7 +917,6 @@ double MatchboxMEBase::spinColourCorrelatedME2(pair<int,int> ij,
 
     double res = 
       matchboxAmplitude()->spinColourCorrelatedME2(ij,c)*
-      crossingSign()*
       me2Norm();
 
     return res;
@@ -1183,6 +1177,9 @@ void MatchboxMEBase::cloneDependencies(const std::string& prefix) {
 
 void MatchboxMEBase::prepareXComb(MatchboxXCombData& xc) const {
 
+  // fixme We need to pass on the partons from the xcmob here, not
+  // assuming one subprocess per matrix element
+
   if ( phasespace() ) {
     size_t nout = diagrams().front()->partons().size()-2;
     xc.nDimPhasespace(phasespace()->nDim(nout));
@@ -1192,8 +1189,11 @@ void MatchboxMEBase::prepareXComb(MatchboxXCombData& xc) const {
     xc.nDimAmplitude(matchboxAmplitude()->nDimAdditional());
     if ( matchboxAmplitude()->colourBasis() ) {
       size_t cdim = 
- 	matchboxAmplitude()->colourBasis()->prepare(diagrams(),matchboxAmplitude()->noCorrelations());
+ 	matchboxAmplitude()->colourBasis()->prepare(diagrams(),noCorrelations());
       xc.colourBasisDim(cdim);
+    }
+    if ( matchboxAmplitude()->isExternal() ) {
+      xc.externalId(matchboxAmplitude()->externalId(diagrams().front()->partons()));
     }
   }
 
@@ -1271,7 +1271,7 @@ void MatchboxMEBase::persistentOutput(PersistentOStream & os) const {
      << theReweights << theSubprocess << theOneLoop 
      << theOneLoopNoBorn
      << epsilonSquarePoleHistograms << epsilonPoleHistograms
-     << theOLPProcess;
+     << theOLPProcess << theNoCorrelations;
 }
 
 void MatchboxMEBase::persistentInput(PersistentIStream & is, int) {
@@ -1280,7 +1280,7 @@ void MatchboxMEBase::persistentInput(PersistentIStream & is, int) {
      >> theReweights >> theSubprocess >> theOneLoop 
      >> theOneLoopNoBorn
      >> epsilonSquarePoleHistograms >> epsilonPoleHistograms
-     >> theOLPProcess;
+     >> theOLPProcess >> theNoCorrelations;
   lastMatchboxXComb(theLastXComb);
 }
 
@@ -1304,6 +1304,8 @@ void MatchboxMEBase::doinit() {
   MEBase::doinit();
   if ( !theAmplitude )
     theAmplitude = dynamic_ptr_cast<Ptr<MatchboxAmplitude>::ptr>(amplitude());
+  if ( matchboxAmplitude() )
+    matchboxAmplitude()->init();
   if ( phasespace() ) {
     phasespace()->init();
   }
@@ -1322,6 +1324,8 @@ void MatchboxMEBase::doinit() {
 
 void MatchboxMEBase::doinitrun() {
   MEBase::doinitrun();
+  if ( matchboxAmplitude() )
+    matchboxAmplitude()->initrun();
   if ( phasespace() ) {
     phasespace()->initrun();
   }
