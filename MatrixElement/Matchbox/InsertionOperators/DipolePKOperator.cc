@@ -42,6 +42,22 @@ IBPtr DipolePKOperator::fullclone() const {
   return new_ptr(*this);
 }
 
+// void DipolePKOperator::setXComb(tStdXCombPtr xc) {
+//   MatchboxInsertionOperator::setXComb(xc);
+//   if ( CA < 0. ) {
+//     CA = SM().Nc();
+//     CF = (SM().Nc()*SM().Nc()-1.0)/(2.*SM().Nc());
+//     gammaQuark = (3./2.)*CF;
+//     gammaGluon = (11./6.)*CA - (1./3.)*lastBorn()->nLight();
+//     KQuark = (7./2.-sqr(pi)/6.)*CF;
+//     KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*lastBorn()->nLight();
+//     if ( isDR() ) {
+//       gammaQuark -= CF/2.;
+//       gammaGluon -= CA/6.;
+//     }
+//   }
+// }
+
 void DipolePKOperator::setXComb(tStdXCombPtr xc) {
   MatchboxInsertionOperator::setXComb(xc);
   if ( CA < 0. ) {
@@ -56,180 +72,15 @@ void DipolePKOperator::setXComb(tStdXCombPtr xc) {
       gammaGluon -= CA/6.;
     }
   }
-}
-
-double DipolePKOperator::gammaSoft() const {
-  double res = (1.+log(1.-x))*PDFx(parton);
-  if ( z > x )
-    res +=
-      (PDFxByz(parton) - z*PDFx(parton)) / (z*(1.-z));
-  return res;
-}
-
-double DipolePKOperator::softLogByz(tcPDPtr p) const {
-  double res = ( sqr(log(1.-x))/2. - sqr(pi)/6. ) * PDFx(p);
-  if ( z > x ) {
-    res += (PDFxByz(p) - z*PDFx(p))*log(1.-z)/(z*(1.-z));
-    res -= PDFxByz(p)*log(z)/(z*(1.-z));
+  int NLight = lastBorn()->nLight();
+  for( int f=1; f<=NLight; ++f ) {
+    Energy2 mF2 = sqr( getParticleData(f)->mass() );
+    if( mF2 == ZERO ) continue; // only heavy quarks
+    NHeavy.push_back(f);
   }
-  return res;
 }
 
-double DipolePKOperator::softLog(tcPDPtr p) const {
-  double res = sqr(log(1.-x)) * PDFx(p) / 2.;
-  if ( z > x ) {
-    res += (PDFxByz(p) - z*PDFx(p))*log(1.-z)/(z*(1.-z));
-  }
-  return res;
-}
-
-double DipolePKOperator::KBarqq() const {
-  assert(abs(parton->id()) < 7);
-  double res = 
-    2.*softLogByz(parton) +
-    (sqr(pi) - 5.)*PDFx(parton);
-  if ( z > x ) {
-    res += PDFxByz(parton)*( (1.-z) - (1.+z)*log((1.-z)/z) ) / z;
-  }
-  return (res * CF);
-}
-
-double DipolePKOperator::KTildeqq() const {
-  assert(abs(parton->id()) < 7);
-  double res =
-    2.*CF*softLog(parton) - CF*(sqr(pi)/3.)*PDFx(parton);
-  if ( z > x ) {
-    res -= ( CF * (1.+z) * log(1.-z) ) * PDFxByz(parton) / z;
-  }
-  return res;
-}
-
-double DipolePKOperator::Pqq() const {
-  assert(abs(parton->id()) < 7);
-  double res = (3./2.+2.*log(1.-x)) * PDFx(parton);
-  if ( z > x ) {
-    res += 2.*(PDFxByz(parton) - z*PDFx(parton))/(z*(1.-z));
-    res -= PDFxByz(parton) * (1.+z)/z;
-  }
-  return (CF*res);
-}
-
-double DipolePKOperator::KBarqg() const {
-  assert(parton->id() == ParticleID::g);
-  if ( z < x )
-    return 0.0;
-  double res = 0.0;
-  double factor = CF * ( ( (1.+sqr(1.-z)) / z ) * log((1.-z)/z) + z ) / z;
-  int nl= lastBorn()->nLight();
-  for ( int f = -lastBorn()->nLight(); f <= nl; ++f ) {
-    if ( f == 0 )
-      continue;
-    res += PDFxByz(getParticleData(f))*factor;
-  }
-  return res;
-}
-
-double DipolePKOperator::KTildeqg() const {
-  if ( z < x )
-    return 0.0;
-  return Pqg() * log(1.-z);
-}
-
-double DipolePKOperator::Pqg() const {
-  assert(parton->id() == ParticleID::g);
-  if ( z < x )
-    return 0.0;
-  double res = 0.0;
-  double factor = CF * ( 1. + sqr(1.-z) ) / sqr(z);
-  int nl = lastBorn()->nLight();
-  for ( int f = -lastBorn()->nLight(); f <= nl; ++f ) {
-    if ( f == 0 )
-      continue;
-    res += PDFxByz(getParticleData(f))*factor;
-  }
-  return res;
-}
-
-double DipolePKOperator::KBargq() const {
-  assert(abs(parton->id()) < 7);
-  if ( z < x )
-    return 0.0;
-  return
-    PDFxByz(getParticleData(ParticleID::g)) *
-    ( 0.5*(sqr(z)+sqr(1.-z))*log((1.-z)/z) + z*(1.-z) ) / z;
-}
-
-double DipolePKOperator::KTildegq() const {
-  assert(abs(parton->id()) < 7);
-  if ( z < x )
-    return 0.0;
-  return Pgq() * log(1.-z);
-}
-
-double DipolePKOperator::Pgq() const {
-  assert(abs(parton->id()) < 7);
-  if ( z < x )
-    return 0.0;
-  return 0.5 * ( sqr(z) + sqr(1.-z) ) * PDFxByz(getParticleData(ParticleID::g)) / z;
-}
-
-double DipolePKOperator::KBargg() const {
-  assert(parton->id() == ParticleID::g);
-  double res = 
-    2.* CA* softLogByz(parton) +
-    ( CA*( sqr(pi) - 50./9. ) + (8./9.)*lastBorn()->nLight() ) * PDFx(parton);
-  if ( z > x ) {
-    res += 2.*CA*((1.-z)/z-1.+z*(1.-z))*log((1.-z)/z)*PDFxByz(parton)/z;
-  }
-  return res;
-}
-
-double DipolePKOperator::KTildegg() const {
-  assert(parton->id() == ParticleID::g);
-  double res =
-    2.*CA*softLog(parton) - CA*(sqr(pi)/3.)*PDFx(parton);
-  if ( z > x ) {
-    res += ( 2.*CA * ( (1.-z)/z -1. + z*(1.-z) ) * log(1.-z) ) * PDFxByz(parton) / z;
-  }
-  return res;
-}
-
-double DipolePKOperator::Pgg() const {
-  assert(parton->id() == ParticleID::g);
-  double res = 
-    ( (11./6.) * CA - (1./3.) * lastBorn()->nLight() + 2.*CA*log(1.-x) ) * PDFx(parton);
-  if ( z > x ) {
-    res += 2. * CA * ( PDFxByz(parton) - z*PDFx(parton) ) / (z*(1.-z));
-    res += 2.* CA *( (1.-z)/z - 1. + z*(1.-z) ) * PDFxByz(parton) / z;
-  }
-  return res;
-}
-
-double DipolePKOperator::PDFx(tcPDPtr pd) const {
-  map<pair<tcPDFPtr,tcPDPtr>,pair<double,double> >::iterator
-    cached = pdfCache.find(make_pair(pdf,pd));
-  if ( cached == pdfCache.end() ) {
-    pdfCache[make_pair(pdf,pd)] = make_pair(0.0,0.0);
-    cached = pdfCache.find(make_pair(pdf,pd));
-  }
-  if ( cached->second.first == 0.0 )
-    cached->second.first = 
-      pdf->xfx(particle,pd,scale,x)/x;
-  return cached->second.first;
-}
-
-double DipolePKOperator::PDFxByz(tcPDPtr pd) const {
-  map<pair<tcPDFPtr,tcPDPtr>,pair<double,double> >::iterator
-    cached = pdfCache.find(make_pair(pdf,pd));
-  if ( cached == pdfCache.end() ) {
-    pdfCache[make_pair(pdf,pd)] = make_pair(0.0,0.0);
-    cached = pdfCache.find(make_pair(pdf,pd));
-  }
-  if ( cached->second.second == 0.0 )
-    cached->second.second = 
-      pdf->xfx(particle,pd,scale,x/z)*z/x;
-  return cached->second.second;
-}
+//////////////////////////////////////////////////////////////////////
 
 bool DipolePKOperator::apply(tcPDPtr pd) const {
   return
@@ -237,13 +88,39 @@ bool DipolePKOperator::apply(tcPDPtr pd) const {
     (abs(pd->id()) < 7 || pd->id() == ParticleID::g);
 }
 
+// bool DipolePKOperator::apply(const cPDVector& pd) const {
+//   if ( !apply(pd[0]) && !apply(pd[1]) )
+//     return false;
+//   bool first = false;
+//   bool second = false;
+//   for ( cPDVector::const_iterator p = pd.begin();
+// 	p != pd.end(); ++p ) {
+//     if ( !first ) {
+//       if ( apply(*p) )
+// 	first = true;
+//     } else {
+//       if ( apply(*p) )
+// 	second = true;
+//     }
+//   }
+//   return first && second;
+// }
+
 bool DipolePKOperator::apply(const cPDVector& pd) const {
   if ( !apply(pd[0]) && !apply(pd[1]) )
     return false;
+  // Prohibit splittings g->Q\bar{Q} in the final state.
+  // Covered by DipoleMPKOperator then.
+  if ( NHeavy.size()!=0 ) return false;
   bool first = false;
   bool second = false;
   for ( cPDVector::const_iterator p = pd.begin();
 	p != pd.end(); ++p ) {
+    // Since this loop only checks for at least one exis-
+    // ting combination:
+    // Return false if any massive particles are present.
+    // Covered by DipoleMPKOperator then.
+    if ( (*p)->mass()!=ZERO ) return false;
     if ( !first ) {
       if ( apply(*p) )
 	first = true;
@@ -254,6 +131,38 @@ bool DipolePKOperator::apply(const cPDVector& pd) const {
   }
   return first && second;
 }
+
+//////////////////////////////////////////////////////////////////////
+
+double DipolePKOperator::me2() const {
+
+  scale = lastBorn()->lastScale();
+
+  double res = 0.0;
+
+  if ( apply(mePartonData()[0]) ) {
+    if ( mePartonData()[0]->coloured() ) {
+      if ( mePartonData()[1]->coloured() )
+	res += lastBorn()->pdf2()*sumParton(0);
+      else
+	res += sumParton(0);
+    }
+  }
+
+  if ( apply(mePartonData()[1]) ) {
+    if ( mePartonData()[1]->coloured() ) {
+      if ( mePartonData()[0]->coloured() )
+	res += lastBorn()->pdf1()*sumParton(1);
+      else
+	res += sumParton(1);
+    }
+  }
+
+  return (lastBorn()->lastAlphaS()/(2.*pi)) * res;
+
+}
+
+//////////////////////////////////////////////////////////////////////
 
 double DipolePKOperator::sumParton(int id) const {
 
@@ -405,7 +314,7 @@ double DipolePKOperator::sumParton(int id) const {
 	res -= glueFinite*fiCorrelated;
     }
 
-  }
+  } // end loop over i
 
   //////////////////////////////////////////////////////////
   // Initial-Initial contributions                        //
@@ -454,33 +363,184 @@ double DipolePKOperator::sumParton(int id) const {
 
 }
 
-double DipolePKOperator::me2() const {
+//////////////////////////////////////////////////////////////////////
 
-  scale = lastBorn()->lastScale();
-
-  double res = 0.0;
-
-  if ( apply(mePartonData()[0]) ) {
-    if ( mePartonData()[0]->coloured() ) {
-      if ( mePartonData()[1]->coloured() )
-	res += lastBorn()->pdf2()*sumParton(0);
-      else
-	res += sumParton(0);
-    }
-  }
-
-  if ( apply(mePartonData()[1]) ) {
-    if ( mePartonData()[1]->coloured() ) {
-      if ( mePartonData()[0]->coloured() )
-	res += lastBorn()->pdf1()*sumParton(1);
-      else
-	res += sumParton(1);
-    }
-  }
-
-  return (lastBorn()->lastAlphaS()/(2.*pi)) * res;
-
+double DipolePKOperator::gammaSoft() const {
+  double res = (1.+log(1.-x))*PDFx(parton);
+  if ( z > x )
+    res +=
+      (PDFxByz(parton) - z*PDFx(parton)) / (z*(1.-z));
+  return res;
 }
+
+double DipolePKOperator::softLogByz(tcPDPtr p) const {
+  double res = ( sqr(log(1.-x))/2. - sqr(pi)/6. ) * PDFx(p);
+  if ( z > x ) {
+    res += (PDFxByz(p) - z*PDFx(p))*log(1.-z)/(z*(1.-z));
+    res -= PDFxByz(p)*log(z)/(z*(1.-z));
+  }
+  return res;
+}
+
+double DipolePKOperator::softLog(tcPDPtr p) const {
+  double res = sqr(log(1.-x)) * PDFx(p) / 2.;
+  if ( z > x ) {
+    res += (PDFxByz(p) - z*PDFx(p))*log(1.-z)/(z*(1.-z));
+  }
+  return res;
+}
+
+double DipolePKOperator::KBarqq() const {
+  assert(abs(parton->id()) < 7);
+  double res = 
+    2.*softLogByz(parton) +
+    (sqr(pi) - 5.)*PDFx(parton);
+  if ( z > x ) {
+    res += PDFxByz(parton)*( (1.-z) - (1.+z)*log((1.-z)/z) ) / z;
+  }
+  return (res * CF);
+}
+
+double DipolePKOperator::KTildeqq() const {
+  assert(abs(parton->id()) < 7);
+  double res =
+    2.*CF*softLog(parton) - CF*(sqr(pi)/3.)*PDFx(parton);
+  if ( z > x ) {
+    res -= ( CF * (1.+z) * log(1.-z) ) * PDFxByz(parton) / z;
+  }
+  return res;
+}
+
+double DipolePKOperator::Pqq() const {
+  assert(abs(parton->id()) < 7);
+  double res = (3./2.+2.*log(1.-x)) * PDFx(parton);
+  if ( z > x ) {
+    res += 2.*(PDFxByz(parton) - z*PDFx(parton))/(z*(1.-z));
+    res -= PDFxByz(parton) * (1.+z)/z;
+  }
+  return (CF*res);
+}
+
+double DipolePKOperator::KBarqg() const {
+  assert(parton->id() == ParticleID::g);
+  if ( z < x )
+    return 0.0;
+  double res = 0.0;
+  double factor = CF * ( ( (1.+sqr(1.-z)) / z ) * log((1.-z)/z) + z ) / z;
+  int nl= lastBorn()->nLight();
+  for ( int f = -lastBorn()->nLight(); f <= nl; ++f ) {
+    if ( f == 0 )
+      continue;
+    res += PDFxByz(getParticleData(f))*factor;
+  }
+  return res;
+}
+
+double DipolePKOperator::KTildeqg() const {
+  if ( z < x )
+    return 0.0;
+  return Pqg() * log(1.-z);
+}
+
+double DipolePKOperator::Pqg() const {
+  assert(parton->id() == ParticleID::g);
+  if ( z < x )
+    return 0.0;
+  double res = 0.0;
+  double factor = CF * ( 1. + sqr(1.-z) ) / sqr(z);
+  int nl = lastBorn()->nLight();
+  for ( int f = -lastBorn()->nLight(); f <= nl; ++f ) {
+    if ( f == 0 )
+      continue;
+    res += PDFxByz(getParticleData(f))*factor;
+  }
+  return res;
+}
+
+double DipolePKOperator::KBargq() const {
+  assert(abs(parton->id()) < 7);
+  if ( z < x )
+    return 0.0;
+  return
+    PDFxByz(getParticleData(ParticleID::g)) *
+    ( 0.5*(sqr(z)+sqr(1.-z))*log((1.-z)/z) + z*(1.-z) ) / z;
+}
+
+double DipolePKOperator::KTildegq() const {
+  assert(abs(parton->id()) < 7);
+  if ( z < x )
+    return 0.0;
+  return Pgq() * log(1.-z);
+}
+
+double DipolePKOperator::Pgq() const {
+  assert(abs(parton->id()) < 7);
+  if ( z < x )
+    return 0.0;
+  return 0.5 * ( sqr(z) + sqr(1.-z) ) * PDFxByz(getParticleData(ParticleID::g)) / z;
+}
+
+double DipolePKOperator::KBargg() const {
+  assert(parton->id() == ParticleID::g);
+  double res = 
+    2.* CA* softLogByz(parton) +
+    ( CA*( sqr(pi) - 50./9. ) + (8./9.)*lastBorn()->nLight() ) * PDFx(parton);
+  if ( z > x ) {
+    res += 2.*CA*((1.-z)/z-1.+z*(1.-z))*log((1.-z)/z)*PDFxByz(parton)/z;
+  }
+  return res;
+}
+
+double DipolePKOperator::KTildegg() const {
+  assert(parton->id() == ParticleID::g);
+  double res =
+    2.*CA*softLog(parton) - CA*(sqr(pi)/3.)*PDFx(parton);
+  if ( z > x ) {
+    res += ( 2.*CA * ( (1.-z)/z -1. + z*(1.-z) ) * log(1.-z) ) * PDFxByz(parton) / z;
+  }
+  return res;
+}
+
+double DipolePKOperator::Pgg() const {
+  assert(parton->id() == ParticleID::g);
+  double res = 
+    ( (11./6.) * CA - (1./3.) * lastBorn()->nLight() + 2.*CA*log(1.-x) ) * PDFx(parton);
+  if ( z > x ) {
+    res += 2. * CA * ( PDFxByz(parton) - z*PDFx(parton) ) / (z*(1.-z));
+    res += 2.* CA *( (1.-z)/z - 1. + z*(1.-z) ) * PDFxByz(parton) / z;
+  }
+  return res;
+}
+
+//////////////////////////////////////////////////////////////////////
+
+double DipolePKOperator::PDFx(tcPDPtr pd) const {
+  map<pair<tcPDFPtr,tcPDPtr>,pair<double,double> >::iterator
+    cached = pdfCache.find(make_pair(pdf,pd));
+  if ( cached == pdfCache.end() ) {
+    pdfCache[make_pair(pdf,pd)] = make_pair(0.0,0.0);
+    cached = pdfCache.find(make_pair(pdf,pd));
+  }
+  if ( cached->second.first == 0.0 )
+    cached->second.first = 
+      pdf->xfx(particle,pd,scale,x)/x;
+  return cached->second.first;
+}
+
+double DipolePKOperator::PDFxByz(tcPDPtr pd) const {
+  map<pair<tcPDFPtr,tcPDPtr>,pair<double,double> >::iterator
+    cached = pdfCache.find(make_pair(pdf,pd));
+  if ( cached == pdfCache.end() ) {
+    pdfCache[make_pair(pdf,pd)] = make_pair(0.0,0.0);
+    cached = pdfCache.find(make_pair(pdf,pd));
+  }
+  if ( cached->second.second == 0.0 )
+    cached->second.second = 
+      pdf->xfx(particle,pd,scale,x/z)*z/x;
+  return cached->second.second;
+}
+
+//////////////////////////////////////////////////////////////////////
 
 void DipolePKOperator::persistentOutput(PersistentOStream & os) const {
   os << CA << CF << gammaQuark << gammaGluon << KQuark << KGluon

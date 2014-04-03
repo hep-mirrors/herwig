@@ -56,7 +56,368 @@ void DipoleMPKOperator::setXComb(tStdXCombPtr xc) {
       gammaGluon -= CA/6.;
     }
   }
+  int NLight = lastBorn()->nLight();
+  for( int f=1; f<=NLight; ++f ) {
+    Energy2 mF2 = sqr( getParticleData(f)->mass() );
+    if( mF2 == ZERO ) continue; // only heavy quarks
+    NHeavy.push_back(f);
+  }
 }
+
+//////////////////////////////////////////////////////////////////////
+
+bool DipoleMPKOperator::apply(tcPDPtr pd) const {
+  return
+    pd->mass() == ZERO &&
+    (abs(pd->id()) < 7 || pd->id() == ParticleID::g);
+}
+
+bool DipoleMPKOperator::applyNotMassless(tcPDPtr pd) const {
+  return
+    // pd->mass() == ZERO &&
+    (abs(pd->id()) < 7 || pd->id() == ParticleID::g);
+}
+
+bool DipoleMPKOperator::apply(const cPDVector& pd) const {
+  if ( !apply(pd[0]) && !apply(pd[1]) )
+    return false;
+
+  // DipoleMPKOperator should only apply, if massive
+  // partons exist in the given process (aka in the
+  // final state).
+  // This applies also to a gluon in the final state
+  // with subsequent splitting g->Q\bar{Q}.
+  bool mFSet = false;
+  if ( NHeavy.size() != 0 ) mFSet = true;
+
+  // Partons in the initial state are assumed massless
+  // in the CS approach.
+  // The following loop checks for at least one existing
+  // combination 'n in addition for at least one massive
+  // parton in the final state 'n for only massless par-
+  // tons in the initial state.
+  bool first = false;
+  bool second = false;
+  bool finalmass = false;
+  bool initialmass = false;
+  int idp = 0;
+  for ( cPDVector::const_iterator p = pd.begin();
+	p != pd.end(); ++p, ++idp ) {
+    if ( (*p)->mass()!=ZERO && idp > 1 ) finalmass = true;
+    if ( (*p)->mass()!=ZERO && idp < 2 ) initialmass = true;
+    if ( !first ) {
+      if ( applyNotMassless(*p) )
+	first = true;
+    } else {
+      if ( applyNotMassless(*p) )
+	second = true;
+    }
+  }
+  return first && second && (finalmass || mFSet) && !initialmass;
+
+}
+
+//////////////////////////////////////////////////////////////////////
+
+double DipoleMPKOperator::me2() const {
+
+  scale = lastBorn()->lastScale();
+
+  double res = 0.0;
+
+  if ( apply(mePartonData()[0]) ) {
+    if ( mePartonData()[0]->coloured() ) {
+      if ( mePartonData()[1]->coloured() )
+	res += lastBorn()->pdf2()*sumParton(0);
+      else
+	res += sumParton(0);
+    }
+  }
+
+  if ( apply(mePartonData()[1]) ) {
+    if ( mePartonData()[1]->coloured() ) {
+      if ( mePartonData()[0]->coloured() )
+	res += lastBorn()->pdf1()*sumParton(1);
+      else
+	res += sumParton(1);
+    }
+  }
+
+  return (lastBorn()->lastAlphaS()/(2.*pi)) * res;
+
+}
+
+//////////////////////////////////////////////////////////////////////
+
+double DipoleMPKOperator::sumParton(int id) const {
+
+// sumParton(int id) sums for a specific id=a'=0,1
+// over all a
+
+  pdf =
+    id == 0 ?
+    lastXCombPtr()->partonBins().first->pdf() :
+    lastXCombPtr()->partonBins().second->pdf();
+
+  x = 
+    id == 0 ?
+    lastXCombPtr()->lastX1() :
+    lastXCombPtr()->lastX2();
+
+  parton =
+    id == 0 ?
+    mePartonData()[0] :
+    mePartonData()[1];
+
+  particle =
+    id == 0 ?
+    lastParticles().first->dataPtr() :
+    lastParticles().second->dataPtr();
+
+  using namespace RandomHelpers;
+
+  double r = insertionRandomNumbers().front();
+  double eps = 1e-3;
+
+  pair<double,double> zw =
+    generate((piecewise(),
+	      flat(0.0,x),
+	      match(inverse(0.0,x,1.0) + inverse(1.0+eps,x,1.0))),r);
+
+  z = zw.first;
+  double mapz = zw.second;
+
+  vector<double> nullPDFCacheVector;
+  for( size_t f=0; f<NHeavy.size(); ++f ) nullPDFCacheVector.push_back(0.0);
+  nullPDFCacheVector.push_back(0.0);
+  nullPDFCacheVector.push_back(0.0);
+
+  for ( map<pair<tcPDFPtr,tcPDPtr>,vector<double> >::iterator cache = 
+    pdfCache.begin(); cache != pdfCache.end(); ++cache ) cache->second = nullPDFCacheVector;
+
+  assert(pdf);
+
+  double res = 0.;
+
+  ////////////////////////////
+  // K operator             //
+  // non-color correlated   //
+  ////////////////////////////
+
+  // The non-color correlated contributions of K
+  // are equal in the massive and massless case.
+
+  if ( mePartonData()[id]->id() == ParticleID::g )
+    res += (KBargg() + KBarqg())*lastBorn()->me2();
+
+  if ( abs(mePartonData()[id]->id()) < 7 )
+    res += (KBarqq() + KBargq())*lastBorn()->me2();
+
+  ////////////////////////////
+
+  double theGammaSoft = 0.0;
+
+  double thePqq = 0.0;
+  double thePqg = 0.0;
+  double thePgq = 0.0;
+  double thePgg = 0.0;
+
+  double ifCorrelated = 0.0;
+  double fiCorrelated = 0.0;
+
+  int idi = 2;
+  vector<Lorentz5Momentum>::const_iterator Pi = meMomenta().begin() + 2;
+
+  double disFinite = 0.0;
+  double glueFinite = 0.0;
+
+  //////////////////////////////////////////////////////////
+  // Initial-Final and Final-Initial contributions        //
+  //////////////////////////////////////////////////////////
+
+  for ( cPDVector::const_iterator i = mePartonData().begin() + 2;
+	i != mePartonData().end(); ++i, ++Pi, ++idi ) {
+
+    if ( !apply(*i) || lastBorn()->noDipole(idi,id) )
+      continue;
+
+    fiCorrelated = lastBorn()->colourCorrelatedME2(make_pair(idi,id));
+    ifCorrelated = lastBorn()->colourCorrelatedME2(make_pair(id,idi));
+
+    if ( theGammaSoft == 0.0 )
+      theGammaSoft = gammaSoft();
+
+    if ( mePartonData()[id]->id() == ParticleID::g &&
+	 thePgg == 0.0 ) {
+      thePqg = Pqg();
+      thePgg = Pgg();
+    }
+
+    if ( abs(mePartonData()[id]->id()) < 7 &&
+	 thePqq == 0.0 ) {
+      thePgq = Pgq();
+      thePqq = Pqq();
+    }
+
+    ////////////////
+    // K operator //
+    ////////////////
+
+    // For m_j=0 and {m_F}=empty we can use the exact massless case.
+    // This case, however, should actually not occur here.
+    if ( (**i).mass() == ZERO && NHeavy.size() == 0 ) {
+      // Last term in massless K operator in (C.31) in massless paper.
+      cout << endl;
+      cout << "!!! Attention !!!" << endl;
+      cout << "!!! m_j=0 and {m_F}=empty in DipoleMPKOperator !!!" << endl;
+      cout << endl;
+      res +=
+        ( (**i).id() == ParticleID::g ? gammaGluon : gammaQuark ) *
+        theGammaSoft * fiCorrelated;
+    }
+
+    // For m_j!=0 or {m_F}!=empty we use the massive formulae.
+    else {
+
+      Energy2 mj2 = sqr((**i).mass());
+      Energy2 sja = 2.*( (*Pi) * meMomenta()[id]/z );
+
+      // Next-to-Last term in massive K operator in (6.55) in massive paper.
+      // Corresponds in massless limit to the last term in massless K operator.
+      if ( mePartonData()[id]->id() == ParticleID::g ) {
+        res -=
+          ( (**i).id() == ParticleID::g ? CA : CF ) *
+          fiCorrelated * 
+          ( (**i).id() == ParticleID::g ? ( Kscriptqg_g() + Kscriptgg_g(sja) ) : ( Kscriptqg_q(sja,mj2) + Kscriptgg_q(sja,mj2) ) );
+      }
+      if ( abs(mePartonData()[id]->id()) < 7 ) {
+        res -=
+          ( (**i).id() == ParticleID::g ? CA : CF ) *
+          fiCorrelated * 
+          ( (**i).id() == ParticleID::g ? ( Kscriptqq_g(sja) + Kscriptgq_g() ) : ( Kscriptqq_q(sja,mj2) + Kscriptgq_q() ) );
+      }
+
+      // The regular splitting functions, not
+      // folded with 1/z*PDF(x/z)*\Theta(z-x)
+      double thePqqreg = -1.*CF*(1.+z);
+      double thePqgreg = CF*(1.+(1.-z)*(1.-z))/z;
+      double thePgqreg = 1./2.*(z*z + (1.-z)*(1.-z));
+      double thePggreg = 2.*CA*((1.-z)/z - 1. + z*(1.-z));
+
+      // Last term in massive K operator in (6.55) in massive paper.
+      // Vanishes theoretically in the massless limit.
+      if ( mePartonData()[id]->id() == ParticleID::g ) {
+        res -=
+          ifCorrelated * 
+          ( ( z>x ? 1./z*PDFxByz(parton)*(thePqgreg+thePggreg)*log((1.-z)*sja/((1.-z)*sja+mj2)) : 0. ) + 
+            (gammaGluon)*PDFx(parton)*( log((sja-2.*sqrt(mj2)*sqrt(sja+mj2)+2.*mj2)/sja) + 2.*sqrt(mj2)/(sqrt(sja+mj2)+sqrt(mj2)) ) );
+      }
+      if ( abs(mePartonData()[id]->id()) < 7 ) {
+        res -=
+          ifCorrelated * 
+          ( ( z>x ? 1./z*PDFxByz(parton)*(thePqqreg+thePgqreg)*log((1.-z)*sja/((1.-z)*sja+mj2)) : 0. ) + 
+            (gammaQuark)*PDFx(parton)*( log((sja-2.*sqrt(mj2)*sqrt(sja+mj2)+2.*mj2)/sja) + 2.*sqrt(mj2)/(sqrt(sja+mj2)+sqrt(mj2)) ) );
+      }
+
+    }
+
+    ////////////////
+    // P operator //
+    ////////////////
+
+    // P(m) = P(m=0).
+
+    // The extra terms, which render the dipole kernels
+    // positive definite, are subtracted here again in
+    // integrated form (disfinite and gluefinite).
+
+    // At the moment the same extra terms are also in
+    // use in the massive dipoles. This has yet to be 
+    // clarified, though, for the massive case.
+
+    double theLog = log(scale/(2.*((*Pi)*meMomenta()[id])));
+
+    if ( mePartonData()[id]->id() == ParticleID::g ) {
+      res +=
+	( thePgg + thePqg ) * theLog * ifCorrelated;
+    }
+
+    if ( abs(mePartonData()[id]->id()) < 7 ) {
+      res +=
+	( thePqq + thePgq ) * theLog * ifCorrelated;
+      if ( disFinite == 0.0 && z > x ) {
+	disFinite = CF*PDFxByz(parton)*(1.+3.*z/2.)/z;
+      }
+      if ( z > x )
+	res -= disFinite*ifCorrelated;
+    }
+
+    if ( abs(mePartonData()[idi]->id()) < 7 ) {
+      if ( disFinite == 0.0 && z > x ) {
+	disFinite = CF*PDFxByz(parton)*(1.+3.*z/2.)/z;
+      }
+      if ( z > x )
+	res -= disFinite*fiCorrelated;
+    }
+
+    if ( mePartonData()[idi]->id() == ParticleID::g ) {
+      if ( glueFinite == 0.0 && z > x ) {
+	glueFinite = 2.*CA*PDFxByz(parton)*(1.+z/6.)/z;
+      }
+      if ( z > x )
+	res -= glueFinite*fiCorrelated;
+    }
+
+  } // end loop over i
+
+  //////////////////////////////////////////////////////////
+  // Initial-Initial contributions                        //
+  //////////////////////////////////////////////////////////
+
+  if ( mePartonData()[ id == 0 ? 1 : 0 ]->coloured() &&
+       !lastBorn()->noDipole(id == 0 ? 0 : 1,
+			     id == 0 ? 1 : 0) ) {
+
+    if ( mePartonData()[id]->id() == ParticleID::g &&
+	 thePgg == 0.0 ) {
+      thePqg = Pqg();
+      thePgg = Pgg();
+    }
+
+    if ( abs(mePartonData()[id]->id()) < 7 &&
+	 thePqq == 0.0 ) {
+      thePgq = Pgq();
+      thePqq = Pqq();
+    }
+
+    double theLog = log(scale/(2.*(meMomenta()[0]*meMomenta()[1])));
+
+    pair<int,int> corr = id == 0 ? make_pair(0,1) : make_pair(1,0);
+    double iiCorrelated = lastBorn()->colourCorrelatedME2(corr);
+
+    if ( mePartonData()[id]->id() == ParticleID::g ) {
+      res +=
+	( thePgg + thePqg ) * theLog * iiCorrelated;
+      res -=
+	( KTildegg() + KTildeqg() ) * iiCorrelated;
+    }    
+
+    if ( abs(mePartonData()[id]->id()) < 7 ) {
+      res +=
+	( thePqq + thePgq ) * theLog * iiCorrelated;
+      res -=
+	( KTildeqq() + KTildegq() ) * iiCorrelated;
+    }
+
+  }
+
+  //////////////////////////////////////////////////////////
+
+  return res * mapz;
+
+}
+
+//////////////////////////////////////////////////////////////////////
 
 double DipoleMPKOperator::gammaSoft() const {
   double res = (1.+log(1.-x))*PDFx(parton);
@@ -207,10 +568,16 @@ double DipoleMPKOperator::Pgg() const {
 
 //////////////////////////////////////////////////
 
+// Kscript^{a,a'}_j terms with j=quark
+
 /**
  * [J^a_{gQ}(z,\mu_Q^2)]_+
+ * a,a' = quark for later
+ * use of this function
+ * in Kscript^{qq}_q
  */
 double DipoleMPKOperator::Ja_gQplus(double muQ2) const {
+  assert(abs(parton->id()) < 7);
   double res = 
     -1. * PDFx(parton) * ( (1.-z)/(2.*(1.-z-muQ2)*(1.-z-muQ2)) - 2./(1.-z)*(1.+log((1.-z+muQ2)/(1.+muQ2))) );
   if ( z > x ) {
@@ -221,8 +588,11 @@ double DipoleMPKOperator::Ja_gQplus(double muQ2) const {
 
 /**
  * [1/(1-z)]_+ * log( (2-z)/(2-z+\mu_Q^2) )
+ * a,a' = quark for later use of this function
+ * in Kscript^{qq}_q
  */
 double DipoleMPKOperator::gammaSoft2(double muQ2) const {
+  assert(abs(parton->id()) < 7);
   double res = 
     (1./(1.-z)) * ( -1. * PDFx(parton) * 2. * log( 1./(1.+muQ2) ) );
   if ( z > x ) {
@@ -235,6 +605,7 @@ double DipoleMPKOperator::gammaSoft2(double muQ2) const {
  * The Kscript^{qq}_q contribution
  */
 double DipoleMPKOperator::Kscriptqq_q(Energy2 sja, Energy2 mj2) const {
+  assert(abs(parton->id()) < 7);
   double muQ2 = mj2/sja;
   double res = 
     2. * softLog(parton) + 
@@ -253,11 +624,17 @@ double DipoleMPKOperator::Kscriptqq_q(Energy2 sja, Energy2 mj2) const {
  * The Kscript^{qg}_q contribution
  */
 double DipoleMPKOperator::Kscriptqg_q(Energy2 sja, Energy2 mj2) const {
+  assert(parton->id() == ParticleID::g);
+  if ( z < x )
+    return 0.0;
   double muQ2 = mj2/sja;
   double res = 0.0;
-  if ( z > x ) {
-    res += 1./z * PDFxByz(parton) * (
-      2.*CF/CA*muQ2/z*log(muQ2/(1.-z+muQ2)) );
+  double factor = 1./z * ( 2.*CF/CA*muQ2/z*log(muQ2/(1.-z+muQ2)) );
+  int nl= lastBorn()->nLight();
+  for ( int f = -lastBorn()->nLight(); f <= nl; ++f ) {
+    if ( f == 0 )
+      continue;
+    res += PDFxByz(getParticleData(f))*factor;
   }
   return res;
 }
@@ -265,7 +642,8 @@ double DipoleMPKOperator::Kscriptqg_q(Energy2 sja, Energy2 mj2) const {
 /**
  * The Kscript^{gq}_q contribution
  */
-double DipoleMPKOperator::Kscriptgq_q(Energy2 sja, Energy2 mj2) const {
+double DipoleMPKOperator::Kscriptgq_q() const {
+  assert(abs(parton->id()) < 7);
   double res = 0.0;
   return res;
 }
@@ -274,13 +652,47 @@ double DipoleMPKOperator::Kscriptgq_q(Energy2 sja, Energy2 mj2) const {
  * The Kscript^{gg}_q contribution
  */
 double DipoleMPKOperator::Kscriptgg_q(Energy2 sja, Energy2 mj2) const {
-  double res = Kscriptqq_q(sja,mj2) + CA/CF*Kscriptqg_q(sja,mj2);
+
+  // I think the pdf folding has to be with the gluon pdf, not with the
+  // quark pdf's, for both contributing terms here, because the overall
+  // contribution is for (aa'_j)=(gg_q), although being a sum of the
+  // (aa'_j)=(qg_q) and (aa'_j)=(qq_q) contributions. -- CR 20140403
+
+  assert(parton->id() == ParticleID::g);
+  double muQ2 = mj2/sja;
+  double res = 0.0;
+
+  // + CA/CF*Kscriptqg_q(sja,mj2)
+  double factor = 0.0;
+  if ( z > x ) {
+    factor += 1./z * PDFxByz(parton) * (
+      2.*CF/CA*muQ2/z*log(muQ2/(1.-z+muQ2)) );
+  }
+  res += CA/CF * factor;
+
+  // + Kscriptqq_q(sja,mj2)
+  res += 2. * softLog(parton) + 
+    Ja_gQplus(muQ2) + 
+    2. * gammaSoft2(muQ2) - 
+    gammaQuark/CF * PDFx(parton) + 
+    ( muQ2*log(muQ2/(1.+muQ2)) + 1./2.*(muQ2/(1.+muQ2)) ) * PDFx(parton);
+  if ( z > x ) {
+    res += 1./z * PDFxByz(parton) * (
+      -2. * log(2.-z)/(1.-z) );
+  }
+    
   return res;
+
 }
+
+//////////////////////////////////////////////////
+
+// Kscript^{a,a'}_j terms with j=gluon
+// The ones for a!=a' will return zero
 
 /**
  * J^{a;NS}_{Q\bar{Q}}(\mu_Q^2)
- * Does not include the folding with 1/z*PDF(x/z)*\Theta(z-x)
+ * Not folded with 1/z*PDF(x/z)*\Theta(z-x)
  */
 double DipoleMPKOperator::JaNS_QQ(double muQ2) const {
   double res = 
@@ -292,18 +704,21 @@ double DipoleMPKOperator::JaNS_QQ(double muQ2) const {
 
 /**
  * [J^a_{Q\bar{Q}}(z,\mu_Q^2)]_{z_+}
+ * where z_+ = 1 - 4\mu_Q^2
+ * int F ranges from 1 to NHeavy associ-
+ * ated to the quark in \mu_Q^2
  */
-double DipoleMPKOperator::Ja_QQzplus(double muQ2) const {
+double DipoleMPKOperator::Ja_QQzplus(double muQ2, int F) const {
   double zplus = 1. - 4.*muQ2;
   double res = 0.0;
   if ( z > x && z < zplus ) {
-    res += ( 1./z*PDFxByz(parton) - 1./zplus*PDFxByzplus(parton,muQ2) ) * 2./3.*( (1.-z+2.*muQ2)/((1.-z)*(1.-z)) * sqrt(1.-4.*muQ2/(1.-z)) );
+    res += ( 1./z*PDFxByz(parton) - 1./zplus*PDFxByzplus(parton,F,muQ2) ) * 2./3.*( (1.-z+2.*muQ2)/((1.-z)*(1.-z)) * sqrt(1.-4.*muQ2/(1.-z)) );
   }
   if ( z > x && z < zplus ) {
-    res += ( 1./zplus*PDFxByzplus(parton,muQ2) ) * 2./3.*( (1.-z+2.*muQ2)/((1.-z)*(1.-z)) * sqrt(1.-4.*muQ2/(1.-z)) );
+    res += ( 1./zplus*PDFxByzplus(parton,F,muQ2) ) * 2./3.*( (1.-z+2.*muQ2)/((1.-z)*(1.-z)) * sqrt(1.-4.*muQ2/(1.-z)) );
   }
   if ( zplus > x && z < zplus ) {
-    res -= ( 1./zplus*PDFxByzplus(parton,muQ2) ) * 2./3.*( (1.-z+2.*muQ2)/((1.-z)*(1.-z)) * sqrt(1.-4.*muQ2/(1.-z)) );
+    res -= ( 1./zplus*PDFxByzplus(parton,F,muQ2) ) * 2./3.*( (1.-z+2.*muQ2)/((1.-z)*(1.-z)) * sqrt(1.-4.*muQ2/(1.-z)) );
   }
   return res;
 }
@@ -311,19 +726,19 @@ double DipoleMPKOperator::Ja_QQzplus(double muQ2) const {
 /**
  * The Kscript^{qq}_g contribution
  */
-double DipoleMPKOperator::Kscriptqq_g(Energy2 sja, Energy2 mj2) const {
-  int NLight = lastBorn()->nLight();
+double DipoleMPKOperator::Kscriptqq_g(Energy2 sja) const {
+  assert(abs(parton->id()) < 7);
   double res = -1.*gammaGluon/CA*gammaSoft();
-  for( int f=1; f<=NLight; ++f ) {
+  int iNHeavy = NHeavy.size();
+  for( int f=1; f<=iNHeavy; ++f ) { // sum over heavy flavours
     Energy2 mF2 = sqr( getParticleData(f)->mass() );
     double muQ2 = mF2/sja;
     double zplus = 1. - 4*muQ2;
-    if( mF2 == ZERO ) continue; // only heavy quarks
-    if( sja <= 4.*mF2 ) continue; // sum only over quarks which meet special condition
+    if( sja <= 4.*mF2 ) continue; // sum only over heavy quarks with special condition
     res += 1./(2.*CA) * (
       PDFx(parton)*( 2./3.*(log(muQ2)+5./3.) - JaNS_QQ(muQ2) ) -
-      1./zplus*PDFxByzplus(parton,muQ2)*( 2./3.*(log(muQ2)+5./3.) - JaNS_QQ(muQ2) ) + 
-      Ja_QQzplus(muQ2) + 
+      1./zplus*PDFxByzplus(parton,f,muQ2)*( 2./3.*(log(muQ2)+5./3.) - JaNS_QQ(muQ2) ) + 
+      Ja_QQzplus(muQ2,f) + 
       PDFx(parton)*( 2./3.*sqrt((1.-4.*muQ2)*(1.-4.*muQ2)*(1.-4.*muQ2)) ) );
   }
   return res;
@@ -332,7 +747,8 @@ double DipoleMPKOperator::Kscriptqq_g(Energy2 sja, Energy2 mj2) const {
 /**
  * The Kscript^{qg}_g contribution
  */
-double DipoleMPKOperator::Kscriptqg_g(Energy2 sja, Energy2 mj2) const {
+double DipoleMPKOperator::Kscriptqg_g() const {
+  assert(parton->id() == ParticleID::g);
   double res = 0.0;
   return res;
 }
@@ -340,7 +756,8 @@ double DipoleMPKOperator::Kscriptqg_g(Energy2 sja, Energy2 mj2) const {
 /**
  * The Kscript^{gq}_g contribution
  */
-double DipoleMPKOperator::Kscriptgq_g(Energy2 sja, Energy2 mj2) const {
+double DipoleMPKOperator::Kscriptgq_g() const {
+  assert(abs(parton->id()) < 7);
   double res = 0.0;
   return res;
 }
@@ -349,486 +766,89 @@ double DipoleMPKOperator::Kscriptgq_g(Energy2 sja, Energy2 mj2) const {
  * The Kscript^{gg}_g contribution
  * equals the Kscript^{qq}_g contribution
  */
-double DipoleMPKOperator::Kscriptgg_g(Energy2 sja, Energy2 mj2) const {
-  int NLight = lastBorn()->nLight();
+double DipoleMPKOperator::Kscriptgg_g(Energy2 sja) const {
+  assert(parton->id() == ParticleID::g);
   double res = -1.*gammaGluon/CA*gammaSoft();
-  for( int f=1; f<=NLight; ++f ) {
+  int iNHeavy = NHeavy.size();
+  for( int f=1; f<=iNHeavy; ++f ) { // sum over heavy flavours
     Energy2 mF2 = sqr( getParticleData(f)->mass() );
     double muQ2 = mF2/sja;
     double zplus = 1. - 4*muQ2;
-    if( mF2 == ZERO ) continue; // only heavy quarks
-    if( sja <= 4.*mF2 ) continue; // sum only over quarks which meet special condition
+    if( sja <= 4.*mF2 ) continue; // sum only over quarks with special condition
     res += 1./(2.*CA) * (
       PDFx(parton)*( 2./3.*(log(muQ2)+5./3.) - JaNS_QQ(muQ2) ) -
-      1./zplus*PDFxByzplus(parton,muQ2)*( 2./3.*(log(muQ2)+5./3.) - JaNS_QQ(muQ2) ) + 
-      Ja_QQzplus(muQ2) + 
+      1./zplus*PDFxByzplus(parton,f,muQ2)*( 2./3.*(log(muQ2)+5./3.) - JaNS_QQ(muQ2) ) + 
+      Ja_QQzplus(muQ2,f) + 
       PDFx(parton)*( 2./3.*sqrt((1.-4.*muQ2)*(1.-4.*muQ2)*(1.-4.*muQ2)) ) );
   }
   return res;
 }
 
-//////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
 
 double DipoleMPKOperator::PDFx(tcPDPtr pd) const {
-  map<pair<tcPDFPtr,tcPDPtr>,pair<double,double> >::iterator
-    cached = pdfCache.find(make_pair(pdf,pd));
+
+  vector<double> nullPDFCacheVector;
+  for( size_t f=0; f<NHeavy.size(); ++f ) nullPDFCacheVector.push_back(0.0);
+  nullPDFCacheVector.push_back(0.0);
+  nullPDFCacheVector.push_back(0.0);
+
+  map<pair<tcPDFPtr,tcPDPtr>,vector<double> >::iterator cached = pdfCache.find(make_pair(pdf,pd));
   if ( cached == pdfCache.end() ) {
-    pdfCache[make_pair(pdf,pd)] = make_pair(0.0,0.0);
+    pdfCache[make_pair(pdf,pd)] = nullPDFCacheVector;
     cached = pdfCache.find(make_pair(pdf,pd));
   }
-  if ( cached->second.first == 0.0 )
-    cached->second.first = 
-      pdf->xfx(particle,pd,scale,x)/x;
-  return cached->second.first;
+  if ( cached->second.at(0) == 0.0 ) cached->second.at(0) = pdf->xfx(particle,pd,scale,x)/x;
+  return cached->second.at(0);
+
 }
 
 double DipoleMPKOperator::PDFxByz(tcPDPtr pd) const {
-  map<pair<tcPDFPtr,tcPDPtr>,pair<double,double> >::iterator
-    cached = pdfCache.find(make_pair(pdf,pd));
+
+  vector<double> nullPDFCacheVector;
+  for( size_t f=0; f<NHeavy.size(); ++f ) nullPDFCacheVector.push_back(0.0);
+  nullPDFCacheVector.push_back(0.0);
+  nullPDFCacheVector.push_back(0.0);
+
+  map<pair<tcPDFPtr,tcPDPtr>,vector<double> >::iterator cached = pdfCache.find(make_pair(pdf,pd));
   if ( cached == pdfCache.end() ) {
-    pdfCache[make_pair(pdf,pd)] = make_pair(0.0,0.0);
+    pdfCache[make_pair(pdf,pd)] = nullPDFCacheVector;
     cached = pdfCache.find(make_pair(pdf,pd));
   }
-  if ( cached->second.second == 0.0 )
-    cached->second.second = 
-      pdf->xfx(particle,pd,scale,x/z)*z/x;
-  return cached->second.second;
+  if ( cached->second.at(1) == 0.0 ) cached->second.at(1) = pdf->xfx(particle,pd,scale,x/z)*z/x;
+  return cached->second.at(1);
+
 }
 
 //////////////////////////////////////////////////
 
-// ! Unsure whether this is actually correct !  //
+/**
+ * Get a PDF value at x/z_+
+ * where z_+ = 1 - 4\mu_Q^2
+ * The int in the second argument ranges from
+ * 1 to NHeavy associated to the quark in \mu_Q^2
+ */
+double DipoleMPKOperator::PDFxByzplus(tcPDPtr pd, int F, double muQ2) const {
 
-double DipoleMPKOperator::PDFxByzplus(tcPDPtr pd, double muQ2) const {
+  vector<double> nullPDFCacheVector;
+  for( size_t f=0; f<NHeavy.size(); ++f ) nullPDFCacheVector.push_back(0.0);
+  nullPDFCacheVector.push_back(0.0);
+  nullPDFCacheVector.push_back(0.0);
+
   double zplus = 1. - 4.*muQ2;
-  map<pair<tcPDFPtr,tcPDPtr>,pair<double,double> >::iterator
-    cached = pdfCache.find(make_pair(pdf,pd));
+  int pdfFCacheID = 1+F;
+
+  map<pair<tcPDFPtr,tcPDPtr>,vector<double> >::iterator cached = pdfCache.find(make_pair(pdf,pd));
   if ( cached == pdfCache.end() ) {
-    pdfCache[make_pair(pdf,pd)] = make_pair(0.0,0.0);
+    pdfCache[make_pair(pdf,pd)] = nullPDFCacheVector;
     cached = pdfCache.find(make_pair(pdf,pd));
   }
-  if ( cached->second.second == 0.0 )
-    cached->second.second = 
-      pdf->xfx(particle,pd,scale,x/zplus)*zplus/x;
-  return cached->second.second;
-}
-
-//////////////////////////////////////////////////
-
-bool DipoleMPKOperator::apply(tcPDPtr pd) const {
-  // DipoleMPKOperator has to apply also to massive partons
-  return
-    (abs(pd->id()) < 7 || pd->id() == ParticleID::g);
-}
-
-bool DipoleMPKOperator::apply(const cPDVector& pd) const {
-  if ( !apply(pd[0]) && !apply(pd[1]) )
-    return false;
-  bool first = false;
-  bool second = false;
-  for ( cPDVector::const_iterator p = pd.begin();
-	p != pd.end(); ++p ) {
-
-    if ( !first ) {
-      if ( apply(*p) )
-	first = true;
-    }
-    else {
-      if ( apply(*p) )
-	second = true;
-    }
-
-  }
-  return first && second;
-}
-
-double DipoleMPKOperator::sumParton(int id) const {
-
-// sumParton(int id) sums for a specific id=a'=0,1
-// over all a
-
-  pdf =
-    id == 0 ?
-    lastXCombPtr()->partonBins().first->pdf() :
-    lastXCombPtr()->partonBins().second->pdf();
-
-  x = 
-    id == 0 ?
-    lastXCombPtr()->lastX1() :
-    lastXCombPtr()->lastX2();
-
-  parton =
-    id == 0 ?
-    mePartonData()[0] :
-    mePartonData()[1];
-
-  particle =
-    id == 0 ?
-    lastParticles().first->dataPtr() :
-    lastParticles().second->dataPtr();
-
-  using namespace RandomHelpers;
-
-  double r = insertionRandomNumbers().front();
-  double eps = 1e-3;
-
-  pair<double,double> zw =
-    generate((piecewise(),
-	      flat(0.0,x),
-	      match(inverse(0.0,x,1.0) + inverse(1.0+eps,x,1.0))),r);
-
-  z = zw.first;
-  double mapz = zw.second;
-
-  for ( map<pair<tcPDFPtr,tcPDPtr>,pair<double,double> >::iterator cache =
-	  pdfCache.begin(); cache != pdfCache.end(); ++cache )
-    cache->second = make_pair(0.0,0.0);
-
-  assert(pdf);
-
-  double res = 0.;
-
-  // The apply function makes really only a difference in the sum over j
-  // (sum over finals):
-  // It allows for massive particles in general, but we trust that the
-  // incoming partons are massless. Those contributions that aren't inside
-  // the sum over j are the same in the massless and the massive P+K, and
-  // should not be accounted here at all.
-  
-  // We could have a g(a)->Q(a')Qbar(j) or a g(a)->Qbar(a')Q(j) splitting
-  // in the initial state. This should then also be correctly handled.
-
-  ////////////////////////////
-  // K operator             //
-  // non-color correlated   //
-  ////////////////////////////
-
-//   if ( mePartonData()[id]->id() == ParticleID::g )
-//     res += (KBargg() + KBarqg())*lastBorn()->me2();
-// 
-//   if ( abs(mePartonData()[id]->id()) < 7 )
-//     res += (KBarqq() + KBargq())*lastBorn()->me2();
-// 
-//   //////////
-// 
-//     // The non-color correlated contributions of K
-//     // are equal in the massive and massless case.
-// 
-//     double zeroMassKNonCorrelated = res;
-// 
-//   //////////
-
-  ////////////////////////////
-
-  double theGammaSoft = 0.0;
-
-  double thePqq = 0.0;
-  double thePqg = 0.0;
-  double thePgq = 0.0;
-  double thePgg = 0.0;
-
-  double ifCorrelated = 0.0;
-  double fiCorrelated = 0.0;
-
-  int idi = 2;
-  vector<Lorentz5Momentum>::const_iterator Pi = meMomenta().begin() + 2;
-
-  double disFinite = 0.0;
-  double glueFinite = 0.0;
-
-  //////////////////////////////////////////////////////////
-  // Initial-Final and Final-Initial contributions        //
-  //////////////////////////////////////////////////////////
-
-  //////////
-
-    // Prepare also to cache the total contribution to K and
-    // P of the mi=0 case, after the sum over i.
-
-    double zeroMassK = 0.0;
-    double zeroMassP = 0.0;
-
-  //////////
-
-  for ( cPDVector::const_iterator i = mePartonData().begin() + 2;
-	i != mePartonData().end(); ++i, ++Pi, ++idi ) {
-
-    if ( !apply(*i) || lastBorn()->noDipole(idi,id) )
-      continue;
-
-    fiCorrelated = lastBorn()->colourCorrelatedME2(make_pair(idi,id));
-    ifCorrelated = lastBorn()->colourCorrelatedME2(make_pair(id,idi));
-
-    if ( theGammaSoft == 0.0 )
-      theGammaSoft = gammaSoft();
-
-    if ( mePartonData()[id]->id() == ParticleID::g &&
-	 thePgg == 0.0 ) {
-      thePqg = Pqg();
-      thePgg = Pgg();
-    }
-
-    if ( abs(mePartonData()[id]->id()) < 7 &&
-	 thePqq == 0.0 ) {
-      thePgq = Pgq();
-      thePqq = Pqq();
-    }
-
-    ////////////////
-    // K operator //
-    ////////////////
-
-    //////////
-
-      // Last term in massless K operator in (C.31) in massless paper
-      zeroMassK +=
-        ( (**i).id() == ParticleID::g ? gammaGluon : gammaQuark ) *
-        theGammaSoft * fiCorrelated;
-
-    //////////
-
-    Energy2 mj2 = sqr((**i).mass());
-    Energy2 sja = 2.*( (*Pi) * meMomenta()[id]/z );
-
-    // Next-to-Last term in massive K operator in (6.55) in massive paper
-    // corresponds in the massless limit to the last term of the massless 
-    // K operator in (C.31) in massless paper
-    if ( mePartonData()[id]->id() == ParticleID::g ) {
-      res -=
-        ( (**i).id() == ParticleID::g ? CA : CF ) *
-        fiCorrelated * 
-        ( (**i).id() == ParticleID::g ? ( Kscriptqg_g(sja,mj2) + Kscriptgg_g(sja,mj2) ) : ( Kscriptqg_q(sja,mj2) + Kscriptgg_q(sja,mj2) ) );
-    }
-    if ( abs(mePartonData()[id]->id()) < 7 ) {
-      res -=
-        ( (**i).id() == ParticleID::g ? CA : CF ) *
-        fiCorrelated * 
-        ( (**i).id() == ParticleID::g ? ( Kscriptqq_g(sja,mj2) + Kscriptgq_g(sja,mj2) ) : ( Kscriptqq_q(sja,mj2) + Kscriptgq_q(sja,mj2) ) );
-    }
-
-    // The regular splitting functions 
-    // without the folding with 1/z*PDF(x/z)*\Theta(z-x)
-    double thePqqreg = -1.*CF*(1.+z);
-    double thePqgreg = CF*(1.+(1.-z)*(1.-z))/z;
-    double thePgqreg = 1./2.*(z*z + (1.-z)*(1.-z));
-    double thePggreg = 2.*CA*((1.-z)/z - 1. + z*(1.-z));
-
-    // Last term of the massive K operator in (6.55) massive paper
-    // Vanishes in the massless limit
-    if ( mePartonData()[id]->id() == ParticleID::g ) {
-      res -=
-        ifCorrelated * 
-        ( ( z>x ? 1./z*PDFxByz(parton)*(thePqgreg+thePggreg)*log((1.-z)*sja/((1.-z)*sja+mj2)) : 0. ) + 
-          (gammaGluon)*PDFx(parton)*( log((sja-2.*sqrt(mj2)*sqrt(sja+mj2)+2.*mj2)/sja) + 2.*sqrt(mj2)/(sqrt(sja+mj2)+sqrt(mj2)) ) );
-    }
-    if ( abs(mePartonData()[id]->id()) < 7 ) {
-      res -=
-        ifCorrelated * 
-        ( ( z>x ? 1./z*PDFxByz(parton)*(thePqqreg+thePgqreg)*log((1.-z)*sja/((1.-z)*sja+mj2)) : 0. ) + 
-          (gammaQuark)*PDFx(parton)*( log((sja-2.*sqrt(mj2)*sqrt(sja+mj2)+2.*mj2)/sja) + 2.*sqrt(mj2)/(sqrt(sja+mj2)+sqrt(mj2)) ) );
-    }
-
-    ////////////////
-    // P operator //
-    ////////////////
-
-    // P(m) = P(m=0).
-
-    // Still need to regulate that the DipoleIOperator
-    // contains the integrated finite extra terms that
-    // render the massless Dipoles positive definite.
-    // At the moment the same extra terms are also in
-    // use in the massive dipoles. This has yet to be 
-    // clarified, though, for the massive case.
-
-    double theLog = log(scale/(2.*((*Pi)*meMomenta()[id])));
-
-    //////////
-
-      if ( mePartonData()[id]->id() == ParticleID::g ) {
-        zeroMassP +=
-          ( thePgg + thePqg ) * theLog * ifCorrelated;
-      }
-
-      if ( abs(mePartonData()[id]->id()) < 7 ) {
-        zeroMassP +=
-          ( thePqq + thePgq ) * theLog * ifCorrelated;
-        if ( disFinite == 0.0 && z > x ) {
-          disFinite = CF*PDFxByz(parton)*(1.+3.*z/2.)/z;
-        }
-        if ( z > x )
-          zeroMassP -= disFinite*ifCorrelated;
-      }
-
-      if ( abs(mePartonData()[idi]->id()) < 7 ) {
-        if ( disFinite == 0.0 && z > x ) {
-          disFinite = CF*PDFxByz(parton)*(1.+3.*z/2.)/z;
-        }
-        if ( z > x )
-          zeroMassP -= disFinite*fiCorrelated;
-      }
-
-      if ( mePartonData()[idi]->id() == ParticleID::g ) {
-        if ( glueFinite == 0.0 && z > x ) {
-          glueFinite = 2.*CA*PDFxByz(parton)*(1.+z/6.)/z;
-        }
-        if ( z > x )
-          zeroMassP -= glueFinite*fiCorrelated;
-      }
-
-    //////////
-
-    if ( mePartonData()[id]->id() == ParticleID::g ) {
-      res +=
-	( thePgg + thePqg ) * theLog * ifCorrelated;
-    }
-
-    if ( abs(mePartonData()[id]->id()) < 7 ) {
-      res +=
-	( thePqq + thePgq ) * theLog * ifCorrelated;
-      if ( disFinite == 0.0 && z > x ) {
-	disFinite = CF*PDFxByz(parton)*(1.+3.*z/2.)/z;
-      }
-      if ( z > x )
-	res -= disFinite*ifCorrelated;
-    }
-
-    if ( abs(mePartonData()[idi]->id()) < 7 ) {
-      if ( disFinite == 0.0 && z > x ) {
-	disFinite = CF*PDFxByz(parton)*(1.+3.*z/2.)/z;
-      }
-      if ( z > x )
-	res -= disFinite*fiCorrelated;
-    }
-
-    if ( mePartonData()[idi]->id() == ParticleID::g ) {
-      if ( glueFinite == 0.0 && z > x ) {
-	glueFinite = 2.*CA*PDFxByz(parton)*(1.+z/6.)/z;
-      }
-      if ( z > x )
-	res -= glueFinite*fiCorrelated;
-    }
-
-  } // end loop over i
-
-  //////////////////////////////////////////////////////////
-  // Initial-Initial contributions                        //
-  //////////////////////////////////////////////////////////
-
-//   // The Initial-Initial contributions of P+K are the same
-//   // in the massive and massless case.
-// 
-//   //////////
-// 
-//     double zeroMassII = 0.0;
-// 
-//   //////////
-// 
-//   if ( mePartonData()[ id == 0 ? 1 : 0 ]->coloured() &&
-//        !lastBorn()->noDipole(id == 0 ? 0 : 1,
-// 			     id == 0 ? 1 : 0) ) {
-// 
-//     if ( mePartonData()[id]->id() == ParticleID::g &&
-// 	 thePgg == 0.0 ) {
-//       thePqg = Pqg();
-//       thePgg = Pgg();
-//     }
-// 
-//     if ( abs(mePartonData()[id]->id()) < 7 &&
-// 	 thePqq == 0.0 ) {
-//       thePgq = Pgq();
-//       thePqq = Pqq();
-//     }
-// 
-//     double theLog = log(scale/(2.*(meMomenta()[0]*meMomenta()[1])));
-// 
-//     pair<int,int> corr = id == 0 ? make_pair(0,1) : make_pair(1,0);
-//     double iiCorrelated = lastBorn()->colourCorrelatedME2(corr);
-// 
-//     //////////
-// 
-//       if ( mePartonData()[id]->id() == ParticleID::g ) {
-//         zeroMassII +=
-//           ( thePgg + thePqg ) * theLog * iiCorrelated;
-//         zeroMassII -=
-//           ( KTildegg() + KTildeqg() ) * iiCorrelated;
-//       }    
-// 
-//       if ( abs(mePartonData()[id]->id()) < 7 ) {
-//         zeroMassII +=
-//           ( thePqq + thePgq ) * theLog * iiCorrelated;
-//         zeroMassII -=
-//           ( KTildeqq() + KTildegq() ) * iiCorrelated;
-//       }
-// 
-//     //////////
-// 
-//     if ( mePartonData()[id]->id() == ParticleID::g ) {
-//       res +=
-// 	( thePgg + thePqg ) * theLog * iiCorrelated;
-//       res -=
-// 	( KTildegg() + KTildeqg() ) * iiCorrelated;
-//     }    
-// 
-//     if ( abs(mePartonData()[id]->id()) < 7 ) {
-//       res +=
-// 	( thePqq + thePgq ) * theLog * iiCorrelated;
-//       res -=
-// 	( KTildeqq() + KTildegq() ) * iiCorrelated;
-//     }
-// 
-//   }
-
-  //////////////////////////////////////////////////////////
-
-  // Subtract massless contributions if needed
-
-  idi = 2;
-  for ( cPDVector::const_iterator i = mePartonData().begin() + 2;
-	i != mePartonData().end(); ++i, ++idi ) {
-    if (mePartonData()[idi]->mass() == ZERO) {
-//       res -= ( zeroMassII + 
-//                zeroMassKNonCorrelated + 
-//                zeroMassK + 
-//                zeroMassP );
-      res -= ( zeroMassK + 
-               zeroMassP );
-    }
-  }
-
-  //////////////////////////////////////////////////////////
-
-  return res * mapz;
+  if ( cached->second.at(pdfFCacheID) == 0.0 ) cached->second.at(pdfFCacheID) = pdf->xfx(particle,pd,scale,x/zplus)*zplus/x;
+  return cached->second.at(pdfFCacheID);
 
 }
 
-double DipoleMPKOperator::me2() const {
-
-  scale = lastBorn()->lastScale();
-
-  double res = 0.0;
-
-  if ( apply(mePartonData()[0]) ) {
-    if ( mePartonData()[0]->coloured() ) {
-      if ( mePartonData()[1]->coloured() )
-	res += lastBorn()->pdf2()*sumParton(0);
-      else
-	res += sumParton(0);
-    }
-  }
-
-  if ( apply(mePartonData()[1]) ) {
-    if ( mePartonData()[1]->coloured() ) {
-      if ( mePartonData()[0]->coloured() )
-	res += lastBorn()->pdf1()*sumParton(1);
-      else
-	res += sumParton(1);
-    }
-  }
-
-  return (lastBorn()->lastAlphaS()/(2.*pi)) * res;
-
-}
+//////////////////////////////////////////////////////////////////////
 
 void DipoleMPKOperator::persistentOutput(PersistentOStream & os) const {
   os << CA << CF << gammaQuark << gammaGluon << KQuark << KGluon

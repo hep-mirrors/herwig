@@ -42,6 +42,23 @@ IBPtr DipoleIOperator::fullclone() const {
   return new_ptr(*this);
 }
 
+// void DipoleIOperator::setXComb(tStdXCombPtr xc) {
+//   MatchboxInsertionOperator::setXComb(xc);
+//   if ( CA < 0. ) {
+//     CA = SM().Nc();
+//     CF = (SM().Nc()*SM().Nc()-1.0)/(2.*SM().Nc());
+//     gammaQuark = (3./2.)*CF;
+//     gammaGluon = (11./6.)*CA - (1./3.)*lastBorn()->nLight();
+//     betaZero = gammaGluon;
+//     KQuark = (7./2.-sqr(pi)/6.)*CF;
+//     KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*lastBorn()->nLight();
+//     if ( isDR() ) {
+//       gammaQuark -= CF/2.;
+//       gammaGluon -= CA/6.;
+//     }
+//   }
+// }
+
 void DipoleIOperator::setXComb(tStdXCombPtr xc) {
   MatchboxInsertionOperator::setXComb(xc);
   if ( CA < 0. ) {
@@ -57,13 +74,43 @@ void DipoleIOperator::setXComb(tStdXCombPtr xc) {
       gammaGluon -= CA/6.;
     }
   }
+  int NLight = lastBorn()->nLight();
+  for( int f=1; f<=NLight; ++f ) {
+    Energy2 mF2 = sqr( getParticleData(f)->mass() );
+    if( mF2 == ZERO ) continue; // only heavy quarks
+    NHeavy.push_back(f);
+  }
 }
 
+// bool DipoleIOperator::apply(const cPDVector& pd) const {
+//   bool first = false;
+//   bool second = false;
+//   for ( cPDVector::const_iterator p = pd.begin();
+// 	p != pd.end(); ++p ) {
+//     if ( !first ) {
+//       if ( apply(*p) )
+// 	first = true;
+//     } else {
+//       if ( apply(*p) )
+// 	second = true;
+//     }
+//   }
+//   return first && second;
+// }
+
 bool DipoleIOperator::apply(const cPDVector& pd) const {
+  // Prohibit splittings g->Q\bar{Q} in the final state.
+  // These are covered by DipoleMIOperator.
+  if ( NHeavy.size()!=0 ) return false;
   bool first = false;
   bool second = false;
   for ( cPDVector::const_iterator p = pd.begin();
 	p != pd.end(); ++p ) {
+    // Since this loop only checks for at least one exis-
+    // ting combination:
+    // Return false if any massive particles are present.
+    // Covered by DipoleMIOperator then.
+    if ( (*p)->mass()!=ZERO ) return false;
     if ( !first ) {
       if ( apply(*p) )
 	first = true;

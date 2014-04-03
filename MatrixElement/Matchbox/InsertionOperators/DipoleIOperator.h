@@ -127,6 +127,12 @@ protected:
 private:
 
   /**
+   * Vector to contain heavy flavour id's
+   * n_F = NHeavy.size()
+   */
+  vector<int> NHeavy;
+
+  /**
    * C_A
    */
   double CA;

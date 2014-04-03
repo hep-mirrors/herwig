@@ -26,18 +26,6 @@ using namespace ThePEG;
  *
  * \brief DipoleMPKOperator implements the massive P+K operator.
  *
- * It is where P(m)=P(m=0)
- * It is lim_{m->0}K(m)->K(m=0)
- *
- * More precisely: DipolePKOperator applies only for massless
- * partons while DipoleMPKOperator applies for massless AND
- * massive partons mj. If there is an mj==0 in the sum over j
- * Then the associated contribution from DipolePKOperator is
- * actually subtracted again.
- * 
- * DipoleMPKOperator trusts that initial state particles are not
- * massive.
- *
  */
 class DipoleMPKOperator: public MatchboxInsertionOperator {
 
@@ -94,6 +82,12 @@ public:
    * the given parton.
    */
   bool apply(tcPDPtr) const;
+
+  /**
+   * Return true, if contributions exist to
+   * the given parton.
+   */
+  bool applyNotMassless(tcPDPtr) const;
 
   /**
    * Return true, if this virtual correction
@@ -181,11 +175,14 @@ public:
 
   /**
    * [J^a_{gQ}(z,\mu_Q^2)]_+
+   * a,a' = quark for later
+   * use of this function
    */
   double Ja_gQplus(double muQ2) const;
 
   /**
    * [1/(1-z)]_+ * log( (2-z)/(2-z+\mu_Q^2) )
+   * a,a' = quark for later use of this function
    */
   double gammaSoft2(double muQ2) const;
 
@@ -202,7 +199,7 @@ public:
   /**
    * The Kscript^{gq}_q contribution
    */
-  double Kscriptgq_q(Energy2 sja, Energy2 mj2) const;
+  double Kscriptgq_q() const;
 
   /**
    * The Kscript^{gg}_q contribution
@@ -211,35 +208,38 @@ public:
 
   /**
    * J^{a;NS}_{Q\bar{Q}}(\mu_Q^2)
-   * Does not include the folding with 1/z*PDF(x/z)*\Theta(z-x)
+   * Not folded with 1/z*PDF(x/z)*\Theta(z-x)
    */
   double JaNS_QQ(double muQ2) const;
 
   /**
    * [J^a_{Q\bar{Q}}(z,\mu_Q^2)]_{z_+}
+   * where z_+ = 1 - 4\mu_Q^2
+   * int F ranges from 1 to NHeavy associ-
+   * ated to the quark in \mu_Q^2
    */
-  double Ja_QQzplus(double muQ2) const;
+  double Ja_QQzplus(double muQ2, int F) const;
 
   /**
    * The Kscript^{qq}_g contribution
    */
-  double Kscriptqq_g(Energy2 sja, Energy2 mj2) const;
+  double Kscriptqq_g(Energy2 sja) const;
 
   /**
    * The Kscript^{qg}_g contribution
    */
-  double Kscriptqg_g(Energy2 sja, Energy2 mj2) const;
+  double Kscriptqg_g() const;
 
   /**
    * The Kscript^{gq}_g contribution
    */
-  double Kscriptgq_g(Energy2 sja, Energy2 mj2) const;
+  double Kscriptgq_g() const;
 
   /**
    * The Kscript^{gg}_g contribution
    * equals the Kscript^{qq}_g contribution
    */
-  double Kscriptgg_g(Energy2 sja, Energy2 mj2) const;
+  double Kscriptgg_g(Energy2 sja) const;
 
   ////////////////////////////////////////////////
 
@@ -292,6 +292,12 @@ protected:
   //@}
 
 private:
+
+  /**
+   * Vector to contain heavy flavour id's
+   * n_F = NHeavy.size()
+   */
+  vector<int> NHeavy;
 
   /**
    * C_A
@@ -349,9 +355,12 @@ private:
   mutable double z;
 
   /**
-   * Cache PDFs evaluated at x and x/z
+   * Cache PDFs evaluated at x, x/z and x/z_+,
+   * z_+ depends hereby on the masses of the heavy flavours,
+   * so, in contrast to the massless case, we need a vector
+   * of size 2+n_F(heavy) instead of the pair<double,double>
    */
-  mutable map<pair<tcPDFPtr,tcPDPtr>,pair<double,double> > pdfCache;
+  mutable map<pair<tcPDFPtr,tcPDPtr>,vector<double> > pdfCache;
 
   /**
    * The currently considered incoming parton.
@@ -373,8 +382,10 @@ private:
   /**
    * Get a PDF value at x/z_+
    * where z_+ = 1 - 4\mu_Q^2
+   * The int in the second argument ranges from
+   * 1 to NHeavy associated to the quark in \mu_Q^2
    */
-  double PDFxByzplus(tcPDPtr,double) const;
+  double PDFxByzplus(tcPDPtr,int,double) const;
 
   ////////////////////////////////////////////////
 

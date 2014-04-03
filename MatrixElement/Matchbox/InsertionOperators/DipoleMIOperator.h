@@ -24,27 +24,8 @@ using namespace ThePEG;
  * \author Simon Platzer, Martin Stoll, Christian Reuschle
  *
  * \brief DipoleMIOperator implements the massive I operator.
- *
- * It is lim_{m->0}I(m)->I(m=0)
- *
- * More precisely: DipoleIOperator applies only for massless
- * partons while DipoleMIOperator applies for massless AND
- * massive partons. In the sum over emitter and spectator,
- * if both are massless, the difference between the massive
- * and massless I operator is returned. However, if at least
- * one is massive, the massive I operator is returned. If both
- * are incoming, then there will be no associated contribution
- * from DipoleMIOperator.
- *
- * In the case of g->QQbar, which is emitter=g and maybe mass-
- * less spectator, the additional terms through the sums over
- * massive flavours should be correctly accounted for.
- *
- * DipoleMIOperator does only apply in the expanded convention,
+ * DipoleMIOperator does only apply in expanded convention,
  * and also not for dimensional reduction.
- *
- * DipoleMIOperator trusts that initial state particles are not
- * massive.
  *
  */
 class DipoleMIOperator: public MatchboxInsertionOperator {
@@ -163,6 +144,12 @@ protected:
 private:
 
   /**
+   * Vector to contain heavy flavour id's
+   * n_F = NHeavy.size()
+   */
+  vector<int> NHeavy;
+
+  /**
    * C_A
    */
   double CA;
@@ -184,15 +171,17 @@ private:
   
   /**
    * \beta_0
-   * The Matchbox convention is \beta_0=\gamma_g with the counterterm part as n/\epsilon*\beta_0.
-   * However, usually \beta_0 is defined as \beta_0=2*\gamma_g, and instead the counterterm part as n/\epsilon*1/2*\beta_0.
+   * The Matchbox convention is \beta_0=\gamma_g.
+   * Often \beta_0 is defined in the literature as \beta_0=2*\gamma_g.
+   * Be aware of consistent usage!
    */
   double betaZero;
 
   /**
    * \Gamma_q, finite term
    */
-  double GammaQuark(const ParticleData&,Energy2) const;
+//   double GammaQuark(const ParticleData&,Energy2) const;
+  double GammaQuark(const ParticleData&) const;
   
   /**
    * \Gamma_g, finite term
