@@ -20,9 +20,9 @@ using namespace ThePEG;
 
 /**
  * \ingroup Matchbox
- * \
+ * \author Simon Platzer, Alexandra Wilcock, Christian Reuschle
  *
- * \brief FFMsqgxDipole implements the D_{q,g;k} subtraction dipole.
+ * \brief FFMsqgxDipole implements the D_{sq,g;k} subtraction dipole.
  *
  */
 class FFMsqgxDipole: public SubtractionDipole {

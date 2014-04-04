@@ -22,8 +22,10 @@
 
 #include "Herwig++/MatrixElement/Matchbox/Base/DipoleRepository.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/SpinCorrelationTensor.h"
-#include "Herwig++/MatrixElement/Matchbox/Phasespace/IFLightTildeKinematics.h"
-#include "Herwig++/MatrixElement/Matchbox/Phasespace/IFLightInvertedTildeKinematics.h"
+//#include "Herwig++/MatrixElement/Matchbox/Phasespace/IFLightTildeKinematics.h"
+//#include "Herwig++/MatrixElement/Matchbox/Phasespace/IFLightInvertedTildeKinematics.h"
+#include "Herwig++/MatrixElement/Matchbox/Phasespace/IFMassiveTildeKinematics.h"
+#include "Herwig++/MatrixElement/Matchbox/Phasespace/IFMassiveInvertedTildeKinematics.h"
 
 using namespace Herwig;
 
@@ -44,12 +46,17 @@ bool IFMqqxDipole::canHandle(const cPDVector& partons,
 			    int emitter, int emission, int spectator) const {
   return
     emitter < 2 && spectator > 1 &&
-    abs(partons[emission]->id()) < 6 &&
-    abs(partons[emitter]->id()) < 6 &&
+//    abs(partons[emission]->id()) < 6 &&
+//    abs(partons[emitter]->id()) < 6 &&
+    abs(partons[emission]->id()) < 7 &&
+    abs(partons[emitter]->id()) < 7 &&
     partons[emission]->id() - partons[emitter]->id() == 0 &&
-    !(partons[emitter]->mass() == ZERO &&
-      partons[emission]->mass() == ZERO &&
-      partons[spectator]->mass() == ZERO);
+//    !(partons[emitter]->mass() == ZERO &&
+//      partons[emission]->mass() == ZERO &&
+//      partons[spectator]->mass() == ZERO);
+    partons[emitter]->mass() == ZERO &&
+    partons[emission]->mass() == ZERO &&
+    partons[spectator]->mass() != ZERO;
 }
 
 double IFMqqxDipole::me2Avg(double ccme2) const {
@@ -144,8 +151,10 @@ void IFMqqxDipole::Init() {
   static ClassDocumentation<IFMqqxDipole> documentation
     ("IFMqqxDipole");
 
-  DipoleRepository::registerDipole<0,IFMqqxDipole,IFLightTildeKinematics,IFLightInvertedTildeKinematics>
-    ("IFMqqxDipole","IFLightTildeKinematics","IFLightInvertedTildeKinematics");
+//  DipoleRepository::registerDipole<0,IFMqqxDipole,IFLightTildeKinematics,IFLightInvertedTildeKinematics>
+//    ("IFMqqxDipole","IFLightTildeKinematics","IFLightInvertedTildeKinematics");
+  DipoleRepository::registerDipole<0,IFMqqxDipole,IFMassiveTildeKinematics,IFMassiveInvertedTildeKinematics>
+    ("IFMqqxDipole","IFMassiveTildeKinematics","IFMassiveInvertedTildeKinematics");
 
 }
 

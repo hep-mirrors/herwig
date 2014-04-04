@@ -22,8 +22,8 @@
 
 #include "Herwig++/MatrixElement/Matchbox/Base/DipoleRepository.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/SpinCorrelationTensor.h"
-#include "Herwig++/MatrixElement/Matchbox/Phasespace/FILightTildeKinematics.h"
-#include "Herwig++/MatrixElement/Matchbox/Phasespace/FILightInvertedTildeKinematics.h"
+#include "Herwig++/MatrixElement/Matchbox/Phasespace/FIMassiveTildeKinematics.h"
+#include "Herwig++/MatrixElement/Matchbox/Phasespace/FIMassiveInvertedTildeKinematics.h"
 
 using namespace Herwig;
 
@@ -44,12 +44,15 @@ bool FIMqqxDipole::canHandle(const cPDVector& partons,
 			    int emitter, int emission, int spectator) const {
   return
     emitter > 1 && spectator < 2 &&
-    abs(partons[emission]->id()) < 6 &&
-    abs(partons[emitter]->id()) < 6 &&
+    abs(partons[emission]->id()) < 7 &&
+    abs(partons[emitter]->id()) < 7 &&
     partons[emission]->id() + partons[emitter]->id() == 0 &&
+//    !(partons[emitter]->mass() == ZERO &&
+//      partons[emission]->mass() == ZERO &&
+//      partons[spectator]->mass() == ZERO);
     !(partons[emitter]->mass() == ZERO &&
-      partons[emission]->mass() == ZERO &&
-      partons[spectator]->mass() == ZERO);
+      partons[emission]->mass() == ZERO) &&
+      partons[spectator]->mass() == ZERO;
 }
 
 double FIMqqxDipole::me2Avg(double ccme2) const {
@@ -65,15 +68,16 @@ double FIMqqxDipole::me2Avg(double ccme2) const {
 	(realEmissionME()->lastXComb().meMomenta()[realEmission()]))*x;
 
   Energy2 mQ2 = sqr(realEmissionME()->lastXComb().mePartonData()[realEmitter()]->mass());
-  double muQ2 = x * mQ2 /
+//  double muQ2 = x * mQ2 /
+  double muQ2 = 0.5 * z * mQ2 /
     ((realEmissionME()->lastXComb().meMomenta()[realEmitter()])*
      (realEmissionME()->lastXComb().meMomenta()[realSpectator()]));
 
   // mu_ij=0, mu_i=mu_j=mu_Q.
-  double zm = ( 1.-x - sqrt( sqr(1.-x-2.*muQ2) - 4.*muQ2 ) ) /
-    ( 2.*(1.-x) );
-  double zp = ( 1.-x + sqrt( sqr(1.-x-2.*muQ2) - 4.*muQ2 ) ) /
-    ( 2.*(1.-x) );
+//  double zm = ( 1.-x - sqrt( sqr(1.-x-2.*muQ2) - 4.*muQ2 ) ) / ( 2.*(1.-x) );
+//  double zp = ( 1.-x + sqrt( sqr(1.-x-2.*muQ2) - 4.*muQ2 ) ) / ( 2.*(1.-x) );
+  double zm = ( 1.-x - sqrt( sqr(1.-x-2.*muQ2) - 4.*sqr(muQ2) ) ) / ( 2.*(1.-x) );
+  double zp = ( 1.-x + sqrt( sqr(1.-x-2.*muQ2) - 4.*sqr(muQ2) ) ) / ( 2.*(1.-x) );
 
   double res = 1.-2.*(z-zm)*(zp-z);
 
@@ -143,8 +147,10 @@ void FIMqqxDipole::Init() {
   static ClassDocumentation<FIMqqxDipole> documentation
     ("FIMqqxDipole");
 
-  DipoleRepository::registerDipole<0,FIMqqxDipole,FILightTildeKinematics,FILightInvertedTildeKinematics>
-    ("FIMqqxDipole","FILightTildeKinematics","FILightInvertedTildeKinematics");
+//  DipoleRepository::registerDipole<0,FIMqqxDipole,FILightTildeKinematics,FILightInvertedTildeKinematics>
+//    ("FIMqqxDipole","FILightTildeKinematics","FILightInvertedTildeKinematics");
+  DipoleRepository::registerDipole<0,FIMqqxDipole,FIMassiveTildeKinematics,FIMassiveInvertedTildeKinematics>
+    ("FIMqqxDipole","FIMassiveTildeKinematics","FIMassiveInvertedTildeKinematics");
 
 }
 

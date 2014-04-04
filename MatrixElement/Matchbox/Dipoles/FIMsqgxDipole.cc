@@ -68,6 +68,11 @@ double FIMsqgxDipole::me2Avg(double ccme2) const {
     8.*Constants::pi*CF*(realEmissionME()->lastXComb().lastSHat())*
     (underlyingBornME()->lastXComb().lastAlphaS())/prop;
 
+//   // NOTE: extra term taken from FIqgxDipole implementation??
+//   res *= ( 2./(1.-z+(1.-x)) - 2. +(1.-x)*(1.+3.*x*z) -
+//   	   sqr(realEmissionME()->lastXComb().mePartonData()[realEmission()]->mass()) / prop * 2.*x);
+  // NOTE: CR: extra term switched off in massive implementation for the moment,
+  //           mass of realEmission changed to mass of realEmitter
   res *= ( 2./(1.-z+(1.-x)) - 2. -
   	   sqr(realEmissionME()->lastXComb().mePartonData()[realEmitter()]->mass()) / prop * 2.*x);
 
@@ -103,7 +108,12 @@ double FIMsqgxDipole::me2() const {
     8.*Constants::pi*CF*(realEmissionME()->lastXComb().lastSHat())*
     (underlyingBornME()->lastXComb().lastAlphaS())/prop;
 
-  res *= ( 2./(1.-z+(1.-x)) -2. -
+//   // NOTE: extra term taken from FIqgxDipole implementation
+//   res *= ( 2./(1.-z+(1.-x)) -2. +(1.-x)*(1.+3.*x*z) -
+//   	   sqr(realEmissionME()->lastXComb().mePartonData()[realEmission()]->mass()) / prop * 2.*x);
+  // NOTE: CR: extra term switched off in massive implementation for the moment,
+  //           mass of realEmission changed to mass of realEmitter
+  res *= ( 2./(1.-z+(1.-x)) - 2. -
   	   sqr(realEmissionME()->lastXComb().mePartonData()[realEmitter()]->mass()) / prop * 2.*x);
 
   res *= -underlyingBornME()->colourCorrelatedME2(make_pair(bornEmitter(),bornSpectator()));

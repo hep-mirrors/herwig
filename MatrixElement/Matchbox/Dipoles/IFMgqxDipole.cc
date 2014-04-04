@@ -21,8 +21,8 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 #include "Herwig++/MatrixElement/Matchbox/Base/DipoleRepository.h"
-#include "Herwig++/MatrixElement/Matchbox/Phasespace/IFLightTildeKinematics.h"
-#include "Herwig++/MatrixElement/Matchbox/Phasespace/IFLightInvertedTildeKinematics.h"
+#include "Herwig++/MatrixElement/Matchbox/Phasespace/IFMassiveTildeKinematics.h"
+#include "Herwig++/MatrixElement/Matchbox/Phasespace/IFMassiveInvertedTildeKinematics.h"
 
 using namespace Herwig;
 
@@ -44,9 +44,9 @@ bool IFMgqxDipole::canHandle(const cPDVector& partons,
   return
     emitter < 2 && spectator > 1 &&
     partons[emitter]->id() == ParticleID::g &&
-    abs(partons[emission]->id()) < 6 &&
-    !(partons[emission]->mass() == ZERO &&
-      partons[spectator]->mass() == ZERO);
+    abs(partons[emission]->id()) < 7 &&
+    partons[emission]->mass() == ZERO &&
+    partons[spectator]->mass() != ZERO;
 }
 
 double IFMgqxDipole::me2Avg(double ccme2) const {
@@ -122,8 +122,8 @@ void IFMgqxDipole::Init() {
   static ClassDocumentation<IFMgqxDipole> documentation
     ("IFMgqxDipole");
 
-  DipoleRepository::registerDipole<0,IFMgqxDipole,IFLightTildeKinematics,IFLightInvertedTildeKinematics>
-    ("IFMgqxDipole","IFLightTildeKinematics","IFLightInvertedTildeKinematics");
+  DipoleRepository::registerDipole<0,IFMgqxDipole,IFMassiveTildeKinematics,IFMassiveInvertedTildeKinematics>
+    ("IFMgqxDipole","IFMassiveTildeKinematics","IFMassiveInvertedTildeKinematics");
 
 }
 

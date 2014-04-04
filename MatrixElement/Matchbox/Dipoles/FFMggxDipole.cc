@@ -49,10 +49,40 @@ bool FFMggxDipole::canHandle(const cPDVector& partons,
     partons[spectator]->mass() != ZERO;
 }
 
-// TODO: (5.20)
-double FFMggxDipole::me2Avg(double) const {
-  assert(false && "implementation missing");
-  return 0.;
+double FFMggxDipole::me2Avg(double ccme2) const {
+
+  if ( jacobian() == 0.0 )
+    return 0.0;
+
+  double y = subtractionParameters()[0];
+  double z = subtractionParameters()[1];
+
+  // masses, g->gg all masses zero except spectator
+  double muj2 = sqr( realEmissionME()->lastXComb().mePartonData()[realSpectator()]->mass() / lastDipoleScale() );
+  // massive extra terms, viji = 1
+  double vijk = sqrt( sqr(2.*muj2+(1.-muj2)*(1.-y))-4.*muj2 ) / ((1.-muj2)*(1.-y));
+
+  Energy2 prop =
+    2.*((realEmissionME()->lastXComb().meMomenta()[realEmitter()])*
+  (realEmissionME()->lastXComb().meMomenta()[realEmission()]));
+
+  double zp = 0.5*(1.+vijk);
+  double zm = 0.5*(1.-vijk);
+
+  double res = -ccme2;
+
+  // extra mass terms all = 0.
+  res *= 16.*Constants::pi*SM().Nc()*(realEmissionME()->lastXComb().lastSHat())*
+    (underlyingBornME()->lastXComb().lastAlphaS())/prop;
+
+  res *= (1./(1-z*(1-y))+1./(1-(1.-z)*(1.-y))+(z*(1.-z)-zm*zp-2.)/vijk);
+
+  res *=
+    realEmissionME()->finalStateSymmetry() /
+    underlyingBornME()->finalStateSymmetry();
+
+  return res;
+
 }
 
 double FFMggxDipole::me2() const {

@@ -22,8 +22,8 @@
 
 #include "Herwig++/MatrixElement/Matchbox/Base/DipoleRepository.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/SpinCorrelationTensor.h"
-#include "Herwig++/MatrixElement/Matchbox/Phasespace/IFLightTildeKinematics.h"
-#include "Herwig++/MatrixElement/Matchbox/Phasespace/IFLightInvertedTildeKinematics.h"
+#include "Herwig++/MatrixElement/Matchbox/Phasespace/IFMassiveTildeKinematics.h"
+#include "Herwig++/MatrixElement/Matchbox/Phasespace/IFMassiveInvertedTildeKinematics.h"
 
 using namespace Herwig;
 
@@ -138,8 +138,8 @@ void IFMggxDipole::Init() {
   static ClassDocumentation<IFMggxDipole> documentation
     ("IFMggxDipole");
 
-  DipoleRepository::registerDipole<0,IFMggxDipole,IFLightTildeKinematics,IFLightInvertedTildeKinematics>
-    ("IFMggxDipole","IFLightTildeKinematics","IFLightInvertedTildeKinematics");
+  DipoleRepository::registerDipole<0,IFMggxDipole,IFMassiveTildeKinematics,IFMassiveInvertedTildeKinematics>
+    ("IFMggxDipole","IFMassiveTildeKinematics","IFMassiveInvertedTildeKinematics");
 
 }
 
