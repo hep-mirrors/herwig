@@ -794,20 +794,18 @@ MatchboxMEBase::getDipoles(const vector<Ptr<SubtractionDipole>::ptr>& dipoles,
       for ( int emission = 2; emission < nreal; ++emission ) {
 	if ( emission == emitter || emission == spectator )
 	  continue;
+	if ( !rep[emitter]->coloured() ||
+	     !rep[emission]->coloured() ||
+	     !rep[spectator]->coloured() )
+	  continue;
+	if ( noDipole(emitter,emission,spectator) )
+	  continue;
 	for ( vector<Ptr<MatchboxMEBase>::ptr>::const_iterator b =
 		borns.begin(); b != borns.end(); ++b ) {
 	  if ( (**b).onlyOneLoop() )
 	    continue;
 	  for ( vector<Ptr<SubtractionDipole>::ptr>::const_iterator d =
 		  dipoles.begin(); d != dipoles.end(); ++d ) {
-	    if ( !rep[emitter]->coloured() ||
-		 !rep[emission]->coloured() ||
-		 !rep[spectator]->coloured() ) {
-	      continue;
-	    }
-	    if ( noDipole(emitter,emission,spectator) ) {
-	      continue;
-	    }
 	    if ( done.find(make_pair(make_pair(make_pair(emitter,emission),spectator),make_pair(*b,*d))) 
 		 != done.end() ) {
 	      continue;
