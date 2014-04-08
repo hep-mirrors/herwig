@@ -71,15 +71,14 @@ void SubtractionDipole::setupBookkeeping() {
 	  theRealEmissionME->diagrams().begin();
 	d != theRealEmissionME->diagrams().end(); ++d ) {
 
-    Ptr<Tree2toNDiagram>::ptr check = 
-      new_ptr(*dynamic_ptr_cast<Ptr<Tree2toNDiagram>::ptr>(*d));
+    Tree2toNDiagram check = *dynamic_ptr_cast<Ptr<Tree2toNDiagram>::ptr>(*d);
 
     map<int,int> theMergeLegs;
     map<int,int> theRemapLegs;
 
-    for ( unsigned int i = 0; i < check->external().size(); ++i )
+    for ( unsigned int i = 0; i < check.external().size(); ++i )
       theMergeLegs[i] = -1;
-    int theEmitter = check->mergeEmission(realEmitter(),realEmission(),theMergeLegs);
+    int theEmitter = check.mergeEmission(realEmitter(),realEmission(),theMergeLegs);
 
     // no underlying Born
     if ( theEmitter == -1 )
@@ -91,7 +90,7 @@ void SubtractionDipole::setupBookkeeping() {
     for ( DiagramVector::const_iterator b = 
 	    theUnderlyingBornME->diagrams().begin();
 	  b != theUnderlyingBornME->diagrams().end(); ++b )
-      if ( check->isSame(*b,theRemapLegs) ) {
+      if ( check.isSame(*b,theRemapLegs) ) {
 	bd = b; break;
       }
 
