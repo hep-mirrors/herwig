@@ -44,7 +44,8 @@ bool FFMqgxDipole::canHandle(const cPDVector& partons,
   return
     emitter > 1 && spectator > 1 &&
     partons[emission]->id() == ParticleID::g &&
-    abs(partons[emitter]->id()) < 7 &&
+//     abs(partons[emitter]->id()) < 7 &&
+    ( abs(partons[emitter]->id()) < 7 || abs(partons[emitter]->id()) == 1000021 ) &&
     !(partons[emitter]->mass() == ZERO &&
       partons[spectator]->mass() == ZERO);
 }
@@ -69,6 +70,9 @@ double FFMqgxDipole::me2Avg(double ccme2) const {
   (realEmissionME()->lastXComb().meMomenta()[realEmission()]));
 
   double CF = (SM().Nc()*SM().Nc()-1.)/(2.*SM().Nc());
+
+  if ( realEmissionME()->lastXComb().mePartonData()[realEmitter()]->id() == 1000021 )
+    CF = SM().Nc(); // For the SUSY D_{gluino,g;k} subtraction dipole we need to replace CF by CA=Nc
 
   // extra mass terms cancel: mi2+m2-Mi2 = mQ2+0-mQ2
   double res =
@@ -106,6 +110,9 @@ double FFMqgxDipole::me2() const {
 	(realEmissionME()->lastXComb().meMomenta()[realEmission()]));
 
   double CF = (SM().Nc()*SM().Nc()-1.)/(2.*SM().Nc());
+
+  if ( realEmissionME()->lastXComb().mePartonData()[realEmitter()]->id() == 1000021 )
+    CF = SM().Nc(); // For the SUSY D_{gluino,g;k} subtraction dipole we need to replace CF by CA=Nc
 
   // extra mass terms cancel: mi2+m2-Mi2 = mQ2+0-mQ2
   double res =
