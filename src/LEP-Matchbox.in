@@ -16,95 +16,39 @@
 set /Herwig/Generators/LEPGenerator:EventHandler:LuminosityFunction:Energy 91.2
 set /Herwig/Generators/LEPGenerator:NumberOfEvents 100000000
 
-#==================================================================================
-#                    :::::MATRIX ELEMENT:::::
-#==================================================================================
-
 cd  /Herwig/MatrixElements/Matchbox
 insert /Herwig/Generators/LEPGenerator:EventHandler:SubProcessHandlers[0] EEFactory
+
+#==================================================================================
+#                    :::::PROCESS SELECTION:::::
+#
+# Note that event generation may fail if no matching matrix element has been found.
+# Coupling orders are with respect to the Born process, i.e. NLO QCD does not
+# require an additional power of alphas. NLO matched simulations are generated
+# by default, as long as virtual corrections are available.
+#==================================================================================
 
 #>>>>>>>>>> Set the order of the couplings
 set EEFactory:OrderInAlphaS 0
 set EEFactory:OrderInAlphaEW 2
 
-
-#>>>>>>>>>> uncomment the desired calculation  
-
-#>>>>>>>>>> two jets (build in):
+#>>>>>>>>>> Select the process
+#>>>>>>>>>> You may use identifiers such as p, pbar, e-, e+, j, l, mu+ etc.
 do EEFactory:Process e- e+ j j 
 
-#>>>>>>>>>> three jets (build in)                    ---- set OrderInAlphaS 1 above:
-# do EEFactory:Process e- e+ j j j
-
-#>>>>>>>>>> four jets (leading order only)(build in) ---- set OrderInAlphaS 2 above:
-# do EEFactory:Process e- e+ j j j j
-
-
-
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-#>>>>>>>>>> for external matrix elements uncomment the following line
-#>>>>>>>>>> and the amplitude which is able to produce your desired calculation
-
-#clear /Herwig/MatrixElements/Matchbox/EEFactory:Amplitudes
-
-cd /Herwig/MatrixElements/Matchbox/Amplitudes
-
-#GoSam
-#library HwMatchboxGoSam.so
-#create Herwig::GoSamAmplitude GoSamAmplitude
-#insert /Herwig/MatrixElements/Matchbox/EEFactory:Amplitudes 0 GoSamAmplitude
-#set GoSamAmplitude:Path /Desired/Path/for/Gosam/Code
-#set GoSamAmplitude:SetupInFilename /Complete/Filename/of/the/Gosam/Infile
-#set /Herwig/Model:EW/Scheme alphaMZScheme
-#set /Herwig/Model:EW/RecalculateEW On
-
-#MadGraph   (until now only Born type matrix elements: Born, Real, Subtraction, Insertions)
-#library HwMatchboxMadGraph.so
-#create Herwig::MadGraphAmplitude MadGraphAmplitude
-#set MadGraphAmplitude:ColourBasis TraceBasis
-#set MadGraphAmplitude:ProcessPath /Desired/Install/Path
-#insert /Herwig/MatrixElements/Matchbox/EEFactory:Amplitudes 0 MadGraphAmplitude
-
-#NJet:
-#library HwMatchboxNJet.so
-#create Herwig::NJetsAmplitude NJetAmplitude
-#insert /Herwig/MatrixElements/Matchbox/EEFactory:Amplitudes 0 NJetAmplitude
-
-
-#OpenLoops
-#library HwMatchboxOpenLoops.so
-#create Herwig::OpenLoopsAmplitude OpenLoopsAmplitude
-#insert /Herwig/MatrixElements/Matchbox/EEFactory:Amplitudes 0 OpenLoopsAmplitude
-
-
-cd /Herwig/MatrixElements/Matchbox
-
 #==================================================================================
-#>>>>>>>>>> Choose here your favorite external process (replace the X):
-# set EEFactory:OrderInAlphaS   X
-# set EEFactory:OrderInAlphaEW  X
-# do EEFactory:Process e+ e- XXXXXX
+#                     :::::CUT SELECTION:::::
+#
+# For finite calculations make resonable cuts! Check the wiki and manual for other
+# cut options and different jet algorithms.
 #==================================================================================
 
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#>>>>>>>>>> Cut on lepton pair invariant mass
 
+# set /Herwig/Cuts/MassCut:MinM 66*GeV
+# set /Herwig/Cuts/MassCut:MaxM 116*GeV
 
-
-
-#==================================================================================
-#                   :::::LO/NLO CALCULATIONS:::::
-#==================================================================================
-# set EEFactory:VirtualContributions On                               # default: On
-# set EEFactory:RealContributions On                                  # default: On
-
-
-#==================================================================================
-#                     :::::CUTS:::::
-# for finite calculations make resonable cuts!
-#==================================================================================
+#>>>>>>>>>> Cuts on jets
 
 # set /Herwig/Cuts/JetFinder:Variant SphericalKt
 # set /Herwig/Cuts/JetFinder:RecombinationScheme E
@@ -115,6 +59,48 @@ cd /Herwig/MatrixElements/Matchbox
 # set /Herwig/Cuts/EECuts:JetFinder /Herwig/Cuts/JetFinder
 # insert /Herwig/Cuts/EECuts:MultiCuts 0 /Herwig/Cuts/NJetsCut
 
+#==================================================================================
+#                    :::::MATRIX ELEMENTS:::::
+#
+# Builtin matrix elements are available for a small range of processes such as
+# e+ e- -> 2..4 jets (4 jets leading order only) and do not require modifaction.
+#==================================================================================
+
+cd /Herwig/MatrixElements/Matchbox/Amplitudes
+
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# Generic processes
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+#>>>>>>>>>> enable generic processes
+
+# clear /Herwig/MatrixElements/Matchbox/EEFactory:Amplitudes
+# insert /Herwig/MatrixElements/Matchbox/EEFactory:Amplitudes 0 GenericProcesses
+
+#>>>>>>>>>> choose a tree-level provider
+
+# MadGraph : requires --with-madgraph
+# set GenericProcesses:TreeLevelAmplitude MadGraph
+
+#>>>>>>>>>> choose a one-loop provider
+
+# GoSam : requires --with-gosam and --with-gosam-contrib
+# set GenericProcesses:OneLoopAmplitude GoSam
+
+# NJet : requires --with-njet
+# set GenericProcesses:OneLoopAmplitude NJet
+
+# OpenLoops : requires --with-openloops
+# set GenericProcesses:OneLoopAmplitude OpenLoops
+
+#==================================================================================
+#                   :::::LO/NLO CALCULATIONS:::::
+#==================================================================================
+
+cd /Herwig/MatrixElements/Matchbox
+
+# set EEFactory:VirtualContributions Off
+# set EEFactory:RealContributions Off
 
 #==================================================================================
 #                     :::::MATCHING:::::
@@ -123,6 +109,9 @@ cd /Herwig/MatrixElements/Matchbox
 #>>>>>>>>>> MC@NLO-type next-to-leading order for use with dipole shower
 
 set EEFactory:ShowerApproximation DipoleMatching
+cd /Herwig/EventHandlers
+set LEPHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
+cd /Herwig/MatrixElements/Matchbox
 
 #>>>>>>>>>> MC@NLO-type next-to-leading order for use with default shower
 
@@ -132,15 +121,28 @@ set EEFactory:ShowerApproximation DipoleMatching
 
 # set EEFactory:ShowerApproximation MEMatching
 # set MECorrectionHandler:Factory EEFactory
-#cd /Herwig/Generators
+# cd /Herwig/Generators
 # insert LEPGenerator:EventHandler:PostSubProcessHandlers[0] MECorrectionHandler
-#cd /Herwig/MatrixElements/Matchbox
+# cd /Herwig/MatrixElements/Matchbox
+
+#>>>>>>>>>> switch to plain (N)LO
+#                   -- note this will need specialized analyses for NLO
+
+# set EEFactory:ShowerApproximation NULL
+# set EEFactory:SubProcessGroups On
+# cd /Herwig/EventHandlers
+# set LEPHandler:CascadeHandler NULL
+# set LEPHandler:HadronizationHandler NULL
+# set LEPHandler:DecayHandler NULL
+# set /Herwig/Analysis/Basics:CheckQuark No
+# cd /Herwig/MatrixElements/Matchbox
 
 #==================================================================================
 #                     :::::SCALES VARIATIONS:::::
 #==================================================================================
 
 #>>>>>>>>>> SCALE CHOICE
+
 set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 91.2*GeV
 set EEFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale
 
@@ -148,12 +150,13 @@ set EEFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale
 # set EEFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/MaxPtScale
 # set EEFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonMassScale
 
-
 #>>>>>>>>>> HARD PROCESS SCALE VARIATION
+
 set EEFactory:RenormalizationScaleFactor 1.0
 set EEFactory:FactorizationScaleFactor 1.0
 
-#>>>>>>>>>> MATCHING SCALE VARIATION - HardScaleFactor has to equal the one for the shower!
+#>>>>>>>>>> MATCHING SCALE VARIATION 
+#                 - HardScaleFactor has to equal the one for the shower!
 
 set DipoleMatching:RenormalizationScaleFactor 1.0
 set DipoleMatching:FactorizationScaleFactor 1.0
@@ -167,7 +170,7 @@ set QTildeMatching:RenormalizationScaleFactor 1.0
 set QTildeMatching:FactorizationScaleFactor 1.0
 set QTildeMatching:HardScaleFactor 1.0
 
-#>>>>>>>>>> SHOWER SCALE VARIATION
+#>>>>>>>>>> SHOWER SCALE VARIATIONS
 
 set /Herwig/DipoleShower/DipoleShowerHandler:RenormalizationScaleFactor 1.0
 set /Herwig/DipoleShower/DipoleShowerHandler:FactorizationScaleFactor 1.0
@@ -176,17 +179,14 @@ set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleFactor 1.0
 set /Herwig/Shower/AlphaQCD:RenormalizationScaleFactor 1.0
 set /Herwig/Shower/Evolver:HardScaleFactor 1.0
 
-
-
-
 #==================================================================================
 #                     :::::SAMPLER:::::
 #==================================================================================
 
+cd /Herwig/EventHandlers
 
-set /Herwig/EventHandlers/LEPHandler:Weighted Off
-set /Herwig/EventHandlers/LEPHandler:Sampler  /Herwig/Samplers/Sampler
-
+set LEPHandler:Weighted Off
+set LEPHandler:Sampler  /Herwig/Samplers/Sampler
 
 #==================================================================================
 #                     :::::GENERATOR:::::
@@ -194,19 +194,12 @@ set /Herwig/EventHandlers/LEPHandler:Sampler  /Herwig/Samplers/Sampler
 
 cd /Herwig/Generators
 
-set LEPGenerator:EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
 set LEPGenerator:EventHandler:CascadeHandler:MPIHandler NULL
 
 set LEPGenerator:RandomNumberGenerator:Seed 31122001
 set LEPGenerator:DebugLevel 1
 set LEPGenerator:PrintEvent 10
 set LEPGenerator:MaxErrors 10000
-
-#insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
-#set /Herwig/Analysis/HepMCFile:PrintEvent 1000000
-#set /Herwig/Analysis/HepMCFile:Format GenEvent
-#set /Herwig/Analysis/HepMCFile:Units GeV_mm
-#set /Herwig/Analysis/HepMCFile:Filename events.fifo
 
 # Rivet Analyses:
 # requires installation of Rivet and --with-rivet while installing ThePEG
@@ -221,6 +214,7 @@ set LEPGenerator:MaxErrors 10000
 
 #==================================================================================
 #                     :::::CLEANUP:::::
+#
 # Change only if you know what you are doing.
 # For the moment, we can only deal with massless partons
 #==================================================================================
@@ -236,10 +230,35 @@ set /Herwig/Particles/b:NominalMass 0*GeV
 set /Herwig/Particles/bbar:NominalMass 0*GeV
 set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
 set /Herwig/Generators/LEPGenerator:EventHandler:CollisionCuts Off
+set /Herwig/Model:QCD/RunningAlphaS /Herwig/MatrixElements/Matchbox/AlphaS/NLOAlphaS
+
+#==================================================================================
+#                     :::::SAMPLER TWEAKING:::::
+#
+# Change only if you know what you are doing.
+#==================================================================================
+
+cd /Herwig/Samplers
+set CellGridSampler:InitialPoints 10000
+set CellGridSampler:ExplorationPoints 500
+set CellGridSampler:ExplorationSteps 4
+set CellGridSampler:Gain 0.3
+set CellGridSampler:Epsilon 1.0
+set CellGridSampler:MinimumSelection 0.000001
+set CellGridSampler:NIterations 1
+set CellGridSampler:EnhancementFactor 1
+set CellGridSampler:UseAllIterations No
+set Sampler:UpdateAfter 1000
+set Sampler:AddUpSamplers Off
+set Sampler:GlobalMaximumWeight Off
+set Sampler:FlatSubprocesses Off
+set Sampler:MinSelection 0.000001
+set Sampler:AlmostUnweighted Off
+set Sampler:RunCombinationData Off
 
 #==================================================================================
 #                     :::::SAVE THE GENERATOR:::::
 #==================================================================================
 
 cd /Herwig/Generators
-saverun LEP LEPGenerator
+saverun LEP-Matchbox LEPGenerator
