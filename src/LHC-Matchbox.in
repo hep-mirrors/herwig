@@ -231,6 +231,19 @@ set LHCGenerator:DebugLevel 1
 set LHCGenerator:PrintEvent 10
 set LHCGenerator:MaxErrors 10000
 
+# Rivet Analyses:
+# requires installation of Rivet and --with-rivet while installing ThePEG
+
+# create ThePEG::NLORivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
+# insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
+# insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_ZINC
+# insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_ZJETS
+# insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_ZKTSPLITTINGS
+# Z+jets in pp at 7 TeV:
+# insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I945498
+# Measurement of the Z pT with electrons and muons at 7 TeV:
+# insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S9131140
+
 #==================================================================================
 #                     :::::CLEANUP:::::
 #

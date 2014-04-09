@@ -208,6 +208,17 @@ set LEPGenerator:MaxErrors 10000
 #set /Herwig/Analysis/HepMCFile:Units GeV_mm
 #set /Herwig/Analysis/HepMCFile:Filename events.fifo
 
+# Rivet Analyses:
+# requires installation of Rivet and --with-rivet while installing ThePEG
+
+# create ThePEG::NLORivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
+# insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
+# insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_JETS
+# Studies of QCD:
+# insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_1996_S3486095
+# Event shapes and identified particles:
+# insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1996_S3430090
+
 #==================================================================================
 #                     :::::CLEANUP:::::
 # Change only if you know what you are doing.
@@ -227,4 +238,8 @@ set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
 set /Herwig/Generators/LEPGenerator:EventHandler:CollisionCuts Off
 
 #==================================================================================
+#                     :::::SAVE THE GENERATOR:::::
+#==================================================================================
+
+cd /Herwig/Generators
 saverun LEP LEPGenerator

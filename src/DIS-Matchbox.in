@@ -207,6 +207,16 @@ set DISGenerator:MaxErrors 10000
 #set /Herwig/Analysis/HepMCFile:Units GeV_mm
 #set /Herwig/Analysis/HepMCFile:Filename events.fifo
 
+# Rivet Analyses:
+# requires installation of Rivet and --with-rivet while installing ThePEG
+
+# create ThePEG::NLORivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
+# insert DISGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
+# Energy flow in DIS:
+# insert /Herwig/Analysis/RivetAnalysis:Analyses 0 H1_2000_S4129130
+# Energy flow and charged particle spectra in DIS:
+# insert /Herwig/Analysis/RivetAnalysis:Analyses 0 H1_1994_S2919893
+
 #==================================================================================
 #                     :::::CLEANUP:::::
 # Change only if you know what you are doing.
@@ -227,6 +237,9 @@ set /Herwig/Cuts/NeutralCurrentCut:MinW2 0.0*GeV2
 set /Herwig/Cuts/DISCuts:MHatMin 0.0*GeV
 set /Herwig/Generators/DISGenerator:EventHandler:CollisionCuts Off
 
+#==================================================================================
+#                     :::::SAVE THE GENERATOR:::::
+#==================================================================================
 
-
+cd /Herwig/Generators
 saverun DIS DISGenerator
