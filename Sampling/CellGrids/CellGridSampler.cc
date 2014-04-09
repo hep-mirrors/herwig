@@ -55,6 +55,12 @@ double CellGridSampler::generate() {
   UseRandom rnd;
   pair<double,double> weights = SimpleCellGrid::generate(rnd,*this,lastPoint());
   double w = SimpleCellGrid::integral()*weights.first/weights.second;
+  if (randomNumberString()!="") 
+  for ( size_t k = 0; k < lastPoint().size(); ++k ) {
+    RandomNumberHistograms[RandomNumberIndex(id(),k)].first.book(lastPoint()[k],w);
+    RandomNumberHistograms[RandomNumberIndex(id(),k)].second+=w;
+
+  }
   if ( !weighted() && initialized() ) {
     double p = min(abs(w),referenceWeight())/referenceWeight();
     double sign = w >= 0. ? 1. : -1.;
@@ -102,7 +108,10 @@ void CellGridSampler::initialize(bool progress) {
   }
 
   lastPoint().resize(dimension());
-
+  if (randomNumberString()!="") 
+  for(size_t i=0;i<lastPoint().size();i++){
+     RandomNumberHistograms[RandomNumberIndex(id(),i)] = make_pair( RandomNumberHistogram(),0.);
+  }
   if ( initialized() ) {
     if ( !haveGrid )
       throw Exception() << "CellGridSampler: Require existing grid when starting to run."
@@ -179,6 +188,14 @@ void CellGridSampler::finalize(bool) {
   XML::Element grid = SimpleCellGrid::toXML();
   grid.appendAttribute("process",id());
   sampler()->grids().append(grid);
+  if (randomNumberString()!="")  
+  for ( map<RandomNumberIndex,pair<RandomNumberHistogram,double> >::
+    const_iterator b = RandomNumberHistograms.begin();
+    b != RandomNumberHistograms.end(); ++b ) {
+    b->second.first.dump(randomNumberString(), b->first.first,shortprocess(),b->first.second);
+  }
+
+
 }
 
 // If needed, insert default implementations of virtual function defined

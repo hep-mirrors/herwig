@@ -110,6 +110,11 @@ public:
   string process() const;
 
   /**
+   * Return a short string describing the process handled by this sampler.
+   */
+  string shortprocess() const;
+  
+  /**
    * Return a string identifying the process handled by this sampler.
    */
   string id() const;
@@ -205,7 +210,7 @@ public:
   /**
    * Finalize this sampler.
    */
-  virtual void finalize(bool) {}
+  virtual void finalize(bool); 
 
   /**
    * Return the total integrated cross section determined from the
@@ -222,6 +227,56 @@ public:
   virtual CrossSection integratedXSecErr() const {
     return sqrt(abs(averageWeightVariance()))*nanobarn;
   }
+
+   /**
+   * Define the key for the collinear subtraction data.
+   */
+
+  
+  struct RandomNumberHistogram {
+
+    /**
+     * The lower bound
+     */
+    double lower;
+
+    /**
+     * The bins, indexed by upper bound.
+     */
+    map<double,double > bins;
+    
+    map<double,double > binsw1;
+    /**
+     * Constructor
+     */
+    RandomNumberHistogram(double low = 0.0, 
+			 double up = 1., 
+			 unsigned int nbins = 30);
+
+    /**
+     * Book an event.
+     */
+    void book(double inv, double weight) {
+      map<double,double>::iterator b =	bins.upper_bound(inv);
+      if ( b == bins.end() ) return;
+      b->second = b->second+weight;
+      map<double,double>::iterator b2 =	binsw1.upper_bound(inv);
+      if ( b2 == binsw1.end() ) return;
+      b2->second = b2->second+1.;
+
+    }
+
+    /**
+     * Write to file given name and invariant.
+     */
+    void dump(const std::string& folder,const std::string& prefix, const std::string& process,const int NR)const;
+
+
+  };
+     
+  typedef pair<string,size_t > RandomNumberIndex;
+  
+  map<RandomNumberIndex,pair<RandomNumberHistogram,double> > RandomNumberHistograms;
 
 public:
 
@@ -261,6 +316,11 @@ public:
    * iteration.
    */
   double enhancementFactor() const { return theEnhancementFactor; }
+  
+  /**
+   * Return the folder for the random number plots.
+   */
+  string randomNumberString() const {return theRandomNumbers;}
 
 public:
 
@@ -365,6 +425,12 @@ private:
    * The containing sampler
    */
   Ptr<GeneralSampler>::tptr theSampler;
+  
+  
+    /**
+   * Folder for the random number plots.
+   */
+  string theRandomNumbers;
 
 private:
 
