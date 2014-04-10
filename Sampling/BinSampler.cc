@@ -235,8 +235,15 @@ void BinSampler::RandomNumberHistogram::
 dump(const std::string& folder,const std::string& prefix, const std::string& process, 
      const int NR) const {
   ostringstream fname("");
-  fname << "RandomNumber-"<< NR ;
-  ofstream out((folder+"/"+prefix+fname.str()+".dat").c_str());
+  std::string prefix2;
+  std::string prefix3=prefix;
+  std::remove_copy(prefix.begin(), prefix.end(), std::back_inserter(prefix2), '.');
+  prefix3=prefix2;prefix2.clear();
+  std::remove_copy(prefix3.begin(), prefix3.end(), std::back_inserter(prefix2), ':');
+    prefix3=prefix2;prefix2.clear();
+  std::remove_copy(prefix3.begin(), prefix3.end(), std::back_inserter(prefix2), ',');
+  fname << "RN-"<< NR ;
+  ofstream out((folder+"/"+prefix2+fname.str()+".dat").c_str());
   double sumofweights=0.;
   for ( map<double,double >::const_iterator b = bins.begin();b != bins.end(); ++b )
        sumofweights+=b->second;  
@@ -250,7 +257,7 @@ dump(const std::string& folder,const std::string& prefix, const std::string& pro
   for ( map<double,double >::const_iterator b = binsw1.begin();b != binsw1.end(); ++b )
        sumofweights+=b->second;  
   
-  ofstream out2((folder+"/"+prefix+fname.str()+"-w=1.dat").c_str());
+  ofstream out2((folder+"/"+prefix2+fname.str()+"-w=1.dat").c_str());
   for ( map<double,double >::const_iterator b = binsw1.begin();
 	b != binsw1.end(); ++b ) {
       out2 << " " << b->first
@@ -259,15 +266,15 @@ dump(const std::string& folder,const std::string& prefix, const std::string& pro
   }
   double xmin = -0.01;
   double xmax = 1.01;
-  ofstream gpout((folder+"/"+prefix+fname.str()+".gp").c_str());
+  ofstream gpout((folder+"/"+prefix2+fname.str()+".gp").c_str());
   gpout << "set terminal epslatex color solid\n"
-      << "set output '" << prefix+fname.str() << "-plot.tex'\n"
+      << "set output '" << prefix2+fname.str() << "-plot.tex'\n"
       << "set xrange [" << xmin << ":" << xmax << "]\n";
     gpout << "set xlabel 'rn "<<NR <<"' \n";
     gpout << "set size 0.5,0.6\n";
-    gpout << "plot '" << prefix+fname.str()
+    gpout << "plot '" << prefix2+fname.str()
     << ".dat' u ($1):($2)  w boxes  lc rgbcolor \"blue\" t '{\\tiny "<<process <<"}',";
-    gpout << " '" << prefix+fname.str();
+    gpout << " '" << prefix2+fname.str();
     gpout << "-w=1.dat' u ($1):($2)  w boxes  lc rgbcolor \"red\" t '{\\tiny "<<process <<":w=1}';";
   gpout << "reset\n";
 }

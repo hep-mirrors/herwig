@@ -59,8 +59,8 @@ double CellGridSampler::generate() {
   double w = SimpleCellGrid::integral()*weights.first/weights.second;
   if (randomNumberString()!="") 
   for ( size_t k = 0; k < lastPoint().size(); ++k ) {
-    RandomNumberHistograms[RandomNumberIndex(id(),k)].first.book(lastPoint()[k],w);
-    RandomNumberHistograms[RandomNumberIndex(id(),k)].second+=w;
+    RandomNumberHistograms[RandomNumberIndex(id(),k)].first.book(lastPoint()[k],abs(w));
+    RandomNumberHistograms[RandomNumberIndex(id(),k)].second+=abs(w);
 
   }
   if ( !weighted() && initialized() ) {
