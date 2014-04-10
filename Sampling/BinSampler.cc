@@ -30,6 +30,7 @@
 #include <boost/progress.hpp>
 
 #include "GeneralSampler.h"
+#include <boost/math/distributions/chi_squared.hpp>
 
 using namespace Herwig;
 
@@ -247,23 +248,21 @@ dump(const std::string& folder,const std::string& prefix, const std::string& pro
   double sumofweights=0.;
   for ( map<double,double >::const_iterator b = bins.begin();b != bins.end(); ++b )
        sumofweights+=b->second;  
+  double sumofweights2=0.;
+  for ( map<double,double >::const_iterator b = binsw1.begin();b != binsw1.end(); ++b )
+       sumofweights2+=b->second;  
+  map<double,double >::const_iterator b2 = binsw1.begin();
+  double chisq=0.;
   for ( map<double,double >::const_iterator b = bins.begin();
-	b != bins.end(); ++b ) {
+	b != bins.end(); ++b, ++b2) {
       out << " " << b->first
 	  << " " << b->second/sumofweights*100.
+	  << " " << b2->second/sumofweights2*100.
 	  << "\n" << flush;
-  } 
-  sumofweights=0.;
-  for ( map<double,double >::const_iterator b = binsw1.begin();b != binsw1.end(); ++b )
-       sumofweights+=b->second;  
-  
-  ofstream out2((folder+"/"+prefix2+fname.str()+"-w=1.dat").c_str());
-  for ( map<double,double >::const_iterator b = binsw1.begin();
-	b != binsw1.end(); ++b ) {
-      out2 << " " << b->first
-	  << " " << b->second/sumofweights*100.
-	  << "\n" << flush;
-  }
+	  chisq+=pow(b->second/sumofweights*sumofweights2-b2->second,2.)/max(b2->second,0.00000001);
+  }   
+  boost::math::chi_squared mydist(bins.size()-1);
+  double p = boost::math::cdf(mydist,chisq);
   double xmin = -0.01;
   double xmax = 1.01;
   ofstream gpout((folder+"/"+prefix2+fname.str()+".gp").c_str());
@@ -273,9 +272,9 @@ dump(const std::string& folder,const std::string& prefix, const std::string& pro
     gpout << "set xlabel 'rn "<<NR <<"' \n";
     gpout << "set size 0.5,0.6\n";
     gpout << "plot '" << prefix2+fname.str()
-    << ".dat' u ($1):($2)  w boxes  lc rgbcolor \"blue\" t '{\\tiny "<<process <<"}',";
+    << ".dat' u ($1):($2)  w boxes  lc rgbcolor \"blue\" t '{\\tiny "<<process <<" }',";
     gpout << " '" << prefix2+fname.str();
-    gpout << "-w=1.dat' u ($1):($2)  w boxes  lc rgbcolor \"red\" t '{\\tiny "<<process <<":w=1}';";
+    gpout << ".dat' u ($1):($3)  w boxes  lc rgbcolor \"red\" t '"<<1-p <<"';";
   gpout << "reset\n";
 }
 

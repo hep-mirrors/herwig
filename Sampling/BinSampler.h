@@ -251,7 +251,7 @@ public:
      */
     RandomNumberHistogram(double low = 0.0, 
 			 double up = 1., 
-			 unsigned int nbins = 30);
+			 unsigned int nbins = 20);
 
     /**
      * Book an event.
