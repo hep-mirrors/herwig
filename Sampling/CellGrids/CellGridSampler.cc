@@ -20,6 +20,8 @@
 #include "ThePEG/Utilities/DescribeClass.h"
 
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/ParVector.h"
+
 
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -138,9 +140,15 @@ void CellGridSampler::initialize(bool progress) {
     Repository::clog() << "exploring " << process();
     progressBar = new boost::progress_display(theExplorationSteps,cout);
   }
-
   std::set<SimpleCellGrid*> newCells;
+  
+  
+  for(size_t splitdim=0; splitdim<pre_adaption_splits().size();splitdim++)
+      SimpleCellGrid::splitter(splitdim,pre_adaption_splits()[splitdim]);
+  
   SimpleCellGrid::explore(theExplorationPoints,rnd,*this,newCells);
+
+  
   bool notAll = false;
   for ( std::size_t step = 1; step < theExplorationSteps; ++step ) {
     newCells.clear();
@@ -253,6 +261,14 @@ void CellGridSampler::Init() {
      "The minimum cell selection probability.",
      &CellGridSampler::theMinimumSelection, 0.0001, 0.0, 1.0,
      false, false, Interface::limited);
+    
+    
+  static ParVector<CellGridSampler,int> interfacethe_pre_adaption_splits
+    ("preadaptionsplit",
+     "The splittings for each dimension befor adaption.",
+     &CellGridSampler::the_pre_adaption_splits, 1., -1, 0.0, 0.0, 0,
+     false, false, Interface::lowerlim);
+
 
 }
 

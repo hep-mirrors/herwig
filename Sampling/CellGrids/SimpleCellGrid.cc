@@ -81,6 +81,22 @@ void SimpleCellGrid::adapt(double gain, double epsilon,
   }
 }
 
+void SimpleCellGrid::splitter(size_t dim, int rat) {
+    if ( !isLeaf() ) {
+    firstChild().splitter( dim, rat);
+    secondChild().splitter(dim, rat);
+    return;
+    }
+    SimpleCellGrid* b=this;
+    for (int i=rat;i>1;i--){
+       b->split(dim,1./i*(b->lowerLeft()[dim]+b->upperRight()[dim]));
+       b=&(b->secondChild());
+    }
+}
+
+
+
+
 void SimpleCellGrid::setWeights() {
   if ( !isLeaf() ) {
     firstChild().setWeights();

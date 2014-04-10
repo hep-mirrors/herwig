@@ -54,6 +54,9 @@ namespace ExSample {
      */
     virtual void split(std::size_t newSplitDimension, double newSplitCoordinate);
 
+
+    virtual void splitter(size_t dim, int rat);
+    
   public:
 
     /**
