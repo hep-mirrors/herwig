@@ -631,16 +631,16 @@ void MatchboxMEBase::AccuracyHistogram::book(double a, double b) {
     r = abs(1.-abs(b/a));
   else if ( abs(b) != 0.0 )
     r = abs(b);
-  if ( log(r) < lower || r == 0.0 ) {
+  if ( log10(r) < lower || r == 0.0 ) {
     ++underflow;
     return;
   }
-  if ( log(r) > upper ) {
+  if ( log10(r) > upper ) {
     ++overflow;
     return;
   }
   map<double,double>::iterator bin =
-    bins.upper_bound(log(r));
+    bins.upper_bound(log10(r));
   if ( bin == bins.end() )
     return;
   bin->second += 1.;
