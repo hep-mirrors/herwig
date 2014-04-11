@@ -800,19 +800,17 @@ MatchboxMEBase::getDipoles(const vector<Ptr<SubtractionDipole>::ptr>& dipoles,
 	  continue;
 	if ( noDipole(emitter,emission,spectator) )
 	  continue;
-	for ( vector<Ptr<MatchboxMEBase>::ptr>::const_iterator b =
-		borns.begin(); b != borns.end(); ++b ) {
-	  if ( (**b).onlyOneLoop() )
+	for ( vector<Ptr<SubtractionDipole>::ptr>::const_iterator d =
+		dipoles.begin(); d != dipoles.end(); ++d ) {
+	  if ( !(**d).canHandle(rep,emitter,emission,spectator) )
 	    continue;
-	  for ( vector<Ptr<SubtractionDipole>::ptr>::const_iterator d =
-		  dipoles.begin(); d != dipoles.end(); ++d ) {
+	  for ( vector<Ptr<MatchboxMEBase>::ptr>::const_iterator b =
+		  borns.begin(); b != borns.end(); ++b ) {
+	    if ( (**b).onlyOneLoop() )
+	      continue;
 	    if ( done.find(make_pair(make_pair(make_pair(emitter,emission),spectator),make_pair(*b,*d))) 
-		 != done.end() ) {
+		 != done.end() )
 	      continue;
-	    }
-	    if ( !(**d).canHandle(rep,emitter,emission,spectator) ) {
-	      continue;
-	    }
 	    // now get to work
 	    (**d).clearBookkeeping();
 	    (**d).realEmitter(emitter);
