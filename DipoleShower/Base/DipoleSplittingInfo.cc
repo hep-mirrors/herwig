@@ -91,13 +91,19 @@ void DipoleIndex::print(ostream& os) const {
 }
 
 DipoleSplittingInfo::DipoleSplittingInfo()
-  : theConfiguration(false,false),
+  : theConfiguration(false,false), 
+    theSpectatorConfiguration(false,false),
     theScale(0.0*GeV),
     theEmitterX(1.0), theSpectatorX(1.0), 
     theHardPt(0.0*GeV), theLastPt(0.0*GeV),
     theLastZ(0.0), theLastPhi(0.0), theLastEmitterZ(0.0),
     theLastSpectatorZ(0.0), theLastValue(0.0),
     theStoppedEvolving(false) {}
+
+void DipoleSplittingInfo::fill(const DipoleSplittingInfo& other) {
+  *this = other;
+}
+
 
 void DipoleSplittingInfo::print(ostream& os) const {
 

@@ -314,24 +314,48 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
 				      const Dipole& dip,
 				      pair<bool,bool> conf,
 				      Energy optCutoff) {
+  return
+    getWinner(winner,dip.index(conf),
+	      dip.emitterX(conf),dip.spectatorX(conf),
+	      conf,dip.emitter(conf),dip.spectator(conf),
+	      dip.emitterScale(conf),optCutoff);
+}
 
-  if ( !dip.index(conf).initialStateEmitter() &&
+Energy DipoleShowerHandler::getWinner(SubleadingSplittingInfo& winner,
+				      Energy optCutoff) {
+  return
+    getWinner(winner,winner.index(),
+	      winner.emitterX(),winner.spectatorX(),
+	      winner.configuration(),
+	      winner.emitter(),winner.spectator(),
+	      winner.startScale(),optCutoff);
+}
+
+Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
+				      const DipoleIndex& index,
+				      double emitterX, double spectatorX,
+				      pair<bool,bool> conf,
+				      tPPtr emitter, tPPtr spectator,
+				      Energy startScale,
+				      Energy optCutoff) {
+
+  if ( !index.initialStateEmitter() &&
        !doFSR ) {
     winner.didStopEvolving();
     return 0.0*GeV;
   }
 
-  if ( dip.index(conf).initialStateEmitter() &&
+  if ( index.initialStateEmitter() &&
        !doISR ) {
     winner.didStopEvolving();
     return 0.0*GeV;
   }
 
   DipoleSplittingInfo candidate;      
-  candidate.index(dip.index(conf));
+  candidate.index(index);
   candidate.configuration(conf);
-  candidate.emitterX(dip.emitterX(conf));
-  candidate.spectatorX(dip.spectatorX(conf));
+  candidate.emitterX(emitterX);
+  candidate.spectatorX(spectatorX);
 
   if ( generators().find(candidate.index()) == generators().end() )
     getGenerators(candidate.index());
@@ -353,9 +377,6 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
   pair<GeneratorMap::iterator,GeneratorMap::iterator> gens
     = generators().equal_range(candidate.index());
 
-  tPPtr emitter = dip.emitter(conf);
-  tPPtr spectator = dip.spectator(conf);
-  Energy startScale = dip.emitterScale(conf);
   Energy winnerScale = 0.0*GeV;
   GeneratorMap::iterator winnerGen = generators().end();
 
@@ -427,7 +448,7 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
     // ATTENTION other profiles go here
 
     if ( nextScale > winnerScale ) {
-      winner = candidate;
+      winner.fill(candidate);
       gen->second->completeSplitting(winner);
       winnerGen = gen;
       winnerScale = nextScale;

@@ -200,6 +200,90 @@ void DipoleEventRecord::popChains(const list<list<DipoleChain>::iterator>& chs) 
 
 }
 
+DipoleIndex 
+DipoleEventRecord::mergeIndex(list<Dipole>::iterator firstDipole, const pair<bool,bool>& whichFirst,
+			      list<Dipole>::iterator secondDipole, const pair<bool,bool>& whichSecond) const {
+  tcPDPtr emitterData = 
+    whichFirst.first ? firstDipole->leftParticle()->dataPtr() : firstDipole->rightParticle()->dataPtr();
+  tcPDPtr spectatorData = 
+    whichSecond.first ? secondDipole->leftParticle()->dataPtr() : secondDipole->rightParticle()->dataPtr();
+  const PDF& emitterPDF =
+    whichFirst.first ? firstDipole->leftPDF() : firstDipole->rightPDF();
+  const PDF& spectatorPDF =
+    whichSecond.first ? secondDipole->leftPDF() : secondDipole->rightPDF();
+  return DipoleIndex(emitterData,spectatorData,emitterPDF,spectatorPDF);
+}
+
+
+SubleadingSplittingInfo 
+DipoleEventRecord::mergeSplittingInfo(list<DipoleChain>::iterator firstChain, list<Dipole>::iterator firstDipole, 
+				      const pair<bool,bool>& whichFirst,
+				      list<DipoleChain>::iterator secondChain, list<Dipole>::iterator secondDipole, 
+				      const pair<bool,bool>& whichSecond) const {
+  SubleadingSplittingInfo res;
+  res.index(mergeIndex(firstDipole,whichFirst,secondDipole,whichSecond));
+  res.emitter(whichFirst.first ? firstDipole->leftParticle() : firstDipole->rightParticle());
+  res.spectator(whichSecond.first ? secondDipole->leftParticle() : secondDipole->rightParticle());
+  res.emitterX(whichFirst.first ? firstDipole->leftFraction() : firstDipole->rightFraction());
+  res.spectatorX(whichSecond.first ? secondDipole->leftFraction() : secondDipole->rightFraction());
+  res.configuration(whichFirst);
+  res.spectatorConfiguration(whichSecond);
+  res.emitterChain(firstChain);
+  res.emitterDipole(firstDipole);
+  res.spectatorChain(secondChain);
+  res.spectatorDipole(secondDipole);
+  return res;
+}
+
+void DipoleEventRecord::getSubleadingSplittings(list<SubleadingSplittingInfo>& res) {
+  static pair<bool,bool> left(true,false);
+  static pair<bool,bool> right(false,true);
+  res.clear();
+  for ( list<DipoleChain>::iterator cit = theChains.begin();
+	cit != theChains.end(); ++cit ) {
+    for ( list<Dipole>::iterator dit = cit->dipoles().begin();
+	  dit != cit->dipoles().end(); ++dit ) {
+      for ( list<Dipole>::iterator djt = dit;
+	    djt != cit->dipoles().end(); ++djt ) {
+	res.push_back(mergeSplittingInfo(cit,dit,left,cit,djt,left));
+	res.push_back(mergeSplittingInfo(cit,dit,right,cit,djt,right));
+	if ( dit != djt ) {
+	  res.push_back(mergeSplittingInfo(cit,dit,left,cit,djt,right));
+	  res.push_back(mergeSplittingInfo(cit,dit,right,cit,djt,left));
+	}
+      }
+    }
+    list<DipoleChain>::iterator cjt = cit; ++cjt;
+    for ( ; cjt != theChains.end(); ++cjt ) {
+      for ( list<Dipole>::iterator dit = cit->dipoles().begin();
+	    dit != cit->dipoles().end(); ++dit ) {
+	for ( list<Dipole>::iterator djt = cjt->dipoles().begin();
+	      djt != cjt->dipoles().end(); ++djt ) {
+	  res.push_back(mergeSplittingInfo(cit,dit,left,cjt,djt,left));
+	  res.push_back(mergeSplittingInfo(cit,dit,right,cjt,djt,right));
+	  res.push_back(mergeSplittingInfo(cit,dit,left,cjt,djt,right));
+	  res.push_back(mergeSplittingInfo(cit,dit,right,cjt,djt,left));
+	}
+      }
+    }
+  }
+}
+
+void DipoleEventRecord::splitSubleading(SubleadingSplittingInfo& dsplit,
+					pair<list<Dipole>::iterator,list<Dipole>::iterator>& childIterators,
+					DipoleChain*& firstChain, DipoleChain*& secondChain) {
+  if ( dsplit.emitterDipole() == dsplit.spectatorDipole() ) {
+    assert(dsplit.emitterChain() == dsplit.spectatorChain());
+    split(dsplit.emitterDipole(),dsplit.emitterChain(),dsplit,
+	  childIterators,firstChain,secondChain,false);
+  } else {
+    // first need to recoil, then split
+    recoil(dsplit.spectatorDipole(),dsplit.spectatorChain(),dsplit);
+    split(dsplit.emitterDipole(),dsplit.emitterChain(),dsplit,
+	  childIterators,firstChain,secondChain,true);
+  }
+}
+
 void DipoleEventRecord::findChains(const PList& ordered) {
 
   theChains.clear();

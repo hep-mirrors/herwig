@@ -25,6 +25,103 @@ using namespace ThePEG;
  * \ingroup DipoleShower
  * \author Simon Platzer
  *
+ * \brief Generalized dipole splitting info to deal with subleading-N
+ * splittings.
+ */
+class SubleadingSplittingInfo
+  : public DipoleSplittingInfo {
+
+public:
+
+  /**
+   * Default constructor
+   */
+  SubleadingSplittingInfo()
+    : DipoleSplittingInfo() {}
+
+  /**
+   * Get the iterator of the emitter dipole chain
+   */
+  list<DipoleChain>::iterator emitterChain() const { return theEmitterChain; }
+
+  /**
+   * Get the iterator of the emitter dipole
+   */
+  list<Dipole>::iterator emitterDipole() const { return theEmitterDipole; }
+
+  /**
+   * Get the iterator of the spectator dipole chain
+   */
+  list<DipoleChain>::iterator spectatorChain() const { return theSpectatorChain; }
+
+  /**
+   * Get the iterator of the spectator dipole
+   */
+  list<Dipole>::iterator spectatorDipole() const { return theSpectatorDipole; }
+
+  /**
+   * Get the starting scale
+   */
+  Energy startScale() const { return theStartScale; }
+
+  /**
+   * Set the iterator of the emitter dipole chain
+   */
+  void emitterChain(list<DipoleChain>::iterator it) { theEmitterChain = it; }
+
+  /**
+   * Set the iterator of the emitter dipole
+   */
+  void emitterDipole(list<Dipole>::iterator it) { theEmitterDipole = it; }
+
+  /**
+   * Set the iterator of the spectator dipole chain
+   */
+  void spectatorChain(list<DipoleChain>::iterator it) { theSpectatorChain = it; }
+
+  /**
+   * Set the iterator of the spectator dipole
+   */
+  void spectatorDipole(list<Dipole>::iterator it) { theSpectatorDipole = it; }
+
+  /**
+   * Set the starting scale
+   */
+  void startScale(Energy s) { theStartScale = s; }
+
+private:
+
+  /**
+   * Iterator of the emitter dipole chain
+   */
+  list<DipoleChain>::iterator theEmitterChain;
+
+  /**
+   * Iterator of the emitter dipole
+   */
+  list<Dipole>::iterator theEmitterDipole;
+
+  /**
+   * Iterator of the spectator dipole chain
+   */
+  list<DipoleChain>::iterator theSpectatorChain;
+
+  /**
+   * Iterator of the spectator dipole
+   */
+  list<Dipole>::iterator theSpectatorDipole;
+
+  /**
+   * The starting scale
+   */
+  Energy theStartScale;
+
+};
+
+/**
+ * \ingroup DipoleShower
+ * \author Simon Platzer
+ *
  * \brief The DipoleEventRecord class is 
  * used internally by the dipole shower.
  */
@@ -176,6 +273,29 @@ public:
    */
   void popChains(const list<list<DipoleChain>::iterator>&);
 
+  /**
+   * Create a merged dipole index given two independent dipoles;
+   * the first dipole is to provide the emitter.
+   */
+  DipoleIndex 
+  mergeIndex(list<Dipole>::iterator firstDipole, const pair<bool,bool>& whichFirst,
+	     list<Dipole>::iterator secondDipole, const pair<bool,bool>& whichSecond) const;
+
+  /**
+   * Create a SubleadingSplitingInfo given two independent dipoles;
+   * the first dipole is to provide the emitter.
+   */
+  SubleadingSplittingInfo 
+  mergeSplittingInfo(list<DipoleChain>::iterator firstChain, list<Dipole>::iterator firstDipole, 
+		     const pair<bool,bool>& whichFirst,
+		     list<DipoleChain>::iterator secondChain, list<Dipole>::iterator secondDipole, 
+		     const pair<bool,bool>& whichSecond) const;
+
+  /**
+   * Return a list of all possible subleading-N emitting pairs
+   */
+  void getSubleadingSplittings(list<SubleadingSplittingInfo>&);
+
 public:
 
   /**
@@ -214,6 +334,13 @@ public:
   void recoil(list<Dipole>::iterator dip,
 	      list<DipoleChain>::iterator ch,
 	      DipoleSplittingInfo& dsplit);
+
+  /**
+   * Peform a subleading-N splitting
+   */
+  void splitSubleading(SubleadingSplittingInfo& dsplit,
+		       pair<list<Dipole>::iterator,list<Dipole>::iterator>& childIterators,
+		       DipoleChain*& firstChain, DipoleChain*& secondChain);
 
   /**
    * Update the particles upon insertion of the

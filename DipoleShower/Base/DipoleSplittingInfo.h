@@ -171,6 +171,18 @@ public:
    */
   DipoleSplittingInfo();
 
+  /**
+   * Destructor
+   */
+  virtual ~DipoleSplittingInfo() {}
+
+public:
+
+  /**
+   * Assign data from another splitting info
+   */
+  void fill(const DipoleSplittingInfo&);
+
 public:
 
   /**
@@ -184,6 +196,11 @@ public:
    * and spectator (false)
    */
   const pair<bool,bool>& configuration() const { return theConfiguration; }
+
+  /**
+   * Get the configuration marking the spectator
+   */
+  const pair<bool,bool>& spectatorConfiguration() const { return theSpectatorConfiguration; }
 
   /**
    * Return the particle data object of the emitter
@@ -387,7 +404,12 @@ public:
   /**
    * Reset the configuration.
    */
-  void configuration(pair<bool,bool> newConfig) { theConfiguration = newConfig; }
+  void configuration(const pair<bool,bool>& newConfig) { theConfiguration = newConfig; }
+
+  /**
+   * Set the configuration marking the spectator
+   */
+  void spectatorConfiguration(const pair<bool,bool>& conf) { theSpectatorConfiguration = conf; }
 
 public:
 
@@ -462,6 +484,11 @@ private:
    * and spectator (false)
    */
   pair<bool,bool> theConfiguration;
+
+  /**
+   * The configuration marking the spectator
+   */
+  pair<bool,bool> theSpectatorConfiguration;
 
   /**
    * The particle data object of the emitter
