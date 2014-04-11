@@ -631,16 +631,16 @@ void MatchboxMEBase::AccuracyHistogram::book(double a, double b) {
     r = abs(1.-abs(b/a));
   else if ( abs(b) != 0.0 )
     r = abs(b);
-  if ( log(r) < lower || r == 0.0 ) {
+  if ( log10(r) < lower || r == 0.0 ) {
     ++underflow;
     return;
   }
-  if ( log(r) > upper ) {
+  if ( log10(r) > upper ) {
     ++overflow;
     return;
   }
   map<double,double>::iterator bin =
-    bins.upper_bound(log(r));
+    bins.upper_bound(log10(r));
   if ( bin == bins.end() )
     return;
   bin->second += 1.;
@@ -794,27 +794,23 @@ MatchboxMEBase::getDipoles(const vector<Ptr<SubtractionDipole>::ptr>& dipoles,
       for ( int emission = 2; emission < nreal; ++emission ) {
 	if ( emission == emitter || emission == spectator )
 	  continue;
-	for ( vector<Ptr<MatchboxMEBase>::ptr>::const_iterator b =
-		borns.begin(); b != borns.end(); ++b ) {
-	  if ( (**b).onlyOneLoop() )
+	if ( !rep[emitter]->coloured() ||
+	     !rep[emission]->coloured() ||
+	     !rep[spectator]->coloured() )
+	  continue;
+	if ( noDipole(emitter,emission,spectator) )
+	  continue;
+	for ( vector<Ptr<SubtractionDipole>::ptr>::const_iterator d =
+		dipoles.begin(); d != dipoles.end(); ++d ) {
+	  if ( !(**d).canHandle(rep,emitter,emission,spectator) )
 	    continue;
-	  for ( vector<Ptr<SubtractionDipole>::ptr>::const_iterator d =
-		  dipoles.begin(); d != dipoles.end(); ++d ) {
-	    if ( !rep[emitter]->coloured() ||
-		 !rep[emission]->coloured() ||
-		 !rep[spectator]->coloured() ) {
+	  for ( vector<Ptr<MatchboxMEBase>::ptr>::const_iterator b =
+		  borns.begin(); b != borns.end(); ++b ) {
+	    if ( (**b).onlyOneLoop() )
 	      continue;
-	    }
-	    if ( noDipole(emitter,emission,spectator) ) {
-	      continue;
-	    }
 	    if ( done.find(make_pair(make_pair(make_pair(emitter,emission),spectator),make_pair(*b,*d))) 
-		 != done.end() ) {
+		 != done.end() )
 	      continue;
-	    }
-	    if ( !(**d).canHandle(rep,emitter,emission,spectator) ) {
-	      continue;
-	    }
 	    // now get to work
 	    (**d).clearBookkeeping();
 	    (**d).realEmitter(emitter);

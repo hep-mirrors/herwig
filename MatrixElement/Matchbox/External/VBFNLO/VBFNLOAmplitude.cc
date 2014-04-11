@@ -89,8 +89,8 @@ void VBFNLOAmplitude::startOLP(const string& contract, int& status) {
 
 bool VBFNLOAmplitude::startOLP(const map<pair<Process,int>,int>& procs) {
 
-  if ( !DynamicLoader::load("VBFNLO.so") )
-    throw Exception() << "failed to load VBFNLO.so\n"
+  if ( !DynamicLoader::load("libVBFNLO.so") )
+    throw Exception() << "failed to load libVBFNLO.so\n"
 		      << DynamicLoader::lastErrorMessage
 		      << Exception::abortnow;
 
@@ -225,16 +225,16 @@ void VBFNLOAmplitude::evalSpinColourCorrelator(pair<int,int>) const {
 }
 
 void VBFNLOAmplitude::doinit() {
-  if ( !DynamicLoader::load("VBFNLO.so") )
-    throw Exception() << "failed to load VBFNLO.so\n"
+  if ( !DynamicLoader::load("libVBFNLO.so") )
+    throw Exception() << "failed to load libVBFNLO.so\n"
 		      << DynamicLoader::lastErrorMessage
 		      << Exception::abortnow;
   MatchboxOLPME::doinit();
 }
 
 void VBFNLOAmplitude::doinitrun() {
-  if ( !DynamicLoader::load("VBFNLO.so") )
-    throw Exception() << "failed to load VBFNLO.so\n"
+  if ( !DynamicLoader::load("libVBFNLO.so") )
+    throw Exception() << "failed to load libVBFNLO.so\n"
 		      << DynamicLoader::lastErrorMessage
 		      << Exception::abortnow;
   MatchboxOLPME::doinitrun();

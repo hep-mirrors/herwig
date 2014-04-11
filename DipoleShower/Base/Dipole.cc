@@ -235,22 +235,22 @@ void Dipole::recoil (DipoleSplittingInfo& dsplit) {
   // check contracts
   assert(dsplit.splittingKinematics());
   assert(dsplit.spectatorData());
-  assert(spectatorX(dsplit.configuration()) == dsplit.spectatorX());
-  assert(spectatorPDF(dsplit.configuration()) == dsplit.index().spectatorPDF());
-  assert((dsplit.configuration().first ? theParticles.first->dataPtr() : theParticles.second->dataPtr())
+  assert(spectatorX(dsplit.spectatorConfiguration()) == dsplit.spectatorX());
+  assert(spectatorPDF(dsplit.spectatorConfiguration()) == dsplit.index().spectatorPDF());
+  assert((dsplit.spectatorConfiguration().first ? theParticles.first->dataPtr() : theParticles.second->dataPtr())
 	 == dsplit.index().spectatorData());
 
-  tPPtr oldSpectator = spectator(dsplit.configuration());
+  tPPtr oldSpectator = spectator(dsplit.spectatorConfiguration());
   PPtr newSpectator = 
       dsplit.spectatorData()->produceParticle(dsplit.splittingKinematics()->lastSpectatorMomentum());
-  DipolePartonSplitter::change(oldSpectator,newSpectator,spectatorPDF(dsplit.configuration()).pdf());
+  DipolePartonSplitter::change(oldSpectator,newSpectator,spectatorPDF(dsplit.spectatorConfiguration()).pdf());
 
   newSpectator->scale(sqr(dsplit.lastPt()));
 
   dsplit.spectator(oldSpectator);
   dsplit.splitSpectator(newSpectator);
 
-  if ( dsplit.configuration().first ) {
+  if ( dsplit.spectatorConfiguration().first ) {
     theParticles.second = newSpectator;
     theFractions.second /= dsplit.lastSpectatorZ();
   } else {

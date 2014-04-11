@@ -30,6 +30,7 @@
 #include <boost/progress.hpp>
 
 #include "GeneralSampler.h"
+#include <boost/math/distributions/chi_squared.hpp>
 
 using namespace Herwig;
 
@@ -76,6 +77,19 @@ string BinSampler::process() const {
   return os.str();
 }
 
+string BinSampler::shortprocess() const {
+  ostringstream os("");
+  const StandardEventHandler& eh = *theEventHandler;
+  const StandardXComb& xc = *eh.xCombs()[theBin];
+  os << xc.mePartonData()[0]->id() << " "
+     << xc.mePartonData()[1]->id() << " : ";
+  for ( cPDVector::const_iterator pid =
+	  xc.mePartonData().begin() + 2;
+	pid != xc.mePartonData().end(); ++pid )
+    os << (**pid).id() << " ";
+  return os.str();
+}
+
 string BinSampler::id() const {
   ostringstream os("");
   const StandardEventHandler& eh = *theEventHandler;
@@ -95,8 +109,10 @@ string BinSampler::id() const {
 
 double BinSampler::generate() {
   double w = 1.;
+//  cout<<"\npoint: ";
   for ( size_t k = 0; k < lastPoint().size(); ++k ) {
     lastPoint()[k] = UseRandom::rnd();
+//    cout<<lastPoint()[k]<<" ";
   }
   try {
     w = eventHandler()->dSigDR(lastPoint()) / nanobarn;
@@ -105,6 +121,14 @@ double BinSampler::generate() {
   } catch (...) {
     throw;
   }
+  if (randomNumberString()!="") 
+  for ( size_t k = 0; k < lastPoint().size(); ++k ) {
+    RandomNumberHistograms[RandomNumberIndex(id(),k)].first.book(lastPoint()[k],w);
+    RandomNumberHistograms[RandomNumberIndex(id(),k)].second+=w;
+  }
+
+  
+  
   if ( !weighted() && initialized() ) {
     double p = min(abs(w),referenceWeight())/referenceWeight();
     double sign = w >= 0. ? 1. : -1.;
@@ -156,6 +180,10 @@ void BinSampler::runIteration(unsigned long points, bool progress) {
 
 void BinSampler::initialize(bool progress) {
   lastPoint().resize(dimension());
+  if (randomNumberString()!="") 
+  for(size_t i=0;i<lastPoint().size();i++){
+     RandomNumberHistograms[RandomNumberIndex(id(),i)] = make_pair( RandomNumberHistogram(),0.);
+  }
   if ( initialized() )
     return;
   if ( !sampler()->grids().children().empty() ) {
@@ -173,6 +201,90 @@ void BinSampler::initialize(bool progress) {
   isInitialized();
 }
 
+
+void BinSampler::finalize(bool){
+  if (theRandomNumbers!="")  
+    for ( map<RandomNumberIndex,pair<RandomNumberHistogram,double> >::
+	  const_iterator b = RandomNumberHistograms.begin();
+	b != RandomNumberHistograms.end(); ++b ) {
+       b->second.first.dump(randomNumberString(), b->first.first,shortprocess(),b->first.second);
+  }
+
+}
+
+
+
+
+BinSampler::RandomNumberHistogram::
+RandomNumberHistogram(double low, 
+		     double up, 
+		     unsigned int nbins) 
+  : lower(low) {
+  nbins = nbins + 1;
+
+  double c = up / (nbins-1.);
+
+  for ( unsigned int k = 1; k < nbins; ++k ) {
+    bins[low+c*k] = 0.;
+    binsw1[low+c*k] = 0.;
+  }
+
+}
+
+
+void BinSampler::RandomNumberHistogram::
+dump(const std::string& folder,const std::string& prefix, const std::string& process, 
+     const int NR) const {
+  ostringstream fname("");
+  std::string prefix2;
+  std::string prefix3=prefix;
+  std::remove_copy(prefix.begin(), prefix.end(), std::back_inserter(prefix2), '.');
+  prefix3=prefix2;prefix2.clear();
+  std::remove_copy(prefix3.begin(), prefix3.end(), std::back_inserter(prefix2), ':');
+    prefix3=prefix2;prefix2.clear();
+  std::remove_copy(prefix3.begin(), prefix3.end(), std::back_inserter(prefix2), ',');
+  fname << "RN-"<< NR ;
+  ofstream out((folder+"/"+prefix2+fname.str()+".dat").c_str());
+  double sumofweights=0.;
+  for ( map<double,double >::const_iterator b = bins.begin();b != bins.end(); ++b )
+       sumofweights+=b->second;  
+  double sumofweights2=0.;
+  for ( map<double,double >::const_iterator b = binsw1.begin();b != binsw1.end(); ++b )
+       sumofweights2+=b->second;  
+  map<double,double >::const_iterator b2 = binsw1.begin();
+  double chisq=0.;
+  for ( map<double,double >::const_iterator b = bins.begin();
+	b != bins.end(); ++b, ++b2) {
+      out << " " << b->first
+	  << " " << b->second/sumofweights*100.
+	  << " " << b2->second/sumofweights2*100.
+	  << "\n" << flush;
+	  chisq+=pow(b->second/sumofweights*sumofweights2-b2->second,2.)/max(b2->second,0.00000001);
+  }   
+  boost::math::chi_squared mydist(bins.size()-1);
+  double p = boost::math::cdf(mydist,chisq);
+  double xmin = -0.01;
+  double xmax = 1.01;
+  ofstream gpout((folder+"/"+prefix2+fname.str()+".gp").c_str());
+  gpout << "set terminal epslatex color solid\n"
+      << "set output '" << prefix2+fname.str() << "-plot.tex'\n"
+      << "set xrange [" << xmin << ":" << xmax << "]\n";
+    gpout << "set xlabel 'rn "<<NR <<"' \n";
+    gpout << "set size 0.5,0.6\n";
+    gpout << "plot '" << prefix2+fname.str()
+    << ".dat' u ($1):($2)  w boxes  lc rgbcolor \"blue\" t '{\\tiny "<<process <<" }',";
+    gpout << " '" << prefix2+fname.str();
+    gpout << ".dat' u ($1):($3)  w boxes  lc rgbcolor \"red\" t '"<<1-p <<"';";
+  gpout << "reset\n";
+}
+
+
+
+
+
+
+
+
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
@@ -182,7 +294,7 @@ void BinSampler::persistentOutput(PersistentOStream & os) const {
   os << theBias << theWeighted << theInitialPoints << theNIterations 
      << theEnhancementFactor << theReferenceWeight
      << theBin << theInitialized << theLastPoint
-     << theEventHandler << theSampler;
+     << theEventHandler << theSampler << theRandomNumbers;
 }
 
 void BinSampler::persistentInput(PersistentIStream & is, int) {
@@ -190,7 +302,7 @@ void BinSampler::persistentInput(PersistentIStream & is, int) {
   is >> theBias >> theWeighted >> theInitialPoints >> theNIterations 
      >> theEnhancementFactor >> theReferenceWeight
      >> theBin >> theInitialized >> theLastPoint
-     >> theEventHandler >> theSampler;
+     >> theEventHandler >> theSampler >> theRandomNumbers;
 }
 
 
@@ -225,6 +337,10 @@ void BinSampler::Init() {
      &BinSampler::theEnhancementFactor, 2.0, 1.0, 0,
      false, false, Interface::lowerlim);
 
-
+  static Parameter<BinSampler,string> interfaceRandomNumbers
+    ("RandomNumbers",
+     "Prefix for distributions of the random numbers.",
+     &BinSampler::theRandomNumbers, "",
+     false, false);
 }
 

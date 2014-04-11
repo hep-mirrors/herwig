@@ -127,32 +127,51 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
 	double as = SM().alphaS();
 	OLP_SetParameter((char *)"alphaS", &as, &zero, &pStatus);
 
-    // hand over quark masses
+        // hand over quark masses and widths (iff massive)
 
 	string mstr;
+	string wstr;
+	if (massiveParticles.empty())
+	  for (int i=1; i<=6; ++i) 
+	    if (getParticleData(i)->mass()/GeV > 0.0) massiveParticles.push_back(i);
+	
 	if ( massiveParticles.size() != 0 ) {
 	  for ( vector<int>::const_iterator mID = massiveParticles.begin(); mID != massiveParticles.end(); ++mID ) {
 	    int mInt = *mID;
 	    double mass=getParticleData(mInt)->mass()/GeV;
+	    double width=getParticleData(mInt)->width()/GeV;
 	    std::stringstream ss;
 	    ss << mInt;
 	    string str = ss.str();
 	    mstr="mass("+str+")";
+	    wstr="width("+str+")";
 	    char * mchar = new char[mstr.size()+1];
+	    char * wchar = new char[wstr.size()+1];
 	    std::copy(mstr.begin(),mstr.end(),mchar);
+	    std::copy(wstr.begin(),wstr.end(),wchar);
 	    mchar[mstr.size()] = '\0';
+	    wchar[wstr.size()] = '\0';
 	    OLP_SetParameter( mchar, &mass, &zero, &pStatus );
+	    OLP_SetParameter( wchar, &width, &zero, &pStatus );
 	    delete[] mchar;
-      }
+	    delete[] wchar;
+          }
 	}
 
-  // hand over b- and t-quark widths
-  double wB = getParticleData(5)->width()/GeV;
-  double wT = getParticleData(6)->width()/GeV;
-  OLP_SetParameter((char*)"width(5)",&wB,&zero,&pStatus);
-  OLP_SetParameter((char*)"width(6)",&wT,&zero,&pStatus);
+//         // hand over b- and t-quark widths
+//         double wB = getParticleData(5)->width()/GeV;
+//         double wT = getParticleData(6)->width()/GeV;
+//         OLP_SetParameter((char*)"width(5)",&wB,&zero,&pStatus);
+//         OLP_SetParameter((char*)"width(6)",&wT,&zero,&pStatus);
 
-    // print OLP parameters
+        // Note: In the GoSam input file, the standard is to set the parameter 
+	// 'symmetries' for quark families and lepton generations, which allow
+	// for flavour changing only between families/generations. If this pa-
+	// rameter is set, GoSam won't allow to set electron and muon mass and
+	// width via the interface. Also setting mass and width for the tau is 
+	// not yet considered.
+
+        // print OLP parameters
 
 	if (thePrintParameter) {
 	  char char_cwd[256];

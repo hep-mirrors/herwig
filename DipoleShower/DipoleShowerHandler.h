@@ -163,6 +163,25 @@ private:
 		   pair<bool,bool> conf,
 		   Energy optCutoff = ZERO);
 
+  /**
+   * Get the winning splitting for the
+   * given dipole and configuration.
+   */
+  Energy getWinner(SubleadingSplittingInfo& winner,
+		   Energy optCutoff = ZERO);
+
+  /**
+   * Get the winning splitting for the
+   * given dipole and configuration.
+   */
+  Energy getWinner(DipoleSplittingInfo& winner,
+		   const DipoleIndex& index,
+		   double emitterX, double spectatorX,
+		   pair<bool,bool> conf,
+		   tPPtr emitter, tPPtr spectator,
+		   Energy startScale,
+		   Energy optCutoff = ZERO);
+
 public:
 
   /** @name Functions used by the persistent I/O system. */

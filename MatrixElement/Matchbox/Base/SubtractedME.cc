@@ -218,7 +218,7 @@ void SubtractedME::getDipoles() {
   head(myRealEmissionME);
   real = myRealEmissionME;
 
-  MEVector dipMEs;
+  dependent().clear();
   vector<Ptr<SubtractionDipole>::ptr> genDipoles
     = real->getDipoles(DipoleRepository::dipoles(factory()->dipoleSet()),borns());
 
@@ -240,11 +240,11 @@ void SubtractedME::getDipoles() {
     generator()->log() << "Assuming finite tree-level O(alphaS) correction.\n";
   }
 
-  dipMEs.resize(genDipoles.size());
-  copy(genDipoles.begin(),genDipoles.end(),dipMEs.begin());
+  dependent().resize(genDipoles.size());
+  copy(genDipoles.begin(),genDipoles.end(),dependent().begin());
 
   if ( !factory()->reweighters().empty() ) {
-    for ( MEVector::const_iterator d = dipMEs.begin(); d != dipMEs.end(); ++d ) {
+    for ( MEVector::const_iterator d = dependent().begin(); d != dependent().end(); ++d ) {
       for ( vector<ReweightPtr>::const_iterator rw = factory()->reweighters().begin();
 	    rw != factory()->reweighters().end(); ++rw )
 	(**d).addReweighter(*rw);
@@ -252,14 +252,12 @@ void SubtractedME::getDipoles() {
   }
 
   if ( !factory()->preweighters().empty() ) {
-    for ( MEVector::const_iterator d = dipMEs.begin(); d != dipMEs.end(); ++d ) {
+    for ( MEVector::const_iterator d = dependent().begin(); d != dependent().end(); ++d ) {
       for ( vector<ReweightPtr>::const_iterator rw = factory()->preweighters().begin();
 	    rw != factory()->preweighters().end(); ++rw )
 	(**d).addPreweighter(*rw);
     }
   }
-
-  dependent() = dipMEs;
 
 }
 

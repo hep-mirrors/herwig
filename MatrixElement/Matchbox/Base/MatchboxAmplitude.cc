@@ -384,19 +384,24 @@ void MatchboxAmplitude::doGenerateHelicities(set<vector<int> >& res,
     return;
   }
 
-  if ( amplitudePartonData()[pos]->iSpin() == PDT::Spin0 ||
-       ( amplitudePartonData()[pos]->iSpin() == PDT::Spin1 &&
-	 amplitudePartonData()[pos]->mass() != ZERO ) ) {
+  if ( amplitudePartonData()[pos]->iSpin() == PDT::Spin0 ) {
     current[pos] = 0;
     doGenerateHelicities(res,current,pos+1);
-  } else if ( amplitudePartonData()[pos]->iSpin() == PDT::Spin1Half ||
-	      amplitudePartonData()[pos]->iSpin() == PDT::Spin1 ) {
+  } else if ( amplitudePartonData()[pos]->iSpin() == PDT::Spin1Half ) {
+    current[pos] = 1;
+    doGenerateHelicities(res,current,pos+1);
+    current[pos] = -1;
+    doGenerateHelicities(res,current,pos+1);
+  }else if (amplitudePartonData()[pos]->iSpin() == PDT::Spin1 ) {
+    if (amplitudePartonData()[pos]->mass() != ZERO){
+    current[pos] = 0;
+    doGenerateHelicities(res,current,pos+1);
+    }
     current[pos] = 1;
     doGenerateHelicities(res,current,pos+1);
     current[pos] = -1;
     doGenerateHelicities(res,current,pos+1);
   }
-
 }
 
 void MatchboxAmplitude::prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr) {

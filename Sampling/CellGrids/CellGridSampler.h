@@ -13,7 +13,9 @@
 //
 
 #include "Herwig++/Sampling/BinSampler.h"
+
 #include "SimpleCellGrid.h"
+
 
 namespace Herwig {
 
@@ -93,6 +95,12 @@ public:
    * Adapt
    */
   virtual void adapt();
+  
+  /**
+   * The splittings for each dimension befor adaption.
+   */
+    
+  const vector<int>& pre_adaption_splits() const { return the_pre_adaption_splits; }
 
 public:
 
@@ -173,6 +181,12 @@ private:
    * The minimum probability for cell selection.
    */
   double theMinimumSelection;
+
+  /**
+   * The splittings for each dimension befor adaption.
+   */
+  
+  vector<int>  the_pre_adaption_splits;
 
 };
 

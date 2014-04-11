@@ -20,6 +20,8 @@
 #include "ThePEG/Utilities/DescribeClass.h"
 
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/ParVector.h"
+
 
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -55,6 +57,12 @@ double CellGridSampler::generate() {
   UseRandom rnd;
   pair<double,double> weights = SimpleCellGrid::generate(rnd,*this,lastPoint());
   double w = SimpleCellGrid::integral()*weights.first/weights.second;
+  if (randomNumberString()!="") 
+  for ( size_t k = 0; k < lastPoint().size(); ++k ) {
+    RandomNumberHistograms[RandomNumberIndex(id(),k)].first.book(lastPoint()[k],abs(w));
+    RandomNumberHistograms[RandomNumberIndex(id(),k)].second+=abs(w);
+
+  }
   if ( !weighted() && initialized() ) {
     double p = min(abs(w),referenceWeight())/referenceWeight();
     double sign = w >= 0. ? 1. : -1.;
@@ -102,7 +110,10 @@ void CellGridSampler::initialize(bool progress) {
   }
 
   lastPoint().resize(dimension());
-
+  if (randomNumberString()!="") 
+  for(size_t i=0;i<lastPoint().size();i++){
+     RandomNumberHistograms[RandomNumberIndex(id(),i)] = make_pair( RandomNumberHistogram(),0.);
+  }
   if ( initialized() ) {
     if ( !haveGrid )
       throw Exception() << "CellGridSampler: Require existing grid when starting to run."
@@ -129,9 +140,15 @@ void CellGridSampler::initialize(bool progress) {
     Repository::clog() << "exploring " << process();
     progressBar = new boost::progress_display(theExplorationSteps,cout);
   }
-
   std::set<SimpleCellGrid*> newCells;
+  
+  
+  for(int splitdim=0; splitdim<min(dimension(),pre_adaption_splits().size());splitdim++)
+      SimpleCellGrid::splitter(splitdim,pre_adaption_splits()[splitdim]);
+  
   SimpleCellGrid::explore(theExplorationPoints,rnd,*this,newCells);
+
+  
   bool notAll = false;
   for ( std::size_t step = 1; step < theExplorationSteps; ++step ) {
     newCells.clear();
@@ -179,6 +196,14 @@ void CellGridSampler::finalize(bool) {
   XML::Element grid = SimpleCellGrid::toXML();
   grid.appendAttribute("process",id());
   sampler()->grids().append(grid);
+  if (randomNumberString()!="")  
+  for ( map<RandomNumberIndex,pair<RandomNumberHistogram,double> >::
+    const_iterator b = RandomNumberHistograms.begin();
+    b != RandomNumberHistograms.end(); ++b ) {
+    b->second.first.dump(randomNumberString(), b->first.first,shortprocess(),b->first.second);
+  }
+
+
 }
 
 // If needed, insert default implementations of virtual function defined
@@ -236,6 +261,14 @@ void CellGridSampler::Init() {
      "The minimum cell selection probability.",
      &CellGridSampler::theMinimumSelection, 0.0001, 0.0, 1.0,
      false, false, Interface::limited);
+    
+    
+  static ParVector<CellGridSampler,int> interfacethe_pre_adaption_splits
+    ("preadaptionsplit",
+     "The splittings for each dimension befor adaption.",
+     &CellGridSampler::the_pre_adaption_splits, 1., -1, 0.0, 0.0, 0,
+     false, false, Interface::lowerlim);
+
 
 }
 
