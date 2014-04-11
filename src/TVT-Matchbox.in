@@ -234,7 +234,9 @@ set LHCGenerator:MaxErrors 10000
 
 # Rivet Analyses:
 # requires installation of Rivet and --with-rivet while installing ThePEG
+# please use NLORivetAnalysis for plain NLO runs
 
+# create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
 # create ThePEG::NLORivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
 # insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
 # insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_ZINC
