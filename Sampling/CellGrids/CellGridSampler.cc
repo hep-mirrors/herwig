@@ -143,7 +143,7 @@ void CellGridSampler::initialize(bool progress) {
   std::set<SimpleCellGrid*> newCells;
   
   
-  for(int splitdim=0; splitdim<min(dimension(),pre_adaption_splits().size());splitdim++)
+  for(int splitdim=0; splitdim<min(dimension(),(int)pre_adaption_splits().size());splitdim++)
       SimpleCellGrid::splitter(splitdim,pre_adaption_splits()[splitdim]);
   
   SimpleCellGrid::explore(theExplorationPoints,rnd,*this,newCells);
