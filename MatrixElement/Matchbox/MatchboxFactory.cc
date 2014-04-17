@@ -297,10 +297,22 @@ void MatchboxFactory::setup() {
 
     const PDVector& partons = particleGroups()["j"];
     unsigned int nl = 0;
+//     for ( PDVector::const_iterator p = partons.begin();
+// 	  p != partons.end(); ++p ) {
+//       if ( abs((**p).id()) < 6 )
+// 	++nl;
+//     }
+//     nLight(nl/2);
+
     for ( PDVector::const_iterator p = partons.begin();
-	  p != partons.end(); ++p )
-      if ( abs((**p).id()) < 6 )
+	  p != partons.end(); ++p ) {
+      if ( abs((**p).id()) < 7 && (**p).mass() == ZERO )
 	++nl;
+      if ( (**p).id() > 0 && (**p).id() < 7 && (**p).mass() == ZERO )
+	nLightVec( (**p).id() );
+      if ( (**p).id() > 0 && (**p).id() < 7 && (**p).mass() != ZERO )
+	nHeavyVec( (**p).id() );
+    }
     nLight(nl/2);
 
     vector<Ptr<MatchboxMEBase>::ptr> mes;
@@ -937,7 +949,9 @@ void MatchboxFactory::doinitrun() {
 
 void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
   os << theDiagramGenerator << theProcessData
-     << theNLight << theOrderInAlphaS << theOrderInAlphaEW 
+     << theNLight 
+     << theNLightVec << theNHeavyVec 
+     << theOrderInAlphaS << theOrderInAlphaEW 
      << theBornContributions << theVirtualContributions
      << theRealContributions << theIndependentVirtuals << theSubProcessGroups << theInclusive
      << thePhasespace << theScaleChoice
@@ -959,7 +973,9 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
 
 void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
   is >> theDiagramGenerator >> theProcessData
-     >> theNLight >> theOrderInAlphaS >> theOrderInAlphaEW 
+     >> theNLight 
+     >> theNLightVec >> theNHeavyVec 
+     >> theOrderInAlphaS >> theOrderInAlphaEW 
      >> theBornContributions >> theVirtualContributions
      >> theRealContributions >> theIndependentVirtuals >> theSubProcessGroups >> theInclusive
      >> thePhasespace >> theScaleChoice

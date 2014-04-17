@@ -183,6 +183,20 @@ public:
   unsigned int nLight() const { return lastMatchboxXComb()->nLight(); }
 
   /**
+   * Return the vector that contains the PDG ids of 
+   * the light flavours, which are contained in the
+   * jet particle group.
+   */
+  vector<int> nLightVec() const { return lastMatchboxXComb()->nLightVec(); }
+
+  /**
+   * Return the vector that contains the PDG ids of 
+   * the heavy flavours, which are contained in the
+   * jet particle group.
+   */
+  vector<int> nHeavyVec() const { return lastMatchboxXComb()->nHeavyVec(); }
+
+  /**
    * Get the dimensionality of the colour basis for this process.
    */
   size_t colourBasisDim() const { return lastMatchboxXComb()->colourBasisDim(); }
@@ -352,6 +366,20 @@ protected:
    * Set the number of light flavours to be considered for this process.
    */
   void nLight(unsigned int n) { lastMatchboxXComb()->nLight(n); }
+
+  /**
+   * Set the elements of the vector that contains the PDG
+   * ids of the light flavours, which are contained in the
+   * jet particle group.
+   */
+  void nLightVec(int n) { lastMatchboxXComb()->nLightVec(n); }
+
+  /**
+   * Set the elements of the vector that contains the PDG
+   * ids of the heavy flavours, which are contained in the
+   * jet particle group.
+   */
+  void nHeavyVec(int n) { lastMatchboxXComb()->nHeavyVec(n); }
 
   /**
    * Set the dimensionality of the colour basis for this process.

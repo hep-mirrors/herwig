@@ -163,6 +163,20 @@ public:
   virtual unsigned int getNLight() const;
 
   /**
+   * Return the vector that contains the PDG ids of 
+   * the light flavours, which are contained in the
+   * jet particle group.
+   */
+  virtual vector<int> getNLightVec() const;
+
+  /**
+   * Return the vector that contains the PDG ids of 
+   * the heavy flavours, which are contained in the
+   * jet particle group.
+   */
+  virtual vector<int> getNHeavyVec() const;
+
+  /**
    * Return true, if this matrix element is handled by a BLHA one-loop provider
    */
   virtual bool isOLPTree() const { 

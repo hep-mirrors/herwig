@@ -52,6 +52,10 @@ Ptr<ProcessData>::tptr MatchboxMEBase::processData() const { return factory()->p
 
 unsigned int MatchboxMEBase::getNLight() const { return factory()->nLight(); }
 
+vector<int> MatchboxMEBase::getNLightVec() const { return factory()->nLightVec(); }
+
+vector<int> MatchboxMEBase::getNHeavyVec() const { return factory()->nHeavyVec(); }
+
 double MatchboxMEBase::factorizationScaleFactor() const { return factory()->factorizationScaleFactor(); }
 
 double MatchboxMEBase::renormalizationScaleFactor() const { return factory()->renormalizationScaleFactor(); }
@@ -1201,6 +1205,12 @@ void MatchboxMEBase::prepareXComb(MatchboxXCombData& xc) const {
   xc.nDimInsertions(insertionAdd);
 
   xc.nLight(getNLight());
+
+  for (size_t inlv=0; inlv<getNLightVec().size(); ++inlv)
+    xc.nLightVec(getNLightVec()[inlv]);
+
+  for (size_t inhv=0; inhv<getNHeavyVec().size(); ++inhv)
+    xc.nHeavyVec(getNHeavyVec()[inhv]);
 
   xc.olpId(olpProcess());
 
