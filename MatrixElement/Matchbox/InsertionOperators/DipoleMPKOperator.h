@@ -24,7 +24,8 @@ using namespace ThePEG;
  * \ingroup Matchbox
  * \author Simon Platzer, Christian Reuschle
  *
- * \brief DipoleMPKOperator implements the massive P+K operator.
+ * \brief DipoleMPKOperator implements the massive P+K
+ * insertion operator.
  *
  */
 class DipoleMPKOperator: public MatchboxInsertionOperator {
@@ -206,6 +207,8 @@ public:
    */
   double Kscriptgg_q(Energy2 sja, Energy2 mj2) const;
 
+  ////////////////////////////
+
   /**
    * J^{a;NS}_{Q\bar{Q}}(\mu_Q^2)
    * Not folded with 1/z*PDF(x/z)*\Theta(z-x)
@@ -293,11 +296,11 @@ protected:
 
 private:
 
-  /**
-   * Vector to contain heavy flavour id's
-   * n_F = NHeavy.size()
-   */
-  vector<int> NHeavy;
+//   /**
+//    * Vector to contain heavy flavour id's
+//    * n_F = NHeavy.size()
+//    */
+//   vector<int> NHeavy;
 
   /**
    * C_A
@@ -377,7 +380,7 @@ private:
    */
   double PDFxByz(tcPDPtr) const;
 
-  ////////////////////////////////////////////////
+  ////////////////////////////
 
   /**
    * Get a PDF value at x/z_+

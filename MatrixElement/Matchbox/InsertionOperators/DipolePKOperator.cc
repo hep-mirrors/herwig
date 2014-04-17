@@ -23,6 +23,8 @@
 #include "Herwig++/MatrixElement/Matchbox/Base/DipoleRepository.h"
 #include "Herwig++/MatrixElement/Matchbox/Phasespace/RandomHelpers.h"
 
+#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
+
 using namespace Herwig;
 using Constants::pi;
 
@@ -72,12 +74,9 @@ void DipolePKOperator::setXComb(tStdXCombPtr xc) {
       gammaGluon -= CA/6.;
     }
   }
-  int NLight = lastBorn()->nLight();
-  for( int f=1; f<=NLight; ++f ) {
-    Energy2 mF2 = sqr( getParticleData(f)->mass() );
-    if( mF2 == ZERO ) continue; // only heavy quarks
-    NHeavy.push_back(f);
-  }
+  cout << "DipolePKOperator::setXComb: lastBorn()->nLight = " << lastBorn()->nLight() << endl;
+  cout << "DipolePKOperator::setXComb: lastBorn()->nLightVec().size() = " << lastBorn()->nLightVec().size() << endl;
+  cout << "DipolePKOperator::setXComb: lastBorn()->nHeavyVec().size() = " << lastBorn()->nHeavyVec().size() << endl;
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -107,11 +106,38 @@ bool DipolePKOperator::apply(tcPDPtr pd) const {
 // }
 
 bool DipolePKOperator::apply(const cPDVector& pd) const {
+
+  cout << "DipolePKOperator::apply (master apply): Entering master apply function!" << endl;
+
+  const map<string,PDVector>& particleGroupsCR = MatchboxFactory::currentFactory()->particleGroups();
+  map<string,PDVector>::const_iterator gitCR = particleGroupsCR.find("j");
+  if ( gitCR == particleGroupsCR.end() )
+    throw Exception() << "DipolePKOperator::apply (master apply): Could not find a jet particle group named 'j'" << Exception::abortnow;
+  const PDVector& jetConstitutentsCR = gitCR->second;
+  vector<int> nLightVecCR;
+  vector<int> nHeavyVecCR;
+  for ( PDVector::const_iterator pCR = jetConstitutentsCR.begin();
+        pCR != jetConstitutentsCR.end(); ++pCR ) {
+    if ( (**pCR).id() > 0 && (**pCR).id() < 7 && (**pCR).mass() == ZERO )
+      nLightVecCR.push_back( (**pCR).id() );
+    if ( (**pCR).id() > 0 && (**pCR).id() < 7 && (**pCR).mass() != ZERO )
+      nHeavyVecCR.push_back( (**pCR).id() );
+  }
+  cout << "DipolePKOperator::apply (master apply): nLightVecCR.size() = " << nLightVecCR.size() << endl;
+  cout << "DipolePKOperator::apply (master apply): nHeavyVecCR.size() = " << nHeavyVecCR.size() << endl;
+
+  cout << "DipolePKOperator::apply (master apply): Continue master apply function!" << endl;
+
   if ( !apply(pd[0]) && !apply(pd[1]) )
     return false;
+
   // Prohibit splittings g->Q\bar{Q} in the final state.
-  // Covered by DipoleMPKOperator then.
-  if ( NHeavy.size()!=0 ) return false;
+  // These are covered by DipoleMPKOperator.
+  if ( nHeavyVecCR.size()!=0 ) {
+    cout << "DipolePKOperator::apply (master apply): nHeavyVecCR.size()!=0. Return false!" << endl;
+    return false;
+  }
+
   bool first = false;
   bool second = false;
   for ( cPDVector::const_iterator p = pd.begin();
@@ -120,7 +146,10 @@ bool DipolePKOperator::apply(const cPDVector& pd) const {
     // ting combination:
     // Return false if any massive particles are present.
     // Covered by DipoleMPKOperator then.
-    if ( (*p)->mass()!=ZERO ) return false;
+    if ( (*p)->coloured() && (*p)->mass()!=ZERO ) {
+      cout << "DipolePKOperator::apply (master apply): Found massive QCD particle. Return false!" << endl;
+      return false;
+    }
     if ( !first ) {
       if ( apply(*p) )
 	first = true;
@@ -129,6 +158,10 @@ bool DipolePKOperator::apply(const cPDVector& pd) const {
 	second = true;
     }
   }
+  if ( first && second )
+    cout << "DipolePKOperator::apply (master apply): first && second = true" << endl;
+  if ( !( first && second ) )
+    cout << "DipolePKOperator::apply (master apply): first && second = false" << endl;
   return first && second;
 }
 

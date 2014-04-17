@@ -120,9 +120,9 @@ bool DipoleMIOperator::apply(const cPDVector& pd) const {
     }
     if ( (*p)->coloured() && (*p)->mass()!=ZERO && idp < 2 ) {
       initialmass = true;
-      Energy pmass = (*p)->mass();
-      double pmassdoubleGeV = pmass / GeV;
-      cout << "     pmassdoubleGeV = " << pmassdoubleGeV << endl; 
+//       Energy pmass = (*p)->mass();
+//       double pmassdoubleGeV = pmass / GeV;
+//       cout << "     pmassdoubleGeV = " << pmassdoubleGeV << endl; 
       cout << "     initialmass = " << initialmass << endl;
     }
     if ( !first ) {
