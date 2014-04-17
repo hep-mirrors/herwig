@@ -23,6 +23,8 @@
 #include "Herwig++/MatrixElement/Matchbox/Base/DipoleRepository.h"
 #include "ThePEG/PDT/DecayMode.h"
 
+#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
+
 #include <gsl/gsl_sf_dilog.h>
 
 using namespace Herwig;
@@ -52,19 +54,38 @@ void DipoleMIOperator::setXComb(tStdXCombPtr xc) {
     CF = (SM().Nc()*SM().Nc()-1.0)/(2.*SM().Nc());
     gammaQuark = (3./2.)*CF;
     gammaGluon = (11./6.)*CA - (1./3.)*lastBorn()->nLight();
-    betaZero = gammaGluon;
+    // betaZero = gammaGluon;
+    betaZero = (11./6.)*CA - (1./3.)*(lastBorn()->nLightVec().size()+lastBorn()->nHeavyVec().size());
     KQuark = (7./2.-sqr(pi)/6.)*CF;
     KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*lastBorn()->nLight();
   }
-  int NLight = lastBorn()->nLight();
-  for( int f=1; f<=NLight; ++f ) {
-    Energy2 mF2 = sqr( getParticleData(f)->mass() );
-    if( mF2 == ZERO ) continue; // only heavy quarks
-    NHeavy.push_back(f);
-  }
+  cout << "DipoleMIOperator::setXComb: lastBorn()->nLight = " << lastBorn()->nLight() << endl;
+  cout << "DipoleMIOperator::setXComb: lastBorn()->nLightVec().size() = " << lastBorn()->nLightVec().size() << endl;
+  cout << "DipoleMIOperator::setXComb: lastBorn()->nHeavyVec().size() = " << lastBorn()->nHeavyVec().size() << endl;
 }
 
 bool DipoleMIOperator::apply(const cPDVector& pd) const {
+
+  cout << "DipoleMIOperator::apply (master apply): Entering master apply function!" << endl;
+
+  const map<string,PDVector>& particleGroupsCR = MatchboxFactory::currentFactory()->particleGroups();
+  map<string,PDVector>::const_iterator gitCR = particleGroupsCR.find("j");
+  if ( gitCR == particleGroupsCR.end() )
+    throw Exception() << "DipoleMIOperator::apply (master apply): Could not find a jet particle group named 'j'" << Exception::abortnow;
+  const PDVector& jetConstitutentsCR = gitCR->second;
+  vector<int> nLightVecCR;
+  vector<int> nHeavyVecCR;
+  for ( PDVector::const_iterator pCR = jetConstitutentsCR.begin();
+        pCR != jetConstitutentsCR.end(); ++pCR ) {
+    if ( (**pCR).id() > 0 && (**pCR).id() < 7 && (**pCR).mass() == ZERO )
+      nLightVecCR.push_back( (**pCR).id() );
+    if ( (**pCR).id() > 0 && (**pCR).id() < 7 && (**pCR).mass() != ZERO )
+      nHeavyVecCR.push_back( (**pCR).id() );
+  }
+  cout << "DipoleMIOperator::apply (master apply): nLightVecCR.size() = " << nLightVecCR.size() << endl;
+  cout << "DipoleMIOperator::apply (master apply): nHeavyVecCR.size() = " << nHeavyVecCR.size() << endl;
+
+  cout << "DipoleMIOperator::apply (master apply): Continue master apply function!" << endl;
 
   // DipoleMIOperator should only apply, if massive
   // partons exist in the given process (aka in the
@@ -72,7 +93,11 @@ bool DipoleMIOperator::apply(const cPDVector& pd) const {
   // This applies also to a gluon in the final state
   // with subsequent splitting g->Q\bar{Q}.
   bool mFSet = false;
-  if ( NHeavy.size() != 0 ) mFSet = true;
+  if ( nHeavyVecCR.size() != 0 ) {
+    mFSet = true;
+    cout << "     mFSet neq 0!" << endl;
+  }
+  cout << "DipoleMIOperator::apply (master apply): After mFSet check: mFSet = " << ( mFSet ? "true" : "false" ) << endl;
 
   // Partons in the initial state are assumed massless
   // in the CS approach.
@@ -88,16 +113,34 @@ bool DipoleMIOperator::apply(const cPDVector& pd) const {
   int idp = 0;
   for ( cPDVector::const_iterator p = pd.begin();
 	p != pd.end(); ++p, ++idp ) {
-    if ( (*p)->mass()!=ZERO && idp > 1 ) finalmass = true;
-    if ( (*p)->mass()!=ZERO && idp < 2 ) initialmass = true;
+    cout << "DipoleMIOperator::apply (master apply): Loop through cPDVector: idp = " << idp << endl;
+    if ( (*p)->coloured() && (*p)->mass()!=ZERO && idp > 1 ) {
+      finalmass = true;
+      cout << "     finalmass = " << finalmass << endl;
+    }
+    if ( (*p)->coloured() && (*p)->mass()!=ZERO && idp < 2 ) {
+      initialmass = true;
+      Energy pmass = (*p)->mass();
+      double pmassdoubleGeV = pmass / GeV;
+      cout << "     pmassdoubleGeV = " << pmassdoubleGeV << endl; 
+      cout << "     initialmass = " << initialmass << endl;
+    }
     if ( !first ) {
-      if ( apply(*p) )
+      if ( apply(*p) ) {
 	first = true;
+	cout << "     first = " << first << endl;
+      }
     } else {
-      if ( apply(*p) )
+      if ( apply(*p) ) {
 	second = true;
+	cout << "     second = " << second << endl;
+      }
     }
   }
+  if ( first && second && (finalmass || mFSet) && !initialmass )
+    cout << "DipoleMIOperator::apply (master apply): first && second && (finalmass || mFSet) && !initialmass = true" << endl;
+  if ( !( first && second && (finalmass || mFSet) && !initialmass ) )
+    cout << "DipoleMIOperator::apply (master apply): first && second && (finalmass || mFSet) && !initialmass = false" << endl;
   return first && second && (finalmass || mFSet) && !initialmass;
 
 }
@@ -147,6 +190,7 @@ double DipoleMIOperator::me2() const {
       
 //       if ( idj < 2 && idk < 2 )
 //         continue;
+
       // If j and k are incoming, same contribution as in DipoleIOperator.
       // Master apply prevents the DipoleIOperator though from applying in
       // case of at least one massive parton. So, add expanded finite term
@@ -171,16 +215,28 @@ double DipoleMIOperator::me2() const {
   }
 
   // NOTE: The accountance for the alpha_s running has yet to be checked for the
-  // massive case. So far assume the same as for the massless case.
+  // massive case. So far assume the same as in the massless case (no DR though).
 
   Energy2 muR2 = 
     lastBorn()->renormalizationScale()*
     sqr(lastBorn()->renormalizationScaleFactor());
   if ( muR2 != mu2 ) {
+    cout << "DipoleMIOperator::me2(): muR2 != mu2 !!!!!" << endl;
+    cout << "muR2/(GeV*GeV) = " << (muR2/(GeV*GeV)) << endl;
+    cout << "mu2/(GeV*GeV) = " << (mu2/(GeV*GeV)) << endl;
+    cout << "sqrt(muR2/(GeV*GeV)) = " << sqrt(muR2/(GeV*GeV)) << endl;
+    cout << "sqrt(mu2/(GeV*GeV)) = " << sqrt(mu2/(GeV*GeV)) << endl;
     res -=
       betaZero *
       lastBorn()->orderInAlphaS() * log(muR2/mu2) *
       lastBorn()->me2();
+  }
+  if ( muR2 == mu2 ) {
+    cout << "DipoleMIOperator::me2(): muR2 = mu2 !!!!!" << endl;
+    cout << "muR2/(GeV*GeV) = " << (muR2/(GeV*GeV)) << endl;
+    cout << "mu2/(GeV*GeV) = " << (mu2/(GeV*GeV)) << endl;
+    cout << "sqrt(muR2/(GeV*GeV)) = " << sqrt(muR2/(GeV*GeV)) << endl;
+    cout << "sqrt(mu2/(GeV*GeV)) = " << sqrt(mu2/(GeV*GeV)) << endl;
   }
 
 //   // include the finite renormalization for DR here; ATTENTION this
@@ -229,6 +285,7 @@ double DipoleMIOperator::oneLoopDoublePole() const {
 
 //       if ( idj < 2 && idk < 2 )
 //         continue;
+
       // If j and k are incoming, same contribution as in DipoleIOperator.
       // Master apply prevents the DipoleIOperator though from applying in
       // case of at least one massive parton. So, add expanded double pole
@@ -352,8 +409,9 @@ double DipoleMIOperator::oneLoopSinglePole() const {
 
       Energy2 sjk = 2.*meMomenta()[idj]*meMomenta()[idk];
 
-      if ( idj < 2 && idk < 2 )
-        continue;
+//       if ( idj < 2 && idk < 2 )
+//         continue;
+
       // If j and k are incoming, same contribution as in DipoleIOperator.
       // Master apply prevents the DipoleIOperator though from applying in
       // case of at least one massive parton. So, add expanded single pole
@@ -446,7 +504,6 @@ double DipoleMIOperator::oneLoopSinglePole() const {
 
 }
 
-// double DipoleMIOperator::GammaQuark(const ParticleData& j, Energy2 sjk) const {
 double DipoleMIOperator::GammaQuark(const ParticleData& j) const {
   if ( j.mass() == ZERO )
     return 0.;
@@ -462,8 +519,6 @@ double DipoleMIOperator::GammaGluon() const {
 double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k,
 			    Energy2 sjk, double kappa, bool mFSetEmpty) const {
   
-  int NLight = lastBorn()->nLight();
-
   Energy2 mu2 = lastBorn()->mu2();
 
   double res = 0.;
@@ -553,10 +608,8 @@ double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k,
       if( j.id() == ParticleID::g ) {
 	// sum over all quark flavours
 	if( !mFSetEmpty )
-	  for( int f=1; f<=NLight; ++f ) {
-	    Energy2 mF2 = sqr( getParticleData(f)->mass() );
-	    // only heavy quarks
-	    if( mF2 == ZERO ) continue;
+	  for( size_t f=0; f<lastBorn()->nHeavyVec().size(); ++f ) { // only heavy quarks
+	    Energy2 mF2 = sqr( getParticleData(lastBorn()->nHeavyVec()[f])->mass() );
 	    // sum only over quarks which meet special condition
 	    if( sjk <= 4.*sqrt(mF2)*(sqrt(mF2)+mk) )
 	      continue;
@@ -581,10 +634,8 @@ double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k,
 	  (kappa-2./3.) * mk2/sjk * (1./CA*lastBorn()->nLight()-1.) * log(2.*mk/(Qjk+mk));
 	// part containing other heavy quark flavours
 	if( !mFSetEmpty )
-	  for( int f=1; f<=NLight; ++f ) {
-	    Energy2 mF2 = sqr( getParticleData(f)->mass() );
-	    // only heavy quarks
-	    if( mF2 == ZERO ) continue;
+	  for( size_t f=0; f<lastBorn()->nHeavyVec().size(); ++f ) { // only heavy quarks
+	    Energy2 mF2 = sqr( getParticleData(lastBorn()->nHeavyVec()[f])->mass() );
 	    // sum only over quarks which meet special condition
 	    if( sjk <= 4.*sqrt(mF2)*(sqrt(mF2)+mk) )
 	      continue;
@@ -598,16 +649,19 @@ double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k,
       }
     }
   }
-    
+
   return res;
+
 }
   
 void DipoleMIOperator::persistentOutput(PersistentOStream & os) const {
-  os << CA << CF << gammaQuark << gammaGluon << betaZero << KQuark << KGluon;
+  os << CA << CF << gammaQuark << gammaGluon << betaZero 
+     << KQuark << KGluon;
 }
 
 void DipoleMIOperator::persistentInput(PersistentIStream & is, int) {
-  is >> CA >> CF >> gammaQuark >> gammaGluon >> betaZero >> KQuark >> KGluon;
+  is >> CA >> CF >> gammaQuark >> gammaGluon >> betaZero 
+     >> KQuark >> KGluon;
 }
 
 // *** Attention *** The following static variable is needed for the type

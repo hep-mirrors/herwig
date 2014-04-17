@@ -140,14 +140,13 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
-
 private:
 
-  /**
-   * Vector to contain heavy flavour id's
-   * n_F = NHeavy.size()
-   */
-  vector<int> NHeavy;
+//   /**
+//    * Vector to contain heavy flavour id's
+//    * n_F = NHeavy.size()
+//    */
+//   vector<int> NHeavy;
 
   /**
    * C_A
@@ -180,7 +179,6 @@ private:
   /**
    * \Gamma_q, finite term
    */
-//   double GammaQuark(const ParticleData&,Energy2) const;
   double GammaQuark(const ParticleData&) const;
   
   /**
