@@ -128,8 +128,10 @@ bool DipolePKOperator::apply(const cPDVector& pd) const {
 
   cout << "DipolePKOperator::apply (master apply): Continue master apply function!" << endl;
 
-  if ( !apply(pd[0]) && !apply(pd[1]) )
+  if ( !apply(pd[0]) && !apply(pd[1]) ) {
+    cout << "DipolePKOperator::apply (master apply): !apply(pd[0]) && !apply(pd[1]) -> return false" << endl;
     return false;
+  }
 
   // Prohibit splittings g->Q\bar{Q} in the final state.
   // These are covered by DipoleMPKOperator.

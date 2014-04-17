@@ -100,8 +100,10 @@ bool DipoleMPKOperator::apply(const cPDVector& pd) const {
 
   cout << "DipoleMPKOperator::apply (master apply): Continue master apply function!" << endl;
 
-  if ( !apply(pd[0]) && !apply(pd[1]) )
+  if ( !apply(pd[0]) && !apply(pd[1]) ) {
+    cout << "DipoleMPKOperator::apply (master apply): !apply(pd[0]) && !apply(pd[1]) -> return false" << endl;
     return false;
+  }
 
   // DipoleMPKOperator should only apply, if massive
   // partons exist in the given process (aka in the
