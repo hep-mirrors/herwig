@@ -44,6 +44,8 @@ IBPtr DipoleMPKOperator::fullclone() const {
   return new_ptr(*this);
 }
 
+//////////////////////////////////////////////////////////////////////
+
 void DipoleMPKOperator::setXComb(tStdXCombPtr xc) {
   MatchboxInsertionOperator::setXComb(xc);
   if ( CA < 0. ) {
@@ -53,17 +55,8 @@ void DipoleMPKOperator::setXComb(tStdXCombPtr xc) {
     gammaGluon = (11./6.)*CA - (1./3.)*lastBorn()->nLight();
     KQuark = (7./2.-sqr(pi)/6.)*CF;
     KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*lastBorn()->nLight();
-//     if ( isDR() ) {
-//       gammaQuark -= CF/2.;
-//       gammaGluon -= CA/6.;
-//     }
   }
-  cout << "DipoleMPKOperator::setXComb: lastBorn()->nLight = " << lastBorn()->nLight() << endl;
-  cout << "DipoleMPKOperator::setXComb: lastBorn()->nLightVec().size() = " << lastBorn()->nLightVec().size() << endl;
-  cout << "DipoleMPKOperator::setXComb: lastBorn()->nHeavyVec().size() = " << lastBorn()->nHeavyVec().size() << endl;
 }
-
-//////////////////////////////////////////////////////////////////////
 
 bool DipoleMPKOperator::apply(tcPDPtr pd) const {
   return
@@ -79,46 +72,24 @@ bool DipoleMPKOperator::applyNotMassless(tcPDPtr pd) const {
 
 bool DipoleMPKOperator::apply(const cPDVector& pd) const {
 
-  cout << "DipoleMPKOperator::apply (master apply): Entering master apply function!" << endl;
-
-  const map<string,PDVector>& particleGroupsCR = MatchboxFactory::currentFactory()->particleGroups();
-  map<string,PDVector>::const_iterator gitCR = particleGroupsCR.find("j");
-  if ( gitCR == particleGroupsCR.end() )
-    throw Exception() << "DipoleMPKOperator::apply (master apply): Could not find a jet particle group named 'j'" << Exception::abortnow;
-  const PDVector& jetConstitutentsCR = gitCR->second;
-  vector<int> nLightVecCR;
-  vector<int> nHeavyVecCR;
-  for ( PDVector::const_iterator pCR = jetConstitutentsCR.begin();
-        pCR != jetConstitutentsCR.end(); ++pCR ) {
-    if ( (**pCR).id() > 0 && (**pCR).id() < 7 && (**pCR).mass() == ZERO )
-      nLightVecCR.push_back( (**pCR).id() );
-    if ( (**pCR).id() > 0 && (**pCR).id() < 7 && (**pCR).mass() != ZERO )
-      nHeavyVecCR.push_back( (**pCR).id() );
-  }
-  cout << "DipoleMPKOperator::apply (master apply): nLightVecCR.size() = " << nLightVecCR.size() << endl;
-  cout << "DipoleMPKOperator::apply (master apply): nHeavyVecCR.size() = " << nHeavyVecCR.size() << endl;
-
-  cout << "DipoleMPKOperator::apply (master apply): Continue master apply function!" << endl;
-
   if ( !apply(pd[0]) && !apply(pd[1]) ) {
-    cout << "DipoleMPKOperator::apply (master apply): !apply(pd[0]) && !apply(pd[1]) -> return false" << endl;
+    cout << "DipoleMPKOperator::apply (master apply): ( !apply(pd[0]) && !apply(pd[1]) ). Return false!" << endl;
     return false;
   }
 
-  // DipoleMPKOperator should only apply, if massive
+  // DipoleMIOperator should only apply, if massive
   // partons exist in the given process (aka in the
-  // final state).
-  // This applies also to a gluon in the final state
-  // with subsequent splitting g->Q\bar{Q}.
+  // final state):
+  // This applies also to gluons in the final state of
+  // the LO process and further splittings g->Q\bar{Q}
+  // inside the jet.
   bool mFSet = false;
-  if ( nHeavyVecCR.size() != 0 ) {
+  if ( NHeavy().size() != 0 ) {
     mFSet = true;
-    cout << "     mFSet neq 0!" << endl;
   }
-  cout << "DipoleMPKOperator::apply (master apply): After mFSet check: mFSet = " << ( mFSet ? "true" : "false" ) << endl;
 
-  // Partons in the initial state are assumed massless
-  // in the CS approach.
+  // Partons in the initial state are assumed massless in
+  // the CS approach.
   // The following loop checks for at least one existing
   // combination 'n in addition for at least one massive
   // parton in the final state 'n for only massless par-
@@ -130,35 +101,69 @@ bool DipoleMPKOperator::apply(const cPDVector& pd) const {
   int idp = 0;
   for ( cPDVector::const_iterator p = pd.begin();
 	p != pd.end(); ++p, ++idp ) {
-    cout << "DipoleMPKOperator::apply (master apply): Loop through cPDVector: idp = " << idp << endl;
     if ( (*p)->coloured() && (*p)->mass()!=ZERO && idp > 1 ) {
       finalmass = true;
-      cout << "     finalmass = " << finalmass << endl;
     }
     if ( (*p)->coloured() && (*p)->mass()!=ZERO && idp < 2 ) {
       initialmass = true;
-//       Energy pmass = (*p)->mass();
-//       double pmassdoubleGeV = pmass / GeV;
-//       cout << "     pmassdoubleGeV = " << pmassdoubleGeV << endl; 
-      cout << "     initialmass = " << initialmass << endl;
     }
     if ( !first ) {
       if ( applyNotMassless(*p) ) {
 	first = true;
-	cout << "     first = " << first << endl;
       }
     } else {
       if ( applyNotMassless(*p) ) {
 	second = true;
-	cout << "     second = " << second << endl;
       }
     }
   }
+
   if ( first && second && (finalmass || mFSet) && !initialmass )
-    cout << "DipoleMPKOperator::apply (master apply): first && second && (finalmass || mFSet) && !initialmass = true" << endl;
+    cout << "DipoleMPKOperator::apply (master apply): Return true!" << endl;
   if ( !( first && second && (finalmass || mFSet) && !initialmass ) )
-    cout << "DipoleMPKOperator::apply (master apply): first && second && (finalmass || mFSet) && !initialmass = false" << endl;
+    cout << "DipoleMPKOperator::apply (master apply): Return false!" << endl;
+
   return first && second && (finalmass || mFSet) && !initialmass;
+
+}
+
+vector<int> DipoleMPKOperator::NLight() const {
+
+  const map<string,PDVector>& theParticleGroups = MatchboxFactory::currentFactory()->particleGroups();
+  map<string,PDVector>::const_iterator theIt = theParticleGroups.find("j");
+  if ( theIt == theParticleGroups.end() )
+    throw Exception() << "DipolePKOperator::NLight(): Could not find a jet particle group named 'j'" << Exception::abortnow;
+
+  const PDVector& theJetConstitutents = theIt->second;
+  vector<int> theNLightVec;
+
+  for ( PDVector::const_iterator theP = theJetConstitutents.begin();
+        theP != theJetConstitutents.end(); ++theP ) {
+    if ( (**theP).id() > 0 && (**theP).id() < 7 && (**theP).mass() == ZERO )
+      theNLightVec.push_back( (**theP).id() );
+  }
+
+  return theNLightVec;
+
+}
+
+vector<int> DipoleMPKOperator::NHeavy() const {
+
+  const map<string,PDVector>& theParticleGroups = MatchboxFactory::currentFactory()->particleGroups();
+  map<string,PDVector>::const_iterator theIt = theParticleGroups.find("j");
+  if ( theIt == theParticleGroups.end() )
+    throw Exception() << "DipolePKOperator::NHeavy(): Could not find a jet particle group named 'j'" << Exception::abortnow;
+
+  const PDVector& theJetConstitutents = theIt->second;
+  vector<int> theNHeavyVec;
+
+  for ( PDVector::const_iterator theP = theJetConstitutents.begin();
+        theP != theJetConstitutents.end(); ++theP ) {
+    if ( (**theP).id() > 0 && (**theP).id() < 7 && (**theP).mass() != ZERO )
+      theNHeavyVec.push_back( (**theP).id() );
+  }
+
+  return theNHeavyVec;
 
 }
 
@@ -200,7 +205,7 @@ double DipoleMPKOperator::me2() const {
 double DipoleMPKOperator::sumParton(int id) const {
 
 // sumParton(int id) sums for a specific id=a'=0,1
-// over all a
+// over all a (see CS paper)
 
   pdf =
     id == 0 ?
@@ -252,7 +257,7 @@ double DipoleMPKOperator::sumParton(int id) const {
   // non-color correlated   //
   ////////////////////////////
 
-  // The non-color correlated contributions of K
+  // The non-color correlated contributions of the K operator
   // are equal in the massive and massless case.
 
   if ( mePartonData()[id]->id() == ParticleID::g )
@@ -307,18 +312,15 @@ double DipoleMPKOperator::sumParton(int id) const {
       thePqq = Pqq();
     }
 
-    ////////////////
-    // K operator //
-    ////////////////
+    //////////////////////////
+    // K operator, the rest //
+    //////////////////////////
 
     // For m_j=0 and {m_F}=empty we can use the exact massless case.
     // This case, however, should actually not occur here.
     if ( (**i).mass() == ZERO && lastBorn()->nHeavyVec().size() == 0 ) {
+      throw InitException() << "DipoleMPKOperator::sumParton: m_j=0 and {m_F}=empty. This should not have happened.";
       // Last term in massless K operator in (C.31) in massless paper.
-      cout << endl;
-      cout << "!!! Attention !!!" << endl;
-      cout << "!!! m_j=0 and {m_F}=empty in DipoleMPKOperator !!!" << endl;
-      cout << endl;
       res +=
         ( (**i).id() == ParticleID::g ? gammaGluon : gammaQuark ) *
         theGammaSoft * fiCorrelated;
@@ -373,14 +375,15 @@ double DipoleMPKOperator::sumParton(int id) const {
     // P operator //
     ////////////////
 
-    // P(m) = P(m=0).
+    // The contributions of the P operator are equal
+    // in the massive and massless case.
 
     // The extra terms, which render the dipole kernels
     // positive definite, are subtracted here again in
     // integrated form (disfinite and gluefinite).
 
-    // At the moment the same extra terms are also in
-    // use in the massive dipoles. This has yet to be 
+    // NOTE: At the moment the same extra terms are also
+    // in use in the massive dipoles. This has yet to be 
     // clarified, though, for the massive case.
 
     double theLog = log(scale/(2.*((*Pi)*meMomenta()[id])));
@@ -616,14 +619,6 @@ double DipoleMPKOperator::Pgg() const {
 
 //////////////////////////////////////////////////////////////////////
 
-// Kscript^{a,a'}_j terms with j=quark
-
-/**
- * [J^a_{gQ}(z,\mu_Q^2)]_+
- * a,a' = quark for later
- * use of this function
- * in Kscript^{qq}_q
- */
 double DipoleMPKOperator::Ja_gQplus(double muQ2) const {
   assert(abs(parton->id()) < 7);
   double res = 
@@ -634,11 +629,6 @@ double DipoleMPKOperator::Ja_gQplus(double muQ2) const {
   return res;
 }
 
-/**
- * [1/(1-z)]_+ * log( (2-z)/(2-z+\mu_Q^2) )
- * a,a' = quark for later use of this function
- * in Kscript^{qq}_q
- */
 double DipoleMPKOperator::gammaSoft2(double muQ2) const {
   assert(abs(parton->id()) < 7);
   double res = 
@@ -649,9 +639,6 @@ double DipoleMPKOperator::gammaSoft2(double muQ2) const {
   return res;
 }
 
-/**
- * The Kscript^{qq}_q contribution
- */
 double DipoleMPKOperator::Kscriptqq_q(Energy2 sja, Energy2 mj2) const {
   assert(abs(parton->id()) < 7);
   double muQ2 = mj2/sja;
@@ -668,9 +655,6 @@ double DipoleMPKOperator::Kscriptqq_q(Energy2 sja, Energy2 mj2) const {
   return res;
 }
 
-/**
- * The Kscript^{qg}_q contribution
- */
 double DipoleMPKOperator::Kscriptqg_q(Energy2 sja, Energy2 mj2) const {
   assert(parton->id() == ParticleID::g);
   if ( z < x )
@@ -687,18 +671,12 @@ double DipoleMPKOperator::Kscriptqg_q(Energy2 sja, Energy2 mj2) const {
   return res;
 }
 
-/**
- * The Kscript^{gq}_q contribution
- */
 double DipoleMPKOperator::Kscriptgq_q() const {
   assert(abs(parton->id()) < 7);
   double res = 0.0;
   return res;
 }
 
-/**
- * The Kscript^{gg}_q contribution
- */
 double DipoleMPKOperator::Kscriptgg_q(Energy2 sja, Energy2 mj2) const {
 
   // I think the pdf folding has to be with the gluon pdf, not with the
@@ -735,13 +713,6 @@ double DipoleMPKOperator::Kscriptgg_q(Energy2 sja, Energy2 mj2) const {
 
 //////////////////////////////
 
-// Kscript^{a,a'}_j terms with j=gluon
-// The ones for a!=a' will return zero
-
-/**
- * J^{a;NS}_{Q\bar{Q}}(\mu_Q^2)
- * Not folded with 1/z*PDF(x/z)*\Theta(z-x)
- */
 double DipoleMPKOperator::JaNS_QQ(double muQ2) const {
   double res = 
     10./9. * ( 1. - sqrt(1.-4.*muQ2) ) - 
@@ -750,12 +721,6 @@ double DipoleMPKOperator::JaNS_QQ(double muQ2) const {
   return res;
 }
 
-/**
- * [J^a_{Q\bar{Q}}(z,\mu_Q^2)]_{z_+}
- * where z_+ = 1 - 4\mu_Q^2
- * int F ranges from 1 to NHeavy associ-
- * ated to the quark in \mu_Q^2
- */
 double DipoleMPKOperator::Ja_QQzplus(double muQ2, int F) const {
   double zplus = 1. - 4.*muQ2;
   double res = 0.0;
@@ -771,13 +736,10 @@ double DipoleMPKOperator::Ja_QQzplus(double muQ2, int F) const {
   return res;
 }
 
-/**
- * The Kscript^{qq}_g contribution
- */
 double DipoleMPKOperator::Kscriptqq_g(Energy2 sja) const {
   assert(abs(parton->id()) < 7);
   double res = -1.*gammaGluon/CA*gammaSoft();
-  for( int f=0; f<lastBorn()->nHeavyVec().size(); ++f ) { // sum over heavy flavours
+  for( size_t f=0; f<lastBorn()->nHeavyVec().size(); ++f ) { // sum over heavy flavours
     Energy2 mF2 = sqr( getParticleData(lastBorn()->nHeavyVec()[f])->mass() );
     double muQ2 = mF2/sja;
     double zplus = 1. - 4*muQ2;
@@ -791,32 +753,22 @@ double DipoleMPKOperator::Kscriptqq_g(Energy2 sja) const {
   return res;
 }
 
-/**
- * The Kscript^{qg}_g contribution
- */
 double DipoleMPKOperator::Kscriptqg_g() const {
   assert(parton->id() == ParticleID::g);
   double res = 0.0;
   return res;
 }
 
-/**
- * The Kscript^{gq}_g contribution
- */
 double DipoleMPKOperator::Kscriptgq_g() const {
   assert(abs(parton->id()) < 7);
   double res = 0.0;
   return res;
 }
 
-/**
- * The Kscript^{gg}_g contribution
- * equals the Kscript^{qq}_g contribution
- */
 double DipoleMPKOperator::Kscriptgg_g(Energy2 sja) const {
   assert(parton->id() == ParticleID::g);
   double res = -1.*gammaGluon/CA*gammaSoft();
-  for( int f=0; f<lastBorn()->nHeavyVec().size(); ++f ) { // sum over heavy flavours
+  for( size_t f=0; f<lastBorn()->nHeavyVec().size(); ++f ) { // sum over heavy flavours
     Energy2 mF2 = sqr( getParticleData(lastBorn()->nHeavyVec()[f])->mass() );
     double muQ2 = mF2/sja;
     double zplus = 1. - 4*muQ2;
@@ -868,13 +820,10 @@ double DipoleMPKOperator::PDFxByz(tcPDPtr pd) const {
 
 //////////////////////////////
 
-/**
- * Get a PDF value at x/z_+
- * where z_+ = 1 - 4\mu_Q^2
- * The int in the second argument ranges from
- * 1 to NHeavy associated to the quark in \mu_Q^2
- */
 double DipoleMPKOperator::PDFxByzplus(tcPDPtr pd, int F, double muQ2) const {
+
+  // NOTE: Might need some debugging. Not sure about the
+  // multiplication by zplus/x at the end -- CR 20140425
 
   vector<double> nullPDFCacheVector;
   for( size_t f=0; f<lastBorn()->nHeavyVec().size(); ++f ) nullPDFCacheVector.push_back(0.0);

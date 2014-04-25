@@ -44,30 +44,13 @@ IBPtr DipoleIOperator::fullclone() const {
   return new_ptr(*this);
 }
 
-// void DipoleIOperator::setXComb(tStdXCombPtr xc) {
-//   MatchboxInsertionOperator::setXComb(xc);
-//   if ( CA < 0. ) {
-//     CA = SM().Nc();
-//     CF = (SM().Nc()*SM().Nc()-1.0)/(2.*SM().Nc());
-//     gammaQuark = (3./2.)*CF;
-//     gammaGluon = (11./6.)*CA - (1./3.)*lastBorn()->nLight();
-//     betaZero = gammaGluon;
-//     KQuark = (7./2.-sqr(pi)/6.)*CF;
-//     KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*lastBorn()->nLight();
-//     if ( isDR() ) {
-//       gammaQuark -= CF/2.;
-//       gammaGluon -= CA/6.;
-//     }
-//   }
-// }
-
 void DipoleIOperator::setXComb(tStdXCombPtr xc) {
   MatchboxInsertionOperator::setXComb(xc);
   if ( CA < 0. ) {
     CA = SM().Nc();
     CF = (SM().Nc()*SM().Nc()-1.0)/(2.*SM().Nc());
     gammaQuark = (3./2.)*CF;
-    gammaGluon = (11./6.)*CA - (1./3.)*lastBorn()->nLight();
+    gammaGluon = (11./6.)*CA - (1./3.)*lastBorn()->nLight(); // Be aware of consistent usage if using together with any OLP!
     betaZero = gammaGluon;
     KQuark = (7./2.-sqr(pi)/6.)*CF;
     KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*lastBorn()->nLight();
@@ -76,9 +59,6 @@ void DipoleIOperator::setXComb(tStdXCombPtr xc) {
       gammaGluon -= CA/6.;
     }
   }
-  cout << "DipoleIOperator::setXComb: lastBorn()->nLight = " << lastBorn()->nLight() << endl;
-  cout << "DipoleIOperator::setXComb: lastBorn()->nLightVec().size() = " << lastBorn()->nLightVec().size() << endl;
-  cout << "DipoleIOperator::setXComb: lastBorn()->nHeavyVec().size() = " << lastBorn()->nHeavyVec().size() << endl;
 }
 
 // bool DipoleIOperator::apply(const cPDVector& pd) const {
@@ -99,31 +79,10 @@ void DipoleIOperator::setXComb(tStdXCombPtr xc) {
 
 bool DipoleIOperator::apply(const cPDVector& pd) const {
 
-  cout << "DipoleIOperator::apply (master apply): Entering master apply function!" << endl;
-
-  const map<string,PDVector>& particleGroupsCR = MatchboxFactory::currentFactory()->particleGroups();
-  map<string,PDVector>::const_iterator gitCR = particleGroupsCR.find("j");
-  if ( gitCR == particleGroupsCR.end() )
-    throw Exception() << "DipoleIOperator::apply (master apply): Could not find a jet particle group named 'j'" << Exception::abortnow;
-  const PDVector& jetConstitutentsCR = gitCR->second;
-  vector<int> nLightVecCR;
-  vector<int> nHeavyVecCR;
-  for ( PDVector::const_iterator pCR = jetConstitutentsCR.begin();
-        pCR != jetConstitutentsCR.end(); ++pCR ) {
-    if ( (**pCR).id() > 0 && (**pCR).id() < 7 && (**pCR).mass() == ZERO )
-      nLightVecCR.push_back( (**pCR).id() );
-    if ( (**pCR).id() > 0 && (**pCR).id() < 7 && (**pCR).mass() != ZERO )
-      nHeavyVecCR.push_back( (**pCR).id() );
-  }
-  cout << "DipoleIOperator::apply (master apply): nLightVecCR.size() = " << nLightVecCR.size() << endl;
-  cout << "DipoleIOperator::apply (master apply): nHeavyVecCR.size() = " << nHeavyVecCR.size() << endl;
-
-  cout << "DipoleIOperator::apply (master apply): Continue master apply function!" << endl;
-
   // Prohibit splittings g->Q\bar{Q} in the final state.
   // These are covered by DipoleMIOperator.
-  if ( nHeavyVecCR.size()!=0 ) {
-    cout << "DipoleIOperator::apply (master apply): nHeavyVecCR.size()!=0. Return false!" << endl;
+  if ( NHeavy().size()!=0 ) {
+    cout << "DipoleIOperator::apply (master apply): Found massive QCD particle in jet particle group. Return false!" << endl;
     return false;
   }
 
@@ -136,7 +95,7 @@ bool DipoleIOperator::apply(const cPDVector& pd) const {
     // Return false if any massive particles are present.
     // Covered by DipoleMIOperator then.
     if ( (*p)->coloured() && (*p)->mass()!=ZERO ) {
-      cout << "DipoleIOperator::apply (master apply): Found massive QCD particle. Return false!" << endl;
+      cout << "DipoleIOperator::apply (master apply): Found massive QCD particle in the Born process. Return false!" << endl;
       return false;
     }
     if ( !first ) {
@@ -147,17 +106,60 @@ bool DipoleIOperator::apply(const cPDVector& pd) const {
 	second = true;
     }
   }
+
   if ( first && second )
-    cout << "DipoleIOperator::apply (master apply): first && second = true" << endl;
+    cout << "DipoleIOperator::apply (master apply): Return true!" << endl;
   if ( !( first && second ) )
-    cout << "DipoleIOperator::apply (master apply): first && second = false" << endl;
+    cout << "DipoleIOperator::apply (master apply): Return false!" << endl;
+
   return first && second;
+
 }
 
 bool DipoleIOperator::apply(tcPDPtr pd) const {
   return
     pd->mass() == ZERO &&
     (abs(pd->id()) < 7 || pd->id() == ParticleID::g);
+}
+
+vector<int> DipoleIOperator::NLight() const {
+
+  const map<string,PDVector>& theParticleGroups = MatchboxFactory::currentFactory()->particleGroups();
+  map<string,PDVector>::const_iterator theIt = theParticleGroups.find("j");
+  if ( theIt == theParticleGroups.end() )
+    throw Exception() << "DipoleIOperator::NLight(): Could not find a jet particle group named 'j'" << Exception::abortnow;
+
+  const PDVector& theJetConstitutents = theIt->second;
+  vector<int> theNLightVec;
+
+  for ( PDVector::const_iterator theP = theJetConstitutents.begin();
+        theP != theJetConstitutents.end(); ++theP ) {
+    if ( (**theP).id() > 0 && (**theP).id() < 7 && (**theP).mass() == ZERO )
+      theNLightVec.push_back( (**theP).id() );
+  }
+
+  return theNLightVec;
+
+}
+
+vector<int> DipoleIOperator::NHeavy() const {
+
+  const map<string,PDVector>& theParticleGroups = MatchboxFactory::currentFactory()->particleGroups();
+  map<string,PDVector>::const_iterator theIt = theParticleGroups.find("j");
+  if ( theIt == theParticleGroups.end() )
+    throw Exception() << "DipoleIOperator::NHeavy(): Could not find a jet particle group named 'j'" << Exception::abortnow;
+
+  const PDVector& theJetConstitutents = theIt->second;
+  vector<int> theNHeavyVec;
+
+  for ( PDVector::const_iterator theP = theJetConstitutents.begin();
+        theP != theJetConstitutents.end(); ++theP ) {
+    if ( (**theP).id() > 0 && (**theP).id() < 7 && (**theP).mass() != ZERO )
+      theNHeavyVec.push_back( (**theP).id() );
+  }
+
+  return theNHeavyVec;
+
 }
 
 double DipoleIOperator::me2() const {
@@ -226,22 +228,10 @@ double DipoleIOperator::me2() const {
     lastBorn()->renormalizationScale()*
     sqr(lastBorn()->renormalizationScaleFactor());
   if ( muR2 != mu2 ) {
-    cout << "DipoleIOperator::me2(): muR2 != mu2 !!!!!" << endl;
-    cout << "muR2/(GeV*GeV) = " << (muR2/(GeV*GeV)) << endl;
-    cout << "mu2/(GeV*GeV) = " << (mu2/(GeV*GeV)) << endl;
-    cout << "sqrt(muR2/(GeV*GeV)) = " << sqrt(muR2/(GeV*GeV)) << endl;
-    cout << "sqrt(mu2/(GeV*GeV)) = " << sqrt(mu2/(GeV*GeV)) << endl;
     res -=
       betaZero *
       lastBorn()->orderInAlphaS() * log(muR2/mu2) *
       lastBorn()->me2();
-  }
-  if ( muR2 == mu2 ) {
-    cout << "DipoleIOperator::me2(): muR2 = mu2 !!!!!" << endl;
-    cout << "muR2/(GeV*GeV) = " << (muR2/(GeV*GeV)) << endl;
-    cout << "mu2/(GeV*GeV) = " << (mu2/(GeV*GeV)) << endl;
-    cout << "sqrt(muR2/(GeV*GeV)) = " << sqrt(muR2/(GeV*GeV)) << endl;
-    cout << "sqrt(mu2/(GeV*GeV)) = " << sqrt(mu2/(GeV*GeV)) << endl;
   }
 
   // include the finite renormalization for DR here; ATTENTION this
@@ -249,11 +239,7 @@ double DipoleIOperator::me2() const {
   // details; this guarantees an expansion in alpha_s^\bar{MS} when
   // using dimensional reduction
   if ( isDR() && isDRbar() ) {
-    cout << "DipoleIOperator::me2(): Finite renormalization for DR !!!!!" << endl;
     res -= (CA/6.)*lastBorn()->orderInAlphaS()*lastBorn()->me2();
-  }
-  if ( !( isDR() && isDRbar() ) ) {
-    cout << "DipoleIOperator::me2(): No finite renormalization for DR !!!!!" << endl;
   }
 
   res *= ( - lastBorn()->lastAlphaS() / (2.*pi) );

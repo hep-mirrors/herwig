@@ -22,7 +22,7 @@ using namespace ThePEG;
 
 /**
  * \ingroup Matchbox
- * \author Simon Platzer
+ * \author Simon Platzer, Christian Reuschle
  *
  * \brief DipolePKOperator implements the P+K
  * insertion operator.
@@ -59,6 +59,18 @@ public:
    * We treat all integrations on equal footing.
    */
   virtual int nDimAdditional() const { return 1; }
+
+  /**
+   * Return a vector of PDG codes of the light flavours,
+   * which are contained in the jet particle group.
+   */
+  vector<int> NLight() const;
+
+  /**
+   * Return a vector of PDG codes of the heavy flavours,
+   * which are contained in the jet particle group.
+   */
+  vector<int> NHeavy() const;
 
   /**
    * Evaluate the finite virtual correction for the
@@ -214,12 +226,6 @@ protected:
   //@}
 
 private:
-
-//   /**
-//    * Vector to contain heavy flavour id's
-//    * n_F = NHeavy.size()
-//    */
-//   vector<int> NHeavy;
 
   /**
    * C_A

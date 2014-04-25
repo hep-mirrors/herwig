@@ -21,7 +21,7 @@ using namespace ThePEG;
 
 /**
  * \ingroup Matchbox
- * \author Simon Platzer
+ * \author Simon Platzer, Christian Reuschle
  *
  * \brief DipoleIOperator implements the I(\epsilon)
  * insertion operator.
@@ -53,6 +53,30 @@ public:
   virtual void setXComb(tStdXCombPtr xc);
 
   /**
+   * Return true, if this virtual correction
+   * applies to the given process.
+   */
+  virtual bool apply(const cPDVector&) const;
+
+  /**
+   * Return true, if contributions exist to
+   * the given parton.
+   */
+  bool apply(tcPDPtr) const;
+
+  /**
+   * Return a vector of PDG codes of the light flavours,
+   * which are contained in the jet particle group.
+   */
+  vector<int> NLight() const;
+
+  /**
+   * Return a vector of PDG codes of the heavy flavours,
+   * which are contained in the jet particle group.
+   */
+  vector<int> NHeavy() const;
+
+  /**
    * Evaluate the finite virtual correction for the
    * variables supplied through the Born XComb object
    * and possible additional random numbers.
@@ -68,18 +92,6 @@ public:
    * If defined, return the coefficient of the pole in epsilon
    */
   virtual double oneLoopSinglePole() const;
-
-  /**
-   * Return true, if contributions exist to
-   * the given parton.
-   */
-  bool apply(tcPDPtr) const;
-
-  /**
-   * Return true, if this virtual correction
-   * applies to the given process.
-   */
-  virtual bool apply(const cPDVector&) const;
 
 public:
 
@@ -125,12 +137,6 @@ protected:
   //@}
 
 private:
-
-//   /**
-//    * Vector to contain heavy flavour id's
-//    * n_F = NHeavy.size()
-//    */
-//   vector<int> NHeavy;
 
   /**
    * C_A

@@ -44,21 +44,7 @@ IBPtr DipolePKOperator::fullclone() const {
   return new_ptr(*this);
 }
 
-// void DipolePKOperator::setXComb(tStdXCombPtr xc) {
-//   MatchboxInsertionOperator::setXComb(xc);
-//   if ( CA < 0. ) {
-//     CA = SM().Nc();
-//     CF = (SM().Nc()*SM().Nc()-1.0)/(2.*SM().Nc());
-//     gammaQuark = (3./2.)*CF;
-//     gammaGluon = (11./6.)*CA - (1./3.)*lastBorn()->nLight();
-//     KQuark = (7./2.-sqr(pi)/6.)*CF;
-//     KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*lastBorn()->nLight();
-//     if ( isDR() ) {
-//       gammaQuark -= CF/2.;
-//       gammaGluon -= CA/6.;
-//     }
-//   }
-// }
+//////////////////////////////////////////////////////////////////////
 
 void DipolePKOperator::setXComb(tStdXCombPtr xc) {
   MatchboxInsertionOperator::setXComb(xc);
@@ -74,12 +60,7 @@ void DipolePKOperator::setXComb(tStdXCombPtr xc) {
       gammaGluon -= CA/6.;
     }
   }
-  cout << "DipolePKOperator::setXComb: lastBorn()->nLight = " << lastBorn()->nLight() << endl;
-  cout << "DipolePKOperator::setXComb: lastBorn()->nLightVec().size() = " << lastBorn()->nLightVec().size() << endl;
-  cout << "DipolePKOperator::setXComb: lastBorn()->nHeavyVec().size() = " << lastBorn()->nHeavyVec().size() << endl;
 }
-
-//////////////////////////////////////////////////////////////////////
 
 bool DipolePKOperator::apply(tcPDPtr pd) const {
   return
@@ -107,36 +88,15 @@ bool DipolePKOperator::apply(tcPDPtr pd) const {
 
 bool DipolePKOperator::apply(const cPDVector& pd) const {
 
-  cout << "DipolePKOperator::apply (master apply): Entering master apply function!" << endl;
-
-  const map<string,PDVector>& particleGroupsCR = MatchboxFactory::currentFactory()->particleGroups();
-  map<string,PDVector>::const_iterator gitCR = particleGroupsCR.find("j");
-  if ( gitCR == particleGroupsCR.end() )
-    throw Exception() << "DipolePKOperator::apply (master apply): Could not find a jet particle group named 'j'" << Exception::abortnow;
-  const PDVector& jetConstitutentsCR = gitCR->second;
-  vector<int> nLightVecCR;
-  vector<int> nHeavyVecCR;
-  for ( PDVector::const_iterator pCR = jetConstitutentsCR.begin();
-        pCR != jetConstitutentsCR.end(); ++pCR ) {
-    if ( (**pCR).id() > 0 && (**pCR).id() < 7 && (**pCR).mass() == ZERO )
-      nLightVecCR.push_back( (**pCR).id() );
-    if ( (**pCR).id() > 0 && (**pCR).id() < 7 && (**pCR).mass() != ZERO )
-      nHeavyVecCR.push_back( (**pCR).id() );
-  }
-  cout << "DipolePKOperator::apply (master apply): nLightVecCR.size() = " << nLightVecCR.size() << endl;
-  cout << "DipolePKOperator::apply (master apply): nHeavyVecCR.size() = " << nHeavyVecCR.size() << endl;
-
-  cout << "DipolePKOperator::apply (master apply): Continue master apply function!" << endl;
-
   if ( !apply(pd[0]) && !apply(pd[1]) ) {
-    cout << "DipolePKOperator::apply (master apply): !apply(pd[0]) && !apply(pd[1]) -> return false" << endl;
+    cout << "DipolePKOperator::apply (master apply): ( !apply(pd[0]) && !apply(pd[1]) ). Return false!" << endl;
     return false;
   }
 
   // Prohibit splittings g->Q\bar{Q} in the final state.
-  // These are covered by DipoleMPKOperator.
-  if ( nHeavyVecCR.size()!=0 ) {
-    cout << "DipolePKOperator::apply (master apply): nHeavyVecCR.size()!=0. Return false!" << endl;
+  // These are covered by DipoleMIOperator.
+  if ( NHeavy().size()!=0 ) {
+    cout << "DipolePKOperator::apply (master apply): Found massive QCD particle in jet particle group. Return false!" << endl;
     return false;
   }
 
@@ -149,7 +109,7 @@ bool DipolePKOperator::apply(const cPDVector& pd) const {
     // Return false if any massive particles are present.
     // Covered by DipoleMPKOperator then.
     if ( (*p)->coloured() && (*p)->mass()!=ZERO ) {
-      cout << "DipolePKOperator::apply (master apply): Found massive QCD particle. Return false!" << endl;
+      cout << "DipolePKOperator::apply (master apply): Found massive QCD particle in the Born process. Return false!" << endl;
       return false;
     }
     if ( !first ) {
@@ -160,11 +120,54 @@ bool DipolePKOperator::apply(const cPDVector& pd) const {
 	second = true;
     }
   }
+
   if ( first && second )
-    cout << "DipolePKOperator::apply (master apply): first && second = true" << endl;
+    cout << "DipolePKOperator::apply (master apply): Return true!" << endl;
   if ( !( first && second ) )
-    cout << "DipolePKOperator::apply (master apply): first && second = false" << endl;
+    cout << "DipolePKOperator::apply (master apply): Return false!" << endl;
+
   return first && second;
+
+}
+
+vector<int> DipolePKOperator::NLight() const {
+
+  const map<string,PDVector>& theParticleGroups = MatchboxFactory::currentFactory()->particleGroups();
+  map<string,PDVector>::const_iterator theIt = theParticleGroups.find("j");
+  if ( theIt == theParticleGroups.end() )
+    throw Exception() << "DipolePKOperator::NLight(): Could not find a jet particle group named 'j'" << Exception::abortnow;
+
+  const PDVector& theJetConstitutents = theIt->second;
+  vector<int> theNLightVec;
+
+  for ( PDVector::const_iterator theP = theJetConstitutents.begin();
+        theP != theJetConstitutents.end(); ++theP ) {
+    if ( (**theP).id() > 0 && (**theP).id() < 7 && (**theP).mass() == ZERO )
+      theNLightVec.push_back( (**theP).id() );
+  }
+
+  return theNLightVec;
+
+}
+
+vector<int> DipolePKOperator::NHeavy() const {
+
+  const map<string,PDVector>& theParticleGroups = MatchboxFactory::currentFactory()->particleGroups();
+  map<string,PDVector>::const_iterator theIt = theParticleGroups.find("j");
+  if ( theIt == theParticleGroups.end() )
+    throw Exception() << "DipolePKOperator::NHeavy(): Could not find a jet particle group named 'j'" << Exception::abortnow;
+
+  const PDVector& theJetConstitutents = theIt->second;
+  vector<int> theNHeavyVec;
+
+  for ( PDVector::const_iterator theP = theJetConstitutents.begin();
+        theP != theJetConstitutents.end(); ++theP ) {
+    if ( (**theP).id() > 0 && (**theP).id() < 7 && (**theP).mass() != ZERO )
+      theNHeavyVec.push_back( (**theP).id() );
+  }
+
+  return theNHeavyVec;
+
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -200,6 +203,9 @@ double DipolePKOperator::me2() const {
 //////////////////////////////////////////////////////////////////////
 
 double DipolePKOperator::sumParton(int id) const {
+
+// sumParton(int id) sums for a specific id=a'=0,1
+// over all a (see CS paper)
 
   pdf =
     id == 0 ?
@@ -299,9 +305,9 @@ double DipolePKOperator::sumParton(int id) const {
       thePqq = Pqq();
     }
 
-    ////////////////
-    // K operator //
-    ////////////////
+    //////////////////////////
+    // K operator, the rest //
+    //////////////////////////
 
     // Last term in massless K operator in (C.31) in massless paper
     res +=

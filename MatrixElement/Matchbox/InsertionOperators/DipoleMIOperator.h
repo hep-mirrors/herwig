@@ -54,6 +54,30 @@ public:
   virtual void setXComb(tStdXCombPtr xc);
 
   /**
+   * Return true, if this virtual correction
+   * applies to the given process.
+   */
+  virtual bool apply(const cPDVector&) const;
+
+  /**
+   * Return true, if contributions exist to
+   * the given parton.
+   */
+  bool apply(tcPDPtr) const;
+
+  /**
+   * Return a vector of PDG codes of the light flavours,
+   * which are contained in the jet particle group.
+   */
+  vector<int> NLight() const;
+
+  /**
+   * Return a vector of PDG codes of the heavy flavours,
+   * which are contained in the jet particle group.
+   */
+  vector<int> NHeavy() const;
+
+  /**
    * Evaluate the finite virtual correction for the
    * variables supplied through the Born XComb object
    * and possible additional random numbers.
@@ -69,24 +93,6 @@ public:
    * If defined, return the coefficient of the pole in epsilon
    */
   virtual double oneLoopSinglePole() const;
-
-//   /**
-//    * Return true, if contributions exist to
-//    * the given parton pair.
-//    */
-//   bool apply(tcPDPtr, tcPDPtr) const;
-
-  /**
-   * Return true, if contributions exist to
-   * the given parton.
-   */
-  bool apply(tcPDPtr) const;
-
-  /**
-   * Return true, if this virtual correction
-   * applies to the given process.
-   */
-  virtual bool apply(const cPDVector&) const;
 
 public:
   
@@ -142,12 +148,6 @@ protected:
 
 private:
 
-//   /**
-//    * Vector to contain heavy flavour id's
-//    * n_F = NHeavy.size()
-//    */
-//   vector<int> NHeavy;
-
   /**
    * C_A
    */
@@ -170,11 +170,47 @@ private:
   
   /**
    * \beta_0
-   * The Matchbox convention is \beta_0=\gamma_g.
-   * Often \beta_0 is defined in the literature as \beta_0=2*\gamma_g.
+   * The Matchbox convention is \beta_0=\gamma_g. Often, however,
+   * \beta_0 is defined in the literature as \beta_0=2*\gamma_g.
    * Be aware of consistent usage!
+   * In the massive case (see hep-ph/0011222v3):
+   *      \beta_0 = 11/3*C_A - 4/3*T_R*(N_f+N_F)
+   * with T_R=1/2, N_f the number of light flavours and N_F the
+   * number of heavy flavours. In our conventions, however:
+   *      \beta_0 = 11/6*C_A - 2/3*T_R*(N_f+N_F)
+   * The "massive" \beta_0 applies as soon as we define massive
+   * flavours in the jet particle group. Be aware that some OLP
+   * might generically(!) use something like N_f=5 and N_F=1 in
+   * their definition of \beta_0!
    */
   double betaZero;
+
+  /**
+   * K_q
+   */
+  double KQuark;
+
+  /**
+   * K_g
+   */
+  double KGluon;
+  
+private:
+
+  /**
+   * V_j, non-singular terms
+   */
+  double Vj(const ParticleData&, const ParticleData&, Energy2,double,bool=false) const;
+
+  /**
+   * V^{(s)}, double pole part in expanded convention.
+   */
+  double VsDoublePole(const ParticleData&, const ParticleData&) const;
+
+  /**
+   * V^{(s)}, single pole part in expanded convention.
+   */
+  double VsSinglePole(const ParticleData&, const ParticleData&, Energy2) const;
 
   /**
    * \Gamma_q, finite term
@@ -187,19 +223,14 @@ private:
   double GammaGluon() const;
 
   /**
-   * K_q
+   * \Gamma_q, single pole term
    */
-  double KQuark;
-
-  /**
-   * K_g
-   */
-  double KGluon;
+  double GammaQuarkSinglePole(const ParticleData&) const;
   
   /**
-   * V_j
+   * \Gamma_g, single pole term
    */
-  double Vj(const ParticleData&, const ParticleData&, Energy2,double,bool=false) const;
+  double GammaGluonSinglePole() const;
 
 private:
 

@@ -61,6 +61,18 @@ public:
   virtual int nDimAdditional() const { return 1; }
 
   /**
+   * Return a vector of PDG codes of the light flavours,
+   * which are contained in the jet particle group.
+   */
+  vector<int> NLight() const;
+
+  /**
+   * Return a vector of PDG codes of the heavy flavours,
+   * which are contained in the jet particle group.
+   */
+  vector<int> NHeavy() const;
+
+  /**
    * Evaluate the finite virtual correction for the
    * variables supplied through the Born XComb object
    * and possible additional random numbers.
@@ -172,18 +184,24 @@ public:
    */
   double Pgg() const;
 
-  ////////////////////////////////////////////////
+  //////////////////////////////////////
+
+  /**
+   * Kscript^{a,a'}_j terms with j=quark
+   */
 
   /**
    * [J^a_{gQ}(z,\mu_Q^2)]_+
    * a,a' = quark for later
    * use of this function
+   * in Kscript^{qq}_q
    */
   double Ja_gQplus(double muQ2) const;
 
   /**
    * [1/(1-z)]_+ * log( (2-z)/(2-z+\mu_Q^2) )
    * a,a' = quark for later use of this function
+   * in Kscript^{qq}_q
    */
   double gammaSoft2(double muQ2) const;
 
@@ -208,6 +226,11 @@ public:
   double Kscriptgg_q(Energy2 sja, Energy2 mj2) const;
 
   ////////////////////////////
+
+  /**
+   * Kscript^{a,a'}_j terms with j=gluon
+   * The ones for a!=a' will return zero
+   */
 
   /**
    * J^{a;NS}_{Q\bar{Q}}(\mu_Q^2)
@@ -244,7 +267,7 @@ public:
    */
   double Kscriptgg_g(Energy2 sja) const;
 
-  ////////////////////////////////////////////////
+  //////////////////////////////////////
 
   /**
    * Get all contributions for the indicated incoming parton.
@@ -295,12 +318,6 @@ protected:
   //@}
 
 private:
-
-//   /**
-//    * Vector to contain heavy flavour id's
-//    * n_F = NHeavy.size()
-//    */
-//   vector<int> NHeavy;
 
   /**
    * C_A
@@ -380,7 +397,7 @@ private:
    */
   double PDFxByz(tcPDPtr) const;
 
-  ////////////////////////////
+  //////////////////////////////////////
 
   /**
    * Get a PDF value at x/z_+
@@ -390,7 +407,7 @@ private:
    */
   double PDFxByzplus(tcPDPtr,int,double) const;
 
-  ////////////////////////////////////////////////
+  //////////////////////////////////////
 
 private:
 
