@@ -72,6 +72,12 @@ bool DipoleMPKOperator::applyNotMassless(tcPDPtr pd) const {
 
 bool DipoleMPKOperator::apply(const cPDVector& pd) const {
 
+  cout << "!!!!! Attention !!!!!" << endl;
+  cout << "Number of massless flavours in jet particle group (aka n_f) = " << NLight().size() << endl;
+  cout << "Number of massive flavours in jet particle group (aka n_F or n_{f,h}) = " << NHeavy().size() << endl;
+  cout << "Ensure consistent usage!" << endl;
+  cout << endl;
+
   if ( !apply(pd[0]) && !apply(pd[1]) ) {
     cout << "DipoleMPKOperator::apply (master apply): ( !apply(pd[0]) && !apply(pd[1]) ). Return false!" << endl;
     return false;

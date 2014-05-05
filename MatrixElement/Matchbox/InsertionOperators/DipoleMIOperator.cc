@@ -63,6 +63,12 @@ void DipoleMIOperator::setXComb(tStdXCombPtr xc) {
 
 bool DipoleMIOperator::apply(const cPDVector& pd) const {
 
+  cout << "!!!!! Attention !!!!!" << endl;
+  cout << "Number of massless flavours in jet particle group (aka n_f) = " << NLight().size() << endl;
+  cout << "Number of massive flavours in jet particle group (aka n_F or n_{f,h}) = " << NHeavy().size() << endl;
+  cout << "Ensure consistent usage!" << endl;
+  cout << endl;
+
   // DipoleMIOperator should only apply, if massive
   // partons exist in the given process (aka in the
   // final state):

@@ -79,6 +79,12 @@ void DipoleIOperator::setXComb(tStdXCombPtr xc) {
 
 bool DipoleIOperator::apply(const cPDVector& pd) const {
 
+  cout << "!!!!! Attention !!!!!" << endl;
+  cout << "Number of massless flavours in jet particle group (aka n_f) = " << NLight().size() << endl;
+  cout << "Number of massive flavours in jet particle group (aka n_F or n_{f,h}) = " << NHeavy().size() << endl;
+  cout << "Ensure consistent usage!" << endl;
+  cout << endl;
+
   // Prohibit splittings g->Q\bar{Q} in the final state.
   // These are covered by DipoleMIOperator.
   if ( NHeavy().size()!=0 ) {
