@@ -59,6 +59,8 @@ bool NJetsAmplitude::startOLP(const map<pair<Process,int>,int>& procs) {
 		      << DynamicLoader::lastErrorMessage
 		      << Exception::abortnow;
 
+  // TODO throw exception on massive leptons in procs
+
   string orderFileName = name() + ".OLPOrder.lh";
   ofstream orderFile(orderFileName.c_str());
 
@@ -80,7 +82,43 @@ bool NJetsAmplitude::startOLP(const map<pair<Process,int>,int>& procs) {
 
   int status = -1;
 
-  startOLP(contractFileName,status);  
+  startOLP(contractFileName,status);
+
+  if ( status != 1 )
+    return false;
+
+  status = 0;
+
+  static double zero = 0.0;
+  double param = 0.0;
+
+  param = SM().alphaEMMZ();
+  NJet::LH_OLP::OLP_SetParameter("alpha",&param,&zero,&status);
+  if ( status != 1 )
+    return false;
+
+  param = getParticleData(ParticleID::Z0)->mass()/GeV;
+  NJet::LH_OLP::OLP_SetParameter("mass(23)",&param,&zero,&status);
+  if ( status != 1 )
+    return false;
+
+  param = getParticleData(ParticleID::Wplus)->mass()/GeV;
+  NJet::LH_OLP::OLP_SetParameter("mass(24)",&param,&zero,&status);
+  if ( status != 1 )
+    return false;
+
+  param = getParticleData(ParticleID::Z0)->width()/GeV;
+  NJet::LH_OLP::OLP_SetParameter("width(23)",&param,&zero,&status);
+  if ( status != 1 )
+    return false;
+
+  param = getParticleData(ParticleID::Wplus)->width()/GeV;
+  NJet::LH_OLP::OLP_SetParameter("width(24)",&param,&zero,&status);
+  if ( status != 1 )
+    return false;
+
+  param = SM().sin2ThetaW();
+  NJet::LH_OLP::OLP_SetParameter("sw2",&param,&zero,&status);
 
   if ( status != 1 )
     return false;
