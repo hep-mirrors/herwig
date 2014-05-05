@@ -207,7 +207,7 @@ text2h ="//static PN_Sigma_sm_xxprocessxx    xxprocessxx     ;\n"
 text1cc="//PN_Sigma_sm_xxprocessxx             InterfaceMadGraph::xxprocessxx ;\n"
 text2cc="//case N:  InterfaceMadGraph::xxprocessxx.calculate_wavefunctions(perm,hel);break;\n"
 text3cc="//case N:  InterfaceMadGraph::xxprocessxx.setMomenta(p); break;\n"
-text4cc="//case N:  return InterfaceMadGraph::xxprocessxx.jamp(T); break;\n"
+text4cc="//case N:  return InterfaceMadGraph::xxprocessxx.get_jamp(T); break;\n"
 text5cc="//case N:  InterfaceMadGraph::xxprocessxx.initProc(\"param_card.dat\"); break;\n"
 text6cc="//case N: return InterfaceMadGraph::xxprocessxx.NCol(); break;\n"
 text7cc="//case N: return InterfaceMadGraph::xxprocessxx.Colour(); break;\n"
@@ -222,7 +222,7 @@ for i in a:
     text1cc+=i+"             InterfaceMadGraph::obj_"+i+" ;\n"
     text2cc+="case "+N[0]+":  InterfaceMadGraph::obj_"+i+".calculate_wavefunctions(perm,hel);break;\n"
     text3cc+="case "+N[0]+":  InterfaceMadGraph::obj_"+i+".setMomenta(p); break;\n"
-    text4cc+="case "+N[0]+":  return InterfaceMadGraph::obj_"+i+".jamp(T); break;\n"
+    text4cc+="case "+N[0]+":  return InterfaceMadGraph::obj_"+i+".get_jamp(T); break;\n"
     text5cc+="case "+N[0]+":  InterfaceMadGraph::obj_"+i+".initProc(\""+pwd1+"/"+"MGout/Cards/"+"param_card.dat\"); break;\n"
     text6cc+="case "+N[0]+": return InterfaceMadGraph::obj_"+i+".NCol(); break;\n"
     text7cc+="case "+N[0]+": return InterfaceMadGraph::obj_"+i+".colorstring(i,j); break;\n"
@@ -232,7 +232,7 @@ for i in a:
     replacemachine("CPPProcess.cc","CPPProcess" , i)
     os.system("mv CPPProcess.h "+i+".h")
     os.system("mv CPPProcess.cc "+i+".cc")
-   # replacemachine(i+".h","virtual void sigmaKin();", "virtual void sigmaKin();\n\tstd::complex<double> jamp(int T);\n\tint NCol();\n\tint colorstring(int i,int j);")
+   # replacemachine(i+".h","virtual void sigmaKin();", "virtual void sigmaKin();\n\tstd::complex<double> get_jamp(int T);\n\tint NCol();\n\tint colorstring(int i,int j);")
     #addjamp(i)
     os.system("rm Makefile")
     file = open(i+".h", "r")
@@ -259,7 +259,7 @@ file = open("InterfaceMadGraph.cc", "w")
 text=text.replace("PN_Sigma_sm_xxprocessxx             InterfaceMadGraph::xxprocessxx ;",text1cc)
 text=text.replace("case N:  InterfaceMadGraph::xxprocessxx.calculate_wavefunctions(perm,hel);break;",text2cc)
 text=text.replace("case N:  InterfaceMadGraph::xxprocessxx.setMomenta(p); break;",text3cc)
-text=text.replace("case N:  return InterfaceMadGraph::xxprocessxx.jamp(T); break;",text4cc)
+text=text.replace("case N:  return InterfaceMadGraph::xxprocessxx.get_jamp(T); break;",text4cc)
 text=text.replace("case N:  InterfaceMadGraph::xxprocessxx.initProc(\"param_card.dat\"); break;",text5cc)
 text=text.replace("case N: return InterfaceMadGraph::xxprocessxx.NCol(); break;",text6cc)
 text=text.replace("case N: return InterfaceMadGraph::xxprocessxx.colorstring(i,j); break;",text7cc)

@@ -70,7 +70,7 @@ default:
 
 std::complex<double> InterfaceMadGraph::jamp(int T,int str){
 switch (str){
-case N:  return InterfaceMadGraph::xxprocessxx.jamp(T); break;
+case N:  return InterfaceMadGraph::xxprocessxx.get_jamp(T); break;
 default: 
     break;}};
 
