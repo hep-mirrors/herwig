@@ -45,6 +45,32 @@ public:
 public:
 
   /**
+   * Return true, if this dipole can possibly handle the indicated
+   * emitter.
+   */
+  virtual bool canHandleEmitter(const cPDVector& partons, int emitter) const {
+    return emitter < 2 && abs(partons[emitter]->id()) < 7;
+  }
+
+  /**
+   * Return true, if this dipole can possibly handle the indicated
+   * splitting.
+   */
+  virtual bool canHandleSplitting(const cPDVector& partons, int emitter, int emission) const {
+    return 
+      canHandleEmitter(partons,emitter) &&
+      partons[emitter]->id() == partons[emission]->id();
+  }
+
+  /**
+   * Return true, if this dipole can possibly handle the indicated
+   * spectator.
+   */
+  virtual bool canHandleSpectator(const cPDVector& partons, int spectator) const {
+    return spectator < 2 && partons[spectator]->coloured();
+  }
+
+  /**
    * Return true, if this dipole applies to the selected
    * configuration.
    */

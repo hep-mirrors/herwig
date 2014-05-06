@@ -58,6 +58,47 @@ public:
   //@{
 
   /**
+   * A helpre struct to communicate diagram merging and remapping
+   * information
+   */
+  struct MergeInfo {
+
+    /**
+     * The merged emitter
+     */
+    int emitter;
+
+    /**
+     * The Born diagram
+     */
+    Ptr<Tree2toNDiagram>::ptr diagram;
+
+    /**
+     * The merging map
+     */
+    map<int,int> mergeLegs;
+
+  };
+
+  /**
+   * Return true, if this dipole can possibly handle the indicated
+   * emitter.
+   */
+  virtual bool canHandleEmitter(const cPDVector& partons, int emitter) const = 0;
+
+  /**
+   * Return true, if this dipole can possibly handle the indicated
+   * splitting.
+   */
+  virtual bool canHandleSplitting(const cPDVector& partons, int emitter, int emission) const = 0;
+
+  /**
+   * Return true, if this dipole can possibly handle the indicated
+   * spectator.
+   */
+  virtual bool canHandleSpectator(const cPDVector& partons, int spectator) const = 0;
+
+  /**
    * Return true, if this dipole applies to the selected
    * configuration.
    */
@@ -84,7 +125,7 @@ public:
   /**
    * Setup bookkeeping maps.
    */
-  void setupBookkeeping();
+  void setupBookkeeping(const map<Ptr<DiagramBase>::ptr,MergeInfo>& mergeInfo);
 
   /**
    * Get bookkeeping information for the given

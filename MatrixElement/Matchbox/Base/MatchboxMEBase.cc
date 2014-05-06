@@ -788,22 +788,81 @@ MatchboxMEBase::getDipoles(const vector<Ptr<SubtractionDipole>::ptr>& dipoles,
 
   // now loop over configs
   for ( int emitter = 0; emitter < nreal; ++emitter ) {
-    for ( int spectator = 0; spectator < nreal; ++spectator ) {
-      if ( emitter == spectator )
+
+    list<Ptr<SubtractionDipole>::ptr> matchDipoles;
+    for ( vector<Ptr<SubtractionDipole>::ptr>::const_iterator d =
+	    dipoles.begin(); d != dipoles.end(); ++d ) {
+      if ( !(**d).canHandleEmitter(rep,emitter) )
 	continue;
-      for ( int emission = 2; emission < nreal; ++emission ) {
-	if ( emission == emitter || emission == spectator )
+      matchDipoles.push_back(*d);
+    }
+    if ( matchDipoles.empty() )
+      continue;
+
+    for ( int emission = 2; emission < nreal; ++emission ) {
+      if ( emission == emitter )
+	continue;
+
+      list<Ptr<SubtractionDipole>::ptr> matchDipoles2;
+      for ( list<Ptr<SubtractionDipole>::ptr>::const_iterator d =
+	      matchDipoles.begin(); d != matchDipoles.end(); ++d ) {
+	if ( !(**d).canHandleSplitting(rep,emitter,emission) )
 	  continue;
-	if ( !rep[emitter]->coloured() ||
-	     !rep[emission]->coloured() ||
-	     !rep[spectator]->coloured() )
+	matchDipoles2.push_back(*d);
+      }
+      if ( matchDipoles2.empty() )
+	continue;
+
+      map<Ptr<DiagramBase>::ptr,SubtractionDipole::MergeInfo> mergeInfo;
+
+      for ( DiagramVector::const_iterator d = diagrams().begin(); d != diagrams().end(); ++d ) {
+
+	Ptr<Tree2toNDiagram>::ptr check(new Tree2toNDiagram(*dynamic_ptr_cast<Ptr<Tree2toNDiagram>::ptr>(*d)));
+
+	map<int,int> theMergeLegs;
+
+	for ( unsigned int i = 0; i < check->external().size(); ++i )
+	  theMergeLegs[i] = -1;
+	int theEmitter = check->mergeEmission(emitter,emission,theMergeLegs);
+
+	// no underlying Born
+	if ( theEmitter == -1 )
 	  continue;
+
+	SubtractionDipole::MergeInfo info;
+	info.diagram = check;
+	info.emitter = theEmitter;
+	info.mergeLegs = theMergeLegs;
+	mergeInfo[*d] = info;
+
+      }
+
+      if ( mergeInfo.empty() )
+	continue;
+
+      for ( int spectator = 0; spectator < nreal; ++spectator ) {
+	if ( spectator == emitter || spectator == emission )
+	  continue;
+
+	list<Ptr<SubtractionDipole>::ptr> matchDipoles3;
+	for ( list<Ptr<SubtractionDipole>::ptr>::const_iterator d =
+		matchDipoles2.begin(); d != matchDipoles2.end(); ++d ) {
+	  if ( !(**d).canHandleSplitting(rep,emitter,emission) )
+	    continue;
+	  matchDipoles3.push_back(*d);
+	}
+	if ( matchDipoles3.empty() )
+	  continue;
+
 	if ( noDipole(emitter,emission,spectator) )
 	  continue;
-	for ( vector<Ptr<SubtractionDipole>::ptr>::const_iterator d =
-		dipoles.begin(); d != dipoles.end(); ++d ) {
+
+	for ( list<Ptr<SubtractionDipole>::ptr>::const_iterator d =
+		matchDipoles3.begin(); d != matchDipoles3.end(); ++d ) {
+
 	  if ( !(**d).canHandle(rep,emitter,emission,spectator) )
 	    continue;
+
 	  for ( vector<Ptr<MatchboxMEBase>::ptr>::const_iterator b =
 		  borns.begin(); b != borns.end(); ++b ) {
 	    if ( (**b).onlyOneLoop() )
@@ -818,7 +877,7 @@ MatchboxMEBase::getDipoles(const vector<Ptr<SubtractionDipole>::ptr>& dipoles,
 	    (**d).realSpectator(spectator);
 	    (**d).realEmissionME(const_cast<MatchboxMEBase*>(this));
 	    (**d).underlyingBornME(*b);
-	    (**d).setupBookkeeping();
+	    (**d).setupBookkeeping(mergeInfo);
 	    if ( !((**d).empty()) ) {
 	      Ptr<SubtractionDipole>::ptr nDipole = (**d).cloneMe();
 	      res.push_back(nDipole);
