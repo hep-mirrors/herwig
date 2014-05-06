@@ -80,14 +80,14 @@ void DipoleIOperator::setXComb(tStdXCombPtr xc) {
 bool DipoleIOperator::apply(const cPDVector& pd) const {
 
   cout << "!!!!! Attention !!!!!" << endl;
-  cout << "Number of massless flavours in jet particle group (aka n_f) = " << NLight().size() << endl;
-  cout << "Number of massive flavours in jet particle group (aka n_F or n_{f,h}) = " << NHeavy().size() << endl;
+  cout << "Number of massless flavours in jet particle group (aka n_f) = " << NLightJetVec().size() << endl;
+  cout << "Number of massive flavours in jet particle group (aka n_F or n_{f,h}) = " << NHeavyJetVec().size() << endl;
   cout << "Ensure consistent usage!" << endl;
   cout << endl;
 
   // Prohibit splittings g->Q\bar{Q} in the final state.
   // These are covered by DipoleMIOperator.
-  if ( NHeavy().size()!=0 ) {
+  if ( NHeavyJetVec().size()!=0 ) {
     cout << "DipoleIOperator::apply (master apply): Found massive QCD particle in jet particle group. Return false!" << endl;
     return false;
   }
@@ -128,43 +128,43 @@ bool DipoleIOperator::apply(tcPDPtr pd) const {
     (abs(pd->id()) < 7 || pd->id() == ParticleID::g);
 }
 
-vector<int> DipoleIOperator::NLight() const {
+vector<int> DipoleIOperator::NLightJetVec() const {
 
   const map<string,PDVector>& theParticleGroups = MatchboxFactory::currentFactory()->particleGroups();
   map<string,PDVector>::const_iterator theIt = theParticleGroups.find("j");
   if ( theIt == theParticleGroups.end() )
-    throw Exception() << "DipoleIOperator::NLight(): Could not find a jet particle group named 'j'" << Exception::abortnow;
+    throw Exception() << "DipoleIOperator::NLightJetVec(): Could not find a jet particle group named 'j'" << Exception::abortnow;
 
   const PDVector& theJetConstitutents = theIt->second;
-  vector<int> theNLightVec;
+  vector<int> theNLightJetVec;
 
   for ( PDVector::const_iterator theP = theJetConstitutents.begin();
         theP != theJetConstitutents.end(); ++theP ) {
     if ( (**theP).id() > 0 && (**theP).id() < 7 && (**theP).mass() == ZERO )
-      theNLightVec.push_back( (**theP).id() );
+      theNLightJetVec.push_back( (**theP).id() );
   }
 
-  return theNLightVec;
+  return theNLightJetVec;
 
 }
 
-vector<int> DipoleIOperator::NHeavy() const {
+vector<int> DipoleIOperator::NHeavyJetVec() const {
 
   const map<string,PDVector>& theParticleGroups = MatchboxFactory::currentFactory()->particleGroups();
   map<string,PDVector>::const_iterator theIt = theParticleGroups.find("j");
   if ( theIt == theParticleGroups.end() )
-    throw Exception() << "DipoleIOperator::NHeavy(): Could not find a jet particle group named 'j'" << Exception::abortnow;
+    throw Exception() << "DipoleIOperator::NHeavyJetVec(): Could not find a jet particle group named 'j'" << Exception::abortnow;
 
   const PDVector& theJetConstitutents = theIt->second;
-  vector<int> theNHeavyVec;
+  vector<int> theNHeavyJetVec;
 
   for ( PDVector::const_iterator theP = theJetConstitutents.begin();
         theP != theJetConstitutents.end(); ++theP ) {
     if ( (**theP).id() > 0 && (**theP).id() < 7 && (**theP).mass() != ZERO )
-      theNHeavyVec.push_back( (**theP).id() );
+      theNHeavyJetVec.push_back( (**theP).id() );
   }
 
-  return theNHeavyVec;
+  return theNHeavyJetVec;
 
 }
 

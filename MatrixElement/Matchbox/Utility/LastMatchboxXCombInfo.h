@@ -187,14 +187,14 @@ public:
    * the light flavours, which are contained in the
    * jet particle group.
    */
-  vector<int> nLightVec() const { return lastMatchboxXComb()->nLightVec(); }
+  vector<int> nLightJetVec() const { return lastMatchboxXComb()->nLightJetVec(); }
 
   /**
    * Return the vector that contains the PDG ids of 
    * the heavy flavours, which are contained in the
    * jet particle group.
    */
-  vector<int> nHeavyVec() const { return lastMatchboxXComb()->nHeavyVec(); }
+  vector<int> nHeavyJetVec() const { return lastMatchboxXComb()->nHeavyJetVec(); }
 
   /**
    * Get the dimensionality of the colour basis for this process.
@@ -372,14 +372,14 @@ protected:
    * ids of the light flavours, which are contained in the
    * jet particle group.
    */
-  void nLightVec(int n) { lastMatchboxXComb()->nLightVec(n); }
+  void nLightJetVec(int n) { lastMatchboxXComb()->nLightJetVec(n); }
 
   /**
    * Set the elements of the vector that contains the PDG
    * ids of the heavy flavours, which are contained in the
    * jet particle group.
    */
-  void nHeavyVec(int n) { lastMatchboxXComb()->nHeavyVec(n); }
+  void nHeavyJetVec(int n) { lastMatchboxXComb()->nHeavyJetVec(n); }
 
   /**
    * Set the dimensionality of the colour basis for this process.

@@ -52,9 +52,9 @@ Ptr<ProcessData>::tptr MatchboxMEBase::processData() const { return factory()->p
 
 unsigned int MatchboxMEBase::getNLight() const { return factory()->nLight(); }
 
-vector<int> MatchboxMEBase::getNLightVec() const { return factory()->nLightVec(); }
+vector<int> MatchboxMEBase::getNLightJetVec() const { return factory()->nLightJetVec(); }
 
-vector<int> MatchboxMEBase::getNHeavyVec() const { return factory()->nHeavyVec(); }
+vector<int> MatchboxMEBase::getNHeavyJetVec() const { return factory()->nHeavyJetVec(); }
 
 double MatchboxMEBase::factorizationScaleFactor() const { return factory()->factorizationScaleFactor(); }
 
@@ -1206,11 +1206,11 @@ void MatchboxMEBase::prepareXComb(MatchboxXCombData& xc) const {
 
   xc.nLight(getNLight());
 
-  for (size_t inlv=0; inlv<getNLightVec().size(); ++inlv)
-    xc.nLightVec(getNLightVec()[inlv]);
+  for (size_t inlv=0; inlv<getNLightJetVec().size(); ++inlv)
+    xc.nLightJetVec(getNLightJetVec()[inlv]);
 
-  for (size_t inhv=0; inhv<getNHeavyVec().size(); ++inhv)
-    xc.nHeavyVec(getNHeavyVec()[inhv]);
+  for (size_t inhv=0; inhv<getNHeavyJetVec().size(); ++inhv)
+    xc.nHeavyJetVec(getNHeavyJetVec()[inhv]);
 
   xc.olpId(olpProcess());
 

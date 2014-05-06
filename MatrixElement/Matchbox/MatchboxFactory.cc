@@ -309,9 +309,9 @@ void MatchboxFactory::setup() {
       if ( abs((**p).id()) < 7 && (**p).mass() == ZERO )
 	++nl;
       if ( (**p).id() > 0 && (**p).id() < 7 && (**p).mass() == ZERO )
-	nLightVec( (**p).id() );
+	nLightJetVec( (**p).id() );
       if ( (**p).id() > 0 && (**p).id() < 7 && (**p).mass() != ZERO )
-	nHeavyVec( (**p).id() );
+	nHeavyJetVec( (**p).id() );
     }
     nLight(nl/2);
 
@@ -950,7 +950,7 @@ void MatchboxFactory::doinitrun() {
 void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
   os << theDiagramGenerator << theProcessData
      << theNLight 
-     << theNLightVec << theNHeavyVec 
+     << theNLightJetVec << theNHeavyJetVec 
      << theOrderInAlphaS << theOrderInAlphaEW 
      << theBornContributions << theVirtualContributions
      << theRealContributions << theIndependentVirtuals << theSubProcessGroups << theInclusive
@@ -974,7 +974,7 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
 void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
   is >> theDiagramGenerator >> theProcessData
      >> theNLight 
-     >> theNLightVec >> theNHeavyVec 
+     >> theNLightJetVec >> theNHeavyJetVec 
      >> theOrderInAlphaS >> theOrderInAlphaEW 
      >> theBornContributions >> theVirtualContributions
      >> theRealContributions >> theIndependentVirtuals >> theSubProcessGroups >> theInclusive

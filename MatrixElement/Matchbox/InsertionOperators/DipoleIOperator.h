@@ -68,13 +68,13 @@ public:
    * Return a vector of PDG codes of the light flavours,
    * which are contained in the jet particle group.
    */
-  vector<int> NLight() const;
+  vector<int> NLightJetVec() const;
 
   /**
    * Return a vector of PDG codes of the heavy flavours,
    * which are contained in the jet particle group.
    */
-  vector<int> NHeavy() const;
+  vector<int> NHeavyJetVec() const;
 
   /**
    * Evaluate the finite virtual correction for the

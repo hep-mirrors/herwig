@@ -52,9 +52,11 @@ void DipoleMPKOperator::setXComb(tStdXCombPtr xc) {
     CA = SM().Nc();
     CF = (SM().Nc()*SM().Nc()-1.0)/(2.*SM().Nc());
     gammaQuark = (3./2.)*CF;
-    gammaGluon = (11./6.)*CA - (1./3.)*lastBorn()->nLight();
+    // gammaGluon = (11./6.)*CA - (1./3.)*lastBorn()->nLight();
+    gammaGluon = (11./6.)*CA - (1./3.)*lastBorn()->nLightJetVec().size();
     KQuark = (7./2.-sqr(pi)/6.)*CF;
-    KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*lastBorn()->nLight();
+    // KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*lastBorn()->nLight();
+    KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*lastBorn()->nLightJetVec().size();
   }
 }
 
@@ -73,8 +75,8 @@ bool DipoleMPKOperator::applyNotMassless(tcPDPtr pd) const {
 bool DipoleMPKOperator::apply(const cPDVector& pd) const {
 
   cout << "!!!!! Attention !!!!!" << endl;
-  cout << "Number of massless flavours in jet particle group (aka n_f) = " << NLight().size() << endl;
-  cout << "Number of massive flavours in jet particle group (aka n_F or n_{f,h}) = " << NHeavy().size() << endl;
+  cout << "Number of massless flavours in jet particle group (aka n_f) = " << NLightJetVec().size() << endl;
+  cout << "Number of massive flavours in jet particle group (aka n_F or n_{f,h}) = " << NHeavyJetVec().size() << endl;
   cout << "Ensure consistent usage!" << endl;
   cout << endl;
 
@@ -90,7 +92,7 @@ bool DipoleMPKOperator::apply(const cPDVector& pd) const {
   // the LO process and further splittings g->Q\bar{Q}
   // inside the jet.
   bool mFSet = false;
-  if ( NHeavy().size() != 0 ) {
+  if ( NHeavyJetVec().size() != 0 ) {
     mFSet = true;
   }
 
@@ -133,43 +135,43 @@ bool DipoleMPKOperator::apply(const cPDVector& pd) const {
 
 }
 
-vector<int> DipoleMPKOperator::NLight() const {
+vector<int> DipoleMPKOperator::NLightJetVec() const {
 
   const map<string,PDVector>& theParticleGroups = MatchboxFactory::currentFactory()->particleGroups();
   map<string,PDVector>::const_iterator theIt = theParticleGroups.find("j");
   if ( theIt == theParticleGroups.end() )
-    throw Exception() << "DipolePKOperator::NLight(): Could not find a jet particle group named 'j'" << Exception::abortnow;
+    throw Exception() << "DipolePKOperator::NLightJetVec(): Could not find a jet particle group named 'j'" << Exception::abortnow;
 
   const PDVector& theJetConstitutents = theIt->second;
-  vector<int> theNLightVec;
+  vector<int> theNLightJetVec;
 
   for ( PDVector::const_iterator theP = theJetConstitutents.begin();
         theP != theJetConstitutents.end(); ++theP ) {
     if ( (**theP).id() > 0 && (**theP).id() < 7 && (**theP).mass() == ZERO )
-      theNLightVec.push_back( (**theP).id() );
+      theNLightJetVec.push_back( (**theP).id() );
   }
 
-  return theNLightVec;
+  return theNLightJetVec;
 
 }
 
-vector<int> DipoleMPKOperator::NHeavy() const {
+vector<int> DipoleMPKOperator::NHeavyJetVec() const {
 
   const map<string,PDVector>& theParticleGroups = MatchboxFactory::currentFactory()->particleGroups();
   map<string,PDVector>::const_iterator theIt = theParticleGroups.find("j");
   if ( theIt == theParticleGroups.end() )
-    throw Exception() << "DipolePKOperator::NHeavy(): Could not find a jet particle group named 'j'" << Exception::abortnow;
+    throw Exception() << "DipolePKOperator::NHeavyJetVec(): Could not find a jet particle group named 'j'" << Exception::abortnow;
 
   const PDVector& theJetConstitutents = theIt->second;
-  vector<int> theNHeavyVec;
+  vector<int> theNHeavyJetVec;
 
   for ( PDVector::const_iterator theP = theJetConstitutents.begin();
         theP != theJetConstitutents.end(); ++theP ) {
     if ( (**theP).id() > 0 && (**theP).id() < 7 && (**theP).mass() != ZERO )
-      theNHeavyVec.push_back( (**theP).id() );
+      theNHeavyJetVec.push_back( (**theP).id() );
   }
 
-  return theNHeavyVec;
+  return theNHeavyJetVec;
 
 }
 
@@ -247,7 +249,7 @@ double DipoleMPKOperator::sumParton(int id) const {
   double mapz = zw.second;
 
   vector<double> nullPDFCacheVector;
-  for( size_t f=0; f<lastBorn()->nHeavyVec().size(); ++f ) nullPDFCacheVector.push_back(0.0);
+  for( size_t f=0; f<lastBorn()->nHeavyJetVec().size(); ++f ) nullPDFCacheVector.push_back(0.0);
   nullPDFCacheVector.push_back(0.0);
   nullPDFCacheVector.push_back(0.0);
 
@@ -324,7 +326,7 @@ double DipoleMPKOperator::sumParton(int id) const {
 
     // For m_j=0 and {m_F}=empty we can use the exact massless case.
     // This case, however, should actually not occur here.
-    if ( (**i).mass() == ZERO && lastBorn()->nHeavyVec().size() == 0 ) {
+    if ( (**i).mass() == ZERO && lastBorn()->nHeavyJetVec().size() == 0 ) {
       throw InitException() << "DipoleMPKOperator::sumParton: m_j=0 and {m_F}=empty. This should not have happened.";
       // Last term in massless K operator in (C.31) in massless paper.
       res +=
@@ -745,8 +747,8 @@ double DipoleMPKOperator::Ja_QQzplus(double muQ2, int F) const {
 double DipoleMPKOperator::Kscriptqq_g(Energy2 sja) const {
   assert(abs(parton->id()) < 7);
   double res = -1.*gammaGluon/CA*gammaSoft();
-  for( size_t f=0; f<lastBorn()->nHeavyVec().size(); ++f ) { // sum over heavy flavours
-    Energy2 mF2 = sqr( getParticleData(lastBorn()->nHeavyVec()[f])->mass() );
+  for( size_t f=0; f<lastBorn()->nHeavyJetVec().size(); ++f ) { // sum over heavy flavours
+    Energy2 mF2 = sqr( getParticleData(lastBorn()->nHeavyJetVec()[f])->mass() );
     double muQ2 = mF2/sja;
     double zplus = 1. - 4*muQ2;
     if( sja <= 4.*mF2 ) continue; // sum only over heavy quarks with special condition
@@ -774,8 +776,8 @@ double DipoleMPKOperator::Kscriptgq_g() const {
 double DipoleMPKOperator::Kscriptgg_g(Energy2 sja) const {
   assert(parton->id() == ParticleID::g);
   double res = -1.*gammaGluon/CA*gammaSoft();
-  for( size_t f=0; f<lastBorn()->nHeavyVec().size(); ++f ) { // sum over heavy flavours
-    Energy2 mF2 = sqr( getParticleData(lastBorn()->nHeavyVec()[f])->mass() );
+  for( size_t f=0; f<lastBorn()->nHeavyJetVec().size(); ++f ) { // sum over heavy flavours
+    Energy2 mF2 = sqr( getParticleData(lastBorn()->nHeavyJetVec()[f])->mass() );
     double muQ2 = mF2/sja;
     double zplus = 1. - 4*muQ2;
     if( sja <= 4.*mF2 ) continue; // sum only over quarks with special condition
@@ -793,7 +795,7 @@ double DipoleMPKOperator::Kscriptgg_g(Energy2 sja) const {
 double DipoleMPKOperator::PDFx(tcPDPtr pd) const {
 
   vector<double> nullPDFCacheVector;
-  for( size_t f=0; f<lastBorn()->nHeavyVec().size(); ++f ) nullPDFCacheVector.push_back(0.0);
+  for( size_t f=0; f<lastBorn()->nHeavyJetVec().size(); ++f ) nullPDFCacheVector.push_back(0.0);
   nullPDFCacheVector.push_back(0.0);
   nullPDFCacheVector.push_back(0.0);
 
@@ -810,7 +812,7 @@ double DipoleMPKOperator::PDFx(tcPDPtr pd) const {
 double DipoleMPKOperator::PDFxByz(tcPDPtr pd) const {
 
   vector<double> nullPDFCacheVector;
-  for( size_t f=0; f<lastBorn()->nHeavyVec().size(); ++f ) nullPDFCacheVector.push_back(0.0);
+  for( size_t f=0; f<lastBorn()->nHeavyJetVec().size(); ++f ) nullPDFCacheVector.push_back(0.0);
   nullPDFCacheVector.push_back(0.0);
   nullPDFCacheVector.push_back(0.0);
 
@@ -832,7 +834,7 @@ double DipoleMPKOperator::PDFxByzplus(tcPDPtr pd, int F, double muQ2) const {
   // multiplication by zplus/x at the end -- CR 20140425
 
   vector<double> nullPDFCacheVector;
-  for( size_t f=0; f<lastBorn()->nHeavyVec().size(); ++f ) nullPDFCacheVector.push_back(0.0);
+  for( size_t f=0; f<lastBorn()->nHeavyJetVec().size(); ++f ) nullPDFCacheVector.push_back(0.0);
   nullPDFCacheVector.push_back(0.0);
   nullPDFCacheVector.push_back(0.0);
 

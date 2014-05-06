@@ -53,19 +53,21 @@ void DipoleMIOperator::setXComb(tStdXCombPtr xc) {
     CA = SM().Nc();
     CF = (SM().Nc()*SM().Nc()-1.0)/(2.*SM().Nc());
     gammaQuark = (3./2.)*CF;
-    gammaGluon = (11./6.)*CA - (1./3.)*lastBorn()->nLight();
+    // gammaGluon = (11./6.)*CA - (1./3.)*lastBorn()->nLight();
+    gammaGluon = (11./6.)*CA - (1./3.)*lastBorn()->nLightJetVec().size();
     // betaZero = gammaGluon;
-    betaZero = (11./6.)*CA - (1./3.)*(lastBorn()->nLightVec().size()+lastBorn()->nHeavyVec().size());
+    betaZero = (11./6.)*CA - (1./3.)*(lastBorn()->nLightJetVec().size()+lastBorn()->nHeavyJetVec().size());
     KQuark = (7./2.-sqr(pi)/6.)*CF;
-    KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*lastBorn()->nLight();
+    // KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*lastBorn()->nLight();
+    KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*lastBorn()->nLightJetVec().size();
   }
 }
 
 bool DipoleMIOperator::apply(const cPDVector& pd) const {
 
   cout << "!!!!! Attention !!!!!" << endl;
-  cout << "Number of massless flavours in jet particle group (aka n_f) = " << NLight().size() << endl;
-  cout << "Number of massive flavours in jet particle group (aka n_F or n_{f,h}) = " << NHeavy().size() << endl;
+  cout << "Number of massless flavours in jet particle group (aka n_f) = " << NLightJetVec().size() << endl;
+  cout << "Number of massive flavours in jet particle group (aka n_F or n_{f,h}) = " << NHeavyJetVec().size() << endl;
   cout << "Ensure consistent usage!" << endl;
   cout << endl;
 
@@ -76,7 +78,7 @@ bool DipoleMIOperator::apply(const cPDVector& pd) const {
   // the LO process and further splittings g->Q\bar{Q}
   // inside the jet.
   bool mFSet = false;
-  if ( NHeavy().size() != 0 ) {
+  if ( NHeavyJetVec().size() != 0 ) {
     mFSet = true;
   }
 
@@ -126,43 +128,43 @@ bool DipoleMIOperator::apply(tcPDPtr pd) const {
     (abs(pd->id()) < 7 || pd->id() == ParticleID::g);
 }
 
-vector<int> DipoleMIOperator::NLight() const {
+vector<int> DipoleMIOperator::NLightJetVec() const {
 
   const map<string,PDVector>& theParticleGroups = MatchboxFactory::currentFactory()->particleGroups();
   map<string,PDVector>::const_iterator theIt = theParticleGroups.find("j");
   if ( theIt == theParticleGroups.end() )
-    throw Exception() << "DipoleMIOperator::NLight(): Could not find a jet particle group named 'j'" << Exception::abortnow;
+    throw Exception() << "DipoleMIOperator::NLightJetVec(): Could not find a jet particle group named 'j'" << Exception::abortnow;
 
   const PDVector& theJetConstitutents = theIt->second;
-  vector<int> theNLightVec;
+  vector<int> theNLightJetVec;
 
   for ( PDVector::const_iterator theP = theJetConstitutents.begin();
         theP != theJetConstitutents.end(); ++theP ) {
     if ( (**theP).id() > 0 && (**theP).id() < 7 && (**theP).mass() == ZERO )
-      theNLightVec.push_back( (**theP).id() );
+      theNLightJetVec.push_back( (**theP).id() );
   }
 
-  return theNLightVec;
+  return theNLightJetVec;
 
 }
 
-vector<int> DipoleMIOperator::NHeavy() const {
+vector<int> DipoleMIOperator::NHeavyJetVec() const {
 
   const map<string,PDVector>& theParticleGroups = MatchboxFactory::currentFactory()->particleGroups();
   map<string,PDVector>::const_iterator theIt = theParticleGroups.find("j");
   if ( theIt == theParticleGroups.end() )
-    throw Exception() << "DipoleMIOperator::NHeavy(): Could not find a jet particle group named 'j'" << Exception::abortnow;
+    throw Exception() << "DipoleMIOperator::NHeavyJetVec(): Could not find a jet particle group named 'j'" << Exception::abortnow;
 
   const PDVector& theJetConstitutents = theIt->second;
-  vector<int> theNHeavyVec;
+  vector<int> theNHeavyJetVec;
 
   for ( PDVector::const_iterator theP = theJetConstitutents.begin();
         theP != theJetConstitutents.end(); ++theP ) {
     if ( (**theP).id() > 0 && (**theP).id() < 7 && (**theP).mass() != ZERO )
-      theNHeavyVec.push_back( (**theP).id() );
+      theNHeavyJetVec.push_back( (**theP).id() );
   }
 
-  return theNHeavyVec;
+  return theNHeavyJetVec;
 
 }
 
@@ -502,8 +504,8 @@ double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k,
       if( j.id() == ParticleID::g ) {
 	// sum over all quark flavours
 	if( !mFSetEmpty )
-	  for( size_t f=0; f<lastBorn()->nHeavyVec().size(); ++f ) { // only heavy quarks
-	    Energy2 mF2 = sqr( getParticleData(lastBorn()->nHeavyVec()[f])->mass() );
+	  for( size_t f=0; f<lastBorn()->nHeavyJetVec().size(); ++f ) { // only heavy quarks
+	    Energy2 mF2 = sqr( getParticleData(lastBorn()->nHeavyJetVec()[f])->mass() );
 	    // sum only over quarks which meet special condition
 	    if( sjk <= 4.*sqrt(mF2)*(sqrt(mF2)+mk) )
 	      continue;
@@ -528,8 +530,8 @@ double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k,
 	  (kappa-2./3.) * mk2/sjk * (1./CA*lastBorn()->nLight()-1.) * log(2.*mk/(Qjk+mk));
 	// part containing other heavy quark flavours
 	if( !mFSetEmpty )
-	  for( size_t f=0; f<lastBorn()->nHeavyVec().size(); ++f ) { // only heavy quarks
-	    Energy2 mF2 = sqr( getParticleData(lastBorn()->nHeavyVec()[f])->mass() );
+	  for( size_t f=0; f<lastBorn()->nHeavyJetVec().size(); ++f ) { // only heavy quarks
+	    Energy2 mF2 = sqr( getParticleData(lastBorn()->nHeavyJetVec()[f])->mass() );
 	    // sum only over quarks which meet special condition
 	    if( sjk <= 4.*sqrt(mF2)*(sqrt(mF2)+mk) )
 	      continue;

@@ -413,28 +413,28 @@ namespace Herwig {
      * the light flavours, which are contained in the
      * jet particle group.
      */
-    vector<int> nLightVec() const { return theNLightVec; }
+    vector<int> nLightJetVec() const { return theNLightJetVec; }
 
     /**
      * Set the elements of the vector that contains the PDG
      * ids of the light flavours, which are contained in the
      * jet particle group.
      */
-    void nLightVec(int n) { theNLightVec.push_back(n); }
+    void nLightJetVec(int n) { theNLightJetVec.push_back(n); }
 
     /**
      * Return the vector that contains the PDG ids of 
      * the heavy flavours, which are contained in the
      * jet particle group.
      */
-    vector<int> nHeavyVec() const { return theNHeavyVec; }
+    vector<int> nHeavyJetVec() const { return theNHeavyJetVec; }
 
     /**
      * Set the elements of the vector that contains the PDG
      * ids of the heavy flavours, which are contained in the
      * jet particle group.
      */
-    void nHeavyVec(int n) { theNHeavyVec.push_back(n); }
+    void nHeavyJetVec(int n) { theNHeavyJetVec.push_back(n); }
 
     /**
      * Get the dimensionality of the colour basis for this process.
@@ -815,13 +815,13 @@ namespace Herwig {
      * Vector with the PDG ids of the light quark flavours,
      * which are contained in the jet particle group.
      */
-    vector<int> theNLightVec;
+    vector<int> theNLightJetVec;
 
     /**
      * Vector with the PDG ids of the heavy quark flavours,
      * which are contained in the jet particle group.
      */
-    vector<int> theNHeavyVec;
+    vector<int> theNHeavyJetVec;
 
     /**
      * The dimensionality of the colour basis for this process.
