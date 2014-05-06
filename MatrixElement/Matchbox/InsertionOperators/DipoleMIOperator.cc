@@ -168,6 +168,42 @@ vector<int> DipoleMIOperator::NHeavyJetVec() const {
 
 }
 
+vector<int> DipoleMIOperator::NLightBornVec() const {
+
+  // For the moment just count all quark and antiquark
+  // constituents in the Born process.
+
+  vector<int> theNLightBornVec;
+
+  for ( cPDVector::const_iterator j = mePartonData().begin();
+	j != mePartonData().end(); ++j ) {
+    // if ( (**j).id() > 0 && (**j).id() < 7 && (**j).mass() == ZERO )
+    if ( abs((**j).id()) < 7 && (**j).mass() == ZERO )
+      theNLightBornVec.push_back( (**j).id() );
+  }
+
+  return theNLightBornVec;
+
+}
+
+vector<int> DipoleMIOperator::NHeavyBornVec() const {
+
+  // For the moment just count all quark and antiquark
+  // constituents in the Born process.
+
+  vector<int> theNHeavyBornVec;
+
+  for ( cPDVector::const_iterator j = mePartonData().begin();
+	j != mePartonData().end(); ++j ) {
+    // if ( (**j).id() > 0 && (**j).id() < 7 && (**j).mass() != ZERO )
+    if ( abs((**j).id()) < 7 && (**j).mass() != ZERO )
+      theNHeavyBornVec.push_back( (**j).id() );
+  }
+
+  return theNHeavyBornVec;
+
+}
+
 double DipoleMIOperator::me2() const {
 
   if ( !isExpanded() )

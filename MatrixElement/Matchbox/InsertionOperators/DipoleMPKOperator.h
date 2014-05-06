@@ -73,6 +73,18 @@ public:
   vector<int> NHeavyJetVec() const;
 
   /**
+   * Return a vector of PDG codes of the light flavours,
+   * which are contained in the associated Born sub-process.
+   */
+  vector<int> NLightBornVec() const;
+
+  /**
+   * Return a vector of PDG codes of the heavy flavours,
+   * which are contained in the associated Born sub-process.
+   */
+  vector<int> NHeavyBornVec() const;
+
+  /**
    * Evaluate the finite virtual correction for the
    * variables supplied through the Born XComb object
    * and possible additional random numbers.
