@@ -887,14 +887,7 @@ private:
   /**
    * Generate subprocesses.
    */
-  set<PDVector> makeSubProcesses(const vector<string>&, bool sorted = true) const;
-
-  /**
-   * Generate subprocesses with all permutations of outgoing partons.
-   */
-  set<PDVector> makeUnsortedSubProcesses(const vector<string>& data) const {
-    return makeSubProcesses(data, false);
-  }
+  set<PDVector> makeSubProcesses(const vector<string>&) const;
 
   /**
    * Generate matrix element objects for the given process.

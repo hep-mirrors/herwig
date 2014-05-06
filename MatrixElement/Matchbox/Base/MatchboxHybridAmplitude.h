@@ -143,15 +143,6 @@ public:
   }
 
   /**
-   * Tell whether the outgoing partons should be sorted when determining
-   * allowed subprocesses. Otherwise, all permutations are counted as
-   * separate subprocesses.
-   */
-  virtual bool sortOutgoing() {
-    return treeLevelAmplitude()->sortOutgoing();
-  }
-
-  /**
    * Return true, if this amplitude already includes averaging over
    * incoming parton's quantum numbers.
    */

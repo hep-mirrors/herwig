@@ -105,25 +105,11 @@ makeMEs(const vector<string>& proc, unsigned int orderas) {
 
   generator()->log() << "determining subprocesses for ";
   copy(proc.begin(),proc.end(),ostream_iterator<string>(generator()->log()," "));
-  generator()->log() << flush;
+  generator()->log() << "\n" << flush;
 
   map<Ptr<MatchboxAmplitude>::ptr,set<Process> > ampProcs;
   map<Process,set<Ptr<MatchboxAmplitude>::ptr> > procAmps;
   set<PDVector> processes = makeSubProcesses(proc);
-
-  bool needUnsorted = false;
-
-  for ( vector<Ptr<MatchboxAmplitude>::ptr>::const_iterator amp
-	  = amplitudes().begin(); amp != amplitudes().end(); ++amp ) {
-    if ( !(**amp).sortOutgoing() ) {
-      needUnsorted = true;
-      break;
-    }
-  }
-
-  set<PDVector> unsortedProcesses;
-  if ( needUnsorted )
-    unsortedProcesses = makeUnsortedSubProcesses(proc);
 
   vector<Ptr<MatchboxAmplitude>::ptr> matchAmplitudes;
 
@@ -160,9 +146,10 @@ makeMEs(const vector<string>& proc, unsigned int orderas) {
     }
   }
 
-  size_t combinations =  processes.size()*matchAmplitudes.size()
-    + unsortedProcesses.size()*matchAmplitudes.size();
+  size_t combinations =  processes.size()*matchAmplitudes.size();
   size_t procCount = 0;
+
+  generator()->log() << "building matrix elements." << flush;
 
   boost::progress_display * progressBar = 
     new boost::progress_display(combinations,generator()->log());
@@ -176,19 +163,7 @@ makeMEs(const vector<string>& proc, unsigned int orderas) {
 	for ( set<PDVector>::const_iterator p = processes.begin();
 	      p != processes.end(); ++p ) {
 	  ++(*progressBar);
-	  if ( !(**amp).canHandle(*p,this) || !(**amp).sortOutgoing() )
-	    continue;
-	  if ( (**amp).isExternal() )
-	    externalAmplitudes().insert(*amp);
-	  ++procCount;
-	  Process proc(*p,oas,oae);
-	  ampProcs[*amp].insert(proc);
-	  procAmps[proc].insert(*amp);
-	}
-	for ( set<PDVector>::const_iterator p = unsortedProcesses.begin();
-	      p != unsortedProcesses.end(); ++p ) {
-	  ++(*progressBar);
-	  if ( !(**amp).canHandle(*p,this) || (**amp).sortOutgoing() )
+	  if ( !(**amp).canHandle(*p,this) )
 	    continue;
 	  if ( (**amp).isExternal() )
 	    externalAmplitudes().insert(*amp);
@@ -568,7 +543,7 @@ void MatchboxFactory::setup() {
 
   if ( realContributions() || meCorrectionsOnly() ) {
 
-    generator()->log() << "preparing real emission matrix elements.\n" << flush;
+    generator()->log() << "preparing subtracted matrix elements.\n" << flush;
 
     if ( theSubtractionData != "" )
       if ( theSubtractionData[theSubtractionData.size()-1] != '/' )
@@ -606,8 +581,13 @@ void MatchboxFactory::setup() {
 
     }
 
-    boost::progress_display * progressBar = 
+    boost::progress_display * progressBar =
       new boost::progress_display(realEmissionMEs().size(),generator()->log());
+
+    /*
+    size_t count = 0;
+    size_t allCount = realEmissionMEs().size();
+    */
 
     for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator real
 	    = realEmissionMEs().begin(); real != realEmissionMEs().end(); ++real ) {
@@ -632,7 +612,19 @@ void MatchboxFactory::setup() {
 
       sub->dependent().clear();
 
+      /*
+      ++count;
+
+      cerr << count << " / " << allCount << " : "
+	   << (**real).name() << "\n" << flush;
+      */
+
       sub->getDipoles();
+
+      /*
+      cerr << sub->dependent().size() << " dipoles from "
+	   << (**real).diagrams().size() << " diagrams\n" << flush;
+      */
 
       if ( sub->dependent().empty() ) {
 	// finite real contribution
@@ -1024,57 +1016,80 @@ struct SortPID {
 };
 
 set<PDVector> MatchboxFactory::
-makeSubProcesses(const vector<string>& proc, bool sorted) const {
+makeSubProcesses(const vector<string>& proc) const {
 
   if ( proc.empty() )
     throw InitException() << "No process specified.";
 
-  vector<PDVector> allProcs(1);
-  size_t pos = 0;
+  vector<PDVector> groups;
   typedef map<string,PDVector>::const_iterator GroupIterator;
-
-  while ( pos < proc.size() ) {
-
-    GroupIterator git =
-      particleGroups().find(proc[pos]);
-
+  for ( vector<string>::const_iterator gr = proc.begin();
+	gr != proc.end(); ++gr ) {
+    GroupIterator git = particleGroups().find(*gr);
     if ( git == particleGroups().end() ) {
       throw InitException() << "particle group '"
-			    << proc[pos] << "' not defined.";
+			    << *gr << "' not defined.";
+    }
+    groups.push_back(git->second);
+  }
+
+  vector<size_t> counts(groups.size(),0);
+  PDVector proto(groups.size());
+
+  set<PDVector> allProcs;
+
+  /*
+  cerr << "using the groups:\n";
+  for ( size_t k = 0; k < groups.size(); ++k ) {
+    cerr << k << " : ";
+    for ( PDVector::const_iterator p = groups[k].begin();
+	  p != groups[k].end(); ++p )
+      cerr << (**p).PDGName() << " ";
+    cerr << "\n" << flush;
+  }
+  */
+
+  while ( true ) {
+
+    for ( size_t k = 0; k < groups.size(); ++k )
+      proto[k] = groups[k][counts[k]];
+
+    /*
+    cerr << "trying : ";
+    for ( vector<size_t>::const_iterator c = counts.begin();
+	  c != counts.end(); ++c )
+      cerr << *c << " ";
+    cerr << "\n" << flush;
+    for ( size_t k = 0; k < groups.size(); ++k )
+      cerr << groups[k][counts[k]]->PDGName() << " ";
+    cerr << "\n" << flush;
+    */
+
+    int charge = -proto[0]->iCharge() -proto[1]->iCharge();
+    for ( size_t k = 2; k < proto.size(); ++k )
+      charge += proto[k]->iCharge();
+
+    if ( charge == 0 ) {
+      sort(proto.begin()+2,proto.end(),SortPID());
+      allProcs.insert(proto);
     }
 
-    vector<PDVector> mine;
-
-    for ( vector<PDVector>::const_iterator i = allProcs.begin();
-	  i != allProcs.end(); ++i ) {
-      for ( PDVector::const_iterator p = git->second.begin();
-	    p != git->second.end(); ++p ) {
-	PDVector v = *i;
-	v.push_back(*p);
-	mine.push_back(v);
+    vector<size_t>::reverse_iterator c = counts.rbegin();
+    vector<PDVector>::const_reverse_iterator g = groups.rbegin();
+    while ( c != counts.rend() ) {
+      if ( ++(*c) == g->size() ) {
+	*c = 0;
+	++c; ++g;
+      } else {
+	break;
       }
     }
-
-    allProcs = mine;
-    ++pos;
+    if ( c == counts.rend() )
+      break;
 
   }
 
-  set<PDVector> allCheckedProcs;
-  for ( vector<PDVector>::const_iterator p = allProcs.begin();
-	p != allProcs.end(); ++p ) {
-    int charge = -(*p)[0]->iCharge() -(*p)[1]->iCharge();
-    for ( size_t k = 2; k < (*p).size(); ++k )
-      charge += (*p)[k]->iCharge();
-    if ( charge != 0 )
-      continue;
-    PDVector pr = *p;
-    if ( sorted )
-      sort(pr.begin()+2,pr.end(),SortPID());
-    allCheckedProcs.insert(pr);
-  }
-
-  return allCheckedProcs;
+  return allProcs;
 
 }
 
