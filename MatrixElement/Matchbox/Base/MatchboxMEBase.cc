@@ -847,7 +847,7 @@ MatchboxMEBase::getDipoles(const vector<Ptr<SubtractionDipole>::ptr>& dipoles,
 	list<Ptr<SubtractionDipole>::ptr> matchDipoles3;
 	for ( list<Ptr<SubtractionDipole>::ptr>::const_iterator d =
 		matchDipoles2.begin(); d != matchDipoles2.end(); ++d ) {
-	  if ( !(**d).canHandleSpectator(rep,emitter,emission) )
+	  if ( !(**d).canHandleSpectator(rep,spectator) )
 	    continue;
 	  matchDipoles3.push_back(*d);
 	}
