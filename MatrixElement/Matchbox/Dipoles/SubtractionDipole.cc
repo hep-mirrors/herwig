@@ -738,8 +738,6 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
     if ( virtualShowerSubtraction() ) {
       if ( !showerApproximation()->isAboveCutoff() )
 	showerApproximation()->wasBelowCutoff();
-      else
-	lastME2(0.0);
     } else {
       if ( !showerApproximation()->isAboveCutoff() ) {
 	showerApproximation()->wasBelowCutoff();
