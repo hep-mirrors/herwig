@@ -38,7 +38,7 @@ SubtractionDipole::SubtractionDipole()
     theRealEmitter(-1), theRealEmission(-1), theRealSpectator(-1), 
     theBornEmitter(-1), theBornSpectator(-1),
     theRealShowerSubtraction(false), theVirtualShowerSubtraction(false),
-    theRealEmissionScales(false) {}
+    theLoopSimSubtraction(false), theRealEmissionScales(false) {}
 
 SubtractionDipole::~SubtractionDipole() {}
 
@@ -730,15 +730,23 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
       res *= weight;
   }
 
-  if ( showerApproximation() && virtualShowerSubtraction() ) {
+  if ( showerApproximation() && (virtualShowerSubtraction() || loopSimSubtraction()) ) {
     assert(!splitting());
     showerApproximation()->setBornXComb(lastXCombPtr());
     showerApproximation()->setRealXComb(realEmissionME()->lastXCombPtr());
     showerApproximation()->setDipole(this);
-    if ( !showerApproximation()->isAboveCutoff() )
-      showerApproximation()->wasBelowCutoff();
-    else
-      lastME2(0.0);
+    if ( virtualShowerSubtraction() ) {
+      if ( !showerApproximation()->isAboveCutoff() )
+	showerApproximation()->wasBelowCutoff();
+      else
+	lastME2(0.0);
+    } else {
+      if ( !showerApproximation()->isAboveCutoff() ) {
+	showerApproximation()->wasBelowCutoff();
+	lastME2(0.0);
+      }
+      res = ZERO;
+    }
     CrossSection shower = ZERO;
     if ( showerApproximation()->isInShowerPhasespace() )
       shower = showerApproximation()->dSigHatDR();
@@ -1123,7 +1131,7 @@ void SubtractionDipole::persistentOutput(PersistentOStream & os) const {
      << ounit(theLastSplittingScale,GeV) << ounit(theLastSubtractionPt,GeV) 
      << ounit(theLastSplittingPt,GeV) << theShowerApproximation 
      << theRealShowerSubtraction << theVirtualShowerSubtraction 
-     << theRealEmissionScales;
+     << theLoopSimSubtraction << theRealEmissionScales;
 }
 
 void SubtractionDipole::persistentInput(PersistentIStream & is, int) {
@@ -1138,7 +1146,7 @@ void SubtractionDipole::persistentInput(PersistentIStream & is, int) {
      >> iunit(theLastSplittingScale,GeV) >> iunit(theLastSubtractionPt,GeV) 
      >> iunit(theLastSplittingPt,GeV) >> theShowerApproximation 
      >> theRealShowerSubtraction >> theVirtualShowerSubtraction 
-     >> theRealEmissionScales;
+     >> theLoopSimSubtraction >> theRealEmissionScales;
   lastMatchboxXComb(theLastXComb);
   typedef multimap<UnderlyingBornKey,RealEmissionInfo>::const_iterator spit;
   pair<spit,spit> kr = theSplittingMap.equal_range(lastUnderlyingBornKey);

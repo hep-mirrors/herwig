@@ -160,6 +160,16 @@ public:
   void setMECorrectionsOnly(bool on = true) { theMECorrectionsOnly = on; }
 
   /**
+   * Produce matrix element corrections, with LoopSim NLO
+   */
+  bool loopSimCorrections() const { return theLoopSimCorrections; }
+
+  /**
+   * Switch to produce matrix element corrections, with LoopSim NLO
+   */
+  void setLoopSimCorrections(bool on = true) { theLoopSimCorrections = on; }
+
+  /**
    * Return true, if subtracted real emission contributions should be included.
    */
   bool realContributions() const { return theRealContributions; }
@@ -950,6 +960,11 @@ private:
    * Produce matrix element corrections, but no NLO
    */
   bool theMECorrectionsOnly;
+
+  /**
+   * Produce matrix element corrections, with LoopSim NLO
+   */
+  bool theLoopSimCorrections;
 
   /**
    * The current factory

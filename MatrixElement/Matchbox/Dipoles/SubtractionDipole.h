@@ -742,6 +742,16 @@ public:
    */
   bool virtualShowerSubtraction() const { return theVirtualShowerSubtraction; }
 
+  /**
+   * Indicate that the loopsim matched virtual contribution should be subtracted.
+   */
+  void doLoopSimSubtraction() { theLoopSimSubtraction = true; }
+
+  /**
+   * Return true, if the loopsim matched virtual contribution should be subtracted.
+   */
+  bool loopSimSubtraction() const { return theLoopSimSubtraction; }
+
   //@}
 
   /** @name Caching and diagnostic information */
@@ -1076,6 +1086,11 @@ private:
    * True, if the shower virtual contribution should be subtracted.
    */
   bool theVirtualShowerSubtraction;
+
+  /**
+   * True, if the loopsim matched virtual contribution should be subtracted.
+   */
+  bool theLoopSimSubtraction;
 
   /**
    * True, if scales should be calculated from real emission kinematics

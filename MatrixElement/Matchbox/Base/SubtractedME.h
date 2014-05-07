@@ -213,6 +213,16 @@ public:
    */
   bool virtualShowerSubtraction() const { return theVirtualShowerSubtraction; }
 
+  /**
+   * Indicate that the loopsim matched virtual contribution should be subtracted.
+   */
+  void doLoopSimSubtraction();
+
+  /**
+   * Return true, if the loopsim matched virtual contribution should be subtracted.
+   */
+  bool loopSimSubtraction() const { return theLoopSimSubtraction; }
+
   //@}
 
   /** @name Matrix element and dipole information */
@@ -510,6 +520,11 @@ private:
    * True, if the shower virtual contribution should be subtracted.
    */
   bool theVirtualShowerSubtraction;
+
+  /**
+   * True, if the loopsim matched virtual contribution should be subtracted.
+   */
+  bool theLoopSimSubtraction;
 
   /**
    * Switch on subprocess groups

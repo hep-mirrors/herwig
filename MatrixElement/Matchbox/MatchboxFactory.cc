@@ -44,7 +44,7 @@ MatchboxFactory::MatchboxFactory()
     theDipoleSet(0), theVerbose(false), theInitVerbose(false), 
     theSubtractionData(""), theSubtractionPlotType(1), theSubtractionScatterPlot(false),
     thePoleData(""), theRealEmissionScales(false), theAllProcesses(false),
-    theMECorrectionsOnly(false) {}
+  theMECorrectionsOnly(false), theLoopSimCorrections(false) {}
 
 MatchboxFactory::~MatchboxFactory() {}
 
@@ -437,7 +437,7 @@ void MatchboxFactory::setup() {
     }
   }
 
-  if ( virtualContributions() && !meCorrectionsOnly() ) {
+  if ( virtualContributions() && !meCorrectionsOnly() && !loopSimCorrections() ) {
 
     bornVirtualMEs().clear();
 
@@ -654,6 +654,16 @@ void MatchboxFactory::setup() {
 	    throw InitException() << "Subtracted ME " << vname << " already existing.";
 	  subv->cloneDependencies(vname);
 	  subv->doVirtualShowerSubtraction();
+	  subtractedMEs().push_back(subv);
+	  MEs().push_back(subv);
+	}
+	if ( loopSimCorrections() ) {
+	  Ptr<SubtractedME>::ptr subv = new_ptr(*sub);
+	  string vname = sub->fullName() + ".SubtractionIntegral";
+	  if ( ! (generator()->preinitRegister(subv,vname) ) )
+	    throw InitException() << "Subtracted ME " << vname << " already existing.";
+	  subv->cloneDependencies(vname);
+	  subv->doLoopSimSubtraction();
 	  subtractedMEs().push_back(subv);
 	  MEs().push_back(subv);
 	}
@@ -946,7 +956,7 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
      << theOLPProcesses << theExternalAmplitudes
      << theSelectedAmplitudes << theDeselectedAmplitudes
      << theDipoleSet << theReweighters << thePreweighters
-     << theMECorrectionsOnly;
+     << theMECorrectionsOnly << theLoopSimCorrections;
 }
 
 void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
@@ -968,7 +978,7 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
      >> theOLPProcesses >> theExternalAmplitudes
      >> theSelectedAmplitudes >> theDeselectedAmplitudes
      >> theDipoleSet >> theReweighters >> thePreweighters
-     >> theMECorrectionsOnly;
+     >> theMECorrectionsOnly >> theLoopSimCorrections;
 }
 
 string MatchboxFactory::startParticleGroup(string name) {
@@ -1492,6 +1502,21 @@ void MatchboxFactory::Init() {
      true);
   static SwitchOption interfaceMECorrectionsOnlyNo
     (interfaceMECorrectionsOnly,
+     "No",
+     "Produce full NLO.",
+     false);
+
+  static Switch<MatchboxFactory,bool> interfaceLoopSimCorrections
+    ("LoopSimCorrections",
+     "Prepare LoopSim corrections.",
+     &MatchboxFactory::theLoopSimCorrections, false, false, false);
+  static SwitchOption interfaceLoopSimCorrectionsYes
+    (interfaceLoopSimCorrections,
+     "Yes",
+     "Produce loopsim corrections.",
+     true);
+  static SwitchOption interfaceLoopSimCorrectionsNo
+    (interfaceLoopSimCorrections,
      "No",
      "Produce full NLO.",
      false);
