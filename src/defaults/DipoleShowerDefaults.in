@@ -382,40 +382,6 @@ set IIgx2cbarcxDipoleKernel:ScreeningScale  0.0*GeV
 set IIgx2bbbarxDipoleKernel:ScreeningScale  0.0*GeV
 set IIgx2bbarbxDipoleKernel:ScreeningScale  0.0*GeV
 
-################################################################################
-# hadronization parameters
-################################################################################
-
-cd /Herwig/Hadronization
-
-set ClusterFissioner:ClMaxLight                  3.274090*GeV
-set ClusterFissioner:ClPowLight                  10.0
-set ClusterFissioner:PSplitLight                 0.7183601
-set ClusterDecayer:ClDirLight                    1
-set ClusterDecayer:ClSmrLight                    3.118342
-
-set ClusterFissioner:ClMaxCharm                  3.274090*GeV
-set ClusterFissioner:ClPowCharm                  10.0
-set ClusterFissioner:PSplitCharm                 0.7183601
-set ClusterDecayer:ClDirCharm                    1
-set ClusterDecayer:ClSmrCharm                    3.118342
-set LightClusterDecayer:SingleHadronLimitCharm   0.0
-
-set ClusterFissioner:ClMaxBottom                 3.274090*GeV
-set ClusterFissioner:ClPowBottom                 10.0
-set ClusterFissioner:PSplitBottom                0.7183601
-set ClusterDecayer:ClDirBottom                   1
-set ClusterDecayer:ClSmrBottom                   3.118342
-set LightClusterDecayer:SingleHadronLimitBottom  0.0
-
-set HadronSelector:PwtUquark                     1.0
-set HadronSelector:PwtDquark                     1.0
-set HadronSelector:PwtSquark                     1.0
-set HadronSelector:PwtCquark                     1.0
-set HadronSelector:PwtBquark                     1.0
-set HadronSelector:PwtDIquark                    1.0
-set HadronSelector:SngWt                         1.0
-set HadronSelector:DecWt                         1.0
-
 cd /
+
 
