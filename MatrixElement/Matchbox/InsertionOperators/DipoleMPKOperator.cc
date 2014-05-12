@@ -74,12 +74,6 @@ bool DipoleMPKOperator::applyNotMassless(tcPDPtr pd) const {
 
 bool DipoleMPKOperator::apply(const cPDVector& pd) const {
 
-  cout << "!!!!! Attention !!!!!" << endl;
-  cout << "Number of massless flavours in jet particle group (aka n_f) = " << NLightJetVec().size() << endl;
-  cout << "Number of massive flavours in jet particle group (aka n_F or n_{f,h}) = " << NHeavyJetVec().size() << endl;
-  cout << "Ensure consistent usage!" << endl;
-  cout << endl;
-
   if ( !apply(pd[0]) && !apply(pd[1]) ) {
     cout << "DipoleMPKOperator::apply (master apply): ( !apply(pd[0]) && !apply(pd[1]) ). Return false!" << endl;
     return false;
@@ -126,8 +120,15 @@ bool DipoleMPKOperator::apply(const cPDVector& pd) const {
     }
   }
 
-  if ( first && second && (finalmass || mFSet) && !initialmass )
+  if ( first && second && (finalmass || mFSet) && !initialmass ) {
     cout << "DipoleMPKOperator::apply (master apply): Return true!" << endl;
+    cout << endl;
+    cout << "     !!!!! Attention !!!!!" << endl;
+    cout << "     Number of massless flavours in jet particle group (aka n_f) = " << NLightJetVec().size() << endl;
+    cout << "     Number of massive flavours in jet particle group (aka n_F or n_{f,h}) = " << NHeavyJetVec().size() << endl;
+    cout << "     Ensure consistent usage!" << endl;
+    cout << endl;
+  }
   if ( !( first && second && (finalmass || mFSet) && !initialmass ) )
     cout << "DipoleMPKOperator::apply (master apply): Return false!" << endl;
 

@@ -50,7 +50,7 @@ void DipoleIOperator::setXComb(tStdXCombPtr xc) {
     CA = SM().Nc();
     CF = (SM().Nc()*SM().Nc()-1.0)/(2.*SM().Nc());
     gammaQuark = (3./2.)*CF;
-    gammaGluon = (11./6.)*CA - (1./3.)*lastBorn()->nLight(); // Be aware of consistent usage if using together with any OLP!
+    gammaGluon = (11./6.)*CA - (1./3.)*lastBorn()->nLight();
     betaZero = gammaGluon;
     KQuark = (7./2.-sqr(pi)/6.)*CF;
     KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*lastBorn()->nLight();
@@ -78,12 +78,6 @@ void DipoleIOperator::setXComb(tStdXCombPtr xc) {
 // }
 
 bool DipoleIOperator::apply(const cPDVector& pd) const {
-
-  cout << "!!!!! Attention !!!!!" << endl;
-  cout << "Number of massless flavours in jet particle group (aka n_f) = " << NLightJetVec().size() << endl;
-  cout << "Number of massive flavours in jet particle group (aka n_F or n_{f,h}) = " << NHeavyJetVec().size() << endl;
-  cout << "Ensure consistent usage!" << endl;
-  cout << endl;
 
   // Prohibit splittings g->Q\bar{Q} in the final state.
   // These are covered by DipoleMIOperator.
@@ -113,8 +107,15 @@ bool DipoleIOperator::apply(const cPDVector& pd) const {
     }
   }
 
-  if ( first && second )
+  if ( first && second ) {
     cout << "DipoleIOperator::apply (master apply): Return true!" << endl;
+    cout << endl;    
+    cout << "     !!!!! Attention !!!!!" << endl;
+    cout << "     Number of massless flavours in jet particle group (aka n_f) = " << NLightJetVec().size() << endl;
+    cout << "     Number of massive flavours in jet particle group (aka n_F or n_{f,h}) = " << NHeavyJetVec().size() << endl;
+    cout << "     Ensure consistent usage!" << endl;
+    cout << endl;    
+  }
   if ( !( first && second ) )
     cout << "DipoleIOperator::apply (master apply): Return false!" << endl;
 
