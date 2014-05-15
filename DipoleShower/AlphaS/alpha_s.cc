@@ -170,6 +170,9 @@ void alpha_s::match_thresholds () {
 	= sqr(quarkMasses()[static_cast<size_t>(f-1)]);
   }
 
+  if ( quark_masses_squared_[1] > quark_masses_squared_[2] )
+    swap(quark_masses_squared_[1],quark_masses_squared_[2]);
+
   unsigned int active_at_input = active_flavours(sqr(scale_in_));
 
   // solve for input lambda

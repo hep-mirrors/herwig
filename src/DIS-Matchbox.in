@@ -118,11 +118,13 @@ cd /Herwig/MatrixElements/Matchbox
 set DISFactory:ShowerApproximation DipoleMatching
 cd /Herwig/EventHandlers
 set DISHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
+set /Herwig/Model:QCD/RunningAlphaS /Herwig/MatrixElements/Matchbox/AlphaS/MatchboxNLOAlphaS
 cd /Herwig/MatrixElements/Matchbox
 
 #>>>>>>>>>> MC@NLO-type next-to-leading order for use with default shower
 
 # set DISFactory:ShowerApproximation QTildeMatching
+# set /Herwig/Model:QCD/RunningAlphaS /Herwig/MatrixElements/Matchbox/AlphaS/NLOAlphaS
 
 #>>>>>>>>>> POWHEG-type next-to-leading order
 
@@ -142,6 +144,7 @@ cd /Herwig/MatrixElements/Matchbox
 # set DISHandler:HadronizationHandler NULL
 # set DISHandler:DecayHandler NULL
 # set /Herwig/Analysis/Basics:CheckQuark No
+# set /Herwig/Model:QCD/RunningAlphaS /Herwig/MatrixElements/Matchbox/AlphaS/MatchboxNLOAlphaS
 # cd /Herwig/MatrixElements/Matchbox
 
 #==================================================================================
@@ -291,7 +294,6 @@ set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
 set /Herwig/Cuts/NeutralCurrentCut:MinW2 0.0*GeV2
 set /Herwig/Cuts/DISCuts:MHatMin 0.0*GeV
 set /Herwig/Generators/DISGenerator:EventHandler:CollisionCuts Off
-set /Herwig/Model:QCD/RunningAlphaS /Herwig/MatrixElements/Matchbox/AlphaS/NLOAlphaS
 
 #==================================================================================
 #                     :::::SAMPLER TWEAKING:::::
