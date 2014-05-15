@@ -489,7 +489,7 @@ insert LOAlphaS:QuarkMasses[5] 174.2
 
 library HwDipoleShowerAlphaS.so
 
-create matchbox::lo_alpha_s MatchboxNLOAlphaS
+create matchbox::nlo_alpha_s MatchboxNLOAlphaS
 set MatchboxNLOAlphaS:exact_evaluation large_scale
 set MatchboxNLOAlphaS:freezing_scale 0.0*GeV
 set MatchboxNLOAlphaS:min_active_flavours 3
