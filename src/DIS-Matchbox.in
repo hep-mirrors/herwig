@@ -212,6 +212,18 @@ set DISHandler:Weighted Off
 set DISHandler:Sampler  /Herwig/Samplers/Sampler
 
 #==================================================================================
+#                    :::::PRE-RUN MODIFICATIONS:::::
+#
+# Parameters of a run can be changed reading an extra input file at the run step
+# via e.g. Herwig++ run --setupfile=Parameters.in LHC-Matchbox.run . This option
+# is useful for high-multiplicity NLO processes, where the setup of matrix elements
+# may take longer. If parameter changes affect the hard process (i.e. cuts,
+# scale choices, and the like) please uncomment the option below to perform
+# grid adaption after the parameters have been changed.
+#==================================================================================
+# set /Herwig/Samplers/Sampler:PostponeInitialize Yes
+
+#==================================================================================
 #                     :::::GENERATOR:::::
 #==================================================================================
 

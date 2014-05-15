@@ -44,7 +44,7 @@ MatchboxFactory::MatchboxFactory()
     theDipoleSet(0), theVerbose(false), theInitVerbose(false), 
     theSubtractionData(""), theSubtractionPlotType(1), theSubtractionScatterPlot(false),
     thePoleData(""), theRealEmissionScales(false), theAllProcesses(false),
-  theMECorrectionsOnly(false), theLoopSimCorrections(false) {}
+  theMECorrectionsOnly(false), theLoopSimCorrections(false), ranSetup(false) {}
 
 MatchboxFactory::~MatchboxFactory() {}
 
@@ -249,6 +249,9 @@ int MatchboxFactory::orderOLPProcess(const Process& proc,
 }
 
 void MatchboxFactory::setup() {
+
+  if ( ranSetup )
+    return;
 
   olpProcesses().clear();
   externalAmplitudes().clear();
@@ -761,6 +764,8 @@ void MatchboxFactory::setup() {
 
   generator()->log() << "Process setup finished.\n" << flush;
 
+  ranSetup = true;
+
 }
 
 void MatchboxFactory::SplittingChannel::print(ostream& os) const {
@@ -926,7 +931,7 @@ void MatchboxFactory::print(ostream& os) const {
 void MatchboxFactory::doinit() {
   theCurrentFactory() = this;
   setup();
-  if ( initVerbose() )
+  if ( initVerbose() && !ranSetup )
     print(Repository::clog());
   SubProcessHandler::doinit();
 }
@@ -956,7 +961,7 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
      << theOLPProcesses << theExternalAmplitudes
      << theSelectedAmplitudes << theDeselectedAmplitudes
      << theDipoleSet << theReweighters << thePreweighters
-     << theMECorrectionsOnly << theLoopSimCorrections;
+     << theMECorrectionsOnly << theLoopSimCorrections << ranSetup;
 }
 
 void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
@@ -978,7 +983,7 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
      >> theOLPProcesses >> theExternalAmplitudes
      >> theSelectedAmplitudes >> theDeselectedAmplitudes
      >> theDipoleSet >> theReweighters >> thePreweighters
-     >> theMECorrectionsOnly >> theLoopSimCorrections;
+     >> theMECorrectionsOnly >> theLoopSimCorrections >> ranSetup;
 }
 
 string MatchboxFactory::startParticleGroup(string name) {

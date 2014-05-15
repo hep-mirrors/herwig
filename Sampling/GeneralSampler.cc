@@ -45,7 +45,7 @@ GeneralSampler::GeneralSampler()
     theGlobalMaximumWeight(true), theFlatSubprocesses(false),
     isSampling(false), theMinSelection(0.01), runCombinationData(false),
     theAlmostUnweighted(false), maximumExceeds(0),
-    maximumExceededBy(0.) {}
+    maximumExceededBy(0.), didReadGrids(false), thePostponeInitialize(false) {}
 
 GeneralSampler::~GeneralSampler() {}
 
@@ -62,6 +62,11 @@ double sign(double x) {
 }
 
 void GeneralSampler::initialize() {
+
+  if ( postponeInitialize() ) {
+    thePostponeInitialize = false;
+    return;
+  }
 
   if ( !samplers().empty() )
     return;
@@ -465,6 +470,8 @@ void GeneralSampler::writeGrids() const {
 }
 
 void GeneralSampler::readGrids() {
+  if ( didReadGrids )
+    return;
   string dataName = generator()->filename() + "-grids.xml";
   ifstream in(dataName.c_str());
   if ( !in ) {
@@ -472,6 +479,7 @@ void GeneralSampler::readGrids() {
     return;
   }
   theGrids = XML::ElementIO::get(in);
+  didReadGrids = true;
 }
 
 void GeneralSampler::persistentOutput(PersistentOStream & os) const {
@@ -484,7 +492,7 @@ void GeneralSampler::persistentOutput(PersistentOStream & os) const {
      << theAddUpSamplers << theGlobalMaximumWeight
      << theFlatSubprocesses << isSampling << theMinSelection
      << runCombinationData << theAlmostUnweighted << maximumExceeds
-     << maximumExceededBy;
+     << maximumExceededBy << thePostponeInitialize;
 }
 
 void GeneralSampler::persistentInput(PersistentIStream & is, int) {
@@ -497,7 +505,7 @@ void GeneralSampler::persistentInput(PersistentIStream & is, int) {
      >> theAddUpSamplers >> theGlobalMaximumWeight
      >> theFlatSubprocesses >> isSampling >> theMinSelection
      >> runCombinationData >> theAlmostUnweighted >> maximumExceeds
-     >> maximumExceededBy;
+     >> maximumExceededBy >> thePostponeInitialize;
 }
 
 
@@ -618,6 +626,21 @@ void GeneralSampler::Init() {
   static SwitchOption interfaceAlmostUnweightedOff
     (interfaceAlmostUnweighted,
      "Off",
+     "",
+     false);
+
+  static Switch<GeneralSampler,bool> interfacePostponeInitialize
+    ("PostponeInitialize",
+     "Postpone initialization to happen after event generator modifications.",
+     &GeneralSampler::thePostponeInitialize, false, false, false);
+  static SwitchOption interfacePostponeInitializeYes
+    (interfacePostponeInitialize,
+     "Yes",
+     "",
+     true);
+  static SwitchOption interfacePostponeInitializeNo
+    (interfacePostponeInitialize,
+     "No",
      "",
      false);
 

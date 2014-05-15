@@ -967,6 +967,11 @@ private:
   bool theLoopSimCorrections;
 
   /**
+   * True, if the setup has already been run.
+   */
+  bool ranSetup;
+
+  /**
    * The current factory
    */
   static MatchboxFactory*& theCurrentFactory();
