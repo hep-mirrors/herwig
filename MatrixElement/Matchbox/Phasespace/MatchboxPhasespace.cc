@@ -15,6 +15,7 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
+#include "ThePEG/Interface/Command.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -435,6 +436,12 @@ void MatchboxPhasespace::Init() {
      "No",
      "Do not use mass generators.",
      false);
+
+
+  static Command<MatchboxPhasespace> interfaceSetCoupling
+    ("SetCoupling",
+     "",
+     &MatchboxPhasespace::doSetCoupling, false);
 
 }
 
