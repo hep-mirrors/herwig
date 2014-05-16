@@ -1,0 +1,552 @@
+// -*- C++ -*-
+//
+// MadGraphAmplitudefortran.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2012 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
+// This is the implementation of the non-inlined, non-templated member
+// functions of the MadGraphAmplitudefortran class.
+//
+
+#include "MadGraphAmplitudefortran.h"
+#include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/EventRecord/Particle.h"
+#include "ThePEG/Repository/UseRandom.h"
+#include "ThePEG/Repository/EventGenerator.h"
+#include "ThePEG/Utilities/DescribeClass.h"
+#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
+#include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+
+#include "ThePEG/PDT/EnumParticles.h"
+#include <cstdlib>
+#include <dlfcn.h>
+#include <errno.h>
+using namespace Herwig;
+
+
+extern "C" void MG_InitProc                    (int* proc );
+extern "C" void MG_Calculate_wavefunctions_virt(int* proc,double*,double*);
+extern "C" void MG_Calculate_wavefunctions_born(int* proc,double*, int*);
+extern "C" void MG_Jamp                        (int* proc,int*, double*);
+extern "C" void MG_Virt                        (int* proc,double*);
+extern "C" void MG_NCol                        (int* proc,int*);
+extern "C" void MG_vxxxxx                      (double* p,double* n,int* inc,double*  );
+extern "C" void MG_Colour                      (int* proc,int* i,int* j ,int* color);
+
+// MG_InitProc(proc,file_card) 
+// MG_Calculate_wavefunctions(proc, momenta,  hel)
+// MG_Jamp(proc ,color,amp)
+// MG_Virt(proc ,amp)
+// MG_NCol(proc ,color)
+// MG_vxxxxx(p, n,inc,VC)
+
+
+
+
+MadGraphAmplitudefortran::MadGraphAmplitudefortran()
+  : theMG5Path("@MADGRAPHFORTRANPREFIX@"), theProcessPath("./MadGraphAmplitudefortrans") {}
+
+MadGraphAmplitudefortran::~MadGraphAmplitudefortran() {
+
+}
+
+IBPtr MadGraphAmplitudefortran::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr MadGraphAmplitudefortran::fullclone() const {
+  return new_ptr(*this);
+}
+
+map<string,int>& MadGraphAmplitudefortran::processmap() {
+  static map<string,int> theProcessMap;
+  return theProcessMap;
+}
+
+template<class ProcType>
+string processId(const ProcType& p) {
+  string orderFileName =  "";
+  for (typename ProcType::const_iterator it=p.begin();it!=p.end();it++)
+    orderFileName +=(*it)->PDGName();
+  orderFileName+=".MG";
+  return orderFileName;
+}
+
+bool initializedMad=false;
+
+
+void MadGraphAmplitudefortran::initProcess(const cPDVector& proc) {
+  if ( lastMatchboxXComb()->initialized() )
+    return;
+  string orderFileName = processId(proc);
+  ifstream ifile((theProcessPath+"/"+orderFileName).c_str());
+  if ( !ifile ) {
+    throw Exception() << "failed to build process " << orderFileName << "\n"
+		      << Exception::abortnow;
+  }
+  if ( !DynamicLoader::load(theProcessPath+"/InterfaceMadGraphfortran.so") )
+    throw Exception() << "Failed to load MadGraph amplitudes\n"
+		      << DynamicLoader::lastErrorMessage
+		      << Exception::abortnow;
+
+  string ppstr = "param_card.dat";
+  char * ppchar = new char[ppstr.size()+1];
+  std::copy(ppstr.begin(),ppstr.end(),ppchar);
+  ppchar[ppstr.size()] = '\0';
+  int xx=lastMatchboxXComb()->externalId();
+  if (!initializedMad){
+    MG_InitProc(&xx);
+    initializedMad=true;
+  }
+  delete[] ppchar;
+  lastMatchboxXComb()->isInitialized();
+}
+
+bool MadGraphAmplitudefortran::initializeExternal() {
+
+  loadProcessMap();
+  if ( !processmap().empty() )
+    return true;
+
+  string para= "MG-Parameter.dat";
+  ofstream params(para.c_str());
+  params<<"$WZ$ "    <<setiosflags(ios::scientific)  <<getParticleData(ParticleID::Z0)->width()     /GeV;
+  params<<"\n$WW$ "    <<setiosflags(ios::scientific)   <<getParticleData(ParticleID::Wplus)->width()/GeV;
+  params<<"\n$alphas$ " <<setiosflags(ios::scientific)  <<SM().alphaS();
+  params<<"\n$GF$ "     <<setiosflags(ios::scientific)  <<SM().fermiConstant()*GeV2   ;
+  params<<"\n$alphaMZ$ " <<setiosflags(ios::scientific) <<1/SM().alphaEMMZ();
+  params<<"\n$MZ$ "     <<setiosflags(ios::scientific)  <<getParticleData(ParticleID::Z0)->mass() /GeV<<flush;
+  params<<"\n$MW$ "    <<setiosflags(ios::scientific)   <<getParticleData(ParticleID::Wplus)->mass() /GeV<<flush;
+  params<<"\n$sw2$ "    <<setiosflags(ios::scientific)   << SM().sin2ThetaW() <<flush;
+  params<<"\n$MT$ "    <<setiosflags(ios::scientific)   << getParticleData(ParticleID::t)->mass() /GeV <<flush;
+  params<<"\n$WT$ "    <<setiosflags(ios::scientific)   << getParticleData(ParticleID::t)->width() /GeV <<flush;
+  params<<"\n$MB$ "    <<setiosflags(ios::scientific)   << getParticleData(ParticleID::b)->mass() /GeV <<flush;
+  params<<"\n$MH$ "    <<setiosflags(ios::scientific)   << getParticleData(ParticleID::h0)->mass() /GeV <<flush;
+  params<<"\n$WH$ "    <<setiosflags(ios::scientific)   << getParticleData(ParticleID::h0)->width() /GeV <<flush;
+  params<<"\n$MTA$ "    <<setiosflags(ios::scientific)   << getParticleData(ParticleID::tauplus)->mass() /GeV <<flush;
+
+  assert(theMG5Path != "");
+  string cmd = "python @prefix@/bin/mg2Matchboxfortran.py ";
+  // TODO move to boost::system
+  char cwd[1024];
+  if ( !getcwd(cwd,sizeof(cwd)) )
+    throw Exception() << "failed to determine current working directory\n"
+		      << Exception::abortnow;
+  cmd += theMG5Path + "/bin " + cwd + "/" + theProcessPath
+    + " > " + cwd + "/" + theProcessPath + "/MG.log 2>&1";
+  generator()->log() << "\n\nCompiling MadGraph amplitudes. This may take some time -- please be patient.\n"
+		     << "In case of problems see " << theProcessPath << "/MG.log for details.\n\n"
+		     << flush;
+  std::system(cmd.c_str());
+
+  loadProcessMap();
+
+  return !processmap().empty();
+
+}
+
+int MadGraphAmplitudefortran::externalId(const cPDVector& proc) {
+  string orderFileName =  processId(proc);
+  assert(processmap().find(orderFileName) != processmap().end());
+  int res = processmap().find(orderFileName)->second;
+  return res;
+}
+
+void MadGraphAmplitudefortran::loadProcessMap() {
+  if ( !processmap().empty() )
+    return;
+  string line = theProcessPath+"/"+"processmap.dat";
+  ifstream infile(line.c_str());
+  if ( !infile )
+    return;
+  string process;
+  int id;
+  while (std::getline(infile, line)) {
+    std::stringstream ss(line);
+    getline( ss, process, ' ' );
+    ss >> id;
+    processmap().insert(make_pair(process,id));
+  }
+}
+
+void MadGraphAmplitudefortran::doinit() {
+  loadProcessMap();
+  MatchboxAmplitude::doinit();
+}
+
+void MadGraphAmplitudefortran::doinitrun() {
+  loadProcessMap();
+  MatchboxAmplitude::doinitrun();
+}
+
+bool MadGraphAmplitudefortran::canHandle(const PDVector& p,
+				  Ptr<MatchboxFactory>::tptr factory) const {
+  if ( factory->processData()->diagramMap().find(p) !=
+       factory->processData()->diagramMap().end() )
+    return true;
+  vector<Ptr<Tree2toNDiagram>::ptr> diags =
+    factory->diagramGenerator()->generate(p,orderInGs(),orderInGem());
+  if ( diags.empty() )
+    return false;
+  factory->processData()->diagramMap()[p] = diags;
+  string orderFileName =  processId(p);
+  std::system(("mkdir -p " + theProcessPath).c_str());
+  orderFileName=theProcessPath+"/"+orderFileName;
+  ofstream orderFile(orderFileName.c_str());
+  int k=0;
+  for (PDVector::const_iterator it=p.begin();it!=p.end();it++){
+    orderFile <<(*it)->PDGName()<<" ";k+=1;if (k==2)orderFile<<" > ";
+  }
+ 
+  if (factory->highestVirt()>=p.size()) orderFile<< " [ virt=QCD ]";
+  orderFile << flush;
+  return true;
+}
+				   
+void MadGraphAmplitudefortran::prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr me) {
+
+  if ( !calculateTreeAmplitudes() ) {
+    MatchboxAmplitude::prepareAmplitudes(me);
+    return;
+  }
+  lastMatchboxXComb()->clearheljamp();
+  initProcess(mePartonData());
+  MatchboxAmplitude::prepareAmplitudes(me);
+
+}
+
+Complex MadGraphAmplitudefortran::evaluate(size_t i, const vector<int>& hel, Complex& largeN) {
+  
+  
+  //find the colourline:
+  int ii = -1;
+  int xx=lastMatchboxXComb()->externalId();
+  if ( colourindexmap.find(i)!= colourindexmap.end() ) {
+    ii = colourindexmap.find(i)->second;
+    if (ii==-1) {
+      largeN = Complex(0.0);
+      return Complex(0.0);
+    }
+  } else {
+    set<vector<size_t> > a = colourOrdering(i);
+    int ncol=-1;
+    MG_NCol(&xx,&ncol);
+    assert(ncol!=-1);
+    for( int it = 0; it < ncol; it++ ){
+      int n = 0;
+      for ( cPDVector::const_iterator nx = mePartonData().begin();
+	    nx != mePartonData().end(); nx++ )
+	if ( (*nx)->coloured() ) n++;
+      set<vector<size_t> > tmpset;
+      vector<size_t> tmpvek;
+      for ( int it2 = 0; it2 < n; it2++ ) {
+	int ret=-2;
+	MG_Colour(&xx,&it,&it2,&ret);
+	assert(ret !=-2);
+	if (ret== -1)
+	  break;
+	if ( ret == 0 ) {
+	  n++;
+	  tmpset.insert(tmpvek);
+	  tmpvek.clear();
+	} else {
+	  tmpvek.push_back(ret-1);
+	}
+	if( it2 == n-1 ) tmpset.insert(tmpvek);
+      }
+      bool found_all = true;
+      for ( set<vector<size_t> >::iterator it3 = a.begin(); it3 != a.end(); it3++ ) {
+	bool found_it3=false;
+	for ( set<vector<size_t> >::iterator it4 = tmpset.begin(); it4 != tmpset.end(); it4++ ) {
+          vector<size_t> it3tmp = gluonsFirst(*it3);
+	  vector<size_t> it4tmp = (*it4);
+	  if ( it3tmp.size() != it4tmp.size() ) continue;
+	  if ( it3tmp == it4tmp ) found_it3 = true;
+	}
+	found_all = found_all && found_it3;
+      }
+
+      if ( found_all ) {
+	colourindexmap.insert(pair<int,int>(i,it) );
+	ii=it;
+      }
+    }
+  }
+  if ( ii == -1 ){
+    colourindexmap.insert(pair<int,int>(i,ii) );
+    largeN = Complex(0.0);
+    return Complex(0.0);
+  }
+  
+  
+  
+  
+  
+
+  map<vector<int>,vector < complex<double> > > tmp=lastMatchboxXComb()->heljamp();
+
+  if(tmp.find(hel)!=tmp.end()){
+    largeN=tmp.find(hel)->second[ii];
+    return tmp.find(hel)->second[ii];
+  }
+
+  double units = pow(sqrt(lastSHat())/GeV,hel.size()-4);
+  
+ 
+
+   int heltmp[10];
+  
+  for(size_t j=0;j<hel.size();j++){
+    if( (crossingMap()[j]>1&&j<=1)||(crossingMap()[j]<=1&&j>1)){
+    heltmp[crossingMap()[j]]=-1*hel[j];}
+    else{heltmp[crossingMap()[j]]=hel[j];}
+  }
+      double momenta[50];
+  size_t j=0;
+  for (size_t i=0;i<mePartonData().size();i++){
+    momenta[j]=meMomenta()[i].e()/GeV;
+    momenta[j+1]=meMomenta()[i].x()/GeV;
+    momenta[j+2]=meMomenta()[i].y()/GeV;
+    momenta[j+3]=meMomenta()[i].z()/GeV;
+    j+=4;
+  }
+
+  
+  MG_Calculate_wavefunctions_born(&xx, &momenta[0],  &heltmp[0]);
+  
+  
+  int ncol=-1;
+  MG_NCol(&xx,&ncol);
+  assert(ncol!=-1);
+  
+  for( int it = 0; it < ncol; it++ ){
+    double dd[2];
+    MG_Jamp(&xx,&it,&dd[0]);
+    Complex d(dd[0],dd[1]);
+    lastMatchboxXComb()->pushheljamp(hel,d*units);
+  }
+
+  
+  largeN = lastMatchboxXComb()->heljamp().find(hel)->second[ii];
+  return lastMatchboxXComb()->heljamp().find(hel)->second[ii];
+
+}
+
+LorentzVector<Complex> MadGraphAmplitudefortran::plusPolarization(const Lorentz5Momentum& p,
+							   const Lorentz5Momentum& n,
+							   int i) const {
+							     
+							     
+						     
+  double poltmp[8];
+  int tmp=i;
+  complex<double> ii(0.0,1.0);
+  double pg[4];double ng[4];
+  pg[0]=p.e()/GeV;pg[1]=p.x()/GeV;pg[2]=p.y()/GeV;pg[3]=p.z()/GeV;
+  ng[0]=n.e()/GeV;ng[1]=n.x()/GeV;ng[2]=n.y()/GeV;ng[3]=n.z()/GeV;
+//   cout<<"\npg "<<pg[0];
+//   cout<<"\nng "<<ng[0];
+//   cout<<"\ni "<<i;
+  MG_vxxxxx(&pg[0],&ng[0],&tmp,&poltmp[0]);
+
+  complex<double> pol[6];
+  pol[0]=Complex(poltmp[0],poltmp[1]);
+  pol[1]=Complex(poltmp[2],poltmp[3]);
+  pol[2]=Complex(poltmp[4],poltmp[5]);
+  pol[3]=Complex(poltmp[6],poltmp[7]);
+  // (double* p,double* n,int* inc,double* p )
+  //cout<<"\nnear exit"<<pol[0]<<" "<<pol[1]<<" "<<pol[2]<<" "<<pol[3]<<" "<<flush;
+  LorentzVector<Complex> polarization(pol[1],pol[2],pol[3],pol[0]);
+
+  return polarization.conjugate();
+}
+ 
+bool equalsModulo(unsigned int i, const vector<int>& a, const vector<int>& b) {
+  assert(a.size()==b.size());
+  if ( a[i] == b[i] )
+    return false;
+  for ( unsigned int k = 0; k < a.size(); ++k ) {
+    if ( k == i )
+      continue;
+    if ( a[k] != b[k] )
+      return false;
+  }
+  return true;
+}
+
+vector<size_t> MadGraphAmplitudefortran::gluonsFirst(vector<size_t> vec) {
+  vector<size_t> vecout;
+  for(vector<size_t>::iterator it= vec.begin();it!= vec.end();++it)
+    if ( mePartonData()[crossingMap()[*it]]->id()==21)
+      vecout.push_back(crossingMap()[*it]);
+
+  for(vector<size_t>::iterator it= vec.begin();it!= vec.end();++it)
+    if ( mePartonData()[crossingMap()[*it]]->id()!=21)
+      vecout.push_back(crossingMap()[*it]);
+
+  return vecout;
+  
+}
+
+double MadGraphAmplitudefortran::spinColourCorrelatedME2(pair<int,int> ij,
+						  const SpinCorrelationTensor& c) const {
+
+  Lorentz5Momentum p = meMomenta()[ij.first];
+  Lorentz5Momentum n = meMomenta()[ij.second];
+
+  LorentzVector<Complex> polarization = plusPolarization(p,n,ij.first);
+
+  Complex pFactor = (polarization*c.momentum())/sqrt(abs(c.scale()));
+
+  double avg =
+    colourCorrelatedME2(ij)*(-c.diagonal()+ (c.scale() > ZERO ? 1. : -1.)*norm(pFactor));
+  int iCrossed = crossingMap()[ij.first];
+  iCrossed = ij.first;
+  for ( unsigned int k = 0; k < crossingMap().size(); ++k )
+    if ( crossingMap()[k] == ij.first ) {
+      iCrossed = k;
+      break;
+    }   
+  
+  Complex csCorr = 0.0;
+
+  if ( calculateColourSpinCorrelator(ij) ) {
+    set<const CVector*> done;
+    for ( AmplitudeConstIterator a = lastAmplitudes().begin();
+	  a != lastAmplitudes().end(); ++a ) {
+      if ( done.find(&(a->second)) != done.end() )
+	continue;
+      AmplitudeConstIterator b = lastAmplitudes().begin();
+      while ( !equalsModulo(iCrossed,a->first,b->first) )
+	if ( ++b == lastAmplitudes().end() )
+	  break;
+      if ( b == lastAmplitudes().end() || done.find(&(b->second)) != done.end() )
+	continue;
+      done.insert(&(a->second)); done.insert(&(b->second));
+      if ( a->first[iCrossed] == 1 )
+	swap(a,b);
+      csCorr -= colourBasis()->colourCorrelatedInterference(ij,mePartonData(),a->second,b->second);
+    }
+    lastColourSpinCorrelator(ij,csCorr);
+  } else {
+    csCorr = lastColourSpinCorrelator(ij);
+  }
+  double corr =
+    2.*real(csCorr*sqr(pFactor));
+
+  double Nc = generator()->standardModel()->Nc();
+  double cfac = 1.;
+  if ( mePartonData()[ij.first]->iColour() == PDT::Colour8 ) {
+    cfac = Nc;
+  } else if ( mePartonData()[ij.first]->iColour() == PDT::Colour3 ||
+	      mePartonData()[ij.first]->iColour() == PDT::Colour3bar ) {
+    cfac = (sqr(Nc)-1.)/(2.*Nc);
+  } else assert(false);
+
+  return
+    ( avg +(c.scale() > ZERO ? 1. : -1.)*corr/cfac);
+
+}
+
+
+
+
+void MadGraphAmplitudefortran::prepareOneLoopAmplitudes(Ptr<MatchboxMEBase>::tcptr me){
+  assert(false);
+  MatchboxAmplitude::prepareAmplitudes(me);
+}
+
+
+double MadGraphAmplitudefortran::oneLoopInterference() const {
+  if ( !calculateOneLoopInterference() )
+    return lastOneLoopInterference();
+  evaloneLoopInterference();
+  return lastOneLoopInterference();
+}
+
+
+void MadGraphAmplitudefortran::evaloneLoopInterference() const  {
+  
+  
+      double units = pow(lastSHat()/GeV2,mePartonData().size()-4);
+
+  double virt[3];
+  double momenta[50];
+
+  size_t j=0;
+  for (size_t i=0;i<mePartonData().size();i++){
+    momenta[j]=meMomenta()[i].e()/GeV;
+    momenta[j+1]=meMomenta()[i].x()/GeV;
+    momenta[j+2]=meMomenta()[i].y()/GeV;
+    momenta[j+3]=meMomenta()[i].z()/GeV;
+    j+=4;
+  }
+  int xx=lastMatchboxXComb()->externalId();
+  
+  MG_Calculate_wavefunctions_virt(&xx,&momenta[0],&virt[0]);
+
+    double ifact = 1.;
+
+    ifact = 1./4.;
+    if (lastMatchboxXComb()->matchboxME()->mePartonData()[0]->iColour() == PDT::Colour3 ||
+	 lastMatchboxXComb()->matchboxME()->mePartonData()[0]->iColour() == PDT::Colour3bar )
+      ifact /= SM().Nc();
+    else if ( lastMatchboxXComb()->matchboxME()->mePartonData()[0]->iColour() == PDT::Colour8 )
+      ifact /= (SM().Nc()*SM().Nc()-1.);
+
+    if ( lastMatchboxXComb()->matchboxME()->mePartonData()[1]->iColour() == PDT::Colour3 ||
+	 lastMatchboxXComb()->matchboxME()->mePartonData()[1]->iColour() == PDT::Colour3bar )
+      ifact /= SM().Nc();
+    else if ( mePartonData()[1]->iColour() == PDT::Colour8 )
+      ifact /= (SM().Nc()*SM().Nc()-1.);
+  
+
+
+    assert(lastMatchboxXComb()->matchboxME());
+    ifact *= lastMatchboxXComb()->matchboxME()->finalStateSymmetry();
+ 
+//  cout<<"\n"<<virt[0]<<" "<<virt[1]<<" "<<virt[2]<<flush;
+  
+  lastOneLoopInterference(virt[0]/ifact*units);
+}
+ 
+void MadGraphAmplitudefortran::persistentOutput(PersistentOStream & os) const {
+  os <<theMG5Path<<theProcessPath<< theOrderInGs << theOrderInGem<<colourindexmap;
+}
+ 
+void MadGraphAmplitudefortran::persistentInput(PersistentIStream & is, int) {
+  is >>theMG5Path>>theProcessPath>> theOrderInGs >> theOrderInGem>>colourindexmap;
+}
+ 
+// *** Attention *** The following static variable is needed for the type
+// description system in ThePEG. Please check that the template arguments
+// are correct (the class and its base class), and that the constructor
+// arguments are correct (the class name and the name of the dynamically
+// loadable library where the class implementation can be found).
+DescribeClass<MadGraphAmplitudefortran,MatchboxAmplitude> 
+describeHerwigMadGraphAmplitudefortran("Herwig::MadGraphAmplitudefortran", "HwMatchboxMadGraphfortran.so");
+ 
+void MadGraphAmplitudefortran::Init() {
+   
+  static ClassDocumentation<MadGraphAmplitudefortran> documentation  ("MadGraphAmplitudefortran");
+   
+  static Parameter<MadGraphAmplitudefortran,string> interfaceMGPath
+    ("MG5Path",
+     "The MG5 Path.",
+     &MadGraphAmplitudefortran::theMG5Path, "@MADGRAPHPREFIX@",
+     false, false);
+   
+  static Parameter<MadGraphAmplitudefortran,string> interfaceProcessPath
+    ("ProcessPath",
+     "The Process Path.",
+     &MadGraphAmplitudefortran::theProcessPath, ".",
+     false, false);
+
+}
+ 
+ 

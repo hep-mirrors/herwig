@@ -131,6 +131,8 @@ HERWIG_CHECK_HEJ
 
 HERWIG_CHECK_MADGRAPH
 
+HERWIG_CHECK_MADGRAPHFORTRAN
+
 HERWIG_COMPILERFLAGS
 
 HERWIG_LOOPTOOLS
@@ -230,6 +232,10 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/Matchbox/External/MadGraph/MadGraphAmplitude.cc
                 MatrixElement/Matchbox/External/MadGraph/mg2Matchbox.py
                 MatrixElement/Matchbox/External/MadGraph/Makefile-MG.in
+                MatrixElement/Matchbox/External/MadGraph_fortran/Makefile
+                MatrixElement/Matchbox/External/MadGraph_fortran/MadGraphAmplitudefortran.cc
+                MatrixElement/Matchbox/External/MadGraph_fortran/mg2Matchboxfortran.py
+                MatrixElement/Matchbox/External/MadGraph_fortran/Makefile-MGfortran.in
 		Sampling/Makefile
 		Sampling/CellGrids/Makefile
                 Shower/Makefile

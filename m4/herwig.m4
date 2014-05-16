@@ -597,6 +597,57 @@ AC_SUBST([SET_MADGRAPH])
 
 ])
 
+#########################################
+
+dnl ##### madgraph #####
+AC_DEFUN([HERWIG_CHECK_MADGRAPHFORTRAN],
+[
+AC_MSG_CHECKING([for MadGraphFortran])
+
+AC_ARG_WITH([madgraphfortran],
+    AS_HELP_STRING([--with-madgraphfortran=DIR], [Installation path of MadGraph]),
+    [],
+    [with_madgraphfortran=no]
+)
+
+AC_MSG_RESULT([$with_madgraphfortran])
+
+AS_IF([test "x$with_madgraphfortran" != "xno"],
+      [AC_CHECK_FILES(
+      ${with_madgraphfortran}/bin/mg5_aMC,
+      [have_madgraphfortran=yes], [have_madgraphfortran=no])],
+      [have_madgraphfortran=no])
+
+AS_IF([test "x$have_madgraphfortran" = "xyes"],
+      [MADGRAPHFORTRANPREFIX=${with_madgraphfortran}
+      AC_SUBST(MADGRAPHFORTRANPREFIX)
+      ])
+
+AS_IF([test "x$with_madgraphfortran" != "xno"  -a "x$have_madgraphfortran" = "xno"],
+      [AC_MSG_ERROR([MadGraphfortran requested but not found])])
+
+AM_CONDITIONAL(HAVE_MADGRAPHFORTRAN,[test "x$have_madgraphfortran" = "xyes" ])
+
+if test "x$have_madgraphfortran" = "xyes"  ; then
+     	LOAD_MADGRAPHFORTRAN="library"
+     	CREATE_MADGRAPHFORTRAN="create"
+     	INSERT_MADGRAPHFORTRAN="insert"
+     	SET_MADGRAPHFORTRAN="set"
+else
+     	LOAD_MADGRAPHFORTRAN="# library"
+	CREATE_MADGRAPHFORTRAN="# create"
+     	INSERT_MADGRAPHFORTRAN="# insert"
+     	SET_MADGRAPHFORTRAN="# set"
+fi
+
+AC_SUBST([LOAD_MADGRAPHFORTRAN])
+AC_SUBST([CREATE_MADGRAPHFORTRAN])
+AC_SUBST([INSERT_MADGRAPHFORTRAN])
+AC_SUBST([SET_MADGRAPHFORTRAN])
+
+])
+
+
 
 dnl ##### hej #####
 AC_DEFUN([HERWIG_CHECK_HEJ],
@@ -852,6 +903,7 @@ cat << _HW_EOF_ > config.herwig
 *** GoSam-Contrib:      $with_gosam_contrib
 *** OpenLoops:		$with_openloops
 *** MadGraph: 		$with_madgraph
+*** MadGraphfortran: 	$with_madgraphfortran
 *** HEJ:		$with_hej
 ***
 *** GSL:		$with_gsl

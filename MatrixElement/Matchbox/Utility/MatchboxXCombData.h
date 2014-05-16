@@ -578,6 +578,24 @@ namespace Herwig {
      * Fill the external momentum vector
      */
     void fillExternalMomenta(const vector<Lorentz5Momentum>&);
+    
+    /**
+     * Caching for the external madgraph colour structures
+     */
+    
+    const map<vector<int>,vector < complex<double> > > heljamp() const{return theHelJamp;}
+    
+    /**
+     *  pushback the madgraph colour structures
+     */
+
+    void pushheljamp(vector<int> hel,complex<double> jamp){theHelJamp[hel].push_back(jamp);}
+    
+    /**
+     * clear the madgraph colour structures
+     */
+
+    void clearheljamp() { theHelJamp.clear();}
 
   public:
 
@@ -874,6 +892,12 @@ namespace Herwig {
      * True, if external momenta have been filled
      */
     bool filledExternalMomenta;
+    
+    /**
+    * caching of different colour structures (MadGraph-Interface)
+    */
+  
+    map<vector<int>,vector < complex<double> > > theHelJamp;
 
   };
 

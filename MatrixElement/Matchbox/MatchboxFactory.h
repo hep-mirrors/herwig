@@ -526,6 +526,12 @@ public:
    * Setup everything
    */
   virtual void setup();
+  
+   /**
+   * The highest multiplicity of legs having virtual contributions.(needed for madgraph) 
+   */
+
+  size_t highestVirt(){return theHighestVirtualsize;}
 
   //@}
 
@@ -960,6 +966,12 @@ private:
    * Produce matrix element corrections, but no NLO
    */
   bool theMECorrectionsOnly;
+
+  /**
+   * The highest multiplicity of legs having virtual contributions.(needed for madgraph) 
+   */
+  
+  int theHighestVirtualsize;
 
   /**
    * Produce matrix element corrections, with LoopSim NLO

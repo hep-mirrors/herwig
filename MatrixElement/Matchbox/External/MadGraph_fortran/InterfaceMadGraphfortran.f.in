@@ -1,0 +1,82 @@
+!MG_InitProc(proc,file_card) 
+!MG_Calculate_wavefunctions(proc, momenta,  hel)
+!MG_Calculate_wavefunctions_born(proc, momenta,  hel)
+!MG_Jamp(proc ,color,amp)
+!MG_Virt(proc ,amp)
+!MG_NCol(proc ,color)
+!MG_vxxxxx(p, n,inc,VC)
+!///////////////////////////////////////////////////////////////////////
+
+
+       subroutine MG_InitProc(proc) bind(c, name="MG_InitProc") 
+         IMPLICIT NONE
+         INTEGER    proc
+MG_InitProctxt
+
+       END
+
+!///////////////////////////////////////////////////////////////////////
+
+       subroutine  MG_Calculate_wavefunctions_virt(proc, momenta,  virt)
+     $   bind(c, name="MG_Calculate_wavefunctions_virt")
+         IMPLICIT NONE
+         REAL*8 momenta(0:40),virt(3)
+         INTEGER proc
+
+MG_CalculateVIRTtxt
+
+       END
+
+
+!///////////////////////////////////////////////////////////////////////
+
+       subroutine  MG_Calculate_wavefunctions_born(proc, momenta,  hel)
+     $   bind(c, name="MG_Calculate_wavefunctions_born")
+         IMPLICIT NONE
+         REAL*8 momenta(0:40)
+         INTEGER hel(0:10),proc
+
+MG_CalculateBORNtxt
+
+       END
+
+!///////////////////////////////////////////////////////////////////////
+
+       subroutine MG_Jamp(proc ,color,amp)
+     $   bind(c, name="MG_Jamp")
+
+         IMPLICIT NONE
+         INTEGER    proc,color
+         REAL*8 amp(0:1)
+         COMPLEX*16 Jamp
+MG_Jamptxt
+
+         amp(0)=real(Jamp)
+         amp(1)=aimag(Jamp)   
+       END
+
+
+
+!///////////////////////////////////////////////////////////////////////
+
+       subroutine MG_NCol(proc ,color)
+     $   bind(c, name="MG_NCol")
+         IMPLICIT NONE
+         INTEGER    proc,color
+MG_NColtxt
+
+       END
+
+!///////////////////////////////////////////////////////////////////////
+
+       subroutine MG_Colour(proc,i,j ,color)
+     $   bind(c, name="MG_Colour")
+         IMPLICIT NONE
+         INTEGER    proc,color,i,j
+MG_ColourMattxt
+
+       END
+
+!///////////////////////////////////////////////////////////////////////
+       
+MG_vxxxxxtxt

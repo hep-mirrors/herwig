@@ -284,6 +284,10 @@ void MatchboxFactory::setup() {
     vector<Ptr<MatchboxMEBase>::ptr> mes;
     for ( vector<vector<string> >::const_iterator p = processes.begin();
 	  p != processes.end(); ++p ) {
+      
+      if(virtualContributions()){
+          theHighestVirtualsize=(*p).size();
+      }
       mes = makeMEs(*p,orderInAlphaS());
       copy(mes.begin(),mes.end(),back_inserter(bornMEs()));
       if ( realContributions() && realEmissionMEs().empty() ) {
@@ -961,7 +965,7 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
      << theOLPProcesses << theExternalAmplitudes
      << theSelectedAmplitudes << theDeselectedAmplitudes
      << theDipoleSet << theReweighters << thePreweighters
-     << theMECorrectionsOnly << theLoopSimCorrections << ranSetup;
+     << theMECorrectionsOnly<< theLoopSimCorrections<<theHighestVirtualsize << ranSetup;
 }
 
 void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
@@ -983,7 +987,7 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
      >> theOLPProcesses >> theExternalAmplitudes
      >> theSelectedAmplitudes >> theDeselectedAmplitudes
      >> theDipoleSet >> theReweighters >> thePreweighters
-     >> theMECorrectionsOnly >> theLoopSimCorrections >> ranSetup;
+     >> theMECorrectionsOnly>> theLoopSimCorrections>>theHighestVirtualsize >> ranSetup;
 }
 
 string MatchboxFactory::startParticleGroup(string name) {
