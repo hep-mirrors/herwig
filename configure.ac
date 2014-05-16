@@ -235,7 +235,6 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/Matchbox/External/MadGraph_fortran/Makefile
                 MatrixElement/Matchbox/External/MadGraph_fortran/MadGraphAmplitudefortran.cc
                 MatrixElement/Matchbox/External/MadGraph_fortran/mg2Matchboxfortran.py
-                MatrixElement/Matchbox/External/MadGraph_fortran/Makefile-MGfortran.in
 		Sampling/Makefile
 		Sampling/CellGrids/Makefile
                 Shower/Makefile
