@@ -46,6 +46,11 @@ public:
 public:
 
   /**
+   * Clear this colour basis
+   */
+  virtual void clear();
+
+  /**
    * Return a map of basis tensor indices to vectors identifying a
    * certain ordering corresponding to the given colour structure. May
    * not be supported by all colour basis implementations.
@@ -78,11 +83,6 @@ public:
   virtual double tMatrixElement(size_t i, size_t a, size_t b,
 				const vector<PDT::Colour>& aBasis,
 				const vector<PDT::Colour>& bBasis) const;
-
-  /**
-   * Return true, if we're running in large-N mode
-   */
-  virtual bool largeN() const { return theLargeN; }
 
   /**
    * Return true, if the colour basis is capable of assigning colour
@@ -153,11 +153,6 @@ private:
    * The color functions object to be used
    */
   mutable Col_functions colorFunctions;
-
-  /**
-   * True, if large-N limit is on.
-   */
-  bool theLargeN;
 
   /**
    * Map legs to known basis vectors.

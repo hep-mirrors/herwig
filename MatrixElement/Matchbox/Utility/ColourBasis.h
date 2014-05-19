@@ -68,6 +68,11 @@ public:
   }
 
   /**
+   * Clear this colour basis
+   */
+  virtual void clear();
+
+  /**
    * Prepare for the given sub process and return the basis
    * dimensionality.
    */

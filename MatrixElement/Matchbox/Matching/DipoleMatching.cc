@@ -51,6 +51,18 @@ CrossSection DipoleMatching::dSigHatDR() const {
 		     dipole()->bornSpectator());
     double ccme2 = 
       dipole()->underlyingBornME()->largeNColourCorrelatedME2(ij,theLargeNBasis);
+
+    // --------------------------------------------------------------------------------
+    cerr << "ccme2(" << ij.first << "," << ij.second
+	 << ") in ";
+    for ( cPDVector::const_iterator p = bornXComb()->mePartonData().begin();
+	  p != bornXComb()->mePartonData().end(); ++p )
+      cerr << (**p).PDGName() << " ";
+    cerr << " : " << ccme2 << " / "
+	 << dipole()->underlyingBornME()->colourCorrelatedME2(ij)
+	 << "\n" << flush;
+    // --------------------------------------------------------------------------------
+
     xme2 = dipole()->me2Avg(ccme2);
   }
 

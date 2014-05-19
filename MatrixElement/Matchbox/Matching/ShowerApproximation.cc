@@ -60,6 +60,7 @@ void ShowerApproximation::setLargeNBasis() {
 			<< Exception::abortnow;
     theLargeNBasis = 
       dipole()->realEmissionME()->matchboxAmplitude()->colourBasis()->cloneMe();
+    theLargeNBasis->clear();
     theLargeNBasis->doLargeN();
   }
 }
