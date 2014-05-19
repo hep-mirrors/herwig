@@ -180,7 +180,9 @@ Energy FFMassiveInvertedTildeKinematics::ptMax() const {
 }
 
 // NOTE: bounds calculated at this step may be too loose
-pair<double,double> FFMassiveInvertedTildeKinematics::zBounds(Energy pt) const {
+pair<double,double> FFMassiveInvertedTildeKinematics::zBounds(Energy pt, Energy hardPt) const {
+
+  hardPt = hardPt == ZERO ? ptMax() : min(hardPt,ptMax());
   
   Energy scale = (bornEmitterMomentum()+bornSpectatorMomentum()).m();
   // masses
@@ -190,11 +192,11 @@ pair<double,double> FFMassiveInvertedTildeKinematics::zBounds(Energy pt) const {
   
   double zp = ( 1.+mui2-mu2+muj2-2.*sqrt(muj2) +
     rootOfKallen(mui2,mu2,sqr(1-sqrt(muj2))) *
-    sqrt( 1.-sqr(pt/ptMax()) ) ) /
+    sqrt( 1.-sqr(pt/hardPt) ) ) /
     ( 2.*sqr(1.-sqrt(muj2)) );
   double zm = ( 1.+mui2-mu2+muj2-2.*sqrt(muj2) -
     rootOfKallen(mui2,mu2,sqr(1-sqrt(muj2))) *
-    sqrt( 1.-sqr(pt/ptMax()) ) ) /
+    sqrt( 1.-sqr(pt/hardPt) ) ) /
     ( 2.*sqr(1.-sqrt(muj2)) );
     
   return make_pair(zm,zp);

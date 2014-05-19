@@ -99,8 +99,9 @@ Energy FFLightInvertedTildeKinematics::ptMax() const {
   return lastScale()/2.;
 }
 
-pair<double,double> FFLightInvertedTildeKinematics::zBounds(Energy pt) const {
-  double s = sqrt(1.-sqr(pt/ptMax()));
+pair<double,double> FFLightInvertedTildeKinematics::zBounds(Energy pt, Energy hardPt) const {
+  hardPt = hardPt == ZERO ? ptMax() : min(hardPt,ptMax());
+  double s = sqrt(1.-sqr(pt/hardPt));
   return make_pair(0.5*(1.-s),0.5*(1.+s));
 }
 

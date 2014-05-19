@@ -129,7 +129,8 @@ Energy FIMassiveInvertedTildeKinematics::ptMax() const {
   return ptmax > 0.*GeV ? ptmax : 0.*GeV;
 }
 
-pair<double,double> FIMassiveInvertedTildeKinematics::zBounds(Energy pt) const {
+pair<double,double> FIMassiveInvertedTildeKinematics::zBounds(Energy pt, Energy hardPt) const {
+  hardPt = hardPt == ZERO ? ptMax() : min(hardPt,ptMax());
   Energy2 mi2 = sqr(realEmitterData()->mass());
   Energy2 m2  = sqr(realEmissionData()->mass());
   Energy2 Mi2 = sqr(bornEmitterData()->mass());
@@ -138,9 +139,9 @@ pair<double,double> FIMassiveInvertedTildeKinematics::zBounds(Energy pt) const {
   Energy2 s = scale * (1.-spectatorX())/spectatorX() +  Mi2;
 
   double zm = .5*( 1.+(mi2-m2)/s - rootOfKallen(s/s,mi2/s,m2/s) *
-		    sqrt( 1.-sqr(pt/ptMax()) ) );
+		    sqrt( 1.-sqr(pt/hardPt) ) );
   double zp = .5*( 1.+(mi2-m2)/s + rootOfKallen(s/s,mi2/s,m2/s) *
-		    sqrt( 1.-sqr(pt/ptMax()) ) );
+		    sqrt( 1.-sqr(pt/hardPt) ) );
   return make_pair(zm, zp);
 
 }

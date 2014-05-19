@@ -68,7 +68,7 @@ public:
   /**
    * Given a pt, return the boundaries on z
    */
-  virtual pair<double,double> zBounds(Energy pt) const;
+  virtual pair<double,double> zBounds(Energy pt, Energy hardPt = ZERO) const;
 
   /**
    * Return true, if this InvertedTildeKinematics object needs to transform
