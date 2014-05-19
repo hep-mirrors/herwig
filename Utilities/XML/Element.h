@@ -75,6 +75,11 @@ namespace XML {
      */
     Element(const Element& other);
 
+    /**
+     * Assignment
+     */
+    Element& operator=(const Element& other);
+
   public:
 
     /**
