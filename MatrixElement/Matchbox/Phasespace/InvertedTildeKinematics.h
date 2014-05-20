@@ -206,6 +206,11 @@ public:
   virtual Energy lastPt() const = 0;
 
   /**
+   * Return the momentum fraction associated to the last splitting.
+   */
+  virtual double lastZ() const = 0;
+
+  /**
    * Return the relevant dipole scale
    */
   virtual Energy lastScale() const;

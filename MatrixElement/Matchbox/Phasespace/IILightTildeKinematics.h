@@ -61,6 +61,11 @@ public:
   virtual Energy lastPt() const;
 
   /**
+   * Return the momentum fraction associated to the last splitting.
+   */
+  virtual double lastZ() const;
+
+  /**
    * Return true, if this TildeKinematics object needs to transform
    * all other particles in the process except the emitter and spectator
    */

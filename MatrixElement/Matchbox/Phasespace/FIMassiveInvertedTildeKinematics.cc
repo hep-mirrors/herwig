@@ -117,6 +117,10 @@ Energy FIMassiveInvertedTildeKinematics::lastPt() const {
 
 }
 
+double FIMassiveInvertedTildeKinematics::lastZ() const {
+  return subtractionParameters()[1];
+}
+
 Energy FIMassiveInvertedTildeKinematics::ptMax() const {
   Energy2 mi2 = sqr(realEmitterData()->mass());
   Energy2 m2  = sqr(realEmissionData()->mass());

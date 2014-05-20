@@ -536,6 +536,13 @@ public:
   }
 
   /**
+   * Return the relevant momentum fractions
+   */
+  double lastZ() const {
+    return splitting() ? theLastSplittingZ : theLastSubtractionZ;
+  }
+
+  /**
    * Return true, if this dipole acts in splitting mode.
    */
   bool splitting() const { return theSplitting; }
@@ -1071,6 +1078,16 @@ private:
    * The last pt as generated from the splitting mapping
    */
   Energy theLastSplittingPt;
+
+  /**
+   * The last z as generated from the tilde mapping
+   */
+  double theLastSubtractionZ;
+
+  /**
+   * The last z as generated from the splitting mapping
+   */
+  double theLastSplittingZ;
 
   /**
    * The shower approximation.

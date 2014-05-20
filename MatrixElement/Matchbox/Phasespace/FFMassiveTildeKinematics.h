@@ -60,6 +60,11 @@ public:
    */
   virtual Energy lastPt() const;
 
+  /**
+   * Return the momentum fraction associated to the last splitting.
+   */
+  virtual double lastZ() const;
+
 public:
   
   /**

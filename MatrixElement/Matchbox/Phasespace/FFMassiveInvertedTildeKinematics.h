@@ -61,6 +61,11 @@ public:
   virtual Energy lastPt() const;
 
   /**
+   * Return the momentum fraction associated to the last splitting.
+   */
+  virtual double lastZ() const;
+
+  /**
    * Return the upper bound on pt
    */
   virtual Energy ptMax() const;

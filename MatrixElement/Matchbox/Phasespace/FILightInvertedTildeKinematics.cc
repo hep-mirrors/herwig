@@ -95,6 +95,10 @@ Energy FILightInvertedTildeKinematics::lastPt() const {
 
 }
 
+double FILightInvertedTildeKinematics::lastZ() const {
+  return subtractionParameters()[1];
+}
+
 Energy FILightInvertedTildeKinematics::ptMax() const {
   double x = spectatorX();
   return sqrt((1.-x)/x)*lastScale()/2.;

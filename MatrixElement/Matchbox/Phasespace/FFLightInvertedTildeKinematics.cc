@@ -95,6 +95,10 @@ Energy FFLightInvertedTildeKinematics::lastPt() const {
 
 }
 
+double FFLightInvertedTildeKinematics::lastZ() const {
+  return subtractionParameters()[1];
+}
+
 Energy FFLightInvertedTildeKinematics::ptMax() const {
   return lastScale()/2.;
 }

@@ -164,6 +164,10 @@ Energy FFMassiveInvertedTildeKinematics::lastPt() const {
 
   return ret;
 }
+
+double FFMassiveInvertedTildeKinematics::lastZ() const {
+  return subtractionParameters()[1];
+}
     
 Energy FFMassiveInvertedTildeKinematics::ptMax() const {
   

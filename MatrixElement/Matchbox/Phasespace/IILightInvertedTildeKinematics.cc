@@ -105,6 +105,12 @@ Energy IILightInvertedTildeKinematics::lastPt() const {
 
 }
 
+double IILightInvertedTildeKinematics::lastZ() const {
+  double x = subtractionParameters()[0];
+  double v = subtractionParameters()[1];
+  return x + v;
+}
+
 Energy IILightInvertedTildeKinematics::ptMax() const {
   double tau = emitterX()*spectatorX();
   return (1.-tau)*lastScale()/(2.*sqrt(tau));

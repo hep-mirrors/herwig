@@ -107,6 +107,12 @@ Energy IFMassiveInvertedTildeKinematics::lastPt() const {
   return sqrt(scale*u*(1.-u)*(1.-x));
 }
 
+double IFMassiveInvertedTildeKinematics::lastZ() const {
+  double x = subtractionParameters()[0];
+  double u = subtractionParameters()[1];
+  return 1. - (1.-x)*(1.-u);
+}
+
 Energy IFMassiveInvertedTildeKinematics::ptMax() const {
   Energy2 scale = 2.*(bornEmitterMomentum()*bornSpectatorMomentum());
   double x = emitterX();

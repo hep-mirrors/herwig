@@ -527,6 +527,7 @@ bool SubtractionDipole::generateTildeKinematics() {
 
   theLastSubtractionScale = theTildeKinematics->lastScale();
   theLastSubtractionPt = theTildeKinematics->lastPt();
+  theLastSubtractionZ = theTildeKinematics->lastZ();
 
   meMomenta().resize(lastHeadXComb().meMomenta().size() - 1);
 
@@ -588,6 +589,7 @@ bool SubtractionDipole::generateRadiationKinematics(const double * r) {
 
   theLastSplittingScale = theInvertedTildeKinematics->lastScale();
   theLastSplittingPt = theInvertedTildeKinematics->lastPt();
+  theLastSplittingZ = theInvertedTildeKinematics->lastZ();
 
   meMomenta().resize(lastHeadXComb().meMomenta().size() + 1);
 
@@ -1127,7 +1129,8 @@ void SubtractionDipole::persistentOutput(PersistentOStream & os) const {
      << lastRealEmissionKey << lastUnderlyingBornKey 
      << theBornEmitter << theBornSpectator << ounit(theLastSubtractionScale,GeV) 
      << ounit(theLastSplittingScale,GeV) << ounit(theLastSubtractionPt,GeV) 
-     << ounit(theLastSplittingPt,GeV) << theShowerApproximation 
+     << ounit(theLastSplittingPt,GeV) << theLastSubtractionZ
+     << theLastSplittingZ << theShowerApproximation 
      << theRealShowerSubtraction << theVirtualShowerSubtraction 
      << theLoopSimSubtraction << theRealEmissionScales;
 }
@@ -1142,7 +1145,8 @@ void SubtractionDipole::persistentInput(PersistentIStream & is, int) {
      >> lastRealEmissionKey >> lastUnderlyingBornKey 
      >> theBornEmitter >> theBornSpectator >> iunit(theLastSubtractionScale,GeV) 
      >> iunit(theLastSplittingScale,GeV) >> iunit(theLastSubtractionPt,GeV) 
-     >> iunit(theLastSplittingPt,GeV) >> theShowerApproximation 
+     >> iunit(theLastSplittingPt,GeV) >> theLastSubtractionZ
+     >> theLastSplittingZ >> theShowerApproximation 
      >> theRealShowerSubtraction >> theVirtualShowerSubtraction 
      >> theLoopSimSubtraction >> theRealEmissionScales;
   lastMatchboxXComb(theLastXComb);
