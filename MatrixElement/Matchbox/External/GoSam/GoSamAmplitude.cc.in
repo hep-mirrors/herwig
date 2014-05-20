@@ -56,14 +56,20 @@ extern "C" void OLP_EvalSubProcess2(int*, double*, double*, double*, double*);
 
 void GoSamAmplitude::signOLP(const string& order, const string& contract) {
 	if(!theCodeExists){
-	  string cmd = "@GOSAMPREFIX@/bin/gosam.py --olp  -o " + contract + "  --config=" + gosamSetupInFileName + " --destination=" + gosamSourcePath + " " + order;
+	  generator()->log() << "\n\n>>> generatintg GoSam amplitudes. This may take some time, please be patient.\n"
+			     << ">>> see gosam-amplitudes.log for details.\n" << flush;
+	  string cmd = "@GOSAMPREFIX@/bin/gosam.py --olp  -o " + contract + "  --config=" + 
+	    gosamSetupInFileName + " --destination=" + gosamSourcePath + " " + order + " > gosam-amplitudes.log 2>&1";
 	  std::system(cmd.c_str());
 	}
 }
 
 bool GoSamAmplitude::buildGoSam() {
 	if(!theCodeExists){
-	  string cmd = "cd " + gosamSourcePath + "; sh autogen.sh FCFLAGS=-g --prefix=" + gosamInstallPath + "; make install";
+	  generator()->log() << "\n\n>>> compiling GoSam amplitudes. This may take some time, please be patient.\n"
+			     << ">>> see " + gosamSourcePath + "/gosam-build.log for details\n\n" << flush;
+	  string cmd = "cd " + gosamSourcePath + " && sh autogen.sh FCFLAGS=-g --prefix=" + 
+	    gosamInstallPath + " > gosam-build.log 2>&1 && make install >> gosam-build.log 2>&1";
 	  std::system(cmd.c_str());
 	}
 	theCodeExists=true;
@@ -321,7 +327,7 @@ void GoSamAmplitude::getids() const {
 
 
 bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
-	cout << "\nWriting the olp-order file." << flush;
+  //cout << "\nWriting the olp-order file." << flush;
 
   string cmd = "";
   char char_cwd[256];
@@ -363,14 +369,13 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
 
   ifstream ifile(contractFileName.c_str());
   if(!ifile){
-    cout << "\nGoSam: Sign the order file." << flush;
+    //cout << "\nGoSam: Sign the order file." << flush;
     signOLP(orderFileName, contractFileName);
 	}
 	
 	if ( !checkOLPContract(contractFileName) ) {
-	  cout << "\n\n!!!!!!!!!!!!!Checking the olp-contract failed!!!!!!!!!!!\n\n" << flush;
-	  assert(0);
-	} else cout << "\nChecked the olp-contract! Everything is OK! Let's build!\n" << flush;
+	  throw Exception() << "failed to start GoSam" << Exception::abortnow;
+	}
 	
 	if (!( DynamicLoader::load(gosamInstallPath+"/lib/libgolem_olp.so") || DynamicLoader::load(gosamInstallPath+"/lib64/libgolem_olp.so"))) buildGoSam();
 	
