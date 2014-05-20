@@ -531,7 +531,7 @@ double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k,
   // j is massive quark
   if( mj2 != ZERO ) {
     assert( abs(j.id()) < 7);
-    res += gammaQuark/CF * log(sjk/Qjk2); // iff j is massive quark and k either massive quark or massless parton (6.21),(6.22)
+    res += gammaQuark/CF * log(sjk/Qjk2); // part common iff j is massive quark and k either massive quark or massless parton (6.21),(6.22)
 
     // k is massive quark (6.21)
     if( mk2 != ZERO ) {
@@ -551,42 +551,43 @@ double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k,
   }
 
   // V_j (j either massless quark (6.23) or gluon (6.24),(6.26))
-
   else {
 
     // k is massless parton
     if( mk == ZERO ) {
-      // only contributes if j is gluon
+      // only contributes if j is gluon (6.26)
       if( j.id() == ParticleID::g ) {
 	// sum over all quark flavours
 	if( !mFSetEmpty )
-	  for( size_t f=0; f<lastBorn()->nHeavyJetVec().size(); ++f ) { // only heavy quarks
+	  for( size_t f=0; f<lastBorn()->nHeavyJetVec().size(); ++f ) { // only heavy quarks in jet (aka g->QQbar at NLO)
 	    Energy2 mF2 = sqr( getParticleData(lastBorn()->nHeavyJetVec()[f])->mass() );
 	    // sum only over quarks which meet special condition
 	    if( sjk <= 4.*sqrt(mF2)*(sqrt(mF2)+mk) )
 	      continue;
 	    double rho1 = sqrt( 1. - 4.*mF2 / sqr(Qjk-mk) );
-	    res += 2./3./CA * ( log((1.+rho1)/2.) - rho1/3.*(3.+sqr(rho1)) - 0.5*log(mF2/Qjk2) );
+// 	    res += 2./3./CA * ( log((1.+rho1)/2.) - rho1/3.*(3.+sqr(rho1)) - 0.5*log(mF2/Qjk2) );
+	    res += 2./3./CA * ( log((1.+rho1)/2.) - rho1/3.*(3.+sqr(rho1)) - 0.5*log(mF2/sjk) );
 	  }
+	  // The last term with Q_{aux} in (6.26) cancels against a similar term in GammaGluon().
       }
     }
 
     // k is massive quark
     else {
       assert( abs(k.id()) < 7);
-      // part common to j massless quark or gluon
+      // part common to j massless quark or gluon (6.23),(6.24)
       res += sqr(pi)/6. - gsl_sf_dilog(sjk/Qjk2);
-      // j is massless (incoming) quark
+      // j is massless quark (6.23)
       if( abs(j.id()) < 7)
 	res += gammaQuark/CF * ( log(sjk/Qjk2) - 2.*log((Qjk-mk)/Qjk) - 2.*mk/(Qjk+mk) );
-      // j is gluon
+      // j is gluon (6.24)
       else if( j.id() == ParticleID::g ) {
 	// part independent of other heavy quark flavours
 	res += gammaGluon/CA * ( log(sjk/Qjk2) - 2.*log((Qjk-mk)/Qjk) - 2.*mk/(Qjk+mk) ) +
 	  (kappa-2./3.) * mk2/sjk * (1./CA*lastBorn()->nLight()-1.) * log(2.*mk/(Qjk+mk));
 	// part containing other heavy quark flavours
 	if( !mFSetEmpty )
-	  for( size_t f=0; f<lastBorn()->nHeavyJetVec().size(); ++f ) { // only heavy quarks
+	  for( size_t f=0; f<lastBorn()->nHeavyJetVec().size(); ++f ) { // only heavy quarks in jet (aka g->QQbar at NLO)
 	    Energy2 mF2 = sqr( getParticleData(lastBorn()->nHeavyJetVec()[f])->mass() );
 	    // sum only over quarks which meet special condition
 	    if( sjk <= 4.*sqrt(mF2)*(sqrt(mF2)+mk) )
@@ -598,6 +599,7 @@ double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k,
 	      1./CA * ( rho2*rho2*rho2*log((rho2-rho1)/(rho2+rho1)) - log((1.-rho1)/(1.+rho1)) -
 	      8.*rho1*mF2/sjk ) * (kappa-2./3.) * mk2/sjk;
 	  }
+	  // The term with Q_{aux} in (6.24) cancels against a similar term in GammaGluon().
       }
     }
   }
