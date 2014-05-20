@@ -374,7 +374,7 @@ double DipoleMIOperator::oneLoopDoublePole() const {
 
       double delta = 0.0;
 
-      if (idj>1) {
+      if (idj>1) { // Involves idk > 1 as well as idk < 2
         delta += ( (**j).id() == ParticleID::g ? CA : CF ) * VsDoublePole(**j,**k);
       }
       else if (idj<2 && idk>1) {
@@ -442,7 +442,7 @@ double DipoleMIOperator::oneLoopSinglePole() const {
 
       Energy2 sjk = 2.*meMomenta()[idj]*meMomenta()[idk];
 
-      if (idj>1) {
+      if (idj>1) { // Involves idk > 1 as well as idk < 2
         delta += ( (**j).id() == ParticleID::g ? CA : CF ) * VsSinglePole(**j,**k,sjk);
         delta += ( (**j).id() == ParticleID::g ? GammaGluonSinglePole() : GammaQuarkSinglePole(**j) );
       }
@@ -463,7 +463,7 @@ double DipoleMIOperator::oneLoopSinglePole() const {
   }
 
   res *= ( - lastBorn()->lastAlphaS() / (2.*pi) );
-  
+
   return res;
 
 }
@@ -666,7 +666,8 @@ double DipoleMIOperator::VsSinglePole(const ParticleData& j, const ParticleData&
   // one mass zero
   else if( mj2 == ZERO || mk2 == ZERO ) {
     Energy2 m2 = sqr(l.mass());
-    res += 1./2.*(1.0 + log(m2/sjk));
+//     res += 1./2.*(1.0 + log(m2/sjk));
+    res += 1./2.*(log(mu2/sjk) + log(m2/sjk));
   }
 
   // no mass zero
