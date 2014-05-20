@@ -262,8 +262,6 @@ void PhasespaceTree::setupMirrored(const Tree2toNDiagram& diag,
       make_pair(-1,-1);
 
   data = diag.allPartons()[pos];
-  
-  //  cerr << "pos= " << pos << " " << data->PDGName() << " " << diag.externalId(pos) << "  next up: " << diag.parent(pos) << " " << diag.children(diag.parent(pos)).second << "\n" << flush;
 
   if ( pos == diag.nSpace() - 1 )
     externalId = 1;

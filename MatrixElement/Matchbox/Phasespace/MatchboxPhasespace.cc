@@ -47,6 +47,7 @@ double MatchboxPhasespace::generateKinematics(const double* r,
   vector<Lorentz5Momentum>::iterator p = momenta.begin() + 2;
 
   double massJacobian = 1.;
+  Energy summ = ZERO;
 
   if ( useMassGenerators() ) {
     Energy gmass = ZERO;
@@ -82,10 +83,18 @@ double MatchboxPhasespace::generateKinematics(const double* r,
       }
       maxMass -= gmass;
       p->setMass(gmass);
+      summ += gmass;
     }
   } else {
-    for ( ; pd != mePartonData().end(); ++pd, ++p )
+    for ( ; pd != mePartonData().end(); ++pd, ++p ) {
+      summ += (**pd).mass();
       p->setMass((**pd).mass());
+    }
+  }
+
+  if ( momenta.size() > 3 && !haveX1X2() ) {
+    if ( summ > (momenta[0]+momenta[1]).m() )
+      return 0.0;
   }
 
   double weight = momenta.size() > 3 ? 

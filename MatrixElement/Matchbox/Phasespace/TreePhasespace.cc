@@ -83,13 +83,14 @@ double TreePhasespace::generateTwoToNKinematics(const double* random,
   map<Ptr<Tree2toNDiagram>::ptr,
       pair <PhasespaceHelpers::PhasespaceTree, PhasespaceHelpers::PhasespaceTree> >::iterator ds =
     lastChannels().begin();
-  advance(ds,(size_t)(random[0]*nchannels));
+  size_t i = (size_t)(random[0]*nchannels);
+  advance(ds,i);
   Ptr<Tree2toNDiagram>::ptr channel = ds->first;
   ++random;
 
   lastPhasespaceInfo.rnd.numbers = random;
   lastPhasespaceInfo.rnd.nRnd = 3*momenta.size() - 10;
-    
+
   try {
     if ( !doMirror )
       lastChannels()[channel].first.generateKinematics(lastPhasespaceInfo,momenta);
@@ -98,7 +99,7 @@ double TreePhasespace::generateTwoToNKinematics(const double* random,
   } catch (Veto) {
     return 0.;
   }
-    
+
   if ( !matchConstraints(momenta) )
     return 0.;
 
