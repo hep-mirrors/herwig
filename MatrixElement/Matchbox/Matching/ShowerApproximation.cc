@@ -25,6 +25,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 #include "Herwig++/MatrixElement/Matchbox/Dipoles/SubtractionDipole.h"
+#include "Herwig++/MatrixElement/Matchbox/Phasespace/InvertedTildeKinematics.h"
 
 using namespace Herwig;
 
@@ -142,7 +143,32 @@ bool ShowerApproximation::isInShowerPhasespace() const {
   if ( !restrictPhasespace() )
     return true;
 
-  return dipole()->lastPt() <= hardScale();
+  InvertedTildeKinematics& kinematics =
+    const_cast<InvertedTildeKinematics&>(*dipole()->invertedTildeKinematics());
+  tcStdXCombPtr tmpreal = kinematics.realXComb();
+  tcStdXCombPtr tmpborn = kinematics.bornXComb();
+  Ptr<SubtractionDipole>::tptr tmpdip = kinematics.dipole();
+
+  Energy hard = hardScale();
+  Energy pt = dipole()->lastPt();
+  double z = dipole()->lastZ();
+
+  pair<double,double> zbounds(0.,1.);
+
+  kinematics.dipole(const_ptr_cast<Ptr<SubtractionDipole>::tptr>(theDipole));
+  kinematics.prepare(realCXComb(),bornCXComb());
+
+  try {
+    zbounds = kinematics.zBounds(pt,hard);
+  } catch(...) {
+    kinematics.dipole(tmpdip);
+    kinematics.prepare(tmpreal,tmpborn);
+    throw;
+  }
+  kinematics.dipole(tmpdip);
+  kinematics.prepare(tmpreal,tmpborn);
+
+  return pt < hard && z > zbounds.first && z < zbounds.second;
 
 }
 

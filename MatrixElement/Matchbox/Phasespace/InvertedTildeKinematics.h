@@ -145,6 +145,16 @@ public:
   }
 
   /**
+   * Return the real xcomb
+   */
+  tcStdXCombPtr realXComb() const { return theRealXComb; }
+
+  /**
+   * Return the Born xcomb
+   */
+  tcStdXCombPtr bornXComb() const { return theBornXComb; }
+
+  /**
    * Set the current dipole
    */
   void dipole(Ptr<SubtractionDipole>::tptr dip) { theDipole = dip; }
