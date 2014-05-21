@@ -68,21 +68,23 @@ bool FrixionePhotonSeparationCut::passCuts(tcCutsPtr parent, const tcPDVector & 
         double dphi = abs(p[i].phi() - p[j].phi());
         if ( dphi > Constants::pi ) dphi = 2.0*Constants::pi - dphi;
         finfo.DeltaR = sqrt(sqr(p[i].eta() - p[j].eta()) + sqr(dphi));
-        finfo.pT = p[j].perp();
-        finfo.f = pow((1-cos(finfo.DeltaR))/(1-cos(theDeltaZero)),theExponentn);
-        partonvec.push_back(finfo);
+	if ( finfo.DeltaR < theDeltaZero ){
+          finfo.pT = p[j].perp();
+          finfo.f = pow((1-cos(finfo.DeltaR))/(1-cos(theDeltaZero)),theExponentn);
+          partonvec.push_back(finfo);
+	}
 
       }
 
       for ( unsigned int j = 0; j < partonvec.size(); ++j ) {
         Energy chidelta=ZERO;
-        for ( unsigned int k = 0; k < partonvec.size(); ++k ) 
-	  if (theCutType == 1) {
+	if (theCutType == 1) {
+          for ( unsigned int k = 0; k < partonvec.size(); ++k ) 
 	    if ( partonvec[k].DeltaR <= partonvec[j].DeltaR ) chidelta += partonvec[k].pT;
-	  }
-	  else if (theCutType == 2) {
-            if ( partonvec[k].DeltaR < theDeltaZero ) chidelta += partonvec[k].pT;
-	  }
+	}
+	else if (theCutType == 2) {
+          chidelta = partonvec[j].pT;
+	}
         if ( !parent->isLessThan<CutTypes::Momentum>(chidelta,p[i].perp() * theEfficiency * partonvec[j].f,weight) ) {
 	  parent->lastCutWeight(0.0);
 	  return false;
