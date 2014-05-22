@@ -41,28 +41,41 @@ IBPtr QTildeMatching::fullclone() const {
 }
 
 Energy QTildeMatching::hardScale() const {
-  // should be the same as for the dipole shower but needs checking;
-  // NB this is the pt veto scale as the `hard' scale is anyway fixed
-  return ShowerApproximation::hardScale();
+  if ( !bornCXComb()->mePartonData()[0]->coloured() &&
+       !bornCXComb()->mePartonData()[1]->coloured() ) {
+    Energy maxPt = (bornCXComb()->meMomenta()[0] + bornCXComb()->meMomenta()[1]).m();
+    maxPt *= hardScaleFactor();
+    return maxPt;
+  }
+  Energy maxPt = -1.0*GeV;
+  vector<Lorentz5Momentum>::const_iterator p = 
+    bornCXComb()->meMomenta().begin() + 2;
+  cPDVector::const_iterator pp = 
+    bornCXComb()->mePartonData().begin() + 2;
+  for ( ; p != bornCXComb()->meMomenta().end(); ++p, ++pp )
+    if ( (**pp).coloured() )
+      maxPt = max(maxPt,p->mt());
+  if ( maxPt < ZERO )
+    maxPt = (bornCXComb()->meMomenta()[0] + bornCXComb()->meMomenta()[1]).m();
+  maxPt *= hardScaleFactor();
+  return maxPt;
 }
 
-double QTildeMatching::hardScaleProfile(Energy, Energy) const {
-  // this needs support in the shower - leave as is for the time being
-  return 1.;
+double QTildeMatching::hardScaleProfile(Energy Q, Energy q) const {
+  if ( q <= Q )
+    return 1.;
+  return 0.;
 }
 
 bool QTildeMatching::isInShowerPhasespace() const {
 
-  if ( !isAboveCutoff() )
-    return false;
-
-  if ( dipole()->lastPt() > hardScale() )
-    return false;
+  assert(theQTildeSudakov->cutOffOption() == 0 && "implementation only provided for default cutoff");
 
   Energy qtildeHard = ZERO;
 
   pair<Energy2,double> vars = getShowerVariables();
   Energy qtilde = sqrt(vars.first);
+  double z = vars.second;
 
   // FF
   if ( dipole()->bornEmitter() > 1 && dipole()->bornSpectator() > 1 ) {
@@ -87,6 +100,8 @@ bool QTildeMatching::isInShowerPhasespace() const {
       theQTildeFinder->
       calculateInitialFinalScales(bornCXComb()->meMomenta()[dipole()->bornEmitter()],
 				  bornCXComb()->meMomenta()[dipole()->bornSpectator()],false).first;
+    if ( z < (dipole()->bornEmitter() == 0 ? bornCXComb()->lastX1() : bornCXComb()->lastX2()) )
+      return false;
   }
 
   // II
@@ -95,9 +110,28 @@ bool QTildeMatching::isInShowerPhasespace() const {
       theQTildeFinder->
       calculateInitialInitialScales(bornCXComb()->meMomenta()[dipole()->bornEmitter()],
 				    bornCXComb()->meMomenta()[dipole()->bornSpectator()]).first;
+    if ( z < (dipole()->bornEmitter() == 0 ? bornCXComb()->lastX1() : bornCXComb()->lastX2()) )
+      return false;
   }
 
-  return qtilde <= qtildeHard;
+
+  Energy Qg = theQTildeSudakov->kinScale();
+  Energy2 pt2 = ZERO;
+  if ( dipole()->bornEmitter() > 1 ) {
+    Energy mu = max(Qg,realCXComb()->meMomenta()[dipole()->realEmitter()].mass());
+    if ( bornCXComb()->mePartonData()[dipole()->bornEmitter()]->id() == ParticleID::g )
+      pt2 = sqr(z*(1.-z)*qtilde) - sqr(mu);
+    else
+      pt2 = sqr(z*(1.-z)*qtilde) - sqr((1.-z)*mu) - z*sqr(Qg);
+  }
+  if ( dipole()->bornEmitter() < 2 ) {
+    pt2 = sqr((1.-z)*qtilde) - z*sqr(Qg);
+  }
+
+  if ( pt2 < ZERO )
+    return false;
+
+  return qtilde <= qtildeHard && sqrt(pt2) < hardScale();
 
 }
 
@@ -109,15 +143,14 @@ bool QTildeMatching::isAboveCutoff() const {
   Energy Qg = theQTildeSudakov->kinScale();
   if ( dipole()->bornEmitter() > 1 ) {
     Energy mu = max(Qg,realCXComb()->meMomenta()[dipole()->realEmitter()].mass());
-    if ( abs(realCXComb()->mePartonData()[dipole()->realEmission()]->id()) < 7 &&
-	 bornCXComb()->mePartonData()[dipole()->bornEmitter()]->id() == ParticleID::g )
-      mu = realCXComb()->meMomenta()[dipole()->realEmitter()].mass();
-    return sqr(z*(1.-z)*qtilde) >= sqr((1.-z)*mu)+z*sqr(Qg);
+    if ( bornCXComb()->mePartonData()[dipole()->bornEmitter()]->id() == ParticleID::g )
+      return sqr(z*(1.-z)*qtilde) - sqr(mu) >= ZERO;
+    else
+      return sqr(z*(1.-z)*qtilde) - sqr((1.-z)*mu) - z*sqr(Qg) >= ZERO;
   }
   if ( dipole()->bornEmitter() < 2 ) {
     return
-      z <= 1.+sqr(Qg)/(2.*sqr(qtilde)) - sqrt(sqr(1.+sqr(Qg)/(2.*sqr(qtilde)))-1.) &&
-      z >= (dipole()->bornEmitter() == 0 ? bornCXComb()->lastX1() : bornCXComb()->lastX2());
+      sqr((1.-z)*qtilde) - z*sqr(Qg) >= ZERO;
   }
   return false;
 }
@@ -157,7 +190,22 @@ CrossSection QTildeMatching::dSigHatDR() const {
 
   xme2 *= bornPDF;
 
-  xme2 *= hardScaleProfile(hardScale(),dipole()->lastPt());
+  Energy qtilde = sqrt(vars.first);
+  double z = vars.second;
+  Energy2 pt2 = ZERO;
+  Energy Qg = theQTildeSudakov->kinScale();
+  if ( dipole()->bornEmitter() > 1 ) {
+    Energy mu = max(Qg,realCXComb()->meMomenta()[dipole()->realEmitter()].mass());
+    if ( bornCXComb()->mePartonData()[dipole()->bornEmitter()]->id() == ParticleID::g )
+      pt2 = sqr(z*(1.-z)*qtilde) - sqr(mu);
+    else
+      pt2 = sqr(z*(1.-z)*qtilde) - sqr((1.-z)*mu) - z*sqr(Qg);
+  }
+  if ( dipole()->bornEmitter() < 2 ) {
+    pt2 = sqr((1.-z)*qtilde) - z*sqr(Qg);
+  }
+  assert(pt2 >= ZERO);
+  xme2 *= hardScaleProfile(hardScale(),sqrt(pt2));
 
   CrossSection res = 
     sqr(hbarc) * 
@@ -178,34 +226,61 @@ double QTildeMatching::me2() const {
 
 pair<Energy2,double> QTildeMatching::getShowerVariables() const {
 
-  Energy2 qtilde2 = ZERO;
-  double z = 1. -
-    (bornCXComb()->meMomenta()[dipole()->bornSpectator()]*
-     realCXComb()->meMomenta()[dipole()->realEmission()]) / 
-    (bornCXComb()->meMomenta()[dipole()->bornSpectator()]*
-     bornCXComb()->meMomenta()[dipole()->bornEmitter()]);
+  Lorentz5Momentum n;
+  Energy2 Q2 = ZERO;
 
-  // final state branching
+  const Lorentz5Momentum& pb = bornCXComb()->meMomenta()[dipole()->bornEmitter()];
+  const Lorentz5Momentum& pc = bornCXComb()->meMomenta()[dipole()->bornSpectator()];
+
   if ( dipole()->bornEmitter() > 1 ) {
-    // final state quark quark branching
-    if ( abs(bornCXComb()->mePartonData()[dipole()->bornEmitter()]->id()) < 7 ) {
-      qtilde2 = 
-	sqr(dipole()->lastPt())/sqr(z*(1.-z)) +
-	sqr(bornCXComb()->mePartonData()[dipole()->bornEmitter()]->mass())/sqr(z);
-    }
-    // final state gluon branching
-    if ( bornCXComb()->mePartonData()[dipole()->bornEmitter()]->id() == ParticleID::g ) {
-      qtilde2 = 
-	(sqr(dipole()->lastPt()) +
-	 sqr(realCXComb()->mePartonData()[dipole()->realEmitter()]->mass()))/sqr(z*(1.-z));
-    }
+    Q2 = (pb+pc).m2();
+  } else {
+    Q2 = -(pb-pc).m2();
   }
 
-  // initial state branching
-  if ( dipole()->bornEmitter() < 2 ) {
-    qtilde2 =
-      sqr(dipole()->lastPt())/sqr(z*(1.-z));
+  if ( dipole()->bornEmitter() > 1 && dipole()->bornSpectator() > 1 ) {
+    double b = sqr(bornCXComb()->meMomenta()[dipole()->bornEmitter()].m())/Q2;
+    double c = sqr(bornCXComb()->meMomenta()[dipole()->bornSpectator()].m())/Q2;
+    double lambda = sqrt(1.+sqr(b)+sqr(c)-2.*b-2.*c-2.*b*c);
+    n = (1.-0.5*(1.-b+c-lambda))*pc - 0.5*(1.-b+c-lambda)*pb;
   }
+
+  if ( dipole()->bornEmitter() > 1 && dipole()->bornSpectator() < 2 ) {
+    n = bornCXComb()->meMomenta()[dipole()->bornSpectator()];
+  }
+
+  if ( dipole()->bornEmitter() < 2 && dipole()->bornSpectator() > 1 ) {
+    double c = sqr(bornCXComb()->meMomenta()[dipole()->bornSpectator()].m())/Q2;
+    n = (1.+c)*pc - c*pb;
+  }
+
+  if ( dipole()->bornEmitter() < 2 && dipole()->bornSpectator() < 2 ) {
+    n = bornCXComb()->meMomenta()[dipole()->bornSpectator()];
+  }
+
+  assert(abs(n.m()/GeV) < 1e-9);
+
+  double z = 0.0;
+
+  if ( dipole()->bornEmitter() > 1 ) {
+    z = 1. - 
+    (n*realCXComb()->meMomenta()[dipole()->realEmission()])/
+    (n*bornCXComb()->meMomenta()[dipole()->bornEmitter()]);
+  } else {
+    z = 1. - 
+    (n*realCXComb()->meMomenta()[dipole()->realEmission()])/
+    (n*realCXComb()->meMomenta()[dipole()->realEmitter()]);
+  }
+
+  Energy2 qtilde2 = ZERO;
+
+  if ( dipole()->bornEmitter() > 1 ) {
+    qtilde2 = (Q2 - bornCXComb()->meMomenta()[dipole()->bornEmitter()].m2())/(z*(1.-z));
+  } else {
+    qtilde2 = (Q2 + bornCXComb()->meMomenta()[dipole()->bornEmitter()].m2())/(1.-z);
+  }
+
+  assert(qtilde2 >= ZERO && z >= 0.0 && z <= 1.0);
 
   return make_pair(qtilde2,z);
 
