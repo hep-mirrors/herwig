@@ -63,7 +63,6 @@ bool QTildeMatching::isInShowerPhasespace() const {
 
   pair<Energy2,double> vars = getShowerVariables();
   Energy qtilde = sqrt(vars.first);
-  double z = vars.second;
 
   // FF
   if ( dipole()->bornEmitter() > 1 && dipole()->bornSpectator() > 1 ) {
@@ -88,8 +87,6 @@ bool QTildeMatching::isInShowerPhasespace() const {
       theQTildeFinder->
       calculateInitialFinalScales(bornCXComb()->meMomenta()[dipole()->bornEmitter()],
 				  bornCXComb()->meMomenta()[dipole()->bornSpectator()],false).first;
-    if ( z < (dipole()->bornEmitter() == 0 ? bornCXComb()->lastX1() : bornCXComb()->lastX2()) )
-      return false;
   }
 
   // II
@@ -98,8 +95,6 @@ bool QTildeMatching::isInShowerPhasespace() const {
       theQTildeFinder->
       calculateInitialInitialScales(bornCXComb()->meMomenta()[dipole()->bornEmitter()],
 				    bornCXComb()->meMomenta()[dipole()->bornSpectator()]).first;
-    if ( z < (dipole()->bornEmitter() == 0 ? bornCXComb()->lastX1() : bornCXComb()->lastX2()) )
-      return false;
   }
 
   return qtilde <= qtildeHard;
@@ -121,7 +116,8 @@ bool QTildeMatching::isAboveCutoff() const {
   }
   if ( dipole()->bornEmitter() < 2 ) {
     return
-      z <= 1.+sqr(Qg)/(2.*sqr(qtilde)) - sqrt(sqr(1.+sqr(Qg)/(2.*sqr(qtilde)))-1.);
+      z <= 1.+sqr(Qg)/(2.*sqr(qtilde)) - sqrt(sqr(1.+sqr(Qg)/(2.*sqr(qtilde)))-1.) &&
+      z >= (dipole()->bornEmitter() == 0 ? bornCXComb()->lastX1() : bornCXComb()->lastX2());
   }
   return false;
 }
