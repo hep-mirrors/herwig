@@ -733,7 +733,7 @@ double DipoleMPKOperator::Kscriptgg_q(Energy2 sja, Energy2 mj2) const {
   double muQ2 = mj2/sja;
   double res = 0.0;
 
-  // + CA/CF*Kscriptqg_q(sja,mj2)
+  // CA/CF*Kscriptqg_q(sja,mj2) contribution
   double factor = 0.0;
   if ( z > x ) {
     factor += 1./z * PDFxByz(parton) * (
@@ -741,9 +741,12 @@ double DipoleMPKOperator::Kscriptgg_q(Energy2 sja, Energy2 mj2) const {
   }
   res += CA/CF * factor;
 
-  // + Kscriptqq_q(sja,mj2)
+  // Kscriptqq_q(sja,mj2) contribution
   res += 2. * softLog(parton) + 
-    Ja_gQplus(muQ2) + 
+    // Ja_gQplus(muQ2) +
+    // The above line (+ Ja_gQplus(muQ2)) causes an error message "Assertion 'abs(parton->id()<7)' failed" in line 668 in DipoleMPKOperator::Ja_gQplus().
+    // Since here Kscriptqq_q() is used (i.e. a (aa'_j)=(qq_q) contribution) but we're actually using it in a (aa'_j)=(gg_q) contribution, we should, for
+    // the usage at hand, rather encode it separately here -> See about 10 lines below.
     2. * gammaSoft2(muQ2) - 
     gammaQuark/CF * PDFx(parton) + 
     ( muQ2*log(muQ2/(1.+muQ2)) + 1./2.*(muQ2/(1.+muQ2)) ) * PDFx(parton);
@@ -751,7 +754,13 @@ double DipoleMPKOperator::Kscriptgg_q(Energy2 sja, Energy2 mj2) const {
     res += 1./z * PDFxByz(parton) * (
       -2. * log(2.-z)/(1.-z) );
   }
-    
+
+  // Ja_gQplus(muQ2) term from the Kscriptqq_q(sja,mj2) contribution
+  res += -1. * PDFx(parton) * ( (1.-z)/(2.*(1.-z-muQ2)*(1.-z-muQ2)) - 2./(1.-z)*(1.+log((1.-z+muQ2)/(1.+muQ2))) );
+  if ( z > x ) {
+    res += 1./z * PDFxByz(parton) * ( (1.-z)/(2.*(1.-z-muQ2)*(1.-z-muQ2)) - 2./(1.-z)*(1.+log((1.-z+muQ2)/(2.-z+muQ2))) );
+  }
+
   return res;
 
 }
