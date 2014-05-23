@@ -292,34 +292,35 @@ double DipoleMIOperator::me2() const {
   // general. So far proceed similarly to the massless case here (no DR though),
   // however betaZero contains not only the light flavours (see setXComb()) now,
   // and also consider arXiv::hep-ph/0011222v3 eq.(27).
-  Energy2 muR2 = 
-    lastBorn()->renormalizationScale()*
-    sqr(lastBorn()->renormalizationScaleFactor());
-  if ( muR2 != mu2 ) {
-    // throw InitException() << "DipoleMIOperator::me2(): muR2 != mu2. Scale dependence restoration for alpha_s not yet understood in the massive case. Please use MatchboxSHatScale as renormalization scale for now.";
-    res -=
-      betaZero *
-      lastBorn()->orderInAlphaS() * 
-      log(muR2/mu2) * lastBorn()->me2();
-      for ( cPDVector::const_iterator j = mePartonData().begin();
-            j != mePartonData().end(); ++j ) {
-        if ( !(**j).coloured() ) continue;
-        res += 
-          ( (**j).id()==ParticleID::g ? gammaGluon-1./3.*lastBorn()->nHeavyJetVec().size() : gammaQuark ) * 
-          log(muR2/mu2) * lastBorn()->me2();
-      }
-  }
 
 //   Energy2 muR2 = 
 //     lastBorn()->renormalizationScale()*
 //     sqr(lastBorn()->renormalizationScaleFactor());
 //   if ( muR2 != mu2 ) {
+//     // throw InitException() << "DipoleMIOperator::me2(): muR2 != mu2. Scale dependence restoration for alpha_s not yet understood in the massive case. Please use MatchboxSHatScale as renormalization scale for now.";
 //     res -=
 //       betaZero *
-//       lastBorn()->orderInAlphaS() * log(muR2/mu2) *
-//       lastBorn()->me2();
+//       lastBorn()->orderInAlphaS() * 
+//       log(muR2/mu2) * lastBorn()->me2();
+//       for ( cPDVector::const_iterator j = mePartonData().begin();
+//             j != mePartonData().end(); ++j ) {
+//         if ( !(**j).coloured() ) continue;
+//         res += 
+//           ( (**j).id()==ParticleID::g ? gammaGluon-1./3.*lastBorn()->nHeavyJetVec().size() : gammaQuark ) * 
+//           log(muR2/mu2) * lastBorn()->me2();
+//       }
 //   }
-// 
+
+  Energy2 muR2 = 
+    lastBorn()->renormalizationScale()*
+    sqr(lastBorn()->renormalizationScaleFactor());
+  if ( muR2 != mu2 ) {
+    res -=
+      betaZero *
+      lastBorn()->orderInAlphaS() * log(muR2/mu2) *
+      lastBorn()->me2();
+  }
+
 //   // include the finite renormalization for DR here; ATTENTION this
 //   // has to be mentioned in the manual!  see hep-ph/9305239 for
 //   // details; this guarantees an expansion in alpha_s^\bar{MS} when

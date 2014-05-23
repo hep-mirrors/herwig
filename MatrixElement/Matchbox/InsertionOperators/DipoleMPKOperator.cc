@@ -665,7 +665,7 @@ double DipoleMPKOperator::Pgg() const {
 //////////////////////////////////////////////////////////////////////
 
 double DipoleMPKOperator::Ja_gQplus(double muQ2) const {
-  assert(abs(parton->id()) < 7);
+//   assert(abs(parton->id()) < 7);
   double res = 
     -1. * PDFx(parton) * ( (1.-z)/(2.*(1.-z-muQ2)*(1.-z-muQ2)) - 2./(1.-z)*(1.+log((1.-z+muQ2)/(1.+muQ2))) );
   if ( z > x ) {
@@ -675,7 +675,7 @@ double DipoleMPKOperator::Ja_gQplus(double muQ2) const {
 }
 
 double DipoleMPKOperator::gammaSoft2(double muQ2) const {
-  assert(abs(parton->id()) < 7);
+//   assert(abs(parton->id()) < 7);
   double res = 
     (1./(1.-z)) * ( -1. * PDFx(parton) * 2. * log( 1./(1.+muQ2) ) );
   if ( z > x ) {
@@ -743,22 +743,13 @@ double DipoleMPKOperator::Kscriptgg_q(Energy2 sja, Energy2 mj2) const {
 
   // Kscriptqq_q(sja,mj2) contribution
   res += 2. * softLog(parton) + 
-    // Ja_gQplus(muQ2) +
-    // The above line (+ Ja_gQplus(muQ2)) causes an error message "Assertion 'abs(parton->id()<7)' failed" in line 668 in DipoleMPKOperator::Ja_gQplus().
-    // Since here Kscriptqq_q() is used (i.e. a (aa'_j)=(qq_q) contribution) but we're actually using it in a (aa'_j)=(gg_q) contribution, we should, for
-    // the usage at hand, rather encode it separately here -> See about 10 lines below.
+    Ja_gQplus(muQ2) +
     2. * gammaSoft2(muQ2) - 
     gammaQuark/CF * PDFx(parton) + 
     ( muQ2*log(muQ2/(1.+muQ2)) + 1./2.*(muQ2/(1.+muQ2)) ) * PDFx(parton);
   if ( z > x ) {
     res += 1./z * PDFxByz(parton) * (
       -2. * log(2.-z)/(1.-z) );
-  }
-
-  // Ja_gQplus(muQ2) term from the Kscriptqq_q(sja,mj2) contribution
-  res += -1. * PDFx(parton) * ( (1.-z)/(2.*(1.-z-muQ2)*(1.-z-muQ2)) - 2./(1.-z)*(1.+log((1.-z+muQ2)/(1.+muQ2))) );
-  if ( z > x ) {
-    res += 1./z * PDFxByz(parton) * ( (1.-z)/(2.*(1.-z-muQ2)*(1.-z-muQ2)) - 2./(1.-z)*(1.+log((1.-z+muQ2)/(2.-z+muQ2))) );
   }
 
   return res;

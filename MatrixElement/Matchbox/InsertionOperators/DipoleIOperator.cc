@@ -61,6 +61,26 @@ void DipoleIOperator::setXComb(tStdXCombPtr xc) {
   }
 }
 
+// void DipoleIOperator::setXComb(tStdXCombPtr xc) {
+//   MatchboxInsertionOperator::setXComb(xc);
+//   if ( CA < 0. ) {
+//     CA = SM().Nc();
+//     CF = (SM().Nc()*SM().Nc()-1.0)/(2.*SM().Nc());
+//     gammaQuark = (3./2.)*CF;
+//     // gammaGluon = (11./6.)*CA - (1./3.)*lastBorn()->nLight();
+//     gammaGluon = (11./6.)*CA - (1./3.)*lastBorn()->nLightJetVec().size();
+//     // betaZero = gammaGluon;
+//     betaZero = (11./6.)*CA - (1./3.)*(lastBorn()->nLightJetVec().size()+lastBorn()->nHeavyJetVec().size());
+//     KQuark = (7./2.-sqr(pi)/6.)*CF;
+//     // KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*lastBorn()->nLight();
+//     KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*lastBorn()->nLightJetVec().size();
+//     if ( isDR() ) {
+//       gammaQuark -= CF/2.;
+//       gammaGluon -= CA/6.;
+//     }
+//   }
+// }
+
 // bool DipoleIOperator::apply(const cPDVector& pd) const {
 //   bool first = false;
 //   bool second = false;
