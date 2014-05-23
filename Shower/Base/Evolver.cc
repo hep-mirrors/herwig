@@ -33,6 +33,10 @@
 #include "Herwig++/Shower/ShowerHandler.h" 
 #include "ThePEG/Utilities/DescribeClass.h"
 
+#include "Herwig++/MatrixElement/Matchbox/Base/SubtractedME.h"
+#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
+#include "ThePEG/Handlers/StandardXComb.h"
+
 using namespace Herwig;
 
 DescribeClass<Evolver,Interfaced>
@@ -52,7 +56,8 @@ void Evolver::persistentOutput(PersistentOStream & os) const {
      << _limitEmissions
      << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << ounit(_iptmax,GeV) 
      << _vetoes << _hardonly << _trunc_Mode << _hardEmissionMode 
-     << _colourEvolutionMethod << _reconOpt << _hardScaleFactor;
+     << _colourEvolutionMethod << _reconOpt << _hardScaleFactor
+     << isMCatNLOSEvent << isMCatNLOHEvent;
 }
 
 void Evolver::persistentInput(PersistentIStream & is, int) {
@@ -61,7 +66,8 @@ void Evolver::persistentInput(PersistentIStream & is, int) {
      >> _limitEmissions
      >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> iunit(_iptmax,GeV) 
      >> _vetoes >> _hardonly >> _trunc_Mode >> _hardEmissionMode
-     >> _colourEvolutionMethod >> _reconOpt >> _hardScaleFactor;
+     >> _colourEvolutionMethod >> _reconOpt >> _hardScaleFactor
+     >> isMCatNLOSEvent >> isMCatNLOHEvent;
 }
 
 void Evolver::Init() {
@@ -378,6 +384,45 @@ void Evolver::setupMaximumScales(ShowerTreePtr hard,
 }
 
 void Evolver::showerHardProcess(ShowerTreePtr hard, XCPtr xcomb) {
+
+
+  isMCatNLOSEvent = false;
+  isMCatNLOHEvent = false;
+
+  Ptr<SubtractedME>::tptr subme;
+  Ptr<MatchboxMEBase>::tptr me;
+
+  Ptr<StandardXComb>::ptr sxc = dynamic_ptr_cast<Ptr<StandardXComb>::ptr>(xcomb);
+
+  if ( sxc ) {
+    subme = dynamic_ptr_cast<Ptr<SubtractedME>::tptr>(sxc->matrixElement());
+    me = dynamic_ptr_cast<Ptr<MatchboxMEBase>::tptr>(sxc->matrixElement());
+  }
+
+  if ( subme ) {
+    if ( subme->showerApproximation() ) {
+      // don't do this for POWHEG-type corrections
+      if ( !subme->showerApproximation()->needsSplittingGenerator() ) {
+	theShowerApproximation = subme->showerApproximation();
+	if ( subme->realShowerSubtraction() )
+	  isMCatNLOHEvent = true;
+	else if ( subme->virtualShowerSubtraction() )
+	  isMCatNLOSEvent = true;
+      }
+    }
+  } else if ( me ) {
+    if ( me->factory()->showerApproximation() ) {
+      if ( !subme->showerApproximation()->needsSplittingGenerator() ) {
+	theShowerApproximation = me->factory()->showerApproximation();
+	isMCatNLOSEvent = true;
+      }
+    }
+  }
+
+  if ( theShowerApproximation ) {
+    _hardScaleFactor = theShowerApproximation->hardScaleFactor();
+  }
+
   _hardme = HwMEBasePtr();
   // extract the matrix element
   tStdXCombPtr lastXC = dynamic_ptr_cast<tStdXCombPtr>(xcomb);

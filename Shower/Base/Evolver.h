@@ -26,6 +26,7 @@
 #include "Evolver.fh"
 #include "Herwig++/MatrixElement/HwMEBase.h"
 #include "Herwig++/Decay/HwDecayerBase.h"
+#include "Herwig++/MatrixElement/Matchbox/Matching/ShowerApproximation.h"
 
 namespace Herwig {
 
@@ -679,6 +680,21 @@ private:
    * A factor to multiply the hard veto scale
    */
   double _hardScaleFactor;
+
+  /**
+   * True, if Matchbox MC@NLO S-event
+   */
+  bool isMCatNLOSEvent;
+
+  /**
+   * True, if matchbox MC@NLO H-event
+   */
+  bool isMCatNLOHEvent;
+
+  /**
+   * The shower approximation to provide the hard scale profile
+   */
+  Ptr<ShowerApproximation>::tptr theShowerApproximation;
 
 };
 

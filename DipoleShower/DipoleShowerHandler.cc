@@ -100,16 +100,21 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr, Energy optCutoff) {
 
       if ( subme ) {
 	if ( subme->showerApproximation() ) {
-	  theShowerApproximation = subme->showerApproximation();
-	  if ( subme->realShowerSubtraction() )
-	    isMCatNLOHEvent = true;
-	  else if ( subme->virtualShowerSubtraction() )
-	    isMCatNLOSEvent = true;
+	  // don't do this for POWHEG-type corrections
+	  if ( !subme->showerApproximation()->needsSplittingGenerator() ) {
+	    theShowerApproximation = subme->showerApproximation();
+	    if ( subme->realShowerSubtraction() )
+	      isMCatNLOHEvent = true;
+	    else if ( subme->virtualShowerSubtraction() )
+	      isMCatNLOSEvent = true;
+	  }
 	}
       } else if ( me ) {
 	if ( me->factory()->showerApproximation() ) {
-	  theShowerApproximation = me->factory()->showerApproximation();
-	  isMCatNLOSEvent = true;
+	  if ( !subme->showerApproximation()->needsSplittingGenerator() ) {
+	    theShowerApproximation = me->factory()->showerApproximation();
+	    isMCatNLOSEvent = true;
+	  }
 	}
       }
 
