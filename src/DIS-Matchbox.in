@@ -132,7 +132,7 @@ cd /Herwig/MatrixElements/Matchbox
 # set DISFactory:ShowerApproximation MEMatching
 # set MECorrectionHandler:Factory DISFactory
 # cd /Herwig/Generators
-# insert DISGenerator:EventHandler:PostSubProcessHandlers[0] MECorrectionHandler
+# insert DISGenerator:EventHandler:PostSubProcessHandlers[0] /Herwig/MatrixElements/Matchbox/MECorrectionHandler
 # cd /Herwig/MatrixElements/Matchbox
 
 #>>>>>>>>>> switch to plain (N)LO

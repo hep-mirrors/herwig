@@ -125,7 +125,7 @@ cd /Herwig/MatrixElements/Matchbox
 # set EEFactory:ShowerApproximation MEMatching
 # set MECorrectionHandler:Factory EEFactory
 # cd /Herwig/Generators
-# insert LEPGenerator:EventHandler:PostSubProcessHandlers[0] MECorrectionHandler
+# insert LEPGenerator:EventHandler:PostSubProcessHandlers[0] /Herwig/MatrixElements/Matchbox/MECorrectionHandler
 # cd /Herwig/MatrixElements/Matchbox
 
 #>>>>>>>>>> switch to plain (N)LO
