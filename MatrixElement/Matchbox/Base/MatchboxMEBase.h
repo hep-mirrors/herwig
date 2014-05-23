@@ -622,7 +622,7 @@ public:
     /**
      * Write to file.
      */
-    void dump(const std::string& prefix, 
+    void dump(const std::string& folder, const std::string& prefix,
 	      const cPDVector& proc) const;
 
     /**
