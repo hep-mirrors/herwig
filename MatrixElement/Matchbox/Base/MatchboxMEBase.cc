@@ -650,13 +650,13 @@ void MatchboxMEBase::AccuracyHistogram::book(double a, double b) {
   bin->second += 1.;
 }
 
-void MatchboxMEBase::AccuracyHistogram::dump(const std::string& prefix, 
+void MatchboxMEBase::AccuracyHistogram::dump(const std::string& folder, const std::string& prefix,
 					     const cPDVector& proc) const {
   ostringstream fname("");
   for ( cPDVector::const_iterator p = proc.begin();
 	p != proc.end(); ++p )
     fname << (**p).PDGName();
-  ofstream out((prefix+fname.str()+".dat").c_str());
+  ofstream out((folder+"/"+prefix+fname.str()+".dat").c_str());
   out << "# same sign : " << sameSign << " opposite sign : "
       << oppositeSign << " nans : " << nans 
       << " overflow : " << overflow
@@ -674,6 +674,13 @@ void MatchboxMEBase::AccuracyHistogram::dump(const std::string& prefix,
 	  << "\n" << flush;
     }
   }
+  ofstream gpout((folder+"/"+prefix+fname.str()+".gp").c_str());
+  gpout << "set terminal png\n"
+      << "set xlabel 'accuracy of pole cancellation [decimal places]'\n"
+      << "set ylabel 'counts\n"
+      << "set xrange [-20:0]\n"
+      << "set output '" << prefix << fname.str() << ".png'\n"
+      << "plot '" << prefix << fname.str() << ".dat' using (0.5*($1+$2)):3 with linespoints pt 7 ps 1 not";
 }
 
 void MatchboxMEBase::AccuracyHistogram::persistentOutput(PersistentOStream& os) const {
@@ -698,8 +705,8 @@ void MatchboxMEBase::logPoles() const {
     res2i += (**v).oneLoopDoublePole();
     res1i += (**v).oneLoopSinglePole();
   }
-  epsilonSquarePoleHistograms[mePartonData()].book(res2me,res2i);
-  epsilonPoleHistograms[mePartonData()].book(res1me,res1i);
+  if (res2me != 0.0 || res2i != 0.0) epsilonSquarePoleHistograms[mePartonData()].book(res2me,res2i);
+  if (res1me != 0.0 || res1i != 0.0) epsilonPoleHistograms[mePartonData()].book(res1me,res1i);
 }
 
 bool MatchboxMEBase::haveOneLoop() const {
@@ -1353,12 +1360,12 @@ void MatchboxMEBase::dofinish() {
   for ( map<cPDVector,AccuracyHistogram>::const_iterator
 	  b = epsilonSquarePoleHistograms.begin();
 	b != epsilonSquarePoleHistograms.end(); ++b ) {
-    b->second.dump(factory()->poleData() + "epsilonSquarePoles-",b->first);
+    b->second.dump(factory()->poleData(),"epsilonSquarePoles-",b->first);
   }
   for ( map<cPDVector,AccuracyHistogram>::const_iterator
 	  b = epsilonPoleHistograms.begin();
 	b != epsilonPoleHistograms.end(); ++b ) {
-    b->second.dump(factory()->poleData() + "epsilonPoles-",b->first);
+    b->second.dump(factory()->poleData(),"epsilonPoles-",b->first);
   }
 }
 
