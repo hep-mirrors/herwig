@@ -273,11 +273,16 @@ pair<Energy2,double> QTildeMatching::getShowerVariables() const {
   }
 
   Energy2 qtilde2 = ZERO;
+  Energy2 q2 = ZERO;
 
   if ( dipole()->bornEmitter() > 1 ) {
-    qtilde2 = (Q2 - bornCXComb()->meMomenta()[dipole()->bornEmitter()].m2())/(z*(1.-z));
+    q2 = 
+      (realCXComb()->meMomenta()[dipole()->realEmitter()] + realCXComb()->meMomenta()[dipole()->realEmission()]).m2();
+    qtilde2 = (q2 - bornCXComb()->meMomenta()[dipole()->bornEmitter()].m2())/(z*(1.-z));
   } else {
-    qtilde2 = (Q2 + bornCXComb()->meMomenta()[dipole()->bornEmitter()].m2())/(1.-z);
+    q2 = 
+      -(realCXComb()->meMomenta()[dipole()->realEmitter()] - realCXComb()->meMomenta()[dipole()->realEmission()]).m2();
+    qtilde2 = (q2 + bornCXComb()->meMomenta()[dipole()->bornEmitter()].m2())/(1.-z);
   }
 
   assert(qtilde2 >= ZERO && z >= 0.0 && z <= 1.0);
