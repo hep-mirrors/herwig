@@ -111,7 +111,7 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr, Energy optCutoff) {
 	}
       } else if ( me ) {
 	if ( me->factory()->showerApproximation() ) {
-	  if ( !subme->showerApproximation()->needsSplittingGenerator() ) {
+	  if ( !me->factory()->showerApproximation()->needsSplittingGenerator() ) {
 	    theShowerApproximation = me->factory()->showerApproximation();
 	    isMCatNLOSEvent = true;
 	  }
