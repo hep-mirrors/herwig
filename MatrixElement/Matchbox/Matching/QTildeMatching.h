@@ -52,11 +52,6 @@ public:
   virtual Energy hardScale() const;
 
   /**
-   * Return a scale profile towards the hard scale
-   */
-  virtual double hardScaleProfile(Energy hard, Energy soft) const;
-
-  /**
    * Return true, if the shower was able to generate an emission
    * leading from the given Born to the given real emission process.
    */

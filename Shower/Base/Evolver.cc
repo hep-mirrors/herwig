@@ -1026,6 +1026,14 @@ bool Evolver::timeLikeVetoed(const Branching & fb,
     }
     if(vetoed) return true;
   }
+  // check for MC@NLO profile scale veto
+  if ( isMCatNLOSEvent && !_progenitor->profileVetoed() ) {
+    assert(theShowerApproximation);
+    double weight = theShowerApproximation->hardScaleProfile(_progenitor->maxHardPt(),fb.kinematics->pT());
+    if ( UseRandom::rnd() > weight )
+      return true;
+    _progenitor->didProfileVeto();
+  }
   return false;
 }
 
@@ -1061,6 +1069,14 @@ bool Evolver::spaceLikeVetoed(const Branching & bb,ShowerParticlePtr particle) {
       }
     }
     if (vetoed) return true;
+  }
+  // check for MC@NLO profile scale veto
+  if ( isMCatNLOSEvent && !_progenitor->profileVetoed() ) {
+    assert(theShowerApproximation);
+    double weight = theShowerApproximation->hardScaleProfile(_progenitor->maxHardPt(),bb.kinematics->pT());
+    if ( UseRandom::rnd() > weight )
+      return true;
+    _progenitor->didProfileVeto();
   }
   return false;
 }

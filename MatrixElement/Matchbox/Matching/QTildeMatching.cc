@@ -61,12 +61,6 @@ Energy QTildeMatching::hardScale() const {
   return maxPt;
 }
 
-double QTildeMatching::hardScaleProfile(Energy Q, Energy q) const {
-  if ( q <= Q )
-    return 1.;
-  return 0.;
-}
-
 bool QTildeMatching::isInShowerPhasespace() const {
 
   assert(theQTildeSudakov->cutOffOption() == 0 && "implementation only provided for default cutoff");
