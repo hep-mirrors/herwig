@@ -305,7 +305,7 @@ insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudehggg
 cd /Herwig/MatrixElements/Matchbox
 
 create Herwig::MEMatching MEMatching
-set MEMatching:RestrictPhasespace Off
+set MEMatching:RestrictPhasespace On
 set MEMatching:BornScaleInSubtraction RealScale
 set MEMatching:RealEmissionScaleInSubtraction RealScale
 set MEMatching:EmissionScaleInSubtraction RealScale
