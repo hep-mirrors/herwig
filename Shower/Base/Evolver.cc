@@ -347,7 +347,7 @@ void Evolver::setupMaximumScales(ShowerTreePtr hard,
 	  cjt = hard->outgoingLines().begin();
 	for(; cjt!=hard->outgoingLines().end(); ++cjt) {
 	  if (cjt->first->progenitor()->coloured())
-	    ptmax = min(ptmax,cjt->first->progenitor()->momentum().mt());
+	    ptmax = min(ptmax,cjt->first->progenitor()->momentum().perp());
 	}
       }
       if (ptmax == generator()->maximumCMEnergy() ) ptmax = pcm.m();
