@@ -25,7 +25,8 @@ using namespace Herwig;
 
 DipoleSplittingGenerator::DipoleSplittingGenerator() 
   : HandlerBase(),
-    theExponentialGenerator(0), prepared(false), presampling(false) {
+    theExponentialGenerator(0), prepared(false), presampling(false),
+    theDoCompensate(false) {
   if ( ShowerHandler::currentHandler() )
     setGenerator(ShowerHandler::currentHandler()->generator());
 }
@@ -82,6 +83,7 @@ void DipoleSplittingGenerator::prepare(const DipoleSplittingInfo& sp) {
   theExponentialGenerator->sampling_parameters().maxtry = maxtry();
   theExponentialGenerator->sampling_parameters().presampling_points = presamplingPoints();
 
+  theExponentialGenerator->docompensate(theDoCompensate);
   theExponentialGenerator->function(this);
   theExponentialGenerator->initialize();
 
@@ -525,11 +527,11 @@ void DipoleSplittingGenerator::debugLastEvent(ostream& os) const {
 
 
 void DipoleSplittingGenerator::persistentOutput(PersistentOStream & os) const {
-  os << theOtherGenerator << theSplittingKernel << theSplittingReweight << theMCCheck;
+  os << theOtherGenerator << theSplittingKernel << theSplittingReweight << theMCCheck << theDoCompensate;
 }
 
 void DipoleSplittingGenerator::persistentInput(PersistentIStream & is, int) {
-  is >> theOtherGenerator >> theSplittingKernel >> theSplittingReweight >> theMCCheck;
+  is >> theOtherGenerator >> theSplittingKernel >> theSplittingReweight >> theMCCheck >> theDoCompensate;
 }
 
 ClassDescription<DipoleSplittingGenerator> DipoleSplittingGenerator::initDipoleSplittingGenerator;

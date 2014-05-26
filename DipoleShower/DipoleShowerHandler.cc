@@ -52,7 +52,7 @@ DipoleShowerHandler::DipoleShowerHandler()
     theRenormalizationScaleFactor(1.0),
     theHardScaleFactor(1.0),
     isMCatNLOSEvent(false),
-  isMCatNLOHEvent(false) {}
+  isMCatNLOHEvent(false), theDoCompensate(false) {}
 
 DipoleShowerHandler::~DipoleShowerHandler() {}
 
@@ -716,6 +716,7 @@ void DipoleShowerHandler::getGenerators(const DipoleIndex& ind,
 
       Ptr<DipoleSplittingGenerator>::ptr nGenerator =
 	new_ptr(DipoleSplittingGenerator());
+      nGenerator->doCompensate(theDoCompensate);
       nGenerator->splittingKernel(*k);
       nGenerator->splittingKernel()->renormalizationScaleFactor(theRenormalizationScaleFactor);
       nGenerator->splittingKernel()->factorizationScaleFactor(theFactorizationScaleFactor);
@@ -798,7 +799,8 @@ void DipoleShowerHandler::persistentOutput(PersistentOStream & os) const {
      << ounit(theFactorizationScaleFreeze,GeV)
      << theFactorizationScaleFactor << theRenormalizationScaleFactor
      << theHardScaleFactor
-     << isMCatNLOSEvent << isMCatNLOHEvent << theShowerApproximation;
+     << isMCatNLOSEvent << isMCatNLOHEvent << theShowerApproximation
+     << theDoCompensate;
 }
 
 void DipoleShowerHandler::persistentInput(PersistentIStream & is, int) {
@@ -811,7 +813,8 @@ void DipoleShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> iunit(theFactorizationScaleFreeze,GeV)
      >> theFactorizationScaleFactor >> theRenormalizationScaleFactor
      >> theHardScaleFactor
-     >> isMCatNLOSEvent >> isMCatNLOHEvent >> theShowerApproximation;
+     >> isMCatNLOSEvent >> isMCatNLOHEvent >> theShowerApproximation
+     >> theDoCompensate;
 }
 
 ClassDescription<DipoleShowerHandler> DipoleShowerHandler::initDipoleShowerHandler;
@@ -1042,6 +1045,21 @@ void DipoleShowerHandler::Init() {
      "The freezing scale for the factorization scale.",
      &DipoleShowerHandler::theFactorizationScaleFreeze, GeV, 2.0*GeV, 0.0*GeV, 0*GeV,
      false, false, Interface::lowerlim);
+
+  static Switch<DipoleShowerHandler,bool> interfaceDoCompensate
+    ("DoCompensate",
+     "",
+     &DipoleShowerHandler::theDoCompensate, false, false, false);
+  static SwitchOption interfaceDoCompensateYes
+    (interfaceDoCompensate,
+     "Yes",
+     "",
+     true);
+  static SwitchOption interfaceDoCompensateNo
+    (interfaceDoCompensate,
+     "No",
+     "",
+     false);
 
 }
 

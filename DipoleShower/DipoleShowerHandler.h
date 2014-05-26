@@ -412,6 +412,11 @@ private:
    */
   Ptr<ShowerApproximation>::tptr theShowerApproximation;
 
+  /**
+   * True, if sampler should apply compensation
+   */
+  bool theDoCompensate;
+
 private:
 
   /**

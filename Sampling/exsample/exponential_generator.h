@@ -43,7 +43,7 @@ namespace exsample {
         integral_accessor_(), missing_accessor_(),
 	parametric_selector_(), exponent_selector_(),
 	parametric_sampler_(), attempts_(0), accepts_(0),
-	splits_(0) {}
+      splits_(0), docompensate_(false) {}
 
   public:
 
@@ -102,6 +102,9 @@ namespace exsample {
 
     /// access the adaption_info object
     adaption_info& sampling_parameters() { return adaption_info_; }
+
+    /// indicate, if compensation should be applied
+    void docompensate(bool yes = true) { docompensate_ = yes; }
 
   public:
 
@@ -227,6 +230,9 @@ namespace exsample {
 
     /// number of splits done
     unsigned long splits_;
+
+    /// true, if compensation should be applied
+    bool docompensate_;
 
   };
 
