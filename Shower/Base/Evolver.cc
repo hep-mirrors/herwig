@@ -412,7 +412,7 @@ void Evolver::showerHardProcess(ShowerTreePtr hard, XCPtr xcomb) {
     }
   } else if ( me ) {
     if ( me->factory()->showerApproximation() ) {
-      if ( !subme->showerApproximation()->needsSplittingGenerator() ) {
+      if ( !me->factory()->showerApproximation()->needsSplittingGenerator() ) {
 	theShowerApproximation = me->factory()->showerApproximation();
 	isMCatNLOSEvent = true;
       }
