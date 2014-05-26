@@ -329,11 +329,11 @@ void Evolver::setupMaximumScales(ShowerTreePtr hard,
     pcm += cit->first->progenitor()->momentum();
     isPartonic |= cit->first->progenitor()->coloured();
   }
-  // find maximum pt from hard process, the maximum pt from all outgoing
+  // find minimum pt from hard process, the maximum pt from all outgoing
   // coloured lines (this is simpler and more general than
   // 2stu/(s^2+t^2+u^2)).  Maximum scale for scattering processes will
   // be transverse mass.
-  Energy ptmax = -1.0*GeV;
+  Energy ptmax = generator()->maximumCMEnergy();
   // general case calculate the scale  
   if (!hardVetoXComb()||
       (hardVetoReadOption()&&
@@ -347,10 +347,10 @@ void Evolver::setupMaximumScales(ShowerTreePtr hard,
 	  cjt = hard->outgoingLines().begin();
 	for(; cjt!=hard->outgoingLines().end(); ++cjt) {
 	  if (cjt->first->progenitor()->coloured())
-	    ptmax = max(ptmax,cjt->first->progenitor()->momentum().mt());
+	    ptmax = min(ptmax,cjt->first->progenitor()->momentum().mt());
 	}
       }
-      if (ptmax < ZERO) ptmax = pcm.m();
+      if (ptmax == generator()->maximumCMEnergy() ) ptmax = pcm.m();
       if(hardVetoXComb()&&hardVetoReadOption()&&
 	 !ShowerHandler::currentHandler()->firstInteraction()) {
 	ptmax=min(ptmax,sqrt(xcomb->lastScale()));
