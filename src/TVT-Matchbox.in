@@ -188,7 +188,6 @@ set DipoleMatching:HardScaleFactor 1.0
 
 set MEMatching:RenormalizationScaleFactor 1.0
 set MEMatching:FactorizationScaleFactor 1.0
-set MEMatching:ScreeningScale 10.0*GeV
 
 set QTildeMatching:RenormalizationScaleFactor 1.0
 set QTildeMatching:FactorizationScaleFactor 1.0
