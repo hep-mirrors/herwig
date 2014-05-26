@@ -56,7 +56,7 @@ void Evolver::persistentOutput(PersistentOStream & os) const {
      << _limitEmissions
      << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << ounit(_iptmax,GeV) 
      << _vetoes << _hardonly << _trunc_Mode << _hardEmissionMode 
-     << _colourEvolutionMethod << _reconOpt << _hardScaleFactor
+     << _colourEvolutionMethod << _reconOpt
      << isMCatNLOSEvent << isMCatNLOHEvent;
 }
 
@@ -66,7 +66,7 @@ void Evolver::persistentInput(PersistentIStream & is, int) {
      >> _limitEmissions
      >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> iunit(_iptmax,GeV) 
      >> _vetoes >> _hardonly >> _trunc_Mode >> _hardEmissionMode
-     >> _colourEvolutionMethod >> _reconOpt >> _hardScaleFactor
+     >> _colourEvolutionMethod >> _reconOpt
      >> isMCatNLOSEvent >> isMCatNLOHEvent;
 }
 
@@ -281,12 +281,6 @@ void Evolver::Init() {
      "Use the off-shell masses in the calculation",
      1);
 
-  static Parameter<Evolver,double> interfaceHardScaleFactor
-    ("HardScaleFactor",
-     "Set the factor to multiply the hard veto scale.",
-     &Evolver::_hardScaleFactor, 1.0, 0.0, 0,
-     false, false, Interface::lowerlim);
-
 }
 
 void Evolver::generateIntrinsicpT(vector<ShowerProgenitorPtr> particlesToShower) {
@@ -347,7 +341,7 @@ void Evolver::setupMaximumScales(ShowerTreePtr hard,
 	  cjt = hard->outgoingLines().begin();
 	for(; cjt!=hard->outgoingLines().end(); ++cjt) {
 	  if (cjt->first->progenitor()->coloured())
-	    ptmax = min(ptmax,cjt->first->progenitor()->momentum().perp());
+	    ptmax = min(ptmax,cjt->first->progenitor()->momentum().mt());
 	}
       }
       if (ptmax == generator()->maximumCMEnergy() ) ptmax = pcm.m();
@@ -375,7 +369,7 @@ void Evolver::setupMaximumScales(ShowerTreePtr hard,
 	->progenitor()->momentum().mass(); 
     }
   }
-  ptmax *= hardScaleFactor();
+  ptmax *= ShowerHandler::currentHandler()->hardScaleFactor();
   // set maxHardPt for all progenitors.  For partonic processes this
   // is now the max pt in the FS, for non-partonic processes or
   // processes with no coloured FS the invariant mass of the IS
@@ -417,10 +411,6 @@ void Evolver::showerHardProcess(ShowerTreePtr hard, XCPtr xcomb) {
 	isMCatNLOSEvent = true;
       }
     }
-  }
-
-  if ( theShowerApproximation ) {
-    _hardScaleFactor = theShowerApproximation->hardScaleFactor();
   }
 
   _hardme = HwMEBasePtr();

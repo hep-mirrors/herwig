@@ -16,6 +16,7 @@
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "Herwig++/MatrixElement/Matchbox/Dipoles/SubtractionDipole.fh"
 #include "Herwig++/MatrixElement/Matchbox/Utility/ColourBasis.h"
+#include "Herwig++/Shower/ShowerHandler.h"
 
 namespace Herwig {
 
@@ -391,6 +392,20 @@ public:
 // If needed, insert declarations of virtual function defined in the
 // InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
 
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+  //@}
+
+
 protected:
 
   /**
@@ -408,6 +423,11 @@ protected:
    * Set the large-N basis
    */
   void setLargeNBasis();
+
+  /**
+   * The shower handler to be used
+   */
+  Ptr<ShowerHandler>::ptr theShowerHandler;
 
 private:
 

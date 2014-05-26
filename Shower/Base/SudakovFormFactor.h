@@ -364,9 +364,7 @@ protected:
    * @param pt2 The value of ther transverse momentum squared, \f$p_T^2\f$.
    * @return true if vetoed
    */
-  bool alphaSVeto(const Energy2 pt2) const 
-  {return UseRandom::rnd() > ThePEG::Math::powi(alpha_->ratio(pt2),
-						splittingFn_->interactionOrder());}
+  bool alphaSVeto(Energy2 pt2) const;
   //@}
 
   /**

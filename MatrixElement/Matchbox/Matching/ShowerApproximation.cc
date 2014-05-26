@@ -108,7 +108,7 @@ Energy ShowerApproximation::hardScale() const {
       bornCXComb()->mePartonData().begin() + 2;
     for ( ; p != bornCXComb()->meMomenta().end(); ++p, ++pp )
       if ( (**pp).coloured() )
-	maxPt = min(maxPt,p->perp());
+	maxPt = min(maxPt,p->mt());
     if ( maxPt == generator()->maximumCMEnergy() )
       maxPt = (bornCXComb()->meMomenta()[0] + bornCXComb()->meMomenta()[1]).m();
     maxPt *= hardScaleFactor();
@@ -341,7 +341,8 @@ void ShowerApproximation::persistentOutput(PersistentOStream & os) const {
      << theBornScaleInSplitting << theEmissionScaleInSplitting
      << ounit(theRenormalizationScaleFreeze,GeV)
      << ounit(theFactorizationScaleFreeze,GeV)
-     << theProfileScales << theProfileRho << maxPtIsMuF;
+     << theProfileScales << theProfileRho << maxPtIsMuF
+     << theShowerHandler;
 }
 
 void ShowerApproximation::persistentInput(PersistentIStream & is, int) {
@@ -358,9 +359,20 @@ void ShowerApproximation::persistentInput(PersistentIStream & is, int) {
      >> theBornScaleInSplitting >> theEmissionScaleInSplitting
      >> iunit(theRenormalizationScaleFreeze,GeV)
      >> iunit(theFactorizationScaleFreeze,GeV)
-     >> theProfileScales >> theProfileRho >> maxPtIsMuF;
+     >> theProfileScales >> theProfileRho >> maxPtIsMuF
+     >> theShowerHandler;
 }
 
+void ShowerApproximation::doinit() {
+  HandlerBase::doinit();
+  if ( theShowerHandler ) {
+    if ( theShowerHandler->scaleFactorOption() < 2 ) {
+      theHardScaleFactor = theShowerHandler->hardScaleFactor();
+      theFactorizationScaleFactor = theShowerHandler->factorizationScaleFactor();
+      theRenormalizationScaleFactor = theShowerHandler->renormalizationScaleFactor();
+    }
+  }
+}
 
 // *** Attention *** The following static variable is needed for the type
 // description system in ThePEG. Please check that the template arguments
@@ -638,6 +650,11 @@ void ShowerApproximation::Init() {
      "No",
      "",
      false);
+
+  static Reference<ShowerApproximation,ShowerHandler> interfaceShowerHandler
+    ("ShowerHandler",
+     "",
+     &ShowerApproximation::theShowerHandler, false, false, true, true, false);
 
 }
 

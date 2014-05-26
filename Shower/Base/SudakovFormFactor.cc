@@ -20,6 +20,7 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ShowerKinematics.h"
 #include "ThePEG/Utilities/DescribeClass.h"
+#include "Herwig++/Shower/ShowerHandler.h"
 
 using namespace Herwig;
 
@@ -156,13 +157,19 @@ void SudakovFormFactor::Init() {
      false, false, Interface::limited);
 }
 
+bool SudakovFormFactor::alphaSVeto(Energy2 pt2) const {
+  pt2 *= sqr(ShowerHandler::currentHandler()->renormalizationScaleFactor());
+  return UseRandom::rnd() > ThePEG::Math::powi(alpha_->ratio(pt2),
+					       splittingFn_->interactionOrder());
+}
+
 bool SudakovFormFactor::
 PDFVeto(const Energy2 t, const double x,
 	const tcPDPtr parton0, const tcPDPtr parton1,
 	Ptr<BeamParticleData>::transient_const_pointer beam) const {
   assert(pdf_);
 
-  Energy2 theScale = t;
+  Energy2 theScale = t * sqr(ShowerHandler::currentHandler()->factorizationScaleFactor());
   if (theScale < sqr(freeze_)) theScale = sqr(freeze_);
 
   double newpdf(0.0), oldpdf(0.0);

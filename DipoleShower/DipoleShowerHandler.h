@@ -383,21 +383,6 @@ private:
   Energy theFactorizationScaleFreeze;
 
   /**
-   * The factorization scale factor.
-   */
-  double theFactorizationScaleFactor;
-
-  /**
-   * The renormalization scale factor.
-   */
-  double theRenormalizationScaleFactor;
-
-  /**
-   * The scale factor for the hard scale
-   */
-  double theHardScaleFactor;
-
-  /**
    * True, if we are showering on a MC@NLO S event
    */
   bool isMCatNLOSEvent;

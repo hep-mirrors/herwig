@@ -331,6 +331,7 @@ set DipoleMatching:FIPtCut 1.0*GeV
 set DipoleMatching:IIPtCut 1.0*GeV
 
 create Herwig::QTildeMatching QTildeMatching HwQTildeMatching.so
+set QTildeMatching:ShowerHandler /Herwig/Shower/ShowerHandler
 # set this to off, if the shower pt veto is off
 set QTildeMatching:RestrictPhasespace On
 set QTildeMatching:BornScaleInSubtraction BornScale

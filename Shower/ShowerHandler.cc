@@ -70,7 +70,10 @@ IBPtr ShowerHandler::fullclone() const {
 
 ShowerHandler::ShowerHandler() : 
   pdfFreezingScale_(2.5*GeV),
-  maxtry_(10),maxtryMPI_(10),maxtryDP_(10), subProcess_() {
+  maxtry_(10),maxtryMPI_(10),maxtryDP_(10), subProcess_(),
+  theFactorizationScaleFactor(1.0),
+  theRenormalizationScaleFactor(1.0),
+  theHardScaleFactor(1.0), theScaleFactorOption(0) {
   inputparticlesDecayInShower_.push_back( 6  ); //  top 
   inputparticlesDecayInShower_.push_back( 23 ); // Z0
   inputparticlesDecayInShower_.push_back( 24 ); // W+/-
@@ -98,13 +101,17 @@ void ShowerHandler::dofinish(){
 void ShowerHandler::persistentOutput(PersistentOStream & os) const {
   os << evolver_ << remDec_ << ounit(pdfFreezingScale_,GeV) << maxtry_ 
      << maxtryMPI_ << maxtryDP_ << inputparticlesDecayInShower_
-     << particlesDecayInShower_ << MPIHandler_ << PDFA_ << PDFB_;
+     << particlesDecayInShower_ << MPIHandler_ << PDFA_ << PDFB_
+     << theFactorizationScaleFactor << theRenormalizationScaleFactor
+     << theHardScaleFactor << theScaleFactorOption;
 }
 
 void ShowerHandler::persistentInput(PersistentIStream & is, int) {
   is >> evolver_ >> remDec_ >> iunit(pdfFreezingScale_,GeV) >> maxtry_ 
      >> maxtryMPI_ >> maxtryDP_ >> inputparticlesDecayInShower_
-     >> particlesDecayInShower_ >> MPIHandler_ >> PDFA_ >> PDFB_;  
+     >> particlesDecayInShower_ >> MPIHandler_ >> PDFA_ >> PDFB_
+     >> theFactorizationScaleFactor >> theRenormalizationScaleFactor
+     >> theHardScaleFactor >> theScaleFactorOption;
 }
 
 void ShowerHandler::Init() {
@@ -191,7 +198,45 @@ void ShowerHandler::Init() {
     ("PDFB",
      "The PDF for beam particle B. Overrides the particle's own PDF setting.",
      &ShowerHandler::PDFB_, false, false, true, true, false);
-  
+
+  static Parameter<ShowerHandler,double> interfaceFactorizationScaleFactor
+    ("FactorizationScaleFactor",
+     "The factorization scale factor.",
+     &ShowerHandler::theFactorizationScaleFactor, 1.0, 0.0, 0,
+     false, false, Interface::lowerlim);
+
+  static Parameter<ShowerHandler,double> interfaceRenormalizationScaleFactor
+    ("RenormalizationScaleFactor",
+     "The renormalization scale factor.",
+     &ShowerHandler::theRenormalizationScaleFactor, 1.0, 0.0, 0,
+     false, false, Interface::lowerlim);
+
+  static Parameter<ShowerHandler,double> interfaceHardScaleFactor
+    ("HardScaleFactor",
+     "The hard scale factor.",
+     &ShowerHandler::theHardScaleFactor, 1.0, 0.0, 0,
+     false, false, Interface::lowerlim);
+
+  static Switch<ShowerHandler,int> interfaceScaleFactorOption
+    ("ScaleFactorOption",
+     "Where to apply scale factors.",
+     &ShowerHandler::theScaleFactorOption, 0, false, false);
+  static SwitchOption interfaceScaleFactorOptionAll
+    (interfaceScaleFactorOption,
+     "All",
+     "Apply in first and secondary scatterings.",
+     0);
+  static SwitchOption interfaceScaleFactorOptionHard
+    (interfaceScaleFactorOption,
+     "Hard",
+     "Only apply for the hard process.",
+     1);
+  static SwitchOption interfaceScaleFactorOptionSecondary
+    (interfaceScaleFactorOption,
+     "Secondary",
+     "Only apply to secondary scatterings.",
+     2);
+ 
 }
 
 void ShowerHandler::cascade() {

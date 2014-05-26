@@ -159,19 +159,11 @@ set EEFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale
 set EEFactory:RenormalizationScaleFactor 1.0
 set EEFactory:FactorizationScaleFactor 1.0
 
-#>>>>>>>>>> MATCHING SCALE VARIATION 
-#                 - HardScaleFactor has to equal the one for the shower!
-
-set DipoleMatching:RenormalizationScaleFactor 1.0
-set DipoleMatching:FactorizationScaleFactor 1.0
-set DipoleMatching:HardScaleFactor 1.0
+#>>>>>>>>>> MATCHING SCALE VARIATION for MEMatching
+#                 - other scale factors are deduced from the shower handlers
 
 set MEMatching:RenormalizationScaleFactor 1.0
 set MEMatching:FactorizationScaleFactor 1.0
-
-set QTildeMatching:RenormalizationScaleFactor 1.0
-set QTildeMatching:FactorizationScaleFactor 1.0
-set QTildeMatching:HardScaleFactor 1.0
 
 #>>>>>>>>>> SHOWER SCALE VARIATIONS
 
@@ -179,8 +171,9 @@ set /Herwig/DipoleShower/DipoleShowerHandler:RenormalizationScaleFactor 1.0
 set /Herwig/DipoleShower/DipoleShowerHandler:FactorizationScaleFactor 1.0
 set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleFactor 1.0
 
-set /Herwig/Shower/AlphaQCD:RenormalizationScaleFactor 1.0
-set /Herwig/Shower/Evolver:HardScaleFactor 1.0
+set /Herwig/Shower/ShowerHandler:RenormalizationScaleFactor 1.0
+set /Herwig/Shower/ShowerHandler:FactorizationScaleFactor 1.0
+set /Herwig/Shower/ShowerHandler:HardScaleFactor 1.0
 
 #==================================================================================
 #                     :::::SAMPLER:::::
