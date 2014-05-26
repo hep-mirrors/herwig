@@ -40,27 +40,6 @@ IBPtr QTildeMatching::fullclone() const {
   return new_ptr(*this);
 }
 
-Energy QTildeMatching::hardScale() const {
-  if ( !bornCXComb()->mePartonData()[0]->coloured() &&
-       !bornCXComb()->mePartonData()[1]->coloured() ) {
-    Energy maxPt = (bornCXComb()->meMomenta()[0] + bornCXComb()->meMomenta()[1]).m();
-    maxPt *= hardScaleFactor();
-    return maxPt;
-  }
-  Energy maxPt = -1.0*GeV;
-  vector<Lorentz5Momentum>::const_iterator p = 
-    bornCXComb()->meMomenta().begin() + 2;
-  cPDVector::const_iterator pp = 
-    bornCXComb()->mePartonData().begin() + 2;
-  for ( ; p != bornCXComb()->meMomenta().end(); ++p, ++pp )
-    if ( (**pp).coloured() )
-      maxPt = max(maxPt,p->mt());
-  if ( maxPt < ZERO )
-    maxPt = (bornCXComb()->meMomenta()[0] + bornCXComb()->meMomenta()[1]).m();
-  maxPt *= hardScaleFactor();
-  return maxPt;
-}
-
 bool QTildeMatching::isInShowerPhasespace() const {
 
   assert(theQTildeSudakov->cutOffOption() == 0 && "implementation only provided for default cutoff");

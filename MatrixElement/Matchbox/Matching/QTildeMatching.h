@@ -47,11 +47,6 @@ public:
 public:
 
   /**
-   * Return the relevant hard scale
-   */
-  virtual Energy hardScale() const;
-
-  /**
    * Return true, if the shower was able to generate an emission
    * leading from the given Born to the given real emission process.
    */
