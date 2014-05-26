@@ -417,6 +417,11 @@ private:
    */
   bool theDoCompensate;
 
+  /**
+   * True if maximum pt should be deduced from the factorization scale
+   */
+  bool maxPtIsMuF;
+
 private:
 
   /**

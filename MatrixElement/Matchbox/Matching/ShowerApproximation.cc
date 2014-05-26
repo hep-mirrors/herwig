@@ -47,7 +47,7 @@ ShowerApproximation::ShowerApproximation()
     theRenormalizationScaleFreeze(1.*GeV),
     theFactorizationScaleFreeze(1.*GeV),
     theProfileScales(true),
-    theProfileRho(0.3) {}
+  theProfileRho(0.3), maxPtIsMuF(false) {}
 
 ShowerApproximation::~ShowerApproximation() {}
 
@@ -94,24 +94,28 @@ bool ShowerApproximation::isAboveCutoff() const {
 }
 
 Energy ShowerApproximation::hardScale() const {
-  if ( !bornCXComb()->mePartonData()[0]->coloured() &&
-       !bornCXComb()->mePartonData()[1]->coloured() ) {
-    Energy maxPt = (bornCXComb()->meMomenta()[0] + bornCXComb()->meMomenta()[1]).m();
+  if ( !maxPtIsMuF ) {
+    if ( !bornCXComb()->mePartonData()[0]->coloured() &&
+	 !bornCXComb()->mePartonData()[1]->coloured() ) {
+      Energy maxPt = (bornCXComb()->meMomenta()[0] + bornCXComb()->meMomenta()[1]).m();
+      maxPt *= hardScaleFactor();
+      return maxPt;
+    }
+    Energy maxPt = generator()->maximumCMEnergy();
+    vector<Lorentz5Momentum>::const_iterator p = 
+      bornCXComb()->meMomenta().begin() + 2;
+    cPDVector::const_iterator pp = 
+      bornCXComb()->mePartonData().begin() + 2;
+    for ( ; p != bornCXComb()->meMomenta().end(); ++p, ++pp )
+      if ( (**pp).coloured() )
+	maxPt = min(maxPt,p->perp());
+    if ( maxPt == generator()->maximumCMEnergy() )
+      maxPt = (bornCXComb()->meMomenta()[0] + bornCXComb()->meMomenta()[1]).m();
     maxPt *= hardScaleFactor();
     return maxPt;
+  } else {
+    return sqrt(bornCXComb()->lastScale());
   }
-  Energy maxPt = generator()->maximumCMEnergy();
-  vector<Lorentz5Momentum>::const_iterator p = 
-    bornCXComb()->meMomenta().begin() + 2;
-  cPDVector::const_iterator pp = 
-    bornCXComb()->mePartonData().begin() + 2;
-  for ( ; p != bornCXComb()->meMomenta().end(); ++p, ++pp )
-    if ( (**pp).coloured() )
-      maxPt = min(maxPt,p->perp());
-  if ( maxPt == generator()->maximumCMEnergy() )
-    maxPt = (bornCXComb()->meMomenta()[0] + bornCXComb()->meMomenta()[1]).m();
-  maxPt *= hardScaleFactor();
-  return maxPt;
 }
 
 double ShowerApproximation::hardScaleProfile(Energy hard, Energy soft) const {
@@ -337,7 +341,7 @@ void ShowerApproximation::persistentOutput(PersistentOStream & os) const {
      << theBornScaleInSplitting << theEmissionScaleInSplitting
      << ounit(theRenormalizationScaleFreeze,GeV)
      << ounit(theFactorizationScaleFreeze,GeV)
-     << theProfileScales << theProfileRho;
+     << theProfileScales << theProfileRho << maxPtIsMuF;
 }
 
 void ShowerApproximation::persistentInput(PersistentIStream & is, int) {
@@ -354,7 +358,7 @@ void ShowerApproximation::persistentInput(PersistentIStream & is, int) {
      >> theBornScaleInSplitting >> theEmissionScaleInSplitting
      >> iunit(theRenormalizationScaleFreeze,GeV)
      >> iunit(theFactorizationScaleFreeze,GeV)
-     >> theProfileScales >> theProfileRho;
+     >> theProfileScales >> theProfileRho >> maxPtIsMuF;
 }
 
 
@@ -618,6 +622,21 @@ void ShowerApproximation::Init() {
     (interfaceShowerKernels,
      "Off",
      "Switch to full dipole functions.",
+     false);
+
+  static Switch<ShowerApproximation,bool> interfaceMaxPtIsMuF
+    ("MaxPtIsMuF",
+     "",
+     &ShowerApproximation::maxPtIsMuF, false, false, false);
+  static SwitchOption interfaceMaxPtIsMuFYes
+    (interfaceMaxPtIsMuF,
+     "Yes",
+     "",
+     true);
+  static SwitchOption interfaceMaxPtIsMuFNo
+    (interfaceMaxPtIsMuF,
+     "No",
+     "",
      false);
 
 }

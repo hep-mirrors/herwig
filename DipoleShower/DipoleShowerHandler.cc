@@ -52,7 +52,8 @@ DipoleShowerHandler::DipoleShowerHandler()
     theRenormalizationScaleFactor(1.0),
     theHardScaleFactor(1.0),
     isMCatNLOSEvent(false),
-  isMCatNLOHEvent(false), theDoCompensate(false) {}
+  isMCatNLOHEvent(false), theDoCompensate(false),
+  maxPtIsMuF(false) {}
 
 DipoleShowerHandler::~DipoleShowerHandler() {}
 
@@ -221,23 +222,27 @@ void DipoleShowerHandler::hardScales() {
 	restrictPhasespace = true;
   }
 
-  if ( (eventRecord().incoming().first->coloured() ||
-	eventRecord().incoming().second->coloured()) &&
-       restrictPhasespace ) {
-    if ( !eventRecord().outgoing().empty() ) {
-      for ( PList::const_iterator p = eventRecord().outgoing().begin();
-	    p != eventRecord().outgoing().end(); ++p )
-	maxPt = min(maxPt,(**p).momentum().perp());
-    } else {
-      assert(!eventRecord().hard().empty());
-      Lorentz5Momentum phard(ZERO,ZERO,ZERO,ZERO);
-      for ( PList::const_iterator p = eventRecord().hard().begin();
-	    p != eventRecord().hard().end(); ++p )
-	phard += (**p).momentum();
-      Energy mhard = phard.m();
-      maxPt = mhard;
+  if ( !maxPtIsMuF ) {
+    if ( (eventRecord().incoming().first->coloured() ||
+	  eventRecord().incoming().second->coloured()) &&
+	 restrictPhasespace ) {
+      if ( !eventRecord().outgoing().empty() ) {
+	for ( PList::const_iterator p = eventRecord().outgoing().begin();
+	      p != eventRecord().outgoing().end(); ++p )
+	  maxPt = min(maxPt,(**p).momentum().perp());
+      } else {
+	assert(!eventRecord().hard().empty());
+	Lorentz5Momentum phard(ZERO,ZERO,ZERO,ZERO);
+	for ( PList::const_iterator p = eventRecord().hard().begin();
+	      p != eventRecord().hard().end(); ++p )
+	  phard += (**p).momentum();
+	Energy mhard = phard.m();
+	maxPt = mhard;
+      }
+      maxPt *= theHardScaleFactor;
     }
-    maxPt *= theHardScaleFactor;
+  } else {
+    maxPt = sqrt(eventRecord().xcombPtr()->lastScale());
   }
 
   for ( list<DipoleChain>::iterator ch = eventRecord().chains().begin();
@@ -800,7 +805,7 @@ void DipoleShowerHandler::persistentOutput(PersistentOStream & os) const {
      << theFactorizationScaleFactor << theRenormalizationScaleFactor
      << theHardScaleFactor
      << isMCatNLOSEvent << isMCatNLOHEvent << theShowerApproximation
-     << theDoCompensate;
+     << theDoCompensate << maxPtIsMuF;
 }
 
 void DipoleShowerHandler::persistentInput(PersistentIStream & is, int) {
@@ -814,7 +819,7 @@ void DipoleShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> theFactorizationScaleFactor >> theRenormalizationScaleFactor
      >> theHardScaleFactor
      >> isMCatNLOSEvent >> isMCatNLOHEvent >> theShowerApproximation
-     >> theDoCompensate;
+     >> theDoCompensate >> maxPtIsMuF;
 }
 
 ClassDescription<DipoleShowerHandler> DipoleShowerHandler::initDipoleShowerHandler;
@@ -1057,6 +1062,21 @@ void DipoleShowerHandler::Init() {
      true);
   static SwitchOption interfaceDoCompensateNo
     (interfaceDoCompensate,
+     "No",
+     "",
+     false);
+
+  static Switch<DipoleShowerHandler,bool> interfaceMaxPtIsMuF
+    ("MaxPtIsMuF",
+     "",
+     &DipoleShowerHandler::maxPtIsMuF, false, false, false);
+  static SwitchOption interfaceMaxPtIsMuFYes
+    (interfaceMaxPtIsMuF,
+     "Yes",
+     "",
+     true);
+  static SwitchOption interfaceMaxPtIsMuFNo
+    (interfaceMaxPtIsMuF,
      "No",
      "",
      false);

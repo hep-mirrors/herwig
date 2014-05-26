@@ -552,6 +552,11 @@ private:
    */
   double theProfileRho;
 
+  /**
+   * True if maximum pt should be deduced from the factorization scale
+   */
+  bool maxPtIsMuF;
+
 private:
 
   /**
