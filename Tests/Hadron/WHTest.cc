@@ -104,7 +104,7 @@ void WHTest::doinitrun() {
   if(getParticleData(ParticleID::h0)->mass()>200.*GeV) 
     _mH     = new_ptr(Histogram(200.,            400.,200));
   else
-    _mH     = new_ptr(Histogram(114.,            116.0,200));
+    _mH     = new_ptr(Histogram(125.,            127.0,200));
   _yH     = new_ptr(Histogram( -10.0,            10.0,200));
   _ptH    = new_ptr(Histogram( 0.,              7000.0,1000));
   _phiH   = new_ptr(Histogram(  0.0,2.0*Constants::pi,200));
