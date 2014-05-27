@@ -38,6 +38,8 @@ NLOJetMEBase<N,I,F>::~NLOJetMEBase() {}
 template<unsigned int N, unsigned int I, unsigned int F>
 void NLOJetMEBase<N,I,F>::getDiagrams() const {
 
+  useMe();
+
   set<PDPtr> inQuarks;
 
   for ( PDVector::const_iterator p = subProcess().legs.begin();
@@ -114,7 +116,8 @@ template<unsigned int N, unsigned int I, unsigned int F>
 void NLOJetMEBase<N,I,F>::Init() {
 
   static ClassDocumentation<NLOJetMEBase<N,I,F> > documentation
-    ("NLOJetMEBase provides the base class for all NLO jet processes.");
+    ("NLOJetMEBase provides the base class for all NLO jet processes.",
+     "Matrix elements have been calculated using nlojet++");
 
   static RefVector<NLOJetMEBase<N,I,F>,ParticleData> interfaceQuarkFlavours
     ("QuarkFlavours",

@@ -80,6 +80,8 @@ TraceBasis::basisList(const vector<PDT::Colour>& basisId) const {
 
 size_t TraceBasis::prepareBasis(const vector<PDT::Colour>& sub) {
 
+  useMe();
+
   vector<PDT::Colour> mySub = normalOrder(sub);
 
   if ( theBasisMap.find(mySub) == theBasisMap.end() ) {
@@ -223,7 +225,8 @@ DescribeClass<TraceBasis,Herwig::ColourBasis>
 void TraceBasis::Init() {
 
   static ClassDocumentation<TraceBasis> documentation
-    ("TraceBasis implements the trace colour basis.");
+    ("TraceBasis implements the trace colour basis.",
+     "The colour algebra has been performed using ColorFull.");
 
 }
 

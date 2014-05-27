@@ -413,6 +413,7 @@ LorentzVector<Complex> GoSamAmplitude::plusPolarization(const Lorentz5Momentum& 
 }
 
 void GoSamAmplitude::evalSubProcess() const {
+  useMe();
 	double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
 	fillOLPMomenta(lastXComb().meMomenta());
 
@@ -518,7 +519,7 @@ DescribeClass<GoSamAmplitude, MatchboxOLPME> describeHerwigGoSamAmplitude("Herwi
 
 void GoSamAmplitude::Init() {
 
-  static ClassDocumentation<GoSamAmplitude> documentation("GoSamAmplitude implements an interface to GoSam.");
+  static ClassDocumentation<GoSamAmplitude> documentation("GoSamAmplitude implements an interface to GoSam.", "Matrix elements have been calculated using GoSam");
 
   static Parameter<GoSamAmplitude,string> interfacePath
        ("Path",

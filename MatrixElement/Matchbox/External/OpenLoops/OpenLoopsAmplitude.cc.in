@@ -258,6 +258,7 @@ bool OpenLoopsAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
 
 
 void OpenLoopsAmplitude::evalSubProcess() const {
+  useMe();
 	double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
 	fillOLPMomenta(lastXComb().meMomenta());
 	double acc ;
@@ -385,7 +386,7 @@ DescribeClass<OpenLoopsAmplitude, MatchboxOLPME> describeHerwigOpenLoopsAmplitud
 
 void OpenLoopsAmplitude::Init() {
 
-  static ClassDocumentation<OpenLoopsAmplitude> documentation("OpenLoopsAmplitude implements an interface to OpenLoops.");
+  static ClassDocumentation<OpenLoopsAmplitude> documentation("OpenLoopsAmplitude implements an interface to OpenLoops.","Matrix elements have been calculated using OpenLoops.");
   static Parameter<OpenLoopsAmplitude,string> interfaceInstallPath
     	("InstallPath",
      	"Prefix for the OpenLoops produced code.",

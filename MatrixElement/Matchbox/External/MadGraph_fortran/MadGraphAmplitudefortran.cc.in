@@ -210,6 +210,8 @@ bool MadGraphAmplitudefortran::canHandle(const PDVector& p,
 				   
 void MadGraphAmplitudefortran::prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr me) {
 
+  useMe();
+
   if ( !calculateTreeAmplitudes() ) {
     MatchboxAmplitude::prepareAmplitudes(me);
     return;
@@ -533,7 +535,7 @@ describeHerwigMadGraphAmplitudefortran("Herwig::MadGraphAmplitudefortran", "HwMa
  
 void MadGraphAmplitudefortran::Init() {
    
-  static ClassDocumentation<MadGraphAmplitudefortran> documentation  ("MadGraphAmplitudefortran");
+  static ClassDocumentation<MadGraphAmplitudefortran> documentation  ("MadGraphAmplitudefortran","Matrix elements have been calculated using MadGraph5");
    
   static Parameter<MadGraphAmplitudefortran,string> interfaceMGPath
     ("MG5Path",

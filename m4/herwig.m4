@@ -560,26 +560,26 @@ AC_DEFUN([HERWIG_CHECK_MADGRAPH],
 [
 AC_MSG_CHECKING([for MadGraph])
 
-AC_ARG_WITH([madgraph],
-    AS_HELP_STRING([--with-madgraph=DIR], [Installation path of MadGraph]),
+AC_ARG_WITH([madgraph-old],
+    AS_HELP_STRING([--with-madgraph-old=DIR], [Installation path of MadGraph]),
     [],
-    [with_madgraph=no]
+    [with_madgraph_old=no]
 )
 
-AC_MSG_RESULT([$with_madgraph])
+AC_MSG_RESULT([$with_madgraph_old])
 
-AS_IF([test "x$with_madgraph" != "xno"],
+AS_IF([test "x$with_madgraph_old" != "xno"],
       [AC_CHECK_FILES(
-      ${with_madgraph}/bin/mg5_aMC,
+      ${with_madgraph_old}/bin/mg5_aMC,
       [have_madgraph=yes], [have_madgraph=no])],
       [have_madgraph=no])
 
 AS_IF([test "x$have_madgraph" = "xyes"],
-      [MADGRAPHPREFIX=${with_madgraph}
+      [MADGRAPHPREFIX=${with_madgraph_old}
       AC_SUBST(MADGRAPHPREFIX)
       ])
 
-AS_IF([test "x$with_madgraph" != "xno"  -a "x$have_madgraph" = "xno"],
+AS_IF([test "x$with_madgraph_old" != "xno"  -a "x$have_madgraph" = "xno"],
       [AC_MSG_ERROR([MadGraph requested but not found])])
 
 AM_CONDITIONAL(HAVE_MADGRAPH,[test "x$have_madgraph" = "xyes" ])
@@ -610,26 +610,26 @@ AC_DEFUN([HERWIG_CHECK_MADGRAPHFORTRAN],
 [
 AC_MSG_CHECKING([for MadGraphFortran])
 
-AC_ARG_WITH([madgraphfortran],
-    AS_HELP_STRING([--with-madgraphfortran=DIR], [Installation path of MadGraph]),
+AC_ARG_WITH([madgraph],
+    AS_HELP_STRING([--with-madgraph=DIR], [Installation path of MadGraph]),
     [],
-    [with_madgraphfortran=no]
+    [with_madgraph=no]
 )
 
-AC_MSG_RESULT([$with_madgraphfortran])
+AC_MSG_RESULT([$with_madgraph])
 
-AS_IF([test "x$with_madgraphfortran" != "xno"],
+AS_IF([test "x$with_madgraph" != "xno"],
       [AC_CHECK_FILES(
-      ${with_madgraphfortran}/bin/mg5_aMC,
+      ${with_madgraph}/bin/mg5_aMC,
       [have_madgraphfortran=yes], [have_madgraphfortran=no])],
       [have_madgraphfortran=no])
 
 AS_IF([test "x$have_madgraphfortran" = "xyes"],
-      [MADGRAPHFORTRANPREFIX=${with_madgraphfortran}
+      [MADGRAPHFORTRANPREFIX=${with_madgraph}
       AC_SUBST(MADGRAPHFORTRANPREFIX)
       ])
 
-AS_IF([test "x$with_madgraphfortran" != "xno"  -a "x$have_madgraphfortran" = "xno"],
+AS_IF([test "x$with_madgraph" != "xno"  -a "x$have_madgraphfortran" = "xno"],
       [AC_MSG_ERROR([MadGraphfortran requested but not found])])
 
 AM_CONDITIONAL(HAVE_MADGRAPHFORTRAN,[test "x$have_madgraphfortran" = "xyes" ])
@@ -903,8 +903,8 @@ cat << _HW_EOF_ > config.herwig
 *** GoSam:		$with_gosam
 *** GoSam-Contrib:      $with_gosam_contrib
 *** OpenLoops:		$with_openloops
-*** MadGraph: 		$with_madgraph
-*** MadGraphfortran: 	$with_madgraphfortran
+*** MadGraph (old):	$with_madgraph_old
+*** MadGraph:        	$with_madgraph
 *** HEJ:		$with_hej
 ***
 *** GSL:		$with_gsl

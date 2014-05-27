@@ -156,6 +156,8 @@ LorentzVector<Complex> NJetsAmplitude::plusPolarization(const Lorentz5Momentum& 
 
 void NJetsAmplitude::evalSubProcess() const {
 
+  useMe();
+
   double units = pow(lastSHat()/GeV2,mePartonData().size()-4.);
   fillOLPMomenta(lastXComb().meMomenta());
   double as = SM().alphaS();
@@ -264,7 +266,7 @@ DescribeClass<NJetsAmplitude,MatchboxOLPME>
 void NJetsAmplitude::Init() {
 
   static ClassDocumentation<NJetsAmplitude> documentation
-    ("NJetsAmplitude implements an interface to NJets.");
+    ("NJetsAmplitude implements an interface to NJets.", "Matrix elements have been calculated using NJet.");
 
 }
 

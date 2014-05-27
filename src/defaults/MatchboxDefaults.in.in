@@ -230,8 +230,12 @@ create ColorFull::TraceBasis TraceBasis
 create Herwig::MatchboxHybridAmplitude GenericProcesses
 
 @LOAD_MADGRAPH@ HwMatchboxMadGraph.so
-@CREATE_MADGRAPH@ Herwig::MadGraphAmplitude MadGraph
-@SET_MADGRAPH@ MadGraph:ColourBasis TraceBasis
+@CREATE_MADGRAPH@ Herwig::MadGraphAmplitude MadGraphOld
+@SET_MADGRAPH@ MadGraphOld:ColourBasis TraceBasis
+
+@LOAD_MADGRAPHFORTRAN@ HwMatchboxMadGraphfortran.so
+@CREATE_MADGRAPHFORTRAN@ Herwig::MadGraphAmplitudefortran MadGraph
+@SET_MADGRAPHFORTRAN@ MadGraph:ColourBasis TraceBasis
 
 @LOAD_GOSAM@ HwMatchboxGoSam.so
 @CREATE_GOSAM@ Herwig::GoSamAmplitude GoSam
