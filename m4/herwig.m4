@@ -65,6 +65,7 @@ if test "x$with_thepeg" = "xno"; then
 fi
 
 THEPEGLDFLAGS="-L${with_thepeg}/lib/ThePEG"
+
 THEPEGHASLHAPDF="no"
 if test -e ${with_thepeg}/lib/ThePEG/ThePEGLHAPDF.so ; then
    THEPEGHASLHAPDF="yes"
@@ -74,6 +75,10 @@ if test "${host_cpu}" == "x86_64" -a -e ${with_thepeg}/lib64/ThePEG/libThePEG.so
   if test -e ${with_thepeg}/lib64/ThePEG/ThePEGLHAPDF.so ; then
       THEPEGHASLHAPDF="yes"
   fi
+fi
+
+if test "x$THEPEGHASLHAPDF" == "xno" ; then
+   AC_MSG_ERROR([Herwig++ requires ThePEG to be build with lhapdf.])
 fi
 
 THEPEGHASFASTJET="no"
@@ -104,6 +109,7 @@ AC_SUBST([THEPEGLIB],[-lThePEG])
 AC_SUBST(THEPEGLDFLAGS)
 AC_SUBST(THEPEGPATH)
 AC_SUBST(THEPEGHASLHAPDF)
+AC_SUBST(THEPEGHASFASTJET)
 
 LIBS="$oldlibs"
 LDFLAGS="$oldldflags"
@@ -852,11 +858,6 @@ LOAD_DIPOLE=""
 LOAD_DIPOLE_ALPHAS=""
 LOAD_MATCHBOX=""
 if test "$enable_dipole" = "yes"; then
-WARNLHAPDF=""
-if test "x$THEPEGHASLHAPDF" = "xno" ; then
-   AC_MSG_WARN([Dipole shower defaults require LHAPDF])
-   WARNLHAPDF=" * warning: LHAPDF disabled * "
-fi
 LOAD_DIPOLE="library HwDipoleShower.so"
 LOAD_DIPOLE_ALPHAS="library HwDipoleShowerAlphaS.so"
 LOAD_MATCHBOX="library HwMatchbox.so"
@@ -888,7 +889,7 @@ cat << _HW_EOF_ > config.herwig
 *** Prefix:		$prefix
 ***
 *** BSM models:		$enable_models
-*** Dipole shower:	$enable_dipole $WARNLHAPDF
+*** Dipole shower:	$enable_dipole
 *** UFO converter:	${python_was_found}
 ***
 *** Herwig debug mode:	$enable_debug
