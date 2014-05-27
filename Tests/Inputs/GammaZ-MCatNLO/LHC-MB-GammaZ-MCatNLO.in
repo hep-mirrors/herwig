@@ -27,20 +27,17 @@ clear /Herwig/MatrixElements/Matchbox/PPFactory:Amplitudes
 
 cd /Herwig/MatrixElements/Matchbox/Amplitudes
 
-#GoSam
-library HwMatchboxGoSam.so
-create Herwig::GoSamAmplitude GoSamAmplitude
-#set GoSamAmplitude:Path WpWm-Powheg
-#set GoSamAmplitude:SetupInFilename setup.gosam.in
-set GoSamAmplitude:PrintParameter On
-insert /Herwig/MatrixElements/Matchbox/PPFactory:Amplitudes 0 GoSamAmplitude
+insert /Herwig/MatrixElements/Matchbox/PPFactory:Amplitudes 0 GenericProcesses
+
+set GenericProcesses:TreeLevelAmplitude MadGraph
+set GenericProcesses:OneLoopAmplitude GoSam
 
 cd /Herwig/MatrixElements/Matchbox
 
 set PPFactory:OrderInAlphaS   0
 set PPFactory:OrderInAlphaEW  2
-do PPFactory:Process p p  W- W+
-#do PPFactory:Process d dbar  W- W+
+do PPFactory:Process p p  Z0 gamma
+#do PPFactory:Process d dbar  Z0 gamma
 
 #==================================================================================
 #                   :::::LO/NLO CALCULATIONS:::::
@@ -49,16 +46,16 @@ do PPFactory:Process p p  W- W+
 set PPFactory:BornContributions On
 set PPFactory:VirtualContributions On
 set PPFactory:RealContributions On
-set PPFactory:SubProcessGroups On
+set PPFactory:SubProcessGroups Off
 
 #==================================================================================
 #                     :::::CUTS:::::
 # for finite calculations make resonable cuts!
 #==================================================================================
 
-set /Herwig/Cuts/MassCut:CComb W
-set /Herwig/Cuts/MassCut:MinM 60*GeV
-set /Herwig/Cuts/MassCut:MaxM 100*GeV
+set /Herwig/Cuts/MassCut:CComb Z
+set /Herwig/Cuts/MassCut:MinM 66*GeV
+set /Herwig/Cuts/MassCut:MaxM 116*GeV
 
 set /Herwig/Cuts/QCDCuts:JetFinder /Herwig/Cuts/JetFinder
 insert /Herwig/Cuts/QCDCuts:MultiCuts 0 /Herwig/Cuts/JetCuts
@@ -66,19 +63,17 @@ insert /Herwig/Cuts/QCDCuts:MultiCuts 0 /Herwig/Cuts/JetCuts
 set /Herwig/Model:EW/Scheme GMuScheme
 set /Herwig/Model:EW/RecalculateEW On
 
-do /Herwig/Particles/W-:SelectDecayModes /Herwig/Particles/W-/W-->nu_mubar,mu-; /Herwig/Particles/W-/W-->nu_ebar,e-;
-do /Herwig/Particles/W+:SelectDecayModes /Herwig/Particles/W+/W+->nu_mu,mu+; /Herwig/Particles/W+/W+->nu_e,e+;
+do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig/Particles/Z0/Z0->mu-,mu+;
 
 #==================================================================================
 #                     :::::MATCHING:::::
 #==================================================================================
 
-#>>>>>>>>>> POWHEG-type next-to-leading order
+#>>>>>>>>>> MC@NLO-type next-to-leading order for use with dipole shower
 
-set PPFactory:ShowerApproximation MEMatching
-set MECorrectionHandler:Factory PPFactory
-cd /Herwig/Generators
-insert LHCGenerator:EventHandler:PostSubProcessHandlers[0] /Herwig/MatrixElements/Matchbox/MECorrectionHandler
+set PPFactory:ShowerApproximation DipoleMatching
+cd /Herwig/EventHandlers
+set LHCHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
 set /Herwig/MatrixElements/Matchbox/AlphaS/NLOAlphaS:LambdaQCD 203.6852*MeV
 set /Herwig/Model:QCD/RunningAlphaS /Herwig/MatrixElements/Matchbox/AlphaS/NLOAlphaS
 cd /Herwig/MatrixElements/Matchbox
@@ -89,7 +84,7 @@ cd /Herwig/MatrixElements/Matchbox
 
 #>>>>>>>>>> SCALE CHOICE
 
-set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 80.0*GeV
+set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 91.2*GeV
 set PPFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale
 
 #>>>>>>>>>> HARD PROCESS SCALE VARIATION
@@ -143,10 +138,8 @@ set LHCGenerator:PrintEvent 10
 set LHCGenerator:MaxErrors 10000
 erase /Herwig/Generators/LHCGenerator:EventHandler:PostSubProcessHandlers[0]
 
-create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
-insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_WWINC
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_WWJETS
+create Herwig::VGammaTest VGammaTest HadronTest.so
+insert LHCGenerator:AnalysisHandlers 0 VGammaTest
 
 #==================================================================================
 #                :::::DIPOLE SHOWER HADRONIZATION SETTINGS:::::
@@ -234,4 +227,4 @@ set Sampler:RunCombinationData Off
 #==================================================================================
 
 cd /Herwig/Generators
-saverun LHC-GS-WW-Powheg LHCGenerator
+saverun LHC-MB-GammaZ-MCatNLO LHCGenerator
