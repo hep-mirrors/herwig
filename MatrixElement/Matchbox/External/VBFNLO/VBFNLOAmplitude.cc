@@ -156,6 +156,8 @@ LorentzVector<Complex> VBFNLOAmplitude::plusPolarization(const Lorentz5Momentum&
 
 void VBFNLOAmplitude::evalSubProcess() const {
 
+  useMe();
+
   double units = pow(lastSHat()/GeV2,mePartonData().size()-4.);
   fillOLPMomenta(lastXComb().meMomenta());
   double scale = sqrt(mu2()/GeV2);
@@ -265,7 +267,7 @@ DescribeClass<VBFNLOAmplitude,MatchboxOLPME>
 void VBFNLOAmplitude::Init() {
 
   static ClassDocumentation<VBFNLOAmplitude> documentation
-    ("VBFNLOAmplitude implements an interface to VBFNLO.");
+    ("VBFNLOAmplitude implements an interface to VBFNLO.","Matrix elements have been calculated using VBFNLO.");
 
 }
 

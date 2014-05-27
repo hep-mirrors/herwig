@@ -250,6 +250,8 @@ int MatchboxFactory::orderOLPProcess(const Process& proc,
 
 void MatchboxFactory::setup() {
 
+  useMe();
+
   if ( ranSetup )
     return;
 

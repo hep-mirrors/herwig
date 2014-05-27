@@ -64,6 +64,8 @@ IBPtr DipoleShowerHandler::fullclone() const {
 
 tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr, Energy optCutoff) {
 
+  useMe();
+
   prepareCascade(sub);
 
   if ( !doFSR && ! doISR )

@@ -188,6 +188,8 @@ bool MadGraphAmplitude::canHandle(const PDVector& p,
 }
 				   
 void MadGraphAmplitude::prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr me) {
+
+  useMe();
    
   if ( !calculateTreeAmplitudes() ) {
     MatchboxAmplitude::prepareAmplitudes(me);
@@ -411,7 +413,7 @@ describeHerwigMadGraphAmplitude("Herwig::MadGraphAmplitude", "HwMatchboxMadGraph
  
 void MadGraphAmplitude::Init() {
    
-  static ClassDocumentation<MadGraphAmplitude> documentation  ("MadGraphAmplitude");
+  static ClassDocumentation<MadGraphAmplitude> documentation  ("MadGraphAmplitude","Matrix elements have been calculated using MadGraph5");
    
   static Parameter<MadGraphAmplitude,string> interfaceMGPath
     ("MG5Path",
