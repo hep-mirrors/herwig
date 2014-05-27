@@ -11,6 +11,8 @@
 // functions of the TreePhasespace class.
 //
 
+#include <sstream> 
+#include <string> 
 #include "TreePhasespace.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
@@ -20,6 +22,7 @@
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
+#include "Herwig++/MatrixElement/Matchbox/Utility/DiagramDrawer.h"
 
 
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -83,14 +86,30 @@ double TreePhasespace::generateTwoToNKinematics(const double* random,
   map<Ptr<Tree2toNDiagram>::ptr,
       pair <PhasespaceHelpers::PhasespaceTree, PhasespaceHelpers::PhasespaceTree> >::iterator ds =
     lastChannels().begin();
+
   size_t i = (size_t)(random[0]*nchannels);
   advance(ds,i);
+
+//   cout << "----------\n" << flush;
+//   cout << "channel = " << (size_t)(random[0]*nchannels) << "\n" << flush;
+  
   Ptr<Tree2toNDiagram>::ptr channel = ds->first;
   ++random;
+  
+//   std::stringstream  fnameprefix;
+//   fnameprefix << (size_t)(random[0]*nchannels);
+//   string fname = fnameprefix.str() + ".diagrams";
+//   ifstream test(fname.c_str());
+//   if ( !test ) {
+//     test.close();
+//     ofstream out(fname.c_str());
+//     DiagramDrawer::drawDiag(out,dynamic_cast<const Tree2toNDiagram&>(*channel));
+//     out << "\n";
+//   }
 
   lastPhasespaceInfo.rnd.numbers = random;
   lastPhasespaceInfo.rnd.nRnd = 3*momenta.size() - 10;
-
+    
   try {
     if ( !doMirror )
       lastChannels()[channel].first.generateKinematics(lastPhasespaceInfo,momenta);
@@ -99,7 +118,7 @@ double TreePhasespace::generateTwoToNKinematics(const double* random,
   } catch (Veto) {
     return 0.;
   }
-
+    
   if ( !matchConstraints(momenta) )
     return 0.;
 
