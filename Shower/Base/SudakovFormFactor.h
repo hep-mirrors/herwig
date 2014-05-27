@@ -138,7 +138,9 @@ public:
 			cutOffOption_(0), a_(0.3), b_(2.3), c_(0.3*GeV),
 			kinCutoffScale_( 2.3*GeV ), vgcut_(0.85*GeV),
 			vqcut_(0.85*GeV), pTmin_(1.*GeV), pT2min_(ZERO),
-			z_( 0.0 ),phi_(0.0), pT_() {}
+			z_( 0.0 ),phi_(0.0), pT_(),
+			theFactorizationScaleFactor(1.0), 
+			theRenormalizationScaleFactor(1.0) {}
 
   /**
    *  Members to generate the scale of the next branching
@@ -616,6 +618,41 @@ private:
    */
   Energy freeze_;
   //@}
+
+public:
+
+  /**
+   * Get the factorization scale factor
+   */
+  double factorizationScaleFactor() const { return theFactorizationScaleFactor; }
+
+  /**
+   * Set the factorization scale factor
+   */
+  void factorizationScaleFactor(double f) { theFactorizationScaleFactor = f; }
+
+  /**
+   * Get the renormalization scale factor
+   */
+  double renormalizationScaleFactor() const { return theRenormalizationScaleFactor; }
+
+  /**
+   * Set the renormalization scale factor
+   */
+  void renormalizationScaleFactor(double f) { theRenormalizationScaleFactor = f; }
+
+private:
+
+  /**
+   * The factorization scale factor.
+   */
+  double theFactorizationScaleFactor;
+
+  /**
+   * The renormalization scale factor.
+   */
+  double theRenormalizationScaleFactor;
+
 };
 
 }

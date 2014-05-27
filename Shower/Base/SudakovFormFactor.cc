@@ -31,14 +31,16 @@ void SudakovFormFactor::persistentOutput(PersistentOStream & os) const {
   os << splittingFn_ << alpha_ << pdfmax_ << particles_ << pdffactor_
      << a_ << b_ << ounit(c_,GeV) << ounit(kinCutoffScale_,GeV) << cutOffOption_
      << ounit(vgcut_,GeV) << ounit(vqcut_,GeV) 
-     << ounit(pTmin_,GeV) << ounit(pT2min_,GeV2);
+     << ounit(pTmin_,GeV) << ounit(pT2min_,GeV2)
+     << theFactorizationScaleFactor << theRenormalizationScaleFactor;
 }
 
 void SudakovFormFactor::persistentInput(PersistentIStream & is, int) {
   is >> splittingFn_ >> alpha_ >> pdfmax_ >> particles_ >> pdffactor_
      >> a_ >> b_ >> iunit(c_,GeV) >> iunit(kinCutoffScale_,GeV) >> cutOffOption_
      >> iunit(vgcut_,GeV) >> iunit(vqcut_,GeV) 
-     >> iunit(pTmin_,GeV) >> iunit(pT2min_,GeV2);
+     >> iunit(pTmin_,GeV) >> iunit(pT2min_,GeV2)
+     >> theFactorizationScaleFactor >> theRenormalizationScaleFactor;
 }
 
 void SudakovFormFactor::Init() {
@@ -158,7 +160,7 @@ void SudakovFormFactor::Init() {
 }
 
 bool SudakovFormFactor::alphaSVeto(Energy2 pt2) const {
-  pt2 *= sqr(ShowerHandler::currentHandler()->renormalizationScaleFactor());
+  pt2 *= sqr(renormalizationScaleFactor());
   return UseRandom::rnd() > ThePEG::Math::powi(alpha_->ratio(pt2),
 					       splittingFn_->interactionOrder());
 }
@@ -169,7 +171,7 @@ PDFVeto(const Energy2 t, const double x,
 	Ptr<BeamParticleData>::transient_const_pointer beam) const {
   assert(pdf_);
 
-  Energy2 theScale = t * sqr(ShowerHandler::currentHandler()->factorizationScaleFactor());
+  Energy2 theScale = t * sqr(factorizationScaleFactor());
   if (theScale < sqr(freeze_)) theScale = sqr(freeze_);
 
   double newpdf(0.0), oldpdf(0.0);

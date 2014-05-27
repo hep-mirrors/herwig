@@ -525,12 +525,17 @@ void ShowerHandler::findShoweringParticles() {
 
 void ShowerHandler::prepareCascade(tSubProPtr sub) { 
   current_ = currentStep(); 
-  subProcess_ = sub; 
+  subProcess_ = sub;
 } 
 
 tPPair ShowerHandler::cascade(tSubProPtr sub,
 			      XCPtr xcomb) {
   prepareCascade(sub);
+  // set the scale variation factors; needs to go after prepareCascade
+  // to trigger possible different variations for hard and secondary
+  // scatters
+  evolver()->renormalizationScaleFactor(renormalizationScaleFactor());
+  evolver()->factorizationScaleFactor(factorizationScaleFactor());
   // start of the try block for the whole showering process
   unsigned int countFailures=0;
   while (countFailures<maxtry_) {

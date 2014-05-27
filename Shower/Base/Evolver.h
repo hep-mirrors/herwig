@@ -63,7 +63,9 @@ public:
 	      _iptrms(ZERO), _beta(0.), _gamma(ZERO), _iptmax(),
 	      _limitEmissions(0), _initialenhance(1.), _finalenhance(1.),
 	      _hardonly(false), _trunc_Mode(true), _hardEmissionMode(0),
-	      _colourEvolutionMethod(0)
+	      _colourEvolutionMethod(0),
+	      theFactorizationScaleFactor(1.0), 
+	      theRenormalizationScaleFactor(1.0)
   {}
 
   /**
@@ -115,6 +117,26 @@ public:
    *  Connect the Hard and Shower trees
    */
   virtual void connectTrees(ShowerTreePtr showerTree, HardTreePtr hardTree, bool hard )const;
+
+  /**
+   * Set the factorization scale factor
+   */
+  void factorizationScaleFactor(double f) { 
+    if ( f == theFactorizationScaleFactor )
+      return;
+    theFactorizationScaleFactor = f;
+    splittingGenerator()->factorizationScaleFactor(f);
+  }
+
+  /**
+   * Set the renormalization scale factor
+   */
+  void renormalizationScaleFactor(double f) {
+    if ( f == theRenormalizationScaleFactor )
+      return;
+    theRenormalizationScaleFactor = f;
+    splittingGenerator()->renormalizationScaleFactor(f);
+  }
 
 public:
 
@@ -680,6 +702,16 @@ private:
    * The shower approximation to provide the hard scale profile
    */
   Ptr<ShowerApproximation>::tptr theShowerApproximation;
+
+  /**
+   * The factorization scale factor.
+   */
+  double theFactorizationScaleFactor;
+
+  /**
+   * The renormalization scale factor.
+   */
+  double theRenormalizationScaleFactor;
 
 };
 

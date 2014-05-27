@@ -57,7 +57,8 @@ void Evolver::persistentOutput(PersistentOStream & os) const {
      << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << ounit(_iptmax,GeV) 
      << _vetoes << _hardonly << _trunc_Mode << _hardEmissionMode 
      << _colourEvolutionMethod << _reconOpt
-     << isMCatNLOSEvent << isMCatNLOHEvent;
+     << isMCatNLOSEvent << isMCatNLOHEvent
+     << theFactorizationScaleFactor << theRenormalizationScaleFactor;
 }
 
 void Evolver::persistentInput(PersistentIStream & is, int) {
@@ -67,7 +68,8 @@ void Evolver::persistentInput(PersistentIStream & is, int) {
      >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> iunit(_iptmax,GeV) 
      >> _vetoes >> _hardonly >> _trunc_Mode >> _hardEmissionMode
      >> _colourEvolutionMethod >> _reconOpt
-     >> isMCatNLOSEvent >> isMCatNLOHEvent;
+     >> isMCatNLOSEvent >> isMCatNLOHEvent
+     >> theFactorizationScaleFactor >> theRenormalizationScaleFactor;
 }
 
 void Evolver::Init() {
