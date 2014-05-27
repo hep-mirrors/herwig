@@ -341,8 +341,7 @@ void ShowerApproximation::persistentOutput(PersistentOStream & os) const {
      << theBornScaleInSplitting << theEmissionScaleInSplitting
      << ounit(theRenormalizationScaleFreeze,GeV)
      << ounit(theFactorizationScaleFreeze,GeV)
-     << theProfileScales << theProfileRho << maxPtIsMuF
-     << theShowerHandler;
+     << theProfileScales << theProfileRho << maxPtIsMuF;
 }
 
 void ShowerApproximation::persistentInput(PersistentIStream & is, int) {
@@ -359,19 +358,7 @@ void ShowerApproximation::persistentInput(PersistentIStream & is, int) {
      >> theBornScaleInSplitting >> theEmissionScaleInSplitting
      >> iunit(theRenormalizationScaleFreeze,GeV)
      >> iunit(theFactorizationScaleFreeze,GeV)
-     >> theProfileScales >> theProfileRho >> maxPtIsMuF
-     >> theShowerHandler;
-}
-
-void ShowerApproximation::doinit() {
-  HandlerBase::doinit();
-  if ( theShowerHandler ) {
-    if ( theShowerHandler->scaleFactorOption() < 2 ) {
-      theHardScaleFactor = theShowerHandler->hardScaleFactor();
-      theFactorizationScaleFactor = theShowerHandler->factorizationScaleFactor();
-      theRenormalizationScaleFactor = theShowerHandler->renormalizationScaleFactor();
-    }
-  }
+     >> theProfileScales >> theProfileRho >> maxPtIsMuF;
 }
 
 // *** Attention *** The following static variable is needed for the type
@@ -650,11 +637,5 @@ void ShowerApproximation::Init() {
      "No",
      "",
      false);
-
-  static Reference<ShowerApproximation,ShowerHandler> interfaceShowerHandler
-    ("ShowerHandler",
-     "",
-     &ShowerApproximation::theShowerHandler, false, false, true, true, false);
-
 }
 

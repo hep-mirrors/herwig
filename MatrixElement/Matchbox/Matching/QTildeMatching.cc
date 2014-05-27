@@ -325,13 +325,23 @@ double QTildeMatching::splitFn(const pair<Energy2,double>& vars) const {
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
+void QTildeMatching::doinit() {
+  ShowerApproximation::doinit();
+  if ( theShowerHandler ) {
+    if ( theShowerHandler->scaleFactorOption() < 2 ) {
+      hardScaleFactor(theShowerHandler->hardScaleFactor());
+      factorizationScaleFactor(theShowerHandler->factorizationScaleFactor());
+      renormalizationScaleFactor(theShowerHandler->renormalizationScaleFactor());
+    }
+  }
+}
 
 void QTildeMatching::persistentOutput(PersistentOStream & os) const {
-  os << theQTildeFinder << theQTildeSudakov;
+  os << theQTildeFinder << theQTildeSudakov << theShowerHandler;
 }
 
 void QTildeMatching::persistentInput(PersistentIStream & is, int) {
-  is >> theQTildeFinder >> theQTildeSudakov;
+  is >> theQTildeFinder >> theQTildeSudakov >> theShowerHandler;
 }
 
 
@@ -357,6 +367,11 @@ void QTildeMatching::Init() {
     ("QTildeSudakov",
      "Set the partner finder to calculate hard scales.",
      &QTildeMatching::theQTildeSudakov, false, false, true, false, false);
+
+  static Reference<QTildeMatching,ShowerHandler> interfaceShowerHandler
+    ("ShowerHandler",
+     "",
+     &QTildeMatching::theShowerHandler, false, false, true, true, false);
 
 }
 

@@ -4,6 +4,7 @@ HwShower_la_LIBADD = \
 $(top_builddir)/PDF/libHwRemDecayer.la \
 $(top_builddir)/PDF/libHwMPIPDF.la
 HwShower_la_SOURCES =  \
+ShowerHandler.h ShowerHandler.fh ShowerHandler.cc \
 UEBase.h UEBase.cc UEBase.fh \
 Couplings/ShowerAlphaQCD.h Couplings/ShowerAlphaQCD.cc \
 SplittingFunctions/HalfHalfOneSplitFn.h SplittingFunctions/HalfHalfOneSplitFn.cc\
@@ -32,7 +33,6 @@ Base/ShowerVeto.h Base/ShowerVeto.fh Base/ShowerVeto.cc
 
 noinst_LTLIBRARIES = libHwShower.la
 libHwShower_la_SOURCES = ShowerConfig.h \
-ShowerHandler.h ShowerHandler.fh ShowerHandler.cc \
 Base/Branching.h \
 Base/ShowerParticle.cc  Base/ShowerParticle.fh  Base/ShowerParticle.h \
 Base/ShowerKinematics.fh  Base/ShowerKinematics.h Base/ShowerKinematics.cc \

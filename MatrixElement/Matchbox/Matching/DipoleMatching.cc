@@ -85,10 +85,24 @@ double DipoleMatching::me2() const {
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 
-void DipoleMatching::persistentOutput(PersistentOStream &) const {}
+void DipoleMatching::persistentOutput(PersistentOStream & os) const {
+  os << theShowerHandler;
+}
 
-void DipoleMatching::persistentInput(PersistentIStream &, int) {}
+void DipoleMatching::persistentInput(PersistentIStream & is, int) {
+  is >> theShowerHandler;
+}
 
+void DipoleMatching::doinit() {
+  ShowerApproximation::doinit();
+  if ( theShowerHandler ) {
+    if ( theShowerHandler->scaleFactorOption() < 2 ) {
+      hardScaleFactor(theShowerHandler->hardScaleFactor());
+      factorizationScaleFactor(theShowerHandler->factorizationScaleFactor());
+      renormalizationScaleFactor(theShowerHandler->renormalizationScaleFactor());
+    }
+  }
+}
 
 // *** Attention *** The following static variable is needed for the type
 // description system in ThePEG. Please check that the template arguments
@@ -96,12 +110,17 @@ void DipoleMatching::persistentInput(PersistentIStream &, int) {}
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<DipoleMatching,Herwig::ShowerApproximation>
-  describeHerwigDipoleMatching("Herwig::DipoleMatching", "HwDipoleMatching.so");
+  describeHerwigDipoleMatching("Herwig::DipoleMatching", "HwDipoleMatching.so HwShower.so");
 
 void DipoleMatching::Init() {
 
   static ClassDocumentation<DipoleMatching> documentation
     ("DipoleMatching implements NLO matching with the dipole shower.");
+
+  static Reference<DipoleMatching,ShowerHandler> interfaceShowerHandler
+    ("ShowerHandler",
+     "",
+     &DipoleMatching::theShowerHandler, false, false, true, true, false);
 
 }
 
