@@ -1,6 +1,4 @@
-if WANT_DIPOLE
 pkglib_LTLIBRARIES = HwMatchboxScales.la
-endif
 
 HwMatchboxScales_la_LDFLAGS = -module -version-info 1:0:0
 

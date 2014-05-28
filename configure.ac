@@ -145,8 +145,6 @@ HERWIG_CHECK_ABS_BUG
 
 HERWIG_ENABLE_MODELS
 
-HERWIG_ENABLE_DIPOLE
-
 SHARED_FLAG=-shared
 AM_CONDITIONAL(NEED_APPLE_FIXES,
 		[test "xx${host/darwin/foundit}xx" != "xx${host}xx"])

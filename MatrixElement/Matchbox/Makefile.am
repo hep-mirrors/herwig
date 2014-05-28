@@ -4,9 +4,7 @@ Dipoles InsertionOperators Matching \
 Cuts Scales Builtin External Tests \
 ColorFull
 
-if WANT_DIPOLE
 noinst_LTLIBRARIES = libHwMatchbox.la
-endif
 
 libHwMatchbox_la_LIBADD = \
 Base/libHwMatchboxBase.la \

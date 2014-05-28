@@ -1,7 +1,5 @@
-if WANT_DIPOLE
 noinst_LTLIBRARIES = libHwMatchboxMatching.la
 pkglib_LTLIBRARIES = HwQTildeMatching.la HwDipoleMatching.la
-endif
 
 libHwMatchboxMatching_la_SOURCES = \
 ShowerApproximation.h \
