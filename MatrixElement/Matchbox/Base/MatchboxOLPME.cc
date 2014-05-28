@@ -31,7 +31,8 @@ MatchboxOLPME::MatchboxOLPME()
 MatchboxOLPME::~MatchboxOLPME() {}
 
 bool MatchboxOLPME::canHandle(const PDVector& p,
-			      Ptr<MatchboxFactory>::tptr factory) const {
+			      Ptr<MatchboxFactory>::tptr factory,
+			      bool) const {
 
   if ( factory->processData()->diagramMap().find(p) !=
        factory->processData()->diagramMap().end() )

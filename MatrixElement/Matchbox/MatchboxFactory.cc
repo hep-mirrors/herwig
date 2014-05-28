@@ -101,7 +101,7 @@ string pid(const PDVector& key) {
 }
 
 vector<Ptr<MatchboxMEBase>::ptr> MatchboxFactory::
-makeMEs(const vector<string>& proc, unsigned int orderas) {
+makeMEs(const vector<string>& proc, unsigned int orderas, bool virt) {
 
   generator()->log() << "determining subprocesses for ";
   copy(proc.begin(),proc.end(),ostream_iterator<string>(generator()->log()," "));
@@ -163,7 +163,7 @@ makeMEs(const vector<string>& proc, unsigned int orderas) {
 	for ( set<PDVector>::const_iterator p = processes.begin();
 	      p != processes.end(); ++p ) {
 	  ++(*progressBar);
-	  if ( !(**amp).canHandle(*p,this) )
+	  if ( !(**amp).canHandle(*p,this,virt) )
 	    continue;
 	  if ( (**amp).isExternal() )
 	    externalAmplitudes().insert(*amp);
@@ -257,6 +257,7 @@ void MatchboxFactory::setup() {
 
   olpProcesses().clear();
   externalAmplitudes().clear();
+  theHighestVirtualsize = 0;
 
   if ( bornMEs().empty() ) {
 
@@ -286,17 +287,16 @@ void MatchboxFactory::setup() {
     vector<Ptr<MatchboxMEBase>::ptr> mes;
     for ( vector<vector<string> >::const_iterator p = processes.begin();
 	  p != processes.end(); ++p ) {
-      
-      if(virtualContributions()){
-          theHighestVirtualsize=(*p).size();
+      if( virtualContributions() ) {
+	theHighestVirtualsize = max(theHighestVirtualsize,(*p).size());
       }
-      mes = makeMEs(*p,orderInAlphaS());
+      mes = makeMEs(*p,orderInAlphaS(),virtualContributions());
       copy(mes.begin(),mes.end(),back_inserter(bornMEs()));
       if ( realContributions() && realEmissionMEs().empty() ) {
 	if ( realEmissionProcesses.empty() ) {
 	  vector<string> rproc = *p;
 	  rproc.push_back("j");
-	  mes = makeMEs(rproc,orderInAlphaS()+1);
+	  mes = makeMEs(rproc,orderInAlphaS()+1,false);
 	  copy(mes.begin(),mes.end(),back_inserter(realEmissionMEs()));
 	}
       }
@@ -305,7 +305,7 @@ void MatchboxFactory::setup() {
       if ( !realEmissionProcesses.empty() ) {
 	for ( vector<vector<string> >::const_iterator q =
 		realEmissionProcesses.begin(); q != realEmissionProcesses.end(); ++q ) {
-	  mes = makeMEs(*q,orderInAlphaS()+1);
+	  mes = makeMEs(*q,orderInAlphaS()+1,false);
 	  copy(mes.begin(),mes.end(),back_inserter(realEmissionMEs()));
 	}
       }

@@ -47,7 +47,8 @@ public:
    * Return true, if this amplitude can handle the given process.
    */
   virtual bool canHandle(const PDVector& p,
-			 Ptr<MatchboxFactory>::tptr) const;
+			 Ptr<MatchboxFactory>::tptr,
+			 bool) const;
 
   /**
    * Set the (tree-level) order in \f$g_S\f$ in which this matrix

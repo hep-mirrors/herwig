@@ -51,7 +51,8 @@ public:
    * Return true, if this amplitude can handle the given process.
    */
   virtual bool canHandle(const PDVector&,
-			 Ptr<MatchboxFactory>::tptr) const;
+			 Ptr<MatchboxFactory>::tptr,
+			 bool) const;
 
   /**
    * Return true, if this amplitude already includes symmetry factors

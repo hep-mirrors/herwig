@@ -909,7 +909,8 @@ private:
    * Generate matrix element objects for the given process.
    */
   vector<Ptr<MatchboxMEBase>::ptr> makeMEs(const vector<string>&, 
-					   unsigned int orderas);
+					   unsigned int orderas,
+					   bool virt);
 
   /**
    * The shower approximation.
@@ -970,7 +971,6 @@ private:
   /**
    * The highest multiplicity of legs having virtual contributions.(needed for madgraph) 
    */
-  
   int theHighestVirtualsize;
 
   /**

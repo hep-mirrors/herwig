@@ -185,7 +185,8 @@ void MadGraphAmplitude::doinitrun() {
 }
 
 bool MadGraphAmplitude::canHandle(const PDVector& p,
-				  Ptr<MatchboxFactory>::tptr factory) const {
+				  Ptr<MatchboxFactory>::tptr factory,
+				  bool virt) const {
   if ( factory->processData()->diagramMap().find(p) !=
        factory->processData()->diagramMap().end() )
     return true;
@@ -203,7 +204,7 @@ bool MadGraphAmplitude::canHandle(const PDVector& p,
     orderFile <<(*it)->PDGName()<<" ";k+=1;if (k==2)orderFile<<" > ";
   }
  
-  if (factory->highestVirt()>=p.size()) orderFile<< " [ virt=QCD ]";
+  if (virt && factory->highestVirt()>=p.size()) orderFile<< " [ virt=QCD ]";
   orderFile << flush;
   return true;
 }

@@ -141,7 +141,8 @@ public:
    * Return true, if this amplitude can handle the given process.
    */
   virtual bool canHandle(const PDVector& p,
-			 Ptr<MatchboxFactory>::tptr) const { return canHandle(p); }
+			 Ptr<MatchboxFactory>::tptr,
+			 bool) const { return canHandle(p); }
 
   /**
    * Return true, if this amplitude can handle the given process.
