@@ -137,6 +137,7 @@ cd /Herwig/MatrixElements/Matchbox
 # set LEPHandler:CascadeHandler NULL
 # set LEPHandler:HadronizationHandler NULL
 # set LEPHandler:DecayHandler NULL
+# set LEPHandler:Weighted On
 # set /Herwig/Analysis/Basics:CheckQuark No
 # set /Herwig/Model:QCD/RunningAlphaS /Herwig/MatrixElements/Matchbox/AlphaS/MatchboxNLOAlphaS
 # cd /Herwig/MatrixElements/Matchbox

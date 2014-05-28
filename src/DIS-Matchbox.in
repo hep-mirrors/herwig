@@ -144,6 +144,7 @@ cd /Herwig/MatrixElements/Matchbox
 # set DISHandler:CascadeHandler NULL
 # set DISHandler:HadronizationHandler NULL
 # set DISHandler:DecayHandler NULL
+# set DISHandler:Weighted On
 # set /Herwig/Analysis/Basics:CheckQuark No
 # set /Herwig/Model:QCD/RunningAlphaS /Herwig/MatrixElements/Matchbox/AlphaS/MatchboxNLOAlphaS
 # cd /Herwig/MatrixElements/Matchbox
