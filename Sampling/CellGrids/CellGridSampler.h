@@ -185,8 +185,18 @@ private:
   /**
    * The splittings for each dimension befor adaption.
    */
-  
   vector<int>  the_pre_adaption_splits;
+
+  /**
+   * The number of splits to put into parton luminiosity degrees of
+   * freedom.
+   */
+  int theLuminositySplits;
+
+  /**
+   * The number of splits to put into channel degrees of freedom.
+   */
+  int theChannelSplits;
 
 };
 

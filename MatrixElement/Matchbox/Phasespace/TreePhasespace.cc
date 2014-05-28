@@ -90,23 +90,9 @@ double TreePhasespace::generateTwoToNKinematics(const double* random,
   size_t i = (size_t)(random[0]*nchannels);
   advance(ds,i);
 
-//   cout << "----------\n" << flush;
-//   cout << "channel = " << (size_t)(random[0]*nchannels) << "\n" << flush;
-  
   Ptr<Tree2toNDiagram>::ptr channel = ds->first;
   ++random;
   
-//   std::stringstream  fnameprefix;
-//   fnameprefix << (size_t)(random[0]*nchannels);
-//   string fname = fnameprefix.str() + ".diagrams";
-//   ifstream test(fname.c_str());
-//   if ( !test ) {
-//     test.close();
-//     ofstream out(fname.c_str());
-//     DiagramDrawer::drawDiag(out,dynamic_cast<const Tree2toNDiagram&>(*channel));
-//     out << "\n";
-//   }
-
   lastPhasespaceInfo.rnd.numbers = random;
   lastPhasespaceInfo.rnd.nRnd = 3*momenta.size() - 10;
     
