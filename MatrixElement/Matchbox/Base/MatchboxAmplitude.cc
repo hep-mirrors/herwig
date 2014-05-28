@@ -307,7 +307,7 @@ void MatchboxAmplitude::fillCrossingMap(size_t shift) {
 	  if ( ++checkcc == processLegs.end() )
 	    break;
       }
-      assert(checkcc != processLegs.end());
+      if(checkcc == processLegs.end())--checkcc;
       crossingMap()[ampCount] = checkcc->second - shift;
       amplitudeLegs.insert(make_pair(checkcc->first,ampCount));
       processLegs.erase(checkcc);
