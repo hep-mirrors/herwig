@@ -288,7 +288,7 @@ void MatchboxFactory::setup() {
     for ( vector<vector<string> >::const_iterator p = processes.begin();
 	  p != processes.end(); ++p ) {
       if( virtualContributions() ) {
-	theHighestVirtualsize = max(theHighestVirtualsize,(*p).size());
+	theHighestVirtualsize = max(theHighestVirtualsize,(int((*p).size())));
       }
       mes = makeMEs(*p,orderInAlphaS(),virtualContributions());
       copy(mes.begin(),mes.end(),back_inserter(bornMEs()));
