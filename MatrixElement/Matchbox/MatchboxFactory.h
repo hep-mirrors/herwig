@@ -623,6 +623,12 @@ public:
    */
   map<string,PDVector>& particleGroups() { return theParticleGroups; }
 
+  /**
+   * Return true, if the given particle is incoming
+   */
+  bool isIncoming(cPDPtr p) const {
+    return theIncoming.find(p->id()) != theIncoming.end();
+  }
   //@}
 
 public:
@@ -982,6 +988,11 @@ private:
    * True, if the setup has already been run.
    */
   bool ranSetup;
+
+  /**
+   * PDG ids of incoming particles
+   */
+  set<long> theIncoming;
 
   /**
    * The current factory

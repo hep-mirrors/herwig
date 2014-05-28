@@ -38,7 +38,8 @@ MatchboxMEBase::MatchboxMEBase()
   : MEBase(), 
     theOneLoop(false),
     theOneLoopNoBorn(false),
-    theNoCorrelations(false) {}
+    theNoCorrelations(false),
+    theHavePDFs(false,false), checkedPDFs(false) {}
 
 MatchboxMEBase::~MatchboxMEBase() {}
 
@@ -354,10 +355,27 @@ Energy2 MatchboxMEBase::renormalizationScaleQED() const {
 
 void MatchboxMEBase::setVetoScales(tSubProPtr) const {}
 
+bool MatchboxMEBase::havePDFWeight1() const {
+  if ( checkedPDFs )
+    return theHavePDFs.first;
+  theHavePDFs.first = factory()->isIncoming(mePartonData()[0]);
+  theHavePDFs.second = factory()->isIncoming(mePartonData()[1]);
+  checkedPDFs = true;
+  return theHavePDFs.first;
+}
+
+bool MatchboxMEBase::havePDFWeight2() const {
+  if ( checkedPDFs )
+    return theHavePDFs.second;
+  theHavePDFs.first = factory()->isIncoming(mePartonData()[0]);
+  theHavePDFs.second = factory()->isIncoming(mePartonData()[1]);
+  checkedPDFs = true;
+  return theHavePDFs.second;
+}
+
 void MatchboxMEBase::getPDFWeight(Energy2 factorizationScale) const {
 
-  if ( !mePartonData()[0]->coloured() &&
-       !mePartonData()[1]->coloured() ) {
+  if ( !havePDFWeight1() && !havePDFWeight2() ) {
     lastMEPDFWeight(1.0);
     logPDFWeight();
     return;
@@ -365,10 +383,10 @@ void MatchboxMEBase::getPDFWeight(Energy2 factorizationScale) const {
 
   double w = 1.;
 
-  if ( mePartonData()[0]->coloured() && havePDFWeight1() )
+  if ( havePDFWeight1() )
     w *= pdf1(factorizationScale);
 
-  if ( mePartonData()[1]->coloured() && havePDFWeight2() )
+  if ( havePDFWeight2() )
     w *= pdf2(factorizationScale);
 
   lastMEPDFWeight(w);
@@ -1326,7 +1344,8 @@ void MatchboxMEBase::persistentOutput(PersistentOStream & os) const {
      << theReweights << theSubprocess << theOneLoop 
      << theOneLoopNoBorn
      << epsilonSquarePoleHistograms << epsilonPoleHistograms
-     << theOLPProcess << theNoCorrelations;
+     << theOLPProcess << theNoCorrelations
+     << theHavePDFs << checkedPDFs;
 }
 
 void MatchboxMEBase::persistentInput(PersistentIStream & is, int) {
@@ -1335,7 +1354,8 @@ void MatchboxMEBase::persistentInput(PersistentIStream & is, int) {
      >> theReweights >> theSubprocess >> theOneLoop 
      >> theOneLoopNoBorn
      >> epsilonSquarePoleHistograms >> epsilonPoleHistograms
-     >> theOLPProcess >> theNoCorrelations;
+     >> theOLPProcess >> theNoCorrelations
+     >> theHavePDFs >> checkedPDFs;
   lastMatchboxXComb(theLastXComb);
 }
 

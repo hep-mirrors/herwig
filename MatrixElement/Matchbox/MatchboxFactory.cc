@@ -222,6 +222,8 @@ makeMEs(const vector<string>& proc, unsigned int orderas, bool virt) {
 	throw InitException() << "Matrix element " << pname << " already existing.";
       if ( me->diagrams().empty() )continue;
       res.push_back(me);
+      theIncoming.insert(m->legs[0]->id());
+      theIncoming.insert(m->legs[1]->id());
     }
   }
 
@@ -258,6 +260,7 @@ void MatchboxFactory::setup() {
   olpProcesses().clear();
   externalAmplitudes().clear();
   theHighestVirtualsize = 0;
+  theIncoming.clear();
 
   if ( bornMEs().empty() ) {
 
@@ -959,7 +962,8 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
      << theOLPProcesses << theExternalAmplitudes
      << theSelectedAmplitudes << theDeselectedAmplitudes
      << theDipoleSet << theReweighters << thePreweighters
-     << theMECorrectionsOnly<< theLoopSimCorrections<<theHighestVirtualsize << ranSetup;
+     << theMECorrectionsOnly<< theLoopSimCorrections<<theHighestVirtualsize << ranSetup
+     << theIncoming;
 }
 
 void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
@@ -981,7 +985,8 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
      >> theOLPProcesses >> theExternalAmplitudes
      >> theSelectedAmplitudes >> theDeselectedAmplitudes
      >> theDipoleSet >> theReweighters >> thePreweighters
-     >> theMECorrectionsOnly>> theLoopSimCorrections>>theHighestVirtualsize >> ranSetup;
+     >> theMECorrectionsOnly>> theLoopSimCorrections>>theHighestVirtualsize >> ranSetup
+     >> theIncoming;
 }
 
 string MatchboxFactory::startParticleGroup(string name) {

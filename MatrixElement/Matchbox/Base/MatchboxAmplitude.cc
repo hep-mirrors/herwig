@@ -300,7 +300,7 @@ void MatchboxAmplitude::fillCrossingMap(size_t shift) {
 	}
       }
       // default to just pick the next available anti-particle
-      if ( processLegs.empty() )break;
+      if ( processLegs.empty() ) break;
       if ( checkcc == processLegs.end() ) {
 	checkcc = processLegs.begin();
 	while ( checkcc->first->id() > 0 )
