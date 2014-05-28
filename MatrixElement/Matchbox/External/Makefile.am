@@ -28,7 +28,3 @@ endif
 if HAVE_MADGRAPH
 SUBDIRS += MadGraph
 endif
-
-if HAVE_MADGRAPHFORTRAN
-SUBDIRS += MadGraph_fortran
-endif

@@ -731,17 +731,13 @@ void MatchboxFactory::setup() {
 
   if ( !externalAmplitudes().empty() ) {
     generator()->log() << "Initializing external amplitudes.\n" << flush;
-    boost::progress_display * progressBar = 
-      new boost::progress_display(externalAmplitudes().size(),generator()->log());
     for ( set<Ptr<MatchboxAmplitude>::tptr>::const_iterator ext =
 	    externalAmplitudes().begin(); ext != externalAmplitudes().end(); ++ext ) {
       if ( !(**ext).initializeExternal() ) {
 	throw InitException() 
 	  << "error: failed to initialize amplitude '" << (**ext).name() << "'\n";
       }
-      ++(*progressBar);
     }
-    delete progressBar;
     generator()->log() << "--------------------------------------------------------------------------------\n"
 		       << flush;
   }
@@ -753,17 +749,13 @@ void MatchboxFactory::setup() {
 	    oit = olpProcesses().begin(); oit != olpProcesses().end(); ++oit ) {
       olps[oit->first] = oit->second;
     }
-    boost::progress_display * progressBar = 
-      new boost::progress_display(olps.size(),generator()->log());
     for ( map<Ptr<MatchboxAmplitude>::tptr,map<pair<Process,int>,int> >::const_iterator
 	    olpit = olps.begin(); olpit != olps.end(); ++olpit ) {
       if ( !olpit->first->startOLP(olpit->second) ) {
 	throw InitException() 
 	  << "error: failed to start OLP for amplitude '" << olpit->first->name() << "'\n";
       }
-      ++(*progressBar);
     }
-    delete progressBar;
     generator()->log() << "--------------------------------------------------------------------------------\n"
 		       << flush;
   }

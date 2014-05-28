@@ -28,25 +28,31 @@
 #include <errno.h>
 using namespace Herwig;
 
-void MG_InitProc(int);
-void MG_Calculate_wavefunctions(const int a[] , const int b[],int,int );
-void MG_SetMomenta(vector<double*>,int,int );
-complex<double> MG_Jamp(int ,int );
-int MG_NCol(int  );
-void MG_vxxxxx(double p[4],double n[4],int inc,complex<double> vc[6]);
-int MG_Colour(int str, int i, int j);
+
+extern "C" void MG_InitProc                    (int* proc );
+extern "C" void MG_Calculate_wavefunctions_virt(int* proc,double*,double*);
+extern "C" void MG_Calculate_wavefunctions_born(int* proc,double*, int*);
+extern "C" void MG_Jamp                        (int* proc,int*, double*);
+extern "C" void MG_Virt                        (int* proc,double*);
+extern "C" void MG_NCol                        (int* proc,int*);
+extern "C" void MG_vxxxxx                      (double* p,double* n,int* inc,double*  );
+extern "C" void MG_Colour                      (int* proc,int* i,int* j ,int* color);
+
+// MG_InitProc(proc,file_card) 
+// MG_Calculate_wavefunctions(proc, momenta,  hel)
+// MG_Jamp(proc ,color,amp)
+// MG_Virt(proc ,amp)
+// MG_NCol(proc ,color)
+// MG_vxxxxx(p, n,inc,VC)
+
+
+
 
 MadGraphAmplitude::MadGraphAmplitude()
-  : theMG5Path("@MADGRAPHPREFIX@"), theProcessPath("./MadGraphAmplitudes"),
-    perm(0), heltmp(0) {}
+  : theMG5Path("@MADGRAPHPREFIX@"), theProcessPath("./MadGraphAmplitudes") {}
 
 MadGraphAmplitude::~MadGraphAmplitude() {
-  if ( perm ) {
-    delete[] perm; perm = 0;
-  }
-  if ( heltmp ) {
-    delete[] heltmp; heltmp = 0;
-  }
+
 }
 
 IBPtr MadGraphAmplitude::clone() const {
@@ -71,6 +77,9 @@ string processId(const ProcType& p) {
   return orderFileName;
 }
 
+bool initializedMad=false;
+
+
 void MadGraphAmplitude::initProcess(const cPDVector& proc) {
   if ( lastMatchboxXComb()->initialized() )
     return;
@@ -84,7 +93,17 @@ void MadGraphAmplitude::initProcess(const cPDVector& proc) {
     throw Exception() << "Failed to load MadGraph amplitudes\n"
 		      << DynamicLoader::lastErrorMessage
 		      << Exception::abortnow;
-  MG_InitProc(lastMatchboxXComb()->externalId());
+
+  string ppstr = "param_card.dat";
+  char * ppchar = new char[ppstr.size()+1];
+  std::copy(ppstr.begin(),ppstr.end(),ppchar);
+  ppchar[ppstr.size()] = '\0';
+  int xx=lastMatchboxXComb()->externalId();
+  if (!initializedMad){
+    MG_InitProc(&xx);
+    initializedMad=true;
+  }
+  delete[] ppchar;
   lastMatchboxXComb()->isInitialized();
 }
 
@@ -183,6 +202,8 @@ bool MadGraphAmplitude::canHandle(const PDVector& p,
   for (PDVector::const_iterator it=p.begin();it!=p.end();it++){
     orderFile <<(*it)->PDGName()<<" ";k+=1;if (k==2)orderFile<<" > ";
   }
+ 
+  if (factory->highestVirt()>=p.size()) orderFile<< " [ virt=QCD ]";
   orderFile << flush;
   return true;
 }
@@ -190,43 +211,23 @@ bool MadGraphAmplitude::canHandle(const PDVector& p,
 void MadGraphAmplitude::prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr me) {
 
   useMe();
-   
+
   if ( !calculateTreeAmplitudes() ) {
     MatchboxAmplitude::prepareAmplitudes(me);
     return;
   }
-
+  lastMatchboxXComb()->clearheljamp();
   initProcess(mePartonData());
-
-  lastMatchboxXComb()->fillExternalMomenta(meMomenta());
-
-  MG_SetMomenta(lastMatchboxXComb()->externalMomenta(),
-		mePartonData().size(),lastMatchboxXComb()->externalId());
-  
   MatchboxAmplitude::prepareAmplitudes(me);
 
 }
 
 Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& largeN) {
   
-  double units = pow(sqrt(lastSHat())/GeV,hel.size()-4);
-
-  if ( !perm )
-    perm = new int[hel.size()];
-
-  if ( !heltmp )
-    heltmp = new int[hel.size()];
   
-  for(size_t j=0;j<hel.size();j++){
-    perm[j] = j;
-    if( (crossingMap()[j]>1&&j<=1)||(crossingMap()[j]<=1&&j>1)){
-    heltmp[crossingMap()[j]]=-1*hel[j];}
-    else{heltmp[crossingMap()[j]]=hel[j];}
-  }
-
-  MG_Calculate_wavefunctions(perm, heltmp,hel.size(),lastMatchboxXComb()->externalId());
-
+  //find the colourline:
   int ii = -1;
+  int xx=lastMatchboxXComb()->externalId();
   if ( colourindexmap.find(i)!= colourindexmap.end() ) {
     ii = colourindexmap.find(i)->second;
     if (ii==-1) {
@@ -234,10 +235,11 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
       return Complex(0.0);
     }
   } else {
-   
     set<vector<size_t> > a = colourOrdering(i);
-    
-    for( int it = 0; it < MG_NCol(lastMatchboxXComb()->externalId()); it++ ){
+    int ncol=-1;
+    MG_NCol(&xx,&ncol);
+    assert(ncol!=-1);
+    for( int it = 0; it < ncol; it++ ){
       int n = 0;
       for ( cPDVector::const_iterator nx = mePartonData().begin();
 	    nx != mePartonData().end(); nx++ )
@@ -245,7 +247,11 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
       set<vector<size_t> > tmpset;
       vector<size_t> tmpvek;
       for ( int it2 = 0; it2 < n; it2++ ) {
-	int ret = MG_Colour(lastMatchboxXComb()->externalId(),it,it2);
+	int ret=-2;
+	MG_Colour(&xx,&it,&it2,&ret);
+	assert(ret !=-2);
+	if (ret== -1)
+	  break;
 	if ( ret == 0 ) {
 	  n++;
 	  tmpset.insert(tmpvek);
@@ -255,7 +261,6 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
 	}
 	if( it2 == n-1 ) tmpset.insert(tmpvek);
       }
-
       bool found_all = true;
       for ( set<vector<size_t> >::iterator it3 = a.begin(); it3 != a.end(); it3++ ) {
 	bool found_it3=false;
@@ -279,25 +284,87 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
     largeN = Complex(0.0);
     return Complex(0.0);
   }
+  
+  
+  
+  
+  
+
+  map<vector<int>,vector < complex<double> > > tmp=lastMatchboxXComb()->heljamp();
+
+  if(tmp.find(hel)!=tmp.end()){
+    largeN=tmp.find(hel)->second[ii];
+    return tmp.find(hel)->second[ii];
+  }
+
+  double units = pow(sqrt(lastSHat())/GeV,hel.size()-4);
+  
  
-  Complex d = MG_Jamp(ii,lastMatchboxXComb()->externalId());
-  largeN = d*units;
-  return d*units;
+
+   int heltmp[10];
+  
+  for(size_t j=0;j<hel.size();j++){
+    if( (crossingMap()[j]>1&&j<=1)||(crossingMap()[j]<=1&&j>1)){
+    heltmp[crossingMap()[j]]=-1*hel[j];}
+    else{heltmp[crossingMap()[j]]=hel[j];}
+  }
+      double momenta[50];
+  size_t j=0;
+  for (size_t i=0;i<mePartonData().size();i++){
+    momenta[j]=meMomenta()[i].e()/GeV;
+    momenta[j+1]=meMomenta()[i].x()/GeV;
+    momenta[j+2]=meMomenta()[i].y()/GeV;
+    momenta[j+3]=meMomenta()[i].z()/GeV;
+    j+=4;
+  }
+
+  
+  MG_Calculate_wavefunctions_born(&xx, &momenta[0],  &heltmp[0]);
+  
+  
+  int ncol=-1;
+  MG_NCol(&xx,&ncol);
+  assert(ncol!=-1);
+  
+  for( int it = 0; it < ncol; it++ ){
+    double dd[2];
+    MG_Jamp(&xx,&it,&dd[0]);
+    Complex d(dd[0],dd[1]);
+    lastMatchboxXComb()->pushheljamp(hel,d*units);
+  }
+
+  
+  largeN = lastMatchboxXComb()->heljamp().find(hel)->second[ii];
+  return lastMatchboxXComb()->heljamp().find(hel)->second[ii];
 
 }
 
 LorentzVector<Complex> MadGraphAmplitude::plusPolarization(const Lorentz5Momentum& p,
 							   const Lorentz5Momentum& n,
 							   int i) const {
-  complex<double> pol[6];
+							     
+							     
+						     
+  double poltmp[8];
+  int tmp=i;
   complex<double> ii(0.0,1.0);
   double pg[4];double ng[4];
   pg[0]=p.e()/GeV;pg[1]=p.x()/GeV;pg[2]=p.y()/GeV;pg[3]=p.z()/GeV;
   ng[0]=n.e()/GeV;ng[1]=n.x()/GeV;ng[2]=n.y()/GeV;ng[3]=n.z()/GeV;
-  MG_vxxxxx(pg,ng,i,pol);
-  LorentzVector<Complex> polarization(pol[3],pol[4],pol[5],pol[2]);
-  if (i<2)
-    return polarization.conjugate();
+//   cout<<"\npg "<<pg[0];
+//   cout<<"\nng "<<ng[0];
+//   cout<<"\ni "<<i;
+  MG_vxxxxx(&pg[0],&ng[0],&tmp,&poltmp[0]);
+
+  complex<double> pol[6];
+  pol[0]=Complex(poltmp[0],poltmp[1]);
+  pol[1]=Complex(poltmp[2],poltmp[3]);
+  pol[2]=Complex(poltmp[4],poltmp[5]);
+  pol[3]=Complex(poltmp[6],poltmp[7]);
+  // (double* p,double* n,int* inc,double* p )
+  //cout<<"\nnear exit"<<pol[0]<<" "<<pol[1]<<" "<<pol[2]<<" "<<pol[3]<<" "<<flush;
+  LorentzVector<Complex> polarization(pol[1],pol[2],pol[3],pol[0]);
+
   return polarization.conjugate();
 }
  
@@ -383,24 +450,79 @@ double MadGraphAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
     cfac = (sqr(Nc)-1.)/(2.*Nc);
   } else assert(false);
 
-
   return
     ( avg +(c.scale() > ZERO ? 1. : -1.)*corr/cfac);
 
 }
+
+
+
+
+void MadGraphAmplitude::prepareOneLoopAmplitudes(Ptr<MatchboxMEBase>::tcptr me){
+  assert(false);
+  MatchboxAmplitude::prepareAmplitudes(me);
+}
+
+
+double MadGraphAmplitude::oneLoopInterference() const {
+  if ( !calculateOneLoopInterference() )
+    return lastOneLoopInterference();
+  evaloneLoopInterference();
+  return lastOneLoopInterference();
+}
+
+
+void MadGraphAmplitude::evaloneLoopInterference() const  {
+  
+  
+      double units = pow(lastSHat()/GeV2,mePartonData().size()-4);
+
+  double virt[3];
+  double momenta[50];
+
+  size_t j=0;
+  for (size_t i=0;i<mePartonData().size();i++){
+    momenta[j]=meMomenta()[i].e()/GeV;
+    momenta[j+1]=meMomenta()[i].x()/GeV;
+    momenta[j+2]=meMomenta()[i].y()/GeV;
+    momenta[j+3]=meMomenta()[i].z()/GeV;
+    j+=4;
+  }
+  int xx=lastMatchboxXComb()->externalId();
+  
+  MG_Calculate_wavefunctions_virt(&xx,&momenta[0],&virt[0]);
+
+    double ifact = 1.;
+
+    ifact = 1./4.;
+    if (lastMatchboxXComb()->matchboxME()->mePartonData()[0]->iColour() == PDT::Colour3 ||
+	 lastMatchboxXComb()->matchboxME()->mePartonData()[0]->iColour() == PDT::Colour3bar )
+      ifact /= SM().Nc();
+    else if ( lastMatchboxXComb()->matchboxME()->mePartonData()[0]->iColour() == PDT::Colour8 )
+      ifact /= (SM().Nc()*SM().Nc()-1.);
+
+    if ( lastMatchboxXComb()->matchboxME()->mePartonData()[1]->iColour() == PDT::Colour3 ||
+	 lastMatchboxXComb()->matchboxME()->mePartonData()[1]->iColour() == PDT::Colour3bar )
+      ifact /= SM().Nc();
+    else if ( mePartonData()[1]->iColour() == PDT::Colour8 )
+      ifact /= (SM().Nc()*SM().Nc()-1.);
+  
+
+
+    assert(lastMatchboxXComb()->matchboxME());
+    ifact *= lastMatchboxXComb()->matchboxME()->finalStateSymmetry();
  
-Complex MadGraphAmplitude::evaluateOneLoop(size_t, const vector<int>&) {
-  throw Exception() << "one-loop amplitudes not supported by MadGraph interface.\n"
-		    << Exception::abortnow;
-  return 0.;
+//  cout<<"\n"<<virt[0]<<" "<<virt[1]<<" "<<virt[2]<<flush;
+  
+  lastOneLoopInterference(virt[0]/ifact*units);
 }
  
 void MadGraphAmplitude::persistentOutput(PersistentOStream & os) const {
-  os <<theMG5Path<<theProcessPath<< theOrderInGs << theOrderInGem;
+  os <<theMG5Path<<theProcessPath<< theOrderInGs << theOrderInGem<<colourindexmap;
 }
  
 void MadGraphAmplitude::persistentInput(PersistentIStream & is, int) {
-  is >>theMG5Path>>theProcessPath>> theOrderInGs >> theOrderInGem;
+  is >>theMG5Path>>theProcessPath>> theOrderInGs >> theOrderInGem>>colourindexmap;
 }
  
 // *** Attention *** The following static variable is needed for the type

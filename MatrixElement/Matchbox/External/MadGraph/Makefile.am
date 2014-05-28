@@ -7,9 +7,7 @@ MadGraphAmplitude.h MadGraphAmplitude.cc
 madgraphdir = ${pkgdatadir}/MadGraphInterface
 
 INPUTFILES = \
-InterfaceMadGraph.cc.in \
-InterfaceMadGraph.h.in \
-Makefile-MG.in \
+InterfaceMadGraph.f.in \
 param_card.dat.in
 
 dist_madgraph_DATA = $(INPUTFILES)

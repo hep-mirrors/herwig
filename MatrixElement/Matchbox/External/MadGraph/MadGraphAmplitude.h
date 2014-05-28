@@ -19,7 +19,7 @@
 namespace Herwig {
 
 
-using namespace ThePEG;
+using namespace ThePEG; 
 
 /**
  * \ingroup Matchbox
@@ -54,6 +54,12 @@ public:
 			 Ptr<MatchboxFactory>::tptr) const;
 
   /**
+   * Return true, if this amplitude already includes symmetry factors
+   * for identical outgoing particles.
+   */
+  virtual bool hasFinalStateSymmetry() const { return false; }
+
+  /**
    * Set the (tree-level) order in \f$g_S\f$ in which this matrix
    * element should be evaluated.
    */
@@ -81,13 +87,19 @@ public:
    * Return true, if this amplitude is capable of calculating one-loop
    * (QCD) corrections.
    */
-  virtual bool haveOneLoop() const { return false; }
+  virtual bool haveOneLoop() const { return true; }
 
   /**
    * Calculate the tree level amplitudes for the phasespace point
    * stored in lastXComb.
    */
   virtual void prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr);
+  
+  /**
+   * Calculate the one-loop amplitudes for the phasespace point
+   * stored in lastXComb, if provided.
+   */
+  virtual void prepareOneLoopAmplitudes(Ptr<MatchboxMEBase>::tcptr);
 
   /**
    * Evaluate the amplitude for the given colour tensor id and
@@ -95,24 +107,37 @@ public:
    */
   virtual Complex evaluate(size_t, const vector<int>&, Complex&);
 
-  /**
-   * Evaluate the amplitude for the given colour tensor id and
-   * helicity assignment
+   /**
+   * Return true, if one-loop contributions will be evaluated at amplitude level.
    */
-  virtual Complex evaluateOneLoop(size_t, const vector<int>&);
+  virtual bool oneLoopAmplitudes() const { return false; }
+  
+   /**
+   * Return the one-loop/tree interference.
+   */
+  virtual double oneLoopInterference() const;
+  
+  void evaloneLoopInterference() const;
+
 
   /**
    * Return true, if one loop corrections are given in the conventions
    * of BDK.
    */
-  virtual bool isBDK() const { return true; }
+
+  virtual bool isCS() const { return false; }
+  virtual bool isExpanded() const { return true; }
+  virtual bool isBDK() const { return false; }
+  virtual bool isDR() const { return false; }
+  virtual bool isDRbar() const {return false;}
 
   /**
    * Return the value of the dimensional regularization
    * parameter. Note that renormalization scale dependence is fully
    * restored in DipoleIOperator.
    */
-  virtual Energy2 mu2() const { return lastSHat(); }
+  virtual Energy2 mu2() const { return 91.18800000000*GeV*91.18800000000*GeV;}
+  //virtual Energy2 mu2() const { return lastSHat(); }
   
   
   virtual LorentzVector<Complex> plusPolarization(const Lorentz5Momentum& p,
@@ -257,16 +282,17 @@ protected:
    * Map colour legs to colour basis
    */
   map<int,int> colourindexmap;
+  
+//   /**
+//    * caching of different colour structures
+//    */
+//   
+//   map<vector<int>,vector < complex<double> > > heljamp;
 
-  /**
-   * Temporary container for permutations
-   */
-  int * perm;
+  
+  //double   momenta[40];
 
-  /**
-   * Temporary container for helicities
-   */
-  int * heltmp;
+  
 
   //@}
 
