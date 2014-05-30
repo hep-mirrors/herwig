@@ -14,7 +14,7 @@
 #=================================================================================#
 
 set /Herwig/EventHandlers/LHCHandler:LuminosityFunction:Energy 8000.0*GeV
-set /Herwig/Generators/LHCGenerator:NumberOfEvents 100000000
+set /Herwig/Generators/LHCGenerator:NumberOfEvents 1000000
 
 #==================================================================================
 #                    :::::MATRIX ELEMENT:::::
@@ -125,6 +125,7 @@ cd /Herwig/EventHandlers
 
 set /Herwig/EventHandlers/LHCHandler:Weighted On
 set /Herwig/Samplers/Sampler:Verbose On
+set /Herwig/Samplers/Sampler:BinSampler /Herwig/Samplers/FlatBinSampler
 set /Herwig/EventHandlers/LHCHandler:Sampler /Herwig/Samplers/Sampler
 
 #==================================================================================
@@ -200,30 +201,6 @@ set /Herwig/Particles/b:NominalMass 0*GeV
 set /Herwig/Particles/bbar:NominalMass 0*GeV
 set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
 set /Herwig/Generators/LHCGenerator:EventHandler:CollisionCuts Off
-
-#==================================================================================
-#                     :::::SAMPLER TWEAKING:::::
-#
-# Change only if you know what you are doing.
-#==================================================================================
-
-cd /Herwig/Samplers
-set CellGridSampler:InitialPoints 10000
-set CellGridSampler:ExplorationPoints 500
-set CellGridSampler:ExplorationSteps 4
-set CellGridSampler:Gain 0.3
-set CellGridSampler:Epsilon 1.0
-set CellGridSampler:MinimumSelection 0.000001
-set CellGridSampler:NIterations 1
-set CellGridSampler:EnhancementFactor 1
-set CellGridSampler:UseAllIterations No
-set Sampler:UpdateAfter 1000
-set Sampler:AddUpSamplers Off
-set Sampler:GlobalMaximumWeight Off
-set Sampler:FlatSubprocesses Off
-set Sampler:MinSelection 0.000001
-set Sampler:AlmostUnweighted Off
-set Sampler:RunCombinationData Off
 
 #==================================================================================
 #                     :::::SAVE THE GENERATOR:::::
