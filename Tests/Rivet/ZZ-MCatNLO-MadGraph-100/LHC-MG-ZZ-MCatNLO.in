@@ -1,0 +1,204 @@
+
+#=================================================================================#
+#.................................................................................#
+#....##...##....#....#####..###.#...#.###...##..#...#...##.....##.................#
+#....#.#.#.#...#.#.....#...#....#...#.#..#.#..#..#.#...#..#...#..#................#
+#....#..#..#..#####....#...#....#####.###..#..#...#......#....#..#................#
+#....#.....#.#.....#...#...#....#...#.#..#.#..#..#.#....#.....#..#................#
+#....#.....#.#.....#...#....###.#...#.###...##..#...#..####.#..##.....@LHC........#
+#.................................................................................#
+#=================================================================================#
+#.................p+-- -- ~~~~~~..................................................#
+#.....................|  |........................................................#
+#.................p+-- -- <<<<<<..................................................#
+#=================================================================================#
+
+set /Herwig/EventHandlers/LHCHandler:LuminosityFunction:Energy 8000.0*GeV
+set /Herwig/Generators/LHCGenerator:NumberOfEvents 100
+
+#==================================================================================
+#                    :::::MATRIX ELEMENT:::::
+#==================================================================================
+
+cd /Herwig/MatrixElements/Matchbox
+insert /Herwig/Generators/LHCGenerator:EventHandler:SubProcessHandlers[0] PPFactory
+
+cd /Herwig/MatrixElements/Matchbox/Amplitudes
+clear /Herwig/MatrixElements/Matchbox/PPFactory:Amplitudes
+insert /Herwig/MatrixElements/Matchbox/PPFactory:Amplitudes 0 MadGraph
+
+cd /Herwig/MatrixElements/Matchbox
+
+set PPFactory:OrderInAlphaS   0
+set PPFactory:OrderInAlphaEW  2
+do PPFactory:Process p p  Z0 Z0
+#do PPFactory:Process d dbar  Z0 Z0
+
+#==================================================================================
+#                   :::::LO/NLO CALCULATIONS:::::
+#==================================================================================
+
+set PPFactory:BornContributions On
+set PPFactory:VirtualContributions On
+set PPFactory:RealContributions On
+set PPFactory:SubProcessGroups Off
+
+#==================================================================================
+#                     :::::CUTS:::::
+# for finite calculations make resonable cuts!
+#==================================================================================
+
+set /Herwig/Cuts/MassCut:CComb Z
+set /Herwig/Cuts/MassCut:MinM 66*GeV
+set /Herwig/Cuts/MassCut:MaxM 116*GeV
+
+set /Herwig/Cuts/QCDCuts:JetFinder /Herwig/Cuts/JetFinder
+insert /Herwig/Cuts/QCDCuts:MultiCuts 0 /Herwig/Cuts/JetCuts
+
+set /Herwig/Model:EW/Scheme GMuScheme
+set /Herwig/Model:EW/RecalculateEW On
+
+do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig/Particles/Z0/Z0->mu-,mu+;
+
+#==================================================================================
+#                     :::::MATCHING:::::
+#==================================================================================
+
+#>>>>>>>>>> MC@NLO-type next-to-leading order for use with dipole shower
+
+set PPFactory:ShowerApproximation DipoleMatching
+cd /Herwig/EventHandlers
+set LHCHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
+set /Herwig/MatrixElements/Matchbox/AlphaS/NLOAlphaS:LambdaQCD 203.6852*MeV
+set /Herwig/Model:QCD/RunningAlphaS /Herwig/MatrixElements/Matchbox/AlphaS/NLOAlphaS
+cd /Herwig/MatrixElements/Matchbox
+
+#==================================================================================
+#                     :::::SCALES VARIATIONS:::::
+#==================================================================================
+
+#>>>>>>>>>> SCALE CHOICE
+
+set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 91.2*GeV
+set PPFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale
+
+#>>>>>>>>>> HARD PROCESS SCALE VARIATION
+
+set PPFactory:RenormalizationScaleFactor 1.0
+set PPFactory:FactorizationScaleFactor 1.0
+
+#>>>>>>>>>> MATCHING SCALE VARIATION for MEMatching
+
+set MEMatching:RenormalizationScaleFactor 1.0
+set MEMatching:FactorizationScaleFactor 1.0
+
+#>>>>>>>>>> SHOWER SCALE VARIATIONS
+
+set /Herwig/DipoleShower/DipoleShowerHandler:RenormalizationScaleFactor 1.0
+set /Herwig/DipoleShower/DipoleShowerHandler:FactorizationScaleFactor 1.0
+set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleFactor 1.0
+
+#==================================================================================
+#                     :::::PDF CHOICE:::::
+#==================================================================================
+
+cd /Herwig/Partons
+create ThePEG::LHAPDF PDFSet ThePEGLHAPDF.so
+set PDFSet:RemnantHandler HadronRemnants
+set /Herwig/Particles/p+:PDF PDFSet
+set /Herwig/Particles/pbar-:PDF PDFSet
+set PDFSet:PDFName CT10.LHgrid
+set /Herwig/Particles/p+:PDF    PDFSet
+set /Herwig/Particles/pbar-:PDF PDFSet
+
+#==================================================================================
+#                     :::::SAMPLER:::::
+#==================================================================================
+
+cd /Herwig/EventHandlers
+
+set /Herwig/EventHandlers/LHCHandler:Weighted On
+set /Herwig/Samplers/Sampler:Verbose On
+set /Herwig/Samplers/Sampler:BinSampler /Herwig/Samplers/FlatBinSampler
+set /Herwig/EventHandlers/LHCHandler:Sampler /Herwig/Samplers/Sampler
+
+#==================================================================================
+#                     :::::GENERATOR:::::
+#==================================================================================
+
+cd /Herwig/Generators
+
+set LHCGenerator:RandomNumberGenerator:Seed 31122001
+set LHCGenerator:DebugLevel 1
+set LHCGenerator:PrintEvent 10
+set LHCGenerator:MaxErrors 10000
+erase /Herwig/Generators/LHCGenerator:EventHandler:PostSubProcessHandlers[0]
+
+create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
+insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_ZZINC
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_ZZJETS
+
+#==================================================================================
+#                :::::DIPOLE SHOWER HADRONIZATION SETTINGS:::::
+#==================================================================================
+
+cd /Herwig/Hadronization
+
+set ClusterFissioner:ClMaxLight                  3.274090*GeV
+set ClusterFissioner:ClPowLight                  10.0
+set ClusterFissioner:PSplitLight                 0.7183601
+set ClusterDecayer:ClDirLight                    1
+set ClusterDecayer:ClSmrLight                    3.118342
+
+set ClusterFissioner:ClMaxCharm                  3.274090*GeV
+set ClusterFissioner:ClPowCharm                  10.0
+set ClusterFissioner:PSplitCharm                 0.7183601
+set ClusterDecayer:ClDirCharm                    1
+set ClusterDecayer:ClSmrCharm                    3.118342
+set LightClusterDecayer:SingleHadronLimitCharm   0.0
+
+set ClusterFissioner:ClMaxBottom                 3.274090*GeV
+set ClusterFissioner:ClPowBottom                 10.0
+set ClusterFissioner:PSplitBottom                0.7183601
+set ClusterDecayer:ClDirBottom                   1
+set ClusterDecayer:ClSmrBottom                   3.118342
+set LightClusterDecayer:SingleHadronLimitBottom  0.0
+
+set HadronSelector:PwtUquark                     1.0
+set HadronSelector:PwtDquark                     1.0
+set HadronSelector:PwtSquark                     1.0
+set HadronSelector:PwtCquark                     1.0
+set HadronSelector:PwtBquark                     1.0
+set HadronSelector:PwtDIquark                    1.0
+set HadronSelector:SngWt                         1.0
+set HadronSelector:DecWt                         1.0
+
+cd /
+
+#==================================================================================
+#                     :::::CLEANUP:::::
+#
+# Change only if you know what you are doing.
+# For the moment, we can only deal with massless partons
+#==================================================================================
+
+set /Herwig/Particles/d:NominalMass 0*GeV
+set /Herwig/Particles/dbar:NominalMass 0*GeV
+set /Herwig/Particles/u:NominalMass 0*GeV
+set /Herwig/Particles/ubar:NominalMass 0*GeV
+set /Herwig/Particles/s:NominalMass 0*GeV
+set /Herwig/Particles/sbar:NominalMass 0*GeV
+set /Herwig/Particles/c:NominalMass 0*GeV
+set /Herwig/Particles/cbar:NominalMass 0*GeV
+set /Herwig/Particles/b:NominalMass 0*GeV
+set /Herwig/Particles/bbar:NominalMass 0*GeV
+set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
+set /Herwig/Generators/LHCGenerator:EventHandler:CollisionCuts Off
+
+#==================================================================================
+#                     :::::SAVE THE GENERATOR:::::
+#==================================================================================
+
+cd /Herwig/Generators
+saverun LHC-MG-ZZ-MCatNLO LHCGenerator

@@ -289,6 +289,19 @@ double QTildeMatching::splitFn(const pair<Energy2,double>& vars) const {
 	return (1./2.)*(1.-2.*z*(1.-z)+2.*sqr(m)/(z*(1.-z)*qtilde2));
       }
     }
+    // final state squark branching
+    if ((abs(bornCXComb()->mePartonData()[dipole()->bornEmitter()]->id()) > 1000000 && 
+	 abs(bornCXComb()->mePartonData()[dipole()->bornEmitter()]->id()) < 1000007) ||
+	(abs(bornCXComb()->mePartonData()[dipole()->bornEmitter()]->id()) > 2000000 && 
+	 abs(bornCXComb()->mePartonData()[dipole()->bornEmitter()]->id()) < 2000007)){
+      Energy m = bornCXComb()->mePartonData()[dipole()->bornEmitter()]->mass();
+      return ((sqr(Nc)-1.)/Nc)*(z-sqr(m)/(z*qtilde2))/(1.-z);
+    }
+    // final state gluino branching
+    if (bornCXComb()->mePartonData()[dipole()->bornEmitter()]->id() == 1000021){
+      Energy m = bornCXComb()->mePartonData()[dipole()->bornEmitter()]->mass();
+      return Nc*(1.+sqr(z)-2.*sqr(m)/(z*qtilde2))/(1.-z);
+    }
   }
 
   // initial state branching
