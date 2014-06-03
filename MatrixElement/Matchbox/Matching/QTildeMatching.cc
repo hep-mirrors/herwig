@@ -231,7 +231,10 @@ pair<Energy2,double> QTildeMatching::getShowerVariables() const {
     n = bornCXComb()->meMomenta()[dipole()->bornSpectator()];
   }
 
-  assert(abs(n.m()/GeV) < 1e-4);
+  // the light-cone condition is numerically not very stable, so we
+  // explicitly push it on the light-cone here
+  n.setMass(ZERO);
+  n.rescaleEnergy();
 
   double z = 0.0;
 
