@@ -231,7 +231,7 @@ pair<Energy2,double> QTildeMatching::getShowerVariables() const {
     n = bornCXComb()->meMomenta()[dipole()->bornSpectator()];
   }
 
-  assert(abs(n.m()/GeV) < 1e-9);
+  assert(abs(n.m()/GeV) < 1e-4);
 
   double z = 0.0;
 
