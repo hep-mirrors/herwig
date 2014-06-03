@@ -1304,6 +1304,38 @@ void MatchboxMEBase::doinit() {
   MEBase::doinit();
   if ( !theAmplitude )
     theAmplitude = dynamic_ptr_cast<Ptr<MatchboxAmplitude>::ptr>(amplitude());
+  if ( phasespace() ) {
+    phasespace()->init();
+  }
+  if ( scaleChoice() ) {
+    scaleChoice()->init();
+  }
+  for ( vector<Ptr<MatchboxReweightBase>::ptr>::iterator rw =
+	  theReweights.begin(); rw != theReweights.end(); ++rw ) {
+    (**rw).init();
+  }
+  for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::iterator v =
+	  virtuals().begin(); v != virtuals().end(); ++v ) {
+    (**v).init();
+  }
+}
+
+void MatchboxMEBase::doinitrun() {
+  MEBase::doinitrun();
+  if ( phasespace() ) {
+    phasespace()->initrun();
+  }
+  if ( scaleChoice() ) {
+    scaleChoice()->initrun();
+  }
+  for ( vector<Ptr<MatchboxReweightBase>::ptr>::iterator rw =
+	  theReweights.begin(); rw != theReweights.end(); ++rw ) {
+    (**rw).initrun();
+  }
+  for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::iterator v =
+	  virtuals().begin(); v != virtuals().end(); ++v ) {
+    (**v).initrun();
+  }
 }
 
 void MatchboxMEBase::dofinish() {
