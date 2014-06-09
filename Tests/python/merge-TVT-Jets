@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-import lighthisto
 import logging
 import sys
 
@@ -7,34 +6,35 @@ if sys.version_info[:3] < (2,4,0):
     print "rivet scripts require Python version >= 2.4.0... exiting"
     sys.exit(1)
 
-import os, copy, re
-from math import sqrt
-
-## Try to load faster but non-standard cElementTree module
-try:
-    import xml.etree.cElementTree as ET
-except ImportError:
-    try:
-        import cElementTree as ET
-    except ImportError:
-        try:
-            import xml.etree.ElementTree as ET
-        except:
-            sys.stderr.write("Can't load the ElementTree XML parser: please install it!\n")
-            sys.exit(1)
+import os, yoda
 
 # #############################################
 
 def fillAbove(desthisto, sourcehistosbyptmin):
-    for i,b in enumerate(desthisto.getBins()):
-        ## Fill bins with pT-ordered histos (so that 'highest always wins')
-        for ptmin, h in sorted(sourcehistosbyptmin.iteritems()):
-            newb = h.getBin(i)
-            if newb.xlow >= ptmin:
-                b.val =  newb.val
-                b.errplus =  newb.errplus
-                b.errminus =  newb.errminus
-                b._focus= newb._focus
+    pthigh= 1e100
+    ptlow =-1e100
+    for pt, h in sorted(sourcehistosbyptmin.iteritems(),reverse=True):
+        ptlow=pt
+        if(type(desthisto)==yoda.core.Scatter2D) :
+            for i in range(0,h.numPoints) :
+                lowEdge = h.points[i].x-h.points[i].xErrs.minus
+                if( lowEdge >= ptlow and 
+                    lowEdge <  pthigh ) :
+                    desthisto.addPoint(h.points[i])
+        elif(type(desthisto)==yoda.core.Profile1D) :
+            for i in range(0,h.numBins) :
+                if(h.bins[i].lowEdge  >= ptlow and 
+                   h.bins[i].lowEdge  <  pthigh ) :
+                    desthisto.bins[i] += h.bins[i]
+        elif(type(desthisto)==yoda.core.Histo1D) :
+            for i in range(0,h.numBins) :
+                if(h.bins[i].lowEdge  >= ptlow and 
+                   h.bins[i].lowEdge  <  pthigh ) :
+                    desthisto.bins[i] += h.bins[i]
+        else :
+            logging.error("Can't merge %s, unknown type" % desthisto.path)
+            sys.exit(1)
+        pthigh=pt
 
 def mergeByPt(hpath, sqrts):
     global inhistos
@@ -77,30 +77,25 @@ if __name__ == "__main__":
     (opts, args) = parser.parse_args()
     logging.basicConfig(level=opts.LOGLEVEL, format="%(message)s")
 
-
-    ## Prefix used in dat file headers
-    headerprefix = "# "
-
-
     ## Check args
     if len(args) < 1:
         logging.error("Must specify at least the name of the files")
         sys.exit(1)
 
-aidafiles=["-Run-II-UE.aida"    ,"-Run-II-Jets-1.aida","-Run-II-Jets-2.aida",\
-           "-Run-II-Jets-3.aida","-Run-II-Jets-4.aida","-Run-II-Jets-5.aida",\
-           "-Run-II-Jets-6.aida","-Run-II-Jets-7.aida",\
-           "-Run-I-UE.aida"    ,"-Run-I-Jets-1.aida","-Run-I-Jets-2.aida",\
-           "-Run-I-Jets-3.aida","-Run-I-Jets-4.aida","-Run-I-Jets-5.aida",\
-           "-630-UE.aida"      ,"-630-Jets-1.aida"  ,"-630-Jets-2.aida"  ,\
-           "-630-Jets-3.aida", "-300-Energy.aida", "-900-Energy.aida", "-1960-Energy.aida",
-           "-RatioPlots.aida"]
+yodafiles=["-Run-II-UE.yoda"    ,"-Run-II-Jets-1.yoda","-Run-II-Jets-2.yoda",\
+           "-Run-II-Jets-3.yoda","-Run-II-Jets-4.yoda","-Run-II-Jets-5.yoda",\
+           "-Run-II-Jets-6.yoda","-Run-II-Jets-7.yoda",\
+           "-Run-I-UE.yoda"    ,"-Run-I-Jets-1.yoda","-Run-I-Jets-2.yoda",\
+           "-Run-I-Jets-3.yoda","-Run-I-Jets-4.yoda","-Run-I-Jets-5.yoda",\
+           "-630-UE.yoda"      ,"-630-Jets-1.yoda"  ,"-630-Jets-2.yoda"  ,\
+           "-630-Jets-3.yoda", "-300-Energy.yoda", "-900-Energy.yoda", "-1960-Energy.yoda",
+#           "-RatioPlots.yoda"
+           ]
 
 ## Get histos
 inhistos = {}
 outhistos={}
-weights = {}
-for f in aidafiles:
+for f in yodafiles:
     file=args[0]+f
     if(file.find("Run-II-UE")>0) :
         sqrts=1960
@@ -161,46 +156,47 @@ for f in aidafiles:
         logging.error("%s can not be read" % file)
         break
     try:
-        tree = ET.parse(file)
+        aos = yoda.read(file)
     except:
-        logging.error("%s can not be parsed as XML" % file)
+        logging.error("%s can not be parsed as YODA" % file)
         break
-    tree = ET.parse(file)
-    ## Get histos from this AIDA file
-    for dps in tree.findall("dataPointSet"):
-        h = lighthisto.Histo.fromDPS(dps)
+    ## Get histos from this YODA file
+    for aopath, ao in aos.iteritems() :
         # di-jet decorrelations
         # jet shapes
-        if(h.fullPath().find("5992206")>0 or h.fullPath().find("6217184")>0 or
-           h.fullPath().find("LEADINGJETS")>0 or h.fullPath().find("7662670")>0 or
-           h.fullPath().find("7057202")>0 or h.fullPath().find("6450792")>0 or
-           h.fullPath().find("7828950")>0 or h.fullPath().find("4751469")>0 or
-           h.fullPath().find("5839831")>0 or h.fullPath().find("4563131")>0 or
-           h.fullPath().find("4517016")>0 or h.fullPath().find("3618439")>0 or
-           h.fullPath().find("8591881")>0) :
-           if not inhistos.has_key(h.fullPath()):
-               inhistos[h.fullPath()] = {}
-           tmpE = inhistos[h.fullPath()]
+        if(aopath.find("5992206")>0 or aopath.find("6217184")>0 or
+           aopath.find("LEADINGJETS")>0 or aopath.find("7662670")>0 or
+           aopath.find("7057202")>0 or aopath.find("6450792")>0 or
+           aopath.find("7828950")>0 or aopath.find("4751469")>0 or
+           aopath.find("5839831")>0 or aopath.find("4563131")>0 or
+           aopath.find("4517016")>0 or aopath.find("3618439")>0 or
+           aopath.find("8591881")>0) :
+           if not inhistos.has_key(aopath):
+               inhistos[aopath] = {}
+           tmpE = inhistos[aopath]
            if not tmpE.has_key(sqrts):
                tmpE[sqrts] = {}
            tmpP = tmpE[sqrts]
            if not tmpP.has_key(ptmin):
-               tmpP[ptmin] = h
+               tmpP[ptmin] = ao
            else:
                 raise Exception("A set with ptmin = %s already exists" % ( ptmin))
-        elif(h.fullPath().find("8233977")>0 or h.fullPath().find("NOTE_9936")>0 or
-             h.fullPath().find("3905616")>0 or h.fullPath().find("3324664")>0 or
-             h.fullPath().find("4796047")>0 or h.fullPath().find("1865951")>0 or
-             h.fullPath().find("2089246")>0 or h.fullPath().find("3108457")>0 or
-             h.fullPath().find("3349578")>0 or h.fullPath().find("3541940")>0 or
-             h.fullPath().find("3214044")>0 or h.fullPath().find("2952106")>0 or
-             h.fullPath().find("NOTE10874")>0 or h.fullPath().find("895662")>0 ) :
-            outhistos[h.fullPath()] = h
+        elif(aopath.find("8233977")>0 or aopath.find("NOTE_9936")>0 or
+             aopath.find("3905616")>0 or aopath.find("3324664")>0 or
+             aopath.find("4796047")>0 or aopath.find("1865951")>0 or
+             aopath.find("2089246")>0 or aopath.find("3108457")>0 or
+             aopath.find("3349578")>0 or aopath.find("3541940")>0 or
+             aopath.find("3214044")>0 or aopath.find("2952106")>0 or
+             aopath.find("NOTE10874")>0 or aopath.find("895662")>0 ) :
+            outhistos[aopath] = ao
+        else :
+            print aopath
+            quit()
 
-aidafiles=["-Run-II-Jets-8.aida","-Run-II-Jets-9.aida","-Run-II-Jets-10.aida","-Run-II-Jets-11.aida",\
-           "-Run-I-Jets-6.aida","-Run-I-Jets-7.aida","-Run-I-Jets-8.aida"]
+yodafiles=["-Run-II-Jets-8.yoda","-Run-II-Jets-9.yoda","-Run-II-Jets-10.yoda","-Run-II-Jets-11.yoda",\
+           "-Run-I-Jets-6.yoda","-Run-I-Jets-7.yoda","-Run-I-Jets-8.yoda"]
 
-for f in aidafiles:
+for f in yodafiles:
     file=args[0]+f
     if(file.find("Run-II-Jets-8")>0) :
         sqrts=1960
@@ -227,35 +223,33 @@ for f in aidafiles:
         logging.error("%s can not be read" % file)
         break
     try:
-        tree = ET.parse(file)
+        aos = yoda.read(file)
     except:
-        logging.error("%s can not be parsed as XML" % file)
+        logging.error("%s can not be parsed as YODA" % file)
         break
-    tree = ET.parse(file)
     ## Get histos from this AIDA file
-    for dps in tree.findall("dataPointSet"):
-        h = lighthisto.Histo.fromDPS(dps)
-        if(h.fullPath().find("8566488")>0 or h.fullPath().find("8320160")>0) :
-           if not inhistos.has_key(h.fullPath()):
-               inhistos[h.fullPath()] = {}
-           tmpE = inhistos[h.fullPath()]
+    for aopath, ao in aos.iteritems() :
+        if(aopath.find("8566488")>0 or aopath.find("8320160")>0) :
+           if not inhistos.has_key(aopath):
+               inhistos[aopath] = {}
+           tmpE = inhistos[aopath]
            if not tmpE.has_key(sqrts):
                tmpE[sqrts] = {}
            tmpP = tmpE[sqrts]
            if not tmpP.has_key(ptmin):
-               tmpP[ptmin] = h
+               tmpP[ptmin] = ao
            else:
                 raise Exception("A set with ptmin = %s already exists" % ( ptmin))
-        elif(h.fullPath().find("8093652")>0 or h.fullPath().find("3418421")>0 or 
-             h.fullPath().find("4266730")>0) :
-           if not inhistos.has_key(h.fullPath()):
-               inhistos[h.fullPath()] = {}
-           tmpE = inhistos[h.fullPath()]
+        elif(aopath.find("8093652")>0 or aopath.find("3418421")>0 or 
+             aopath.find("4266730")>0) :
+           if not inhistos.has_key(aopath):
+               inhistos[aopath] = {}
+           tmpE = inhistos[aopath]
            if not tmpE.has_key(sqrts):
                tmpE[sqrts] = {}
            tmpP = tmpE[sqrts]
            if not tmpP.has_key(1000.*ptmin):
-               tmpP[1000.*ptmin] = h
+               tmpP[1000.*ptmin] = ao
            else:
                 raise Exception("A set with ptmin = %s already exists" % ( 1000.*ptmin))
 
@@ -270,15 +264,25 @@ for hpath,hsets in inhistos.iteritems():
         hpath.find("4563131")>0 or hpath.find("4517016")>0 or
         hpath.find("3618439")>0 or hpath.find("4266730")>0 or
         hpath.find("3418421")>0 or hpath.find("8591881")>0) :
-        workhisto = copy.deepcopy(hsets.values()[0].values()[0])
-        outhistos[hpath] = workhisto
-        ## Empty the bin set for histos which we're going to merge
-        for b in outhistos[hpath]:
-            b.val = 0
-            b.errplus = 0
-            b.errminus = 0
-            b._focus= None
-
+        if(type(hsets.values()[0].values()[0])==yoda.core.Scatter2D) :
+            outhistos[hpath] = yoda.core.Scatter2D(hsets.values()[0].values()[0].path,
+                                                   hsets.values()[0].values()[0].title)
+        elif(type(hsets.values()[0].values()[0])==yoda.core.Profile1D) :
+            outhistos[hpath] = yoda.core.Profile1D(hsets.values()[0].values()[0].path,
+                                                   hsets.values()[0].values()[0].title)
+            for i in range(0,hsets.values()[0].values()[0].numBins) :
+                outhistos[hpath].addBin(hsets.values()[0].values()[0].bins[i].lowEdge,
+                                        hsets.values()[0].values()[0].bins[i].highEdge)
+        elif(type(hsets.values()[0].values()[0])==yoda.core.Histo1D) :
+            outhistos[hpath] = yoda.core.Histo1D(hsets.values()[0].values()[0].path,
+                                                hsets.values()[0].values()[0].title)
+            for i in range(0,hsets.values()[0].values()[0].numBins) :
+                outhistos[hpath].addBin(hsets.values()[0].values()[0].bins[i].lowEdge,
+                                        hsets.values()[0].values()[0].bins[i].highEdge)
+        else :
+            logging.error("Histogram %s is of unknown type" % hpath)
+            print hpath,type(hsets.values()[0].values()[0])
+            sys.exit(1)
 
 ## Field analysis
 logging.info("Processing CDF_2001_S4751469")
@@ -392,20 +396,20 @@ mergeByPt("/CDF_2005_S6217184/d13-x01-y01", "1960")
 #     ## CDF dijet mass spectrum
 mergeByPt("/CDF_2008_S8093652/d01-x01-y01", "1960")
 
-## Rick Field Run-II Leading Jets analysis
-logging.info("Processing CDF_2008_LEADINGJETS")
-## charged particle density
-mergeByPt("/CDF_2008_LEADINGJETS/d01-x01-y01", "1960")
-mergeByPt("/CDF_2008_LEADINGJETS/d02-x01-y01", "1960")
-mergeByPt("/CDF_2008_LEADINGJETS/d03-x01-y01", "1960")
-mergeByPt("/CDF_2008_LEADINGJETS/d04-x01-y01", "1960")
-## pT sum density
-mergeByPt("/CDF_2008_LEADINGJETS/d05-x01-y01", "1960")
-mergeByPt("/CDF_2008_LEADINGJETS/d06-x01-y01", "1960")
-mergeByPt("/CDF_2008_LEADINGJETS/d07-x01-y01", "1960")
-mergeByPt("/CDF_2008_LEADINGJETS/d08-x01-y01", "1960")
-## mean pT
-mergeByPt("/CDF_2008_LEADINGJETS/d09-x01-y01", "1960")
+# ## Rick Field Run-II Leading Jets analysis
+# logging.info("Processing CDF_2008_LEADINGJETS")
+# ## charged particle density
+# mergeByPt("/CDF_2008_LEADINGJETS/d01-x01-y01", "1960")
+# mergeByPt("/CDF_2008_LEADINGJETS/d02-x01-y01", "1960")
+# mergeByPt("/CDF_2008_LEADINGJETS/d03-x01-y01", "1960")
+# mergeByPt("/CDF_2008_LEADINGJETS/d04-x01-y01", "1960")
+# ## pT sum density
+# mergeByPt("/CDF_2008_LEADINGJETS/d05-x01-y01", "1960")
+# mergeByPt("/CDF_2008_LEADINGJETS/d06-x01-y01", "1960")
+# mergeByPt("/CDF_2008_LEADINGJETS/d07-x01-y01", "1960")
+# mergeByPt("/CDF_2008_LEADINGJETS/d08-x01-y01", "1960")
+# ## mean pT
+# mergeByPt("/CDF_2008_LEADINGJETS/d09-x01-y01", "1960")
 
 ## newer version
 logging.info("Processing CDF_2010_S8591881_QCD")
@@ -423,8 +427,6 @@ mergeByPt("/CDF_2010_S8591881_QCD/d13-x01-y02", "1960")
 mergeByPt("/CDF_2010_S8591881_QCD/d13-x01-y03", "1960")
 mergeByPt("/CDF_2010_S8591881_QCD/d14-x01-y01", "1960")
 mergeByPt("/CDF_2010_S8591881_QCD/d15-x01-y01", "1960")
-
-
 
 ## D0 dijet correlation analysis
 logging.info("Processing D0_2004_S5992206")
@@ -458,7 +460,6 @@ mergeByPt("/CDF_2001_S4517016/d02-x01-y01", "1800")
 mergeByPt("/CDF_2001_S4517016/d03-x01-y01", "1800")
 mergeByPt("/CDF_2001_S4517016/d04-x01-y01", "1800")
 
-
 useOnePt("/CDF_1998_S3618439/d01-x01-y01", "1800","105")
 useOnePt("/CDF_1998_S3618439/d01-x01-y02", "1800","105")
 
@@ -481,35 +482,25 @@ mergeByPt("/CDF_2006_S6450792/d01-x01-y01", "1960")
 mergeByPt("/CDF_2000_S4266730/d01-x01-y01", "1800")
 
 
-useOnePt("/CDF_1996_S3418421/d01-x01-y01","1800","150")
-useOnePt("/CDF_1996_S3418421/d01-x01-y02","1800","150")
-useOnePt("/CDF_1996_S3418421/d01-x01-y03","1800","150")
-useOnePt("/CDF_1996_S3418421/d01-x01-y04","1800","500")
-useOnePt("/CDF_1996_S3418421/d01-x01-y05","1800","500")
-mergeByPt("/CDF_1996_S3418421/d02-x01-y01","1800")
+# useOnePt("/CDF_1996_S3418421/d01-x01-y01","1800","150")
+# useOnePt("/CDF_1996_S3418421/d01-x01-y02","1800","150")
+# useOnePt("/CDF_1996_S3418421/d01-x01-y03","1800","150")
+# useOnePt("/CDF_1996_S3418421/d01-x01-y04","1800","500")
+# useOnePt("/CDF_1996_S3418421/d01-x01-y05","1800","500")
+# mergeByPt("/CDF_1996_S3418421/d02-x01-y01","1800")
 
-useOnePt("/D0_2009_S8320160/d01-x01-y01", "1960", "0.15" )
-useOnePt("/D0_2009_S8320160/d02-x01-y01", "1960", "0.15" )
-useOnePt("/D0_2009_S8320160/d03-x01-y01", "1960", "0.4" )
-useOnePt("/D0_2009_S8320160/d04-x01-y01", "1960", "0.4" )
-useOnePt("/D0_2009_S8320160/d05-x01-y01", "1960", "0.6" )
-useOnePt("/D0_2009_S8320160/d06-x01-y01", "1960", "0.6" )
-useOnePt("/D0_2009_S8320160/d07-x01-y01", "1960", "0.6" )
-useOnePt("/D0_2009_S8320160/d08-x01-y01", "1960", "0.6" )
-useOnePt("/D0_2009_S8320160/d09-x01-y01", "1960", "1.0" )
-useOnePt("/D0_2009_S8320160/d10-x01-y01", "1960", "1.0" )
+# useOnePt("/D0_2009_S8320160/d01-x01-y01", "1960", "0.15" )
+# useOnePt("/D0_2009_S8320160/d02-x01-y01", "1960", "0.15" )
+# useOnePt("/D0_2009_S8320160/d03-x01-y01", "1960", "0.4" )
+# useOnePt("/D0_2009_S8320160/d04-x01-y01", "1960", "0.4" )
+# useOnePt("/D0_2009_S8320160/d05-x01-y01", "1960", "0.6" )
+# useOnePt("/D0_2009_S8320160/d06-x01-y01", "1960", "0.6" )
+# useOnePt("/D0_2009_S8320160/d07-x01-y01", "1960", "0.6" )
+# useOnePt("/D0_2009_S8320160/d08-x01-y01", "1960", "0.6" )
+# useOnePt("/D0_2009_S8320160/d09-x01-y01", "1960", "1.0" )
+# useOnePt("/D0_2009_S8320160/d10-x01-y01", "1960", "1.0" )
 
 # Choose output file
-name = args[0]+"-Jets.aida"
-out = open(name, "w")
-## Write out merged histos
-out.write('<?xml version="1.0" encoding="ISO-8859-1" ?>\n')
-out.write('<!DOCTYPE aida SYSTEM "http://aida.freehep.org/schemas/3.3/aida.dtd">\n')
-out.write('<aida version="3.3">\n')
-out.write('  <implementation version="1.1" package="FreeHEP"/>\n')
-for hpath, h in sorted(outhistos.iteritems()):
-    logging.debug("hpath = %s" % hpath)
-    out.write(h.asAIDA() + "\n\n")
-out.write('</aida>\n')
-
+name = args[0]+"-Jets.yoda"
+yoda.writeYODA(outhistos,name)
 sys.exit(0)

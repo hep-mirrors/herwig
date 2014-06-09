@@ -73,7 +73,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1193338
 # total transverse energy
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1183818
 # underlying event forward rapidities
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_PAS_FWD_11_003
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1218372
 # strange particles in underlying event
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_PAS_QCD_11_010
 # CMS central and forward jets
@@ -83,11 +83,14 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1184941
 # ATLAS charged particle in min bias
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1125575
 # ATLAS two particle correlation
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1094061
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1094061
 # ATLAS correlations
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1093734
 # LHCB energy flow
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2013_I1208105
+# ATLAS charged particle event shapes
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1124167
+
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################
