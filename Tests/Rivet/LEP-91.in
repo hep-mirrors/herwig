@@ -61,7 +61,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_1996_S3430090
 # DELPHI b quark
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2002_069_CONF_603
 # ALEPH b quark
-#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_2001_S4656318
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_2001_S4656318
 # SLD b quark
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 SLD_2002_S4869273
 # PDG hadron multiplicities and ratios
