@@ -358,8 +358,12 @@ void MatchboxMEBase::setVetoScales(tSubProPtr) const {}
 bool MatchboxMEBase::havePDFWeight1() const {
   if ( checkedPDFs )
     return theHavePDFs.first;
-  theHavePDFs.first = factory()->isIncoming(mePartonData()[0]);
-  theHavePDFs.second = factory()->isIncoming(mePartonData()[1]);
+  theHavePDFs.first = 
+    factory()->isIncoming(mePartonData()[0]) && 
+    lastXCombPtr()->partonBins().first->pdf();
+  theHavePDFs.second = 
+    factory()->isIncoming(mePartonData()[1]) &&
+    lastXCombPtr()->partonBins().second->pdf();
   checkedPDFs = true;
   return theHavePDFs.first;
 }
@@ -367,8 +371,12 @@ bool MatchboxMEBase::havePDFWeight1() const {
 bool MatchboxMEBase::havePDFWeight2() const {
   if ( checkedPDFs )
     return theHavePDFs.second;
-  theHavePDFs.first = factory()->isIncoming(mePartonData()[0]);
-  theHavePDFs.second = factory()->isIncoming(mePartonData()[1]);
+  theHavePDFs.first = 
+    factory()->isIncoming(mePartonData()[0]) && 
+    lastXCombPtr()->partonBins().first->pdf();
+  theHavePDFs.second = 
+    factory()->isIncoming(mePartonData()[1]) &&
+    lastXCombPtr()->partonBins().second->pdf();
   checkedPDFs = true;
   return theHavePDFs.second;
 }

@@ -995,6 +995,16 @@ private:
   set<long> theIncoming;
 
   /**
+   * True, if first incoming partons originate from perturbative PDF
+   */
+  bool theFirstPerturbativePDF;
+
+  /**
+   * True, if second incoming partons originate from perturbative PDF
+   */
+  bool theSecondPerturbativePDF;
+
+  /**
    * The current factory
    */
   static MatchboxFactory*& theCurrentFactory();

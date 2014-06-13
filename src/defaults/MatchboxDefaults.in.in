@@ -526,16 +526,22 @@ cd /Herwig/MatrixElements/Matchbox
 cp Factory EEFactory
 set EEFactory:PartonExtractor /Herwig/Partons/EEExtractor
 set EEFactory:Cuts /Herwig/Cuts/EECuts
+set EEFactory:FirstPerturbativePDF No
+set EEFactory:SecondPerturbativePDF No
 
 cp Factory DISFactory
 
 set DISFactory:PartonExtractor /Herwig/Partons/DISExtractor
 set DISFactory:Cuts /Herwig/Cuts/DISCuts
+set DISFactory:FirstPerturbativePDF No
+set DISFactory:SecondPerturbativePDF Yes
 
 cp Factory PPFactory
 
 set PPFactory:PartonExtractor /Herwig/Partons/QCDExtractor
 set PPFactory:Cuts /Herwig/Cuts/QCDCuts
+set PPFactory:FirstPerturbativePDF Yes
+set PPFactory:SecondPerturbativePDF Yes
 
 cd /
 

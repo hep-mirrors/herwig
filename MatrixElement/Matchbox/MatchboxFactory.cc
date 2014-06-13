@@ -44,7 +44,8 @@ MatchboxFactory::MatchboxFactory()
     theDipoleSet(0), theVerbose(false), theInitVerbose(false), 
     theSubtractionData(""), theSubtractionPlotType(1), theSubtractionScatterPlot(false),
     thePoleData(""), theRealEmissionScales(false), theAllProcesses(false),
-  theMECorrectionsOnly(false), theLoopSimCorrections(false), ranSetup(false) {}
+  theMECorrectionsOnly(false), theLoopSimCorrections(false), ranSetup(false),
+  theFirstPerturbativePDF(true), theSecondPerturbativePDF(true) {}
 
 MatchboxFactory::~MatchboxFactory() {}
 
@@ -222,8 +223,10 @@ makeMEs(const vector<string>& proc, unsigned int orderas, bool virt) {
 	throw InitException() << "Matrix element " << pname << " already existing.";
       if ( me->diagrams().empty() )continue;
       res.push_back(me);
-      theIncoming.insert(m->legs[0]->id());
-      theIncoming.insert(m->legs[1]->id());
+      if ( theFirstPerturbativePDF )
+	theIncoming.insert(m->legs[0]->id());
+      if ( theSecondPerturbativePDF )
+	theIncoming.insert(m->legs[1]->id());
     }
   }
 
@@ -963,7 +966,7 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
      << theSelectedAmplitudes << theDeselectedAmplitudes
      << theDipoleSet << theReweighters << thePreweighters
      << theMECorrectionsOnly<< theLoopSimCorrections<<theHighestVirtualsize << ranSetup
-     << theIncoming;
+     << theIncoming << theFirstPerturbativePDF << theSecondPerturbativePDF;
 }
 
 void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
@@ -986,7 +989,7 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
      >> theSelectedAmplitudes >> theDeselectedAmplitudes
      >> theDipoleSet >> theReweighters >> thePreweighters
      >> theMECorrectionsOnly>> theLoopSimCorrections>>theHighestVirtualsize >> ranSetup
-     >> theIncoming;
+     >> theIncoming >> theFirstPerturbativePDF >> theSecondPerturbativePDF;
 }
 
 string MatchboxFactory::startParticleGroup(string name) {
@@ -1527,6 +1530,36 @@ void MatchboxFactory::Init() {
     (interfaceLoopSimCorrections,
      "No",
      "Produce full NLO.",
+     false);
+
+  static Switch<MatchboxFactory,bool> interfaceFirstPerturbativePDF
+    ("FirstPerturbativePDF",
+     "",
+     &MatchboxFactory::theFirstPerturbativePDF, true, false, false);
+  static SwitchOption interfaceFirstPerturbativePDFYes
+    (interfaceFirstPerturbativePDF,
+     "Yes",
+     "",
+     true);
+  static SwitchOption interfaceFirstPerturbativePDFNo
+    (interfaceFirstPerturbativePDF,
+     "No",
+     "",
+     false);
+
+  static Switch<MatchboxFactory,bool> interfaceSecondPerturbativePDF
+    ("SecondPerturbativePDF",
+     "",
+     &MatchboxFactory::theSecondPerturbativePDF, true, false, false);
+  static SwitchOption interfaceSecondPerturbativePDFYes
+    (interfaceSecondPerturbativePDF,
+     "Yes",
+     "",
+     true);
+  static SwitchOption interfaceSecondPerturbativePDFNo
+    (interfaceSecondPerturbativePDF,
+     "No",
+     "",
      false);
 
 }

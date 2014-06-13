@@ -40,6 +40,10 @@ set DISFactory:OrderInAlphaEW 2
 #>>>>>>>>>> You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
 do DISFactory:Process e+ p e+ j
 
+#>>>>>>>>>> If a swap of beams, p e+/- is needed comment in this
+# set DISFactory:FirstPerturbativePDF Yes
+# set DISFactory:SecondPerturbativePDF No
+
 #==================================================================================
 #                     :::::CUT SELECTION:::::
 #
