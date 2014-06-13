@@ -71,15 +71,15 @@ void TreePhasespace::setXComb(tStdXCombPtr xco) {
     channelMap()[lastXCombPtr()] = channels;
     lastChannelsIterator = channelMap().find(lastXCombPtr());
   }
-    
-  lastPhasespaceInfo.sHat = lastXComb().lastSHat();
-  lastPhasespaceInfo.sqrtSHat = sqrt(lastXComb().lastSHat());
-  lastPhasespaceInfo.weight = 1.;
 
 }
 
 double TreePhasespace::generateTwoToNKinematics(const double* random,
 						vector<Lorentz5Momentum>& momenta) {
+
+  lastPhasespaceInfo.sHat = lastXComb().lastSHat();
+  lastPhasespaceInfo.sqrtSHat = sqrt(lastXComb().lastSHat());
+  lastPhasespaceInfo.weight = 1.;
 
   size_t nchannels = lastXComb().diagrams().size();
   bool doMirror = (UseRandom::rnd() < 0.5) && theIncludeMirrored;
