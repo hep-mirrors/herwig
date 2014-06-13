@@ -158,6 +158,7 @@ cd /Herwig/MatrixElements/Matchbox
 # set LHCHandler:DecayHandler NULL
 # set LHCHandler:Weighted On
 # set /Herwig/Analysis/Basics:CheckQuark No
+# erase LHCHandler:PostSubProcessHandlers[0]
 # set /Herwig/Model:QCD/RunningAlphaS /Herwig/MatrixElements/Matchbox/AlphaS/MatchboxNLOAlphaS
 # cd /Herwig/MatrixElements/Matchbox
 
