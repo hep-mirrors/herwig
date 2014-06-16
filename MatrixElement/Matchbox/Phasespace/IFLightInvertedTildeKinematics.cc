@@ -108,13 +108,18 @@ Energy IFLightInvertedTildeKinematics::ptMax() const {
   return sqrt((1.-x)/x)*lastScale()/2.;
 }
 
-pair<double,double> IFLightInvertedTildeKinematics::zBounds(Energy pt) const {
-  double s = sqrt(1.-sqr(pt/ptMax()));
+pair<double,double> IFLightInvertedTildeKinematics::zBounds(Energy pt, Energy hardPt) const {
+  hardPt = hardPt == ZERO ? ptMax() : min(hardPt,ptMax());
+  double s = sqrt(1.-sqr(pt/hardPt));
   double x = emitterX();
   return make_pair(0.5*(1.+x-(1.-x)*s),0.5*(1.+x+(1.-x)*s));
 }
 
-
+double IFLightInvertedTildeKinematics::lastZ() const {
+  double x = subtractionParameters()[0];
+  double u = subtractionParameters()[1];
+  return 1. - (1.-x)*(1.-u);
+}
 
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).

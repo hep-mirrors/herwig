@@ -78,6 +78,11 @@ Energy IILightTildeKinematics::lastPt() const {
 
 }
 
+double IILightTildeKinematics::lastZ() const {
+  double x = subtractionParameters()[0];
+  double v = subtractionParameters()[1];
+  return x + v;
+}
 
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).

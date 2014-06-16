@@ -141,7 +141,8 @@ public:
    * Return true, if this amplitude can handle the given process.
    */
   virtual bool canHandle(const PDVector& p,
-			 Ptr<MatchboxFactory>::tptr) const { return canHandle(p); }
+			 Ptr<MatchboxFactory>::tptr,
+			 bool) const { return canHandle(p); }
 
   /**
    * Return true, if this amplitude can handle the given process.
@@ -192,13 +193,6 @@ public:
       hwStandardModel(dynamic_ptr_cast<Ptr<StandardModel>::tcptr>(HandlerBase::standardModel()));
     return hwStandardModel();
   }
-
-  /**
-   * Tell whether the outgoing partons should be sorted when determining
-   * allowed subprocesses. Otherwise, all permutations are counted as
-   * separate subprocesses.
-   */
-  virtual bool sortOutgoing() { return true; }
 
   /**
    * Return true, if this amplitude already includes averaging over

@@ -28,7 +28,7 @@ using namespace Herwig;
 
 ShowerApproximationKernel::ShowerApproximationKernel() 
   : thePresampling(false), thePresamplingPoints(10000), 
-    theMaxTry(100000), sampler(0) {}
+    theMaxTry(100000), sampler(0), theDoCompensate(false) {}
 
 ShowerApproximationKernel::~ShowerApproximationKernel() {}
 
@@ -129,6 +129,7 @@ double ShowerApproximationKernel::generate() {
     sampler = new ExponentialGenerator();
     sampler->sampling_parameters().maxtry = maxtry();
     sampler->sampling_parameters().presampling_points = presamplingPoints();
+    sampler->docompensate(theDoCompensate);
     sampler->function(this);
     sampler->initialize();
 
@@ -163,7 +164,7 @@ void ShowerApproximationKernel::persistentOutput(PersistentOStream & os) const {
      << thePresamplingPoints << theMaxTry << theFlags 
      << theSupport << theShowerApproximationGenerator 
      << theLastParameterPoint << theLastBornPoint
-     << (sampler ? true : false);
+     << (sampler ? true : false) << theDoCompensate;
   if ( sampler )
     sampler->put(os);
 }
@@ -175,7 +176,7 @@ void ShowerApproximationKernel::persistentInput(PersistentIStream & is, int) {
      >> thePresamplingPoints >> theMaxTry >> theFlags 
      >> theSupport >> theShowerApproximationGenerator 
      >> theLastParameterPoint >> theLastBornPoint
-     >> haveSampler; 
+     >> haveSampler >> theDoCompensate; 
   if ( haveSampler ) {
     sampler = new ExponentialGenerator();
     sampler->get(is);

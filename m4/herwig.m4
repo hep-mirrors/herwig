@@ -65,6 +65,7 @@ if test "x$with_thepeg" = "xno"; then
 fi
 
 THEPEGLDFLAGS="-L${with_thepeg}/lib/ThePEG"
+
 THEPEGHASLHAPDF="no"
 if test -e ${with_thepeg}/lib/ThePEG/ThePEGLHAPDF.so ; then
    THEPEGHASLHAPDF="yes"
@@ -74,6 +75,10 @@ if test "${host_cpu}" == "x86_64" -a -e ${with_thepeg}/lib64/ThePEG/libThePEG.so
   if test -e ${with_thepeg}/lib64/ThePEG/ThePEGLHAPDF.so ; then
       THEPEGHASLHAPDF="yes"
   fi
+fi
+
+if test "x$THEPEGHASLHAPDF" == "xno" ; then
+   AC_MSG_ERROR([Herwig++ requires ThePEG to be build with lhapdf.])
 fi
 
 THEPEGHASFASTJET="no"
@@ -104,6 +109,7 @@ AC_SUBST([THEPEGLIB],[-lThePEG])
 AC_SUBST(THEPEGLDFLAGS)
 AC_SUBST(THEPEGPATH)
 AC_SUBST(THEPEGHASLHAPDF)
+AC_SUBST(THEPEGHASFASTJET)
 
 LIBS="$oldlibs"
 LDFLAGS="$oldldflags"
@@ -598,6 +604,7 @@ AC_SUBST([SET_MADGRAPH])
 ])
 
 
+
 dnl ##### hej #####
 AC_DEFUN([HERWIG_CHECK_HEJ],
 [
@@ -785,39 +792,6 @@ AC_SUBST(LOAD_BSM)
 AM_CONDITIONAL(WANT_BSM,[test "$enable_models" = "yes"])
 ])
 
-
-AC_DEFUN([HERWIG_ENABLE_DIPOLE],
-[
-AC_MSG_CHECKING([if dipole shower should be built])
-
-AC_ARG_ENABLE(dipole,
-        AC_HELP_STRING([--disable-dipole],[Turn off compilation of dipole shower.]),
-        [],
-        [enable_dipole=yes]
-        )
-AC_MSG_RESULT([$enable_dipole])
-
-LOAD_DIPOLE=""
-LOAD_DIPOLE_ALPHAS=""
-LOAD_MATCHBOX=""
-if test "$enable_dipole" = "yes"; then
-WARNLHAPDF=""
-if test "x$THEPEGHASLHAPDF" = "xno" ; then
-   AC_MSG_WARN([Dipole shower defaults require LHAPDF])
-   WARNLHAPDF=" * warning: LHAPDF disabled * "
-fi
-LOAD_DIPOLE="library HwDipoleShower.so"
-LOAD_DIPOLE_ALPHAS="library HwDipoleShowerAlphaS.so"
-LOAD_MATCHBOX="library HwMatchbox.so"
-fi
-AC_SUBST(LOAD_DIPOLE)
-AC_SUBST(LOAD_DIPOLE_ALPHAS)
-AC_SUBST(LOAD_MATCHBOX)
-
-AM_CONDITIONAL(WANT_DIPOLE,[test "$enable_dipole" = "yes"])
-])
-
-
 AC_DEFUN([HERWIG_OVERVIEW],
 [
 FCSTRING=`$FC --version | head -1`
@@ -837,7 +811,6 @@ cat << _HW_EOF_ > config.herwig
 *** Prefix:		$prefix
 ***
 *** BSM models:		$enable_models
-*** Dipole shower:	$enable_dipole $WARNLHAPDF
 *** UFO converter:	${python_was_found}
 ***
 *** Herwig debug mode:	$enable_debug
@@ -851,7 +824,7 @@ cat << _HW_EOF_ > config.herwig
 *** GoSam:		$with_gosam
 *** GoSam-Contrib:      $with_gosam_contrib
 *** OpenLoops:		$with_openloops
-*** MadGraph: 		$with_madgraph
+*** MadGraph:        	$with_madgraph
 *** HEJ:		$with_hej
 ***
 *** GSL:		$with_gsl

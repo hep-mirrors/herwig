@@ -40,24 +40,9 @@ IBPtr QTildeMatching::fullclone() const {
   return new_ptr(*this);
 }
 
-Energy QTildeMatching::hardScale() const {
-  // should be the same as for the dipole shower but needs checking;
-  // NB this is the pt veto scale as the `hard' scale is anyway fixed
-  return ShowerApproximation::hardScale();
-}
-
-double QTildeMatching::hardScaleProfile(Energy, Energy) const {
-  // this needs support in the shower - leave as is for the time being
-  return 1.;
-}
-
 bool QTildeMatching::isInShowerPhasespace() const {
 
-  if ( !isAboveCutoff() )
-    return false;
-
-  if ( dipole()->lastPt() > hardScale() )
-    return false;
+  assert(theQTildeSudakov->cutOffOption() == 0 && "implementation only provided for default cutoff");
 
   Energy qtildeHard = ZERO;
 
@@ -102,7 +87,24 @@ bool QTildeMatching::isInShowerPhasespace() const {
       return false;
   }
 
-  return qtilde <= qtildeHard;
+
+  Energy Qg = theQTildeSudakov->kinScale();
+  Energy2 pt2 = ZERO;
+  if ( dipole()->bornEmitter() > 1 ) {
+    Energy mu = max(Qg,realCXComb()->meMomenta()[dipole()->realEmitter()].mass());
+    if ( bornCXComb()->mePartonData()[dipole()->bornEmitter()]->id() == ParticleID::g )
+      pt2 = sqr(z*(1.-z)*qtilde) - sqr(mu);
+    else
+      pt2 = sqr(z*(1.-z)*qtilde) - sqr((1.-z)*mu) - z*sqr(Qg);
+  }
+  if ( dipole()->bornEmitter() < 2 ) {
+    pt2 = sqr((1.-z)*qtilde) - z*sqr(Qg);
+  }
+
+  if ( pt2 < ZERO )
+    return false;
+
+  return qtilde <= qtildeHard && sqrt(pt2) < hardScale();
 
 }
 
@@ -114,14 +116,14 @@ bool QTildeMatching::isAboveCutoff() const {
   Energy Qg = theQTildeSudakov->kinScale();
   if ( dipole()->bornEmitter() > 1 ) {
     Energy mu = max(Qg,realCXComb()->meMomenta()[dipole()->realEmitter()].mass());
-    if ( abs(realCXComb()->mePartonData()[dipole()->realEmission()]->id()) < 7 &&
-	 bornCXComb()->mePartonData()[dipole()->bornEmitter()]->id() == ParticleID::g )
-      mu = realCXComb()->meMomenta()[dipole()->realEmitter()].mass();
-    return sqr(z*(1.-z)*qtilde) >= sqr((1.-z)*mu)+z*sqr(Qg);
+    if ( bornCXComb()->mePartonData()[dipole()->bornEmitter()]->id() == ParticleID::g )
+      return sqr(z*(1.-z)*qtilde) - sqr(mu) >= ZERO;
+    else
+      return sqr(z*(1.-z)*qtilde) - sqr((1.-z)*mu) - z*sqr(Qg) >= ZERO;
   }
   if ( dipole()->bornEmitter() < 2 ) {
     return
-      z <= 1.+sqr(Qg)/(2.*sqr(qtilde)) - sqrt(sqr(1.+sqr(Qg)/(2.*sqr(qtilde)))-1.);
+      sqr((1.-z)*qtilde) - z*sqr(Qg) >= ZERO;
   }
   return false;
 }
@@ -161,7 +163,22 @@ CrossSection QTildeMatching::dSigHatDR() const {
 
   xme2 *= bornPDF;
 
-  xme2 *= hardScaleProfile(hardScale(),dipole()->lastPt());
+  Energy qtilde = sqrt(vars.first);
+  double z = vars.second;
+  Energy2 pt2 = ZERO;
+  Energy Qg = theQTildeSudakov->kinScale();
+  if ( dipole()->bornEmitter() > 1 ) {
+    Energy mu = max(Qg,realCXComb()->meMomenta()[dipole()->realEmitter()].mass());
+    if ( bornCXComb()->mePartonData()[dipole()->bornEmitter()]->id() == ParticleID::g )
+      pt2 = sqr(z*(1.-z)*qtilde) - sqr(mu);
+    else
+      pt2 = sqr(z*(1.-z)*qtilde) - sqr((1.-z)*mu) - z*sqr(Qg);
+  }
+  if ( dipole()->bornEmitter() < 2 ) {
+    pt2 = sqr((1.-z)*qtilde) - z*sqr(Qg);
+  }
+  assert(pt2 >= ZERO);
+  xme2 *= hardScaleProfile(hardScale(),sqrt(pt2));
 
   CrossSection res = 
     sqr(hbarc) * 
@@ -182,34 +199,69 @@ double QTildeMatching::me2() const {
 
 pair<Energy2,double> QTildeMatching::getShowerVariables() const {
 
-  Energy2 qtilde2 = ZERO;
-  double z = 1. -
-    (bornCXComb()->meMomenta()[dipole()->bornSpectator()]*
-     realCXComb()->meMomenta()[dipole()->realEmission()]) / 
-    (bornCXComb()->meMomenta()[dipole()->bornSpectator()]*
-     bornCXComb()->meMomenta()[dipole()->bornEmitter()]);
+  Lorentz5Momentum n;
+  Energy2 Q2 = ZERO;
 
-  // final state branching
+  const Lorentz5Momentum& pb = bornCXComb()->meMomenta()[dipole()->bornEmitter()];
+  const Lorentz5Momentum& pc = bornCXComb()->meMomenta()[dipole()->bornSpectator()];
+
   if ( dipole()->bornEmitter() > 1 ) {
-    // final state quark quark branching
-    if ( abs(bornCXComb()->mePartonData()[dipole()->bornEmitter()]->id()) < 7 ) {
-      qtilde2 = 
-	sqr(dipole()->lastPt())/sqr(z*(1.-z)) +
-	sqr(bornCXComb()->mePartonData()[dipole()->bornEmitter()]->mass())/sqr(z);
-    }
-    // final state gluon branching
-    if ( bornCXComb()->mePartonData()[dipole()->bornEmitter()]->id() == ParticleID::g ) {
-      qtilde2 = 
-	(sqr(dipole()->lastPt()) +
-	 sqr(realCXComb()->mePartonData()[dipole()->realEmitter()]->mass()))/sqr(z*(1.-z));
-    }
+    Q2 = (pb+pc).m2();
+  } else {
+    Q2 = -(pb-pc).m2();
   }
 
-  // initial state branching
-  if ( dipole()->bornEmitter() < 2 ) {
-    qtilde2 =
-      sqr(dipole()->lastPt())/sqr(z*(1.-z));
+  if ( dipole()->bornEmitter() > 1 && dipole()->bornSpectator() > 1 ) {
+    double b = sqr(bornCXComb()->meMomenta()[dipole()->bornEmitter()].m())/Q2;
+    double c = sqr(bornCXComb()->meMomenta()[dipole()->bornSpectator()].m())/Q2;
+    double lambda = sqrt(1.+sqr(b)+sqr(c)-2.*b-2.*c-2.*b*c);
+    n = (1.-0.5*(1.-b+c-lambda))*pc - 0.5*(1.-b+c-lambda)*pb;
   }
+
+  if ( dipole()->bornEmitter() > 1 && dipole()->bornSpectator() < 2 ) {
+    n = bornCXComb()->meMomenta()[dipole()->bornSpectator()];
+  }
+
+  if ( dipole()->bornEmitter() < 2 && dipole()->bornSpectator() > 1 ) {
+    double c = sqr(bornCXComb()->meMomenta()[dipole()->bornSpectator()].m())/Q2;
+    n = (1.+c)*pc - c*pb;
+  }
+
+  if ( dipole()->bornEmitter() < 2 && dipole()->bornSpectator() < 2 ) {
+    n = bornCXComb()->meMomenta()[dipole()->bornSpectator()];
+  }
+
+  // the light-cone condition is numerically not very stable, so we
+  // explicitly push it on the light-cone here
+  n.setMass(ZERO);
+  n.rescaleEnergy();
+
+  double z = 0.0;
+
+  if ( dipole()->bornEmitter() > 1 ) {
+    z = 1. - 
+    (n*realCXComb()->meMomenta()[dipole()->realEmission()])/
+    (n*bornCXComb()->meMomenta()[dipole()->bornEmitter()]);
+  } else {
+    z = 1. - 
+    (n*realCXComb()->meMomenta()[dipole()->realEmission()])/
+    (n*realCXComb()->meMomenta()[dipole()->realEmitter()]);
+  }
+
+  Energy2 qtilde2 = ZERO;
+  Energy2 q2 = ZERO;
+
+  if ( dipole()->bornEmitter() > 1 ) {
+    q2 = 
+      (realCXComb()->meMomenta()[dipole()->realEmitter()] + realCXComb()->meMomenta()[dipole()->realEmission()]).m2();
+    qtilde2 = (q2 - bornCXComb()->meMomenta()[dipole()->bornEmitter()].m2())/(z*(1.-z));
+  } else {
+    q2 = 
+      -(realCXComb()->meMomenta()[dipole()->realEmitter()] - realCXComb()->meMomenta()[dipole()->realEmission()]).m2();
+    qtilde2 = (q2 + bornCXComb()->meMomenta()[dipole()->bornEmitter()].m2())/(1.-z);
+  }
+
+  assert(qtilde2 >= ZERO && z >= 0.0 && z <= 1.0);
 
   return make_pair(qtilde2,z);
 
@@ -239,6 +291,19 @@ double QTildeMatching::splitFn(const pair<Energy2,double>& vars) const {
 	Energy m = realCXComb()->mePartonData()[dipole()->realEmission()]->mass();
 	return (1./2.)*(1.-2.*z*(1.-z)+2.*sqr(m)/(z*(1.-z)*qtilde2));
       }
+    }
+    // final state squark branching
+    if ((abs(bornCXComb()->mePartonData()[dipole()->bornEmitter()]->id()) > 1000000 && 
+	 abs(bornCXComb()->mePartonData()[dipole()->bornEmitter()]->id()) < 1000007) ||
+	(abs(bornCXComb()->mePartonData()[dipole()->bornEmitter()]->id()) > 2000000 && 
+	 abs(bornCXComb()->mePartonData()[dipole()->bornEmitter()]->id()) < 2000007)){
+      Energy m = bornCXComb()->mePartonData()[dipole()->bornEmitter()]->mass();
+      return ((sqr(Nc)-1.)/Nc)*(z-sqr(m)/(z*qtilde2))/(1.-z);
+    }
+    // final state gluino branching
+    if (bornCXComb()->mePartonData()[dipole()->bornEmitter()]->id() == 1000021){
+      Energy m = bornCXComb()->mePartonData()[dipole()->bornEmitter()]->mass();
+      return Nc*(1.+sqr(z)-2.*sqr(m)/(z*qtilde2))/(1.-z);
     }
   }
 
@@ -276,13 +341,23 @@ double QTildeMatching::splitFn(const pair<Energy2,double>& vars) const {
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
+void QTildeMatching::doinit() {
+  ShowerApproximation::doinit();
+  if ( theShowerHandler ) {
+    if ( theShowerHandler->scaleFactorOption() < 2 ) {
+      hardScaleFactor(theShowerHandler->hardScaleFactor());
+      factorizationScaleFactor(theShowerHandler->factorizationScaleFactor());
+      renormalizationScaleFactor(theShowerHandler->renormalizationScaleFactor());
+    }
+  }
+}
 
 void QTildeMatching::persistentOutput(PersistentOStream & os) const {
-  os << theQTildeFinder << theQTildeSudakov;
+  os << theQTildeFinder << theQTildeSudakov << theShowerHandler;
 }
 
 void QTildeMatching::persistentInput(PersistentIStream & is, int) {
-  is >> theQTildeFinder >> theQTildeSudakov;
+  is >> theQTildeFinder >> theQTildeSudakov >> theShowerHandler;
 }
 
 
@@ -308,6 +383,11 @@ void QTildeMatching::Init() {
     ("QTildeSudakov",
      "Set the partner finder to calculate hard scales.",
      &QTildeMatching::theQTildeSudakov, false, false, true, false, false);
+
+  static Reference<QTildeMatching,ShowerHandler> interfaceShowerHandler
+    ("ShowerHandler",
+     "",
+     &QTildeMatching::theShowerHandler, false, false, true, true, false);
 
 }
 

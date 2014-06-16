@@ -1,6 +1,4 @@
-if WANT_DIPOLE
 pkglib_LTLIBRARIES = HwColorFull.la
-endif
 
 HwColorFull_la_LDFLAGS = -module -version-info 1:0:0
 

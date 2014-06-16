@@ -47,14 +47,14 @@ Energy2 MatchboxPtScale::renormalizationScale() const {
 
   theJetFinder->cluster(pd, p, cuts, t1, t2);
 
-  Energy2 maxpt2 = ZERO;
+  Energy2 minpt2 = sqr(generator()->maximumCMEnergy());
   tcPDVector::const_iterator itpd = pd.begin();
   for (vector<LorentzMomentum>::const_iterator itp = p.begin() ;
        itp != p.end(); ++itp, ++itpd )
     if ( (**itpd).coloured() )
-      maxpt2 = max(maxpt2,(*itp).perp2());
+      minpt2 = min(minpt2,(*itp).perp2());
 
-  return maxpt2;
+  return minpt2;
 }
 
 Energy2 MatchboxPtScale::factorizationScale() const {

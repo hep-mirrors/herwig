@@ -188,6 +188,16 @@ public:
   void setMECorrectionsOnly(bool on = true) { theMECorrectionsOnly = on; }
 
   /**
+   * Produce matrix element corrections, with LoopSim NLO
+   */
+  bool loopSimCorrections() const { return theLoopSimCorrections; }
+
+  /**
+   * Switch to produce matrix element corrections, with LoopSim NLO
+   */
+  void setLoopSimCorrections(bool on = true) { theLoopSimCorrections = on; }
+
+  /**
    * Return true, if subtracted real emission contributions should be included.
    */
   bool realContributions() const { return theRealContributions; }
@@ -544,6 +554,12 @@ public:
    * Setup everything
    */
   virtual void setup();
+  
+   /**
+   * The highest multiplicity of legs having virtual contributions.(needed for madgraph) 
+   */
+
+  size_t highestVirt(){return theHighestVirtualsize;}
 
   //@}
 
@@ -635,6 +651,12 @@ public:
    */
   map<string,PDVector>& particleGroups() { return theParticleGroups; }
 
+  /**
+   * Return true, if the given particle is incoming
+   */
+  bool isIncoming(cPDPtr p) const {
+    return theIncoming.find(p->id()) != theIncoming.end();
+  }
   //@}
 
 public:
@@ -927,20 +949,14 @@ private:
   /**
    * Generate subprocesses.
    */
-  set<PDVector> makeSubProcesses(const vector<string>&, bool sorted = true) const;
-
-  /**
-   * Generate subprocesses with all permutations of outgoing partons.
-   */
-  set<PDVector> makeUnsortedSubProcesses(const vector<string>& data) const {
-    return makeSubProcesses(data, false);
-  }
+  set<PDVector> makeSubProcesses(const vector<string>&) const;
 
   /**
    * Generate matrix element objects for the given process.
    */
   vector<Ptr<MatchboxMEBase>::ptr> makeMEs(const vector<string>&, 
-					   unsigned int orderas);
+					   unsigned int orderas,
+					   bool virt);
 
   /**
    * The shower approximation.
@@ -997,6 +1013,36 @@ private:
    * Produce matrix element corrections, but no NLO
    */
   bool theMECorrectionsOnly;
+
+  /**
+   * The highest multiplicity of legs having virtual contributions.(needed for madgraph) 
+   */
+  int theHighestVirtualsize;
+
+  /**
+   * Produce matrix element corrections, with LoopSim NLO
+   */
+  bool theLoopSimCorrections;
+
+  /**
+   * True, if the setup has already been run.
+   */
+  bool ranSetup;
+
+  /**
+   * PDG ids of incoming particles
+   */
+  set<long> theIncoming;
+
+  /**
+   * True, if first incoming partons originate from perturbative PDF
+   */
+  bool theFirstPerturbativePDF;
+
+  /**
+   * True, if second incoming partons originate from perturbative PDF
+   */
+  bool theSecondPerturbativePDF;
 
   /**
    * The current factory

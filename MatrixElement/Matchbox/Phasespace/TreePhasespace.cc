@@ -11,6 +11,8 @@
 // functions of the TreePhasespace class.
 //
 
+#include <sstream> 
+#include <string> 
 #include "TreePhasespace.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
@@ -20,6 +22,7 @@
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
+#include "Herwig++/MatrixElement/Matchbox/Utility/DiagramDrawer.h"
 
 
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -68,25 +71,28 @@ void TreePhasespace::setXComb(tStdXCombPtr xco) {
     channelMap()[lastXCombPtr()] = channels;
     lastChannelsIterator = channelMap().find(lastXCombPtr());
   }
-    
-  lastPhasespaceInfo.sHat = lastXComb().lastSHat();
-  lastPhasespaceInfo.sqrtSHat = sqrt(lastXComb().lastSHat());
-  lastPhasespaceInfo.weight = 1.;
 
 }
 
 double TreePhasespace::generateTwoToNKinematics(const double* random,
 						vector<Lorentz5Momentum>& momenta) {
 
+  lastPhasespaceInfo.sHat = lastXComb().lastSHat();
+  lastPhasespaceInfo.sqrtSHat = sqrt(lastXComb().lastSHat());
+  lastPhasespaceInfo.weight = 1.;
+
   size_t nchannels = lastXComb().diagrams().size();
   bool doMirror = (UseRandom::rnd() < 0.5) && theIncludeMirrored;
   map<Ptr<Tree2toNDiagram>::ptr,
       pair <PhasespaceHelpers::PhasespaceTree, PhasespaceHelpers::PhasespaceTree> >::iterator ds =
     lastChannels().begin();
-  advance(ds,(size_t)(random[0]*nchannels));
+
+  size_t i = (size_t)(random[0]*nchannels);
+  advance(ds,i);
+
   Ptr<Tree2toNDiagram>::ptr channel = ds->first;
   ++random;
-
+  
   lastPhasespaceInfo.rnd.numbers = random;
   lastPhasespaceInfo.rnd.nRnd = 3*momenta.size() - 10;
     

@@ -228,11 +228,13 @@ namespace exsample {
 	  else
 	    scaling = 0.;
 	}
-	it->info().parametric_missing(last_parameter_bin_,
-				      it->info().parametric_missing(last_parameter_bin_) +
-				      static_cast<int>(round(scaling * it->info().attempted())));
-	if (it->info().parametric_missing(last_parameter_bin_) != 0) {
-	  compensating_ = true;
+	if ( docompensate_ ) {
+	  it->info().parametric_missing(last_parameter_bin_,
+					it->info().parametric_missing(last_parameter_bin_) +
+					static_cast<int>(round(scaling * it->info().attempted())));
+	  if (it->info().parametric_missing(last_parameter_bin_) != 0) {
+	    compensating_ = true;
+	  }
 	}
       }
     }
@@ -350,6 +352,7 @@ namespace exsample {
     os << attempts_; ostream_traits<OStream>::separator(os);
     os << accepts_; ostream_traits<OStream>::separator(os);
     os << splits_; ostream_traits<OStream>::separator(os);
+    os << docompensate_; ostream_traits<OStream>::separator(os);
   }
 
   template<class Function, class Random>
@@ -372,7 +375,7 @@ namespace exsample {
     }
     is >> last_exponent_integrand_;
     last_exponent_ = exponents_.find(last_parameter_bin_);
-    is >> compensating_ >> attempts_ >> accepts_ >> splits_;
+    is >> compensating_ >> attempts_ >> accepts_ >> splits_ >> docompensate_;
   }
 
 }

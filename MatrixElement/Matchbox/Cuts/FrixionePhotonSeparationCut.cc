@@ -38,7 +38,8 @@ void FrixionePhotonSeparationCut::describe() const {
     << fullName() << ":\n"
     << "DeltaZero = " << theDeltaZero << " \n"
     << "Exponent n = " << theExponentn << " \n"
-    << "Efficiency = " << theEfficiency << " \n\n";
+    << "Efficiency = " << theEfficiency << " \n"
+    << "Cut Type = " << theCutType << " \n\n";
 }
 
 IBPtr FrixionePhotonSeparationCut::clone() const {
@@ -67,16 +68,23 @@ bool FrixionePhotonSeparationCut::passCuts(tcCutsPtr parent, const tcPDVector & 
         double dphi = abs(p[i].phi() - p[j].phi());
         if ( dphi > Constants::pi ) dphi = 2.0*Constants::pi - dphi;
         finfo.DeltaR = sqrt(sqr(p[i].eta() - p[j].eta()) + sqr(dphi));
-        finfo.pT = p[j].perp();
-        finfo.f = pow((1-cos(finfo.DeltaR))/(1-cos(theDeltaZero)),theExponentn);
-        partonvec.push_back(finfo);
+	if ( finfo.DeltaR < theDeltaZero ){
+          finfo.pT = p[j].perp();
+          finfo.f = pow((1-cos(finfo.DeltaR))/(1-cos(theDeltaZero)),theExponentn);
+          partonvec.push_back(finfo);
+	}
 
       }
 
       for ( unsigned int j = 0; j < partonvec.size(); ++j ) {
         Energy chidelta=ZERO;
-        for ( unsigned int k = 0; k < partonvec.size(); ++k ) 
-          if ( partonvec[k].DeltaR <= partonvec[j].DeltaR ) chidelta += partonvec[k].pT;
+	if (theCutType == 1) {
+          for ( unsigned int k = 0; k < partonvec.size(); ++k ) 
+	    if ( partonvec[k].DeltaR <= partonvec[j].DeltaR ) chidelta += partonvec[k].pT;
+	}
+	else if (theCutType == 2) {
+          chidelta = partonvec[j].pT;
+	}
         if ( !parent->isLessThan<CutTypes::Momentum>(chidelta,p[i].perp() * theEfficiency * partonvec[j].f,weight) ) {
 	  parent->lastCutWeight(0.0);
 	  return false;
@@ -92,11 +100,11 @@ bool FrixionePhotonSeparationCut::passCuts(tcCutsPtr parent, const tcPDVector & 
 }
 
 void FrixionePhotonSeparationCut::persistentOutput(PersistentOStream & os) const {
-  os << theDeltaZero << theExponentn << theEfficiency;
+  os << theDeltaZero << theExponentn << theEfficiency << theCutType;
 }
 
 void FrixionePhotonSeparationCut::persistentInput(PersistentIStream & is, int) {
-  is >> theDeltaZero >> theExponentn >> theEfficiency;
+  is >> theDeltaZero >> theExponentn >> theEfficiency >> theCutType;
 }
 
 ClassDescription<FrixionePhotonSeparationCut> FrixionePhotonSeparationCut::initFrixionePhotonSeparationCut;
@@ -126,9 +134,25 @@ void FrixionePhotonSeparationCut::Init() {
      &FrixionePhotonSeparationCut::theEfficiency, 1.0, 0.0, 10.0,
      false, false, Interface::limited);
 
+  static Switch<FrixionePhotonSeparationCut,int> interfaceCutType
+    ("CutType",
+     "Switch for controlling which definition of Frixione cut is used",
+     &FrixionePhotonSeparationCut::theCutType, 1, false, false);
+  static SwitchOption interfaceCutTypeVBFNLO
+    (interfaceCutType,
+     "VBFNLO",
+     "Switch to Frixione cut a la VBFNLO",
+     1);
+  static SwitchOption interfaceCutTypeMCFM
+    (interfaceCutType,
+     "MCFM",
+     "Switch to Frixione cut a la MCFM",
+     2);
+
   interfaceDeltaZero.setHasDefault(false);
   interfaceExponentn.setHasDefault(false);
   interfaceEfficiency.setHasDefault(false);
+  interfaceCutType.setHasDefault(false);
 
 }
 

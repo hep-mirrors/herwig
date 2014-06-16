@@ -218,6 +218,7 @@ namespace ExSample {
 		 RndGenerator& rnd,
 		 Function& f,
 		 std::set<SimpleCellGrid*>& newCells) {
+
       if ( !isLeaf() ) {
 	firstChild().explore(nPoints,rnd,f,newCells);
 	secondChild().explore(nPoints,rnd,f,newCells);

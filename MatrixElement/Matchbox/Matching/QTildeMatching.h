@@ -13,6 +13,7 @@
 //
 
 #include "Herwig++/MatrixElement/Matchbox/Matching/ShowerApproximation.h"
+#include "Herwig++/Shower/ShowerHandler.h"
 #include "Herwig++/Shower/Default/QTildeFinder.h"
 #include "Herwig++/Shower/Default/QTildeSudakov.h"
 
@@ -45,16 +46,6 @@ public:
   //@}
 
 public:
-
-  /**
-   * Return the relevant hard scale
-   */
-  virtual Energy hardScale() const;
-
-  /**
-   * Return a scale profile towards the hard scale
-   */
-  virtual double hardScaleProfile(Energy hard, Energy soft) const;
 
   /**
    * Return true, if the shower was able to generate an emission
@@ -144,6 +135,17 @@ protected:
 // If needed, insert declarations of virtual function defined in the
 // InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
 
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+  //@}
 
 private:
 
@@ -152,6 +154,11 @@ private:
    * In fact, it should not even be implemented.
    */
   QTildeMatching & operator=(const QTildeMatching &);
+
+  /**
+   * The shower handler to be used
+   */
+  Ptr<ShowerHandler>::ptr theShowerHandler;
 
   /**
    * The qtilde partner finder for calculating the hard scales

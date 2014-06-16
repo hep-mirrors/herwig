@@ -145,6 +145,16 @@ public:
   }
 
   /**
+   * Return the real xcomb
+   */
+  tcStdXCombPtr realXComb() const { return theRealXComb; }
+
+  /**
+   * Return the Born xcomb
+   */
+  tcStdXCombPtr bornXComb() const { return theBornXComb; }
+
+  /**
    * Set the current dipole
    */
   void dipole(Ptr<SubtractionDipole>::tptr dip) { theDipole = dip; }
@@ -206,6 +216,11 @@ public:
   virtual Energy lastPt() const = 0;
 
   /**
+   * Return the momentum fraction associated to the last splitting.
+   */
+  virtual double lastZ() const = 0;
+
+  /**
    * Return the relevant dipole scale
    */
   virtual Energy lastScale() const;
@@ -216,9 +231,10 @@ public:
   virtual Energy ptMax() const = 0;
 
   /**
-   * Given a pt, return the boundaries on z
+   * Given a pt and a hard pt, return the boundaries on z; if the hard
+   * pt is zero, ptMax() will be used.
    */
-  virtual pair<double,double> zBounds(Energy pt) const = 0;
+  virtual pair<double,double> zBounds(Energy pt, Energy hardPt = ZERO) const = 0;
 
   /**
    * Generate pt and z

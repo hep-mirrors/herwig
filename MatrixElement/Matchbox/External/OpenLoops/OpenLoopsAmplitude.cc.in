@@ -239,25 +239,21 @@ void OpenLoopsAmplitude::getids() const{
 	openloopsInstallPath=line;
 }
 bool OpenLoopsAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
-	cout << "\nWriting the olp-order file." << flush;
 	string contractFileName =  "OLP_answer.lh";
 	string orderFileName = "OLP_order.lh";
 	fillOrderFile(procs);
-	cout << "\nOpenLoops: Sign the order file." << flush;
-
  	int status = -1;
 	startOLP(orderFileName, status);
 	if ( !checkOLPContract() ) {
-		cout << "\n\n!!!!!!!!!!!!!Checking the olp-contract failed!!!!!!!!!!!\n\n" << flush;
-		assert(0);
-	} else cout << "\nChecked the olp-contract! Everything is OK! Let's build!\n" << flush;
+	  return false;
+	}
 	if ( status != 1 ) return false;
 	return true;
-
 }
 
 
 void OpenLoopsAmplitude::evalSubProcess() const {
+  useMe();
 	double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
 	fillOLPMomenta(lastXComb().meMomenta());
 	double acc ;
@@ -385,7 +381,7 @@ DescribeClass<OpenLoopsAmplitude, MatchboxOLPME> describeHerwigOpenLoopsAmplitud
 
 void OpenLoopsAmplitude::Init() {
 
-  static ClassDocumentation<OpenLoopsAmplitude> documentation("OpenLoopsAmplitude implements an interface to OpenLoops.");
+  static ClassDocumentation<OpenLoopsAmplitude> documentation("OpenLoopsAmplitude implements an interface to OpenLoops.","Matrix elements have been calculated using OpenLoops.");
   static Parameter<OpenLoopsAmplitude,string> interfaceInstallPath
     	("InstallPath",
      	"Prefix for the OpenLoops produced code.",

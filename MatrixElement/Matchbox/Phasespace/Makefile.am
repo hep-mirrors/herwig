@@ -1,6 +1,4 @@
-if WANT_DIPOLE
 noinst_LTLIBRARIES = libHwMatchboxPhasespace.la
-endif
 
 libHwMatchboxPhasespace_la_SOURCES = \
 FFLightInvertedTildeKinematics.cc \

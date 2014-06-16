@@ -300,13 +300,16 @@ void MatchboxAmplitude::fillCrossingMap(size_t shift) {
 	}
       }
       // default to just pick the next available anti-particle
+      if ( processLegs.empty() ) break;
       if ( checkcc == processLegs.end() ) {
 	checkcc = processLegs.begin();
 	while ( checkcc->first->id() > 0 )
 	  if ( ++checkcc == processLegs.end() )
 	    break;
       }
-      assert(checkcc != processLegs.end());
+      // if still not there, use whatever is available at the end
+      if ( checkcc == processLegs.end() )
+	checkcc = processLegs.begin();
       crossingMap()[ampCount] = checkcc->second - shift;
       amplitudeLegs.insert(make_pair(checkcc->first,ampCount));
       processLegs.erase(checkcc);

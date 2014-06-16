@@ -1,6 +1,5 @@
-if WANT_DIPOLE
 pkglib_LTLIBRARIES = HwMatchboxScales.la
-endif
+
 
 HwMatchboxScales_la_LDFLAGS = -module -version-info 1:0:0
 
@@ -18,5 +17,6 @@ MatchboxPtScale.cc\
 MatchboxScale.h \
 MatchboxScale.cc \
 MatchboxSHatScale.h \
-MatchboxSHatScale.cc
-
+MatchboxSHatScale.cc \
+MatchboxTriVecScales.h \
+MatchboxTriVecScales.cc

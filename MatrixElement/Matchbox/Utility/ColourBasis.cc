@@ -58,6 +58,23 @@ ColourBasis::~ColourBasis() {
   theColourLineMap.clear();
 }
 
+void ColourBasis::clear() {
+  theLargeN = false;
+  theSearchPath = ".";
+  theNormalOrderedLegs.clear();
+  theIndexMap.clear();
+  theScalarProducts.clear();
+  theCharges.clear();
+  theChargeNonZeros.clear();
+  theCorrelators.clear();
+  theFlowMap.clear();
+  theColourLineMap.clear();
+  theOrderingStringIdentifiers.clear();
+  theOrderingIdentifiers.clear();
+  didRead = false;
+  didWrite = false;
+  tmp.clear();
+}
 
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).

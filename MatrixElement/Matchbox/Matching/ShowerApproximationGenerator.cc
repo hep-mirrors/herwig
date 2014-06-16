@@ -16,6 +16,7 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -31,7 +32,7 @@
 using namespace Herwig;
 
 ShowerApproximationGenerator::ShowerApproximationGenerator() 
-  : thePresamplingPoints(10000), theMaxTry(100000) {}
+  : thePresamplingPoints(50000), theMaxTry(100000), theDoCompensate(false) {}
 
 ShowerApproximationGenerator::~ShowerApproximationGenerator() {}
 
@@ -225,6 +226,7 @@ handle(EventHandler & eh, const tPVector &,
       kernel->presamplingPoints(thePresamplingPoints);
       kernel->maxtry(theMaxTry);
       kernel->showerApproximationGenerator(this);
+      kernel->doCompensate(theDoCompensate);
       if ( kernel->dipole()->bornEmitter() > 1 &&
 	   kernel->dipole()->bornSpectator() > 1 ) {
 	kernel->ptCut(ffPtCut());
@@ -345,7 +347,7 @@ void ShowerApproximationGenerator::persistentOutput(PersistentOStream & os) cons
      << theKernelMap << thePresamplingPoints << theMaxTry 
      << lastIncomingXComb << theLastBornME << ounit(theLastMomenta,GeV) 
      << ounit(theLastPresamplingMomenta,GeV) << theLastRandomNumbers
-     << theLastBornXComb << theLastPartons;
+     << theLastBornXComb << theLastPartons << theDoCompensate;
 }
 
 void ShowerApproximationGenerator::persistentInput(PersistentIStream & is, int) {
@@ -353,7 +355,7 @@ void ShowerApproximationGenerator::persistentInput(PersistentIStream & is, int) 
      >> theKernelMap >> thePresamplingPoints >> theMaxTry 
      >> lastIncomingXComb >> theLastBornME >> iunit(theLastMomenta,GeV) 
      >> iunit(theLastPresamplingMomenta,GeV) >> theLastRandomNumbers
-     >> theLastBornXComb >> theLastPartons;
+     >> theLastBornXComb >> theLastPartons >> theDoCompensate;
 }
 
 
@@ -392,7 +394,7 @@ void ShowerApproximationGenerator::Init() {
   static Parameter<ShowerApproximationGenerator,unsigned long> interfacePresamplingPoints
     ("PresamplingPoints",
      "Set the number of presampling points.",
-     &ShowerApproximationGenerator::thePresamplingPoints, 10000, 1, 0,
+     &ShowerApproximationGenerator::thePresamplingPoints, 50000, 1, 0,
      false, false, Interface::lowerlim);
 
   static Parameter<ShowerApproximationGenerator,unsigned long> interfaceMaxTry
@@ -400,6 +402,21 @@ void ShowerApproximationGenerator::Init() {
      "Set the number of maximum attempts.",
      &ShowerApproximationGenerator::theMaxTry, 100000, 1, 0,
      false, false, Interface::lowerlim);
+
+  static Switch<ShowerApproximationGenerator,bool> interfaceDoCompensate
+    ("DoCompensate",
+     "",
+     &ShowerApproximationGenerator::theDoCompensate, false, false, false);
+  static SwitchOption interfaceDoCompensateYes
+    (interfaceDoCompensate,
+     "Yes",
+     "",
+     true);
+  static SwitchOption interfaceDoCompensateNo
+    (interfaceDoCompensate,
+     "No",
+     "",
+     false);
 
 }
 

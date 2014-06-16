@@ -107,20 +107,27 @@ Energy IFMassiveInvertedTildeKinematics::lastPt() const {
   return sqrt(scale*u*(1.-u)*(1.-x));
 }
 
+double IFMassiveInvertedTildeKinematics::lastZ() const {
+  double x = subtractionParameters()[0];
+  double u = subtractionParameters()[1];
+  return 1. - (1.-x)*(1.-u);
+}
+
 Energy IFMassiveInvertedTildeKinematics::ptMax() const {
   Energy2 scale = 2.*(bornEmitterMomentum()*bornSpectatorMomentum());
   double x = emitterX();
   return sqrt(scale*(1.-x))/2.;
 }
 
-pair<double,double> IFMassiveInvertedTildeKinematics::zBounds(Energy pt) const {
+pair<double,double> IFMassiveInvertedTildeKinematics::zBounds(Energy pt, Energy hardPt) const {
+  hardPt = hardPt == ZERO ? ptMax() : min(hardPt,ptMax());
   Energy2 scale = 2.*(bornEmitterMomentum()*bornSpectatorMomentum());
   double alpha = 1. - (2.*sqr(bornSpectatorData()->mass())/scale);
   double xe = emitterX();
   double zp = 0.5*( alpha + xe - (alpha-1.)*xe +
-		    alpha*(1.-xe)*sqrt(1.-sqr(pt/ptMax()) ) );
+		    alpha*(1.-xe)*sqrt(1.-sqr(pt/hardPt) ) );
   double zm = 0.5*( alpha + xe - (alpha-1.)*xe -
-		    alpha*(1.-xe)*sqrt(1.-sqr(pt/ptMax()) ) );
+		    alpha*(1.-xe)*sqrt(1.-sqr(pt/hardPt) ) );
   return make_pair(zm,zp);
 }
 

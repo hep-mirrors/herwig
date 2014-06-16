@@ -166,6 +166,50 @@ public:
    */
   virtual HardTreePtr generateCKKW(ShowerTreePtr tree) const;
 
+  /**
+   * The factorization scale factor.
+   */
+  double factorizationScaleFactor() const { 
+    if ( theScaleFactorOption == 0 || !subProcess_ )
+      return theFactorizationScaleFactor;
+    if ( theScaleFactorOption == 1 )
+      return firstInteraction() ? theFactorizationScaleFactor : 1.0;
+    if ( theScaleFactorOption == 2 )
+      return !firstInteraction() ? theFactorizationScaleFactor : 1.0;
+    return 1.0;
+  }
+
+  /**
+   * The renormalization scale factor.
+   */
+  double renormalizationScaleFactor() const { 
+    if ( theScaleFactorOption == 0 || !subProcess_ )
+      return theRenormalizationScaleFactor;
+    if ( theScaleFactorOption == 1 )
+      return firstInteraction() ? theRenormalizationScaleFactor : 1.0;
+    if ( theScaleFactorOption == 2 )
+      return !firstInteraction() ? theRenormalizationScaleFactor : 1.0;
+    return 1.0;
+  }
+
+  /**
+   * The scale factor for the hard scale
+   */
+  double hardScaleFactor() const { 
+    if ( theScaleFactorOption == 0 || !subProcess_ )
+      return theHardScaleFactor;
+    if ( theScaleFactorOption == 1 )
+      return firstInteraction() ? theHardScaleFactor : 1.0;
+    if ( theScaleFactorOption == 2 )
+      return !firstInteraction() ? theHardScaleFactor : 1.0;
+    return 1.0;
+  }
+
+  /**
+   * The option on when to apply the scale factors
+   */
+  int scaleFactorOption() const { return theScaleFactorOption; }
+
 protected:
 
   /** @name Clone Methods. */
@@ -415,6 +459,26 @@ private:
    * The MPI PDF's to be used for secondary scatters.
    */
   pair <PDFPtr, PDFPtr> mpipdfs_;
+
+  /**
+   * The factorization scale factor.
+   */
+  double theFactorizationScaleFactor;
+
+  /**
+   * The renormalization scale factor.
+   */
+  double theRenormalizationScaleFactor;
+
+  /**
+   * The scale factor for the hard scale
+   */
+  double theHardScaleFactor;
+
+  /**
+   * The option on when to apply the scale factors
+   */
+  int theScaleFactorOption;
 
 public:
 

@@ -1,6 +1,4 @@
-if WANT_DIPOLE
 noinst_LTLIBRARIES = libHwMatchboxInsertionOperators.la
-endif
 
 libHwMatchboxInsertionOperators_la_SOURCES = \
 DipoleIOperator.cc \

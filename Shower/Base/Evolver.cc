@@ -33,6 +33,10 @@
 #include "Herwig++/Shower/ShowerHandler.h" 
 #include "ThePEG/Utilities/DescribeClass.h"
 
+#include "Herwig++/MatrixElement/Matchbox/Base/SubtractedME.h"
+#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
+#include "ThePEG/Handlers/StandardXComb.h"
+
 using namespace Herwig;
 
 DescribeClass<Evolver,Interfaced>
@@ -52,7 +56,9 @@ void Evolver::persistentOutput(PersistentOStream & os) const {
      << _limitEmissions
      << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << ounit(_iptmax,GeV) 
      << _vetoes << _hardonly << _trunc_Mode << _hardEmissionMode 
-     << _colourEvolutionMethod << _reconOpt << _hardScaleFactor;
+     << _colourEvolutionMethod << _reconOpt
+     << isMCatNLOSEvent << isMCatNLOHEvent
+     << theFactorizationScaleFactor << theRenormalizationScaleFactor;
 }
 
 void Evolver::persistentInput(PersistentIStream & is, int) {
@@ -61,7 +67,9 @@ void Evolver::persistentInput(PersistentIStream & is, int) {
      >> _limitEmissions
      >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> iunit(_iptmax,GeV) 
      >> _vetoes >> _hardonly >> _trunc_Mode >> _hardEmissionMode
-     >> _colourEvolutionMethod >> _reconOpt >> _hardScaleFactor;
+     >> _colourEvolutionMethod >> _reconOpt
+     >> isMCatNLOSEvent >> isMCatNLOHEvent
+     >> theFactorizationScaleFactor >> theRenormalizationScaleFactor;
 }
 
 void Evolver::Init() {
@@ -275,12 +283,6 @@ void Evolver::Init() {
      "Use the off-shell masses in the calculation",
      1);
 
-  static Parameter<Evolver,double> interfaceHardScaleFactor
-    ("HardScaleFactor",
-     "Set the factor to multiply the hard veto scale.",
-     &Evolver::_hardScaleFactor, 1.0, 0.0, 0,
-     false, false, Interface::lowerlim);
-
 }
 
 void Evolver::generateIntrinsicpT(vector<ShowerProgenitorPtr> particlesToShower) {
@@ -323,11 +325,11 @@ void Evolver::setupMaximumScales(ShowerTreePtr hard,
     pcm += cit->first->progenitor()->momentum();
     isPartonic |= cit->first->progenitor()->coloured();
   }
-  // find maximum pt from hard process, the maximum pt from all outgoing
+  // find minimum pt from hard process, the maximum pt from all outgoing
   // coloured lines (this is simpler and more general than
   // 2stu/(s^2+t^2+u^2)).  Maximum scale for scattering processes will
   // be transverse mass.
-  Energy ptmax = -1.0*GeV;
+  Energy ptmax = generator()->maximumCMEnergy();
   // general case calculate the scale  
   if (!hardVetoXComb()||
       (hardVetoReadOption()&&
@@ -341,10 +343,10 @@ void Evolver::setupMaximumScales(ShowerTreePtr hard,
 	  cjt = hard->outgoingLines().begin();
 	for(; cjt!=hard->outgoingLines().end(); ++cjt) {
 	  if (cjt->first->progenitor()->coloured())
-	    ptmax = max(ptmax,cjt->first->progenitor()->momentum().mt());
+	    ptmax = min(ptmax,cjt->first->progenitor()->momentum().mt());
 	}
       }
-      if (ptmax < ZERO) ptmax = pcm.m();
+      if (ptmax == generator()->maximumCMEnergy() ) ptmax = pcm.m();
       if(hardVetoXComb()&&hardVetoReadOption()&&
 	 !ShowerHandler::currentHandler()->firstInteraction()) {
 	ptmax=min(ptmax,sqrt(xcomb->lastScale()));
@@ -369,7 +371,7 @@ void Evolver::setupMaximumScales(ShowerTreePtr hard,
 	->progenitor()->momentum().mass(); 
     }
   }
-  ptmax *= hardScaleFactor();
+  ptmax *= ShowerHandler::currentHandler()->hardScaleFactor();
   // set maxHardPt for all progenitors.  For partonic processes this
   // is now the max pt in the FS, for non-partonic processes or
   // processes with no coloured FS the invariant mass of the IS
@@ -378,6 +380,41 @@ void Evolver::setupMaximumScales(ShowerTreePtr hard,
 }
 
 void Evolver::showerHardProcess(ShowerTreePtr hard, XCPtr xcomb) {
+
+
+  isMCatNLOSEvent = false;
+  isMCatNLOHEvent = false;
+
+  Ptr<SubtractedME>::tptr subme;
+  Ptr<MatchboxMEBase>::tptr me;
+
+  Ptr<StandardXComb>::ptr sxc = dynamic_ptr_cast<Ptr<StandardXComb>::ptr>(xcomb);
+
+  if ( sxc ) {
+    subme = dynamic_ptr_cast<Ptr<SubtractedME>::tptr>(sxc->matrixElement());
+    me = dynamic_ptr_cast<Ptr<MatchboxMEBase>::tptr>(sxc->matrixElement());
+  }
+
+  if ( subme ) {
+    if ( subme->showerApproximation() ) {
+      // don't do this for POWHEG-type corrections
+      if ( !subme->showerApproximation()->needsSplittingGenerator() ) {
+	theShowerApproximation = subme->showerApproximation();
+	if ( subme->realShowerSubtraction() )
+	  isMCatNLOHEvent = true;
+	else if ( subme->virtualShowerSubtraction() )
+	  isMCatNLOSEvent = true;
+      }
+    }
+  } else if ( me ) {
+    if ( me->factory()->showerApproximation() ) {
+      if ( !me->factory()->showerApproximation()->needsSplittingGenerator() ) {
+	theShowerApproximation = me->factory()->showerApproximation();
+	isMCatNLOSEvent = true;
+      }
+    }
+  }
+
   _hardme = HwMEBasePtr();
   // extract the matrix element
   tStdXCombPtr lastXC = dynamic_ptr_cast<tStdXCombPtr>(xcomb);
@@ -981,6 +1018,14 @@ bool Evolver::timeLikeVetoed(const Branching & fb,
     }
     if(vetoed) return true;
   }
+  // check for MC@NLO profile scale veto
+  if ( isMCatNLOSEvent && !_progenitor->profileVetoed() ) {
+    assert(theShowerApproximation);
+    double weight = theShowerApproximation->hardScaleProfile(_progenitor->maxHardPt(),fb.kinematics->pT());
+    if ( UseRandom::rnd() > weight )
+      return true;
+    _progenitor->didProfileVeto();
+  }
   return false;
 }
 
@@ -1016,6 +1061,14 @@ bool Evolver::spaceLikeVetoed(const Branching & bb,ShowerParticlePtr particle) {
       }
     }
     if (vetoed) return true;
+  }
+  // check for MC@NLO profile scale veto
+  if ( isMCatNLOSEvent && !_progenitor->profileVetoed() ) {
+    assert(theShowerApproximation);
+    double weight = theShowerApproximation->hardScaleProfile(_progenitor->maxHardPt(),bb.kinematics->pT());
+    if ( UseRandom::rnd() > weight )
+      return true;
+    _progenitor->didProfileVeto();
   }
   return false;
 }

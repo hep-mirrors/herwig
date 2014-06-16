@@ -145,8 +145,6 @@ HERWIG_CHECK_ABS_BUG
 
 HERWIG_ENABLE_MODELS
 
-HERWIG_ENABLE_DIPOLE
-
 SHARED_FLAG=-shared
 AM_CONDITIONAL(NEED_APPLE_FIXES,
 		[test "xx${host/darwin/foundit}xx" != "xx${host}xx"])
@@ -229,7 +227,6 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/Matchbox/External/MadGraph/Makefile
                 MatrixElement/Matchbox/External/MadGraph/MadGraphAmplitude.cc
                 MatrixElement/Matchbox/External/MadGraph/mg2Matchbox.py
-                MatrixElement/Matchbox/External/MadGraph/Makefile-MG.in
 		Sampling/Makefile
 		Sampling/CellGrids/Makefile
                 Shower/Makefile

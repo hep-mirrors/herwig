@@ -41,7 +41,8 @@ CellGridSampler::CellGridSampler()
   : BinSampler(), SimpleCellGrid(),
     theExplorationPoints(1000), theExplorationSteps(8),
     theGain(0.3), theEpsilon(0.01),
-    theMinimumSelection(0.0001) {}
+    theMinimumSelection(0.0001), theLuminositySplits(0),
+    theChannelSplits(0) {}
 
 CellGridSampler::~CellGridSampler() {}
 
@@ -142,8 +143,24 @@ void CellGridSampler::initialize(bool progress) {
   }
   std::set<SimpleCellGrid*> newCells;
   
+  if ( pre_adaption_splits().empty() &&
+       (theLuminositySplits || theChannelSplits) ) {
+    const StandardEventHandler& eh = *eventHandler();
+    const StandardXComb& xc = *eh.xCombs()[bin()];
+    the_pre_adaption_splits.resize(dimension(),0);
+    const pair<int,int>& pdims = xc.partonDimensions();
+    if ( theLuminositySplits && dimension() >= pdims.first + pdims.second ) {
+      for ( int n = 0; n < pdims.first; ++n )
+	the_pre_adaption_splits[n] = theLuminositySplits;
+      for ( int n = dimension() - pdims.second; n < dimension(); ++n )
+	the_pre_adaption_splits[n] = theLuminositySplits;
+    }
+    if ( theChannelSplits && dimension() > pdims.first + pdims.second ) {
+      the_pre_adaption_splits[pdims.first] = theChannelSplits;
+    }
+  }
   
-  for(int splitdim=0; splitdim<min(dimension(),pre_adaption_splits().size());splitdim++)
+  for(int splitdim=0; splitdim<min(dimension(),(int)pre_adaption_splits().size());splitdim++)
       SimpleCellGrid::splitter(splitdim,pre_adaption_splits()[splitdim]);
   
   SimpleCellGrid::explore(theExplorationPoints,rnd,*this,newCells);
@@ -211,12 +228,16 @@ void CellGridSampler::finalize(bool) {
 
 void CellGridSampler::persistentOutput(PersistentOStream & os) const {
   os << theExplorationPoints << theExplorationSteps
-     << theGain << theEpsilon << theMinimumSelection;
+     << theGain << theEpsilon << theMinimumSelection
+     << the_pre_adaption_splits
+     << theLuminositySplits << theChannelSplits;
 }
 
 void CellGridSampler::persistentInput(PersistentIStream & is, int) {
   is >> theExplorationPoints >> theExplorationSteps
-     >> theGain >> theEpsilon >> theMinimumSelection;
+     >> theGain >> theEpsilon >> theMinimumSelection
+     >> the_pre_adaption_splits
+     >> theLuminositySplits >> theChannelSplits;
 }
 
 // *** Attention *** The following static variable is needed for the type
@@ -262,13 +283,23 @@ void CellGridSampler::Init() {
      &CellGridSampler::theMinimumSelection, 0.0001, 0.0, 1.0,
      false, false, Interface::limited);
     
-    
   static ParVector<CellGridSampler,int> interfacethe_pre_adaption_splits
     ("preadaptionsplit",
      "The splittings for each dimension befor adaption.",
      &CellGridSampler::the_pre_adaption_splits, 1., -1, 0.0, 0.0, 0,
      false, false, Interface::lowerlim);
 
+  static Parameter<CellGridSampler,int> interfaceLuminositySplits
+    ("LuminositySplits",
+     "",
+     &CellGridSampler::theLuminositySplits, 0, 0, 0,
+     false, false, Interface::lowerlim);
+
+  static Parameter<CellGridSampler,int> interfaceChannelSplits
+    ("ChannelSplits",
+     "",
+     &CellGridSampler::theChannelSplits, 0, 0, 0,
+     false, false, Interface::lowerlim);
 
 }
 

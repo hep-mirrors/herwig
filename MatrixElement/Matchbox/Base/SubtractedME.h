@@ -147,7 +147,9 @@ public:
   /**
    * Return true, if projectors will be used
    */
-  virtual bool willProject() const { return inclusive() || virtualShowerSubtraction(); }
+  virtual bool willProject() const { 
+    return inclusive() || virtualShowerSubtraction() || loopSimSubtraction();
+  }
 
   /**
    * Return true, if this MEGroup will reweight the contributing cross
@@ -212,6 +214,16 @@ public:
    * Return true, if the shower virtual contribution should be subtracted.
    */
   bool virtualShowerSubtraction() const { return theVirtualShowerSubtraction; }
+
+  /**
+   * Indicate that the loopsim matched virtual contribution should be subtracted.
+   */
+  void doLoopSimSubtraction();
+
+  /**
+   * Return true, if the loopsim matched virtual contribution should be subtracted.
+   */
+  bool loopSimSubtraction() const { return theLoopSimSubtraction; }
 
   //@}
 
@@ -510,6 +522,11 @@ private:
    * True, if the shower virtual contribution should be subtracted.
    */
   bool theVirtualShowerSubtraction;
+
+  /**
+   * True, if the loopsim matched virtual contribution should be subtracted.
+   */
+  bool theLoopSimSubtraction;
 
   /**
    * Switch on subprocess groups

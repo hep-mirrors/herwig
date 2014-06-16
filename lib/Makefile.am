@@ -14,14 +14,11 @@ $(top_builddir)/Models/General/libHwModelGenerator.la \
 $(top_builddir)/Decay/General/libHwGeneralDecay.la \
 $(top_builddir)/MatrixElement/General/libHwGeneralME.la \
 $(top_builddir)/MatrixElement/libHwME.la \
+$(top_builddir)/MatrixElement/Matchbox/libHwMatchbox.la \
 $(top_builddir)/Decay/WeakCurrents/libHwWeakCurrent.la \
 $(top_builddir)/Looptools/libHwLooptools.la \
 $(top_builddir)/Shower/libHwShower.la \
 $(THEPEGLIB) -ldl
-
-if WANT_DIPOLE
-Herwig_la_LIBADD += $(top_builddir)/MatrixElement/Matchbox/libHwMatchbox.la
-endif
 
 dist_noinst_SCRIPTS = fix-osx-path
 

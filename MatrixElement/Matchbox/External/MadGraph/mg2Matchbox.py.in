@@ -1,69 +1,7 @@
 #! /usr/bin/env python
 
-import os,re,sys,fileinput,random,time,math,glob,functools,errno
+import os,re,sys,fileinput,random,time,math,glob,functools,errno,shutil
 from multiprocessing import Pool
-
-
-
-
-
-
-
-parameterdat="{\n  // Define \"zero\"\n  zero = 0;"+                		\
-             "\n  ZERO = 0;  \n // Prepare a vector for indices\n"+             \
-	     "vector<int> indices(2, 0); \n"+ 					\
-	     "WH = slha.get_block_entry(\"decay\", 25, 5.753088e-03); \n"+ \
-	     "WW = slha.get_block_entry(\"decay\", 24, 2.047600e+00); \n"+ \
-	     "WZ = slha.get_block_entry(\"decay\", 23, 2.441404e+00); \n"+ \
-	     "WT = slha.get_block_entry(\"decay\", 6, 1.491500e+00); \n "+ \
-	     "ymtau = slha.get_block_entry(\"yukawa\", 15, 1.777000e+00);\n "+ \
-	     "ymt = slha.get_block_entry(\"yukawa\", 6, 1.730000e+02);\n "+ \
-	     "ymb = slha.get_block_entry(\"yukawa\", 5, 4.700000e+00); \n "+ \
-	     "aS = slha.get_block_entry(\"sminputs\", 3, 1.180000e-01);\n "+ \
-	     "Gf = slha.get_block_entry(\"sminputs\", 2, 1.166390e-05); \n "+\
-	     "aEWM1 = slha.get_block_entry(\"sminputs\", 1, 1.325070e+02); \n "+ \
-	     "MH = slha.get_block_entry(\"mass\", 25, 1.200000e+02); \n "+ \
-	     "MZ = slha.get_block_entry(\"mass\", 23, 9.118800e+01); \n "+ \
-	     "MTA = slha.get_block_entry(\"mass\", 15, 1.777000e+00); \n "+ \
-	     "MT = slha.get_block_entry(\"mass\", 6, 1.730000e+02); \n "+ \
-	     "MB = slha.get_block_entry(\"mass\", 5,4.700000e+00); \n "+ \
-	     "MW = slha.get_block_entry(\"mass\", 24,80.419002); \n "+ \
-	     "sw2 = slha.get_block_entry(\"sminputs\", 4,-1000.1); \n "+ \
-	     "conjg__CKM1x1 = 1.;\n "+ \
-	     "conjg__CKM3x3 = 1.;\n  "+\
-	     "CKM3x3 = 1.;\n "+ \
-	     "complexi = std::complex<double> (0., 1.);\n "+ \
-	     "MZ__exp__2 = pow(MZ, 2.);\n  "+ \
-	     "MZ__exp__4 = pow(MZ, 4.);\n "+ \
-	     "sqrt__2 = sqrt(2.);\n "+ \
-	     "MH__exp__2 = pow(MH, 2.);\n "+ \
-	     "aEW = 1./aEWM1;\n "+ \
-	     "sqrt__aEW = sqrt(aEW);\n "+ \
-	     "ee = 2. * sqrt__aEW * sqrt(M_PI);\n "+ \
-	     "MW__exp__2 = pow(MW, 2.);\n  "+ \
-	     "cw = sqrt(1. - sw2);\n "+ \
-	     "sqrt__sw2 = sqrt(sw2);\n  "+ \
-	     "sw = sqrt__sw2;\n "+ \
-	     "g1 = ee/cw;\n "+ \
-	     "gw = ee/sw;\n "+\
-	     "vev = (2. * MW * sw)/ee;\n "+ \
-	     "vev__exp__2 = pow(vev, 2.);\n "+ \
-	     "lam = MH__exp__2/(2. * vev__exp__2);\n "+ \
-	     "yb = (ymb * sqrt__2)/vev;\n "+ \
-	     "yt = (ymt * sqrt__2)/vev;\n "+\
-	     "ytau = (ymtau * sqrt__2)/vev;\n "+ \
-	     "muH = sqrt(lam * vev__exp__2);\n "+ \
-	     "I1x33 = yb * conjg__CKM3x3;\n "+ \
-	     "I2x33 = yt * conjg__CKM3x3;\n "+ \
-	     "I3x33 = CKM3x3 * yt;\n  "+ \
-	     "I4x33 = CKM3x3 * yb;\n "+ \
-	     "ee__exp__2 = pow(ee, 2.);\n "+ \
-	     "sw__exp__2 = pow(sw, 2.);\n "+ \
-	     "cw__exp__2 = pow(cw, 2.);\n }\n"+ \
-	     "void Parameters_sm::setIndependentCouplings()\n "
-
-
-
 
 def replacemachine(fileName, sourceText, replaceText):
     file = open(fileName, "r") 
@@ -81,19 +19,9 @@ def mkdir_p(path):
             pass
         else: raise   
  
-#def addjamp(fileName):
-    #file = open(fileName+".cc", "r")
-    #text = file.read()
-    #file.close()
-    #file = open(fileName+".cc", "w")
-
-    ## Fix this.
-    #file.write(text.replace("pars->print","//pars->print").replace("pars->setIndependentCouplings();","pars->setIndependentCouplings();\n\tpars->setDependentParameters();\n\tpars->setDependentCouplings(); " ))
-    #file.close()     
-
 def fillprocs():
   fileproc=open("proc.dat","w")
-  fileproc.write("import model sm\n")
+  fileproc.write("import model loop_sm\n")
   fileproc.write("define ubar =u~\n")
   fileproc.write("define dbar =d~\n")
   fileproc.write("define nu_mubar =vm~\n")
@@ -103,8 +31,6 @@ def fillprocs():
   fileproc.write("define bbar =b~\n")
   fileproc.write("define tbar =t~\n")
   fileproc.write("define Z0 =z\n")
-#  fileproc.write("define W+ =w+\n")
-#  fileproc.write("define W-=w-\n")
   fileproc.write("define h0 =h\n")
   fileproc.write("define gamma =a \n")
   fileproc.write("define nu_e =ve \n")
@@ -119,19 +45,49 @@ def fillprocs():
   first=True
   processmap=""
   procnr=0
+  virtlines=""
+  bornlines=""
   for filei in files:
-    processmap+=filei+" "
+    
     file = open(filei, "r")
     for line in file:
       linetmp=line
+      if "virt" in linetmp:
+	continue
       procnr+=1
+      processmap+=filei+" "
       processmap+=str(procnr) +"\n"
       if first:
-	fileproc.write("generate "+linetmp+"@"+str(procnr)+"\n")
+	bornlines+="generate "+linetmp+"@"+str(procnr)+"\n"
 	first=False
       else:
-	fileproc.write("add process "+linetmp+"@"+str(procnr)+"\n")
-  fileproc.write("output matchbox MGout")
+	bornlines+="add process "+linetmp+"@"+str(procnr)+"\n"
+    file.close()
+  first=True
+  for filei in files:
+    
+    file = open(filei, "r")
+    for line in file:
+      linetmp=line
+      if "virt" not in linetmp:
+	continue
+      procnr+=1
+      processmap+=filei+" "
+      processmap+=str(procnr) +"\n"
+      if first:
+	virtlines+="generate "+linetmp+"@"+str(procnr)+"\n"
+	first=False
+      else:
+	virtlines+="add process "+linetmp+"@"+str(procnr)+"\n"
+    file.close()
+
+  fileproc.write(bornlines)
+  if virtlines!="" and bornlines!="":
+     fileproc.write("output matchbox MG5 --postpone_model\n") 
+  fileproc.write(virtlines)
+  fileproc.write("output matchbox MG5 -f\n")
+  
+
   fileproc.close()
   fileprocessmap=open("processmap.dat","w")
   fileprocessmap.write(processmap)
@@ -197,86 +153,211 @@ if os.path.isfile("InterfaceMadGraph.so"):
  
 fillprocs()
 os.system("python "+sys.argv[1]+"/mg5_aMC proc.dat")
-list=[]
-pwd1=os.getcwd()
-os.chdir(pwd1+"/"+"MGout/SubProcesses")
-a=os.listdir('./')
-pwd=os.getcwd()
-text1h ="//#include \"MGout/SubProcesses/PN_Sigma_sm_xxprocessxx/PN_Sigma_sm_xxprocessxx.h\"\n"
-text2h ="//static PN_Sigma_sm_xxprocessxx    xxprocessxx     ;\n"
-text1cc="//PN_Sigma_sm_xxprocessxx             InterfaceMadGraph::xxprocessxx ;\n"
-text2cc="//case N:  InterfaceMadGraph::xxprocessxx.calculate_wavefunctions(perm,hel);break;\n"
-text3cc="//case N:  InterfaceMadGraph::xxprocessxx.setMomenta(p); break;\n"
-text4cc="//case N:  return InterfaceMadGraph::xxprocessxx.jamp(T); break;\n"
-text5cc="//case N:  InterfaceMadGraph::xxprocessxx.initProc(\"param_card.dat\"); break;\n"
-text6cc="//case N: return InterfaceMadGraph::xxprocessxx.NCol(); break;\n"
-text7cc="//case N: return InterfaceMadGraph::xxprocessxx.Colour(); break;\n"
-makefile=""
+Bornlist=[]
+Virtlist=[]
+procs=open("proc.dat","r")
+for line in procs:
+  if "@" in line:
+    if "[ virt=QCD ]" in line:
+      Virtlist+=[line.split("@")[1].replace("\n","")]
+    else:
+      Bornlist+=[line.split("@")[1].replace("\n","")]
+TXTlist=[["","setpara('param_card.dat')"],
+	 ["","BORN(momenta,hel)"],
+	 ["","SLOOPMATRIX(momenta,virt)"],
+	 ["","GET_JAMP(color,Jamp)"],
+	 ["","GET_NCOL(color)"],
+	 ["","GET_NCOLOR(i,j,color)"]]
+for txt in TXTlist:
+  for i in Bornlist + list(set(Virtlist) - set(Bornlist)):
+    if txt[1]=="Virt(amp)" or txt[1]=="SLOOPMATRIX(momenta,virt)" and i not in  Virtlist:
+      continue
+   # if txt[1]=="BORN(momenta,hel)" and i not in  Bornlist:
+   #   continue
+    if txt[0]=="":
+       txt[0]+="         IF (proc .EQ. "+i+") THEN\n            CALL "
+       if "setpara" not in txt[1] :   
+	  txt[0]+=   "P"+i+"_"
+       txt[0]+=txt[1]+"\n"
+    else:
+       txt[0]+="         ELSE IF (proc .EQ. "+i+") THEN\n"\
+               "            CALL "
+       if "setpara" not in txt[1] :   
+	  txt[0]+=   "P"+i+"_"
+       txt[0]+=txt[1]+"\n"
+  if txt[0]!="":	     
+    txt[0]+="         ELSE\n"
+    txt[0]+="             WRITE(*,*) '##W02A WARNING No id found '\n"
+    txt[0]+="         ENDIF   \n"
 
-for i in a:
+shutil.copyfile("@prefix@/share/Herwig++/MadGraphInterface/InterfaceMadGraph.f.in", "InterfaceMadGraph.f")
+replacemachine("InterfaceMadGraph.f","MG_InitProctxt", TXTlist[0][0])
+replacemachine("InterfaceMadGraph.f","MG_CalculateBORNtxt",TXTlist[1][0])
+replacemachine("InterfaceMadGraph.f","MG_CalculateVIRTtxt",TXTlist[2][0])
+replacemachine("InterfaceMadGraph.f","MG_Jamptxt",     TXTlist[3][0])
+replacemachine("InterfaceMadGraph.f","MG_NColtxt",     TXTlist[4][0])
+replacemachine("InterfaceMadGraph.f","MG_ColourMattxt",TXTlist[5][0])
 
-  if os.path.isdir(pwd+"/"+i):
-    N=re.findall('([0-9]+)', i)
-    text1h +="#include \"MGout/SubProcesses/"+i+"/"+i+".h\"\n"
-    text2h +="static "+i+"    obj_"+i+"     ;\n"
-    text1cc+=i+"             InterfaceMadGraph::obj_"+i+" ;\n"
-    text2cc+="case "+N[0]+":  InterfaceMadGraph::obj_"+i+".calculate_wavefunctions(perm,hel);break;\n"
-    text3cc+="case "+N[0]+":  InterfaceMadGraph::obj_"+i+".setMomenta(p); break;\n"
-    text4cc+="case "+N[0]+":  return InterfaceMadGraph::obj_"+i+".jamp(T); break;\n"
-    text5cc+="case "+N[0]+":  InterfaceMadGraph::obj_"+i+".initProc(\""+pwd1+"/"+"MGout/Cards/"+"param_card.dat\"); break;\n"
-    text6cc+="case "+N[0]+": return InterfaceMadGraph::obj_"+i+".NCol(); break;\n"
-    text7cc+="case "+N[0]+": return InterfaceMadGraph::obj_"+i+".colorstring(i,j); break;\n"
-    makefile+=" MGout/SubProcesses/"+i+"/"+i+".cc "
-    os.chdir(pwd+"/"+i)
-    replacemachine("CPPProcess.h","CPPProcess" , i)
-    replacemachine("CPPProcess.cc","CPPProcess" , i)
-    os.system("mv CPPProcess.h "+i+".h")
-    os.system("mv CPPProcess.cc "+i+".cc")
-   # replacemachine(i+".h","virtual void sigmaKin();", "virtual void sigmaKin();\n\tstd::complex<double> jamp(int T);\n\tint NCol();\n\tint colorstring(int i,int j);")
-    #addjamp(i)
-    os.system("rm Makefile")
-    file = open(i+".h", "r")
-    onlyoneprocess = file.read()
-    if "static const int nprocesses = 1;" not in onlyoneprocess:
-       sys.exit()
-    file.close()
-    #replacemachine(i+".h","private:" , "//private:")
+MG_vxxxxxtxt=""
+if TXTlist[2][0]!="":
+  MG_vxxxxxtxt="""       subroutine  MG_vxxxxx(p, n,inc,VC)
+     $   bind(c, name='MG_vxxxxx')
+         IMPLICIT NONE
+         double precision p(0:3)
+         double precision n(0:3)
+         INTEGER inc
+         double precision VC(0:7)
+         double complex  VCtmp(0:4)
+         double complex  Ninplus(8)
+         double complex  Noutminus(8)
+         double complex  Pinplus(8)
+         double complex  Poutplus(8)
+         double complex   denom
+         double complex  IMAG1
+         PARAMETER (IMAG1=(0D0,1D0))
+         CALL IXXXXX(n, 0.0d0, +1, +1, Ninplus);  ! |n+>
+         CALL OXXXXX(p, 0.0d0, +1, +1, Poutplus); ! <p+|
+         CALL OXXXXX(n, 0.0d0, -1, +1, Noutminus);!  <n-|
+         CALL IXXXXX(p, 0.0d0, +1, +1, Pinplus);  ! |p+>
+         !<p+| gamma_mu |n+>
+         VCtmp(0)=Ninplus(5)*Poutplus(7)+Ninplus(6)*Poutplus(8)+
+     $             Ninplus(7)*Poutplus(5)+Ninplus(8)*Poutplus(6)
+         VCtmp(1)=(Ninplus(7)*Poutplus(6)+Ninplus(8)*Poutplus(5)-
+     $             Ninplus(5)*Poutplus(8)-Ninplus(6)*Poutplus(7))
+         VCtmp(2)=(-IMAG1*(Ninplus(5)*Poutplus(8)+Ninplus(8) 
+     $             * Poutplus(5))+IMAG1*(Ninplus(6)*Poutplus(7)
+     $             + Ninplus(7)*Poutplus(6)));
+         VCtmp(3)=(Ninplus(6)*Poutplus(8)+Ninplus(7)*Poutplus(5)-
+     $              Ninplus(5)*Poutplus(7)-Ninplus(8)*Poutplus(6))
+         denom= (Pinplus(5)*Noutminus(5)+Pinplus(6)
+     $          *Noutminus(6)+Pinplus(7)*Noutminus(7)
+     $          +Pinplus(8)*Noutminus(8))*sqrt(2.d0)
+          if (inc.gt.1 )THEN
+            denom=denom*-1.0d0
+            if (abs(VCtmp(3)).ne.0.d0)THEN
+             denom=denom* (VCtmp(3))/abs(VCtmp(3))
+            endif
+            if (abs(VCtmp(1)).ne.0.d0)THEN
+              denom=denom* (VCtmp(1))/abs(VCtmp(1))
+            endif
+          endif
+         VCtmp(0)=-1.0d0*VCtmp(0)/denom
+         VCtmp(1)=-1.0d0*VCtmp(1)/denom
+         VCtmp(2)=-1.0d0*VCtmp(2)/denom
+         VCtmp(3)=-1.0d0*VCtmp(3)/denom
+         VC(0)= real(VCtmp(0))
+         VC(1)=aimag(VCtmp(0))  
+         VC(2)= real(VCtmp(1))
+         VC(3)=aimag(VCtmp(1))  
+         VC(4)= real(VCtmp(2))
+         VC(5)=aimag(VCtmp(2))  
+         VC(6)= real(VCtmp(3))
+         VC(7)=aimag(VCtmp(3))  
+       END"""
+else:
+  MG_vxxxxxtxt="""       subroutine  MG_vxxxxx(p, n,inc,VC)
+     $   bind(c, name='MG_vxxxxx')
+         IMPLICIT NONE
+         double precision p(0:3)
+         double precision n(0:3)
+         INTEGER inc
+         double precision VC(0:7)
+         double complex  VCtmp(0:4)
+         double complex  Ninplus(6)
+         double complex  Noutminus(6)
+         double complex  Pinplus(6)
+         double complex  Poutplus(6)
+         double complex   denom
+         double complex  IMAG1
+         PARAMETER (IMAG1=(0D0,1D0))
+         CALL IXXXXX(n, 0.0d0, +1, +1, Ninplus);  ! |n+>
+         CALL OXXXXX(p, 0.0d0, +1, +1, Poutplus); ! <p+|
+         CALL OXXXXX(n, 0.0d0, -1, +1, Noutminus);!  <n-|
+         CALL IXXXXX(p, 0.0d0, +1, +1, Pinplus);  ! |p+>
+         !<p+| gamma_mu |n+>
+         VCtmp(0)=Ninplus(3)*Poutplus(5)+Ninplus(4)*Poutplus(6)+
+     $             Ninplus(5)*Poutplus(3)+Ninplus(6)*Poutplus(4)
+         VCtmp(1)=(Ninplus(5)*Poutplus(4)+Ninplus(6)*Poutplus(3)-
+     $             Ninplus(3)*Poutplus(6)-Ninplus(4)*Poutplus(5))
+         VCtmp(2)=(-IMAG1*(Ninplus(3)*Poutplus(6)+Ninplus(6) 
+     $             * Poutplus(3))+IMAG1*(Ninplus(4)*Poutplus(5)
+     $             + Ninplus(5)*Poutplus(4)));
+         VCtmp(3)=(Ninplus(4)*Poutplus(6)+Ninplus(5)*Poutplus(3)-
+     $              Ninplus(3)*Poutplus(5)-Ninplus(6)*Poutplus(4))
+         denom= (Pinplus(3)*Noutminus(3)+Pinplus(4)
+     $          *Noutminus(4)+Pinplus(5)*Noutminus(5)
+     $          +Pinplus(6)*Noutminus(6))*sqrt(2.d0)
+          if (inc.gt.1 )THEN
+            denom=denom*-1.0d0
+            if (abs(VCtmp(3)).ne.0.d0)THEN
+             denom=denom* (VCtmp(3))/abs(VCtmp(3))
+            endif
+            if (abs(VCtmp(1)).ne.0.d0)THEN
+              denom=denom* (VCtmp(1))/abs(VCtmp(1))
+            endif
+          endif
+         VCtmp(0)=-1.0d0*VCtmp(0)/denom
+         VCtmp(1)=-1.0d0*VCtmp(1)/denom
+         VCtmp(2)=-1.0d0*VCtmp(2)/denom
+         VCtmp(3)=-1.0d0*VCtmp(3)/denom
+         VC(0)= real(VCtmp(0))
+         VC(1)=aimag(VCtmp(0))  
+         VC(2)= real(VCtmp(1))
+         VC(3)=aimag(VCtmp(1))  
+         VC(4)= real(VCtmp(2))
+         VC(5)=aimag(VCtmp(2))  
+         VC(6)= real(VCtmp(3))
+         VC(7)=aimag(VCtmp(3))  
+       END"""
+replacemachine("InterfaceMadGraph.f","MG_vxxxxxtxt",MG_vxxxxxtxt)
 
-os.chdir(pwd1)
-file = open("@prefix@/share/Herwig++/MadGraphInterface/InterfaceMadGraph.h.in", "r")
-text = file.read()
-file.close()
-file = open("InterfaceMadGraph.h", "w")
-text=text.replace("#include \"MGout/SubProcesses/PN_Sigma_sm_xxprocessxx/PN_Sigma_sm_xxprocessxx.h\"", text1h)
-text=text.replace("static PN_Sigma_sm_xxprocessxx    xxprocessxx     ;", text2h)
-file.write(text)
-file.close()
 
-file = open("@prefix@/share/Herwig++/MadGraphInterface/InterfaceMadGraph.cc.in", "r")
-text = file.read()
-file.close()
-file = open("InterfaceMadGraph.cc", "w")
-text=text.replace("PN_Sigma_sm_xxprocessxx             InterfaceMadGraph::xxprocessxx ;",text1cc)
-text=text.replace("case N:  InterfaceMadGraph::xxprocessxx.calculate_wavefunctions(perm,hel);break;",text2cc)
-text=text.replace("case N:  InterfaceMadGraph::xxprocessxx.setMomenta(p); break;",text3cc)
-text=text.replace("case N:  return InterfaceMadGraph::xxprocessxx.jamp(T); break;",text4cc)
-text=text.replace("case N:  InterfaceMadGraph::xxprocessxx.initProc(\"param_card.dat\"); break;",text5cc)
-text=text.replace("case N: return InterfaceMadGraph::xxprocessxx.NCol(); break;",text6cc)
-text=text.replace("case N: return InterfaceMadGraph::xxprocessxx.colorstring(i,j); break;",text7cc)
-file.write(text)
-file.close()
+make=" "
+files1=glob.glob('*/*/*.f')
+files2=glob.glob('*/*/*/*.f')
+for i in files1+files2:
+  if "check_sa" not in i:
+   make += " "+i
 
-file = open("@prefix@/share/Herwig++/MadGraphInterface/Makefile-MG.in", "r")
-text = file.read()
-file.close()
-file = open("Makefile", "w")
-file.write(text)
-file.write(makefile)
-file.close()
+files1=glob.glob('*/*/*.inc')
+files2=glob.glob('*/*/*/*.inc')
+coefdir=""
+for i in files1+files2:
+  if "nexternal.inc" in i:
+   coefdir+=" -I"+i.replace("nexternal.inc"," ")
+  #if "coupl.inc" in i:
+   #INCLUDE=i.replace("coupl.inc"," ")
+   #coefdir+=" -I"+INCLUDE.replace("coupl.inc"," ")   
 
-replacefromto(sys.argv[2]+"/MGout/src/Parameters_sm.cc", "void Parameters_sm::setIndependentParameters(SLHAReader& slha)","void Parameters_sm::setIndependentCouplings()",parameterdat)
-replacemachine(sys.argv[2]+"/MGout/src/read_slha.cc","cout << \"Opened slha fil", "//cout << \"Opened slha fil")
+file=open("makefile","w")
+file.write("include MG5/Source/make_opts\n")
+file.write("LIBDIR = MG5/lib\n")
+if Virtlist!=[]:
+    file.write("LINKLIBS =  -L$(LIBDIR) -lcts \n")
+    file.write("LIBS =  $(LIBDIR)libcts.$(libext) \n")
+file.write("PROCESS= InterfaceMadGraph.f "+make)
+file.write("\n\nall:  \n\t gfortran  $(FFLAGS) -fPIC -fno-f2c -shared -s -o  InterfaceMadGraph.so -IMG5/SubProcesses/ ")
+if coefdir != "":
+   file.write(coefdir)
+file.write("   $(PROCESS) $(LINKLIBS) ")
+file.close()
 
 os.system("make")
-os.chdir(pwdxx)
-os.system("cp param_card.dat "+sys.argv[2]+"/MGout/Cards/")
+
+os.system("ln -s MadGraphAmplitudes/MG5/SubProcesses ../")
+os.system("ln -s MadGraphAmplitudes/MG5/Cards ../")
+os.system("cp $(find -name ident_card.dat) ../")
+#os.system("cp $(find -name MadLoopParams.dat) ../")
+#os.system("cp $(find -name ColorNumFactors.dat) ../")
+#os.system("cp $(find -name ColorDenomFactors.dat) ../")
+#os.system("cp $(find -name HelConfigs.dat) ../")
+#ColorNumFactors.dat
+#ColorDenomFactors.dat
+#HelConfigs.dat
+
+#replacefromto(sys.argv[2]+"/MGout/src/Parameters_sm.cc", "void Parameters_sm::setIndependentParameters(SLHAReader& slha)","void Parameters_sm::setIndependentCouplings()",parameterdat)
+#replacemachine(sys.argv[2]+"/MGout/src/read_slha.cc","cout << \"Opened slha fil", "//cout << \"Opened slha fil")
+
+#os.system("make")
+#os.chdir(pwdxx)
+#os.system("cp param_card.dat "+sys.argv[2]+"/MGout/Cards/")

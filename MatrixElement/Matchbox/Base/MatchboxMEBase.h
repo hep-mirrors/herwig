@@ -418,17 +418,13 @@ public:
    * Return true, if this matrix element provides the PDF
    * weight for the first incoming parton itself.
    */
-  virtual bool havePDFWeight1() const { 
-    return diagrams().front()->partons()[0]->coloured();
-  }
+  virtual bool havePDFWeight1() const;
 
   /**
    * Return true, if this matrix element provides the PDF
    * weight for the second incoming parton itself.
    */
-  virtual bool havePDFWeight2() const { 
-    return diagrams().front()->partons()[1]->coloured();
-  }
+  virtual bool havePDFWeight2() const;
 
   /**
    * Set the PDF weight.
@@ -1010,6 +1006,16 @@ private:
    * not require colour correlators.
    */
   bool theNoCorrelations;
+
+  /**
+   * Flag which pdfs should be included.
+   */
+  mutable pair<bool,bool> theHavePDFs;
+
+  /**
+   * True, if already checked for which PDFs to include.
+   */
+  mutable bool checkedPDFs;
 
 private:
 

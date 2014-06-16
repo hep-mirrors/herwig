@@ -22,6 +22,15 @@ Element::Element(const Element& other)
   index();
 }
 
+Element& Element::operator=(const Element& other) {
+  theType = other.theType;
+  theNameOrContent = other.theNameOrContent;
+  theAttributes = other.theAttributes;
+  theChildren = other.theChildren;
+  index();
+  return *this;
+}
+
 const string& Element::name() const {
   assertNamed();
   return theNameOrContent;

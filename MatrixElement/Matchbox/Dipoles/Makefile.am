@@ -1,6 +1,4 @@
-if WANT_DIPOLE
 noinst_LTLIBRARIES = libHwMatchboxDipoles.la
-endif
 
 libHwMatchboxDipoles_la_SOURCES = \
 FFggxDipole.cc \

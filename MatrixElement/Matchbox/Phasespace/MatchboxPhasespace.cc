@@ -15,12 +15,11 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
+#include "ThePEG/Interface/Command.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
-#include "ThePEG/Persistency/PersistentOStream.h"
-#include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/ProcessData.h"
 #include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
 
@@ -48,6 +47,7 @@ double MatchboxPhasespace::generateKinematics(const double* r,
   vector<Lorentz5Momentum>::iterator p = momenta.begin() + 2;
 
   double massJacobian = 1.;
+  Energy summ = ZERO;
 
   if ( useMassGenerators() ) {
     Energy gmass = ZERO;
@@ -83,10 +83,18 @@ double MatchboxPhasespace::generateKinematics(const double* r,
       }
       maxMass -= gmass;
       p->setMass(gmass);
+      summ += gmass;
     }
   } else {
-    for ( ; pd != mePartonData().end(); ++pd, ++p )
+    for ( ; pd != mePartonData().end(); ++pd, ++p ) {
+      summ += (**pd).mass();
       p->setMass((**pd).mass());
+    }
+  }
+
+  if ( momenta.size() > 3 && !haveX1X2() ) {
+    if ( summ > (momenta[0]+momenta[1]).m() )
+      return 0.0;
   }
 
   double weight = momenta.size() > 3 ? 
@@ -182,6 +190,65 @@ double MatchboxPhasespace::invertTwoToOneKinematics(const vector<Lorentz5Momentu
 
 }
 
+void MatchboxPhasespace::setCoupling(long a, long b, long c, 
+				     double coupling, bool includeCrossings) {
+  cPDPtr A = getParticleData(a);
+  cPDPtr B = getParticleData(b);
+  cPDPtr C = getParticleData(c);
+  if ( !A || !B || !C ) {
+    generator()->log() << "Warning: could not determine particle data for ids "
+		       << a << " " << b << " " << c << " when setting coupling in MatchboxPhasespace.\n"
+		       << flush;
+    return;
+  }
+  if ( !includeCrossings ) {
+    couplings[LTriple(a,b,c)] = coupling;
+    return;
+  }
+  if ( A->CC() ) {
+    couplings[LTriple(-a,b,c)] = coupling;
+    couplings[LTriple(-a,c,b)] = coupling;
+  } else {
+    couplings[LTriple(a,b,c)] = coupling;
+    couplings[LTriple(a,c,b)] = coupling;
+  }
+  if ( B->CC() ) {
+    couplings[LTriple(-b,a,c)] = coupling;
+    couplings[LTriple(-b,c,a)] = coupling;
+  } else {
+    couplings[LTriple(b,a,c)] = coupling;
+    couplings[LTriple(b,c,a)] = coupling;
+  }
+  if ( C->CC() ) {
+    couplings[LTriple(-c,a,b)] = coupling;
+    couplings[LTriple(-c,b,a)] = coupling;
+  } else {
+    couplings[LTriple(c,a,b)] = coupling;
+    couplings[LTriple(c,b,a)] = coupling;
+  }
+}
+
+string MatchboxPhasespace::doSetCoupling(string in) {
+  istringstream is(in);
+  long a,b,c; double coupling;
+  is >> a >> b >> c >> coupling;
+  if ( !is )
+    return "MatchboxPhasespace: error in setting coupling.";
+  setCoupling(a,b,c,coupling,true);
+  return "";
+}
+
+string MatchboxPhasespace::doSetPhysicalCoupling(string in) {
+  istringstream is(in);
+  long a,b,c; double coupling;
+  is >> a >> b >> c >> coupling;
+  if ( !is )
+    return "MatchboxPhasespace: error in setting coupling.";
+  setCoupling(a,b,c,coupling,false);
+  return "";
+}
+
+
 pair<double,Lorentz5Momentum> 
 MatchboxPhasespace::timeLikeWeight(const Tree2toNDiagram& diag,
 				   int branch, double flatCut) const {
@@ -201,17 +268,24 @@ MatchboxPhasespace::timeLikeWeight(const Tree2toNDiagram& diag,
   res.first *= other.first;
   res.second += other.second;
 
+  LTriple vertexKey(diag.allPartons()[branch]->id(),
+		    diag.allPartons()[children.first]->id(),
+		    diag.allPartons()[children.second]->id());
+  map<LTriple,double>::const_iterator cit = couplings.find(vertexKey);
+  if ( cit != couplings.end() )
+    res.first *= cit->second;
+
   Energy2 mass2 = sqr(diag.allPartons()[branch]->mass());
   Energy2 width2 = sqr(diag.allPartons()[branch]->width());
 
   if ( width2 == ZERO ) {
     if ( abs((res.second.m2()-mass2)/lastSHat()) > flatCut )
       res.first /=
-	abs((res.second.m2()-mass2)/lastSHat());
+	abs((res.second.m2()-mass2)/GeV2);
   } else {
     res.first /=
-      sqr((res.second.m2()-mass2)/lastSHat()) +
-      mass2*width2/sqr(lastSHat());
+      sqr((res.second.m2()-mass2)/GeV2) +
+      mass2*width2/sqr(GeV2);
   }
 
   return res;
@@ -230,6 +304,13 @@ double MatchboxPhasespace::spaceLikeWeight(const Tree2toNDiagram& diag,
   pair<double,Lorentz5Momentum> res =
     timeLikeWeight(diag,children.second,flatCut);
 
+  LTriple vertexKey(diag.allPartons()[branch]->id(),
+		    diag.allPartons()[children.first]->id(),
+		    diag.allPartons()[children.second]->id());
+  map<LTriple,double>::const_iterator cit = couplings.find(vertexKey);
+  if ( cit != couplings.end() )
+    res.first *= cit->second;
+
   if ( children.first == diag.nSpace() - 1 ) {
     return res.first;
   }
@@ -242,11 +323,11 @@ double MatchboxPhasespace::spaceLikeWeight(const Tree2toNDiagram& diag,
   if ( width2 == ZERO ) {
     if ( abs((res.second.m2()-mass2)/lastSHat()) > flatCut )
       res.first /=
-	abs((res.second.m2()-mass2)/lastSHat());
+	abs((res.second.m2()-mass2)/GeV2);
   } else {
     res.first /=
-      sqr((res.second.m2()-mass2)/lastSHat()) +
-      mass2*width2/sqr(lastSHat());
+      sqr((res.second.m2()-mass2)/GeV2) +
+      mass2*width2/sqr(GeV2);
   }
 
   return
@@ -321,11 +402,25 @@ bool MatchboxPhasespace::matchConstraints(const vector<Lorentz5Momentum>& moment
 void MatchboxPhasespace::persistentOutput(PersistentOStream & os) const {
   os << theLastXComb
      << ounit(singularCutoff,GeV) << theUseMassGenerators;
+  //<< couplings; // no idea why this isn't working
+  os << couplings.size();
+  for ( map<LTriple,double>::const_iterator cit = 
+	  couplings.begin(); cit != couplings.end(); ++cit )
+    os << cit->first << cit->second;
 }
 
 void MatchboxPhasespace::persistentInput(PersistentIStream & is, int) {
   is >> theLastXComb
      >> iunit(singularCutoff,GeV) >> theUseMassGenerators;
+  //>> couplings;  // no idea why this isn't working
+  couplings.clear();
+  size_t size;
+  LTriple k;
+  is >> size;
+  while ( size-- && is ) {
+    is >> k;
+    is >> couplings[k];
+  }
   lastMatchboxXComb(theLastXComb);
 }
 
@@ -366,6 +461,16 @@ void MatchboxPhasespace::Init() {
      "No",
      "Do not use mass generators.",
      false);
+
+  static Command<MatchboxPhasespace> interfaceSetCoupling
+    ("SetCoupling",
+     "",
+     &MatchboxPhasespace::doSetCoupling, false);
+
+  static Command<MatchboxPhasespace> interfaceSetPhysicalCoupling
+    ("SetPhysicalCoupling",
+     "",
+     &MatchboxPhasespace::doSetPhysicalCoupling, false);
 
 }
 

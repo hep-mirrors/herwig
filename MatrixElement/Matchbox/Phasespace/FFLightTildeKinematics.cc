@@ -66,6 +66,11 @@ Energy FFLightTildeKinematics::lastPt() const {
 
 }
 
+double FFLightTildeKinematics::lastZ() const {
+  return subtractionParameters()[1];
+}
+
+
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 

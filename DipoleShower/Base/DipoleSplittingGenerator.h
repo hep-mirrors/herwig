@@ -225,6 +225,11 @@ public:
    */
   double evaluate(const vector<double>&);
 
+  /**
+   * True, if sampler should apply compensation
+   */
+  void doCompensate(bool yes = true) { theDoCompensate = yes; }
+
 public:
 
   /**@name Wrap to the exsample2 interface until this is finally cleaned up. */
@@ -373,6 +378,11 @@ private:
    * Pointer to a check histogram object
    */
   Ptr<DipoleMCCheck>::ptr theMCCheck;
+
+  /**
+   * True, if sampler should apply compensation
+   */
+  bool theDoCompensate;
 
 private:
 

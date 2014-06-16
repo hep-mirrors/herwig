@@ -40,6 +40,10 @@ set DISFactory:OrderInAlphaEW 2
 #>>>>>>>>>> You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
 do DISFactory:Process e+ p e+ j
 
+#>>>>>>>>>> If a swap of beams, p e+/- is needed comment in this
+# set DISFactory:FirstPerturbativePDF Yes
+# set DISFactory:SecondPerturbativePDF No
+
 #==================================================================================
 #                     :::::CUT SELECTION:::::
 #
@@ -118,18 +122,21 @@ cd /Herwig/MatrixElements/Matchbox
 set DISFactory:ShowerApproximation DipoleMatching
 cd /Herwig/EventHandlers
 set DISHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
+set /Herwig/Model:QCD/RunningAlphaS /Herwig/MatrixElements/Matchbox/AlphaS/MatchboxNLOAlphaS
 cd /Herwig/MatrixElements/Matchbox
 
 #>>>>>>>>>> MC@NLO-type next-to-leading order for use with default shower
 
 # set DISFactory:ShowerApproximation QTildeMatching
+# set /Herwig/Shower/Evolver:MECorrMode No
+# set /Herwig/Model:QCD/RunningAlphaS /Herwig/MatrixElements/Matchbox/AlphaS/NLOAlphaS
 
 #>>>>>>>>>> POWHEG-type next-to-leading order
 
 # set DISFactory:ShowerApproximation MEMatching
 # set MECorrectionHandler:Factory DISFactory
 # cd /Herwig/Generators
-# insert DISGenerator:EventHandler:PostSubProcessHandlers[0] MECorrectionHandler
+# insert DISGenerator:EventHandler:PostSubProcessHandlers[0] /Herwig/MatrixElements/Matchbox/MECorrectionHandler
 # cd /Herwig/MatrixElements/Matchbox
 
 #>>>>>>>>>> switch to plain (N)LO
@@ -141,7 +148,9 @@ cd /Herwig/MatrixElements/Matchbox
 # set DISHandler:CascadeHandler NULL
 # set DISHandler:HadronizationHandler NULL
 # set DISHandler:DecayHandler NULL
+# set DISHandler:Weighted On
 # set /Herwig/Analysis/Basics:CheckQuark No
+# set /Herwig/Model:QCD/RunningAlphaS /Herwig/MatrixElements/Matchbox/AlphaS/MatchboxNLOAlphaS
 # cd /Herwig/MatrixElements/Matchbox
 
 #==================================================================================
@@ -154,7 +163,7 @@ set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 91.2*GeV
 set DISFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale
 
 # set DISFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPtScale
-# set DISFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/MaxPtScale
+# set DISFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/MinPtScale
 # set DISFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonMassScale
 
 #>>>>>>>>>> HARD PROCESS SCALE VARIATION
@@ -162,20 +171,11 @@ set DISFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale
 set DISFactory:RenormalizationScaleFactor 1.0
 set DISFactory:FactorizationScaleFactor 1.0
 
-#>>>>>>>>>> MATCHING SCALE VARIATION 
-#                 - HardScaleFactor has to equal the one for the shower!
-
-set DipoleMatching:RenormalizationScaleFactor 1.0
-set DipoleMatching:FactorizationScaleFactor 1.0
-set DipoleMatching:HardScaleFactor 1.0
+#>>>>>>>>>> MATCHING SCALE VARIATION for MEMatching
+#                 - other scale factors are deduced from the shower handlers
 
 set MEMatching:RenormalizationScaleFactor 1.0
 set MEMatching:FactorizationScaleFactor 1.0
-set MEMatching:ScreeningScale 10.0*GeV
-
-set QTildeMatching:RenormalizationScaleFactor 1.0
-set QTildeMatching:FactorizationScaleFactor 1.0
-set QTildeMatching:HardScaleFactor 1.0
 
 #>>>>>>>>>> SHOWER SCALE VARIATIONS
 
@@ -183,8 +183,9 @@ set /Herwig/DipoleShower/DipoleShowerHandler:RenormalizationScaleFactor 1.0
 set /Herwig/DipoleShower/DipoleShowerHandler:FactorizationScaleFactor 1.0
 set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleFactor 1.0
 
-set /Herwig/Shower/AlphaQCD:RenormalizationScaleFactor 1.0
-set /Herwig/Shower/Evolver:HardScaleFactor 1.0
+set /Herwig/Shower/ShowerHandler:RenormalizationScaleFactor 1.0
+set /Herwig/Shower/ShowerHandler:FactorizationScaleFactor 1.0
+set /Herwig/Shower/ShowerHandler:HardScaleFactor 1.0
 
 #==================================================================================
 #                     :::::PDF CHOICE:::::
@@ -207,6 +208,18 @@ cd /Herwig/EventHandlers
 
 set DISHandler:Weighted Off
 set DISHandler:Sampler  /Herwig/Samplers/Sampler
+
+#==================================================================================
+#                    :::::PRE-RUN MODIFICATIONS:::::
+#
+# Parameters of a run can be changed reading an extra input file at the run step
+# via e.g. Herwig++ run --setupfile=Parameters.in LHC-Matchbox.run . This option
+# is useful for high-multiplicity NLO processes, where the setup of matrix elements
+# may take longer. If parameter changes affect the hard process (i.e. cuts,
+# scale choices, and the like) please uncomment the option below to perform
+# grid adaption after the parameters have been changed.
+#==================================================================================
+# set /Herwig/Samplers/Sampler:PostponeInitialize Yes
 
 #==================================================================================
 #                     :::::GENERATOR:::::
@@ -233,6 +246,45 @@ set DISGenerator:MaxErrors 10000
 # insert /Herwig/Analysis/RivetAnalysis:Analyses 0 H1_1994_S2919893
 
 #==================================================================================
+#                :::::DIPOLE SHOWER HADRONIZATION SETTINGS:::::
+#
+# Please comment out when using the angular ordered shower.
+#==================================================================================
+
+cd /Herwig/Hadronization
+
+set ClusterFissioner:ClMaxLight                  3.274090*GeV
+set ClusterFissioner:ClPowLight                  10.0
+set ClusterFissioner:PSplitLight                 0.7183601
+set ClusterDecayer:ClDirLight                    1
+set ClusterDecayer:ClSmrLight                    3.118342
+
+set ClusterFissioner:ClMaxCharm                  3.274090*GeV
+set ClusterFissioner:ClPowCharm                  10.0
+set ClusterFissioner:PSplitCharm                 0.7183601
+set ClusterDecayer:ClDirCharm                    1
+set ClusterDecayer:ClSmrCharm                    3.118342
+set LightClusterDecayer:SingleHadronLimitCharm   0.0
+
+set ClusterFissioner:ClMaxBottom                 3.274090*GeV
+set ClusterFissioner:ClPowBottom                 10.0
+set ClusterFissioner:PSplitBottom                0.7183601
+set ClusterDecayer:ClDirBottom                   1
+set ClusterDecayer:ClSmrBottom                   3.118342
+set LightClusterDecayer:SingleHadronLimitBottom  0.0
+
+set HadronSelector:PwtUquark                     1.0
+set HadronSelector:PwtDquark                     1.0
+set HadronSelector:PwtSquark                     1.0
+set HadronSelector:PwtCquark                     1.0
+set HadronSelector:PwtBquark                     1.0
+set HadronSelector:PwtDIquark                    1.0
+set HadronSelector:SngWt                         1.0
+set HadronSelector:DecWt                         1.0
+
+cd /
+
+#==================================================================================
 #                     :::::CLEANUP:::::
 #
 # Change only if you know what you are doing.
@@ -252,7 +304,6 @@ set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
 set /Herwig/Cuts/NeutralCurrentCut:MinW2 0.0*GeV2
 set /Herwig/Cuts/DISCuts:MHatMin 0.0*GeV
 set /Herwig/Generators/DISGenerator:EventHandler:CollisionCuts Off
-set /Herwig/Model:QCD/RunningAlphaS /Herwig/MatrixElements/Matchbox/AlphaS/NLOAlphaS
 
 #==================================================================================
 #                     :::::SAMPLER TWEAKING:::::

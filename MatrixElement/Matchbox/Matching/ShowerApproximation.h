@@ -294,6 +294,11 @@ public:
   double hardScaleFactor() const { return theHardScaleFactor; }
 
   /**
+   * Set the scale factor for the hard scale
+   */
+  void hardScaleFactor(double f) { theHardScaleFactor = f; }
+
+  /**
    * Return the relevant hard scale
    */
   virtual Energy hardScale() const;
@@ -551,6 +556,11 @@ private:
    * The profile scale parameter
    */
   double theProfileRho;
+
+  /**
+   * True if maximum pt should be deduced from the factorization scale
+   */
+  bool maxPtIsMuF;
 
 private:
 

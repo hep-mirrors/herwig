@@ -305,7 +305,7 @@ insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudehggg
 cd /Herwig/MatrixElements/Matchbox
 
 create Herwig::MEMatching MEMatching
-set MEMatching:RestrictPhasespace Off
+set MEMatching:RestrictPhasespace On
 set MEMatching:BornScaleInSubtraction RealScale
 set MEMatching:RealEmissionScaleInSubtraction RealScale
 set MEMatching:EmissionScaleInSubtraction RealScale
@@ -331,6 +331,7 @@ set DipoleMatching:FIPtCut 1.0*GeV
 set DipoleMatching:IIPtCut 1.0*GeV
 
 create Herwig::QTildeMatching QTildeMatching HwQTildeMatching.so
+set QTildeMatching:ShowerHandler /Herwig/Shower/ShowerHandler
 # set this to off, if the shower pt veto is off
 set QTildeMatching:RestrictPhasespace On
 set QTildeMatching:BornScaleInSubtraction BornScale
@@ -456,8 +457,8 @@ cd Scales
 create Herwig::MatchboxScaleChoice SHatScale
 cp SHatScale FixedScale
 set FixedScale:FixedScale 100.*GeV
-create Herwig::MatchboxPtScale MaxPtScale
-set MaxPtScale:JetFinder /Herwig/Cuts/JetFinder
+create Herwig::MatchboxPtScale MinPtScale
+set MinPtScale:JetFinder /Herwig/Cuts/JetFinder
 create Herwig::MatchboxLeptonMassScale LeptonMassScale
 create Herwig::MatchboxLeptonPtScale LeptonPtScale
 
@@ -487,6 +488,35 @@ insert LOAlphaS:QuarkMasses[3] 1.25
 insert LOAlphaS:QuarkMasses[4] 4.2
 insert LOAlphaS:QuarkMasses[5] 174.2
 
+library HwDipoleShowerAlphaS.so
+
+create matchbox::nlo_alpha_s MatchboxNLOAlphaS
+set MatchboxNLOAlphaS:exact_evaluation large_scale
+set MatchboxNLOAlphaS:freezing_scale 0.0*GeV
+set MatchboxNLOAlphaS:min_active_flavours 3
+set MatchboxNLOAlphaS:max_active_flavours 6
+set MatchboxNLOAlphaS:input_scale 91.188*GeV
+set MatchboxNLOAlphaS:input_alpha_s 0.1271103
+insert MatchboxNLOAlphaS:QuarkMasses[0] 0.005
+insert MatchboxNLOAlphaS:QuarkMasses[1] 0.0023
+insert MatchboxNLOAlphaS:QuarkMasses[2] 0.095
+insert MatchboxNLOAlphaS:QuarkMasses[3] 1.25
+insert MatchboxNLOAlphaS:QuarkMasses[4] 4.2
+insert MatchboxNLOAlphaS:QuarkMasses[5] 174.2
+
+create matchbox::lo_alpha_s MatchboxLOAlphaS
+set MatchboxLOAlphaS:freezing_scale 0.0*GeV
+set MatchboxLOAlphaS:min_active_flavours 3
+set MatchboxLOAlphaS:max_active_flavours 6
+set MatchboxLOAlphaS:input_scale 91.188*GeV
+set MatchboxLOAlphaS:input_alpha_s 0.1283827
+insert MatchboxLOAlphaS:QuarkMasses[0] 0.005
+insert MatchboxLOAlphaS:QuarkMasses[1] 0.0023
+insert MatchboxLOAlphaS:QuarkMasses[2] 0.095
+insert MatchboxLOAlphaS:QuarkMasses[3] 1.25
+insert MatchboxLOAlphaS:QuarkMasses[4] 4.2
+insert MatchboxLOAlphaS:QuarkMasses[5] 174.2
+
 ################################################################################
 # Factories for different colliders
 ################################################################################
@@ -496,16 +526,22 @@ cd /Herwig/MatrixElements/Matchbox
 cp Factory EEFactory
 set EEFactory:PartonExtractor /Herwig/Partons/EEExtractor
 set EEFactory:Cuts /Herwig/Cuts/EECuts
+set EEFactory:FirstPerturbativePDF No
+set EEFactory:SecondPerturbativePDF No
 
 cp Factory DISFactory
 
 set DISFactory:PartonExtractor /Herwig/Partons/DISExtractor
 set DISFactory:Cuts /Herwig/Cuts/DISCuts
+set DISFactory:FirstPerturbativePDF No
+set DISFactory:SecondPerturbativePDF Yes
 
 cp Factory PPFactory
 
 set PPFactory:PartonExtractor /Herwig/Partons/QCDExtractor
 set PPFactory:Cuts /Herwig/Cuts/QCDCuts
+set PPFactory:FirstPerturbativePDF Yes
+set PPFactory:SecondPerturbativePDF Yes
 
 cd /
 

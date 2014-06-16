@@ -37,7 +37,7 @@ public:
   /**
    * The default constructor.
    */
-  FrixionePhotonSeparationCut() :  theDeltaZero(0.0), theExponentn(1.0), theEfficiency(0.0) {}
+  FrixionePhotonSeparationCut() :  theDeltaZero(0.0), theExponentn(1.0), theEfficiency(0.0), theCutType(1) {}
   //@}
 
 public:
@@ -118,6 +118,11 @@ private:
    * The efficiency epsilon of the algorithm
    */
   double theEfficiency;
+
+  /**
+   * The cut type of the algorithm
+   */
+  int theCutType;
 
 private:
 

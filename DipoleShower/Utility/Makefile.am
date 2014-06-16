@@ -1,6 +1,4 @@
-if WANT_DIPOLE
 noinst_LTLIBRARIES = libHwDipoleShowerUtility.la
-endif
 
 libHwDipoleShowerUtility_la_SOURCES = \
 	ConstituentReshuffler.h ConstituentReshuffler.cc \

@@ -24,8 +24,7 @@
 
 using namespace ColorFull;
 
-TraceBasis::TraceBasis() 
-  : theLargeN(false) {}
+TraceBasis::TraceBasis() {}
 
 TraceBasis::~TraceBasis() {}
 
@@ -35,6 +34,12 @@ IBPtr TraceBasis::clone() const {
 
 IBPtr TraceBasis::fullclone() const {
   return new_ptr(*this);
+}
+
+void TraceBasis::clear() {
+  ColourBasis::clear();
+  theBasisMap.clear();
+  theScalarProducts.clear();
 }
 
 map<size_t,vector<vector<size_t> > > 
@@ -75,6 +80,8 @@ TraceBasis::basisList(const vector<PDT::Colour>& basisId) const {
 
 size_t TraceBasis::prepareBasis(const vector<PDT::Colour>& sub) {
 
+  useMe();
+
   vector<PDT::Colour> mySub = normalOrder(sub);
 
   if ( theBasisMap.find(mySub) == theBasisMap.end() ) {
@@ -99,7 +106,7 @@ void TraceBasis::readBasisDetails(const vector<PDT::Colour>& sub) {
 double TraceBasis::scalarProduct(size_t i, size_t j,
 				 const vector<PDT::Colour>& abBasis) const {
 
-  if ( theLargeN && i != j )
+  if ( largeN() && i != j )
     return 0.;
 
   map<vector<PDT::Colour>,Trace_basis>::const_iterator bit =
@@ -129,7 +136,7 @@ double TraceBasis::scalarProduct(size_t i, size_t j,
   }
 
   return
-    theLargeN ? 
+    largeN() ? 
     colorFunctions.double_num(colorFunctions.leading(pit->second)) :
     colorFunctions.double_num(pit->second);
 
@@ -201,14 +208,9 @@ bool TraceBasis::colourConnected(const cPDVector& sub,
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 
-void TraceBasis::persistentOutput(PersistentOStream & os) const {
-  os << theLargeN;
-}
+void TraceBasis::persistentOutput(PersistentOStream &) const {}
 
-void TraceBasis::persistentInput(PersistentIStream & is , int) {
-  // TODO add istream to Trace_basisl
-  is >> theLargeN;
-}
+void TraceBasis::persistentInput(PersistentIStream & , int) {}
 
 
 // *** Attention *** The following static variable is needed for the type
@@ -223,23 +225,8 @@ DescribeClass<TraceBasis,Herwig::ColourBasis>
 void TraceBasis::Init() {
 
   static ClassDocumentation<TraceBasis> documentation
-    ("TraceBasis implements the trace colour basis.");
-
-
-  static Switch<TraceBasis,bool> interfaceLargeN
-    ("LargeN",
-     "Switch on or off large-N evaluation.",
-     &TraceBasis::theLargeN, false, false, false);
-  static SwitchOption interfaceLargeNOn
-    (interfaceLargeN,
-     "On",
-     "Work in N=infinity",
-     true);
-  static SwitchOption interfaceLargeNOff
-    (interfaceLargeN,
-     "Off",
-     "Work in N=3",
-     false);
+    ("TraceBasis implements the trace colour basis.",
+     "The colour algebra has been performed using ColorFull.");
 
 }
 

@@ -36,7 +36,7 @@ using namespace Herwig;
 SubtractedME::SubtractedME() 
   : MEGroup(), 
     theRealShowerSubtraction(false), theVirtualShowerSubtraction(false),
-    theSubProcessGroups(false), theInclusive(false) {}
+    theLoopSimSubtraction(false), theSubProcessGroups(false), theInclusive(false) {}
 
 SubtractedME::~SubtractedME() {}
 
@@ -358,10 +358,23 @@ void SubtractedME::doVirtualShowerSubtraction() {
   }
 }
 
+void SubtractedME::doLoopSimSubtraction() { 
+  theLoopSimSubtraction = true; 
+  for ( MEVector::const_iterator m = dependent().begin();
+	m != dependent().end(); ++m ) {
+    Ptr<SubtractionDipole>::tptr dip = 
+      dynamic_ptr_cast<Ptr<SubtractionDipole>::tptr>(*m);
+    assert(dip);
+    dip->showerApproximation(showerApproximation());
+    dip->doLoopSimSubtraction();
+  }
+}
+
+
 void SubtractedME::setVetoScales(tSubProPtr) const {}
 
 void SubtractedME::fillProjectors() {
-  if ( !inclusive() && !virtualShowerSubtraction() )
+  if ( !inclusive() && !virtualShowerSubtraction() && !loopSimSubtraction() )
     return;
   Ptr<StdXCombGroup>::tptr group = 
     dynamic_ptr_cast<Ptr<StdXCombGroup>::tptr>(lastXCombPtr());
@@ -377,7 +390,7 @@ void SubtractedME::fillProjectors() {
 
 double SubtractedME::reweightHead(const vector<tStdXCombPtr>& dep) {
 
-  if ( inclusive() && !lastXComb().lastProjector() )
+  if ( (inclusive() || loopSimSubtraction()) && !lastXComb().lastProjector() )
     return 1.;
 
   if ( virtualShowerSubtraction() && !lastXComb().lastProjector() ) {
@@ -401,11 +414,17 @@ double SubtractedME::reweightHead(const vector<tStdXCombPtr>& dep) {
     return 1.;
   }
 
-  if ( virtualShowerSubtraction() || inclusive() ) {
+  if ( virtualShowerSubtraction() || loopSimSubtraction() || inclusive() ) {
     if ( virtualShowerSubtraction() ) {
       assert(showerApproximation());
       bool above = !showerApproximation()->belowCutoff();
       if ( above )
+	return 0.;
+    }
+    if ( loopSimSubtraction() ) {
+      assert(showerApproximation());
+      bool below = showerApproximation()->belowCutoff();
+      if ( below )
 	return 0.;
     }
     double sum = 0.;
@@ -422,8 +441,11 @@ double SubtractedME::reweightHead(const vector<tStdXCombPtr>& dep) {
       }
     }
     n /= lastXComb().lastProjector()->cutWeight();
+    double sign = 1.;
+    if ( loopSimSubtraction() )
+      sign = -1.;
     return
-      n * (1.-haveNoDipole) * lastXComb().lastProjector()->lastME2() * lastXComb().lastProjector()->cutWeight() / sum;
+      sign * n * (1.-haveNoDipole) * lastXComb().lastProjector()->lastME2() * lastXComb().lastProjector()->cutWeight() / sum;
   }
 
   return 1.;
@@ -432,14 +454,14 @@ double SubtractedME::reweightHead(const vector<tStdXCombPtr>& dep) {
 
 double SubtractedME::reweightDependent(tStdXCombPtr xc, const vector<tStdXCombPtr>& dep) {
 
-  if ( inclusive() && !lastXComb().lastProjector() )
+  if ( (inclusive() || loopSimSubtraction()) && !lastXComb().lastProjector() )
     return 0.;
 
   if ( virtualShowerSubtraction() && !lastXComb().lastProjector() ) {
     return 0.;
   }
 
-  if ( virtualShowerSubtraction() || inclusive() ) {
+  if ( virtualShowerSubtraction() || inclusive() || loopSimSubtraction() ) {
     if ( xc != lastXComb().lastProjector() )
       return 0.;
     double n = 0.;
@@ -783,6 +805,7 @@ void SubtractedME::persistentOutput(PersistentOStream & os) const {
      << collinearHistograms << softHistograms 
      << fnamesSoftSubtraction
      << theRealShowerSubtraction << theVirtualShowerSubtraction
+     << theLoopSimSubtraction
      << theSubProcessGroups << theInclusive;
 }
 
@@ -791,6 +814,7 @@ void SubtractedME::persistentInput(PersistentIStream & is, int) {
      >> collinearHistograms >> softHistograms 
      >> fnamesSoftSubtraction
      >> theRealShowerSubtraction >> theVirtualShowerSubtraction
+     >> theLoopSimSubtraction
      >> theSubProcessGroups >> theInclusive;
   lastMatchboxXComb(theLastXComb);
 }

@@ -25,6 +25,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 #include "Herwig++/MatrixElement/Matchbox/Dipoles/SubtractionDipole.h"
+#include "Herwig++/MatrixElement/Matchbox/Phasespace/InvertedTildeKinematics.h"
 
 using namespace Herwig;
 
@@ -46,7 +47,7 @@ ShowerApproximation::ShowerApproximation()
     theRenormalizationScaleFreeze(1.*GeV),
     theFactorizationScaleFreeze(1.*GeV),
     theProfileScales(true),
-    theProfileRho(0.3) {}
+  theProfileRho(0.3), maxPtIsMuF(false) {}
 
 ShowerApproximation::~ShowerApproximation() {}
 
@@ -60,6 +61,7 @@ void ShowerApproximation::setLargeNBasis() {
 			<< Exception::abortnow;
     theLargeNBasis = 
       dipole()->realEmissionME()->matchboxAmplitude()->colourBasis()->cloneMe();
+    theLargeNBasis->clear();
     theLargeNBasis->doLargeN();
   }
 }
@@ -92,24 +94,28 @@ bool ShowerApproximation::isAboveCutoff() const {
 }
 
 Energy ShowerApproximation::hardScale() const {
-  if ( !bornCXComb()->mePartonData()[0]->coloured() &&
-       !bornCXComb()->mePartonData()[1]->coloured() ) {
-    Energy maxPt = (bornCXComb()->meMomenta()[0] + bornCXComb()->meMomenta()[1]).m();
+  if ( !maxPtIsMuF ) {
+    if ( !bornCXComb()->mePartonData()[0]->coloured() &&
+	 !bornCXComb()->mePartonData()[1]->coloured() ) {
+      Energy maxPt = (bornCXComb()->meMomenta()[0] + bornCXComb()->meMomenta()[1]).m();
+      maxPt *= hardScaleFactor();
+      return maxPt;
+    }
+    Energy maxPt = generator()->maximumCMEnergy();
+    vector<Lorentz5Momentum>::const_iterator p = 
+      bornCXComb()->meMomenta().begin() + 2;
+    cPDVector::const_iterator pp = 
+      bornCXComb()->mePartonData().begin() + 2;
+    for ( ; p != bornCXComb()->meMomenta().end(); ++p, ++pp )
+      if ( (**pp).coloured() )
+	maxPt = min(maxPt,p->mt());
+    if ( maxPt == generator()->maximumCMEnergy() )
+      maxPt = (bornCXComb()->meMomenta()[0] + bornCXComb()->meMomenta()[1]).m();
     maxPt *= hardScaleFactor();
     return maxPt;
+  } else {
+    return sqrt(bornCXComb()->lastScale());
   }
-  Energy maxPt = generator()->maximumCMEnergy();
-  vector<Lorentz5Momentum>::const_iterator p = 
-    bornCXComb()->meMomenta().begin() + 2;
-  cPDVector::const_iterator pp = 
-    bornCXComb()->mePartonData().begin() + 2;
-  for ( ; p != bornCXComb()->meMomenta().end(); ++p, ++pp )
-    if ( (**pp).coloured() )
-      maxPt = min(maxPt,p->perp());
-  if ( maxPt == generator()->maximumCMEnergy() )
-    maxPt = (bornCXComb()->meMomenta()[0] + bornCXComb()->meMomenta()[1]).m();
-  maxPt *= hardScaleFactor();
-  return maxPt;
 }
 
 double ShowerApproximation::hardScaleProfile(Energy hard, Energy soft) const {
@@ -141,7 +147,32 @@ bool ShowerApproximation::isInShowerPhasespace() const {
   if ( !restrictPhasespace() )
     return true;
 
-  return dipole()->lastPt() <= hardScale();
+  InvertedTildeKinematics& kinematics =
+    const_cast<InvertedTildeKinematics&>(*dipole()->invertedTildeKinematics());
+  tcStdXCombPtr tmpreal = kinematics.realXComb();
+  tcStdXCombPtr tmpborn = kinematics.bornXComb();
+  Ptr<SubtractionDipole>::tptr tmpdip = kinematics.dipole();
+
+  Energy hard = hardScale();
+  Energy pt = dipole()->lastPt();
+  double z = dipole()->lastZ();
+
+  pair<double,double> zbounds(0.,1.);
+
+  kinematics.dipole(const_ptr_cast<Ptr<SubtractionDipole>::tptr>(theDipole));
+  kinematics.prepare(realCXComb(),bornCXComb());
+
+  try {
+    zbounds = kinematics.zBounds(pt,hard);
+  } catch(...) {
+    kinematics.dipole(tmpdip);
+    kinematics.prepare(tmpreal,tmpborn);
+    throw;
+  }
+  kinematics.dipole(tmpdip);
+  kinematics.prepare(tmpreal,tmpborn);
+
+  return pt < hard && z > zbounds.first && z < zbounds.second;
 
 }
 
@@ -310,7 +341,7 @@ void ShowerApproximation::persistentOutput(PersistentOStream & os) const {
      << theBornScaleInSplitting << theEmissionScaleInSplitting
      << ounit(theRenormalizationScaleFreeze,GeV)
      << ounit(theFactorizationScaleFreeze,GeV)
-     << theProfileScales << theProfileRho;
+     << theProfileScales << theProfileRho << maxPtIsMuF;
 }
 
 void ShowerApproximation::persistentInput(PersistentIStream & is, int) {
@@ -327,9 +358,8 @@ void ShowerApproximation::persistentInput(PersistentIStream & is, int) {
      >> theBornScaleInSplitting >> theEmissionScaleInSplitting
      >> iunit(theRenormalizationScaleFreeze,GeV)
      >> iunit(theFactorizationScaleFreeze,GeV)
-     >> theProfileScales >> theProfileRho;
+     >> theProfileScales >> theProfileRho >> maxPtIsMuF;
 }
-
 
 // *** Attention *** The following static variable is needed for the type
 // description system in ThePEG. Please check that the template arguments
@@ -593,5 +623,19 @@ void ShowerApproximation::Init() {
      "Switch to full dipole functions.",
      false);
 
+  static Switch<ShowerApproximation,bool> interfaceMaxPtIsMuF
+    ("MaxPtIsMuF",
+     "",
+     &ShowerApproximation::maxPtIsMuF, false, false, false);
+  static SwitchOption interfaceMaxPtIsMuFYes
+    (interfaceMaxPtIsMuF,
+     "Yes",
+     "",
+     true);
+  static SwitchOption interfaceMaxPtIsMuFNo
+    (interfaceMaxPtIsMuF,
+     "No",
+     "",
+     false);
 }
 

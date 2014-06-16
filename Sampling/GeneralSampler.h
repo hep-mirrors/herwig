@@ -193,6 +193,12 @@ protected:
    */
   void updateSamplers();
 
+  /**
+   * Return true, if initialization should be postponed to the second call of
+   * the initialization.
+   */
+  bool postponeInitialize() const { return thePostponeInitialize; }
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -412,6 +418,17 @@ private:
    * The average relative deviation from the maximum weight
    */
   double maximumExceededBy;
+
+  /**
+   * True, if grids have already been read.
+   */
+  bool didReadGrids;
+
+  /**
+   * True, if initialization should be postponed to the second call of
+   * the initialization.
+   */
+  bool thePostponeInitialize;
 
 private:
 

@@ -30,7 +30,7 @@
 using namespace Herwig;
 
 MEMatching::MEMatching()
-  : theScreeningScale(10*GeV) {}
+  : theScreeningScale(0*GeV) {}
 
 MEMatching::~MEMatching() {}
 
@@ -165,7 +165,7 @@ void MEMatching::Init() {
   static Parameter<MEMatching,Energy> interfaceScreeningScale
     ("ScreeningScale",
      "The screening scale to project out singular parts.",
-     &MEMatching::theScreeningScale, GeV, 10.0*GeV, 0.0*GeV, 0*GeV,
+     &MEMatching::theScreeningScale, GeV, 0.0*GeV, 0.0*GeV, 0*GeV,
      false, false, Interface::lowerlim);
 
 }

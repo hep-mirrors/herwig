@@ -42,7 +42,7 @@ public:
 		     _thresholds(4), _lambda(4),
 		     _nloop(3),_lambdaopt(false),_thresopt(false),
 		     _lambdain(0.208364*GeV),_alphain(0.118),_inopt(true),_tolerance(1e-10),
-		     _maxtry(100),_alphamin(0.), _renormalizationScaleFactor(1.0) {}
+		     _maxtry(100),_alphamin(0.) {}
 
 public:
 
@@ -91,16 +91,6 @@ public:
     else if (nf==4 || nf==5) return _lambda[nf-3];
     else                     return _lambda[3];
   }
-
-  /**
-   * Return the factor to scale the argument
-   */
-  double renormalizationScaleFactor() const { return _renormalizationScaleFactor; }
-
-  /**
-   * Set the factor to scale the argument
-   */
-  void renormalizationScaleFactor(double f) { _renormalizationScaleFactor = f; }
 
 public:
 
@@ -280,11 +270,6 @@ private:
    *  The minimum value of the coupling
    */
   double _alphamin;
-
-  /**
-   * Factor to scale the argument
-   */
-  double _renormalizationScaleFactor;
 
 };
 

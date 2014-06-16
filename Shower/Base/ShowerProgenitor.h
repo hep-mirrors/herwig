@@ -47,7 +47,7 @@ public:
 		   Energy pT=ZERO,bool emitted=false)
     : _original(original), _copy(copy), _perturbative(true),
       _particle(particle), _highestpT(pT), _maxpT(Constants::MaxEnergy), 
-      _maxHardPt(ZERO), _hasEmitted(emitted) {
+      _maxHardPt(ZERO), _hasEmitted(emitted), _didProfileVeto(false) {
     // get the BeamParticleData object
     if ( original->parents().empty() ) {
       _beam=dynamic_ptr_cast<tcBeamPtr>(original->dataPtr());
@@ -159,6 +159,16 @@ public:
    */
   tcBeamPtr beam() { return _beam; }
 
+  /**
+   * Return true, if the profile scale veto has been applied
+   */
+  bool profileVetoed() const { return _didProfileVeto; }
+
+  /**
+   * Indicate that the profile scale veto has been applied
+   */
+  void didProfileVeto(bool yes = true) { _didProfileVeto = yes; }
+
 private:
 
   /**
@@ -206,6 +216,11 @@ private:
    *  The BeamParticleData object
    */
   tcBeamPtr _beam;
+
+  /**
+   * True, if the profile scale veto has been applied
+   */
+  bool _didProfileVeto;
 
 };
 }

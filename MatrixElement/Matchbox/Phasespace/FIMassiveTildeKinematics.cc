@@ -78,6 +78,9 @@ Energy FIMassiveTildeKinematics::lastPt() const {
 
 }
 
+double FIMassiveTildeKinematics::lastZ() const {
+  return subtractionParameters()[1];
+}
 
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).

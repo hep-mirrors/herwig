@@ -58,6 +58,47 @@ public:
   //@{
 
   /**
+   * A helpre struct to communicate diagram merging and remapping
+   * information
+   */
+  struct MergeInfo {
+
+    /**
+     * The merged emitter
+     */
+    int emitter;
+
+    /**
+     * The Born diagram
+     */
+    Ptr<Tree2toNDiagram>::ptr diagram;
+
+    /**
+     * The merging map
+     */
+    map<int,int> mergeLegs;
+
+  };
+
+  /**
+   * Return true, if this dipole can possibly handle the indicated
+   * emitter.
+   */
+  virtual bool canHandleEmitter(const cPDVector& partons, int emitter) const = 0;
+
+  /**
+   * Return true, if this dipole can possibly handle the indicated
+   * splitting.
+   */
+  virtual bool canHandleSplitting(const cPDVector& partons, int emitter, int emission) const = 0;
+
+  /**
+   * Return true, if this dipole can possibly handle the indicated
+   * spectator.
+   */
+  virtual bool canHandleSpectator(const cPDVector& partons, int spectator) const = 0;
+
+  /**
    * Return true, if this dipole applies to the selected
    * configuration.
    */
@@ -84,7 +125,7 @@ public:
   /**
    * Setup bookkeeping maps.
    */
-  void setupBookkeeping();
+  void setupBookkeeping(const map<Ptr<DiagramBase>::ptr,MergeInfo>& mergeInfo);
 
   /**
    * Get bookkeeping information for the given
@@ -495,6 +536,13 @@ public:
   }
 
   /**
+   * Return the relevant momentum fractions
+   */
+  double lastZ() const {
+    return splitting() ? theLastSplittingZ : theLastSubtractionZ;
+  }
+
+  /**
    * Return true, if this dipole acts in splitting mode.
    */
   bool splitting() const { return theSplitting; }
@@ -700,6 +748,16 @@ public:
    * Return true, if the shower virtual contribution should be subtracted.
    */
   bool virtualShowerSubtraction() const { return theVirtualShowerSubtraction; }
+
+  /**
+   * Indicate that the loopsim matched virtual contribution should be subtracted.
+   */
+  void doLoopSimSubtraction() { theLoopSimSubtraction = true; }
+
+  /**
+   * Return true, if the loopsim matched virtual contribution should be subtracted.
+   */
+  bool loopSimSubtraction() const { return theLoopSimSubtraction; }
 
   //@}
 
@@ -1022,6 +1080,16 @@ private:
   Energy theLastSplittingPt;
 
   /**
+   * The last z as generated from the tilde mapping
+   */
+  double theLastSubtractionZ;
+
+  /**
+   * The last z as generated from the splitting mapping
+   */
+  double theLastSplittingZ;
+
+  /**
    * The shower approximation.
    */
   Ptr<ShowerApproximation>::ptr theShowerApproximation;
@@ -1035,6 +1103,11 @@ private:
    * True, if the shower virtual contribution should be subtracted.
    */
   bool theVirtualShowerSubtraction;
+
+  /**
+   * True, if the loopsim matched virtual contribution should be subtracted.
+   */
+  bool theLoopSimSubtraction;
 
   /**
    * True, if scales should be calculated from real emission kinematics

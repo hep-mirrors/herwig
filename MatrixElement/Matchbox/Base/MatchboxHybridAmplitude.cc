@@ -42,8 +42,6 @@ IBPtr MatchboxHybridAmplitude::fullclone() const {
 
 bool MatchboxHybridAmplitude::isConsistent() const {
   return
-    treeLevelAmplitude()->sortOutgoing() == 
-    oneLoopAmplitude()->sortOutgoing() &&
     !treeLevelAmplitude()->isOLPTree() &&
     !treeLevelAmplitude()->isOLPLoop() &&
     oneLoopAmplitude()->haveOneLoop() &&

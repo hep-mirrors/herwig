@@ -61,6 +61,11 @@ public:
   virtual Energy lastPt() const;
 
   /**
+   * Return the momentum fraction associated to the last splitting.
+   */
+  virtual double lastZ() const;
+
+  /**
    * Return the upper bound on pt
    */
   virtual Energy ptMax() const;
@@ -69,7 +74,7 @@ public:
    * Given a pt, return the boundaries on z
    * Note that allowing parton masses these bounds may be too loose
    */
-  virtual pair<double,double> zBounds(Energy pt) const;
+  virtual pair<double,double> zBounds(Energy pt, Energy hardPt = ZERO) const;
   
   /**
    * For generated pt and z, check if this point is

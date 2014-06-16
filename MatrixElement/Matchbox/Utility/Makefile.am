@@ -1,6 +1,4 @@
-if WANT_DIPOLE
 noinst_LTLIBRARIES = libHwMatchboxUtility.la
-endif
 
 libHwMatchboxUtility_la_SOURCES = \
 AmplitudeCache.h \

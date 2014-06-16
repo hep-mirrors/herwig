@@ -236,6 +236,11 @@ public:
     return dipole()->invertedTildeKinematics()->evolutionCutoff();
   }
 
+  /**
+   * True, if sampler should apply compensation
+   */
+  void doCompensate(bool yes = true) { theDoCompensate = yes; }
+
 public:
 
   /**@name Wrap to the exsample2 interface until this is finally cleaned up. */
@@ -408,6 +413,11 @@ private:
    * The Sudakov sampler
    */
   ExponentialGeneratorPtr sampler;
+
+  /**
+   * True, if sampler should apply compensation
+   */
+  bool theDoCompensate;
 
   /**
    * The assignment operator is private and must never be called.

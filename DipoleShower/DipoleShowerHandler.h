@@ -383,21 +383,6 @@ private:
   Energy theFactorizationScaleFreeze;
 
   /**
-   * The factorization scale factor.
-   */
-  double theFactorizationScaleFactor;
-
-  /**
-   * The renormalization scale factor.
-   */
-  double theRenormalizationScaleFactor;
-
-  /**
-   * The scale factor for the hard scale
-   */
-  double theHardScaleFactor;
-
-  /**
    * True, if we are showering on a MC@NLO S event
    */
   bool isMCatNLOSEvent;
@@ -411,6 +396,16 @@ private:
    * The matching subtraction, if appropriate
    */
   Ptr<ShowerApproximation>::tptr theShowerApproximation;
+
+  /**
+   * True, if sampler should apply compensation
+   */
+  bool theDoCompensate;
+
+  /**
+   * True if maximum pt should be deduced from the factorization scale
+   */
+  bool maxPtIsMuF;
 
 private:
 
