@@ -281,11 +281,11 @@ MatchboxPhasespace::timeLikeWeight(const Tree2toNDiagram& diag,
   if ( width2 == ZERO ) {
     if ( abs((res.second.m2()-mass2)/lastSHat()) > flatCut )
       res.first /=
-	abs((res.second.m2()-mass2)/lastSHat());
+	abs((res.second.m2()-mass2)/GeV2);
   } else {
     res.first /=
-      sqr((res.second.m2()-mass2)/lastSHat()) +
-      mass2*width2/sqr(lastSHat());
+      sqr((res.second.m2()-mass2)/GeV2) +
+      mass2*width2/sqr(GeV2);
   }
 
   return res;
@@ -323,11 +323,11 @@ double MatchboxPhasespace::spaceLikeWeight(const Tree2toNDiagram& diag,
   if ( width2 == ZERO ) {
     if ( abs((res.second.m2()-mass2)/lastSHat()) > flatCut )
       res.first /=
-	abs((res.second.m2()-mass2)/lastSHat());
+	abs((res.second.m2()-mass2)/GeV2);
   } else {
     res.first /=
-      sqr((res.second.m2()-mass2)/lastSHat()) +
-      mass2*width2/sqr(lastSHat());
+      sqr((res.second.m2()-mass2)/GeV2) +
+      mass2*width2/sqr(GeV2);
   }
 
   return
