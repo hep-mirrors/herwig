@@ -238,6 +238,7 @@ private:
 
   mutable string gosamPathInterface;
   mutable string gosamSetupInFilenameInterface;
+  mutable string gosamBuildScript;
 
   mutable string gosamPath;
   mutable string gosamSourcePath;
