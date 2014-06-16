@@ -1,14 +1,16 @@
 ###################
 # model           #
 ###################
-model=smdiag
+#default:
+#model=smdiag
 
 ###################
 # needed to pick  #
 # EW scheme auto- #
 # matically       #
 ###################
-model.options=ewchoose
+#default:
+#model.options=ewchoose
 
 ###################
 # if model=smdiag #
@@ -22,7 +24,8 @@ symmetries=family,generation
 # for loop topo-  #
 # logies          #
 ###################
-qgraf.options=onshell,notadpole,nosnail
+#default:
+#qgraf.options=onshell,notadpole,nosnail
 
 ###################
 # qgraf options   #
@@ -37,7 +40,7 @@ qgraf.options=onshell,notadpole,nosnail
 # chord only for
 # loop-propagators
 
-qgraf.verbatim=true=iprop[phim,phip,chi,H,0,0];
+# qgraf.verbatim=true=iprop[phim,phip,chi,H,0,0];
 # qgraf.verbatim=true=iprop[A,Z,C,S,B,T,phim,phip,chi,H,0,0];
 # qgraf.verbatim=true=iprop[C,S,B,T,phim,phip,chi,H,0,0];
 
@@ -73,24 +76,32 @@ filter.nlo= lambda d: not d.isScaleless()
 # program options #
 ###################
 
-PSP_check=False
-PSP_verbosity=1
-PSP_chk_threshold1=4
-PSP_chk_threshold2=3
-PSP_chk_kfactor=1000
+#defaults:
+#PSP_check=True
+#PSP_verbosity=1
+#PSP_chk_th1=8
+#PSP_chk_th2=3
+#PSP_chk_th3=5
+#PSP_chk_kfactor=10000
+
 # PSP_verbosity=2
-# PSP_chk_kfactor=10000
 
-r2=implicit
-abbrev.level=diagram
+# default:
+#r2=explicit
 
-# debug=all
+#r2=implicit
 
-extensions=samurai, golem95, autotools, derive, numpolvec @FORMOPT@
-# extensions=samurai, golem95, autotools, derive, numpolvec
-# extensions=samurai, golem95, autotools, derive
+#abbrev.level=diagram
 
-diagsum=True
+#debug=all
+
+extensions=autotools @FORMOPT@
+
+#default:
+#reduction_programs=ninja, golem95
+reduction_programs=@REDUCTIONPROGRAMS@
+
+#diagsum=True
 
 # group=True
 
@@ -98,15 +109,17 @@ diagsum=True
 # contrib options #
 ###################
 
-form.bin=tform
+#form.bin=tform
 form.tempdir=@FORMTEMPDIR@
 #form.threads=1
 
-qgraf.bin=qgraf
+#qgraf.bin=qgraf
 
-fc.bin=gfortran -O2
+#fc.bin=gfortran -O2
 
-samurai.fcflags=-I@GOSAMCONTRIBPREFIX@/include/gosam-contrib
-samurai.ldflags=-L@GOSAMCONTRIBLIBS@ -lgolem -lsamurai -lavh_olo -lqcdloop -lff
-golem95.fcflags=-I@GOSAMCONTRIBPREFIX@/include/gosam-contrib
-golem95.ldflags=-L@GOSAMCONTRIBLIBS@ -lgolem -lsamurai -lavh_olo -lqcdloop -lff
+#samurai.fcflags=-I@GOSAMCONTRIBPREFIX@/include/gosam-contrib
+#samurai.ldflags=-L@GOSAMCONTRIBLIBS@ -lgolem -lsamurai -lavh_olo -lqcdloop -lff
+#golem95.fcflags=-I@GOSAMCONTRIBPREFIX@/include/gosam-contrib
+#golem95.ldflags=-L@GOSAMCONTRIBLIBS@ -lgolem -lsamurai -lavh_olo -lqcdloop -lff
+#ninja.fcflags=-I@GOSAMCONTRIBPREFIX@/include/gosam-contrib
+#ninja.ldflags=-L@GOSAMCONTRIBLIBS@ -lninja

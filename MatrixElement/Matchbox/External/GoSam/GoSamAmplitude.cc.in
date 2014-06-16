@@ -362,7 +362,9 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
     // set form's tempdir to the current working directory
     cmd = "sed -i 's/@FORMTEMPDIR@/" + StringUtils::replace(gosamSourcePath, string("/"), string("\\/")) + "/g' " + gosamSetupInFileName;
     std::system(cmd.c_str());
-    cmd = "sed -i 's/@FORMOPT@/" + (theFormOpt ? string(", formopt") : string("")) + "/g' " + gosamSetupInFileName;
+    cmd = "sed -i 's/@FORMOPT@/" + (theFormOpt ? string("") : string(", noformopt")) + "/g' " + gosamSetupInFileName;
+    std::system(cmd.c_str());
+    cmd = "sed -i 's/@REDUCTIONPROGRAMS@/" + (theFormOpt ? string("ninja, golem95") : string("samurai, golem95")) + "/g' " + gosamSetupInFileName;
     std::system(cmd.c_str());
   }
   infile.close();
