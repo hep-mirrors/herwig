@@ -190,7 +190,8 @@ double MatchboxPhasespace::invertTwoToOneKinematics(const vector<Lorentz5Momentu
 
 }
 
-void MatchboxPhasespace::setCoupling(long a, long b, long c, double coupling) {
+void MatchboxPhasespace::setCoupling(long a, long b, long c, 
+				     double coupling, bool includeCrossings) {
   cPDPtr A = getParticleData(a);
   cPDPtr B = getParticleData(b);
   cPDPtr C = getParticleData(c);
@@ -198,6 +199,10 @@ void MatchboxPhasespace::setCoupling(long a, long b, long c, double coupling) {
     generator()->log() << "Warning: could not determine particle data for ids "
 		       << a << " " << b << " " << c << " when setting coupling in MatchboxPhasespace.\n"
 		       << flush;
+    return;
+  }
+  if ( !includeCrossings ) {
+    couplings[LTriple(a,b,c)] = coupling;
     return;
   }
   if ( A->CC() ) {
@@ -229,9 +234,20 @@ string MatchboxPhasespace::doSetCoupling(string in) {
   is >> a >> b >> c >> coupling;
   if ( !is )
     return "MatchboxPhasespace: error in setting coupling.";
-  setCoupling(a,b,c,coupling);
+  setCoupling(a,b,c,coupling,true);
   return "";
 }
+
+string MatchboxPhasespace::doSetPhysicalCoupling(string in) {
+  istringstream is(in);
+  long a,b,c; double coupling;
+  is >> a >> b >> c >> coupling;
+  if ( !is )
+    return "MatchboxPhasespace: error in setting coupling.";
+  setCoupling(a,b,c,coupling,false);
+  return "";
+}
+
 
 pair<double,Lorentz5Momentum> 
 MatchboxPhasespace::timeLikeWeight(const Tree2toNDiagram& diag,
@@ -446,11 +462,15 @@ void MatchboxPhasespace::Init() {
      "Do not use mass generators.",
      false);
 
-
   static Command<MatchboxPhasespace> interfaceSetCoupling
     ("SetCoupling",
      "",
      &MatchboxPhasespace::doSetCoupling, false);
+
+  static Command<MatchboxPhasespace> interfaceSetPhysicalCoupling
+    ("SetPhysicalCoupling",
+     "",
+     &MatchboxPhasespace::doSetPhysicalCoupling, false);
 
 }
 

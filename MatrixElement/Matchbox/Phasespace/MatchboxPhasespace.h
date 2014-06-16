@@ -278,7 +278,8 @@ protected:
    * legs are outgoing, and all possible crossings will be taken care
    * of. If not set, coupling weights default to one.
    */
-  void setCoupling(long a, long b, long c, double coupling);
+  void setCoupling(long a, long b, long c,
+		   double coupling, bool includeCrossings = true);
 
 public:
 
@@ -334,6 +335,11 @@ private:
    * Interface function to setcoupling
    */
   string doSetCoupling(string);
+
+  /**
+   * Interface function to setcoupling
+   */
+  string doSetPhysicalCoupling(string);
 
   /**
    * The assignment operator is private and must never be called.
