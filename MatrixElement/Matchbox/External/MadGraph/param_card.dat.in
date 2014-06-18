@@ -9,6 +9,16 @@
 ######################################################################
 
 ###################################
+## INFORMATION FOR LOOP
+###################################
+Block loop 
+    1 9.118800e+01 # MU_R  (Warning: Do not change this!!!)
+		   # The ren/fac scale running is handled in Herwig++
+
+
+
+
+###################################
 ## INFORMATION FOR MASS
 ###################################
 Block mass 
@@ -33,7 +43,7 @@ Block mass
   16 0.000000 # vt : 0.0 
   21 0.000000 # g : 0.0 
   22 0.000000 # a : 0.0 
-  24 $MW$ # really the herwig input
+  24 $MW$ # really the Herwig++ input
 
 ###################################
 ## INFORMATION FOR SMINPUTS
