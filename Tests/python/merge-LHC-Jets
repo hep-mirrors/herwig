@@ -11,7 +11,7 @@ import os, yoda
 # #############################################
 
 
-def fillAbove(desthisto, sourcehistosbyptmin):
+def fillAbove(scale,desthisto, sourcehistosbyptmin):
     pthigh= 1e100
     ptlow =-1e100
     for pt, h in sorted(sourcehistosbyptmin.iteritems(),reverse=True):
@@ -19,89 +19,37 @@ def fillAbove(desthisto, sourcehistosbyptmin):
         if(type(desthisto)==yoda.core.Scatter2D) :
             for i in range(0,h.numPoints) :
                 lowEdge = h.points[i].x-h.points[i].xErrs.minus
-                if( lowEdge >= ptlow and 
-                    lowEdge <  pthigh ) :
+                if( lowEdge*scale >= ptlow and 
+                    lowEdge*scale <  pthigh ) :
                     desthisto.addPoint(h.points[i])
         elif(type(desthisto)==yoda.core.Profile1D) :
             for i in range(0,h.numBins) :
-                if(h.bins[i].lowEdge  >= ptlow and 
-                   h.bins[i].lowEdge  <  pthigh ) :
+                if(h.bins[i].lowEdge*scale  >= ptlow and 
+                   h.bins[i].lowEdge*scale  <  pthigh ) :
                     desthisto.bins[i] += h.bins[i]
         elif(type(desthisto)==yoda.core.Histo1D) :
             for i in range(0,h.numBins) :
-                if(h.bins[i].lowEdge  >= ptlow and 
-                   h.bins[i].lowEdge  <  pthigh ) :
+                if(h.bins[i].lowEdge*scale  >= ptlow and 
+                   h.bins[i].lowEdge*scale  <  pthigh ) :
                     desthisto.bins[i] += h.bins[i]
         else :
             logging.error("Can't merge %s, unknown type" % desthisto.path)
             sys.exit(1)
         pthigh=pt
 
-def fillAboveTeV(desthisto, sourcehistosbyptmin):
-    print ' testing got here?'
-    pthigh= 1e100
-    ptlow =-1e100
-    print desthisto.path
-    print type(desthisto)
-    for pt, h in sorted(sourcehistosbyptmin.iteritems(),reverse=True):
-        ptlow=pt
-        if(type(desthisto)==yoda.core.Scatter2D) :
-            print pt,h.path
-            for i in range(0,h.numPoints) :
-                lowEdge = h.points[i].x-h.points[i].xErrs.minus
-                print lowEdge,ptlow,pthigh
-                if( lowEdge*500. >= ptlow and 
-                    lowEdge*500. <  pthigh ) :
-                    desthisto.addPoint(h.points[i])
-        elif(type(desthisto)==yoda.core.Profile1D) :
-            for i in range(0,h.numBins) :
-                if(h.bins[i].lowEdge*500.  >= ptlow and 
-                   h.bins[i].lowEdge*500.  <  pthigh ) :
-                    desthisto.bins[i] += h.bins[i]
-        elif(type(desthisto)==yoda.core.Histo1D) :
-            for i in range(0,h.numBins) :
-                if(h.bins[i].lowEdge*500.  >= ptlow and 
-                   h.bins[i].lowEdge*500.  <  pthigh ) :
-                    desthisto.bins[i] += h.bins[i]
-        else :
-            logging.error("Can't merge %s, unknown type" % desthisto.path)
-            sys.exit(1)
-        pthigh=pt
-
-def mergeByPt(hpath, sqrts):
+def mergeByPt(hpath, sqrts, scale=1.):
     global inhistos_pt
     global outhistos
     try:
-        fillAbove(outhistos[hpath], inhistos_pt[hpath][float(sqrts)])
+        fillAbove(scale,outhistos[hpath], inhistos_pt[hpath][float(sqrts)])
     except:
         pass
 
-def mergeByPtTeV(hpath, sqrts):
-    print 'in merge tev',hpath
-    global inhistos_pt
-    global outhistos
-    try:
-        print 'in merge tev 1',hpath
-        print outhistos[hpath]
-        print inhistos_pt[hpath][float(sqrts)]
-        fillAboveTeV(outhistos[hpath], inhistos_pt[hpath][float(sqrts)])
-        print 'in merge tev 2',hpath
-    except:
-        pass
-
-def mergeByMass(hpath, sqrts):
+def mergeByMass(hpath, sqrts, scale=1.):
     global inhistos_mass
     global outhistos
     try:
-        fillAbove(outhistos[hpath], inhistos_mass[hpath][float(sqrts)])
-    except:
-        pass
-
-def mergeByMassTeV(hpath, sqrts):
-    global inhistos_mass
-    global outhistos
-    try:
-        fillAboveTeV(outhistos[hpath], inhistos_mass[hpath][float(sqrts)])
+        fillAbove(scale,outhistos[hpath], inhistos_mass[hpath][float(sqrts)])
     except:
         pass
 
@@ -288,15 +236,18 @@ for f in yodafiles:
             else :
                 outhistos[aopath] = ao
 
-yodafiles=["-7-Jets-9.yoda" ,"-7-Jets-10.yoda",
+yodafiles=["-7-Jets-1.yoda" ,"-7-Jets-9.yoda" ,"-7-Jets-10.yoda",
            "-7-Jets-11.yoda","-7-Jets-12.yoda","-7-Jets-13.yoda",
            "-7-Heavy-6.yoda","-7-Heavy-7.yoda","-7-Heavy-8.yoda"]
 
 for f in yodafiles:
     file="LHC"+f
+    if(file.find("-7-Jets-1.yoda")>0) :
+        sqrts=7000
+        mass=0
     if(file.find("-7-Jets-9.yoda")>0) :
         sqrts=7000
-        mass=110
+        mass=100
     elif(file.find("-7-Jets-10.yoda")>0) :
         sqrts=7000
         mass=300
@@ -727,24 +678,24 @@ mergeByPt("/ATLAS_2012_I1082936/d02-x01-y05", "7000")
 mergeByPt("/ATLAS_2012_I1082936/d02-x01-y06", "7000")
 mergeByPt("/ATLAS_2012_I1082936/d02-x01-y07", "7000")
 
-mergeByMassTeV("/ATLAS_2012_I1082936/d03-x01-y01", "7000")
-mergeByMassTeV("/ATLAS_2012_I1082936/d03-x01-y02", "7000")
-mergeByMassTeV("/ATLAS_2012_I1082936/d03-x01-y03", "7000")
-mergeByMassTeV("/ATLAS_2012_I1082936/d03-x01-y04", "7000")
-mergeByMassTeV("/ATLAS_2012_I1082936/d03-x01-y05", "7000")
-mergeByMassTeV("/ATLAS_2012_I1082936/d03-x01-y06", "7000")
-mergeByMassTeV("/ATLAS_2012_I1082936/d03-x01-y07", "7000")
-mergeByMassTeV("/ATLAS_2012_I1082936/d03-x01-y08", "7000")
-mergeByMassTeV("/ATLAS_2012_I1082936/d03-x01-y09", "7000")
-mergeByMassTeV("/ATLAS_2012_I1082936/d04-x01-y01", "7000")
-mergeByMassTeV("/ATLAS_2012_I1082936/d04-x01-y02", "7000")
-mergeByMassTeV("/ATLAS_2012_I1082936/d04-x01-y03", "7000")
-mergeByMassTeV("/ATLAS_2012_I1082936/d04-x01-y04", "7000")
-mergeByMassTeV("/ATLAS_2012_I1082936/d04-x01-y05", "7000")
-mergeByMassTeV("/ATLAS_2012_I1082936/d04-x01-y06", "7000")
-mergeByMassTeV("/ATLAS_2012_I1082936/d04-x01-y07", "7000")
-mergeByMassTeV("/ATLAS_2012_I1082936/d04-x01-y08", "7000")
-mergeByMassTeV("/ATLAS_2012_I1082936/d04-x01-y09", "7000")
+mergeByMass("/ATLAS_2012_I1082936/d03-x01-y01", "7000", 1000.)
+mergeByMass("/ATLAS_2012_I1082936/d03-x01-y02", "7000", 1000.)
+mergeByMass("/ATLAS_2012_I1082936/d03-x01-y03", "7000", 1000.)
+mergeByMass("/ATLAS_2012_I1082936/d03-x01-y04", "7000", 1000.)
+mergeByMass("/ATLAS_2012_I1082936/d03-x01-y05", "7000", 1000.)
+mergeByMass("/ATLAS_2012_I1082936/d03-x01-y06", "7000", 1000.)
+mergeByMass("/ATLAS_2012_I1082936/d03-x01-y07", "7000", 1000.)
+mergeByMass("/ATLAS_2012_I1082936/d03-x01-y08", "7000", 1000.)
+mergeByMass("/ATLAS_2012_I1082936/d03-x01-y09", "7000", 1000.)
+mergeByMass("/ATLAS_2012_I1082936/d04-x01-y01", "7000", 1000.)
+mergeByMass("/ATLAS_2012_I1082936/d04-x01-y02", "7000", 1000.)
+mergeByMass("/ATLAS_2012_I1082936/d04-x01-y03", "7000", 1000.)
+mergeByMass("/ATLAS_2012_I1082936/d04-x01-y04", "7000", 1000.)
+mergeByMass("/ATLAS_2012_I1082936/d04-x01-y05", "7000", 1000.)
+mergeByMass("/ATLAS_2012_I1082936/d04-x01-y06", "7000", 1000.)
+mergeByMass("/ATLAS_2012_I1082936/d04-x01-y07", "7000", 1000.)
+mergeByMass("/ATLAS_2012_I1082936/d04-x01-y08", "7000", 1000.)
+mergeByMass("/ATLAS_2012_I1082936/d04-x01-y09", "7000", 1000.)
 
 
 logging.info("Processing CMS_2011_S8968497")
@@ -757,7 +708,7 @@ useOneMass("/CMS_2011_S8968497/d05-x01-y01", "7000", "800" )
 useOneMass("/CMS_2011_S8968497/d06-x01-y01", "7000", "300" )
 useOneMass("/CMS_2011_S8968497/d07-x01-y01", "7000", "300" )
 useOneMass("/CMS_2011_S8968497/d08-x01-y01", "7000", "300" )
-useOneMass("/CMS_2011_S8968497/d09-x01-y01", "7000", "110" )
+useOneMass("/CMS_2011_S8968497/d09-x01-y01", "7000", "100" )
 
 
 logging.info("Processing ATLAS_2011_S9126244")
@@ -871,7 +822,7 @@ mergeByPt("/CMS_2011_S9086218/d06-x01-y01", "7000")
 
 # CMS 2/3 jet cross section ratio
 logging.info("Processing CMS_2011_S9086218")
-mergeByPtTeV("/CMS_2011_S9088458/d01-x01-y01", "7000")
+mergeByPt("/CMS_2011_S9088458/d01-x01-y01", "7000",500.)
 
 # ATLAS track jet
 logging.info("Processing ATLAS_2011_I919017")
@@ -1085,14 +1036,14 @@ useOnePt("/ATLAS_2011_I919017/d02-x05-y24",  "7000",  "4" )
 useOnePt("/ATLAS_2011_I919017/d02-x05-y25",  "7000", "30" )
 
 logging.info("Processing ATLAS_2011_I926145")
-mergeByPt("/ATLAS_2011_I926145/d01-x01-y01", "7000")
-mergeByPt("/ATLAS_2011_I926145/d02-x01-y01", "7000")
-mergeByPt("/ATLAS_2011_I926145/d03-x01-y01", "7000")
+mergeByPt("/ATLAS_2011_I926145/d01-x01-y01", "7000",1.5)
+mergeByPt("/ATLAS_2011_I926145/d02-x01-y01", "7000",1.5)
+mergeByPt("/ATLAS_2011_I926145/d03-x01-y01", "7000",1.5)
 
 logging.info("Processing CMS_2011_S8941262")
 useOnePt("/CMS_2011_S8941262/d01-x01-y01",  "7000", "10" )
 useOnePt("/CMS_2011_S8941262/d03-x01-y01",  "7000", "10" )
-mergeByPt("/CMS_2011_S8941262/d02-x01-y01", "7000")
+mergeByPt("/CMS_2011_S8941262/d02-x01-y01", "7000",1.5)
 
 logging.info("Processing CMS_2011_S8973270")
 useOnePt("/CMS_2011_S8973270/d01-x01-y01",  "7000", "70" )

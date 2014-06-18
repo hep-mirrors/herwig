@@ -269,7 +269,7 @@ Rivet-LHC-EW: Rivet-LHC-W-e  Rivet-LHC-Powheg-W-e  \
 
 Rivet-LHC-Photon: Rivet-LHC-7-PromptPhoton Rivet-LHC-7-DiPhoton Rivet-LHC-7-GammaGamma
 	rm -rf Rivet-LHC-Photon 
-	yodamerge LHC-7-PromptPhoton.yoda LHC-7-DiPhoton.yoda LHC-7-GammaGamma.yoda -o LHC-Photon.yoda
+	python/merge-LHC-Photon LHC-7-PromptPhoton.yoda LHC-7-DiPhoton.yoda LHC-7-GammaGamma.yoda -o LHC-Photon.yoda
 	rivet-mkhtml -o Rivet-LHC-Photon LHC-Photon.yoda:Hw++
 
 Rivet-LHC-Higgs: Rivet-LHC-Powheg-ggH Rivet-LHC-ggH Rivet-LHC-ggHJet \

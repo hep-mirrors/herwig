@@ -1,0 +1,58 @@
+#! /usr/bin/env python
+import logging
+import sys
+import os, yoda
+
+"""%prog
+
+Script for merging aida files
+
+"""
+
+import sys
+if sys.version_info[:3] < (2,4,0):
+    print "rivet scripts require Python version >= 2.4.0... exiting"
+    sys.exit(1)
+
+if __name__ == "__main__":
+    import logging
+    from optparse import OptionParser, OptionGroup
+    parser = OptionParser(usage="%prog aidafile aidafile2 [...]")
+    parser.add_option("-o", "--out", dest="OUTFILE", default="-")
+    verbgroup = OptionGroup(parser, "Verbosity control")
+    verbgroup.add_option("-v", "--verbose", action="store_const", const=logging.DEBUG, dest="LOGLEVEL",
+                         default=logging.INFO, help="print debug (very verbose) messages")
+    verbgroup.add_option("-q", "--quiet", action="store_const", const=logging.WARNING, dest="LOGLEVEL",
+                         default=logging.INFO, help="be very quiet")
+    parser.add_option_group(verbgroup)
+    (opts, args) = parser.parse_args()
+    logging.basicConfig(level=opts.LOGLEVEL, format="%(message)s")
+
+    ## Check args
+    if len(args) < 1:
+        logging.error("Must specify at least one AIDA histogram file")
+        sys.exit(1)
+
+    ## Get histos
+    outhistos={}
+    for file in args:
+        if not os.access(file, os.R_OK):
+            logging.error("%s can not be read" % file)
+            break
+        try:
+            aos = yoda.read(file)
+        except:
+            logging.error("%s can not be parsed as XML" % file)
+            break
+        ## Get histos from this YODA file
+        for aopath, ao in aos.iteritems() :
+            if (aopath.find("CMS_2013_I1258128")>0) :
+                if(aopath.find("d05")>0 or aopath.find("d06")>0 or
+                   aopath.find("d07")>0 or aopath.find("d08")>0) :
+                    outhistos[aopath] = ao
+            else :
+                outhistos[aopath] = ao
+
+    # Choose output file
+    yoda.writeYODA(outhistos,opts.OUTFILE)
+    sys.exit(0)
