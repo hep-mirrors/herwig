@@ -5,7 +5,7 @@ import os, yoda
 
 """%prog
 
-Script for merging yoda files
+Script for merging aida files
 
 """
 
@@ -42,18 +42,17 @@ if __name__ == "__main__":
         try:
             aos = yoda.read(file)
         except:
-            logging.error("%s can not be parsed as yoda" % file)
+            logging.error("%s can not be parsed as XML" % file)
             break
         ## Get histos from this YODA file
         for aopath, ao in aos.iteritems() :
-            if(aopath.find("D0_2010_S8821313")>0) :
-                if(aopath.find("d01")>0 and file.find("-e")>0) : 
-                    outhistos[aopath] = ao
-                elif(aopath.find("d02")>0 and file.find("-mu")>0) : 
+            if (aopath.find("CMS_2013_I1258128")>0) :
+                if(aopath.find("d05")>0 or aopath.find("d06")>0 or
+                   aopath.find("d07")>0 or aopath.find("d08")>0) :
                     outhistos[aopath] = ao
             else :
                 outhistos[aopath] = ao
 
-    # output the yoda file
+    # Choose output file
     yoda.writeYODA(outhistos,opts.OUTFILE)
     sys.exit(0)

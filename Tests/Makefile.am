@@ -142,11 +142,10 @@ Rivet-LEP: Rivet-LEP-22  Rivet-LEP-35  Rivet-LEP-44  Rivet-LEP-91  \
            Rivet-LEP-Powheg-200 Rivet-LEP-Powheg-202 \
            Rivet-LEP-Powheg-206 Rivet-LEP-Powheg-10 \
            Rivet-LEP-Powheg-91-nopi
-	for i in LEP-*.aida; do rivet-rmgaps $$i; done;
 	rm -rf Rivet-LEP
 	python/merge-LEP LEP
 	python/merge-LEP LEP-Powheg
-	rivet-mkhtml -o Rivet-LEP LEP.aida:Hw++ LEP-Powheg.aida:Hw++-Powheg
+	rivet-mkhtml -o Rivet-LEP LEP.yoda:Hw++ LEP-Powheg.yoda:Hw++-Powheg
 
 Rivet-BFactory: Rivet-BFactory-10.52 Rivet-BFactory-Powheg-10.52 \
                 Rivet-BFactory-10.52-sym Rivet-BFactory-Powheg-10.52-sym \
@@ -155,11 +154,10 @@ Rivet-BFactory: Rivet-BFactory-10.52 Rivet-BFactory-Powheg-10.52 \
                 Rivet-BFactory-10.58 Rivet-BFactory-Powheg-10.58 \
                 Rivet-BFactory-Upsilon Rivet-BFactory-Upsilon2 Rivet-BFactory-Upsilon4 \
                 Rivet-BFactory-Tau
-	for i in BFactory-*.aida; do rivet-rmgaps $$i; done;
 	rm -rf Rivet-BFactory
 	python/merge-BFactory BFactory
 	python/merge-BFactory BFactory-Powheg
-	rivet-mkhtml -o Rivet-BFactory BFactory.aida:Hw++ BFactory-Powheg.aida:Hw++-Powheg
+	rivet-mkhtml -o Rivet-BFactory BFactory.yoda:Hw++ BFactory-Powheg.yoda:Hw++-Powheg
 
 Rivet-DIS: Rivet-DIS-e--LowQ2 \
 	   Rivet-DIS-e+-LowQ2 Rivet-DIS-e+-HighQ2\
@@ -167,19 +165,11 @@ Rivet-DIS: Rivet-DIS-e--LowQ2 \
 	   Rivet-DIS-Powheg-e+-LowQ2 Rivet-DIS-Powheg-e+-HighQ2\
            Rivet-DIS-NoME-e--LowQ2 \
 	   Rivet-DIS-NoME-e+-LowQ2 Rivet-DIS-NoME-e+-HighQ2
-	rivet-rmgaps DIS-e+-LowQ2.aida
-	rivet-rmgaps DIS-e--LowQ2.aida
-	rivet-rmgaps DIS-e+-HighQ2.aida
-	rivet-rmgaps DIS-Powheg-e+-LowQ2.aida
-	rivet-rmgaps DIS-Powheg-e--LowQ2.aida
-	rivet-rmgaps DIS-Powheg-e+-HighQ2.aida
-	rivet-rmgaps DIS-NoME-e+-LowQ2.aida
-	rivet-rmgaps DIS-NoME-e--LowQ2.aida
-	rivet-rmgaps DIS-NoME-e+-HighQ2.aida
+	rm -rf Rivet-DIS
 	python/merge-DIS DIS 
 	python/merge-DIS DIS-Powheg
 	python/merge-DIS DIS-NoME
-	rivet-mkhtml -o Rivet-DIS DIS.aida:Hw++ DIS-Powheg.aida:Hw++-Powheg DIS-NoME.aida:Hw++-NoME
+	rivet-mkhtml -o Rivet-DIS DIS.yoda:Hw++ DIS-Powheg.yoda:Hw++-Powheg DIS-NoME.yoda:Hw++-NoME
 
 Rivet-TVT-WZ: Rivet-TVT-Run-I-Z     Rivet-TVT-Powheg-Run-I-Z \
               Rivet-TVT-Run-I-W     Rivet-TVT-Powheg-Run-I-W \
@@ -187,26 +177,23 @@ Rivet-TVT-WZ: Rivet-TVT-Run-I-Z     Rivet-TVT-Powheg-Run-I-Z \
               Rivet-TVT-Run-II-Z-e  Rivet-TVT-Powheg-Run-II-Z-e  \
               Rivet-TVT-Run-II-Z-mu Rivet-TVT-Powheg-Run-II-Z-mu \
               Rivet-TVT-Run-II-W    Rivet-TVT-Powheg-Run-II-W
-	rivet-rmgaps TVT-Run-II-Z-e.aida;
-	rivet-rmgaps TVT-Powheg-Run-II-Z-e.aida; 
 	rm -rf Rivet-TVT-WZ
-	python/merge-TVT-EW TVT-Run-II-W.aida TVT-Run-II-Z-{e,mu}.aida\
-                            TVT-Run-I-{W,Z,WZ}.aida -o TVT-WZ.aida
-	python/merge-TVT-EW TVT-Powheg-Run-II-W.aida   TVT-Powheg-Run-II-Z-{e,mu}.aida\
-                            TVT-Powheg-Run-I-{W,Z,WZ}.aida -o TVT-Powheg-WZ.aida
-	rivet-mkhtml -o Rivet-TVT-WZ TVT-WZ.aida:Hw++ TVT-Powheg-WZ.aida:Hw++-Powheg
+	python/merge-TVT-EW TVT-Run-II-W.yoda TVT-Run-II-Z-{e,mu}.yoda\
+                            TVT-Run-I-{W,Z,WZ}.yoda -o TVT-WZ.yoda
+	python/merge-TVT-EW TVT-Powheg-Run-II-W.yoda   TVT-Powheg-Run-II-Z-{e,mu}.yoda\
+                            TVT-Powheg-Run-I-{W,Z,WZ}.yoda -o TVT-Powheg-WZ.yoda
+	rivet-mkhtml -o Rivet-TVT-WZ TVT-WZ.yoda:Hw++ TVT-Powheg-WZ.yoda:Hw++-Powheg
 
 Rivet-TVT-Photon: Rivet-TVT-Run-II-PromptPhoton \
                   Rivet-TVT-Run-II-DiPhoton-GammaGamma Rivet-TVT-Run-II-DiPhoton-GammaJet \
 		  Rivet-TVT-Powheg-Run-II-DiPhoton-GammaGamma Rivet-TVT-Powheg-Run-II-DiPhoton-GammaJet
 #                  Rivet-TVT-Run-I-PromptPhoton 
 	rm -rf Rivet-TVT-Photon 
-	python/add-aida Rivet-TVT-Run-II-DiPhoton-GammaGamma Rivet-TVT-Run-II-DiPhoton-GammaJet --add -o TVT-Run-II-DiPhoton.aida
-	python/add-aida Rivet-TVT-Powheg-Run-II-DiPhoton-GammaGamma Rivet-TVT-Powheg-Run-II-DiPhoton-GammaJet --add -o TVT-Powheg-Run-II-DiPhoton.aida
-	python/merge-aida TVT-Run-II-DiPhoton.aida TVT-Run-II-PromptPhoton.aida\
-                           -o TVT-Photon.aida
-	rivet-mkhtml -o Rivet-TVT-Photon TVT-Photon.aida:Hw++
-	rivet-mkhtml -o Rivet-TVT-Photon TVT-Photon.aida:Hw++  TVT-Powheg-Run-II-DiPhoton.aida:Hw++-Powheg
+	yodamerge Rivet-TVT-Run-II-DiPhoton-GammaGamma Rivet-TVT-Run-II-DiPhoton-GammaJet --add -o TVT-Run-II-DiPhoton.aida
+	yodamerge Rivet-TVT-Powheg-Run-II-DiPhoton-GammaGamma Rivet-TVT-Powheg-Run-II-DiPhoton-GammaJet --add -o TVT-Powheg-Run-II-DiPhoton.aida
+	yodamerge TVT-Run-II-DiPhoton.yoda TVT-Run-II-PromptPhoton.yoda\
+                           -o TVT-Photon.yoda
+	rivet-mkhtml -o Rivet-TVT-Photon TVT-Photon.yoda:Hw++ TVT-Powheg-Run-II-DiPhoton.aida:Hw++-Powheg
 
 Rivet-TVT-Jets: Rivet-TVT-Run-II-Jets-1  Rivet-TVT-Run-II-Jets-2 \
                 Rivet-TVT-Run-II-Jets-3  Rivet-TVT-Run-II-Jets-4 \
@@ -223,13 +210,12 @@ Rivet-TVT-Jets: Rivet-TVT-Run-II-Jets-1  Rivet-TVT-Run-II-Jets-2 \
                 Rivet-TVT-630-Jets-2     Rivet-TVT-630-Jets-3 \
                 Rivet-TVT-300-UE         Rivet-TVT-300-Jets-1 \
                 Rivet-TVT-900-UE         Rivet-TVT-900-Jets-1
-	rivet-rmgaps TVT-Run-I-Jets-4.aida	
 	python/merge-TVT-Energy TVT
-	rivet-merge-CDF_2012_NOTE10874 TVT-300-Energy.aida TVT-900-Energy.aida TVT-1960-Energy.aida
-	flat2aida RatioPlots.dat -o TVT-RatioPlots.aida
+	rivet-merge-CDF_2012_NOTE10874 TVT-300-Energy.yoda TVT-900-Energy.yoda TVT-1960-Energy.yoda
+	flat2yoda RatioPlots.dat -o TVT-RatioPlots.yoda
 	rm -rf Rivet-TVT-Jets
 	python/merge-TVT-Jets TVT
-	rivet-mkhtml -o Rivet-TVT-Jets TVT-Jets.aida:Hw++
+	rivet-mkhtml -o Rivet-TVT-Jets TVT-Jets.yoda:Hw++
 
 Rivet-LHC-Jets: Rivet-LHC-7-Jets-0  Rivet-LHC-7-Jets-1  Rivet-LHC-7-Jets-2 \
 		Rivet-LHC-7-Jets-3  Rivet-LHC-7-Jets-4 \
@@ -251,16 +237,14 @@ Rivet-LHC-Jets: Rivet-LHC-7-Jets-0  Rivet-LHC-7-Jets-1  Rivet-LHC-7-Jets-2 \
 		Rivet-LHC-7-Jets-All-5
 	rm -rf Rivet-LHC-Jets
 	python/merge-LHC-Jets
-	rivet-rmgaps LHC-Jets.aida
-	rivet-mkhtml -o Rivet-LHC-Jets LHC-Jets.aida:Hw++
+	rivet-mkhtml -o Rivet-LHC-Jets LHC-Jets.yoda:Hw++
 
 Rivet-Star: Rivet-Star-UE     Rivet-Star-Jets-1 \
             Rivet-Star-Jets-2 Rivet-Star-Jets-3 \
             Rivet-Star-Jets-4
 	rm -rf Rivet-Star
-	rivet-rmgaps Star-UE.aida
 	python/merge-Star Star
-	rivet-mkhtml -o Rivet-Star Star.aida
+	rivet-mkhtml -o Rivet-Star Star.yoda
 
 Rivet-SppS: Rivet-ISR-44-UE Rivet-ISR-63-UE \
 	    Rivet-SppS-63-UE  Rivet-ISR-30-UE \
@@ -268,26 +252,27 @@ Rivet-SppS: Rivet-ISR-44-UE Rivet-ISR-63-UE \
 	    Rivet-SppS-500-UE Rivet-SppS-900-UE \
 	    Rivet-SppS-546-UE Rivet-SppS-53-UE
 	rm -rf Rivet-SppS
-	python/merge-aida  ISR-44-UE.aida ISR-63-UE.aida SppS-63-UE.aida  ISR-30-UE.aida \
-		           ISR-53-UE.aida SppS-200-UE.aida SppS-500-UE.aida SppS-900-UE.aida \
-	                   SppS-546-UE.aida SppS-53-UE.aida -o SppS.aida
-	rivet-mkhtml -o Rivet-SppS SppS.aida
+	python/merge-SppS SppS
+	rivet-mkhtml -o Rivet-SppS SppS.yoda
 
-Rivet-LHC-EW: Rivet-LHC-W-e  Rivet-LHC-Powheg-W-e  \
-              Rivet-LHC-W-mu Rivet-LHC-Powheg-W-mu \
-              Rivet-LHC-Z-e  Rivet-LHC-Powheg-Z-e  \
-              Rivet-LHC-Z-mu Rivet-LHC-Powheg-Z-mu \
-              Rivet-LHC-WZ   Rivet-LHC-Powheg-WZ\
-              Rivet-LHC-WW   Rivet-LHC-Powheg-WW\
-              Rivet-LHC-ZZ   Rivet-LHC-Powheg-ZZ\
+Rivet-LHC-EW: Rivet-LHC-W-e    Rivet-LHC-Powheg-W-e  \
+              Rivet-LHC-W-mu   Rivet-LHC-Powheg-W-mu \
+              Rivet-LHC-Z-e    Rivet-LHC-Powheg-Z-e  \
+              Rivet-LHC-Z-mu   Rivet-LHC-Powheg-Z-mu \
+              Rivet-LHC-WZ     Rivet-LHC-Powheg-WZ\
+              Rivet-LHC-WW-emu Rivet-LHC-Powheg-WW-emu\
+              Rivet-LHC-WW-ll  Rivet-LHC-Powheg-WW-ll\
+              Rivet-LHC-ZZ-ll Rivet-LHC-Powheg-ZZ-ll\
+              Rivet-LHC-ZZ-lv Rivet-LHC-Powheg-ZZ-lv\
               Rivet-LHC-7-W-Jet-1-e Rivet-LHC-7-W-Jet-2-e\
               Rivet-LHC-7-W-Jet-3-e Rivet-LHC-7-Z-Jet-1-e\
               Rivet-LHC-7-Z-Jet-2-e Rivet-LHC-7-Z-Jet-3-e
 	rm -rf Rivet-LHC-EW;
-	python/merge-LHC-EW LHC-{W-e,W-mu,Z-e,Z-mu,WW,WZ,ZZ}.aida LHC-7-{W,Z}-Jet-{1,2,3}-e.aida -o LHC-EW.aida;
-	python/merge-LHC-EW LHC-Powheg-{W-e,W-mu,Z-e,Z-mu,WW,WZ,ZZ}.aida -o LHC-Powheg-EW.aida;
-	rivet-mkhtml -o Rivet-LHC-EW LHC-EW.aida:Hw++ LHC-Powheg-EW.aida:Hw++-Powheg;
+	python/merge-LHC-EW LHC-{W-e,W-mu,Z-e,Z-mu,WW-emu,WW-ll,WZ,ZZ-ll,ZZ-lv}.yoda LHC-7-{W,Z}-Jet-{1,2,3}-e.yoda -o LHC-EW.yoda;
+	python/merge-LHC-EW LHC-Powheg-{W-e,W-mu,Z-e,Z-mu,WW-emu,WW-ll,WZ,ZZ-ll,ZZ-lv}.yoda -o LHC-Powheg-EW.yoda;
+	rivet-mkhtml -o Rivet-LHC-EW LHC-EW.yoda:Hw++ LHC-Powheg-EW.yoda:Hw++-Powheg;
 
+<<<<<<< local
 Rivet-LHC-Photon: Rivet-LHC-7-PromptPhoton \
                   Rivet-LHC-7-DiPhoton-GammaGamma        Rivet-LHC-7-DiPhoton-GammaJet \
 		  Rivet-LHC-Powheg-7-DiPhoton-GammaGamma Rivet-LHC-Powheg-7-DiPhoton-GammaJet
@@ -296,14 +281,20 @@ Rivet-LHC-Photon: Rivet-LHC-7-PromptPhoton \
 	python/add-aida LHC-Powheg-7-DiPhoton-GammaGamma.aida LHC-7-Powheg-DiPhoton-GammaJet.aida --add -o LHC-Powheg-7-DiPhoton.aida
 	python/merge-aida LHC-7-PromptPhoton.aida LHC-7-DiPhoton.aida -o LHC-Photon.aida
 	rivet-mkhtml -o Rivet-LHC-Photon LHC-Photon.aida:Hw++ LHC-Powheg-7-DiPhoton.aida:Hw++-Powheg
+=======
+Rivet-LHC-Photon: Rivet-LHC-7-PromptPhoton Rivet-LHC-7-DiPhoton Rivet-LHC-7-GammaGamma
+	rm -rf Rivet-LHC-Photon 
+	python/merge-LHC-Photon LHC-7-PromptPhoton.yoda LHC-7-DiPhoton.yoda LHC-7-GammaGamma.yoda -o LHC-Photon.yoda
+	rivet-mkhtml -o Rivet-LHC-Photon LHC-Photon.yoda:Hw++
+>>>>>>> other
 
 Rivet-LHC-Higgs: Rivet-LHC-Powheg-ggH Rivet-LHC-ggH Rivet-LHC-ggHJet \
 		 Rivet-LHC-Powheg-VBF Rivet-LHC-VBF Rivet-LHC-WH Rivet-LHC-ZH \
 		 Rivet-LHC-Powheg-WH Rivet-LHC-Powheg-ZH
 	rm -rf Rivet-LHC-Higgs
-	rivet-mkhtml -o Rivet-LHC-Higgs LHC-Powheg-ggH.aida:gg-Powheg LHC-ggH.aida:gg LHC-ggHJet.aida:HJet \
-		 LHC-Powheg-VBF.aida:VBF-Powheg LHC-VBF.aida:VBF LHC-WH.aida:WH LHC-ZH.aida:ZH \
-                 LHC-Powheg-WH.aida:WH-Powheg LHC-Powheg-ZH.aida:ZH-Powheg
+	rivet-mkhtml -o Rivet-LHC-Higgs LHC-Powheg-ggH.yoda:gg-Powheg LHC-ggH.yoda:gg LHC-ggHJet.yoda:HJet \
+                        LHC-Powheg-VBF.yoda:VBF-Powheg LHC-VBF.yoda:VBF LHC-WH.yoda:WH LHC-ZH.yoda:ZH \
+                        LHC-Powheg-WH.yoda:WH-Powheg LHC-Powheg-ZH.yoda:ZH-Powheg
 
 tests-Rivet : Rivet-LEP Rivet-BFactory Rivet-DIS Rivet-TVT-WZ Rivet-TVT-Photon Rivet-TVT-Jets Rivet-LHC-Jets Rivet-Star Rivet-SppS Rivet-LHC-EW Rivet-LHC-Photon
 
@@ -327,4 +318,4 @@ test-LHC-% : Inputs/LHC-%.in HadronTest.la GammaTest.la
 endif
 
 clean-local:
-	rm -f *.out *.log *.tex *.top *.run *.dump *.mult *.Bmult *.aida
+	rm -f *.out *.log *.tex *.top *.run *.dump *.mult *.Bmult *.yoda
