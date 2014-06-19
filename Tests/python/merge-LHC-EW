@@ -75,6 +75,11 @@ if __name__ == "__main__":
                     outhistos[aopath] = ao
                 elif(aopath.find("y02")>0 and file.find("-mu")>0) : 
                     outhistos[aopath] = ao
+            elif (aopath.find("CMS_2012_I941555")>0) :
+                if((aopath.find("y01")>0 or aopath.find("y03")>0 ) and file.find("-mu")>0) : 
+                    outhistos[aopath] = ao
+                elif(aopath.find("y02")>0 and file.find("-e")>0) : 
+                    outhistos[aopath] = ao
             elif (aopath.find("ATLAS_2012_I1204784" )>0) :
                 if( file.find("-e")>0 and
                     ( aopath.find("d03")>0 or 

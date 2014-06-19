@@ -90,6 +90,9 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1093734
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2013_I1208105
 # ATLAS charged particle event shapes
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1124167
+# CMS Jet/UE properties
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1261026
+
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'

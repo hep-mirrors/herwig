@@ -11,10 +11,14 @@ cd /Herwig/MatrixElements
 insert SimpleQCD:MatrixElements[0] PowhegMEPP2VV
 set PowhegMEPP2VV:Process ZZ
 
-do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig/Particles/Z0/Z0->mu-,mu+;
+do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig/Particles/Z0/Z0->mu-,mu+; /Herwig/Particles/Z0/Z0->tau-,tau+;
 
 # No QED radiation
 erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
+
+# put BR's into cross section
+create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter
+insert /Herwig/EventHandlers/LHCHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter
 
 ##################################################
 # select the analyses
@@ -27,4 +31,4 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_ZZJETS
 # Save run for later usage with 'Herwig++ run'
 ##################################################
 cd /Herwig/Generators
-saverun LHC-Powheg-ZZ LHCGenerator
+saverun LHC-Powheg-ZZ-ll LHCGenerator

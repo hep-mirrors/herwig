@@ -33,6 +33,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1118269
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S9035664
 # b-jet cross section
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I930220
+# charm production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2013_I1218996
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'
