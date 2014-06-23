@@ -101,6 +101,7 @@ public:
    * pt selected for the next splitting.
    */
   Energy generate(const DipoleSplittingInfo&,
+		  Energy optHardPt = ZERO,
 		  Energy optCutoff = ZERO);
 
   /**
@@ -110,6 +111,7 @@ public:
    * from a wrapping generator.
    */
   Energy generateWrapped(DipoleSplittingInfo&,
+			 Energy optHardPt = ZERO,
 			 Energy optCutoff = ZERO);
 
   /**
@@ -141,7 +143,8 @@ protected:
   /**
    * Update parameters given a splitting.
    */
-  void fixParameters(const DipoleSplittingInfo&);
+  void fixParameters(const DipoleSplittingInfo&,
+		     Energy optHardPt = ZERO);
 
   /**
    * With the parameters previuosly supplied

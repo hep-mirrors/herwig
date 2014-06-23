@@ -87,13 +87,14 @@ protected:
    * The main method which manages the showering of a subprocess.
    */
   virtual tPPair cascade(tSubProPtr sub, XCPtr xcomb) {
-    return cascade(sub,xcomb,ZERO);
+    return cascade(sub,xcomb,ZERO,ZERO);
   }
 
   /**
    * The main method which manages the showering of a subprocess.
    */
-  tPPair cascade(tSubProPtr sub, XCPtr xcomb, Energy optCutoff);
+  tPPair cascade(tSubProPtr sub, XCPtr xcomb, 
+		 Energy optHardPt, Energy optCutoff);
 
   /**
    * Build splitting generators for the given
@@ -152,6 +153,7 @@ private:
    * Perform the cascade.
    */
   void doCascade(unsigned int& emDone,
+		 Energy optHardPt = ZERO,
 		 Energy optCutoff = ZERO);
 
   /**
@@ -161,6 +163,7 @@ private:
   Energy getWinner(DipoleSplittingInfo& winner,
 		   const Dipole& dip,
 		   pair<bool,bool> conf,
+		   Energy optHardPt = ZERO,
 		   Energy optCutoff = ZERO);
 
   /**
@@ -168,6 +171,7 @@ private:
    * given dipole and configuration.
    */
   Energy getWinner(SubleadingSplittingInfo& winner,
+		   Energy optHardPt = ZERO,
 		   Energy optCutoff = ZERO);
 
   /**
@@ -180,6 +184,7 @@ private:
 		   pair<bool,bool> conf,
 		   tPPtr emitter, tPPtr spectator,
 		   Energy startScale,
+		   Energy optHardPt = ZERO,
 		   Energy optCutoff = ZERO);
 
 public:
