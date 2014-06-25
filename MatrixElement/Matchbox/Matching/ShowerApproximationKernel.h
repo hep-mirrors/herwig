@@ -202,6 +202,12 @@ public:
   unsigned long maxtry() const { return theMaxTry; }
 
   /**
+   * Return the number of accepted points after which the grid should
+   * be frozen
+   */
+  unsigned long freezeGrid() const { return theFreezeGrid; }
+
+  /**
    * Set the number of points to presample this
    * splitting generator.
    */
@@ -212,6 +218,12 @@ public:
    * to generate a splitting.
    */
   void maxtry(unsigned long p) { theMaxTry = p; }
+
+  /**
+   * Set the number of accepted points after which the grid should
+   * be frozen
+   */
+  void freezeGrid(unsigned long n) { theFreezeGrid = n; }
 
   /**
    * Evalute the splitting kernel.
@@ -369,6 +381,12 @@ private:
    * to generate a splitting.
    */
   unsigned long theMaxTry;
+
+  /**
+   * Return the number of accepted points after which the grid should
+   * be frozen
+   */
+  unsigned long theFreezeGrid;
 
   /**
    * The sampling flags

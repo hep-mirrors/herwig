@@ -28,7 +28,8 @@ using namespace Herwig;
 
 ShowerApproximationKernel::ShowerApproximationKernel() 
   : thePresampling(false), thePresamplingPoints(10000), 
-    theMaxTry(100000), sampler(0), theDoCompensate(false) {}
+    theMaxTry(100000), theFreezeGrid(500000),
+    sampler(0), theDoCompensate(false) {}
 
 ShowerApproximationKernel::~ShowerApproximationKernel() {}
 
@@ -129,6 +130,7 @@ double ShowerApproximationKernel::generate() {
     sampler = new ExponentialGenerator();
     sampler->sampling_parameters().maxtry = maxtry();
     sampler->sampling_parameters().presampling_points = presamplingPoints();
+    sampler->sampling_parameters().freeze_grid = freezeGrid();
     sampler->docompensate(theDoCompensate);
     sampler->function(this);
     sampler->initialize();
@@ -161,7 +163,7 @@ double ShowerApproximationKernel::generate() {
 void ShowerApproximationKernel::persistentOutput(PersistentOStream & os) const {
   os << theDipole << theShowerApproximation << theBornXComb 
      << theRealXComb << theTildeXCombs << thePresampling 
-     << thePresamplingPoints << theMaxTry << theFlags 
+     << thePresamplingPoints << theMaxTry << theFreezeGrid << theFlags 
      << theSupport << theShowerApproximationGenerator 
      << theLastParameterPoint << theLastBornPoint
      << (sampler ? true : false) << theDoCompensate;
@@ -173,7 +175,7 @@ void ShowerApproximationKernel::persistentInput(PersistentIStream & is, int) {
   bool haveSampler;
   is >> theDipole >> theShowerApproximation >> theBornXComb 
      >> theRealXComb >> theTildeXCombs >> thePresampling 
-     >> thePresamplingPoints >> theMaxTry >> theFlags 
+     >> thePresamplingPoints >> theMaxTry >> theFreezeGrid >> theFlags 
      >> theSupport >> theShowerApproximationGenerator 
      >> theLastParameterPoint >> theLastBornPoint
      >> haveSampler >> theDoCompensate; 
