@@ -206,6 +206,12 @@ public:
   unsigned long maxtry() const { return splittingKernel()->maxtry(); }
 
   /**
+   * Return the number of accepted points after which the grid should
+   * be frozen
+   */
+  unsigned long freezeGrid() const { return splittingKernel()->freezeGrid(); }
+
+  /**
    * Return true, if this splitting generator
    * is able to deliver an overestimate to the sampled
    * kernel.
