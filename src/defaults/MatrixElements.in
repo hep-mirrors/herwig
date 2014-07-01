@@ -192,13 +192,6 @@ newdef PowhegMEPP2VV:Coupling /Herwig/Shower/AlphaQCD
 create Herwig::MEPP2HiggsVBFPowheg PowhegMEPP2HiggsVBF
 newdef PowhegMEPP2HiggsVBF:ShowerAlphaQCD /Herwig/Shower/AlphaQCD
 
-# PP -> diphoton NLO
-create Herwig::MEPP2GammaGammaPowheg MEGammaGammaPowheg 
-set MEGammaGammaPowheg:Process 0
-set MEGammaGammaPowheg:Contribution 1
-set MEGammaGammaPowheg:ShowerAlphaQCD /Herwig/Shower/AlphaQCD
-set MEGammaGammaPowheg:ShowerAlphaQED /Herwig/Shower/AlphaQED
-
 ##########################################################
 # DIS matrix elements
 ##########################################################

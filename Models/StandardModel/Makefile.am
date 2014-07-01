@@ -19,9 +19,4 @@ libHwStandardModel_la_SOURCES = \
 	SMHGGVertex.cc SMHGGVertex.h \
 	SMHPPVertex.cc SMHPPVertex.h\
 	SMHHHVertex.cc SMHHHVertex.h \
-	SMWWHHVertex.cc SMWWHHVertex.h \
-	OneLoopFFAWZVertex.cc OneLoopFFAWZVedrtex.h OneLoopFFAWZVedrtex.fh
-
-pkglib_LTLIBRARIES = HwMRSTAlphaS.la
-HwMRSTAlphaS_la_SOURCES = MRSTAlphaS.h MRSTAlphaS.cc MRSTAlphaSFORTRAN.f
-HwMRSTAlphaS_la_LDFLAGS = -module -version-info 1:0:0
+	SMWWHHVertex.cc SMWWHHVertex.h

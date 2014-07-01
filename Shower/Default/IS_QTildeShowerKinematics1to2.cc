@@ -50,8 +50,6 @@ updateParent(const tShowerParticlePtr parent,
   // calculate the scales
   splittingFn()->evaluateInitialStateScales(partnerType,scale(),z(),parent,
 					    children[0],children[1]);
-  // debugging printout if needed
-  if(Debug::level >= 10 ) printScales(parent,children[0],children[1]);
   // set proper colour connections
   splittingFn()->colourConnection(parent,children[0],children[1],
 				  partnerType,true);

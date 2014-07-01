@@ -81,12 +81,6 @@ protected:
    */
   void setBasis(const Lorentz5Momentum &p, const Lorentz5Momentum & n);
 
-  /**
-   *  Print out scales after branching for debugging
-   */
-  void printScales(tShowerParticlePtr parent,tShowerParticlePtr child1,
-		   tShowerParticlePtr child2) const;
-
 private:
 
   /**

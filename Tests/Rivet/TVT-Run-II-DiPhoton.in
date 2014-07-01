@@ -14,16 +14,12 @@ set LHCGenerator:EventHandler:LuminosityFunction:Energy 1960.0
 ##################################################
 cd /Herwig/MatrixElements
 # Drell-Yan Z/gamma
-insert SimpleQCD:MatrixElements[0] MEGammaJet
-
-# switch QED on (shower)
-set /Herwig/Shower/Evolver:Interactions BothAtOnce
+insert SimpleQCD:MatrixElements[0] MEGammaGamma
 
 # photon cuts
 set /Herwig/Cuts/PhotonKtCut:MinKT 5.
-set /Herwig/Cuts/JetKtCut:MinKT 5.
 
-# No QED radiation (YFS)
+# No QED radiation
 erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
 
 ##################################################
@@ -39,4 +35,4 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2010_S8570965
 # Save run for later usage with 'Herwig++ run'
 ##################################################
 cd /Herwig/Generators
-saverun TVT-Run-II-DiPhoton-GammaJet LHCGenerator
+saverun TVT-Run-II-DiPhoton LHCGenerator

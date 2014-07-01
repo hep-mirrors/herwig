@@ -18,8 +18,7 @@
 
 using namespace Herwig;
 
-MEPP2VV::MEPP2VV() : process_(0), maxflavour_(5), massOption_(2) ,
-  debugMCFM_(0)
+MEPP2VV::MEPP2VV() : process_(0), maxflavour_(5), massOption_(2) 
 {}
 
 unsigned int MEPP2VV::orderInAlphaS() const {
@@ -64,6 +63,7 @@ void MEPP2VV::Init() {
      "ZZ",
      "Only include ZZ",
      3);
+ 
   static SwitchOption interfaceProcessWpZ
     (interfaceProcess,
      "WpZ",
@@ -96,33 +96,16 @@ void MEPP2VV::Init() {
      "The bosons are generated off-shell using the mass and width generator.",
      2);
 
-  static Switch<MEPP2VV,unsigned int> interfaceDebugMCFM
-    ("DebugMCFM",
-     "Option to make t-channel propagators massless for WW (as in MCFM)",
-     &MEPP2VV::debugMCFM_, 0, false, false);
-  static SwitchOption interfaceNoDebugging
-    (interfaceDebugMCFM,
-     "NoDebugging",
-     "Default massive t-channel propagators in WW production",
-     0);
-  static SwitchOption interfaceDebugging
-    (interfaceDebugMCFM,
-     "Debugging",
-     "Use massless t-channel propagators in WW production (as in MCFM)",
-     1);
-
 }
 
 void MEPP2VV::persistentOutput(PersistentOStream & os) const {
-  os << FFPvertex_ << FFWvertex_ << FFZvertex_ << WWWvertex_
-     << process_ << massOption_ << maxflavour_
-     << debugMCFM_;
+  os << FFPvertex_ << FFWvertex_ << FFZvertex_ << WWWvertex_ 
+     << process_ << massOption_ << maxflavour_;
 }
 
 void MEPP2VV::persistentInput(PersistentIStream & is, int) {
-  is >> FFPvertex_ >> FFWvertex_ >> FFZvertex_ >> WWWvertex_
-     >> process_ >> massOption_ >> maxflavour_
-     >> debugMCFM_;
+  is >> FFPvertex_ >> FFWvertex_ >> FFZvertex_ >> WWWvertex_ 
+     >> process_ >> massOption_ >> maxflavour_;
 }
 
 Energy2 MEPP2VV::scale() const {
