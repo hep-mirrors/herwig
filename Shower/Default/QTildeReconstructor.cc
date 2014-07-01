@@ -124,12 +124,12 @@ unsigned int ACLSIZE(set<HardBranchingPtr>::const_iterator & a) {
 
 void QTildeReconstructor::persistentOutput(PersistentOStream & os) const {
   os << _reconopt << _initialBoost << ounit(_minQ,GeV) << _noRescale 
-     << _noRescaleVector;
+     << _noRescaleVector << _finalStateReconOption;
 }
 
 void QTildeReconstructor::persistentInput(PersistentIStream & is, int) {
   is >> _reconopt >> _initialBoost >> iunit(_minQ,GeV) >> _noRescale 
-     >> _noRescaleVector;  
+     >> _noRescaleVector >> _finalStateReconOption;  
 }
 
 void QTildeReconstructor::Init() {
@@ -179,6 +179,28 @@ void QTildeReconstructor::Init() {
      "LongTransBoost",
      "First apply a longitudinal and then a transverse boost",
      1);
+
+
+  static Switch<QTildeReconstructor,unsigned int> interfaceFinalStateReconOption
+    ("FinalStateReconOption",
+     "Option for how to reconstruct the momenta of the final state system",
+     &QTildeReconstructor::_finalStateReconOption, 0, false, false);
+  static SwitchOption interfaceFinalStateReconOptionRescale
+    (interfaceFinalStateReconOption,
+     "Rescale",
+     "All the momenta are rescaled in the rest frame",
+     0);
+  static SwitchOption interfaceFinalStateReconOptionHighest
+    (interfaceFinalStateReconOption,
+     "Highest",
+     "The particle with the highest offshellness is treated seperately",
+     1);
+  static SwitchOption interfaceFinalStateReconOptionRecursive
+    (interfaceFinalStateReconOption,
+     "Recursive",
+     "Recursively treated the particle with the highest offshellness seperately",
+     2);
+
 
 }
 
@@ -1391,7 +1413,7 @@ solveBoost(const double k, const Lorentz5Momentum & newq,
 	   const Lorentz5Momentum & oldp ) const {
   Energy q = newq.vect().mag(); 
   Energy2 qs = sqr(q); 
-  Energy2 Q2 = newq.mass2(); 
+  Energy2 Q2 = newq.mass2();
   Energy kp = k*(oldp.vect().mag()); 
   Energy2 kps = sqr(kp);
   double betam = (q*newq.e() - kp*sqrt(kps + Q2))/(kps + qs + Q2); 
@@ -1532,22 +1554,46 @@ reconstructFinalStateSystem(bool applyBoost,
     tempJetKin.q = (*cit)->progenitor()->momentum();
     jetKinematics.push_back(tempJetKin);
   }
-  // find the rescaling factor
-  double k = 0.0;
-  if(radiated) {
-    k = solveKfactor(pcm.m(), jetKinematics);
-  }
-  // perform the rescaling and boosts
-  for(JetKinVect::iterator it = jetKinematics.begin();
-      it != jetKinematics.end(); ++it) {
-    LorentzRotation Trafo = LorentzRotation(); 
-    if(radiated) Trafo = solveBoost(k, it->q, it->p);
-    if(gottaBoost) Trafo.boost(-beta_cm);
-    if(applyBoost) {
-      Trafo.transform(  toRest);
-      Trafo.transform(fromRest);
+  // default option rescale everything with the same factor
+  if( _finalStateReconOption == 0 || jetKinematics.size() <= 2 ) {
+    // find the rescaling factor
+    double k = 0.0;
+    if(radiated) {
+      k = solveKfactor(pcm.m(), jetKinematics);
     }
-    if(radiated || gottaBoost || applyBoost) deepTransform(it->parent,Trafo);
+    // perform the rescaling and boosts
+    for(JetKinVect::iterator it = jetKinematics.begin();
+	it != jetKinematics.end(); ++it) {
+      LorentzRotation Trafo = LorentzRotation(); 
+      if(radiated) Trafo = solveBoost(k, it->q, it->p);
+      if(gottaBoost) Trafo.boost(-beta_cm);
+      if(applyBoost) {
+	Trafo.transform(  toRest);
+	Trafo.transform(fromRest);
+      }
+      if(radiated || gottaBoost || applyBoost) deepTransform(it->parent,Trafo);
+    }
+  }
+  // different treatment of most off-shell
+  else if ( _finalStateReconOption == 1 ||  
+	    _finalStateReconOption == 2 ) {
+    // sort the jets by virtuality
+    JetKinSet orderedJets(jetKinematics.begin(),jetKinematics.end());
+    // do the reconstruction
+    reconstructFinalFinalOffShell(orderedJets,pcm.m2(), _finalStateReconOption == 2);
+    // apply the final boosts
+    if(gottaBoost || applyBoost) { 
+      LorentzRotation finalBoosts;
+      if(gottaBoost) finalBoosts.boost(-beta_cm);
+      if(applyBoost) {
+      	finalBoosts.transform(  toRest);
+      	finalBoosts.transform(fromRest);
+      } 
+      for(JetKinVect::iterator it = jetKinematics.begin();
+	  it != jetKinematics.end(); ++it) {
+	deepTransform(it->parent,finalBoosts);
+      }
+    }
   }
 }
 
@@ -2312,4 +2358,62 @@ void QTildeReconstructor::deepTransform(PPtr particle,
   }
 }
 
+void QTildeReconstructor::reconstructFinalFinalOffShell(JetKinSet orderedJets,
+							Energy2 s,
+							bool recursive) const {
+  JetKinSet::iterator jit;
+  jit = orderedJets.begin(); ++jit;
+  // 4-momentum of recoiling system
+  Lorentz5Momentum psum;
+  for( ; jit!=orderedJets.end(); ++jit) psum += jit->p;
+  psum.rescaleMass();
+  // calculate the 3-momentum rescaling factor
+  Energy2 m1sq(orderedJets.begin()->q.m2()),m2sq(psum.m2());
+  Energy4 num = sqr(s - m1sq - m2sq) - 4.*m1sq*m2sq;
+  if(num<ZERO) throw KinematicsReconstructionVeto();
+  double k = sqrt( num / (4.*s*orderedJets.begin()->p.vect().mag2()) );
+  // boost the most off-shell
+  LorentzRotation B1 = solveBoost(k, orderedJets.begin()->q, orderedJets.begin()->p);
+  deepTransform(orderedJets.begin()->parent,B1);
+  // boost everything else 
+  // first to rescale
+  LorentzRotation B2 = solveBoost(k, psum, psum);
+  // and then to rest frame of new system
+  Lorentz5Momentum pnew = B2*psum;
+  pnew.rescaleMass();
+  B2.transform(pnew.findBoostToCM());
+  // applt transform
+  JetKinVect newJets;
+  jit = orderedJets.begin(); ++jit;
+  for(;jit!=orderedJets.end();++jit) {
+    JetKinStruct tempJetKin;      
+    deepTransform(jit->parent,B2);
+    tempJetKin.parent = jit->parent;
+    tempJetKin.p = jit->p; 
+    tempJetKin.p.transform(B2);
+    tempJetKin.q = jit->q; 
+    tempJetKin.q.transform(B2);
+    newJets.push_back(tempJetKin);
+  }
+  // final reconstruction 
+  if(newJets.size()==2 || !recursive ) {
+    // rescaling factor
+    double k = solveKfactor(psum.m(), newJets);
+    // rescale jets in the new CMF
+    for(JetKinVect::iterator it = newJets.begin(); it != newJets.end(); ++it) {
+      LorentzRotation Trafo = solveBoost(k, it->q, it->p);
+      deepTransform(it->parent,Trafo);
+    }
+  }
+  // recursive
+  else {
+    JetKinSet newOrderedJets(newJets.begin(),newJets.end());
+    reconstructFinalFinalOffShell(newOrderedJets,psum.m2(),recursive);
+  }
+  // finally boost back from new CMF
+  LorentzRotation back(-pnew.findBoostToCM());
+  for(JetKinVect::iterator it = newJets.begin(); it != newJets.end(); ++it) {
+     deepTransform(it->parent,back);
+  }
+}
 

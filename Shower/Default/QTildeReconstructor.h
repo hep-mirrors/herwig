@@ -41,9 +41,32 @@ struct JetKinStruct {
 };
 
 /**
+ *  Struct to order the jets in off-shellness
+ */
+struct JetOrdering {
+
+  bool operator() (JetKinStruct j1, JetKinStruct j2) {
+    Energy diff1 = j1.q.m()-j1.p.m();
+    Energy diff2 = j2.q.m()-j2.p.m();
+    if(diff1!=diff2) {
+      return diff1>diff2;
+    }
+    else if( j1.q.e() != j2.q.e() )
+      return j1.q.e()>j2.q.e();
+    else
+      return j1.parent->uniqueId>j2.parent->uniqueId;
+  }
+};
+
+/**
  * typedef for a vector of JetKinStruct
  */  
 typedef vector<JetKinStruct> JetKinVect;
+
+/**
+ *  typedef for a set of JetKinStruct ordered by off-shellness
+ */
+typedef set<JetKinStruct,JetOrdering> JetKinSet;
 
 /** \ingroup Shower
  *
@@ -77,7 +100,8 @@ public:
   /**
    *  Default constructor
    */
-  QTildeReconstructor() : _reconopt(0), _initialBoost(0), _minQ(MeV) {};
+  QTildeReconstructor() : _reconopt(0), _initialBoost(0), 
+			  _finalStateReconOption(0), _minQ(MeV) {};
 
   /**
    *  Methods to reconstruct the kinematics of a scattering or decay process
@@ -272,6 +296,13 @@ protected:
   //@}
 
   /**
+   *   Recursively treat the most off-shell paricle seperately
+   * for final-final reconstruction
+   */
+  void reconstructFinalFinalOffShell(JetKinSet orderedJets, Energy2 s,
+				     bool recursive) const;
+
+  /**
    *  Various methods for the Lorentz transforms needed to do the 
    *  rescalings
    */
@@ -395,7 +426,7 @@ protected:
    * @param jets The jets
    */
   Energy momConsEq(const double & k, const Energy & root_s,
-			  const JetKinVect & jets) const;
+		   const JetKinVect & jets) const;
   //@}
 
   /**
@@ -476,6 +507,11 @@ private:
    *  Option for the boost for initial-initial reconstruction
    */
   unsigned int _initialBoost;
+
+  /**
+   * Option for the reconstruction of final stateb systems
+   */
+  unsigned int _finalStateReconOption;
 
   /**
    * Minimum invariant mass for initial-final dipoles to allow the
