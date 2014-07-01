@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-import lighthisto
 import logging
 import sys
 
@@ -7,36 +6,20 @@ if sys.version_info[:3] < (2,4,0):
     print "rivet scripts require Python version >= 2.4.0... exiting"
     sys.exit(1)
 
-import os, copy, re
-from math import sqrt
-
-## Try to load faster but non-standard cElementTree module
-try:
-    import xml.etree.cElementTree as ET
-except ImportError:
-    try:
-        import cElementTree as ET
-    except ImportError:
-        try:
-            import xml.etree.ElementTree as ET
-        except:
-            sys.stderr.write("Can't load the ElementTree XML parser: please install it!\n")
-            sys.exit(1)
-
-
+import os, yoda
 
 # #############################################
 
-def fillAbove(desthisto, sourcehistosbyptmin):
-    for i,b in enumerate(desthisto.getBins()):
-        ## Fill bins with pT-ordered histos (so that 'highest always wins')
-        for ptmin, h in sorted(sourcehistosbyptmin.iteritems()):
-            newb = h.getBin(i)
-            if b.xlow >= float(ptmin) :
-                b.val =  newb.val
-                b.errplus =  newb.errplus
-                b.errminus =  newb.errminus
-                b._focus= newb._focus
+def fillAbove(desthisto, sourcehistosbyq2):
+    q2high=1e100
+    q2low=-1e100
+    for q2,h in  sorted(sourcehistosbyq2.iteritems(),reverse=True) :
+        q2low=q2
+        for i in range(0,h.numBins) :
+            if(h.bins[i].lowEdge  >= q2low and 
+               h.bins[i].lowEdge  <  q2high ) :
+                desthisto.bins[i] += h.bins[i]
+        q2high=q2
 
 def merge(hpath):
     global inhistos
@@ -46,13 +29,14 @@ def merge(hpath):
     except:
         pass
 
-def useOne(hpath, sqrts):
+def useOne(hpath, q2):
     global inhistos
     global outhistos
     try:
-        outhistos[hpath] =  inhistos[hpath][float(sqrts)]
+        outhistos[hpath] =  inhistos[hpath][float(q2)]
     except:
         pass
+
 if __name__ == "__main__":
     import logging
     from optparse import OptionParser, OptionGroup
@@ -66,11 +50,6 @@ if __name__ == "__main__":
     (opts, args) = parser.parse_args()
     logging.basicConfig(level=opts.LOGLEVEL, format="%(message)s")
 
-
-    ## Prefix used in dat file headers
-    headerprefix = "# "
-
-
     ## Check args
     if len(args) < 1:
         logging.error("Must specify at least the name of the files")
@@ -78,14 +57,14 @@ if __name__ == "__main__":
 
 # #######################################
 
-aidafiles=["-e--LowQ2.aida","-e+-LowQ2.aida","-e+-HighQ2.aida"]
+yodafiles=["-e--LowQ2.yoda","-e+-LowQ2.yoda","-e+-HighQ2.yoda"]
 
 ## Get histos
 inhistos = {}
 outhistos={}
 weights = {}
 
-for f in aidafiles:
+for f in yodafiles:
     file = args[0]+f
     if(file.find("Low")> 0) :
         q2=0
@@ -96,39 +75,38 @@ for f in aidafiles:
         logging.error("%s can not be read" % file)
         break
     try:
-        tree = ET.parse(file)
+        aos = yoda.read(file)
     except:
-        logging.error("%s can not be parsed as XML" % file)
+        logging.error("%s can not be parsed as YODA" % file)
         break
-    tree = ET.parse(file)
-    ## Get histos from this AIDA file
-    for dps in tree.findall("dataPointSet"):
-        h = lighthisto.Histo.fromDPS(dps)
-        # di-jet decorrelations
-        # jet shapes
-        if(h.fullPath().find("4129130")>0 ) :
-           if not inhistos.has_key(h.fullPath()):
-               inhistos[h.fullPath()] = {}
-           tmpE = inhistos[h.fullPath()]
+    ## Get histos from this YODA file
+    for aopath, ao in aos.iteritems() :
+        if(aopath.find("4129130")>0 ) :
+           if not inhistos.has_key(aopath):
+               inhistos[aopath] = {}
+           tmpE = inhistos[aopath]
            if not tmpE.has_key(q2):
-               tmpE[q2] = h
+               tmpE[q2] = ao
            else:
                 raise Exception("A set with q2    = %s already exists" % ( q2   ))
-        elif(h.fullPath().find("2919893")>0 ) :
-            outhistos[h.fullPath()] = h
+        elif(aopath.find("2919893")>0 ) :
+            outhistos[aopath] = ao
         else :
-            print '!!!!! DIDNT FIND',h.fullPath()
+            logging.error("Analysis %s is unknown" % aopath)
+            sys.exit(1)
 
 ## Make empty output histos if needed
 for hpath,hsets in inhistos.iteritems():
-    if( hpath.find("4129130")>0) :
-        outhistos[hpath] = copy.deepcopy(hsets.values()[0])
-        ## Empty the bin set for histos which we're going to merge
-        for i,b in enumerate(outhistos[hpath].getBins()):
-            b.val = 0
-            b.errplus = 0
-            b.errminus = 0
-            b._focus= None
+    if( hpath.find("4129130")>0 and (hpath.find("d33")>0 or hpath.find("d34")>0)) :
+        if(type(hsets.values()[0])==yoda.core.Scatter2D) :
+            outhistos[hpath] = yoda.core.Scatter2D(hsets.values()[0].path,hsets.values()[0].title)
+        elif(type(hsets.values()[0])==yoda.core.Profile1D) :
+            outhistos[hpath] = yoda.core.Profile1D(hsets.values()[0].path,hsets.values()[0].title)
+            for i in range(0,hsets.values()[0].numBins) :
+                outhistos[hpath].addBin(hsets.values()[0].bins[i].lowEdge,hsets.values()[0].bins[i].highEdge)
+        else :
+            logging.error("Histogram %s is of unknown type" % hpath)
+            sys.exit(1)
 
 # H1 transverse energy
 useOne("/H1_2000_S4129130/d01-x01-y01","0")
@@ -168,16 +146,7 @@ merge("/H1_2000_S4129130/d33-x01-y01")
 merge("/H1_2000_S4129130/d34-x01-y01")
 
 # Choose output file
-name = args[0]+".aida"
-out = open(name, "w")
-## Write out merged histos
-out.write('<?xml version="1.0" encoding="ISO-8859-1" ?>\n')
-out.write('<!DOCTYPE aida SYSTEM "http://aida.freehep.org/schemas/3.3/aida.dtd">\n')
-out.write('<aida version="3.3">\n')
-out.write('  <implementation version="1.1" package="FreeHEP"/>\n')
-for hpath, h in sorted(outhistos.iteritems()):
-    logging.debug("hpath = %s" % hpath)
-    out.write(h.asAIDA() + "\n\n")
-out.write('</aida>\n')
-
+name = args[0]+".yoda"
+# output the yoda file
+yoda.writeYODA(outhistos,name)
 sys.exit(0)

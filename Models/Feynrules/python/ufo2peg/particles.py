@@ -52,7 +52,7 @@ setup $name $pdg_code $name $mass $width $wcut $ctau $charge $color $spin 0
 
 class ParticleConverter:
     'Convert a FR particle to extract the information ThePEG needs.'
-    def __init__(self,p,parmsubs):
+    def __init__(self,p,parmsubs,modelparameters):
         self.name = p.name
         self.pdg_code = p.pdg_code
         self.spin = p.spin
@@ -60,16 +60,43 @@ class ParticleConverter:
         if self.color == 1:
             self.color = 0
         self.selfconjugate = 0
+
         self.mass = parmsubs[str(p.mass)]
-        self.width = parmsubs[str(p.width)]
-        try:
-            self.mass = self.mass.real
-        except:
-            pass
-        self.mass = abs(self.mass)
+        if type(self.mass) == str:
+            value = modelparameters[self.mass]
+            try:
+                value = value.real
+            except:
+                pass
+            newname = '%s_ABS' % self.mass
+            self.mass = '${%s}' % newname
+            modelparameters[newname] = abs(value)
+        else:
+            try:
+                self.mass = self.mass.real
+            except:
+                pass
+            self.mass = abs(self.mass)
+
         hbarc = 197.3269631e-15 # GeV mm (I hope ;-) )
-        self.ctau = (hbarc / self.width) if self.width != 0 else 0
-        self.wcut = 10 * self.width
+        self.width = parmsubs[str(p.width)]
+        if type(self.width) == str:
+            width = modelparameters[self.width]
+            ctau = (hbarc / width) if width != 0 else 0
+            newname = '%s_CTAU' % self.width
+            self.ctau = '${%s}' % newname
+            modelparameters[newname] = ctau
+
+            wcut = 10 * width
+            newname = '%s_WCUT' % self.width
+            self.wcut = '${%s}' % newname
+            modelparameters[newname] = wcut
+
+            self.width = '${%s}' % self.width
+        else:
+            self.ctau = (hbarc / self.width) if self.width != 0 else 0
+            self.wcut = 10.0 * self.width
+
         self.charge = int(3 * p.charge)
 
     def subs(self):
@@ -77,7 +104,7 @@ class ParticleConverter:
 
 
 
-def thepeg_particles(FR,parameters,modelname):
+def thepeg_particles(FR,parameters,modelname,modelparameters):
     plist = []
     antis = {}
     names = []
@@ -110,7 +137,7 @@ rm /Herwig/Masses/HiggsMass
 rm /Herwig/Widths/HiggsWidth
 """
 )
-        subs = ParticleConverter(p,parameters).subs()
+        subs = ParticleConverter(p,parameters,modelparameters).subs()
         plist.append( particleT.substitute(subs) )
 
         pdg, name = subs['pdg_code'],  subs['name']

@@ -29,7 +29,7 @@ set /Herwig/Cuts/QCDCuts:X2Min 0.01
 ##################################################
 
 # underlying event forward rapidities
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_PAS_FWD_11_003
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1218372
 
 
 ##################################################

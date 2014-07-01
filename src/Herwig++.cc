@@ -31,7 +31,8 @@ void printUsageAndExit();
 void HerwigInit(string infile, string reponame);
 void HerwigRead(string reponame, string runname,
 		const gengetopt_args_info & args_info);
-void HerwigRun(string runname, int seed, string tag, long N, 
+void HerwigRun(string runname, string setupfile,
+	       int seed, string tag, long N, 
 	       bool tics, bool resume, int jobs);
 
 void setSearchPaths(const gengetopt_args_info & args_info);
@@ -96,6 +97,9 @@ int main(int argc, char * argv[]) {
     // run name tag (default given in ggo file)
     string tag = args_info.tag_arg;
 
+    // run modifccation file
+    string setupfile = args_info.setupfile_arg;
+
     // parallel jobs
     int jobs = 1;
 #   ifdef HAVE_UNISTD_H
@@ -139,7 +143,7 @@ int main(int argc, char * argv[]) {
     switch ( status ) {
     case INIT:  HerwigInit( runname, reponame ); break;
     case READ:  HerwigRead( reponame, runname, args_info ); break;
-    case RUN:   HerwigRun( runname, seed, tag, N, tics, resume, jobs );  break;
+    case RUN:   HerwigRun( runname, setupfile , seed, tag, N, tics, resume, jobs );  break;
     default:    printUsageAndExit();
     }
 
@@ -236,7 +240,8 @@ void HerwigRead(string reponame, string runname,
 
 
 
-void HerwigRun(string runname, int seed, string tag, long N, 
+void HerwigRun(string runname, string setupfile,
+	       int seed, string tag, long N, 
 	       bool tics, bool resume, int jobs) {
   PersistentIStream is(runname);
   ThePEG::EGPtr eg;
@@ -250,6 +255,11 @@ void HerwigRun(string runname, int seed, string tag, long N,
 	      << "Check if '" << runname << "' is a valid run file.\n";
     Repository::cleanup();
     exit( EXIT_FAILURE );
+  }
+
+  if ( ! setupfile.empty() ) {
+    string msg = Repository::modifyEventGenerator(*eg, setupfile, cout);
+    if ( ! msg.empty() ) cerr << msg << '\n';
   }
 
   if ( seed > 0 ) eg->setSeed(seed);
