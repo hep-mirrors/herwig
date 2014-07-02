@@ -32,12 +32,12 @@ struct JetKinStruct {
   /**
    *  Momentum of the particle before reconstruction
    */
-  Lorentz5Momentum p;
+  mutable Lorentz5Momentum p;
 
   /**
    *  Momentum of the particle after reconstruction
    */  
-  Lorentz5Momentum q;
+  mutable Lorentz5Momentum q;
 };
 
 /**
