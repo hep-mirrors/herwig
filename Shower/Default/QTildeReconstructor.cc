@@ -120,6 +120,24 @@ unsigned int ACLSIZE(set<HardBranchingPtr>::const_iterator & a) {
   return (*a)->branchingParticle()->colourInfo()->antiColourLines().size();
 }
 
+/**
+ *  Struct to order the jets in off-shellness
+ */
+struct JetOrdering {
+
+  bool operator() (const JetKinStruct & j1, const JetKinStruct & j2) {
+    Energy diff1 = j1.q.m()-j1.p.m();
+    Energy diff2 = j2.q.m()-j2.p.m();
+    if(diff1!=diff2) {
+      return diff1>diff2;
+    }
+    else if( j1.q.e() != j2.q.e() )
+      return j1.q.e()>j2.q.e();
+    else
+      return j1.parent->uniqueId>j2.parent->uniqueId;
+  }
+};
+
 }
 
 void QTildeReconstructor::persistentOutput(PersistentOStream & os) const {
@@ -1585,17 +1603,16 @@ reconstructFinalStateSystem(bool applyBoost,
   // different treatment of most off-shell
   else if ( _finalStateReconOption <= 4 ) {
     // sort the jets by virtuality
-    JetKinSet orderedJets(jetKinematics.begin(),jetKinematics.end());
+    std::sort(jetKinematics.begin(),jetKinematics.end(),JetOrdering());
     // Bryan's procedures from FORTRAN
     if( _finalStateReconOption <=2 ) {
       // loop over the off-shell partons,  _finalStateReconOption==1 only first ==2 all
-      JetKinSet::const_iterator jend = _finalStateReconOption==1 ? orderedJets.begin() : orderedJets.end();
-      if(_finalStateReconOption==1) ++jend;
-      for(JetKinSet::const_iterator jit=orderedJets.begin(); jit!=jend;++jit) {
+      JetKinVect::const_iterator jend = _finalStateReconOption==1 ? jetKinematics.begin()+1 : jetKinematics.end();
+      for(JetKinVect::const_iterator jit=jetKinematics.begin(); jit!=jend;++jit) {
 	// calculate the 4-momentum of the recoiling system
 	Lorentz5Momentum psum;
 	bool done = true;
-	for(JetKinSet::const_iterator it=orderedJets.begin();it!=orderedJets.end();++it) {
+	for(JetKinVect::const_iterator it=jetKinematics.begin();it!=jetKinematics.end();++it) {
 	  if(it==jit) {
 	    done = false;
 	    continue;
@@ -1627,16 +1644,17 @@ reconstructFinalStateSystem(bool applyBoost,
 	deepTransform(jit->parent,B1);
 	// boost everything else to rescale
 	LorentzRotation B2 = solveBoost(k, psum, psum);
-	for(JetKinSet::iterator it=orderedJets.begin();it!=orderedJets.end();++it) {
+	for(JetKinVect::iterator it=jetKinematics.begin();it!=jetKinematics.end();++it) {
 	  if(it==jit) continue;
 	  deepTransform(it->parent,B2);
-	  it->p *= B2; it->q *= B2;
+	  it->p *= B2;
+	  it->q *= B2;
 	}
       }
     }
     // Peter's C++ procedures
     else {
-      reconstructFinalFinalOffShell(orderedJets,pcm.m2(), _finalStateReconOption == 4);
+      reconstructFinalFinalOffShell(jetKinematics,pcm.m2(), _finalStateReconOption == 4);
     }
   }
   else
@@ -2417,10 +2435,10 @@ void QTildeReconstructor::deepTransform(PPtr particle,
   }
 }
 
-void QTildeReconstructor::reconstructFinalFinalOffShell(JetKinSet orderedJets,
+void QTildeReconstructor::reconstructFinalFinalOffShell(JetKinVect orderedJets,
 							Energy2 s,
 							bool recursive) const {
-  JetKinSet::iterator jit;
+  JetKinVect::iterator jit;
   jit = orderedJets.begin(); ++jit;
   // 4-momentum of recoiling system
   Lorentz5Momentum psum;
@@ -2441,19 +2459,14 @@ void QTildeReconstructor::reconstructFinalFinalOffShell(JetKinSet orderedJets,
   Lorentz5Momentum pnew = B2*psum;
   pnew.rescaleMass();
   B2.transform(pnew.findBoostToCM());
-  // apply transform
-  JetKinVect newJets;
+  // apply transform (calling routine ensures at least 3 elements)
   jit = orderedJets.begin(); ++jit;
   for(;jit!=orderedJets.end();++jit) {
-    JetKinStruct tempJetKin;      
     deepTransform(jit->parent,B2);
-    tempJetKin.parent = jit->parent;
-    tempJetKin.p = jit->p; 
-    tempJetKin.p.transform(B2);
-    tempJetKin.q = jit->q; 
-    tempJetKin.q.transform(B2);
-    newJets.push_back(tempJetKin);
+    jit->p *= B2; 
+    jit->q *= B2;
   }
+  JetKinVect newJets(orderedJets.begin()+1,orderedJets.end());
   // final reconstruction 
   if(newJets.size()==2 || !recursive ) {
     // rescaling factor
@@ -2466,8 +2479,8 @@ void QTildeReconstructor::reconstructFinalFinalOffShell(JetKinSet orderedJets,
   }
   // recursive
   else {
-    JetKinSet newOrderedJets(newJets.begin(),newJets.end());
-    reconstructFinalFinalOffShell(newOrderedJets,psum.m2(),recursive);
+    std::sort(newJets.begin(),newJets.end(),JetOrdering());
+    reconstructFinalFinalOffShell(newJets,psum.m2(),recursive);
   }
   // finally boost back from new CMF
   LorentzRotation back(-pnew.findBoostToCM());

@@ -32,41 +32,18 @@ struct JetKinStruct {
   /**
    *  Momentum of the particle before reconstruction
    */
-  mutable Lorentz5Momentum p;
+  Lorentz5Momentum p;
 
   /**
    *  Momentum of the particle after reconstruction
    */  
-  mutable Lorentz5Momentum q;
-};
-
-/**
- *  Struct to order the jets in off-shellness
- */
-struct JetOrdering {
-
-  bool operator() (JetKinStruct j1, JetKinStruct j2) {
-    Energy diff1 = j1.q.m()-j1.p.m();
-    Energy diff2 = j2.q.m()-j2.p.m();
-    if(diff1!=diff2) {
-      return diff1>diff2;
-    }
-    else if( j1.q.e() != j2.q.e() )
-      return j1.q.e()>j2.q.e();
-    else
-      return j1.parent->uniqueId>j2.parent->uniqueId;
-  }
+  Lorentz5Momentum q;
 };
 
 /**
  * typedef for a vector of JetKinStruct
  */  
 typedef vector<JetKinStruct> JetKinVect;
-
-/**
- *  typedef for a set of JetKinStruct ordered by off-shellness
- */
-typedef set<JetKinStruct,JetOrdering> JetKinSet;
 
 /** \ingroup Shower
  *
@@ -299,7 +276,7 @@ protected:
    *   Recursively treat the most off-shell paricle seperately
    * for final-final reconstruction
    */
-  void reconstructFinalFinalOffShell(JetKinSet orderedJets, Energy2 s,
+  void reconstructFinalFinalOffShell(JetKinVect orderedJets, Energy2 s,
 				     bool recursive) const;
 
   /**
