@@ -23,6 +23,8 @@
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Command.h"
 
+#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
+
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Utilities/StringUtils.h"
@@ -34,7 +36,7 @@
 
 using namespace Herwig;
 
-GoSamAmplitude::GoSamAmplitude() {theCodeExists=false;isitDR=false;
+GoSamAmplitude::GoSamAmplitude() {theCodeExists=false;isitDR=false;thePrintParameter=false;theSetMuToMuR=false;
 }
 
 GoSamAmplitude::~GoSamAmplitude() {
@@ -74,6 +76,17 @@ bool GoSamAmplitude::buildGoSam() {
 	}
 	theCodeExists=true;
 	return 1;
+}
+
+
+Energy2 GoSamAmplitude::mu2() const { 
+  if (theSetMuToMuR) {
+    Energy2 rscale = MatchboxFactory::currentFactory()->scaleChoice()->renormalizationScale()*sqr(MatchboxFactory::currentFactory()->renormalizationScaleFactor());
+//     cout << "GoSamAmplitude::mu2(): sqrt(rscale/GeV/GeV) = " << sqrt(rscale/GeV/GeV) << endl;
+    return rscale;
+  }
+//   cout << "GoSamAmplitude::mu2(): sqrt(lastSHat()/GeV/GeV) = " << sqrt(lastSHat()/GeV/GeV) << endl;
+  return lastSHat(); 
 }
 
 void GoSamAmplitude::startOLP(const string& contract, int& status) {
@@ -418,6 +431,7 @@ void GoSamAmplitude::evalSubProcess() const {
 	fillOLPMomenta(lastXComb().meMomenta());
 
 	double scale = sqrt(mu2() / GeV2);
+//         cout << "GoSamAmplitude::evalSubProcess(): sqrt(mu2()/GeV/GeV) = " << sqrt(mu2()/GeV/GeV) << endl;
 
 	double out[7] = { };
 	if ( idpair.size() == 0 ) {
@@ -503,11 +517,11 @@ void GoSamAmplitude::doinitrun() {
 
 
 void GoSamAmplitude::persistentOutput(PersistentOStream & os) const {
-	os << idpair << theCodeExists << massiveParticles << thePrintParameter << gosamPathInterface << gosamSetupInFilenameInterface;
+	os << idpair << theCodeExists << massiveParticles << thePrintParameter << gosamPathInterface << gosamSetupInFilenameInterface << theSetMuToMuR;
 }
 
 void GoSamAmplitude::persistentInput(PersistentIStream & is, int) {
-	is >> idpair >> theCodeExists >> massiveParticles >> thePrintParameter >> gosamPathInterface >> gosamSetupInFilenameInterface;
+	is >> idpair >> theCodeExists >> massiveParticles >> thePrintParameter >> gosamPathInterface >> gosamSetupInFilenameInterface >> theSetMuToMuR;
 }
 
 // *** Attention *** The following static variable is needed for the type
@@ -592,6 +606,23 @@ void GoSamAmplitude::Init() {
           true);
   static SwitchOption interfaceFormOptOff
          (interfaceFormOpt,
+          "Off",
+          "Off",
+          false);
+
+  static Switch<GoSamAmplitude,bool> interfaceSetMuToMuR
+         ("SetMuToMuR",
+          "Switch On to set the value of the dimensional regularization parameter mu2 for this OLP"
+	  "to the value of the renormalization scale muR2. Default is Off. The restoration for the "
+	  "full renormalization scale dependence in the DipoleIOperator isn't needed in this case.",
+          &GoSamAmplitude::theSetMuToMuR, false, false, false);
+  static SwitchOption interfaceSetMuToMuROn
+         (interfaceSetMuToMuR,
+          "On",
+          "On",
+          true);
+  static SwitchOption interfaceSetMuToMuROff
+         (interfaceSetMuToMuR,
           "Off",
           "Off",
           false);

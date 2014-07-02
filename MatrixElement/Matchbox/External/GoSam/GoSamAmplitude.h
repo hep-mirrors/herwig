@@ -15,6 +15,8 @@
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxOLPME.h"
 #include "ThePEG/Utilities/DynamicLoader.h"
 
+// #include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
+
 
 namespace Herwig {
 
@@ -105,7 +107,16 @@ public:
 
   //virtual void getids() const ;
   
-  virtual Energy2 mu2() const { return lastSHat(); }
+//   virtual Energy2 mu2() const { return lastSHat(); }
+
+//   virtual Energy2 mu2() const { 
+//     Energy2 rscale = MatchboxFactory::currentFactory()->scaleChoice()->renormalizationScale()*sqr(MatchboxFactory::currentFactory()->renormalizationScaleFactor());
+//     cout << "GoSamAmplitude(.h)::Energy2 mu2(): sqrt(rscale/GeV/GeV) = " << sqrt(rscale/GeV/GeV) << endl;
+//     cout << "GoSamAmplitude(.h)::Energy2 mu2(): sqrt(lastSHat()/GeV/GeV) = " << sqrt(lastSHat()/GeV/GeV) << endl;
+//     return lastSHat(); 
+//   }
+
+  virtual Energy2 mu2() const;
 
   /**
    * Start the one loop provider, if appropriate. This default
@@ -268,6 +279,11 @@ private:
    * Method to create the setup.in file for GoSam
    */
   void setupGoSamIn(string setupGoSamInFile);
+
+  /**
+   * Switch to print parameters
+   */
+  bool theSetMuToMuR;
 
 }; // end "class GoSamAmplitude: public MatchboxOLPME"
 
