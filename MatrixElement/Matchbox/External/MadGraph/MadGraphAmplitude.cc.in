@@ -110,8 +110,7 @@ void MadGraphAmplitude::initProcess(const cPDVector& proc) {
 bool MadGraphAmplitude::initializeExternal() {
 
   loadProcessMap();
-  if ( !processmap().empty() )
-    return true;
+
 
   string para= "MG-Parameter.dat";
   ofstream params(para.c_str());
@@ -133,12 +132,19 @@ bool MadGraphAmplitude::initializeExternal() {
   assert(theMG5Path != "");
   string cmd = "python @prefix@/bin/mg2Matchbox.py ";
   // TODO move to boost::system
+  
+  if ( !processmap().empty() ){
+    //set the parameters
+    cmd +=  theProcessPath;
+    std::system(cmd.c_str());
+    return true;
+  }
   char cwd[1024];
   if ( !getcwd(cwd,sizeof(cwd)) )
     throw Exception() << "failed to determine current working directory\n"
 		      << Exception::abortnow;
-  cmd += theMG5Path + "/bin " + cwd + "/" + theProcessPath
-    + " > " + cwd + "/" + theProcessPath + "/MG.log 2>&1";
+  cmd += theMG5Path + "/bin " +  theProcessPath
+    + " > " +  theProcessPath + "/MG.log 2>&1";
   generator()->log() << "\n\nCompiling MadGraph amplitudes. This may take some time -- please be patient.\n"
 		     << "In case of problems see " << theProcessPath << "/MG.log for details.\n\n"
 		     << flush;

@@ -101,6 +101,7 @@ public:
    * pt selected for the next splitting.
    */
   Energy generate(const DipoleSplittingInfo&,
+		  Energy optHardPt = ZERO,
 		  Energy optCutoff = ZERO);
 
   /**
@@ -110,6 +111,7 @@ public:
    * from a wrapping generator.
    */
   Energy generateWrapped(DipoleSplittingInfo&,
+			 Energy optHardPt = ZERO,
 			 Energy optCutoff = ZERO);
 
   /**
@@ -141,7 +143,8 @@ protected:
   /**
    * Update parameters given a splitting.
    */
-  void fixParameters(const DipoleSplittingInfo&);
+  void fixParameters(const DipoleSplittingInfo&,
+		     Energy optHardPt = ZERO);
 
   /**
    * With the parameters previuosly supplied
@@ -201,6 +204,12 @@ public:
    * to generate a splitting.
    */
   unsigned long maxtry() const { return splittingKernel()->maxtry(); }
+
+  /**
+   * Return the number of accepted points after which the grid should
+   * be frozen
+   */
+  unsigned long freezeGrid() const { return splittingKernel()->freezeGrid(); }
 
   /**
    * Return true, if this splitting generator

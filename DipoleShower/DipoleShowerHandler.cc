@@ -62,7 +62,8 @@ IBPtr DipoleShowerHandler::fullclone() const {
   return new_ptr(*this);
 }
 
-tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr, Energy optCutoff) {
+tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr,
+				    Energy optHardPt, Energy optCutoff) {
 
   useMe();
 
@@ -139,7 +140,7 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr, Energy optCutoff) {
 
       if ( !firstMCatNLOEmission ) {
 
-	doCascade(nEmitted,optCutoff);
+	doCascade(nEmitted,optHardPt,optCutoff);
 
 	if ( discardNoEmissions ) {
 	  if ( !didRadiate )
@@ -152,7 +153,7 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr, Energy optCutoff) {
       } else {
 
 	if ( nEmissions == 1 )
-	  doCascade(nEmitted,optCutoff);
+	  doCascade(nEmitted,optHardPt,optCutoff);
 
       }
 
@@ -318,22 +319,24 @@ void DipoleShowerHandler::hardScales() {
 Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
 				      const Dipole& dip,
 				      pair<bool,bool> conf,
+				      Energy optHardPt,
 				      Energy optCutoff) {
   return
     getWinner(winner,dip.index(conf),
 	      dip.emitterX(conf),dip.spectatorX(conf),
 	      conf,dip.emitter(conf),dip.spectator(conf),
-	      dip.emitterScale(conf),optCutoff);
+	      dip.emitterScale(conf),optHardPt,optCutoff);
 }
 
 Energy DipoleShowerHandler::getWinner(SubleadingSplittingInfo& winner,
+				      Energy optHardPt,
 				      Energy optCutoff) {
   return
     getWinner(winner,winner.index(),
 	      winner.emitterX(),winner.spectatorX(),
 	      winner.configuration(),
 	      winner.emitter(),winner.spectator(),
-	      winner.startScale(),optCutoff);
+	      winner.startScale(),optHardPt,optCutoff);
 }
 
 Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
@@ -342,6 +345,7 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
 				      pair<bool,bool> conf,
 				      tPPtr emitter, tPPtr spectator,
 				      Energy startScale,
+				      Energy optHardPt,
 				      Energy optCutoff) {
 
   if ( !index.initialStateEmitter() &&
@@ -428,7 +432,7 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
       candidate.hardPt(maxPossible);
     }
 
-    gen->second->generate(candidate,optCutoff);
+    gen->second->generate(candidate,optHardPt,optCutoff);
     Energy nextScale = evolutionOrdering()->evolutionScale(gen->second->lastSplitting(),*(gen->second->splittingKernel()));
 
     if ( isMCatNLOSEvent && nextScale > ircutoff ) {
@@ -441,7 +445,7 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
 	    candidate.continuesEvolving();
 	    Energy nextHardScale = evolutionOrdering()->maxPt(nextScale,candidate,*(gen->second->splittingKernel()));
 	    candidate.hardPt(nextHardScale);
-	    gen->second->generate(candidate,optCutoff);
+	    gen->second->generate(candidate,optHardPt,optCutoff);
 	    nextScale = evolutionOrdering()->evolutionScale(gen->second->lastSplitting(),*(gen->second->splittingKernel()));
 	    if ( nextScale <= ircutoff || candidate.stoppedEvolving() )
 	      break;
@@ -474,6 +478,7 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
 }
 
 void DipoleShowerHandler::doCascade(unsigned int& emDone,
+				    Energy optHardPt,
 				    Energy optCutoff) {
 
   if ( nEmissions )
@@ -499,7 +504,7 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
     for ( list<Dipole>::iterator dip = eventRecord().currentChain().dipoles().begin();
 	  dip != eventRecord().currentChain().dipoles().end(); ++dip ) {
       
-      nextLeftScale = getWinner(dipoleWinner,*dip,make_pair(true,false),optCutoff);
+      nextLeftScale = getWinner(dipoleWinner,*dip,make_pair(true,false),optHardPt,optCutoff);
 
       if ( nextLeftScale > winnerScale ) {
 	winnerScale = nextLeftScale;
@@ -507,7 +512,7 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
 	winnerDip = dip;
       }
 
-      nextRightScale = getWinner(dipoleWinner,*dip,make_pair(false,true),optCutoff);
+      nextRightScale = getWinner(dipoleWinner,*dip,make_pair(false,true),optHardPt,optCutoff);
 
       if ( nextRightScale > winnerScale ) {
 	winnerScale = nextRightScale;

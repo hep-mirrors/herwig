@@ -50,7 +50,7 @@ namespace exsample {
 
   template<class Function, class Random>
   bool exponential_generator<Function,Random>::split () {
-    if (adaption_info_.freeze_grid == accepts_)
+    if (adaption_info_.freeze_grid <= accepts_)
       return false;
     if (compensating_)
       return false;

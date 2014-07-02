@@ -82,6 +82,7 @@ void DipoleSplittingGenerator::prepare(const DipoleSplittingInfo& sp) {
 
   theExponentialGenerator->sampling_parameters().maxtry = maxtry();
   theExponentialGenerator->sampling_parameters().presampling_points = presamplingPoints();
+  theExponentialGenerator->sampling_parameters().freeze_grid = freezeGrid();
 
   theExponentialGenerator->docompensate(theDoCompensate);
   theExponentialGenerator->function(this);
@@ -89,7 +90,8 @@ void DipoleSplittingGenerator::prepare(const DipoleSplittingInfo& sp) {
 
 }
 
-void DipoleSplittingGenerator::fixParameters(const DipoleSplittingInfo& sp) {
+void DipoleSplittingGenerator::fixParameters(const DipoleSplittingInfo& sp,
+					     Energy optHardPt) {
 
   assert(generator());
 
@@ -103,7 +105,9 @@ void DipoleSplittingGenerator::fixParameters(const DipoleSplittingInfo& sp) {
 
   generatedSplitting.hardPt(sp.hardPt());
 
-  parameters[0] = splittingKinematics()->ptToRandom(generatedSplitting.hardPt(),
+  parameters[0] = splittingKinematics()->ptToRandom(optHardPt == ZERO ? 
+						    generatedSplitting.hardPt() : 
+						    min(generatedSplitting.hardPt(),optHardPt),
 						    sp.scale(),
 						    sp.emitterX(), sp.spectatorX(),
 						    generatedSplitting.index(),
@@ -420,12 +424,13 @@ void DipoleSplittingGenerator::doGenerate(Energy optCutoff) {
 }
 
 Energy DipoleSplittingGenerator::generate(const DipoleSplittingInfo& split,
+					  Energy optHardPt,
 					  Energy optCutoff) {
 
-  fixParameters(split);
+  fixParameters(split,optHardPt);
 
   if ( wrapping() ) {
-    return theOtherGenerator->generateWrapped(generatedSplitting,optCutoff);
+    return theOtherGenerator->generateWrapped(generatedSplitting,optHardPt,optCutoff);
   }
 
   doGenerate(optCutoff);
@@ -435,6 +440,7 @@ Energy DipoleSplittingGenerator::generate(const DipoleSplittingInfo& split,
 }
 
 Energy DipoleSplittingGenerator::generateWrapped(DipoleSplittingInfo& split,
+						 Energy optHardPt,
 						 Energy optCutoff) {
 
   assert(!wrapping());
@@ -442,7 +448,7 @@ Energy DipoleSplittingGenerator::generateWrapped(DipoleSplittingInfo& split,
   DipoleSplittingInfo backup = generatedSplitting;
   generatedSplitting = split;
 
-  fixParameters(split);
+  fixParameters(split,optHardPt);
 
   try {
     doGenerate(optCutoff);

@@ -71,7 +71,14 @@ bool GoSamAmplitude::buildGoSam() {
 	  generator()->log() << "\n\n>>> compiling GoSam amplitudes. This may take some time, please be patient.\n"
 			     << ">>> see " + gosamSourcePath + "/gosam-build.log for details\n\n" << flush;
 	  string cmd = "cd " + gosamSourcePath + " && sh autogen.sh FCFLAGS=-g --prefix=" + 
-	    gosamInstallPath + " > gosam-build.log 2>&1 && make install >> gosam-build.log 2>&1";
+	    gosamInstallPath + " > gosam-build.log 2>&1";
+	  std::system(cmd.c_str());
+	  if (!gosamBuildScript.empty()) {
+		  cmd = "cd " + gosamSourcePath + " && " + gosamBuildScript + " >> gosam-build.log 2>&1";
+		  std::system(cmd.c_str());
+	  }
+	  std::system(cmd.c_str());
+	  cmd = "cd " + gosamSourcePath + " && make install >> gosam-build.log 2>&1";
 	  std::system(cmd.c_str());
 	}
 	theCodeExists=true;
@@ -375,7 +382,9 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
     // set form's tempdir to the current working directory
     cmd = "sed -i 's/@FORMTEMPDIR@/" + StringUtils::replace(gosamSourcePath, string("/"), string("\\/")) + "/g' " + gosamSetupInFileName;
     std::system(cmd.c_str());
-    cmd = "sed -i 's/@FORMOPT@/" + (theFormOpt ? string(", formopt") : string("")) + "/g' " + gosamSetupInFileName;
+    cmd = "sed -i 's/@FORMOPT@/" + (theFormOpt ? string("") : string(", noformopt")) + "/g' " + gosamSetupInFileName;
+    std::system(cmd.c_str());
+    cmd = "sed -i 's/@REDUCTIONPROGRAMS@/" + (theFormOpt ? string("ninja, golem95") : string("samurai, golem95")) + "/g' " + gosamSetupInFileName;
     std::system(cmd.c_str());
   }
   infile.close();
@@ -517,11 +526,11 @@ void GoSamAmplitude::doinitrun() {
 
 
 void GoSamAmplitude::persistentOutput(PersistentOStream & os) const {
-	os << idpair << theCodeExists << massiveParticles << thePrintParameter << gosamPathInterface << gosamSetupInFilenameInterface << theSetMuToMuR;
+	os << idpair << theCodeExists << massiveParticles << thePrintParameter << gosamPathInterface << gosamSetupInFilenameInterface << gosamBuildScript << theSetMuToMuR;
 }
 
 void GoSamAmplitude::persistentInput(PersistentIStream & is, int) {
-	is >> idpair >> theCodeExists >> massiveParticles >> thePrintParameter >> gosamPathInterface >> gosamSetupInFilenameInterface >> theSetMuToMuR;
+	is >> idpair >> theCodeExists >> massiveParticles >> thePrintParameter >> gosamPathInterface >> gosamSetupInFilenameInterface >> gosamBuildScript >> theSetMuToMuR;
 }
 
 // *** Attention *** The following static variable is needed for the type
@@ -609,6 +618,12 @@ void GoSamAmplitude::Init() {
           "Off",
           "Off",
           false);
+
+  static Parameter<GoSamAmplitude,string> interfaceBuildScript
+       ("BuildScript",
+        "File name of a custom build script, which is called between 'autogen.sh' and 'make install'. It can be used for parallelization.",
+        &GoSamAmplitude::gosamBuildScript, "",
+        false, false);
 
   static Switch<GoSamAmplitude,bool> interfaceSetMuToMuR
          ("SetMuToMuR",

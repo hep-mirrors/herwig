@@ -192,6 +192,12 @@ public:
   unsigned long maxtry() const { return theMaxtry; }
 
   /**
+   * Return the number of accepted points after which the grid should
+   * be frozen
+   */
+  unsigned long freezeGrid() const { return theFreezeGrid; }
+
+  /**
    * Evaluate this splitting kernel for the given
    * dipole splitting.
    */
@@ -314,6 +320,12 @@ private:
    * to generate a splitting.
    */
   unsigned long theMaxtry;
+
+  /**
+   * Return the number of accepted points after which the grid should
+   * be frozen
+   */
+  unsigned long theFreezeGrid;
 
   /**
    * The flavour produced, if this cannot

@@ -195,6 +195,12 @@ private:
   unsigned long theMaxTry;
 
   /**
+   * Return the number of accepted points after which the grid should
+   * be frozen
+   */
+  unsigned long theFreezeGrid;
+
+  /**
    * The last external Born XComb dealt with
    */
   tStdXCombPtr lastIncomingXComb;

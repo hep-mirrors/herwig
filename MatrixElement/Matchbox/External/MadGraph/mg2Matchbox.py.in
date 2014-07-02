@@ -3,7 +3,7 @@
 import os,re,sys,fileinput,random,time,math,glob,functools,errno,shutil
 from multiprocessing import Pool
 
-def replacemachine(fileName, sourceText, replaceText):
+def replacetext(fileName, sourceText, replaceText):
     file = open(fileName, "r") 
     text = file.read() 
     file.close()
@@ -18,6 +18,11 @@ def mkdir_p(path):
         if exc.errno == errno.EEXIST and os.path.isdir(path):
             pass
         else: raise   
+      
+def find(name, path):
+    for root, dirs, files in os.walk(path):
+        if name in files:
+            return os.path.join(root, name)      
  
 def fillprocs():
   fileproc=open("proc.dat","w")
@@ -93,40 +98,36 @@ def fillprocs():
   fileprocessmap.write(processmap)
   fileprocessmap.close()
 
-def replacefromto(xfile, xfrom,xto,repltext):
-    file = open(xfile, "r") 
-    text=""
-    replace=False
-    for line in file:
-      if not replace:
-	text+=line
-      if xfrom in line:
-	replace=True
-	text+=repltext
-      if replace and (xto in line):
-	replace=False
-    file.close() 
-    file = open(xfile, "w")
-    file.write(text)
-    file.close() 
-  
+
 
   
   
   
 file = open("@prefix@/share/Herwig++/MadGraphInterface/param_card.dat.in", "r") 
-text = file.read() 
+paramcard = file.read() 
 file.close()
 file = open("param_card.dat", "w")
 params=open("MG-Parameter.dat", "r")
 for line in params:
   a=line.split()
-  #print a[0],"-->",a[1]
-  text=text.replace(a[0],a[1])
+  paramcard=paramcard.replace(a[0],a[1])
 params.close()
-file.write(text)
+file.write(paramcard)
 file.close()   
-pwdxx=os.getcwd() 
+pwd=os.getcwd() 
+if "SubProcesses" in os.listdir(pwd):
+  os.unlink(pwd+"/SubProcesses")
+if "Cards" in os.listdir(pwd):
+  os.unlink(pwd+"/Cards")
+  
+
+  
+if  len(sys.argv)<3:
+  os.system("ln -s "+sys.argv[1]+"/MG5/SubProcesses "+pwd )
+  os.system("ln -s "+sys.argv[1]+"/MG5/Cards "+pwd )
+  os.system("cp "+find("ident_card.dat",sys.argv[1])+" "+pwd )
+  exit()
+
 
 
 
@@ -162,44 +163,42 @@ for line in procs:
       Virtlist+=[line.split("@")[1].replace("\n","")]
     else:
       Bornlist+=[line.split("@")[1].replace("\n","")]
-TXTlist=[["","setpara('param_card.dat')"],
+routines=[["","setpara('param_card.dat')"],
 	 ["","BORN(momenta,hel)"],
 	 ["","SLOOPMATRIX(momenta,virt)"],
 	 ["","GET_JAMP(color,Jamp)"],
 	 ["","GET_NCOL(color)"],
 	 ["","GET_NCOLOR(i,j,color)"]]
-for txt in TXTlist:
+for routine in routines:
   for i in Bornlist + list(set(Virtlist) - set(Bornlist)):
-    if txt[1]=="Virt(amp)" or txt[1]=="SLOOPMATRIX(momenta,virt)" and i not in  Virtlist:
+    if routine[1]=="Virt(amp)" or routine[1]=="SLOOPMATRIX(momenta,virt)" and i not in  Virtlist:
       continue
-   # if txt[1]=="BORN(momenta,hel)" and i not in  Bornlist:
-   #   continue
-    if txt[0]=="":
-       txt[0]+="         IF (proc .EQ. "+i+") THEN\n            CALL "
-       if "setpara" not in txt[1] :   
-	  txt[0]+=   "P"+i+"_"
-       txt[0]+=txt[1]+"\n"
+    if routine[0]=="":
+       routine[0]+="         IF (proc .EQ. "+i+") THEN\n            CALL "
+       if "setpara" not in routine[1] :   
+	  routine[0]+=   "P"+i+"_"
+       routine[0]+=routine[1]+"\n"
     else:
-       txt[0]+="         ELSE IF (proc .EQ. "+i+") THEN\n"\
+       routine[0]+="         ELSE IF (proc .EQ. "+i+") THEN\n"\
                "            CALL "
-       if "setpara" not in txt[1] :   
-	  txt[0]+=   "P"+i+"_"
-       txt[0]+=txt[1]+"\n"
-  if txt[0]!="":	     
-    txt[0]+="         ELSE\n"
-    txt[0]+="             WRITE(*,*) '##W02A WARNING No id found '\n"
-    txt[0]+="         ENDIF   \n"
+       if "setpara" not in routine[1] :   
+	  routine[0]+=   "P"+i+"_"
+       routine[0]+=routine[1]+"\n"
+  if routine[0]!="":	     
+    routine[0]+="         ELSE\n"
+    routine[0]+="             WRITE(*,*) '##W02A WARNING No id found '\n"
+    routine[0]+="         ENDIF   \n"
 
 shutil.copyfile("@prefix@/share/Herwig++/MadGraphInterface/InterfaceMadGraph.f.in", "InterfaceMadGraph.f")
-replacemachine("InterfaceMadGraph.f","MG_InitProctxt", TXTlist[0][0])
-replacemachine("InterfaceMadGraph.f","MG_CalculateBORNtxt",TXTlist[1][0])
-replacemachine("InterfaceMadGraph.f","MG_CalculateVIRTtxt",TXTlist[2][0])
-replacemachine("InterfaceMadGraph.f","MG_Jamptxt",     TXTlist[3][0])
-replacemachine("InterfaceMadGraph.f","MG_NColtxt",     TXTlist[4][0])
-replacemachine("InterfaceMadGraph.f","MG_ColourMattxt",TXTlist[5][0])
+replacetext("InterfaceMadGraph.f","MG_InitProctxt", routines[0][0])
+replacetext("InterfaceMadGraph.f","MG_CalculateBORNtxt",routines[1][0])
+replacetext("InterfaceMadGraph.f","MG_CalculateVIRTtxt",routines[2][0])
+replacetext("InterfaceMadGraph.f","MG_Jamptxt",     routines[3][0])
+replacetext("InterfaceMadGraph.f","MG_NColtxt",     routines[4][0])
+replacetext("InterfaceMadGraph.f","MG_ColourMattxt",routines[5][0])
 
 MG_vxxxxxtxt=""
-if TXTlist[2][0]!="":
+if routines[2][0]!="":
   MG_vxxxxxtxt="""       subroutine  MG_vxxxxx(p, n,inc,VC)
      $   bind(c, name='MG_vxxxxx')
          IMPLICIT NONE
@@ -309,7 +308,7 @@ else:
          VC(6)= real(VCtmp(3))
          VC(7)=aimag(VCtmp(3))  
        END"""
-replacemachine("InterfaceMadGraph.f","MG_vxxxxxtxt",MG_vxxxxxtxt)
+replacetext("InterfaceMadGraph.f","MG_vxxxxxtxt",MG_vxxxxxtxt)
 
 
 make=" "
@@ -325,9 +324,7 @@ coefdir=""
 for i in files1+files2:
   if "nexternal.inc" in i:
    coefdir+=" -I"+i.replace("nexternal.inc"," ")
-  #if "coupl.inc" in i:
-   #INCLUDE=i.replace("coupl.inc"," ")
-   #coefdir+=" -I"+INCLUDE.replace("coupl.inc"," ")   
+
 
 file=open("makefile","w")
 file.write("include MG5/Source/make_opts\n")
@@ -344,20 +341,8 @@ file.close()
 
 os.system("make")
 
-os.system("ln -s MadGraphAmplitudes/MG5/SubProcesses ../")
-os.system("ln -s MadGraphAmplitudes/MG5/Cards ../")
-os.system("cp $(find -name ident_card.dat) ../")
-#os.system("cp $(find -name MadLoopParams.dat) ../")
-#os.system("cp $(find -name ColorNumFactors.dat) ../")
-#os.system("cp $(find -name ColorDenomFactors.dat) ../")
-#os.system("cp $(find -name HelConfigs.dat) ../")
-#ColorNumFactors.dat
-#ColorDenomFactors.dat
-#HelConfigs.dat
-
-#replacefromto(sys.argv[2]+"/MGout/src/Parameters_sm.cc", "void Parameters_sm::setIndependentParameters(SLHAReader& slha)","void Parameters_sm::setIndependentCouplings()",parameterdat)
-#replacemachine(sys.argv[2]+"/MGout/src/read_slha.cc","cout << \"Opened slha fil", "//cout << \"Opened slha fil")
-
-#os.system("make")
-#os.chdir(pwdxx)
-#os.system("cp param_card.dat "+sys.argv[2]+"/MGout/Cards/")
+os.system("ln -s "+sys.argv[2]+"/MG5/SubProcesses "+pwd )
+os.system("ln -s "+sys.argv[2]+"/MG5/Cards "+pwd )
+os.system("cp "+find("ident_card.dat",sys.argv[2])+" "+pwd )
+os.system("cp "+find("MadLoopParams.dat",sys.argv[2])+" "+pwd )
+os.chdir(pwd)

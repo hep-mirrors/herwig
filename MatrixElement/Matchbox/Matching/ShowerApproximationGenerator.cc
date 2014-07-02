@@ -32,7 +32,8 @@
 using namespace Herwig;
 
 ShowerApproximationGenerator::ShowerApproximationGenerator() 
-  : thePresamplingPoints(50000), theMaxTry(100000), theDoCompensate(false) {}
+  : thePresamplingPoints(50000), theMaxTry(100000), theFreezeGrid(500000),
+    theDoCompensate(false) {}
 
 ShowerApproximationGenerator::~ShowerApproximationGenerator() {}
 
@@ -225,6 +226,7 @@ handle(EventHandler & eh, const tPVector &,
       kernel->showerApproximation(theShowerApproximation);
       kernel->presamplingPoints(thePresamplingPoints);
       kernel->maxtry(theMaxTry);
+      kernel->freezeGrid(theFreezeGrid);
       kernel->showerApproximationGenerator(this);
       kernel->doCompensate(theDoCompensate);
       if ( kernel->dipole()->bornEmitter() > 1 &&
@@ -344,7 +346,7 @@ IBPtr ShowerApproximationGenerator::fullclone() const {
 
 void ShowerApproximationGenerator::persistentOutput(PersistentOStream & os) const {
   os << theShowerApproximation << thePhasespace << theFactory 
-     << theKernelMap << thePresamplingPoints << theMaxTry 
+     << theKernelMap << thePresamplingPoints << theMaxTry << theFreezeGrid
      << lastIncomingXComb << theLastBornME << ounit(theLastMomenta,GeV) 
      << ounit(theLastPresamplingMomenta,GeV) << theLastRandomNumbers
      << theLastBornXComb << theLastPartons << theDoCompensate;
@@ -352,7 +354,7 @@ void ShowerApproximationGenerator::persistentOutput(PersistentOStream & os) cons
 
 void ShowerApproximationGenerator::persistentInput(PersistentIStream & is, int) {
   is >> theShowerApproximation >> thePhasespace >> theFactory 
-     >> theKernelMap >> thePresamplingPoints >> theMaxTry 
+     >> theKernelMap >> thePresamplingPoints >> theMaxTry >> theFreezeGrid
      >> lastIncomingXComb >> theLastBornME >> iunit(theLastMomenta,GeV) 
      >> iunit(theLastPresamplingMomenta,GeV) >> theLastRandomNumbers
      >> theLastBornXComb >> theLastPartons >> theDoCompensate;
@@ -401,6 +403,12 @@ void ShowerApproximationGenerator::Init() {
     ("MaxTry",
      "Set the number of maximum attempts.",
      &ShowerApproximationGenerator::theMaxTry, 100000, 1, 0,
+     false, false, Interface::lowerlim);
+
+  static Parameter<ShowerApproximationGenerator,unsigned long> interfaceFreezeGrid
+    ("FreezeGrid",
+     "",
+     &ShowerApproximationGenerator::theFreezeGrid, 500000, 1, 0,
      false, false, Interface::lowerlim);
 
   static Switch<ShowerApproximationGenerator,bool> interfaceDoCompensate

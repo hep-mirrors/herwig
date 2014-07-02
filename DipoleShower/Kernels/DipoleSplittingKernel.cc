@@ -25,6 +25,7 @@ using namespace Herwig;
 DipoleSplittingKernel::DipoleSplittingKernel() 
   : HandlerBase(), theScreeningScale(0.0*GeV), 
     thePresamplingPoints(50000), theMaxtry(100000),
+    theFreezeGrid(500000),
     theStrictLargeN(false), 
     theFactorizationScaleFactor(1.0),
     theRenormalizationScaleFactor(1.0),
@@ -40,7 +41,7 @@ DipoleSplittingKernel::~DipoleSplittingKernel() {}
 
 void DipoleSplittingKernel::persistentOutput(PersistentOStream & os) const {
   os << theAlphaS << ounit(theScreeningScale,GeV) << theSplittingKinematics << thePDFRatio
-     << thePresamplingPoints << theMaxtry
+     << thePresamplingPoints << theMaxtry << theFreezeGrid
      << theFlavour << theMCCheck << theStrictLargeN
      << theFactorizationScaleFactor
      << theRenormalizationScaleFactor
@@ -50,7 +51,7 @@ void DipoleSplittingKernel::persistentOutput(PersistentOStream & os) const {
 
 void DipoleSplittingKernel::persistentInput(PersistentIStream & is, int) {
   is >> theAlphaS >> iunit(theScreeningScale,GeV) >> theSplittingKinematics >> thePDFRatio
-     >> thePresamplingPoints >> theMaxtry
+     >> thePresamplingPoints >> theMaxtry >> theFreezeGrid
      >> theFlavour >> theMCCheck >> theStrictLargeN
      >> theFactorizationScaleFactor
      >> theRenormalizationScaleFactor
@@ -141,6 +142,12 @@ void DipoleSplittingKernel::Init() {
     ("Maxtry",
      "The maximum number of attempts to generate a splitting.",
      &DipoleSplittingKernel::theMaxtry, 10000, 1, 0,
+     false, false, Interface::lowerlim);
+
+  static Parameter<DipoleSplittingKernel,unsigned long> interfaceFreezeGrid
+    ("FreezeGrid",
+     "",
+     &DipoleSplittingKernel::theFreezeGrid, 500000, 1, 0,
      false, false, Interface::lowerlim);
 
   static Reference<DipoleSplittingKernel,ParticleData> interfaceFlavour
