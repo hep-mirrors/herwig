@@ -155,7 +155,21 @@ void CellGridSampler2::adapt() {
 }
 
 void CellGridSampler2::initialize(bool progress) {
+   size_t tmp= theMonacoDimensions.size();
+   map<int,double>tmpMD;
+   for(map<int,double>::iterator it=theMonacoDimensions.begin(); it!=theMonacoDimensions.end();it++){
+     if (it->first<0){
+       tmpMD.insert(make_pair(Herwig::BinSampler::dimension()+it->first,1.));      
+     }else{
+       assert(tmpMD.find(it->first)==tmpMD.end());
+       tmpMD.insert(make_pair(it->first,1.));  
+     }
+   }
 
+   theMonacoDimensions=tmpMD;
+   
+   assert(tmp== theMonacoDimensions.size());
+   
   bool haveCellGridGrid = false;
   list<XML::Element>::iterator gitCG = sampler()->grids().children().begin();
   for ( ; gitCG != sampler()->grids().children().end(); ++gitCG ) {
