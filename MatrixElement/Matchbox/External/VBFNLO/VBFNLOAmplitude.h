@@ -195,6 +195,11 @@ private:
    */
   mutable vector<double> spinColourCorrelatorResults;
 
+  /**
+   * Switch for random helicity summation 
+   */
+  bool theRanHelSum;
+
 };
 
 }
