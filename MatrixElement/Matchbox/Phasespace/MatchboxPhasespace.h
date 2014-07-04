@@ -122,6 +122,8 @@ public:
     lastMatchboxXComb(xc);
   }
 
+  virtual void setCrossSection(CrossSection ){};
+  
   /**
    * Return the factory object
    */

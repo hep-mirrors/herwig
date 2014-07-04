@@ -57,6 +57,14 @@ public:
 public:
 
   /**
+   * Generate a phase space point from a vector \a r of \a nr numbers
+   * in the interval ]0,1[ and return the corresponding differential
+   * cross section.(Basically a wrapper to get information in the phasespace)
+   */
+   CrossSection dSigDR(const pair<double,double> ll, int nr, const double * r);
+
+  
+  /**
    * Reset all saved data about last generated phasespace point;
    */
   virtual void clean();

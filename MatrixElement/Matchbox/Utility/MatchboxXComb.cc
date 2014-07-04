@@ -14,6 +14,8 @@
 #include "MatchboxXComb.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Utilities/DescribeClass.h"
+#include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.h"
+
 
 using namespace Herwig;
 
@@ -47,6 +49,21 @@ MatchboxXComb::MatchboxXComb(tStdXCombPtr newHead,
     MatchboxXCombData(newME) {
   flushCaches();
 }
+
+
+CrossSection MatchboxXComb::dSigDR(const pair<double,double> ll, int nr, const double * r){
+  CrossSection res=StandardXComb::dSigDR(ll,nr,r);
+  Ptr<MatchboxMEBase>::tptr me =dynamic_ptr_cast<Ptr<MatchboxMEBase>::tptr>(matrixElement());
+  if(me){
+    if(me->phasespace()){
+      me->phasespace()->setCrossSection(abs(res));
+    }
+  }
+  return res;
+}
+
+  
+
 
 void MatchboxXComb::clean() {
   StandardXComb::clean();
