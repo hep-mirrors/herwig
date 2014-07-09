@@ -402,15 +402,21 @@ double DipoleMPKOperator::sumParton(int id) const {
       // Last term in massive K operator in (6.55) in massive paper.
       // Vanishes theoretically in the massless limit.
       if ( mePartonData()[id]->id() == ParticleID::g ) {
+        double quarkpdfsum = 0.0;
+        int nl= lastBorn()->nLight();
+        for ( int f = -lastBorn()->nLight(); f <= nl; ++f ) {
+          if ( f == 0 ) continue;
+          quarkpdfsum += PDFxByz(getParticleData(f));
+        }
         res -=
           ifCorrelated * 
-          ( ( z>x ? 1./z*PDFxByz(parton)*(thePqgreg+thePggreg)*log((1.-z)*sja/((1.-z)*sja+mj2)) : 0. ) + 
+          ( ( z>x ? 1./z*( thePqgreg*quarkpdfsum + thePggreg*PDFxByz(parton) )*log((1.-z)*sja/((1.-z)*sja+mj2)) : 0. ) + 
             (gammaGluon)*PDFx(parton)*( log((sja-2.*sqrt(mj2)*sqrt(sja+mj2)+2.*mj2)/sja) + 2.*sqrt(mj2)/(sqrt(sja+mj2)+sqrt(mj2)) ) );
       }
       if ( abs(mePartonData()[id]->id()) < 7 ) {
         res -=
           ifCorrelated * 
-          ( ( z>x ? 1./z*PDFxByz(parton)*(thePqqreg+thePgqreg)*log((1.-z)*sja/((1.-z)*sja+mj2)) : 0. ) + 
+          ( ( z>x ? 1./z*( thePqqreg*PDFxByz(parton) + thePgqreg*PDFxByz(getParticleData(ParticleID::g)) )*log((1.-z)*sja/((1.-z)*sja+mj2)) : 0. ) + 
             (gammaQuark)*PDFx(parton)*( log((sja-2.*sqrt(mj2)*sqrt(sja+mj2)+2.*mj2)/sja) + 2.*sqrt(mj2)/(sqrt(sja+mj2)+sqrt(mj2)) ) );
       }
 
