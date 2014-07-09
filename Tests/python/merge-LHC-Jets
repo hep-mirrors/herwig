@@ -217,6 +217,8 @@ for f in yodafiles:
            aopath.find("I1094564")>0 or
            aopath.find("I930220")>0 or
            aopath.find("I1224539")>0 or
+           aopath.find("I1273574")>0 or
+           aopath.find("I1261026")>0 or
            aopath.find("CMS_2012_PAS_QCD_11_010")>0) :
            if not inhistos_pt.has_key(aopath):
                inhistos_pt[aopath] = {}
@@ -282,7 +284,8 @@ for f in yodafiles:
         if(aopath.find("8817804")>0 or
            aopath.find("1082936")>0 or
            aopath.find("I930220")>0 or
-           aopath.find("8968497")>0) :
+           aopath.find("1261026")>0 or
+           aopath.find("1090423")>0) :
            if not inhistos_mass.has_key(aopath):
                inhistos_mass[aopath] = {}
            tmpE = inhistos_mass[aopath]
@@ -316,6 +319,9 @@ for hpath,hsets in inhistos_pt.iteritems():
         hpath.find("1094564")>0 or
         hpath.find("I930220")>0 or
         hpath.find("S9088458")>0 or 
+        hpath.find("I1273574")>0 or 
+        hpath.find("I1261026")>0 or 
+        hpath.find("I1090423")>0 or
         hpath.find("CMS_2012_PAS_QCD_11_010")>0) :
         if(type(hsets.values()[0].values()[0])==yoda.core.Scatter2D) :
             outhistos[hpath] = yoda.core.Scatter2D(hsets.values()[0].values()[0].path,
@@ -1496,6 +1502,47 @@ useOnePt("/CMS_2013_I1224539_DIJET/d25-x01-y01",  "7000", "600" )
 useOnePt("/CMS_2013_I1224539_DIJET/d26-x01-y01",  "7000", "600" )
 useOnePt("/CMS_2013_I1224539_DIJET/d27-x01-y01",  "7000", "600" )
 useOnePt("/CMS_2013_I1224539_DIJET/d28-x01-y01",  "7000", "600" )
+
+useOnePt("/CMS_2013_I1273574/d01-x01-y01",  "7000", "80" )
+mergeByPt("/CMS_2013_I1273574/d02-x01-y01", "7000",1.)
+useOnePt("/CMS_2013_I1273574/d03-x01-y01",  "7000", "80" )
+useOnePt("/CMS_2013_I1273574/d04-x01-y01",  "7000", "80" )
+useOnePt("/CMS_2013_I1273574/d05-x01-y01",  "7000", "80" )
+useOnePt("/CMS_2013_I1273574/d06-x01-y01",  "7000", "80" )
+mergeByPt("/CMS_2013_I1273574/d07-x01-y01", "7000",1.)
+useOnePt("/CMS_2013_I1273574/d08-x01-y01",  "7000", "80" )
+mergeByPt("/CMS_2013_I1273574/d09-x01-y01", "7000",1.)
+useOnePt("/CMS_2013_I1273574/d10-x01-y01",  "7000", "80" )
+mergeByPt("/CMS_2013_I1273574/d11-x01-y01", "7000",1.)
+
+useOnePt("/CMS_2013_I1261026/d01-x01-y01",  "7000", "0" )
+useOnePt("/CMS_2013_I1261026/d02-x01-y01",  "7000", "0" )
+useOnePt("/CMS_2013_I1261026/d03-x01-y01",  "7000", "0" )
+useOnePt("/CMS_2013_I1261026/d04-x01-y01",  "7000", "0" )
+useOnePt("/CMS_2013_I1261026/d05-x01-y01",  "7000", "0" )
+useOnePt("/CMS_2013_I1261026/d06-x01-y01",  "7000", "0" )
+useOnePt("/CMS_2013_I1261026/d07-x01-y01",  "7000", "0" )
+useOnePt("/CMS_2013_I1261026/d08-x01-y01",  "7000", "0" )
+useOnePt("/CMS_2013_I1261026/d09-x01-y01",  "7000", "0" )
+useOnePt("/CMS_2013_I1261026/d10-x01-y01",  "7000", "0" )
+useOnePt("/CMS_2013_I1261026/d11-x01-y01",  "7000", "0" )
+useOnePt("/CMS_2013_I1261026/d12-x01-y01",  "7000", "0" )
+useOnePt("/CMS_2013_I1261026/d13-x01-y01",  "7000", "0" )
+useOnePt("/CMS_2013_I1261026/d14-x01-y01",  "7000", "0" )
+useOnePt("/CMS_2013_I1261026/d15-x01-y01",  "7000", "0" )
+useOnePt("/CMS_2013_I1261026/d16-x01-y01",  "7000", "0" )
+useOnePt("/CMS_2013_I1261026/d17-x01-y01",  "7000", "0" )
+
+
+useOneMass("/CMS_2012_I1090423/d01-x01-y01", "7000", "2000" )
+useOneMass("/CMS_2012_I1090423/d02-x01-y01", "7000", "2000" )
+useOneMass("/CMS_2012_I1090423/d03-x01-y01", "7000", "1200" )
+useOneMass("/CMS_2012_I1090423/d04-x01-y01", "7000", "1200" )
+useOneMass("/CMS_2012_I1090423/d05-x01-y01", "7000", "1200" )
+useOneMass("/CMS_2012_I1090423/d06-x01-y01", "7000", "800" )
+useOneMass("/CMS_2012_I1090423/d07-x01-y01", "7000", "800" )
+useOneMass("/CMS_2012_I1090423/d08-x01-y01", "7000", "300" )
+useOneMass("/CMS_2012_I1090423/d09-x01-y01", "7000", "300" )
 
 # Choose output file
 name = "LHC"+"-Jets.yoda"
