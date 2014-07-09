@@ -797,7 +797,7 @@ double DipoleMPKOperator::Kscriptqq_g(Energy2 sja) const {
     if( sja <= 4.*mF2 ) continue; // sum only over heavy quarks with special condition
     res += 1./(2.*CA) * (
       PDFx(parton)*( 2./3.*(log(muQ2)+5./3.) - JaNS_QQ(muQ2) ) -
-      1./zplus*PDFxByzplus(parton,f,muQ2)*( 2./3.*(log(muQ2)+5./3.) - JaNS_QQ(muQ2) ) + 
+      ( x<zplus ? 1./zplus*PDFxByzplus(parton,f,muQ2)*( 2./3.*(log(muQ2)+5./3.) - JaNS_QQ(muQ2) ) : 0. ) + 
       Ja_QQzplus(muQ2,f) + 
       PDFx(parton)*( 2./3.*sqrt((1.-4.*muQ2)*(1.-4.*muQ2)*(1.-4.*muQ2)) ) );
   }
@@ -826,7 +826,7 @@ double DipoleMPKOperator::Kscriptgg_g(Energy2 sja) const {
     if( sja <= 4.*mF2 ) continue; // sum only over quarks with special condition
     res += 1./(2.*CA) * (
       PDFx(parton)*( 2./3.*(log(muQ2)+5./3.) - JaNS_QQ(muQ2) ) -
-      1./zplus*PDFxByzplus(parton,f,muQ2)*( 2./3.*(log(muQ2)+5./3.) - JaNS_QQ(muQ2) ) + 
+      ( x<zplus ? 1./zplus*PDFxByzplus(parton,f,muQ2)*( 2./3.*(log(muQ2)+5./3.) - JaNS_QQ(muQ2) ) : 0. ) + 
       Ja_QQzplus(muQ2,f) + 
       PDFx(parton)*( 2./3.*sqrt((1.-4.*muQ2)*(1.-4.*muQ2)*(1.-4.*muQ2)) ) );
   }
