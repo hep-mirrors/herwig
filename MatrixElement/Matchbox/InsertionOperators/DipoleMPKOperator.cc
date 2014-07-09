@@ -683,9 +683,9 @@ double DipoleMPKOperator::Ja_gQplus(double muQ2) const {
 double DipoleMPKOperator::gammaSoft2(double muQ2) const {
 //   assert(abs(parton->id()) < 7);
   double res = 
-    (1./(1.-z)) * ( -1. * PDFx(parton) * 2. * log( 1./(1.+muQ2) ) );
+    (1./(1.-z)) * ( -1. * PDFx(parton) * log( 1./(1.+muQ2) ) );
   if ( z > x ) {
-    res += (1./(1.-z)) * ( 1./z * PDFxByz(parton) * 2. * log( (2.-z)/(2.-z+muQ2) ) );
+    res += (1./(1.-z)) * ( 1./z * PDFxByz(parton) * log( (2.-z)/(2.-z+muQ2) ) );
   }
   return res;
 }
