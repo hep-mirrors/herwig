@@ -38,6 +38,7 @@ newdef ShowerModel:KinematicsReconstructor KinematicsReconstructor
 newdef Evolver:ShowerModel ShowerModel
 newdef Evolver:SplittingGenerator SplittingGenerator
 newdef Evolver:HardScaleFactor 1.0
+newdef Evolver:Interactions BothAtOnce
 
 ##################################################################
 # Intrinsic pT
