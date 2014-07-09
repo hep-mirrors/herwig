@@ -475,7 +475,7 @@ reconstructHardJets(ShowerTreePtr hard,
       }
       // e+e- type
       else if(nnun==0&&nnii==0&&nnif==0&&nnf>0&&nni==2) {
-	general = type==ShowerInteraction::QED;
+	general = type==ShowerInteraction::QED || type == ShowerInteraction::Both;
       }
       // general type
       else {
@@ -1264,7 +1264,7 @@ bool QTildeReconstructor::deconstructHardJets(HardTreePtr tree,
 	  deconstructInitialInitialSystem(applyBoost,toRest,fromRest,tree,
 					  systems[ix].jets,type);
       }
-      if(type==ShowerInteraction::QED) {
+      if(type==ShowerInteraction::QED||type==ShowerInteraction::Both) {
 	combineFinalStateShower(systems);
 	general=false;
       }
@@ -1289,7 +1289,7 @@ bool QTildeReconstructor::deconstructHardJets(HardTreePtr tree,
       toRest = LorentzRotation(ptotal.findBoostToCM());
       fromRest = toRest;
       fromRest.invert();
-      if(type==ShowerInteraction::QED) {
+      if(type==ShowerInteraction::QED||type==ShowerInteraction::Both) {
 	combineFinalStateShower(systems);
 	general=false;
       }
