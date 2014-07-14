@@ -673,9 +673,9 @@ double DipoleMPKOperator::Pgg() const {
 double DipoleMPKOperator::Ja_gQplus(double muQ2) const {
 //   assert(abs(parton->id()) < 7);
   double res = 
-    -1. * PDFx(parton) * ( (1.-z)/(2.*(1.-z-muQ2)*(1.-z-muQ2)) - 2./(1.-z)*(1.+log((1.-z+muQ2)/(1.+muQ2))) );
+    -1. * PDFx(parton) * ( (1.-z)/(2.*(1.-z+muQ2)*(1.-z+muQ2)) - 2./(1.-z)*(1.+log((1.-z+muQ2)/(1.+muQ2))) );
   if ( z > x ) {
-    res += 1./z * PDFxByz(parton) * ( (1.-z)/(2.*(1.-z-muQ2)*(1.-z-muQ2)) - 2./(1.-z)*(1.+log((1.-z+muQ2)/(2.-z+muQ2))) );
+    res += 1./z * PDFxByz(parton) * ( (1.-z)/(2.*(1.-z+muQ2)*(1.-z+muQ2)) - 2./(1.-z)*(1.+log((1.-z+muQ2)/(2.-z+muQ2))) );
   }
   return res;
 }
