@@ -11,5 +11,5 @@ HwMatchboxVBFNLO_la_CPPFLAGS += -I$(VBFNLOINCLUDE)
 #-lHELAS -lVBFNLOPDFsets -lVBFNLOPhasespace -lVBFspecific -lgfortran 
 
 HwMatchboxVBFNLO_la_SOURCES = \
-VBFNLOAmplitude.h VBFNLOAmplitude.cc
-
+VBFNLOAmplitude.h VBFNLOAmplitude.cc \
+VBFNLOPhasespace.h VBFNLOPhasespace.cc
