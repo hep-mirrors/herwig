@@ -284,8 +284,8 @@ MatchboxPhasespace::timeLikeWeight(const Tree2toNDiagram& diag,
 	abs((res.second.m2()-mass2)/GeV2);
   } else {
     res.first /=
-      sqr((res.second.m2()-mass2)/GeV2) +
-      mass2*width2/sqr(GeV2);
+      (sqr((res.second.m2()-mass2)/GeV2) +
+       mass2*width2/sqr(GeV2))/(abs(res.second.m2()/GeV2));
   }
 
   return res;
@@ -330,8 +330,8 @@ double MatchboxPhasespace::spaceLikeWeight(const Tree2toNDiagram& diag,
 	abs((res.second.m2()-mass2)/GeV2);
   } else {
     res.first /=
-      sqr((res.second.m2()-mass2)/GeV2) +
-      mass2*width2/sqr(GeV2);
+      (sqr((res.second.m2()-mass2)/GeV2) +
+       mass2*width2/sqr(GeV2))/(abs(res.second.m2()/GeV2));
   }
 
   return
