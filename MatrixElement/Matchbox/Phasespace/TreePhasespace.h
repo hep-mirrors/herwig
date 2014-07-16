@@ -153,7 +153,7 @@ private:
   /**
    * The object storing cross section informations
    */
-  map<Ptr<Tree2toNDiagram>::ptr,pair< double,pair<double,size_t> > diagramtoXsecmap;
+  map<Ptr<Tree2toNDiagram>::ptr,pair< double,double> > diagramtoXsecmap;
 
   /**
    * Map xcomb's to channel vectors indexed by diagram id.

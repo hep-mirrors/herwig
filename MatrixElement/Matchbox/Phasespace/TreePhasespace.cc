@@ -68,7 +68,7 @@ void TreePhasespace::setXComb(tStdXCombPtr xco) {
       PhasespaceTree treeMirror;
       treeMirror.setupMirrored(*diag, diag->nSpace() - 1);
       channels[diag] = make_pair(tree,treeMirror);
-      diagramtoXsecmap[diag] = make_pair(0.0,make_pair(0.0000000001,0));
+      diagramtoXsecmap[diag] = make_pair(0.0,0.0000000001);
     }
     channelMap()[lastXCombPtr()] = channels;
     lastChannelsIterator = channelMap().find(lastXCombPtr());
@@ -81,15 +81,15 @@ void TreePhasespace::setXComb(tStdXCombPtr xco) {
     
     for(map<Ptr<Tree2toNDiagram>::ptr,pair<PhasespaceTree, PhasespaceTree> >::iterator it=channelMap()[lastXCombPtr()].begin();
 	it!=channelMap()[lastXCombPtr()].end();it++){
-      totalxsec+=(diagramtoXsecmap.find((*it).first)->second.first)/(diagramtoXsecmap.find((*it).first)->second.second.first);
-    total+=diagramtoXsecmap.find((*it).first)->second.second.second;
+      totalxsec+=(diagramtoXsecmap.find((*it).first)->second.first)/(diagramtoXsecmap.find((*it).first)->second.second);
+    total+=diagramtoXsecmap.find((*it).first)->second.second;
 	}
+	
 	for(map<Ptr<Tree2toNDiagram>::ptr,pair<PhasespaceTree, PhasespaceTree> >::iterator it=channelMap()[lastXCombPtr()].begin();
 	    it!=channelMap()[lastXCombPtr()].end();it++){
-	  double xsec=(diagramtoXsecmap.find((*it).first)->second.first)/(diagramtoXsecmap.find((*it).first)->second.second.first);
-	ChannelSelector.insert((total>5000?(0.02*totalxsec+xsec):1.),(*it).first);
-	ChannelSelectormap.insert(make_pair((*it).first,(total>5000?(0.02*totalxsec+xsec):1.)));
-	
+	  double xsec=(diagramtoXsecmap.find((*it).first)->second.first)/(diagramtoXsecmap.find((*it).first)->second.second);
+	ChannelSelector.insert((total>5000?(0.02*totalxsec+xsec):1),(*it).first);
+	ChannelSelectormap.insert(make_pair((*it).first,(total>5000?(0.02*totalxsec+xsec):1)));
 	    }
   }
   
@@ -100,8 +100,7 @@ void TreePhasespace::setXComb(tStdXCombPtr xco) {
 void TreePhasespace::setCrossSection(CrossSection res){
   if(withChannelSelector){
   diagramtoXsecmap.find(lastdiag)->second.first+=res/nanobarn;
-  diagramtoXsecmap.find(lastdiag)->second.second.first+=1.;
-  if(res!=0.)diagramtoXsecmap.find(lastdiag)->second.second.second+=1;
+  diagramtoXsecmap.find(lastdiag)->second.second+=1.;
   }
 }
 
