@@ -141,17 +141,10 @@ Element::findFirst(int type, const string& name) const {
   return i->second;
 }
 
-pair<list<Element>::const_iterator,list<Element>::const_iterator> 
+pair<multimap<pair<int,string>,list<Element>::iterator>::const_iterator,multimap<pair<int,string>,list<Element>::iterator>::const_iterator>
 Element::findAll(int type, const string& name) const {
   assertChildren();
-  typedef
-    multimap<pair<int,string>,list<Element>::iterator>::const_iterator
-    IndexIterator;
-  pair<IndexIterator,IndexIterator> i = 
-    theIndex.equal_range(make_pair(type,name));
-  if ( i.first == theIndex.end() )
-    return make_pair(theChildren.end(),theChildren.end());
-  return make_pair(i.first->second,i.second->second);
+  return theIndex.equal_range(make_pair(type,name));
 }
 
 void Element::assertContent() const {
