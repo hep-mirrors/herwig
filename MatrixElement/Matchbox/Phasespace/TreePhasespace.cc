@@ -101,7 +101,7 @@ void TreePhasespace::setCrossSection(CrossSection res){
   if(withChannelSelector){
   diagramtoXsecmap.find(lastdiag)->second.first+=res/nanobarn;
   diagramtoXsecmap.find(lastdiag)->second.second.first+=1.;
-  if(res!=0.*nanobarn)diagramtoXsecmap.find(lastdiag)->second.second.second+=1;
+  if(res!=0.)diagramtoXsecmap.find(lastdiag)->second.second.second+=1;
   }
 }
 
