@@ -88,8 +88,8 @@ void TreePhasespace::setXComb(tStdXCombPtr xco) {
 	for(map<Ptr<Tree2toNDiagram>::ptr,pair<PhasespaceTree, PhasespaceTree> >::iterator it=channelMap()[lastXCombPtr()].begin();
 	    it!=channelMap()[lastXCombPtr()].end();it++){
 	  double xsec=(diagramtoXsecmap.find((*it).first)->second.first)/(diagramtoXsecmap.find((*it).first)->second.second);
-	ChannelSelector.insert((total>5000?(0.02*totalxsec+xsec):1),(*it).first);
-	ChannelSelectormap.insert(make_pair((*it).first,(total>5000?(0.02*totalxsec+xsec):1)));
+	ChannelSelector.insert((total>5000?(0.05*totalxsec+xsec):1),(*it).first);
+	ChannelSelectormap.insert(make_pair((*it).first,(total>5000?(0.05*totalxsec+xsec):1)));
 	    }
   }
   

@@ -283,7 +283,7 @@ public:
   /**
    * Return the dimension.
    */
-  virtual int dimension() const { return theEventHandler->nDim(bin()); }
+  int dimension() const { return theEventHandler->nDim(bin()); }
 
   /**
    * Return the number of points to be used for initial integration.

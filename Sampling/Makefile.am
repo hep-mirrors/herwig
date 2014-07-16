@@ -8,7 +8,6 @@ GeneralStatistics.h GeneralStatistics.cc \
 MultiIterationStatistics.h MultiIterationStatistics.cc \
 BinSampler.h BinSampler.cc \
 GeneralSampler.h GeneralSampler.cc \
-MonacoSampler.h MonacoSampler.cc \
 exsample/cell.icc \
 exsample/generator.h \
 exsample/linear_interpolator.icc \

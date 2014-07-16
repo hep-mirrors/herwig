@@ -5,7 +5,5 @@ CellGrid.h \
 SimpleCellGrid.cc \
 SimpleCellGrid.h \
 CellGridSampler.cc \
-CellGridSampler.h \
-CellGridSampler2.cc \
-CellGridSampler2.h
+CellGridSampler.h
 
