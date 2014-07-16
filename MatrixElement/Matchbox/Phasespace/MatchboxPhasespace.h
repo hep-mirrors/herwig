@@ -121,13 +121,7 @@ public:
     theLastXComb = xc;
     lastMatchboxXComb(xc);
   }
-  
-  /**
-   * Setting information of the last generated point.
-   */
-  
-  virtual void setCrossSection(CrossSection ){};
-  
+
   /**
    * Return the factory object
    */

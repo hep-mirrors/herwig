@@ -38,7 +38,6 @@ TreePhasespace::TreePhasespace()
   lastPhasespaceInfo.M0 = M0;
   lastPhasespaceInfo.Mc = Mc;
   theIncludeMirrored = true;
-  withChannelSelector=false;
 }
 
 TreePhasespace::~TreePhasespace() {}
@@ -56,7 +55,7 @@ void TreePhasespace::setXComb(tStdXCombPtr xco) {
   MatchboxPhasespace::setXComb(xco);
 
   lastChannelsIterator = channelMap().find(lastXCombPtr());
-  
+
   if ( lastChannelsIterator == channelMap().end() ) {
     map<Ptr<Tree2toNDiagram>::ptr,pair<PhasespaceTree, PhasespaceTree> > channels;
     for ( StandardXComb::DiagramVector::const_iterator d =
@@ -68,42 +67,12 @@ void TreePhasespace::setXComb(tStdXCombPtr xco) {
       PhasespaceTree treeMirror;
       treeMirror.setupMirrored(*diag, diag->nSpace() - 1);
       channels[diag] = make_pair(tree,treeMirror);
-      diagramtoXsecmap[diag] = make_pair(0.0,0.0000000001);
     }
     channelMap()[lastXCombPtr()] = channels;
     lastChannelsIterator = channelMap().find(lastXCombPtr());
   }
-  if(withChannelSelector){
-    ChannelSelector.clear();
-    ChannelSelectormap.clear();
-    double totalxsec=0.;
-    size_t total=0.;
-    
-    for(map<Ptr<Tree2toNDiagram>::ptr,pair<PhasespaceTree, PhasespaceTree> >::iterator it=channelMap()[lastXCombPtr()].begin();
-	it!=channelMap()[lastXCombPtr()].end();it++){
-      totalxsec+=(diagramtoXsecmap.find((*it).first)->second.first)/(diagramtoXsecmap.find((*it).first)->second.second);
-    total+=diagramtoXsecmap.find((*it).first)->second.second;
-	}
-	
-	for(map<Ptr<Tree2toNDiagram>::ptr,pair<PhasespaceTree, PhasespaceTree> >::iterator it=channelMap()[lastXCombPtr()].begin();
-	    it!=channelMap()[lastXCombPtr()].end();it++){
-	  double xsec=(diagramtoXsecmap.find((*it).first)->second.first)/(diagramtoXsecmap.find((*it).first)->second.second);
-	ChannelSelector.insert((total>5000?(0.05*totalxsec+xsec):1),(*it).first);
-	ChannelSelectormap.insert(make_pair((*it).first,(total>5000?(0.05*totalxsec+xsec):1)));
-	    }
-  }
-  
 
 }
-
-
-void TreePhasespace::setCrossSection(CrossSection res){
-  if(withChannelSelector){
-  diagramtoXsecmap.find(lastdiag)->second.first+=res/nanobarn;
-  diagramtoXsecmap.find(lastdiag)->second.second+=1.;
-  }
-}
-
 
 double TreePhasespace::generateTwoToNKinematics(const double* random,
 						vector<Lorentz5Momentum>& momenta) {
@@ -114,25 +83,15 @@ double TreePhasespace::generateTwoToNKinematics(const double* random,
 
   size_t nchannels = lastXComb().diagrams().size();
   bool doMirror = (UseRandom::rnd() < 0.5) && theIncludeMirrored;
-
-  Ptr<Tree2toNDiagram>::ptr channel;
-  double weight=1.;
-  
-  if(withChannelSelector){
-    channel = ChannelSelector.select(UseRandom::rnd());
-    weight=ChannelSelector.sum()/ChannelSelectormap.find(channel)->second/ChannelSelector.size();
-  }else{
-    map<Ptr<Tree2toNDiagram>::ptr,
-    pair <PhasespaceHelpers::PhasespaceTree, PhasespaceHelpers::PhasespaceTree> >::iterator ds =
+  map<Ptr<Tree2toNDiagram>::ptr,
+      pair <PhasespaceHelpers::PhasespaceTree, PhasespaceHelpers::PhasespaceTree> >::iterator ds =
     lastChannels().begin();
-    size_t i = (size_t)(random[0]*nchannels);
-    advance(ds,i);
-    channel = ds->first;
-    ++random;
-  }
-  
-  lastdiag=channel;
-  
+
+  size_t i = (size_t)(random[0]*nchannels);
+  advance(ds,i);
+
+  Ptr<Tree2toNDiagram>::ptr channel = ds->first;
+  ++random;
   
   lastPhasespaceInfo.rnd.numbers = random;
   lastPhasespaceInfo.rnd.nRnd = 3*momenta.size() - 10;
@@ -167,7 +126,7 @@ double TreePhasespace::generateTwoToNKinematics(const double* random,
 	k != momenta.end(); ++k )
     k->rescaleRho();
 
-  return nchannels*lastPhasespaceInfo.weight*diagramWeight(*channel)/(sum*piWeight)*weight;
+  return nchannels*lastPhasespaceInfo.weight*diagramWeight(*channel)/(sum*piWeight);
 
 }
 
@@ -194,14 +153,14 @@ void TreePhasespace::persistentOutput(PersistentOStream & os) const {
   os << theChannelMap << x0 << xc 
      << ounit(M0,GeV) << ounit(Mc,GeV)
      << theIncludeMirrored
-     << theLastXComb << withChannelSelector << diagramtoXsecmap;
+     << theLastXComb;
 }
 
 void TreePhasespace::persistentInput(PersistentIStream & is, int) {
   is >> theChannelMap >> x0 >> xc 
      >> iunit(M0,GeV) >> iunit(Mc,GeV)
      >> theIncludeMirrored
-     >> theLastXComb >> withChannelSelector >> diagramtoXsecmap;
+     >> theLastXComb;
   lastPhasespaceInfo.x0 = x0;
   lastPhasespaceInfo.xc = xc;
   lastPhasespaceInfo.M0 = M0;
@@ -272,26 +231,6 @@ void TreePhasespace::Init() {
      "False",
      "Use only unmirrored diagrams",
      false);
-  
-  static Switch<TreePhasespace,bool> interfacewithChannelSelector
-    ("withChannelSelector",
-     "Choose whether to include a ChannelSelector",
-     &TreePhasespace::withChannelSelector, true, true, false);
-  static SwitchOption interfacewithChannelSelectorTrue
-    (interfacewithChannelSelector,
-     "True",
-     "Use ChannelSelector",
-     true);
-  static SwitchOption interfacewithChannelSelectorFalse
-    (interfacewithChannelSelector,
-     "False",
-     "Don't use ChannelSelector",
-     false);  
-    
-    
-    
-    
-    
 
 }
 

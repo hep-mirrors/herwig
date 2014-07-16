@@ -59,13 +59,7 @@ public:
    */
   virtual double generateTwoToNKinematics(const double*,
 					  vector<Lorentz5Momentum>& momenta);
-  
-  /**
-   * Setting information of the last generated point.
-   */
-  
-  void setCrossSection(CrossSection res);
-  
+
   /**
    * Return the number of random numbers required to produce a given
    * multiplicity final state.
@@ -73,7 +67,7 @@ public:
   virtual int nDim(int nFinal) const {
     if ( nFinal == 1 )
       return 1;
-    return 3*(nFinal - 1)-(withChannelSelector?1:0); // one additional number needed for channel selection
+    return 3*(nFinal - 1); // one additional number needed for channel selection
   }
 
 public:
@@ -149,11 +143,6 @@ private:
    * The object storing channel maps
    */
   Ptr<TreePhasespaceChannels>::ptr theChannelMap;
-  
-  /**
-   * The object storing cross section informations
-   */
-  map<Ptr<Tree2toNDiagram>::ptr,pair< double,double> > diagramtoXsecmap;
 
   /**
    * Map xcomb's to channel vectors indexed by diagram id.
@@ -199,27 +188,6 @@ private:
    * propagators are actually cut off.
    */
   Energy Mc;
-  
-  
-  /**
-   * Deside if the Phasespace should use a selector for channels
-   */
-  
-  bool withChannelSelector;
-  
-  /**
-   * The ChannelSelector.
-   */
-  
-  Selector<Ptr<Tree2toNDiagram>::ptr> ChannelSelector;
-  
-  /**
-   * Storing the weights of the different channels
-   */
-  map<Ptr<Tree2toNDiagram>::ptr,double> ChannelSelectormap;
-  
-  
-  Ptr<Tree2toNDiagram>::ptr lastdiag;
 
   /**
    * Choose whether to also use mirrored phasespace generation
