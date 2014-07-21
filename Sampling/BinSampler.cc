@@ -20,6 +20,7 @@
 #include "ThePEG/Repository/Repository.h"
 
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Switch.h"
 
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -43,7 +44,12 @@ BinSampler::BinSampler()
     theEnhancementFactor(1.0),
     theReferenceWeight(1.0),
     theBin(-1),
-    theInitialized(false) {}
+    theInitialized(false),
+    theRemapperPoints(0),
+    theRemapChannelDimension(false),
+    theLuminosityMapperBins(0),
+    theGeneralMapperBins(0),
+    theRemapperMinSelection(0.00001) {}
 
 BinSampler::~BinSampler() {}
 
@@ -107,28 +113,48 @@ string BinSampler::id() const {
   return os.str();
 }
 
-double BinSampler::generate() {
-  double w = 1.;
-//  cout<<"\npoint: ";
-  for ( size_t k = 0; k < lastPoint().size(); ++k ) {
-    lastPoint()[k] = UseRandom::rnd();
-//    cout<<lastPoint()[k]<<" ";
+double BinSampler::evaluate(vector<double> p,
+			    bool remap) {
+  double w = 1.0;
+  if ( remap && !remappers.empty() ) {
+    for ( size_t k = 0; k < p.size(); ++k ) {
+      map<size_t,Remapper>::const_iterator r =
+	remappers.find(k);
+      if ( r != remappers.end() ) {
+	pair<double,double> f = r->second.generate(p[k]);
+	p[k] = f.first;
+	w /= f.second;
+      }
+    }
   }
   try {
-    w = eventHandler()->dSigDR(lastPoint()) / nanobarn;
+    w *= eventHandler()->dSigDR(p) / nanobarn;
   } catch (Veto&) {
     w = 0.0;
   } catch (...) {
     throw;
   }
   if (randomNumberString()!="") 
-  for ( size_t k = 0; k < lastPoint().size(); ++k ) {
-    RandomNumberHistograms[RandomNumberIndex(id(),k)].first.book(lastPoint()[k],w);
-    RandomNumberHistograms[RandomNumberIndex(id(),k)].second+=w;
-  }
+    for ( size_t k = 0; k < p.size(); ++k ) {
+      RandomNumberHistograms[RandomNumberIndex(id(),k)].first.book(p[k],w);
+      RandomNumberHistograms[RandomNumberIndex(id(),k)].second+=w;
+    }
+  return w;
+}
 
-  
-  
+double BinSampler::generate() {
+  double w = 1.;
+  for ( size_t k = 0; k < lastPoint().size(); ++k ) {
+    lastPoint()[k] = UseRandom::rnd();
+  }
+  try {
+    w = evaluate(lastPoint());
+  } catch (Veto&) {
+    w = 0.0;
+  } catch (...) {
+    throw;
+  }
+ 
   if ( !weighted() && initialized() ) {
     double p = min(abs(w),referenceWeight())/referenceWeight();
     double sign = w >= 0. ? 1. : -1.;
@@ -141,6 +167,148 @@ double BinSampler::generate() {
   if ( w != 0.0 )
     accept();
   return w;
+}
+
+void BinSampler::fillRemappers(bool progress) {
+
+  if ( remappers.empty() )
+    return;
+
+  boost::progress_display* progressBar = 0;
+  if ( progress ) {
+    Repository::clog() << "warming up " << process();
+    progressBar = new boost::progress_display(theRemapperPoints,Repository::clog());
+  }
+
+  for ( unsigned long k = 0; k < theRemapperPoints; ++k ) {
+
+    double w = 1.;
+    for ( size_t k = 0; k < lastPoint().size(); ++k ) {
+      lastPoint()[k] = UseRandom::rnd();
+    }
+    try {
+      w = evaluate(lastPoint(),false);
+    } catch (Veto&) {
+      w = 0.0;
+    } catch (...) {
+      throw;
+    }
+
+    if ( w != 0.0 ) {
+      for ( map<size_t,Remapper>::iterator r = remappers.begin();
+	    r != remappers.end(); ++r )
+	r->second.fill(lastPoint()[r->first],w);
+    }
+
+    ++(*progressBar);
+
+  }
+
+  if ( progressBar ) {
+    delete progressBar;
+  }
+
+}
+
+void BinSampler::saveRemappers() const {
+
+  if ( remappers.empty() )
+    return;
+
+  XML::Element maps(XML::ElementTypes::Element,"Remappers");
+  maps.appendAttribute("process",id());
+
+  for ( map<size_t,Remapper>::const_iterator r = remappers.begin();
+	r != remappers.end(); ++r ) {
+    XML::Element rmap = r->second.toXML();
+    rmap.appendAttribute("dimension",r->first);
+    maps.append(rmap);
+  }
+
+  sampler()->grids().append(maps);
+
+}
+
+void BinSampler::setupRemappers(bool progress) {
+
+  if ( !theRemapperPoints )
+    return;
+
+  lastPoint().resize(dimension());
+
+  bool haveGrid = false;
+
+  list<XML::Element>::iterator git = sampler()->grids().children().begin();
+  for ( ; git != sampler()->grids().children().end(); ++git ) {
+    if ( git->type() != XML::ElementTypes::Element )
+      continue;
+    if ( git->name() != "Remappers" )
+      continue;
+    string proc;
+    git->getFromAttribute("process",proc);
+    if ( proc == id() ) {
+      haveGrid = true;
+      break;
+    }
+  }
+
+  if ( haveGrid ) {
+    for ( list<XML::Element>::iterator cit = git->children().begin();
+	  cit != git->children().end(); ++cit ) {
+      if ( cit->type() != XML::ElementTypes::Element )
+	continue;
+      if ( cit->name() != "Remapper" )
+	continue;
+      size_t dimension = 0;
+      cit->getFromAttribute("dimension",dimension);
+      remappers[dimension].fromXML(*cit);
+    }
+    sampler()->grids().erase(git);
+  }
+
+  if ( !haveGrid ) {
+
+    const StandardEventHandler& eh = *eventHandler();
+    const StandardXComb& xc = *eh.xCombs()[bin()];
+    const pair<int,int>& pdims = xc.partonDimensions();
+
+    set<int> remapped;
+
+    if ( theRemapChannelDimension && xc.diagrams().size() > 1 &&
+	 dimension() > pdims.first + pdims.second ) {
+      remappers[pdims.first] = Remapper(xc.diagrams().size(),theRemapperMinSelection,false);
+      remapped.insert(pdims.first);
+    }
+
+    if ( theLuminosityMapperBins > 1 && dimension() >= pdims.first + pdims.second ) {
+      for ( int n = 0; n < pdims.first; ++n ) {
+	remappers[n] = Remapper(theLuminosityMapperBins,theRemapperMinSelection,true);
+	remapped.insert(n);
+      }
+      for ( int n = dimension() - pdims.second; n < dimension(); ++n ) {
+	remappers[n] = Remapper(theLuminosityMapperBins,theRemapperMinSelection,true);
+	remapped.insert(n);
+      }
+    }
+
+    if ( theGeneralMapperBins > 1 ) {
+      for ( int n = 0; n < dimension(); n++ ) {
+	if ( remapped.find(n) == remapped.end() ) {
+	  remappers[n] = Remapper(theGeneralMapperBins,theRemapperMinSelection,true);
+	  remapped.insert(n);
+	}
+      }
+    }
+
+    fillRemappers(progress);
+
+    for ( map<size_t,Remapper>::iterator r = remappers.begin();
+	  r != remappers.end(); ++r ) {
+      r->second.finalize();
+    }
+
+  }
+
 }
 
 void BinSampler::runIteration(unsigned long points, bool progress) {
@@ -294,7 +462,9 @@ void BinSampler::persistentOutput(PersistentOStream & os) const {
   os << theBias << theWeighted << theInitialPoints << theNIterations 
      << theEnhancementFactor << theReferenceWeight
      << theBin << theInitialized << theLastPoint
-     << theEventHandler << theSampler << theRandomNumbers;
+     << theEventHandler << theSampler << theRandomNumbers
+     << theRemapperPoints << theRemapChannelDimension
+     << theLuminosityMapperBins << theGeneralMapperBins;
 }
 
 void BinSampler::persistentInput(PersistentIStream & is, int) {
@@ -302,7 +472,9 @@ void BinSampler::persistentInput(PersistentIStream & is, int) {
   is >> theBias >> theWeighted >> theInitialPoints >> theNIterations 
      >> theEnhancementFactor >> theReferenceWeight
      >> theBin >> theInitialized >> theLastPoint
-     >> theEventHandler >> theSampler >> theRandomNumbers;
+     >> theEventHandler >> theSampler >> theRandomNumbers
+     >> theRemapperPoints >> theRemapChannelDimension
+     >> theLuminosityMapperBins >> theGeneralMapperBins;
 }
 
 
@@ -342,5 +514,45 @@ void BinSampler::Init() {
      "Prefix for distributions of the random numbers.",
      &BinSampler::theRandomNumbers, "",
      false, false);
+
+  static Parameter<BinSampler,unsigned long> interfaceRemapperPoints
+    ("RemapperPoints",
+     "The number of points to be used for filling remappers.",
+     &BinSampler::theRemapperPoints, 10000, 0, 0,
+     false, false, Interface::lowerlim);
+
+  static Switch<BinSampler,bool> interfaceRemapChannelDimension
+    ("RemapChannelDimension",
+     "Switch on remapping of the channel dimension.",
+     &BinSampler::theRemapChannelDimension, true, false, false);
+  static SwitchOption interfaceRemapChannelDimensionYes
+    (interfaceRemapChannelDimension,
+     "Yes",
+     "",
+     true);
+  static SwitchOption interfaceRemapChannelDimensionNo
+    (interfaceRemapChannelDimension,
+     "No",
+     "",
+     false);
+
+  static Parameter<BinSampler,unsigned long> interfaceLuminosityMapperBins
+    ("LuminosityMapperBins",
+     "The number of bins to be used for remapping parton luminosities.",
+     &BinSampler::theLuminosityMapperBins, 0, 0, 0,
+     false, false, Interface::lowerlim);
+
+  static Parameter<BinSampler,unsigned long> interfaceGeneralMapperBins
+    ("GeneralMapperBins",
+     "The number of bins to be used for remapping other phase space dimensions.",
+     &BinSampler::theGeneralMapperBins, 0, 0, 0,
+     false, false, Interface::lowerlim);
+
+  static Parameter<BinSampler,double> interfaceRemapperMinSelection
+    ("RemapperMinSelection",
+     "The minimum bin selection probability for remappers.",
+     &BinSampler::theRemapperMinSelection, 0.00001, 0.0, 1.0,
+     false, false, Interface::limited);
+
 }
 

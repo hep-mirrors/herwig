@@ -348,7 +348,7 @@ void CellGrid::fromXML(const XML::Element& grid) {
 
   const XML::Element& boundaries = *cit;
   cit = boundaries.findFirst(XML::ElementTypes::ParsedCharacterData,"");
-  if ( cit == grid.children().end() )
+  if ( cit == boundaries.children().end() )
     throw runtime_error("[ExSample::CellGrid] Expected boundary data.");
   istringstream bdata(cit->content());
 
