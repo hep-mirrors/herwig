@@ -28,7 +28,7 @@
 
 using namespace Herwig;
 
-MEPP2GammaJet::MEPP2GammaJet() : _maxflavour(5), _processopt(0) {
+MEPP2GammaJet::MEPP2GammaJet() : _maxflavour(5), _processopt(0), scalePreFactor_(1.) {
   massOption(vector<unsigned int>(2,0));
 }
 
@@ -99,7 +99,7 @@ unsigned int MEPP2GammaJet::orderInAlphaEW() const {
 
 Energy2 MEPP2GammaJet::scale() const {
   Energy2 s(sHat()),u(uHat()),t(tHat());
-  return 2.*s*t*u/(s*s+t*t+u*u);
+  return scalePreFactor_*2.*s*t*u/(s*s+t*t+u*u);
 }
 
 Selector<MEBase::DiagramIndex>
@@ -118,11 +118,11 @@ MEPP2GammaJet::diagrams(const DiagramVector & diags) const {
 }
 
 void MEPP2GammaJet::persistentOutput(PersistentOStream & os) const {
-  os << _gluonvertex << _photonvertex << _maxflavour << _processopt;
+  os << _gluonvertex << _photonvertex << _maxflavour << _processopt << scalePreFactor_;
 }
 
 void MEPP2GammaJet::persistentInput(PersistentIStream & is, int) {
-  is >> _gluonvertex >> _photonvertex >> _maxflavour >> _processopt;
+  is >> _gluonvertex >> _photonvertex >> _maxflavour >> _processopt >> scalePreFactor_;
 }
 
 ClassDescription<MEPP2GammaJet> MEPP2GammaJet::initMEPP2GammaJet;
@@ -164,6 +164,12 @@ void MEPP2GammaJet::Init() {
      "qbarg",
      "Only include the incoming qbar g subprocess",
      3);
+
+  static Parameter<MEPP2GammaJet,double> interfaceScalePreFactor
+    ("ScalePreFactor",
+     "Prefactor for the scale",
+     &MEPP2GammaJet::scalePreFactor_, 1.0, 0.0, 10.0,
+     false, false, Interface::limited);
 }
 
 Selector<const ColourLines *>
@@ -227,15 +233,15 @@ double MEPP2GammaJet::me2() const {
     }
     // calculate the matrix element
     me = qqbarME(fin,ain,gout,pout,false)/9.;
-//     Energy2 mt(scale());
+//       Energy2 mt(scale());
 //     double coupling=sqr(4.*Constants::pi)*SM().alphaEM(ZERO)*SM().alphaS(mt)*
 //       sqr(mePartonData()[0]->iCharge()/3.);
-//     Energy2 t(tHat()),u(uHat());
-//     double me2=8./9./u/t*(t*t+u*u)*coupling;
-//     cerr << "testing matrix element A" 
-// 	 << me << "  " 
-// 	 << me2 << " " << me/me2
-// 	 << endl;
+//       Energy2 t(tHat()),u(uHat());
+//       double me2=8./9./u/t*(t*t+u*u)*coupling;
+//       cerr << "testing matrix element A" 
+//  	   << me << "  " 
+//  	   << me2 << " " << me/me2
+//  	   << endl;
   }
   else if(mePartonData()[0]->id()>0&&mePartonData()[1]->id()) {
     // order of the particles
@@ -258,15 +264,15 @@ double MEPP2GammaJet::me2() const {
     }
     // calculate the matrix element
     me = qgME(fin,gin,pout,fout,false)/24.;
-//     Energy2 mt(scale());
+//       Energy2 mt(scale());
 //     double coupling=sqr(4.*Constants::pi)*SM().alphaEM(ZERO)*SM().alphaS(mt);
-//     Energy2 s(sHat()),t(tHat()),u(uHat());
-//     double me2=-1./3./s/t*(s*s+t*t+2.*u*(s+t+u))*coupling*
+//       Energy2 s(sHat()),t(tHat()),u(uHat());
+//       double me2=-1./3./s/t*(s*s+t*t+2.*u*(s+t+u))*coupling*
 //       sqr(mePartonData()[0]->iCharge()/3.);
-//     cerr << "testing matrix element B" 
-// 	 << me << "  " 
-// 	 << me2 << " " << me/me2
-// 	 << endl; 
+//       cerr << "testing matrix element B" 
+// 	   << me << "  " 
+// 	   << me2 << " " << me/me2
+// 	   << endl; 
   }
   else {
     // order of the particles
@@ -289,15 +295,15 @@ double MEPP2GammaJet::me2() const {
     }
     // calculate the matrix element
     me=qbargME(ain,gin,pout,aout,false)/24.;
-//     Energy2 mt(scale());
+//       Energy2 mt(scale());
 //     double coupling=sqr(4.*Constants::pi)*SM().alphaEM(ZERO)*SM().alphaS(mt);
-//     Energy2 s(sHat()),t(tHat()),u(uHat());
-//     double me2=-1./3./s/t*(s*s+t*t+2.*u*(s+t+u))*coupling*
+//       Energy2 s(sHat()),t(tHat()),u(uHat());
+//       double me2=-1./3./s/t*(s*s+t*t+2.*u*(s+t+u))*coupling*
 //       sqr(mePartonData()[0]->iCharge()/3.);
-//     cerr << "testing matrix element C" 
-// 	 << me << "  " 
-// 	 << me2 << " " << me/me2
-// 	 << endl; 
+//       cerr << "testing matrix element C" 
+// 	   << me << "  " 
+// 	   << me2 << " " << me/me2
+// 	   << endl; 
   }
   return me;
 }

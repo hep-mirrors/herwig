@@ -50,7 +50,7 @@ public:
   /**
    * The default constructor.
    */
-  PartnerFinder() : _approach(0), _partnerMethod(0) {}
+  PartnerFinder() : partnerMethod_(0), QEDPartner_(0), scaleChoice_(0) {}
 
   /**
    * Given in input a collection of particles (ShowerParticle objects),
@@ -75,7 +75,7 @@ public:
    * @param isDecayCase      Whether or not this is a decay
    * @param setPartners Whether to set the colour partners or just the scales
    */
-  virtual bool setInitialEvolutionScales(const ShowerParticleVector &particles,
+  virtual void setInitialEvolutionScales(const ShowerParticleVector &particles,
 					 const bool isDecayCase,
 					 ShowerInteraction::Type,
 					 const bool setPartners=true);
@@ -116,11 +116,33 @@ protected:
   /**
    *  Set initial scales for a QCD interaction
    */
-  virtual bool setInitialQCDEvolutionScales(const ShowerParticleVector &particles,
+  virtual void setInitialQCDEvolutionScales(const ShowerParticleVector &particles,
 					    const bool isDecayCase,
 					    const bool setPartners=true);
 
+  /**
+   *  Set initial scales for a QED interaction
+   */
+  virtual void setInitialQEDEvolutionScales(const ShowerParticleVector &particles,
+					    const bool isDecayCase,
+					    const bool setPartners=true);
   //@}
+
+  /**
+   *  Find the QCD partners
+   * @param particle The particle to find the partners for
+   * @param particles The full set of particles to search
+   */
+  vector< pair<ShowerPartnerType::Type, tShowerParticlePtr> > 
+  findQCDPartners(tShowerParticlePtr particle, const ShowerParticleVector &particles);
+
+  /**
+   *  Find the QED partners
+   * @param particle The particle to find the partners for
+   * @param particles The full set of particles to search
+   */
+  vector< pair<double, tShowerParticlePtr> > 
+  findQEDPartners(tShowerParticlePtr particle, const ShowerParticleVector &particles);
 
   /**
    * Given a pair of particles, supposedly partners w.r.t. an interaction,
@@ -155,11 +177,6 @@ protected:
 							  const bool isDecayCase)=0;
   //@}
 
-  /**
-   *  The approach for the colour partners
-   */
-  bool approach() const {return _approach;}
-
 private:
 
   /**
@@ -171,15 +188,19 @@ private:
 private:
 
   /**
-   *  Approach to use for setting the colour partners in the random approach
-   */
-  int _approach;
-
-  /**
    *  Method for choosing colour partner
    */
-   int _partnerMethod;
+   int partnerMethod_;
 
+  /**
+   *  Choice for the QED radiation partner
+   */
+  int QEDPartner_;
+
+  /**
+   *  Choice of the scale
+   */
+  int scaleChoice_;
 };
 
 }

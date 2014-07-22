@@ -520,7 +520,7 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
   // if no coloured particles return
   if ( !colouredParticles ) {
     for (unsigned int it=0; it<Progenitors.size(); ++it){
-      Progenitors[it]->maximumpT(pTmin_);
+      Progenitors[it]->maximumpT(pTmin_,ShowerInteraction::QCD);
     }
     return HardTreePtr();
   }
@@ -594,9 +594,9 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
 
   // if no emission return
   if(momenta.empty()) {
-    bProgenitor->maximumpT(pTmin_);
-    aProgenitor->maximumpT(pTmin_);
-    cProgenitor->maximumpT(pTmin_);
+    bProgenitor->maximumpT(pTmin_,ShowerInteraction::QCD);
+    aProgenitor->maximumpT(pTmin_,ShowerInteraction::QCD);
+    cProgenitor->maximumpT(pTmin_,ShowerInteraction::QCD);
     return HardTreePtr();
   }
 
@@ -606,9 +606,9 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
   }
  
   // set maximum pT for subsequent branchings
-  bProgenitor   ->maximumpT(pT_);
-  finalEmitter  ->maximumpT(pT_);
-  finalSpectator->maximumpT(pT_);
+  bProgenitor   ->maximumpT(pT_,ShowerInteraction::QCD);
+  finalEmitter  ->maximumpT(pT_,ShowerInteraction::QCD);
+  finalSpectator->maximumpT(pT_,ShowerInteraction::QCD);
 
   // get ParticleData objects
   tcPDPtr b = bProgenitor   ->progenitor()->dataPtr();
@@ -651,6 +651,20 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
   emitterBranch->addChild(new_ptr(HardBranching(gauge,SudakovPtr(),
 						HardBranchingPtr(),
 						HardBranching::Outgoing)));
+
+  if (emitterBranch->branchingParticle()->dataPtr()->hasColour()
+      && (! emitterBranch->branchingParticle()->dataPtr()->hasAntiColour())) {
+    emitterBranch->type(ShowerPartnerType::QCDColourLine);
+  }
+  else if (emitterBranch->branchingParticle()->dataPtr()->hasAntiColour()
+	   && (! emitterBranch->branchingParticle()->dataPtr()->hasColour())) {
+    emitterBranch->type(ShowerPartnerType::QCDAntiColourLine);
+  }
+  else
+    emitterBranch->type(UseRandom::rndbool() ? 
+			ShowerPartnerType::QCDColourLine : 
+			ShowerPartnerType::QCDAntiColourLine);
+
   allBranchings.push_back(spaceBranchings[0]);
   allBranchings.push_back(emitterBranch);
   allBranchings.push_back(spectatorBranch);

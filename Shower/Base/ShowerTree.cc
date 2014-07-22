@@ -450,7 +450,7 @@ void ShowerTree::insertHard(StepPtr pstep, bool ISR, bool) {
   if(ISR) {
     for(cit=incomingLines().begin();cit!=incomingLines().end();++cit) {
       ShowerParticlePtr init=(*cit).first->progenitor();
-      assert(init->getThePEGBase());
+      assert(init->thePEGBase());
       PPtr original = (*cit).first->original();
       if(original->parents().empty()) continue;
       PPtr hadron= original->parents()[0];
@@ -501,7 +501,7 @@ void ShowerTree::insertHard(StepPtr pstep, bool ISR, bool) {
   else {
     for(cit=incomingLines().begin();cit!=incomingLines().end();++cit) {
       ShowerParticlePtr init=(*cit).first->progenitor();
-      assert(init->getThePEGBase());
+      assert(init->thePEGBase());
       PPtr original = (*cit).first->original();
       if(original->parents().empty()) continue;
       PPtr hadron= original->parents()[0];
@@ -524,7 +524,7 @@ void ShowerTree::insertHard(StepPtr pstep, bool ISR, bool) {
   // final-state radiation
   for(cjt=outgoingLines().begin();cjt!=outgoingLines().end();++cjt) {
     ShowerParticlePtr init=(*cjt).first->progenitor();
-    assert(init->getThePEGBase());
+    assert(init->thePEGBase());
     // if not from a matrix element correction
     if(cjt->first->perturbative()) {
       // register the shower particle as a 
@@ -826,7 +826,7 @@ void ShowerTree::insertDecay(StepPtr pstep,bool ISR, bool) {
   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cit;
   for(cit=outgoingLines().begin();cit!=outgoingLines().end();++cit) {
     ShowerParticlePtr init=cit->first->progenitor();
-    if(!init->getThePEGBase()) 
+    if(!init->thePEGBase()) 
       throw Exception() << "Final-state particle must have a ThePEGBase"
 			<< " in ShowerTree::insertDecay()" 
 			<< Exception::runerror;
@@ -1109,4 +1109,17 @@ void ShowerTree::fixColour(tShowerParticlePtr part) {
       }
     }
   }
+}
+
+vector<ShowerParticlePtr> ShowerTree::extractProgenitorParticles() {
+  vector<ShowerParticlePtr> particles;
+  // incoming particles
+  for(map<ShowerProgenitorPtr, ShowerParticlePtr>::const_iterator 
+	cit=incomingLines().begin(); cit!=incomingLines().end();++cit)
+    particles.push_back(cit->first->progenitor());
+  // outgoing particles
+  for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator
+	cjt=outgoingLines().begin(); cjt!=outgoingLines().end();++cjt)
+    particles.push_back(cjt->first->progenitor());
+  return particles;
 }

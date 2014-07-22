@@ -15,6 +15,7 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include <ostream>
 
 using namespace Herwig;
 
@@ -29,3 +30,26 @@ PPtr ShowerParticle::fullclone() const {
 ClassDescription<ShowerParticle> ShowerParticle::initShowerParticle;
 // Definition of the static class description member.
 
+void ShowerParticle::vetoEmission(ShowerPartnerType::Type, Energy scale) {
+  scales_.QED         = min(scale,scales_.QED        );
+  scales_.QED_noAO    = min(scale,scales_.QED_noAO   );
+  scales_.QCD_c       = min(scale,scales_.QCD_c      );
+  scales_.QCD_c_noAO  = min(scale,scales_.QCD_c_noAO );
+  scales_.QCD_ac      = min(scale,scales_.QCD_ac     );
+  scales_.QCD_ac_noAO = min(scale,scales_.QCD_ac_noAO);
+}
+
+void ShowerParticle::addPartner(EvolutionPartner in ) {
+  partners_.push_back(in); 
+}
+
+ostream & operator<<(ostream & os, const ShowerParticle::EvolutionScales & es) {
+  os << "Scales: QED=" << es.QED / GeV
+     << " QCD_c=" << es.QCD_c / GeV
+     << " QCD_ac=" << es.QCD_ac / GeV
+     << " QED_noAO=" << es.QED_noAO / GeV
+     << " QCD_c_noAO" << es.QCD_c_noAO / GeV
+     << " QCD_ac_noAO" << es.QCD_ac_noAO / GeV
+     << '\n';
+  return os;
+}

@@ -25,11 +25,11 @@ IBPtr MEee2gZ2qqPowheg::fullclone() const {
 }
 
 void MEee2gZ2qqPowheg::persistentOutput(PersistentOStream & os) const {
-  os << contrib_ << yPow_ << zPow_;
+  os << contrib_ << corrections_ << yPow_ << zPow_;
 }
 
 void MEee2gZ2qqPowheg::persistentInput(PersistentIStream & is, int) {
-  is >> contrib_ >> yPow_ >> zPow_;
+  is >> contrib_ >> corrections_ >> yPow_ >> zPow_;
 }
 
 ClassDescription<MEee2gZ2qqPowheg> MEee2gZ2qqPowheg::initMEee2gZ2qqPowheg;
@@ -72,6 +72,26 @@ void MEee2gZ2qqPowheg::Init() {
      "The sampling power for y",
      &MEee2gZ2qqPowheg::yPow_, 0.9, 0.0, 1.0,
      false, false, Interface::limited);
+
+  static Switch<MEee2gZ2qqPowheg,unsigned int> interfaceCorrections
+    ("Corrections",
+     "Which corrections to include",
+     &MEee2gZ2qqPowheg::corrections_, 1, false, false);
+  static SwitchOption interfaceCorrectionsQCD
+    (interfaceCorrections,
+     "QCD",
+     "Only include the QCD corrections",
+     1);
+  static SwitchOption interfaceCorrectionsQED
+    (interfaceCorrections,
+     "QED",
+     "Only include the QED corrections",
+     2);
+  static SwitchOption interfaceCorrectionsQCDandQED
+    (interfaceCorrections,
+     "QCDandQED",
+     "Include both QED and QCD corrections",
+     3);
 
 }
 
@@ -213,11 +233,10 @@ double MEee2gZ2qqPowheg::me2() const {
   double omv = 4.*mu2/(1.+v);
   double f1,f2,fNS,VNS;
   double CF=4./3.;
-  double aS = SM().alphaS(scale());
   double r = omv/(1.+v),lr(log(r));
   // normal form
   if(mu>1e-4) {
-    f1 = CF*aS/Constants::pi*
+    f1 = 
       ( +1. + 3.*log(0.5*(1.+v)) - 1.5*log(0.5*(1.+v2)) + sqr(Constants::pi)/6.
 	- 0.5*sqr(lr) - (1.+v2)/v*(lr*log(1.+v2) + sqr(Constants::pi)/12. 
 				       -0.5*log(4.*mu2)*lr + 0.25*sqr(lr)));
@@ -228,11 +247,11 @@ double MEee2gZ2qqPowheg::me2() const {
 			    - 2.*Herwig::Math::ReLi2(2.*v/(1.+v)) - sqr(Constants::pi)/6.)
       + log(1.-mu) - 2.*log(1.-2.*mu) - 4.*mu2/(1.+v2)*log(mu/(1.-mu)) - mu/(1.-mu)
       + 4.*(2.*mu2-mu)/(1.+v2) + 0.5*sqr(Constants::pi); 
-    f2 = CF*aS/Constants::pi*mu2*lr/v;
+    f2 = mu2*lr/v;
   }
   // small mass limit
   else {
-    f1 = -CF*aS/Constants::pi/6.*
+    f1 = -1./6.*
       ( - 6. - 24.*lmu*mu2 - 15.*mu4 - 12.*mu4*lmu - 24.*mu4*sqr(lmu) 
 	+ 2.*mu4*sqr(Constants::pi) - 12.*mu2*mu4 - 96.*mu2*mu4*sqr(lmu) 
 	+ 8.*mu2*mu4*sqr(Constants::pi) - 80.*mu2*mu4*lmu);
@@ -242,10 +261,10 @@ double MEee2gZ2qqPowheg::me2() const {
     VNS = - mu2/1260.*(-6930. + 7560.*lmu + 2520.*mu - 16695.*mu2 + 1260.*mu2*sqr(Constants::pi) 
 		       + 12600.*lmu*mu2 + 1344.*mu*mu2 - 52780.*mu4 + 36960.*mu4*lmu 
 		       + 5040.*mu4*sqr(Constants::pi) - 12216.*mu*mu4);
-    f2 = CF*aS*mu2/Constants::pi*( 2.*lmu + 4.*mu2*lmu + 2.*mu2 + 12.*mu4*lmu + 7.*mu4);
+    f2 = mu2*( 2.*lmu + 4.*mu2*lmu + 2.*mu2 + 12.*mu4*lmu + 7.*mu4);
   }
   // add up bits for f1
-  f1 += CF*aS/Constants::pi*(fNS+VNS);
+  f1 += fNS+VNS;
   // now for the real correction
   double jac = 1.;
   // generate y
@@ -281,8 +300,8 @@ double MEee2gZ2qqPowheg::me2() const {
     pemit .setZ(- pemit.z());
   // loop over the possible emitting partons
   vector<cPDPtr> partons(mePartonData());
-  partons.push_back(gluon());
-  double realwgt(0.);
+  partons.push_back(cPDPtr());
+  double realwgt[2]={0.,0.};
   for(unsigned int iemit=0;iemit<2;++iemit) {
     // boost and rotate momenta
     LorentzRotation eventFrame( ( rescaledMomenta()[2] +
@@ -302,15 +321,50 @@ double MEee2gZ2qqPowheg::me2() const {
     }
     momenta.push_back(eventFrame*pgluon);
     // calculate the weight
-    if(1.-x1>1e-5 && 1.-x2>1e-5) 
-      realwgt += meRatio(partons,momenta,iemit,true);
+    if(1.-x1>1e-5 && 1.-x2>1e-5) {
+      for(unsigned int ix=0;ix<2;++ix) {
+	if(ix==0 && (corrections_==1 || corrections_==3 ) ) {
+	  partons[4] = gluon();
+	  realwgt[ix] += meRatio(partons,momenta,iemit,ShowerInteraction::QCD,true);
+	}
+	else if( ix==1 && (corrections_==2 || corrections_==3 )) {
+	  partons[4] = gamma();
+	  realwgt[ix] += meRatio(partons,momenta,iemit,ShowerInteraction::QED,true);
+	}
+	else
+	  realwgt[ix]=0.;
+      }
+    }
   }
   // total real emission contribution
-  double realFact = 0.25*(1.-y)*jac*
-    sqr(1.-2.*mu2)/sqrt(1.-4.*mu2)/Constants::twopi*
-    2.*CF*aS*realwgt;
+  double realFact = 0.25*(1.-y)*jac*sqr(1.-2.*mu2)/sqrt(1.-4.*mu2);
+  for(unsigned int ix=0;ix<2;++ix) realwgt[ix] *= realFact;
+  // coupling prefactors
+  double charge = sqr(double(mePartonData()[2]->iCharge())/3.);
+  double aS  = CF*SM().alphaS (scale())/Constants::pi;
+  double aEM =    SM().alphaEM(scale())/Constants::pi*charge;
+  // coupling factors
+  // correction for real emission
+  realwgt[0] *= aS ;
+  realwgt[1] *= aEM;
+  // and virtual
+  if(corrections_==1) {
+    f1 *= aS;
+    f2 *= aS;
+    realwgt[1]=0.;
+  }
+  else if(corrections_==2) {
+    f1 *= aEM;
+    f2 *= aEM;
+    realwgt[0]=0.;
+  }
+  else if(corrections_==3) {
+    f1 *= aS + aEM;
+    f2 *= aS + aEM;
+  }
   // the born + virtual + real
-  total[0] = total[0]*(1. + f1 + realFact) + f2*total[3];
+  total[0] = total[0]*(1. + f1 + realwgt[0]+realwgt[1]) + f2*total[3];
+  // return the answer
   if(contrib_==2) total[0] *=-1.;
   return max(total[0],0.);
 }

@@ -272,6 +272,6 @@ bool HwMEBase::softMatrixElementVeto(ShowerProgenitorPtr,
   return false;
 }
 
-HardTreePtr HwMEBase::generateHardest(ShowerTreePtr) {
-    return HardTreePtr();
+HardTreePtr HwMEBase::generateHardest(ShowerTreePtr,vector<ShowerInteraction::Type>) {
+  return HardTreePtr();
 }

@@ -257,6 +257,11 @@ private:
    * Matrix element for spin correlations
    */
   ProductionMatrixElement _me;
+
+  /**
+   *  Scale prefactor
+   */
+  double scalePreFactor_;
 };
 
 }

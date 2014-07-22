@@ -46,7 +46,7 @@ public:
   ShowerProgenitor(PPtr original,PPtr copy, ShowerParticlePtr particle,
 		   Energy pT=ZERO,bool emitted=false)
     : _original(original), _copy(copy), _perturbative(true),
-      _particle(particle), _highestpT(pT), _maxpT(Constants::MaxEnergy), 
+      _particle(particle), _highestpT(pT), 
       _maxHardPt(ZERO), _hasEmitted(emitted), _didProfileVeto(false) {
     // get the BeamParticleData object
     if ( original->parents().empty() ) {
@@ -116,12 +116,17 @@ public:
   /**
    *  Access the maximum \f$p_T\f$ for radiation
    */
-  Energy maximumpT() const { return _maxpT; }
+  Energy maximumpT(ShowerInteraction::Type type) const {
+    assert(type!=ShowerInteraction::Both);
+    map<ShowerInteraction::Type,Energy>::const_iterator it = _maxpT.find(type);
+    return it !=_maxpT.end() ? it->second : Constants::MaxEnergy; 
+  }
 
   /**
    *  Set the maximum \f$p_T\f$ for radiation
    */
-  void maximumpT(Energy in) { _maxpT=in; }
+  void maximumpT(Energy in,ShowerInteraction::Type type) {
+    _maxpT[type]=in; }
   //@}
 
   /**
@@ -200,7 +205,7 @@ private:
   /**
    *  Maximum allowed \f$p_T\f$ for emission from this particle
    */
-  Energy _maxpT;
+  map<ShowerInteraction::Type,Energy> _maxpT;
 
   /**
    *  maximum hard \f$p_T\f$ from the hard process

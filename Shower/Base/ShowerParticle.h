@@ -17,6 +17,7 @@
 #include "Herwig++/Shower/ShowerConfig.h"
 #include "ShowerKinematics.h"
 #include "ShowerParticle.fh"
+#include <iosfwd>
 
 namespace Herwig {
 
@@ -59,6 +60,84 @@ class ShowerParticle: public Particle {
 
 public:
 
+  /**
+   *  Struct for all the info on an evolution partner
+   */
+  struct EvolutionPartner {
+
+    /**
+     *  Constructor
+     */
+    EvolutionPartner(tShowerParticlePtr p,double w, ShowerPartnerType::Type t,
+		     Energy s) : partner(p), weight(w), type(t), scale(s)
+    {}
+
+    /**
+     * The partner
+     */
+    tShowerParticlePtr partner;
+    
+    /**
+     *  Weight
+     */
+    double weight;
+
+    /**
+     *  Type
+     */
+    ShowerPartnerType::Type type;
+
+    /**
+     *  The assoicated evolution scale
+     */
+    Energy scale;
+  };
+
+  /**
+   *  Struct to store the evolution scales
+   */
+  struct EvolutionScales {
+
+    /**
+     *  Constructor
+     */
+    EvolutionScales() : QED(),QCD_c(),QCD_ac(),
+			QED_noAO(),QCD_c_noAO(),QCD_ac_noAO()
+    {}
+
+    /**
+     *  QED scale
+     */
+    Energy QED;
+
+    /**
+     * QCD colour scale
+     */
+    Energy QCD_c;
+
+    /**
+     *  QCD anticolour scale
+     */
+    Energy QCD_ac;
+
+    /**
+     *  QED scale
+     */
+    Energy QED_noAO;
+
+    /**
+     * QCD colour scale
+     */
+    Energy QCD_c_noAO;
+
+    /**
+     *  QCD anticolour scale
+     */
+    Energy QCD_ac_noAO;
+
+  };
+
+
   /** @name Construction and descruction functions. */
   //@{
 
@@ -71,9 +150,9 @@ public:
    * @param tls Whether or not the particle initiates a time-like shower
    */
   ShowerParticle(tcEventPDPtr x, bool fs, bool tls=false) 
-    : Particle(x), _isFinalState(fs), _reconstructionFixedPoint( false ),
+    : Particle(x), _isFinalState(fs),
       _perturbative(0), _initiatesTLS(tls), _x(1.0), _showerKinematics(),
-      _scale(ZERO), _vMass(ZERO), _thePEGBase(), _evolutionScale2(), _radiationLine() {}
+      _vMass(ZERO), _thePEGBase() {}
 
   /**
    * Copy constructor from a ThePEG Particle
@@ -83,9 +162,9 @@ public:
    * @param tls Whether or not the particle initiates a time-like shower
    */
   ShowerParticle(const Particle & x, unsigned int pert, bool fs, bool tls=false)
-    : Particle(x), _isFinalState(fs), _reconstructionFixedPoint( false ),
+    : Particle(x), _isFinalState(fs),
     _perturbative(pert), _initiatesTLS(tls), _x(1.0), _showerKinematics(),
-    _scale(ZERO), _vMass(ZERO), _thePEGBase(&x), _evolutionScale2(), _radiationLine() {}
+    _vMass(ZERO), _thePEGBase(&x) {}
   //@}
 
 public:
@@ -142,7 +221,7 @@ public:
   /**
    * Set the ShowerKinematics object.
    */
-  void setShowerKinematics(const ShoKinPtr in) { _showerKinematics = in; }
+  void showerKinematics(const ShoKinPtr in) { _showerKinematics = in; }
   //@}
 
   /**
@@ -150,16 +229,19 @@ public:
    */
   //@{
   /**
-   * Return the evolution scale \f$\tilde{q}\f$
+   *  Veto emission at a given scale 
    */
-  Energy evolutionScale() const { return _scale; }
-
-
+  void vetoEmission(ShowerPartnerType::Type type, Energy scale);
 
   /**
-   *  Set the evolution \f$\tilde{q}\f$ scale
+   *  Access to the evolution scales
    */
-  void setEvolutionScale(Energy scale) { _scale = scale; }
+  const EvolutionScales & scales() const {return scales_;} 
+
+  /**
+   *  Access to the evolution scales
+   */
+  EvolutionScales & scales() {return scales_;} 
 
   /**
    * Return the virtual mass\f$
@@ -169,79 +251,44 @@ public:
   /**
    *  Set the virtual mass
    */
-  void setVirtualMass(Energy mass) { _vMass = mass; }
+  void virtualMass(Energy mass) { _vMass = mass; }
 
   /** 
    * Return the partner
    */
   tShowerParticlePtr partner() const { return _partner; }
 
-
   /**
    * Set the partner
    */
-  void setPartner(const tShowerParticlePtr partner) { _partner = partner; } 
-
+  void partner(const tShowerParticlePtr partner) { _partner = partner; } 
 
   /**
-   * Return the evolution scale \f$\tilde{q}\f$ belonging to the second partner
+   *  Get the possible partners 
    */
-  Energy evolutionScale2() const { return _evolutionScale2; }
+  vector<EvolutionPartner> & partners() { return partners_; }
 
   /**
-   *  Set the evolution \f$\tilde{q}\f$ scale of the second partner for gluon
+   *  Add a possible partners 
    */
-  void setEvolutionScale2(Energy evolutionScale2) { _evolutionScale2 = evolutionScale2; }
-  
-  /**
-   *  Return the radiation line of a gluon
-   *  This is 0 for a particle with random radiation choice, 1 for the colour
-   *  line and 2 for the anti-colour line.
-   */
-  int radiationLine() { return _radiationLine; }
+  void addPartner(EvolutionPartner in );
 
   /**
-   *  Set the radiation line of a gluon
-   */   
-  void setRadiationLine(int radiationLine) { _radiationLine = radiationLine; }
-  
-  
+   *  Clear the evolution partners
+   */
+  void clearPartners() { partners_.clear(); }
+    
   /** 
    * Return the progenitor of the shower
    */
   tShowerParticlePtr progenitor() const { return _progenitor; }
 
-
   /**
    * Set the progenitor of the shower
    */
-  void setProgenitor(const tShowerParticlePtr progenitor) { _progenitor = progenitor; } 
-    
-
+  void progenitor(const tShowerParticlePtr progenitor) { _progenitor = progenitor; } 
   //@}
 
-  /**
-   * Access/Set the flag that tells if the particle should be
-   * treated in a special way during the kinematics reconstruction
-   * (see KinematicsReconstructor class). 
-   * In practice, it returns true when either the particle is childless, 
-   * or is a on-shell decaying particle (in which case we have to set the flag to
-   * true before the showering of this particle: it is not enough to check 
-   * if decayer() is not null, because if it emits radiation
-   * the decays products will be "transferred" to the particle
-   * instance after the showering).
-   */
-  //@{
-  /**
-   *  Get the flag
-   */
-  bool isReconstructionFixedPoint() const { return _reconstructionFixedPoint || children().empty(); }
-
-  /**
-   *  Set the flag
-   */
-  void setReconstructionFixedPoint(const bool in) { _reconstructionFixedPoint = in; }
-  //@}
 
   /**
    *  Members to store and provide access to variables for a specific
@@ -268,7 +315,7 @@ public:
    *  If this particle came from the hard process get a pointer to ThePEG particle
    *  it came from
    */
-  const tcPPtr getThePEGBase() const { return _thePEGBase; }
+  const tcPPtr thePEGBase() const { return _thePEGBase; }
 
 protected:
 
@@ -304,11 +351,6 @@ private:
   bool _isFinalState;
 
   /**
-   *  Whether the particle is a reconstruction fixed point
-   */
-  bool _reconstructionFixedPoint;
-
-  /**
    *  Whether the particle came from 
    */
   unsigned int _perturbative;
@@ -334,9 +376,9 @@ private:
   ShoKinPtr _showerKinematics;
 
   /**
-   *  Evolution scales
+   *  Storage of the evolution scales
    */
-  Energy _scale;
+  EvolutionScales scales_;
 
   /**
    *  Virtual mass
@@ -354,21 +396,18 @@ private:
   const tcPPtr _thePEGBase;
   
   /**
-   *  Second evolution scale
-   */  
-  Energy _evolutionScale2; 
-  
-  /**
-   *  Radiation Line
-   */
-  int _radiationLine;
-  
-  /**
    *  Progenitor
    */   
   tShowerParticlePtr _progenitor;
+
+  /**
+   *  Partners
+   */
+  vector<EvolutionPartner> partners_;
     
 };
+
+ostream & operator<<(ostream & os, const ShowerParticle::EvolutionScales & es);
 
 }
 

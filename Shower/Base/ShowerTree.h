@@ -260,6 +260,11 @@ public:
    */
   const LorentzRotation & transform() {return _transforms;}
 
+  /**
+   *  Get all the progenitors
+   */
+  vector<ShowerParticlePtr> extractProgenitorParticles();
+
 protected:
 
   /**

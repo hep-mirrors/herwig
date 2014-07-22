@@ -33,7 +33,7 @@ using namespace ThePEG::Helicity;
 // namespace {
 // using namespace Herwig;
 // using namespace ThePEG::Helicity;
-
+// 
 // void debuggingMatrixElement(bool BGF,const Lorentz5Momentum & pin,
 // 			    const Lorentz5Momentum & p1,
 // 			    const Lorentz5Momentum & p2,
@@ -221,7 +221,7 @@ using namespace ThePEG::Helicity;
 //     cerr << "testing RATIO B " << test1/test2 << "\n";
 //   }
 // }
-
+// 
 // }
  
 DISBase::DISBase()  : initial_(6.), final_(3.),
@@ -703,7 +703,7 @@ bool DISBase::softMatrixElementVeto(ShowerProgenitorPtr initial,
     return false;
   }
   // otherwise
-  parent->setEvolutionScale(br.kinematics->scale());
+  parent->vetoEmission(br.type,br.kinematics->scale());
   return true;
 }
 
@@ -824,7 +824,14 @@ vector<double> DISBase::BGFME(double xp, double x2, double x3,
   return output;
 }
 
-HardTreePtr DISBase::generateHardest(ShowerTreePtr tree) {
+HardTreePtr DISBase::generateHardest(ShowerTreePtr tree,
+				     vector<ShowerInteraction::Type> inter) {
+  bool found = false;
+  // check if generating QCD radiation
+  for(unsigned int ix=0;ix<inter.size();++ix) {
+    found |= inter[ix]==ShowerInteraction::QCD;
+  }
+  if(!found) return HardTreePtr();
   ShowerParticlePtr quark[2],lepton[2];
   PPtr hadron;
   // incoming particles
@@ -868,6 +875,7 @@ HardTreePtr DISBase::generateHardest(ShowerTreePtr tree) {
   phadron.setMass(0.*GeV);
   phadron.rescaleRho();
   Lorentz5Momentum pb     = quark[0]->momentum();
+  Lorentz5Momentum pbasis = phadron;
   Axis axis(q_.vect().unit());
   double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
   LorentzRotation rot_ = LorentzRotation();
@@ -977,6 +985,8 @@ HardTreePtr DISBase::generateHardest(ShowerTreePtr tree) {
       HardBranchingPtr g(new_ptr(HardBranching(newg,SudakovPtr(),spaceBranch,
 					       HardBranching::Outgoing)));
       spaceBranch->addChild(g);
+      spaceBranch->type(offBranch->branchingParticle()->id()>0 ? 
+			ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine);
       HardBranchingPtr outBranch(new_ptr(HardBranching(newqout,SudakovPtr(),
 						       HardBranchingPtr(),
 						       HardBranching::Outgoing)));
@@ -1008,6 +1018,8 @@ HardTreePtr DISBase::generateHardest(ShowerTreePtr tree) {
 						       HardBranching::Outgoing)));
       offBranch->addChild(outBranch);
       offBranch->addChild(g);
+      offBranch->type(offBranch->branchingParticle()->id()>0 ? 
+		       ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine);
       spaceBranchings.push_back(spaceBranch);
       allBranchings.push_back(spaceBranch);
       allBranchings.push_back(offBranch);	 
@@ -1038,6 +1050,8 @@ HardTreePtr DISBase::generateHardest(ShowerTreePtr tree) {
 						HardBranching::Outgoing)));
     spaceBranch->addChild(offBranch);
     spaceBranch->addChild(qbar);
+    spaceBranch->type(offBranch->branchingParticle()->id()>0 ? 
+		     ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine);
     HardBranchingPtr outBranch(new_ptr(HardBranching(newq,SudakovPtr(),
 						     HardBranchingPtr(),
 						     HardBranching::Outgoing)));
@@ -1057,7 +1071,7 @@ HardTreePtr DISBase::generateHardest(ShowerTreePtr tree) {
 	cit=tree->incomingLines().begin();cit!=tree->incomingLines().end();++cit) {
     // set maximum pT
     if(QuarkMatcher::Check(cit->first->progenitor()->data()))
-      cit->first->maximumpT(pT);
+      cit->first->maximumpT(pT,ShowerInteraction::QCD);
     for(set<HardBranchingPtr>::iterator cjt=newTree->branchings().begin();
 	cjt!=newTree->branchings().end();++cjt) {
       if(!(*cjt)->branchingParticle()->isFinalState()&&
@@ -1079,7 +1093,7 @@ HardTreePtr DISBase::generateHardest(ShowerTreePtr tree) {
 	cit=tree->outgoingLines().begin();cit!=tree->outgoingLines().end();++cit) {
     // set maximum pT
     if(QuarkMatcher::Check(cit->first->progenitor()->data()))
-      cit->first->maximumpT(pT);
+      cit->first->maximumpT(pT,ShowerInteraction::QCD);
     for(set<HardBranchingPtr>::iterator cjt=newTree->branchings().begin();
 	cjt!=newTree->branchings().end();++cjt) {
       if((*cjt)->branchingParticle()->isFinalState()&&
@@ -1088,34 +1102,6 @@ HardTreePtr DISBase::generateHardest(ShowerTreePtr tree) {
       }
     }
   }
-  // set the evolution partners and scales
-  ShowerParticleVector particles;
-  for(set<HardBranchingPtr>::iterator cit=newTree->branchings().begin();
-      cit!=newTree->branchings().end();++cit) {
-    particles.push_back((*cit)->branchingParticle());
-  }
-//   evolver()->showerModel()->partnerFinder()->
-//     setInitialEvolutionScales(particles,true,ShowerInteraction::QCD,true);
-//   // Calculate the shower variables:
-//   evolver()->showerModel()->kinematicsReconstructor()->
-//     deconstructHardJets(newTree,evolver(),ShowerInteraction::QCD);
-//   for(set<HardBranchingPtr>::iterator cjt=newTree->branchings().begin(); 
-//       cjt!=newTree->branchings().end();++cjt) { 
-//     if(cjt==newTree->branchings().begin()) { 
-//       (**cjt).showerMomentum((**cjt).branchingParticle()->momentum()); 
-//       ++cjt; 
-//       (**cjt).showerMomentum((**cjt).branchingParticle()->momentum()); 
-//       ++cjt;
-//     } 
-//     // incoming 
-//     if((**cjt).status()==HardBranching::Incoming) { 
-//       quark[0]->set5Momentum((**cjt).showerMomentum()); 
-//     } 
-//     // outgoing 
-//     else { 
-//       quark[1]->set5Momentum((**cjt).showerMomentum()); 
-//     } 
-//   } 
   return newTree;
 }
 

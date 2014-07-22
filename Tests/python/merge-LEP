@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-import lighthisto
+# import lighthisto
 import logging
 import sys
 
@@ -7,36 +7,24 @@ if sys.version_info[:3] < (2,4,0):
     print "rivet scripts require Python version >= 2.4.0... exiting"
     sys.exit(1)
 
-import os, copy, re
-from math import sqrt
+import os, yoda, copy
 
-## Try to load faster but non-standard cElementTree module
-try:
-    import xml.etree.cElementTree as ET
-except ImportError:
-    try:
-        import cElementTree as ET
-    except ImportError:
-        try:
-            import xml.etree.ElementTree as ET
-        except:
-            sys.stderr.write("Can't load the ElementTree XML parser: please install it!\n")
+# # #############################################
+
+def fillAbove(desthisto, sourcehistosbysqrts):
+    if type(desthisto) is yoda.core.Scatter2D :
+        if(desthisto.numPoints!=1) :
+            print desthisto.numPoints
+            logging.error("Must have one bin for a specific sqrt(s) for %s" % desthisto.path)
             sys.exit(1)
-
-
-
-# #############################################
-
-def fillAbove(desthisto, sourcehistosbyptmin):
-    for i,b in enumerate(desthisto.getBins()):
-        ## Fill bins with pT-ordered histos (so that 'highest always wins')
-        for ptmin, h in sorted(sourcehistosbyptmin.iteritems()):
-            newb = h.getBin(i)
-            if newb.xlow <= float(ptmin) and newb.xhigh >=float(ptmin):
-                b.val =  newb.val
-                b.errplus =  newb.errplus
-                b.errminus =  newb.errminus
-                b._focus= newb._focus
+        for sqrts, h in sorted(sourcehistosbysqrts.iteritems()) :
+            if(h.numPoints!=1) :
+                continue
+            if(desthisto.points[0].x != h.points[0].x) :
+                desthisto.addPoint(h.points[0])
+    else :
+        logging.error("Unknown analysis object" + desthisto.path)
+        sys.exit(1)
 
 def merge(hpath):
     global inhistos
@@ -53,6 +41,7 @@ def useOne(hpath, sqrts):
         outhistos[hpath] =  inhistos[hpath][float(sqrts)]
     except:
         pass
+
 if __name__ == "__main__":
     import logging
     from optparse import OptionParser, OptionGroup
@@ -66,28 +55,22 @@ if __name__ == "__main__":
     (opts, args) = parser.parse_args()
     logging.basicConfig(level=opts.LOGLEVEL, format="%(message)s")
 
-
-    ## Prefix used in dat file headers
-    headerprefix = "# "
-
-
     ## Check args
     if len(args) < 1:
         logging.error("Must specify at least the name of the files")
         sys.exit(1)
 
-# #######################################
+#######################################
 
-aidafiles=["-130.aida","-133.aida","-136.aida","-177.aida","-192.aida",
-           "-196.aida","-202.aida","-206.aida","-91.aida" ,"-91-nopi.aida" ,\
-           "-161.aida","-183.aida","-197.aida","-35.aida" ,"-172.aida",\
-           "-189.aida","-200.aida","-44.aida","-14.aida","-22.aida","-10.aida" ]
-
+yodafiles=["-130.yoda","-133.yoda","-136.yoda","-177.yoda","-192.yoda",
+           "-196.yoda","-202.yoda","-206.yoda","-91.yoda" ,"-91-nopi.yoda" ,\
+           "-161.yoda","-183.yoda","-197.yoda","-35.yoda" ,"-172.yoda",\
+           "-189.yoda","-200.yoda","-44.yoda","-14.yoda","-22.yoda","-10.yoda" ]
+           
 ## Get histos
 inhistos = {}
 outhistos={}
-weights = {}
-for f in aidafiles:
+for f in yodafiles:
     file = args[0]+f
     if(file.find("10")>0) :
         sqrts=10
@@ -134,40 +117,35 @@ for f in aidafiles:
         logging.error("%s can not be read" % file)
         break
     try:
-        tree = ET.parse(file)
+        aos = yoda.read(file)
     except:
-        logging.error("%s can not be parsed as XML" % file)
+        logging.error("%s can not be parsed as yoda" % file)
         break
-    tree = ET.parse(file)
-    ## Get histos from this AIDA file
-    for dps in tree.findall("dataPointSet"):
-        h = lighthisto.Histo.fromDPS(dps)
+    ## Get histos from this YODA file
+    for aopath, ao in aos.iteritems() :
         # jet shapes
-        if(h.fullPath().find("4300807")>0 or h.fullPath().find("6132243")>0 or
-           h.fullPath().find("5765862")>0 or h.fullPath().find("3612880")>0 or
-           h.fullPath().find("4328825")>0 or h.fullPath().find("5361494")>0 or
-           h.fullPath().find("2148048")>0 or h.fullPath().find("MULTIPLICITIES")>0 ) :
-           if not inhistos.has_key(h.fullPath()):
-               inhistos[h.fullPath()] = {}
-           if not inhistos[h.fullPath()].has_key(sqrts):
-               inhistos[h.fullPath()][sqrts] = h
-           else:
+        if(aopath.find("4300807")>0 or aopath.find("6132243")>0 or
+           aopath.find("5765862")>0 or aopath.find("3612880")>0 or
+           aopath.find("4328825")>0 or aopath.find("5361494")>0 or
+           aopath.find("2148048")>0 or aopath.find("MULTIPLICITIES")>0 ) :
+            if not inhistos.has_key(aopath):
+                inhistos[aopath] = {}
+            if not inhistos[aopath].has_key(sqrts):
+                inhistos[aopath][sqrts] = ao
+            else:
                 raise Exception("A set with sqrts = %s already exists" % ( sqrts))
         else :
-            outhistos[h.fullPath()] = h
+            outhistos[aopath] = ao
 
-## Make empty output histos if needed
+# ## Make empty output histos if needed
 for hpath,hsets in inhistos.iteritems():
-    if( hpath.find("4300807")>0 or hpath.find("6132243")>0 or hpath.find("5765862")>0 or
+    if( hpath.find("4300807")>0 or hpath.find("6132243")>0 or 
+        hpath.find("5765862")>0 or
         hpath.find("4328825")>0 or hpath.find("5361494")>0) :
-        workhisto = copy.deepcopy(hsets.values()[0])
-        outhistos[hpath] = workhisto
-        ## Empty the bin set for histos which we're going to merge
-        for b in outhistos[hpath]:
-            b.val = 0
-            b.errplus = 0
-            b.errminus = 0
-            b._focus= None
+        # workhisto = copy.deepcopy(hsets.values()[0])
+        # outhistos[hpath] = workhisto
+        outhistos[hpath] = hsets.values()[0]
+
 # tasso
 useOne("/TASSO_1990_S2148048/d06-x01-y01","14")
 useOne("/TASSO_1990_S2148048/d07-x01-y01","14")
@@ -887,16 +865,7 @@ useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d38-x01-y04","177")
 useOne("/PDG_HADRON_MULTIPLICITIES_RATIOS/d39-x01-y04","177")
 
 # Choose output file
-name = args[0]+".aida"
-out = open(name, "w")
-## Write out merged histos
-out.write('<?xml version="1.0" encoding="ISO-8859-1" ?>\n')
-out.write('<!DOCTYPE aida SYSTEM "http://aida.freehep.org/schemas/3.3/aida.dtd">\n')
-out.write('<aida version="3.3">\n')
-out.write('  <implementation version="1.1" package="FreeHEP"/>\n')
-for hpath, h in sorted(outhistos.iteritems()):
-    logging.debug("hpath = %s" % hpath)
-    out.write(h.asAIDA() + "\n\n")
-out.write('</aida>\n')
-
+name = args[0]+".yoda"
+# output the yoda file
+yoda.writeYODA(outhistos,name)
 sys.exit(0)

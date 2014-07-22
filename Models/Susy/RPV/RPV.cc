@@ -707,7 +707,7 @@ void RPV::createMixingMatrices() {
       double mass = abs(theMasses.find(id)->second);
       // find scalar partner
       double mdiff=1e30;
-      long new_id;
+      long new_id = 0;
       for(ParamMap::const_iterator it=theMasses.begin();it!=theMasses.end();++it) {
 	double diff = abs(abs(it->second)-mass);
 	if(diff<mdiff) {

@@ -70,7 +70,8 @@ public:
    */
   virtual bool reconstructHardJets(ShowerTreePtr hard,
 				   const map<tShowerProgenitorPtr,
-				   pair<Energy,double> > & pt) const=0;
+				   pair<Energy,double> > & pt,
+				   ShowerInteraction::Type type) const=0;
 
   /**
    * Given the ShowerTree for a decay shower
@@ -80,7 +81,8 @@ public:
    * and preserving the invariant mass and the rapidity of the 
    * hard subprocess system.
    */
-  virtual bool reconstructDecayJets(ShowerTreePtr decay) const=0;
+  virtual bool reconstructDecayJets(ShowerTreePtr decay,
+				    ShowerInteraction::Type type) const=0;
   //@}
 
   /**
