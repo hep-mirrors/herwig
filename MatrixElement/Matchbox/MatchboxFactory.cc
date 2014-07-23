@@ -302,6 +302,13 @@ void MatchboxFactory::setup() {
     }
     nLight(nl/2);
 
+    const PDVector& partonsInP = particleGroups()["p"];
+    for ( PDVector::const_iterator pip = partonsInP.begin();
+	  pip != partonsInP.end(); ++pip ) {
+      if ( (**pip).id() > 0 && (**pip).id() < 7 && (**pip).mass() == ZERO )
+	nLightProtonVec( (**pip).id() );
+    }
+
     vector<Ptr<MatchboxMEBase>::ptr> mes;
     for ( vector<vector<string> >::const_iterator p = processes.begin();
 	  p != processes.end(); ++p ) {
@@ -961,7 +968,7 @@ void MatchboxFactory::doinitrun() {
 void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
   os << theDiagramGenerator << theProcessData
      << theNLight 
-     << theNLightJetVec << theNHeavyJetVec 
+     << theNLightJetVec << theNHeavyJetVec << theNLightProtonVec 
      << theOrderInAlphaS << theOrderInAlphaEW 
      << theBornContributions << theVirtualContributions
      << theRealContributions << theIndependentVirtuals << theSubProcessGroups << theInclusive
@@ -986,7 +993,7 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
 void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
   is >> theDiagramGenerator >> theProcessData
      >> theNLight 
-     >> theNLightJetVec >> theNHeavyJetVec 
+     >> theNLightJetVec >> theNHeavyJetVec >> theNLightProtonVec 
      >> theOrderInAlphaS >> theOrderInAlphaEW 
      >> theBornContributions >> theVirtualContributions
      >> theRealContributions >> theIndependentVirtuals >> theSubProcessGroups >> theInclusive

@@ -128,6 +128,20 @@ public:
   void nHeavyJetVec(int n) { theNHeavyJetVec.push_back(n); }
 
   /**
+   * Return the vector that contains the PDG ids of 
+   * the light flavours, which are contained in the
+   * proton particle group.
+   */
+  vector<int> nLightProtonVec() const { return theNLightProtonVec; }
+
+  /**
+   * Set the elements of the vector that contains the PDG
+   * ids of the light flavours, which are contained in the
+   * proton particle group.
+   */
+  void nLightProtonVec(int n) { theNLightProtonVec.push_back(n); }
+
+  /**
    * Return the order in \f$\alpha_S\f$.
    */
   unsigned int orderInAlphaS() const { return theOrderInAlphaS; }
@@ -749,6 +763,12 @@ private:
    * which are contained in the jet particle group.
    */
   vector<int> theNHeavyJetVec;
+
+  /**
+   * Vector with the PDG ids of the light quark flavours,
+   * which are contained in the proton particle group.
+   */
+  vector<int> theNLightProtonVec;
 
   /**
    * The order in \f$\alpha_S\f$.

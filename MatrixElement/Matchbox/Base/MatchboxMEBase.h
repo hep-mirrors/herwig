@@ -177,6 +177,13 @@ public:
   virtual vector<int> getNHeavyJetVec() const;
 
   /**
+   * Return the vector that contains the PDG ids of 
+   * the light flavours, which are contained in the
+   * proton particle group.
+   */
+  virtual vector<int> getNLightProtonVec() const;
+
+  /**
    * Return true, if this matrix element is handled by a BLHA one-loop provider
    */
   virtual bool isOLPTree() const { 

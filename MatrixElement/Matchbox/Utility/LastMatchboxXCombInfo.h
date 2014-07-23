@@ -197,6 +197,13 @@ public:
   vector<int> nHeavyJetVec() const { return lastMatchboxXComb()->nHeavyJetVec(); }
 
   /**
+   * Return the vector that contains the PDG ids of 
+   * the light flavours, which are contained in the
+   * proton particle group.
+   */
+  vector<int> nLightProtonVec() const { return lastMatchboxXComb()->nLightProtonVec(); }
+
+  /**
    * Get the dimensionality of the colour basis for this process.
    */
   size_t colourBasisDim() const { return lastMatchboxXComb()->colourBasisDim(); }
@@ -380,6 +387,13 @@ protected:
    * jet particle group.
    */
   void nHeavyJetVec(int n) { lastMatchboxXComb()->nHeavyJetVec(n); }
+
+  /**
+   * Set the elements of the vector that contains the PDG
+   * ids of the light flavours, which are contained in the
+   * proton particle group.
+   */
+  void nLightProtonVec(int n) { lastMatchboxXComb()->nLightProtonVec(n); }
 
   /**
    * Set the dimensionality of the colour basis for this process.

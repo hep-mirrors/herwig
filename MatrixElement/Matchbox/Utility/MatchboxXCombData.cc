@@ -178,7 +178,7 @@ void MatchboxXCombData::persistentOutput(PersistentOStream & os) const {
      << theColourCorrelators << theCalculateLargeNColourCorrelators 
      << theLargeNColourCorrelators << theCalculateColourSpinCorrelators 
      << theColourSpinCorrelators << theNLight 
-     << theNLightJetVec << theNHeavyJetVec 
+     << theNLightJetVec << theNHeavyJetVec << theNLightProtonVec 
      << theColourBasisDim 
      << theNDimPhasespace << theNDimAmplitude << theNDimInsertions 
      << theAmplitudeRandomNumbers << theInsertionRandomNumbers 
@@ -202,7 +202,7 @@ void MatchboxXCombData::persistentInput(PersistentIStream & is, int) {
      >> theColourCorrelators >> theCalculateLargeNColourCorrelators 
      >> theLargeNColourCorrelators >> theCalculateColourSpinCorrelators 
      >> theColourSpinCorrelators >> theNLight 
-     >> theNLightJetVec >> theNHeavyJetVec 
+     >> theNLightJetVec >> theNHeavyJetVec >> theNLightProtonVec 
      >> theColourBasisDim 
      >> theNDimPhasespace >> theNDimAmplitude >> theNDimInsertions 
      >> theAmplitudeRandomNumbers >> theInsertionRandomNumbers 

@@ -57,6 +57,8 @@ vector<int> MatchboxMEBase::getNLightJetVec() const { return factory()->nLightJe
 
 vector<int> MatchboxMEBase::getNHeavyJetVec() const { return factory()->nHeavyJetVec(); }
 
+vector<int> MatchboxMEBase::getNLightProtonVec() const { return factory()->nLightProtonVec(); }
+
 double MatchboxMEBase::factorizationScaleFactor() const { return factory()->factorizationScaleFactor(); }
 
 double MatchboxMEBase::renormalizationScaleFactor() const { return factory()->renormalizationScaleFactor(); }
@@ -1303,6 +1305,9 @@ void MatchboxMEBase::prepareXComb(MatchboxXCombData& xc) const {
 
   for (size_t inhv=0; inhv<getNHeavyJetVec().size(); ++inhv)
     xc.nHeavyJetVec(getNHeavyJetVec()[inhv]);
+
+  for (size_t inlpv=0; inlpv<getNLightProtonVec().size(); ++inlpv)
+    xc.nLightProtonVec(getNLightProtonVec()[inlpv]);
 
   xc.olpId(olpProcess());
 
