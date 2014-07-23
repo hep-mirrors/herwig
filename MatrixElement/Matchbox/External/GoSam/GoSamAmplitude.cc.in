@@ -88,11 +88,12 @@ bool GoSamAmplitude::buildGoSam() {
 
 Energy2 GoSamAmplitude::mu2() const { 
   if (theSetMuToMuR) {
-    Energy2 rscale = MatchboxFactory::currentFactory()->scaleChoice()->renormalizationScale()*sqr(MatchboxFactory::currentFactory()->renormalizationScaleFactor());
-//     cout << "GoSamAmplitude::mu2(): sqrt(rscale/GeV/GeV) = " << sqrt(rscale/GeV/GeV) << endl;
+    Energy2 rscale = MatchboxFactory::currentFactory()->scaleChoice()->renormalizationScale()
+                   * sqr(MatchboxFactory::currentFactory()->renormalizationScaleFactor());
+    // cout << "GoSamAmplitude::mu2(): sqrt(rscale/GeV/GeV) = " << sqrt(rscale/GeV/GeV) << endl;
     return rscale;
   }
-//   cout << "GoSamAmplitude::mu2(): sqrt(lastSHat()/GeV/GeV) = " << sqrt(lastSHat()/GeV/GeV) << endl;
+  // cout << "GoSamAmplitude::mu2(): sqrt(lastSHat()/GeV/GeV) = " << sqrt(lastSHat()/GeV/GeV) << endl;
   return lastSHat(); 
 }
 
@@ -211,6 +212,16 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
 	  delete[] ppchar;
 	}
 
+        cout << endl;
+        cout << "-----" << endl;
+        cout << "GoSamAmplitude::startOLP(): sqrt(mu2()/GeV/GeV) = " << setprecision(10) << sqrt(mu2()/GeV/GeV) << endl;
+        cout << "GoSamAmplitude::startOLP(): SM().alphaS(mu2()) = " << setprecision(10) << SM().alphaS(mu2()) << endl;
+        cout << "-----" << endl;
+        cout << "GoSamAmplitude::startOLP(): getParticleData(ParticleID::Z0)->mass()/GeV = " << setprecision(10) << getParticleData(ParticleID::Z0)->mass()/GeV << endl;
+        cout << "GoSamAmplitude::startOLP(): SM().alphaS(sqr(getParticleData(ParticleID::Z0)->mass())) = " << setprecision(10) << SM().alphaS(sqr(getParticleData(ParticleID::Z0)->mass())) << endl;
+        cout << "-----" << endl;
+        cout << endl;
+
 }
 
 void GoSamAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs, string orderFileName) {
@@ -240,6 +251,7 @@ void GoSamAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs, st
     oldOrderFileStream.close();
     return;
   }
+
 	ofstream orderFile(orderFileName.c_str());
 	int asPower = 100;
 	int minlegs = 100;
@@ -256,6 +268,7 @@ void GoSamAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs, st
 	orderFile << "MatrixElementSquareType  CHsummed\n";
 	orderFile << "CorrectionType           QCD\n";
 	orderFile << "IRregularisation         " << (isDR() ? "DRED" : "CDR") << "\n";
+
   // loop over quarks to check if they have non-zero masses
   for (int i=1; i<=6; ++i) if (getParticleData(i)->mass()/GeV > 0.0) massiveParticles.push_back(i);
 	if ( massiveParticles.size() != 0 ) {
@@ -440,7 +453,7 @@ void GoSamAmplitude::evalSubProcess() const {
 	fillOLPMomenta(lastXComb().meMomenta());
 
 	double scale = sqrt(mu2() / GeV2);
-//         cout << "GoSamAmplitude::evalSubProcess(): sqrt(mu2()/GeV/GeV) = " << sqrt(mu2()/GeV/GeV) << endl;
+        // cout << "GoSamAmplitude::evalSubProcess(): sqrt(mu2()/GeV/GeV) = " << sqrt(mu2()/GeV/GeV) << endl;
 
 	double out[7] = { };
 	if ( idpair.size() == 0 ) {
