@@ -22,10 +22,13 @@ using namespace ThePEG;
 
 /**
  * \ingroup Matchbox
- * \author Simon Platzer, Christian Reuschle
+ * \author Simon Platzer, Daniel Rauch, Christian Reuschle,
+ *         Johannes Bellm
  *
- * \brief DipoleMPKOperator implements the massive P+K
- * insertion operator.
+ * \brief DipoleMPKOperator implements the P+K
+ * insertion operator for the massive case.
+ * DipoleMPKOperator does not apply for dimen-
+ * sional reduction.
  *
  */
 class DipoleMPKOperator: public MatchboxInsertionOperator {
@@ -83,6 +86,12 @@ public:
    * which are contained in the associated Born sub-process.
    */
   vector<int> NHeavyBornVec() const;
+
+  /**
+   * Return a vector of PDG codes of the light flavours,
+   * which are contained in the proton particle group.
+   */
+  vector<int> NLightProtonVec() const;
 
   /**
    * Evaluate the finite virtual correction for the
@@ -237,6 +246,26 @@ public:
    */
   double Kscriptgg_q(Energy2 sja, Energy2 mj2) const;
 
+  /**
+   * The Kscriptbar^{qq}_q contribution (B.17)
+   */
+  double Kscriptbarqq_q(Energy2 Qja2, Energy2 mj2) const;
+
+  /**
+   * The Kscriptbar^{qg}_q contribution (B.17)
+   */
+  double Kscriptbarqg_q(Energy2 Qja2, Energy2 mj2) const;
+
+  /**
+   * The Kscriptbar^{gq}_q contribution (B.17)
+   */
+  double Kscriptbargq_q() const;
+
+  /**
+   * The Kscriptbar^{gg}_q contribution (B.17)
+   */
+  double Kscriptbargg_q(Energy2 Qja2, Energy2 mj2) const;
+
   ////////////////////////////
 
   /**
@@ -252,16 +281,13 @@ public:
 
   /**
    * [J^a_{Q\bar{Q}}(z,\mu_Q^2)]_{z_+}
-   * where z_+ = 1 - 4\mu_Q^2
-   * int F ranges from 1 to NHeavy associ-
-   * ated to the quark in \mu_Q^2
    */
-  double Ja_QQzplus(double muQ2, int F) const;
+  double Ja_QQzplus(double muQ2, int F, double zplus) const;
 
   /**
    * The Kscript^{qq}_g contribution
    */
-  double Kscriptqq_g(Energy2 sja) const;
+  double Kscriptqq_g(Energy2 sja, bool) const;
 
   /**
    * The Kscript^{qg}_g contribution
@@ -277,7 +303,27 @@ public:
    * The Kscript^{gg}_g contribution
    * equals the Kscript^{qq}_g contribution
    */
-  double Kscriptgg_g(Energy2 sja) const;
+  double Kscriptgg_g(Energy2 sja, bool) const;
+
+  /**
+   * The Kscriptbar^{qq}_g contribution (B.18)
+   */
+  double Kscriptbarqq_g(Energy2 Qja2, bool) const;
+
+  /**
+   * The Kscriptbar^{qg}_g contribution (B.18)
+   */
+  double Kscriptbarqg_g() const;
+
+  /**
+   * The Kscriptbar^{gq}_g contribution (B.18)
+   */
+  double Kscriptbargq_g() const;
+
+  /**
+   * The Kscriptbar^{gg}_g contribution (B.18)
+   */
+  double Kscriptbargg_g(Energy2 Qja2, bool) const;
 
   //////////////////////////////////////
 
@@ -413,9 +459,6 @@ private:
 
   /**
    * Get a PDF value at x/z_+
-   * where z_+ = 1 - 4\mu_Q^2
-   * The int in the second argument ranges from
-   * 1 to NHeavy associated to the quark in \mu_Q^2
    */
   double PDFxByzplus(tcPDPtr,int,double) const;
 

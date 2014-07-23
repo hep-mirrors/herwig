@@ -21,11 +21,13 @@ using namespace ThePEG;
 
 /**
  * \ingroup Matchbox
- * \author Simon Platzer, Martin Stoll, Christian Reuschle
+ * \author Simon Platzer, Daniel Rauch, Christian Reuschle,
+ *         Martin Stoll
  *
- * \brief DipoleMIOperator implements the massive I operator.
- * DipoleMIOperator does only apply in expanded convention,
- * and also not for dimensional reduction.
+ * \brief DipoleMIOperator implements the I(\epsilon) 
+ * insertion operator for the massive case.
+ * DipoleMIOperator does only apply for expanded con-
+ * vention and also not for dimensional reduction.
  *
  */
 class DipoleMIOperator: public MatchboxInsertionOperator {
@@ -88,6 +90,12 @@ public:
    * which are contained in the associated Born sub-process.
    */
   vector<int> NHeavyBornVec() const;
+
+  /**
+   * Return a vector of PDG codes of the light flavours,
+   * which are contained in the proton particle group.
+   */
+  vector<int> NLightProtonVec() const;
 
   /**
    * Evaluate the finite virtual correction for the
@@ -182,13 +190,15 @@ private:
   
   /**
    * \beta_0
-   * The Matchbox convention is \beta_0=\gamma_g. Often, however,
+   * The Matchbox convention is \beta_0=\gamma_g. Often however,
    * \beta_0 is defined in the literature as \beta_0=2*\gamma_g.
    * Be aware of consistent usage!
    * In the massive case (see hep-ph/0011222v3):
    *      \beta_0 = 11/3*C_A - 4/3*T_R*(N_f+N_F)
-   * with T_R=1/2, N_f the number of light flavours and N_F the
-   * number of heavy flavours. In our conventions, however:
+   * with T_R=1/2, N_f the number of light flavours ,and N_F the
+   * number of heavy flavours, which originate in the splittings
+   * g->qqbar or g->QQbar.
+   * In our conventions, however:
    *      \beta_0 = 11/6*C_A - 2/3*T_R*(N_f+N_F)
    * The "massive" \beta_0 applies as soon as we define massive
    * flavours in the jet particle group. Be aware that some OLP
@@ -212,7 +222,7 @@ private:
   /**
    * V_j, non-singular terms
    */
-  double Vj(const ParticleData&, const ParticleData&, Energy2,double,bool=false) const;
+  double Vj(const ParticleData&, const ParticleData&, Energy2,double,bool,bool=false) const;
 
   /**
    * V^{(s)}, double pole part in expanded convention.

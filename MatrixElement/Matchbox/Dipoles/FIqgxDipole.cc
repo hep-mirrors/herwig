@@ -67,7 +67,10 @@ double FIqgxDipole::me2Avg(double ccme2) const {
     8.*Constants::pi*CF*(realEmissionME()->lastXComb().lastSHat())*
     (underlyingBornME()->lastXComb().lastAlphaS())/prop;
 
-  res *= ( 2./(1.-z+(1.-x)) -(1.+z) +(1.-x)*(1.+3.*x*z) );
+  res *= ( 
+    2./(1.-z+(1.-x)) -(1.+z) 
+//     + (1.-x)*(1.+3.*x*z) 
+    );
 
   res *= -ccme2;
 
@@ -101,7 +104,10 @@ double FIqgxDipole::me2() const {
     8.*Constants::pi*CF*(realEmissionME()->lastXComb().lastSHat())*
     (underlyingBornME()->lastXComb().lastAlphaS())/prop;
 
-  res *= ( 2./(1.-z+(1.-x)) -(1.+z) +(1.-x)*(1.+3.*x*z) );
+  res *= ( 
+    2./(1.-z+(1.-x)) - (1.+z) 
+//     + (1.-x)*(1.+3.*x*z) 
+    );
 
   res *= -underlyingBornME()->colourCorrelatedME2(make_pair(bornEmitter(),bornSpectator()));
 

@@ -85,6 +85,12 @@ public:
   vector<int> NHeavyBornVec() const;
 
   /**
+   * Return a vector of PDG codes of the light flavours,
+   * which are contained in the proton particle group.
+   */
+  vector<int> NLightProtonVec() const;
+
+  /**
    * Evaluate the finite virtual correction for the
    * variables supplied through the Born XComb object
    * and possible additional random numbers.

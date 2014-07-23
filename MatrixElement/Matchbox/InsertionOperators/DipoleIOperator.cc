@@ -44,65 +44,16 @@ IBPtr DipoleIOperator::fullclone() const {
   return new_ptr(*this);
 }
 
-void DipoleIOperator::setXComb(tStdXCombPtr xc) {
-  MatchboxInsertionOperator::setXComb(xc);
-  if ( CA < 0. ) {
-    CA = SM().Nc();
-    CF = (SM().Nc()*SM().Nc()-1.0)/(2.*SM().Nc());
-    gammaQuark = (3./2.)*CF;
-    gammaGluon = (11./6.)*CA - (1./3.)*lastBorn()->nLight();
-    betaZero = gammaGluon;
-    KQuark = (7./2.-sqr(pi)/6.)*CF;
-    KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*lastBorn()->nLight();
-    if ( isDR() ) {
-      gammaQuark -= CF/2.;
-      gammaGluon -= CA/6.;
-    }
-  }
-}
-
-// void DipoleIOperator::setXComb(tStdXCombPtr xc) {
-//   MatchboxInsertionOperator::setXComb(xc);
-//   if ( CA < 0. ) {
-//     CA = SM().Nc();
-//     CF = (SM().Nc()*SM().Nc()-1.0)/(2.*SM().Nc());
-//     gammaQuark = (3./2.)*CF;
-//     // gammaGluon = (11./6.)*CA - (1./3.)*lastBorn()->nLight();
-//     gammaGluon = (11./6.)*CA - (1./3.)*lastBorn()->nLightJetVec().size();
-//     // betaZero = gammaGluon;
-//     betaZero = (11./6.)*CA - (1./3.)*(lastBorn()->nLightJetVec().size()+lastBorn()->nHeavyJetVec().size());
-//     KQuark = (7./2.-sqr(pi)/6.)*CF;
-//     // KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*lastBorn()->nLight();
-//     KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*lastBorn()->nLightJetVec().size();
-//     if ( isDR() ) {
-//       gammaQuark -= CF/2.;
-//       gammaGluon -= CA/6.;
-//     }
-//   }
-// }
-
-// bool DipoleIOperator::apply(const cPDVector& pd) const {
-//   bool first = false;
-//   bool second = false;
-//   for ( cPDVector::const_iterator p = pd.begin();
-// 	p != pd.end(); ++p ) {
-//     if ( !first ) {
-//       if ( apply(*p) )
-// 	first = true;
-//     } else {
-//       if ( apply(*p) )
-// 	second = true;
-//     }
-//   }
-//   return first && second;
-// }
+//////////////////////////////////////////////////////////////////////
 
 bool DipoleIOperator::apply(const cPDVector& pd) const {
 
+  // DipoleIOperator should only apply if in the overall
+  // process only massless partons can occur.
+
   // Prohibit splittings g->Q\bar{Q} in the final state.
-  // These are covered by DipoleMIOperator.
+  // These are covered completely by DipoleMIOperator.
   if ( NHeavyJetVec().size()!=0 ) {
-    cout << "DipoleIOperator::apply (master apply): Found massive QCD particle in jet particle group. Return false!" << endl;
     return false;
   }
 
@@ -111,11 +62,9 @@ bool DipoleIOperator::apply(const cPDVector& pd) const {
   for ( cPDVector::const_iterator p = pd.begin();
 	p != pd.end(); ++p ) {
     // Since this loop only checks for at least one exis-
-    // ting combination:
-    // Return false if any massive particles are present.
-    // Covered by DipoleMIOperator then.
+    // ting combination: Return false if any massive par-
+    // tons are present (covered by DipoleMIOperator).
     if ( (*p)->coloured() && (*p)->mass()!=ZERO ) {
-      cout << "DipoleIOperator::apply (master apply): Found massive QCD particle in the Born process. Return false!" << endl;
       return false;
     }
     if ( !first ) {
@@ -127,18 +76,6 @@ bool DipoleIOperator::apply(const cPDVector& pd) const {
     }
   }
 
-  if ( first && second ) {
-    cout << "DipoleIOperator::apply (master apply): Return true!" << endl;
-    cout << endl;    
-    cout << "     !!!!! Attention !!!!!" << endl;
-    cout << "     Number of massless flavours in jet particle group (aka n_f) = " << NLightJetVec().size() << endl;
-    cout << "     Number of massive flavours in jet particle group (aka n_F or n_{f,h}) = " << NHeavyJetVec().size() << endl;
-    cout << "     Ensure consistent usage!" << endl;
-    cout << endl;    
-  }
-  if ( !( first && second ) )
-    cout << "DipoleIOperator::apply (master apply): Return false!" << endl;
-
   return first && second;
 
 }
@@ -148,6 +85,25 @@ bool DipoleIOperator::apply(tcPDPtr pd) const {
     pd->mass() == ZERO &&
     (abs(pd->id()) < 7 || pd->id() == ParticleID::g);
 }
+
+void DipoleIOperator::setXComb(tStdXCombPtr xc) {
+  MatchboxInsertionOperator::setXComb(xc);
+  if ( CA < 0. ) {
+    CA = SM().Nc();
+    CF = (SM().Nc()*SM().Nc()-1.0)/(2.*SM().Nc());
+    gammaQuark = (3./2.)*CF;
+    gammaGluon = (11./6.)*CA - (1./3.)*NLightJetVec().size();
+    betaZero = gammaGluon;
+    KQuark = (7./2.-sqr(pi)/6.)*CF;
+    KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*NLightJetVec().size();
+    if ( isDR() ) {
+      gammaQuark -= CF/2.;
+      gammaGluon -= CA/6.;
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////
 
 vector<int> DipoleIOperator::NLightJetVec() const {
 
@@ -198,7 +154,6 @@ vector<int> DipoleIOperator::NLightBornVec() const {
 
   for ( cPDVector::const_iterator j = mePartonData().begin();
 	j != mePartonData().end(); ++j ) {
-    // if ( (**j).id() > 0 && (**j).id() < 7 && (**j).mass() == ZERO )
     if ( abs((**j).id()) < 7 && (**j).mass() == ZERO )
       theNLightBornVec.push_back( (**j).id() );
   }
@@ -216,7 +171,6 @@ vector<int> DipoleIOperator::NHeavyBornVec() const {
 
   for ( cPDVector::const_iterator j = mePartonData().begin();
 	j != mePartonData().end(); ++j ) {
-    // if ( (**j).id() > 0 && (**j).id() < 7 && (**j).mass() != ZERO )
     if ( abs((**j).id()) < 7 && (**j).mass() != ZERO )
       theNHeavyBornVec.push_back( (**j).id() );
   }
@@ -224,6 +178,28 @@ vector<int> DipoleIOperator::NHeavyBornVec() const {
   return theNHeavyBornVec;
 
 }
+
+vector<int> DipoleIOperator::NLightProtonVec() const {
+
+  const map<string,PDVector>& theParticleGroups = MatchboxFactory::currentFactory()->particleGroups();
+  map<string,PDVector>::const_iterator theIt = theParticleGroups.find("p");
+  if ( theIt == theParticleGroups.end() )
+    throw Exception() << "DipoleIOperator::NLightProtonVec(): Could not find a proton particle group named 'p'" << Exception::abortnow;
+
+  const PDVector& theProtonConstitutents = theIt->second;
+  vector<int> theNLightProtonVec;
+
+  for ( PDVector::const_iterator theP = theProtonConstitutents.begin();
+        theP != theProtonConstitutents.end(); ++theP ) {
+    if ( (**theP).id() > 0 && (**theP).id() < 7 && (**theP).mass() == ZERO )
+      theNLightProtonVec.push_back( (**theP).id() );
+  }
+
+  return theNLightProtonVec;
+
+}
+
+//////////////////////////////////////////////////////////////////////
 
 double DipoleIOperator::me2() const {
 
@@ -287,6 +263,10 @@ double DipoleIOperator::me2() const {
     }
   }
 
+  // NOTE: In the following we account for the full scale restoration 
+  // if \mu of the OLP differs from \mu_R.
+  // Note: In the GoSam OLP interface, it is possible to directly set 
+  // \mu = \mu_R, via the switch SetMuToMuR (for debugging purposes).
   Energy2 muR2 = 
     lastBorn()->renormalizationScale()*
     sqr(lastBorn()->renormalizationScaleFactor());
@@ -385,6 +365,8 @@ double DipoleIOperator::oneLoopSinglePole() const {
   return res;
 
 }
+
+//////////////////////////////////////////////////////////////////////
 
 void DipoleIOperator::persistentOutput(PersistentOStream & os) const {
   os << CA << CF << gammaQuark << gammaGluon << betaZero

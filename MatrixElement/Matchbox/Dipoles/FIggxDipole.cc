@@ -62,7 +62,10 @@ double FIggxDipole::me2Avg(double ccme2) const {
 	(realEmissionME()->lastXComb().meMomenta()[realEmission()]))*x;
 
 
-  double res = 1./((1.-z)+(1.-x))+1./(z+(1.-x))-2.+z*(1.-z)+(1.-x)*(1.+x*z*(1.-z));
+  double res = 
+    1./((1.-z)+(1.-x)) + 1./(z+(1.-x)) - 2.+z*(1.-z) 
+//     + (1.-x)*(1.+x*z*(1.-z))
+    ;
 
   res *= 16.*Constants::pi*SM().Nc()*(realEmissionME()->lastXComb().lastSHat())*
     (underlyingBornME()->lastXComb().lastAlphaS())/prop;
@@ -93,7 +96,10 @@ double FIggxDipole::me2() const {
     2.*((realEmissionME()->lastXComb().meMomenta()[realEmitter()])*
 	(realEmissionME()->lastXComb().meMomenta()[realEmission()]))*x;
 
-  double diag = 1./(1.-z+1.-x)+1./(z+1.-x)-2.+(1.-x)*(1.+x*z*(1.-z));
+  double diag = 
+    1./(1.-z+1.-x) + 1./(z+1.-x) - 2. 
+//     + (1.-x)*(1.+x*z*(1.-z))
+    ;
   Lorentz5Momentum pc = 
     z*realEmissionME()->lastXComb().meMomenta()[realEmitter()] -
     (1.-z)*realEmissionME()->lastXComb().meMomenta()[realEmission()];

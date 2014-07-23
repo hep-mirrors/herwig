@@ -46,57 +46,18 @@ IBPtr DipolePKOperator::fullclone() const {
 
 //////////////////////////////////////////////////////////////////////
 
-void DipolePKOperator::setXComb(tStdXCombPtr xc) {
-  MatchboxInsertionOperator::setXComb(xc);
-  if ( CA < 0. ) {
-    CA = SM().Nc();
-    CF = (SM().Nc()*SM().Nc()-1.0)/(2.*SM().Nc());
-    gammaQuark = (3./2.)*CF;
-    gammaGluon = (11./6.)*CA - (1./3.)*lastBorn()->nLight();
-    KQuark = (7./2.-sqr(pi)/6.)*CF;
-    KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*lastBorn()->nLight();
-    if ( isDR() ) {
-      gammaQuark -= CF/2.;
-      gammaGluon -= CA/6.;
-    }
-  }
-}
-
-bool DipolePKOperator::apply(tcPDPtr pd) const {
-  return
-    pd->mass() == ZERO &&
-    (abs(pd->id()) < 7 || pd->id() == ParticleID::g);
-}
-
-// bool DipolePKOperator::apply(const cPDVector& pd) const {
-//   if ( !apply(pd[0]) && !apply(pd[1]) )
-//     return false;
-//   bool first = false;
-//   bool second = false;
-//   for ( cPDVector::const_iterator p = pd.begin();
-// 	p != pd.end(); ++p ) {
-//     if ( !first ) {
-//       if ( apply(*p) )
-// 	first = true;
-//     } else {
-//       if ( apply(*p) )
-// 	second = true;
-//     }
-//   }
-//   return first && second;
-// }
-
 bool DipolePKOperator::apply(const cPDVector& pd) const {
 
+  // DipolePKOperator should only apply if in the overall
+  // process only massless partons can occur.
+
   if ( !apply(pd[0]) && !apply(pd[1]) ) {
-    cout << "DipolePKOperator::apply (master apply): ( !apply(pd[0]) && !apply(pd[1]) ). Return false!" << endl;
     return false;
   }
 
   // Prohibit splittings g->Q\bar{Q} in the final state.
-  // These are covered by DipoleMIOperator.
+  // These are covered completely by DipoleMPKOperator.
   if ( NHeavyJetVec().size()!=0 ) {
-    cout << "DipolePKOperator::apply (master apply): Found massive QCD particle in jet particle group. Return false!" << endl;
     return false;
   }
 
@@ -105,11 +66,9 @@ bool DipolePKOperator::apply(const cPDVector& pd) const {
   for ( cPDVector::const_iterator p = pd.begin();
 	p != pd.end(); ++p ) {
     // Since this loop only checks for at least one exis-
-    // ting combination:
-    // Return false if any massive particles are present.
-    // Covered by DipoleMPKOperator then.
+    // ting combination: Return false if any massive par-
+    // tons are present (covered by DipoleMPKOperator).
     if ( (*p)->coloured() && (*p)->mass()!=ZERO ) {
-      cout << "DipolePKOperator::apply (master apply): Found massive QCD particle in the Born process. Return false!" << endl;
       return false;
     }
     if ( !first ) {
@@ -121,21 +80,33 @@ bool DipolePKOperator::apply(const cPDVector& pd) const {
     }
   }
 
-  if ( first && second ) {
-    cout << "DipolePKOperator::apply (master apply): Return true!" << endl;
-    cout << endl;
-    cout << "     !!!!! Attention !!!!!" << endl;
-    cout << "     Number of massless flavours in jet particle group (aka n_f) = " << NLightJetVec().size() << endl;
-    cout << "     Number of massive flavours in jet particle group (aka n_F or n_{f,h}) = " << NHeavyJetVec().size() << endl;
-    cout << "     Ensure consistent usage!" << endl;
-    cout << endl;
-  }
-  if ( !( first && second ) )
-    cout << "DipolePKOperator::apply (master apply): Return false!" << endl;
-
   return first && second;
 
 }
+
+bool DipolePKOperator::apply(tcPDPtr pd) const {
+  return
+    pd->mass() == ZERO &&
+    (abs(pd->id()) < 7 || pd->id() == ParticleID::g);
+}
+
+void DipolePKOperator::setXComb(tStdXCombPtr xc) {
+  MatchboxInsertionOperator::setXComb(xc);
+  if ( CA < 0. ) {
+    CA = SM().Nc();
+    CF = (SM().Nc()*SM().Nc()-1.0)/(2.*SM().Nc());
+    gammaQuark = (3./2.)*CF;
+    gammaGluon = (11./6.)*CA - (1./3.)*NLightJetVec().size();
+    KQuark = (7./2.-sqr(pi)/6.)*CF;
+    KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*NLightJetVec().size();
+    if ( isDR() ) {
+      gammaQuark -= CF/2.;
+      gammaGluon -= CA/6.;
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////
 
 vector<int> DipolePKOperator::NLightJetVec() const {
 
@@ -186,7 +157,6 @@ vector<int> DipolePKOperator::NLightBornVec() const {
 
   for ( cPDVector::const_iterator j = mePartonData().begin();
 	j != mePartonData().end(); ++j ) {
-    // if ( (**j).id() > 0 && (**j).id() < 7 && (**j).mass() == ZERO )
     if ( abs((**j).id()) < 7 && (**j).mass() == ZERO )
       theNLightBornVec.push_back( (**j).id() );
   }
@@ -204,7 +174,6 @@ vector<int> DipolePKOperator::NHeavyBornVec() const {
 
   for ( cPDVector::const_iterator j = mePartonData().begin();
 	j != mePartonData().end(); ++j ) {
-    // if ( (**j).id() > 0 && (**j).id() < 7 && (**j).mass() != ZERO )
     if ( abs((**j).id()) < 7 && (**j).mass() != ZERO )
       theNHeavyBornVec.push_back( (**j).id() );
   }
@@ -213,6 +182,25 @@ vector<int> DipolePKOperator::NHeavyBornVec() const {
 
 }
 
+vector<int> DipolePKOperator::NLightProtonVec() const {
+
+  const map<string,PDVector>& theParticleGroups = MatchboxFactory::currentFactory()->particleGroups();
+  map<string,PDVector>::const_iterator theIt = theParticleGroups.find("p");
+  if ( theIt == theParticleGroups.end() )
+    throw Exception() << "DipolePKOperator::NLightProtonVec(): Could not find a proton particle group named 'p'" << Exception::abortnow;
+
+  const PDVector& theProtonConstitutents = theIt->second;
+  vector<int> theNLightProtonVec;
+
+  for ( PDVector::const_iterator theP = theProtonConstitutents.begin();
+        theP != theProtonConstitutents.end(); ++theP ) {
+    if ( (**theP).id() > 0 && (**theP).id() < 7 && (**theP).mass() == ZERO )
+      theNLightProtonVec.push_back( (**theP).id() );
+  }
+
+  return theNLightProtonVec;
+
+}
 
 //////////////////////////////////////////////////////////////////////
 
@@ -284,6 +272,8 @@ double DipolePKOperator::sumParton(int id) const {
   z = zw.first;
   double mapz = zw.second;
 
+  // For every new momentum fraction at which we want to evaluate a pdf
+  // we introduce a new member to the pdf cache: Initialize the cache.
   for ( map<pair<tcPDFPtr,tcPDPtr>,pair<double,double> >::iterator cache =
 	  pdfCache.begin(); cache != pdfCache.end(); ++cache )
     cache->second = make_pair(0.0,0.0);
@@ -367,6 +357,13 @@ double DipolePKOperator::sumParton(int id) const {
     // integrated form (disfinite and gluefinite).
 
     double theLog = log(scale/(2.*((*Pi)*meMomenta()[id])));
+    
+    // Note: In the CS paper theLog is given by 
+    // \log(\mu_F^2/(2zp_Ip_a)) = \log(\mu_F^2/(2p_Ip_a'))
+    // Note: The AP splitting kernels P^{aa'} contain plus
+    // distributions
+    // Note however: In our implementation p_Ip_a' is kept
+    // fixed, so we don't have a z dependence there
 
     if ( mePartonData()[id]->id() == ParticleID::g ) {
       res +=
@@ -376,28 +373,28 @@ double DipolePKOperator::sumParton(int id) const {
     if ( abs(mePartonData()[id]->id()) < 7 ) {
       res +=
 	( thePqq + thePgq ) * theLog * ifCorrelated;
-      if ( disFinite == 0.0 && z > x ) {
-	disFinite = CF*PDFxByz(parton)*(1.+3.*z/2.)/z;
-      }
-      if ( z > x )
-	res -= disFinite*ifCorrelated;
+//       if ( disFinite == 0.0 && z > x ) {
+//         disFinite = CF*PDFxByz(parton)*(1.+3.*z/2.)/z;
+//       }
+//       if ( z > x )
+//         res -= disFinite*ifCorrelated;
     }
 
-    if ( abs(mePartonData()[idi]->id()) < 7 ) {
-      if ( disFinite == 0.0 && z > x ) {
-	disFinite = CF*PDFxByz(parton)*(1.+3.*z/2.)/z;
-      }
-      if ( z > x )
-	res -= disFinite*fiCorrelated;
-    }
+//     if ( abs(mePartonData()[idi]->id()) < 7 ) {
+//       if ( disFinite == 0.0 && z > x ) {
+//         disFinite = CF*PDFxByz(parton)*(1.+3.*z/2.)/z;
+//       }
+//       if ( z > x )
+//         res -= disFinite*fiCorrelated;
+//     }
 
-    if ( mePartonData()[idi]->id() == ParticleID::g ) {
-      if ( glueFinite == 0.0 && z > x ) {
-	glueFinite = 2.*CA*PDFxByz(parton)*(1.+z/6.)/z;
-      }
-      if ( z > x )
-	res -= glueFinite*fiCorrelated;
-    }
+//     if ( mePartonData()[idi]->id() == ParticleID::g ) {
+//       if ( glueFinite == 0.0 && z > x ) {
+//         glueFinite = 2.*CA*PDFxByz(parton)*(1.+z/6.)/z;
+//       }
+//       if ( z > x )
+//         res -= glueFinite*fiCorrelated;
+//     }
 
   } // end loop over i
 
@@ -422,6 +419,11 @@ double DipolePKOperator::sumParton(int id) const {
     }
 
     double theLog = log(scale/(2.*(meMomenta()[0]*meMomenta()[1])));
+
+    // Note: In the CS paper theLog is given by 
+    // \log(\mu_F^2/(2zp_Ip_a)) = \log(\mu_F^2/(2p_Ip_a'))
+    // Note: The AP splitting kernels P^{aa'} contain plus
+    // distributions
 
     pair<int,int> corr = id == 0 ? make_pair(0,1) : make_pair(1,0);
     double iiCorrelated = lastBorn()->colourCorrelatedME2(corr);
@@ -512,8 +514,8 @@ double DipolePKOperator::KBarqg() const {
     return 0.0;
   double res = 0.0;
   double factor = CF * ( ( (1.+sqr(1.-z)) / z ) * log((1.-z)/z) + z ) / z;
-  int nl= lastBorn()->nLight();
-  for ( int f = -lastBorn()->nLight(); f <= nl; ++f ) {
+  int nlp = NLightProtonVec().size();
+  for ( int f = -nlp; f <= nlp; ++f ) {
     if ( f == 0 )
       continue;
     res += PDFxByz(getParticleData(f))*factor;
@@ -533,8 +535,8 @@ double DipolePKOperator::Pqg() const {
     return 0.0;
   double res = 0.0;
   double factor = CF * ( 1. + sqr(1.-z) ) / sqr(z);
-  int nl = lastBorn()->nLight();
-  for ( int f = -lastBorn()->nLight(); f <= nl; ++f ) {
+  int nlp = NLightProtonVec().size();
+  for ( int f = -nlp; f <= nlp; ++f ) {
     if ( f == 0 )
       continue;
     res += PDFxByz(getParticleData(f))*factor;
@@ -569,7 +571,7 @@ double DipolePKOperator::KBargg() const {
   assert(parton->id() == ParticleID::g);
   double res = 
     2.* CA* softLogByz(parton) +
-    ( CA*( sqr(pi) - 50./9. ) + (8./9.)*lastBorn()->nLight() ) * PDFx(parton);
+    ( CA*( sqr(pi) - 50./9. ) + (8./9.)*NLightJetVec().size() ) * PDFx(parton);
   if ( z > x ) {
     res += 2.*CA*((1.-z)/z-1.+z*(1.-z))*log((1.-z)/z)*PDFxByz(parton)/z;
   }
@@ -589,7 +591,7 @@ double DipolePKOperator::KTildegg() const {
 double DipolePKOperator::Pgg() const {
   assert(parton->id() == ParticleID::g);
   double res = 
-    ( (11./6.) * CA - (1./3.) * lastBorn()->nLight() + 2.*CA*log(1.-x) ) * PDFx(parton);
+    ( (11./6.) * CA - (1./3.)*NLightJetVec().size() + 2.*CA*log(1.-x) ) * PDFx(parton);
   if ( z > x ) {
     res += 2. * CA * ( PDFxByz(parton) - z*PDFx(parton) ) / (z*(1.-z));
     res += 2.* CA *( (1.-z)/z - 1. + z*(1.-z) ) * PDFxByz(parton) / z;
@@ -599,6 +601,9 @@ double DipolePKOperator::Pgg() const {
 
 //////////////////////////////////////////////////////////////////////
 
+// For every new momentum fraction at which we want to evaluate a pdf
+// we introduce a new member to the pdf cache.
+
 double DipolePKOperator::PDFx(tcPDPtr pd) const {
   map<pair<tcPDFPtr,tcPDPtr>,pair<double,double> >::iterator
     cached = pdfCache.find(make_pair(pdf,pd));
@@ -606,6 +611,9 @@ double DipolePKOperator::PDFx(tcPDPtr pd) const {
     pdfCache[make_pair(pdf,pd)] = make_pair(0.0,0.0);
     cached = pdfCache.find(make_pair(pdf,pd));
   }
+  // The convention of the pdf sets is always to return a*f(a). Upon usage, 
+  // we have to remember that and rescale the result of the pdf accordingly
+  // again, i.e. a*f(a)/a.
   if ( cached->second.first == 0.0 )
     cached->second.first = 
       pdf->xfx(particle,pd,scale,x)/x;
@@ -619,6 +627,9 @@ double DipolePKOperator::PDFxByz(tcPDPtr pd) const {
     pdfCache[make_pair(pdf,pd)] = make_pair(0.0,0.0);
     cached = pdfCache.find(make_pair(pdf,pd));
   }
+  // The convention of the pdf sets is always to return a*f(a). Upon usage, 
+  // we have to remember that and rescale the result of the pdf accordingly
+  // again, i.e. a*f(a)/a.
   if ( cached->second.second == 0.0 )
     cached->second.second = 
       pdf->xfx(particle,pd,scale,x/z)*z/x;

@@ -68,7 +68,11 @@ double IFMqgxDipole::me2Avg(double ccme2) const {
     (underlyingBornME()->lastXComb().lastAlphaS())/prop;
 
   // NOTE: extra term same as in IFqgxDipole
-  res *= ( 2./(1.-x+u) - (1.+x) + u*(1.+3.*x*(1.-u)) );
+  // NOTE: extra term switched off for the moment in the massive case
+  res *= ( 
+    2./(1.-x+u) - (1.+x) 
+    // + u*(1.+3.*x*(1.-u)) 
+    );
 
   res *= -ccme2;
 
@@ -103,7 +107,11 @@ double IFMqgxDipole::me2() const {
     (underlyingBornME()->lastXComb().lastAlphaS())/prop;
 
   // NOTE: extra term same as in IFqgxDipole
-  res *= ( 2./(1.-x+u) - (1.+x) + u*(1.+3.*x*(1.-u)) );
+  // NOTE: extra term switched off for the moment in the massive case
+  res *= ( 
+    2./(1.-x+u) - (1.+x) 
+    // + u*(1.+3.*x*(1.-u)) 
+    );
 
   res *= -underlyingBornME()->colourCorrelatedME2(make_pair(bornEmitter(),bornSpectator()));
 
