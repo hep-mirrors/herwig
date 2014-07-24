@@ -212,7 +212,7 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
 	  delete[] ppchar;
 	}
 
-        cout << endl;
+        /*cout << endl;
         cout << "-----" << endl;
         cout << "GoSamAmplitude::startOLP(): sqrt(mu2()/GeV/GeV) = " << setprecision(10) << sqrt(mu2()/GeV/GeV) << endl;
         cout << "GoSamAmplitude::startOLP(): SM().alphaS(mu2()) = " << setprecision(10) << SM().alphaS(mu2()) << endl;
@@ -220,7 +220,7 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
         cout << "GoSamAmplitude::startOLP(): getParticleData(ParticleID::Z0)->mass()/GeV = " << setprecision(10) << getParticleData(ParticleID::Z0)->mass()/GeV << endl;
         cout << "GoSamAmplitude::startOLP(): SM().alphaS(sqr(getParticleData(ParticleID::Z0)->mass())) = " << setprecision(10) << SM().alphaS(sqr(getParticleData(ParticleID::Z0)->mass())) << endl;
         cout << "-----" << endl;
-        cout << endl;
+        cout << endl;*/
 
 }
 
