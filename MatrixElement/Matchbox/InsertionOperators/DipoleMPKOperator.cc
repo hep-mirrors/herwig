@@ -414,8 +414,10 @@ double DipoleMPKOperator::sumParton(int id) const {
           ( (**i).id() == ParticleID::g ? CA : CF ) *
           fiCorrelated * 
           ( appendixB 
-          ? ( (**i).id() == ParticleID::g ? ( Kscriptbarqg_g() + Kscriptbargg_g(sja, appendixB) ) : ( Kscriptbarqg_q(Qja2,mj2) + Kscriptbargg_q(Qja2,mj2) ) )
-          : ( (**i).id() == ParticleID::g ? ( Kscriptqg_g() + Kscriptgg_g(sja, appendixB) ) : ( Kscriptqg_q(sja,mj2) + Kscriptgg_q(sja,mj2) ) ) 
+          ? ( (**i).id() == ParticleID::g ? ( Kscriptbarqg_g() + Kscriptbargg_g(Qja2,appendixB) ) 
+	                                  : ( Kscriptbarqg_q(Qja2,mj2) + Kscriptbargg_q(Qja2,mj2) ) )
+          : ( (**i).id() == ParticleID::g ? ( Kscriptqg_g() + Kscriptgg_g(sja,appendixB) ) 
+	                                  : ( Kscriptqg_q(sja,mj2) + Kscriptgg_q(sja,mj2) ) ) 
           );
       }
       if ( abs(mePartonData()[id]->id()) < 7 ) {
@@ -423,8 +425,10 @@ double DipoleMPKOperator::sumParton(int id) const {
           ( (**i).id() == ParticleID::g ? CA : CF ) *
           fiCorrelated * 
           ( appendixB 
-          ? ( (**i).id() == ParticleID::g ? ( Kscriptbarqq_g(sja, appendixB) + Kscriptbargq_g() ) : ( Kscriptbarqq_q(Qja2,mj2) + Kscriptbargq_q() ) )
-          : ( (**i).id() == ParticleID::g ? ( Kscriptqq_g(sja, appendixB) + Kscriptgq_g() ) : ( Kscriptqq_q(Qja2,mj2) + Kscriptgq_q() ) )
+          ? ( (**i).id() == ParticleID::g ? ( Kscriptbarqq_g(Qja2,appendixB) + Kscriptbargq_g() ) 
+	                                  : ( Kscriptbarqq_q(Qja2,mj2) + Kscriptbargq_q() ) )
+          : ( (**i).id() == ParticleID::g ? ( Kscriptqq_g(sja,appendixB) + Kscriptgq_g() ) 
+	                                  : ( Kscriptqq_q(sja,mj2) + Kscriptgq_q() ) )
           );
       }
 
