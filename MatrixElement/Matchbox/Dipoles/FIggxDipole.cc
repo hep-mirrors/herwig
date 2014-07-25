@@ -64,7 +64,7 @@ double FIggxDipole::me2Avg(double ccme2) const {
 
   double res = 
     1./((1.-z)+(1.-x)) + 1./(z+(1.-x)) - 2.+z*(1.-z) 
-//     + (1.-x)*(1.+x*z*(1.-z))
+    + (1.-x)*(1.+x*z*(1.-z))
     ;
 
   res *= 16.*Constants::pi*SM().Nc()*(realEmissionME()->lastXComb().lastSHat())*
@@ -98,7 +98,7 @@ double FIggxDipole::me2() const {
 
   double diag = 
     1./(1.-z+1.-x) + 1./(z+1.-x) - 2. 
-//     + (1.-x)*(1.+x*z*(1.-z))
+    + (1.-x)*(1.+x*z*(1.-z))
     ;
   Lorentz5Momentum pc = 
     z*realEmissionME()->lastXComb().meMomenta()[realEmitter()] -

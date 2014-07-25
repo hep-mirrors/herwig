@@ -373,28 +373,28 @@ double DipolePKOperator::sumParton(int id) const {
     if ( abs(mePartonData()[id]->id()) < 7 ) {
       res +=
 	( thePqq + thePgq ) * theLog * ifCorrelated;
-//       if ( disFinite == 0.0 && z > x ) {
-//         disFinite = CF*PDFxByz(parton)*(1.+3.*z/2.)/z;
-//       }
-//       if ( z > x )
-//         res -= disFinite*ifCorrelated;
+      if ( disFinite == 0.0 && z > x ) {
+        disFinite = CF*PDFxByz(parton)*(1.+3.*z/2.)/z;
+      }
+      if ( z > x )
+        res -= disFinite*ifCorrelated;
     }
 
-//     if ( abs(mePartonData()[idi]->id()) < 7 ) {
-//       if ( disFinite == 0.0 && z > x ) {
-//         disFinite = CF*PDFxByz(parton)*(1.+3.*z/2.)/z;
-//       }
-//       if ( z > x )
-//         res -= disFinite*fiCorrelated;
-//     }
+    if ( abs(mePartonData()[idi]->id()) < 7 ) {
+      if ( disFinite == 0.0 && z > x ) {
+        disFinite = CF*PDFxByz(parton)*(1.+3.*z/2.)/z;
+      }
+      if ( z > x )
+        res -= disFinite*fiCorrelated;
+    }
 
-//     if ( mePartonData()[idi]->id() == ParticleID::g ) {
-//       if ( glueFinite == 0.0 && z > x ) {
-//         glueFinite = 2.*CA*PDFxByz(parton)*(1.+z/6.)/z;
-//       }
-//       if ( z > x )
-//         res -= glueFinite*fiCorrelated;
-//     }
+    if ( mePartonData()[idi]->id() == ParticleID::g ) {
+      if ( glueFinite == 0.0 && z > x ) {
+        glueFinite = 2.*CA*PDFxByz(parton)*(1.+z/6.)/z;
+      }
+      if ( z > x )
+        res -= glueFinite*fiCorrelated;
+    }
 
   } // end loop over i
 
@@ -424,6 +424,8 @@ double DipolePKOperator::sumParton(int id) const {
     // \log(\mu_F^2/(2zp_Ip_a)) = \log(\mu_F^2/(2p_Ip_a'))
     // Note: The AP splitting kernels P^{aa'} contain plus
     // distributions
+    // Note however: In our implementation p_Ip_a' is kept
+    // fixed, so we don't have a z dependence there
 
     pair<int,int> corr = id == 0 ? make_pair(0,1) : make_pair(1,0);
     double iiCorrelated = lastBorn()->colourCorrelatedME2(corr);

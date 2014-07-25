@@ -90,10 +90,8 @@ Energy2 GoSamAmplitude::mu2() const {
   if (theSetMuToMuR) {
     Energy2 rscale = MatchboxFactory::currentFactory()->scaleChoice()->renormalizationScale()
                    * sqr(MatchboxFactory::currentFactory()->renormalizationScaleFactor());
-    // cout << "GoSamAmplitude::mu2(): sqrt(rscale/GeV/GeV) = " << sqrt(rscale/GeV/GeV) << endl;
     return rscale;
   }
-  // cout << "GoSamAmplitude::mu2(): sqrt(lastSHat()/GeV/GeV) = " << sqrt(lastSHat()/GeV/GeV) << endl;
   return lastSHat(); 
 }
 
@@ -212,6 +210,8 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
 	  delete[] ppchar;
 	}
 
+        // Debugging output for alphaS at various scales.
+        // The following produces a segmentation fault, if mu2() returns lastSHat(), because lastSHat is not yet set.
         /*cout << endl;
         cout << "-----" << endl;
         cout << "GoSamAmplitude::startOLP(): sqrt(mu2()/GeV/GeV) = " << setprecision(10) << sqrt(mu2()/GeV/GeV) << endl;
@@ -453,7 +453,6 @@ void GoSamAmplitude::evalSubProcess() const {
 	fillOLPMomenta(lastXComb().meMomenta());
 
 	double scale = sqrt(mu2() / GeV2);
-        // cout << "GoSamAmplitude::evalSubProcess(): sqrt(mu2()/GeV/GeV) = " << sqrt(mu2()/GeV/GeV) << endl;
 
 	double out[7] = { };
 	if ( idpair.size() == 0 ) {

@@ -263,6 +263,14 @@ double DipoleMPKOperator::sumParton(int id) const {
 // over all a (see CS paper)
 
   bool appendixB = true;
+  // Note: We are using a parametrization where we keep s_{ja'}=2p_jp_a' fixed,
+  // rather than s_{ja}=2p_jp_a, due to the substitution \eta->x/z and the sub-
+  // sequent shift of the z-dependence from the hard Born ME into the PDF. 
+  // Thus we need to make sure to keep the right kinematic variable fixed while
+  // performig the z-integration, i.e. s_{ja'} in our case. This is partly des-
+  // cribed in appendix B of the massive CS paper, but also in the last term of
+  // eq. (6.55) in the massive CS paper we need to consider that s_{ja'} is our
+  // fixed variable and not s_{ja}.
 
   pdf =
     id == 0 ?
@@ -374,13 +382,13 @@ double DipoleMPKOperator::sumParton(int id) const {
       theGammaSoft = gammaSoft();
 
     if ( mePartonData()[id]->id() == ParticleID::g &&
-	 thePgg == 0.0 ) {
+	     thePgg == 0.0 ) {
       thePqg = Pqg();
       thePgg = Pgg();
     }
 
     if ( abs(mePartonData()[id]->id()) < 7 &&
-	 thePqq == 0.0 ) {
+	     thePqq == 0.0 ) {
       thePgq = Pgq();
       thePqq = Pqq();
     }
@@ -397,6 +405,7 @@ double DipoleMPKOperator::sumParton(int id) const {
       res +=
         ( (**i).id() == ParticleID::g ? gammaGluon : gammaQuark ) *
         theGammaSoft * fiCorrelated;
+        // gammaSoft() * fiCorrelated;
     }
 
     // For m_j!=0 or {m_F}!=empty we use the massive formulae.
@@ -415,9 +424,9 @@ double DipoleMPKOperator::sumParton(int id) const {
           fiCorrelated * 
           ( appendixB 
           ? ( (**i).id() == ParticleID::g ? ( Kscriptbarqg_g() + Kscriptbargg_g(Qja2,appendixB) ) 
-	                                  : ( Kscriptbarqg_q(Qja2,mj2) + Kscriptbargg_q(Qja2,mj2) ) )
+	                                  : ( Kscriptbarqg_q(Qja2,mj2) + Kscriptbargg_q(Qja2,mj2,appendixB) ) )
           : ( (**i).id() == ParticleID::g ? ( Kscriptqg_g() + Kscriptgg_g(sja,appendixB) ) 
-	                                  : ( Kscriptqg_q(sja,mj2) + Kscriptgg_q(sja,mj2) ) ) 
+	                                  : ( Kscriptqg_q(sja,mj2) + Kscriptgg_q(sja,mj2,appendixB) ) ) 
           );
       }
       if ( abs(mePartonData()[id]->id()) < 7 ) {
@@ -426,9 +435,9 @@ double DipoleMPKOperator::sumParton(int id) const {
           fiCorrelated * 
           ( appendixB 
           ? ( (**i).id() == ParticleID::g ? ( Kscriptbarqq_g(Qja2,appendixB) + Kscriptbargq_g() ) 
-	                                  : ( Kscriptbarqq_q(Qja2,mj2) + Kscriptbargq_q() ) )
+	                                  : ( Kscriptbarqq_q(Qja2,mj2,appendixB) + Kscriptbargq_q() ) )
           : ( (**i).id() == ParticleID::g ? ( Kscriptqq_g(sja,appendixB) + Kscriptgq_g() ) 
-	                                  : ( Kscriptqq_q(sja,mj2) + Kscriptgq_q() ) )
+	                                  : ( Kscriptqq_q(sja,mj2,appendixB) + Kscriptgq_q() ) )
           );
       }
 
@@ -438,26 +447,53 @@ double DipoleMPKOperator::sumParton(int id) const {
       if (thePqgreg == 0.0) thePqgreg = CF*(1.+(1.-z)*(1.-z))/z;
       if (thePgqreg == 0.0) thePgqreg = 1./2.*(z*z + (1.-z)*(1.-z));
       if (thePggreg == 0.0) thePggreg = 2.*CA*((1.-z)/z - 1. + z*(1.-z));
+      // double thePqqreg = -1.*CF*(1.+z);
+      // double thePqgreg = CF*(1.+(1.-z)*(1.-z))/z;
+      // double thePgqreg = 1./2.*(z*z + (1.-z)*(1.-z));
+      // double thePggreg = 2.*CA*((1.-z)/z - 1. + z*(1.-z));
+
 
       // Last term in massive K operator in (6.55) in massive paper.
       // Vanishes theoretically in the massless limit.
-      if ( mePartonData()[id]->id() == ParticleID::g ) {
-        double quarkpdfsum = 0.0;
-        int nlp = NLightProtonVec().size();
-        for ( int f = -nlp; f <= nlp; ++f ) {
-          if ( f == 0 ) continue;
-          quarkpdfsum += PDFxByz(getParticleData(f));
+      if (!appendixB) {
+        if ( mePartonData()[id]->id() == ParticleID::g ) {
+          double quarkpdfsum = 0.0;
+          int nlp = NLightProtonVec().size();
+          for ( int f = -nlp; f <= nlp; ++f ) {
+            if ( f == 0 ) continue;
+            quarkpdfsum += PDFxByz(getParticleData(f));
+          }
+          res -=
+            ifCorrelated * 
+            ( ( z>x ? 1./z*( thePqgreg*quarkpdfsum + thePggreg*PDFxByz(parton) )*log((1.-z)*sja/((1.-z)*sja+mj2)) : 0. ) + 
+              (gammaGluon)*PDFx(parton)*( log((sja-2.*sqrt(mj2)*sqrt(sja+mj2)+2.*mj2)/sja) + 2.*sqrt(mj2)/(sqrt(sja+mj2)+sqrt(mj2)) ) );
         }
-        res -=
-          ifCorrelated * 
-          ( ( z>x ? 1./z*( thePqgreg*quarkpdfsum + thePggreg*PDFxByz(parton) )*log((1.-z)*sja/((1.-z)*sja+mj2)) : 0. ) + 
-            (gammaGluon)*PDFx(parton)*( log((sja-2.*sqrt(mj2)*sqrt(sja+mj2)+2.*mj2)/sja) + 2.*sqrt(mj2)/(sqrt(sja+mj2)+sqrt(mj2)) ) );
+        if ( abs(mePartonData()[id]->id()) < 7 ) {
+          res -=
+            ifCorrelated * 
+            ( ( z>x ? 1./z*( thePqqreg*PDFxByz(parton) + thePgqreg*PDFxByz(getParticleData(ParticleID::g)) )*log((1.-z)*sja/((1.-z)*sja+mj2)) : 0. ) + 
+              (gammaQuark)*PDFx(parton)*( log((sja-2.*sqrt(mj2)*sqrt(sja+mj2)+2.*mj2)/sja) + 2.*sqrt(mj2)/(sqrt(sja+mj2)+sqrt(mj2)) ) );
+        }
       }
-      if ( abs(mePartonData()[id]->id()) < 7 ) {
-        res -=
-          ifCorrelated * 
-          ( ( z>x ? 1./z*( thePqqreg*PDFxByz(parton) + thePgqreg*PDFxByz(getParticleData(ParticleID::g)) )*log((1.-z)*sja/((1.-z)*sja+mj2)) : 0. ) + 
-            (gammaQuark)*PDFx(parton)*( log((sja-2.*sqrt(mj2)*sqrt(sja+mj2)+2.*mj2)/sja) + 2.*sqrt(mj2)/(sqrt(sja+mj2)+sqrt(mj2)) ) );
+      else if (appendixB) {
+        if ( mePartonData()[id]->id() == ParticleID::g ) {
+          double quarkpdfsum = 0.0;
+          int nlp = NLightProtonVec().size();
+          for ( int f = -nlp; f <= nlp; ++f ) {
+            if ( f == 0 ) continue;
+            quarkpdfsum += PDFxByz(getParticleData(f));
+          }
+          res -=
+            ifCorrelated * 
+            ( ( z>x ? 1./z*( thePqgreg*quarkpdfsum + thePggreg*PDFxByz(parton) )*log((1.-z)*sja/((1.-z)*sja+mj2)) : 0. ) + 
+              (gammaGluon)*PDFx(parton)*( log((z*sja-2.*sqrt(mj2)*sqrt(z*sja+mj2)+2.*mj2)/(z*sja)) + 2.*sqrt(mj2)/(sqrt(z*sja+mj2)+sqrt(mj2)) ) );
+        }
+        if ( abs(mePartonData()[id]->id()) < 7 ) {
+          res -=
+            ifCorrelated * 
+            ( ( z>x ? 1./z*( thePqqreg*PDFxByz(parton) + thePgqreg*PDFxByz(getParticleData(ParticleID::g)) )*log((1.-z)*sja/((1.-z)*sja+mj2)) : 0. ) + 
+              (gammaQuark)*PDFx(parton)*( log((z*sja-2.*sqrt(mj2)*sqrt(z*sja+mj2)+2.*mj2)/(z*sja)) + 2.*sqrt(mj2)/(sqrt(z*sja+mj2)+sqrt(mj2)) ) );
+        }
       }
 
     }
@@ -486,42 +522,44 @@ double DipoleMPKOperator::sumParton(int id) const {
 
     if ( mePartonData()[id]->id() == ParticleID::g ) {
       res +=
-	( thePgg + thePqg ) * theLog * ifCorrelated;
+        ( thePgg + thePqg ) * theLog * ifCorrelated;
+        // ( Pgg() + Pqg() ) * theLog * ifCorrelated;
     }
 
     if ( abs(mePartonData()[id]->id()) < 7 ) {
       res +=
-	( thePqq + thePgq ) * theLog * ifCorrelated;
-//       // if ( disFinite == 0.0 && z > x ) { 
-//       // extra terms only present in massless dipoles, idi is spectator
-//       if ( disFinite == 0.0 && z > x && mePartonData()[idi]->mass() == ZERO ) {
-//         disFinite = CF*PDFxByz(parton)*(1.+3.*z/2.)/z;
-//       }
-//       // if ( z > x ) 
-//       // extra terms only present in massless dipoles, idi is spectator
-//       if ( z > x && mePartonData()[idi]->mass() == ZERO )
-//         res -= disFinite*ifCorrelated;
+        ( thePqq + thePgq ) * theLog * ifCorrelated;
+        // ( Pqq() + Pgq() ) * theLog * ifCorrelated;
+      // if ( disFinite == 0.0 && z > x ) { 
+      // extra terms only present in massless dipoles, idi is spectator
+      if ( disFinite == 0.0 && z > x && mePartonData()[idi]->mass() == ZERO ) {
+        disFinite = CF*PDFxByz(parton)*(1.+3.*z/2.)/z;
+      }
+      // if ( z > x ) 
+      // extra terms only present in massless dipoles, idi is spectator
+      if ( z > x && mePartonData()[idi]->mass() == ZERO )
+        res -= disFinite*ifCorrelated;
     }
 
-//     if ( abs(mePartonData()[idi]->id()) < 7 ) {
-//       // if ( disFinite == 0.0 && z > x ) { 
-//       // extra terms only present in massless dipoles, idi is emitter
-//       if ( disFinite == 0.0 && z > x && mePartonData()[idi]->mass() == ZERO ) {
-//         disFinite = CF*PDFxByz(parton)*(1.+3.*z/2.)/z;
-//       }
-//       // if ( z > x ) 
-//       // extra terms only present in massless dipoles, idi is emitter
-//       if ( z > x && mePartonData()[idi]->mass() == ZERO )
-//         res -= disFinite*fiCorrelated;
-//     }
+    if ( abs(mePartonData()[idi]->id()) < 7 ) {
+      // if ( disFinite == 0.0 && z > x ) { 
+      // extra terms only present in massless dipoles, idi is emitter
+      if ( disFinite == 0.0 && z > x && mePartonData()[idi]->mass() == ZERO ) {
+        disFinite = CF*PDFxByz(parton)*(1.+3.*z/2.)/z;
+      }
+      // if ( z > x ) 
+      // extra terms only present in massless dipoles, idi is emitter
+      if ( z > x && mePartonData()[idi]->mass() == ZERO )
+        res -= disFinite*fiCorrelated;
+    }
 
-//     if ( mePartonData()[idi]->id() == ParticleID::g ) {
-//       if ( glueFinite == 0.0 && z > x ) {
-//         glueFinite = 2.*CA*PDFxByz(parton)*(1.+z/6.)/z;
-//       }
-//       if ( z > x )
-//         res -= glueFinite*fiCorrelated;
-//     }
+    if ( mePartonData()[idi]->id() == ParticleID::g ) {
+      if ( glueFinite == 0.0 && z > x ) {
+        glueFinite = 2.*CA*PDFxByz(parton)*(1.+z/6.)/z;
+      }
+      if ( z > x )
+        res -= glueFinite*fiCorrelated;
+    }
 
   } // end loop over i
 
@@ -534,13 +572,13 @@ double DipoleMPKOperator::sumParton(int id) const {
 			     id == 0 ? 1 : 0) ) {
 
     if ( mePartonData()[id]->id() == ParticleID::g &&
-	 thePgg == 0.0 ) {
+	     thePgg == 0.0 ) {
       thePqg = Pqg();
       thePgg = Pgg();
     }
 
     if ( abs(mePartonData()[id]->id()) < 7 &&
-	 thePqq == 0.0 ) {
+	     thePqq == 0.0 ) {
       thePgq = Pgq();
       thePqq = Pqq();
     }
@@ -551,20 +589,24 @@ double DipoleMPKOperator::sumParton(int id) const {
     // \log(\mu_F^2/(2zp_Ip_a)) = \log(\mu_F^2/(2p_Ip_a'))
     // Note: The AP splitting kernels P^{aa'} contain plus
     // distributions
+    // Note however: In our implementation p_Ip_a' is kept
+    // fixed, so we don't have a z dependence there
 
     pair<int,int> corr = id == 0 ? make_pair(0,1) : make_pair(1,0);
     double iiCorrelated = lastBorn()->colourCorrelatedME2(corr);
 
     if ( mePartonData()[id]->id() == ParticleID::g ) {
       res +=
-	( thePgg + thePqg ) * theLog * iiCorrelated;
+        ( thePgg + thePqg ) * theLog * iiCorrelated;
+        // ( Pgg() + Pqg() ) * theLog * iiCorrelated;
       res -=
 	( KTildegg() + KTildeqg() ) * iiCorrelated;
     }    
 
     if ( abs(mePartonData()[id]->id()) < 7 ) {
       res +=
-	( thePqq + thePgq ) * theLog * iiCorrelated;
+        ( thePqq + thePgq ) * theLog * iiCorrelated;
+        // ( Pqq() + Pgq() ) * theLog * iiCorrelated;
       res -=
 	( KTildeqq() + KTildegq() ) * iiCorrelated;
     }
@@ -645,9 +687,9 @@ double DipoleMPKOperator::KBarqg() const {
   for ( int f = -nlp; f <= nlp; ++f ) {
     if ( f == 0 )
       continue;
-    res += PDFxByz(getParticleData(f))*factor;
+    res += PDFxByz(getParticleData(f));
   }
-  return res;
+  return res*factor;
 }
 
 double DipoleMPKOperator::KTildeqg() const {
@@ -666,9 +708,9 @@ double DipoleMPKOperator::Pqg() const {
   for ( int f = -nlp; f <= nlp; ++f ) {
     if ( f == 0 )
       continue;
-    res += PDFxByz(getParticleData(f))*factor;
+    res += PDFxByz(getParticleData(f));
   }
-  return res;
+  return res*factor;
 }
 
 double DipoleMPKOperator::KBargq() const {
@@ -746,15 +788,33 @@ double DipoleMPKOperator::gammaSoft2(double muQ2) const {
   return res;
 }
 
-double DipoleMPKOperator::Kscriptqq_q(Energy2 sja, Energy2 mj2) const {
+double DipoleMPKOperator::Ja_gQplusmod(double muQ2) const {
+  double res = 
+    -1. * PDFx(parton) * ( (1.-z)/(2.*(1.-z+muQ2)*(1.-z+muQ2)) - 2./(1.-z)*(1.+log((1.-z+muQ2)/(1.+muQ2/z))) );
+  if ( z > x ) {
+    res += 1./z * PDFxByz(parton) * ( (1.-z)/(2.*(1.-z+muQ2)*(1.-z+muQ2)) - 2./(1.-z)*(1.+log((1.-z+muQ2)/(2.-z+muQ2))) );
+  }
+  return res;
+}
+
+double DipoleMPKOperator::gammaSoft2mod(double muQ2) const {
+  double res = 
+    (1./(1.-z)) * ( -1. * PDFx(parton) * log( 1./(1.+muQ2/z) ) );
+  if ( z > x ) {
+    res += (1./(1.-z)) * ( 1./z * PDFxByz(parton) * log( (2.-z)/(2.-z+muQ2) ) );
+  }
+  return res;
+}
+
+double DipoleMPKOperator::Kscriptqq_q(Energy2 sja, Energy2 mj2, bool appendixB) const {
   assert(abs(parton->id()) < 7);
   double muQ2 = mj2/sja;
   double res = 
     2. * softLog(parton) + 
-    Ja_gQplus(muQ2) + 
-    2. * gammaSoft2(muQ2) - 
+    ( appendixB ? Ja_gQplusmod(muQ2) : Ja_gQplus(muQ2) ) + 
+    2. * ( appendixB ? gammaSoft2mod(muQ2) : gammaSoft2(muQ2) ) - 
     gammaQuark/CF * PDFx(parton) + 
-    ( muQ2*log(muQ2/(1.+muQ2)) + 1./2.*(muQ2/(1.+muQ2)) ) * PDFx(parton);
+    ( appendixB ? muQ2/z*log(muQ2/(z+muQ2)) + 1./2.*(muQ2/(z+muQ2)) : muQ2*log(muQ2/(1.+muQ2)) + 1./2.*(muQ2/(1.+muQ2)) ) * PDFx(parton);
   if ( z > x ) {
     res += 1./z * PDFxByz(parton) * (
       -2. * log(2.-z)/(1.-z) );
@@ -773,9 +833,9 @@ double DipoleMPKOperator::Kscriptqg_q(Energy2 sja, Energy2 mj2) const {
   for ( int f = -nlp; f <= nlp; ++f ) {
     if ( f == 0 )
       continue;
-    res += PDFxByz(getParticleData(f))*factor;
+    res += PDFxByz(getParticleData(f));
   }
-  return res;
+  return res*factor;
 }
 
 double DipoleMPKOperator::Kscriptgq_q() const {
@@ -784,7 +844,7 @@ double DipoleMPKOperator::Kscriptgq_q() const {
   return res;
 }
 
-double DipoleMPKOperator::Kscriptgg_q(Energy2 sja, Energy2 mj2) const {
+double DipoleMPKOperator::Kscriptgg_q(Energy2 sja, Energy2 mj2, bool appendixB) const {
   assert(parton->id() == ParticleID::g);
 
   // The pdf folding has to be with the gluon pdf here, not with
@@ -807,10 +867,10 @@ double DipoleMPKOperator::Kscriptgg_q(Energy2 sja, Energy2 mj2) const {
 
   // Kscriptqq_q contribution
   res += 2. * softLog(parton) + 
-    Ja_gQplus(muQ2) +
-    2. * gammaSoft2(muQ2) - 
+    ( appendixB ? Ja_gQplusmod(muQ2) : Ja_gQplus(muQ2) ) + 
+    2. * ( appendixB ? gammaSoft2mod(muQ2) : gammaSoft2(muQ2) ) - 
     gammaQuark/CF * PDFx(parton) + 
-    ( muQ2*log(muQ2/(1.+muQ2)) + 1./2.*(muQ2/(1.+muQ2)) ) * PDFx(parton);
+    ( appendixB ? muQ2/z*log(muQ2/(z+muQ2)) + 1./2.*(muQ2/(z+muQ2)) : muQ2*log(muQ2/(1.+muQ2)) + 1./2.*(muQ2/(1.+muQ2)) ) * PDFx(parton);
   if ( z > x ) {
     res += 1./z * PDFxByz(parton) * (
       -2. * log(2.-z)/(1.-z) );
@@ -820,7 +880,7 @@ double DipoleMPKOperator::Kscriptgg_q(Energy2 sja, Energy2 mj2) const {
 
 }
 
-double DipoleMPKOperator::Kscriptbarqq_q(Energy2 Qja2, Energy2 mj2) const {
+double DipoleMPKOperator::Kscriptbarqq_q(Energy2 Qja2, Energy2 mj2, bool appendixB) const {
   assert(abs(parton->id()) < 7);
 
   double mubarQ2 = mj2/(-Qja2);
@@ -828,11 +888,11 @@ double DipoleMPKOperator::Kscriptbarqq_q(Energy2 Qja2, Energy2 mj2) const {
 
   Energy2 sjamod = (mj2-Qja2)/z; // Since Qja2=mj2-z*sja this gives sja again
 
-  res += Kscriptqq_q(sjamod, mj2)
-    // + \deltaqq*\delta(1-z)*DeltaJbaraNS_gQ(mj2/-Qja2) contribution
-    + PDFx(parton)*( sqr(pi)/3. - 2.*gsl_sf_dilog(1./(1.+mubarQ2)) + 2.*gsl_sf_dilog(-mubarQ2/(1.+mubarQ2)) 
-                   + 0.5*log((1.+mubarQ2)/(1+2.*mubarQ2)) + 0.5*mubarQ2*(2.+mubarQ2)*log((1.+mubarQ2)/mubarQ2) 
-                   - mubarQ2*(1.+mubarQ2)/(1+2.*mubarQ2) );
+  res += Kscriptqq_q(sjamod, mj2, appendixB)
+      // \deltaqq*\delta(1-z)*DeltaJbaraNS_gQ(mj2/-Qja2) contribution
+      + PDFx(parton)*( sqr(pi)/3. - 2.*gsl_sf_dilog(1./(1.+mubarQ2)) + 2.*gsl_sf_dilog(-mubarQ2/(1.+mubarQ2)) 
+                     + 0.5*log((1.+mubarQ2)/(1.+2.*mubarQ2)) + 0.5*mubarQ2*(2.+mubarQ2)*log((1.+mubarQ2)/mubarQ2) 
+                     - mubarQ2*(1.+mubarQ2)/(1.+2.*mubarQ2) );
 
   return res;
 
@@ -846,7 +906,7 @@ double DipoleMPKOperator::Kscriptbarqg_q(Energy2 Qja2, Energy2 mj2) const {
   Energy2 sjamod = (mj2-Qja2)/z; // Since Qja2=mj2-z*sja this gives sja again
 
   res += Kscriptqg_q(sjamod, mj2);
-    // + \deltaqg*\delta(1-z)*DeltaJbaraNS_gQ(mj2/-Qja2) contribution is zero
+  // \deltaqg*\delta(1-z)*DeltaJbaraNS_gQ(mj2/-Qja2) contribution is zero
 
   return res;
 
@@ -859,7 +919,7 @@ double DipoleMPKOperator::Kscriptbargq_q() const {
 }
 
 
-double DipoleMPKOperator::Kscriptbargg_q(Energy2 Qja2, Energy2 mj2) const {
+double DipoleMPKOperator::Kscriptbargg_q(Energy2 Qja2, Energy2 mj2, bool appendixB) const {
   assert(parton->id() == ParticleID::g);
 
   double mubarQ2 = mj2/(-Qja2);
@@ -867,11 +927,11 @@ double DipoleMPKOperator::Kscriptbargg_q(Energy2 Qja2, Energy2 mj2) const {
 
   Energy2 sjamod = (mj2-Qja2)/z; // Since Qja2=mj2-z*sja this gives sja again
 
-  res += Kscriptgg_q(sjamod, mj2)
-    // + \deltagg*\delta(1-z)*DeltaJbaraNS_gQ(mj2/-Qja2) contribution
-    + PDFx(parton)*( sqr(pi)/3. - 2.*gsl_sf_dilog(1./(1.+mubarQ2)) + 2.*gsl_sf_dilog(-mubarQ2/(1.+mubarQ2)) 
-                   + 0.5*log((1.+mubarQ2)/(1+2.*mubarQ2)) + 0.5*mubarQ2*(2.+mubarQ2)*log((1.+mubarQ2)/mubarQ2) 
-                   - mubarQ2*(1.+mubarQ2)/(1+2.*mubarQ2) );
+  res += Kscriptgg_q(sjamod, mj2, appendixB)
+      // \deltagg*\delta(1-z)*DeltaJbaraNS_gQ(mj2/-Qja2) contribution
+      + PDFx(parton)*( sqr(pi)/3. - 2.*gsl_sf_dilog(1./(1.+mubarQ2)) + 2.*gsl_sf_dilog(-mubarQ2/(1.+mubarQ2)) 
+                     + 0.5*log((1.+mubarQ2)/(1.+2.*mubarQ2)) + 0.5*mubarQ2*(2.+mubarQ2)*log((1.+mubarQ2)/mubarQ2) 
+                     - mubarQ2*(1.+mubarQ2)/(1.+2.*mubarQ2) );
 
   return res;
 
@@ -901,6 +961,18 @@ double DipoleMPKOperator::Ja_QQzplus(double muQ2, int F, double zplus) const {
   return res;
 }
 
+double DipoleMPKOperator::Ja_QQzplusmod(double muQ2, int F, double zplus) const {
+// This should actually be the same as Ja_QQzplus()
+  double res = 0.0;
+  if ( z > x && z < zplus ) {
+    res += ( 1./z*PDFxByz(parton) ) * 2./3.*( (1.-z+2.*muQ2)/((1.-z)*(1.-z)) * sqrt(1.-4.*muQ2/(1.-z)) );
+  }
+  if ( zplus > x && z < zplus ) {
+    res -= ( 1./zplus*PDFxByzplus(parton,F,zplus) ) * 2./3.*( (1.-z+2.*muQ2)/((1.-z)*(1.-z)) * sqrt(1.-4.*muQ2/(1.-z)) );
+  }
+  return res;
+}
+
 double DipoleMPKOperator::Kscriptqq_g(Energy2 sja, bool appendixB) const {
   assert(abs(parton->id()) < 7);
 
@@ -909,17 +981,23 @@ double DipoleMPKOperator::Kscriptqq_g(Energy2 sja, bool appendixB) const {
   for( size_t f=0; f<NHeavyJetVec().size(); ++f ) { // sum over heavy flavours
     Energy2 mF2 = sqr( getParticleData(NHeavyJetVec()[f])->mass() );
     double muQ2 = mF2/sja;
-    double muQ2bar = mF2/(-z*sja); // see appendix B, remember that m_j=m_g=0
+    double muQ2prime = mF2/(z*sja);
+    double muQ2bar = mF2/(-z*sja); // only for modified zplus, see appendix B, remember that m_j=m_g=0
     double zplus = (appendixB ? 1./(1.+4.*muQ2bar) : 1. - 4*muQ2);
     // sum only over heavy quarks which meet special condition
     // but not if method of appendix B is used (see comment at
     // the end of appendix B, also need different zplus then)
     if( !appendixB && sja <= 4.*mF2 ) continue;
     res += 1./(2.*CA) * (
-      PDFx(parton)*( 2./3.*(log(muQ2)+5./3.) - JaNS_QQ(muQ2) ) -
-      ( x<zplus ? 1./zplus*PDFxByzplus(parton,f,zplus)*( 2./3.*(log(muQ2)+5./3.) - JaNS_QQ(muQ2) ) : 0. ) + 
-      Ja_QQzplus(muQ2,f,zplus) + 
-      PDFx(parton)*( 2./3.*sqrt((1.-4.*muQ2)*(1.-4.*muQ2)*(1.-4.*muQ2)) ) );
+      PDFx(parton)*( ( appendixB ? 2./3.*(log(muQ2prime)+5./3.) - JaNS_QQ(muQ2prime) 
+                                 : 2./3.*(log(muQ2)+5./3.) - JaNS_QQ(muQ2) ) ) -
+      ( x<zplus ? ( appendixB ? 1./zplus*PDFxByzplus(parton,f,zplus)*( 2./3.*(log(zplus*muQ2prime)+5./3.) - JaNS_QQ(zplus*muQ2prime) ) 
+                              : 1./zplus*PDFxByzplus(parton,f,zplus)*( 2./3.*(log(muQ2)+5./3.) - JaNS_QQ(muQ2) ) ) : 0. ) + 
+      ( appendixB ? Ja_QQzplusmod(muQ2,f,zplus) : Ja_QQzplus(muQ2,f,zplus) ) + 
+      ( appendixB ? PDFx(parton)*( 2./3.*sqrt((1.-4.*muQ2prime)*(1.-4.*muQ2prime)*(1.-4.*muQ2prime)) ) 
+                  : PDFx(parton)*( 2./3.*sqrt((1.-4.*muQ2)*(1.-4.*muQ2)*(1.-4.*muQ2)) ) ) 
+      );
+
   }
 
   return res;
@@ -946,17 +1024,22 @@ double DipoleMPKOperator::Kscriptgg_g(Energy2 sja, bool appendixB) const {
   for( size_t f=0; f<NHeavyJetVec().size(); ++f ) { // sum over heavy flavours
     Energy2 mF2 = sqr( getParticleData(NHeavyJetVec()[f])->mass() );
     double muQ2 = mF2/sja;
-    double muQ2bar = mF2/(-z*sja); // see appendix B, remember that m_j=m_g=0
+    double muQ2prime = mF2/(z*sja);
+    double muQ2bar = mF2/(-z*sja); // only for modified zplus, see appendix B, remember that m_j=m_g=0
     double zplus = (appendixB ? 1./(1.+4.*muQ2bar) : 1. - 4*muQ2);
     // sum only over heavy quarks which meet special condition
     // but not if method of appendix B is used (see comment at
     // the end of appendix B, also need different zplus then)
     if( !appendixB && sja <= 4.*mF2 ) continue;
     res += 1./(2.*CA) * (
-      PDFx(parton)*( 2./3.*(log(muQ2)+5./3.) - JaNS_QQ(muQ2) ) -
-      ( x<zplus ? 1./zplus*PDFxByzplus(parton,f,zplus)*( 2./3.*(log(muQ2)+5./3.) - JaNS_QQ(muQ2) ) : 0. ) + 
-      Ja_QQzplus(muQ2,f,zplus) + 
-      PDFx(parton)*( 2./3.*sqrt((1.-4.*muQ2)*(1.-4.*muQ2)*(1.-4.*muQ2)) ) );
+      PDFx(parton)*( ( appendixB ? 2./3.*(log(muQ2prime)+5./3.) - JaNS_QQ(muQ2prime) 
+                                 : 2./3.*(log(muQ2)+5./3.) - JaNS_QQ(muQ2) ) ) -
+      ( x<zplus ? ( appendixB ? 1./zplus*PDFxByzplus(parton,f,zplus)*( 2./3.*(log(zplus*muQ2prime)+5./3.) - JaNS_QQ(zplus*muQ2prime) ) 
+                              : 1./zplus*PDFxByzplus(parton,f,zplus)*( 2./3.*(log(muQ2)+5./3.) - JaNS_QQ(muQ2) ) ) : 0. ) + 
+      ( appendixB ? Ja_QQzplusmod(muQ2,f,zplus) : Ja_QQzplus(muQ2,f,zplus) ) + 
+      ( appendixB ? PDFx(parton)*( 2./3.*sqrt((1.-4.*muQ2prime)*(1.-4.*muQ2prime)*(1.-4.*muQ2prime)) ) 
+                  : PDFx(parton)*( 2./3.*sqrt((1.-4.*muQ2)*(1.-4.*muQ2)*(1.-4.*muQ2)) ) ) 
+      );
   }
 
   return res;
@@ -976,10 +1059,9 @@ double DipoleMPKOperator::Kscriptbarqq_g(Energy2 Qja2, bool appendixB) const {
     Energy2 mF2 = sqr( getParticleData(NHeavyJetVec()[f])->mass() );
     double mubarQ2 = mF2/(-Qja2);
     double zplus = 1./(1.+4.*mubarQ2); // actually zbar_plus, see appendix B
-    res += 1./(2.*CA)*PDFxByzplus(parton,f,zplus)*( 
-                        8./3.*mubarQ2 - 10./9. + (10./9.+16./3.*mubarQ2)/sqrt((1.+4.*mubarQ2)*(1.+4.*mubarQ2)*(1.+4.*mubarQ2))
-                      + 4./3.*( (1.-2.*mubarQ2)*sqrt(1.+4.*mubarQ2) - 1. )*log( (sqrt(1.+4.*mubarQ2)+1.)/(2.*sqrt(mubarQ2)) )
-		   );
+    res += 1./(2.*CA)*PDFxByzplus(parton,f,zplus)
+                     *( 8./3.*mubarQ2 - 10./9. + (10./9.+16./3.*mubarQ2)/sqrt((1.+4.*mubarQ2)*(1.+4.*mubarQ2)*(1.+4.*mubarQ2))
+                      + 4./3.*( (1.-2.*mubarQ2)*sqrt(1.+4.*mubarQ2) - 1. )*log( (sqrt(1.+4.*mubarQ2)+1.)/(2.*sqrt(mubarQ2)) ) );
   }
 
   return res;
@@ -1012,10 +1094,9 @@ double DipoleMPKOperator::Kscriptbargg_g(Energy2 Qja2, bool appendixB) const {
     Energy2 mF2 = sqr( getParticleData(NHeavyJetVec()[f])->mass() );
     double mubarQ2 = mF2/(-Qja2);
     double zplus = 1./(1.+4.*mubarQ2); // actually zbar_plus, see appendix B
-    res += 1./(2.*CA)*PDFxByzplus(parton,f,zplus)*( 
-                        8./3.*mubarQ2 - 10./9. + (10./9.+16./3.*mubarQ2)/sqrt((1.+4.*mubarQ2)*(1.+4.*mubarQ2)*(1.+4.*mubarQ2))
-                      + 4./3.*( (1.-2.*mubarQ2)*sqrt(1.+4.*mubarQ2) - 1. )*log( (sqrt(1.+4.*mubarQ2)+1.)/(2.*sqrt(mubarQ2)) )
-		   );
+    res += 1./(2.*CA)*PDFxByzplus(parton,f,zplus)
+                     *( 8./3.*mubarQ2 - 10./9. + (10./9.+16./3.*mubarQ2)/sqrt((1.+4.*mubarQ2)*(1.+4.*mubarQ2)*(1.+4.*mubarQ2))
+                      + 4./3.*( (1.-2.*mubarQ2)*sqrt(1.+4.*mubarQ2) - 1. )*log( (sqrt(1.+4.*mubarQ2)+1.)/(2.*sqrt(mubarQ2)) ) );
   }
 
   return res;

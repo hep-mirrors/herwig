@@ -226,10 +226,14 @@ public:
    */
   double gammaSoft2(double muQ2) const;
 
+  double Ja_gQplusmod(double muQ2) const;
+
+  double gammaSoft2mod(double muQ2) const;
+
   /**
    * The Kscript^{qq}_q contribution
    */
-  double Kscriptqq_q(Energy2 sja, Energy2 mj2) const;
+  double Kscriptqq_q(Energy2 sja, Energy2 mj2, bool) const;
 
   /**
    * The Kscript^{qg}_q contribution
@@ -244,12 +248,12 @@ public:
   /**
    * The Kscript^{gg}_q contribution
    */
-  double Kscriptgg_q(Energy2 sja, Energy2 mj2) const;
+  double Kscriptgg_q(Energy2 sja, Energy2 mj2, bool) const;
 
   /**
    * The Kscriptbar^{qq}_q contribution (B.17)
    */
-  double Kscriptbarqq_q(Energy2 Qja2, Energy2 mj2) const;
+  double Kscriptbarqq_q(Energy2 Qja2, Energy2 mj2, bool) const;
 
   /**
    * The Kscriptbar^{qg}_q contribution (B.17)
@@ -264,7 +268,7 @@ public:
   /**
    * The Kscriptbar^{gg}_q contribution (B.17)
    */
-  double Kscriptbargg_q(Energy2 Qja2, Energy2 mj2) const;
+  double Kscriptbargg_q(Energy2 Qja2, Energy2 mj2, bool) const;
 
   ////////////////////////////
 
@@ -283,6 +287,8 @@ public:
    * [J^a_{Q\bar{Q}}(z,\mu_Q^2)]_{z_+}
    */
   double Ja_QQzplus(double muQ2, int F, double zplus) const;
+
+  double Ja_QQzplusmod(double muQ2, int F, double zplus) const;
 
   /**
    * The Kscript^{qq}_g contribution

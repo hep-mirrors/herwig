@@ -107,14 +107,7 @@ public:
 
   //virtual void getids() const ;
   
-//   virtual Energy2 mu2() const { return lastSHat(); }
-
-//   virtual Energy2 mu2() const { 
-//     Energy2 rscale = MatchboxFactory::currentFactory()->scaleChoice()->renormalizationScale()*sqr(MatchboxFactory::currentFactory()->renormalizationScaleFactor());
-//     cout << "GoSamAmplitude(.h)::Energy2 mu2(): sqrt(rscale/GeV/GeV) = " << sqrt(rscale/GeV/GeV) << endl;
-//     cout << "GoSamAmplitude(.h)::Energy2 mu2(): sqrt(lastSHat()/GeV/GeV) = " << sqrt(lastSHat()/GeV/GeV) << endl;
-//     return lastSHat(); 
-//   }
+  //virtual Energy2 mu2() const { return lastSHat(); }
 
   virtual Energy2 mu2() const;
 

@@ -69,7 +69,7 @@ double IFqgxDipole::me2Avg(double ccme2) const {
 
   res *= ( 
     2./(1.-x+u) - (1.+x) 
-//     + u*(1.+3.*x*(1.-u)) 
+    + u*(1.+3.*x*(1.-u)) 
     );
 
   res *= -ccme2;
@@ -106,7 +106,7 @@ double IFqgxDipole::me2() const {
 
   res *= ( 
     2./(1.-x+u) - (1.+x) 
-//     + u*(1.+3.*x*(1.-u)) 
+    + u*(1.+3.*x*(1.-u)) 
     );
 
   res *= -underlyingBornME()->colourCorrelatedME2(make_pair(bornEmitter(),bornSpectator()));
