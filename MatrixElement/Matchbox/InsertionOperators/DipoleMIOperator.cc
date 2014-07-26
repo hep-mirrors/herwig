@@ -229,6 +229,18 @@ double DipoleMIOperator::me2() const {
   double kappa=0.;
 
   bool appendixB = true;
+  // Note: We are using a parametrization where we keep s_{ja'}=2p_jp_a' fixed,
+  // rather than s_{ja}=2p_jp_a, due to the substitution \eta->x/z and the sub-
+  // sequent shift of the z-dependence from the hard Born ME into the PDF. 
+  // Thus we need to make sure to keep the right kinematic variable fixed while
+  // performig the z-integration, i.e. s_{ja'} in our case. This is partly des-
+  // cribed in appendix B of the massive CS paper, but also in the last term of
+  // eq. (6.55) in the massive CS paper we need to consider that s_{ja'} is our
+  // fixed variable and not s_{ja}.
+  // This also means that in the sum over heavy quark flavours, in the g->QQbar
+  // contributions, we need to sum over N_F and not just N_F^{ja} (see appendix
+  // B in the massive CS paper), which is also important for the massive I ope-
+  // rator (the same for the massive K operator) here.
 
   double res = 0.;
 
