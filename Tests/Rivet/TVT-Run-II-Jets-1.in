@@ -31,7 +31,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2005_S6217184
 # CDF inclusive jet kt
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2007_S7057202
 # run II UE analysis
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2008_LEADINGJETS
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2008_LEADINGJETS
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2010_S8591881_QCD
 # inclusive jet cross section
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0  D0_2008_S7662670

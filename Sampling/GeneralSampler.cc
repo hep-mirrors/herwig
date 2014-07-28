@@ -101,6 +101,7 @@ void GeneralSampler::initialize() {
     s->bin(b);
     lastSampler(s);
     s->doWeighted(eventHandler()->weighted());
+    s->setupRemappers(theVerbose);
     s->initialize(theVerbose);
     samplers()[b] = s;
     if ( !theVerbose )
@@ -132,6 +133,11 @@ void GeneralSampler::initialize() {
   if ( samplers().empty() ) {
     throw Exception() << "No processes with non-zero cross section present."
 		      << Exception::abortnow;
+  }
+
+  for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers().begin();
+	s != samplers().end(); ++s ) {
+    s->second->saveRemappers();
   }
 
   writeGrids();
@@ -429,6 +435,11 @@ void GeneralSampler::dofinish() {
 
   }
 
+  for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers().begin();
+	s != samplers().end(); ++s ) {
+    s->second->saveRemappers();
+  }
+
   writeGrids();
 
   SamplerBase::dofinish();
@@ -441,6 +452,7 @@ void GeneralSampler::doinitrun() {
   eventHandler()->initrun();
   for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers().begin();
 	s != samplers().end(); ++s ) {
+    s->second->setupRemappers(theVerbose);
     s->second->initialize(theVerbose);
   }
   SamplerBase::doinitrun();

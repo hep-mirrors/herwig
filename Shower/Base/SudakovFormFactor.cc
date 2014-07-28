@@ -264,7 +264,12 @@ Energy2 SudakovFormFactor::guesst(Energy2 t1,unsigned int iopt,
   }
   else if(iopt==2) c*=-1.;
   if(splittingFn_->interactionOrder()==1) {
-    return t1*pow(UseRandom::rnd(),c);
+    double r = UseRandom::rnd();
+    if(iopt!=2 || c*log(r)<log(Constants::MaxEnergy2/t1)) {
+      return t1*pow(r,c);
+    }
+    else
+      return Constants::MaxEnergy2;
   }
   else {
     assert(false && "Units are dubious here.");

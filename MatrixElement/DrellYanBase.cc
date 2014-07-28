@@ -648,11 +648,18 @@ bool DrellYanBase::softMatrixElementVeto(ShowerProgenitorPtr initial,
     return false;
   }
   // otherwise
-  parent->setEvolutionScale(br.kinematics->scale());
+  parent->vetoEmission(br.type,br.kinematics->scale());
   return true;
 }
 
-HardTreePtr DrellYanBase::generateHardest(ShowerTreePtr tree) {
+HardTreePtr DrellYanBase::generateHardest(ShowerTreePtr tree,
+					  vector<ShowerInteraction::Type> inter) {
+  bool found = false;
+  // check if generating QCD radiation
+  for(unsigned int ix=0;ix<inter.size();++ix) {
+    found |= inter[ix]==ShowerInteraction::QCD;
+  }
+  if(!found) return HardTreePtr();
   useMe();
   // get the particles to be showered
   _beams.clear();
@@ -695,7 +702,7 @@ HardTreePtr DrellYanBase::generateHardest(ShowerTreePtr tree) {
   // generate the hard emission and return if no emission
   if(!getEvent(pnew,emission_type)) {
     for(unsigned int ix=0;ix<particlesToShower.size();++ix)
-      particlesToShower[ix]->maximumpT(_min_pt);
+      particlesToShower[ix]->maximumpT(_min_pt,ShowerInteraction::QCD);
     return HardTreePtr();
   }
   // construct the HardTree object needed to perform the showers
@@ -752,6 +759,8 @@ HardTreePtr DrellYanBase::generateHardest(ShowerTreePtr tree) {
   hardBranch.push_back(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
 					    inBranch[iemit],HardBranching::Incoming)));
   inBranch[iemit]->addChild(hardBranch.back());
+  inBranch[iemit]->type(hardBranch.back()->branchingParticle()->id()>0 ? 
+			ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine);
   // create the branching for the emitted jet
   inBranch[iemit]->addChild(new_ptr(HardBranching(newparticles[2],SudakovPtr(),
 						 inBranch[iemit],HardBranching::Outgoing)));
@@ -771,8 +780,8 @@ HardTreePtr DrellYanBase::generateHardest(ShowerTreePtr tree) {
   // and set the maximum pt for the radiation
   set<HardBranchingPtr> hard=hardtree->branchings();
   for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
-    if( _pt < _min_pt ) particlesToShower[ix]->maximumpT(_min_pt);
-    else particlesToShower[ix]->maximumpT(_pt);
+    if( _pt < _min_pt ) particlesToShower[ix]->maximumpT(_min_pt,ShowerInteraction::QCD);
+    else particlesToShower[ix]->maximumpT(_pt,ShowerInteraction::QCD);
     for(set<HardBranchingPtr>::const_iterator mit=hard.begin();
 	mit!=hard.end();++mit) {
       if(particlesToShower[ix]->progenitor()->id()==(*mit)->branchingParticle()->id()&&

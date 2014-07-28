@@ -33,6 +33,12 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1107658
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1204784
 # Z and real photon + jet
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1258128
+# CMS Z + b-hadron
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1256943
+# CMS Z ang correlations and event shapes
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1209721
+# CMS Z pt and y
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I941555
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################

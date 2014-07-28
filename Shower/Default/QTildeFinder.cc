@@ -17,6 +17,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Repository/EventGenerator.h"
+#include "ThePEG/EventRecord/Event.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "ThePEG/Repository/UseRandom.h" 
 #include "ThePEG/Utilities/DescribeClass.h"

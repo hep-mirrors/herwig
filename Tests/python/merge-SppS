@@ -1,0 +1,163 @@
+#! /usr/bin/env python
+# import lighthisto
+import logging
+import sys
+
+if sys.version_info[:3] < (2,4,0):
+    print "rivet scripts require Python version >= 2.4.0... exiting"
+    sys.exit(1)
+
+import os, yoda, copy
+
+# # #############################################
+
+def useOne(hpath, sqrts):
+    global inhistos
+    global outhistos
+    try:
+        outhistos[hpath] =  inhistos[hpath][float(sqrts)]
+    except:
+        pass
+
+if __name__ == "__main__":
+    import logging
+    from optparse import OptionParser, OptionGroup
+    parser = OptionParser(usage="%prog name")
+    verbgroup = OptionGroup(parser, "Verbosity control")
+    verbgroup.add_option("-v", "--verbose", action="store_const", const=logging.DEBUG, dest="LOGLEVEL",
+                         default=logging.INFO, help="print debug (very verbose) messages")
+    verbgroup.add_option("-q", "--quiet", action="store_const", const=logging.WARNING, dest="LOGLEVEL",
+                         default=logging.INFO, help="be very quiet")
+    parser.add_option_group(verbgroup)
+    (opts, args) = parser.parse_args()
+    logging.basicConfig(level=opts.LOGLEVEL, format="%(message)s")
+
+    ## Check args
+    if len(args) < 1:
+        logging.error("Must specify at least the name of the files")
+        sys.exit(1)
+
+#######################################
+
+yodafiles=["ISR-44-UE.yoda","ISR-63-UE.yoda","SppS-63-UE.yoda","ISR-30-UE.yoda", \
+           "ISR-53-UE.yoda","SppS-200-UE.yoda","SppS-500-UE.yoda","SppS-900-UE.yoda", \
+           "SppS-546-UE.yoda","SppS-53-UE.yoda"]
+           
+## Get histos
+inhistos = {}
+outhistos={}
+for file in yodafiles:
+    if(file.find("44")>0) :
+        sqrts=44
+    elif(file.find("63")>0) :
+        sqrts=63
+    elif(file.find("30")>0) :
+        sqrts=30
+    elif(file.find("53")>0) :
+        sqrts=53
+    elif(file.find("200")>0) :
+        sqrts=200
+    elif(file.find("500")>0) :
+        sqrts=500
+    elif(file.find("900")>0) :
+        sqrts=900
+    elif(file.find("546")>0) :
+        sqrts=546
+    elif(file.find("53")>0) :
+        sqrts=53
+
+    if not os.access(file, os.R_OK):
+        logging.error("%s can not be read" % file)
+        break
+    try:
+        aos = yoda.read(file)
+    except:
+        logging.error("%s can not be parsed as yoda" % file)
+        break
+    ## Get histos from this YODA file
+    for aopath, ao in aos.iteritems() :
+        if(aopath.find("1926373")>0 or aopath.find("1867512")>0 or
+           aopath.find("1583476")>0 or aopath.find("2044935")>0 or
+           aopath.find("1178091")>0 ) :
+            if not inhistos.has_key(aopath):
+                inhistos[aopath] = {}
+            if not inhistos[aopath].has_key(sqrts):
+                inhistos[aopath][sqrts] = ao
+            else:
+                raise Exception("A set with sqrts = %s already exists" % ( sqrts))
+        else :
+            outhistos[aopath] = ao
+
+# UA5_1989_S1926373
+useOne("/UA5_1989_S1926373/d01-x01-y01","200")
+useOne("/UA5_1989_S1926373/d02-x01-y01","900")
+useOne("/UA5_1989_S1926373/d03-x01-y01","200")
+useOne("/UA5_1989_S1926373/d04-x01-y01","200")
+useOne("/UA5_1989_S1926373/d05-x01-y01","200")
+useOne("/UA5_1989_S1926373/d06-x01-y01","200")
+useOne("/UA5_1989_S1926373/d07-x01-y01","900")
+useOne("/UA5_1989_S1926373/d08-x01-y01","900")
+useOne("/UA5_1989_S1926373/d09-x01-y01","900")
+useOne("/UA5_1989_S1926373/d10-x01-y01","900")
+useOne("/UA5_1989_S1926373/d11-x01-y01","200")
+useOne("/UA5_1989_S1926373/d12-x01-y01","900")
+# UA5_1988_S1867512
+useOne("/UA5_1988_S1867512/d02-x01-y01","200")
+useOne("/UA5_1988_S1867512/d02-x01-y02","546")
+useOne("/UA5_1988_S1867512/d02-x01-y03","900")
+useOne("/UA5_1988_S1867512/d03-x01-y01","200")
+useOne("/UA5_1988_S1867512/d03-x01-y02","546")
+useOne("/UA5_1988_S1867512/d03-x01-y03","900")
+# UA5_1986_S1583476
+useOne("/UA5_1986_S1583476/d01-x01-y01","200")
+useOne("/UA5_1986_S1583476/d01-x01-y02","200")
+useOne("/UA5_1986_S1583476/d01-x01-y03","900")
+useOne("/UA5_1986_S1583476/d01-x01-y04","900")
+useOne("/UA5_1986_S1583476/d02-x01-y01","200")
+useOne("/UA5_1986_S1583476/d02-x01-y02","200")
+useOne("/UA5_1986_S1583476/d02-x01-y03","200")
+useOne("/UA5_1986_S1583476/d02-x01-y04","200")
+useOne("/UA5_1986_S1583476/d02-x01-y05","200")
+useOne("/UA5_1986_S1583476/d02-x01-y06","200")
+useOne("/UA5_1986_S1583476/d03-x01-y01","900")
+useOne("/UA5_1986_S1583476/d03-x01-y02","900")
+useOne("/UA5_1986_S1583476/d03-x01-y03","900")
+useOne("/UA5_1986_S1583476/d03-x01-y04","900")
+useOne("/UA5_1986_S1583476/d03-x01-y05","900")
+useOne("/UA5_1986_S1583476/d03-x01-y06","900")
+useOne("/UA5_1986_S1583476/d03-x01-y07","900")
+useOne("/UA5_1986_S1583476/d03-x01-y08","900")
+useOne("/UA5_1986_S1583476/d03-x01-y09","900")
+# UA1_1990_S2044935
+useOne("/UA1_1990_S2044935/d01-x01-y01","200")
+useOne("/UA1_1990_S2044935/d01-x01-y02","500")
+useOne("/UA1_1990_S2044935/d01-x01-y03","900")
+useOne("/UA1_1990_S2044935/d02-x01-y01","200")
+useOne("/UA1_1990_S2044935/d02-x01-y02","500")
+useOne("/UA1_1990_S2044935/d02-x01-y03","900")
+useOne("/UA1_1990_S2044935/d03-x01-y01","900")
+useOne("/UA1_1990_S2044935/d04-x01-y01","900")
+useOne("/UA1_1990_S2044935/d05-x01-y01","900")
+useOne("/UA1_1990_S2044935/d06-x01-y01","200")
+useOne("/UA1_1990_S2044935/d07-x01-y01","900")
+useOne("/UA1_1990_S2044935/d08-x01-y01","63")
+useOne("/UA1_1990_S2044935/d09-x01-y01","200")
+useOne("/UA1_1990_S2044935/d10-x01-y01","500")
+useOne("/UA1_1990_S2044935/d11-x01-y01","900")
+useOne("/UA1_1990_S2044935/d12-x01-y01","200")
+useOne("/UA1_1990_S2044935/d12-x01-y02","500")
+useOne("/UA1_1990_S2044935/d12-x01-y03","900")
+# SFM_1984_S1178091
+useOne("/SFM_1984_S1178091/d01-x01-y01","30")
+useOne("/SFM_1984_S1178091/d01-x01-y02","44")
+useOne("/SFM_1984_S1178091/d01-x01-y03","53")
+useOne("/SFM_1984_S1178091/d01-x01-y04","63")
+useOne("/SFM_1984_S1178091/d02-x01-y01","30")
+useOne("/SFM_1984_S1178091/d02-x01-y02","44")
+useOne("/SFM_1984_S1178091/d02-x01-y03","53")
+useOne("/SFM_1984_S1178091/d02-x01-y04","63")
+# Choose output file
+name = args[0]+".yoda"
+# output the yoda file
+yoda.writeYODA(outhistos,name)
+sys.exit(0)

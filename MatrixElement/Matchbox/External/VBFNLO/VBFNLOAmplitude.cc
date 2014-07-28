@@ -17,6 +17,7 @@
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
+#include "ThePEG/Interface/Switch.h"
 
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -85,6 +86,7 @@ void VBFNLOAmplitude::startOLP(const string& contract, int& status) {
 
   setOLPParameter("alphas",SM().alphaS());
 
+  setOLPParameter("ranhelsum",theRanHelSum);
 }
 
 bool VBFNLOAmplitude::startOLP(const map<pair<Process,int>,int>& procs) {
@@ -248,11 +250,11 @@ void VBFNLOAmplitude::doinitrun() {
 
 
 void VBFNLOAmplitude::persistentOutput(PersistentOStream & os) const {
-  os << colourCorrelatorResults << spinColourCorrelatorResults;
+  os << colourCorrelatorResults << spinColourCorrelatorResults << theRanHelSum;
 }
 
 void VBFNLOAmplitude::persistentInput(PersistentIStream & is, int) {
-  is >> colourCorrelatorResults >> spinColourCorrelatorResults;
+  is >> colourCorrelatorResults >> spinColourCorrelatorResults >> theRanHelSum;
 }
 
 
@@ -268,6 +270,20 @@ void VBFNLOAmplitude::Init() {
 
   static ClassDocumentation<VBFNLOAmplitude> documentation
     ("VBFNLOAmplitude implements an interface to VBFNLO.","Matrix elements have been calculated using VBFNLO.");
+
+  static Switch<VBFNLOAmplitude,bool> interfaceRandomHelicitySummation
+    ("RandomHelicitySummation", "Switch for random helicity summation of leptons and photons",
+      &VBFNLOAmplitude::theRanHelSum, false, false, false);
+  static SwitchOption interfaceRandomHelicitySummationTrue
+    (interfaceRandomHelicitySummation, 
+     "True", 
+     "Perform random helicity summation", 
+     true);
+  static SwitchOption interfaceRandomHelicitySummationFalse
+    (interfaceRandomHelicitySummation, 
+     "False", 
+     "Sum over all helicity combinations", 
+     false);
 
 }
 

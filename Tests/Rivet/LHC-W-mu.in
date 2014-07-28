@@ -28,6 +28,9 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I925932
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1083318
 # ATLAS W kT scales
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1217867
+# CMS double parton scattering
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1272853
+
 
 
 ##################################################

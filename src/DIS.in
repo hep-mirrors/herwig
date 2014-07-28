@@ -12,6 +12,10 @@ set DISGenerator:RandomNumberGenerator:Seed 31122001
 set DISGenerator:PrintEvent 10
 set DISGenerator:MaxErrors 10000
 set /Herwig/Shower/ShowerHandler:MPIHandler NULL
+# switch off final-state electron/muon FSR
+do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting e-->e-,gamma; /Herwig/Shower/LtoLGammaSudakov
+do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting mu-->mu-,gamma; /Herwig/Shower/LtoLGammaSudakov
+do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting tau-->tau-,gamma; /Herwig/Shower/LtoLGammaSudakov
 
 ##################################################
 # DIS physics parameters (override defaults here) 

@@ -17,6 +17,7 @@
 #include "ThePEG/Repository/UseRandom.h"
 
 #include "MultiIterationStatistics.h"
+#include "Remapper.h"
 
 namespace Herwig {
 
@@ -62,6 +63,11 @@ public:
 
 public:
 
+  /**
+   * Evaluate the cross section
+   */
+  double evaluate(vector<double> p,
+		  bool remap = true);
 
   /**
    * Return the bias with which this sampler is selected. The sampler
@@ -182,6 +188,21 @@ public:
   virtual double generate();
 
   /**
+   * Fill and finalize the remappers present
+   */
+  void fillRemappers(bool progress);
+
+  /**
+   * Write remappers to grid file
+   */
+  void saveRemappers() const;
+
+  /**
+   * Read remappers from grid file
+   */
+  void setupRemappers(bool progress);
+
+  /**
    * Run a single iteration of n points, optionally printing a
    * progress bar to cout. Calls generate n times.
    */
@@ -283,7 +304,7 @@ public:
   /**
    * Return the dimension.
    */
-  virtual int dimension() const { return theEventHandler->nDim(bin()); }
+  int dimension() const { return theEventHandler->nDim(bin()); }
 
   /**
    * Return the number of points to be used for initial integration.
@@ -426,11 +447,40 @@ private:
    */
   Ptr<GeneralSampler>::tptr theSampler;
   
-  
-    /**
+  /**
    * Folder for the random number plots.
    */
   string theRandomNumbers;
+
+  /**
+   * Remapper objects indexed by dimension
+   */
+  map<size_t,Remapper> remappers;
+
+  /**
+   * The number of points to be used for initial filling of the remappers
+   */
+  unsigned long theRemapperPoints;
+
+  /**
+   * True if channels should get a remapper
+   */
+  bool theRemapChannelDimension;
+
+  /**
+   * The number of bins to be used for luminosity dimensions
+   */
+  unsigned long theLuminosityMapperBins;
+
+  /**
+   * The number of bins to be used for any other dimension
+   */
+  unsigned long theGeneralMapperBins;
+
+  /**
+   * The minimum selection probability for remapper bins
+   */
+  double theRemapperMinSelection;
 
 private:
 

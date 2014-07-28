@@ -265,6 +265,26 @@ for vertexnumber,vertex in enumerate(all_vertices,1):
         vertex.herwig_skip_vertex = True
         continue
 
+
+    gsnames = ['goldstone',
+           'goldstoneboson',
+           'GoldstoneBoson']
+
+    for p in vertex.particles:
+        def gstest(name):
+            try:
+                return getattr(p,name)
+            except AttributeError:
+                return False
+
+        if any(map(gstest, gsnames)):
+            vertex.herwig_skip_vertex = True
+            break
+
+    if vertex.herwig_skip_vertex: 
+        continue
+
+
     lfactors = { 
         'FFV'  : '-complex(0,1)',  # ok
         'VVV'  : 'complex(0,1)',   # changed to fix ttbar

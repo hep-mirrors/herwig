@@ -77,7 +77,8 @@ public:
   /**
    *  Default constructor
    */
-  QTildeReconstructor() : _reconopt(0), _initialBoost(0), _minQ(MeV) {};
+  QTildeReconstructor() : _reconopt(0), _initialBoost(0), 
+			  _finalStateReconOption(0), _minQ(MeV) {};
 
   /**
    *  Methods to reconstruct the kinematics of a scattering or decay process
@@ -93,7 +94,8 @@ public:
    */
   virtual bool reconstructHardJets(ShowerTreePtr hard,
 				   const map<tShowerProgenitorPtr,
-				   pair<Energy,double> > & pt) const;
+				   pair<Energy,double> > & pt,
+				   ShowerInteraction::Type type) const;
 
   /**
    * Given in input a vector of the particles which initiated the showers
@@ -103,7 +105,8 @@ public:
    * and preserving the invariant mass and the rapidity of the 
    * hard subprocess system.
    */
-  virtual bool reconstructDecayJets(ShowerTreePtr decay) const;
+  virtual bool reconstructDecayJets(ShowerTreePtr decay,
+				    ShowerInteraction::Type type) const;
   //@}
 
   /**
@@ -226,7 +229,7 @@ protected:
    *  particles
    */
   void reconstructInitialInitialSystem(bool & applyBoost,
-				       LorentzRotation & toRest,
+				       LorentzRotation &   toRest,
 				       LorentzRotation & fromRest,
 				       vector<ShowerProgenitorPtr>) const;
   //@}
@@ -240,7 +243,7 @@ protected:
    *  Perform the inverse reconstruction of a system with only final-state
    *  particles
    */
-  void deconstructFinalStateSystem(const LorentzRotation & toRest,
+  void deconstructFinalStateSystem(const LorentzRotation &   toRest,
 				   const LorentzRotation & fromRest,
 				   HardTreePtr,
 				   vector<HardBranchingPtr>,
@@ -252,7 +255,7 @@ protected:
    *  particles
    */
   void deconstructInitialInitialSystem(bool & applyBoost,
-				       LorentzRotation & toRest,
+				       LorentzRotation &   toRest,
 				       LorentzRotation & fromRest,
 				       HardTreePtr,
 				       vector<HardBranchingPtr>,
@@ -270,6 +273,13 @@ protected:
   bool deconstructGeneralSystem(HardTreePtr, cEvolverPtr,
 				ShowerInteraction::Type) const;
   //@}
+
+  /**
+   *   Recursively treat the most off-shell paricle seperately
+   * for final-final reconstruction
+   */
+  void reconstructFinalFinalOffShell(JetKinVect orderedJets, Energy2 s,
+				     bool recursive) const;
 
   /**
    *  Various methods for the Lorentz transforms needed to do the 
@@ -395,7 +405,7 @@ protected:
    * @param jets The jets
    */
   Energy momConsEq(const double & k, const Energy & root_s,
-			  const JetKinVect & jets) const;
+		   const JetKinVect & jets) const;
   //@}
 
   /**
@@ -476,6 +486,11 @@ private:
    *  Option for the boost for initial-initial reconstruction
    */
   unsigned int _initialBoost;
+
+  /**
+   * Option for the reconstruction of final stateb systems
+   */
+  unsigned int _finalStateReconOption;
 
   /**
    * Minimum invariant mass for initial-final dipoles to allow the

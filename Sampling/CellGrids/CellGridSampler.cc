@@ -21,7 +21,7 @@
 
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ParVector.h"
-
+#include "ThePEG/Interface/Switch.h"
 
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -42,7 +42,7 @@ CellGridSampler::CellGridSampler()
     theExplorationPoints(1000), theExplorationSteps(8),
     theGain(0.3), theEpsilon(0.01),
     theMinimumSelection(0.0001), theLuminositySplits(0),
-    theChannelSplits(0) {}
+    theChannelSplits(0), theAllChannelSplits(false) {}
 
 CellGridSampler::~CellGridSampler() {}
 
@@ -58,12 +58,6 @@ double CellGridSampler::generate() {
   UseRandom rnd;
   pair<double,double> weights = SimpleCellGrid::generate(rnd,*this,lastPoint());
   double w = SimpleCellGrid::integral()*weights.first/weights.second;
-  if (randomNumberString()!="") 
-  for ( size_t k = 0; k < lastPoint().size(); ++k ) {
-    RandomNumberHistograms[RandomNumberIndex(id(),k)].first.book(lastPoint()[k],abs(w));
-    RandomNumberHistograms[RandomNumberIndex(id(),k)].second+=abs(w);
-
-  }
   if ( !weighted() && initialized() ) {
     double p = min(abs(w),referenceWeight())/referenceWeight();
     double sign = w >= 0. ? 1. : -1.;
@@ -144,7 +138,7 @@ void CellGridSampler::initialize(bool progress) {
   std::set<SimpleCellGrid*> newCells;
   
   if ( pre_adaption_splits().empty() &&
-       (theLuminositySplits || theChannelSplits) ) {
+       (theLuminositySplits || theChannelSplits || theAllChannelSplits) ) {
     const StandardEventHandler& eh = *eventHandler();
     const StandardXComb& xc = *eh.xCombs()[bin()];
     the_pre_adaption_splits.resize(dimension(),0);
@@ -155,8 +149,13 @@ void CellGridSampler::initialize(bool progress) {
       for ( int n = dimension() - pdims.second; n < dimension(); ++n )
 	the_pre_adaption_splits[n] = theLuminositySplits;
     }
-    if ( theChannelSplits && dimension() > pdims.first + pdims.second ) {
+    if ( theChannelSplits && xc.diagrams().size() &&
+	 dimension() > pdims.first + pdims.second ) {
       the_pre_adaption_splits[pdims.first] = theChannelSplits;
+    }
+    if ( theAllChannelSplits && xc.diagrams().size() > 1 &&
+	 dimension() > pdims.first + pdims.second ) {
+      the_pre_adaption_splits[pdims.first] = xc.diagrams().size() - 1;
     }
   }
   
@@ -230,14 +229,16 @@ void CellGridSampler::persistentOutput(PersistentOStream & os) const {
   os << theExplorationPoints << theExplorationSteps
      << theGain << theEpsilon << theMinimumSelection
      << the_pre_adaption_splits
-     << theLuminositySplits << theChannelSplits;
+     << theLuminositySplits << theChannelSplits
+     << theAllChannelSplits;
 }
 
 void CellGridSampler::persistentInput(PersistentIStream & is, int) {
   is >> theExplorationPoints >> theExplorationSteps
      >> theGain >> theEpsilon >> theMinimumSelection
      >> the_pre_adaption_splits
-     >> theLuminositySplits >> theChannelSplits;
+     >> theLuminositySplits >> theChannelSplits
+     >> theAllChannelSplits;
 }
 
 // *** Attention *** The following static variable is needed for the type
@@ -300,6 +301,22 @@ void CellGridSampler::Init() {
      "",
      &CellGridSampler::theChannelSplits, 0, 0, 0,
      false, false, Interface::lowerlim);
+
+
+  static Switch<CellGridSampler,bool> interfaceAllChannelSplits
+    ("AllChannelSplits",
+     "",
+     &CellGridSampler::theAllChannelSplits, false, false, false);
+  static SwitchOption interfaceAllChannelSplitsOn
+    (interfaceAllChannelSplits,
+     "On",
+     "",
+     true);
+  static SwitchOption interfaceAllChannelSplitsOff
+    (interfaceAllChannelSplits,
+     "Off",
+     "",
+     false);
 
 }
 

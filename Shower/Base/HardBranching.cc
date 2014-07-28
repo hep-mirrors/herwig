@@ -62,7 +62,7 @@ void HardBranching::setMomenta(LorentzRotation R,double aparent,
       Axis axis(p_bb.vect().unit());
       LorentzRotation rot;
       if(axis.perp2()>0.) {
-	double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
+    	double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
     	rot.setRotate(-acos(axis.z()),
 		      Axis(-axis.y()/sinth,axis.x()/sinth,0.));
     	vect.transform(rot);
@@ -102,19 +102,5 @@ HardBranching::HardBranching(ShowerParticlePtr particle, SudakovPtr sudakov,
   : _particle(particle), _original(), _p(particle->momentum()), _n(), _qt(),
     _shower(particle->momentum()), _pt(ZERO), _x_frac(0.),
     _status(status), _scale(ZERO), _z(0.),_phi(0.), _parent(parent),
-    _sudakov(sudakov)
+    _sudakov(sudakov), type_(ShowerPartnerType::Undefined)
 {}
-
-void HardBranching::fixColours() {
-  if(_status!=Incoming && !_sudakov) return;
-  if(_status==Outgoing && _children.empty()) return;
-  if(_status==Incoming && !_parent) return;
-  if(_status==Incoming)
-    _parent->sudakov()->splittingFn()->
-      colourConnection(_parent->_particle,_particle,
-		       _parent->children()[1]->_particle,true);
-  else
-    _sudakov->splittingFn()->
-      colourConnection(_particle,_children[0]->_particle,
-		       _children[1]->_particle,false);
-}

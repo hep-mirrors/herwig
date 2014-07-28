@@ -47,6 +47,10 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1087342
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1184941
 # ATLAS subjets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1094564
+# CMS 4-jet
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1273574 
+# CMS colour coherence
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1265659
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'

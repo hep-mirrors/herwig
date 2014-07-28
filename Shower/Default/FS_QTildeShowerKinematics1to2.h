@@ -51,10 +51,9 @@ public:
    * branching products are calculated and updated from the knowledge
    * of the parent kinematics.  This method is used by the
    * ForwardShowerEvolver.  
-   * ***ACHTUNG*** Might be extended to update colour connections as well.
-   * @param theParent The branching particle
-   * @param theChildren The particles produced in the branching
-   * @param angularOrder Whether or not to apply angular ordering
+   * @param parent The branching particle
+   * @param children The particles produced in the branching
+   * @param partnerType The type of evolution partner
    */
 private:
 
@@ -64,45 +63,45 @@ private:
 			bool setAlpha) const; 
 
 public:
-  virtual void updateChildren( const tShowerParticlePtr theParent, 
-			       const ShowerParticleVector & theChildren,
-			       bool angularOrder) const;
+  virtual void updateChildren( const tShowerParticlePtr parent, 
+			       const ShowerParticleVector & children,
+			       ShowerPartnerType::Type partnerType) const;
 
-  virtual void resetChildren( const tShowerParticlePtr theParent, 
-			      const ShowerParticleVector & theChildren) const;
+  virtual void resetChildren( const tShowerParticlePtr parent, 
+			      const ShowerParticleVector & children) const;
 
 
   /**
    * Update the parent Kinematics from the knowledge of the kinematics
    * of the children. This method will be used by the KinematicsReconstructor.
-   * @param theParent   The parent
-   * @param theChildren The children
-   * @param angularOrder Whether or not to apply angular ordering
+   * @param parent   The parent
+   * @param children The children
+   * @param partnerType The type of evolution partner
    */
-  virtual void updateParent(const tShowerParticlePtr theParent,
-			    const ShowerParticleVector & theChildren,
-			    bool angularOrder) const;
+  virtual void updateParent(const tShowerParticlePtr parent,
+			    const ShowerParticleVector & children,
+			    ShowerPartnerType::Type partnerType) const;
 
   /**
    * Update the parent Kinematics from the knowledge of the kinematics
    * of the children. This method will be used by the 
    * KinematicsReconstructor.
    */
-  virtual void reconstructParent( const tShowerParticlePtr theParent, 
-				  const ParticleVector & theChildren ) const;
+  virtual void reconstructParent( const tShowerParticlePtr parent, 
+				  const ParticleVector & children ) const;
 
   /**
    * Update the kinematical data of a particle when a reconstruction
    * fixpoint was found. This will highly depend on the kind of
    * kinematics chosen and will be defined in the inherited concrete
    * classes. This method will be used by the KinematicsReconstructor.
-   * @param theLast The particle to update
+   * @param last The particle to update
    * @param iopt The option for the momentum reconstruction 
    * - 0 is in the rest frame of the pair of reference vectors
    * - 1 is in the rest frame of the p vector
    * @param mass The mass to be used, if less than zero on-shell
    */
-  virtual void reconstructLast(const tShowerParticlePtr theLast,
+  virtual void reconstructLast(const tShowerParticlePtr last,
 			       unsigned int iopt, Energy mass=-1.*GeV) const;
 
   /**

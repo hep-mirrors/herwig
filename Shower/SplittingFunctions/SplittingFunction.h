@@ -14,6 +14,8 @@
 
 #include "ThePEG/Interface/Interfaced.h"
 #include "Herwig++/Shower/ShowerConfig.h"
+#include "ThePEG/EventRecord/ColourLine.h"
+#include "ThePEG/PDT/ParticleData.h"
 #include "SplittingFunction.fh"
 
 namespace Herwig {
@@ -24,9 +26,12 @@ using namespace ThePEG;
    * Enum to define the possible types of colour structure which can occur in
    * the branching.
    */
-  enum ColourStructure {Undefined=-1,TripletTripletOctet=0,OctetOctetOctet=1,
-                        OctetTripletTriplet=2,TripletOctetTriplet=3,SextetSextetOctet=4};
-
+  enum ColourStructure {Undefined=0,
+			TripletTripletOctet  = 1,OctetOctetOctet    =2,
+			OctetTripletTriplet  = 3,TripletOctetTriplet=4,
+			SextetSextetOctet    = 5,
+			ChargedChargedNeutral=-1,ChargedNeutralCharged=-2,
+			NeutralChargedCharged=-3};
 
 /** \ingroup Shower
  *
@@ -67,8 +72,9 @@ public:
    */
   SplittingFunction(unsigned int b)
     : Interfaced(), _interactionType(ShowerInteraction::UNDEFINED),
-      _interactionorder(b), 
+      _interactionOrder(b), 
       _colourStructure(Undefined), _colourFactor(-1.),
+      angularOrdered_(true),
       _splittingColourMethod(0) {}
 public:
 
@@ -84,7 +90,7 @@ public:
   /**
    *  Return the order of the splitting function in the interaction
    */
-  unsigned int interactionOrder() const {return _interactionorder;}
+  unsigned int interactionOrder() const {return _interactionOrder;}
 
   /**
    *  Return the colour structure
@@ -94,7 +100,23 @@ public:
   /**
    *  Return the colour factor
    */
-  double colourFactor() const {return _colourFactor;}
+  double colourFactor(const IdList &ids) const {
+    if(_colourStructure>0)
+      return _colourFactor;
+    else if(_colourStructure<0) {
+      if(_colourStructure==ChargedChargedNeutral ||
+	 _colourStructure==ChargedNeutralCharged) {
+	tPDPtr part=getParticleData(ids[0]);
+	return sqr(double(part->iCharge())/3.);
+      }
+      else {
+	tPDPtr part=getParticleData(ids[1]);
+	return sqr(double(part->iCharge())/3.);
+      }
+    }
+    else
+      assert(false);
+  }
   //@}
 
   /**
@@ -181,12 +203,51 @@ public:
    * @param parent The parent for the branching
    * @param first  The first  branching product
    * @param second The second branching product
+   * @param partnerType The type of evolution partner
    * @param back Whether this is foward or backward evolution.
    */
   virtual void colourConnection(tShowerParticlePtr parent,
 				tShowerParticlePtr first,
 				tShowerParticlePtr second,
+				ShowerPartnerType::Type partnerType, 
 				const bool back) const;
+
+  /**
+   *  Whether or not the interaction is angular ordered
+   */
+  bool angularOrdered() const {return angularOrdered_;}
+
+  /**
+   *  Functions to state scales after branching happens
+   */
+  //@{
+  /**
+   *  Sort out scales for final-state emission
+   */
+  void evaluateFinalStateScales(ShowerPartnerType::Type type,
+				Energy scale, double z,
+				tShowerParticlePtr parent,
+				tShowerParticlePtr first,
+				tShowerParticlePtr second);
+
+  /**
+   *  Sort out scales for initial-state emission
+   */
+  void evaluateInitialStateScales(ShowerPartnerType::Type type,
+				  Energy scale, double z,
+				  tShowerParticlePtr parent,
+				  tShowerParticlePtr first,
+				  tShowerParticlePtr second);
+
+  /**
+   *  Sort out scales for decay emission
+   */
+  void evaluateDecayScales(ShowerPartnerType::Type type,
+			   Energy scale, double z,
+			   tShowerParticlePtr parent,
+			   tShowerParticlePtr first,
+			   tShowerParticlePtr second);
+  //@}
 
 public:
 
@@ -251,7 +312,7 @@ private:
   /**
    *  The order of the splitting function in the coupling
    */
-  unsigned int _interactionorder;
+  unsigned int _interactionOrder;
 
   /**
    *  The colour structure
@@ -262,6 +323,11 @@ private:
    *  The colour factor
    */
   double _colourFactor;
+
+  /**
+   *  Whether or not this interaction is angular-ordered
+   */
+  bool angularOrdered_;
   
   /**
    *  The method for assigning colour

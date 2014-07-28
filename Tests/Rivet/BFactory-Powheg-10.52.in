@@ -23,6 +23,7 @@ set /Herwig/MatrixElements/PowhegMEee2gZ2qq:MaximumFlavour 4
 
 # BELLE charm hadron production
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2006_S6265367
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2013_I1216515
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'

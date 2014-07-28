@@ -77,21 +77,6 @@ public:
   virtual void finalize(bool);
 
   /**
-   * Evaluate the cross section.
-   */
-  double evaluate(const vector<double>& p) {
-    double w = 1.0;
-    try {
-      w = eventHandler()->dSigDR(p) / nanobarn;
-    } catch (Veto&) {
-      w = 0.0;
-    } catch (...) {
-      throw;
-    }
-    return w;
-  }
-
-  /**
    * Adapt
    */
   virtual void adapt();
@@ -197,6 +182,11 @@ private:
    * The number of splits to put into channel degrees of freedom.
    */
   int theChannelSplits;
+
+  /**
+   * Perform splits for all channels
+   */
+  bool theAllChannelSplits;
 
 };
 

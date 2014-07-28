@@ -513,7 +513,7 @@ softMatrixElementVeto(ShowerProgenitorPtr initial,ShowerParticlePtr parent,Branc
   Energy2 d_m2 = parent->momentum().m2();
   Energy2 pPerp2 = sqr(d_z*d_qt) - d_m2;
   if(pPerp2<ZERO) {
-    parent->setEvolutionScale(br.kinematics->scale());
+    parent->vetoEmission(br.type,br.kinematics->scale());
     return true;
   }
   Energy pPerp = (1.-d_z)*sqrt(pPerp2);
@@ -528,7 +528,7 @@ softMatrixElementVeto(ShowerProgenitorPtr initial,ShowerParticlePtr parent,Branc
   // if not vetoed reset max
   if(!veto) initial->highestpT(pPerp);
   // if vetoing reset the scale
-  if(veto) parent->setEvolutionScale(br.kinematics->scale());
+  if(veto) parent->vetoEmission(br.type,br.kinematics->scale());
   // return the veto
   return veto;
 }

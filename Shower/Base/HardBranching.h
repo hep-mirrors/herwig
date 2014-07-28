@@ -64,11 +64,6 @@ public:
 		  bool setMomentum=true);
 
   /**
-   *  Use the Sudakov to fix the colours
-   */
-  void fixColours();
-
-  /**
    *  Set and get members for the private member variables
    */
   //@{
@@ -249,6 +244,22 @@ public:
 
   //@}
 
+  /**
+   *  Type of branching
+   */
+  ShowerPartnerType::Type type() const {
+    assert(type_!=ShowerPartnerType::Undefined);
+    return type_;
+  }
+
+  /**
+   *  Type of branching
+   */
+  void type(ShowerPartnerType::Type in) {
+    type_ = in;
+    assert(type_!=ShowerPartnerType::Undefined);
+  }
+
 private:
 
   /**
@@ -341,6 +352,10 @@ private:
    */
   tHardBranchingPtr _partner;
 
+  /**
+   *  The type of branching
+   */
+  ShowerPartnerType::Type type_;
 };
 
 }

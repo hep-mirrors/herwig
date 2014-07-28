@@ -28,11 +28,13 @@ library HwMEDIS.so
 create Herwig::MEee2gZ2qq MEee2gZ2qq
 newdef MEee2gZ2qq:MinimumFlavour 1
 newdef MEee2gZ2qq:MaximumFlavour 5
-newdef MEee2gZ2qq:Coupling /Herwig/Shower/AlphaQCD
+newdef MEee2gZ2qq:AlphaQCD /Herwig/Shower/AlphaQCD
+newdef MEee2gZ2qq:AlphaQED /Herwig/Shower/AlphaQED
 
 # e+e- -> l+l-
 create Herwig::MEee2gZ2ll MEee2gZ2ll
 newdef MEee2gZ2ll:Allowed Charged
+set MEee2gZ2ll:AlphaQED /Herwig/Shower/AlphaQED
 
 # e+e- -> W+W- ZZ
 create Herwig::MEee2VV MEee2VV
@@ -51,7 +53,11 @@ library HwPowhegMELepton.so
 create Herwig::MEee2gZ2qqPowheg PowhegMEee2gZ2qq
 newdef PowhegMEee2gZ2qq:MinimumFlavour 1
 newdef PowhegMEee2gZ2qq:MaximumFlavour 5
-newdef PowhegMEee2gZ2qq:Coupling /Herwig/Shower/AlphaQCD
+newdef PowhegMEee2gZ2qq:AlphaQCD /Herwig/Shower/AlphaQCD
+newdef PowhegMEee2gZ2qq:AlphaQED /Herwig/Shower/AlphaQED
+create Herwig::MEee2gZ2llPowheg PowhegMEee2gZ2ll
+newdef PowhegMEee2gZ2ll:Allowed Charged
+set PowhegMEee2gZ2ll:AlphaQED /Herwig/Shower/AlphaQED
 
 ############################################################
 #  hadron-hadron matrix elements
