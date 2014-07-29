@@ -2,7 +2,7 @@ SUBDIRS = \
 Base Utility Phasespace \
 Dipoles InsertionOperators Matching \
 Cuts Scales Builtin External Tests \
-ColorFull
+ColorFull CVolver
 
 noinst_LTLIBRARIES = libHwMatchbox.la
 
