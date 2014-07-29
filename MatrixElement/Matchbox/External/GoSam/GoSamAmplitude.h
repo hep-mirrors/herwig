@@ -36,15 +36,24 @@ class gosamprocinfo{
 		void setGID(int g){theGOlpId=g;}
 		void setOAs(int i){ orderAlphas=i;}
 		int orderAs(){return orderAlphas;}
+		void setOAew(int j){ orderAlphaew=j;}
+		int orderAew(){return orderAlphaew;}
+		void setPartonLegs(int i){ partonLegs=i;}
+		int getPartonLegs(){return partonLegs;}
+		void setNonPartonLegs(int i){ nonpartonLegs=i;}
+		int getNonPartonLegs(){return nonpartonLegs;}
 	private:
 		int theHOlpId;
 		int theGOlpId;
 		string theProcstr;
 		string theTypestr;
 		int orderAlphas;
+		int orderAlphaew;
+		int partonLegs;
+		int nonpartonLegs;
 	public:
-		void persistentOutput(PersistentOStream & os) const{os<<theHOlpId<<theGOlpId<<theProcstr<<theTypestr<<orderAlphas;}
-		void persistentInput(PersistentIStream &is) {is>>theHOlpId>>theGOlpId>>theProcstr>>theTypestr>>orderAlphas;}
+		void persistentOutput(PersistentOStream & os) const{os<<theHOlpId<<theGOlpId<<theProcstr<<theTypestr<<orderAlphas<<orderAlphaew<<partonLegs<<nonpartonLegs;}
+		void persistentInput(PersistentIStream &is) {is>>theHOlpId>>theGOlpId>>theProcstr>>theTypestr>>orderAlphas>>orderAlphaew>>partonLegs>>nonpartonLegs;}
 };
 
 /**
@@ -234,6 +243,11 @@ private:
    */
   mutable map< int , int > idpair;
 
+  /**
+   * first is the olp id from herwig, second the amplitude type
+   */
+  mutable map< int , string > idtypepair;
+
   map<int , gosamprocinfo > processmap;
 
   mutable string gosamPathInterface;
@@ -252,6 +266,7 @@ private:
 
   bool theCodeExists;
   bool theFormOpt;
+  bool theNinja;
 
   bool isitDR;
   

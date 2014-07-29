@@ -34,7 +34,7 @@
 
 using namespace Herwig;
 
-GoSamAmplitude::GoSamAmplitude() {theCodeExists=false;isitDR=false;
+GoSamAmplitude::GoSamAmplitude() {theCodeExists=false;isitDR=false;thePrintParameter=true;theFormOpt=true;theNinja=true;
 }
 
 GoSamAmplitude::~GoSamAmplitude() {
@@ -56,7 +56,7 @@ extern "C" void OLP_EvalSubProcess2(int*, double*, double*, double*, double*);
 
 void GoSamAmplitude::signOLP(const string& order, const string& contract) {
 	if(!theCodeExists){
-	  generator()->log() << "\n\n>>> generatintg GoSam amplitudes. This may take some time, please be patient.\n"
+	  generator()->log() << "\n>>> generating GoSam amplitudes. This may take some time, please be patient.\n"
 			     << ">>> see gosam-amplitudes.log for details.\n" << flush;
 	  string cmd = "@GOSAMPREFIX@/bin/gosam.py --olp  -o " + contract + "  --config=" + 
 	    gosamSetupInFileName + " --destination=" + gosamSourcePath + " " + order + " > gosam-amplitudes.log 2>&1";
@@ -66,7 +66,7 @@ void GoSamAmplitude::signOLP(const string& order, const string& contract) {
 
 bool GoSamAmplitude::buildGoSam() {
 	if(!theCodeExists){
-	  generator()->log() << "\n\n>>> compiling GoSam amplitudes. This may take some time, please be patient.\n"
+	  generator()->log() << "\n>>> compiling GoSam amplitudes. This may take some time, please be patient.\n"
 			     << ">>> see " + gosamSourcePath + "/gosam-build.log for details\n\n" << flush;
 	  string cmd = "cd " + gosamSourcePath + " && sh autogen.sh FCFLAGS=-g --prefix=" + 
 	    gosamInstallPath + " > gosam-build.log 2>&1";
@@ -205,11 +205,21 @@ void GoSamAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs, st
   for ( map<pair<Process, int>, int>::const_iterator p = procs.begin() ; p != procs.end() ; ++p ) {
     std::stringstream Processstr;
     std::stringstream Typestr;
+    int partonlegs = 0;
+    for ( PDVector::const_iterator o = (*p).first.first.legs.begin(); o != (*p).first.first.legs.end() ; ++o )
+      if ( (**o).coloured() ) partonlegs += 1;
+    int totcplpow = (*p).first.first.orderInAlphaS + (*p).first.first.orderInAlphaEW;
+    int totnumleg = (*p).first.first.legs.size();
+    int nonpartonlegs = totnumleg - partonlegs;
     Processstr << (*p).first.first.legs[0]->id() << " " << (*p).first.first.legs[1]->id() << " -> ";
     for ( PDVector::const_iterator o = (*p).first.first.legs.begin() + 2 ; o != (*p).first.first.legs.end() ; ++o )
       Processstr << (**o).id() << " ";
-    if ( (*p).first.second == ProcessType::treeME2 ) {
+      // if ( (*p).first.second == ProcessType::treeME2 ) {
+      //   Typestr << "Tree";
+    if ( (*p).first.second == ProcessType::treeME2 && totcplpow != totnumleg ) {
       Typestr << "Tree";
+    } else if ( (*p).first.second == ProcessType::treeME2 && totcplpow == totnumleg ) {
+      Typestr << "LoopInduced";
     } else if ( (*p).first.second == ProcessType::colourCorrelatedME2 ) {
       Typestr << "ccTree";
     } else if ( (*p).first.second == ProcessType::spinColourCorrelatedME2 ) {
@@ -219,6 +229,9 @@ void GoSamAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs, st
     }
     gosamprocinfo pro = gosamprocinfo((*p).second, -1, Processstr.str(), Typestr.str());
     pro.setOAs(p->first.first.orderInAlphaS);
+    pro.setOAew(p->first.first.orderInAlphaEW);
+    pro.setPartonLegs(partonlegs);
+    pro.setNonPartonLegs(nonpartonlegs);
     processmap[(*p).second] = pro;
   }
 
@@ -231,11 +244,17 @@ void GoSamAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs, st
 	int asPower = 100;
 	int minlegs = 100;
 	int maxlegs = -1;
+	int maxasPower = -1;
+	int aewPower = 100;
+	int maxaewPower = -1;
 
 	for ( map<pair<Process, int>, int>::const_iterator t = procs.begin() ; t != procs.end() ; ++t ) {
 	  asPower = min(asPower, static_cast<int>(t->first.first.orderInAlphaS));
 	  minlegs = min(minlegs, static_cast<int>(t->first.first.legs.size()));
 	  maxlegs = max(maxlegs, static_cast<int>(t->first.first.legs.size()));
+	  maxasPower = max(maxasPower, static_cast<int>(t->first.first.orderInAlphaS));
+	  aewPower = min(aewPower, static_cast<int>(t->first.first.orderInAlphaEW));
+	  maxaewPower = max(maxaewPower, static_cast<int>(t->first.first.orderInAlphaEW));
 	}
 
 	orderFile << "# OLP order file created by Herwig++/Matchbox for GoSam\n\n";
@@ -257,23 +276,56 @@ void GoSamAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs, st
 
 	vector < string > types;
 	types.push_back("Tree");
+	types.push_back("LoopInduced");
 	types.push_back("ccTree");
 	types.push_back("scTree");
 	types.push_back("Loop");
-	for ( int i = asPower ; i != asPower + maxlegs - minlegs + 1 ; i++ ) {
-	  orderFile << "\n\nAlphasPower              " << i;
+
+	// for ( int i = asPower ; i != asPower + maxlegs - minlegs + 1 ; i++ ) {
+	for ( int i = asPower ; i != maxasPower + 1 ; i++ ) {
+	for ( int j = aewPower ; j != maxaewPower + 1 ; j++ ) {
+	  // orderFile << "\n\nAlphasPower              " << i;
+	  orderFile << "\nAlphasPower              " << i << "\n";
+	  orderFile << "AlphaPower              " << j << "\n";
 	  for ( vector<string>::iterator it = types.begin() ; it != types.end() ; it++ ) {
+	    if ( *it == "LoopInduced" ) continue;
 	    for ( map<int, gosamprocinfo>::iterator p = processmap.begin() ; p != processmap.end() ; ++p )
-	      if ( (*p).second.Tstr() == *it && i == (*p).second.orderAs() ) {
+	      // if ( (*p).second.Tstr() == *it && i == (*p).second.orderAs() ) {
+	      if ( (*p).second.Tstr() == *it && i == (*p).second.orderAs() && j == (*p).second.orderAew() ) {
 	        orderFile << "\nAmplitudeType " << *it << "\n";
 		break;
 	      }
 	    for ( map<int, gosamprocinfo>::iterator p = processmap.begin() ; p != processmap.end() ; ++p )
-	      if ( (*p).second.Tstr() == *it && i == (*p).second.orderAs() ) {
+	      // if ( (*p).second.Tstr() == *it && i == (*p).second.orderAs() ) {
+	      if ( (*p).second.Tstr() == *it && i == (*p).second.orderAs() && j == (*p).second.orderAew() ) {
 	        orderFile << (*p).second.Pstr() << "\n";
 	      }
 	  }
 	}
+	}
+
+        // Write out the loop induced processes separately
+        int asPowerLI = 100;
+        int aewPowerLI = 100;
+        bool qcdLI=false;
+        bool qedLI=false;
+        for ( map<int, gosamprocinfo>::iterator p = processmap.begin() ; p != processmap.end() ; ++p ) {
+          if ( (*p).second.Tstr() != "LoopInduced" ) continue;
+          if ( (*p).second.getPartonLegs() == (*p).second.orderAs() ) qcdLI = true;
+          // else if ( (*p).second.getNonPartonLegs() == (*p).second.orderAew() ) qedLI = true;
+          if ( (*p).second.getNonPartonLegs() == (*p).second.orderAew() ) qedLI = true;
+          if ( (*p).second.orderAs() != asPowerLI || (*p).second.orderAs() != asPowerLI ) {
+            asPowerLI = (*p).second.orderAs();
+            aewPowerLI = (*p).second.orderAew();
+            // At the moment GoSam requires for loop induced processes the coupling power 
+	    // which would correspond to an associated  fictitious Born process
+            orderFile << "\nAlphasPower              " << (qcdLI ? (asPowerLI-2) : asPowerLI) << "\n";
+            orderFile << "AlphaPower              " << (qedLI ? (aewPowerLI-2) : aewPowerLI) << "\n";
+            orderFile << "\nAmplitudeType " << "LoopInduced" << "\n";
+          }
+          orderFile << (*p).second.Pstr() << "\n";
+        }
+
 	orderFile << flush;
 
 }
@@ -312,7 +364,8 @@ bool GoSamAmplitude::checkOLPContract(string contractFileName) {
 
 	for ( map<int, gosamprocinfo>::iterator p = processmap.begin() ; p != processmap.end() ; p++ ) {
 	    idpair.insert ( std::pair<int,int>((*p).second.HID(),(*p).second.GID()) );
-	    IDS << (*p).second.HID() << " " << (*p).second.GID() << "\n";
+	    // IDS << (*p).second.HID() << " " << (*p).second.GID() << "\n";
+	    IDS << (*p).second.HID() << " " << (*p).second.GID() << " " << (*p).second.Tstr() << "\n";
 	    if ( (*p).second.GID() == -1 ) return 0;
 	}
 	IDS << flush;
@@ -326,9 +379,12 @@ void GoSamAmplitude::getids() const {
 	ifstream infile(line.c_str());
 	int hid;
 	int gid;
+	string type;
 	while (std::getline(infile, line)) {
-	 istringstream(line) >> hid>>gid;
+	 // istringstream(line) >> hid>>gid;
+	 istringstream(line) >> hid>>gid>>type;
 	 idpair.insert ( std::pair<int,int>(hid,gid) );
+	 idtypepair.insert ( std::pair<int,string>(hid,type) );
 	}
 }
 
@@ -369,9 +425,14 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
     // set form's tempdir to the current working directory
     cmd = "sed -i 's/@FORMTEMPDIR@/" + StringUtils::replace(gosamSourcePath, string("/"), string("\\/")) + "/g' " + gosamSetupInFileName;
     std::system(cmd.c_str());
-    cmd = "sed -i 's/@FORMOPT@/" + (theFormOpt ? string("") : string(", noformopt")) + "/g' " + gosamSetupInFileName;
+    cmd = "sed -i 's/@REDUCTIONPROGRAMS@/" + (theNinja ? string("ninja, golem95") : string("samurai, golem95")) + "/g' " + gosamSetupInFileName;
     std::system(cmd.c_str());
-    cmd = "sed -i 's/@REDUCTIONPROGRAMS@/" + (theFormOpt ? string("ninja, golem95") : string("samurai, golem95")) + "/g' " + gosamSetupInFileName;
+    if (theNinja) generator()->log() << "\nGoSam will use Ninja as reduction program.\n" << flush;
+    else if (!theNinja) generator()->log() << "\nGoSam will use Samurai as reduction program.\n" << flush;
+    if (theFormOpt) generator()->log() << "Form optimization switched on.\n" << flush;
+    else if (!theFormOpt) generator()->log() << "Form optimization switched off.\n" << flush;
+    if (theNinja && !theFormOpt) throw Exception() << "Ninja reduction needs form optimization!\n" << Exception::abortnow;
+    cmd = "sed -i 's/@FORMOPT@/" + (theFormOpt ? string("") : string(", noformopt")) + "/g' " + gosamSetupInFileName;
     std::system(cmd.c_str());
   }
   infile.close();
@@ -434,7 +495,8 @@ void GoSamAmplitude::evalSubProcess() const {
 	}
 	int id = olpId()[ProcessType::oneLoopInterference] ? olpId()[ProcessType::oneLoopInterference] : olpId()[ProcessType::treeME2];
          //cout<<"\n"<<id<<" "<<idpair[id];
-	 int callid(idpair.find(id)->second);
+	 int callid(idpair.find(id)->second); // If id denotes the Herwig ID, this returns the GoSam ID
+	 string calltype(idtypepair.find(id)->second); // If id denotes the Herwig ID, this returns the amplitude type
          double acc;
 	OLP_EvalSubProcess2(&(callid), olpMomenta(), &scale, out, &acc);
 
@@ -442,8 +504,13 @@ void GoSamAmplitude::evalSubProcess() const {
 	  if(calculateTreeME2())lastTreeME2(out[3] * units);
 	  lastOneLoopInterference((out[2])* units);
 	  lastOneLoopPoles(pair<double, double>(out[0] * units, out[1] * units));
-	} else if ( olpId()[ProcessType::treeME2] ) {
+	// } else if ( olpId()[ProcessType::treeME2] ) {
+	//   lastTreeME2(out[3] * units);
+	// }
+	} else if ( olpId()[ProcessType::treeME2] && calltype=="Tree" ) {
 	  lastTreeME2(out[3] * units);
+	} else if ( olpId()[ProcessType::treeME2] && calltype=="LoopInduced" ) {
+	  lastTreeME2(out[2] * units);
 	}
 
 }
@@ -512,11 +579,11 @@ void GoSamAmplitude::doinitrun() {
 
 
 void GoSamAmplitude::persistentOutput(PersistentOStream & os) const {
-	os << idpair << theCodeExists << massiveParticles << thePrintParameter << gosamPathInterface << gosamSetupInFilenameInterface << gosamBuildScript;
+	os << idpair << theCodeExists << massiveParticles << thePrintParameter << gosamPathInterface << gosamSetupInFilenameInterface << gosamBuildScript << theFormOpt << theNinja;
 }
 
 void GoSamAmplitude::persistentInput(PersistentIStream & is, int) {
-	is >> idpair >> theCodeExists >> massiveParticles >> thePrintParameter >> gosamPathInterface >> gosamSetupInFilenameInterface >> gosamBuildScript;
+	is >> idpair >> theCodeExists >> massiveParticles >> thePrintParameter >> gosamPathInterface >> gosamSetupInFilenameInterface >> gosamBuildScript >> theFormOpt >> theNinja;
 }
 
 // *** Attention *** The following static variable is needed for the type
@@ -601,6 +668,21 @@ void GoSamAmplitude::Init() {
           true);
   static SwitchOption interfaceFormOptOff
          (interfaceFormOpt,
+          "Off",
+          "Off",
+          false);
+
+  static Switch<GoSamAmplitude,bool> interfaceNinja
+         ("Ninja",
+          "Switch On/Off for reduction with Ninja. If Off then Samurai is used.",
+          &GoSamAmplitude::theNinja, true, false, false);
+  static SwitchOption interfaceNinjaOn
+         (interfaceNinja,
+          "On",
+          "On",
+          true);
+  static SwitchOption interfaceNinjaOff
+         (interfaceNinja,
           "Off",
           "Off",
           false);
