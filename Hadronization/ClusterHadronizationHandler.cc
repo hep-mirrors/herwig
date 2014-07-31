@@ -164,6 +164,7 @@ handle(EventHandler & ch, const tPVector & tagged,
   for(unsigned int ix=0;ix<currentlist.size();++ix) {
     if(currentlist[ix]->scale()<Q02) currentlist[ix]->scale(Q02);
   }
+
   // split the gluons
   _partonSplitter->split(currentlist);
   // form the clusters
@@ -265,44 +266,6 @@ handle(EventHandler & ch, const tPVector & tagged,
   if (isSoftUnderlyingEventON()) {
     assert(_underlyingEventHandler);
     ch.performStep(_underlyingEventHandler,Hint::Default());
-  }
-  // calculate positions
-  // extract all particles from the event
-  tEventPtr event=ch.currentEvent();
-  vector<tPPtr> particles;
-  particles.reserve(256);
-  event->select(back_inserter(particles), ThePEG::AllSelector());
-  for(vector<tPPtr>::const_iterator pit=particles.begin();
-      pit!=particles.end(); ++pit) {
-    if ((**pit).parents().empty()) 
-      continue;
-    tPPtr parent = (**pit).parents()[0];
-    // fudged fix for the shower's technical vertices:
-    // make lifelength for 1-1 vertices zero
-    // \todo sort out shower inserted vertices properly
-    if ( (**pit).id() == parent->id() 
-	 && (**pit).parents().size() == 1
-	 && parent->children().size() == 1 ) {
-      parent->setLifeLength(LorentzDistance());
-      // ??? (**pit).setVertex( parent->vertex() );
-    }
-    // fix the vertex position for particles from clusters
-    bool inClusters = false;
-    bool newVertex  = false;
-    // iterate up the ancestry to find the origin of the parent cluster
-    while( !parent->parents().empty() ) {
-      bool parentIsCluster = parent->id() == ParticleID::Cluster;
-      if ( !inClusters && parentIsCluster ) {
-	inClusters = true;
-      }
-      else if ( inClusters && !parentIsCluster ) {
-	newVertex = true;
-	break;
-      }
-      parent = parent->parents()[0]; 
-    }
-    // parent is now the ancestor of the cluster chain
-    if ( newVertex ) (**pit).setVertex( parent->vertex() );
   }
 }
 
