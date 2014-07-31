@@ -82,6 +82,12 @@ void PartonSplitter::split(PVector & tagged) {
     (*pit)->antiColourLine()->addAntiColoured(ptrQbar);
     (*pit)->addChild(ptrQbar);
     newtag.push_back(ptrQbar);
+    
+    // assume same position as gluon
+    ptrQ   ->setVertex((**pit).decayVertex());
+    ptrQ   ->setLifeLength(Lorentz5Distance());
+    ptrQbar->setVertex((**pit).decayVertex());
+    ptrQbar->setLifeLength(Lorentz5Distance());
   }
   swap(tagged,newtag);
 }
