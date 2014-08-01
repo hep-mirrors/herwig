@@ -192,8 +192,17 @@ public:
    * mass spectrum used to generate the cluster child masses (see method
    * drawChildMass).
    */
-  virtual cutType cut(ClusterPtr &, tPVector & finalhadrons, bool softUEisOn);
+  //@{
+  /**
+   *  Split two-component cluster
+   */
+  virtual cutType cutTwo(ClusterPtr &, tPVector & finalhadrons, bool softUEisOn);
 
+  /**
+   *  Split three-component cluster
+   */
+  virtual cutType cutThree(ClusterPtr &, tPVector & finalhadrons, bool softUEisOn);
+  //@}
 public:
 
   /**
@@ -206,6 +215,7 @@ public:
 		      const Lorentz5Momentum &a,
 		      const LorentzPoint &b) const;
 protected:
+
   /**
    * Produces a cluster from the flavours passed in.
    *
@@ -214,9 +224,10 @@ protected:
    * ptrQ and d is for the new particle newPtr. rem specifies whether the existing
    * particle is a beam remnant or not.
    */
-  PPair produceCluster(tPPtr & ptrQ, tPPtr newPtr, Lorentz5Momentum &a, 
-		       LorentzPoint &b, Lorentz5Momentum &c, 
-		       Lorentz5Momentum &d, const bool rem) const;
+  PPair produceCluster(tPPtr ptrQ, tPPtr newPtr, const Lorentz5Momentum &a,
+		       const LorentzPoint &b, const Lorentz5Momentum &c,
+		       const Lorentz5Momentum &d, const bool rem,
+		       tPPtr spect=tPPtr(), bool remSpect=false) const;
 
   /**
    * Returns the new quark-antiquark pair
@@ -279,13 +290,37 @@ protected:
 			  LorentzPoint & positionClu2 ) const;
 
 protected:
+
   /** @name Access members for child classes. */
   //@{
+  /**
+   *  Access to the hadron selector
+   */
   HadronSelectorPtr hadronsSelector() const {return _hadronsSelector;}
+
+  /**
+   *  Access to soft-cluster parameter
+   */
   Energy btClM() const {return _btClM;}
+
+  /**
+   *  Cluster splitting paramater for light quarks
+   */
   double pSplitLight() const {return _pSplitLight;}  
+
+  /**
+   *  Cluster splitting paramater for bottom quarks
+   */
   double pSplitBottom() const {return _pSplitBottom;}
+
+  /**
+   *  Cluster splitting paramater for charm quarks
+   */
   double pSplitCharm() const {return _pSplitCharm;}
+
+  /**
+   *  Cluster splitting paramater for exotic particles
+   */
   double pSplitExotic() const {return _pSplitExotic;}
   //@}
   
