@@ -20,4 +20,4 @@ libHwStandardModel_la_SOURCES = \
 	SMHPPVertex.cc SMHPPVertex.h\
 	SMHHHVertex.cc SMHHHVertex.h \
 	SMWWHHVertex.cc SMWWHHVertex.h \
-	genericSVVVertex.cc genericSVVVertex.h
+	GenericSVVVertex.cc GenericSVVVertex.h

@@ -1,15 +1,15 @@
 // -*- C++ -*-
 //
-// genericSVVVertex.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// GenericSVVVertex.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef HERWIG_genericSVVVertex_H
-#define HERWIG_genericSVVVertex_H
+#ifndef HERWIG_GenericSVVVertex_H
+#define HERWIG_GenericSVVVertex_H
 //
-// This is the declaration of the genericSVVVertex class.
+// This is the declaration of the GenericSVVVertex class.
 //
 
 #include "ThePEG/Helicity/Vertex/Scalar/GeneralVVSVertex.h"
@@ -20,18 +20,18 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The <code>genericSVVVertex</code> class implements the 
+ * The <code>GenericSVVVertex</code> class implements the 
  * setCoupling member for the Standard Model effective 
  * vertex Higgs-gluon-gluon. 
  */
-class genericSVVVertex: public Helicity::GeneralVVSVertex {
+class GenericSVVVertex: public Helicity::GeneralVVSVertex {
   
 public:
 
   /**
    * The default constructor.
    */
-  genericSVVVertex();
+  GenericSVVVertex();
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -98,13 +98,13 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<genericSVVVertex> initgenericSVVVertex;
+  static ClassDescription<GenericSVVVertex> initGenericSVVVertex;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  genericSVVVertex & operator=(const genericSVVVertex &);
+  GenericSVVVertex & operator=(const GenericSVVVertex &);
 
   /**
    * Storage of couplings
@@ -136,24 +136,24 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of genericSVVVertex. */
+ *  base classes of GenericSVVVertex. */
 template <>
-struct BaseClassTrait<Herwig::genericSVVVertex,1> {
-  /** Typedef of the first base class of genericSVVVertex. */
+struct BaseClassTrait<Herwig::GenericSVVVertex,1> {
+  /** Typedef of the first base class of GenericSVVVertex. */
   typedef Helicity::GeneralVVSVertex  NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the genericSVVVertex class and the shared object where it is defined. */
+ *  the GenericSVVVertex class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::genericSVVVertex>
-  : public ClassTraitsBase<Herwig::genericSVVVertex> {
+struct ClassTraits<Herwig::GenericSVVVertex>
+  : public ClassTraitsBase<Herwig::GenericSVVVertex> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::genericSVVVertex"; }
+  static string className() { return "Herwig::GenericSVVVertex"; }
 };
 
 /** @endcond */
 
 }
 
-#endif /* HERWIG_genericSVVVertex_H */
+#endif /* HERWIG_GenericSVVVertex_H */
