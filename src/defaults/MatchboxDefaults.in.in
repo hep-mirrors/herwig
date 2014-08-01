@@ -559,8 +559,8 @@ cd Scales
 create Herwig::MatchboxScaleChoice SHatScale
 cp SHatScale FixedScale
 set FixedScale:FixedScale 100.*GeV
-create Herwig::MatchboxPtScale MinPtScale
-set MinPtScale:JetFinder /Herwig/Cuts/JetFinder
+create Herwig::MatchboxPtScale MaxptScale
+set MaxptScale:JetFinder /Herwig/Cuts/JetFinder
 create Herwig::MatchboxLeptonMassScale LeptonMassScale
 create Herwig::MatchboxLeptonPtScale LeptonPtScale
 
