@@ -412,6 +412,12 @@ private:
    */
   bool maxPtIsMuF;
 
+  /**
+   * Return the number of accepted points after which the grid should
+   * be frozen
+   */
+  unsigned long theFreezeGrid;
+
 private:
 
   /**
