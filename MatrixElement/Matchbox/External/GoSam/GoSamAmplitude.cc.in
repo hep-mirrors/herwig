@@ -419,12 +419,13 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
   // check if setup.gosam.in exists
   ifstream infile(gosamSetupInFileName.c_str());
   if (!infile) {
-    // if it doesn't get it from src/defaults
+    // if it doesn't, then get it from src/defaults
     string cmd = "cp @prefix@/share/Herwig++/defaults/setup.gosam.in " + gosamSetupInFileName;
     std::system(cmd.c_str());
     // set form's tempdir to the current working directory
     cmd = "sed -i 's/@FORMTEMPDIR@/" + StringUtils::replace(gosamSourcePath, string("/"), string("\\/")) + "/g' " + gosamSetupInFileName;
     std::system(cmd.c_str());
+    // set reduction programs to what is specified through the repository
     cmd = "sed -i 's/@REDUCTIONPROGRAMS@/" + (theNinja ? string("ninja, golem95") : string("samurai, golem95")) + "/g' " + gosamSetupInFileName;
     std::system(cmd.c_str());
     if (theNinja) generator()->log() << "\nGoSam will use Ninja as reduction program.\n" << flush;
@@ -432,6 +433,7 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
     if (theFormOpt) generator()->log() << "Form optimization switched on.\n" << flush;
     else if (!theFormOpt) generator()->log() << "Form optimization switched off.\n" << flush;
     if (theNinja && !theFormOpt) throw Exception() << "Ninja reduction needs form optimization!\n" << Exception::abortnow;
+    // use or don't use formopt
     cmd = "sed -i 's/@FORMOPT@/" + (theFormOpt ? string("") : string(", noformopt")) + "/g' " + gosamSetupInFileName;
     std::system(cmd.c_str());
   }
@@ -579,11 +581,11 @@ void GoSamAmplitude::doinitrun() {
 
 
 void GoSamAmplitude::persistentOutput(PersistentOStream & os) const {
-	os << idpair << theCodeExists << massiveParticles << thePrintParameter << gosamPathInterface << gosamSetupInFilenameInterface << gosamBuildScript << theFormOpt << theNinja;
+	os << idpair << idtypepair << theCodeExists << massiveParticles << thePrintParameter << gosamPathInterface << gosamSetupInFilenameInterface << gosamBuildScript << theFormOpt << theNinja;
 }
 
 void GoSamAmplitude::persistentInput(PersistentIStream & is, int) {
-	is >> idpair >> theCodeExists >> massiveParticles >> thePrintParameter >> gosamPathInterface >> gosamSetupInFilenameInterface >> gosamBuildScript >> theFormOpt >> theNinja;
+	is >> idpair >> idtypepair >> theCodeExists >> massiveParticles >> thePrintParameter >> gosamPathInterface >> gosamSetupInFilenameInterface >> gosamBuildScript >> theFormOpt >> theNinja;
 }
 
 // *** Attention *** The following static variable is needed for the type
