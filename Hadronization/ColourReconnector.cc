@@ -14,7 +14,6 @@
 #include "ColourReconnector.h"
 #include "Cluster.h"
 #include "Herwig++/Utilities/Maths.h"
-
 #include <ThePEG/Interface/Switch.h>
 #include "ThePEG/Interface/Parameter.h"
 #include <ThePEG/Persistency/PersistentOStream.h>
@@ -22,6 +21,7 @@
 #include <ThePEG/Repository/UseRandom.h>
 #include <algorithm>
 #include <ThePEG/Utilities/DescribeClass.h>
+#include <ThePEG/Repository/EventGenerator.h>
 
 
 using namespace Herwig;
@@ -223,6 +223,9 @@ CluVecIt ColourReconnector::_findRecoPartner(CluVecIt cl,
     // stop it putting beam remnants together
     if((*cl)->isBeamCluster() && (*cit)->isBeamCluster()) continue;
 
+    // stop it putting far apart clusters together
+    if(((**cl).vertex()-(**cit).vertex()).m()>_maxDistance) continue;
+
     // momenta of the old clusters
     Lorentz5Momentum p1 = (*cl)->colParticle()->momentum() + 
                           (*cl)->antiColParticle()->momentum();
@@ -265,11 +268,19 @@ ColourReconnector::_reconnect(ClusterPtr c1, ClusterPtr c2) const {
 
   ClusterPtr newCluster1
     = new_ptr( Cluster( c1->colParticle(), c2->antiColParticle() ) );
+
+  newCluster1->setVertex(0.5*( c1->colParticle()->vertex() + 
+			       c2->antiColParticle()->vertex() ));
+
   if(c1->isBeamRemnant(c1_col )) newCluster1->setBeamRemnant(0,true);
   if(c2->isBeamRemnant(c2_anti)) newCluster1->setBeamRemnant(1,true);
   
   ClusterPtr newCluster2
     = new_ptr( Cluster( c2->colParticle(), c1->antiColParticle() ) );
+
+  newCluster2->setVertex(0.5*( c2->colParticle()->vertex() + 
+			       c1->antiColParticle()->vertex() ));
+
   if(c2->isBeamRemnant(c2_col )) newCluster2->setBeamRemnant(0,true);
   if(c1->isBeamRemnant(c1_anti)) newCluster2->setBeamRemnant(1,true);
 
@@ -322,12 +333,12 @@ bool ColourReconnector::isColour8(cPPtr p, cPPtr q) {
 
 void ColourReconnector::persistentOutput(PersistentOStream & os) const {
   os << _clreco << _preco << _algorithm << _initTemp << _annealingFactor
-     << _annealingSteps << _triesPerStepFactor;
+     << _annealingSteps << _triesPerStepFactor << ounit(_maxDistance,femtometer);
 }
 
 void ColourReconnector::persistentInput(PersistentIStream & is, int) {
   is >> _clreco >> _preco >> _algorithm >> _initTemp >> _annealingFactor
-     >> _annealingSteps >> _triesPerStepFactor;
+     >> _annealingSteps >> _triesPerStepFactor >> iunit(_maxDistance,femtometer);
 }
 
 
@@ -403,5 +414,13 @@ void ColourReconnector::Init() {
      "Statistical",
      "Statistical colour reconnection using simulated annealing",
      1);
+
+
+  static Parameter<ColourReconnector,Length> interfaceMaxDistance
+    ("MaxDistance",
+     "Maximum distance between the clusters at which to consider rearrangement"
+     " to avoid colour reconneections of displaced vertices",
+     &ColourReconnector::_maxDistance, femtometer, 1000.*femtometer, 0.0*femtometer, 1e100*femtometer,
+     false, false, Interface::limited);
 
 }
