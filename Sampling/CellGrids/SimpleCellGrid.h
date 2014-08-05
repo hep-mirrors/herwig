@@ -290,12 +290,13 @@ namespace ExSample {
 	selected->adjustReferenceWeight(xw);
       }
       if ( unweight ) {
-	double p = std::min(std::abs(xw),getReferenceWeight())/getReferenceWeight();
+	double r = selected->getReferenceWeight();
+	double p = std::min(std::abs(xw),r)/r;
 	double sign = xw >= 0. ? 1. : -1.;
 	if ( p < 1 && rnd.rnd() > p )
 	  xw = 0.;
 	else
-	  xw = sign*std::max(std::abs(xw),theReferenceWeight);
+	  xw = sign*std::max(std::abs(xw),r);
       }
       return xw;
     }
