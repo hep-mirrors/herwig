@@ -51,7 +51,7 @@ public :
   /**
    * Default constructor.
    */
-  ClusterFinder() : heavyDiquarks_(2), diQuarkSelection_(1)
+  ClusterFinder() : heavyDiquarks_(2), diQuarkSelection_(1), diQuarkOnShell_(false)
   {}
   //@}
 
@@ -137,6 +137,11 @@ private:
    *  Option for the selection of which quarks to make into a diquark
    */
   unsigned int diQuarkSelection_;
+
+  /**
+   *  Force diquarks to be on-shell
+   */
+  bool diQuarkOnShell_;
 
 };
 

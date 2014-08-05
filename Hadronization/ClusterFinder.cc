@@ -22,6 +22,7 @@
 #include <ThePEG/EventRecord/Collision.h>
 #include "CheckId.h"
 #include "Herwig++/Utilities/EnumParticles.h"
+#include "Herwig++/Utilities/Kinematics.h"
 #include "Cluster.h"
 #include <ThePEG/Utilities/DescribeClass.h>
 
@@ -38,11 +39,11 @@ IBPtr ClusterFinder::fullclone() const {
   return new_ptr(*this);
 }
 void ClusterFinder::persistentOutput(PersistentOStream & os) const {
-  os << heavyDiquarks_ << diQuarkSelection_;
+  os << heavyDiquarks_ << diQuarkSelection_ << diQuarkOnShell_;
 }
 
 void ClusterFinder::persistentInput(PersistentIStream & is, int) {
-  is >> heavyDiquarks_ >> diQuarkSelection_;
+  is >> heavyDiquarks_ >> diQuarkSelection_ >> diQuarkOnShell_;
 }
 
 void ClusterFinder::Init() {
@@ -84,6 +85,21 @@ void ClusterFinder::Init() {
      "LowestMass",
      "Combine the lowest mass pair",
      1);
+
+  static Switch<ClusterFinder,bool> interfaceDiQuarkOnShell
+    ("DiQuarkOnShell",
+     "Force the diquark produced in baryon-number violating clusters to be on-shell",
+     &ClusterFinder::diQuarkOnShell_, false, false, false);
+  static SwitchOption interfaceDiQuarkOnShellYes
+    (interfaceDiQuarkOnShell,
+     "Yes",
+     "Force to be on-shell",
+     true);
+  static SwitchOption interfaceDiQuarkOnShellNo
+    (interfaceDiQuarkOnShell,
+     "No",
+     "Leave off-shell",
+     false);
 
 }
 
@@ -418,6 +434,32 @@ void ClusterFinder::reduceToTwoComponents(ClusterVector & clusters) {
     diquark->set5Momentum(Lorentz5Momentum(vec[0]->momentum() + vec[1]->momentum(),
 					   dataDiquark->constituentMass()));
     diquark->setVertex(0.5*(vec[0]->vertex() + vec[1]->vertex()));
+
+    if(diQuarkOnShell_) {
+      Lorentz5Momentum psum = diquark->momentum()+other->momentum();
+      psum.rescaleMass();
+      Boost boost = psum.boostVector();
+      Lorentz5Momentum pother   =   other->momentum();
+      Lorentz5Momentum pdiquark = diquark->momentum();
+      pother.boost(-boost);
+      pdiquark.boost(-boost);
+      Energy pcm = Kinematics::pstarTwoBodyDecay(psum.mass(),
+						 other->dataPtr()->constituentMass(),
+						 diquark->dataPtr()->constituentMass());
+      if(pcm>ZERO) {
+	double fact = pcm/pother.vect().mag();
+	pother   *= fact;
+	pdiquark *= fact; 
+	pother  .setMass(other->dataPtr()->constituentMass());
+	pdiquark.setMass(dataDiquark     ->constituentMass());
+	pother  .rescaleEnergy();
+	pdiquark.rescaleEnergy();
+	pother  .boost(boost);
+	pdiquark.boost(boost);
+	other->set5Momentum(pother);
+	diquark->set5Momentum(pdiquark);
+      }
+    }
     // make the new cluster
     ClusterPtr nclus = new_ptr(Cluster(other,diquark));
     //vec[0]->addChild(nclus);
