@@ -42,7 +42,8 @@ CellGridSampler::CellGridSampler()
     theExplorationPoints(1000), theExplorationSteps(8),
     theGain(0.3), theEpsilon(0.01),
     theMinimumSelection(0.0001), theLuminositySplits(0),
-    theChannelSplits(0), theAllChannelSplits(false) {}
+    theChannelSplits(0), theAllChannelSplits(false),
+    theUnweightCells(true) {}
 
 CellGridSampler::~CellGridSampler() {}
 
@@ -56,8 +57,9 @@ IBPtr CellGridSampler::fullclone() const {
 
 double CellGridSampler::generate() {
   UseRandom rnd;
-  pair<double,double> weights = SimpleCellGrid::generate(rnd,*this,lastPoint());
-  double w = SimpleCellGrid::integral()*weights.first/weights.second;
+  double w = SimpleCellGrid::sample(rnd,*this,lastPoint(),
+				    !weighted() && initialized() && theUnweightCells, 
+				    !initialized());
   if ( !weighted() && initialized() ) {
     double p = min(abs(w),referenceWeight())/referenceWeight();
     double sign = w >= 0. ? 1. : -1.;
@@ -230,7 +232,7 @@ void CellGridSampler::persistentOutput(PersistentOStream & os) const {
      << theGain << theEpsilon << theMinimumSelection
      << the_pre_adaption_splits
      << theLuminositySplits << theChannelSplits
-     << theAllChannelSplits;
+     << theAllChannelSplits << theUnweightCells;
 }
 
 void CellGridSampler::persistentInput(PersistentIStream & is, int) {
@@ -238,7 +240,7 @@ void CellGridSampler::persistentInput(PersistentIStream & is, int) {
      >> theGain >> theEpsilon >> theMinimumSelection
      >> the_pre_adaption_splits
      >> theLuminositySplits >> theChannelSplits
-     >> theAllChannelSplits;
+     >> theAllChannelSplits >> theUnweightCells;
 }
 
 // *** Attention *** The following static variable is needed for the type
@@ -302,7 +304,6 @@ void CellGridSampler::Init() {
      &CellGridSampler::theChannelSplits, 0, 0, 0,
      false, false, Interface::lowerlim);
 
-
   static Switch<CellGridSampler,bool> interfaceAllChannelSplits
     ("AllChannelSplits",
      "",
@@ -317,6 +318,22 @@ void CellGridSampler::Init() {
      "Off",
      "",
      false);
+
+  static Switch<CellGridSampler,bool> interfaceUnweightCells
+    ("UnweightCells",
+     "",
+     &CellGridSampler::theUnweightCells, true, false, false);
+  static SwitchOption interfaceUnweightCellsYes
+    (interfaceUnweightCells,
+     "Yes",
+     "",
+     true);
+  static SwitchOption interfaceUnweightCellsNo
+    (interfaceUnweightCells,
+     "No",
+     "",
+     false);
+
 
 }
 

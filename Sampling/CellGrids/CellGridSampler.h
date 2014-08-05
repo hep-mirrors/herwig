@@ -188,6 +188,11 @@ private:
    */
   bool theAllChannelSplits;
 
+  /**
+   * Perform unweighting in cells
+   */
+  bool theUnweightCells;
+
 };
 
 }
