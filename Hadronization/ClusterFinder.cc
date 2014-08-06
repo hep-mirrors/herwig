@@ -433,8 +433,9 @@ void ClusterFinder::reduceToTwoComponents(ClusterVector & clusters) {
     vec[1]->addChild(diquark);
     diquark->set5Momentum(Lorentz5Momentum(vec[0]->momentum() + vec[1]->momentum(),
 					   dataDiquark->constituentMass()));
-    diquark->setVertex(0.5*(vec[0]->vertex() + vec[1]->vertex()));
-
+    // use the same method as for cluster to determine the diquark position
+    diquark->setVertex(Cluster::calculateX(vec[0],vec[1]));
+    // put on-shell if required
     if(diQuarkOnShell_) {
       Lorentz5Momentum psum = diquark->momentum()+other->momentum();
       psum.rescaleMass();
