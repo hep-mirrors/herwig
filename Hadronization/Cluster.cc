@@ -195,7 +195,12 @@ LorentzPoint Cluster::calculateX(tPPtr q1, tPPtr q2) {
     }
   }
   // Now, finally, determine the cluster position
-  return 0.5 * (pos1 + pos2 + s1*displace1 + s2*displace2);
+  LorentzPoint position = 0.5 * (pos1 + pos2 + s1*displace1 + s2*displace2);
+  // set the decay vertex of the two particles via the lifeLength
+  q1->setLifeLength(position-q1->vertex());
+  q2->setLifeLength(position-q2->vertex());
+  // return the answer
+  return position;
 }
 
 bool Cluster::isBeamCluster() const {

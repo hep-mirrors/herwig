@@ -11,6 +11,7 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ShowerTree.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
+#include "Herwig++/Shower/ShowerHandler.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Handlers/EventHandler.h"
 #include "ThePEG/Handlers/XComb.h"
@@ -22,6 +23,10 @@ using namespace Herwig;
 using namespace ThePEG;
 
 set<long> ShowerTree::_decayInShower = set<long>();
+
+bool ShowerTree::_spaceTime = false;
+
+Energy2 ShowerTree::_vmin2 = 0.1*GeV2;
 
 namespace {
   void findBeam(tPPtr & beam, PPtr incoming) {
@@ -475,6 +480,8 @@ void ShowerTree::insertHard(StepPtr pstep, bool ISR, bool) {
 	  updateColour(init);
 	  hadron->addChild(init);
 	  pstep->addIntermediate(init);
+	  init->setLifeLength(Lorentz5Distance());
+	  init->setVertex(LorentzPoint());
 	}
       }
       // from matrix element correction
@@ -496,10 +503,10 @@ void ShowerTree::insertHard(StepPtr pstep, bool ISR, bool) {
 	  updateColour(init);
 	  hadron->addChild(init);
 	  pstep->addIntermediate(init);
+	  init->setLifeLength(Lorentz5Distance());
+	  init->setVertex(LorentzPoint());
 	}
       }
-      init->setLifeLength(Lorentz5Distance());
-      init->setVertex(LorentzPoint());
     }
   }
   else {
@@ -580,13 +587,14 @@ void ShowerTree::insertHard(StepPtr pstep, bool ISR, bool) {
 }
 
 void ShowerTree::addFinalStateShower(PPtr p, StepPtr s) {
+  // if endpoint assume doesn't travel
   if(p->children().empty()) {
     p->setLifeLength(Lorentz5Distance());
     return;
   }
-  // \todo the space time-distance should be set properly here !!!!
+  // set the space-time distance
   else {
-    p->setLifeLength(Lorentz5Distance());
+    p->setLifeLength(spaceTimeDistance(p));
   }
   ParticleVector::const_iterator child;
   for(child=p->children().begin(); child != p->children().end(); ++child) {
@@ -665,30 +673,39 @@ void ShowerTree::updateColour(PPtr particle) {
 
 void ShowerTree::addInitialStateShower(PPtr p, PPtr hadron,
 				       StepPtr s, bool addchildren) {
-  p->setLifeLength(Lorentz5Distance());
-  p->setVertex(LorentzPoint());
   // Each parton here should only have one parent
   if(!p->parents().empty())  {
     if(p->parents().size()!=1) 
       throw Exception() << "Particle must only have one parent in ShowerTree"
 			<< "::addInitialStateShower" << Exception::runerror;
+    // set the space-time distances
+    if(addchildren) {
+      p->setLifeLength(spaceTimeDistance(p));
+      p->setVertex(p->children()[0]->vertex()-p->lifeLength());
+    }
+    else {
+      p->setLifeLength(spaceTimeDistance(p));
+      p->setVertex(-p->lifeLength());
+    }
+    // recurse
     addInitialStateShower(p->parents()[0],hadron,s);
   }
   else {
     hadron->addChild(p);
     s->addIntermediate(p);
+    p->setVertex(p->children()[0]->vertex());
+    p->setLifeLength(Lorentz5Distance());
   }
   updateColour(p);
-  ParticleVector::const_iterator child;
   // if not adding children return 
   if(!addchildren) return;
   // add children
+  ParticleVector::const_iterator child;
   for(child = p->children().begin(); child != p->children().end(); ++child) {
     // if a final-state particle update the colour
     ShowerParticlePtr schild = 
       dynamic_ptr_cast<ShowerParticlePtr>(*child);
-    (**child).setLifeLength(Lorentz5Distance());
-    (**child).setVertex(p->vertex());
+    (**child).setVertex(p->decayVertex());
     if(schild && schild->isFinalState()) updateColour(*child);
     // if there are grandchildren of p
     if(!(*child)->children().empty()) {
@@ -862,7 +879,7 @@ void ShowerTree::insertDecay(StepPtr pstep,bool ISR, bool) {
   for(unsigned int ix=0;ix<dpar.size();++ix) dpar[ix]->abandonChild(copy);
   final->addChild(copy);
   pstep->addDecayProduct(copy);
-  // just a copy does move
+  // just a copy does not move
   copy->setLifeLength(Lorentz5Distance());
   copy->setVertex(final->decayVertex());
   // final-state radiation
@@ -1174,4 +1191,19 @@ vector<ShowerParticlePtr> ShowerTree::extractProgenitorParticles() {
 	cjt=outgoingLines().begin(); cjt!=outgoingLines().end();++cjt)
     particles.push_back(cjt->first->progenitor());
   return particles;
+}
+
+Lorentz5Distance ShowerTree::spaceTimeDistance(tPPtr particle) {
+  if(!_spaceTime) return Lorentz5Distance();
+  Energy2 q2 = particle->mass() > ZERO ? sqr(particle->mass()) : -sqr(particle->mass());
+  const tcPDPtr data = particle->dataPtr();
+  // calculate width imposing min value
+  Energy conMass = max(data->constituentMass(),200*MeV);
+  Energy width = max(data->generateWidth(particle->mass()),_vmin2/conMass);
+  // offshellness
+  Energy2 offShell = q2-sqr(data->constituentMass());
+  if(abs(offShell)<1e-10*GeV2) offShell = ZERO;
+  InvEnergy2 fact = UseRandom::rndExp(1./sqrt((sqr(offShell)+sqr(q2*width/conMass))));
+  Lorentz5Distance output = (hbarc*fact)*particle->momentum();
+  return output;
 }
