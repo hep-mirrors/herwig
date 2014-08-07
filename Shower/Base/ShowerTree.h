@@ -36,6 +36,8 @@ using namespace ThePEG;
  */
 class ShowerTree : public Base {
 
+  friend class ShowerHandler;
+
 public:
 
   /**
@@ -59,6 +61,12 @@ public:
   ShowerTree(PPtr in, ShowerDecayMap & decay);
   //@}
 
+  /**
+   * Calculate the space-time displacement
+   * @param particle The particle for which to calculate the displacement
+   */
+  static Lorentz5Distance spaceTimeDistance(tPPtr particle);
+
 public:
 
   /**
@@ -69,7 +77,7 @@ public:
    */
   void fillEventRecord(StepPtr pstep,bool ISR,bool FSR) {
     if(_wasHard) 
-      insertHard(pstep,ISR,FSR);
+      insertHard (pstep,ISR,FSR);
     else         
       insertDecay(pstep,ISR,FSR);
   }
@@ -260,6 +268,11 @@ public:
    */
   const LorentzRotation & transform() {return _transforms;}
 
+  /**
+   *  Get all the progenitors
+   */
+  vector<ShowerParticlePtr> extractProgenitorParticles();
+
 protected:
 
   /**
@@ -408,6 +421,16 @@ private:
    *  Copy of decay in shower from ShowerHandler
    */
   static set<long> _decayInShower;
+
+  /**
+   *  Whether or not to include space-time distances
+   */
+  static bool _spaceTime;
+
+  /**
+   *  Minimum virtuality for the space-time model
+   */
+  static Energy2 _vmin2;
 
   /**
    *  Check if a particle decays in the shower

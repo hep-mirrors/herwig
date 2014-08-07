@@ -29,6 +29,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S8968497
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1087342
 # CMS dijet
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1184941
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1090423
+
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'

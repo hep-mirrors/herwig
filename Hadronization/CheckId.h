@@ -23,7 +23,7 @@ using namespace ThePEG;
 
 /** \ingroup Hadronization
  *
- *  This is a pure static class which provides some useful methods
+ *  This is a namespace which provides some useful methods
  *  for checking the PDG id of particles.
  *  Notice that the name "quark" in the methods below means any of 
  *  the following:
@@ -36,12 +36,17 @@ using namespace ThePEG;
  *  Similarly for the name  "diquark"  which include all  diquarks (id > 0)
  *  and  anti-diquarks  (id < 0)  not made with  t  ( anti-t ) component. 
  *
- *  NB) For Other useful methods (even some implemented in CheckId class!)
+ *  NB) For Other useful methods (even some implemented in CheckId)
  *      @see StandardMatchers
  */
-class CheckId {
+namespace CheckId {
   
-public:
+  /**
+   * Return the id of the diquark (anti-diquark) made by the two 
+   * quarks (antiquarks) of id specified in input (id1, id2).
+   * Caller must ensure that id1 and id2 are quarks.
+   */
+  long makeDiquarkID(long id1, long id2);
   
   /**
    * Return the particle data of the diquark (anti-diquark) made by the two 
@@ -49,66 +54,26 @@ public:
    * @param par1 (anti-)quark data pointer
    * @param par2 (anti-)quark data pointer
    */
-  static PDPtr makeDiquark(tcPDPtr par1, tcPDPtr par2) {
-    long id1 = par1->id();
-    long id2 = par2->id();
-    long idnew = makeDiquarkID(id1,id2);
-    assert(!CurrentGenerator::isVoid());
-    return CurrentGenerator::current().getParticleData(idnew);
-  }
+  PDPtr makeDiquark(tcPDPtr par1, tcPDPtr par2);
 
-
-  /**
-   * Return the id of the diquark (anti-diquark) made by the two 
-   * quarks (antiquarks) of id specified in input (id1, id2).
-   * Caller must ensure that id1 and id2 are quarks.
-   */
-  static long makeDiquarkID(long id1, long id2);
-  
   /**
    * Return true if the two particles in input can be the components of a meson;
    *false otherwise.
    */
-  static bool canBeMeson(tcPDPtr par1,tcPDPtr par2) {
-    assert(par1 && par2);
-    long id1 = par1->id();
-    long id2 = par2->id();
-    // a Meson must not have any diquarks
-    if(DiquarkMatcher::Check(id1) || DiquarkMatcher::Check(id2)) return false;
-    return ( abs(int(par1->iColour()))== 3  && 
-	     abs(int(par2->iColour())) == 3 &&  
-	     id1*id2 < 0);
-  }
-  
+  bool canBeMeson(tcPDPtr par1,tcPDPtr par2);
+
   /**
    * Return true if the two or three particles in input can be the components 
    * of a baryon; false otherwise.
    */
-  static bool canBeBaryon(tcPDPtr par1, tcPDPtr par2 , tcPDPtr par3 = PDPtr()) {
-    assert(par1 && par2);
-    long id1 = par1->id(), id2 = par2->id();
-    if (!par3) {
-      if( id1*id2 < 0) return false;
-      if(DiquarkMatcher::Check(id1))
-	return abs(int(par2->iColour())) == 3 && !DiquarkMatcher::Check(id2); 
-      if(DiquarkMatcher::Check(id2))
-	return abs(int(par1->iColour())) == 3;
-      return false;
-    } 
-    else {
-      // In this case, to be a baryon, all three components must be (anti-)quarks
-      // and with the same sign.
-      return (par1->iColour() == 3 && par2->iColour() == 3 && par3->iColour() == 3) ||
-	(par1->iColour() == -3 && par2->iColour() == -3 && par3->iColour() == -3);
-    }
-  }
+  bool canBeBaryon(tcPDPtr par1, tcPDPtr par2 , tcPDPtr par3 = PDPtr());
   
    /**
    * Return true if the two or three particles in input can be the components 
    * of a hadron; false otherwise.
    */
-  static bool canBeHadron(tcPDPtr par1, tcPDPtr par2 , tcPDPtr par3 = PDPtr())  {
-    return (canBeMeson(par1,par2) && !par3) || canBeBaryon(par1,par2,par3);
+  inline bool canBeHadron(tcPDPtr par1, tcPDPtr par2 , tcPDPtr par3 = PDPtr())  {
+    return (!par3 && canBeMeson(par1,par2)) || canBeBaryon(par1,par2,par3);
   }
 
  
@@ -120,7 +85,7 @@ public:
    * an (anti-)meson, an (anti-)baryon; in the other cases, each pointer
    * is assumed to be either (anti-)quark or (anti-)diquark.
    */
-  static bool hasBottom(tcPDPtr par1, tcPDPtr par2 = PDPtr(), tcPDPtr par3 = PDPtr());
+  bool hasBottom(tcPDPtr par1, tcPDPtr par2 = PDPtr(), tcPDPtr par3 = PDPtr());
   /**
    * Return true if any of the possible three input particles has 
    * c-flavour; 
@@ -129,57 +94,15 @@ public:
    * a (anti-)meson, a (anti-)baryon; in the other cases, each pointer
    * is assumed to be either (anti-)quark or (anti-)diquark.
    */
-  static bool hasCharm(tcPDPtr par1, tcPDPtr par2 = PDPtr(), tcPDPtr par3 = PDPtr());
+  bool hasCharm(tcPDPtr par1, tcPDPtr par2 = PDPtr(), tcPDPtr par3 = PDPtr());
   /**
    * Return true, if any of the possible input particle pointer is an exotic quark, e.g. Susy quark;
    * false otherwise.   
    */
-  static bool isExotic(tcPDPtr par1, tcPDPtr par2 = PDPtr(), tcPDPtr par3 = PDPtr());
+  bool isExotic(tcPDPtr par1, tcPDPtr par2 = PDPtr(), tcPDPtr par3 = PDPtr());
 
-private:
-  
-  /**
-   * Return true if the particle pointer corresponds to a diquark 
-   * or anti-diquark carrying b flavour; false otherwise.
-   */
-  static bool isDiquarkWithB(tcPDPtr par1) {
-    if (!par1) return false;
-    long id1 = par1->id();
-    return DiquarkMatcher::Check(id1)  &&  (abs(id1)/1000)%10 == ParticleID::b;
-  }
-  
-  /**
-   * Return true if the particle pointer corresponds to a diquark
-   *  or anti-diquark carrying c flavour; false otherwise.
-   */
-  static bool isDiquarkWithC(tcPDPtr par1) {
-    if (!par1) return false;
-    long id1 = par1->id();
-    return ( DiquarkMatcher::Check(id1)  &&  
-	     ( (abs(id1)/1000)%10 == ParticleID::c  
-	       || (abs(id1)/100)%10 == ParticleID::c ) );
-  }
-
-private:
-  
-  /**
-   * Pure static class so default constructor is private
-   */
-  CheckId();
-  
-  /**
-   * Pure static class so copy constructor is private
-   */
-  CheckId(const CheckId & x);
-  
-  /**
-   *  Assignmet is private as static
-   */
-  CheckId & operator=(const CheckId & x);
-  
-};
+}
   
 }
 
 #endif /* HERWIG_CheckId_H */
-

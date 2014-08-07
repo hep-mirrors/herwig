@@ -15,6 +15,7 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "Herwig++/Shower/SplittingFunctions/SplittingFunction.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
+#include "ThePEG/Utilities/Debug.h"
 
 using namespace Herwig;
 
@@ -44,46 +45,32 @@ updateParameters(tShowerParticlePtr theParent,
   child1.pt  = sqrt( sqr(child1.ptx) + sqr(child1.pty) );
 }
 
-
-
 void FS_QTildeShowerKinematics1to2::
-updateChildren(const tShowerParticlePtr theParent, 
-	       const ShowerParticleVector & theChildren,
-	       bool angularOrder) const {
-  if(theChildren.size() != 2)
-    throw Exception() << "FS_QTildeShowerKinematics1to2::updateChildren() "
-		      << "Warning! too many children!" << Exception::eventerror;
-  // copy scales etc
-  Energy dqtilde = scale();
-  // note that 1st child gets z, 2nd gets (1-z) by our convention.
-  if(angularOrder) {
-    theChildren[0]->setEvolutionScale(    z() * dqtilde);
-    theChildren[1]->setEvolutionScale((1.-z())* dqtilde);
-  }
-  else {
-    theChildren[0]->setEvolutionScale(dqtilde);
-    theChildren[1]->setEvolutionScale(dqtilde);
-  }
-  updateParameters(theParent, theChildren[0], theChildren[1], true);
+updateChildren(const tShowerParticlePtr parent, 
+	       const ShowerParticleVector & children,
+	       ShowerPartnerType::Type partnerType) const {
+  assert(children.size()==2);
+  // calculate the scales
+  splittingFn()->evaluateFinalStateScales(partnerType,scale(),z(),parent,
+					  children[0],children[1]);
+  // update the parameters
+  updateParameters(parent, children[0], children[1], true);
   // set up the colour connections
-  splittingFn()->colourConnection(theParent,theChildren[0],theChildren[1],false);
+  splittingFn()->colourConnection(parent,children[0],children[1],partnerType,false);
   // make the products children of the parent
-  theParent->addChild(theChildren[0]);
-  theParent->addChild(theChildren[1]);
+  parent->addChild(children[0]);
+  parent->addChild(children[1]);
 }
 
 void FS_QTildeShowerKinematics1to2::
-reconstructParent(const tShowerParticlePtr theParent, 
-	     const ParticleVector & theChildren ) const {
-  if(theChildren.size() != 2) 
-    throw Exception() << "FS_QTildeShowerKinematics1to2::updateParent() " 
-		      << "Warning! too many children!" 
-		      << Exception::eventerror;
-  ShowerParticlePtr c1 = dynamic_ptr_cast<ShowerParticlePtr>(theChildren[0]);
-  ShowerParticlePtr c2 = dynamic_ptr_cast<ShowerParticlePtr>(theChildren[1]);
-  theParent->showerParameters().beta= 
+reconstructParent(const tShowerParticlePtr parent, 
+		  const ParticleVector & children ) const {
+  assert(children.size() == 2);
+  ShowerParticlePtr c1 = dynamic_ptr_cast<ShowerParticlePtr>(children[0]);
+  ShowerParticlePtr c2 = dynamic_ptr_cast<ShowerParticlePtr>(children[1]);
+  parent->showerParameters().beta= 
     c1->showerParameters().beta + c2->showerParameters().beta; 
-  theParent->set5Momentum( c1->momentum() + c2->momentum() );
+  parent->set5Momentum( c1->momentum() + c2->momentum() );
 }
 
 void FS_QTildeShowerKinematics1to2::reconstructLast(const tShowerParticlePtr theLast,
@@ -153,14 +140,14 @@ void FS_QTildeShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr) {
 
 void FS_QTildeShowerKinematics1to2::updateParent(const tShowerParticlePtr parent, 
 						 const ShowerParticleVector & children,
-						 bool) const {
+						 ShowerPartnerType::Type) const {
   IdList ids(3);
   ids[0] = parent->id();
   ids[1] = children[0]->id();
   ids[2] = children[1]->id();
-  vector<Energy> virtualMasses = SudakovFormFactor()->virtualMasses(ids);
-  if(children[0]->children().empty()) children[0]->setVirtualMass(virtualMasses[1]);
-  if(children[1]->children().empty()) children[1]->setVirtualMass(virtualMasses[2]);
+  const vector<Energy> & virtualMasses = SudakovFormFactor()->virtualMasses(ids);
+  if(children[0]->children().empty()) children[0]->virtualMass(virtualMasses[1]);
+  if(children[1]->children().empty()) children[1]->virtualMass(virtualMasses[2]);
   // compute the new pT of the branching
   Energy2 pt2=sqr(z()*(1.-z()))*sqr(scale())
     - sqr(children[0]->virtualMass())*(1.-z())
@@ -171,25 +158,24 @@ void FS_QTildeShowerKinematics1to2::updateParent(const tShowerParticlePtr parent
     sqr(children[1]->virtualMass())/(1.-z()) +
     pt2/z()/(1.-z());
   if(pt2<ZERO) {
-    parent->setVirtualMass(ZERO);
+    parent->virtualMass(ZERO);
   }
   else {
-    parent->setVirtualMass(sqrt(q2));
+    parent->virtualMass(sqrt(q2));
     pT(sqrt(pt2));
   }
 }
 
 void FS_QTildeShowerKinematics1to2::
-resetChildren(const tShowerParticlePtr theParent, 
-	      const ShowerParticleVector & theChildren) const {
-  updateParameters(theParent, theChildren[0], theChildren[1], false);
-
-  for(unsigned int ix=0;ix<theChildren.size();++ix) {
-    if(theChildren[ix]->children().empty()) continue;
-    ShowerParticleVector children;
-    for(unsigned int iy=0;iy<theChildren[ix]->children().size();++iy)
-      children.push_back(dynamic_ptr_cast<ShowerParticlePtr>
-			 (theChildren[ix]->children()[iy]));
-    theChildren[ix]->showerKinematics()->resetChildren(theChildren[ix],children);
+resetChildren(const tShowerParticlePtr parent, 
+	      const ShowerParticleVector & children) const {
+  updateParameters(parent, children[0], children[1], false);
+  for(unsigned int ix=0;ix<children.size();++ix) {
+    if(children[ix]->children().empty()) continue;
+    ShowerParticleVector newChildren;
+    for(unsigned int iy=0;iy<children[ix]->children().size();++iy)
+      newChildren.push_back(dynamic_ptr_cast<ShowerParticlePtr>
+			    (children[ix]->children()[iy]));
+    children[ix]->showerKinematics()->resetChildren(children[ix],newChildren);
   }
 }

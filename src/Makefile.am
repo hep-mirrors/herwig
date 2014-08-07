@@ -12,7 +12,7 @@ Herwig___LDADD = $(THEPEGLIB) -ldl
 Herwig___CPPFLAGS = $(AM_CPPFLAGS) \
 -DHERWIG_PKGDATADIR="\"$(pkgdatadir)\"" \
 -DHERWIG_PKGLIBDIR="\"$(pkglibdir)\"" \
--DTHEPEG_PKGLIBDIR="\"$(THEPEGPATH)/lib/ThePEG\""
+-DTHEPEG_PKGLIBDIR="\"$(THEPEGLIBPATH)\""
 bin_SCRIPTS = herwig-config
 
 HELPERFILES = CMSSM40.1.1.slha RPV3.1.slha NMSSM.spc \
@@ -147,7 +147,7 @@ valgrind-run:
 	$(VALGRIND) ./Herwig++ run -d1 -D -N5 LHC.run &> /tmp/valgrind-run.log
 
 SETUPTHEPEG=$(THEPEGPATH)/bin/setupThePEG
-THEPEGREPO=$(THEPEGPATH)/lib/ThePEG/ThePEGDefaults.rpo
+THEPEGREPO=$(THEPEGLIBPATH)/ThePEGDefaults.rpo
 
 install-data-hook:
 	@echo Creating repository

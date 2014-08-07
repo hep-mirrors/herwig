@@ -43,6 +43,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1184941
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_PAS_QCD_11_010
 # ATLAS charged particle in min bias
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1125575
+# CMS 4-jet
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1273574 
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'

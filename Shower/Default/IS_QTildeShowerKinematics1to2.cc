@@ -15,6 +15,7 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
+#include "ThePEG/Utilities/Debug.h"
 #include <cassert>
 
 using namespace Herwig;
@@ -22,7 +23,7 @@ using namespace Herwig;
 void IS_QTildeShowerKinematics1to2::
 updateChildren( const tShowerParticlePtr theParent, 
 		const ShowerParticleVector & theChildren,
-		bool ) const {
+		ShowerPartnerType::Type) const {
   const ShowerParticle::Parameters & parent = theParent->showerParameters();
   ShowerParticle::Parameters & child0 = theChildren[0]->showerParameters();
   ShowerParticle::Parameters & child1 = theChildren[1]->showerParameters();
@@ -43,21 +44,19 @@ updateChildren( const tShowerParticlePtr theParent,
 
 
 void IS_QTildeShowerKinematics1to2::
-updateParent(const tShowerParticlePtr theParent, 
-	     const ShowerParticleVector & theChildren,
-	     bool angularOrder) const {
-  // no z for angular ordering in backward branchings
-  theParent->setEvolutionScale(scale());
-  if(angularOrder)
-    theChildren[1]->setEvolutionScale((1.-z())*scale());
-  else
-    theChildren[1]->setEvolutionScale(scale());
+updateParent(const tShowerParticlePtr parent, 
+	     const ShowerParticleVector & children,
+	     ShowerPartnerType::Type partnerType) const {
+  // calculate the scales
+  splittingFn()->evaluateInitialStateScales(partnerType,scale(),z(),parent,
+					    children[0],children[1]);
   // set proper colour connections
-  splittingFn()->colourConnection(theParent,theChildren[0],theChildren[1],true);
+  splittingFn()->colourConnection(parent,children[0],children[1],
+				  partnerType,true);
   // set proper parent/child relationships
-  theParent->addChild(theChildren[0]);
-  theParent->addChild(theChildren[1]);
-  theParent->x(theChildren[0]->x()/z());
+  parent->addChild(children[0]);
+  parent->addChild(children[1]);
+  parent->x(children[0]->x()/z());
 }
 
 void IS_QTildeShowerKinematics1to2::
@@ -108,6 +107,7 @@ void IS_QTildeShowerKinematics1to2::initialize(ShowerParticle & particle, PPtr p
   if(particle.perturbative()==1) {
     // find the partner and its momentum
     ShowerParticlePtr partner=particle.partner();
+    assert(partner);
     if(partner->isFinalState()) {
       Lorentz5Momentum pa = -particle.momentum()+partner->momentum();
       Lorentz5Momentum pb =  particle.momentum();

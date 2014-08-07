@@ -36,6 +36,13 @@ option "debug-fpe" D "Enable floating point exceptions."
 option "quiet" q "Disable event counter."
   flag off
 
+option "jobs" j "Number of jobs to run in parallel (max 10)."
+  int  optional
+
+option "setupfile" x "An input file to modify run parameters."
+  typestr="SETUPFILE"
+  string optional default=""
+
 section "Repository options"
 text ""
 

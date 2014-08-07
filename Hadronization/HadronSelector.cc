@@ -45,7 +45,7 @@ namespace {
   //   }
   // }
 
-  bool weightIsLess (pair<tcPDPtr,double> a, pair<tcPDPtr,double> b) {
+  bool weightIsLess (pair<long,double> a, pair<long,double> b) {
     return a.second < b.second;
   }
 
@@ -352,7 +352,7 @@ void HadronSelector::Init() {
 
 }
 
-double HadronSelector::mixingStateWeight(long id) {
+double HadronSelector::mixingStateWeight(long id) const {
   switch(id) {
   case ParticleID::eta:      return 0.5*probabilityMixing(_etamix  ,1);
   case ParticleID::etaprime: return 0.5*probabilityMixing(_etamix  ,2);
@@ -425,33 +425,33 @@ void HadronSelector::doinit() {
     _repwt[2][3][ix]=_weight3D3[ix];
   // weights for the different quarks etc
   for(unsigned int ix=0; ix<_partons.size(); ++ix) {
-    _pwt[_partons[ix]]=1.;
+    _pwt[_partons[ix]->id()]=1.;
   }
-  _pwt[getParticleData(1)]  = _pwtDquark;
-  _pwt[getParticleData(2)]  = _pwtUquark;
-  _pwt[getParticleData(3)]  = _pwtSquark;
-  _pwt[getParticleData(4)]  = _pwtCquark;
-  _pwt[getParticleData(5)]  = _pwtBquark;
-  _pwt[getParticleData(1103)] =       _pwtDIquark * _pwtDquark * _pwtDquark;
-  _pwt[getParticleData(2101)] = 0.5 * _pwtDIquark * _pwtUquark * _pwtDquark;
-  _pwt[getParticleData(2203)] =       _pwtDIquark * _pwtUquark * _pwtUquark;
-  _pwt[getParticleData(3101)] = 0.5 * _pwtDIquark * _pwtSquark * _pwtDquark;
-  _pwt[getParticleData(3201)] = 0.5 * _pwtDIquark * _pwtSquark * _pwtUquark;
-  _pwt[getParticleData(3303)] =       _pwtDIquark * _pwtSquark * _pwtSquark;
+  _pwt[1]  = _pwtDquark;
+  _pwt[2]  = _pwtUquark;
+  _pwt[3]  = _pwtSquark;
+  _pwt[4]  = _pwtCquark;
+  _pwt[5]  = _pwtBquark;
+  _pwt[1103] =       _pwtDIquark * _pwtDquark * _pwtDquark;
+  _pwt[2101] = 0.5 * _pwtDIquark * _pwtUquark * _pwtDquark;
+  _pwt[2203] =       _pwtDIquark * _pwtUquark * _pwtUquark;
+  _pwt[3101] = 0.5 * _pwtDIquark * _pwtSquark * _pwtDquark;
+  _pwt[3201] = 0.5 * _pwtDIquark * _pwtSquark * _pwtUquark;
+  _pwt[3303] =       _pwtDIquark * _pwtSquark * _pwtSquark;
   // Commenting out heavy di-quark weights
-  _pwt[getParticleData(4101)] = 0.0;
-  _pwt[getParticleData(4201)] = 0.0;
-  _pwt[getParticleData(4301)] = 0.0;
-  _pwt[getParticleData(4403)] = 0.0;
-  _pwt[getParticleData(5101)] = 0.0;
-  _pwt[getParticleData(5201)] = 0.0;
-  _pwt[getParticleData(5301)] = 0.0;
-  _pwt[getParticleData(5401)] = 0.0;
-  _pwt[getParticleData(5503)] = 0.0;
+  _pwt[4101] = 0.0;
+  _pwt[4201] = 0.0;
+  _pwt[4301] = 0.0;
+  _pwt[4403] = 0.0;
+  _pwt[5101] = 0.0;
+  _pwt[5201] = 0.0;
+  _pwt[5301] = 0.0;
+  _pwt[5401] = 0.0;
+  _pwt[5503] = 0.0;
   // find the maximum
-  map<tcPDPtr,double>::iterator pit =
+  map<long,double>::iterator pit =
     max_element(_pwt.begin(),_pwt.end(),weightIsLess); 
-  double pmax = pit->second;
+  const double pmax = pit->second;
   for(pit=_pwt.begin(); pit!=_pwt.end(); ++pit) {
     pit->second/=pmax;
   }
@@ -632,7 +632,7 @@ void HadronSelector::constructHadronTable() {
   }
 }
 
-double HadronSelector::specialWeight(long id) {
+double HadronSelector::specialWeight(long id) const {
   const int pspin = id % 10;  
   // Only K0L and K0S have pspin == 0, should
   // not get them until Decay step

@@ -7,7 +7,7 @@
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_LeptoquarkModelSLQSLQGVertex_H
-#define HERWIG_LeptoquarkModelSLQSLQGVVertex_H
+#define HERWIG_LeptoquarkModelSLQSLQGVertex_H
 //
 // This is the declaration of the LeptoquarkModelSLQSLQGVertex class.
 

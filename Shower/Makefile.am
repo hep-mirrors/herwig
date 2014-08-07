@@ -1,11 +1,12 @@
 pkglib_LTLIBRARIES = HwShower.la
-HwShower_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 17:0:0
+HwShower_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 18:0:0
 HwShower_la_LIBADD = \
 $(top_builddir)/PDF/libHwRemDecayer.la \
 $(top_builddir)/PDF/libHwMPIPDF.la
 HwShower_la_SOURCES =  \
 UEBase.h UEBase.cc UEBase.fh \
 Couplings/ShowerAlphaQCD.h Couplings/ShowerAlphaQCD.cc \
+Couplings/ShowerAlphaQED.h Couplings/ShowerAlphaQED.cc\
 ShowerHandler.h ShowerHandler.fh ShowerHandler.cc \
 SplittingFunctions/HalfHalfOneSplitFn.h SplittingFunctions/HalfHalfOneSplitFn.cc\
 SplittingFunctions/OneOneOneSplitFn.h SplittingFunctions/OneOneOneSplitFn.cc\
@@ -29,7 +30,6 @@ Base/ShowerModel.cc Base/ShowerModel.h Base/ShowerModel.fh \
 Base/PartnerFinder.h Base/PartnerFinder.fh Base/PartnerFinder.cc \
 Base/Evolver.h Base/Evolver.fh Base/Evolver.cc \
 Base/ShowerVeto.h Base/ShowerVeto.fh Base/ShowerVeto.cc
-
 
 noinst_LTLIBRARIES = libHwShower.la
 libHwShower_la_SOURCES = ShowerConfig.h \

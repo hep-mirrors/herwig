@@ -49,7 +49,8 @@ public:
   _clreco(0),
   _initTemp(0.1),
   _preco(0.5),
-  _triesPerStepFactor(5.0)
+  _triesPerStepFactor(5.0),
+  _maxDistance(1000.*femtometer)
   {}
   //@}
 
@@ -71,7 +72,7 @@ private:
    * @arguments q, aq vectors containing the quarks and antiquarks respectively
    * @return    Sum of cluster squared masses M^2_{q[i],aq[i]}.
    */
-  Energy2 _clusterMassSum(const PVector q, const PVector aq) const;
+  Energy2 _clusterMassSum(const PVector & q, const PVector & aq) const;
 
   
   /**
@@ -81,7 +82,7 @@ private:
    * @param  P  Permutation, a vector of permutated indices from 0 to
    *            cv.size()-1
    */
-  bool _containsColour8(const ClusterVector cv, const vector<size_t> P) const;
+  bool _containsColour8(const ClusterVector & cv, const vector<size_t> & P) const;
 
   /**
    * @brief     A Metropolis-type algorithm which finds a local minimum in the
@@ -102,11 +103,12 @@ private:
    *            If no reconnection partner can be found, a pointer to the
    *            original Cluster cl is returned.
    * @arguments cv cluster vector
-   *            cl cluster which wants to have a reconnection partner
-   * @return    pointer to the found cluster, or the original cluster pointer if
+   *            cl cluster iterator (must be from cv) which wants to have a reconnection partner
+   * @return    iterator to the found cluster, or the original cluster pointer if
    *            no mass-reducing combination can be found
    */
-  ClusterPtr _findRecoPartner(ClusterPtr cl, ClusterVector cv) const;
+  ClusterVector::iterator _findRecoPartner(ClusterVector::iterator cl,
+                                           ClusterVector & cv) const;
 
   /**
    * @brief     Reconnects the constituents of the given clusters to the (only)
@@ -126,7 +128,7 @@ private:
    *            found after maxtries trials
    */
   pair <int,int>
-    _shuffle(const PVector q, const PVector aq, unsigned maxtries = 10) const;
+    _shuffle(const PVector & q, const PVector & aq, unsigned maxtries = 10) const;
 
 
   /** DATA MEMBERS */
@@ -169,6 +171,11 @@ private:
    * this factor.
    */
   double _triesPerStepFactor;
+
+  /**
+   *  Maximium distance for reconnections
+   */
+  Length _maxDistance;
 
   /**
    * @return	true, if the two partons are splitting products of the same

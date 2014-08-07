@@ -26,6 +26,7 @@ cd /Herwig/Generators
 
 # BELLE charm hadron production
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_S7266081
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2008_I786560
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'

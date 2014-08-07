@@ -157,7 +157,7 @@ double DipoleIOperator::me2() const {
   // has to be mentioned in the manual!  see hep-ph/9305239 for
   // details; this guarantees an expansion in alpha_s^\bar{MS} when
   // using dimensional reduction
-  if ( isDR() )
+  if ( isDR() && isDRbar() )
     res -= (CA/6.)*lastBorn()->orderInAlphaS()*lastBorn()->me2();
 
   res *= ( - lastBorn()->lastAlphaS() / (2.*pi) );

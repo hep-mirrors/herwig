@@ -93,6 +93,10 @@ dnl ####################################
 dnl for Doc/fixinterfaces.pl
 AC_PATH_PROG(PERL, perl)
 
+dnl for Models/Feynrules
+AM_PATH_PYTHON([2.6],, [:])
+AM_CONDITIONAL([HAVE_PYTHON], [test "x$PYTHON" != "x:"])
+
 HERWIG_CHECK_GSL
 
 HERWIG_CHECK_THEPEG

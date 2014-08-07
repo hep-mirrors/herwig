@@ -17,6 +17,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Repository/EventGenerator.h"
+#include "ThePEG/EventRecord/Event.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "ThePEG/Repository/UseRandom.h" 
 #include "ThePEG/Utilities/DescribeClass.h"
@@ -191,11 +192,11 @@ calculateInitialInitialScales(const ShowerPPair &ppair) {
 
 pair<Energy,Energy> QTildeFinder::
 calculateFinalFinalScales(const ShowerPPair &particlePair) {
-  static const double eps=1e-8;
+  static const double eps=1e-6;
   // Using JHEP 12(2003)045 we find that we need ktilde = 1/2(1+b-c+lambda)
   // ktilde = qtilde^2/Q^2 therefore qtilde = sqrt(ktilde*Q^2)
   // find momenta in rest frame of system
-  Lorentz5Momentum p1= particlePair.first->momentum(); 
+  Lorentz5Momentum p1 = particlePair.first->momentum(); 
   Lorentz5Momentum p2 = particlePair.second->momentum(); 
   Lorentz5Momentum p12(p1+p2);
   Boost boostv=p12.findBoostToCM();
@@ -206,15 +207,23 @@ calculateFinalFinalScales(const ShowerPPair &particlePair) {
   double b = p1.mass2()/Q2;
   double c = p2.mass2()/Q2;
   if(b<0.) {
-    if(b<-eps) throw Exception() << "Negative Mass sqaured b = " << b
-				 << "in QTildeFinder::calculateFinalFinalScales()"
-				 << Exception::eventerror;
+    if(b<-eps) {
+      generator()->log() << *particlePair.first  << "\n"
+			 << *particlePair.second << "\n";
+      throw Exception() << "Negative Mass squared b = " << b
+			<< "in QTildeFinder::calculateFinalFinalScales()"
+			<< Exception::eventerror;
+    }
     b = 0.;
   }
   if(c<0.) {
-    if(c<-eps) throw Exception() << "Negative Mass sqaured c = " << c
-				 << "in QTildeFinder::calculateFinalFinalScales()"
-				 << Exception::eventerror;
+    if(c<-eps) {
+      generator()->log() << *particlePair.first  << "\n"
+			 << *particlePair.second << "\n";
+      throw Exception() << "Negative Mass squared c = " << c
+			<< "in QTildeFinder::calculateFinalFinalScales()"
+			<< Exception::eventerror;
+    }
     c = 0.;
   }
   // KMH & PR - 16 May 2008 - swapped lambda calculation from 

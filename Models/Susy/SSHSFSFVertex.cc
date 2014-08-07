@@ -232,9 +232,10 @@ void SSHSFSFVertex::downSF(Energy2 q2, long higgs, long sm,
    if( higgs == ParticleID::A0 ) {
      theCoupLast = -Complex(0.,1.)*mfacta*(theTriC[sm - 1]*theTanB + theMu);
      if(sm == 5) {
-       theCoupLast *= 
+      // do not revert to *=, breaks with XCode 5.1
+       theCoupLast = theCoupLast * (
 	 (*theMix[1])(alpha, 1) * (*theMix[1])(beta , 0) -
-	 (*theMix[1])(alpha, 0) * (*theMix[1])(beta , 1);
+	 (*theMix[1])(alpha, 0) * (*theMix[1])(beta , 1) );
      }
      else if(alpha<beta) theCoupLast *= -1.;
      return;
@@ -282,9 +283,10 @@ void SSHSFSFVertex::upSF(Energy2 q2, long higgs, long sm,
   if( higgs == ParticleID::A0 ){
     theCoupLast = -Complex(0.,1.)*mfacta*(theTriC[sm - 1]/theTanB + theMu);
     if(sm == 6) {
-      theCoupLast *= 
+    // do not revert to *=, breaks with XCode 5.1
+      theCoupLast = theCoupLast * (
 	(*theMix[0])(alpha, 1) * (*theMix[0])(beta , 0) -
-	(*theMix[0])(alpha, 0) * (*theMix[0])(beta , 1);
+	(*theMix[0])(alpha, 0) * (*theMix[0])(beta , 1) );
     }
     else if(alpha<beta) theCoupLast *= -1.;
     return;
@@ -340,9 +342,10 @@ void SSHSFSFVertex::leptonSF(Energy2 q2, long higgs, long sm,
   if( higgs == ParticleID::A0 ) {
     theCoupLast = -Complex(0.,1.)*mfacta*(theTriC[(sm + 1)/2]*theTanB + theMu);
     if(sm == 15) {
-      theCoupLast *= 
+      // do not revert to *=, breaks with XCode 5.1
+      theCoupLast = theCoupLast * (
 	(*theMix[2])(alpha, 1) * (*theMix[2])(beta , 0) -
-	(*theMix[2])(alpha, 0) * (*theMix[2])(beta , 1);
+	(*theMix[2])(alpha, 0) * (*theMix[2])(beta , 1) );
     }
     else if(alpha<beta) theCoupLast *= -1.;
     return;

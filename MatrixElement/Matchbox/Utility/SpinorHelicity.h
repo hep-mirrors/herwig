@@ -92,8 +92,9 @@ namespace SpinorHelicity {
       if ( p.t() < ZERO ) {
 	pair<complex<Value>,complex<Value> > res = 
 	  components<Value,MValue>(-p);
-	res.first *= Complex(0.,1.);
-	res.second *= Complex(0.,1.);
+  // do not revert to *=, breaks with XCode 5.1
+	res.first = res.first * Complex(0.,1.);
+	res.second = res.second * Complex(0.,1.);
 	return res;
       }
       Energy pPlus = p.t() + p.x();
@@ -117,8 +118,9 @@ namespace SpinorHelicity {
       if ( p.t() < ZERO ) {
 	pair<complex<Value>,complex<Value> > res = 
 	  components<Value,MValue>(-p);
-	res.first *= Complex(0.,1.);
-	res.second *= Complex(0.,1.);
+  // do not revert to *=, breaks with XCode 5.1  
+	res.first = res.first * Complex(0.,1.);
+	res.second = res.second * Complex(0.,1.);
 	return res;
       }
       Energy pPlus = p.t() + p.x();

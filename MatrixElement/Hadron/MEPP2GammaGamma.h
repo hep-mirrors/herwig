@@ -38,7 +38,7 @@ public:
   /**
    * The default constructor.
    */
-  MEPP2GammaGamma() : _maxflavour(5),_process(0) {
+  MEPP2GammaGamma() : _maxflavour(5),_process(0), scalePreFactor_(1.) {
     massOption(vector<unsigned int>(2,0));
   }
   
@@ -246,6 +246,10 @@ private:
    */
   mutable double _diagwgt[2];
 
+  /**
+   *  Scale prefactor
+   */
+  double scalePreFactor_;
 };
 
 }

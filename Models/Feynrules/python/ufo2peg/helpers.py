@@ -46,7 +46,7 @@ def is_number(s):
 
 def getTemplate(name):
     """Create a python string template from a file."""
-    templatename = '{}.template'.format(name)
+    templatename = '{name}.template'.format(name=name)
     # assumes the template files sit next to this script
     moduledir = path.dirname(path.abspath(__file__))
     templatepath = path.join(moduledir,templatename)
@@ -83,9 +83,14 @@ def unique_lorentztag(vertex):
     for l in vertex.lorentz:
         lorentztag = get_lorentztag(l.spins)
         unique( lorentztag )
-        if lorentztag != l.name[:len(lorentztag)]:
+        lname = l.name[:len(lorentztag)]
+        if sorted(lorentztag) != sorted(lname):
             raise Exception("Lorentztags: %s is not %s in %s" 
-                            % (lorentztag,l.name[:len(lorentztag)],vertex))
+                            % (lorentztag,lname,vertex))
+#        if lorentztag != lname:
+#            sys.stderr.write("Warning: Lorentz tag ordering: %s is not %s in %s\n"
+#                             % (lorentztag,lname,vertex))
+
     return lorentztag
 
 
@@ -126,7 +131,7 @@ def spindirectory(lt):
     elif 'V' in lt: 
         spin_directory = 'Vector'
     else:
-        raise Exception("Unknown Lorentz tag {}.".format(lt))
+        raise Exception("Unknown Lorentz tag {lt}.".format(lt=lt))
     return spin_directory
 
 
@@ -172,12 +177,12 @@ def colorfactor(vertex,L,pos):
 
     elif l(3) == l(-3) == 1 and l(1) == L-2:
         nums = [pos[3][0], pos[-3][0]]
-        label = ('Identity({},{})'.format(*sorted(nums)),)
+        label = ('Identity({0},{1})'.format(*sorted(nums)),)
         if match(label): return ('1',)
 
     elif l(6) == l(-6) == 1 and l(1) == L-2:
         nums = [pos[6][0], pos[-6][0]]
-        label = ('Identity({},{})'.format(*sorted(nums)),)
+        label = ('Identity({0},{1})'.format(*sorted(nums)),)
         if match(label): return ('1',)
 
     elif l(6) == l(-6) == 2 and L==4:
@@ -188,19 +193,19 @@ def colorfactor(vertex,L,pos):
         raise SkipThisVertex()
 
     elif l(8) == l(3) == l(-3) == 1 and l(1) == L-3:
-        label = ('T({},{},{})'.format(pos[8][0],pos[3][0],pos[-3][0]),)
+        label = ('T({g},{q},{qb})'.format(g=pos[8][0],q=pos[3][0],qb=pos[-3][0]),)
         if match(label): return ('1',)
 
     elif l(8) == l(6) == l(-6) == 1 and l(1) == L-3:
-        label = ('T6({},{},{})'.format(pos[8][0],pos[6][0],pos[-6][0]),)
+        label = ('T6({g},{s},{sb})'.format(g=pos[8][0],s=pos[6][0],sb=pos[-6][0]),)
         if match(label): return ('1',)
 
     elif l(6) == 1 and l(-3) == 2 and L==3:
-        label = ('K6({},{},{})'.format(pos[6][0],pos[-3][0],pos[-3][1]),)
+        label = ('K6({s},{qb1},{qb2})'.format(s=pos[6][0],qb1=pos[-3][0],qb2=pos[-3][1]),)
         if match(label): return ('1',)
 
     elif l(-6) == 1 and l(3) == 2 and L==3:
-        label = ('K6Bar({},{},{})'.format(pos[-6][0],pos[3][0],pos[3][1]),)
+        label = ('K6Bar({sb},{q1},{q2})'.format(sb=pos[-6][0],q1=pos[3][0],q2=pos[3][1]),)
         if match(label): return ('1',)
 
     elif l(8) == L == 3:
@@ -278,7 +283,7 @@ def typemap(s):
 def add_brackets(expr, syms):
     result = expr
     for s in syms:
-        pattern = r'({})(\W|$)'.format(s)
+        pattern = r'({symb})(\W|$)'.format(symb=s)
         result = re.sub(pattern, r'\1()\2', result)
     return result
 

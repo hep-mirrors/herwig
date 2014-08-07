@@ -172,7 +172,9 @@ void ClusterFissioner::Init() {
 }
 
 tPVector ClusterFissioner::fission(ClusterVector & clusters, bool softUEisOn) {
+  // return if no clusters
   if (clusters.empty()) return tPVector();
+
   /*****************
    * Loop over the (input) collection of cluster pointers, and store in 
    * the vector  splitClusters  all the clusters that need to be split
@@ -229,8 +231,11 @@ void ClusterFissioner::cut(stack<ClusterPtr> & clusterStack,
   while (!clusterStack.empty()) {
     // take the last element of the vector
     ClusterPtr iCluster = clusterStack.top(); clusterStack.pop();   
-    // split it                 
-    cutType ct = cut(iCluster, finalhadrons, softUEisOn);
+    // split it
+    cutType ct = iCluster->numComponents() == 2 ?
+      cutTwo(iCluster, finalhadrons, softUEisOn) : 
+      cutThree(iCluster, finalhadrons, softUEisOn);
+
     // There are cases when we don't want to split, even if it fails mass test
     if(!ct.first.first || !ct.second.first) {
       // if an unsplit beam cluster leave if for the underlying event
@@ -277,14 +282,26 @@ void ClusterFissioner::cut(stack<ClusterPtr> & clusterStack,
 }
 
 namespace {
-   bool cantMakeHadron(tcPPtr p1, tcPPtr p2) {
+
+  /**
+   *  Check if can't make a hadron from the partons
+   */
+  bool cantMakeHadron(tcPPtr p1, tcPPtr p2) {
     return ! CheckId::canBeHadron(p1->dataPtr(), p2->dataPtr());
+  }
+  
+  /**
+   *  Check if can't make a diquark from the partons
+   */
+  bool cantMakeDiQuark(tcPPtr p1, tcPPtr p2) {
+    long id1 = p1->id(), id2 = p2->id();
+    return ! (QuarkMatcher::Check(id1) && QuarkMatcher::Check(id2) && id1*id2>0);
   }
 }
 
-ClusterFissioner::cutType ClusterFissioner::cut(ClusterPtr & cluster, 
-						tPVector & finalhadrons,
-						bool softUEisOn) {
+ClusterFissioner::cutType
+ClusterFissioner::cutTwo(ClusterPtr & cluster, tPVector & finalhadrons,
+			 bool softUEisOn) {
   // need to make sure only 2-cpt clusters get here
   assert(cluster->numComponents() == 2);
   tPPtr ptrQ1 = cluster->particle(0);
@@ -453,7 +470,7 @@ ClusterFissioner::cutType ClusterFissioner::cut(ClusterPtr & cluster,
    * inconsistency!
    ********************/
   LorentzPoint posC,pos1,pos2;
-  posC = cluster->labVertex();
+  posC = cluster->vertex();
   calculatePositions(pClu, posC, pClu1, pClu2, pos1, pos2);
   cutType rval;
   if(toHadron1) {
@@ -473,6 +490,172 @@ ClusterFissioner::cutType ClusterFissioner::cut(ClusterPtr & cluster,
   return rval;
 }
 
+
+ClusterFissioner::cutType
+ClusterFissioner::cutThree(ClusterPtr & cluster, tPVector & finalhadrons,
+			   bool softUEisOn) {
+  // need to make sure only 3-cpt clusters get here
+  assert(cluster->numComponents() == 3);
+  // extract quarks
+  tPPtr ptrQ[3] = {cluster->particle(0),cluster->particle(1),cluster->particle(2)};
+  assert( ptrQ[0] && ptrQ[1] && ptrQ[2] );
+  // find maximum mass pair
+  Energy mmax(ZERO);
+  Lorentz5Momentum pDiQuark;
+  int iq1(-1),iq2(-1);
+  Lorentz5Momentum psum;
+  for(int q1=0;q1<3;++q1) {
+    psum+= ptrQ[q1]->momentum();
+    for(int q2=q1+1;q2<3;++q2) {
+      Lorentz5Momentum ptest = ptrQ[q1]->momentum()+ptrQ[q2]->momentum();
+      ptest.rescaleMass();
+      Energy mass = ptest.m();
+      if(mass>mmax) {
+	mmax = mass;
+	pDiQuark = ptest;
+	iq1  = q1;
+	iq2  = q2;
+      }
+    }
+  }
+  // and the spectators
+  int iother(-1);
+  for(int ix=0;ix<3;++ix) if(ix!=iq1&&ix!=iq2) iother=ix;
+  assert(iq1>=0&&iq2>=0&&iother>=0);
+
+  // And check if those particles are from a beam remnant
+  bool rem1 = cluster->isBeamRemnant(iq1);
+  bool rem2 = cluster->isBeamRemnant(iq2);
+  // workout which distribution to use
+  bool soft1(false),soft2(false);
+  switch (_iopRem) {
+  case 0:
+    soft1 = rem1 || rem2;
+    soft2 = rem2 || rem1;
+    break;
+  case 1:
+    soft1 = rem1;
+    soft2 = rem2;
+    break;
+  }
+  // Initialization for the exponential ("soft") mass distribution.
+  static const int max_loop = 1000;
+  int counter = 0;
+  Energy Mc1 = ZERO, Mc2 = ZERO, m1=ZERO, m2=ZERO, m=ZERO;
+  bool toHadron(false), toDiQuark(false);
+  PPtr newPtr1 = PPtr(),newPtr2 = PPtr();
+  PDPtr diquark;
+  bool succeeded = false;
+  do {
+    succeeded = false;
+    ++counter;
+    drawNewFlavour(newPtr1,newPtr2);
+    // randomly pick which will be (anti)diquark and which a mesonic cluster
+    if(UseRandom::rndbool()) {
+      swap(iq1,iq2);
+      swap(rem1,rem2);
+    }
+    // check first order
+    if(cantMakeHadron(ptrQ[iq1], newPtr1) || cantMakeDiQuark(ptrQ[iq2], newPtr2)) {
+      swap(newPtr1,newPtr2);
+    }
+    // check again
+    if(cantMakeHadron(ptrQ[iq1], newPtr1) || cantMakeDiQuark(ptrQ[iq2], newPtr2)) {
+      throw Exception()
+	<< "ClusterFissioner cannot split the cluster ("
+	<< ptrQ[iq1]->PDGName() << ' ' << ptrQ[iq2]->PDGName()
+	<< ") into a hadron and diquark.\n" << Exception::runerror;
+    }
+    // Check that new clusters can produce particles and there is enough
+    // phase space to choose the drawn flavour
+    m1 = ptrQ[iq1]->data().constituentMass();
+    m2 = ptrQ[iq2]->data().constituentMass();
+    m  = newPtr1->data().constituentMass();
+    // Do not split in the case there is no phase space available
+    if(mmax <  m1+m + m2+m) continue;
+    // power for splitting
+    double exp1(_pSplitLight),exp2(_pSplitLight);
+    if     (CheckId::isExotic (ptrQ[iq1]->dataPtr())) exp1 = _pSplitExotic;
+    else if(CheckId::hasBottom(ptrQ[iq1]->dataPtr())) exp1 = _pSplitBottom;
+    else if(CheckId::hasCharm (ptrQ[iq1]->dataPtr())) exp1 = _pSplitCharm;
+
+    if     (CheckId::isExotic (ptrQ[iq2]->dataPtr())) exp2 = _pSplitExotic;
+    else if(CheckId::hasBottom(ptrQ[iq2]->dataPtr())) exp2 = _pSplitBottom;
+    else if(CheckId::hasCharm (ptrQ[iq2]->dataPtr())) exp2 = _pSplitCharm;
+
+    // If, during the drawing of candidate masses, too many attempts fail
+    // (because the phase space available is tiny)
+    /// \todo run separate loop here?
+    Mc1 = drawChildMass(mmax,m1,m2,m,exp1,soft1);
+    Mc2 = drawChildMass(mmax,m2,m1,m,exp2,soft2);
+    if(Mc1 < m1+m || Mc2 < m+m2 || Mc1+Mc2 > mmax) continue;
+    // check if need to force meson clster to hadron
+    toHadron = false;
+    if(Mc1 < _hadronsSelector->massLightestHadronPair(ptrQ[iq1]->dataPtr(), newPtr1->dataPtr())) {
+      Mc1 = _hadronsSelector->massLightestHadron(ptrQ[iq1]->dataPtr(), newPtr1->dataPtr());
+      toHadron = true;
+    }
+    // check if need to force diquark cluster to be on-shell
+    toDiQuark = false;
+    diquark = CheckId::makeDiquark(ptrQ[iq2]->dataPtr(), newPtr2->dataPtr());
+    if(Mc2 < diquark->constituentMass()) {
+      Mc2 = diquark->constituentMass();
+      toDiQuark = true;
+    }
+    // if a beam cluster not allowed to decay to hadrons
+    if(cluster->isBeamCluster() && toHadron && softUEisOn)
+      continue;
+    // Check if the decay kinematics is still possible: if not then
+    // force the one-hadron decay for the other cluster as well.
+    if(Mc1 + Mc2  >  mmax) {
+      if(!toHadron) {
+	Mc1 = _hadronsSelector->massLightestHadron(ptrQ[iq1]->dataPtr(), newPtr1->dataPtr()); 
+	toHadron = true;
+      }
+      else if(!toDiQuark) {
+	Mc2 = _hadronsSelector->massLightestHadron(ptrQ[iq2]->dataPtr(), newPtr2->dataPtr());
+	toDiQuark = true;
+      }
+    }
+    succeeded = (mmax >= Mc1+Mc2);
+  }
+  while (!succeeded && counter < max_loop);
+  // check no of tries
+  if(counter >= max_loop) return cutType();
+
+  // Determine the (5-components) momenta (all in the LAB frame)
+  Lorentz5Momentum p0Q1 = ptrQ[iq1]->momentum();
+  // to be determined
+  Lorentz5Momentum pClu1(Mc1), pClu2(Mc2), pQ1(m1), pQone(m), pQtwo(m), pQ2(m2);
+  calculateKinematics(pDiQuark,p0Q1,toHadron,toDiQuark,
+		      pClu1,pClu2,pQ1,pQone,pQtwo,pQ2);
+  // positions of the new clusters
+  LorentzPoint pos1,pos2;
+  Lorentz5Momentum pBaryon = pClu2+ptrQ[iother]->momentum();
+  calculatePositions(cluster->momentum(), cluster->vertex(), pClu1, pBaryon, pos1, pos2);
+  // first the mesonic cluster/meson
+  cutType rval;
+   if(toHadron) {
+     rval.first = produceHadron(ptrQ[iq1]->dataPtr(), newPtr1, pClu1, pos1);
+     finalhadrons.push_back(rval.first.first);
+   }
+   else {
+     rval.first = produceCluster(ptrQ[iq1], newPtr1, pClu1, pos1, pQ1, pQone, rem1);
+   }
+   if(toDiQuark) {
+     rem2 |= cluster->isBeamRemnant(iother);
+     PPtr newDiQuark = diquark->produceParticle(pClu2);
+     rval.second = produceCluster(newDiQuark, ptrQ[iother], pBaryon, pos2, pClu2,
+      				  ptrQ[iother]->momentum(), rem2);
+   }
+   else {
+     rval.second = produceCluster(ptrQ[iq2], newPtr2, pBaryon, pos2, pQ2, pQtwo, rem2,
+				  ptrQ[iother],cluster->isBeamRemnant(iother));
+   }
+   cluster->isAvailable(false);
+   return rval;
+}
+
 ClusterFissioner::PPair 
 ClusterFissioner::produceHadron(tcPDPtr ptrQ, tPPtr newPtr, 
 				const Lorentz5Momentum &a,
@@ -482,32 +665,28 @@ ClusterFissioner::produceHadron(tcPDPtr ptrQ, tPPtr newPtr,
   
   rval.second = newPtr;
   rval.first->set5Momentum(a);
-  rval.first->setLabVertex(b);
+  rval.first->setVertex(b);
   return rval;
 }
 
-ClusterFissioner::PPair ClusterFissioner::produceCluster(tPPtr & ptrQ,
-							 tPPtr newPtr,
-							 Lorentz5Momentum & a,
-				                         LorentzPoint & b, 
-							 Lorentz5Momentum & c,
-				                         Lorentz5Momentum & d, 
-							 bool isRem) const {
+ClusterFissioner::PPair ClusterFissioner::produceCluster(tPPtr ptrQ, tPPtr newPtr,
+							 const Lorentz5Momentum & a,
+				                         const LorentzPoint & b,
+							 const Lorentz5Momentum & c,
+				                         const Lorentz5Momentum & d,
+							 bool isRem,
+							 tPPtr spect, bool remSpect) const {
   PPair rval;
   rval.second = newPtr;
-  ClusterPtr cluster = new_ptr(Cluster(ptrQ,rval.second));
+  ClusterPtr cluster = !spect ? new_ptr(Cluster(ptrQ,rval.second)) : new_ptr(Cluster(ptrQ,rval.second,spect));
   rval.first = cluster;
-  rval.first->set5Momentum(a);
-  rval.first->setLabVertex(b);
-  if(cluster->particle(0)->id() == ptrQ->id()) {
-    cluster->particle(0)->set5Momentum(c);
-    cluster->particle(1)->set5Momentum(d);
-    cluster->setBeamRemnant(0,isRem);
-  } else {
-    cluster->particle(0)->set5Momentum(d);
-    cluster->particle(1)->set5Momentum(c);
-    cluster->setBeamRemnant(1,isRem);
-  }
+  cluster->set5Momentum(a);
+  cluster->setVertex(b);
+  assert(cluster->particle(0)->id() == ptrQ->id());
+  cluster->particle(0)->set5Momentum(c);
+  cluster->particle(1)->set5Momentum(d);
+  cluster->setBeamRemnant(0,isRem);
+  if(remSpect) cluster->setBeamRemnant(2,remSpect);
   return rval;
 }
 
@@ -697,8 +876,7 @@ void ClusterFissioner::calculatePositions(const Lorentz5Momentum & pClu,
 					  const Lorentz5Momentum & pClu1,
 					  const Lorentz5Momentum & pClu2,
 					  LorentzPoint & positionClu1,
-					  LorentzPoint & positionClu2) const 
-{
+					  LorentzPoint & positionClu2) const {
   // Determine positions of cluster children.
   // See Marc Smith's thesis, page 127, formulas (4.122) and (4.123).
   Energy Mclu  = pClu.m();

@@ -296,7 +296,7 @@ public:
    * Return an ordering identifier for the current subprocess and
    * colour absis tensor index.
    */
-  const vector<vector<size_t> >& colourOrdering(size_t id) const;
+  const set<vector<size_t> >& colourOrdering(size_t id) const;
 
   //@}
 
@@ -411,6 +411,12 @@ public:
   virtual bool isDR() const { return false; }
 
   /**
+   * Return true, if the amplitude is DRbar renormalized, otherwise
+   * MSbar is assumed.
+   */
+  virtual bool isDRbar() const { return true; }
+
+  /**
    * Return true, if one loop corrections are given in the conventions
    * of the integrated dipoles.
    */
@@ -514,6 +520,25 @@ public:
 
 // If needed, insert declarations of virtual function defined in the
 // InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
+  //@}
 
 private:
 

@@ -203,8 +203,7 @@ void ClusterDecayer::decay(const ClusterVector & clusters, tPVector & finalhadro
 }
 
 
-pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr) 
-  {
+pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr) {
   using Constants::pi;
   using Constants::twopi;
   // To decay the cluster into two hadrons one must distinguish between
@@ -428,8 +427,8 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr)
     LorentzPoint positionHad1 = LorentzPoint();
     LorentzPoint positionHad2 = LorentzPoint();
     calculatePositions(pClu, ptr->vertex(), pHad1, pHad2, positionHad1, positionHad2);
-    ptrHad1->setLabVertex(positionHad1);
-    ptrHad2->setLabVertex(positionHad2);
+    ptrHad1->setVertex(positionHad1);
+    ptrHad2->setVertex(positionHad2);
   }
   return pair<PPtr,PPtr>(ptrHad1,ptrHad2);
 }
@@ -441,36 +440,30 @@ calculatePositions(const Lorentz5Momentum &pClu,
 		   const Lorentz5Momentum &, 
 		   const Lorentz5Momentum &, 
 		   LorentzPoint &positionHad1, 
-		   LorentzPoint &positionHad2 ) const 
-{
+		   LorentzPoint &positionHad2 ) const {
   // First, determine the relative positions of the children hadrons
   // with respect to their parent cluster, in the cluster reference frame,
   // assuming gaussian smearing with width inversely proportional to the 
   // parent cluster mass.
   Length smearingWidth = hbarc / pClu.m();
-  LorentzDistance distanceHad1, distanceHad2;
+  LorentzDistance distanceHad[2];
   for ( int i = 0; i < 2; i++ ) {   // i==0 is the first hadron; i==1 is the second one
-    for ( int j = 0; j < 4; j++ ) {  // the four components of the LorentzDistance
-      double delta;
-      while ( ! Smearing::gaussianSmearing( 0.0, smearingWidth/mm, delta ) ) { }
-      if ( i == 0 ) {
-	// DGRELL fudge!
-	distanceHad1 = LorentzDistance(0*mm,0*mm,delta*mm,0*mm);
-      } else {
-	distanceHad2 = LorentzDistance(0*mm,0*mm,delta*mm,0*mm);	
-      }
+    double delta[4]={0.,0.,0.,0.};
+    // smearing of the four components of the LorentzDistance
+    for ( int j = 0; j < 4; j++ ) {
+      while ( ! Smearing::gaussianSmearing( 0.0, smearingWidth/femtometer, delta[j] ) ) { }
     }
+    // set the distance
+    delta[0] = abs(delta[0]) +sqrt(sqr(delta[1])+sqr(delta[2])+sqr(delta[3]));
+    distanceHad[i] = LorentzVector<double>(delta[1],delta[2],delta[3],delta[0])*femtometer;
+    // Boost such relative positions of the children hadrons,
+    // with respect to their parent cluster,
+    // from the cluster reference frame to the Lab frame.
+    distanceHad[i].boost(pClu.boostVector());
   }
-  // Then, boost such relative positions of the children hadrons,
-  // with respect to their parent cluster,
-  // from the cluster reference frame to the Lab frame.
-  distanceHad1.boost(pClu.boostVector()); 
-  distanceHad2.boost(pClu.boostVector());  
-
   // Finally, determine the absolute positions of the children hadrons
   // in the Lab frame.
-  positionHad1 = distanceHad1 + positionClu;
-  positionHad2 = distanceHad2 + positionClu;
-
+  positionHad1 = distanceHad[0] + positionClu;
+  positionHad2 = distanceHad[1] + positionClu;
 }
 

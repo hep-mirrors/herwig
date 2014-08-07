@@ -428,7 +428,7 @@ protected:
   /**
    *  Access the potential branchings
    */
-  vector<IdList> particles() const { return particles_; }
+  const vector<IdList> & particles() const { return particles_; }
 
   /**
    * For a particle which came from the hard process get the spin density and
@@ -489,7 +489,7 @@ public:
   /**
    *  Calculate the virtual masses for a branchings
    */
-  vector<Energy> virtualMasses(const IdList & ids);
+  const vector<Energy> & virtualMasses(const IdList & ids);
   //@}
 
   /**

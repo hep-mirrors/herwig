@@ -20,48 +20,33 @@
 using namespace Herwig;
 
 void Decay_QTildeShowerKinematics1to2::
-updateChildren(const tShowerParticlePtr theParent, 
-	       const ShowerParticleVector & theChildren,
-	       bool angularOrder ) const {
-  if(theChildren.size() != 2)
-    throw Exception() <<  "Decay_QTildeShowerKinematics1to2::updateChildren() " 
- 		      << "Warning! too many children!" << Exception::eventerror;
-  // copy scales etc
-  Energy dqtilde = scale();
-  double dz = z(); 
-  double dphi = phi();
-  // set the values
-  // if(theParent->showerParameters().alpha==0.0) {
-  //   theParent->showerParameters().alpha=1.;
-  // }
-  if(angularOrder) {
-    theChildren[0]->setEvolutionScale(        dqtilde);
-    theChildren[1]->setEvolutionScale((1.-dz)*dqtilde);
-  }
-  else {
-    theChildren[0]->setEvolutionScale(        dqtilde);
-    theChildren[1]->setEvolutionScale(        dqtilde);
-  }
+updateChildren(const tShowerParticlePtr parent, 
+	       const ShowerParticleVector & children,
+	       ShowerPartnerType::Type partnerType) const {
+  assert(children.size() == 2);
+  // calculate the scales
+  splittingFn()->evaluateDecayScales(partnerType,scale(),z(),parent,
+				     children[0],children[1]);
   // determine alphas of children according to interpretation of z
-  const ShowerParticle::Parameters & parent = theParent->showerParameters();
-  ShowerParticle::Parameters & child0 = theChildren[0]->showerParameters();
-  ShowerParticle::Parameters & child1 = theChildren[1]->showerParameters();
-  child0.alpha =     dz  * parent.alpha; 
-  child1.alpha = (1.-dz) * parent.alpha;
+  const ShowerParticle::Parameters & params = parent->showerParameters();
+  ShowerParticle::Parameters & child0 = children[0]->showerParameters();
+  ShowerParticle::Parameters & child1 = children[1]->showerParameters();
+  child0.alpha =     z()  * params.alpha; 
+  child1.alpha = (1.-z()) * params.alpha;
 
-  child0.ptx =  pT() * cos(dphi) +     dz  * parent.ptx;
-  child0.pty =  pT() * sin(dphi) +     dz  * parent.pty;
+  child0.ptx =  pT() * cos(phi()) +     z()* params.ptx;
+  child0.pty =  pT() * sin(phi()) +     z()* params.pty;
   child0.pt  = sqrt( sqr(child0.ptx) + sqr(child0.pty) );
 
-  child1.ptx = -pT() * cos(dphi) + (1.-dz) * parent.ptx;
-  child1.pty = -pT() * sin(dphi) + (1.-dz) * parent.pty;
+  child1.ptx = -pT() * cos(phi()) + (1.-z()) * params.ptx;
+  child1.pty = -pT() * sin(phi()) + (1.-z()) * params.pty;
   child1.pt  = sqrt( sqr(child1.ptx) + sqr(child1.pty) );
 
   // set up the colour connections
-  splittingFn()->colourConnection(theParent,theChildren[0],theChildren[1],false);
+  splittingFn()->colourConnection(parent,children[0],children[1],partnerType,false);
   // make the products children of the parent
-  theParent->addChild(theChildren[0]);
-  theParent->addChild(theChildren[1]);
+  parent->addChild(children[0]);
+  parent->addChild(children[1]);
 }
 
 void Decay_QTildeShowerKinematics1to2::
@@ -97,7 +82,7 @@ void Decay_QTildeShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr
     ShowerParticlePtr partner=particle.partner();
     Lorentz5Momentum ppartner(partner->momentum());
     // reomved to make inverse recon work properly
-    //if(partner->getThePEGBase()) ppartner=partner->getThePEGBase()->momentum();
+    //if(partner->thePEGBase()) ppartner=partner->thePEGBase()->momentum();
     pcm=ppartner;
     Boost boost(p.findBoostToCM());
     pcm.boost(boost);

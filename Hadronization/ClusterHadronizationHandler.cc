@@ -15,6 +15,7 @@
 #include <ThePEG/Interface/ClassDocumentation.h>
 #include <ThePEG/Persistency/PersistentOStream.h>
 #include <ThePEG/Persistency/PersistentIStream.h>
+#include <ThePEG/Interface/Switch.h> 
 #include <ThePEG/Interface/Parameter.h> 
 #include <ThePEG/Interface/Reference.h>
 #include <ThePEG/Handlers/EventHandler.h>
@@ -47,28 +48,18 @@ IBPtr ClusterHadronizationHandler::fullclone() const {
 
 void ClusterHadronizationHandler::persistentOutput(PersistentOStream & os) 
   const {
-  os << _partonSplitter 
-     << _clusterFinder
-     << _colourReconnector
-     << _clusterFissioner
-     << _lightClusterDecayer
-     << _clusterDecayer
-     << ounit(_minVirtuality2,GeV2)
-     << ounit(_maxDisplacement,mm)
-     << _underlyingEventHandler;
+  os << _partonSplitter << _clusterFinder << _colourReconnector
+     << _clusterFissioner << _lightClusterDecayer << _clusterDecayer
+     << ounit(_minVirtuality2,GeV2) << ounit(_maxDisplacement,mm)
+     << _underlyingEventHandler << _reduceToTwoComponents;
 }
 
 
 void ClusterHadronizationHandler::persistentInput(PersistentIStream & is, int) {
-  is >> _partonSplitter 
-     >> _clusterFinder
-     >> _colourReconnector
-     >> _clusterFissioner
-     >> _lightClusterDecayer
-     >> _clusterDecayer
-     >> iunit(_minVirtuality2,GeV2)
-     >> iunit(_maxDisplacement,mm)
-     >> _underlyingEventHandler;
+  is >> _partonSplitter >> _clusterFinder >> _colourReconnector
+     >> _clusterFissioner >> _lightClusterDecayer >> _clusterDecayer
+     >> iunit(_minVirtuality2,GeV2) >> iunit(_maxDisplacement,mm)
+     >> _underlyingEventHandler >> _reduceToTwoComponents;
 }
 
 
@@ -138,6 +129,23 @@ void ClusterHadronizationHandler::Init() {
      "Pointer to the handler for the Underlying Event. "
      "Set to NULL to disable.",
      &ClusterHadronizationHandler::_underlyingEventHandler, false, false, true, true, false);
+
+   static Switch<ClusterHadronizationHandler,bool> interfaceReduceToTwoComponents
+    ("ReduceToTwoComponents",
+     "Whether or not to reduce three component baryon-number violating clusters to two components before cluster splitting or leave"
+     " this till after the cluster splitting",
+     &ClusterHadronizationHandler::_reduceToTwoComponents, true, false, false);
+  static SwitchOption interfaceReduceToTwoComponentsYes
+    (interfaceReduceToTwoComponents,
+     "BeforeSplitting",
+     "Reduce to two components",
+     true);
+  static SwitchOption interfaceReduceToTwoComponentsNo
+    (interfaceReduceToTwoComponents,
+     "AfterSplitting",
+     "Treat as three components",
+     false);
+
 }
 
 namespace {
@@ -164,13 +172,15 @@ handle(EventHandler & ch, const tPVector & tagged,
   for(unsigned int ix=0;ix<currentlist.size();++ix) {
     if(currentlist[ix]->scale()<Q02) currentlist[ix]->scale(Q02);
   }
+
   // split the gluons
   _partonSplitter->split(currentlist);
   // form the clusters
   ClusterVector clusters =
     _clusterFinder->formClusters(currentlist);
-
-  _clusterFinder->reduceToTwoComponents(clusters); 
+  // reduce BV clusters to two components now if needed
+  if(_reduceToTwoComponents)
+    _clusterFinder->reduceToTwoComponents(clusters);
 
   // perform colour reconnection if needed and then
   // decay the clusters into one hadron
@@ -179,7 +189,6 @@ handle(EventHandler & ch, const tPVector & tagged,
   const ClusterVector savedclusters = clusters;
   tPVector finalHadrons; // only needed for partonic decayer
   while (!lightOK && tried++ < 10) {
-
     // no colour reconnection with baryon-number-violating (BV) clusters
     ClusterVector CRclusters, BVclusters;
     CRclusters.reserve( clusters.size() );
@@ -211,6 +220,10 @@ handle(EventHandler & ch, const tPVector & tagged,
     // fission of heavy clusters
     // NB: during cluster fission, light hadrons might be produced straight away
     finalHadrons = _clusterFissioner->fission(clusters,isSoftUnderlyingEventON());
+
+    // if clusters not previously reduced to two components do it now
+    if(!_reduceToTwoComponents)
+      _clusterFinder->reduceToTwoComponents(clusters);
 
     lightOK = _lightClusterDecayer->decay(clusters,finalHadrons);
 
@@ -265,44 +278,6 @@ handle(EventHandler & ch, const tPVector & tagged,
   if (isSoftUnderlyingEventON()) {
     assert(_underlyingEventHandler);
     ch.performStep(_underlyingEventHandler,Hint::Default());
-  }
-  // calculate positions
-  // extract all particles from the event
-  tEventPtr event=ch.currentEvent();
-  vector<tPPtr> particles;
-  particles.reserve(256);
-  event->select(back_inserter(particles), ThePEG::AllSelector());
-  for(vector<tPPtr>::const_iterator pit=particles.begin();
-      pit!=particles.end(); ++pit) {
-    if ((**pit).parents().empty()) 
-      continue;
-    tPPtr parent = (**pit).parents()[0];
-    // fudged fix for the shower's technical vertices:
-    // make lifelength for 1-1 vertices zero
-    // \todo sort out shower inserted vertices properly
-    if ( (**pit).id() == parent->id() 
-	 && (**pit).parents().size() == 1
-	 && parent->children().size() == 1 ) {
-      parent->setLifeLength(LorentzDistance());
-      // ??? (**pit).setVertex( parent->vertex() );
-    }
-    // fix the vertex position for particles from clusters
-    bool inClusters = false;
-    bool newVertex  = false;
-    // iterate up the ancestry to find the origin of the parent cluster
-    while( !parent->parents().empty() ) {
-      bool parentIsCluster = parent->id() == ParticleID::Cluster;
-      if ( !inClusters && parentIsCluster ) {
-	inClusters = true;
-      }
-      else if ( inClusters && !parentIsCluster ) {
-	newVertex = true;
-	break;
-      }
-      parent = parent->parents()[0]; 
-    }
-    // parent is now the ancestor of the cluster chain
-    if ( newVertex ) (**pit).setVertex( parent->vertex() );
   }
 }
 

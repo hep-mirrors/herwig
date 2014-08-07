@@ -303,6 +303,41 @@ private:
    */
   bool prepared;
 
+  /**
+   * The vertices to be excluded.
+   */
+  VertexVector theExcludeVertices;
+
+  /**
+   * Minimal and maximal occurences of spacelike internal lines
+   */
+  map<tcPDPtr,pair<int,int> > spaceLikeAllowed;
+
+  /**
+   * Minimal and maximal occurences of timelike internal lines
+   */
+  map<tcPDPtr,pair<int,int> > timeLikeAllowed;
+
+  /**
+   * The next particle for which internal lines need to be restricted
+   */
+  PDVector theRestrictLines;
+
+  /**
+   * Command to set an allowed range of spacelike internal lines
+   */
+  string doSpaceLikeRange(string);
+
+  /**
+   * Command to set an allowed range of timelike internal lines
+   */
+  string doTimeLikeRange(string);
+
+  /**
+   * Command to clear the restrict lines container
+   */
+  string doClearRestrictLines(string);
+
 private:
 
   /**

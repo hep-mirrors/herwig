@@ -93,8 +93,8 @@ HardTreePtr SMTopPOWHEGDecayer::generateHardest(ShowerTreePtr tree) {
 
   // if no emission return
   if(momenta.empty()) {
-    topProgenitor->maximumpT(pTmin_);
-    bProgenitor  ->maximumpT(pTmin_);    
+    topProgenitor->maximumpT(pTmin_,ShowerInteraction::QCD);
+    bProgenitor  ->maximumpT(pTmin_,ShowerInteraction::QCD);    
     return HardTreePtr();
   }
   
@@ -141,6 +141,9 @@ HardTreePtr SMTopPOWHEGDecayer::generateHardest(ShowerTreePtr tree) {
   emitterBranch->addChild(new_ptr(HardBranching(gauge,SudakovPtr(),
 						HardBranchingPtr(),
 						HardBranching::Outgoing)));
+  emitterBranch->type(emitterBranch->branchingParticle()->id()>0 ? 
+		      ShowerPartnerType::QCDColourLine : 
+		      ShowerPartnerType::QCDAntiColourLine);
   allBranchings.push_back(spaceBranchings[0]);
   allBranchings.push_back(emitterBranch);
   allBranchings.push_back(spectatorBranch);
@@ -148,8 +151,8 @@ HardTreePtr SMTopPOWHEGDecayer::generateHardest(ShowerTreePtr tree) {
   HardTreePtr hardtree = new_ptr(HardTree(allBranchings,spaceBranchings,
 					  ShowerInteraction::QCD));
   // Set the maximum pt for all other emissions
-  topProgenitor->maximumpT(pT_);
-  bProgenitor  ->maximumpT(pT_);
+  topProgenitor->maximumpT(pT_,ShowerInteraction::QCD);
+  bProgenitor  ->maximumpT(pT_,ShowerInteraction::QCD);
   // Connect the particles with the branchings in the HardTree
   hardtree->connect( topProgenitor->progenitor(), spaceBranchings[0] );
   hardtree->connect(   bProgenitor->progenitor(),   allBranchings[1] );

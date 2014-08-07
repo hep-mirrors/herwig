@@ -1009,6 +1009,46 @@ void SubtractionDipole::logGenerateRadiationKinematics(const double * r) const {
 
 }
 
+void SubtractionDipole::doinit() {
+  MEBase::doinit();
+  if ( underlyingBornME() ) {
+    theUnderlyingBornME->init();
+  }
+  if ( realEmissionME() ) {
+    theRealEmissionME->init();
+  }
+  if ( tildeKinematics() ) {
+    theTildeKinematics->init();
+  }
+  if ( invertedTildeKinematics() ) {
+    theInvertedTildeKinematics->init();
+  }
+  for ( vector<Ptr<MatchboxReweightBase>::ptr>::iterator rw =
+	  theReweights.begin(); rw != theReweights.end(); ++rw ) {
+    (**rw).init();
+  }
+}
+
+void SubtractionDipole::doinitrun() {
+  MEBase::doinitrun();
+  if ( underlyingBornME() ) {
+    theUnderlyingBornME->initrun();
+  }
+  if ( realEmissionME() ) {
+    theRealEmissionME->initrun();
+  }
+  if ( tildeKinematics() ) {
+    theTildeKinematics->initrun();
+  }
+  if ( invertedTildeKinematics() ) {
+    theInvertedTildeKinematics->initrun();
+  }
+  for ( vector<Ptr<MatchboxReweightBase>::ptr>::iterator rw =
+	  theReweights.begin(); rw != theReweights.end(); ++rw ) {
+    (**rw).initrun();
+  }
+}
+
 void SubtractionDipole::cloneDependencies(const std::string& prefix) {
 
   if ( underlyingBornME() ) {

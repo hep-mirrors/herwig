@@ -471,6 +471,12 @@ public:
   virtual bool onlyOneLoop() const;
 
   /**
+   * Return true, if the amplitude is DRbar renormalized, otherwise
+   * MSbar is assumed.
+   */
+  virtual bool isDRbar() const;
+
+  /**
    * Return true, if one loop corrections have been calculated in
    * dimensional reduction. Otherwise conventional dimensional
    * regularization is assumed. Note that renormalization is always
@@ -881,6 +887,12 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit();
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
 
   /**
    * Finalize this object. Called in the run phase just after a

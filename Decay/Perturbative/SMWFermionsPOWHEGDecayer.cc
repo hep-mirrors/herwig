@@ -91,8 +91,8 @@ generateHardest(ShowerTreePtr tree) {
   // Generate emission and set _quark[0,1] and _gauge to be the 
   // momenta of q, qbar and g after the hardest emission:
   if(!getEvent(hardProcess)) {
-    QProgenitor   ->maximumpT(pTmin_);
-    QbarProgenitor->maximumpT(pTmin_);
+    QProgenitor   ->maximumpT(pTmin_,ShowerInteraction::QCD);
+    QbarProgenitor->maximumpT(pTmin_,ShowerInteraction::QCD);
     return HardTreePtr();
   }
   // Ensure the energies are greater than the constituent masses:
@@ -139,6 +139,9 @@ generateHardest(ShowerTreePtr tree) {
   emitterBranch->addChild(new_ptr(HardBranching(gauge,SudakovPtr(),
 						HardBranchingPtr(),
 						HardBranching::Outgoing)));
+  emitterBranch->type(emitterBranch->branchingParticle()->id()>0 ? 
+		      ShowerPartnerType::QCDColourLine : 
+		      ShowerPartnerType::QCDAntiColourLine);
   allBranchings.push_back(emitterBranch);
   allBranchings.push_back(spectatorBranch);
   if(iemitter==1) swap(allBranchings[0],allBranchings[1]);
@@ -149,8 +152,8 @@ generateHardest(ShowerTreePtr tree) {
 					   ShowerInteraction::QCD));
   // Set the maximum pt for all other emissions
   Energy ptveto(pT_);
-  QProgenitor   ->maximumpT(ptveto);
-  QbarProgenitor->maximumpT(ptveto);
+  QProgenitor   ->maximumpT(ptveto,ShowerInteraction::QCD);
+  QbarProgenitor->maximumpT(ptveto,ShowerInteraction::QCD);
   // Connect the particles with the branchings in the HardTree
   hardtree->connect( QProgenitor->progenitor()   , allBranchings[0] );
   hardtree->connect( QbarProgenitor->progenitor(), allBranchings[1] );

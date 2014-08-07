@@ -58,6 +58,8 @@ void ShowerHandler::doinit() {
 
   // \todo DG: Disabled here because of momentum-violation problems
   //  ShowerTree::_decayInShower = particlesDecayInShower_;
+  ShowerTree::_vmin2 = vMin_;
+  ShowerTree::_spaceTime = includeSpaceTime_;
 }
 
 IBPtr ShowerHandler::clone() const {
@@ -70,7 +72,8 @@ IBPtr ShowerHandler::fullclone() const {
 
 ShowerHandler::ShowerHandler() : 
   pdfFreezingScale_(2.5*GeV),
-  maxtry_(10),maxtryMPI_(10),maxtryDP_(10), subProcess_() {
+  maxtry_(10),maxtryMPI_(10),maxtryDP_(10),
+  includeSpaceTime_(false), vMin_(0.1*GeV2), subProcess_() {
   inputparticlesDecayInShower_.push_back( 6  ); //  top 
   inputparticlesDecayInShower_.push_back( 23 ); // Z0
   inputparticlesDecayInShower_.push_back( 24 ); // W+/-
@@ -88,6 +91,8 @@ void ShowerHandler::doinitrun(){
   // \todo DG: Disabled here because of momentum-violation problems
   // Must set pre-cascade-handler to NewPhysics/DecayHandler instead
   //  ShowerTree::_decayInShower = particlesDecayInShower_;
+  ShowerTree::_vmin2 = vMin_;
+  ShowerTree::_spaceTime = includeSpaceTime_;
 }
 
 void ShowerHandler::dofinish(){
@@ -98,13 +103,15 @@ void ShowerHandler::dofinish(){
 void ShowerHandler::persistentOutput(PersistentOStream & os) const {
   os << evolver_ << remDec_ << ounit(pdfFreezingScale_,GeV) << maxtry_ 
      << maxtryMPI_ << maxtryDP_ << inputparticlesDecayInShower_
-     << particlesDecayInShower_ << MPIHandler_ << PDFA_ << PDFB_;
+     << particlesDecayInShower_ << MPIHandler_ << PDFA_ << PDFB_
+     << includeSpaceTime_ << ounit(vMin_,GeV2);
 }
 
 void ShowerHandler::persistentInput(PersistentIStream & is, int) {
   is >> evolver_ >> remDec_ >> iunit(pdfFreezingScale_,GeV) >> maxtry_ 
      >> maxtryMPI_ >> maxtryDP_ >> inputparticlesDecayInShower_
-     >> particlesDecayInShower_ >> MPIHandler_ >> PDFA_ >> PDFB_;  
+     >> particlesDecayInShower_ >> MPIHandler_ >> PDFA_ >> PDFB_
+     >> includeSpaceTime_ >> iunit(vMin_,GeV2);
 }
 
 void ShowerHandler::Init() {
@@ -191,7 +198,28 @@ void ShowerHandler::Init() {
     ("PDFB",
      "The PDF for beam particle B. Overrides the particle's own PDF setting.",
      &ShowerHandler::PDFB_, false, false, true, true, false);
+
+  static Switch<ShowerHandler,bool> interfaceIncludeSpaceTime
+    ("IncludeSpaceTime",
+     "Whether to include the model for the calculation of space-time distances",
+     &ShowerHandler::includeSpaceTime_, false, false, false);
+  static SwitchOption interfaceIncludeSpaceTimeYes
+    (interfaceIncludeSpaceTime,
+     "Yes",
+     "Include the model",
+     true);
+  static SwitchOption interfaceIncludeSpaceTimeNo
+    (interfaceIncludeSpaceTime,
+     "No",
+     "Only include the displacement from the particle-s lifetime for decaying particles",
+     false);
   
+  static Parameter<ShowerHandler,Energy2> interfaceMinimumVirtuality
+    ("MinimumVirtuality",
+     "The minimum virtuality for the space-time model",
+     &ShowerHandler::vMin_, GeV2, 0.1*GeV2, 0.0*GeV2, 1000.0*GeV2,
+     false, false, Interface::limited);
+
 }
 
 void ShowerHandler::cascade() {
@@ -733,3 +761,4 @@ bool ShowerHandler::isResolvedHadron(tPPtr particle) {
 HardTreePtr ShowerHandler::generateCKKW(ShowerTreePtr ) const {
   return HardTreePtr();
 }
+

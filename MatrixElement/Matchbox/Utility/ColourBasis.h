@@ -103,9 +103,9 @@ public:
    * sensible results for colour bases which implement the basisList
    * query.
    */
-  const vector<vector<size_t> >& ordering(const cPDVector& sub, 
-					  const map<size_t,size_t>& colourToAmplitude,
-					  size_t tensorId);
+  const set<vector<size_t> >& ordering(const cPDVector& sub, 
+				       const map<size_t,size_t>& colourToAmplitude,
+				       size_t tensorId);
 
   /**
    * For the given subprocess and amplitude vectors
@@ -459,12 +459,12 @@ private:
   /**
    * Store ordering identifiers
    */
-  map<vector<PDT::Colour>,map<map<size_t,size_t>,map<size_t,string> > > theOrderingStringIdentifiers;
+  map<cPDVector,map<size_t,string> > theOrderingStringIdentifiers;
 
   /**
    * Store ordering identifiers
    */
-  map<vector<PDT::Colour>,map<map<size_t,size_t>,map<size_t,vector<vector<size_t> > > > > theOrderingIdentifiers;
+  map<cPDVector,map<size_t,set<vector<size_t> > > > theOrderingIdentifiers;
 
   /**
    * Write out yet unknown basis computations.

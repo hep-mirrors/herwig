@@ -25,6 +25,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8914702
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1093738
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_PHOTONJETS
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_PHOTONJETUE
+# CMS
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1258128
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'

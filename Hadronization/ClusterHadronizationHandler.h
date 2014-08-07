@@ -58,7 +58,8 @@ public:
    * The default constructor.
    */
   ClusterHadronizationHandler() 
-  : _minVirtuality2( 0.1*GeV2 ), _maxDisplacement( 1.0e-10*mm )
+    : _minVirtuality2( 0.1*GeV2 ), _maxDisplacement( 1.0e-10*mm ), 
+      _reduceToTwoComponents(true)
   {}
 
   //@}
@@ -197,6 +198,11 @@ private:
    * The pointer to the Underlying Event handler. 
    */
   StepHdlPtr _underlyingEventHandler;
+
+  /**
+   *  How to handle baryon-number clusters
+   */
+  bool _reduceToTwoComponents;
 
   /**
    * Tag the constituents of the clusters as their parents

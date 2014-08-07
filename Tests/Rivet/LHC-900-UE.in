@@ -71,10 +71,11 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2012_I1181770
 # ATLAS inelastic cross section
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I894867
 # underlying event forward rapidities
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_PAS_FWD_11_003
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1218372
 # ATLAS two particle correlation
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1094061
-
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1094061
+# ATLAS correlations
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1093734
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################

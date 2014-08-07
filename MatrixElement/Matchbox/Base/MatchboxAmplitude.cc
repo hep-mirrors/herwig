@@ -46,6 +46,18 @@ void MatchboxAmplitude::persistentInput(PersistentIStream & is, int) {
   lastMatchboxXComb(theLastXComb);
 }
 
+void MatchboxAmplitude::doinit() {
+  Amplitude::doinit();
+  if ( colourBasis() )
+    colourBasis()->init();
+}
+
+void MatchboxAmplitude::doinitrun() {
+  Amplitude::doinitrun();
+  if ( colourBasis() )
+    colourBasis()->initrun();
+}
+
 void MatchboxAmplitude::cloneDependencies(const std::string&) {}
 
 Ptr<MatchboxMEBase>::ptr MatchboxAmplitude::makeME(const PDVector&) const {
@@ -334,9 +346,9 @@ const string& MatchboxAmplitude::colourOrderingString(size_t id) const {
 
 }
 
-const vector<vector<size_t> >& MatchboxAmplitude::colourOrdering(size_t id) const {
+const set<vector<size_t> >& MatchboxAmplitude::colourOrdering(size_t id) const {
 
-  static vector<vector<size_t> > empty;
+  static set<vector<size_t> > empty;
   if ( !colourBasis() ) {
     return empty;
   }

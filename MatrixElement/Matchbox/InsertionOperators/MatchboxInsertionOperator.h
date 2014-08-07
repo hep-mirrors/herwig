@@ -91,6 +91,11 @@ public:
   //@{
 
   /**
+   * Change from MSbar to DRbar
+   */
+  virtual void useDRbar() { theUseDRbar = true; }
+
+  /**
    * Change from CDR to DR
    */
   virtual void useDR() { theUseDR = true; }
@@ -114,6 +119,12 @@ public:
    * Change to the Expanded conventions
    */
   virtual void useExpanded() { theUseExpanded = true; }
+
+  /**
+   * Return true, if the amplitude is DRbar renormalized, otherwise
+   * MSbar is assumed.
+   */
+  virtual bool isDRbar() const { return theUseDRbar; }
 
   /**
    * Return true, if this virtual correction
@@ -226,6 +237,11 @@ public:
 // InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
 
 private:
+
+  /**
+   * Change from MSbar to DRbar
+   */
+  bool theUseDRbar;
 
   /**
    * True, if this virtual correction

@@ -86,9 +86,18 @@ Cluster::Cluster(tPPtr p1, tPPtr p2, tPPtr p3)
     else
       _id = 10*abs(p1->id()) + abs(p2->id());
   }
+  // calculate the momentum
   calculateP();
-  calculateX();
-
+  // calculate the position
+  // Only in the case of two components we have a definition of cluster
+  // position in terms of the two components.
+  if ( _numComp != 2 ) {
+    // take the average
+    setVertex(LorentzPoint());
+  }
+  else {
+    setVertex(calculateX(_component[0],_component[1]));
+  }
 }    
 
 Cluster::Cluster(tcEventPDPtr x) 
@@ -134,65 +143,64 @@ void Cluster::calculateP() {
 }
 
 
-void Cluster::calculateX() {
-  if ( _numComp != 2 ) {
-    // Only in the case of two components we have a definition of cluster
-    // position in terms of the two components.
-    setVertex(LorentzPoint());
-  } else {
-    // Get the needed parameters. 
-    Energy2 vmin2 
-      = ClusterHadronizationHandler::currentHandler()->minVirtuality2();
-    Length dmax 
-      = ClusterHadronizationHandler::currentHandler()->maxDisplacement();
-    
-    // Get the positions and displacements of the two components (Lab frame).
-    LorentzPoint pos1 = _component[0]->vertex();
-    Lorentz5Momentum p1 = _component[0]->momentum();
-    LorentzDistance displace1 = -log( UseRandom::rnd() ) * 
-      hbarc * p1 * (1 / sqrt(sqr(p1.m2() - p1.mass2()) + sqr(vmin2)));
-    if ( abs( displace1.m() ) > dmax ) {
-      displace1 *= dmax / abs( displace1.m() );
+LorentzPoint Cluster::calculateX(tPPtr q1, tPPtr q2) {
+  // Get the needed parameters. 
+  Energy2 vmin2 
+    = ClusterHadronizationHandler::currentHandler()->minVirtuality2();
+  Length dmax 
+    = ClusterHadronizationHandler::currentHandler()->maxDisplacement();
+  
+  // Get the positions and displacements of the two components (Lab frame).
+  LorentzPoint pos1 = q1->vertex();
+  Lorentz5Momentum p1 = q1->momentum();
+  LorentzDistance displace1 = -log( UseRandom::rnd() ) * 
+    hbarc * p1 * (1 / sqrt(sqr(p1.m2() - p1.mass2()) + sqr(vmin2)));
+  if ( abs( displace1.m() ) > dmax ) {
+    displace1 *= dmax / abs( displace1.m() );
+  }
+  LorentzPoint pos2 = q2->vertex();
+  Lorentz5Momentum p2 = q2->momentum();
+  LorentzDistance displace2 = -log( UseRandom::rnd() ) * 
+    hbarc * p2 * (1 / sqrt(sqr(p2.m2() - p2.mass2()) + sqr(vmin2)));
+  if ( abs( displace2.m() ) > dmax ) {
+    displace2 *= dmax / abs( displace2.m() );
+  }
+  double s1 = 0.0, s2 = 0.0;
+  Lorentz5Momentum pcl = p1 + p2;
+  if ( abs( pcl.vect().dot( displace1.vect() ) ) > 1.0e-20*MeV*mm  &&
+       abs( pcl.vect().dot( displace2.vect() ) ) > 1.0e-20*MeV*mm  ) {
+    // The displacement with the smallest projection along pcl.vect()
+    // is scaled up such that both displacements have equal projections
+    // along pcl.vect().
+    double ratio = ( abs( pcl.vect().dot( displace1.vect() ) ) / 
+		     abs( pcl.vect().dot( displace2.vect() ) ) );
+    if ( pcl.vect().dot(displace1.vect()) * 
+	 pcl.vect().dot(displace2.vect())  <  0.0*sqr(MeV*mm) ) {
+      ratio *= -1;
     }
-    LorentzPoint pos2 = _component[1]->vertex();
-    Lorentz5Momentum p2 = _component[1]->momentum();
-    LorentzDistance displace2 = -log( UseRandom::rnd() ) * 
-      hbarc * p2 * (1 / sqrt(sqr(p2.m2() - p2.mass2()) + sqr(vmin2)));
-    if ( abs( displace2.m() ) > dmax ) {
-      displace2 *= dmax / abs( displace2.m() );
+    if ( abs( ratio ) > 1.0 ) {
+      displace2 *= ratio;
+    } else {
+      displace1 *= ratio;
     }
-    double s1 = 0.0, s2 = 0.0;
-    Lorentz5Momentum pcl = p1 + p2;
-    if ( abs( pcl.vect().dot( displace1.vect() ) ) > 1.0e-20*MeV*mm  &&
-	 abs( pcl.vect().dot( displace2.vect() ) ) > 1.0e-20*MeV*mm  ) {
-      // The displacement with the smallest projection along pcl.vect()
-      // is scaled up such that both displacements have equal projections
-      // along pcl.vect().
-      double ratio = ( abs( pcl.vect().dot( displace1.vect() ) ) / 
-		       abs( pcl.vect().dot( displace2.vect() ) ) );
-      if ( pcl.vect().dot(displace1.vect()) * 
-	   pcl.vect().dot(displace2.vect())  <  0.0*sqr(MeV*mm) ) {
-	ratio *= -1;
-      }
-      if ( abs( ratio ) > 1.0 ) {
-	displace2 *= ratio;
-      } else {
-	displace1 *= ratio;
-      }
-      // Now determine the s1 and s2 values.
-      double s1minusS2 = ( pcl.vect().dot( pos2.vect() - pos1.vect() ) / 
-			   pcl.vect().dot( displace1.vect() ) );
-      if ( s1minusS2 < 0 ) {
-	s1 = 1.0;
-	s2 = s1 - s1minusS2;
-      } else if ( s1minusS2 > 0 ) {
-	s2 = 1;
-	s1 = s2 + s1minusS2;
-      }
+    // Now determine the s1 and s2 values.
+    double s1minusS2 = ( pcl.vect().dot( pos2.vect() - pos1.vect() ) / 
+			 pcl.vect().dot( displace1.vect() ) );
+    if ( s1minusS2 < 0 ) {
+      s1 = 1.0;
+      s2 = s1 - s1minusS2;
+    } else if ( s1minusS2 > 0 ) {
+      s2 = 1;
+      s1 = s2 + s1minusS2;
     }
-    // Now, finally, determine the cluster position
-    setVertex(0.5 * (pos1 + pos2 + s1*displace1 + s2*displace2));
-  } // end else part of if ( _collecCompPtr.size() != 2 )   
+  }
+  // Now, finally, determine the cluster position
+  LorentzPoint position = 0.5 * (pos1 + pos2 + s1*displace1 + s2*displace2);
+  // set the decay vertex of the two particles via the lifeLength
+  q1->setLifeLength(position-q1->vertex());
+  q2->setLifeLength(position-q2->vertex());
+  // return the answer
+  return position;
 }
 
 bool Cluster::isBeamCluster() const {

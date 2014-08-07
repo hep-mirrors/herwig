@@ -31,6 +31,12 @@ namespace Herwig {
 
 using namespace ThePEG;
 
+/**\ingroup Shower
+ * Exception class
+ * used to communicate failure of QED shower
+ */
+struct InteractionVeto {};
+
 /** \ingroup Shower
  * The Evolver class class performs the sohwer evolution of hard scattering 
  * and decay processes in Herwig++.
@@ -61,7 +67,7 @@ public:
 	      _hardVetoRead(0), _reconOpt(0), _hardVetoReadOption(false),
 	      _iptrms(ZERO), _beta(0.), _gamma(ZERO), _iptmax(),
 	      _limitEmissions(0), _initialenhance(1.), _finalenhance(1.),
-	      _hardonly(false), _trunc_Mode(true), _hardEmissionMode(0),
+	       interaction_(1), _trunc_Mode(true), _hardEmissionMode(0),
 	      _colourEvolutionMethod(0), _hardScaleFactor(1.0)
   {}
 
@@ -113,7 +119,7 @@ public:
   /**
    *  Connect the Hard and Shower trees
    */
-  virtual void connectTrees(ShowerTreePtr showerTree, HardTreePtr hardTree, bool hard )const;
+  virtual void connectTrees(ShowerTreePtr showerTree, HardTreePtr hardTree, bool hard );
 
 public:
 
@@ -144,6 +150,11 @@ public:
 protected:
 
   /**
+   *   Perform the shower
+   */
+  void doShowering(bool hard,XCPtr);
+
+  /**
    *  Generate the hard matrix element correction
    */
   virtual void hardMatrixElementCorrection(bool);
@@ -164,7 +175,8 @@ protected:
   /**
    *  set the colour partners
    */
-  virtual void setEvolutionPartners(bool hard,ShowerInteraction::Type);
+  virtual void setEvolutionPartners(bool hard,ShowerInteraction::Type,
+				    bool clear);
 
   /**
    *  Methods to perform the evolution of an individual particle, including
@@ -202,10 +214,10 @@ protected:
    * @param maxscale    The maximum scale for the shower.
    * @param minimumMass The minimum mass of the final-state system
    */
-  virtual bool spaceLikeDecayShower(tShowerParticlePtr particle,
-				    Energy maxscale,
-				    Energy minimumMass,
-				    ShowerInteraction::Type);
+  virtual bool 
+  spaceLikeDecayShower(tShowerParticlePtr particle,
+		       const ShowerParticle::EvolutionScales & maxScales,
+		       Energy minimumMass,ShowerInteraction::Type);
 
   /**
    * Truncated shower from a time-like particle
@@ -225,8 +237,8 @@ protected:
    * Truncated shower from a time-like particle
    */
   virtual bool truncatedSpaceLikeDecayShower(tShowerParticlePtr particle,
-					     Energy maxscale, Energy minimumMass,
-					     HardBranchingPtr branch,
+					     const ShowerParticle::EvolutionScales & maxScales,
+					     Energy minimumMass, HardBranchingPtr branch,
 					     ShowerInteraction::Type type);
   //@}
 
@@ -427,7 +439,7 @@ protected:
   /**
    *  find the maximally allowed pt acc to the hard process. 
    */
-  void setupMaximumScales(ShowerTreePtr, const vector<ShowerProgenitorPtr> &,XCPtr);
+  void setupMaximumScales(const vector<ShowerProgenitorPtr> &,XCPtr);
 
   /**
    * Return the factor to multiply the hard veto scale
@@ -459,8 +471,9 @@ protected:
   /**
    *  Start the shower of a spacelike particle
    */
-  virtual bool startSpaceLikeDecayShower(Energy maxscale,Energy minimumMass,
-					 ShowerInteraction::Type);
+  virtual bool 
+  startSpaceLikeDecayShower(const ShowerParticle::EvolutionScales & maxScales,
+			    Energy minimumMass,ShowerInteraction::Type);
 
   /**
    *  Vetos for the timelike shower
@@ -480,7 +493,36 @@ protected:
   /**
    *  Only generate the hard emission, for testing only.
    */
-  bool hardOnly() const {return _hardonly;}
+  bool hardOnly() const {return _limitEmissions==3;}
+
+  /**
+   *  Members to construct the HardTree from the shower if needed
+   */
+  //@{
+  /**
+   *  Construct the tree for a scattering process
+   */
+  bool constructHardTree(vector<ShowerProgenitorPtr> & particlesToShower,
+			 ShowerInteraction::Type inter);
+
+  /**
+   *  Construct the tree for a decay process
+   */  
+  bool constructDecayTree(vector<ShowerProgenitorPtr> & particlesToShower,
+			  ShowerInteraction::Type inter);
+
+  /**
+   *  Construct a time-like line
+   */
+  void constructTimeLikeLine(tHardBranchingPtr branch,tShowerParticlePtr particle);
+
+  /**
+   *  Construct a space-like line
+   */
+  void constructSpaceLikeLine(tShowerParticlePtr particle,
+			      HardBranchingPtr & first, HardBranchingPtr & last,
+			      SudakovPtr sud,PPtr beam);
+  //@}
 
 protected:
 
@@ -497,6 +539,18 @@ protected:
    * @return a pointer to the new object.
    */
   virtual IBPtr fullclone() const;
+  //@} 
+
+protected:
+  
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
   //@}
 
 private:
@@ -650,10 +704,14 @@ private:
   unsigned int _nfs;
 
   /**
-   *  Only generate the emission from the hardest emission
-   *  generate for testing only
+   *  The option for wqhich interactions to use
    */
-  bool _hardonly;
+  unsigned int interaction_;
+
+  /**
+   *  Interactions allowed in the shower
+   */
+  vector<ShowerInteraction::Type> interactions_;
 
  /**
    *  Truncated shower switch

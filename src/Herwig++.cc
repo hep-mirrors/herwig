@@ -16,6 +16,14 @@
 #include <ThePEG/Utilities/Debug.h>
 #include <iostream>
 
+#include <config.h>
+#ifdef HAVE_UNISTD_H
+#include <queue>
+#include <unistd.h>
+#include <sys/wait.h>
+#endif
+
+
 using namespace ThePEG;
 
 void printUsageAndExit();
@@ -23,8 +31,9 @@ void printUsageAndExit();
 void HerwigInit(string infile, string reponame);
 void HerwigRead(string reponame, string runname,
 		const gengetopt_args_info & args_info);
-void HerwigRun(string runname, int seed, string tag, long N, 
-	       bool tics, bool resume);
+void HerwigRun(string runname, string setupfile,
+	       int seed, string tag, long N, 
+	       bool tics, bool resume, int jobs);
 
 void setSearchPaths(const gengetopt_args_info & args_info);
 
@@ -88,6 +97,16 @@ int main(int argc, char * argv[]) {
     // run name tag (default given in ggo file)
     string tag = args_info.tag_arg;
 
+    // run modifccation file
+    string setupfile = args_info.setupfile_arg;
+
+    // parallel jobs
+    int jobs = 1;
+#   ifdef HAVE_UNISTD_H
+    if ( args_info.jobs_given )
+      jobs = min( args_info.jobs_arg, 10 );
+#   endif
+
     setSearchPaths(args_info);
   
     // Library search path for dlopen()
@@ -124,7 +143,7 @@ int main(int argc, char * argv[]) {
     switch ( status ) {
     case INIT:  HerwigInit( runname, reponame ); break;
     case READ:  HerwigRead( reponame, runname, args_info ); break;
-    case RUN:   HerwigRun( runname, seed, tag, N, tics, resume );  break;
+    case RUN:   HerwigRun( runname, setupfile , seed, tag, N, tics, resume, jobs );  break;
     default:    printUsageAndExit();
     }
 
@@ -221,8 +240,9 @@ void HerwigRead(string reponame, string runname,
 
 
 
-void HerwigRun(string runname, int seed, string tag, long N, 
-	       bool tics, bool resume) {
+void HerwigRun(string runname, string setupfile,
+	       int seed, string tag, long N, 
+	       bool tics, bool resume, int jobs) {
   PersistentIStream is(runname);
   ThePEG::EGPtr eg;
   is >> eg;
@@ -237,12 +257,59 @@ void HerwigRun(string runname, int seed, string tag, long N,
     exit( EXIT_FAILURE );
   }
 
+  if ( ! setupfile.empty() ) {
+    string msg = Repository::modifyEventGenerator(*eg, setupfile, cout);
+    if ( ! msg.empty() ) cerr << msg << '\n';
+  }
+
   if ( seed > 0 ) eg->setSeed(seed);
   if ( !tag.empty() ) eg->addTag(tag);
 
-  eg->go( resume ? -1 : 1, N, tics );
+  if (jobs <= 1) {
 
-  if ( tics )
-    std::cout << '\n';
+    eg->go( resume ? -1 : 1, N, tics );
+    if ( tics ) std::cout << '\n';
+  
+  }
+  else { // forked jobs
+
+#   ifdef HAVE_UNISTD_H
+
+    std::queue<pid_t> pids;
+    pid_t pid;
+
+    for (int n=0; n<jobs; n++) {
+      pid = fork();
+      if (pid == -1) {
+        std::cerr << "Herwig++: Problem in fork().\n";
+        Repository::cleanup();
+        exit( EXIT_FAILURE );
+      }
+      else if ( pid == 0 ) {
+        std::cout << "Forked child " << n << ", PID " << getpid() << std::endl;
+        eg->setSeed( seed + n );
+        // fix numbering to allow n > 10
+        assert( n <= 10 );
+        eg->addTag( tag + "-" + char( 48 + n ) );
+        eg->go( resume ? -1 : 1, N / jobs, false );
+        break;
+      }
+      else {
+        pids.push(pid);
+      }
+    }
+
+    if (pid == 0) return;
+
+    while (! pids.empty() ) {
+      std::cout << "Waiting for " << pids.size() << " job(s)." << std::endl;
+      waitpid(pids.front(), NULL, 0);
+      std::cout << "PID " << pids.front() << " done." << std::endl;
+      pids.pop();
+    }
+
+#   endif
+    return;
+
+  }
 }
-

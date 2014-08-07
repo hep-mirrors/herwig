@@ -337,6 +337,14 @@ public:
   }
 
   /**
+   * Return true, if the amplitude is DRbar renormalized, otherwise
+   * MSbar is assumed.
+   */
+  virtual bool isDRbar() const { 
+    return oneLoopAmplitude()->isDRbar();
+  }
+
+  /**
    * Return true, if one loop corrections have been calculated in
    * dimensional reduction. Otherwise conventional dimensional
    * regularization is assumed. Note that renormalization is always

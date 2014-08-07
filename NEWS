@@ -1,5 +1,47 @@
 Herwig++ News				(emacs -*- outline -*- format)
 
+* Herwig++-2.7.1 release: 2014-07-07
+
+** New shower switches to select schemes for momentum reconstruction
+*** QTildeReconstructor:FinalStateReconOption
+    has the following options:
+*** Default
+    All momenta are rescaled in the rest frame.
+*** MostOffShell
+    Put all particles on the new-mass shell and the most off-shell and
+    recoiling system are rescaled to ensure 4-momentum is conserved.
+*** Recursive
+    Recursively put the most off-shell particle which hasn't yet been
+    rescaled on-shell by rescaling the particles and the recoiling
+    system.
+*** RestMostOffShell
+    The most off-shell is put on shell by rescaling it and the
+    recoiling system, the recoiling system is then put on-shell in its
+    rest frame.
+*** RestRecursive
+    As above, but recursively treat the currently most-off shell
+    (only makes a difference for more than 3 partons)
+
+** Ticket #378: Hadronization of baryon number violating clusters involving diquarks
+   Fixed by only considering non-diquarks to be combined in the
+   ClusterFinder.
+
+** UFO converter can now parse SLHA files for parameter settings
+   The UFO converter code can now use SLHA files for modifying
+   parameters. The first pass "ufo2herwig" produces the model to be
+   compiled. For each parameter card, run "slha2herwig" to get the
+   matching input file.
+
+** Fix for systems using lib64
+   The repository is now initialized correctly on systems using lib64
+   as the library location.
+   
+** Efficiency optimization
+   Better allocation of internal vector variables for a noticeable
+   speed increase of 10-20% with LHC events.
+
+
+
 * Herwig++-2.7.0 release: 2013-10-28
 
 ** UFO interface to Feynman rules generators

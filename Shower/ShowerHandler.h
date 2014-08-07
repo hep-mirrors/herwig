@@ -372,6 +372,16 @@ private:
   vector<long> inputparticlesDecayInShower_;
 
   /**
+   *   Whether or not to include spa-cetime distances in the shower
+   */
+  bool includeSpaceTime_;
+
+  /**
+   *  The minimum virtuality for the space-time model
+   */
+  Energy2 vMin_;
+
+  /**
    *  The ShowerTree for the hard process
    */
   ShowerTreePtr hard_;
