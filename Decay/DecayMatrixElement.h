@@ -170,6 +170,11 @@ public:
   vector<PDT::Spin> outspin() {return _outspin;}
   //@}
 
+  /**
+   *  Get the number of outgoing particles
+   */
+  unsigned int nOut() const {return _nout;}
+
 public:
 
   /**
