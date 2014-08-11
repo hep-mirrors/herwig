@@ -548,6 +548,11 @@ create ThePEG::JetCuts JetCuts
 set JetCuts:UnresolvedMatcher  /Herwig/Matchers/StandardQCDParton
 set JetCuts:Ordering OrderPt
 
+create Herwig::FrixionePhotonSeparationCut FrixionePhotonSeparationCut
+create Herwig::IdentifiedParticleCut IdentifiedParticleCut
+create Herwig::MatchboxDeltaRCut MatchboxDeltaRCut
+create Herwig::MissingPtCut MissingPtCut
+
 ################################################################################
 # Setup scale choices
 ################################################################################

@@ -130,6 +130,7 @@ cd /Herwig/MatrixElements/Matchbox
 
 #>>>>>>>>>> switch to plain (N)LO
 #                   -- note this will need specialized analyses for NLO
+#		    -- also consider running weighted eventsd (see below)
 
 # set EEFactory:ShowerApproximation NULL
 # set EEFactory:SubProcessGroups On
@@ -137,7 +138,6 @@ cd /Herwig/MatrixElements/Matchbox
 # set LEPHandler:CascadeHandler NULL
 # set LEPHandler:HadronizationHandler NULL
 # set LEPHandler:DecayHandler NULL
-# set LEPHandler:Weighted On
 # set /Herwig/Analysis/Basics:CheckQuark No
 # set /Herwig/Model:QCD/RunningAlphaS /Herwig/MatrixElements/Matchbox/AlphaS/MatchboxNLOAlphaS
 # cd /Herwig/MatrixElements/Matchbox
