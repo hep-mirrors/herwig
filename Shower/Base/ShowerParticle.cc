@@ -51,4 +51,5 @@ ostream & operator<<(ostream & os, const ShowerParticle::EvolutionScales & es) {
      << " QCD_c_noAO" << es.QCD_c_noAO / GeV
      << " QCD_ac_noAO" << es.QCD_ac_noAO / GeV
      << '\n';
+  return os;
 }
