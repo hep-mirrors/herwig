@@ -344,8 +344,28 @@ double QTildeSudakov::generatePhi(ShowerParticle & particle, const IdList & ids,
     rho = rhop;
   }
   // get the kinematic variables
+  double phi0 = 0.;
   double z = kinematics->z();
   Energy2 t = z*(1.-z)*sqr(kinematics->scale());
+  // extract the phi of the previous branching
+  if(!particle.parents().empty()) {
+    tPPtr parent  = particle.parents()[0];
+    if(parent) {
+      tShowerParticlePtr showerParent = dynamic_ptr_cast<tShowerParticlePtr>(parent);
+      if(showerParent) {
+	phi0 = showerParent->showerKinematics()->phi();
+	if(parent->children()[0]==&particle) {
+	  phi0 = phi0;
+	}
+	else if(parent->children()[1]==&particle) {
+	  phi0 -= Constants::pi;
+	  if(phi0<0.) phi0 += Constants::twopi;
+	}
+	else
+	  assert(false);
+      }
+    }
+  }
   // generate the azimuthal angle
   double phi;
   Complex wgt;
@@ -373,6 +393,8 @@ double QTildeSudakov::generatePhi(ShowerParticle & particle, const IdList & ids,
   // set the incoming particle for the vertex
   inspin->decayVertex(Svertex);
   // return the azimuthal angle (remember this is phi w.r.t. the previous branching)
+  phi -= phi0;
+  if(phi<0.) phi += Constants::twopi;
   return phi;
 }
 
