@@ -50,7 +50,7 @@ IBPtr Evolver::fullclone() const {
 void Evolver::persistentOutput(PersistentOStream & os) const {
   os << _model << _splittingGenerator << _maxtry 
      << _meCorrMode << _hardVetoMode << _hardVetoRead << _hardVetoReadOption
-     << _limitEmissions
+     << _limitEmissions << _spinOpt
      << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << ounit(_iptmax,GeV) 
      << _vetoes << _trunc_Mode << _hardEmissionMode 
      << _colourEvolutionMethod << _reconOpt << _hardScaleFactor
@@ -63,7 +63,7 @@ void Evolver::persistentInput(PersistentIStream & is, int) {
   unsigned int isize;
   is >> _model >> _splittingGenerator >> _maxtry 
      >> _meCorrMode >> _hardVetoMode >> _hardVetoRead >> _hardVetoReadOption
-     >> _limitEmissions
+     >> _limitEmissions >> _spinOpt
      >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> iunit(_iptmax,GeV)
      >> _vetoes >> _trunc_Mode >> _hardEmissionMode
      >> _colourEvolutionMethod >> _reconOpt >> _hardScaleFactor
@@ -329,6 +329,31 @@ void Evolver::Init() {
      "Set the factor to multiply the hard veto scale.",
      &Evolver::_hardScaleFactor, 1.0, 0.0, 0,
      false, false, Interface::lowerlim);
+
+  static Switch<Evolver,unsigned int> interfaceSpinCorrelations
+    ("SpinCorrelations",
+     "Treatment of spin correlations in the parton shower",
+     &Evolver::_spinOpt, 0, false, false);
+  static SwitchOption interfaceSpinCorrelationsOff
+    (interfaceSpinCorrelations,
+     "Off",
+     "No spin correlations",
+     0);
+  static SwitchOption interfaceSpinCorrelationsSpin
+    (interfaceSpinCorrelations,
+     "Spin",
+     "Include the azimuthal spin correlations only",
+     1);
+  static SwitchOption interfaceSpinCorrelationsSoft
+    (interfaceSpinCorrelations,
+     "Soft",
+     "Include the soft correlations inside the cone only",
+     2);
+  static SwitchOption interfaceSpinCorrelationsBoth
+    (interfaceSpinCorrelations,
+     "Both",
+     "Include both spin and soft correlations",
+     3);
 
 }
 
