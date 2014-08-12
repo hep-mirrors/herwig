@@ -121,6 +121,32 @@ public:
    */
   virtual void connectTrees(ShowerTreePtr showerTree, HardTreePtr hardTree, bool hard );
 
+  /**
+   *   Access to switches for spin correlations
+   */
+  //@{
+  /**
+   *   Spin Correlations
+   */
+  bool spinCorrelations() const {
+    return _spinOpt==1 || _spinOpt==3;
+  }
+
+  /**
+   *  Soft correlations
+   */
+  bool softCorrelations() const {
+    return _spinOpt==2 || _spinOpt==3;
+  }
+
+  /**
+   *  Any correlations
+   */
+  bool correlations() const {
+    return _spinOpt!=0;
+  }
+  //@}
+
 public:
 
   /** @name Functions used by the persistent I/O system. */

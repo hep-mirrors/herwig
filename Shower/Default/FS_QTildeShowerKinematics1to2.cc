@@ -20,6 +20,11 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/LorentzSpinorBar.h"
+#include "Herwig++/Shower/ShowerHandler.h"
+#include "Herwig++/Shower/Base/Evolver.h"
+#include "Herwig++/Shower/Base/PartnerFinder.h"
+#include "Herwig++/Shower/Base/ShowerModel.h"
+#include "Herwig++/Shower/Base/KinematicsReconstructor.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -67,6 +72,7 @@ updateChildren(const tShowerParticlePtr parent,
   parent->addChild(children[0]);
   parent->addChild(children[1]);
   // sort out the helicity stuff 
+  if(! ShowerHandler::currentHandler()->evolver()->correlations()) return;
   SpinPtr pspin(parent->spinInfo());
   if(!pspin) return;
   // get the vertex

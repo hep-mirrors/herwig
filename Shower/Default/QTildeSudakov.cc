@@ -25,6 +25,11 @@
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "Herwig++/Shower/Base/ShowerVertex.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
+#include "Herwig++/Shower/ShowerHandler.h"
+#include "Herwig++/Shower/Base/Evolver.h"
+#include "Herwig++/Shower/Base/PartnerFinder.h"
+#include "Herwig++/Shower/Base/ShowerModel.h"
+#include "Herwig++/Shower/Base/KinematicsReconstructor.h"
 
 using namespace Herwig;
 
@@ -313,6 +318,9 @@ bool QTildeSudakov::computeSpaceLikeLimits(Energy2 & t, double x) {
 
 double QTildeSudakov::generatePhi(ShowerParticle & particle, const IdList & ids,
 				  ShoKinPtr kinematics) {
+  // no correlations, return flat phi
+  if(! ShowerHandler::currentHandler()->evolver()->correlations())
+    return Constants::twopi*UseRandom::rnd();
   // get the spin density matrix and the mapping
   RhoDMatrix mapping;
   SpinPtr inspin;
@@ -367,6 +375,7 @@ double QTildeSudakov::generatePhi(ShowerParticle & particle, const IdList & ids,
   // return the azimuthal angle (remember this is phi w.r.t. the previous branching)
   return phi;
 }
+
 Energy QTildeSudakov::calculateScale(double zin, Energy pt, IdList ids,
 				     unsigned int iopt) {
   Energy2 tmin;
