@@ -5,6 +5,7 @@ libHwDipoleShowerBase_la_SOURCES = \
 	Dipole.h Dipole.cc \
 	DipoleChain.h DipoleChain.cc \
 	DipoleEventRecord.h DipoleEventRecord.cc \
+	DipoleEventReweight.h DipoleEventReweight.cc \
 	DipoleSplittingGenerator.h DipoleSplittingGenerator.cc \
 	DipoleSplittingReweight.h DipoleSplittingReweight.cc \
 	DipoleEvolutionOrdering.h DipoleEvolutionOrdering.cc \

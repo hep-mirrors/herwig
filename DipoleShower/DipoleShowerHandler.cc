@@ -577,6 +577,16 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
 			 << "DipoleShowerHandler encountered the following chains:\n"
 			 << (*firstChain) << (*secondChain) << flush;
     }
+
+    if ( theEventReweight ) {
+      double w = theEventReweight->weight(eventRecord().incoming(),
+					  eventRecord().outgoing(),
+					  eventRecord().hard());
+      Ptr<StandardEventHandler>::tptr eh = 
+	dynamic_ptr_cast<Ptr<StandardEventHandler>::tptr>(eventHandler());
+      assert(eh);
+      eh->reweight(w);
+    }
     
     if ( nEmissions )
       if ( ++emDone == nEmissions )
@@ -804,7 +814,8 @@ void DipoleShowerHandler::persistentOutput(PersistentOStream & os) const {
      << ounit(theRenormalizationScaleFreeze,GeV)
      << ounit(theFactorizationScaleFreeze,GeV)
      << isMCatNLOSEvent << isMCatNLOHEvent << theShowerApproximation
-     << theDoCompensate << maxPtIsMuF << theFreezeGrid;
+     << theDoCompensate << maxPtIsMuF << theFreezeGrid
+     << theEventReweight;
 }
 
 void DipoleShowerHandler::persistentInput(PersistentIStream & is, int) {
@@ -816,7 +827,8 @@ void DipoleShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> iunit(theRenormalizationScaleFreeze,GeV)
      >> iunit(theFactorizationScaleFreeze,GeV)
      >> isMCatNLOSEvent >> isMCatNLOHEvent >> theShowerApproximation
-     >> theDoCompensate >> maxPtIsMuF >> theFreezeGrid;
+     >> theDoCompensate >> maxPtIsMuF >> theFreezeGrid
+     >> theEventReweight;
 }
 
 ClassDescription<DipoleShowerHandler> DipoleShowerHandler::initDipoleShowerHandler;
@@ -1065,6 +1077,11 @@ void DipoleShowerHandler::Init() {
      "",
      &DipoleShowerHandler::theFreezeGrid, 500000, 1, 0,
      false, false, Interface::lowerlim);
+
+  static Reference<DipoleShowerHandler,DipoleEventReweight> interfaceEventReweight
+    ("EventReweight",
+     "",
+     &DipoleShowerHandler::theEventReweight, false, false, true, true, false);
 
 }
 
