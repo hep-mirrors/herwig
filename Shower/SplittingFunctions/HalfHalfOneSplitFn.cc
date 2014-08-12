@@ -15,6 +15,7 @@
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Utilities/DescribeClass.h"
+#include "Herwig++/Shower/Base/ShowerParticle.h"
 
 using namespace Herwig;
 
@@ -94,4 +95,44 @@ bool HalfHalfOneSplitFn::accept(const IdList &ids) const {
   if(q->iSpin()!=PDT::Spin1Half ||
      g->iSpin()!=PDT::Spin1) return false;
   return checkColours(ids);
+}
+
+vector<pair<int, Complex> > 
+HalfHalfOneSplitFn::generatePhi(ShowerParticle & ,ShoKinPtr ,
+				const double z, const Energy2, const IdList & ,
+				const RhoDMatrix &) {
+  // no dependence on the spin density matrix, dependence on off-diagonal terms cancels
+  // and rest = splitting function for Tr(rho)=1 as required by defn
+  return vector<pair<int, Complex> >(1,make_pair(0,1.));
+}
+
+DecayMatrixElement HalfHalfOneSplitFn::matrixElement(ShowerParticle & particle,ShoKinPtr showerkin,
+						     const double z, const Energy2 t, 
+						     const IdList & ids, const double phi) {
+  // calculate the kernal
+  DecayMatrixElement kernal(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin1);
+  Energy m = particle.dataPtr()->mass();
+  double mt = m/sqrt(t);
+  double root = sqrt(1.-(1.-z)*sqr(m)/z/t);
+  double romz = sqrt(1.-z); 
+  double rz   = sqrt(z);
+  kernal(0,0,0) = -root/romz;
+  kernal(0,0,2) =  root/romz*z;
+  kernal(0,1,0) =  mt*(1.-z)/rz;
+  kernal(0,1,2) =  0.;
+  kernal(1,0,0) =  0.;
+  kernal(1,0,2) =  mt*(1.-z)/rz;
+  kernal(1,1,0) = -root/romz*z;
+  kernal(1,1,2) =  root/romz;
+  for(unsigned int lamA=0;lamA<2;++lamA) {
+    Complex factA = exp(Complex(0.,1.)*double(2*lamA-1)/2.*phi);
+    for(unsigned int lamB=0;lamB<2;++lamB) {
+      Complex factB = exp(-Complex(0.,1.)*double(2*lamB-1)/2.*phi);
+      for(unsigned int lamC=0;lamC<3;lamC+=2) {
+	Complex factC = exp(-Complex(0.,1.)*double(lamC-1)*phi);
+	kernal(lamA,lamB,lamC/2) *= factA*factB*factC;
+      }
+    }
+  }
+  return kernal;
 }

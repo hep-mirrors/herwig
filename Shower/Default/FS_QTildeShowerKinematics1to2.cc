@@ -16,8 +16,13 @@
 #include "Herwig++/Shower/SplittingFunctions/SplittingFunction.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "ThePEG/Utilities/Debug.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/LorentzSpinorBar.h"
 
 using namespace Herwig;
+using namespace ThePEG::Helicity;
 
 void FS_QTildeShowerKinematics1to2::
 updateParameters(tShowerParticlePtr theParent,
@@ -43,6 +48,7 @@ updateParameters(tShowerParticlePtr theParent,
   child1.ptx = -pT() * cphi + (1.-z())* parent.ptx;
   child1.pty = -pT() * sphi + (1.-z())* parent.pty;
   child1.pt  = sqrt( sqr(child1.ptx) + sqr(child1.pty) );
+  
 }
 
 void FS_QTildeShowerKinematics1to2::
@@ -60,6 +66,60 @@ updateChildren(const tShowerParticlePtr parent,
   // make the products children of the parent
   parent->addChild(children[0]);
   parent->addChild(children[1]);
+  // sort out the helicity stuff 
+  SpinPtr pspin(parent->spinInfo());
+  if(!pspin) return;
+  // get the vertex
+  VertexPtr vertex(const_ptr_cast<VertexPtr>(pspin->decayVertex()));
+  if(!vertex) return;
+  // construct the spin info for the children
+  ShowerParticleVector::const_iterator pit;
+  for(pit=children.begin();pit!=children.end();++pit) {
+    Energy mass = (*pit)->data().mass(); 
+    // calculate the momentum of the children assuming on-shell
+    Energy2 pt2 = sqr((**pit).showerParameters().pt);
+    double alpha = (**pit).showerParameters().alpha;
+    double beta = 0.5*(sqr(mass) + pt2 - sqr(alpha)*pVector().m2())/(alpha*p_dot_n());
+    Lorentz5Momentum porig=sudakov2Momentum(alpha,beta,
+					    (**pit).showerParameters().ptx,
+					    (**pit).showerParameters().pty);
+    porig.setMass(mass);
+    // now construct the required spininfo and calculate the basis states
+    PDT::Spin spin((*pit)->dataPtr()->iSpin());
+    if(spin==PDT::Spin0) {
+      assert(false);
+    }
+    // calculate the basis states and construct the SpinInfo for a spin-1/2 particle
+    else if(spin==PDT::Spin1Half) {
+      // outgoing particle
+      if((*pit)->id()>0) {
+      	vector<LorentzSpinorBar<SqrtEnergy> > stemp;
+	SpinorBarWaveFunction::calculateWaveFunctions(stemp,*pit,outgoing);
+	SpinorBarWaveFunction::constructSpinInfo(stemp,*pit,outgoing,true);
+      }
+      // outgoing antiparticle
+      else {
+      	vector<LorentzSpinor<SqrtEnergy> > stemp;
+	SpinorWaveFunction::calculateWaveFunctions(stemp,*pit,outgoing);
+	SpinorWaveFunction::constructSpinInfo(stemp,*pit,outgoing,true);
+      }
+    }
+    // calculate the basis states and construct the SpinInfo for a spin-1 particle
+    else if(spin==PDT::Spin1) {
+      bool massless((*pit)->id()==ParticleID::g||(*pit)->id()==ParticleID::gamma);
+      vector<Helicity::LorentzPolarizationVector> vtemp;
+      VectorWaveFunction::calculateWaveFunctions(vtemp,*pit,outgoing,massless);
+      VectorWaveFunction::constructSpinInfo(vtemp,*pit,outgoing,true,massless);
+    }
+    else {
+      throw Exception() << "Spins higher than 1 are not yet implemented in " 
+			<< "FS_QtildaShowerKinematics1to2::constructVertex() "
+			<< Exception::runerror;
+    }
+    // connect the spinInfo object to the vertex
+    (*pit)->spinInfo()->productionVertex(vertex);
+    (*pit)->set5Momentum(porig);
+  }
 }
 
 void FS_QTildeShowerKinematics1to2::
@@ -74,7 +134,6 @@ reconstructParent(const tShowerParticlePtr parent,
 }
 
 void FS_QTildeShowerKinematics1to2::reconstructLast(const tShowerParticlePtr theLast,
-						    unsigned int iopt, 
 						    Energy mass) const {
   // set beta component and consequently all missing data from that,
   // using the nominal (i.e. PDT) mass.
@@ -84,12 +143,13 @@ void FS_QTildeShowerKinematics1to2::reconstructLast(const tShowerParticlePtr the
     / ( 2. * last.alpha * p_dot_n() );
   // set that new momentum
   theLast->set5Momentum(sudakov2Momentum( last.alpha, last.beta, 
-					  last.ptx, last.pty, iopt) );
+					  last.ptx, last.pty) );
 }
 
 void FS_QTildeShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr) {
   // set the basis vectors
   Lorentz5Momentum p,n;
+  Frame frame;
   if(particle.perturbative()!=0) {
     // find the partner and its momentum
     ShowerParticlePtr partner=particle.partner();
@@ -120,22 +180,25 @@ void FS_QTildeShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr) {
 	n = Lorentz5Momentum( ZERO, -pcm.vect()); 
 	n.boost( -boost);
       } 
-    } 
+    }
+    frame = BackToBack;
   }
   else if(particle.initiatesTLS()) {
     tShoKinPtr kin=dynamic_ptr_cast<ShowerParticlePtr>
       (particle.parents()[0]->children()[0])->showerKinematics();
     p = kin->getBasis()[0];
     n = kin->getBasis()[1];
+    frame = kin->frame();
   }
   else  {
     tShoKinPtr kin=dynamic_ptr_cast<ShowerParticlePtr>(particle.parents()[0])
       ->showerKinematics();
     p = kin->getBasis()[0];
     n = kin->getBasis()[1];
+    frame = kin->frame();
   }
   // set the basis vectors
-  setBasis(p,n);
+  setBasis(p,n,frame);
 }
 
 void FS_QTildeShowerKinematics1to2::updateParent(const tShowerParticlePtr parent, 

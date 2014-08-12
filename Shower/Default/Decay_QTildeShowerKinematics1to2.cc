@@ -56,25 +56,24 @@ reconstructParent( const tShowerParticlePtr, const ParticleVector &) const {
 }
 
 void Decay_QTildeShowerKinematics1to2::
-reconstructLast(const tShowerParticlePtr theLast,
-		unsigned int iopt,Energy mass) const {
+reconstructLast(const tShowerParticlePtr last, Energy mass) const {
   // set beta component and consequently all missing data from that,
   // using the nominal (i.e. PDT) mass.
-  Energy theMass = mass>ZERO ? mass : theLast->data().constituentMass(); 
-  theLast->showerParameters().beta=
-    (sqr(theMass) + sqr(theLast->showerParameters().pt)
-     - sqr( theLast->showerParameters().alpha )*pVector().m2())
-    / ( 2.*theLast->showerParameters().alpha*p_dot_n() );   
+  Energy theMass = mass>ZERO ? mass : last->data().constituentMass(); 
+  last->showerParameters().beta=
+    (sqr(theMass) + sqr(last->showerParameters().pt)
+     - sqr( last->showerParameters().alpha )*pVector().m2())
+    / ( 2.*last->showerParameters().alpha*p_dot_n() );   
   // set that new momentum  
-  theLast->set5Momentum(  sudakov2Momentum( theLast->showerParameters().alpha, 
-					    theLast->showerParameters().beta, 
-					    theLast->showerParameters().ptx,
-					    theLast->showerParameters().pty,
-					    iopt));
+  last->set5Momentum( sudakov2Momentum( last->showerParameters().alpha, 
+					last->showerParameters().beta, 
+					last->showerParameters().ptx,
+					last->showerParameters().pty) );
 }
 
 void Decay_QTildeShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr) {
   Lorentz5Momentum p, n, ppartner, pcm;
+  Frame frame;
   assert(particle.perturbative()!=1);
   // this is for the initial decaying particle
   if(particle.perturbative()==2) {
@@ -88,12 +87,14 @@ void Decay_QTildeShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr
     pcm.boost(boost);
     n = Lorentz5Momentum( ZERO,0.5*p.mass()*pcm.vect().unit()); 
     n.boost( -boost);
+    frame = Rest;
   }
   else {
     tShoKinPtr kin=dynamic_ptr_cast<ShowerParticlePtr>(particle.parents()[0])
       ->showerKinematics();
     p = kin->getBasis()[0];
     n = kin->getBasis()[1];
+    frame = kin->frame();
   }
-  setBasis(p,n);
+  setBasis(p,n,frame);
 }

@@ -22,6 +22,8 @@
 #include "ShowerParticle.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig;
@@ -222,30 +224,37 @@ void SudakovFormFactor::addSplitting(const IdList & in) {
   if(add) particles_.push_back(in);
 }
 
-SpinPtr SudakovFormFactor::getMapping(RhoDMatrix & rho, RhoDMatrix & mapping,
-				      ShowerParticle & particle,ShoKinPtr showerkin) {
-  // output spininfo
-  SpinPtr output;
+bool SudakovFormFactor::getMapping(SpinPtr & output, RhoDMatrix & mapping,
+				   ShowerParticle & particle,ShoKinPtr showerkin) {
   // if the particle is final-state and not from the hard process
   if(!particle.perturbative() && particle.isFinalState()) {
     // mapping is the identity
     mapping=RhoDMatrix(particle.dataPtr()->iSpin());
     output=particle.spinInfo();
-    // should have spin info
-    if(!output) {
-      cerr << " particle does not have spinInfo " << endl;
-      exit(1); 
-    }
+    assert(output);
+    return false;
   }
   // if particle is final-state and is from the hard process
   else if(particle.perturbative() && particle.isFinalState()) {
     // get the basis vectors
     vector<Lorentz5Momentum> basis=showerkin->getBasis();
+    // momentum of the evolution frame
+    // hard process
+    if(particle.perturbative()==1) {
+    }
+    // decay
+    else if(particle.perturbative()==2) {
+    }
+    else
+      assert(false);
     // we are doing the evolution in the back-to-back frame
     // work out the boostvector
+
+    // is this really true ??
     Boost boostv(-(basis[0]+basis[1]).boostVector());
     // boost the momentum
-    Lorentz5Momentum porig(basis[0]);porig.boost(boostv);
+    Lorentz5Momentum porig(basis[0]);
+    porig.boost(boostv);
     // now rotate so along the z axis as needed for the splitting functions
     Axis axis(porig.vect().unit());
     LorentzRotation rot;
@@ -292,26 +301,105 @@ SpinPtr SudakovFormFactor::getMapping(RhoDMatrix & rho, RhoDMatrix & mapping,
 	  for(unsigned int iy=0;iy<2;++iy) {
 	    mapping(ix,iy)=sbasis[iy].scalar(fbasis[ix])/2./porig.mass();
 	    if(particle.id()<0){mapping(ix,iy)=conj(mapping(ix,iy));}
-	    cerr << "testing the mapping " << ix << " " << iy << " " 
-		 << mapping(ix,iy) << endl;
 	  }
 	}
+	return true;
       }
       // spin info does not exist create it
       else {
-	cerr << "testing no basis case not yet handled " << endl;
-	exit(1);
+	// calculate the splitting basis for the branching
+	// and rotate back to construct the basis states
+	LorentzRotation rinv = rot.inverse();
+       	SpinorWaveFunction wave;
+      	if(particle.id()>0)
+      	  wave=SpinorWaveFunction(porig,particle.dataPtr(),incoming);
+      	else
+      	  wave=SpinorWaveFunction(porig,particle.dataPtr(),outgoing);
+	FermionSpinPtr fspin = new_ptr(FermionSpinInfo(particle.momentum(),true));
+	for(unsigned int ix=0;ix<2;++ix) {
+	  wave.reset(ix);
+	  LorentzSpinor<SqrtEnergy> basis = wave.dimensionedWave();
+	  basis.transform(rinv);
+	  fspin->setBasisState(ix,basis);
+	  fspin->setDecayState(ix,basis);
+	}
+	output=fspin;
+	particle.spinInfo(fspin);
+	return false;
       }
     }
-    else {
-      cerr << "testing spin 1 not yet implemented " << endl;
-      exit(0);
+    else if(spin==PDT::Spin1) {
+      VectorSpinPtr vspin=dynamic_ptr_cast<VectorSpinPtr>(particle.spinInfo());
+      // spin info exists get information from it
+      if(vspin) {
+	output=vspin;
+	// rotate the original basis
+	vector<LorentzPolarizationVector> sbasis;
+	for(unsigned int ix=0;ix<3;++ix) {
+	  sbasis.push_back(vspin->getProductionBasisState(ix));
+	  sbasis.back().transform(rot);
+	}
+	// splitting basis
+	vector<LorentzPolarizationVector> fbasis;
+	bool massless(particle.id()==ParticleID::g||particle.id()==ParticleID::gamma);
+	VectorWaveFunction wave(porig,particle.dataPtr(),outgoing);
+	for(unsigned int ix=0;ix<3;++ix) {
+	  if(massless&&ix==1) {
+	    fbasis.push_back(LorentzPolarizationVector());
+	  }
+	  else {
+	    wave.reset(ix);
+	    fbasis.push_back(wave.wave());
+	  }
+	}
+	// work out the mapping
+	for(unsigned int ix=0;ix<3;++ix) {
+	  for(unsigned int iy=0;iy<3;++iy) {
+	    mapping(ix,iy)= sbasis[iy].dot(fbasis[ix].conjugate());
+	    if(particle.id()<0)
+	      mapping(ix,iy)=conj(mapping(ix,iy));
+	  }
+	}
+	return true; 
+      }
+      else {
+	// calculate the splitting basis for the branching
+	// and rotate back to construct the basis states
+	LorentzRotation rinv = rot.inverse();
+	bool massless(particle.id()==ParticleID::g||particle.id()==ParticleID::gamma);
+	VectorWaveFunction wave(porig,particle.dataPtr(),outgoing);
+	VectorSpinPtr vspin = new_ptr(VectorSpinInfo(particle.momentum(),true));
+	for(unsigned int ix=0;ix<3;++ix) {
+	  LorentzPolarizationVector basis;
+	  if(massless&&ix==1) {
+	    basis = LorentzPolarizationVector();
+	  }
+	  else {
+	    wave.reset(ix);
+	    basis = wave.wave();
+	  }
+	  basis *= rinv;
+	  vspin->setBasisState(ix,basis);
+	  vspin->setDecayState(ix,basis);
+	}
+	particle.spinInfo(vspin);
+	if(massless) {
+	  mapping(0,0) = 1.;
+	  mapping(1,1) = 0.;
+	  mapping(2,2) = 1.;
+	  vspin->rhoMatrix()(0,0) = 0.5;
+	  vspin->rhoMatrix()(1,1) = 0.;
+	  vspin->rhoMatrix()(2,2) = 0.5;
+	}
+	output = vspin;
+	return false;
+      }
     }
+    // not scalar/fermion/vector
+    else
+      assert(false);
   }
-  // set the decayed flag
-  output->decay();
-  rho=output->rhoMatrix();
-  return output;
+  return true;
 }
 
 void SudakovFormFactor::removeSplitting(const IdList & in) {

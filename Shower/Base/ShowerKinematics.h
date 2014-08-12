@@ -45,6 +45,14 @@ using namespace ThePEG;
 class ShowerKinematics: public Base {
 
 public:
+
+  /**
+   *   enum for the frame definition
+   */
+  enum Frame {BackToBack,Rest};
+
+public:
+
   /**
    * The default constructor.
    */
@@ -131,13 +139,9 @@ public:
    * kinematics chosen and will be defined in the inherited concrete
    * classes. This method will be used by the KinematicsReconstructor.
    * @param last The particle.
-   * @param iopt The option for the momentum reconstruction 
-   * - 0 is in the rest frame of the pair of reference vectors
-   * - 1 is in the rest frame of the p vector
    * @param mass The mass to be used, if less than zero on-shell
    */
-  virtual void reconstructLast(const tShowerParticlePtr last,
-			       unsigned int iopt, Energy mass=-1.*GeV) const;
+  virtual void reconstructLast(const tShowerParticlePtr last, Energy mass=-1.*GeV) const;
 
   /**
    *  Perform any initial calculations needed after the branching has been selected
@@ -173,6 +177,11 @@ public:
    * which in turn are members of the concrete class QTildeShowerKinematics1to2.
    */
   virtual vector<Lorentz5Momentum> getBasis() const = 0;
+  
+  /**
+   * Access to the frame definition
+   */
+  Frame frame() const {return _frame;}
 
 
   /**
@@ -247,6 +256,13 @@ public:
   void SudakovFormFactor(const tSudakovPtr sud) { _sudakov=sud; }
   //@}
 
+protected:
+  
+  /**
+   *  Set the frame definition
+   */
+  void frame(Frame frame) {_frame = frame;}
+
 private:
 
   /**
@@ -286,6 +302,12 @@ private:
    *  The splitting function for the branching of the particle
    */
   tSudakovPtr _sudakov;
+
+  /**
+   *  The frame in which the basis vectors are defined
+   */
+  Frame _frame;
+
 };
 
 }

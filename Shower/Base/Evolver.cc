@@ -505,6 +505,7 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
       if(!timeLikeVetoed(fb,particle)) break;
       // otherwise reset scale and continue - SO IS involved in veto algorithm
       particle->vetoEmission(fb.type,fb.kinematics->scale());
+      if(particle->spinInfo()) particle->spinInfo()->decayVertex(VertexPtr());
     }
     // has emitted
     // Assign the shower kinematics to the emitting particle.
@@ -532,8 +533,10 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
     if(_limitEmissions!=0) return true;
     // shower the first  particle
     timeLikeShower(theChildren[0],type,false);
+    if(theChildren[0]->spinInfo()) theChildren[0]->spinInfo()->develop();
     // shower the second particle
     timeLikeShower(theChildren[1],type,false);
+    if(theChildren[1]->spinInfo()) theChildren[1]->spinInfo()->develop();
     // that's if for old approach
     if(_reconOpt==0) break;
     // branching has happened

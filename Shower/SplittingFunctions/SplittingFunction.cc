@@ -130,21 +130,18 @@ void SplittingFunction::Init() {
 
 }
 
-double SplittingFunction::generatePhi(ShowerParticle &,ShoKinPtr,
-				      const double, const Energy,
-				      const IdList &, const RhoDMatrix &,
-				      const double) {
+vector<pair<int,Complex> >  
+SplittingFunction::generatePhi(ShowerParticle &,ShoKinPtr, const double, const Energy2,
+			       const IdList &, const RhoDMatrix &) {
   cerr << "Using SplittingFunction::generatePhi()" << fullName() << "\n";
-  exit(1);
-  return Constants::twopi*UseRandom::rnd();
+  assert(false);
 }
 
 DecayMatrixElement SplittingFunction::matrixElement(ShowerParticle &,ShoKinPtr,
-						    const double, const Energy, 
-						    const IdList &,
-						    const RhoDMatrix &, const double) {
-  throw Exception() << "SplittingFunction::matrixElement called for " << fullName()
-		    << Exception::runerror;
+						    const double, const Energy2, 
+						    const IdList &, const double) {
+  cerr << "SplittingFunction::matrixElement called for " << fullName() << "\n";
+  assert(false);
 }
 
 void SplittingFunction::persistentOutput(PersistentOStream & os) const {

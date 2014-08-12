@@ -67,19 +67,16 @@ public:
    *              parameterisation
    * @param py    The \f$x\f$-component of the transverse momentum in the Sudakov 
    *              parameterisation
-   * @param iopt The option for the momentum reconstruction 
-   * - 0 is in the rest frame of the pair of reference vectors
-   * - 1 is in the rest frame of the p vector
    */
-  Lorentz5Momentum sudakov2Momentum(double alpha, double beta, Energy px, Energy py,
-				    unsigned int iopt) const;
+  Lorentz5Momentum sudakov2Momentum(double alpha, double beta,
+				    Energy px, Energy py) const;
 
 protected:
 
   /**
    *  Set the basis vectors
    */
-  void setBasis(const Lorentz5Momentum &p, const Lorentz5Momentum & n);
+  void setBasis(const Lorentz5Momentum &p, const Lorentz5Momentum & n, Frame frame);
 
 private:
 

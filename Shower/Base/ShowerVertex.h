@@ -42,19 +42,39 @@ class ShowerVertex: public HelicityVertex {
 public:
 
   /**
+   * Default constructor
+   */
+  ShowerVertex() : convertIn_(false), convertOut_(2,false), outMatrix_(2,RhoDMatrix())
+  {}
+
+public:
+
+  /**
    *  Access to the matrix element
    */
   //@{
   /**
    * Get the matrix element
    */
-  inline const DecayMatrixElement & ME() const;
+  inline const DecayMatrixElement & ME() const {
+    return matrixElement_;
+  }
 
   /**
    * Set the matrix element
    */
-  inline void ME(const DecayMatrixElement &) const;
-  //@}  
+  inline void ME(const DecayMatrixElement & in) const {
+    matrixElement_.reset(in);
+  }
+  //@}
+
+  /**
+   *  Set the change of basis for the incoming particle
+   */
+  inline void incomingBasisTransform(RhoDMatrix conv) {
+    convertIn_ = true;
+    inMatrix_ = conv;
+  }
 
 public:
   
@@ -70,6 +90,11 @@ public:
    */
   virtual RhoDMatrix getDMatrix(int) const;
 
+  /**
+   *  Get the transformed rho matrix
+   */ 
+  RhoDMatrix mapIncoming(RhoDMatrix rho) const;
+
 public:
 
   /**
@@ -83,12 +108,6 @@ public:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an concrete class without persistent data.
-   */
-  static NoPIOClassDescription<ShowerVertex> initShowerVertex;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -99,39 +118,30 @@ private:
   /**
    * Storage of the decay matrix element.
    */
-  DecayMatrixElement _matrixelement;
+  DecayMatrixElement matrixElement_;
+
+  /**
+   *  Whether or not the incoming spin density matrices need to be converted
+   */
+  bool convertIn_;
+
+  /**
+   *  Whether or not the outgoing spin density matrices need to be converted
+   */
+  vector<bool> convertOut_;
+
+  /**
+   * Storage of conversion for incoming particle
+   */
+  RhoDMatrix inMatrix_;
+  
+
+  /**
+   *  Storage of conversion for outgoing particles
+   */
+  vector<RhoDMatrix> outMatrix_;
 
 };
 }
-
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of ShowerVertex. */
-template <>
-struct BaseClassTrait<Herwig::ShowerVertex,1> {
-  /** Typedef of the first base class of ShowerVertex. */
-  typedef Herwig::HelicityVertex NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the ShowerVertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::ShowerVertex>
-  : public ClassTraitsBase<Herwig::ShowerVertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::ShowerVertex"; }
-};
-
-/** @endcond */
-
-}
-
-#include "ShowerVertex.icc"
 
 #endif /* HERWIG_ShowerVertex_H */

@@ -295,10 +295,10 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
   // return empty branching if nothing happened
   if(!kinematics)  return Branching(ShoKinPtr(), IdList(),SudakovPtr(),
 				    ShowerPartnerType::Undefined);
-  // and generate phi
-  sudakov->generatePhi(particle,ids,kinematics);
   // If a branching has been selected initialize it
   kinematics->initialize(particle,PPtr());
+  // and generate phi
+  sudakov->generatePhi(particle,ids,kinematics);
   // and return it
   return Branching(kinematics, ids,sudakov,partnerType);
 }

@@ -96,13 +96,9 @@ public:
    * kinematics chosen and will be defined in the inherited concrete
    * classes. This method will be used by the KinematicsReconstructor.
    * @param last The particle to update
-   * @param iopt The option for the momentum reconstruction 
-   * - 0 is in the rest frame of the pair of reference vectors
-   * - 1 is in the rest frame of the p vector
    * @param mass The mass to be used, if less than zero on-shell
    */
-  virtual void reconstructLast(const tShowerParticlePtr last,
-			       unsigned int iopt, Energy mass=-1.*GeV) const;
+  virtual void reconstructLast(const tShowerParticlePtr last, Energy mass=-1.*GeV) const;
 
   /**
    *  Perform any initial calculations needed after the branching has been selected

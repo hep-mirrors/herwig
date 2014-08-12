@@ -366,18 +366,20 @@ protected:
    * @return true if vetoed
    */
   bool SplittingFnVeto(const Energy2 t, 
-			      const IdList &ids, 
-			      const bool mass) const 
-  { return UseRandom::rnd()>splittingFn_->ratioP(z_, t, ids,mass); }
+		       const IdList &ids, 
+		       const bool mass) const {
+    return UseRandom::rnd()>splittingFn_->ratioP(z_, t, ids,mass);
+  }
 
   /**
    *  The veto on the coupling constant
    * @param pt2 The value of ther transverse momentum squared, \f$p_T^2\f$.
    * @return true if vetoed
    */
-  bool alphaSVeto(const Energy2 pt2) const 
-  {return UseRandom::rnd() > ThePEG::Math::powi(alpha_->ratio(pt2),
-						splittingFn_->interactionOrder());}
+  bool alphaSVeto(const Energy2 pt2) const {
+    return UseRandom::rnd() > ThePEG::Math::powi(alpha_->ratio(pt2),
+						 splittingFn_->interactionOrder());
+  }
   //@}
 
   /**
@@ -438,9 +440,8 @@ protected:
    * @param particle The particle
    * @param showerkin The ShowerKinematics object
    */
-  SpinPtr getMapping(RhoDMatrix & rho, RhoDMatrix & map,
-		     ShowerParticle & particle,ShoKinPtr showerkin);
-
+  bool getMapping(SpinPtr &, RhoDMatrix & map,
+		  ShowerParticle & particle,ShoKinPtr showerkin);
 
 public:
 

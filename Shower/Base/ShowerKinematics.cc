@@ -51,7 +51,7 @@ void ShowerKinematics::reconstructParent(const tShowerParticlePtr,
 }
 
 void ShowerKinematics::reconstructLast(const tShowerParticlePtr,
-				       unsigned int,Energy) const {
+				       Energy) const {
   throw Exception() << "Base class ShowerKinematics::reconstructLast called,"
 		    << " should have been overriden in an inheriting class" 
 		    << Exception::runerror;

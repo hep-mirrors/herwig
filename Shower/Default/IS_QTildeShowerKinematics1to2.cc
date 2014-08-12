@@ -73,7 +73,7 @@ reconstructParent(const tShowerParticlePtr theParent,
   c2param.beta = 0.5*( sqr(c2->data().constituentMass()) + sqr(c2param.pt) )
     / ( c2param.alpha * p_dot_n() );
   c2->set5Momentum( sudakov2Momentum(c2param.alpha, c2param.beta, 
-				     c2param.ptx, c2param.pty, 0) );
+				     c2param.ptx  , c2param.pty) );
   // spacelike child
   Lorentz5Momentum pc1(theParent->momentum() - c2->momentum());
   pc1.rescaleMass();
@@ -104,6 +104,7 @@ void IS_QTildeShowerKinematics1to2::initialize(ShowerParticle & particle, PPtr p
   // For the time being we are considering only 1->2 branching
   Lorentz5Momentum p, n, pthis, pcm;
   assert(particle.perturbative()!=2);
+  Frame frame;
   if(particle.perturbative()==1) {
     // find the partner and its momentum
     ShowerParticlePtr partner=particle.partner();
@@ -139,12 +140,15 @@ void IS_QTildeShowerKinematics1to2::initialize(ShowerParticle & particle, PPtr p
       p = Lorentz5Momentum(ZERO, pcm.vect());
       n = Lorentz5Momentum(ZERO, -pcm.vect());
     }
+    frame = BackToBack;
   } 
   else {
     p = dynamic_ptr_cast<ShowerParticlePtr>(particle.children()[0])
       ->showerKinematics()->getBasis()[0];
     n = dynamic_ptr_cast<ShowerParticlePtr>(particle.children()[0])
       ->showerKinematics()->getBasis()[1];
+    frame = dynamic_ptr_cast<ShowerParticlePtr>(particle.children()[0])
+      ->showerKinematics()->frame();
   }
-  setBasis(p,n);
+  setBasis(p,n,frame);
 }

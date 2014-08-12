@@ -95,7 +95,6 @@ public:
    */
   virtual double generatePhi(ShowerParticle & particle,const IdList & ids,
 			     ShoKinPtr kinematics);
-
   /**
    *  Method to return the evolution scale given the
    *  transverse momentum, \f$p_T\f$ and \f$z\f$.

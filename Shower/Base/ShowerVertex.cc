@@ -12,6 +12,7 @@
 //
 
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/EventRecord/SpinInfo.h"
 #include "ShowerVertex.h"
 
@@ -19,8 +20,8 @@ using namespace Herwig;
 using namespace Herwig::Helicity;
 using namespace ThePEG;
 
-NoPIOClassDescription<ShowerVertex> ShowerVertex::initShowerVertex;
-// Definition of the static class description member.
+DescribeNoPIOClass<ShowerVertex,HelicityVertex>
+describeShowerVertex ("Herwig::ShowerVertex","");
 
 void ShowerVertex::Init() {
 
@@ -32,6 +33,10 @@ void ShowerVertex::Init() {
 
 // method to get the rho matrix for a given outgoing particle
 RhoDMatrix ShowerVertex::getRhoMatrix(int i, bool) const {
+  assert(matrixElement_.nOut()==2);
+  // calculate the incoming spin density matrix
+  RhoDMatrix input=incoming()[0]->rhoMatrix();
+  if(convertIn_) input = mapIncoming(input);
   // get the rho matrices for the outgoing particles
   vector<RhoDMatrix> rhoout;
   for(unsigned int ix=0,N=outgoing().size();ix<N;++ix) {
@@ -39,19 +44,33 @@ RhoDMatrix ShowerVertex::getRhoMatrix(int i, bool) const {
       rhoout.push_back(outgoing()[ix]->DMatrix());
   }
   // calculate the spin density matrix
-  RhoDMatrix input=incoming()[0]->rhoMatrix();
-  RhoDMatrix temp=_matrixelement.calculateRhoMatrix(i,input,rhoout);
-  return temp;
+  return matrixElement_.calculateRhoMatrix(i,input,rhoout);
 }
 
 // method to get the D matrix for an incoming particle
 RhoDMatrix ShowerVertex::getDMatrix(int) const {
+  assert(matrixElement_.nOut()==2);
   // get the decay matrices for the outgoing particles
   vector<RhoDMatrix> Dout;
   for(unsigned int ix=0,N=outgoing().size();ix<N;++ix) {
     Dout.push_back(outgoing()[ix]->DMatrix());
   }
   // calculate the spin density matrix and return the answer
-  RhoDMatrix temp = _matrixelement.calculateDMatrix(Dout);
+  RhoDMatrix temp = matrixElement_.calculateDMatrix(Dout);
   return temp;
 }
+
+RhoDMatrix ShowerVertex::mapIncoming(RhoDMatrix rho) const {
+  RhoDMatrix output(rho.iSpin());
+  for(int ixa=0;ixa<rho.iSpin();++ixa) {
+    for(int ixb=0;ixb<rho.iSpin();++ixb) {
+      for(int iya=0;iya<rho.iSpin();++iya) {
+	for(int iyb=0;iyb<rho.iSpin();++iyb) {
+	  output(ixa,ixb) += rho(iya,iyb)*inMatrix_(iya,ixa)*conj(inMatrix_(iyb,ixb));
+	}
+      }
+    }
+  }
+  return output;
+}
+

@@ -46,6 +46,4 @@ SplittingFunctions/SplittingGenerator.cc SplittingFunctions/SplittingGenerator.h
 SplittingFunctions/SplittingGenerator.fh \
 SplittingFunctions/SplittingFunction.h SplittingFunctions/SplittingFunction.fh \
 SplittingFunctions/SplittingFunction.cc  \
-Base/ShowerVertex.cc Base/ShowerVertex.fh Base/ShowerVertex.h \
-Base/ShowerVertex.icc
-
+Base/ShowerVertex.cc Base/ShowerVertex.fh Base/ShowerVertex.h

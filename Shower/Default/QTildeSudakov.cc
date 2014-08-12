@@ -24,6 +24,7 @@
 #include "Herwig++/Shower/Default/Decay_QTildeShowerKinematics1to2.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "Herwig++/Shower/Base/ShowerVertex.h"
+#include "Herwig++/Shower/Base/ShowerParticle.h"
 
 using namespace Herwig;
 
@@ -310,33 +311,53 @@ bool QTildeSudakov::computeSpaceLikeLimits(Energy2 & t, double x) {
     return true;
 }
 
-double QTildeSudakov::generatePhi(ShowerParticle & particle,const IdList & ids,
+double QTildeSudakov::generatePhi(ShowerParticle & particle, const IdList & ids,
 				  ShoKinPtr kinematics) {
   // get the spin density matrix and the mapping
-  RhoDMatrix rho,mapping;
-  SpinPtr inspin(getMapping(rho,mapping,particle,kinematics));
-  // map the rho matrix to the shower basis
-  RhoDMatrix rhop(rho.iSpin());
-  cout << rhop << "\n";
-  for(int ixa=0;ixa<rho.iSpin();++ixa) {
-    for(int ixb=0;ixb<rho.iSpin();++ixb) {
-      for(int iya=0;iya<rho.iSpin();++iya) {
-	for(int iyb=0;iyb<rho.iSpin();++iyb) {
-	  rhop(ixa,ixb)+=rho(iya,iyb)*mapping(iya,ixa)*conj(mapping(iyb,ixb));
+  RhoDMatrix mapping;
+  SpinPtr inspin;
+  bool needMapping = getMapping(inspin,mapping,particle,kinematics);
+  // set the decayed flag
+  inspin->decay();
+  // get the spin density matrix
+  RhoDMatrix rho=inspin->rhoMatrix();
+  // map to the shower basis if needed
+  if(needMapping) {
+    RhoDMatrix rhop(rho.iSpin());
+    for(int ixa=0;ixa<rho.iSpin();++ixa) {
+      for(int ixb=0;ixb<rho.iSpin();++ixb) {
+	for(int iya=0;iya<rho.iSpin();++iya) {
+	  for(int iyb=0;iyb<rho.iSpin();++iyb) {
+	    rhop(ixa,ixb) += rho(iya,iyb)*mapping(iya,ixa)*conj(mapping(iyb,ixb));
+	  }
 	}
       }
     }
+    rho = rhop;
   }
+  // get the kinematic variables
+  double z = kinematics->z();
+  Energy2 t = z*(1.-z)*sqr(kinematics->scale());
   // generate the azimuthal angle
-  double wgt,phi;
+  double phi;
+  Complex wgt;
+  vector<pair<int,Complex> > 
+    wgts = splittingFn()->generatePhi(particle,kinematics,z,t,ids,rho);
+  static const Complex ii(0.,1.);
   do {
     phi = Constants::twopi*UseRandom::rnd();
-    wgt = splittingFn()->generatePhi(particle,kinematics,z(),q_,ids,rhop,phi);
+    wgt = 0.;
+    for(unsigned int ix=0;ix<wgts.size();++ix) {
+      if(wgts[ix].first==0)
+	wgt += wgts[ix].second;
+      else
+	wgt += exp(double(wgts[ix].first)*ii*phi)*wgts[ix].second;
+    }
   }
-  while(wgt<UseRandom::rnd());
+  while(wgt.real()<UseRandom::rnd());
   // compute the matrix element for spin correlations
   DecayMatrixElement 
-    me(splittingFn()->matrixElement(particle,kinematics,z(),q_,ids,mapping,phi));
+    me(splittingFn()->matrixElement(particle,kinematics,z,t,ids,phi));
   // create the vertex
   SVertexPtr Svertex(new_ptr(ShowerVertex()));
   // set the matrix element
@@ -346,66 +367,6 @@ double QTildeSudakov::generatePhi(ShowerParticle & particle,const IdList & ids,
   // return the azimuthal angle (remember this is phi w.r.t. the previous branching)
   return phi;
 }
- 
-// void QTildeSudakov::constructVertex(const tShowerParticlePtr theParent, 
-// 				    const ShowerParticleVector theChildren) {
-//   // cast the spin info of the decaying particle (return if fails)
-//   SpinPtr pspin(theParent->spinInfo());
-//   if(!pspin) return;
-//   // get the vertex
-//   VertexPtr vertex(const_ptr_cast<VertexPtr>(pspin->getDecayVertex()));
-//   if(!vertex) return;
-//   // construct the spin info for the children
-//   ShowerParticleVector::const_iterator pit;
-//   for(pit=theChildren.begin();pit!=theChildren.end();++pit) { 
-//     Energy theMass = (*pit)->id()==ParticleID::g 
-//       ? 0.*GeV : (*pit)->data().constituentMass(); 
-//     // calculate the momentum of the children assuming on-shell
-//     double beta = 0.5*(sqr(theMass)+(*pit)->sudPperp2() 
-// 		       - sqr( (*pit)->sudAlpha() )*pVector().m2())
-//       /((*pit)->sudAlpha()*p_dot_n());
-//     Lorentz5Momentum pchild=sudakov2Momentum((*pit)->sudAlpha(),beta,
-// 					     (*pit)->sudPx(),
-// 					     (*pit)->sudPy());
-//     pchild.setMass(theMass);
-//     Lorentz5Momentum porig=(*pit)->momentum();
-//     (*pit)->set5Momentum(pchild);
-//     // now construct the required spininfo and calculate the basis states
-//     PDT::Spin spin((*pit)->dataPtr()->iSpin());
-//     if(spin==PDT::Spin0) {
-//       throw Exception() << "QTildeSudakov::constructVertex no spin 0 "
-// 			<< Exception::abortnow;
-//     }
-//     // calculate the basis states and construct the SpinInfo for a spin-1/2 particle
-//     else if(spin==PDT::Spin1Half) {
-//       // outgoing particle
-//       if((*pit)->id()>0) {
-// 	vector<LorentzSpinorBar> stemp;
-// 	SpinorBarWaveFunction(stemp,*pit,outgoing,true,true);
-//       }
-//       // outgoing antiparticle
-//       else {
-// 	vector<LorentzSpinor> stemp;
-// 	SpinorWaveFunction(stemp,*pit,outgoing,true,true);
-//       }
-//     }
-//     // calculate the basis states and construct the SpinInfo for a spin-1 particle
-//     else if(spin==PDT::Spin1) {
-//       bool massless((*pit)->id()==ParticleID::g||(*pit)->id()==ParticleID::gamma);
-//       vector<LorentzPolarizationVector> vtemp;
-//       VectorWaveFunction(vtemp,*pit,outgoing,true,massless,true,vector_phase);
-//     }
-//     else {
-//       throw Exception() << "Spins higher than 1 are not yet implemented in " 
-// 			<< "FS_QtildaShowerKinematics1to2::constructVertex() "
-// 			<< Exception::runerror;
-//     }
-//     // connect the spinInfo object to the vertex
-//     (*pit)->spinInfo()->setProductionVertex(vertex);
-//     (*pit)->set5Momentum(porig);
-//   }
-// }
-
 Energy QTildeSudakov::calculateScale(double zin, Energy pt, IdList ids,
 				     unsigned int iopt) {
   Energy2 tmin;

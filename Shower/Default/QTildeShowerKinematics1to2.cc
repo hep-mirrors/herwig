@@ -24,20 +24,21 @@ vector<Lorentz5Momentum> QTildeShowerKinematics1to2::getBasis() const {
 }
 
 void QTildeShowerKinematics1to2::setBasis(const Lorentz5Momentum &p,
-					  const Lorentz5Momentum & n) {
+					  const Lorentz5Momentum & n,
+					  Frame inframe) {
   _pVector=p;
   _nVector=n;
+  frame(inframe);
 }
 
 Lorentz5Momentum QTildeShowerKinematics1to2::
-sudakov2Momentum(double alpha, double beta, Energy px, 
-		 Energy py,unsigned int iopt) const {
+sudakov2Momentum(double alpha, double beta, Energy px, Energy py) const {
   if(isnan(beta)||isinf(beta)) 
     throw Exception() << "beta infinite in "
 		      << "QTildeShowerKinematics1to2::sudakov2Momentum()"
 		      << Exception::eventerror;
   Lorentz5Momentum dq;
-  if(iopt==0) {
+  if(frame()==BackToBack) {
     const Boost beta_bb = -(_pVector + _nVector).boostVector();
     Lorentz5Momentum p_bb = _pVector;
     Lorentz5Momentum n_bb = _nVector; 
@@ -69,7 +70,7 @@ sudakov2Momentum(double alpha, double beta, Energy px,
     dq.rescaleMass(); 
     // return the momentum
   }
-  else {
+  else if(frame()==Rest) {
     const Boost beta_bb = -pVector().boostVector();
     Lorentz5Momentum p_bb = pVector();
     Lorentz5Momentum n_bb = nVector(); 
@@ -98,5 +99,7 @@ sudakov2Momentum(double alpha, double beta, Energy px,
     dq.boost( -beta_bb ); 
     dq.rescaleMass();
   }
+  else
+    assert(false);
   return dq; 
 }
