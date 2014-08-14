@@ -89,6 +89,8 @@ CrossSection MEMatching::dSigHatDR() const {
   if ( bornPDF == 0.0 )
     return ZERO;
 
+  xme2 *= bornPDF;
+
   if ( theScreeningScale != ZERO ) {
     xme2 *= sqr(theScreeningScale) /
       ( sqr(dipole()->lastPt()) + sqr(theScreeningScale) );

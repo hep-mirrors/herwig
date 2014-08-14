@@ -599,11 +599,6 @@ void MatchboxFactory::setup() {
     boost::progress_display * progressBar =
       new boost::progress_display(realEmissionMEs().size(),generator()->log());
 
-    /*
-    size_t count = 0;
-    size_t allCount = realEmissionMEs().size();
-    */
-
     for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator real
 	    = realEmissionMEs().begin(); real != realEmissionMEs().end(); ++real ) {
 
@@ -627,19 +622,7 @@ void MatchboxFactory::setup() {
 
       sub->dependent().clear();
 
-      /*
-      ++count;
-
-      cerr << count << " / " << allCount << " : "
-	   << (**real).name() << "\n" << flush;
-      */
-
       sub->getDipoles();
-
-      /*
-      cerr << sub->dependent().size() << " dipoles from "
-	   << (**real).diagrams().size() << " diagrams\n" << flush;
-      */
 
       if ( sub->dependent().empty() ) {
 	// finite real contribution
@@ -658,11 +641,11 @@ void MatchboxFactory::setup() {
 	sub->doRealEmissionScales();
 
       subtractedMEs().push_back(sub);
-      if ( !meCorrectionsOnly() || (meCorrectionsOnly() && showerApproximation()->restrictPhasespace()) )
+      if ( !showerApproximation() || (showerApproximation() && showerApproximation()->hasHEvents()) )
 	MEs().push_back(sub);
 
       if ( showerApproximation() ) {
-	if ( virtualContributions() && !meCorrectionsOnly() ) {
+	if ( virtualContributions() && !meCorrectionsOnly() && !loopSimCorrections() ) {
 	  Ptr<SubtractedME>::ptr subv = new_ptr(*sub);
 	  string vname = sub->fullName() + ".SubtractionIntegral";
 	  if ( ! (generator()->preinitRegister(subv,vname) ) )
@@ -682,8 +665,7 @@ void MatchboxFactory::setup() {
 	  subtractedMEs().push_back(subv);
 	  MEs().push_back(subv);
 	}
-	if ( !meCorrectionsOnly() || (meCorrectionsOnly() && showerApproximation()->restrictPhasespace()) )
-	  sub->doRealShowerSubtraction();
+	sub->doRealShowerSubtraction();
 	if ( showerApproximation()->needsSplittingGenerator() )
 	  for ( set<cPDVector>::const_iterator p = bornProcs.begin();
 		p != bornProcs.end(); ++p ) {
