@@ -200,7 +200,8 @@ void BinSampler::fillRemappers(bool progress) {
 	r->second.fill(lastPoint()[r->first],w);
     }
 
-    ++(*progressBar);
+    if ( progressBar )
+      ++(*progressBar);
 
   }
 
