@@ -329,6 +329,11 @@ set CellGridSampler:MinimumSelection 0.000001
 set CellGridSampler:NIterations 1
 set CellGridSampler:EnhancementFactor 1
 set CellGridSampler:UseAllIterations No
+set CellGridSampler:RemapperPoints 100000
+set CellGridSampler:RemapperMinSelection 0.00001
+set CellGridSampler:RemapChannelDimension Yes
+set CellGridSampler:LuminosityMapperBins 20
+set CellGridSampler:GeneralMapperBins 0
 set Sampler:UpdateAfter 1000
 set Sampler:AddUpSamplers Off
 set Sampler:GlobalMaximumWeight Off
