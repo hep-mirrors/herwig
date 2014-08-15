@@ -320,6 +320,7 @@ create Herwig::ShowerApproximationGenerator MECorrectionHandler
 set MECorrectionHandler:ShowerApproximation MEMatching
 create Herwig::FlatInvertiblePhasespace InvertiblePhasespace
 set MECorrectionHandler:Phasespace InvertiblePhasespace
+set MECorrectionHandler:FreezeGrid 100000
 
 create Herwig::DipoleMatching DipoleMatching HwDipoleMatching.so
 set DipoleMatching:RestrictPhasespace On
