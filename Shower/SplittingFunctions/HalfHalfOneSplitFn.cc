@@ -116,23 +116,14 @@ DecayMatrixElement HalfHalfOneSplitFn::matrixElement(ShowerParticle & particle,S
   double root = sqrt(1.-(1.-z)*sqr(m)/z/t);
   double romz = sqrt(1.-z); 
   double rz   = sqrt(z);
-  kernal(0,0,0) = -root/romz;
-  kernal(0,0,2) =  root/romz*z;
-  kernal(0,1,0) =  mt*(1.-z)/rz;
+  Complex phase = exp(Complex(0.,1.)*phi);
+  kernal(0,0,0) = -root/romz*phase;
+  kernal(1,1,2) =  -conj(kernal(0,0,0));
+  kernal(0,0,2) =  root/romz*z/phase;
+  kernal(1,1,0) = -conj(kernal(0,0,2));
+  kernal(1,0,2) =  mt*(1.-z)/rz;
+  kernal(0,1,0) =  conj(kernal(1,0,2));
   kernal(0,1,2) =  0.;
   kernal(1,0,0) =  0.;
-  kernal(1,0,2) =  mt*(1.-z)/rz;
-  kernal(1,1,0) = -root/romz*z;
-  kernal(1,1,2) =  root/romz;
-  for(unsigned int lamA=0;lamA<2;++lamA) {
-    Complex factA = exp(Complex(0.,1.)*double(2*lamA-1)/2.*phi);
-    for(unsigned int lamB=0;lamB<2;++lamB) {
-      Complex factB = exp(-Complex(0.,1.)*double(2*lamB-1)/2.*phi);
-      for(unsigned int lamC=0;lamC<3;lamC+=2) {
-	Complex factC = exp(-Complex(0.,1.)*double(lamC-1)*phi);
-	kernal(lamA,lamB,lamC/2) *= factA*factB*factC;
-      }
-    }
-  }
   return kernal;
 }
