@@ -112,6 +112,8 @@ void MatchboxAmplitude::olpOrderFileProcesses(ostream& os,
     os << "cctree\n";
   } else if ( currentType == ProcessType::spinColourCorrelatedME2 ) {
     os << "sctree\n";
+  } else if ( currentType == ProcessType::loopInducedME2 ) {
+    os << "loopinduced\n";
   } else assert(false);
 
 

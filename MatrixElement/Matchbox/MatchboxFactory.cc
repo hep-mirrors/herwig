@@ -316,11 +316,20 @@ void MatchboxFactory::setup() {
 	}
       }
     }
- 
+
     if(bornMEs().empty()&&realEmissionMEs().empty() )
       throw InitException() << "No matrix elements have been found.\n\
       Please check if your order of Alpha_s and Alpha_ew have the right value.\n";
-      
+
+  }
+
+  if ( loopInducedMEs().empty() ) {
+
+    for ( vector<vector<string> >::const_iterator p = loopInducedProcesses.begin();
+	  p != loopInducedProcesses.end(); ++p ) {
+      vector<Ptr<MatchboxMEBase>::ptr> mes = makeMEs(*p,orderInAlphaS(),false);
+      copy(mes.begin(),mes.end(),back_inserter(loopInducedMEs()));
+    }
 
   }
 
@@ -352,6 +361,12 @@ void MatchboxFactory::setup() {
       virtualsAreBDK |= (**born).isBDK();
       virtualsAreExpanded |= (**born).isExpanded();
     }
+  }
+
+  // prepare the loop induced matrix elements
+  for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator looped
+	  = loopInducedMEs().begin(); looped != loopInducedMEs().end(); ++looped ) {
+    prepareME(*looped);
   }
 
   // check the additional insertion operators
@@ -450,6 +465,33 @@ void MatchboxFactory::setup() {
       MEs().push_back(bornme);
 
     }
+
+  }
+
+  if ( bornContributions() && !loopInducedMEs().empty() ) {
+
+    for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator looped
+	    = loopInducedMEs().begin(); looped != loopInducedMEs().end(); ++looped ) {
+
+      Ptr<MatchboxMEBase>::ptr loopme = (**looped).cloneMe();
+      string pname = fullName() + "/" + (**looped).name() + ".LoopInduced";
+      if ( ! (generator()->preinitRegister(loopme,pname) ) )
+	throw InitException() << "Matrix element " << pname << " already existing.";
+
+      if ( loopme->isOLPTree() ) {
+	int id = orderOLPProcess(loopme->subProcess(),
+				 (**looped).matchboxAmplitude(),
+				 ProcessType::loopInducedME2);
+	loopme->olpProcess(ProcessType::loopInducedME2,id);
+      }
+
+      loopme->needsNoCorrelations();
+
+      loopme->cloneDependencies();
+      MEs().push_back(loopme);
+
+    }
+
   }
 
   if ( virtualContributions() && !meCorrectionsOnly() && !loopSimCorrections() ) {
@@ -937,11 +979,11 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
      << theFactorizationScaleFactor << theRenormalizationScaleFactor
      << theFixedCouplings << theFixedQEDCouplings << theVetoScales
      << theAmplitudes
-     << theBornMEs << theVirtuals << theRealEmissionMEs
+     << theBornMEs << theVirtuals << theRealEmissionMEs << theLoopInducedMEs
      << theBornVirtualMEs << theSubtractedMEs << theFiniteRealMEs
      << theVerbose << theInitVerbose << theSubtractionData << theSubtractionPlotType
      << theSubtractionScatterPlot << thePoleData
-     << theParticleGroups << processes << realEmissionProcesses
+     << theParticleGroups << processes << loopInducedProcesses << realEmissionProcesses
      << theShowerApproximation << theSplittingDipoles
      << theRealEmissionScales << theAllProcesses
      << theOLPProcesses << theExternalAmplitudes
@@ -960,11 +1002,11 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
      >> theFactorizationScaleFactor >> theRenormalizationScaleFactor
      >> theFixedCouplings >> theFixedQEDCouplings >> theVetoScales
      >> theAmplitudes
-     >> theBornMEs >> theVirtuals >> theRealEmissionMEs
+     >> theBornMEs >> theVirtuals >> theRealEmissionMEs >> theLoopInducedMEs
      >> theBornVirtualMEs >> theSubtractedMEs >> theFiniteRealMEs
      >> theVerbose >> theInitVerbose >> theSubtractionData >> theSubtractionPlotType
      >> theSubtractionScatterPlot >> thePoleData
-     >> theParticleGroups >> processes >> realEmissionProcesses
+     >> theParticleGroups >> processes >> loopInducedProcesses >> realEmissionProcesses
      >> theShowerApproximation >> theSplittingDipoles
      >> theRealEmissionScales >> theAllProcesses
      >> theOLPProcesses >> theExternalAmplitudes
@@ -997,6 +1039,18 @@ string MatchboxFactory::doProcess(string in) {
     *p = StringUtils::stripws(*p);
   }
   processes.push_back(process);
+  return "";
+}
+
+string MatchboxFactory::doLoopInducedProcess(string in) {
+  vector<string> loopInducedProcess = StringUtils::split(in);
+  if ( loopInducedProcess.size() < 3 )
+    throw InitException() << "Invalid process.";
+  for ( vector<string>::iterator p = loopInducedProcess.begin();
+	p != loopInducedProcess.end(); ++p ) {
+    *p = StringUtils::stripws(*p);
+  }
+  loopInducedProcesses.push_back(loopInducedProcess);
   return "";
 }
 
@@ -1411,12 +1465,17 @@ void MatchboxFactory::Init() {
 
   static Command<MatchboxFactory> interfaceProcess
     ("Process",
-     "Set the process to consider.",
+     "Set the process(es) to consider.",
      &MatchboxFactory::doProcess, false);
+
+  static Command<MatchboxFactory> interfaceLoopInducedProcess
+    ("LoopInducedProcess",
+     "Set the loop induced process(es) to consider.",
+     &MatchboxFactory::doLoopInducedProcess, false);
 
   static Command<MatchboxFactory> interfaceSingleRealProcess
     ("SingleRealProcess",
-     "Set the process to consider.",
+     "Set the real emission process(es) to consider.",
      &MatchboxFactory::doSingleRealProcess, false);
 
   static Reference<MatchboxFactory,ShowerApproximation> interfaceShowerApproximation
