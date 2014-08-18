@@ -569,6 +569,10 @@ create Herwig::MatchboxPtScale MaxptScale
 set MaxptScale:JetFinder /Herwig/Cuts/JetFinder
 create Herwig::MatchboxLeptonMassScale LeptonMassScale
 create Herwig::MatchboxLeptonPtScale LeptonPtScale
+create Herwig::MatchboxHtScale HTScale
+set HTScale:JetFinder /Herwig/Cuts/JetFinder
+set HTScale:JetsOnly True
+set HTScale:DoAverage True
 
 set /Herwig/MatrixElements/Matchbox/Factory:ScaleChoice LeptonMassScale
 

@@ -173,6 +173,7 @@ set PPFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale
 
 # set PPFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPtScale
 # set PPFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/MaxptScale
+# set PPFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/HTScale
 # set PPFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonMassScale
 
 #>>>>>>>>>> HARD PROCESS SCALE VARIATION
