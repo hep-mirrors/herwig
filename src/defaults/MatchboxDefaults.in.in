@@ -327,7 +327,7 @@ set DipoleMatching:RestrictPhasespace On
 set DipoleMatching:BornScaleInSubtraction BornScale
 set DipoleMatching:RealEmissionScaleInSubtraction BornScale
 set DipoleMatching:EmissionScaleInSubtraction BornScale
-set DipoleMatching:FFPtCut 1.0*GeV
+set DipoleMatching:FFPtCut 1.014259*GeV
 set DipoleMatching:FIPtCut 1.0*GeV
 set DipoleMatching:IIPtCut 1.0*GeV
 
