@@ -99,16 +99,16 @@ bool HalfHalfOneSplitFn::accept(const IdList &ids) const {
 
 vector<pair<int, Complex> > 
 HalfHalfOneSplitFn::generatePhi(ShowerParticle & ,ShoKinPtr ,
-				const double z, const Energy2, const IdList & ,
+				const double, const Energy2, const IdList & ,
 				const RhoDMatrix &) {
   // no dependence on the spin density matrix, dependence on off-diagonal terms cancels
   // and rest = splitting function for Tr(rho)=1 as required by defn
   return vector<pair<int, Complex> >(1,make_pair(0,1.));
 }
 
-DecayMatrixElement HalfHalfOneSplitFn::matrixElement(ShowerParticle & particle,ShoKinPtr showerkin,
+DecayMatrixElement HalfHalfOneSplitFn::matrixElement(ShowerParticle & particle,ShoKinPtr,
 						     const double z, const Energy2 t, 
-						     const IdList & ids, const double phi) {
+						     const IdList &, const double phi) {
   // calculate the kernal
   DecayMatrixElement kernal(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin1);
   Energy m = particle.dataPtr()->mass();

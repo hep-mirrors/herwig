@@ -124,7 +124,6 @@ DecayMatrixElement OneHalfHalfSplitFn::matrixElement(ShowerParticle &,ShoKinPtr,
   // calculate the kernal
   DecayMatrixElement kernal(PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half);
   double mt = getParticleData(ids[1])->mass()/sqrt(t);
-  double mt = 0.;
   double root = sqrt(1.-sqr(mt)/z/(1.-z));
   kernal(0,0,0) = mt/sqrt(z*(1.-z));
   kernal(2,1,1) = kernal(0,0,0);
