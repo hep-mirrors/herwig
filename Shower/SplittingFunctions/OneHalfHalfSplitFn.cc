@@ -109,7 +109,7 @@ OneHalfHalfSplitFn::generatePhi(ShowerParticle & ,ShoKinPtr ,
   Energy mq = getParticleData(ids[1])->mass();
   Energy2 mq2 = sqr(mq);
   double fact = z*(1.-z)-mq2/t;
-  double max = 1.-2.*fact*(1.+2.*modRho);
+  double max = 1.+2.*fact*(-1.+2.*modRho);
   vector<pair<int, Complex> > output;
   output.push_back(make_pair( 0,(rho(0,0)+rho(2,2))*(1.-2.*fact)/max));
   output.push_back(make_pair(-2,2.*fact*rho(0,2)/max));
@@ -124,14 +124,15 @@ DecayMatrixElement OneHalfHalfSplitFn::matrixElement(ShowerParticle &,ShoKinPtr,
   // calculate the kernal
   DecayMatrixElement kernal(PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half);
   double mt = getParticleData(ids[1])->mass()/sqrt(t);
+  double mt = 0.;
   double root = sqrt(1.-sqr(mt)/z/(1.-z));
   kernal(0,0,0) = mt/sqrt(z*(1.-z));
-  kernal(1,1,1) = -kernal(0,0,0);
+  kernal(2,1,1) = kernal(0,0,0);
   kernal(0,0,1) = -z*root*exp(-ii*phi);
-  kernal(1,1,0) = -conj(kernal(0,0,1));
+  kernal(2,1,0) = -conj(kernal(0,0,1));
   kernal(0,1,0) = (1.-z)*exp(-ii*phi)*root;
-  kernal(1,0,1) = -conj(kernal(0,1,0));
+  kernal(2,0,1) = -conj(kernal(0,1,0));
   kernal(0,1,1) = 0.;
-  kernal(1,0,0) = 0.;
+  kernal(2,0,0) = 0.;
   return kernal;
 }

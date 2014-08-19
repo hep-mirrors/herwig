@@ -88,15 +88,15 @@ bool OneOneOneSplitFn::accept(const IdList & ids) const {
 
 vector<pair<int, Complex> > 
 OneOneOneSplitFn::generatePhi(ShowerParticle & ,ShoKinPtr ,
-				const double z, const Energy2, const IdList &,
-				const RhoDMatrix & rho) { 
+			      const double z, const Energy2, const IdList &,
+			      const RhoDMatrix & rho) {
   assert(rho.iSpin()==PDT::Spin1);
   double modRho = abs(rho(0,2));
-  double max = 2.*z*modRho*(1.-z)+sqr(+1.-(1.-z)*z)/(z*(1.-z));
+  double max = 2.*z*modRho*(1.-z)+sqr(1.-(1.-z)*z)/(z*(1.-z));
   vector<pair<int, Complex> > output;
   output.push_back(make_pair( 0,(rho(0,0)+rho(2,2))*sqr(1.-(1.-z)*z)/(z*(1.-z))/max));
-  output.push_back(make_pair(-2,-rho(0,2)*z*(1.-z)));
-  output.push_back(make_pair( 2,-rho(2,0)*z*(1.-z)));
+  output.push_back(make_pair(-2,-rho(0,2)*z*(1.-z)/max));
+  output.push_back(make_pair( 2,-rho(2,0)*z*(1.-z)/max));
   return output;
 }
 
@@ -105,19 +105,16 @@ DecayMatrixElement OneOneOneSplitFn::matrixElement(ShowerParticle &,ShoKinPtr,
 						     const IdList &, const double phi) {
   // calculate the kernal
   DecayMatrixElement kernal(PDT::Spin1,PDT::Spin1,PDT::Spin1);
-  double root = sqrt(z*(1.-z));
   double omz = 1.-z;
-  double fact = 1./z/(1.-z)-1.;
-  for(int lamA=-1;lamA<2;lamA+=2) {
-    Complex factA = exp(Complex(0.,1.)*double(lamA)*phi);
-    for(int lamB=-1;lamB<2;lamB+=2) {
-      Complex factB = exp(-Complex(0.,1.)*double(lamB)*phi);
-      for(int lamC=-1;lamC<2;lamC+=2) {
-	Complex factC = exp(-Complex(0.,1.)*double(lamC)*phi);
-	kernal(1+lamA,1+lamB,1+lamC) = -0.5*root*factA*factB*factC*
-	  (lamA*lamB*lamC*fact+lamA+lamB/z+lamC/omz);
-      }
-    }
-  }
+  double root = sqrt(z*omz);
+  Complex phase = exp(Complex(0.,1.)*phi);
+  kernal(0,0,0) =  phase/root;
+  kernal(2,2,2) = -conj(kernal(0,0,0));
+  kernal(0,0,2) = -sqr(z)/root/phase;
+  kernal(2,2,0) = -conj(kernal(0,0,2));
+  kernal(0,2,0) = -sqr(omz)/root/phase;
+  kernal(2,0,2) = -conj(kernal(0,2,0));
+  kernal(0,2,2) = 0.;
+  kernal(2,0,0) = 0.;
   return kernal;
 }
