@@ -114,7 +114,7 @@ ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
 	alphaSVeto(sqr(z()*(1.-z()))*t));
   if(t > ZERO) q_ = sqrt(t);
   else q_ = -1.*MeV;
-  phi(Constants::twopi*UseRandom::rnd());
+  phi(0.);
   if(q_ < ZERO) return ShoKinPtr();
   // return the ShowerKinematics object
   return createFinalStateBranching(q_,z(),phi(),pT()); 
@@ -377,9 +377,13 @@ double QTildeSudakov::generatePhi(ShowerParticle & particle, const IdList & ids,
     wgt = 0.;
     for(unsigned int ix=0;ix<wgts.size();++ix) {
       if(wgts[ix].first==0)
-	wgt += wgts[ix].second;
+  	wgt += wgts[ix].second;
       else
-	wgt += exp(double(wgts[ix].first)*ii*phi)*wgts[ix].second;
+  	wgt += exp(double(wgts[ix].first)*ii*phi)*wgts[ix].second;
+    }
+    if(wgt.real()>1.) {
+      cerr << "testing weight problem " << wgt << " " << wgt.real()-1. 
+  	   << " " << ids[0] << " " << ids[1] << " " << ids[2] << "\n";
     }
   }
   while(wgt.real()<UseRandom::rnd());
@@ -393,8 +397,6 @@ double QTildeSudakov::generatePhi(ShowerParticle & particle, const IdList & ids,
   // set the incoming particle for the vertex
   inspin->decayVertex(Svertex);
   // return the azimuthal angle (remember this is phi w.r.t. the previous branching)
-  phi -= phi0;
-  if(phi<0.) phi += Constants::twopi;
   return phi;
 }
 
