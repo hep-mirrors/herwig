@@ -56,8 +56,7 @@ RhoDMatrix ShowerVertex::getDMatrix(int) const {
     Dout.push_back(outgoing()[ix]->DMatrix());
   }
   // calculate the spin density matrix and return the answer
-  RhoDMatrix temp = matrixElement_.calculateDMatrix(Dout);
-  return temp;
+  return matrixElement_.calculateDMatrix(Dout);
 }
 
 RhoDMatrix ShowerVertex::mapIncoming(RhoDMatrix rho) const {
