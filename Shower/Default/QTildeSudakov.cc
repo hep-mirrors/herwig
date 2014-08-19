@@ -331,7 +331,7 @@ double QTildeSudakov::generatePhi(ShowerParticle & particle, const IdList & ids,
   RhoDMatrix rho=inspin->rhoMatrix();
   // map to the shower basis if needed
   if(needMapping) {
-    RhoDMatrix rhop(rho.iSpin());
+    RhoDMatrix rhop(rho.iSpin(),false);
     for(int ixa=0;ixa<rho.iSpin();++ixa) {
       for(int ixb=0;ixb<rho.iSpin();++ixb) {
 	for(int iya=0;iya<rho.iSpin();++iya) {
@@ -381,9 +381,12 @@ double QTildeSudakov::generatePhi(ShowerParticle & particle, const IdList & ids,
       else
   	wgt += exp(double(wgts[ix].first)*ii*phi)*wgts[ix].second;
     }
-    if(wgt.real()>1.) {
+    if(wgt.real()-1.>1e-10) {
       cerr << "testing weight problem " << wgt << " " << wgt.real()-1. 
-  	   << " " << ids[0] << " " << ids[1] << " " << ids[2] << "\n";
+  	   << " " << ids[0] << " " << ids[1] << " " << ids[2] << " " << " " << z << " " << phi << "\n";
+      cerr << "Weights \n";
+      for(unsigned int ix=0;ix<wgts.size();++ix)
+	cerr << wgts[ix].first << " " << wgts[ix].second << "\n";
     }
   }
   while(wgt.real()<UseRandom::rnd());
