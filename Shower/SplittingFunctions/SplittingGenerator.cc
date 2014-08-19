@@ -298,7 +298,7 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
   // If a branching has been selected initialize it
   kinematics->initialize(particle,PPtr());
   // and generate phi
-  sudakov->generatePhi(particle,ids,kinematics);
+  kinematics->phi(sudakov->generatePhi(particle,ids,kinematics));
   // and return it
   return Branching(kinematics, ids,sudakov,partnerType);
 }
