@@ -57,7 +57,7 @@ void HJetsAnalysis::persistentInput(PersistentIStream &, int) {}
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<HJetsAnalysis,Herwig::JetsPlusAnalysis>
-  describeHerwigHJetsAnalysis("Herwig::HJetsAnalysis", "HwJetsAnalysis.so");
+  describeHerwigHJetsAnalysis("Herwig::HJetsAnalysis", "JetCuts.so HwJetsAnalysis.so");
 
 void HJetsAnalysis::Init() {
 

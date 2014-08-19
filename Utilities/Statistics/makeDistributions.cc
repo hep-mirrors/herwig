@@ -71,7 +71,7 @@ int main(int argc, char* argv[]) {
 	  combined.histograms().begin(); h != combined.histograms().end(); ++h ) {
     Distribution dist(h->second,nPoints);
     // testing only, dump makePlots
-    // dist.toMakePlots(outName);
+    dist.toMakePlots(outName);
     xhistos.append(dist.toXML());
   }
 
