@@ -234,7 +234,8 @@ private:
     ObjectProperties(const string& name, Energy ecm)
       : pt(name + "Pt",Statistics::Histogram::regularBinEdges(0,ecm/GeV/2.,(unsigned int)(ecm/GeV/2.)),true,false),
 	y(name + "Y",Statistics::Histogram::regularBinEdges(-6,6,120),false,false),
-	phi(name + "Phi",Statistics::Histogram::regularBinEdges(0.,2.*Constants::pi,32),pair<double,double>(0.,2.*Constants::pi)),
+	phi(name + "Phi",Statistics::Histogram::regularBinEdges(-Constants::pi,Constants::pi,32),
+	    pair<double,double>(-Constants::pi,Constants::pi)),
 	mass(name + "Mass",Statistics::Histogram::regularBinEdges(0,ecm/GeV,(unsigned int)(ecm/GeV)),true,false) {}
 
     /**
