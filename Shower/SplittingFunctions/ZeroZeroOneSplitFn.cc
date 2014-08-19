@@ -15,6 +15,7 @@
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Utilities/DescribeClass.h"
+#include "Herwig++/Shower/Base/ShowerParticle.h"
 
 using namespace Herwig;
 
@@ -90,4 +91,25 @@ bool ZeroZeroOneSplitFn::accept(const IdList &ids) const {
   if(q->iSpin()!=PDT::Spin0 ||
      g->iSpin()!=PDT::Spin1) return false;
   return checkColours(ids);
+}
+
+
+vector<pair<int, Complex> > 
+ZeroZeroOneSplitFn::generatePhi(ShowerParticle & ,ShoKinPtr ,
+				const double, const Energy2, const IdList &,
+				const RhoDMatrix &) {
+  // scalar so no dependence
+  return vector<pair<int, Complex> >(1,make_pair(0,1.));
+}
+
+DecayMatrixElement ZeroZeroOneSplitFn::matrixElement(ShowerParticle & particle,ShoKinPtr,
+						     const double z, const Energy2 t, 
+						     const IdList &, const double phi) {
+  // calculate the kernal
+  DecayMatrixElement kernal(PDT::Spin0,PDT::Spin0,PDT::Spin1);
+  Energy m = particle.dataPtr()->mass();
+  double mt = m/sqrt(t);
+  kernal(0,0,0) = -exp(Complex(0.,1.)*phi)*sqrt(1.-(1.-z)*sqr(m)/z/t)*sqrt(z/(1.-z));
+  kernal(0,0,2) = -conj(kernal(0,0,0));
+  return kernal;
 }
