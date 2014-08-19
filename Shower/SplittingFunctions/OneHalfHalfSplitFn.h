@@ -122,8 +122,7 @@ public:
    * @return The weight
    */
   virtual vector<pair<int,Complex> >
-  generatePhi(ShowerParticle & particle,ShoKinPtr showerkin,
-	      const double z, const Energy2 t, const IdList & ids,
+  generatePhiForward(const double z, const Energy2 t, const IdList & ids,
 	      const RhoDMatrix &);
   
   /**

@@ -98,8 +98,7 @@ bool HalfHalfOneSplitFn::accept(const IdList &ids) const {
 }
 
 vector<pair<int, Complex> > 
-HalfHalfOneSplitFn::generatePhi(ShowerParticle & ,ShoKinPtr ,
-				const double, const Energy2, const IdList & ,
+HalfHalfOneSplitFn::generatePhiForward(const double, const Energy2, const IdList & ,
 				const RhoDMatrix &) {
   // no dependence on the spin density matrix, dependence on off-diagonal terms cancels
   // and rest = splitting function for Tr(rho)=1 as required by defn

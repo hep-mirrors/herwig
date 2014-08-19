@@ -316,8 +316,9 @@ bool QTildeSudakov::computeSpaceLikeLimits(Energy2 & t, double x) {
     return true;
 }
 
-double QTildeSudakov::generatePhi(ShowerParticle & particle, const IdList & ids,
-				  ShoKinPtr kinematics) {
+double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
+					 const IdList & ids,
+					 ShoKinPtr kinematics) {
   // no correlations, return flat phi
   if(! ShowerHandler::currentHandler()->evolver()->correlations())
     return Constants::twopi*UseRandom::rnd();
@@ -370,7 +371,7 @@ double QTildeSudakov::generatePhi(ShowerParticle & particle, const IdList & ids,
   double phi;
   Complex wgt;
   vector<pair<int,Complex> > 
-    wgts = splittingFn()->generatePhi(particle,kinematics,z,t,ids,rho);
+    wgts = splittingFn()->generatePhiForward(z,t,ids,rho);
   static const Complex ii(0.,1.);
   do {
     phi = Constants::twopi*UseRandom::rnd();

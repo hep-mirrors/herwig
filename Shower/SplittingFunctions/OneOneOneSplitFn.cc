@@ -87,8 +87,7 @@ bool OneOneOneSplitFn::accept(const IdList & ids) const {
 }
 
 vector<pair<int, Complex> > 
-OneOneOneSplitFn::generatePhi(ShowerParticle & ,ShoKinPtr ,
-			      const double z, const Energy2, const IdList &,
+OneOneOneSplitFn::generatePhiForward(const double z, const Energy2, const IdList &,
 			      const RhoDMatrix & rho) {
   assert(rho.iSpin()==PDT::Spin1);
   double modRho = abs(rho(0,2));

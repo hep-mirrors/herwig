@@ -101,8 +101,7 @@ bool OneHalfHalfSplitFn::accept(const IdList &ids) const {
 }
 
 vector<pair<int, Complex> > 
-OneHalfHalfSplitFn::generatePhi(ShowerParticle & ,ShoKinPtr ,
-				const double z, const Energy2 t, const IdList & ids,
+OneHalfHalfSplitFn::generatePhiForward(const double z, const Energy2 t, const IdList & ids,
 				const RhoDMatrix & rho) { 
   assert(rho.iSpin()==PDT::Spin1);
   double modRho = abs(rho(0,2));

@@ -131,9 +131,9 @@ void SplittingFunction::Init() {
 }
 
 vector<pair<int,Complex> >  
-SplittingFunction::generatePhi(ShowerParticle &,ShoKinPtr, const double, const Energy2,
+SplittingFunction::generatePhiForward(const double, const Energy2,
 			       const IdList &, const RhoDMatrix &) {
-  cerr << "Using SplittingFunction::generatePhi()" << fullName() << "\n";
+  cerr << "Using SplittingFunction::generatePhiForward()" << fullName() << "\n";
   assert(false);
 }
 

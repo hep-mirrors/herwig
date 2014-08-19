@@ -200,8 +200,8 @@ public:
    * @param ids The PDG codes of the particles in the branchings
    * @param The Shower kinematics
    */
-  virtual double generatePhi(ShowerParticle & particle,const IdList & ids,
-			     ShoKinPtr kinematics)=0;
+  virtual double generatePhiForward(ShowerParticle & particle,const IdList & ids,
+				    ShoKinPtr kinematics)=0;
 
   /**
    *  Methods to provide public access to the private member variables

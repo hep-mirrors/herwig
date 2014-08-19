@@ -93,8 +93,8 @@ public:
    * @param ids The PDG codes of the particles in the branchings
    * @param The Shower kinematics
    */
-  virtual double generatePhi(ShowerParticle & particle,const IdList & ids,
-			     ShoKinPtr kinematics);
+  virtual double generatePhiForward(ShowerParticle & particle,const IdList & ids,
+				    ShoKinPtr kinematics);
   /**
    *  Method to return the evolution scale given the
    *  transverse momentum, \f$p_T\f$ and \f$z\f$.
