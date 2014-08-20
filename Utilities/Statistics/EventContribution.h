@@ -47,7 +47,7 @@ namespace Statistics {
      * Return the normalized overlap with an interval
      */
     double overlap(const std::pair<double,double>& interval) const {
-      return calculateOverlap(interval,support());
+      return calculateOverlap(interval,support(),support().second-support().first);
     }
 
     /**
@@ -119,10 +119,13 @@ namespace Statistics {
     double overlap(const std::pair<double,double>& interval,
 		   const std::pair<double,double>& periodicity) const {
       if ( support().first < support().second )
-	return calculateOverlap(interval,support());
+	return calculateOverlap(interval,support(),support().second-support().first);
+      double norm = 
+	support().second - periodicity.first +
+	periodicity.second - support().first;
       return
-	calculateOverlap(interval,std::make_pair(periodicity.first,support().second)) +
-	calculateOverlap(interval,std::make_pair(support().first,periodicity.second));
+	calculateOverlap(interval,std::make_pair(periodicity.first,support().second),norm) +
+	calculateOverlap(interval,std::make_pair(support().first,periodicity.second),norm);
     }
 
   private:
@@ -131,16 +134,23 @@ namespace Statistics {
      * Calculate the normalized overlap with an interval
      */
     double calculateOverlap(const std::pair<double,double>& interval,
-			    const std::pair<double,double>& newSupport) const {
+			    const std::pair<double,double>& newSupport,
+			    double norm) const {
       if ( newSupport.first == newSupport.second ) {
 	if ( newSupport.first >= interval.first &&
 	     newSupport.second < interval.second )
 	  return 1.0;
 	return 0.0;
       }
+      if ( newSupport.first <= interval.first &&
+	   newSupport.second <= interval.first )
+	return 0.0;
+      if ( newSupport.first >= interval.second &&
+	   newSupport.second >= interval.second )
+	return 0.0;
       double lower = std::max(newSupport.first,interval.first);
       double upper = std::min(newSupport.second,interval.second);
-      return std::max(0.0,(upper-lower)/(newSupport.second-newSupport.first));
+      return std::max(0.0,(upper-lower)/norm);
     }
 
     /**

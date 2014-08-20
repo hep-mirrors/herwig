@@ -231,12 +231,12 @@ private:
     /**
      * Construct given Ecm
      */
-    ObjectProperties(const string& name, Energy ecm)
-      : pt(name + "Pt",Statistics::Histogram::regularBinEdges(0,ecm/GeV/2.,(unsigned int)(ecm/GeV/2.)),true,false),
+    ObjectProperties(const string& name, Energy)
+      : pt(name + "Pt",Statistics::Histogram::regularBinEdges(0,1000,1000),true,false),
 	y(name + "Y",Statistics::Histogram::regularBinEdges(-6,6,120),false,false),
 	phi(name + "Phi",Statistics::Histogram::regularBinEdges(-Constants::pi,Constants::pi,32),
-	    pair<double,double>(-Constants::pi,Constants::pi)),
-	mass(name + "Mass",Statistics::Histogram::regularBinEdges(0,ecm/GeV,(unsigned int)(ecm/GeV)),true,false) {}
+	    make_pair(-Constants::pi,Constants::pi)),
+	mass(name + "Mass",Statistics::Histogram::regularBinEdges(0,1000,1000),true,false) {}
 
     /**
      * Count given momentum, weight and id
@@ -327,7 +327,8 @@ private:
     PairProperties(const string& name, Energy ecm)
       : ObjectProperties(name,ecm),
 	deltaY(name + "DeltaY",Statistics::Histogram::regularBinEdges(0,6,60),true,false),
-	deltaPhi(name + "DeltaPhi",Statistics::Histogram::regularBinEdges(-Constants::pi,Constants::pi,32),true,true),
+	deltaPhi(name + "DeltaPhi",Statistics::Histogram::regularBinEdges(-Constants::pi,Constants::pi,32),
+		 make_pair(-Constants::pi,Constants::pi)),
 	deltaR(name + "DeltaR",Statistics::Histogram::regularBinEdges(0,10,100),true,false) {}
 
     /**
@@ -405,7 +406,7 @@ protected:
       theJetProperties.find(id);
     if ( h != theJetProperties.end() )
       return h->second;
-    ostringstream ids; ids << "jet" << id;
+    ostringstream ids; ids << "Jet" << id;
     return 
       theJetProperties[id] = 
       ObjectProperties(ids.str(),generator()->maximumCMEnergy());
@@ -419,7 +420,7 @@ protected:
       return theJetInclusiveProperties;
     return
       theJetInclusiveProperties = 
-      ObjectProperties("jetInclusive",generator()->maximumCMEnergy());
+      ObjectProperties("JetInclusive",generator()->maximumCMEnergy());
   }
 
   /**
@@ -442,7 +443,7 @@ protected:
       theJetPairProperties.find(make_pair(id,jd));
     if ( h != theJetPairProperties.end() )
       return h->second;
-    ostringstream ids; ids << "jet" << id << jd;
+    ostringstream ids; ids << "Jet" << id << jd;
     return theJetPairProperties[make_pair(id,jd)] = 
       PairProperties(ids.str(),generator()->maximumCMEnergy());
   }
@@ -455,7 +456,7 @@ protected:
       theJetHardPairProperties.find(make_pair(id,jd));
     if ( h != theJetHardPairProperties.end() )
       return h->second;
-    ostringstream ids; ids << "jet" << id << jd;
+    ostringstream ids; ids << "Jet" << id << jd;
     return theJetHardPairProperties[make_pair(id,jd)] = 
       PairProperties(ids.str(),generator()->maximumCMEnergy());
   }

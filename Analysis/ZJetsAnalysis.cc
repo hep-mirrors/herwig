@@ -35,17 +35,22 @@ void ZJetsAnalysis::reconstructHardObjects(ParticleVector& parts) {
     if ( (**eplus).id() == ParticleID::eplus )
       break;
   }
+  if ( eplus == parts.end() )
+    throw Exception() << "No e+e- pair found in ZJetsAnalysis"
+		      << Exception::abortnow;
+  LorentzMomentum peplus = (**eplus).momentum();
+  parts.erase(eplus);
   ParticleVector::iterator eminus = parts.begin();
   for ( ; eminus != parts.end(); ++eminus ) {
     if ( (**eminus).id() == ParticleID::eminus )
       break;
   }
-  if ( eplus == parts.end() || eminus == parts.end() )
+  if ( eminus == parts.end() )
     throw Exception() << "No e+e- pair found in ZJetsAnalysis"
 		      << Exception::abortnow;
-  hardObjectMomentum("Z") = (**eplus).momentum() + (**eminus).momentum();
-  parts.erase(eplus);
+  LorentzMomentum peminus = (**eminus).momentum();
   parts.erase(eminus);
+  hardObjectMomentum("Z") = peplus + peminus;
 }
 
 // If needed, insert default implementations of virtual function defined
