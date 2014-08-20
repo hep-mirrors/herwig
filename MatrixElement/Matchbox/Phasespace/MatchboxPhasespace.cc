@@ -26,7 +26,7 @@
 using namespace Herwig;
 
 MatchboxPhasespace::MatchboxPhasespace() 
-  : singularCutoff(10*GeV), theUseMassGenerators(false) {}
+  : singularCutoff(10*GeV), theUseMassGenerators(false), theLoopParticleIdMin(200001), theLoopParticleIdMax(200100) {}
 
 MatchboxPhasespace::~MatchboxPhasespace() {}
 
@@ -278,6 +278,18 @@ MatchboxPhasespace::timeLikeWeight(const Tree2toNDiagram& diag,
   Energy2 mass2 = sqr(diag.allPartons()[branch]->mass());
   Energy2 width2 = sqr(diag.allPartons()[branch]->width());
 
+if ( diag.allPartons()[branch]->id() >= theLoopParticleIdMin
+     && diag.allPartons()[branch]->id() <= theLoopParticleIdMax ) { // "loop particle"
+
+   if ( abs((res.second.m2()-mass2)/lastSHat()) > flatCut ) {
+     res.first /=
+       abs((res.second.m2()-mass2)/GeV2);
+     res.first *=
+       log(abs((res.second.m2()-mass2)/GeV2)); // normal. of the argument in the log?
+   }
+
+} else {
+
   if ( width2 == ZERO ) {
     if ( abs((res.second.m2()-mass2)/lastSHat()) > flatCut )
       res.first /=
@@ -287,6 +299,8 @@ MatchboxPhasespace::timeLikeWeight(const Tree2toNDiagram& diag,
       (sqr((res.second.m2()-mass2)/GeV2) +
        mass2*width2/sqr(GeV2))/(abs(res.second.m2()/GeV2));
   }
+
+}
 
   return res;
 
@@ -324,6 +338,18 @@ double MatchboxPhasespace::spaceLikeWeight(const Tree2toNDiagram& diag,
   Energy2 mass2 = sqr(diag.allPartons()[branch]->mass());
   Energy2 width2 = sqr(diag.allPartons()[branch]->width());
 
+if ( diag.allPartons()[branch]->id() >= theLoopParticleIdMin
+     && diag.allPartons()[branch]->id() <= theLoopParticleIdMax ) { // "loop particle"
+
+   if ( abs((res.second.m2()-mass2)/lastSHat()) > flatCut ) {
+     res.first /=
+       abs((res.second.m2()-mass2)/GeV2);
+     res.first *=
+       log(abs((res.second.m2()-mass2)/GeV2)); // normal. of the argument in the log?
+   }
+
+} else {
+
   if ( width2 == ZERO ) {
     if ( abs((res.second.m2()-mass2)/lastSHat()) > flatCut )
       res.first /=
@@ -333,6 +359,8 @@ double MatchboxPhasespace::spaceLikeWeight(const Tree2toNDiagram& diag,
       (sqr((res.second.m2()-mass2)/GeV2) +
        mass2*width2/sqr(GeV2))/(abs(res.second.m2()/GeV2));
   }
+
+}
 
   return
     res.first * spaceLikeWeight(diag,res.second,children.first,flatCut);
@@ -405,7 +433,7 @@ bool MatchboxPhasespace::matchConstraints(const vector<Lorentz5Momentum>& moment
 
 void MatchboxPhasespace::persistentOutput(PersistentOStream & os) const {
   os << theLastXComb
-     << ounit(singularCutoff,GeV) << theUseMassGenerators;
+     << ounit(singularCutoff,GeV) << theUseMassGenerators << theLoopParticleIdMin << theLoopParticleIdMax;
   //<< couplings; // no idea why this isn't working
   os << couplings.size();
   for ( map<LTriple,double>::const_iterator cit = 
@@ -415,7 +443,7 @@ void MatchboxPhasespace::persistentOutput(PersistentOStream & os) const {
 
 void MatchboxPhasespace::persistentInput(PersistentIStream & is, int) {
   is >> theLastXComb
-     >> iunit(singularCutoff,GeV) >> theUseMassGenerators;
+     >> iunit(singularCutoff,GeV) >> theUseMassGenerators >> theLoopParticleIdMin >> theLoopParticleIdMax;
   //>> couplings;  // no idea why this isn't working
   couplings.clear();
   size_t size;
@@ -475,6 +503,22 @@ void MatchboxPhasespace::Init() {
     ("SetPhysicalCoupling",
      "",
      &MatchboxPhasespace::doSetPhysicalCoupling, false);
+
+  static Parameter<MatchboxPhasespace,int> interfaceLoopParticleIdMin
+    ("LoopParticleIdMin",
+     "First id in a range of id's meant to denote fictitious "
+     "'ghost' particles to be used by the diagram generator "
+     "in loop induced processes.",
+     &MatchboxPhasespace::theLoopParticleIdMin, 200001, 0, 0,
+     false, false, Interface::lowerlim);
+
+  static Parameter<MatchboxPhasespace,int> interfaceLoopParticleIdMax
+    ("LoopParticleIdMax",
+     "Last id in a range of id's meant to denote fictitious "
+     "'ghost' particles to be used by the diagram generator "
+     "in loop induced processes.",
+     &MatchboxPhasespace::theLoopParticleIdMax, 200100, 0, 0,
+     false, false, Interface::lowerlim);
 
 }
 
