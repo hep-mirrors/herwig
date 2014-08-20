@@ -275,7 +275,7 @@ void MEChargedCurrentDIS::constructVertex(tSubProPtr sub) {
   SpinorWaveFunction   (f2,hard[order[1]],incoming,!qorder,true);
   SpinorBarWaveFunction(a1,hard[order[2]],outgoing, lorder,true);
   SpinorBarWaveFunction(a2,hard[order[3]],outgoing, qorder,true);
-  helicityME(f1,f2,a1,a2,lorder,qorder,false);
+  helicityME(f1,f2,a1,a2,lorder,qorder,true);
   // construct the vertex
   HardVertexPtr hardvertex=new_ptr(HardVertex());
   // set the matrix element for the vertex
