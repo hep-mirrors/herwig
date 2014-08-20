@@ -47,7 +47,7 @@ Energy2 MatchboxPtScale::renormalizationScale() const {
 
   theJetFinder->cluster(pd, p, cuts, t1, t2);
 
-  Energy2 maxpt2 = sqr(generator()->maximumCMEnergy());
+  Energy2 maxpt2 = ZERO;
   tcPDVector::const_iterator itpd = pd.begin();
   for (vector<LorentzMomentum>::const_iterator itp = p.begin() ;
        itp != p.end(); ++itp, ++itpd )
