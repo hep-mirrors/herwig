@@ -1,0 +1,138 @@
+
+##### Set up effective vertices for loop induced processes ########################
+##### To be included from LHC-Matchbox.in, if loop induced ########################
+##### processes are under consideration.                   ########################
+
+##### Loop Particles #####
+
+cd /Herwig/Particles/
+
+# neutral loop particle
+# effect of a loop transmitting no color and no charge
+
+create ThePEG::ParticleData neutralLoopParticle
+setup neutralLoopParticle 200002 nLP 0. 0. 0. 0 0 0 1 1
+
+# charged and colored loop particles
+# effects of loops transmitting color and charge
+
+create ThePEG::ParticleData ccLP-    
+setup ccLP-  -200004 ccLP- 0. 0. 0. 0 -3 8  1 1
+create ThePEG::ParticleData ccLP+
+setup ccLP+  200004 ccLP+ 0. 0. 0. 0 3 8 1 1
+makeanti ccLP- ccLP+
+
+# colored loop particle
+# effect of a loop transmitting color but no charge
+
+create ThePEG::ParticleData cLP
+setup cLP 200001 cLP 0. 0. 0. 0 0 8 1 1 
+
+
+##### Vertices #####
+
+cd /Herwig/Vertices/
+
+# self interactions of loop particles
+# (nLP,nLP,nLP), (cLP,cLP,cLP), (cLP,cLP,nLP)
+#create Herwig::GenericSVVVertex genericSVVVertex4 
+#create Herwig::GenericSVVVertex genericSVVVertex5 
+#create Herwig::GenericSVVVertex genericSVVVertex6 
+#do genericSVVVertex4:pids 200002 200002 200002
+#do genericSVVVertex5:pids 200001 200001 200001
+#do genericSVVVertex6:pids 200001 200001 200002
+#set genericSVVVertex4:OrderInAlphaS 0
+#set genericSVVVertex4:OrderInAlphaEW 0
+#set genericSVVVertex5:OrderInAlphaS 0
+#set genericSVVVertex5:OrderInAlphaEW 0
+#set genericSVVVertex6:OrderInAlphaS 0
+#set genericSVVVertex6:OrderInAlphaEW 0
+#insert /Herwig/MatrixElements/Matchbox/PPFactory:DiagramGenerator:Vertices 0 genericSVVVertex4
+#insert /Herwig/MatrixElements/Matchbox/PPFactory:DiagramGenerator:Vertices 0 genericSVVVertex5
+#insert /Herwig/MatrixElements/Matchbox/PPFactory:DiagramGenerator:Vertices 0 genericSVVVertex6
+
+# splits of loop particles to (g,g), (gamma,gamma) or (gamma,g)
+# (g,g,nLP), (gamma,gamma,nLP), (gamma,g,cLP)
+create Herwig::GenericSVVVertex genericSVVVertex1 
+create Herwig::GenericSVVVertex genericSVVVertex2 
+create Herwig::GenericSVVVertex genericSVVVertex3 
+do genericSVVVertex1:pids 21 21 200002
+do genericSVVVertex2:pids 22 22 200002
+do genericSVVVertex3:pids 22 21 200001
+set genericSVVVertex1:OrderInAlphaS 2
+set genericSVVVertex1:OrderInAlphaEW 0
+set genericSVVVertex2:OrderInAlphaS 0
+set genericSVVVertex2:OrderInAlphaEW 2
+set genericSVVVertex3:OrderInAlphaS 1
+set genericSVVVertex3:OrderInAlphaEW 1
+insert /Herwig/MatrixElements/Matchbox/PPFactory:DiagramGenerator:Vertices 0 genericSVVVertex1
+insert /Herwig/MatrixElements/Matchbox/PPFactory:DiagramGenerator:Vertices 0 genericSVVVertex2
+insert /Herwig/MatrixElements/Matchbox/PPFactory:DiagramGenerator:Vertices 0 genericSVVVertex3
+
+# single radiation of gamma or g off loop particles
+# (nLP,nLP,gamma), (cLP,cLP,g), (cLP,cLP,gamma), (cLP,nLP,g)
+create Herwig::GenericSVVVertex genericSVVVertex7 
+create Herwig::GenericSVVVertex genericSVVVertex8 
+create Herwig::GenericSVVVertex genericSVVVertex9 
+create Herwig::GenericSVVVertex genericSVVVertex10 
+do genericSVVVertex7:pids 200002 200002 22
+do genericSVVVertex8:pids 200001 200001 21
+do genericSVVVertex9:pids 200001 200001 22
+do genericSVVVertex10:pids 200001 200002 21
+set genericSVVVertex7:OrderInAlphaS 0
+set genericSVVVertex7:OrderInAlphaEW 1
+set genericSVVVertex8:OrderInAlphaS 1
+set genericSVVVertex8:OrderInAlphaEW 0
+set genericSVVVertex9:OrderInAlphaS 0
+set genericSVVVertex9:OrderInAlphaEW 1
+set genericSVVVertex10:OrderInAlphaS 1
+set genericSVVVertex10:OrderInAlphaEW 0
+insert /Herwig/MatrixElements/Matchbox/PPFactory:DiagramGenerator:Vertices 0 genericSVVVertex7
+insert /Herwig/MatrixElements/Matchbox/PPFactory:DiagramGenerator:Vertices 0 genericSVVVertex8
+insert /Herwig/MatrixElements/Matchbox/PPFactory:DiagramGenerator:Vertices 0 genericSVVVertex9
+insert /Herwig/MatrixElements/Matchbox/PPFactory:DiagramGenerator:Vertices 0 genericSVVVertex10
+
+# splits of loop particles to two vector bosons, 
+# with at least one charged vector boson
+# (nLP,W+,W-), (ccLP-,g,W+), (ccLP+,g,W-)
+create Herwig::GenericSVVVertex genericSVVVertex11 
+create Herwig::GenericSVVVertex genericSVVVertex21 
+create Herwig::GenericSVVVertex genericSVVVertex31 
+do genericSVVVertex11:pids 200002 24 -24
+do genericSVVVertex21:pids -200004 21 24
+do genericSVVVertex31:pids 200004 21 -24
+set genericSVVVertex11:OrderInAlphaS 0
+set genericSVVVertex11:OrderInAlphaEW 2
+set genericSVVVertex21:OrderInAlphaS 1
+set genericSVVVertex21:OrderInAlphaEW 1
+set genericSVVVertex31:OrderInAlphaS 1
+set genericSVVVertex31:OrderInAlphaEW 1
+insert /Herwig/MatrixElements/Matchbox/PPFactory:DiagramGenerator:Vertices 0 genericSVVVertex11
+insert /Herwig/MatrixElements/Matchbox/PPFactory:DiagramGenerator:Vertices 0 genericSVVVertex21
+insert /Herwig/MatrixElements/Matchbox/PPFactory:DiagramGenerator:Vertices 0 genericSVVVertex31
+
+# single radiation of W+ off loop particles
+# (cLP,ccLP-,W+)
+#create Herwig::GenericSVVVertex genericSVVVertex41 
+#do genericSVVVertex41:pids 200001 -200004 24
+#set genericSVVVertex41:OrderInAlphaS 0
+#set genericSVVVertex41:OrderInAlphaEW 0
+#insert /Herwig/MatrixElements/Matchbox/PPFactory:DiagramGenerator:Vertices 0 genericSVVVertex41
+
+
+##########
+
+## simple effective (g,g,gamma) and (g,g,Z) vertices
+## this needs a VVV vertex
+#create Herwig::GenericVVVVertex genericVVVVertex51 
+#create Herwig::GenericVVVVertex genericVVVVertex61 
+#do genericVVVVertex51:pids 21 21 22
+#do genericVVVVertex61:pids 21 21 23
+#set genericVVVVertex51:OrderInAlphaS 2
+#set genericVVVVertex51:OrderInAlphaEW 1
+#set genericVVVVertex61:OrderInAlphaS 2
+#set genericVVVVertex61:OrderInAlphaEW 1
+#insert /Herwig/MatrixElements/Matchbox/PPFactory:DiagramGenerator:Vertices 0 genericVVVVertex51
+#insert /Herwig/MatrixElements/Matchbox/PPFactory:DiagramGenerator:Vertices 0 genericVVVVertex61
+
+

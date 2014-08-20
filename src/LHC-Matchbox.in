@@ -112,6 +112,38 @@ cd /Herwig/MatrixElements/Matchbox/Amplitudes
 # insert PPFactory:DiagramGenerator:RestrictLines /Herwig/Particles/Wminus
 # do PPFactory:DiagramGenerator:TimeLikeRange 0 0
 
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# Loop induced processes (only with GoSam for now)
+# This requires to have MatchboxLoopInduced.in in the current folder and
+#   do PPFactory:LoopInducedProcess
+# instead of
+#   do PPFactory:Process
+# above
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+# read MatchboxLoopInduced.in
+
+# cd /Herwig/MatrixElements/Matchbox/Amplitudes
+
+# clear /Herwig/MatrixElements/Matchbox/PPFactory:Amplitudes
+# library HwMatchboxGoSam.so
+# create Herwig::GoSamAmplitude GoSamAmplitude
+
+# If a setup.gosam.in is used, which does not come with the installation
+# set GoSamAmplitude:SetupInFilename ../setup.gosam.in
+
+# If Ninja is not used (Ninja Off), Samurai will be used automatically
+# Default: If Ninja is used (Ninja On), form optimization has to be on (FormOpt On)
+# set GoSamAmplitude:Ninja On
+# set GoSamAmplitude:FormOpt On
+
+# insert /Herwig/MatrixElements/Matchbox/PPFactory:Amplitudes 0 GoSamAmplitude
+
+# An electroweak scheme can be chosen, which should be supported by GoSam
+# set /Herwig/Model:EW/Scheme alphaMZScheme
+# set /Herwig/Model:EW/Scheme GMuScheme
+# set /Herwig/Model:EW/RecalculateEW On
+
 #==================================================================================
 #                   :::::LO/NLO CALCULATIONS:::::
 #==================================================================================
