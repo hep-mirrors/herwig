@@ -21,7 +21,8 @@ HwJetsAnalysis_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 1:0:0
 HwJetsAnalysis_la_SOURCES = \
 JetsPlusAnalysis.h JetsPlusAnalysis.cc \
 HJetsAnalysis.h HJetsAnalysis.cc \
-ZJetsAnalysis.h ZJetsAnalysis.cc
+ZJetsAnalysis.h ZJetsAnalysis.cc \
+TTJetsAnalysis.h TTJetsAnalysis.cc
 
 pkglib_LTLIBRARIES +=  HwLEPAnalysis.la
 HwLEPAnalysis_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 6:0:0
