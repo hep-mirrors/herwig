@@ -102,7 +102,7 @@ bool OneHalfHalfSplitFn::accept(const IdList &ids) const {
 
 vector<pair<int, Complex> > 
 OneHalfHalfSplitFn::generatePhiForward(const double z, const Energy2 t, const IdList & ids,
-				const RhoDMatrix & rho) { 
+				       const RhoDMatrix & rho) { 
   assert(rho.iSpin()==PDT::Spin1);
   double modRho = abs(rho(0,2));
   Energy mq = getParticleData(ids[1])->mass();
@@ -116,14 +116,26 @@ OneHalfHalfSplitFn::generatePhiForward(const double z, const Energy2 t, const Id
   return output;
 }
 
-DecayMatrixElement OneHalfHalfSplitFn::matrixElement(ShowerParticle &,ShoKinPtr,
-						     const double z, const Energy2 t, 
+vector<pair<int, Complex> > 
+OneHalfHalfSplitFn::generatePhiBackward(const double, const Energy2, const IdList &,
+					const RhoDMatrix & ) { 
+  // no dependance
+  return vector<pair<int, Complex> >(1,make_pair(1,1.));
+}
+
+DecayMatrixElement OneHalfHalfSplitFn::matrixElement(const double z, const Energy2 t, 
 						     const IdList & ids, const double phi) {
   static const Complex ii(0.,1.);
   // calculate the kernal
   DecayMatrixElement kernal(PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half);
   double mt = getParticleData(ids[1])->mass()/sqrt(t);
-  double root = sqrt(1.-sqr(mt)/z/(1.-z));
+  double root =1.-sqr(mt)/z/(1.-z);
+  if(root>=0.) 
+    root = sqrt(root);
+  else {
+    mt = 0.;
+    root = 1.;
+  }
   kernal(0,0,0) = mt/sqrt(z*(1.-z));
   kernal(2,1,1) = kernal(0,0,0);
   kernal(0,0,1) = -z*root*exp(-ii*phi);

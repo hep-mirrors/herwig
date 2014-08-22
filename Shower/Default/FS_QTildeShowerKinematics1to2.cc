@@ -16,10 +16,6 @@
 #include "Herwig++/Shower/SplittingFunctions/SplittingFunction.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "ThePEG/Utilities/Debug.h"
-#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
-#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
-#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "ThePEG/Helicity/LorentzSpinorBar.h"
 #include "Herwig++/Shower/ShowerHandler.h"
 #include "Herwig++/Shower/Base/Evolver.h"
 #include "Herwig++/Shower/Base/PartnerFinder.h"
@@ -27,7 +23,6 @@
 #include "Herwig++/Shower/Base/KinematicsReconstructor.h"
 
 using namespace Herwig;
-using namespace ThePEG::Helicity;
 
 void FS_QTildeShowerKinematics1to2::
 updateParameters(tShowerParticlePtr theParent,
@@ -78,53 +73,12 @@ updateChildren(const tShowerParticlePtr parent,
   // get the vertex
   VertexPtr vertex(const_ptr_cast<VertexPtr>(pspin->decayVertex()));
   if(!vertex) return;
-  // construct the spin info for the children
   ShowerParticleVector::const_iterator pit;
   for(pit=children.begin();pit!=children.end();++pit) {
-    Energy mass = (*pit)->data().mass(); 
-    // calculate the momentum of the children assuming on-shell
-    Energy2 pt2 = sqr((**pit).showerParameters().pt);
-    double alpha = (**pit).showerParameters().alpha;
-    double beta = 0.5*(sqr(mass) + pt2 - sqr(alpha)*pVector().m2())/(alpha*p_dot_n());
-    Lorentz5Momentum porig=sudakov2Momentum(alpha,beta,
-					    (**pit).showerParameters().ptx,
-					    (**pit).showerParameters().pty);
-    porig.setMass(mass);
-    // now construct the required spininfo and calculate the basis states
-    PDT::Spin spin((*pit)->dataPtr()->iSpin());
-    if(spin==PDT::Spin0) {
-      assert(false);
-    }
-    // calculate the basis states and construct the SpinInfo for a spin-1/2 particle
-    else if(spin==PDT::Spin1Half) {
-      // outgoing particle
-      if((*pit)->id()>0) {
-      	vector<LorentzSpinorBar<SqrtEnergy> > stemp;
-	SpinorBarWaveFunction::calculateWaveFunctions(stemp,*pit,outgoing);
-	SpinorBarWaveFunction::constructSpinInfo(stemp,*pit,outgoing,true);
-      }
-      // outgoing antiparticle
-      else {
-      	vector<LorentzSpinor<SqrtEnergy> > stemp;
-	SpinorWaveFunction::calculateWaveFunctions(stemp,*pit,outgoing);
-	SpinorWaveFunction::constructSpinInfo(stemp,*pit,outgoing,true);
-      }
-    }
-    // calculate the basis states and construct the SpinInfo for a spin-1 particle
-    else if(spin==PDT::Spin1) {
-      bool massless((*pit)->id()==ParticleID::g||(*pit)->id()==ParticleID::gamma);
-      vector<Helicity::LorentzPolarizationVector> vtemp;
-      VectorWaveFunction::calculateWaveFunctions(vtemp,*pit,outgoing,massless);
-      VectorWaveFunction::constructSpinInfo(vtemp,*pit,outgoing,true,massless);
-    }
-    else {
-      throw Exception() << "Spins higher than 1 are not yet implemented in " 
-			<< "FS_QtildaShowerKinematics1to2::constructVertex() "
-			<< Exception::runerror;
-    }
+    // construct the spin info for the children
+    constructSpinInfo(*pit,true);
     // connect the spinInfo object to the vertex
     (*pit)->spinInfo()->productionVertex(vertex);
-    (*pit)->set5Momentum(porig);
   }
 }
 

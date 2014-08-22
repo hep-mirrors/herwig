@@ -130,20 +130,6 @@ void SplittingFunction::Init() {
 
 }
 
-vector<pair<int,Complex> >  
-SplittingFunction::generatePhiForward(const double, const Energy2,
-			       const IdList &, const RhoDMatrix &) {
-  cerr << "Using SplittingFunction::generatePhiForward()" << fullName() << "\n";
-  assert(false);
-}
-
-DecayMatrixElement SplittingFunction::matrixElement(ShowerParticle &,ShoKinPtr,
-						    const double, const Energy2, 
-						    const IdList &, const double) {
-  cerr << "SplittingFunction::matrixElement called for " << fullName() << "\n";
-  assert(false);
-}
-
 void SplittingFunction::persistentOutput(PersistentOStream & os) const {
   using namespace ShowerInteraction;
    os << oenum(_interactionType) << _interactionOrder 

@@ -110,6 +110,40 @@ public:
 			       unsigned int PDFfactor=0) const;
   //@}
 
+  /**
+   * Method to calculate the azimuthal angle for forward evolution
+   * @param z The energy fraction
+   * @param t The scale \f$t=2p_j\cdot p_k\f$.
+   * @param ids The PDG codes for the particles in the splitting.
+   * @param The azimuthal angle, \f$\phi\f$.
+   * @return The weight
+   */
+  virtual vector<pair<int,Complex> > 
+  generatePhiForward(const double z, const Energy2 t, const IdList & ids,
+		     const RhoDMatrix &);
+
+  /**
+   * Method to calculate the azimuthal angle for backward evolution
+   * @param z The energy fraction
+   * @param t The scale \f$t=2p_j\cdot p_k\f$.
+   * @param ids The PDG codes for the particles in the splitting.
+   * @param The azimuthal angle, \f$\phi\f$.
+   * @return The weight
+   */
+  virtual vector<pair<int,Complex> > 
+  generatePhiBackward(const double z, const Energy2 t, const IdList & ids,
+		      const RhoDMatrix &);
+
+  /**
+   * Calculate the matrix element for the splitting
+   * @param z The energy fraction
+   * @param t The scale \f$t=2p_j\cdot p_k\f$.
+   * @param ids The PDG codes for the particles in the splitting.
+   * @param The azimuthal angle, \f$\phi\f$.
+   */
+  virtual DecayMatrixElement matrixElement(const double z, const Energy2 t, 
+					   const IdList & ids, const double phi);
+
 public:
 
   /**

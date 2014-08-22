@@ -13,8 +13,14 @@
 
 #include "QTildeShowerKinematics1to2.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "Herwig++/Shower/Base/ShowerParticle.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/LorentzSpinorBar.h"
 
 using namespace Herwig;
+using namespace ThePEG::Helicity;
 
 vector<Lorentz5Momentum> QTildeShowerKinematics1to2::getBasis() const {
   vector<Lorentz5Momentum> dum;
@@ -102,4 +108,50 @@ sudakov2Momentum(double alpha, double beta, Energy px, Energy py) const {
   else
     assert(false);
   return dq; 
+}
+
+void QTildeShowerKinematics1to2::constructSpinInfo(tShowerParticlePtr particle,
+						   bool timeLike) const {
+  Energy mass = particle->data().mass(); 
+  // calculate the momentum of the assuming on-shell
+  Energy2 pt2 = sqr(particle->showerParameters().pt);
+  double alpha = timeLike ? particle->showerParameters().alpha : particle->x();
+  double beta = 0.5*(sqr(mass) + pt2 - sqr(alpha)*pVector().m2())/(alpha*p_dot_n());
+  Lorentz5Momentum porig=sudakov2Momentum(alpha,beta,
+					  particle->showerParameters().ptx,
+					  particle->showerParameters().pty);
+  porig.setMass(mass);
+  // now construct the required spininfo and calculate the basis states
+  PDT::Spin spin(particle->dataPtr()->iSpin());
+  if(spin==PDT::Spin0) {
+    assert(false);
+  }
+  // calculate the basis states and construct the SpinInfo for a spin-1/2 particle
+  else if(spin==PDT::Spin1Half) {
+    // outgoing particle
+    if(particle->id()>0) {
+      vector<LorentzSpinorBar<SqrtEnergy> > stemp;
+      SpinorBarWaveFunction::calculateWaveFunctions(stemp,particle,outgoing);
+      SpinorBarWaveFunction::constructSpinInfo(stemp,particle,outgoing,timeLike);
+    }
+    // outgoing antiparticle
+    else {
+      vector<LorentzSpinor<SqrtEnergy> > stemp;
+      SpinorWaveFunction::calculateWaveFunctions(stemp,particle,outgoing);
+      SpinorWaveFunction::constructSpinInfo(stemp,particle,outgoing,timeLike);
+    }
+  }
+  // calculate the basis states and construct the SpinInfo for a spin-1 particle
+  else if(spin==PDT::Spin1) {
+    bool massless(particle->id()==ParticleID::g||particle->id()==ParticleID::gamma);
+    vector<Helicity::LorentzPolarizationVector> vtemp;
+    VectorWaveFunction::calculateWaveFunctions(vtemp,particle,outgoing,massless);
+    VectorWaveFunction::constructSpinInfo(vtemp,particle,outgoing,timeLike,massless);
+  }
+  else {
+    throw Exception() << "Spins higher than 1 are not yet implemented in " 
+		      << "FS_QtildaShowerKinematics1to2::constructVertex() "
+		      << Exception::runerror;
+  }
+  particle->set5Momentum(porig);
 }

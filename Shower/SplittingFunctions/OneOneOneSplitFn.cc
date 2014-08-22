@@ -88,7 +88,7 @@ bool OneOneOneSplitFn::accept(const IdList & ids) const {
 
 vector<pair<int, Complex> > 
 OneOneOneSplitFn::generatePhiForward(const double z, const Energy2, const IdList &,
-			      const RhoDMatrix & rho) {
+				     const RhoDMatrix & rho) {
   assert(rho.iSpin()==PDT::Spin1);
   double modRho = abs(rho(0,2));
   double max = 2.*z*modRho*(1.-z)+sqr(1.-(1.-z)*z)/(z*(1.-z));
@@ -99,9 +99,22 @@ OneOneOneSplitFn::generatePhiForward(const double z, const Energy2, const IdList
   return output;
 }
 
-DecayMatrixElement OneOneOneSplitFn::matrixElement(ShowerParticle &,ShoKinPtr,
-						     const double z, const Energy2, 
-						     const IdList &, const double phi) {
+vector<pair<int, Complex> > 
+OneOneOneSplitFn::generatePhiBackward(const double z, const Energy2, const IdList &,
+			      const RhoDMatrix & rho) {
+  assert(rho.iSpin()==PDT::Spin1);
+  double diag = sqr(1 - (1 - z)*z)/(1 - z)/z;
+  double off  = (1.-z)/z;
+  double max  = 2.*abs(rho(0,2))*off+diag;
+  vector<pair<int, Complex> > output;
+  output.push_back(make_pair( 0, (rho(0,0)+rho(2,2))*diag/max));
+  output.push_back(make_pair( 2,-rho(0,2)           * off/max));
+  output.push_back(make_pair(-2,-rho(2,0)           * off/max));
+  return output;
+}
+
+DecayMatrixElement OneOneOneSplitFn::matrixElement(const double z, const Energy2, 
+						   const IdList &, const double phi) {
   // calculate the kernal
   DecayMatrixElement kernal(PDT::Spin1,PDT::Spin1,PDT::Spin1);
   double omz = 1.-z;

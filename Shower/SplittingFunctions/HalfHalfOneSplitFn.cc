@@ -15,7 +15,6 @@
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Utilities/DescribeClass.h"
-#include "Herwig++/Shower/Base/ShowerParticle.h"
 
 using namespace Herwig;
 
@@ -99,18 +98,25 @@ bool HalfHalfOneSplitFn::accept(const IdList &ids) const {
 
 vector<pair<int, Complex> > 
 HalfHalfOneSplitFn::generatePhiForward(const double, const Energy2, const IdList & ,
-				const RhoDMatrix &) {
+				       const RhoDMatrix &) {
   // no dependence on the spin density matrix, dependence on off-diagonal terms cancels
   // and rest = splitting function for Tr(rho)=1 as required by defn
   return vector<pair<int, Complex> >(1,make_pair(0,1.));
 }
 
-DecayMatrixElement HalfHalfOneSplitFn::matrixElement(ShowerParticle & particle,ShoKinPtr,
-						     const double z, const Energy2 t, 
-						     const IdList &, const double phi) {
+vector<pair<int, Complex> > 
+HalfHalfOneSplitFn::generatePhiBackward(const double, const Energy2, const IdList & ,
+					const RhoDMatrix &) {
+  // no dependence on the spin density matrix, dependence on off-diagonal terms cancels
+  // and rest = splitting function for Tr(rho)=1 as required by defn
+  return vector<pair<int, Complex> >(1,make_pair(0,1.));
+}
+
+DecayMatrixElement HalfHalfOneSplitFn::matrixElement(const double z, const Energy2 t, 
+						     const IdList & ids, const double phi) {
   // calculate the kernal
   DecayMatrixElement kernal(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin1);
-  Energy m = particle.dataPtr()->mass();
+  Energy m = getParticleData(ids[0])->mass();
   double mt = m/sqrt(t);
   double root = sqrt(1.-(1.-z)*sqr(m)/z/t);
   double romz = sqrt(1.-z); 

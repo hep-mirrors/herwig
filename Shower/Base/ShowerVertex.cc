@@ -70,6 +70,7 @@ RhoDMatrix ShowerVertex::mapIncoming(RhoDMatrix rho) const {
       }
     }
   }
+  output.normalize();
   return output;
 }
 

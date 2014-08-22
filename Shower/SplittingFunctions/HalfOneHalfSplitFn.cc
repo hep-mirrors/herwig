@@ -24,7 +24,8 @@ describeHalfOneHalfSplitFn ("Herwig::HalfOneHalfSplitFn","HwShower.so");
 void HalfOneHalfSplitFn::Init() {
 
   static ClassDocumentation<HalfOneHalfSplitFn> documentation
-    ("The HalfOneHalfSplitFn class implements the splitting function for q -> g q");
+    ("The HalfOneHalfSplitFn class implements the splitting "
+     "function for q -> g q");
 
 }
 
@@ -96,3 +97,47 @@ bool HalfOneHalfSplitFn::accept(const IdList &ids) const {
   return checkColours(ids);
 }
 
+
+vector<pair<int, Complex> > 
+HalfOneHalfSplitFn::generatePhiForward(const double, const Energy2, const IdList & ,
+				       const RhoDMatrix &) {
+  // no dependence on the spin density matrix, dependence on off-diagonal terms cancels
+  // and rest = splitting function for Tr(rho)=1 as required by defn
+  return vector<pair<int, Complex> >(1,make_pair(0,1.));
+}
+
+vector<pair<int, Complex> > 
+HalfOneHalfSplitFn::generatePhiBackward(const double z, const Energy2 t, const IdList & ids,
+					const RhoDMatrix & rho) {
+  assert(rho.iSpin()==PDT::Spin1);
+  double mt = sqr(getParticleData(ids[0])->mass())/t;
+  double diag = (1.+sqr(1.-z))/z - 2.*mt;
+  double off  = 2.*(1.-z)/z*(1.-mt*z/(1.-z));
+  double max = diag+2.*abs(rho(0,2))*off;
+  vector<pair<int, Complex> > output;
+  output.push_back(make_pair( 0, (rho(0,0)+rho(2,2))*diag/max));
+  output.push_back(make_pair( 2, -rho(0,2)          * off/max)); 
+  output.push_back(make_pair(-2, -rho(2,0)          * off/max)); 
+  return output;
+}
+
+DecayMatrixElement HalfOneHalfSplitFn::matrixElement(const double z, const Energy2 t, 
+						     const IdList & ids, const double phi) {
+  // calculate the kernal
+  DecayMatrixElement kernal(PDT::Spin1Half,PDT::Spin1,PDT::Spin1Half);
+  Energy m = getParticleData(ids[0])->mass();
+  double mt = m/sqrt(t);
+  double root = sqrt(1.-z*sqr(m)/(1.-z)/t);
+  double romz = sqrt(1.-z); 
+  double rz   = sqrt(z);
+  Complex phase = exp(Complex(0.,1.)*phi);
+  kernal(0,0,0) = -root/rz/phase;
+  kernal(1,1,2) =  -conj(kernal(0,0,0));
+  kernal(0,0,2) =  root/rz*(1.-z)*phase;
+  kernal(1,1,0) = -conj(kernal(0,0,2));
+  kernal(1,0,2) =  mt*z/romz;
+  kernal(0,1,0) =  conj(kernal(1,0,2));
+  kernal(0,1,2) =  0.;
+  kernal(1,0,0) =  0.;
+  return kernal;
+}

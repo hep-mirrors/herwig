@@ -16,6 +16,11 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "ThePEG/Utilities/Debug.h"
+#include "Herwig++/Shower/ShowerHandler.h"
+#include "Herwig++/Shower/Base/Evolver.h"
+#include "Herwig++/Shower/Base/PartnerFinder.h"
+#include "Herwig++/Shower/Base/ShowerModel.h"
+#include "Herwig++/Shower/Base/KinematicsReconstructor.h"
 #include <cassert>
 
 using namespace Herwig;
@@ -57,6 +62,26 @@ updateParent(const tShowerParticlePtr parent,
   parent->addChild(children[0]);
   parent->addChild(children[1]);
   parent->x(children[0]->x()/z());
+  // sort out the helicity stuff 
+  if(! ShowerHandler::currentHandler()->evolver()->correlations()) return;
+  SpinPtr pspin(children[0]->spinInfo());
+  if(!pspin) return;
+  // get the vertex
+  VertexPtr vertex(const_ptr_cast<VertexPtr>(pspin->decayVertex()));
+  if(!vertex) return;
+  // construct the spin info for parent and timelike child
+  // temporary assignment of shower parameters to calculate correlations
+  parent->showerParameters().alpha = parent->x();
+  children[1]->showerParameters().alpha = (1.-z()) * parent->x();
+  children[1]->showerParameters().ptx   = - cos(phi()) * pT();
+  children[1]->showerParameters().pty   = - sin(phi()) * pT();
+  children[1]->showerParameters().pt    = pT();
+  // construct the spin infos
+  constructSpinInfo(parent,false);
+  constructSpinInfo(children[1],true);
+  // connect the spinInfo objects to the vertex
+  parent     ->spinInfo()->productionVertex(vertex);
+  children[1]->spinInfo()->productionVertex(vertex);
 }
 
 void IS_QTildeShowerKinematics1to2::

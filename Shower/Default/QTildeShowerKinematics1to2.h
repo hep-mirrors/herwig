@@ -78,6 +78,11 @@ protected:
    */
   void setBasis(const Lorentz5Momentum &p, const Lorentz5Momentum & n, Frame frame);
 
+  /**
+   *  Construct the spin info object for a shower particle
+   */
+  void constructSpinInfo(tShowerParticlePtr,bool timelike) const;
+
 private:
 
   /**

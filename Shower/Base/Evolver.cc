@@ -33,6 +33,7 @@
 #include "ThePEG/PDT/DecayMode.h"
 #include "Herwig++/Shower/ShowerHandler.h" 
 #include "ThePEG/Utilities/DescribeClass.h"
+#include "ShowerVertex.h"
 
 using namespace Herwig;
 
@@ -610,6 +611,7 @@ Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
     if(!spaceLikeVetoed(bb,particle)) break;
     // otherwise reset scale and continue
     particle->vetoEmission(bb.type,bb.kinematics->scale());
+    if(particle->spinInfo()) particle->spinInfo()->decayVertex(VertexPtr());
   }
   // assign the splitting function and shower kinematics
   particle->showerKinematics(bb.kinematics);
@@ -640,6 +642,7 @@ Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
   ++_nis;
   bool emitted = _limitEmissions==0 ? 
     spaceLikeShower(newParent,beam,type) : false;
+  if(newParent->spinInfo()) newParent->spinInfo()->develop();
   // now reconstruct the momentum
   if(!emitted) {
     if(_intrinsic.find(_progenitor)==_intrinsic.end()) {
@@ -657,6 +660,7 @@ Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
   if(_limitEmissions!=0) return true;
   // perform the shower of the final-state particle
   timeLikeShower(otherChild,type,true);
+  if(theChildren[1]->spinInfo()) theChildren[1]->spinInfo()->develop();
   // return the emitted
   return true;
 }
@@ -2216,6 +2220,13 @@ void Evolver::doShowering(bool hard,XCPtr xcomb) {
 	currentTree()->clear();
 	setEvolutionPartners(hard,interactions_[inter],true);
 	_nis = _nfs = 0;
+	for(unsigned int ix=0; ix<particlesToShower.size();++ix) {
+	  SpinPtr spin = particlesToShower[ix]->progenitor()->spinInfo();
+	  if(spin && spin->decayVertex() &&
+	     dynamic_ptr_cast<tcSVertexPtr>(spin->decayVertex())) {
+	    spin->decayVertex(VertexPtr());
+	  }
+	}
       }
       // generate the shower
       // pick random starting point 

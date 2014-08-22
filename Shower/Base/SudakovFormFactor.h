@@ -195,13 +195,22 @@ public:
   //@}
 
   /**
-   *  Generate the azimuthal angle of the branching
+   * Generate the azimuthal angle of the branching for forward evolution
    * @param particle The branching particle
    * @param ids The PDG codes of the particles in the branchings
    * @param The Shower kinematics
    */
   virtual double generatePhiForward(ShowerParticle & particle,const IdList & ids,
 				    ShoKinPtr kinematics)=0;
+
+  /**
+   *  Generate the azimuthal angle of the branching for backward evolution
+   * @param particle The branching particle
+   * @param ids The PDG codes of the particles in the branchings
+   * @param The Shower kinematics
+   */
+  virtual double generatePhiBackward(ShowerParticle & particle,const IdList & ids,
+				     ShoKinPtr kinematics)=0;
 
   /**
    *  Methods to provide public access to the private member variables

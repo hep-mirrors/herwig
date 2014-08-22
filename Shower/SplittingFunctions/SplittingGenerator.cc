@@ -521,6 +521,8 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr beamparticle,
   // initialize the ShowerKinematics 
   // and return it
   kinematics->initialize(particle,beamparticle);
+  // and generate phi
+  kinematics->phi(sudakov->generatePhiBackward(particle,ids,kinematics));
   // return the answer
   return Branching(kinematics, ids,sudakov,partnerType);
 }

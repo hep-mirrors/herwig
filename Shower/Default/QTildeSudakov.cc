@@ -112,9 +112,7 @@ ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
   }
   while(PSVeto(t) || SplittingFnVeto(z()*(1.-z())*t,ids,true) || 
 	alphaSVeto(sqr(z()*(1.-z()))*t));
-  if(t > ZERO) q_ = sqrt(t);
-  else q_ = -1.*MeV;
-  phi(0.);
+  q_ = t > ZERO ? Energy(sqrt(t)) : -1.*MeV;
   if(q_ < ZERO) return ShoKinPtr();
   // return the ShowerKinematics object
   return createFinalStateBranching(q_,z(),phi(),pT()); 
@@ -156,7 +154,6 @@ generateNextSpaceBranching(const Energy startingQ,
 	PDFVeto(t,x,parton0,parton1,beam) || pt2 < pT2min() );
   if(t > ZERO && zLimits().first < zLimits().second)  q_ = sqrt(t);
   else return ShoKinPtr();
-  phi(Constants::twopi*UseRandom::rnd());
   pT(sqrt(pt2));
   // create the ShowerKinematics and return it
   return createInitialStateBranching(q_,z(),phi(),pT());
@@ -342,31 +339,12 @@ double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
 	}
       }
     }
+    rhop.normalize();
     rho = rhop;
   }
   // get the kinematic variables
-  double phi0 = 0.;
   double z = kinematics->z();
   Energy2 t = z*(1.-z)*sqr(kinematics->scale());
-  // extract the phi of the previous branching
-  if(!particle.parents().empty()) {
-    tPPtr parent  = particle.parents()[0];
-    if(parent) {
-      tShowerParticlePtr showerParent = dynamic_ptr_cast<tShowerParticlePtr>(parent);
-      if(showerParent) {
-	phi0 = showerParent->showerKinematics()->phi();
-	if(parent->children()[0]==&particle) {
-	  phi0 = phi0;
-	}
-	else if(parent->children()[1]==&particle) {
-	  phi0 -= Constants::pi;
-	  if(phi0<0.) phi0 += Constants::twopi;
-	}
-	else
-	  assert(false);
-      }
-    }
-  }
   // generate the azimuthal angle
   double phi;
   Complex wgt;
@@ -383,7 +361,7 @@ double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
   	wgt += exp(double(wgts[ix].first)*ii*phi)*wgts[ix].second;
     }
     if(wgt.real()-1.>1e-10) {
-      cerr << "testing weight problem " << wgt << " " << wgt.real()-1. 
+      cerr << "Forward weight problem " << wgt << " " << wgt.real()-1. 
   	   << " " << ids[0] << " " << ids[1] << " " << ids[2] << " " << " " << z << " " << phi << "\n";
       cerr << "Weights \n";
       for(unsigned int ix=0;ix<wgts.size();++ix)
@@ -392,15 +370,83 @@ double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
   }
   while(wgt.real()<UseRandom::rnd());
   // compute the matrix element for spin correlations
-  DecayMatrixElement 
-    me(splittingFn()->matrixElement(particle,kinematics,z,t,ids,phi));
+  DecayMatrixElement me(splittingFn()->matrixElement(z,t,ids,phi));
   // create the vertex
   SVertexPtr Svertex(new_ptr(ShowerVertex()));
   // set the matrix element
   Svertex->ME().reset(me);
   // set the incoming particle for the vertex
   inspin->decayVertex(Svertex);
-  // return the azimuthal angle (remember this is phi w.r.t. the previous branching)
+  // return the azimuthal angle
+  return phi;
+}
+
+double QTildeSudakov::generatePhiBackward(ShowerParticle & particle,
+					  const IdList & ids,
+					  ShoKinPtr kinematics) {
+  // no correlations, return flat phi
+  if(! ShowerHandler::currentHandler()->evolver()->correlations())
+    return Constants::twopi*UseRandom::rnd();
+  // get the spin density matrix and the mapping
+  RhoDMatrix mapping;
+  SpinPtr inspin;
+  bool needMapping = getMapping(inspin,mapping,particle,kinematics);
+  // set the decayed flag (counterintuitive but going backward)
+  inspin->decay();
+  // get the spin density matrix
+  RhoDMatrix rho=inspin->DMatrix();
+  // map to the shower basis if needed
+  if(needMapping) {
+    RhoDMatrix rhop(rho.iSpin(),false);
+    for(int ixa=0;ixa<rho.iSpin();++ixa) {
+      for(int ixb=0;ixb<rho.iSpin();++ixb) {
+  	for(int iya=0;iya<rho.iSpin();++iya) {
+  	  for(int iyb=0;iyb<rho.iSpin();++iyb) {
+  	    rhop(ixa,ixb) += rho(iya,iyb)*mapping(iya,ixa)*conj(mapping(iyb,ixb));
+  	  }
+  	}
+      }
+    }
+    rhop.normalize();
+    rho = rhop;
+  }
+  // get the kinematic variables
+  double z = kinematics->z();
+  Energy2 t = (1.-z)*sqr(kinematics->scale())/z;
+  // generate the azimuthal angle
+  double phi;
+  Complex wgt;
+  vector<pair<int,Complex> > 
+    wgts = splittingFn()->generatePhiBackward(z,t,ids,rho);
+  static const Complex ii(0.,1.);
+  do {
+    phi = Constants::twopi*UseRandom::rnd();
+    wgt = 0.;
+    for(unsigned int ix=0;ix<wgts.size();++ix) {
+      if(wgts[ix].first==0)
+  	wgt += wgts[ix].second;
+      else
+  	wgt += exp(double(wgts[ix].first)*ii*phi)*wgts[ix].second;
+    }
+    if(wgt.real()-1.>1e-10) {
+      cerr << "Backward weight problem " << wgt << " " << wgt.real()-1. 
+  	   << " " << ids[0] << " " << ids[1] << " " << ids[2] << " " << " " << z << " " << phi << "\n";
+      cerr << "Weights \n";
+      for(unsigned int ix=0;ix<wgts.size();++ix)
+  	cerr << wgts[ix].first << " " << wgts[ix].second << "\n";
+    }
+  }
+  while(wgt.real()<UseRandom::rnd());
+  // compute the matrix element for spin correlations
+  DecayMatrixElement me(splittingFn()->matrixElement(z,t,ids,phi));
+  // create the vertex
+  SVertexPtr Svertex(new_ptr(ShowerVertex()));
+  // set the matrix element
+  Svertex->ME().reset(me);
+  // set the incoming particle for the vertex 
+  // (in reality the first child as going backwards)
+  inspin->decayVertex(Svertex);
+  // return the azimuthal angle
   return phi;
 }
 
