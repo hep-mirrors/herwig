@@ -62,15 +62,15 @@ sudakov2Momentum(double alpha, double beta, Energy px, Energy py) const {
     // but different azimuthal angle to make implementing spin correlations easier
     //    dq.rotateUz( unitVector(p_bb.vect()) );
     Axis axis(p_bb.vect().unit());
+    LorentzRotation rot;
     if(axis.perp2()>0.) {
-      LorentzRotation rot;
       double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
-      rot.setRotate(acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
-      dq.transform(rot);
+      rot.rotate(acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
     }
     else if(axis.z()<0.) {
-      dq.setZ(-dq.z());
+      rot.rotate(Constants::pi,Axis(1.,0.,0.));
     }
+    dq.transform(rot);
     // boost back 
     dq.boost( -beta_bb ); 
     dq.rescaleMass(); 
@@ -92,15 +92,15 @@ sudakov2Momentum(double alpha, double beta, Energy px, Energy py) const {
     // changed to be same as other case
 //     dq.rotateUz( unitVector(n_bb.vect()) );
     Axis axis(n_bb.vect().unit());
+    LorentzRotation rot;
     if(axis.perp2()>0.) {
-      LorentzRotation rot;
       double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
-      rot.setRotate(acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
-      dq.transform(rot);
+      rot.rotate(acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
     }
     else if(axis.z()<0.) {
-      dq.setZ(-dq.z());
+      rot.rotate(Constants::pi,Axis(1.,0.,0.));
     }
+    dq.transform(rot);
     // boost back 
     dq.boost( -beta_bb ); 
     dq.rescaleMass();

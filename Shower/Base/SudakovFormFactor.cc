@@ -241,8 +241,8 @@ LorentzRotation boostToShower(const vector<Lorentz5Momentum> & basis) {
     double sinth(sqrt(1.-sqr(axis.z())));
     output.rotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
   }
-  else if(axis.z()>0.) {
-    porig.setZ(-porig.z());
+  else if(axis.z()<0.) {
+    output.rotate(Constants::pi,Axis(1.,0.,0.));
   }
   return output;
 }
@@ -450,7 +450,8 @@ bool SudakovFormFactor::getMapping(SpinPtr & output, RhoDMatrix & mapping,
     vector<Lorentz5Momentum> basis=showerkin->getBasis();
     // get transform to shower frame
     LorentzRotation rot = boostToShower(basis);
-    Lorentz5Momentum porig = rot*basis[0];
+    Lorentz5Momentum porig = basis[0]*particle.x();
+    porig *= rot;
     porig.setX(ZERO);
     porig.setY(ZERO);
     // the rest depends on the spin of the particle
