@@ -325,6 +325,30 @@ RhoDMatrix fermionMapping(ShowerParticle & particle,
   return mapping;
 }
 
+FermionSpinPtr createFermionSpinInfo(ShowerParticle & particle,
+				     const Lorentz5Momentum & porig,
+				     const LorentzRotation & rot,
+				     Helicity::Direction dir) {
+  // calculate the splitting basis for the branching
+  // and rotate back to construct the basis states
+  LorentzRotation rinv = rot.inverse();
+  SpinorWaveFunction wave;
+  if(particle.id()>0)
+    wave=SpinorWaveFunction(porig,particle.dataPtr(),incoming);
+  else
+    wave=SpinorWaveFunction(porig,particle.dataPtr(),outgoing);
+  FermionSpinPtr fspin = new_ptr(FermionSpinInfo(particle.momentum(),dir==outgoing));
+  for(unsigned int ix=0;ix<2;++ix) {
+    wave.reset(ix);
+    LorentzSpinor<SqrtEnergy> basis = wave.dimensionedWave();
+    basis.transform(rinv);
+    fspin->setBasisState(ix,basis);
+    fspin->setDecayState(ix,basis);
+  }
+  particle.spinInfo(fspin);
+  return fspin;
+}
+
 VectorSpinPtr createVectorSpinInfo(ShowerParticle & particle,
 				   const Lorentz5Momentum & porig,
 				   const LorentzRotation & rot,
@@ -399,24 +423,7 @@ bool SudakovFormFactor::getMapping(SpinPtr & output, RhoDMatrix & mapping,
       }
       // spin info does not exist create it
       else {
-	// calculate the splitting basis for the branching
-	// and rotate back to construct the basis states
-	LorentzRotation rinv = rot.inverse();
-       	SpinorWaveFunction wave;
-      	if(particle.id()>0)
-      	  wave=SpinorWaveFunction(porig,particle.dataPtr(),incoming);
-      	else
-      	  wave=SpinorWaveFunction(porig,particle.dataPtr(),outgoing);
-	FermionSpinPtr fspin = new_ptr(FermionSpinInfo(particle.momentum(),true));
-	for(unsigned int ix=0;ix<2;++ix) {
-	  wave.reset(ix);
-	  LorentzSpinor<SqrtEnergy> basis = wave.dimensionedWave();
-	  basis.transform(rinv);
-	  fspin->setBasisState(ix,basis);
-	  fspin->setDecayState(ix,basis);
-	}
-	output=fspin;
-	particle.spinInfo(fspin);
+	output = createFermionSpinInfo(particle,porig,rot,outgoing);
 	return false;
       }
     }
@@ -465,8 +472,8 @@ bool SudakovFormFactor::getMapping(SpinPtr & output, RhoDMatrix & mapping,
       }
       // spin info does not exist create it
       else {
-	cerr << "testing has no spininfo\n";
-	assert(false);
+	output = createFermionSpinInfo(particle,porig,rot,incoming);
+	return false;
       }
     }
     // spin-1
