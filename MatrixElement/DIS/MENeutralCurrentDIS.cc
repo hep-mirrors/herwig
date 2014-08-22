@@ -288,8 +288,11 @@ void MENeutralCurrentDIS::constructVertex(tSubProPtr sub) {
   hard.push_back(sub->incoming().second);
   hard.push_back(sub->outgoing()[0]);
   hard.push_back(sub->outgoing()[1]);
+  // sort out the ordering
   unsigned int order[4]={0,1,2,3};
   bool lorder(true),qorder(true);
+  if(abs(hard[0]->id())<6) swap(hard[0],hard[1]);
+  if(abs(hard[2]->id())<6) swap(hard[2],hard[3]);
   if(hard[0]->id()<0) {
     swap(order[0],order[2]);
     lorder = false;
@@ -300,10 +303,10 @@ void MENeutralCurrentDIS::constructVertex(tSubProPtr sub) {
   }
   vector<SpinorWaveFunction>    f1,f2;
   vector<SpinorBarWaveFunction> a1,a2;
-  SpinorWaveFunction   (f1,hard[order[0]],incoming,!lorder,true);
-  SpinorWaveFunction   (f2,hard[order[1]],incoming,!qorder,true);
-  SpinorBarWaveFunction(a1,hard[order[2]],outgoing, lorder,true);
-  SpinorBarWaveFunction(a2,hard[order[3]],outgoing, qorder,true);
+  SpinorWaveFunction   (f1,hard[order[0]], lorder ? incoming : outgoing, !lorder,true);
+  SpinorWaveFunction   (f2,hard[order[1]], qorder ? incoming : outgoing, !qorder,true);
+  SpinorBarWaveFunction(a1,hard[order[2]], lorder ? outgoing : incoming,  lorder,true);
+  SpinorBarWaveFunction(a2,hard[order[3]], qorder ? outgoing : incoming,  qorder,true);
   helicityME(f1,f2,a1,a2,lorder,qorder,true);
   // construct the vertex
   HardVertexPtr hardvertex=new_ptr(HardVertex());
