@@ -121,6 +121,13 @@ void JetsPlusAnalysis::analyze(ParticleVector& parts, long id, double weight) {
 void JetsPlusAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
   AnalysisHandler::analyze(event, ieve, loop, state);
 
+  Ptr<StandardEventHandler>::tptr seh =
+    dynamic_ptr_cast<Ptr<StandardEventHandler>::tptr>(generator()->eventHandler());
+  Ptr<GeneralSampler>::tptr sampler =
+    dynamic_ptr_cast<Ptr<GeneralSampler>::tptr>(seh->sampler());
+
+  double norm = sampler->maxXSec()/picobarn;
+
   if ( !theIsShowered ) {
 
     tSubProPtr sub = event->primarySubProcess();
@@ -129,14 +136,14 @@ void JetsPlusAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) 
 
     ParticleVector hfs = sub->outgoing();
 
-    analyze(hfs,ieve,event->weight()*sub->groupWeight());
+    analyze(hfs,ieve,norm*event->weight()*sub->groupWeight());
 
     if ( grp ) {
     
       for ( SubProcessVector::const_iterator s = grp->dependent().begin();
 	    s != grp->dependent().end(); ++s ) {
 	ParticleVector fs = (**s).outgoing();
-	analyze(fs,ieve,event->weight()*(**s).groupWeight());
+	analyze(fs,ieve,norm*event->weight()*(**s).groupWeight());
       }
 
     }
@@ -145,7 +152,7 @@ void JetsPlusAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) 
 
     ParticleVector fs;
     event->getFinalState(fs);
-    analyze(fs,ieve,event->weight());
+    analyze(fs,ieve,norm*event->weight());
 
   }
 
