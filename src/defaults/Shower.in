@@ -39,6 +39,7 @@ newdef Evolver:ShowerModel ShowerModel
 newdef Evolver:SplittingGenerator SplittingGenerator
 newdef Evolver:HardScaleFactor 1.0
 newdef Evolver:Interactions BothAtOnce
+newdef Evolver:SpinCorrelations Spin
 
 ##################################################################
 # Intrinsic pT
