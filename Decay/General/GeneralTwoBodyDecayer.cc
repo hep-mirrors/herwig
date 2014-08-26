@@ -518,19 +518,10 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
     }
   }
   // if no coloured particles return
-  if ( !colouredParticles ) {
-    for (unsigned int it=0; it<Progenitors.size(); ++it){
-      Progenitors[it]->maximumpT(pTmin_,ShowerInteraction::QCD);
-    }
-    return HardTreePtr();
-  }
+  if ( !colouredParticles ) return HardTreePtr();
   // check exactly two outgoing particles
-  if (tree->outgoingLines().size()!=2) {
-    throw Exception()
-      << "Number of outgoing particles is not equal to 2 in "
-      << "GeneralTwoBodyDecayer::generateHardest()" 
-      << Exception::runerror;
-  }
+  if (tree->outgoingLines().size()!=2) 
+    assert(false);
   // for decay b -> a c 
   // set progenitors
   ShowerProgenitorPtr 
@@ -545,7 +536,9 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
 
   // identify which dipoles are required
   vector<dipoleType> dipoles;
-  identifyDipoles(dipoles,aProgenitor,bProgenitor,cProgenitor);
+  if(!identifyDipoles(dipoles,aProgenitor,bProgenitor,cProgenitor)) {
+    return HardTreePtr();
+  }
 
   Energy trialpT = pTmin_;
   LorentzRotation eventFrame;
@@ -1133,7 +1126,7 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
 }
 
 
-void GeneralTwoBodyDecayer::identifyDipoles(vector<dipoleType>  & dipoles,
+bool GeneralTwoBodyDecayer::identifyDipoles(vector<dipoleType>  & dipoles,
 					    ShowerProgenitorPtr & aProgenitor,
 					    ShowerProgenitorPtr & bProgenitor,
 					    ShowerProgenitorPtr & cProgenitor) const {
@@ -1216,10 +1209,7 @@ void GeneralTwoBodyDecayer::identifyDipoles(vector<dipoleType>  & dipoles,
     }
   }
   // check colour structure is allowed
-  if (dipoles.size()==0) 
-    throw Exception() << "Unknown colour structure in 3 body decay in "
-		      << "GeneralTwoBodyDecayer::identifyDipoles()"
-		      << Exception::runerror;
+  return !dipoles.empty();
 }
 
 const GeneralTwoBodyDecayer::CFlow & 
