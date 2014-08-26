@@ -213,6 +213,15 @@ public:
 				     ShoKinPtr kinematics)=0;
 
   /**
+   *  Generate the azimuthal angle of the branching for ISR in decays
+   * @param particle The branching particle
+   * @param ids The PDG codes of the particles in the branchings
+   * @param The Shower kinematics
+   */
+  virtual double generatePhiDecay(ShowerParticle & particle,const IdList & ids,
+				  ShoKinPtr kinematics)=0;
+
+  /**
    *  Methods to provide public access to the private member variables
    */
   //@{

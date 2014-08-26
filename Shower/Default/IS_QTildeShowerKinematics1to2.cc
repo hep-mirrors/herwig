@@ -21,6 +21,7 @@
 #include "Herwig++/Shower/Base/PartnerFinder.h"
 #include "Herwig++/Shower/Base/ShowerModel.h"
 #include "Herwig++/Shower/Base/KinematicsReconstructor.h"
+#include "Herwig++/Shower/Base/ShowerVertex.h"
 #include <cassert>
 
 using namespace Herwig;
@@ -66,9 +67,20 @@ updateParent(const tShowerParticlePtr parent,
   if(! ShowerHandler::currentHandler()->evolver()->correlations()) return;
   SpinPtr pspin(children[0]->spinInfo());
   if(!pspin) return;
-  // get the vertex
-  VertexPtr vertex(const_ptr_cast<VertexPtr>(pspin->decayVertex()));
-  if(!vertex) return;
+  // compute the matrix element for spin correlations
+  IdList ids;
+  ids.push_back(parent->id());
+  ids.push_back(children[0]->id());
+  ids.push_back(children[1]->id());
+  Energy2 t = (1.-z())*sqr(scale())/z();
+  DecayMatrixElement me(splittingFn()->matrixElement(z(),t,ids,phi()));
+  // create the vertex
+  SVertexPtr vertex(new_ptr(ShowerVertex()));
+  // set the matrix element
+  vertex->ME().reset(me);
+  // set the incoming particle for the vertex 
+  // (in reality the first child as going backwards)
+  pspin->decayVertex(vertex);
   // construct the spin info for parent and timelike child
   // temporary assignment of shower parameters to calculate correlations
   parent->showerParameters().alpha = parent->x();

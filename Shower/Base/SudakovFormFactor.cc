@@ -226,23 +226,38 @@ void SudakovFormFactor::addSplitting(const IdList & in) {
 
 namespace {
 
-LorentzRotation boostToShower(const vector<Lorentz5Momentum> & basis) {
-  // we are doing the evolution in the back-to-back frame
-  // work out the boostvector
-  Boost boostv(-(basis[0]+basis[1]).boostVector());
-  // momentum of the parton
-  Lorentz5Momentum porig(basis[0]);
-  // construct the Lorentz boost
-  LorentzRotation output(boostv);
-  porig *= output;
-  Axis axis(porig.vect().unit());
-  // now rotate so along the z axis as needed for the splitting functions
-  if(axis.perp2()>0.) {
-    double sinth(sqrt(1.-sqr(axis.z())));
-    output.rotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+LorentzRotation boostToShower(const vector<Lorentz5Momentum> & basis,
+			      ShowerKinematics::Frame frame,
+			      Lorentz5Momentum & porig) {
+  LorentzRotation output;
+  if(frame==ShowerKinematics::BackToBack) {
+    // we are doing the evolution in the back-to-back frame
+    // work out the boostvector
+    Boost boostv(-(basis[0]+basis[1]).boostVector());
+    // momentum of the parton
+    Lorentz5Momentum ptest(basis[0]);
+    // construct the Lorentz boost
+    output = LorentzRotation(boostv);
+    ptest *= output;
+    Axis axis(ptest.vect().unit());
+    // now rotate so along the z axis as needed for the splitting functions
+    if(axis.perp2()>0.) {
+      double sinth(sqrt(1.-sqr(axis.z())));
+      output.rotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+    }
+    else if(axis.z()<0.) {
+      output.rotate(Constants::pi,Axis(1.,0.,0.));
+    }
+    porig = output*basis[0];
+    porig.setX(ZERO);
+    porig.setY(ZERO);
   }
-  else if(axis.z()<0.) {
-    output.rotate(Constants::pi,Axis(1.,0.,0.));
+  else {
+    output = LorentzRotation(-basis[0].boostVector());
+    porig = output*basis[0];
+    porig.setX(ZERO);
+    porig.setY(ZERO);
+    porig.setZ(ZERO);
   }
   return output;
 }
@@ -390,21 +405,36 @@ bool SudakovFormFactor::getMapping(SpinPtr & output, RhoDMatrix & mapping,
   // if the particle is not from the hard process
   if(!particle.perturbative()) {
     // mapping is the identity
-    mapping=RhoDMatrix(particle.dataPtr()->iSpin());
     output=particle.spinInfo();
-    assert(output);
-    return false;
+    mapping=RhoDMatrix(particle.dataPtr()->iSpin());
+    if(output) {
+      return false;
+    }
+    else {
+      assert(particle.parents().size()==1);
+      Lorentz5Momentum porig;
+      LorentzRotation rot = boostToShower(showerkin->getBasis(),showerkin->frame(),porig);
+      if(particle.dataPtr()->iSpin()==PDT::Spin0) {
+	assert(false);
+      }
+      else if(particle.dataPtr()->iSpin()==PDT::Spin1Half) {
+	output = createFermionSpinInfo(particle,porig,rot,outgoing);
+      }
+      else if(particle.dataPtr()->iSpin()==PDT::Spin1) {
+	output = createVectorSpinInfo(particle,porig,rot,outgoing);
+      }
+      else {
+	assert(false);
+      }
+      return false;
+    }
   }
   // if particle is final-state and is from the hard process
   else if(particle.isFinalState()) {
     assert(particle.perturbative()==1 || particle.perturbative()==2);
-    // get the basis vectors
-    vector<Lorentz5Momentum> basis=showerkin->getBasis();
     // get transform to shower frame
-    LorentzRotation rot = boostToShower(basis);
-    Lorentz5Momentum porig = rot*basis[0];
-    porig.setX(ZERO);
-    porig.setY(ZERO);
+    Lorentz5Momentum porig;
+    LorentzRotation rot = boostToShower(showerkin->getBasis(),showerkin->frame(),porig);
     // the rest depends on the spin of the particle
     PDT::Spin spin(particle.dataPtr()->iSpin());
     mapping=RhoDMatrix(spin,false);
@@ -444,16 +474,13 @@ bool SudakovFormFactor::getMapping(SpinPtr & output, RhoDMatrix & mapping,
     else
       assert(false);
   }
-  else if(particle.perturbative() && !particle.isFinalState()) {
-    assert(particle.perturbative()==1);
+  // incoming to hard process
+  else if(particle.perturbative()==1 && !particle.isFinalState()) {
     // get the basis vectors
-    vector<Lorentz5Momentum> basis=showerkin->getBasis();
     // get transform to shower frame
-    LorentzRotation rot = boostToShower(basis);
-    Lorentz5Momentum porig = basis[0]*particle.x();
-    porig *= rot;
-    porig.setX(ZERO);
-    porig.setY(ZERO);
+    Lorentz5Momentum porig;
+    LorentzRotation rot = boostToShower(showerkin->getBasis(),showerkin->frame(),porig);
+    porig *= particle.x();
     // the rest depends on the spin of the particle
     PDT::Spin spin(particle.dataPtr()->iSpin());
     mapping=RhoDMatrix(spin);
@@ -492,6 +519,54 @@ bool SudakovFormFactor::getMapping(SpinPtr & output, RhoDMatrix & mapping,
 	return false;
       }
     }
+    assert(false);
+  }
+  // incoming to decay
+  else if(particle.perturbative() == 2 && !particle.isFinalState()) { 
+    // get the basis vectors
+    Lorentz5Momentum porig;
+    LorentzRotation rot=boostToShower(showerkin->getBasis(),
+				      showerkin->frame(),porig);
+    // the rest depends on the spin of the particle
+    PDT::Spin spin(particle.dataPtr()->iSpin());
+    mapping=RhoDMatrix(spin);
+    // do the spin dependent bit
+    if(spin==PDT::Spin0) {
+      cerr << "testing spin 0 not yet implemented " << endl;
+      assert(false);
+    }
+    // spin-1/2
+    else if(spin==PDT::Spin1Half) {
+    //   FermionSpinPtr fspin=dynamic_ptr_cast<FermionSpinPtr>(particle.spinInfo());
+    //   // spin info exists get information from it
+    //   if(fspin) {
+    // 	output=fspin;
+    // 	mapping = fermionMapping(particle,porig,fspin,rot);
+    // 	return true;
+    //   // spin info does not exist create it
+    //   else {
+    // 	output = createFermionSpinInfo(particle,porig,rot,incoming);
+    // 	return false;
+    //   }
+    // }
+      assert(false);
+    }
+    // // spin-1
+    // else if(spin==PDT::Spin1) {
+    //   VectorSpinPtr vspin=dynamic_ptr_cast<VectorSpinPtr>(particle.spinInfo());
+    //   // spinInfo exists map it
+    //   if(vspin) {
+    // 	output=vspin;
+    // 	mapping = bosonMapping(particle,porig,vspin,rot);
+    // 	return true;
+    //   }
+    //   // create the spininfo
+    //   else {
+    // 	output = createVectorSpinInfo(particle,porig,rot,incoming);
+    // 	return false;
+    //   }
+    // }
+    // assert(false);
     assert(false);
   }
   else

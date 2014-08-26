@@ -207,7 +207,7 @@ ShoKinPtr QTildeSudakov::generateNextDecayBranching(const Energy startingScale,
     pT(sqrt(pt2));
   }
   else return ShoKinPtr();
-  phi(Constants::twopi*UseRandom::rnd());
+  phi(0.);
   // create the ShowerKinematics object
   return createDecayBranching(q_,z(),phi(),pT());
 }
@@ -369,14 +369,6 @@ double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
     }
   }
   while(wgt.real()<UseRandom::rnd());
-  // compute the matrix element for spin correlations
-  DecayMatrixElement me(splittingFn()->matrixElement(z,t,ids,phi));
-  // create the vertex
-  SVertexPtr Svertex(new_ptr(ShowerVertex()));
-  // set the matrix element
-  Svertex->ME().reset(me);
-  // set the incoming particle for the vertex
-  inspin->decayVertex(Svertex);
   // return the azimuthal angle
   return phi;
 }
@@ -437,18 +429,102 @@ double QTildeSudakov::generatePhiBackward(ShowerParticle & particle,
     }
   }
   while(wgt.real()<UseRandom::rnd());
-  // compute the matrix element for spin correlations
-  DecayMatrixElement me(splittingFn()->matrixElement(z,t,ids,phi));
-  // create the vertex
-  SVertexPtr Svertex(new_ptr(ShowerVertex()));
-  // set the matrix element
-  Svertex->ME().reset(me);
-  // set the incoming particle for the vertex 
-  // (in reality the first child as going backwards)
-  inspin->decayVertex(Svertex);
   // return the azimuthal angle
   return phi;
 }
+
+double QTildeSudakov::generatePhiDecay(ShowerParticle & particle,
+				       const IdList & ids,
+				       ShoKinPtr kinematics) {
+  return Constants::twopi*UseRandom::rnd();
+  // cerr << particle.isFinalState() << " " << particle << "\n";
+  // cerr << particle.spinInfo() << "\n";
+  // if(particle.spinInfo()) {
+  //   cerr << "testing spin info " << particle.spinInfo()->productionVertex() << " "
+  // 	 << particle.spinInfo()->decayVertex() << " " 
+  // 	 << particle.spinInfo()->developed() << " " << particle.spinInfo()->decayed() << "\n";
+  //   if(particle.spinInfo()->productionVertex()) {
+  //     cerr << "production " 
+  // 	   << particle.spinInfo()->productionVertex()->incoming().size() << " " 
+  // 	   << particle.spinInfo()->productionVertex()->outgoing().size() << "\n";
+  //   }
+  //   if(particle.spinInfo()->decayVertex()) {
+  //     cerr << "decay " 
+  // 	   << particle.spinInfo()->decayVertex()->incoming().size() << " " 
+  // 	   << particle.spinInfo()->decayVertex()->outgoing().size() << "\n";
+  //   }
+  // }
+
+  // cerr << "testing variables " << kinematics->z() << " " << kinematics->scale()/GeV << " "
+  //      << particle.mass()/GeV << "\n";;
+
+  // // no correlations, return flat phi
+  // if(! ShowerHandler::currentHandler()->evolver()->correlations())
+  //   return Constants::twopi*UseRandom::rnd();
+  // // get the spin density matrix and the mapping
+  // RhoDMatrix mapping;
+  // SpinPtr inspin;
+  // bool needMapping = getMapping(inspin,mapping,particle,kinematics);
+  // assert(false);
+  // 
+  // // set the decayed flag
+  // inspin->decay();
+  // // get the spin density matrix
+  // RhoDMatrix rho=inspin->rhoMatrix();
+  // // map to the shower basis if needed
+  // if(needMapping) {
+  //   RhoDMatrix rhop(rho.iSpin(),false);
+  //   for(int ixa=0;ixa<rho.iSpin();++ixa) {
+  //     for(int ixb=0;ixb<rho.iSpin();++ixb) {
+  // 	for(int iya=0;iya<rho.iSpin();++iya) {
+  // 	  for(int iyb=0;iyb<rho.iSpin();++iyb) {
+  // 	    rhop(ixa,ixb) += rho(iya,iyb)*mapping(iya,ixa)*conj(mapping(iyb,ixb));
+  // 	  }
+  // 	}
+  //     }
+  //   }
+  //   rhop.normalize();
+  //   rho = rhop;
+  // }
+  // // get the kinematic variables
+  // double z = kinematics->z();
+  // Energy2 t = z*(1.-z)*sqr(kinematics->scale());
+  // // generate the azimuthal angle
+  // double phi;
+  // Complex wgt;
+  // vector<pair<int,Complex> > 
+  //   wgts = splittingFn()->generatePhiForward(z,t,ids,rho);
+  // static const Complex ii(0.,1.);
+  // do {
+  //   phi = Constants::twopi*UseRandom::rnd();
+  //   wgt = 0.;
+  //   for(unsigned int ix=0;ix<wgts.size();++ix) {
+  //     if(wgts[ix].first==0)
+  // 	wgt += wgts[ix].second;
+  //     else
+  // 	wgt += exp(double(wgts[ix].first)*ii*phi)*wgts[ix].second;
+  //   }
+  //   if(wgt.real()-1.>1e-10) {
+  //     cerr << "Forward weight problem " << wgt << " " << wgt.real()-1. 
+  // 	   << " " << ids[0] << " " << ids[1] << " " << ids[2] << " " << " " << z << " " << phi << "\n";
+  //     cerr << "Weights \n";
+  //     for(unsigned int ix=0;ix<wgts.size();++ix)
+  // 	cerr << wgts[ix].first << " " << wgts[ix].second << "\n";
+  //   }
+  // }
+  // while(wgt.real()<UseRandom::rnd());
+  // // compute the matrix element for spin correlations
+  // DecayMatrixElement me(splittingFn()->matrixElement(z,t,ids,phi));
+  // // create the vertex
+  // SVertexPtr Svertex(new_ptr(ShowerVertex()));
+  // // set the matrix element
+  // Svertex->ME().reset(me);
+  // // set the incoming particle for the vertex
+  // inspin->decayVertex(Svertex);
+  // // return the azimuthal angle
+  // return phi;
+}
+
 
 Energy QTildeSudakov::calculateScale(double zin, Energy pt, IdList ids,
 				     unsigned int iopt) {

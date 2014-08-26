@@ -414,6 +414,8 @@ chooseDecayBranching(ShowerParticle &particle,
 				    ShowerPartnerType::Undefined);
   // initialize the branching
   kinematics->initialize(particle,PPtr());
+  // and generate phi
+  kinematics->phi(sudakov->generatePhiDecay(particle,ids,kinematics));
   // and return it
   return Branching(kinematics, ids,sudakov,partnerType);
 }
@@ -527,8 +529,7 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr beamparticle,
   return Branching(kinematics, ids,sudakov,partnerType);
 }
 
-void SplittingGenerator::rebind(const TranslationMap & trans)
-  {
+void SplittingGenerator::rebind(const TranslationMap & trans) {
   BranchingList::iterator cit;
   for(cit=_fbranchings.begin();cit!=_fbranchings.end();++cit)
     {(cit->second).first=trans.translate((cit->second).first);}
