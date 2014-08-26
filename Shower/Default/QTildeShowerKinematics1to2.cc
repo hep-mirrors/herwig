@@ -17,6 +17,7 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/LorentzSpinorBar.h"
 
 using namespace Herwig;
@@ -124,7 +125,7 @@ void QTildeShowerKinematics1to2::constructSpinInfo(tShowerParticlePtr particle,
   // now construct the required spininfo and calculate the basis states
   PDT::Spin spin(particle->dataPtr()->iSpin());
   if(spin==PDT::Spin0) {
-    assert(false);
+    ScalarWaveFunction::constructSpinInfo(particle,outgoing,timeLike);
   }
   // calculate the basis states and construct the SpinInfo for a spin-1/2 particle
   else if(spin==PDT::Spin1Half) {

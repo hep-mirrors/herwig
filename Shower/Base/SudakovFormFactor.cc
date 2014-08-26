@@ -24,6 +24,7 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig;
@@ -440,8 +441,9 @@ bool SudakovFormFactor::getMapping(SpinPtr & output, RhoDMatrix & mapping,
     mapping=RhoDMatrix(spin,false);
     // do the spin dependent bit
     if(spin==PDT::Spin0) {
-      cerr << "testing spin 0 not yet implemented " << endl;
-      assert(false);
+      ScalarWaveFunction::constructSpinInfo(&particle,outgoing,true);
+      output=particle.spinInfo();
+      return false;
     }
     else if(spin==PDT::Spin1Half) {
       FermionSpinPtr fspin=dynamic_ptr_cast<FermionSpinPtr>(particle.spinInfo());
