@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// HiggsJetAnalysis.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// ParallelRunAnalysis.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2014 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
@@ -12,7 +12,6 @@
 // This is the declaration of the ParallelRunAnalysis class.
 //
 
-//#include <fstream>
 //#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/AnalysisHandler.h"
 //#include "Herwig++/Utilities/Histogram.h"
@@ -22,12 +21,11 @@ namespace Herwig {
 using namespace ThePEG;
 
 /** \ingroup Analysis
- * HiggsJetAnalysis assumes that there is one Higgs in the final state
- * and books some observables computed from its four momentum.  It
- * shouldn't do anything in case there is no Higgs in the event.
+ * This analysis prints out information necessary for the combination of multiple
+ * Herwig runs during the run step.
  *
- * @see \ref HiggsJetAnalysisInterfaces "The interfaces"
- * defined for HiggsJetAnalysis.
+ * @see \ref ParallelRunAnalysisInterfaces "The interfaces"
+ * defined for ParallelRunAnalysis.
  */
 class ParallelRunAnalysis: public AnalysisHandler {
 
@@ -150,7 +148,7 @@ struct ClassTraits<Herwig::ParallelRunAnalysis>
   /** Return a platform-independent class name */
   static string className() { return "Herwig::ParallelRunAnalysis"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
-   *  access to the HiggsJetAnalysis class and any other class on which it depends
+   *  access to the ParallelRunAnalysis class and any other class on which it depends
    *  (except the base class). */
   static string library() { return "HwAnalysis.so"; }
 };

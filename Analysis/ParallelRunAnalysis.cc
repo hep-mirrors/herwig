@@ -13,9 +13,7 @@
 
 using namespace Herwig;
 
-ParallelRunAnalysis::ParallelRunAnalysis()
-  // : log("parallel.status",ofstream::out) 
-  {}
+ParallelRunAnalysis::ParallelRunAnalysis() {}
 
 void ParallelRunAnalysis::doinitrun() {
   // log.open("parallel.status",ofstream::out);
@@ -39,7 +37,6 @@ void ParallelRunAnalysis::analyze(tEventPtr, long currev, int, int) {
   char str[128];
   sprintf(str,"event> %lu/%lu/%lu xs = %.10E pb +/- %.10E pb\n",currev,attempts,totev,curEvtHandler->integratedXSec()/picobarn,curEvtHandler->integratedXSecErr()/picobarn);
   ofstream log("parallel.log",ofstream::app);
-  // log <<  "event> " << currev << "/" << attempts << "/" << totev << " xs = " << setw(10) << curEvtHandler->integratedXSec()/picobarn << " pb +- " << setw(10) << curEvtHandler->integratedXSecErr()/picobarn << " pb\n" << flush;
   log << str << flush;
   log.close();
 }
