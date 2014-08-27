@@ -14,6 +14,7 @@ LPairAnalysis.h LPairAnalysis.cc\
 GammaGammaAnalysis.h GammaGammaAnalysis.cc\
 GammaJetAnalysis.h GammaJetAnalysis.cc\
 HiggsJetAnalysis.h HiggsJetAnalysis.cc \
+ParallelRunAnalysis.h ParallelRunAnalysis.cc \
 DrellYanPT.h DrellYanPT.cc
 
 pkglib_LTLIBRARIES +=  HwLEPAnalysis.la
