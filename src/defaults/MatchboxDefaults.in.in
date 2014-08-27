@@ -320,13 +320,14 @@ create Herwig::ShowerApproximationGenerator MECorrectionHandler
 set MECorrectionHandler:ShowerApproximation MEMatching
 create Herwig::FlatInvertiblePhasespace InvertiblePhasespace
 set MECorrectionHandler:Phasespace InvertiblePhasespace
+set MECorrectionHandler:FreezeGrid 100000
 
 create Herwig::DipoleMatching DipoleMatching HwDipoleMatching.so
 set DipoleMatching:RestrictPhasespace On
 set DipoleMatching:BornScaleInSubtraction BornScale
 set DipoleMatching:RealEmissionScaleInSubtraction BornScale
 set DipoleMatching:EmissionScaleInSubtraction BornScale
-set DipoleMatching:FFPtCut 1.0*GeV
+set DipoleMatching:FFPtCut 1.014259*GeV
 set DipoleMatching:FIPtCut 1.0*GeV
 set DipoleMatching:IIPtCut 1.0*GeV
 
@@ -548,6 +549,11 @@ create ThePEG::JetCuts JetCuts
 set JetCuts:UnresolvedMatcher  /Herwig/Matchers/StandardQCDParton
 set JetCuts:Ordering OrderPt
 
+create Herwig::FrixionePhotonSeparationCut FrixionePhotonSeparationCut
+create Herwig::IdentifiedParticleCut IdentifiedParticleCut
+create Herwig::MatchboxDeltaRCut MatchboxDeltaRCut
+create Herwig::MissingPtCut MissingPtCut
+
 ################################################################################
 # Setup scale choices
 ################################################################################
@@ -559,10 +565,14 @@ cd Scales
 create Herwig::MatchboxScaleChoice SHatScale
 cp SHatScale FixedScale
 set FixedScale:FixedScale 100.*GeV
-create Herwig::MatchboxPtScale MinPtScale
-set MinPtScale:JetFinder /Herwig/Cuts/JetFinder
+create Herwig::MatchboxPtScale MaxptScale
+set MaxptScale:JetFinder /Herwig/Cuts/JetFinder
 create Herwig::MatchboxLeptonMassScale LeptonMassScale
 create Herwig::MatchboxLeptonPtScale LeptonPtScale
+create Herwig::MatchboxHtScale HTScale
+set HTScale:JetFinder /Herwig/Cuts/JetFinder
+set HTScale:JetsOnly True
+set HTScale:DoAverage True
 
 set /Herwig/MatrixElements/Matchbox/Factory:ScaleChoice LeptonMassScale
 

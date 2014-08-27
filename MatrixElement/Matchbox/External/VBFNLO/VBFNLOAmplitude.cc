@@ -172,6 +172,13 @@ void VBFNLOAmplitude::evalSubProcess() const {
     olpId()[ProcessType::oneLoopInterference] :
     olpId()[ProcessType::treeME2];
 
+  if (theRanHelSum) {
+    vector<double> helicityrn = amplitudeRandomNumbers();
+    if (helicityrn.size()>0) {
+      setOLPParameter("HelicityRN",helicityrn[0]);
+    }
+  }
+
   OLP_EvalSubProcess2(&id, olpMomenta(), &scale, out, &acc);
 
   if ( olpId()[ProcessType::oneLoopInterference] ) {
@@ -196,6 +203,13 @@ void VBFNLOAmplitude::evalColourCorrelator(pair<int,int>) const {
   colourCorrelatorResults.resize(n*(n-1)/2);
 
   int id = olpId()[ProcessType::colourCorrelatedME2];
+
+  if (theRanHelSum && lastHeadMatchboxXComb()) {
+    vector<double> helicityrn = lastHeadMatchboxXComb()->amplitudeRandomNumbers();
+    if (helicityrn.size()>0) {
+      setOLPParameter("HelicityRN",helicityrn[0]);
+    }
+  }
 
   OLP_EvalSubProcess2(&id, olpMomenta(), &scale, &colourCorrelatorResults[0], &acc);
 

@@ -15,9 +15,7 @@ using namespace Herwig;
 
 ParallelRunAnalysis::ParallelRunAnalysis() {}
 
-void ParallelRunAnalysis::doinitrun() {
-  // log.open("parallel.status",ofstream::out);
-}
+void ParallelRunAnalysis::doinitrun() {}
 
 void ParallelRunAnalysis::dofinish() {
   AnalysisHandler::dofinish();

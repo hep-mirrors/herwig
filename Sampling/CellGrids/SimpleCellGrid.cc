@@ -20,7 +20,8 @@ SimpleCellGrid::SimpleCellGrid(const std::vector<double>& newLowerLeft,
 			       const std::vector<double>& newUpperRight,
 			       bool keepWeightInformation,
 			       double newWeight)
-  : CellGrid(newLowerLeft,newUpperRight,newWeight) {
+  : CellGrid(newLowerLeft,newUpperRight,newWeight),
+    theReferenceWeight(0.0) {
   if ( keepWeightInformation )
     weightInformation().resize(newLowerLeft.size());
 }
@@ -49,6 +50,7 @@ void SimpleCellGrid::adapt(double gain, double epsilon,
   }
   if ( weightInformation().empty() )
     throw runtime_error("[ExSample::SimpleCellGrid] Cannot adapt without weight information.");
+  theReferenceWeight = 0.0;
   double avg =
     (weightInformation().front().first.sumOfWeights +
      weightInformation().front().second.sumOfWeights)/
@@ -128,6 +130,7 @@ void SimpleCellGrid::updateWeightInformation(const vector<double>& point,
 void SimpleCellGrid::fromXML(const XML::Element& grid) {
 
   CellGrid::fromXML(grid);
+  grid.getFromAttribute("referenceWeight",theReferenceWeight);
   if ( !grid.hasAttribute("keepWeightInformation") )
     return;
   bool keepWeightInformation = false;
@@ -141,6 +144,7 @@ XML::Element SimpleCellGrid::toXML() const {
 
   XML::Element grid = CellGrid::toXML();
   grid.appendAttribute("keepWeightInformation",!weightInformation().empty());
+  grid.appendAttribute("referenceWeight",theReferenceWeight);
   return grid;
 
 }

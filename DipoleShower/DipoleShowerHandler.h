@@ -20,6 +20,7 @@
 #include "Herwig++/DipoleShower/Base/DipoleSplittingGenerator.h"
 #include "Herwig++/DipoleShower/Base/DipoleEventRecord.h"
 #include "Herwig++/DipoleShower/Base/DipoleEvolutionOrdering.h"
+#include "Herwig++/DipoleShower/Base/DipoleEventReweight.h"
 #include "Herwig++/DipoleShower/Utility/ConstituentReshuffler.h"
 #include "Herwig++/DipoleShower/Utility/IntrinsicPtGenerator.h"
 #include "Herwig++/MatrixElement/Matchbox/Matching/ShowerApproximation.h"
@@ -411,6 +412,17 @@ private:
    * True if maximum pt should be deduced from the factorization scale
    */
   bool maxPtIsMuF;
+
+  /**
+   * Return the number of accepted points after which the grid should
+   * be frozen
+   */
+  unsigned long theFreezeGrid;
+
+  /**
+   * A pointer to the dipole event reweight object
+   */
+  Ptr<DipoleEventReweight>::ptr theEventReweight;
 
 private:
 

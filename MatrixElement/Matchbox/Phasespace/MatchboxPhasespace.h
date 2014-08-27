@@ -342,6 +342,20 @@ private:
   string doSetPhysicalCoupling(string);
 
   /**
+   * The first id in a range of id's meant to denote fictitious
+   * 'ghost' particles to be used by the diagram generator
+   * in loop induced processes.
+   */
+  int theLoopParticleIdMin;
+
+  /**
+   * The last id in a range of id's meant to denote fictitious
+   * 'ghost' particles to be used by the diagram generator
+   * in loop induced processes.
+   */
+  int theLoopParticleIdMax;
+
+  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */

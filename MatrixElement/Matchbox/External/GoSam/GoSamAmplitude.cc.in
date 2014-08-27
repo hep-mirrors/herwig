@@ -23,8 +23,6 @@
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Command.h"
 
-#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Utilities/StringUtils.h"
@@ -36,7 +34,7 @@
 
 using namespace Herwig;
 
-GoSamAmplitude::GoSamAmplitude() {theCodeExists=false;isitDR=false;thePrintParameter=false;theSetMuToMuR=false;
+GoSamAmplitude::GoSamAmplitude() {theCodeExists=false;isitDR=false;thePrintParameter=true;theFormOpt=true;theNinja=true;
 }
 
 GoSamAmplitude::~GoSamAmplitude() {
@@ -58,7 +56,7 @@ extern "C" void OLP_EvalSubProcess2(int*, double*, double*, double*, double*);
 
 void GoSamAmplitude::signOLP(const string& order, const string& contract) {
 	if(!theCodeExists){
-	  generator()->log() << "\n\n>>> generatintg GoSam amplitudes. This may take some time, please be patient.\n"
+	  generator()->log() << "\n>>> generating GoSam amplitudes. This may take some time, please be patient.\n"
 			     << ">>> see gosam-amplitudes.log for details.\n" << flush;
 	  string cmd = "@GOSAMPREFIX@/bin/gosam.py --olp  -o " + contract + "  --config=" + 
 	    gosamSetupInFileName + " --destination=" + gosamSourcePath + " " + order + " > gosam-amplitudes.log 2>&1";
@@ -68,7 +66,7 @@ void GoSamAmplitude::signOLP(const string& order, const string& contract) {
 
 bool GoSamAmplitude::buildGoSam() {
 	if(!theCodeExists){
-	  generator()->log() << "\n\n>>> compiling GoSam amplitudes. This may take some time, please be patient.\n"
+	  generator()->log() << "\n>>> compiling GoSam amplitudes. This may take some time, please be patient.\n"
 			     << ">>> see " + gosamSourcePath + "/gosam-build.log for details\n\n" << flush;
 	  string cmd = "cd " + gosamSourcePath + " && sh autogen.sh FCFLAGS=-g --prefix=" + 
 	    gosamInstallPath + " > gosam-build.log 2>&1";
@@ -83,16 +81,6 @@ bool GoSamAmplitude::buildGoSam() {
 	}
 	theCodeExists=true;
 	return 1;
-}
-
-
-Energy2 GoSamAmplitude::mu2() const { 
-  if (theSetMuToMuR) {
-    Energy2 rscale = MatchboxFactory::currentFactory()->scaleChoice()->renormalizationScale()
-                   * sqr(MatchboxFactory::currentFactory()->renormalizationScaleFactor());
-    return rscale;
-  }
-  return lastSHat(); 
 }
 
 void GoSamAmplitude::startOLP(const string& contract, int& status) {
@@ -210,18 +198,6 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
 	  delete[] ppchar;
 	}
 
-        // Debugging output for alphaS at various scales.
-        // The following produces a segmentation fault, if mu2() returns lastSHat(), because lastSHat is not yet set.
-        /*cout << endl;
-        cout << "-----" << endl;
-        cout << "GoSamAmplitude::startOLP(): sqrt(mu2()/GeV/GeV) = " << setprecision(10) << sqrt(mu2()/GeV/GeV) << endl;
-        cout << "GoSamAmplitude::startOLP(): SM().alphaS(mu2()) = " << setprecision(10) << SM().alphaS(mu2()) << endl;
-        cout << "-----" << endl;
-        cout << "GoSamAmplitude::startOLP(): getParticleData(ParticleID::Z0)->mass()/GeV = " << setprecision(10) << getParticleData(ParticleID::Z0)->mass()/GeV << endl;
-        cout << "GoSamAmplitude::startOLP(): SM().alphaS(sqr(getParticleData(ParticleID::Z0)->mass())) = " << setprecision(10) << SM().alphaS(sqr(getParticleData(ParticleID::Z0)->mass())) << endl;
-        cout << "-----" << endl;
-        cout << endl;*/
-
 }
 
 void GoSamAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs, string orderFileName) {
@@ -229,11 +205,25 @@ void GoSamAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs, st
   for ( map<pair<Process, int>, int>::const_iterator p = procs.begin() ; p != procs.end() ; ++p ) {
     std::stringstream Processstr;
     std::stringstream Typestr;
+//     int partonlegs = 0;
+//     for ( PDVector::const_iterator o = (*p).first.first.legs.begin(); o != (*p).first.first.legs.end() ; ++o )
+//       if ( (**o).coloured() ) partonlegs += 1;
+//     int totcplpow = (*p).first.first.orderInAlphaS + (*p).first.first.orderInAlphaEW;
+//     int totnumleg = (*p).first.first.legs.size();
+//     int nonpartonlegs = totnumleg - partonlegs;
     Processstr << (*p).first.first.legs[0]->id() << " " << (*p).first.first.legs[1]->id() << " -> ";
     for ( PDVector::const_iterator o = (*p).first.first.legs.begin() + 2 ; o != (*p).first.first.legs.end() ; ++o )
       Processstr << (**o).id() << " ";
+    // if ( (*p).first.second == ProcessType::treeME2 ) {
+    //   Typestr << "Tree";
+//     if ( (*p).first.second == ProcessType::treeME2 && totcplpow != totnumleg ) {
+//       Typestr << "Tree";
+//     } else if ( (*p).first.second == ProcessType::treeME2 && totcplpow == totnumleg ) {
+//       Typestr << "LoopInduced";
     if ( (*p).first.second == ProcessType::treeME2 ) {
       Typestr << "Tree";
+    } else if ( (*p).first.second == ProcessType::loopInducedME2 ) {
+      Typestr << "LoopInduced";
     } else if ( (*p).first.second == ProcessType::colourCorrelatedME2 ) {
       Typestr << "ccTree";
     } else if ( (*p).first.second == ProcessType::spinColourCorrelatedME2 ) {
@@ -243,6 +233,9 @@ void GoSamAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs, st
     }
     gosamprocinfo pro = gosamprocinfo((*p).second, -1, Processstr.str(), Typestr.str());
     pro.setOAs(p->first.first.orderInAlphaS);
+    pro.setOAew(p->first.first.orderInAlphaEW);
+//     pro.setPartonLegs(partonlegs);
+//     pro.setNonPartonLegs(nonpartonlegs);
     processmap[(*p).second] = pro;
   }
 
@@ -251,16 +244,21 @@ void GoSamAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs, st
     oldOrderFileStream.close();
     return;
   }
-
 	ofstream orderFile(orderFileName.c_str());
 	int asPower = 100;
 	int minlegs = 100;
 	int maxlegs = -1;
+	int maxasPower = -1;
+	int aewPower = 100;
+	int maxaewPower = -1;
 
 	for ( map<pair<Process, int>, int>::const_iterator t = procs.begin() ; t != procs.end() ; ++t ) {
 	  asPower = min(asPower, static_cast<int>(t->first.first.orderInAlphaS));
 	  minlegs = min(minlegs, static_cast<int>(t->first.first.legs.size()));
 	  maxlegs = max(maxlegs, static_cast<int>(t->first.first.legs.size()));
+	  maxasPower = max(maxasPower, static_cast<int>(t->first.first.orderInAlphaS));
+	  aewPower = min(aewPower, static_cast<int>(t->first.first.orderInAlphaEW));
+	  maxaewPower = max(maxaewPower, static_cast<int>(t->first.first.orderInAlphaEW));
 	}
 
 	orderFile << "# OLP order file created by Herwig++/Matchbox for GoSam\n\n";
@@ -269,37 +267,76 @@ void GoSamAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs, st
 	orderFile << "CorrectionType           QCD\n";
 	orderFile << "IRregularisation         " << (isDR() ? "DRED" : "CDR") << "\n";
 
-  // loop over quarks to check if they have non-zero masses
-  for (int i=1; i<=6; ++i) if (getParticleData(i)->mass()/GeV > 0.0) massiveParticles.push_back(i);
-	if ( massiveParticles.size() != 0 ) {
-	  orderFile << "MassiveParticles         ";
-	  for ( vector<int>::const_iterator mID = massiveParticles.begin(); mID != massiveParticles.end(); ++mID ) {
-	    int mInt = *mID;
-	    orderFile << mInt << " ";
-      }
-	  orderFile << "\n";
-    }
+        // loop over quarks to check if they have non-zero masses
+        for (int i=1; i<=6; ++i) if (getParticleData(i)->mass()/GeV > 0.0) massiveParticles.push_back(i);
+        if ( massiveParticles.size() != 0 ) {
+          orderFile << "MassiveParticles         ";
+          for ( vector<int>::const_iterator mID = massiveParticles.begin(); mID != massiveParticles.end(); ++mID ) {
+            int mInt = *mID;
+            orderFile << mInt << " ";
+          }
+          orderFile << "\n";
+        }
 	orderFile << "\n";
 
 	vector < string > types;
 	types.push_back("Tree");
+	types.push_back("LoopInduced");
 	types.push_back("ccTree");
 	types.push_back("scTree");
 	types.push_back("Loop");
-	for ( int i = asPower ; i != asPower + maxlegs - minlegs + 1 ; i++ ) {
-	  orderFile << "\n\nAlphasPower              " << i;
+
+	// for ( int i = asPower ; i != asPower + maxlegs - minlegs + 1 ; i++ ) {
+	for ( int i = asPower ; i != maxasPower + 1 ; i++ ) {
+	for ( int j = aewPower ; j != maxaewPower + 1 ; j++ ) {
+	  // orderFile << "\n\nAlphasPower              " << i;
+	  orderFile << "\nAlphasPower              " << i << "\n";
+	  orderFile << "AlphaPower              " << j << "\n";
 	  for ( vector<string>::iterator it = types.begin() ; it != types.end() ; it++ ) {
+	    if ( *it == "LoopInduced" ) continue;
 	    for ( map<int, gosamprocinfo>::iterator p = processmap.begin() ; p != processmap.end() ; ++p )
-	      if ( (*p).second.Tstr() == *it && i == (*p).second.orderAs() ) {
+	      // if ( (*p).second.Tstr() == *it && i == (*p).second.orderAs() ) {
+	      if ( (*p).second.Tstr() == *it && i == (*p).second.orderAs() && j == (*p).second.orderAew() ) {
 	        orderFile << "\nAmplitudeType " << *it << "\n";
 		break;
 	      }
 	    for ( map<int, gosamprocinfo>::iterator p = processmap.begin() ; p != processmap.end() ; ++p )
-	      if ( (*p).second.Tstr() == *it && i == (*p).second.orderAs() ) {
+	      // if ( (*p).second.Tstr() == *it && i == (*p).second.orderAs() ) {
+	      if ( (*p).second.Tstr() == *it && i == (*p).second.orderAs() && j == (*p).second.orderAew() ) {
 	        orderFile << (*p).second.Pstr() << "\n";
 	      }
 	  }
 	}
+	}
+
+        // Write out the loop induced processes separately
+        int asPowerLI = 100;
+        int aewPowerLI = 100;
+//         bool qcdLI=false;
+//         bool qedLI=false;
+        for ( map<int, gosamprocinfo>::iterator p = processmap.begin() ; p != processmap.end() ; ++p ) {
+          if ( (*p).second.Tstr() != "LoopInduced" ) continue;
+//           if ( (*p).second.getPartonLegs() == (*p).second.orderAs() ) qcdLI = true;
+//           // else if ( (*p).second.getNonPartonLegs() == (*p).second.orderAew() ) qedLI = true;
+//           if ( (*p).second.getNonPartonLegs() == (*p).second.orderAew() ) qedLI = true;
+//           // if ( (*p).second.orderAs() != asPowerLI || (*p).second.orderAs() != asPowerLI ) {
+          if ( (*p).second.orderAs() != asPowerLI || (*p).second.orderAew() != aewPowerLI ) {
+            asPowerLI = (*p).second.orderAs();
+            aewPowerLI = (*p).second.orderAew();
+//             // At the moment GoSam requires for loop induced processes the coupling power 
+//             // which would correspond to an associated  fictitious Born process
+//             orderFile << "\nAlphasPower              " << (qcdLI ? (asPowerLI-2) : asPowerLI) << "\n";
+//             orderFile << "AlphaPower              " << (qedLI ? (aewPowerLI-2) : aewPowerLI) << "\n";
+//             orderFile << "\nAmplitudeType " << "LoopInduced" << "\n";
+            // At the moment GoSam requires for qcd loop induced processes the as coupling power 
+            // which would correspond to an associated  fictitious Born process
+            orderFile << "\nAlphasPower              " << (asPowerLI-2) << "\n";
+            orderFile << "AlphaPower              " << aewPowerLI << "\n";
+            orderFile << "\nAmplitudeType " << "LoopInduced" << "\n";
+          }
+          orderFile << (*p).second.Pstr() << "\n";
+        }
+
 	orderFile << flush;
 
 }
@@ -338,7 +375,8 @@ bool GoSamAmplitude::checkOLPContract(string contractFileName) {
 
 	for ( map<int, gosamprocinfo>::iterator p = processmap.begin() ; p != processmap.end() ; p++ ) {
 	    idpair.insert ( std::pair<int,int>((*p).second.HID(),(*p).second.GID()) );
-	    IDS << (*p).second.HID() << " " << (*p).second.GID() << "\n";
+	    // IDS << (*p).second.HID() << " " << (*p).second.GID() << "\n";
+	    IDS << (*p).second.HID() << " " << (*p).second.GID() << " " << (*p).second.Tstr() << "\n";
 	    if ( (*p).second.GID() == -1 ) return 0;
 	}
 	IDS << flush;
@@ -352,9 +390,12 @@ void GoSamAmplitude::getids() const {
 	ifstream infile(line.c_str());
 	int hid;
 	int gid;
+	string type;
 	while (std::getline(infile, line)) {
-	 istringstream(line) >> hid>>gid;
+	 // istringstream(line) >> hid>>gid;
+	 istringstream(line) >> hid>>gid>>type;
 	 idpair.insert ( std::pair<int,int>(hid,gid) );
+	 idtypepair.insert ( std::pair<int,string>(hid,type) );
 	}
 }
 
@@ -377,27 +418,34 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
   std::system(("mkdir " + gosamSourcePath).c_str());
   std::system(("mkdir " + gosamInstallPath).c_str());
 
-	contractFileTitle = name() + ".OLPContract.lh";
-	parametersFileTitle = name() + ".OLPParameters.lh";
+  contractFileTitle = name() + ".OLPContract.lh";
+  parametersFileTitle = name() + ".OLPParameters.lh";
   string orderFileName = gosamPath + "/" + name() + ".OLPOrder.lh";
-	contractFileName = gosamPath  + "/" + contractFileTitle;
+  contractFileName = gosamPath  + "/" + contractFileTitle;
   gosamSetupInFileName = gosamSetupInFilenameInterface == "" ? gosamPath + "/setup.gosam.in" : gosamSetupInFilenameInterface;
 
-	// check for old order file and create it if it doesn't already exist
-	fillOrderFile(procs, orderFileName);
+  // check for old order file and create it if it doesn't already exist
+  fillOrderFile(procs, orderFileName);
 
   // check if setup.gosam.in exists
   ifstream infile(gosamSetupInFileName.c_str());
   if (!infile) {
-    // if it doesn't get it from src/defaults
+    // if it doesn't, then get it from src/defaults
     string cmd = "cp @prefix@/share/Herwig++/defaults/setup.gosam.in " + gosamSetupInFileName;
     std::system(cmd.c_str());
     // set form's tempdir to the current working directory
     cmd = "sed -i 's/@FORMTEMPDIR@/" + StringUtils::replace(gosamSourcePath, string("/"), string("\\/")) + "/g' " + gosamSetupInFileName;
     std::system(cmd.c_str());
-    cmd = "sed -i 's/@FORMOPT@/" + (theFormOpt ? string("") : string(", noformopt")) + "/g' " + gosamSetupInFileName;
+    // set reduction programs to what is specified through the repository
+    cmd = "sed -i 's/@REDUCTIONPROGRAMS@/" + (theNinja ? string("ninja, golem95") : string("samurai, golem95")) + "/g' " + gosamSetupInFileName;
     std::system(cmd.c_str());
-    cmd = "sed -i 's/@REDUCTIONPROGRAMS@/" + (theFormOpt ? string("ninja, golem95") : string("samurai, golem95")) + "/g' " + gosamSetupInFileName;
+    if (theNinja) generator()->log() << "\nGoSam will use Ninja as reduction program.\n" << flush;
+    else if (!theNinja) generator()->log() << "\nGoSam will use Samurai as reduction program.\n" << flush;
+    if (theFormOpt) generator()->log() << "Form optimization switched on.\n" << flush;
+    else if (!theFormOpt) generator()->log() << "Form optimization switched off.\n" << flush;
+    if (theNinja && !theFormOpt) throw Exception() << "Ninja reduction needs form optimization!\n" << Exception::abortnow;
+    // use or don't use formopt
+    cmd = "sed -i 's/@FORMOPT@/" + (theFormOpt ? string("") : string(", noformopt")) + "/g' " + gosamSetupInFileName;
     std::system(cmd.c_str());
   }
   infile.close();
@@ -406,20 +454,20 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
   if(!ifile){
     //cout << "\nGoSam: Sign the order file." << flush;
     signOLP(orderFileName, contractFileName);
-	}
-	
-	if ( !checkOLPContract(contractFileName) ) {
-	  throw Exception() << "failed to start GoSam" << Exception::abortnow;
-	}
-	
-	if (!( DynamicLoader::load(gosamInstallPath+"/lib/libgolem_olp.so") || DynamicLoader::load(gosamInstallPath+"/lib64/libgolem_olp.so"))) buildGoSam();
-	
-	int status = -1;
-	startOLP(contractFileTitle, status);
+  }
 
-	if ( status != 1 ) return false;
+  if ( !checkOLPContract(contractFileName) ) {
+    throw Exception() << "failed to start GoSam" << Exception::abortnow;
+  }
 
-	return true;
+  if (!( DynamicLoader::load(gosamInstallPath+"/lib/libgolem_olp.so") || DynamicLoader::load(gosamInstallPath+"/lib64/libgolem_olp.so"))) buildGoSam();
+
+  int status = -1;
+  startOLP(contractFileTitle, status);
+
+  if ( status != 1 ) return false;
+
+  return true;
 
 }
 
@@ -447,29 +495,68 @@ LorentzVector<Complex> GoSamAmplitude::plusPolarization(const Lorentz5Momentum& 
 
 }
 
+// double LIresult = 0.0;
 void GoSamAmplitude::evalSubProcess() const {
   useMe();
-	double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
-	fillOLPMomenta(lastXComb().meMomenta());
+        double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
+        fillOLPMomenta(lastXComb().meMomenta());
 
-	double scale = sqrt(mu2() / GeV2);
+        double scale = sqrt(mu2() / GeV2);
 
-	double out[7] = { };
-	if ( idpair.size() == 0 ) {
-	  getids();
-	}
-	int id = olpId()[ProcessType::oneLoopInterference] ? olpId()[ProcessType::oneLoopInterference] : olpId()[ProcessType::treeME2];
-         //cout<<"\n"<<id<<" "<<idpair[id];
-	 int callid(idpair.find(id)->second);
-         double acc;
-	OLP_EvalSubProcess2(&(callid), olpMomenta(), &scale, out, &acc);
+        double out[7] = { };
+        if ( idpair.size() == 0 ) {
+          getids();
+        }
+//        int id = olpId()[ProcessType::oneLoopInterference] ? olpId()[ProcessType::oneLoopInterference] : olpId()[ProcessType::treeME2];
+        int id = -99;
+        if ( olpId()[ProcessType::loopInducedME2] ) id = olpId()[ProcessType::loopInducedME2];
+        else if ( olpId()[ProcessType::oneLoopInterference] ) id = olpId()[ProcessType::oneLoopInterference];
+        else id = olpId()[ProcessType::treeME2];
+        // cout<<"\n"<<id<<" "<<idpair[id];
+        int callid(idpair.find(id)->second); // If id denotes the Herwig ID, this returns the GoSam ID
+        string calltype(idtypepair.find(id)->second); // If id denotes the Herwig ID, this returns the amplitude type
+        double acc;
+        OLP_EvalSubProcess2(&(callid), olpMomenta(), &scale, out, &acc);
 
 	if ( olpId()[ProcessType::oneLoopInterference] ) {
-	  if(calculateTreeME2())lastTreeME2(out[3] * units);
-	  lastOneLoopInterference((out[2])* units);
-	  lastOneLoopPoles(pair<double, double>(out[0] * units, out[1] * units));
-	} else if ( olpId()[ProcessType::treeME2] ) {
-	  lastTreeME2(out[3] * units);
+          if(calculateTreeME2())lastTreeME2(out[3] * units);
+          lastOneLoopInterference((out[2])* units);
+          lastOneLoopPoles(pair<double, double>(out[0] * units, out[1] * units));
+        // } else if ( olpId()[ProcessType::treeME2] ) {
+        //   lastTreeME2(out[3] * units);
+        // }
+//         } else if ( olpId()[ProcessType::treeME2] && calltype=="Tree" ) {
+//           lastTreeME2(out[3] * units);
+//         } else if ( olpId()[ProcessType::treeME2] && calltype=="LoopInduced" ) {
+//           lastTreeME2(out[2] * units);
+        } else if ( olpId()[ProcessType::treeME2] ) {
+          lastTreeME2(out[3] * units);
+        } else if ( olpId()[ProcessType::loopInducedME2] ) {
+          lastTreeME2(out[2] * units);
+          // // debug output for the loop induced stuff, in order to use, need to
+          // // uncomment "double LIresult = 0.0" outside of function evalSubProcess()
+          // if (out[2]>LIresult) {
+          // LIresult = max(out[2],LIresult);
+          // cout << "\n" << flush;
+          // cout << "GoSamAmplitude::evalSubProcess(): LoopInduced\n" << flush;
+          // cout << "Virtual finite container,      out[2] = " << out[2] << "\n" << flush;
+          // cout << "\n" << flush;
+          // cout << "Virtual double pole container, out[0] = " << out[0] << "\n" << flush;
+          // cout << "Virtual single pole container, out[1] = " << out[1] << "\n" << flush;
+          // cout << "Tree container,                out[3] = " << out[3] << "\n" << flush;
+          // cout << "\n" << flush;
+          // vector<Lorentz5Momentum> olpMomentaCR;
+          // olpMomentaCR = lastXComb().meMomenta();
+          // for (size_t i=0; i!=olpMomentaCR.size(); ++i) {
+          // cout << "olpMomenta()[" << i << "](E,p_x,p_y,p_z,M) = " 
+          //      << olpMomentaCR[i].t()/GeV << ","
+          //      << olpMomentaCR[i].x()/GeV << ","
+          //      << olpMomentaCR[i].y()/GeV << ","
+          //      << olpMomentaCR[i].z()/GeV << ","
+          //      << olpMomentaCR[i].mass()/GeV << "\n" << flush;
+          // }
+          // cout << "\n" << flush;
+          // }
 	}
 
 }
@@ -538,11 +625,11 @@ void GoSamAmplitude::doinitrun() {
 
 
 void GoSamAmplitude::persistentOutput(PersistentOStream & os) const {
-	os << idpair << theCodeExists << massiveParticles << thePrintParameter << gosamPathInterface << gosamSetupInFilenameInterface << gosamBuildScript << theSetMuToMuR;
+	os << idpair << idtypepair << theCodeExists << massiveParticles << thePrintParameter << gosamPathInterface << gosamSetupInFilenameInterface << gosamBuildScript << theFormOpt << theNinja;
 }
 
 void GoSamAmplitude::persistentInput(PersistentIStream & is, int) {
-	is >> idpair >> theCodeExists >> massiveParticles >> thePrintParameter >> gosamPathInterface >> gosamSetupInFilenameInterface >> gosamBuildScript >> theSetMuToMuR;
+	is >> idpair >> idtypepair >> theCodeExists >> massiveParticles >> thePrintParameter >> gosamPathInterface >> gosamSetupInFilenameInterface >> gosamBuildScript >> theFormOpt >> theNinja;
 }
 
 // *** Attention *** The following static variable is needed for the type
@@ -631,28 +718,26 @@ void GoSamAmplitude::Init() {
           "Off",
           false);
 
+  static Switch<GoSamAmplitude,bool> interfaceNinja
+         ("Ninja",
+          "Switch On/Off for reduction with Ninja. If Off then Samurai is used.",
+          &GoSamAmplitude::theNinja, true, false, false);
+  static SwitchOption interfaceNinjaOn
+         (interfaceNinja,
+          "On",
+          "On",
+          true);
+  static SwitchOption interfaceNinjaOff
+         (interfaceNinja,
+          "Off",
+          "Off",
+          false);
+
   static Parameter<GoSamAmplitude,string> interfaceBuildScript
        ("BuildScript",
         "File name of a custom build script, which is called between 'autogen.sh' and 'make install'. It can be used for parallelization.",
         &GoSamAmplitude::gosamBuildScript, "",
         false, false);
-
-  static Switch<GoSamAmplitude,bool> interfaceSetMuToMuR
-         ("SetMuToMuR",
-          "Switch On to set the value of the dimensional regularization parameter mu2 for this OLP"
-	  "to the value of the renormalization scale muR2. Default is Off. The restoration for the "
-	  "full renormalization scale dependence in the DipoleIOperator isn't needed in this case.",
-          &GoSamAmplitude::theSetMuToMuR, false, false, false);
-  static SwitchOption interfaceSetMuToMuROn
-         (interfaceSetMuToMuR,
-          "On",
-          "On",
-          true);
-  static SwitchOption interfaceSetMuToMuROff
-         (interfaceSetMuToMuR,
-          "Off",
-          "Off",
-          false);
 
 }
 

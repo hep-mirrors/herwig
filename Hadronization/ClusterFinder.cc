@@ -43,8 +43,7 @@ void ClusterFinder::Init() {
 }
 
 
-ClusterVector ClusterFinder::formClusters(const PVector & partons) 
-  {
+ClusterVector ClusterFinder::formClusters(const PVector & partons) {
 
   set<tPPtr> examinedSet;  // colour particles already included in a cluster
   map<tColinePtr, pair<tPPtr,tPPtr> > quarkQuark; // quark quark 
@@ -329,29 +328,23 @@ void ClusterFinder::reduceToTwoComponents(ClusterVector & clusters) {
     // unique to this kind of component (all perturbative components are in
     // a similar situation), but it is not harmful.
     
+    // construct the diquark
     PPtr diquark = dataDiquark->produceParticle();
     vec[0]->addChild(diquark);
     vec[1]->addChild(diquark);
+    diquark->set5Momentum(Lorentz5Momentum(vec[0]->momentum() + vec[1]->momentum(),
+					   dataDiquark->constituentMass()));
+    diquark->setVertex(0.5*(vec[0]->vertex() + vec[1]->vertex()));
+    // make the new cluster
     ClusterPtr nclus = new_ptr(Cluster(other,diquark));
-
     //vec[0]->addChild(nclus);
     //diquark->addChild(nclus);
-    (*cluIter)->addChild(nclus);
 
-    nclus->set5Momentum((*cluIter)->momentum());
-    nclus->setVertex((*cluIter)->vertex());
-    for(int i = 0; i<nclus->numComponents(); i++) {
-      if(nclus->particle(i)->id() == dataDiquark->id()) {
-	nclus->particle(i)->set5Momentum(Lorentz5Momentum(vec[0]->momentum()
-	                     + vec[1]->momentum(), dataDiquark->constituentMass()));
-        nclus->particle(i)->setVertex(0.5*(vec[0]->vertex()
-			     + vec[1]->vertex()));
-      }
-    }
     // Set the parent/children relationship between the original cluster 
     // (the one with three components) with the new one (the one with two components)
     // and add the latter to the vector of new redefined clusters.
-    //(*cluIter)->addChild(nclus);
+    (*cluIter)->addChild(nclus);
+
     redefinedClusters.push_back(nclus);
   }
 

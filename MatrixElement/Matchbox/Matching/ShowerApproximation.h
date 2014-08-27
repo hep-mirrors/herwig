@@ -55,6 +55,12 @@ public:
   virtual bool needsSplittingGenerator() const { return false; }
 
   /**
+   * Return true, if this shower approximation will require
+   * H events
+   */
+  virtual bool hasHEvents() const { return true; }
+
+  /**
    * Return true, if this shower approximation will require tilde
    * XCombs for the real phase space point generated
    */

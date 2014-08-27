@@ -14,6 +14,7 @@ mkdir /Herwig/DipoleShower
 cd /Herwig/DipoleShower
 
 create Herwig::DipoleShowerHandler DipoleShowerHandler
+set DipoleShowerHandler:FreezeGrid 100000
 
 ################################################################################
 # Setup the underlying event and fix missing reference.

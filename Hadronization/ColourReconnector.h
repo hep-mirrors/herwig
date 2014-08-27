@@ -49,7 +49,8 @@ public:
   _clreco(0),
   _initTemp(0.1),
   _preco(0.5),
-  _triesPerStepFactor(5.0)
+  _triesPerStepFactor(5.0),
+  _maxDistance(1000.*femtometer)
   {}
   //@}
 
@@ -170,6 +171,11 @@ private:
    * this factor.
    */
   double _triesPerStepFactor;
+
+  /**
+   *  Maximium distance for reconnections
+   */
+  Length _maxDistance;
 
   /**
    * @return	true, if the two partons are splitting products of the same

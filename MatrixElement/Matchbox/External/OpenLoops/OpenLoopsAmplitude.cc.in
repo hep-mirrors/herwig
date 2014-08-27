@@ -174,6 +174,8 @@ void OpenLoopsAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs
 		}
 	}
 	orderFile << flush;
+	// crude fix for openloops hardwired tmp replaced by ./tmp
+	std::system("mkdir tmp");
 }
 
 bool OpenLoopsAmplitude::checkOLPContract() {

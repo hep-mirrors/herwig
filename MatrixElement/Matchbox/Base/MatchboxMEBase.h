@@ -215,7 +215,7 @@ public:
    */
   void olpProcess(int pType, int id) { 
     if ( theOLPProcess.empty() )
-      theOLPProcess.resize(4,0);
+      theOLPProcess.resize(5,0);
     theOLPProcess[pType] = id;
   }
 

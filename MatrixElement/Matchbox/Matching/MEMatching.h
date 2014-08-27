@@ -50,6 +50,12 @@ public:
    */
   virtual bool needsSplittingGenerator() const { return true; }
 
+  /**
+   * Return true, if this shower approximation will require
+   * H events
+   */
+  virtual bool hasHEvents() const { return restrictPhasespace() || theScreeningScale != ZERO; }
+
 public:
 
   /**

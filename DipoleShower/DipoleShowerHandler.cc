@@ -50,7 +50,7 @@ DipoleShowerHandler::DipoleShowerHandler()
     theFactorizationScaleFreeze(2.*GeV),
     isMCatNLOSEvent(false),
   isMCatNLOHEvent(false), theDoCompensate(false),
-  maxPtIsMuF(false) {}
+    maxPtIsMuF(false), theFreezeGrid(500000) {}
 
 DipoleShowerHandler::~DipoleShowerHandler() {}
 
@@ -577,6 +577,16 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
 			 << "DipoleShowerHandler encountered the following chains:\n"
 			 << (*firstChain) << (*secondChain) << flush;
     }
+
+    if ( theEventReweight ) {
+      double w = theEventReweight->weight(eventRecord().incoming(),
+					  eventRecord().outgoing(),
+					  eventRecord().hard());
+      Ptr<StandardEventHandler>::tptr eh = 
+	dynamic_ptr_cast<Ptr<StandardEventHandler>::tptr>(eventHandler());
+      assert(eh);
+      eh->reweight(w);
+    }
     
     if ( nEmissions )
       if ( ++emDone == nEmissions )
@@ -725,6 +735,7 @@ void DipoleShowerHandler::getGenerators(const DipoleIndex& ind,
       nGenerator->splittingKernel(*k);
       nGenerator->splittingKernel()->renormalizationScaleFactor(renormalizationScaleFactor());
       nGenerator->splittingKernel()->factorizationScaleFactor(factorizationScaleFactor());
+      nGenerator->splittingKernel()->freezeGrid(theFreezeGrid);
 
       GeneratorMap::const_iterator equivalent = generators().end();
 
@@ -803,7 +814,8 @@ void DipoleShowerHandler::persistentOutput(PersistentOStream & os) const {
      << ounit(theRenormalizationScaleFreeze,GeV)
      << ounit(theFactorizationScaleFreeze,GeV)
      << isMCatNLOSEvent << isMCatNLOHEvent << theShowerApproximation
-     << theDoCompensate << maxPtIsMuF;
+     << theDoCompensate << maxPtIsMuF << theFreezeGrid
+     << theEventReweight;
 }
 
 void DipoleShowerHandler::persistentInput(PersistentIStream & is, int) {
@@ -815,7 +827,8 @@ void DipoleShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> iunit(theRenormalizationScaleFreeze,GeV)
      >> iunit(theFactorizationScaleFreeze,GeV)
      >> isMCatNLOSEvent >> isMCatNLOHEvent >> theShowerApproximation
-     >> theDoCompensate >> maxPtIsMuF;
+     >> theDoCompensate >> maxPtIsMuF >> theFreezeGrid
+     >> theEventReweight;
 }
 
 ClassDescription<DipoleShowerHandler> DipoleShowerHandler::initDipoleShowerHandler;
@@ -1058,6 +1071,17 @@ void DipoleShowerHandler::Init() {
      "No",
      "",
      false);
+
+  static Parameter<DipoleShowerHandler,unsigned long> interfaceFreezeGrid
+    ("FreezeGrid",
+     "",
+     &DipoleShowerHandler::theFreezeGrid, 500000, 1, 0,
+     false, false, Interface::lowerlim);
+
+  static Reference<DipoleShowerHandler,DipoleEventReweight> interfaceEventReweight
+    ("EventReweight",
+     "",
+     &DipoleShowerHandler::theEventReweight, false, false, true, true, false);
 
 }
 

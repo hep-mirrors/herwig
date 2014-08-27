@@ -85,7 +85,8 @@ namespace ProcessType {
     treeME2 = 0,
     colourCorrelatedME2,
     spinColourCorrelatedME2,
-    oneLoopInterference
+    oneLoopInterference,
+    loopInducedME2
 
   };
 

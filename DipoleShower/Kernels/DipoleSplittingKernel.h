@@ -198,6 +198,12 @@ public:
   unsigned long freezeGrid() const { return theFreezeGrid; }
 
   /**
+   * Set the number of accepted points after which the grid should
+   * be frozen
+   */
+  void freezeGrid(unsigned long n) { theFreezeGrid = n; }
+
+  /**
    * Evaluate this splitting kernel for the given
    * dipole splitting.
    */

@@ -165,6 +165,20 @@ namespace ExSample {
 					 double w);
 
     /**
+     * Adjust the reference weight
+     */
+    void adjustReferenceWeight(double w) {
+      theReferenceWeight = std::max(theReferenceWeight,std::abs(w));
+    }
+
+    /**
+     * Return the reference weight
+     */
+    double getReferenceWeight() const {
+      return theReferenceWeight;
+    }
+
+    /**
      * Perform a default adaption step, splitting along the dimension
      * which shows up the largest difference in average weights; if
      * this exceeds gain, perform the split.
@@ -262,6 +276,35 @@ namespace ExSample {
      * Sample a point and return its weight
      */
     template<class RndGenerator, class Function>
+    double sample(RndGenerator& rnd,
+		  Function& f,
+		  std::vector<double>& p,
+		  bool unweight,
+		  bool adjustReference) {
+      SimpleCellGrid* selected = selectCell(rnd);
+      selected->sampleFlatPoint(p,rnd);
+      double w = f.evaluate(p);
+      selected->updateWeightInformation(p,w);
+      double xw = integral()*w/selected->weight(); 
+      if ( adjustReference ) {
+	selected->adjustReferenceWeight(xw);
+      }
+      if ( unweight ) {
+	double r = selected->getReferenceWeight();
+	double p = std::min(std::abs(xw),r)/r;
+	double sign = xw >= 0. ? 1. : -1.;
+	if ( p < 1 && rnd.rnd() > p )
+	  xw = 0.;
+	else
+	  xw = sign*std::max(std::abs(xw),r);
+      }
+      return xw;
+    }
+
+    /**
+     * Sample a point and return its weight
+     */
+    template<class RndGenerator, class Function>
     std::pair<double,double> generate(RndGenerator& rnd,
 				      Function& f,
 				      std::vector<double>& p) {
@@ -305,6 +348,11 @@ namespace ExSample {
      * Weight information for adaption steps
      */
     std::vector<std::pair<Counter,Counter> > theWeightInformation;
+
+    /**
+     * The reference weight to be used for unweighting
+     */
+    double theReferenceWeight;
 
   };
 

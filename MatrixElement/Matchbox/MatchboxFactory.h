@@ -387,6 +387,16 @@ public:
   vector<Ptr<MatchboxMEBase>::ptr>& bornMEs() { return theBornMEs; }
 
   /**
+   * Return the loop induced matrix elements to be considered
+   */
+  const vector<Ptr<MatchboxMEBase>::ptr>& loopInducedMEs() const { return theLoopInducedMEs; }
+
+  /**
+   * Access the loop induced matrix elements to be considered
+   */
+  vector<Ptr<MatchboxMEBase>::ptr>& loopInducedMEs() { return theLoopInducedMEs; }
+
+  /**
    * Return the processes to be ordered from an OLP
    */
   const map<Ptr<MatchboxAmplitude>::tptr,
@@ -861,6 +871,11 @@ private:
   vector<Ptr<MatchboxMEBase>::ptr> theBornMEs;
 
   /**
+   * The loop induced matrix elements to be considered
+   */
+  vector<Ptr<MatchboxMEBase>::ptr> theLoopInducedMEs;
+
+  /**
    * The virtual corrections to be considered
    */
   vector<Ptr<MatchboxInsertionOperator>::ptr> theVirtuals;
@@ -962,9 +977,19 @@ private:
   string doProcess(string);
 
   /**
+   * Command to set the process.
+   */
+  string doLoopInducedProcess(string);
+
+  /**
    * The process to consider in terms of particle groups.
    */
   vector<vector<string> > processes;
+
+  /**
+   * The loop induced process to consider in terms of particle groups.
+   */
+  vector<vector<string> > loopInducedProcesses;
 
   /**
    * Generate subprocesses.

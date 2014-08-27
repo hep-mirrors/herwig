@@ -65,6 +65,12 @@ public:
   virtual bool isDRbar() const { return false; }
 
   /**
+   * Request an additional random number if we are doing random helicity
+   * summation.
+   */
+  virtual int nDimAdditional() const { return theRanHelSum?1:0; }
+
+  /**
    * Set an OLP parameter (assuming real parameters only)
    */
   void setOLPParameter(const string& name, double value) const;

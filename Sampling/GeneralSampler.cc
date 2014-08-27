@@ -157,12 +157,14 @@ double GeneralSampler::generate() {
   while ( true ) {
 
     try {
-      weight = lastSampler()->generate()/lastSampler()->referenceWeight();
+      weight = 1.0;
       double p = lastSampler()->referenceWeight()/lastSampler()->bias()/theMaxWeight;
       if ( weighted() )
 	weight *= p;
       else if ( p < UseRandom::rnd() )
 	weight = 0.0;
+      if ( weight != 0.0 )
+	weight *= lastSampler()->generate()/lastSampler()->referenceWeight();
     } catch(BinSampler::NextIteration) {
       updateSamplers();
       lastSampler(samplers().upper_bound(UseRandom::rnd())->second);

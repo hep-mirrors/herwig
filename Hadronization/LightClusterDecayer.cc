@@ -279,9 +279,9 @@ bool LightClusterDecayer::reshuffling(const tcPDPtr pdata1,
   
   Kinematics::twoBodyDecay(pSystem, mhad1, mclu2, u.vect().unit(), phad1, pclu2);
 
-  ptrhad1->set5Momentum( phad1 );               // set momentum of first hadron.
-  ptrhad1->setLabVertex(cluPtr1->vertex()); // set hadron vertex position to the
-                                                // parent cluster position.
+  ptrhad1->set5Momentum( phad1 );        // set momentum of first hadron.
+  ptrhad1->setVertex(cluPtr1->vertex()); // set hadron vertex position to the
+                                         // parent cluster position.
   cluPtr1->addChild(ptrhad1);
   finalhadrons.push_back(ptrhad1);
   cluPtr1->flagAsReshuffled();
@@ -298,8 +298,8 @@ bool LightClusterDecayer::reshuffling(const tcPDPtr pdata1,
     PPtr ptrhad2 = _hadronSelector->lightestHadron(part3->dataPtr(),part4->dataPtr())
       ->produceParticle();
     ptrhad2->set5Momentum( pclu2 );            
-    ptrhad2->setLabVertex( cluPtr2->vertex() ); // set hadron vertex position to the
-                                                  // parent cluster position.
+    ptrhad2->setVertex( cluPtr2->vertex() ); // set hadron vertex position to the
+                                             // parent cluster position.
     cluPtr2->addChild(ptrhad2);  
     finalhadrons.push_back(ptrhad2);
   } else {
