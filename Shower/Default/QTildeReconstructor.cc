@@ -1987,20 +1987,9 @@ deconstructFinalStateSystem(const LorentzRotation &   toRest,
   vector<Energy> mon;
   for(cit=jets.begin();cit!=jets.end();++cit) {
     pout.push_back((*cit)->branchingParticle()->momentum());
-    // KH - 230909 - If the particle has no children then it will 
-    // not have showered and so it should be "on-shell" so we can
-    // get it's mass from it's momentum. This means that the
-    // inverseRescalingFactor doesn't give any nans or do things 
-    // it shouldn't if it gets e.g. two Z bosons generated with
-    // off-shell masses. This is for sure not the best solution.
-    // PR 1/1/10 modification to previous soln
-    if((*cit)->branchingParticle()->children().size()==0 ||
-       (!(*cit)->branchingParticle()->dataPtr()->coloured() &&
-	!(*cit)->branchingParticle()->dataPtr()->stable()) ) 
-	mon.push_back(pout.back().mass());
-    else
-      mon.push_back((*cit)->branchingParticle()->dataPtr()->mass());
+    mon.push_back(findMass(*cit));
   }
+
   // boost all the momenta to the rest frame of the decaying particle
   Lorentz5Momentum pin;
   for(unsigned int ix=0;ix<pout.size();++ix) {
@@ -2012,20 +2001,15 @@ deconstructFinalStateSystem(const LorentzRotation &   toRest,
   double lambda=inverseRescalingFactor(pout,mon,pin.mass());
   if (lambda< 1.e-10) throw KinematicsReconstructionVeto(); 
   // now calculate the p reference vectors 
-  for(cit=jets.begin();cit!=jets.end();++cit){
-    Lorentz5Momentum pvect = (*cit)->branchingParticle()->momentum();
+  for(unsigned int ix=0;ix<jets.size();++ix) {
+    Lorentz5Momentum pvect = jets[ix]->branchingParticle()->momentum();
     pvect.transform(toRest);
     pvect /= lambda;
-    if((*cit)->branchingParticle()->children().size()==0 ||
-       (!(*cit)->branchingParticle()->dataPtr()->coloured() &&
-	!(*cit)->branchingParticle()->dataPtr()->stable()) ) 
-      pvect.setMass((*cit)->branchingParticle()->momentum().mass());
-    else
-      pvect.setMass((*cit)->branchingParticle()->dataPtr()->mass());
+    pvect.setMass(mon[ix]);
     pvect.rescaleEnergy();
     pvect.transform(fromRest);
-    (*cit)->pVector(pvect);
-    (*cit)->showerMomentum(pvect);
+    jets[ix]->pVector(pvect);
+    jets[ix]->showerMomentum(pvect);
   }
   // find the colour partners
   ShowerParticleVector particles;
@@ -2562,3 +2546,25 @@ void QTildeReconstructor::reconstructFinalFinalOffShell(JetKinVect orderedJets,
   }
 }
 
+Energy QTildeReconstructor::findMass(HardBranchingPtr branch) const {
+  // KH - 230909 - If the particle has no children then it will 
+  // not have showered and so it should be "on-shell" so we can
+  // get it's mass from it's momentum. This means that the
+  // inverseRescalingFactor doesn't give any nans or do things 
+  // it shouldn't if it gets e.g. two Z bosons generated with
+  // off-shell masses. This is for sure not the best solution.
+  // PR 1/1/10 modification to previous soln
+  // PR 28/8/14 change to procedure and factorize into a function
+  if(branch->children().empty()) {
+    return branch->branchingParticle()->mass();
+  }
+  else if(!branch->children().empty() &&
+	  !branch->branchingParticle()->dataPtr()->stable() ) {
+    for(unsigned int ix=0;ix<branch->children().size();++ix) {
+      if(branch->branchingParticle()->id()==
+	 branch->children()[ix]->branchingParticle()->id())
+	return findMass(branch->children()[ix]);
+    }
+  }
+  return branch->branchingParticle()->dataPtr()->mass();
+}

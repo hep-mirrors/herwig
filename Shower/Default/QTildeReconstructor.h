@@ -437,6 +437,11 @@ protected:
   void deepTransform(PPtr particle,const LorentzRotation & r,
 		     bool match=true,PPtr original=PPtr()) const;
 
+  /**
+   *  Find the mass of a particle in the hard branching
+   */
+  Energy findMass(HardBranchingPtr) const;
+
 protected:
 
   /** @name Clone Methods. */

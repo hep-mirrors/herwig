@@ -508,6 +508,9 @@ void GeneralTwoBodyDecayer::setDecayInfo(PDPtr incoming,PDPair outgoing,
 }
 
 HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
+  // ignore effective vertices
+  if (vertex_ && (vertex_->orderInGem()+vertex_->orderInGs())>1) 
+    return HardTreePtr();
   // search for coloured particles
   bool colouredParticles=false;
   vector<ShowerProgenitorPtr> Progenitors = tree->extractProgenitors();
@@ -529,10 +532,6 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
     aProgenitor = tree->outgoingLines().rbegin()->first;
   // get the decaying particle
   ShowerProgenitorPtr bProgenitor = tree->incomingLines().begin()->first;
-
-  // ignore effective vertices
-  if (vertex_ && (vertex_->orderInGem()+vertex_->orderInGs())>1) 
-    return HardTreePtr();
 
   // identify which dipoles are required
   vector<dipoleType> dipoles;
