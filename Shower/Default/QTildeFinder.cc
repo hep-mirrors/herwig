@@ -21,6 +21,7 @@
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "ThePEG/Repository/UseRandom.h" 
 #include "ThePEG/Utilities/DescribeClass.h"
+#include "Herwig++/Shower/Base/ShowerVeto.h"
 
 using namespace Herwig;
 
@@ -144,7 +145,8 @@ calculateInitialFinalScales(const ShowerPPair &ppair, const bool isDecayCase) {
     Energy2 mb2(sqr(ppair.first->mass()));
     double a=(pb-pc).m2()/mb2;
     double c=sqr(ppair.second->mass())/mb2;
-    double lambda   = sqrt(1. + a*a + c*c - 2.*a - 2.*c - 2.*a*c);
+    double lambda   = 1. + a*a + c*c - 2.*a - 2.*c - 2.*a*c;
+    lambda = sqrt(max(lambda,0.));
     double PROD     = 0.25*sqr(1. - a + c + lambda);
     double ktilde_b, ktilde_c,cosi(0.);
     switch(initialFinalDecayConditions()) {
