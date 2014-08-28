@@ -875,7 +875,6 @@ HardTreePtr DISBase::generateHardest(ShowerTreePtr tree,
   phadron.setMass(0.*GeV);
   phadron.rescaleRho();
   Lorentz5Momentum pb     = quark[0]->momentum();
-  Lorentz5Momentum pbasis = phadron;
   Axis axis(q_.vect().unit());
   double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
   LorentzRotation rot_ = LorentzRotation();
