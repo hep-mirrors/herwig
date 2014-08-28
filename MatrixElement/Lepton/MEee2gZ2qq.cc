@@ -422,6 +422,13 @@ void MEee2gZ2qq::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
   // change the existing quark and antiquark
   PPtr orig;
   for(cit=tree->outgoingLines().begin();cit!=tree->outgoingLines().end();++cit) {
+    map<tShowerTreePtr,pair<tShowerProgenitorPtr,
+			    tShowerParticlePtr> >::const_iterator tit;
+    for(tit  = tree->treelinks().begin();
+	tit != tree->treelinks().end();++tit) {
+      if(tit->second.first && tit->second.second==cit->first->progenitor())
+	break;
+    }
     if(cit->first->progenitor()->id()==newq->id()) {
       // remove old particles from colour line
       col->removeColoured(cit->first->copy());
@@ -433,11 +440,13 @@ void MEee2gZ2qq::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
       tree->outgoingLines()[cit->first]=sp;
       cit->first->perturbative(!firstEmits);
       if(firstEmits) orig=cit->first->original();
+      if(tit!=tree->treelinks().end())
+	tree->updateLink(tit->first,make_pair(cit->first,sp));
     }
     else {
       // remove old particles from colour line
       col->removeAntiColoured(cit->first->copy());
-      col->removeColoured(cit->first->progenitor());
+      col->removeAntiColoured(cit->first->progenitor());
       // insert new particles
       cit->first->copy(newa);
       ShowerParticlePtr sp(new_ptr(ShowerParticle(*newa,1,true)));
@@ -445,6 +454,8 @@ void MEee2gZ2qq::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
       tree->outgoingLines()[cit->first]=sp;
       cit->first->perturbative(firstEmits);
       if(!firstEmits) orig=cit->first->original();
+      if(tit!=tree->treelinks().end())
+	tree->updateLink(tit->first,make_pair(cit->first,sp));
     }
   }
   // add the gluon
