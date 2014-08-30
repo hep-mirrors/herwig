@@ -725,6 +725,7 @@ void ShowerTree::decay(ShowerDecayMap & decay) {
   // if already decayed return
   if(!_outgoingLines.empty()) return;
   // otherwise decay it
+  applyTransforms();
   // now we need to replace the particle with a new copy after the shower
   // find particle after the shower
   ShowerParticlePtr newparent=_parent->_treelinks[this].second;

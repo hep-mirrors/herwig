@@ -75,16 +75,6 @@ public:
    */
   virtual bool showerHardProcessVeto() { return false; };
 
-  /**
-   * It returns true if the particle with the specified id
-   * is in the list of those that should be decayed during the showering
-   * showering.
-   */
-  bool decaysInShower(const long id) const {
-    return ( particlesDecayInShower_.find( abs(id) ) != 
-	     particlesDecayInShower_.end() ); 
-  }
-
 public:
 
   /**@name Methods related to PDF freezing */
