@@ -743,6 +743,7 @@ void ShowerTree::decay(ShowerDecayMap & decay) {
   _incomingLines.insert(make_pair(newprog,stemp));
   // now we need to decay the copy
   PPtr parent=copy[0];
+  if(parent->spinInfo()) parent->spinInfo()->decay(true);
   unsigned int ntry = 0;
   while (true) {
     // exit if fails

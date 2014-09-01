@@ -695,7 +695,14 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
     try {
       // generate the showering
       doShowering(false,XCPtr());
-      // if no vetos return
+      // if no vetos 
+      // force calculation of spin correlations
+      SpinPtr spInfo = decay->incomingLines().begin()->first->progenitor()->spinInfo();
+      if(spInfo) {
+	if(!spInfo->developed()) spInfo->needsUpdate();
+	spInfo->develop();
+      }
+      // and then return
       return;
     }
     catch (InteractionVeto) {
