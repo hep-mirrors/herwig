@@ -124,6 +124,7 @@ void QTildeShowerKinematics1to2::constructSpinInfo(tShowerParticlePtr particle,
   porig.setMass(mass);
   // now construct the required spininfo and calculate the basis states
   PDT::Spin spin(particle->dataPtr()->iSpin());
+  particle->set5Momentum(porig);
   if(spin==PDT::Spin0) {
     ScalarWaveFunction::constructSpinInfo(particle,outgoing,timeLike);
   }
@@ -154,5 +155,4 @@ void QTildeShowerKinematics1to2::constructSpinInfo(tShowerParticlePtr particle,
 		      << "FS_QtildaShowerKinematics1to2::constructVertex() "
 		      << Exception::runerror;
   }
-  particle->set5Momentum(porig);
 }
