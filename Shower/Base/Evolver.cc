@@ -33,8 +33,28 @@
 #include "ThePEG/PDT/DecayMode.h"
 #include "Herwig++/Shower/ShowerHandler.h" 
 #include "ThePEG/Utilities/DescribeClass.h"
+#include <ThePEG/Repository/CurrentGenerator.h>
 
 using namespace Herwig;
+
+namespace {
+	/**
+	 * Cached lookup of decay modes.
+	 * Generator::findDecayMode() is not efficient.
+   */
+  tDMPtr findDecayMode(const string & tag) {
+    static map<string,DMPtr> cache;
+
+    map<string,DMPtr>::const_iterator pos = cache.find(tag);
+
+    if ( pos != cache.end() ) 
+    	return pos->second;
+
+    tDMPtr dm = CurrentGenerator::current().findDecayMode(tag);
+    cache[tag] = dm;
+    return dm;
+  }
+}
 
 DescribeClass<Evolver,Interfaced>
 describeEvolver ("Herwig::Evolver","HwShower.so");
@@ -651,7 +671,7 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
       tag += it->first->original()->dataPtr()->name();
     }
     tag += ";";
-    dm = generator()->findDecayMode(tag);
+    dm = findDecayMode(tag);
   }
   if(dm) _decayme = dynamic_ptr_cast<HwDecayerBasePtr>(dm->decayer());
   // set the ShowerTree to be showered
