@@ -45,7 +45,8 @@ MEPP2Higgs::MEPP2Higgs() : scaleopt_(1),  mu_F_(100.*GeV),
 			   ggPow_(1.6), qgPow_(1.6), enhance_(1.1),
 			   nover_(0), ntry_(0), ngen_(0), maxwgt_(0.),
 			   power_(2.0), pregg_(7.), preqg_(3.),
-			   pregqbar_(3.), minpT_(2.*GeV)
+			   pregqbar_(3.), minpT_(2.*GeV),
+			   spinCorrelations_(true)
 {}
 
 ClassDescription<MEPP2Higgs> MEPP2Higgs::initMEPP2Higgs;
@@ -58,7 +59,7 @@ void MEPP2Higgs::persistentOutput(PersistentOStream & os) const {
      << alpha_ << prefactor_ << power_ << pregg_ << preqg_
      << pregqbar_ << ounit( minpT_, GeV ) << ggPow_ << qgPow_ 
      << enhance_ << channelwgtA_ << channelwgtB_ << channelWeights_
-     << mu_R_opt_ << mu_F_opt_;
+     << mu_R_opt_ << mu_F_opt_ << spinCorrelations_;
 }
 
 void MEPP2Higgs::persistentInput(PersistentIStream & is, int) {
@@ -68,7 +69,7 @@ void MEPP2Higgs::persistentInput(PersistentIStream & is, int) {
      >> alpha_ >> prefactor_ >> power_ >> pregg_ >> preqg_
      >> pregqbar_ >> iunit( minpT_, GeV ) >> ggPow_ >> qgPow_ 
      >> enhance_ >> channelwgtA_ >> channelwgtB_ >> channelWeights_
-     >> mu_R_opt_ >> mu_F_opt_;
+     >> mu_R_opt_ >> mu_F_opt_ >> spinCorrelations_;
 }
 
 void MEPP2Higgs::Init() {
@@ -285,6 +286,22 @@ void MEPP2Higgs::Init() {
       "pT",
       "Use pT as the scale in the PDFs",
       1);
+
+  static Switch<MEPP2Higgs,bool> interfaceSpinCorrelations
+    ("SpinCorrelations",
+     "Which on/off spin correlations in the hard process",
+     &MEPP2Higgs::spinCorrelations_, true, false, false);
+  static SwitchOption interfaceSpinCorrelationsYes
+    (interfaceSpinCorrelations,
+     "Yes",
+     "Switch correlations on",
+     true);
+  static SwitchOption interfaceSpinCorrelationsNo
+    (interfaceSpinCorrelations,
+     "No",
+     "Switch correlations off",
+     false);
+
 }
 
 void MEPP2Higgs::doinit() {
@@ -468,6 +485,7 @@ Selector<const ColourLines *> MEPP2Higgs::colourGeometries(tcDiagPtr diag) const
 }
 
 void MEPP2Higgs::constructVertex(tSubProPtr sub) {
+  if(!spinCorrelations_) return;
   // extract the particles in the hard process
   ParticleVector hard;
   hard.push_back(sub->incoming().first);

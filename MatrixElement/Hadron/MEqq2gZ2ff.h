@@ -246,6 +246,11 @@ private:
    * Matrix element for spin correlations
    */
   ProductionMatrixElement _me;
+
+  /**
+   *  Whether of not to construct the vertex for spin correlations
+   */
+  bool spinCorrelations_;
 };
 
 }

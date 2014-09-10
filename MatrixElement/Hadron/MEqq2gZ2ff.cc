@@ -30,7 +30,7 @@
 using namespace Herwig;
 
 MEqq2gZ2ff::MEqq2gZ2ff() : _minflavour(1), _maxflavour(5), 
-			   _gammaZ(0), _process(0) {
+			   _gammaZ(0), _process(0), spinCorrelations_(true) {
   massOption(vector<unsigned int>(2,1));
 }
 
@@ -133,13 +133,13 @@ MEqq2gZ2ff::colourGeometries(tcDiagPtr) const {
 void MEqq2gZ2ff::persistentOutput(PersistentOStream & os) const {
   os << _minflavour << _maxflavour << _gammaZ << _process
      << _theFFZVertex << _theFFPVertex 
-     << _gamma << _z0;
+     << _gamma << _z0 << spinCorrelations_;
 }
 
 void MEqq2gZ2ff::persistentInput(PersistentIStream & is, int) { 
   is >> _minflavour >> _maxflavour >> _gammaZ >> _process
      >> _theFFZVertex >> _theFFPVertex 
-     >> _gamma >> _z0; 
+     >> _gamma >> _z0 >> spinCorrelations_; 
 }
 
 ClassDescription<MEqq2gZ2ff> MEqq2gZ2ff::initMEqq2gZ2ff;
@@ -274,6 +274,21 @@ void MEqq2gZ2ff::Init() {
      "Only include t tbar as outgoing particles",
      16);
 
+  static Switch<MEqq2gZ2ff,bool> interfaceSpinCorrelations
+    ("SpinCorrelations",
+     "Which on/off spin correlations in the hard process",
+     &MEqq2gZ2ff::spinCorrelations_, true, false, false);
+  static SwitchOption interfaceSpinCorrelationsYes
+    (interfaceSpinCorrelations,
+     "Yes",
+     "Switch correlations on",
+     true);
+  static SwitchOption interfaceSpinCorrelationsNo
+    (interfaceSpinCorrelations,
+     "No",
+     "Switch correlations off",
+     false);
+
 }
 
 double MEqq2gZ2ff::qqbarME(vector<SpinorWaveFunction>    & fin ,
@@ -335,6 +350,7 @@ double MEqq2gZ2ff::qqbarME(vector<SpinorWaveFunction>    & fin ,
 }
 
 void MEqq2gZ2ff::constructVertex(tSubProPtr sub) {
+  if(!spinCorrelations_) return;
   // extract the particles in the hard process
   ParticleVector hard;
   hard.push_back(sub->incoming().first);hard.push_back(sub->incoming().second);
