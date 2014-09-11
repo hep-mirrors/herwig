@@ -141,7 +141,8 @@ Element::findFirst(int type, const string& name) const {
   return i->second;
 }
 
-pair<multimap<pair<int,string>,list<Element>::iterator>::const_iterator,multimap<pair<int,string>,list<Element>::iterator>::const_iterator>
+pair<multimap<pair<int,string>,list<Element>::iterator>::const_iterator,
+     multimap<pair<int,string>,list<Element>::iterator>::const_iterator>
 Element::findAll(int type, const string& name) const {
   assertChildren();
   return theIndex.equal_range(make_pair(type,name));

@@ -55,6 +55,84 @@ void MultiIterationStatistics::persistentInput(PersistentIStream & is, int) {
   get(is);
 }
 
+void MultiIterationStatistics::fromXML(const XML::Element& elem) {
+
+  size_t nit;
+  elem.getFromAttribute("nIterations",nit);
+  elem.getFromAttribute("minIterationPoints",theMinIterationPoints);
+  elem.getFromAttribute("useAllIterations",theUseAllIterations);
+
+  theIterations.resize(nit);
+
+  list<XML::Element>::const_iterator stats =
+    elem.findFirst(XML::ElementTypes::Element,"GeneralStatistics");
+
+  if ( stats == elem.children().end() )
+    throw Exception()
+      << "MultiIterationStatistics expected a GeneralStatistics element"
+      << Exception::abortnow;
+
+  GeneralStatistics::fromXML(*stats);
+
+  stats = elem.findFirst(XML::ElementTypes::Element,"Iterations");
+
+  if ( stats == elem.children().end() )
+    throw Exception()
+      << "MultiIterationStatistics expected an Iterations element"
+      << Exception::abortnow;
+
+  pair<multimap<pair<int,string>,list<XML::Element>::iterator>::const_iterator,
+       multimap<pair<int,string>,list<XML::Element>::iterator>::const_iterator>
+    range = stats->findAll(XML::ElementTypes::Element,"GeneralStatistics");
+
+  if ( (size_t)(std::distance(range.second,range.first)) != nit )
+    throw Exception() << "MultiIterationStatistics expected "
+		      << nit << " iterations but only found "
+		      << std::distance(range.second,range.first)
+		      << Exception::abortnow;
+  
+  set<size_t> which;
+
+  for ( multimap<pair<int,string>,list<XML::Element>::iterator>::const_iterator a = range.first;
+	a != range.second; ++a ) {
+    size_t id;
+    a->second->getFromAttribute("number",id);
+    which.insert(id);
+    theIterations[id].fromXML(*(a->second));
+  }
+
+  if ( which.size() != nit )
+    throw Exception() << "MultiIterationStatistics expected "
+		      << nit << " iterations but only found "
+		      << which.size()
+		      << Exception::abortnow;
+
+}
+
+XML::Element MultiIterationStatistics::toXML() const {
+
+  XML::Element elem(XML::ElementTypes::Element,"MultiIterationStatistics");
+
+  elem.appendAttribute("nIterations",theIterations.size());
+  elem.appendAttribute("minIterationPoints",theMinIterationPoints);
+  elem.appendAttribute("useAllIterations",theUseAllIterations);
+
+  XML::Element stats = GeneralStatistics::toXML();
+  elem.append(stats);
+
+  XML::Element its(XML::ElementTypes::Element,"Iterations");
+  for ( size_t k = 0; k < theIterations.size(); ++k ) {
+    XML::Element it = theIterations[k].toXML();
+    it.appendAttribute("number",k);
+    its.append(it);
+  }
+  elem.append(its);
+
+  return elem;
+
+}
+
+
 double MultiIterationStatistics::chi2() const {
   assert(!iterations().empty());
   double current = averageWeight(true);

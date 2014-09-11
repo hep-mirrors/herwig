@@ -13,7 +13,6 @@
 //
 
 #include "ThePEG/Handlers/SamplerBase.h"
-#include "Herwig++/Utilities/XML/Element.h"
 #include "BinSampler.h"
 
 namespace Herwig {
