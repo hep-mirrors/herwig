@@ -20,6 +20,7 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "Herwig++/Utilities/Kinematics.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -77,7 +78,7 @@ double FRSDecayer::me2(const int , const Particle & inpart,
       if(wavebar_[0].wave().Type() != v_spinortype)
 	for(unsigned int ix = 0; ix < 2; ++ix) wavebar_[ix].conjugate();
     }
-    ME(DecayMatrixElement(PDT::Spin1Half,PDT::Spin3Half,PDT::Spin0));
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,PDT::Spin3Half,PDT::Spin0)));
   }
   // setup spin info when needed
   if(meopt==Terminate) {
@@ -104,13 +105,13 @@ double FRSDecayer::me2(const int , const Particle & inpart,
   Energy2 scale(sqr(inpart.mass()));
   for(unsigned int if1 = 0; if1 < 2; ++if1) {
     for(unsigned int if2 = 0; if2 < 4; ++if2) {
-      if(ferm) ME()(if1, if2, 0) = 
+      if(ferm) (*ME())(if1, if2, 0) = 
 		 abstractVertex_->evaluate(scale,wave_[if1],RSwavebar_[if2],scal);
-      else     ME()(if1, if2, 0) = 
+      else     (*ME())(if1, if2, 0) = 
 		 abstractVertex_->evaluate(scale,RSwave_[if2],wavebar_[if1],scal);
     }
   }
-  double output = (ME().contract(rho_)).real()/scale*UnitRemoval::E2;
+  double output = (ME()->contract(rho_)).real()/scale*UnitRemoval::E2;
   // colour and identical particle factors
   output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
 			 decay[1]->dataPtr());

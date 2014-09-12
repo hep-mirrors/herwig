@@ -23,6 +23,7 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/epsilon.h"
 #include "Herwig++/PDT/ThreeBodyAllOn1IntegralCalculator.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -238,8 +239,8 @@ double PScalarVectorFermionsDecayer::me2(const int,
   if(meopt==Initialize) {
     ScalarWaveFunction::
       calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
-    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin1,PDT::Spin1Half,
-			  PDT::Spin1Half));
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1,PDT::Spin1Half,
+					 PDT::Spin1Half)));
   }
   if(meopt==Terminate) {
     // set up the spin information for the decay products
@@ -284,11 +285,11 @@ double PScalarVectorFermionsDecayer::me2(const int,
       // compute the current for this part
       eps = epsilon(decay[0]->momentum(),pff,fcurrent);
       for(ispin[1]=0;ispin[1]<3;++ispin[1]) {
-	ME()(ispin)=pre *_vectors[ispin[1]].dot(eps);
+	(*ME())(ispin)=pre *_vectors[ispin[1]].dot(eps);
       }
     }	  
   }
-  double me = ME().contract(_rho).real();
+  double me = ME()->contract(_rho).real();
 //   //code to test the matrix element against the analytic result
 //   Energy   m[4]={inpart.mass(),decay[0]->mass(),decay[1]->mass(),decay[2]->mass()};
 //   Energy2 m2[4]={m[0]*m[0],m[1]*m[1],m[2]*m[2],m[3]*m[3]};

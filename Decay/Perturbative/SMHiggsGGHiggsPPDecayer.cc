@@ -19,6 +19,7 @@
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/PDT/DecayMode.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 
 using namespace Herwig;
@@ -94,7 +95,7 @@ double SMHiggsGGHiggsPPDecayer::me2(const int,
     ScalarWaveFunction::
       calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&part),incoming);
     _swave = ScalarWaveFunction(part.momentum(),part.dataPtr(),incoming);
-    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin1,PDT::Spin1));
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1,PDT::Spin1)));
   }
   if(meopt==Terminate) {
     ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&part),
@@ -114,17 +115,17 @@ double SMHiggsGGHiggsPPDecayer::me2(const int,
     for(v2hel = 0;v2hel < 3;v2hel+=2) {
       if(decay[0]->id() == ParticleID::g &&
 	 decay[1]->id() == ParticleID::g) {
-	ME()(0,v1hel,v2hel) = _hggvertex->evaluate(scale,_vwave[0][v1hel],
+	(*ME())(0,v1hel,v2hel) = _hggvertex->evaluate(scale,_vwave[0][v1hel],
 						   _vwave[1][v2hel],_swave);
       }
       else {
-	ME()(0,v1hel,v2hel) = _hppvertex->evaluate(scale,_vwave[0][v1hel],
+	(*ME())(0,v1hel,v2hel) = _hppvertex->evaluate(scale,_vwave[0][v1hel],
 						   _vwave[1][v2hel],_swave);
       }
     }
   }
   //store matrix element
-  double output = ME().contract(_rho).real()*UnitRemoval::E2/scale;
+  double output = ME()->contract(_rho).real()*UnitRemoval::E2/scale;
   //colour factor (N^2 - 1)/4
   if(decay[0]->id() == ParticleID::g &&
      decay[1]->id() == ParticleID::g) {

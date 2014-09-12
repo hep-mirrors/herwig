@@ -56,15 +56,15 @@ public:
   /**
    * Get the matrix element
    */
-  inline const DecayMatrixElement & ME() const {
+  inline const DecayMEPtr ME() const {
     return matrixElement_;
   }
 
   /**
    * Set the matrix element
    */
-  inline void ME(const DecayMatrixElement & in) const {
-    matrixElement_.reset(in);
+  inline void ME(DecayMEPtr in) const {
+    matrixElement_ = in;
   }
   //@}
 
@@ -118,7 +118,7 @@ private:
   /**
    * Storage of the decay matrix element.
    */
-  DecayMatrixElement matrixElement_;
+  mutable DecayMEPtr matrixElement_;
 
   /**
    *  Whether or not the incoming spin density matrices need to be converted

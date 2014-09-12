@@ -20,6 +20,7 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -59,7 +60,7 @@ void VectorMeson2FermionDecayer::doinit() {
 
 VectorMeson2FermionDecayer::VectorMeson2FermionDecayer() 
   : _coupling(42), _incoming(42), _outgoingf(42), _outgoinga(42), _maxweight(42) {
-  ME(DecayMatrixElement(PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half));
+  ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half)));
   // don't include intermediates
   generateIntermediates(false);
   // rho -> e+e-, mu+mu
@@ -285,8 +286,8 @@ double VectorMeson2FermionDecayer::me2(const int,
     for(unsigned iy=0;iy<2;++iy) {
       temp = pre*_wave[ix].vectorCurrent(_wavebar[iy]);
       for(unsigned int iz=0;iz<3;++iz) {
-	if(iferm>ianti) ME()(iz,ix,iy)=_vectors[iz].dot(temp);
-	else            ME()(iz,iy,ix)=_vectors[iz].dot(temp);
+	if(iferm>ianti) (*ME())(iz,ix,iy)=_vectors[iz].dot(temp);
+	else            (*ME())(iz,iy,ix)=_vectors[iz].dot(temp);
       }
     }
   }
@@ -298,7 +299,7 @@ double VectorMeson2FermionDecayer::me2(const int,
 //        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " "
 //        << me << " " << test << " " << (me-test)/(me+test) << "\n";
   // return the answer
-  return ME().contract(_rho).real();
+  return ME()->contract(_rho).real();
 }
 
 bool VectorMeson2FermionDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,

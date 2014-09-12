@@ -19,6 +19,7 @@
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -59,7 +60,7 @@ void VectorMesonPVectorPScalarDecayer::doinit() {
 VectorMesonPVectorPScalarDecayer::VectorMesonPVectorPScalarDecayer()
   :  _coupling(21), _incoming(21), _outgoingA(21), _outgoingP(21), 
      _maxweight(21) {
-  ME(DecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin0));
+  ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin0)));
   // Jpsi to K_1 K
   _incoming[0] = 443; _outgoingA[0] =  20313; _outgoingP[0] = -311; 
   _coupling[0] = 0.00127/GeV; _maxweight[0] = 12.; 
@@ -228,12 +229,12 @@ double VectorMesonPVectorPScalarDecayer::me2(const int,
   for(unsigned int ix=0;ix<3;++ix) {
     epsdot=_vectors[1][ix]*inpart.momentum();
     for(unsigned int iy=0;iy<3;++iy) {
-      ME()(iy,ix,0)=pre*(p0dotpv*(_vectors[1][ix].dot(_vectors[0][iy]))-
+      (*ME())(iy,ix,0)=pre*(p0dotpv*(_vectors[1][ix].dot(_vectors[0][iy]))-
 			 epsdot*(_vectors[0][iy]*decay[0]->momentum()));
     }
   }
   // test of the matrix element
-//   double me = ME().contract(_rho).real();
+//   double me = ME()->contract(_rho).real();
 //   Energy pcm=Kinematics::pstarTwoBodyDecay(inpart.mass(),decay[0]->mass(),
 // 					   decay[1]->mass());
 //   double test = sqr(_coupling[imode()])/3.*(2.*sqr(pcm)+3.*sqr(decay[0]->mass()));
@@ -241,7 +242,7 @@ double VectorMesonPVectorPScalarDecayer::me2(const int,
 //        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " "
 //        << me << " " << test << " " << (me-test)/(me+test) << "\n";
   // return the answer
-  return ME().contract(_rho).real();
+  return ME()->contract(_rho).real();
 }
 
 bool VectorMesonPVectorPScalarDecayer::twoBodyMEcode(const DecayMode & dm,

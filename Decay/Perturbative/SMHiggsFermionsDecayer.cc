@@ -22,6 +22,7 @@
 #include "ThePEG/Helicity/FermionSpinInfo.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -136,7 +137,7 @@ double SMHiggsFermionsDecayer::me2(const int, const Particle & inpart,
     ScalarWaveFunction::
       calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
     _swave = ScalarWaveFunction(inpart.momentum(),inpart.dataPtr(),incoming);
-    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half));
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half)));
   }
   if(meopt==Terminate) {
     ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),
@@ -156,15 +157,15 @@ double SMHiggsFermionsDecayer::me2(const int, const Particle & inpart,
   for(ifm=0;ifm<2;++ifm) {
     for(ia=0;ia<2;++ia) {
       if(iferm>ianti)
-	ME()(0,ia,ifm)=_hvertex->evaluate(scale,_wave[ia],
+	(*ME())(0,ia,ifm)=_hvertex->evaluate(scale,_wave[ia],
 					  _wavebar[ifm],_swave);
       else
-	ME()(0,ifm,ia)=_hvertex->evaluate(scale,_wave[ia],
+	(*ME())(0,ifm,ia)=_hvertex->evaluate(scale,_wave[ia],
 					  _wavebar[ifm],_swave);
     }
   }
   int id = abs(decay[0]->id());
-  double output=(ME().contract(_rho)).real()*UnitRemoval::E2/scale;
+  double output=(ME()->contract(_rho)).real()*UnitRemoval::E2/scale;
   if(id <=6) output*=3.;
   // test of the partial width
 //   Ptr<Herwig::StandardModel>::transient_const_pointer 

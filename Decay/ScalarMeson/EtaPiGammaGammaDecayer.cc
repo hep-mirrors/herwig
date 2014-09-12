@@ -20,6 +20,7 @@
 #include "Herwig++/PDT/ThreeBodyAllOnCalculator.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -226,7 +227,7 @@ double EtaPiGammaGammaDecayer::me2(const int,const Particle & inpart,
   if(meopt==Initialize) {
     ScalarWaveFunction::
       calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
-    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin1,PDT::Spin1));
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin1,PDT::Spin1)));
   }
   if(meopt==Terminate) {
     // set up the spin information for the decay products
@@ -277,10 +278,10 @@ double EtaPiGammaGammaDecayer::me2(const int,const Particle & inpart,
   Complex e1dote2;
   for(unsigned int ix=0;ix<3;++ix) {
     for(unsigned int iy=0;iy<3;++iy) {
-      if(ix==1||iy==1) ME()(0,0,ix,iy)=0.;
+      if(ix==1||iy==1) (*ME())(0,0,ix,iy)=0.;
       else {
 	e1dote2=_vectors[0][ix].dot(_vectors[1][iy]);
-	ME()(0,0,ix,iy) = 
+	(*ME())(0,0,ix,iy) = 
 	  Dfact*complex<Energy2>(e1dote2*q1dotq2-
 				 e1dotq2[ix]*e2dotq1[iy])
 	  -Efact*complex<Energy4>(-e1dote2*pdotq1*pdotq2
@@ -291,7 +292,7 @@ double EtaPiGammaGammaDecayer::me2(const int,const Particle & inpart,
     }
   }
   /*
-  double me(ME().contract(rhoin).real());
+  double me(ME()->contract(rhoin).real());
   Energy M(inpart.mass()),M2(M*M);
   Energy2 s1(2.*(decay[1]->momentum()*decay[2]->momentum()));
   Energy2 s2(M2-2.*(inpart.momentum()*decay[1]->momentum()));
@@ -304,7 +305,7 @@ double EtaPiGammaGammaDecayer::me2(const int,const Particle & inpart,
    (M2-s3)*(M2-s3))/8. - me << endl;
   return me;
   */
-  return ME().contract(_rho).real();
+  return ME()->contract(_rho).real();
 }
  
 double EtaPiGammaGammaDecayer::

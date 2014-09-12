@@ -19,6 +19,7 @@
 #include "Herwig++/Utilities/Kinematics.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -92,9 +93,9 @@ double SSVDecayer::me2(const int , const Particle & inpart,
       calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
     _swave = ScalarWaveFunction(inpart.momentum(),inpart.dataPtr(),incoming);
     if(ivec==1)
-      ME(DecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin1));
+      ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin1)));
     else
-      ME(DecayMatrixElement(PDT::Spin0,PDT::Spin1,PDT::Spin0));
+      ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1,PDT::Spin0)));
   }
   if(meopt==Terminate) {
     ScalarWaveFunction::
@@ -112,13 +113,13 @@ double SSVDecayer::me2(const int , const Particle & inpart,
   double output(0.);
   if(ivec == 0) {
     for(unsigned int ix = 0; ix < 3; ++ix)
-      ME()(0, ix, 0) = _abstractVertex->evaluate(scale,_vector[ix],sca, _swave);
+      (*ME())(0, ix, 0) = _abstractVertex->evaluate(scale,_vector[ix],sca, _swave);
   }
   else {
     for(unsigned int ix = 0; ix < 3; ++ix)
-      ME()(0, 0, ix) = _abstractVertex->evaluate(scale,_vector[ix],sca,_swave);
+      (*ME())(0, 0, ix) = _abstractVertex->evaluate(scale,_vector[ix],sca,_swave);
   }
-  output = (ME().contract(_rho)).real()/scale*UnitRemoval::E2;
+  output = (ME()->contract(_rho)).real()/scale*UnitRemoval::E2;
   // colour and identical particle factors
   output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
 			 decay[1]->dataPtr());
@@ -193,8 +194,8 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
   unsigned int nflow;
   vector<DVector> cfactors = getColourFactors(inpart, decay, nflow);  
   if(nflow==2) cfactors[0][1]=cfactors[1][0];
-  vector<DecayMatrixElement> ME(nflow,DecayMatrixElement(PDT::Spin0, PDT::Spin0,
-							 PDT::Spin1, PDT::Spin1));
+  vector<GeneralDecayMEPtr> ME(nflow,new_ptr(GeneralDecayMatrixElement(PDT::Spin0, PDT::Spin0,
+								       PDT::Spin1, PDT::Spin1)));
 
   // create wavefunctions
   ScalarWaveFunction _scal(decay[iscal]->momentum(),  decay[iscal]->dataPtr(),outgoing);
@@ -253,7 +254,7 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
 	double sign  = 1.;//inpart.dataPtr()->id()>0 ? 1:-1;	
 	Complex diag = sign * _abstractVertex->evaluate(scale,_vector3[iv],_scal,scalarInter)/gs;
 	for(unsigned int ix=0;ix<colourFlow[0].size();++ix) {
-	  ME[colourFlow[0][ix].first](0, 0, iv, ig) += 
+	  (*ME[colourFlow[0][ix].first])(0, 0, iv, ig) += 
 	    colourFlow[0][ix].second*diag; 
 	}
       }
@@ -276,7 +277,7 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
 	double sign  = 1.;//decay[iscal]->dataPtr()->id()>0 ? -1:1;
 	Complex diag = sign*_abstractVertex->evaluate(scale,_vector3[iv],scalarInter,_swave3)/gs;
 	for(unsigned int ix=0;ix<colourFlow[S].size();++ix) {
-	  ME[colourFlow[S][ix].first](0, 0, iv, ig) += 
+	  (*ME[colourFlow[S][ix].first])(0, 0, iv, ig) += 
 	    colourFlow[S][ix].second*diag;
 	}
       }
@@ -301,7 +302,7 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
 	double gs    = _abstractOutgoingVertexV->strongCoupling(scale);	
 	Complex diag =  sign*_abstractVertex->evaluate(scale,vectorInter,_scal,_swave3)/gs;
 	for(unsigned int ix=0;ix<colourFlow[V].size();++ix) {
-	  ME[colourFlow[V][ix].first](0, 0, iv, ig) += 
+	  (*ME[colourFlow[V][ix].first])(0, 0, iv, ig) += 
 	    colourFlow[V][ix].second*diag;
 	}
       }
@@ -312,7 +313,7 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
 	Complex diag =  sign*_abstractFourPointVertex->evaluate(scale, _gluon[2*ig], _vector3[iv],
 							       _scal, _swave3)/gs;
 	for(unsigned int ix=0;ix<colourFlow[3].size();++ix) {
-	  ME[colourFlow[3][ix].first](0, 0, iv, ig) += 
+	  (*ME[colourFlow[3][ix].first])(0, 0, iv, ig) += 
 	     colourFlow[3][ix].second*diag;
 	}
       }
@@ -323,7 +324,7 @@ double  SSVDecayer::threeBodyME(const int , const Particle & inpart,
   double output=0.;
   for(unsigned int ix=0; ix<nflow; ++ix){
     for(unsigned int iy=0; iy<nflow; ++iy){
-      output+=cfactors[ix][iy]*(ME[ix].contract(ME[iy],_rho3)).real();
+      output+=cfactors[ix][iy]*(ME[ix]->contract(*ME[iy],_rho3)).real();
     }
   }
   output*=(4.*Constants::pi);

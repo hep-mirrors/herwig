@@ -25,6 +25,7 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/epsilon.h"
 #include "Herwig++/PDT/ThreeBodyAllOn1IntegralCalculator.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -43,8 +44,8 @@ VectorMesonPScalarFermionsDecayer::VectorMesonPScalarFermionsDecayer()
   : _coupling(6), _incoming(6), _outgoingP(6), _outgoingf(6), _outgoinga(6), 
     _maxweight(6), _weight(6), _includeVMD(6), _VMDid(6), _VMDmass(6), 
     _VMDwidth(6) {
-  ME(DecayMatrixElement(PDT::Spin1,PDT::Spin0,
-			PDT::Spin1Half,PDT::Spin1Half));
+  ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin0,
+				       PDT::Spin1Half,PDT::Spin1Half)));
   // omega -> pi e+e- /mu+mu-
   _incoming[0] =  223; _outgoingP[0] =  111; 
   _outgoingf[0] = 11; _outgoinga[0] = -11; 
@@ -301,7 +302,7 @@ double VectorMesonPScalarFermionsDecayer::me2(const int,
       temp=pre*epsilon(inpart.momentum(),pff,
 				    _wave[ix].vectorCurrent(_wavebar[iy]));
       for(iz=0;iz<3;++iz) 
-	ME()(iz,0,iy,ix)=temp.dot(_vectors[iz]); 
+	(*ME())(iz,0,iy,ix)=temp.dot(_vectors[iz]); 
     }
   }
   /* code for the spin averaged me for testing only
@@ -326,7 +327,7 @@ double VectorMesonPScalarFermionsDecayer::me2(const int,
        << endl;
    */
   // return the answer
-  return ME().contract(_rho).real();
+  return ME()->contract(_rho).real();
 }
 
 WidthCalculatorBasePtr 

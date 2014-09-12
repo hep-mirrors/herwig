@@ -20,6 +20,7 @@
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "Herwig++/PDT/ThreeBodyAllOnCalculator.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -304,7 +305,7 @@ double OniumToOniumPiPiDecayer::me2(const int,
     VectorWaveFunction::calculateWaveFunctions(_vectors[0],_rho,
 						const_ptr_cast<tPPtr>(&inpart),
 						incoming,false);
-    ME(DecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin0,PDT::Spin0));
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin0,PDT::Spin0)));
   }
   if(meopt==Terminate) {
     VectorWaveFunction::constructSpinInfo(_vectors[0],const_ptr_cast<tPPtr>(&inpart),
@@ -326,13 +327,13 @@ double OniumToOniumPiPiDecayer::me2(const int,
       complex<Energy2> dotb = 
 	(_vectors[0][ix]*decay[1]->momentum())*(_vectors[1][iy]*decay[2]->momentum())+
 	(_vectors[0][ix]*decay[2]->momentum())*(_vectors[1][iy]*decay[1]->momentum());
-      ME()(ix,iy,0,0)= _coupling[imode()/2]*
+      (*ME())(ix,iy,0,0)= _coupling[imode()/2]*
 	(A*dota*(q2-2.*mpi2)+B*dota*decay[1]->momentum().e()*decay[2]->momentum().e()
 	 +C*dotb);
     }
   }
   // matrix element
-  double output=ME().contract(_rho).real();
+  double output=ME()->contract(_rho).real();
   if(imode()%2==1) output*=0.5;
   // test of the matrix element
 //   Energy2 s1=(decay[1]->momentum()+decay[2]->momentum()).m2();

@@ -19,6 +19,7 @@
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "Herwig++/PDT/ThreeBodyAllOn1IntegralCalculator.h"
 #include "Herwig++/PDT/OneOffShellCalculator.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -241,7 +242,7 @@ double EtaPiPiPiDecayer::me2(const int,const Particle & inpart,
   if(meopt==Initialize) {
     ScalarWaveFunction::
       calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
-    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin0,PDT::Spin0));
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin0,PDT::Spin0)));
   }
   if(meopt==Terminate) {
     // set up the spin information for the decay products
@@ -265,7 +266,7 @@ double EtaPiPiPiDecayer::me2(const int,const Particle & inpart,
   double x(0.5*sqrt(3.)*(u-t)/inpart.mass()/Q),x2(x*x);
   double y(0.5*msum/inpart.mass()*(Mmm2-s)/m34/Q-1),y2(y*y);
   double me(_prefactor[imode()]*(1+_a[imode()]*y+_b[imode()]*y2+_c[imode()]*x2));
-  ME()(0,0,0,0)=sqrt(me);
+  (*ME())(0,0,0,0)=sqrt(me);
   return me;
 }
 

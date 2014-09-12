@@ -21,6 +21,7 @@
 #include "Herwig++/PDT/ThreeBodyAllOnCalculator.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -325,7 +326,7 @@ double a1SimpleDecayer::me2(const int ichan,const Particle & inpart,
     VectorWaveFunction::calculateWaveFunctions(_vectors,_rho,
 						const_ptr_cast<tPPtr>(&inpart),
 						incoming,false);
-    ME(DecayMatrixElement(PDT::Spin1,PDT::Spin0,PDT::Spin0,PDT::Spin0));
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin0,PDT::Spin0,PDT::Spin0)));
   }
   if(meopt==Terminate) {
     VectorWaveFunction::constructSpinInfo(_vectors,const_ptr_cast<tPPtr>(&inpart),
@@ -352,9 +353,9 @@ double a1SimpleDecayer::me2(const int ichan,const Particle & inpart,
   }
   // compute the matrix element
   for(unsigned int ix=0;ix<3;++ix)
-    ME()(ix,0,0,0)=_coupling*current.dot(_vectors[ix]);
+    (*ME())(ix,0,0,0)=_coupling*current.dot(_vectors[ix]);
   // matrix element and identical particle factor
-  double output=ME().contract(_rho).real();
+  double output=ME()->contract(_rho).real();
   if(imode()!=1) output*=0.5;
   // test the output
 //   double test = threeBodyMatrixElement(imode(),sqr(inpart.mass()),

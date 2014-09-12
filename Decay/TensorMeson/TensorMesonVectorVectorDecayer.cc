@@ -19,6 +19,7 @@
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -58,7 +59,7 @@ void TensorMesonVectorVectorDecayer::doinit() {
 TensorMesonVectorVectorDecayer::TensorMesonVectorVectorDecayer() 
   : _incoming(22), _outgoing1(22), _outgoing2(22), 
     _coupling(22), _maxweight(22) {
-  ME(DecayMatrixElement(PDT::Spin2,PDT::Spin1,PDT::Spin1));
+  ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin2,PDT::Spin1,PDT::Spin1)));
   // a_2 -> gamma gamma
   _incoming[0] = 115; _outgoing1[0] =  22; _outgoing2[0] = 22; 
   _coupling[0] = 0.00727/GeV; _maxweight[0] = 1.7; 
@@ -262,12 +263,12 @@ double TensorMesonVectorVectorDecayer::me2(const int,const Particle & inpart,
 	      -p1eps2[iy]*(_vectors[0][ix].dot(pleft[1][inhel]+pright[1][inhel]))
 	      +pboth[inhel]*e1e2
 	      +(p2eps1[ix]*p1eps2[iy]-e1e2*p1p2)*trace[inhel]);
-	ME()(inhel,ix,iy)=fact*me;
+	(*ME())(inhel,ix,iy)=fact*me;
       }    
     }
   }
 //   // testing the matrix element
-//   double metest = ME().contract(_rho).real();
+//   double metest = ME()->contract(_rho).real();
 //   Energy2 m02(sqr(inpart.mass())),m12(sqr(decay[0]->mass())),m22(sqr(decay[1]->mass()));
 //   Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.mass(),decay[0]->mass(),
 // 					     decay[1]->mass());
@@ -278,7 +279,7 @@ double TensorMesonVectorVectorDecayer::me2(const int,const Particle & inpart,
 //        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " " 
 //        << metest << " " << test <<  " " << (metest-test)/(metest+test) << endl;
   // return the answer
-  return ME().contract(_rho).real();
+  return ME()->contract(_rho).real();
 }
 
 bool TensorMesonVectorVectorDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,

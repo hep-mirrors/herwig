@@ -27,6 +27,7 @@
 #include "Herwig++/Shower/Base/ShowerProgenitor.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "Herwig++/Shower/Base/Branching.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -153,7 +154,7 @@ double SMZDecayer::me2(const int, const Particle & inpart,
     VectorWaveFunction::calculateWaveFunctions(_vectors,_rho,
 					       const_ptr_cast<tPPtr>(&inpart),
 					       incoming,false);
-    ME(DecayMatrixElement(PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half));
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half)));
   }
   if(meopt==Terminate) {
     VectorWaveFunction::constructSpinInfo(_vectors,const_ptr_cast<tPPtr>(&inpart),
@@ -174,14 +175,14 @@ double SMZDecayer::me2(const int, const Particle & inpart,
   for(ifm=0;ifm<2;++ifm) {
     for(ia=0;ia<2;++ia) {
       for(vhel=0;vhel<3;++vhel) {
-	if(iferm>ianti) ME()(vhel,ia,ifm)=
+	if(iferm>ianti) (*ME())(vhel,ia,ifm)=
 	  FFZvertex_->evaluate(scale,_wave[ia],_wavebar[ifm],_vectors[vhel]);
-	else            ME()(vhel,ifm,ia)=
+	else            (*ME())(vhel,ifm,ia)=
 	  FFZvertex_->evaluate(scale,_wave[ia],_wavebar[ifm],_vectors[vhel]);
       }
     }
   }
-  double output=(ME().contract(_rho)).real()*UnitRemoval::E2/scale;
+  double output=(ME()->contract(_rho)).real()*UnitRemoval::E2/scale;
   if(abs(decay[0]->id())<=6) output*=3.;
   if(decay[0]->hasColour())      decay[0]->antiColourNeighbour(decay[1]);
   else if(decay[1]->hasColour()) decay[1]->antiColourNeighbour(decay[0]);

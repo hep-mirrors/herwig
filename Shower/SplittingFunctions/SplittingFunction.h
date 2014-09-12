@@ -246,8 +246,8 @@ public:
    * @param ids The PDG codes for the particles in the splitting.
    * @param The azimuthal angle, \f$\phi\f$.
    */
-  virtual DecayMatrixElement matrixElement(const double z, const Energy2 t, 
-					   const IdList & ids, const double phi) = 0;
+  virtual DecayMEPtr matrixElement(const double z, const Energy2 t, 
+				   const IdList & ids, const double phi) = 0;
 
   /**
    *  Whether or not the interaction is angular ordered

@@ -20,6 +20,7 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "Herwig++/Utilities/Kinematics.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -68,7 +69,7 @@ double FRVDecayer::me2(const int , const Particle & inpart,
       if(wavebar_[0].wave().Type() != v_spinortype)
 	for(unsigned int ix = 0; ix < 2; ++ix) wavebar_[ix].conjugate();
     }
-    ME(DecayMatrixElement(PDT::Spin1Half,PDT::Spin3Half,PDT::Spin1));
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,PDT::Spin3Half,PDT::Spin1)));
   }
   // setup spin info when needed
   if(meopt==Terminate) {
@@ -102,18 +103,18 @@ double FRVDecayer::me2(const int , const Particle & inpart,
       for(unsigned int vhel = 0; vhel < 3; ++vhel) {
 	if(massless && vhel == 1) ++vhel;
 	if(ferm)
-	  ME()(if1, if2,vhel) = 
+	  (*ME())(if1, if2,vhel) = 
 	    abstractVertex_->evaluate(scale,wave_[if1],
 				      RSwavebar_[if2],vector_[vhel]);
 	else
-	  ME()(if1, if2, vhel) = 
+	  (*ME())(if1, if2, vhel) = 
 	    abstractVertex_->evaluate(scale,RSwave_[if2],
 				      wavebar_[if1],vector_[vhel]);
 	
       }
     }
   }
-  double output=(ME().contract(rho_)).real()/scale*UnitRemoval::E2;
+  double output=(ME()->contract(rho_)).real()/scale*UnitRemoval::E2;
   // test
 //   Energy m1(inpart.mass()),m2(decay[0]->mass()),m3(decay[1]->mass());
 //   Energy2 m12(m1*m1),m22(m2*m2),m32(m3*m3);

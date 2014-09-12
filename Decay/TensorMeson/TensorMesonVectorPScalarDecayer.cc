@@ -21,6 +21,7 @@
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/epsilon.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -36,7 +37,7 @@ void TensorMesonVectorPScalarDecayer::doinitrun() {
 TensorMesonVectorPScalarDecayer::TensorMesonVectorPScalarDecayer() 
   :  _incoming(31), _outgoingV(31), _outgoingP(31), 
      _coupling(31), _maxweight(31) {
-  ME(DecayMatrixElement(PDT::Spin2,PDT::Spin1,PDT::Spin0));
+  ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin2,PDT::Spin1,PDT::Spin0)));
   // a_2 -> rho pi
   _incoming[0] =  115; _outgoingV[0] =  213; _outgoingP[0] = -211; 
   _coupling[0] = 21.1/GeV2; _maxweight[0] = 10.; 
@@ -248,16 +249,16 @@ double TensorMesonVectorPScalarDecayer::me2(const int,const Particle & inpart,
   // calculate the matrix element
   for(unsigned int inhel=0;inhel<5;++inhel) {
     for(unsigned int vhel=0;vhel<3;++vhel){
-      if(vhel==1&&photon) ME()(inhel,vhel,0)=0.;
+      if(vhel==1&&photon) (*ME())(inhel,vhel,0)=0.;
       else {
 	LorentzVector<complex<InvEnergy> > vtemp=
 	  fact*epsilon(decay[0]->momentum(),_vectors[vhel],decay[1]->momentum());
-	ME()(inhel,vhel,0)= (decay[1]->momentum()*_tensors[inhel]).dot(vtemp);
+	(*ME())(inhel,vhel,0)= (decay[1]->momentum()*_tensors[inhel]).dot(vtemp);
       }
     }
   }
 //   // test of the answer
-//   double me = ME().contract(_rho).real();
+//   double me = ME()->contract(_rho).real();
 //   Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.mass(),decay[0]->mass(),
 // 					     decay[1]->mass());
 //   double test = Energy4(pow<4,1>(2*pcm))*sqr( _coupling[imode()])/80.;
@@ -265,7 +266,7 @@ double TensorMesonVectorPScalarDecayer::me2(const int,const Particle & inpart,
 //        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " " 
 //        << me << " " << test << " " << (me-test)/(me+test) << endl;
   // return the answer
-  return ME().contract(_rho).real();
+  return ME()->contract(_rho).real();
 }
 
 bool TensorMesonVectorPScalarDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,

@@ -73,11 +73,10 @@ updateParent(const tShowerParticlePtr parent,
   ids.push_back(children[0]->id());
   ids.push_back(children[1]->id());
   Energy2 t = (1.-z())*sqr(scale())/z();
-  DecayMatrixElement me(splittingFn()->matrixElement(z(),t,ids,phi()));
   // create the vertex
   SVertexPtr vertex(new_ptr(ShowerVertex()));
   // set the matrix element
-  vertex->ME().reset(me);
+  vertex->ME(splittingFn()->matrixElement(z(),t,ids,phi()));
   // set the incoming particle for the vertex 
   // (in reality the first child as going backwards)
   pspin->decayVertex(vertex);

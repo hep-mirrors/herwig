@@ -20,6 +20,7 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "Herwig++/Utilities/Kinematics.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -101,7 +102,7 @@ double FFVDecayer::me2(const int , const Particle & inpart,
       if(_wavebar[0].wave().Type() != v_spinortype)
 	for(unsigned int ix = 0; ix < 2; ++ix) _wavebar[ix].conjugate();
     }
-    ME(DecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin1));
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin1)));
   }
   // setup spin info when needed
   if(meopt==Terminate) {
@@ -134,15 +135,15 @@ double FFVDecayer::me2(const int , const Particle & inpart,
       for(unsigned int vhel = 0; vhel < 3; ++vhel) {
 	if(massless && vhel == 1) ++vhel;
 	if(ferm)
-	  ME()(if1, if2,vhel) = 
+	  (*ME())(if1, if2,vhel) = 
 	    _abstractVertex->evaluate(scale,_wave[if1],_wavebar[if2],_vector[vhel]);
 	else
-	  ME()(if2, if1, vhel) = 
+	  (*ME())(if2, if1, vhel) = 
 	    _abstractVertex->evaluate(scale,_wave[if1],_wavebar[if2],_vector[vhel]);
       }
     }
   }
-  double output=(ME().contract(_rho)).real()/scale*UnitRemoval::E2;
+  double output=(ME()->contract(_rho)).real()/scale*UnitRemoval::E2;
   // colour and identical particle factors
   output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),decay[1]->dataPtr());
   // return the answer
@@ -258,8 +259,8 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
   vector<DVector> cfactors = getColourFactors(inpart, decay, nflow);
   if(nflow==2) cfactors[0][1] = cfactors[1][0];
 
-  vector<DecayMatrixElement> ME(nflow,DecayMatrixElement(PDT::Spin1Half, PDT::Spin1Half,
-							 PDT::Spin1,     PDT::Spin1));
+  vector<GeneralDecayMEPtr> ME(nflow,new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half, PDT::Spin1Half,
+								       PDT::Spin1,     PDT::Spin1)));
 
   // create wavefunctions
   if (ferm)  SpinorBarWaveFunction::calculateWaveFunctions(_wavebar3, decay[iferm],outgoing);
@@ -334,7 +335,7 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
 	      diag = _abstractVertex->evaluate(scale,_wave3[ifo], spinorBarInter,_vector3[iv])/gs;
 	    }
 	    for(unsigned int ix=0;ix<colourFlow[0].size();++ix) {
-	      ME[colourFlow[0][ix].first](ifi, ifo, iv, ig) += 
+	      (*ME[colourFlow[0][ix].first])(ifi, ifo, iv, ig) += 
 		colourFlow[0][ix].second*diag;
 	    }
 	  }
@@ -372,7 +373,7 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
 	      diag = _abstractVertex->evaluate(scale,spinorInter,_wavebar3[ifi],_vector3[iv])/gs;
 	    }
 	    for(unsigned int ix=0;ix<colourFlow[F].size();++ix) {
-	      ME[colourFlow[F][ix].first](ifi, ifo, iv, ig) += 
+	      (*ME[colourFlow[F][ix].first])(ifi, ifo, iv, ig) += 
 		 colourFlow[F][ix].second*diag;
 	    }
 	  }
@@ -402,8 +403,8 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
 	      diag = sign*_abstractVertex->evaluate(scale,_wave3[ifo],_wavebar3[ifi],vectorInter)/gs;
 	    }
 	    for(unsigned int ix=0;ix<colourFlow[V].size();++ix) {
-	      ME[colourFlow[V][ix].first](ifi, ifo, iv, ig) += 
-		 colourFlow[V][ix].second*diag;
+	      (*ME[colourFlow[V][ix].first])(ifi, ifo, iv, ig) += 
+		colourFlow[V][ix].second*diag;
 	    }
 	  }
 	}
@@ -416,7 +417,7 @@ double  FFVDecayer::threeBodyME(const int , const Particle & inpart,
   double output=0.;
   for(unsigned int ix=0; ix<nflow; ++ix){
     for(unsigned int iy=0; iy<nflow; ++iy){
-      output+=cfactors[ix][iy]*(ME[ix].contract(ME[iy],_rho3)).real();
+      output+=cfactors[ix][iy]*(ME[ix]->contract(*ME[iy],_rho3)).real();
     }
   }
   output*=(4.*Constants::pi);

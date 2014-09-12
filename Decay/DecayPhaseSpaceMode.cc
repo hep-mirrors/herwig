@@ -403,7 +403,7 @@ void DecayPhaseSpaceMode::constructVertex(const Particle & inpart,
     (decay[ix]->spinInfo())->productionVertex(vertex);
   }
   // set the matrix element
-  Dvertex->ME().reset(_integrator->ME());
+  Dvertex->ME(_integrator->ME());
 }
 
 // output info on the mode

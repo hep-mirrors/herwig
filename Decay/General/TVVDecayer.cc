@@ -20,6 +20,7 @@
 #include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
 #include "Herwig++/Utilities/Kinematics.h"
 #include "ThePEG/Helicity/LorentzTensor.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -74,7 +75,7 @@ double TVVDecayer::me2(const int , const Particle & inpart,
     TensorWaveFunction::
       calculateWaveFunctions(_tensors,_rho,const_ptr_cast<tPPtr>(&inpart),
 			     incoming,false);
-    ME(DecayMatrixElement(PDT::Spin2,PDT::Spin1,PDT::Spin1));
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin2,PDT::Spin1,PDT::Spin1)));
   }
   if(meopt==Terminate) {
     TensorWaveFunction::
@@ -93,7 +94,7 @@ double TVVDecayer::me2(const int , const Particle & inpart,
   for(thel=0;thel<5;++thel) {
     for(v1hel=0;v1hel<3;++v1hel) {
       for(v2hel=0;v2hel<3;++v2hel) {
-	ME()(thel,v1hel,v2hel) = _abstractVertex->evaluate(scale,
+	(*ME())(thel,v1hel,v2hel) = _abstractVertex->evaluate(scale,
 							   _vectors[0][v1hel],
 							   _vectors[1][v2hel],
 							   _tensors[thel]);
@@ -102,7 +103,7 @@ double TVVDecayer::me2(const int , const Particle & inpart,
       if(photon[0]) ++v1hel;
     }
   }
-  double output = (ME().contract(_rho)).real()/scale*UnitRemoval::E2;
+  double output = (ME()->contract(_rho)).real()/scale*UnitRemoval::E2;
   // colour and identical particle factors
   output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
 			 decay[1]->dataPtr());
@@ -175,8 +176,8 @@ double TVVDecayer::threeBodyME(const int , const Particle & inpart,
   vector<DVector> cfactors = getColourFactors(inpart, decay, nflow);
   if(nflow==2) cfactors[0][1]=cfactors[1][0];
 
-  vector<DecayMatrixElement> ME(nflow,DecayMatrixElement(PDT::Spin2, PDT::Spin1,
-							 PDT::Spin1, PDT::Spin1));
+  vector<GeneralDecayMEPtr> ME(nflow,new_ptr(GeneralDecayMatrixElement(PDT::Spin2, PDT::Spin1,
+								       PDT::Spin1, PDT::Spin1)));
   // create wavefunctions
   for(unsigned int ix=0;ix<2;++ix)
     VectorWaveFunction::
@@ -242,7 +243,7 @@ double TVVDecayer::threeBodyME(const int , const Particle & inpart,
 	    Complex diag = _abstractVertex->evaluate(scale,_vectors3[1][iv1], 
 						     vectInter,_tensors3[it])/gs;
 	    for(unsigned int ix=0;ix<colourFlow[1].size();++ix) {
-	      ME[colourFlow[1][ix].first](it, iv0, iv1, ig) += 
+	      (*ME[colourFlow[1][ix].first])(it, iv0, iv1, ig) += 
 		colourFlow[1][ix].second*diag;
 	    }
 	  }
@@ -267,7 +268,7 @@ double TVVDecayer::threeBodyME(const int , const Particle & inpart,
 	    Complex diag = _abstractVertex->evaluate(scale,vectInter,_vectors3[0][iv0],
 						     _tensors3[it])/gs;
 	    for(unsigned int ix=0;ix<colourFlow[2].size();++ix) {
-	      ME[colourFlow[2][ix].first](it, iv0, iv1, ig) += 
+	      (*ME[colourFlow[2][ix].first])(it, iv0, iv1, ig) += 
 		colourFlow[2][ix].second*diag;
 	    }
 	  }
@@ -279,8 +280,8 @@ double TVVDecayer::threeBodyME(const int , const Particle & inpart,
 							      _vectors3[1][iv1],_gluon[2*ig], 
 							      _tensors3[it])/gs;
 	    for(unsigned int ix=0;ix<colourFlow[3].size();++ix) {
-	      ME[colourFlow[3][ix].first](it, iv0, iv1, ig) += 
-		 colourFlow[3][ix].second*diag;
+	      (*ME[colourFlow[3][ix].first])(it, iv0, iv1, ig) += 
+		colourFlow[3][ix].second*diag;
 	    }
 	  }
 	}
@@ -294,7 +295,7 @@ double TVVDecayer::threeBodyME(const int , const Particle & inpart,
   double output=0.;
   for(unsigned int ix=0; ix<nflow; ++ix){
     for(unsigned int iy=0; iy<nflow; ++iy){
-      output+=cfactors[ix][iy]*(ME[ix].contract(ME[iy],_rho3)).real();
+      output+=cfactors[ix][iy]*(ME[ix]->contract(*ME[iy],_rho3)).real();
     }
   }
   output*=(4.*Constants::pi); 

@@ -15,6 +15,7 @@
 #include "ThePEG/Helicity/WaveFunction/RSSpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -129,7 +130,7 @@ halfHalfScalar(const int,const Particle & inpart,
 						    const_ptr_cast<tPPtr>(&inpart),
 						    incoming);
     // matrix element
-    ME(DecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin0));
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin0)));
   }
   // setup spin info when needed
   if(meopt==Terminate) {
@@ -176,7 +177,7 @@ halfHalfScalar(const int,const Particle & inpart,
     for(iy=0;iy<2;++iy) {
       if(decay[0]->id()>0){ispin[0]=iy;ispin[1]=ix;}
       else{ispin[0]=ix;ispin[1]=iy;}
-      ME()(ispin)=_inHalf[iy].generalScalar(_inHalfBar[ix],left,right)/inpart.mass();
+      (*ME())(ispin)=_inHalf[iy].generalScalar(_inHalfBar[ix],left,right)/inpart.mass();
 //       output += norm(ME()(ispin));
     }
   }
@@ -197,7 +198,7 @@ halfHalfScalar(const int,const Particle & inpart,
 //   generator()->log() << "testing partial " << pcm*0.5*output/8./Constants::pi/MeV
 // 		     << "\n";
   // store the matrix element
-  return (ME().contract(_rho)).real();
+  return (ME()->contract(_rho)).real();
 }
 
 // matrix element for the decay of a spin-1/2 fermion to a spin-1/2 fermion and
@@ -219,7 +220,7 @@ halfHalfVector(const int,const Particle & inpart,
 						    const_ptr_cast<tPPtr>(&inpart),
 						    incoming);
     // matrix element
-    ME(DecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin1));
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin1)));
   }
   // setup spin info when needed
   if(meopt==Terminate) {
@@ -290,7 +291,7 @@ halfHalfVector(const int,const Particle & inpart,
       for(ispin[2]=0;ispin[2]<3;++ispin[2]) {
 	ispin[2]=ispin[2];
 	prod=_inVec[ispin[2]].dot(inpart.momentum())/msum;
-	ME()(ispin)=(svec.dot(_inVec[ispin[2]])+prod*scalar)/inpart.mass();
+	(*ME())(ispin)=(svec.dot(_inVec[ispin[2]])+prod*scalar)/inpart.mass();
 // 	output += norm(ME()(ispin));
       }
     }
@@ -311,7 +312,7 @@ halfHalfVector(const int,const Particle & inpart,
 //   generator()->log() << "alpha = " << 2.*(norm(h3)+norm(h4))/(norm(h1)+norm(h2))-1.
 // 		     << "\n";
   // return the answer
-  return (ME().contract(_rho)).real();
+  return (ME()->contract(_rho)).real();
 }
 
 // matrix element for the decay of a spin-1/2 fermion to a spin-3/2 fermion and
@@ -332,7 +333,7 @@ double Baryon1MesonDecayerBase::halfThreeHalfScalar(const int,
 						    const_ptr_cast<tPPtr>(&inpart),
 						    incoming);
     // matrix element
-    ME(DecayMatrixElement(PDT::Spin1Half,PDT::Spin3Half,PDT::Spin0));
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,PDT::Spin3Half,PDT::Spin0)));
   }
   // setup spin info when needed
   if(meopt==Terminate) {
@@ -394,11 +395,11 @@ double Baryon1MesonDecayerBase::halfThreeHalfScalar(const int,
       ispin[1]=iya;
       complex<double> value = _inHalf[iy].generalScalar(_inHalfBar[ix],left,right)
 	*UnitRemoval::E/inpart.mass()/msum;
-      ME()(ispin) = value;
+      (*ME())(ispin) = value;
       //output+= norm(ME()(ispin));
     }
   }
-  double output = (ME().contract(_rho)).real();
+  double output = (ME()->contract(_rho)).real();
   // test of the matrix element
 //   Energy m1(inpart.mass()),m2(decay[0]->mass()),m3(decay[1]->mass());
 //   Energy Qp(sqrt(sqr(m1+m2)-sqr(m3))),Qm(sqrt(sqr(m1-m2)-sqr(m3)));
@@ -432,7 +433,7 @@ halfThreeHalfVector(const int,const Particle & inpart,
 						    const_ptr_cast<tPPtr>(&inpart),
 						    incoming);
     // matrix element
-    ME(DecayMatrixElement(PDT::Spin1Half,PDT::Spin3Half,PDT::Spin1));
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,PDT::Spin3Half,PDT::Spin1)));
   }
   // setup spin info when needed
   if(meopt==Terminate) {
@@ -468,7 +469,7 @@ halfThreeHalfVector(const int,const Particle & inpart,
     for(unsigned int ix=0;ix<_inThreeHalf.size();++ix)
       _inHalf[ix] = _inThreeHalf[ix].dot(in);
   }
-  ME().zero();
+  ME()->zero();
   VectorWaveFunction::calculateWaveFunctions(_inVec,decay[1],outgoing,photon);
   // get the couplings
   Complex A1,A2,A3,B1,B2,B3;
@@ -508,7 +509,7 @@ halfThreeHalfVector(const int,const Particle & inpart,
       for(unsigned int iz=0;iz<3;++iz) {
 	ispin[2]=iz;
 	prod=_inVec[iz].dot(inpart.momentum())/msum;
-	ME()(ispin) += (svec.dot(_inVec[iz])+prod*scalar)*
+	(*ME())(ispin) += (svec.dot(_inVec[iz])+prod*scalar)*
 	  UnitRemoval::E/msum/inpart.mass();
       }
     }
@@ -521,11 +522,11 @@ halfThreeHalfVector(const int,const Particle & inpart,
 	ispin[0]=ixa;
 	if(decay[0]->id()>0) stemp  = _inHalf[ixa];
 	else                 sbtemp = _inHalfBar[ixa];
-	ME()(ispin) += stemp.generalScalar(sbtemp,left,right)/inpart.mass();
+	(*ME())(ispin) += stemp.generalScalar(sbtemp,left,right)/inpart.mass();
       }
     }
   }
-  double output = (ME().contract(_rho)).real();
+  double output = (ME()->contract(_rho)).real();
   // test of the matrix element
 //   Energy m1(inpart.mass()),m2(decay[0]->mass()),m3(decay[1]->mass());
 //   Energy2 m12(m1*m1),m22(m2*m2),m32(m3*m3);
@@ -569,7 +570,7 @@ threeHalfHalfScalar(const int,const Particle & inpart,
 						      incoming);
     }
     // matrix element
-    ME(DecayMatrixElement(PDT::Spin3Half,PDT::Spin1Half,PDT::Spin0));
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin3Half,PDT::Spin1Half,PDT::Spin0)));
   }
   // setup spin info when needed
   if(meopt==Terminate) {
@@ -630,11 +631,11 @@ threeHalfHalfScalar(const int,const Particle & inpart,
       if(decay[0]->id()<0) swap(ix,iy);
       ispin[0]=iya;
       ispin[1]=ixa;
-      ME()(ispin) = _inHalf[iy].generalScalar(_inHalfBar[ix],left,right)*
+      (*ME())(ispin) = _inHalf[iy].generalScalar(_inHalfBar[ix],left,right)*
 	UnitRemoval::E/msum/inpart.mass();
     }
   }
-  double output = (ME().contract(_rho)).real();
+  double output = (ME()->contract(_rho)).real();
   // test of the matrix element
 //   Energy m1(inpart.mass()),m2(decay[0]->mass()),m3(decay[1]->mass());
 //   Energy Qp(sqrt(sqr(m1+m2)-sqr(m3))),Qm(sqrt(sqr(m1-m2)-sqr(m3)));
@@ -669,7 +670,7 @@ double Baryon1MesonDecayerBase::threeHalfThreeHalfScalar(const int,
 						      incoming);
     }
     // matrix element
-    ME(DecayMatrixElement(PDT::Spin3Half,PDT::Spin3Half,PDT::Spin0));
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin3Half,PDT::Spin3Half,PDT::Spin0)));
   }
   // setup spin info when needed
   if(meopt==Terminate) {
@@ -730,13 +731,13 @@ double Baryon1MesonDecayerBase::threeHalfThreeHalfScalar(const int,
       if(decay[0]->id()<0) swap(ix,iy);
       ispin[0]=iya;
       ispin[1]=ixa;
-      ME()(ispin)=(_inThreeHalf[iy].generalScalar(_inThreeHalfBar[ix],left1,right1)
+      (*ME())(ispin)=(_inThreeHalf[iy].generalScalar(_inThreeHalfBar[ix],left1,right1)
 		   +_inHalf[iy].generalScalar( _inHalfBar[ix],left2,right2)
 		   *UnitRemoval::E2/sqr(msum))/inpart.mass();
     }
   }
   // return the answer
-  return (ME().contract(_rho)).real();
+  return (ME()->contract(_rho)).real();
 }
 
 // matrix element for the decay of a spin-3/2 fermion to a spin-1/2 fermion and
@@ -761,7 +762,7 @@ threeHalfHalfVector(const int,const Particle & inpart,
 						      incoming);
     }
     // matrix element
-    ME(DecayMatrixElement(PDT::Spin3Half,PDT::Spin1Half,PDT::Spin1));
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin3Half,PDT::Spin1Half,PDT::Spin1)));
   }
 
   // setup spin info when needed
@@ -799,7 +800,7 @@ threeHalfHalfVector(const int,const Particle & inpart,
     for(unsigned int ix=0;ix<_inThreeHalfBar.size();++ix)
       _inHalfBar[ix] = _inThreeHalfBar[ix].dot(out);
   }
-  ME().zero();
+  ME()->zero();
   VectorWaveFunction::calculateWaveFunctions(_inVec,decay[1],outgoing,photon);
   // get the couplings
   Complex A1,A2,A3,B1,B2,B3,prod,meout;
@@ -836,7 +837,7 @@ threeHalfHalfVector(const int,const Particle & inpart,
       for(unsigned int iz=0;iz<3;++iz) {
 	ispin[2]=iz;
 	prod=_inVec[iz].dot(decay[0]->momentum())/msum;
-	ME()(ispin) += (svec.dot(_inVec[iz])+prod*scalar)*
+	(*ME())(ispin) += (svec.dot(_inVec[iz])+prod*scalar)*
 	  UnitRemoval::E/msum/inpart.mass();
       }
     }
@@ -849,11 +850,11 @@ threeHalfHalfVector(const int,const Particle & inpart,
 	ispin[1]=ixa;
 	if(decay[0]->id()>0) sbtemp = _inHalfBar[ixa];
 	else                 stemp  = _inHalf[ixa];
-	ME()(ispin) += stemp.generalScalar(sbtemp,left,right)/inpart.mass();
+	(*ME())(ispin) += stemp.generalScalar(sbtemp,left,right)/inpart.mass();
       }
     }
   }
-  double output = (ME().contract(_rho)).real();
+  double output = (ME()->contract(_rho)).real();
   // testing code
 //   Energy m1(inpart.mass()),m2(decay[0]->mass()),m3(decay[1]->mass());
 //   Energy2 m12(m1*m1),m22(m2*m2),m32(m3*m3);

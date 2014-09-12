@@ -20,6 +20,7 @@
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/epsilon.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -171,7 +172,7 @@ double PScalarVectorVectorDecayer::me2(const int,
   if(meopt==Initialize) {
     ScalarWaveFunction::
       calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
-    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin1,PDT::Spin1));
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1,PDT::Spin1)));
   }
   if(meopt==Terminate) {
     // set up the spin information for the decay products
@@ -190,7 +191,7 @@ double PScalarVectorVectorDecayer::me2(const int,
   unsigned int ix,iy;
   for(ix=0;ix<3;++ix) {
     for(iy=0;iy<3;++iy) {
-      ME()(0,ix,iy)=fact*epsilon(_vectors[0][ix],decay[1]->momentum(),
+      (*ME())(0,ix,iy)=fact*epsilon(_vectors[0][ix],decay[1]->momentum(),
 				 _vectors[1][iy])
 	*decay[0]->momentum();
     }
@@ -202,7 +203,7 @@ double PScalarVectorVectorDecayer::me2(const int,
 //   cerr << "testing the matrix element for " << inpart.PDGName() << " -> " 
 //        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " " 
 //        << me << " " << (me-test)/(me+test) << "\n";
-  return ME().contract(_rho).real();
+  return ME()->contract(_rho).real();
 }
 
 // specify the 1-2 matrix element to be used in the running width calculation

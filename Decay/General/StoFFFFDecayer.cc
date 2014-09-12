@@ -17,6 +17,7 @@
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 #include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 #include <numeric>
 
 using namespace Herwig;
@@ -172,12 +173,12 @@ double StoFFFFDecayer::me2(const int ichan, const Particle & inpart,
   }
   // matrix element for the colour flows
   vector<Complex> flows(ncf, Complex(0.)),largeflows(ncf, Complex(0.));
-  vector<DecayMatrixElement> mes(ncf,DecayMatrixElement(PDT::Spin0,
-							PDT::Spin1Half,PDT::Spin1Half,
-							PDT::Spin1Half,PDT::Spin1Half));
-  vector<DecayMatrixElement> mel(ncf,DecayMatrixElement(PDT::Spin0,
-							PDT::Spin1Half,PDT::Spin1Half,
-							PDT::Spin1Half,PDT::Spin1Half));
+  vector<GeneralDecayMEPtr> mes(ncf,new_ptr(GeneralDecayMatrixElement(PDT::Spin0,
+								      PDT::Spin1Half,PDT::Spin1Half,
+								      PDT::Spin1Half,PDT::Spin1Half)));
+  vector<GeneralDecayMEPtr> mel(ncf,new_ptr(GeneralDecayMatrixElement(PDT::Spin0,
+								      PDT::Spin1Half,PDT::Spin1Half,
+								      PDT::Spin1Half,PDT::Spin1Half)));
   // calculate the matrix element
   unsigned int ihel[4];
   for(ihel[0] = 0; ihel[0] < 2; ++ihel[0]) {
@@ -383,8 +384,8 @@ double StoFFFFDecayer::me2(const int ichan, const Particle & inpart,
 	  }
 	  // now add the flows to the me2 with appropriate colour factors
 	  for(unsigned int ix = 0; ix < ncf; ++ix) {
-	    mes[ix](0,ihel[0],ihel[1],ihel[2],ihel[3]) =      flows[ix];
-	    mel[ix](0,ihel[0],ihel[1],ihel[2],ihel[3]) = largeflows[ix];
+	    (*mes[ix])(0,ihel[0],ihel[1],ihel[2],ihel[3]) =      flows[ix];
+	    (*mel[ix])(0,ihel[0],ihel[1],ihel[2],ihel[3]) = largeflows[ix];
 	  }
 	}
       }
@@ -395,10 +396,10 @@ double StoFFFFDecayer::me2(const int ichan, const Particle & inpart,
     vector<double> pflows(ncf,0.);
     for(unsigned int ix = 0; ix < ncf; ++ix) {
       for(unsigned int iy = 0; iy < ncf; ++ iy) {
-	double con = cfactors[ix][iy]*(mes[ix].contract(mes[iy],rho_)).real();
+	double con = cfactors[ix][iy]*(mes[ix]->contract(*mes[iy],rho_)).real();
 	me2 += con;
 	if(ix==iy) {
-	  con = nfactors[ix][iy]*(mel[ix].contract(mel[iy],rho_)).real();
+	  con = nfactors[ix][iy]*(mel[ix]->contract(*mel[iy],rho_)).real();
 	  pflows[ix] += con;
 	}
       }
@@ -416,7 +417,7 @@ double StoFFFFDecayer::me2(const int ichan, const Particle & inpart,
   }
   else {
     unsigned int iflow = colourFlow();
-    me2 = nfactors[iflow][iflow]*(mel[iflow].contract(mel[iflow],rho_)).real();
+    me2 = nfactors[iflow][iflow]*(mel[iflow]->contract(*mel[iflow],rho_)).real();
   }
   // return the matrix element squared
   return me2*scale*UnitRemoval::InvE2;

@@ -26,6 +26,7 @@
 #include "Herwig++/Shower/Base/ShowerProgenitor.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "Herwig++/Shower/Base/Branching.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -212,8 +213,8 @@ double SMTopDecayer::me2(const int, const Particle & inpart,
       SpinorBarWaveFunction::calculateWaveFunctions(_inHalfBar,_rho,
 						    const_ptr_cast<tPPtr>(&inpart),
 						    incoming);
-    ME(DecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
-			  PDT::Spin1Half,PDT::Spin1Half));
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
+					 PDT::Spin1Half,PDT::Spin1Half)));
   }
   // setup spin info when needed
   if(meopt==Terminate) {
@@ -261,7 +262,7 @@ double SMTopDecayer::me2(const int, const Particle & inpart,
 				   _inHalfBar[bhel]);
 	for(afhel=0;afhel<2;++afhel){
 	  for(fhel=0;fhel<2;++fhel){
-	    ME()(thel,bhel,afhel,fhel) = 
+	    (*ME())(thel,bhel,afhel,fhel) = 
 	      _wvertex->evaluate(scale,_outHalf[afhel],
 				 _outHalfBar[fhel],inter);
 	  }
@@ -279,7 +280,7 @@ double SMTopDecayer::me2(const int, const Particle & inpart,
 	  evaluate(scale,1,Wminus,_inHalf[bbhel],_inHalfBar[tbhel]);
 	for(afhel=0;afhel<2;++afhel){
 	  for(fhel=0;fhel<2;++fhel){
-	    ME()(tbhel,bbhel,fhel,afhel) = 
+	    (*ME())(tbhel,bbhel,fhel,afhel) = 
 	      _wvertex->evaluate(scale,_outHalf[afhel],
 				 _outHalfBar[fhel],inter);
 	  }
@@ -287,7 +288,7 @@ double SMTopDecayer::me2(const int, const Particle & inpart,
       }
     }
   }
-  double output = (ME().contract(_rho)).real();
+  double output = (ME()->contract(_rho)).real();
   if(abs(decay[1]->id())<=6) output *=3.;
   return output;
 }

@@ -76,12 +76,10 @@ updateChildren(const tShowerParticlePtr parent,
   ids.push_back(parent->id());
   ids.push_back(children[0]->id());
   ids.push_back(children[1]->id());
-  // compute the matrix element for spin correlations
-  DecayMatrixElement me(splittingFn()->matrixElement(z(),t,ids,phi()));
   // create the vertex
   SVertexPtr vertex(new_ptr(ShowerVertex()));
   // set the matrix element
-  vertex->ME().reset(me);
+  vertex->ME(splittingFn()->matrixElement(z(),t,ids,phi()));
   // set the incoming particle for the vertex
   parent->spinInfo()->decayVertex(vertex);
   ShowerParticleVector::const_iterator pit;

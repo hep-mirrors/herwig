@@ -20,6 +20,7 @@
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "Herwig++/Utilities/Kinematics.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -71,7 +72,7 @@ double SVVDecayer::me2(const int , const Particle & inpart,
     ScalarWaveFunction::
       calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
     _swave = ScalarWaveFunction(inpart.momentum(),inpart.dataPtr(),incoming);
-    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin1,PDT::Spin1));
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1,PDT::Spin1)));
   }
   if(meopt==Terminate) {
     ScalarWaveFunction::
@@ -91,11 +92,11 @@ double SVVDecayer::me2(const int , const Particle & inpart,
     if( photon[1] && iv2 == 1 ) ++iv2;
     for(iv1=0;iv1<3;++iv1) {
       if( photon[0] && iv1 == 1) ++iv1;
-      ME()(0, iv1, iv2) = _abstractVertex->evaluate(scale,_vectors[0][iv1],
+      (*ME())(0, iv1, iv2) = _abstractVertex->evaluate(scale,_vectors[0][iv1],
 						    _vectors[1][iv2],_swave);
     }
   }
-  double output = ME().contract(_rho).real()/scale*UnitRemoval::E2;
+  double output = ME()->contract(_rho).real()/scale*UnitRemoval::E2;
   // colour and identical particle factors
   output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
 			 decay[1]->dataPtr());

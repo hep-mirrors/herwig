@@ -19,6 +19,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 
@@ -563,7 +564,7 @@ double DtoKPiPiMarkIII::me2( const int ichan,const Particle & inpart,
   if(meopt==Initialize) {
     ScalarWaveFunction::
       calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
-    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin0,PDT::Spin0));
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin0,PDT::Spin0)));
   }
   if(meopt==Terminate) {
     // set up the spin information for the decay products
@@ -644,7 +645,7 @@ double DtoKPiPiMarkIII::me2( const int ichan,const Particle & inpart,
     }
   }
   // now compute the matrix element
-  ME()(0,0,0,0)=amp;
+  (*ME())(0,0,0,0)=amp;
   return norm(amp);
 }
 

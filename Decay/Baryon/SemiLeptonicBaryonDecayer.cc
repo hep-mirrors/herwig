@@ -20,6 +20,7 @@
 #include "ThePEG/Helicity/FermionSpinInfo.h"
 #include "ThePEG/Helicity/RSFermionSpinInfo.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -212,7 +213,7 @@ double SemiLeptonicBaryonDecayer::halfHalf(const int ichan,
     }
     _constants[decay.size()]=1;
     _constants[_ibar]=_constants[_ibar+1];
-    ME(DecayMatrixElement(PDT::Spin1Half,_ispin));
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,_ispin)));
   }
   // setup spin info when needed
   if(meopt==Terminate) {
@@ -289,7 +290,7 @@ double SemiLeptonicBaryonDecayer::halfHalf(const int ichan,
       for(ix=decay.size();ix>0;--ix) {
 	if(ix-1!=_ibar) ihel[ix]=(lhel%_constants[ix-1])/_constants[ix];
       }
-      ME()(ihel)= lepton[lhel].dot(hadron[mhel])*SM().fermiConstant();
+      (*ME())(ihel)= lepton[lhel].dot(hadron[mhel])*SM().fermiConstant();
     }
   }
   // ckm factor
@@ -299,7 +300,7 @@ double SemiLeptonicBaryonDecayer::halfHalf(const int ichan,
     else             ckm = SM().CKM(abs(outquark)/2-1,(inquark-1)/2);
   }
   // return the answer
-  return 0.5*(ME().contract(_rho)).real()*ckm; 
+  return 0.5*(ME()->contract(_rho)).real()*ckm; 
 }
 
 
@@ -341,7 +342,7 @@ double SemiLeptonicBaryonDecayer::halfThreeHalf(const int ichan,
     }
     _constants[decay.size()]=1;
     _constants[_ibar]=_constants[_ibar+1];
-    ME(DecayMatrixElement(PDT::Spin1Half,_ispin));
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,_ispin)));
   }
   // setup spin info when needed
   if(meopt==Terminate) {
@@ -452,7 +453,7 @@ double SemiLeptonicBaryonDecayer::halfThreeHalf(const int ichan,
       for(unsigned int lhel=0;lhel<lepton.size();++lhel) {
 	ihel[2] = lhel/2;
 	ihel[3] = lhel%2;
-	ME()(ihel) = lepton[lhel].dot(hadron[iya][ixa])*SM().fermiConstant();
+	(*ME())(ihel) = lepton[lhel].dot(hadron[iya][ixa])*SM().fermiConstant();
       }
     }  
   }
@@ -463,7 +464,7 @@ double SemiLeptonicBaryonDecayer::halfThreeHalf(const int ichan,
     else{ckm = SM().CKM(abs(outquark)/2-1,(inquark-1)/2);}
   }
   // return the answer
-  return 0.5*(ME().contract(_rho)).real()*ckm;
+  return 0.5*(ME()->contract(_rho)).real()*ckm;
 }
 
 // output the setup information for the particle database

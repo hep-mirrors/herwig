@@ -15,6 +15,7 @@
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Utilities/DescribeClass.h"
+#include "Herwig++/Decay/TwoBodyDecayMatrixElement.h"
 
 using namespace Herwig;
 
@@ -123,11 +124,11 @@ OneHalfHalfSplitFn::generatePhiBackward(const double, const Energy2, const IdLis
   return vector<pair<int, Complex> >(1,make_pair(1,1.));
 }
 
-DecayMatrixElement OneHalfHalfSplitFn::matrixElement(const double z, const Energy2 t, 
-						     const IdList & ids, const double phi) {
+DecayMEPtr OneHalfHalfSplitFn::matrixElement(const double z, const Energy2 t, 
+					     const IdList & ids, const double phi) {
   static const Complex ii(0.,1.);
   // calculate the kernal
-  DecayMatrixElement kernal(PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half);
+  DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half)));
   double mt = getParticleData(ids[1])->mass()/sqrt(t);
   double root =1.-sqr(mt)/z/(1.-z);
   if(root>=0.) 
@@ -136,13 +137,13 @@ DecayMatrixElement OneHalfHalfSplitFn::matrixElement(const double z, const Energ
     mt = 0.;
     root = 1.;
   }
-  kernal(0,0,0) = mt/sqrt(z*(1.-z));
-  kernal(2,1,1) = kernal(0,0,0);
-  kernal(0,0,1) = -z*root*exp(-ii*phi);
-  kernal(2,1,0) = -conj(kernal(0,0,1));
-  kernal(0,1,0) = (1.-z)*exp(-ii*phi)*root;
-  kernal(2,0,1) = -conj(kernal(0,1,0));
-  kernal(0,1,1) = 0.;
-  kernal(2,0,0) = 0.;
+  (*kernal)(0,0,0) = mt/sqrt(z*(1.-z));
+  (*kernal)(2,1,1) = (*kernal)(0,0,0);
+  (*kernal)(0,0,1) = -z*root*exp(-ii*phi);
+  (*kernal)(2,1,0) = -conj((*kernal)(0,0,1));
+  (*kernal)(0,1,0) = (1.-z)*exp(-ii*phi)*root;
+  (*kernal)(2,0,1) = -conj((*kernal)(0,1,0));
+  (*kernal)(0,1,1) = 0.;
+  (*kernal)(2,0,0) = 0.;
   return kernal;
 }

@@ -19,6 +19,7 @@
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -160,7 +161,7 @@ double ScalarMesonTensorScalarDecayer::me2(const int,
   if(meopt==Initialize) {
     ScalarWaveFunction::
       calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
-    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin2,PDT::Spin0));
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin2,PDT::Spin0)));
   }
   if(meopt==Terminate) {
     // set up the spin information for the decay products
@@ -178,7 +179,7 @@ double ScalarMesonTensorScalarDecayer::me2(const int,
   LorentzPolarizationVectorE vtemp;
   for(unsigned int ix=0;ix<5;++ix) {
     vtemp = _tensors[ix]*inpart.momentum(); 
-    ME()(0,ix,0) = fact * decay[1]->momentum().dot(vtemp);
+    (*ME())(0,ix,0) = fact * decay[1]->momentum().dot(vtemp);
   }
   // test of the matrix element
 //   double me=newME.contract(rhoin).real();
@@ -190,7 +191,7 @@ double ScalarMesonTensorScalarDecayer::me2(const int,
 //        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " "
 //        << me << " " << (me-test)/(me+test) << "\n";
   // output the answer
-  return ME().contract(_rho).real();
+  return ME()->contract(_rho).real();
 }
 
 // specify the 1-2 matrix element to be used in the running width calculation

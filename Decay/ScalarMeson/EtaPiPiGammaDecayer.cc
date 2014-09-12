@@ -25,6 +25,7 @@
 #include "Herwig++/PDT/ThreeBodyAllOnCalculator.h"
 #include "Herwig++/Utilities/GaussianIntegrator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -443,7 +444,7 @@ double EtaPiPiGammaDecayer::me2(const int,const Particle & inpart,
   if(meopt==Initialize) {
     ScalarWaveFunction::
       calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
-    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin0,PDT::Spin1));
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin0,PDT::Spin1)));
   }
   if(meopt==Terminate) {
     // set up the spin information for the decay products
@@ -492,11 +493,11 @@ double EtaPiPiGammaDecayer::me2(const int,const Particle & inpart,
   // compute the matrix element
   vector<unsigned int> ispin(4,0);
   for(ispin[3]=0;ispin[3]<3;++ispin[3]) {
-    if(ispin[3]==1) ME()(ispin)=0.;
-    else            ME()(ispin)=epstemp.dot(_vectors[ispin[3]]);
+    if(ispin[3]==1) (*ME())(ispin)=0.;
+    else            (*ME())(ispin)=epstemp.dot(_vectors[ispin[3]]);
   }
   // contract the whole thing
-  return ME().contract(_rho).real();
+  return ME()->contract(_rho).real();
 }
 
 double EtaPiPiGammaDecayer::

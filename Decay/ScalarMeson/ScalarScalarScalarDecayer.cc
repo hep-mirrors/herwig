@@ -18,6 +18,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -349,7 +350,7 @@ double ScalarScalarScalarDecayer::me2(const int,
   if(meopt==Initialize) {
     ScalarWaveFunction::
       calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
-    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin0));
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin0)));
   }
   if(meopt==Terminate) {
     // set up the spin information for the decay products
@@ -360,7 +361,7 @@ double ScalarScalarScalarDecayer::me2(const int,
     return 0.;
   }
   double fact(_coupling[imode()]/inpart.mass());
-  ME()(0,0,0) = fact;
+  (*ME())(0,0,0) = fact;
   return sqr(fact);
 }
 

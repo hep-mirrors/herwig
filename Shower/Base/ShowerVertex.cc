@@ -33,7 +33,7 @@ void ShowerVertex::Init() {
 
 // method to get the rho matrix for a given outgoing particle
 RhoDMatrix ShowerVertex::getRhoMatrix(int i, bool) const {
-  assert(matrixElement_.nOut()==2);
+  assert(matrixElement_->nOut()==2);
   // calculate the incoming spin density matrix
   RhoDMatrix input=incoming()[0]->rhoMatrix();
   if(convertIn_) input = mapIncoming(input);
@@ -44,19 +44,19 @@ RhoDMatrix ShowerVertex::getRhoMatrix(int i, bool) const {
       rhoout.push_back(outgoing()[ix]->DMatrix());
   }
   // calculate the spin density matrix
-  return matrixElement_.calculateRhoMatrix(i,input,rhoout);
+  return matrixElement_->calculateRhoMatrix(i,input,rhoout);
 }
 
 // method to get the D matrix for an incoming particle
 RhoDMatrix ShowerVertex::getDMatrix(int) const {
-  assert(matrixElement_.nOut()==2);
+  assert(matrixElement_->nOut()==2);
   // get the decay matrices for the outgoing particles
   vector<RhoDMatrix> Dout;
   for(unsigned int ix=0,N=outgoing().size();ix<N;++ix) {
     Dout.push_back(outgoing()[ix]->DMatrix());
   }
   // calculate the spin density matrix and return the answer
-  return matrixElement_.calculateDMatrix(Dout);
+  return matrixElement_->calculateDMatrix(Dout);
 }
 
 RhoDMatrix ShowerVertex::mapIncoming(RhoDMatrix rho) const {

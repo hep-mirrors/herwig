@@ -43,15 +43,15 @@ public:
   /**
    * Get the matrix element
    */
-  const DecayMatrixElement & ME() const { 
-    return _matrixelement;
+  const DecayMEPtr ME() const { 
+    return matrixElement_;
   }
 
   /**
    * Set the matrix element
    */
-  void ME(const DecayMatrixElement & in) const {
-    _matrixelement.reset(in);
+  void ME(DecayMEPtr in) const {
+    matrixElement_ = in;
   }
   //@}  
 
@@ -77,13 +77,6 @@ public:
    */
   virtual RhoDMatrix getDMatrix(int) const;
   
-private:
-  
-  /**
-   * Describe a concrete class without persistent data.
-   */
-  static NoPIOClassDescription<DecayVertex> initDecayVertex;
-  
   /** 
    * Private and non-existent assignment operator.
    */
@@ -94,42 +87,10 @@ private:
   /**
    * Storage of the decay matrix element.
    */
-  DecayMatrixElement _matrixelement;
+  mutable DecayMEPtr matrixElement_;
   
 };
 
-}
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-  
-/**
- * The following template specialization informs ThePEG about the
- * base class of DecayVertex.
- */
-template <>
-struct BaseClassTrait<Herwig::DecayVertex,1> {
-  /** Typedef of the base class of DecayVertex. */
-  typedef ThePEG::HelicityVertex NthBase;
-};
-  
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<Herwig::DecayVertex>
-  : public ClassTraitsBase<Herwig::DecayVertex> {
-  
-  /**
-   * Return the class name.
-   */
-  static string className() { return "Herwig::DecayVertex"; }
-};
-
-/** @endcond */
-  
 }
 
 #endif /* HERWIG_DecayVertex_H */

@@ -21,6 +21,7 @@
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -181,7 +182,7 @@ double ScalarVectorVectorDecayer::me2(const int,
   if(meopt==Initialize) {
     ScalarWaveFunction::
       calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
-    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin1,PDT::Spin1));
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1,PDT::Spin1)));
   }
   if(meopt==Terminate) {
     // set up the spin information for the decay products
@@ -201,7 +202,7 @@ double ScalarVectorVectorDecayer::me2(const int,
   unsigned int ix,iy;
   for(ix=0;ix<3;++ix) {
     for(iy=0;iy<3;++iy) {
-      ME()(0,ix,iy)=fact*(p1p2*_vectors[0][ix].dot(_vectors[1][iy])-
+      (*ME())(0,ix,iy)=fact*(p1p2*_vectors[0][ix].dot(_vectors[1][iy])-
 			  (_vectors[1][iy]*decay[0]->momentum())*
 			  (_vectors[0][ix]*decay[1]->momentum()));
     }
@@ -215,7 +216,7 @@ double ScalarVectorVectorDecayer::me2(const int,
   //   cerr << "testing matrix element for " << inpart.PDGName() << " -> " 
   //        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " "
   //        << me << " " << test << " " << (me-test)/(me+test) << "\n";
-  return ME().contract(_rho).real();
+  return ME()->contract(_rho).real();
 }
 
 // output the setup info for the particle database

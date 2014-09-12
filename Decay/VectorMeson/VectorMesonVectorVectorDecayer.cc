@@ -18,6 +18,7 @@
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -56,7 +57,7 @@ void VectorMesonVectorVectorDecayer::doinit() {
 VectorMesonVectorVectorDecayer::VectorMesonVectorVectorDecayer() 
   : _coupling(4), _incoming(4), _outgoing1(4), _outgoing2(4), 
     _maxweight(4) {
-  ME(DecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin1));
+  ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin1)));
   // decay of rho'' to rho rho
   _incoming[0] = 30213; _outgoing1[0] =  213; _outgoing2[0] = 113; 
   _coupling[0] = 3.21; _maxweight[0] = 35.; 
@@ -198,7 +199,7 @@ double VectorMesonVectorVectorDecayer::me2(const int,
 		  +eps1eps2*(-p1p2*pdiff+m12*decay[1]->momentum()
 			     -m22*decay[0]->momentum()));
       for(unsigned int inpol=0;inpol<3;++inpol) 
-	ME()(inpol,ipol1,ipol2)=_vectors[0][inpol].dot(vtemp);
+	(*ME())(inpol,ipol1,ipol2)=_vectors[0][inpol].dot(vtemp);
     }
   }
   // test of the matrix element
@@ -211,7 +212,7 @@ double VectorMesonVectorVectorDecayer::me2(const int,
 //        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " "
 //        << me << " " << test << " " << (me-test)/(me+test) << "\n";
   // return the answer
-  return ME().contract(_rho).real();
+  return ME()->contract(_rho).real();
 }
 
 bool VectorMesonVectorVectorDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,

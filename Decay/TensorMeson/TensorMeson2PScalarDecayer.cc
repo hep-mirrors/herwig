@@ -19,6 +19,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -34,7 +35,7 @@ void TensorMeson2PScalarDecayer::doinitrun() {
 TensorMeson2PScalarDecayer::TensorMeson2PScalarDecayer() 
   : _incoming(48), _outgoing1(48), _outgoing2(48), 
     _coupling(48), _maxweight(48) {
-  ME(DecayMatrixElement(PDT::Spin2,PDT::Spin0,PDT::Spin0));
+  ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin2,PDT::Spin0,PDT::Spin0)));
   // a_2 -> eta pi
   _incoming[0] = 115; _outgoing1[0] =  221; _outgoing2[0] = 111; 
   _coupling[0] = 10.90/GeV; _maxweight[0] = 1.7; 
@@ -285,7 +286,7 @@ double TensorMeson2PScalarDecayer::me2(const int, const Particle & inpart,
   }
   // calculate the matrix element
   for(unsigned int ix=0;ix<5;++ix) {
-    ME()(ix,0,0) = _coupling[imode()]/inpart.mass()*
+    (*ME())(ix,0,0) = _coupling[imode()]/inpart.mass()*
       ((_tensors[ix]*decay[1]->momentum())*decay[0]->momentum());
   }
 //   // test of the answer
@@ -297,7 +298,7 @@ double TensorMeson2PScalarDecayer::me2(const int, const Particle & inpart,
 //        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " " 
 //        << me << " " << test << " " << (me-test)/(me+test) << endl;
   // return the answer
-  return ME().contract(_rho).real();
+  return ME()->contract(_rho).real();
 }
 
 bool TensorMeson2PScalarDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,

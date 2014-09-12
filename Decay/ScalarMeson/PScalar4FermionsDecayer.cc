@@ -24,6 +24,7 @@
 #include "ThePEG/Helicity/epsilon.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -249,8 +250,8 @@ double PScalar4FermionsDecayer::me2(const int,
   if(meopt==Initialize) {
     ScalarWaveFunction::
       calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
-    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half,
-			  PDT::Spin1Half,PDT::Spin1Half));
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half,
+					 PDT::Spin1Half,PDT::Spin1Half)));
   }
   if(meopt==Terminate) {
     // set up the spin information for the decay products
@@ -338,12 +339,12 @@ double PScalar4FermionsDecayer::me2(const int,
 			  current[3][ispin[3]][ispin[2]]);
 	    diag-= prop2*(eps*momentum[2]);
 	  }
-	  ME()(ispin)=pre*diag;
+	  (*ME())(ispin)=pre*diag;
 	}
       }
     }
   }
-  double me=ME().contract(_rho).real();
+  double me=ME()->contract(_rho).real();
   if(identical) me *= 0.25;
   return me;
 }

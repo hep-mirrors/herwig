@@ -10,6 +10,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig++/PDT/ThreeBodyAllOnCalculator.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 #include <numeric>
 
 using namespace Herwig;
@@ -207,16 +208,16 @@ double  FtoFVVDecayer::me2(const int ichan, const Particle & inpart,
   const vector<vector<double> > nfactors(getLargeNcColourFactors());
   const size_t ncf(numberOfFlows());
   vector<Complex> flows(ncf, Complex(0.)), largeflows(ncf, Complex(0.)); 
-  vector<DecayMatrixElement> 
-    mes(ncf,DecayMatrixElement(PDT::Spin1Half, 
-			       (isp == 0) ? PDT::Spin1Half : PDT::Spin1,
-			       (isp == 1) ? PDT::Spin1Half : PDT::Spin1,
-			       (isp == 2) ? PDT::Spin1Half : PDT::Spin1));
-  vector<DecayMatrixElement> 
-    mel(ncf,DecayMatrixElement(PDT::Spin1Half, 
-			       (isp == 0) ? PDT::Spin1Half : PDT::Spin1,
-			       (isp == 1) ? PDT::Spin1Half : PDT::Spin1,
-			       (isp == 2) ? PDT::Spin1Half : PDT::Spin1));
+  vector<GeneralDecayMEPtr> 
+    mes(ncf,new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half, 
+					      (isp == 0) ? PDT::Spin1Half : PDT::Spin1,
+					      (isp == 1) ? PDT::Spin1Half : PDT::Spin1,
+					      (isp == 2) ? PDT::Spin1Half : PDT::Spin1)));
+  vector<GeneralDecayMEPtr> 
+    mel(ncf,new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half, 
+					      (isp == 0) ? PDT::Spin1Half : PDT::Spin1,
+					      (isp == 1) ? PDT::Spin1Half : PDT::Spin1,
+					      (isp == 2) ? PDT::Spin1Half : PDT::Spin1)));
   //Helicity calculation
   for( unsigned int if1 = 0; if1 < 2; ++if1 ) {
     for( unsigned int if2 = 0; if2 < 2; ++if2 ) {
@@ -331,16 +332,16 @@ double  FtoFVVDecayer::me2(const int ichan, const Particle & inpart,
 	if( !ferm ) swap(h1,h2);
 	  for(unsigned int ix = 0; ix < ncf; ++ix) {
 	    if(isp == 0) {
-	      mes[ix](h1, h2, iv1, iv2) = flows[ix];
-	      mel[ix](h1, h2, iv1, iv2) = largeflows[ix];
+	      (*mes[ix])(h1, h2, iv1, iv2) = flows[ix];
+	      (*mel[ix])(h1, h2, iv1, iv2) = largeflows[ix];
 	    }
 	    else if(isp == 1) { 
-	      mes[ix](h1, iv1, h2, iv2) = flows[ix];
-	      mel[ix](h1, iv1, h2, iv2) = largeflows[ix];
+	      (*mes[ix])(h1, iv1, h2, iv2) = flows[ix];
+	      (*mel[ix])(h1, iv1, h2, iv2) = largeflows[ix];
 	    }
 	    else if(isp == 2) { 
-	      mes[ix](h1, iv1, iv2, h2) = flows[ix];
-	      mel[ix](h1, iv1, h2, iv2) = largeflows[ix];
+	      (*mes[ix])(h1, iv1, iv2, h2) = flows[ix];
+	      (*mel[ix])(h1, iv1, h2, iv2) = largeflows[ix];
 	    }
 	  }
 
@@ -356,10 +357,10 @@ double  FtoFVVDecayer::me2(const int ichan, const Particle & inpart,
     vector<double> pflows(ncf,0.);
     for(unsigned int ix = 0; ix < ncf; ++ix) {
       for(unsigned int iy = 0; iy < ncf; ++ iy) {
-	double con = cfactors[ix][iy]*(mes[ix].contract(mes[iy],_rho)).real();
+	double con = cfactors[ix][iy]*(mes[ix]->contract(*mes[iy],_rho)).real();
 	me2 += con;
 	if(ix==iy) {
-	  con = nfactors[ix][iy]*(mel[ix].contract(mel[iy],_rho)).real();
+	  con = nfactors[ix][iy]*(mel[ix]->contract(*mel[iy],_rho)).real();
 	  pflows[ix] += con;
 	}
       }
@@ -377,7 +378,7 @@ double  FtoFVVDecayer::me2(const int ichan, const Particle & inpart,
   }
   else {
     unsigned int iflow = colourFlow();
-    me2 = nfactors[iflow][iflow]*(mel[iflow].contract(mel[iflow],_rho)).real();
+    me2 = nfactors[iflow][iflow]*(mel[iflow]->contract(*mel[iflow],_rho)).real();
   }
   // return the matrix element squared
   return me2;

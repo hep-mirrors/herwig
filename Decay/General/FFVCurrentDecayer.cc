@@ -19,6 +19,7 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 
@@ -150,7 +151,7 @@ double FFVCurrentDecayer::me2(const int ichan, const Particle & inpart,
   constants[decay.size()]=1;
   constants[0]=constants[1];
   // compute the matrix element
-  DecayMatrixElement newME(PDT::Spin1Half,ispin);
+  GeneralDecayMEPtr newME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,ispin)));
   VectorWaveFunction vWave;
   tcPDPtr vec= inpart.dataPtr()->iCharge()-decay[0]->dataPtr()->iCharge() > 0
     ? getParticleData(ParticleID::Wplus) : getParticleData(ParticleID::Wminus);
@@ -165,7 +166,7 @@ double FFVCurrentDecayer::me2(const int ichan, const Particle & inpart,
 	ihel[0]=if1;
 	ihel[1]=if2;
 	if(!ferm) swap(ihel[0],ihel[1]);
-	newME(ihel) = _theFFVPtr->evaluate(scale,_wave[if1],_wavebar[if2],vWave);
+	(*newME)(ihel) = _theFFVPtr->evaluate(scale,_wave[if1],_wavebar[if2],vWave);
       }
     }
   }
@@ -180,7 +181,7 @@ double FFVCurrentDecayer::me2(const int ichan, const Particle & inpart,
     else        ckm = SM().CKM(abs(ia)/2-1,(iq-1)/2);
   }
   pre /= 0.125*sqr(_theFFVPtr->weakCoupling(scale));
-  double output(0.5*pre*ckm*(ME().contract(_rho)).real()*
+  double output(0.5*pre*ckm*(ME()->contract(_rho)).real()*
 		sqr(SM().fermiConstant()*UnitRemoval::E2));
   return output;
 }

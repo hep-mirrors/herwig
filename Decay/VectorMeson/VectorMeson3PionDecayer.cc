@@ -22,6 +22,7 @@
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "Herwig++/PDT/ThreeBodyAllOnCalculator.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -56,7 +57,7 @@ VectorMeson3PionDecayer::VectorMeson3PionDecayer()
     _rho2mass(2), _rho3mass(2), _rho1width(2), _rho2width(2), 
     _rho3width(2), _defaultmass(2), _mpic(ZERO), _mpi0(ZERO) {
   // matrix element storage
-  ME(DecayMatrixElement(PDT::Spin1,PDT::Spin0,PDT::Spin0,PDT::Spin0));
+  ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin0,PDT::Spin0,PDT::Spin0)));
   // omega decay
   _incoming[0] = 223;
   _coupling[0] = 178.71/GeV;
@@ -497,9 +498,9 @@ double VectorMeson3PionDecayer::me2(const int ichan,
 					  decay[2]->momentum());
   // compute the matrix element
   for(unsigned int ix=0;ix<3;++ix) 
-    ME()(ix,0,0,0)=scalar.dot(_vectors[ix]);
+    (*ME())(ix,0,0,0)=scalar.dot(_vectors[ix]);
   // return the answer
-  return ME().contract(_rho).real();
+  return ME()->contract(_rho).real();
 }
 
 double VectorMeson3PionDecayer::

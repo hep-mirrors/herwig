@@ -18,6 +18,7 @@
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -33,7 +34,7 @@ void VectorMesonVectorScalarDecayer::doinitrun() {
 VectorMesonVectorScalarDecayer::VectorMesonVectorScalarDecayer() 
   : _coupling(16), _incoming(16), _outgoingV(16), 
     _outgoingS(16), _maxweight(16) {
-  ME(DecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin0));
+  ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin0)));
   // decay of the phi to the a_0 and f_0 and a photon
   _incoming[0] = 333; _outgoingV[0] = 22; _outgoingS[0] = 9000111; 
   _coupling[0] = 0.238/GeV; _maxweight[0] = 10.; 
@@ -209,12 +210,12 @@ double VectorMesonVectorScalarDecayer::me2(const int,
   InvEnergy2 pre(_coupling[imode()]/inpart.mass());
   for(unsigned int ix=0;ix<3;++ix) {
     if(ix==1&&photon) {
-      for(unsigned int iy=0;iy<3;++iy) ME()(iy,ix,0)=0.;
+      for(unsigned int iy=0;iy<3;++iy) (*ME())(iy,ix,0)=0.;
     }
     else {
       epsdot=_vectors[1][ix]*inpart.momentum();
       for(unsigned int iy=0;iy<3;++iy) {
-	ME()(iy,ix,0)=pre*_vectors[0][iy].dot(p0dotpv*_vectors[1][ix]-
+	(*ME())(iy,ix,0)=pre*_vectors[0][iy].dot(p0dotpv*_vectors[1][ix]-
 					      epsdot*decay[0]->momentum());
       }
     }
@@ -228,7 +229,7 @@ double VectorMesonVectorScalarDecayer::me2(const int,
 //        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " "
 //        << me << " " << test << " " << (me-test)/(me+test) << "\n";
   // return the answer
-  return ME().contract(_rho).real();
+  return ME()->contract(_rho).real();
 }
 
 bool VectorMesonVectorScalarDecayer::twoBodyMEcode(const DecayMode & dm,
