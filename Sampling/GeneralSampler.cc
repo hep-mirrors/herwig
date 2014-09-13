@@ -68,6 +68,11 @@ void GeneralSampler::initialize() {
 
   if ( theParallelIntegration ) {
 
+    if ( !theIntegratePerJob )
+      throw Exception()
+	<< "Please specify the number of integration jobs"
+	<< Exception::abortnow;
+
     unsigned int jobCount = 0;
 
     ofstream* jobList = 0;
@@ -102,6 +107,7 @@ void GeneralSampler::initialize() {
     }
 
     theParallelIntegration = false;
+    theSaveStatistics = true;
     if ( postponeInitialize() )
       thePostponeInitialize = false;
     return;
