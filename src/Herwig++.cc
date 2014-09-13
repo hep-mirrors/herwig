@@ -33,7 +33,8 @@ void HerwigRead(string reponame, string runname,
 		const gengetopt_args_info & args_info);
 void HerwigRun(string runname, string setupfile,
 	       int seed, string tag, long N, 
-	       bool tics, bool resume, int jobs);
+	       bool tics, bool resume, int jobs,
+	       bool noevents);
 
 void setSearchPaths(const gengetopt_args_info & args_info);
 
@@ -132,6 +133,11 @@ int main(int argc, char * argv[]) {
     if ( args_info.quiet_flag )
       tics = false;
 
+    // no events
+    bool noevents = false;
+    if ( args_info.noevents_flag )
+      noevents = true;
+
     // Resume
     bool resume = false;
     if ( args_info.resume_flag )
@@ -143,7 +149,7 @@ int main(int argc, char * argv[]) {
     switch ( status ) {
     case INIT:  HerwigInit( runname, reponame ); break;
     case READ:  HerwigRead( reponame, runname, args_info ); break;
-    case RUN:   HerwigRun( runname, setupfile , seed, tag, N, tics, resume, jobs );  break;
+    case RUN:   HerwigRun( runname, setupfile , seed, tag, N, tics, resume, jobs, noevents );  break;
     default:    printUsageAndExit();
     }
 
@@ -242,7 +248,8 @@ void HerwigRead(string reponame, string runname,
 
 void HerwigRun(string runname, string setupfile,
 	       int seed, string tag, long N, 
-	       bool tics, bool resume, int jobs) {
+	       bool tics, bool resume, int jobs,
+	       bool noevents) {
   PersistentIStream is(runname);
   ThePEG::EGPtr eg;
   is >> eg;
@@ -265,6 +272,11 @@ void HerwigRun(string runname, string setupfile,
   if ( seed > 0 ) eg->setSeed(seed);
   if ( !tag.empty() ) eg->addTag(tag);
 
+  if ( noevents ) {
+    eg->initialize();
+    return;
+  }
+  
   if (jobs <= 1) {
 
     eg->go( resume ? -1 : 1, N, tics );

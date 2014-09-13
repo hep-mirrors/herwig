@@ -198,6 +198,16 @@ public:
   void saveRemappers() const;
 
   /**
+   * Write integration data to grid files
+   */
+  void saveIntegrationData() const;
+
+  /**
+   * Read integration data from grid files
+   */
+  void readIntegrationData();
+
+  /**
    * Read remappers from grid file
    */
   void setupRemappers(bool progress);
@@ -227,6 +237,11 @@ public:
    * Indicate that this sampler has already been initialized.
    */
   void isInitialized() { theInitialized = true; }
+
+  /**
+   * Return true, if integration has already been performed
+   */
+  bool integrated() const { return theIntegrated; }
 
   /**
    * Finalize this sampler.
@@ -481,6 +496,11 @@ private:
    * The minimum selection probability for remapper bins
    */
   double theRemapperMinSelection;
+
+  /**
+   * True, if integration has already be performed
+   */
+  bool theIntegrated;
 
 private:
 

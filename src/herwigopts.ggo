@@ -43,6 +43,9 @@ option "setupfile" x "An input file to modify run parameters."
   typestr="SETUPFILE"
   string optional default=""
 
+option "noevents" n "Initialize the event generator, but do not generate any events."
+  flag off
+
 section "Repository options"
 text ""
 

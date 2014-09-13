@@ -111,6 +111,7 @@ void CellGridSampler::initialize(bool progress) {
   for(size_t i=0;i<lastPoint().size();i++){
      RandomNumberHistograms[RandomNumberIndex(id(),i)] = make_pair( RandomNumberHistogram(),0.);
   }
+
   if ( initialized() ) {
     if ( !haveGrid )
       throw Exception() << "CellGridSampler: Require existing grid when starting to run."
@@ -119,7 +120,8 @@ void CellGridSampler::initialize(bool progress) {
   }
 
   if ( haveGrid ) {
-    runIteration(initialPoints(),progress);
+    if ( !integrated() )
+      runIteration(initialPoints(),progress);
     isInitialized();
     XML::Element grid = SimpleCellGrid::toXML();
     grid.appendAttribute("process",id());
