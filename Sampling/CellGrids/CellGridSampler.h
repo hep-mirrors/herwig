@@ -80,6 +80,11 @@ public:
    * Adapt
    */
   virtual void adapt();
+
+  /**
+   * Save grid data
+   */
+  virtual void saveGrid() const;
   
   /**
    * The splittings for each dimension befor adaption.

@@ -84,6 +84,12 @@ void CellGridSampler::adapt() {
   SimpleCellGrid::minimumSelection(theMinimumSelection);
 }
 
+void CellGridSampler::saveGrid() const {
+  XML::Element grid = SimpleCellGrid::toXML();
+  grid.appendAttribute("process",id());
+  sampler()->grids().append(grid);
+}
+
 void CellGridSampler::initialize(bool progress) {
 
   bool haveGrid = false;
@@ -123,9 +129,6 @@ void CellGridSampler::initialize(bool progress) {
     if ( !integrated() )
       runIteration(initialPoints(),progress);
     isInitialized();
-    XML::Element grid = SimpleCellGrid::toXML();
-    grid.appendAttribute("process",id());
-    sampler()->grids().append(grid);
     return;
   }
 
@@ -205,10 +208,6 @@ void CellGridSampler::initialize(bool progress) {
     }
   }
   isInitialized();
-
-  XML::Element grid = SimpleCellGrid::toXML();
-  grid.appendAttribute("process",id());
-  sampler()->grids().append(grid);
 
 }
 

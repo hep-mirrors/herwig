@@ -207,8 +207,10 @@ void GeneralSampler::initialize() {
 		      << Exception::abortnow;
   }
 
+  theGrids = XML::Element(XML::ElementTypes::Element,"Grids");
   for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers().begin();
 	s != samplers().end(); ++s ) {
+    s->second->saveGrid();
     s->second->saveRemappers();
     if ( theSaveStatistics )
       s->second->saveIntegrationData();
@@ -511,8 +513,10 @@ void GeneralSampler::dofinish() {
 
   }
 
+  theGrids = XML::Element(XML::ElementTypes::Element,"Grids");
   for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers().begin();
 	s != samplers().end(); ++s ) {
+    s->second->saveGrid();
     s->second->saveRemappers();
     if ( theSaveStatistics )
       s->second->saveIntegrationData();

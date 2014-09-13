@@ -203,6 +203,11 @@ public:
   void saveIntegrationData() const;
 
   /**
+   * Save grid data
+   */
+  virtual void saveGrid() const {}
+
+  /**
    * Read integration data from grid files
    */
   void readIntegrationData();
