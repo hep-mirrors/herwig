@@ -140,6 +140,7 @@ void GeneralSampler::initialize() {
   }
 
   set<int> binsToIntegrate;
+  bool integrationJob = false;
   if ( theIntegratePerJob ) {
     ifstream jobList("integrationBins.dat");
     if ( !jobList )
@@ -148,6 +149,7 @@ void GeneralSampler::initialize() {
     int b = 0;
     while ( jobList >> b )
       binsToIntegrate.insert(b);
+    integrationJob = true;
   }
 
   if ( binsToIntegrate.empty() ) {
@@ -169,7 +171,8 @@ void GeneralSampler::initialize() {
     lastSampler(s);
     s->doWeighted(eventHandler()->weighted());
     s->setupRemappers(theVerbose);
-    if ( !theIgnoreIntegrationData )
+    if ( !theIgnoreIntegrationData &&
+	 !integrationJob )
       s->readIntegrationData();
     s->initialize(theVerbose);
     samplers()[*bit] = s;
