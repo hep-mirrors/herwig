@@ -22,7 +22,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
-#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
+#include "Herwig++/Decay/TwoBodyDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -220,7 +220,7 @@ double PScalarLeptonNeutrinoDecayer::me2(const int,const Particle & inpart,
 					 const ParticleVector & decay,
 					 MEOption meopt) const {
   if(!ME())
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half)));
+    ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half)));
   // work out which decay constant to use
   int icoup(0),id(abs(inpart.id()));
   for(unsigned int ix=0;ix<_incoming.size();++ix) {

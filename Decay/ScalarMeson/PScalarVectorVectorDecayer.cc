@@ -20,7 +20,7 @@
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/epsilon.h"
-#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
+#include "Herwig++/Decay/TwoBodyDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -167,7 +167,7 @@ double PScalarVectorVectorDecayer::me2(const int,
 				       const ParticleVector & decay,
 				       MEOption meopt) const {
   if(!ME())
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1,PDT::Spin1)));
+    ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin0,PDT::Spin1,PDT::Spin1)));
   bool photon[2]={false,false};
   for(unsigned int ix=0;ix<2;++ix)
     photon[ix] = decay[ix]->id()==ParticleID::gamma;

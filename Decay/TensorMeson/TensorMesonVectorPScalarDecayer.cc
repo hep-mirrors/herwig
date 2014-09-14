@@ -21,7 +21,7 @@
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/epsilon.h"
-#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
+#include "Herwig++/Decay/TwoBodyDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -227,7 +227,7 @@ double TensorMesonVectorPScalarDecayer::me2(const int,const Particle & inpart,
 					    const ParticleVector & decay,
 					    MEOption meopt) const {
   if(!ME())
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin2,PDT::Spin1,PDT::Spin0)));
+    ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin2,PDT::Spin1,PDT::Spin0)));
   // check for photons
   bool photon(_outgoingV[imode()]==ParticleID::gamma);
   // stuff for incoming particle

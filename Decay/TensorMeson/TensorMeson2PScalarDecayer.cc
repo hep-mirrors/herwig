@@ -19,7 +19,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
-#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
+#include "Herwig++/Decay/TwoBodyDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -269,7 +269,7 @@ double TensorMeson2PScalarDecayer::me2(const int, const Particle & inpart,
 				       const ParticleVector & decay,
 				       MEOption meopt) const {
   if(!ME())
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin2,PDT::Spin0,PDT::Spin0)));
+    ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin2,PDT::Spin0,PDT::Spin0)));
   // stuff for incoming particle
   if(meopt==Initialize) {
     _rho = RhoDMatrix(PDT::Spin2);

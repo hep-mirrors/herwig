@@ -20,7 +20,7 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
+#include "Herwig++/Decay/TwoBodyDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -256,7 +256,7 @@ double VectorMeson2FermionDecayer::me2(const int,
 				       const ParticleVector& decay,
 				       MEOption meopt) const {
   if(!ME())
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half)));
+    ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half)));
   // fermion and antifermion
   unsigned int iferm(0),ianti(1);
   if(_outgoingf[imode()]!=decay[iferm]->id()) swap(iferm,ianti);

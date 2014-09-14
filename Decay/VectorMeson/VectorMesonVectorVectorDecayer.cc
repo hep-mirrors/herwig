@@ -18,7 +18,7 @@
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
+#include "Herwig++/Decay/TwoBodyDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -159,7 +159,7 @@ double VectorMesonVectorVectorDecayer::me2(const int,
 					   const ParticleVector & decay,
 					   MEOption meopt) const {
   if(!ME())
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin1)));
+    ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin1)));
   bool photon[2];
   for(unsigned int ix=0;ix<2;++ix) 
     photon[ix] = decay[ix]->id()==ParticleID::gamma;

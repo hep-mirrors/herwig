@@ -15,7 +15,7 @@
 #include "ThePEG/Helicity/WaveFunction/RSSpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
+#include "Herwig++/Decay/TwoBodyDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -119,7 +119,7 @@ double Baryon1MesonDecayerBase::
 halfHalfScalar(const int,const Particle & inpart,
 	       const ParticleVector & decay,MEOption meopt) const {
   if(!ME())
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin0)));
+    ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin0)));
   // spinors etc for the decaying particle
   if(meopt==Initialize) {
     // spinors and rho
@@ -208,7 +208,7 @@ double Baryon1MesonDecayerBase::
 halfHalfVector(const int,const Particle & inpart,
 	       const ParticleVector & decay,MEOption meopt) const {
   if(!ME())
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin1)));
+    ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin1)));
   // check if the outgoing meson is really a photon
   bool photon=decay[1]->id()==ParticleID::gamma;
   // spinors etc for the decaying particle
@@ -324,7 +324,7 @@ double Baryon1MesonDecayerBase::halfThreeHalfScalar(const int,
 						    const ParticleVector & decay,
 						    MEOption meopt) const {
   if(!ME())
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,PDT::Spin3Half,PDT::Spin0)));
+    ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1Half,PDT::Spin3Half,PDT::Spin0)));
   // spinors etc for the decaying particle
   if(meopt==Initialize) {
     // spinors and rho
@@ -423,7 +423,7 @@ double Baryon1MesonDecayerBase::
 halfThreeHalfVector(const int,const Particle & inpart,
 		    const ParticleVector & decay, MEOption meopt) const {
   if(!ME())
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,PDT::Spin3Half,PDT::Spin1)));
+    ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1Half,PDT::Spin3Half,PDT::Spin1)));
   // check if the outgoing meson is really a photon
   bool photon=decay[1]->id()==ParticleID::gamma;
   // spinors etc for the decaying particle
@@ -561,7 +561,7 @@ double Baryon1MesonDecayerBase::
 threeHalfHalfScalar(const int,const Particle & inpart,
 		    const ParticleVector & decay, MEOption meopt) const {
   if(!ME())
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin3Half,PDT::Spin1Half,PDT::Spin0)));
+    ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin3Half,PDT::Spin1Half,PDT::Spin0)));
   // spinors etc for the decaying particle
   if(meopt==Initialize) {
     // spinors and rho
@@ -662,7 +662,7 @@ double Baryon1MesonDecayerBase::threeHalfThreeHalfScalar(const int,
 							 const ParticleVector & decay,
 							 MEOption meopt) const {
   if(!ME())
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin3Half,PDT::Spin3Half,PDT::Spin0)));
+    ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin3Half,PDT::Spin3Half,PDT::Spin0)));
   // spinors etc for the decaying particle
   if(meopt==Initialize) {
     // spinors and rho
@@ -753,7 +753,7 @@ double Baryon1MesonDecayerBase::
 threeHalfHalfVector(const int,const Particle & inpart,
 		    const ParticleVector & decay,MEOption meopt) const {
   if(!ME())
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin3Half,PDT::Spin1Half,PDT::Spin1)));
+    ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin3Half,PDT::Spin1Half,PDT::Spin1)));
   // check if the outgoing meson is really a photon
   bool photon=decay[1]->id()==ParticleID::gamma;
   // spinors etc for the decaying particle

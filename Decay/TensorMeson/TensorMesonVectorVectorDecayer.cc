@@ -19,7 +19,7 @@
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
-#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
+#include "Herwig++/Decay/TwoBodyDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -204,7 +204,7 @@ double TensorMesonVectorVectorDecayer::me2(const int,const Particle & inpart,
 					   const ParticleVector & decay,
 					   MEOption meopt) const {
   if(!ME())
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin2,PDT::Spin1,PDT::Spin1)));
+    ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin2,PDT::Spin1,PDT::Spin1)));
   // photons ??
   bool photon[2];
   for(unsigned int ix=0;ix<2;++ix)
