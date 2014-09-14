@@ -68,6 +68,8 @@ void TVVDecayer::Init() {
 double TVVDecayer::me2(const int , const Particle & inpart,
 		       const ParticleVector & decay,
 		       MEOption meopt) const {
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin2,PDT::Spin1,PDT::Spin1)));
   bool photon[2];
   for(unsigned int ix=0;ix<2;++ix)
     photon[ix] = decay[ix]->mass()==ZERO;
@@ -75,7 +77,6 @@ double TVVDecayer::me2(const int , const Particle & inpart,
     TensorWaveFunction::
       calculateWaveFunctions(_tensors,_rho,const_ptr_cast<tPPtr>(&inpart),
 			     incoming,false);
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin2,PDT::Spin1,PDT::Spin1)));
   }
   if(meopt==Terminate) {
     TensorWaveFunction::

@@ -61,7 +61,6 @@ void VectorMesonVectorPScalarDecayer::doinit() {
 
 VectorMesonVectorPScalarDecayer::VectorMesonVectorPScalarDecayer() 
   : _coupling(73), _incoming(73), _outgoingV(73), _outgoingP(73), _maxweight(73) {
-  ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin0)));
   // intermediates
   generateIntermediates(false);
   // rho -> gamma pi modes
@@ -348,6 +347,8 @@ double VectorMesonVectorPScalarDecayer::me2(const int,
 					    const Particle & inpart,
 					    const ParticleVector & decay,
 					    MEOption meopt) const {
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin0)));
   // is the vector massless
   bool photon(_outgoingV[imode()]==ParticleID::gamma);
   if(meopt==Initialize) {

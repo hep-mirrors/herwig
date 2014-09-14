@@ -60,7 +60,6 @@ void VectorMeson2MesonDecayer::doinit() {
 VectorMeson2MesonDecayer::VectorMeson2MesonDecayer() :
   _incoming(64), _outgoing1(64), _outgoing2(64), _maxweight(64), _coupling(64) {
   // matrix element storage
-  ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin0,PDT::Spin0)));
   // don't generate intermediates
   generateIntermediates(false);
   // reserve size of vectors for speed
@@ -306,6 +305,8 @@ double VectorMeson2MesonDecayer::me2(const int,
 				     const Particle & inpart,
 				     const ParticleVector & decay,
 				     MEOption meopt) const {
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin0,PDT::Spin0)));
   if(meopt==Initialize) {
     VectorWaveFunction::calculateWaveFunctions(_vectors,_rho,
 					       const_ptr_cast<tPPtr>(&inpart),

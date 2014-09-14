@@ -493,11 +493,12 @@ double a1ThreePionDecayer::me2(const int ichan,
 			       const ParticleVector & decay,
 			       MEOption meopt) const {
   useMe();
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin0,PDT::Spin0,PDT::Spin0)));
   if(meopt==Initialize) {
     VectorWaveFunction::calculateWaveFunctions(_vectors,_rho,
 						const_ptr_cast<tPPtr>(&inpart),
 						incoming,false);
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin0,PDT::Spin0,PDT::Spin0)));
   }
   if(meopt==Terminate) {
     VectorWaveFunction::constructSpinInfo(_vectors,const_ptr_cast<tPPtr>(&inpart),

@@ -426,6 +426,8 @@ double BaryonFactorizedDecayer::halfHalf(const int ichan,
   vector<PDT::Spin> spin;
   for(unsigned ix=0;ix<decay.size();++ix) 
     spin.push_back(decay[ix]->dataPtr()->iSpin());
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,spin)));
   if(meopt==Initialize) {
     // spinors and rho
     if(inpart.id()>0)
@@ -436,7 +438,6 @@ double BaryonFactorizedDecayer::halfHalf(const int ichan,
       SpinorBarWaveFunction::calculateWaveFunctions(_inHalfBar,_rho,
 						    const_ptr_cast<tPPtr>(&inpart),
 						    incoming);
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,spin)));
   }
   // setup spin info when needed
   if(meopt==Terminate) {
@@ -554,6 +555,8 @@ double BaryonFactorizedDecayer::halfThreeHalf(const int ichan,
   vector<PDT::Spin> spin(decay.size());
   for(unsigned int ix=0;ix<decay.size();++ix)
     spin[ix]=decay[ix]->data().iSpin();
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,spin)));
   // spinors etc for the decaying particle
   if(meopt==Initialize) {
     // spinors and rho
@@ -565,7 +568,6 @@ double BaryonFactorizedDecayer::halfThreeHalf(const int ichan,
       SpinorBarWaveFunction::calculateWaveFunctions(_inHalfBar,_rho,
 						    const_ptr_cast<tPPtr>(&inpart),
 						    incoming);
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,spin)));
   }
   // setup spin info when needed
   if(meopt==Terminate) {

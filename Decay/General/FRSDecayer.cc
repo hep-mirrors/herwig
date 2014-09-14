@@ -62,6 +62,8 @@ double FRSDecayer::me2(const int , const Particle & inpart,
 		       const ParticleVector & decay,
 		       MEOption meopt) const {
   bool ferm = inpart.id() > 0;
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,PDT::Spin3Half,PDT::Spin0)));
   if(meopt==Initialize) {
     // spinors and rho
     if(ferm) {
@@ -78,7 +80,6 @@ double FRSDecayer::me2(const int , const Particle & inpart,
       if(wavebar_[0].wave().Type() != v_spinortype)
 	for(unsigned int ix = 0; ix < 2; ++ix) wavebar_[ix].conjugate();
     }
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,PDT::Spin3Half,PDT::Spin0)));
   }
   // setup spin info when needed
   if(meopt==Terminate) {

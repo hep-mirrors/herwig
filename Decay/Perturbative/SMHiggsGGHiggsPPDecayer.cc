@@ -91,11 +91,12 @@ double SMHiggsGGHiggsPPDecayer::me2(const int,
 				    const Particle & part,
 				    const ParticleVector & decay,
 				    MEOption meopt) const {
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1,PDT::Spin1)));
   if(meopt==Initialize) {
     ScalarWaveFunction::
       calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&part),incoming);
     _swave = ScalarWaveFunction(part.momentum(),part.dataPtr(),incoming);
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1,PDT::Spin1)));
   }
   if(meopt==Terminate) {
     ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&part),

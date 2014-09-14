@@ -57,7 +57,6 @@ void VectorMesonVectorVectorDecayer::doinit() {
 VectorMesonVectorVectorDecayer::VectorMesonVectorVectorDecayer() 
   : _coupling(4), _incoming(4), _outgoing1(4), _outgoing2(4), 
     _maxweight(4) {
-  ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin1)));
   // decay of rho'' to rho rho
   _incoming[0] = 30213; _outgoing1[0] =  213; _outgoing2[0] = 113; 
   _coupling[0] = 3.21; _maxweight[0] = 35.; 
@@ -159,6 +158,8 @@ double VectorMesonVectorVectorDecayer::me2(const int,
 					   const Particle & inpart,
 					   const ParticleVector & decay,
 					   MEOption meopt) const {
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin1)));
   bool photon[2];
   for(unsigned int ix=0;ix<2;++ix) 
     photon[ix] = decay[ix]->id()==ParticleID::gamma;

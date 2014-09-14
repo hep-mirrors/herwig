@@ -131,13 +131,14 @@ void SMHiggsFermionsDecayer::Init() {
 double SMHiggsFermionsDecayer::me2(const int, const Particle & inpart,
 				   const ParticleVector & decay,
 				   MEOption meopt) const {
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half)));
   int iferm(1),ianti(0);
   if(decay[0]->id()>0) swap(iferm,ianti);
   if(meopt==Initialize) {
     ScalarWaveFunction::
       calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
     _swave = ScalarWaveFunction(inpart.momentum(),inpart.dataPtr(),incoming);
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half)));
   }
   if(meopt==Terminate) {
     ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),

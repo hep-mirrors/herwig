@@ -77,6 +77,8 @@ void FFVDecayer::persistentInput(PersistentIStream & is, int) {
 double FFVDecayer::me2(const int , const Particle & inpart,
 		       const ParticleVector & decay, 
 		       MEOption meopt) const {
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin1)));
   // type of process
   int itype[2];
   if(inpart.dataPtr()->CC())        itype[0] = inpart.id() > 0 ? 0 : 1;
@@ -102,7 +104,6 @@ double FFVDecayer::me2(const int , const Particle & inpart,
       if(_wavebar[0].wave().Type() != v_spinortype)
 	for(unsigned int ix = 0; ix < 2; ++ix) _wavebar[ix].conjugate();
     }
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin1)));
   }
   // setup spin info when needed
   if(meopt==Terminate) {

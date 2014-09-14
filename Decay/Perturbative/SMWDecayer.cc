@@ -167,13 +167,14 @@ void SMWDecayer::Init() {
 double SMWDecayer::me2(const int, const Particle & inpart,
 			const ParticleVector & decay,
 			MEOption meopt) const {
+  if(!ME()) 
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half)));
   int iferm(1),ianti(0);
   if(decay[0]->id()>0) swap(iferm,ianti);
   if(meopt==Initialize) {
     VectorWaveFunction::calculateWaveFunctions(_vectors,_rho,
 					       const_ptr_cast<tPPtr>(&inpart),
 					       incoming,false);
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half)));
   }
   if(meopt==Terminate) {
     VectorWaveFunction::constructSpinInfo(_vectors,const_ptr_cast<tPPtr>(&inpart),

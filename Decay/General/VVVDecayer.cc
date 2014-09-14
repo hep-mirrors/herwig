@@ -59,6 +59,8 @@ void VVVDecayer::Init() {
 double VVVDecayer::me2(const int , const Particle & inpart,
                        const ParticleVector & decay,
 		       MEOption meopt) const {
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin1)));
   bool massless[2];
   for(unsigned int ix=0;ix<2;++ix) 
     massless[ix] = (decay[ix]->id()==ParticleID::gamma ||
@@ -67,7 +69,6 @@ double VVVDecayer::me2(const int , const Particle & inpart,
     VectorWaveFunction::calculateWaveFunctions(_vectors[0],_rho,
 					       const_ptr_cast<tPPtr>(&inpart),
 					       incoming,false);
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin1)));
   }
   if(meopt==Terminate) {
     VectorWaveFunction::constructSpinInfo(_vectors[0],const_ptr_cast<tPPtr>(&inpart),

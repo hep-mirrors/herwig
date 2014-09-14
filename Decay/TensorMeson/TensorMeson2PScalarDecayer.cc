@@ -35,7 +35,6 @@ void TensorMeson2PScalarDecayer::doinitrun() {
 TensorMeson2PScalarDecayer::TensorMeson2PScalarDecayer() 
   : _incoming(48), _outgoing1(48), _outgoing2(48), 
     _coupling(48), _maxweight(48) {
-  ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin2,PDT::Spin0,PDT::Spin0)));
   // a_2 -> eta pi
   _incoming[0] = 115; _outgoing1[0] =  221; _outgoing2[0] = 111; 
   _coupling[0] = 10.90/GeV; _maxweight[0] = 1.7; 
@@ -269,6 +268,8 @@ void TensorMeson2PScalarDecayer::Init() {
 double TensorMeson2PScalarDecayer::me2(const int, const Particle & inpart,
 				       const ParticleVector & decay,
 				       MEOption meopt) const {
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin2,PDT::Spin0,PDT::Spin0)));
   // stuff for incoming particle
   if(meopt==Initialize) {
     _rho = RhoDMatrix(PDT::Spin2);

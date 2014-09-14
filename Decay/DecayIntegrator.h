@@ -69,6 +69,11 @@ public:
   friend ostream & operator<<(ostream &, const DecayIntegrator &);
 
   /**
+   *  and DecayPhaseMode
+   */
+  friend class DecayPhaseSpaceMode;
+
+  /**
    *  Enum for the matrix element option
    */
   enum MEOption {Initialize,Calculate,Terminate};

@@ -88,14 +88,16 @@ double SSVDecayer::me2(const int , const Particle & inpart,
 		       MEOption meopt) const {
   unsigned int isc(0),ivec(1);
   if(decay[0]->dataPtr()->iSpin() != PDT::Spin0) swap(isc,ivec);
-  if(meopt==Initialize) {
-    ScalarWaveFunction::
-      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
-    _swave = ScalarWaveFunction(inpart.momentum(),inpart.dataPtr(),incoming);
+  if(!ME()) {
     if(ivec==1)
       ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin1)));
     else
       ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1,PDT::Spin0)));
+  }
+  if(meopt==Initialize) {
+    ScalarWaveFunction::
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
+    _swave = ScalarWaveFunction(inpart.momentum(),inpart.dataPtr(),incoming);
   }
   if(meopt==Terminate) {
     ScalarWaveFunction::

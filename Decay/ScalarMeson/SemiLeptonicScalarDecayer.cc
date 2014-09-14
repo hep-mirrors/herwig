@@ -189,16 +189,18 @@ double SemiLeptonicScalarDecayer::me2(const int ichan,
   leptons.push_back(decay[decay.size()-2]);
   leptons.push_back(decay[decay.size()-1]);
   int mode=(abs(decay[1]->id())-11)/2;
-  // initialisation
-  if(meopt==Initialize) {
-    ScalarWaveFunction::
-      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
+  if(!ME()) {
     if(jspin==0)
       ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half)));
     else if(jspin==1)       
       ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half)));
     else if(jspin==2)       
       ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin2,PDT::Spin1Half,PDT::Spin1Half)));
+  }
+  // initialisation
+  if(meopt==Initialize) {
+    ScalarWaveFunction::
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
     // work out the mapping for the lepton vector
     _constants.resize(decay.size()+1);
     _ispin.resize(decay.size());

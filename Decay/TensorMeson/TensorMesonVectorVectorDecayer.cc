@@ -59,7 +59,6 @@ void TensorMesonVectorVectorDecayer::doinit() {
 TensorMesonVectorVectorDecayer::TensorMesonVectorVectorDecayer() 
   : _incoming(22), _outgoing1(22), _outgoing2(22), 
     _coupling(22), _maxweight(22) {
-  ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin2,PDT::Spin1,PDT::Spin1)));
   // a_2 -> gamma gamma
   _incoming[0] = 115; _outgoing1[0] =  22; _outgoing2[0] = 22; 
   _coupling[0] = 0.00727/GeV; _maxweight[0] = 1.7; 
@@ -204,6 +203,8 @@ void TensorMesonVectorVectorDecayer::Init() {
 double TensorMesonVectorVectorDecayer::me2(const int,const Particle & inpart,
 					   const ParticleVector & decay,
 					   MEOption meopt) const {
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin2,PDT::Spin1,PDT::Spin1)));
   // photons ??
   bool photon[2];
   for(unsigned int ix=0;ix<2;++ix)

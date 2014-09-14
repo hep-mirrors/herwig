@@ -34,7 +34,6 @@ void VectorMesonVectorScalarDecayer::doinitrun() {
 VectorMesonVectorScalarDecayer::VectorMesonVectorScalarDecayer() 
   : _coupling(16), _incoming(16), _outgoingV(16), 
     _outgoingS(16), _maxweight(16) {
-  ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin0)));
   // decay of the phi to the a_0 and f_0 and a photon
   _incoming[0] = 333; _outgoingV[0] = 22; _outgoingS[0] = 9000111; 
   _coupling[0] = 0.238/GeV; _maxweight[0] = 10.; 
@@ -188,6 +187,8 @@ double VectorMesonVectorScalarDecayer::me2(const int,
 					   const Particle & inpart,
 					   const ParticleVector & decay,
 					   MEOption meopt) const {
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin0)));
   // is the vector massless
   bool photon(_outgoingV[imode()]==ParticleID::gamma);
   if(meopt==Initialize) {

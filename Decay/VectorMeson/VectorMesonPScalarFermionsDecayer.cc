@@ -44,8 +44,6 @@ VectorMesonPScalarFermionsDecayer::VectorMesonPScalarFermionsDecayer()
   : _coupling(6), _incoming(6), _outgoingP(6), _outgoingf(6), _outgoinga(6), 
     _maxweight(6), _weight(6), _includeVMD(6), _VMDid(6), _VMDmass(6), 
     _VMDwidth(6) {
-  ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin0,
-				       PDT::Spin1Half,PDT::Spin1Half)));
   // omega -> pi e+e- /mu+mu-
   _incoming[0] =  223; _outgoingP[0] =  111; 
   _outgoingf[0] = 11; _outgoinga[0] = -11; 
@@ -261,6 +259,9 @@ double VectorMesonPScalarFermionsDecayer::me2(const int,
 					      const Particle & inpart,
 					      const ParticleVector & decay,
 					      MEOption meopt) const {
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin0,
+					 PDT::Spin1Half,PDT::Spin1Half)));
   // initialization
   if(meopt==Initialize) {
     VectorWaveFunction::calculateWaveFunctions(_vectors,_rho,

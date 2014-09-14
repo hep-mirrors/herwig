@@ -193,14 +193,15 @@ ParticleVector SMHiggsWWDecayer::decay(const Particle & parent,
 double SMHiggsWWDecayer::me2(const int, const Particle & inpart,
 			     const ParticleVector & decay,
 			     MEOption meopt) const {
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half,
+					 PDT::Spin1Half,PDT::Spin1Half)));
   // check if Z or W decay
   bool Z0=decay[0]->id()==-decay[1]->id();
   if(meopt==Initialize) {
     ScalarWaveFunction::
       calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
     _swave = ScalarWaveFunction(inpart.momentum(),inpart.dataPtr(),incoming);
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half,
-					 PDT::Spin1Half,PDT::Spin1Half)));
   }
   if(meopt==Terminate) {
     ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),

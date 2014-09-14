@@ -62,15 +62,17 @@ double SRFDecayer::me2(const int , const Particle & inpart,
 		       const ParticleVector & decay,MEOption meopt) const {
   unsigned int irs=0,ifm=1;
   if(decay[0]->dataPtr()->iSpin()==PDT::Spin1Half) swap(irs,ifm);
+  if(!ME()) {
+    if(irs==0)
+      ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin3Half,PDT::Spin1Half)));
+    else
+      ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1Half,PDT::Spin3Half)));
+  }
   bool ferm = decay[ifm]->id()<0;
   if(meopt==Initialize) {
     ScalarWaveFunction::
       calculateWaveFunctions(rho_,const_ptr_cast<tPPtr>(&inpart),incoming);
     swave_ = ScalarWaveFunction(inpart.momentum(),inpart.dataPtr(),incoming);
-    if(irs==0)
-      ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin3Half,PDT::Spin1Half)));
-    else
-      ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1Half,PDT::Spin3Half)));
   }
   if(meopt==Terminate) {
     ScalarWaveFunction::

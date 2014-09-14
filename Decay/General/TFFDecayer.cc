@@ -70,12 +70,13 @@ double TFFDecayer::me2(const int , const Particle & inpart,
 		       const ParticleVector & decay,
 		       MEOption meopt) const {
   unsigned int iferm(0),ianti(1);
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin2,PDT::Spin1Half,PDT::Spin1Half)));
   if(decay[0]->id()>=0) swap(iferm,ianti);
   if(meopt==Initialize) {
     TensorWaveFunction::
       calculateWaveFunctions(_tensors,_rho,const_ptr_cast<tPPtr>(&inpart),
 			     incoming,false);
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin2,PDT::Spin1Half,PDT::Spin1Half)));
   }
   if(meopt==Terminate) {
     TensorWaveFunction::

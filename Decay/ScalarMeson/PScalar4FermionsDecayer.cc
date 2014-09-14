@@ -246,12 +246,13 @@ double PScalar4FermionsDecayer::me2(const int,
 				    const Particle & inpart,
 				    const ParticleVector & decay,
 				    MEOption meopt) const {
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half,
+					 PDT::Spin1Half,PDT::Spin1Half)));
   bool identical((_outgoing1[imode()]==_outgoing2[imode()]));
   if(meopt==Initialize) {
     ScalarWaveFunction::
       calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half,
-					 PDT::Spin1Half,PDT::Spin1Half)));
   }
   if(meopt==Terminate) {
     // set up the spin information for the decay products

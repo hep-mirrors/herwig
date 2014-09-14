@@ -60,7 +60,6 @@ void VectorMeson2FermionDecayer::doinit() {
 
 VectorMeson2FermionDecayer::VectorMeson2FermionDecayer() 
   : _coupling(42), _incoming(42), _outgoingf(42), _outgoinga(42), _maxweight(42) {
-  ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half)));
   // don't include intermediates
   generateIntermediates(false);
   // rho -> e+e-, mu+mu
@@ -256,6 +255,8 @@ double VectorMeson2FermionDecayer::me2(const int,
 				       const Particle & inpart,
 				       const ParticleVector& decay,
 				       MEOption meopt) const {
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half)));
   // fermion and antifermion
   unsigned int iferm(0),ianti(1);
   if(_outgoingf[imode()]!=decay[iferm]->id()) swap(iferm,ianti);

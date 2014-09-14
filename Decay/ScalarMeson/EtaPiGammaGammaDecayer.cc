@@ -223,11 +223,12 @@ void EtaPiGammaGammaDecayer::Init() {
 double EtaPiGammaGammaDecayer::me2(const int,const Particle & inpart,
 				   const ParticleVector& decay,
 				   MEOption meopt) const {
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin1,PDT::Spin1)));
   useMe();
   if(meopt==Initialize) {
     ScalarWaveFunction::
       calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin1,PDT::Spin1)));
   }
   if(meopt==Terminate) {
     // set up the spin information for the decay products

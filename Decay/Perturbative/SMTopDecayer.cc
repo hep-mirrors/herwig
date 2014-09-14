@@ -202,6 +202,9 @@ void SMTopDecayer::Init() {
 double SMTopDecayer::me2(const int, const Particle & inpart,
 			 const ParticleVector & decay,
 			 MEOption meopt) const {
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
+					 PDT::Spin1Half,PDT::Spin1Half)));
   // spinors etc for the decaying particle
   if(meopt==Initialize) {
     // spinors and rho
@@ -213,8 +216,6 @@ double SMTopDecayer::me2(const int, const Particle & inpart,
       SpinorBarWaveFunction::calculateWaveFunctions(_inHalfBar,_rho,
 						    const_ptr_cast<tPPtr>(&inpart),
 						    incoming);
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
-					 PDT::Spin1Half,PDT::Spin1Half)));
   }
   // setup spin info when needed
   if(meopt==Terminate) {

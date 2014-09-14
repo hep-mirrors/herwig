@@ -66,7 +66,8 @@ void SFFDecayer::Init() {
 
 double SFFDecayer::me2(const int , const Particle & inpart,
 		       const ParticleVector & decay,MEOption meopt) const {
-
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half)));
   // work out which is the fermion and antifermion
   int iferm(1),ianti(0);
   int itype[2];
@@ -80,7 +81,6 @@ double SFFDecayer::me2(const int , const Particle & inpart,
     ScalarWaveFunction::
       calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
     _swave = ScalarWaveFunction(inpart.momentum(),inpart.dataPtr(),incoming);
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half)));
   }
   if(meopt==Terminate) {
     ScalarWaveFunction::

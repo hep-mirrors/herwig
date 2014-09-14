@@ -87,6 +87,8 @@ void FFSDecayer::Init() {
 double FFSDecayer::me2(const int , const Particle & inpart,
 		       const ParticleVector & decay,
 		       MEOption meopt) const {
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin0)));
   //Need to use different barred or unbarred spinors depending on 
   //whether particle is cc or not.
   int itype[2];
@@ -112,7 +114,6 @@ double FFSDecayer::me2(const int , const Particle & inpart,
       if(_wavebar[0].wave().Type() != v_spinortype)
 	for(unsigned int ix = 0; ix < 2; ++ix) _wavebar[ix].conjugate();
     }
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin0)));
   }
   // setup spin info when needed
   if(meopt==Terminate) {

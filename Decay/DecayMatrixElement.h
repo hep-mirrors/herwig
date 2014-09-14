@@ -82,7 +82,7 @@ public:
    * incoming particle. The spins of the decay products are summed over.
    * @param rhoin The \f$\rho\f$ matrix for the decaying particle.
    */
-  virtual Complex contract(const RhoDMatrix & rhoin) const;
+  virtual Complex contract(const RhoDMatrix & rhoin) const = 0;
 
   // /** 
   //  * Contract the matrix element with the \f$\rho\f$ matrix of the 

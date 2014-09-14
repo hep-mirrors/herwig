@@ -326,6 +326,7 @@ Energy DecayPhaseSpaceMode::channelPhaseSpace(bool cc,
 // generate the decay
 ParticleVector DecayPhaseSpaceMode::generate(bool intermediates,bool cc,
 					     const Particle & inpart) const {
+  _integrator->ME(DecayMEPtr());
   // compute the prefactor
   InvEnergy pre(1./MeV); 
   Energy prewid;
@@ -388,6 +389,7 @@ ParticleVector DecayPhaseSpaceMode::generate(bool intermediates,bool cc,
     // generate the particle vector
     _channels[_ichannel]->generateIntermediates(cc,inpart,particles);
   }
+  _integrator->ME(DecayMEPtr());
   return particles;
 }
 
@@ -404,6 +406,7 @@ void DecayPhaseSpaceMode::constructVertex(const Particle & inpart,
   }
   // set the matrix element
   Dvertex->ME(_integrator->ME());
+  _integrator->ME(DecayMEPtr());
 }
 
 // output info on the mode

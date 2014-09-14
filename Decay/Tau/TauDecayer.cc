@@ -266,8 +266,9 @@ double TauDecayer::me2(const int ichan,const Particle & inpart,
     while(ix>0);
     _constants[decay.size()] = 1;
     _constants[0           ] = _constants[1];
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,_ispin)));  
   }
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,_ispin)));  
   // connect the spininfo up if needed
   if(meopt==Terminate) {
     if(inpart.id()==ParticleID::tauminus) {

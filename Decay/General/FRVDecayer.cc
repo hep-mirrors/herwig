@@ -50,6 +50,8 @@ void FRVDecayer::persistentInput(PersistentIStream & is, int) {
 double FRVDecayer::me2(const int , const Particle & inpart,
 		       const ParticleVector & decay, 
 		       MEOption meopt) const {
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,PDT::Spin3Half,PDT::Spin1)));
   // decaying fermion or antifermion
   bool ferm = inpart.id() > 0;
   // initialize
@@ -69,7 +71,6 @@ double FRVDecayer::me2(const int , const Particle & inpart,
       if(wavebar_[0].wave().Type() != v_spinortype)
 	for(unsigned int ix = 0; ix < 2; ++ix) wavebar_[ix].conjugate();
     }
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,PDT::Spin3Half,PDT::Spin1)));
   }
   // setup spin info when needed
   if(meopt==Terminate) {

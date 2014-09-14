@@ -487,17 +487,19 @@ double ScalarMesonFactorizedDecayer::me2(const int ichan,
 					 const Particle & part,
 					 const ParticleVector & decay,
 					 MEOption meopt) const {
+  if(!ME()) {
+    // create the matrix element
+    vector<PDT::Spin> spin;
+    for(unsigned int ix=0;ix<decay.size();++ix)
+      spin.push_back(decay[ix]->dataPtr()->iSpin());
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,spin)));
+  }
   // initialisation
   if(meopt==Initialize) {
     ScalarWaveFunction::
       calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&part),incoming);
     _vectors.resize(decay.size());
     _tensors.resize(decay.size());
-    // create the matrix element
-    vector<PDT::Spin> spin;
-    for(unsigned int ix=0;ix<decay.size();++ix)
-      spin.push_back(decay[ix]->dataPtr()->iSpin());
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,spin)));
   }
   if(meopt==Terminate) {
     // set up the spin information for the decay products

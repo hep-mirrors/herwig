@@ -57,7 +57,6 @@ VectorMeson3PionDecayer::VectorMeson3PionDecayer()
     _rho2mass(2), _rho3mass(2), _rho1width(2), _rho2width(2), 
     _rho3width(2), _defaultmass(2), _mpic(ZERO), _mpi0(ZERO) {
   // matrix element storage
-  ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin0,PDT::Spin0,PDT::Spin0)));
   // omega decay
   _incoming[0] = 223;
   _coupling[0] = 178.71/GeV;
@@ -421,6 +420,8 @@ double VectorMeson3PionDecayer::me2(const int ichan,
 				    const Particle & inpart,
 				    const ParticleVector & decay,
 				    MEOption meopt) const {
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin0,PDT::Spin0,PDT::Spin0)));
   useMe();
   if(meopt==Initialize) {
     VectorWaveFunction::calculateWaveFunctions(_vectors,_rho,

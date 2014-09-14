@@ -219,6 +219,8 @@ void PScalarLeptonNeutrinoDecayer::Init() {
 double PScalarLeptonNeutrinoDecayer::me2(const int,const Particle & inpart,
 					 const ParticleVector & decay,
 					 MEOption meopt) const {
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half)));
   // work out which decay constant to use
   int icoup(0),id(abs(inpart.id()));
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
@@ -236,7 +238,6 @@ double PScalarLeptonNeutrinoDecayer::me2(const int,const Particle & inpart,
   if(meopt==Initialize) {
     ScalarWaveFunction::
       calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half)));
   }
   if(meopt==Terminate) {
     // set up the spin information for the decay products

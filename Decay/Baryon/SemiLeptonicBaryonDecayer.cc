@@ -213,8 +213,9 @@ double SemiLeptonicBaryonDecayer::halfHalf(const int ichan,
     }
     _constants[decay.size()]=1;
     _constants[_ibar]=_constants[_ibar+1];
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,_ispin)));
   }
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,_ispin)));
   // setup spin info when needed
   if(meopt==Terminate) {
     // for the decaying particle
@@ -342,8 +343,9 @@ double SemiLeptonicBaryonDecayer::halfThreeHalf(const int ichan,
     }
     _constants[decay.size()]=1;
     _constants[_ibar]=_constants[_ibar+1];
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,_ispin)));
   }
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,_ispin)));
   // setup spin info when needed
   if(meopt==Terminate) {
     // for the decaying particle

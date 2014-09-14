@@ -65,6 +65,8 @@ void SVVDecayer::Init() {
 double SVVDecayer::me2(const int , const Particle & inpart,
 		       const ParticleVector& decay, 
 		       MEOption meopt) const {
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1,PDT::Spin1)));
   bool photon[2];
   for(unsigned int ix=0;ix<2;++ix)
     photon[ix] = decay[ix]->mass()==ZERO;
@@ -72,7 +74,6 @@ double SVVDecayer::me2(const int , const Particle & inpart,
     ScalarWaveFunction::
       calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
     _swave = ScalarWaveFunction(inpart.momentum(),inpart.dataPtr(),incoming);
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1,PDT::Spin1)));
   }
   if(meopt==Terminate) {
     ScalarWaveFunction::

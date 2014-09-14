@@ -300,12 +300,13 @@ double OniumToOniumPiPiDecayer::me2(const int,
 				    const Particle & inpart,
 				    const ParticleVector & decay,
 				    MEOption meopt) const {
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin0,PDT::Spin0)));
   useMe();
   if(meopt==Initialize) {
     VectorWaveFunction::calculateWaveFunctions(_vectors[0],_rho,
 						const_ptr_cast<tPPtr>(&inpart),
 						incoming,false);
-    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin0,PDT::Spin0)));
   }
   if(meopt==Terminate) {
     VectorWaveFunction::constructSpinInfo(_vectors[0],const_ptr_cast<tPPtr>(&inpart),

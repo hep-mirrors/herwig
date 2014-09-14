@@ -37,7 +37,6 @@ void TensorMesonVectorPScalarDecayer::doinitrun() {
 TensorMesonVectorPScalarDecayer::TensorMesonVectorPScalarDecayer() 
   :  _incoming(31), _outgoingV(31), _outgoingP(31), 
      _coupling(31), _maxweight(31) {
-  ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin2,PDT::Spin1,PDT::Spin0)));
   // a_2 -> rho pi
   _incoming[0] =  115; _outgoingV[0] =  213; _outgoingP[0] = -211; 
   _coupling[0] = 21.1/GeV2; _maxweight[0] = 10.; 
@@ -227,6 +226,8 @@ void TensorMesonVectorPScalarDecayer::Init() {
 double TensorMesonVectorPScalarDecayer::me2(const int,const Particle & inpart,
 					    const ParticleVector & decay,
 					    MEOption meopt) const {
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin2,PDT::Spin1,PDT::Spin0)));
   // check for photons
   bool photon(_outgoingV[imode()]==ParticleID::gamma);
   // stuff for incoming particle
