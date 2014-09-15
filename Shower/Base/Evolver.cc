@@ -536,7 +536,10 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
   // don't do anything if not needed
   if(_limitEmissions == 1 || hardOnly() || 
      ( _limitEmissions == 2 && _nfs != 0) ||
-     ( _limitEmissions == 4 && _nfs + _nis != 0) ) return false;  
+     ( _limitEmissions == 4 && _nfs + _nis != 0) ) {
+    if(particle->spinInfo()) particle->spinInfo()->develop();
+    return false;
+  }
   ShowerParticleVector theChildren; 
   int ntry=0;
   do {
@@ -546,7 +549,10 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
     while (true) {
       fb=_splittingGenerator->chooseForwardBranching(*particle,_finalenhance,type);
       // no emission return
-      if(!fb.kinematics) return false;
+      if(!fb.kinematics) {
+	if(particle->spinInfo()) particle->spinInfo()->develop();
+	return false;
+      }
       // if emission OK break
       if(!timeLikeVetoed(fb,particle)) break;
       // otherwise reset scale and continue - SO IS involved in veto algorithm
@@ -576,7 +582,12 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
       updateChildren(particle, theChildren,fb.type);
     // update number of emissions
     ++_nfs;
-    if(_limitEmissions!=0) return true;
+    if(_limitEmissions!=0) {
+      theChildren[0]->spinInfo()->develop();
+      theChildren[1]->spinInfo()->develop();
+      if(particle->spinInfo()) particle->spinInfo()->develop();
+      return true;
+    }
     // shower the first  particle
     timeLikeShower(theChildren[0],type,false);
     if(theChildren[0]->spinInfo()) theChildren[0]->spinInfo()->develop();
@@ -599,6 +610,7 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
   while(particle->virtualMass()==ZERO&&ntry<50);
   if(first)
     particle->showerKinematics()->resetChildren(particle,theChildren);
+  if(particle->spinInfo()) particle->spinInfo()->develop();
   return true;
 }
 
@@ -617,7 +629,10 @@ Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
   // don't do anything if not needed
   if(_limitEmissions == 2  || hardOnly() ||
      ( _limitEmissions == 1 && _nis != 0 ) ||
-     ( _limitEmissions == 4 && _nis + _nfs != 0 ) ) return false;
+     ( _limitEmissions == 4 && _nis + _nfs != 0 ) ) {
+    if(particle->spinInfo()) particle->spinInfo()->develop();
+    return false;
+  }
   Branching bb;
   // generate branching
   while (true) {
@@ -626,7 +641,10 @@ Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
 						    _beam,type,
 						    pdf,freeze);
     // return if no emission
-    if(!bb.kinematics) return false;
+    if(!bb.kinematics) {
+      if(particle->spinInfo()) particle->spinInfo()->develop();
+      return false;
+    }
     // if not vetoed break
     if(!spaceLikeVetoed(bb,particle)) break;
     // otherwise reset scale and continue
@@ -677,11 +695,15 @@ Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
   }
   particle->showerKinematics()->
     updateChildren(newParent, theChildren,bb.type);
-  if(_limitEmissions!=0) return true;
+  if(_limitEmissions!=0) {
+    if(particle->spinInfo()) particle->spinInfo()->develop();
+    return true;
+  }
   // perform the shower of the final-state particle
   timeLikeShower(otherChild,type,true);
   if(theChildren[1]->spinInfo()) theChildren[1]->spinInfo()->develop();
   // return the emitted
+  if(particle->spinInfo()) particle->spinInfo()->develop();
   return true;
 }
 
