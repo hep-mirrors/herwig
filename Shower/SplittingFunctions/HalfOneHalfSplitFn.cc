@@ -133,12 +133,12 @@ DecayMEPtr HalfOneHalfSplitFn::matrixElement(const double z, const Energy2 t,
   double rz   = sqrt(z);
   Complex phase = exp(Complex(0.,1.)*phi);
   (*kernal)(0,0,0) = -root/rz/phase;
-  (*kernal)(1,1,2) =  -conj((*kernal)(0,0,0));
-  (*kernal)(0,0,2) =  root/rz*(1.-z)*phase;
-  (*kernal)(1,1,0) = -conj((*kernal)(0,0,2));
-  (*kernal)(1,0,2) =  mt*z/romz;
-  (*kernal)(0,1,0) =  conj((*kernal)(1,0,2));
-  (*kernal)(0,1,2) =  0.;
+  (*kernal)(1,2,1) = -conj((*kernal)(0,0,0));
+  (*kernal)(0,2,0) =  root/rz*(1.-z)*phase;
+  (*kernal)(1,0,1) = -conj((*kernal)(0,2,0));
+  (*kernal)(1,2,0) =  mt*z/romz;
+  (*kernal)(0,0,1) =  conj((*kernal)(1,2,0));
+  (*kernal)(0,2,1) =  0.;
   (*kernal)(1,0,0) =  0.;
   return kernal;
 }
