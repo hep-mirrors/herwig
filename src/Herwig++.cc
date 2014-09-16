@@ -264,16 +264,18 @@ void HerwigRun(string runname, string setupfile,
     exit( EXIT_FAILURE );
   }
 
-  if ( ! setupfile.empty() ) {
-    string msg = Repository::modifyEventGenerator(*eg, setupfile, cout);
-    if ( ! msg.empty() ) cerr << msg << '\n';
-  }
-
   if ( seed > 0 ) eg->setSeed(seed);
   if ( !tag.empty() ) eg->addTag(tag);
 
+  if ( ! setupfile.empty() ) {
+    string msg = Repository::modifyEventGenerator(*eg, setupfile, cout);
+    if ( ! msg.empty() ) cerr << msg << '\n';
+    if ( noevents )
+      return;
+  }
+
   if ( noevents ) {
-    eg->initialize();
+    Repository::resetEventGenerator(*eg);
     return;
   }
   

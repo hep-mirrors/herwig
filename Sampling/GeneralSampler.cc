@@ -77,9 +77,13 @@ void GeneralSampler::initialize() {
 
     ofstream* jobList = 0;
 
+    generator()->log() 
+      << "--------------------------------------------------------------------------------\n"
+      << "preparing integration jobs ...\n" << flush;
+
     for ( int b = 0; b < eventHandler()->nBins(); ++b ) {
 
-      if ( b == 0 || (b+1) % theIntegratePerJob == 0 ) {
+      if ( b == 0 || b % theIntegratePerJob == 0 ) {
 	if ( jobList ) {
 	  jobList->close();
 	  jobList = 0;
