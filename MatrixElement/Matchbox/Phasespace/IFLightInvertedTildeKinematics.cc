@@ -60,8 +60,8 @@ bool IFLightInvertedTildeKinematics::doMap(const double * r) {
     return false;
   }
 
-  double x = 0.5*(1./ratio)*(1.-z+ratio)*sqrt(rho);
-  double u = 0.5*(1./(1.-z))*(1.-z+ratio)*sqrt(rho);
+  double x = 0.5*(1./ratio)*(1.-z+ratio)*(1.-sqrt(rho));
+  double u = 0.5*(1./(1.-z))*(1.-z+ratio)*(1.-sqrt(rho));
 
   if ( x < emitterX() || x > 1. || 
        u < 0. || u > 1. ) {
