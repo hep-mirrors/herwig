@@ -86,7 +86,10 @@ void Remapper::finalize() {
 pair<double,double> Remapper::generate(double r) const {
   map<double,SelectorEntry>::const_iterator bin
     = selector.upper_bound(r);
-  assert(bin != selector.end());
+  // happens, if there is truely non-zero cross section
+  // then let the integrator pick up this result downstream
+  if ( bin == selector.end() )
+    return r;
   const SelectorEntry& binInfo = bin->second;
   double intUp = bin->first;
   double intLow = 
