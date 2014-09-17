@@ -89,7 +89,7 @@ pair<double,double> Remapper::generate(double r) const {
   // happens, if there is truely non-zero cross section
   // then let the integrator pick up this result downstream
   if ( bin == selector.end() )
-    return r;
+    return make_pair(r,1.);
   const SelectorEntry& binInfo = bin->second;
   double intUp = bin->first;
   double intLow = 
