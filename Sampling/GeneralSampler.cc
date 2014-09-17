@@ -48,7 +48,7 @@ GeneralSampler::GeneralSampler()
     theAlmostUnweighted(false), maximumExceeds(0),
     maximumExceededBy(0.), didReadGrids(false), thePostponeInitialize(false),
     theParallelIntegration(false), theSaveStatistics(false),
-    theIntegratePerJob(0), theIgnoreIntegrationData(true) {}
+    theIntegratePerJob(0), theIgnoreIntegrationData(false) {}
 
 GeneralSampler::~GeneralSampler() {}
 
@@ -147,13 +147,12 @@ void GeneralSampler::initialize() {
   bool integrationJob = false;
   if ( theIntegratePerJob ) {
     ifstream jobList("integrationBins.dat");
-    if ( !jobList )
-      throw Exception() << "Failed to load integration job list"
-			<< Exception::abortnow;
-    int b = 0;
-    while ( jobList >> b )
-      binsToIntegrate.insert(b);
-    integrationJob = true;
+    if ( jobList ) {
+      int b = 0;
+      while ( jobList >> b )
+	binsToIntegrate.insert(b);
+      integrationJob = true;
+    }
   }
 
   if ( binsToIntegrate.empty() ) {
@@ -534,15 +533,19 @@ void GeneralSampler::dofinish() {
 
 void GeneralSampler::doinitrun() {
   readGrids();
-  isSampling = true;
   eventHandler()->initrun();
-  for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers().begin();
-	s != samplers().end(); ++s ) {
-    s->second->setupRemappers(theVerbose);
-    if ( !theIgnoreIntegrationData )
-      s->second->readIntegrationData();
-    s->second->initialize(theVerbose);
+  if ( !samplers().empty() ) {
+    for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers().begin();
+	  s != samplers().end(); ++s ) {
+      s->second->setupRemappers(theVerbose);
+      if ( !theIgnoreIntegrationData )
+	s->second->readIntegrationData();
+      s->second->initialize(theVerbose);
+    }
+  } else {
+    initialize();
   }
+  isSampling = true;
   SamplerBase::doinitrun();
 }
 
@@ -787,7 +790,7 @@ void GeneralSampler::Init() {
   static Switch<GeneralSampler,bool> interfaceIgnoreIntegrationData
     ("IgnoreIntegrationData",
      "",
-     &GeneralSampler::theIgnoreIntegrationData, true, false, false);
+     &GeneralSampler::theIgnoreIntegrationData, false, false, false);
   static SwitchOption interfaceIgnoreIntegrationDataYes
     (interfaceIgnoreIntegrationData,
      "Yes",
