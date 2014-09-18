@@ -89,15 +89,12 @@ void GeneralSampler::initialize() {
 	  jobList = 0;
 	}
 	ostringstream name;
-	name << "./HerwigIntegration/run" << jobCount;
+	name << "integrationBins" << jobCount;
 	++jobCount;
-	string cmd = "mkdir -p " + name.str();
-	std::system(cmd.c_str());
-	name << "/integrationBins.dat";
 	string fname = name.str();
 	jobList = new ofstream(fname.c_str());
 	if ( !*jobList )
-	  throw Exception() << "Failed to write integratino job list"
+	  throw Exception() << "Failed to write integration job list"
 			    << Exception::abortnow;
       }
 
@@ -145,8 +142,8 @@ void GeneralSampler::initialize() {
 
   set<int> binsToIntegrate;
   bool integrationJob = false;
-  if ( theIntegratePerJob ) {
-    ifstream jobList("integrationBins.dat");
+  if ( integrationList() != "" ) {
+    ifstream jobList(integrationList().c_str());
     if ( jobList ) {
       int b = 0;
       while ( jobList >> b )
@@ -580,7 +577,10 @@ IVector GeneralSampler::getReferences() {
 void GeneralSampler::writeGrids() const {
   if ( theGrids.children().empty() )
     return;
-  string dataName = generator()->filename() + "-grids.xml";
+  string dataName = generator()->filename();
+  if ( integrationList() != "" )
+    dataName += "-" + integrationList();
+  dataName += "-grids.xml";
   ofstream out(dataName.c_str());
   XML::ElementIO::put(theGrids,out);
 }

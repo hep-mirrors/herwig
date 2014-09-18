@@ -14,6 +14,8 @@
 #include <ThePEG/Repository/Repository.h>
 #include <ThePEG/Utilities/Exception.h>
 #include <ThePEG/Utilities/Debug.h>
+#include <ThePEG/Handlers/StandardEventHandler.h>
+#include <ThePEG/Handlers/SamplerBase.h>
 #include <iostream>
 
 #include <config.h>
@@ -34,7 +36,7 @@ void HerwigRead(string reponame, string runname,
 void HerwigRun(string runname, string setupfile,
 	       int seed, string tag, long N, 
 	       bool tics, bool resume, int jobs,
-	       bool noevents);
+	       string integrationList);
 
 void setSearchPaths(const gengetopt_args_info & args_info);
 
@@ -133,10 +135,8 @@ int main(int argc, char * argv[]) {
     if ( args_info.quiet_flag )
       tics = false;
 
-    // no events
-    bool noevents = false;
-    if ( args_info.noevents_flag )
-      noevents = true;
+    // integration list
+    string integrationList = args_info.integrate_arg;
 
     // Resume
     bool resume = false;
@@ -149,7 +149,7 @@ int main(int argc, char * argv[]) {
     switch ( status ) {
     case INIT:  HerwigInit( runname, reponame ); break;
     case READ:  HerwigRead( reponame, runname, args_info ); break;
-    case RUN:   HerwigRun( runname, setupfile , seed, tag, N, tics, resume, jobs, noevents );  break;
+    case RUN:   HerwigRun( runname, setupfile , seed, tag, N, tics, resume, jobs, integrationList );  break;
     default:    printUsageAndExit();
     }
 
@@ -249,7 +249,7 @@ void HerwigRead(string reponame, string runname,
 void HerwigRun(string runname, string setupfile,
 	       int seed, string tag, long N, 
 	       bool tics, bool resume, int jobs,
-	       bool noevents) {
+	       string integrationList) {
   PersistentIStream is(runname);
   ThePEG::EGPtr eg;
   is >> eg;
@@ -267,14 +267,25 @@ void HerwigRun(string runname, string setupfile,
   if ( seed > 0 ) eg->setSeed(seed);
   if ( !tag.empty() ) eg->addTag(tag);
 
+  if ( integrationList != "" ) {
+    Ptr<StandardEventHandler>::tptr eh =
+      dynamic_ptr_cast<Ptr<StandardEventHandler>::tptr>(eg->eventHandler());
+    if ( !eh ) {
+      std::cerr << "Herwig++: Cannot set integration list for a non-standard EventHandler.\n";
+      Repository::cleanup();
+      exit( EXIT_FAILURE );
+    }
+    eh->sampler()->integrationList(integrationList);
+  }
+
   if ( ! setupfile.empty() ) {
     string msg = Repository::modifyEventGenerator(*eg, setupfile, cout);
     if ( ! msg.empty() ) cerr << msg << '\n';
-    if ( noevents )
+    if ( integrationList != "" )
       return;
   }
 
-  if ( noevents ) {
+  if ( integrationList != "" ) {
     Repository::resetEventGenerator(*eg);
     return;
   }
