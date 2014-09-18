@@ -37,7 +37,7 @@ ShowerApproximation::ShowerApproximation()
     theIIPtCut(1.0*GeV), theIIScreeningScale(ZERO),
     theRestrictPhasespace(true), theHardScaleFactor(1.0),
     theRenormalizationScaleFactor(1.0), theFactorizationScaleFactor(1.0),
-    theExtrapolationX(0.65),
+    theExtrapolationX(1.0),
     theRealEmissionScaleInSubtraction(showerScale), 
     theBornScaleInSubtraction(showerScale), 
     theEmissionScaleInSubtraction(showerScale), 
@@ -447,7 +447,7 @@ void ShowerApproximation::Init() {
   static Parameter<ShowerApproximation,double> interfaceExtrapolationX
     ("ExtrapolationX",
      "The x from which on extrapolation should be performed.",
-     &ShowerApproximation::theExtrapolationX, 0.65, 0.0, 1.0,
+     &ShowerApproximation::theExtrapolationX, 1.0, 0.0, 1.0,
      false, false, Interface::limited);
 
   static Switch<ShowerApproximation,int> interfaceRealEmissionScaleInSubtraction
