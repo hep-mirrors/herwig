@@ -46,21 +46,26 @@ IBPtr MissingPtCut::fullclone() const {
 bool MissingPtCut::passCuts(tcCutsPtr parent, const tcPDVector & ptype, 
                             const vector<LorentzMomentum> & p) const {
 
-  Energy ptMissSum = 0.0*GeV;
+  // Energy ptMissSum = 0.0*GeV;
+  LorentzMomentum momentumMissSum;
   bool nonu = true;
 
   for ( int i = 0, N = ptype.size(); i < N; ++i ) {
     if ( abs(ptype[i]->id())==ParticleID::nu_e || abs(ptype[i]->id())==ParticleID::nu_mu || abs(ptype[i]->id())==ParticleID::nu_tau ) {
-      ptMissSum = ptMissSum + p[i].perp();
+      // ptMissSum = ptMissSum + p[i].perp();
+      momentumMissSum = momentumMissSum + p[i];
       nonu = false;
     }
   }
 
   if ( nonu ) return true;
 
+  Energy ptMiss = momentumMissSum.perp();  
+
   double weight = 1.0;
 
-  if ( !parent->isInside<CutTypes::Momentum>(ptMissSum,ptMissMin(),ptMissMax(),weight) ) {
+  // if ( !parent->isInside<CutTypes::Momentum>(ptMissSum,ptMissMin(),ptMissMax(),weight) ) {
+  if ( !parent->isInside<CutTypes::Momentum>(ptMiss,ptMissMin(),ptMissMax(),weight) ) {
     parent->lastCutWeight(0.0);
     return false;
   }
