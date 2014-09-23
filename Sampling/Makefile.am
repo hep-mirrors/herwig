@@ -32,7 +32,7 @@ HwSampling_la_LIBADD = \
 CellGrids/libHwCellGrids.la
 
 install-exec-local:
-	$(install_sh_SCRIPT) $(builddir)/mergeGrids.py $(DESTDIR)$(bindir)/mergeGrids.py
+	$(install_sh_SCRIPT) $(srcdir)/mergeGrids.py $(DESTDIR)$(bindir)/mergeGrids.py
 
 uninstall-local:
 	rm -f  $(DESTDIR)$(bindir)/mergeGrids.py
