@@ -249,6 +249,18 @@ private:
     }
 
     /**
+     * Count given momentum components, weight and id
+     */
+    void count(Energy perp, double rapidity, 
+	       double xphi, Energy m,
+	       double weight, unsigned int id) {
+      pt.count(Statistics::EventContribution(perp/GeV,weight,1.),id);
+      y.count(Statistics::EventContribution(rapidity,weight,0.1),id);
+      phi.count(Statistics::EventContribution(xphi,weight,0.1),id);
+      mass.count(Statistics::EventContribution(m/GeV,weight,1.),id);
+    }
+
+    /**
      * Convert to XML
      */
     void finalize(XML::Element& elem) {
@@ -369,6 +381,26 @@ private:
   ObjectProperties theJetInclusiveProperties;
 
   /**
+   * Jet-summed properties
+   */
+  ObjectProperties theJetSummedProperties;
+
+  /**
+   * Jet-average properties
+   */
+  ObjectProperties theJetAverageProperties;
+
+  /**
+   * Inclusive jet multiplicities
+   */
+  Statistics::Histogram theNJetsInclusive;
+
+  /**
+   * Exclusive jet multiplicities
+   */
+  Statistics::Histogram theNJetsExclusive;
+
+  /**
    * Hard object pair properties
    */
   map<pair<string,string>,PairProperties> theHardPairProperties;
@@ -421,6 +453,57 @@ protected:
     return
       theJetInclusiveProperties = 
       ObjectProperties("JetInclusive",generator()->maximumCMEnergy());
+  }
+
+  /**
+   * Jet-summed properties
+   */
+  ObjectProperties& jetSummedProperties() {
+    if ( !theJetSummedProperties.pt.bins().empty() )
+      return theJetSummedProperties;
+    return
+      theJetSummedProperties = 
+      ObjectProperties("JetSummed",generator()->maximumCMEnergy());
+  }
+
+  /**
+   * Jet-average properties
+   */
+  ObjectProperties& jetAverageProperties() {
+    if ( !theJetAverageProperties.pt.bins().empty() )
+      return theJetAverageProperties;
+    return
+      theJetAverageProperties = 
+      ObjectProperties("JetAverage",generator()->maximumCMEnergy());
+  }
+
+
+  /**
+   * Inclusive jet multiplicities
+   */
+  Statistics::Histogram& nJetsInclusive() {
+    if ( !theNJetsInclusive.bins().empty() )
+      return theNJetsInclusive;
+    return
+      theNJetsInclusive =
+      Statistics::Histogram("NJetsInclusive",
+			    Statistics::Histogram::regularBinEdges(-0.5,theJetRegions.size()+0.5,
+								   theJetRegions.size()+1),
+			    true,true);
+  }
+
+  /**
+   * Exclusive jet multiplicities
+   */
+  Statistics::Histogram& nJetsExclusive() {
+    if ( !theNJetsExclusive.bins().empty() )
+      return theNJetsExclusive;
+    return
+      theNJetsExclusive =
+      Statistics::Histogram("NJetsExclusive",
+			    Statistics::Histogram::regularBinEdges(-0.5,theJetRegions.size()+0.5,
+								   theJetRegions.size()+1),
+			    true,true);
   }
 
   /**

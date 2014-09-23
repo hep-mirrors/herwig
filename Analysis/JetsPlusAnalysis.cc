@@ -98,15 +98,43 @@ void JetsPlusAnalysis::analyze(ParticleVector& parts, long id, double weight) {
     }
   }
 
+  unsigned int njets = 0;
+  Energy jetSummedPerp = ZERO;
+  double jetSummedRapidity = 0.0;
+  double jetSummedPhi = 0.0;
+  Energy jetSummedM = ZERO;
+
+  nJetsInclusive().count(Statistics::EventContribution(njets,weight,0.0),id);
+  if ( njets == theJets.size() )
+    nJetsExclusive().count(Statistics::EventContribution(njets,weight,0.0),id);
+
   for ( map<unsigned int,LorentzMomentum>::const_iterator h = theJets.begin();
 	h != theJets.end(); ++h ) {
+    njets += 1;
     jetProperties(h->first).count(h->second,weight,id);
     jetInclusiveProperties().count(h->second,weight,id);
+    nJetsInclusive().count(Statistics::EventContribution(njets,weight,0.0),id);
+    if ( njets == theJets.size() )
+      nJetsExclusive().count(Statistics::EventContribution(njets,weight,0.0),id);
+    jetSummedPerp += h->second.perp();
+    jetSummedRapidity += h->second.rapidity();
+    jetSummedPhi += h->second.phi();
+    jetSummedM += h->second.m();
     map<unsigned int,LorentzMomentum>::const_iterator g = h; ++g;
     for ( ; g != theJets.end(); ++g ) {
       jetPairProperties(h->first,g->first).count(h->second,g->second,weight,id);
     }
   }
+
+  if ( njets > 0.0 )
+    jetSummedProperties().count(jetSummedPerp,jetSummedRapidity,
+				jetSummedPhi,jetSummedM,
+				weight,id);
+
+  if ( njets > 0.0 )
+    jetAverageProperties().count(jetSummedPerp/njets,jetSummedRapidity/njets,
+				 jetSummedPhi/njets,jetSummedM/njets,
+				 weight,id);
 
   for ( map<string,LorentzMomentum>::const_iterator h = theHardObjects.begin();
 	h != theHardObjects.end(); ++h ) {
@@ -192,6 +220,24 @@ void JetsPlusAnalysis::dofinish() {
 
   if ( !theJetInclusiveProperties.pt.bins().empty() ) {
     theJetInclusiveProperties.finalize(xhistos);
+  }
+
+  if ( !theJetSummedProperties.pt.bins().empty() ) {
+    theJetSummedProperties.finalize(xhistos);
+  }
+
+  if ( !theJetAverageProperties.pt.bins().empty() ) {
+    theJetAverageProperties.finalize(xhistos);
+  }
+
+  if ( !theNJetsInclusive.bins().empty() ) {
+    theNJetsInclusive.finalize();
+    xhistos.append(theNJetsInclusive.toXML());
+  }
+
+  if ( !theNJetsExclusive.bins().empty() ) {
+    theNJetsExclusive.finalize();
+    xhistos.append(theNJetsExclusive.toXML());
   }
 
   for ( map<pair<string,string>,PairProperties>::iterator h = theHardPairProperties.begin();
