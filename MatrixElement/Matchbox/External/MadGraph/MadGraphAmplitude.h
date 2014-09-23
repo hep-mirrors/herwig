@@ -284,17 +284,6 @@ protected:
    */
   map<int,int> colourindexmap;
   
-//   /**
-//    * caching of different colour structures
-//    */
-//   
-//   map<vector<int>,vector < complex<double> > > heljamp;
-
-  
-  //double   momenta[40];
-
-  
-
   //@}
 
 private:
