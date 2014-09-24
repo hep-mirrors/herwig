@@ -123,6 +123,18 @@ void JetsPlusAnalysis::analyze(ParticleVector& parts, long id, double weight) {
     map<unsigned int,LorentzMomentum>::const_iterator g = h; ++g;
     for ( ; g != theJets.end(); ++g ) {
       jetPairProperties(h->first,g->first).count(h->second,g->second,weight,id);
+      map<unsigned int,LorentzMomentum>::const_iterator g1 = g; ++g1;
+      for ( ; g1 != theJets.end(); ++g1 ) {
+	LorentzMomentum p123 =
+	  h->second + g->second + g1->second;
+	threeJetProperties(h->first,g->first,g1->first).count(p123,weight,id);
+	map<unsigned int,LorentzMomentum>::const_iterator g2 = g1; ++g2;
+	for ( ; g2 != theJets.end(); ++g2 ) {
+	  LorentzMomentum p1234 =
+	    h->second + g->second + g1->second + g2->second;
+	  fourJetProperties(h->first,g->first,g1->first,g2->first).count(p1234,weight,id);
+	}
+      }
     }
   }
 
@@ -143,6 +155,8 @@ void JetsPlusAnalysis::analyze(ParticleVector& parts, long id, double weight) {
       jetHardPairProperties(g->first,h->first).count(g->second,h->second,weight,id);
     }
   }
+
+  analyzeSpecial(id,weight);
 
 }
 
@@ -254,6 +268,18 @@ void JetsPlusAnalysis::dofinish() {
 	h != theJetHardPairProperties.end(); ++h ) {
     h->second.finalize(xhistos);
   }
+
+  for ( map<boost::tuple<unsigned int,unsigned int,unsigned int>,ObjectProperties>::iterator h =
+	  theThreeJetProperties.begin(); h != theThreeJetProperties.end(); ++h ) {
+    h->second.finalize(xhistos);
+  }
+
+  for ( map<boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties>::iterator h =
+	  theFourJetProperties.begin(); h != theFourJetProperties.end(); ++h ) {
+    h->second.finalize(xhistos);
+  }
+
+  finalize(xhistos);
 
   elem.append(xhistos);
 

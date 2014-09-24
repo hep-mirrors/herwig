@@ -11,6 +11,9 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "Herwig++/Utilities/Statistics/Histogram.h"
 
+#include <boost/tuple/tuple.hpp>
+#include <boost/tuple/tuple_comparison.hpp>
+
 namespace Herwig {
 
 using namespace ThePEG;
@@ -107,6 +110,11 @@ protected:
    * The jet regions to match.
    */
   const vector<Ptr<JetRegion>::ptr>& jetRegions() const { return theJetRegions; }
+
+  /**
+   * Return the number of matched jets
+   */
+  unsigned int nJets() const { return theJets.size(); }
 
   /**
    * Set the momentum of the indicated jet.
@@ -313,6 +321,17 @@ private:
     }
 
     /**
+     * Calculate ydoty
+     */
+    double yy(const LorentzMomentum& a,
+	      const LorentzMomentum& b){
+      double ya = a.rapidity();
+      double yb = b.rapidity();
+      double yres = sqrt(abs(ya*yb));
+      return ya*yb < 0. ? -yres : yres;
+    }
+
+    /**
      * Delta y
      */
     Statistics::Histogram deltaY;
@@ -328,6 +347,11 @@ private:
     Statistics::Histogram deltaR;
 
     /**
+     * Product of the rapidities
+     */
+    Statistics::Histogram yDotY;
+
+    /**
      * Default constructor
      */
     PairProperties() 
@@ -341,7 +365,8 @@ private:
 	deltaY(name + "DeltaY",Statistics::Histogram::regularBinEdges(0,6,60),true,false),
 	deltaPhi(name + "DeltaPhi",Statistics::Histogram::regularBinEdges(-Constants::pi,Constants::pi,32),
 		 make_pair(-Constants::pi,Constants::pi)),
-	deltaR(name + "DeltaR",Statistics::Histogram::regularBinEdges(0,10,100),true,false) {}
+	deltaR(name + "DeltaR",Statistics::Histogram::regularBinEdges(0,10,100),true,false),
+	yDotY(name + "YDotY",Statistics::Histogram::regularBinEdges(-6,6,120),false,false) {}
 
     /**
      * Count given momentum, weight and id
@@ -351,6 +376,7 @@ private:
       deltaY.count(Statistics::EventContribution(dY(p,q),weight,0.1),id);
       deltaPhi.count(Statistics::EventContribution(dPhi(p,q),weight,0.1),id);
       deltaR.count(Statistics::EventContribution(dR(p,q),weight,0.1),id);
+      yDotY.count(Statistics::EventContribution(yy(p,q),weight,0.1),id);
     }
 
     /**
@@ -361,6 +387,7 @@ private:
       deltaY.finalize(); elem.append(deltaY.toXML());
       deltaPhi.finalize(); elem.append(deltaPhi.toXML());
       deltaR.finalize(); elem.append(deltaR.toXML());
+      yDotY.finalize(); elem.append(yDotY.toXML());
     }
 
   };
@@ -414,6 +441,16 @@ private:
    * Jet/hard pair properties
    */
   map<pair<unsigned int,string>,PairProperties> theJetHardPairProperties;
+
+  /**
+   * Trijet properties
+   */
+  map<boost::tuple<unsigned int,unsigned int,unsigned int>,ObjectProperties> theThreeJetProperties;
+
+  /**
+   * Fourjet properties
+   */
+  map<boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties> theFourJetProperties;
 
 protected:
 
@@ -543,6 +580,46 @@ protected:
     return theJetHardPairProperties[make_pair(id,jd)] = 
       PairProperties(ids.str(),generator()->maximumCMEnergy());
   }
+
+  /**
+   * Trijet properties
+   */
+  ObjectProperties& threeJetProperties(const unsigned int id1, const unsigned int id2,
+				       const unsigned int id3) {
+    map<boost::tuple<unsigned int,unsigned int,unsigned int>,ObjectProperties>::iterator it =
+      theThreeJetProperties.find(boost::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3));
+    if ( it != theThreeJetProperties.end() )
+      return it->second;
+    ostringstream ids; 
+    ids << "Jet" << id1 << id2 << id3;
+    return theThreeJetProperties[boost::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3)] =
+      ObjectProperties(ids.str(),generator()->maximumCMEnergy());
+  }
+
+  /**
+   * Fourjet properties
+   */
+  ObjectProperties& fourJetProperties(const unsigned int id1, const unsigned int id2,
+				      const unsigned int id3, const unsigned int id4) {
+    map<boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties>::iterator it =
+      theFourJetProperties.find(boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>(id1,id2,id3,id4));
+    if ( it != theFourJetProperties.end() )
+      return it->second;
+    ostringstream ids; 
+    ids << "Jet" << id1 << id2 << id3 << id4;
+    return theFourJetProperties[boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>(id1,id2,id3,id4)] =
+      ObjectProperties(ids.str(),generator()->maximumCMEnergy());
+  }  
+
+  /**
+   * Perform any additional analysis required
+   */
+  virtual void analyzeSpecial(long, double) {}
+
+  /**
+   * Append any additional histograms to the given histogram element
+   */
+  virtual void finalize(XML::Element&) {}
 
 private:
 

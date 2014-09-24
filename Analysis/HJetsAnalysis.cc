@@ -42,6 +42,31 @@ void HJetsAnalysis::reconstructHardObjects(ParticleVector& parts) {
   parts.erase(higgs);
 }
 
+void HJetsAnalysis::analyzeSpecial(long id, double weight) {
+  if ( nJets() < 2 )
+    return;
+  higgsYStar().count(Statistics::EventContribution(yStar(jetMomentum(1),jetMomentum(2),hardObjectMomentum("h")),weight,0.1),id);
+  if ( nJets() > 2 )
+    thirdJetYStar().count(Statistics::EventContribution(yStar(jetMomentum(1),jetMomentum(2),jetMomentum(3)),weight,0.1),id);
+  if ( nJets() > 3 )
+    thirdJetYStar().count(Statistics::EventContribution(yStar(jetMomentum(1),jetMomentum(2),jetMomentum(4)),weight,0.1),id);
+}
+
+void HJetsAnalysis::finalize(XML::Element& xhistos) {
+  if ( !theHiggsYStar.bins().empty() ) {
+    theHiggsYStar.finalize();
+    xhistos.append(theHiggsYStar.toXML());
+  }
+  if ( !theThirdJetYStar.bins().empty() ) {
+    theThirdJetYStar.finalize();
+    xhistos.append(theThirdJetYStar.toXML());
+  }
+  if ( !theFourthJetYStar.bins().empty() ) {
+    theFourthJetYStar.finalize();
+    xhistos.append(theFourthJetYStar.toXML());
+  }
+}
+
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
