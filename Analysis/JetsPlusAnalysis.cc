@@ -114,8 +114,10 @@ void JetsPlusAnalysis::analyze(ParticleVector& parts, long id, double weight) {
     jetProperties(h->first).count(h->second,weight,id);
     jetInclusiveProperties().count(h->second,weight,id);
     nJetsInclusive().count(Statistics::EventContribution(njets,weight,0.0),id);
-    if ( njets == theJets.size() )
+    if ( njets == theJets.size() ) {
+      exclusiveJetProperties(h->first).count(h->second,weight,id);
       nJetsExclusive().count(Statistics::EventContribution(njets,weight,0.0),id);
+    }
     jetSummedPerp += h->second.perp();
     jetSummedRapidity += h->second.rapidity();
     jetSummedPhi += h->second.phi();
@@ -229,6 +231,11 @@ void JetsPlusAnalysis::dofinish() {
 
   for ( map<unsigned int,ObjectProperties>::iterator h = theJetProperties.begin();
 	h != theJetProperties.end(); ++h ) {
+    h->second.finalize(xhistos);
+  }
+
+  for ( map<unsigned int,ObjectProperties>::iterator h = theExclusiveJetProperties.begin();
+	h != theExclusiveJetProperties.end(); ++h ) {
     h->second.finalize(xhistos);
   }
 

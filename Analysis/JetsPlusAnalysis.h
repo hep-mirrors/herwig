@@ -403,6 +403,11 @@ private:
   map<unsigned int,ObjectProperties> theJetProperties;
 
   /**
+   * Exclusive jet properties
+   */
+  map<unsigned int,ObjectProperties> theExclusiveJetProperties;
+
+  /**
    * Jet-inclusive properties
    */
   ObjectProperties theJetInclusiveProperties;
@@ -478,6 +483,20 @@ protected:
     ostringstream ids; ids << "Jet" << id;
     return 
       theJetProperties[id] = 
+      ObjectProperties(ids.str(),generator()->maximumCMEnergy());
+  }
+
+  /**
+   * Exclusive jet properties
+   */
+  ObjectProperties& exclusiveJetProperties(const unsigned int id) {
+    map<unsigned int,ObjectProperties>::iterator h = 
+      theExclusiveJetProperties.find(id);
+    if ( h != theExclusiveJetProperties.end() )
+      return h->second;
+    ostringstream ids; ids << "ExclusiveJet" << id;
+    return 
+      theExclusiveJetProperties[id] = 
       ObjectProperties(ids.str(),generator()->maximumCMEnergy());
   }
 
