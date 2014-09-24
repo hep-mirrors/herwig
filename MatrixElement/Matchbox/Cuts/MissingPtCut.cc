@@ -51,11 +51,25 @@ bool MissingPtCut::passCuts(tcCutsPtr parent, const tcPDVector & ptype,
   bool nonu = true;
 
   for ( int i = 0, N = ptype.size(); i < N; ++i ) {
-    if ( abs(ptype[i]->id())==ParticleID::nu_e || abs(ptype[i]->id())==ParticleID::nu_mu || abs(ptype[i]->id())==ParticleID::nu_tau ) {
-      // ptMissSum = ptMissSum + p[i].perp();
-      momentumMissSum = momentumMissSum + p[i];
-      nonu = false;
+
+    if ( invisibleParticles().size() == 0 ) {
+      if ( abs(ptype[i]->id())==ParticleID::nu_e || abs(ptype[i]->id())==ParticleID::nu_mu || abs(ptype[i]->id())==ParticleID::nu_tau ) {
+        // ptMissSum = ptMissSum + p[i].perp();
+        momentumMissSum = momentumMissSum + p[i];
+        nonu = false;
+      }
     }
+    else if ( invisibleParticles().size() != 0 ) {
+      for ( vector<int>::const_iterator iID = invisibleParticles().begin(); iID != invisibleParticles().end(); ++iID ) {
+        int iInt = *iID;
+        if ( abs(ptype[i]->id())==iInt ) {
+          // ptMissSum = ptMissSum + p[i].perp();
+          momentumMissSum = momentumMissSum + p[i];
+          nonu = false;
+        }
+      }
+    }
+
   }
 
   if ( nonu ) return true;
@@ -75,6 +89,14 @@ bool MissingPtCut::passCuts(tcCutsPtr parent, const tcPDVector & ptype,
 
 }
 
+string MissingPtCut::doInvisibleParticles(string in) {
+  istringstream ins(in);
+  int first;
+  ins >> first;
+  theInvisibleParticles.push_back(first);
+  return "";
+}
+
 void MissingPtCut::describe() const {
 
   CurrentGenerator::log()
@@ -92,11 +114,13 @@ void MissingPtCut::describe() const {
 
 
 void MissingPtCut::persistentOutput(PersistentOStream & os) const {
-  os << ounit(thePtMissMin,GeV) << ounit(thePtMissMax,GeV);
+//   os << ounit(thePtMissMin,GeV) << ounit(thePtMissMax,GeV);
+  os << ounit(thePtMissMin,GeV) << ounit(thePtMissMax,GeV) << theInvisibleParticles;
 }
 
 void MissingPtCut::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(thePtMissMin,GeV) >> iunit(thePtMissMax,GeV);
+//   is >> iunit(thePtMissMin,GeV) >> iunit(thePtMissMax,GeV);
+  is >> iunit(thePtMissMin,GeV) >> iunit(thePtMissMax,GeV) >> theInvisibleParticles;
 }
 
 
@@ -111,9 +135,21 @@ DescribeClass<MissingPtCut,MultiCutBase>
 void MissingPtCut::Init() {
 
   static ClassDocumentation<MissingPtCut> documentation
-    ("MissingPtCut implements a cut on the total missing transverse momentum "
-     "of a set of outgoing particles, i.e. for now the total transverse momentum "
-     "of all outgoing neutrinos in an event.");
+//    ("MissingPtCut implements a cut on the missing transverse momentum "
+//     "of a set of outgoing particles, i.e. for now the total transverse momentum "
+//     "of all outgoing neutrinos in an event.");
+    ("MissingPtCut implements a cut on the transverse momentum of the four-momentum "
+     "sum of a set of outgoing particles that cannot be detected. By default the three "
+     "standard model neutrinos are considered. If at least one undetectable particle "
+     "is specified through the InvisibleParticles interface, the default choice is "
+     "nullified.");
+
+  static Command<MissingPtCut> interfaceInvisibleParticles
+    ("InvisibleParticles",
+     "Insert the PDG code of a particle that cannot be detected. If no particle " 
+     "is inserted at all, the three standard model neutrinos are considered by "
+     "default. If at least one particle is inserted, the default choice is nullified.",
+     &MissingPtCut::doInvisibleParticles, false);
 
   static Parameter<MissingPtCut,Energy> interfacePtMissMin
     ("PtMissMin",
