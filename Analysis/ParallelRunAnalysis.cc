@@ -33,7 +33,10 @@ void ParallelRunAnalysis::analyze(tEventPtr, long currev, int, int) {
   tEHPtr curEvtHandler = generator()->currentEventHandler();
   long attempts = (dynamic_ptr_cast<StdEHPtr>(curEvtHandler))->sampler()->attempts();
   char str[128];
-  sprintf(str,"event> %lu/%lu/%lu xs = %.10E pb +/- %.10E pb\n",currev,attempts,totev,curEvtHandler->integratedXSec()/picobarn,curEvtHandler->integratedXSecErr()/picobarn);
+  sprintf(str,"event> %lu/%lu/%lu xs = %.10E pb +/- %.10E pb\n",
+          currev,attempts,totev,
+          double(curEvtHandler->integratedXSec()/picobarn),
+          double(curEvtHandler->integratedXSecErr()/picobarn));
   ofstream log("parallel.log",ofstream::app);
   log << str << flush;
   log.close();
