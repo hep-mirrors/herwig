@@ -143,7 +143,7 @@ namespace ExSample {
       double varianceOfAverage() const {
 	return 
 	  nPoints > 1.0 ?
-	  abs(sumOfSquaredWeights/nPoints - sqr(sumOfWeights/nPoints))/(nPoints-1) : 0.0;
+	  fabs(sumOfSquaredWeights/nPoints - sqr(sumOfWeights/nPoints))/(nPoints-1) : 0.0;
       }
 
     };

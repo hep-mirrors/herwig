@@ -337,7 +337,7 @@ void Col_basis::simplify(){
 }
 
 
-Poly_vec Col_basis::decompose( const Col_amp & Ca ){
+Poly_vec Col_basis::decompose( const Col_amp & ){
 
 	std::cerr << "Col_basis::decompose: This function is not implemented for the Col_basis class. Try using a derived class (such as Trace_basis). " << std::endl;
 
@@ -728,7 +728,7 @@ bool Col_basis::check_symmetry( const dmatr & matr ) const {
 		Poly_vec rowi;
 		// Loop over basis vectors in Basis
 		for (uint j = 0; j <=i; j++) {
-			if ((abs(d_spm.at(i).at(j) / d_spm.at(j).at(i) - 1.0) > accuracy) && (d_spm.at(i).at(j) > accuracy) && (d_spm.at(j).at(i) > accuracy)) {
+			if ((fabs(d_spm.at(i).at(j) / d_spm.at(j).at(i) - 1.0) > accuracy) && (d_spm.at(i).at(j) > accuracy) && (d_spm.at(j).at(i) > accuracy)) {
 				sym=false;
 				std::cerr
 				<< "Col_basis::check_symmetry( dmatr ): Error, the resulting scalar product matrix is not symmetric. \n "

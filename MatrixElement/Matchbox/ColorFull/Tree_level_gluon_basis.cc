@@ -65,7 +65,7 @@ void Tree_level_gluon_basis::read_in_Col_basis( std::string filename ){
 	// Then check that it's really a tree level gluon basis
 	// Check that length of each Col_amp is 2
 	for( uint bv=0; bv < cb.size(); bv++ ){
-		if(! cb.at(bv).size()==2 ){
+		if( cb.at(bv).size()!=2 ){
 			std::cerr << "Tree_level_gluon_basis::read_in_Col_basis: The basis read in from file " << filename <<
 					" has basis vectors with length > 2, and is thus not a tree level gluon basis."
 					<< std::endl;
@@ -268,7 +268,7 @@ Col_amp Tree_level_gluon_basis::add_one_gluon( const Col_str & Cs, int g_new ) c
 }
 
 
-Col_amp Tree_level_gluon_basis::add_one_gluon(const Col_amp & Old_basis, int n_g, int g_new) const {
+Col_amp Tree_level_gluon_basis::add_one_gluon(const Col_amp & Old_basis, int, int g_new) const {
 
 	// For storing the new basis
 	Col_amp New_bas;

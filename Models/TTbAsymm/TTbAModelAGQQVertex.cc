@@ -82,8 +82,8 @@ void TTbAModelAGQQVertex::setCoupling(Energy2 q2,tcPDPtr aa ,tcPDPtr bb, tcPDPtr
   double gstrong = 1.0;
   gstrong = strongCoupling(q2);
 
-  if(fabs(aa->id()) == 63 || fabs(bb->id()) == 63 || fabs(cc->id()) == 63) {
-    if(fabs(aa->id()) !=6 && fabs(bb->id()) !=6 && fabs(cc->id()) != 6) {
+  if(abs(aa->id()) == 63 || abs(bb->id()) == 63 || abs(cc->id()) == 63) {
+    if(abs(aa->id()) !=6 && abs(bb->id()) !=6 && abs(cc->id()) != 6) {
       _cR = _cAGQQ_R; 
       _cL = _cAGQQ_L; 
     } else { 

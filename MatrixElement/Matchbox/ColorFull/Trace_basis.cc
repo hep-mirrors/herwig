@@ -160,7 +160,7 @@ Col_amp Trace_basis::connect_quarks( int n_quark ) const{
 }
 
 
-Col_amp Trace_basis::add_one_gluon( const Col_str & Cs, int g_new, int n_loop ) const {
+Col_amp Trace_basis::add_one_gluon( const Col_str & Cs, int g_new, int ) const {
 
 	// For storing the new basis
 	Col_amp New_tensors;
@@ -194,7 +194,7 @@ Col_amp Trace_basis::add_one_gluon( const Col_str & Cs, int g_new, int n_loop ) 
 }
 
 
-Col_amp Trace_basis::add_one_gluon(const Col_amp & Old_basis, int n_q, int n_g, int g_new, int n_loop) const{
+Col_amp Trace_basis::add_one_gluon(const Col_amp & Old_basis, int n_q, int, int g_new, int n_loop) const{
 
 	// For storing the new basis
 	Col_amp New_bas;
