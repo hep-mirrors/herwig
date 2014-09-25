@@ -278,29 +278,29 @@ MatchboxPhasespace::timeLikeWeight(const Tree2toNDiagram& diag,
   Energy2 mass2 = sqr(diag.allPartons()[branch]->mass());
   Energy2 width2 = sqr(diag.allPartons()[branch]->width());
 
-if ( diag.allPartons()[branch]->id() >= theLoopParticleIdMin
-     && diag.allPartons()[branch]->id() <= theLoopParticleIdMax ) { // "loop particle"
+  if ( abs(diag.allPartons()[branch]->id()) >= theLoopParticleIdMin
+       && abs(diag.allPartons()[branch]->id()) <= theLoopParticleIdMax ) { // "loop particle"
 
-   if ( abs((res.second.m2()-mass2)/lastSHat()) > flatCut ) {
-     res.first /=
-       abs((res.second.m2()-mass2)/GeV2);
-     res.first *=
-       log(abs((res.second.m2()-mass2)/GeV2)); // normal. of the argument in the log?
-   }
-
-} else {
-
-  if ( width2 == ZERO ) {
-    if ( abs((res.second.m2()-mass2)/lastSHat()) > flatCut )
+    if ( abs((res.second.m2()-mass2)/lastSHat()) > flatCut ) {
       res.first /=
 	abs((res.second.m2()-mass2)/GeV2);
-  } else {
-    res.first /=
-      (sqr((res.second.m2()-mass2)/GeV2) +
-       mass2*width2/sqr(GeV2))/(abs(res.second.m2()/GeV2));
-  }
+      res.first *=
+	log(abs((res.second.m2()-mass2)/GeV2)); // normal. of the argument in the log?
+    }
 
-}
+  } else {
+
+    if ( width2 == ZERO ) {
+      if ( abs((res.second.m2()-mass2)/lastSHat()) > flatCut )
+	res.first /=
+	  abs((res.second.m2()-mass2)/GeV2);
+    } else {
+      res.first /=
+	(sqr((res.second.m2()-mass2)/GeV2) +
+	 mass2*width2/sqr(GeV2))/(abs(res.second.m2()/GeV2));
+    }
+
+  }
 
   return res;
 
@@ -338,29 +338,29 @@ double MatchboxPhasespace::spaceLikeWeight(const Tree2toNDiagram& diag,
   Energy2 mass2 = sqr(diag.allPartons()[branch]->mass());
   Energy2 width2 = sqr(diag.allPartons()[branch]->width());
 
-if ( diag.allPartons()[branch]->id() >= theLoopParticleIdMin
-     && diag.allPartons()[branch]->id() <= theLoopParticleIdMax ) { // "loop particle"
+  if ( abs(diag.allPartons()[branch]->id()) >= theLoopParticleIdMin
+       && (diag.allPartons()[branch]->id()) <= theLoopParticleIdMax ) { // "loop particle"
 
-   if ( abs((res.second.m2()-mass2)/lastSHat()) > flatCut ) {
-     res.first /=
-       abs((res.second.m2()-mass2)/GeV2);
-     res.first *=
-       log(abs((res.second.m2()-mass2)/GeV2)); // normal. of the argument in the log?
-   }
-
-} else {
-
-  if ( width2 == ZERO ) {
-    if ( abs((res.second.m2()-mass2)/lastSHat()) > flatCut )
+    if ( abs((res.second.m2()-mass2)/lastSHat()) > flatCut ) {
       res.first /=
 	abs((res.second.m2()-mass2)/GeV2);
-  } else {
-    res.first /=
-      (sqr((res.second.m2()-mass2)/GeV2) +
-       mass2*width2/sqr(GeV2))/(abs(res.second.m2()/GeV2));
-  }
+      res.first *=
+	log(abs((res.second.m2()-mass2)/GeV2)); // normal. of the argument in the log?
+    }
 
-}
+  } else {
+
+    if ( width2 == ZERO ) {
+      if ( abs((res.second.m2()-mass2)/lastSHat()) > flatCut )
+	res.first /=
+	  abs((res.second.m2()-mass2)/GeV2);
+    } else {
+      res.first /=
+	(sqr((res.second.m2()-mass2)/GeV2) +
+	 mass2*width2/sqr(GeV2))/(abs(res.second.m2()/GeV2));
+    }
+
+  }
 
   return
     res.first * spaceLikeWeight(diag,res.second,children.first,flatCut);
