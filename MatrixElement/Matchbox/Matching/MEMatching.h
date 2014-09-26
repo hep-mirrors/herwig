@@ -76,7 +76,8 @@ public:
   /**
    * Generate a weight for the given dipole channel
    */
-  double channelWeight(int emitter, int emission, int spectator) const;
+  double channelWeight(int emitter, int emission, 
+		       int spectator, int bemitter) const;
 
   /**
    * Generate a normalized weight taking into account all channels

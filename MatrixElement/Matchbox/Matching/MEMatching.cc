@@ -42,7 +42,16 @@ IBPtr MEMatching::fullclone() const {
   return new_ptr(*this);
 }
 
-double MEMatching::channelWeight(int emitter, int emission, int spectator) const {
+double MEMatching::channelWeight(int emitter, int emission, 
+				 int spectator, int bemitter) const {
+  double cfac = 1.;
+  double Nc = generator()->standardModel()->Nc();
+  if ( bornCXComb()->mePartonData()[bemitter]->iColour() == PDT::Colour8 ) {
+    cfac = Nc;
+  } else if ( bornCXComb()->mePartonData()[bemitter]->iColour() == PDT::Colour3 ||
+	      bornCXComb()->mePartonData()[bemitter]->iColour() == PDT::Colour3bar ) {
+    cfac = (sqr(Nc)-1.)/(2.*Nc);
+  } else assert(false);
   // do the most simple thing for the time being; needs fixing later
   if ( realCXComb()->mePartonData()[emission]->id() == ParticleID::g ) {
     Energy2 pipk = 
@@ -51,16 +60,17 @@ double MEMatching::channelWeight(int emitter, int emission, int spectator) const
       realCXComb()->meMomenta()[emitter] * realCXComb()->meMomenta()[emission];
     Energy2 pjpk = 
       realCXComb()->meMomenta()[emission] * realCXComb()->meMomenta()[spectator];
-    return GeV2 * pipk / ( pipj * ( pipj + pjpk ) );
+    return cfac *GeV2 * pipk / ( pipj * ( pipj + pjpk ) );
   }
   return
-    GeV2 / (realCXComb()->meMomenta()[emitter] * realCXComb()->meMomenta()[emission]);
+    cfac * GeV2 / (realCXComb()->meMomenta()[emitter] * realCXComb()->meMomenta()[emission]);
 }
 
 double MEMatching::channelWeight() const {
   double currentChannel = channelWeight(dipole()->realEmitter(),
 					dipole()->realEmission(),
-					dipole()->realSpectator());
+					dipole()->realSpectator(),
+					dipole()->bornEmitter());
   if ( currentChannel == 0. )
     return 0.;
   double sum = 0.;
@@ -69,7 +79,8 @@ double MEMatching::channelWeight() const {
 	dip != dipole()->partnerDipoles().end(); ++dip )
     sum += channelWeight((**dip).realEmitter(),
 			 (**dip).realEmission(),
-			 (**dip).realSpectator());
+			 (**dip).realSpectator(),
+			 (**dip).bornEmitter());
   assert(sum > 0.0);
   return currentChannel / sum;
 }
