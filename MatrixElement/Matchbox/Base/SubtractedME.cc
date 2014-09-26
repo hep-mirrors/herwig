@@ -470,6 +470,9 @@ double SubtractedME::reweightDependent(tStdXCombPtr xc, const vector<tStdXCombPt
     if ( realShowerSubtraction() )
       return 1.0;
 
+    if ( xc != lastXComb().lastProjector() )
+      return 0.0;
+
     double thetaF = 1.;
     double invPAlpha = 0.;
 
@@ -485,7 +488,7 @@ double SubtractedME::reweightDependent(tStdXCombPtr xc, const vector<tStdXCombPt
     }
 
     assert(invPAlpha != 0.0);
-    double palpha = lastXComb().lastProjector()->cutWeight()/invPAlpha;
+    double palpha = xc->cutWeight()/invPAlpha;
 
     return 1./palpha;
 
