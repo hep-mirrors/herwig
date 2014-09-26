@@ -8,10 +8,11 @@ for particle physics. See arXiv:0803.0883 for a detailed manual, \
 or arXiv:1101.2599 for a more general description of the physics \
 behind MC event generation."
 
-usage " (read|run) [OPTIONS]... [FILE]" 
+usage " (read|integrate|run) [OPTIONS]... [FILE]" 
 
-description "One of the commands 'read' or 'run' is required:
+description "One of the commands 'read', 'integrate' or 'run' is required:
     read - reads an input file and creates a run file,
+    integrate - integrate subprocesses, if integration has been postponed
     run  - reads a run file and generates events."
 
 section "Event generation options"
@@ -40,12 +41,16 @@ option "jobs" j "Number of jobs to run in parallel (max 10)."
   int  optional
 
 option "setupfile" x "An input file to modify run parameters."
-  typestr="SETUPFILE"
-  string optional default=""
+  typestr="FILE"
+  string optional
 
-option "integrate" n "Integrate the given list of subprocesses."
-  typestr="INTEGRATE"
-  string optional default=""
+section "Integration options"
+text "
+  -x,--setupfile=FILE      An input file to modify run parameters."
+
+option "bins" n "Integrate the given list of subprocesses."
+  typestr="FILE"
+  string optional
 
 section "Repository options"
 text ""

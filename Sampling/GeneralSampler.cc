@@ -141,14 +141,12 @@ void GeneralSampler::initialize() {
   }
 
   set<int> binsToIntegrate;
-  bool integrationJob = false;
   if ( integrationList() != "" ) {
     ifstream jobList(integrationList().c_str());
     if ( jobList ) {
       int b = 0;
       while ( jobList >> b )
 	binsToIntegrate.insert(b);
-      integrationJob = true;
     }
   }
 
@@ -172,7 +170,7 @@ void GeneralSampler::initialize() {
     s->doWeighted(eventHandler()->weighted());
     s->setupRemappers(theVerbose);
     if ( !theIgnoreIntegrationData &&
-	 !integrationJob )
+	 !integrationJob() )
       s->readIntegrationData();
     s->initialize(theVerbose);
     samplers()[*bit] = s;
@@ -186,7 +184,7 @@ void GeneralSampler::initialize() {
     }
   }
 
-  if ( integrationJob ) {
+  if ( integrationJob() ) {
     theGrids = XML::Element(XML::ElementTypes::Element,"Grids");
     for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers().begin();
 	  s != samplers().end(); ++s ) {

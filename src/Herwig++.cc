@@ -36,6 +36,7 @@ void HerwigRead(string reponame, string runname,
 void HerwigRun(string runname, string setupfile,
 	       int seed, string tag, long N, 
 	       bool tics, bool resume, int jobs,
+	       bool integrationJob,
 	       string integrationList);
 
 void setSearchPaths(const gengetopt_args_info & args_info);
@@ -56,12 +57,14 @@ int main(int argc, char * argv[]) {
       printUsageAndExit();
 
     // Interpret command status
-    enum { INIT, READ, RUN, ERROR } status;
+    enum { INIT, READ, INTEGRATE, RUN, ERROR } status;
     std::string runType = args_info.inputs[0];
     if ( runType == "init" )
       status = INIT;
     else if ( runType == "read" ) 
       status = READ;
+    else if ( runType == "integrate" ) 
+      status = INTEGRATE;
     else if ( runType == "run" )  
       status = RUN;
     else {
@@ -75,7 +78,7 @@ int main(int argc, char * argv[]) {
       runname = args_info.inputs[1];
 
     // If status is RUN, we need a runname
-    if ( status == RUN && runname.empty() ) {
+    if ( ( status == RUN || status == INTEGRATE ) && runname.empty() ) {
       cerr << "Error: You need to supply a runfile name.\n";
       printUsageAndExit();
     }
@@ -101,7 +104,9 @@ int main(int argc, char * argv[]) {
     string tag = args_info.tag_arg;
 
     // run modifccation file
-    string setupfile = args_info.setupfile_arg;
+    string setupfile = "";
+    if ( args_info.setupfile_given )
+      setupfile = args_info.setupfile_arg;
 
     // parallel jobs
     int jobs = 1;
@@ -136,7 +141,9 @@ int main(int argc, char * argv[]) {
       tics = false;
 
     // integration list
-    string integrationList = args_info.integrate_arg;
+    string integrationList = "";
+    if ( args_info.bins_given )
+      integrationList = args_info.bins_arg;
 
     // Resume
     bool resume = false;
@@ -147,9 +154,10 @@ int main(int argc, char * argv[]) {
    
     // Call mode
     switch ( status ) {
-    case INIT:  HerwigInit( runname, reponame ); break;
-    case READ:  HerwigRead( reponame, runname, args_info ); break;
-    case RUN:   HerwigRun( runname, setupfile , seed, tag, N, tics, resume, jobs, integrationList );  break;
+    case INIT:        HerwigInit( runname, reponame ); break;
+    case READ:        HerwigRead( reponame, runname, args_info ); break;
+    case INTEGRATE:   HerwigRun( runname, setupfile , seed, tag, N, tics, resume, jobs, true, integrationList );  break;
+    case RUN:         HerwigRun( runname, setupfile , seed, tag, N, tics, resume, jobs, false, integrationList );  break;
     default:    printUsageAndExit();
     }
 
@@ -249,6 +257,7 @@ void HerwigRead(string reponame, string runname,
 void HerwigRun(string runname, string setupfile,
 	       int seed, string tag, long N, 
 	       bool tics, bool resume, int jobs,
+	       bool integrationJob,
 	       string integrationList) {
   PersistentIStream is(runname);
   ThePEG::EGPtr eg;
@@ -267,25 +276,27 @@ void HerwigRun(string runname, string setupfile,
   if ( seed > 0 ) eg->setSeed(seed);
   if ( !tag.empty() ) eg->addTag(tag);
 
-  if ( integrationList != "" ) {
+  if ( integrationJob ) {
     Ptr<StandardEventHandler>::tptr eh =
       dynamic_ptr_cast<Ptr<StandardEventHandler>::tptr>(eg->eventHandler());
     if ( !eh ) {
-      std::cerr << "Herwig++: Cannot set integration list for a non-standard EventHandler.\n";
+      std::cerr << "Herwig++: Cannot set integration mode for a non-standard EventHandler.\n";
       Repository::cleanup();
       exit( EXIT_FAILURE );
     }
-    eh->sampler()->integrationList(integrationList);
+    eh->sampler()->isIntegrationJob();
+    if ( integrationList != "" )
+      eh->sampler()->integrationList(integrationList);
   }
 
   if ( ! setupfile.empty() ) {
     string msg = Repository::modifyEventGenerator(*eg, setupfile, cout);
     if ( ! msg.empty() ) cerr << msg << '\n';
-    if ( integrationList != "" )
+    if ( integrationJob )
       return;
   }
 
-  if ( integrationList != "" ) {
+  if ( integrationJob ) {
     Repository::resetEventGenerator(*eg);
     return;
   }
