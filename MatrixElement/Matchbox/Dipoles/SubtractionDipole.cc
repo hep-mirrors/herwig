@@ -677,7 +677,7 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
       underlyingBornME()->largeNColourCorrelatedME2(ij,showerApproximation()->largeNBasis());
     double split = me2Avg(ccme2);
     lastMatchboxXComb()->lastSplittingChannelWeight(split);
-    if ( loopSimSubtraction() )
+    if ( loopSimSubtraction() || realShowerSubtraction() )
       needTheDipole = false;
   }
 

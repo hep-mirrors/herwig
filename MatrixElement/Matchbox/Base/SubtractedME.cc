@@ -395,9 +395,6 @@ double SubtractedME::reweightHead(const vector<tStdXCombPtr>& dep) {
     if ( (virtualShowerSubtraction() || loopSimSubtraction()) && !lastXComb().lastProjector() )
       return 0.0;
 
-    if ( realShowerSubtraction() && !lastXComb().lastProjector() )
-      return 1.0;
-
     double thetaF = 1.;
     double gDenominator = 0.;
     double fNumerator = 0.;
@@ -428,10 +425,16 @@ double SubtractedME::reweightHead(const vector<tStdXCombPtr>& dep) {
       }
     }
 
+    if ( realShowerSubtraction() && thetaF == 1. )
+      return 1.0;
+
     assert(fDenominator != 0.0);
 
     if ( realShowerSubtraction() )
       return (fNumerator/fDenominator)*(1.-thetaF)+thetaF;
+
+    if ( gDenominator == 0.0 )
+      return 0.0;
 
     assert(invPAlpha != 0.0);
     double palpha = lastXComb().lastProjector()->cutWeight()/invPAlpha;
@@ -464,11 +467,11 @@ double SubtractedME::reweightDependent(tStdXCombPtr xc, const vector<tStdXCombPt
 
   if ( showerApproximation() ) {
 
-    if ( !lastXComb().lastProjector() )
-      return 0.0;
-
     if ( realShowerSubtraction() )
       return 1.0;
+
+    if ( !lastXComb().lastProjector() )
+      return 0.0;
 
     if ( xc != lastXComb().lastProjector() )
       return 0.0;
@@ -480,7 +483,6 @@ double SubtractedME::reweightDependent(tStdXCombPtr xc, const vector<tStdXCombPt
       if ( !(**d).matrixElement()->apply() ||
 	   !(**d).kinematicsGenerated() )
 	continue;
-      const MatchboxXCombData& dxc = dynamic_cast<const MatchboxXCombData&>(**d);
       if ( (**d).willPassCuts() ) {
 	thetaF *= 1. - (**d).cutWeight();
 	invPAlpha += (**d).cutWeight();
