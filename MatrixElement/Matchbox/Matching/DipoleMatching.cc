@@ -44,16 +44,12 @@ CrossSection DipoleMatching::dSigHatDR() const {
 
   double xme2 = 0.;
 
-  if ( !theShowerKernels ) {
-    xme2 = dipole()->me2();
-  } else {
-    pair<int,int> ij(dipole()->bornEmitter(),
-		     dipole()->bornSpectator());
-    double ccme2 = 
-      dipole()->underlyingBornME()->largeNColourCorrelatedME2(ij,theLargeNBasis);
+  pair<int,int> ij(dipole()->bornEmitter(),
+		   dipole()->bornSpectator());
+  double ccme2 = 
+    dipole()->underlyingBornME()->largeNColourCorrelatedME2(ij,theLargeNBasis);
 
-    xme2 = dipole()->me2Avg(ccme2);
-  }
+  xme2 = dipole()->me2Avg(ccme2);
 
   xme2 /= dipole()->underlyingBornME()->lastXComb().lastAlphaS();
   double bornPDF = bornPDFWeight(dipole()->underlyingBornME()->lastScale());

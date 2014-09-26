@@ -30,7 +30,7 @@
 using namespace Herwig;
 
 ShowerApproximation::ShowerApproximation() 
-  : HandlerBase(), theShowerKernels(true),
+  : HandlerBase(),
     theBelowCutoff(false),
     theFFPtCut(1.0*GeV), theFFScreeningScale(ZERO),
     theFIPtCut(1.0*GeV), theFIScreeningScale(ZERO),
@@ -52,7 +52,7 @@ ShowerApproximation::ShowerApproximation()
 ShowerApproximation::~ShowerApproximation() {}
 
 void ShowerApproximation::setLargeNBasis() {
-  if ( theShowerKernels && !theLargeNBasis ) {
+  if ( !theLargeNBasis ) {
     if ( !dipole()->realEmissionME()->matchboxAmplitude() )
       throw Exception() << "expecting an amplitude object"
 			<< Exception::abortnow;
@@ -328,7 +328,7 @@ double ShowerApproximation::scaleWeight(int rScale, int bScale, int eScale) cons
 
 
 void ShowerApproximation::persistentOutput(PersistentOStream & os) const {
-  os << theShowerKernels << theLargeNBasis
+  os << theLargeNBasis
      << theBornXComb << theRealXComb << theTildeXCombs << theDipole << theBelowCutoff
      << ounit(theFFPtCut,GeV) << ounit(theFFScreeningScale,GeV) 
      << ounit(theFIPtCut,GeV) << ounit(theFIScreeningScale,GeV) 
@@ -345,7 +345,7 @@ void ShowerApproximation::persistentOutput(PersistentOStream & os) const {
 }
 
 void ShowerApproximation::persistentInput(PersistentIStream & is, int) {
-  is >> theShowerKernels >> theLargeNBasis
+  is >> theLargeNBasis
      >> theBornXComb >> theRealXComb >> theTildeXCombs >> theDipole >> theBelowCutoff
      >> iunit(theFFPtCut,GeV) >> iunit(theFFScreeningScale,GeV) 
      >> iunit(theFIPtCut,GeV) >> iunit(theFIScreeningScale,GeV) 
@@ -607,21 +607,6 @@ void ShowerApproximation::Init() {
     ("LargeNBasis",
      "Set the large-N colour basis implementation.",
      &ShowerApproximation::theLargeNBasis, false, false, true, true, false);
-
-  static Switch<ShowerApproximation,bool> interfaceShowerKernels
-    ("ShowerKernels",
-     "Switch between exact and shower approximated dipole functions.",
-     &ShowerApproximation::theShowerKernels, true, false, false);
-  static SwitchOption interfaceShowerKernelsOn
-    (interfaceShowerKernels,
-     "On",
-     "Switch to shower approximated dipole functions.",
-     true);
-  static SwitchOption interfaceShowerKernelsOff
-    (interfaceShowerKernels,
-     "Off",
-     "Switch to full dipole functions.",
-     false);
 
   static Switch<ShowerApproximation,bool> interfaceMaxPtIsMuF
     ("MaxPtIsMuF",

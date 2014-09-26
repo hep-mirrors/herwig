@@ -124,19 +124,7 @@ public:
    * constructed in place of the one driven by the head matrix element
    * or a full subprocess group.
    */
-  virtual bool selectDependentSubProcess() const { return inclusive(); }
-
-  /**
-   * Return true, if the integral over the unresolved emission should be
-   * calculated.
-   */
-  bool inclusive() const;
-
-  /**
-   * Switch on calculating the integral over the unresolved emission should be
-   * calculated.
-   */
-  void setInclusive(bool on = true) { theInclusive = on; }
+  virtual bool selectDependentSubProcess() const { return false; }
 
   /**
    * Fill the projectors object of xcombs to choose subprocesses
@@ -148,7 +136,7 @@ public:
    * Return true, if projectors will be used
    */
   virtual bool willProject() const { 
-    return inclusive() || virtualShowerSubtraction() || loopSimSubtraction();
+    return virtualShowerSubtraction() || loopSimSubtraction();
   }
 
   /**
@@ -156,7 +144,7 @@ public:
    * sections.
    */
   virtual bool groupReweighted() const { 
-    return inclusive() || showerApproximation();
+    return showerApproximation();
   }
 
   /**
@@ -532,12 +520,6 @@ private:
    * Switch on subprocess groups
    */
   bool theSubProcessGroups;
-
-  /**
-   * True, if the integral over the unresolved emission should be
-   * calculated.
-   */
-  bool theInclusive;
 
 private:
 

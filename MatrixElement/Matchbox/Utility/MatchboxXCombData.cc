@@ -32,7 +32,8 @@ MatchboxXCombData::MatchboxXCombData()
     theNDimAmplitude(0), theNDimInsertions(0), 
     theSymmetryFactor(0.0), theOLPMomenta(0),
     filledOLPMomenta(false), theExternalId(0),
-    theInitialized(false), filledExternalMomenta(false) {
+    theInitialized(false), filledExternalMomenta(false),
+    theLastThetaMu(0.0), theLastDipoleME2(0.0), theLastSplittingChannelWeight(0.0) {
   flushCaches();
 }
 
@@ -59,7 +60,8 @@ MatchboxXCombData::MatchboxXCombData(tMEPtr newME)
     theNDimAmplitude(0), theNDimInsertions(0), 
     theSymmetryFactor(0.0), theOLPMomenta(0),
     filledOLPMomenta(false), theExternalId(0),
-    theInitialized(false), filledExternalMomenta(false) {
+    theInitialized(false), filledExternalMomenta(false),
+    theLastThetaMu(0.0), theLastDipoleME2(0.0), theLastSplittingChannelWeight(0.0) {
   flushCaches();
   theMatchboxME = dynamic_ptr_cast<Ptr<MatchboxMEBase>::tptr>(newME);
   theSubtractionDipole = dynamic_ptr_cast<Ptr<SubtractionDipole>::tptr>(newME);
@@ -131,6 +133,9 @@ void MatchboxXCombData::flushCaches() {
     f->second = true;
   filledOLPMomenta = false;
   filledExternalMomenta = false;
+  theLastThetaMu = 0.0; 
+  theLastDipoleME2 = 0.0; 
+  theLastSplittingChannelWeight = 0.0;
 }
 
 void MatchboxXCombData::putCVector(PersistentOStream& os, const CVector& v) {
@@ -182,7 +187,8 @@ void MatchboxXCombData::persistentOutput(PersistentOStream & os) const {
      << theAmplitudeRandomNumbers << theInsertionRandomNumbers 
      << theDiagramWeights << theSingularLimits// << theLastSingularLimit 
      << theStandardModel << theSymmetryFactor
-     << theOLPId << theExternalId;
+     << theOLPId << theExternalId 
+     << theLastThetaMu << theLastDipoleME2 << theLastSplittingChannelWeight;
   putAmplitudeMap(os,theLastAmplitudes);
   putAmplitudeMap(os,theLastLargeNAmplitudes);
   putAmplitudeMap(os,theLastOneLoopAmplitudes);
@@ -204,7 +210,8 @@ void MatchboxXCombData::persistentInput(PersistentIStream & is, int) {
      >> theAmplitudeRandomNumbers >> theInsertionRandomNumbers 
      >> theDiagramWeights >> theSingularLimits// >> theLastSingularLimit 
      >> theStandardModel >> theSymmetryFactor
-     >> theOLPId >> theExternalId;
+     >> theOLPId >> theExternalId
+     >> theLastThetaMu >> theLastDipoleME2 >> theLastSplittingChannelWeight;
   getAmplitudeMap(is,theLastAmplitudes);
   getAmplitudeMap(is,theLastLargeNAmplitudes);
   getAmplitudeMap(is,theLastOneLoopAmplitudes);

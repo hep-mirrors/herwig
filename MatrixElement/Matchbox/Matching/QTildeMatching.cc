@@ -134,10 +134,8 @@ CrossSection QTildeMatching::dSigHatDR() const {
 
   pair<int,int> ij(dipole()->bornEmitter(),
 		   dipole()->bornSpectator());
-  double ccme2 = 
-    theShowerKernels ?
-    dipole()->underlyingBornME()->largeNColourCorrelatedME2(ij,theLargeNBasis) :
-    dipole()->underlyingBornME()->colourCorrelatedME2(ij);
+  double ccme2 =
+    dipole()->underlyingBornME()->largeNColourCorrelatedME2(ij,theLargeNBasis);
 
   Energy2 prop = ZERO;
   if ( dipole()->bornEmitter() > 1 ) {

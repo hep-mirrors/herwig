@@ -34,7 +34,7 @@ using namespace Herwig;
 
 SubtractionDipole::SubtractionDipole() 
   : MEBase(), theSplitting(false), theApply(true), theSubtractionTest(false),
-    theIgnoreCuts(false), theShowerKernel(false),
+    theIgnoreCuts(false),
     theRealEmitter(-1), theRealEmission(-1), theRealSpectator(-1), 
     theBornEmitter(-1), theBornSpectator(-1),
     theRealShowerSubtraction(false), theVirtualShowerSubtraction(false),
@@ -658,34 +658,45 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
 
   lastMEPDFWeight(pdfweight);
 
-  if ( showerApproximation() && realShowerSubtraction() ) {
+  bool needTheDipole = true;
+  if ( showerApproximation() ) {
     assert(!splitting());
     showerApproximation()->setBornXComb(lastXCombPtr());
     showerApproximation()->setRealXComb(realEmissionME()->lastXCombPtr());
     showerApproximation()->setDipole(this);
-    if ( !showerApproximation()->isAboveCutoff() )
+    if ( !showerApproximation()->isAboveCutoff() ) {
       showerApproximation()->wasBelowCutoff();
+      lastMatchboxXComb()->lastThetaMu(0.0);
+    } else {
+      lastMatchboxXComb()->lastThetaMu(1.0);
+    }
+
+    assert(showerApproximation()->largeNBasis());
+    pair<int,int> ij(bornEmitter(),bornSpectator());
+    double ccme2 = 
+      underlyingBornME()->largeNColourCorrelatedME2(ij,showerApproximation()->largeNBasis());
+    double split = me2Avg(ccme2);
+    lastMatchboxXComb()->lastSplittingChannelWeight(split);
+    if ( loopSimSubtraction() )
+      needTheDipole = false;
+  }
+
+  if ( showerApproximation() && realShowerSubtraction() ) {
     if ( !showerApproximation()->isInShowerPhasespace() ) {
       lastMECrossSection(ZERO);
       lastME2(0.0);
       return ZERO;   
     }
-    lastMECrossSection(-showerApproximation()->dSigHatDR());
+    lastMECrossSection(-showerApproximation()->dSigHatDR()*lastThetaMu());
     return lastMECrossSection();
   }
 
   double xme2 = 0.0;
 
-  if ( !showerKernel() )
+  if ( needTheDipole )
     xme2 = me2();
-  else
-    xme2 = me2Avg(-underlyingBornME()->me2());
 
-  if ( xme2 == 0.0 ) {
-    lastMECrossSection(ZERO);
-    lastME2(0.0);
-    return ZERO;
-  }
+  lastMatchboxXComb()->lastDipoleME2(xme2);
 
   double coupl = lastMECouplings();
   coupl *= underlyingBornME()->lastXComb().lastAlphaS();
@@ -717,7 +728,7 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
     sqr(hbarc) * jac * pdfweight * xme2 /
     (2. * realEmissionME()->lastXComb().lastSHat());
 
-  if ( !showerApproximation() ) {
+  if ( !showerApproximation() && xme2 != 0.0 ) {
     double weight = 0.0;
     bool applied = false;
     for ( vector<Ptr<MatchboxReweightBase>::ptr>::const_iterator rw =
@@ -733,23 +744,11 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
   }
 
   if ( showerApproximation() && (virtualShowerSubtraction() || loopSimSubtraction()) ) {
-    assert(!splitting());
-    showerApproximation()->setBornXComb(lastXCombPtr());
-    showerApproximation()->setRealXComb(realEmissionME()->lastXCombPtr());
-    showerApproximation()->setDipole(this);
-    if ( virtualShowerSubtraction() ) {
-      if ( !showerApproximation()->isAboveCutoff() )
-	showerApproximation()->wasBelowCutoff();
-    } else {
-      if ( !showerApproximation()->isAboveCutoff() ) {
-	showerApproximation()->wasBelowCutoff();
-	lastME2(0.0);
-      }
+    if ( loopSimSubtraction() )
       res = ZERO;
-    }
     CrossSection shower = ZERO;
     if ( showerApproximation()->isInShowerPhasespace() )
-      shower = showerApproximation()->dSigHatDR();
+      shower = showerApproximation()->dSigHatDR()*lastThetaMu();
     res -= shower;
   }
 
@@ -1121,7 +1120,7 @@ void SubtractionDipole::generateSubCollision(SubProcess & sub) {
 
 void SubtractionDipole::persistentOutput(PersistentOStream & os) const {
   os << theLastXComb << theSplitting << theApply << theSubtractionTest 
-     << theIgnoreCuts << theShowerKernel << theRealEmissionME << theUnderlyingBornME 
+     << theIgnoreCuts << theRealEmissionME << theUnderlyingBornME 
      << thePartners << theTildeKinematics << theInvertedTildeKinematics 
      << theReweights << theRealEmitter << theRealEmission << theRealSpectator 
      << theSubtractionParameters << theMergingMap << theSplittingMap 
@@ -1137,7 +1136,7 @@ void SubtractionDipole::persistentOutput(PersistentOStream & os) const {
 
 void SubtractionDipole::persistentInput(PersistentIStream & is, int) {
   is >> theLastXComb >> theSplitting >> theApply >> theSubtractionTest 
-     >> theIgnoreCuts >> theShowerKernel >> theRealEmissionME >> theUnderlyingBornME 
+     >> theIgnoreCuts >> theRealEmissionME >> theUnderlyingBornME 
      >> thePartners >> theTildeKinematics >> theInvertedTildeKinematics 
      >> theReweights >> theRealEmitter >> theRealEmission >> theRealSpectator 
      >> theSubtractionParameters >> theMergingMap >> theSplittingMap 

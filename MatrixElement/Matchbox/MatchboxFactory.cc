@@ -38,7 +38,7 @@ MatchboxFactory::MatchboxFactory()
     theOrderInAlphaS(0), theOrderInAlphaEW(0),
     theBornContributions(true), theVirtualContributions(true),
     theRealContributions(true), theIndependentVirtuals(false),
-    theSubProcessGroups(false), theInclusive(false),
+    theSubProcessGroups(false),
     theFactorizationScaleFactor(1.0), theRenormalizationScaleFactor(1.0),
     theFixedCouplings(false), theFixedQEDCouplings(false), theVetoScales(false),
     theDipoleSet(0), theVerbose(false), theInitVerbose(false), 
@@ -974,7 +974,7 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
   os << theDiagramGenerator << theProcessData
      << theNLight << theOrderInAlphaS << theOrderInAlphaEW 
      << theBornContributions << theVirtualContributions
-     << theRealContributions << theIndependentVirtuals << theSubProcessGroups << theInclusive
+     << theRealContributions << theIndependentVirtuals << theSubProcessGroups
      << thePhasespace << theScaleChoice
      << theFactorizationScaleFactor << theRenormalizationScaleFactor
      << theFixedCouplings << theFixedQEDCouplings << theVetoScales
@@ -997,7 +997,7 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
   is >> theDiagramGenerator >> theProcessData
      >> theNLight >> theOrderInAlphaS >> theOrderInAlphaEW 
      >> theBornContributions >> theVirtualContributions
-     >> theRealContributions >> theIndependentVirtuals >> theSubProcessGroups >> theInclusive
+     >> theRealContributions >> theIndependentVirtuals >> theSubProcessGroups
      >> thePhasespace >> theScaleChoice
      >> theFactorizationScaleFactor >> theRenormalizationScaleFactor
      >> theFixedCouplings >> theFixedQEDCouplings >> theVetoScales
@@ -1257,21 +1257,6 @@ void MatchboxFactory::Init() {
      true);
   static SwitchOption interfaceSubProcessGroupsOff
     (interfaceSubProcessGroups,
-     "Off",
-     "Off",
-     false);
-
-  static Switch<MatchboxFactory,bool> interfaceInclusive
-    ("Inclusive",
-     "Switch on or off production of inclusive cross section.",
-     &MatchboxFactory::theInclusive, false, false, false);
-  static SwitchOption interfaceInclusiveOn
-    (interfaceInclusive,
-     "On",
-     "On",
-     true);
-  static SwitchOption interfaceInclusiveOff
-    (interfaceInclusive,
      "Off",
      "Off",
      false);

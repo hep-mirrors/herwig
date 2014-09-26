@@ -402,12 +402,15 @@ public:
 // If needed, insert declarations of virtual function defined in the
 // InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
 
-protected:
+public:
 
   /**
-   * True, if the shower kernels should be reproduced.
+   * A large-N colour basis to be used when reproducing the shower
+   * kernels.
    */
-  bool theShowerKernels;
+  Ptr<ColourBasis>::tptr largeNBasis() const { return theLargeNBasis; }
+
+protected:
 
   /**
    * A large-N colour basis to be used when reproducing the shower

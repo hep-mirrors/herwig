@@ -36,7 +36,7 @@ using namespace Herwig;
 SubtractedME::SubtractedME() 
   : MEGroup(), 
     theRealShowerSubtraction(false), theVirtualShowerSubtraction(false),
-    theLoopSimSubtraction(false), theSubProcessGroups(false), theInclusive(false) {}
+    theLoopSimSubtraction(false), theSubProcessGroups(false) {}
 
 SubtractedME::~SubtractedME() {}
 
@@ -46,11 +46,9 @@ void SubtractedME::factory(Ptr<MatchboxFactory>::tcptr f) { theFactory = f; }
 
 bool SubtractedME::subProcessGroups() const { 
   return 
-    (factory()->subProcessGroups() && !(showerApproximation() || inclusive())) ||
+    (factory()->subProcessGroups() && !showerApproximation()) ||
     factory()->subtractionData() != "" || theSubProcessGroups;
 }
-
-bool SubtractedME::inclusive() const { return factory()->inclusive() || theInclusive; }
 
 Ptr<ShowerApproximation>::tptr SubtractedME::showerApproximation() const { return factory()->showerApproximation(); }
 
@@ -145,12 +143,12 @@ StdXCombPtr SubtractedME::makeXComb(Energy newMaxEnergy, const cPDPair & inc,
 	  if ( !haveDipole )
 	    continue;
 	  collinearHistograms[CollinearSubtractionIndex(*p,make_pair(i,j))] = SubtractionHistogram(0.00001,1000.);
-    ostringstream fname("");
-    fname << factory()->subtractionData();
-    const cPDVector& myproc = CollinearSubtractionIndex(*p,make_pair(i,j)).first;
-    for (cPDVector::const_iterator pp = myproc.begin(); pp != myproc.end(); ++pp) fname << (**pp).PDGName();
-    fname << "-" << i << "-" << j << "-scatter.dat";
-    fnamesCollinearSubtraction[CollinearSubtractionIndex(*p,make_pair(i,j))] = fname.str();
+	  ostringstream fname("");
+	  fname << factory()->subtractionData();
+	  const cPDVector& myproc = CollinearSubtractionIndex(*p,make_pair(i,j)).first;
+	  for (cPDVector::const_iterator pp = myproc.begin(); pp != myproc.end(); ++pp) fname << (**pp).PDGName();
+	  fname << "-" << i << "-" << j << "-scatter.dat";
+	  fnamesCollinearSubtraction[CollinearSubtractionIndex(*p,make_pair(i,j))] = fname.str();
 	  if ( theReal->phasespace() )
 	    res->singularLimits().insert(make_pair(i,j));
 	}
@@ -374,7 +372,7 @@ void SubtractedME::doLoopSimSubtraction() {
 void SubtractedME::setVetoScales(tSubProPtr) const {}
 
 void SubtractedME::fillProjectors() {
-  if ( !inclusive() && !virtualShowerSubtraction() && !loopSimSubtraction() )
+  if ( !virtualShowerSubtraction() && !loopSimSubtraction() )
     return;
   Ptr<StdXCombGroup>::tptr group = 
     dynamic_ptr_cast<Ptr<StdXCombGroup>::tptr>(lastXCombPtr());
@@ -390,62 +388,72 @@ void SubtractedME::fillProjectors() {
 
 double SubtractedME::reweightHead(const vector<tStdXCombPtr>& dep) {
 
-  if ( (inclusive() || loopSimSubtraction()) && !lastXComb().lastProjector() )
-    return 1.;
+  if ( showerApproximation() ) {
 
-  if ( virtualShowerSubtraction() && !lastXComb().lastProjector() ) {
-    return 0.;
-  }
+    // !lastXComb().lastProjector() implies thetaF = 1
 
-  if ( realShowerSubtraction() ) {
-    assert(showerApproximation());
-    bool below = showerApproximation()->belowCutoff();
-    double haveNoDipole = 1.0;
+    if ( (virtualShowerSubtraction() || loopSimSubtraction()) && !lastXComb().lastProjector() )
+      return 0.0;
+
+    if ( realShowerSubtraction() && !lastXComb().lastProjector() )
+      return 1.0;
+
+    double thetaF = 1.;
+    double gDenominator = 0.;
+    double fNumerator = 0.;
+    double fDenominator = 0.;
+    double invPAlpha = 0.;
+
     for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d ) {
       if ( !(**d).matrixElement()->apply() ||
 	   !(**d).kinematicsGenerated() )
 	continue;
-      haveNoDipole *= 1. - (**d).cutWeight();
-      if ( haveNoDipole == 0.0 )
-	break;
-    }
-    if ( below )
-      return haveNoDipole;
-    return 1.;
-  }
-
-  if ( virtualShowerSubtraction() || loopSimSubtraction() || inclusive() ) {
-    if ( virtualShowerSubtraction() ) {
-      assert(showerApproximation());
-      bool above = !showerApproximation()->belowCutoff();
-      if ( above )
-	return 0.;
-    }
-    if ( loopSimSubtraction() ) {
-      assert(showerApproximation());
-      bool below = showerApproximation()->belowCutoff();
-      if ( below )
-	return 0.;
-    }
-    double sum = 0.;
-    double n = 0.;
-    double haveNoDipole = 1.0;
-    for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d ) {
-      if ( !(**d).matrixElement()->apply() ||
-	   !(**d).kinematicsGenerated() )
-	continue;
+      const MatchboxXCombData& dxc = dynamic_cast<const MatchboxXCombData&>(**d);
       if ( (**d).willPassCuts() ) {
-	sum += (**d).lastME2() * (**d).cutWeight();
-	n += (**d).cutWeight();
-	haveNoDipole *= 1. - (**d).cutWeight();
+	thetaF *= 1. - (**d).cutWeight();
+	fNumerator += 
+	  dxc.lastSplittingChannelWeight() *
+	  (**d).cutWeight() *
+	  dxc.lastThetaMu();
+	fDenominator += 
+	  dxc.lastSplittingChannelWeight() *
+	  (**d).cutWeight();
+	if ( virtualShowerSubtraction() ) {
+	  invPAlpha += (**d).cutWeight();
+	  gDenominator += 
+	    dxc.lastDipoleME2() *
+	    (**d).cutWeight() *
+	    (1.-dxc.lastThetaMu());
+	}
       }
     }
-    n /= lastXComb().lastProjector()->cutWeight();
-    double sign = 1.;
-    if ( loopSimSubtraction() )
-      sign = -1.;
-    return
-      sign * n * (1.-haveNoDipole) * lastXComb().lastProjector()->lastME2() * lastXComb().lastProjector()->cutWeight() / sum;
+
+    assert(fDenominator != 0.0);
+
+    if ( realShowerSubtraction() )
+      return (fNumerator/fDenominator)*(1.-thetaF)+thetaF;
+
+    assert(invPAlpha != 0.0);
+    double palpha = lastXComb().lastProjector()->cutWeight()/invPAlpha;
+
+    const MatchboxXCombData& pxc = dynamic_cast<const MatchboxXCombData&>(*lastXComb().lastProjector());
+
+    assert((virtualShowerSubtraction() && gDenominator != 0.0) || 
+	   (loopSimSubtraction() && fDenominator != 0.0));
+
+    double G = 
+      virtualShowerSubtraction() ?
+      // G alpha
+      (1.-thetaF) * (1.-fNumerator/fDenominator) *
+      pxc.lastDipoleME2() * lastXComb().lastProjector()->cutWeight() *
+      (1.-pxc.lastThetaMu()) / gDenominator :
+      // tilde G alpha
+      -(1.-thetaF) *
+      pxc.lastSplittingChannelWeight() * lastXComb().lastProjector()->cutWeight() *
+      pxc.lastThetaMu() / fDenominator;
+
+    return G/palpha;
+
   }
 
   return 1.;
@@ -454,40 +462,33 @@ double SubtractedME::reweightHead(const vector<tStdXCombPtr>& dep) {
 
 double SubtractedME::reweightDependent(tStdXCombPtr xc, const vector<tStdXCombPtr>& dep) {
 
-  if ( (inclusive() || loopSimSubtraction()) && !lastXComb().lastProjector() )
-    return 0.;
+  if ( showerApproximation() ) {
 
-  if ( virtualShowerSubtraction() && !lastXComb().lastProjector() ) {
-    return 0.;
-  }
+    if ( !lastXComb().lastProjector() )
+      return 0.0;
 
-  if ( virtualShowerSubtraction() || inclusive() || loopSimSubtraction() ) {
-    if ( xc != lastXComb().lastProjector() )
-      return 0.;
-    double n = 0.;
-    double haveNoDipole = 1.0;
+    if ( realShowerSubtraction() )
+      return 1.0;
+
+    double thetaF = 1.;
+    double invPAlpha = 0.;
+
     for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d ) {
       if ( !(**d).matrixElement()->apply() ||
 	   !(**d).kinematicsGenerated() )
 	continue;
+      const MatchboxXCombData& dxc = dynamic_cast<const MatchboxXCombData&>(**d);
       if ( (**d).willPassCuts() ) {
-	n += (**d).cutWeight();
-	haveNoDipole *= 1. - (**d).cutWeight();
+	thetaF *= 1. - (**d).cutWeight();
+	invPAlpha += (**d).cutWeight();
       }
     }
-    return n * (1. - haveNoDipole) / lastXComb().lastProjector()->cutWeight();
-  }
 
-  if ( realShowerSubtraction() ) {
-    double haveNoDipole = 1.0;
-    for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d ) {
-      if ( !(**d).kinematicsGenerated() )
-	continue;
-      haveNoDipole *= 1. - (**d).cutWeight();
-      if ( haveNoDipole == 0.0 )
-	break;
-    }
-    return 1. - haveNoDipole;
+    assert(invPAlpha != 0.0);
+    double palpha = lastXComb().lastProjector()->cutWeight()/invPAlpha;
+
+    return 1./palpha;
+
   }
 
   return 1.;
@@ -806,7 +807,7 @@ void SubtractedME::persistentOutput(PersistentOStream & os) const {
      << fnamesSoftSubtraction
      << theRealShowerSubtraction << theVirtualShowerSubtraction
      << theLoopSimSubtraction
-     << theSubProcessGroups << theInclusive;
+     << theSubProcessGroups;
 }
 
 void SubtractedME::persistentInput(PersistentIStream & is, int) {
@@ -815,7 +816,7 @@ void SubtractedME::persistentInput(PersistentIStream & is, int) {
      >> fnamesSoftSubtraction
      >> theRealShowerSubtraction >> theVirtualShowerSubtraction
      >> theLoopSimSubtraction
-     >> theSubProcessGroups >> theInclusive;
+     >> theSubProcessGroups;
   lastMatchboxXComb(theLastXComb);
 }
 

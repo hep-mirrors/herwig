@@ -213,17 +213,6 @@ public:
   void setRealEmissionScales(bool on = true) { theRealEmissionScales = on; }
 
   /**
-   * Return true, if the integral over the unresolved emission should be
-   * calculated.
-   */
-  bool inclusive() const { return theInclusive; }
-
-  /**
-   * Switch on or off inclusive mode.
-   */
-  void setInclusive(bool on = true) { theInclusive = on; }
-
-  /**
    * Set the shower approximation.
    */
   void showerApproximation(Ptr<ShowerApproximation>::tptr app) { theShowerApproximation = app; }
@@ -757,12 +746,6 @@ private:
    * head matrix element.
    */
   bool theSubProcessGroups;
-
-  /**
-   * True, if the integral over the unresolved emission should be
-   * calculated.
-   */
-  bool theInclusive;
 
   /**
    * The phase space generator to be used.

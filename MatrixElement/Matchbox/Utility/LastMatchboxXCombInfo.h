@@ -254,6 +254,21 @@ public:
     lastMatchboxXComb()->fillOLPMomenta(mm);
   }
 
+  /**
+   * Get the IR cutoff weight for the last dipole encountered
+   */
+  double lastThetaMu() const { return lastMatchboxXComb()->lastThetaMu(); }
+
+  /**
+   * Get the value of the last dipole encountered
+   */
+  double lastDipoleME2() const { return lastMatchboxXComb()->lastDipoleME2(); }
+
+  /**
+   * Get the value of the last splitting channel weight
+   */
+  double lastSplittingChannelWeight() const { return lastMatchboxXComb()->lastSplittingChannelWeight(); }
+
 protected:
 
   /**
@@ -412,6 +427,21 @@ protected:
    * Set the OLP process id
    */
   void olpId(int pType, int id) { lastMatchboxXComb()->olpId(pType,id); }
+
+  /**
+   * Set the IR cutoff weight for the last dipole encountered
+   */
+  void lastThetaMu(double n) { lastMatchboxXComb()->lastThetaMu(n); }
+
+  /**
+   * Set the value of the last dipole encountered
+   */
+  void lastDipoleME2(double n) { lastMatchboxXComb()->lastDipoleME2(n); }
+
+  /**
+   * Set the value of the last splitting channel weight
+   */
+  void lastSplittingChannelWeight(double n) { lastMatchboxXComb()->lastSplittingChannelWeight(n); }
 
 protected:
 

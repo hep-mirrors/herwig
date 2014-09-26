@@ -689,18 +689,6 @@ public:
   virtual double me2Avg(double ccme2) const = 0;
 
   /**
-   * Return true, if the cross section should actually return the spin
-   * averaged splitting function times the Born matrix element squared.
-   */
-  bool showerKernel() const { return theShowerKernel; }
-
-  /**
-   * Indicate that the cross section should actually return the spin
-   * averaged splitting function times the Born matrix element squared.
-   */
-  void doShowerKernel(bool is = true) { theShowerKernel = is; }
-
-  /**
    * Return the matrix element squared differential in the variables
    * given by the last call to generateKinematics().
    */
@@ -944,12 +932,6 @@ private:
    * True if cuts should be ignored
    */
   bool theIgnoreCuts;
-
-  /**
-   * True, if the cross section should actually return the spin
-   * averaged splitting function times the Born matrix element squared.
-   */
-  bool theShowerKernel;
 
   /**
    * The real emission matrix element to be considered
