@@ -433,8 +433,12 @@ double SubtractedME::reweightHead(const vector<tStdXCombPtr>& dep) {
     if ( realShowerSubtraction() )
       return (fNumerator/fDenominator)*(1.-thetaF)+thetaF;
 
-    if ( gDenominator == 0.0 )
+    if ( gDenominator == 0.0 && virtualShowerSubtraction() ) {
+      // everything needs to be above the cutoff, in this case
+      // giving rise to G alpha = 0.
+      assert(!showerApproximation()->belowCutoff());
       return 0.0;
+    }
 
     assert(invPAlpha != 0.0);
     double palpha = lastXComb().lastProjector()->cutWeight()/invPAlpha;
