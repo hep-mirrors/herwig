@@ -323,6 +323,50 @@ double ShowerApproximation::scaleWeight(int rScale, int bScale, int eScale) cons
     
 }
 
+double ShowerApproximation::channelWeight(int emitter, int emission, 
+					  int spectator, int bemitter) const {
+  double cfac = 1.;
+  double Nc = generator()->standardModel()->Nc();
+  if ( bornCXComb()->mePartonData()[bemitter]->iColour() == PDT::Colour8 ) {
+    cfac = Nc;
+  } else if ( bornCXComb()->mePartonData()[bemitter]->iColour() == PDT::Colour3 ||
+	      bornCXComb()->mePartonData()[bemitter]->iColour() == PDT::Colour3bar ) {
+    cfac = (sqr(Nc)-1.)/(2.*Nc);
+  } else assert(false);
+  // do the most simple thing for the time being; needs fixing later
+  if ( realCXComb()->mePartonData()[emission]->id() == ParticleID::g ) {
+    Energy2 pipk = 
+      realCXComb()->meMomenta()[emitter] * realCXComb()->meMomenta()[spectator];
+    Energy2 pipj = 
+      realCXComb()->meMomenta()[emitter] * realCXComb()->meMomenta()[emission];
+    Energy2 pjpk = 
+      realCXComb()->meMomenta()[emission] * realCXComb()->meMomenta()[spectator];
+    return cfac *GeV2 * pipk / ( pipj * ( pipj + pjpk ) );
+  }
+  return
+    cfac * GeV2 / (realCXComb()->meMomenta()[emitter] * realCXComb()->meMomenta()[emission]);
+}
+
+double ShowerApproximation::channelWeight() const {
+  double currentChannel = channelWeight(dipole()->realEmitter(),
+					dipole()->realEmission(),
+					dipole()->realSpectator(),
+					dipole()->bornEmitter());
+  if ( currentChannel == 0. )
+    return 0.;
+  double sum = 0.;
+  for ( vector<Ptr<SubtractionDipole>::ptr>::const_iterator dip =
+	  dipole()->partnerDipoles().begin();
+	dip != dipole()->partnerDipoles().end(); ++dip )
+    sum += channelWeight((**dip).realEmitter(),
+			 (**dip).realEmission(),
+			 (**dip).realSpectator(),
+			 (**dip).bornEmitter());
+  assert(sum > 0.0);
+  return currentChannel / sum;
+}
+
+
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 

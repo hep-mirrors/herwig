@@ -73,17 +73,6 @@ public:
    */
   virtual double me2() const;
 
-  /**
-   * Generate a weight for the given dipole channel
-   */
-  double channelWeight(int emitter, int emission, 
-		       int spectator, int bemitter) const;
-
-  /**
-   * Generate a normalized weight taking into account all channels
-   */
-  double channelWeight() const;
-
 public:
 
   /** @name Functions used by the persistent I/O system. */

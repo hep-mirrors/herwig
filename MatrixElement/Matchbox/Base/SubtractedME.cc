@@ -390,76 +390,11 @@ double SubtractedME::reweightHead(const vector<tStdXCombPtr>& dep) {
 
   if ( showerApproximation() ) {
 
-    // !lastXComb().lastProjector() implies thetaF = 1
-
-    if ( (virtualShowerSubtraction() || loopSimSubtraction()) && !lastXComb().lastProjector() )
-      return 0.0;
-
-    double thetaF = 1.;
-    double gDenominator = 0.;
-    double fNumerator = 0.;
-    double fDenominator = 0.;
-    double invPAlpha = 0.;
-
-    for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d ) {
-      if ( !(**d).matrixElement()->apply() ||
-	   !(**d).kinematicsGenerated() )
-	continue;
-      const MatchboxXCombData& dxc = dynamic_cast<const MatchboxXCombData&>(**d);
-      if ( (**d).willPassCuts() ) {
-	thetaF *= 1. - (**d).cutWeight();
-	fNumerator += 
-	  dxc.lastSplittingChannelWeight() *
-	  (**d).cutWeight() *
-	  dxc.lastThetaMu();
-	fDenominator += 
-	  dxc.lastSplittingChannelWeight() *
-	  (**d).cutWeight();
-	if ( virtualShowerSubtraction() ) {
-	  invPAlpha += (**d).cutWeight();
-	  gDenominator += 
-	    dxc.lastDipoleME2() *
-	    (**d).cutWeight() *
-	    (1.-dxc.lastThetaMu());
-	}
-      }
-    }
-
-    if ( realShowerSubtraction() && thetaF == 1. )
-      return 1.0;
-
-    assert(fDenominator != 0.0);
-
     if ( realShowerSubtraction() )
-      return (fNumerator/fDenominator)*(1.-thetaF)+thetaF;
+      return 1.;
 
-    if ( gDenominator == 0.0 && virtualShowerSubtraction() ) {
-      // everything needs to be above the cutoff, in this case
-      // giving rise to G alpha = 0.
-      assert(!showerApproximation()->belowCutoff());
-      return 0.0;
-    }
-
-    assert(invPAlpha != 0.0);
-    double palpha = lastXComb().lastProjector()->cutWeight()/invPAlpha;
-
-    const MatchboxXCombData& pxc = dynamic_cast<const MatchboxXCombData&>(*lastXComb().lastProjector());
-
-    assert((virtualShowerSubtraction() && gDenominator != 0.0) || 
-	   (loopSimSubtraction() && fDenominator != 0.0));
-
-    double G = 
-      virtualShowerSubtraction() ?
-      // G alpha
-      (1.-thetaF) * (1.-fNumerator/fDenominator) *
-      pxc.lastDipoleME2() * lastXComb().lastProjector()->cutWeight() *
-      (1.-pxc.lastThetaMu()) / gDenominator :
-      // tilde G alpha
-      -(1.-thetaF) *
-      pxc.lastSplittingChannelWeight() * lastXComb().lastProjector()->cutWeight() *
-      pxc.lastThetaMu() / fDenominator;
-
-    return G/palpha;
+    if ( virtualShowerSubtraction() || loopSimSubtraction() )
+      return 0.;
 
   }
 
@@ -474,29 +409,31 @@ double SubtractedME::reweightDependent(tStdXCombPtr xc, const vector<tStdXCombPt
     if ( realShowerSubtraction() )
       return 1.0;
 
-    if ( !lastXComb().lastProjector() )
-      return 0.0;
+    if ( virtualShowerSubtraction() || loopSimSubtraction() ) {
 
-    if ( xc != lastXComb().lastProjector() )
-      return 0.0;
+      if ( !lastXComb().lastProjector() )
+	return 0.0;
 
-    double thetaF = 1.;
-    double invPAlpha = 0.;
+      if ( xc != lastXComb().lastProjector() )
+	return 0.0;
 
-    for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d ) {
-      if ( !(**d).matrixElement()->apply() ||
-	   !(**d).kinematicsGenerated() )
-	continue;
-      if ( (**d).willPassCuts() ) {
-	thetaF *= 1. - (**d).cutWeight();
-	invPAlpha += (**d).cutWeight();
+      double invPAlpha = 0.;
+
+      for ( vector<tStdXCombPtr>::const_iterator d = dep.begin(); d != dep.end(); ++d ) {
+	if ( !(**d).matrixElement()->apply() ||
+	     !(**d).kinematicsGenerated() )
+	  continue;
+	if ( (**d).willPassCuts() ) {
+	  invPAlpha += (**d).cutWeight();
+	}
       }
+
+      assert(invPAlpha != 0.0);
+      double palpha = xc->cutWeight()/invPAlpha;
+
+      return 1./palpha;
+
     }
-
-    assert(invPAlpha != 0.0);
-    double palpha = xc->cutWeight()/invPAlpha;
-
-    return 1./palpha;
 
   }
 

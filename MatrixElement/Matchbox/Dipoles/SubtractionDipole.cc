@@ -26,6 +26,7 @@
 #include "ThePEG/PDF/PartonExtractor.h"
 #include "Herwig++/MatrixElement/Matchbox/Phasespace/TildeKinematics.h"
 #include "Herwig++/MatrixElement/Matchbox/Phasespace/InvertedTildeKinematics.h"
+#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
 
 #include <iterator>
 using std::ostream_iterator;
@@ -659,6 +660,10 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
   lastMEPDFWeight(pdfweight);
 
   bool needTheDipole = true;
+  CrossSection shower = ZERO;
+
+  double lastThetaMu = 1.0;
+
   if ( showerApproximation() ) {
     assert(!splitting());
     showerApproximation()->setBornXComb(lastXCombPtr());
@@ -666,29 +671,24 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
     showerApproximation()->setDipole(this);
     if ( !showerApproximation()->isAboveCutoff() ) {
       showerApproximation()->wasBelowCutoff();
-      lastMatchboxXComb()->lastThetaMu(0.0);
+      lastThetaMu = 0.0;
     } else {
-      lastMatchboxXComb()->lastThetaMu(1.0);
+      lastThetaMu = 1.0;;
     }
-
-    assert(showerApproximation()->largeNBasis());
-    pair<int,int> ij(bornEmitter(),bornSpectator());
-    double ccme2 = 
-      underlyingBornME()->largeNColourCorrelatedME2(ij,showerApproximation()->largeNBasis());
-    double split = me2Avg(ccme2);
-    lastMatchboxXComb()->lastSplittingChannelWeight(split);
-    if ( loopSimSubtraction() || realShowerSubtraction() )
+    if ( lastThetaMu > 0.0 &&
+	 showerApproximation()->isInShowerPhasespace() ) {
+      if ( realShowerSubtraction() )
+	shower = showerApproximation()->dSigHatDR()*lastThetaMu;
+      if ( virtualShowerSubtraction() || loopSimSubtraction() )
+	shower = -showerApproximation()->dSigHatDR()*lastThetaMu;
+    }
+    if ( realShowerSubtraction() && lastThetaMu == 1.0 )
       needTheDipole = false;
-  }
-
-  if ( showerApproximation() && realShowerSubtraction() ) {
-    if ( !showerApproximation()->isInShowerPhasespace() ) {
-      lastMECrossSection(ZERO);
-      lastME2(0.0);
-      return ZERO;   
-    }
-    lastMECrossSection(-showerApproximation()->dSigHatDR()*lastThetaMu());
-    return lastMECrossSection();
+    if ( virtualShowerSubtraction() && lastThetaMu == 0.0 )
+      needTheDipole = false;
+    if ( MatchboxFactory::currentFactory()->loopSimCorrections() ||
+	 MatchboxFactory::currentFactory()->meCorrectionsOnly() )
+      needTheDipole = false;
   }
 
   double xme2 = 0.0;
@@ -696,7 +696,32 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
   if ( needTheDipole )
     xme2 = me2();
 
-  lastMatchboxXComb()->lastDipoleME2(xme2);
+  if ( MatchboxFactory::currentFactory()->loopSimCorrections() ||
+       MatchboxFactory::currentFactory()->meCorrectionsOnly() ) {
+
+    assert(showerApproximation());
+    xme2 = realEmissionME()->me2() * showerApproximation()->channelWeight();
+
+    double rws =
+      pow(underlyingBornME()->lastXComb().lastAlphaS()/
+	  realEmissionME()->lastXComb().lastAlphaS(),
+	  realEmissionME()->orderInAlphaS());
+
+    xme2 *= rws;
+
+    double rwe =
+      pow(underlyingBornME()->lastXComb().lastAlphaEM()/
+	  realEmissionME()->lastXComb().lastAlphaEM(),
+	  underlyingBornME()->orderInAlphaEW());
+
+    xme2 *= rwe;
+
+  }
+
+  if ( realShowerSubtraction() )
+    xme2 *= 1. - lastThetaMu;
+  if ( virtualShowerSubtraction() || loopSimSubtraction() )
+    xme2 *= lastThetaMu;
 
   double coupl = lastMECouplings();
   coupl *= underlyingBornME()->lastXComb().lastAlphaS();
@@ -722,6 +747,7 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
   }
 
   lastMECouplings(coupl);
+
   lastME2(xme2);
 
   CrossSection res = 
@@ -743,16 +769,7 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
       res *= weight;
   }
 
-  if ( showerApproximation() && (virtualShowerSubtraction() || loopSimSubtraction()) ) {
-    if ( loopSimSubtraction() )
-      res = ZERO;
-    CrossSection shower = ZERO;
-    if ( showerApproximation()->isInShowerPhasespace() )
-      shower = showerApproximation()->dSigHatDR()*lastThetaMu();
-    res -= shower;
-  }
-
-  lastMECrossSection(-res);
+  lastMECrossSection(-res-shower);
 
   logDSigHatDR(jac);
 

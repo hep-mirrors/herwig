@@ -594,36 +594,6 @@ namespace Herwig {
      */
     void clearheljamp() { theHelJamp.clear(); }
 
-    /**
-     * Set the IR cutoff weight for the last dipole encountered
-     */
-    void lastThetaMu(double n) { theLastThetaMu = n; }
-
-    /**
-     * Get the IR cutoff weight for the last dipole encountered
-     */
-    double lastThetaMu() const { return theLastThetaMu; }
-
-    /**
-     * Set the value of the last dipole encountered
-     */
-    void lastDipoleME2(double n) { theLastDipoleME2 = n; }
-
-    /**
-     * Get the value of the last dipole encountered
-     */
-    double lastDipoleME2() const { return theLastDipoleME2; }
-
-    /**
-     * Set the value of the last splitting channel weight
-     */
-    void lastSplittingChannelWeight(double n) { theLastSplittingChannelWeight = n; }
-
-    /**
-     * Get the value of the last splitting channel weight
-     */
-    double lastSplittingChannelWeight() const { return theLastSplittingChannelWeight; }
-
   public:
 
     /** @name Functions used by the persistent I/O system. */
@@ -924,21 +894,6 @@ namespace Herwig {
      * caching of different colour structures (MadGraph-Interface)
      */
     map<vector<int>,vector < complex<double> > > theHelJamp;
-
-    /**
-     * IR cutoff weight for the last dipole encountered
-     */
-    double theLastThetaMu;
-
-    /**
-     * The value of the last dipole encountered
-     */
-    double theLastDipoleME2;
-
-    /**
-     * The value of the last splitting channel weight
-     */
-    double theLastSplittingChannelWeight;
 
   };
 
