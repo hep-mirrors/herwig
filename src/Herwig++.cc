@@ -290,7 +290,7 @@ void HerwigRun(string runname, string setupfile,
   }
 
   if ( ! setupfile.empty() ) {
-    string msg = Repository::modifyEventGenerator(*eg, setupfile, cout);
+    string msg = Repository::modifyEventGenerator(*eg, setupfile, cout, integrationJob);
     if ( ! msg.empty() ) cerr << msg << '\n';
     if ( integrationJob )
       return;
