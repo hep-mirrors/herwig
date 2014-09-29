@@ -16,8 +16,8 @@ def fillAbove(desthisto, sourcehistosbyq2):
     for q2,h in  sorted(sourcehistosbyq2.iteritems(),reverse=True) :
         q2low=q2
         for i in range(0,h.numBins) :
-            if(h.bins[i].lowEdge  >= q2low and 
-               h.bins[i].lowEdge  <  q2high ) :
+            if(h.bins[i].xMin  >= q2low and 
+               h.bins[i].xMin  <  q2high ) :
                 desthisto.bins[i] += h.bins[i]
         q2high=q2
 
@@ -103,7 +103,7 @@ for hpath,hsets in inhistos.iteritems():
         elif(type(hsets.values()[0])==yoda.core.Profile1D) :
             outhistos[hpath] = yoda.core.Profile1D(hsets.values()[0].path,hsets.values()[0].title)
             for i in range(0,hsets.values()[0].numBins) :
-                outhistos[hpath].addBin(hsets.values()[0].bins[i].lowEdge,hsets.values()[0].bins[i].highEdge)
+                outhistos[hpath].addBin(hsets.values()[0].bins[i].xMin,hsets.values()[0].bins[i].xMax)
         else :
             logging.error("Histogram %s is of unknown type" % hpath)
             sys.exit(1)
