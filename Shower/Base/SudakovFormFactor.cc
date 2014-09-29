@@ -441,7 +441,10 @@ bool SudakovFormFactor::getMapping(SpinPtr & output, RhoDMatrix & mapping,
     mapping=RhoDMatrix(spin,false);
     // do the spin dependent bit
     if(spin==PDT::Spin0) {
-      ScalarWaveFunction::constructSpinInfo(&particle,outgoing,true);
+      ScalarSpinPtr sspin=dynamic_ptr_cast<ScalarSpinPtr>(particle.spinInfo());
+      if(!sspin) {
+	ScalarWaveFunction::constructSpinInfo(&particle,outgoing,true);
+      }
       output=particle.spinInfo();
       return false;
     }

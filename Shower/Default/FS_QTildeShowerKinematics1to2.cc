@@ -70,7 +70,12 @@ updateChildren(const tShowerParticlePtr parent,
   // sort out the helicity stuff 
   if(! ShowerHandler::currentHandler()->evolver()->correlations()) return;
   SpinPtr pspin(parent->spinInfo());
-  if(!pspin) return;
+  // set the momenta of the children
+  ShowerParticleVector::const_iterator pit;
+  for(pit=children.begin();pit!=children.end();++pit) {
+    setMomentum(*pit,true);
+  }
+  if(!pspin ||  !ShowerHandler::currentHandler()->evolver()->spinCorrelations() ) return;
   Energy2 t = sqr(scale())*z()*(1.-z());
   IdList ids;
   ids.push_back(parent->id());
@@ -82,7 +87,6 @@ updateChildren(const tShowerParticlePtr parent,
   vertex->ME(splittingFn()->matrixElement(z(),t,ids,phi()));
   // set the incoming particle for the vertex
   parent->spinInfo()->decayVertex(vertex);
-  ShowerParticleVector::const_iterator pit;
   for(pit=children.begin();pit!=children.end();++pit) {
     // construct the spin info for the children
     constructSpinInfo(*pit,true);

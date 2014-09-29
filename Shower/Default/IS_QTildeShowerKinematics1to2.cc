@@ -65,8 +65,17 @@ updateParent(const tShowerParticlePtr parent,
   parent->x(children[0]->x()/z());
   // sort out the helicity stuff 
   if(! ShowerHandler::currentHandler()->evolver()->correlations()) return;
+  // construct the spin info for parent and timelike child
+  // temporary assignment of shower parameters to calculate correlations
+  parent->showerParameters().alpha = parent->x();
+  children[1]->showerParameters().alpha = (1.-z()) * parent->x();
+  children[1]->showerParameters().ptx   = - cos(phi()) * pT();
+  children[1]->showerParameters().pty   = - sin(phi()) * pT();
+  children[1]->showerParameters().pt    = pT();
+  setMomentum(parent,false);
+  setMomentum(children[1],true);
   SpinPtr pspin(children[0]->spinInfo());
-  if(!pspin) return;
+  if(!pspin ||  !ShowerHandler::currentHandler()->evolver()->spinCorrelations() ) return;
   // compute the matrix element for spin correlations
   IdList ids;
   ids.push_back(parent->id());
@@ -80,13 +89,6 @@ updateParent(const tShowerParticlePtr parent,
   // set the incoming particle for the vertex 
   // (in reality the first child as going backwards)
   pspin->decayVertex(vertex);
-  // construct the spin info for parent and timelike child
-  // temporary assignment of shower parameters to calculate correlations
-  parent->showerParameters().alpha = parent->x();
-  children[1]->showerParameters().alpha = (1.-z()) * parent->x();
-  children[1]->showerParameters().ptx   = - cos(phi()) * pT();
-  children[1]->showerParameters().pty   = - sin(phi()) * pT();
-  children[1]->showerParameters().pt    = pT();
   // construct the spin infos
   constructSpinInfo(parent,false);
   constructSpinInfo(children[1],true);

@@ -79,6 +79,11 @@ protected:
   void setBasis(const Lorentz5Momentum &p, const Lorentz5Momentum & n, Frame frame);
 
   /**
+   *  Set a preliminary momentum for the particle
+   */
+  void setMomentum(tShowerParticlePtr,bool timelike) const;
+
+  /**
    *  Construct the spin info object for a shower particle
    */
   void constructSpinInfo(tShowerParticlePtr,bool timelike) const;

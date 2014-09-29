@@ -44,75 +44,61 @@ sudakov2Momentum(double alpha, double beta, Energy px, Energy py) const {
     throw Exception() << "beta infinite in "
 		      << "QTildeShowerKinematics1to2::sudakov2Momentum()"
 		      << Exception::eventerror;
-  Lorentz5Momentum dq;
+  Boost beta_bb;
   if(frame()==BackToBack) {
-    const Boost beta_bb = -(_pVector + _nVector).boostVector();
-    Lorentz5Momentum p_bb = _pVector;
-    Lorentz5Momentum n_bb = _nVector; 
-    p_bb.boost( beta_bb );
-    n_bb.boost( beta_bb );
-    // set first in b2b frame along z-axis (assuming that p and n are
-    // b2b as checked above)
-    dq=Lorentz5Momentum(ZERO, ZERO, (alpha - beta)*p_bb.vect().mag(), 
-			alpha*p_bb.t() + beta*n_bb.t());
-    // add transverse components
-    dq.setX(px);
-    dq.setY(py);
-    // rotate to have z-axis parallel to p
-    // this rotation changed by PR to a different rotation with the same effect
-    // but different azimuthal angle to make implementing spin correlations easier
-    //    dq.rotateUz( unitVector(p_bb.vect()) );
-    Axis axis(p_bb.vect().unit());
-    LorentzRotation rot;
-    if(axis.perp2()>0.) {
-      double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
-      rot.rotate(acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
-    }
-    else if(axis.z()<0.) {
-      rot.rotate(Constants::pi,Axis(1.,0.,0.));
-    }
-    dq.transform(rot);
-    // boost back 
-    dq.boost( -beta_bb ); 
-    dq.rescaleMass(); 
-    // return the momentum
+    beta_bb = -(_pVector + _nVector).boostVector();
   }
   else if(frame()==Rest) {
-    const Boost beta_bb = -pVector().boostVector();
-    Lorentz5Momentum p_bb = pVector();
-    Lorentz5Momentum n_bb = nVector(); 
-    p_bb.boost( beta_bb );
-    n_bb.boost( beta_bb );
-    // set first in b2b frame along z-axis (assuming that p and n are
-    // b2b as checked above)
-    dq=Lorentz5Momentum (ZERO, ZERO, 0.5*beta*pVector().mass(), 
-			 alpha*pVector().mass() + 0.5*beta*pVector().mass());
-    // add transverse components
-    dq.setX(px);
-    dq.setY(py);
-    // changed to be same as other case
-//     dq.rotateUz( unitVector(n_bb.vect()) );
-    Axis axis(n_bb.vect().unit());
-    LorentzRotation rot;
-    if(axis.perp2()>0.) {
-      double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
-      rot.rotate(acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
-    }
-    else if(axis.z()<0.) {
-      rot.rotate(Constants::pi,Axis(1.,0.,0.));
-    }
-    dq.transform(rot);
-    // boost back 
-    dq.boost( -beta_bb ); 
-    dq.rescaleMass();
+    beta_bb = -pVector().boostVector();
   }
   else
     assert(false);
+  Lorentz5Momentum p_bb = pVector();
+  Lorentz5Momentum n_bb = nVector(); 
+  p_bb.boost( beta_bb );
+  n_bb.boost( beta_bb );
+  // momentum without transverse components
+  Lorentz5Momentum dq;
+  if(frame()==BackToBack) {
+    dq=Lorentz5Momentum(ZERO, ZERO, (alpha - beta)*p_bb.vect().mag(), 
+			alpha*p_bb.t() + beta*n_bb.t());
+  }
+  else if(frame()==Rest) {
+    dq=Lorentz5Momentum (ZERO, ZERO, 0.5*beta*pVector().mass(), 
+			 alpha*pVector().mass() + 0.5*beta*pVector().mass());
+  }
+  else
+    assert(false);
+  // add transverse components
+  dq.setX(px);
+  dq.setY(py);
+  // rotate to have z-axis parallel to p/n
+  Axis axis;
+  if(frame()==BackToBack) {
+    axis = p_bb.vect().unit();
+  }
+  else if(frame()==Rest) {
+    axis = n_bb.vect().unit();
+  }
+  else
+    assert(false);
+  LorentzRotation rot;
+  if(axis.perp2()>0.) {
+    double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
+    rot.rotate(acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+  }
+  else if(axis.z()<0.) {
+    rot.rotate(Constants::pi,Axis(1.,0.,0.));
+  }
+  dq.transform(rot);
+  // boost back 
+  dq.boost( -beta_bb ); 
+  dq.rescaleMass();
   return dq; 
 }
 
-void QTildeShowerKinematics1to2::constructSpinInfo(tShowerParticlePtr particle,
-						   bool timeLike) const {
+void QTildeShowerKinematics1to2::setMomentum(tShowerParticlePtr particle,
+					     bool timeLike) const {
   Energy mass = particle->data().mass(); 
   // calculate the momentum of the assuming on-shell
   Energy2 pt2 = sqr(particle->showerParameters().pt);
@@ -122,9 +108,13 @@ void QTildeShowerKinematics1to2::constructSpinInfo(tShowerParticlePtr particle,
 					  particle->showerParameters().ptx,
 					  particle->showerParameters().pty);
   porig.setMass(mass);
+  particle->set5Momentum(porig);
+}
+
+void QTildeShowerKinematics1to2::constructSpinInfo(tShowerParticlePtr particle,
+						   bool timeLike) const {
   // now construct the required spininfo and calculate the basis states
   PDT::Spin spin(particle->dataPtr()->iSpin());
-  particle->set5Momentum(porig);
   if(spin==PDT::Spin0) {
     ScalarWaveFunction::constructSpinInfo(particle,outgoing,timeLike);
   }

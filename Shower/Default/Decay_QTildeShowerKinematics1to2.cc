@@ -16,6 +16,12 @@
 #include "Herwig++/Shower/SplittingFunctions/SplittingFunction.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include <cassert>
+#include "Herwig++/Shower/ShowerHandler.h"
+#include "Herwig++/Shower/Base/Evolver.h"
+#include "Herwig++/Shower/Base/PartnerFinder.h"
+#include "Herwig++/Shower/Base/ShowerModel.h"
+#include "Herwig++/Shower/Base/KinematicsReconstructor.h"
+#include "Herwig++/Shower/Base/ShowerVertex.h"
 
 using namespace Herwig;
 
@@ -47,6 +53,13 @@ updateChildren(const tShowerParticlePtr parent,
   // make the products children of the parent
   parent->addChild(children[0]);
   parent->addChild(children[1]);
+  if(! ShowerHandler::currentHandler()->evolver()->correlations()) return;
+  SpinPtr pspin(parent->spinInfo());
+  // set the momenta of the children
+  ShowerParticleVector::const_iterator pit;
+  for(pit=children.begin();pit!=children.end();++pit) {
+    setMomentum(*pit,true);
+  }
 }
 
 void Decay_QTildeShowerKinematics1to2::
