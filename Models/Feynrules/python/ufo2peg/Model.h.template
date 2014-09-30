@@ -10,7 +10,7 @@
 #define HERWIG_${ModelName}_H
 
 // This is the declaration of the ${ModelName} class.
-#include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "Herwig++/Models/General/BSMModel.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -26,8 +26,7 @@ const Complex ii = Complex(0,1);
  *
  *  @see StandardModel
  */
-//class ${ModelName}: public StandardModel {
-class ${ModelName}: public StandardModel {
+class ${ModelName}: public BSMModel {
 
 public:
   /// Default constructor
