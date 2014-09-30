@@ -5,7 +5,7 @@
 // This is the declaration of the SextetModel class.
 //
 
-#include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "Herwig++/Models/General/BSMModel.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
@@ -26,7 +26,7 @@ using namespace ThePEG;
  * @see \ref SextetModelInterfaces "The interfaces"
  * defined for SextetModel.
  */
-class SextetModel: public StandardModel {
+class SextetModel: public BSMModel {
 
 public:
 
