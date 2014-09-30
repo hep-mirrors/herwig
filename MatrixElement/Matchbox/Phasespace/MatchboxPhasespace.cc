@@ -335,11 +335,11 @@ double MatchboxPhasespace::spaceLikeWeight(const Tree2toNDiagram& diag,
 
   res.second = incoming - res.second;
 
-  Energy2 mass2 = sqr(diag.allPartons()[branch]->mass());
-  Energy2 width2 = sqr(diag.allPartons()[branch]->width());
+  Energy2 mass2 = sqr(diag.allPartons()[children.first]->mass());
+  Energy2 width2 = sqr(diag.allPartons()[children.first]->width());
 
-  if ( abs(diag.allPartons()[branch]->id()) >= theLoopParticleIdMin
-       && (diag.allPartons()[branch]->id()) <= theLoopParticleIdMax ) { // "loop particle"
+  if ( abs(diag.allPartons()[children.first]->id()) >= theLoopParticleIdMin
+       && (diag.allPartons()[children.first]->id()) <= theLoopParticleIdMax ) { // "loop particle"
 
     if ( abs((res.second.m2()-mass2)/lastSHat()) > flatCut ) {
       res.first /=
