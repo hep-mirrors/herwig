@@ -26,6 +26,11 @@ parser.add_argument(
 	metavar='SLHA_file', 
 	help='SLHA spectrum file.'
 )
+parser.add_argument(
+    '-o','--output',
+    default="FRModel_slha.model",
+    help="Name for the output file"
+)
 
 args = parser.parse_args()
 
@@ -87,7 +92,7 @@ while True:
 	else:
 		break
 
-
-with open('tmp2','w') as f:
+print "Output written as : ",args.output
+with open(args.output,'w') as f:
 	f.write(newcontent)
 	f.write('\n')
