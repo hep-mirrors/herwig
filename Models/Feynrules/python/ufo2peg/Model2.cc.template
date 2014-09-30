@@ -27,7 +27,7 @@ using namespace Herwig;
 
 void ${ModelName}::doinit() {
   ${doinit}
-  StandardModel::doinit();
+  BSMModel::doinit();
   ${addVertex}
 
 }

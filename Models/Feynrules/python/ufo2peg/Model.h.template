@@ -24,7 +24,7 @@ const Complex ii = Complex(0,1);
  *  FeynRules Model class and implements additional FeynRules Model couplings, 
  *  access to vertices for helicity amplitude calculations etc.
  *
- *  @see StandardModel
+ *  @see BSMModel
  */
 class ${ModelName}: public BSMModel {
 

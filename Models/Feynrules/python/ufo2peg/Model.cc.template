@@ -39,7 +39,7 @@ IBPtr ${ModelName}::fullclone() const {
 
 void ${ModelName}::doinit() {
   ${doinit}
-  StandardModel::doinit();
+  BSMModel::doinit();
   ${addVertex}
 
 }
@@ -53,7 +53,7 @@ void ${ModelName}::persistentInput(PersistentIStream & is, int) {
 }
 
 // Static variable needed for the type description system in ThePEG.
-DescribeClass<${ModelName},StandardModel>
+DescribeClass<${ModelName},BSMModel>
   describeThePEG${ModelName}("Herwig::${ModelName}", "${ModelName}.so");
 
 void ${ModelName}::Init() {
@@ -61,7 +61,7 @@ void ${ModelName}::Init() {
 
 
 static ClassDocumentation<${ModelName}> documentation
-  ("The ${ModelName} class inherits from StandardModel"
+  ("The ${ModelName} class inherits from BSMModel"
    "and supplies additional couplings and access to the ${ModelName}"
    "vertices for helicity amplitude calculations" );
 
