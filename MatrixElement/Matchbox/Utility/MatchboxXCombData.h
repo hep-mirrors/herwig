@@ -624,20 +624,17 @@ namespace Herwig {
     /**
      * Caching for the external madgraph colour structures
      */
-    
-    const map<vector<int>,vector < complex<double> > > heljamp() const{return theHelJamp;}
+    const map<vector<int>,vector < complex<double> > >& heljamp() const { return theHelJamp; }
     
     /**
      *  pushback the madgraph colour structures
      */
-
-    void pushheljamp(vector<int> hel,complex<double> jamp){theHelJamp[hel].push_back(jamp);}
+    void pushheljamp(const vector<int>& hel, const complex<double>& jamp) { theHelJamp[hel].push_back(jamp); }
     
     /**
      * clear the madgraph colour structures
      */
-
-    void clearheljamp() { theHelJamp.clear();}
+    void clearheljamp() { theHelJamp.clear(); }
 
   public:
 
@@ -954,9 +951,8 @@ namespace Herwig {
     bool filledExternalMomenta;
     
     /**
-    * caching of different colour structures (MadGraph-Interface)
-    */
-  
+     * caching of different colour structures (MadGraph-Interface)
+     */
     map<vector<int>,vector < complex<double> > > theHelJamp;
 
   };

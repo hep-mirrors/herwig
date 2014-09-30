@@ -144,6 +144,16 @@ public:
   //@}
 
   /**
+   * Fill statistics data from an XML element
+   */
+  void fromXML(const XML::Element&);
+
+  /**
+   * Return an XML element for the data of this statistics
+   */
+  XML::Element toXML() const;
+
+  /**
    * The standard Init function used to initialize the interfaces.
    * Called exactly once for each class by the class description system
    * before the main function starts or

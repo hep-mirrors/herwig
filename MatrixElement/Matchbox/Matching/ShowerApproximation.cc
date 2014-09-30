@@ -30,14 +30,14 @@
 using namespace Herwig;
 
 ShowerApproximation::ShowerApproximation() 
-  : HandlerBase(), theShowerKernels(true),
+  : HandlerBase(),
     theBelowCutoff(false),
     theFFPtCut(1.0*GeV), theFFScreeningScale(ZERO),
     theFIPtCut(1.0*GeV), theFIScreeningScale(ZERO),
     theIIPtCut(1.0*GeV), theIIScreeningScale(ZERO),
     theRestrictPhasespace(true), theHardScaleFactor(1.0),
     theRenormalizationScaleFactor(1.0), theFactorizationScaleFactor(1.0),
-    theExtrapolationX(0.65),
+    theExtrapolationX(1.0),
     theRealEmissionScaleInSubtraction(showerScale), 
     theBornScaleInSubtraction(showerScale), 
     theEmissionScaleInSubtraction(showerScale), 
@@ -52,7 +52,7 @@ ShowerApproximation::ShowerApproximation()
 ShowerApproximation::~ShowerApproximation() {}
 
 void ShowerApproximation::setLargeNBasis() {
-  if ( theShowerKernels && !theLargeNBasis ) {
+  if ( !theLargeNBasis ) {
     if ( !dipole()->realEmissionME()->matchboxAmplitude() )
       throw Exception() << "expecting an amplitude object"
 			<< Exception::abortnow;
@@ -323,12 +323,56 @@ double ShowerApproximation::scaleWeight(int rScale, int bScale, int eScale) cons
     
 }
 
+double ShowerApproximation::channelWeight(int emitter, int emission, 
+					  int spectator, int bemitter) const {
+  double cfac = 1.;
+  double Nc = generator()->standardModel()->Nc();
+  if ( bornCXComb()->mePartonData()[bemitter]->iColour() == PDT::Colour8 ) {
+    cfac = Nc;
+  } else if ( bornCXComb()->mePartonData()[bemitter]->iColour() == PDT::Colour3 ||
+	      bornCXComb()->mePartonData()[bemitter]->iColour() == PDT::Colour3bar ) {
+    cfac = (sqr(Nc)-1.)/(2.*Nc);
+  } else assert(false);
+  // do the most simple thing for the time being; needs fixing later
+  if ( realCXComb()->mePartonData()[emission]->id() == ParticleID::g ) {
+    Energy2 pipk = 
+      realCXComb()->meMomenta()[emitter] * realCXComb()->meMomenta()[spectator];
+    Energy2 pipj = 
+      realCXComb()->meMomenta()[emitter] * realCXComb()->meMomenta()[emission];
+    Energy2 pjpk = 
+      realCXComb()->meMomenta()[emission] * realCXComb()->meMomenta()[spectator];
+    return cfac *GeV2 * pipk / ( pipj * ( pipj + pjpk ) );
+  }
+  return
+    cfac * GeV2 / (realCXComb()->meMomenta()[emitter] * realCXComb()->meMomenta()[emission]);
+}
+
+double ShowerApproximation::channelWeight() const {
+  double currentChannel = channelWeight(dipole()->realEmitter(),
+					dipole()->realEmission(),
+					dipole()->realSpectator(),
+					dipole()->bornEmitter());
+  if ( currentChannel == 0. )
+    return 0.;
+  double sum = 0.;
+  for ( vector<Ptr<SubtractionDipole>::ptr>::const_iterator dip =
+	  dipole()->partnerDipoles().begin();
+	dip != dipole()->partnerDipoles().end(); ++dip )
+    sum += channelWeight((**dip).realEmitter(),
+			 (**dip).realEmission(),
+			 (**dip).realSpectator(),
+			 (**dip).bornEmitter());
+  assert(sum > 0.0);
+  return currentChannel / sum;
+}
+
+
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 
 void ShowerApproximation::persistentOutput(PersistentOStream & os) const {
-  os << theShowerKernels << theLargeNBasis
+  os << theLargeNBasis
      << theBornXComb << theRealXComb << theTildeXCombs << theDipole << theBelowCutoff
      << ounit(theFFPtCut,GeV) << ounit(theFFScreeningScale,GeV) 
      << ounit(theFIPtCut,GeV) << ounit(theFIScreeningScale,GeV) 
@@ -345,7 +389,7 @@ void ShowerApproximation::persistentOutput(PersistentOStream & os) const {
 }
 
 void ShowerApproximation::persistentInput(PersistentIStream & is, int) {
-  is >> theShowerKernels >> theLargeNBasis
+  is >> theLargeNBasis
      >> theBornXComb >> theRealXComb >> theTildeXCombs >> theDipole >> theBelowCutoff
      >> iunit(theFFPtCut,GeV) >> iunit(theFFScreeningScale,GeV) 
      >> iunit(theFIPtCut,GeV) >> iunit(theFIScreeningScale,GeV) 
@@ -447,7 +491,7 @@ void ShowerApproximation::Init() {
   static Parameter<ShowerApproximation,double> interfaceExtrapolationX
     ("ExtrapolationX",
      "The x from which on extrapolation should be performed.",
-     &ShowerApproximation::theExtrapolationX, 0.65, 0.0, 1.0,
+     &ShowerApproximation::theExtrapolationX, 1.0, 0.0, 1.0,
      false, false, Interface::limited);
 
   static Switch<ShowerApproximation,int> interfaceRealEmissionScaleInSubtraction
@@ -607,21 +651,6 @@ void ShowerApproximation::Init() {
     ("LargeNBasis",
      "Set the large-N colour basis implementation.",
      &ShowerApproximation::theLargeNBasis, false, false, true, true, false);
-
-  static Switch<ShowerApproximation,bool> interfaceShowerKernels
-    ("ShowerKernels",
-     "Switch between exact and shower approximated dipole functions.",
-     &ShowerApproximation::theShowerKernels, true, false, false);
-  static SwitchOption interfaceShowerKernelsOn
-    (interfaceShowerKernels,
-     "On",
-     "Switch to shower approximated dipole functions.",
-     true);
-  static SwitchOption interfaceShowerKernelsOff
-    (interfaceShowerKernels,
-     "Off",
-     "Switch to full dipole functions.",
-     false);
 
   static Switch<ShowerApproximation,bool> interfaceMaxPtIsMuF
     ("MaxPtIsMuF",

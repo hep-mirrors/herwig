@@ -13,7 +13,6 @@
 //
 
 #include "ThePEG/Handlers/SamplerBase.h"
-#include "Herwig++/Utilities/XML/Element.h"
 #include "BinSampler.h"
 
 namespace Herwig {
@@ -429,6 +428,26 @@ private:
    * the initialization.
    */
   bool thePostponeInitialize;
+
+  /**
+   * True, if parallel subprocess integration should be enabled
+   */
+  bool theParallelIntegration;
+
+  /**
+   * True, if statistics should be saved to grid XML files
+   */
+  bool theSaveStatistics;
+
+  /**
+   * The number of subprocesses to integrate per job
+   */
+  unsigned int theIntegratePerJob;
+
+  /**
+   * Ignore existing integration data in grid files
+   */
+  bool theIgnoreIntegrationData;
 
 private:
 

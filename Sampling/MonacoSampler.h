@@ -72,6 +72,11 @@ public:
   virtual void adapt();
 
   /**
+   * Save grid data
+   */
+  virtual void saveGrid() const;
+
+  /**
    * Initialize this bin sampler. This default version calls runIteration.
    */
   virtual void initialize(bool progress);

@@ -77,15 +77,15 @@ void TTbAModelZPQQVertex::Init() {
 
 void TTbAModelZPQQVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcPDPtr cc) {
   double _cR = 0, _cL = 0;
-  if( fabs(aa->id()) == 6 || fabs(bb->id()) == 6 || fabs(cc->id()) == 6) { 
+  if( abs(aa->id()) == 6 || abs(bb->id()) == 6 || abs(cc->id()) == 6) { 
     _cR = _cZPTU_R; 
     _cL = _cZPTU_L; 
   } else {
-    if( fabs(aa->id()) != 4 && fabs(bb->id()) != 4 && fabs(cc->id()) != 4) { 
+    if( abs(aa->id()) != 4 && abs(bb->id()) != 4 && abs(cc->id()) != 4) { 
       _cR = _cZPUU_R; 
       _cL = _cZPUU_L;
     }
-    if( fabs(aa->id()) == 4 || fabs(bb->id()) == 4 || fabs(cc->id()) == 4) { 
+    if( abs(aa->id()) == 4 || abs(bb->id()) == 4 || abs(cc->id()) == 4) { 
       _cR = _cZPCC_R; 
       _cL = _cZPCC_L;
     }

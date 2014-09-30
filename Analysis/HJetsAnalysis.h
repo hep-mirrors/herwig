@@ -43,6 +43,18 @@ public:
    */
   virtual void reconstructHardObjects(ParticleVector&);
 
+protected:
+
+  /**
+   * Perform any additional analysis required
+   */
+  virtual void analyzeSpecial(long id, double weight);
+
+  /**
+   * Append any additional histograms to the given histogram element
+   */
+  virtual void finalize(XML::Element&);
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -90,6 +102,66 @@ protected:
 // If needed, insert declarations of virtual function defined in the
 // InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
 
+private:
+
+  /**
+   * Relative rapidity of the Higgs between the first two jets
+   */
+  Statistics::Histogram theHiggsYStar;
+
+  /**
+   * Relative rapidity of the third jet between the first two jets
+   */
+  Statistics::Histogram theThirdJetYStar;
+
+  /**
+   * Relative rapidity of the fourth jet between the first two jets
+   */
+  Statistics::Histogram theFourthJetYStar;
+
+protected:
+
+  /**
+   * Calculate ystar given two jets and object of interest
+   */
+  double yStar(const LorentzMomentum& jet1, const LorentzMomentum& jet2,
+	       const LorentzMomentum& obj) const {
+    double y1 = jet1.rapidity();
+    double y2 = jet2.rapidity();
+    double res =
+      obj.rapidity() - 0.5*(y1+y2);
+    return res/(y1-y2);
+  }
+
+  /**
+   * Relative rapidity of the Higgs between the first two jets
+   */
+  Statistics::Histogram& higgsYStar() {
+    if ( !theHiggsYStar.bins().empty() )
+      return theHiggsYStar;
+    return theHiggsYStar =
+      Statistics::Histogram("HiggsYStar",Statistics::Histogram::regularBinEdges(-6,6,120),false,false);
+  }
+
+  /**
+   * Relative rapidity of the third jet between the first two jets
+   */
+  Statistics::Histogram& thirdJetYStar() {
+    if ( !theThirdJetYStar.bins().empty() )
+      return theThirdJetYStar;
+    return theThirdJetYStar =
+      Statistics::Histogram("Jet3YStar",Statistics::Histogram::regularBinEdges(-6,6,120),false,false);
+  }
+
+  /**
+   * Relative rapidity of the fourth jet between the first two jets
+   */
+  Statistics::Histogram& fourthJetYStar() {
+    if ( !theFourthJetYStar.bins().empty() )
+      return theFourthJetYStar;
+    return theFourthJetYStar =
+      Statistics::Histogram("Jet4YStar",Statistics::Histogram::regularBinEdges(-6,6,120),false,false);
+  }
 
 private:
 

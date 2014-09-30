@@ -33,7 +33,7 @@ namespace CVolver {
    */
   inline std::vector<std::size_t> identicalPermutation(const std::size_t n) {
     std::vector<std::size_t> res(n);
-    iota(res.begin(),res.end(),0);
+    CVolver::iota(res.begin(),res.end(),0);
     return res;
   }
 

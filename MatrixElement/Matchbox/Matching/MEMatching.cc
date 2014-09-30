@@ -42,38 +42,6 @@ IBPtr MEMatching::fullclone() const {
   return new_ptr(*this);
 }
 
-double MEMatching::channelWeight(int emitter, int emission, int spectator) const {
-  // do the most simple thing for the time being; needs fixing later
-  if ( realCXComb()->mePartonData()[emission]->id() == ParticleID::g ) {
-    Energy2 pipk = 
-      realCXComb()->meMomenta()[emitter] * realCXComb()->meMomenta()[spectator];
-    Energy2 pipj = 
-      realCXComb()->meMomenta()[emitter] * realCXComb()->meMomenta()[emission];
-    Energy2 pjpk = 
-      realCXComb()->meMomenta()[emission] * realCXComb()->meMomenta()[spectator];
-    return GeV2 * pipk / ( pipj * ( pipj + pjpk ) );
-  }
-  return
-    GeV2 / (realCXComb()->meMomenta()[emitter] * realCXComb()->meMomenta()[emission]);
-}
-
-double MEMatching::channelWeight() const {
-  double currentChannel = channelWeight(dipole()->realEmitter(),
-					dipole()->realEmission(),
-					dipole()->realSpectator());
-  if ( currentChannel == 0. )
-    return 0.;
-  double sum = 0.;
-  for ( vector<Ptr<SubtractionDipole>::ptr>::const_iterator dip =
-	  dipole()->partnerDipoles().begin();
-	dip != dipole()->partnerDipoles().end(); ++dip )
-    sum += channelWeight((**dip).realEmitter(),
-			 (**dip).realEmission(),
-			 (**dip).realSpectator());
-  assert(sum > 0.0);
-  return currentChannel / sum;
-}
-
 CrossSection MEMatching::dSigHatDR() const {
 
   double xme2 = dipole()->realEmissionME()->me2();

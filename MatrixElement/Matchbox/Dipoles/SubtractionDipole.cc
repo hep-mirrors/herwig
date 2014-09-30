@@ -26,6 +26,7 @@
 #include "ThePEG/PDF/PartonExtractor.h"
 #include "Herwig++/MatrixElement/Matchbox/Phasespace/TildeKinematics.h"
 #include "Herwig++/MatrixElement/Matchbox/Phasespace/InvertedTildeKinematics.h"
+#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
 
 #include <iterator>
 using std::ostream_iterator;
@@ -34,7 +35,7 @@ using namespace Herwig;
 
 SubtractionDipole::SubtractionDipole() 
   : MEBase(), theSplitting(false), theApply(true), theSubtractionTest(false),
-    theIgnoreCuts(false), theShowerKernel(false),
+    theIgnoreCuts(false),
     theRealEmitter(-1), theRealEmission(-1), theRealSpectator(-1), 
     theBornEmitter(-1), theBornSpectator(-1),
     theRealShowerSubtraction(false), theVirtualShowerSubtraction(false),
@@ -658,34 +659,69 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
 
   lastMEPDFWeight(pdfweight);
 
-  if ( showerApproximation() && realShowerSubtraction() ) {
+  bool needTheDipole = true;
+  CrossSection shower = ZERO;
+
+  double lastThetaMu = 1.0;
+
+  if ( showerApproximation() ) {
     assert(!splitting());
     showerApproximation()->setBornXComb(lastXCombPtr());
     showerApproximation()->setRealXComb(realEmissionME()->lastXCombPtr());
     showerApproximation()->setDipole(this);
-    if ( !showerApproximation()->isAboveCutoff() )
+    if ( !showerApproximation()->isAboveCutoff() ) {
       showerApproximation()->wasBelowCutoff();
-    if ( !showerApproximation()->isInShowerPhasespace() ) {
-      lastMECrossSection(ZERO);
-      lastME2(0.0);
-      return ZERO;   
+      lastThetaMu = 0.0;
+    } else {
+      lastThetaMu = 1.0;;
     }
-    lastMECrossSection(-showerApproximation()->dSigHatDR());
-    return lastMECrossSection();
+    if ( lastThetaMu > 0.0 &&
+	 showerApproximation()->isInShowerPhasespace() ) {
+      if ( realShowerSubtraction() )
+	shower = showerApproximation()->dSigHatDR()*lastThetaMu;
+      if ( virtualShowerSubtraction() || loopSimSubtraction() )
+	shower = -showerApproximation()->dSigHatDR()*lastThetaMu;
+    }
+    if ( realShowerSubtraction() && lastThetaMu == 1.0 )
+      needTheDipole = false;
+    if ( virtualShowerSubtraction() && lastThetaMu == 0.0 )
+      needTheDipole = false;
+    if ( MatchboxFactory::currentFactory()->loopSimCorrections() ||
+	 MatchboxFactory::currentFactory()->meCorrectionsOnly() )
+      needTheDipole = false;
   }
 
   double xme2 = 0.0;
 
-  if ( !showerKernel() )
+  if ( needTheDipole )
     xme2 = me2();
-  else
-    xme2 = me2Avg(-underlyingBornME()->me2());
 
-  if ( xme2 == 0.0 ) {
-    lastMECrossSection(ZERO);
-    lastME2(0.0);
-    return ZERO;
+  if ( MatchboxFactory::currentFactory()->loopSimCorrections() ||
+       MatchboxFactory::currentFactory()->meCorrectionsOnly() ) {
+
+    assert(showerApproximation());
+    xme2 = realEmissionME()->me2() * showerApproximation()->channelWeight();
+
+    double rws =
+      pow(underlyingBornME()->lastXComb().lastAlphaS()/
+	  realEmissionME()->lastXComb().lastAlphaS(),
+	  realEmissionME()->orderInAlphaS());
+
+    xme2 *= rws;
+
+    double rwe =
+      pow(underlyingBornME()->lastXComb().lastAlphaEM()/
+	  realEmissionME()->lastXComb().lastAlphaEM(),
+	  underlyingBornME()->orderInAlphaEW());
+
+    xme2 *= rwe;
+
   }
+
+  if ( realShowerSubtraction() )
+    xme2 *= 1. - lastThetaMu;
+  if ( virtualShowerSubtraction() || loopSimSubtraction() )
+    xme2 *= lastThetaMu;
 
   double coupl = lastMECouplings();
   coupl *= underlyingBornME()->lastXComb().lastAlphaS();
@@ -711,13 +747,14 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
   }
 
   lastMECouplings(coupl);
+
   lastME2(xme2);
 
   CrossSection res = 
     sqr(hbarc) * jac * pdfweight * xme2 /
     (2. * realEmissionME()->lastXComb().lastSHat());
 
-  if ( !showerApproximation() ) {
+  if ( !showerApproximation() && xme2 != 0.0 ) {
     double weight = 0.0;
     bool applied = false;
     for ( vector<Ptr<MatchboxReweightBase>::ptr>::const_iterator rw =
@@ -732,28 +769,7 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
       res *= weight;
   }
 
-  if ( showerApproximation() && (virtualShowerSubtraction() || loopSimSubtraction()) ) {
-    assert(!splitting());
-    showerApproximation()->setBornXComb(lastXCombPtr());
-    showerApproximation()->setRealXComb(realEmissionME()->lastXCombPtr());
-    showerApproximation()->setDipole(this);
-    if ( virtualShowerSubtraction() ) {
-      if ( !showerApproximation()->isAboveCutoff() )
-	showerApproximation()->wasBelowCutoff();
-    } else {
-      if ( !showerApproximation()->isAboveCutoff() ) {
-	showerApproximation()->wasBelowCutoff();
-	lastME2(0.0);
-      }
-      res = ZERO;
-    }
-    CrossSection shower = ZERO;
-    if ( showerApproximation()->isInShowerPhasespace() )
-      shower = showerApproximation()->dSigHatDR();
-    res -= shower;
-  }
-
-  lastMECrossSection(-res);
+  lastMECrossSection(-res-shower);
 
   logDSigHatDR(jac);
 
@@ -1121,7 +1137,7 @@ void SubtractionDipole::generateSubCollision(SubProcess & sub) {
 
 void SubtractionDipole::persistentOutput(PersistentOStream & os) const {
   os << theLastXComb << theSplitting << theApply << theSubtractionTest 
-     << theIgnoreCuts << theShowerKernel << theRealEmissionME << theUnderlyingBornME 
+     << theIgnoreCuts << theRealEmissionME << theUnderlyingBornME 
      << thePartners << theTildeKinematics << theInvertedTildeKinematics 
      << theReweights << theRealEmitter << theRealEmission << theRealSpectator 
      << theSubtractionParameters << theMergingMap << theSplittingMap 
@@ -1137,7 +1153,7 @@ void SubtractionDipole::persistentOutput(PersistentOStream & os) const {
 
 void SubtractionDipole::persistentInput(PersistentIStream & is, int) {
   is >> theLastXComb >> theSplitting >> theApply >> theSubtractionTest 
-     >> theIgnoreCuts >> theShowerKernel >> theRealEmissionME >> theUnderlyingBornME 
+     >> theIgnoreCuts >> theRealEmissionME >> theUnderlyingBornME 
      >> thePartners >> theTildeKinematics >> theInvertedTildeKinematics 
      >> theReweights >> theRealEmitter >> theRealEmission >> theRealSpectator 
      >> theSubtractionParameters >> theMergingMap >> theSplittingMap 

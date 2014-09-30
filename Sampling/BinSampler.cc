@@ -49,7 +49,8 @@ BinSampler::BinSampler()
     theRemapChannelDimension(false),
     theLuminosityMapperBins(0),
     theGeneralMapperBins(0),
-    theRemapperMinSelection(0.00001) {}
+    theRemapperMinSelection(0.00001),
+    theIntegrated(false) {}
 
 BinSampler::~BinSampler() {}
 
@@ -211,6 +212,41 @@ void BinSampler::fillRemappers(bool progress) {
 
 }
 
+void BinSampler::saveIntegrationData() const {
+
+  XML::Element stats = MultiIterationStatistics::toXML();
+  stats.appendAttribute("process",id());
+
+  sampler()->grids().append(stats);
+
+}
+
+void BinSampler::readIntegrationData() {
+
+  bool haveStats = false;
+
+  list<XML::Element>::iterator sit = sampler()->grids().children().begin();
+  for ( ; sit != sampler()->grids().children().end(); ++sit ) {
+    if ( sit->type() != XML::ElementTypes::Element )
+      continue;
+    if ( sit->name() != "MultiIterationStatistics" )
+      continue;
+    string proc;
+    sit->getFromAttribute("process",proc);
+    if ( proc == id() ) {
+      haveStats = true;
+      break;
+    }
+  }
+
+  if ( haveStats ) {
+    MultiIterationStatistics::fromXML(*sit);
+    sampler()->grids().erase(sit);
+    theIntegrated = true;
+  }
+
+}
+
 void BinSampler::saveRemappers() const {
 
   if ( remappers.empty() )
@@ -358,13 +394,15 @@ void BinSampler::initialize(bool progress) {
   if ( !sampler()->grids().children().empty() ) {
     nIterations(1);
   }
-  unsigned long points = initialPoints();
-  for ( unsigned long k = 0; k < nIterations(); ++k ) {
-    runIteration(points,progress);
-    if ( k < nIterations() - 1 ) {
-      points = (unsigned long)(points*enhancementFactor());
-      adapt();
-      nextIteration();
+  if ( !integrated() ) {
+    unsigned long points = initialPoints();
+    for ( unsigned long k = 0; k < nIterations(); ++k ) {
+      runIteration(points,progress);
+      if ( k < nIterations() - 1 ) {
+	points = (unsigned long)(points*enhancementFactor());
+	adapt();
+	nextIteration();
+      }
     }
   }
   isInitialized();
@@ -465,7 +503,8 @@ void BinSampler::persistentOutput(PersistentOStream & os) const {
      << theBin << theInitialized << theLastPoint
      << theEventHandler << theSampler << theRandomNumbers
      << theRemapperPoints << theRemapChannelDimension
-     << theLuminosityMapperBins << theGeneralMapperBins;
+     << theLuminosityMapperBins << theGeneralMapperBins
+     << theIntegrated;
 }
 
 void BinSampler::persistentInput(PersistentIStream & is, int) {
@@ -475,7 +514,8 @@ void BinSampler::persistentInput(PersistentIStream & is, int) {
      >> theBin >> theInitialized >> theLastPoint
      >> theEventHandler >> theSampler >> theRandomNumbers
      >> theRemapperPoints >> theRemapChannelDimension
-     >> theLuminosityMapperBins >> theGeneralMapperBins;
+     >> theLuminosityMapperBins >> theGeneralMapperBins
+     >> theIntegrated;
 }
 
 

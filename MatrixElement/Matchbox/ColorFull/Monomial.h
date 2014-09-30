@@ -79,7 +79,7 @@ public:
 	/// Take the complex conjugate.
 	/// Note that this changes the Monomial itself.
 	void conjugate() {
-		imag( cnum_part )=-imag( cnum_part );
+		cnum_part=conj( cnum_part );
 	}
 
 	/// Function for reading in the Monomial from the file filename,

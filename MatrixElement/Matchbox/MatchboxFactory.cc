@@ -38,7 +38,7 @@ MatchboxFactory::MatchboxFactory()
     theOrderInAlphaS(0), theOrderInAlphaEW(0),
     theBornContributions(true), theVirtualContributions(true),
     theRealContributions(true), theIndependentVirtuals(false),
-    theSubProcessGroups(false), theInclusive(false),
+    theSubProcessGroups(false),
     theFactorizationScaleFactor(1.0), theRenormalizationScaleFactor(1.0),
     theFixedCouplings(false), theFixedQEDCouplings(false), theVetoScales(false),
     theDipoleSet(0), theVerbose(false), theInitVerbose(false), 
@@ -257,30 +257,29 @@ void MatchboxFactory::setup() {
 
   useMe();
 
-  if ( ranSetup )
-    return;
+  if ( !ranSetup ) {
 
-  olpProcesses().clear();
-  externalAmplitudes().clear();
-  theHighestVirtualsize = 0;
-  theIncoming.clear();
+    olpProcesses().clear();
+    externalAmplitudes().clear();
+    theHighestVirtualsize = 0;
+    theIncoming.clear();
 
-  if ( bornMEs().empty() ) {
+    if ( bornMEs().empty() ) {
 
-    if ( particleGroups().find("j") == particleGroups().end() )
-      throw InitException() << "Could not find a jet particle group named 'j'";
+      if ( particleGroups().find("j") == particleGroups().end() )
+	throw InitException() << "Could not find a jet particle group named 'j'";
 
-    // rebind the particle data objects
-    for ( map<string,PDVector>::iterator g = particleGroups().begin();
-	  g != particleGroups().end(); ++g )
-      for ( PDVector::iterator p = g->second.begin();
-	    p != g->second.end(); ++p ) {
+      // rebind the particle data objects
+      for ( map<string,PDVector>::iterator g = particleGroups().begin();
+	    g != particleGroups().end(); ++g )
+	for ( PDVector::iterator p = g->second.begin();
+	      p != g->second.end(); ++p ) {
 #ifndef NDEBUG
-	long checkid = (**p).id();
+	  long checkid = (**p).id();
 #endif
-	*p = getParticleData((**p).id());
-	assert((**p).id() == checkid);
-      }
+	  *p = getParticleData((**p).id());
+	  assert((**p).id() == checkid);
+	}
 
     const PDVector& partons = particleGroups()["j"];
     unsigned int nl = 0;
@@ -309,473 +308,476 @@ void MatchboxFactory::setup() {
 	nLightProtonVec( (**pip).id() );
     }
 
-    vector<Ptr<MatchboxMEBase>::ptr> mes;
-    for ( vector<vector<string> >::const_iterator p = processes.begin();
-	  p != processes.end(); ++p ) {
-      if( virtualContributions() ) {
-	theHighestVirtualsize = max(theHighestVirtualsize,(int((*p).size())));
+      vector<Ptr<MatchboxMEBase>::ptr> mes;
+      for ( vector<vector<string> >::const_iterator p = processes.begin();
+	    p != processes.end(); ++p ) {
+	if( virtualContributions() ) {
+	  theHighestVirtualsize = max(theHighestVirtualsize,(int((*p).size())));
+	}
+	mes = makeMEs(*p,orderInAlphaS(),virtualContributions());
+	copy(mes.begin(),mes.end(),back_inserter(bornMEs()));
+	if ( realContributions() && realEmissionMEs().empty() ) {
+	  if ( realEmissionProcesses.empty() ) {
+	    vector<string> rproc = *p;
+	    rproc.push_back("j");
+	    mes = makeMEs(rproc,orderInAlphaS()+1,false);
+	    copy(mes.begin(),mes.end(),back_inserter(realEmissionMEs()));
+	  }
+	}
       }
-      mes = makeMEs(*p,orderInAlphaS(),virtualContributions());
-      copy(mes.begin(),mes.end(),back_inserter(bornMEs()));
       if ( realContributions() && realEmissionMEs().empty() ) {
-	if ( realEmissionProcesses.empty() ) {
-	  vector<string> rproc = *p;
-	  rproc.push_back("j");
-	  mes = makeMEs(rproc,orderInAlphaS()+1,false);
-	  copy(mes.begin(),mes.end(),back_inserter(realEmissionMEs()));
+	if ( !realEmissionProcesses.empty() ) {
+	  for ( vector<vector<string> >::const_iterator q =
+		  realEmissionProcesses.begin(); q != realEmissionProcesses.end(); ++q ) {
+	    mes = makeMEs(*q,orderInAlphaS()+1,false);
+	    copy(mes.begin(),mes.end(),back_inserter(realEmissionMEs()));
+	  }
 	}
       }
+
     }
-    if ( realContributions() && realEmissionMEs().empty() ) {
-      if ( !realEmissionProcesses.empty() ) {
-	for ( vector<vector<string> >::const_iterator q =
-		realEmissionProcesses.begin(); q != realEmissionProcesses.end(); ++q ) {
-	  mes = makeMEs(*q,orderInAlphaS()+1,false);
-	  copy(mes.begin(),mes.end(),back_inserter(realEmissionMEs()));
-	}
+
+    if ( loopInducedMEs().empty() ) {
+
+      for ( vector<vector<string> >::const_iterator p = loopInducedProcesses.begin();
+	    p != loopInducedProcesses.end(); ++p ) {
+	vector<Ptr<MatchboxMEBase>::ptr> mes = makeMEs(*p,orderInAlphaS(),false);
+	copy(mes.begin(),mes.end(),back_inserter(loopInducedMEs()));
       }
+
     }
 
-  }
-
-  if ( loopInducedMEs().empty() ) {
-
-    for ( vector<vector<string> >::const_iterator p = loopInducedProcesses.begin();
-	  p != loopInducedProcesses.end(); ++p ) {
-      vector<Ptr<MatchboxMEBase>::ptr> mes = makeMEs(*p,orderInAlphaS(),false);
-      copy(mes.begin(),mes.end(),back_inserter(loopInducedMEs()));
-    }
-
-  }
-
-  if( bornMEs().empty() && realEmissionMEs().empty() && loopInducedMEs().empty() )
-    throw InitException() << "No matrix elements have been found.\n\
+    if( bornMEs().empty() && realEmissionMEs().empty() && loopInducedMEs().empty() )
+      throw InitException() << "No matrix elements have been found.\n\
       Please check if your order of Alpha_s and Alpha_ew have the right value.\n";
 
-  // check if we have virtual contributions
-  bool haveVirtuals = true;
+    // check if we have virtual contributions
+    bool haveVirtuals = true;
 
-  // check DR conventions of virtual contributions
-  bool virtualsAreDR = false;
-  bool virtualsAreCDR = false;
+    // check DR conventions of virtual contributions
+    bool virtualsAreDR = false;
+    bool virtualsAreCDR = false;
 
-  // check finite term conventions of virtual contributions
-  bool virtualsAreCS = false;
-  bool virtualsAreBDK = false;
-  bool virtualsAreExpanded = false;
+    // check finite term conventions of virtual contributions
+    bool virtualsAreCS = false;
+    bool virtualsAreBDK = false;
+    bool virtualsAreExpanded = false;
 
-  // renormalization scheme
-  bool virtualsAreDRbar = false;
+    // renormalization scheme
+    bool virtualsAreDRbar = false;
 
-  // check and prepare the Born and virtual matrix elements
-  for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born
-	  = bornMEs().begin(); born != bornMEs().end(); ++born ) {
-    prepareME(*born);
-    haveVirtuals &= (**born).haveOneLoop();
-    if ( (**born).haveOneLoop() ) {
-      virtualsAreDRbar |= (**born).isDRbar();
-      virtualsAreDR |= (**born).isDR();
-      virtualsAreCDR |= !(**born).isDR();
-      virtualsAreCS |= (**born).isCS();
-      virtualsAreBDK |= (**born).isBDK();
-      virtualsAreExpanded |= (**born).isExpanded();
-    }
-  }
-
-  // prepare the loop induced matrix elements
-  for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator looped
-	  = loopInducedMEs().begin(); looped != loopInducedMEs().end(); ++looped ) {
-    prepareME(*looped);
-  }
-
-  // check the additional insertion operators
-  if ( !virtuals().empty() )
-    haveVirtuals = true;    
-  for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt
-	  = virtuals().begin(); virt != virtuals().end(); ++virt ) {
-    virtualsAreDRbar |= (**virt).isDRbar();
-    virtualsAreDR |= (**virt).isDR();
-    virtualsAreCDR |= !(**virt).isDR();
-    virtualsAreCS |= (**virt).isCS();
-    virtualsAreBDK |= (**virt).isBDK();
-    virtualsAreExpanded |= (**virt).isExpanded();
-  }
-
-  // check for consistent conventions on virtuals, if we are to include them
-  if ( virtualContributions() ) {
-    if ( !haveVirtuals ) {
-      throw InitException() << "Could not find amplitudes for all virtual contributions needed.\n";
-    }
-    if ( virtualsAreDR && virtualsAreCDR ) {
-      throw InitException() << "Virtual corrections use inconsistent regularization schemes.\n";
-    }
-    if ( (virtualsAreCS && virtualsAreBDK) ||
-	 (virtualsAreCS && virtualsAreExpanded) ||
-	 (virtualsAreBDK && virtualsAreExpanded) ||
-	 (!virtualsAreCS && !virtualsAreBDK && !virtualsAreExpanded) ) {
-      throw InitException() << "Virtual corrections use inconsistent conventions on finite terms.\n";
-    }
-  }
-
-  // prepare dipole insertion operators
-  if ( virtualContributions() ) {
-    for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt
-	    = DipoleRepository::insertionOperators(dipoleSet()).begin(); 
-	  virt != DipoleRepository::insertionOperators(dipoleSet()).end(); ++virt ) {
-      if ( virtualsAreDRbar )
-	(**virt).useDRbar();
-      if ( virtualsAreDR )
-	(**virt).useDR();
-      else
-	(**virt).useCDR();
-      if ( virtualsAreCS )
-	(**virt).useCS();
-      if ( virtualsAreBDK )
-	(**virt).useBDK();
-      if ( virtualsAreExpanded )
-	(**virt).useExpanded();
-    }
-  }
-
-  // prepare the real emission matrix elements
-  if ( realContributions() ) {
-    for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator real
-	    = realEmissionMEs().begin(); real != realEmissionMEs().end(); ++real ) {
-      prepareME(*real);
-    }
-  }
-
-  // start creating matrix elements
-  MEs().clear();
-
-  // setup born and virtual contributions
-
-  if ( bornContributions() || virtualContributions() ) {
-    generator()->log() << "preparing Born"
-		       << (virtualContributions() ? " and virtual" : "")
-		       << " matrix elements.\n" << flush;
-  }
-
-  if ( (bornContributions() && !virtualContributions()) || 
-       (bornContributions() && virtualContributions() && independentVirtuals()) ) {
+    // check and prepare the Born and virtual matrix elements
     for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born
 	    = bornMEs().begin(); born != bornMEs().end(); ++born ) {
-
-      if ( (**born).onlyOneLoop() )
-	continue;
-
-      Ptr<MatchboxMEBase>::ptr bornme = (**born).cloneMe();
-      string pname = fullName() + "/" + (**born).name();
-      if ( independentVirtuals() )
-	pname += ".Born";
-      if ( ! (generator()->preinitRegister(bornme,pname) ) )
-	throw InitException() << "Matrix element " << pname << " already existing.";
-
-      if ( bornme->isOLPTree() ) {
-	int id = orderOLPProcess(bornme->subProcess(),
-				 (**born).matchboxAmplitude(),
-				 ProcessType::treeME2);
-	bornme->olpProcess(ProcessType::treeME2,id);
+      prepareME(*born);
+      haveVirtuals &= (**born).haveOneLoop();
+      if ( (**born).haveOneLoop() ) {
+	virtualsAreDRbar |= (**born).isDRbar();
+	virtualsAreDR |= (**born).isDR();
+	virtualsAreCDR |= !(**born).isDR();
+	virtualsAreCS |= (**born).isCS();
+	virtualsAreBDK |= (**born).isBDK();
+	virtualsAreExpanded |= (**born).isExpanded();
       }
-
-      bornme->needsNoCorrelations();
-
-      bornme->cloneDependencies();
-      MEs().push_back(bornme);
-
     }
 
-  }
-
-  if ( bornContributions() && !loopInducedMEs().empty() ) {
-
+    // prepare the loop induced matrix elements
     for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator looped
 	    = loopInducedMEs().begin(); looped != loopInducedMEs().end(); ++looped ) {
+      prepareME(*looped);
+    }
 
-      Ptr<MatchboxMEBase>::ptr loopme = (**looped).cloneMe();
-      string pname = fullName() + "/" + (**looped).name() + ".LoopInduced";
-      if ( ! (generator()->preinitRegister(loopme,pname) ) )
-	throw InitException() << "Matrix element " << pname << " already existing.";
+    // check the additional insertion operators
+    if ( !virtuals().empty() )
+      haveVirtuals = true;    
+    for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt
+	    = virtuals().begin(); virt != virtuals().end(); ++virt ) {
+      virtualsAreDRbar |= (**virt).isDRbar();
+      virtualsAreDR |= (**virt).isDR();
+      virtualsAreCDR |= !(**virt).isDR();
+      virtualsAreCS |= (**virt).isCS();
+      virtualsAreBDK |= (**virt).isBDK();
+      virtualsAreExpanded |= (**virt).isExpanded();
+    }
 
-      if ( loopme->isOLPTree() ) {
-	int id = orderOLPProcess(loopme->subProcess(),
-				 (**looped).matchboxAmplitude(),
-				 ProcessType::loopInducedME2);
-	loopme->olpProcess(ProcessType::loopInducedME2,id);
+    // check for consistent conventions on virtuals, if we are to include them
+    if ( virtualContributions() ) {
+      if ( !haveVirtuals ) {
+	throw InitException() << "Could not find amplitudes for all virtual contributions needed.\n";
       }
+      if ( virtualsAreDR && virtualsAreCDR ) {
+	throw InitException() << "Virtual corrections use inconsistent regularization schemes.\n";
+      }
+      if ( (virtualsAreCS && virtualsAreBDK) ||
+	   (virtualsAreCS && virtualsAreExpanded) ||
+	   (virtualsAreBDK && virtualsAreExpanded) ||
+	   (!virtualsAreCS && !virtualsAreBDK && !virtualsAreExpanded) ) {
+	throw InitException() << "Virtual corrections use inconsistent conventions on finite terms.\n";
+      }
+    }
 
-      loopme->needsNoCorrelations();
+    // prepare dipole insertion operators
+    if ( virtualContributions() ) {
+      for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt
+	      = DipoleRepository::insertionOperators(dipoleSet()).begin(); 
+	    virt != DipoleRepository::insertionOperators(dipoleSet()).end(); ++virt ) {
+	if ( virtualsAreDRbar )
+	  (**virt).useDRbar();
+	if ( virtualsAreDR )
+	  (**virt).useDR();
+	else
+	  (**virt).useCDR();
+	if ( virtualsAreCS )
+	  (**virt).useCS();
+	if ( virtualsAreBDK )
+	  (**virt).useBDK();
+	if ( virtualsAreExpanded )
+	  (**virt).useExpanded();
+      }
+    }
 
-      loopme->cloneDependencies();
-      MEs().push_back(loopme);
+    // prepare the real emission matrix elements
+    if ( realContributions() ) {
+      for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator real
+	      = realEmissionMEs().begin(); real != realEmissionMEs().end(); ++real ) {
+	prepareME(*real);
+      }
+    }
+
+    // start creating matrix elements
+    MEs().clear();
+
+    // setup born and virtual contributions
+
+    if ( bornContributions() || virtualContributions() ) {
+      generator()->log() << "preparing Born"
+			 << (virtualContributions() ? " and virtual" : "")
+			 << " matrix elements.\n" << flush;
+    }
+
+    if ( (bornContributions() && !virtualContributions()) || 
+	 (bornContributions() && virtualContributions() && independentVirtuals()) ) {
+      for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born
+	      = bornMEs().begin(); born != bornMEs().end(); ++born ) {
+
+	if ( (**born).onlyOneLoop() )
+	  continue;
+
+	Ptr<MatchboxMEBase>::ptr bornme = (**born).cloneMe();
+	string pname = fullName() + "/" + (**born).name();
+	if ( independentVirtuals() )
+	  pname += ".Born";
+	if ( ! (generator()->preinitRegister(bornme,pname) ) )
+	  throw InitException() << "Matrix element " << pname << " already existing.";
+
+	if ( bornme->isOLPTree() ) {
+	  int id = orderOLPProcess(bornme->subProcess(),
+				   (**born).matchboxAmplitude(),
+				   ProcessType::treeME2);
+	  bornme->olpProcess(ProcessType::treeME2,id);
+	}
+
+	bornme->needsNoCorrelations();
+
+	bornme->cloneDependencies();
+	MEs().push_back(bornme);
+
+      }
 
     }
 
-  }
+    if ( bornContributions() && !loopInducedMEs().empty() ) {
 
-  if ( virtualContributions() && !meCorrectionsOnly() && !loopSimCorrections() ) {
+      for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator looped
+	      = loopInducedMEs().begin(); looped != loopInducedMEs().end(); ++looped ) {
 
-    bornVirtualMEs().clear();
+	Ptr<MatchboxMEBase>::ptr loopme = (**looped).cloneMe();
+	string pname = fullName() + "/" + (**looped).name() + ".LoopInduced";
+	if ( ! (generator()->preinitRegister(loopme,pname) ) )
+	  throw InitException() << "Matrix element " << pname << " already existing.";
 
-    boost::progress_display * progressBar = 
-      new boost::progress_display(bornMEs().size(),generator()->log());
-
-    if ( thePoleData != "" )
-      if ( thePoleData[thePoleData.size()-1] != '/' )
-	thePoleData += "/";
-
-    for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born
-	    = bornMEs().begin(); born != bornMEs().end(); ++born ) {
-
-      Ptr<MatchboxMEBase>::ptr nlo = (**born).cloneMe();
-      string pname = fullName() + "/" + (**born).name();
-      if ( !independentVirtuals() )
-	pname += ".BornVirtual";
-      else
-	pname += ".Virtual";
-      if ( ! (generator()->preinitRegister(nlo,pname) ) )
-	throw InitException() << "NLO ME " << pname << " already existing.";
-
-      nlo->virtuals().clear();
-
-      if ( !nlo->onlyOneLoop() ) {
-	for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt
-		= virtuals().begin(); virt != virtuals().end(); ++virt ) {
-	  if ( (**virt).apply((**born).diagrams().front()->partons()) )
-	    nlo->virtuals().push_back(*virt);
+	if ( loopme->isOLPTree() ) {
+	  int id = orderOLPProcess(loopme->subProcess(),
+				   (**looped).matchboxAmplitude(),
+				   ProcessType::loopInducedME2);
+	  loopme->olpProcess(ProcessType::loopInducedME2,id);
 	}
-	for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt
-		= DipoleRepository::insertionOperators(dipoleSet()).begin(); 
-	      virt != DipoleRepository::insertionOperators(dipoleSet()).end(); ++virt ) {
-	  if ( (**virt).apply((**born).diagrams().front()->partons()) )
-	    nlo->virtuals().push_back(*virt);
-	}
-	if ( nlo->virtuals().empty() )
-	  throw InitException() << "No insertion operators have been found for "
-				<< (**born).name() << "\n";
-	if ( checkPoles() ) {
-	  if ( !virtualsAreExpanded ) {
-	    throw InitException() << "Cannot check epsilon poles if virtuals are not in `expanded' convention.\n";
+
+	loopme->needsNoCorrelations();
+
+	loopme->cloneDependencies();
+	MEs().push_back(loopme);
+
+      }
+
+    }
+
+    if ( virtualContributions() && !meCorrectionsOnly() && !loopSimCorrections() ) {
+
+      bornVirtualMEs().clear();
+
+      boost::progress_display * progressBar = 
+	new boost::progress_display(bornMEs().size(),generator()->log());
+
+      if ( thePoleData != "" )
+	if ( thePoleData[thePoleData.size()-1] != '/' )
+	  thePoleData += "/";
+
+      for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born
+	      = bornMEs().begin(); born != bornMEs().end(); ++born ) {
+
+	Ptr<MatchboxMEBase>::ptr nlo = (**born).cloneMe();
+	string pname = fullName() + "/" + (**born).name();
+	if ( !independentVirtuals() )
+	  pname += ".BornVirtual";
+	else
+	  pname += ".Virtual";
+	if ( ! (generator()->preinitRegister(nlo,pname) ) )
+	  throw InitException() << "NLO ME " << pname << " already existing.";
+
+	nlo->virtuals().clear();
+
+	if ( !nlo->onlyOneLoop() ) {
+	  for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt
+		  = virtuals().begin(); virt != virtuals().end(); ++virt ) {
+	    if ( (**virt).apply((**born).diagrams().front()->partons()) )
+	      nlo->virtuals().push_back(*virt);
+	  }
+	  for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt
+		  = DipoleRepository::insertionOperators(dipoleSet()).begin(); 
+		virt != DipoleRepository::insertionOperators(dipoleSet()).end(); ++virt ) {
+	    if ( (**virt).apply((**born).diagrams().front()->partons()) )
+	      nlo->virtuals().push_back(*virt);
+	  }
+	  if ( nlo->virtuals().empty() )
+	    throw InitException() << "No insertion operators have been found for "
+				  << (**born).name() << "\n";
+	  if ( checkPoles() ) {
+	    if ( !virtualsAreExpanded ) {
+	      throw InitException() << "Cannot check epsilon poles if virtuals are not in `expanded' convention.\n";
+	    }
 	  }
 	}
-      }
 
-      if ( !bornContributions() || independentVirtuals() ) {
-	nlo->doOneLoopNoBorn();
-      } else {
-	nlo->doOneLoop();
-      }
-
-      if ( nlo->isOLPLoop() ) {
-	int id = orderOLPProcess(nlo->subProcess(),
-				 (**born).matchboxAmplitude(),
-				 ProcessType::oneLoopInterference);
-	nlo->olpProcess(ProcessType::oneLoopInterference,id);
-	if ( !nlo->onlyOneLoop() && nlo->needsOLPCorrelators() ) {
-	  id = orderOLPProcess(nlo->subProcess(),
-			       (**born).matchboxAmplitude(),
-			       ProcessType::colourCorrelatedME2);
-	  nlo->olpProcess(ProcessType::colourCorrelatedME2,id);	  
+	if ( !bornContributions() || independentVirtuals() ) {
+	  nlo->doOneLoopNoBorn();
+	} else {
+	  nlo->doOneLoop();
 	}
-      }
 
-      nlo->needsCorrelations();
-
-      nlo->cloneDependencies();
-
-      bornVirtualMEs().push_back(nlo);
-      MEs().push_back(nlo);
-
-      ++(*progressBar);
-
-    }
-
-    delete progressBar;
-
-    generator()->log() << "--------------------------------------------------------------------------------\n"
-		       << flush;
-
-  }
-
-  theSplittingDipoles.clear();
-  set<cPDVector> bornProcs;
-  if ( showerApproximation() && !virtualContributions() && !realContributions() ) {
-    generator()->log() << "Warning: Matching requested for LO run. Matching disabled.\n" << flush;
-    showerApproximation(Ptr<ShowerApproximation>::tptr());
-  }
-  if ( showerApproximation() && (subtractionData() != "" || subProcessGroups()) ) {
-    generator()->log() << "Warning: Matching requested for plain NLO run. Matching disabled.\n" << flush;
-    showerApproximation(Ptr<ShowerApproximation>::tptr());
-  }
-  if ( showerApproximation() ) {
-    if ( showerApproximation()->needsSplittingGenerator() ) {
-      for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born
-	      = bornMEs().begin(); born != bornMEs().end(); ++born )
-	for ( MEBase::DiagramVector::const_iterator d = (**born).diagrams().begin();
-	      d != (**born).diagrams().end(); ++d )
-	  bornProcs.insert((**d).partons());
-    }
-  }
-
-  if ( realContributions() || meCorrectionsOnly() ) {
-
-    generator()->log() << "preparing subtracted matrix elements.\n" << flush;
-
-    if ( theSubtractionData != "" )
-      if ( theSubtractionData[theSubtractionData.size()-1] != '/' )
-	theSubtractionData += "/";
-
-    subtractedMEs().clear();    
-
-    for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born
-	    = bornMEs().begin(); born != bornMEs().end(); ++born ) {
-
-      if ( (**born).onlyOneLoop() )
-	continue;
-
-      (**born).needsCorrelations();
-
-      if ( (**born).isOLPTree() ) {
-	int id = orderOLPProcess((**born).subProcess(),
+	if ( nlo->isOLPLoop() ) {
+	  int id = orderOLPProcess(nlo->subProcess(),
+				   (**born).matchboxAmplitude(),
+				   ProcessType::oneLoopInterference);
+	  nlo->olpProcess(ProcessType::oneLoopInterference,id);
+	  if ( !nlo->onlyOneLoop() && nlo->needsOLPCorrelators() ) {
+	    id = orderOLPProcess(nlo->subProcess(),
 				 (**born).matchboxAmplitude(),
 				 ProcessType::colourCorrelatedME2);
-	(**born).olpProcess(ProcessType::colourCorrelatedME2,id);
-	bool haveGluon = false;
-	for ( PDVector::const_iterator p = (**born).subProcess().legs.begin();
-	      p != (**born).subProcess().legs.end(); ++p )
-	  if ( (**p).id() == 21 ) {
-	    haveGluon = true;
-	    break;
+	    nlo->olpProcess(ProcessType::colourCorrelatedME2,id);	  
 	  }
-	if ( haveGluon ) {
-	  id = orderOLPProcess((**born).subProcess(),
-			       (**born).matchboxAmplitude(),
-			       ProcessType::spinColourCorrelatedME2);
-	  (**born).olpProcess(ProcessType::spinColourCorrelatedME2,id);
 	}
+
+	nlo->needsCorrelations();
+
+	nlo->cloneDependencies();
+
+	bornVirtualMEs().push_back(nlo);
+	MEs().push_back(nlo);
+
+	++(*progressBar);
+
       }
+
+      delete progressBar;
+
+      generator()->log() << "--------------------------------------------------------------------------------\n"
+			 << flush;
 
     }
 
-    boost::progress_display * progressBar =
-      new boost::progress_display(realEmissionMEs().size(),generator()->log());
-
-    for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator real
-	    = realEmissionMEs().begin(); real != realEmissionMEs().end(); ++real ) {
-
-      Ptr<SubtractedME>::ptr sub = new_ptr(SubtractedME());
-      string pname = fullName() + "/" + (**real).name() + ".SubtractedReal";
-      if ( ! (generator()->preinitRegister(sub,pname) ) )
-	throw InitException() << "Subtracted ME " << pname << " already existing.";
-
-      sub->factory(this);
-
-      (**real).needsNoCorrelations();
-
-      if ( (**real).isOLPTree() ) {
-	int id = orderOLPProcess((**real).subProcess(),
-				 (**real).matchboxAmplitude(),
-				 ProcessType::treeME2);
-	(**real).olpProcess(ProcessType::treeME2,id);
+    theSplittingDipoles.clear();
+    set<cPDVector> bornProcs;
+    if ( showerApproximation() && !virtualContributions() && !realContributions() ) {
+      generator()->log() << "Warning: Matching requested for LO run. Matching disabled.\n" << flush;
+      showerApproximation(Ptr<ShowerApproximation>::tptr());
+    }
+    if ( showerApproximation() && (subtractionData() != "" || subProcessGroups()) ) {
+      generator()->log() << "Warning: Matching requested for plain NLO run. Matching disabled.\n" << flush;
+      showerApproximation(Ptr<ShowerApproximation>::tptr());
+    }
+    if ( showerApproximation() ) {
+      if ( showerApproximation()->needsSplittingGenerator() ) {
+	for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born
+		= bornMEs().begin(); born != bornMEs().end(); ++born )
+	  for ( MEBase::DiagramVector::const_iterator d = (**born).diagrams().begin();
+		d != (**born).diagrams().end(); ++d )
+	    bornProcs.insert((**d).partons());
       }
+    }
 
-      sub->head(*real);
+    if ( realContributions() || meCorrectionsOnly() ) {
 
-      sub->dependent().clear();
+      generator()->log() << "preparing subtracted matrix elements.\n" << flush;
 
-      sub->getDipoles();
+      if ( theSubtractionData != "" )
+	if ( theSubtractionData[theSubtractionData.size()-1] != '/' )
+	  theSubtractionData += "/";
 
-      if ( sub->dependent().empty() ) {
-	// finite real contribution
-	Ptr<MatchboxMEBase>::ptr fme = 
-	  dynamic_ptr_cast<Ptr<MatchboxMEBase>::ptr>(sub->head())->cloneMe();
-	string qname = fullName() + "/" + (**real).name() + ".FiniteReal";
-	if ( ! (generator()->preinitRegister(fme,qname) ) )
-	  throw InitException() << "ME " << qname << " already existing.";
-	MEs().push_back(fme);	
-        finiteRealMEs().push_back(fme);
-	sub->head(tMEPtr());
-	continue;
-      }
+      subtractedMEs().clear();    
 
-      if ( realEmissionScales() )
-	sub->doRealEmissionScales();
+      for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born
+	      = bornMEs().begin(); born != bornMEs().end(); ++born ) {
 
-      subtractedMEs().push_back(sub);
-      if ( !showerApproximation() || (showerApproximation() && showerApproximation()->hasHEvents()) )
-	MEs().push_back(sub);
+	if ( (**born).onlyOneLoop() )
+	  continue;
 
-      if ( showerApproximation() ) {
-	if ( virtualContributions() && !meCorrectionsOnly() && !loopSimCorrections() ) {
-	  Ptr<SubtractedME>::ptr subv = new_ptr(*sub);
-	  string vname = sub->fullName() + ".SubtractionIntegral";
-	  if ( ! (generator()->preinitRegister(subv,vname) ) )
-	    throw InitException() << "Subtracted ME " << vname << " already existing.";
-	  subv->cloneDependencies(vname);
-	  subv->doVirtualShowerSubtraction();
-	  subtractedMEs().push_back(subv);
-	  MEs().push_back(subv);
-	}
-	if ( loopSimCorrections() ) {
-	  Ptr<SubtractedME>::ptr subv = new_ptr(*sub);
-	  string vname = sub->fullName() + ".SubtractionIntegral";
-	  if ( ! (generator()->preinitRegister(subv,vname) ) )
-	    throw InitException() << "Subtracted ME " << vname << " already existing.";
-	  subv->cloneDependencies(vname);
-	  subv->doLoopSimSubtraction();
-	  subtractedMEs().push_back(subv);
-	  MEs().push_back(subv);
-	}
-	sub->doRealShowerSubtraction();
-	if ( showerApproximation()->needsSplittingGenerator() )
-	  for ( set<cPDVector>::const_iterator p = bornProcs.begin();
-		p != bornProcs.end(); ++p ) {
-	    vector<Ptr<SubtractionDipole>::ptr> sdip = sub->splitDipoles(*p);
-	    set<Ptr<SubtractionDipole>::ptr>& dips = theSplittingDipoles[*p];
-	    copy(sdip.begin(),sdip.end(),inserter(dips,dips.begin()));
+	(**born).needsCorrelations();
+
+	if ( (**born).isOLPTree() ) {
+	  int id = orderOLPProcess((**born).subProcess(),
+				   (**born).matchboxAmplitude(),
+				   ProcessType::colourCorrelatedME2);
+	  (**born).olpProcess(ProcessType::colourCorrelatedME2,id);
+	  bool haveGluon = false;
+	  for ( PDVector::const_iterator p = (**born).subProcess().legs.begin();
+		p != (**born).subProcess().legs.end(); ++p )
+	    if ( (**p).id() == 21 ) {
+	      haveGluon = true;
+	      break;
+	    }
+	  if ( haveGluon ) {
+	    id = orderOLPProcess((**born).subProcess(),
+				 (**born).matchboxAmplitude(),
+				 ProcessType::spinColourCorrelatedME2);
+	    (**born).olpProcess(ProcessType::spinColourCorrelatedME2,id);
 	  }
+	}
+
       }
 
-      ++(*progressBar);
+      boost::progress_display * progressBar =
+	new boost::progress_display(realEmissionMEs().size(),generator()->log());
+
+      for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator real
+	      = realEmissionMEs().begin(); real != realEmissionMEs().end(); ++real ) {
+
+	Ptr<SubtractedME>::ptr sub = new_ptr(SubtractedME());
+	string pname = fullName() + "/" + (**real).name() + ".SubtractedReal";
+	if ( ! (generator()->preinitRegister(sub,pname) ) )
+	  throw InitException() << "Subtracted ME " << pname << " already existing.";
+
+	sub->factory(this);
+
+	(**real).needsNoCorrelations();
+
+	if ( (**real).isOLPTree() ) {
+	  int id = orderOLPProcess((**real).subProcess(),
+				   (**real).matchboxAmplitude(),
+				   ProcessType::treeME2);
+	  (**real).olpProcess(ProcessType::treeME2,id);
+	}
+
+	sub->head(*real);
+
+	sub->dependent().clear();
+
+	sub->getDipoles();
+
+	if ( sub->dependent().empty() ) {
+	  // finite real contribution
+	  Ptr<MatchboxMEBase>::ptr fme = 
+	    dynamic_ptr_cast<Ptr<MatchboxMEBase>::ptr>(sub->head())->cloneMe();
+	  string qname = fullName() + "/" + (**real).name() + ".FiniteReal";
+	  if ( ! (generator()->preinitRegister(fme,qname) ) )
+	    throw InitException() << "ME " << qname << " already existing.";
+	  MEs().push_back(fme);	
+	  finiteRealMEs().push_back(fme);
+	  sub->head(tMEPtr());
+	  continue;
+	}
+
+	if ( realEmissionScales() )
+	  sub->doRealEmissionScales();
+
+	subtractedMEs().push_back(sub);
+	if ( !showerApproximation() || (showerApproximation() && showerApproximation()->hasHEvents()) )
+	  MEs().push_back(sub);
+
+	if ( showerApproximation() ) {
+	  if ( virtualContributions() && !meCorrectionsOnly() && !loopSimCorrections() ) {
+	    Ptr<SubtractedME>::ptr subv = new_ptr(*sub);
+	    string vname = sub->fullName() + ".SubtractionIntegral";
+	    if ( ! (generator()->preinitRegister(subv,vname) ) )
+	      throw InitException() << "Subtracted ME " << vname << " already existing.";
+	    subv->cloneDependencies(vname);
+	    subv->doVirtualShowerSubtraction();
+	    subtractedMEs().push_back(subv);
+	    MEs().push_back(subv);
+	  }
+	  if ( loopSimCorrections() ) {
+	    Ptr<SubtractedME>::ptr subv = new_ptr(*sub);
+	    string vname = sub->fullName() + ".SubtractionIntegral";
+	    if ( ! (generator()->preinitRegister(subv,vname) ) )
+	      throw InitException() << "Subtracted ME " << vname << " already existing.";
+	    subv->cloneDependencies(vname);
+	    subv->doLoopSimSubtraction();
+	    subtractedMEs().push_back(subv);
+	    MEs().push_back(subv);
+	  }
+	  sub->doRealShowerSubtraction();
+	  if ( showerApproximation()->needsSplittingGenerator() )
+	    for ( set<cPDVector>::const_iterator p = bornProcs.begin();
+		  p != bornProcs.end(); ++p ) {
+	      vector<Ptr<SubtractionDipole>::ptr> sdip = sub->splitDipoles(*p);
+	      set<Ptr<SubtractionDipole>::ptr>& dips = theSplittingDipoles[*p];
+	      copy(sdip.begin(),sdip.end(),inserter(dips,dips.begin()));
+	    }
+	}
+
+	++(*progressBar);
+
+      }
+
+      delete progressBar;
+
+      generator()->log() << "--------------------------------------------------------------------------------\n"
+			 << flush;
 
     }
 
-    delete progressBar;
-
-    generator()->log() << "--------------------------------------------------------------------------------\n"
-		       << flush;
-
-  }
-
-  if ( !theSplittingDipoles.empty() ) {
-    map<Ptr<SubtractionDipole>::ptr,Ptr<SubtractionDipole>::ptr> cloneMap;
-    for ( map<cPDVector,set<Ptr<SubtractionDipole>::ptr> >::const_iterator sd = theSplittingDipoles.begin();
-	  sd != theSplittingDipoles.end(); ++sd ) {
-      for ( set<Ptr<SubtractionDipole>::ptr>::const_iterator d = sd->second.begin();
-	    d != sd->second.end(); ++d ) {
-	cloneMap[*d] = Ptr<SubtractionDipole>::ptr();
+    if ( !theSplittingDipoles.empty() ) {
+      map<Ptr<SubtractionDipole>::ptr,Ptr<SubtractionDipole>::ptr> cloneMap;
+      for ( map<cPDVector,set<Ptr<SubtractionDipole>::ptr> >::const_iterator sd = theSplittingDipoles.begin();
+	    sd != theSplittingDipoles.end(); ++sd ) {
+	for ( set<Ptr<SubtractionDipole>::ptr>::const_iterator d = sd->second.begin();
+	      d != sd->second.end(); ++d ) {
+	  cloneMap[*d] = Ptr<SubtractionDipole>::ptr();
+	}
+      }
+      for ( map<Ptr<SubtractionDipole>::ptr,Ptr<SubtractionDipole>::ptr>::iterator cd =
+	      cloneMap.begin(); cd != cloneMap.end(); ++cd ) {
+	Ptr<SubtractionDipole>::ptr cloned = cd->first->cloneMe();
+	string dname = cd->first->fullName() + ".splitting";
+	if ( ! (generator()->preinitRegister(cloned,dname)) )
+	  throw InitException() << "Dipole '" << dname << "' already existing.";
+	cloned->cloneDependencies();
+	cloned->showerApproximation(Ptr<ShowerApproximation>::tptr());
+	cloned->doSplitting();
+	cd->second = cloned;
+      }
+      for ( map<cPDVector,set<Ptr<SubtractionDipole>::ptr> >::iterator sd = theSplittingDipoles.begin();
+	    sd != theSplittingDipoles.end(); ++sd ) {
+	set<Ptr<SubtractionDipole>::ptr> cloned;
+	for ( set<Ptr<SubtractionDipole>::ptr>::iterator d = sd->second.begin();
+	      d != sd->second.end(); ++d ) {
+	  cloned.insert(cloneMap[*d]);
+	}
+	sd->second = cloned;
       }
     }
-    for ( map<Ptr<SubtractionDipole>::ptr,Ptr<SubtractionDipole>::ptr>::iterator cd =
-	    cloneMap.begin(); cd != cloneMap.end(); ++cd ) {
-      Ptr<SubtractionDipole>::ptr cloned = cd->first->cloneMe();
-      string dname = cd->first->fullName() + ".splitting";
-      if ( ! (generator()->preinitRegister(cloned,dname)) )
-	throw InitException() << "Dipole '" << dname << "' already existing.";
-      cloned->cloneDependencies();
-      cloned->showerApproximation(Ptr<ShowerApproximation>::tptr());
-      cloned->doSplitting();
-      cd->second = cloned;
-    }
-    for ( map<cPDVector,set<Ptr<SubtractionDipole>::ptr> >::iterator sd = theSplittingDipoles.begin();
-	  sd != theSplittingDipoles.end(); ++sd ) {
-      set<Ptr<SubtractionDipole>::ptr> cloned;
-      for ( set<Ptr<SubtractionDipole>::ptr>::iterator d = sd->second.begin();
-	    d != sd->second.end(); ++d ) {
-	cloned.insert(cloneMap[*d]);
-      }
-      sd->second = cloned;
-    }
+
+
   }
 
   if ( !externalAmplitudes().empty() ) {
@@ -995,7 +997,7 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
      << theNLightJetVec << theNHeavyJetVec << theNLightProtonVec 
      << theOrderInAlphaS << theOrderInAlphaEW 
      << theBornContributions << theVirtualContributions
-     << theRealContributions << theIndependentVirtuals << theSubProcessGroups << theInclusive
+     << theRealContributions << theIndependentVirtuals << theSubProcessGroups
      << thePhasespace << theScaleChoice
      << theFactorizationScaleFactor << theRenormalizationScaleFactor
      << theFixedCouplings << theFixedQEDCouplings << theVetoScales
@@ -1020,7 +1022,7 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
      >> theNLightJetVec >> theNHeavyJetVec >> theNLightProtonVec 
      >> theOrderInAlphaS >> theOrderInAlphaEW 
      >> theBornContributions >> theVirtualContributions
-     >> theRealContributions >> theIndependentVirtuals >> theSubProcessGroups >> theInclusive
+     >> theRealContributions >> theIndependentVirtuals >> theSubProcessGroups
      >> thePhasespace >> theScaleChoice
      >> theFactorizationScaleFactor >> theRenormalizationScaleFactor
      >> theFixedCouplings >> theFixedQEDCouplings >> theVetoScales
@@ -1280,21 +1282,6 @@ void MatchboxFactory::Init() {
      true);
   static SwitchOption interfaceSubProcessGroupsOff
     (interfaceSubProcessGroups,
-     "Off",
-     "Off",
-     false);
-
-  static Switch<MatchboxFactory,bool> interfaceInclusive
-    ("Inclusive",
-     "Switch on or off production of inclusive cross section.",
-     &MatchboxFactory::theInclusive, false, false, false);
-  static SwitchOption interfaceInclusiveOn
-    (interfaceInclusive,
-     "On",
-     "On",
-     true);
-  static SwitchOption interfaceInclusiveOff
-    (interfaceInclusive,
      "Off",
      "Off",
      false);

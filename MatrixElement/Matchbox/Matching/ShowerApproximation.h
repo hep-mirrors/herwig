@@ -374,6 +374,19 @@ public:
 
 public:
 
+  /**
+   * Generate a weight for the given dipole channel
+   */
+  virtual double channelWeight(int emitter, int emission, 
+			       int spectator, int bemitter) const;
+
+  /**
+   * Generate a normalized weight taking into account all channels
+   */
+  virtual double channelWeight() const;
+
+public:
+
   /** @name Functions used by the persistent I/O system. */
   //@{
   /**
@@ -402,12 +415,15 @@ public:
 // If needed, insert declarations of virtual function defined in the
 // InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
 
-protected:
+public:
 
   /**
-   * True, if the shower kernels should be reproduced.
+   * A large-N colour basis to be used when reproducing the shower
+   * kernels.
    */
-  bool theShowerKernels;
+  Ptr<ColourBasis>::tptr largeNBasis() const { return theLargeNBasis; }
+
+protected:
 
   /**
    * A large-N colour basis to be used when reproducing the shower

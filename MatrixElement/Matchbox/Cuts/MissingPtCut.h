@@ -79,6 +79,16 @@ public:
 public:
 
   /**
+   * Return the PDG codes of those particles that cannot be detected
+   */
+  const vector<int>& invisibleParticles() const { return theInvisibleParticles; }
+
+  /**
+   * Command to insert the PDG code of a particle that cannot be detected
+   */
+  string doInvisibleParticles(string);
+
+  /**
    * Return the minimum missing pt.
    */
   Energy ptMissMin() const { return thePtMissMin; }
@@ -137,6 +147,11 @@ protected:
 
 
 private:
+
+  /**
+   * The PDG codes of those particles that cannot be detected
+   */
+  vector<int> theInvisibleParticles;
 
   /**
    * The minimum missing pt.

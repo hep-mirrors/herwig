@@ -15,6 +15,8 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
+#include "Herwig++/Utilities/XML/Element.h"
+
 namespace Herwig {
 
 using namespace ThePEG;
@@ -234,6 +236,16 @@ public:
    */
   void get(PersistentIStream & is);
   //@}
+
+  /**
+   * Fill statistics data from an XML element
+   */
+  void fromXML(const XML::Element&);
+
+  /**
+   * Return an XML element for the data of this statistics
+   */
+  XML::Element toXML() const;
 
 private:
 

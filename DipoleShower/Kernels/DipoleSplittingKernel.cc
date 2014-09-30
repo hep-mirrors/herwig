@@ -24,7 +24,7 @@ using namespace Herwig;
 
 DipoleSplittingKernel::DipoleSplittingKernel() 
   : HandlerBase(), theScreeningScale(0.0*GeV), 
-    thePresamplingPoints(50000), theMaxtry(100000),
+    thePresamplingPoints(2000), theMaxtry(100000),
     theFreezeGrid(500000),
     theStrictLargeN(false), 
     theFactorizationScaleFactor(1.0),
@@ -135,7 +135,7 @@ void DipoleSplittingKernel::Init() {
   static Parameter<DipoleSplittingKernel,unsigned long> interfacePresamplingPoints
     ("PresamplingPoints",
      "The number of points used to presample this kernel.",
-     &DipoleSplittingKernel::thePresamplingPoints, 50000, 1, 0,
+     &DipoleSplittingKernel::thePresamplingPoints, 2000, 1, 0,
      false, false, Interface::lowerlim);
 
   static Parameter<DipoleSplittingKernel,unsigned long> interfaceMaxtry

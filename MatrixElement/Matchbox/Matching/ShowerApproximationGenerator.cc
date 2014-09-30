@@ -32,7 +32,7 @@
 using namespace Herwig;
 
 ShowerApproximationGenerator::ShowerApproximationGenerator() 
-  : thePresamplingPoints(50000), theMaxTry(100000), theFreezeGrid(500000),
+  : thePresamplingPoints(2000), theMaxTry(100000), theFreezeGrid(500000),
     theDoCompensate(false) {}
 
 ShowerApproximationGenerator::~ShowerApproximationGenerator() {}
@@ -396,7 +396,7 @@ void ShowerApproximationGenerator::Init() {
   static Parameter<ShowerApproximationGenerator,unsigned long> interfacePresamplingPoints
     ("PresamplingPoints",
      "Set the number of presampling points.",
-     &ShowerApproximationGenerator::thePresamplingPoints, 50000, 1, 0,
+     &ShowerApproximationGenerator::thePresamplingPoints, 2000, 1, 0,
      false, false, Interface::lowerlim);
 
   static Parameter<ShowerApproximationGenerator,unsigned long> interfaceMaxTry

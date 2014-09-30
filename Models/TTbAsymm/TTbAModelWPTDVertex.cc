@@ -71,7 +71,7 @@ void TTbAModelWPTDVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcPDPtr cc
   
   double _cL = 0, _cR = 0;
   
-  if(fabs(aa->id()) == 34 || fabs(bb->id()) == 34 || fabs(cc->id()) == 34) {
+  if(abs(aa->id()) == 34 || abs(bb->id()) == 34 || abs(cc->id()) == 34) {
     _cR = _cWPTD_R; 
     _cL = _cWPTD_L; 
   }

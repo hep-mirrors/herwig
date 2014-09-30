@@ -32,6 +32,7 @@
 #include "Herwig++/Utilities/XML/ElementIO.h"
 
 #include <boost/progress.hpp>
+#include <cstdlib>
 
 using namespace Herwig;
 
@@ -45,7 +46,9 @@ GeneralSampler::GeneralSampler()
     theGlobalMaximumWeight(true), theFlatSubprocesses(false),
     isSampling(false), theMinSelection(0.01), runCombinationData(false),
     theAlmostUnweighted(false), maximumExceeds(0),
-    maximumExceededBy(0.), didReadGrids(false), thePostponeInitialize(false) {}
+    maximumExceededBy(0.), didReadGrids(false), thePostponeInitialize(false),
+    theParallelIntegration(false), theSaveStatistics(false),
+    theIntegratePerJob(0), theIgnoreIntegrationData(false) {}
 
 GeneralSampler::~GeneralSampler() {}
 
@@ -62,6 +65,55 @@ double sign(double x) {
 }
 
 void GeneralSampler::initialize() {
+
+  if ( theParallelIntegration ) {
+
+    if ( !theIntegratePerJob )
+      throw Exception()
+	<< "Please specify the number of integration jobs"
+	<< Exception::abortnow;
+
+    unsigned int jobCount = 0;
+
+    ofstream* jobList = 0;
+
+    generator()->log() 
+      << "--------------------------------------------------------------------------------\n"
+      << "preparing integration jobs ...\n" << flush;
+
+    for ( int b = 0; b < eventHandler()->nBins(); ++b ) {
+
+      if ( b == 0 || b % theIntegratePerJob == 0 ) {
+	if ( jobList ) {
+	  jobList->close();
+	  jobList = 0;
+	}
+	ostringstream name;
+	name << "integrationBins" << jobCount;
+	++jobCount;
+	string fname = name.str();
+	jobList = new ofstream(fname.c_str());
+	if ( !*jobList )
+	  throw Exception() << "Failed to write integration job list"
+			    << Exception::abortnow;
+      }
+
+      *jobList << b << " ";
+
+    }
+
+    if ( jobList ) {
+      jobList->close();
+      jobList = 0;
+    }
+
+    theParallelIntegration = false;
+    theSaveStatistics = true;
+    if ( postponeInitialize() )
+      thePostponeInitialize = false;
+    return;
+
+  }
 
   if ( postponeInitialize() ) {
     thePostponeInitialize = false;
@@ -88,22 +140,40 @@ void GeneralSampler::initialize() {
     theGlobalMaximumWeight = true;
   }
 
+  set<int> binsToIntegrate;
+  if ( integrationList() != "" ) {
+    ifstream jobList(integrationList().c_str());
+    if ( jobList ) {
+      int b = 0;
+      while ( jobList >> b )
+	binsToIntegrate.insert(b);
+    }
+  }
+
+  if ( binsToIntegrate.empty() ) {
+    for ( int b = 0; b < eventHandler()->nBins(); ++b ) 
+      binsToIntegrate.insert(b);
+  }
+
   boost::progress_display* progressBar = 0;
   if ( !theVerbose ) {
     Repository::clog() << "integrating subprocesses";
-    progressBar = new boost::progress_display(eventHandler()->nBins(),Repository::clog());
+    progressBar = new boost::progress_display(binsToIntegrate.size(),Repository::clog());
   }
 
-  for ( int b = 0; b < eventHandler()->nBins(); ++b ) {
+  for ( set<int>::const_iterator bit = binsToIntegrate.begin(); bit != binsToIntegrate.end(); ++bit ) {
     Ptr<BinSampler>::ptr s = theBinSampler->cloneMe();
     s->eventHandler(eventHandler());
     s->sampler(this);
-    s->bin(b);
+    s->bin(*bit);
     lastSampler(s);
     s->doWeighted(eventHandler()->weighted());
     s->setupRemappers(theVerbose);
+    if ( !theIgnoreIntegrationData &&
+	 !integrationJob() )
+      s->readIntegrationData();
     s->initialize(theVerbose);
-    samplers()[b] = s;
+    samplers()[*bit] = s;
     if ( !theVerbose )
       ++(*progressBar);
     if ( s->nanPoints() && theVerbose ) {
@@ -112,6 +182,19 @@ void GeneralSampler::initialize() {
 			 << s->allPoints() << " points with nan or inf weight.\n"
 			 << flush;
     }
+  }
+
+  if ( integrationJob() ) {
+    theGrids = XML::Element(XML::ElementTypes::Element,"Grids");
+    for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers().begin();
+	  s != samplers().end(); ++s ) {
+      s->second->saveGrid();
+      s->second->saveRemappers();
+      if ( theSaveStatistics )
+	s->second->saveIntegrationData();
+    }
+    writeGrids();
+    return;
   }
 
   if ( theVerbose ) {
@@ -135,9 +218,13 @@ void GeneralSampler::initialize() {
 		      << Exception::abortnow;
   }
 
+  theGrids = XML::Element(XML::ElementTypes::Element,"Grids");
   for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers().begin();
 	s != samplers().end(); ++s ) {
+    s->second->saveGrid();
     s->second->saveRemappers();
+    if ( theSaveStatistics )
+      s->second->saveIntegrationData();
   }
 
   writeGrids();
@@ -437,9 +524,13 @@ void GeneralSampler::dofinish() {
 
   }
 
+  theGrids = XML::Element(XML::ElementTypes::Element,"Grids");
   for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers().begin();
 	s != samplers().end(); ++s ) {
+    s->second->saveGrid();
     s->second->saveRemappers();
+    if ( theSaveStatistics )
+      s->second->saveIntegrationData();
   }
 
   writeGrids();
@@ -450,13 +541,19 @@ void GeneralSampler::dofinish() {
 
 void GeneralSampler::doinitrun() {
   readGrids();
-  isSampling = true;
   eventHandler()->initrun();
-  for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers().begin();
-	s != samplers().end(); ++s ) {
-    s->second->setupRemappers(theVerbose);
-    s->second->initialize(theVerbose);
+  if ( !samplers().empty() ) {
+    for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers().begin();
+	  s != samplers().end(); ++s ) {
+      s->second->setupRemappers(theVerbose);
+      if ( !theIgnoreIntegrationData )
+	s->second->readIntegrationData();
+      s->second->initialize(theVerbose);
+    }
+  } else {
+    initialize();
   }
+  isSampling = true;
   SamplerBase::doinitrun();
 }
 
@@ -478,7 +575,10 @@ IVector GeneralSampler::getReferences() {
 void GeneralSampler::writeGrids() const {
   if ( theGrids.children().empty() )
     return;
-  string dataName = generator()->filename() + "-grids.xml";
+  string dataName = generator()->filename();
+  if ( integrationList() != "" )
+    dataName += "-" + integrationList();
+  dataName += "-grids.xml";
   ofstream out(dataName.c_str());
   XML::ElementIO::put(theGrids,out);
 }
@@ -506,7 +606,9 @@ void GeneralSampler::persistentOutput(PersistentOStream & os) const {
      << theAddUpSamplers << theGlobalMaximumWeight
      << theFlatSubprocesses << isSampling << theMinSelection
      << runCombinationData << theAlmostUnweighted << maximumExceeds
-     << maximumExceededBy << thePostponeInitialize;
+     << maximumExceededBy << thePostponeInitialize
+     << theParallelIntegration << theSaveStatistics
+     << theIntegratePerJob << theIgnoreIntegrationData;
 }
 
 void GeneralSampler::persistentInput(PersistentIStream & is, int) {
@@ -519,7 +621,9 @@ void GeneralSampler::persistentInput(PersistentIStream & is, int) {
      >> theAddUpSamplers >> theGlobalMaximumWeight
      >> theFlatSubprocesses >> isSampling >> theMinSelection
      >> runCombinationData >> theAlmostUnweighted >> maximumExceeds
-     >> maximumExceededBy >> thePostponeInitialize;
+     >> maximumExceededBy >> thePostponeInitialize
+     >> theParallelIntegration >> theSaveStatistics
+     >> theIntegratePerJob >> theIgnoreIntegrationData;
 }
 
 
@@ -654,6 +758,57 @@ void GeneralSampler::Init() {
      true);
   static SwitchOption interfacePostponeInitializeNo
     (interfacePostponeInitialize,
+     "No",
+     "",
+     false);
+
+  static Switch<GeneralSampler,bool> interfaceParallelIntegration
+    ("ParallelIntegration",
+     "Prepare parallel jobs for integration.",
+     &GeneralSampler::theParallelIntegration, false, false, false);
+  static SwitchOption interfaceParallelIntegrationYes
+    (interfaceParallelIntegration,
+     "Yes",
+     "",
+     true);
+  static SwitchOption interfaceParallelIntegrationNo
+    (interfaceParallelIntegration,
+     "No",
+     "",
+     false);
+
+  static Parameter<GeneralSampler,unsigned int> interfaceIntegratePerJob
+    ("IntegratePerJob",
+     "The number of subprocesses to integrate per job.",
+     &GeneralSampler::theIntegratePerJob, 0, 0, 0,
+     false, false, Interface::lowerlim);
+
+  static Switch<GeneralSampler,bool> interfaceSaveStatistics
+    ("SaveStatistics",
+     "",
+     &GeneralSampler::theSaveStatistics, false, false, false);
+  static SwitchOption interfaceSaveStatisticsYes
+    (interfaceSaveStatistics,
+     "Yes",
+     "",
+     true);
+  static SwitchOption interfaceSaveStatisticsNo
+    (interfaceSaveStatistics,
+     "No",
+     "",
+     false);
+
+  static Switch<GeneralSampler,bool> interfaceIgnoreIntegrationData
+    ("IgnoreIntegrationData",
+     "",
+     &GeneralSampler::theIgnoreIntegrationData, false, false, false);
+  static SwitchOption interfaceIgnoreIntegrationDataYes
+    (interfaceIgnoreIntegrationData,
+     "Yes",
+     "",
+     true);
+  static SwitchOption interfaceIgnoreIntegrationDataNo
+    (interfaceIgnoreIntegrationData,
      "No",
      "",
      false);

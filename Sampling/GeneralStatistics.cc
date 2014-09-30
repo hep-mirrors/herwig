@@ -31,3 +31,36 @@ void GeneralStatistics::get(PersistentIStream & is) {
      >> theNanPoints >> theAllPoints >> theLastWeight;
 }
 
+void GeneralStatistics::fromXML(const XML::Element& elem) {
+
+  elem.getFromAttribute("maxWeight", theMaxWeight);
+  elem.getFromAttribute("minWeight", theMinWeight);
+  elem.getFromAttribute("sumWeights", theSumWeights);
+  elem.getFromAttribute("sumSquaredWeights", theSumSquaredWeights);
+  elem.getFromAttribute("sumAbsWeights", theSumAbsWeights);
+  elem.getFromAttribute("selectedPoints", theSelectedPoints);
+  elem.getFromAttribute("acceptedPoints", theAcceptedPoints);
+  elem.getFromAttribute("nanPoints", theNanPoints);
+  elem.getFromAttribute("allPoints", theAllPoints);
+  elem.getFromAttribute("lastWeight", theLastWeight);
+
+}
+
+XML::Element GeneralStatistics::toXML() const {
+
+  XML::Element elem(XML::ElementTypes::Element,"GeneralStatistics");
+
+  elem.appendAttribute("maxWeight", theMaxWeight);
+  elem.appendAttribute("minWeight", theMinWeight);
+  elem.appendAttribute("sumWeights", theSumWeights);
+  elem.appendAttribute("sumSquaredWeights", theSumSquaredWeights);
+  elem.appendAttribute("sumAbsWeights", theSumAbsWeights);
+  elem.appendAttribute("selectedPoints", theSelectedPoints);
+  elem.appendAttribute("acceptedPoints", theAcceptedPoints);
+  elem.appendAttribute("nanPoints", theNanPoints);
+  elem.appendAttribute("allPoints", theAllPoints);
+  elem.appendAttribute("lastWeight", theLastWeight);
+
+  return elem;
+
+}

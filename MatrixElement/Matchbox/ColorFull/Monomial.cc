@@ -94,7 +94,7 @@ void Monomial::Monomial_of_str( std::string str ) {
 
 
 		// We may have to skip some chars containing spaces and *
-		while (i < str.size() && (str.at(i) == ' 'or str.at(i) == '\n' or str.at(i) == '*' or str.at(i) == '(' or str.at(i) == ')')) i++;
+		while (i < str.size() && (str.at(i) == ' ' or str.at(i) == '\n' or str.at(i) == '*' or str.at(i) == '(' or str.at(i) == ')')) i++;
 
 		// look for denominator "/"
 		if(i< str.size() and  str.at(i) == '/') {

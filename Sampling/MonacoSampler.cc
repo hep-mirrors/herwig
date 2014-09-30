@@ -109,6 +109,12 @@ double MonacoSampler::generate() {
   return w;
 }
 
+void MonacoSampler::saveGrid() const {
+  XML::Element grid = toXML();
+  grid.appendAttribute("process",id());
+  sampler()->grids().append(grid);
+}
+
 void MonacoSampler::initialize(bool progress) {
 
 //read in grid
@@ -154,12 +160,11 @@ void MonacoSampler::initialize(bool progress) {
   }
 
   if ( haveGrid ) {
-    runIteration(initialPoints(),progress);
-    adapt();
+    if ( !integrated() ) {
+      runIteration(initialPoints(),progress);
+      adapt();
+    }
     isInitialized();
-    XML::Element grid = MonacoSampler::toXML();
-    grid.appendAttribute("process",id());
-    sampler()->grids().append(grid);
     return;
   }
 
@@ -177,10 +182,6 @@ void MonacoSampler::initialize(bool progress) {
   }
   adapt();
   isInitialized();
-
-  XML::Element grid = MonacoSampler::toXML();
-  grid.appendAttribute("process",id());
-  sampler()->grids().append(grid);
 }
 
 void MonacoSampler::adapt() {

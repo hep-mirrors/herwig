@@ -98,15 +98,57 @@ void JetsPlusAnalysis::analyze(ParticleVector& parts, long id, double weight) {
     }
   }
 
+  unsigned int njets = 0;
+  Energy jetSummedPerp = ZERO;
+  double jetSummedRapidity = 0.0;
+  double jetSummedPhi = 0.0;
+  Energy jetSummedM = ZERO;
+
+  nJetsInclusive().count(Statistics::EventContribution(njets,weight,0.0),id);
+  if ( njets == theJets.size() )
+    nJetsExclusive().count(Statistics::EventContribution(njets,weight,0.0),id);
+
   for ( map<unsigned int,LorentzMomentum>::const_iterator h = theJets.begin();
 	h != theJets.end(); ++h ) {
+    njets += 1;
     jetProperties(h->first).count(h->second,weight,id);
     jetInclusiveProperties().count(h->second,weight,id);
+    nJetsInclusive().count(Statistics::EventContribution(njets,weight,0.0),id);
+    if ( njets == theJets.size() ) {
+      exclusiveJetProperties(h->first).count(h->second,weight,id);
+      nJetsExclusive().count(Statistics::EventContribution(njets,weight,0.0),id);
+    }
+    jetSummedPerp += h->second.perp();
+    jetSummedRapidity += h->second.rapidity();
+    jetSummedPhi += h->second.phi();
+    jetSummedM += h->second.m();
     map<unsigned int,LorentzMomentum>::const_iterator g = h; ++g;
     for ( ; g != theJets.end(); ++g ) {
       jetPairProperties(h->first,g->first).count(h->second,g->second,weight,id);
+      map<unsigned int,LorentzMomentum>::const_iterator g1 = g; ++g1;
+      for ( ; g1 != theJets.end(); ++g1 ) {
+	LorentzMomentum p123 =
+	  h->second + g->second + g1->second;
+	threeJetProperties(h->first,g->first,g1->first).count(p123,weight,id);
+	map<unsigned int,LorentzMomentum>::const_iterator g2 = g1; ++g2;
+	for ( ; g2 != theJets.end(); ++g2 ) {
+	  LorentzMomentum p1234 =
+	    h->second + g->second + g1->second + g2->second;
+	  fourJetProperties(h->first,g->first,g1->first,g2->first).count(p1234,weight,id);
+	}
+      }
     }
   }
+
+  if ( njets > 0.0 )
+    jetSummedProperties().count(jetSummedPerp,jetSummedRapidity,
+				jetSummedPhi,jetSummedM,
+				weight,id);
+
+  if ( njets > 0.0 )
+    jetAverageProperties().count(jetSummedPerp/njets,jetSummedRapidity/njets,
+				 jetSummedPhi/njets,jetSummedM/njets,
+				 weight,id);
 
   for ( map<string,LorentzMomentum>::const_iterator h = theHardObjects.begin();
 	h != theHardObjects.end(); ++h ) {
@@ -115,6 +157,8 @@ void JetsPlusAnalysis::analyze(ParticleVector& parts, long id, double weight) {
       jetHardPairProperties(g->first,h->first).count(g->second,h->second,weight,id);
     }
   }
+
+  analyzeSpecial(id,weight);
 
 }
 
@@ -190,8 +234,31 @@ void JetsPlusAnalysis::dofinish() {
     h->second.finalize(xhistos);
   }
 
+  for ( map<unsigned int,ObjectProperties>::iterator h = theExclusiveJetProperties.begin();
+	h != theExclusiveJetProperties.end(); ++h ) {
+    h->second.finalize(xhistos);
+  }
+
   if ( !theJetInclusiveProperties.pt.bins().empty() ) {
     theJetInclusiveProperties.finalize(xhistos);
+  }
+
+  if ( !theJetSummedProperties.pt.bins().empty() ) {
+    theJetSummedProperties.finalize(xhistos);
+  }
+
+  if ( !theJetAverageProperties.pt.bins().empty() ) {
+    theJetAverageProperties.finalize(xhistos);
+  }
+
+  if ( !theNJetsInclusive.bins().empty() ) {
+    theNJetsInclusive.finalize();
+    xhistos.append(theNJetsInclusive.toXML());
+  }
+
+  if ( !theNJetsExclusive.bins().empty() ) {
+    theNJetsExclusive.finalize();
+    xhistos.append(theNJetsExclusive.toXML());
   }
 
   for ( map<pair<string,string>,PairProperties>::iterator h = theHardPairProperties.begin();
@@ -208,6 +275,18 @@ void JetsPlusAnalysis::dofinish() {
 	h != theJetHardPairProperties.end(); ++h ) {
     h->second.finalize(xhistos);
   }
+
+  for ( map<boost::tuple<unsigned int,unsigned int,unsigned int>,ObjectProperties>::iterator h =
+	  theThreeJetProperties.begin(); h != theThreeJetProperties.end(); ++h ) {
+    h->second.finalize(xhistos);
+  }
+
+  for ( map<boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties>::iterator h =
+	  theFourJetProperties.begin(); h != theFourJetProperties.end(); ++h ) {
+    h->second.finalize(xhistos);
+  }
+
+  finalize(xhistos);
 
   elem.append(xhistos);
 

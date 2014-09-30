@@ -253,7 +253,8 @@ namespace XML {
     /**
      * Find all elements of the given type and name
      */
-    std::pair<std::multimap<std::pair<int,std::string>,std::list<Element>::iterator>::const_iterator,std::multimap<std::pair<int,std::string>,std::list<Element>::iterator>::const_iterator>
+    std::pair<std::multimap<std::pair<int,std::string>,std::list<Element>::iterator>::const_iterator,
+	      std::multimap<std::pair<int,std::string>,std::list<Element>::iterator>::const_iterator>
     findAll(int type, const std::string& name) const;
 
   private:
