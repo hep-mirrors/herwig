@@ -33,6 +33,11 @@ parser.add_argument(
     action="store_true", 
     help="ignore skipped vertices and produce output anyway"
 )
+parser.add_argument(
+    '--split-model', 
+    action="store_true", 
+    help="Split the model file into pieces to improve compilation for models with many parameters"
+)
 
 vertex_skipped = False
 
@@ -196,18 +201,41 @@ for p in FR.all_parameters:
     if args.verbose:
         pprint.pprint((p.name,p.value, value, p.nature))
 
+paramconstructor=': '
+
+for ncount in range(0,len(parmconstr)) :
+    paramconstructor += parmconstr[ncount]
+    if(ncount != len(parmconstr) -1) :
+        paramconstructor += ','
+    if(ncount%5 == 0 ) :
+        paramconstructor += "\n"
+
+paramout=""
+paramin =""
+for ncount in range(0,len(paramsforstream)) :
+    if(ncount !=0 ) :
+        paramout += "<< " + paramsforstream[ncount]
+        paramin  += ">> " + paramsforstream[ncount]
+    else :
+        paramout += paramsforstream[ncount]
+        paramin  += paramsforstream[ncount]
+    if(ncount%5 == 0 ) :
+        paramout += "\n"
+        paramin  += "\n"
+
 parmtextsubs = { 'parmgetters' : '\n'.join(parmgetters),
                  'parmdecls' : '\n'.join(parmdecls),
-                 'parmconstr' : ': %s' % ','.join(parmconstr),
+                 'parmconstr' : paramconstructor,
                  'getters' : '',
                  'decls' : '',
                  'addVertex' : '',
                  'doinit' : '\n'.join(doinit),
-                 'ostream' : '<< '.join(paramsforstream),
-                 'istream' : '>> '.join(paramsforstream),
+                 'ostream' : paramout,
+                 'istream' : paramin ,
                  'refs' : '',
                  'parmextinter': ''.join(interfaceDecls),
-                 'ModelName': modelname
+                 'ModelName': modelname,
+                 'calcfunctions': ''
                  }
 
 ##################################################
@@ -566,8 +594,34 @@ modelfilesubs = { 'plist' : plist,
 # write the files from templates according to the above subs
 if should_print():
     MODEL_HWIN = getTemplate('LHC-FR.in')
+    if(not args.split_model) :
+        MODEL_CC = [getTemplate('Model.cc')]
+    else :
+        MODEL_EXTRA_CC=getTemplate('Model6.cc')
+        extra_names=[]
+        extra_calcs=[]
+        parmtextsubs['doinit']=""
+        for i in range(0,len(doinit)) :
+            if( i%20 == 0 ) :
+                function_name = "initCalc" +str(int(i/20))
+                parmtextsubs['doinit'] += function_name +"();\n"
+                parmtextsubs['calcfunctions'] += "void " + function_name + "();\n"
+                extra_names.append(function_name)
+                extra_calcs.append("")
+            extra_calcs[-1] += doinit[i] + "\n"
+        for i in range(0,len(extra_names)) :
+            ccname =  '%s_extra_%s.cc' % (modelname,i)
+            writeFile( ccname,     MODEL_EXTRA_CC.substitute({'ModelName' : modelname,
+                                                              'functionName' : extra_names[i],
+                                                              'functionCalcs' : extra_calcs[i] }) )
+
+
+
+
+        MODEL_CC = [getTemplate('Model1.cc'),getTemplate('Model2.cc'),getTemplate('Model3.cc'),
+                    getTemplate('Model4.cc'),getTemplate('Model5.cc')]
     MODEL_H  = getTemplate('Model.h')
-    MODEL_CC = getTemplate('Model.cc')
+    print 'LENGTH',len(MODEL_CC)
     MODELINFILE = getTemplate('FR.model')
     writeFile( 'LHC-%s.in' % modelname, 
                MODEL_HWIN.substitute({ 'ModelName' : modelname,
@@ -577,7 +631,12 @@ if should_print():
     modeltemplate = Template( MODELINFILE.substitute(modelfilesubs) )
 
     writeFile( '%s.h' % modelname,      MODEL_H.substitute(parmtextsubs) )
-    writeFile( '%s.cc' % modelname,     MODEL_CC.substitute(parmtextsubs) )
+    for i in range(0,len(MODEL_CC)) :
+        if(len(MODEL_CC)==1) :
+            ccname = '%s.cc' % modelname
+        else :
+            ccname = '%s.cc' % (modelname + str(i))
+        writeFile( ccname,     MODEL_CC[i].substitute(parmtextsubs) )
     writeFile( modelname +'.template', modeltemplate.template )
     writeFile( modelname +'.model', modeltemplate.substitute( modelparameters ) )
     # copy the Makefile-FR to current directory,

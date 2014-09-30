@@ -104,6 +104,16 @@ private:
    * Private and non-existent assignment operator.
    */
   ${ModelName} & operator=(const ${ModelName} &);
+
+private:
+
+  /**
+   *  Helper functions for doinit
+   */
+  //@{
+
+${calcfunctions}
+  //@}
   
 private:
 
