@@ -119,9 +119,6 @@ Energy ShowerApproximation::hardScale() const {
 }
 
 double ShowerApproximation::hardScaleProfile(Energy hard, Energy soft) const {
-  if ( !bornCXComb()->mePartonData()[0]->coloured() &&
-       !bornCXComb()->mePartonData()[1]->coloured() )
-    return 1;
   double x = soft/hard;
   if ( theProfileScales ) {
     if ( x > 1. ) {
