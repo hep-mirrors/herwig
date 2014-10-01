@@ -13,46 +13,117 @@
 //
 
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxOLPME.h"
-#include "ThePEG/Utilities/DynamicLoader.h"
-
-
-
 
 namespace Herwig {
 
 using namespace ThePEG;
 
-
-class openloopsprocinfo{
-
-	public:
-		openloopsprocinfo(){};
-		openloopsprocinfo(int HID,int GID, string procstr,string typestr):
-			theHOlpId(HID),theGOlpId(GID),theProcstr(procstr),theTypestr(typestr){
-		}
-		~openloopsprocinfo(){}
-		int HID() const {return theHOlpId;}
-		int GID() const {return theGOlpId;}
-		string Pstr() const {return theProcstr;}
-		string Tstr() const {return theTypestr;}
-		void setGID(int g){theGOlpId=g;}
-		void setOAs(int i){ orderAlphas=i;}
-		int orderAs(){return orderAlphas;}
-	private:
-		int theHOlpId;
-		int theGOlpId;
-		string theProcstr;
-		string theTypestr;
-		int orderAlphas;
-	public:
-		void persistentOutput(PersistentOStream & os) const{os<<theHOlpId<<theGOlpId<<theProcstr<<theTypestr<<orderAlphas;}
-		void persistentInput(PersistentIStream &is) {is>>theHOlpId>>theGOlpId>>theProcstr>>theTypestr>>orderAlphas;}
-};
 /**
  * \ingroup Matchbox
- * \author Simon Platzer
+ * \author Johannes Bellm, Simon Platzer
  *
- * \brief OpenLoopsAmplitude implements an interface to NJets
+ * \brief Process information for OpenLoops
+ */
+class OpenLoopsProcInfo{
+
+public:
+
+  /**
+   * Default constructor
+   */
+  OpenLoopsProcInfo() {}
+
+  /**
+   * Construct giving data
+   */
+  OpenLoopsProcInfo(int HID,int GID, string procstr,string typestr)
+    : theHOlpId(HID), theGOlpId(GID), theProcstr(procstr), theTypestr(typestr) {}
+
+  /**
+   * Document me
+   */
+  int HID() const { return theHOlpId; }
+
+  /**
+   * Document me
+   */
+  int GID() const { return theGOlpId; }
+
+  /**
+   * Document me
+   */
+  const string& Pstr() const { return theProcstr; }
+
+  /**
+   * Document me
+   */
+  const string& Tstr() const { return theTypestr; }
+
+  /**
+   * Document me
+   */
+  void setGID(int g) { theGOlpId=g; }
+
+  /**
+   * Document me
+   */
+  void setOAs(int i) { orderAlphas=i; }
+
+  /**
+   * Document me
+   */
+  int orderAs() { return orderAlphas; }
+
+private:
+
+  /**
+   * Document me
+   */
+  int theHOlpId;
+
+  /**
+   * Document me
+   */
+  int theGOlpId;
+
+  /**
+   * Document me
+   */
+  string theProcstr;
+
+  /**
+   * Document me
+   */
+  string theTypestr;
+
+  /**
+   * Document me
+   */
+  int orderAlphas;
+
+public:
+
+  /**
+   * Write to persistent stream
+   */
+  void persistentOutput(PersistentOStream & os) const{
+    os << theHOlpId << theGOlpId << theProcstr << theTypestr << orderAlphas;
+  }
+
+  /**
+   * Read from persistent stream
+   */
+  void persistentInput(PersistentIStream &is) {
+    is >> theHOlpId >> theGOlpId >> theProcstr >> theTypestr >> orderAlphas;
+  }
+
+};
+
+/**
+ * \ingroup Matchbox
+ * \author Johannes Bellm, Simon Platzer
+ *
+ * \brief OpenLoopsAmplitude implements an interface to OpenLoops
  */
 class OpenLoopsAmplitude: public MatchboxOLPME {
 
@@ -211,9 +282,7 @@ private:
    */
   mutable map< int , int > idpair;
 
-  map<int , openloopsprocinfo > processmap;
-
-  mutable string openloopsInstallPath;
+  map<int , OpenLoopsProcInfo > processmap;
 
   bool theCodeExists;
 
@@ -221,18 +290,7 @@ private:
 
 
 };
-//inline PersistentOStream& operator<<(PersistentOStream& os,
-//				     const openloopsprocinfo& h) {
-//  h.persistentOutput(os);
-//  return os;
-//}
 
-//inline PersistentIStream& operator>>(PersistentIStream& is,
-//		openloopsprocinfo& h) {
-//  h.persistentInput(is);
-//
-//return is;
-//}
 }
 
 #endif /* Herwig_OpenLoopsAmplitude_H */
