@@ -412,17 +412,17 @@ bool SudakovFormFactor::getMapping(SpinPtr & output, RhoDMatrix & mapping,
       return false;
     }
     else {
-      assert(particle.parents().size()==1);
       Lorentz5Momentum porig;
       LorentzRotation rot = boostToShower(showerkin->getBasis(),showerkin->frame(),porig);
+      Helicity::Direction dir = particle.isFinalState() ? outgoing : incoming;
       if(particle.dataPtr()->iSpin()==PDT::Spin0) {
 	assert(false);
       }
       else if(particle.dataPtr()->iSpin()==PDT::Spin1Half) {
-	output = createFermionSpinInfo(particle,porig,rot,outgoing);
+	output = createFermionSpinInfo(particle,porig,rot,dir);
       }
       else if(particle.dataPtr()->iSpin()==PDT::Spin1) {
-	output = createVectorSpinInfo(particle,porig,rot,outgoing);
+	output = createVectorSpinInfo(particle,porig,rot,dir);
       }
       else {
 	assert(false);
