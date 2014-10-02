@@ -42,7 +42,9 @@ public:
     init_(true),iteration_(1), points_(1000), info_(false), 
     createModes_(true), removeOnShell_(1), excludeEffective_(true), 
     minReleaseFraction_(1e-3), maxBoson_(1), maxList_(1),
-    includeTopOnShell_(false) {}
+    includeTopOnShell_(false ), removeFlavourChangingVertices_(false),
+    removeSmallVertices_(false), minVertexNorm_(1e-8) 
+  {}
 
   /**
    * Function used to determine allowed decaymodes, to be implemented
@@ -62,6 +64,27 @@ public:
    */
   void decayConstructor(tDecayConstructorPtr d) { 
     decayConstructor_ = d;
+  }
+
+  /**
+   *  Remove flavour changing vertices ?
+   */
+  bool removeFlavourChangingVertices() const {
+    return removeFlavourChangingVertices_;
+  }
+
+  /**
+   *  Remove small vertices ?
+   */
+  bool removeSmallVertices() const {
+    return removeSmallVertices_;
+  }
+
+  /**
+   *  Minimum norm for vertex removal
+   */
+  double minVertexNorm() const {
+    return minVertexNorm_;
   }
 
 protected:
@@ -289,6 +312,21 @@ private:
    *  Include on-shell for \f$t\to b W\f$
    */
   bool includeTopOnShell_;
+
+  /**
+   *  Remove flavour changing vertices ?
+   */
+  bool removeFlavourChangingVertices_;
+
+  /**
+   *  Remove small vertices ?
+   */
+  bool removeSmallVertices_;
+
+  /**
+   *  Minimum norm for vertex removal
+   */
+  double minVertexNorm_;
 };
 
   /** An Exception class that can be used by all inheriting classes to
@@ -303,33 +341,6 @@ private:
 			       Severity sev) : Exception(str,sev)
     {}
   };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of NBodyDecayConstructorBase. */
-template <>
-struct BaseClassTrait<Herwig::NBodyDecayConstructorBase,1> {
-  /** Typedef of the first base class of NBodyDecayConstructorBase. */
-  typedef Interfaced NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the NBodyDecayConstructorBase class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::NBodyDecayConstructorBase>
-  : public ClassTraitsBase<Herwig::NBodyDecayConstructorBase> {
-  /** Return a platform-independent class name */
-  static string className() { return "Herwig::NBodyDecayConstructorBase"; }
-};
-
-/** @endcond */
 
 }
 
