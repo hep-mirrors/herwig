@@ -386,7 +386,7 @@ void SubtractedME::fillProjectors() {
   }
 }
 
-double SubtractedME::reweightHead(const vector<tStdXCombPtr>& dep) {
+double SubtractedME::reweightHead(const vector<tStdXCombPtr>&) {
 
   if ( showerApproximation() ) {
 
