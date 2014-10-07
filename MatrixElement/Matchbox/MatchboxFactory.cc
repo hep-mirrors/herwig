@@ -26,6 +26,7 @@
 #include "Herwig++/MatrixElement/Matchbox/Utility/SU2Helper.h"
 
 #include <boost/progress.hpp>
+#include <boost/filesystem.hpp>
 
 #include <iterator>
 using std::ostream_iterator;
@@ -45,7 +46,8 @@ MatchboxFactory::MatchboxFactory()
     theSubtractionData(""), theSubtractionPlotType(1), theSubtractionScatterPlot(false),
     thePoleData(""), theRealEmissionScales(false), theAllProcesses(false),
   theMECorrectionsOnly(false), theLoopSimCorrections(false), ranSetup(false),
-  theFirstPerturbativePDF(true), theSecondPerturbativePDF(true) {}
+  theFirstPerturbativePDF(true), theSecondPerturbativePDF(true),
+  thePrefix("./Matchbox"), theAmplitudeStorage("") {}
 
 MatchboxFactory::~MatchboxFactory() {}
 
@@ -971,6 +973,25 @@ void MatchboxFactory::doinitrun() {
   SubProcessHandler::doinitrun();
 }
 
+const string& MatchboxFactory::amplitudeStorage() {
+  if ( !theAmplitudeStorage.empty() )
+    return theAmplitudeStorage;
+  theAmplitudeStorage = prefix();
+  if ( theAmplitudeStorage.empty() )
+    theAmplitudeStorage = "./";
+  else if ( *theAmplitudeStorage.rbegin() != '/' )
+    theAmplitudeStorage += "/";
+  theAmplitudeStorage += "Amplitudes/";
+  if ( boost::filesystem::exists(theAmplitudeStorage) ) {
+    if ( !boost::filesystem::is_directory(theAmplitudeStorage) )
+      throw Exception() << "Matchbox amplitude storage '"
+			<< theAmplitudeStorage << "' existing but not a directory."
+			<< Exception::abortnow;
+  } else {
+    boost::filesystem::create_directories(theAmplitudeStorage);
+  }
+  return theAmplitudeStorage;
+}
 
 void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
   os << theDiagramGenerator << theProcessData
@@ -992,7 +1013,8 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
      << theSelectedAmplitudes << theDeselectedAmplitudes
      << theDipoleSet << theReweighters << thePreweighters
      << theMECorrectionsOnly<< theLoopSimCorrections<<theHighestVirtualsize << ranSetup
-     << theIncoming << theFirstPerturbativePDF << theSecondPerturbativePDF;
+     << theIncoming << theFirstPerturbativePDF << theSecondPerturbativePDF
+     << thePrefix << theAmplitudeStorage;
 }
 
 void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
@@ -1015,7 +1037,8 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
      >> theSelectedAmplitudes >> theDeselectedAmplitudes
      >> theDipoleSet >> theReweighters >> thePreweighters
      >> theMECorrectionsOnly>> theLoopSimCorrections>>theHighestVirtualsize >> ranSetup
-     >> theIncoming >> theFirstPerturbativePDF >> theSecondPerturbativePDF;
+     >> theIncoming >> theFirstPerturbativePDF >> theSecondPerturbativePDF
+     >> thePrefix >> theAmplitudeStorage;
 }
 
 string MatchboxFactory::startParticleGroup(string name) {

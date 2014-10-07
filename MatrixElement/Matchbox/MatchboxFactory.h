@@ -630,6 +630,25 @@ public:
   }
   //@}
 
+  /** @name Data handling */
+  //@{
+  /**
+   * Return the prefix to store Matchbox data and libraries
+   */
+  const string& prefix() const { return thePrefix; }
+
+  /**
+   * Set the prefix to store Matchbox data and libraries
+   */
+  void prefix(const string& p) { thePrefix = p; }
+
+  /**
+   * Return (and possibly create) a directory to contain amplitude
+   * information.
+   */
+  const string& amplitudeStorage();
+  //@}
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -1016,6 +1035,16 @@ private:
    * The current factory
    */
   static MatchboxFactory*& theCurrentFactory();
+
+  /**
+   * The prefix to store Matchbox data and libraries
+   */
+  string thePrefix;
+
+  /**
+   * The directory to contain amplitude information.
+   */
+  string theAmplitudeStorage;
 
 private:
 
