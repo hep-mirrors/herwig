@@ -32,7 +32,8 @@ void printUsageAndExit();
 
 void HerwigInit(string infile, string reponame);
 void HerwigRead(string reponame, string runname,
-		const gengetopt_args_info & args_info);
+		const gengetopt_args_info & args_info,
+		bool postponeInitialize);
 void HerwigRun(string runname, string setupfile,
 	       int seed, string tag, long N, 
 	       bool tics, bool resume, int jobs,
@@ -57,12 +58,14 @@ int main(int argc, char * argv[]) {
       printUsageAndExit();
 
     // Interpret command status
-    enum { INIT, READ, INTEGRATE, RUN, ERROR } status;
+    enum { INIT, READ, BUILD, INTEGRATE, RUN, ERROR } status;
     std::string runType = args_info.inputs[0];
     if ( runType == "init" )
       status = INIT;
     else if ( runType == "read" ) 
       status = READ;
+    else if ( runType == "build" ) 
+      status = BUILD;
     else if ( runType == "integrate" ) 
       status = INTEGRATE;
     else if ( runType == "run" )  
@@ -155,10 +158,11 @@ int main(int argc, char * argv[]) {
     // Call mode
     switch ( status ) {
     case INIT:        HerwigInit( runname, reponame ); break;
-    case READ:        HerwigRead( reponame, runname, args_info ); break;
+    case READ:        HerwigRead( reponame, runname, args_info, false ); break;
+    case BUILD:       HerwigRead( reponame, runname, args_info, true ); break;
     case INTEGRATE:   HerwigRun( runname, setupfile , seed, tag, N, tics, resume, jobs, true, integrationList );  break;
     case RUN:         HerwigRun( runname, setupfile , seed, tag, N, tics, resume, jobs, false, integrationList );  break;
-    default:    printUsageAndExit();
+    default:          printUsageAndExit();
     }
 
 
@@ -230,7 +234,8 @@ void HerwigInit(string infile, string reponame) {
 
 
 void HerwigRead(string reponame, string runname, 
-		const gengetopt_args_info & args_info) {
+		const gengetopt_args_info & args_info,
+		bool postponeInitialize) {
 #ifdef HERWIG_PKGDATADIR
   ifstream test(reponame.c_str());
   if ( !test ) {
@@ -242,6 +247,8 @@ void HerwigRead(string reponame, string runname,
   if ( ! msg.empty() ) cerr << msg << '\n';
   setSearchPaths(args_info);
   breakThePEG();
+  if ( postponeInitialize )
+    SamplerBase::doPostponeInitialize();
   if ( !runname.empty() && runname != "-" ) {
     string msg = Repository::read(runname, std::cout);
     if ( ! msg.empty() ) cerr << msg << '\n';

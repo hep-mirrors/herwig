@@ -46,7 +46,7 @@ GeneralSampler::GeneralSampler()
     theGlobalMaximumWeight(true), theFlatSubprocesses(false),
     isSampling(false), theMinSelection(0.01), runCombinationData(false),
     theAlmostUnweighted(false), maximumExceeds(0),
-    maximumExceededBy(0.), didReadGrids(false), thePostponeInitialize(false),
+    maximumExceededBy(0.), didReadGrids(false),
     theParallelIntegration(false), theSaveStatistics(false),
     theIntegratePerJob(0), theIgnoreIntegrationData(false) {}
 
@@ -109,16 +109,12 @@ void GeneralSampler::initialize() {
 
     theParallelIntegration = false;
     theSaveStatistics = true;
-    if ( postponeInitialize() )
-      thePostponeInitialize = false;
     return;
 
   }
 
-  if ( postponeInitialize() ) {
-    thePostponeInitialize = false;
+  if ( postponeInitialize() )
     return;
-  }
 
   if ( !samplers().empty() )
     return;
@@ -575,7 +571,12 @@ IVector GeneralSampler::getReferences() {
 void GeneralSampler::writeGrids() const {
   if ( theGrids.children().empty() )
     return;
-  string dataName = generator()->filename();
+  string dataName = gridDirectory();
+  if ( dataName.empty() )
+    dataName = "./";
+  else if ( *dataName.rbegin() != '/' )
+    dataName += "/";
+  dataName += generator()->filename();
   if ( integrationList() != "" )
     dataName += "-" + integrationList();
   dataName += "-grids.xml";
@@ -586,7 +587,12 @@ void GeneralSampler::writeGrids() const {
 void GeneralSampler::readGrids() {
   if ( didReadGrids )
     return;
-  string dataName = generator()->filename() + "-grids.xml";
+  string dataName = gridDirectory();
+  if ( dataName.empty() )
+    dataName = "./";
+  else if ( *dataName.rbegin() != '/' )
+    dataName += "/";
+  dataName += generator()->filename() + "-grids.xml";
   ifstream in(dataName.c_str());
   if ( !in ) {
     theGrids = XML::Element(XML::ElementTypes::Element,"Grids");
@@ -606,7 +612,7 @@ void GeneralSampler::persistentOutput(PersistentOStream & os) const {
      << theAddUpSamplers << theGlobalMaximumWeight
      << theFlatSubprocesses << isSampling << theMinSelection
      << runCombinationData << theAlmostUnweighted << maximumExceeds
-     << maximumExceededBy << thePostponeInitialize
+     << maximumExceededBy
      << theParallelIntegration << theSaveStatistics
      << theIntegratePerJob << theIgnoreIntegrationData;
 }
@@ -621,7 +627,7 @@ void GeneralSampler::persistentInput(PersistentIStream & is, int) {
      >> theAddUpSamplers >> theGlobalMaximumWeight
      >> theFlatSubprocesses >> isSampling >> theMinSelection
      >> runCombinationData >> theAlmostUnweighted >> maximumExceeds
-     >> maximumExceededBy >> thePostponeInitialize
+     >> maximumExceededBy
      >> theParallelIntegration >> theSaveStatistics
      >> theIntegratePerJob >> theIgnoreIntegrationData;
 }
@@ -744,21 +750,6 @@ void GeneralSampler::Init() {
   static SwitchOption interfaceAlmostUnweightedOff
     (interfaceAlmostUnweighted,
      "Off",
-     "",
-     false);
-
-  static Switch<GeneralSampler,bool> interfacePostponeInitialize
-    ("PostponeInitialize",
-     "Postpone initialization to happen after event generator modifications.",
-     &GeneralSampler::thePostponeInitialize, false, false, false);
-  static SwitchOption interfacePostponeInitializeYes
-    (interfacePostponeInitialize,
-     "Yes",
-     "",
-     true);
-  static SwitchOption interfacePostponeInitializeNo
-    (interfacePostponeInitialize,
-     "No",
      "",
      false);
 
