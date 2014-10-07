@@ -119,9 +119,6 @@ Energy ShowerApproximation::hardScale() const {
 }
 
 double ShowerApproximation::hardScaleProfile(Energy hard, Energy soft) const {
-  if ( !bornCXComb()->mePartonData()[0]->coloured() &&
-       !bornCXComb()->mePartonData()[1]->coloured() )
-    return 1;
   double x = soft/hard;
   if ( theProfileScales ) {
     if ( x > 1. ) {
@@ -162,6 +159,12 @@ bool ShowerApproximation::isInShowerPhasespace() const {
   kinematics.dipole(const_ptr_cast<Ptr<SubtractionDipole>::tptr>(theDipole));
   kinematics.prepare(realCXComb(),bornCXComb());
 
+  if ( pt > hard ) {
+    kinematics.dipole(tmpdip);
+    kinematics.prepare(tmpreal,tmpborn);
+    return false;
+  }
+
   try {
     zbounds = kinematics.zBounds(pt,hard);
   } catch(...) {
@@ -172,7 +175,7 @@ bool ShowerApproximation::isInShowerPhasespace() const {
   kinematics.dipole(tmpdip);
   kinematics.prepare(tmpreal,tmpborn);
 
-  return pt < hard && z > zbounds.first && z < zbounds.second;
+  return z > zbounds.first && z < zbounds.second;
 
 }
 

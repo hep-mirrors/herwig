@@ -85,12 +85,12 @@ void MultiIterationStatistics::fromXML(const XML::Element& elem) {
        multimap<pair<int,string>,list<XML::Element>::iterator>::const_iterator>
     range = stats->findAll(XML::ElementTypes::Element,"GeneralStatistics");
 
-  if ( (size_t)(std::distance(range.second,range.first)) != nit )
+  if ( (size_t)(std::distance(range.first,range.second)) != nit )
     throw Exception() << "MultiIterationStatistics expected "
 		      << nit << " iterations but only found "
-		      << std::distance(range.second,range.first)
+		      << std::distance(range.first,range.second)
 		      << Exception::abortnow;
-  
+
   set<size_t> which;
 
   for ( multimap<pair<int,string>,list<XML::Element>::iterator>::const_iterator a = range.first;

@@ -25,6 +25,8 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
+#include "ThePEG/Utilities/DynamicLoader.h"
+
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -148,7 +150,7 @@ void OpenLoopsAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs
 		} else if ( (*p).first.second == ProcessType::oneLoopInterference ) {
 			Typestr << "Loop";
 		}
-		openloopsprocinfo pro = openloopsprocinfo((*p).second, -1, Processstr.str(), Typestr.str());
+		OpenLoopsProcInfo pro = OpenLoopsProcInfo((*p).second, -1, Processstr.str(), Typestr.str());
 		pro.setOAs(p->first.first.orderInAlphaS);
 		processmap[(*p).second] = pro;
 	}
@@ -162,12 +164,12 @@ void OpenLoopsAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs
 		orderFile << "\n\nCouplingPower QCD       " << i;
 		orderFile << "\n\n#AlphasPower            " << i;
 		for ( vector<string>::iterator it = types.begin() ; it != types.end() ; it++ ) {
-			for ( map<int, openloopsprocinfo>::iterator p = processmap.begin() ; p != processmap.end() ; ++p )
+			for ( map<int, OpenLoopsProcInfo>::iterator p = processmap.begin() ; p != processmap.end() ; ++p )
 			  if ( (*p).second.Tstr() == *it && i == (unsigned int) (*p).second.orderAs() ) {
 					orderFile << "\nAmplitudeType " << *it << "\n";
 					break;
 				}
-			for ( map<int, openloopsprocinfo>::iterator p = processmap.begin() ; p != processmap.end() ; ++p )
+			for ( map<int, OpenLoopsProcInfo>::iterator p = processmap.begin() ; p != processmap.end() ; ++p )
 			  if ( (*p).second.Tstr() == *it && i == (unsigned int) (*p).second.orderAs() ) {
 					orderFile << (*p).second.Pstr() << "\n";
 				}
@@ -186,7 +188,7 @@ bool OpenLoopsAmplitude::checkOLPContract() {
 	while (std::getline(infile, line)) {
 		contractfile.push_back(line);
 	}
-	for ( map<int, openloopsprocinfo>::iterator p = processmap.begin() ; p != processmap.end() ; p++ ) {
+	for ( map<int, OpenLoopsProcInfo>::iterator p = processmap.begin() ; p != processmap.end() ; p++ ) {
 		bool righttype = false;
 		for ( vector<string>::iterator linex = contractfile.begin() ; linex != contractfile.end() ; ++linex ) {
 			if ( (*linex).find("AmplitudeType ")!= std::string::npos ) {
@@ -214,15 +216,12 @@ bool OpenLoopsAmplitude::checkOLPContract() {
 	string ids = "ids.dat";
 	ofstream IDS(ids.c_str());
 
-	for ( map<int, openloopsprocinfo>::iterator p = processmap.begin() ; p != processmap.end() ; p++ ) {
+	for ( map<int, OpenLoopsProcInfo>::iterator p = processmap.begin() ; p != processmap.end() ; p++ ) {
 	    idpair.insert ( std::pair<int,int>((*p).second.HID(),(*p).second.GID()) );
 	    IDS << (*p).second.HID() << " " << (*p).second.GID() << "\n";
 	    if ( (*p).second.GID() == -1 ) return 0;
 	}
 	IDS << flush;
-	ids = "installpath.dat";
-	ofstream Install(ids.c_str());
-	Install<<openloopsInstallPath << flush;
 	return 1;
 }
 
@@ -235,10 +234,6 @@ void OpenLoopsAmplitude::getids() const{
 	   istringstream(line) >> hid>>gid;
 	   idpair.insert ( std::pair<int,int>(hid,gid) );
 	}
-	line ="installpath.dat";
-	ifstream infile2(line.c_str());
-	std::getline(infile2, line);
-	openloopsInstallPath=line;
 }
 bool OpenLoopsAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
 	string contractFileName =  "OLP_answer.lh";
@@ -384,11 +379,6 @@ DescribeClass<OpenLoopsAmplitude, MatchboxOLPME> describeHerwigOpenLoopsAmplitud
 void OpenLoopsAmplitude::Init() {
 
   static ClassDocumentation<OpenLoopsAmplitude> documentation("OpenLoopsAmplitude implements an interface to OpenLoops.","Matrix elements have been calculated using OpenLoops.");
-  static Parameter<OpenLoopsAmplitude,string> interfaceInstallPath
-    	("InstallPath",
-     	"Prefix for the OpenLoops produced code.",
-     	&OpenLoopsAmplitude::openloopsInstallPath, "",
-     	false, false);
 
   static Switch<OpenLoopsAmplitude,bool> interfaceCodeExists
     ("CodeExists",
