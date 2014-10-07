@@ -64,6 +64,10 @@ else
 AC_MSG_RESULT([no])
 fi
 
+dnl check for POSIX
+AC_CHECK_HEADER([unistd.h],[],
+      [AC_MSG_ERROR([Herwig++ needs "unistd.h". Non-POSIX systems are not supported.])])
+
 dnl Checks for programs.
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET

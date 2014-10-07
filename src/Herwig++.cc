@@ -18,12 +18,10 @@
 #include <ThePEG/Handlers/SamplerBase.h>
 #include <iostream>
 
-#include <config.h>
-#ifdef HAVE_UNISTD_H
 #include <queue>
 #include <unistd.h>
 #include <sys/wait.h>
-#endif
+
 
 
 using namespace ThePEG;
@@ -113,10 +111,8 @@ int main(int argc, char * argv[]) {
 
     // parallel jobs
     int jobs = 1;
-#   ifdef HAVE_UNISTD_H
     if ( args_info.jobs_given )
       jobs = min( args_info.jobs_arg, 10 );
-#   endif
 
     setSearchPaths(args_info);
   
@@ -315,9 +311,6 @@ void HerwigRun(string runname, string setupfile,
   
   }
   else { // forked jobs
-
-#   ifdef HAVE_UNISTD_H
-
     std::queue<pid_t> pids;
     pid_t pid;
 
@@ -350,9 +343,5 @@ void HerwigRun(string runname, string setupfile,
       std::cout << "PID " << pids.front() << " done." << std::endl;
       pids.pop();
     }
-
-#   endif
-    return;
-
   }
 }

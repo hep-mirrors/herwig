@@ -16,15 +16,13 @@
 #include <cassert>
 #include <string>
 
-#ifdef HAVE_UNISTD_H
-# include "ThePEG/Repository/CurrentGenerator.h"
-#endif
+#include "ThePEG/Repository/CurrentGenerator.h"
+
 
 extern "C" {
 
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
+#include <unistd.h>
+
 
   extern void a0sub_(DOUBLE_COMPLEX *result, AARGS(_Fr_));
   extern void a0subc_(DOUBLE_COMPLEX *result, AARGS(_Fc_));
@@ -82,7 +80,6 @@ extern "C" {
 
 namespace {
 
-#ifdef HAVE_UNISTD_H
   int start_redirection(std::string logfilename) {
     if ( ! ThePEG::CurrentGenerator::isVoid() 
 	 && ThePEG::CurrentGenerator::current().useStdOut() ) return -1;
@@ -104,14 +101,7 @@ namespace {
     close(fd);
     clearerr(stdout);
   }
-#else
-  int start_redirection(std::string) {
-    return -1;
-  }
   
-  void stop_redirection(int) {}
-#endif
-
 } // namespace
 
 namespace Herwig {
