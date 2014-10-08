@@ -105,7 +105,7 @@ HERWIG_CHECK_GSL
 
 HERWIG_CHECK_THEPEG
 
-BOOST_REQUIRE
+BOOST_REQUIRE([1.41])
 BOOST_FIND_HEADER([boost/array.hpp])
 BOOST_FIND_HEADER([boost/numeric/ublas/io.hpp])
 BOOST_FIND_HEADER([boost/numeric/ublas/matrix.hpp])
@@ -118,6 +118,7 @@ BOOST_FIND_HEADER([boost/progress.hpp])
 BOOST_FIND_HEADER([boost/scoped_array.hpp])
 BOOST_FIND_HEADER([boost/scoped_ptr.hpp])
 BOOST_FIND_HEADER([boost/utility.hpp])
+BOOST_FILESYSTEM
 
 HERWIG_CHECK_VBFNLO
 
