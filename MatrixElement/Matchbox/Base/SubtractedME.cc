@@ -455,6 +455,10 @@ void SubtractedME::doinit() {
     getDipoles();
   }
 
+  for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator b = theBorns.begin();
+	b != theBorns.end(); ++b )
+    (**b).init();
+
   if ( initVerbose() )
     print(Repository::clog());
 
@@ -470,9 +474,13 @@ void SubtractedME::doinitrun() {
     return;
   }
 
-  MEGroup::doinitrun();
-
   theReal = dynamic_ptr_cast<Ptr<MatchboxMEBase>::tptr>(head());
+
+  for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator b = theBorns.begin();
+	b != theBorns.end(); ++b )
+    (**b).initrun();
+
+  MEGroup::doinitrun();
 
 }
 
