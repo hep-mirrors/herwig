@@ -898,6 +898,7 @@ MatchboxMEBase::getDipoles(const vector<Ptr<SubtractionDipole>::ptr>& dipoles,
 	      continue;
 	    // now get to work
 	    (**d).clearBookkeeping();
+	    (**d).factory(factory());
 	    (**d).realEmitter(emitter);
 	    (**d).realEmission(emission);
 	    (**d).realSpectator(spectator);

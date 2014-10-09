@@ -686,8 +686,8 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
       needTheDipole = false;
     if ( virtualShowerSubtraction() && lastThetaMu == 0.0 )
       needTheDipole = false;
-    if ( MatchboxFactory::currentFactory()->loopSimCorrections() ||
-	 MatchboxFactory::currentFactory()->meCorrectionsOnly() )
+    if ( factory()->loopSimCorrections() ||
+	 factory()->meCorrectionsOnly() )
       needTheDipole = false;
   }
 
@@ -696,8 +696,8 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
   if ( needTheDipole )
     xme2 = me2();
 
-  if ( MatchboxFactory::currentFactory()->loopSimCorrections() ||
-       MatchboxFactory::currentFactory()->meCorrectionsOnly() ) {
+  if ( factory()->loopSimCorrections() ||
+       factory()->meCorrectionsOnly() ) {
 
     assert(showerApproximation());
     xme2 = realEmissionME()->me2() * showerApproximation()->channelWeight();
@@ -1040,6 +1040,13 @@ void SubtractionDipole::doinit() {
   if ( invertedTildeKinematics() ) {
     theInvertedTildeKinematics->init();
   }
+  if ( showerApproximation() ) {
+    theShowerApproximation>init();
+  }
+  for ( vector<Ptr<SubtractionDipole>::ptr>::iterator p = thePartners.begin();
+	p != thePartners.end(); ++p ) {
+    (**p).init();
+  }
   for ( vector<Ptr<MatchboxReweightBase>::ptr>::iterator rw =
 	  theReweights.begin(); rw != theReweights.end(); ++rw ) {
     (**rw).init();
@@ -1059,6 +1066,13 @@ void SubtractionDipole::doinitrun() {
   }
   if ( invertedTildeKinematics() ) {
     theInvertedTildeKinematics->initrun();
+  }
+  if ( showerApproximation() ) {
+    theShowerApproximation>init();
+  }
+  for ( vector<Ptr<SubtractionDipole>::ptr>::iterator p = thePartners.begin();
+	p != thePartners.end(); ++p ) {
+    (**p).initrun();
   }
   for ( vector<Ptr<MatchboxReweightBase>::ptr>::iterator rw =
 	  theReweights.begin(); rw != theReweights.end(); ++rw ) {
@@ -1148,7 +1162,7 @@ void SubtractionDipole::persistentOutput(PersistentOStream & os) const {
      << ounit(theLastSplittingPt,GeV) << theLastSubtractionZ
      << theLastSplittingZ << theShowerApproximation 
      << theRealShowerSubtraction << theVirtualShowerSubtraction 
-     << theLoopSimSubtraction << theRealEmissionScales;
+     << theLoopSimSubtraction << theRealEmissionScales << theFactory;
 }
 
 void SubtractionDipole::persistentInput(PersistentIStream & is, int) {
@@ -1164,7 +1178,7 @@ void SubtractionDipole::persistentInput(PersistentIStream & is, int) {
      >> iunit(theLastSplittingPt,GeV) >> theLastSubtractionZ
      >> theLastSplittingZ >> theShowerApproximation 
      >> theRealShowerSubtraction >> theVirtualShowerSubtraction 
-     >> theLoopSimSubtraction >> theRealEmissionScales;
+     >> theLoopSimSubtraction >> theRealEmissionScales >> theFactory;
   lastMatchboxXComb(theLastXComb);
   typedef multimap<UnderlyingBornKey,RealEmissionInfo>::const_iterator spit;
   pair<spit,spit> kr = theSplittingMap.equal_range(lastUnderlyingBornKey);
@@ -1173,6 +1187,15 @@ void SubtractionDipole::persistentInput(PersistentIStream & is, int) {
     if ( process(lastRealEmissionInfo->second.first) == lastXComb().mePartonData() )
       break;
 }
+
+Ptr<MatchboxFactory>::tptr SubtractionDipole::factory() const {
+  return theFactory;
+}
+
+void SubtractionDipole::factory(Ptr<MatchboxFactory>::tptr f) {
+  theFactory = f;
+}
+
 
 void SubtractionDipole::Init() {
 

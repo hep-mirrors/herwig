@@ -54,6 +54,16 @@ public:
 
 public:
 
+  /**
+   * Return the factory which produced this matrix element
+   */
+  Ptr<MatchboxFactory>::tptr factory() const;
+
+  /**
+   * Set the factory which produced this matrix element
+   */
+  void factory(Ptr<MatchboxFactory>::tptr f);
+
   /** @name Subprocess and diagram information. */
   //@{
 
@@ -912,6 +922,11 @@ protected:
   //@}
 
 private:
+
+  /**
+   * The factory which produced this matrix element
+   */
+  Ptr<MatchboxFactory>::tptr theFactory;
 
   /**
    * Wether or not this dipole acts in splitting mode.
