@@ -56,14 +56,6 @@ public:
 
 public:
 
-  /**
-   * Return the current factory
-   */
-  static MatchboxFactory* currentFactory() { 
-    assert(theCurrentFactory());
-    return theCurrentFactory();
-  }
-
   /** @name Process and diagram information */
   //@{
 
@@ -1030,11 +1022,6 @@ private:
    * True, if second incoming partons originate from perturbative PDF
    */
   bool theSecondPerturbativePDF;
-
-  /**
-   * The current factory
-   */
-  static MatchboxFactory*& theCurrentFactory();
 
   /**
    * The prefix to store Matchbox data and libraries

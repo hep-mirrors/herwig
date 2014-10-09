@@ -23,6 +23,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/SpinorHelicity.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/SU2Helper.h"
+#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
 #include "MatchboxMEBase.h"
 
 #include <boost/numeric/ublas/io.hpp>
@@ -38,12 +39,20 @@ MatchboxAmplitude::MatchboxAmplitude()
 MatchboxAmplitude::~MatchboxAmplitude() {}
 
 void MatchboxAmplitude::persistentOutput(PersistentOStream & os) const {
-  os << theLastXComb << theColourBasis;
+  os << theLastXComb << theColourBasis << theFactory;
 }
 
 void MatchboxAmplitude::persistentInput(PersistentIStream & is, int) {
-  is >> theLastXComb >> theColourBasis;
+  is >> theLastXComb >> theColourBasis >> theFactory;
   lastMatchboxXComb(theLastXComb);
+}
+
+Ptr<MatchboxFactory>::tptr MatchboxAmplitude::factory() const {
+  return theFactory;
+}
+
+void MatchboxAmplitude::factory(Ptr<MatchboxFactory>::tptr f) {
+  theFactory = f;
 }
 
 void MatchboxAmplitude::doinit() {

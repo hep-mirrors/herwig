@@ -135,6 +135,16 @@ public:
 			const vector<Lorentz5Momentum> & momenta, 
 			const vector<int> & helicities);
 
+  /**
+   * Return the factory which produced this matrix element
+   */
+  Ptr<MatchboxFactory>::tptr factory() const;
+
+  /**
+   * Set the factory which produced this matrix element
+   */
+  void factory(Ptr<MatchboxFactory>::tptr f);
+
   /** @name Subprocess information */
   //@{
 
@@ -546,6 +556,11 @@ protected:
   //@}
 
 private:
+
+  /**
+   * The factory which produced this matrix element
+   */
+  Ptr<MatchboxFactory>::tptr theFactory;
 
   /**
    * Recursively generate helicities

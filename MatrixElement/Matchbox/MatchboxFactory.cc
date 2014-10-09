@@ -51,11 +51,6 @@ MatchboxFactory::MatchboxFactory()
 
 MatchboxFactory::~MatchboxFactory() {}
 
-MatchboxFactory*& MatchboxFactory::theCurrentFactory() {
-  static MatchboxFactory* sCurrentFactory = 0;
-  return sCurrentFactory;
-}
-
 IBPtr MatchboxFactory::clone() const {
   return new_ptr(*this);
 }
@@ -265,6 +260,11 @@ void MatchboxFactory::setup() {
     externalAmplitudes().clear();
     theHighestVirtualsize = 0;
     theIncoming.clear();
+
+    for ( vector<Ptr<MatchboxAmplitude>::ptr>::iterator amp
+	    = amplitudes().begin(); amp != amplitudes().end(); ++amp ) {
+      (**amp).factory(this);
+    }
 
     if ( bornMEs().empty() ) {
 
@@ -961,7 +961,6 @@ void MatchboxFactory::print(ostream& os) const {
 }
 
 void MatchboxFactory::doinit() {
-  theCurrentFactory() = this;
   setup();
   if ( initVerbose() && !ranSetup )
     print(Repository::clog());
@@ -969,7 +968,6 @@ void MatchboxFactory::doinit() {
 }
 
 void MatchboxFactory::doinitrun() {
-  theCurrentFactory() = this;
   SubProcessHandler::doinitrun();
 }
 
