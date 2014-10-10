@@ -980,7 +980,7 @@ const string& MatchboxFactory::amplitudeStorage() {
     return theAmplitudeStorage;
   theAmplitudeStorage = prefix();
   if ( theAmplitudeStorage.empty() )
-    theAmplitudeStorage = "./";
+    theAmplitudeStorage = "./Matchbox/";
   else if ( *theAmplitudeStorage.rbegin() != '/' )
     theAmplitudeStorage += "/";
   theAmplitudeStorage += "Amplitudes/";
