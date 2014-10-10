@@ -154,7 +154,8 @@ void MonacoSampler::initialize(bool progress) {
 
   if ( initialized() ) {
     if ( !haveGrid )
-      throw Exception() << "MonacoSampler: Require existing grid when starting to run."
+      throw Exception() << "MonacoSampler: Require existing grid when starting to run.\n"
+			<< "Did you miss setting --setupfile?"
 			<< Exception::abortnow;
     return;
   }
