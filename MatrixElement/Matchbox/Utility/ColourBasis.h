@@ -440,11 +440,6 @@ private:
   bool theLargeN;
 
   /**
-   * A search path for already calculated and stored matrices.
-   */
-  string theSearchPath;
-
-  /**
    * Map external legs to normal ordered versions
    */
   map<cPDVector,vector<PDT::Colour> > theNormalOrderedLegs;

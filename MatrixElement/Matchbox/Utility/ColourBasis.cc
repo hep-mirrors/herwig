@@ -53,7 +53,7 @@ void ColourBasis::factory(Ptr<MatchboxFactory>::tptr f) {
 }
 
 ColourBasis::ColourBasis() 
-  : theLargeN(false), theSearchPath("."), didRead(false), didWrite(false) {}
+  : theLargeN(false), didRead(false), didWrite(false) {}
 
 ColourBasis::~ColourBasis() {
   for ( map<Ptr<Tree2toNDiagram>::tcptr,vector<ColourLines*> >::iterator cl =
@@ -69,7 +69,6 @@ ColourBasis::~ColourBasis() {
 
 void ColourBasis::clear() {
   theLargeN = false;
-  theSearchPath = ".";
   theNormalOrderedLegs.clear();
   theIndexMap.clear();
   theScalarProducts.clear();
@@ -1030,7 +1029,7 @@ void ColourBasis::writeBasis(const string& prefix) const {
     legs.insert(lit->second);
   }
 
-  string searchPath = theSearchPath;
+  string searchPath = factory()->amplitudeStorage();
 
   if ( searchPath != "" )
     if ( *(--searchPath.end()) != '/' )
@@ -1082,7 +1081,7 @@ void ColourBasis::writeBasis(const string& prefix) const {
 
 bool ColourBasis::readBasis(const vector<PDT::Colour>& legs) {
 
-  string searchPath = theSearchPath;
+  string searchPath = factory()->amplitudeStorage();
 
   if ( searchPath != "" )
     if ( *(--searchPath.end()) != '/' )
@@ -1116,7 +1115,7 @@ void ColourBasis::readBasis() {
   if ( didRead )
     return;
 
-  string searchPath = theSearchPath;
+  string searchPath = factory()->amplitudeStorage();
 
   if ( searchPath != "" )
     if ( *(--searchPath.end()) != '/' )
@@ -1200,17 +1199,16 @@ void ColourBasis::doinitrun() {
 }
 
 void ColourBasis::persistentOutput(PersistentOStream & os) const {
-  os << theLargeN << theSearchPath << theNormalOrderedLegs
+  os << theLargeN << theNormalOrderedLegs
      << theIndexMap << theFlowMap << theOrderingStringIdentifiers 
      << theOrderingIdentifiers << theFactory;
   writeBasis();
 }
 
 void ColourBasis::persistentInput(PersistentIStream & is, int) {
-  is >> theLargeN >> theSearchPath >> theNormalOrderedLegs
+  is >> theLargeN >> theNormalOrderedLegs
      >> theIndexMap >> theFlowMap >> theOrderingStringIdentifiers
      >> theOrderingIdentifiers >> theFactory;
-  readBasis();
 }
 
 
@@ -1227,13 +1225,6 @@ void ColourBasis::Init() {
   static ClassDocumentation<ColourBasis> documentation
     ("ColourBasis is an interface to a colour basis "
      "implementation.");
-
-
-  static Parameter<ColourBasis,string> interfaceSearchPath
-    ("SearchPath",
-     "Set the search path for pre-computed colour basis data.",
-     &ColourBasis::theSearchPath, ".",
-     false, false);
 
   static Switch<ColourBasis,bool> interfaceLargeN
     ("LargeN",
