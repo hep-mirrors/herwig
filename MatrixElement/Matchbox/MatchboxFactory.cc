@@ -962,12 +962,16 @@ void MatchboxFactory::print(ostream& os) const {
 
 void MatchboxFactory::doinit() {
   setup();
+  if ( theShowerApproximation )
+    theShowerApproximation->init();
   if ( initVerbose() && !ranSetup )
     print(Repository::clog());
   SubProcessHandler::doinit();
 }
 
 void MatchboxFactory::doinitrun() {
+  if ( theShowerApproximation )
+    theShowerApproximation->initrun();
   SubProcessHandler::doinitrun();
 }
 
