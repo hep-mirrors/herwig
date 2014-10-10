@@ -47,7 +47,7 @@ GeneralSampler::GeneralSampler()
     isSampling(false), theMinSelection(0.01), runCombinationData(false),
     theAlmostUnweighted(false), maximumExceeds(0),
     maximumExceededBy(0.), didReadGrids(false),
-    theParallelIntegration(false), theSaveStatistics(false),
+    theParallelIntegration(false),
     theIntegratePerJob(0), theIgnoreIntegrationData(false) {}
 
 GeneralSampler::~GeneralSampler() {}
@@ -113,7 +113,6 @@ void GeneralSampler::initialize() {
     }
 
     theParallelIntegration = false;
-    theSaveStatistics = true;
     return;
 
   }
@@ -197,7 +196,7 @@ void GeneralSampler::initialize() {
 	  s != samplers().end(); ++s ) {
       s->second->saveGrid();
       s->second->saveRemappers();
-      if ( theSaveStatistics )
+      if ( integrationJob() )
 	s->second->saveIntegrationData();
     }
     writeGrids();
@@ -230,7 +229,7 @@ void GeneralSampler::initialize() {
 	s != samplers().end(); ++s ) {
     s->second->saveGrid();
     s->second->saveRemappers();
-    if ( theSaveStatistics )
+    if ( integrationJob() )
       s->second->saveIntegrationData();
   }
 
@@ -506,7 +505,7 @@ void GeneralSampler::dofinish() {
 
   if ( runCombinationData ) {
 
-    string dataName = generator()->filename() + "-sampling.dat";
+    string dataName = generator()->runName() + "-sampling.dat";
 
     ofstream data(dataName.c_str());
 
@@ -536,7 +535,7 @@ void GeneralSampler::dofinish() {
 	s != samplers().end(); ++s ) {
     s->second->saveGrid();
     s->second->saveRemappers();
-    if ( theSaveStatistics )
+    if ( integrationJob() )
       s->second->saveIntegrationData();
   }
 
@@ -587,7 +586,7 @@ void GeneralSampler::writeGrids() const {
     dataName = "./";
   else if ( *dataName.rbegin() != '/' )
     dataName += "/";
-  dataName += generator()->filename();
+  dataName += generator()->runName();
   if ( integrationList() != "" )
     dataName += "-" + integrationList();
   dataName += "-grids.xml";
@@ -603,7 +602,7 @@ void GeneralSampler::readGrids() {
     dataName = "./";
   else if ( *dataName.rbegin() != '/' )
     dataName += "/";
-  dataName += generator()->filename() + "-grids.xml";
+  dataName += generator()->runName() + "-grids.xml";
   ifstream in(dataName.c_str());
   if ( !in ) {
     theGrids = XML::Element(XML::ElementTypes::Element,"Grids");
@@ -623,8 +622,7 @@ void GeneralSampler::persistentOutput(PersistentOStream & os) const {
      << theAddUpSamplers << theGlobalMaximumWeight
      << theFlatSubprocesses << isSampling << theMinSelection
      << runCombinationData << theAlmostUnweighted << maximumExceeds
-     << maximumExceededBy
-     << theParallelIntegration << theSaveStatistics
+     << maximumExceededBy << theParallelIntegration
      << theIntegratePerJob << theIgnoreIntegrationData;
 }
 
@@ -638,8 +636,7 @@ void GeneralSampler::persistentInput(PersistentIStream & is, int) {
      >> theAddUpSamplers >> theGlobalMaximumWeight
      >> theFlatSubprocesses >> isSampling >> theMinSelection
      >> runCombinationData >> theAlmostUnweighted >> maximumExceeds
-     >> maximumExceededBy
-     >> theParallelIntegration >> theSaveStatistics
+     >> maximumExceededBy >> theParallelIntegration
      >> theIntegratePerJob >> theIgnoreIntegrationData;
 }
 
@@ -784,21 +781,6 @@ void GeneralSampler::Init() {
      "The number of subprocesses to integrate per job.",
      &GeneralSampler::theIntegratePerJob, 0, 0, 0,
      false, false, Interface::lowerlim);
-
-  static Switch<GeneralSampler,bool> interfaceSaveStatistics
-    ("SaveStatistics",
-     "",
-     &GeneralSampler::theSaveStatistics, false, false, false);
-  static SwitchOption interfaceSaveStatisticsYes
-    (interfaceSaveStatistics,
-     "Yes",
-     "",
-     true);
-  static SwitchOption interfaceSaveStatisticsNo
-    (interfaceSaveStatistics,
-     "No",
-     "",
-     false);
 
   static Switch<GeneralSampler,bool> interfaceIgnoreIntegrationData
     ("IgnoreIntegrationData",

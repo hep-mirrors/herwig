@@ -423,11 +423,6 @@ private:
   bool theParallelIntegration;
 
   /**
-   * True, if statistics should be saved to grid XML files
-   */
-  bool theSaveStatistics;
-
-  /**
    * The number of subprocesses to integrate per job
    */
   unsigned int theIntegratePerJob;
