@@ -43,9 +43,9 @@ MatchboxMEBase::MatchboxMEBase()
 
 MatchboxMEBase::~MatchboxMEBase() {}
 
-Ptr<MatchboxFactory>::tcptr MatchboxMEBase::factory() const { return theFactory; }
+Ptr<MatchboxFactory>::tptr MatchboxMEBase::factory() const { return theFactory; }
 
-void MatchboxMEBase::factory(Ptr<MatchboxFactory>::tcptr f) { theFactory = f; }
+void MatchboxMEBase::factory(Ptr<MatchboxFactory>::tptr f) { theFactory = f; }
 
 Ptr<Tree2toNGenerator>::tptr MatchboxMEBase::diagramGenerator() const { return factory()->diagramGenerator(); }
 

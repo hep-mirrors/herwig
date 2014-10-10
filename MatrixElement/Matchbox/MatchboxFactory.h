@@ -511,7 +511,7 @@ public:
   /**
    * Prepare a matrix element.
    */
-  void prepareME(Ptr<MatchboxMEBase>::ptr) const;
+  void prepareME(Ptr<MatchboxMEBase>::ptr);
 
   /**
    * Setup everything

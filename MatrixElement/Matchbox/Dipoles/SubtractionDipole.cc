@@ -1041,7 +1041,7 @@ void SubtractionDipole::doinit() {
     theInvertedTildeKinematics->init();
   }
   if ( showerApproximation() ) {
-    theShowerApproximation>init();
+    theShowerApproximation->init();
   }
   for ( vector<Ptr<SubtractionDipole>::ptr>::iterator p = thePartners.begin();
 	p != thePartners.end(); ++p ) {
@@ -1068,7 +1068,7 @@ void SubtractionDipole::doinitrun() {
     theInvertedTildeKinematics->initrun();
   }
   if ( showerApproximation() ) {
-    theShowerApproximation>init();
+    theShowerApproximation->initrun();
   }
   for ( vector<Ptr<SubtractionDipole>::ptr>::iterator p = thePartners.begin();
 	p != thePartners.end(); ++p ) {

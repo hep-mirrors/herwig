@@ -59,7 +59,7 @@ IBPtr MatchboxFactory::fullclone() const {
   return new_ptr(*this);
 }
 
-void MatchboxFactory::prepareME(Ptr<MatchboxMEBase>::ptr me) const {
+void MatchboxFactory::prepareME(Ptr<MatchboxMEBase>::ptr me) {
 
   Ptr<MatchboxAmplitude>::ptr amp =
     dynamic_ptr_cast<Ptr<MatchboxAmplitude>::ptr>((*me).amplitude());
