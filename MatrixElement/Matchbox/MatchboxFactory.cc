@@ -22,6 +22,8 @@
 #include "ThePEG/Utilities/StringUtils.h"
 #include "ThePEG/Repository/Repository.h"
 #include "ThePEG/Repository/EventGenerator.h"
+#include "ThePEG/Handlers/EventHandler.h"
+#include "ThePEG/Handlers/SamplerBase.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/DipoleRepository.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/SU2Helper.h"
 
@@ -47,7 +49,7 @@ MatchboxFactory::MatchboxFactory()
     thePoleData(""), theRealEmissionScales(false), theAllProcesses(false),
   theMECorrectionsOnly(false), theLoopSimCorrections(false), ranSetup(false),
   theFirstPerturbativePDF(true), theSecondPerturbativePDF(true),
-  thePrefix("./Matchbox"), theAmplitudeStorage("") {}
+  thePrefix("./Matchbox"), theRunStorage(""), theBuildStorage("") {}
 
 MatchboxFactory::~MatchboxFactory() {}
 
@@ -966,34 +968,63 @@ void MatchboxFactory::doinit() {
     theShowerApproximation->init();
   if ( initVerbose() && !ranSetup )
     print(Repository::clog());
+  Ptr<StandardEventHandler>::tptr eh =
+    dynamic_ptr_cast<Ptr<StandardEventHandler>::tptr>(generator()->eventHandler());
+  assert(eh);
+  eh->sampler()->gridDirectory(runStorage());
   SubProcessHandler::doinit();
 }
 
 void MatchboxFactory::doinitrun() {
   if ( theShowerApproximation )
     theShowerApproximation->initrun();
+  Ptr<StandardEventHandler>::tptr eh =
+    dynamic_ptr_cast<Ptr<StandardEventHandler>::tptr>(generator()->eventHandler());
+  assert(eh);
+  eh->sampler()->gridDirectory(runStorage());
   SubProcessHandler::doinitrun();
 }
 
-const string& MatchboxFactory::amplitudeStorage() {
-  if ( !theAmplitudeStorage.empty() )
-    return theAmplitudeStorage;
-  theAmplitudeStorage = prefix();
-  if ( theAmplitudeStorage.empty() )
-    theAmplitudeStorage = "./Matchbox/";
-  else if ( *theAmplitudeStorage.rbegin() != '/' )
-    theAmplitudeStorage += "/";
-  theAmplitudeStorage += "Amplitudes/";
-  if ( boost::filesystem::exists(theAmplitudeStorage) ) {
-    if ( !boost::filesystem::is_directory(theAmplitudeStorage) )
+const string& MatchboxFactory::buildStorage() {
+  if ( !theBuildStorage.empty() )
+    return theBuildStorage;
+  theBuildStorage = prefix();
+  if ( theBuildStorage.empty() )
+    theBuildStorage = "./Matchbox/";
+  else if ( *theBuildStorage.rbegin() != '/' )
+    theBuildStorage += "/";
+  theBuildStorage += "Amplitudes/";
+  if ( boost::filesystem::exists(theBuildStorage) ) {
+    if ( !boost::filesystem::is_directory(theBuildStorage) )
       throw Exception() << "Matchbox amplitude storage '"
-			<< theAmplitudeStorage << "' existing but not a directory."
+			<< theBuildStorage << "' existing but not a directory."
 			<< Exception::abortnow;
   } else {
-    boost::filesystem::create_directories(theAmplitudeStorage);
+    boost::filesystem::create_directories(theBuildStorage);
   }
-  return theAmplitudeStorage;
+  return theBuildStorage;
 }
+
+const string& MatchboxFactory::runStorage() {
+  if ( !theRunStorage.empty() )
+    return theRunStorage;
+  theRunStorage = prefix();
+  if ( theRunStorage.empty() )
+    theRunStorage = "./Matchbox/";
+  else if ( *theRunStorage.rbegin() != '/' )
+    theRunStorage += "/";
+  theRunStorage += generator()->runName();
+  if ( boost::filesystem::exists(theRunStorage) ) {
+    if ( !boost::filesystem::is_directory(theRunStorage) )
+      throw Exception() << "Matchbox grid storage '"
+			<< theRunStorage << "' existing but not a directory."
+			<< Exception::abortnow;
+  } else {
+    boost::filesystem::create_directories(theRunStorage);
+  }
+  return theRunStorage;
+}
+
 
 void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
   os << theDiagramGenerator << theProcessData
@@ -1016,7 +1047,7 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
      << theDipoleSet << theReweighters << thePreweighters
      << theMECorrectionsOnly<< theLoopSimCorrections<<theHighestVirtualsize << ranSetup
      << theIncoming << theFirstPerturbativePDF << theSecondPerturbativePDF
-     << thePrefix << theAmplitudeStorage;
+     << thePrefix << theBuildStorage << theRunStorage;
 }
 
 void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
@@ -1040,7 +1071,7 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
      >> theDipoleSet >> theReweighters >> thePreweighters
      >> theMECorrectionsOnly>> theLoopSimCorrections>>theHighestVirtualsize >> ranSetup
      >> theIncoming >> theFirstPerturbativePDF >> theSecondPerturbativePDF
-     >> thePrefix >> theAmplitudeStorage;
+     >> thePrefix >> theBuildStorage >> theRunStorage;
 }
 
 string MatchboxFactory::startParticleGroup(string name) {

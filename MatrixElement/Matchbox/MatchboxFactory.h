@@ -638,7 +638,13 @@ public:
    * Return (and possibly create) a directory to contain amplitude
    * information.
    */
-  const string& amplitudeStorage();
+  const string& buildStorage();
+
+  /**
+   * Return (and possibly create) a directory to contain integration grid
+   * information.
+   */
+  const string& runStorage();
   //@}
 
 public:
@@ -1031,7 +1037,12 @@ private:
   /**
    * The directory to contain amplitude information.
    */
-  string theAmplitudeStorage;
+  string theBuildStorage;
+
+  /**
+   * The directory to contain grid information.
+   */
+  string theRunStorage;
 
 private:
 

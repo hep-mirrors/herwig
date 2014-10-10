@@ -1029,7 +1029,7 @@ void ColourBasis::writeBasis(const string& prefix) const {
     legs.insert(lit->second);
   }
 
-  string searchPath = factory()->amplitudeStorage();
+  string searchPath = factory()->buildStorage();
 
   if ( searchPath != "" )
     if ( *(--searchPath.end()) != '/' )
@@ -1081,7 +1081,7 @@ void ColourBasis::writeBasis(const string& prefix) const {
 
 bool ColourBasis::readBasis(const vector<PDT::Colour>& legs) {
 
-  string searchPath = factory()->amplitudeStorage();
+  string searchPath = factory()->buildStorage();
 
   if ( searchPath != "" )
     if ( *(--searchPath.end()) != '/' )
@@ -1115,7 +1115,7 @@ void ColourBasis::readBasis() {
   if ( didRead )
     return;
 
-  string searchPath = factory()->amplitudeStorage();
+  string searchPath = factory()->buildStorage();
 
   if ( searchPath != "" )
     if ( *(--searchPath.end()) != '/' )
