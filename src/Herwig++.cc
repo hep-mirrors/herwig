@@ -279,7 +279,7 @@ void HerwigRun(string runname, string setupfile,
   if ( seed > 0 ) eg->setSeed(seed);
   if ( !tag.empty() ) eg->addTag(tag);
   if ( !setupfile.empty() ) eg->addTag("-" + setupfile);
-  if ( integrationjob ) {
+  if ( integrationJob ) {
     eg->addTag("-integrate");
     if ( !integrationList.empty() )
       eg->addTag("-" + integrationList);
