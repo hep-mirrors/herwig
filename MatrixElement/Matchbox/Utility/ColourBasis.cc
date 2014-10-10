@@ -53,7 +53,7 @@ void ColourBasis::factory(Ptr<MatchboxFactory>::tptr f) {
 }
 
 ColourBasis::ColourBasis() 
-  : theLargeN(false), didRead(false), didWrite(false) {}
+  : theLargeN(false), didRead(false), didWrite(false), theSearchPath("") {}
 
 ColourBasis::~ColourBasis() {
   for ( map<Ptr<Tree2toNDiagram>::tcptr,vector<ColourLines*> >::iterator cl =
@@ -1029,7 +1029,7 @@ void ColourBasis::writeBasis(const string& prefix) const {
     legs.insert(lit->second);
   }
 
-  string searchPath = factory()->buildStorage();
+  string searchPath = theSearchPath;
 
   if ( searchPath != "" )
     if ( *(--searchPath.end()) != '/' )
@@ -1081,7 +1081,7 @@ void ColourBasis::writeBasis(const string& prefix) const {
 
 bool ColourBasis::readBasis(const vector<PDT::Colour>& legs) {
 
-  string searchPath = factory()->buildStorage();
+  string searchPath = theSearchPath;
 
   if ( searchPath != "" )
     if ( *(--searchPath.end()) != '/' )
@@ -1115,7 +1115,7 @@ void ColourBasis::readBasis() {
   if ( didRead )
     return;
 
-  string searchPath = factory()->buildStorage();
+  string searchPath = theSearchPath;
 
   if ( searchPath != "" )
     if ( *(--searchPath.end()) != '/' )
@@ -1185,6 +1185,8 @@ void ColourBasis::read(compressed_matrix<double>& m, istream& is,
 
 void ColourBasis::doinit() {
   HandlerBase::doinit();
+  if ( theSearchPath.empty() && factory() )
+    theSearchPath = factory()->buildStorage();
   readBasis();
 }
 
@@ -1195,20 +1197,22 @@ void ColourBasis::dofinish() {
 
 void ColourBasis::doinitrun() {
   HandlerBase::doinitrun();
+  if ( theSearchPath.empty() && factory() )
+    theSearchPath = factory()->buildStorage();
   readBasis();
 }
 
 void ColourBasis::persistentOutput(PersistentOStream & os) const {
   os << theLargeN << theNormalOrderedLegs
      << theIndexMap << theFlowMap << theOrderingStringIdentifiers 
-     << theOrderingIdentifiers << theFactory;
+     << theOrderingIdentifiers << theFactory << theSearchPath;
   writeBasis();
 }
 
 void ColourBasis::persistentInput(PersistentIStream & is, int) {
   is >> theLargeN >> theNormalOrderedLegs
      >> theIndexMap >> theFlowMap >> theOrderingStringIdentifiers
-     >> theOrderingIdentifiers >> theFactory;
+     >> theOrderingIdentifiers >> theFactory >> theSearchPath;
 }
 
 
