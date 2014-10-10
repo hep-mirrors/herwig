@@ -19,6 +19,7 @@
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
+#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
 
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -42,6 +43,14 @@ using boost::numeric::ublas::trans;
 using boost::numeric::ublas::row;
 using boost::numeric::ublas::column;
 using boost::numeric::ublas::prod;
+
+Ptr<MatchboxFactory>::tptr ColourBasis::factory() const {
+  return theFactory;
+}
+
+void ColourBasis::factory(Ptr<MatchboxFactory>::tptr f) {
+  theFactory = f;
+}
 
 ColourBasis::ColourBasis() 
   : theLargeN(false), theSearchPath("."), didRead(false), didWrite(false) {}
@@ -1192,13 +1201,15 @@ void ColourBasis::doinitrun() {
 
 void ColourBasis::persistentOutput(PersistentOStream & os) const {
   os << theLargeN << theSearchPath << theNormalOrderedLegs
-     << theIndexMap << theFlowMap << theOrderingStringIdentifiers << theOrderingIdentifiers;
+     << theIndexMap << theFlowMap << theOrderingStringIdentifiers 
+     << theOrderingIdentifiers << theFactory;
   writeBasis();
 }
 
 void ColourBasis::persistentInput(PersistentIStream & is, int) {
   is >> theLargeN >> theSearchPath >> theNormalOrderedLegs
-     >> theIndexMap >> theFlowMap >> theOrderingStringIdentifiers >> theOrderingIdentifiers;
+     >> theIndexMap >> theFlowMap >> theOrderingStringIdentifiers
+     >> theOrderingIdentifiers >> theFactory;
   readBasis();
 }
 

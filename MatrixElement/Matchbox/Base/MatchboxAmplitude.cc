@@ -57,8 +57,10 @@ void MatchboxAmplitude::factory(Ptr<MatchboxFactory>::tptr f) {
 
 void MatchboxAmplitude::doinit() {
   Amplitude::doinit();
-  if ( colourBasis() )
+  if ( colourBasis() ) {
+    colourBasis()->factory(factory());
     colourBasis()->init();
+  }
 }
 
 void MatchboxAmplitude::doinitrun() {

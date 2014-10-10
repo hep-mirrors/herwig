@@ -18,6 +18,7 @@
 #include "ThePEG/MatrixElement/MEBase.h"
 
 #include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxXComb.h"
+#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.fh"
 
 #include <iterator>
 
@@ -59,6 +60,16 @@ public:
   //@}
 
 public:
+
+  /**
+   * Return the factory which produced this matrix element
+   */
+  Ptr<MatchboxFactory>::tptr factory() const;
+
+  /**
+   * Set the factory which produced this matrix element
+   */
+  void factory(Ptr<MatchboxFactory>::tptr f);
 
   /**
    * Clone this colour basis.
@@ -409,6 +420,11 @@ protected:
   //@}
 
 private:
+
+  /**
+   * The factory which produced this matrix element
+   */
+  Ptr<MatchboxFactory>::tptr theFactory;
 
   typedef map<vector<PDT::Colour>,symmetric_matrix<double,upper> >
   ScalarProductMap;
