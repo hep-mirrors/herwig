@@ -49,7 +49,7 @@ MatchboxFactory::MatchboxFactory()
     thePoleData(""), theRealEmissionScales(false), theAllProcesses(false),
   theMECorrectionsOnly(false), theLoopSimCorrections(false), ranSetup(false),
   theFirstPerturbativePDF(true), theSecondPerturbativePDF(true),
-  thePrefix("./Matchbox"), theRunStorage(""), theBuildStorage("") {}
+  thePrefix("./Matchbox"), theBuildStorage(""), theRunStorage("") {}
 
 MatchboxFactory::~MatchboxFactory() {}
 
@@ -972,6 +972,7 @@ void MatchboxFactory::doinit() {
     dynamic_ptr_cast<Ptr<StandardEventHandler>::tptr>(generator()->eventHandler());
   assert(eh);
   eh->sampler()->gridDirectory(runStorage());
+  eh->sampler()->parallelIntegrationDirectory(buildStorage());
   SubProcessHandler::doinit();
 }
 
@@ -982,6 +983,7 @@ void MatchboxFactory::doinitrun() {
     dynamic_ptr_cast<Ptr<StandardEventHandler>::tptr>(generator()->eventHandler());
   assert(eh);
   eh->sampler()->gridDirectory(runStorage());
+  eh->sampler()->parallelIntegrationDirectory(buildStorage());
   SubProcessHandler::doinitrun();
 }
 
@@ -993,10 +995,10 @@ const string& MatchboxFactory::buildStorage() {
     theBuildStorage = "./Matchbox/";
   else if ( *theBuildStorage.rbegin() != '/' )
     theBuildStorage += "/";
-  theBuildStorage += "Amplitudes/";
+  theBuildStorage += "Build/";
   if ( boost::filesystem::exists(theBuildStorage) ) {
     if ( !boost::filesystem::is_directory(theBuildStorage) )
-      throw Exception() << "Matchbox amplitude storage '"
+      throw Exception() << "Matchbox build storage '"
 			<< theBuildStorage << "' existing but not a directory."
 			<< Exception::abortnow;
   } else {
@@ -1016,7 +1018,7 @@ const string& MatchboxFactory::runStorage() {
   theRunStorage += generator()->runName();
   if ( boost::filesystem::exists(theRunStorage) ) {
     if ( !boost::filesystem::is_directory(theRunStorage) )
-      throw Exception() << "Matchbox grid storage '"
+      throw Exception() << "Matchbox run storage '"
 			<< theRunStorage << "' existing but not a directory."
 			<< Exception::abortnow;
   } else {

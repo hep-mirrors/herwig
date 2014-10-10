@@ -89,7 +89,12 @@ void GeneralSampler::initialize() {
 	  jobList = 0;
 	}
 	ostringstream name;
-	name << "integrationBins" << jobCount;
+	string prefix = parallelIntegrationDirectory();
+	if ( prefix.empty() )
+	  prefix = "./";
+	else if ( *prefix.rbegin() != '/' )
+	  prefix += "/";
+	name << prefix << "integrationBins" << jobCount;
 	++jobCount;
 	string fname = name.str();
 	jobList = new ofstream(fname.c_str());
@@ -138,7 +143,13 @@ void GeneralSampler::initialize() {
 
   set<int> binsToIntegrate;
   if ( integrationList() != "" ) {
-    ifstream jobList(integrationList().c_str());
+    string prefix = parallelIntegrationDirectory();
+    if ( prefix.empty() )
+      prefix = "./";
+    else if ( *prefix.rbegin() != '/' )
+      prefix += "/";
+    string fname = prefix + integrationList();
+    ifstream jobList(fname.c_str());
     if ( jobList ) {
       int b = 0;
       while ( jobList >> b )
