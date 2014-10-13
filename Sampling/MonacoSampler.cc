@@ -168,9 +168,6 @@ void MonacoSampler::initialize(bool progress) {
     return;
   }
 
-  if ( !sampler()->grids().children().empty() ) {
-    nIterations(1);
-  }
   unsigned long points = initialPoints();
   for ( unsigned long k = 0; k < nIterations(); ++k ) {
     runIteration(points,progress);
