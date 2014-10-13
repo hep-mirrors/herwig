@@ -46,8 +46,8 @@ GeneralSampler::GeneralSampler()
     theGlobalMaximumWeight(true), theFlatSubprocesses(false),
     isSampling(false), theMinSelection(0.01), runCombinationData(false),
     theAlmostUnweighted(false), maximumExceeds(0),
-    maximumExceededBy(0.), didReadGrids(false), thePostponeInitialize(false),
-    theParallelIntegration(false), theSaveStatistics(false),
+    maximumExceededBy(0.), didReadGrids(false),
+    theParallelIntegration(false),
     theIntegratePerJob(0), theIgnoreIntegrationData(false) {}
 
 GeneralSampler::~GeneralSampler() {}
@@ -89,7 +89,12 @@ void GeneralSampler::initialize() {
 	  jobList = 0;
 	}
 	ostringstream name;
-	name << "integrationBins" << jobCount;
+	string prefix = parallelIntegrationDirectory();
+	if ( prefix.empty() )
+	  prefix = "./";
+	else if ( *prefix.rbegin() != '/' )
+	  prefix += "/";
+	name << prefix << "integrationBins" << jobCount;
 	++jobCount;
 	string fname = name.str();
 	jobList = new ofstream(fname.c_str());
@@ -108,17 +113,12 @@ void GeneralSampler::initialize() {
     }
 
     theParallelIntegration = false;
-    theSaveStatistics = true;
-    if ( postponeInitialize() )
-      thePostponeInitialize = false;
     return;
 
   }
 
-  if ( postponeInitialize() ) {
-    thePostponeInitialize = false;
+  if ( postponeInitialize() )
     return;
-  }
 
   if ( !samplers().empty() )
     return;
@@ -142,7 +142,13 @@ void GeneralSampler::initialize() {
 
   set<int> binsToIntegrate;
   if ( integrationList() != "" ) {
-    ifstream jobList(integrationList().c_str());
+    string prefix = parallelIntegrationDirectory();
+    if ( prefix.empty() )
+      prefix = "./";
+    else if ( *prefix.rbegin() != '/' )
+      prefix += "/";
+    string fname = prefix + integrationList();
+    ifstream jobList(fname.c_str());
     if ( jobList ) {
       int b = 0;
       while ( jobList >> b )
@@ -190,7 +196,7 @@ void GeneralSampler::initialize() {
 	  s != samplers().end(); ++s ) {
       s->second->saveGrid();
       s->second->saveRemappers();
-      if ( theSaveStatistics )
+      if ( integrationJob() )
 	s->second->saveIntegrationData();
     }
     writeGrids();
@@ -223,7 +229,7 @@ void GeneralSampler::initialize() {
 	s != samplers().end(); ++s ) {
     s->second->saveGrid();
     s->second->saveRemappers();
-    if ( theSaveStatistics )
+    if ( integrationJob() )
       s->second->saveIntegrationData();
   }
 
@@ -499,7 +505,7 @@ void GeneralSampler::dofinish() {
 
   if ( runCombinationData ) {
 
-    string dataName = generator()->filename() + "-sampling.dat";
+    string dataName = generator()->runName() + "-sampling.dat";
 
     ofstream data(dataName.c_str());
 
@@ -529,7 +535,7 @@ void GeneralSampler::dofinish() {
 	s != samplers().end(); ++s ) {
     s->second->saveGrid();
     s->second->saveRemappers();
-    if ( theSaveStatistics )
+    if ( integrationJob() )
       s->second->saveIntegrationData();
   }
 
@@ -575,7 +581,12 @@ IVector GeneralSampler::getReferences() {
 void GeneralSampler::writeGrids() const {
   if ( theGrids.children().empty() )
     return;
-  string dataName = generator()->filename();
+  string dataName = gridDirectory();
+  if ( dataName.empty() )
+    dataName = "./";
+  else if ( *dataName.rbegin() != '/' )
+    dataName += "/";
+  dataName += generator()->runName();
   if ( integrationList() != "" )
     dataName += "-" + integrationList();
   dataName += "-grids.xml";
@@ -586,7 +597,12 @@ void GeneralSampler::writeGrids() const {
 void GeneralSampler::readGrids() {
   if ( didReadGrids )
     return;
-  string dataName = generator()->filename() + "-grids.xml";
+  string dataName = gridDirectory();
+  if ( dataName.empty() )
+    dataName = "./";
+  else if ( *dataName.rbegin() != '/' )
+    dataName += "/";
+  dataName += generator()->runName() + "-grids.xml";
   ifstream in(dataName.c_str());
   if ( !in ) {
     theGrids = XML::Element(XML::ElementTypes::Element,"Grids");
@@ -606,8 +622,7 @@ void GeneralSampler::persistentOutput(PersistentOStream & os) const {
      << theAddUpSamplers << theGlobalMaximumWeight
      << theFlatSubprocesses << isSampling << theMinSelection
      << runCombinationData << theAlmostUnweighted << maximumExceeds
-     << maximumExceededBy << thePostponeInitialize
-     << theParallelIntegration << theSaveStatistics
+     << maximumExceededBy << theParallelIntegration
      << theIntegratePerJob << theIgnoreIntegrationData;
 }
 
@@ -621,8 +636,7 @@ void GeneralSampler::persistentInput(PersistentIStream & is, int) {
      >> theAddUpSamplers >> theGlobalMaximumWeight
      >> theFlatSubprocesses >> isSampling >> theMinSelection
      >> runCombinationData >> theAlmostUnweighted >> maximumExceeds
-     >> maximumExceededBy >> thePostponeInitialize
-     >> theParallelIntegration >> theSaveStatistics
+     >> maximumExceededBy >> theParallelIntegration
      >> theIntegratePerJob >> theIgnoreIntegrationData;
 }
 
@@ -747,21 +761,6 @@ void GeneralSampler::Init() {
      "",
      false);
 
-  static Switch<GeneralSampler,bool> interfacePostponeInitialize
-    ("PostponeInitialize",
-     "Postpone initialization to happen after event generator modifications.",
-     &GeneralSampler::thePostponeInitialize, false, false, false);
-  static SwitchOption interfacePostponeInitializeYes
-    (interfacePostponeInitialize,
-     "Yes",
-     "",
-     true);
-  static SwitchOption interfacePostponeInitializeNo
-    (interfacePostponeInitialize,
-     "No",
-     "",
-     false);
-
   static Switch<GeneralSampler,bool> interfaceParallelIntegration
     ("ParallelIntegration",
      "Prepare parallel jobs for integration.",
@@ -782,21 +781,6 @@ void GeneralSampler::Init() {
      "The number of subprocesses to integrate per job.",
      &GeneralSampler::theIntegratePerJob, 0, 0, 0,
      false, false, Interface::lowerlim);
-
-  static Switch<GeneralSampler,bool> interfaceSaveStatistics
-    ("SaveStatistics",
-     "",
-     &GeneralSampler::theSaveStatistics, false, false, false);
-  static SwitchOption interfaceSaveStatisticsYes
-    (interfaceSaveStatistics,
-     "Yes",
-     "",
-     true);
-  static SwitchOption interfaceSaveStatisticsNo
-    (interfaceSaveStatistics,
-     "No",
-     "",
-     false);
 
   static Switch<GeneralSampler,bool> interfaceIgnoreIntegrationData
     ("IgnoreIntegrationData",

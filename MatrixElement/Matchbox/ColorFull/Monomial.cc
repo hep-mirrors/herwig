@@ -440,8 +440,27 @@ bool operator==(const Monomial & Mon1 , const Monomial & Mon2){
   if(Mon1.int_part != Mon2.int_part ) return false;
 
   // For comparing numerical part use an accuracy, as numbers may be small, compare ratio
-  if( real(Mon1.cnum_part)/real(Mon2.cnum_part)  < (1-accuracy) or real(Mon1.cnum_part)/real(Mon2.cnum_part)  > (1+accuracy) ) return false;
-  if( imag(Mon1.cnum_part)/imag(Mon2.cnum_part)  < (1-accuracy) or imag(Mon1.cnum_part)/imag(Mon2.cnum_part)  > (1+accuracy) ) return false;
+  const double r1 = real(Mon1.cnum_part);
+  const double r2 = real(Mon2.cnum_part);
+  const double i1 = imag(Mon1.cnum_part);
+  const double i2 = imag(Mon2.cnum_part);
+
+  if( r2 != 0 and i2 != 0 ) {
+    if( r1/r2  < (1-accuracy) or r1/r2  > (1+accuracy) ) return false;
+    if( i1/i2  < (1-accuracy) or i1/i2  > (1+accuracy) ) return false;
+  }
+  else if( r2 == 0 and i2 != 0 )  { 
+    if( r1 != 0 ) return false;
+    if( i1/i2  < (1-accuracy) or i1/i2  > (1+accuracy) ) return false;
+  }
+  else if ( r2 != 0 and i2 == 0 ) { 
+    if( r1/r2  < (1-accuracy) or r1/r2  > (1+accuracy) ) return false;
+    if( i1 != 0 ) return false;
+  }
+  else { // both r2,i2 are zero
+    if( r1 != 0 ) return false;
+    if( i1 != 0 ) return false;
+  }
 
   return true;
 }

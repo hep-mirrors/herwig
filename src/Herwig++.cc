@@ -18,12 +18,10 @@
 #include <ThePEG/Handlers/SamplerBase.h>
 #include <iostream>
 
-#include <config.h>
-#ifdef HAVE_UNISTD_H
 #include <queue>
 #include <unistd.h>
 #include <sys/wait.h>
-#endif
+
 
 
 using namespace ThePEG;
@@ -32,7 +30,8 @@ void printUsageAndExit();
 
 void HerwigInit(string infile, string reponame);
 void HerwigRead(string reponame, string runname,
-		const gengetopt_args_info & args_info);
+		const gengetopt_args_info & args_info,
+		bool postponeInitialize);
 void HerwigRun(string runname, string setupfile,
 	       int seed, string tag, long N, 
 	       bool tics, bool resume, int jobs,
@@ -57,12 +56,14 @@ int main(int argc, char * argv[]) {
       printUsageAndExit();
 
     // Interpret command status
-    enum { INIT, READ, INTEGRATE, RUN, ERROR } status;
+    enum { INIT, READ, BUILD, INTEGRATE, RUN, ERROR } status;
     std::string runType = args_info.inputs[0];
     if ( runType == "init" )
       status = INIT;
     else if ( runType == "read" ) 
       status = READ;
+    else if ( runType == "build" ) 
+      status = BUILD;
     else if ( runType == "integrate" ) 
       status = INTEGRATE;
     else if ( runType == "run" )  
@@ -110,10 +111,8 @@ int main(int argc, char * argv[]) {
 
     // parallel jobs
     int jobs = 1;
-#   ifdef HAVE_UNISTD_H
     if ( args_info.jobs_given )
       jobs = min( args_info.jobs_arg, 10 );
-#   endif
 
     setSearchPaths(args_info);
   
@@ -155,10 +154,11 @@ int main(int argc, char * argv[]) {
     // Call mode
     switch ( status ) {
     case INIT:        HerwigInit( runname, reponame ); break;
-    case READ:        HerwigRead( reponame, runname, args_info ); break;
+    case READ:        HerwigRead( reponame, runname, args_info, false ); break;
+    case BUILD:       HerwigRead( reponame, runname, args_info, true ); break;
     case INTEGRATE:   HerwigRun( runname, setupfile , seed, tag, N, tics, resume, jobs, true, integrationList );  break;
     case RUN:         HerwigRun( runname, setupfile , seed, tag, N, tics, resume, jobs, false, integrationList );  break;
-    default:    printUsageAndExit();
+    default:          printUsageAndExit();
     }
 
 
@@ -230,7 +230,8 @@ void HerwigInit(string infile, string reponame) {
 
 
 void HerwigRead(string reponame, string runname, 
-		const gengetopt_args_info & args_info) {
+		const gengetopt_args_info & args_info,
+		bool postponeInitialize) {
 #ifdef HERWIG_PKGDATADIR
   ifstream test(reponame.c_str());
   if ( !test ) {
@@ -242,6 +243,8 @@ void HerwigRead(string reponame, string runname,
   if ( ! msg.empty() ) cerr << msg << '\n';
   setSearchPaths(args_info);
   breakThePEG();
+  if ( postponeInitialize )
+    SamplerBase::doPostponeInitialize();
   if ( !runname.empty() && runname != "-" ) {
     string msg = Repository::read(runname, std::cout);
     if ( ! msg.empty() ) cerr << msg << '\n';
@@ -275,6 +278,11 @@ void HerwigRun(string runname, string setupfile,
 
   if ( seed > 0 ) eg->setSeed(seed);
   if ( !tag.empty() ) eg->addTag(tag);
+  if ( !setupfile.empty() ) eg->addTag("-" + setupfile);
+  if ( integrationJob ) {
+    if ( !integrationList.empty() )
+      eg->addTag("-" + integrationList);
+  }
 
   if ( integrationJob ) {
     Ptr<StandardEventHandler>::tptr eh =
@@ -308,9 +316,6 @@ void HerwigRun(string runname, string setupfile,
   
   }
   else { // forked jobs
-
-#   ifdef HAVE_UNISTD_H
-
     std::queue<pid_t> pids;
     pid_t pid;
 
@@ -343,9 +348,5 @@ void HerwigRun(string runname, string setupfile,
       std::cout << "PID " << pids.front() << " done." << std::endl;
       pids.pop();
     }
-
-#   endif
-    return;
-
   }
 }

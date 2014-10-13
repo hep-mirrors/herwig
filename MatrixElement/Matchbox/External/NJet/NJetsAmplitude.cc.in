@@ -68,7 +68,7 @@ bool NJetsAmplitude::startOLP(const map<pair<Process,int>,int>& procs) {
 
   orderFile << "NJetReturnAccuracy        yes\n"
 	    << "NJetRenormalize           yes\n"
-	    << "NJetNf                    " << MatchboxFactory::currentFactory()->nLight() << "\n";
+	    << "NJetNf                    " << factory()->nLight() << "\n";
 
   olpOrderFileProcesses(orderFile,procs);
 
