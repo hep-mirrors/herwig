@@ -82,7 +82,7 @@ double VBFNLOPhasespace::generateTwoToNKinematics(const double* random,
 
   double* p = new double[4*momenta.size()];
 
-  OLP_PhaseSpacePoint(&id, const_cast<double*>(random+1), p, &weight);
+  OLP_PhaseSpacePoint(&id, const_cast<double*>(random), const_cast<double*>(random+1), p, &weight);
 
   if (weight < 0) {
     throw Exception() << "negative weight in VBFNLOPhaseSpace\n"
