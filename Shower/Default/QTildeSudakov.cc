@@ -844,8 +844,13 @@ double QTildeSudakov::generatePhiDecay(ShowerParticle & particle,
       wgt = (-m12/sqr(pik) -m22/sqr(dot) +2.*pipj/pik/dot)/aziMax;
     }
     else if(ShowerHandler::currentHandler()->evolver()->softCorrelations()==2) {
-      Energy Eg = Ek[0]+Ek[1]*cos(phi)+Ek[2]*sin(phi);
-      wgt = 0.5/pik/Eg*(Ei-m12*Eg/pik  + pipj*Eg/dot - Ej*pik/dot)/aziMax;
+      if(qperp0.m2()==ZERO) {
+	wgt = 1.;
+      }
+      else {
+	Energy Eg = Ek[0]+Ek[1]*cos(phi)+Ek[2]*sin(phi);
+	wgt = 0.5/pik/Eg*(Ei-m12*Eg/pik  + pipj*Eg/dot - Ej*pik/dot)/aziMax;
+      }	
     }
     if(wgt-1.>1e-10||wgt<-1e-10) {
       generator()->log() << "Decay soft weight problem " << wgt << " " << wgt-1. 
