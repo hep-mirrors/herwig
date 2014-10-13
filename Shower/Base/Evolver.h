@@ -68,7 +68,8 @@ public:
 	      _iptrms(ZERO), _beta(0.), _gamma(ZERO), _iptmax(),
 	      _limitEmissions(0), _initialenhance(1.), _finalenhance(1.),
 	       interaction_(1), _trunc_Mode(true), _hardEmissionMode(0),
-	      _colourEvolutionMethod(0), _hardScaleFactor(1.0), _spinOpt(0)
+	      _colourEvolutionMethod(0), _hardScaleFactor(1.0), _spinOpt(0),
+	      _softOpt(0)
   {}
 
   /**
@@ -128,22 +129,22 @@ public:
   /**
    *   Spin Correlations
    */
-  bool spinCorrelations() const {
-    return _spinOpt==1 || _spinOpt==3;
+  unsigned int spinCorrelations() const {
+    return _spinOpt;
   }
 
   /**
    *  Soft correlations
    */
-  bool softCorrelations() const {
-    return _spinOpt==2 || _spinOpt==3;
+  unsigned int softCorrelations() const {
+    return _softOpt;
   }
 
   /**
    *  Any correlations
    */
   bool correlations() const {
-    return _spinOpt!=0;
+    return _spinOpt!=0||_softOpt!=0;
   }
   //@}
 
@@ -768,6 +769,11 @@ private:
    *  Option to include spin correlations
    */
   unsigned int _spinOpt;
+
+  /**
+   *  Option for the kernal for soft correlations
+   */
+  unsigned int _softOpt;
 
 };
 

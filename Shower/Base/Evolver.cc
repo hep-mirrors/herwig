@@ -39,9 +39,9 @@
 using namespace Herwig;
 
 namespace {
-	/**
-	 * Cached lookup of decay modes.
-	 * Generator::findDecayMode() is not efficient.
+  /**
+   * Cached lookup of decay modes.
+   * Generator::findDecayMode() is not efficient.
    */
   tDMPtr findDecayMode(const string & tag) {
     static map<string,DMPtr> cache;
@@ -71,7 +71,7 @@ IBPtr Evolver::fullclone() const {
 void Evolver::persistentOutput(PersistentOStream & os) const {
   os << _model << _splittingGenerator << _maxtry 
      << _meCorrMode << _hardVetoMode << _hardVetoRead << _hardVetoReadOption
-     << _limitEmissions << _spinOpt
+     << _limitEmissions << _spinOpt << _softOpt
      << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << ounit(_iptmax,GeV) 
      << _vetoes << _trunc_Mode << _hardEmissionMode 
      << _colourEvolutionMethod << _reconOpt << _hardScaleFactor
@@ -84,7 +84,7 @@ void Evolver::persistentInput(PersistentIStream & is, int) {
   unsigned int isize;
   is >> _model >> _splittingGenerator >> _maxtry 
      >> _meCorrMode >> _hardVetoMode >> _hardVetoRead >> _hardVetoReadOption
-     >> _limitEmissions >> _spinOpt
+     >> _limitEmissions >> _spinOpt >> _softOpt
      >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> iunit(_iptmax,GeV)
      >> _vetoes >> _trunc_Mode >> _hardEmissionMode
      >> _colourEvolutionMethod >> _reconOpt >> _hardScaleFactor
@@ -357,24 +357,34 @@ void Evolver::Init() {
      &Evolver::_spinOpt, 0, false, false);
   static SwitchOption interfaceSpinCorrelationsOff
     (interfaceSpinCorrelations,
-     "Off",
+     "No",
      "No spin correlations",
      0);
   static SwitchOption interfaceSpinCorrelationsSpin
     (interfaceSpinCorrelations,
-     "Spin",
+     "Yes",
      "Include the azimuthal spin correlations only",
      1);
-  static SwitchOption interfaceSpinCorrelationsSoft
-    (interfaceSpinCorrelations,
-     "Soft",
-     "Include the soft correlations inside the cone only",
+
+  static Switch<Evolver,unsigned int> interfaceSoftCorrelations
+    ("SoftCorrelations",
+     "Option for the treatment of soft correlations in the parton shower",
+     &Evolver::_softOpt, 0, false, false);
+  static SwitchOption interfaceSoftCorrelationsNone
+    (interfaceSoftCorrelations,
+     "No",
+     "No soft correlations",
+     1);
+  static SwitchOption interfaceSoftCorrelationsFull
+    (interfaceSoftCorrelations,
+     "Full",
+     "Use the full eikonal",
+     1);
+  static SwitchOption interfaceSoftCorrelationsSingular
+    (interfaceSoftCorrelations,
+     "Singular",
+     "Use original Webber-Marchisini form",
      2);
-  static SwitchOption interfaceSpinCorrelationsBoth
-    (interfaceSpinCorrelations,
-     "Both",
-     "Include both spin and soft correlations",
-     3);
 
 }
 
