@@ -130,8 +130,8 @@ bool ShowerApproximationGenerator::generate(const vector<double>& r) {
 			      lastIncomingXComb->cuts()->x1Min());
   Energy Q = lastIncomingXComb->lastParticles().first->momentum().plus();
   Energy mass = theLastPartons.first->dataPtr()->mass();
-  double xi = (4.*sqr(x*Q) - sqr(mass))/(4.*sqr(Q)*x);
-  Lorentz5Momentum p1(ZERO,ZERO,xi*Q);
+  double xi = (sqr(x*Q) - sqr(mass))/(sqr(Q)*x);
+  Lorentz5Momentum p1(ZERO,ZERO,xi*Q/2.);
   p1.setMass(mass); p1.rescaleEnergy();
   theLastPartons.first->set5Momentum(p1);
 
@@ -139,8 +139,8 @@ bool ShowerApproximationGenerator::generate(const vector<double>& r) {
 		       lastIncomingXComb->cuts()->x2Min());
   Q = lastIncomingXComb->lastParticles().second->momentum().minus();
   mass = theLastPartons.second->dataPtr()->mass();
-  xi = (4.*sqr(x*Q) - sqr(mass))/(4.*sqr(Q)*x);
-  Lorentz5Momentum p2(ZERO,ZERO,-xi*Q);
+  xi = (sqr(x*Q) - sqr(mass))/(sqr(Q)*x);
+  Lorentz5Momentum p2(ZERO,ZERO,-xi*Q/2.);
   p2.setMass(mass); p2.rescaleEnergy();
   theLastPartons.second->set5Momentum(p2);
 
