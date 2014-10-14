@@ -137,7 +137,7 @@ public:
    * parameter. Note that renormalization scale dependence is fully
    * restored in DipoleIOperator.
    */
-  virtual Energy2 mu2() const { return 91.18800000000*GeV*91.18800000000*GeV;}
+  virtual Energy2 mu2() const { return sqr(91.18800000000*GeV);}
   //virtual Energy2 mu2() const { return lastSHat(); }
   
   
@@ -262,7 +262,12 @@ protected:
   /**
    * The path to generate amplitudes in.
    */
-  string theProcessPath;
+  string theProcessPath;  
+  
+  /**
+   * The path to generate amplitudes in.
+   */
+  string theMGmodel;
 
   /**
    * The process map.
@@ -279,10 +284,18 @@ protected:
    */
   void initProcess(const cPDVector&);
 
-  /**
-   * Map colour legs to colour basis
-   */
-  map<int,int> colourindexmap;
+
+  mutable vector<string>  BornAmplitudes;
+  mutable vector<string>  VirtAmplitudes;
+   
+  mutable vector<int>  colourindex;
+  mutable vector<int>  crossing;
+  mutable double virt[3];
+  mutable double momenta[50];
+  mutable int heltmp[10];
+  mutable double poltmp[8];
+  
+
   
   //@}
 

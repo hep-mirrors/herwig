@@ -8,7 +8,8 @@ madgraphdir = ${pkgdatadir}/MadGraphInterface
 
 INPUTFILES = \
 InterfaceMadGraph.f.in \
-param_card.dat.in
+param_card.dat.in \
+param_card_heft.dat.in
 
 dist_madgraph_DATA = $(INPUTFILES)
 
