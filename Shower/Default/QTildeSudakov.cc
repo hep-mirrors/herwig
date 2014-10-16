@@ -659,7 +659,7 @@ double QTildeSudakov::generatePhiBackward(ShowerParticle & particle,
       Ek = alpha0*zFact/(1.-zFact)*pVect.t()+beta2*nVect.t();
       Ei = alpha0*pVect.t()+beta0*nVect.t();
       Ej = pj.t();
-      aziMax = 0.5/pik/Ek*(Ei-m12*Ek/pik  + pipj*Ek/(pjk[0]-mag) - Ej*pik/(pjk[0]-mag));
+      aziMax = 0.5/pik/Ek*(Ei-m12*Ek/pik  + pipj*Ek/(pjk[0]-mag) - Ej*pik/(pjk[0]+mag));
     }
     else {
       assert(ShowerHandler::currentHandler()->evolver()->softCorrelations()==0);
@@ -728,10 +728,10 @@ double QTildeSudakov::generatePhiBackward(ShowerParticle & particle,
 	aziWgt = (-m12/sqr(pik) -m22/sqr(dot) +2.*pipj/pik/dot)/aziMax;
       }
       else if(ShowerHandler::currentHandler()->evolver()->softCorrelations()==2) {
-	aziWgt = 0.5/pik/Ek*(Ei-m12*Ek/pik  + pipj*Ek/dot - Ej*pik/dot)/aziMax;
+	aziWgt = max(ZERO,0.5/pik/Ek*(Ei-m12*Ek/pik  + pipj*Ek/dot - Ej*pik/dot)/aziMax);
       }
       if(aziWgt-1.>1e-10||aziWgt<-1e-10) {
- 	generator()->log() << "Forward soft weight problem " << aziWgt << " " << aziWgt-1. 
+ 	generator()->log() << "Backward soft weight problem " << aziWgt << " " << aziWgt-1. 
  			   << " " << ids[0] << " " << ids[1] << " " << ids[2] << " " << " " << phi << "\n";
       }
     }
