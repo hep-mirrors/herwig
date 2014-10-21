@@ -88,11 +88,11 @@ bool DipoleMIOperator::apply(const cPDVector& pd) const {
     }
     if ( !first ) {
       if ( apply(*p) ) {
-	first = true;
+        first = true;
       }
     } else {
       if ( apply(*p) ) {
-	second = true;
+        second = true;
       }
     }
   }
@@ -239,8 +239,9 @@ double DipoleMIOperator::me2() const {
   // fixed variable and not s_{ja}.
   // This also means that in the sum over heavy quark flavours, in the g->QQbar
   // contributions, we need to sum over N_F and not just N_F^{ja} (see appendix
-  // B in the massive CS paper), which is also important for the massive I ope-
-  // rator (the same for the massive K operator) here.
+  // B in the massive CS paper, last sentence on p. 51 in arXiv:hep-ph/0201036)
+  // which is important for the massive I operator here but especially for the
+  // massive PK operator.
 
   double res = 0.;
 
@@ -280,19 +281,19 @@ double DipoleMIOperator::me2() const {
       
       if ( idj > 1 ) { // Involves idk > 1 as well as idk < 2
         delta +=
-	  ( ((**j).id() == ParticleID::g ? CA : CF) *
-	    ( Vj(**j,**k,sjk,kappa,appendixB) - sqr(pi)/3. ) +
-	    ((**j).id() == ParticleID::g ? GammaGluon() : GammaQuark(**j)) +
-	    ((**j).id() == ParticleID::g ? gammaGluon : gammaQuark) * (1 + log(mu2/sjk)) +
-	    ((**j).id() == ParticleID::g ? KGluon : KQuark) );
+          ( ((**j).id() == ParticleID::g ? CA : CF) *
+          ( Vj(**j,**k,sjk,kappa,appendixB) - sqr(pi)/3. ) +
+          ((**j).id() == ParticleID::g ? GammaGluon() : GammaQuark(**j)) +
+          ((**j).id() == ParticleID::g ? gammaGluon : gammaQuark) * (1 + log(mu2/sjk)) +
+          ((**j).id() == ParticleID::g ? KGluon : KQuark) );
       }
 
       if ( idj < 2 && idk > 1 ) {
         delta +=
-	  ( ((**j).id() == ParticleID::g ? CA : CF) *
-	    ( Vj(**j,**k,sjk,2./3.,appendixB,true) - sqr(pi)/3. ) +
-	    ((**j).id() == ParticleID::g ? gammaGluon : gammaQuark) * (1 + log(mu2/sjk)) +
-	    ((**j).id() == ParticleID::g ? KGluon : KQuark) );
+          ( ((**j).id() == ParticleID::g ? CA : CF) *
+          ( Vj(**j,**k,sjk,2./3.,appendixB,true) - sqr(pi)/3. ) +
+          ((**j).id() == ParticleID::g ? gammaGluon : gammaQuark) * (1 + log(mu2/sjk)) +
+          ((**j).id() == ParticleID::g ? KGluon : KQuark) );
       }
 
       // If j and k are incoming, same contribution as in DipoleIOperator.
@@ -477,8 +478,9 @@ double DipoleMIOperator::oneLoopSinglePole() const {
 
 //////////////////////////////////////////////////////////////////////
 
-double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k,
-			    Energy2 sjk, double kappa, bool appendixB, bool mFSetEmpty) const {
+double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k, 
+			                      Energy2 sjk, double kappa, bool appendixB, 
+                            bool mFSetEmpty) const {
   
   Energy2 mu2 = lastBorn()->mu2();
 
@@ -520,7 +522,7 @@ double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k,
       1./2.*log(m2/sjk)*log(sjk/Qjk2) - 1./2.*log(m2/Qjk2)*log(sjk/Qjk2);
     // Expanded
     res += 1./2.*log(mu2/sjk)*log(m2/sjk) +
-        1./4.*log(mu2/sjk)*log(mu2/sjk);
+      1./4.*log(mu2/sjk)*log(mu2/sjk);
   }
 
   // no mass zero
@@ -548,15 +550,15 @@ double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k,
     if( mk2 != ZERO ) {
       assert( abs(k.id()) < 7);
       res += 1./vjk * ( ( rho==0. ? 0. : log(rho*rho)*log(1.+rho*rho) ) + 2.*gsl_sf_dilog(rho*rho) -
-	gsl_sf_dilog(1.-rhoj*rhoj) - gsl_sf_dilog(1.-rhok*rhok) - sqr(pi)/6. ) +
-	log((Qjk-mk)/Qjk) - 2.*log((sqr(Qjk-mk)-mj2)/Qjk2) - 2.*mj2/sjk*log(mj/(Qjk-mk)) -
-	mk/(Qjk-mk) + 2.*mk*(2.*mk-Qjk)/sjk + sqr(pi)/2.;
+        gsl_sf_dilog(1.-rhoj*rhoj) - gsl_sf_dilog(1.-rhok*rhok) - sqr(pi)/6. ) +
+        log((Qjk-mk)/Qjk) - 2.*log((sqr(Qjk-mk)-mj2)/Qjk2) - 2.*mj2/sjk*log(mj/(Qjk-mk)) -
+        mk/(Qjk-mk) + 2.*mk*(2.*mk-Qjk)/sjk + sqr(pi)/2.;
     }
 
     // k is massless parton (6.22)
     else {
       res += sqr(pi)/6. - gsl_sf_dilog(sjk/Qjk2) -
-	2.*log(sjk/Qjk2) - mj2/sjk*log(mj2/Qjk2);
+        2.*log(sjk/Qjk2) - mj2/sjk*log(mj2/Qjk2);
     }
 
   }
@@ -568,19 +570,19 @@ double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k,
     if( mk == ZERO ) {
       // only contributes if j is gluon (6.26)
       if( j.id() == ParticleID::g ) {
-	// sum over all quark flavours
-	if( !mFSetEmpty )
-	  for( size_t f=0; f<NHeavyJetVec().size(); ++f ) { // only heavy quarks in jet (aka g->QQbar at NLO)
-	    Energy2 mF2 = sqr( getParticleData(NHeavyJetVec()[f])->mass() );
-	    // sum only over quarks which meet special condition
+        // sum over all quark flavours
+        if( !mFSetEmpty )
+          for( size_t f=0; f<NHeavyJetVec().size(); ++f ) { // only heavy quarks in jet (aka g->QQbar at NLO)
+            Energy2 mF2 = sqr( getParticleData(NHeavyJetVec()[f])->mass() );
+            // sum only over quarks which meet special condition
             // but not if method of appendix B is used (see note
-	    // at the end of appendix B)
- 	    if( !appendixB && sjk <= 4.*sqrt(mF2)*(sqrt(mF2)+mk) )
-	      continue;
-	    double rho1 = sqrt( 1. - 4.*mF2 / sqr(Qjk-mk) );
-	    res += 2./3./CA * ( log((1.+rho1)/2.) - rho1/3.*(3.+sqr(rho1)) - 0.5*log(mF2/sjk) );
-	  }
-	  // The last term with Q_{aux} in (6.26) cancels against a similar term in GammaGluon().
+            // at the end of appendix B)
+ 	          if( !appendixB && sjk <= 4.*sqrt(mF2)*(sqrt(mF2)+mk) )
+              continue;
+            double rho1 = sqrt( 1. - 4.*mF2 / sqr(Qjk-mk) );
+            res += 2./3./CA * ( log((1.+rho1)/2.) - rho1/3.*(3.+sqr(rho1)) - 0.5*log(mF2/sjk) );
+          }
+         // The last term with Q_{aux} in (6.26) cancels against a similar term in GammaGluon().
       }
     }
 
@@ -591,31 +593,32 @@ double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k,
       res += sqr(pi)/6. - gsl_sf_dilog(sjk/Qjk2);
       // j is massless quark (6.23)
       if( abs(j.id()) < 7)
-	res += gammaQuark/CF * ( log(sjk/Qjk2) - 2.*log((Qjk-mk)/Qjk) - 2.*mk/(Qjk+mk) );
+        res += gammaQuark/CF * ( log(sjk/Qjk2) - 2.*log((Qjk-mk)/Qjk) - 2.*mk/(Qjk+mk) );
       // j is gluon (6.24)
       else if( j.id() == ParticleID::g ) {
-	// part independent of other heavy quark flavours
-	res += gammaGluon/CA * ( log(sjk/Qjk2) - 2.*log((Qjk-mk)/Qjk) - 2.*mk/(Qjk+mk) ) +
-	  (kappa-2./3.) * mk2/sjk * (1./CA*NLightJetVec().size()-1.) * log(2.*mk/(Qjk+mk));
-	// part containing other heavy quark flavours
-	if( !mFSetEmpty )
-	  for( size_t f=0; f<NHeavyJetVec().size(); ++f ) { // only heavy quarks in jet (aka g->QQbar at NLO)
-	    Energy2 mF2 = sqr( getParticleData(NHeavyJetVec()[f])->mass() );
-	    // sum only over quarks which meet special condition
-            // but not if method of appendix B is used (see note
-	    // at the end of appendix B)
-	    if( !appendixB && sjk <= 4.*sqrt(mF2)*(sqrt(mF2)+mk) )
-	      continue;
-	    double rho1 = sqrt( 1. - 4.*mF2 / sqr(Qjk-mk) );
-	    double rho2 = sqrt( 1. - 4.*mF2 / (Qjk2-mk2) );
-	    res += 2./3./CA * ( log((Qjk-mk)/Qjk) + mk*rho1*rho1*rho1/(Qjk+mk) + log((1.+rho1)/2.) -
-	      rho1/3.*(3.+sqr(rho1)) - 1./2.*log(mF2/Qjk2) ) +
-	      1./CA * ( rho2*rho2*rho2*log((rho2-rho1)/(rho2+rho1)) - log((1.-rho1)/(1.+rho1)) -
-	      8.*rho1*mF2/sjk ) * (kappa-2./3.) * mk2/sjk;
-	  }
-	  // The term with Q_{aux} in (6.24) cancels against a similar term in GammaGluon().
+        // part independent of other heavy quark flavours
+        res += gammaGluon/CA * ( log(sjk/Qjk2) - 2.*log((Qjk-mk)/Qjk) - 2.*mk/(Qjk+mk) ) +
+          (kappa-2./3.) * mk2/sjk * (1./CA*NLightJetVec().size()-1.) * log(2.*mk/(Qjk+mk));
+        // part containing other heavy quark flavours
+        if( !mFSetEmpty )
+        for( size_t f=0; f<NHeavyJetVec().size(); ++f ) { // only heavy quarks in jet (aka g->QQbar at NLO)
+          Energy2 mF2 = sqr( getParticleData(NHeavyJetVec()[f])->mass() );
+          // sum only over quarks which meet special condition
+          // but not if method of appendix B is used (see note
+          // at the end of appendix B)
+          if( !appendixB && sjk <= 4.*sqrt(mF2)*(sqrt(mF2)+mk) )
+            continue;
+          double rho1 = sqrt( 1. - 4.*mF2 / sqr(Qjk-mk) );
+          double rho2 = sqrt( 1. - 4.*mF2 / (Qjk2-mk2) );
+          res += 2./3./CA * ( log((Qjk-mk)/Qjk) + mk*rho1*rho1*rho1/(Qjk+mk) + log((1.+rho1)/2.) -
+            rho1/3.*(3.+sqr(rho1)) - 1./2.*log(mF2/Qjk2) ) +
+            1./CA * ( rho2*rho2*rho2*log((rho2-rho1)/(rho2+rho1)) - log((1.-rho1)/(1.+rho1)) -
+            8.*rho1*mF2/sjk ) * (kappa-2./3.) * mk2/sjk;
+        }
+        // The term with Q_{aux} in (6.24) cancels against a similar term in GammaGluon().
       }
     }
+
   }
 
   return res;

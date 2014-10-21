@@ -90,11 +90,11 @@ bool DipoleMPKOperator::apply(const cPDVector& pd) const {
     }
     if ( !first ) {
       if ( applyNotMassless(*p) ) {
-	first = true;
+        first = true;
       }
     } else {
       if ( applyNotMassless(*p) ) {
-	second = true;
+        second = true;
       }
     }
   }
@@ -236,18 +236,18 @@ double DipoleMPKOperator::me2() const {
   if ( apply(mePartonData()[0]) ) {
     if ( mePartonData()[0]->coloured() ) {
       if ( mePartonData()[1]->coloured() )
-	res += lastBorn()->pdf2()*sumParton(0);
+        res += lastBorn()->pdf2()*sumParton(0);
       else
-	res += sumParton(0);
+        res += sumParton(0);
     }
   }
 
   if ( apply(mePartonData()[1]) ) {
     if ( mePartonData()[1]->coloured() ) {
       if ( mePartonData()[0]->coloured() )
-	res += lastBorn()->pdf1()*sumParton(1);
+        res += lastBorn()->pdf1()*sumParton(1);
       else
-	res += sumParton(1);
+        res += sumParton(1);
     }
   }
 
@@ -273,8 +273,9 @@ double DipoleMPKOperator::sumParton(int id) const {
   // fixed variable and not s_{ja}.
   // This also means that in the sum over heavy quark flavours, in the g->QQbar
   // contributions, we need to sum over N_F and not just N_F^{ja} (see appendix
-  // B in the massive CS paper), which is actually also important for the I op-
-  // erator in the massive case.
+  // B in the massive CS paper, last sentence on p. 51 in arXiv:hep-ph/0201036)
+  // which is not only important for the massive PK operator here but actually 
+  // also for the I operator in the massive case.
 
   pdf =
     id == 0 ?
@@ -302,9 +303,10 @@ double DipoleMPKOperator::sumParton(int id) const {
   double eps = 1e-3;
 
   pair<double,double> zw =
-    generate((piecewise(),
-	      flat(0.0,x),
-	      match(inverse(0.0,x,1.0) + inverse(1.0+eps,x,1.0))),r);
+    generate( ( piecewise(),
+                flat(0.0,x),
+                match(inverse(0.0,x,1.0) + inverse(1.0+eps,x,1.0)) ),
+              r );
 
   z = zw.first;
   double mapz = zw.second;
@@ -386,13 +388,13 @@ double DipoleMPKOperator::sumParton(int id) const {
       theGammaSoft = gammaSoft();
 
     if ( mePartonData()[id]->id() == ParticleID::g &&
-	     thePgg == 0.0 ) {
+         thePgg == 0.0 ) {
       thePqg = Pqg();
       thePgg = Pgg();
     }
 
     if ( abs(mePartonData()[id]->id()) < 7 &&
-	     thePqq == 0.0 ) {
+         thePqq == 0.0 ) {
       thePgq = Pgq();
       thePqq = Pqq();
     }
@@ -401,10 +403,19 @@ double DipoleMPKOperator::sumParton(int id) const {
     // K operator, the rest //
     //////////////////////////
 
+//     // For m_j=0 and {m_F}=empty we can use the exact massless case.
+//     // This case, however, should actually not occur here.
+//     if ( (**i).mass() == ZERO && NHeavyJetVec().size() == 0 ) {
+//       throw InitException() << "DipoleMPKOperator::sumParton: m_j=0 and {m_F}=empty. This should not have happened.";
+//       // Last term in massless K operator in (C.31) in massless paper.
+//       res +=
+//         ( (**i).id() == ParticleID::g ? gammaGluon : gammaQuark ) *
+//         theGammaSoft * fiCorrelated;
+//         // gammaSoft() * fiCorrelated;
+//     }
+
     // For m_j=0 and {m_F}=empty we can use the exact massless case.
-    // This case, however, should actually not occur here.
     if ( (**i).mass() == ZERO && NHeavyJetVec().size() == 0 ) {
-      throw InitException() << "DipoleMPKOperator::sumParton: m_j=0 and {m_F}=empty. This should not have happened.";
       // Last term in massless K operator in (C.31) in massless paper.
       res +=
         ( (**i).id() == ParticleID::g ? gammaGluon : gammaQuark ) *
@@ -428,9 +439,9 @@ double DipoleMPKOperator::sumParton(int id) const {
           fiCorrelated * 
           ( appendixB 
           ? ( (**i).id() == ParticleID::g ? ( Kscriptbarqg_g() + Kscriptbargg_g(Qja2,appendixB) ) 
-	                                  : ( Kscriptbarqg_q(Qja2,mj2) + Kscriptbargg_q(Qja2,mj2,appendixB) ) )
+                                          : ( Kscriptbarqg_q(Qja2,mj2) + Kscriptbargg_q(Qja2,mj2,appendixB) ) )
           : ( (**i).id() == ParticleID::g ? ( Kscriptqg_g() + Kscriptgg_g(sja,appendixB) ) 
-	                                  : ( Kscriptqg_q(sja,mj2) + Kscriptgg_q(sja,mj2,appendixB) ) ) 
+                                          : ( Kscriptqg_q(sja,mj2) + Kscriptgg_q(sja,mj2,appendixB) ) ) 
           );
       }
       if ( abs(mePartonData()[id]->id()) < 7 ) {
@@ -439,9 +450,9 @@ double DipoleMPKOperator::sumParton(int id) const {
           fiCorrelated * 
           ( appendixB 
           ? ( (**i).id() == ParticleID::g ? ( Kscriptbarqq_g(Qja2,appendixB) + Kscriptbargq_g() ) 
-	                                  : ( Kscriptbarqq_q(Qja2,mj2,appendixB) + Kscriptbargq_q() ) )
+                                          : ( Kscriptbarqq_q(Qja2,mj2,appendixB) + Kscriptbargq_q() ) )
           : ( (**i).id() == ParticleID::g ? ( Kscriptqq_g(sja,appendixB) + Kscriptgq_g() ) 
-	                                  : ( Kscriptqq_q(sja,mj2,appendixB) + Kscriptgq_q() ) )
+                                          : ( Kscriptqq_q(sja,mj2,appendixB) + Kscriptgq_q() ) )
           );
       }
 
@@ -455,7 +466,6 @@ double DipoleMPKOperator::sumParton(int id) const {
       // double thePqgreg = CF*(1.+(1.-z)*(1.-z))/z;
       // double thePgqreg = 1./2.*(z*z + (1.-z)*(1.-z));
       // double thePggreg = 2.*CA*((1.-z)/z - 1. + z*(1.-z));
-
 
       // Last term in massive K operator in (6.55) in massive paper.
       // Vanishes theoretically in the massless limit.
@@ -573,16 +583,16 @@ double DipoleMPKOperator::sumParton(int id) const {
 
   if ( mePartonData()[ id == 0 ? 1 : 0 ]->coloured() &&
        !lastBorn()->noDipole(id == 0 ? 0 : 1,
-			     id == 0 ? 1 : 0) ) {
+                             id == 0 ? 1 : 0) ) {
 
     if ( mePartonData()[id]->id() == ParticleID::g &&
-	     thePgg == 0.0 ) {
+         thePgg == 0.0 ) {
       thePqg = Pqg();
       thePgg = Pgg();
     }
 
     if ( abs(mePartonData()[id]->id()) < 7 &&
-	     thePqq == 0.0 ) {
+         thePqq == 0.0 ) {
       thePgq = Pgq();
       thePqq = Pqq();
     }
@@ -604,7 +614,7 @@ double DipoleMPKOperator::sumParton(int id) const {
         ( thePgg + thePqg ) * theLog * iiCorrelated;
         // ( Pgg() + Pqg() ) * theLog * iiCorrelated;
       res -=
-	( KTildegg() + KTildeqg() ) * iiCorrelated;
+        ( KTildegg() + KTildeqg() ) * iiCorrelated;
     }    
 
     if ( abs(mePartonData()[id]->id()) < 7 ) {
@@ -612,7 +622,7 @@ double DipoleMPKOperator::sumParton(int id) const {
         ( thePqq + thePgq ) * theLog * iiCorrelated;
         // ( Pqq() + Pgq() ) * theLog * iiCorrelated;
       res -=
-	( KTildeqq() + KTildegq() ) * iiCorrelated;
+        ( KTildeqq() + KTildegq() ) * iiCorrelated;
     }
 
   }
@@ -1000,7 +1010,7 @@ double DipoleMPKOperator::Kscriptqq_g(Energy2 sja, bool appendixB) const {
       ( appendixB ? Ja_QQzplusmod(muQ2,f,zplus) : Ja_QQzplus(muQ2,f,zplus) ) + 
       ( appendixB ? PDFx(parton)*( 2./3.*sqrt((1.-4.*muQ2prime)*(1.-4.*muQ2prime)*(1.-4.*muQ2prime)) ) 
                   : PDFx(parton)*( 2./3.*sqrt((1.-4.*muQ2)*(1.-4.*muQ2)*(1.-4.*muQ2)) ) ) 
-      );
+    );
 
   }
 
@@ -1043,7 +1053,7 @@ double DipoleMPKOperator::Kscriptgg_g(Energy2 sja, bool appendixB) const {
       ( appendixB ? Ja_QQzplusmod(muQ2,f,zplus) : Ja_QQzplus(muQ2,f,zplus) ) + 
       ( appendixB ? PDFx(parton)*( 2./3.*sqrt((1.-4.*muQ2prime)*(1.-4.*muQ2prime)*(1.-4.*muQ2prime)) ) 
                   : PDFx(parton)*( 2./3.*sqrt((1.-4.*muQ2)*(1.-4.*muQ2)*(1.-4.*muQ2)) ) ) 
-      );
+    );
   }
 
   return res;
