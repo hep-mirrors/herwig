@@ -374,7 +374,7 @@ void Evolver::Init() {
     (interfaceSoftCorrelations,
      "No",
      "No soft correlations",
-     1);
+     0);
   static SwitchOption interfaceSoftCorrelationsFull
     (interfaceSoftCorrelations,
      "Full",
