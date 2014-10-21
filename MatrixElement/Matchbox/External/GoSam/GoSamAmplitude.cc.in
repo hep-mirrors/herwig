@@ -68,8 +68,10 @@ bool GoSamAmplitude::buildGoSam() {
 	if(!theCodeExists){
 	  generator()->log() << "\n>>> compiling GoSam amplitudes. This may take some time, please be patient.\n"
 			     << ">>> see " + gosamSourcePath + "/gosam-build.log for details\n\n" << flush;
+// 	  string cmd = "cd " + gosamSourcePath + " && sh autogen.sh FCFLAGS=-g --prefix=" + 
+// 	    gosamInstallPath + " > gosam-build.log 2>&1";
 	  string cmd = "cd " + gosamSourcePath + " && sh autogen.sh FCFLAGS=-g --prefix=" + 
-	    gosamInstallPath + " > gosam-build.log 2>&1";
+	    gosamInstallPath + " --disable-static > gosam-build.log 2>&1";
 	  std::system(cmd.c_str());
 	  if (!gosamBuildScript.empty()) {
 		  cmd = "cd " + gosamSourcePath + " && " + gosamBuildScript + " >> gosam-build.log 2>&1";
