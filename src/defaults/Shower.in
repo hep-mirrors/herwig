@@ -26,6 +26,7 @@ create Herwig::ShowerAlphaQED AlphaQED
 create Herwig::Evolver Evolver
 create Herwig::QTildeModel ShowerModel
 create Herwig::QTildeFinder PartnerFinder
+newdef PartnerFinder:PartnerMethod 1
 create Herwig::QTildeReconstructor KinematicsReconstructor
 newdef KinematicsReconstructor:ReconstructionOption Colour
 
@@ -41,6 +42,8 @@ newdef Evolver:HardScaleFactor 1.0
 newdef Evolver:Interactions BothAtOnce
 newdef Evolver:SpinCorrelations Yes
 newdef Evolver:SoftCorrelations Singular
+newdef Evolver:ColourEvolutionMethod HalfCA
+
 
 ##################################################################
 # Intrinsic pT

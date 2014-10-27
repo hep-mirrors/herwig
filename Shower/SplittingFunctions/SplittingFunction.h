@@ -77,8 +77,7 @@ public:
     : Interfaced(), _interactionType(ShowerInteraction::UNDEFINED),
       _interactionOrder(b), 
       _colourStructure(Undefined), _colourFactor(-1.),
-      angularOrdered_(true),
-      _splittingColourMethod(0) {}
+      angularOrdered_(true) {}
 public:
 
   /**
@@ -364,17 +363,6 @@ private:
    *  Whether or not this interaction is angular-ordered
    */
   bool angularOrdered_;
-  
-  /**
-   *  The method for assigning colour
-   *  The default, 0, will assign colour lines for octets
-   *  randomly without keeping a record of which lines radiate.
-   *  For option 1 only the "correct" lines will radiate until
-   *  the lowest scale is reached.
-   *  For option 2 there will be random radiation, but the
-   *  line which radiates is recorded
-   */
-   int _splittingColourMethod;
 };
 
 }
