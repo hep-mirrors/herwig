@@ -38,6 +38,11 @@ parser.add_argument(
     action="store_true", 
     help="Split the model file into pieces to improve compilation for models with many parameters"
 )
+parser.add_argument(
+    '--no-generic-loop-vertices',
+    action="store_true",
+    help="Don't include the automatically generated generic loop vertices for h->gg and h->gamma gamma"
+)
 
 vertex_skipped = False
 
@@ -570,8 +575,9 @@ def get_vertices():
     for v in all_vertices:
         if v.herwig_skip_vertex: continue
         vlist.append( vertexline.format(modelname=modelname, vname=v.name) )
-    vlist.append('insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/V_GenericHPP\n'.format(modelname=modelname) )
-    vlist.append('insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/V_GenericHGG\n'.format(modelname=modelname) )
+    if( not args.no_generic_loop_vertices) :
+        vlist.append('insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/V_GenericHPP\n'.format(modelname=modelname) )
+        vlist.append('insert {modelname}:ExtraVertices 0 /Herwig/{modelname}/V_GenericHGG\n'.format(modelname=modelname) )
     return ''.join(vlist)
 
 
