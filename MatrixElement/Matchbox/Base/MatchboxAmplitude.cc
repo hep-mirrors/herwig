@@ -169,13 +169,13 @@ void MatchboxAmplitude::olpOrderFileProcesses(ostream& os,
 
 bool MatchboxAmplitude::startOLP(const map<pair<Process,int>,int>& procs) {
 
-  string orderFileName = name() + ".OLPOrder.lh";
+  string orderFileName = factory()->buildStorage() + name() + ".OLPOrder.lh";
   ofstream orderFile(orderFileName.c_str());
 
   olpOrderFileHeader(orderFile);
   olpOrderFileProcesses(orderFile,procs);
 
-  string contractFileName = name() + ".OLPContract.lh";
+  string contractFileName = factory()->buildStorage() + name() + ".OLPContract.lh";
 
   signOLP(orderFileName, contractFileName);
 
