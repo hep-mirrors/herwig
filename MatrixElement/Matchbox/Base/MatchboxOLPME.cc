@@ -149,7 +149,7 @@ bool didstartOLP = false;
 
 void MatchboxOLPME::doinitrun() {
   if ( !didstartOLP ) {
-    string contractFileName = name() + ".OLPContract.lh";
+    string contractFileName = factory()->buildStorage() + name() + ".OLPContract.lh";
     int status = -1;
     startOLP(contractFileName,status);
     didstartOLP=true;
