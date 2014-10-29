@@ -96,7 +96,7 @@ bool VBFNLOAmplitude::startOLP(const map<pair<Process,int>,int>& procs) {
 		      << DynamicLoader::lastErrorMessage
 		      << Exception::abortnow;
 
-  string orderFileName = name() + ".OLPOrder.lh";
+  string orderFileName = factory()->buildStorage() + name() + ".OLPOrder.lh";
   ofstream orderFile(orderFileName.c_str());
 
   olpOrderFileHeader(orderFile);
@@ -109,7 +109,7 @@ bool VBFNLOAmplitude::startOLP(const map<pair<Process,int>,int>& procs) {
 
   orderFile.close();
 
-  string contractFileName = name() + ".OLPContract.lh";
+  string contractFileName = factory()->buildStorage() + name() + ".OLPContract.lh";
 
   signOLP(orderFileName, contractFileName);
 
