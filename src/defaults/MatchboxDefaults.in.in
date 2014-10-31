@@ -570,6 +570,8 @@ set MaxptScale:JetFinder /Herwig/Cuts/JetFinder
 create Herwig::MatchboxLeptonMassScale LeptonMassScale
 create Herwig::MatchboxLeptonPtScale LeptonPtScale
 create Herwig::MatchboxHtScale HTScale
+create Herwig::MatchboxTopMassScale TopMassScale
+create Herwig::MatchboxTopMTScale TopMTScale
 set HTScale:JetFinder /Herwig/Cuts/JetFinder
 set HTScale:JetsOnly True
 set HTScale:DoAverage True
