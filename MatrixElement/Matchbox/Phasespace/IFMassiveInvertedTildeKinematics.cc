@@ -41,8 +41,7 @@ bool IFMassiveInvertedTildeKinematics::doMap(const double * r) {
 
   Lorentz5Momentum emitter = bornEmitterMomentum();
   Lorentz5Momentum spectator = bornSpectatorMomentum();
-  Energy2 scale = 2.*(spectator*emitter);  
-  double alpha  = 1. - (2.*sqr(bornSpectatorData()->mass())/scale);
+  Energy2 scale = 2.*(spectator*emitter);
 
   double mapping = 1.0;
   pair<Energy,double> ptz = generatePtZ(mapping,r);
@@ -56,10 +55,8 @@ bool IFMassiveInvertedTildeKinematics::doMap(const double * r) {
   double ratio = sqr(pt)/scale;
 
   // x
-  double root = sqrt( sqr(1.-z+alpha*ratio) - 4.*ratio*(1.-z) );
-  double x = alpha == 1. ? ( z*(1.-z) - ratio ) / ( 1. - z - ratio ) :
-    ( sqr(alpha)*ratio + 2.*z - alpha*(1.+z) + alpha*root ) / (2.*(1.-alpha));
-  double u = ( 1.-z + alpha*ratio - root ) /(2.*(1.-z));
+  double u = ratio/(1.-z);
+  double x = (z*(1.-z)-ratio)/(1.-z-ratio);
   double up = (1.-x) / (1.-x+(x*sqr(bornSpectatorData()->mass())/scale));
 
   if ( x < emitterX() || x > 1. || u > up) {
@@ -71,8 +68,8 @@ bool IFMassiveInvertedTildeKinematics::doMap(const double * r) {
   Energy magKt = sqrt(scale*u*(1.-u)*(1.-x)/x - sqr(u*bornSpectatorData()->mass()));
 
   // TODO: why not mapping /= sqr(z*(1.-z)-ratio)/(1.-z) ? (see phd thesis, (5.74))
-  // mapping /= sqr(z*(1.-z)-ratio)/(1.-z-ratio);
-  mapping *= (1.-u)/(1.-2.*u+u*u*alpha)/x;
+  mapping /= sqr(z*(1.-z)-ratio)/(1.-z-ratio);
+  // mapping *= (1.-u)/(1.-2.*u+u*u*alpha)/x;
   jacobian(mapping*(sqr(lastScale())/sHat())/(16.*sqr(Constants::pi)));
 
   double phi = 2.*Constants::pi*r[2];
@@ -121,14 +118,9 @@ Energy IFMassiveInvertedTildeKinematics::ptMax() const {
 
 pair<double,double> IFMassiveInvertedTildeKinematics::zBounds(Energy pt, Energy hardPt) const {
   hardPt = hardPt == ZERO ? ptMax() : min(hardPt,ptMax());
-  Energy2 scale = 2.*(bornEmitterMomentum()*bornSpectatorMomentum());
-  double alpha = 1. - (2.*sqr(bornSpectatorData()->mass())/scale);
-  double xe = emitterX();
-  double zp = 0.5*( alpha + xe - (alpha-1.)*xe +
-		    alpha*(1.-xe)*sqrt(1.-sqr(pt/hardPt) ) );
-  double zm = 0.5*( alpha + xe - (alpha-1.)*xe -
-		    alpha*(1.-xe)*sqrt(1.-sqr(pt/hardPt) ) );
-  return make_pair(zm,zp);
+  double s = sqrt(1.-sqr(pt/hardPt));
+  double x = emitterX();
+  return make_pair(0.5*(1.+x-(1.-x)*s),0.5*(1.+x+(1.-x)*s));
 }
 
 
