@@ -28,7 +28,7 @@ IBPtr FFMqx2qgxDipoleKernel::fullclone() const {
 
 bool FFMqx2qgxDipoleKernel::canHandle(const DipoleIndex& ind) const {
   return
-    abs(ind.emitterData()->id()) < 6  &&
+    abs(ind.emitterData()->id()) < 7  &&
     // 2012-05-01
     abs(ind.emitterData()->id()) == abs(flavour()->id()) &&
     !( ind.emitterData()->mass() == ZERO &&
@@ -47,7 +47,7 @@ bool FFMqx2qgxDipoleKernel::canHandleEquivalent(const DipoleIndex& a,
 
   return
     sk.emission(b)->id() == ParticleID::g &&
-    abs(sk.emitter(b)->id()) < 6 &&
+    abs(sk.emitter(b)->id()) < 7 &&
     abs(sk.emitter(b)->mass()) == abs(emitter(a)->mass()) &&
     abs(sk.spectator(b)->mass()) == abs(spectator(a)->mass());
 
@@ -58,7 +58,7 @@ tcPDPtr FFMqx2qgxDipoleKernel::emitter(const DipoleIndex& ind) const {
   //  return ind.emitterData();
   //  cout << "q2qg kernel: flavour " << flavour()->id() << endl << flush;
   assert(flavour());
-  assert(abs(flavour()->id())<6);
+  assert(abs(flavour()->id())<7);
   //  cout << "  assertions passed" << endl << flush;
   return ind.emitterData()->id() > 0 ?
     (tcPDPtr) flavour() : (tcPDPtr) flavour()->CC();

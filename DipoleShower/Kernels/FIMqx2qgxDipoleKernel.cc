@@ -28,7 +28,7 @@ IBPtr FIMqx2qgxDipoleKernel::fullclone() const {
 
 bool FIMqx2qgxDipoleKernel::canHandle(const DipoleIndex& ind) const {
   return
-    abs(ind.emitterData()->id()) < 6 &&
+    abs(ind.emitterData()->id()) < 7 &&
     abs(ind.emitterData()->id())==abs(flavour()->id()) &&
     ind.emitterData()->mass() != ZERO &&
     ind.spectatorData()->mass() == ZERO &&
@@ -46,7 +46,7 @@ bool FIMqx2qgxDipoleKernel::canHandleEquivalent(const DipoleIndex& a,
 
   return
     sk.emission(b)->id() == ParticleID::g &&
-    abs(sk.emitter(b)->id()) < 6 &&
+    abs(sk.emitter(b)->id()) < 7 &&
     sk.emitter(b)->mass() == emitter(a)->mass() &&
     a.spectatorPDF() == b.spectatorPDF();
        
@@ -56,7 +56,7 @@ bool FIMqx2qgxDipoleKernel::canHandleEquivalent(const DipoleIndex& a,
 
 tcPDPtr FIMqx2qgxDipoleKernel::emitter(const DipoleIndex& ind) const {
   assert(flavour());
-  assert(abs(flavour()->id())<6 && flavour()->mass() != ZERO);
+  assert(abs(flavour()->id())<7 && flavour()->mass() != ZERO);
   return ind.emitterData()->id() > 0 ?
     (tcPDPtr) flavour() : (tcPDPtr) flavour()->CC();
 }
