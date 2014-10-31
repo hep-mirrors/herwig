@@ -18,5 +18,7 @@ MatchboxScale.h \
 MatchboxScale.cc \
 MatchboxSHatScale.h \
 MatchboxSHatScale.cc \
+MatchboxTopMassScale.cc \
+MatchboxTopMTScale.cc \
 MatchboxTriVecScales.h \
 MatchboxTriVecScales.cc
