@@ -9,7 +9,58 @@ Script for merging aida files
 
 """
 
-import sys
+def fillAbove(scale,desthisto, sourcehistosbyptmin):
+    pthigh= 1e100
+    ptlow =-1e100
+    for pt, h in sorted(sourcehistosbyptmin.iteritems(),reverse=True):
+        ptlow=pt
+        if(type(desthisto)==yoda.core.Scatter2D) :
+            for i in range(0,h.numPoints) :
+                xMin = h.points[i].x-h.points[i].xErrs.minus
+                if( xMin*scale >= ptlow and 
+                    xMin*scale <  pthigh ) :
+                    desthisto.addPoint(h.points[i])
+        elif(type(desthisto)==yoda.core.Profile1D) :
+            for i in range(0,h.numBins) :
+                if(h.bins[i].xMin*scale  >= ptlow and 
+                   h.bins[i].xMin*scale  <  pthigh ) :
+                    desthisto.bins[i] += h.bins[i]
+        elif(type(desthisto)==yoda.core.Histo1D) :
+            for i in range(0,h.numBins) :
+                if(h.bins[i].xMin*scale  >= ptlow and 
+                   h.bins[i].xMin*scale  <  pthigh ) :
+                    desthisto.bins[i] += h.bins[i]
+        else :
+            logging.error("Can't merge %s, unknown type" % desthisto.path)
+            sys.exit(1)
+        pthigh=pt
+
+def mergeByPt(hpath, scale=1.):
+    global inhistos
+    global outhistos
+    try:
+        fillAbove(scale,outhistos[hpath], inhistos[hpath])
+    except:
+        pass
+
+def useOnePt(hpath, ptmin):
+    global inhistos
+    global outhistos
+    try:
+       ## Find best pT_min match
+        ptmins = inhistos[hpath].keys()
+        closest_ptmin = None
+        for ptm in ptmins:
+            if closest_ptmin is None or \
+                    abs(ptm-float(ptmin)) < abs(closest_ptmin-float(ptmin)):
+                closest_ptmin = ptm
+        if closest_ptmin != float(ptmin):
+            logging.warning("Inexact match for requested pTmin=%s: " % ptmin + \
+                                "using pTmin=%e instead" % closest_ptmin)
+        outhistos[hpath] =  inhistos[hpath][closest_ptmin]
+    except:
+        pass
+
 if sys.version_info[:3] < (2,4,0):
     print "rivet scripts require Python version >= 2.4.0... exiting"
     sys.exit(1)
@@ -28,31 +79,164 @@ if __name__ == "__main__":
     (opts, args) = parser.parse_args()
     logging.basicConfig(level=opts.LOGLEVEL, format="%(message)s")
 
-    ## Check args
-    if len(args) < 1:
-        logging.error("Must specify at least one AIDA histogram file")
-        sys.exit(1)
+files=["-7-PromptPhoton-1.yoda","-7-PromptPhoton-2.yoda",
+       "-7-PromptPhoton-3.yoda","-7-PromptPhoton-4.yoda",
+       "-7-DiPhoton.yoda","-7-GammaGamma.yoda"]
 
-    ## Get histos
-    outhistos={}
-    for file in args:
-        if not os.access(file, os.R_OK):
-            logging.error("%s can not be read" % file)
-            break
-        try:
-            aos = yoda.read(file)
-        except:
-            logging.error("%s can not be parsed as XML" % file)
-            break
+## Get histos
+inhistos = {}
+outhistos={}
+for f in files:
+    file="LHC"+f
+    if not os.access(file, os.R_OK):
+        logging.error("%s can not be read" % file)
+        break
+    try:
+        aos = yoda.read(file)
+    except:
+        logging.error("%s can not be parsed as XML" % file)
+        break
+    if(file.find("PromptPhoton")>=0) :
+        if(file.find("-7-PromptPhoton-1")>0) :
+            ptmin=0.
+        elif(file.find("-7-PromptPhoton-2")>0) :
+            ptmin=35.
+        elif(file.find("-7-PromptPhoton-3")>0) :
+            ptmin=90.
+        elif(file.find("-7-PromptPhoton-4")>0) :
+            ptmin=170.
         ## Get histos from this YODA file
         for aopath, ao in aos.iteritems() :
+            if not inhistos.has_key(aopath):
+                inhistos[aopath] = {}
             if (aopath.find("CMS_2013_I1258128")>0) :
                 if(aopath.find("d05")>0 or aopath.find("d06")>0 or
                    aopath.find("d07")>0 or aopath.find("d08")>0) :
-                    outhistos[aopath] = ao
+                    inhistos[aopath][ptmin] = ao
             else :
-                outhistos[aopath] = ao
+                inhistos[aopath][ptmin] = ao
+    else : 
+        ## Get histos from this YODA file
+        for aopath, ao in aos.iteritems() :
+            outhistos[aopath] = ao
 
-    # Choose output file
-    yoda.writeYODA(outhistos,opts.OUTFILE)
-    sys.exit(0)
+
+for hpath,hsets in inhistos.iteritems():
+    if( hpath.find("1263495")>0  or 
+        hpath.find("1093738")>0 or 
+        hpath.find("921594")>0 or 
+        hpath.find("8914702")>0 ) :
+        if(type(hsets.values()[0])==yoda.core.Scatter2D) :
+            outhistos[hpath] = yoda.core.Scatter2D(hsets.values()[0].path,
+                                                   hsets.values()[0].title)
+        elif(type(hsets.values()[0])==yoda.core.Profile1D) :
+            outhistos[hpath] = yoda.core.Profile1D(hsets.values()[0].path,
+                                                   hsets.values()[0].title)
+            for i in range(0,hsets.values()[0].numBins) :
+                outhistos[hpath].addBin(hsets.values()[0].bins[i].xMin,
+                                        hsets.values()[0].bins[i].xMax)
+        elif(type(hsets.values()[0])==yoda.core.Histo1D) :
+            outhistos[hpath] = yoda.core.Histo1D(hsets.values()[0].path,
+                                                hsets.values()[0].title)
+            for i in range(0,hsets.values()[0].numBins) :
+                outhistos[hpath].addBin(hsets.values()[0].bins[i].xMin,
+                                        hsets.values()[0].bins[i].xMax)
+        else :
+            logging.error("Histogram %s is of unknown type" % hpath)
+            print hpath,type(hsets.values()[0])
+            sys.exit(1)
+
+
+
+logging.info("Processing ATLAS_2013_I1263495")
+mergeByPt("/ATLAS_2013_I1263495/d01-x01-y01")
+mergeByPt("/ATLAS_2013_I1263495/d01-x01-y03")
+useOnePt("/ATLAS_2013_I1263495/d01-x02-y01", "90" )
+
+logging.info("Processing ATLAS_2012_I1093738")
+mergeByPt("/ATLAS_2012_I1093738/d01-x01-y01")
+mergeByPt("/ATLAS_2012_I1093738/d02-x01-y01")
+mergeByPt("/ATLAS_2012_I1093738/d03-x01-y01")
+mergeByPt("/ATLAS_2012_I1093738/d04-x01-y01")
+mergeByPt("/ATLAS_2012_I1093738/d05-x01-y01")
+mergeByPt("/ATLAS_2012_I1093738/d06-x01-y01")
+
+
+logging.info("Processing ATLAS_2011_I921594")
+mergeByPt("/ATLAS_2011_I921594/d01-x01-y01")
+mergeByPt("/ATLAS_2011_I921594/d01-x01-y02")
+mergeByPt("/ATLAS_2011_I921594/d01-x01-y04")
+mergeByPt("/ATLAS_2011_I921594/d01-x01-y05")
+
+logging.info("Processing ATLAS_2010_S8914702")
+mergeByPt("/ATLAS_2010_S8914702/d01-x01-y01")
+mergeByPt("/ATLAS_2010_S8914702/d01-x01-y02")
+mergeByPt("/ATLAS_2010_S8914702/d01-x01-y03")
+
+logging.info("Processing CMS_2013_I1258128")
+useOnePt("/CMS_2013_I1258128/d05-x01-y01", "35" )
+useOnePt("/CMS_2013_I1258128/d06-x01-y01", "35" )
+useOnePt("/CMS_2013_I1258128/d07-x01-y01", "35" )
+useOnePt("/CMS_2013_I1258128/d08-x01-y01", "35" )
+
+logging.info("Processing /MC_PHOTONJETS")
+useOnePt("/MC_PHOTONJETS/jet_HT","0")
+useOnePt("/MC_PHOTONJETS/jet_eta_1","0")
+useOnePt("/MC_PHOTONJETS/jet_eta_2","0")
+useOnePt("/MC_PHOTONJETS/jet_eta_3","0")
+useOnePt("/MC_PHOTONJETS/jet_eta_4","0")
+useOnePt("/MC_PHOTONJETS/jet_eta_pmratio_1","0")
+useOnePt("/MC_PHOTONJETS/jet_eta_pmratio_2","0")
+useOnePt("/MC_PHOTONJETS/jet_eta_pmratio_3","0")
+useOnePt("/MC_PHOTONJETS/jet_eta_pmratio_4","0")
+useOnePt("/MC_PHOTONJETS/jet_mass_1","0")
+useOnePt("/MC_PHOTONJETS/jet_mass_2","0")
+useOnePt("/MC_PHOTONJETS/jet_mass_3","0")
+useOnePt("/MC_PHOTONJETS/jet_mass_4","0")
+useOnePt("/MC_PHOTONJETS/jet_multi_exclusive","0")
+useOnePt("/MC_PHOTONJETS/jet_multi_inclusive","0")
+useOnePt("/MC_PHOTONJETS/jet_multi_ratio","0")
+useOnePt("/MC_PHOTONJETS/jet_pT_1","0")
+useOnePt("/MC_PHOTONJETS/jet_pT_2","0")
+useOnePt("/MC_PHOTONJETS/jet_pT_3","0")
+useOnePt("/MC_PHOTONJETS/jet_pT_4","0")
+useOnePt("/MC_PHOTONJETS/jet_y_1","0")
+useOnePt("/MC_PHOTONJETS/jet_y_2","0")
+useOnePt("/MC_PHOTONJETS/jet_y_3","0")
+useOnePt("/MC_PHOTONJETS/jet_y_4","0")
+useOnePt("/MC_PHOTONJETS/jet_y_pmratio_1","0")
+useOnePt("/MC_PHOTONJETS/jet_y_pmratio_2","0")
+useOnePt("/MC_PHOTONJETS/jet_y_pmratio_3","0")
+useOnePt("/MC_PHOTONJETS/jet_y_pmratio_4","0")
+useOnePt("/MC_PHOTONJETS/jets_dR_12","0")
+useOnePt("/MC_PHOTONJETS/jets_dR_13","0")
+useOnePt("/MC_PHOTONJETS/jets_dR_23","0")
+useOnePt("/MC_PHOTONJETS/jets_deta_12","0")
+useOnePt("/MC_PHOTONJETS/jets_deta_13","0")
+useOnePt("/MC_PHOTONJETS/jets_deta_23","0")
+useOnePt("/MC_PHOTONJETS/jets_dphi_12","0")
+useOnePt("/MC_PHOTONJETS/jets_dphi_13","0")
+useOnePt("/MC_PHOTONJETS/jets_dphi_23","0")
+useOnePt("/MC_PHOTONJETS/photon_jet1_dR","0")
+useOnePt("/MC_PHOTONJETS/photon_jet1_deta","0")
+useOnePt("/MC_PHOTONJETS/photon_jet1_dphi","0")
+useOnePt("/MC_PHOTONJETUE/gammajet-dR","0")
+useOnePt("/MC_PHOTONJETUE/gammajet-dphi","0")
+useOnePt("/MC_PHOTONJETUE/trans-maxnchg-gamma","0")
+useOnePt("/MC_PHOTONJETUE/trans-maxnchg-jet","0")
+useOnePt("/MC_PHOTONJETUE/trans-maxptsum-gamma","0")
+useOnePt("/MC_PHOTONJETUE/trans-maxptsum-jet","0")
+useOnePt("/MC_PHOTONJETUE/trans-minnchg-gamma","0")
+useOnePt("/MC_PHOTONJETUE/trans-minnchg-jet","0")
+useOnePt("/MC_PHOTONJETUE/trans-minptsum-gamma","0")
+useOnePt("/MC_PHOTONJETUE/trans-minptsum-jet","0")
+useOnePt("/MC_PHOTONJETUE/trans-nchg-gamma","0")
+useOnePt("/MC_PHOTONJETUE/trans-nchg-jet","0")
+useOnePt("/MC_PHOTONJETUE/trans-ptavg-gamma","0")
+useOnePt("/MC_PHOTONJETUE/trans-ptavg-jet","0")
+useOnePt("/MC_PHOTONJETUE/trans-ptsum-gamma","0")
+useOnePt("/MC_PHOTONJETUE/trans-ptsum-jet","0")
+
+# Choose output file
+yoda.writeYODA(outhistos,opts.OUTFILE)
+sys.exit(0)
