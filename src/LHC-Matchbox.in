@@ -236,10 +236,8 @@ set /Herwig/Shower/ShowerHandler:HardScaleFactor 1.0
 cd /Herwig/Partons
 create ThePEG::LHAPDF PDFSet ThePEGLHAPDF.so
 set PDFSet:RemnantHandler HadronRemnants
+set /Herwig/Partons/PDFSet:PDFName CT10
 set /Herwig/Particles/p+:PDF PDFSet
-set /Herwig/Particles/pbar-:PDF PDFSet
-set PDFSet:PDFName CT10.LHgrid
-set /Herwig/Particles/p+:PDF    PDFSet
 set /Herwig/Particles/pbar-:PDF PDFSet
 
 #==================================================================================
