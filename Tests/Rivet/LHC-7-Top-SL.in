@@ -14,6 +14,9 @@ set /Herwig/Particles/tbar:Synchronized Not_synchronized
 do /Herwig/Particles/t:SelectDecayModes t->nu_e,e+,b; t->nu_mu,mu+,b;
 do /Herwig/Particles/tbar:SelectDecayModes tbar->b,bbar,cbar; tbar->bbar,cbar,d; tbar->bbar,cbar,s; tbar->bbar,s,ubar; tbar->bbar,ubar,d;
 
+create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter
+insert /Herwig/EventHandlers/LHCHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter
+
 # No QED radiation
 erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
 
@@ -25,7 +28,7 @@ erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_TTBAR
 # ATLAS b-jet shapes in top events
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1243871
-
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1304688
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################
