@@ -199,7 +199,7 @@ int MadGraphAmplitude::externalId(const cPDVector& proc) {
 }
 
 void MadGraphAmplitude::loadProcessMap() {
-  if ( theProcessPath = "" ) theProcessPath = factory()->buildStorage()+"/MadGraphAmplitudes";
+  if ( theProcessPath == "" ) theProcessPath = factory()->buildStorage()+"/MadGraphAmplitudes";
   if ( !processmap().empty() )
     return;
   string line = theProcessPath+"/"+"processmap.dat";
