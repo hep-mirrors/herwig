@@ -463,6 +463,13 @@ void GeneralSampler::currentCrossSections() const {
 
 void GeneralSampler::doinit() {
   readGrids();
+  if ( !theGrids.children().empty() )
+    Repository::clog()
+      << "--------------------------------------------------------------------------------\n\n"
+      << "Using an existing grid. Please consider re-running the grid adaption\n"
+      << "when there have been significant changes to parameters, cuts, etc.\n\n"
+      << "--------------------------------------------------------------------------------\n"
+      << flush;
   SamplerBase::doinit();
 }
 
@@ -548,6 +555,18 @@ void GeneralSampler::dofinish() {
 void GeneralSampler::doinitrun() {
   readGrids();
   eventHandler()->initrun();
+  if ( theGrids.children().empty() ) {
+    Repository::clog()
+      << "--------------------------------------------------------------------------------\n\n"
+      << "No grid file could be found at the start of this run.\n"
+      << "Rerunning grid adaption now, please be patient.\n"
+      << "If the --setupfile argument has been used with run, please consider\n"
+      << "using the build / integrate / run combination instead of read and run.\n\n"
+      << "--------------------------------------------------------------------------------\n"
+      << flush;
+    theSamplers.clear();
+    initialize();
+  }
   if ( !samplers().empty() ) {
     for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers().begin();
 	  s != samplers().end(); ++s ) {
