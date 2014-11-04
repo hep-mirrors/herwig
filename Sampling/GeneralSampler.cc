@@ -48,7 +48,8 @@ GeneralSampler::GeneralSampler()
     theAlmostUnweighted(false), maximumExceeds(0),
     maximumExceededBy(0.), didReadGrids(false),
     theParallelIntegration(false),
-    theIntegratePerJob(0), theIgnoreIntegrationData(false) {}
+  theIntegratePerJob(0), theIgnoreIntegrationData(false),
+  justAfterIntegrate(false) {}
 
 GeneralSampler::~GeneralSampler() {}
 
@@ -162,7 +163,7 @@ void GeneralSampler::initialize() {
   }
 
   boost::progress_display* progressBar = 0;
-  if ( !theVerbose ) {
+  if ( !theVerbose && !justAfterIntegrate ) {
     Repository::clog() << "integrating subprocesses";
     progressBar = new boost::progress_display(binsToIntegrate.size(),Repository::clog());
   }
@@ -180,7 +181,7 @@ void GeneralSampler::initialize() {
       s->readIntegrationData();
     s->initialize(theVerbose);
     samplers()[*bit] = s;
-    if ( !theVerbose )
+    if ( !theVerbose && !justAfterIntegrate )
       ++(*progressBar);
     if ( s->nanPoints() && theVerbose ) {
       Repository::clog() << "warning: " 
@@ -188,6 +189,11 @@ void GeneralSampler::initialize() {
 			 << s->allPoints() << " points with nan or inf weight.\n"
 			 << flush;
     }
+  }
+
+  if ( progressBar ) {
+    delete progressBar;
+    progressBar = 0;
   }
 
   if ( integrationJob() ) {
@@ -463,6 +469,17 @@ void GeneralSampler::currentCrossSections() const {
 
 void GeneralSampler::doinit() {
   readGrids();
+  if ( theGrids.children().empty() && hasSetupFile() )
+    Repository::clog()
+      << "--------------------------------------------------------------------------------\n\n"
+      << "No grid file could be found at the start of this run.\n"
+      << "Rerunning grid adaption now, please be patient.\n\n"
+      << "* For a read/run setup intented to be used with --setupfile please consider\n"
+      << "  using the build/integrate/run setup.\n"
+      << "* For a build/integrate/run setup to be used with --setupfile please ensure\n"
+      << "  that the same setupfile is provided to both, the integrate and run steps.\n\n"
+      << "--------------------------------------------------------------------------------\n"
+      << flush;
   if ( !theGrids.children().empty() )
     Repository::clog()
       << "--------------------------------------------------------------------------------\n\n"
@@ -555,30 +572,23 @@ void GeneralSampler::dofinish() {
 void GeneralSampler::doinitrun() {
   readGrids();
   eventHandler()->initrun();
-  if ( theGrids.children().empty() ) {
-    Repository::clog()
-      << "--------------------------------------------------------------------------------\n\n"
-      << "No grid file could be found at the start of this run.\n"
-      << "Rerunning grid adaption now, please be patient.\n"
-      << "* For a read/run setup intented to be used with --setupfile please consider\n"
-      << "  using the build/integrate/run setup.\n"
-      << "* For a build/integrate/run setup to be used with --setupfile please ensure\n"
-      << "  that the same setupfile is provided to both, the integrate and run steps.\n\n"
-      << "--------------------------------------------------------------------------------\n"
-      << flush;
+  if ( theGrids.children().empty() && hasSetupFile() ) {
     theSamplers.clear();
     initialize();
-  }
-  if ( !samplers().empty() ) {
-    for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers().begin();
-	  s != samplers().end(); ++s ) {
-      s->second->setupRemappers(theVerbose);
-      if ( !theIgnoreIntegrationData )
-	s->second->readIntegrationData();
-      s->second->initialize(theVerbose);
-    }
   } else {
-    initialize();
+    if ( !samplers().empty() ) {
+      for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers().begin();
+	    s != samplers().end(); ++s ) {
+	s->second->setupRemappers(theVerbose);
+	if ( !theIgnoreIntegrationData )
+	  s->second->readIntegrationData();
+	s->second->initialize(theVerbose);
+      }
+    } else {
+      // we had an integration step just before and need to reinitialize
+      justAfterIntegrate = true;
+      initialize();
+    }
   }
   isSampling = true;
   SamplerBase::doinitrun();

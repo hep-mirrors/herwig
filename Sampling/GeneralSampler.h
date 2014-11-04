@@ -432,6 +432,11 @@ private:
    */
   bool theIgnoreIntegrationData;
 
+  /**
+   * Indicate that initialization is only reading a grid.
+   */
+  bool justAfterIntegrate;
+
 private:
 
   /**

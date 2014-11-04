@@ -1049,7 +1049,7 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
      << theDipoleSet << theReweighters << thePreweighters
      << theMECorrectionsOnly<< theLoopSimCorrections<<theHighestVirtualsize << ranSetup
      << theIncoming << theFirstPerturbativePDF << theSecondPerturbativePDF
-     << thePrefix << theBuildStorage << theRunStorage;
+     << thePrefix;
 }
 
 void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
@@ -1073,7 +1073,7 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
      >> theDipoleSet >> theReweighters >> thePreweighters
      >> theMECorrectionsOnly>> theLoopSimCorrections>>theHighestVirtualsize >> ranSetup
      >> theIncoming >> theFirstPerturbativePDF >> theSecondPerturbativePDF
-     >> thePrefix >> theBuildStorage >> theRunStorage;
+     >> thePrefix;
 }
 
 string MatchboxFactory::startParticleGroup(string name) {
