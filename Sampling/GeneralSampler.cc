@@ -560,8 +560,10 @@ void GeneralSampler::doinitrun() {
       << "--------------------------------------------------------------------------------\n\n"
       << "No grid file could be found at the start of this run.\n"
       << "Rerunning grid adaption now, please be patient.\n"
-      << "If the --setupfile argument has been used with run, please consider\n"
-      << "using the build / integrate / run combination instead of read and run.\n\n"
+      << "* For a read/run setup intented to be used with --setupfile please consider\n"
+      << "  using the build/integrate/run setup.\n"
+      << "* For a build/integrate/run setup to be used with --setupfile please ensure\n"
+      << "  that the same setupfile is provided to both, the integrate and run steps.\n\n"
       << "--------------------------------------------------------------------------------\n"
       << flush;
     theSamplers.clear();
