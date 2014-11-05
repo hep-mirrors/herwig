@@ -91,27 +91,6 @@ void SplittingFunction::Init() {
     (interfaceInteractionType,
      "QED","QED",ShowerInteraction::QED);
 
-  static Switch<SplittingFunction,int> interfaceSplittingColourMethod
-    ("SplittingColourMethod",
-     "Choice of assigning colour in 8->88 splittings.",
-     &SplittingFunction::_splittingColourMethod, 0, false, false);
-  static SwitchOption interfaceSplittingColourMethodRandom
-    (interfaceSplittingColourMethod,
-     "Random",
-     "Choose colour assignments randomly.",
-     0);
-  static SwitchOption interfaceSplittingColourMethodCorrectLines
-    (interfaceSplittingColourMethod,
-     "CorrectLines",
-     "Choose correct lines for colour.",
-     1);
-  static SwitchOption interfaceSplittingColourMethodRandomRecord
-    (interfaceSplittingColourMethod,
-     "RandomRecord",
-     "Choose colour assignments randomly and record the result.",
-     2);
-
-
   static Switch<SplittingFunction,bool> interfaceAngularOrdered
     ("AngularOrdered",
      "Whether or not this interaction is angular ordered, "
@@ -134,14 +113,14 @@ void SplittingFunction::persistentOutput(PersistentOStream & os) const {
   using namespace ShowerInteraction;
    os << oenum(_interactionType) << _interactionOrder 
       << oenum(_colourStructure) << _colourFactor
-      << angularOrdered_ << _splittingColourMethod;
+      << angularOrdered_;
 }
 
 void SplittingFunction::persistentInput(PersistentIStream & is, int) {
   using namespace ShowerInteraction;
   is >> ienum(_interactionType) >> _interactionOrder 
      >>	ienum(_colourStructure) >> _colourFactor
-     >> angularOrdered_ >> _splittingColourMethod;
+     >> angularOrdered_;
 }
 
 void SplittingFunction::colourConnection(tShowerParticlePtr parent,

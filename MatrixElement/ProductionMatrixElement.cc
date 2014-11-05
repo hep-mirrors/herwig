@@ -29,35 +29,33 @@ calculateDMatrix(int id, const RhoDMatrix & rhoin,
   Complex temp;
   unsigned int ix,iy;
   int ixa,iya;
-  for(ix=0;ix<_matrixelement.size();++ix)
-    {
+  for(ix=0;ix<_matrixelement.size();++ix) {
+    // map the vector index to the helicities
+    for(ixa=_outspin.size()+1;ixa>=0;--ixa)
+      {ihel1[ixa]=(ix%_constants[ixa])/_constants[ixa+1];}
+    // inner loop
+    for(iy=0;iy<_matrixelement.size();++iy) {
       // map the vector index to the helicities
-      for(ixa=_outspin.size()+1;ixa>=0;--ixa)
-	{ihel1[ixa]=(ix%_constants[ixa])/_constants[ixa+1];}
-      // inner loop
-      for(iy=0;iy<_matrixelement.size();++iy)
-	{
-	  // map the vector index to the helicities	   
-	  for(iya=_outspin.size()+1;iya>=0;--iya)
-	    {ihel2[iya]=(iy%_constants[iya])/_constants[iya+1];}
-	  // matrix element piece
-	  temp=_matrixelement[ix]*conj(_matrixelement[iy]);
-	  // spin density matrices for the outgoing particles
-	  for(unsigned int iz=0;iz<_outspin.size();++iz)
-	    {temp*=rhoout[iz](ihel1[iz+2],ihel2[iz+2]);}
-	  // construct the spin density matrix
-	  if(id==0)
-	    {
-	      temp*=rhoin(ihel1[1],ihel2[1]);
-	      output(ihel1[0],ihel2[0])+=temp;
-	    }
-	  else
-	    {
-	      temp*=rhoin(ihel1[0],ihel2[0]);
-	      output(ihel1[1],ihel2[1])+=temp;
-	    }
-	}
+      for(iya=_outspin.size()+1;iya>=0;--iya)
+	{ihel2[iya]=(iy%_constants[iya])/_constants[iya+1];}
+      // matrix element piece
+      temp=_matrixelement[ix]*conj(_matrixelement[iy]);
+      // spin density matrices for the outgoing particles
+      for(unsigned int iz=0;iz<_outspin.size();++iz)
+	{temp*=rhoout[iz](ihel1[iz+2],ihel2[iz+2]);}
+      // construct the spin density matrix
+      if(id==0) {
+	temp*=rhoin(ihel1[1],ihel2[1]);
+	output(ihel1[0],ihel2[0])+=temp;
+      }
+      else {
+	temp*=rhoin(ihel1[0],ihel2[0]);
+	output(ihel1[1],ihel2[1])+=temp;
+      }
     }
+  }
+  // normalise the matrix so it has unit trace
+  output.normalize();
   // return the answer
   return output;
 }

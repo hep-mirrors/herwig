@@ -13,8 +13,15 @@
 
 #include "QTildeShowerKinematics1to2.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "Herwig++/Shower/Base/ShowerParticle.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ThePEG/Helicity/LorentzSpinorBar.h"
 
 using namespace Herwig;
+using namespace ThePEG::Helicity;
 
 vector<Lorentz5Momentum> QTildeShowerKinematics1to2::getBasis() const {
   vector<Lorentz5Momentum> dum;
@@ -24,79 +31,118 @@ vector<Lorentz5Momentum> QTildeShowerKinematics1to2::getBasis() const {
 }
 
 void QTildeShowerKinematics1to2::setBasis(const Lorentz5Momentum &p,
-					  const Lorentz5Momentum & n) {
+					  const Lorentz5Momentum & n,
+					  Frame inframe) {
   _pVector=p;
   _nVector=n;
+  frame(inframe);
 }
 
 Lorentz5Momentum QTildeShowerKinematics1to2::
-sudakov2Momentum(double alpha, double beta, Energy px, 
-		 Energy py,unsigned int iopt) const {
+sudakov2Momentum(double alpha, double beta, Energy px, Energy py) const {
   if(isnan(beta)||isinf(beta)) 
     throw Exception() << "beta infinite in "
 		      << "QTildeShowerKinematics1to2::sudakov2Momentum()"
 		      << Exception::eventerror;
+  Boost beta_bb;
+  if(frame()==BackToBack) {
+    beta_bb = -(_pVector + _nVector).boostVector();
+  }
+  else if(frame()==Rest) {
+    beta_bb = -pVector().boostVector();
+  }
+  else
+    assert(false);
+  Lorentz5Momentum p_bb = pVector();
+  Lorentz5Momentum n_bb = nVector(); 
+  p_bb.boost( beta_bb );
+  n_bb.boost( beta_bb );
+  // momentum without transverse components
   Lorentz5Momentum dq;
-  if(iopt==0) {
-    const Boost beta_bb = -(_pVector + _nVector).boostVector();
-    Lorentz5Momentum p_bb = _pVector;
-    Lorentz5Momentum n_bb = _nVector; 
-    p_bb.boost( beta_bb );
-    n_bb.boost( beta_bb );
-    // set first in b2b frame along z-axis (assuming that p and n are
-    // b2b as checked above)
+  if(frame()==BackToBack) {
     dq=Lorentz5Momentum(ZERO, ZERO, (alpha - beta)*p_bb.vect().mag(), 
 			alpha*p_bb.t() + beta*n_bb.t());
-    // add transverse components
-    dq.setX(px);
-    dq.setY(py);
-    // rotate to have z-axis parallel to p
-    // this rotation changed by PR to a different rotation with the same effect
-    // but different azimuthal angle to make implementing spin correlations easier
-    //    dq.rotateUz( unitVector(p_bb.vect()) );
-    Axis axis(p_bb.vect().unit());
-    if(axis.perp2()>0.) {
-      LorentzRotation rot;
-      double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
-      rot.setRotate(acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
-      dq.transform(rot);
-    }
-    else if(axis.z()<0.) {
-      dq.setZ(-dq.z());
-    }
-    // boost back 
-    dq.boost( -beta_bb ); 
-    dq.rescaleMass(); 
-    // return the momentum
   }
-  else {
-    const Boost beta_bb = -pVector().boostVector();
-    Lorentz5Momentum p_bb = pVector();
-    Lorentz5Momentum n_bb = nVector(); 
-    p_bb.boost( beta_bb );
-    n_bb.boost( beta_bb );
-    // set first in b2b frame along z-axis (assuming that p and n are
-    // b2b as checked above)
+  else if(frame()==Rest) {
     dq=Lorentz5Momentum (ZERO, ZERO, 0.5*beta*pVector().mass(), 
 			 alpha*pVector().mass() + 0.5*beta*pVector().mass());
-    // add transverse components
-    dq.setX(px);
-    dq.setY(py);
-    // changed to be same as other case
-//     dq.rotateUz( unitVector(n_bb.vect()) );
-    Axis axis(n_bb.vect().unit());
-    if(axis.perp2()>0.) {
-      LorentzRotation rot;
-      double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
-      rot.setRotate(acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
-      dq.transform(rot);
-    }
-    else if(axis.z()<0.) {
-      dq.setZ(-dq.z());
-    }
-    // boost back 
-    dq.boost( -beta_bb ); 
-    dq.rescaleMass();
   }
+  else
+    assert(false);
+  // add transverse components
+  dq.setX(px);
+  dq.setY(py);
+  // rotate to have z-axis parallel to p/n
+  Axis axis;
+  if(frame()==BackToBack) {
+    axis = p_bb.vect().unit();
+  }
+  else if(frame()==Rest) {
+    axis = n_bb.vect().unit();
+  }
+  else
+    assert(false);
+  LorentzRotation rot;
+  if(axis.perp2()>1e-10) {
+    double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
+    rot.rotate(acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+  }
+  else if(axis.z()<0.) {
+    rot.rotate(Constants::pi,Axis(1.,0.,0.));
+  }
+  dq.transform(rot);
+  // boost back 
+  dq.boost( -beta_bb ); 
+  dq.rescaleMass();
   return dq; 
+}
+
+void QTildeShowerKinematics1to2::setMomentum(tShowerParticlePtr particle,
+					     bool timeLike) const {
+  Energy mass = particle->data().mass(); 
+  // calculate the momentum of the assuming on-shell
+  Energy2 pt2 = sqr(particle->showerParameters().pt);
+  double alpha = timeLike ? particle->showerParameters().alpha : particle->x();
+  double beta = 0.5*(sqr(mass) + pt2 - sqr(alpha)*pVector().m2())/(alpha*p_dot_n());
+  Lorentz5Momentum porig=sudakov2Momentum(alpha,beta,
+					  particle->showerParameters().ptx,
+					  particle->showerParameters().pty);
+  porig.setMass(mass);
+  particle->set5Momentum(porig);
+}
+
+void QTildeShowerKinematics1to2::constructSpinInfo(tShowerParticlePtr particle,
+						   bool timeLike) const {
+  // now construct the required spininfo and calculate the basis states
+  PDT::Spin spin(particle->dataPtr()->iSpin());
+  if(spin==PDT::Spin0) {
+    ScalarWaveFunction::constructSpinInfo(particle,outgoing,timeLike);
+  }
+  // calculate the basis states and construct the SpinInfo for a spin-1/2 particle
+  else if(spin==PDT::Spin1Half) {
+    // outgoing particle
+    if(particle->id()>0) {
+      vector<LorentzSpinorBar<SqrtEnergy> > stemp;
+      SpinorBarWaveFunction::calculateWaveFunctions(stemp,particle,outgoing);
+      SpinorBarWaveFunction::constructSpinInfo(stemp,particle,outgoing,timeLike);
+    }
+    // outgoing antiparticle
+    else {
+      vector<LorentzSpinor<SqrtEnergy> > stemp;
+      SpinorWaveFunction::calculateWaveFunctions(stemp,particle,outgoing);
+      SpinorWaveFunction::constructSpinInfo(stemp,particle,outgoing,timeLike);
+    }
+  }
+  // calculate the basis states and construct the SpinInfo for a spin-1 particle
+  else if(spin==PDT::Spin1) {
+    bool massless(particle->id()==ParticleID::g||particle->id()==ParticleID::gamma);
+    vector<Helicity::LorentzPolarizationVector> vtemp;
+    VectorWaveFunction::calculateWaveFunctions(vtemp,particle,outgoing,massless);
+    VectorWaveFunction::constructSpinInfo(vtemp,particle,outgoing,timeLike,massless);
+  }
+  else {
+    throw Exception() << "Spins higher than 1 are not yet implemented in " 
+		      << "FS_QtildaShowerKinematics1to2::constructVertex() "
+		      << Exception::runerror;
+  }
 }

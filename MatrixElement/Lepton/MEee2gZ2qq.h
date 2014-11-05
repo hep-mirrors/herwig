@@ -43,6 +43,7 @@ public:
    * The default constructor.
    */
   MEee2gZ2qq() : minflav_(1), maxflav_(5), massopt_(1),
+		 spinCorrelations_(true),
 		 pTminQED_(GeV), pTminQCD_(GeV),
 		 preFactor_(6.)
   {}
@@ -355,7 +356,7 @@ private:
 private:
 
   /**
-   *  Parameters controlling the loead-order process
+   *  Parameters controlling the leading-order process
    */
   //@{
   /**
@@ -393,6 +394,11 @@ private:
    */
   AbstractFFVVertexPtr FFGVertex_;
   //@}
+
+  /**
+   *  Switch on/off the helivity vertex construction
+   */
+  bool spinCorrelations_;
 
   /**
    *  Pointer to the ParticleData objects

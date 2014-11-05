@@ -27,7 +27,7 @@ cd /Herwig/NewPhysics
 
 # Switch to decide whether to include EW diagrams in the 
 # hard process (On by default)
-set HPConstructor:IncludeEW Yes
+set HPConstructor:IncludeEW No
 
 # Example hard process: Incoming proton, outgoing squarks
 insert HPConstructor:Incoming 0 /Herwig/Particles/g
@@ -36,9 +36,10 @@ insert HPConstructor:Incoming 2 /Herwig/Particles/ubar
 insert HPConstructor:Incoming 3 /Herwig/Particles/d
 insert HPConstructor:Incoming 4 /Herwig/Particles/dbar
 
-insert HPConstructor:Outgoing 0 /Herwig/Particles/~chi_20
-insert HPConstructor:Outgoing 1 /Herwig/Particles/~chi_30
-set HEPConstructor:Processes Exclusive
+insert HPConstructor:Outgoing 0 /Herwig/Particles/~u_L
+insert HPConstructor:Outgoing 1 /Herwig/Particles/~u_Lbar
+insert HPConstructor:Outgoing 2 /Herwig/Particles/~d_L
+insert HPConstructor:Outgoing 3 /Herwig/Particles/~d_Lbar
 
 # --- Perturbative Decays ---
 # Read in the spectrum file and optional decay table.

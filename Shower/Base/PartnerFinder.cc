@@ -243,6 +243,8 @@ void PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &par
 	    }
 	  }
 	}
+	else
+	  position = UseRandom::irnd(partners.size());
       }
       else
 	assert(false);

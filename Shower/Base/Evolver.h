@@ -68,7 +68,8 @@ public:
 	      _iptrms(ZERO), _beta(0.), _gamma(ZERO), _iptmax(),
 	      _limitEmissions(0), _initialenhance(1.), _finalenhance(1.),
 	       interaction_(1), _trunc_Mode(true), _hardEmissionMode(0),
-	      _colourEvolutionMethod(0), _hardScaleFactor(1.0)
+	      _colourEvolutionMethod(0), _hardScaleFactor(1.0), _spinOpt(1),
+	      _softOpt(2)
   {}
 
   /**
@@ -120,6 +121,32 @@ public:
    *  Connect the Hard and Shower trees
    */
   virtual void connectTrees(ShowerTreePtr showerTree, HardTreePtr hardTree, bool hard );
+
+  /**
+   *   Access to switches for spin correlations
+   */
+  //@{
+  /**
+   *   Spin Correlations
+   */
+  unsigned int spinCorrelations() const {
+    return _spinOpt;
+  }
+
+  /**
+   *  Soft correlations
+   */
+  unsigned int softCorrelations() const {
+    return _softOpt;
+  }
+
+  /**
+   *  Any correlations
+   */
+  bool correlations() const {
+    return _spinOpt!=0||_softOpt!=0;
+  }
+  //@}
 
 public:
 
@@ -737,6 +764,16 @@ private:
    * A factor to multiply the hard veto scale
    */
   double _hardScaleFactor;
+
+  /**
+   *  Option to include spin correlations
+   */
+  unsigned int _spinOpt;
+
+  /**
+   *  Option for the kernal for soft correlations
+   */
+  unsigned int _softOpt;
 
 };
 

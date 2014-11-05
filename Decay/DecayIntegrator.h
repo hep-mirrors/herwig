@@ -69,6 +69,11 @@ public:
   friend ostream & operator<<(ostream &, const DecayIntegrator &);
 
   /**
+   *  and DecayPhaseMode
+   */
+  friend class DecayPhaseSpaceMode;
+
+  /**
    *  Enum for the matrix element option
    */
   enum MEOption {Initialize,Calculate,Terminate};
@@ -141,7 +146,7 @@ public:
   /**
    * The helicity amplitude matrix element for spin correlations.
    */
-  DecayMatrixElement & ME() const {return _matrixelement;}
+  DecayMEPtr ME() const {return _matrixelement;}
 
   /**
    * Specify the \f$1\to2\f$ matrix element to be used in the running width calculation.
@@ -327,7 +332,7 @@ protected:
   /**
    * Set the helicity matrix element for the decay.
    */
-  void ME(const DecayMatrixElement & in) const {_matrixelement.reset(in);}
+  void ME(DecayMEPtr in) const { _matrixelement = in;}
    
   /**
    * Reset the properities of all intermediates.
@@ -441,7 +446,7 @@ private:
   /**
    * The helicity matrix element for the current decay
    */
-  mutable DecayMatrixElement _matrixelement;
+  mutable DecayMEPtr _matrixelement;
 
   /**
    *  Whether or not the real photon emission matrix element exists

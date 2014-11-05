@@ -21,6 +21,7 @@
 #include "ThePEG/Helicity/epsilon.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "Herwig++/Decay/TwoBodyDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -60,7 +61,6 @@ void VectorMesonVectorPScalarDecayer::doinit() {
 
 VectorMesonVectorPScalarDecayer::VectorMesonVectorPScalarDecayer() 
   : _coupling(73), _incoming(73), _outgoingV(73), _outgoingP(73), _maxweight(73) {
-  ME(DecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin0));
   // intermediates
   generateIntermediates(false);
   // rho -> gamma pi modes
@@ -347,6 +347,8 @@ double VectorMesonVectorPScalarDecayer::me2(const int,
 					    const Particle & inpart,
 					    const ParticleVector & decay,
 					    MEOption meopt) const {
+  if(!ME())
+    ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin0)));
   // is the vector massless
   bool photon(_outgoingV[imode()]==ParticleID::gamma);
   if(meopt==Initialize) {
@@ -367,12 +369,12 @@ double VectorMesonVectorPScalarDecayer::me2(const int,
   LorentzPolarizationVector vtemp;
   for(unsigned int ix=0;ix<3;++ix) {
     if(ix==1&&photon) {
-      for(unsigned int iy=0;iy<3;++iy) ME()(iy,ix,0)=0.;
+      for(unsigned int iy=0;iy<3;++iy) (*ME())(iy,ix,0)=0.;
     }
     else {
       vtemp=_coupling[imode()]/inpart.mass()*
 	epsilon(inpart.momentum(),_vectors[1][ix],decay[0]->momentum());
-      for(unsigned int iy=0;iy<3;++iy) ME()(iy,ix,0)=_vectors[0][iy].dot(vtemp);
+      for(unsigned int iy=0;iy<3;++iy) (*ME())(iy,ix,0)=_vectors[0][iy].dot(vtemp);
     }
   }
   // test of the matrix element
@@ -384,7 +386,7 @@ double VectorMesonVectorPScalarDecayer::me2(const int,
 //        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " "
 //        << me << " " << test << " " << (me-test)/(me+test) << "\n";
   // return the answer
-  return ME().contract(_rho).real();
+  return ME()->contract(_rho).real();
 }
 
 bool VectorMesonVectorPScalarDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,

@@ -19,6 +19,7 @@
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -59,11 +60,12 @@ void TSSDecayer::Init() {
 double TSSDecayer::me2(const int , const Particle & inpart,
 		       const ParticleVector & decay,
 		       MEOption meopt) const {
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin2,PDT::Spin0,PDT::Spin0)));
   if(meopt==Initialize) {
     TensorWaveFunction::
       calculateWaveFunctions(_tensors,_rho,const_ptr_cast<tPPtr>(&inpart),
 			     incoming,false);
-    ME(DecayMatrixElement(PDT::Spin2,PDT::Spin0,PDT::Spin0));
   }
   if(meopt==Terminate) {
     TensorWaveFunction::
@@ -78,9 +80,9 @@ double TSSDecayer::me2(const int , const Particle & inpart,
   ScalarWaveFunction sca2(decay[1]->momentum(),decay[1]->dataPtr(),outgoing);
   Energy2 scale(sqr(inpart.mass()));
   for(unsigned int thel=0;thel<5;++thel) {
-    ME()(thel,0,0) =_abstractVertex->evaluate(scale,sca1,sca2,_tensors[thel]); 
+    (*ME())(thel,0,0) =_abstractVertex->evaluate(scale,sca1,sca2,_tensors[thel]); 
   }
-  double output = (ME().contract(_rho)).real()/scale*UnitRemoval::E2;
+  double output = (ME()->contract(_rho)).real()/scale*UnitRemoval::E2;
   // colour and identical particle factors
   output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
 			 decay[1]->dataPtr());

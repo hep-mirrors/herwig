@@ -124,10 +124,3 @@ newdef NewModel:DecayConstructor DecayConstructor
 insert DecayConstructor:NBodyDecayConstructors[0] TwoBodyDC
 insert DecayConstructor:NBodyDecayConstructors[1] ThreeBodyDC
 insert DecayConstructor:NBodyDecayConstructors[2] FourBodyDC
-
-# Required to decay the particles before showering so as to keep
-# the spin correlations in the decay
-create Herwig::HwDecayHandler DecayHandler
-newdef DecayHandler:NewStep No
-insert DecayHandler:Excluded 0 /Herwig/Particles/tau-
-insert DecayHandler:Excluded 1 /Herwig/Particles/tau+

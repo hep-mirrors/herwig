@@ -179,8 +179,7 @@ protected:
    * main information we want.
    * This methods returns false if there was no radiation or rescaling required
    */
-  virtual bool reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
-				      unsigned int iopt) const;
+  virtual bool reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent) const;
 
   /**
    * Exactly similar to the previous one, but for a space-like jet.

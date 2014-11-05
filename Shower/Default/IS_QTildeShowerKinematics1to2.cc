@@ -16,6 +16,12 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "ThePEG/Utilities/Debug.h"
+#include "Herwig++/Shower/ShowerHandler.h"
+#include "Herwig++/Shower/Base/Evolver.h"
+#include "Herwig++/Shower/Base/PartnerFinder.h"
+#include "Herwig++/Shower/Base/ShowerModel.h"
+#include "Herwig++/Shower/Base/KinematicsReconstructor.h"
+#include "Herwig++/Shower/Base/ShowerVertex.h"
 #include <cassert>
 
 using namespace Herwig;
@@ -57,6 +63,38 @@ updateParent(const tShowerParticlePtr parent,
   parent->addChild(children[0]);
   parent->addChild(children[1]);
   parent->x(children[0]->x()/z());
+  // sort out the helicity stuff 
+  if(! ShowerHandler::currentHandler()->evolver()->correlations()) return;
+  // construct the spin info for parent and timelike child
+  // temporary assignment of shower parameters to calculate correlations
+  parent->showerParameters().alpha = parent->x();
+  children[1]->showerParameters().alpha = (1.-z()) * parent->x();
+  children[1]->showerParameters().ptx   = - cos(phi()) * pT();
+  children[1]->showerParameters().pty   = - sin(phi()) * pT();
+  children[1]->showerParameters().pt    = pT();
+  setMomentum(parent,false);
+  setMomentum(children[1],true);
+  SpinPtr pspin(children[0]->spinInfo());
+  if(!pspin ||  !ShowerHandler::currentHandler()->evolver()->spinCorrelations() ) return;
+  // compute the matrix element for spin correlations
+  IdList ids;
+  ids.push_back(parent->id());
+  ids.push_back(children[0]->id());
+  ids.push_back(children[1]->id());
+  Energy2 t = (1.-z())*sqr(scale())/z();
+  // create the vertex
+  SVertexPtr vertex(new_ptr(ShowerVertex()));
+  // set the matrix element
+  vertex->ME(splittingFn()->matrixElement(z(),t,ids,phi()));
+  // set the incoming particle for the vertex 
+  // (in reality the first child as going backwards)
+  pspin->decayVertex(vertex);
+  // construct the spin infos
+  constructSpinInfo(parent,false);
+  constructSpinInfo(children[1],true);
+  // connect the spinInfo objects to the vertex
+  parent     ->spinInfo()->productionVertex(vertex);
+  children[1]->spinInfo()->productionVertex(vertex);
 }
 
 void IS_QTildeShowerKinematics1to2::
@@ -73,7 +111,7 @@ reconstructParent(const tShowerParticlePtr theParent,
   c2param.beta = 0.5*( sqr(c2->data().constituentMass()) + sqr(c2param.pt) )
     / ( c2param.alpha * p_dot_n() );
   c2->set5Momentum( sudakov2Momentum(c2param.alpha, c2param.beta, 
-				     c2param.ptx, c2param.pty, 0) );
+				     c2param.ptx  , c2param.pty) );
   // spacelike child
   Lorentz5Momentum pc1(theParent->momentum() - c2->momentum());
   pc1.rescaleMass();
@@ -104,6 +142,7 @@ void IS_QTildeShowerKinematics1to2::initialize(ShowerParticle & particle, PPtr p
   // For the time being we are considering only 1->2 branching
   Lorentz5Momentum p, n, pthis, pcm;
   assert(particle.perturbative()!=2);
+  Frame frame;
   if(particle.perturbative()==1) {
     // find the partner and its momentum
     ShowerParticlePtr partner=particle.partner();
@@ -139,12 +178,15 @@ void IS_QTildeShowerKinematics1to2::initialize(ShowerParticle & particle, PPtr p
       p = Lorentz5Momentum(ZERO, pcm.vect());
       n = Lorentz5Momentum(ZERO, -pcm.vect());
     }
+    frame = BackToBack;
   } 
   else {
     p = dynamic_ptr_cast<ShowerParticlePtr>(particle.children()[0])
       ->showerKinematics()->getBasis()[0];
     n = dynamic_ptr_cast<ShowerParticlePtr>(particle.children()[0])
       ->showerKinematics()->getBasis()[1];
+    frame = dynamic_ptr_cast<ShowerParticlePtr>(particle.children()[0])
+      ->showerKinematics()->frame();
   }
-  setBasis(p,n);
+  setBasis(p,n,frame);
 }

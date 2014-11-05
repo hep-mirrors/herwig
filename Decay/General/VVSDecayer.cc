@@ -8,6 +8,7 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -50,11 +51,12 @@ double VVSDecayer::me2(const int , const Particle & inpart,
 		       MEOption meopt) const {
   bool massless = ( decay[0]->id()==ParticleID::gamma || 
 		    decay[0]->id()==ParticleID::g );
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin0)));
   if(meopt==Initialize) {
     VectorWaveFunction::calculateWaveFunctions(_vectors[0],_rho,
 					       const_ptr_cast<tPPtr>(&inpart),
 					       incoming,false);
-    ME(DecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin0));
   }
   if(meopt==Terminate) {
     VectorWaveFunction::constructSpinInfo(_vectors[0],const_ptr_cast<tPPtr>(&inpart),
@@ -72,11 +74,11 @@ double VVSDecayer::me2(const int , const Particle & inpart,
   for(unsigned int in=0;in<3;++in) {
     for(unsigned int out=0;out<3;++out) {
       if(massless&&out==1) ++out;
-      ME()(in,out,0) = 
+      (*ME())(in,out,0) = 
 	_abstractVertex->evaluate(scale,_vectors[0][in],_vectors[1][out],sca);
     }
   }
-  double output=(ME().contract(_rho)).real()/scale*UnitRemoval::E2;
+  double output=(ME()->contract(_rho)).real()/scale*UnitRemoval::E2;
   // colour and identical particle factors
   output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
 			 decay[1]->dataPtr());

@@ -21,6 +21,7 @@
 #include "ThePEG/Helicity/FermionSpinInfo.h"
 #include "ThePEG/Helicity/RSFermionSpinInfo.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -425,6 +426,8 @@ double BaryonFactorizedDecayer::halfHalf(const int ichan,
   vector<PDT::Spin> spin;
   for(unsigned ix=0;ix<decay.size();++ix) 
     spin.push_back(decay[ix]->dataPtr()->iSpin());
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,spin)));
   if(meopt==Initialize) {
     // spinors and rho
     if(inpart.id()>0)
@@ -435,7 +438,6 @@ double BaryonFactorizedDecayer::halfHalf(const int ichan,
       SpinorBarWaveFunction::calculateWaveFunctions(_inHalfBar,_rho,
 						    const_ptr_cast<tPPtr>(&inpart),
 						    incoming);
-    ME(DecayMatrixElement(PDT::Spin1Half,spin));
   }
   // setup spin info when needed
   if(meopt==Terminate) {
@@ -457,7 +459,7 @@ double BaryonFactorizedDecayer::halfHalf(const int ichan,
 		      ichan,scale,hadpart,meopt);
     return 0.;
   }
-  ME().zero();
+  ME()->zero();
   // spinors for the decay product
   if(inpart.id()>0) {
     SpinorBarWaveFunction::calculateWaveFunctions(_inHalfBar,decay[0],outgoing);
@@ -534,13 +536,13 @@ double BaryonFactorizedDecayer::halfHalf(const int ichan,
 	// map the index for the hadrons to a helicity state
 	for(ix=decay.size();ix>0;--ix) {
 	  if(ix-1!=ibar){ihel[ix]=(lhel%constants[ix-1])/constants[ix];}}
-	ME()(ihel) += hadron[lhel].dot(baryon[mhel])*
+	(*ME())(ihel) += hadron[lhel].dot(baryon[mhel])*
 	  _factCKM[imode()][mode]*SM().fermiConstant();
       }
     }
   }
   // return the answer
-  return 0.5*pre*(ME().contract(_rho)).real();
+  return 0.5*pre*(ME()->contract(_rho)).real();
 }
 
 // matrix element for a 1/2 -> 3/2 decay
@@ -553,6 +555,8 @@ double BaryonFactorizedDecayer::halfThreeHalf(const int ichan,
   vector<PDT::Spin> spin(decay.size());
   for(unsigned int ix=0;ix<decay.size();++ix)
     spin[ix]=decay[ix]->data().iSpin();
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin1Half,spin)));
   // spinors etc for the decaying particle
   if(meopt==Initialize) {
     // spinors and rho
@@ -564,7 +568,6 @@ double BaryonFactorizedDecayer::halfThreeHalf(const int ichan,
       SpinorBarWaveFunction::calculateWaveFunctions(_inHalfBar,_rho,
 						    const_ptr_cast<tPPtr>(&inpart),
 						    incoming);
-    ME(DecayMatrixElement(PDT::Spin1Half,spin));
   }
   // setup spin info when needed
   if(meopt==Terminate) {
@@ -589,7 +592,7 @@ double BaryonFactorizedDecayer::halfThreeHalf(const int ichan,
 		      ichan,scale,hadpart,meopt);
     return 0.;
   }
-  ME().zero();
+  ME()->zero();
   // spinors for the decay product
   LorentzPolarizationVector in=UnitRemoval::InvE*inpart.momentum();
   if(inpart.id()>0) {
@@ -704,14 +707,14 @@ double BaryonFactorizedDecayer::halfThreeHalf(const int ichan,
 	  // map the index for the hadrons to a helicity state
 	  for(unsigned int ix=decay.size();ix>0;--ix)
 	    {if(ix-1!=ibar){ihel[ix]=(lhel%constants[ix-1])/constants[ix];}}
-	  ME()(ihel) += hadron[lhel].dot(baryon[iya][ixa])*
+	  (*ME())(ihel) += hadron[lhel].dot(baryon[iya][ixa])*
 	    _factCKM[imode()][mode]*SM().fermiConstant();
 	}
       }
     }
   }
   // return the answer
-  return 0.5*pre*(ME().contract(_rho)).real();
+  return 0.5*pre*(ME()->contract(_rho)).real();
 }
 
 void BaryonFactorizedDecayer::findModes(unsigned int imode,

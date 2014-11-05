@@ -18,6 +18,8 @@
 #include "Herwig++/Shower/SplittingFunctions/SplittingGenerator.fh"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/PDF/BeamParticleData.h"
+#include "ThePEG/EventRecord/RhoDMatrix.h"
+#include "ThePEG/EventRecord/SpinInfo.h"
 #include "ShowerKinematics.fh"
 #include "SudakovFormFactor.fh"
 
@@ -193,6 +195,33 @@ public:
   //@}
 
   /**
+   * Generate the azimuthal angle of the branching for forward evolution
+   * @param particle The branching particle
+   * @param ids The PDG codes of the particles in the branchings
+   * @param The Shower kinematics
+   */
+  virtual double generatePhiForward(ShowerParticle & particle,const IdList & ids,
+				    ShoKinPtr kinematics)=0;
+
+  /**
+   *  Generate the azimuthal angle of the branching for backward evolution
+   * @param particle The branching particle
+   * @param ids The PDG codes of the particles in the branchings
+   * @param The Shower kinematics
+   */
+  virtual double generatePhiBackward(ShowerParticle & particle,const IdList & ids,
+				     ShoKinPtr kinematics)=0;
+
+  /**
+   *  Generate the azimuthal angle of the branching for ISR in decays
+   * @param particle The branching particle
+   * @param ids The PDG codes of the particles in the branchings
+   * @param The Shower kinematics
+   */
+  virtual double generatePhiDecay(ShowerParticle & particle,const IdList & ids,
+				  ShoKinPtr kinematics)=0;
+
+  /**
    *  Methods to provide public access to the private member variables
    */
   //@{
@@ -355,18 +384,20 @@ protected:
    * @return true if vetoed
    */
   bool SplittingFnVeto(const Energy2 t, 
-			      const IdList &ids, 
-			      const bool mass) const 
-  { return UseRandom::rnd()>splittingFn_->ratioP(z_, t, ids,mass); }
+		       const IdList &ids, 
+		       const bool mass) const {
+    return UseRandom::rnd()>splittingFn_->ratioP(z_, t, ids,mass);
+  }
 
   /**
    *  The veto on the coupling constant
    * @param pt2 The value of ther transverse momentum squared, \f$p_T^2\f$.
    * @return true if vetoed
    */
-  bool alphaSVeto(const Energy2 pt2) const 
-  {return UseRandom::rnd() > ThePEG::Math::powi(alpha_->ratio(pt2),
-						splittingFn_->interactionOrder());}
+  bool alphaSVeto(const Energy2 pt2) const {
+    return UseRandom::rnd() > ThePEG::Math::powi(alpha_->ratio(pt2),
+						 splittingFn_->interactionOrder());
+  }
   //@}
 
   /**
@@ -418,6 +449,17 @@ protected:
    *  Access the potential branchings
    */
   const vector<IdList> & particles() const { return particles_; }
+
+  /**
+   * For a particle which came from the hard process get the spin density and
+   * the mapping required to the basis used in the Shower
+   * @param rho The \f$\rho\f$ matrix
+   * @param mapping The mapping
+   * @param particle The particle
+   * @param showerkin The ShowerKinematics object
+   */
+  bool getMapping(SpinPtr &, RhoDMatrix & map,
+		  ShowerParticle & particle,ShoKinPtr showerkin);
 
 public:
 

@@ -55,9 +55,7 @@ void ShowerHandler::doinit() {
   // set used in the simulation
   particlesDecayInShower_.insert(inputparticlesDecayInShower_.begin(),
 				 inputparticlesDecayInShower_.end());
-
-  // \todo DG: Disabled here because of momentum-violation problems
-  //  ShowerTree::_decayInShower = particlesDecayInShower_;
+  ShowerTree::_decayInShower = particlesDecayInShower_;
   ShowerTree::_vmin2 = vMin_;
   ShowerTree::_spaceTime = includeSpaceTime_;
 }
@@ -88,9 +86,7 @@ void ShowerHandler::doinitrun(){
     if(MPIHandler_->softInt())
       remDec_->initSoftInteractions(MPIHandler_->Ptmin(), MPIHandler_->beta());
   }
-  // \todo DG: Disabled here because of momentum-violation problems
-  // Must set pre-cascade-handler to NewPhysics/DecayHandler instead
-  //  ShowerTree::_decayInShower = particlesDecayInShower_;
+  ShowerTree::_decayInShower = particlesDecayInShower_;
   ShowerTree::_vmin2 = vMin_;
   ShowerTree::_spaceTime = includeSpaceTime_;
 }
