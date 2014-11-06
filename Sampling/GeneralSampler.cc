@@ -556,7 +556,8 @@ void GeneralSampler::dofinish() {
     else if ( *dataName.rbegin() != '/' )
       dataName += "/";
     dataName += generator()->runName();
-    dataName += "-sampling.dat";
+    ostringstream so; so << seed();
+    dataName += "-" + so.str() + "-sampling.dat";
 
     ofstream data(dataName.c_str());
 
