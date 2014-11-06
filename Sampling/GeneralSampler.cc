@@ -590,10 +590,7 @@ void GeneralSampler::dofinish() {
       s->second->saveIntegrationData();
   }
 
-  // we should actually append the seed used to the grid name here but
-  // requires seed to be reported by ThePEG which is not cleanly
-  // supported right now
-  writeGrids();
+  writeGrids(true);
 
   SamplerBase::dofinish();
 
@@ -647,7 +644,7 @@ IVector GeneralSampler::getReferences() {
   return ret;
 }
 
-void GeneralSampler::writeGrids() const {
+void GeneralSampler::writeGrids(bool seedIndex) const {
   if ( theGrids.children().empty() )
     return;
   string dataName = gridDirectory();
@@ -656,7 +653,12 @@ void GeneralSampler::writeGrids() const {
   else if ( *dataName.rbegin() != '/' )
     dataName += "/";
   dataName += generator()->runName();
-  dataName += "-grids.xml";
+  if ( !seedIndex )
+    dataName += "-grids.xml";
+  else {
+    ostringstream so; so << seed();
+    dataName += "-" + so.str() + "-grids.xml";
+  }
   ofstream out(dataName.c_str());
   XML::ElementIO::put(theGrids,out);
 }

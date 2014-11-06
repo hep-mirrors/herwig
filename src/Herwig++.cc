@@ -102,8 +102,10 @@ int main(int argc, char * argv[]) {
 
     // RNG seed
     int seed = 0;
-    if ( args_info.seed_given )
+    if ( args_info.seed_given ) {
       seed = args_info.seed_arg;
+      SamplerBase::setSeed(seed);
+    }
 
     // run name tag (default given in ggo file)
     string tag = args_info.tag_arg;
