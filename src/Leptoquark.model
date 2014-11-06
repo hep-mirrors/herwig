@@ -238,4 +238,21 @@ cd /Herwig/Generators
 set LEPGenerator:StandardModelParameters  /Herwig/NewPhysics/Leptoquark/Model
 set LHCGenerator:StandardModelParameters  /Herwig/NewPhysics/Leptoquark/Model
 
-#insert /Herwig/Shower/ShowerHandler:DecayInShower 0  9911561 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  9911561
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  9921551
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  9931551
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  9931661
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  9931561
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  9941561
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  9941551
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  9951551
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  9951651
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  9961551
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  9971561
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  9981561
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  9981651
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  9981551
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  9991551
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  9991561
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  9901561
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  9901661

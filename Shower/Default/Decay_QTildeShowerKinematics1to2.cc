@@ -16,6 +16,12 @@
 #include "Herwig++/Shower/SplittingFunctions/SplittingFunction.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include <cassert>
+#include "Herwig++/Shower/ShowerHandler.h"
+#include "Herwig++/Shower/Base/Evolver.h"
+#include "Herwig++/Shower/Base/PartnerFinder.h"
+#include "Herwig++/Shower/Base/ShowerModel.h"
+#include "Herwig++/Shower/Base/KinematicsReconstructor.h"
+#include "Herwig++/Shower/Base/ShowerVertex.h"
 
 using namespace Herwig;
 
@@ -47,6 +53,13 @@ updateChildren(const tShowerParticlePtr parent,
   // make the products children of the parent
   parent->addChild(children[0]);
   parent->addChild(children[1]);
+  if(! ShowerHandler::currentHandler()->evolver()->correlations()) return;
+  SpinPtr pspin(parent->spinInfo());
+  // set the momenta of the children
+  ShowerParticleVector::const_iterator pit;
+  for(pit=children.begin();pit!=children.end();++pit) {
+    setMomentum(*pit,true);
+  }
 }
 
 void Decay_QTildeShowerKinematics1to2::
@@ -56,25 +69,24 @@ reconstructParent( const tShowerParticlePtr, const ParticleVector &) const {
 }
 
 void Decay_QTildeShowerKinematics1to2::
-reconstructLast(const tShowerParticlePtr theLast,
-		unsigned int iopt,Energy mass) const {
+reconstructLast(const tShowerParticlePtr last, Energy mass) const {
   // set beta component and consequently all missing data from that,
   // using the nominal (i.e. PDT) mass.
-  Energy theMass = mass>ZERO ? mass : theLast->data().constituentMass(); 
-  theLast->showerParameters().beta=
-    (sqr(theMass) + sqr(theLast->showerParameters().pt)
-     - sqr( theLast->showerParameters().alpha )*pVector().m2())
-    / ( 2.*theLast->showerParameters().alpha*p_dot_n() );   
+  Energy theMass = mass>ZERO ? mass : last->data().constituentMass(); 
+  last->showerParameters().beta=
+    (sqr(theMass) + sqr(last->showerParameters().pt)
+     - sqr( last->showerParameters().alpha )*pVector().m2())
+    / ( 2.*last->showerParameters().alpha*p_dot_n() );   
   // set that new momentum  
-  theLast->set5Momentum(  sudakov2Momentum( theLast->showerParameters().alpha, 
-					    theLast->showerParameters().beta, 
-					    theLast->showerParameters().ptx,
-					    theLast->showerParameters().pty,
-					    iopt));
+  last->set5Momentum( sudakov2Momentum( last->showerParameters().alpha, 
+					last->showerParameters().beta, 
+					last->showerParameters().ptx,
+					last->showerParameters().pty) );
 }
 
 void Decay_QTildeShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr) {
   Lorentz5Momentum p, n, ppartner, pcm;
+  Frame frame;
   assert(particle.perturbative()!=1);
   // this is for the initial decaying particle
   if(particle.perturbative()==2) {
@@ -88,12 +100,14 @@ void Decay_QTildeShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr
     pcm.boost(boost);
     n = Lorentz5Momentum( ZERO,0.5*p.mass()*pcm.vect().unit()); 
     n.boost( -boost);
+    frame = Rest;
   }
   else {
     tShoKinPtr kin=dynamic_ptr_cast<ShowerParticlePtr>(particle.parents()[0])
       ->showerKinematics();
     p = kin->getBasis()[0];
     n = kin->getBasis()[1];
+    frame = kin->frame();
   }
-  setBasis(p,n);
+  setBasis(p,n,frame);
 }

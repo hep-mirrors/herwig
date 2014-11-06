@@ -21,6 +21,7 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/PDT/ParticleData.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 typedef Selector<tDMPtr> DecaySelector;
@@ -192,14 +193,15 @@ ParticleVector SMHiggsWWDecayer::decay(const Particle & parent,
 double SMHiggsWWDecayer::me2(const int, const Particle & inpart,
 			     const ParticleVector & decay,
 			     MEOption meopt) const {
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half,
+					 PDT::Spin1Half,PDT::Spin1Half)));
   // check if Z or W decay
   bool Z0=decay[0]->id()==-decay[1]->id();
   if(meopt==Initialize) {
     ScalarWaveFunction::
       calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
     _swave = ScalarWaveFunction(inpart.momentum(),inpart.dataPtr(),incoming);
-    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half,
-			  PDT::Spin1Half,PDT::Spin1Half));
   }
   if(meopt==Terminate) {
     ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),
@@ -263,14 +265,14 @@ double SMHiggsWWDecayer::me2(const int, const Particle & inpart,
     for(ohel2=0;ohel2<2;++ohel2) {
       for(ohel3=0;ohel3<2;++ohel3) {
 	for(ohel4=0;ohel4<2;++ohel4) {
-	  ME()(0,ohel1,ohel2,ohel3,ohel4)=
+	  (*ME())(0,ohel1,ohel2,ohel3,ohel4)=
 	    _theHVVVertex->evaluate(scale0,curr1[ohel1][ohel2],
 				    curr2[ohel3][ohel4],_swave);
 	}
       }
     }
   }
-  double output=(ME().contract(_rho)).real()*scale0*UnitRemoval::InvE2;
+  double output=(ME()->contract(_rho)).real()*scale0*UnitRemoval::InvE2;
   // set up the colour flows
   if(decay[0]->coloured()) {
     output*=3.;

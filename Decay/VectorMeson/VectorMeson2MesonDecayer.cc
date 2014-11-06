@@ -19,6 +19,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "Herwig++/Decay/TwoBodyDecayMatrixElement.h"
 
 using namespace Herwig; 
 using namespace ThePEG::Helicity;
@@ -59,7 +60,6 @@ void VectorMeson2MesonDecayer::doinit() {
 VectorMeson2MesonDecayer::VectorMeson2MesonDecayer() :
   _incoming(64), _outgoing1(64), _outgoing2(64), _maxweight(64), _coupling(64) {
   // matrix element storage
-  ME(DecayMatrixElement(PDT::Spin1,PDT::Spin0,PDT::Spin0));
   // don't generate intermediates
   generateIntermediates(false);
   // reserve size of vectors for speed
@@ -305,6 +305,8 @@ double VectorMeson2MesonDecayer::me2(const int,
 				     const Particle & inpart,
 				     const ParticleVector & decay,
 				     MEOption meopt) const {
+  if(!ME())
+    ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1,PDT::Spin0,PDT::Spin0)));
   if(meopt==Initialize) {
     VectorWaveFunction::calculateWaveFunctions(_vectors,_rho,
 					       const_ptr_cast<tPPtr>(&inpart),
@@ -323,7 +325,7 @@ double VectorMeson2MesonDecayer::me2(const int,
     * _coupling[imode()]/inpart.mass();
   // compute the matrix element
   for(unsigned int ix=0;ix<3;++ix) 
-    ME()(ix,0,0)=_vectors[ix].dot(pdiff);
+    (*ME())(ix,0,0)=_vectors[ix].dot(pdiff);
   // test of the matrix element
 //   double me = newME.contract(_rho).real();
 //   Energy pcm=Kinematics::pstarTwoBodyDecay(inpart.mass(),decay[0]->mass(),
@@ -333,7 +335,7 @@ double VectorMeson2MesonDecayer::me2(const int,
 //        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " "
 //        << me << " " << test << " " << (me-test)/(me+test) << "\n";
   // return the answer
-  return ME().contract(_rho).real();
+  return ME()->contract(_rho).real();
 }
  
 bool VectorMeson2MesonDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,

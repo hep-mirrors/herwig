@@ -20,6 +20,7 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "Herwig++/Utilities/Kinematics.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -61,15 +62,17 @@ double SRFDecayer::me2(const int , const Particle & inpart,
 		       const ParticleVector & decay,MEOption meopt) const {
   unsigned int irs=0,ifm=1;
   if(decay[0]->dataPtr()->iSpin()==PDT::Spin1Half) swap(irs,ifm);
+  if(!ME()) {
+    if(irs==0)
+      ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin3Half,PDT::Spin1Half)));
+    else
+      ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1Half,PDT::Spin3Half)));
+  }
   bool ferm = decay[ifm]->id()<0;
   if(meopt==Initialize) {
     ScalarWaveFunction::
       calculateWaveFunctions(rho_,const_ptr_cast<tPPtr>(&inpart),incoming);
     swave_ = ScalarWaveFunction(inpart.momentum(),inpart.dataPtr(),incoming);
-    if(irs==0)
-      ME(DecayMatrixElement(PDT::Spin0,PDT::Spin3Half,PDT::Spin1Half));
-    else
-      ME(DecayMatrixElement(PDT::Spin0,PDT::Spin1Half,PDT::Spin3Half));
   }
   if(meopt==Terminate) {
     ScalarWaveFunction::
@@ -105,23 +108,23 @@ double SRFDecayer::me2(const int , const Particle & inpart,
     for(unsigned int ia = 0; ia < 2; ++ia) {
       if(irs==0) {
 	if(ferm)
-	  ME()(0, ifm, ia) = abstractVertex_->evaluate(scale,wave_[ia],
+	  (*ME())(0, ifm, ia) = abstractVertex_->evaluate(scale,wave_[ia],
 						       RSwavebar_[ifm],swave_);
 	else
-	  ME()(0, ifm, ia) = abstractVertex_->evaluate(scale,RSwave_[ifm],
+	  (*ME())(0, ifm, ia) = abstractVertex_->evaluate(scale,RSwave_[ifm],
 						       wavebar_[ia],swave_);
       }
       else {
 	if(ferm)
-	  ME()(0, ia, ifm) = abstractVertex_->evaluate(scale,wave_[ia],
+	  (*ME())(0, ia, ifm) = abstractVertex_->evaluate(scale,wave_[ia],
 						       RSwavebar_[ifm],swave_);
 	else
-	  ME()(0, ia, ifm) = abstractVertex_->evaluate(scale,RSwave_[ifm],
+	  (*ME())(0, ia, ifm) = abstractVertex_->evaluate(scale,RSwave_[ifm],
 						       wavebar_[ia],swave_);
       }
     }
   }
-  double output = (ME().contract(rho_)).real()/scale*UnitRemoval::E2;
+  double output = (ME()->contract(rho_)).real()/scale*UnitRemoval::E2;
   // colour and identical particle factors
   output *= colourFactor(inpart.dataPtr(),decay[irs]->dataPtr(),
 			 decay[ifm]->dataPtr());

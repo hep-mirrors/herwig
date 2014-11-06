@@ -17,19 +17,19 @@ def fillAbove(desthisto, sourcehistosbyptmin):
         ptlow=pt
         if(type(desthisto)==yoda.core.Scatter2D) :
             for i in range(0,h.numPoints) :
-                lowEdge = h.points[i].x-h.points[i].xErrs.minus
-                if( lowEdge >= ptlow and 
-                    lowEdge <  pthigh ) :
+                xMin = h.points[i].x-h.points[i].xErrs.minus
+                if( xMin >= ptlow and 
+                    xMin <  pthigh ) :
                     desthisto.addPoint(h.points[i])
         elif(type(desthisto)==yoda.core.Profile1D) :
             for i in range(0,h.numBins) :
-                if(h.bins[i].lowEdge  >= ptlow and 
-                   h.bins[i].lowEdge  <  pthigh ) :
+                if(h.bins[i].xMin  >= ptlow and 
+                   h.bins[i].xMin  <  pthigh ) :
                     desthisto.bins[i] += h.bins[i]
         elif(type(desthisto)==yoda.core.Histo1D) :
             for i in range(0,h.numBins) :
-                if(h.bins[i].lowEdge  >= ptlow and 
-                   h.bins[i].lowEdge  <  pthigh ) :
+                if(h.bins[i].xMin  >= ptlow and 
+                   h.bins[i].xMin  <  pthigh ) :
                     desthisto.bins[i] += h.bins[i]
         else :
             logging.error("Can't merge %s, unknown type" % desthisto.path)
@@ -271,14 +271,14 @@ for hpath,hsets in inhistos.iteritems():
             outhistos[hpath] = yoda.core.Profile1D(hsets.values()[0].values()[0].path,
                                                    hsets.values()[0].values()[0].title)
             for i in range(0,hsets.values()[0].values()[0].numBins) :
-                outhistos[hpath].addBin(hsets.values()[0].values()[0].bins[i].lowEdge,
-                                        hsets.values()[0].values()[0].bins[i].highEdge)
+                outhistos[hpath].addBin(hsets.values()[0].values()[0].bins[i].xMin,
+                                        hsets.values()[0].values()[0].bins[i].xMax)
         elif(type(hsets.values()[0].values()[0])==yoda.core.Histo1D) :
             outhistos[hpath] = yoda.core.Histo1D(hsets.values()[0].values()[0].path,
                                                 hsets.values()[0].values()[0].title)
             for i in range(0,hsets.values()[0].values()[0].numBins) :
-                outhistos[hpath].addBin(hsets.values()[0].values()[0].bins[i].lowEdge,
-                                        hsets.values()[0].values()[0].bins[i].highEdge)
+                outhistos[hpath].addBin(hsets.values()[0].values()[0].bins[i].xMin,
+                                        hsets.values()[0].values()[0].bins[i].xMax)
         else :
             logging.error("Histogram %s is of unknown type" % hpath)
             print hpath,type(hsets.values()[0].values()[0])

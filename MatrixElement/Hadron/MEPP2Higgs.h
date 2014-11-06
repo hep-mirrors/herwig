@@ -695,6 +695,12 @@ private:
    */
   tcPDPtr out_;
   //@}
+
+  /**
+   *  Whether of not to construct the vertex for spin correlations
+   */
+  bool spinCorrelations_;
+
 };
 
 }

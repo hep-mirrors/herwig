@@ -221,3 +221,26 @@ cd /Herwig/Generators
 # Choose Little Higgs over SM
 set LEPGenerator:StandardModelParameters  /Herwig/NewPhysics/LHTP/Model
 set LHCGenerator:StandardModelParameters  /Herwig/NewPhysics/LHTP/Model
+
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  32
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  33
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  34
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0   8
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  35
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  36
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  37
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  38
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  4000001
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  4000002
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  4000003
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  4000004
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  4000005
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  4000006
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  4000008
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  4000011
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  4000012
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  4000013
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  4000014
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  4000015
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  4000016
+

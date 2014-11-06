@@ -24,6 +24,7 @@
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/epsilon.h"
 #include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -486,17 +487,19 @@ double ScalarMesonFactorizedDecayer::me2(const int ichan,
 					 const Particle & part,
 					 const ParticleVector & decay,
 					 MEOption meopt) const {
+  if(!ME()) {
+    // create the matrix element
+    vector<PDT::Spin> spin;
+    for(unsigned int ix=0;ix<decay.size();++ix)
+      spin.push_back(decay[ix]->dataPtr()->iSpin());
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,spin)));
+  }
   // initialisation
   if(meopt==Initialize) {
     ScalarWaveFunction::
       calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&part),incoming);
     _vectors.resize(decay.size());
     _tensors.resize(decay.size());
-    // create the matrix element
-    vector<PDT::Spin> spin;
-    for(unsigned int ix=0;ix<decay.size();++ix)
-      spin.push_back(decay[ix]->dataPtr()->iSpin());
-    ME(DecayMatrixElement(PDT::Spin0,spin));
   }
   if(meopt==Terminate) {
     // set up the spin information for the decay products
@@ -539,7 +542,7 @@ double ScalarMesonFactorizedDecayer::me2(const int ichan,
       assert(false);
     }
   }
-  ME().zero();
+  ME()->zero();
   // find the mode
   unsigned int mode(imode()),chel,fhel;
   int id0(part.id()),id1;
@@ -636,13 +639,13 @@ double ScalarMesonFactorizedDecayer::me2(const int ichan,
       }
       for(fhel=0;fhel<form.size();++fhel) {
 	ihel[_formpart[mode][iy]+1]=fhel;
-	ME()(ihel) +=pre*_CKMfact[mode][iy]*
+	(*ME())(ihel) +=pre*_CKMfact[mode][iy]*
 	  form[fhel].dot(curr[chel])*SM().fermiConstant();
       }
     }
   }
   // perform the contraction
-  return 0.5*(ME().contract(_rho)).real();
+  return 0.5*(ME()->contract(_rho)).real();
 }
   
 void ScalarMesonFactorizedDecayer::findModes(unsigned int imode,

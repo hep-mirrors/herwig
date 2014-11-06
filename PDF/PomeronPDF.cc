@@ -81,7 +81,6 @@ double PomeronPDF::xfx(tcPDPtr particle, tcPDPtr parton, Energy2 qq,
   case ParticleID::b: case ParticleID::bbar:
     return 0;
   default:
-    assert(false);
     return 0.;
   }
 }

@@ -7,6 +7,12 @@ read LHCBase-Powheg.in
 #  Use the q qbar matrix element
 ##################################################
 cd /Herwig/MatrixElements
+# needs the gauge bosons decayed before the shower 
+create Herwig::HwDecayHandler /Herwig/NewPhysics/DecayHandler
+set /Herwig/NewPhysics/DecayHandler:NewStep No
+insert /Herwig/NewPhysics/DecayHandler:Excluded 0 /Herwig/Particles/tau-
+insert /Herwig/NewPhysics/DecayHandler:Excluded 1 /Herwig/Particles/tau+
+insert /Herwig/EventHandlers/LHCHandler:PreCascadeHandlers 0 /Herwig/NewPhysics/DecayHandler
 # Drell-Yan Z/gamma
 insert SimpleQCD:MatrixElements[0] PowhegMEPP2VV
 set PowhegMEPP2VV:Process WZ

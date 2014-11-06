@@ -9,6 +9,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/PDT/ThreeBodyAllOnCalculator.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 #include <numeric>
 
 using namespace Herwig;
@@ -168,16 +169,16 @@ double StoSFFDecayer::me2(const int ichan, const Particle & inpart,
   Energy2 scale(sqr(inpart.mass()));  
   const size_t ncf(numberOfFlows());
   vector<Complex> flows(ncf, Complex(0.)), largeflows(ncf, Complex(0.)); 
-  vector<DecayMatrixElement> 
-    mes(ncf,DecayMatrixElement(PDT::Spin0,
-			       isca==0 ? PDT::Spin0 : PDT::Spin1Half,
-			       isca==1 ? PDT::Spin0 : PDT::Spin1Half,
-			       isca==2 ? PDT::Spin0 : PDT::Spin1Half));
-  vector<DecayMatrixElement> 
-    mel(ncf,DecayMatrixElement(PDT::Spin0,
-			       isca == 0 ? PDT::Spin0 : PDT::Spin1Half,
-			       isca == 1 ? PDT::Spin0 : PDT::Spin1Half,
-			       isca == 2 ? PDT::Spin0 : PDT::Spin1Half));
+  vector<GeneralDecayMEPtr> 
+    mes(ncf,new_ptr(GeneralDecayMatrixElement(PDT::Spin0,
+					      isca==0 ? PDT::Spin0 : PDT::Spin1Half,
+					      isca==1 ? PDT::Spin0 : PDT::Spin1Half,
+					      isca==2 ? PDT::Spin0 : PDT::Spin1Half)));
+  vector<GeneralDecayMEPtr> 
+    mel(ncf,new_ptr(GeneralDecayMatrixElement(PDT::Spin0,
+					      isca == 0 ? PDT::Spin0 : PDT::Spin1Half,
+					      isca == 1 ? PDT::Spin0 : PDT::Spin1Half,
+					      isca == 2 ? PDT::Spin0 : PDT::Spin1Half)));
   static const unsigned int out2[3]={1,0,0},out3[3]={2,2,1};
   for(unsigned int s1 = 0;s1 < 2; ++s1) {
     for(unsigned int s2 = 0;s2 < 2; ++s2) {
@@ -312,16 +313,16 @@ double StoSFFDecayer::me2(const int ichan, const Particle & inpart,
       }
       for(unsigned int ix = 0; ix < ncf; ++ix) {
 	if(isca == 0) {
-	  mes[ix](0, 0, s1, s2) = flows[ix];
-	  mel[ix](0, 0, s1, s2) = largeflows[ix];
+	  (*mes[ix])(0, 0, s1, s2) = flows[ix];
+	  (*mel[ix])(0, 0, s1, s2) = largeflows[ix];
 	}
 	else if(isca == 1 ) { 
-	  mes[ix](0, s1, 0, s2) = flows[ix];
-	  mel[ix](0, s1, 0, s2) = largeflows[ix];
+	  (*mes[ix])(0, s1, 0, s2) = flows[ix];
+	  (*mel[ix])(0, s1, 0, s2) = largeflows[ix];
 	}
 	else if(isca == 2) { 
-	  mes[ix](0, s1,s2, 0) = flows[ix];
-	  mel[ix](0, s1,s2, 0) = largeflows[ix] ;
+	  (*mes[ix])(0, s1,s2, 0) = flows[ix];
+	  (*mel[ix])(0, s1,s2, 0) = largeflows[ix] ;
 	}
       }
     }
@@ -331,10 +332,10 @@ double StoSFFDecayer::me2(const int ichan, const Particle & inpart,
     vector<double> pflows(ncf,0.);
     for(unsigned int ix = 0; ix < ncf; ++ix) {
       for(unsigned int iy = 0; iy < ncf; ++ iy) {
-	double con = cfactors[ix][iy]*(mes[ix].contract(mes[iy],_rho)).real();
+	double con = cfactors[ix][iy]*(mes[ix]->contract(*mes[iy],_rho)).real();
 	me2 += con;
 	if(ix == iy) {
-	  con = nfactors[ix][iy]*(mel[ix].contract(mel[iy],_rho)).real();
+	  con = nfactors[ix][iy]*(mel[ix]->contract(*mel[iy],_rho)).real();
 	  pflows[ix] += con;
 	}
       }
@@ -352,7 +353,7 @@ double StoSFFDecayer::me2(const int ichan, const Particle & inpart,
   }
   else {
     unsigned int iflow = colourFlow();
-    me2 = nfactors[iflow][iflow]*(mel[iflow].contract(mel[iflow],_rho)).real();
+    me2 = nfactors[iflow][iflow]*(mel[iflow]->contract(*mel[iflow],_rho)).real();
   }
   // return the matrix element squared
   return me2;

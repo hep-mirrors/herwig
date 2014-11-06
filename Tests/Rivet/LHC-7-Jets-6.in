@@ -47,6 +47,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1094564
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1224539_DIJET
 # CMS 4-jet
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1273574 
+# ATLAS leading jet UE
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1298811
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'

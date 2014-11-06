@@ -289,8 +289,7 @@ void QTildeReconstructor::doinit() {
 }
 
 bool QTildeReconstructor::
-reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
-		       unsigned int iopt) const {
+reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent) const {
   assert(particleJetParent);
   bool emitted=true;
   // if this is not a fixed point in the reconstruction
@@ -299,7 +298,7 @@ reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
     for ( ParticleVector::const_iterator cit = 
 	    particleJetParent->children().begin();
 	  cit != particleJetParent->children().end(); ++cit )
-      reconstructTimeLikeJet(dynamic_ptr_cast<ShowerParticlePtr>(*cit),iopt);
+      reconstructTimeLikeJet(dynamic_ptr_cast<ShowerParticlePtr>(*cit));
   }
   // it is a reconstruction fixpoint, ie kinematical data has to be available 
   else {
@@ -313,11 +312,11 @@ reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
       if (jetGrandParent->showerKinematics()) {
 	if(particleJetParent->id()==_progenitor->id()&&
 	   !_progenitor->data().stable()) {
-	  jetGrandParent->showerKinematics()->reconstructLast(particleJetParent,iopt,
+	  jetGrandParent->showerKinematics()->reconstructLast(particleJetParent,
 							      _progenitor->mass());
 	}
 	else {
-	  jetGrandParent->showerKinematics()->reconstructLast(particleJetParent,iopt);
+	  jetGrandParent->showerKinematics()->reconstructLast(particleJetParent);
 	}
       }
     }
@@ -594,7 +593,7 @@ reconstructSpaceLikeJet( const tShowerParticlePtr p) const {
       showerKinematics()->reconstructParent(p,p->children());
     if(!child->children().empty()) {
       _progenitor=child;
-      reconstructTimeLikeJet(child,0);
+      reconstructTimeLikeJet(child);
       // calculate the momentum of the particle
       Lorentz5Momentum pnew=p->momentum()-child->momentum();
       pnew.rescaleMass();
@@ -717,7 +716,7 @@ reconstructDecayJets(ShowerTreePtr decay,
       tempJetKin.p = ShowerHardJets[ix]->progenitor()->momentum();
       if(gottaBoost) tempJetKin.p.boost(boosttorest,gammarest);
       _progenitor=tempJetKin.parent;
-      atLeastOnce |= reconstructTimeLikeJet(tempJetKin.parent,0);
+      atLeastOnce |= reconstructTimeLikeJet(tempJetKin.parent);
       if(gottaBoost) deepTransform(tempJetKin.parent,restboost);
       tempJetKin.q = ShowerHardJets[ix]->progenitor()->momentum();
       jetKinematics.push_back(tempJetKin);
@@ -790,7 +789,7 @@ reconstructDecayJet( const tShowerParticlePtr p) const {
   child = dynamic_ptr_cast<ShowerParticlePtr>(p->children()[1]);
   if(child) {
     _progenitor=child;
-    reconstructTimeLikeJet(child,1);
+    reconstructTimeLikeJet(child);
     // calculate the momentum of the particle
     Lorentz5Momentum pnew=p->momentum()-child->momentum();
     pnew.rescaleMass();
@@ -1421,7 +1420,7 @@ reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
     if(jets[ix]->progenitor()->isFinalState()) {
       pout[0] +=jets[ix]->progenitor()->momentum();
       _progenitor = jets[ix]->progenitor();
-      reconstructTimeLikeJet(jets[ix]->progenitor(),0);
+      reconstructTimeLikeJet(jets[ix]->progenitor());
     }
     // initial-state parton
     else {
@@ -1654,7 +1653,7 @@ reconstructFinalStateSystem(bool applyBoost,
     }
     tempJetKin.p = (*cit)->progenitor()->momentum();
     _progenitor=tempJetKin.parent;
-    radiated |= reconstructTimeLikeJet((*cit)->progenitor(),0);
+    radiated |= reconstructTimeLikeJet((*cit)->progenitor());
     tempJetKin.q = (*cit)->progenitor()->momentum();
     jetKinematics.push_back(tempJetKin);
   }
@@ -1988,20 +1987,9 @@ deconstructFinalStateSystem(const LorentzRotation &   toRest,
   vector<Energy> mon;
   for(cit=jets.begin();cit!=jets.end();++cit) {
     pout.push_back((*cit)->branchingParticle()->momentum());
-    // KH - 230909 - If the particle has no children then it will 
-    // not have showered and so it should be "on-shell" so we can
-    // get it's mass from it's momentum. This means that the
-    // inverseRescalingFactor doesn't give any nans or do things 
-    // it shouldn't if it gets e.g. two Z bosons generated with
-    // off-shell masses. This is for sure not the best solution.
-    // PR 1/1/10 modification to previous soln
-    if((*cit)->branchingParticle()->children().size()==0 ||
-       (!(*cit)->branchingParticle()->dataPtr()->coloured() &&
-	!(*cit)->branchingParticle()->dataPtr()->stable()) ) 
-	mon.push_back(pout.back().mass());
-    else
-      mon.push_back((*cit)->branchingParticle()->dataPtr()->mass());
+    mon.push_back(findMass(*cit));
   }
+
   // boost all the momenta to the rest frame of the decaying particle
   Lorentz5Momentum pin;
   for(unsigned int ix=0;ix<pout.size();++ix) {
@@ -2013,20 +2001,15 @@ deconstructFinalStateSystem(const LorentzRotation &   toRest,
   double lambda=inverseRescalingFactor(pout,mon,pin.mass());
   if (lambda< 1.e-10) throw KinematicsReconstructionVeto(); 
   // now calculate the p reference vectors 
-  for(cit=jets.begin();cit!=jets.end();++cit){
-    Lorentz5Momentum pvect = (*cit)->branchingParticle()->momentum();
+  for(unsigned int ix=0;ix<jets.size();++ix) {
+    Lorentz5Momentum pvect = jets[ix]->branchingParticle()->momentum();
     pvect.transform(toRest);
     pvect /= lambda;
-    if((*cit)->branchingParticle()->children().size()==0 ||
-       (!(*cit)->branchingParticle()->dataPtr()->coloured() &&
-	!(*cit)->branchingParticle()->dataPtr()->stable()) ) 
-      pvect.setMass((*cit)->branchingParticle()->momentum().mass());
-    else
-      pvect.setMass((*cit)->branchingParticle()->dataPtr()->mass());
+    pvect.setMass(mon[ix]);
     pvect.rescaleEnergy();
     pvect.transform(fromRest);
-    (*cit)->pVector(pvect);
-    (*cit)->showerMomentum(pvect);
+    jets[ix]->pVector(pvect);
+    jets[ix]->showerMomentum(pvect);
   }
   // find the colour partners
   ShowerParticleVector particles;
@@ -2563,3 +2546,25 @@ void QTildeReconstructor::reconstructFinalFinalOffShell(JetKinVect orderedJets,
   }
 }
 
+Energy QTildeReconstructor::findMass(HardBranchingPtr branch) const {
+  // KH - 230909 - If the particle has no children then it will 
+  // not have showered and so it should be "on-shell" so we can
+  // get it's mass from it's momentum. This means that the
+  // inverseRescalingFactor doesn't give any nans or do things 
+  // it shouldn't if it gets e.g. two Z bosons generated with
+  // off-shell masses. This is for sure not the best solution.
+  // PR 1/1/10 modification to previous soln
+  // PR 28/8/14 change to procedure and factorize into a function
+  if(branch->children().empty()) {
+    return branch->branchingParticle()->mass();
+  }
+  else if(!branch->children().empty() &&
+	  !branch->branchingParticle()->dataPtr()->stable() ) {
+    for(unsigned int ix=0;ix<branch->children().size();++ix) {
+      if(branch->branchingParticle()->id()==
+	 branch->children()[ix]->branchingParticle()->id())
+	return findMass(branch->children()[ix]);
+    }
+  }
+  return branch->branchingParticle()->dataPtr()->mass();
+}

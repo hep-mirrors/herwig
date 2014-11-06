@@ -23,6 +23,13 @@
 #include "Herwig++/Shower/Default/IS_QTildeShowerKinematics1to2.h"
 #include "Herwig++/Shower/Default/Decay_QTildeShowerKinematics1to2.h"
 #include "ThePEG/Utilities/DescribeClass.h"
+#include "Herwig++/Shower/Base/ShowerVertex.h"
+#include "Herwig++/Shower/Base/ShowerParticle.h"
+#include "Herwig++/Shower/ShowerHandler.h"
+#include "Herwig++/Shower/Base/Evolver.h"
+#include "Herwig++/Shower/Base/PartnerFinder.h"
+#include "Herwig++/Shower/Base/ShowerModel.h"
+#include "Herwig++/Shower/Base/KinematicsReconstructor.h"
 
 using namespace Herwig;
 
@@ -105,9 +112,7 @@ ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
   }
   while(PSVeto(t) || SplittingFnVeto(z()*(1.-z())*t,ids,true) || 
 	alphaSVeto(sqr(z()*(1.-z()))*t));
-  if(t > ZERO) q_ = sqrt(t);
-  else q_ = -1.*MeV;
-  phi(Constants::twopi*UseRandom::rnd());
+  q_ = t > ZERO ? Energy(sqrt(t)) : -1.*MeV;
   if(q_ < ZERO) return ShoKinPtr();
   // return the ShowerKinematics object
   return createFinalStateBranching(q_,z(),phi(),pT()); 
@@ -149,7 +154,6 @@ generateNextSpaceBranching(const Energy startingQ,
 	PDFVeto(t,x,parton0,parton1,beam) || pt2 < pT2min() );
   if(t > ZERO && zLimits().first < zLimits().second)  q_ = sqrt(t);
   else return ShoKinPtr();
-  phi(Constants::twopi*UseRandom::rnd());
   pT(sqrt(pt2));
   // create the ShowerKinematics and return it
   return createInitialStateBranching(q_,z(),phi(),pT());
@@ -203,7 +207,7 @@ ShoKinPtr QTildeSudakov::generateNextDecayBranching(const Energy startingScale,
     pT(sqrt(pt2));
   }
   else return ShoKinPtr();
-  phi(Constants::twopi*UseRandom::rnd());
+  phi(0.);
   // create the ShowerKinematics object
   return createDecayBranching(q_,z(),phi(),pT());
 }
@@ -308,6 +312,565 @@ bool QTildeSudakov::computeSpaceLikeLimits(Energy2 & t, double x) {
   else
     return true;
 }
+
+namespace {
+
+tShowerParticlePtr findCorrelationPartner(ShowerParticle & particle,
+					  bool forward,
+					  ShowerInteraction::Type inter) {
+  tPPtr child = &particle;
+  tPPtr mother;
+  if(forward) {
+    mother = !particle.parents().empty() ? particle.parents()[0] : tPPtr();
+  }
+  else {
+    mother = particle.children().size()==2 ? &particle : tPPtr();
+  }
+  tShowerParticlePtr partner;
+  while(mother) {
+    tPPtr otherChild;
+    if(forward) {
+      for (unsigned int ix=0;ix<mother->children().size();++ix) {
+	if(mother->children()[ix]!=child) {
+	  otherChild = mother->children()[ix];
+	  break;
+	}
+      }
+    }
+    else {
+      otherChild = mother->children()[1];
+    }
+    tShowerParticlePtr other = dynamic_ptr_cast<tShowerParticlePtr>(otherChild);
+    if((inter==ShowerInteraction::QCD && otherChild->dataPtr()->coloured()) ||
+       (inter==ShowerInteraction::QED && otherChild->dataPtr()->charged())) {
+      partner = other;
+      break;
+    }
+    if(forward && !other->isFinalState()) {
+      partner = dynamic_ptr_cast<tShowerParticlePtr>(mother);
+      break;
+    }
+    child = mother;
+    if(forward) {
+      mother = ! mother->parents().empty() ? mother->parents()[0] : tPPtr();
+    }
+    else {
+      if(mother->children()[0]->children().size()!=2)
+	break;
+      mother = mother->children()[0];
+    }
+  }
+  if(!partner) {
+    if(forward) {
+      partner = dynamic_ptr_cast<tShowerParticlePtr>( child)->partner();
+    }
+    else {
+      if(mother) {
+	tShowerParticlePtr parent;
+	if(!mother->children().empty()) {
+	  parent = dynamic_ptr_cast<tShowerParticlePtr>(mother->children()[0]);
+	}
+	if(!parent) {
+	  parent = dynamic_ptr_cast<tShowerParticlePtr>(mother);
+	}
+	partner = parent->partner();
+      }
+      else {
+	partner = dynamic_ptr_cast<tShowerParticlePtr>(&particle)->partner();
+      }
+    }
+  }
+  return partner;
+}
+
+}
+
+double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
+					 const IdList & ids,
+					 ShoKinPtr kinematics) {
+  // no correlations, return flat phi
+  if(! ShowerHandler::currentHandler()->evolver()->correlations())
+    return Constants::twopi*UseRandom::rnd();
+  // get the kinematic variables
+  double  z = kinematics->z();
+  Energy2 t = z*(1.-z)*sqr(kinematics->scale());
+  Energy pT = kinematics->pT();
+  // if soft correlations
+  Energy2 pipj,pik;
+  bool canBeSoft[2] = {ids[1]==ParticleID::g || ids[1]==ParticleID::gamma,
+		       ids[2]==ParticleID::g || ids[2]==ParticleID::gamma };
+  vector<Energy2> pjk(3,ZERO);
+  vector<Energy> Ek(3,ZERO);
+  Energy Ei,Ej;
+  Energy2 m12(ZERO),m22(ZERO);
+  InvEnergy2 aziMax(ZERO);
+  bool softAllowed = ShowerHandler::currentHandler()->evolver()->softCorrelations()&&
+    (canBeSoft[0] || canBeSoft[1]);
+  bool swapOrder;
+  if(softAllowed) {
+    // find the partner for the soft correlations
+    tShowerParticlePtr partner=findCorrelationPartner(particle,true,splittingFn()->interactionType());
+    // remember we want the softer gluon 
+    swapOrder = !canBeSoft[1] || (canBeSoft[0] && canBeSoft[1] && z < 0.5);
+    double zFact = !swapOrder ? (1.-z) : z;
+    // compute the transforms to the shower reference frame
+    // first the boost
+    vector<Lorentz5Momentum> basis = kinematics->getBasis();
+    Lorentz5Momentum pVect = basis[0];
+    Lorentz5Momentum nVect = basis[1];
+    Boost beta_bb;
+    if(kinematics->frame()==ShowerKinematics::BackToBack) {
+      beta_bb = -(pVect + nVect).boostVector();
+    }
+    else if(kinematics->frame()==ShowerKinematics::Rest) {
+      beta_bb = -pVect.boostVector();
+    }
+    else
+      assert(false);
+    pVect.boost(beta_bb);
+    nVect.boost(beta_bb);
+    Axis axis;
+    if(kinematics->frame()==ShowerKinematics::BackToBack) {
+      axis = pVect.vect().unit();
+    }
+    else if(kinematics->frame()==ShowerKinematics::Rest) {
+      axis = nVect.vect().unit();
+    }
+    else
+      assert(false);
+    // and then the rotation
+    LorentzRotation rot;
+    if(axis.perp2()>0.) {
+      double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
+      rot.rotate(acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+    }
+    else if(axis.z()<0.) {
+      rot.rotate(Constants::pi,Axis(1.,0.,0.));
+    }
+    rot.invert();
+    pVect *= rot;
+    nVect *= rot;
+    // shower parameters
+    Energy2 pn = pVect*nVect;
+    Energy2 m2 = pVect.m2();
+    double alpha0 = particle.showerParameters().alpha;
+    double  beta0 = 0.5/alpha0/pn*
+      (sqr(particle.dataPtr()->mass())-sqr(alpha0)*m2+sqr(particle.showerParameters().pt));
+    Lorentz5Momentum qperp0(particle.showerParameters().ptx,
+			    particle.showerParameters().pty,ZERO,ZERO);
+    assert(partner);
+    Lorentz5Momentum pj = partner->momentum();
+    pj.boost(beta_bb);
+    pj *= rot;
+    // compute the two phi independent dot products
+    pik = 0.5*zFact*(sqr(alpha0)*m2 - sqr(particle.showerParameters().pt) + 2.*alpha0*beta0*pn )
+      +0.5*sqr(pT)/zFact;
+    Energy2 dot1 = pj*pVect;
+    Energy2 dot2 = pj*nVect;
+    Energy2 dot3 = pj*qperp0;
+    pipj = alpha0*dot1+beta0*dot2+dot3;
+    // compute the constants for the phi dependent dot product
+    pjk[0] = zFact*(alpha0*dot1+dot3-0.5*dot2/pn*(alpha0*m2-sqr(particle.showerParameters().pt)/alpha0))
+      +0.5*sqr(pT)*dot2/pn/zFact/alpha0;
+    pjk[1] = (pj.x() - dot2/alpha0/pn*qperp0.x())*pT;
+    pjk[2] = (pj.y() - dot2/alpha0/pn*qperp0.y())*pT;
+    m12 = sqr(particle.dataPtr()->mass());
+    m22 = sqr(partner->dataPtr()->mass());
+    if(swapOrder) {
+      pjk[1] *= -1.;
+      pjk[2] *= -1.;
+    }
+    Energy2 mag = sqrt(sqr(pjk[1])+sqr(pjk[2]));
+    if(ShowerHandler::currentHandler()->evolver()->softCorrelations()==1) {
+      aziMax = -m12/sqr(pik) -m22/sqr(pjk[0]+mag) +2.*pipj/pik/(pjk[0]-mag);
+    }
+    else if(ShowerHandler::currentHandler()->evolver()->softCorrelations()==2) {
+      Ek[0] = zFact*(alpha0*pVect.t()-0.5*nVect.t()/pn*(alpha0*m2-sqr(particle.showerParameters().pt)/alpha0))
+	+0.5*sqr(pT)*nVect.t()/pn/zFact/alpha0;
+      Ek[1] = -nVect.t()/alpha0/pn*qperp0.x()*pT;
+      Ek[2] = -nVect.t()/alpha0/pn*qperp0.y()*pT;
+      if(swapOrder) {
+	Ek[1] *= -1.;
+	Ek[2] *= -1.;
+      }
+      Energy mag2=sqrt(sqr(Ek[1])+sqr(Ek[2]));
+      Ei = alpha0*pVect.t()+beta0*nVect.t();
+      Ej = pj.t();
+      aziMax = 0.5/pik/(Ek[0]-mag2)*(Ei-m12*(Ek[0]-mag2)/pik  + pipj*(Ek[0]+mag2)/(pjk[0]-mag) - Ej*pik/(pjk[0]+mag) );
+    }
+    else
+      assert(false);
+  }
+  // if spin correlations
+  vector<pair<int,Complex> > wgts;     
+  if(ShowerHandler::currentHandler()->evolver()->spinCorrelations()) {
+    // get the spin density matrix and the mapping
+    RhoDMatrix mapping;
+    SpinPtr inspin;
+    bool needMapping = getMapping(inspin,mapping,particle,kinematics);
+    // set the decayed flag
+    inspin->decay();
+    // get the spin density matrix
+    RhoDMatrix rho=inspin->rhoMatrix();
+    // map to the shower basis if needed
+    if(needMapping) {
+      RhoDMatrix rhop(rho.iSpin(),false);
+      for(int ixa=0;ixa<rho.iSpin();++ixa) {
+	for(int ixb=0;ixb<rho.iSpin();++ixb) {
+	  for(int iya=0;iya<rho.iSpin();++iya) {
+	    for(int iyb=0;iyb<rho.iSpin();++iyb) {
+	      rhop(ixa,ixb) += rho(iya,iyb)*mapping(iya,ixa)*conj(mapping(iyb,ixb));
+	    }
+	  }
+	}
+      }
+      rhop.normalize();
+      rho = rhop;
+    }
+    // calculate the weights
+    wgts = splittingFn()->generatePhiForward(z,t,ids,rho);
+  }
+  else {
+    wgts = vector<pair<int,Complex> >(1,make_pair(0,1.));
+  }
+  // generate the azimuthal angle
+  double phi,wgt;
+  static const Complex ii(0.,1.);
+  unsigned int ntry(0);
+  double phiMax(0.),wgtMax(0.);
+  do {
+    phi = Constants::twopi*UseRandom::rnd();
+    // first the spin correlations bit (gives 1 if correlations off)
+    Complex spinWgt = 0.;
+    for(unsigned int ix=0;ix<wgts.size();++ix) {
+      if(wgts[ix].first==0)
+  	spinWgt += wgts[ix].second;
+      else
+  	spinWgt += exp(double(wgts[ix].first)*ii*phi)*wgts[ix].second;
+    }
+    wgt = spinWgt.real();
+    if(wgt-1.>1e-10) {
+      generator()->log() << "Forward spin weight problem " << wgt << " " << wgt-1. 
+  	   << " " << ids[0] << " " << ids[1] << " " << ids[2] << " " << " " << phi << "\n";
+      generator()->log() << "Weights \n";
+      for(unsigned int ix=0;ix<wgts.size();++ix)
+	generator()->log() << wgts[ix].first << " " << wgts[ix].second << "\n";
+    }
+    // soft correlations bit
+    double aziWgt = 1.;
+    if(softAllowed) {
+      Energy2 dot = pjk[0]+pjk[1]*cos(phi)+pjk[2]*sin(phi);
+      if(ShowerHandler::currentHandler()->evolver()->softCorrelations()==1) {
+	aziWgt = (-m12/sqr(pik) -m22/sqr(dot) +2.*pipj/pik/dot)/aziMax;
+      }
+      else if(ShowerHandler::currentHandler()->evolver()->softCorrelations()==2) {
+	Energy Eg = Ek[0]+Ek[1]*cos(phi)+Ek[2]*sin(phi);
+	aziWgt = max(ZERO,0.5/pik/Eg*(Ei-m12*Eg/pik  + pipj*Eg/dot - Ej*pik/dot)/aziMax);
+      }
+      if(aziWgt-1.>1e-10||aziWgt<-1e-10) {
+	generator()->log() << "Forward soft weight problem " << aziWgt << " " << aziWgt-1. 
+			   << " " << ids[0] << " " << ids[1] << " " << ids[2] << " " << " " << phi << "\n";
+      }
+    }
+    wgt *= aziWgt;
+    if(wgt>wgtMax) {
+      phiMax = phi;
+      wgtMax = wgt;
+    }
+    ++ntry;
+  }
+  while(wgt<UseRandom::rnd()&&ntry<10000);
+  if(ntry==10000) {
+    phi = phiMax;
+    generator()->log() << "Too many tries to generate phi in forward evolution\n";
+  }
+  // return the azimuthal angle
+  return phi;
+}
+
+double QTildeSudakov::generatePhiBackward(ShowerParticle & particle,
+					  const IdList & ids,
+					  ShoKinPtr kinematics) {
+  // no correlations, return flat phi
+  if(! ShowerHandler::currentHandler()->evolver()->correlations())
+    return Constants::twopi*UseRandom::rnd();
+  // get the kinematic variables
+  double z = kinematics->z();
+  Energy2 t = (1.-z)*sqr(kinematics->scale())/z;
+  Energy pT = kinematics->pT();
+  // if soft correlations 
+  bool softAllowed = ShowerHandler::currentHandler()->evolver()->softCorrelations() &&
+    (ids[2]==ParticleID::g || ids[2]==ParticleID::gamma);
+  Energy2 pipj,pik,m12(ZERO),m22(ZERO);
+  vector<Energy2> pjk(3,ZERO);
+  Energy Ei,Ej,Ek;
+  InvEnergy2 aziMax(ZERO);
+  if(softAllowed) {
+    // find the partner for the soft correlations
+    tShowerParticlePtr partner=findCorrelationPartner(particle,false,splittingFn()->interactionType());
+    double zFact = (1.-z);
+    // compute the transforms to the shower reference frame
+    // first the boost
+    vector<Lorentz5Momentum> basis = kinematics->getBasis();
+    Lorentz5Momentum pVect = basis[0];
+    Lorentz5Momentum nVect = basis[1];
+    assert(kinematics->frame()==ShowerKinematics::BackToBack);
+    Boost beta_bb = -(pVect + nVect).boostVector();
+    pVect.boost(beta_bb);
+    nVect.boost(beta_bb);
+    Axis axis = pVect.vect().unit();
+    // and then the rotation
+    LorentzRotation rot;
+    if(axis.perp2()>0.) {
+      double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
+      rot.rotate(acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+    }
+    else if(axis.z()<0.) {
+      rot.rotate(Constants::pi,Axis(1.,0.,0.));
+    }
+    rot.invert();
+    pVect *= rot;
+    nVect *= rot;
+    // shower parameters
+    Energy2 pn = pVect*nVect;
+    Energy2 m2 = pVect.m2();
+    double alpha0 = particle.x();
+    double  beta0 = -0.5/alpha0/pn*sqr(alpha0)*m2;
+    Lorentz5Momentum pj = partner->momentum();
+    pj.boost(beta_bb);
+    pj *= rot;
+    double beta2 = 0.5*(1.-zFact)*(sqr(alpha0*zFact/(1.-zFact))*m2+sqr(pT))/alpha0/zFact/pn; 
+    // compute the two phi independent dot products
+    Energy2 dot1 = pj*pVect;
+    Energy2 dot2 = pj*nVect;
+    pipj = alpha0*dot1+beta0*dot2;
+    pik  = alpha0*(alpha0*zFact/(1.-zFact)*m2+pn*(beta2+zFact/(1.-zFact)*beta0));
+    // compute the constants for the phi dependent dot product
+    pjk[0] = alpha0*zFact/(1.-zFact)*dot1+beta2*dot2;
+    pjk[1] = pj.x()*pT;
+    pjk[2] = pj.y()*pT;
+    m12 = ZERO;
+    m22 = sqr(partner->dataPtr()->mass());
+    Energy2 mag = sqrt(sqr(pjk[1])+sqr(pjk[2]));
+    if(ShowerHandler::currentHandler()->evolver()->softCorrelations()==1) {
+      aziMax = -m12/sqr(pik) -m22/sqr(pjk[0]+mag) +2.*pipj/pik/(pjk[0]-mag);
+    }
+    else if(ShowerHandler::currentHandler()->evolver()->softCorrelations()==2) {
+      Ek = alpha0*zFact/(1.-zFact)*pVect.t()+beta2*nVect.t();
+      Ei = alpha0*pVect.t()+beta0*nVect.t();
+      Ej = pj.t();
+      aziMax = 0.5/pik/Ek*(Ei-m12*Ek/pik  + pipj*Ek/(pjk[0]-mag) - Ej*pik/(pjk[0]+mag));
+    }
+    else {
+      assert(ShowerHandler::currentHandler()->evolver()->softCorrelations()==0);
+    }
+  }
+  // if spin correlations
+  vector<pair<int,Complex> > wgts;
+  if(ShowerHandler::currentHandler()->evolver()->spinCorrelations()) {
+    // get the spin density matrix and the mapping
+    RhoDMatrix mapping;
+    SpinPtr inspin;
+    bool needMapping = getMapping(inspin,mapping,particle,kinematics);
+    // set the decayed flag (counterintuitive but going backward)
+    inspin->decay();
+    // get the spin density matrix
+    RhoDMatrix rho=inspin->DMatrix();
+    // map to the shower basis if needed
+    if(needMapping) {
+      RhoDMatrix rhop(rho.iSpin(),false);
+      for(int ixa=0;ixa<rho.iSpin();++ixa) {
+	for(int ixb=0;ixb<rho.iSpin();++ixb) {
+	  for(int iya=0;iya<rho.iSpin();++iya) {
+	    for(int iyb=0;iyb<rho.iSpin();++iyb) {
+	      rhop(ixa,ixb) += rho(iya,iyb)*mapping(iya,ixa)*conj(mapping(iyb,ixb));
+	    }
+	  }
+	}
+      }
+      rhop.normalize();
+      rho = rhop;
+    }
+    wgts = splittingFn()->generatePhiBackward(z,t,ids,rho);
+  }
+  else {
+    wgts = vector<pair<int,Complex> >(1,make_pair(0,1.));
+  }
+  // generate the azimuthal angle
+  double phi,wgt;
+  static const Complex ii(0.,1.);
+  unsigned int ntry(0);
+  double phiMax(0.),wgtMax(0.);
+
+
+  do {
+    phi = Constants::twopi*UseRandom::rnd();
+    Complex spinWgt = 0.;
+    for(unsigned int ix=0;ix<wgts.size();++ix) {
+      if(wgts[ix].first==0)
+  	spinWgt += wgts[ix].second;
+      else
+  	spinWgt += exp(double(wgts[ix].first)*ii*phi)*wgts[ix].second;
+    }
+    wgt = spinWgt.real();
+    if(wgt-1.>1e-10) {
+      generator()->log() << "Backward weight problem " << wgt << " " << wgt-1. 
+  	   << " " << ids[0] << " " << ids[1] << " " << ids[2] << " " << " " << z << " " << phi << "\n";
+      generator()->log() << "Weights \n";
+      for(unsigned int ix=0;ix<wgts.size();++ix)
+  	generator()->log() << wgts[ix].first << " " << wgts[ix].second << "\n";
+    }
+    // soft correlations bit
+    double aziWgt = 1.;
+    if(softAllowed) {
+      Energy2 dot = pjk[0]+pjk[1]*cos(phi)+pjk[2]*sin(phi);
+      if(ShowerHandler::currentHandler()->evolver()->softCorrelations()==1) {
+	aziWgt = (-m12/sqr(pik) -m22/sqr(dot) +2.*pipj/pik/dot)/aziMax;
+      }
+      else if(ShowerHandler::currentHandler()->evolver()->softCorrelations()==2) {
+	aziWgt = max(ZERO,0.5/pik/Ek*(Ei-m12*Ek/pik  + pipj*Ek/dot - Ej*pik/dot)/aziMax);
+      }
+      if(aziWgt-1.>1e-10||aziWgt<-1e-10) {
+ 	generator()->log() << "Backward soft weight problem " << aziWgt << " " << aziWgt-1. 
+ 			   << " " << ids[0] << " " << ids[1] << " " << ids[2] << " " << " " << phi << "\n";
+      }
+    }
+    wgt *= aziWgt;
+    if(wgt>wgtMax) {
+      phiMax = phi;
+      wgtMax = wgt;
+    }
+    ++ntry;
+  }
+  while(wgt<UseRandom::rnd()&&ntry<10000);
+  if(ntry==10000) {
+    phi = phiMax;
+    generator()->log() << "Too many tries to generate phi in backward evolution\n";
+  }
+  // return the azimuthal angle
+  return phi;
+}
+
+double QTildeSudakov::generatePhiDecay(ShowerParticle & particle,
+				       const IdList & ids,
+				       ShoKinPtr kinematics) {
+  // only soft correlations in this case
+  // no correlations, return flat phi
+  if( !(ShowerHandler::currentHandler()->evolver()->softCorrelations() &&
+	(ids[2]==ParticleID::g || ids[2]==ParticleID::gamma )))
+    return Constants::twopi*UseRandom::rnd();
+  // get the kinematic variables
+  double  z = kinematics->z();
+  Energy pT = kinematics->pT();
+  // if soft correlations
+  // find the partner for the soft correlations
+  tShowerParticlePtr partner = findCorrelationPartner(particle,true,splittingFn()->interactionType());
+  double zFact(1.-z);
+  vector<Lorentz5Momentum> basis = kinematics->getBasis();
+  // compute the transforms to the shower reference frame
+  // first the boost
+  Lorentz5Momentum pVect = basis[0];
+  Lorentz5Momentum nVect = basis[1];
+  assert(kinematics->frame()==ShowerKinematics::Rest);
+  Boost beta_bb = -pVect.boostVector();
+  pVect.boost(beta_bb);
+  nVect.boost(beta_bb);
+  Axis axis = nVect.vect().unit();
+  // and then the rotation
+  LorentzRotation rot;
+  if(axis.perp2()>0.) {
+    double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
+    rot.rotate(acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+  }
+  else if(axis.z()<0.) {
+    rot.rotate(Constants::pi,Axis(1.,0.,0.));
+  }
+  rot.invert();
+  pVect *= rot;
+  nVect *= rot;
+  // shower parameters
+  Energy2 pn = pVect*nVect;
+  Energy2 m2 = pVect.m2();
+  double alpha0 = particle.showerParameters().alpha;
+  double  beta0 = 0.5/alpha0/pn*
+    (sqr(particle.dataPtr()->mass())-sqr(alpha0)*m2+sqr(particle.showerParameters().pt));
+  Lorentz5Momentum qperp0(particle.showerParameters().ptx,
+			  particle.showerParameters().pty,ZERO,ZERO);
+  Lorentz5Momentum pj = partner->momentum();
+  pj.boost(beta_bb);
+  pj *= rot;
+  // compute the two phi independent dot products
+  Energy2 pik = 0.5*zFact*(sqr(alpha0)*m2 - sqr(particle.showerParameters().pt) + 2.*alpha0*beta0*pn )
+    +0.5*sqr(pT)/zFact;
+  Energy2 dot1 = pj*pVect;
+  Energy2 dot2 = pj*nVect;
+  Energy2 dot3 = pj*qperp0;
+  Energy2 pipj = alpha0*dot1+beta0*dot2+dot3;
+  // compute the constants for the phi dependent dot product
+  vector<Energy2> pjk(3,ZERO);
+  pjk[0] = zFact*(alpha0*dot1+dot3-0.5*dot2/pn*(alpha0*m2-sqr(particle.showerParameters().pt)/alpha0))
+    +0.5*sqr(pT)*dot2/pn/zFact/alpha0;
+  pjk[1] = (pj.x() - dot2/alpha0/pn*qperp0.x())*pT;
+  pjk[2] = (pj.y() - dot2/alpha0/pn*qperp0.y())*pT;
+  Energy2 m12 = sqr(particle.dataPtr()->mass());
+  Energy2 m22 = sqr(partner->dataPtr()->mass());
+  Energy2 mag = sqrt(sqr(pjk[1])+sqr(pjk[2]));
+  InvEnergy2 aziMax;
+  vector<Energy> Ek(3,ZERO);
+  Energy Ei,Ej;
+  if(ShowerHandler::currentHandler()->evolver()->softCorrelations()==1) {
+    aziMax = -m12/sqr(pik) -m22/sqr(pjk[0]+mag) +2.*pipj/pik/(pjk[0]-mag);
+  }
+  else if(ShowerHandler::currentHandler()->evolver()->softCorrelations()==2) {
+    Ek[0] = zFact*(alpha0*pVect.t()+-0.5*nVect.t()/pn*(alpha0*m2-sqr(particle.showerParameters().pt)/alpha0))
+      +0.5*sqr(pT)*nVect.t()/pn/zFact/alpha0;
+    Ek[1] = -nVect.t()/alpha0/pn*qperp0.x()*pT;
+    Ek[2] = -nVect.t()/alpha0/pn*qperp0.y()*pT;
+    Energy mag2=sqrt(sqr(Ek[1])+sqr(Ek[2]));
+    Ei = alpha0*pVect.t()+beta0*nVect.t();
+    Ej = pj.t();
+    aziMax = 0.5/pik/(Ek[0]-mag2)*(Ei-m12*(Ek[0]-mag2)/pik  + pipj*(Ek[0]+mag2)/(pjk[0]-mag) - Ej*pik/(pjk[0]-mag) );
+  }
+  else
+    assert(ShowerHandler::currentHandler()->evolver()->softCorrelations()==0);
+  // generate the azimuthal angle
+  double phi,wgt(0.);
+  unsigned int ntry(0);
+  double phiMax(0.),wgtMax(0.);
+  do {
+    phi = Constants::twopi*UseRandom::rnd();
+    Energy2 dot = pjk[0]+pjk[1]*cos(phi)+pjk[2]*sin(phi);
+    if(ShowerHandler::currentHandler()->evolver()->softCorrelations()==1) {
+      wgt = (-m12/sqr(pik) -m22/sqr(dot) +2.*pipj/pik/dot)/aziMax;
+    }
+    else if(ShowerHandler::currentHandler()->evolver()->softCorrelations()==2) {
+      if(qperp0.m2()==ZERO) {
+	wgt = 1.;
+      }
+      else {
+	Energy Eg = Ek[0]+Ek[1]*cos(phi)+Ek[2]*sin(phi);
+	wgt = 0.5/pik/Eg*(Ei-m12*Eg/pik  + pipj*Eg/dot - Ej*pik/dot)/aziMax;
+      }	
+    }
+    if(wgt-1.>1e-10||wgt<-1e-10) {
+      generator()->log() << "Decay soft weight problem " << wgt << " " << wgt-1. 
+			 << " " << ids[0] << " " << ids[1] << " " << ids[2] << " " << " " << phi << "\n";
+    }
+    if(wgt>wgtMax) {
+      phiMax = phi;
+      wgtMax = wgt;
+    }
+    ++ntry;
+  }
+  while(wgt<UseRandom::rnd()&&ntry<10000);
+  if(ntry==10000) {
+    phi = phiMax;
+    generator()->log() << "Too many tries to generate phi\n";
+  }
+  // return the azimuthal angle
+  return phi;
+}
+
 
 Energy QTildeSudakov::calculateScale(double zin, Energy pt, IdList ids,
 				     unsigned int iopt) {

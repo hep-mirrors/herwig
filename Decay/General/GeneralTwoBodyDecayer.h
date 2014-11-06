@@ -235,7 +235,7 @@ protected:
   /**
    *  Work out the type of process
    */
-  void identifyDipoles(vector<dipoleType> & dipoles,
+  bool identifyDipoles(vector<dipoleType> & dipoles,
 		       ShowerProgenitorPtr & aProgenitor,
 		       ShowerProgenitorPtr & bProgenitor,
 		       ShowerProgenitorPtr & cProgenitor) const;

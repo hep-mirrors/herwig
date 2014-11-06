@@ -22,6 +22,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
+#include "Herwig++/Decay/TwoBodyDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -218,6 +219,8 @@ void PScalarLeptonNeutrinoDecayer::Init() {
 double PScalarLeptonNeutrinoDecayer::me2(const int,const Particle & inpart,
 					 const ParticleVector & decay,
 					 MEOption meopt) const {
+  if(!ME())
+    ME(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half)));
   // work out which decay constant to use
   int icoup(0),id(abs(inpart.id()));
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
@@ -235,7 +238,6 @@ double PScalarLeptonNeutrinoDecayer::me2(const int,const Particle & inpart,
   if(meopt==Initialize) {
     ScalarWaveFunction::
       calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
-    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half));
   }
   if(meopt==Terminate) {
     // set up the spin information for the decay products
@@ -259,7 +261,7 @@ double PScalarLeptonNeutrinoDecayer::me2(const int,const Particle & inpart,
   vector<unsigned int> ispin(3,0);
   for(ispin[ianti+1]=0;ispin[ianti+1]<2;++ispin[ianti+1]) {
     for(ispin[iferm+1]=0;ispin[iferm+1]<2;++ispin[iferm+1]) {
-      ME()(ispin)= idferm%2==0 ? 
+      (*ME())(ispin)= idferm%2==0 ? 
 	pre*_wave[ispin[ianti+1]].rightScalar(_wavebar[ispin[iferm+1]]) :
 	pre*_wave[ispin[ianti+1]].leftScalar( _wavebar[ispin[iferm+1]]) ;
     }
@@ -272,7 +274,7 @@ double PScalarLeptonNeutrinoDecayer::me2(const int,const Particle & inpart,
 //   cout << "testing matrix element for " << inpart.PDGName() << " -> " 
 //        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " " 
 //        << me << " " << (me-test)/(me+test) << endl;
-  return 0.5*ME().contract(_rho).real();
+  return 0.5*ME()->contract(_rho).real();
 }
 
 

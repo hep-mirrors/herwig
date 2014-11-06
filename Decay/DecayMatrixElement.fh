@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the DecayMatrixElement class.
+//
+#ifndef Herwig_DecayMatrixElement_FH
+#define Herwig_DecayMatrixElement_FH
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace Herwig {
+
+class DecayMatrixElement;
+
+ThePEG_DECLARE_POINTERS(Herwig::DecayMatrixElement,DecayMEPtr);
+
+}
+
+#endif

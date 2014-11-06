@@ -67,9 +67,6 @@ double sign(double x) {
 
 void GeneralSampler::initialize() {
 
-  // testing/debug
-  cerr << "\n\nentering initialize now\n\n" << flush;
-
   if ( theParallelIntegration &&
        runLevel() == ReadMode )
     throw Exception()
@@ -497,8 +494,6 @@ void GeneralSampler::currentCrossSections() const {
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 void GeneralSampler::doinit() {
-  // testing/debug
-  cerr << "\n\nentering doinit now\n\n" << flush;
   readGrids();
   if ( theGrids.children().empty() && runLevel() == RunMode )
     throw Exception()
@@ -601,10 +596,6 @@ void GeneralSampler::dofinish() {
 }
 
 void GeneralSampler::doinitrun() {
-
-  // testing/debug
-  cerr << "\n\nentering doinitrun now\n\n" << flush;
-
   readGrids();
 
   if ( theGrids.children().empty() )
