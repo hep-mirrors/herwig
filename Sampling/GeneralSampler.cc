@@ -654,6 +654,8 @@ void GeneralSampler::writeGrids(bool seedIndex) const {
   else if ( *dataName.rbegin() != '/' )
     dataName += "/";
   dataName += generator()->runName();
+  if ( !integrationList().empty() )
+    dataName += "-" + integrationList();
   if ( !seedIndex )
     dataName += "-grids.xml";
   else {

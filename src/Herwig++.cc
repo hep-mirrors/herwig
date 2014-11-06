@@ -283,8 +283,6 @@ void HerwigRun(string runname, string setupfile,
   if ( seed > 0 ) eg->setSeed(seed);
   if ( !tag.empty() ) eg->addTag(tag);
   if ( !setupfile.empty() ) eg->addTag("-" + setupfile);
-  if ( !integrationList.empty() )
-    eg->addTag("-" + integrationList);
 
   if ( integrationJob ) {
     Ptr<StandardEventHandler>::tptr eh =
