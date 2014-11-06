@@ -265,7 +265,8 @@ void GeneralSampler::initialize() {
       s->second->saveIntegrationData();
   }
 
-  writeGrids();
+  if ( !justAfterIntegrate )
+    writeGrids();
 
 }
 
