@@ -554,7 +554,13 @@ void GeneralSampler::dofinish() {
 
   if ( runCombinationData ) {
 
-    string dataName = generator()->runName() + "-sampling.dat";
+    string dataName = gridDirectory();
+    if ( dataName.empty() )
+      dataName = "./";
+    else if ( *dataName.rbegin() != '/' )
+      dataName += "/";
+    dataName += generator()->runName();
+    dataName += "-sampling.dat";
 
     ofstream data(dataName.c_str());
 
