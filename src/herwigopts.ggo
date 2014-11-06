@@ -49,8 +49,8 @@ section "Integration options"
 text "
   -x,--setupfile=FILE      An input file to modify run parameters."
 
-option "bins" n "Integrate the given list of subprocesses."
-  typestr="FILE"
+option "jobid" n "Integrate the given integration job."
+  typestr="NUMBER"
   string optional
 
 section "Repository options"

@@ -428,11 +428,6 @@ private:
   unsigned int theIntegratePerJob;
 
   /**
-   * Ignore existing integration data in grid files
-   */
-  bool theIgnoreIntegrationData;
-
-  /**
    * Indicate that initialization is only reading a grid.
    */
   bool justAfterIntegrate;

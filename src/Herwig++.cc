@@ -30,8 +30,7 @@ void printUsageAndExit();
 
 void HerwigInit(string infile, string reponame);
 void HerwigRead(string reponame, string runname,
-		const gengetopt_args_info & args_info,
-		bool postponeInitialize);
+		const gengetopt_args_info & args_info);
 void HerwigRun(string runname, string setupfile,
 	       int seed, string tag, long N, 
 	       bool tics, bool resume, int jobs,
@@ -58,17 +57,22 @@ int main(int argc, char * argv[]) {
     // Interpret command status
     enum { INIT, READ, BUILD, INTEGRATE, RUN, ERROR } status;
     std::string runType = args_info.inputs[0];
-    if ( runType == "init" )
+    if ( runType == "init" ) {
       status = INIT;
-    else if ( runType == "read" ) 
+      SamplerBase::setRunLevel(SamplerBase::InitMode);
+    } else if ( runType == "read" ) {
       status = READ;
-    else if ( runType == "build" ) 
+      SamplerBase::setRunLevel(SamplerBase::ReadMode);
+    } else if ( runType == "build" ) {
       status = BUILD;
-    else if ( runType == "integrate" ) 
+      SamplerBase::setRunLevel(SamplerBase::BuildMode);
+    } else if ( runType == "integrate" ) {
       status = INTEGRATE;
-    else if ( runType == "run" )  
+      SamplerBase::setRunLevel(SamplerBase::IntegrationMode);
+    } else if ( runType == "run" ) {
       status = RUN;
-    else {
+      SamplerBase::setRunLevel(SamplerBase::RunMode);
+    } else {
       status = ERROR;
       printUsageAndExit();
     }
@@ -141,8 +145,9 @@ int main(int argc, char * argv[]) {
 
     // integration list
     string integrationList = "";
-    if ( args_info.bins_given )
-      integrationList = args_info.bins_arg;
+    if ( args_info.jobid_given ) {
+      integrationList = "integrationJob" + string(args_info.jobid_arg);
+    }
 
     // Resume
     bool resume = false;
@@ -154,8 +159,8 @@ int main(int argc, char * argv[]) {
     // Call mode
     switch ( status ) {
     case INIT:        HerwigInit( runname, reponame ); break;
-    case READ:        HerwigRead( reponame, runname, args_info, false ); break;
-    case BUILD:       HerwigRead( reponame, runname, args_info, true ); break;
+    case READ:        HerwigRead( reponame, runname, args_info ); break;
+    case BUILD:       HerwigRead( reponame, runname, args_info ); break;
     case INTEGRATE:   HerwigRun( runname, setupfile , seed, tag, N, tics, resume, jobs, true, integrationList );  break;
     case RUN:         HerwigRun( runname, setupfile , seed, tag, N, tics, resume, jobs, false, integrationList );  break;
     default:          printUsageAndExit();
@@ -230,8 +235,7 @@ void HerwigInit(string infile, string reponame) {
 
 
 void HerwigRead(string reponame, string runname, 
-		const gengetopt_args_info & args_info,
-		bool postponeInitialize) {
+		const gengetopt_args_info & args_info) {
 #ifdef HERWIG_PKGDATADIR
   ifstream test(reponame.c_str());
   if ( !test ) {
@@ -243,8 +247,6 @@ void HerwigRead(string reponame, string runname,
   if ( ! msg.empty() ) cerr << msg << '\n';
   setSearchPaths(args_info);
   breakThePEG();
-  if ( postponeInitialize )
-    SamplerBase::doPostponeInitialize();
   if ( !runname.empty() && runname != "-" ) {
     string msg = Repository::read(runname, std::cout);
     if ( ! msg.empty() ) cerr << msg << '\n';
@@ -279,10 +281,8 @@ void HerwigRun(string runname, string setupfile,
   if ( seed > 0 ) eg->setSeed(seed);
   if ( !tag.empty() ) eg->addTag(tag);
   if ( !setupfile.empty() ) eg->addTag("-" + setupfile);
-  if ( integrationJob ) {
-    if ( !integrationList.empty() )
-      eg->addTag("-" + integrationList);
-  }
+  if ( !integrationList.empty() )
+    eg->addTag("-" + integrationList);
 
   if ( integrationJob ) {
     Ptr<StandardEventHandler>::tptr eh =
@@ -292,14 +292,12 @@ void HerwigRun(string runname, string setupfile,
       Repository::cleanup();
       exit( EXIT_FAILURE );
     }
-    eh->sampler()->isIntegrationJob();
-    if ( integrationList != "" )
+    if ( !integrationList.empty() )
       eh->sampler()->integrationList(integrationList);
   }
 
   if ( ! setupfile.empty() ) {
-    if ( !integrationJob )
-      SamplerBase::setupFileUsed();
+    SamplerBase::setupFileUsed();
     string msg = Repository::modifyEventGenerator(*eg, setupfile, cout, integrationJob);
     if ( ! msg.empty() ) cerr << msg << '\n';
     if ( integrationJob )
