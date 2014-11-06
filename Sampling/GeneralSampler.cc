@@ -590,6 +590,9 @@ void GeneralSampler::dofinish() {
       s->second->saveIntegrationData();
   }
 
+  // we should actually append the seed used to the grid name here but
+  // requires seed to be reported by ThePEG which is not cleanly
+  // supported right now
   writeGrids();
 
   SamplerBase::dofinish();

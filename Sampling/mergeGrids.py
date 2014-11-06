@@ -26,10 +26,12 @@ if __name__ == '__main__':
         sys.stderr.write('Please specify a run name\n')
         sys.exit(1)
 
-    gridId = 'Matchbox/' + args[0] + '/' + args[0]
+    runName=args[0]
     setupName=opts.setupFile
     if setupName:
-        gridId = gridId + '-' + setupName
+        runName = runName + '-' + setupName
+
+    gridId = 'Matchbox/' + runName + '/' + runName
 
     gridFiles=glob.glob(gridId + '-integrationJob*-grids.xml')
 
