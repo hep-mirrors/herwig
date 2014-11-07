@@ -113,21 +113,20 @@ void MEee2gZ2qq::persistentOutput(PersistentOStream & os) const {
   os << FFZVertex_ << FFPVertex_ << FFGVertex_ 
      << Z0_ << gamma_ << gluon_ << minflav_ 
      << maxflav_ << massopt_ << alphaQCD_ << alphaQED_ 
-     << ounit(pTminQED_,GeV) << ounit(pTminQCD_,GeV) << preFactor_;
+     << ounit(pTminQED_,GeV) << ounit(pTminQCD_,GeV) << preFactor_
+     << spinCorrelations_;
 }
 
 void MEee2gZ2qq::persistentInput(PersistentIStream & is, int) {
   is >> FFZVertex_ >> FFPVertex_ >> FFGVertex_ 
      >> Z0_ >> gamma_ >> gluon_ >> minflav_ 
      >> maxflav_ >> massopt_ >> alphaQCD_ >> alphaQED_
-     >> iunit(pTminQED_,GeV)  >> iunit(pTminQCD_,GeV) >> preFactor_;
+     >> iunit(pTminQED_,GeV)  >> iunit(pTminQCD_,GeV) >> preFactor_
+     >> spinCorrelations_;
 }
 
-// *** Attention *** The following static variable is needed for the type
-// description system in ThePEG. Please check that the template arguments
-// are correct (the class and its base class), and that the constructor
-// arguments are correct (the class name and the name of the dynamically
-// loadable library where the class implementation can be found).
+// The following static variable is needed for the type
+// description system in ThePEG.
 DescribeClass<MEee2gZ2qq,HwMEBase>
 describeMEee2gZ2qq("Herwig::MEee2gZ2qq", "HwMELepton.so");
 
@@ -190,6 +189,21 @@ void MEee2gZ2qq::Init() {
     ("AlphaQED",
      "Pointer to the object to calculate the EM coupling for the correction",
      &MEee2gZ2qq::alphaQED_, false, false, true, false, false);
+
+  static Switch<MEee2gZ2qq,bool> interfaceSpinCorrelations
+    ("SpinCorrelations",
+     "Switch the construction of the veretx for spin correlations on/off",
+     &MEee2gZ2qq::spinCorrelations_, true, false, false);
+  static SwitchOption interfaceSpinCorrelationsYes
+    (interfaceSpinCorrelations,
+     "Yes",
+     "Swtich On",
+     true);
+  static SwitchOption interfaceSpinCorrelationsNo
+    (interfaceSpinCorrelations,
+     "No",
+     "Switch off",
+     false);
 
 }
 
@@ -273,6 +287,7 @@ ProductionMatrixElement MEee2gZ2qq::HelicityME(vector<SpinorWaveFunction>    & f
 }
 
 void MEee2gZ2qq::constructVertex(tSubProPtr sub) {
+  if(!spinCorrelations_) return;
   // extract the particles in the hard process
   ParticleVector hard;
   hard.push_back(sub->incoming().first);
@@ -422,6 +437,13 @@ void MEee2gZ2qq::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
   // change the existing quark and antiquark
   PPtr orig;
   for(cit=tree->outgoingLines().begin();cit!=tree->outgoingLines().end();++cit) {
+    map<tShowerTreePtr,pair<tShowerProgenitorPtr,
+			    tShowerParticlePtr> >::const_iterator tit;
+    for(tit  = tree->treelinks().begin();
+	tit != tree->treelinks().end();++tit) {
+      if(tit->second.first && tit->second.second==cit->first->progenitor())
+	break;
+    }
     if(cit->first->progenitor()->id()==newq->id()) {
       // remove old particles from colour line
       col->removeColoured(cit->first->copy());
@@ -433,11 +455,13 @@ void MEee2gZ2qq::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
       tree->outgoingLines()[cit->first]=sp;
       cit->first->perturbative(!firstEmits);
       if(firstEmits) orig=cit->first->original();
+      if(tit!=tree->treelinks().end())
+	tree->updateLink(tit->first,make_pair(cit->first,sp));
     }
     else {
       // remove old particles from colour line
       col->removeAntiColoured(cit->first->copy());
-      col->removeColoured(cit->first->progenitor());
+      col->removeAntiColoured(cit->first->progenitor());
       // insert new particles
       cit->first->copy(newa);
       ShowerParticlePtr sp(new_ptr(ShowerParticle(*newa,1,true)));
@@ -445,6 +469,8 @@ void MEee2gZ2qq::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
       tree->outgoingLines()[cit->first]=sp;
       cit->first->perturbative(firstEmits);
       if(!firstEmits) orig=cit->first->original();
+      if(tit!=tree->treelinks().end())
+	tree->updateLink(tit->first,make_pair(cit->first,sp));
     }
   }
   // add the gluon

@@ -18,12 +18,10 @@
 #include <ThePEG/Handlers/SamplerBase.h>
 #include <iostream>
 
-#include <config.h>
-#ifdef HAVE_UNISTD_H
 #include <queue>
 #include <unistd.h>
 #include <sys/wait.h>
-#endif
+
 
 
 using namespace ThePEG;
@@ -57,17 +55,24 @@ int main(int argc, char * argv[]) {
       printUsageAndExit();
 
     // Interpret command status
-    enum { INIT, READ, INTEGRATE, RUN, ERROR } status;
+    enum { INIT, READ, BUILD, INTEGRATE, RUN, ERROR } status;
     std::string runType = args_info.inputs[0];
-    if ( runType == "init" )
+    if ( runType == "init" ) {
       status = INIT;
-    else if ( runType == "read" ) 
+      SamplerBase::setRunLevel(SamplerBase::InitMode);
+    } else if ( runType == "read" ) {
       status = READ;
-    else if ( runType == "integrate" ) 
+      SamplerBase::setRunLevel(SamplerBase::ReadMode);
+    } else if ( runType == "build" ) {
+      status = BUILD;
+      SamplerBase::setRunLevel(SamplerBase::BuildMode);
+    } else if ( runType == "integrate" ) {
       status = INTEGRATE;
-    else if ( runType == "run" )  
+      SamplerBase::setRunLevel(SamplerBase::IntegrationMode);
+    } else if ( runType == "run" ) {
       status = RUN;
-    else {
+      SamplerBase::setRunLevel(SamplerBase::RunMode);
+    } else {
       status = ERROR;
       printUsageAndExit();
     }
@@ -97,8 +102,10 @@ int main(int argc, char * argv[]) {
 
     // RNG seed
     int seed = 0;
-    if ( args_info.seed_given )
+    if ( args_info.seed_given ) {
       seed = args_info.seed_arg;
+      SamplerBase::setSeed(seed);
+    }
 
     // run name tag (default given in ggo file)
     string tag = args_info.tag_arg;
@@ -110,10 +117,8 @@ int main(int argc, char * argv[]) {
 
     // parallel jobs
     int jobs = 1;
-#   ifdef HAVE_UNISTD_H
     if ( args_info.jobs_given )
       jobs = min( args_info.jobs_arg, 10 );
-#   endif
 
     setSearchPaths(args_info);
   
@@ -142,8 +147,9 @@ int main(int argc, char * argv[]) {
 
     // integration list
     string integrationList = "";
-    if ( args_info.bins_given )
-      integrationList = args_info.bins_arg;
+    if ( args_info.jobid_given ) {
+      integrationList = "integrationJob" + string(args_info.jobid_arg);
+    }
 
     // Resume
     bool resume = false;
@@ -156,9 +162,10 @@ int main(int argc, char * argv[]) {
     switch ( status ) {
     case INIT:        HerwigInit( runname, reponame ); break;
     case READ:        HerwigRead( reponame, runname, args_info ); break;
+    case BUILD:       HerwigRead( reponame, runname, args_info ); break;
     case INTEGRATE:   HerwigRun( runname, setupfile , seed, tag, N, tics, resume, jobs, true, integrationList );  break;
     case RUN:         HerwigRun( runname, setupfile , seed, tag, N, tics, resume, jobs, false, integrationList );  break;
-    default:    printUsageAndExit();
+    default:          printUsageAndExit();
     }
 
 
@@ -275,6 +282,7 @@ void HerwigRun(string runname, string setupfile,
 
   if ( seed > 0 ) eg->setSeed(seed);
   if ( !tag.empty() ) eg->addTag(tag);
+  if ( !setupfile.empty() ) eg->addTag("-" + setupfile);
 
   if ( integrationJob ) {
     Ptr<StandardEventHandler>::tptr eh =
@@ -284,12 +292,12 @@ void HerwigRun(string runname, string setupfile,
       Repository::cleanup();
       exit( EXIT_FAILURE );
     }
-    eh->sampler()->isIntegrationJob();
-    if ( integrationList != "" )
+    if ( !integrationList.empty() )
       eh->sampler()->integrationList(integrationList);
   }
 
   if ( ! setupfile.empty() ) {
+    SamplerBase::setupFileUsed();
     string msg = Repository::modifyEventGenerator(*eg, setupfile, cout, integrationJob);
     if ( ! msg.empty() ) cerr << msg << '\n';
     if ( integrationJob )
@@ -308,9 +316,6 @@ void HerwigRun(string runname, string setupfile,
   
   }
   else { // forked jobs
-
-#   ifdef HAVE_UNISTD_H
-
     std::queue<pid_t> pids;
     pid_t pid;
 
@@ -343,9 +348,5 @@ void HerwigRun(string runname, string setupfile,
       std::cout << "PID " << pids.front() << " done." << std::endl;
       pids.pop();
     }
-
-#   endif
-    return;
-
   }
 }

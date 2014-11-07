@@ -75,16 +75,6 @@ public:
    */
   virtual bool showerHardProcessVeto() { return false; };
 
-  /**
-   * It returns true if the particle with the specified id
-   * is in the list of those that should be decayed during the showering
-   * showering.
-   */
-  bool decaysInShower(const long id) const {
-    return ( particlesDecayInShower_.find( abs(id) ) != 
-	     particlesDecayInShower_.end() ); 
-  }
-
 public:
 
   /**@name Methods related to PDF freezing */
@@ -414,6 +404,16 @@ private:
    *  this is a vector that is interfaced so they can be changed
    */
   vector<long> inputparticlesDecayInShower_;
+
+  /**
+   *   Whether or not to include spa-cetime distances in the shower
+   */
+  bool includeSpaceTime_;
+
+  /**
+   *  The minimum virtuality for the space-time model
+   */
+  Energy2 vMin_;
 
   /**
    *  The ShowerTree for the hard process

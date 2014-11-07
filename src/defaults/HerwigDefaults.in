@@ -106,8 +106,6 @@ newdef LEPHandler:Sampler /Herwig/ACDCSampler
 newdef LEPHandler:CascadeHandler /Herwig/Shower/ShowerHandler
 newdef LEPHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
 newdef LEPHandler:DecayHandler /Herwig/Decays/DecayHandler
-# spin correlations for perturbative decays (in same step so shower works)
-insert LEPHandler:PreCascadeHandlers 0 /Herwig/NewPhysics/DecayHandler
 # QED radiation off Z decay products in hard process
 insert LEPHandler:PostSubProcessHandlers 0 /Herwig/QEDRadiation/QEDRadiationHandler
 
@@ -123,8 +121,6 @@ newdef LHCHandler:Sampler /Herwig/ACDCSampler
 newdef LHCHandler:CascadeHandler /Herwig/Shower/ShowerHandler
 newdef LHCHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
 newdef LHCHandler:DecayHandler /Herwig/Decays/DecayHandler
-# spin correlations for perturbative decays (in same step so shower works)
-insert LHCHandler:PreCascadeHandlers 0 /Herwig/NewPhysics/DecayHandler
 # QED radiation off W/Z decay products in hard process
 insert LHCHandler:PostSubProcessHandlers[0] /Herwig/QEDRadiation/QEDRadiationHandler
 

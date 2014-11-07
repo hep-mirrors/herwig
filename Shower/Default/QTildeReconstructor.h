@@ -179,8 +179,7 @@ protected:
    * main information we want.
    * This methods returns false if there was no radiation or rescaling required
    */
-  virtual bool reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
-				      unsigned int iopt) const;
+  virtual bool reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent) const;
 
   /**
    * Exactly similar to the previous one, but for a space-like jet.
@@ -437,6 +436,11 @@ protected:
    */
   void deepTransform(PPtr particle,const LorentzRotation & r,
 		     bool match=true,PPtr original=PPtr()) const;
+
+  /**
+   *  Find the mass of a particle in the hard branching
+   */
+  Energy findMass(HardBranchingPtr) const;
 
 protected:
 

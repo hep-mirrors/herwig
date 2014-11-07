@@ -55,9 +55,9 @@ void ShowerHandler::doinit() {
   // set used in the simulation
   particlesDecayInShower_.insert(inputparticlesDecayInShower_.begin(),
 				 inputparticlesDecayInShower_.end());
-
-  // \todo DG: Disabled here because of momentum-violation problems
-  //  ShowerTree::_decayInShower = particlesDecayInShower_;
+  ShowerTree::_decayInShower = particlesDecayInShower_;
+  ShowerTree::_vmin2 = vMin_;
+  ShowerTree::_spaceTime = includeSpaceTime_;
 }
 
 IBPtr ShowerHandler::clone() const {
@@ -70,7 +70,8 @@ IBPtr ShowerHandler::fullclone() const {
 
 ShowerHandler::ShowerHandler() : 
   pdfFreezingScale_(2.5*GeV),
-  maxtry_(10),maxtryMPI_(10),maxtryDP_(10), subProcess_(),
+  maxtry_(10),maxtryMPI_(10),maxtryDP_(10),
+  includeSpaceTime_(false), vMin_(0.1*GeV2), subProcess_(),
   theFactorizationScaleFactor(1.0),
   theRenormalizationScaleFactor(1.0),
   theHardScaleFactor(1.0), theScaleFactorOption(0) {
@@ -88,9 +89,9 @@ void ShowerHandler::doinitrun(){
     if(MPIHandler_->softInt())
       remDec_->initSoftInteractions(MPIHandler_->Ptmin(), MPIHandler_->beta());
   }
-  // \todo DG: Disabled here because of momentum-violation problems
-  // Must set pre-cascade-handler to NewPhysics/DecayHandler instead
-  //  ShowerTree::_decayInShower = particlesDecayInShower_;
+  ShowerTree::_decayInShower = particlesDecayInShower_;
+  ShowerTree::_vmin2 = vMin_;
+  ShowerTree::_spaceTime = includeSpaceTime_;
 }
 
 void ShowerHandler::dofinish(){
@@ -102,6 +103,7 @@ void ShowerHandler::persistentOutput(PersistentOStream & os) const {
   os << evolver_ << remDec_ << ounit(pdfFreezingScale_,GeV) << maxtry_ 
      << maxtryMPI_ << maxtryDP_ << inputparticlesDecayInShower_
      << particlesDecayInShower_ << MPIHandler_ << PDFA_ << PDFB_
+     << includeSpaceTime_ << ounit(vMin_,GeV2)
      << theFactorizationScaleFactor << theRenormalizationScaleFactor
      << theHardScaleFactor << theScaleFactorOption;
 }
@@ -110,6 +112,7 @@ void ShowerHandler::persistentInput(PersistentIStream & is, int) {
   is >> evolver_ >> remDec_ >> iunit(pdfFreezingScale_,GeV) >> maxtry_ 
      >> maxtryMPI_ >> maxtryDP_ >> inputparticlesDecayInShower_
      >> particlesDecayInShower_ >> MPIHandler_ >> PDFA_ >> PDFB_
+     >> includeSpaceTime_ >> iunit(vMin_,GeV2)
      >> theFactorizationScaleFactor >> theRenormalizationScaleFactor
      >> theHardScaleFactor >> theScaleFactorOption;
 }
@@ -198,6 +201,27 @@ void ShowerHandler::Init() {
     ("PDFB",
      "The PDF for beam particle B. Overrides the particle's own PDF setting.",
      &ShowerHandler::PDFB_, false, false, true, true, false);
+
+  static Switch<ShowerHandler,bool> interfaceIncludeSpaceTime
+    ("IncludeSpaceTime",
+     "Whether to include the model for the calculation of space-time distances",
+     &ShowerHandler::includeSpaceTime_, false, false, false);
+  static SwitchOption interfaceIncludeSpaceTimeYes
+    (interfaceIncludeSpaceTime,
+     "Yes",
+     "Include the model",
+     true);
+  static SwitchOption interfaceIncludeSpaceTimeNo
+    (interfaceIncludeSpaceTime,
+     "No",
+     "Only include the displacement from the particle-s lifetime for decaying particles",
+     false);
+  
+  static Parameter<ShowerHandler,Energy2> interfaceMinimumVirtuality
+    ("MinimumVirtuality",
+     "The minimum virtuality for the space-time model",
+     &ShowerHandler::vMin_, GeV2, 0.1*GeV2, 0.0*GeV2, 1000.0*GeV2,
+     false, false, Interface::limited);
 
   static Parameter<ShowerHandler,double> interfaceFactorizationScaleFactor
     ("FactorizationScaleFactor",

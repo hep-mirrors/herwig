@@ -23,13 +23,18 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 #include "ThePEG/PDT/EnumParticles.h"
+#include <boost/lexical_cast.hpp>
+
+
+
 #include <cstdlib>
 #include <dlfcn.h>
 #include <errno.h>
+
 using namespace Herwig;
 
 
-extern "C" void MG_InitProc                    (int* proc );
+extern "C" void MG_InitProc                    ();
 extern "C" void MG_Calculate_wavefunctions_virt(int* proc,double*,double*);
 extern "C" void MG_Calculate_wavefunctions_born(int* proc,double*, int*);
 extern "C" void MG_Jamp                        (int* proc,int*, double*);
@@ -49,7 +54,7 @@ extern "C" void MG_Colour                      (int* proc,int* i,int* j ,int* co
 
 
 MadGraphAmplitude::MadGraphAmplitude()
-  : theMG5Path("@MADGRAPHPREFIX@"), theProcessPath("./MadGraphAmplitudes") {}
+  : theMG5Path("@MADGRAPHPREFIX@"), theProcessPath(""),theMGmodel("loop_sm") {}
 
 MadGraphAmplitude::~MadGraphAmplitude() {
 
@@ -72,7 +77,7 @@ template<class ProcType>
 string processId(const ProcType& p) {
   string orderFileName =  "";
   for (typename ProcType::const_iterator it=p.begin();it!=p.end();it++)
-    orderFileName +=(*it)->PDGName();
+    orderFileName +=boost::lexical_cast<string>( (*it)->id());
   orderFileName+=".MG";
   return orderFileName;
 }
@@ -80,39 +85,51 @@ string processId(const ProcType& p) {
 bool initializedMad=false;
 
 
-void MadGraphAmplitude::initProcess(const cPDVector& proc) {
+void MadGraphAmplitude::initProcess(const cPDVector& ) {
+  
+  if ( theProcessPath == "" ) theProcessPath = factory()->buildStorage()+"/MadGraphAmplitudes";
+  
   if ( lastMatchboxXComb()->initialized() )
     return;
-  string orderFileName = processId(proc);
-  ifstream ifile((theProcessPath+"/"+orderFileName).c_str());
-  if ( !ifile ) {
-    throw Exception() << "failed to build process " << orderFileName << "\n"
-		      << Exception::abortnow;
-  }
+//   string orderFileName = processId(proc);
+//   ifstream ifile((theProcessPath+"/"+orderFileName).c_str());
+//   if ( !ifile ) {
+//     throw Exception() << "failed to build process " << orderFileName << "\n"
+// 		      << Exception::abortnow;
+//   }
   if ( !DynamicLoader::load(theProcessPath+"/InterfaceMadGraph.so") )
     throw Exception() << "Failed to load MadGraph amplitudes\n"
 		      << DynamicLoader::lastErrorMessage
 		      << Exception::abortnow;
 
-  string ppstr = "param_card.dat";
-  char * ppchar = new char[ppstr.size()+1];
-  std::copy(ppstr.begin(),ppstr.end(),ppchar);
-  ppchar[ppstr.size()] = '\0';
-  int xx=lastMatchboxXComb()->externalId();
   if (!initializedMad){
-    MG_InitProc(&xx);
+    MG_InitProc();
     initializedMad=true;
   }
-  delete[] ppchar;
   lastMatchboxXComb()->isInitialized();
 }
 
 bool MadGraphAmplitude::initializeExternal() {
+  if ( theProcessPath == "" ) theProcessPath = factory()->buildStorage()+"/MadGraphAmplitudes";
 
   loadProcessMap();
+  std::system(("mkdir -p " + theProcessPath).c_str());
 
-
-  string para= "MG-Parameter.dat";
+  string born= theProcessPath+"/BornAmplitudes.dat";
+  ofstream borns(born.c_str());
+  string virt= theProcessPath+"/VirtAmplitudes.dat";
+  ofstream virts(virt.c_str());
+  
+  for (vector<string>::iterator amps=BornAmplitudes.begin();amps!=BornAmplitudes.end();amps++)
+    borns<<*amps<<endl;
+  for (vector<string>::iterator amps=VirtAmplitudes.begin();amps!=VirtAmplitudes.end();amps++)
+    virts<<*amps<<endl;
+  borns.close();
+  virts.close();
+  
+  
+   
+  string para= theProcessPath+"/MG-Parameter.dat";
   ofstream params(para.c_str());
   params<<"$WZ$ "    <<std::setiosflags(ios::scientific)  <<getParticleData(ParticleID::Z0)->width()     /GeV;
   params<<"\n$WW$ "    <<std::setiosflags(ios::scientific)   <<getParticleData(ParticleID::Wplus)->width()/GeV;
@@ -135,7 +152,7 @@ bool MadGraphAmplitude::initializeExternal() {
   
   if ( !processmap().empty() ){
     //set the parameters
-    cmd +=  theProcessPath;
+    cmd +="--path "+theProcessPath+" --model "+theMGmodel;
     std::system(cmd.c_str());
     return true;
   }
@@ -143,8 +160,7 @@ bool MadGraphAmplitude::initializeExternal() {
   if ( !getcwd(cwd,sizeof(cwd)) )
     throw Exception() << "failed to determine current working directory\n"
 		      << Exception::abortnow;
-  cmd += theMG5Path + "/bin " +  theProcessPath
-    + " > " +  theProcessPath + "/MG.log 2>&1";
+  cmd +="--build --bpath "+ theMG5Path + "/bin " +  "--path "+theProcessPath +" --model "+theMGmodel+" > " +  theProcessPath + "/MG.log 2>&1";
   generator()->log() << "\n\nCompiling MadGraph amplitudes. This may take some time -- please be patient.\n"
 		     << "In case of problems see " << theProcessPath << "/MG.log for details.\n\n"
 		     << flush;
@@ -157,13 +173,33 @@ bool MadGraphAmplitude::initializeExternal() {
 }
 
 int MadGraphAmplitude::externalId(const cPDVector& proc) {
-  string orderFileName =  processId(proc);
-  assert(processmap().find(orderFileName) != processmap().end());
-  int res = processmap().find(orderFileName)->second;
+    for (int i=0;i<100;i++){
+    colourindex.push_back(-2);
+  }
+  assert(!BornAmplitudes.empty()||!VirtAmplitudes.empty());
+  
+  int res=0;
+  string amp="";
+  int k=0;
+  for (cPDVector::const_iterator it=proc.begin();it!=proc.end();it++,k++){
+    amp+=boost::lexical_cast<string>( (*it)->id())+" ";if (k==1)amp+=" > ";
+  }
+
+  
+  for (vector<string>::iterator amps=BornAmplitudes.begin();amps!=BornAmplitudes.end();amps++,res++)
+    if(amp==*amps)return res+1;
+  for (vector<string>::iterator amps=VirtAmplitudes.begin();amps!=VirtAmplitudes.end();amps++,res++)
+    if(amp==*amps)return res+1;
+  
+  throw Exception() << "One amplitude has no externalId. Please remove the MadGraphAmplitude-folder and rebuild.\n"     << Exception::abortnow;
+  
+
+
   return res;
 }
 
 void MadGraphAmplitude::loadProcessMap() {
+  if ( theProcessPath == "" ) theProcessPath = factory()->buildStorage()+"/MadGraphAmplitudes";
   if ( !processmap().empty() )
     return;
   string line = theProcessPath+"/"+"processmap.dat";
@@ -201,17 +237,17 @@ bool MadGraphAmplitude::canHandle(const PDVector& p,
   if ( diags.empty() )
     return false;
   factory->processData()->diagramMap()[p] = diags;
-  string orderFileName =  processId(p);
-  std::system(("mkdir -p " + theProcessPath).c_str());
-  orderFileName=theProcessPath+"/"+orderFileName;
-  ofstream orderFile(orderFileName.c_str());
+  string amp="";
   int k=0;
-  for (PDVector::const_iterator it=p.begin();it!=p.end();it++){
-    orderFile <<(*it)->PDGName()<<" ";k+=1;if (k==2)orderFile<<" > ";
+  for (PDVector::const_iterator it=p.begin();it!=p.end();it++,k++){
+    amp+=boost::lexical_cast<string>( (*it)->id())+" ";if (k==1)amp+=" > ";
   }
- 
-  if (virt && factory->highestVirt()>=p.size()) orderFile<< " [ virt=QCD ]";
-  orderFile << flush;
+   if (virt && factory->highestVirt()>=p.size()){
+    VirtAmplitudes.push_back(amp);
+  }else{
+    BornAmplitudes.push_back(amp);
+  }
+  
   return true;
 }
 				   
@@ -235,8 +271,9 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
   //find the colourline:
   int ii = -1;
   int xx=lastMatchboxXComb()->externalId();
-  if ( colourindexmap.find(i)!= colourindexmap.end() ) {
-    ii = colourindexmap.find(i)->second;
+  if(colourindex[i]!=-2){
+//   if ( colourindexmap.find(i)!= colourindexmap.end() ) {
+    ii = colourindex[i];
     if (ii==-1) {
       largeN = Complex(0.0);
       return Complex(0.0);
@@ -281,13 +318,16 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
       }
 
       if ( found_all ) {
-	colourindexmap.insert(pair<int,int>(i,it) );
+	colourindex[i]=it;
+      
+
 	ii=it;
       }
     }
   }
   if ( ii == -1 ){
-    colourindexmap.insert(pair<int,int>(i,ii) );
+
+    colourindex[i]=ii;
     largeN = Complex(0.0);
     return Complex(0.0);
   }
@@ -296,26 +336,27 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
 
   if( tmp.find(hel) != tmp.end() ) {
     largeN = tmp.find(hel)->second[ii];
-    return tmp.find(hel)->second[ii];
+    return largeN;
   }
 
   double units = pow(sqrt(lastSHat())/GeV,hel.size()-4);
 
-  int heltmp[10];
+
   
   for(size_t j=0;j<hel.size();j++){
-    if( (crossingMap()[j]>1&&j<=1)||(crossingMap()[j]<=1&&j>1)){
-    heltmp[crossingMap()[j]]=-1*hel[j];}
-    else{heltmp[crossingMap()[j]]=hel[j];}
+    int cross=crossingMap()[j];
+    if( (cross>1&&j<=1)||(cross<=1&&j>1)){
+    heltmp[cross]=-1*hel[j];}
+    else{heltmp[cross]=hel[j];}
   }
 
-  double momenta[50];
+
   size_t j=0;
   for (size_t i=0;i<mePartonData().size();i++){
-    momenta[j]=meMomenta()[i].e()/GeV;
-    momenta[j+1]=meMomenta()[i].x()/GeV;
-    momenta[j+2]=meMomenta()[i].y()/GeV;
-    momenta[j+3]=meMomenta()[i].z()/GeV;
+    momenta[j]=abs(meMomenta()[i].e()/GeV)<1.e-13?0.:double(meMomenta()[i].e()/GeV);
+    momenta[j+1]=abs(meMomenta()[i].x()/GeV)<1.e-13?0.:double(meMomenta()[i].x()/GeV);
+    momenta[j+2]=abs(meMomenta()[i].y()/GeV)<1.e-13?0.:double(meMomenta()[i].y()/GeV);
+    momenta[j+3]=abs(meMomenta()[i].z()/GeV)<1.e-13?0.:double(meMomenta()[i].z()/GeV);
     j+=4;
   }
 
@@ -326,17 +367,17 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
   int ncol=-1;
   MG_NCol(&xx,&ncol);
   assert(ncol!=-1);
-  
+  Complex res;
   for( int it = 0; it < ncol; it++ ){
     double dd[2];
     MG_Jamp(&xx,&it,&dd[0]);
     Complex d(dd[0],dd[1]);
+    if(it==ii)res=d*units;
     lastMatchboxXComb()->pushheljamp(hel,d*units);
   }
 
-  
-  largeN = lastMatchboxXComb()->heljamp().find(hel)->second[ii];
-  return lastMatchboxXComb()->heljamp().find(hel)->second[ii];
+  largeN = res;
+  return res;
 
 }
 
@@ -346,7 +387,7 @@ LorentzVector<Complex> MadGraphAmplitude::plusPolarization(const Lorentz5Momentu
 							     
 							     
 						     
-  double poltmp[8];
+
   int tmp=i;
   complex<double> ii(0.0,1.0);
   double pg[4];double ng[4];
@@ -478,8 +519,7 @@ void MadGraphAmplitude::evaloneLoopInterference() const  {
   
       double units = pow(lastSHat()/GeV2,mePartonData().size()-4);
 
-  double virt[3];
-  double momenta[50];
+
 
   size_t j=0;
   for (size_t i=0;i<mePartonData().size();i++){
@@ -519,11 +559,11 @@ void MadGraphAmplitude::evaloneLoopInterference() const  {
 }
  
 void MadGraphAmplitude::persistentOutput(PersistentOStream & os) const {
-  os <<theMG5Path<<theProcessPath<< theOrderInGs << theOrderInGem<<colourindexmap;
+  os <<theMG5Path<<theProcessPath<< theOrderInGs << theOrderInGem<<colourindex<<theMGmodel;
 }
  
 void MadGraphAmplitude::persistentInput(PersistentIStream & is, int) {
-  is >>theMG5Path>>theProcessPath>> theOrderInGs >> theOrderInGem>>colourindexmap;
+  is >>theMG5Path>>theProcessPath>> theOrderInGs >> theOrderInGem>>colourindex>>theMGmodel;
 }
  
 // *** Attention *** The following static variable is needed for the type
@@ -541,14 +581,19 @@ void MadGraphAmplitude::Init() {
   static Parameter<MadGraphAmplitude,string> interfaceMGPath
     ("MG5Path",
      "The MG5 Path.",
-     &MadGraphAmplitude::theMG5Path, "@MADGRAPHPREFIX@",
-     false, false);
+     &MadGraphAmplitude::theMG5Path, "@MADGRAPHPREFIX@",false, false);
    
   static Parameter<MadGraphAmplitude,string> interfaceProcessPath
     ("ProcessPath",
      "The Process Path.",
-     &MadGraphAmplitude::theProcessPath, ".",
-     false, false);
+     &MadGraphAmplitude::theProcessPath, ".",false, false);   
+    
+  static Parameter<MadGraphAmplitude,string> interfaceModel
+    ("Model",
+     "The MadGraph-Model.",
+     &MadGraphAmplitude::theMGmodel, "loop_sm",false, false);
+    
+    
 
 }
  

@@ -50,6 +50,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S9120041
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I919017
 # LHCB phi production
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2011_I919315
+# ATLAS phi production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1282441
 # LHCB promt hadron productiom
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2012_I1119400
 # ATLAS rap gap
@@ -92,7 +94,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2013_I1208105
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1124167
 # CMS Jet/UE properties
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1261026
-
+# ATLAS leading jet UE
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1298811
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'

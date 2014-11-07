@@ -163,7 +163,7 @@ public:
   /**
    * Write out grids
    */
-  void writeGrids() const;
+  void writeGrids(bool seedIndex = false) const;
 
   /**
    * Read in grids
@@ -191,12 +191,6 @@ protected:
    * Update the sampler selection
    */
   void updateSamplers();
-
-  /**
-   * Return true, if initialization should be postponed to the second call of
-   * the initialization.
-   */
-  bool postponeInitialize() const { return thePostponeInitialize; }
 
 public:
 
@@ -424,20 +418,9 @@ private:
   bool didReadGrids;
 
   /**
-   * True, if initialization should be postponed to the second call of
-   * the initialization.
-   */
-  bool thePostponeInitialize;
-
-  /**
    * True, if parallel subprocess integration should be enabled
    */
   bool theParallelIntegration;
-
-  /**
-   * True, if statistics should be saved to grid XML files
-   */
-  bool theSaveStatistics;
 
   /**
    * The number of subprocesses to integrate per job
@@ -445,9 +428,9 @@ private:
   unsigned int theIntegratePerJob;
 
   /**
-   * Ignore existing integration data in grid files
+   * Indicate that initialization is only reading a grid.
    */
-  bool theIgnoreIntegrationData;
+  bool justAfterIntegrate;
 
 private:
 

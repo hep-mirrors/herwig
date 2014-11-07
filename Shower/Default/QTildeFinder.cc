@@ -149,7 +149,8 @@ calculateInitialFinalScales(const Lorentz5Momentum& pb, const Lorentz5Momentum& 
     Energy2 mb2(sqr(pb.mass()));
     double a=(pb-pc).m2()/mb2;
     double c=sqr(pc.mass())/mb2;
-    double lambda   = sqrt(1. + a*a + c*c - 2.*a - 2.*c - 2.*a*c);
+    double lambda   = 1. + a*a + c*c - 2.*a - 2.*c - 2.*a*c;
+    lambda = sqrt(max(lambda,0.));
     double PROD     = 0.25*sqr(1. - a + c + lambda);
     double ktilde_b, ktilde_c,cosi(0.);
     switch(initialFinalDecayConditions()) {
@@ -227,15 +228,19 @@ calculateFinalFinalScales(Lorentz5Momentum p1, Lorentz5Momentum p2,
   double b = p1.mass2()/Q2;
   double c = p2.mass2()/Q2;
   if(b<0.) {
-    if(b<-eps) throw Exception() << "Negative Mass sqaured b = " << b
-				 << "in QTildeFinder::calculateFinalFinalScales()"
-				 << Exception::eventerror;
+    if(b<-eps) {
+      throw Exception() << "Negative Mass squared b = " << b
+			<< "in QTildeFinder::calculateFinalFinalScales()"
+			<< Exception::eventerror;
+    }
     b = 0.;
   }
   if(c<0.) {
-    if(c<-eps) throw Exception() << "Negative Mass sqaured c = " << c
-				 << "in QTildeFinder::calculateFinalFinalScales()"
-				 << Exception::eventerror;
+    if(c<-eps) {
+      throw Exception() << "Negative Mass squared c = " << c
+			<< "in QTildeFinder::calculateFinalFinalScales()"
+			<< Exception::eventerror;
+    }
     c = 0.;
   }
   // KMH & PR - 16 May 2008 - swapped lambda calculation from 

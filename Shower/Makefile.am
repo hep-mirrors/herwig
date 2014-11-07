@@ -45,4 +45,5 @@ Couplings/ShowerAlpha.h Couplings/ShowerAlpha.cc Couplings/ShowerAlpha.fh\
 SplittingFunctions/SplittingGenerator.cc SplittingFunctions/SplittingGenerator.h\
 SplittingFunctions/SplittingGenerator.fh \
 SplittingFunctions/SplittingFunction.h SplittingFunctions/SplittingFunction.fh \
-SplittingFunctions/SplittingFunction.cc 
+SplittingFunctions/SplittingFunction.cc  \
+Base/ShowerVertex.cc Base/ShowerVertex.fh Base/ShowerVertex.h

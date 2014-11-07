@@ -46,9 +46,10 @@ GeneralSampler::GeneralSampler()
     theGlobalMaximumWeight(true), theFlatSubprocesses(false),
     isSampling(false), theMinSelection(0.01), runCombinationData(false),
     theAlmostUnweighted(false), maximumExceeds(0),
-    maximumExceededBy(0.), didReadGrids(false), thePostponeInitialize(false),
-    theParallelIntegration(false), theSaveStatistics(false),
-    theIntegratePerJob(0), theIgnoreIntegrationData(false) {}
+    maximumExceededBy(0.), didReadGrids(false),
+    theParallelIntegration(false),
+  theIntegratePerJob(0),
+  justAfterIntegrate(false) {}
 
 GeneralSampler::~GeneralSampler() {}
 
@@ -65,6 +66,26 @@ double sign(double x) {
 }
 
 void GeneralSampler::initialize() {
+
+  if ( theParallelIntegration &&
+       runLevel() == ReadMode )
+    throw Exception()
+      << "\n--------------------------------------------------------------------------------\n\n"
+      << "Parallel integration is only supported in the build/integrate/run mode\n\n"
+      << "--------------------------------------------------------------------------------\n"
+      << Exception::abortnow;
+
+  if ( runLevel() == ReadMode ||
+       runLevel() == IntegrationMode ) {
+    assert(theSamplers.empty());
+    if ( !theGrids.children().empty() )
+      Repository::clog()
+	<< "--------------------------------------------------------------------------------\n\n"
+	<< "Using an existing grid. Please consider re-running the grid adaption\n"
+	<< "when there have been significant changes to parameters, cuts, etc.\n\n"
+	<< "--------------------------------------------------------------------------------\n"
+	<< flush;
+  }
 
   if ( theParallelIntegration ) {
 
@@ -89,7 +110,12 @@ void GeneralSampler::initialize() {
 	  jobList = 0;
 	}
 	ostringstream name;
-	name << "integrationBins" << jobCount;
+	string prefix = parallelIntegrationDirectory();
+	if ( prefix.empty() )
+	  prefix = "./";
+	else if ( *prefix.rbegin() != '/' )
+	  prefix += "/";
+	name << prefix << "integrationJob" << jobCount;
 	++jobCount;
 	string fname = name.str();
 	jobList = new ofstream(fname.c_str());
@@ -102,23 +128,26 @@ void GeneralSampler::initialize() {
 
     }
 
+    generator()->log() 
+      << "--------------------------------------------------------------------------------\n\n"
+      << "Wrote " << jobCount << " integration jobs\n"
+      << "Please submit integration jobs with the\nintegrate --jobid=x\ncommand for job ids "
+      << "from 0 to " << (jobCount-1) << "\n\n"
+      << "--------------------------------------------------------------------------------\n"
+      << flush;
+
     if ( jobList ) {
       jobList->close();
       jobList = 0;
     }
 
     theParallelIntegration = false;
-    theSaveStatistics = true;
-    if ( postponeInitialize() )
-      thePostponeInitialize = false;
     return;
 
   }
 
-  if ( postponeInitialize() ) {
-    thePostponeInitialize = false;
+  if ( runLevel() == BuildMode )
     return;
-  }
 
   if ( !samplers().empty() )
     return;
@@ -142,7 +171,13 @@ void GeneralSampler::initialize() {
 
   set<int> binsToIntegrate;
   if ( integrationList() != "" ) {
-    ifstream jobList(integrationList().c_str());
+    string prefix = parallelIntegrationDirectory();
+    if ( prefix.empty() )
+      prefix = "./";
+    else if ( *prefix.rbegin() != '/' )
+      prefix += "/";
+    string fname = prefix + integrationList();
+    ifstream jobList(fname.c_str());
     if ( jobList ) {
       int b = 0;
       while ( jobList >> b )
@@ -156,7 +191,7 @@ void GeneralSampler::initialize() {
   }
 
   boost::progress_display* progressBar = 0;
-  if ( !theVerbose ) {
+  if ( !theVerbose && !justAfterIntegrate ) {
     Repository::clog() << "integrating subprocesses";
     progressBar = new boost::progress_display(binsToIntegrate.size(),Repository::clog());
   }
@@ -169,12 +204,11 @@ void GeneralSampler::initialize() {
     lastSampler(s);
     s->doWeighted(eventHandler()->weighted());
     s->setupRemappers(theVerbose);
-    if ( !theIgnoreIntegrationData &&
-	 !integrationJob() )
+    if ( justAfterIntegrate )
       s->readIntegrationData();
     s->initialize(theVerbose);
     samplers()[*bit] = s;
-    if ( !theVerbose )
+    if ( !theVerbose && !justAfterIntegrate )
       ++(*progressBar);
     if ( s->nanPoints() && theVerbose ) {
       Repository::clog() << "warning: " 
@@ -184,14 +218,18 @@ void GeneralSampler::initialize() {
     }
   }
 
-  if ( integrationJob() ) {
+  if ( progressBar ) {
+    delete progressBar;
+    progressBar = 0;
+  }
+
+  if ( runLevel() == IntegrationMode ) {
     theGrids = XML::Element(XML::ElementTypes::Element,"Grids");
     for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers().begin();
 	  s != samplers().end(); ++s ) {
       s->second->saveGrid();
       s->second->saveRemappers();
-      if ( theSaveStatistics )
-	s->second->saveIntegrationData();
+      s->second->saveIntegrationData();
     }
     writeGrids();
     return;
@@ -223,11 +261,12 @@ void GeneralSampler::initialize() {
 	s != samplers().end(); ++s ) {
     s->second->saveGrid();
     s->second->saveRemappers();
-    if ( theSaveStatistics )
+    if ( justAfterIntegrate )
       s->second->saveIntegrationData();
   }
 
-  writeGrids();
+  if ( !justAfterIntegrate )
+    writeGrids();
 
 }
 
@@ -457,6 +496,18 @@ void GeneralSampler::currentCrossSections() const {
 
 void GeneralSampler::doinit() {
   readGrids();
+  if ( theGrids.children().empty() && runLevel() == RunMode )
+    throw Exception()
+      << "\n--------------------------------------------------------------------------------\n\n"
+      << "No grid file could be found at the start of this run.\n\n"
+      << "* For a read/run setup intented to be used with --setupfile please consider\n"
+      << "  using the build/integrate/run setup.\n"
+      << "* For a build/integrate/run setup to be used with --setupfile please ensure\n"
+      << "  that the same setupfile is provided to both, the integrate and run steps.\n\n"
+      << "--------------------------------------------------------------------------------\n"
+      << Exception::abortnow;
+  if ( samplers().empty() && runLevel() == RunMode )
+    justAfterIntegrate = true;
   SamplerBase::doinit();
 }
 
@@ -499,7 +550,15 @@ void GeneralSampler::dofinish() {
 
   if ( runCombinationData ) {
 
-    string dataName = generator()->filename() + "-sampling.dat";
+    string dataName = gridDirectory();
+    if ( dataName.empty() )
+      dataName = "./";
+    else if ( *dataName.rbegin() != '/' )
+      dataName += "/";
+    dataName += generator()->runName();
+    //ostringstream so; so << seed();
+    //dataName += "-" + so.str() + "-sampling.dat";
+    dataName += "-sampling.dat";
 
     ofstream data(dataName.c_str());
 
@@ -529,7 +588,7 @@ void GeneralSampler::dofinish() {
 	s != samplers().end(); ++s ) {
     s->second->saveGrid();
     s->second->saveRemappers();
-    if ( theSaveStatistics )
+    if ( justAfterIntegrate )
       s->second->saveIntegrationData();
   }
 
@@ -541,17 +600,32 @@ void GeneralSampler::dofinish() {
 
 void GeneralSampler::doinitrun() {
   readGrids();
+
+  if ( theGrids.children().empty() )
+    throw Exception()
+      << "\n--------------------------------------------------------------------------------\n\n"
+      << "No grid file could be found at the start of this run.\n\n"
+      << "* For a read/run setup intented to be used with --setupfile please consider\n"
+      << "  using the build/integrate/run setup.\n"
+      << "* For a build/integrate/run setup to be used with --setupfile please ensure\n"
+      << "  that the same setupfile is provided to both, the integrate and run steps.\n\n"
+      << "--------------------------------------------------------------------------------\n"
+      << Exception::abortnow;
+
   eventHandler()->initrun();
-  if ( !samplers().empty() ) {
+
+  if ( samplers().empty() ) {
+    justAfterIntegrate = true;
+    if ( !hasSetupFile() )
+      initialize();
+  } else {
     for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers().begin();
 	  s != samplers().end(); ++s ) {
       s->second->setupRemappers(theVerbose);
-      if ( !theIgnoreIntegrationData )
+      if ( justAfterIntegrate )
 	s->second->readIntegrationData();
       s->second->initialize(theVerbose);
     }
-  } else {
-    initialize();
   }
   isSampling = true;
   SamplerBase::doinitrun();
@@ -572,13 +646,23 @@ IVector GeneralSampler::getReferences() {
   return ret;
 }
 
-void GeneralSampler::writeGrids() const {
+void GeneralSampler::writeGrids(bool seedIndex) const {
   if ( theGrids.children().empty() )
     return;
-  string dataName = generator()->filename();
-  if ( integrationList() != "" )
+  string dataName = gridDirectory();
+  if ( dataName.empty() )
+    dataName = "./";
+  else if ( *dataName.rbegin() != '/' )
+    dataName += "/";
+  dataName += generator()->runName();
+  if ( !integrationList().empty() )
     dataName += "-" + integrationList();
-  dataName += "-grids.xml";
+  if ( !seedIndex )
+    dataName += "-grids.xml";
+  else {
+    ostringstream so; so << seed();
+    dataName += "-" + so.str() + "-grids.xml";
+  }
   ofstream out(dataName.c_str());
   XML::ElementIO::put(theGrids,out);
 }
@@ -586,7 +670,12 @@ void GeneralSampler::writeGrids() const {
 void GeneralSampler::readGrids() {
   if ( didReadGrids )
     return;
-  string dataName = generator()->filename() + "-grids.xml";
+  string dataName = gridDirectory();
+  if ( dataName.empty() )
+    dataName = "./";
+  else if ( *dataName.rbegin() != '/' )
+    dataName += "/";
+  dataName += generator()->runName() + "-grids.xml";
   ifstream in(dataName.c_str());
   if ( !in ) {
     theGrids = XML::Element(XML::ElementTypes::Element,"Grids");
@@ -606,9 +695,8 @@ void GeneralSampler::persistentOutput(PersistentOStream & os) const {
      << theAddUpSamplers << theGlobalMaximumWeight
      << theFlatSubprocesses << isSampling << theMinSelection
      << runCombinationData << theAlmostUnweighted << maximumExceeds
-     << maximumExceededBy << thePostponeInitialize
-     << theParallelIntegration << theSaveStatistics
-     << theIntegratePerJob << theIgnoreIntegrationData;
+     << maximumExceededBy << theParallelIntegration
+     << theIntegratePerJob;
 }
 
 void GeneralSampler::persistentInput(PersistentIStream & is, int) {
@@ -621,9 +709,8 @@ void GeneralSampler::persistentInput(PersistentIStream & is, int) {
      >> theAddUpSamplers >> theGlobalMaximumWeight
      >> theFlatSubprocesses >> isSampling >> theMinSelection
      >> runCombinationData >> theAlmostUnweighted >> maximumExceeds
-     >> maximumExceededBy >> thePostponeInitialize
-     >> theParallelIntegration >> theSaveStatistics
-     >> theIntegratePerJob >> theIgnoreIntegrationData;
+     >> maximumExceededBy >> theParallelIntegration
+     >> theIntegratePerJob;
 }
 
 
@@ -747,21 +834,6 @@ void GeneralSampler::Init() {
      "",
      false);
 
-  static Switch<GeneralSampler,bool> interfacePostponeInitialize
-    ("PostponeInitialize",
-     "Postpone initialization to happen after event generator modifications.",
-     &GeneralSampler::thePostponeInitialize, false, false, false);
-  static SwitchOption interfacePostponeInitializeYes
-    (interfacePostponeInitialize,
-     "Yes",
-     "",
-     true);
-  static SwitchOption interfacePostponeInitializeNo
-    (interfacePostponeInitialize,
-     "No",
-     "",
-     false);
-
   static Switch<GeneralSampler,bool> interfaceParallelIntegration
     ("ParallelIntegration",
      "Prepare parallel jobs for integration.",
@@ -782,36 +854,6 @@ void GeneralSampler::Init() {
      "The number of subprocesses to integrate per job.",
      &GeneralSampler::theIntegratePerJob, 0, 0, 0,
      false, false, Interface::lowerlim);
-
-  static Switch<GeneralSampler,bool> interfaceSaveStatistics
-    ("SaveStatistics",
-     "",
-     &GeneralSampler::theSaveStatistics, false, false, false);
-  static SwitchOption interfaceSaveStatisticsYes
-    (interfaceSaveStatistics,
-     "Yes",
-     "",
-     true);
-  static SwitchOption interfaceSaveStatisticsNo
-    (interfaceSaveStatistics,
-     "No",
-     "",
-     false);
-
-  static Switch<GeneralSampler,bool> interfaceIgnoreIntegrationData
-    ("IgnoreIntegrationData",
-     "",
-     &GeneralSampler::theIgnoreIntegrationData, false, false, false);
-  static SwitchOption interfaceIgnoreIntegrationDataYes
-    (interfaceIgnoreIntegrationData,
-     "Yes",
-     "",
-     true);
-  static SwitchOption interfaceIgnoreIntegrationDataNo
-    (interfaceIgnoreIntegrationData,
-     "No",
-     "",
-     false);
 
 }
 

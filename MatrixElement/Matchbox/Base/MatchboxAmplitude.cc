@@ -23,6 +23,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/SpinorHelicity.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/SU2Helper.h"
+#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
 #include "MatchboxMEBase.h"
 
 #include <boost/numeric/ublas/io.hpp>
@@ -38,18 +39,28 @@ MatchboxAmplitude::MatchboxAmplitude()
 MatchboxAmplitude::~MatchboxAmplitude() {}
 
 void MatchboxAmplitude::persistentOutput(PersistentOStream & os) const {
-  os << theLastXComb << theColourBasis;
+  os << theLastXComb << theColourBasis << theFactory;
 }
 
 void MatchboxAmplitude::persistentInput(PersistentIStream & is, int) {
-  is >> theLastXComb >> theColourBasis;
+  is >> theLastXComb >> theColourBasis >> theFactory;
   lastMatchboxXComb(theLastXComb);
+}
+
+Ptr<MatchboxFactory>::tptr MatchboxAmplitude::factory() const {
+  return theFactory;
+}
+
+void MatchboxAmplitude::factory(Ptr<MatchboxFactory>::tptr f) {
+  theFactory = f;
 }
 
 void MatchboxAmplitude::doinit() {
   Amplitude::doinit();
-  if ( colourBasis() )
+  if ( colourBasis() ) {
+    colourBasis()->factory(factory());
     colourBasis()->init();
+  }
 }
 
 void MatchboxAmplitude::doinitrun() {
@@ -158,13 +169,13 @@ void MatchboxAmplitude::olpOrderFileProcesses(ostream& os,
 
 bool MatchboxAmplitude::startOLP(const map<pair<Process,int>,int>& procs) {
 
-  string orderFileName = name() + ".OLPOrder.lh";
+  string orderFileName = factory()->buildStorage() + name() + ".OLPOrder.lh";
   ofstream orderFile(orderFileName.c_str());
 
   olpOrderFileHeader(orderFile);
   olpOrderFileProcesses(orderFile,procs);
 
-  string contractFileName = name() + ".OLPContract.lh";
+  string contractFileName = factory()->buildStorage() + name() + ".OLPContract.lh";
 
   signOLP(orderFileName, contractFileName);
 

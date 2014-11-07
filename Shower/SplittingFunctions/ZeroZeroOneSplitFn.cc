@@ -15,6 +15,7 @@
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Utilities/DescribeClass.h"
+#include "Herwig++/Decay/TwoBodyDecayMatrixElement.h"
 
 using namespace Herwig;
 
@@ -90,4 +91,29 @@ bool ZeroZeroOneSplitFn::accept(const IdList &ids) const {
   if(q->iSpin()!=PDT::Spin0 ||
      g->iSpin()!=PDT::Spin1) return false;
   return checkColours(ids);
+}
+
+vector<pair<int, Complex> > 
+ZeroZeroOneSplitFn::generatePhiForward(const double, const Energy2, const IdList &,
+				const RhoDMatrix &) {
+  // scalar so no dependence
+  return vector<pair<int, Complex> >(1,make_pair(0,1.));
+}
+
+vector<pair<int, Complex> > 
+ZeroZeroOneSplitFn::generatePhiBackward(const double, const Energy2, const IdList &,
+					const RhoDMatrix &) {
+  // scalar so no dependence
+  assert(false);
+  return vector<pair<int, Complex> >(1,make_pair(0,1.));
+}
+
+DecayMEPtr ZeroZeroOneSplitFn::matrixElement(const double z, const Energy2 t, 
+					     const IdList & ids, const double phi) {
+  // calculate the kernal
+  DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin1)));
+  Energy m = getParticleData(ids[0])->mass();
+  (*kernal)(0,0,0) = -exp(Complex(0.,1.)*phi)*sqrt(1.-(1.-z)*sqr(m)/z/t)*sqrt(z/(1.-z));
+  (*kernal)(0,0,2) = -conj((*kernal)(0,0,0));
+  return kernal;
 }

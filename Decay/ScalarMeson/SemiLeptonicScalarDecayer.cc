@@ -26,6 +26,7 @@
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -188,16 +189,18 @@ double SemiLeptonicScalarDecayer::me2(const int ichan,
   leptons.push_back(decay[decay.size()-2]);
   leptons.push_back(decay[decay.size()-1]);
   int mode=(abs(decay[1]->id())-11)/2;
+  if(!ME()) {
+    if(jspin==0)
+      ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half)));
+    else if(jspin==1)       
+      ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half)));
+    else if(jspin==2)       
+      ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin0,PDT::Spin2,PDT::Spin1Half,PDT::Spin1Half)));
+  }
   // initialisation
   if(meopt==Initialize) {
     ScalarWaveFunction::
       calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
-    if(jspin==0)
-      ME(DecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half));
-    else if(jspin==1)       
-      ME(DecayMatrixElement(PDT::Spin0,PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half));
-    else if(jspin==2)       
-      ME(DecayMatrixElement(PDT::Spin0,PDT::Spin2,PDT::Spin1Half,PDT::Spin1Half));
     // work out the mapping for the lepton vector
     _constants.resize(decay.size()+1);
     _ispin.resize(decay.size());
@@ -309,7 +312,7 @@ double SemiLeptonicScalarDecayer::me2(const int ichan,
       // helicities of mesons
       ihel[0]=0;
       ihel[_imes+1]=mhel;
-      ME()(ihel)= lepton[lhel].dot(hadron[mhel])*SM().fermiConstant();
+      (*ME())(ihel)= lepton[lhel].dot(hadron[mhel])*SM().fermiConstant();
     }
   }
   // store the matrix element
@@ -319,7 +322,7 @@ double SemiLeptonicScalarDecayer::me2(const int ichan,
     else        ckm = SM().CKM(abs(ia)/2-1,(abs(iq)-1)/2);
   }
   // return the answer
-  return 0.5*(ME().contract(_rho)).real()*ckm; 
+  return 0.5*(ME()->contract(_rho)).real()*ckm; 
 }
  
 // output the setup information for the particle database

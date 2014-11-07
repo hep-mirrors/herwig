@@ -13,18 +13,22 @@
 
 #include "ClusterFinder.h"
 #include <ThePEG/Interface/ClassDocumentation.h>
+#include <ThePEG/Interface/Switch.h>
+#include <ThePEG/Persistency/PersistentOStream.h>
+#include <ThePEG/Persistency/PersistentIStream.h>
 #include <ThePEG/PDT/StandardMatchers.h>
 #include <ThePEG/PDT/EnumParticles.h>
 #include <ThePEG/Repository/EventGenerator.h>
 #include <ThePEG/EventRecord/Collision.h>
 #include "CheckId.h"
 #include "Herwig++/Utilities/EnumParticles.h"
+#include "Herwig++/Utilities/Kinematics.h"
 #include "Cluster.h"
 #include <ThePEG/Utilities/DescribeClass.h>
 
 using namespace Herwig;
 
-DescribeNoPIOClass<ClusterFinder,Interfaced>
+DescribeClass<ClusterFinder,Interfaced>
 describeClusterFinder("Herwig::ClusterFinder","");
 
 IBPtr ClusterFinder::clone() const {
@@ -34,14 +38,70 @@ IBPtr ClusterFinder::clone() const {
 IBPtr ClusterFinder::fullclone() const {
   return new_ptr(*this);
 }
+void ClusterFinder::persistentOutput(PersistentOStream & os) const {
+  os << heavyDiquarks_ << diQuarkSelection_ << diQuarkOnShell_;
+}
+
+void ClusterFinder::persistentInput(PersistentIStream & is, int) {
+  is >> heavyDiquarks_ >> diQuarkSelection_ >> diQuarkOnShell_;
+}
 
 void ClusterFinder::Init() {
 
   static ClassDocumentation<ClusterFinder> documentation
     ("This class is responsible of finding clusters.");
 
-}
+  static Switch<ClusterFinder,unsigned int> interfaceHeavyDiquarks
+    ("HeavyDiquarks",
+     "How to treat heavy quarks in baryon number violating clusters",
+     &ClusterFinder::heavyDiquarks_, 2, false, false);
+  static SwitchOption interfaceHeavyDiquarksDefault
+    (interfaceHeavyDiquarks,
+     "Allow",
+     "No special treatment, allow both heavy and doubly heavy diquarks",
+     0);
+  static SwitchOption interfaceHeavyDiquarksNoDoublyHeavy
+    (interfaceHeavyDiquarks,
+     "NoDoublyHeavy",
+     "Avoid having diquarks with twoo heavy quarks",
+     1);
+  static SwitchOption interfaceHeavyDiquarksNoHeavy
+    (interfaceHeavyDiquarks,
+     "NoHeavy",
+     "Try and avoid diquarks contain c and b altogether",
+     2);
 
+  static Switch<ClusterFinder,unsigned int> interfaceDiQuarkSelection
+    ("DiQuarkSelection",
+     "Option controlling the selection of quarks to merge into a diquark in baryon-number violating clusters",
+     &ClusterFinder::diQuarkSelection_, 1, false, false);
+  static SwitchOption interfaceDiQuarkSelectionRandom
+    (interfaceDiQuarkSelection,
+     "Random",
+     "Randomly pick a pair to combine",
+     0);
+  static SwitchOption interfaceDiQuarkSelectionLowestMass
+    (interfaceDiQuarkSelection,
+     "LowestMass",
+     "Combine the lowest mass pair",
+     1);
+
+  static Switch<ClusterFinder,bool> interfaceDiQuarkOnShell
+    ("DiQuarkOnShell",
+     "Force the diquark produced in baryon-number violating clusters to be on-shell",
+     &ClusterFinder::diQuarkOnShell_, false, false, false);
+  static SwitchOption interfaceDiQuarkOnShellYes
+    (interfaceDiQuarkOnShell,
+     "Yes",
+     "Force to be on-shell",
+     true);
+  static SwitchOption interfaceDiQuarkOnShellNo
+    (interfaceDiQuarkOnShell,
+     "No",
+     "Leave off-shell",
+     false);
+
+}
 
 ClusterVector ClusterFinder::formClusters(const PVector & partons) {
 
@@ -247,6 +307,11 @@ ClusterVector ClusterFinder::formClusters(const PVector & partons) {
   return clusters;
 }
 
+namespace {
+  bool PartOrdering(tPPtr p1,tPPtr p2) {
+    return abs(p1->id())<abs(p2->id());
+  }
+}
 
 void ClusterFinder::reduceToTwoComponents(ClusterVector & clusters) {
 
@@ -263,19 +328,18 @@ void ClusterFinder::reduceToTwoComponents(ClusterVector & clusters) {
       cluIter != clusters.end() ; ++cluIter) {
     tParticleVector vec;
 
-    if ( ! (*cluIter)->isAvailable()  
-	 ||  (*cluIter)->numComponents() != 3 ) continue;
+    if ( (*cluIter)->numComponents() != 3 ||
+	 ! (*cluIter)->isAvailable() ) continue;
     
     tPPtr other;
-    int iCharge1(0);
     for(int i = 0; i<(*cluIter)->numComponents(); i++) {
       tPPtr part = (*cluIter)->particle(i);
       if(!DiquarkMatcher::Check(*(part->dataPtr())))
 	vec.push_back(part);
       else
 	other = part;
-      iCharge1 += part->dataPtr()->iCharge();
     }
+
     if(vec.size()<2) {
       throw Exception() << "Could not make a diquark for a baryonic cluster decay from "
 			<< (*cluIter)->particle(0)->PDGName() << " "
@@ -285,19 +349,54 @@ void ClusterFinder::reduceToTwoComponents(ClusterVector & clusters) {
 			<< Exception::eventerror;
     }
 
-    // Randomly selects two components to be considered as a (anti)diquark
-    // and place them as the first and second element of  vec.
-    int choice = vec.size()==2 ? 0 : UseRandom::rnd3(1.0, 1.0, 1.0);
-    switch (choice) {
-    case 0: 
-      break; 
-    case 1:
-      swap(vec[2],vec[0]);
-      break;
-    case 2:
-      swap(vec[2],vec[1]);
-      break;
+    // order the vector so heaviest at the end
+    std::sort(vec.begin(),vec.end(),PartOrdering);
+
+    // Special treatment of heavy quarks
+    // avoid doubly heavy diquarks
+    if(heavyDiquarks_>=1   && vec.size()>2 &&
+       abs(vec[1]->id())>3 && abs(vec[0]->id())<=3) {
+      if(UseRandom::rndbool()) swap(vec[1],vec[2]);
+      other = vec[2];
+      vec.pop_back();
     }
+    // avoid singly heavy diquarks
+    if(heavyDiquarks_==2   && vec.size()>2 &&
+       abs(vec[2]->id())>3 && abs(vec[1]->id())<=3) {
+      other = vec[2];
+      vec.pop_back();
+    }
+
+    // if there's a choice pick the pair to make a diquark from
+    if(vec.size()>2) {
+      unsigned int ichoice(0);
+      // random choice
+      if(diQuarkSelection_==0) {
+	ichoice = UseRandom::rnd3(1.0, 1.0, 1.0);
+      }
+      // pick the lightest quark pair
+      else if(diQuarkSelection_==1) {
+	Energy m12 = (vec[0]->momentum()+vec[1]->momentum()).m();
+	Energy m13 = (vec[0]->momentum()+vec[2]->momentum()).m();
+	Energy m23 = (vec[1]->momentum()+vec[2]->momentum()).m();
+	if     (m13<=m12&&m13<=m23)  ichoice = 2;
+	else if(m23<=m12&&m23<=m13)  ichoice = 1;
+      }
+      else
+	assert(false);
+      // make the swaps so select pair first
+      switch (ichoice) {
+      case 0:
+	break;
+      case 1:
+	swap(vec[2],vec[0]);
+	break;
+      case 2:
+	swap(vec[2],vec[1]);
+	break;
+      }
+    }
+    // set up
     tcPDPtr temp1  = vec[0]->dataPtr();
     tcPDPtr temp2  = vec[1]->dataPtr();
     if(!other) other = vec[2];
@@ -334,7 +433,34 @@ void ClusterFinder::reduceToTwoComponents(ClusterVector & clusters) {
     vec[1]->addChild(diquark);
     diquark->set5Momentum(Lorentz5Momentum(vec[0]->momentum() + vec[1]->momentum(),
 					   dataDiquark->constituentMass()));
-    diquark->setVertex(0.5*(vec[0]->vertex() + vec[1]->vertex()));
+    // use the same method as for cluster to determine the diquark position
+    diquark->setVertex(Cluster::calculateX(vec[0],vec[1]));
+    // put on-shell if required
+    if(diQuarkOnShell_) {
+      Lorentz5Momentum psum = diquark->momentum()+other->momentum();
+      psum.rescaleMass();
+      Boost boost = psum.boostVector();
+      Lorentz5Momentum pother   =   other->momentum();
+      Lorentz5Momentum pdiquark = diquark->momentum();
+      pother.boost(-boost);
+      pdiquark.boost(-boost);
+      Energy pcm = Kinematics::pstarTwoBodyDecay(psum.mass(),
+						 other->dataPtr()->constituentMass(),
+						 diquark->dataPtr()->constituentMass());
+      if(pcm>ZERO) {
+	double fact = pcm/pother.vect().mag();
+	pother   *= fact;
+	pdiquark *= fact; 
+	pother  .setMass(other->dataPtr()->constituentMass());
+	pdiquark.setMass(dataDiquark     ->constituentMass());
+	pother  .rescaleEnergy();
+	pdiquark.rescaleEnergy();
+	pother  .boost(boost);
+	pdiquark.boost(boost);
+	other->set5Momentum(pother);
+	diquark->set5Momentum(pdiquark);
+      }
+    }
     // make the new cluster
     ClusterPtr nclus = new_ptr(Cluster(other,diquark));
     //vec[0]->addChild(nclus);

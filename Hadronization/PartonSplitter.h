@@ -41,6 +41,12 @@ class PartonSplitter: public Interfaced {
 public:
 
   /**
+   *  Default constructor
+   */
+  PartonSplitter() : _gluonDistance(ZERO)
+  {}
+
+  /**
    * This method does the nonperturbative splitting of:
    * time-like gluons. At the end of the shower the gluons should be
    * on a "physical" mass shell and should therefore be time-like.
@@ -127,6 +133,10 @@ private:
    */
   Selector<PDPtr,double> _quarkSelector;
 
+  /**
+   *   c tau for gluon decays
+   */
+  Length _gluonDistance;
 };
 
 }

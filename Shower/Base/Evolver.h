@@ -70,6 +70,8 @@ public:
 	      _limitEmissions(0), _initialenhance(1.), _finalenhance(1.),
 	       interaction_(1), _trunc_Mode(true), _hardEmissionMode(0),
 	      _colourEvolutionMethod(0),
+	      _spinOpt(1),
+	      _softOpt(2),
 	      theFactorizationScaleFactor(1.0), 
 	      theRenormalizationScaleFactor(1.0)
   {}
@@ -123,6 +125,33 @@ public:
    *  Connect the Hard and Shower trees
    */
   virtual void connectTrees(ShowerTreePtr showerTree, HardTreePtr hardTree, bool hard );
+
+  /**
+   *   Access to switches for spin correlations
+   */
+  //@{
+  /**
+   *   Spin Correlations
+   */
+  unsigned int spinCorrelations() const {
+    return _spinOpt;
+  }
+
+  /**
+   *  Soft correlations
+   */
+  unsigned int softCorrelations() const {
+    return _softOpt;
+  }
+
+  /**
+   *  Any correlations
+   */
+  bool correlations() const {
+    return _spinOpt!=0||_softOpt!=0;
+  }
+  //@}
+
 
   /**
    * Set the factorization scale factor
@@ -745,6 +774,16 @@ private:
    * Colour evolution method
    */
   int _colourEvolutionMethod;
+
+  /**
+   *  Option to include spin correlations
+   */
+  unsigned int _spinOpt;
+
+  /**
+   *  Option for the kernal for soft correlations
+   */
+  unsigned int _softOpt;
 
   /**
    * True, if Matchbox MC@NLO S-event

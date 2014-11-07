@@ -56,14 +56,6 @@ public:
 
 public:
 
-  /**
-   * Return the current factory
-   */
-  static MatchboxFactory* currentFactory() { 
-    assert(theCurrentFactory());
-    return theCurrentFactory();
-  }
-
   /** @name Process and diagram information */
   //@{
 
@@ -561,7 +553,7 @@ public:
   /**
    * Prepare a matrix element.
    */
-  void prepareME(Ptr<MatchboxMEBase>::ptr) const;
+  void prepareME(Ptr<MatchboxMEBase>::ptr);
 
   /**
    * Setup everything
@@ -670,6 +662,31 @@ public:
   bool isIncoming(cPDPtr p) const {
     return theIncoming.find(p->id()) != theIncoming.end();
   }
+  //@}
+
+  /** @name Data handling */
+  //@{
+  /**
+   * Return the prefix to store Matchbox data and libraries
+   */
+  const string& prefix() const { return thePrefix; }
+
+  /**
+   * Set the prefix to store Matchbox data and libraries
+   */
+  void prefix(const string& p) { thePrefix = p; }
+
+  /**
+   * Return (and possibly create) a directory to contain amplitude
+   * information.
+   */
+  const string& buildStorage();
+
+  /**
+   * Return (and possibly create) a directory to contain integration grid
+   * information.
+   */
+  const string& runStorage();
   //@}
 
 public:
@@ -1073,9 +1090,19 @@ private:
   bool theSecondPerturbativePDF;
 
   /**
-   * The current factory
+   * The prefix to store Matchbox data and libraries
    */
-  static MatchboxFactory*& theCurrentFactory();
+  string thePrefix;
+
+  /**
+   * The directory to contain amplitude information.
+   */
+  string theBuildStorage;
+
+  /**
+   * The directory to contain grid information.
+   */
+  string theRunStorage;
 
 private:
 

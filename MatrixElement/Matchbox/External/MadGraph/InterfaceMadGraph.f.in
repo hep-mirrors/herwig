@@ -78,5 +78,17 @@ MG_ColourMattxt
        END
 
 !///////////////////////////////////////////////////////////////////////
+
+!       subroutine MG_Procname(proc,name)
+!     $   bind(c, name="MG_Procname")
+!         IMPLICIT NONE
+!         INTEGER    proc
+!         CHARACTER name
+!MG_Procnametxt
+!
+!       END
+
+!///////////////////////////////////////////////////////////////////////
+
        
 MG_vxxxxxtxt

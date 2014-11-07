@@ -120,7 +120,8 @@ void CellGridSampler::initialize(bool progress) {
 
   if ( initialized() ) {
     if ( !haveGrid )
-      throw Exception() << "CellGridSampler: Require existing grid when starting to run."
+      throw Exception() << "CellGridSampler: Require existing grid when starting to run.\n"
+			<< "Did you miss setting --setupfile?"
 			<< Exception::abortnow;
     return;
   }

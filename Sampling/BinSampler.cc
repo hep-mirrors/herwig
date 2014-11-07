@@ -243,6 +243,13 @@ void BinSampler::readIntegrationData() {
     MultiIterationStatistics::fromXML(*sit);
     sampler()->grids().erase(sit);
     theIntegrated = true;
+  } else {
+    throw Exception()
+      << "\n--------------------------------------------------------------------------------\n\n"
+      << "Expected integration data.\n\n"
+      << "* When using the build setup make sure the integrate command has been run.\n\n"
+      << "--------------------------------------------------------------------------------\n"
+      << Exception::abortnow;
   }
 
 }

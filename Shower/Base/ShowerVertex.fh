@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the ShowerVertex class.
+//
+#ifndef HERWIG_ShowerVertex_FH
+#define HERWIG_ShowerVertex_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+using namespace ThePEG;
+
+class ShowerVertex;
+ThePEG_DECLARE_POINTERS(ShowerVertex,SVertexPtr);
+}
+
+#endif

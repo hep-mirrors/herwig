@@ -14,6 +14,9 @@
 
 #include "ThePEG/Interface/Interfaced.h"
 #include "Herwig++/Shower/ShowerConfig.h"
+#include "ThePEG/EventRecord/RhoDMatrix.h"
+#include "Herwig++/Decay/DecayMatrixElement.h"
+#include "Herwig++/Shower/Base/ShowerKinematics.fh"
 #include "ThePEG/EventRecord/ColourLine.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include "SplittingFunction.fh"
@@ -74,8 +77,7 @@ public:
     : Interfaced(), _interactionType(ShowerInteraction::UNDEFINED),
       _interactionOrder(b), 
       _colourStructure(Undefined), _colourFactor(-1.),
-      angularOrdered_(true),
-      _splittingColourMethod(0) {}
+      angularOrdered_(true) {}
 public:
 
   /**
@@ -213,6 +215,40 @@ public:
 				const bool back) const;
 
   /**
+   * Method to calculate the azimuthal angle for forward evolution
+   * @param z The energy fraction
+   * @param t The scale \f$t=2p_j\cdot p_k\f$.
+   * @param ids The PDG codes for the particles in the splitting.
+   * @param The azimuthal angle, \f$\phi\f$.
+   * @return The weight
+   */
+  virtual vector<pair<int,Complex> > 
+  generatePhiForward(const double z, const Energy2 t, const IdList & ids,
+		     const RhoDMatrix &) = 0;
+
+  /**
+   * Method to calculate the azimuthal angle for backward evolution
+   * @param z The energy fraction
+   * @param t The scale \f$t=2p_j\cdot p_k\f$.
+   * @param ids The PDG codes for the particles in the splitting.
+   * @param The azimuthal angle, \f$\phi\f$.
+   * @return The weight
+   */
+  virtual vector<pair<int,Complex> > 
+  generatePhiBackward(const double z, const Energy2 t, const IdList & ids,
+		      const RhoDMatrix &) = 0;
+
+  /**
+   * Calculate the matrix element for the splitting
+   * @param z The energy fraction
+   * @param t The scale \f$t=2p_j\cdot p_k\f$.
+   * @param ids The PDG codes for the particles in the splitting.
+   * @param The azimuthal angle, \f$\phi\f$.
+   */
+  virtual DecayMEPtr matrixElement(const double z, const Energy2 t, 
+				   const IdList & ids, const double phi) = 0;
+
+  /**
    *  Whether or not the interaction is angular ordered
    */
   bool angularOrdered() const {return angularOrdered_;}
@@ -229,7 +265,6 @@ public:
 				tShowerParticlePtr parent,
 				tShowerParticlePtr first,
 				tShowerParticlePtr second);
-
   /**
    *  Sort out scales for initial-state emission
    */
@@ -328,17 +363,6 @@ private:
    *  Whether or not this interaction is angular-ordered
    */
   bool angularOrdered_;
-  
-  /**
-   *  The method for assigning colour
-   *  The default, 0, will assign colour lines for octets
-   *  randomly without keeping a record of which lines radiate.
-   *  For option 1 only the "correct" lines will radiate until
-   *  the lowest scale is reached.
-   *  For option 2 there will be random radiation, but the
-   *  line which radiates is recorded
-   */
-   int _splittingColourMethod;
 };
 
 }

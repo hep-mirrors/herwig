@@ -10,6 +10,10 @@
 # The second section contains the user settings.
 ###################################################
 
+# Set emission to POWHEG for radiation in decays
+set /Herwig/Shower/Evolver:HardEmissionMode POWHEG
+
+# read model
 read ADD.model
 cd /Herwig/NewPhysics
 

@@ -19,6 +19,7 @@
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
+#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
 
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -43,8 +44,16 @@ using boost::numeric::ublas::row;
 using boost::numeric::ublas::column;
 using boost::numeric::ublas::prod;
 
+Ptr<MatchboxFactory>::tptr ColourBasis::factory() const {
+  return theFactory;
+}
+
+void ColourBasis::factory(Ptr<MatchboxFactory>::tptr f) {
+  theFactory = f;
+}
+
 ColourBasis::ColourBasis() 
-  : theLargeN(false), theSearchPath("."), didRead(false), didWrite(false) {}
+  : theLargeN(false), didRead(false), didWrite(false), theSearchPath("") {}
 
 ColourBasis::~ColourBasis() {
   for ( map<Ptr<Tree2toNDiagram>::tcptr,vector<ColourLines*> >::iterator cl =
@@ -60,7 +69,6 @@ ColourBasis::~ColourBasis() {
 
 void ColourBasis::clear() {
   theLargeN = false;
-  theSearchPath = ".";
   theNormalOrderedLegs.clear();
   theIndexMap.clear();
   theScalarProducts.clear();
@@ -1177,6 +1185,8 @@ void ColourBasis::read(compressed_matrix<double>& m, istream& is,
 
 void ColourBasis::doinit() {
   HandlerBase::doinit();
+  if ( theSearchPath.empty() && factory() )
+    theSearchPath = factory()->buildStorage();
   readBasis();
 }
 
@@ -1187,19 +1197,22 @@ void ColourBasis::dofinish() {
 
 void ColourBasis::doinitrun() {
   HandlerBase::doinitrun();
+  if ( theSearchPath.empty() && factory() )
+    theSearchPath = factory()->buildStorage();
   readBasis();
 }
 
 void ColourBasis::persistentOutput(PersistentOStream & os) const {
-  os << theLargeN << theSearchPath << theNormalOrderedLegs
-     << theIndexMap << theFlowMap << theOrderingStringIdentifiers << theOrderingIdentifiers;
+  os << theLargeN << theNormalOrderedLegs
+     << theIndexMap << theFlowMap << theOrderingStringIdentifiers 
+     << theOrderingIdentifiers << theFactory << theSearchPath;
   writeBasis();
 }
 
 void ColourBasis::persistentInput(PersistentIStream & is, int) {
-  is >> theLargeN >> theSearchPath >> theNormalOrderedLegs
-     >> theIndexMap >> theFlowMap >> theOrderingStringIdentifiers >> theOrderingIdentifiers;
-  readBasis();
+  is >> theLargeN >> theNormalOrderedLegs
+     >> theIndexMap >> theFlowMap >> theOrderingStringIdentifiers
+     >> theOrderingIdentifiers >> theFactory >> theSearchPath;
 }
 
 
@@ -1216,13 +1229,6 @@ void ColourBasis::Init() {
   static ClassDocumentation<ColourBasis> documentation
     ("ColourBasis is an interface to a colour basis "
      "implementation.");
-
-
-  static Parameter<ColourBasis,string> interfaceSearchPath
-    ("SearchPath",
-     "Set the search path for pre-computed colour basis data.",
-     &ColourBasis::theSearchPath, ".",
-     false, false);
 
   static Switch<ColourBasis,bool> interfaceLargeN
     ("LargeN",

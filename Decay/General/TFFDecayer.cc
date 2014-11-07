@@ -20,6 +20,7 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "Herwig++/Utilities/Kinematics.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -69,12 +70,13 @@ double TFFDecayer::me2(const int , const Particle & inpart,
 		       const ParticleVector & decay,
 		       MEOption meopt) const {
   unsigned int iferm(0),ianti(1);
+  if(!ME())
+    ME(new_ptr(GeneralDecayMatrixElement(PDT::Spin2,PDT::Spin1Half,PDT::Spin1Half)));
   if(decay[0]->id()>=0) swap(iferm,ianti);
   if(meopt==Initialize) {
     TensorWaveFunction::
       calculateWaveFunctions(_tensors,_rho,const_ptr_cast<tPPtr>(&inpart),
 			     incoming,false);
-    ME(DecayMatrixElement(PDT::Spin2,PDT::Spin1Half,PDT::Spin1Half));
   }
   if(meopt==Terminate) {
     TensorWaveFunction::
@@ -96,19 +98,19 @@ double TFFDecayer::me2(const int , const Particle & inpart,
     for(fhel=0;fhel<2;++fhel) {
       for(ahel=0;ahel<2;++ahel) {
 	if(iferm > ianti) {
-	  ME()(thel,fhel,ahel) = 
+	  (*ME())(thel,fhel,ahel) = 
 	    _abstractVertex->evaluate(scale,_wave[ahel],
 				      _wavebar[fhel],_tensors[thel]);
 	}
 	else {
-	  ME()(thel,ahel,fhel) = 
+	  (*ME())(thel,ahel,fhel) = 
 	    _abstractVertex->evaluate(scale,_wave[ahel],
 				      _wavebar[fhel],_tensors[thel]);
 	}
       }
     }
   }
-  double output = (ME().contract(_rho)).real()/scale*UnitRemoval::E2;
+  double output = (ME()->contract(_rho)).real()/scale*UnitRemoval::E2;
   // colour and identical particle factors
   output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
 			 decay[1]->dataPtr());
@@ -180,8 +182,8 @@ double TFFDecayer::threeBodyME(const int , const Particle & inpart,
   vector<DVector> cfactors = getColourFactors(inpart, decay, nflow);
   if(nflow==2) cfactors[0][1]=cfactors[1][0];
 
-  vector<DecayMatrixElement> ME(nflow,DecayMatrixElement(PDT::Spin2,     PDT::Spin1Half,
-							 PDT::Spin1Half, PDT::Spin1));
+  vector<GeneralDecayMEPtr> ME(nflow,new_ptr(GeneralDecayMatrixElement(PDT::Spin2,     PDT::Spin1Half,
+								       PDT::Spin1Half, PDT::Spin1)));
   // create wavefunctions
   SpinorBarWaveFunction::
     calculateWaveFunctions(_wavebar3, decay[iferm],outgoing);
@@ -250,7 +252,7 @@ double TFFDecayer::threeBodyME(const int , const Particle & inpart,
 	    double gs    =  abstractOutgoingVertexF->strongCoupling(scale);
 	    Complex diag = _abstractVertex->evaluate(scale,_wave3[ia], interS,_tensors3[it])/gs;
 	    for(unsigned int ix=0;ix<colourFlow[1].size();++ix) {
-	      ME[colourFlow[1][ix].first](it, ifm, ia, ig) += 
+	      (*ME[colourFlow[1][ix].first])(it, ifm, ia, ig) += 
 		colourFlow[1][ix].second*diag;
 	    }
 	  }
@@ -274,7 +276,7 @@ double TFFDecayer::threeBodyME(const int , const Particle & inpart,
 	    double gs    =  abstractOutgoingVertexA->strongCoupling(scale);
 	    Complex diag = _abstractVertex->evaluate(scale,interS,_wavebar3[ifm],_tensors3[it])/gs;
 	    for(unsigned int ix=0;ix<colourFlow[2].size();++ix) {
-	      ME[colourFlow[2][ix].first](it, ifm, ia, ig) += 
+	      (*ME[colourFlow[2][ix].first])(it, ifm, ia, ig) += 
 		colourFlow[2][ix].second*diag;
 	    }
 	  }
@@ -285,8 +287,8 @@ double TFFDecayer::threeBodyME(const int , const Particle & inpart,
 	    Complex diag = _abstractFourPointVertex->evaluate(scale, _wave3[ia], _wavebar3[ifm],
 							      _gluon[2*ig], _tensors3[it])/gs;
 	    for(unsigned int ix=0;ix<colourFlow[3].size();++ix) {
-	      ME[colourFlow[3][ix].first](it, ifm, ia, ig) += 
-	      colourFlow[3][ix].second*diag;
+	      (*ME[colourFlow[3][ix].first])(it, ifm, ia, ig) += 
+		colourFlow[3][ix].second*diag;
 	    }
 	  }
 	}
@@ -298,7 +300,7 @@ double TFFDecayer::threeBodyME(const int , const Particle & inpart,
   double output=0.;
   for(unsigned int ix=0; ix<nflow; ++ix){
     for(unsigned int iy=0; iy<nflow; ++iy){
-      output+=cfactors[ix][iy]*(ME[ix].contract(ME[iy],_rho3)).real();
+      output+=cfactors[ix][iy]*(ME[ix]->contract(*ME[iy],_rho3)).real();
     }
   }
   output*=(4.*Constants::pi);

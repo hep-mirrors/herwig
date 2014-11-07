@@ -64,12 +64,12 @@ public:
   /**
    * Return the factory which produced this matrix element
    */
-  Ptr<MatchboxFactory>::tcptr factory() const;
+  Ptr<MatchboxFactory>::tptr factory() const;
 
   /**
    * Set the factory which produced this matrix element
    */
-  void factory(Ptr<MatchboxFactory>::tcptr f);
+  void factory(Ptr<MatchboxFactory>::tptr f);
 
   /** @name Subprocess and diagram information. */
   //@{
@@ -947,7 +947,7 @@ private:
   /**
    * The factory which produced this matrix element
    */
-  Ptr<MatchboxFactory>::tcptr theFactory;
+  Ptr<MatchboxFactory>::tptr theFactory;
 
   /**
    * The phase space generator to be used.

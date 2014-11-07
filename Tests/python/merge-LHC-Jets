@@ -18,19 +18,19 @@ def fillAbove(scale,desthisto, sourcehistosbyptmin):
         ptlow=pt
         if(type(desthisto)==yoda.core.Scatter2D) :
             for i in range(0,h.numPoints) :
-                lowEdge = h.points[i].x-h.points[i].xErrs.minus
-                if( lowEdge*scale >= ptlow and 
-                    lowEdge*scale <  pthigh ) :
+                xMin = h.points[i].x-h.points[i].xErrs.minus
+                if( xMin*scale >= ptlow and 
+                    xMin*scale <  pthigh ) :
                     desthisto.addPoint(h.points[i])
         elif(type(desthisto)==yoda.core.Profile1D) :
             for i in range(0,h.numBins) :
-                if(h.bins[i].lowEdge*scale  >= ptlow and 
-                   h.bins[i].lowEdge*scale  <  pthigh ) :
+                if(h.bins[i].xMin*scale  >= ptlow and 
+                   h.bins[i].xMin*scale  <  pthigh ) :
                     desthisto.bins[i] += h.bins[i]
         elif(type(desthisto)==yoda.core.Histo1D) :
             for i in range(0,h.numBins) :
-                if(h.bins[i].lowEdge*scale  >= ptlow and 
-                   h.bins[i].lowEdge*scale  <  pthigh ) :
+                if(h.bins[i].xMin*scale  >= ptlow and 
+                   h.bins[i].xMin*scale  <  pthigh ) :
                     desthisto.bins[i] += h.bins[i]
         else :
             logging.error("Can't merge %s, unknown type" % desthisto.path)
@@ -219,7 +219,8 @@ for f in yodafiles:
            aopath.find("I1224539")>0 or
            aopath.find("I1273574")>0 or
            aopath.find("I1261026")>0 or
-           aopath.find("CMS_2012_PAS_QCD_11_010")>0) :
+           aopath.find("CMS_2012_PAS_QCD_11_010")>0 or
+           aopath.find("ATLAS_2014_I1298811")>0) :
            if not inhistos_pt.has_key(aopath):
                inhistos_pt[aopath] = {}
            tmpE = inhistos_pt[aopath]
@@ -285,7 +286,8 @@ for f in yodafiles:
            aopath.find("1082936")>0 or
            aopath.find("I930220")>0 or
            aopath.find("1261026")>0 or
-           aopath.find("1090423")>0) :
+           aopath.find("1090423")>0 or
+           aopath.find("1268975")>0) :
            if not inhistos_mass.has_key(aopath):
                inhistos_mass[aopath] = {}
            tmpE = inhistos_mass[aopath]
@@ -322,7 +324,8 @@ for hpath,hsets in inhistos_pt.iteritems():
         hpath.find("I1273574")>0 or 
         hpath.find("I1261026")>0 or 
         hpath.find("I1090423")>0 or
-        hpath.find("CMS_2012_PAS_QCD_11_010")>0) :
+        hpath.find("QCD_11_010")>0 or
+        hpath.find("1298811")>0) :
         if(type(hsets.values()[0].values()[0])==yoda.core.Scatter2D) :
             outhistos[hpath] = yoda.core.Scatter2D(hsets.values()[0].values()[0].path,
                                                    hsets.values()[0].values()[0].title)
@@ -330,18 +333,42 @@ for hpath,hsets in inhistos_pt.iteritems():
             outhistos[hpath] = yoda.core.Profile1D(hsets.values()[0].values()[0].path,
                                                    hsets.values()[0].values()[0].title)
             for i in range(0,hsets.values()[0].values()[0].numBins) :
-                outhistos[hpath].addBin(hsets.values()[0].values()[0].bins[i].lowEdge,
-                                        hsets.values()[0].values()[0].bins[i].highEdge)
+                outhistos[hpath].addBin(hsets.values()[0].values()[0].bins[i].xMin,
+                                        hsets.values()[0].values()[0].bins[i].xMax)
         elif(type(hsets.values()[0].values()[0])==yoda.core.Histo1D) :
             outhistos[hpath] = yoda.core.Histo1D(hsets.values()[0].values()[0].path,
                                                 hsets.values()[0].values()[0].title)
             for i in range(0,hsets.values()[0].values()[0].numBins) :
-                outhistos[hpath].addBin(hsets.values()[0].values()[0].bins[i].lowEdge,
-                                        hsets.values()[0].values()[0].bins[i].highEdge)
+                outhistos[hpath].addBin(hsets.values()[0].values()[0].bins[i].xMin,
+                                        hsets.values()[0].values()[0].bins[i].xMax)
+        else :
+            logging.error("Histogram %s is of unknown type" % hpath)
+            print hpath,type(hsets.values()[0].values()[0])
+            sys.exit(1) 
+
+## Make empty output histos if needed
+for hpath,hsets in inhistos_mass.iteritems():
+    if(hpath.find("1268975")>0) :
+        if(type(hsets.values()[0].values()[0])==yoda.core.Scatter2D) :
+            outhistos[hpath] = yoda.core.Scatter2D(hsets.values()[0].values()[0].path,
+                                                   hsets.values()[0].values()[0].title)
+        elif(type(hsets.values()[0].values()[0])==yoda.core.Profile1D) :
+            outhistos[hpath] = yoda.core.Profile1D(hsets.values()[0].values()[0].path,
+                                                   hsets.values()[0].values()[0].title)
+            for i in range(0,hsets.values()[0].values()[0].numBins) :
+                outhistos[hpath].addBin(hsets.values()[0].values()[0].bins[i].xMin,
+                                        hsets.values()[0].values()[0].bins[i].xMax)
+        elif(type(hsets.values()[0].values()[0])==yoda.core.Histo1D) :
+            outhistos[hpath] = yoda.core.Histo1D(hsets.values()[0].values()[0].path,
+                                                hsets.values()[0].values()[0].title)
+            for i in range(0,hsets.values()[0].values()[0].numBins) :
+                outhistos[hpath].addBin(hsets.values()[0].values()[0].bins[i].xMin,
+                                        hsets.values()[0].values()[0].bins[i].xMax)
         else :
             logging.error("Histogram %s is of unknown type" % hpath)
             print hpath,type(hsets.values()[0].values()[0])
             sys.exit(1)
+        
 
 logging.info("Processing CMS_2011_S8957746")
 useOnePt("/CMS_2011_S8957746/d01-x01-y01", "7000", "80" )
@@ -1544,6 +1571,97 @@ useOneMass("/CMS_2012_I1090423/d07-x01-y01", "7000", "800" )
 useOneMass("/CMS_2012_I1090423/d08-x01-y01", "7000", "300" )
 useOneMass("/CMS_2012_I1090423/d09-x01-y01", "7000", "300" )
 
+logging.info("Processing ATLAS_2014_I1298811")
+mergeByPt("/ATLAS_2014_I1298811/d01-x01-y01", "7000")
+mergeByPt("/ATLAS_2014_I1298811/d01-x01-y02", "7000")
+mergeByPt("/ATLAS_2014_I1298811/d02-x01-y01", "7000")
+mergeByPt("/ATLAS_2014_I1298811/d02-x01-y02", "7000")
+mergeByPt("/ATLAS_2014_I1298811/d03-x01-y01", "7000")
+mergeByPt("/ATLAS_2014_I1298811/d03-x01-y02", "7000")
+mergeByPt("/ATLAS_2014_I1298811/d04-x01-y01", "7000")
+mergeByPt("/ATLAS_2014_I1298811/d04-x01-y02", "7000")
+mergeByPt("/ATLAS_2014_I1298811/d05-x01-y01", "7000")
+mergeByPt("/ATLAS_2014_I1298811/d05-x01-y02", "7000")
+mergeByPt("/ATLAS_2014_I1298811/d06-x01-y01", "7000")
+mergeByPt("/ATLAS_2014_I1298811/d06-x01-y02", "7000")
+mergeByPt("/ATLAS_2014_I1298811/d07-x01-y01", "7000")
+mergeByPt("/ATLAS_2014_I1298811/d07-x01-y02", "7000")
+mergeByPt("/ATLAS_2014_I1298811/d08-x01-y01", "7000")
+mergeByPt("/ATLAS_2014_I1298811/d08-x01-y02", "7000")
+mergeByPt("/ATLAS_2014_I1298811/d09-x01-y01", "7000")
+mergeByPt("/ATLAS_2014_I1298811/d09-x01-y02", "7000")
+mergeByPt("/ATLAS_2014_I1298811/d10-x01-y01", "7000")
+mergeByPt("/ATLAS_2014_I1298811/d10-x01-y02", "7000")
+useOnePt("/ATLAS_2014_I1298811/d11-x01-y01",  "7000", "0" )
+useOnePt("/ATLAS_2014_I1298811/d12-x01-y01",  "7000", "0" )
+
+useOnePt("/ATLAS_2014_I1298811/d13-x01-y01",  "7000", "4" )
+useOnePt("/ATLAS_2014_I1298811/d13-x01-y02",  "7000", "4" )
+useOnePt("/ATLAS_2014_I1298811/d14-x01-y01",  "7000", "4" )
+useOnePt("/ATLAS_2014_I1298811/d14-x01-y02",  "7000", "4" )
+useOnePt("/ATLAS_2014_I1298811/d15-x01-y01",  "7000", "4" )
+useOnePt("/ATLAS_2014_I1298811/d15-x01-y02",  "7000", "4" )
+useOnePt("/ATLAS_2014_I1298811/d25-x01-y01",  "7000", "4" )
+useOnePt("/ATLAS_2014_I1298811/d25-x01-y02",  "7000", "4" )
+useOnePt("/ATLAS_2014_I1298811/d26-x01-y01",  "7000", "4" )
+useOnePt("/ATLAS_2014_I1298811/d26-x01-y02",  "7000", "4" )
+useOnePt("/ATLAS_2014_I1298811/d27-x01-y01",  "7000", "4" )
+useOnePt("/ATLAS_2014_I1298811/d27-x01-y02",  "7000", "4" )
+
+useOnePt("/ATLAS_2014_I1298811/d16-x01-y01",  "7000", "4" )
+useOnePt("/ATLAS_2014_I1298811/d16-x01-y02",  "7000", "4" )
+useOnePt("/ATLAS_2014_I1298811/d17-x01-y01",  "7000", "4" )
+useOnePt("/ATLAS_2014_I1298811/d17-x01-y02",  "7000", "4" )
+useOnePt("/ATLAS_2014_I1298811/d18-x01-y01",  "7000", "4" )
+useOnePt("/ATLAS_2014_I1298811/d18-x01-y02",  "7000", "4" )
+useOnePt("/ATLAS_2014_I1298811/d28-x01-y01",  "7000", "4" )
+useOnePt("/ATLAS_2014_I1298811/d28-x01-y02",  "7000", "4" )
+useOnePt("/ATLAS_2014_I1298811/d29-x01-y01",  "7000", "4" )
+useOnePt("/ATLAS_2014_I1298811/d29-x01-y02",  "7000", "4" )
+useOnePt("/ATLAS_2014_I1298811/d30-x01-y01",  "7000", "4" )
+useOnePt("/ATLAS_2014_I1298811/d30-x01-y02",  "7000", "4" )
+
+useOnePt("/ATLAS_2014_I1298811/d19-x01-y01",  "7000", "40" )
+useOnePt("/ATLAS_2014_I1298811/d19-x01-y02",  "7000", "40" )
+useOnePt("/ATLAS_2014_I1298811/d20-x01-y01",  "7000", "40" )
+useOnePt("/ATLAS_2014_I1298811/d20-x01-y02",  "7000", "40" )
+useOnePt("/ATLAS_2014_I1298811/d21-x01-y01",  "7000", "40" )
+useOnePt("/ATLAS_2014_I1298811/d21-x01-y02",  "7000", "40" )
+useOnePt("/ATLAS_2014_I1298811/d31-x01-y01",  "7000", "40" )
+useOnePt("/ATLAS_2014_I1298811/d31-x01-y02",  "7000", "40" )
+useOnePt("/ATLAS_2014_I1298811/d32-x01-y01",  "7000", "40" )
+useOnePt("/ATLAS_2014_I1298811/d32-x01-y02",  "7000", "40" )
+useOnePt("/ATLAS_2014_I1298811/d33-x01-y01",  "7000", "40" )
+useOnePt("/ATLAS_2014_I1298811/d33-x01-y02",  "7000", "40" )
+
+useOnePt("/ATLAS_2014_I1298811/d22-x01-y01",  "7000", "210" )
+useOnePt("/ATLAS_2014_I1298811/d22-x01-y02",  "7000", "210" )
+useOnePt("/ATLAS_2014_I1298811/d23-x01-y01",  "7000", "210" )
+useOnePt("/ATLAS_2014_I1298811/d23-x01-y02",  "7000", "210" )
+useOnePt("/ATLAS_2014_I1298811/d24-x01-y01",  "7000", "210" )
+useOnePt("/ATLAS_2014_I1298811/d24-x01-y02",  "7000", "210" )
+useOnePt("/ATLAS_2014_I1298811/d34-x01-y01",  "7000", "210" )
+useOnePt("/ATLAS_2014_I1298811/d34-x01-y02",  "7000", "210" )
+useOnePt("/ATLAS_2014_I1298811/d35-x01-y01",  "7000", "210" )
+useOnePt("/ATLAS_2014_I1298811/d35-x01-y02",  "7000", "210" )
+useOnePt("/ATLAS_2014_I1298811/d36-x01-y01",  "7000", "210" )
+useOnePt("/ATLAS_2014_I1298811/d36-x01-y02",  "7000", "210" )
+
+
+logging.info("Processing ATLAS_2014_I1268975")
+mergeByMass("/ATLAS_2014_I1268975/d01-x01-y01", "7000", 1000.)
+mergeByMass("/ATLAS_2014_I1268975/d01-x01-y02", "7000", 1000.)
+mergeByMass("/ATLAS_2014_I1268975/d01-x01-y03", "7000", 1000.)
+mergeByMass("/ATLAS_2014_I1268975/d01-x01-y04", "7000", 1000.)
+mergeByMass("/ATLAS_2014_I1268975/d01-x01-y05", "7000", 1000.)
+mergeByMass("/ATLAS_2014_I1268975/d01-x01-y06", "7000", 1000.)
+
+mergeByMass("/ATLAS_2014_I1268975/d02-x01-y01", "7000", 1000.)
+mergeByMass("/ATLAS_2014_I1268975/d02-x01-y02", "7000", 1000.)
+mergeByMass("/ATLAS_2014_I1268975/d02-x01-y03", "7000", 1000.)
+mergeByMass("/ATLAS_2014_I1268975/d02-x01-y04", "7000", 1000.)
+mergeByMass("/ATLAS_2014_I1268975/d02-x01-y05", "7000", 1000.)
+mergeByMass("/ATLAS_2014_I1268975/d02-x01-y06", "7000", 1000.)
 # Choose output file
 name = "LHC"+"-Jets.yoda"
 yoda.writeYODA(outhistos,name)

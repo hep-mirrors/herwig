@@ -8,10 +8,11 @@ for particle physics. See arXiv:0803.0883 for a detailed manual, \
 or arXiv:1101.2599 for a more general description of the physics \
 behind MC event generation."
 
-usage " (read|integrate|run) [OPTIONS]... [FILE]" 
+usage " (read|build|integrate|run) [OPTIONS]... [FILE]" 
 
-description "One of the commands 'read', 'integrate' or 'run' is required:
+description "One of the commands 'read', 'build', 'integrate' or 'run' is required:
     read - reads an input file and creates a run file,
+    build - reads an input file and creates matrix elements, postponing integration
     integrate - integrate subprocesses, if integration has been postponed
     run  - reads a run file and generates events."
 
@@ -48,8 +49,8 @@ section "Integration options"
 text "
   -x,--setupfile=FILE      An input file to modify run parameters."
 
-option "bins" n "Integrate the given list of subprocesses."
-  typestr="FILE"
+option "jobid" n "Integrate the given integration job."
+  typestr="NUMBER"
   string optional
 
 section "Repository options"

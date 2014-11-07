@@ -211,6 +211,27 @@ public:
    * Return true if the cluster has hadron children.
    */
   bool isStatusFinal() const;
+
+public:
+
+  /**
+   * Calculate the 4-position vector of the cluster
+   * Method made static so can be used in other places
+   * Displacement of the ith constituent given by momentum \f$p_i\f$
+   * vertex \f$x_i\f$ and mass \f$m_i\f$ is
+   * \f[ D_i = -C \log(r) \frac{p_i}{\sqrt{(p_i^2 - m_i^2)^2 + v^4}} \f]
+   * where \f$r\f$ is a random number [0,1],
+   * \f$v\f$ is the minimum virtuality and \f$C\f$ is
+   * a conversion factor from GeV to millimeters. We can then find the
+   * difference in \f$s\f$ factors as
+   * \f[ (s_1-s_2) = \frac{(\vec{p}_1 + \vec{p}_2) \cdot (\vec{x}_2 -
+   *                 \vec{x}_1)}{(\vec{p}_1 + \vec{p}_2) \cdot \vec{D}_1}.
+   * \f]
+   * if \f$s_2>s_1\f$ then \f$s_1 = 1.0\f$ otherwise \f$s_2 = 1.0\f$.
+   * These are then used to determine the value of the clusters vertex as
+   * \f[ X = \frac{1}{2} ( x_1 +x_2 + s_1 D_1 + s_2 D_2). \f]
+   */
+  static LorentzPoint calculateX(tPPtr q1, tPPtr q2);
   
 protected:
   
@@ -256,24 +277,6 @@ private:
    * and the mass of the cluster is \f$m^2 = P^2\f$
    */
   void calculateP();
-  
-  /**
-   * Calculate the 4-position vector of the cluster
-   * Displacement of the ith constituent given by momentum \f$p_i\f$
-   * vertex \f$x_i\f$ and mass \f$m_i\f$ is 
-   * \f[ D_i = -C \log(r) \frac{p_i}{\sqrt{(p_i^2 - m_i^2)^2 + v^4}} \f]
-   * where \f$r\f$ is a random number [0,1], 
-   * \f$v\f$ is the minimum virtuality and \f$C\f$ is 
-   * a conversion factor from GeV to millimeters. We can then find the 
-   * difference in \f$s\f$ factors as
-   * \f[ (s_1-s_2) = \frac{(\vec{p}_1 + \vec{p}_2) \cdot (\vec{x}_2 - 
-   *                 \vec{x}_1)}{(\vec{p}_1 + \vec{p}_2) \cdot \vec{D}_1}. 
-   * \f]
-   * if \f$s_2>s_1\f$ then \f$s_1 = 1.0\f$ otherwise \f$s_2 = 1.0\f$. 
-   * These are then used to determine the value of the clusters vertex as
-   * \f[ X = \frac{1}{2} ( x_1 +x_2 + s_1 D_1 + s_2 D_2). \f]
-   */
-  void calculateX();
   
   /**
    * Determines whether constituent p is perturbative or not.

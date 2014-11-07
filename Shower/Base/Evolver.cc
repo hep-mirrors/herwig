@@ -33,12 +33,32 @@
 #include "ThePEG/PDT/DecayMode.h"
 #include "Herwig++/Shower/ShowerHandler.h" 
 #include "ThePEG/Utilities/DescribeClass.h"
-
+#include "ShowerVertex.h"
+#include "ThePEG/Repository/CurrentGenerator.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/SubtractedME.h"
 #include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 
 using namespace Herwig;
+
+namespace {
+  /**
+   * Cached lookup of decay modes.
+   * Generator::findDecayMode() is not efficient.
+   */
+  tDMPtr findDecayMode(const string & tag) {
+    static map<string,DMPtr> cache;
+
+    map<string,DMPtr>::const_iterator pos = cache.find(tag);
+
+    if ( pos != cache.end() ) 
+    	return pos->second;
+
+    tDMPtr dm = CurrentGenerator::current().findDecayMode(tag);
+    cache[tag] = dm;
+    return dm;
+  }
+}
 
 DescribeClass<Evolver,Interfaced>
 describeEvolver ("Herwig::Evolver","HwShower.so");
@@ -54,7 +74,7 @@ IBPtr Evolver::fullclone() const {
 void Evolver::persistentOutput(PersistentOStream & os) const {
   os << _model << _splittingGenerator << _maxtry 
      << _meCorrMode << _hardVetoMode << _hardVetoRead << _hardVetoReadOption
-     << _limitEmissions
+     << _limitEmissions << _spinOpt << _softOpt
      << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << ounit(_iptmax,GeV) 
      << _vetoes << _trunc_Mode << _hardEmissionMode 
      << _colourEvolutionMethod << _reconOpt
@@ -69,7 +89,7 @@ void Evolver::persistentInput(PersistentIStream & is, int) {
   unsigned int isize;
   is >> _model >> _splittingGenerator >> _maxtry 
      >> _meCorrMode >> _hardVetoMode >> _hardVetoRead >> _hardVetoReadOption
-     >> _limitEmissions
+     >> _limitEmissions >> _spinOpt >> _softOpt
      >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> iunit(_iptmax,GeV)
      >> _vetoes >> _trunc_Mode >> _hardEmissionMode
      >> _colourEvolutionMethod >> _reconOpt
@@ -332,6 +352,41 @@ void Evolver::Init() {
      "Use the off-shell masses in the calculation",
      1);
 
+  static Switch<Evolver,unsigned int> interfaceSpinCorrelations
+    ("SpinCorrelations",
+     "Treatment of spin correlations in the parton shower",
+     &Evolver::_spinOpt, 1, false, false);
+  static SwitchOption interfaceSpinCorrelationsOff
+    (interfaceSpinCorrelations,
+     "No",
+     "No spin correlations",
+     0);
+  static SwitchOption interfaceSpinCorrelationsSpin
+    (interfaceSpinCorrelations,
+     "Yes",
+     "Include the azimuthal spin correlations only",
+     1);
+
+  static Switch<Evolver,unsigned int> interfaceSoftCorrelations
+    ("SoftCorrelations",
+     "Option for the treatment of soft correlations in the parton shower",
+     &Evolver::_softOpt, 2, false, false);
+  static SwitchOption interfaceSoftCorrelationsNone
+    (interfaceSoftCorrelations,
+     "No",
+     "No soft correlations",
+     0);
+  static SwitchOption interfaceSoftCorrelationsFull
+    (interfaceSoftCorrelations,
+     "Full",
+     "Use the full eikonal",
+     1);
+  static SwitchOption interfaceSoftCorrelationsSingular
+    (interfaceSoftCorrelations,
+     "Singular",
+     "Use original Webber-Marchisini form",
+     2);
+
 }
 
 void Evolver::generateIntrinsicpT(vector<ShowerProgenitorPtr> particlesToShower) {
@@ -527,7 +582,10 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
   // don't do anything if not needed
   if(_limitEmissions == 1 || hardOnly() || 
      ( _limitEmissions == 2 && _nfs != 0) ||
-     ( _limitEmissions == 4 && _nfs + _nis != 0) ) return false;  
+     ( _limitEmissions == 4 && _nfs + _nis != 0) ) {
+    if(particle->spinInfo()) particle->spinInfo()->develop();
+    return false;
+  }
   ShowerParticleVector theChildren; 
   int ntry=0;
   do {
@@ -537,11 +595,15 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
     while (true) {
       fb=_splittingGenerator->chooseForwardBranching(*particle,_finalenhance,type);
       // no emission return
-      if(!fb.kinematics) return false;
+      if(!fb.kinematics) {
+	if(particle->spinInfo()) particle->spinInfo()->develop();
+	return false;
+      }
       // if emission OK break
       if(!timeLikeVetoed(fb,particle)) break;
       // otherwise reset scale and continue - SO IS involved in veto algorithm
       particle->vetoEmission(fb.type,fb.kinematics->scale());
+      if(particle->spinInfo()) particle->spinInfo()->decayVertex(VertexPtr());
     }
     // has emitted
     // Assign the shower kinematics to the emitting particle.
@@ -566,11 +628,18 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
       updateChildren(particle, theChildren,fb.type);
     // update number of emissions
     ++_nfs;
-    if(_limitEmissions!=0) return true;
+    if(_limitEmissions!=0) {
+      theChildren[0]->spinInfo()->develop();
+      theChildren[1]->spinInfo()->develop();
+      if(particle->spinInfo()) particle->spinInfo()->develop();
+      return true;
+    }
     // shower the first  particle
     timeLikeShower(theChildren[0],type,false);
+    if(theChildren[0]->spinInfo()) theChildren[0]->spinInfo()->develop();
     // shower the second particle
     timeLikeShower(theChildren[1],type,false);
+    if(theChildren[1]->spinInfo()) theChildren[1]->spinInfo()->develop();
     // that's if for old approach
     if(_reconOpt==0) break;
     // branching has happened
@@ -587,6 +656,7 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
   while(particle->virtualMass()==ZERO&&ntry<50);
   if(first)
     particle->showerKinematics()->resetChildren(particle,theChildren);
+  if(particle->spinInfo()) particle->spinInfo()->develop();
   return true;
 }
 
@@ -605,7 +675,10 @@ Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
   // don't do anything if not needed
   if(_limitEmissions == 2  || hardOnly() ||
      ( _limitEmissions == 1 && _nis != 0 ) ||
-     ( _limitEmissions == 4 && _nis + _nfs != 0 ) ) return false;
+     ( _limitEmissions == 4 && _nis + _nfs != 0 ) ) {
+    if(particle->spinInfo()) particle->spinInfo()->develop();
+    return false;
+  }
   Branching bb;
   // generate branching
   while (true) {
@@ -614,11 +687,15 @@ Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
 						    _beam,type,
 						    pdf,freeze);
     // return if no emission
-    if(!bb.kinematics) return false;
+    if(!bb.kinematics) {
+      if(particle->spinInfo()) particle->spinInfo()->develop();
+      return false;
+    }
     // if not vetoed break
     if(!spaceLikeVetoed(bb,particle)) break;
     // otherwise reset scale and continue
     particle->vetoEmission(bb.type,bb.kinematics->scale());
+    if(particle->spinInfo()) particle->spinInfo()->decayVertex(VertexPtr());
   }
   // assign the splitting function and shower kinematics
   particle->showerKinematics(bb.kinematics);
@@ -649,6 +726,7 @@ Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
   ++_nis;
   bool emitted = _limitEmissions==0 ? 
     spaceLikeShower(newParent,beam,type) : false;
+  if(newParent->spinInfo()) newParent->spinInfo()->develop();
   // now reconstruct the momentum
   if(!emitted) {
     if(_intrinsic.find(_progenitor)==_intrinsic.end()) {
@@ -663,10 +741,15 @@ Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
   }
   particle->showerKinematics()->
     updateChildren(newParent, theChildren,bb.type);
-  if(_limitEmissions!=0) return true;
+  if(_limitEmissions!=0) {
+    if(particle->spinInfo()) particle->spinInfo()->develop();
+    return true;
+  }
   // perform the shower of the final-state particle
   timeLikeShower(otherChild,type,true);
+  if(theChildren[1]->spinInfo()) theChildren[1]->spinInfo()->develop();
   // return the emitted
+  if(particle->spinInfo()) particle->spinInfo()->develop();
   return true;
 }
 
@@ -688,7 +771,7 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
       tag += it->first->original()->dataPtr()->name();
     }
     tag += ";";
-    dm = generator()->findDecayMode(tag);
+    dm = findDecayMode(tag);
   }
   if(dm) _decayme = dynamic_ptr_cast<HwDecayerBasePtr>(dm->decayer());
   // set the ShowerTree to be showered
@@ -700,7 +783,14 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
     try {
       // generate the showering
       doShowering(false,XCPtr());
-      // if no vetos return
+      // if no vetos 
+      // force calculation of spin correlations
+      SpinPtr spInfo = decay->incomingLines().begin()->first->progenitor()->spinInfo();
+      if(spInfo) {
+	if(!spInfo->developed()) spInfo->needsUpdate();
+	spInfo->develop();
+      }
+      // and then return
       return;
     }
     catch (InteractionVeto) {
@@ -2241,6 +2331,13 @@ void Evolver::doShowering(bool hard,XCPtr xcomb) {
 	currentTree()->clear();
 	setEvolutionPartners(hard,interactions_[inter],true);
 	_nis = _nfs = 0;
+	for(unsigned int ix=0; ix<particlesToShower.size();++ix) {
+	  SpinPtr spin = particlesToShower[ix]->progenitor()->spinInfo();
+	  if(spin && spin->decayVertex() &&
+	     dynamic_ptr_cast<tcSVertexPtr>(spin->decayVertex())) {
+	    spin->decayVertex(VertexPtr());
+	  }
+	}
       }
       // generate the shower
       // pick random starting point 

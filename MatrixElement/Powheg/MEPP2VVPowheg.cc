@@ -23,7 +23,7 @@
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "Herwig++/MatrixElement/HardVertex.h"
-#include "Herwig++/Decay/DecayMatrixElement.h"
+#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
 #include "Herwig++/Shower/Base/ShowerProgenitor.h"
 #include "Herwig++/Shower/Base/ShowerTree.h"
 #include "Herwig++/Shower/Base/Branching.h"
@@ -5275,12 +5275,12 @@ void MEPP2VVPowheg::recalculateVertex() {
       k6.push_back(k6Spinor);
     }
 
-    DecayMatrixElement decayAmps(PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half);
+    DecayMEPtr decayAmps(new_ptr(GeneralDecayMatrixElement(PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half)));
 
     for(unsigned int k1hel=0;k1hel<3;++k1hel) {
       for(unsigned int k3hel=0;k3hel<2;++k3hel) {
 	for(unsigned int k4hel=0;k4hel<2;++k4hel) {
-	  decayAmps(k1hel,k3hel,k4hel) = 
+	  (*decayAmps)(k1hel,k3hel,k4hel) = 
 	    ffv1->evaluate(EWScale_,k3[k3hel],k4[k4hel],v1[k1hel]);
 	}
       }
@@ -5291,8 +5291,8 @@ void MEPP2VVPowheg::recalculateVertex() {
 	Complex theElement(0.,0.);
 	for(unsigned int k3hel=0;k3hel<2;++k3hel) {
 	  for(unsigned int k4hel=0;k4hel<2;++k4hel) {
-	    theElement += decayAmps(k1hel,k3hel,k4hel)
-	            *conj(decayAmps(k1helpr,k3hel,k4hel));
+	    theElement += (*decayAmps)(k1hel,k3hel,k4hel)
+	      *conj((*decayAmps)(k1helpr,k3hel,k4hel));
 	  }
 	}
 	V1decayMatrix[k1hel][k1helpr] = theElement;
@@ -5304,7 +5304,7 @@ void MEPP2VVPowheg::recalculateVertex() {
     for(unsigned int k2hel=0;k2hel<3;++k2hel) {
       for(unsigned int k5hel=0;k5hel<2;++k5hel) {
 	for(unsigned int k6hel=0;k6hel<2;++k6hel) {
-	  decayAmps(k2hel,k5hel,k6hel) = 
+	  (*decayAmps)(k2hel,k5hel,k6hel) = 
 	    ffv2->evaluate(EWScale_,k5[k5hel],k6[k6hel],v2[k2hel]);
 	}
       }
@@ -5315,8 +5315,8 @@ void MEPP2VVPowheg::recalculateVertex() {
 	Complex theElement(0.,0.);
 	for(unsigned int k5hel=0;k5hel<2;++k5hel) {
 	  for(unsigned int k6hel=0;k6hel<2;++k6hel) {
-	    theElement += decayAmps(k2hel,k5hel,k6hel)
-	            *conj(decayAmps(k2helpr,k5hel,k6hel));
+	    theElement += (*decayAmps)(k2hel,k5hel,k6hel)
+	      *conj((*decayAmps)(k2helpr,k5hel,k6hel));
 	  }
 	}
 	V2decayMatrix[k2hel][k2helpr] = theElement;
