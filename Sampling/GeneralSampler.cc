@@ -591,7 +591,7 @@ void GeneralSampler::dofinish() {
       s->second->saveIntegrationData();
   }
 
-  writeGrids(true);
+  writeGrids();
 
   SamplerBase::dofinish();
 
