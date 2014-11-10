@@ -78,13 +78,9 @@ Energy2 MatchboxTopMassScale::factorizationScale() const {
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 
-void MatchboxTopMassScale::persistentOutput(PersistentOStream & os) const {
-  os ;
-}
+void MatchboxTopMassScale::persistentOutput(PersistentOStream &) const {}
 
-void MatchboxTopMassScale::persistentInput(PersistentIStream & is, int) {
-  is ;
-}
+void MatchboxTopMassScale::persistentInput(PersistentIStream &, int) {}
 
 
 // *** Attention *** The following static variable is needed for the type
