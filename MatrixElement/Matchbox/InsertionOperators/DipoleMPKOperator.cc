@@ -130,7 +130,8 @@ void DipoleMPKOperator::setXComb(tStdXCombPtr xc) {
 
 vector<int> DipoleMPKOperator::NLightJetVec() const {
 
-  const map<string,PDVector>& theParticleGroups = MatchboxFactory::currentFactory()->particleGroups();
+  // const map<string,PDVector>& theParticleGroups = MatchboxFactory::currentFactory()->particleGroups();
+  const map<string,PDVector>& theParticleGroups = factory()->particleGroups();
   map<string,PDVector>::const_iterator theIt = theParticleGroups.find("j");
   if ( theIt == theParticleGroups.end() )
     throw Exception() << "DipolePKOperator::NLightJetVec(): Could not find a jet particle group named 'j'" << Exception::abortnow;
@@ -150,7 +151,8 @@ vector<int> DipoleMPKOperator::NLightJetVec() const {
 
 vector<int> DipoleMPKOperator::NHeavyJetVec() const {
 
-  const map<string,PDVector>& theParticleGroups = MatchboxFactory::currentFactory()->particleGroups();
+  // const map<string,PDVector>& theParticleGroups = MatchboxFactory::currentFactory()->particleGroups();
+  const map<string,PDVector>& theParticleGroups = factory()->particleGroups();
   map<string,PDVector>::const_iterator theIt = theParticleGroups.find("j");
   if ( theIt == theParticleGroups.end() )
     throw Exception() << "DipolePKOperator::NHeavyJetVec(): Could not find a jet particle group named 'j'" << Exception::abortnow;
@@ -204,7 +206,8 @@ vector<int> DipoleMPKOperator::NHeavyBornVec() const {
 
 vector<int> DipoleMPKOperator::NLightProtonVec() const {
 
-  const map<string,PDVector>& theParticleGroups = MatchboxFactory::currentFactory()->particleGroups();
+  // const map<string,PDVector>& theParticleGroups = MatchboxFactory::currentFactory()->particleGroups();
+  const map<string,PDVector>& theParticleGroups = factory()->particleGroups();
   map<string,PDVector>::const_iterator theIt = theParticleGroups.find("p");
   if ( theIt == theParticleGroups.end() )
     throw Exception() << "DipoleMPKOperator::NLightProtonVec(): Could not find a proton particle group named 'p'" << Exception::abortnow;
