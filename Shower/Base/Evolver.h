@@ -566,6 +566,23 @@ protected:
 			      SudakovPtr sud,PPtr beam);
   //@}
 
+public:
+
+  /** @name MC@NLO diagnostics */
+  //@{
+
+  /**
+   * True, if Matchbox MC@NLO S-event
+   */
+  bool wasMCatNLOSEvent() const { return isMCatNLOSEvent; }
+
+  /**
+   * True, if matchbox MC@NLO H-event
+   */
+  bool wasMCatNLOHEvent() const { return isMCatNLOHEvent; }
+
+  //@}
+
 protected:
 
   /** @name Clone Methods. */
