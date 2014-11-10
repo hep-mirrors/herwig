@@ -17,6 +17,7 @@
 #include "ThePEG/Handlers/LastXCombInfo.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/LastMatchboxXCombInfo.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.fh"
+#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.fh"
 
 namespace Herwig {
 
@@ -52,6 +53,16 @@ public:
   //@}
 
 public:
+
+  /**
+   * Return the factory which produced this matrix element
+   */
+  Ptr<MatchboxFactory>::tptr factory() const;
+
+  /**
+   * Set the factory which produced this matrix element
+   */
+  void factory(Ptr<MatchboxFactory>::tptr f);
 
   /** @name Process and phasespace information */
   //@{
@@ -237,6 +248,11 @@ public:
 // InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
 
 private:
+
+  /**
+   * The factory which produced this matrix element
+   */
+  Ptr<MatchboxFactory>::tptr theFactory;
 
   /**
    * Change from MSbar to DRbar

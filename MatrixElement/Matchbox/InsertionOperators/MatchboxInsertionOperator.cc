@@ -19,8 +19,13 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.h"
+#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
 
 using namespace Herwig;
+
+Ptr<MatchboxFactory>::tptr MatchboxInsertionOperator::factory() const { return theFactory; }
+
+void MatchboxInsertionOperator::factory(Ptr<MatchboxFactory>::tptr f) { theFactory = f; }
 
 MatchboxInsertionOperator::MatchboxInsertionOperator() 
   : HandlerBase(),
@@ -40,12 +45,12 @@ CrossSection MatchboxInsertionOperator::dSigHatDR() const {
 }
 
 void MatchboxInsertionOperator::persistentOutput(PersistentOStream & os) const {
-  os << theLastXComb << theUseDRbar
+  os << theLastXComb << theFactory << theUseDRbar
      << theUseDR << theUseCS << theUseBDK << theUseExpanded;
 }
 
 void MatchboxInsertionOperator::persistentInput(PersistentIStream & is, int) {
-  is >> theLastXComb >> theUseDRbar
+  is >> theLastXComb >> theFactory >> theUseDRbar
      >> theUseDR >> theUseCS >> theUseBDK >> theUseExpanded;
   lastMatchboxXComb(theLastXComb);
 }
