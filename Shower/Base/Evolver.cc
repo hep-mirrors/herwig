@@ -2273,6 +2273,11 @@ void Evolver::doShowering(bool hard,XCPtr xcomb) {
   bool showerOrder(true);
   // zero number of emissions
   _nis = _nfs = 0;
+  // if MC@NLO H event and limited emissions
+  // indicate both final and initial state emission
+  if ( isMCatNLOHEvent && _limitEmissions != 0 ) {
+    _nis = _nfs = 1;
+  }
   // extract particles to shower
   vector<ShowerProgenitorPtr> particlesToShower(setupShower(hard));
   // setup the maximum scales for the shower
