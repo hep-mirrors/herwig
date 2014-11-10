@@ -425,6 +425,7 @@ void MatchboxFactory::setup() {
       for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt
 	      = DipoleRepository::insertionOperators(dipoleSet()).begin(); 
 	    virt != DipoleRepository::insertionOperators(dipoleSet()).end(); ++virt ) {
+	(**virt).factory(this);
 	if ( virtualsAreDRbar )
 	  (**virt).useDRbar();
 	if ( virtualsAreDR )
