@@ -20,5 +20,6 @@ MatchboxSHatScale.h \
 MatchboxSHatScale.cc \
 MatchboxTopMassScale.cc \
 MatchboxTopMTScale.cc \
+MatchboxTopMinMTScale.cc \
 MatchboxTriVecScales.h \
 MatchboxTriVecScales.cc
