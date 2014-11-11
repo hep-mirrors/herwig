@@ -40,13 +40,17 @@ SSGNGVertex::SSGNGVertex() : _includeOnShell(false), _realIntegral(false),
 			     _omitLightQuarkYukawas(false),
 			     _sw(0.), _cw(0.), _idlast(0), 
 			     _q2last(ZERO), _couplast(0.),
-			     _leftlast(ZERO), _rightlast(ZERO) {
+			     _leftlast(ZERO), _rightlast(ZERO),
+			     _initLoops(false) {
   orderInGem(1);
   orderInGs(2);
 }
 
 void SSGNGVertex::doinit() {
-  Looptools::ltini();
+  if(!_initLoops) {
+    Looptools::ltini();
+    _initLoops = true;
+  }
   tMSSMPtr model = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
   if(!model)
     throw InitException() << "SSGNGVertex::doinit() - "
@@ -95,7 +99,10 @@ void SSGNGVertex::dofinish() {
 }
 
 void SSGNGVertex::doinitrun() {
-  Looptools::ltini();
+  if(!_initLoops) {
+    Looptools::ltini();
+    _initLoops = true;
+  }
   GeneralFFVVertex::doinitrun();
 }
 
@@ -192,6 +199,10 @@ void SSGNGVertex::setCoupling(Energy2 q2, tcPDPtr part1,
   setLeft (0.);
   setRight(0.);
   if(in2 != _idlast || q2 !=_q2last) {
+    if(!_initLoops) {
+      Looptools::ltini();
+      _initLoops = true;
+    }
     Looptools::clearcache();
     _leftlast  = ZERO;
     _rightlast = ZERO;
@@ -269,7 +280,7 @@ void SSGNGVertex::setCoupling(Energy2 q2, tcPDPtr part1,
   }
   norm(_couplast);
   setLeftSigma ( _leftlast);
-  setRightSigma(_rightlast);  
+  setRightSigma(_rightlast);
 }
 
 void SSGNGVertex::loopIntegrals(Energy Mi, Energy Mj, Energy M, Energy m,
