@@ -2336,6 +2336,11 @@ void Evolver::doShowering(bool hard,XCPtr xcomb) {
 	currentTree()->clear();
 	setEvolutionPartners(hard,interactions_[inter],true);
 	_nis = _nfs = 0;
+	// if MC@NLO H event and limited emissions
+	// indicate both final and initial state emission
+	if ( isMCatNLOHEvent && _limitEmissions != 0 ) {
+	  _nis = _nfs = 1;
+	}
 	for(unsigned int ix=0; ix<particlesToShower.size();++ix) {
 	  SpinPtr spin = particlesToShower[ix]->progenitor()->spinInfo();
 	  if(spin && spin->decayVertex() &&
