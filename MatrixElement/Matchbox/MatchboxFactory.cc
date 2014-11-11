@@ -621,7 +621,9 @@ void MatchboxFactory::setup() {
       }
     }
 
-    if ( realContributions() || meCorrectionsOnly() ) {
+    if ( realContributions() || meCorrectionsOnly() ||
+	 (showerApproximation() && virtualContributions()) ||
+	 (showerApproximation() && loopSimCorrections()) ) {
 
       generator()->log() << "preparing subtracted matrix elements.\n" << flush;
 
@@ -689,7 +691,7 @@ void MatchboxFactory::setup() {
 
 	sub->getDipoles();
 
-	if ( sub->dependent().empty() ) {
+	if ( sub->dependent().empty() && realContributions() ) {
 	  // finite real contribution
 	  Ptr<MatchboxMEBase>::ptr fme = 
 	    dynamic_ptr_cast<Ptr<MatchboxMEBase>::ptr>(sub->head())->cloneMe();
@@ -706,8 +708,9 @@ void MatchboxFactory::setup() {
 	  sub->doRealEmissionScales();
 
 	subtractedMEs().push_back(sub);
-	if ( !showerApproximation() || (showerApproximation() && showerApproximation()->hasHEvents()) )
-	  MEs().push_back(sub);
+	if ( realContributions() )
+	  if ( !showerApproximation() || (showerApproximation() && showerApproximation()->hasHEvents()) )
+	    MEs().push_back(sub);
 
 	if ( showerApproximation() ) {
 	  if ( virtualContributions() && !meCorrectionsOnly() && !loopSimCorrections() ) {
