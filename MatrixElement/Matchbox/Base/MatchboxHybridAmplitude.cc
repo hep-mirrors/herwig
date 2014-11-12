@@ -40,6 +40,14 @@ IBPtr MatchboxHybridAmplitude::fullclone() const {
   return new_ptr(*this);
 }
 
+void MatchboxHybridAmplitude::factory(Ptr<MatchboxFactory>::tptr f) {
+  if ( treeLevelAmplitude() )
+    treeLevelAmplitude()->factory(f);
+  if ( oneLoopAmplitude() )
+    oneLoopAmplitude()->factory(f);
+  MatchboxAmplitude::factory(f);
+}
+
 bool MatchboxHybridAmplitude::isConsistent() const {
   return
     !treeLevelAmplitude()->isOLPTree() &&

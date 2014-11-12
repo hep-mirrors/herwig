@@ -143,7 +143,7 @@ public:
   /**
    * Set the factory which produced this matrix element
    */
-  void factory(Ptr<MatchboxFactory>::tptr f);
+  virtual void factory(Ptr<MatchboxFactory>::tptr f);
 
   /** @name Subprocess information */
   //@{
