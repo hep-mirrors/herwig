@@ -65,7 +65,8 @@ TVT-Matchbox.in \
 TVT-Powheg.in \
 TVT-TTBA.in \
 LHC-LH.in \
-LHC-LHTP.in
+LHC-LHTP.in \
+DipoleShowerParameters.in
 
 dist_pkgdata_DATA = $(INPUTFILES) $(HELPERFILES)
 pkgdata_DATA = Makefile-UserModules
