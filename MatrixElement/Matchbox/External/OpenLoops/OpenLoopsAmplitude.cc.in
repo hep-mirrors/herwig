@@ -27,6 +27,8 @@
 
 #include "ThePEG/Utilities/DynamicLoader.h"
 
+#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
+
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -63,7 +65,7 @@ extern "C" void OLP_Polvec(double*,double*,double*);
 bool didstartOLP=false;
 
 void OpenLoopsAmplitude::doinitrun() {
-  string contractFileName = "OLP_order.lh";
+  string contractFileName = factory()->buildStorage() + name() + ".OLPOrder.lh";
   int status = -1;
   if (didstartOLP==false){
 	  startOLP(contractFileName,status);
@@ -115,7 +117,7 @@ void OpenLoopsAmplitude::startOLP(const string& contract, int& status) {
 }
 
 void OpenLoopsAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs) {
-	string orderFileName = "OLP_order.lh";
+	string orderFileName = factory()->buildStorage() + name() + ".OLPOrder.lh";
 	ofstream orderFile(orderFileName.c_str());
 	size_t asPower = 100;
 	size_t minlegs = 100;
@@ -130,7 +132,7 @@ void OpenLoopsAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs
 	orderFile << "# OLP order file created by Herwig++/Matchbox for OpenLoops\n\n";
 	orderFile << "CorrectionType           QCD\n";
 	orderFile << "IRregularization         " << (isDR() ? "DRED" : "CDR") << "\n";
-	orderFile << "extra answerfile      " << "OLP_answer.lh" << "\n";
+	orderFile << "extra answerfile      " << (factory()->buildStorage() + name() + ".OLPAnswer.lh") << "\n";
 	orderFile << "\n";
 
 	if (extraOpenLoopsPath!="")
@@ -176,12 +178,10 @@ void OpenLoopsAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs
 		}
 	}
 	orderFile << flush;
-	// crude fix for openloops hardwired tmp replaced by ./tmp
-	std::system("mkdir tmp");
 }
 
 bool OpenLoopsAmplitude::checkOLPContract() {
-	string contractFileName = "OLP_answer.lh";
+	string contractFileName = factory()->buildStorage() + name() + ".OLPAnswer.lh";
         ifstream infile(contractFileName.c_str());
 	string line;
 	vector < string > contractfile;
@@ -213,7 +213,7 @@ bool OpenLoopsAmplitude::checkOLPContract() {
 			}
 		}
 	}
-	string ids = "ids.dat";
+	string ids = factory()->runStorage() + "OpenLoops.ids.dat";
 	ofstream IDS(ids.c_str());
 
 	for ( map<int, OpenLoopsProcInfo>::iterator p = processmap.begin() ; p != processmap.end() ; p++ ) {
@@ -226,7 +226,7 @@ bool OpenLoopsAmplitude::checkOLPContract() {
 }
 
 void OpenLoopsAmplitude::getids() const{
-	string line = "ids.dat";
+	string line = factory()->runStorage() + "OpenLoops.ids.dat";
 	ifstream infile(line.c_str());
 	int hid;
 	int gid;
@@ -236,8 +236,8 @@ void OpenLoopsAmplitude::getids() const{
 	}
 }
 bool OpenLoopsAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
-	string contractFileName =  "OLP_answer.lh";
-	string orderFileName = "OLP_order.lh";
+	string contractFileName =  factory()->buildStorage() + name() + ".OLPAnswer.lh";
+	string orderFileName = factory()->buildStorage() + name() + ".OLPOrder.lh";
 	fillOrderFile(procs);
  	int status = -1;
 	startOLP(orderFileName, status);
@@ -261,7 +261,7 @@ void OpenLoopsAmplitude::evalSubProcess() const {
 
 	if ( idpair.size() == 0 ) {
 		getids();
-		string parfile="OpenLoops-Parameter.dat";
+		string parfile=factory()->runStorage() + name() + ".Parameters.dat";
 	        OLP_PrintParameter(parfile.c_str());
 		
 	}
@@ -286,7 +286,7 @@ void OpenLoopsAmplitude::evalColourCorrelator(pair<int, int>  ) const {
 	colourCorrelatorResults.resize(n * (n - 1) / 2);
 	if ( idpair.size() == 0 ) {
 		getids();
-		string parfile="OpenLoops-Parameter.dat";
+		string parfile=factory()->runStorage() + name() + ".Parameters.dat";
 	        OLP_PrintParameter(parfile.c_str());
 		
 	}
@@ -319,7 +319,7 @@ double OpenLoopsAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
 
 	if ( idpair.size() == 0 ) {
 		getids();
-		string parfile="OpenLoops-Parameter.dat";
+		string parfile=factory()->runStorage() + name() + ".Parameters.dat";
 	        OLP_PrintParameter(parfile.c_str());
 		
 	}
