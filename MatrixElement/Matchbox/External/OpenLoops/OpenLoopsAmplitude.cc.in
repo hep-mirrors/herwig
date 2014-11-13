@@ -52,14 +52,13 @@ IBPtr OpenLoopsAmplitude::fullclone() const {
 
 extern "C" void OLP_Start(const char*, int* i);
 extern "C" void OLP_SetParameter(const char* ,double* ,double*,int*);
+extern "C" void ol_setparameter_string(const char*, const char*);
 extern "C" void OLP_PrintParameter(const char*);
 extern "C" void OLP_EvalSubProcess(int*, double*, double*, double*, double*);
 extern "C" void OLP_EvalSubProcess2(int*, double*, double*, double*, double*);
                                   // id  ps-point polvec  emitter  res    acc
 extern "C" void OLP_SpinCorrelator(int*, double*, double*, int*, double*,double*);
 extern "C" void OLP_Polvec(double*,double*,double*);
-
-
 
 
 bool didstartOLP=false;
@@ -96,6 +95,11 @@ void OpenLoopsAmplitude::startOLP(const string& contract, int& status) {
 			    << Exception::abortnow;
 	}
 
+	string stabilityPrefix = factory()->runStorage() + "OpenLoops.StabilityLog";
+	assert(stabilityPrefix.size() < 256);
+
+	ol_setparameter_string("stability_logdir",stabilityPrefix.c_str());
+
 	OLP_Start(tempcontract.c_str(), &status);
 	int a=0;double null=0.0;double one=1.0;
 	int part[8]={1,2,3,4,5,6,23,24};string stri;
@@ -114,6 +118,7 @@ void OpenLoopsAmplitude::startOLP(const string& contract, int& status) {
 	OLP_SetParameter( stri.c_str(),&one ,&null,&a);
 	stri="alpha";one=SM().alphaEMMZ();
 	OLP_SetParameter(stri.c_str(),&one ,&null,&a);
+
 }
 
 void OpenLoopsAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs) {
@@ -261,8 +266,10 @@ void OpenLoopsAmplitude::evalSubProcess() const {
 
 	if ( idpair.size() == 0 ) {
 		getids();
-		string parfile=factory()->runStorage() + name() + ".Parameters.dat";
-	        OLP_PrintParameter(parfile.c_str());
+		if ( Debug::level > 1 ) {
+		  string parfile=factory()->runStorage() + name() + ".Parameters.dat";
+		  OLP_PrintParameter(parfile.c_str());
+		}
 		
 	}
 
@@ -286,8 +293,10 @@ void OpenLoopsAmplitude::evalColourCorrelator(pair<int, int>  ) const {
 	colourCorrelatorResults.resize(n * (n - 1) / 2);
 	if ( idpair.size() == 0 ) {
 		getids();
-		string parfile=factory()->runStorage() + name() + ".Parameters.dat";
-	        OLP_PrintParameter(parfile.c_str());
+		if ( Debug::level > 1 ) {
+		  string parfile=factory()->runStorage() + name() + ".Parameters.dat";
+		  OLP_PrintParameter(parfile.c_str());
+		}
 		
 	}
 
@@ -319,8 +328,10 @@ double OpenLoopsAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
 
 	if ( idpair.size() == 0 ) {
 		getids();
-		string parfile=factory()->runStorage() + name() + ".Parameters.dat";
-	        OLP_PrintParameter(parfile.c_str());
+		if ( Debug::level > 1 ) {
+		  string parfile=factory()->runStorage() + name() + ".Parameters.dat";
+		  OLP_PrintParameter(parfile.c_str());
+		}
 		
 	}
 	int id = (*(idpair.find(olpId()[ProcessType::spinColourCorrelatedME2]))).second;
