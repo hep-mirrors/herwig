@@ -612,6 +612,8 @@ void GoSamAmplitude::evalSpinColourCorrelator(pair<int , int > ) const {
 }
 
 void GoSamAmplitude::doinit() {
+  // @TODO This is problematic. Please check, if setting appropriate
+  // and warn/throw otherwise. Related to private wiki ticket #133.
   HandlerBase::standardModel()->ewScheme(1);
   HandlerBase::standardModel()->init();
   MatchboxOLPME::doinit();
