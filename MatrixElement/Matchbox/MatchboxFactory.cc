@@ -1038,7 +1038,7 @@ const string& MatchboxFactory::runStorage() {
     theRunStorage = "./Matchbox/";
   else if ( *theRunStorage.rbegin() != '/' )
     theRunStorage += "/";
-  theRunStorage += generator()->runName();
+  theRunStorage += generator()->runName() + "/";
   if ( boost::filesystem::exists(theRunStorage) ) {
     if ( !boost::filesystem::is_directory(theRunStorage) )
       throw Exception() << "Matchbox run storage '"
