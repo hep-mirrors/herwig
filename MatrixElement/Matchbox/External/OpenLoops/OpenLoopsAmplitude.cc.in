@@ -60,29 +60,9 @@ extern "C" void OLP_EvalSubProcess2(int*, double*, double*, double*, double*);
 extern "C" void OLP_SpinCorrelator(int*, double*, double*, int*, double*,double*);
 extern "C" void OLP_Polvec(double*,double*,double*);
 
-
-bool didstartOLP=false;
-
 void OpenLoopsAmplitude::doinitrun() {
-  string contractFileName = factory()->buildStorage() + name() + ".OLPOrder.lh";
-  int status = -1;
-  if (didstartOLP==false){
-	  startOLP(contractFileName,status);
-	  didstartOLP=true;
-
-  if ( status != 1 ) {
-    throw Exception()
-      << "Failed to restart one loop provider for amplitude '"
-      << name() << "'\n" << Exception::abortnow;
-  }
-  }
-  MatchboxAmplitude::doinitrun();
+  MatchboxOLPME::doinitrun();
 }
-
-
-
-
-
 
 void OpenLoopsAmplitude::startOLP(const string& contract, int& status) {
 	string tempcontract=contract;
@@ -122,7 +102,7 @@ void OpenLoopsAmplitude::startOLP(const string& contract, int& status) {
 }
 
 void OpenLoopsAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs) {
-	string orderFileName = factory()->buildStorage() + name() + ".OLPOrder.lh";
+	string orderFileName = factory()->buildStorage() + name() + ".OLPContract.lh";
 	ofstream orderFile(orderFileName.c_str());
 	size_t asPower = 100;
 	size_t minlegs = 100;
@@ -242,7 +222,7 @@ void OpenLoopsAmplitude::getids() const{
 }
 bool OpenLoopsAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
 	string contractFileName =  factory()->buildStorage() + name() + ".OLPAnswer.lh";
-	string orderFileName = factory()->buildStorage() + name() + ".OLPOrder.lh";
+	string orderFileName = factory()->buildStorage() + name() + ".OLPContract.lh";
 	fillOrderFile(procs);
  	int status = -1;
 	startOLP(orderFileName, status);
