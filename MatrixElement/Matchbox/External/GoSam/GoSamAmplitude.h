@@ -38,10 +38,6 @@ class gosamprocinfo{
 		int orderAs(){return orderAlphas;}
 		void setOAew(int j){ orderAlphaew=j;}
 		int orderAew(){return orderAlphaew;}
-// 		void setPartonLegs(int i){ partonLegs=i;}
-// 		int getPartonLegs(){return partonLegs;}
-// 		void setNonPartonLegs(int i){ nonpartonLegs=i;}
-// 		int getNonPartonLegs(){return nonpartonLegs;}
 	private:
 		int theHOlpId;
 		int theGOlpId;
@@ -49,14 +45,11 @@ class gosamprocinfo{
 		string theTypestr;
 		int orderAlphas;
 		int orderAlphaew;
-// 		int partonLegs;
-// 		int nonpartonLegs;
 	public:
-// 		void persistentOutput(PersistentOStream & os) const{os<<theHOlpId<<theGOlpId<<theProcstr<<theTypestr<<orderAlphas<<orderAlphaew<<partonLegs<<nonpartonLegs;}
-// 		void persistentInput(PersistentIStream &is) {is>>theHOlpId>>theGOlpId>>theProcstr>>theTypestr>>orderAlphas>>orderAlphaew>>partonLegs>>nonpartonLegs;}
 		void persistentOutput(PersistentOStream & os) const{os<<theHOlpId<<theGOlpId<<theProcstr<<theTypestr<<orderAlphas<<orderAlphaew;}
 		void persistentInput(PersistentIStream &is) {is>>theHOlpId>>theGOlpId>>theProcstr>>theTypestr>>orderAlphas>>orderAlphaew;}
 };
+
 
 /**
  * \ingroup Matchbox
@@ -82,6 +75,7 @@ public:
   virtual ~GoSamAmplitude();
 
   //@}
+
 
 public:
 
@@ -115,8 +109,6 @@ public:
    */
   virtual void startOLP(const string&, int& status);
 
-  //virtual void getids() const ;
-  
   virtual Energy2 mu2() const { return lastSHat(); }
 
   /**
@@ -148,9 +140,8 @@ public:
    */
   virtual void evalSpinColourCorrelator(pair<int,int> ij) const;
 
-
-
   void getids() const;
+
 
 public:
 
@@ -180,6 +171,7 @@ public:
    */
   static void Init();
 
+
 protected:
 
   /** @name Standard Interfaced functions. */
@@ -198,6 +190,7 @@ protected:
    */
   virtual void doinitrun();
   //@}
+
 
 protected:
 
@@ -260,12 +253,19 @@ private:
   mutable string gosamPath;
   mutable string gosamSourcePath;
   mutable string gosamInstallPath;
+
+  mutable string gosamPathRelative;
+  mutable string gosamSourcePathRelative;
+  mutable string gosamInstallPathRelative;
+
   mutable string gosamSetupInFileName;
 
   mutable string orderFileTitle;
   mutable string contractFileTitle;
   mutable string parametersFileTitle;
   mutable string contractFileName;
+  mutable string orderFileName;
+  mutable string parametersFileName;
 
   bool theCodeExists;
   bool theFormOpt;
@@ -289,19 +289,6 @@ private:
   void setupGoSamIn(string setupGoSamInFile);
 
 }; // end "class GoSamAmplitude: public MatchboxOLPME"
-
-
-//inline PersistentOStream& operator<<(PersistentOStream& os,
-//	                                   const gosamprocinfo& h) {
-//  h.persistentOutput(os);
-//  return os;
-//}
-
-//inline PersistentIStream& operator>>(PersistentIStream& is,
-//	                                   gosamprocinfo& h) {
-//  h.persistentInput(is);
-//  return is;
-//}
 
 
 } // end "namespace Herwig"
