@@ -248,7 +248,8 @@ create Herwig::MatchboxHybridAmplitude GenericProcesses
 mkdir Builtin
 cd Builtin
 
-create Herwig::SimpleColourBasis SimpleColourBasis
+create Herwig::SimpleColourBasis  SimpleColourBasis
+create Herwig::SimpleColourBasis2 SimpleColourBasis2
 
 create Herwig::MatchboxAmplitudellbarqqbar Amplitudellbarqqbar
 set Amplitudellbarqqbar:ColourBasis SimpleColourBasis
@@ -283,6 +284,18 @@ set Amplitudehggg:ColourBasis SimpleColourBasis
 create Herwig::MatchboxAmplitudehqqbarg Amplitudehqqbarg
 set Amplitudehqqbarg:ColourBasis SimpleColourBasis
 
+create Herwig::MatchboxAmplitudeqqbarttbar Amplitudeqqbarttbar
+set Amplitudeqqbarttbar:ColourBasis SimpleColourBasis2
+
+create Herwig::MatchboxAmplitudeqqbarttbarg Amplitudeqqbarttbarg
+set Amplitudeqqbarttbarg:ColourBasis SimpleColourBasis2
+
+create Herwig::MatchboxAmplitudeggttbar Amplitudeggttbar
+set Amplitudeggttbar:ColourBasis SimpleColourBasis2
+
+create Herwig::MatchboxAmplitudeggttbarg Amplitudeggttbarg
+set Amplitudeggttbarg:ColourBasis SimpleColourBasis2
+
 
 insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudellbarqqbar
 insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudellbarqqbarg
@@ -296,6 +309,11 @@ insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudelnuqqbarqqb
 
 insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudehgg
 insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudehggg
+
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqqbarttbar
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqqbarttbarg
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeggttbar
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeggttbarg
 
 
 ################################################################################
