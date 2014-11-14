@@ -30,4 +30,24 @@ MatchboxAmplitudehggg.cc \
 MatchboxAmplitudehggg.h \
 MatchboxAmplitudehgg.h \
 MatchboxAmplitudehqqbarg.cc \
-MatchboxAmplitudehqqbarg.h
+MatchboxAmplitudehqqbarg.h \
+MatchboxAmplitudeqqbarttbar.cc \
+MatchboxAmplitudeqqbarttbar.h \
+MatchboxAmplitudeqqbarttbarg.cc \
+MatchboxAmplitudeqqbarttbarg.h \
+MatchboxAmplitudeggttbar.cc \
+MatchboxAmplitudeggttbar.h \
+MatchboxAmplitudeggttbarg.cc \
+MatchboxAmplitudeggttbarg.h \
+HelAmps_sm.cc \
+HelAmps_sm.h \
+Parameters_sm.cc \
+Parameters_sm.h \
+MG_qqx2ttx.cc \
+MG_qqx2ttx.h \
+MG_qqx2ttxg.cc \
+MG_qqx2ttxg.h \
+MG_gg2ttx.cc \
+MG_gg2ttx.h \
+MG_gg2ttxg.cc \
+MG_gg2ttxg.h
