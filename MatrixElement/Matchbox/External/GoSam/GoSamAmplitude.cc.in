@@ -149,11 +149,6 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
   gosamSourcePath = gosamPath + "source/";
   gosamInstallPath = gosamPath + "build/";
 
-  cerr << "folderMatchboxBuild = " << folderMatchboxBuild << "\n";
-  cerr << "gosamPath = " << gosamPath << "\n";
-  cerr << "gosamSourcePath = " << gosamSourcePath << "\n";
-  cerr << "gosamInstallPath = " << gosamInstallPath << "\n";
-
   // cout << "GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs): gosamPath = " << gosamPath << endl;
 
   // create all the directories
@@ -242,9 +237,6 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
 
 void GoSamAmplitude::startOLP(const string& contract, int& status) {
 
-  cerr << "entering void GoSamAmplitude::startOLP(const string& contract, int& status)\n";
-  cerr << " with contract = " << contract << "\n";
-
   string tempcontract = contract;
 
   char char_cwd[256];
@@ -267,12 +259,10 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
     // tempcontract = gosamPath + "/" + tempcontract;
     if ( !( DynamicLoader::load(gosamPath+"build/lib/libgolem_olp.so") || DynamicLoader::load(gosamPath+"build/lib64/libgolem_olp.so") ) ) assert(0);
     tempcontract = gosamPath + tempcontract;
-    cerr << "empty gosamPathInterface -> tempcontract = " << tempcontract << "\n";
   }
   else {
     if ( !( DynamicLoader::load(gosamPathInterface+"/build/lib/libgolem_olp.so") || DynamicLoader::load(gosamPathInterface+"/build/lib64/libgolem_olp.so") ) ) assert(0);
     tempcontract = gosamPathInterface + "/" + tempcontract;
-    cerr << "non-empty gosamPathInterface -> tempcontract = " << tempcontract << "\n";
   }
 
   OLP_Start(tempcontract.c_str(), &status);
