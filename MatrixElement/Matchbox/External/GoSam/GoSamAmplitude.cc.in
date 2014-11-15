@@ -37,9 +37,11 @@
 #include <sstream>
 #include <string>
 #include <cstdlib>
+#include <exception>
 
 using namespace Herwig;
 
+namespace bfs = boost::filesystem;
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -141,29 +143,45 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
   folderMatchboxBuild.erase(folderMatchboxBuild.begin());
 
   // set all necessary path and file names
-  gosamPath = gosamPathInterface == "" ? cwd + folderMatchboxBuild + "GoSam/" : gosamPathInterface;
+  gosamPath = gosamPathInterface == "" ? cwd + folderMatchboxBuild + "GoSam" : gosamPathInterface;
+  // When transitioning to C++ 11 this length()-1 workaround can be replaced by string.back()
+  if (gosamPath.at(gosamPath.length()-1) != '/') gosamPath.append("/");
   gosamSourcePath = gosamPath + "source/";
   gosamInstallPath = gosamPath + "build/";
 
+  cerr << "folderMatchboxBuild = " << folderMatchboxBuild << "\n";
+  cerr << "gosamPath = " << gosamPath << "\n";
+  cerr << "gosamSourcePath = " << gosamSourcePath << "\n";
+  cerr << "gosamInstallPath = " << gosamInstallPath << "\n";
+
   // cout << "GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs): gosamPath = " << gosamPath << endl;
 
-  gosamPathRelative = gosamPathInterface == "" ? factory()->buildStorage() + "GoSam/" : gosamPathInterface;
-  gosamSourcePathRelative = gosamPathRelative + "source/";
-  gosamInstallPathRelative = gosamPathRelative + "build/";
-
   // create all the directories
-  std::system(("mkdir " + gosamPathRelative).c_str());
-  std::system(("mkdir " + gosamSourcePathRelative).c_str());
-  std::system(("mkdir " + gosamInstallPathRelative).c_str());
+  if (!bfs::is_directory(gosamPath)){
+    try {
+      bfs::create_directory(gosamPath);
+    } catch (exception& e) {
+      cerr << "--------------------------------------------------------------------------------\n";
+      cerr << "The following exception occured:\n\n";
+      cerr << " " << e.what() << "\n\n";
+      cerr << " -> Please create the parent directory of\n";
+      cerr << "      " << gosamPath << "\n";
+      cerr << "    manually!\n";
+      cerr << "--------------------------------------------------------------------------------\n";
+      abort();
+    }
+  }
+  if (!bfs::is_directory(gosamSourcePath)) bfs::create_directory(gosamSourcePath);
+  if (!bfs::is_directory(gosamInstallPath)) bfs::create_directory(gosamInstallPath);
 
   contractFileTitle = name() + ".OLPContract.lh";
-  contractFileName = gosamPath  + contractFileTitle;
+  contractFileName = gosamPath + "/" + contractFileTitle;
 
-  string orderFileName = gosamPath + name() + ".OLPOrder.lh";
+  string orderFileName = gosamPath + "/" + name() + ".OLPOrder.lh";
 
-  parametersFileTitle = name() + ".OLPParameters.lh";
+  //parametersFileTitle = name() + ".OLPParameters.lh";
 
-  gosamSetupInFileName = gosamSetupInFilenameInterface == "" ? gosamPath + "setup.gosam.in" : gosamSetupInFilenameInterface;
+  gosamSetupInFileName = gosamSetupInFilenameInterface == "" ? gosamPath + "/setup.gosam.in" : gosamSetupInFilenameInterface;
 
   // check if setup.gosam.in exists
   ifstream infile(gosamSetupInFileName.c_str());
@@ -224,6 +242,9 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
 
 void GoSamAmplitude::startOLP(const string& contract, int& status) {
 
+  cerr << "entering void GoSamAmplitude::startOLP(const string& contract, int& status)\n";
+  cerr << " with contract = " << contract << "\n";
+
   string tempcontract = contract;
 
   char char_cwd[256];
@@ -233,7 +254,9 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
   string folderMatchboxBuild = factory()->buildStorage();
   folderMatchboxBuild.erase(folderMatchboxBuild.begin());
 
-  gosamPath = gosamPathInterface == "" ? cwd + folderMatchboxBuild + "GoSam/" : gosamPathInterface;
+  gosamPath = gosamPathInterface == "" ? cwd + folderMatchboxBuild + "GoSam" : gosamPathInterface;
+  // When transitioning to C++ 11 this length()-1 workaround can be replaced by string.back()
+  if (gosamPath.at(gosamPath.length()-1) != '/') gosamPath.append("/");
 
   // cout << "GoSamAmplitude::startOLP(const string& contract, int& status): gosamPath = " << gosamPath << endl;
 
@@ -244,10 +267,12 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
     // tempcontract = gosamPath + "/" + tempcontract;
     if ( !( DynamicLoader::load(gosamPath+"build/lib/libgolem_olp.so") || DynamicLoader::load(gosamPath+"build/lib64/libgolem_olp.so") ) ) assert(0);
     tempcontract = gosamPath + tempcontract;
+    cerr << "empty gosamPathInterface -> tempcontract = " << tempcontract << "\n";
   }
   else {
     if ( !( DynamicLoader::load(gosamPathInterface+"/build/lib/libgolem_olp.so") || DynamicLoader::load(gosamPathInterface+"/build/lib64/libgolem_olp.so") ) ) assert(0);
     tempcontract = gosamPathInterface + "/" + tempcontract;
+    cerr << "non-empty gosamPathInterface -> tempcontract = " << tempcontract << "\n";
   }
 
   OLP_Start(tempcontract.c_str(), &status);
@@ -342,7 +367,7 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
     // char char_cwd[256];
     // getcwd(char_cwd, sizeof(char_cwd));
     // gosamPath = gosamPathInterface == "" ? string(char_cwd) + "/GoSam" : gosamPathInterface;
-    string ppstr = gosamPath + name() + ".OLPParameters.lh";
+    string ppstr = gosamPath + "/" + name() + ".OLPParameters.lh";
     char * ppchar = new char[ppstr.size()+1];
     std::copy(ppstr.begin(),ppstr.end(),ppchar);
     ppchar[ppstr.size()] = '\0';
@@ -734,9 +759,9 @@ void GoSamAmplitude::Init() {
 
   static ClassDocumentation<GoSamAmplitude> documentation("GoSamAmplitude implements an interface to GoSam.", "Matrix elements have been calculated using GoSam");
 
-  static Parameter<GoSamAmplitude,string> interfacePath
-       ("Path",
-        "Prefix for the source code, include files and library produced by GoSam.",
+  static Parameter<GoSamAmplitude,string> interfaceProcessPath
+       ("ProcessPath",
+        "Prefix for the process source code, include files and library produced by GoSam.",
         &GoSamAmplitude::gosamPathInterface, "",
         false, false);
 
