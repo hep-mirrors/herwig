@@ -26,8 +26,7 @@
 using namespace Herwig;
 
 MatchboxOLPME::MatchboxOLPME() 
-  : optionalContractFile(""),
-    theOrderInGs(0), theOrderInGem(0) {}
+  : theOrderInGs(0), theOrderInGem(0) {}
 
 MatchboxOLPME::~MatchboxOLPME() {}
 
@@ -146,17 +145,33 @@ double MatchboxOLPME::largeNColourCorrelatedME2(pair<int,int>,
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
-bool didstartOLP = false;
-
-void MatchboxOLPME::doinitrun() {
-  if ( !didstartOLP ) {
+void MatchboxOLPME::doinit() {
+  if ( !didStartOLP() ) {
     string contractFileName = 
-      optionalContractFile.empty() ? 
+      optionalContractFile().empty() ? 
       factory()->buildStorage() + name() + ".OLPContract.lh" :
-      optionalContractFile;
+      optionalContractFile();
     int status = -1;
     startOLP(contractFileName,status);
-    didstartOLP=true;
+    didStartOLP()=true;
+    if ( status != 1 ) {
+      throw Exception()
+	<< "Failed to restart one loop provider for amplitude '"
+	<< name() << "'\n" << Exception::abortnow;
+    }
+  }
+  MatchboxAmplitude::doinit();
+}
+
+void MatchboxOLPME::doinitrun() {
+  if ( !didStartOLP() ) {
+    string contractFileName = 
+      optionalContractFile().empty() ? 
+      factory()->buildStorage() + name() + ".OLPContract.lh" :
+      optionalContractFile();
+    int status = -1;
+    startOLP(contractFileName,status);
+    didStartOLP()=true;
     if ( status != 1 ) {
       throw Exception()
 	<< "Failed to restart one loop provider for amplitude '"

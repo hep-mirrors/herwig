@@ -99,6 +99,8 @@ void OpenLoopsAmplitude::startOLP(const string& contract, int& status) {
 	stri="alpha";one=SM().alphaEMMZ();
 	OLP_SetParameter(stri.c_str(),&one ,&null,&a);
 
+  didStartOLP() = true;
+
 }
 
 void OpenLoopsAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs) {

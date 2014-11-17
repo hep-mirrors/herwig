@@ -73,6 +73,7 @@ void GoSamAmplitude::doinit() {
   // it's fixed.
   HandlerBase::standardModel()->ewScheme(1);
   HandlerBase::standardModel()->init();
+  optionalContractFile() = contractFileName;
   MatchboxOLPME::doinit();
 }
 
@@ -81,7 +82,7 @@ void GoSamAmplitude::doinit() {
 // }
 
 void GoSamAmplitude::doinitrun() {
-  optionalContractFile = contractFileName;
+  optionalContractFile() = contractFileName;
   MatchboxOLPME::doinitrun();
 }
 
@@ -353,6 +354,8 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
     OLP_PrintParameter(ppchar);
     delete[] ppchar;
   }
+
+  didStartOLP() = true;
 
 }
 

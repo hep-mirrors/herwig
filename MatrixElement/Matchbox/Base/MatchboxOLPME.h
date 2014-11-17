@@ -233,6 +233,13 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+
+  /**
    * Initialize this object. Called in the run phase just before
    * a run begins.
    */
@@ -242,7 +249,18 @@ protected:
   /**
    * Set an optional contract file name to be used
    */
-  string optionalContractFile;
+  static string& optionalContractFile() {
+    static string s = "";
+    return s;
+  }
+
+  /**
+   * Indicate that the OLP has been started
+   */
+  static bool& didStartOLP() {
+    static bool f = false;
+    return f;
+  }
 
 private:
 

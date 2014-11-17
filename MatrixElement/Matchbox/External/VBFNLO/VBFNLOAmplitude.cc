@@ -87,6 +87,9 @@ void VBFNLOAmplitude::startOLP(const string& contract, int& status) {
   setOLPParameter("alphas",SM().alphaS());
 
   setOLPParameter("ranhelsum",theRanHelSum);
+
+  didStartOLP() = true;
+
 }
 
 bool VBFNLOAmplitude::startOLP(const map<pair<Process,int>,int>& procs) {
