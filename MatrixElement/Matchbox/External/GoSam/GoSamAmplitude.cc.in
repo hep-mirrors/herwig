@@ -68,6 +68,9 @@ IBPtr GoSamAmplitude::fullclone() const {
 
 
 void GoSamAmplitude::doinit() {
+  // @TODO Fix me! Need to check for this setting and otherwise warn,
+  // but not quietly set it. And _do not_ remove this TODO unless
+  // it's fixed.
   HandlerBase::standardModel()->ewScheme(1);
   HandlerBase::standardModel()->init();
   MatchboxOLPME::doinit();
@@ -77,23 +80,9 @@ void GoSamAmplitude::doinit() {
 //   MatchboxOLPME::doinitrun();
 // }
 
-bool didstartOLP=false;
-
 void GoSamAmplitude::doinitrun() {
-  // string contractFileName = factory()->buildStorage() + name() + ".OLPOrder.lh";
-  // string contractFileName = factory()->buildStorage() + name() + ".OLPContract.lh";
-  int status = -1;
-  if (didstartOLP==false){
-    // startOLP(contractFileName,status);
-    startOLP(contractFileTitle,status);
-    didstartOLP=true;
-    if ( status != 1 ) {
-      throw Exception()
-        << "Failed to restart one loop provider for amplitude '"
-        << name() << "'\n" << Exception::abortnow;
-    }
-  }
-  MatchboxAmplitude::doinitrun();
+  optionalContractFile = contractFileName;
+  MatchboxOLPME::doinitrun();
 }
 
 

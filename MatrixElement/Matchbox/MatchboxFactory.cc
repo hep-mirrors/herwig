@@ -785,43 +785,42 @@ void MatchboxFactory::setup() {
       }
     }
 
-
-  }
-
-  if ( !externalAmplitudes().empty() ) {
-    generator()->log() << "Initializing external amplitudes.\n" << flush;
-    for ( set<Ptr<MatchboxAmplitude>::tptr>::const_iterator ext =
-	    externalAmplitudes().begin(); ext != externalAmplitudes().end(); ++ext ) {
-      if ( !(**ext).initializeExternal() ) {
-	throw InitException() 
-	  << "error: failed to initialize amplitude '" << (**ext).name() << "'\n";
+    if ( !externalAmplitudes().empty() ) {
+      generator()->log() << "Initializing external amplitudes.\n" << flush;
+      for ( set<Ptr<MatchboxAmplitude>::tptr>::const_iterator ext =
+	      externalAmplitudes().begin(); ext != externalAmplitudes().end(); ++ext ) {
+	if ( !(**ext).initializeExternal() ) {
+	  throw InitException() 
+	    << "error: failed to initialize amplitude '" << (**ext).name() << "'\n";
+	}
       }
+      generator()->log() << "--------------------------------------------------------------------------------\n"
+			 << flush;
     }
-    generator()->log() << "--------------------------------------------------------------------------------\n"
-		       << flush;
-  }
 
-  if ( !olpProcesses().empty() ) {
-    generator()->log() << "Initializing one-loop provider(s).\n" << flush;
-    map<Ptr<MatchboxAmplitude>::tptr,map<pair<Process,int>,int> > olps;
-    for ( map<Ptr<MatchboxAmplitude>::tptr,map<pair<Process,int>,int> >::const_iterator
-	    oit = olpProcesses().begin(); oit != olpProcesses().end(); ++oit ) {
-      olps[oit->first] = oit->second;
-    }
-    for ( map<Ptr<MatchboxAmplitude>::tptr,map<pair<Process,int>,int> >::const_iterator
-	    olpit = olps.begin(); olpit != olps.end(); ++olpit ) {
-      if ( !olpit->first->startOLP(olpit->second) ) {
-	throw InitException() 
-	  << "error: failed to start OLP for amplitude '" << olpit->first->name() << "'\n";
+    if ( !olpProcesses().empty() ) {
+      generator()->log() << "Initializing one-loop provider(s).\n" << flush;
+      map<Ptr<MatchboxAmplitude>::tptr,map<pair<Process,int>,int> > olps;
+      for ( map<Ptr<MatchboxAmplitude>::tptr,map<pair<Process,int>,int> >::const_iterator
+	      oit = olpProcesses().begin(); oit != olpProcesses().end(); ++oit ) {
+	olps[oit->first] = oit->second;
       }
+      for ( map<Ptr<MatchboxAmplitude>::tptr,map<pair<Process,int>,int> >::const_iterator
+	      olpit = olps.begin(); olpit != olps.end(); ++olpit ) {
+	if ( !olpit->first->startOLP(olpit->second) ) {
+	  throw InitException() 
+	    << "error: failed to start OLP for amplitude '" << olpit->first->name() << "'\n";
+	}
+      }
+      generator()->log() << "--------------------------------------------------------------------------------\n"
+			 << flush;
     }
-    generator()->log() << "--------------------------------------------------------------------------------\n"
-		       << flush;
+
+    generator()->log() << "Process setup finished.\n" << flush;
+
+    ranSetup = true;
+
   }
-
-  generator()->log() << "Process setup finished.\n" << flush;
-
-  ranSetup = true;
 
 }
 

@@ -239,6 +239,10 @@ protected:
   virtual void doinitrun();
   //@}
 
+  /**
+   * Set an optional contract file name to be used
+   */
+  string optionalContractFile;
 
 private:
 

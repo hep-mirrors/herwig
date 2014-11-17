@@ -26,7 +26,8 @@
 using namespace Herwig;
 
 MatchboxOLPME::MatchboxOLPME() 
-  : theOrderInGs(0), theOrderInGem(0) {}
+  : theOrderInGs(0), theOrderInGem(0),
+    optionalContractFile("") {}
 
 MatchboxOLPME::~MatchboxOLPME() {}
 
@@ -149,7 +150,10 @@ bool didstartOLP = false;
 
 void MatchboxOLPME::doinitrun() {
   if ( !didstartOLP ) {
-    string contractFileName = factory()->buildStorage() + name() + ".OLPContract.lh";
+    string contractFileName = 
+      optionalContractFile.empty() ? 
+      factory()->buildStorage() + name() + ".OLPContract.lh" :
+      optionalContractFile;
     int status = -1;
     startOLP(contractFileName,status);
     didstartOLP=true;
