@@ -198,7 +198,7 @@ bool OpenLoopsAmplitude::checkOLPContract() {
 			}
 		}
 	}
-	string ids = factory()->runStorage() + "OpenLoops.ids.dat";
+	string ids = factory()->buildStorage() + "OpenLoops.ids.dat";
 	ofstream IDS(ids.c_str());
 
 	for ( map<int, OpenLoopsProcInfo>::iterator p = processmap.begin() ; p != processmap.end() ; p++ ) {
@@ -211,7 +211,7 @@ bool OpenLoopsAmplitude::checkOLPContract() {
 }
 
 void OpenLoopsAmplitude::getids() const{
-	string line = factory()->runStorage() + "OpenLoops.ids.dat";
+	string line = factory()->buildStorage() + "OpenLoops.ids.dat";
 	ifstream infile(line.c_str());
 	int hid;
 	int gid;
