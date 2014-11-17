@@ -102,7 +102,25 @@ void GeneralSampler::initialize() {
       << "--------------------------------------------------------------------------------\n"
       << "preparing integration jobs ...\n" << flush;
 
-    for ( int b = 0; b < eventHandler()->nBins(); ++b ) {
+    vector<int> randomized;
+    vector<int> pickfrom;
+    for ( int b = 0; b < eventHandler()->nBins(); ++b )
+      pickfrom.push_back(b);
+
+    //set<int> check;
+
+    while ( !pickfrom.empty() ) {
+      size_t idx = UseRandom::irnd(pickfrom.size());
+      randomized.push_back(pickfrom[idx]);
+      //check.insert(pickfrom[idx]);
+      pickfrom.erase(pickfrom.begin() + idx);
+    }
+
+    //assert(check.size() == eventHandler()->nBins());
+
+    int b = 0;
+    for ( vector<int>::const_iterator bx = randomized.begin();
+	  bx != randomized.end(); ++bx, ++b ) {
 
       if ( b == 0 || b % theIntegratePerJob == 0 ) {
 	if ( jobList ) {
@@ -124,7 +142,7 @@ void GeneralSampler::initialize() {
 			    << Exception::abortnow;
       }
 
-      *jobList << b << " ";
+      *jobList << *bx << " ";
 
     }
 
