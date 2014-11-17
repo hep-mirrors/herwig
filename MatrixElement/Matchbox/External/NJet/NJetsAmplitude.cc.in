@@ -50,39 +50,6 @@ void NJetsAmplitude::signOLP(const string& order, const string& contract) {
 
 void NJetsAmplitude::startOLP(const string& contract, int& status) {
   NJet::LH_OLP::OLP_Start(contract.c_str(), &status);
-}
-
-bool NJetsAmplitude::startOLP(const map<pair<Process,int>,int>& procs) {
-
-  if ( !DynamicLoader::load("libnjet2.so") )
-    throw Exception() << "failed to load libnjet2.so\n"
-		      << DynamicLoader::lastErrorMessage
-		      << Exception::abortnow;
-
-  // TODO throw exception on massive leptons in procs
-
-  string orderFileName = factory()->buildStorage() + name() + ".OLPOrder.lh";
-  ofstream orderFile(orderFileName.c_str());
-
-  olpOrderFileHeader(orderFile);
-
-  orderFile << "NJetReturnAccuracy        yes\n"
-	    << "NJetRenormalize           yes\n"
-	    << "NJetNf                    " << factory()->nLight() << "\n";
-
-  olpOrderFileProcesses(orderFile,procs);
-
-  orderFile << flush;
-
-  orderFile.close();
-
-  string contractFileName = factory()->buildStorage() + name() + ".OLPContract.lh";
-
-  signOLP(orderFileName, contractFileName);
-
-  int status = -1;
-
-  startOLP(contractFileName,status);
 
   if ( status != 1 )
     return false;
@@ -125,6 +92,44 @@ bool NJetsAmplitude::startOLP(const map<pair<Process,int>,int>& procs) {
 
   return true;
 
+}
+
+bool NJetsAmplitude::startOLP(const map<pair<Process,int>,int>& procs) {
+
+  if ( !DynamicLoader::load("libnjet2.so") )
+    throw Exception() << "failed to load libnjet2.so\n"
+		      << DynamicLoader::lastErrorMessage
+		      << Exception::abortnow;
+
+  // TODO throw exception on massive leptons in procs
+
+  string orderFileName = factory()->buildStorage() + name() + ".OLPOrder.lh";
+  ofstream orderFile(orderFileName.c_str());
+
+  olpOrderFileHeader(orderFile);
+
+  orderFile << "NJetReturnAccuracy        yes\n"
+	    << "NJetRenormalize           yes\n"
+	    << "NJetNf                    " << factory()->nLight() << "\n";
+
+  olpOrderFileProcesses(orderFile,procs);
+
+  orderFile << flush;
+
+  orderFile.close();
+
+  string contractFileName = factory()->buildStorage() + name() + ".OLPContract.lh";
+
+  signOLP(orderFileName, contractFileName);
+
+  int status = -1;
+
+  startOLP(contractFileName,status);
+
+  if ( status != 1 )
+    return false;
+
+  return true;
 
 }
 
