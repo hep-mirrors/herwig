@@ -150,21 +150,21 @@ cd /Herwig/MatrixElements/Matchbox/Amplitudes
 ##################################################
 cd /Herwig/MatrixElements/Matchbox
 
-## MC@NLO-type next-to-leading order for use with dipole shower
-
-set DISFactory:ShowerApproximation DipoleMatching
-cd /Herwig/EventHandlers
-set DISHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
-set DISHandler:CascadeHandler:MPIHandler NULL
-set /Herwig/Model:QCD/RunningAlphaS /Herwig/MatrixElements/Matchbox/AlphaS/MatchboxNLOAlphaS
-read DipoleShowerParameters.in
-cd /Herwig/MatrixElements/Matchbox
-
 ## MC@NLO-type next-to-leading order for use with default shower
 
-# set DISFactory:ShowerApproximation QTildeMatching
-# set /Herwig/Shower/Evolver:MECorrMode No
-# set /Herwig/Model:QCD/RunningAlphaS /Herwig/MatrixElements/Matchbox/AlphaS/NLOAlphaS
+set DISFactory:ShowerApproximation QTildeMatching
+set /Herwig/Shower/Evolver:MECorrMode No
+set /Herwig/Model:QCD/RunningAlphaS /Herwig/MatrixElements/Matchbox/AlphaS/NLOAlphaS
+cd /Herwig/MatrixElements/Matchbox
+
+## MC@NLO-type next-to-leading order for use with dipole shower
+
+# set DISFactory:ShowerApproximation DipoleMatching
+# cd /Herwig/EventHandlers
+# set DISHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
+# set DISHandler:CascadeHandler:MPIHandler NULL
+# set /Herwig/Model:QCD/RunningAlphaS /Herwig/MatrixElements/Matchbox/AlphaS/MatchboxNLOAlphaS
+# read DipoleShowerParameters.in
 # cd /Herwig/MatrixElements/Matchbox
 
 ## POWHEG-type next-to-leading order
