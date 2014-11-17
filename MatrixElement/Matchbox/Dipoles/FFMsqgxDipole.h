@@ -51,7 +51,7 @@ public:
   virtual bool canHandleEmitter(const cPDVector& partons, int emitter) const {
     return 
       emitter > 1 &&
-      (abs(abs(partons[emitter]->id()) - 1000000) < 7 || abs(partons[emitter]->id()) - 2000000 < 7);
+      (abs(abs(partons[emitter]->id()) - 1000000) < 7 || abs(abs(partons[emitter]->id()) - 2000000) < 7);
   }
 
   /**
