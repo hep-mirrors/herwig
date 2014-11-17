@@ -26,8 +26,8 @@
 using namespace Herwig;
 
 MatchboxOLPME::MatchboxOLPME() 
-  : theOrderInGs(0), theOrderInGem(0),
-    optionalContractFile("") {}
+  : optionalContractFile(""),
+    theOrderInGs(0), theOrderInGem(0) {}
 
 MatchboxOLPME::~MatchboxOLPME() {}
 
