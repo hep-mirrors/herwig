@@ -151,6 +151,13 @@ int main(int argc, char * argv[]) {
       integrationList = "integrationJob" + string(args_info.jobid_arg);
     }
 
+    // job size
+    unsigned int jobsize = 0;
+    if ( args_info.jobsize_given ) {
+      jobsize = args_info.jobsize_arg;
+      SamplerBase::setIntegratePerJob(jobsize);
+    }
+
     // Resume
     bool resume = false;
     if ( args_info.resume_flag )

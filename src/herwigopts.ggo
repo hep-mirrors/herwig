@@ -45,9 +45,13 @@ option "setupfile" x "An input file to modify run parameters."
   typestr="FILE"
   string optional
 
-section "Integration options"
+section "Build and integration options"
 text "
-  -x,--setupfile=FILE      An input file to modify run parameters."
+  -x, --setupfile=FILE     An input file to modify run parameters."
+
+option "jobsize" z "The number of subprocesses to integrate per job ."
+  typestr="NUMBER"
+  long optional
 
 option "jobid" n "Integrate the given integration job."
   typestr="NUMBER"

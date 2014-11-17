@@ -513,6 +513,10 @@ void GeneralSampler::currentCrossSections() const {
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 void GeneralSampler::doinit() {
+  if ( integratePerJob() ) {
+    theParallelIntegration = true;
+    theIntegratePerJob = integratePerJob();
+  }
   readGrids();
   if ( theGrids.children().empty() && runLevel() == RunMode )
     throw Exception()
