@@ -139,6 +139,7 @@ if "Cards" in os.listdir(pwd):
 if  not args.build:
   os.system("ln -s "+args.path+"/MG5/SubProcesses "+pwd )
   os.system("ln -s "+args.path+"/MG5/Cards "+pwd )
+  os.system("cp "+find("ident_card.dat",args.path)+" "+pwd )
   containsall=True
   for filei in [args.path+"/VirtAmplitudes.dat",args.path+"/BornAmplitudes.dat"]:
     file = open(filei, "r")
@@ -206,6 +207,7 @@ for line in procs:
 routines=[["","BORN(momenta,hel)"],
 	 ["","SLOOPMATRIX(momenta,virt)"],
 	 ["","GET_JAMP(color,Jamp)"],
+	 ["","GET_LNJAMP(color,Jamp)"],
 	 ["","GET_NCOL(color)"],
 	 ["","GET_NCOLOR(i,j,color)"]]
 for routine in routines:
@@ -259,12 +261,13 @@ else:
 replacetext("InterfaceMadGraph.f","MG_CalculateBORNtxt",routines[0][0])
 replacetext("InterfaceMadGraph.f","MG_CalculateVIRTtxt",routines[1][0])
 replacetext("InterfaceMadGraph.f","MG_Jamptxt",     routines[2][0])
-replacetext("InterfaceMadGraph.f","MG_NColtxt",     routines[3][0])
-replacetext("InterfaceMadGraph.f","MG_ColourMattxt",routines[4][0])
+replacetext("InterfaceMadGraph.f","MG_LNJamptxt",     routines[3][0])
+replacetext("InterfaceMadGraph.f","MG_NColtxt",     routines[4][0])
+replacetext("InterfaceMadGraph.f","MG_ColourMattxt",routines[5][0])
 #replacetext("InterfaceMadGraph.f","MG_Procnametxt",MG_Procnametxt)
 
 MG_vxxxxxtxt=""
-if routines[2][0]!="":
+if routines[1][0]!="":
   MG_vxxxxxtxt="""       subroutine  MG_vxxxxx(p, n,inc,VC)
      $   bind(c, name='MG_vxxxxx')
          IMPLICIT NONE
@@ -409,7 +412,7 @@ os.system("make")
 
 os.system("ln -s "+args.path +"/MG5/SubProcesses "+pwd )
 os.system("ln -s "+args.path +"/MG5/Cards "+pwd )
-#os.system("cp "+find("ident_card.dat",sys.argv[2])+" "+pwd )
+os.system("cp "+find("ident_card.dat",args.path)+" "+pwd )
 if param_card =="":
   os.system("cp "+find("param_card.dat",args.path)+" "+pwd )
 if(find("MadLoopParams.dat",args.path)):

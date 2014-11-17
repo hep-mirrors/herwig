@@ -38,6 +38,7 @@ extern "C" void MG_InitProc                    ();
 extern "C" void MG_Calculate_wavefunctions_virt(int* proc,double*,double*);
 extern "C" void MG_Calculate_wavefunctions_born(int* proc,double*, int*);
 extern "C" void MG_Jamp                        (int* proc,int*, double*);
+extern "C" void MG_LNJamp                        (int* proc,int*, double*);
 extern "C" void MG_Virt                        (int* proc,double*);
 extern "C" void MG_NCol                        (int* proc,int*);
 extern "C" void MG_vxxxxx                      (double* p,double* n,int* inc,double*  );
@@ -260,6 +261,7 @@ void MadGraphAmplitude::prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr me) {
     return;
   }
   lastMatchboxXComb()->clearheljamp();
+  lastMatchboxXComb()->clearhelLNjamp();
   initProcess(mePartonData());
   MatchboxAmplitude::prepareAmplitudes(me);
 
@@ -333,10 +335,12 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
   }
   
   const map<vector<int>,vector < complex<double> > >& tmp = lastMatchboxXComb()->heljamp();
+    const map<vector<int>,vector < complex<double> > >& tmpLN = lastMatchboxXComb()->helLNjamp();
 
-  if( tmp.find(hel) != tmp.end() ) {
-    largeN = tmp.find(hel)->second[ii];
-    return largeN;
+  if( tmp.find(hel) != tmp.end()) {
+	assert(tmpLN.find(hel) != tmpLN.end());
+    largeN = tmpLN.find(hel)->second[ii];
+    return tmp.find(hel)->second[ii];;
   }
 
   double units = pow(sqrt(lastSHat())/GeV,hel.size()-4);
@@ -368,15 +372,21 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
   MG_NCol(&xx,&ncol);
   assert(ncol!=-1);
   Complex res;
+  Complex resLN;
   for( int it = 0; it < ncol; it++ ){
     double dd[2];
     MG_Jamp(&xx,&it,&dd[0]);
     Complex d(dd[0],dd[1]);
     if(it==ii)res=d*units;
     lastMatchboxXComb()->pushheljamp(hel,d*units);
+	double ddLN[2];
+    MG_LNJamp(&xx,&it,&ddLN[0]);
+    Complex dLN(ddLN[0],ddLN[1]);
+    if(it==ii)resLN=dLN*units;
+    lastMatchboxXComb()->pushhelLNjamp(hel,dLN*units);
   }
 
-  largeN = res;
+  largeN = resLN;
   return res;
 
 }

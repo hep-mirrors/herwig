@@ -54,6 +54,21 @@ MG_Jamptxt
          amp(0)=real(Jamp)
          amp(1)=aimag(Jamp)   
        END
+       
+!///////////////////////////////////////////////////////////////////////
+
+       subroutine MG_LNJamp(proc ,color,amp)
+     $   bind(c, name="MG_LNJamp")
+
+         IMPLICIT NONE
+         INTEGER    proc,color
+         REAL*8 amp(0:1)
+         COMPLEX*16 Jamp
+MG_LNJamptxt
+
+         amp(0)=real(Jamp)
+         amp(1)=aimag(Jamp)   
+       END
 
 
 
@@ -78,17 +93,5 @@ MG_ColourMattxt
        END
 
 !///////////////////////////////////////////////////////////////////////
-
-!       subroutine MG_Procname(proc,name)
-!     $   bind(c, name="MG_Procname")
-!         IMPLICIT NONE
-!         INTEGER    proc
-!         CHARACTER name
-!MG_Procnametxt
-!
-!       END
-
-!///////////////////////////////////////////////////////////////////////
-
        
 MG_vxxxxxtxt
