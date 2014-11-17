@@ -534,7 +534,8 @@ bool GoSamAmplitude::checkOLPContract(string contractFileName) {
   // string ids = "GoSam_ids.dat";
   // ofstream IDS(ids.c_str());
 
-	string ids = factory()->runStorage() + "GoSam.ids.dat";
+	// string ids = factory()->runStorage() + "GoSam.ids.dat";
+	string ids = factory()->buildStorage() + "GoSam.ids.dat";
 	ofstream IDS(ids.c_str());
 
 	for ( map<int, gosamprocinfo>::iterator p = processmap.begin() ; p != processmap.end() ; p++ ) {
@@ -571,7 +572,8 @@ bool GoSamAmplitude::buildGoSam() {
 
 void GoSamAmplitude::getids() const {
   // string line = "GoSam_ids.dat";
-	string line = factory()->runStorage() + "GoSam.ids.dat";
+	// string line = factory()->runStorage() + "GoSam.ids.dat";
+	string line = factory()->buildStorage() + "GoSam.ids.dat";
 	ifstream infile(line.c_str());
 	int hid;
 	int gid;
