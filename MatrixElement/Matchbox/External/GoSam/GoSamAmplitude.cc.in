@@ -68,7 +68,7 @@ IBPtr GoSamAmplitude::fullclone() const {
 
 
 void GoSamAmplitude::doinit() {
-  optionalContractFile() = contractFileName;
+  optionalContractFile() = name() + ".OLPContract.lh";
   MatchboxOLPME::doinit();
 }
 
@@ -77,7 +77,7 @@ void GoSamAmplitude::doinit() {
 // }
 
 void GoSamAmplitude::doinitrun() {
-  optionalContractFile() = contractFileName;
+  optionalContractFile() = name() + ".OLPContract.lh";
   MatchboxOLPME::doinitrun();
 }
 
