@@ -529,21 +529,17 @@ bool GoSamAmplitude::checkOLPContract(string contractFileName) {
 	  }
   }
 
-  // string ids = "GoSam_ids.dat";
-  // ofstream IDS(ids.c_str());
+  string ids = factory()->buildStorage() + "GoSam.ids.dat";
+  ofstream IDS(ids.c_str());
 
-	// string ids = factory()->runStorage() + "GoSam.ids.dat";
-	string ids = factory()->buildStorage() + "GoSam/GoSam.ids.dat";
-	ofstream IDS(ids.c_str());
+  for ( map<int, gosamprocinfo>::iterator p = processmap.begin() ; p != processmap.end() ; p++ ) {
+    idpair.insert ( std::pair<int,int>((*p).second.HID(),(*p).second.GID()) );
+    IDS << (*p).second.HID() << " " << (*p).second.GID() << " " << (*p).second.Tstr() << "\n";
+    if ( (*p).second.GID() == -1 ) return 0;
+  }
+  IDS << flush;
 
-	for ( map<int, gosamprocinfo>::iterator p = processmap.begin() ; p != processmap.end() ; p++ ) {
-	  idpair.insert ( std::pair<int,int>((*p).second.HID(),(*p).second.GID()) );
-	  IDS << (*p).second.HID() << " " << (*p).second.GID() << " " << (*p).second.Tstr() << "\n";
-	  if ( (*p).second.GID() == -1 ) return 0;
-	}
-	IDS << flush;
-
-	return 1;
+  return 1;
 
 }
 
@@ -569,18 +565,16 @@ bool GoSamAmplitude::buildGoSam() {
 }
 
 void GoSamAmplitude::getids() const {
-  // string line = "GoSam_ids.dat";
-	// string line = factory()->runStorage() + "GoSam.ids.dat";
-	string line = factory()->buildStorage() + "GoSam/GoSam.ids.dat";
-	ifstream infile(line.c_str());
-	int hid;
-	int gid;
-	string type;
-	while (std::getline(infile, line)) {
-	  istringstream(line) >> hid >> gid >> type;
-	  idpair.insert ( std::pair<int,int>(hid,gid) );
-	  idtypepair.insert ( std::pair<int,string>(hid,type) );
-	}
+  string line = factory()->buildStorage() + "GoSam.ids.dat";
+  ifstream infile(line.c_str());
+  int hid;
+  int gid;
+  string type;
+  while (std::getline(infile, line)) {
+    istringstream(line) >> hid >> gid >> type;
+    idpair.insert ( std::pair<int,int>(hid,gid) );
+    idtypepair.insert ( std::pair<int,string>(hid,type) );
+  }
 }
 
 
