@@ -719,11 +719,25 @@ LorentzVector<Complex> GoSamAmplitude::plusPolarization(const Lorentz5Momentum& 
 
 
 void GoSamAmplitude::persistentOutput(PersistentOStream & os) const {
-  os << idpair << idtypepair << theCodeExists << massiveParticles << thePrintParameter << gosamPathInterface << gosamSetupInFilenameInterface << gosamBuildScript << theFormOpt << theNinja << contractFileName;
+  os << idpair << idtypepair << processmap << gosamPathInterface
+     << gosamSetupInFilenameInterface << gosamBuildScript << gosamPath
+     << gosamSourcePath << gosamInstallPath << gosamPathRelative
+     << gosamSourcePathRelative << gosamInstallPathRelative << gosamSetupInFileName
+     << orderFileTitle << contractFileTitle << parametersFileTitle
+     << contractFileName << orderFileName << parametersFileName
+     << theCodeExists << theFormOpt << theNinja << isitDR << massiveParticles
+     << thePrintParameter;
 }
 
 void GoSamAmplitude::persistentInput(PersistentIStream & is, int) {
-  is >> idpair >> idtypepair >> theCodeExists >> massiveParticles >> thePrintParameter >> gosamPathInterface >> gosamSetupInFilenameInterface >> gosamBuildScript >> theFormOpt >> theNinja >> contractFileName;
+  is >> idpair >> idtypepair >> processmap >> gosamPathInterface
+     >> gosamSetupInFilenameInterface >> gosamBuildScript >> gosamPath
+     >> gosamSourcePath >> gosamInstallPath >> gosamPathRelative
+     >> gosamSourcePathRelative >> gosamInstallPathRelative >> gosamSetupInFileName
+     >> orderFileTitle >> contractFileTitle >> parametersFileTitle
+     >> contractFileName >> orderFileName >> parametersFileName
+     >> theCodeExists >> theFormOpt >> theNinja >> isitDR >> massiveParticles
+     >> thePrintParameter;
 }
 
 

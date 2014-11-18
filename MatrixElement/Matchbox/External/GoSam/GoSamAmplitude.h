@@ -290,6 +290,13 @@ private:
 
 }; // end "class GoSamAmplitude: public MatchboxOLPME"
 
+  inline PersistentOStream& operator<<(PersistentOStream& os, const gosamprocinfo& p) {
+    p.persistentOutput(os); return os;
+  }
+
+  inline PersistentIStream& operator>>(PersistentIStream& is, gosamprocinfo& p) {
+    p.persistentInput(is); return is;
+  }
 
 } // end "namespace Herwig"
 
