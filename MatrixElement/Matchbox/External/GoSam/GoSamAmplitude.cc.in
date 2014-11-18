@@ -68,11 +68,6 @@ IBPtr GoSamAmplitude::fullclone() const {
 
 
 void GoSamAmplitude::doinit() {
-  // @TODO Fix me! Need to check for this setting and otherwise warn,
-  // but not quietly set it. And _do not_ remove this TODO unless
-  // it's fixed.
-  HandlerBase::standardModel()->ewScheme(1);
-  HandlerBase::standardModel()->init();
   optionalContractFile() = contractFileName;
   MatchboxOLPME::doinit();
 }

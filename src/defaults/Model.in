@@ -13,10 +13,19 @@ create Herwig::StandardModel Model
 # the strong coupling
 create Herwig::O2AlphaS AlphaS O2AlphaS.so
 newdef Model:QCD/RunningAlphaS AlphaS
+insert AlphaS:QuarkMasses[0] 0.005
+insert AlphaS:QuarkMasses[1] 0.0023
+insert AlphaS:QuarkMasses[2] 0.095
+insert AlphaS:QuarkMasses[3] 1.25
+insert AlphaS:QuarkMasses[4] 4.2
+insert AlphaS:QuarkMasses[5] 174.2
 
 # the electromagetic coupling
 create ThePEG::SimpleAlphaEM AlphaEM SimpleAlphaEM.so
 newdef Model:EW/RunningAlphaEM AlphaEM
+
+# the default EW scheme is G_mu
+set Model:EW/Scheme GMuScheme
 
 # the CKM matrix
 create Herwig::StandardCKM CKM
