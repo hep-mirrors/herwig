@@ -258,10 +258,8 @@ private:
 
   mutable string orderFileTitle;
   mutable string contractFileTitle;
-  mutable string parametersFileTitle;
   mutable string contractFileName;
   mutable string orderFileName;
-  mutable string parametersFileName;
 
   bool theCodeExists;
   bool theFormOpt;
