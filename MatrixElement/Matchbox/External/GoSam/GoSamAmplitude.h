@@ -254,10 +254,6 @@ private:
   mutable string gosamSourcePath;
   mutable string gosamInstallPath;
 
-  mutable string gosamPathRelative;
-  mutable string gosamSourcePathRelative;
-  mutable string gosamInstallPathRelative;
-
   mutable string gosamSetupInFileName;
 
   mutable string orderFileTitle;
