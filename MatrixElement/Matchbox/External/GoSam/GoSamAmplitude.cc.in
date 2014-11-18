@@ -164,13 +164,11 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
   gosamSetupInFileName = gosamSetupInFilenameInterface == "" ? gosamPath + "/setup.gosam.in" : gosamSetupInFilenameInterface;
 
   // check if setup.gosam.in exists
-  ifstream infile(gosamSetupInFileName.c_str());
-  if (!infile) {
+  if (!bfs::exists(gosamSetupInFileName)){
     // if it doesn't, then get it from src/defaults
-    string cmd = "cp @prefix@/share/Herwig++/defaults/setup.gosam.in " + gosamSetupInFileName;
-    std::system(cmd.c_str());
+    bfs::copy_file("@prefix@/share/Herwig++/defaults/setup.gosam.in", gosamSetupInFileName);
     // set form's tempdir to the current working directory
-    cmd = "sed -i 's/@FORMTEMPDIR@/" + StringUtils::replace(gosamSourcePath, string("/"), string("\\/")) + "/g' " + gosamSetupInFileName;
+    string cmd = "sed -i 's/@FORMTEMPDIR@/" + StringUtils::replace(gosamSourcePath, string("/"), string("\\/")) + "/g' " + gosamSetupInFileName;
     std::system(cmd.c_str());
     // set reduction programs to what is specified through the repository
     cmd = "sed -i 's/@REDUCTIONPROGRAMS@/" + (theNinja ? string("ninja, golem95") : string("samurai, golem95")) + "/g' " + gosamSetupInFileName;
@@ -184,7 +182,6 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
     cmd = "sed -i 's/@FORMOPT@/" + (theFormOpt ? string("") : string(", noformopt")) + "/g' " + gosamSetupInFileName;
     std::system(cmd.c_str());
   }
-  infile.close();
 
   // check for old order file and create it if it doesn't already exist
   fillOrderFile(procs, orderFileName);
@@ -545,8 +542,6 @@ bool GoSamAmplitude::checkOLPContract(string contractFileName) {
 
 bool GoSamAmplitude::buildGoSam() {
   if(!theCodeExists){
-    // generator()->log() << "\n>>> compiling GoSam amplitudes. This may take some time, please be patient.\n"
-    //                    << ">>> see " + gosamSourcePath + "/gosam-build.log for details.\n\n" << flush;
     generator()->log() << "\n>>> compiling GoSam amplitudes. This may take some time, please be patient.\n"
                        << ">>> see " + gosamSourcePath + "gosam-build.log for details.\n\n" << flush;
     string cmd = "cd " + gosamSourcePath + " && sh autogen.sh FCFLAGS=-g --prefix=" + 
