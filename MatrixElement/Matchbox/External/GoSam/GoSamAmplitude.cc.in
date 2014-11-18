@@ -719,11 +719,11 @@ LorentzVector<Complex> GoSamAmplitude::plusPolarization(const Lorentz5Momentum& 
 
 
 void GoSamAmplitude::persistentOutput(PersistentOStream & os) const {
-	os << idpair << idtypepair << theCodeExists << massiveParticles << thePrintParameter << gosamPathInterface << gosamSetupInFilenameInterface << gosamBuildScript << theFormOpt << theNinja;
+  os << idpair << idtypepair << theCodeExists << massiveParticles << thePrintParameter << gosamPathInterface << gosamSetupInFilenameInterface << gosamBuildScript << theFormOpt << theNinja << contractFileName;
 }
 
 void GoSamAmplitude::persistentInput(PersistentIStream & is, int) {
-	is >> idpair >> idtypepair >> theCodeExists >> massiveParticles >> thePrintParameter >> gosamPathInterface >> gosamSetupInFilenameInterface >> gosamBuildScript >> theFormOpt >> theNinja;
+  is >> idpair >> idtypepair >> theCodeExists >> massiveParticles >> thePrintParameter >> gosamPathInterface >> gosamSetupInFilenameInterface >> gosamBuildScript >> theFormOpt >> theNinja >> contractFileName;
 }
 
 
