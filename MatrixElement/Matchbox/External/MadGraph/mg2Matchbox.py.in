@@ -3,12 +3,7 @@
 import os,sys,glob,errno,shutil,argparse,time
  
 
-
-
-
-
-
-
+#  helper to replace all sourceText in fileName with replaceText
 def replacetext(fileName, sourceText, replaceText):
     file = open(fileName, "r") 
     text = file.read() 
@@ -17,6 +12,7 @@ def replacetext(fileName, sourceText, replaceText):
     file.write(text.replace(sourceText, replaceText))
     file.close() 
 
+#  helper to build recursivly path
 def mkdir_p(path):
     try:
         os.makedirs(path)
@@ -25,17 +21,20 @@ def mkdir_p(path):
             pass
         else: raise   
       
+#  helper to find all files of with name in path
 def find(name, path):
     for root, dirs, files in os.walk(path):
         if name in files:
             return os.path.join(root, name)      
  
+# fill the proc.dat and processmap.dat files from BornAmplitudes.dat and VirtAmplitudes.dat. 
 def fillprocs(model):
+  bornlist=[]
+  virtlist=[]
   fileproc=open("proc.dat","w")
   fileproc.write("import model "+model+"\n")
   borns="BornAmplitudes.dat"
   virts="VirtAmplitudes.dat"
-  
   first=True
   processmap=""
   procnr=0
@@ -47,6 +46,7 @@ def fillprocs(model):
       procnr+=1
       processmap+=linetmp+" "
       processmap+=str(procnr) +"\n"
+      bornlist+=[str(procnr)]
       if first:
 	bornlines+="generate "+linetmp+" @"+str(procnr)+"\n"
 	first=False
@@ -60,6 +60,7 @@ def fillprocs(model):
       procnr+=1
       processmap+=linetmp+" "
       processmap+=str(procnr) +"\n"
+      virtlist+=[str(procnr)]
       if first:
 	virtlines+="generate "+linetmp+" @"+str(procnr)+"\n"
 	first=False
@@ -72,26 +73,50 @@ def fillprocs(model):
      fileproc.write("output matchbox MG5 --postpone_model\n") 
   fileproc.write(virtlines)
   fileproc.write("output matchbox MG5 -f\n")
-  
-
   fileproc.close()
   fileprocessmap=open("processmap.dat","w")
   fileprocessmap.write(processmap)
   fileprocessmap.close()
+  return bornlist,virtlist
 
+def build_matchbox_tmp(pwd,buildpath):
+   cwd=os.getcwd() 
+   os.chdir(pwd)
+   mkdir_p(pwd+"/Matchbox/MG_tmp/")
+   if not buildpath.startswith("/"):
+     buildpath=pwd+"/"+buildpath.lstrip("./")
+   resources=glob.glob(buildpath +"/MG5/SubProcesses/MadLoop5_resources/*")
+   resources+=glob.glob(buildpath +"/MG5/Cards/*")
+   resources+=glob.glob(buildpath +"/MG5/Cards/SubProcesses/*")
+   for i in resources:
+     if not os.path.isfile( pwd+"/Matchbox/MG_tmp/"+os.path.basename(i)) \
+       and not os.path.islink( pwd+"/Matchbox/MG_tmp/"+os.path.basename(i)):
+        os.symlink(i, pwd+"/Matchbox/MG_tmp/"+os.path.basename(i))
+   os.chdir(cwd)    
 
 
   
 parser = argparse.ArgumentParser()
-parser.add_argument('--path', help='installpath')
+parser.add_argument('--buildpath', help='installpath')
 parser.add_argument('--build', help='build', action="store_true")
-parser.add_argument('--bpath', help='buildpath')
+parser.add_argument('--madgraph', help='madgraph_installpath')
+parser.add_argument('--runpath', help='runpath')
 parser.add_argument('--model', help='model')
 
 args = parser.parse_args()
 
 
+pwd=os.getcwd() 
+
+
 param_card=""
+mkdir_p(pwd+"/Matchbox/MG_tmp/")
+
+
+
+
+
+
 if args.model=="loop_sm" or args.model=="heft":
 
   if args.model=="loop_sm":
@@ -102,9 +127,9 @@ if args.model=="loop_sm" or args.model=="heft":
   file = open("@prefix@/share/Herwig++/MadGraphInterface/"+param_card+".in", "r") 
   paramcard = file.read() 
   file.close()
-  file = open(param_card, "w")
+  file = open("Matchbox/MG_tmp/"+param_card, "w")
 
-  params=open(args.path+"/MG-Parameter.dat", "r")
+  params=open(args.buildpath+"/MG-Parameter.dat", "r")
 
   for line in params:
     a=line.split()
@@ -116,36 +141,30 @@ else:
   print "---------------------------------------------------------------"
   print "---------------------------------------------------------------"
   print "Warning: The model set for the MadGraph Interface "
-  print "         needs a parameter ssetting by hand."
+  print "         needs a parameter setting by hand."
   print "         Please fill the param_card.dat"
-  print "         this you favourite assumptions."
+  print "         with your favourite assumptions."
   print "         And make sure Herwig uses the same parameters."
   print "---------------------------------------------------------------"
   print "---------------------------------------------------------------"
   
   time.sleep(5)
-  if not os.path.isfile("param_card.dat"):
-    os.system("cp "+find("param_card.dat",args.path)+" "+pwd )
 
 
-pwd=os.getcwd() 
-if "SubProcesses" in os.listdir(pwd):
-  os.unlink(pwd+"/SubProcesses")
-if "Cards" in os.listdir(pwd):
-  os.unlink(pwd+"/Cards")
-  
 
   
 if  not args.build:
-  os.system("ln -s "+args.path+"/MG5/SubProcesses "+pwd )
-  os.system("ln -s "+args.path+"/MG5/Cards "+pwd )
-  os.system("cp "+find("ident_card.dat",args.path)+" "+pwd )
+  #os.system("ln -s "+args.buildpath+"/MG5/SubProcesses "+pwd )
+  #os.system("ln -s "+args.buildpath+"/MG5/Cards "+pwd )
+  #os.system("cp "+find("ident_card.dat",args.buildpath)+" "+pwd )
+  
+  build_matchbox_tmp(pwd,args.buildpath)
   containsall=True
-  for filei in [args.path+"/VirtAmplitudes.dat",args.path+"/BornAmplitudes.dat"]:
+  for filei in [args.buildpath+"/VirtAmplitudes.dat",args.buildpath+"/BornAmplitudes.dat"]:
     file = open(filei, "r")
     for line in file:
 	contains=False
-	fileprocessmap=open(args.path+"/processmap.dat","r")
+	fileprocessmap=open(args.buildpath+"/processmap.dat","r")
 	for line1 in fileprocessmap:
 	  if line.rstrip() == line1.\
 	    replace("add process","").\
@@ -169,13 +188,13 @@ if  not args.build:
 
 
 
-if not os.path.isdir(args.path):
+if not os.path.isdir(args.buildpath):
    print "The MadGraph Install path was not existend. It has been created for you."
    print "Just start Herwig++ read again.."
-   mkdir_p(args.path)
+   mkdir_p(args.buildpath)
    exit()
 
-os.chdir(args.path)
+os.chdir(args.buildpath)
 if os.path.isfile("InterfaceMadGraph.so"):
   containsall=True
   for filei in ["VirtAmplitudes.dat","BornAmplitudes.dat"]:
@@ -193,17 +212,21 @@ if os.path.isfile("InterfaceMadGraph.so"):
       exit()    
   
  
-fillprocs(args.model)
-os.system("python "+args.bpath+"/mg5_aMC proc.dat")
-Bornlist=[]
-Virtlist=[]
-procs=open("proc.dat","r")
-for line in procs:
-  if "@" in line:
-    if "[ virt=QCD ]" in line:
-      Virtlist+=[line.split("@")[1].replace("\n","")]
-    else:
-      Bornlist+=[line.split("@")[1].replace("\n","")]
+Bornlist,Virtlist=fillprocs(args.model)
+os.system("python "+args.madgraph+"/mg5_aMC proc.dat")
+#Bornlist=[]
+#Virtlist=[]
+
+
+
+
+#procs=open("proc.dat","r")
+#for line in procs:
+  #if "@" in line:
+    #if "[ virt=QCD ]" in line:
+      #Virtlist+=[line.split("@")[1].replace("\n","")]
+    #else:
+      #Bornlist+=[line.split("@")[1].replace("\n","")]
 routines=[["","BORN(momenta,hel)"],
 	 ["","SLOOPMATRIX(momenta,virt)"],
 	 ["","GET_JAMP(color,Jamp)"],
@@ -216,55 +239,31 @@ for routine in routines:
       continue
     if routine[0]=="":
        routine[0]+="         IF (proc .EQ. "+i+") THEN\n            CALL "
-       routine[0]+=   "P"+i+"_"+routine[1]+"\n"
+       routine[0]+=   "ML5_"+i+"_"+routine[1]+"\n"
     else:
        routine[0]+="         ELSE IF (proc .EQ. "+i+") THEN\n"\
                "            CALL "
-       routine[0]+=   "P"+i+"_"+routine[1]+"\n"
+       routine[0]+=   "ML5_"+i+"_"+routine[1]+"\n"
   if routine[0]!="":	     
        routine[0]+="         ELSE\n"
        routine[0]+="             WRITE(*,*) '##W02A WARNING No id found '\n"
        routine[0]+="         ENDIF   \n"
 
 
-procs.close()
-procs=open("proc.dat","r")
-
-#MG_Procnametxt=""
-#for line in procs:
-  #if "@" in line:
-      #if MG_Procnametxt=="":
-         #MG_Procnametxt+="         IF (proc .EQ. "+line.split("@")[1].replace("\n","")+") THEN\n            "
-         #MG_Procnametxt+="name=\'"+line.split("@")[0]\
-	                          #.replace("[ virt=QCD ]","")\
-				  #.replace("generate","")\
-				  #.replace("add process","")+"\'\n"
-      #else:
-	 #MG_Procnametxt+="         ELSE IF (proc .EQ. "+line.split("@")[1].replace("\n","")+") THEN\n             "
-         #MG_Procnametxt+="name=\'"+line.split("@")[0]\
-	                          #.replace("[ virt=QCD ]","")\
-				  #.replace("generate","")\
-				  #.replace("add process","")+"\'\n"
-#if MG_Procnametxt!="":	     
-	 #MG_Procnametxt+="         ELSE\n"
-	 #MG_Procnametxt+="             WRITE(*,*) '##W02A WARNING No id found '\n"
-	 #MG_Procnametxt+="         ENDIF   \n"
-
-
-
+#procs.close()
+#procs=open("proc.dat","r")
 
 shutil.copyfile("@prefix@/share/Herwig++/MadGraphInterface/InterfaceMadGraph.f.in", "InterfaceMadGraph.f")
 if param_card !="":
-  replacetext("InterfaceMadGraph.f","MG_InitProctxt","         CALL setpara('"+param_card+"')")
+  replacetext("InterfaceMadGraph.f","MG_InitProctxt","         CALL setpara('Matchbox/MG_tmp/"+param_card+"')")
 else:
-  replacetext("InterfaceMadGraph.f","MG_InitProctxt","         CALL setpara('param_card.dat')")
+  replacetext("InterfaceMadGraph.f","MG_InitProctxt","         CALL setpara('Matchbox/MG_tmp/param_card.dat')")
 replacetext("InterfaceMadGraph.f","MG_CalculateBORNtxt",routines[0][0])
 replacetext("InterfaceMadGraph.f","MG_CalculateVIRTtxt",routines[1][0])
 replacetext("InterfaceMadGraph.f","MG_Jamptxt",     routines[2][0])
 replacetext("InterfaceMadGraph.f","MG_LNJamptxt",     routines[3][0])
 replacetext("InterfaceMadGraph.f","MG_NColtxt",     routines[4][0])
 replacetext("InterfaceMadGraph.f","MG_ColourMattxt",routines[5][0])
-#replacetext("InterfaceMadGraph.f","MG_Procnametxt",MG_Procnametxt)
 
 MG_vxxxxxtxt=""
 if routines[1][0]!="":
@@ -381,40 +380,45 @@ replacetext("InterfaceMadGraph.f","MG_vxxxxxtxt",MG_vxxxxxtxt)
 
 
 make=" "
-files1=glob.glob('*/*/*.f')
-files2=glob.glob('*/*/*/*.f')
-for i in files1+files2:
-  if "check_sa" not in i:
-   make += " "+i
+fortanfiles=glob.glob('*/*/*.f')+glob.glob('*/*/*/*.f')
 
-files1=glob.glob('*/*/*.inc')
-files2=glob.glob('*/*/*/*.inc')
+for i in fortanfiles:
+  if "check_sa" not in i:
+    if not os.path.islink(i):
+       make += " "+i+"\\\n                  "
+
+incfiles=glob.glob('*/*/*.inc')+glob.glob('*/*/*/*.inc')
+
 coefdir=""
-for i in files1+files2:
+for i in incfiles:
   if "nexternal.inc" in i:
    coefdir+=" -I"+i.replace("nexternal.inc"," ")
 
 
 file=open("makefile","w")
-file.write("include MG5/Source/make_opts\n")
-file.write("LIBDIR = MG5/lib\n")
+file.write("include MG5/Source/make_opts  ")
 if Virtlist!=[]:
-    file.write("LINKLIBS =  -L$(LIBDIR) -lcts \n")
-    file.write("LIBS =  $(LIBDIR)libcts.$(libext) \n")
-file.write("PROCESS= InterfaceMadGraph.f "+make)
-file.write("\n\nall:  \n\t gfortran  $(FFLAGS) -fPIC -fno-f2c -shared -s -o  InterfaceMadGraph.so -IMG5/SubProcesses/ ")
+    file.write("\nLIBDIR = MG5/lib\nLINKLIBS =  -L$(LIBDIR) -lcts  -liregi -L$(LIBDIR)/golem95_lib -lgolem") 
+    file.write("\nLIBS = $(LIBDIR)libcts.$(libext) $(LIBDIR)libgolem.$(libext) $(LIBDIR)libiregi.$(libext)")
+file.write("\nPROCESS= InterfaceMadGraph.f "+make+"\n\nall:  \n\t gfortran  $(FFLAGS) -fPIC -fno-f2c -shared -s -o  InterfaceMadGraph.so -IMG5/SubProcesses/" )
+if Virtlist!=[]:
+  file.write(" -IMG5/lib/golem95_include ")
+
 if coefdir != "":
    file.write(coefdir)
 file.write("   $(PROCESS) $(LINKLIBS) ")
 file.close()
 
+
+os.chdir(pwd)
+os.chdir(args.buildpath)
+replacetext("MG5/Source/MODEL/lha_read.f", "ident_card.dat","Matchbox/MG_tmp/ident_card.dat")
+replacetext("MG5/Source/MODEL/lha_read.f", "param.log","Matchbox/MG_tmp/param.log")
+if Virtlist!=[]:
+  replacetext("MG5/SubProcesses/MadLoopCommons.f", "PREFIX='./'","PREFIX='./Matchbox/MG_tmp/'")
+
 os.system("make")
 
-os.system("ln -s "+args.path +"/MG5/SubProcesses "+pwd )
-os.system("ln -s "+args.path +"/MG5/Cards "+pwd )
-os.system("cp "+find("ident_card.dat",args.path)+" "+pwd )
-if param_card =="":
-  os.system("cp "+find("param_card.dat",args.path)+" "+pwd )
-if(find("MadLoopParams.dat",args.path)):
-  os.system("cp "+find("MadLoopParams.dat",args.path)+" "+pwd )
-os.chdir(pwd)
+
+build_matchbox_tmp(pwd,args.buildpath)
+

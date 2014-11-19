@@ -20,7 +20,7 @@ MG_InitProctxt
        subroutine  MG_Calculate_wavefunctions_virt(proc, momenta,  virt)
      $   bind(c, name="MG_Calculate_wavefunctions_virt")
          IMPLICIT NONE
-         REAL*8 momenta(0:40),virt(3)
+         REAL*8 momenta(0:40),virt(20)
          INTEGER proc
 
 MG_CalculateVIRTtxt

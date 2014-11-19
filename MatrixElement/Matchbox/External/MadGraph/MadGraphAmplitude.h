@@ -254,15 +254,7 @@ protected:
    */
   unsigned int theOrderInGem;
 
-  /**
-   * The path to the MadGraph installation
-   */
-  string theMG5Path;
-  
-  /**
-   * The path to generate amplitudes in.
-   */
-  string theProcessPath;  
+
   
   /**
    * The path to generate amplitudes in.
@@ -290,7 +282,7 @@ protected:
    
   mutable vector<int>  colourindex;
   mutable vector<int>  crossing;
-  mutable double virt[3];
+  mutable double virt[20];
   mutable double momenta[50];
   mutable int heltmp[10];
   mutable double poltmp[8];
