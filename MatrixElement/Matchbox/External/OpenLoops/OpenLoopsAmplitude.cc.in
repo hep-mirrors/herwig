@@ -56,8 +56,8 @@ extern "C" void ol_setparameter_string(const char*, const char*);
 extern "C" void OLP_PrintParameter(const char*);
 extern "C" void OLP_EvalSubProcess(int*, double*, double*, double*, double*);
 extern "C" void OLP_EvalSubProcess2(int*, double*, double*, double*, double*);
-                                  // id  ps-point polvec  emitter  res    acc
-extern "C" void OLP_SpinCorrelator(int*, double*, double*, int*, double*,double*);
+                                  // id  ps-point emitter polvec res
+extern "C" void ol_evaluate_sc(int, double*, int, double*, double*);
 extern "C" void OLP_Polvec(double*,double*,double*);
 
 void OpenLoopsAmplitude::doinitrun() {
@@ -304,7 +304,6 @@ double OpenLoopsAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
 	double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
 	fillOLPMomenta(lastXComb().meMomenta());
 
-	double acc =1.;
 	int emitter=ij.first+1;
 	int n = lastXComb().meMomenta().size();
 
@@ -327,7 +326,7 @@ double OpenLoopsAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
 	polvec[3]=c.momentum().z()/GeV;
         double avg= colourCorrelatedME2(ij)*(-c.diagonal());
 
-	OLP_SpinCorrelator(&id, olpMomenta(),polvec, &emitter,&spinColourCorrelatorResults[0] ,&acc);
+	ol_evaluate_sc(id, olpMomenta(),emitter,polvec,&spinColourCorrelatorResults[0]);
 
         double corr =-1.*units * spinColourCorrelatorResults[ij.second]/c.scale()*c.momentum().dot(c.momentum());
 
