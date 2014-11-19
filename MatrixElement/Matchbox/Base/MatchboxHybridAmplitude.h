@@ -329,6 +329,16 @@ public:
       treeLevelAmplitude()->spinColourCorrelatedME2(emitterSpectator,c);
   }
 
+  /**
+   * Return the spin correlated matrix element.
+   */
+  virtual double spinCorrelatedME2(pair<int,int> emitterSpectator,
+				   const SpinCorrelationTensor& c) const {
+    return 
+      theUseOLPCorrelators ?
+      oneLoopAmplitude()->spinCorrelatedME2(emitterSpectator,c) :
+      treeLevelAmplitude()->spinCorrelatedME2(emitterSpectator,c);
+  }
 
   /**
    * Return true, if tree-level contributions will be evaluated at amplitude level.

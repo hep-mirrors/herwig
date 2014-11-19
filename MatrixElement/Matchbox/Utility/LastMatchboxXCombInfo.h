@@ -178,6 +178,17 @@ public:
   Complex lastColourSpinCorrelator(const pair<int,int>& ij) const { return lastMatchboxXComb()->lastColourSpinCorrelator(ij); }
 
   /**
+   * True, if the indexed spin correlated matrix element needs to be
+   * calculated.
+   */
+  bool calculateSpinCorrelator(const pair<int,int>& ij) const { return lastMatchboxXComb()->calculateSpinCorrelator(ij); }
+
+  /**
+   * The spin correlated matrix element.
+   */
+  Complex lastSpinCorrelator(const pair<int,int>& ij) const { return lastMatchboxXComb()->lastSpinCorrelator(ij); }
+
+  /**
    * Return the number of light flavours to be considered for this process.
    */
   unsigned int nLight() const { return lastMatchboxXComb()->nLight(); }
@@ -368,6 +379,11 @@ protected:
    * The colour/spin correlated matrix element.
    */
   void lastColourSpinCorrelator(const pair<int,int>& ij, Complex v) const { lastMatchboxXComb()->lastColourSpinCorrelator(ij,v); }
+
+  /**
+   * The spin correlated matrix element.
+   */
+  void lastSpinCorrelator(const pair<int,int>& ij, Complex v) const { lastMatchboxXComb()->lastSpinCorrelator(ij,v); }
 
   /**
    * Set the number of light flavours to be considered for this process.

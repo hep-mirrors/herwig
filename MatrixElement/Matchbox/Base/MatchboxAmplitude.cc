@@ -125,6 +125,8 @@ void MatchboxAmplitude::olpOrderFileProcesses(ostream& os,
     os << "sctree\n";
   } else if ( currentType == ProcessType::loopInducedME2 ) {
     os << "loopinduced\n";
+  } else if ( currentType == ProcessType::spinCorrelatedME2 ) {
+    os << "stree\n";
   } else assert(false);
 
 
@@ -152,6 +154,8 @@ void MatchboxAmplitude::olpOrderFileProcesses(ostream& os,
 	os << "cctree\n";
       } else if ( currentType == ProcessType::spinColourCorrelatedME2 ) {
 	os << "sctree\n";
+      } else if ( currentType == ProcessType::spinCorrelatedME2 ) {
+	os << "stree\n";
       } else assert(false);
     }
 
@@ -673,6 +677,60 @@ double MatchboxAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
     avg + (c.scale() > ZERO ? 1. : -1.)*corr/cfac;
 
 }
+
+double MatchboxAmplitude::spinCorrelatedME2(pair<int,int> ij,
+					    const SpinCorrelationTensor& c) const {
+
+  Lorentz5Momentum p = meMomenta()[ij.first];
+  Lorentz5Momentum n = meMomenta()[ij.second];
+
+  LorentzVector<Complex> polarization = plusPolarization(p,n,ij.first);
+
+  Complex pFactor = (polarization*c.momentum())/sqrt(abs(c.scale()));
+
+  double avg =
+    me2()*(-c.diagonal()+ (c.scale() > ZERO ? 1. : -1.)*norm(pFactor));
+
+  int iCrossed = -1;
+  for ( unsigned int k = 0; k < crossingMap().size(); ++k )
+    if ( crossingMap()[k] == ij.first ) {
+      iCrossed = k;
+      break;
+    }      
+  assert(iCrossed >= 0);
+
+  Complex csCorr = 0.0;
+
+  if ( calculateSpinCorrelator(ij) ) {
+    set<const CVector*> done;
+    for ( AmplitudeConstIterator a = lastAmplitudes().begin();
+	  a != lastAmplitudes().end(); ++a ) {
+      if ( done.find(&(a->second)) != done.end() )
+	continue;
+      AmplitudeConstIterator b = lastAmplitudes().begin();
+      while ( !equalsModulo(iCrossed,a->first,b->first) )
+	if ( ++b == lastAmplitudes().end() )
+	  break;
+      if ( b == lastAmplitudes().end() || done.find(&(b->second)) != done.end() )
+	continue;
+      done.insert(&(a->second)); done.insert(&(b->second));
+      if ( a->first[iCrossed] == 1 )
+	swap(a,b);
+      csCorr += colourBasis()->interference(mePartonData(),a->second,b->second);
+    }
+    lastSpinCorrelator(ij,csCorr);
+  } else {
+    csCorr = lastSpinCorrelator(ij);
+  }
+
+  double corr = 
+    2.*real(csCorr*sqr(pFactor));
+
+  return 
+    avg + (c.scale() > ZERO ? 1. : -1.)*corr;
+
+}
+
 
 void MatchboxAmplitude::Init() {
 

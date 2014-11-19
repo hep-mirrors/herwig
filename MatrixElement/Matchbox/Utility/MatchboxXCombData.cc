@@ -129,6 +129,9 @@ void MatchboxXCombData::flushCaches() {
   for ( map<pair<int,int>,bool>::iterator f = theCalculateColourSpinCorrelators.begin();
 	f != theCalculateColourSpinCorrelators.end(); ++f )
     f->second = true;
+  for ( map<pair<int,int>,bool>::iterator f = theCalculateSpinCorrelators.begin();
+	f != theCalculateSpinCorrelators.end(); ++f )
+    f->second = true;
   filledOLPMomenta = false;
   filledExternalMomenta = false;
 }
@@ -177,7 +180,8 @@ void MatchboxXCombData::persistentOutput(PersistentOStream & os) const {
      << theLastOneLoopPoles << theCalculateColourCorrelators 
      << theColourCorrelators << theCalculateLargeNColourCorrelators 
      << theLargeNColourCorrelators << theCalculateColourSpinCorrelators 
-     << theColourSpinCorrelators << theNLight 
+     << theColourSpinCorrelators << theCalculateSpinCorrelators 
+     << theSpinCorrelators << theNLight 
      << theNLightJetVec << theNHeavyJetVec << theNLightProtonVec 
      << theColourBasisDim 
      << theNDimPhasespace << theNDimAmplitude << theNDimInsertions 
@@ -201,7 +205,8 @@ void MatchboxXCombData::persistentInput(PersistentIStream & is, int) {
      >> theLastOneLoopPoles >> theCalculateColourCorrelators 
      >> theColourCorrelators >> theCalculateLargeNColourCorrelators 
      >> theLargeNColourCorrelators >> theCalculateColourSpinCorrelators 
-     >> theColourSpinCorrelators >> theNLight 
+     >> theColourSpinCorrelators >> theCalculateSpinCorrelators 
+     >> theSpinCorrelators >> theNLight 
      >> theNLightJetVec >> theNHeavyJetVec >> theNLightProtonVec 
      >> theColourBasisDim 
      >> theNDimPhasespace >> theNDimAmplitude >> theNDimInsertions 

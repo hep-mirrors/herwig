@@ -739,6 +739,14 @@ public:
   virtual double spinColourCorrelatedME2(pair<int,int> emitterSpectator,
 					 const SpinCorrelationTensor& c) const;
 
+  /**
+   * Return the spin correlated matrix element squared for
+   * the vector boson indexed by the first argument using the given
+   * correlation tensor.
+   */
+  virtual double spinCorrelatedME2(pair<int,int> emitterSpectator,
+				   const SpinCorrelationTensor& c) const;
+
   //@}
 
   /** @name Caching and diagnostic information */

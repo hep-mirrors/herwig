@@ -114,6 +114,41 @@ double MatchboxOLPME::spinColourCorrelatedME2(pair<int,int> ij,
 
 }
 
+double MatchboxOLPME::spinCorrelatedME2(pair<int,int> ij,
+					      const SpinCorrelationTensor& c) const {
+
+  Lorentz5Momentum p = meMomenta()[ij.first];
+  Lorentz5Momentum n = meMomenta()[ij.second];
+
+  LorentzVector<Complex> polarization = plusPolarization(p,n,ij.first);
+
+  Complex pFactor = (polarization*c.momentum())/sqrt(abs(c.scale()));
+
+  double avg =
+    me2()*(-c.diagonal()+ (c.scale() > ZERO ? 1. : -1.)*norm(pFactor));
+
+  Complex csCorr = 0.0;
+
+  if ( calculateSpinCorrelator(ij) )
+    evalSpinCorrelator(ij);
+
+  csCorr = lastSpinCorrelator(ij);
+
+  double corr = 
+    2.*real(csCorr*sqr(pFactor));
+
+  return 
+    avg + (c.scale() > ZERO ? 1. : -1.)*corr;
+
+}
+
+
+void MatchboxOLPME::evalSpinCorrelator(pair<int,int>) const {
+  throw Exception()
+    << "MatchboxOLPME::spinCorrelatedME2() is not implemented.\n"
+    << "Please check your setup." << Exception::abortnow;
+}
+
 double MatchboxOLPME::oneLoopDoublePole() const {
   if ( !calculateOneLoopPoles() )
     return lastOneLoopPoles().first;

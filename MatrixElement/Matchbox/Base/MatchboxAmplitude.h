@@ -86,7 +86,8 @@ namespace ProcessType {
     colourCorrelatedME2,
     spinColourCorrelatedME2,
     oneLoopInterference,
-    loopInducedME2
+    loopInducedME2,
+    spinCorrelatedME2
 
   };
 
@@ -382,6 +383,12 @@ public:
    */
   virtual double spinColourCorrelatedME2(pair<int,int> emitterSpectator,
 					 const SpinCorrelationTensor& c) const;
+
+  /**
+   * Return the spin correlated matrix element.
+   */
+  virtual double spinCorrelatedME2(pair<int,int> emitterSpectator,
+				   const SpinCorrelationTensor& c) const;
 
 
   /**

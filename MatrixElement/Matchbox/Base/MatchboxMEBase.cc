@@ -1025,6 +1025,30 @@ double MatchboxMEBase::spinColourCorrelatedME2(pair<int,int> ij,
 
 }
 
+double MatchboxMEBase::spinCorrelatedME2(pair<int,int> ij,
+					 const SpinCorrelationTensor& c) const {
+
+  if ( matchboxAmplitude() ) {
+
+    if ( matchboxAmplitude()->treeAmplitudes() )
+      matchboxAmplitude()->prepareAmplitudes(this);
+
+    double res = 
+      matchboxAmplitude()->spinCorrelatedME2(ij,c)*
+      me2Norm();
+
+    return res;
+
+  }
+
+  throw Exception()
+    << "MatchboxMEBase::spinCorrelatedME2() expects a MatchboxAmplitude object.\n"
+    << "Please check your setup." << Exception::abortnow;
+  return 0.;
+
+}
+
+
 void MatchboxMEBase::flushCaches() { 
   MEBase::flushCaches();
   if ( matchboxAmplitude() )

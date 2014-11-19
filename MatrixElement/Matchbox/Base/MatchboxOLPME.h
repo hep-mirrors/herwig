@@ -123,6 +123,11 @@ public:
   virtual double spinColourCorrelatedME2(pair<int,int> ij,
 					 const SpinCorrelationTensor& c) const;
 
+  /**
+   * Return the spin correlated matrix element.
+   */
+  virtual double spinCorrelatedME2(pair<int,int> ij,
+				   const SpinCorrelationTensor& c) const;
 
   /**
    * Return true, if tree-level contributions will be evaluated at amplitude level.
@@ -196,6 +201,11 @@ public:
    * Fill in results for the given colour/spin correlator
    */
   virtual void evalSpinColourCorrelator(pair<int,int> ij) const = 0;
+
+  /**
+   * Fill in results for the given spin correlator; may not be supported
+   */
+  virtual void evalSpinCorrelator(pair<int,int> ij) const;
 
 public:
 

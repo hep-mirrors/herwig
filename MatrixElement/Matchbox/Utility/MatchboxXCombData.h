@@ -399,6 +399,37 @@ namespace Herwig {
     }
 
     /**
+     * True, if the indexed spin correlated matrix element needs to be
+     * calculated.
+     */
+    bool calculateSpinCorrelator(const pair<int,int>& ij) const {
+      map<pair<int,int>,bool>::const_iterator f =
+	theCalculateSpinCorrelators.find(ij);
+      if ( f == theCalculateSpinCorrelators.end() )
+	return true;
+      return f->second;
+    }
+
+    /**
+     * The spin correlated matrix element.
+     */
+    Complex lastSpinCorrelator(const pair<int,int>& ij) const {
+      map<pair<int,int>,Complex>::const_iterator v =
+	theSpinCorrelators.find(ij);
+      if ( v == theSpinCorrelators.end() )
+	return 0.;
+      return v->second;
+    }
+
+    /**
+     * The spin correlated matrix element.
+     */
+    void lastSpinCorrelator(const pair<int,int>& ij, Complex v) {
+      theSpinCorrelators[ij] = v;
+      theCalculateSpinCorrelators[ij] = false;
+    }
+
+    /**
      * Return the number of light flavours to be considered for this process.
      */
     unsigned int nLight() const { return theNLight; }
@@ -849,6 +880,17 @@ namespace Herwig {
      * The colour/spin correlated matrix element.
      */
     map<pair<int,int>,Complex> theColourSpinCorrelators;
+
+    /**
+     * True, if the indexed spin correlated matrix element needs to be
+     * calculated.
+     */
+    map<pair<int,int>,bool> theCalculateSpinCorrelators;
+
+    /**
+     * The spin correlated matrix element.
+     */
+    map<pair<int,int>,Complex> theSpinCorrelators;
 
     /**
      * The number of light flavours to be considered for this process.
