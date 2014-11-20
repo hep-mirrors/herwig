@@ -34,7 +34,7 @@
 using namespace Herwig;
 
 
-extern "C" void MG_InitProc                    ();
+extern "C"{ void mginitproc_(char *i,int*);}
 extern "C" void MG_Calculate_wavefunctions_virt(int* proc,double*,double*);
 extern "C" void MG_Calculate_wavefunctions_born(int* proc,double*, int*);
 extern "C" void MG_Jamp                        (int* proc,int*, double*);
@@ -90,7 +90,12 @@ void MadGraphAmplitude::initProcess(const cPDVector& ) {
 		      << Exception::abortnow;
 
   if (!initializedMad){
-    MG_InitProc();
+//     const_cast<char *> ((factory()->runStorage()+"/MadGraphAmplitudes"+"/param_card.dat").c_str())
+    string mstr=(factory()->runStorage()+"/MadGraphAmplitudes"+"/param_card"+((theMGmodel=="loop_sm")?"":("_"+theMGmodel))+".dat");
+    char * wchar = new char[mstr.size()+1];
+    std::copy(mstr.begin(),mstr.end(),wchar);
+    int s=mstr.size();
+    mginitproc_(wchar,&s);
     initializedMad=true;
   }
   lastMatchboxXComb()->isInitialized();
@@ -100,6 +105,7 @@ bool MadGraphAmplitude::initializeExternal() {
 
   loadProcessMap();
   std::system(("mkdir -p " + factory()->buildStorage()+"/MadGraphAmplitudes").c_str());
+  std::system(("mkdir -p " + factory()->runStorage()+"/MadGraphAmplitudes").c_str());
 
   string born= factory()->buildStorage()+"/MadGraphAmplitudes"+"/BornAmplitudes.dat";
   ofstream borns(born.c_str());
@@ -115,7 +121,7 @@ bool MadGraphAmplitude::initializeExternal() {
   
   
    
-  string para= factory()->buildStorage()+"/MadGraphAmplitudes"+"/MG-Parameter.dat";
+  string para= factory()->runStorage()+"/MadGraphAmplitudes"+"/MG-Parameter.dat";
   ofstream params(para.c_str());
   params<<"$WZ$ "    <<std::setiosflags(ios::scientific)  <<getParticleData(ParticleID::Z0)->width()     /GeV;
   params<<"\n$WW$ "    <<std::setiosflags(ios::scientific)   <<getParticleData(ParticleID::Wplus)->width()/GeV;
@@ -134,11 +140,14 @@ bool MadGraphAmplitude::initializeExternal() {
 
   
   string cmd = "python @prefix@/bin/mg2Matchbox.py ";
+  cmd +=" --buildpath "+factory()->buildStorage()+"/MadGraphAmplitudes";
+  cmd +=" --model "+theMGmodel;
+  cmd +=" --runpath "+factory()->runStorage()+"/MadGraphAmplitudes " ;  
   // TODO move to boost::system
   
   if ( !processmap().empty() ){
     //set the parameters
-    cmd +="--buildpath "+factory()->buildStorage()+"/MadGraphAmplitudes"+" --model "+theMGmodel;
+
     std::system(cmd.c_str());
     return true;
   }
@@ -146,19 +155,28 @@ bool MadGraphAmplitude::initializeExternal() {
   if ( !getcwd(cwd,sizeof(cwd)) )
     throw Exception() << "failed to determine current working directory\n"
 		      << Exception::abortnow;
-		      
-		      
-  cmd +="--build --madgraph @MADGRAPHPREFIX@/bin " ;
-  cmd +="--buildpath "+factory()->buildStorage()+"/MadGraphAmplitudes " ;
-  cmd +="--runpath "+factory()->runStorage()+"/MadGraphAmplitudes " ;
-  cmd +=" --model "+theMGmodel+" > ";
-  cmd +=  factory()->buildStorage()+"/MadGraphAmplitudes" + "/MG.log 2>&1";
+     
+  cmd +=" --madgraph @MADGRAPHPREFIX@/bin " ;
+  cmd +="--build > ";
+  cmd +=  factory()->buildStorage()+"/MadGraphAmplitudes/MG.log 2>&1";
   
   
   generator()->log() << "\n\nCompiling MadGraph amplitudes. This may take some time -- please be patient.\n"
-		     << "In case of problems see " << factory()->buildStorage()+"/MadGraphAmplitudes" << "/MG.log for details.\n\n"
+		     << "In case of problems see " << factory()->buildStorage()+"/MadGraphAmplitudes/MG.log for details.\n\n"
 		     << flush;
   std::system(cmd.c_str());
+  
+  
+  cmd = "python @prefix@/bin/mg2Matchbox.py ";
+  cmd +=" --buildpath "+factory()->buildStorage()+"/MadGraphAmplitudes";
+  cmd +=" --model "+theMGmodel;
+  cmd +=" --runpath "+factory()->runStorage()+"/MadGraphAmplitudes " ;
+  std::system(cmd.c_str());
+    
+  
+  
+  
+  
 
   loadProcessMap();
 

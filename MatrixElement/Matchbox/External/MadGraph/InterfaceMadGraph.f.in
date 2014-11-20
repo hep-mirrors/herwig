@@ -1,18 +1,14 @@
-!MG_InitProc(proc,file_card) 
-!MG_Calculate_wavefunctions(proc, momenta,  hel)
-!MG_Calculate_wavefunctions_born(proc, momenta,  hel)
-!MG_Jamp(proc ,color,amp)
-!MG_Virt(proc ,amp)
-!MG_NCol(proc ,color)
-!MG_vxxxxx(p, n,inc,VC)
+!This file gets filled from mg2Matchbox.py
 !///////////////////////////////////////////////////////////////////////
 
 
-       subroutine MG_InitProc(proc) bind(c, name="MG_InitProc") 
+       subroutine MGInitProc(file_card,a)
          IMPLICIT NONE
-         INTEGER    proc
-MG_InitProctxt
-
+         INTEGER a
+         character(a) file_card
+         print*,"Reading inputs from: "
+         print*, TRIM(file_card)
+         CALL setpara(file_card)
        END
 
 !///////////////////////////////////////////////////////////////////////
