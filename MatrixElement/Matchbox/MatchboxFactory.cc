@@ -258,6 +258,12 @@ void MatchboxFactory::productionMode() {
   if ( inProductionMode )
     return;
 
+  if ( !bornContributions() && !virtualContributions() && !realContributions() )
+    throw Exception()
+      << "At least one cross section contribution needs to be enabled.\n"
+      << "Please check your setup.\n"
+      << Exception::abortnow;
+
   bool needTrueVirtuals =
     virtualContributions() && !meCorrectionsOnly() && !loopSimCorrections();
 
