@@ -556,6 +556,11 @@ public:
   void prepareME(Ptr<MatchboxMEBase>::ptr);
 
   /**
+   * Check consistency and switch to porduction mode.
+   */
+  void productionMode();
+
+  /**
    * Setup everything
    */
   virtual void setup();
@@ -1103,6 +1108,18 @@ private:
    * The directory to contain grid information.
    */
   string theRunStorage;
+
+  /**
+   * True, if this Factory is in production mode.
+   */
+  bool inProductionMode;
+
+  /**
+   * Command for production mode
+   */
+  string doProductionMode(string) {
+    productionMode(); return "";
+  }
 
 private:
 

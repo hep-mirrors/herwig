@@ -49,7 +49,8 @@ MatchboxFactory::MatchboxFactory()
     thePoleData(""), theRealEmissionScales(false), theAllProcesses(false),
   theMECorrectionsOnly(false), theLoopSimCorrections(false), ranSetup(false),
   theFirstPerturbativePDF(true), theSecondPerturbativePDF(true),
-  thePrefix("./Matchbox"), theBuildStorage(""), theRunStorage("") {}
+  thePrefix("./Matchbox"), theBuildStorage(""), theRunStorage(""),
+  inProductionMode(false) {}
 
 MatchboxFactory::~MatchboxFactory() {}
 
@@ -252,21 +253,62 @@ int MatchboxFactory::orderOLPProcess(const Process& proc,
   return id + 1;
 }
 
+void MatchboxFactory::productionMode() {
+
+  if ( inProductionMode )
+    return;
+
+  bool needTrueVirtuals =
+    virtualContributions() && !meCorrectionsOnly() && !loopSimCorrections();
+
+  for ( vector<Ptr<MatchboxAmplitude>::ptr>::iterator amp
+	  = amplitudes().begin(); amp != amplitudes().end(); ++amp ) {
+    if ( !needTrueVirtuals && (**amp).oneLoopAmplitude() ) {
+      Repository::clog() << "One-loop contributions from '"
+			 << (**amp).name()
+			 << "' are not required and will be disabled.\n"
+			 << flush;
+      (**amp).disableOneLoop();
+    }
+  }
+
+  if ( showerApproximation() && !virtualContributions() && !realContributions() ) {
+    Repository::clog() << "Warning: Matching requested for LO run. Matching disabled.\n" << flush;
+    showerApproximation(Ptr<ShowerApproximation>::tptr());
+  }
+  if ( showerApproximation() && (subtractionData() != "" || subProcessGroups()) ) {
+    Repository::clog() << "Warning: Matching requested for plain NLO run. Matching disabled.\n" << flush;
+    showerApproximation(Ptr<ShowerApproximation>::tptr());
+  }
+
+  inProductionMode = true;
+
+}
+
 void MatchboxFactory::setup() {
 
   useMe();
 
   if ( !ranSetup ) {
 
+    if ( !inProductionMode )
+      throw Exception() << "The MatchboxFactory object '"
+			<< name() << "' has not been switched to production mode.\n"
+			<< "Did you use 'do "
+			<< name() << "::ProductionMode' before isolating the event generator?\n"
+			<< Exception::abortnow;
+
     olpProcesses().clear();
     externalAmplitudes().clear();
     theHighestVirtualsize = 0;
     theIncoming.clear();
 
+    bool needTrueVirtuals =
+      virtualContributions() && !meCorrectionsOnly() && !loopSimCorrections();
+
     for ( vector<Ptr<MatchboxAmplitude>::ptr>::iterator amp
-	    = amplitudes().begin(); amp != amplitudes().end(); ++amp ) {
+	    = amplitudes().begin(); amp != amplitudes().end(); ++amp )
       (**amp).factory(this);
-    }
 
     if ( bornMEs().empty() ) {
 
@@ -285,40 +327,34 @@ void MatchboxFactory::setup() {
 	  assert((**p).id() == checkid);
 	}
 
-    const PDVector& partons = particleGroups()["j"];
-    unsigned int nl = 0;
-//     for ( PDVector::const_iterator p = partons.begin();
-// 	  p != partons.end(); ++p ) {
-//       if ( abs((**p).id()) < 6 )
-// 	++nl;
-//     }
-//     nLight(nl/2);
+      const PDVector& partons = particleGroups()["j"];
+      unsigned int nl = 0;
 
-    for ( PDVector::const_iterator p = partons.begin();
-	  p != partons.end(); ++p ) {
-      if ( abs((**p).id()) < 7 && (**p).mass() == ZERO )
-	++nl;
-      if ( (**p).id() > 0 && (**p).id() < 7 && (**p).mass() == ZERO )
-	nLightJetVec( (**p).id() );
-      if ( (**p).id() > 0 && (**p).id() < 7 && (**p).mass() != ZERO )
-	nHeavyJetVec( (**p).id() );
-    }
-    nLight(nl/2);
+      for ( PDVector::const_iterator p = partons.begin();
+	    p != partons.end(); ++p ) {
+	if ( abs((**p).id()) < 7 && (**p).mass() == ZERO )
+	  ++nl;
+	if ( (**p).id() > 0 && (**p).id() < 7 && (**p).mass() == ZERO )
+	  nLightJetVec( (**p).id() );
+	if ( (**p).id() > 0 && (**p).id() < 7 && (**p).mass() != ZERO )
+	  nHeavyJetVec( (**p).id() );
+      }
+      nLight(nl/2);
 
-    const PDVector& partonsInP = particleGroups()["p"];
-    for ( PDVector::const_iterator pip = partonsInP.begin();
-	  pip != partonsInP.end(); ++pip ) {
-      if ( (**pip).id() > 0 && (**pip).id() < 7 && (**pip).mass() == ZERO )
-	nLightProtonVec( (**pip).id() );
-    }
+      const PDVector& partonsInP = particleGroups()["p"];
+      for ( PDVector::const_iterator pip = partonsInP.begin();
+	    pip != partonsInP.end(); ++pip ) {
+	if ( (**pip).id() > 0 && (**pip).id() < 7 && (**pip).mass() == ZERO )
+	  nLightProtonVec( (**pip).id() );
+      }
 
       vector<Ptr<MatchboxMEBase>::ptr> mes;
       for ( vector<vector<string> >::const_iterator p = processes.begin();
 	    p != processes.end(); ++p ) {
-	if( virtualContributions() ) {
+	if( needTrueVirtuals ) {
 	  theHighestVirtualsize = max(theHighestVirtualsize,(int((*p).size())));
 	}
-	mes = makeMEs(*p,orderInAlphaS(),virtualContributions());
+	mes = makeMEs(*p,orderInAlphaS(),needTrueVirtuals);
 	copy(mes.begin(),mes.end(),back_inserter(bornMEs()));
 	if ( realContributions() && realEmissionMEs().empty() ) {
 	  if ( realEmissionProcesses.empty() ) {
@@ -375,13 +411,15 @@ void MatchboxFactory::setup() {
 	    = bornMEs().begin(); born != bornMEs().end(); ++born ) {
       prepareME(*born);
       haveVirtuals &= (**born).haveOneLoop();
-      if ( (**born).haveOneLoop() ) {
-	virtualsAreDRbar |= (**born).isDRbar();
-	virtualsAreDR |= (**born).isDR();
-	virtualsAreCDR |= !(**born).isDR();
-	virtualsAreCS |= (**born).isCS();
-	virtualsAreBDK |= (**born).isBDK();
-	virtualsAreExpanded |= (**born).isExpanded();
+      if ( needTrueVirtuals ) {
+	if ( (**born).haveOneLoop() ) {
+	  virtualsAreDRbar |= (**born).isDRbar();
+	  virtualsAreDR |= (**born).isDR();
+	  virtualsAreCDR |= !(**born).isDR();
+	  virtualsAreCS |= (**born).isCS();
+	  virtualsAreBDK |= (**born).isBDK();
+	  virtualsAreExpanded |= (**born).isExpanded();
+	}
       }
     }
 
@@ -391,54 +429,58 @@ void MatchboxFactory::setup() {
       prepareME(*looped);
     }
 
-    // check the additional insertion operators
-    if ( !virtuals().empty() )
-      haveVirtuals = true;    
-    for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt
-	    = virtuals().begin(); virt != virtuals().end(); ++virt ) {
-      virtualsAreDRbar |= (**virt).isDRbar();
-      virtualsAreDR |= (**virt).isDR();
-      virtualsAreCDR |= !(**virt).isDR();
-      virtualsAreCS |= (**virt).isCS();
-      virtualsAreBDK |= (**virt).isBDK();
-      virtualsAreExpanded |= (**virt).isExpanded();
-    }
+    if ( needTrueVirtuals ) {
 
-    // check for consistent conventions on virtuals, if we are to include them
-    if ( virtualContributions() ) {
-      if ( !haveVirtuals ) {
-	throw InitException() << "Could not find amplitudes for all virtual contributions needed.\n";
-      }
-      if ( virtualsAreDR && virtualsAreCDR ) {
-	throw InitException() << "Virtual corrections use inconsistent regularization schemes.\n";
-      }
-      if ( (virtualsAreCS && virtualsAreBDK) ||
-	   (virtualsAreCS && virtualsAreExpanded) ||
-	   (virtualsAreBDK && virtualsAreExpanded) ||
-	   (!virtualsAreCS && !virtualsAreBDK && !virtualsAreExpanded) ) {
-	throw InitException() << "Virtual corrections use inconsistent conventions on finite terms.\n";
-      }
-    }
-
-    // prepare dipole insertion operators
-    if ( virtualContributions() ) {
+      // check the additional insertion operators
+      if ( !virtuals().empty() )
+	haveVirtuals = true;    
       for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt
-	      = DipoleRepository::insertionOperators(dipoleSet()).begin(); 
-	    virt != DipoleRepository::insertionOperators(dipoleSet()).end(); ++virt ) {
-	(**virt).factory(this);
-	if ( virtualsAreDRbar )
-	  (**virt).useDRbar();
-	if ( virtualsAreDR )
-	  (**virt).useDR();
-	else
-	  (**virt).useCDR();
-	if ( virtualsAreCS )
-	  (**virt).useCS();
-	if ( virtualsAreBDK )
-	  (**virt).useBDK();
-	if ( virtualsAreExpanded )
-	  (**virt).useExpanded();
+	      = virtuals().begin(); virt != virtuals().end(); ++virt ) {
+	virtualsAreDRbar |= (**virt).isDRbar();
+	virtualsAreDR |= (**virt).isDR();
+	virtualsAreCDR |= !(**virt).isDR();
+	virtualsAreCS |= (**virt).isCS();
+	virtualsAreBDK |= (**virt).isBDK();
+	virtualsAreExpanded |= (**virt).isExpanded();
       }
+
+      // check for consistent conventions on virtuals, if we are to include them
+      if ( virtualContributions() ) {
+	if ( !haveVirtuals ) {
+	  throw InitException() << "Could not find amplitudes for all virtual contributions needed.\n";
+	}
+	if ( virtualsAreDR && virtualsAreCDR ) {
+	  throw InitException() << "Virtual corrections use inconsistent regularization schemes.\n";
+	}
+	if ( (virtualsAreCS && virtualsAreBDK) ||
+	     (virtualsAreCS && virtualsAreExpanded) ||
+	     (virtualsAreBDK && virtualsAreExpanded) ||
+	     (!virtualsAreCS && !virtualsAreBDK && !virtualsAreExpanded) ) {
+	  throw InitException() << "Virtual corrections use inconsistent conventions on finite terms.\n";
+	}
+      }
+
+      // prepare dipole insertion operators
+      if ( virtualContributions() ) {
+	for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt
+		= DipoleRepository::insertionOperators(dipoleSet()).begin(); 
+	      virt != DipoleRepository::insertionOperators(dipoleSet()).end(); ++virt ) {
+	  (**virt).factory(this);
+	  if ( virtualsAreDRbar )
+	    (**virt).useDRbar();
+	  if ( virtualsAreDR )
+	    (**virt).useDR();
+	  else
+	    (**virt).useCDR();
+	  if ( virtualsAreCS )
+	    (**virt).useCS();
+	  if ( virtualsAreBDK )
+	    (**virt).useBDK();
+	  if ( virtualsAreExpanded )
+	    (**virt).useExpanded();
+	}
+      }
+
     }
 
     // prepare the real emission matrix elements
@@ -517,7 +559,7 @@ void MatchboxFactory::setup() {
 
     }
 
-    if ( virtualContributions() && !meCorrectionsOnly() && !loopSimCorrections() ) {
+    if ( needTrueVirtuals ) {
 
       bornVirtualMEs().clear();
 
@@ -603,14 +645,6 @@ void MatchboxFactory::setup() {
 
     theSplittingDipoles.clear();
     set<cPDVector> bornProcs;
-    if ( showerApproximation() && !virtualContributions() && !realContributions() ) {
-      generator()->log() << "Warning: Matching requested for LO run. Matching disabled.\n" << flush;
-      showerApproximation(Ptr<ShowerApproximation>::tptr());
-    }
-    if ( showerApproximation() && (subtractionData() != "" || subProcessGroups()) ) {
-      generator()->log() << "Warning: Matching requested for plain NLO run. Matching disabled.\n" << flush;
-      showerApproximation(Ptr<ShowerApproximation>::tptr());
-    }
     if ( showerApproximation() ) {
       if ( showerApproximation()->needsSplittingGenerator() ) {
 	for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born
@@ -1073,7 +1107,7 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
      << theDipoleSet << theReweighters << thePreweighters
      << theMECorrectionsOnly<< theLoopSimCorrections<<theHighestVirtualsize << ranSetup
      << theIncoming << theFirstPerturbativePDF << theSecondPerturbativePDF
-     << thePrefix;
+     << thePrefix << inProductionMode;
 }
 
 void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
@@ -1099,7 +1133,7 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
      >> theDipoleSet >> theReweighters >> thePreweighters
      >> theMECorrectionsOnly>> theLoopSimCorrections>>theHighestVirtualsize >> ranSetup
      >> theIncoming >> theFirstPerturbativePDF >> theSecondPerturbativePDF
-     >> thePrefix;
+     >> thePrefix >> inProductionMode;
 }
 
 string MatchboxFactory::startParticleGroup(string name) {
@@ -1673,6 +1707,11 @@ void MatchboxFactory::Init() {
      "No",
      "",
      false);
+
+  static Command<MatchboxFactory> interfaceProductionMode
+    ("ProductionMode",
+     "Switch this factory to production mode.",
+     &MatchboxFactory::doProductionMode, false);
 
 }
 

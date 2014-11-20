@@ -49,6 +49,7 @@ void MatchboxHybridAmplitude::factory(Ptr<MatchboxFactory>::tptr f) {
 }
 
 bool MatchboxHybridAmplitude::isConsistent() const {
+  assert(oneLoopAmplitude());
   return
     !treeLevelAmplitude()->isOLPTree() &&
     !treeLevelAmplitude()->isOLPLoop() &&
@@ -66,10 +67,13 @@ void MatchboxHybridAmplitude::prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr me) {
 }
 
 void MatchboxHybridAmplitude::prepareOneLoopAmplitudes(Ptr<MatchboxMEBase>::tcptr me) {
+  assert(oneLoopAmplitude());
   oneLoopAmplitude()->prepareOneLoopAmplitudes(me);
 }
 
 double MatchboxHybridAmplitude::symmetryRatio() const {
+
+  assert(oneLoopAmplitude());
 
   double ifact = 1.;
   if ( treeLevelAmplitude()->hasInitialAverage() &&
@@ -197,9 +201,8 @@ void MatchboxHybridAmplitude::Init() {
 
   static Reference<MatchboxHybridAmplitude,MatchboxAmplitude> interfaceOneLoopAmplitude
     ("OneLoopAmplitude",
-     "Set the tree level amplitude to be used.",
-     &MatchboxHybridAmplitude::theOneLoopAmplitude, false, false, true, false, false);
-
+     "Set the one-loop amplitude to be used.",
+     &MatchboxHybridAmplitude::theOneLoopAmplitude, false, false, true, true, false);
 
   static Switch<MatchboxHybridAmplitude,bool> interfaceUseOLPCorrelators
     ("UseOLPCorrelators",

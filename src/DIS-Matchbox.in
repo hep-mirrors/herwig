@@ -256,5 +256,7 @@ set /Herwig/Generators/DISGenerator:EventHandler:CollisionCuts Off
 ## Save the generator
 ##################################################
 
+do /Herwig/MatrixElements/Matchbox/DISFactory:ProductionMode
+
 cd /Herwig/Generators
 saverun DIS-Matchbox DISGenerator

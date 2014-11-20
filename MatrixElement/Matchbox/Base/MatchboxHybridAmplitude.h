@@ -65,7 +65,7 @@ public:
   /**
    * Return the amplitude object to provide one-loop amplitudes.
    */
-  Ptr<MatchboxAmplitude>::tptr oneLoopAmplitude() const { return theOneLoopAmplitude; }
+  virtual Ptr<MatchboxAmplitude>::tptr oneLoopAmplitude() const { return theOneLoopAmplitude; }
 
   /**
    * Set the amplitude object to provide one-loop amplitudes.
@@ -122,7 +122,8 @@ public:
    */
   virtual void orderInGs(unsigned int n) {
     treeLevelAmplitude()->orderInGs(n);
-    oneLoopAmplitude()->orderInGs(n);
+    if ( oneLoopAmplitude() )
+      oneLoopAmplitude()->orderInGs(n);
   }
 
   /**
@@ -139,7 +140,8 @@ public:
    */
   virtual void orderInGem(unsigned int n) {
     treeLevelAmplitude()->orderInGem(n);
-    oneLoopAmplitude()->orderInGem(n);
+    if ( oneLoopAmplitude() )
+      oneLoopAmplitude()->orderInGem(n);
   }
 
   /**
@@ -175,6 +177,8 @@ public:
    * Return true, if this amplitude is handled by a BLHA one-loop provider
    */
   virtual bool isOLPLoop() const { 
+    if ( !oneLoopAmplitude() )
+      return false;
     return oneLoopAmplitude()->isOLPLoop();
   }
 
@@ -191,6 +195,7 @@ public:
    * implementation writes an BLHA 2.0 order file and starts the OLP
    */
   virtual bool startOLP(const map<pair<Process,int>,int>& procs) {
+    assert(oneLoopAmplitude());
     return oneLoopAmplitude()->startOLP(procs);
   }
 
@@ -254,7 +259,8 @@ public:
    */
   virtual void setXComb(tStdXCombPtr xc) {
     treeLevelAmplitude()->setXComb(xc);
-    oneLoopAmplitude()->setXComb(xc);
+    if ( oneLoopAmplitude() )
+      oneLoopAmplitude()->setXComb(xc);
     lastMatchboxXComb(xc);
   }
 
@@ -361,10 +367,15 @@ public:
   //@{
 
   /**
+   * Diasble one-loop functionality if not needed.
+   */
+  virtual void disableOneLoop() { oneLoopAmplitude(Ptr<MatchboxAmplitude>::ptr()); }
+
+  /**
    * Return true, if this amplitude is capable of calculating one-loop
    * (QCD) corrections.
    */
-  virtual bool haveOneLoop() const { return true; }
+  virtual bool haveOneLoop() const { return oneLoopAmplitude(); }
 
   /**
    * Return true, if this amplitude only provides
@@ -376,6 +387,7 @@ public:
    * Return true, if one-loop contributions will be evaluated at amplitude level.
    */
   virtual bool oneLoopAmplitudes() const { 
+    assert(oneLoopAmplitude());
     return oneLoopAmplitude()->oneLoopAmplitudes();
   }
 
@@ -384,6 +396,7 @@ public:
    * MSbar is assumed.
    */
   virtual bool isDRbar() const { 
+    assert(oneLoopAmplitude());
     return oneLoopAmplitude()->isDRbar();
   }
 
@@ -394,6 +407,7 @@ public:
    * assumed to be MSbar.
    */
   virtual bool isDR() const { 
+    assert(oneLoopAmplitude());
     return oneLoopAmplitude()->isDR();
   }
 
@@ -402,6 +416,7 @@ public:
    * of the integrated dipoles.
    */
   virtual bool isCS() const { 
+    assert(oneLoopAmplitude());
     return oneLoopAmplitude()->isCS();
   }
 
@@ -410,6 +425,7 @@ public:
    * of BDK.
    */
   virtual bool isBDK() const { 
+    assert(oneLoopAmplitude());
     return oneLoopAmplitude()->isBDK();
   }
 
@@ -418,6 +434,7 @@ public:
    * of everything expanded.
    */
   virtual bool isExpanded() const { 
+    assert(oneLoopAmplitude());
     return oneLoopAmplitude()->isExpanded();
   }
 
@@ -426,7 +443,8 @@ public:
    * parameter. Note that renormalization scale dependence is fully
    * restored in DipoleIOperator.
    */
-  virtual Energy2 mu2() const { 
+  virtual Energy2 mu2() const {
+    assert(oneLoopAmplitude()); 
     return oneLoopAmplitude()->mu2();
   }
 
@@ -440,6 +458,7 @@ public:
    * If defined, return the coefficient of the pole in epsilon^2
    */
   virtual double oneLoopDoublePole() const { 
+    assert(oneLoopAmplitude());
     return symmetryRatio()*oneLoopAmplitude()->oneLoopDoublePole();
   }
 
@@ -447,6 +466,7 @@ public:
    * If defined, return the coefficient of the pole in epsilon
    */
   virtual double oneLoopSinglePole() const { 
+    assert(oneLoopAmplitude());
     return symmetryRatio()*oneLoopAmplitude()->oneLoopSinglePole();
   }
 
@@ -460,6 +480,7 @@ public:
    * Return the one-loop/tree interference.
    */
   virtual double oneLoopInterference() const {
+    assert(oneLoopAmplitude());
     return symmetryRatio()*oneLoopAmplitude()->oneLoopInterference();
   }
 
@@ -468,6 +489,7 @@ public:
    * helicity assignment
    */
   virtual Complex evaluateOneLoop(size_t a, const vector<int>& hel) { 
+    assert(oneLoopAmplitude());
     return oneLoopAmplitude()->evaluateOneLoop(a,hel);
   }
 
@@ -481,7 +503,8 @@ public:
    */
   virtual void flushCaches() {
     treeLevelAmplitude()->flushCaches();
-    oneLoopAmplitude()->flushCaches();
+    if ( oneLoopAmplitude() )
+      oneLoopAmplitude()->flushCaches();
   }
 
   /**

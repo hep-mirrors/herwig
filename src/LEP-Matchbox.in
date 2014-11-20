@@ -231,5 +231,7 @@ set /Herwig/Generators/LEPGenerator:EventHandler:CollisionCuts Off
 ## Save the generator
 ##################################################
 
+do /Herwig/MatrixElements/Matchbox/EEFactory:ProductionMode
+
 cd /Herwig/Generators
 saverun LEP-Matchbox LEPGenerator

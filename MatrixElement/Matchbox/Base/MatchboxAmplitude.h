@@ -408,6 +408,18 @@ public:
   //@{
 
   /**
+   * Return the one-loop amplitude, if applicable.
+   */
+  virtual Ptr<MatchboxAmplitude>::tptr oneLoopAmplitude() const {
+    return Ptr<MatchboxAmplitude>::tptr();
+  }
+
+  /**
+   * Diasble one-loop functionality if not needed.
+   */
+  virtual void disableOneLoop() {}
+
+  /**
    * Return true, if this amplitude is capable of calculating one-loop
    * (QCD) corrections.
    */

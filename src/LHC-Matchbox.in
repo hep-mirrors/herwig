@@ -265,5 +265,7 @@ set /Herwig/Generators/LHCGenerator:EventHandler:CollisionCuts Off
 ## Save the generator
 ##################################################
 
+do /Herwig/MatrixElements/Matchbox/PPFactory:ProductionMode
+
 cd /Herwig/Generators
 saverun LHC-Matchbox LHCGenerator
