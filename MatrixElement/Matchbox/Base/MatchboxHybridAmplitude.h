@@ -101,7 +101,9 @@ public:
    * Return the number of random numbers required to evaluate this
    * amplitude at a fixed phase space point.
    */
-  virtual int nDimAdditional() const { 
+  virtual int nDimAdditional() const {
+    if ( !oneLoopAmplitude() )
+      return treeLevelAmplitude()->nDimAdditional();
     return
       treeLevelAmplitude()->nDimAdditional() ?
       treeLevelAmplitude()->nDimAdditional() :
