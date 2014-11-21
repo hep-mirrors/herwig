@@ -48,7 +48,7 @@ namespace bfs = boost::filesystem;
 
 
 GoSamAmplitude::GoSamAmplitude() {
-  theCodeExists=false;isitDR=false;thePrintParameter=true;theFormOpt=true;theNinja=true;
+  theCodeExists=false;isitDR=false;theFormOpt=true;theNinja=true;
 }
 
 GoSamAmplitude::~GoSamAmplitude() {}
@@ -286,14 +286,12 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
   // not yet considered.
 
   // print OLP parameters
-  if (thePrintParameter) {
-    string ppstr = gosamPath + "/" + name() + ".OLPParameters.lh";
-    char * ppchar = new char[ppstr.size()+1];
-    std::copy(ppstr.begin(),ppstr.end(),ppchar);
-    ppchar[ppstr.size()] = '\0';
-    OLP_PrintParameter(ppchar);
-    delete[] ppchar;
-  }
+  string ppstr = factory()->runStorage() + name() + ".OLPParameters.lh";
+  char * ppchar = new char[ppstr.size()+1];
+  std::copy(ppstr.begin(),ppstr.end(),ppchar);
+  ppchar[ppstr.size()] = '\0';
+  OLP_PrintParameter(ppchar);
+  delete[] ppchar;
 
   didStartOLP() = true;
 
@@ -645,8 +643,7 @@ void GoSamAmplitude::persistentOutput(PersistentOStream & os) const {
      << gosamSourcePath << gosamInstallPath << gosamSetupInFileName
      << orderFileTitle << contractFileTitle
      << contractFileName << orderFileName
-     << theCodeExists << theFormOpt << theNinja << isitDR << massiveParticles
-     << thePrintParameter;
+     << theCodeExists << theFormOpt << theNinja << isitDR << massiveParticles;
 }
 
 void GoSamAmplitude::persistentInput(PersistentIStream & is, int) {
@@ -655,8 +652,7 @@ void GoSamAmplitude::persistentInput(PersistentIStream & is, int) {
      >> gosamSourcePath >> gosamInstallPath >> gosamSetupInFileName
      >> orderFileTitle >> contractFileTitle
      >> contractFileName >> orderFileName
-     >> theCodeExists >> theFormOpt >> theNinja >> isitDR >> massiveParticles
-     >> thePrintParameter;
+     >> theCodeExists >> theFormOpt >> theNinja >> isitDR >> massiveParticles;
 }
 
 
@@ -715,22 +711,6 @@ void GoSamAmplitude::Init() {
           "Switch False.",
           false);
   
-  static Switch<GoSamAmplitude,bool> interfacePrintParameter
-         ("PrintParameter",
-          "Switch On if OLP parameters are to be printed into an output file"
-          "'GoSamAmplitude'.OLPParameters.lh, otherwise Off. Default is Off.",
-          &GoSamAmplitude::thePrintParameter, false, false, false);
-  static SwitchOption interfacePrintParameterOn
-         (interfacePrintParameter,
-          "On",
-          "On",
-          true);
-  static SwitchOption interfacePrintParameterOff
-         (interfacePrintParameter,
-          "Off",
-          "Off",
-          false);
-
   static Switch<GoSamAmplitude,bool> interfaceFormOpt
          ("FormOpt",
           "Switch On/Off formopt",

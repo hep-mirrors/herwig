@@ -273,11 +273,6 @@ private:
   vector<int> massiveParticles; //theMassiveParticles;
 
   /**
-   * Switch to print parameters
-   */
-  bool thePrintParameter;
-
-  /**
    * Method to create the setup.in file for GoSam
    */
   void setupGoSamIn(string setupGoSamInFile);
