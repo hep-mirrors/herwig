@@ -572,11 +572,11 @@ void MadGraphAmplitude::evaloneLoopInterference() const  {
 }
  
 void MadGraphAmplitude::persistentOutput(PersistentOStream & os) const {
-  os << theOrderInGs << theOrderInGem<<colourindex<<theMGmodel;
+  os << theOrderInGs << theOrderInGem<<colourindex<<theMGmodel << BornAmplitudes << VirtAmplitudes;
 }
  
 void MadGraphAmplitude::persistentInput(PersistentIStream & is, int) {
-  is >> theOrderInGs >> theOrderInGem>>colourindex>>theMGmodel;
+  is >> theOrderInGs >> theOrderInGem>>colourindex>>theMGmodel >> BornAmplitudes >> VirtAmplitudes;
 }
  
 // *** Attention *** The following static variable is needed for the type
