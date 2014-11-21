@@ -286,12 +286,10 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
   // not yet considered.
 
   // print OLP parameters
-  string ppstr = factory()->runStorage() + name() + ".OLPParameters.lh";
-  char * ppchar = new char[ppstr.size()+1];
-  std::copy(ppstr.begin(),ppstr.end(),ppchar);
-  ppchar[ppstr.size()] = '\0';
-  OLP_PrintParameter(ppchar);
-  delete[] ppchar;
+  if ( Debug::level > 1 ) {
+    string ppstr = factory()->runStorage() + name() + ".OLPParameters.lh";
+    OLP_PrintParameter(const_cast<char*>(ppstr.c_str()));
+  }
 
   didStartOLP() = true;
 
