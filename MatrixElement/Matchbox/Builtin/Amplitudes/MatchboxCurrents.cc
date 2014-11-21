@@ -78,13 +78,13 @@ const LorentzVector<Complex>& MatchboxCurrents::llbarLeftCurrent(int l,    int l
 
   if ( getCurrent(hash<0>(1,1,l,lHel,lbar,lbarHel)) ) {
     if ( lHel == 1 && lbarHel == 1 )
-      cacheCurrent(Complex(0.,1.)*plusCurrent(l,lbar));
+      cacheCurrent(Complex(0.,1.)*minusCurrent(l,lbar));
     if ( lHel == 1 && lbarHel == -1 )
-      cacheCurrent((Complex(0.,2.)*mass(lbar)/minusProduct(l,lbar))*momentum(l));
+      cacheCurrent((Complex(0.,2.)*mass(lbar)/plusProduct(l,lbar))*momentum(l));
     if ( lHel == -1 && lbarHel == 1 )
-      cacheCurrent((Complex(0.,-2.)*mass(l)/plusProduct(l,lbar))*momentum(lbar));
+      cacheCurrent((Complex(0.,-2.)*mass(l)/minusProduct(l,lbar))*momentum(lbar));
     if ( lHel == -1 && lbarHel == -1 )
-      cacheCurrent((Complex(0.,1.)*mass(l)*mass(lbar)/invariant(l,lbar))*plusCurrent(lbar,l));
+      cacheCurrent((Complex(0.,1.)*mass(l)*mass(lbar)/invariant(l,lbar))*minusCurrent(lbar,l));
   }
   return cachedCurrent();
     
@@ -95,13 +95,13 @@ const LorentzVector<Complex>& MatchboxCurrents::llbarRightCurrent(int l,    int 
     
   if ( getCurrent(hash<0>(2,1,l,lHel,lbar,lbarHel)) ) {
     if ( lHel == 1 && lbarHel == 1 )
-      cacheCurrent((Complex(0.,1.)*mass(l)*mass(lbar)/invariant(l,lbar))*plusCurrent(l,lbar));
+      cacheCurrent((Complex(0.,1.)*mass(l)*mass(lbar)/invariant(l,lbar))*minusCurrent(l,lbar));
     if ( lHel == 1 && lbarHel == -1 )
-      cacheCurrent((Complex(0.,-2.)*mass(l)/minusProduct(l,lbar))*momentum(lbar));
+      cacheCurrent((Complex(0.,-2.)*mass(l)/plusProduct(l,lbar))*momentum(lbar));
     if ( lHel == -1 && lbarHel == 1 )
-      cacheCurrent((Complex(0.,2.)*mass(lbar)/plusProduct(l,lbar))*momentum(l));
+      cacheCurrent((Complex(0.,2.)*mass(lbar)/minusProduct(l,lbar))*momentum(l));
     if ( lHel == -1 && lbarHel == -1 )
-      cacheCurrent(Complex(0.,1.)*plusCurrent(lbar,l));
+      cacheCurrent(Complex(0.,1.)*minusCurrent(lbar,l));
   }
   return cachedCurrent();
 
@@ -115,7 +115,7 @@ const LorentzVector<Complex>& MatchboxCurrents::qqbarLeftCurrent(int q,    int q
     return czero;
 
   if ( getCurrent(hash<1>(1,1,q,qHel,qbar,qbarHel)) ) {
-    cacheCurrent(Complex(0.,1.)*plusCurrent(q,qbar));
+    cacheCurrent(Complex(0.,1.)*minusCurrent(q,qbar));
   }
 #ifdef CHECK_MatchboxCurrents
   checkCurrent("qqbarLeftCurrent",cachedCurrent(),momentum(q)+momentum(qbar));
@@ -132,7 +132,7 @@ const LorentzVector<Complex>& MatchboxCurrents::qqbarRightCurrent(int q,    int 
     return czero;
 
   if ( getCurrent(hash<1>(2,1,q,qHel,qbar,qbarHel)) ) {
-    cacheCurrent(Complex(0.,1.)*plusCurrent(qbar,q));
+    cacheCurrent(Complex(0.,1.)*minusCurrent(qbar,q));
   }
 #ifdef CHECK_MatchboxCurrents
   checkCurrent("qqbarRightCurrent",cachedCurrent(),momentum(q)+momentum(qbar));
@@ -149,11 +149,11 @@ const LorentzVector<Complex>& MatchboxCurrents::qqbargLeftCurrent(int q,    int 
   if ( qHel != 1 || qbarHel != 1 )
     return czero;
 
-  if ( gHel == -1 ) {
+  if ( gHel == 1 ) {
     if ( getCurrent(hash<2>(1,1,q,qHel,qbar,qbarHel,g,gHel)) ) {
       cacheCurrent(Complex(0.,1.)*sqrt(2.)*
-		   ((plusProduct(q,qbar)/(plusProduct(q,g)*plusProduct(g,qbar)))*plusCurrent(q,qbar)
-		    +(1./plusProduct(g,qbar))*plusCurrent(q,g)));
+		   ((minusProduct(q,qbar)/(minusProduct(q,g)*minusProduct(g,qbar)))*minusCurrent(q,qbar)
+		    +(1./minusProduct(g,qbar))*minusCurrent(q,g)));
     }
 #ifdef CHECK_MatchboxCurrents
   checkCurrent("qqbargLeftCurrent",cachedCurrent(),momentum(q)+momentum(qbar)+momentum(g));
@@ -161,11 +161,11 @@ const LorentzVector<Complex>& MatchboxCurrents::qqbargLeftCurrent(int q,    int 
     return cachedCurrent();
   }
 
-  if ( gHel == 1 ) {
+  if ( gHel == -1 ) {
     if ( getCurrent(hash<2>(1,1,q,qHel,qbar,qbarHel,g,gHel)) ) {
       cacheCurrent(Complex(0.,-1.)*sqrt(2.)*
-		   ((minusProduct(q,qbar)/(minusProduct(q,g)*minusProduct(g,qbar)))*plusCurrent(q,qbar)
-		    +(1./minusProduct(q,g))*plusCurrent(g,qbar)));
+		   ((plusProduct(q,qbar)/(plusProduct(q,g)*plusProduct(g,qbar)))*minusCurrent(q,qbar)
+		    +(1./plusProduct(q,g))*minusCurrent(g,qbar)));
     }
 #ifdef CHECK_MatchboxCurrents
   checkCurrent("qqbargLeftCurrent",cachedCurrent(),momentum(q)+momentum(qbar)+momentum(g));
@@ -185,11 +185,11 @@ const LorentzVector<Complex>& MatchboxCurrents::qqbargRightCurrent(int q,    int
   if ( qHel != -1 || qbarHel != -1 )
     return czero;
 
-  if ( gHel == -1 ) {
+  if ( gHel == 1 ) {
     if ( getCurrent(hash<2>(2,1,q,qHel,qbar,qbarHel,g,gHel)) ) {
       cacheCurrent(Complex(0.,1.)*sqrt(2.)*
-		   ((plusProduct(q,qbar)/(plusProduct(q,g)*plusProduct(g,qbar)))*plusCurrent(qbar,q)
-		    +(1./plusProduct(q,g))*plusCurrent(qbar,g)));
+		   ((minusProduct(q,qbar)/(minusProduct(q,g)*minusProduct(g,qbar)))*minusCurrent(qbar,q)
+		    +(1./minusProduct(q,g))*minusCurrent(qbar,g)));
     }
 #ifdef CHECK_MatchboxCurrents
   checkCurrent("qqbargRightCurrent",cachedCurrent(),momentum(q)+momentum(qbar)+momentum(g));
@@ -197,11 +197,11 @@ const LorentzVector<Complex>& MatchboxCurrents::qqbargRightCurrent(int q,    int
     return cachedCurrent();
   }
 
-  if ( gHel == 1 ) {
+  if ( gHel == -1 ) {
     if ( getCurrent(hash<2>(2,1,q,qHel,qbar,qbarHel,g,gHel)) ) {
       cacheCurrent(Complex(0.,-1.)*sqrt(2.)*
-		   ((minusProduct(q,qbar)/(minusProduct(q,g)*minusProduct(g,qbar)))*plusCurrent(qbar,q)
-		    +(1./minusProduct(g,qbar))*plusCurrent(g,q)));
+		   ((plusProduct(q,qbar)/(plusProduct(q,g)*plusProduct(g,qbar)))*minusCurrent(qbar,q)
+		    +(1./plusProduct(g,qbar))*minusCurrent(g,q)));
     }
 #ifdef CHECK_MatchboxCurrents
   checkCurrent("qqbargRightCurrent",cachedCurrent(),momentum(q)+momentum(qbar)+momentum(g));
@@ -218,201 +218,201 @@ LorentzVector<Complex> MatchboxCurrents::qqbarggGeneralLeftCurrent(int i, int,
 								   int k, int g1Hel,
 								   int l, int g2Hel,
 								   int n) {
-  if ( g1Hel == -1 && g2Hel == -1 ) {
+  if ( g1Hel == 1 && g2Hel == 1 ) {
     return
-      (Complex(0,-2)*minusProduct(j,l)*minusProduct(k,l)*plusCurrent(i,k))/
+      (Complex(0,-2)*plusProduct(j,l)*plusProduct(k,l)*minusCurrent(i,k))/
       (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))) - 
-      (Complex(0,2)*minusProduct(j,l)*minusProduct(k,l)*plusCurrent(i,k))/
+      (Complex(0,2)*plusProduct(j,l)*plusProduct(k,l)*minusCurrent(i,k))/
       (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))) - 
-      (Complex(0,2)*minusProduct(j,k)*minusProduct(k,l)*plusCurrent(i,l))/
+      (Complex(0,2)*plusProduct(j,k)*plusProduct(k,l)*minusCurrent(i,l))/
       (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))) + 
-      (Complex(0,2)*minusProduct(i,l)*minusProduct(k,l)*plusCurrent(i,j)*plusProduct(i,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)) - 
-      (Complex(0,2)*minusProduct(i,k)*minusProduct(j,l)*plusCurrent(i,l)*plusProduct(i,n))/
-      (invariant(i,k)*invariant(j,l)*plusProduct(k,n)) + 
-      (Complex(0,2)*sqr(minusProduct(k,l))*plusCurrent(k,j)*plusProduct(i,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)) - 
-      (Complex(0,2)*minusProduct(j,l)*minusProduct(k,l)*plusCurrent(i,j)*plusProduct(j,n))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)) - 
-      (Complex(0,2)*minusProduct(j,l)*minusProduct(k,l)*plusCurrent(i,j)*plusProduct(j,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)) + 
-      (Complex(0,2)*minusProduct(j,k)*minusProduct(j,l)*plusCurrent(i,l)*plusProduct(j,n))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)) + 
-      (Complex(0,2)*minusProduct(i,k)*minusProduct(k,l)*plusCurrent(i,j)*plusProduct(i,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)) - 
-      (Complex(0,2)*sqr(minusProduct(k,l))*plusCurrent(l,j)*plusProduct(i,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)) - 
-      (Complex(0,2)*minusProduct(j,k)*minusProduct(k,l)*plusCurrent(i,j)*plusProduct(j,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)) + 
-      (Complex(0,2)*minusProduct(j,k)*minusProduct(j,l)*plusCurrent(i,k)*plusProduct(j,n))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)) + 
-      (Complex(0,2)*minusProduct(i,k)*minusProduct(i,l)*plusCurrent(i,j)*sqr(plusProduct(i,n)))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*plusProduct(l,n)) + 
-      (Complex(0,2)*minusProduct(i,k)*minusProduct(k,l)*plusCurrent(k,j)*sqr(plusProduct(i,n)))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*plusProduct(l,n)) - 
-      (Complex(0,2)*minusProduct(i,k)*minusProduct(j,l)*plusCurrent(i,j)*plusProduct(i,n)*plusProduct(j,n))/
-      (invariant(i,k)*invariant(j,l)*plusProduct(k,n)*plusProduct(l,n)) + 
-      (Complex(0,2)*minusProduct(j,k)*minusProduct(j,l)*plusCurrent(i,j)*sqr(plusProduct(j,n)))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*plusProduct(l,n)) - 
-      (Complex(0,2)*minusProduct(j,k)*minusProduct(k,l)*plusCurrent(i,k)*plusProduct(k,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)) - 
-      (Complex(0,2)*minusProduct(j,l)*minusProduct(k,l)*plusCurrent(i,l)*plusProduct(l,n))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)) - 
-      (Complex(0,2)*minusProduct(j,l)*minusProduct(k,l)*plusCurrent(i,l)*plusProduct(l,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n));
-  }
-
-  if ( g1Hel == -1 && g2Hel == 1 ) {
-    return
-      (Complex(0,-2)*minusProduct(j,k)*minusProduct(j,n)*plusCurrent(i,k)*plusProduct(j,l))/
+      (Complex(0,2)*plusProduct(i,l)*plusProduct(k,l)*minusCurrent(i,j)*minusProduct(i,n))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)) - 
+      (Complex(0,2)*plusProduct(i,k)*plusProduct(j,l)*minusCurrent(i,l)*minusProduct(i,n))/
+      (invariant(i,k)*invariant(j,l)*minusProduct(k,n)) + 
+      (Complex(0,2)*sqr(plusProduct(k,l))*minusCurrent(k,j)*minusProduct(i,n))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)) - 
+      (Complex(0,2)*plusProduct(j,l)*plusProduct(k,l)*minusCurrent(i,j)*minusProduct(j,n))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)) - 
+      (Complex(0,2)*plusProduct(j,l)*plusProduct(k,l)*minusCurrent(i,j)*minusProduct(j,n))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)) + 
+      (Complex(0,2)*plusProduct(j,k)*plusProduct(j,l)*minusCurrent(i,l)*minusProduct(j,n))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)) + 
+      (Complex(0,2)*plusProduct(i,k)*plusProduct(k,l)*minusCurrent(i,j)*minusProduct(i,n))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)) - 
+      (Complex(0,2)*sqr(plusProduct(k,l))*minusCurrent(l,j)*minusProduct(i,n))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)) - 
+      (Complex(0,2)*plusProduct(j,k)*plusProduct(k,l)*minusCurrent(i,j)*minusProduct(j,n))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(l,n)) + 
+      (Complex(0,2)*plusProduct(j,k)*plusProduct(j,l)*minusCurrent(i,k)*minusProduct(j,n))/
       (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(l,n)) + 
-      (Complex(0,2)*minusProduct(j,k)*minusProduct(k,n)*plusCurrent(i,k)*plusProduct(k,l))/
+      (Complex(0,2)*plusProduct(i,k)*plusProduct(i,l)*minusCurrent(i,j)*sqr(minusProduct(i,n)))/
+      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)*minusProduct(l,n)) + 
+      (Complex(0,2)*plusProduct(i,k)*plusProduct(k,l)*minusCurrent(k,j)*sqr(minusProduct(i,n)))/
+      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)*minusProduct(l,n)) - 
+      (Complex(0,2)*plusProduct(i,k)*plusProduct(j,l)*minusCurrent(i,j)*minusProduct(i,n)*minusProduct(j,n))/
+      (invariant(i,k)*invariant(j,l)*minusProduct(k,n)*minusProduct(l,n)) + 
+      (Complex(0,2)*plusProduct(j,k)*plusProduct(j,l)*minusCurrent(i,j)*sqr(minusProduct(j,n)))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)*minusProduct(l,n)) - 
+      (Complex(0,2)*plusProduct(j,k)*plusProduct(k,l)*minusCurrent(i,k)*minusProduct(k,n))/
       (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(l,n)) - 
-      (Complex(0,2)*minusProduct(i,k)*minusProduct(i,n)*plusCurrent(i,j)*plusProduct(i,l)*plusProduct(i,n))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)*plusProduct(k,n)) - 
-      (Complex(0,2)*minusProduct(i,k)*minusProduct(k,n)*plusCurrent(k,j)*plusProduct(i,l)*plusProduct(i,n))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)*plusProduct(k,n)) - 
-      (Complex(0,2)*minusProduct(i,k)*plusCurrent(l,j)*plusProduct(i,l)*plusProduct(i,n))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)) + 
-      (Complex(0,2)*minusProduct(i,k)*minusProduct(j,n)*plusCurrent(i,j)*plusProduct(i,n)*plusProduct(j,l))/
-      (invariant(i,k)*invariant(j,l)*minusProduct(l,n)*plusProduct(k,n)) - 
-      (Complex(0,2)*minusProduct(j,k)*minusProduct(j,n)*plusCurrent(i,j)*plusProduct(j,l)*plusProduct(j,n))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(l,n)*plusProduct(k,n)) - 
-      (Complex(0,2)*minusProduct(i,k)*minusProduct(k,n)*plusCurrent(i,j)*plusProduct(i,n)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)*plusProduct(k,n)) + 
-      (Complex(0,2)*minusProduct(k,l)*minusProduct(k,n)*plusCurrent(l,j)*plusProduct(i,n)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)*plusProduct(k,n)) + 
-      (Complex(0,2)*minusProduct(j,k)*minusProduct(k,n)*plusCurrent(i,j)*plusProduct(j,n)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(l,n)*plusProduct(k,n)) - 
-      (Complex(0,1)*minusProduct(i,k)*minusProduct(k,n)*plusCurrent(i,j)*plusProduct(i,k)*plusProduct(l,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)*plusProduct(k,n)) + 
-      (Complex(0,1)*minusProduct(k,l)*minusProduct(k,n)*plusCurrent(l,j)*plusProduct(i,k)*plusProduct(l,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)*plusProduct(k,n)) - 
-      (Complex(0,2)*minusProduct(i,n)*minusProduct(k,l)*plusCurrent(i,j)*plusProduct(i,l)*plusProduct(l,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)*plusProduct(k,n)) + 
-      (Complex(0,1)*minusProduct(i,l)*minusProduct(k,n)*plusCurrent(i,j)*plusProduct(i,l)*plusProduct(l,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)*plusProduct(k,n)) - 
-      (Complex(0,1)*minusProduct(k,l)*minusProduct(k,n)*plusCurrent(k,j)*plusProduct(i,l)*plusProduct(l,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)*plusProduct(k,n)) - 
-      (Complex(0,2)*minusProduct(k,l)*plusCurrent(l,j)*plusProduct(i,l)*plusProduct(l,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)) + 
-      (Complex(0,1)*minusProduct(j,k)*minusProduct(k,n)*plusCurrent(i,j)*plusProduct(j,k)*plusProduct(l,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(l,n)*plusProduct(k,n)) + 
-      (Complex(0,2)*minusProduct(j,n)*minusProduct(k,l)*plusCurrent(i,j)*plusProduct(j,l)*plusProduct(l,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(l,n)*plusProduct(k,n)) - 
-      (Complex(0,1)*minusProduct(j,l)*minusProduct(k,n)*plusCurrent(i,j)*plusProduct(j,l)*plusProduct(l,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(l,n)*plusProduct(k,n)) - 
-      (Complex(0,2)*minusProduct(j,k)*minusProduct(j,n)*plusCurrent(i,l)*plusProduct(j,l)*plusProduct(l,n))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(l,n)*plusProduct(k,n)) + 
-      (Complex(0,2)*minusProduct(j,n)*minusProduct(k,l)*plusCurrent(i,k)*plusProduct(k,l)*plusProduct(l,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(l,n)*plusProduct(k,n)) - 
-      (Complex(0,1)*minusProduct(j,l)*minusProduct(k,n)*plusCurrent(i,k)*plusProduct(k,l)*plusProduct(l,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(l,n)*plusProduct(k,n)) + 
-      (Complex(0,1)*minusProduct(j,k)*minusProduct(k,n)*plusCurrent(i,l)*plusProduct(k,l)*plusProduct(l,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(l,n)*plusProduct(k,n));
+      (Complex(0,2)*plusProduct(j,l)*plusProduct(k,l)*minusCurrent(i,l)*minusProduct(l,n))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)) - 
+      (Complex(0,2)*plusProduct(j,l)*plusProduct(k,l)*minusCurrent(i,l)*minusProduct(l,n))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n));
   }
 
   if ( g1Hel == 1 && g2Hel == -1 ) {
     return
-      (Complex(0,2)*minusProduct(i,n)*minusProduct(j,l)*plusCurrent(i,l)*plusProduct(i,k))/
-      (invariant(i,k)*invariant(j,l)*minusProduct(k,n)) + 
-      (Complex(0,2)*minusProduct(j,l)*plusCurrent(k,l)*plusProduct(i,k))/(invariant(i,k)*invariant(j,l)) - 
-      (Complex(0,2)*minusProduct(j,l)*minusProduct(l,n)*plusCurrent(i,j)*plusProduct(j,k))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)) + 
-      (Complex(0,2)*minusProduct(j,l)*minusProduct(l,n)*plusCurrent(i,l)*plusProduct(k,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)) + 
-      (Complex(0,2)*minusProduct(j,l)*minusProduct(l,n)*plusCurrent(i,l)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)) - 
-      (Complex(0,2)*minusProduct(i,l)*minusProduct(i,n)*plusCurrent(i,j)*plusProduct(i,k)*plusProduct(i,n))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)*plusProduct(l,n)) - 
-      (Complex(0,2)*minusProduct(i,n)*minusProduct(k,l)*plusCurrent(k,j)*plusProduct(i,k)*plusProduct(i,n))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)*plusProduct(l,n)) + 
-      (Complex(0,2)*minusProduct(i,n)*minusProduct(j,l)*plusCurrent(i,j)*plusProduct(i,k)*plusProduct(j,n))/
-      (invariant(i,k)*invariant(j,l)*minusProduct(k,n)*plusProduct(l,n)) + 
-      (Complex(0,2)*minusProduct(j,l)*plusCurrent(k,j)*plusProduct(i,k)*plusProduct(j,n))/
-      (invariant(i,k)*invariant(j,l)*plusProduct(l,n)) - 
-      (Complex(0,2)*minusProduct(j,l)*minusProduct(j,n)*plusCurrent(i,j)*plusProduct(j,k)*plusProduct(j,n))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)*plusProduct(l,n)) - 
-      (Complex(0,2)*minusProduct(i,l)*minusProduct(l,n)*plusCurrent(i,j)*plusProduct(i,n)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)*plusProduct(l,n)) - 
-      (Complex(0,2)*minusProduct(k,l)*minusProduct(l,n)*plusCurrent(k,j)*plusProduct(i,n)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)*plusProduct(l,n)) + 
-      (Complex(0,2)*minusProduct(j,l)*minusProduct(l,n)*plusCurrent(i,j)*plusProduct(j,n)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)*plusProduct(l,n)) + 
-      (Complex(0,2)*minusProduct(j,l)*minusProduct(j,n)*plusCurrent(i,l)*plusProduct(j,n)*plusProduct(k,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)*plusProduct(l,n)) - 
-      (Complex(0,2)*minusProduct(i,l)*plusCurrent(i,j)*plusProduct(i,k)*plusProduct(k,n))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)) - 
-      (Complex(0,2)*minusProduct(i,n)*minusProduct(k,l)*plusCurrent(i,j)*plusProduct(i,k)*plusProduct(k,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)*plusProduct(l,n)) - 
-      (Complex(0,1)*minusProduct(i,k)*minusProduct(l,n)*plusCurrent(i,j)*plusProduct(i,k)*plusProduct(k,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)*plusProduct(l,n)) - 
-      (Complex(0,2)*minusProduct(k,l)*plusCurrent(k,j)*plusProduct(i,k)*plusProduct(k,n))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)) - 
-      (Complex(0,2)*minusProduct(k,l)*plusCurrent(k,j)*plusProduct(i,k)*plusProduct(k,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)) - 
-      (Complex(0,1)*minusProduct(k,l)*minusProduct(l,n)*plusCurrent(l,j)*plusProduct(i,k)*plusProduct(k,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)*plusProduct(l,n)) + 
-      (Complex(0,1)*minusProduct(i,l)*minusProduct(l,n)*plusCurrent(i,j)*plusProduct(i,l)*plusProduct(k,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)*plusProduct(l,n)) + 
-      (Complex(0,1)*minusProduct(k,l)*minusProduct(l,n)*plusCurrent(k,j)*plusProduct(i,l)*plusProduct(k,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)*plusProduct(l,n)) + 
-      (Complex(0,2)*minusProduct(j,n)*minusProduct(k,l)*plusCurrent(i,j)*plusProduct(j,k)*plusProduct(k,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)*plusProduct(l,n)) + 
-      (Complex(0,1)*minusProduct(j,k)*minusProduct(l,n)*plusCurrent(i,j)*plusProduct(j,k)*plusProduct(k,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)*plusProduct(l,n)) - 
-      (Complex(0,1)*minusProduct(j,l)*minusProduct(l,n)*plusCurrent(i,j)*plusProduct(j,l)*plusProduct(k,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)*plusProduct(l,n)) + 
-      (Complex(0,1)*minusProduct(j,l)*minusProduct(l,n)*plusCurrent(i,k)*plusProduct(k,l)*plusProduct(k,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)*plusProduct(l,n)) - 
-      (Complex(0,2)*minusProduct(j,n)*minusProduct(k,l)*plusCurrent(i,l)*plusProduct(k,l)*plusProduct(k,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)*plusProduct(l,n)) - 
-      (Complex(0,1)*minusProduct(j,k)*minusProduct(l,n)*plusCurrent(i,l)*plusProduct(k,l)*plusProduct(k,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)*plusProduct(l,n));
+      (Complex(0,-2)*plusProduct(j,k)*plusProduct(j,n)*minusCurrent(i,k)*minusProduct(j,l))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)) + 
+      (Complex(0,2)*plusProduct(j,k)*plusProduct(k,n)*minusCurrent(i,k)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)) - 
+      (Complex(0,2)*plusProduct(i,k)*plusProduct(i,n)*minusCurrent(i,j)*minusProduct(i,l)*minusProduct(i,n))/
+      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (Complex(0,2)*plusProduct(i,k)*plusProduct(k,n)*minusCurrent(k,j)*minusProduct(i,l)*minusProduct(i,n))/
+      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (Complex(0,2)*plusProduct(i,k)*minusCurrent(l,j)*minusProduct(i,l)*minusProduct(i,n))/
+      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)) + 
+      (Complex(0,2)*plusProduct(i,k)*plusProduct(j,n)*minusCurrent(i,j)*minusProduct(i,n)*minusProduct(j,l))/
+      (invariant(i,k)*invariant(j,l)*plusProduct(l,n)*minusProduct(k,n)) - 
+      (Complex(0,2)*plusProduct(j,k)*plusProduct(j,n)*minusCurrent(i,j)*minusProduct(j,l)*minusProduct(j,n))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (Complex(0,2)*plusProduct(i,k)*plusProduct(k,n)*minusCurrent(i,j)*minusProduct(i,n)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) + 
+      (Complex(0,2)*plusProduct(k,l)*plusProduct(k,n)*minusCurrent(l,j)*minusProduct(i,n)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) + 
+      (Complex(0,2)*plusProduct(j,k)*plusProduct(k,n)*minusCurrent(i,j)*minusProduct(j,n)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (Complex(0,1)*plusProduct(i,k)*plusProduct(k,n)*minusCurrent(i,j)*minusProduct(i,k)*minusProduct(l,n))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) + 
+      (Complex(0,1)*plusProduct(k,l)*plusProduct(k,n)*minusCurrent(l,j)*minusProduct(i,k)*minusProduct(l,n))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (Complex(0,2)*plusProduct(i,n)*plusProduct(k,l)*minusCurrent(i,j)*minusProduct(i,l)*minusProduct(l,n))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) + 
+      (Complex(0,1)*plusProduct(i,l)*plusProduct(k,n)*minusCurrent(i,j)*minusProduct(i,l)*minusProduct(l,n))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (Complex(0,1)*plusProduct(k,l)*plusProduct(k,n)*minusCurrent(k,j)*minusProduct(i,l)*minusProduct(l,n))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (Complex(0,2)*plusProduct(k,l)*minusCurrent(l,j)*minusProduct(i,l)*minusProduct(l,n))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)) + 
+      (Complex(0,1)*plusProduct(j,k)*plusProduct(k,n)*minusCurrent(i,j)*minusProduct(j,k)*minusProduct(l,n))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) + 
+      (Complex(0,2)*plusProduct(j,n)*plusProduct(k,l)*minusCurrent(i,j)*minusProduct(j,l)*minusProduct(l,n))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (Complex(0,1)*plusProduct(j,l)*plusProduct(k,n)*minusCurrent(i,j)*minusProduct(j,l)*minusProduct(l,n))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (Complex(0,2)*plusProduct(j,k)*plusProduct(j,n)*minusCurrent(i,l)*minusProduct(j,l)*minusProduct(l,n))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) + 
+      (Complex(0,2)*plusProduct(j,n)*plusProduct(k,l)*minusCurrent(i,k)*minusProduct(k,l)*minusProduct(l,n))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (Complex(0,1)*plusProduct(j,l)*plusProduct(k,n)*minusCurrent(i,k)*minusProduct(k,l)*minusProduct(l,n))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) + 
+      (Complex(0,1)*plusProduct(j,k)*plusProduct(k,n)*minusCurrent(i,l)*minusProduct(k,l)*minusProduct(l,n))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n));
   }
 
-  if ( g1Hel == 1 && g2Hel == 1 ) {
+  if ( g1Hel == -1 && g2Hel == 1 ) {
     return
-      (Complex(0,2)*sqr(minusProduct(i,n))*plusCurrent(i,j)*plusProduct(i,k)*plusProduct(i,l))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)*minusProduct(l,n)) + 
-      (Complex(0,2)*minusProduct(i,n)*plusCurrent(k,j)*plusProduct(i,k)*plusProduct(i,l))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)) + 
-      (Complex(0,2)*minusProduct(i,n)*plusCurrent(l,j)*plusProduct(i,k)*plusProduct(i,l))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)) - 
-      (Complex(0,2)*minusProduct(i,n)*minusProduct(j,n)*plusCurrent(i,j)*plusProduct(i,k)*plusProduct(j,l))/
-      (invariant(i,k)*invariant(j,l)*minusProduct(k,n)*minusProduct(l,n)) - 
-      (Complex(0,2)*minusProduct(j,n)*plusCurrent(k,j)*plusProduct(i,k)*plusProduct(j,l))/
-      (invariant(i,k)*invariant(j,l)*minusProduct(l,n)) + 
-      (Complex(0,2)*sqr(minusProduct(j,n))*plusCurrent(i,j)*plusProduct(j,k)*plusProduct(j,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)*minusProduct(l,n)) + 
-      (Complex(0,2)*minusProduct(i,n)*plusCurrent(i,j)*plusProduct(i,k)*plusProduct(k,l))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)) + 
-      (Complex(0,2)*minusProduct(i,n)*plusCurrent(i,j)*plusProduct(i,k)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)) + 
-      (Complex(0,2)*minusProduct(k,n)*plusCurrent(k,j)*plusProduct(i,k)*plusProduct(k,l))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)) + 
-      (Complex(0,2)*minusProduct(k,n)*plusCurrent(k,j)*plusProduct(i,k)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)) + 
-      (Complex(0,2)*plusCurrent(l,j)*plusProduct(i,k)*plusProduct(k,l))/
+      (Complex(0,2)*plusProduct(i,n)*plusProduct(j,l)*minusCurrent(i,l)*minusProduct(i,k))/
+      (invariant(i,k)*invariant(j,l)*plusProduct(k,n)) + 
+      (Complex(0,2)*plusProduct(j,l)*minusCurrent(k,l)*minusProduct(i,k))/(invariant(i,k)*invariant(j,l)) - 
+      (Complex(0,2)*plusProduct(j,l)*plusProduct(l,n)*minusCurrent(i,j)*minusProduct(j,k))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)) + 
+      (Complex(0,2)*plusProduct(j,l)*plusProduct(l,n)*minusCurrent(i,l)*minusProduct(k,l))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)) + 
+      (Complex(0,2)*plusProduct(j,l)*plusProduct(l,n)*minusCurrent(i,l)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)) - 
+      (Complex(0,2)*plusProduct(i,l)*plusProduct(i,n)*minusCurrent(i,j)*minusProduct(i,k)*minusProduct(i,n))/
+      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) - 
+      (Complex(0,2)*plusProduct(i,n)*plusProduct(k,l)*minusCurrent(k,j)*minusProduct(i,k)*minusProduct(i,n))/
+      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) + 
+      (Complex(0,2)*plusProduct(i,n)*plusProduct(j,l)*minusCurrent(i,j)*minusProduct(i,k)*minusProduct(j,n))/
+      (invariant(i,k)*invariant(j,l)*plusProduct(k,n)*minusProduct(l,n)) + 
+      (Complex(0,2)*plusProduct(j,l)*minusCurrent(k,j)*minusProduct(i,k)*minusProduct(j,n))/
+      (invariant(i,k)*invariant(j,l)*minusProduct(l,n)) - 
+      (Complex(0,2)*plusProduct(j,l)*plusProduct(j,n)*minusCurrent(i,j)*minusProduct(j,k)*minusProduct(j,n))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) - 
+      (Complex(0,2)*plusProduct(i,l)*plusProduct(l,n)*minusCurrent(i,j)*minusProduct(i,n)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) - 
+      (Complex(0,2)*plusProduct(k,l)*plusProduct(l,n)*minusCurrent(k,j)*minusProduct(i,n)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) + 
+      (Complex(0,2)*plusProduct(j,l)*plusProduct(l,n)*minusCurrent(i,j)*minusProduct(j,n)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) + 
+      (Complex(0,2)*plusProduct(j,l)*plusProduct(j,n)*minusCurrent(i,l)*minusProduct(j,n)*minusProduct(k,l))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) - 
+      (Complex(0,2)*plusProduct(i,l)*minusCurrent(i,j)*minusProduct(i,k)*minusProduct(k,n))/
+      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)) - 
+      (Complex(0,2)*plusProduct(i,n)*plusProduct(k,l)*minusCurrent(i,j)*minusProduct(i,k)*minusProduct(k,n))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) - 
+      (Complex(0,1)*plusProduct(i,k)*plusProduct(l,n)*minusCurrent(i,j)*minusProduct(i,k)*minusProduct(k,n))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) - 
+      (Complex(0,2)*plusProduct(k,l)*minusCurrent(k,j)*minusProduct(i,k)*minusProduct(k,n))/
+      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)) - 
+      (Complex(0,2)*plusProduct(k,l)*minusCurrent(k,j)*minusProduct(i,k)*minusProduct(k,n))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)) - 
+      (Complex(0,1)*plusProduct(k,l)*plusProduct(l,n)*minusCurrent(l,j)*minusProduct(i,k)*minusProduct(k,n))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) + 
+      (Complex(0,1)*plusProduct(i,l)*plusProduct(l,n)*minusCurrent(i,j)*minusProduct(i,l)*minusProduct(k,n))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) + 
+      (Complex(0,1)*plusProduct(k,l)*plusProduct(l,n)*minusCurrent(k,j)*minusProduct(i,l)*minusProduct(k,n))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) + 
+      (Complex(0,2)*plusProduct(j,n)*plusProduct(k,l)*minusCurrent(i,j)*minusProduct(j,k)*minusProduct(k,n))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) + 
+      (Complex(0,1)*plusProduct(j,k)*plusProduct(l,n)*minusCurrent(i,j)*minusProduct(j,k)*minusProduct(k,n))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) - 
+      (Complex(0,1)*plusProduct(j,l)*plusProduct(l,n)*minusCurrent(i,j)*minusProduct(j,l)*minusProduct(k,n))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) + 
+      (Complex(0,1)*plusProduct(j,l)*plusProduct(l,n)*minusCurrent(i,k)*minusProduct(k,l)*minusProduct(k,n))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) - 
+      (Complex(0,2)*plusProduct(j,n)*plusProduct(k,l)*minusCurrent(i,l)*minusProduct(k,l)*minusProduct(k,n))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) - 
+      (Complex(0,1)*plusProduct(j,k)*plusProduct(l,n)*minusCurrent(i,l)*minusProduct(k,l)*minusProduct(k,n))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n));
+  }
+
+  if ( g1Hel == -1 && g2Hel == -1 ) {
+    return
+      (Complex(0,2)*sqr(plusProduct(i,n))*minusCurrent(i,j)*minusProduct(i,k)*minusProduct(i,l))/
+      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*plusProduct(l,n)) + 
+      (Complex(0,2)*plusProduct(i,n)*minusCurrent(k,j)*minusProduct(i,k)*minusProduct(i,l))/
+      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)) + 
+      (Complex(0,2)*plusProduct(i,n)*minusCurrent(l,j)*minusProduct(i,k)*minusProduct(i,l))/
+      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)) - 
+      (Complex(0,2)*plusProduct(i,n)*plusProduct(j,n)*minusCurrent(i,j)*minusProduct(i,k)*minusProduct(j,l))/
+      (invariant(i,k)*invariant(j,l)*plusProduct(k,n)*plusProduct(l,n)) - 
+      (Complex(0,2)*plusProduct(j,n)*minusCurrent(k,j)*minusProduct(i,k)*minusProduct(j,l))/
+      (invariant(i,k)*invariant(j,l)*plusProduct(l,n)) + 
+      (Complex(0,2)*sqr(plusProduct(j,n))*minusCurrent(i,j)*minusProduct(j,k)*minusProduct(j,l))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*plusProduct(l,n)) + 
+      (Complex(0,2)*plusProduct(i,n)*minusCurrent(i,j)*minusProduct(i,k)*minusProduct(k,l))/
+      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)) + 
+      (Complex(0,2)*plusProduct(i,n)*minusCurrent(i,j)*minusProduct(i,k)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)) + 
+      (Complex(0,2)*plusProduct(k,n)*minusCurrent(k,j)*minusProduct(i,k)*minusProduct(k,l))/
+      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)) + 
+      (Complex(0,2)*plusProduct(k,n)*minusCurrent(k,j)*minusProduct(i,k)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)) + 
+      (Complex(0,2)*minusCurrent(l,j)*minusProduct(i,k)*minusProduct(k,l))/
       (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))) + 
-      (Complex(0,2)*plusCurrent(l,j)*plusProduct(i,k)*plusProduct(k,l))/
+      (Complex(0,2)*minusCurrent(l,j)*minusProduct(i,k)*minusProduct(k,l))/
       (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))) + 
-      (Complex(0,2)*minusProduct(i,n)*plusCurrent(i,j)*plusProduct(i,l)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)) + 
-      (Complex(0,2)*plusCurrent(k,j)*plusProduct(i,l)*plusProduct(k,l))/
+      (Complex(0,2)*plusProduct(i,n)*minusCurrent(i,j)*minusProduct(i,l)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)) + 
+      (Complex(0,2)*minusCurrent(k,j)*minusProduct(i,l)*minusProduct(k,l))/
       (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))) + 
-      (Complex(0,2)*minusProduct(l,n)*plusCurrent(l,j)*plusProduct(i,l)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)) - 
-      (Complex(0,2)*minusProduct(j,n)*plusCurrent(i,j)*plusProduct(j,k)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(l,n)) - 
-      (Complex(0,2)*minusProduct(j,n)*plusCurrent(i,j)*plusProduct(j,l)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)) - 
-      (Complex(0,2)*sqr(minusProduct(j,n))*plusCurrent(i,l)*plusProduct(j,l)*plusProduct(k,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)*minusProduct(l,n)) - 
-      (Complex(0,2)*minusProduct(j,n)*plusCurrent(i,k)*sqr(plusProduct(k,l)))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)) + 
-      (Complex(0,2)*minusProduct(j,n)*plusCurrent(i,l)*sqr(plusProduct(k,l)))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(l,n));
+      (Complex(0,2)*plusProduct(l,n)*minusCurrent(l,j)*minusProduct(i,l)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)) - 
+      (Complex(0,2)*plusProduct(j,n)*minusCurrent(i,j)*minusProduct(j,k)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)) - 
+      (Complex(0,2)*plusProduct(j,n)*minusCurrent(i,j)*minusProduct(j,l)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)) - 
+      (Complex(0,2)*sqr(plusProduct(j,n))*minusCurrent(i,l)*minusProduct(j,l)*minusProduct(k,l))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*plusProduct(l,n)) - 
+      (Complex(0,2)*plusProduct(j,n)*minusCurrent(i,k)*sqr(minusProduct(k,l)))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)) + 
+      (Complex(0,2)*plusProduct(j,n)*minusCurrent(i,l)*sqr(minusProduct(k,l)))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n));
   }
 
   static LorentzVector<Complex> czero(0.,0.,0.,0.);
@@ -425,143 +425,143 @@ LorentzVector<Complex> MatchboxCurrents::qqbarggFixedLeftCurrent(int i, int,
 								 int k, int g1Hel,
 								 int l, int g2Hel) {
 
-  if ( g1Hel == -1 && g2Hel == -1 ) {
+  if ( g1Hel == 1 && g2Hel == 1 ) {
     return
-      (Complex(0,-2)*minusProduct(j,l)*minusProduct(k,l)*plusCurrent(i,k))/
+      (Complex(0,-2)*plusProduct(j,l)*plusProduct(k,l)*minusCurrent(i,k))/
       (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))) - 
-      (Complex(0,2)*minusProduct(j,l)*minusProduct(k,l)*plusCurrent(i,k))/
+      (Complex(0,2)*plusProduct(j,l)*plusProduct(k,l)*minusCurrent(i,k))/
       (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))) - 
-      (Complex(0,2)*minusProduct(j,k)*minusProduct(k,l)*plusCurrent(i,l))/
+      (Complex(0,2)*plusProduct(j,k)*plusProduct(k,l)*minusCurrent(i,l))/
       (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))) - 
-      (Complex(0,2)*minusProduct(j,l)*minusProduct(k,l)*plusCurrent(i,j)*plusProduct(i,j))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)) - 
-      (Complex(0,2)*minusProduct(j,l)*minusProduct(k,l)*plusCurrent(i,j)*plusProduct(i,j))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)) + 
-      (Complex(0,2)*minusProduct(j,k)*minusProduct(j,l)*plusCurrent(i,l)*plusProduct(i,j))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)) - 
-      (Complex(0,2)*minusProduct(j,k)*minusProduct(k,l)*plusCurrent(i,j)*plusProduct(i,j))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)) + 
-      (Complex(0,2)*minusProduct(j,k)*minusProduct(j,l)*plusCurrent(i,k)*plusProduct(i,j))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)) + 
-      (Complex(0,2)*minusProduct(j,k)*minusProduct(j,l)*plusCurrent(i,j)*sqr(plusProduct(i,j)))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*plusProduct(i,l)) - 
-      (Complex(0,2)*minusProduct(j,k)*minusProduct(k,l)*plusCurrent(i,k)*plusProduct(i,k))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)) - 
-      (Complex(0,2)*minusProduct(j,l)*minusProduct(k,l)*plusCurrent(i,l)*plusProduct(i,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)) - 
-      (Complex(0,2)*minusProduct(j,l)*minusProduct(k,l)*plusCurrent(i,l)*plusProduct(i,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k));
-  }
-
-  if ( g1Hel == -1 && g2Hel == 1 ) {
-    return
-      (Complex(0,-1)*sqr(minusProduct(i,k))*plusCurrent(i,j)*plusProduct(i,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,l)) + 
-      (Complex(0,1)*minusProduct(i,k)*minusProduct(k,l)*plusCurrent(l,j)*plusProduct(i,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,l)) + 
-      (Complex(0,1)*minusProduct(i,k)*plusCurrent(i,j)*sqr(plusProduct(i,l)))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,k)) - 
-      (Complex(0,1)*minusProduct(i,k)*minusProduct(k,l)*plusCurrent(k,j)*sqr(plusProduct(i,l)))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,l)*plusProduct(i,k)) - 
-      (Complex(0,2)*minusProduct(k,l)*plusCurrent(l,j)*sqr(plusProduct(i,l)))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,k)) + 
-      (Complex(0,1)*minusProduct(i,k)*minusProduct(j,k)*plusCurrent(i,j)*plusProduct(i,l)*plusProduct(j,k))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l)*plusProduct(i,k)) - 
-      (Complex(0,2)*minusProduct(i,j)*minusProduct(j,k)*plusCurrent(i,k)*plusProduct(j,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l)) - 
-      (Complex(0,2)*minusProduct(i,j)*minusProduct(j,k)*plusCurrent(i,j)*plusProduct(i,j)*plusProduct(j,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l)*plusProduct(i,k)) - 
-      (Complex(0,1)*minusProduct(i,k)*minusProduct(j,l)*plusCurrent(i,j)*plusProduct(i,l)*plusProduct(j,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l)*plusProduct(i,k)) + 
-      (Complex(0,2)*minusProduct(i,j)*minusProduct(k,l)*plusCurrent(i,j)*plusProduct(i,l)*plusProduct(j,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l)*plusProduct(i,k)) - 
-      (Complex(0,2)*minusProduct(i,j)*minusProduct(j,k)*plusCurrent(i,l)*plusProduct(i,l)*plusProduct(j,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l)*plusProduct(i,k)) + 
-      (Complex(0,2)*minusProduct(i,k)*minusProduct(j,k)*plusCurrent(i,k)*plusProduct(k,l))/
+      (Complex(0,2)*plusProduct(j,l)*plusProduct(k,l)*minusCurrent(i,j)*minusProduct(i,j))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)) - 
+      (Complex(0,2)*plusProduct(j,l)*plusProduct(k,l)*minusCurrent(i,j)*minusProduct(i,j))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)) + 
+      (Complex(0,2)*plusProduct(j,k)*plusProduct(j,l)*minusCurrent(i,l)*minusProduct(i,j))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)) - 
+      (Complex(0,2)*plusProduct(j,k)*plusProduct(k,l)*minusCurrent(i,j)*minusProduct(i,j))/
       (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l)) + 
-      (Complex(0,2)*minusProduct(i,k)*minusProduct(j,k)*plusCurrent(i,j)*plusProduct(i,j)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l)*plusProduct(i,k)) - 
-      (Complex(0,1)*minusProduct(i,k)*minusProduct(j,l)*plusCurrent(i,k)*plusProduct(i,l)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l)*plusProduct(i,k)) + 
-      (Complex(0,2)*minusProduct(i,j)*minusProduct(k,l)*plusCurrent(i,k)*plusProduct(i,l)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l)*plusProduct(i,k)) + 
-      (Complex(0,1)*minusProduct(i,k)*minusProduct(j,k)*plusCurrent(i,l)*plusProduct(i,l)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l)*plusProduct(i,k));
+      (Complex(0,2)*plusProduct(j,k)*plusProduct(j,l)*minusCurrent(i,k)*minusProduct(i,j))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l)) + 
+      (Complex(0,2)*plusProduct(j,k)*plusProduct(j,l)*minusCurrent(i,j)*sqr(minusProduct(i,j)))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)*minusProduct(i,l)) - 
+      (Complex(0,2)*plusProduct(j,k)*plusProduct(k,l)*minusCurrent(i,k)*minusProduct(i,k))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l)) - 
+      (Complex(0,2)*plusProduct(j,l)*plusProduct(k,l)*minusCurrent(i,l)*minusProduct(i,l))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)) - 
+      (Complex(0,2)*plusProduct(j,l)*plusProduct(k,l)*minusCurrent(i,l)*minusProduct(i,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k));
   }
 
   if ( g1Hel == 1 && g2Hel == -1 ) {
     return
-      (Complex(0,1)*sqr(minusProduct(i,l))*plusCurrent(i,j)*plusProduct(i,k))/
+      (Complex(0,-1)*sqr(plusProduct(i,k))*minusCurrent(i,j)*minusProduct(i,l))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,l)) + 
+      (Complex(0,1)*plusProduct(i,k)*plusProduct(k,l)*minusCurrent(l,j)*minusProduct(i,l))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,l)) + 
+      (Complex(0,1)*plusProduct(i,k)*minusCurrent(i,j)*sqr(minusProduct(i,l)))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,k)) - 
+      (Complex(0,1)*plusProduct(i,k)*plusProduct(k,l)*minusCurrent(k,j)*sqr(minusProduct(i,l)))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k)) - 
+      (Complex(0,2)*plusProduct(k,l)*minusCurrent(l,j)*sqr(minusProduct(i,l)))/
       (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,k)) + 
-      (Complex(0,1)*minusProduct(i,l)*minusProduct(k,l)*plusCurrent(k,j)*plusProduct(i,k))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,k)) + 
-      (Complex(0,2)*minusProduct(j,l)*plusCurrent(k,l)*plusProduct(i,k))/(invariant(i,k)*invariant(j,l)) + 
-      (Complex(0,2)*minusProduct(j,l)*plusCurrent(k,j)*plusProduct(i,j)*plusProduct(i,k))/
-      (invariant(i,k)*invariant(j,l)*plusProduct(i,l)) - 
-      (Complex(0,2)*minusProduct(i,l)*plusCurrent(i,j)*sqr(plusProduct(i,k)))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,l)) - 
-      (Complex(0,1)*minusProduct(i,l)*plusCurrent(i,j)*sqr(plusProduct(i,k)))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,l)) - 
-      (Complex(0,2)*minusProduct(k,l)*plusCurrent(k,j)*sqr(plusProduct(i,k)))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,l)) - 
-      (Complex(0,2)*minusProduct(k,l)*plusCurrent(k,j)*sqr(plusProduct(i,k)))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,l)) - 
-      (Complex(0,1)*minusProduct(i,l)*minusProduct(k,l)*plusCurrent(l,j)*sqr(plusProduct(i,k)))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,k)*plusProduct(i,l)) - 
-      (Complex(0,2)*minusProduct(i,l)*minusProduct(j,l)*plusCurrent(i,j)*plusProduct(j,k))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)) - 
-      (Complex(0,2)*minusProduct(i,j)*minusProduct(j,l)*plusCurrent(i,j)*plusProduct(i,j)*plusProduct(j,k))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)*plusProduct(i,l)) + 
-      (Complex(0,1)*minusProduct(i,l)*minusProduct(j,k)*plusCurrent(i,j)*plusProduct(i,k)*plusProduct(j,k))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)*plusProduct(i,l)) + 
-      (Complex(0,2)*minusProduct(i,j)*minusProduct(k,l)*plusCurrent(i,j)*plusProduct(i,k)*plusProduct(j,k))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)*plusProduct(i,l)) - 
-      (Complex(0,1)*minusProduct(i,l)*minusProduct(j,l)*plusCurrent(i,j)*plusProduct(i,k)*plusProduct(j,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)*plusProduct(i,l)) + 
-      (Complex(0,2)*minusProduct(i,l)*minusProduct(j,l)*plusCurrent(i,l)*plusProduct(k,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)) + 
-      (Complex(0,2)*minusProduct(i,l)*minusProduct(j,l)*plusCurrent(i,l)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)) + 
-      (Complex(0,2)*minusProduct(i,l)*minusProduct(j,l)*plusCurrent(i,j)*plusProduct(i,j)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)*plusProduct(i,l)) + 
-      (Complex(0,2)*minusProduct(i,j)*minusProduct(j,l)*plusCurrent(i,l)*plusProduct(i,j)*plusProduct(k,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)*plusProduct(i,l)) + 
-      (Complex(0,1)*minusProduct(i,l)*minusProduct(j,l)*plusCurrent(i,k)*plusProduct(i,k)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)*plusProduct(i,l)) - 
-      (Complex(0,1)*minusProduct(i,l)*minusProduct(j,k)*plusCurrent(i,l)*plusProduct(i,k)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)*plusProduct(i,l)) - 
-      (Complex(0,2)*minusProduct(i,j)*minusProduct(k,l)*plusCurrent(i,l)*plusProduct(i,k)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)*plusProduct(i,l));
+      (Complex(0,1)*plusProduct(i,k)*plusProduct(j,k)*minusCurrent(i,j)*minusProduct(i,l)*minusProduct(j,k))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k)) - 
+      (Complex(0,2)*plusProduct(i,j)*plusProduct(j,k)*minusCurrent(i,k)*minusProduct(j,l))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)) - 
+      (Complex(0,2)*plusProduct(i,j)*plusProduct(j,k)*minusCurrent(i,j)*minusProduct(i,j)*minusProduct(j,l))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k)) - 
+      (Complex(0,1)*plusProduct(i,k)*plusProduct(j,l)*minusCurrent(i,j)*minusProduct(i,l)*minusProduct(j,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k)) + 
+      (Complex(0,2)*plusProduct(i,j)*plusProduct(k,l)*minusCurrent(i,j)*minusProduct(i,l)*minusProduct(j,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k)) - 
+      (Complex(0,2)*plusProduct(i,j)*plusProduct(j,k)*minusCurrent(i,l)*minusProduct(i,l)*minusProduct(j,l))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k)) + 
+      (Complex(0,2)*plusProduct(i,k)*plusProduct(j,k)*minusCurrent(i,k)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)) + 
+      (Complex(0,2)*plusProduct(i,k)*plusProduct(j,k)*minusCurrent(i,j)*minusProduct(i,j)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k)) - 
+      (Complex(0,1)*plusProduct(i,k)*plusProduct(j,l)*minusCurrent(i,k)*minusProduct(i,l)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k)) + 
+      (Complex(0,2)*plusProduct(i,j)*plusProduct(k,l)*minusCurrent(i,k)*minusProduct(i,l)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k)) + 
+      (Complex(0,1)*plusProduct(i,k)*plusProduct(j,k)*minusCurrent(i,l)*minusProduct(i,l)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k));
   }
 
-  if ( g1Hel == 1 && g2Hel == 1 ) {
+  if ( g1Hel == -1 && g2Hel == 1 ) {
     return
-      (Complex(0,-2)*minusProduct(i,j)*plusCurrent(k,j)*plusProduct(i,k)*plusProduct(j,l))/
-      (invariant(i,k)*invariant(j,l)*minusProduct(i,l)) + 
-      (Complex(0,2)*sqr(minusProduct(i,j))*plusCurrent(i,j)*plusProduct(j,k)*plusProduct(j,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)*minusProduct(i,l)) + 
-      (Complex(0,2)*minusProduct(i,k)*plusCurrent(k,j)*plusProduct(i,k)*plusProduct(k,l))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,l)) + 
-      (Complex(0,2)*minusProduct(i,k)*plusCurrent(k,j)*plusProduct(i,k)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,l)) + 
-      (Complex(0,2)*plusCurrent(l,j)*plusProduct(i,k)*plusProduct(k,l))/
+      (Complex(0,1)*sqr(plusProduct(i,l))*minusCurrent(i,j)*minusProduct(i,k))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,k)) + 
+      (Complex(0,1)*plusProduct(i,l)*plusProduct(k,l)*minusCurrent(k,j)*minusProduct(i,k))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,k)) + 
+      (Complex(0,2)*plusProduct(j,l)*minusCurrent(k,l)*minusProduct(i,k))/(invariant(i,k)*invariant(j,l)) + 
+      (Complex(0,2)*plusProduct(j,l)*minusCurrent(k,j)*minusProduct(i,j)*minusProduct(i,k))/
+      (invariant(i,k)*invariant(j,l)*minusProduct(i,l)) - 
+      (Complex(0,2)*plusProduct(i,l)*minusCurrent(i,j)*sqr(minusProduct(i,k)))/
+      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,l)) - 
+      (Complex(0,1)*plusProduct(i,l)*minusCurrent(i,j)*sqr(minusProduct(i,k)))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,l)) - 
+      (Complex(0,2)*plusProduct(k,l)*minusCurrent(k,j)*sqr(minusProduct(i,k)))/
+      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,l)) - 
+      (Complex(0,2)*plusProduct(k,l)*minusCurrent(k,j)*sqr(minusProduct(i,k)))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,l)) - 
+      (Complex(0,1)*plusProduct(i,l)*plusProduct(k,l)*minusCurrent(l,j)*sqr(minusProduct(i,k)))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) - 
+      (Complex(0,2)*plusProduct(i,l)*plusProduct(j,l)*minusCurrent(i,j)*minusProduct(j,k))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)) - 
+      (Complex(0,2)*plusProduct(i,j)*plusProduct(j,l)*minusCurrent(i,j)*minusProduct(i,j)*minusProduct(j,k))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) + 
+      (Complex(0,1)*plusProduct(i,l)*plusProduct(j,k)*minusCurrent(i,j)*minusProduct(i,k)*minusProduct(j,k))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) + 
+      (Complex(0,2)*plusProduct(i,j)*plusProduct(k,l)*minusCurrent(i,j)*minusProduct(i,k)*minusProduct(j,k))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) - 
+      (Complex(0,1)*plusProduct(i,l)*plusProduct(j,l)*minusCurrent(i,j)*minusProduct(i,k)*minusProduct(j,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) + 
+      (Complex(0,2)*plusProduct(i,l)*plusProduct(j,l)*minusCurrent(i,l)*minusProduct(k,l))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)) + 
+      (Complex(0,2)*plusProduct(i,l)*plusProduct(j,l)*minusCurrent(i,l)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)) + 
+      (Complex(0,2)*plusProduct(i,l)*plusProduct(j,l)*minusCurrent(i,j)*minusProduct(i,j)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) + 
+      (Complex(0,2)*plusProduct(i,j)*plusProduct(j,l)*minusCurrent(i,l)*minusProduct(i,j)*minusProduct(k,l))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) + 
+      (Complex(0,1)*plusProduct(i,l)*plusProduct(j,l)*minusCurrent(i,k)*minusProduct(i,k)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) - 
+      (Complex(0,1)*plusProduct(i,l)*plusProduct(j,k)*minusCurrent(i,l)*minusProduct(i,k)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) - 
+      (Complex(0,2)*plusProduct(i,j)*plusProduct(k,l)*minusCurrent(i,l)*minusProduct(i,k)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l));
+  }
+
+  if ( g1Hel == -1 && g2Hel == -1 ) {
+    return
+      (Complex(0,-2)*plusProduct(i,j)*minusCurrent(k,j)*minusProduct(i,k)*minusProduct(j,l))/
+      (invariant(i,k)*invariant(j,l)*plusProduct(i,l)) + 
+      (Complex(0,2)*sqr(plusProduct(i,j))*minusCurrent(i,j)*minusProduct(j,k)*minusProduct(j,l))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*plusProduct(i,l)) + 
+      (Complex(0,2)*plusProduct(i,k)*minusCurrent(k,j)*minusProduct(i,k)*minusProduct(k,l))/
+      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,l)) + 
+      (Complex(0,2)*plusProduct(i,k)*minusCurrent(k,j)*minusProduct(i,k)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,l)) + 
+      (Complex(0,2)*minusCurrent(l,j)*minusProduct(i,k)*minusProduct(k,l))/
       (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))) + 
-      (Complex(0,2)*plusCurrent(l,j)*plusProduct(i,k)*plusProduct(k,l))/
+      (Complex(0,2)*minusCurrent(l,j)*minusProduct(i,k)*minusProduct(k,l))/
       (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))) + 
-      (Complex(0,2)*plusCurrent(k,j)*plusProduct(i,l)*plusProduct(k,l))/
+      (Complex(0,2)*minusCurrent(k,j)*minusProduct(i,l)*minusProduct(k,l))/
       (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))) + 
-      (Complex(0,2)*minusProduct(i,l)*plusCurrent(l,j)*plusProduct(i,l)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,k)) - 
-      (Complex(0,2)*minusProduct(i,j)*plusCurrent(i,j)*plusProduct(j,k)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l)) - 
-      (Complex(0,2)*minusProduct(i,j)*plusCurrent(i,j)*plusProduct(j,l)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)) - 
-      (Complex(0,2)*sqr(minusProduct(i,j))*plusCurrent(i,l)*plusProduct(j,l)*plusProduct(k,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)*minusProduct(i,l)) - 
-      (Complex(0,2)*minusProduct(i,j)*plusCurrent(i,k)*sqr(plusProduct(k,l)))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)) + 
-      (Complex(0,2)*minusProduct(i,j)*plusCurrent(i,l)*sqr(plusProduct(k,l)))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l));
+      (Complex(0,2)*plusProduct(i,l)*minusCurrent(l,j)*minusProduct(i,l)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,k)) - 
+      (Complex(0,2)*plusProduct(i,j)*minusCurrent(i,j)*minusProduct(j,k)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)) - 
+      (Complex(0,2)*plusProduct(i,j)*minusCurrent(i,j)*minusProduct(j,l)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)) - 
+      (Complex(0,2)*sqr(plusProduct(i,j))*minusCurrent(i,l)*minusProduct(j,l)*minusProduct(k,l))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*plusProduct(i,l)) - 
+      (Complex(0,2)*plusProduct(i,j)*minusCurrent(i,k)*sqr(minusProduct(k,l)))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)) + 
+      (Complex(0,2)*plusProduct(i,j)*minusCurrent(i,l)*sqr(minusProduct(k,l)))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l));
   }
 
   static LorentzVector<Complex> czero(0.,0.,0.,0.);
@@ -575,201 +575,201 @@ LorentzVector<Complex> MatchboxCurrents::qqbarggGeneralRightCurrent(int i, int,
 								    int l, int g2Hel,
 								    int n) {
 
-  if ( g1Hel == -1 && g2Hel == -1 ) {
+  if ( g1Hel == 1 && g2Hel == 1 ) {
     return
-      (Complex(0,2)*minusProduct(i,l)*minusProduct(k,l)*plusCurrent(j,k))/
+      (Complex(0,2)*plusProduct(i,l)*plusProduct(k,l)*minusCurrent(j,k))/
       (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))) + 
-      (Complex(0,2)*minusProduct(i,k)*minusProduct(k,l)*plusCurrent(j,l))/
+      (Complex(0,2)*plusProduct(i,k)*plusProduct(k,l)*minusCurrent(j,l))/
       (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))) + 
-      (Complex(0,2)*minusProduct(i,k)*minusProduct(k,l)*plusCurrent(j,l))/
+      (Complex(0,2)*plusProduct(i,k)*plusProduct(k,l)*minusCurrent(j,l))/
       (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))) + 
-      (Complex(0,2)*minusProduct(i,l)*minusProduct(k,l)*plusCurrent(j,i)*plusProduct(i,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)) + 
-      (Complex(0,2)*minusProduct(i,k)*minusProduct(i,l)*plusCurrent(j,l)*plusProduct(i,n))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)) - 
-      (Complex(0,2)*minusProduct(j,l)*minusProduct(k,l)*plusCurrent(j,i)*plusProduct(j,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)) - 
-      (Complex(0,2)*sqr(minusProduct(k,l))*plusCurrent(k,i)*plusProduct(j,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)) + 
-      (Complex(0,2)*minusProduct(i,k)*minusProduct(k,l)*plusCurrent(j,i)*plusProduct(i,n))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)) + 
-      (Complex(0,2)*minusProduct(i,k)*minusProduct(k,l)*plusCurrent(j,i)*plusProduct(i,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)) + 
-      (Complex(0,2)*minusProduct(i,k)*minusProduct(i,l)*plusCurrent(j,k)*plusProduct(i,n))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)) - 
-      (Complex(0,2)*minusProduct(j,k)*minusProduct(k,l)*plusCurrent(j,i)*plusProduct(j,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)) - 
-      (Complex(0,2)*minusProduct(i,k)*minusProduct(j,l)*plusCurrent(j,k)*plusProduct(j,n))/
-      (invariant(i,k)*invariant(j,l)*plusProduct(l,n)) + 
-      (Complex(0,2)*sqr(minusProduct(k,l))*plusCurrent(l,i)*plusProduct(j,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)) + 
-      (Complex(0,2)*minusProduct(i,k)*minusProduct(i,l)*plusCurrent(j,i)*sqr(plusProduct(i,n)))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*plusProduct(l,n)) - 
-      (Complex(0,2)*minusProduct(i,k)*minusProduct(j,l)*plusCurrent(j,i)*plusProduct(i,n)*plusProduct(j,n))/
-      (invariant(i,k)*invariant(j,l)*plusProduct(k,n)*plusProduct(l,n)) + 
-      (Complex(0,2)*minusProduct(j,k)*minusProduct(j,l)*plusCurrent(j,i)*sqr(plusProduct(j,n)))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*plusProduct(l,n)) - 
-      (Complex(0,2)*minusProduct(j,l)*minusProduct(k,l)*plusCurrent(l,i)*sqr(plusProduct(j,n)))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*plusProduct(l,n)) + 
-      (Complex(0,2)*minusProduct(i,k)*minusProduct(k,l)*plusCurrent(j,k)*plusProduct(k,n))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)) + 
-      (Complex(0,2)*minusProduct(i,k)*minusProduct(k,l)*plusCurrent(j,k)*plusProduct(k,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)) + 
-      (Complex(0,2)*minusProduct(i,l)*minusProduct(k,l)*plusCurrent(j,l)*plusProduct(l,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n));
-  }
-
-  if ( g1Hel == -1 && g2Hel == 1 ) {
-    return
-      (Complex(0,-2)*minusProduct(i,k)*minusProduct(k,n)*plusCurrent(j,i)*plusProduct(i,l))/
+      (Complex(0,2)*plusProduct(i,l)*plusProduct(k,l)*minusCurrent(j,i)*minusProduct(i,n))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)) + 
+      (Complex(0,2)*plusProduct(i,k)*plusProduct(i,l)*minusCurrent(j,l)*minusProduct(i,n))/
+      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)) - 
+      (Complex(0,2)*plusProduct(j,l)*plusProduct(k,l)*minusCurrent(j,i)*minusProduct(j,n))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)) - 
+      (Complex(0,2)*sqr(plusProduct(k,l))*minusCurrent(k,i)*minusProduct(j,n))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)) + 
+      (Complex(0,2)*plusProduct(i,k)*plusProduct(k,l)*minusCurrent(j,i)*minusProduct(i,n))/
       (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)) + 
-      (Complex(0,2)*minusProduct(i,k)*minusProduct(j,n)*plusCurrent(j,k)*plusProduct(j,l))/
-      (invariant(i,k)*invariant(j,l)*minusProduct(l,n)) + 
-      (Complex(0,2)*minusProduct(i,k)*plusCurrent(l,k)*plusProduct(j,l))/(invariant(i,k)*invariant(j,l)) - 
-      (Complex(0,2)*minusProduct(i,k)*minusProduct(k,n)*plusCurrent(j,k)*plusProduct(k,l))/
+      (Complex(0,2)*plusProduct(i,k)*plusProduct(k,l)*minusCurrent(j,i)*minusProduct(i,n))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)) + 
+      (Complex(0,2)*plusProduct(i,k)*plusProduct(i,l)*minusCurrent(j,k)*minusProduct(i,n))/
       (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)) - 
-      (Complex(0,2)*minusProduct(i,k)*minusProduct(k,n)*plusCurrent(j,k)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)) - 
-      (Complex(0,2)*minusProduct(i,k)*minusProduct(i,n)*plusCurrent(j,i)*plusProduct(i,l)*plusProduct(i,n))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)*plusProduct(k,n)) + 
-      (Complex(0,2)*minusProduct(i,k)*minusProduct(j,n)*plusCurrent(j,i)*plusProduct(i,n)*plusProduct(j,l))/
-      (invariant(i,k)*invariant(j,l)*minusProduct(l,n)*plusProduct(k,n)) + 
-      (Complex(0,2)*minusProduct(i,k)*plusCurrent(l,i)*plusProduct(i,n)*plusProduct(j,l))/
-      (invariant(i,k)*invariant(j,l)*plusProduct(k,n)) - 
-      (Complex(0,2)*minusProduct(j,k)*minusProduct(j,n)*plusCurrent(j,i)*plusProduct(j,l)*plusProduct(j,n))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(l,n)*plusProduct(k,n)) + 
-      (Complex(0,2)*minusProduct(j,n)*minusProduct(k,l)*plusCurrent(l,i)*plusProduct(j,l)*plusProduct(j,n))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(l,n)*plusProduct(k,n)) - 
-      (Complex(0,2)*minusProduct(i,k)*minusProduct(k,n)*plusCurrent(j,i)*plusProduct(i,n)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)*plusProduct(k,n)) - 
-      (Complex(0,2)*minusProduct(i,k)*minusProduct(i,n)*plusCurrent(j,k)*plusProduct(i,n)*plusProduct(k,l))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)*plusProduct(k,n)) + 
-      (Complex(0,2)*minusProduct(j,k)*minusProduct(k,n)*plusCurrent(j,i)*plusProduct(j,n)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(l,n)*plusProduct(k,n)) - 
-      (Complex(0,2)*minusProduct(k,l)*minusProduct(k,n)*plusCurrent(l,i)*plusProduct(j,n)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(l,n)*plusProduct(k,n)) - 
-      (Complex(0,1)*minusProduct(i,k)*minusProduct(k,n)*plusCurrent(j,i)*plusProduct(i,k)*plusProduct(l,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)*plusProduct(k,n)) - 
-      (Complex(0,2)*minusProduct(i,n)*minusProduct(k,l)*plusCurrent(j,i)*plusProduct(i,l)*plusProduct(l,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)*plusProduct(k,n)) + 
-      (Complex(0,1)*minusProduct(i,l)*minusProduct(k,n)*plusCurrent(j,i)*plusProduct(i,l)*plusProduct(l,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)*plusProduct(k,n)) + 
-      (Complex(0,1)*minusProduct(j,k)*minusProduct(k,n)*plusCurrent(j,i)*plusProduct(j,k)*plusProduct(l,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(l,n)*plusProduct(k,n)) - 
-      (Complex(0,1)*minusProduct(k,l)*minusProduct(k,n)*plusCurrent(l,i)*plusProduct(j,k)*plusProduct(l,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(l,n)*plusProduct(k,n)) - 
-      (Complex(0,2)*minusProduct(j,k)*plusCurrent(j,i)*plusProduct(j,l)*plusProduct(l,n))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)) + 
-      (Complex(0,2)*minusProduct(j,n)*minusProduct(k,l)*plusCurrent(j,i)*plusProduct(j,l)*plusProduct(l,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(l,n)*plusProduct(k,n)) - 
-      (Complex(0,1)*minusProduct(j,l)*minusProduct(k,n)*plusCurrent(j,i)*plusProduct(j,l)*plusProduct(l,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(l,n)*plusProduct(k,n)) + 
-      (Complex(0,1)*minusProduct(k,l)*minusProduct(k,n)*plusCurrent(k,i)*plusProduct(j,l)*plusProduct(l,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(l,n)*plusProduct(k,n)) + 
-      (Complex(0,2)*minusProduct(k,l)*plusCurrent(l,i)*plusProduct(j,l)*plusProduct(l,n))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)) + 
-      (Complex(0,2)*minusProduct(k,l)*plusCurrent(l,i)*plusProduct(j,l)*plusProduct(l,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)) - 
-      (Complex(0,2)*minusProduct(i,n)*minusProduct(k,l)*plusCurrent(j,k)*plusProduct(k,l)*plusProduct(l,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)*plusProduct(k,n)) + 
-      (Complex(0,1)*minusProduct(i,l)*minusProduct(k,n)*plusCurrent(j,k)*plusProduct(k,l)*plusProduct(l,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)*plusProduct(k,n)) - 
-      (Complex(0,1)*minusProduct(i,k)*minusProduct(k,n)*plusCurrent(j,l)*plusProduct(k,l)*plusProduct(l,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)*plusProduct(k,n));
+      (Complex(0,2)*plusProduct(j,k)*plusProduct(k,l)*minusCurrent(j,i)*minusProduct(j,n))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(l,n)) - 
+      (Complex(0,2)*plusProduct(i,k)*plusProduct(j,l)*minusCurrent(j,k)*minusProduct(j,n))/
+      (invariant(i,k)*invariant(j,l)*minusProduct(l,n)) + 
+      (Complex(0,2)*sqr(plusProduct(k,l))*minusCurrent(l,i)*minusProduct(j,n))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(l,n)) + 
+      (Complex(0,2)*plusProduct(i,k)*plusProduct(i,l)*minusCurrent(j,i)*sqr(minusProduct(i,n)))/
+      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)*minusProduct(l,n)) - 
+      (Complex(0,2)*plusProduct(i,k)*plusProduct(j,l)*minusCurrent(j,i)*minusProduct(i,n)*minusProduct(j,n))/
+      (invariant(i,k)*invariant(j,l)*minusProduct(k,n)*minusProduct(l,n)) + 
+      (Complex(0,2)*plusProduct(j,k)*plusProduct(j,l)*minusCurrent(j,i)*sqr(minusProduct(j,n)))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)*minusProduct(l,n)) - 
+      (Complex(0,2)*plusProduct(j,l)*plusProduct(k,l)*minusCurrent(l,i)*sqr(minusProduct(j,n)))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)*minusProduct(l,n)) + 
+      (Complex(0,2)*plusProduct(i,k)*plusProduct(k,l)*minusCurrent(j,k)*minusProduct(k,n))/
+      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)) + 
+      (Complex(0,2)*plusProduct(i,k)*plusProduct(k,l)*minusCurrent(j,k)*minusProduct(k,n))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)) + 
+      (Complex(0,2)*plusProduct(i,l)*plusProduct(k,l)*minusCurrent(j,l)*minusProduct(l,n))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n));
   }
 
   if ( g1Hel == 1 && g2Hel == -1 ) {
     return
-      (Complex(0,-2)*minusProduct(i,l)*minusProduct(i,n)*plusCurrent(j,l)*plusProduct(i,k))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)) - 
-      (Complex(0,2)*minusProduct(i,l)*minusProduct(l,n)*plusCurrent(j,l)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)) - 
-      (Complex(0,2)*minusProduct(i,l)*minusProduct(i,n)*plusCurrent(j,i)*plusProduct(i,k)*plusProduct(i,n))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)*plusProduct(l,n)) + 
-      (Complex(0,2)*minusProduct(i,n)*minusProduct(j,l)*plusCurrent(j,i)*plusProduct(i,k)*plusProduct(j,n))/
-      (invariant(i,k)*invariant(j,l)*minusProduct(k,n)*plusProduct(l,n)) - 
-      (Complex(0,2)*minusProduct(j,l)*minusProduct(j,n)*plusCurrent(j,i)*plusProduct(j,k)*plusProduct(j,n))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)*plusProduct(l,n)) - 
-      (Complex(0,2)*minusProduct(j,l)*plusCurrent(k,i)*plusProduct(j,k)*plusProduct(j,n))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)) - 
-      (Complex(0,2)*minusProduct(j,l)*minusProduct(l,n)*plusCurrent(l,i)*plusProduct(j,k)*plusProduct(j,n))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)*plusProduct(l,n)) - 
-      (Complex(0,2)*minusProduct(i,l)*minusProduct(l,n)*plusCurrent(j,i)*plusProduct(i,n)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)*plusProduct(l,n)) + 
-      (Complex(0,2)*minusProduct(j,l)*minusProduct(l,n)*plusCurrent(j,i)*plusProduct(j,n)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)*plusProduct(l,n)) + 
-      (Complex(0,2)*minusProduct(k,l)*minusProduct(l,n)*plusCurrent(k,i)*plusProduct(j,n)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)*plusProduct(l,n)) - 
-      (Complex(0,2)*minusProduct(i,n)*minusProduct(k,l)*plusCurrent(j,i)*plusProduct(i,k)*plusProduct(k,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)*plusProduct(l,n)) - 
-      (Complex(0,1)*minusProduct(i,k)*minusProduct(l,n)*plusCurrent(j,i)*plusProduct(i,k)*plusProduct(k,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)*plusProduct(l,n)) - 
-      (Complex(0,2)*minusProduct(i,l)*minusProduct(i,n)*plusCurrent(j,k)*plusProduct(i,k)*plusProduct(k,n))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)*plusProduct(l,n)) + 
-      (Complex(0,1)*minusProduct(i,l)*minusProduct(l,n)*plusCurrent(j,i)*plusProduct(i,l)*plusProduct(k,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)*plusProduct(l,n)) + 
-      (Complex(0,2)*minusProduct(j,n)*minusProduct(k,l)*plusCurrent(j,i)*plusProduct(j,k)*plusProduct(k,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)*plusProduct(l,n)) + 
-      (Complex(0,1)*minusProduct(j,k)*minusProduct(l,n)*plusCurrent(j,i)*plusProduct(j,k)*plusProduct(k,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)*plusProduct(l,n)) + 
-      (Complex(0,2)*minusProduct(k,l)*plusCurrent(k,i)*plusProduct(j,k)*plusProduct(k,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)) + 
-      (Complex(0,1)*minusProduct(k,l)*minusProduct(l,n)*plusCurrent(l,i)*plusProduct(j,k)*plusProduct(k,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)*plusProduct(l,n)) - 
-      (Complex(0,1)*minusProduct(j,l)*minusProduct(l,n)*plusCurrent(j,i)*plusProduct(j,l)*plusProduct(k,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)*plusProduct(l,n)) - 
-      (Complex(0,1)*minusProduct(k,l)*minusProduct(l,n)*plusCurrent(k,i)*plusProduct(j,l)*plusProduct(k,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)*plusProduct(l,n)) - 
-      (Complex(0,1)*minusProduct(i,l)*minusProduct(l,n)*plusCurrent(j,k)*plusProduct(k,l)*plusProduct(k,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)*plusProduct(l,n)) + 
-      (Complex(0,2)*minusProduct(i,n)*minusProduct(k,l)*plusCurrent(j,l)*plusProduct(k,l)*plusProduct(k,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)*plusProduct(l,n)) + 
-      (Complex(0,1)*minusProduct(i,k)*minusProduct(l,n)*plusCurrent(j,l)*plusProduct(k,l)*plusProduct(k,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)*plusProduct(l,n));
+      (Complex(0,-2)*plusProduct(i,k)*plusProduct(k,n)*minusCurrent(j,i)*minusProduct(i,l))/
+      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)) + 
+      (Complex(0,2)*plusProduct(i,k)*plusProduct(j,n)*minusCurrent(j,k)*minusProduct(j,l))/
+      (invariant(i,k)*invariant(j,l)*plusProduct(l,n)) + 
+      (Complex(0,2)*plusProduct(i,k)*minusCurrent(l,k)*minusProduct(j,l))/(invariant(i,k)*invariant(j,l)) - 
+      (Complex(0,2)*plusProduct(i,k)*plusProduct(k,n)*minusCurrent(j,k)*minusProduct(k,l))/
+      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)) - 
+      (Complex(0,2)*plusProduct(i,k)*plusProduct(k,n)*minusCurrent(j,k)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)) - 
+      (Complex(0,2)*plusProduct(i,k)*plusProduct(i,n)*minusCurrent(j,i)*minusProduct(i,l)*minusProduct(i,n))/
+      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) + 
+      (Complex(0,2)*plusProduct(i,k)*plusProduct(j,n)*minusCurrent(j,i)*minusProduct(i,n)*minusProduct(j,l))/
+      (invariant(i,k)*invariant(j,l)*plusProduct(l,n)*minusProduct(k,n)) + 
+      (Complex(0,2)*plusProduct(i,k)*minusCurrent(l,i)*minusProduct(i,n)*minusProduct(j,l))/
+      (invariant(i,k)*invariant(j,l)*minusProduct(k,n)) - 
+      (Complex(0,2)*plusProduct(j,k)*plusProduct(j,n)*minusCurrent(j,i)*minusProduct(j,l)*minusProduct(j,n))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) + 
+      (Complex(0,2)*plusProduct(j,n)*plusProduct(k,l)*minusCurrent(l,i)*minusProduct(j,l)*minusProduct(j,n))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (Complex(0,2)*plusProduct(i,k)*plusProduct(k,n)*minusCurrent(j,i)*minusProduct(i,n)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (Complex(0,2)*plusProduct(i,k)*plusProduct(i,n)*minusCurrent(j,k)*minusProduct(i,n)*minusProduct(k,l))/
+      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) + 
+      (Complex(0,2)*plusProduct(j,k)*plusProduct(k,n)*minusCurrent(j,i)*minusProduct(j,n)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (Complex(0,2)*plusProduct(k,l)*plusProduct(k,n)*minusCurrent(l,i)*minusProduct(j,n)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (Complex(0,1)*plusProduct(i,k)*plusProduct(k,n)*minusCurrent(j,i)*minusProduct(i,k)*minusProduct(l,n))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (Complex(0,2)*plusProduct(i,n)*plusProduct(k,l)*minusCurrent(j,i)*minusProduct(i,l)*minusProduct(l,n))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) + 
+      (Complex(0,1)*plusProduct(i,l)*plusProduct(k,n)*minusCurrent(j,i)*minusProduct(i,l)*minusProduct(l,n))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) + 
+      (Complex(0,1)*plusProduct(j,k)*plusProduct(k,n)*minusCurrent(j,i)*minusProduct(j,k)*minusProduct(l,n))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (Complex(0,1)*plusProduct(k,l)*plusProduct(k,n)*minusCurrent(l,i)*minusProduct(j,k)*minusProduct(l,n))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (Complex(0,2)*plusProduct(j,k)*minusCurrent(j,i)*minusProduct(j,l)*minusProduct(l,n))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)) + 
+      (Complex(0,2)*plusProduct(j,n)*plusProduct(k,l)*minusCurrent(j,i)*minusProduct(j,l)*minusProduct(l,n))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (Complex(0,1)*plusProduct(j,l)*plusProduct(k,n)*minusCurrent(j,i)*minusProduct(j,l)*minusProduct(l,n))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) + 
+      (Complex(0,1)*plusProduct(k,l)*plusProduct(k,n)*minusCurrent(k,i)*minusProduct(j,l)*minusProduct(l,n))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) + 
+      (Complex(0,2)*plusProduct(k,l)*minusCurrent(l,i)*minusProduct(j,l)*minusProduct(l,n))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)) + 
+      (Complex(0,2)*plusProduct(k,l)*minusCurrent(l,i)*minusProduct(j,l)*minusProduct(l,n))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)) - 
+      (Complex(0,2)*plusProduct(i,n)*plusProduct(k,l)*minusCurrent(j,k)*minusProduct(k,l)*minusProduct(l,n))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) + 
+      (Complex(0,1)*plusProduct(i,l)*plusProduct(k,n)*minusCurrent(j,k)*minusProduct(k,l)*minusProduct(l,n))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (Complex(0,1)*plusProduct(i,k)*plusProduct(k,n)*minusCurrent(j,l)*minusProduct(k,l)*minusProduct(l,n))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n));
   }
 
-  if ( g1Hel == 1 && g2Hel == 1 ) {
+  if ( g1Hel == -1 && g2Hel == 1 ) {
     return
-      (Complex(0,2)*sqr(minusProduct(i,n))*plusCurrent(j,i)*plusProduct(i,k)*plusProduct(i,l))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)*minusProduct(l,n)) - 
-      (Complex(0,2)*minusProduct(i,n)*minusProduct(j,n)*plusCurrent(j,i)*plusProduct(i,k)*plusProduct(j,l))/
-      (invariant(i,k)*invariant(j,l)*minusProduct(k,n)*minusProduct(l,n)) - 
-      (Complex(0,2)*minusProduct(i,n)*plusCurrent(l,i)*plusProduct(i,k)*plusProduct(j,l))/
-      (invariant(i,k)*invariant(j,l)*minusProduct(k,n)) + 
-      (Complex(0,2)*sqr(minusProduct(j,n))*plusCurrent(j,i)*plusProduct(j,k)*plusProduct(j,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)*minusProduct(l,n)) + 
-      (Complex(0,2)*minusProduct(j,n)*plusCurrent(k,i)*plusProduct(j,k)*plusProduct(j,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(l,n)) + 
-      (Complex(0,2)*minusProduct(j,n)*plusCurrent(l,i)*plusProduct(j,k)*plusProduct(j,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)) + 
-      (Complex(0,2)*minusProduct(i,n)*plusCurrent(j,i)*plusProduct(i,k)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)) + 
-      (Complex(0,2)*sqr(minusProduct(i,n))*plusCurrent(j,k)*plusProduct(i,k)*plusProduct(k,l))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)*minusProduct(l,n)) + 
-      (Complex(0,2)*minusProduct(i,n)*plusCurrent(j,i)*plusProduct(i,l)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)) - 
-      (Complex(0,2)*minusProduct(j,n)*plusCurrent(j,i)*plusProduct(j,k)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(l,n)) - 
-      (Complex(0,2)*minusProduct(k,n)*plusCurrent(k,i)*plusProduct(j,k)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(l,n)) - 
-      (Complex(0,2)*plusCurrent(l,i)*plusProduct(j,k)*plusProduct(k,l))/
+      (Complex(0,-2)*plusProduct(i,l)*plusProduct(i,n)*minusCurrent(j,l)*minusProduct(i,k))/
+      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)) - 
+      (Complex(0,2)*plusProduct(i,l)*plusProduct(l,n)*minusCurrent(j,l)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)) - 
+      (Complex(0,2)*plusProduct(i,l)*plusProduct(i,n)*minusCurrent(j,i)*minusProduct(i,k)*minusProduct(i,n))/
+      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) + 
+      (Complex(0,2)*plusProduct(i,n)*plusProduct(j,l)*minusCurrent(j,i)*minusProduct(i,k)*minusProduct(j,n))/
+      (invariant(i,k)*invariant(j,l)*plusProduct(k,n)*minusProduct(l,n)) - 
+      (Complex(0,2)*plusProduct(j,l)*plusProduct(j,n)*minusCurrent(j,i)*minusProduct(j,k)*minusProduct(j,n))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) - 
+      (Complex(0,2)*plusProduct(j,l)*minusCurrent(k,i)*minusProduct(j,k)*minusProduct(j,n))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(l,n)) - 
+      (Complex(0,2)*plusProduct(j,l)*plusProduct(l,n)*minusCurrent(l,i)*minusProduct(j,k)*minusProduct(j,n))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) - 
+      (Complex(0,2)*plusProduct(i,l)*plusProduct(l,n)*minusCurrent(j,i)*minusProduct(i,n)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) + 
+      (Complex(0,2)*plusProduct(j,l)*plusProduct(l,n)*minusCurrent(j,i)*minusProduct(j,n)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) + 
+      (Complex(0,2)*plusProduct(k,l)*plusProduct(l,n)*minusCurrent(k,i)*minusProduct(j,n)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) - 
+      (Complex(0,2)*plusProduct(i,n)*plusProduct(k,l)*minusCurrent(j,i)*minusProduct(i,k)*minusProduct(k,n))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) - 
+      (Complex(0,1)*plusProduct(i,k)*plusProduct(l,n)*minusCurrent(j,i)*minusProduct(i,k)*minusProduct(k,n))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) - 
+      (Complex(0,2)*plusProduct(i,l)*plusProduct(i,n)*minusCurrent(j,k)*minusProduct(i,k)*minusProduct(k,n))/
+      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) + 
+      (Complex(0,1)*plusProduct(i,l)*plusProduct(l,n)*minusCurrent(j,i)*minusProduct(i,l)*minusProduct(k,n))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) + 
+      (Complex(0,2)*plusProduct(j,n)*plusProduct(k,l)*minusCurrent(j,i)*minusProduct(j,k)*minusProduct(k,n))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) + 
+      (Complex(0,1)*plusProduct(j,k)*plusProduct(l,n)*minusCurrent(j,i)*minusProduct(j,k)*minusProduct(k,n))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) + 
+      (Complex(0,2)*plusProduct(k,l)*minusCurrent(k,i)*minusProduct(j,k)*minusProduct(k,n))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(l,n)) + 
+      (Complex(0,1)*plusProduct(k,l)*plusProduct(l,n)*minusCurrent(l,i)*minusProduct(j,k)*minusProduct(k,n))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) - 
+      (Complex(0,1)*plusProduct(j,l)*plusProduct(l,n)*minusCurrent(j,i)*minusProduct(j,l)*minusProduct(k,n))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) - 
+      (Complex(0,1)*plusProduct(k,l)*plusProduct(l,n)*minusCurrent(k,i)*minusProduct(j,l)*minusProduct(k,n))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) - 
+      (Complex(0,1)*plusProduct(i,l)*plusProduct(l,n)*minusCurrent(j,k)*minusProduct(k,l)*minusProduct(k,n))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) + 
+      (Complex(0,2)*plusProduct(i,n)*plusProduct(k,l)*minusCurrent(j,l)*minusProduct(k,l)*minusProduct(k,n))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) + 
+      (Complex(0,1)*plusProduct(i,k)*plusProduct(l,n)*minusCurrent(j,l)*minusProduct(k,l)*minusProduct(k,n))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n));
+  }
+
+  if ( g1Hel == -1 && g2Hel == -1 ) {
+    return
+      (Complex(0,2)*sqr(plusProduct(i,n))*minusCurrent(j,i)*minusProduct(i,k)*minusProduct(i,l))/
+      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*plusProduct(l,n)) - 
+      (Complex(0,2)*plusProduct(i,n)*plusProduct(j,n)*minusCurrent(j,i)*minusProduct(i,k)*minusProduct(j,l))/
+      (invariant(i,k)*invariant(j,l)*plusProduct(k,n)*plusProduct(l,n)) - 
+      (Complex(0,2)*plusProduct(i,n)*minusCurrent(l,i)*minusProduct(i,k)*minusProduct(j,l))/
+      (invariant(i,k)*invariant(j,l)*plusProduct(k,n)) + 
+      (Complex(0,2)*sqr(plusProduct(j,n))*minusCurrent(j,i)*minusProduct(j,k)*minusProduct(j,l))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*plusProduct(l,n)) + 
+      (Complex(0,2)*plusProduct(j,n)*minusCurrent(k,i)*minusProduct(j,k)*minusProduct(j,l))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)) + 
+      (Complex(0,2)*plusProduct(j,n)*minusCurrent(l,i)*minusProduct(j,k)*minusProduct(j,l))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)) + 
+      (Complex(0,2)*plusProduct(i,n)*minusCurrent(j,i)*minusProduct(i,k)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)) + 
+      (Complex(0,2)*sqr(plusProduct(i,n))*minusCurrent(j,k)*minusProduct(i,k)*minusProduct(k,l))/
+      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*plusProduct(l,n)) + 
+      (Complex(0,2)*plusProduct(i,n)*minusCurrent(j,i)*minusProduct(i,l)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)) - 
+      (Complex(0,2)*plusProduct(j,n)*minusCurrent(j,i)*minusProduct(j,k)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)) - 
+      (Complex(0,2)*plusProduct(k,n)*minusCurrent(k,i)*minusProduct(j,k)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)) - 
+      (Complex(0,2)*minusCurrent(l,i)*minusProduct(j,k)*minusProduct(k,l))/
       (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))) - 
-      (Complex(0,2)*minusProduct(j,n)*plusCurrent(j,i)*plusProduct(j,l)*plusProduct(k,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)) - 
-      (Complex(0,2)*minusProduct(j,n)*plusCurrent(j,i)*plusProduct(j,l)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)) - 
-      (Complex(0,2)*plusCurrent(k,i)*plusProduct(j,l)*plusProduct(k,l))/
+      (Complex(0,2)*plusProduct(j,n)*minusCurrent(j,i)*minusProduct(j,l)*minusProduct(k,l))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)) - 
+      (Complex(0,2)*plusProduct(j,n)*minusCurrent(j,i)*minusProduct(j,l)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)) - 
+      (Complex(0,2)*minusCurrent(k,i)*minusProduct(j,l)*minusProduct(k,l))/
       (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))) - 
-      (Complex(0,2)*plusCurrent(k,i)*plusProduct(j,l)*plusProduct(k,l))/
+      (Complex(0,2)*minusCurrent(k,i)*minusProduct(j,l)*minusProduct(k,l))/
       (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))) - 
-      (Complex(0,2)*minusProduct(l,n)*plusCurrent(l,i)*plusProduct(j,l)*plusProduct(k,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)) - 
-      (Complex(0,2)*minusProduct(l,n)*plusCurrent(l,i)*plusProduct(j,l)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)) + 
-      (Complex(0,2)*minusProduct(i,n)*plusCurrent(j,k)*sqr(plusProduct(k,l)))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)) - 
-      (Complex(0,2)*minusProduct(i,n)*plusCurrent(j,l)*sqr(plusProduct(k,l)))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n));
+      (Complex(0,2)*plusProduct(l,n)*minusCurrent(l,i)*minusProduct(j,l)*minusProduct(k,l))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)) - 
+      (Complex(0,2)*plusProduct(l,n)*minusCurrent(l,i)*minusProduct(j,l)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)) + 
+      (Complex(0,2)*plusProduct(i,n)*minusCurrent(j,k)*sqr(minusProduct(k,l)))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)) - 
+      (Complex(0,2)*plusProduct(i,n)*minusCurrent(j,l)*sqr(minusProduct(k,l)))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n));
   }
 
   static LorentzVector<Complex> czero(0.,0.,0.,0.);
@@ -782,143 +782,143 @@ LorentzVector<Complex> MatchboxCurrents::qqbarggFixedRightCurrent(int i, int,
 								  int k, int g1Hel,
 								  int l, int g2Hel) {
 
-  if ( g1Hel == -1 && g2Hel == -1 ) {
+  if ( g1Hel == 1 && g2Hel == 1 ) {
     return
-      (Complex(0,2)*minusProduct(i,l)*minusProduct(k,l)*plusCurrent(j,k))/
+      (Complex(0,2)*plusProduct(i,l)*plusProduct(k,l)*minusCurrent(j,k))/
       (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))) + 
-      (Complex(0,2)*minusProduct(i,k)*minusProduct(k,l)*plusCurrent(j,l))/
+      (Complex(0,2)*plusProduct(i,k)*plusProduct(k,l)*minusCurrent(j,l))/
       (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))) + 
-      (Complex(0,2)*minusProduct(i,k)*minusProduct(k,l)*plusCurrent(j,l))/
+      (Complex(0,2)*plusProduct(i,k)*plusProduct(k,l)*minusCurrent(j,l))/
       (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))) - 
-      (Complex(0,2)*minusProduct(j,l)*minusProduct(k,l)*plusCurrent(j,i)*plusProduct(i,j))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)) - 
-      (Complex(0,2)*sqr(minusProduct(k,l))*plusCurrent(k,i)*plusProduct(i,j))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)) - 
-      (Complex(0,2)*minusProduct(j,k)*minusProduct(k,l)*plusCurrent(j,i)*plusProduct(i,j))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)) - 
-      (Complex(0,2)*minusProduct(i,k)*minusProduct(j,l)*plusCurrent(j,k)*plusProduct(i,j))/
-      (invariant(i,k)*invariant(j,l)*plusProduct(i,l)) + 
-      (Complex(0,2)*sqr(minusProduct(k,l))*plusCurrent(l,i)*plusProduct(i,j))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)) + 
-      (Complex(0,2)*minusProduct(j,k)*minusProduct(j,l)*plusCurrent(j,i)*sqr(plusProduct(i,j)))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*plusProduct(i,l)) - 
-      (Complex(0,2)*minusProduct(j,l)*minusProduct(k,l)*plusCurrent(l,i)*sqr(plusProduct(i,j)))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*plusProduct(i,l)) + 
-      (Complex(0,2)*minusProduct(i,k)*minusProduct(k,l)*plusCurrent(j,k)*plusProduct(i,k))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,l)) + 
-      (Complex(0,2)*minusProduct(i,k)*minusProduct(k,l)*plusCurrent(j,k)*plusProduct(i,k))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,l)) + 
-      (Complex(0,2)*minusProduct(i,l)*minusProduct(k,l)*plusCurrent(j,l)*plusProduct(i,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,k));
-  }
-
-  if ( g1Hel == -1 && g2Hel == 1 ) {
-    return
-      (Complex(0,-2)*sqr(minusProduct(i,k))*plusCurrent(j,i)*plusProduct(i,l))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,l)) - 
-      (Complex(0,1)*sqr(minusProduct(i,k))*plusCurrent(j,i)*plusProduct(i,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,l)) + 
-      (Complex(0,1)*minusProduct(i,k)*plusCurrent(j,i)*sqr(plusProduct(i,l)))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,k)) + 
-      (Complex(0,1)*minusProduct(i,k)*minusProduct(j,k)*plusCurrent(j,i)*plusProduct(i,l)*plusProduct(j,k))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l)*plusProduct(i,k)) - 
-      (Complex(0,1)*minusProduct(i,k)*minusProduct(k,l)*plusCurrent(l,i)*plusProduct(i,l)*plusProduct(j,k))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l)*plusProduct(i,k)) + 
-      (Complex(0,2)*minusProduct(i,j)*minusProduct(i,k)*plusCurrent(j,k)*plusProduct(j,l))/
+      (Complex(0,2)*plusProduct(j,l)*plusProduct(k,l)*minusCurrent(j,i)*minusProduct(i,j))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)) - 
+      (Complex(0,2)*sqr(plusProduct(k,l))*minusCurrent(k,i)*minusProduct(i,j))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)) - 
+      (Complex(0,2)*plusProduct(j,k)*plusProduct(k,l)*minusCurrent(j,i)*minusProduct(i,j))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l)) - 
+      (Complex(0,2)*plusProduct(i,k)*plusProduct(j,l)*minusCurrent(j,k)*minusProduct(i,j))/
       (invariant(i,k)*invariant(j,l)*minusProduct(i,l)) + 
-      (Complex(0,2)*minusProduct(i,k)*plusCurrent(l,k)*plusProduct(j,l))/(invariant(i,k)*invariant(j,l)) - 
-      (Complex(0,2)*minusProduct(i,j)*minusProduct(j,k)*plusCurrent(j,i)*plusProduct(i,j)*plusProduct(j,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l)*plusProduct(i,k)) + 
-      (Complex(0,2)*minusProduct(i,j)*minusProduct(k,l)*plusCurrent(l,i)*plusProduct(i,j)*plusProduct(j,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l)*plusProduct(i,k)) - 
-      (Complex(0,2)*minusProduct(j,k)*plusCurrent(j,i)*plusProduct(i,l)*plusProduct(j,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)) - 
-      (Complex(0,1)*minusProduct(i,k)*minusProduct(j,l)*plusCurrent(j,i)*plusProduct(i,l)*plusProduct(j,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l)*plusProduct(i,k)) + 
-      (Complex(0,2)*minusProduct(i,j)*minusProduct(k,l)*plusCurrent(j,i)*plusProduct(i,l)*plusProduct(j,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l)*plusProduct(i,k)) + 
-      (Complex(0,1)*minusProduct(i,k)*minusProduct(k,l)*plusCurrent(k,i)*plusProduct(i,l)*plusProduct(j,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l)*plusProduct(i,k)) + 
-      (Complex(0,2)*minusProduct(k,l)*plusCurrent(l,i)*plusProduct(i,l)*plusProduct(j,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)) + 
-      (Complex(0,2)*minusProduct(k,l)*plusCurrent(l,i)*plusProduct(i,l)*plusProduct(j,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)) - 
-      (Complex(0,2)*sqr(minusProduct(i,k))*plusCurrent(j,k)*plusProduct(k,l))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,l)) - 
-      (Complex(0,2)*sqr(minusProduct(i,k))*plusCurrent(j,k)*plusProduct(k,l))/
+      (Complex(0,2)*sqr(plusProduct(k,l))*minusCurrent(l,i)*minusProduct(i,j))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l)) + 
+      (Complex(0,2)*plusProduct(j,k)*plusProduct(j,l)*minusCurrent(j,i)*sqr(minusProduct(i,j)))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)*minusProduct(i,l)) - 
+      (Complex(0,2)*plusProduct(j,l)*plusProduct(k,l)*minusCurrent(l,i)*sqr(minusProduct(i,j)))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)*minusProduct(i,l)) + 
+      (Complex(0,2)*plusProduct(i,k)*plusProduct(k,l)*minusCurrent(j,k)*minusProduct(i,k))/
+      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,l)) + 
+      (Complex(0,2)*plusProduct(i,k)*plusProduct(k,l)*minusCurrent(j,k)*minusProduct(i,k))/
       (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,l)) + 
-      (Complex(0,2)*minusProduct(i,k)*minusProduct(j,k)*plusCurrent(j,i)*plusProduct(i,j)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l)*plusProduct(i,k)) - 
-      (Complex(0,2)*minusProduct(i,k)*minusProduct(k,l)*plusCurrent(l,i)*plusProduct(i,j)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l)*plusProduct(i,k)) + 
-      (Complex(0,1)*minusProduct(i,k)*plusCurrent(j,k)*plusProduct(i,l)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,k)) - 
-      (Complex(0,1)*sqr(minusProduct(i,k))*plusCurrent(j,l)*plusProduct(i,l)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,l)*plusProduct(i,k));
+      (Complex(0,2)*plusProduct(i,l)*plusProduct(k,l)*minusCurrent(j,l)*minusProduct(i,l))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,k));
   }
 
   if ( g1Hel == 1 && g2Hel == -1 ) {
     return
-      (Complex(0,1)*sqr(minusProduct(i,l))*plusCurrent(j,i)*plusProduct(i,k))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,k)) - 
-      (Complex(0,1)*minusProduct(i,l)*plusCurrent(j,i)*sqr(plusProduct(i,k)))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,l)) - 
-      (Complex(0,2)*minusProduct(i,j)*minusProduct(j,l)*plusCurrent(j,i)*plusProduct(i,j)*plusProduct(j,k))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)*plusProduct(i,l)) - 
-      (Complex(0,2)*minusProduct(j,l)*plusCurrent(k,i)*plusProduct(i,j)*plusProduct(j,k))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)) - 
-      (Complex(0,2)*minusProduct(i,l)*minusProduct(j,l)*plusCurrent(l,i)*plusProduct(i,j)*plusProduct(j,k))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)*plusProduct(i,l)) + 
-      (Complex(0,1)*minusProduct(i,l)*minusProduct(j,k)*plusCurrent(j,i)*plusProduct(i,k)*plusProduct(j,k))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)*plusProduct(i,l)) + 
-      (Complex(0,2)*minusProduct(i,j)*minusProduct(k,l)*plusCurrent(j,i)*plusProduct(i,k)*plusProduct(j,k))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)*plusProduct(i,l)) + 
-      (Complex(0,2)*minusProduct(k,l)*plusCurrent(k,i)*plusProduct(i,k)*plusProduct(j,k))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)) + 
-      (Complex(0,1)*minusProduct(i,l)*minusProduct(k,l)*plusCurrent(l,i)*plusProduct(i,k)*plusProduct(j,k))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)*plusProduct(i,l)) - 
-      (Complex(0,1)*minusProduct(i,l)*minusProduct(j,l)*plusCurrent(j,i)*plusProduct(i,k)*plusProduct(j,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)*plusProduct(i,l)) - 
-      (Complex(0,1)*minusProduct(i,l)*minusProduct(k,l)*plusCurrent(k,i)*plusProduct(i,k)*plusProduct(j,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)*plusProduct(i,l)) - 
-      (Complex(0,2)*sqr(minusProduct(i,l))*plusCurrent(j,l)*plusProduct(k,l))/
+      (Complex(0,-2)*sqr(plusProduct(i,k))*minusCurrent(j,i)*minusProduct(i,l))/
+      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,l)) - 
+      (Complex(0,1)*sqr(plusProduct(i,k))*minusCurrent(j,i)*minusProduct(i,l))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,l)) + 
+      (Complex(0,1)*plusProduct(i,k)*minusCurrent(j,i)*sqr(minusProduct(i,l)))/
       (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,k)) + 
-      (Complex(0,2)*minusProduct(i,l)*minusProduct(j,l)*plusCurrent(j,i)*plusProduct(i,j)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)*plusProduct(i,l)) + 
-      (Complex(0,2)*minusProduct(i,l)*minusProduct(k,l)*plusCurrent(k,i)*plusProduct(i,j)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)*plusProduct(i,l)) - 
-      (Complex(0,1)*sqr(minusProduct(i,l))*plusCurrent(j,k)*plusProduct(i,k)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,k)*plusProduct(i,l)) + 
-      (Complex(0,1)*minusProduct(i,l)*plusCurrent(j,l)*plusProduct(i,k)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,l));
+      (Complex(0,1)*plusProduct(i,k)*plusProduct(j,k)*minusCurrent(j,i)*minusProduct(i,l)*minusProduct(j,k))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k)) - 
+      (Complex(0,1)*plusProduct(i,k)*plusProduct(k,l)*minusCurrent(l,i)*minusProduct(i,l)*minusProduct(j,k))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k)) + 
+      (Complex(0,2)*plusProduct(i,j)*plusProduct(i,k)*minusCurrent(j,k)*minusProduct(j,l))/
+      (invariant(i,k)*invariant(j,l)*plusProduct(i,l)) + 
+      (Complex(0,2)*plusProduct(i,k)*minusCurrent(l,k)*minusProduct(j,l))/(invariant(i,k)*invariant(j,l)) - 
+      (Complex(0,2)*plusProduct(i,j)*plusProduct(j,k)*minusCurrent(j,i)*minusProduct(i,j)*minusProduct(j,l))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k)) + 
+      (Complex(0,2)*plusProduct(i,j)*plusProduct(k,l)*minusCurrent(l,i)*minusProduct(i,j)*minusProduct(j,l))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k)) - 
+      (Complex(0,2)*plusProduct(j,k)*minusCurrent(j,i)*minusProduct(i,l)*minusProduct(j,l))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)) - 
+      (Complex(0,1)*plusProduct(i,k)*plusProduct(j,l)*minusCurrent(j,i)*minusProduct(i,l)*minusProduct(j,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k)) + 
+      (Complex(0,2)*plusProduct(i,j)*plusProduct(k,l)*minusCurrent(j,i)*minusProduct(i,l)*minusProduct(j,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k)) + 
+      (Complex(0,1)*plusProduct(i,k)*plusProduct(k,l)*minusCurrent(k,i)*minusProduct(i,l)*minusProduct(j,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k)) + 
+      (Complex(0,2)*plusProduct(k,l)*minusCurrent(l,i)*minusProduct(i,l)*minusProduct(j,l))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)) + 
+      (Complex(0,2)*plusProduct(k,l)*minusCurrent(l,i)*minusProduct(i,l)*minusProduct(j,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)) - 
+      (Complex(0,2)*sqr(plusProduct(i,k))*minusCurrent(j,k)*minusProduct(k,l))/
+      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,l)) - 
+      (Complex(0,2)*sqr(plusProduct(i,k))*minusCurrent(j,k)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,l)) + 
+      (Complex(0,2)*plusProduct(i,k)*plusProduct(j,k)*minusCurrent(j,i)*minusProduct(i,j)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k)) - 
+      (Complex(0,2)*plusProduct(i,k)*plusProduct(k,l)*minusCurrent(l,i)*minusProduct(i,j)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k)) + 
+      (Complex(0,1)*plusProduct(i,k)*minusCurrent(j,k)*minusProduct(i,l)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,k)) - 
+      (Complex(0,1)*sqr(plusProduct(i,k))*minusCurrent(j,l)*minusProduct(i,l)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k));
   }
 
-  if ( g1Hel == 1 && g2Hel == 1 ) {
+  if ( g1Hel == -1 && g2Hel == 1 ) {
     return
-      (Complex(0,2)*sqr(minusProduct(i,j))*plusCurrent(j,i)*plusProduct(j,k)*plusProduct(j,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)*minusProduct(i,l)) + 
-      (Complex(0,2)*minusProduct(i,j)*plusCurrent(k,i)*plusProduct(j,k)*plusProduct(j,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l)) + 
-      (Complex(0,2)*minusProduct(i,j)*plusCurrent(l,i)*plusProduct(j,k)*plusProduct(j,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)) - 
-      (Complex(0,2)*minusProduct(i,j)*plusCurrent(j,i)*plusProduct(j,k)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l)) - 
-      (Complex(0,2)*minusProduct(i,k)*plusCurrent(k,i)*plusProduct(j,k)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l)) - 
-      (Complex(0,2)*plusCurrent(l,i)*plusProduct(j,k)*plusProduct(k,l))/
+      (Complex(0,1)*sqr(plusProduct(i,l))*minusCurrent(j,i)*minusProduct(i,k))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,k)) - 
+      (Complex(0,1)*plusProduct(i,l)*minusCurrent(j,i)*sqr(minusProduct(i,k)))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,l)) - 
+      (Complex(0,2)*plusProduct(i,j)*plusProduct(j,l)*minusCurrent(j,i)*minusProduct(i,j)*minusProduct(j,k))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) - 
+      (Complex(0,2)*plusProduct(j,l)*minusCurrent(k,i)*minusProduct(i,j)*minusProduct(j,k))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l)) - 
+      (Complex(0,2)*plusProduct(i,l)*plusProduct(j,l)*minusCurrent(l,i)*minusProduct(i,j)*minusProduct(j,k))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) + 
+      (Complex(0,1)*plusProduct(i,l)*plusProduct(j,k)*minusCurrent(j,i)*minusProduct(i,k)*minusProduct(j,k))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) + 
+      (Complex(0,2)*plusProduct(i,j)*plusProduct(k,l)*minusCurrent(j,i)*minusProduct(i,k)*minusProduct(j,k))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) + 
+      (Complex(0,2)*plusProduct(k,l)*minusCurrent(k,i)*minusProduct(i,k)*minusProduct(j,k))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l)) + 
+      (Complex(0,1)*plusProduct(i,l)*plusProduct(k,l)*minusCurrent(l,i)*minusProduct(i,k)*minusProduct(j,k))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) - 
+      (Complex(0,1)*plusProduct(i,l)*plusProduct(j,l)*minusCurrent(j,i)*minusProduct(i,k)*minusProduct(j,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) - 
+      (Complex(0,1)*plusProduct(i,l)*plusProduct(k,l)*minusCurrent(k,i)*minusProduct(i,k)*minusProduct(j,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) - 
+      (Complex(0,2)*sqr(plusProduct(i,l))*minusCurrent(j,l)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,k)) + 
+      (Complex(0,2)*plusProduct(i,l)*plusProduct(j,l)*minusCurrent(j,i)*minusProduct(i,j)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) + 
+      (Complex(0,2)*plusProduct(i,l)*plusProduct(k,l)*minusCurrent(k,i)*minusProduct(i,j)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) - 
+      (Complex(0,1)*sqr(plusProduct(i,l))*minusCurrent(j,k)*minusProduct(i,k)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) + 
+      (Complex(0,1)*plusProduct(i,l)*minusCurrent(j,l)*minusProduct(i,k)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,l));
+  }
+
+  if ( g1Hel == -1 && g2Hel == -1 ) {
+    return
+      (Complex(0,2)*sqr(plusProduct(i,j))*minusCurrent(j,i)*minusProduct(j,k)*minusProduct(j,l))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*plusProduct(i,l)) + 
+      (Complex(0,2)*plusProduct(i,j)*minusCurrent(k,i)*minusProduct(j,k)*minusProduct(j,l))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)) + 
+      (Complex(0,2)*plusProduct(i,j)*minusCurrent(l,i)*minusProduct(j,k)*minusProduct(j,l))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)) - 
+      (Complex(0,2)*plusProduct(i,j)*minusCurrent(j,i)*minusProduct(j,k)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)) - 
+      (Complex(0,2)*plusProduct(i,k)*minusCurrent(k,i)*minusProduct(j,k)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)) - 
+      (Complex(0,2)*minusCurrent(l,i)*minusProduct(j,k)*minusProduct(k,l))/
       (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))) - 
-      (Complex(0,2)*minusProduct(i,j)*plusCurrent(j,i)*plusProduct(j,l)*plusProduct(k,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)) - 
-      (Complex(0,2)*minusProduct(i,j)*plusCurrent(j,i)*plusProduct(j,l)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)) - 
-      (Complex(0,2)*plusCurrent(k,i)*plusProduct(j,l)*plusProduct(k,l))/
+      (Complex(0,2)*plusProduct(i,j)*minusCurrent(j,i)*minusProduct(j,l)*minusProduct(k,l))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)) - 
+      (Complex(0,2)*plusProduct(i,j)*minusCurrent(j,i)*minusProduct(j,l)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)) - 
+      (Complex(0,2)*minusCurrent(k,i)*minusProduct(j,l)*minusProduct(k,l))/
       (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))) - 
-      (Complex(0,2)*plusCurrent(k,i)*plusProduct(j,l)*plusProduct(k,l))/
+      (Complex(0,2)*minusCurrent(k,i)*minusProduct(j,l)*minusProduct(k,l))/
       (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))) - 
-      (Complex(0,2)*minusProduct(i,l)*plusCurrent(l,i)*plusProduct(j,l)*plusProduct(k,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)) - 
-      (Complex(0,2)*minusProduct(i,l)*plusCurrent(l,i)*plusProduct(j,l)*plusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k));
+      (Complex(0,2)*plusProduct(i,l)*minusCurrent(l,i)*minusProduct(j,l)*minusProduct(k,l))/
+      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)) - 
+      (Complex(0,2)*plusProduct(i,l)*minusCurrent(l,i)*minusProduct(j,l)*minusProduct(k,l))/
+      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k));
   }
 
   static LorentzVector<Complex> czero(0.,0.,0.,0.);
@@ -1030,11 +1030,11 @@ const LorentzVector<Complex>& MatchboxCurrents::qqbarqqbarLeftCurrent(int q,    
   if ( kHel == 1 && kbarHel == 1 ) {
     if ( getCurrent(hash<4>(1,1,q,qHel,qbar,qbarHel,k,kHel,kbar,kbarHel)) ) {
       cacheCurrent((Complex(0.,-2.)/invariant(k,l))*
-		   ((plusProduct(k,i)*minusProduct(i,l)*plusCurrent(i,j)+
-		     plusProduct(i,k)*minusProduct(l,k)*plusCurrent(k,j))/
+		   ((minusProduct(k,i)*plusProduct(i,l)*minusCurrent(i,j)+
+		     minusProduct(i,k)*plusProduct(l,k)*minusCurrent(k,j))/
 		    (invariant(k,l)+invariant(i,l)+invariant(i,k))-
-		    (plusProduct(j,k)*minusProduct(l,j)*plusCurrent(i,j)+
-		     plusProduct(l,k)*minusProduct(l,j)*plusCurrent(i,l))/
+		    (minusProduct(j,k)*plusProduct(l,j)*minusCurrent(i,j)+
+		     minusProduct(l,k)*plusProduct(l,j)*minusCurrent(i,l))/
 		    (invariant(k,l)+invariant(j,l)+invariant(j,k))));
     }
 #ifdef CHECK_MatchboxCurrents
@@ -1046,11 +1046,11 @@ const LorentzVector<Complex>& MatchboxCurrents::qqbarqqbarLeftCurrent(int q,    
   if ( kHel == -1 && kbarHel == -1 ) {
     if ( getCurrent(hash<4>(1,1,q,qHel,qbar,qbarHel,k,kHel,kbar,kbarHel)) ) {
       cacheCurrent((Complex(0.,-2.)/invariant(k,l))*
-		   ((plusProduct(l,i)*minusProduct(i,k)*plusCurrent(i,j)+
-		     plusProduct(i,l)*minusProduct(k,l)*plusCurrent(l,j))/
+		   ((minusProduct(l,i)*plusProduct(i,k)*minusCurrent(i,j)+
+		     minusProduct(i,l)*plusProduct(k,l)*minusCurrent(l,j))/
 		    (invariant(k,l)+invariant(i,l)+invariant(i,k))-
-		    (plusProduct(j,l)*minusProduct(k,j)*plusCurrent(i,j)+
-		     plusProduct(k,l)*minusProduct(k,j)*plusCurrent(i,k))/
+		    (minusProduct(j,l)*plusProduct(k,j)*minusCurrent(i,j)+
+		     minusProduct(k,l)*plusProduct(k,j)*minusCurrent(i,k))/
 		    (invariant(k,l)+invariant(j,l)+invariant(j,k))));
     }
 #ifdef CHECK_MatchboxCurrents
@@ -1079,11 +1079,11 @@ const LorentzVector<Complex>& MatchboxCurrents::qqbarqqbarRightCurrent(int q,   
   if ( kHel == 1 && kbarHel == 1 ) {
     if ( getCurrent(hash<4>(2,1,q,qHel,qbar,qbarHel,k,kHel,kbar,kbarHel)) ) {
       cacheCurrent((Complex(0.,-2.)/invariant(k,l))*
-		   ((plusProduct(k,i)*minusProduct(i,l)*plusCurrent(j,i)+
-		     plusProduct(l,k)*minusProduct(l,i)*plusCurrent(j,l))/
+		   ((minusProduct(k,i)*plusProduct(i,l)*minusCurrent(j,i)+
+		     minusProduct(l,k)*plusProduct(l,i)*minusCurrent(j,l))/
 		    (invariant(k,l)+invariant(i,l)+invariant(i,k))-
-		    (plusProduct(j,k)*minusProduct(l,j)*plusCurrent(j,i)+
-		     plusProduct(j,k)*minusProduct(l,k)*plusCurrent(k,i))/
+		    (minusProduct(j,k)*plusProduct(l,j)*minusCurrent(j,i)+
+		     minusProduct(j,k)*plusProduct(l,k)*minusCurrent(k,i))/
 		    (invariant(k,l)+invariant(j,l)+invariant(j,k))));
     }
 #ifdef CHECK_MatchboxCurrents
@@ -1095,11 +1095,11 @@ const LorentzVector<Complex>& MatchboxCurrents::qqbarqqbarRightCurrent(int q,   
   if ( kHel == -1 && kbarHel == -1 ) {
     if ( getCurrent(hash<4>(2,1,q,qHel,qbar,qbarHel,k,kHel,kbar,kbarHel)) ) {
       cacheCurrent((Complex(0.,-2.)/invariant(k,l))*
-		   ((plusProduct(l,i)*minusProduct(i,k)*plusCurrent(j,i)+
-		     plusProduct(k,l)*minusProduct(k,i)*plusCurrent(j,k))/
+		   ((minusProduct(l,i)*plusProduct(i,k)*minusCurrent(j,i)+
+		     minusProduct(k,l)*plusProduct(k,i)*minusCurrent(j,k))/
 		    (invariant(k,l)+invariant(i,l)+invariant(i,k))-
-		    (plusProduct(j,l)*minusProduct(k,j)*plusCurrent(j,i)+
-		     plusProduct(j,l)*minusProduct(k,l)*plusCurrent(l,i))/
+		    (minusProduct(j,l)*plusProduct(k,j)*minusCurrent(j,i)+
+		     minusProduct(j,l)*plusProduct(k,l)*minusCurrent(l,i))/
 		    (invariant(k,l)+invariant(j,l)+invariant(j,k))));
     }
 #ifdef CHECK_MatchboxCurrents
@@ -2577,37 +2577,37 @@ LorentzVector<Complex> MatchboxCurrents::qqbargGeneralLeftLoopCurrent(int i, int
   Complex c10 = qqbargLoops[9]; Complex c11 = qqbargLoops[10]; Complex c12 = qqbargLoops[11];
   Complex c13 = qqbargLoops[12];
 
-  if ( gHel == -1 ) {
-    return
-      (sqrt(2)*c6*minusProduct(j,k)*plusCurrent(n,k)*plusProduct(i,k))/(invariant(j,k)*plusProduct(k,n)) + 
-      (sqrt(2)*c1*minusProduct(j,k)*momentum(i)*plusProduct(i,n))/plusProduct(k,n) + 
-      (sqrt(2)*c2*minusProduct(j,k)*momentum(j)*plusProduct(i,n))/plusProduct(k,n) + 
-      (2*sqrt(2)*c3*minusProduct(j,k)*momentum(k)*plusProduct(i,n))/(invariant(j,k)*plusProduct(k,n)) + 
-      (sqrt(2)*c4*minusProduct(i,k)*plusCurrent(i,j)*plusProduct(i,n))/(invariant(i,k)*plusProduct(k,n)) - 
-      (sqrt(2)*c7*minusProduct(i,k)*minusProduct(j,k)*momentum(i)*plusProduct(i,k)*plusProduct(i,n))/(invariant(i,k)*plusProduct(k,n)) - 
-      (sqrt(2)*c9*minusProduct(i,k)*minusProduct(j,k)*momentum(j)*plusProduct(i,k)*plusProduct(i,n))/(invariant(i,k)*plusProduct(k,n)) - 
-      (2*sqrt(2)*c11*minusProduct(i,k)*minusProduct(j,k)*momentum(k)*plusProduct(i,k)*plusProduct(i,n))/(invariant(i,k)*invariant(j,k)*plusProduct(k,n)) + 
-      (sqrt(2)*c5*minusProduct(j,k)*plusCurrent(i,j)*plusProduct(j,n))/(invariant(j,k)*plusProduct(k,n)) - 
-      (sqrt(2)*c8*sqr(minusProduct(j,k))*momentum(i)*plusProduct(i,k)*plusProduct(j,n))/(invariant(j,k)*plusProduct(k,n)) - 
-      (sqrt(2)*c10*sqr(minusProduct(j,k))*momentum(j)*plusProduct(i,k)*plusProduct(j,n))/(invariant(j,k)*plusProduct(k,n)) - 
-      (2*sqrt(2)*c12*sqr(minusProduct(j,k))*momentum(k)*plusProduct(i,k)*plusProduct(j,n))/(sqr(invariant(j,k))*plusProduct(k,n));
-  }
-
   if ( gHel == 1 ) {
     return
-      -((sqrt(2)*c1*minusProduct(j,n)*momentum(i)*plusProduct(i,k))/minusProduct(k,n)) - 
-      (sqrt(2)*c2*minusProduct(j,n)*momentum(j)*plusProduct(i,k))/minusProduct(k,n) - 
-      (2*sqrt(2)*c3*minusProduct(j,n)*momentum(k)*plusProduct(i,k))/(invariant(j,k)*minusProduct(k,n)) - 
-      (sqrt(2)*c4*minusProduct(i,n)*plusCurrent(i,j)*plusProduct(i,k))/(invariant(i,k)*minusProduct(k,n)) + 
-      (sqrt(2)*c13*plusCurrent(k,j)*plusProduct(i,k))/invariant(i,k) + (sqrt(2)*c13*plusCurrent(k,j)*plusProduct(i,k))/invariant(j,k) - 
-      (sqrt(2)*c6*minusProduct(j,k)*plusCurrent(k,n)*plusProduct(i,k))/(invariant(j,k)*minusProduct(k,n)) + 
-      (sqrt(2)*c7*minusProduct(i,n)*minusProduct(j,k)*momentum(i)*sqr(plusProduct(i,k)))/(invariant(i,k)*minusProduct(k,n)) + 
-      (sqrt(2)*c9*minusProduct(i,n)*minusProduct(j,k)*momentum(j)*sqr(plusProduct(i,k)))/(invariant(i,k)*minusProduct(k,n)) + 
-      (2*sqrt(2)*c11*minusProduct(i,n)*minusProduct(j,k)*momentum(k)*sqr(plusProduct(i,k)))/(invariant(i,k)*invariant(j,k)*minusProduct(k,n)) - 
-      (sqrt(2)*c5*minusProduct(j,n)*plusCurrent(i,j)*plusProduct(j,k))/(invariant(j,k)*minusProduct(k,n)) + 
-      (sqrt(2)*c8*minusProduct(j,k)*minusProduct(j,n)*momentum(i)*plusProduct(i,k)*plusProduct(j,k))/(invariant(j,k)*minusProduct(k,n)) + 
-      (sqrt(2)*c10*minusProduct(j,k)*minusProduct(j,n)*momentum(j)*plusProduct(i,k)*plusProduct(j,k))/(invariant(j,k)*minusProduct(k,n)) + 
-      (2*sqrt(2)*c12*minusProduct(j,k)*minusProduct(j,n)*momentum(k)*plusProduct(i,k)*plusProduct(j,k))/(sqr(invariant(j,k))*minusProduct(k,n));
+      (sqrt(2)*c6*plusProduct(j,k)*minusCurrent(n,k)*minusProduct(i,k))/(invariant(j,k)*minusProduct(k,n)) + 
+      (sqrt(2)*c1*plusProduct(j,k)*momentum(i)*minusProduct(i,n))/minusProduct(k,n) + 
+      (sqrt(2)*c2*plusProduct(j,k)*momentum(j)*minusProduct(i,n))/minusProduct(k,n) + 
+      (2*sqrt(2)*c3*plusProduct(j,k)*momentum(k)*minusProduct(i,n))/(invariant(j,k)*minusProduct(k,n)) + 
+      (sqrt(2)*c4*plusProduct(i,k)*minusCurrent(i,j)*minusProduct(i,n))/(invariant(i,k)*minusProduct(k,n)) - 
+      (sqrt(2)*c7*plusProduct(i,k)*plusProduct(j,k)*momentum(i)*minusProduct(i,k)*minusProduct(i,n))/(invariant(i,k)*minusProduct(k,n)) - 
+      (sqrt(2)*c9*plusProduct(i,k)*plusProduct(j,k)*momentum(j)*minusProduct(i,k)*minusProduct(i,n))/(invariant(i,k)*minusProduct(k,n)) - 
+      (2*sqrt(2)*c11*plusProduct(i,k)*plusProduct(j,k)*momentum(k)*minusProduct(i,k)*minusProduct(i,n))/(invariant(i,k)*invariant(j,k)*minusProduct(k,n)) + 
+      (sqrt(2)*c5*plusProduct(j,k)*minusCurrent(i,j)*minusProduct(j,n))/(invariant(j,k)*minusProduct(k,n)) - 
+      (sqrt(2)*c8*sqr(plusProduct(j,k))*momentum(i)*minusProduct(i,k)*minusProduct(j,n))/(invariant(j,k)*minusProduct(k,n)) - 
+      (sqrt(2)*c10*sqr(plusProduct(j,k))*momentum(j)*minusProduct(i,k)*minusProduct(j,n))/(invariant(j,k)*minusProduct(k,n)) - 
+      (2*sqrt(2)*c12*sqr(plusProduct(j,k))*momentum(k)*minusProduct(i,k)*minusProduct(j,n))/(sqr(invariant(j,k))*minusProduct(k,n));
+  }
+
+  if ( gHel == -1 ) {
+    return
+      -((sqrt(2)*c1*plusProduct(j,n)*momentum(i)*minusProduct(i,k))/plusProduct(k,n)) - 
+      (sqrt(2)*c2*plusProduct(j,n)*momentum(j)*minusProduct(i,k))/plusProduct(k,n) - 
+      (2*sqrt(2)*c3*plusProduct(j,n)*momentum(k)*minusProduct(i,k))/(invariant(j,k)*plusProduct(k,n)) - 
+      (sqrt(2)*c4*plusProduct(i,n)*minusCurrent(i,j)*minusProduct(i,k))/(invariant(i,k)*plusProduct(k,n)) + 
+      (sqrt(2)*c13*minusCurrent(k,j)*minusProduct(i,k))/invariant(i,k) + (sqrt(2)*c13*minusCurrent(k,j)*minusProduct(i,k))/invariant(j,k) - 
+      (sqrt(2)*c6*plusProduct(j,k)*minusCurrent(k,n)*minusProduct(i,k))/(invariant(j,k)*plusProduct(k,n)) + 
+      (sqrt(2)*c7*plusProduct(i,n)*plusProduct(j,k)*momentum(i)*sqr(minusProduct(i,k)))/(invariant(i,k)*plusProduct(k,n)) + 
+      (sqrt(2)*c9*plusProduct(i,n)*plusProduct(j,k)*momentum(j)*sqr(minusProduct(i,k)))/(invariant(i,k)*plusProduct(k,n)) + 
+      (2*sqrt(2)*c11*plusProduct(i,n)*plusProduct(j,k)*momentum(k)*sqr(minusProduct(i,k)))/(invariant(i,k)*invariant(j,k)*plusProduct(k,n)) - 
+      (sqrt(2)*c5*plusProduct(j,n)*minusCurrent(i,j)*minusProduct(j,k))/(invariant(j,k)*plusProduct(k,n)) + 
+      (sqrt(2)*c8*plusProduct(j,k)*plusProduct(j,n)*momentum(i)*minusProduct(i,k)*minusProduct(j,k))/(invariant(j,k)*plusProduct(k,n)) + 
+      (sqrt(2)*c10*plusProduct(j,k)*plusProduct(j,n)*momentum(j)*minusProduct(i,k)*minusProduct(j,k))/(invariant(j,k)*plusProduct(k,n)) + 
+      (2*sqrt(2)*c12*plusProduct(j,k)*plusProduct(j,n)*momentum(k)*minusProduct(i,k)*minusProduct(j,k))/(sqr(invariant(j,k))*plusProduct(k,n));
   }
 
   static LorentzVector<Complex> czero(0.,0.,0.,0.);
@@ -2627,23 +2627,23 @@ LorentzVector<Complex> MatchboxCurrents::qqbargFixedLeftLoopCurrent(int i, int,
   Complex c10 = qqbargLoops[9]; Complex c11 = qqbargLoops[10]; Complex c12 = qqbargLoops[11];
   Complex c13 = qqbargLoops[12];
 
-  if ( gHel == -1 ) {
-    return
-      -((sqrt(2)*c6*minusProduct(j,k)*plusCurrent(i,k))/invariant(j,k)) 
-      - (sqrt(2)*c8*sqr(minusProduct(j,k))*momentum(i)*plusProduct(i,j))/invariant(j,k) - 
-      (sqrt(2)*c10*sqr(minusProduct(j,k))*momentum(j)*plusProduct(i,j))/invariant(j,k) - 
-      (2*sqrt(2)*c12*sqr(minusProduct(j,k))*momentum(k)*plusProduct(i,j))/sqr(invariant(j,k)) + 
-      (sqrt(2)*c5*minusProduct(j,k)*plusCurrent(i,j)*plusProduct(i,j))/(invariant(j,k)*plusProduct(i,k));
-  }
-
   if ( gHel == 1 ) {
     return
-      (sqrt(2)*c4*minusProduct(i,j)*plusCurrent(i,j)*plusProduct(i,k))/(invariant(i,k)*minusProduct(j,k)) + 
-      (sqrt(2)*c13*plusCurrent(k,j)*plusProduct(i,k))/invariant(i,k) + (sqrt(2)*c13*plusCurrent(k,j)*plusProduct(i,k))/invariant(j,k) + 
-      (sqrt(2)*c6*plusCurrent(k,j)*plusProduct(i,k))/invariant(j,k) - (sqrt(2)*c7*minusProduct(i,j)*momentum(i)*
-								       sqr(plusProduct(i,k)))/invariant(i,k) - 
-      (sqrt(2)*c9*minusProduct(i,j)*momentum(j)*sqr(plusProduct(i,k)))/invariant(i,k) - 
-      (2*sqrt(2)*c11*minusProduct(i,j)*momentum(k)*sqr(plusProduct(i,k)))/(invariant(i,k)*invariant(j,k));
+      -((sqrt(2)*c6*plusProduct(j,k)*minusCurrent(i,k))/invariant(j,k)) 
+      - (sqrt(2)*c8*sqr(plusProduct(j,k))*momentum(i)*minusProduct(i,j))/invariant(j,k) - 
+      (sqrt(2)*c10*sqr(plusProduct(j,k))*momentum(j)*minusProduct(i,j))/invariant(j,k) - 
+      (2*sqrt(2)*c12*sqr(plusProduct(j,k))*momentum(k)*minusProduct(i,j))/sqr(invariant(j,k)) + 
+      (sqrt(2)*c5*plusProduct(j,k)*minusCurrent(i,j)*minusProduct(i,j))/(invariant(j,k)*minusProduct(i,k));
+  }
+
+  if ( gHel == -1 ) {
+    return
+      (sqrt(2)*c4*plusProduct(i,j)*minusCurrent(i,j)*minusProduct(i,k))/(invariant(i,k)*plusProduct(j,k)) + 
+      (sqrt(2)*c13*minusCurrent(k,j)*minusProduct(i,k))/invariant(i,k) + (sqrt(2)*c13*minusCurrent(k,j)*minusProduct(i,k))/invariant(j,k) + 
+      (sqrt(2)*c6*minusCurrent(k,j)*minusProduct(i,k))/invariant(j,k) - (sqrt(2)*c7*plusProduct(i,j)*momentum(i)*
+								       sqr(minusProduct(i,k)))/invariant(i,k) - 
+      (sqrt(2)*c9*plusProduct(i,j)*momentum(j)*sqr(minusProduct(i,k)))/invariant(i,k) - 
+      (2*sqrt(2)*c11*plusProduct(i,j)*momentum(k)*sqr(minusProduct(i,k)))/(invariant(i,k)*invariant(j,k));
   }
 
   static LorentzVector<Complex> czero(0.,0.,0.,0.);
@@ -2664,38 +2664,38 @@ LorentzVector<Complex> MatchboxCurrents::qqbargGeneralRightLoopCurrent(int i,   
   Complex c10 = qqbargLoops[9]; Complex c11 = qqbargLoops[10]; Complex c12 = qqbargLoops[11];
   Complex c13 = qqbargLoops[12];
 
-  if ( gHel == -1 ) {
-    return
-      -((sqrt(2)*c13*minusProduct(i,k)*plusCurrent(j,k))/invariant(i,k)) - (sqrt(2)*c13*minusProduct(i,k)*plusCurrent(j,k))/invariant(j,k) + 
-      (sqrt(2)*c4*minusProduct(i,k)*plusCurrent(j,i)*plusProduct(i,n))/(invariant(i,k)*plusProduct(k,n)) + 
-      (sqrt(2)*c6*minusProduct(i,k)*plusCurrent(n,k)*plusProduct(j,k))/(invariant(j,k)*plusProduct(k,n)) - 
-      (sqrt(2)*c7*sqr(minusProduct(i,k))*momentum(i)*plusProduct(i,n)*plusProduct(j,k))/(invariant(i,k)*plusProduct(k,n)) - 
-      (sqrt(2)*c9*sqr(minusProduct(i,k))*momentum(j)*plusProduct(i,n)*plusProduct(j,k))/(invariant(i,k)*plusProduct(k,n)) - 
-      (2*sqrt(2)*c11*sqr(minusProduct(i,k))*momentum(k)*plusProduct(i,n)*plusProduct(j,k))/(invariant(i,k)*invariant(j,k)*plusProduct(k,n)) + 
-      (sqrt(2)*c1*minusProduct(i,k)*momentum(i)*plusProduct(j,n))/plusProduct(k,n) + 
-      (sqrt(2)*c2*minusProduct(i,k)*momentum(j)*plusProduct(j,n))/plusProduct(k,n) + 
-      (2*sqrt(2)*c3*minusProduct(i,k)*momentum(k)*plusProduct(j,n))/(invariant(j,k)*plusProduct(k,n)) + 
-      (sqrt(2)*c5*minusProduct(j,k)*plusCurrent(j,i)*plusProduct(j,n))/(invariant(j,k)*plusProduct(k,n)) - 
-      (sqrt(2)*c8*minusProduct(i,k)*minusProduct(j,k)*momentum(i)*plusProduct(j,k)*plusProduct(j,n))/(invariant(j,k)*plusProduct(k,n)) - 
-      (sqrt(2)*c10*minusProduct(i,k)*minusProduct(j,k)*momentum(j)*plusProduct(j,k)*plusProduct(j,n))/(invariant(j,k)*plusProduct(k,n)) - 
-      (2*sqrt(2)*c12*minusProduct(i,k)*minusProduct(j,k)*momentum(k)*plusProduct(j,k)*plusProduct(j,n))/(sqr(invariant(j,k))*plusProduct(k,n));
-  }
-
   if ( gHel == 1 ) {
     return
-      -((sqrt(2)*c4*minusProduct(i,n)*plusCurrent(j,i)*plusProduct(i,k))/(invariant(i,k)*minusProduct(k,n))) - 
-      (sqrt(2)*c1*minusProduct(i,n)*momentum(i)*plusProduct(j,k))/minusProduct(k,n) - 
-      (sqrt(2)*c2*minusProduct(i,n)*momentum(j)*plusProduct(j,k))/minusProduct(k,n) - 
-      (2*sqrt(2)*c3*minusProduct(i,n)*momentum(k)*plusProduct(j,k))/(invariant(j,k)*minusProduct(k,n)) - 
-      (sqrt(2)*c5*minusProduct(j,n)*plusCurrent(j,i)*plusProduct(j,k))/(invariant(j,k)*minusProduct(k,n)) - 
-      (sqrt(2)*c6*minusProduct(i,k)*plusCurrent(k,n)*plusProduct(j,k))/(invariant(j,k)*minusProduct(k,n)) + 
-      (sqrt(2)*c7*minusProduct(i,k)*minusProduct(i,n)*momentum(i)*plusProduct(i,k)*plusProduct(j,k))/(invariant(i,k)*minusProduct(k,n)) + 
-      (sqrt(2)*c9*minusProduct(i,k)*minusProduct(i,n)*momentum(j)*plusProduct(i,k)*plusProduct(j,k))/(invariant(i,k)*minusProduct(k,n)) + 
-      (2*sqrt(2)*c11*minusProduct(i,k)*minusProduct(i,n)*momentum(k)*plusProduct(i,k)*plusProduct(j,k))/
-      (invariant(i,k)*invariant(j,k)*minusProduct(k,n)) + 
-      (sqrt(2)*c8*minusProduct(i,k)*minusProduct(j,n)*momentum(i)*sqr(plusProduct(j,k)))/(invariant(j,k)*minusProduct(k,n)) + 
-      (sqrt(2)*c10*minusProduct(i,k)*minusProduct(j,n)*momentum(j)*sqr(plusProduct(j,k)))/(invariant(j,k)*minusProduct(k,n)) + 
-      (2*sqrt(2)*c12*minusProduct(i,k)*minusProduct(j,n)*momentum(k)*sqr(plusProduct(j,k)))/(sqr(invariant(j,k))*minusProduct(k,n));
+      -((sqrt(2)*c13*plusProduct(i,k)*minusCurrent(j,k))/invariant(i,k)) - (sqrt(2)*c13*plusProduct(i,k)*minusCurrent(j,k))/invariant(j,k) + 
+      (sqrt(2)*c4*plusProduct(i,k)*minusCurrent(j,i)*minusProduct(i,n))/(invariant(i,k)*minusProduct(k,n)) + 
+      (sqrt(2)*c6*plusProduct(i,k)*minusCurrent(n,k)*minusProduct(j,k))/(invariant(j,k)*minusProduct(k,n)) - 
+      (sqrt(2)*c7*sqr(plusProduct(i,k))*momentum(i)*minusProduct(i,n)*minusProduct(j,k))/(invariant(i,k)*minusProduct(k,n)) - 
+      (sqrt(2)*c9*sqr(plusProduct(i,k))*momentum(j)*minusProduct(i,n)*minusProduct(j,k))/(invariant(i,k)*minusProduct(k,n)) - 
+      (2*sqrt(2)*c11*sqr(plusProduct(i,k))*momentum(k)*minusProduct(i,n)*minusProduct(j,k))/(invariant(i,k)*invariant(j,k)*minusProduct(k,n)) + 
+      (sqrt(2)*c1*plusProduct(i,k)*momentum(i)*minusProduct(j,n))/minusProduct(k,n) + 
+      (sqrt(2)*c2*plusProduct(i,k)*momentum(j)*minusProduct(j,n))/minusProduct(k,n) + 
+      (2*sqrt(2)*c3*plusProduct(i,k)*momentum(k)*minusProduct(j,n))/(invariant(j,k)*minusProduct(k,n)) + 
+      (sqrt(2)*c5*plusProduct(j,k)*minusCurrent(j,i)*minusProduct(j,n))/(invariant(j,k)*minusProduct(k,n)) - 
+      (sqrt(2)*c8*plusProduct(i,k)*plusProduct(j,k)*momentum(i)*minusProduct(j,k)*minusProduct(j,n))/(invariant(j,k)*minusProduct(k,n)) - 
+      (sqrt(2)*c10*plusProduct(i,k)*plusProduct(j,k)*momentum(j)*minusProduct(j,k)*minusProduct(j,n))/(invariant(j,k)*minusProduct(k,n)) - 
+      (2*sqrt(2)*c12*plusProduct(i,k)*plusProduct(j,k)*momentum(k)*minusProduct(j,k)*minusProduct(j,n))/(sqr(invariant(j,k))*minusProduct(k,n));
+  }
+
+  if ( gHel == -1 ) {
+    return
+      -((sqrt(2)*c4*plusProduct(i,n)*minusCurrent(j,i)*minusProduct(i,k))/(invariant(i,k)*plusProduct(k,n))) - 
+      (sqrt(2)*c1*plusProduct(i,n)*momentum(i)*minusProduct(j,k))/plusProduct(k,n) - 
+      (sqrt(2)*c2*plusProduct(i,n)*momentum(j)*minusProduct(j,k))/plusProduct(k,n) - 
+      (2*sqrt(2)*c3*plusProduct(i,n)*momentum(k)*minusProduct(j,k))/(invariant(j,k)*plusProduct(k,n)) - 
+      (sqrt(2)*c5*plusProduct(j,n)*minusCurrent(j,i)*minusProduct(j,k))/(invariant(j,k)*plusProduct(k,n)) - 
+      (sqrt(2)*c6*plusProduct(i,k)*minusCurrent(k,n)*minusProduct(j,k))/(invariant(j,k)*plusProduct(k,n)) + 
+      (sqrt(2)*c7*plusProduct(i,k)*plusProduct(i,n)*momentum(i)*minusProduct(i,k)*minusProduct(j,k))/(invariant(i,k)*plusProduct(k,n)) + 
+      (sqrt(2)*c9*plusProduct(i,k)*plusProduct(i,n)*momentum(j)*minusProduct(i,k)*minusProduct(j,k))/(invariant(i,k)*plusProduct(k,n)) + 
+      (2*sqrt(2)*c11*plusProduct(i,k)*plusProduct(i,n)*momentum(k)*minusProduct(i,k)*minusProduct(j,k))/
+      (invariant(i,k)*invariant(j,k)*plusProduct(k,n)) + 
+      (sqrt(2)*c8*plusProduct(i,k)*plusProduct(j,n)*momentum(i)*sqr(minusProduct(j,k)))/(invariant(j,k)*plusProduct(k,n)) + 
+      (sqrt(2)*c10*plusProduct(i,k)*plusProduct(j,n)*momentum(j)*sqr(minusProduct(j,k)))/(invariant(j,k)*plusProduct(k,n)) + 
+      (2*sqrt(2)*c12*plusProduct(i,k)*plusProduct(j,n)*momentum(k)*sqr(minusProduct(j,k)))/(sqr(invariant(j,k))*plusProduct(k,n));
   }
 
   static LorentzVector<Complex> czero(0.,0.,0.,0.);
@@ -2715,24 +2715,24 @@ LorentzVector<Complex> MatchboxCurrents::qqbargFixedRightLoopCurrent(int i, int,
   Complex c10 = qqbargLoops[9]; Complex c11 = qqbargLoops[10]; Complex c12 = qqbargLoops[11];
   Complex c13 = qqbargLoops[12];
 
-  if ( gHel == -1 ) {
-    return
-      -((sqrt(2)*c13*minusProduct(i,k)*plusCurrent(j,k))/invariant(i,k)) - 
-      (sqrt(2)*c13*minusProduct(i,k)*plusCurrent(j,k))/invariant(j,k) - 
-      (sqrt(2)*c6*minusProduct(i,k)*plusCurrent(j,k))/invariant(j,k) + 
-      (sqrt(2)*c7*sqr(minusProduct(i,k))*momentum(i)*plusProduct(i,j))/invariant(i,k) + 
-      (sqrt(2)*c9*sqr(minusProduct(i,k))*momentum(j)*plusProduct(i,j))/invariant(i,k) + 
-      (2*sqrt(2)*c11*sqr(minusProduct(i,k))*momentum(k)*plusProduct(i,j))/(invariant(i,k)*invariant(j,k)) - 
-      (sqrt(2)*c4*minusProduct(i,k)*plusCurrent(j,i)*plusProduct(i,j))/(invariant(i,k)*plusProduct(j,k));
-  }
-
   if ( gHel == 1 ) {
     return
-      -((sqrt(2)*c5*minusProduct(i,j)*plusCurrent(j,i)*plusProduct(j,k))/(invariant(j,k)*minusProduct(i,k))) + 
-      (sqrt(2)*c6*plusCurrent(k,i)*plusProduct(j,k))/invariant(j,k) + 
-      (sqrt(2)*c8*minusProduct(i,j)*momentum(i)*sqr(plusProduct(j,k)))/invariant(j,k) + 
-      (sqrt(2)*c10*minusProduct(i,j)*momentum(j)*sqr(plusProduct(j,k)))/invariant(j,k) + 
-      (2*sqrt(2)*c12*minusProduct(i,j)*momentum(k)*sqr(plusProduct(j,k)))/sqr(invariant(j,k));
+      -((sqrt(2)*c13*plusProduct(i,k)*minusCurrent(j,k))/invariant(i,k)) - 
+      (sqrt(2)*c13*plusProduct(i,k)*minusCurrent(j,k))/invariant(j,k) - 
+      (sqrt(2)*c6*plusProduct(i,k)*minusCurrent(j,k))/invariant(j,k) + 
+      (sqrt(2)*c7*sqr(plusProduct(i,k))*momentum(i)*minusProduct(i,j))/invariant(i,k) + 
+      (sqrt(2)*c9*sqr(plusProduct(i,k))*momentum(j)*minusProduct(i,j))/invariant(i,k) + 
+      (2*sqrt(2)*c11*sqr(plusProduct(i,k))*momentum(k)*minusProduct(i,j))/(invariant(i,k)*invariant(j,k)) - 
+      (sqrt(2)*c4*plusProduct(i,k)*minusCurrent(j,i)*minusProduct(i,j))/(invariant(i,k)*minusProduct(j,k));
+  }
+
+  if ( gHel == -1 ) {
+    return
+      -((sqrt(2)*c5*plusProduct(i,j)*minusCurrent(j,i)*minusProduct(j,k))/(invariant(j,k)*plusProduct(i,k))) + 
+      (sqrt(2)*c6*minusCurrent(k,i)*minusProduct(j,k))/invariant(j,k) + 
+      (sqrt(2)*c8*plusProduct(i,j)*momentum(i)*sqr(minusProduct(j,k)))/invariant(j,k) + 
+      (sqrt(2)*c10*plusProduct(i,j)*momentum(j)*sqr(minusProduct(j,k)))/invariant(j,k) + 
+      (2*sqrt(2)*c12*plusProduct(i,j)*momentum(k)*sqr(minusProduct(j,k)))/sqr(invariant(j,k));
   }
 
   static LorentzVector<Complex> czero(0.,0.,0.,0.);
