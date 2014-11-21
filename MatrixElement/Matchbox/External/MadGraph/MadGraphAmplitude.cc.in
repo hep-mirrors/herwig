@@ -84,13 +84,16 @@ void MadGraphAmplitude::initProcess(const cPDVector& ) {
   if ( lastMatchboxXComb()->initialized() )
     return;
 
-  if ( !DynamicLoader::load(factory()->buildStorage()+"/MadGraphAmplitudes"+"/InterfaceMadGraph.so") )
+  string MGProcLibPath = theProcessPath == "" ? factory()->buildStorage()+"MadGraphAmplitudes" : theProcessPath;
+  if (MGProcLibPath.at(MGProcLibPath.length()-1) != '/') MGProcLibPath.append("/");
+
+  if ( !DynamicLoader::load(MGProcLibPath+"InterfaceMadGraph.so") )
     throw Exception() << "Failed to load MadGraph amplitudes\n"
-		      << DynamicLoader::lastErrorMessage
-		      << Exception::abortnow;
+                      << DynamicLoader::lastErrorMessage
+                      << Exception::abortnow;
 
   if (!initializedMad){
-    string mstr=(factory()->runStorage()+"/MadGraphAmplitudes"+"/param_card"+((theMGmodel=="loop_sm")?"":("_"+theMGmodel))+".dat");
+    string mstr=(factory()->runStorage()+"MadGraphAmplitudes"+"/param_card"+((theMGmodel=="loop_sm")?"":("_"+theMGmodel))+".dat");
     size_t len = mstr.size();
     mginitproc_(const_cast<char*>(mstr.c_str()),len);
     initializedMad=true;
@@ -101,12 +104,15 @@ void MadGraphAmplitude::initProcess(const cPDVector& ) {
 bool MadGraphAmplitude::initializeExternal() {
 
   loadProcessMap();
-  std::system(("mkdir -p " + factory()->buildStorage()+"/MadGraphAmplitudes").c_str());
+  string MGProcLibPath = theProcessPath == "" ? factory()->buildStorage()+"MadGraphAmplitudes" : theProcessPath;
+  if (MGProcLibPath.at(MGProcLibPath.length()-1) != '/') MGProcLibPath.append("/");
+  
+  std::system(("mkdir -p " + MGProcLibPath).c_str());
   std::system(("mkdir -p " + factory()->runStorage()+"/MadGraphAmplitudes").c_str());
 
-  string born= factory()->buildStorage()+"/MadGraphAmplitudes"+"/BornAmplitudes.dat";
+  string born= MGProcLibPath+"BornAmplitudes.dat";
   ofstream borns(born.c_str());
-  string virt= factory()->buildStorage()+"/MadGraphAmplitudes"+"/VirtAmplitudes.dat";
+  string virt= MGProcLibPath+"VirtAmplitudes.dat";
   ofstream virts(virt.c_str());
   
   for (vector<string>::iterator amps=BornAmplitudes.begin();amps!=BornAmplitudes.end();amps++)
@@ -137,7 +143,7 @@ bool MadGraphAmplitude::initializeExternal() {
 
   
   string cmd = "python @prefix@/bin/mg2Matchbox.py ";
-  cmd +=" --buildpath "+factory()->buildStorage()+"/MadGraphAmplitudes";
+  cmd +=" --buildpath "+MGProcLibPath;
   cmd +=" --model "+theMGmodel;
   cmd +=" --runpath "+factory()->runStorage()+"/MadGraphAmplitudes " ;  
   // TODO move to boost::system
@@ -151,21 +157,21 @@ bool MadGraphAmplitude::initializeExternal() {
   char cwd[1024];
   if ( !getcwd(cwd,sizeof(cwd)) )
     throw Exception() << "failed to determine current working directory\n"
-		      << Exception::abortnow;
+                      << Exception::abortnow;
      
   cmd +=" --madgraph @MADGRAPHPREFIX@/bin " ;
   cmd +="--build > ";
-  cmd +=  factory()->buildStorage()+"/MadGraphAmplitudes/MG.log 2>&1";
+  cmd +=  MGProcLibPath+"MG.log 2>&1";
   
   
   generator()->log() << "\n\nCompiling MadGraph amplitudes. This may take some time -- please be patient.\n"
-		     << "In case of problems see " << factory()->buildStorage()+"/MadGraphAmplitudes/MG.log for details.\n\n"
-		     << flush;
+                     << "In case of problems see " << MGProcLibPath << "MG.log for details.\n\n"
+                     << flush;
   std::system(cmd.c_str());
   
   
   cmd = "python @prefix@/bin/mg2Matchbox.py ";
-  cmd +=" --buildpath "+factory()->buildStorage()+"/MadGraphAmplitudes";
+  cmd +=" --buildpath "+MGProcLibPath;
   cmd +=" --model "+theMGmodel;
   cmd +=" --runpath "+factory()->runStorage()+"/MadGraphAmplitudes " ;
   std::system(cmd.c_str());
@@ -210,7 +216,9 @@ int MadGraphAmplitude::externalId(const cPDVector& proc) {
 void MadGraphAmplitude::loadProcessMap() {
   if ( !processmap().empty() )
     return;
-  string line = factory()->buildStorage()+"/MadGraphAmplitudes"+"/"+"processmap.dat";
+  string MGProcLibPath = theProcessPath == "" ? factory()->buildStorage()+"MadGraphAmplitudes" : theProcessPath;
+  if (MGProcLibPath.at(MGProcLibPath.length()-1) != '/') MGProcLibPath.append("/");
+  string line = MGProcLibPath+"processmap.dat";
   ifstream infile(line.c_str());
   if ( !infile )
     return;
@@ -235,8 +243,8 @@ void MadGraphAmplitude::doinitrun() {
 }
 
 bool MadGraphAmplitude::canHandle(const PDVector& p,
-				  Ptr<MatchboxFactory>::tptr factory,
-				  bool virt) const {
+                                  Ptr<MatchboxFactory>::tptr factory,
+                                  bool virt) const {
   if ( factory->processData()->diagramMap().find(p) !=
        factory->processData()->diagramMap().end() )
     return true;
@@ -258,7 +266,7 @@ bool MadGraphAmplitude::canHandle(const PDVector& p,
   
   return true;
 }
-				   
+
 void MadGraphAmplitude::prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr me) {
 
   useMe();
@@ -295,42 +303,42 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
     for( int it = 0; it < ncol; it++ ){
       int n = 0;
       for ( cPDVector::const_iterator nx = mePartonData().begin();
-	    nx != mePartonData().end(); nx++ )
-	if ( (*nx)->coloured() ) n++;
+            nx != mePartonData().end(); nx++ )
+        if ( (*nx)->coloured() ) n++;
       set<vector<size_t> > tmpset;
       vector<size_t> tmpvek;
       for ( int it2 = 0; it2 < n; it2++ ) {
-	int ret=-2;
-	MG_Colour(&xx,&it,&it2,&ret);
-	assert(ret !=-2);
-	if (ret== -1)
-	  break;
-	if ( ret == 0 ) {
-	  n++;
-	  tmpset.insert(tmpvek);
-	  tmpvek.clear();
-	} else {
-	  tmpvek.push_back(ret-1);
-	}
-	if( it2 == n-1 ) tmpset.insert(tmpvek);
+        int ret=-2;
+        MG_Colour(&xx,&it,&it2,&ret);
+        assert(ret !=-2);
+        if (ret== -1)
+          break;
+        if ( ret == 0 ) {
+          n++;
+          tmpset.insert(tmpvek);
+          tmpvek.clear();
+        } else {
+          tmpvek.push_back(ret-1);
+        }
+        if( it2 == n-1 ) tmpset.insert(tmpvek);
       }
       bool found_all = true;
       for ( set<vector<size_t> >::iterator it3 = a.begin(); it3 != a.end(); it3++ ) {
-	bool found_it3=false;
-	for ( set<vector<size_t> >::iterator it4 = tmpset.begin(); it4 != tmpset.end(); it4++ ) {
+        bool found_it3=false;
+        for ( set<vector<size_t> >::iterator it4 = tmpset.begin(); it4 != tmpset.end(); it4++ ) {
           vector<size_t> it3tmp = gluonsFirst(*it3);
-	  vector<size_t> it4tmp = (*it4);
-	  if ( it3tmp.size() != it4tmp.size() ) continue;
-	  if ( it3tmp == it4tmp ) found_it3 = true;
-	}
-	found_all = found_all && found_it3;
+          vector<size_t> it4tmp = (*it4);
+          if ( it3tmp.size() != it4tmp.size() ) continue;
+          if ( it3tmp == it4tmp ) found_it3 = true;
+        }
+        found_all = found_all && found_it3;
       }
 
       if ( found_all ) {
-	colourindex[i]=it;
+        colourindex[i]=it;
       
 
-	ii=it;
+        ii=it;
       }
     }
   }
@@ -345,7 +353,7 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
     const map<vector<int>,vector < complex<double> > >& tmpLN = lastMatchboxXComb()->helLNjamp();
 
   if( tmp.find(hel) != tmp.end()) {
-	assert(tmpLN.find(hel) != tmpLN.end());
+    assert(tmpLN.find(hel) != tmpLN.end());
     largeN = tmpLN.find(hel)->second[ii];
     return tmp.find(hel)->second[ii];;
   }
@@ -386,7 +394,7 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
     Complex d(dd[0],dd[1]);
     if(it==ii)res=d*units;
     lastMatchboxXComb()->pushheljamp(hel,d*units);
-	double ddLN[2];
+    double ddLN[2];
     MG_LNJamp(&xx,&it,&ddLN[0]);
     Complex dLN(ddLN[0],ddLN[1]);
     if(it==ii)resLN=dLN*units;
@@ -399,11 +407,11 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
 }
 
 LorentzVector<Complex> MadGraphAmplitude::plusPolarization(const Lorentz5Momentum& p,
-							   const Lorentz5Momentum& n,
-							   int i) const {
-							     
-							     
-						     
+                                                           const Lorentz5Momentum& n,
+                                                           int i) const {
+                                                             
+                                                             
+                                                     
 
   int tmp=i;
   complex<double> ii(0.0,1.0);
@@ -452,7 +460,7 @@ vector<size_t> MadGraphAmplitude::gluonsFirst(vector<size_t> vec) {
 }
 
 double MadGraphAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
-						  const SpinCorrelationTensor& c) const {
+                                                  const SpinCorrelationTensor& c) const {
 
   Lorentz5Momentum p = meMomenta()[ij.first];
   Lorentz5Momentum n = meMomenta()[ij.second];
@@ -476,18 +484,18 @@ double MadGraphAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
   if ( calculateColourSpinCorrelator(ij) ) {
     set<const CVector*> done;
     for ( AmplitudeConstIterator a = lastAmplitudes().begin();
-	  a != lastAmplitudes().end(); ++a ) {
+          a != lastAmplitudes().end(); ++a ) {
       if ( done.find(&(a->second)) != done.end() )
-	continue;
+        continue;
       AmplitudeConstIterator b = lastAmplitudes().begin();
       while ( !equalsModulo(iCrossed,a->first,b->first) )
-	if ( ++b == lastAmplitudes().end() )
-	  break;
+        if ( ++b == lastAmplitudes().end() )
+          break;
       if ( b == lastAmplitudes().end() || done.find(&(b->second)) != done.end() )
-	continue;
+        continue;
       done.insert(&(a->second)); done.insert(&(b->second));
       if ( a->first[iCrossed] == 1 )
-	swap(a,b);
+        swap(a,b);
       csCorr -= colourBasis()->colourCorrelatedInterference(ij,mePartonData(),a->second,b->second);
     }
     lastColourSpinCorrelator(ij,csCorr);
@@ -502,7 +510,7 @@ double MadGraphAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
   if ( mePartonData()[ij.first]->iColour() == PDT::Colour8 ) {
     cfac = Nc;
   } else if ( mePartonData()[ij.first]->iColour() == PDT::Colour3 ||
-	      mePartonData()[ij.first]->iColour() == PDT::Colour3bar ) {
+              mePartonData()[ij.first]->iColour() == PDT::Colour3bar ) {
     cfac = (sqr(Nc)-1.)/(2.*Nc);
   } else assert(false);
 
@@ -551,13 +559,13 @@ void MadGraphAmplitude::evaloneLoopInterference() const  {
 
     ifact = 1./4.;
     if (lastMatchboxXComb()->matchboxME()->mePartonData()[0]->iColour() == PDT::Colour3 ||
-	 lastMatchboxXComb()->matchboxME()->mePartonData()[0]->iColour() == PDT::Colour3bar )
+        lastMatchboxXComb()->matchboxME()->mePartonData()[0]->iColour() == PDT::Colour3bar )
       ifact /= SM().Nc();
     else if ( lastMatchboxXComb()->matchboxME()->mePartonData()[0]->iColour() == PDT::Colour8 )
       ifact /= (SM().Nc()*SM().Nc()-1.);
 
     if ( lastMatchboxXComb()->matchboxME()->mePartonData()[1]->iColour() == PDT::Colour3 ||
-	 lastMatchboxXComb()->matchboxME()->mePartonData()[1]->iColour() == PDT::Colour3bar )
+         lastMatchboxXComb()->matchboxME()->mePartonData()[1]->iColour() == PDT::Colour3bar )
       ifact /= SM().Nc();
     else if ( mePartonData()[1]->iColour() == PDT::Colour8 )
       ifact /= (SM().Nc()*SM().Nc()-1.);
@@ -572,11 +580,13 @@ void MadGraphAmplitude::evaloneLoopInterference() const  {
 }
  
 void MadGraphAmplitude::persistentOutput(PersistentOStream & os) const {
-  os << theOrderInGs << theOrderInGem<<colourindex<<theMGmodel << BornAmplitudes << VirtAmplitudes;
+  os << theOrderInGs << theOrderInGem << BornAmplitudes << VirtAmplitudes
+     << colourindex << theProcessPath << theMGmodel;
 }
  
 void MadGraphAmplitude::persistentInput(PersistentIStream & is, int) {
-  is >> theOrderInGs >> theOrderInGem>>colourindex>>theMGmodel >> BornAmplitudes >> VirtAmplitudes;
+  is >> theOrderInGs >> theOrderInGem >> BornAmplitudes >> VirtAmplitudes
+     >> colourindex >> theProcessPath >> theMGmodel;
 }
  
 // *** Attention *** The following static variable is needed for the type
@@ -591,6 +601,10 @@ void MadGraphAmplitude::Init() {
    
   static ClassDocumentation<MadGraphAmplitude> documentation  ("MadGraphAmplitude","Matrix elements have been calculated using MadGraph5");
    
+  static Parameter<MadGraphAmplitude,string> interfaceProcessPath
+    ("ProcessPath",
+     "The Process Path.",
+     &MadGraphAmplitude::theProcessPath, "",false, false);  
 
   static Parameter<MadGraphAmplitude,string> interfaceModel
     ("Model",

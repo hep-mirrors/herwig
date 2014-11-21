@@ -257,6 +257,11 @@ protected:
 
   
   /**
+   * The path for the process libraries.
+   */
+  string theProcessPath;
+  
+  /**
    * The path to generate amplitudes in.
    */
   string theMGmodel;
