@@ -2,10 +2,9 @@
 !///////////////////////////////////////////////////////////////////////
 
 
-       subroutine MGInitProc(file_card,a)
+       subroutine MGInitProc(file_card)
          IMPLICIT NONE
-         INTEGER a
-         character(a) file_card
+         character*(*) file_card
          print*,"Reading inputs from: "
          print*, TRIM(file_card)
          CALL setpara(file_card)

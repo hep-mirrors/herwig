@@ -34,7 +34,7 @@
 using namespace Herwig;
 
 
-extern "C"{ void mginitproc_(char *i,int*);}
+extern "C" void mginitproc_(char *i,int);
 extern "C" void MG_Calculate_wavefunctions_virt(int* proc,double*,double*);
 extern "C" void MG_Calculate_wavefunctions_born(int* proc,double*, int*);
 extern "C" void MG_Jamp                        (int* proc,int*, double*);
@@ -90,12 +90,9 @@ void MadGraphAmplitude::initProcess(const cPDVector& ) {
 		      << Exception::abortnow;
 
   if (!initializedMad){
-//     const_cast<char *> ((factory()->runStorage()+"/MadGraphAmplitudes"+"/param_card.dat").c_str())
     string mstr=(factory()->runStorage()+"/MadGraphAmplitudes"+"/param_card"+((theMGmodel=="loop_sm")?"":("_"+theMGmodel))+".dat");
-    char * wchar = new char[mstr.size()+1];
-    std::copy(mstr.begin(),mstr.end(),wchar);
-    int s=mstr.size();
-    mginitproc_(wchar,&s);
+    size_t len = mstr.size();
+    mginitproc_(const_cast<char*>(mstr.c_str()),len);
     initializedMad=true;
   }
   lastMatchboxXComb()->isInitialized();
