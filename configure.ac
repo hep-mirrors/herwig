@@ -264,6 +264,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Tests/Makefile
 		Makefile])
 
+AC_CONFIG_LINKS([Doc/BSMlibs.in:Doc/BSMlibs.in])
 AC_CONFIG_FILES([Doc/fixinterfaces.pl],[chmod +x Doc/fixinterfaces.pl])
 
 HERWIG_OVERVIEW
