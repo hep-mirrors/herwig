@@ -193,7 +193,9 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
   if (gosamPath.at(gosamPath.length()-1) != '/') gosamPath.append("/");
 
   if (!( DynamicLoader::load(gosamPath+"build/lib/libgolem_olp.so")
-      || DynamicLoader::load(gosamPath+"build/lib64/libgolem_olp.so"))) assert(0);
+      || DynamicLoader::load(gosamPath+"build/lib64/libgolem_olp.so")))
+    throw Exception() << "Failed to load GoSam. Please check the log file.\n"
+		      << Exception::abortnow;
   tempcontract = gosamPath + tempcontract;
 
   OLP_Start(tempcontract.c_str(), &status);
@@ -454,7 +456,9 @@ bool GoSamAmplitude::checkOLPContract(string contractFileName) {
       if ( righttype ) {
         if ( (*linex).find((*p).second.Pstr()) != std::string::npos && (*p).second.Pstr().length() == (*linex).find("|") ) {
           string sub = (*linex).substr((*linex).find("|") + 1, (*linex).find("#") - (*linex).find("|") - 1); // | 1 23 # buggy??
-          if ( sub.find(" 1 ") != 0 ) assert(0);
+          if ( sub.find(" 1 ") != 0 ) 
+	    throw Exception() << "Failed to check contractfile. Please check the logfile.\n"
+			      << Exception::abortnow;
           string subx = sub.substr(3);
           int subint;
           istringstream(subx) >> subint;
