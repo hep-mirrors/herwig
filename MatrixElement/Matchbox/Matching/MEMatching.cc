@@ -20,6 +20,7 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 
+#include "ThePEG/Handlers/StdXCombGroup.h"
 #include "ThePEG/PDT/EnumParticles.h"
 
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -43,6 +44,16 @@ IBPtr MEMatching::fullclone() const {
 }
 
 CrossSection MEMatching::dSigHatDR() const {
+
+  // need to ensure the partner dipoles all got their xcombs set
+  // for a safe evaluation of channelweight
+  Ptr<StdXCombGroup>::tcptr grp =
+    dynamic_ptr_cast<Ptr<StdXCombGroup>::tcptr>(realCXComb());
+  assert(grp);
+  for ( vector<StdXCombPtr>::const_iterator dep = grp->dependent().begin();
+	dep != grp->dependent().end(); ++dep ) {
+    (**dep).matrixElement()->setXComb(*dep);
+  }
 
   double xme2 = dipole()->realEmissionME()->me2();
 
