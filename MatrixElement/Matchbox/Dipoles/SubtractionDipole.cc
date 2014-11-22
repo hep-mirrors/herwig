@@ -455,6 +455,11 @@ void SubtractionDipole::setXComb(tStdXCombPtr xc) {
     underlyingBornME()->setXComb(xc);
     subtractionBookkeeping();
   }
+  if ( splitting() ) {
+    for ( vector<Ptr<SubtractionDipole>::ptr>::iterator p =
+	    thePartners.begin(); p != thePartners.end(); ++p )
+      (**p).setXComb(xc);
+  }
   if ( !apply() )
     return;
 }
