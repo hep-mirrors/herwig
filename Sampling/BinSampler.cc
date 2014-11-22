@@ -466,6 +466,12 @@ dump(const std::string& folder,const std::string& prefix, const std::string& pro
   for ( map<double,double >::const_iterator b = binsw1.begin();b != binsw1.end(); ++b )
        sumofweights2+=b->second;  
   map<double,double >::const_iterator b2 = binsw1.begin();
+  if ( sumofweights == 0 ) {
+    cerr << "too little statistics accumulated for "
+	 << process << " ; skipping random number diagnostic.\n"
+	 << flush;
+    return;
+  }
   double chisq=0.;
   for ( map<double,double >::const_iterator b = bins.begin();
 	b != bins.end(); ++b, ++b2) {
