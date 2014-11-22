@@ -101,6 +101,8 @@ void MadGraphAmplitude::initProcess(const cPDVector& ) {
   lastMatchboxXComb()->isInitialized();
 }
 
+bool ranMadGraphInitializeExternal = false;
+
 bool MadGraphAmplitude::initializeExternal() {
 
   loadProcessMap();
@@ -152,6 +154,7 @@ bool MadGraphAmplitude::initializeExternal() {
     //set the parameters
 
     std::system(cmd.c_str());
+    ranMadGraphInitializeExternal = true;
     return true;
   }
   char cwd[1024];
@@ -182,6 +185,8 @@ bool MadGraphAmplitude::initializeExternal() {
   
 
   loadProcessMap();
+
+  ranMadGraphInitializeExternal = true;
 
   return !processmap().empty();
 
@@ -233,12 +238,17 @@ void MadGraphAmplitude::loadProcessMap() {
 }
 
 void MadGraphAmplitude::doinit() {
-  loadProcessMap();
+  if ( !ranMadGraphInitializeExternal ) {
+    initializeExternal();
+  }
   MatchboxAmplitude::doinit();
 }
 
 void MadGraphAmplitude::doinitrun() {
-  loadProcessMap();
+  if ( !ranMadGraphInitializeExternal ) {
+    loadProcessMap();
+    ranMadGraphInitializeExternal = true;
+  }
   MatchboxAmplitude::doinitrun();
 }
 
