@@ -53,6 +53,10 @@ option "jobsize" z "The number of subprocesses to integrate per job ."
   typestr="NUMBER"
   long optional
 
+option "maxjobs" y "The maximum number of integration jobs to be created."
+  typestr="NUMBER"
+  long optional
+
 option "jobid" n "Integrate the given integration job."
   typestr="NUMBER"
   string optional

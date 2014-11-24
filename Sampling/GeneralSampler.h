@@ -428,6 +428,11 @@ private:
   unsigned int theIntegratePerJob;
 
   /**
+   * The maximum number of integration jobs to be created
+   */
+  unsigned int theIntegrationJobs;
+
+  /**
    * Indicate that initialization is only reading a grid.
    */
   bool justAfterIntegrate;

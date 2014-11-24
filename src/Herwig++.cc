@@ -158,6 +158,13 @@ int main(int argc, char * argv[]) {
       SamplerBase::setIntegratePerJob(jobsize);
     }
 
+    // max integration jobs
+    unsigned int maxjobs = 0;
+    if ( args_info.maxjobs_given ) {
+      maxjobs = args_info.maxjobs_arg;
+      SamplerBase::setIntegrationJobs(maxjobs);
+    }
+
     // Resume
     bool resume = false;
     if ( args_info.resume_flag )

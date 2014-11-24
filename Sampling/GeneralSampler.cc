@@ -48,7 +48,7 @@ GeneralSampler::GeneralSampler()
     theAlmostUnweighted(false), maximumExceeds(0),
     maximumExceededBy(0.), didReadGrids(false),
     theParallelIntegration(false),
-  theIntegratePerJob(0),
+  theIntegratePerJob(0), theIntegrationJobs(0),
   justAfterIntegrate(false) {}
 
 GeneralSampler::~GeneralSampler() {}
@@ -89,10 +89,18 @@ void GeneralSampler::initialize() {
 
   if ( theParallelIntegration ) {
 
-    if ( !theIntegratePerJob )
+    if ( !theIntegratePerJob && !theIntegrationJobs )
       throw Exception()
-	<< "Please specify the number of integration jobs"
+	<< "Please specify the number of subprocesses per integration job or the "
+	<< "number of integration jobs to be created."
 	<< Exception::abortnow;
+
+    if ( theIntegrationJobs ) {
+      unsigned int nintegrate = eventHandler()->nBins()/theIntegrationJobs;
+      if ( eventHandler()->nBins() % theIntegrationJobs != 0 )
+	++nintegrate;
+      theIntegratePerJob = max(theIntegratePerJob,nintegrate);
+    }
 
     unsigned int jobCount = 0;
 
@@ -200,6 +208,12 @@ void GeneralSampler::initialize() {
       int b = 0;
       while ( jobList >> b )
 	binsToIntegrate.insert(b);
+    } else {
+      Repository::clog() 
+	<< "Job list '"
+	<< integrationList() << "' not found.\n"
+	<< "Assuming empty integration job\n" << flush;
+      return;
     }
   }
 
@@ -516,6 +530,7 @@ void GeneralSampler::doinit() {
   if ( integratePerJob() ) {
     theParallelIntegration = true;
     theIntegratePerJob = integratePerJob();
+    theIntegrationJobs = integrationJobs();
   }
   readGrids();
   if ( theGrids.children().empty() && runLevel() == RunMode )
@@ -718,7 +733,7 @@ void GeneralSampler::persistentOutput(PersistentOStream & os) const {
      << theFlatSubprocesses << isSampling << theMinSelection
      << runCombinationData << theAlmostUnweighted << maximumExceeds
      << maximumExceededBy << theParallelIntegration
-     << theIntegratePerJob;
+     << theIntegratePerJob << theIntegrationJobs;
 }
 
 void GeneralSampler::persistentInput(PersistentIStream & is, int) {
@@ -732,7 +747,7 @@ void GeneralSampler::persistentInput(PersistentIStream & is, int) {
      >> theFlatSubprocesses >> isSampling >> theMinSelection
      >> runCombinationData >> theAlmostUnweighted >> maximumExceeds
      >> maximumExceededBy >> theParallelIntegration
-     >> theIntegratePerJob;
+     >> theIntegratePerJob >> theIntegrationJobs;
 }
 
 
@@ -875,6 +890,12 @@ void GeneralSampler::Init() {
     ("IntegratePerJob",
      "The number of subprocesses to integrate per job.",
      &GeneralSampler::theIntegratePerJob, 0, 0, 0,
+     false, false, Interface::lowerlim);
+
+  static Parameter<GeneralSampler,unsigned int> interfaceIntegrationJobs
+    ("IntegrationJobs",
+     "The maximum number of integration jobs to create.",
+     &GeneralSampler::theIntegrationJobs, 0, 0, 0,
      false, false, Interface::lowerlim);
 
 }
