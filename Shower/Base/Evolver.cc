@@ -103,6 +103,9 @@ void Evolver::persistentInput(PersistentIStream & is, int) {
 
 void Evolver::doinit() {
   Interfaced::doinit();
+  // interactions may have been changed through a setup file so we
+  // clear it up here
+  interactions_.clear();
   if(interaction_==0) {
     interactions_.push_back(ShowerInteraction::QCD);
     interactions_.push_back(ShowerInteraction::QED);

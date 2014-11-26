@@ -340,15 +340,26 @@ double QTildeMatching::splitFn(const pair<Energy2,double>& vars) const {
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 void QTildeMatching::doinit() {
-  ShowerApproximation::doinit();
-  if ( theShowerHandler ) {
-    if ( theShowerHandler->scaleFactorOption() < 2 ) {
-      hardScaleFactor(theShowerHandler->hardScaleFactor());
-      factorizationScaleFactor(theShowerHandler->factorizationScaleFactor());
-      renormalizationScaleFactor(theShowerHandler->renormalizationScaleFactor());
-    }
+  asssert(theShowerHandler && theQTildeFinder && theQTildeSudakov);
+  theShowerHandler->init();
+  theQTildeFinder->init();
+  theQTildeSudakov->init();
+  if ( theShowerHandler->scaleFactorOption() < 2 ) {
+    hardScaleFactor(theShowerHandler->hardScaleFactor());
+    factorizationScaleFactor(theShowerHandler->factorizationScaleFactor());
+    renormalizationScaleFactor(theShowerHandler->renormalizationScaleFactor());
   }
+  ShowerApproximation::doinit();
 }
+
+void QTildeMatching::doinitrun() {
+  asssert(theShowerHandler && theQTildeFinder && theQTildeSudakov);
+  theShowerHandler->initrun();
+  theQTildeFinder->initrun();
+  theQTildeSudakov->initrun();
+  ShowerApproximation::doinitrun();
+}
+
 
 void QTildeMatching::persistentOutput(PersistentOStream & os) const {
   os << theQTildeFinder << theQTildeSudakov << theShowerHandler;
