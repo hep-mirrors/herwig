@@ -340,7 +340,7 @@ double QTildeMatching::splitFn(const pair<Energy2,double>& vars) const {
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 void QTildeMatching::doinit() {
-  asssert(theShowerHandler && theQTildeFinder && theQTildeSudakov);
+  assert(theShowerHandler && theQTildeFinder && theQTildeSudakov);
   theShowerHandler->init();
   theQTildeFinder->init();
   theQTildeSudakov->init();
@@ -353,7 +353,7 @@ void QTildeMatching::doinit() {
 }
 
 void QTildeMatching::doinitrun() {
-  asssert(theShowerHandler && theQTildeFinder && theQTildeSudakov);
+  assert(theShowerHandler && theQTildeFinder && theQTildeSudakov);
   theShowerHandler->initrun();
   theQTildeFinder->initrun();
   theQTildeSudakov->initrun();
