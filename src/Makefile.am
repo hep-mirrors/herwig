@@ -108,7 +108,7 @@ check-Powheg: check-LHC-Powheg check-TVT-Powheg
 check-BSM: $(check_BSM_Full)
 
 check_Matchbox= \
-check-LEP-Matchbox check-DIS-Matchbox check-LHC-Matchbox check-TVT-Matchbox
+check-LEP-Matchbox check-DIS-Matchbox check-LHC-Matchbox
 
 check-Matchbox: $(check_Matchbox)
 
