@@ -15,6 +15,7 @@ set LEPGenerator:NumberOfEvents 100000000
 cd /Herwig/EventHandlers
 set LEPHandler:Weighted Off
 set LEPHandler:Sampler  /Herwig/Samplers/Sampler
+set LEPHandler:CascadeHandler:MPIHandler NULL
 
 ##################################################
 ## beam energy sqrt(s) = 91.2 GeV!
