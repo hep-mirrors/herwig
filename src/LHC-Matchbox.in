@@ -47,7 +47,7 @@ set /Herwig/Particles/pbar-:PDF PDFSet
 
 ## Set the order of the couplings
 cd /Herwig/MatrixElements/Matchbox
-set PPFactory:OrderInAlphaS 1
+set PPFactory:OrderInAlphaS 0
 set PPFactory:OrderInAlphaEW 2
 
 ## Select the process
