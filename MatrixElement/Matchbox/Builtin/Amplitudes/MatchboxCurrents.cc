@@ -16,6 +16,8 @@ using Constants::pi;
 
 namespace {
 
+const static LorentzVector<Complex> czero(0.,0.,0.,0.);
+
 inline Complex csqr(const Complex & a) {
   return a * a;
 }
@@ -114,7 +116,6 @@ const LorentzVector<Complex>& MatchboxCurrents::llbarRightCurrent(const int l,  
 const LorentzVector<Complex>& MatchboxCurrents::qqbarLeftCurrent(const int q,    const int qHel,
 								 const int qbar, const int qbarHel) {
 
-  static LorentzVector<Complex> czero(0.,0.,0.,0.);
   if ( qHel != 1 || qbarHel != 1 )
     return czero;
 
@@ -131,7 +132,6 @@ const LorentzVector<Complex>& MatchboxCurrents::qqbarLeftCurrent(const int q,   
 const LorentzVector<Complex>& MatchboxCurrents::qqbarRightCurrent(const int q,    const int qHel,
 								  const int qbar, const int qbarHel) {
 
-  static LorentzVector<Complex> czero(0.,0.,0.,0.);
   if ( qHel != -1 || qbarHel != -1 )
     return czero;
 
@@ -149,13 +149,12 @@ const LorentzVector<Complex>& MatchboxCurrents::qqbargLeftCurrent(const int q,  
 								  const int qbar, const int qbarHel,
 								  const int g,    const int gHel) {
 
-  static LorentzVector<Complex> czero(0.,0.,0.,0.);
   if ( qHel != 1 || qbarHel != 1 )
     return czero;
 
   if ( gHel == 1 ) {
     if ( getCurrent(hash<2>(1,1,q,qHel,qbar,qbarHel,g,gHel)) ) {
-      cacheCurrent(Complex(0.,1.) * sqrt(2.)*
+      cacheCurrent(Complex(0.,sqrt(2.)) *
 		   ((minusProduct(q,qbar)/(minusProduct(q,g) * minusProduct(g,qbar))) * minusCurrent(q,qbar)
 		    +(1./minusProduct(g,qbar)) * minusCurrent(q,g)));
     }
@@ -167,7 +166,7 @@ const LorentzVector<Complex>& MatchboxCurrents::qqbargLeftCurrent(const int q,  
 
   if ( gHel == -1 ) {
     if ( getCurrent(hash<2>(1,1,q,qHel,qbar,qbarHel,g,gHel)) ) {
-      cacheCurrent(Complex(0.,-1.) * sqrt(2.)*
+      cacheCurrent(Complex(0.,-sqrt(2.)) *
 		   ((plusProduct(q,qbar)/(plusProduct(q,g) * plusProduct(g,qbar))) * minusCurrent(q,qbar)
 		    +(1./plusProduct(q,g)) * minusCurrent(g,qbar)));
     }
@@ -185,13 +184,12 @@ const LorentzVector<Complex>& MatchboxCurrents::qqbargRightCurrent(const int q, 
 								   const int qbar, const int qbarHel,
 								   const int g,    const int gHel) {
 
-  static LorentzVector<Complex> czero(0.,0.,0.,0.);
   if ( qHel != -1 || qbarHel != -1 )
     return czero;
 
   if ( gHel == 1 ) {
     if ( getCurrent(hash<2>(2,1,q,qHel,qbar,qbarHel,g,gHel)) ) {
-      cacheCurrent(Complex(0.,1.) * sqrt(2.)*
+      cacheCurrent(Complex(0.,sqrt(2.)) *
 		   ((minusProduct(q,qbar)/(minusProduct(q,g) * minusProduct(g,qbar))) * minusCurrent(qbar,q)
 		    +(1./minusProduct(q,g)) * minusCurrent(qbar,g)));
     }
@@ -203,7 +201,7 @@ const LorentzVector<Complex>& MatchboxCurrents::qqbargRightCurrent(const int q, 
 
   if ( gHel == -1 ) {
     if ( getCurrent(hash<2>(2,1,q,qHel,qbar,qbarHel,g,gHel)) ) {
-      cacheCurrent(Complex(0.,-1.) * sqrt(2.)*
+      cacheCurrent(Complex(0.,-sqrt(2.)) *
 		   ((plusProduct(q,qbar)/(plusProduct(q,g) * plusProduct(g,qbar))) * minusCurrent(qbar,q)
 		    +(1./plusProduct(g,qbar)) * minusCurrent(g,q)));
     }
@@ -217,8 +215,8 @@ const LorentzVector<Complex>& MatchboxCurrents::qqbargRightCurrent(const int q, 
 
 }
 
-LorentzVector<Complex> MatchboxCurrents::qqbarggGeneralLeftCurrent(const int i, int,
-								   const int j, int,
+LorentzVector<Complex> MatchboxCurrents::qqbarggGeneralLeftCurrent(const int i, const int,
+								   const int j, const int,
 								   const int k, const int g1Hel,
 								   const int l, const int g2Hel,
 								   const int n) {
@@ -228,210 +226,240 @@ LorentzVector<Complex> MatchboxCurrents::qqbarggGeneralLeftCurrent(const int i, 
   const double jl = invariant(j,l);
   const double kl = invariant(k,l);
 
+  const Complex plusP_ik = plusProduct(i,k);
+  const Complex plusP_il = plusProduct(i,l);
+  const Complex plusP_in = plusProduct(i,n);
+
+  const Complex plusP_jk = plusProduct(j,k);
+  const Complex plusP_jl = plusProduct(j,l);
+  const Complex plusP_jn = plusProduct(j,n);
+
+  const Complex plusP_kl = plusProduct(k,l);
+  const Complex plusP_kn = plusProduct(k,n);
+  const Complex plusP_ln = plusProduct(l,n);
+
+  const Complex minusP_ik = minusProduct(i,k);
+  const Complex minusP_il = minusProduct(i,l);
+  const Complex minusP_in = minusProduct(i,n);
+  const Complex minusP_jk = minusProduct(j,k);
+  const Complex minusP_jl = minusProduct(j,l);
+  const Complex minusP_jn = minusProduct(j,n);
+  const Complex minusP_kl = minusProduct(k,l);
+  const Complex minusP_kn = minusProduct(k,n);
+  const Complex minusP_ln = minusProduct(l,n);
+
+  const LorentzVector<Complex> & minusC_ij = minusCurrent(i,j);
+  const LorentzVector<Complex> & minusC_ik = minusCurrent(i,k);
+  const LorentzVector<Complex> & minusC_il = minusCurrent(i,l);
+
+  const LorentzVector<Complex> & minusC_kj = minusCurrent(k,j);
+  const LorentzVector<Complex> & minusC_kl = minusCurrent(k,l);
+
+  const LorentzVector<Complex> & minusC_lj = minusCurrent(l,j);
+
   if ( g1Hel == 1 && g2Hel == 1 ) {
     return
-      (Complex(0,-2) * plusProduct(j,l) * plusProduct(k,l) * minusCurrent(i,k))/
+      (Complex(0,-2) * plusP_jl * plusP_kl * minusC_ik)/
       (jl * (jk + jl + kl)) - 
-      (Complex(0,2) * plusProduct(j,l) * plusProduct(k,l) * minusCurrent(i,k))/
+      (Complex(0,2) * plusP_jl * plusP_kl * minusC_ik)/
       (kl * (jk + jl + kl)) - 
-      (Complex(0,2) * plusProduct(j,k) * plusProduct(k,l) * minusCurrent(i,l))/
+      (Complex(0,2) * plusP_jk * plusP_kl * minusC_il)/
       (kl * (jk + jl + kl)) + 
-      (Complex(0,2) * plusProduct(i,l) * plusProduct(k,l) * minusCurrent(i,j) * minusProduct(i,n))/
-      (kl * (ik + il + kl) * minusProduct(k,n)) - 
-      (Complex(0,2) * plusProduct(i,k) * plusProduct(j,l) * minusCurrent(i,l) * minusProduct(i,n))/
-      (ik * jl * minusProduct(k,n)) + 
-      (Complex(0,2) * sqr(plusProduct(k,l)) * minusCurrent(k,j) * minusProduct(i,n))/
-      (kl * (ik + il + kl) * minusProduct(k,n)) - 
-      (Complex(0,2) * plusProduct(j,l) * plusProduct(k,l) * minusCurrent(i,j) * minusProduct(j,n))/
-      (jl * (jk + jl + kl) * minusProduct(k,n)) - 
-      (Complex(0,2) * plusProduct(j,l) * plusProduct(k,l) * minusCurrent(i,j) * minusProduct(j,n))/
-      (kl * (jk + jl + kl) * minusProduct(k,n)) + 
-      (Complex(0,2) * plusProduct(j,k) * plusProduct(j,l) * minusCurrent(i,l) * minusProduct(j,n))/
-      (jl * (jk + jl + kl) * minusProduct(k,n)) + 
-      (Complex(0,2) * plusProduct(i,k) * plusProduct(k,l) * minusCurrent(i,j) * minusProduct(i,n))/
-      (kl * (ik + il + kl) * minusProduct(l,n)) - 
-      (Complex(0,2) * sqr(plusProduct(k,l)) * minusCurrent(l,j) * minusProduct(i,n))/
-      (kl * (ik + il + kl) * minusProduct(l,n)) - 
-      (Complex(0,2) * plusProduct(j,k) * plusProduct(k,l) * minusCurrent(i,j) * minusProduct(j,n))/
-      (kl * (jk + jl + kl) * minusProduct(l,n)) + 
-      (Complex(0,2) * plusProduct(j,k) * plusProduct(j,l) * minusCurrent(i,k) * minusProduct(j,n))/
-      (jl * (jk + jl + kl) * minusProduct(l,n)) + 
-      (Complex(0,2) * plusProduct(i,k) * plusProduct(i,l) * minusCurrent(i,j) * sqr(minusProduct(i,n)))/
-      (ik * (ik + il + kl) * minusProduct(k,n) * minusProduct(l,n)) + 
-      (Complex(0,2) * plusProduct(i,k) * plusProduct(k,l) * minusCurrent(k,j) * sqr(minusProduct(i,n)))/
-      (ik * (ik + il + kl) * minusProduct(k,n) * minusProduct(l,n)) - 
-      (Complex(0,2) * plusProduct(i,k) * plusProduct(j,l) * minusCurrent(i,j) * minusProduct(i,n) * minusProduct(j,n))/
-      (ik * jl * minusProduct(k,n) * minusProduct(l,n)) + 
-      (Complex(0,2) * plusProduct(j,k) * plusProduct(j,l) * minusCurrent(i,j) * sqr(minusProduct(j,n)))/
-      (jl * (jk + jl + kl) * minusProduct(k,n) * minusProduct(l,n)) - 
-      (Complex(0,2) * plusProduct(j,k) * plusProduct(k,l) * minusCurrent(i,k) * minusProduct(k,n))/
-      (kl * (jk + jl + kl) * minusProduct(l,n)) - 
-      (Complex(0,2) * plusProduct(j,l) * plusProduct(k,l) * minusCurrent(i,l) * minusProduct(l,n))/
-      (jl * (jk + jl + kl) * minusProduct(k,n)) - 
-      (Complex(0,2) * plusProduct(j,l) * plusProduct(k,l) * minusCurrent(i,l) * minusProduct(l,n))/
-      (kl * (jk + jl + kl) * minusProduct(k,n));
+      (Complex(0,2) * plusP_il * plusP_kl * minusC_ij * minusP_in)/
+      (kl * (ik + il + kl) * minusP_kn) - 
+      (Complex(0,2) * plusP_ik * plusP_jl * minusC_il * minusP_in)/
+      (ik * jl * minusP_kn) + 
+      (Complex(0,2) * sqr(plusP_kl) * minusC_kj * minusP_in)/
+      (kl * (ik + il + kl) * minusP_kn) - 
+      (Complex(0,2) * plusP_jl * plusP_kl * minusC_ij * minusP_jn)/
+      (jl * (jk + jl + kl) * minusP_kn) - 
+      (Complex(0,2) * plusP_jl * plusP_kl * minusC_ij * minusP_jn)/
+      (kl * (jk + jl + kl) * minusP_kn) + 
+      (Complex(0,2) * plusP_jk * plusP_jl * minusC_il * minusP_jn)/
+      (jl * (jk + jl + kl) * minusP_kn) + 
+      (Complex(0,2) * plusP_ik * plusP_kl * minusC_ij * minusP_in)/
+      (kl * (ik + il + kl) * minusP_ln) - 
+      (Complex(0,2) * sqr(plusP_kl) * minusC_lj * minusP_in)/
+      (kl * (ik + il + kl) * minusP_ln) - 
+      (Complex(0,2) * plusP_jk * plusP_kl * minusC_ij * minusP_jn)/
+      (kl * (jk + jl + kl) * minusP_ln) + 
+      (Complex(0,2) * plusP_jk * plusP_jl * minusC_ik * minusP_jn)/
+      (jl * (jk + jl + kl) * minusP_ln) + 
+      (Complex(0,2) * plusP_ik * plusP_il * minusC_ij * sqr(minusP_in))/
+      (ik * (ik + il + kl) * minusP_kn * minusP_ln) + 
+      (Complex(0,2) * plusP_ik * plusP_kl * minusC_kj * sqr(minusP_in))/
+      (ik * (ik + il + kl) * minusP_kn * minusP_ln) - 
+      (Complex(0,2) * plusP_ik * plusP_jl * minusC_ij * minusP_in * minusP_jn)/
+      (ik * jl * minusP_kn * minusP_ln) + 
+      (Complex(0,2) * plusP_jk * plusP_jl * minusC_ij * sqr(minusP_jn))/
+      (jl * (jk + jl + kl) * minusP_kn * minusP_ln) - 
+      (Complex(0,2) * plusP_jk * plusP_kl * minusC_ik * minusP_kn)/
+      (kl * (jk + jl + kl) * minusP_ln) - 
+      (Complex(0,2) * plusP_jl * plusP_kl * minusC_il * minusP_ln)/
+      (jl * (jk + jl + kl) * minusP_kn) - 
+      (Complex(0,2) * plusP_jl * plusP_kl * minusC_il * minusP_ln)/
+      (kl * (jk + jl + kl) * minusP_kn);
   }
 
   if ( g1Hel == 1 && g2Hel == -1 ) {
     return
-      (Complex(0,-2) * plusProduct(j,k) * plusProduct(j,n) * minusCurrent(i,k) * minusProduct(j,l))/
-      (jl * (jk + jl + kl) * plusProduct(l,n)) + 
-      (Complex(0,2) * plusProduct(j,k) * plusProduct(k,n) * minusCurrent(i,k) * minusProduct(k,l))/
-      (kl * (jk + jl + kl) * plusProduct(l,n)) - 
-      (Complex(0,2) * plusProduct(i,k) * plusProduct(i,n) * minusCurrent(i,j) * minusProduct(i,l) * minusProduct(i,n))/
-      (ik * (ik + il + kl) * plusProduct(l,n) * minusProduct(k,n)) - 
-      (Complex(0,2) * plusProduct(i,k) * plusProduct(k,n) * minusCurrent(k,j) * minusProduct(i,l) * minusProduct(i,n))/
-      (ik * (ik + il + kl) * plusProduct(l,n) * minusProduct(k,n)) - 
-      (Complex(0,2) * plusProduct(i,k) * minusCurrent(l,j) * minusProduct(i,l) * minusProduct(i,n))/
-      (ik * (ik + il + kl) * minusProduct(k,n)) + 
-      (Complex(0,2) * plusProduct(i,k) * plusProduct(j,n) * minusCurrent(i,j) * minusProduct(i,n) * minusProduct(j,l))/
-      (ik * jl * plusProduct(l,n) * minusProduct(k,n)) - 
-      (Complex(0,2) * plusProduct(j,k) * plusProduct(j,n) * minusCurrent(i,j) * minusProduct(j,l) * minusProduct(j,n))/
-      (jl * (jk + jl + kl) * plusProduct(l,n) * minusProduct(k,n)) - 
-      (Complex(0,2) * plusProduct(i,k) * plusProduct(k,n) * minusCurrent(i,j) * minusProduct(i,n) * minusProduct(k,l))/
-      (kl * (ik + il + kl) * plusProduct(l,n) * minusProduct(k,n)) + 
-      (Complex(0,2) * plusProduct(k,l) * plusProduct(k,n) * minusCurrent(l,j) * minusProduct(i,n) * minusProduct(k,l))/
-      (kl * (ik + il + kl) * plusProduct(l,n) * minusProduct(k,n)) + 
-      (Complex(0,2) * plusProduct(j,k) * plusProduct(k,n) * minusCurrent(i,j) * minusProduct(j,n) * minusProduct(k,l))/
-      (kl * (jk + jl + kl) * plusProduct(l,n) * minusProduct(k,n)) - 
-      (Complex(0,1) * plusProduct(i,k) * plusProduct(k,n) * minusCurrent(i,j) * minusProduct(i,k) * minusProduct(l,n))/
-      (kl * (ik + il + kl) * plusProduct(l,n) * minusProduct(k,n)) + 
-      (Complex(0,1) * plusProduct(k,l) * plusProduct(k,n) * minusCurrent(l,j) * minusProduct(i,k) * minusProduct(l,n))/
-      (kl * (ik + il + kl) * plusProduct(l,n) * minusProduct(k,n)) - 
-      (Complex(0,2) * plusProduct(i,n) * plusProduct(k,l) * minusCurrent(i,j) * minusProduct(i,l) * minusProduct(l,n))/
-      (kl * (ik + il + kl) * plusProduct(l,n) * minusProduct(k,n)) + 
-      (Complex(0,1) * plusProduct(i,l) * plusProduct(k,n) * minusCurrent(i,j) * minusProduct(i,l) * minusProduct(l,n))/
-      (kl * (ik + il + kl) * plusProduct(l,n) * minusProduct(k,n)) - 
-      (Complex(0,1) * plusProduct(k,l) * plusProduct(k,n) * minusCurrent(k,j) * minusProduct(i,l) * minusProduct(l,n))/
-      (kl * (ik + il + kl) * plusProduct(l,n) * minusProduct(k,n)) - 
-      (Complex(0,2) * plusProduct(k,l) * minusCurrent(l,j) * minusProduct(i,l) * minusProduct(l,n))/
-      (kl * (ik + il + kl) * minusProduct(k,n)) + 
-      (Complex(0,1) * plusProduct(j,k) * plusProduct(k,n) * minusCurrent(i,j) * minusProduct(j,k) * minusProduct(l,n))/
-      (kl * (jk + jl + kl) * plusProduct(l,n) * minusProduct(k,n)) + 
-      (Complex(0,2) * plusProduct(j,n) * plusProduct(k,l) * minusCurrent(i,j) * minusProduct(j,l) * minusProduct(l,n))/
-      (kl * (jk + jl + kl) * plusProduct(l,n) * minusProduct(k,n)) - 
-      (Complex(0,1) * plusProduct(j,l) * plusProduct(k,n) * minusCurrent(i,j) * minusProduct(j,l) * minusProduct(l,n))/
-      (kl * (jk + jl + kl) * plusProduct(l,n) * minusProduct(k,n)) - 
-      (Complex(0,2) * plusProduct(j,k) * plusProduct(j,n) * minusCurrent(i,l) * minusProduct(j,l) * minusProduct(l,n))/
-      (jl * (jk + jl + kl) * plusProduct(l,n) * minusProduct(k,n)) + 
-      (Complex(0,2) * plusProduct(j,n) * plusProduct(k,l) * minusCurrent(i,k) * minusProduct(k,l) * minusProduct(l,n))/
-      (kl * (jk + jl + kl) * plusProduct(l,n) * minusProduct(k,n)) - 
-      (Complex(0,1) * plusProduct(j,l) * plusProduct(k,n) * minusCurrent(i,k) * minusProduct(k,l) * minusProduct(l,n))/
-      (kl * (jk + jl + kl) * plusProduct(l,n) * minusProduct(k,n)) + 
-      (Complex(0,1) * plusProduct(j,k) * plusProduct(k,n) * minusCurrent(i,l) * minusProduct(k,l) * minusProduct(l,n))/
-      (kl * (jk + jl + kl) * plusProduct(l,n) * minusProduct(k,n));
+      (Complex(0,-2) * plusP_jk * plusP_jn * minusC_ik * minusP_jl)/
+      (jl * (jk + jl + kl) * plusP_ln) + 
+      (Complex(0,2) * plusP_jk * plusP_kn * minusC_ik * minusP_kl)/
+      (kl * (jk + jl + kl) * plusP_ln) - 
+      (Complex(0,2) * plusP_ik * plusP_in * minusC_ij * minusP_il * minusP_in)/
+      (ik * (ik + il + kl) * plusP_ln * minusP_kn) - 
+      (Complex(0,2) * plusP_ik * plusP_kn * minusC_kj * minusP_il * minusP_in)/
+      (ik * (ik + il + kl) * plusP_ln * minusP_kn) - 
+      (Complex(0,2) * plusP_ik * minusC_lj * minusP_il * minusP_in)/
+      (ik * (ik + il + kl) * minusP_kn) + 
+      (Complex(0,2) * plusP_ik * plusP_jn * minusC_ij * minusP_in * minusP_jl)/
+      (ik * jl * plusP_ln * minusP_kn) - 
+      (Complex(0,2) * plusP_jk * plusP_jn * minusC_ij * minusP_jl * minusP_jn)/
+      (jl * (jk + jl + kl) * plusP_ln * minusP_kn) - 
+      (Complex(0,2) * plusP_ik * plusP_kn * minusC_ij * minusP_in * minusP_kl)/
+      (kl * (ik + il + kl) * plusP_ln * minusP_kn) + 
+      (Complex(0,2) * plusP_kl * plusP_kn * minusC_lj * minusP_in * minusP_kl)/
+      (kl * (ik + il + kl) * plusP_ln * minusP_kn) + 
+      (Complex(0,2) * plusP_jk * plusP_kn * minusC_ij * minusP_jn * minusP_kl)/
+      (kl * (jk + jl + kl) * plusP_ln * minusP_kn) - 
+      (Complex(0,1) * plusP_ik * plusP_kn * minusC_ij * minusP_ik * minusP_ln)/
+      (kl * (ik + il + kl) * plusP_ln * minusP_kn) + 
+      (Complex(0,1) * plusP_kl * plusP_kn * minusC_lj * minusP_ik * minusP_ln)/
+      (kl * (ik + il + kl) * plusP_ln * minusP_kn) - 
+      (Complex(0,2) * plusP_in * plusP_kl * minusC_ij * minusP_il * minusP_ln)/
+      (kl * (ik + il + kl) * plusP_ln * minusP_kn) + 
+      (Complex(0,1) * plusP_il * plusP_kn * minusC_ij * minusP_il * minusP_ln)/
+      (kl * (ik + il + kl) * plusP_ln * minusP_kn) - 
+      (Complex(0,1) * plusP_kl * plusP_kn * minusC_kj * minusP_il * minusP_ln)/
+      (kl * (ik + il + kl) * plusP_ln * minusP_kn) - 
+      (Complex(0,2) * plusP_kl * minusC_lj * minusP_il * minusP_ln)/
+      (kl * (ik + il + kl) * minusP_kn) + 
+      (Complex(0,1) * plusP_jk * plusP_kn * minusC_ij * minusP_jk * minusP_ln)/
+      (kl * (jk + jl + kl) * plusP_ln * minusP_kn) + 
+      (Complex(0,2) * plusP_jn * plusP_kl * minusC_ij * minusP_jl * minusP_ln)/
+      (kl * (jk + jl + kl) * plusP_ln * minusP_kn) - 
+      (Complex(0,1) * plusP_jl * plusP_kn * minusC_ij * minusP_jl * minusP_ln)/
+      (kl * (jk + jl + kl) * plusP_ln * minusP_kn) - 
+      (Complex(0,2) * plusP_jk * plusP_jn * minusC_il * minusP_jl * minusP_ln)/
+      (jl * (jk + jl + kl) * plusP_ln * minusP_kn) + 
+      (Complex(0,2) * plusP_jn * plusP_kl * minusC_ik * minusP_kl * minusP_ln)/
+      (kl * (jk + jl + kl) * plusP_ln * minusP_kn) - 
+      (Complex(0,1) * plusP_jl * plusP_kn * minusC_ik * minusP_kl * minusP_ln)/
+      (kl * (jk + jl + kl) * plusP_ln * minusP_kn) + 
+      (Complex(0,1) * plusP_jk * plusP_kn * minusC_il * minusP_kl * minusP_ln)/
+      (kl * (jk + jl + kl) * plusP_ln * minusP_kn);
   }
 
   if ( g1Hel == -1 && g2Hel == 1 ) {
     return
-      (Complex(0,2) * plusProduct(i,n) * plusProduct(j,l) * minusCurrent(i,l) * minusProduct(i,k))/
-      (ik * jl * plusProduct(k,n)) + 
-      (Complex(0,2) * plusProduct(j,l) * minusCurrent(k,l) * minusProduct(i,k))/(ik * jl) - 
-      (Complex(0,2) * plusProduct(j,l) * plusProduct(l,n) * minusCurrent(i,j) * minusProduct(j,k))/
-      (jl * (jk + jl + kl) * plusProduct(k,n)) + 
-      (Complex(0,2) * plusProduct(j,l) * plusProduct(l,n) * minusCurrent(i,l) * minusProduct(k,l))/
-      (jl * (jk + jl + kl) * plusProduct(k,n)) + 
-      (Complex(0,2) * plusProduct(j,l) * plusProduct(l,n) * minusCurrent(i,l) * minusProduct(k,l))/
-      (kl * (jk + jl + kl) * plusProduct(k,n)) - 
-      (Complex(0,2) * plusProduct(i,l) * plusProduct(i,n) * minusCurrent(i,j) * minusProduct(i,k) * minusProduct(i,n))/
-      (ik * (ik + il + kl) * plusProduct(k,n) * minusProduct(l,n)) - 
-      (Complex(0,2) * plusProduct(i,n) * plusProduct(k,l) * minusCurrent(k,j) * minusProduct(i,k) * minusProduct(i,n))/
-      (ik * (ik + il + kl) * plusProduct(k,n) * minusProduct(l,n)) + 
-      (Complex(0,2) * plusProduct(i,n) * plusProduct(j,l) * minusCurrent(i,j) * minusProduct(i,k) * minusProduct(j,n))/
-      (ik * jl * plusProduct(k,n) * minusProduct(l,n)) + 
-      (Complex(0,2) * plusProduct(j,l) * minusCurrent(k,j) * minusProduct(i,k) * minusProduct(j,n))/
-      (ik * jl * minusProduct(l,n)) - 
-      (Complex(0,2) * plusProduct(j,l) * plusProduct(j,n) * minusCurrent(i,j) * minusProduct(j,k) * minusProduct(j,n))/
-      (jl * (jk + jl + kl) * plusProduct(k,n) * minusProduct(l,n)) - 
-      (Complex(0,2) * plusProduct(i,l) * plusProduct(l,n) * minusCurrent(i,j) * minusProduct(i,n) * minusProduct(k,l))/
-      (kl * (ik + il + kl) * plusProduct(k,n) * minusProduct(l,n)) - 
-      (Complex(0,2) * plusProduct(k,l) * plusProduct(l,n) * minusCurrent(k,j) * minusProduct(i,n) * minusProduct(k,l))/
-      (kl * (ik + il + kl) * plusProduct(k,n) * minusProduct(l,n)) + 
-      (Complex(0,2) * plusProduct(j,l) * plusProduct(l,n) * minusCurrent(i,j) * minusProduct(j,n) * minusProduct(k,l))/
-      (kl * (jk + jl + kl) * plusProduct(k,n) * minusProduct(l,n)) + 
-      (Complex(0,2) * plusProduct(j,l) * plusProduct(j,n) * minusCurrent(i,l) * minusProduct(j,n) * minusProduct(k,l))/
-      (jl * (jk + jl + kl) * plusProduct(k,n) * minusProduct(l,n)) - 
-      (Complex(0,2) * plusProduct(i,l) * minusCurrent(i,j) * minusProduct(i,k) * minusProduct(k,n))/
-      (ik * (ik + il + kl) * minusProduct(l,n)) - 
-      (Complex(0,2) * plusProduct(i,n) * plusProduct(k,l) * minusCurrent(i,j) * minusProduct(i,k) * minusProduct(k,n))/
-      (kl * (ik + il + kl) * plusProduct(k,n) * minusProduct(l,n)) - 
-      (Complex(0,1) * plusProduct(i,k) * plusProduct(l,n) * minusCurrent(i,j) * minusProduct(i,k) * minusProduct(k,n))/
-      (kl * (ik + il + kl) * plusProduct(k,n) * minusProduct(l,n)) - 
-      (Complex(0,2) * plusProduct(k,l) * minusCurrent(k,j) * minusProduct(i,k) * minusProduct(k,n))/
-      (ik * (ik + il + kl) * minusProduct(l,n)) - 
-      (Complex(0,2) * plusProduct(k,l) * minusCurrent(k,j) * minusProduct(i,k) * minusProduct(k,n))/
-      (kl * (ik + il + kl) * minusProduct(l,n)) - 
-      (Complex(0,1) * plusProduct(k,l) * plusProduct(l,n) * minusCurrent(l,j) * minusProduct(i,k) * minusProduct(k,n))/
-      (kl * (ik + il + kl) * plusProduct(k,n) * minusProduct(l,n)) + 
-      (Complex(0,1) * plusProduct(i,l) * plusProduct(l,n) * minusCurrent(i,j) * minusProduct(i,l) * minusProduct(k,n))/
-      (kl * (ik + il + kl) * plusProduct(k,n) * minusProduct(l,n)) + 
-      (Complex(0,1) * plusProduct(k,l) * plusProduct(l,n) * minusCurrent(k,j) * minusProduct(i,l) * minusProduct(k,n))/
-      (kl * (ik + il + kl) * plusProduct(k,n) * minusProduct(l,n)) + 
-      (Complex(0,2) * plusProduct(j,n) * plusProduct(k,l) * minusCurrent(i,j) * minusProduct(j,k) * minusProduct(k,n))/
-      (kl * (jk + jl + kl) * plusProduct(k,n) * minusProduct(l,n)) + 
-      (Complex(0,1) * plusProduct(j,k) * plusProduct(l,n) * minusCurrent(i,j) * minusProduct(j,k) * minusProduct(k,n))/
-      (kl * (jk + jl + kl) * plusProduct(k,n) * minusProduct(l,n)) - 
-      (Complex(0,1) * plusProduct(j,l) * plusProduct(l,n) * minusCurrent(i,j) * minusProduct(j,l) * minusProduct(k,n))/
-      (kl * (jk + jl + kl) * plusProduct(k,n) * minusProduct(l,n)) + 
-      (Complex(0,1) * plusProduct(j,l) * plusProduct(l,n) * minusCurrent(i,k) * minusProduct(k,l) * minusProduct(k,n))/
-      (kl * (jk + jl + kl) * plusProduct(k,n) * minusProduct(l,n)) - 
-      (Complex(0,2) * plusProduct(j,n) * plusProduct(k,l) * minusCurrent(i,l) * minusProduct(k,l) * minusProduct(k,n))/
-      (kl * (jk + jl + kl) * plusProduct(k,n) * minusProduct(l,n)) - 
-      (Complex(0,1) * plusProduct(j,k) * plusProduct(l,n) * minusCurrent(i,l) * minusProduct(k,l) * minusProduct(k,n))/
-      (kl * (jk + jl + kl) * plusProduct(k,n) * minusProduct(l,n));
+      (Complex(0,2) * plusP_in * plusP_jl * minusC_il * minusP_ik)/
+      (ik * jl * plusP_kn) + 
+      (Complex(0,2) * plusP_jl * minusC_kl * minusP_ik)/(ik * jl) - 
+      (Complex(0,2) * plusP_jl * plusP_ln * minusC_ij * minusP_jk)/
+      (jl * (jk + jl + kl) * plusP_kn) + 
+      (Complex(0,2) * plusP_jl * plusP_ln * minusC_il * minusP_kl)/
+      (jl * (jk + jl + kl) * plusP_kn) + 
+      (Complex(0,2) * plusP_jl * plusP_ln * minusC_il * minusP_kl)/
+      (kl * (jk + jl + kl) * plusP_kn) - 
+      (Complex(0,2) * plusP_il * plusP_in * minusC_ij * minusP_ik * minusP_in)/
+      (ik * (ik + il + kl) * plusP_kn * minusP_ln) - 
+      (Complex(0,2) * plusP_in * plusP_kl * minusC_kj * minusP_ik * minusP_in)/
+      (ik * (ik + il + kl) * plusP_kn * minusP_ln) + 
+      (Complex(0,2) * plusP_in * plusP_jl * minusC_ij * minusP_ik * minusP_jn)/
+      (ik * jl * plusP_kn * minusP_ln) + 
+      (Complex(0,2) * plusP_jl * minusC_kj * minusP_ik * minusP_jn)/
+      (ik * jl * minusP_ln) - 
+      (Complex(0,2) * plusP_jl * plusP_jn * minusC_ij * minusP_jk * minusP_jn)/
+      (jl * (jk + jl + kl) * plusP_kn * minusP_ln) - 
+      (Complex(0,2) * plusP_il * plusP_ln * minusC_ij * minusP_in * minusP_kl)/
+      (kl * (ik + il + kl) * plusP_kn * minusP_ln) - 
+      (Complex(0,2) * plusP_kl * plusP_ln * minusC_kj * minusP_in * minusP_kl)/
+      (kl * (ik + il + kl) * plusP_kn * minusP_ln) + 
+      (Complex(0,2) * plusP_jl * plusP_ln * minusC_ij * minusP_jn * minusP_kl)/
+      (kl * (jk + jl + kl) * plusP_kn * minusP_ln) + 
+      (Complex(0,2) * plusP_jl * plusP_jn * minusC_il * minusP_jn * minusP_kl)/
+      (jl * (jk + jl + kl) * plusP_kn * minusP_ln) - 
+      (Complex(0,2) * plusP_il * minusC_ij * minusP_ik * minusP_kn)/
+      (ik * (ik + il + kl) * minusP_ln) - 
+      (Complex(0,2) * plusP_in * plusP_kl * minusC_ij * minusP_ik * minusP_kn)/
+      (kl * (ik + il + kl) * plusP_kn * minusP_ln) - 
+      (Complex(0,1) * plusP_ik * plusP_ln * minusC_ij * minusP_ik * minusP_kn)/
+      (kl * (ik + il + kl) * plusP_kn * minusP_ln) - 
+      (Complex(0,2) * plusP_kl * minusC_kj * minusP_ik * minusP_kn)/
+      (ik * (ik + il + kl) * minusP_ln) - 
+      (Complex(0,2) * plusP_kl * minusC_kj * minusP_ik * minusP_kn)/
+      (kl * (ik + il + kl) * minusP_ln) - 
+      (Complex(0,1) * plusP_kl * plusP_ln * minusC_lj * minusP_ik * minusP_kn)/
+      (kl * (ik + il + kl) * plusP_kn * minusP_ln) + 
+      (Complex(0,1) * plusP_il * plusP_ln * minusC_ij * minusP_il * minusP_kn)/
+      (kl * (ik + il + kl) * plusP_kn * minusP_ln) + 
+      (Complex(0,1) * plusP_kl * plusP_ln * minusC_kj * minusP_il * minusP_kn)/
+      (kl * (ik + il + kl) * plusP_kn * minusP_ln) + 
+      (Complex(0,2) * plusP_jn * plusP_kl * minusC_ij * minusP_jk * minusP_kn)/
+      (kl * (jk + jl + kl) * plusP_kn * minusP_ln) + 
+      (Complex(0,1) * plusP_jk * plusP_ln * minusC_ij * minusP_jk * minusP_kn)/
+      (kl * (jk + jl + kl) * plusP_kn * minusP_ln) - 
+      (Complex(0,1) * plusP_jl * plusP_ln * minusC_ij * minusP_jl * minusP_kn)/
+      (kl * (jk + jl + kl) * plusP_kn * minusP_ln) + 
+      (Complex(0,1) * plusP_jl * plusP_ln * minusC_ik * minusP_kl * minusP_kn)/
+      (kl * (jk + jl + kl) * plusP_kn * minusP_ln) - 
+      (Complex(0,2) * plusP_jn * plusP_kl * minusC_il * minusP_kl * minusP_kn)/
+      (kl * (jk + jl + kl) * plusP_kn * minusP_ln) - 
+      (Complex(0,1) * plusP_jk * plusP_ln * minusC_il * minusP_kl * minusP_kn)/
+      (kl * (jk + jl + kl) * plusP_kn * minusP_ln);
   }
 
   if ( g1Hel == -1 && g2Hel == -1 ) {
     return
-      (Complex(0,2) * sqr(plusProduct(i,n)) * minusCurrent(i,j) * minusProduct(i,k) * minusProduct(i,l))/
-      (ik * (ik + il + kl) * plusProduct(k,n) * plusProduct(l,n)) + 
-      (Complex(0,2) * plusProduct(i,n) * minusCurrent(k,j) * minusProduct(i,k) * minusProduct(i,l))/
-      (ik * (ik + il + kl) * plusProduct(l,n)) + 
-      (Complex(0,2) * plusProduct(i,n) * minusCurrent(l,j) * minusProduct(i,k) * minusProduct(i,l))/
-      (ik * (ik + il + kl) * plusProduct(k,n)) - 
-      (Complex(0,2) * plusProduct(i,n) * plusProduct(j,n) * minusCurrent(i,j) * minusProduct(i,k) * minusProduct(j,l))/
-      (ik * jl * plusProduct(k,n) * plusProduct(l,n)) - 
-      (Complex(0,2) * plusProduct(j,n) * minusCurrent(k,j) * minusProduct(i,k) * minusProduct(j,l))/
-      (ik * jl * plusProduct(l,n)) + 
-      (Complex(0,2) * sqr(plusProduct(j,n)) * minusCurrent(i,j) * minusProduct(j,k) * minusProduct(j,l))/
-      (jl * (jk + jl + kl) * plusProduct(k,n) * plusProduct(l,n)) + 
-      (Complex(0,2) * plusProduct(i,n) * minusCurrent(i,j) * minusProduct(i,k) * minusProduct(k,l))/
-      (ik * (ik + il + kl) * plusProduct(l,n)) + 
-      (Complex(0,2) * plusProduct(i,n) * minusCurrent(i,j) * minusProduct(i,k) * minusProduct(k,l))/
-      (kl * (ik + il + kl) * plusProduct(l,n)) + 
-      (Complex(0,2) * plusProduct(k,n) * minusCurrent(k,j) * minusProduct(i,k) * minusProduct(k,l))/
-      (ik * (ik + il + kl) * plusProduct(l,n)) + 
-      (Complex(0,2) * plusProduct(k,n) * minusCurrent(k,j) * minusProduct(i,k) * minusProduct(k,l))/
-      (kl * (ik + il + kl) * plusProduct(l,n)) + 
-      (Complex(0,2) * minusCurrent(l,j) * minusProduct(i,k) * minusProduct(k,l))/
+      (Complex(0,2) * sqr(plusP_in) * minusC_ij * minusP_ik * minusP_il)/
+      (ik * (ik + il + kl) * plusP_kn * plusP_ln) + 
+      (Complex(0,2) * plusP_in * minusC_kj * minusP_ik * minusP_il)/
+      (ik * (ik + il + kl) * plusP_ln) + 
+      (Complex(0,2) * plusP_in * minusC_lj * minusP_ik * minusP_il)/
+      (ik * (ik + il + kl) * plusP_kn) - 
+      (Complex(0,2) * plusP_in * plusP_jn * minusC_ij * minusP_ik * minusP_jl)/
+      (ik * jl * plusP_kn * plusP_ln) - 
+      (Complex(0,2) * plusP_jn * minusC_kj * minusP_ik * minusP_jl)/
+      (ik * jl * plusP_ln) + 
+      (Complex(0,2) * sqr(plusP_jn) * minusC_ij * minusP_jk * minusP_jl)/
+      (jl * (jk + jl + kl) * plusP_kn * plusP_ln) + 
+      (Complex(0,2) * plusP_in * minusC_ij * minusP_ik * minusP_kl)/
+      (ik * (ik + il + kl) * plusP_ln) + 
+      (Complex(0,2) * plusP_in * minusC_ij * minusP_ik * minusP_kl)/
+      (kl * (ik + il + kl) * plusP_ln) + 
+      (Complex(0,2) * plusP_kn * minusC_kj * minusP_ik * minusP_kl)/
+      (ik * (ik + il + kl) * plusP_ln) + 
+      (Complex(0,2) * plusP_kn * minusC_kj * minusP_ik * minusP_kl)/
+      (kl * (ik + il + kl) * plusP_ln) + 
+      (Complex(0,2) * minusC_lj * minusP_ik * minusP_kl)/
       (ik * (ik + il + kl)) + 
-      (Complex(0,2) * minusCurrent(l,j) * minusProduct(i,k) * minusProduct(k,l))/
+      (Complex(0,2) * minusC_lj * minusP_ik * minusP_kl)/
       (kl * (ik + il + kl)) + 
-      (Complex(0,2) * plusProduct(i,n) * minusCurrent(i,j) * minusProduct(i,l) * minusProduct(k,l))/
-      (kl * (ik + il + kl) * plusProduct(k,n)) + 
-      (Complex(0,2) * minusCurrent(k,j) * minusProduct(i,l) * minusProduct(k,l))/
+      (Complex(0,2) * plusP_in * minusC_ij * minusP_il * minusP_kl)/
+      (kl * (ik + il + kl) * plusP_kn) + 
+      (Complex(0,2) * minusC_kj * minusP_il * minusP_kl)/
       (kl * (ik + il + kl)) + 
-      (Complex(0,2) * plusProduct(l,n) * minusCurrent(l,j) * minusProduct(i,l) * minusProduct(k,l))/
-      (kl * (ik + il + kl) * plusProduct(k,n)) - 
-      (Complex(0,2) * plusProduct(j,n) * minusCurrent(i,j) * minusProduct(j,k) * minusProduct(k,l))/
-      (kl * (jk + jl + kl) * plusProduct(l,n)) - 
-      (Complex(0,2) * plusProduct(j,n) * minusCurrent(i,j) * minusProduct(j,l) * minusProduct(k,l))/
-      (kl * (jk + jl + kl) * plusProduct(k,n)) - 
-      (Complex(0,2) * sqr(plusProduct(j,n)) * minusCurrent(i,l) * minusProduct(j,l) * minusProduct(k,l))/
-      (jl * (jk + jl + kl) * plusProduct(k,n) * plusProduct(l,n)) - 
-      (Complex(0,2) * plusProduct(j,n) * minusCurrent(i,k) * sqr(minusProduct(k,l)))/
-      (kl * (jk + jl + kl) * plusProduct(k,n)) + 
-      (Complex(0,2) * plusProduct(j,n) * minusCurrent(i,l) * sqr(minusProduct(k,l)))/
-      (kl * (jk + jl + kl) * plusProduct(l,n));
+      (Complex(0,2) * plusP_ln * minusC_lj * minusP_il * minusP_kl)/
+      (kl * (ik + il + kl) * plusP_kn) - 
+      (Complex(0,2) * plusP_jn * minusC_ij * minusP_jk * minusP_kl)/
+      (kl * (jk + jl + kl) * plusP_ln) - 
+      (Complex(0,2) * plusP_jn * minusC_ij * minusP_jl * minusP_kl)/
+      (kl * (jk + jl + kl) * plusP_kn) - 
+      (Complex(0,2) * sqr(plusP_jn) * minusC_il * minusP_jl * minusP_kl)/
+      (jl * (jk + jl + kl) * plusP_kn * plusP_ln) - 
+      (Complex(0,2) * plusP_jn * minusC_ik * sqr(minusP_kl))/
+      (kl * (jk + jl + kl) * plusP_kn) + 
+      (Complex(0,2) * plusP_jn * minusC_il * sqr(minusP_kl))/
+      (kl * (jk + jl + kl) * plusP_ln);
   }
 
-  static LorentzVector<Complex> czero(0.,0.,0.,0.);
   return czero;
 
 }
 
-LorentzVector<Complex> MatchboxCurrents::qqbarggFixedLeftCurrent(const int i, int,
-								 const int j, int,
+LorentzVector<Complex> MatchboxCurrents::qqbarggFixedLeftCurrent(const int i, const int,
+								 const int j, const int,
 								 const int k, const int g1Hel,
 								 const int l, const int g2Hel) {
   const double ik = invariant(i,k);
@@ -440,152 +468,176 @@ LorentzVector<Complex> MatchboxCurrents::qqbarggFixedLeftCurrent(const int i, in
   const double jl = invariant(j,l);
   const double kl = invariant(k,l);
 
+  const Complex plusP_ij = plusProduct(i,j);
+  const Complex plusP_ik = plusProduct(i,k);
+  const Complex plusP_il = plusProduct(i,l);
+
+  const Complex plusP_jk = plusProduct(j,k);
+  const Complex plusP_jl = plusProduct(j,l);
+
+  const Complex plusP_kl = plusProduct(k,l);
+
+  const Complex minusP_ij = minusProduct(i,j);
+  const Complex minusP_ik = minusProduct(i,k);
+  const Complex minusP_il = minusProduct(i,l);
+  const Complex minusP_jk = minusProduct(j,k);
+  const Complex minusP_jl = minusProduct(j,l);
+  const Complex minusP_kl = minusProduct(k,l);
+
+  const LorentzVector<Complex> & minusC_ij = minusCurrent(i,j);
+  const LorentzVector<Complex> & minusC_ik = minusCurrent(i,k);
+  const LorentzVector<Complex> & minusC_il = minusCurrent(i,l);
+
+  const LorentzVector<Complex> & minusC_kj = minusCurrent(k,j);
+  const LorentzVector<Complex> & minusC_kl = minusCurrent(k,l);
+
+  const LorentzVector<Complex> & minusC_lj = minusCurrent(l,j);
+
   if ( g1Hel == 1 && g2Hel == 1 ) {
     return
-      (Complex(0,-2) * plusProduct(j,l) * plusProduct(k,l) * minusCurrent(i,k))/
+      (Complex(0,-2) * plusP_jl * plusP_kl * minusC_ik)/
       (jl * (jk + jl + kl)) - 
-      (Complex(0,2) * plusProduct(j,l) * plusProduct(k,l) * minusCurrent(i,k))/
+      (Complex(0,2) * plusP_jl * plusP_kl * minusC_ik)/
       (kl * (jk + jl + kl)) - 
-      (Complex(0,2) * plusProduct(j,k) * plusProduct(k,l) * minusCurrent(i,l))/
+      (Complex(0,2) * plusP_jk * plusP_kl * minusC_il)/
       (kl * (jk + jl + kl)) - 
-      (Complex(0,2) * plusProduct(j,l) * plusProduct(k,l) * minusCurrent(i,j) * minusProduct(i,j))/
-      (jl * (jk + jl + kl) * minusProduct(i,k)) - 
-      (Complex(0,2) * plusProduct(j,l) * plusProduct(k,l) * minusCurrent(i,j) * minusProduct(i,j))/
-      (kl * (jk + jl + kl) * minusProduct(i,k)) + 
-      (Complex(0,2) * plusProduct(j,k) * plusProduct(j,l) * minusCurrent(i,l) * minusProduct(i,j))/
-      (jl * (jk + jl + kl) * minusProduct(i,k)) - 
-      (Complex(0,2) * plusProduct(j,k) * plusProduct(k,l) * minusCurrent(i,j) * minusProduct(i,j))/
-      (kl * (jk + jl + kl) * minusProduct(i,l)) + 
-      (Complex(0,2) * plusProduct(j,k) * plusProduct(j,l) * minusCurrent(i,k) * minusProduct(i,j))/
-      (jl * (jk + jl + kl) * minusProduct(i,l)) + 
-      (Complex(0,2) * plusProduct(j,k) * plusProduct(j,l) * minusCurrent(i,j) * sqr(minusProduct(i,j)))/
-      (jl * (jk + jl + kl) * minusProduct(i,k) * minusProduct(i,l)) - 
-      (Complex(0,2) * plusProduct(j,k) * plusProduct(k,l) * minusCurrent(i,k) * minusProduct(i,k))/
-      (kl * (jk + jl + kl) * minusProduct(i,l)) - 
-      (Complex(0,2) * plusProduct(j,l) * plusProduct(k,l) * minusCurrent(i,l) * minusProduct(i,l))/
-      (jl * (jk + jl + kl) * minusProduct(i,k)) - 
-      (Complex(0,2) * plusProduct(j,l) * plusProduct(k,l) * minusCurrent(i,l) * minusProduct(i,l))/
-      (kl * (jk + jl + kl) * minusProduct(i,k));
+      (Complex(0,2) * plusP_jl * plusP_kl * minusC_ij * minusP_ij)/
+      (jl * (jk + jl + kl) * minusP_ik) - 
+      (Complex(0,2) * plusP_jl * plusP_kl * minusC_ij * minusP_ij)/
+      (kl * (jk + jl + kl) * minusP_ik) + 
+      (Complex(0,2) * plusP_jk * plusP_jl * minusC_il * minusP_ij)/
+      (jl * (jk + jl + kl) * minusP_ik) - 
+      (Complex(0,2) * plusP_jk * plusP_kl * minusC_ij * minusP_ij)/
+      (kl * (jk + jl + kl) * minusP_il) + 
+      (Complex(0,2) * plusP_jk * plusP_jl * minusC_ik * minusP_ij)/
+      (jl * (jk + jl + kl) * minusP_il) + 
+      (Complex(0,2) * plusP_jk * plusP_jl * minusC_ij * sqr(minusP_ij))/
+      (jl * (jk + jl + kl) * minusP_ik * minusP_il) - 
+      (Complex(0,2) * plusP_jk * plusP_kl * minusC_ik * minusP_ik)/
+      (kl * (jk + jl + kl) * minusP_il) - 
+      (Complex(0,2) * plusP_jl * plusP_kl * minusC_il * minusP_il)/
+      (jl * (jk + jl + kl) * minusP_ik) - 
+      (Complex(0,2) * plusP_jl * plusP_kl * minusC_il * minusP_il)/
+      (kl * (jk + jl + kl) * minusP_ik);
   }
 
   if ( g1Hel == 1 && g2Hel == -1 ) {
     return
-      (Complex(0,-1) * sqr(plusProduct(i,k)) * minusCurrent(i,j) * minusProduct(i,l))/
-      (kl * (ik + il + kl) * plusProduct(i,l)) + 
-      (Complex(0,1) * plusProduct(i,k) * plusProduct(k,l) * minusCurrent(l,j) * minusProduct(i,l))/
-      (kl * (ik + il + kl) * plusProduct(i,l)) + 
-      (Complex(0,1) * plusProduct(i,k) * minusCurrent(i,j) * sqr(minusProduct(i,l)))/
-      (kl * (ik + il + kl) * minusProduct(i,k)) - 
-      (Complex(0,1) * plusProduct(i,k) * plusProduct(k,l) * minusCurrent(k,j) * sqr(minusProduct(i,l)))/
-      (kl * (ik + il + kl) * plusProduct(i,l) * minusProduct(i,k)) - 
-      (Complex(0,2) * plusProduct(k,l) * minusCurrent(l,j) * sqr(minusProduct(i,l)))/
-      (kl * (ik + il + kl) * minusProduct(i,k)) + 
-      (Complex(0,1) * plusProduct(i,k) * plusProduct(j,k) * minusCurrent(i,j) * minusProduct(i,l) * minusProduct(j,k))/
-      (kl * (jk + jl + kl) * plusProduct(i,l) * minusProduct(i,k)) - 
-      (Complex(0,2) * plusProduct(i,j) * plusProduct(j,k) * minusCurrent(i,k) * minusProduct(j,l))/
-      (jl * (jk + jl + kl) * plusProduct(i,l)) - 
-      (Complex(0,2) * plusProduct(i,j) * plusProduct(j,k) * minusCurrent(i,j) * minusProduct(i,j) * minusProduct(j,l))/
-      (jl * (jk + jl + kl) * plusProduct(i,l) * minusProduct(i,k)) - 
-      (Complex(0,1) * plusProduct(i,k) * plusProduct(j,l) * minusCurrent(i,j) * minusProduct(i,l) * minusProduct(j,l))/
-      (kl * (jk + jl + kl) * plusProduct(i,l) * minusProduct(i,k)) + 
-      (Complex(0,2) * plusProduct(i,j) * plusProduct(k,l) * minusCurrent(i,j) * minusProduct(i,l) * minusProduct(j,l))/
-      (kl * (jk + jl + kl) * plusProduct(i,l) * minusProduct(i,k)) - 
-      (Complex(0,2) * plusProduct(i,j) * plusProduct(j,k) * minusCurrent(i,l) * minusProduct(i,l) * minusProduct(j,l))/
-      (jl * (jk + jl + kl) * plusProduct(i,l) * minusProduct(i,k)) + 
-      (Complex(0,2) * plusProduct(i,k) * plusProduct(j,k) * minusCurrent(i,k) * minusProduct(k,l))/
-      (kl * (jk + jl + kl) * plusProduct(i,l)) + 
-      (Complex(0,2) * plusProduct(i,k) * plusProduct(j,k) * minusCurrent(i,j) * minusProduct(i,j) * minusProduct(k,l))/
-      (kl * (jk + jl + kl) * plusProduct(i,l) * minusProduct(i,k)) - 
-      (Complex(0,1) * plusProduct(i,k) * plusProduct(j,l) * minusCurrent(i,k) * minusProduct(i,l) * minusProduct(k,l))/
-      (kl * (jk + jl + kl) * plusProduct(i,l) * minusProduct(i,k)) + 
-      (Complex(0,2) * plusProduct(i,j) * plusProduct(k,l) * minusCurrent(i,k) * minusProduct(i,l) * minusProduct(k,l))/
-      (kl * (jk + jl + kl) * plusProduct(i,l) * minusProduct(i,k)) + 
-      (Complex(0,1) * plusProduct(i,k) * plusProduct(j,k) * minusCurrent(i,l) * minusProduct(i,l) * minusProduct(k,l))/
-      (kl * (jk + jl + kl) * plusProduct(i,l) * minusProduct(i,k));
+      (Complex(0,-1) * sqr(plusP_ik) * minusC_ij * minusP_il)/
+      (kl * (ik + il + kl) * plusP_il) + 
+      (Complex(0,1) * plusP_ik * plusP_kl * minusC_lj * minusP_il)/
+      (kl * (ik + il + kl) * plusP_il) + 
+      (Complex(0,1) * plusP_ik * minusC_ij * sqr(minusP_il))/
+      (kl * (ik + il + kl) * minusP_ik) - 
+      (Complex(0,1) * plusP_ik * plusP_kl * minusC_kj * sqr(minusP_il))/
+      (kl * (ik + il + kl) * plusP_il * minusP_ik) - 
+      (Complex(0,2) * plusP_kl * minusC_lj * sqr(minusP_il))/
+      (kl * (ik + il + kl) * minusP_ik) + 
+      (Complex(0,1) * plusP_ik * plusP_jk * minusC_ij * minusP_il * minusP_jk)/
+      (kl * (jk + jl + kl) * plusP_il * minusP_ik) - 
+      (Complex(0,2) * plusP_ij * plusP_jk * minusC_ik * minusP_jl)/
+      (jl * (jk + jl + kl) * plusP_il) - 
+      (Complex(0,2) * plusP_ij * plusP_jk * minusC_ij * minusP_ij * minusP_jl)/
+      (jl * (jk + jl + kl) * plusP_il * minusP_ik) - 
+      (Complex(0,1) * plusP_ik * plusP_jl * minusC_ij * minusP_il * minusP_jl)/
+      (kl * (jk + jl + kl) * plusP_il * minusP_ik) + 
+      (Complex(0,2) * plusP_ij * plusP_kl * minusC_ij * minusP_il * minusP_jl)/
+      (kl * (jk + jl + kl) * plusP_il * minusP_ik) - 
+      (Complex(0,2) * plusP_ij * plusP_jk * minusC_il * minusP_il * minusP_jl)/
+      (jl * (jk + jl + kl) * plusP_il * minusP_ik) + 
+      (Complex(0,2) * plusP_ik * plusP_jk * minusC_ik * minusP_kl)/
+      (kl * (jk + jl + kl) * plusP_il) + 
+      (Complex(0,2) * plusP_ik * plusP_jk * minusC_ij * minusP_ij * minusP_kl)/
+      (kl * (jk + jl + kl) * plusP_il * minusP_ik) - 
+      (Complex(0,1) * plusP_ik * plusP_jl * minusC_ik * minusP_il * minusP_kl)/
+      (kl * (jk + jl + kl) * plusP_il * minusP_ik) + 
+      (Complex(0,2) * plusP_ij * plusP_kl * minusC_ik * minusP_il * minusP_kl)/
+      (kl * (jk + jl + kl) * plusP_il * minusP_ik) + 
+      (Complex(0,1) * plusP_ik * plusP_jk * minusC_il * minusP_il * minusP_kl)/
+      (kl * (jk + jl + kl) * plusP_il * minusP_ik);
   }
 
   if ( g1Hel == -1 && g2Hel == 1 ) {
     return
-      (Complex(0,1) * sqr(plusProduct(i,l)) * minusCurrent(i,j) * minusProduct(i,k))/
-      (kl * (ik + il + kl) * plusProduct(i,k)) + 
-      (Complex(0,1) * plusProduct(i,l) * plusProduct(k,l) * minusCurrent(k,j) * minusProduct(i,k))/
-      (kl * (ik + il + kl) * plusProduct(i,k)) + 
-      (Complex(0,2) * plusProduct(j,l) * minusCurrent(k,l) * minusProduct(i,k))/(ik * jl) + 
-      (Complex(0,2) * plusProduct(j,l) * minusCurrent(k,j) * minusProduct(i,j) * minusProduct(i,k))/
-      (ik * jl * minusProduct(i,l)) - 
-      (Complex(0,2) * plusProduct(i,l) * minusCurrent(i,j) * sqr(minusProduct(i,k)))/
-      (ik * (ik + il + kl) * minusProduct(i,l)) - 
-      (Complex(0,1) * plusProduct(i,l) * minusCurrent(i,j) * sqr(minusProduct(i,k)))/
-      (kl * (ik + il + kl) * minusProduct(i,l)) - 
-      (Complex(0,2) * plusProduct(k,l) * minusCurrent(k,j) * sqr(minusProduct(i,k)))/
-      (ik * (ik + il + kl) * minusProduct(i,l)) - 
-      (Complex(0,2) * plusProduct(k,l) * minusCurrent(k,j) * sqr(minusProduct(i,k)))/
-      (kl * (ik + il + kl) * minusProduct(i,l)) - 
-      (Complex(0,1) * plusProduct(i,l) * plusProduct(k,l) * minusCurrent(l,j) * sqr(minusProduct(i,k)))/
-      (kl * (ik + il + kl) * plusProduct(i,k) * minusProduct(i,l)) - 
-      (Complex(0,2) * plusProduct(i,l) * plusProduct(j,l) * minusCurrent(i,j) * minusProduct(j,k))/
-      (jl * (jk + jl + kl) * plusProduct(i,k)) - 
-      (Complex(0,2) * plusProduct(i,j) * plusProduct(j,l) * minusCurrent(i,j) * minusProduct(i,j) * minusProduct(j,k))/
-      (jl * (jk + jl + kl) * plusProduct(i,k) * minusProduct(i,l)) + 
-      (Complex(0,1) * plusProduct(i,l) * plusProduct(j,k) * minusCurrent(i,j) * minusProduct(i,k) * minusProduct(j,k))/
-      (kl * (jk + jl + kl) * plusProduct(i,k) * minusProduct(i,l)) + 
-      (Complex(0,2) * plusProduct(i,j) * plusProduct(k,l) * minusCurrent(i,j) * minusProduct(i,k) * minusProduct(j,k))/
-      (kl * (jk + jl + kl) * plusProduct(i,k) * minusProduct(i,l)) - 
-      (Complex(0,1) * plusProduct(i,l) * plusProduct(j,l) * minusCurrent(i,j) * minusProduct(i,k) * minusProduct(j,l))/
-      (kl * (jk + jl + kl) * plusProduct(i,k) * minusProduct(i,l)) + 
-      (Complex(0,2) * plusProduct(i,l) * plusProduct(j,l) * minusCurrent(i,l) * minusProduct(k,l))/
-      (jl * (jk + jl + kl) * plusProduct(i,k)) + 
-      (Complex(0,2) * plusProduct(i,l) * plusProduct(j,l) * minusCurrent(i,l) * minusProduct(k,l))/
-      (kl * (jk + jl + kl) * plusProduct(i,k)) + 
-      (Complex(0,2) * plusProduct(i,l) * plusProduct(j,l) * minusCurrent(i,j) * minusProduct(i,j) * minusProduct(k,l))/
-      (kl * (jk + jl + kl) * plusProduct(i,k) * minusProduct(i,l)) + 
-      (Complex(0,2) * plusProduct(i,j) * plusProduct(j,l) * minusCurrent(i,l) * minusProduct(i,j) * minusProduct(k,l))/
-      (jl * (jk + jl + kl) * plusProduct(i,k) * minusProduct(i,l)) + 
-      (Complex(0,1) * plusProduct(i,l) * plusProduct(j,l) * minusCurrent(i,k) * minusProduct(i,k) * minusProduct(k,l))/
-      (kl * (jk + jl + kl) * plusProduct(i,k) * minusProduct(i,l)) - 
-      (Complex(0,1) * plusProduct(i,l) * plusProduct(j,k) * minusCurrent(i,l) * minusProduct(i,k) * minusProduct(k,l))/
-      (kl * (jk + jl + kl) * plusProduct(i,k) * minusProduct(i,l)) - 
-      (Complex(0,2) * plusProduct(i,j) * plusProduct(k,l) * minusCurrent(i,l) * minusProduct(i,k) * minusProduct(k,l))/
-      (kl * (jk + jl + kl) * plusProduct(i,k) * minusProduct(i,l));
+      (Complex(0,1) * sqr(plusP_il) * minusC_ij * minusP_ik)/
+      (kl * (ik + il + kl) * plusP_ik) + 
+      (Complex(0,1) * plusP_il * plusP_kl * minusC_kj * minusP_ik)/
+      (kl * (ik + il + kl) * plusP_ik) + 
+      (Complex(0,2) * plusP_jl * minusC_kl * minusP_ik)/(ik * jl) + 
+      (Complex(0,2) * plusP_jl * minusC_kj * minusP_ij * minusP_ik)/
+      (ik * jl * minusP_il) - 
+      (Complex(0,2) * plusP_il * minusC_ij * sqr(minusP_ik))/
+      (ik * (ik + il + kl) * minusP_il) - 
+      (Complex(0,1) * plusP_il * minusC_ij * sqr(minusP_ik))/
+      (kl * (ik + il + kl) * minusP_il) - 
+      (Complex(0,2) * plusP_kl * minusC_kj * sqr(minusP_ik))/
+      (ik * (ik + il + kl) * minusP_il) - 
+      (Complex(0,2) * plusP_kl * minusC_kj * sqr(minusP_ik))/
+      (kl * (ik + il + kl) * minusP_il) - 
+      (Complex(0,1) * plusP_il * plusP_kl * minusC_lj * sqr(minusP_ik))/
+      (kl * (ik + il + kl) * plusP_ik * minusP_il) - 
+      (Complex(0,2) * plusP_il * plusP_jl * minusC_ij * minusP_jk)/
+      (jl * (jk + jl + kl) * plusP_ik) - 
+      (Complex(0,2) * plusP_ij * plusP_jl * minusC_ij * minusP_ij * minusP_jk)/
+      (jl * (jk + jl + kl) * plusP_ik * minusP_il) + 
+      (Complex(0,1) * plusP_il * plusP_jk * minusC_ij * minusP_ik * minusP_jk)/
+      (kl * (jk + jl + kl) * plusP_ik * minusP_il) + 
+      (Complex(0,2) * plusP_ij * plusP_kl * minusC_ij * minusP_ik * minusP_jk)/
+      (kl * (jk + jl + kl) * plusP_ik * minusP_il) - 
+      (Complex(0,1) * plusP_il * plusP_jl * minusC_ij * minusP_ik * minusP_jl)/
+      (kl * (jk + jl + kl) * plusP_ik * minusP_il) + 
+      (Complex(0,2) * plusP_il * plusP_jl * minusC_il * minusP_kl)/
+      (jl * (jk + jl + kl) * plusP_ik) + 
+      (Complex(0,2) * plusP_il * plusP_jl * minusC_il * minusP_kl)/
+      (kl * (jk + jl + kl) * plusP_ik) + 
+      (Complex(0,2) * plusP_il * plusP_jl * minusC_ij * minusP_ij * minusP_kl)/
+      (kl * (jk + jl + kl) * plusP_ik * minusP_il) + 
+      (Complex(0,2) * plusP_ij * plusP_jl * minusC_il * minusP_ij * minusP_kl)/
+      (jl * (jk + jl + kl) * plusP_ik * minusP_il) + 
+      (Complex(0,1) * plusP_il * plusP_jl * minusC_ik * minusP_ik * minusP_kl)/
+      (kl * (jk + jl + kl) * plusP_ik * minusP_il) - 
+      (Complex(0,1) * plusP_il * plusP_jk * minusC_il * minusP_ik * minusP_kl)/
+      (kl * (jk + jl + kl) * plusP_ik * minusP_il) - 
+      (Complex(0,2) * plusP_ij * plusP_kl * minusC_il * minusP_ik * minusP_kl)/
+      (kl * (jk + jl + kl) * plusP_ik * minusP_il);
   }
 
   if ( g1Hel == -1 && g2Hel == -1 ) {
     return
-      (Complex(0,-2) * plusProduct(i,j) * minusCurrent(k,j) * minusProduct(i,k) * minusProduct(j,l))/
-      (ik * jl * plusProduct(i,l)) + 
-      (Complex(0,2) * sqr(plusProduct(i,j)) * minusCurrent(i,j) * minusProduct(j,k) * minusProduct(j,l))/
-      (jl * (jk + jl + kl) * plusProduct(i,k) * plusProduct(i,l)) + 
-      (Complex(0,2) * plusProduct(i,k) * minusCurrent(k,j) * minusProduct(i,k) * minusProduct(k,l))/
-      (ik * (ik + il + kl) * plusProduct(i,l)) + 
-      (Complex(0,2) * plusProduct(i,k) * minusCurrent(k,j) * minusProduct(i,k) * minusProduct(k,l))/
-      (kl * (ik + il + kl) * plusProduct(i,l)) + 
-      (Complex(0,2) * minusCurrent(l,j) * minusProduct(i,k) * minusProduct(k,l))/
+      (Complex(0,-2) * plusP_ij * minusC_kj * minusP_ik * minusP_jl)/
+      (ik * jl * plusP_il) + 
+      (Complex(0,2) * sqr(plusP_ij) * minusC_ij * minusP_jk * minusP_jl)/
+      (jl * (jk + jl + kl) * plusP_ik * plusP_il) + 
+      (Complex(0,2) * plusP_ik * minusC_kj * minusP_ik * minusP_kl)/
+      (ik * (ik + il + kl) * plusP_il) + 
+      (Complex(0,2) * plusP_ik * minusC_kj * minusP_ik * minusP_kl)/
+      (kl * (ik + il + kl) * plusP_il) + 
+      (Complex(0,2) * minusC_lj * minusP_ik * minusP_kl)/
       (ik * (ik + il + kl)) + 
-      (Complex(0,2) * minusCurrent(l,j) * minusProduct(i,k) * minusProduct(k,l))/
+      (Complex(0,2) * minusC_lj * minusP_ik * minusP_kl)/
       (kl * (ik + il + kl)) + 
-      (Complex(0,2) * minusCurrent(k,j) * minusProduct(i,l) * minusProduct(k,l))/
+      (Complex(0,2) * minusC_kj * minusP_il * minusP_kl)/
       (kl * (ik + il + kl)) + 
-      (Complex(0,2) * plusProduct(i,l) * minusCurrent(l,j) * minusProduct(i,l) * minusProduct(k,l))/
-      (kl * (ik + il + kl) * plusProduct(i,k)) - 
-      (Complex(0,2) * plusProduct(i,j) * minusCurrent(i,j) * minusProduct(j,k) * minusProduct(k,l))/
-      (kl * (jk + jl + kl) * plusProduct(i,l)) - 
-      (Complex(0,2) * plusProduct(i,j) * minusCurrent(i,j) * minusProduct(j,l) * minusProduct(k,l))/
-      (kl * (jk + jl + kl) * plusProduct(i,k)) - 
-      (Complex(0,2) * sqr(plusProduct(i,j)) * minusCurrent(i,l) * minusProduct(j,l) * minusProduct(k,l))/
-      (jl * (jk + jl + kl) * plusProduct(i,k) * plusProduct(i,l)) - 
-      (Complex(0,2) * plusProduct(i,j) * minusCurrent(i,k) * sqr(minusProduct(k,l)))/
-      (kl * (jk + jl + kl) * plusProduct(i,k)) + 
-      (Complex(0,2) * plusProduct(i,j) * minusCurrent(i,l) * sqr(minusProduct(k,l)))/
-      (kl * (jk + jl + kl) * plusProduct(i,l));
+      (Complex(0,2) * plusP_il * minusC_lj * minusP_il * minusP_kl)/
+      (kl * (ik + il + kl) * plusP_ik) - 
+      (Complex(0,2) * plusP_ij * minusC_ij * minusP_jk * minusP_kl)/
+      (kl * (jk + jl + kl) * plusP_il) - 
+      (Complex(0,2) * plusP_ij * minusC_ij * minusP_jl * minusP_kl)/
+      (kl * (jk + jl + kl) * plusP_ik) - 
+      (Complex(0,2) * sqr(plusP_ij) * minusC_il * minusP_jl * minusP_kl)/
+      (jl * (jk + jl + kl) * plusP_ik * plusP_il) - 
+      (Complex(0,2) * plusP_ij * minusC_ik * sqr(minusP_kl))/
+      (kl * (jk + jl + kl) * plusP_ik) + 
+      (Complex(0,2) * plusP_ij * minusC_il * sqr(minusP_kl))/
+      (kl * (jk + jl + kl) * plusP_il);
   }
 
-  static LorentzVector<Complex> czero(0.,0.,0.,0.);
   return czero;
 
 }
 
-LorentzVector<Complex> MatchboxCurrents::qqbarggGeneralRightCurrent(const int i, int,
-								    const int j, int,
+LorentzVector<Complex> MatchboxCurrents::qqbarggGeneralRightCurrent(const int i, const int,
+								    const int j, const int,
 								    const int k, const int g1Hel,
 								    const int l, const int g2Hel,
 								    const int n) {
@@ -595,210 +647,240 @@ LorentzVector<Complex> MatchboxCurrents::qqbarggGeneralRightCurrent(const int i,
   const double jl = invariant(j,l);
   const double kl = invariant(k,l);
 
+  const Complex plusP_ik = plusProduct(i,k);
+  const Complex plusP_il = plusProduct(i,l);
+  const Complex plusP_in = plusProduct(i,n);
+
+  const Complex plusP_jk = plusProduct(j,k);
+  const Complex plusP_jl = plusProduct(j,l);
+  const Complex plusP_jn = plusProduct(j,n);
+
+  const Complex plusP_kl = plusProduct(k,l);
+  const Complex plusP_kn = plusProduct(k,n);
+  const Complex plusP_ln = plusProduct(l,n);
+
+  const Complex minusP_ik = minusProduct(i,k);
+  const Complex minusP_il = minusProduct(i,l);
+  const Complex minusP_in = minusProduct(i,n);
+  const Complex minusP_jk = minusProduct(j,k);
+  const Complex minusP_jl = minusProduct(j,l);
+  const Complex minusP_jn = minusProduct(j,n);
+  const Complex minusP_kl = minusProduct(k,l);
+  const Complex minusP_kn = minusProduct(k,n);
+  const Complex minusP_ln = minusProduct(l,n);
+
+  const LorentzVector<Complex> & minusC_ji = minusCurrent(j,i);
+  const LorentzVector<Complex> & minusC_jk = minusCurrent(j,k);
+  const LorentzVector<Complex> & minusC_jl = minusCurrent(j,l);
+
+  const LorentzVector<Complex> & minusC_ki = minusCurrent(k,i);
+
+  const LorentzVector<Complex> & minusC_li = minusCurrent(l,i);
+  const LorentzVector<Complex> & minusC_lk = minusCurrent(l,k);
+
   if ( g1Hel == 1 && g2Hel == 1 ) {
     return
-      (Complex(0,2) * plusProduct(i,l) * plusProduct(k,l) * minusCurrent(j,k))/
+      (Complex(0,2) * plusP_il * plusP_kl * minusC_jk)/
       (kl * (ik + il + kl)) + 
-      (Complex(0,2) * plusProduct(i,k) * plusProduct(k,l) * minusCurrent(j,l))/
+      (Complex(0,2) * plusP_ik * plusP_kl * minusC_jl)/
       (ik * (ik + il + kl)) + 
-      (Complex(0,2) * plusProduct(i,k) * plusProduct(k,l) * minusCurrent(j,l))/
+      (Complex(0,2) * plusP_ik * plusP_kl * minusC_jl)/
       (kl * (ik + il + kl)) + 
-      (Complex(0,2) * plusProduct(i,l) * plusProduct(k,l) * minusCurrent(j,i) * minusProduct(i,n))/
-      (kl * (ik + il + kl) * minusProduct(k,n)) + 
-      (Complex(0,2) * plusProduct(i,k) * plusProduct(i,l) * minusCurrent(j,l) * minusProduct(i,n))/
-      (ik * (ik + il + kl) * minusProduct(k,n)) - 
-      (Complex(0,2) * plusProduct(j,l) * plusProduct(k,l) * minusCurrent(j,i) * minusProduct(j,n))/
-      (kl * (jk + jl + kl) * minusProduct(k,n)) - 
-      (Complex(0,2) * sqr(plusProduct(k,l)) * minusCurrent(k,i) * minusProduct(j,n))/
-      (kl * (jk + jl + kl) * minusProduct(k,n)) + 
-      (Complex(0,2) * plusProduct(i,k) * plusProduct(k,l) * minusCurrent(j,i) * minusProduct(i,n))/
-      (ik * (ik + il + kl) * minusProduct(l,n)) + 
-      (Complex(0,2) * plusProduct(i,k) * plusProduct(k,l) * minusCurrent(j,i) * minusProduct(i,n))/
-      (kl * (ik + il + kl) * minusProduct(l,n)) + 
-      (Complex(0,2) * plusProduct(i,k) * plusProduct(i,l) * minusCurrent(j,k) * minusProduct(i,n))/
-      (ik * (ik + il + kl) * minusProduct(l,n)) - 
-      (Complex(0,2) * plusProduct(j,k) * plusProduct(k,l) * minusCurrent(j,i) * minusProduct(j,n))/
-      (kl * (jk + jl + kl) * minusProduct(l,n)) - 
-      (Complex(0,2) * plusProduct(i,k) * plusProduct(j,l) * minusCurrent(j,k) * minusProduct(j,n))/
-      (ik * jl * minusProduct(l,n)) + 
-      (Complex(0,2) * sqr(plusProduct(k,l)) * minusCurrent(l,i) * minusProduct(j,n))/
-      (kl * (jk + jl + kl) * minusProduct(l,n)) + 
-      (Complex(0,2) * plusProduct(i,k) * plusProduct(i,l) * minusCurrent(j,i) * sqr(minusProduct(i,n)))/
-      (ik * (ik + il + kl) * minusProduct(k,n) * minusProduct(l,n)) - 
-      (Complex(0,2) * plusProduct(i,k) * plusProduct(j,l) * minusCurrent(j,i) * minusProduct(i,n) * minusProduct(j,n))/
-      (ik * jl * minusProduct(k,n) * minusProduct(l,n)) + 
-      (Complex(0,2) * plusProduct(j,k) * plusProduct(j,l) * minusCurrent(j,i) * sqr(minusProduct(j,n)))/
-      (jl * (jk + jl + kl) * minusProduct(k,n) * minusProduct(l,n)) - 
-      (Complex(0,2) * plusProduct(j,l) * plusProduct(k,l) * minusCurrent(l,i) * sqr(minusProduct(j,n)))/
-      (jl * (jk + jl + kl) * minusProduct(k,n) * minusProduct(l,n)) + 
-      (Complex(0,2) * plusProduct(i,k) * plusProduct(k,l) * minusCurrent(j,k) * minusProduct(k,n))/
-      (ik * (ik + il + kl) * minusProduct(l,n)) + 
-      (Complex(0,2) * plusProduct(i,k) * plusProduct(k,l) * minusCurrent(j,k) * minusProduct(k,n))/
-      (kl * (ik + il + kl) * minusProduct(l,n)) + 
-      (Complex(0,2) * plusProduct(i,l) * plusProduct(k,l) * minusCurrent(j,l) * minusProduct(l,n))/
-      (kl * (ik + il + kl) * minusProduct(k,n));
+      (Complex(0,2) * plusP_il * plusP_kl * minusC_ji * minusP_in)/
+      (kl * (ik + il + kl) * minusP_kn) + 
+      (Complex(0,2) * plusP_ik * plusP_il * minusC_jl * minusP_in)/
+      (ik * (ik + il + kl) * minusP_kn) - 
+      (Complex(0,2) * plusP_jl * plusP_kl * minusC_ji * minusP_jn)/
+      (kl * (jk + jl + kl) * minusP_kn) - 
+      (Complex(0,2) * sqr(plusP_kl) * minusC_ki * minusP_jn)/
+      (kl * (jk + jl + kl) * minusP_kn) + 
+      (Complex(0,2) * plusP_ik * plusP_kl * minusC_ji * minusP_in)/
+      (ik * (ik + il + kl) * minusP_ln) + 
+      (Complex(0,2) * plusP_ik * plusP_kl * minusC_ji * minusP_in)/
+      (kl * (ik + il + kl) * minusP_ln) + 
+      (Complex(0,2) * plusP_ik * plusP_il * minusC_jk * minusP_in)/
+      (ik * (ik + il + kl) * minusP_ln) - 
+      (Complex(0,2) * plusP_jk * plusP_kl * minusC_ji * minusP_jn)/
+      (kl * (jk + jl + kl) * minusP_ln) - 
+      (Complex(0,2) * plusP_ik * plusP_jl * minusC_jk * minusP_jn)/
+      (ik * jl * minusP_ln) + 
+      (Complex(0,2) * sqr(plusP_kl) * minusC_li * minusP_jn)/
+      (kl * (jk + jl + kl) * minusP_ln) + 
+      (Complex(0,2) * plusP_ik * plusP_il * minusC_ji * sqr(minusP_in))/
+      (ik * (ik + il + kl) * minusP_kn * minusP_ln) - 
+      (Complex(0,2) * plusP_ik * plusP_jl * minusC_ji * minusP_in * minusP_jn)/
+      (ik * jl * minusP_kn * minusP_ln) + 
+      (Complex(0,2) * plusP_jk * plusP_jl * minusC_ji * sqr(minusP_jn))/
+      (jl * (jk + jl + kl) * minusP_kn * minusP_ln) - 
+      (Complex(0,2) * plusP_jl * plusP_kl * minusC_li * sqr(minusP_jn))/
+      (jl * (jk + jl + kl) * minusP_kn * minusP_ln) + 
+      (Complex(0,2) * plusP_ik * plusP_kl * minusC_jk * minusP_kn)/
+      (ik * (ik + il + kl) * minusP_ln) + 
+      (Complex(0,2) * plusP_ik * plusP_kl * minusC_jk * minusP_kn)/
+      (kl * (ik + il + kl) * minusP_ln) + 
+      (Complex(0,2) * plusP_il * plusP_kl * minusC_jl * minusP_ln)/
+      (kl * (ik + il + kl) * minusP_kn);
   }
 
   if ( g1Hel == 1 && g2Hel == -1 ) {
     return
-      (Complex(0,-2) * plusProduct(i,k) * plusProduct(k,n) * minusCurrent(j,i) * minusProduct(i,l))/
-      (ik * (ik + il + kl) * plusProduct(l,n)) + 
-      (Complex(0,2) * plusProduct(i,k) * plusProduct(j,n) * minusCurrent(j,k) * minusProduct(j,l))/
-      (ik * jl * plusProduct(l,n)) + 
-      (Complex(0,2) * plusProduct(i,k) * minusCurrent(l,k) * minusProduct(j,l))/(ik * jl) - 
-      (Complex(0,2) * plusProduct(i,k) * plusProduct(k,n) * minusCurrent(j,k) * minusProduct(k,l))/
-      (ik * (ik + il + kl) * plusProduct(l,n)) - 
-      (Complex(0,2) * plusProduct(i,k) * plusProduct(k,n) * minusCurrent(j,k) * minusProduct(k,l))/
-      (kl * (ik + il + kl) * plusProduct(l,n)) - 
-      (Complex(0,2) * plusProduct(i,k) * plusProduct(i,n) * minusCurrent(j,i) * minusProduct(i,l) * minusProduct(i,n))/
-      (ik * (ik + il + kl) * plusProduct(l,n) * minusProduct(k,n)) + 
-      (Complex(0,2) * plusProduct(i,k) * plusProduct(j,n) * minusCurrent(j,i) * minusProduct(i,n) * minusProduct(j,l))/
-      (ik * jl * plusProduct(l,n) * minusProduct(k,n)) + 
-      (Complex(0,2) * plusProduct(i,k) * minusCurrent(l,i) * minusProduct(i,n) * minusProduct(j,l))/
-      (ik * jl * minusProduct(k,n)) - 
-      (Complex(0,2) * plusProduct(j,k) * plusProduct(j,n) * minusCurrent(j,i) * minusProduct(j,l) * minusProduct(j,n))/
-      (jl * (jk + jl + kl) * plusProduct(l,n) * minusProduct(k,n)) + 
-      (Complex(0,2) * plusProduct(j,n) * plusProduct(k,l) * minusCurrent(l,i) * minusProduct(j,l) * minusProduct(j,n))/
-      (jl * (jk + jl + kl) * plusProduct(l,n) * minusProduct(k,n)) - 
-      (Complex(0,2) * plusProduct(i,k) * plusProduct(k,n) * minusCurrent(j,i) * minusProduct(i,n) * minusProduct(k,l))/
-      (kl * (ik + il + kl) * plusProduct(l,n) * minusProduct(k,n)) - 
-      (Complex(0,2) * plusProduct(i,k) * plusProduct(i,n) * minusCurrent(j,k) * minusProduct(i,n) * minusProduct(k,l))/
-      (ik * (ik + il + kl) * plusProduct(l,n) * minusProduct(k,n)) + 
-      (Complex(0,2) * plusProduct(j,k) * plusProduct(k,n) * minusCurrent(j,i) * minusProduct(j,n) * minusProduct(k,l))/
-      (kl * (jk + jl + kl) * plusProduct(l,n) * minusProduct(k,n)) - 
-      (Complex(0,2) * plusProduct(k,l) * plusProduct(k,n) * minusCurrent(l,i) * minusProduct(j,n) * minusProduct(k,l))/
-      (kl * (jk + jl + kl) * plusProduct(l,n) * minusProduct(k,n)) - 
-      (Complex(0,1) * plusProduct(i,k) * plusProduct(k,n) * minusCurrent(j,i) * minusProduct(i,k) * minusProduct(l,n))/
-      (kl * (ik + il + kl) * plusProduct(l,n) * minusProduct(k,n)) - 
-      (Complex(0,2) * plusProduct(i,n) * plusProduct(k,l) * minusCurrent(j,i) * minusProduct(i,l) * minusProduct(l,n))/
-      (kl * (ik + il + kl) * plusProduct(l,n) * minusProduct(k,n)) + 
-      (Complex(0,1) * plusProduct(i,l) * plusProduct(k,n) * minusCurrent(j,i) * minusProduct(i,l) * minusProduct(l,n))/
-      (kl * (ik + il + kl) * plusProduct(l,n) * minusProduct(k,n)) + 
-      (Complex(0,1) * plusProduct(j,k) * plusProduct(k,n) * minusCurrent(j,i) * minusProduct(j,k) * minusProduct(l,n))/
-      (kl * (jk + jl + kl) * plusProduct(l,n) * minusProduct(k,n)) - 
-      (Complex(0,1) * plusProduct(k,l) * plusProduct(k,n) * minusCurrent(l,i) * minusProduct(j,k) * minusProduct(l,n))/
-      (kl * (jk + jl + kl) * plusProduct(l,n) * minusProduct(k,n)) - 
-      (Complex(0,2) * plusProduct(j,k) * minusCurrent(j,i) * minusProduct(j,l) * minusProduct(l,n))/
-      (jl * (jk + jl + kl) * minusProduct(k,n)) + 
-      (Complex(0,2) * plusProduct(j,n) * plusProduct(k,l) * minusCurrent(j,i) * minusProduct(j,l) * minusProduct(l,n))/
-      (kl * (jk + jl + kl) * plusProduct(l,n) * minusProduct(k,n)) - 
-      (Complex(0,1) * plusProduct(j,l) * plusProduct(k,n) * minusCurrent(j,i) * minusProduct(j,l) * minusProduct(l,n))/
-      (kl * (jk + jl + kl) * plusProduct(l,n) * minusProduct(k,n)) + 
-      (Complex(0,1) * plusProduct(k,l) * plusProduct(k,n) * minusCurrent(k,i) * minusProduct(j,l) * minusProduct(l,n))/
-      (kl * (jk + jl + kl) * plusProduct(l,n) * minusProduct(k,n)) + 
-      (Complex(0,2) * plusProduct(k,l) * minusCurrent(l,i) * minusProduct(j,l) * minusProduct(l,n))/
-      (jl * (jk + jl + kl) * minusProduct(k,n)) + 
-      (Complex(0,2) * plusProduct(k,l) * minusCurrent(l,i) * minusProduct(j,l) * minusProduct(l,n))/
-      (kl * (jk + jl + kl) * minusProduct(k,n)) - 
-      (Complex(0,2) * plusProduct(i,n) * plusProduct(k,l) * minusCurrent(j,k) * minusProduct(k,l) * minusProduct(l,n))/
-      (kl * (ik + il + kl) * plusProduct(l,n) * minusProduct(k,n)) + 
-      (Complex(0,1) * plusProduct(i,l) * plusProduct(k,n) * minusCurrent(j,k) * minusProduct(k,l) * minusProduct(l,n))/
-      (kl * (ik + il + kl) * plusProduct(l,n) * minusProduct(k,n)) - 
-      (Complex(0,1) * plusProduct(i,k) * plusProduct(k,n) * minusCurrent(j,l) * minusProduct(k,l) * minusProduct(l,n))/
-      (kl * (ik + il + kl) * plusProduct(l,n) * minusProduct(k,n));
+      (Complex(0,-2) * plusP_ik * plusP_kn * minusC_ji * minusP_il)/
+      (ik * (ik + il + kl) * plusP_ln) + 
+      (Complex(0,2) * plusP_ik * plusP_jn * minusC_jk * minusP_jl)/
+      (ik * jl * plusP_ln) + 
+      (Complex(0,2) * plusP_ik * minusC_lk * minusP_jl)/(ik * jl) - 
+      (Complex(0,2) * plusP_ik * plusP_kn * minusC_jk * minusP_kl)/
+      (ik * (ik + il + kl) * plusP_ln) - 
+      (Complex(0,2) * plusP_ik * plusP_kn * minusC_jk * minusP_kl)/
+      (kl * (ik + il + kl) * plusP_ln) - 
+      (Complex(0,2) * plusP_ik * plusP_in * minusC_ji * minusP_il * minusP_in)/
+      (ik * (ik + il + kl) * plusP_ln * minusP_kn) + 
+      (Complex(0,2) * plusP_ik * plusP_jn * minusC_ji * minusP_in * minusP_jl)/
+      (ik * jl * plusP_ln * minusP_kn) + 
+      (Complex(0,2) * plusP_ik * minusC_li * minusP_in * minusP_jl)/
+      (ik * jl * minusP_kn) - 
+      (Complex(0,2) * plusP_jk * plusP_jn * minusC_ji * minusP_jl * minusP_jn)/
+      (jl * (jk + jl + kl) * plusP_ln * minusP_kn) + 
+      (Complex(0,2) * plusP_jn * plusP_kl * minusC_li * minusP_jl * minusP_jn)/
+      (jl * (jk + jl + kl) * plusP_ln * minusP_kn) - 
+      (Complex(0,2) * plusP_ik * plusP_kn * minusC_ji * minusP_in * minusP_kl)/
+      (kl * (ik + il + kl) * plusP_ln * minusP_kn) - 
+      (Complex(0,2) * plusP_ik * plusP_in * minusC_jk * minusP_in * minusP_kl)/
+      (ik * (ik + il + kl) * plusP_ln * minusP_kn) + 
+      (Complex(0,2) * plusP_jk * plusP_kn * minusC_ji * minusP_jn * minusP_kl)/
+      (kl * (jk + jl + kl) * plusP_ln * minusP_kn) - 
+      (Complex(0,2) * plusP_kl * plusP_kn * minusC_li * minusP_jn * minusP_kl)/
+      (kl * (jk + jl + kl) * plusP_ln * minusP_kn) - 
+      (Complex(0,1) * plusP_ik * plusP_kn * minusC_ji * minusP_ik * minusP_ln)/
+      (kl * (ik + il + kl) * plusP_ln * minusP_kn) - 
+      (Complex(0,2) * plusP_in * plusP_kl * minusC_ji * minusP_il * minusP_ln)/
+      (kl * (ik + il + kl) * plusP_ln * minusP_kn) + 
+      (Complex(0,1) * plusP_il * plusP_kn * minusC_ji * minusP_il * minusP_ln)/
+      (kl * (ik + il + kl) * plusP_ln * minusP_kn) + 
+      (Complex(0,1) * plusP_jk * plusP_kn * minusC_ji * minusP_jk * minusP_ln)/
+      (kl * (jk + jl + kl) * plusP_ln * minusP_kn) - 
+      (Complex(0,1) * plusP_kl * plusP_kn * minusC_li * minusP_jk * minusP_ln)/
+      (kl * (jk + jl + kl) * plusP_ln * minusP_kn) - 
+      (Complex(0,2) * plusP_jk * minusC_ji * minusP_jl * minusP_ln)/
+      (jl * (jk + jl + kl) * minusP_kn) + 
+      (Complex(0,2) * plusP_jn * plusP_kl * minusC_ji * minusP_jl * minusP_ln)/
+      (kl * (jk + jl + kl) * plusP_ln * minusP_kn) - 
+      (Complex(0,1) * plusP_jl * plusP_kn * minusC_ji * minusP_jl * minusP_ln)/
+      (kl * (jk + jl + kl) * plusP_ln * minusP_kn) + 
+      (Complex(0,1) * plusP_kl * plusP_kn * minusC_ki * minusP_jl * minusP_ln)/
+      (kl * (jk + jl + kl) * plusP_ln * minusP_kn) + 
+      (Complex(0,2) * plusP_kl * minusC_li * minusP_jl * minusP_ln)/
+      (jl * (jk + jl + kl) * minusP_kn) + 
+      (Complex(0,2) * plusP_kl * minusC_li * minusP_jl * minusP_ln)/
+      (kl * (jk + jl + kl) * minusP_kn) - 
+      (Complex(0,2) * plusP_in * plusP_kl * minusC_jk * minusP_kl * minusP_ln)/
+      (kl * (ik + il + kl) * plusP_ln * minusP_kn) + 
+      (Complex(0,1) * plusP_il * plusP_kn * minusC_jk * minusP_kl * minusP_ln)/
+      (kl * (ik + il + kl) * plusP_ln * minusP_kn) - 
+      (Complex(0,1) * plusP_ik * plusP_kn * minusC_jl * minusP_kl * minusP_ln)/
+      (kl * (ik + il + kl) * plusP_ln * minusP_kn);
   }
 
   if ( g1Hel == -1 && g2Hel == 1 ) {
     return
-      (Complex(0,-2) * plusProduct(i,l) * plusProduct(i,n) * minusCurrent(j,l) * minusProduct(i,k))/
-      (ik * (ik + il + kl) * plusProduct(k,n)) - 
-      (Complex(0,2) * plusProduct(i,l) * plusProduct(l,n) * minusCurrent(j,l) * minusProduct(k,l))/
-      (kl * (ik + il + kl) * plusProduct(k,n)) - 
-      (Complex(0,2) * plusProduct(i,l) * plusProduct(i,n) * minusCurrent(j,i) * minusProduct(i,k) * minusProduct(i,n))/
-      (ik * (ik + il + kl) * plusProduct(k,n) * minusProduct(l,n)) + 
-      (Complex(0,2) * plusProduct(i,n) * plusProduct(j,l) * minusCurrent(j,i) * minusProduct(i,k) * minusProduct(j,n))/
-      (ik * jl * plusProduct(k,n) * minusProduct(l,n)) - 
-      (Complex(0,2) * plusProduct(j,l) * plusProduct(j,n) * minusCurrent(j,i) * minusProduct(j,k) * minusProduct(j,n))/
-      (jl * (jk + jl + kl) * plusProduct(k,n) * minusProduct(l,n)) - 
-      (Complex(0,2) * plusProduct(j,l) * minusCurrent(k,i) * minusProduct(j,k) * minusProduct(j,n))/
-      (jl * (jk + jl + kl) * minusProduct(l,n)) - 
-      (Complex(0,2) * plusProduct(j,l) * plusProduct(l,n) * minusCurrent(l,i) * minusProduct(j,k) * minusProduct(j,n))/
-      (jl * (jk + jl + kl) * plusProduct(k,n) * minusProduct(l,n)) - 
-      (Complex(0,2) * plusProduct(i,l) * plusProduct(l,n) * minusCurrent(j,i) * minusProduct(i,n) * minusProduct(k,l))/
-      (kl * (ik + il + kl) * plusProduct(k,n) * minusProduct(l,n)) + 
-      (Complex(0,2) * plusProduct(j,l) * plusProduct(l,n) * minusCurrent(j,i) * minusProduct(j,n) * minusProduct(k,l))/
-      (kl * (jk + jl + kl) * plusProduct(k,n) * minusProduct(l,n)) + 
-      (Complex(0,2) * plusProduct(k,l) * plusProduct(l,n) * minusCurrent(k,i) * minusProduct(j,n) * minusProduct(k,l))/
-      (kl * (jk + jl + kl) * plusProduct(k,n) * minusProduct(l,n)) - 
-      (Complex(0,2) * plusProduct(i,n) * plusProduct(k,l) * minusCurrent(j,i) * minusProduct(i,k) * minusProduct(k,n))/
-      (kl * (ik + il + kl) * plusProduct(k,n) * minusProduct(l,n)) - 
-      (Complex(0,1) * plusProduct(i,k) * plusProduct(l,n) * minusCurrent(j,i) * minusProduct(i,k) * minusProduct(k,n))/
-      (kl * (ik + il + kl) * plusProduct(k,n) * minusProduct(l,n)) - 
-      (Complex(0,2) * plusProduct(i,l) * plusProduct(i,n) * minusCurrent(j,k) * minusProduct(i,k) * minusProduct(k,n))/
-      (ik * (ik + il + kl) * plusProduct(k,n) * minusProduct(l,n)) + 
-      (Complex(0,1) * plusProduct(i,l) * plusProduct(l,n) * minusCurrent(j,i) * minusProduct(i,l) * minusProduct(k,n))/
-      (kl * (ik + il + kl) * plusProduct(k,n) * minusProduct(l,n)) + 
-      (Complex(0,2) * plusProduct(j,n) * plusProduct(k,l) * minusCurrent(j,i) * minusProduct(j,k) * minusProduct(k,n))/
-      (kl * (jk + jl + kl) * plusProduct(k,n) * minusProduct(l,n)) + 
-      (Complex(0,1) * plusProduct(j,k) * plusProduct(l,n) * minusCurrent(j,i) * minusProduct(j,k) * minusProduct(k,n))/
-      (kl * (jk + jl + kl) * plusProduct(k,n) * minusProduct(l,n)) + 
-      (Complex(0,2) * plusProduct(k,l) * minusCurrent(k,i) * minusProduct(j,k) * minusProduct(k,n))/
-      (kl * (jk + jl + kl) * minusProduct(l,n)) + 
-      (Complex(0,1) * plusProduct(k,l) * plusProduct(l,n) * minusCurrent(l,i) * minusProduct(j,k) * minusProduct(k,n))/
-      (kl * (jk + jl + kl) * plusProduct(k,n) * minusProduct(l,n)) - 
-      (Complex(0,1) * plusProduct(j,l) * plusProduct(l,n) * minusCurrent(j,i) * minusProduct(j,l) * minusProduct(k,n))/
-      (kl * (jk + jl + kl) * plusProduct(k,n) * minusProduct(l,n)) - 
-      (Complex(0,1) * plusProduct(k,l) * plusProduct(l,n) * minusCurrent(k,i) * minusProduct(j,l) * minusProduct(k,n))/
-      (kl * (jk + jl + kl) * plusProduct(k,n) * minusProduct(l,n)) - 
-      (Complex(0,1) * plusProduct(i,l) * plusProduct(l,n) * minusCurrent(j,k) * minusProduct(k,l) * minusProduct(k,n))/
-      (kl * (ik + il + kl) * plusProduct(k,n) * minusProduct(l,n)) + 
-      (Complex(0,2) * plusProduct(i,n) * plusProduct(k,l) * minusCurrent(j,l) * minusProduct(k,l) * minusProduct(k,n))/
-      (kl * (ik + il + kl) * plusProduct(k,n) * minusProduct(l,n)) + 
-      (Complex(0,1) * plusProduct(i,k) * plusProduct(l,n) * minusCurrent(j,l) * minusProduct(k,l) * minusProduct(k,n))/
-      (kl * (ik + il + kl) * plusProduct(k,n) * minusProduct(l,n));
+      (Complex(0,-2) * plusP_il * plusP_in * minusC_jl * minusP_ik)/
+      (ik * (ik + il + kl) * plusP_kn) - 
+      (Complex(0,2) * plusP_il * plusP_ln * minusC_jl * minusP_kl)/
+      (kl * (ik + il + kl) * plusP_kn) - 
+      (Complex(0,2) * plusP_il * plusP_in * minusC_ji * minusP_ik * minusP_in)/
+      (ik * (ik + il + kl) * plusP_kn * minusP_ln) + 
+      (Complex(0,2) * plusP_in * plusP_jl * minusC_ji * minusP_ik * minusP_jn)/
+      (ik * jl * plusP_kn * minusP_ln) - 
+      (Complex(0,2) * plusP_jl * plusP_jn * minusC_ji * minusP_jk * minusP_jn)/
+      (jl * (jk + jl + kl) * plusP_kn * minusP_ln) - 
+      (Complex(0,2) * plusP_jl * minusC_ki * minusP_jk * minusP_jn)/
+      (jl * (jk + jl + kl) * minusP_ln) - 
+      (Complex(0,2) * plusP_jl * plusP_ln * minusC_li * minusP_jk * minusP_jn)/
+      (jl * (jk + jl + kl) * plusP_kn * minusP_ln) - 
+      (Complex(0,2) * plusP_il * plusP_ln * minusC_ji * minusP_in * minusP_kl)/
+      (kl * (ik + il + kl) * plusP_kn * minusP_ln) + 
+      (Complex(0,2) * plusP_jl * plusP_ln * minusC_ji * minusP_jn * minusP_kl)/
+      (kl * (jk + jl + kl) * plusP_kn * minusP_ln) + 
+      (Complex(0,2) * plusP_kl * plusP_ln * minusC_ki * minusP_jn * minusP_kl)/
+      (kl * (jk + jl + kl) * plusP_kn * minusP_ln) - 
+      (Complex(0,2) * plusP_in * plusP_kl * minusC_ji * minusP_ik * minusP_kn)/
+      (kl * (ik + il + kl) * plusP_kn * minusP_ln) - 
+      (Complex(0,1) * plusP_ik * plusP_ln * minusC_ji * minusP_ik * minusP_kn)/
+      (kl * (ik + il + kl) * plusP_kn * minusP_ln) - 
+      (Complex(0,2) * plusP_il * plusP_in * minusC_jk * minusP_ik * minusP_kn)/
+      (ik * (ik + il + kl) * plusP_kn * minusP_ln) + 
+      (Complex(0,1) * plusP_il * plusP_ln * minusC_ji * minusP_il * minusP_kn)/
+      (kl * (ik + il + kl) * plusP_kn * minusP_ln) + 
+      (Complex(0,2) * plusP_jn * plusP_kl * minusC_ji * minusP_jk * minusP_kn)/
+      (kl * (jk + jl + kl) * plusP_kn * minusP_ln) + 
+      (Complex(0,1) * plusP_jk * plusP_ln * minusC_ji * minusP_jk * minusP_kn)/
+      (kl * (jk + jl + kl) * plusP_kn * minusP_ln) + 
+      (Complex(0,2) * plusP_kl * minusC_ki * minusP_jk * minusP_kn)/
+      (kl * (jk + jl + kl) * minusP_ln) + 
+      (Complex(0,1) * plusP_kl * plusP_ln * minusC_li * minusP_jk * minusP_kn)/
+      (kl * (jk + jl + kl) * plusP_kn * minusP_ln) - 
+      (Complex(0,1) * plusP_jl * plusP_ln * minusC_ji * minusP_jl * minusP_kn)/
+      (kl * (jk + jl + kl) * plusP_kn * minusP_ln) - 
+      (Complex(0,1) * plusP_kl * plusP_ln * minusC_ki * minusP_jl * minusP_kn)/
+      (kl * (jk + jl + kl) * plusP_kn * minusP_ln) - 
+      (Complex(0,1) * plusP_il * plusP_ln * minusC_jk * minusP_kl * minusP_kn)/
+      (kl * (ik + il + kl) * plusP_kn * minusP_ln) + 
+      (Complex(0,2) * plusP_in * plusP_kl * minusC_jl * minusP_kl * minusP_kn)/
+      (kl * (ik + il + kl) * plusP_kn * minusP_ln) + 
+      (Complex(0,1) * plusP_ik * plusP_ln * minusC_jl * minusP_kl * minusP_kn)/
+      (kl * (ik + il + kl) * plusP_kn * minusP_ln);
   }
 
   if ( g1Hel == -1 && g2Hel == -1 ) {
     return
-      (Complex(0,2) * sqr(plusProduct(i,n)) * minusCurrent(j,i) * minusProduct(i,k) * minusProduct(i,l))/
-      (ik * (ik + il + kl) * plusProduct(k,n) * plusProduct(l,n)) - 
-      (Complex(0,2) * plusProduct(i,n) * plusProduct(j,n) * minusCurrent(j,i) * minusProduct(i,k) * minusProduct(j,l))/
-      (ik * jl * plusProduct(k,n) * plusProduct(l,n)) - 
-      (Complex(0,2) * plusProduct(i,n) * minusCurrent(l,i) * minusProduct(i,k) * minusProduct(j,l))/
-      (ik * jl * plusProduct(k,n)) + 
-      (Complex(0,2) * sqr(plusProduct(j,n)) * minusCurrent(j,i) * minusProduct(j,k) * minusProduct(j,l))/
-      (jl * (jk + jl + kl) * plusProduct(k,n) * plusProduct(l,n)) + 
-      (Complex(0,2) * plusProduct(j,n) * minusCurrent(k,i) * minusProduct(j,k) * minusProduct(j,l))/
-      (jl * (jk + jl + kl) * plusProduct(l,n)) + 
-      (Complex(0,2) * plusProduct(j,n) * minusCurrent(l,i) * minusProduct(j,k) * minusProduct(j,l))/
-      (jl * (jk + jl + kl) * plusProduct(k,n)) + 
-      (Complex(0,2) * plusProduct(i,n) * minusCurrent(j,i) * minusProduct(i,k) * minusProduct(k,l))/
-      (kl * (ik + il + kl) * plusProduct(l,n)) + 
-      (Complex(0,2) * sqr(plusProduct(i,n)) * minusCurrent(j,k) * minusProduct(i,k) * minusProduct(k,l))/
-      (ik * (ik + il + kl) * plusProduct(k,n) * plusProduct(l,n)) + 
-      (Complex(0,2) * plusProduct(i,n) * minusCurrent(j,i) * minusProduct(i,l) * minusProduct(k,l))/
-      (kl * (ik + il + kl) * plusProduct(k,n)) - 
-      (Complex(0,2) * plusProduct(j,n) * minusCurrent(j,i) * minusProduct(j,k) * minusProduct(k,l))/
-      (kl * (jk + jl + kl) * plusProduct(l,n)) - 
-      (Complex(0,2) * plusProduct(k,n) * minusCurrent(k,i) * minusProduct(j,k) * minusProduct(k,l))/
-      (kl * (jk + jl + kl) * plusProduct(l,n)) - 
-      (Complex(0,2) * minusCurrent(l,i) * minusProduct(j,k) * minusProduct(k,l))/
+      (Complex(0,2) * sqr(plusP_in) * minusC_ji * minusP_ik * minusP_il)/
+      (ik * (ik + il + kl) * plusP_kn * plusP_ln) - 
+      (Complex(0,2) * plusP_in * plusP_jn * minusC_ji * minusP_ik * minusP_jl)/
+      (ik * jl * plusP_kn * plusP_ln) - 
+      (Complex(0,2) * plusP_in * minusC_li * minusP_ik * minusP_jl)/
+      (ik * jl * plusP_kn) + 
+      (Complex(0,2) * sqr(plusP_jn) * minusC_ji * minusP_jk * minusP_jl)/
+      (jl * (jk + jl + kl) * plusP_kn * plusP_ln) + 
+      (Complex(0,2) * plusP_jn * minusC_ki * minusP_jk * minusP_jl)/
+      (jl * (jk + jl + kl) * plusP_ln) + 
+      (Complex(0,2) * plusP_jn * minusC_li * minusP_jk * minusP_jl)/
+      (jl * (jk + jl + kl) * plusP_kn) + 
+      (Complex(0,2) * plusP_in * minusC_ji * minusP_ik * minusP_kl)/
+      (kl * (ik + il + kl) * plusP_ln) + 
+      (Complex(0,2) * sqr(plusP_in) * minusC_jk * minusP_ik * minusP_kl)/
+      (ik * (ik + il + kl) * plusP_kn * plusP_ln) + 
+      (Complex(0,2) * plusP_in * minusC_ji * minusP_il * minusP_kl)/
+      (kl * (ik + il + kl) * plusP_kn) - 
+      (Complex(0,2) * plusP_jn * minusC_ji * minusP_jk * minusP_kl)/
+      (kl * (jk + jl + kl) * plusP_ln) - 
+      (Complex(0,2) * plusP_kn * minusC_ki * minusP_jk * minusP_kl)/
+      (kl * (jk + jl + kl) * plusP_ln) - 
+      (Complex(0,2) * minusC_li * minusP_jk * minusP_kl)/
       (kl * (jk + jl + kl)) - 
-      (Complex(0,2) * plusProduct(j,n) * minusCurrent(j,i) * minusProduct(j,l) * minusProduct(k,l))/
-      (jl * (jk + jl + kl) * plusProduct(k,n)) - 
-      (Complex(0,2) * plusProduct(j,n) * minusCurrent(j,i) * minusProduct(j,l) * minusProduct(k,l))/
-      (kl * (jk + jl + kl) * plusProduct(k,n)) - 
-      (Complex(0,2) * minusCurrent(k,i) * minusProduct(j,l) * minusProduct(k,l))/
+      (Complex(0,2) * plusP_jn * minusC_ji * minusP_jl * minusP_kl)/
+      (jl * (jk + jl + kl) * plusP_kn) - 
+      (Complex(0,2) * plusP_jn * minusC_ji * minusP_jl * minusP_kl)/
+      (kl * (jk + jl + kl) * plusP_kn) - 
+      (Complex(0,2) * minusC_ki * minusP_jl * minusP_kl)/
       (jl * (jk + jl + kl)) - 
-      (Complex(0,2) * minusCurrent(k,i) * minusProduct(j,l) * minusProduct(k,l))/
+      (Complex(0,2) * minusC_ki * minusP_jl * minusP_kl)/
       (kl * (jk + jl + kl)) - 
-      (Complex(0,2) * plusProduct(l,n) * minusCurrent(l,i) * minusProduct(j,l) * minusProduct(k,l))/
-      (jl * (jk + jl + kl) * plusProduct(k,n)) - 
-      (Complex(0,2) * plusProduct(l,n) * minusCurrent(l,i) * minusProduct(j,l) * minusProduct(k,l))/
-      (kl * (jk + jl + kl) * plusProduct(k,n)) + 
-      (Complex(0,2) * plusProduct(i,n) * minusCurrent(j,k) * sqr(minusProduct(k,l)))/
-      (kl * (ik + il + kl) * plusProduct(k,n)) - 
-      (Complex(0,2) * plusProduct(i,n) * minusCurrent(j,l) * sqr(minusProduct(k,l)))/
-      (kl * (ik + il + kl) * plusProduct(l,n));
+      (Complex(0,2) * plusP_ln * minusC_li * minusP_jl * minusP_kl)/
+      (jl * (jk + jl + kl) * plusP_kn) - 
+      (Complex(0,2) * plusP_ln * minusC_li * minusP_jl * minusP_kl)/
+      (kl * (jk + jl + kl) * plusP_kn) + 
+      (Complex(0,2) * plusP_in * minusC_jk * sqr(minusP_kl))/
+      (kl * (ik + il + kl) * plusP_kn) - 
+      (Complex(0,2) * plusP_in * minusC_jl * sqr(minusP_kl))/
+      (kl * (ik + il + kl) * plusP_ln);
   }
 
-  static LorentzVector<Complex> czero(0.,0.,0.,0.);
   return czero;
 
 }
 
-LorentzVector<Complex> MatchboxCurrents::qqbarggFixedRightCurrent(const int i, int,
-								  const int j, int,
+LorentzVector<Complex> MatchboxCurrents::qqbarggFixedRightCurrent(const int i, const int,
+								  const int j, const int,
 								  const int k, const int g1Hel,
 								  const int l, const int g2Hel) {
   const double ik = invariant(i,k);
@@ -807,146 +889,170 @@ LorentzVector<Complex> MatchboxCurrents::qqbarggFixedRightCurrent(const int i, i
   const double jl = invariant(j,l);
   const double kl = invariant(k,l);
 
+  const Complex plusP_ij = plusProduct(i,j);
+  const Complex plusP_ik = plusProduct(i,k);
+  const Complex plusP_il = plusProduct(i,l);
+
+  const Complex plusP_jk = plusProduct(j,k);
+  const Complex plusP_jl = plusProduct(j,l);
+
+  const Complex plusP_kl = plusProduct(k,l);
+
+  const Complex minusP_ij = minusProduct(i,j);
+  const Complex minusP_ik = minusProduct(i,k);
+  const Complex minusP_il = minusProduct(i,l);
+  const Complex minusP_jk = minusProduct(j,k);
+  const Complex minusP_jl = minusProduct(j,l);
+  const Complex minusP_kl = minusProduct(k,l);
+
+  const LorentzVector<Complex> & minusC_ji = minusCurrent(j,i);
+  const LorentzVector<Complex> & minusC_jk = minusCurrent(j,k);
+  const LorentzVector<Complex> & minusC_jl = minusCurrent(j,l);
+
+  const LorentzVector<Complex> & minusC_ki = minusCurrent(k,i);
+
+  const LorentzVector<Complex> & minusC_li = minusCurrent(l,i);
+  const LorentzVector<Complex> & minusC_lk = minusCurrent(l,k);
+
   if ( g1Hel == 1 && g2Hel == 1 ) {
     return
-      (Complex(0,2) * plusProduct(i,l) * plusProduct(k,l) * minusCurrent(j,k))/
+      (Complex(0,2) * plusP_il * plusP_kl * minusC_jk)/
       (kl * (ik + il + kl)) + 
-      (Complex(0,2) * plusProduct(i,k) * plusProduct(k,l) * minusCurrent(j,l))/
+      (Complex(0,2) * plusP_ik * plusP_kl * minusC_jl)/
       (ik * (ik + il + kl)) + 
-      (Complex(0,2) * plusProduct(i,k) * plusProduct(k,l) * minusCurrent(j,l))/
+      (Complex(0,2) * plusP_ik * plusP_kl * minusC_jl)/
       (kl * (ik + il + kl)) - 
-      (Complex(0,2) * plusProduct(j,l) * plusProduct(k,l) * minusCurrent(j,i) * minusProduct(i,j))/
-      (kl * (jk + jl + kl) * minusProduct(i,k)) - 
-      (Complex(0,2) * sqr(plusProduct(k,l)) * minusCurrent(k,i) * minusProduct(i,j))/
-      (kl * (jk + jl + kl) * minusProduct(i,k)) - 
-      (Complex(0,2) * plusProduct(j,k) * plusProduct(k,l) * minusCurrent(j,i) * minusProduct(i,j))/
-      (kl * (jk + jl + kl) * minusProduct(i,l)) - 
-      (Complex(0,2) * plusProduct(i,k) * plusProduct(j,l) * minusCurrent(j,k) * minusProduct(i,j))/
-      (ik * jl * minusProduct(i,l)) + 
-      (Complex(0,2) * sqr(plusProduct(k,l)) * minusCurrent(l,i) * minusProduct(i,j))/
-      (kl * (jk + jl + kl) * minusProduct(i,l)) + 
-      (Complex(0,2) * plusProduct(j,k) * plusProduct(j,l) * minusCurrent(j,i) * sqr(minusProduct(i,j)))/
-      (jl * (jk + jl + kl) * minusProduct(i,k) * minusProduct(i,l)) - 
-      (Complex(0,2) * plusProduct(j,l) * plusProduct(k,l) * minusCurrent(l,i) * sqr(minusProduct(i,j)))/
-      (jl * (jk + jl + kl) * minusProduct(i,k) * minusProduct(i,l)) + 
-      (Complex(0,2) * plusProduct(i,k) * plusProduct(k,l) * minusCurrent(j,k) * minusProduct(i,k))/
-      (ik * (ik + il + kl) * minusProduct(i,l)) + 
-      (Complex(0,2) * plusProduct(i,k) * plusProduct(k,l) * minusCurrent(j,k) * minusProduct(i,k))/
-      (kl * (ik + il + kl) * minusProduct(i,l)) + 
-      (Complex(0,2) * plusProduct(i,l) * plusProduct(k,l) * minusCurrent(j,l) * minusProduct(i,l))/
-      (kl * (ik + il + kl) * minusProduct(i,k));
+      (Complex(0,2) * plusP_jl * plusP_kl * minusC_ji * minusP_ij)/
+      (kl * (jk + jl + kl) * minusP_ik) - 
+      (Complex(0,2) * sqr(plusP_kl) * minusC_ki * minusP_ij)/
+      (kl * (jk + jl + kl) * minusP_ik) - 
+      (Complex(0,2) * plusP_jk * plusP_kl * minusC_ji * minusP_ij)/
+      (kl * (jk + jl + kl) * minusP_il) - 
+      (Complex(0,2) * plusP_ik * plusP_jl * minusC_jk * minusP_ij)/
+      (ik * jl * minusP_il) + 
+      (Complex(0,2) * sqr(plusP_kl) * minusC_li * minusP_ij)/
+      (kl * (jk + jl + kl) * minusP_il) + 
+      (Complex(0,2) * plusP_jk * plusP_jl * minusC_ji * sqr(minusP_ij))/
+      (jl * (jk + jl + kl) * minusP_ik * minusP_il) - 
+      (Complex(0,2) * plusP_jl * plusP_kl * minusC_li * sqr(minusP_ij))/
+      (jl * (jk + jl + kl) * minusP_ik * minusP_il) + 
+      (Complex(0,2) * plusP_ik * plusP_kl * minusC_jk * minusP_ik)/
+      (ik * (ik + il + kl) * minusP_il) + 
+      (Complex(0,2) * plusP_ik * plusP_kl * minusC_jk * minusP_ik)/
+      (kl * (ik + il + kl) * minusP_il) + 
+      (Complex(0,2) * plusP_il * plusP_kl * minusC_jl * minusP_il)/
+      (kl * (ik + il + kl) * minusP_ik);
   }
 
   if ( g1Hel == 1 && g2Hel == -1 ) {
     return
-      (Complex(0,-2) * sqr(plusProduct(i,k)) * minusCurrent(j,i) * minusProduct(i,l))/
-      (ik * (ik + il + kl) * plusProduct(i,l)) - 
-      (Complex(0,1) * sqr(plusProduct(i,k)) * minusCurrent(j,i) * minusProduct(i,l))/
-      (kl * (ik + il + kl) * plusProduct(i,l)) + 
-      (Complex(0,1) * plusProduct(i,k) * minusCurrent(j,i) * sqr(minusProduct(i,l)))/
-      (kl * (ik + il + kl) * minusProduct(i,k)) + 
-      (Complex(0,1) * plusProduct(i,k) * plusProduct(j,k) * minusCurrent(j,i) * minusProduct(i,l) * minusProduct(j,k))/
-      (kl * (jk + jl + kl) * plusProduct(i,l) * minusProduct(i,k)) - 
-      (Complex(0,1) * plusProduct(i,k) * plusProduct(k,l) * minusCurrent(l,i) * minusProduct(i,l) * minusProduct(j,k))/
-      (kl * (jk + jl + kl) * plusProduct(i,l) * minusProduct(i,k)) + 
-      (Complex(0,2) * plusProduct(i,j) * plusProduct(i,k) * minusCurrent(j,k) * minusProduct(j,l))/
-      (ik * jl * plusProduct(i,l)) + 
-      (Complex(0,2) * plusProduct(i,k) * minusCurrent(l,k) * minusProduct(j,l))/(ik * jl) - 
-      (Complex(0,2) * plusProduct(i,j) * plusProduct(j,k) * minusCurrent(j,i) * minusProduct(i,j) * minusProduct(j,l))/
-      (jl * (jk + jl + kl) * plusProduct(i,l) * minusProduct(i,k)) + 
-      (Complex(0,2) * plusProduct(i,j) * plusProduct(k,l) * minusCurrent(l,i) * minusProduct(i,j) * minusProduct(j,l))/
-      (jl * (jk + jl + kl) * plusProduct(i,l) * minusProduct(i,k)) - 
-      (Complex(0,2) * plusProduct(j,k) * minusCurrent(j,i) * minusProduct(i,l) * minusProduct(j,l))/
-      (jl * (jk + jl + kl) * minusProduct(i,k)) - 
-      (Complex(0,1) * plusProduct(i,k) * plusProduct(j,l) * minusCurrent(j,i) * minusProduct(i,l) * minusProduct(j,l))/
-      (kl * (jk + jl + kl) * plusProduct(i,l) * minusProduct(i,k)) + 
-      (Complex(0,2) * plusProduct(i,j) * plusProduct(k,l) * minusCurrent(j,i) * minusProduct(i,l) * minusProduct(j,l))/
-      (kl * (jk + jl + kl) * plusProduct(i,l) * minusProduct(i,k)) + 
-      (Complex(0,1) * plusProduct(i,k) * plusProduct(k,l) * minusCurrent(k,i) * minusProduct(i,l) * minusProduct(j,l))/
-      (kl * (jk + jl + kl) * plusProduct(i,l) * minusProduct(i,k)) + 
-      (Complex(0,2) * plusProduct(k,l) * minusCurrent(l,i) * minusProduct(i,l) * minusProduct(j,l))/
-      (jl * (jk + jl + kl) * minusProduct(i,k)) + 
-      (Complex(0,2) * plusProduct(k,l) * minusCurrent(l,i) * minusProduct(i,l) * minusProduct(j,l))/
-      (kl * (jk + jl + kl) * minusProduct(i,k)) - 
-      (Complex(0,2) * sqr(plusProduct(i,k)) * minusCurrent(j,k) * minusProduct(k,l))/
-      (ik * (ik + il + kl) * plusProduct(i,l)) - 
-      (Complex(0,2) * sqr(plusProduct(i,k)) * minusCurrent(j,k) * minusProduct(k,l))/
-      (kl * (ik + il + kl) * plusProduct(i,l)) + 
-      (Complex(0,2) * plusProduct(i,k) * plusProduct(j,k) * minusCurrent(j,i) * minusProduct(i,j) * minusProduct(k,l))/
-      (kl * (jk + jl + kl) * plusProduct(i,l) * minusProduct(i,k)) - 
-      (Complex(0,2) * plusProduct(i,k) * plusProduct(k,l) * minusCurrent(l,i) * minusProduct(i,j) * minusProduct(k,l))/
-      (kl * (jk + jl + kl) * plusProduct(i,l) * minusProduct(i,k)) + 
-      (Complex(0,1) * plusProduct(i,k) * minusCurrent(j,k) * minusProduct(i,l) * minusProduct(k,l))/
-      (kl * (ik + il + kl) * minusProduct(i,k)) - 
-      (Complex(0,1) * sqr(plusProduct(i,k)) * minusCurrent(j,l) * minusProduct(i,l) * minusProduct(k,l))/
-      (kl * (ik + il + kl) * plusProduct(i,l) * minusProduct(i,k));
+      (Complex(0,-2) * sqr(plusP_ik) * minusC_ji * minusP_il)/
+      (ik * (ik + il + kl) * plusP_il) - 
+      (Complex(0,1) * sqr(plusP_ik) * minusC_ji * minusP_il)/
+      (kl * (ik + il + kl) * plusP_il) + 
+      (Complex(0,1) * plusP_ik * minusC_ji * sqr(minusP_il))/
+      (kl * (ik + il + kl) * minusP_ik) + 
+      (Complex(0,1) * plusP_ik * plusP_jk * minusC_ji * minusP_il * minusP_jk)/
+      (kl * (jk + jl + kl) * plusP_il * minusP_ik) - 
+      (Complex(0,1) * plusP_ik * plusP_kl * minusC_li * minusP_il * minusP_jk)/
+      (kl * (jk + jl + kl) * plusP_il * minusP_ik) + 
+      (Complex(0,2) * plusP_ij * plusP_ik * minusC_jk * minusP_jl)/
+      (ik * jl * plusP_il) + 
+      (Complex(0,2) * plusP_ik * minusC_lk * minusP_jl)/(ik * jl) - 
+      (Complex(0,2) * plusP_ij * plusP_jk * minusC_ji * minusP_ij * minusP_jl)/
+      (jl * (jk + jl + kl) * plusP_il * minusP_ik) + 
+      (Complex(0,2) * plusP_ij * plusP_kl * minusC_li * minusP_ij * minusP_jl)/
+      (jl * (jk + jl + kl) * plusP_il * minusP_ik) - 
+      (Complex(0,2) * plusP_jk * minusC_ji * minusP_il * minusP_jl)/
+      (jl * (jk + jl + kl) * minusP_ik) - 
+      (Complex(0,1) * plusP_ik * plusP_jl * minusC_ji * minusP_il * minusP_jl)/
+      (kl * (jk + jl + kl) * plusP_il * minusP_ik) + 
+      (Complex(0,2) * plusP_ij * plusP_kl * minusC_ji * minusP_il * minusP_jl)/
+      (kl * (jk + jl + kl) * plusP_il * minusP_ik) + 
+      (Complex(0,1) * plusP_ik * plusP_kl * minusC_ki * minusP_il * minusP_jl)/
+      (kl * (jk + jl + kl) * plusP_il * minusP_ik) + 
+      (Complex(0,2) * plusP_kl * minusC_li * minusP_il * minusP_jl)/
+      (jl * (jk + jl + kl) * minusP_ik) + 
+      (Complex(0,2) * plusP_kl * minusC_li * minusP_il * minusP_jl)/
+      (kl * (jk + jl + kl) * minusP_ik) - 
+      (Complex(0,2) * sqr(plusP_ik) * minusC_jk * minusP_kl)/
+      (ik * (ik + il + kl) * plusP_il) - 
+      (Complex(0,2) * sqr(plusP_ik) * minusC_jk * minusP_kl)/
+      (kl * (ik + il + kl) * plusP_il) + 
+      (Complex(0,2) * plusP_ik * plusP_jk * minusC_ji * minusP_ij * minusP_kl)/
+      (kl * (jk + jl + kl) * plusP_il * minusP_ik) - 
+      (Complex(0,2) * plusP_ik * plusP_kl * minusC_li * minusP_ij * minusP_kl)/
+      (kl * (jk + jl + kl) * plusP_il * minusP_ik) + 
+      (Complex(0,1) * plusP_ik * minusC_jk * minusP_il * minusP_kl)/
+      (kl * (ik + il + kl) * minusP_ik) - 
+      (Complex(0,1) * sqr(plusP_ik) * minusC_jl * minusP_il * minusP_kl)/
+      (kl * (ik + il + kl) * plusP_il * minusP_ik);
   }
 
   if ( g1Hel == -1 && g2Hel == 1 ) {
     return
-      (Complex(0,1) * sqr(plusProduct(i,l)) * minusCurrent(j,i) * minusProduct(i,k))/
-      (kl * (ik + il + kl) * plusProduct(i,k)) - 
-      (Complex(0,1) * plusProduct(i,l) * minusCurrent(j,i) * sqr(minusProduct(i,k)))/
-      (kl * (ik + il + kl) * minusProduct(i,l)) - 
-      (Complex(0,2) * plusProduct(i,j) * plusProduct(j,l) * minusCurrent(j,i) * minusProduct(i,j) * minusProduct(j,k))/
-      (jl * (jk + jl + kl) * plusProduct(i,k) * minusProduct(i,l)) - 
-      (Complex(0,2) * plusProduct(j,l) * minusCurrent(k,i) * minusProduct(i,j) * minusProduct(j,k))/
-      (jl * (jk + jl + kl) * minusProduct(i,l)) - 
-      (Complex(0,2) * plusProduct(i,l) * plusProduct(j,l) * minusCurrent(l,i) * minusProduct(i,j) * minusProduct(j,k))/
-      (jl * (jk + jl + kl) * plusProduct(i,k) * minusProduct(i,l)) + 
-      (Complex(0,1) * plusProduct(i,l) * plusProduct(j,k) * minusCurrent(j,i) * minusProduct(i,k) * minusProduct(j,k))/
-      (kl * (jk + jl + kl) * plusProduct(i,k) * minusProduct(i,l)) + 
-      (Complex(0,2) * plusProduct(i,j) * plusProduct(k,l) * minusCurrent(j,i) * minusProduct(i,k) * minusProduct(j,k))/
-      (kl * (jk + jl + kl) * plusProduct(i,k) * minusProduct(i,l)) + 
-      (Complex(0,2) * plusProduct(k,l) * minusCurrent(k,i) * minusProduct(i,k) * minusProduct(j,k))/
-      (kl * (jk + jl + kl) * minusProduct(i,l)) + 
-      (Complex(0,1) * plusProduct(i,l) * plusProduct(k,l) * minusCurrent(l,i) * minusProduct(i,k) * minusProduct(j,k))/
-      (kl * (jk + jl + kl) * plusProduct(i,k) * minusProduct(i,l)) - 
-      (Complex(0,1) * plusProduct(i,l) * plusProduct(j,l) * minusCurrent(j,i) * minusProduct(i,k) * minusProduct(j,l))/
-      (kl * (jk + jl + kl) * plusProduct(i,k) * minusProduct(i,l)) - 
-      (Complex(0,1) * plusProduct(i,l) * plusProduct(k,l) * minusCurrent(k,i) * minusProduct(i,k) * minusProduct(j,l))/
-      (kl * (jk + jl + kl) * plusProduct(i,k) * minusProduct(i,l)) - 
-      (Complex(0,2) * sqr(plusProduct(i,l)) * minusCurrent(j,l) * minusProduct(k,l))/
-      (kl * (ik + il + kl) * plusProduct(i,k)) + 
-      (Complex(0,2) * plusProduct(i,l) * plusProduct(j,l) * minusCurrent(j,i) * minusProduct(i,j) * minusProduct(k,l))/
-      (kl * (jk + jl + kl) * plusProduct(i,k) * minusProduct(i,l)) + 
-      (Complex(0,2) * plusProduct(i,l) * plusProduct(k,l) * minusCurrent(k,i) * minusProduct(i,j) * minusProduct(k,l))/
-      (kl * (jk + jl + kl) * plusProduct(i,k) * minusProduct(i,l)) - 
-      (Complex(0,1) * sqr(plusProduct(i,l)) * minusCurrent(j,k) * minusProduct(i,k) * minusProduct(k,l))/
-      (kl * (ik + il + kl) * plusProduct(i,k) * minusProduct(i,l)) + 
-      (Complex(0,1) * plusProduct(i,l) * minusCurrent(j,l) * minusProduct(i,k) * minusProduct(k,l))/
-      (kl * (ik + il + kl) * minusProduct(i,l));
+      (Complex(0,1) * sqr(plusP_il) * minusC_ji * minusP_ik)/
+      (kl * (ik + il + kl) * plusP_ik) - 
+      (Complex(0,1) * plusP_il * minusC_ji * sqr(minusP_ik))/
+      (kl * (ik + il + kl) * minusP_il) - 
+      (Complex(0,2) * plusP_ij * plusP_jl * minusC_ji * minusP_ij * minusP_jk)/
+      (jl * (jk + jl + kl) * plusP_ik * minusP_il) - 
+      (Complex(0,2) * plusP_jl * minusC_ki * minusP_ij * minusP_jk)/
+      (jl * (jk + jl + kl) * minusP_il) - 
+      (Complex(0,2) * plusP_il * plusP_jl * minusC_li * minusP_ij * minusP_jk)/
+      (jl * (jk + jl + kl) * plusP_ik * minusP_il) + 
+      (Complex(0,1) * plusP_il * plusP_jk * minusC_ji * minusP_ik * minusP_jk)/
+      (kl * (jk + jl + kl) * plusP_ik * minusP_il) + 
+      (Complex(0,2) * plusP_ij * plusP_kl * minusC_ji * minusP_ik * minusP_jk)/
+      (kl * (jk + jl + kl) * plusP_ik * minusP_il) + 
+      (Complex(0,2) * plusP_kl * minusC_ki * minusP_ik * minusP_jk)/
+      (kl * (jk + jl + kl) * minusP_il) + 
+      (Complex(0,1) * plusP_il * plusP_kl * minusC_li * minusP_ik * minusP_jk)/
+      (kl * (jk + jl + kl) * plusP_ik * minusP_il) - 
+      (Complex(0,1) * plusP_il * plusP_jl * minusC_ji * minusP_ik * minusP_jl)/
+      (kl * (jk + jl + kl) * plusP_ik * minusP_il) - 
+      (Complex(0,1) * plusP_il * plusP_kl * minusC_ki * minusP_ik * minusP_jl)/
+      (kl * (jk + jl + kl) * plusP_ik * minusP_il) - 
+      (Complex(0,2) * sqr(plusP_il) * minusC_jl * minusP_kl)/
+      (kl * (ik + il + kl) * plusP_ik) + 
+      (Complex(0,2) * plusP_il * plusP_jl * minusC_ji * minusP_ij * minusP_kl)/
+      (kl * (jk + jl + kl) * plusP_ik * minusP_il) + 
+      (Complex(0,2) * plusP_il * plusP_kl * minusC_ki * minusP_ij * minusP_kl)/
+      (kl * (jk + jl + kl) * plusP_ik * minusP_il) - 
+      (Complex(0,1) * sqr(plusP_il) * minusC_jk * minusP_ik * minusP_kl)/
+      (kl * (ik + il + kl) * plusP_ik * minusP_il) + 
+      (Complex(0,1) * plusP_il * minusC_jl * minusP_ik * minusP_kl)/
+      (kl * (ik + il + kl) * minusP_il);
   }
 
   if ( g1Hel == -1 && g2Hel == -1 ) {
     return
-      (Complex(0,2) * sqr(plusProduct(i,j)) * minusCurrent(j,i) * minusProduct(j,k) * minusProduct(j,l))/
-      (jl * (jk + jl + kl) * plusProduct(i,k) * plusProduct(i,l)) + 
-      (Complex(0,2) * plusProduct(i,j) * minusCurrent(k,i) * minusProduct(j,k) * minusProduct(j,l))/
-      (jl * (jk + jl + kl) * plusProduct(i,l)) + 
-      (Complex(0,2) * plusProduct(i,j) * minusCurrent(l,i) * minusProduct(j,k) * minusProduct(j,l))/
-      (jl * (jk + jl + kl) * plusProduct(i,k)) - 
-      (Complex(0,2) * plusProduct(i,j) * minusCurrent(j,i) * minusProduct(j,k) * minusProduct(k,l))/
-      (kl * (jk + jl + kl) * plusProduct(i,l)) - 
-      (Complex(0,2) * plusProduct(i,k) * minusCurrent(k,i) * minusProduct(j,k) * minusProduct(k,l))/
-      (kl * (jk + jl + kl) * plusProduct(i,l)) - 
-      (Complex(0,2) * minusCurrent(l,i) * minusProduct(j,k) * minusProduct(k,l))/
+      (Complex(0,2) * sqr(plusP_ij) * minusC_ji * minusP_jk * minusP_jl)/
+      (jl * (jk + jl + kl) * plusP_ik * plusP_il) + 
+      (Complex(0,2) * plusP_ij * minusC_ki * minusP_jk * minusP_jl)/
+      (jl * (jk + jl + kl) * plusP_il) + 
+      (Complex(0,2) * plusP_ij * minusC_li * minusP_jk * minusP_jl)/
+      (jl * (jk + jl + kl) * plusP_ik) - 
+      (Complex(0,2) * plusP_ij * minusC_ji * minusP_jk * minusP_kl)/
+      (kl * (jk + jl + kl) * plusP_il) - 
+      (Complex(0,2) * plusP_ik * minusC_ki * minusP_jk * minusP_kl)/
+      (kl * (jk + jl + kl) * plusP_il) - 
+      (Complex(0,2) * minusC_li * minusP_jk * minusP_kl)/
       (kl * (jk + jl + kl)) - 
-      (Complex(0,2) * plusProduct(i,j) * minusCurrent(j,i) * minusProduct(j,l) * minusProduct(k,l))/
-      (jl * (jk + jl + kl) * plusProduct(i,k)) - 
-      (Complex(0,2) * plusProduct(i,j) * minusCurrent(j,i) * minusProduct(j,l) * minusProduct(k,l))/
-      (kl * (jk + jl + kl) * plusProduct(i,k)) - 
-      (Complex(0,2) * minusCurrent(k,i) * minusProduct(j,l) * minusProduct(k,l))/
+      (Complex(0,2) * plusP_ij * minusC_ji * minusP_jl * minusP_kl)/
+      (jl * (jk + jl + kl) * plusP_ik) - 
+      (Complex(0,2) * plusP_ij * minusC_ji * minusP_jl * minusP_kl)/
+      (kl * (jk + jl + kl) * plusP_ik) - 
+      (Complex(0,2) * minusC_ki * minusP_jl * minusP_kl)/
       (jl * (jk + jl + kl)) - 
-      (Complex(0,2) * minusCurrent(k,i) * minusProduct(j,l) * minusProduct(k,l))/
+      (Complex(0,2) * minusC_ki * minusP_jl * minusP_kl)/
       (kl * (jk + jl + kl)) - 
-      (Complex(0,2) * plusProduct(i,l) * minusCurrent(l,i) * minusProduct(j,l) * minusProduct(k,l))/
-      (jl * (jk + jl + kl) * plusProduct(i,k)) - 
-      (Complex(0,2) * plusProduct(i,l) * minusCurrent(l,i) * minusProduct(j,l) * minusProduct(k,l))/
-      (kl * (jk + jl + kl) * plusProduct(i,k));
+      (Complex(0,2) * plusP_il * minusC_li * minusP_jl * minusP_kl)/
+      (jl * (jk + jl + kl) * plusP_ik) - 
+      (Complex(0,2) * plusP_il * minusC_li * minusP_jl * minusP_kl)/
+      (kl * (jk + jl + kl) * plusP_ik);
   }
 
-  static LorentzVector<Complex> czero(0.,0.,0.,0.);
   return czero;
 
 }
@@ -955,7 +1061,6 @@ const LorentzVector<Complex>& MatchboxCurrents::qqbarggLeftCurrent(const int q, 
 								   const int qbar, const int qbarHel,
 								   const int g1,   const int g1Hel,
 								   const int g2,   const int g2Hel) {
-  static LorentzVector<Complex> czero(0.,0.,0.,0.);
   if ( qHel != 1 || qbarHel != 1 )
     return czero;
 
@@ -999,7 +1104,6 @@ const LorentzVector<Complex>& MatchboxCurrents::qqbarggRightCurrent(const int q,
 								    const int g1,   const int g1Hel,
 								    const int g2,   const int g2Hel) {
 
-  static LorentzVector<Complex> czero(0.,0.,0.,0.);
   if ( qHel != -1 || qbarHel != -1 )
     return czero;
 
@@ -1044,8 +1148,6 @@ const LorentzVector<Complex>& MatchboxCurrents::qqbarqqbarLeftCurrent(const int 
 								      const int k,    const int kHel,
 								      const int kbar, const int kbarHel) {
 
-  static LorentzVector<Complex> czero(0.,0.,0.,0.);
-
   if ( qHel != 1 || qbarHel != 1 ||
        abs(kHel+kbarHel) != 2 )
     return czero;
@@ -1058,14 +1160,40 @@ const LorentzVector<Complex>& MatchboxCurrents::qqbarqqbarLeftCurrent(const int 
   const double jl = invariant(j,l);
   const double kl = invariant(k,l);
 
+  const Complex plusP_ik = plusProduct(i,k);
+  const Complex plusP_il = plusProduct(i,l);
+
+  const Complex plusP_kj = plusProduct(k,j);
+  const Complex plusP_kl = plusProduct(k,l);
+  const Complex plusP_lj = plusProduct(l,j);
+  const Complex plusP_lk = plusProduct(l,k);
+
+  const Complex minusP_ik = minusProduct(i,k);
+  const Complex minusP_il = minusProduct(i,l);
+  const Complex minusP_jk = minusProduct(j,k);
+  const Complex minusP_jl = minusProduct(j,l);
+  const Complex minusP_ki = minusProduct(k,i);
+  const Complex minusP_kl = minusProduct(k,l);
+  const Complex minusP_li = minusProduct(l,i);
+  const Complex minusP_lk = minusProduct(l,k);
+
+  
+  const LorentzVector<Complex> & minusC_ij = minusCurrent(i,j);
+  const LorentzVector<Complex> & minusC_ik = minusCurrent(i,k);
+  const LorentzVector<Complex> & minusC_il = minusCurrent(i,l);
+
+  const LorentzVector<Complex> & minusC_kj = minusCurrent(k,j);
+
+  const LorentzVector<Complex> & minusC_lj = minusCurrent(l,j);
+
   if ( kHel == 1 && kbarHel == 1 ) {
     if ( getCurrent(hash<4>(1,1,q,qHel,qbar,qbarHel,k,kHel,kbar,kbarHel)) ) {
       cacheCurrent((Complex(0.,-2.)/kl)*
-		   ((minusProduct(k,i) * plusProduct(i,l) * minusCurrent(i,j)+
-		     minusProduct(i,k) * plusProduct(l,k) * minusCurrent(k,j))/
+		   ((minusP_ki * plusP_il * minusC_ij+
+		     minusP_ik * plusP_lk * minusC_kj)/
 		    (kl+il+ik)-
-		    (minusProduct(j,k) * plusProduct(l,j) * minusCurrent(i,j)+
-		     minusProduct(l,k) * plusProduct(l,j) * minusCurrent(i,l))/
+		    (minusP_jk * plusP_lj * minusC_ij+
+		     minusP_lk * plusP_lj * minusC_il)/
 		    (kl+jl+jk)));
     }
 #ifdef CHECK_MatchboxCurrents
@@ -1078,11 +1206,11 @@ const LorentzVector<Complex>& MatchboxCurrents::qqbarqqbarLeftCurrent(const int 
   if ( kHel == -1 && kbarHel == -1 ) {
     if ( getCurrent(hash<4>(1,1,q,qHel,qbar,qbarHel,k,kHel,kbar,kbarHel)) ) {
       cacheCurrent((Complex(0.,-2.)/kl)*
-		   ((minusProduct(l,i) * plusProduct(i,k) * minusCurrent(i,j)+
-		     minusProduct(i,l) * plusProduct(k,l) * minusCurrent(l,j))/
+		   ((minusP_li * plusP_ik * minusC_ij+
+		     minusP_il * plusP_kl * minusC_lj)/
 		    (kl+il+ik)-
-		    (minusProduct(j,l) * plusProduct(k,j) * minusCurrent(i,j)+
-		     minusProduct(k,l) * plusProduct(k,j) * minusCurrent(i,k))/
+		    (minusP_jl * plusP_kj * minusC_ij+
+		     minusP_kl * plusP_kj * minusC_ik)/
 		    (kl+jl+jk)));
     }
 #ifdef CHECK_MatchboxCurrents
@@ -1100,8 +1228,6 @@ const LorentzVector<Complex>& MatchboxCurrents::qqbarqqbarRightCurrent(const int
 								       const int k,    const int kHel,
 								       const int kbar, const int kbarHel) {
 
-  static LorentzVector<Complex> czero(0.,0.,0.,0.);
-
   if ( qHel != -1 || qbarHel != -1 ||
        abs(kHel+kbarHel) != 2 )
     return czero;
@@ -1114,14 +1240,41 @@ const LorentzVector<Complex>& MatchboxCurrents::qqbarqqbarRightCurrent(const int
   const double jl = invariant(j,l);
   const double kl = invariant(k,l);
 
+  const Complex plusP_ik = plusProduct(i,k);
+  const Complex plusP_il = plusProduct(i,l);
+
+  const Complex plusP_ki = plusProduct(k,i);
+  const Complex plusP_kj = plusProduct(k,j);
+  const Complex plusP_kl = plusProduct(k,l);
+
+  const Complex plusP_li = plusProduct(l,i);
+  const Complex plusP_lj = plusProduct(l,j);
+  const Complex plusP_lk = plusProduct(l,k);
+
+  const Complex minusP_jk = minusProduct(j,k);
+  const Complex minusP_jl = minusProduct(j,l);
+  const Complex minusP_ki = minusProduct(k,i);
+  const Complex minusP_kl = minusProduct(k,l);
+  const Complex minusP_li = minusProduct(l,i);
+  const Complex minusP_lk = minusProduct(l,k);
+
+  
+  const LorentzVector<Complex> & minusC_ji = minusCurrent(j,i);
+  const LorentzVector<Complex> & minusC_jk = minusCurrent(j,k);
+  const LorentzVector<Complex> & minusC_jl = minusCurrent(j,l);
+
+  const LorentzVector<Complex> & minusC_ki = minusCurrent(k,i);
+
+  const LorentzVector<Complex> & minusC_li = minusCurrent(l,i);
+
   if ( kHel == 1 && kbarHel == 1 ) {
     if ( getCurrent(hash<4>(2,1,q,qHel,qbar,qbarHel,k,kHel,kbar,kbarHel)) ) {
       cacheCurrent((Complex(0.,-2.)/kl)*
-		   ((minusProduct(k,i) * plusProduct(i,l) * minusCurrent(j,i)+
-		     minusProduct(l,k) * plusProduct(l,i) * minusCurrent(j,l))/
+		   ((minusP_ki * plusP_il * minusC_ji+
+		     minusP_lk * plusP_li * minusC_jl)/
 		    (kl+il+ik)-
-		    (minusProduct(j,k) * plusProduct(l,j) * minusCurrent(j,i)+
-		     minusProduct(j,k) * plusProduct(l,k) * minusCurrent(k,i))/
+		    (minusP_jk * plusP_lj * minusC_ji+
+		     minusP_jk * plusP_lk * minusC_ki)/
 		    (kl+jl+jk)));
     }
 #ifdef CHECK_MatchboxCurrents
@@ -1133,11 +1286,11 @@ const LorentzVector<Complex>& MatchboxCurrents::qqbarqqbarRightCurrent(const int
   if ( kHel == -1 && kbarHel == -1 ) {
     if ( getCurrent(hash<4>(2,1,q,qHel,qbar,qbarHel,k,kHel,kbar,kbarHel)) ) {
       cacheCurrent((Complex(0.,-2.)/kl)*
-		   ((minusProduct(l,i) * plusProduct(i,k) * minusCurrent(j,i)+
-		     minusProduct(k,l) * plusProduct(k,i) * minusCurrent(j,k))/
+		   ((minusP_li * plusP_ik * minusC_ji+
+		     minusP_kl * plusP_ki * minusC_jk)/
 		    (kl+il+ik)-
-		    (minusProduct(j,l) * plusProduct(k,j) * minusCurrent(j,i)+
-		     minusProduct(j,l) * plusProduct(k,l) * minusCurrent(l,i))/
+		    (minusP_jl * plusP_kj * minusC_ji+
+		     minusP_jl * plusP_kl * minusC_li)/
 		    (kl+jl+jk)));
     }
 #ifdef CHECK_MatchboxCurrents
@@ -1155,7 +1308,6 @@ const LorentzVector<Complex>& MatchboxCurrents::qqbarLeftOneLoopCurrent(const in
 									const int qbar, const int qbarHel) {
 
 
-  static LorentzVector<Complex> czero(0.,0.,0.,0.);
   if ( qHel != 1 || qbarHel != 1 )
     return czero;
 
@@ -1174,7 +1326,6 @@ const LorentzVector<Complex>& MatchboxCurrents::qqbarRightOneLoopCurrent(const i
 									 const int qbar, const int qbarHel) { 
 
 
-  static LorentzVector<Complex> czero(0.,0.,0.,0.);
   if ( qHel != -1 || qbarHel != -1 )
     return czero;
 
@@ -2067,8 +2218,8 @@ void MatchboxCurrents::qqbargLoopCoefficients(const int i, const int j, const in
 
 }
 
-LorentzVector<Complex> MatchboxCurrents::qqbargGeneralLeftLoopCurrent(const int i, int,
-								      const int j, int,
+LorentzVector<Complex> MatchboxCurrents::qqbargGeneralLeftLoopCurrent(const int i, const int,
+								      const int j, const int,
 								      const int k, const int gHel,
 								      const int n) {
 
@@ -2077,6 +2228,26 @@ LorentzVector<Complex> MatchboxCurrents::qqbargGeneralLeftLoopCurrent(const int 
   const double ik = invariant(i,k);
   const double jk = invariant(j,k);
 
+  const Complex plusP_ik = plusProduct(i,k);
+  const Complex plusP_in = plusProduct(i,n);
+
+  const Complex plusP_jk = plusProduct(j,k);
+  const Complex plusP_jn = plusProduct(j,n);
+
+  const Complex plusP_kn = plusProduct(k,n);
+
+  const Complex minusP_ik = minusProduct(i,k);
+  const Complex minusP_in = minusProduct(i,n);
+  const Complex minusP_jk = minusProduct(j,k);
+  const Complex minusP_jn = minusProduct(j,n);
+  const Complex minusP_kn = minusProduct(k,n);
+  
+  const LorentzVector<Complex> & minusC_ij = minusCurrent(i,j);
+
+  const LorentzVector<Complex> & minusC_nk = minusCurrent(n,k);
+  const LorentzVector<Complex> & minusC_kj = minusCurrent(k,j);
+  const LorentzVector<Complex> & minusC_kn = minusCurrent(k,n);
+
   Complex c1  = qqbargLoops[0]; Complex c2  = qqbargLoops[1];  Complex c3  = qqbargLoops[2];
   Complex c4  = qqbargLoops[3]; Complex c5  = qqbargLoops[4];  Complex c6  = qqbargLoops[5];
   Complex c7  = qqbargLoops[6]; Complex c8  = qqbargLoops[7];  Complex c9  = qqbargLoops[8];
@@ -2085,50 +2256,60 @@ LorentzVector<Complex> MatchboxCurrents::qqbargGeneralLeftLoopCurrent(const int 
 
   if ( gHel == 1 ) {
     return
-      (sqrt(2) * c6 * plusProduct(j,k) * minusCurrent(n,k) * minusProduct(i,k))/(jk * minusProduct(k,n)) + 
-      (sqrt(2) * c1 * plusProduct(j,k) * momentum(i) * minusProduct(i,n))/minusProduct(k,n) + 
-      (sqrt(2) * c2 * plusProduct(j,k) * momentum(j) * minusProduct(i,n))/minusProduct(k,n) + 
-      (2 * sqrt(2) * c3 * plusProduct(j,k) * momentum(k) * minusProduct(i,n))/(jk * minusProduct(k,n)) + 
-      (sqrt(2) * c4 * plusProduct(i,k) * minusCurrent(i,j) * minusProduct(i,n))/(ik * minusProduct(k,n)) - 
-      (sqrt(2) * c7 * plusProduct(i,k) * plusProduct(j,k) * momentum(i) * minusProduct(i,k) * minusProduct(i,n))/(ik * minusProduct(k,n)) - 
-      (sqrt(2) * c9 * plusProduct(i,k) * plusProduct(j,k) * momentum(j) * minusProduct(i,k) * minusProduct(i,n))/(ik * minusProduct(k,n)) - 
-      (2 * sqrt(2) * c11 * plusProduct(i,k) * plusProduct(j,k) * momentum(k) * minusProduct(i,k) * minusProduct(i,n))/(ik * jk * minusProduct(k,n)) + 
-      (sqrt(2) * c5 * plusProduct(j,k) * minusCurrent(i,j) * minusProduct(j,n))/(jk * minusProduct(k,n)) - 
-      (sqrt(2) * c8 * sqr(plusProduct(j,k)) * momentum(i) * minusProduct(i,k) * minusProduct(j,n))/(jk * minusProduct(k,n)) - 
-      (sqrt(2) * c10 * sqr(plusProduct(j,k)) * momentum(j) * minusProduct(i,k) * minusProduct(j,n))/(jk * minusProduct(k,n)) - 
-      (2 * sqrt(2) * c12 * sqr(plusProduct(j,k)) * momentum(k) * minusProduct(i,k) * minusProduct(j,n))/(sqr(jk) * minusProduct(k,n));
+      (sqrt(2) * c6 * plusP_jk * minusC_nk * minusP_ik)/(jk * minusP_kn) + 
+      (sqrt(2) * c1 * plusP_jk * momentum(i) * minusP_in)/minusP_kn + 
+      (sqrt(2) * c2 * plusP_jk * momentum(j) * minusP_in)/minusP_kn + 
+      (2 * sqrt(2) * c3 * plusP_jk * momentum(k) * minusP_in)/(jk * minusP_kn) + 
+      (sqrt(2) * c4 * plusP_ik * minusC_ij * minusP_in)/(ik * minusP_kn) - 
+      (sqrt(2) * c7 * plusP_ik * plusP_jk * momentum(i) * minusP_ik * minusP_in)/(ik * minusP_kn) - 
+      (sqrt(2) * c9 * plusP_ik * plusP_jk * momentum(j) * minusP_ik * minusP_in)/(ik * minusP_kn) - 
+      (2 * sqrt(2) * c11 * plusP_ik * plusP_jk * momentum(k) * minusP_ik * minusP_in)/(ik * jk * minusP_kn) + 
+      (sqrt(2) * c5 * plusP_jk * minusC_ij * minusP_jn)/(jk * minusP_kn) - 
+      (sqrt(2) * c8 * sqr(plusP_jk) * momentum(i) * minusP_ik * minusP_jn)/(jk * minusP_kn) - 
+      (sqrt(2) * c10 * sqr(plusP_jk) * momentum(j) * minusP_ik * minusP_jn)/(jk * minusP_kn) - 
+      (2 * sqrt(2) * c12 * sqr(plusP_jk) * momentum(k) * minusP_ik * minusP_jn)/(sqr(jk) * minusP_kn);
   }
 
   if ( gHel == -1 ) {
     return
-      -((sqrt(2) * c1 * plusProduct(j,n) * momentum(i) * minusProduct(i,k))/plusProduct(k,n)) - 
-      (sqrt(2) * c2 * plusProduct(j,n) * momentum(j) * minusProduct(i,k))/plusProduct(k,n) - 
-      (2 * sqrt(2) * c3 * plusProduct(j,n) * momentum(k) * minusProduct(i,k))/(jk * plusProduct(k,n)) - 
-      (sqrt(2) * c4 * plusProduct(i,n) * minusCurrent(i,j) * minusProduct(i,k))/(ik * plusProduct(k,n)) + 
-      (sqrt(2) * c13 * minusCurrent(k,j) * minusProduct(i,k))/ik + (sqrt(2) * c13 * minusCurrent(k,j) * minusProduct(i,k))/jk - 
-      (sqrt(2) * c6 * plusProduct(j,k) * minusCurrent(k,n) * minusProduct(i,k))/(jk * plusProduct(k,n)) + 
-      (sqrt(2) * c7 * plusProduct(i,n) * plusProduct(j,k) * momentum(i) * sqr(minusProduct(i,k)))/(ik * plusProduct(k,n)) + 
-      (sqrt(2) * c9 * plusProduct(i,n) * plusProduct(j,k) * momentum(j) * sqr(minusProduct(i,k)))/(ik * plusProduct(k,n)) + 
-      (2 * sqrt(2) * c11 * plusProduct(i,n) * plusProduct(j,k) * momentum(k) * sqr(minusProduct(i,k)))/(ik * jk * plusProduct(k,n)) - 
-      (sqrt(2) * c5 * plusProduct(j,n) * minusCurrent(i,j) * minusProduct(j,k))/(jk * plusProduct(k,n)) + 
-      (sqrt(2) * c8 * plusProduct(j,k) * plusProduct(j,n) * momentum(i) * minusProduct(i,k) * minusProduct(j,k))/(jk * plusProduct(k,n)) + 
-      (sqrt(2) * c10 * plusProduct(j,k) * plusProduct(j,n) * momentum(j) * minusProduct(i,k) * minusProduct(j,k))/(jk * plusProduct(k,n)) + 
-      (2 * sqrt(2) * c12 * plusProduct(j,k) * plusProduct(j,n) * momentum(k) * minusProduct(i,k) * minusProduct(j,k))/(sqr(jk) * plusProduct(k,n));
+      -((sqrt(2) * c1 * plusP_jn * momentum(i) * minusP_ik)/plusP_kn) - 
+      (sqrt(2) * c2 * plusP_jn * momentum(j) * minusP_ik)/plusP_kn - 
+      (2 * sqrt(2) * c3 * plusP_jn * momentum(k) * minusP_ik)/(jk * plusP_kn) - 
+      (sqrt(2) * c4 * plusP_in * minusC_ij * minusP_ik)/(ik * plusP_kn) + 
+      (sqrt(2) * c13 * minusC_kj * minusP_ik)/ik + (sqrt(2) * c13 * minusC_kj * minusP_ik)/jk - 
+      (sqrt(2) * c6 * plusP_jk * minusC_kn * minusP_ik)/(jk * plusP_kn) + 
+      (sqrt(2) * c7 * plusP_in * plusP_jk * momentum(i) * sqr(minusP_ik))/(ik * plusP_kn) + 
+      (sqrt(2) * c9 * plusP_in * plusP_jk * momentum(j) * sqr(minusP_ik))/(ik * plusP_kn) + 
+      (2 * sqrt(2) * c11 * plusP_in * plusP_jk * momentum(k) * sqr(minusP_ik))/(ik * jk * plusP_kn) - 
+      (sqrt(2) * c5 * plusP_jn * minusC_ij * minusP_jk)/(jk * plusP_kn) + 
+      (sqrt(2) * c8 * plusP_jk * plusP_jn * momentum(i) * minusP_ik * minusP_jk)/(jk * plusP_kn) + 
+      (sqrt(2) * c10 * plusP_jk * plusP_jn * momentum(j) * minusP_ik * minusP_jk)/(jk * plusP_kn) + 
+      (2 * sqrt(2) * c12 * plusP_jk * plusP_jn * momentum(k) * minusP_ik * minusP_jk)/(sqr(jk) * plusP_kn);
   }
 
-  static LorentzVector<Complex> czero(0.,0.,0.,0.);
   return czero;
 
 }
 
-LorentzVector<Complex> MatchboxCurrents::qqbargFixedLeftLoopCurrent(const int i, int,
-								    const int j, int,
+LorentzVector<Complex> MatchboxCurrents::qqbargFixedLeftLoopCurrent(const int i, const int,
+								    const int j, const int,
 								    const int k, const int gHel) {
 
   qqbargLoopCoefficients(i,j,k);
 
   const double ik = invariant(i,k);
   const double jk = invariant(j,k);
+
+  const Complex plusP_ij = plusProduct(i,j);
+  const Complex plusP_jk = plusProduct(j,k);
+
+  const Complex minusP_ij = minusProduct(i,j);
+  const Complex minusP_ik = minusProduct(i,k);
+
+  const LorentzVector<Complex> & minusC_ij = minusCurrent(i,j);
+  const LorentzVector<Complex> & minusC_ik = minusCurrent(i,k);
+
+  const LorentzVector<Complex> & minusC_kj = minusCurrent(k,j);
 
   //Complex c1  = qqbargLoops[0]; Complex c2  = qqbargLoops[1];  Complex c3  = qqbargLoops[2];
   Complex c4  = qqbargLoops[3]; Complex c5  = qqbargLoops[4];  Complex c6  = qqbargLoops[5];
@@ -2138,30 +2319,29 @@ LorentzVector<Complex> MatchboxCurrents::qqbargFixedLeftLoopCurrent(const int i,
 
   if ( gHel == 1 ) {
     return
-      -((sqrt(2) * c6 * plusProduct(j,k) * minusCurrent(i,k))/jk) 
-      - (sqrt(2) * c8 * sqr(plusProduct(j,k)) * momentum(i) * minusProduct(i,j))/jk - 
-      (sqrt(2) * c10 * sqr(plusProduct(j,k)) * momentum(j) * minusProduct(i,j))/jk - 
-      (2 * sqrt(2) * c12 * sqr(plusProduct(j,k)) * momentum(k) * minusProduct(i,j))/sqr(jk) + 
-      (sqrt(2) * c5 * plusProduct(j,k) * minusCurrent(i,j) * minusProduct(i,j))/(jk * minusProduct(i,k));
+      -((sqrt(2) * c6 * plusP_jk * minusC_ik)/jk) 
+      - (sqrt(2) * c8 * sqr(plusP_jk) * momentum(i) * minusP_ij)/jk - 
+      (sqrt(2) * c10 * sqr(plusP_jk) * momentum(j) * minusP_ij)/jk - 
+      (2 * sqrt(2) * c12 * sqr(plusP_jk) * momentum(k) * minusP_ij)/sqr(jk) + 
+      (sqrt(2) * c5 * plusP_jk * minusC_ij * minusP_ij)/(jk * minusP_ik);
   }
 
   if ( gHel == -1 ) {
     return
-      (sqrt(2) * c4 * plusProduct(i,j) * minusCurrent(i,j) * minusProduct(i,k))/(ik * plusProduct(j,k)) + 
-      (sqrt(2) * c13 * minusCurrent(k,j) * minusProduct(i,k))/ik + (sqrt(2) * c13 * minusCurrent(k,j) * minusProduct(i,k))/jk + 
-      (sqrt(2) * c6 * minusCurrent(k,j) * minusProduct(i,k))/jk - (sqrt(2) * c7 * plusProduct(i,j) * momentum(i)*
-								       sqr(minusProduct(i,k)))/ik - 
-      (sqrt(2) * c9 * plusProduct(i,j) * momentum(j) * sqr(minusProduct(i,k)))/ik - 
-      (2 * sqrt(2) * c11 * plusProduct(i,j) * momentum(k) * sqr(minusProduct(i,k)))/(ik * jk);
+      (sqrt(2) * c4 * plusP_ij * minusC_ij * minusP_ik)/(ik * plusP_jk) + 
+      (sqrt(2) * c13 * minusC_kj * minusP_ik)/ik + (sqrt(2) * c13 * minusC_kj * minusP_ik)/jk + 
+      (sqrt(2) * c6 * minusC_kj * minusP_ik)/jk - (sqrt(2) * c7 * plusP_ij * momentum(i)*
+								       sqr(minusP_ik))/ik - 
+      (sqrt(2) * c9 * plusP_ij * momentum(j) * sqr(minusP_ik))/ik - 
+      (2 * sqrt(2) * c11 * plusP_ij * momentum(k) * sqr(minusP_ik))/(ik * jk);
   }
 
-  static LorentzVector<Complex> czero(0.,0.,0.,0.);
   return czero;
 
 }
 
-LorentzVector<Complex> MatchboxCurrents::qqbargGeneralRightLoopCurrent(const int i,    int,
-								       const int j,    int,
+LorentzVector<Complex> MatchboxCurrents::qqbargGeneralRightLoopCurrent(const int i,    const int,
+								       const int j,    const int,
 								       const int k,    const int gHel,
 								       const int n) {
 
@@ -2170,6 +2350,26 @@ LorentzVector<Complex> MatchboxCurrents::qqbargGeneralRightLoopCurrent(const int
   const double ik = invariant(i,k);
   const double jk = invariant(j,k);
 
+  const Complex plusP_ik = plusProduct(i,k);
+  const Complex plusP_in = plusProduct(i,n);
+
+  const Complex plusP_jk = plusProduct(j,k);
+  const Complex plusP_jn = plusProduct(j,n);
+
+  const Complex plusP_kn = plusProduct(k,n);
+
+  const Complex minusP_ik = minusProduct(i,k);
+  const Complex minusP_in = minusProduct(i,n);
+  const Complex minusP_jk = minusProduct(j,k);
+  const Complex minusP_jn = minusProduct(j,n);
+  const Complex minusP_kn = minusProduct(k,n);
+
+  const LorentzVector<Complex> & minusC_ji = minusCurrent(j,i);
+  const LorentzVector<Complex> & minusC_jk = minusCurrent(j,k);
+
+  const LorentzVector<Complex> & minusC_nk = minusCurrent(n,k);
+  const LorentzVector<Complex> & minusC_kn = minusCurrent(k,n);
+
   Complex c1  = qqbargLoops[0]; Complex c2  = qqbargLoops[1];  Complex c3  = qqbargLoops[2];
   Complex c4  = qqbargLoops[3]; Complex c5  = qqbargLoops[4];  Complex c6  = qqbargLoops[5];
   Complex c7  = qqbargLoops[6]; Complex c8  = qqbargLoops[7];  Complex c9  = qqbargLoops[8];
@@ -2178,51 +2378,61 @@ LorentzVector<Complex> MatchboxCurrents::qqbargGeneralRightLoopCurrent(const int
 
   if ( gHel == 1 ) {
     return
-      -((sqrt(2) * c13 * plusProduct(i,k) * minusCurrent(j,k))/ik) - (sqrt(2) * c13 * plusProduct(i,k) * minusCurrent(j,k))/jk + 
-      (sqrt(2) * c4 * plusProduct(i,k) * minusCurrent(j,i) * minusProduct(i,n))/(ik * minusProduct(k,n)) + 
-      (sqrt(2) * c6 * plusProduct(i,k) * minusCurrent(n,k) * minusProduct(j,k))/(jk * minusProduct(k,n)) - 
-      (sqrt(2) * c7 * sqr(plusProduct(i,k)) * momentum(i) * minusProduct(i,n) * minusProduct(j,k))/(ik * minusProduct(k,n)) - 
-      (sqrt(2) * c9 * sqr(plusProduct(i,k)) * momentum(j) * minusProduct(i,n) * minusProduct(j,k))/(ik * minusProduct(k,n)) - 
-      (2 * sqrt(2) * c11 * sqr(plusProduct(i,k)) * momentum(k) * minusProduct(i,n) * minusProduct(j,k))/(ik * jk * minusProduct(k,n)) + 
-      (sqrt(2) * c1 * plusProduct(i,k) * momentum(i) * minusProduct(j,n))/minusProduct(k,n) + 
-      (sqrt(2) * c2 * plusProduct(i,k) * momentum(j) * minusProduct(j,n))/minusProduct(k,n) + 
-      (2 * sqrt(2) * c3 * plusProduct(i,k) * momentum(k) * minusProduct(j,n))/(jk * minusProduct(k,n)) + 
-      (sqrt(2) * c5 * plusProduct(j,k) * minusCurrent(j,i) * minusProduct(j,n))/(jk * minusProduct(k,n)) - 
-      (sqrt(2) * c8 * plusProduct(i,k) * plusProduct(j,k) * momentum(i) * minusProduct(j,k) * minusProduct(j,n))/(jk * minusProduct(k,n)) - 
-      (sqrt(2) * c10 * plusProduct(i,k) * plusProduct(j,k) * momentum(j) * minusProduct(j,k) * minusProduct(j,n))/(jk * minusProduct(k,n)) - 
-      (2 * sqrt(2) * c12 * plusProduct(i,k) * plusProduct(j,k) * momentum(k) * minusProduct(j,k) * minusProduct(j,n))/(sqr(jk) * minusProduct(k,n));
+      -((sqrt(2) * c13 * plusP_ik * minusC_jk)/ik) - (sqrt(2) * c13 * plusP_ik * minusC_jk)/jk + 
+      (sqrt(2) * c4 * plusP_ik * minusC_ji * minusP_in)/(ik * minusP_kn) + 
+      (sqrt(2) * c6 * plusP_ik * minusC_nk * minusP_jk)/(jk * minusP_kn) - 
+      (sqrt(2) * c7 * sqr(plusP_ik) * momentum(i) * minusP_in * minusP_jk)/(ik * minusP_kn) - 
+      (sqrt(2) * c9 * sqr(plusP_ik) * momentum(j) * minusP_in * minusP_jk)/(ik * minusP_kn) - 
+      (2 * sqrt(2) * c11 * sqr(plusP_ik) * momentum(k) * minusP_in * minusP_jk)/(ik * jk * minusP_kn) + 
+      (sqrt(2) * c1 * plusP_ik * momentum(i) * minusP_jn)/minusP_kn + 
+      (sqrt(2) * c2 * plusP_ik * momentum(j) * minusP_jn)/minusP_kn + 
+      (2 * sqrt(2) * c3 * plusP_ik * momentum(k) * minusP_jn)/(jk * minusP_kn) + 
+      (sqrt(2) * c5 * plusP_jk * minusC_ji * minusP_jn)/(jk * minusP_kn) - 
+      (sqrt(2) * c8 * plusP_ik * plusP_jk * momentum(i) * minusP_jk * minusP_jn)/(jk * minusP_kn) - 
+      (sqrt(2) * c10 * plusP_ik * plusP_jk * momentum(j) * minusP_jk * minusP_jn)/(jk * minusP_kn) - 
+      (2 * sqrt(2) * c12 * plusP_ik * plusP_jk * momentum(k) * minusP_jk * minusP_jn)/(sqr(jk) * minusP_kn);
   }
 
   if ( gHel == -1 ) {
     return
-      -((sqrt(2) * c4 * plusProduct(i,n) * minusCurrent(j,i) * minusProduct(i,k))/(ik * plusProduct(k,n))) - 
-      (sqrt(2) * c1 * plusProduct(i,n) * momentum(i) * minusProduct(j,k))/plusProduct(k,n) - 
-      (sqrt(2) * c2 * plusProduct(i,n) * momentum(j) * minusProduct(j,k))/plusProduct(k,n) - 
-      (2 * sqrt(2) * c3 * plusProduct(i,n) * momentum(k) * minusProduct(j,k))/(jk * plusProduct(k,n)) - 
-      (sqrt(2) * c5 * plusProduct(j,n) * minusCurrent(j,i) * minusProduct(j,k))/(jk * plusProduct(k,n)) - 
-      (sqrt(2) * c6 * plusProduct(i,k) * minusCurrent(k,n) * minusProduct(j,k))/(jk * plusProduct(k,n)) + 
-      (sqrt(2) * c7 * plusProduct(i,k) * plusProduct(i,n) * momentum(i) * minusProduct(i,k) * minusProduct(j,k))/(ik * plusProduct(k,n)) + 
-      (sqrt(2) * c9 * plusProduct(i,k) * plusProduct(i,n) * momentum(j) * minusProduct(i,k) * minusProduct(j,k))/(ik * plusProduct(k,n)) + 
-      (2 * sqrt(2) * c11 * plusProduct(i,k) * plusProduct(i,n) * momentum(k) * minusProduct(i,k) * minusProduct(j,k))/
-      (ik * jk * plusProduct(k,n)) + 
-      (sqrt(2) * c8 * plusProduct(i,k) * plusProduct(j,n) * momentum(i) * sqr(minusProduct(j,k)))/(jk * plusProduct(k,n)) + 
-      (sqrt(2) * c10 * plusProduct(i,k) * plusProduct(j,n) * momentum(j) * sqr(minusProduct(j,k)))/(jk * plusProduct(k,n)) + 
-      (2 * sqrt(2) * c12 * plusProduct(i,k) * plusProduct(j,n) * momentum(k) * sqr(minusProduct(j,k)))/(sqr(jk) * plusProduct(k,n));
+      -((sqrt(2) * c4 * plusP_in * minusC_ji * minusP_ik)/(ik * plusP_kn)) - 
+      (sqrt(2) * c1 * plusP_in * momentum(i) * minusP_jk)/plusP_kn - 
+      (sqrt(2) * c2 * plusP_in * momentum(j) * minusP_jk)/plusP_kn - 
+      (2 * sqrt(2) * c3 * plusP_in * momentum(k) * minusP_jk)/(jk * plusP_kn) - 
+      (sqrt(2) * c5 * plusP_jn * minusC_ji * minusP_jk)/(jk * plusP_kn) - 
+      (sqrt(2) * c6 * plusP_ik * minusC_kn * minusP_jk)/(jk * plusP_kn) + 
+      (sqrt(2) * c7 * plusP_ik * plusP_in * momentum(i) * minusP_ik * minusP_jk)/(ik * plusP_kn) + 
+      (sqrt(2) * c9 * plusP_ik * plusP_in * momentum(j) * minusP_ik * minusP_jk)/(ik * plusP_kn) + 
+      (2 * sqrt(2) * c11 * plusP_ik * plusP_in * momentum(k) * minusP_ik * minusP_jk)/
+      (ik * jk * plusP_kn) + 
+      (sqrt(2) * c8 * plusP_ik * plusP_jn * momentum(i) * sqr(minusP_jk))/(jk * plusP_kn) + 
+      (sqrt(2) * c10 * plusP_ik * plusP_jn * momentum(j) * sqr(minusP_jk))/(jk * plusP_kn) + 
+      (2 * sqrt(2) * c12 * plusP_ik * plusP_jn * momentum(k) * sqr(minusP_jk))/(sqr(jk) * plusP_kn);
   }
 
-  static LorentzVector<Complex> czero(0.,0.,0.,0.);
   return czero;
 
 }
 
-LorentzVector<Complex> MatchboxCurrents::qqbargFixedRightLoopCurrent(const int i, int,
-								     const int j, int,
+LorentzVector<Complex> MatchboxCurrents::qqbargFixedRightLoopCurrent(const int i, const int,
+								     const int j, const int,
 								     const int k, const int gHel) {
 
   qqbargLoopCoefficients(i,j,k);
 
   const double ik = invariant(i,k);
   const double jk = invariant(j,k);
+
+  const Complex plusP_ij = plusProduct(i,j);
+  const Complex plusP_ik = plusProduct(i,k);
+  
+  const Complex minusP_ij = minusProduct(i,j);
+  const Complex minusP_jk = minusProduct(j,k);
+
+  const LorentzVector<Complex> & minusC_ji = minusCurrent(j,i);
+  const LorentzVector<Complex> & minusC_jk = minusCurrent(j,k);
+
+  const LorentzVector<Complex> & minusC_ki = minusCurrent(k,i);
 
   //Complex c1  = qqbargLoops[0]; Complex c2  = qqbargLoops[1];  Complex c3  = qqbargLoops[2];
   Complex c4  = qqbargLoops[3]; Complex c5  = qqbargLoops[4];  Complex c6  = qqbargLoops[5];
@@ -2232,25 +2442,24 @@ LorentzVector<Complex> MatchboxCurrents::qqbargFixedRightLoopCurrent(const int i
 
   if ( gHel == 1 ) {
     return
-      -((sqrt(2) * c13 * plusProduct(i,k) * minusCurrent(j,k))/ik) - 
-      (sqrt(2) * c13 * plusProduct(i,k) * minusCurrent(j,k))/jk - 
-      (sqrt(2) * c6 * plusProduct(i,k) * minusCurrent(j,k))/jk + 
-      (sqrt(2) * c7 * sqr(plusProduct(i,k)) * momentum(i) * minusProduct(i,j))/ik + 
-      (sqrt(2) * c9 * sqr(plusProduct(i,k)) * momentum(j) * minusProduct(i,j))/ik + 
-      (2 * sqrt(2) * c11 * sqr(plusProduct(i,k)) * momentum(k) * minusProduct(i,j))/(ik * jk) - 
-      (sqrt(2) * c4 * plusProduct(i,k) * minusCurrent(j,i) * minusProduct(i,j))/(ik * minusProduct(j,k));
+      -((sqrt(2) * c13 * plusP_ik * minusC_jk)/ik) - 
+      (sqrt(2) * c13 * plusP_ik * minusC_jk)/jk - 
+      (sqrt(2) * c6 * plusP_ik * minusC_jk)/jk + 
+      (sqrt(2) * c7 * sqr(plusP_ik) * momentum(i) * minusP_ij)/ik + 
+      (sqrt(2) * c9 * sqr(plusP_ik) * momentum(j) * minusP_ij)/ik + 
+      (2 * sqrt(2) * c11 * sqr(plusP_ik) * momentum(k) * minusP_ij)/(ik * jk) - 
+      (sqrt(2) * c4 * plusP_ik * minusC_ji * minusP_ij)/(ik * minusP_jk);
   }
 
   if ( gHel == -1 ) {
     return
-      -((sqrt(2) * c5 * plusProduct(i,j) * minusCurrent(j,i) * minusProduct(j,k))/(jk * plusProduct(i,k))) + 
-      (sqrt(2) * c6 * minusCurrent(k,i) * minusProduct(j,k))/jk + 
-      (sqrt(2) * c8 * plusProduct(i,j) * momentum(i) * sqr(minusProduct(j,k)))/jk + 
-      (sqrt(2) * c10 * plusProduct(i,j) * momentum(j) * sqr(minusProduct(j,k)))/jk + 
-      (2 * sqrt(2) * c12 * plusProduct(i,j) * momentum(k) * sqr(minusProduct(j,k)))/sqr(jk);
+      -((sqrt(2) * c5 * plusP_ij * minusC_ji * minusP_jk)/(jk * plusP_ik)) + 
+      (sqrt(2) * c6 * minusC_ki * minusP_jk)/jk + 
+      (sqrt(2) * c8 * plusP_ij * momentum(i) * sqr(minusP_jk))/jk + 
+      (sqrt(2) * c10 * plusP_ij * momentum(j) * sqr(minusP_jk))/jk + 
+      (2 * sqrt(2) * c12 * plusP_ij * momentum(k) * sqr(minusP_jk))/sqr(jk);
   }
 
-  static LorentzVector<Complex> czero(0.,0.,0.,0.);
   return czero;
 
 }
@@ -2258,7 +2467,6 @@ LorentzVector<Complex> MatchboxCurrents::qqbargFixedRightLoopCurrent(const int i
 const LorentzVector<Complex>& MatchboxCurrents::qqbargLeftOneLoopCurrent(const int q,    const int qHel,
 									 const int qbar, const int qbarHel,
 									 const int g1,   const int g1Hel) {
-  static LorentzVector<Complex> czero(0.,0.,0.,0.);
   if ( qHel != 1 || qbarHel != 1 )
     return czero;
 
@@ -2301,7 +2509,6 @@ const LorentzVector<Complex>& MatchboxCurrents::qqbargRightOneLoopCurrent(const 
 									  const int qbar, const int qbarHel,
 									  const int g1,   const int g1Hel) {
 
-  static LorentzVector<Complex> czero(0.,0.,0.,0.);
   if ( qHel != -1 || qbarHel != -1 )
     return czero;
 
