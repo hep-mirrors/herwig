@@ -291,6 +291,8 @@ namespace ExSample {
       }
       if ( unweight ) {
 	double r = selected->getReferenceWeight();
+	if ( r == 0. )
+	  return xw;
 	double p = std::min(std::abs(xw),r)/r;
 	double sign = xw >= 0. ? 1. : -1.;
 	if ( p < 1 && rnd.rnd() > p )
