@@ -141,7 +141,7 @@ void CellGridSampler::initialize(bool progress) {
   boost::progress_display* progressBar = 0;
   if ( progress ) {
     Repository::clog() << "exploring " << process();
-    progressBar = new boost::progress_display(theExplorationSteps,cout);
+    progressBar = new boost::progress_display(theExplorationSteps,Repository::clog());
   }
   std::set<SimpleCellGrid*> newCells;
   
