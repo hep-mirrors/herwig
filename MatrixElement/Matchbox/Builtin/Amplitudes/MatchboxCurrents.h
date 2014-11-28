@@ -82,11 +82,11 @@ struct MatchboxCurrents
    * second member of the pair reserved for combinations
    */
   template<size_t slot>
-  pair<size_t,size_t> hash(int ct,      int tl,
-			   int p1,      int h1,
-			   int p2,      int h2,
-			   int p3 = -1, int h3 = -2,
-			   int p4 = -1, int h4 = -2) const {
+  pair<size_t,size_t> hash(const int ct,      const int tl,
+			   const int p1,      const int h1,
+			   const int p2,      const int h2,
+			   const int p3 = -1, const int h3 = -2,
+			   const int p4 = -1, const int h4 = -2) const {
     return 
       pair<size_t,size_t>(slot,
 			  (p4 + 1)*1 +         (h4 + 2)*10 +
@@ -99,140 +99,140 @@ struct MatchboxCurrents
   /**
    * Setup the lepton reference momenta
    */
-  void setupLeptons(int l,    const Lorentz5Momentum& pl,
-		    int lbar, const Lorentz5Momentum& plbar);
+  void setupLeptons(const int l,    const Lorentz5Momentum& pl,
+		    const int lbar, const Lorentz5Momentum& plbar);
 
   /**
    * Tree level left-handed llbar current
    */
-  const LorentzVector<Complex>& llbarLeftCurrent(int l,    int lHel,
-						 int lbar, int lbarHel);
+  const LorentzVector<Complex>& llbarLeftCurrent(const int l,    const int lHel,
+						 const int lbar, const int lbarHel);
 
   /**
    * Tree level right-handed llbar current
    */
-  const LorentzVector<Complex>& llbarRightCurrent(int l,    int lHel,
-						  int lbar, int lbarHel);
+  const LorentzVector<Complex>& llbarRightCurrent(const int l,    const int lHel,
+						  const int lbar, const int lbarHel);
 
   /**
    * Tree level left-handed qqbar current
    */
-  const LorentzVector<Complex>& qqbarLeftCurrent(int q,    int qHel,
-						 int qbar, int qbarHel);
+  const LorentzVector<Complex>& qqbarLeftCurrent(const int q,    const int qHel,
+						 const int qbar, const int qbarHel);
 
   /**
    * Tree level right-handed qqbar current
    */
-  const LorentzVector<Complex>& qqbarRightCurrent(int q,    int qHel,
-						  int qbar, int qbarHel);
+  const LorentzVector<Complex>& qqbarRightCurrent(const int q,    const int qHel,
+						  const int qbar, const int qbarHel);
 
   /**
    * Tree level left-handed qqbarg current
    */
-  const LorentzVector<Complex>& qqbargLeftCurrent(int q,    int qHel,
-						  int qbar, int qbarHel,
-						  int g,    int gHel);
+  const LorentzVector<Complex>& qqbargLeftCurrent(const int q,    const int qHel,
+						  const int qbar, const int qbarHel,
+						  const int g,    const int gHel);
 
   /**
    * Tree level right-handed qqbarg current
    */
-  const LorentzVector<Complex>& qqbargRightCurrent(int q,    int qHel,
-						   int qbar, int qbarHel,
-						   int g,    int gHel);
+  const LorentzVector<Complex>& qqbargRightCurrent(const int q,    const int qHel,
+						   const int qbar, const int qbarHel,
+						   const int g,    const int gHel);
 
   /**
    * Tree level left-handed qqbargg current
    */
-  const LorentzVector<Complex>& qqbarggLeftCurrent(int q,    int qHel,
-						   int qbar, int qbarHel,
-						   int g1,   int g1Hel,
-						   int g2,   int g2Hel);
+  const LorentzVector<Complex>& qqbarggLeftCurrent(const int q,    const int qHel,
+						   const int qbar, const int qbarHel,
+						   const int g1,   const int g1Hel,
+						   const int g2,   const int g2Hel);
 
   /**
    * Tree level right-handed qqbargg current
    */
-  const LorentzVector<Complex>& qqbarggRightCurrent(int q,    int qHel,
-						    int qbar, int qbarHel,
-						    int g1,   int g1Hel,
-						    int g2,   int g2Hel);
+  const LorentzVector<Complex>& qqbarggRightCurrent(const int q,    const int qHel,
+						    const int qbar, const int qbarHel,
+						    const int g1,   const int g1Hel,
+						    const int g2,   const int g2Hel);
 
   /**
    * Tree level left-handed qqbarkkbar current
    */
-  const LorentzVector<Complex>& qqbarqqbarLeftCurrent(int q,    int qHel,
-						      int qbar, int qbarHel,
-						      int k,    int kHel,
-						      int kbar, int kbarHel);
+  const LorentzVector<Complex>& qqbarqqbarLeftCurrent(const int q,    const int qHel,
+						      const int qbar, const int qbarHel,
+						      const int k,    const int kHel,
+						      const int kbar, const int kbarHel);
 
   /**
    * Tree level right-handed qqbarkkbar current
    */
-  const LorentzVector<Complex>& qqbarqqbarRightCurrent(int q,    int qHel,
-						       int qbar, int qbarHel,
-						       int k,    int kHel,
-						       int kbar, int kbarHel);
+  const LorentzVector<Complex>& qqbarqqbarRightCurrent(const int q,    const int qHel,
+						       const int qbar, const int qbarHel,
+						       const int k,    const int kHel,
+						       const int kbar, const int kbarHel);
 
   /**
    * One-loop left-handed qqbar current
    */
-  const LorentzVector<Complex>& qqbarLeftOneLoopCurrent(int q,    int qHel,
-							int qbar, int qbarHel);
+  const LorentzVector<Complex>& qqbarLeftOneLoopCurrent(const int q,    const int qHel,
+							const int qbar, const int qbarHel);
 
   /**
    * One-loop right-handed qqbar current
    */
-  const LorentzVector<Complex>& qqbarRightOneLoopCurrent(int q,    int qHel,
-							 int qbar, int qbarHel);
+  const LorentzVector<Complex>& qqbarRightOneLoopCurrent(const int q,    const int qHel,
+							 const int qbar, const int qbarHel);
 
   /**
    * One-loop left-handed qqbarg current
    */
-  const LorentzVector<Complex>& qqbargLeftOneLoopCurrent(int q,    int qHel,
-							 int qbar, int qbarHel,
-							 int g,    int gHel);
+  const LorentzVector<Complex>& qqbargLeftOneLoopCurrent(const int q,    const int qHel,
+							 const int qbar, const int qbarHel,
+							 const int g,    const int gHel);
 
   /**
    * One-loop right-handed qqbarg current
    */
-  const LorentzVector<Complex>& qqbargRightOneLoopCurrent(int q,    int qHel,
-							  int qbar, int qbarHel,
-							  int g,    int gHel);
+  const LorentzVector<Complex>& qqbargRightOneLoopCurrent(const int q,    const int qHel,
+							  const int qbar, const int qbarHel,
+							  const int g,    const int gHel);
 
 private:
 
   /**
    * Tree level left-handed qqbargg current, full reference vector dependence
    */
-  LorentzVector<Complex> qqbarggGeneralLeftCurrent(int q,    int qHel,
-						   int qbar, int qbarHel,
-						   int g1,   int g1Hel,
-						   int g2,   int g2Hel,
-						   int n);
+  LorentzVector<Complex> qqbarggGeneralLeftCurrent(const int q,    const int qHel,
+						   const int qbar, const int qbarHel,
+						   const int g1,   const int g1Hel,
+						   const int g2,   const int g2Hel,
+						   const int n);
 
   /**
    * Tree level left-handed qqbargg current, fixed reference vector choice
    */
-  LorentzVector<Complex> qqbarggFixedLeftCurrent(int q,    int qHel,
-						 int qbar, int qbarHel,
-						 int g1,   int g1Hel,
-						 int g2,   int g2Hel);
+  LorentzVector<Complex> qqbarggFixedLeftCurrent(const int q,    const int qHel,
+						 const int qbar, const int qbarHel,
+						 const int g1,   const int g1Hel,
+						 const int g2,   const int g2Hel);
 
   /**
    * Tree level left-handed qqbargg current, full reference vector dependence
    */
-  LorentzVector<Complex> qqbarggGeneralRightCurrent(int q,    int qHel,
-						   int qbar, int qbarHel,
-						   int g1,   int g1Hel,
-						   int g2,   int g2Hel,
-						   int n);
+  LorentzVector<Complex> qqbarggGeneralRightCurrent(const int q,    const int qHel,
+						   const int qbar, const int qbarHel,
+						   const int g1,   const int g1Hel,
+						   const int g2,   const int g2Hel,
+						   const int n);
 
   /**
    * Tree level left-handed qqbargg current, fixed reference vector choice
    */
-  LorentzVector<Complex> qqbarggFixedRightCurrent(int q,    int qHel,
-						  int qbar, int qbarHel,
-						  int g1,   int g1Hel,
-						  int g2,   int g2Hel);
+  LorentzVector<Complex> qqbarggFixedRightCurrent(const int q,    const int qHel,
+						  const int qbar, const int qbarHel,
+						  const int g1,   const int g1Hel,
+						  const int g2,   const int g2Hel);
 
   /**
    * Container for the coefficients of the standard matrix elements for the
@@ -244,42 +244,42 @@ private:
    * Work out the coefficients of the standard matrix elements for the
    * one-loop qqbarg currents.
    */
-  void qqbargLoopCoefficients(int q, int qbar, int g);
+  void qqbargLoopCoefficients(const int q, const int qbar, const int g);
 
   /**
    * Evaluate the six-dimensional box
    */
-  Complex box6(int i, int j, int k);
+  Complex box6(const int i, const int j, const int k);
 
   /**
    * One-loop left-handed qqbarg current, full reference vector dependence
    */
-  LorentzVector<Complex> qqbargGeneralLeftLoopCurrent(int q,    int qHel,
-						      int qbar, int qbarHel,
-						      int g,    int gHel,
-						      int n);
+  LorentzVector<Complex> qqbargGeneralLeftLoopCurrent(const int q,    const int qHel,
+						      const int qbar, const int qbarHel,
+						      const int g,    const int gHel,
+						      const int n);
 
   /**
    * One-loop left-handed qqbarg current, fixed reference vector choice
    */
-  LorentzVector<Complex> qqbargFixedLeftLoopCurrent(int q,    int qHel,
-						    int qbar, int qbarHel,
-						    int g,    int gHel);
+  LorentzVector<Complex> qqbargFixedLeftLoopCurrent(const int q,    const int qHel,
+						    const int qbar, const int qbarHel,
+						    const int g,    const int gHel);
 
   /**
    * One-loop left-handed qqbarg current, full reference vector dependence
    */
-  LorentzVector<Complex> qqbargGeneralRightLoopCurrent(int q,    int qHel,
-						       int qbar, int qbarHel,
-						       int g,    int gHel,
-						       int n);
+  LorentzVector<Complex> qqbargGeneralRightLoopCurrent(const int q,    const int qHel,
+						       const int qbar, const int qbarHel,
+						       const int g,    const int gHel,
+						       const int n);
 
   /**
    * One-loop left-handed qqbarg current, fixed reference vector choice
    */
-  LorentzVector<Complex> qqbargFixedRightLoopCurrent(int q,    int qHel,
-						     int qbar, int qbarHel,
-						     int g,    int gHel);
+  LorentzVector<Complex> qqbargFixedRightLoopCurrent(const int q,    const int qHel,
+						     const int qbar, const int qbarHel,
+						     const int g,    const int gHel);
 
 
 //#define CHECK_MatchboxCurrents
