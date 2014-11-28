@@ -362,7 +362,10 @@ void MatchboxFactory::setup() {
 	}
 	mes = makeMEs(*p,orderInAlphaS(),needTrueVirtuals);
 	copy(mes.begin(),mes.end(),back_inserter(bornMEs()));
-	if ( realContributions() && realEmissionMEs().empty() ) {
+	if ( (realContributions() || meCorrectionsOnly() ||
+	      (showerApproximation() && virtualContributions()) ||
+	      (showerApproximation() && loopSimCorrections()))
+	     && realEmissionMEs().empty() ) {
 	  if ( realEmissionProcesses.empty() ) {
 	    vector<string> rproc = *p;
 	    rproc.push_back("j");
@@ -371,7 +374,10 @@ void MatchboxFactory::setup() {
 	  }
 	}
       }
-      if ( realContributions() && realEmissionMEs().empty() ) {
+      if ( (realContributions() || meCorrectionsOnly() ||
+	    (showerApproximation() && virtualContributions()) ||
+	    (showerApproximation() && loopSimCorrections()))
+	   && realEmissionMEs().empty() ) {
 	if ( !realEmissionProcesses.empty() ) {
 	  for ( vector<vector<string> >::const_iterator q =
 		  realEmissionProcesses.begin(); q != realEmissionProcesses.end(); ++q ) {
@@ -490,7 +496,9 @@ void MatchboxFactory::setup() {
     }
 
     // prepare the real emission matrix elements
-    if ( realContributions() ) {
+    if ( realContributions() || meCorrectionsOnly() ||
+	 (showerApproximation() && virtualContributions()) ||
+	 (showerApproximation() && loopSimCorrections()) ) {
       for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator real
 	      = realEmissionMEs().begin(); real != realEmissionMEs().end(); ++real ) {
 	prepareME(*real);
