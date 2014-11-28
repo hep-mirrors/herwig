@@ -589,7 +589,7 @@ void MatchboxFactory::setup() {
 
 	Ptr<MatchboxMEBase>::ptr nlo = (**born).cloneMe();
 	string pname = fullName() + "/" + (**born).name();
-	if ( !independentVirtuals() )
+	if ( !independentVirtuals() && !(!bornContributions() && virtualContributions()) )
 	  pname += ".BornVirtual";
 	else
 	  pname += ".Virtual";
