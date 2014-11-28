@@ -218,201 +218,207 @@ LorentzVector<Complex> MatchboxCurrents::qqbarggGeneralLeftCurrent(int i, int,
 								   int k, int g1Hel,
 								   int l, int g2Hel,
 								   int n) {
+  const double ik = invariant(i,k);
+  const double il = invariant(i,l);
+  const double jk = invariant(j,k);
+  const double jl = invariant(j,l);
+  const double kl = invariant(k,l);
+
   if ( g1Hel == 1 && g2Hel == 1 ) {
     return
       (Complex(0,-2)*plusProduct(j,l)*plusProduct(k,l)*minusCurrent(i,k))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))) - 
+      (jl*(jk + jl + kl)) - 
       (Complex(0,2)*plusProduct(j,l)*plusProduct(k,l)*minusCurrent(i,k))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))) - 
+      (kl*(jk + jl + kl)) - 
       (Complex(0,2)*plusProduct(j,k)*plusProduct(k,l)*minusCurrent(i,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))) + 
+      (kl*(jk + jl + kl)) + 
       (Complex(0,2)*plusProduct(i,l)*plusProduct(k,l)*minusCurrent(i,j)*minusProduct(i,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)) - 
+      (kl*(ik + il + kl)*minusProduct(k,n)) - 
       (Complex(0,2)*plusProduct(i,k)*plusProduct(j,l)*minusCurrent(i,l)*minusProduct(i,n))/
-      (invariant(i,k)*invariant(j,l)*minusProduct(k,n)) + 
+      (ik*jl*minusProduct(k,n)) + 
       (Complex(0,2)*sqr(plusProduct(k,l))*minusCurrent(k,j)*minusProduct(i,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)) - 
+      (kl*(ik + il + kl)*minusProduct(k,n)) - 
       (Complex(0,2)*plusProduct(j,l)*plusProduct(k,l)*minusCurrent(i,j)*minusProduct(j,n))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)) - 
+      (jl*(jk + jl + kl)*minusProduct(k,n)) - 
       (Complex(0,2)*plusProduct(j,l)*plusProduct(k,l)*minusCurrent(i,j)*minusProduct(j,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)) + 
+      (kl*(jk + jl + kl)*minusProduct(k,n)) + 
       (Complex(0,2)*plusProduct(j,k)*plusProduct(j,l)*minusCurrent(i,l)*minusProduct(j,n))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)) + 
+      (jl*(jk + jl + kl)*minusProduct(k,n)) + 
       (Complex(0,2)*plusProduct(i,k)*plusProduct(k,l)*minusCurrent(i,j)*minusProduct(i,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)) - 
+      (kl*(ik + il + kl)*minusProduct(l,n)) - 
       (Complex(0,2)*sqr(plusProduct(k,l))*minusCurrent(l,j)*minusProduct(i,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)) - 
+      (kl*(ik + il + kl)*minusProduct(l,n)) - 
       (Complex(0,2)*plusProduct(j,k)*plusProduct(k,l)*minusCurrent(i,j)*minusProduct(j,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(l,n)) + 
+      (kl*(jk + jl + kl)*minusProduct(l,n)) + 
       (Complex(0,2)*plusProduct(j,k)*plusProduct(j,l)*minusCurrent(i,k)*minusProduct(j,n))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(l,n)) + 
+      (jl*(jk + jl + kl)*minusProduct(l,n)) + 
       (Complex(0,2)*plusProduct(i,k)*plusProduct(i,l)*minusCurrent(i,j)*sqr(minusProduct(i,n)))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)*minusProduct(l,n)) + 
+      (ik*(ik + il + kl)*minusProduct(k,n)*minusProduct(l,n)) + 
       (Complex(0,2)*plusProduct(i,k)*plusProduct(k,l)*minusCurrent(k,j)*sqr(minusProduct(i,n)))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)*minusProduct(l,n)) - 
+      (ik*(ik + il + kl)*minusProduct(k,n)*minusProduct(l,n)) - 
       (Complex(0,2)*plusProduct(i,k)*plusProduct(j,l)*minusCurrent(i,j)*minusProduct(i,n)*minusProduct(j,n))/
-      (invariant(i,k)*invariant(j,l)*minusProduct(k,n)*minusProduct(l,n)) + 
+      (ik*jl*minusProduct(k,n)*minusProduct(l,n)) + 
       (Complex(0,2)*plusProduct(j,k)*plusProduct(j,l)*minusCurrent(i,j)*sqr(minusProduct(j,n)))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)*minusProduct(l,n)) - 
+      (jl*(jk + jl + kl)*minusProduct(k,n)*minusProduct(l,n)) - 
       (Complex(0,2)*plusProduct(j,k)*plusProduct(k,l)*minusCurrent(i,k)*minusProduct(k,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(l,n)) - 
+      (kl*(jk + jl + kl)*minusProduct(l,n)) - 
       (Complex(0,2)*plusProduct(j,l)*plusProduct(k,l)*minusCurrent(i,l)*minusProduct(l,n))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)) - 
+      (jl*(jk + jl + kl)*minusProduct(k,n)) - 
       (Complex(0,2)*plusProduct(j,l)*plusProduct(k,l)*minusCurrent(i,l)*minusProduct(l,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n));
+      (kl*(jk + jl + kl)*minusProduct(k,n));
   }
 
   if ( g1Hel == 1 && g2Hel == -1 ) {
     return
       (Complex(0,-2)*plusProduct(j,k)*plusProduct(j,n)*minusCurrent(i,k)*minusProduct(j,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)) + 
+      (jl*(jk + jl + kl)*plusProduct(l,n)) + 
       (Complex(0,2)*plusProduct(j,k)*plusProduct(k,n)*minusCurrent(i,k)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)) - 
+      (kl*(jk + jl + kl)*plusProduct(l,n)) - 
       (Complex(0,2)*plusProduct(i,k)*plusProduct(i,n)*minusCurrent(i,j)*minusProduct(i,l)*minusProduct(i,n))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (ik*(ik + il + kl)*plusProduct(l,n)*minusProduct(k,n)) - 
       (Complex(0,2)*plusProduct(i,k)*plusProduct(k,n)*minusCurrent(k,j)*minusProduct(i,l)*minusProduct(i,n))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (ik*(ik + il + kl)*plusProduct(l,n)*minusProduct(k,n)) - 
       (Complex(0,2)*plusProduct(i,k)*minusCurrent(l,j)*minusProduct(i,l)*minusProduct(i,n))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)) + 
+      (ik*(ik + il + kl)*minusProduct(k,n)) + 
       (Complex(0,2)*plusProduct(i,k)*plusProduct(j,n)*minusCurrent(i,j)*minusProduct(i,n)*minusProduct(j,l))/
-      (invariant(i,k)*invariant(j,l)*plusProduct(l,n)*minusProduct(k,n)) - 
+      (ik*jl*plusProduct(l,n)*minusProduct(k,n)) - 
       (Complex(0,2)*plusProduct(j,k)*plusProduct(j,n)*minusCurrent(i,j)*minusProduct(j,l)*minusProduct(j,n))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (jl*(jk + jl + kl)*plusProduct(l,n)*minusProduct(k,n)) - 
       (Complex(0,2)*plusProduct(i,k)*plusProduct(k,n)*minusCurrent(i,j)*minusProduct(i,n)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) + 
+      (kl*(ik + il + kl)*plusProduct(l,n)*minusProduct(k,n)) + 
       (Complex(0,2)*plusProduct(k,l)*plusProduct(k,n)*minusCurrent(l,j)*minusProduct(i,n)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) + 
+      (kl*(ik + il + kl)*plusProduct(l,n)*minusProduct(k,n)) + 
       (Complex(0,2)*plusProduct(j,k)*plusProduct(k,n)*minusCurrent(i,j)*minusProduct(j,n)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (kl*(jk + jl + kl)*plusProduct(l,n)*minusProduct(k,n)) - 
       (Complex(0,1)*plusProduct(i,k)*plusProduct(k,n)*minusCurrent(i,j)*minusProduct(i,k)*minusProduct(l,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) + 
+      (kl*(ik + il + kl)*plusProduct(l,n)*minusProduct(k,n)) + 
       (Complex(0,1)*plusProduct(k,l)*plusProduct(k,n)*minusCurrent(l,j)*minusProduct(i,k)*minusProduct(l,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (kl*(ik + il + kl)*plusProduct(l,n)*minusProduct(k,n)) - 
       (Complex(0,2)*plusProduct(i,n)*plusProduct(k,l)*minusCurrent(i,j)*minusProduct(i,l)*minusProduct(l,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) + 
+      (kl*(ik + il + kl)*plusProduct(l,n)*minusProduct(k,n)) + 
       (Complex(0,1)*plusProduct(i,l)*plusProduct(k,n)*minusCurrent(i,j)*minusProduct(i,l)*minusProduct(l,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (kl*(ik + il + kl)*plusProduct(l,n)*minusProduct(k,n)) - 
       (Complex(0,1)*plusProduct(k,l)*plusProduct(k,n)*minusCurrent(k,j)*minusProduct(i,l)*minusProduct(l,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (kl*(ik + il + kl)*plusProduct(l,n)*minusProduct(k,n)) - 
       (Complex(0,2)*plusProduct(k,l)*minusCurrent(l,j)*minusProduct(i,l)*minusProduct(l,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)) + 
+      (kl*(ik + il + kl)*minusProduct(k,n)) + 
       (Complex(0,1)*plusProduct(j,k)*plusProduct(k,n)*minusCurrent(i,j)*minusProduct(j,k)*minusProduct(l,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) + 
+      (kl*(jk + jl + kl)*plusProduct(l,n)*minusProduct(k,n)) + 
       (Complex(0,2)*plusProduct(j,n)*plusProduct(k,l)*minusCurrent(i,j)*minusProduct(j,l)*minusProduct(l,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (kl*(jk + jl + kl)*plusProduct(l,n)*minusProduct(k,n)) - 
       (Complex(0,1)*plusProduct(j,l)*plusProduct(k,n)*minusCurrent(i,j)*minusProduct(j,l)*minusProduct(l,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (kl*(jk + jl + kl)*plusProduct(l,n)*minusProduct(k,n)) - 
       (Complex(0,2)*plusProduct(j,k)*plusProduct(j,n)*minusCurrent(i,l)*minusProduct(j,l)*minusProduct(l,n))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) + 
+      (jl*(jk + jl + kl)*plusProduct(l,n)*minusProduct(k,n)) + 
       (Complex(0,2)*plusProduct(j,n)*plusProduct(k,l)*minusCurrent(i,k)*minusProduct(k,l)*minusProduct(l,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (kl*(jk + jl + kl)*plusProduct(l,n)*minusProduct(k,n)) - 
       (Complex(0,1)*plusProduct(j,l)*plusProduct(k,n)*minusCurrent(i,k)*minusProduct(k,l)*minusProduct(l,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) + 
+      (kl*(jk + jl + kl)*plusProduct(l,n)*minusProduct(k,n)) + 
       (Complex(0,1)*plusProduct(j,k)*plusProduct(k,n)*minusCurrent(i,l)*minusProduct(k,l)*minusProduct(l,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n));
+      (kl*(jk + jl + kl)*plusProduct(l,n)*minusProduct(k,n));
   }
 
   if ( g1Hel == -1 && g2Hel == 1 ) {
     return
       (Complex(0,2)*plusProduct(i,n)*plusProduct(j,l)*minusCurrent(i,l)*minusProduct(i,k))/
-      (invariant(i,k)*invariant(j,l)*plusProduct(k,n)) + 
-      (Complex(0,2)*plusProduct(j,l)*minusCurrent(k,l)*minusProduct(i,k))/(invariant(i,k)*invariant(j,l)) - 
+      (ik*jl*plusProduct(k,n)) + 
+      (Complex(0,2)*plusProduct(j,l)*minusCurrent(k,l)*minusProduct(i,k))/(ik*jl) - 
       (Complex(0,2)*plusProduct(j,l)*plusProduct(l,n)*minusCurrent(i,j)*minusProduct(j,k))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)) + 
+      (jl*(jk + jl + kl)*plusProduct(k,n)) + 
       (Complex(0,2)*plusProduct(j,l)*plusProduct(l,n)*minusCurrent(i,l)*minusProduct(k,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)) + 
+      (jl*(jk + jl + kl)*plusProduct(k,n)) + 
       (Complex(0,2)*plusProduct(j,l)*plusProduct(l,n)*minusCurrent(i,l)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)) - 
+      (kl*(jk + jl + kl)*plusProduct(k,n)) - 
       (Complex(0,2)*plusProduct(i,l)*plusProduct(i,n)*minusCurrent(i,j)*minusProduct(i,k)*minusProduct(i,n))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) - 
+      (ik*(ik + il + kl)*plusProduct(k,n)*minusProduct(l,n)) - 
       (Complex(0,2)*plusProduct(i,n)*plusProduct(k,l)*minusCurrent(k,j)*minusProduct(i,k)*minusProduct(i,n))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) + 
+      (ik*(ik + il + kl)*plusProduct(k,n)*minusProduct(l,n)) + 
       (Complex(0,2)*plusProduct(i,n)*plusProduct(j,l)*minusCurrent(i,j)*minusProduct(i,k)*minusProduct(j,n))/
-      (invariant(i,k)*invariant(j,l)*plusProduct(k,n)*minusProduct(l,n)) + 
+      (ik*jl*plusProduct(k,n)*minusProduct(l,n)) + 
       (Complex(0,2)*plusProduct(j,l)*minusCurrent(k,j)*minusProduct(i,k)*minusProduct(j,n))/
-      (invariant(i,k)*invariant(j,l)*minusProduct(l,n)) - 
+      (ik*jl*minusProduct(l,n)) - 
       (Complex(0,2)*plusProduct(j,l)*plusProduct(j,n)*minusCurrent(i,j)*minusProduct(j,k)*minusProduct(j,n))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) - 
+      (jl*(jk + jl + kl)*plusProduct(k,n)*minusProduct(l,n)) - 
       (Complex(0,2)*plusProduct(i,l)*plusProduct(l,n)*minusCurrent(i,j)*minusProduct(i,n)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) - 
+      (kl*(ik + il + kl)*plusProduct(k,n)*minusProduct(l,n)) - 
       (Complex(0,2)*plusProduct(k,l)*plusProduct(l,n)*minusCurrent(k,j)*minusProduct(i,n)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) + 
+      (kl*(ik + il + kl)*plusProduct(k,n)*minusProduct(l,n)) + 
       (Complex(0,2)*plusProduct(j,l)*plusProduct(l,n)*minusCurrent(i,j)*minusProduct(j,n)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) + 
+      (kl*(jk + jl + kl)*plusProduct(k,n)*minusProduct(l,n)) + 
       (Complex(0,2)*plusProduct(j,l)*plusProduct(j,n)*minusCurrent(i,l)*minusProduct(j,n)*minusProduct(k,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) - 
+      (jl*(jk + jl + kl)*plusProduct(k,n)*minusProduct(l,n)) - 
       (Complex(0,2)*plusProduct(i,l)*minusCurrent(i,j)*minusProduct(i,k)*minusProduct(k,n))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)) - 
+      (ik*(ik + il + kl)*minusProduct(l,n)) - 
       (Complex(0,2)*plusProduct(i,n)*plusProduct(k,l)*minusCurrent(i,j)*minusProduct(i,k)*minusProduct(k,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) - 
+      (kl*(ik + il + kl)*plusProduct(k,n)*minusProduct(l,n)) - 
       (Complex(0,1)*plusProduct(i,k)*plusProduct(l,n)*minusCurrent(i,j)*minusProduct(i,k)*minusProduct(k,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) - 
+      (kl*(ik + il + kl)*plusProduct(k,n)*minusProduct(l,n)) - 
       (Complex(0,2)*plusProduct(k,l)*minusCurrent(k,j)*minusProduct(i,k)*minusProduct(k,n))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)) - 
+      (ik*(ik + il + kl)*minusProduct(l,n)) - 
       (Complex(0,2)*plusProduct(k,l)*minusCurrent(k,j)*minusProduct(i,k)*minusProduct(k,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)) - 
+      (kl*(ik + il + kl)*minusProduct(l,n)) - 
       (Complex(0,1)*plusProduct(k,l)*plusProduct(l,n)*minusCurrent(l,j)*minusProduct(i,k)*minusProduct(k,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) + 
+      (kl*(ik + il + kl)*plusProduct(k,n)*minusProduct(l,n)) + 
       (Complex(0,1)*plusProduct(i,l)*plusProduct(l,n)*minusCurrent(i,j)*minusProduct(i,l)*minusProduct(k,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) + 
+      (kl*(ik + il + kl)*plusProduct(k,n)*minusProduct(l,n)) + 
       (Complex(0,1)*plusProduct(k,l)*plusProduct(l,n)*minusCurrent(k,j)*minusProduct(i,l)*minusProduct(k,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) + 
+      (kl*(ik + il + kl)*plusProduct(k,n)*minusProduct(l,n)) + 
       (Complex(0,2)*plusProduct(j,n)*plusProduct(k,l)*minusCurrent(i,j)*minusProduct(j,k)*minusProduct(k,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) + 
+      (kl*(jk + jl + kl)*plusProduct(k,n)*minusProduct(l,n)) + 
       (Complex(0,1)*plusProduct(j,k)*plusProduct(l,n)*minusCurrent(i,j)*minusProduct(j,k)*minusProduct(k,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) - 
+      (kl*(jk + jl + kl)*plusProduct(k,n)*minusProduct(l,n)) - 
       (Complex(0,1)*plusProduct(j,l)*plusProduct(l,n)*minusCurrent(i,j)*minusProduct(j,l)*minusProduct(k,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) + 
+      (kl*(jk + jl + kl)*plusProduct(k,n)*minusProduct(l,n)) + 
       (Complex(0,1)*plusProduct(j,l)*plusProduct(l,n)*minusCurrent(i,k)*minusProduct(k,l)*minusProduct(k,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) - 
+      (kl*(jk + jl + kl)*plusProduct(k,n)*minusProduct(l,n)) - 
       (Complex(0,2)*plusProduct(j,n)*plusProduct(k,l)*minusCurrent(i,l)*minusProduct(k,l)*minusProduct(k,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) - 
+      (kl*(jk + jl + kl)*plusProduct(k,n)*minusProduct(l,n)) - 
       (Complex(0,1)*plusProduct(j,k)*plusProduct(l,n)*minusCurrent(i,l)*minusProduct(k,l)*minusProduct(k,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n));
+      (kl*(jk + jl + kl)*plusProduct(k,n)*minusProduct(l,n));
   }
 
   if ( g1Hel == -1 && g2Hel == -1 ) {
     return
       (Complex(0,2)*sqr(plusProduct(i,n))*minusCurrent(i,j)*minusProduct(i,k)*minusProduct(i,l))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*plusProduct(l,n)) + 
+      (ik*(ik + il + kl)*plusProduct(k,n)*plusProduct(l,n)) + 
       (Complex(0,2)*plusProduct(i,n)*minusCurrent(k,j)*minusProduct(i,k)*minusProduct(i,l))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)) + 
+      (ik*(ik + il + kl)*plusProduct(l,n)) + 
       (Complex(0,2)*plusProduct(i,n)*minusCurrent(l,j)*minusProduct(i,k)*minusProduct(i,l))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)) - 
+      (ik*(ik + il + kl)*plusProduct(k,n)) - 
       (Complex(0,2)*plusProduct(i,n)*plusProduct(j,n)*minusCurrent(i,j)*minusProduct(i,k)*minusProduct(j,l))/
-      (invariant(i,k)*invariant(j,l)*plusProduct(k,n)*plusProduct(l,n)) - 
+      (ik*jl*plusProduct(k,n)*plusProduct(l,n)) - 
       (Complex(0,2)*plusProduct(j,n)*minusCurrent(k,j)*minusProduct(i,k)*minusProduct(j,l))/
-      (invariant(i,k)*invariant(j,l)*plusProduct(l,n)) + 
+      (ik*jl*plusProduct(l,n)) + 
       (Complex(0,2)*sqr(plusProduct(j,n))*minusCurrent(i,j)*minusProduct(j,k)*minusProduct(j,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*plusProduct(l,n)) + 
+      (jl*(jk + jl + kl)*plusProduct(k,n)*plusProduct(l,n)) + 
       (Complex(0,2)*plusProduct(i,n)*minusCurrent(i,j)*minusProduct(i,k)*minusProduct(k,l))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)) + 
+      (ik*(ik + il + kl)*plusProduct(l,n)) + 
       (Complex(0,2)*plusProduct(i,n)*minusCurrent(i,j)*minusProduct(i,k)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)) + 
+      (kl*(ik + il + kl)*plusProduct(l,n)) + 
       (Complex(0,2)*plusProduct(k,n)*minusCurrent(k,j)*minusProduct(i,k)*minusProduct(k,l))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)) + 
+      (ik*(ik + il + kl)*plusProduct(l,n)) + 
       (Complex(0,2)*plusProduct(k,n)*minusCurrent(k,j)*minusProduct(i,k)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)) + 
+      (kl*(ik + il + kl)*plusProduct(l,n)) + 
       (Complex(0,2)*minusCurrent(l,j)*minusProduct(i,k)*minusProduct(k,l))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))) + 
+      (ik*(ik + il + kl)) + 
       (Complex(0,2)*minusCurrent(l,j)*minusProduct(i,k)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))) + 
+      (kl*(ik + il + kl)) + 
       (Complex(0,2)*plusProduct(i,n)*minusCurrent(i,j)*minusProduct(i,l)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)) + 
+      (kl*(ik + il + kl)*plusProduct(k,n)) + 
       (Complex(0,2)*minusCurrent(k,j)*minusProduct(i,l)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))) + 
+      (kl*(ik + il + kl)) + 
       (Complex(0,2)*plusProduct(l,n)*minusCurrent(l,j)*minusProduct(i,l)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)) - 
+      (kl*(ik + il + kl)*plusProduct(k,n)) - 
       (Complex(0,2)*plusProduct(j,n)*minusCurrent(i,j)*minusProduct(j,k)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)) - 
+      (kl*(jk + jl + kl)*plusProduct(l,n)) - 
       (Complex(0,2)*plusProduct(j,n)*minusCurrent(i,j)*minusProduct(j,l)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)) - 
+      (kl*(jk + jl + kl)*plusProduct(k,n)) - 
       (Complex(0,2)*sqr(plusProduct(j,n))*minusCurrent(i,l)*minusProduct(j,l)*minusProduct(k,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*plusProduct(l,n)) - 
+      (jl*(jk + jl + kl)*plusProduct(k,n)*plusProduct(l,n)) - 
       (Complex(0,2)*plusProduct(j,n)*minusCurrent(i,k)*sqr(minusProduct(k,l)))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)) + 
+      (kl*(jk + jl + kl)*plusProduct(k,n)) + 
       (Complex(0,2)*plusProduct(j,n)*minusCurrent(i,l)*sqr(minusProduct(k,l)))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n));
+      (kl*(jk + jl + kl)*plusProduct(l,n));
   }
 
   static LorentzVector<Complex> czero(0.,0.,0.,0.);
@@ -424,144 +430,149 @@ LorentzVector<Complex> MatchboxCurrents::qqbarggFixedLeftCurrent(int i, int,
 								 int j, int,
 								 int k, int g1Hel,
 								 int l, int g2Hel) {
+  const double ik = invariant(i,k);
+  const double il = invariant(i,l);
+  const double jk = invariant(j,k);
+  const double jl = invariant(j,l);
+  const double kl = invariant(k,l);
 
   if ( g1Hel == 1 && g2Hel == 1 ) {
     return
       (Complex(0,-2)*plusProduct(j,l)*plusProduct(k,l)*minusCurrent(i,k))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))) - 
+      (jl*(jk + jl + kl)) - 
       (Complex(0,2)*plusProduct(j,l)*plusProduct(k,l)*minusCurrent(i,k))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))) - 
+      (kl*(jk + jl + kl)) - 
       (Complex(0,2)*plusProduct(j,k)*plusProduct(k,l)*minusCurrent(i,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))) - 
+      (kl*(jk + jl + kl)) - 
       (Complex(0,2)*plusProduct(j,l)*plusProduct(k,l)*minusCurrent(i,j)*minusProduct(i,j))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)) - 
+      (jl*(jk + jl + kl)*minusProduct(i,k)) - 
       (Complex(0,2)*plusProduct(j,l)*plusProduct(k,l)*minusCurrent(i,j)*minusProduct(i,j))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)) + 
+      (kl*(jk + jl + kl)*minusProduct(i,k)) + 
       (Complex(0,2)*plusProduct(j,k)*plusProduct(j,l)*minusCurrent(i,l)*minusProduct(i,j))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)) - 
+      (jl*(jk + jl + kl)*minusProduct(i,k)) - 
       (Complex(0,2)*plusProduct(j,k)*plusProduct(k,l)*minusCurrent(i,j)*minusProduct(i,j))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l)) + 
+      (kl*(jk + jl + kl)*minusProduct(i,l)) + 
       (Complex(0,2)*plusProduct(j,k)*plusProduct(j,l)*minusCurrent(i,k)*minusProduct(i,j))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l)) + 
+      (jl*(jk + jl + kl)*minusProduct(i,l)) + 
       (Complex(0,2)*plusProduct(j,k)*plusProduct(j,l)*minusCurrent(i,j)*sqr(minusProduct(i,j)))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)*minusProduct(i,l)) - 
+      (jl*(jk + jl + kl)*minusProduct(i,k)*minusProduct(i,l)) - 
       (Complex(0,2)*plusProduct(j,k)*plusProduct(k,l)*minusCurrent(i,k)*minusProduct(i,k))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l)) - 
+      (kl*(jk + jl + kl)*minusProduct(i,l)) - 
       (Complex(0,2)*plusProduct(j,l)*plusProduct(k,l)*minusCurrent(i,l)*minusProduct(i,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)) - 
+      (jl*(jk + jl + kl)*minusProduct(i,k)) - 
       (Complex(0,2)*plusProduct(j,l)*plusProduct(k,l)*minusCurrent(i,l)*minusProduct(i,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k));
+      (kl*(jk + jl + kl)*minusProduct(i,k));
   }
 
   if ( g1Hel == 1 && g2Hel == -1 ) {
     return
       (Complex(0,-1)*sqr(plusProduct(i,k))*minusCurrent(i,j)*minusProduct(i,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,l)) + 
+      (kl*(ik + il + kl)*plusProduct(i,l)) + 
       (Complex(0,1)*plusProduct(i,k)*plusProduct(k,l)*minusCurrent(l,j)*minusProduct(i,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,l)) + 
+      (kl*(ik + il + kl)*plusProduct(i,l)) + 
       (Complex(0,1)*plusProduct(i,k)*minusCurrent(i,j)*sqr(minusProduct(i,l)))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,k)) - 
+      (kl*(ik + il + kl)*minusProduct(i,k)) - 
       (Complex(0,1)*plusProduct(i,k)*plusProduct(k,l)*minusCurrent(k,j)*sqr(minusProduct(i,l)))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k)) - 
+      (kl*(ik + il + kl)*plusProduct(i,l)*minusProduct(i,k)) - 
       (Complex(0,2)*plusProduct(k,l)*minusCurrent(l,j)*sqr(minusProduct(i,l)))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,k)) + 
+      (kl*(ik + il + kl)*minusProduct(i,k)) + 
       (Complex(0,1)*plusProduct(i,k)*plusProduct(j,k)*minusCurrent(i,j)*minusProduct(i,l)*minusProduct(j,k))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k)) - 
+      (kl*(jk + jl + kl)*plusProduct(i,l)*minusProduct(i,k)) - 
       (Complex(0,2)*plusProduct(i,j)*plusProduct(j,k)*minusCurrent(i,k)*minusProduct(j,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)) - 
+      (jl*(jk + jl + kl)*plusProduct(i,l)) - 
       (Complex(0,2)*plusProduct(i,j)*plusProduct(j,k)*minusCurrent(i,j)*minusProduct(i,j)*minusProduct(j,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k)) - 
+      (jl*(jk + jl + kl)*plusProduct(i,l)*minusProduct(i,k)) - 
       (Complex(0,1)*plusProduct(i,k)*plusProduct(j,l)*minusCurrent(i,j)*minusProduct(i,l)*minusProduct(j,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k)) + 
+      (kl*(jk + jl + kl)*plusProduct(i,l)*minusProduct(i,k)) + 
       (Complex(0,2)*plusProduct(i,j)*plusProduct(k,l)*minusCurrent(i,j)*minusProduct(i,l)*minusProduct(j,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k)) - 
+      (kl*(jk + jl + kl)*plusProduct(i,l)*minusProduct(i,k)) - 
       (Complex(0,2)*plusProduct(i,j)*plusProduct(j,k)*minusCurrent(i,l)*minusProduct(i,l)*minusProduct(j,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k)) + 
+      (jl*(jk + jl + kl)*plusProduct(i,l)*minusProduct(i,k)) + 
       (Complex(0,2)*plusProduct(i,k)*plusProduct(j,k)*minusCurrent(i,k)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)) + 
+      (kl*(jk + jl + kl)*plusProduct(i,l)) + 
       (Complex(0,2)*plusProduct(i,k)*plusProduct(j,k)*minusCurrent(i,j)*minusProduct(i,j)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k)) - 
+      (kl*(jk + jl + kl)*plusProduct(i,l)*minusProduct(i,k)) - 
       (Complex(0,1)*plusProduct(i,k)*plusProduct(j,l)*minusCurrent(i,k)*minusProduct(i,l)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k)) + 
+      (kl*(jk + jl + kl)*plusProduct(i,l)*minusProduct(i,k)) + 
       (Complex(0,2)*plusProduct(i,j)*plusProduct(k,l)*minusCurrent(i,k)*minusProduct(i,l)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k)) + 
+      (kl*(jk + jl + kl)*plusProduct(i,l)*minusProduct(i,k)) + 
       (Complex(0,1)*plusProduct(i,k)*plusProduct(j,k)*minusCurrent(i,l)*minusProduct(i,l)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k));
+      (kl*(jk + jl + kl)*plusProduct(i,l)*minusProduct(i,k));
   }
 
   if ( g1Hel == -1 && g2Hel == 1 ) {
     return
       (Complex(0,1)*sqr(plusProduct(i,l))*minusCurrent(i,j)*minusProduct(i,k))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,k)) + 
+      (kl*(ik + il + kl)*plusProduct(i,k)) + 
       (Complex(0,1)*plusProduct(i,l)*plusProduct(k,l)*minusCurrent(k,j)*minusProduct(i,k))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,k)) + 
-      (Complex(0,2)*plusProduct(j,l)*minusCurrent(k,l)*minusProduct(i,k))/(invariant(i,k)*invariant(j,l)) + 
+      (kl*(ik + il + kl)*plusProduct(i,k)) + 
+      (Complex(0,2)*plusProduct(j,l)*minusCurrent(k,l)*minusProduct(i,k))/(ik*jl) + 
       (Complex(0,2)*plusProduct(j,l)*minusCurrent(k,j)*minusProduct(i,j)*minusProduct(i,k))/
-      (invariant(i,k)*invariant(j,l)*minusProduct(i,l)) - 
+      (ik*jl*minusProduct(i,l)) - 
       (Complex(0,2)*plusProduct(i,l)*minusCurrent(i,j)*sqr(minusProduct(i,k)))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,l)) - 
+      (ik*(ik + il + kl)*minusProduct(i,l)) - 
       (Complex(0,1)*plusProduct(i,l)*minusCurrent(i,j)*sqr(minusProduct(i,k)))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,l)) - 
+      (kl*(ik + il + kl)*minusProduct(i,l)) - 
       (Complex(0,2)*plusProduct(k,l)*minusCurrent(k,j)*sqr(minusProduct(i,k)))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,l)) - 
+      (ik*(ik + il + kl)*minusProduct(i,l)) - 
       (Complex(0,2)*plusProduct(k,l)*minusCurrent(k,j)*sqr(minusProduct(i,k)))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,l)) - 
+      (kl*(ik + il + kl)*minusProduct(i,l)) - 
       (Complex(0,1)*plusProduct(i,l)*plusProduct(k,l)*minusCurrent(l,j)*sqr(minusProduct(i,k)))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) - 
+      (kl*(ik + il + kl)*plusProduct(i,k)*minusProduct(i,l)) - 
       (Complex(0,2)*plusProduct(i,l)*plusProduct(j,l)*minusCurrent(i,j)*minusProduct(j,k))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)) - 
+      (jl*(jk + jl + kl)*plusProduct(i,k)) - 
       (Complex(0,2)*plusProduct(i,j)*plusProduct(j,l)*minusCurrent(i,j)*minusProduct(i,j)*minusProduct(j,k))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) + 
+      (jl*(jk + jl + kl)*plusProduct(i,k)*minusProduct(i,l)) + 
       (Complex(0,1)*plusProduct(i,l)*plusProduct(j,k)*minusCurrent(i,j)*minusProduct(i,k)*minusProduct(j,k))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) + 
+      (kl*(jk + jl + kl)*plusProduct(i,k)*minusProduct(i,l)) + 
       (Complex(0,2)*plusProduct(i,j)*plusProduct(k,l)*minusCurrent(i,j)*minusProduct(i,k)*minusProduct(j,k))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) - 
+      (kl*(jk + jl + kl)*plusProduct(i,k)*minusProduct(i,l)) - 
       (Complex(0,1)*plusProduct(i,l)*plusProduct(j,l)*minusCurrent(i,j)*minusProduct(i,k)*minusProduct(j,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) + 
+      (kl*(jk + jl + kl)*plusProduct(i,k)*minusProduct(i,l)) + 
       (Complex(0,2)*plusProduct(i,l)*plusProduct(j,l)*minusCurrent(i,l)*minusProduct(k,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)) + 
+      (jl*(jk + jl + kl)*plusProduct(i,k)) + 
       (Complex(0,2)*plusProduct(i,l)*plusProduct(j,l)*minusCurrent(i,l)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)) + 
+      (kl*(jk + jl + kl)*plusProduct(i,k)) + 
       (Complex(0,2)*plusProduct(i,l)*plusProduct(j,l)*minusCurrent(i,j)*minusProduct(i,j)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) + 
+      (kl*(jk + jl + kl)*plusProduct(i,k)*minusProduct(i,l)) + 
       (Complex(0,2)*plusProduct(i,j)*plusProduct(j,l)*minusCurrent(i,l)*minusProduct(i,j)*minusProduct(k,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) + 
+      (jl*(jk + jl + kl)*plusProduct(i,k)*minusProduct(i,l)) + 
       (Complex(0,1)*plusProduct(i,l)*plusProduct(j,l)*minusCurrent(i,k)*minusProduct(i,k)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) - 
+      (kl*(jk + jl + kl)*plusProduct(i,k)*minusProduct(i,l)) - 
       (Complex(0,1)*plusProduct(i,l)*plusProduct(j,k)*minusCurrent(i,l)*minusProduct(i,k)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) - 
+      (kl*(jk + jl + kl)*plusProduct(i,k)*minusProduct(i,l)) - 
       (Complex(0,2)*plusProduct(i,j)*plusProduct(k,l)*minusCurrent(i,l)*minusProduct(i,k)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l));
+      (kl*(jk + jl + kl)*plusProduct(i,k)*minusProduct(i,l));
   }
 
   if ( g1Hel == -1 && g2Hel == -1 ) {
     return
       (Complex(0,-2)*plusProduct(i,j)*minusCurrent(k,j)*minusProduct(i,k)*minusProduct(j,l))/
-      (invariant(i,k)*invariant(j,l)*plusProduct(i,l)) + 
+      (ik*jl*plusProduct(i,l)) + 
       (Complex(0,2)*sqr(plusProduct(i,j))*minusCurrent(i,j)*minusProduct(j,k)*minusProduct(j,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*plusProduct(i,l)) + 
+      (jl*(jk + jl + kl)*plusProduct(i,k)*plusProduct(i,l)) + 
       (Complex(0,2)*plusProduct(i,k)*minusCurrent(k,j)*minusProduct(i,k)*minusProduct(k,l))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,l)) + 
+      (ik*(ik + il + kl)*plusProduct(i,l)) + 
       (Complex(0,2)*plusProduct(i,k)*minusCurrent(k,j)*minusProduct(i,k)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,l)) + 
+      (kl*(ik + il + kl)*plusProduct(i,l)) + 
       (Complex(0,2)*minusCurrent(l,j)*minusProduct(i,k)*minusProduct(k,l))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))) + 
+      (ik*(ik + il + kl)) + 
       (Complex(0,2)*minusCurrent(l,j)*minusProduct(i,k)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))) + 
+      (kl*(ik + il + kl)) + 
       (Complex(0,2)*minusCurrent(k,j)*minusProduct(i,l)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))) + 
+      (kl*(ik + il + kl)) + 
       (Complex(0,2)*plusProduct(i,l)*minusCurrent(l,j)*minusProduct(i,l)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,k)) - 
+      (kl*(ik + il + kl)*plusProduct(i,k)) - 
       (Complex(0,2)*plusProduct(i,j)*minusCurrent(i,j)*minusProduct(j,k)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)) - 
+      (kl*(jk + jl + kl)*plusProduct(i,l)) - 
       (Complex(0,2)*plusProduct(i,j)*minusCurrent(i,j)*minusProduct(j,l)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)) - 
+      (kl*(jk + jl + kl)*plusProduct(i,k)) - 
       (Complex(0,2)*sqr(plusProduct(i,j))*minusCurrent(i,l)*minusProduct(j,l)*minusProduct(k,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*plusProduct(i,l)) - 
+      (jl*(jk + jl + kl)*plusProduct(i,k)*plusProduct(i,l)) - 
       (Complex(0,2)*plusProduct(i,j)*minusCurrent(i,k)*sqr(minusProduct(k,l)))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)) + 
+      (kl*(jk + jl + kl)*plusProduct(i,k)) + 
       (Complex(0,2)*plusProduct(i,j)*minusCurrent(i,l)*sqr(minusProduct(k,l)))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l));
+      (kl*(jk + jl + kl)*plusProduct(i,l));
   }
 
   static LorentzVector<Complex> czero(0.,0.,0.,0.);
@@ -574,202 +585,207 @@ LorentzVector<Complex> MatchboxCurrents::qqbarggGeneralRightCurrent(int i, int,
 								    int k, int g1Hel,
 								    int l, int g2Hel,
 								    int n) {
+  const double ik = invariant(i,k);
+  const double il = invariant(i,l);
+  const double jk = invariant(j,k);
+  const double jl = invariant(j,l);
+  const double kl = invariant(k,l);
 
   if ( g1Hel == 1 && g2Hel == 1 ) {
     return
       (Complex(0,2)*plusProduct(i,l)*plusProduct(k,l)*minusCurrent(j,k))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))) + 
+      (kl*(ik + il + kl)) + 
       (Complex(0,2)*plusProduct(i,k)*plusProduct(k,l)*minusCurrent(j,l))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))) + 
+      (ik*(ik + il + kl)) + 
       (Complex(0,2)*plusProduct(i,k)*plusProduct(k,l)*minusCurrent(j,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))) + 
+      (kl*(ik + il + kl)) + 
       (Complex(0,2)*plusProduct(i,l)*plusProduct(k,l)*minusCurrent(j,i)*minusProduct(i,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)) + 
+      (kl*(ik + il + kl)*minusProduct(k,n)) + 
       (Complex(0,2)*plusProduct(i,k)*plusProduct(i,l)*minusCurrent(j,l)*minusProduct(i,n))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)) - 
+      (ik*(ik + il + kl)*minusProduct(k,n)) - 
       (Complex(0,2)*plusProduct(j,l)*plusProduct(k,l)*minusCurrent(j,i)*minusProduct(j,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)) - 
+      (kl*(jk + jl + kl)*minusProduct(k,n)) - 
       (Complex(0,2)*sqr(plusProduct(k,l))*minusCurrent(k,i)*minusProduct(j,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)) + 
+      (kl*(jk + jl + kl)*minusProduct(k,n)) + 
       (Complex(0,2)*plusProduct(i,k)*plusProduct(k,l)*minusCurrent(j,i)*minusProduct(i,n))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)) + 
+      (ik*(ik + il + kl)*minusProduct(l,n)) + 
       (Complex(0,2)*plusProduct(i,k)*plusProduct(k,l)*minusCurrent(j,i)*minusProduct(i,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)) + 
+      (kl*(ik + il + kl)*minusProduct(l,n)) + 
       (Complex(0,2)*plusProduct(i,k)*plusProduct(i,l)*minusCurrent(j,k)*minusProduct(i,n))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)) - 
+      (ik*(ik + il + kl)*minusProduct(l,n)) - 
       (Complex(0,2)*plusProduct(j,k)*plusProduct(k,l)*minusCurrent(j,i)*minusProduct(j,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(l,n)) - 
+      (kl*(jk + jl + kl)*minusProduct(l,n)) - 
       (Complex(0,2)*plusProduct(i,k)*plusProduct(j,l)*minusCurrent(j,k)*minusProduct(j,n))/
-      (invariant(i,k)*invariant(j,l)*minusProduct(l,n)) + 
+      (ik*jl*minusProduct(l,n)) + 
       (Complex(0,2)*sqr(plusProduct(k,l))*minusCurrent(l,i)*minusProduct(j,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(l,n)) + 
+      (kl*(jk + jl + kl)*minusProduct(l,n)) + 
       (Complex(0,2)*plusProduct(i,k)*plusProduct(i,l)*minusCurrent(j,i)*sqr(minusProduct(i,n)))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n)*minusProduct(l,n)) - 
+      (ik*(ik + il + kl)*minusProduct(k,n)*minusProduct(l,n)) - 
       (Complex(0,2)*plusProduct(i,k)*plusProduct(j,l)*minusCurrent(j,i)*minusProduct(i,n)*minusProduct(j,n))/
-      (invariant(i,k)*invariant(j,l)*minusProduct(k,n)*minusProduct(l,n)) + 
+      (ik*jl*minusProduct(k,n)*minusProduct(l,n)) + 
       (Complex(0,2)*plusProduct(j,k)*plusProduct(j,l)*minusCurrent(j,i)*sqr(minusProduct(j,n)))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)*minusProduct(l,n)) - 
+      (jl*(jk + jl + kl)*minusProduct(k,n)*minusProduct(l,n)) - 
       (Complex(0,2)*plusProduct(j,l)*plusProduct(k,l)*minusCurrent(l,i)*sqr(minusProduct(j,n)))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)*minusProduct(l,n)) + 
+      (jl*(jk + jl + kl)*minusProduct(k,n)*minusProduct(l,n)) + 
       (Complex(0,2)*plusProduct(i,k)*plusProduct(k,l)*minusCurrent(j,k)*minusProduct(k,n))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)) + 
+      (ik*(ik + il + kl)*minusProduct(l,n)) + 
       (Complex(0,2)*plusProduct(i,k)*plusProduct(k,l)*minusCurrent(j,k)*minusProduct(k,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(l,n)) + 
+      (kl*(ik + il + kl)*minusProduct(l,n)) + 
       (Complex(0,2)*plusProduct(i,l)*plusProduct(k,l)*minusCurrent(j,l)*minusProduct(l,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(k,n));
+      (kl*(ik + il + kl)*minusProduct(k,n));
   }
 
   if ( g1Hel == 1 && g2Hel == -1 ) {
     return
       (Complex(0,-2)*plusProduct(i,k)*plusProduct(k,n)*minusCurrent(j,i)*minusProduct(i,l))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)) + 
+      (ik*(ik + il + kl)*plusProduct(l,n)) + 
       (Complex(0,2)*plusProduct(i,k)*plusProduct(j,n)*minusCurrent(j,k)*minusProduct(j,l))/
-      (invariant(i,k)*invariant(j,l)*plusProduct(l,n)) + 
-      (Complex(0,2)*plusProduct(i,k)*minusCurrent(l,k)*minusProduct(j,l))/(invariant(i,k)*invariant(j,l)) - 
+      (ik*jl*plusProduct(l,n)) + 
+      (Complex(0,2)*plusProduct(i,k)*minusCurrent(l,k)*minusProduct(j,l))/(ik*jl) - 
       (Complex(0,2)*plusProduct(i,k)*plusProduct(k,n)*minusCurrent(j,k)*minusProduct(k,l))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)) - 
+      (ik*(ik + il + kl)*plusProduct(l,n)) - 
       (Complex(0,2)*plusProduct(i,k)*plusProduct(k,n)*minusCurrent(j,k)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)) - 
+      (kl*(ik + il + kl)*plusProduct(l,n)) - 
       (Complex(0,2)*plusProduct(i,k)*plusProduct(i,n)*minusCurrent(j,i)*minusProduct(i,l)*minusProduct(i,n))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) + 
+      (ik*(ik + il + kl)*plusProduct(l,n)*minusProduct(k,n)) + 
       (Complex(0,2)*plusProduct(i,k)*plusProduct(j,n)*minusCurrent(j,i)*minusProduct(i,n)*minusProduct(j,l))/
-      (invariant(i,k)*invariant(j,l)*plusProduct(l,n)*minusProduct(k,n)) + 
+      (ik*jl*plusProduct(l,n)*minusProduct(k,n)) + 
       (Complex(0,2)*plusProduct(i,k)*minusCurrent(l,i)*minusProduct(i,n)*minusProduct(j,l))/
-      (invariant(i,k)*invariant(j,l)*minusProduct(k,n)) - 
+      (ik*jl*minusProduct(k,n)) - 
       (Complex(0,2)*plusProduct(j,k)*plusProduct(j,n)*minusCurrent(j,i)*minusProduct(j,l)*minusProduct(j,n))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) + 
+      (jl*(jk + jl + kl)*plusProduct(l,n)*minusProduct(k,n)) + 
       (Complex(0,2)*plusProduct(j,n)*plusProduct(k,l)*minusCurrent(l,i)*minusProduct(j,l)*minusProduct(j,n))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (jl*(jk + jl + kl)*plusProduct(l,n)*minusProduct(k,n)) - 
       (Complex(0,2)*plusProduct(i,k)*plusProduct(k,n)*minusCurrent(j,i)*minusProduct(i,n)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (kl*(ik + il + kl)*plusProduct(l,n)*minusProduct(k,n)) - 
       (Complex(0,2)*plusProduct(i,k)*plusProduct(i,n)*minusCurrent(j,k)*minusProduct(i,n)*minusProduct(k,l))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) + 
+      (ik*(ik + il + kl)*plusProduct(l,n)*minusProduct(k,n)) + 
       (Complex(0,2)*plusProduct(j,k)*plusProduct(k,n)*minusCurrent(j,i)*minusProduct(j,n)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (kl*(jk + jl + kl)*plusProduct(l,n)*minusProduct(k,n)) - 
       (Complex(0,2)*plusProduct(k,l)*plusProduct(k,n)*minusCurrent(l,i)*minusProduct(j,n)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (kl*(jk + jl + kl)*plusProduct(l,n)*minusProduct(k,n)) - 
       (Complex(0,1)*plusProduct(i,k)*plusProduct(k,n)*minusCurrent(j,i)*minusProduct(i,k)*minusProduct(l,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (kl*(ik + il + kl)*plusProduct(l,n)*minusProduct(k,n)) - 
       (Complex(0,2)*plusProduct(i,n)*plusProduct(k,l)*minusCurrent(j,i)*minusProduct(i,l)*minusProduct(l,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) + 
+      (kl*(ik + il + kl)*plusProduct(l,n)*minusProduct(k,n)) + 
       (Complex(0,1)*plusProduct(i,l)*plusProduct(k,n)*minusCurrent(j,i)*minusProduct(i,l)*minusProduct(l,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) + 
+      (kl*(ik + il + kl)*plusProduct(l,n)*minusProduct(k,n)) + 
       (Complex(0,1)*plusProduct(j,k)*plusProduct(k,n)*minusCurrent(j,i)*minusProduct(j,k)*minusProduct(l,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (kl*(jk + jl + kl)*plusProduct(l,n)*minusProduct(k,n)) - 
       (Complex(0,1)*plusProduct(k,l)*plusProduct(k,n)*minusCurrent(l,i)*minusProduct(j,k)*minusProduct(l,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (kl*(jk + jl + kl)*plusProduct(l,n)*minusProduct(k,n)) - 
       (Complex(0,2)*plusProduct(j,k)*minusCurrent(j,i)*minusProduct(j,l)*minusProduct(l,n))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)) + 
+      (jl*(jk + jl + kl)*minusProduct(k,n)) + 
       (Complex(0,2)*plusProduct(j,n)*plusProduct(k,l)*minusCurrent(j,i)*minusProduct(j,l)*minusProduct(l,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (kl*(jk + jl + kl)*plusProduct(l,n)*minusProduct(k,n)) - 
       (Complex(0,1)*plusProduct(j,l)*plusProduct(k,n)*minusCurrent(j,i)*minusProduct(j,l)*minusProduct(l,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) + 
+      (kl*(jk + jl + kl)*plusProduct(l,n)*minusProduct(k,n)) + 
       (Complex(0,1)*plusProduct(k,l)*plusProduct(k,n)*minusCurrent(k,i)*minusProduct(j,l)*minusProduct(l,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) + 
+      (kl*(jk + jl + kl)*plusProduct(l,n)*minusProduct(k,n)) + 
       (Complex(0,2)*plusProduct(k,l)*minusCurrent(l,i)*minusProduct(j,l)*minusProduct(l,n))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)) + 
+      (jl*(jk + jl + kl)*minusProduct(k,n)) + 
       (Complex(0,2)*plusProduct(k,l)*minusCurrent(l,i)*minusProduct(j,l)*minusProduct(l,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(k,n)) - 
+      (kl*(jk + jl + kl)*minusProduct(k,n)) - 
       (Complex(0,2)*plusProduct(i,n)*plusProduct(k,l)*minusCurrent(j,k)*minusProduct(k,l)*minusProduct(l,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) + 
+      (kl*(ik + il + kl)*plusProduct(l,n)*minusProduct(k,n)) + 
       (Complex(0,1)*plusProduct(i,l)*plusProduct(k,n)*minusCurrent(j,k)*minusProduct(k,l)*minusProduct(l,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n)) - 
+      (kl*(ik + il + kl)*plusProduct(l,n)*minusProduct(k,n)) - 
       (Complex(0,1)*plusProduct(i,k)*plusProduct(k,n)*minusCurrent(j,l)*minusProduct(k,l)*minusProduct(l,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)*minusProduct(k,n));
+      (kl*(ik + il + kl)*plusProduct(l,n)*minusProduct(k,n));
   }
 
   if ( g1Hel == -1 && g2Hel == 1 ) {
     return
       (Complex(0,-2)*plusProduct(i,l)*plusProduct(i,n)*minusCurrent(j,l)*minusProduct(i,k))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)) - 
+      (ik*(ik + il + kl)*plusProduct(k,n)) - 
       (Complex(0,2)*plusProduct(i,l)*plusProduct(l,n)*minusCurrent(j,l)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)) - 
+      (kl*(ik + il + kl)*plusProduct(k,n)) - 
       (Complex(0,2)*plusProduct(i,l)*plusProduct(i,n)*minusCurrent(j,i)*minusProduct(i,k)*minusProduct(i,n))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) + 
+      (ik*(ik + il + kl)*plusProduct(k,n)*minusProduct(l,n)) + 
       (Complex(0,2)*plusProduct(i,n)*plusProduct(j,l)*minusCurrent(j,i)*minusProduct(i,k)*minusProduct(j,n))/
-      (invariant(i,k)*invariant(j,l)*plusProduct(k,n)*minusProduct(l,n)) - 
+      (ik*jl*plusProduct(k,n)*minusProduct(l,n)) - 
       (Complex(0,2)*plusProduct(j,l)*plusProduct(j,n)*minusCurrent(j,i)*minusProduct(j,k)*minusProduct(j,n))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) - 
+      (jl*(jk + jl + kl)*plusProduct(k,n)*minusProduct(l,n)) - 
       (Complex(0,2)*plusProduct(j,l)*minusCurrent(k,i)*minusProduct(j,k)*minusProduct(j,n))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(l,n)) - 
+      (jl*(jk + jl + kl)*minusProduct(l,n)) - 
       (Complex(0,2)*plusProduct(j,l)*plusProduct(l,n)*minusCurrent(l,i)*minusProduct(j,k)*minusProduct(j,n))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) - 
+      (jl*(jk + jl + kl)*plusProduct(k,n)*minusProduct(l,n)) - 
       (Complex(0,2)*plusProduct(i,l)*plusProduct(l,n)*minusCurrent(j,i)*minusProduct(i,n)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) + 
+      (kl*(ik + il + kl)*plusProduct(k,n)*minusProduct(l,n)) + 
       (Complex(0,2)*plusProduct(j,l)*plusProduct(l,n)*minusCurrent(j,i)*minusProduct(j,n)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) + 
+      (kl*(jk + jl + kl)*plusProduct(k,n)*minusProduct(l,n)) + 
       (Complex(0,2)*plusProduct(k,l)*plusProduct(l,n)*minusCurrent(k,i)*minusProduct(j,n)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) - 
+      (kl*(jk + jl + kl)*plusProduct(k,n)*minusProduct(l,n)) - 
       (Complex(0,2)*plusProduct(i,n)*plusProduct(k,l)*minusCurrent(j,i)*minusProduct(i,k)*minusProduct(k,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) - 
+      (kl*(ik + il + kl)*plusProduct(k,n)*minusProduct(l,n)) - 
       (Complex(0,1)*plusProduct(i,k)*plusProduct(l,n)*minusCurrent(j,i)*minusProduct(i,k)*minusProduct(k,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) - 
+      (kl*(ik + il + kl)*plusProduct(k,n)*minusProduct(l,n)) - 
       (Complex(0,2)*plusProduct(i,l)*plusProduct(i,n)*minusCurrent(j,k)*minusProduct(i,k)*minusProduct(k,n))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) + 
+      (ik*(ik + il + kl)*plusProduct(k,n)*minusProduct(l,n)) + 
       (Complex(0,1)*plusProduct(i,l)*plusProduct(l,n)*minusCurrent(j,i)*minusProduct(i,l)*minusProduct(k,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) + 
+      (kl*(ik + il + kl)*plusProduct(k,n)*minusProduct(l,n)) + 
       (Complex(0,2)*plusProduct(j,n)*plusProduct(k,l)*minusCurrent(j,i)*minusProduct(j,k)*minusProduct(k,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) + 
+      (kl*(jk + jl + kl)*plusProduct(k,n)*minusProduct(l,n)) + 
       (Complex(0,1)*plusProduct(j,k)*plusProduct(l,n)*minusCurrent(j,i)*minusProduct(j,k)*minusProduct(k,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) + 
+      (kl*(jk + jl + kl)*plusProduct(k,n)*minusProduct(l,n)) + 
       (Complex(0,2)*plusProduct(k,l)*minusCurrent(k,i)*minusProduct(j,k)*minusProduct(k,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(l,n)) + 
+      (kl*(jk + jl + kl)*minusProduct(l,n)) + 
       (Complex(0,1)*plusProduct(k,l)*plusProduct(l,n)*minusCurrent(l,i)*minusProduct(j,k)*minusProduct(k,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) - 
+      (kl*(jk + jl + kl)*plusProduct(k,n)*minusProduct(l,n)) - 
       (Complex(0,1)*plusProduct(j,l)*plusProduct(l,n)*minusCurrent(j,i)*minusProduct(j,l)*minusProduct(k,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) - 
+      (kl*(jk + jl + kl)*plusProduct(k,n)*minusProduct(l,n)) - 
       (Complex(0,1)*plusProduct(k,l)*plusProduct(l,n)*minusCurrent(k,i)*minusProduct(j,l)*minusProduct(k,n))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) - 
+      (kl*(jk + jl + kl)*plusProduct(k,n)*minusProduct(l,n)) - 
       (Complex(0,1)*plusProduct(i,l)*plusProduct(l,n)*minusCurrent(j,k)*minusProduct(k,l)*minusProduct(k,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) + 
+      (kl*(ik + il + kl)*plusProduct(k,n)*minusProduct(l,n)) + 
       (Complex(0,2)*plusProduct(i,n)*plusProduct(k,l)*minusCurrent(j,l)*minusProduct(k,l)*minusProduct(k,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n)) + 
+      (kl*(ik + il + kl)*plusProduct(k,n)*minusProduct(l,n)) + 
       (Complex(0,1)*plusProduct(i,k)*plusProduct(l,n)*minusCurrent(j,l)*minusProduct(k,l)*minusProduct(k,n))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*minusProduct(l,n));
+      (kl*(ik + il + kl)*plusProduct(k,n)*minusProduct(l,n));
   }
 
   if ( g1Hel == -1 && g2Hel == -1 ) {
     return
       (Complex(0,2)*sqr(plusProduct(i,n))*minusCurrent(j,i)*minusProduct(i,k)*minusProduct(i,l))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*plusProduct(l,n)) - 
+      (ik*(ik + il + kl)*plusProduct(k,n)*plusProduct(l,n)) - 
       (Complex(0,2)*plusProduct(i,n)*plusProduct(j,n)*minusCurrent(j,i)*minusProduct(i,k)*minusProduct(j,l))/
-      (invariant(i,k)*invariant(j,l)*plusProduct(k,n)*plusProduct(l,n)) - 
+      (ik*jl*plusProduct(k,n)*plusProduct(l,n)) - 
       (Complex(0,2)*plusProduct(i,n)*minusCurrent(l,i)*minusProduct(i,k)*minusProduct(j,l))/
-      (invariant(i,k)*invariant(j,l)*plusProduct(k,n)) + 
+      (ik*jl*plusProduct(k,n)) + 
       (Complex(0,2)*sqr(plusProduct(j,n))*minusCurrent(j,i)*minusProduct(j,k)*minusProduct(j,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)*plusProduct(l,n)) + 
+      (jl*(jk + jl + kl)*plusProduct(k,n)*plusProduct(l,n)) + 
       (Complex(0,2)*plusProduct(j,n)*minusCurrent(k,i)*minusProduct(j,k)*minusProduct(j,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)) + 
+      (jl*(jk + jl + kl)*plusProduct(l,n)) + 
       (Complex(0,2)*plusProduct(j,n)*minusCurrent(l,i)*minusProduct(j,k)*minusProduct(j,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)) + 
+      (jl*(jk + jl + kl)*plusProduct(k,n)) + 
       (Complex(0,2)*plusProduct(i,n)*minusCurrent(j,i)*minusProduct(i,k)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n)) + 
+      (kl*(ik + il + kl)*plusProduct(l,n)) + 
       (Complex(0,2)*sqr(plusProduct(i,n))*minusCurrent(j,k)*minusProduct(i,k)*minusProduct(k,l))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)*plusProduct(l,n)) + 
+      (ik*(ik + il + kl)*plusProduct(k,n)*plusProduct(l,n)) + 
       (Complex(0,2)*plusProduct(i,n)*minusCurrent(j,i)*minusProduct(i,l)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)) - 
+      (kl*(ik + il + kl)*plusProduct(k,n)) - 
       (Complex(0,2)*plusProduct(j,n)*minusCurrent(j,i)*minusProduct(j,k)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)) - 
+      (kl*(jk + jl + kl)*plusProduct(l,n)) - 
       (Complex(0,2)*plusProduct(k,n)*minusCurrent(k,i)*minusProduct(j,k)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(l,n)) - 
+      (kl*(jk + jl + kl)*plusProduct(l,n)) - 
       (Complex(0,2)*minusCurrent(l,i)*minusProduct(j,k)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))) - 
+      (kl*(jk + jl + kl)) - 
       (Complex(0,2)*plusProduct(j,n)*minusCurrent(j,i)*minusProduct(j,l)*minusProduct(k,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)) - 
+      (jl*(jk + jl + kl)*plusProduct(k,n)) - 
       (Complex(0,2)*plusProduct(j,n)*minusCurrent(j,i)*minusProduct(j,l)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)) - 
+      (kl*(jk + jl + kl)*plusProduct(k,n)) - 
       (Complex(0,2)*minusCurrent(k,i)*minusProduct(j,l)*minusProduct(k,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))) - 
+      (jl*(jk + jl + kl)) - 
       (Complex(0,2)*minusCurrent(k,i)*minusProduct(j,l)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))) - 
+      (kl*(jk + jl + kl)) - 
       (Complex(0,2)*plusProduct(l,n)*minusCurrent(l,i)*minusProduct(j,l)*minusProduct(k,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)) - 
+      (jl*(jk + jl + kl)*plusProduct(k,n)) - 
       (Complex(0,2)*plusProduct(l,n)*minusCurrent(l,i)*minusProduct(j,l)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(k,n)) + 
+      (kl*(jk + jl + kl)*plusProduct(k,n)) + 
       (Complex(0,2)*plusProduct(i,n)*minusCurrent(j,k)*sqr(minusProduct(k,l)))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(k,n)) - 
+      (kl*(ik + il + kl)*plusProduct(k,n)) - 
       (Complex(0,2)*plusProduct(i,n)*minusCurrent(j,l)*sqr(minusProduct(k,l)))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(l,n));
+      (kl*(ik + il + kl)*plusProduct(l,n));
   }
 
   static LorentzVector<Complex> czero(0.,0.,0.,0.);
@@ -781,144 +797,149 @@ LorentzVector<Complex> MatchboxCurrents::qqbarggFixedRightCurrent(int i, int,
 								  int j, int,
 								  int k, int g1Hel,
 								  int l, int g2Hel) {
+  const double ik = invariant(i,k);
+  const double il = invariant(i,l);
+  const double jk = invariant(j,k);
+  const double jl = invariant(j,l);
+  const double kl = invariant(k,l);
 
   if ( g1Hel == 1 && g2Hel == 1 ) {
     return
       (Complex(0,2)*plusProduct(i,l)*plusProduct(k,l)*minusCurrent(j,k))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))) + 
+      (kl*(ik + il + kl)) + 
       (Complex(0,2)*plusProduct(i,k)*plusProduct(k,l)*minusCurrent(j,l))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))) + 
+      (ik*(ik + il + kl)) + 
       (Complex(0,2)*plusProduct(i,k)*plusProduct(k,l)*minusCurrent(j,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))) - 
+      (kl*(ik + il + kl)) - 
       (Complex(0,2)*plusProduct(j,l)*plusProduct(k,l)*minusCurrent(j,i)*minusProduct(i,j))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)) - 
+      (kl*(jk + jl + kl)*minusProduct(i,k)) - 
       (Complex(0,2)*sqr(plusProduct(k,l))*minusCurrent(k,i)*minusProduct(i,j))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)) - 
+      (kl*(jk + jl + kl)*minusProduct(i,k)) - 
       (Complex(0,2)*plusProduct(j,k)*plusProduct(k,l)*minusCurrent(j,i)*minusProduct(i,j))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l)) - 
+      (kl*(jk + jl + kl)*minusProduct(i,l)) - 
       (Complex(0,2)*plusProduct(i,k)*plusProduct(j,l)*minusCurrent(j,k)*minusProduct(i,j))/
-      (invariant(i,k)*invariant(j,l)*minusProduct(i,l)) + 
+      (ik*jl*minusProduct(i,l)) + 
       (Complex(0,2)*sqr(plusProduct(k,l))*minusCurrent(l,i)*minusProduct(i,j))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l)) + 
+      (kl*(jk + jl + kl)*minusProduct(i,l)) + 
       (Complex(0,2)*plusProduct(j,k)*plusProduct(j,l)*minusCurrent(j,i)*sqr(minusProduct(i,j)))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)*minusProduct(i,l)) - 
+      (jl*(jk + jl + kl)*minusProduct(i,k)*minusProduct(i,l)) - 
       (Complex(0,2)*plusProduct(j,l)*plusProduct(k,l)*minusCurrent(l,i)*sqr(minusProduct(i,j)))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)*minusProduct(i,l)) + 
+      (jl*(jk + jl + kl)*minusProduct(i,k)*minusProduct(i,l)) + 
       (Complex(0,2)*plusProduct(i,k)*plusProduct(k,l)*minusCurrent(j,k)*minusProduct(i,k))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,l)) + 
+      (ik*(ik + il + kl)*minusProduct(i,l)) + 
       (Complex(0,2)*plusProduct(i,k)*plusProduct(k,l)*minusCurrent(j,k)*minusProduct(i,k))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,l)) + 
+      (kl*(ik + il + kl)*minusProduct(i,l)) + 
       (Complex(0,2)*plusProduct(i,l)*plusProduct(k,l)*minusCurrent(j,l)*minusProduct(i,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,k));
+      (kl*(ik + il + kl)*minusProduct(i,k));
   }
 
   if ( g1Hel == 1 && g2Hel == -1 ) {
     return
       (Complex(0,-2)*sqr(plusProduct(i,k))*minusCurrent(j,i)*minusProduct(i,l))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,l)) - 
+      (ik*(ik + il + kl)*plusProduct(i,l)) - 
       (Complex(0,1)*sqr(plusProduct(i,k))*minusCurrent(j,i)*minusProduct(i,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,l)) + 
+      (kl*(ik + il + kl)*plusProduct(i,l)) + 
       (Complex(0,1)*plusProduct(i,k)*minusCurrent(j,i)*sqr(minusProduct(i,l)))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,k)) + 
+      (kl*(ik + il + kl)*minusProduct(i,k)) + 
       (Complex(0,1)*plusProduct(i,k)*plusProduct(j,k)*minusCurrent(j,i)*minusProduct(i,l)*minusProduct(j,k))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k)) - 
+      (kl*(jk + jl + kl)*plusProduct(i,l)*minusProduct(i,k)) - 
       (Complex(0,1)*plusProduct(i,k)*plusProduct(k,l)*minusCurrent(l,i)*minusProduct(i,l)*minusProduct(j,k))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k)) + 
+      (kl*(jk + jl + kl)*plusProduct(i,l)*minusProduct(i,k)) + 
       (Complex(0,2)*plusProduct(i,j)*plusProduct(i,k)*minusCurrent(j,k)*minusProduct(j,l))/
-      (invariant(i,k)*invariant(j,l)*plusProduct(i,l)) + 
-      (Complex(0,2)*plusProduct(i,k)*minusCurrent(l,k)*minusProduct(j,l))/(invariant(i,k)*invariant(j,l)) - 
+      (ik*jl*plusProduct(i,l)) + 
+      (Complex(0,2)*plusProduct(i,k)*minusCurrent(l,k)*minusProduct(j,l))/(ik*jl) - 
       (Complex(0,2)*plusProduct(i,j)*plusProduct(j,k)*minusCurrent(j,i)*minusProduct(i,j)*minusProduct(j,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k)) + 
+      (jl*(jk + jl + kl)*plusProduct(i,l)*minusProduct(i,k)) + 
       (Complex(0,2)*plusProduct(i,j)*plusProduct(k,l)*minusCurrent(l,i)*minusProduct(i,j)*minusProduct(j,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k)) - 
+      (jl*(jk + jl + kl)*plusProduct(i,l)*minusProduct(i,k)) - 
       (Complex(0,2)*plusProduct(j,k)*minusCurrent(j,i)*minusProduct(i,l)*minusProduct(j,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)) - 
+      (jl*(jk + jl + kl)*minusProduct(i,k)) - 
       (Complex(0,1)*plusProduct(i,k)*plusProduct(j,l)*minusCurrent(j,i)*minusProduct(i,l)*minusProduct(j,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k)) + 
+      (kl*(jk + jl + kl)*plusProduct(i,l)*minusProduct(i,k)) + 
       (Complex(0,2)*plusProduct(i,j)*plusProduct(k,l)*minusCurrent(j,i)*minusProduct(i,l)*minusProduct(j,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k)) + 
+      (kl*(jk + jl + kl)*plusProduct(i,l)*minusProduct(i,k)) + 
       (Complex(0,1)*plusProduct(i,k)*plusProduct(k,l)*minusCurrent(k,i)*minusProduct(i,l)*minusProduct(j,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k)) + 
+      (kl*(jk + jl + kl)*plusProduct(i,l)*minusProduct(i,k)) + 
       (Complex(0,2)*plusProduct(k,l)*minusCurrent(l,i)*minusProduct(i,l)*minusProduct(j,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)) + 
+      (jl*(jk + jl + kl)*minusProduct(i,k)) + 
       (Complex(0,2)*plusProduct(k,l)*minusCurrent(l,i)*minusProduct(i,l)*minusProduct(j,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,k)) - 
+      (kl*(jk + jl + kl)*minusProduct(i,k)) - 
       (Complex(0,2)*sqr(plusProduct(i,k))*minusCurrent(j,k)*minusProduct(k,l))/
-      (invariant(i,k)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,l)) - 
+      (ik*(ik + il + kl)*plusProduct(i,l)) - 
       (Complex(0,2)*sqr(plusProduct(i,k))*minusCurrent(j,k)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,l)) + 
+      (kl*(ik + il + kl)*plusProduct(i,l)) + 
       (Complex(0,2)*plusProduct(i,k)*plusProduct(j,k)*minusCurrent(j,i)*minusProduct(i,j)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k)) - 
+      (kl*(jk + jl + kl)*plusProduct(i,l)*minusProduct(i,k)) - 
       (Complex(0,2)*plusProduct(i,k)*plusProduct(k,l)*minusCurrent(l,i)*minusProduct(i,j)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k)) + 
+      (kl*(jk + jl + kl)*plusProduct(i,l)*minusProduct(i,k)) + 
       (Complex(0,1)*plusProduct(i,k)*minusCurrent(j,k)*minusProduct(i,l)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,k)) - 
+      (kl*(ik + il + kl)*minusProduct(i,k)) - 
       (Complex(0,1)*sqr(plusProduct(i,k))*minusCurrent(j,l)*minusProduct(i,l)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,l)*minusProduct(i,k));
+      (kl*(ik + il + kl)*plusProduct(i,l)*minusProduct(i,k));
   }
 
   if ( g1Hel == -1 && g2Hel == 1 ) {
     return
       (Complex(0,1)*sqr(plusProduct(i,l))*minusCurrent(j,i)*minusProduct(i,k))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,k)) - 
+      (kl*(ik + il + kl)*plusProduct(i,k)) - 
       (Complex(0,1)*plusProduct(i,l)*minusCurrent(j,i)*sqr(minusProduct(i,k)))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,l)) - 
+      (kl*(ik + il + kl)*minusProduct(i,l)) - 
       (Complex(0,2)*plusProduct(i,j)*plusProduct(j,l)*minusCurrent(j,i)*minusProduct(i,j)*minusProduct(j,k))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) - 
+      (jl*(jk + jl + kl)*plusProduct(i,k)*minusProduct(i,l)) - 
       (Complex(0,2)*plusProduct(j,l)*minusCurrent(k,i)*minusProduct(i,j)*minusProduct(j,k))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l)) - 
+      (jl*(jk + jl + kl)*minusProduct(i,l)) - 
       (Complex(0,2)*plusProduct(i,l)*plusProduct(j,l)*minusCurrent(l,i)*minusProduct(i,j)*minusProduct(j,k))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) + 
+      (jl*(jk + jl + kl)*plusProduct(i,k)*minusProduct(i,l)) + 
       (Complex(0,1)*plusProduct(i,l)*plusProduct(j,k)*minusCurrent(j,i)*minusProduct(i,k)*minusProduct(j,k))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) + 
+      (kl*(jk + jl + kl)*plusProduct(i,k)*minusProduct(i,l)) + 
       (Complex(0,2)*plusProduct(i,j)*plusProduct(k,l)*minusCurrent(j,i)*minusProduct(i,k)*minusProduct(j,k))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) + 
+      (kl*(jk + jl + kl)*plusProduct(i,k)*minusProduct(i,l)) + 
       (Complex(0,2)*plusProduct(k,l)*minusCurrent(k,i)*minusProduct(i,k)*minusProduct(j,k))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*minusProduct(i,l)) + 
+      (kl*(jk + jl + kl)*minusProduct(i,l)) + 
       (Complex(0,1)*plusProduct(i,l)*plusProduct(k,l)*minusCurrent(l,i)*minusProduct(i,k)*minusProduct(j,k))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) - 
+      (kl*(jk + jl + kl)*plusProduct(i,k)*minusProduct(i,l)) - 
       (Complex(0,1)*plusProduct(i,l)*plusProduct(j,l)*minusCurrent(j,i)*minusProduct(i,k)*minusProduct(j,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) - 
+      (kl*(jk + jl + kl)*plusProduct(i,k)*minusProduct(i,l)) - 
       (Complex(0,1)*plusProduct(i,l)*plusProduct(k,l)*minusCurrent(k,i)*minusProduct(i,k)*minusProduct(j,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) - 
+      (kl*(jk + jl + kl)*plusProduct(i,k)*minusProduct(i,l)) - 
       (Complex(0,2)*sqr(plusProduct(i,l))*minusCurrent(j,l)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,k)) + 
+      (kl*(ik + il + kl)*plusProduct(i,k)) + 
       (Complex(0,2)*plusProduct(i,l)*plusProduct(j,l)*minusCurrent(j,i)*minusProduct(i,j)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) + 
+      (kl*(jk + jl + kl)*plusProduct(i,k)*minusProduct(i,l)) + 
       (Complex(0,2)*plusProduct(i,l)*plusProduct(k,l)*minusCurrent(k,i)*minusProduct(i,j)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) - 
+      (kl*(jk + jl + kl)*plusProduct(i,k)*minusProduct(i,l)) - 
       (Complex(0,1)*sqr(plusProduct(i,l))*minusCurrent(j,k)*minusProduct(i,k)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*plusProduct(i,k)*minusProduct(i,l)) + 
+      (kl*(ik + il + kl)*plusProduct(i,k)*minusProduct(i,l)) + 
       (Complex(0,1)*plusProduct(i,l)*minusCurrent(j,l)*minusProduct(i,k)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(i,k) + invariant(i,l) + invariant(k,l))*minusProduct(i,l));
+      (kl*(ik + il + kl)*minusProduct(i,l));
   }
 
   if ( g1Hel == -1 && g2Hel == -1 ) {
     return
       (Complex(0,2)*sqr(plusProduct(i,j))*minusCurrent(j,i)*minusProduct(j,k)*minusProduct(j,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)*plusProduct(i,l)) + 
+      (jl*(jk + jl + kl)*plusProduct(i,k)*plusProduct(i,l)) + 
       (Complex(0,2)*plusProduct(i,j)*minusCurrent(k,i)*minusProduct(j,k)*minusProduct(j,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)) + 
+      (jl*(jk + jl + kl)*plusProduct(i,l)) + 
       (Complex(0,2)*plusProduct(i,j)*minusCurrent(l,i)*minusProduct(j,k)*minusProduct(j,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)) - 
+      (jl*(jk + jl + kl)*plusProduct(i,k)) - 
       (Complex(0,2)*plusProduct(i,j)*minusCurrent(j,i)*minusProduct(j,k)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)) - 
+      (kl*(jk + jl + kl)*plusProduct(i,l)) - 
       (Complex(0,2)*plusProduct(i,k)*minusCurrent(k,i)*minusProduct(j,k)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,l)) - 
+      (kl*(jk + jl + kl)*plusProduct(i,l)) - 
       (Complex(0,2)*minusCurrent(l,i)*minusProduct(j,k)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))) - 
+      (kl*(jk + jl + kl)) - 
       (Complex(0,2)*plusProduct(i,j)*minusCurrent(j,i)*minusProduct(j,l)*minusProduct(k,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)) - 
+      (jl*(jk + jl + kl)*plusProduct(i,k)) - 
       (Complex(0,2)*plusProduct(i,j)*minusCurrent(j,i)*minusProduct(j,l)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)) - 
+      (kl*(jk + jl + kl)*plusProduct(i,k)) - 
       (Complex(0,2)*minusCurrent(k,i)*minusProduct(j,l)*minusProduct(k,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))) - 
+      (jl*(jk + jl + kl)) - 
       (Complex(0,2)*minusCurrent(k,i)*minusProduct(j,l)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))) - 
+      (kl*(jk + jl + kl)) - 
       (Complex(0,2)*plusProduct(i,l)*minusCurrent(l,i)*minusProduct(j,l)*minusProduct(k,l))/
-      (invariant(j,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k)) - 
+      (jl*(jk + jl + kl)*plusProduct(i,k)) - 
       (Complex(0,2)*plusProduct(i,l)*minusCurrent(l,i)*minusProduct(j,l)*minusProduct(k,l))/
-      (invariant(k,l)*(invariant(j,k) + invariant(j,l) + invariant(k,l))*plusProduct(i,k));
+      (kl*(jk + jl + kl)*plusProduct(i,k));
   }
 
   static LorentzVector<Complex> czero(0.,0.,0.,0.);
@@ -1027,15 +1048,21 @@ const LorentzVector<Complex>& MatchboxCurrents::qqbarqqbarLeftCurrent(int q,    
 
   int i = q; int j = qbar; int l = kbar;
 
+  const double ik = invariant(i,k);
+  const double il = invariant(i,l);
+  const double jk = invariant(j,k);
+  const double jl = invariant(j,l);
+  const double kl = invariant(k,l);
+
   if ( kHel == 1 && kbarHel == 1 ) {
     if ( getCurrent(hash<4>(1,1,q,qHel,qbar,qbarHel,k,kHel,kbar,kbarHel)) ) {
-      cacheCurrent((Complex(0.,-2.)/invariant(k,l))*
+      cacheCurrent((Complex(0.,-2.)/kl)*
 		   ((minusProduct(k,i)*plusProduct(i,l)*minusCurrent(i,j)+
 		     minusProduct(i,k)*plusProduct(l,k)*minusCurrent(k,j))/
-		    (invariant(k,l)+invariant(i,l)+invariant(i,k))-
+		    (kl+il+ik)-
 		    (minusProduct(j,k)*plusProduct(l,j)*minusCurrent(i,j)+
 		     minusProduct(l,k)*plusProduct(l,j)*minusCurrent(i,l))/
-		    (invariant(k,l)+invariant(j,l)+invariant(j,k))));
+		    (kl+jl+jk)));
     }
 #ifdef CHECK_MatchboxCurrents
   checkCurrent("qqbarqqbarLeftCurrent",cachedCurrent(),momentum(q)+momentum(qbar)+momentum(k)+momentum(kbar));
@@ -1043,15 +1070,16 @@ const LorentzVector<Complex>& MatchboxCurrents::qqbarqqbarLeftCurrent(int q,    
     return cachedCurrent();
   }
 
+
   if ( kHel == -1 && kbarHel == -1 ) {
     if ( getCurrent(hash<4>(1,1,q,qHel,qbar,qbarHel,k,kHel,kbar,kbarHel)) ) {
-      cacheCurrent((Complex(0.,-2.)/invariant(k,l))*
+      cacheCurrent((Complex(0.,-2.)/kl)*
 		   ((minusProduct(l,i)*plusProduct(i,k)*minusCurrent(i,j)+
 		     minusProduct(i,l)*plusProduct(k,l)*minusCurrent(l,j))/
-		    (invariant(k,l)+invariant(i,l)+invariant(i,k))-
+		    (kl+il+ik)-
 		    (minusProduct(j,l)*plusProduct(k,j)*minusCurrent(i,j)+
 		     minusProduct(k,l)*plusProduct(k,j)*minusCurrent(i,k))/
-		    (invariant(k,l)+invariant(j,l)+invariant(j,k))));
+		    (kl+jl+jk)));
     }
 #ifdef CHECK_MatchboxCurrents
   checkCurrent("qqbarqqbarLeftCurrent",cachedCurrent(),momentum(q)+momentum(qbar)+momentum(k)+momentum(kbar));
@@ -1076,15 +1104,21 @@ const LorentzVector<Complex>& MatchboxCurrents::qqbarqqbarRightCurrent(int q,   
 
   int i = q; int j = qbar; int l = kbar;
 
+  const double ik = invariant(i,k);
+  const double il = invariant(i,l);
+  const double jk = invariant(j,k);
+  const double jl = invariant(j,l);
+  const double kl = invariant(k,l);
+
   if ( kHel == 1 && kbarHel == 1 ) {
     if ( getCurrent(hash<4>(2,1,q,qHel,qbar,qbarHel,k,kHel,kbar,kbarHel)) ) {
-      cacheCurrent((Complex(0.,-2.)/invariant(k,l))*
+      cacheCurrent((Complex(0.,-2.)/kl)*
 		   ((minusProduct(k,i)*plusProduct(i,l)*minusCurrent(j,i)+
 		     minusProduct(l,k)*plusProduct(l,i)*minusCurrent(j,l))/
-		    (invariant(k,l)+invariant(i,l)+invariant(i,k))-
+		    (kl+il+ik)-
 		    (minusProduct(j,k)*plusProduct(l,j)*minusCurrent(j,i)+
 		     minusProduct(j,k)*plusProduct(l,k)*minusCurrent(k,i))/
-		    (invariant(k,l)+invariant(j,l)+invariant(j,k))));
+		    (kl+jl+jk)));
     }
 #ifdef CHECK_MatchboxCurrents
   checkCurrent("qqbarqqbarRightCurrent",cachedCurrent(),momentum(q)+momentum(qbar)+momentum(k)+momentum(kbar));
@@ -1094,13 +1128,13 @@ const LorentzVector<Complex>& MatchboxCurrents::qqbarqqbarRightCurrent(int q,   
 
   if ( kHel == -1 && kbarHel == -1 ) {
     if ( getCurrent(hash<4>(2,1,q,qHel,qbar,qbarHel,k,kHel,kbar,kbarHel)) ) {
-      cacheCurrent((Complex(0.,-2.)/invariant(k,l))*
+      cacheCurrent((Complex(0.,-2.)/kl)*
 		   ((minusProduct(l,i)*plusProduct(i,k)*minusCurrent(j,i)+
 		     minusProduct(k,l)*plusProduct(k,i)*minusCurrent(j,k))/
-		    (invariant(k,l)+invariant(i,l)+invariant(i,k))-
+		    (kl+il+ik)-
 		    (minusProduct(j,l)*plusProduct(k,j)*minusCurrent(j,i)+
 		     minusProduct(j,l)*plusProduct(k,l)*minusCurrent(l,i))/
-		    (invariant(k,l)+invariant(j,l)+invariant(j,k))));
+		    (kl+jl+jk)));
     }
 #ifdef CHECK_MatchboxCurrents
   checkCurrent("qqbarqqbarRightCurrent",cachedCurrent(),momentum(q)+momentum(qbar)+momentum(k)+momentum(kbar));
@@ -1176,9 +1210,9 @@ inline Complex Li2(double a, double b) {
 
 Complex MatchboxCurrents::box6(int i, int j, int k) {
 
-  double sij = invariant(i,j);
-  double sik = invariant(i,k);
-  double sjk = invariant(j,k);
+  const double sij = invariant(i,j);
+  const double sik = invariant(i,k);
+  const double sjk = invariant(j,k);
 
   return
     -( Li2(sik+sjk,sij) + Li2(sik+sij,sjk) + 0.5*csqr(log(1.,sij,sjk)) + sqr(pi)/6. )/8.;
@@ -1202,1329 +1236,1332 @@ void MatchboxCurrents::qqbargLoopCoefficients(int i, int j, int k) {
   qqbargLoops.resize(13);
 
   // get the transcendentals
+  const double ij = invariant(i,j);  
+  const double ik = invariant(i,k);
+  const double jk = invariant(j,k);
 
-  double Q2 = invariant(i,j) + invariant(i,k) + invariant(j,k);
+  const double Q2 = ij + ik + jk;
   // checked for LEP that virtuals + I operator are mu2 independent
   //double xmu2 = 10*GeV2/sqr(amplitudeScale());
-  double xmu2 = 1.;
+  const double xmu2 = 1.;
 
-  Complex Lijk = log(1.,-xmu2/Q2);
+  const Complex Lijk = log(1.,-xmu2/Q2);
 
-  Complex Lij = log(1.,Q2,invariant(i,j));
-  Complex Lik = log(1.,Q2,invariant(i,k));
-  Complex Ljk = log(1.,Q2,invariant(j,k));
+  const Complex Lij = log(1.,Q2,ij);
+  const Complex Lik = log(1.,Q2,ik);
+  const Complex Ljk = log(1.,Q2,jk);
 
-  Complex Box6ijk = box6(i,j,k);
-  Complex Box6ikj = box6(i,k,j);
-  Complex Box6jik = box6(j,i,k);
+  const Complex Box6ijk = box6(i,j,k);
+  const Complex Box6ikj = box6(i,k,j);
+  const Complex Box6jik = box6(j,i,k);
 
   // get the coefficients
 
   qqbargLoops[0] = 
-    (2*CF*sqr(invariant(i,j)))/(sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (32*CA*Box6ijk*sqr(invariant(i,j)))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (64*CF*Box6ijk*sqr(invariant(i,j)))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (8*CA*Box6jik*sqr(invariant(i,j)))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (16*CF*Box6jik*sqr(invariant(i,j)))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (2*CA*Lij*sqr(invariant(i,j)))/(sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (4*CF*Lij*sqr(invariant(i,j)))/(sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (CA*Lik*sqr(invariant(i,j)))/(sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (2*CF*Lik*sqr(invariant(i,j)))/(sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (4*CF*Ljk*sqr(invariant(i,j)))/(sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (16*CA*Box6ijk*pow(invariant(i,j),3))/
-    (invariant(i,k)*sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (32*CF*Box6ijk*pow(invariant(i,j),3))/
-    (invariant(i,k)*sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CA*Lij*pow(invariant(i,j),3))/
-    (invariant(i,k)*sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (2*CF*Lij*pow(invariant(i,j),3))/
-    (invariant(i,k)*sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (2*CF*invariant(i,j)*invariant(i,k))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (16*CA*Box6ijk*invariant(i,j)*invariant(i,k))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (32*CF*Box6ijk*invariant(i,j)*invariant(i,k))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (16*CA*Box6jik*invariant(i,j)*invariant(i,k))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (32*CF*Box6jik*invariant(i,j)*invariant(i,k))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CA*Lij*invariant(i,j)*invariant(i,k))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (2*CF*Lij*invariant(i,j)*invariant(i,k))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (2*CA*Lik*invariant(i,j)*invariant(i,k))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (4*CF*Lik*invariant(i,j)*invariant(i,k))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (4*CF*Ljk*invariant(i,j)*invariant(i,k))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (8*CA*Box6jik*sqr(invariant(i,k)))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (16*CF*Box6jik*sqr(invariant(i,k)))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (CA*Lik*sqr(invariant(i,k)))/(sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (2*CF*Lik*sqr(invariant(i,k)))/(sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (8*CA*Box6jik*pow(invariant(i,j),3))/
-    (sqr(invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,j) + invariant(j,k))) + 
-    (16*CF*Box6jik*pow(invariant(i,j),3))/
-    (sqr(invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,j) + invariant(j,k))) - 
-    (16*CA*Box6jik*sqr(invariant(i,j))*invariant(i,k))/
-    (sqr(invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,j) + invariant(j,k))) + 
-    (32*CF*Box6jik*sqr(invariant(i,j))*invariant(i,k))/
-    (sqr(invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,j) + invariant(j,k))) - 
-    (8*CA*Box6jik*invariant(i,j)*sqr(invariant(i,k)))/
-    (sqr(invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,j) + invariant(j,k))) + 
-    (16*CF*Box6jik*invariant(i,j)*sqr(invariant(i,k)))/
-    (sqr(invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,j) + invariant(j,k))) + 
-    (2*CF*invariant(i,j)*invariant(j,k))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (40*CA*Box6ijk*invariant(i,j)*invariant(j,k))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (80*CF*Box6ijk*invariant(i,j)*invariant(j,k))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (24*CA*Box6ikj*invariant(i,j)*invariant(j,k))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (2*CA*Lij*invariant(i,j)*invariant(j,k))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (4*CF*Lij*invariant(i,j)*invariant(j,k))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (CA*Lik*invariant(i,j)*invariant(j,k))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (4*CF*Lik*invariant(i,j)*invariant(j,k))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (12*CF*Ljk*invariant(i,j)*invariant(j,k))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (8*CA*Box6ijk*pow(invariant(i,j),3)*invariant(j,k))/
-    (sqr(invariant(i,k))*sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (16*CF*Box6ijk*pow(invariant(i,j),3)*invariant(j,k))/
-    (sqr(invariant(i,k))*sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (32*CA*Box6ijk*sqr(invariant(i,j))*invariant(j,k))/
-    (invariant(i,k)*sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (64*CF*Box6ijk*sqr(invariant(i,j))*invariant(j,k))/
-    (invariant(i,k)*sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CA*Lij*sqr(invariant(i,j))*invariant(j,k))/
-    (invariant(i,k)*sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (2*CF*Lij*sqr(invariant(i,j))*invariant(j,k))/
-    (invariant(i,k)*sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CA*Ljk*sqr(invariant(i,j))*invariant(j,k))/
-    (invariant(i,k)*sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (2*CF*Ljk*sqr(invariant(i,j))*invariant(j,k))/
-    (invariant(i,k)*sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (2*CF*invariant(i,k)*invariant(j,k))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (16*CA*Box6ijk*invariant(i,k)*invariant(j,k))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (32*CF*Box6ijk*invariant(i,k)*invariant(j,k))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (48*CA*Box6ikj*invariant(i,k)*invariant(j,k))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CA*Lij*invariant(i,k)*invariant(j,k))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (2*CF*Lij*invariant(i,k)*invariant(j,k))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (2*CA*Lik*invariant(i,k)*invariant(j,k))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (8*CF*Lik*invariant(i,k)*invariant(j,k))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (CA*Ljk*invariant(i,k)*invariant(j,k))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (8*CF*Ljk*invariant(i,k)*invariant(j,k))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (24*CA*Box6ikj*sqr(invariant(i,k))*invariant(j,k))/
-    (invariant(i,j)*sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (CA*Lik*sqr(invariant(i,k))*invariant(j,k))/
-    (invariant(i,j)*sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (4*CF*Lik*sqr(invariant(i,k))*invariant(j,k))/
-    (invariant(i,j)*sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (8*CA*Box6ijk*sqr(invariant(j,k)))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (16*CF*Box6ijk*sqr(invariant(j,k)))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (24*CA*Box6ikj*sqr(invariant(j,k)))/
-    (sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (8*CF*Ljk*sqr(invariant(j,k)))/(sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (8*CA*Box6ijk*sqr(invariant(i,j))*sqr(invariant(j,k)))/
-    (sqr(invariant(i,k))*sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (16*CF*Box6ijk*sqr(invariant(i,j))*sqr(invariant(j,k)))/
-    (sqr(invariant(i,k))*sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (16*CA*Box6ijk*invariant(i,j)*sqr(invariant(j,k)))/
-    (invariant(i,k)*sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (32*CF*Box6ijk*invariant(i,j)*sqr(invariant(j,k)))/
-    (invariant(i,k)*sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CA*Ljk*invariant(i,j)*sqr(invariant(j,k)))/
-    (invariant(i,k)*sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (2*CF*Ljk*invariant(i,j)*sqr(invariant(j,k)))/
-    (invariant(i,k)*sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (48*CA*Box6ikj*invariant(i,k)*sqr(invariant(j,k)))/
-    (invariant(i,j)*sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (CA*Ljk*invariant(i,k)*sqr(invariant(j,k)))/
-    (invariant(i,j)*sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (4*CF*Ljk*invariant(i,k)*sqr(invariant(j,k)))/
-    (invariant(i,j)*sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (24*CA*Box6ikj*sqr(invariant(i,k))*sqr(invariant(j,k)))/
-    (sqr(invariant(i,j))*sqr(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k)));
+    (2*CF*sqr(ij))/(sqr(ij + ik)*(ij + jk)) - 
+    (32*CA*Box6ijk*sqr(ij))/
+    (sqr(ij + ik)*(ij + jk)) + 
+    (64*CF*Box6ijk*sqr(ij))/
+    (sqr(ij + ik)*(ij + jk)) - 
+    (8*CA*Box6jik*sqr(ij))/
+    (sqr(ij + ik)*(ij + jk)) + 
+    (16*CF*Box6jik*sqr(ij))/
+    (sqr(ij + ik)*(ij + jk)) + 
+    (2*CA*Lij*sqr(ij))/(sqr(ij + ik)*(ij + jk)) - 
+    (4*CF*Lij*sqr(ij))/(sqr(ij + ik)*(ij + jk)) - 
+    (CA*Lik*sqr(ij))/(sqr(ij + ik)*(ij + jk)) - 
+    (2*CF*Lik*sqr(ij))/(sqr(ij + ik)*(ij + jk)) - 
+    (4*CF*Ljk*sqr(ij))/(sqr(ij + ik)*(ij + jk)) - 
+    (16*CA*Box6ijk*pow(ij,3))/
+    (ik*sqr(ij + ik)*(ij + jk)) + 
+    (32*CF*Box6ijk*pow(ij,3))/
+    (ik*sqr(ij + ik)*(ij + jk)) + 
+    (CA*Lij*pow(ij,3))/
+    (ik*sqr(ij + ik)*(ij + jk)) - 
+    (2*CF*Lij*pow(ij,3))/
+    (ik*sqr(ij + ik)*(ij + jk)) + 
+    (2*CF*ij*ik)/
+    (sqr(ij + ik)*(ij + jk)) - 
+    (16*CA*Box6ijk*ij*ik)/
+    (sqr(ij + ik)*(ij + jk)) + 
+    (32*CF*Box6ijk*ij*ik)/
+    (sqr(ij + ik)*(ij + jk)) - 
+    (16*CA*Box6jik*ij*ik)/
+    (sqr(ij + ik)*(ij + jk)) + 
+    (32*CF*Box6jik*ij*ik)/
+    (sqr(ij + ik)*(ij + jk)) + 
+    (CA*Lij*ij*ik)/
+    (sqr(ij + ik)*(ij + jk)) - 
+    (2*CF*Lij*ij*ik)/
+    (sqr(ij + ik)*(ij + jk)) - 
+    (2*CA*Lik*ij*ik)/
+    (sqr(ij + ik)*(ij + jk)) - 
+    (4*CF*Lik*ij*ik)/
+    (sqr(ij + ik)*(ij + jk)) - 
+    (4*CF*Ljk*ij*ik)/
+    (sqr(ij + ik)*(ij + jk)) - 
+    (8*CA*Box6jik*sqr(ik))/
+    (sqr(ij + ik)*(ij + jk)) + 
+    (16*CF*Box6jik*sqr(ik))/
+    (sqr(ij + ik)*(ij + jk)) - 
+    (CA*Lik*sqr(ik))/(sqr(ij + ik)*(ij + jk)) - 
+    (2*CF*Lik*sqr(ik))/(sqr(ij + ik)*(ij + jk)) - 
+    (8*CA*Box6jik*pow(ij,3))/
+    (sqr(ij + ik)*jk*(ij + jk)) + 
+    (16*CF*Box6jik*pow(ij,3))/
+    (sqr(ij + ik)*jk*(ij + jk)) - 
+    (16*CA*Box6jik*sqr(ij)*ik)/
+    (sqr(ij + ik)*jk*(ij + jk)) + 
+    (32*CF*Box6jik*sqr(ij)*ik)/
+    (sqr(ij + ik)*jk*(ij + jk)) - 
+    (8*CA*Box6jik*ij*sqr(ik))/
+    (sqr(ij + ik)*jk*(ij + jk)) + 
+    (16*CF*Box6jik*ij*sqr(ik))/
+    (sqr(ij + ik)*jk*(ij + jk)) + 
+    (2*CF*ij*jk)/
+    (sqr(ij + ik)*(ij + jk)) - 
+    (40*CA*Box6ijk*ij*jk)/
+    (sqr(ij + ik)*(ij + jk)) + 
+    (80*CF*Box6ijk*ij*jk)/
+    (sqr(ij + ik)*(ij + jk)) + 
+    (24*CA*Box6ikj*ij*jk)/
+    (sqr(ij + ik)*(ij + jk)) + 
+    (2*CA*Lij*ij*jk)/
+    (sqr(ij + ik)*(ij + jk)) - 
+    (4*CF*Lij*ij*jk)/
+    (sqr(ij + ik)*(ij + jk)) - 
+    (CA*Lik*ij*jk)/
+    (sqr(ij + ik)*(ij + jk)) - 
+    (4*CF*Lik*ij*jk)/
+    (sqr(ij + ik)*(ij + jk)) - 
+    (12*CF*Ljk*ij*jk)/
+    (sqr(ij + ik)*(ij + jk)) - 
+    (8*CA*Box6ijk*pow(ij,3)*jk)/
+    (sqr(ik)*sqr(ij + ik)*(ij + jk)) + 
+    (16*CF*Box6ijk*pow(ij,3)*jk)/
+    (sqr(ik)*sqr(ij + ik)*(ij + jk)) - 
+    (32*CA*Box6ijk*sqr(ij)*jk)/
+    (ik*sqr(ij + ik)*(ij + jk)) + 
+    (64*CF*Box6ijk*sqr(ij)*jk)/
+    (ik*sqr(ij + ik)*(ij + jk)) + 
+    (CA*Lij*sqr(ij)*jk)/
+    (ik*sqr(ij + ik)*(ij + jk)) - 
+    (2*CF*Lij*sqr(ij)*jk)/
+    (ik*sqr(ij + ik)*(ij + jk)) + 
+    (CA*Ljk*sqr(ij)*jk)/
+    (ik*sqr(ij + ik)*(ij + jk)) - 
+    (2*CF*Ljk*sqr(ij)*jk)/
+    (ik*sqr(ij + ik)*(ij + jk)) + 
+    (2*CF*ik*jk)/
+    (sqr(ij + ik)*(ij + jk)) - 
+    (16*CA*Box6ijk*ik*jk)/
+    (sqr(ij + ik)*(ij + jk)) + 
+    (32*CF*Box6ijk*ik*jk)/
+    (sqr(ij + ik)*(ij + jk)) + 
+    (48*CA*Box6ikj*ik*jk)/
+    (sqr(ij + ik)*(ij + jk)) + 
+    (CA*Lij*ik*jk)/
+    (sqr(ij + ik)*(ij + jk)) - 
+    (2*CF*Lij*ik*jk)/
+    (sqr(ij + ik)*(ij + jk)) - 
+    (2*CA*Lik*ik*jk)/
+    (sqr(ij + ik)*(ij + jk)) - 
+    (8*CF*Lik*ik*jk)/
+    (sqr(ij + ik)*(ij + jk)) - 
+    (CA*Ljk*ik*jk)/
+    (sqr(ij + ik)*(ij + jk)) - 
+    (8*CF*Ljk*ik*jk)/
+    (sqr(ij + ik)*(ij + jk)) + 
+    (24*CA*Box6ikj*sqr(ik)*jk)/
+    (ij*sqr(ij + ik)*(ij + jk)) - 
+    (CA*Lik*sqr(ik)*jk)/
+    (ij*sqr(ij + ik)*(ij + jk)) - 
+    (4*CF*Lik*sqr(ik)*jk)/
+    (ij*sqr(ij + ik)*(ij + jk)) - 
+    (8*CA*Box6ijk*sqr(jk))/
+    (sqr(ij + ik)*(ij + jk)) + 
+    (16*CF*Box6ijk*sqr(jk))/
+    (sqr(ij + ik)*(ij + jk)) + 
+    (24*CA*Box6ikj*sqr(jk))/
+    (sqr(ij + ik)*(ij + jk)) - 
+    (8*CF*Ljk*sqr(jk))/(sqr(ij + ik)*(ij + jk)) - 
+    (8*CA*Box6ijk*sqr(ij)*sqr(jk))/
+    (sqr(ik)*sqr(ij + ik)*(ij + jk)) + 
+    (16*CF*Box6ijk*sqr(ij)*sqr(jk))/
+    (sqr(ik)*sqr(ij + ik)*(ij + jk)) - 
+    (16*CA*Box6ijk*ij*sqr(jk))/
+    (ik*sqr(ij + ik)*(ij + jk)) + 
+    (32*CF*Box6ijk*ij*sqr(jk))/
+    (ik*sqr(ij + ik)*(ij + jk)) + 
+    (CA*Ljk*ij*sqr(jk))/
+    (ik*sqr(ij + ik)*(ij + jk)) - 
+    (2*CF*Ljk*ij*sqr(jk))/
+    (ik*sqr(ij + ik)*(ij + jk)) + 
+    (48*CA*Box6ikj*ik*sqr(jk))/
+    (ij*sqr(ij + ik)*(ij + jk)) - 
+    (CA*Ljk*ik*sqr(jk))/
+    (ij*sqr(ij + ik)*(ij + jk)) - 
+    (4*CF*Ljk*ik*sqr(jk))/
+    (ij*sqr(ij + ik)*(ij + jk)) + 
+    (24*CA*Box6ikj*sqr(ik)*sqr(jk))/
+    (sqr(ij)*sqr(ij + ik)*(ij + jk));
 
   qqbargLoops[1] = 
-    (-2*CF*sqr(invariant(i,j)))/((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (8*CA*Box6ijk*sqr(invariant(i,j)))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) - 
-    (16*CF*Box6ijk*sqr(invariant(i,j)))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (32*CA*Box6jik*sqr(invariant(i,j)))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) - 
-    (64*CF*Box6jik*sqr(invariant(i,j)))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) - 
-    (2*CA*Lij*sqr(invariant(i,j)))/((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (4*CF*Lij*sqr(invariant(i,j)))/((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (4*CF*Lik*sqr(invariant(i,j)))/((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (CA*Ljk*sqr(invariant(i,j)))/((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (2*CF*Ljk*sqr(invariant(i,j)))/((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (8*CA*Box6ijk*pow(invariant(i,j),3))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) - 
-    (16*CF*Box6ijk*pow(invariant(i,j),3))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) - 
-    (2*CF*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) - 
-    (24*CA*Box6ikj*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (40*CA*Box6jik*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) - 
-    (80*CF*Box6jik*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) - 
-    (2*CA*Lij*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (4*CF*Lij*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (12*CF*Lik*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (CA*Ljk*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (4*CF*Ljk*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) - 
-    (24*CA*Box6ikj*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (8*CA*Box6jik*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) - 
-    (16*CF*Box6jik*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (8*CF*Lik*sqr(invariant(i,k)))/((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (8*CA*Box6jik*pow(invariant(i,j),3)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(j,k))*sqr(invariant(i,j) + invariant(j,k))) - 
-    (16*CF*Box6jik*pow(invariant(i,j),3)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(j,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (8*CA*Box6jik*sqr(invariant(i,j))*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(j,k))*sqr(invariant(i,j) + invariant(j,k))) - 
-    (16*CF*Box6jik*sqr(invariant(i,j))*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(j,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (16*CA*Box6jik*pow(invariant(i,j),3))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*sqr(invariant(i,j) + invariant(j,k))) - 
-    (32*CF*Box6jik*pow(invariant(i,j),3))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*sqr(invariant(i,j) + invariant(j,k))) - 
-    (CA*Lij*pow(invariant(i,j),3))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*sqr(invariant(i,j) + invariant(j,k))) + 
-    (2*CF*Lij*pow(invariant(i,j),3))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*sqr(invariant(i,j) + invariant(j,k))) + 
-    (32*CA*Box6jik*sqr(invariant(i,j))*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*sqr(invariant(i,j) + invariant(j,k))) - 
-    (64*CF*Box6jik*sqr(invariant(i,j))*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*sqr(invariant(i,j) + invariant(j,k))) - 
-    (CA*Lij*sqr(invariant(i,j))*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*sqr(invariant(i,j) + invariant(j,k))) + 
-    (2*CF*Lij*sqr(invariant(i,j))*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*sqr(invariant(i,j) + invariant(j,k))) - 
-    (CA*Lik*sqr(invariant(i,j))*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*sqr(invariant(i,j) + invariant(j,k))) + 
-    (2*CF*Lik*sqr(invariant(i,j))*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*sqr(invariant(i,j) + invariant(j,k))) + 
-    (16*CA*Box6jik*invariant(i,j)*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*sqr(invariant(i,j) + invariant(j,k))) - 
-    (32*CF*Box6jik*invariant(i,j)*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*sqr(invariant(i,j) + invariant(j,k))) - 
-    (CA*Lik*invariant(i,j)*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*sqr(invariant(i,j) + invariant(j,k))) + 
-    (2*CF*Lik*invariant(i,j)*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*sqr(invariant(i,j) + invariant(j,k))) - 
-    (2*CF*invariant(i,j)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (16*CA*Box6ijk*invariant(i,j)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) - 
-    (32*CF*Box6ijk*invariant(i,j)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (16*CA*Box6jik*invariant(i,j)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) - 
-    (32*CF*Box6jik*invariant(i,j)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) - 
-    (CA*Lij*invariant(i,j)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (2*CF*Lij*invariant(i,j)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (4*CF*Lik*invariant(i,j)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (2*CA*Ljk*invariant(i,j)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (4*CF*Ljk*invariant(i,j)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (16*CA*Box6ijk*sqr(invariant(i,j))*invariant(j,k))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) - 
-    (32*CF*Box6ijk*sqr(invariant(i,j))*invariant(j,k))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) - 
-    (2*CF*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) - 
-    (48*CA*Box6ikj*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (16*CA*Box6jik*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) - 
-    (32*CF*Box6jik*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) - 
-    (CA*Lij*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (2*CF*Lij*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (CA*Lik*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (8*CF*Lik*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (2*CA*Ljk*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (8*CF*Ljk*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) - 
-    (48*CA*Box6ikj*sqr(invariant(i,k))*invariant(j,k))/
-    (invariant(i,j)*(invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (CA*Lik*sqr(invariant(i,k))*invariant(j,k))/
-    (invariant(i,j)*(invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (4*CF*Lik*sqr(invariant(i,k))*invariant(j,k))/
-    (invariant(i,j)*(invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (8*CA*Box6ijk*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) - 
-    (16*CF*Box6ijk*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (CA*Ljk*sqr(invariant(j,k)))/((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (2*CF*Ljk*sqr(invariant(j,k)))/((invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (8*CA*Box6ijk*invariant(i,j)*sqr(invariant(j,k)))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) - 
-    (16*CF*Box6ijk*invariant(i,j)*sqr(invariant(j,k)))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) - 
-    (24*CA*Box6ikj*invariant(i,k)*sqr(invariant(j,k)))/
-    (invariant(i,j)*(invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (CA*Ljk*invariant(i,k)*sqr(invariant(j,k)))/
-    (invariant(i,j)*(invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (4*CF*Ljk*invariant(i,k)*sqr(invariant(j,k)))/
-    (invariant(i,j)*(invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k))) - 
-    (24*CA*Box6ikj*sqr(invariant(i,k))*sqr(invariant(j,k)))/
-    (sqr(invariant(i,j))*(invariant(i,j) + invariant(i,k))*sqr(invariant(i,j) + invariant(j,k)));
+    (-2*CF*sqr(ij))/((ij + ik)*sqr(ij + jk)) + 
+    (8*CA*Box6ijk*sqr(ij))/
+    ((ij + ik)*sqr(ij + jk)) - 
+    (16*CF*Box6ijk*sqr(ij))/
+    ((ij + ik)*sqr(ij + jk)) + 
+    (32*CA*Box6jik*sqr(ij))/
+    ((ij + ik)*sqr(ij + jk)) - 
+    (64*CF*Box6jik*sqr(ij))/
+    ((ij + ik)*sqr(ij + jk)) - 
+    (2*CA*Lij*sqr(ij))/((ij + ik)*sqr(ij + jk)) + 
+    (4*CF*Lij*sqr(ij))/((ij + ik)*sqr(ij + jk)) + 
+    (4*CF*Lik*sqr(ij))/((ij + ik)*sqr(ij + jk)) + 
+    (CA*Ljk*sqr(ij))/((ij + ik)*sqr(ij + jk)) + 
+    (2*CF*Ljk*sqr(ij))/((ij + ik)*sqr(ij + jk)) + 
+    (8*CA*Box6ijk*pow(ij,3))/
+    (ik*(ij + ik)*sqr(ij + jk)) - 
+    (16*CF*Box6ijk*pow(ij,3))/
+    (ik*(ij + ik)*sqr(ij + jk)) - 
+    (2*CF*ij*ik)/
+    ((ij + ik)*sqr(ij + jk)) - 
+    (24*CA*Box6ikj*ij*ik)/
+    ((ij + ik)*sqr(ij + jk)) + 
+    (40*CA*Box6jik*ij*ik)/
+    ((ij + ik)*sqr(ij + jk)) - 
+    (80*CF*Box6jik*ij*ik)/
+    ((ij + ik)*sqr(ij + jk)) - 
+    (2*CA*Lij*ij*ik)/
+    ((ij + ik)*sqr(ij + jk)) + 
+    (4*CF*Lij*ij*ik)/
+    ((ij + ik)*sqr(ij + jk)) + 
+    (12*CF*Lik*ij*ik)/
+    ((ij + ik)*sqr(ij + jk)) + 
+    (CA*Ljk*ij*ik)/
+    ((ij + ik)*sqr(ij + jk)) + 
+    (4*CF*Ljk*ij*ik)/
+    ((ij + ik)*sqr(ij + jk)) - 
+    (24*CA*Box6ikj*sqr(ik))/
+    ((ij + ik)*sqr(ij + jk)) + 
+    (8*CA*Box6jik*sqr(ik))/
+    ((ij + ik)*sqr(ij + jk)) - 
+    (16*CF*Box6jik*sqr(ik))/
+    ((ij + ik)*sqr(ij + jk)) + 
+    (8*CF*Lik*sqr(ik))/((ij + ik)*sqr(ij + jk)) + 
+    (8*CA*Box6jik*pow(ij,3)*ik)/
+    ((ij + ik)*sqr(jk)*sqr(ij + jk)) - 
+    (16*CF*Box6jik*pow(ij,3)*ik)/
+    ((ij + ik)*sqr(jk)*sqr(ij + jk)) + 
+    (8*CA*Box6jik*sqr(ij)*sqr(ik))/
+    ((ij + ik)*sqr(jk)*sqr(ij + jk)) - 
+    (16*CF*Box6jik*sqr(ij)*sqr(ik))/
+    ((ij + ik)*sqr(jk)*sqr(ij + jk)) + 
+    (16*CA*Box6jik*pow(ij,3))/
+    ((ij + ik)*jk*sqr(ij + jk)) - 
+    (32*CF*Box6jik*pow(ij,3))/
+    ((ij + ik)*jk*sqr(ij + jk)) - 
+    (CA*Lij*pow(ij,3))/
+    ((ij + ik)*jk*sqr(ij + jk)) + 
+    (2*CF*Lij*pow(ij,3))/
+    ((ij + ik)*jk*sqr(ij + jk)) + 
+    (32*CA*Box6jik*sqr(ij)*ik)/
+    ((ij + ik)*jk*sqr(ij + jk)) - 
+    (64*CF*Box6jik*sqr(ij)*ik)/
+    ((ij + ik)*jk*sqr(ij + jk)) - 
+    (CA*Lij*sqr(ij)*ik)/
+    ((ij + ik)*jk*sqr(ij + jk)) + 
+    (2*CF*Lij*sqr(ij)*ik)/
+    ((ij + ik)*jk*sqr(ij + jk)) - 
+    (CA*Lik*sqr(ij)*ik)/
+    ((ij + ik)*jk*sqr(ij + jk)) + 
+    (2*CF*Lik*sqr(ij)*ik)/
+    ((ij + ik)*jk*sqr(ij + jk)) + 
+    (16*CA*Box6jik*ij*sqr(ik))/
+    ((ij + ik)*jk*sqr(ij + jk)) - 
+    (32*CF*Box6jik*ij*sqr(ik))/
+    ((ij + ik)*jk*sqr(ij + jk)) - 
+    (CA*Lik*ij*sqr(ik))/
+    ((ij + ik)*jk*sqr(ij + jk)) + 
+    (2*CF*Lik*ij*sqr(ik))/
+    ((ij + ik)*jk*sqr(ij + jk)) - 
+    (2*CF*ij*jk)/
+    ((ij + ik)*sqr(ij + jk)) + 
+    (16*CA*Box6ijk*ij*jk)/
+    ((ij + ik)*sqr(ij + jk)) - 
+    (32*CF*Box6ijk*ij*jk)/
+    ((ij + ik)*sqr(ij + jk)) + 
+    (16*CA*Box6jik*ij*jk)/
+    ((ij + ik)*sqr(ij + jk)) - 
+    (32*CF*Box6jik*ij*jk)/
+    ((ij + ik)*sqr(ij + jk)) - 
+    (CA*Lij*ij*jk)/
+    ((ij + ik)*sqr(ij + jk)) + 
+    (2*CF*Lij*ij*jk)/
+    ((ij + ik)*sqr(ij + jk)) + 
+    (4*CF*Lik*ij*jk)/
+    ((ij + ik)*sqr(ij + jk)) + 
+    (2*CA*Ljk*ij*jk)/
+    ((ij + ik)*sqr(ij + jk)) + 
+    (4*CF*Ljk*ij*jk)/
+    ((ij + ik)*sqr(ij + jk)) + 
+    (16*CA*Box6ijk*sqr(ij)*jk)/
+    (ik*(ij + ik)*sqr(ij + jk)) - 
+    (32*CF*Box6ijk*sqr(ij)*jk)/
+    (ik*(ij + ik)*sqr(ij + jk)) - 
+    (2*CF*ik*jk)/
+    ((ij + ik)*sqr(ij + jk)) - 
+    (48*CA*Box6ikj*ik*jk)/
+    ((ij + ik)*sqr(ij + jk)) + 
+    (16*CA*Box6jik*ik*jk)/
+    ((ij + ik)*sqr(ij + jk)) - 
+    (32*CF*Box6jik*ik*jk)/
+    ((ij + ik)*sqr(ij + jk)) - 
+    (CA*Lij*ik*jk)/
+    ((ij + ik)*sqr(ij + jk)) + 
+    (2*CF*Lij*ik*jk)/
+    ((ij + ik)*sqr(ij + jk)) + 
+    (CA*Lik*ik*jk)/
+    ((ij + ik)*sqr(ij + jk)) + 
+    (8*CF*Lik*ik*jk)/
+    ((ij + ik)*sqr(ij + jk)) + 
+    (2*CA*Ljk*ik*jk)/
+    ((ij + ik)*sqr(ij + jk)) + 
+    (8*CF*Ljk*ik*jk)/
+    ((ij + ik)*sqr(ij + jk)) - 
+    (48*CA*Box6ikj*sqr(ik)*jk)/
+    (ij*(ij + ik)*sqr(ij + jk)) + 
+    (CA*Lik*sqr(ik)*jk)/
+    (ij*(ij + ik)*sqr(ij + jk)) + 
+    (4*CF*Lik*sqr(ik)*jk)/
+    (ij*(ij + ik)*sqr(ij + jk)) + 
+    (8*CA*Box6ijk*sqr(jk))/
+    ((ij + ik)*sqr(ij + jk)) - 
+    (16*CF*Box6ijk*sqr(jk))/
+    ((ij + ik)*sqr(ij + jk)) + 
+    (CA*Ljk*sqr(jk))/((ij + ik)*sqr(ij + jk)) + 
+    (2*CF*Ljk*sqr(jk))/((ij + ik)*sqr(ij + jk)) + 
+    (8*CA*Box6ijk*ij*sqr(jk))/
+    (ik*(ij + ik)*sqr(ij + jk)) - 
+    (16*CF*Box6ijk*ij*sqr(jk))/
+    (ik*(ij + ik)*sqr(ij + jk)) - 
+    (24*CA*Box6ikj*ik*sqr(jk))/
+    (ij*(ij + ik)*sqr(ij + jk)) + 
+    (CA*Ljk*ik*sqr(jk))/
+    (ij*(ij + ik)*sqr(ij + jk)) + 
+    (4*CF*Ljk*ik*sqr(jk))/
+    (ij*(ij + ik)*sqr(ij + jk)) - 
+    (24*CA*Box6ikj*sqr(ik)*sqr(jk))/
+    (sqr(ij)*(ij + ik)*sqr(ij + jk));
 
   qqbargLoops[2] = -3*CF*Lijk +
-    (-4*CA*Box6jik*pow(invariant(i,j),3))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (8*CF*Box6jik*pow(invariant(i,j),3))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (CA*Lij*pow(invariant(i,j),3))/
-    (2.*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k)))
-    - (CF*Lij*pow(invariant(i,j),3))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (CA*sqr(invariant(i,j))*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (9*CF*sqr(invariant(i,j))*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (8*CA*Box6ijk*sqr(invariant(i,j))*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (16*CF*Box6ijk*sqr(invariant(i,j))*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (8*CA*Box6ikj*sqr(invariant(i,j))*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (8*CA*Box6jik*sqr(invariant(i,j))*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (16*CF*Box6jik*sqr(invariant(i,j))*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (CA*Lij*sqr(invariant(i,j))*invariant(i,k))/
-    (2.*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k)))
-    - (CF*Lij*sqr(invariant(i,j))*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (CA*Lik*sqr(invariant(i,j))*invariant(i,k))/
-    (2.*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k)))
-    - (CF*Lik*sqr(invariant(i,j))*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (CA*invariant(i,j)*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (9*CF*invariant(i,j)*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (8*CA*Box6ijk*invariant(i,j)*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (16*CF*Box6ijk*invariant(i,j)*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (8*CA*Box6ikj*invariant(i,j)*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (4*CA*Box6jik*invariant(i,j)*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (8*CF*Box6jik*invariant(i,j)*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (CA*Lik*invariant(i,j)*sqr(invariant(i,k)))/
-    (2.*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k)))
-    - (CF*Lik*invariant(i,j)*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (4*CA*Box6jik*pow(invariant(i,j),3)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,j) + invariant(j,k))*
-     (invariant(i,k) + invariant(j,k))) + (8*CF*Box6jik*pow(invariant(i,j),3)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,j) + invariant(j,k))*
-     (invariant(i,k) + invariant(j,k))) - (4*CA*Box6jik*sqr(invariant(i,j))*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,j) + invariant(j,k))*
-     (invariant(i,k) + invariant(j,k))) + (8*CF*Box6jik*sqr(invariant(i,j))*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,j) + invariant(j,k))*
-     (invariant(i,k) + invariant(j,k))) + (CA*sqr(invariant(i,j))*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (9*CF*sqr(invariant(i,j))*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (12*CA*Box6ijk*sqr(invariant(i,j))*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (24*CF*Box6ijk*sqr(invariant(i,j))*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (8*CA*Box6ikj*sqr(invariant(i,j))*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (4*CA*Box6jik*sqr(invariant(i,j))*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (8*CF*Box6jik*sqr(invariant(i,j))*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (CA*Lik*sqr(invariant(i,j))*invariant(j,k))/
-    (2.*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k)))
-    - (CF*Lik*sqr(invariant(i,j))*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (CA*Ljk*sqr(invariant(i,j))*invariant(j,k))/
-    (2.*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k)))
-    + (CF*Ljk*sqr(invariant(i,j))*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (4*CA*Box6ijk*pow(invariant(i,j),3)*invariant(j,k))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*
-     (invariant(i,k) + invariant(j,k))) - (8*CF*Box6ijk*pow(invariant(i,j),3)*invariant(j,k))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*
-     (invariant(i,k) + invariant(j,k))) - (CA*Lij*pow(invariant(i,j),3)*invariant(j,k))/
-    (2.*invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*
-     (invariant(i,k) + invariant(j,k))) + (CF*Lij*pow(invariant(i,j),3)*invariant(j,k))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*
-     (invariant(i,k) + invariant(j,k))) + (2*CA*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (18*CF*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (16*CA*Box6ijk*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (32*CF*Box6ijk*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (28*CA*Box6ikj*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (4*CA*Box6jik*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (8*CF*Box6jik*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (CA*Lij*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    (2.*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k)))
-    - (CF*Lij*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (CA*Lik*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (CF*Lik*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (CA*Ljk*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    (2.*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k)))
-    + (3*CF*Ljk*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (CA*sqr(invariant(i,k))*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (9*CF*sqr(invariant(i,k))*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (8*CA*Box6ijk*sqr(invariant(i,k))*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (16*CF*Box6ijk*sqr(invariant(i,k))*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (20*CA*Box6ikj*sqr(invariant(i,k))*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (CA*Lik*sqr(invariant(i,k))*invariant(j,k))/
-    (2.*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k)))
-    + (CA*invariant(i,j)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (9*CF*invariant(i,j)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (12*CA*Box6ijk*invariant(i,j)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (24*CF*Box6ijk*invariant(i,j)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (20*CA*Box6ikj*invariant(i,j)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (CA*Lij*invariant(i,j)*sqr(invariant(j,k)))/
-    (2.*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k)))
-    + (CF*Lij*invariant(i,j)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (CA*Lik*invariant(i,j)*sqr(invariant(j,k)))/
-    (2.*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k)))
-    - (CA*Ljk*invariant(i,j)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (4*CF*Ljk*invariant(i,j)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (4*CA*Box6ijk*pow(invariant(i,j),3)*sqr(invariant(j,k)))/
-    (sqr(invariant(i,k))*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*
-     (invariant(i,k) + invariant(j,k))) - (8*CF*Box6ijk*pow(invariant(i,j),3)*sqr(invariant(j,k)))/
-    (sqr(invariant(i,k))*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*
-     (invariant(i,k) + invariant(j,k))) + (8*CA*Box6ijk*sqr(invariant(i,j))*sqr(invariant(j,k)))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*
-     (invariant(i,k) + invariant(j,k))) - (16*CF*Box6ijk*sqr(invariant(i,j))*sqr(invariant(j,k)))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*
-     (invariant(i,k) + invariant(j,k))) - (CA*Lij*sqr(invariant(i,j))*sqr(invariant(j,k)))/
-    (2.*invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*
-     (invariant(i,k) + invariant(j,k))) + (CF*Lij*sqr(invariant(i,j))*sqr(invariant(j,k)))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*
-     (invariant(i,k) + invariant(j,k))) - (CA*Ljk*sqr(invariant(i,j))*sqr(invariant(j,k)))/
-    (2.*invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*
-     (invariant(i,k) + invariant(j,k))) + (CF*Ljk*sqr(invariant(i,j))*sqr(invariant(j,k)))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*
-     (invariant(i,k) + invariant(j,k))) + (CA*invariant(i,k)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (9*CF*invariant(i,k)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (8*CA*Box6ijk*invariant(i,k)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (16*CF*Box6ijk*invariant(i,k)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (32*CA*Box6ikj*invariant(i,k)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (CA*Lik*invariant(i,k)*sqr(invariant(j,k)))/
-    (2.*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k)))
-    - (CA*Ljk*invariant(i,k)*sqr(invariant(j,k)))/
-    (2.*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k)))
-    + (3*CF*Ljk*invariant(i,k)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (12*CA*Box6ikj*sqr(invariant(i,k))*sqr(invariant(j,k)))/
-    (invariant(i,j)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*
-     (invariant(i,k) + invariant(j,k))) - (12*CA*Box6ikj*pow(invariant(j,k),3))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (CA*Ljk*pow(invariant(j,k),3))/
-    (2.*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k)))
-    + (3*CF*Ljk*pow(invariant(j,k),3))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (4*CA*Box6ijk*sqr(invariant(i,j))*pow(invariant(j,k),3))/
-    (sqr(invariant(i,k))*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*
-     (invariant(i,k) + invariant(j,k))) - (8*CF*Box6ijk*sqr(invariant(i,j))*pow(invariant(j,k),3))/
-    (sqr(invariant(i,k))*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*
-     (invariant(i,k) + invariant(j,k))) + (4*CA*Box6ijk*invariant(i,j)*pow(invariant(j,k),3))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*
-     (invariant(i,k) + invariant(j,k))) - (8*CF*Box6ijk*invariant(i,j)*pow(invariant(j,k),3))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*
-     (invariant(i,k) + invariant(j,k))) - (CA*Ljk*invariant(i,j)*pow(invariant(j,k),3))/
-    (2.*invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*
-     (invariant(i,k) + invariant(j,k))) + (CF*Ljk*invariant(i,j)*pow(invariant(j,k),3))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*
-     (invariant(i,k) + invariant(j,k))) - (12*CA*Box6ikj*invariant(i,k)*pow(invariant(j,k),3))/
-    (invariant(i,j)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*
-     (invariant(i,k) + invariant(j,k)));
+    (-4*CA*Box6jik*pow(ij,3))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (8*CF*Box6jik*pow(ij,3))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (CA*Lij*pow(ij,3))/
+    (2.*(ij + ik)*(ij + jk)*(ik + jk))
+    - (CF*Lij*pow(ij,3))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (CA*sqr(ij)*ik)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (9*CF*sqr(ij)*ik)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (8*CA*Box6ijk*sqr(ij)*ik)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (16*CF*Box6ijk*sqr(ij)*ik)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (8*CA*Box6ikj*sqr(ij)*ik)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (8*CA*Box6jik*sqr(ij)*ik)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (16*CF*Box6jik*sqr(ij)*ik)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (CA*Lij*sqr(ij)*ik)/
+    (2.*(ij + ik)*(ij + jk)*(ik + jk))
+    - (CF*Lij*sqr(ij)*ik)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (CA*Lik*sqr(ij)*ik)/
+    (2.*(ij + ik)*(ij + jk)*(ik + jk))
+    - (CF*Lik*sqr(ij)*ik)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (CA*ij*sqr(ik))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (9*CF*ij*sqr(ik))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (8*CA*Box6ijk*ij*sqr(ik))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (16*CF*Box6ijk*ij*sqr(ik))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (8*CA*Box6ikj*ij*sqr(ik))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (4*CA*Box6jik*ij*sqr(ik))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (8*CF*Box6jik*ij*sqr(ik))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (CA*Lik*ij*sqr(ik))/
+    (2.*(ij + ik)*(ij + jk)*(ik + jk))
+    - (CF*Lik*ij*sqr(ik))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (4*CA*Box6jik*pow(ij,3)*ik)/
+    ((ij + ik)*jk*(ij + jk)*
+     (ik + jk)) + (8*CF*Box6jik*pow(ij,3)*ik)/
+    ((ij + ik)*jk*(ij + jk)*
+     (ik + jk)) - (4*CA*Box6jik*sqr(ij)*sqr(ik))/
+    ((ij + ik)*jk*(ij + jk)*
+     (ik + jk)) + (8*CF*Box6jik*sqr(ij)*sqr(ik))/
+    ((ij + ik)*jk*(ij + jk)*
+     (ik + jk)) + (CA*sqr(ij)*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (9*CF*sqr(ij)*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (12*CA*Box6ijk*sqr(ij)*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (24*CF*Box6ijk*sqr(ij)*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (8*CA*Box6ikj*sqr(ij)*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (4*CA*Box6jik*sqr(ij)*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (8*CF*Box6jik*sqr(ij)*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (CA*Lik*sqr(ij)*jk)/
+    (2.*(ij + ik)*(ij + jk)*(ik + jk))
+    - (CF*Lik*sqr(ij)*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (CA*Ljk*sqr(ij)*jk)/
+    (2.*(ij + ik)*(ij + jk)*(ik + jk))
+    + (CF*Ljk*sqr(ij)*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (4*CA*Box6ijk*pow(ij,3)*jk)/
+    (ik*(ij + ik)*(ij + jk)*
+     (ik + jk)) - (8*CF*Box6ijk*pow(ij,3)*jk)/
+    (ik*(ij + ik)*(ij + jk)*
+     (ik + jk)) - (CA*Lij*pow(ij,3)*jk)/
+    (2.*ik*(ij + ik)*(ij + jk)*
+     (ik + jk)) + (CF*Lij*pow(ij,3)*jk)/
+    (ik*(ij + ik)*(ij + jk)*
+     (ik + jk)) + (2*CA*ij*ik*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (18*CF*ij*ik*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (16*CA*Box6ijk*ij*ik*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (32*CF*Box6ijk*ij*ik*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (28*CA*Box6ikj*ij*ik*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (4*CA*Box6jik*ij*ik*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (8*CF*Box6jik*ij*ik*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (CA*Lij*ij*ik*jk)/
+    (2.*(ij + ik)*(ij + jk)*(ik + jk))
+    - (CF*Lij*ij*ik*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (CA*Lik*ij*ik*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (CF*Lik*ij*ik*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (CA*Ljk*ij*ik*jk)/
+    (2.*(ij + ik)*(ij + jk)*(ik + jk))
+    + (3*CF*Ljk*ij*ik*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (CA*sqr(ik)*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (9*CF*sqr(ik)*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (8*CA*Box6ijk*sqr(ik)*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (16*CF*Box6ijk*sqr(ik)*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (20*CA*Box6ikj*sqr(ik)*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (CA*Lik*sqr(ik)*jk)/
+    (2.*(ij + ik)*(ij + jk)*(ik + jk))
+    + (CA*ij*sqr(jk))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (9*CF*ij*sqr(jk))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (12*CA*Box6ijk*ij*sqr(jk))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (24*CF*Box6ijk*ij*sqr(jk))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (20*CA*Box6ikj*ij*sqr(jk))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (CA*Lij*ij*sqr(jk))/
+    (2.*(ij + ik)*(ij + jk)*(ik + jk))
+    + (CF*Lij*ij*sqr(jk))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (CA*Lik*ij*sqr(jk))/
+    (2.*(ij + ik)*(ij + jk)*(ik + jk))
+    - (CA*Ljk*ij*sqr(jk))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (4*CF*Ljk*ij*sqr(jk))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (4*CA*Box6ijk*pow(ij,3)*sqr(jk))/
+    (sqr(ik)*(ij + ik)*(ij + jk)*
+     (ik + jk)) - (8*CF*Box6ijk*pow(ij,3)*sqr(jk))/
+    (sqr(ik)*(ij + ik)*(ij + jk)*
+     (ik + jk)) + (8*CA*Box6ijk*sqr(ij)*sqr(jk))/
+    (ik*(ij + ik)*(ij + jk)*
+     (ik + jk)) - (16*CF*Box6ijk*sqr(ij)*sqr(jk))/
+    (ik*(ij + ik)*(ij + jk)*
+     (ik + jk)) - (CA*Lij*sqr(ij)*sqr(jk))/
+    (2.*ik*(ij + ik)*(ij + jk)*
+     (ik + jk)) + (CF*Lij*sqr(ij)*sqr(jk))/
+    (ik*(ij + ik)*(ij + jk)*
+     (ik + jk)) - (CA*Ljk*sqr(ij)*sqr(jk))/
+    (2.*ik*(ij + ik)*(ij + jk)*
+     (ik + jk)) + (CF*Ljk*sqr(ij)*sqr(jk))/
+    (ik*(ij + ik)*(ij + jk)*
+     (ik + jk)) + (CA*ik*sqr(jk))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (9*CF*ik*sqr(jk))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (8*CA*Box6ijk*ik*sqr(jk))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (16*CF*Box6ijk*ik*sqr(jk))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (32*CA*Box6ikj*ik*sqr(jk))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (CA*Lik*ik*sqr(jk))/
+    (2.*(ij + ik)*(ij + jk)*(ik + jk))
+    - (CA*Ljk*ik*sqr(jk))/
+    (2.*(ij + ik)*(ij + jk)*(ik + jk))
+    + (3*CF*Ljk*ik*sqr(jk))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (12*CA*Box6ikj*sqr(ik)*sqr(jk))/
+    (ij*(ij + ik)*(ij + jk)*
+     (ik + jk)) - (12*CA*Box6ikj*pow(jk,3))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (CA*Ljk*pow(jk,3))/
+    (2.*(ij + ik)*(ij + jk)*(ik + jk))
+    + (3*CF*Ljk*pow(jk,3))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (4*CA*Box6ijk*sqr(ij)*pow(jk,3))/
+    (sqr(ik)*(ij + ik)*(ij + jk)*
+     (ik + jk)) - (8*CF*Box6ijk*sqr(ij)*pow(jk,3))/
+    (sqr(ik)*(ij + ik)*(ij + jk)*
+     (ik + jk)) + (4*CA*Box6ijk*ij*pow(jk,3))/
+    (ik*(ij + ik)*(ij + jk)*
+     (ik + jk)) - (8*CF*Box6ijk*ij*pow(jk,3))/
+    (ik*(ij + ik)*(ij + jk)*
+     (ik + jk)) - (CA*Ljk*ij*pow(jk,3))/
+    (2.*ik*(ij + ik)*(ij + jk)*
+     (ik + jk)) + (CF*Ljk*ij*pow(jk,3))/
+    (ik*(ij + ik)*(ij + jk)*
+     (ik + jk)) - (12*CA*Box6ikj*ik*pow(jk,3))/
+    (ij*(ij + ik)*(ij + jk)*
+     (ik + jk));
 
   qqbargLoops[3] = 3*CF*Lijk +
-    (8*CF*sqr(invariant(i,j)))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (8*CA*Box6ijk*sqr(invariant(i,j)))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (16*CF*Box6ijk*sqr(invariant(i,j)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (8*CA*Box6ikj*sqr(invariant(i,j)))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (8*CA*Box6jik*sqr(invariant(i,j)))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (16*CF*Box6jik*sqr(invariant(i,j)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CA*Lij*sqr(invariant(i,j)))/(2.*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (CF*Lij*sqr(invariant(i,j)))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (8*CF*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (8*CA*Box6ijk*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (16*CF*Box6ijk*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (8*CA*Box6ikj*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (12*CA*Box6jik*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (24*CF*Box6jik*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CA*Lij*invariant(i,j)*invariant(i,k))/
-    (2.*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (CF*Lij*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CA*Lik*invariant(i,j)*invariant(i,k))/
-    (2.*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (CF*Lik*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (4*CA*Box6jik*sqr(invariant(i,k)))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (8*CF*Box6jik*sqr(invariant(i,k)))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CA*Lik*sqr(invariant(i,k)))/(2.*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (CF*Lik*sqr(invariant(i,k)))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (4*CA*Box6jik*sqr(invariant(i,j))*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,j) + invariant(j,k))) + 
-    (8*CF*Box6jik*sqr(invariant(i,j))*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,j) + invariant(j,k))) - 
-    (4*CA*Box6jik*invariant(i,j)*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,j) + invariant(j,k))) + 
-    (8*CF*Box6jik*invariant(i,j)*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,j) + invariant(j,k))) + 
-    (8*CF*invariant(i,j)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (12*CA*Box6ijk*invariant(i,j)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (24*CF*Box6ijk*invariant(i,j)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (8*CA*Box6ikj*invariant(i,j)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (8*CA*Box6jik*invariant(i,j)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (16*CF*Box6jik*invariant(i,j)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CA*Lij*invariant(i,j)*invariant(j,k))/
-    (2.*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (CF*Lij*invariant(i,j)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CA*Ljk*invariant(i,j)*invariant(j,k))/
-    (2.*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (CF*Ljk*invariant(i,j)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (4*CA*Box6ijk*sqr(invariant(i,j))*invariant(j,k))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (8*CF*Box6ijk*sqr(invariant(i,j))*invariant(j,k))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (8*CF*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (8*CA*Box6ijk*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (16*CF*Box6ijk*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (4*CA*Box6ikj*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (8*CA*Box6jik*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (16*CF*Box6jik*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CA*Lij*invariant(i,k)*invariant(j,k))/
-    (2.*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (CF*Lij*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CA*Lik*invariant(i,k)*invariant(j,k))/
-    (2.*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (2*CF*Lik*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CA*Ljk*invariant(i,k)*invariant(j,k))/
-    (2.*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (2*CF*Ljk*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (12*CA*Box6ikj*sqr(invariant(i,k))*invariant(j,k))/
-    (invariant(i,j)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CA*Lik*sqr(invariant(i,k))*invariant(j,k))/
-    (2.*invariant(i,j)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (2*CF*Lik*sqr(invariant(i,k))*invariant(j,k))/
-    (invariant(i,j)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (4*CA*Box6ijk*sqr(invariant(j,k)))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (8*CF*Box6ijk*sqr(invariant(j,k)))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CA*Ljk*sqr(invariant(j,k)))/(2.*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (CF*Ljk*sqr(invariant(j,k)))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (4*CA*Box6ijk*invariant(i,j)*sqr(invariant(j,k)))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (8*CF*Box6ijk*invariant(i,j)*sqr(invariant(j,k)))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (12*CA*Box6ikj*invariant(i,k)*sqr(invariant(j,k)))/
-    (invariant(i,j)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CA*Ljk*invariant(i,k)*sqr(invariant(j,k)))/
-    (2.*invariant(i,j)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (2*CF*Ljk*invariant(i,k)*sqr(invariant(j,k)))/
-    (invariant(i,j)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (12*CA*Box6ikj*sqr(invariant(i,k))*sqr(invariant(j,k)))/
-    (sqr(invariant(i,j))*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k)));
+    (8*CF*sqr(ij))/((ij + ik)*(ij + jk)) - 
+    (8*CA*Box6ijk*sqr(ij))/((ij + ik)*(ij + jk)) + 
+    (16*CF*Box6ijk*sqr(ij))/
+    ((ij + ik)*(ij + jk)) + 
+    (8*CA*Box6ikj*sqr(ij))/((ij + ik)*(ij + jk)) - 
+    (8*CA*Box6jik*sqr(ij))/((ij + ik)*(ij + jk)) + 
+    (16*CF*Box6jik*sqr(ij))/
+    ((ij + ik)*(ij + jk)) + 
+    (CA*Lij*sqr(ij))/(2.*(ij + ik)*(ij + jk)) - 
+    (CF*Lij*sqr(ij))/((ij + ik)*(ij + jk)) + 
+    (8*CF*ij*ik)/
+    ((ij + ik)*(ij + jk)) - 
+    (8*CA*Box6ijk*ij*ik)/
+    ((ij + ik)*(ij + jk)) + 
+    (16*CF*Box6ijk*ij*ik)/
+    ((ij + ik)*(ij + jk)) + 
+    (8*CA*Box6ikj*ij*ik)/
+    ((ij + ik)*(ij + jk)) - 
+    (12*CA*Box6jik*ij*ik)/
+    ((ij + ik)*(ij + jk)) + 
+    (24*CF*Box6jik*ij*ik)/
+    ((ij + ik)*(ij + jk)) + 
+    (CA*Lij*ij*ik)/
+    (2.*(ij + ik)*(ij + jk)) - 
+    (CF*Lij*ij*ik)/
+    ((ij + ik)*(ij + jk)) + 
+    (CA*Lik*ij*ik)/
+    (2.*(ij + ik)*(ij + jk)) - 
+    (CF*Lik*ij*ik)/
+    ((ij + ik)*(ij + jk)) - 
+    (4*CA*Box6jik*sqr(ik))/((ij + ik)*(ij + jk)) + 
+    (8*CF*Box6jik*sqr(ik))/((ij + ik)*(ij + jk)) + 
+    (CA*Lik*sqr(ik))/(2.*(ij + ik)*(ij + jk)) - 
+    (CF*Lik*sqr(ik))/((ij + ik)*(ij + jk)) - 
+    (4*CA*Box6jik*sqr(ij)*ik)/
+    ((ij + ik)*jk*(ij + jk)) + 
+    (8*CF*Box6jik*sqr(ij)*ik)/
+    ((ij + ik)*jk*(ij + jk)) - 
+    (4*CA*Box6jik*ij*sqr(ik))/
+    ((ij + ik)*jk*(ij + jk)) + 
+    (8*CF*Box6jik*ij*sqr(ik))/
+    ((ij + ik)*jk*(ij + jk)) + 
+    (8*CF*ij*jk)/
+    ((ij + ik)*(ij + jk)) - 
+    (12*CA*Box6ijk*ij*jk)/
+    ((ij + ik)*(ij + jk)) + 
+    (24*CF*Box6ijk*ij*jk)/
+    ((ij + ik)*(ij + jk)) + 
+    (8*CA*Box6ikj*ij*jk)/
+    ((ij + ik)*(ij + jk)) - 
+    (8*CA*Box6jik*ij*jk)/
+    ((ij + ik)*(ij + jk)) + 
+    (16*CF*Box6jik*ij*jk)/
+    ((ij + ik)*(ij + jk)) + 
+    (CA*Lij*ij*jk)/
+    (2.*(ij + ik)*(ij + jk)) - 
+    (CF*Lij*ij*jk)/
+    ((ij + ik)*(ij + jk)) + 
+    (CA*Ljk*ij*jk)/
+    (2.*(ij + ik)*(ij + jk)) - 
+    (CF*Ljk*ij*jk)/
+    ((ij + ik)*(ij + jk)) - 
+    (4*CA*Box6ijk*sqr(ij)*jk)/
+    (ik*(ij + ik)*(ij + jk)) + 
+    (8*CF*Box6ijk*sqr(ij)*jk)/
+    (ik*(ij + ik)*(ij + jk)) + 
+    (8*CF*ik*jk)/
+    ((ij + ik)*(ij + jk)) - 
+    (8*CA*Box6ijk*ik*jk)/
+    ((ij + ik)*(ij + jk)) + 
+    (16*CF*Box6ijk*ik*jk)/
+    ((ij + ik)*(ij + jk)) - 
+    (4*CA*Box6ikj*ik*jk)/
+    ((ij + ik)*(ij + jk)) - 
+    (8*CA*Box6jik*ik*jk)/
+    ((ij + ik)*(ij + jk)) + 
+    (16*CF*Box6jik*ik*jk)/
+    ((ij + ik)*(ij + jk)) + 
+    (CA*Lij*ik*jk)/
+    (2.*(ij + ik)*(ij + jk)) - 
+    (CF*Lij*ik*jk)/
+    ((ij + ik)*(ij + jk)) + 
+    (CA*Lik*ik*jk)/
+    (2.*(ij + ik)*(ij + jk)) + 
+    (2*CF*Lik*ik*jk)/
+    ((ij + ik)*(ij + jk)) + 
+    (CA*Ljk*ik*jk)/
+    (2.*(ij + ik)*(ij + jk)) + 
+    (2*CF*Ljk*ik*jk)/
+    ((ij + ik)*(ij + jk)) - 
+    (12*CA*Box6ikj*sqr(ik)*jk)/
+    (ij*(ij + ik)*(ij + jk)) + 
+    (CA*Lik*sqr(ik)*jk)/
+    (2.*ij*(ij + ik)*(ij + jk)) + 
+    (2*CF*Lik*sqr(ik)*jk)/
+    (ij*(ij + ik)*(ij + jk)) - 
+    (4*CA*Box6ijk*sqr(jk))/((ij + ik)*(ij + jk)) + 
+    (8*CF*Box6ijk*sqr(jk))/((ij + ik)*(ij + jk)) + 
+    (CA*Ljk*sqr(jk))/(2.*(ij + ik)*(ij + jk)) - 
+    (CF*Ljk*sqr(jk))/((ij + ik)*(ij + jk)) - 
+    (4*CA*Box6ijk*ij*sqr(jk))/
+    (ik*(ij + ik)*(ij + jk)) + 
+    (8*CF*Box6ijk*ij*sqr(jk))/
+    (ik*(ij + ik)*(ij + jk)) - 
+    (12*CA*Box6ikj*ik*sqr(jk))/
+    (ij*(ij + ik)*(ij + jk)) + 
+    (CA*Ljk*ik*sqr(jk))/
+    (2.*ij*(ij + ik)*(ij + jk)) + 
+    (2*CF*Ljk*ik*sqr(jk))/
+    (ij*(ij + ik)*(ij + jk)) - 
+    (12*CA*Box6ikj*sqr(ik)*sqr(jk))/
+    (sqr(ij)*(ij + ik)*(ij + jk));
 
   qqbargLoops[4] = -3*CF*Lijk +
-    (-8*CF*sqr(invariant(i,j)))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (8*CA*Box6ijk*sqr(invariant(i,j)))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (16*CF*Box6ijk*sqr(invariant(i,j)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (8*CA*Box6ikj*sqr(invariant(i,j)))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (8*CA*Box6jik*sqr(invariant(i,j)))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (16*CF*Box6jik*sqr(invariant(i,j)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (CA*Lij*sqr(invariant(i,j)))/(2.*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CF*Lij*sqr(invariant(i,j)))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (8*CF*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (8*CA*Box6ijk*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (16*CF*Box6ijk*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (8*CA*Box6ikj*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (12*CA*Box6jik*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (24*CF*Box6jik*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (CA*Lij*invariant(i,j)*invariant(i,k))/
-    (2.*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CF*Lij*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (CA*Lik*invariant(i,j)*invariant(i,k))/
-    (2.*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CF*Lik*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (4*CA*Box6jik*sqr(invariant(i,k)))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (8*CF*Box6jik*sqr(invariant(i,k)))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (CA*Lik*sqr(invariant(i,k)))/(2.*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CF*Lik*sqr(invariant(i,k)))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (4*CA*Box6jik*sqr(invariant(i,j))*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,j) + invariant(j,k))) - 
-    (8*CF*Box6jik*sqr(invariant(i,j))*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,j) + invariant(j,k))) + 
-    (4*CA*Box6jik*invariant(i,j)*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,j) + invariant(j,k))) - 
-    (8*CF*Box6jik*invariant(i,j)*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,j) + invariant(j,k))) - 
-    (8*CF*invariant(i,j)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (12*CA*Box6ijk*invariant(i,j)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (24*CF*Box6ijk*invariant(i,j)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (8*CA*Box6ikj*invariant(i,j)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (8*CA*Box6jik*invariant(i,j)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (16*CF*Box6jik*invariant(i,j)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (CA*Lij*invariant(i,j)*invariant(j,k))/
-    (2.*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CF*Lij*invariant(i,j)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (CA*Ljk*invariant(i,j)*invariant(j,k))/
-    (2.*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CF*Ljk*invariant(i,j)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (4*CA*Box6ijk*sqr(invariant(i,j))*invariant(j,k))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (8*CF*Box6ijk*sqr(invariant(i,j))*invariant(j,k))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (8*CF*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (8*CA*Box6ijk*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (16*CF*Box6ijk*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (4*CA*Box6ikj*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (8*CA*Box6jik*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (16*CF*Box6jik*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (CA*Lij*invariant(i,k)*invariant(j,k))/
-    (2.*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CF*Lij*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (CA*Lik*invariant(i,k)*invariant(j,k))/
-    (2.*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (2*CF*Lik*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (CA*Ljk*invariant(i,k)*invariant(j,k))/
-    (2.*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (2*CF*Ljk*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (12*CA*Box6ikj*sqr(invariant(i,k))*invariant(j,k))/
-    (invariant(i,j)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (CA*Lik*sqr(invariant(i,k))*invariant(j,k))/
-    (2.*invariant(i,j)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (2*CF*Lik*sqr(invariant(i,k))*invariant(j,k))/
-    (invariant(i,j)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (4*CA*Box6ijk*sqr(invariant(j,k)))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (8*CF*Box6ijk*sqr(invariant(j,k)))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (CA*Ljk*sqr(invariant(j,k)))/(2.*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CF*Ljk*sqr(invariant(j,k)))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (4*CA*Box6ijk*invariant(i,j)*sqr(invariant(j,k)))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (8*CF*Box6ijk*invariant(i,j)*sqr(invariant(j,k)))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (12*CA*Box6ikj*invariant(i,k)*sqr(invariant(j,k)))/
-    (invariant(i,j)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (CA*Ljk*invariant(i,k)*sqr(invariant(j,k)))/
-    (2.*invariant(i,j)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (2*CF*Ljk*invariant(i,k)*sqr(invariant(j,k)))/
-    (invariant(i,j)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (12*CA*Box6ikj*sqr(invariant(i,k))*sqr(invariant(j,k)))/
-    (sqr(invariant(i,j))*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k)));
+    (-8*CF*sqr(ij))/((ij + ik)*(ij + jk)) + 
+    (8*CA*Box6ijk*sqr(ij))/((ij + ik)*(ij + jk)) - 
+    (16*CF*Box6ijk*sqr(ij))/
+    ((ij + ik)*(ij + jk)) - 
+    (8*CA*Box6ikj*sqr(ij))/((ij + ik)*(ij + jk)) + 
+    (8*CA*Box6jik*sqr(ij))/((ij + ik)*(ij + jk)) - 
+    (16*CF*Box6jik*sqr(ij))/
+    ((ij + ik)*(ij + jk)) - 
+    (CA*Lij*sqr(ij))/(2.*(ij + ik)*(ij + jk)) + 
+    (CF*Lij*sqr(ij))/((ij + ik)*(ij + jk)) - 
+    (8*CF*ij*ik)/
+    ((ij + ik)*(ij + jk)) + 
+    (8*CA*Box6ijk*ij*ik)/
+    ((ij + ik)*(ij + jk)) - 
+    (16*CF*Box6ijk*ij*ik)/
+    ((ij + ik)*(ij + jk)) - 
+    (8*CA*Box6ikj*ij*ik)/
+    ((ij + ik)*(ij + jk)) + 
+    (12*CA*Box6jik*ij*ik)/
+    ((ij + ik)*(ij + jk)) - 
+    (24*CF*Box6jik*ij*ik)/
+    ((ij + ik)*(ij + jk)) - 
+    (CA*Lij*ij*ik)/
+    (2.*(ij + ik)*(ij + jk)) + 
+    (CF*Lij*ij*ik)/
+    ((ij + ik)*(ij + jk)) - 
+    (CA*Lik*ij*ik)/
+    (2.*(ij + ik)*(ij + jk)) + 
+    (CF*Lik*ij*ik)/
+    ((ij + ik)*(ij + jk)) + 
+    (4*CA*Box6jik*sqr(ik))/((ij + ik)*(ij + jk)) - 
+    (8*CF*Box6jik*sqr(ik))/((ij + ik)*(ij + jk)) - 
+    (CA*Lik*sqr(ik))/(2.*(ij + ik)*(ij + jk)) + 
+    (CF*Lik*sqr(ik))/((ij + ik)*(ij + jk)) + 
+    (4*CA*Box6jik*sqr(ij)*ik)/
+    ((ij + ik)*jk*(ij + jk)) - 
+    (8*CF*Box6jik*sqr(ij)*ik)/
+    ((ij + ik)*jk*(ij + jk)) + 
+    (4*CA*Box6jik*ij*sqr(ik))/
+    ((ij + ik)*jk*(ij + jk)) - 
+    (8*CF*Box6jik*ij*sqr(ik))/
+    ((ij + ik)*jk*(ij + jk)) - 
+    (8*CF*ij*jk)/
+    ((ij + ik)*(ij + jk)) + 
+    (12*CA*Box6ijk*ij*jk)/
+    ((ij + ik)*(ij + jk)) - 
+    (24*CF*Box6ijk*ij*jk)/
+    ((ij + ik)*(ij + jk)) - 
+    (8*CA*Box6ikj*ij*jk)/
+    ((ij + ik)*(ij + jk)) + 
+    (8*CA*Box6jik*ij*jk)/
+    ((ij + ik)*(ij + jk)) - 
+    (16*CF*Box6jik*ij*jk)/
+    ((ij + ik)*(ij + jk)) - 
+    (CA*Lij*ij*jk)/
+    (2.*(ij + ik)*(ij + jk)) + 
+    (CF*Lij*ij*jk)/
+    ((ij + ik)*(ij + jk)) - 
+    (CA*Ljk*ij*jk)/
+    (2.*(ij + ik)*(ij + jk)) + 
+    (CF*Ljk*ij*jk)/
+    ((ij + ik)*(ij + jk)) + 
+    (4*CA*Box6ijk*sqr(ij)*jk)/
+    (ik*(ij + ik)*(ij + jk)) - 
+    (8*CF*Box6ijk*sqr(ij)*jk)/
+    (ik*(ij + ik)*(ij + jk)) - 
+    (8*CF*ik*jk)/
+    ((ij + ik)*(ij + jk)) + 
+    (8*CA*Box6ijk*ik*jk)/
+    ((ij + ik)*(ij + jk)) - 
+    (16*CF*Box6ijk*ik*jk)/
+    ((ij + ik)*(ij + jk)) + 
+    (4*CA*Box6ikj*ik*jk)/
+    ((ij + ik)*(ij + jk)) + 
+    (8*CA*Box6jik*ik*jk)/
+    ((ij + ik)*(ij + jk)) - 
+    (16*CF*Box6jik*ik*jk)/
+    ((ij + ik)*(ij + jk)) - 
+    (CA*Lij*ik*jk)/
+    (2.*(ij + ik)*(ij + jk)) + 
+    (CF*Lij*ik*jk)/
+    ((ij + ik)*(ij + jk)) - 
+    (CA*Lik*ik*jk)/
+    (2.*(ij + ik)*(ij + jk)) - 
+    (2*CF*Lik*ik*jk)/
+    ((ij + ik)*(ij + jk)) - 
+    (CA*Ljk*ik*jk)/
+    (2.*(ij + ik)*(ij + jk)) - 
+    (2*CF*Ljk*ik*jk)/
+    ((ij + ik)*(ij + jk)) + 
+    (12*CA*Box6ikj*sqr(ik)*jk)/
+    (ij*(ij + ik)*(ij + jk)) - 
+    (CA*Lik*sqr(ik)*jk)/
+    (2.*ij*(ij + ik)*(ij + jk)) - 
+    (2*CF*Lik*sqr(ik)*jk)/
+    (ij*(ij + ik)*(ij + jk)) + 
+    (4*CA*Box6ijk*sqr(jk))/((ij + ik)*(ij + jk)) - 
+    (8*CF*Box6ijk*sqr(jk))/((ij + ik)*(ij + jk)) - 
+    (CA*Ljk*sqr(jk))/(2.*(ij + ik)*(ij + jk)) + 
+    (CF*Ljk*sqr(jk))/((ij + ik)*(ij + jk)) + 
+    (4*CA*Box6ijk*ij*sqr(jk))/
+    (ik*(ij + ik)*(ij + jk)) - 
+    (8*CF*Box6ijk*ij*sqr(jk))/
+    (ik*(ij + ik)*(ij + jk)) + 
+    (12*CA*Box6ikj*ik*sqr(jk))/
+    (ij*(ij + ik)*(ij + jk)) - 
+    (CA*Ljk*ik*sqr(jk))/
+    (2.*ij*(ij + ik)*(ij + jk)) - 
+    (2*CF*Ljk*ik*sqr(jk))/
+    (ij*(ij + ik)*(ij + jk)) + 
+    (12*CA*Box6ikj*sqr(ik)*sqr(jk))/
+    (sqr(ij)*(ij + ik)*(ij + jk));
 
   qqbargLoops[5] = 3*CF*Lijk +
-    (-4*CA*Box6jik*sqr(invariant(i,j)))/((invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) + 
-    (8*CF*Box6jik*sqr(invariant(i,j)))/((invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) + 
-    (CA*Lij*sqr(invariant(i,j)))/(2.*(invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) - 
-    (CF*Lij*sqr(invariant(i,j)))/((invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) - 
-    (CA*invariant(i,j)*invariant(i,k))/((invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) + 
-    (9*CF*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) - 
-    (8*CA*Box6ijk*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) + 
-    (16*CF*Box6ijk*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) + 
-    (8*CA*Box6ikj*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) - 
-    (4*CA*Box6jik*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) + 
-    (8*CF*Box6jik*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) + 
-    (CA*Lij*invariant(i,j)*invariant(i,k))/
-    (2.*(invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) - 
-    (CF*Lij*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) + 
-    (CA*Lik*invariant(i,j)*invariant(i,k))/
-    (2.*(invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) - 
-    (CF*Lik*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) - 
-    (CA*sqr(invariant(i,k)))/((invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) + 
-    (9*CF*sqr(invariant(i,k)))/((invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) - 
-    (8*CA*Box6ijk*sqr(invariant(i,k)))/((invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) + 
-    (16*CF*Box6ijk*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) + 
-    (8*CA*Box6ikj*sqr(invariant(i,k)))/((invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) + 
-    (CA*Lik*sqr(invariant(i,k)))/(2.*(invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) - 
-    (CF*Lik*sqr(invariant(i,k)))/((invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) - 
-    (4*CA*Box6jik*sqr(invariant(i,j))*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,k) + invariant(j,k))) + 
-    (8*CF*Box6jik*sqr(invariant(i,j))*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,k) + invariant(j,k))) - 
-    (4*CA*Box6jik*invariant(i,j)*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,k) + invariant(j,k))) + 
-    (8*CF*Box6jik*invariant(i,j)*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,k) + invariant(j,k))) - 
-    (CA*invariant(i,j)*invariant(j,k))/((invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) + 
-    (9*CF*invariant(i,j)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) - 
-    (4*CA*Box6ijk*invariant(i,j)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) + 
-    (8*CF*Box6ijk*invariant(i,j)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) + 
-    (8*CA*Box6ikj*invariant(i,j)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) - 
-    (CA*Lij*invariant(i,j)*invariant(j,k))/
-    (2.*(invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) + 
-    (CF*Lij*invariant(i,j)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) + 
-    (CA*Lik*invariant(i,j)*invariant(j,k))/
-    (2.*(invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) - 
-    (CF*Lik*invariant(i,j)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) - 
-    (CA*Ljk*invariant(i,j)*invariant(j,k))/
-    (2.*(invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) + 
-    (CF*Ljk*invariant(i,j)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) + 
-    (4*CA*Box6ijk*sqr(invariant(i,j))*invariant(j,k))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) - 
-    (8*CF*Box6ijk*sqr(invariant(i,j))*invariant(j,k))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) - 
-    (CA*Lij*sqr(invariant(i,j))*invariant(j,k))/
-    (2.*invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) + 
-    (CF*Lij*sqr(invariant(i,j))*invariant(j,k))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) - 
-    (CA*invariant(i,k)*invariant(j,k))/((invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) + 
-    (9*CF*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) - 
-    (8*CA*Box6ijk*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) + 
-    (16*CF*Box6ijk*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) + 
-    (20*CA*Box6ikj*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) + 
-    (CA*Lik*invariant(i,k)*invariant(j,k))/
-    (2.*(invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) - 
-    (CF*Lik*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) - 
-    (CA*Ljk*invariant(i,k)*invariant(j,k))/
-    (2.*(invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) - 
-    (2*CF*Ljk*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) + 
-    (12*CA*Box6ikj*sqr(invariant(i,k))*invariant(j,k))/
-    (invariant(i,j)*(invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) + 
-    (12*CA*Box6ikj*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) - 
-    (CA*Ljk*sqr(invariant(j,k)))/(2.*(invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) - 
-    (2*CF*Ljk*sqr(invariant(j,k)))/((invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) + 
-    (4*CA*Box6ijk*sqr(invariant(i,j))*sqr(invariant(j,k)))/
-    (sqr(invariant(i,k))*(invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) - 
-    (8*CF*Box6ijk*sqr(invariant(i,j))*sqr(invariant(j,k)))/
-    (sqr(invariant(i,k))*(invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) + 
-    (4*CA*Box6ijk*invariant(i,j)*sqr(invariant(j,k)))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) - 
-    (8*CF*Box6ijk*invariant(i,j)*sqr(invariant(j,k)))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) - 
-    (CA*Ljk*invariant(i,j)*sqr(invariant(j,k)))/
-    (2.*invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) + 
-    (CF*Ljk*invariant(i,j)*sqr(invariant(j,k)))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k))) + 
-    (12*CA*Box6ikj*invariant(i,k)*sqr(invariant(j,k)))/
-    (invariant(i,j)*(invariant(i,j) + invariant(i,k))*(invariant(i,k) + invariant(j,k)));
+    (-4*CA*Box6jik*sqr(ij))/((ij + ik)*(ik + jk)) + 
+    (8*CF*Box6jik*sqr(ij))/((ij + ik)*(ik + jk)) + 
+    (CA*Lij*sqr(ij))/(2.*(ij + ik)*(ik + jk)) - 
+    (CF*Lij*sqr(ij))/((ij + ik)*(ik + jk)) - 
+    (CA*ij*ik)/((ij + ik)*(ik + jk)) + 
+    (9*CF*ij*ik)/
+    ((ij + ik)*(ik + jk)) - 
+    (8*CA*Box6ijk*ij*ik)/
+    ((ij + ik)*(ik + jk)) + 
+    (16*CF*Box6ijk*ij*ik)/
+    ((ij + ik)*(ik + jk)) + 
+    (8*CA*Box6ikj*ij*ik)/
+    ((ij + ik)*(ik + jk)) - 
+    (4*CA*Box6jik*ij*ik)/
+    ((ij + ik)*(ik + jk)) + 
+    (8*CF*Box6jik*ij*ik)/
+    ((ij + ik)*(ik + jk)) + 
+    (CA*Lij*ij*ik)/
+    (2.*(ij + ik)*(ik + jk)) - 
+    (CF*Lij*ij*ik)/
+    ((ij + ik)*(ik + jk)) + 
+    (CA*Lik*ij*ik)/
+    (2.*(ij + ik)*(ik + jk)) - 
+    (CF*Lik*ij*ik)/
+    ((ij + ik)*(ik + jk)) - 
+    (CA*sqr(ik))/((ij + ik)*(ik + jk)) + 
+    (9*CF*sqr(ik))/((ij + ik)*(ik + jk)) - 
+    (8*CA*Box6ijk*sqr(ik))/((ij + ik)*(ik + jk)) + 
+    (16*CF*Box6ijk*sqr(ik))/
+    ((ij + ik)*(ik + jk)) + 
+    (8*CA*Box6ikj*sqr(ik))/((ij + ik)*(ik + jk)) + 
+    (CA*Lik*sqr(ik))/(2.*(ij + ik)*(ik + jk)) - 
+    (CF*Lik*sqr(ik))/((ij + ik)*(ik + jk)) - 
+    (4*CA*Box6jik*sqr(ij)*ik)/
+    ((ij + ik)*jk*(ik + jk)) + 
+    (8*CF*Box6jik*sqr(ij)*ik)/
+    ((ij + ik)*jk*(ik + jk)) - 
+    (4*CA*Box6jik*ij*sqr(ik))/
+    ((ij + ik)*jk*(ik + jk)) + 
+    (8*CF*Box6jik*ij*sqr(ik))/
+    ((ij + ik)*jk*(ik + jk)) - 
+    (CA*ij*jk)/((ij + ik)*(ik + jk)) + 
+    (9*CF*ij*jk)/
+    ((ij + ik)*(ik + jk)) - 
+    (4*CA*Box6ijk*ij*jk)/
+    ((ij + ik)*(ik + jk)) + 
+    (8*CF*Box6ijk*ij*jk)/
+    ((ij + ik)*(ik + jk)) + 
+    (8*CA*Box6ikj*ij*jk)/
+    ((ij + ik)*(ik + jk)) - 
+    (CA*Lij*ij*jk)/
+    (2.*(ij + ik)*(ik + jk)) + 
+    (CF*Lij*ij*jk)/
+    ((ij + ik)*(ik + jk)) + 
+    (CA*Lik*ij*jk)/
+    (2.*(ij + ik)*(ik + jk)) - 
+    (CF*Lik*ij*jk)/
+    ((ij + ik)*(ik + jk)) - 
+    (CA*Ljk*ij*jk)/
+    (2.*(ij + ik)*(ik + jk)) + 
+    (CF*Ljk*ij*jk)/
+    ((ij + ik)*(ik + jk)) + 
+    (4*CA*Box6ijk*sqr(ij)*jk)/
+    (ik*(ij + ik)*(ik + jk)) - 
+    (8*CF*Box6ijk*sqr(ij)*jk)/
+    (ik*(ij + ik)*(ik + jk)) - 
+    (CA*Lij*sqr(ij)*jk)/
+    (2.*ik*(ij + ik)*(ik + jk)) + 
+    (CF*Lij*sqr(ij)*jk)/
+    (ik*(ij + ik)*(ik + jk)) - 
+    (CA*ik*jk)/((ij + ik)*(ik + jk)) + 
+    (9*CF*ik*jk)/
+    ((ij + ik)*(ik + jk)) - 
+    (8*CA*Box6ijk*ik*jk)/
+    ((ij + ik)*(ik + jk)) + 
+    (16*CF*Box6ijk*ik*jk)/
+    ((ij + ik)*(ik + jk)) + 
+    (20*CA*Box6ikj*ik*jk)/
+    ((ij + ik)*(ik + jk)) + 
+    (CA*Lik*ik*jk)/
+    (2.*(ij + ik)*(ik + jk)) - 
+    (CF*Lik*ik*jk)/
+    ((ij + ik)*(ik + jk)) - 
+    (CA*Ljk*ik*jk)/
+    (2.*(ij + ik)*(ik + jk)) - 
+    (2*CF*Ljk*ik*jk)/
+    ((ij + ik)*(ik + jk)) + 
+    (12*CA*Box6ikj*sqr(ik)*jk)/
+    (ij*(ij + ik)*(ik + jk)) + 
+    (12*CA*Box6ikj*sqr(jk))/
+    ((ij + ik)*(ik + jk)) - 
+    (CA*Ljk*sqr(jk))/(2.*(ij + ik)*(ik + jk)) - 
+    (2*CF*Ljk*sqr(jk))/((ij + ik)*(ik + jk)) + 
+    (4*CA*Box6ijk*sqr(ij)*sqr(jk))/
+    (sqr(ik)*(ij + ik)*(ik + jk)) - 
+    (8*CF*Box6ijk*sqr(ij)*sqr(jk))/
+    (sqr(ik)*(ij + ik)*(ik + jk)) + 
+    (4*CA*Box6ijk*ij*sqr(jk))/
+    (ik*(ij + ik)*(ik + jk)) - 
+    (8*CF*Box6ijk*ij*sqr(jk))/
+    (ik*(ij + ik)*(ik + jk)) - 
+    (CA*Ljk*ij*sqr(jk))/
+    (2.*ik*(ij + ik)*(ik + jk)) + 
+    (CF*Ljk*ij*sqr(jk))/
+    (ik*(ij + ik)*(ik + jk)) + 
+    (12*CA*Box6ikj*ik*sqr(jk))/
+    (ij*(ij + ik)*(ik + jk));
 
   qqbargLoops[6] = 
-    (-2*CF*invariant(i,j))/sqr(invariant(i,j) + invariant(i,k)) + 
-    (32*CA*Box6ijk*invariant(i,j))/sqr(invariant(i,j) + invariant(i,k)) - 
-    (64*CF*Box6ijk*invariant(i,j))/sqr(invariant(i,j) + invariant(i,k)) - 
-    (4*CA*Lij*invariant(i,j))/sqr(invariant(i,j) + invariant(i,k)) + 
-    (8*CF*Lij*invariant(i,j))/sqr(invariant(i,j) + invariant(i,k)) + 
-    (4*CF*Ljk*invariant(i,j))/sqr(invariant(i,j) + invariant(i,k)) + 
-    (16*CA*Box6ijk*sqr(invariant(i,j)))/(invariant(i,k)*sqr(invariant(i,j) + invariant(i,k))) - 
-    (32*CF*Box6ijk*sqr(invariant(i,j)))/(invariant(i,k)*sqr(invariant(i,j) + invariant(i,k))) - 
-    (2*CA*Lij*sqr(invariant(i,j)))/(invariant(i,k)*sqr(invariant(i,j) + invariant(i,k))) + 
-    (4*CF*Lij*sqr(invariant(i,j)))/(invariant(i,k)*sqr(invariant(i,j) + invariant(i,k))) - 
-    (2*CF*invariant(i,k))/sqr(invariant(i,j) + invariant(i,k)) + 
-    (16*CA*Box6ijk*invariant(i,k))/sqr(invariant(i,j) + invariant(i,k)) - 
-    (32*CF*Box6ijk*invariant(i,k))/sqr(invariant(i,j) + invariant(i,k)) - 
-    (2*CA*Lij*invariant(i,k))/sqr(invariant(i,j) + invariant(i,k)) + 
-    (4*CF*Lij*invariant(i,k))/sqr(invariant(i,j) + invariant(i,k)) + 
-    (4*CF*Ljk*invariant(i,k))/sqr(invariant(i,j) + invariant(i,k)) + 
-    (16*CA*Box6ijk*invariant(j,k))/sqr(invariant(i,j) + invariant(i,k)) - 
-    (32*CF*Box6ijk*invariant(j,k))/sqr(invariant(i,j) + invariant(i,k)) - 
-    (2*CA*Ljk*invariant(j,k))/sqr(invariant(i,j) + invariant(i,k)) + 
-    (6*CF*Ljk*invariant(j,k))/sqr(invariant(i,j) + invariant(i,k)) + 
-    (16*CA*Box6ijk*sqr(invariant(i,j))*invariant(j,k))/
-    (sqr(invariant(i,k))*sqr(invariant(i,j) + invariant(i,k))) - 
-    (32*CF*Box6ijk*sqr(invariant(i,j))*invariant(j,k))/
-    (sqr(invariant(i,k))*sqr(invariant(i,j) + invariant(i,k))) + 
-    (32*CA*Box6ijk*invariant(i,j)*invariant(j,k))/(invariant(i,k)*sqr(invariant(i,j) + invariant(i,k))) - 
-    (64*CF*Box6ijk*invariant(i,j)*invariant(j,k))/(invariant(i,k)*sqr(invariant(i,j) + invariant(i,k))) - 
-    (2*CA*Ljk*invariant(i,j)*invariant(j,k))/(invariant(i,k)*sqr(invariant(i,j) + invariant(i,k))) + 
-    (4*CF*Ljk*invariant(i,j)*invariant(j,k))/(invariant(i,k)*sqr(invariant(i,j) + invariant(i,k)));
+    (-2*CF*ij)/sqr(ij + ik) + 
+    (32*CA*Box6ijk*ij)/sqr(ij + ik) - 
+    (64*CF*Box6ijk*ij)/sqr(ij + ik) - 
+    (4*CA*Lij*ij)/sqr(ij + ik) + 
+    (8*CF*Lij*ij)/sqr(ij + ik) + 
+    (4*CF*Ljk*ij)/sqr(ij + ik) + 
+    (16*CA*Box6ijk*sqr(ij))/(ik*sqr(ij + ik)) - 
+    (32*CF*Box6ijk*sqr(ij))/(ik*sqr(ij + ik)) - 
+    (2*CA*Lij*sqr(ij))/(ik*sqr(ij + ik)) + 
+    (4*CF*Lij*sqr(ij))/(ik*sqr(ij + ik)) - 
+    (2*CF*ik)/sqr(ij + ik) + 
+    (16*CA*Box6ijk*ik)/sqr(ij + ik) - 
+    (32*CF*Box6ijk*ik)/sqr(ij + ik) - 
+    (2*CA*Lij*ik)/sqr(ij + ik) + 
+    (4*CF*Lij*ik)/sqr(ij + ik) + 
+    (4*CF*Ljk*ik)/sqr(ij + ik) + 
+    (16*CA*Box6ijk*jk)/sqr(ij + ik) - 
+    (32*CF*Box6ijk*jk)/sqr(ij + ik) - 
+    (2*CA*Ljk*jk)/sqr(ij + ik) + 
+    (6*CF*Ljk*jk)/sqr(ij + ik) + 
+    (16*CA*Box6ijk*sqr(ij)*jk)/
+    (sqr(ik)*sqr(ij + ik)) - 
+    (32*CF*Box6ijk*sqr(ij)*jk)/
+    (sqr(ik)*sqr(ij + ik)) + 
+    (32*CA*Box6ijk*ij*jk)/(ik*sqr(ij + ik)) - 
+    (64*CF*Box6ijk*ij*jk)/(ik*sqr(ij + ik)) - 
+    (2*CA*Ljk*ij*jk)/(ik*sqr(ij + ik)) + 
+    (4*CF*Ljk*ij*jk)/(ik*sqr(ij + ik));
 
   qqbargLoops[7] = 
-    (8*CA*Box6jik*invariant(i,j))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (16*CF*Box6jik*invariant(i,j))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CA*Lij*invariant(i,j))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (2*CF*Lij*invariant(i,j))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CA*Lik*invariant(i,j))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (2*CF*Lik*invariant(i,j))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CA*Lij*sqr(invariant(i,j)))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (2*CF*Lij*sqr(invariant(i,j)))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (8*CA*Box6jik*invariant(i,k))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (16*CF*Box6jik*invariant(i,k))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CA*Lik*invariant(i,k))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (2*CF*Lik*invariant(i,k))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (8*CA*Box6jik*sqr(invariant(i,j)))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,j) + invariant(j,k))) - 
-    (16*CF*Box6jik*sqr(invariant(i,j)))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,j) + invariant(j,k))) + 
-    (8*CA*Box6jik*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,j) + invariant(j,k))) - 
-    (16*CF*Box6jik*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,j) + invariant(j,k))) - 
-    (24*CA*Box6ikj*invariant(j,k))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CA*Lij*invariant(j,k))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (2*CF*Lij*invariant(j,k))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CA*Lik*invariant(j,k))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (4*CF*Lik*invariant(j,k))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CA*Ljk*invariant(j,k))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (4*CF*Ljk*invariant(j,k))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (8*CA*Box6ijk*sqr(invariant(i,j))*invariant(j,k))/
-    (sqr(invariant(i,k))*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (16*CF*Box6ijk*sqr(invariant(i,j))*invariant(j,k))/
-    (sqr(invariant(i,k))*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (8*CA*Box6ijk*invariant(i,j)*invariant(j,k))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (16*CF*Box6ijk*invariant(i,j)*invariant(j,k))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CA*Lij*invariant(i,j)*invariant(j,k))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (2*CF*Lij*invariant(i,j)*invariant(j,k))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CA*Ljk*invariant(i,j)*invariant(j,k))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (2*CF*Ljk*invariant(i,j)*invariant(j,k))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (24*CA*Box6ikj*invariant(i,k)*invariant(j,k))/
-    (invariant(i,j)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CA*Lik*invariant(i,k)*invariant(j,k))/
-    (invariant(i,j)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (4*CF*Lik*invariant(i,k)*invariant(j,k))/
-    (invariant(i,j)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (24*CA*Box6ikj*sqr(invariant(j,k)))/
-    (invariant(i,j)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CA*Ljk*sqr(invariant(j,k)))/
-    (invariant(i,j)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (4*CF*Ljk*sqr(invariant(j,k)))/
-    (invariant(i,j)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (8*CA*Box6ijk*invariant(i,j)*sqr(invariant(j,k)))/
-    (sqr(invariant(i,k))*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (16*CF*Box6ijk*invariant(i,j)*sqr(invariant(j,k)))/
-    (sqr(invariant(i,k))*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (8*CA*Box6ijk*sqr(invariant(j,k)))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (16*CF*Box6ijk*sqr(invariant(j,k)))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (CA*Ljk*sqr(invariant(j,k)))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (2*CF*Ljk*sqr(invariant(j,k)))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (24*CA*Box6ikj*invariant(i,k)*sqr(invariant(j,k)))/
-    (sqr(invariant(i,j))*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k)));
+    (8*CA*Box6jik*ij)/((ij + ik)*(ij + jk)) - 
+    (16*CF*Box6jik*ij)/((ij + ik)*(ij + jk)) + 
+    (CA*Lij*ij)/((ij + ik)*(ij + jk)) - 
+    (2*CF*Lij*ij)/((ij + ik)*(ij + jk)) + 
+    (CA*Lik*ij)/((ij + ik)*(ij + jk)) + 
+    (2*CF*Lik*ij)/((ij + ik)*(ij + jk)) + 
+    (CA*Lij*sqr(ij))/
+    (ik*(ij + ik)*(ij + jk)) - 
+    (2*CF*Lij*sqr(ij))/
+    (ik*(ij + ik)*(ij + jk)) + 
+    (8*CA*Box6jik*ik)/((ij + ik)*(ij + jk)) - 
+    (16*CF*Box6jik*ik)/((ij + ik)*(ij + jk)) + 
+    (CA*Lik*ik)/((ij + ik)*(ij + jk)) + 
+    (2*CF*Lik*ik)/((ij + ik)*(ij + jk)) + 
+    (8*CA*Box6jik*sqr(ij))/
+    ((ij + ik)*jk*(ij + jk)) - 
+    (16*CF*Box6jik*sqr(ij))/
+    ((ij + ik)*jk*(ij + jk)) + 
+    (8*CA*Box6jik*ij*ik)/
+    ((ij + ik)*jk*(ij + jk)) - 
+    (16*CF*Box6jik*ij*ik)/
+    ((ij + ik)*jk*(ij + jk)) - 
+    (24*CA*Box6ikj*jk)/((ij + ik)*(ij + jk)) + 
+    (CA*Lij*jk)/((ij + ik)*(ij + jk)) - 
+    (2*CF*Lij*jk)/((ij + ik)*(ij + jk)) + 
+    (CA*Lik*jk)/((ij + ik)*(ij + jk)) + 
+    (4*CF*Lik*jk)/((ij + ik)*(ij + jk)) + 
+    (CA*Ljk*jk)/((ij + ik)*(ij + jk)) + 
+    (4*CF*Ljk*jk)/((ij + ik)*(ij + jk)) - 
+    (8*CA*Box6ijk*sqr(ij)*jk)/
+    (sqr(ik)*(ij + ik)*(ij + jk)) + 
+    (16*CF*Box6ijk*sqr(ij)*jk)/
+    (sqr(ik)*(ij + ik)*(ij + jk)) - 
+    (8*CA*Box6ijk*ij*jk)/
+    (ik*(ij + ik)*(ij + jk)) + 
+    (16*CF*Box6ijk*ij*jk)/
+    (ik*(ij + ik)*(ij + jk)) + 
+    (CA*Lij*ij*jk)/
+    (ik*(ij + ik)*(ij + jk)) - 
+    (2*CF*Lij*ij*jk)/
+    (ik*(ij + ik)*(ij + jk)) + 
+    (CA*Ljk*ij*jk)/
+    (ik*(ij + ik)*(ij + jk)) - 
+    (2*CF*Ljk*ij*jk)/
+    (ik*(ij + ik)*(ij + jk)) - 
+    (24*CA*Box6ikj*ik*jk)/
+    (ij*(ij + ik)*(ij + jk)) + 
+    (CA*Lik*ik*jk)/
+    (ij*(ij + ik)*(ij + jk)) + 
+    (4*CF*Lik*ik*jk)/
+    (ij*(ij + ik)*(ij + jk)) - 
+    (24*CA*Box6ikj*sqr(jk))/
+    (ij*(ij + ik)*(ij + jk)) + 
+    (CA*Ljk*sqr(jk))/
+    (ij*(ij + ik)*(ij + jk)) + 
+    (4*CF*Ljk*sqr(jk))/
+    (ij*(ij + ik)*(ij + jk)) - 
+    (8*CA*Box6ijk*ij*sqr(jk))/
+    (sqr(ik)*(ij + ik)*(ij + jk)) + 
+    (16*CF*Box6ijk*ij*sqr(jk))/
+    (sqr(ik)*(ij + ik)*(ij + jk)) - 
+    (8*CA*Box6ijk*sqr(jk))/
+    (ik*(ij + ik)*(ij + jk)) + 
+    (16*CF*Box6ijk*sqr(jk))/
+    (ik*(ij + ik)*(ij + jk)) + 
+    (CA*Ljk*sqr(jk))/
+    (ik*(ij + ik)*(ij + jk)) - 
+    (2*CF*Ljk*sqr(jk))/
+    (ik*(ij + ik)*(ij + jk)) - 
+    (24*CA*Box6ikj*ik*sqr(jk))/
+    (sqr(ij)*(ij + ik)*(ij + jk));
 
   qqbargLoops[8] = 
-    (-8*CA*Box6ijk*invariant(i,j))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (16*CF*Box6ijk*invariant(i,j))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (CA*Lij*invariant(i,j))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (2*CF*Lij*invariant(i,j))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (CA*Ljk*invariant(i,j))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (2*CF*Ljk*invariant(i,j))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (8*CA*Box6ijk*sqr(invariant(i,j)))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (16*CF*Box6ijk*sqr(invariant(i,j)))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (24*CA*Box6ikj*invariant(i,k))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (CA*Lij*invariant(i,k))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (2*CF*Lij*invariant(i,k))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (CA*Lik*invariant(i,k))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (4*CF*Lik*invariant(i,k))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (CA*Ljk*invariant(i,k))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (4*CF*Ljk*invariant(i,k))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (24*CA*Box6ikj*sqr(invariant(i,k)))/
-    (invariant(i,j)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (CA*Lik*sqr(invariant(i,k)))/
-    (invariant(i,j)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (4*CF*Lik*sqr(invariant(i,k)))/
-    (invariant(i,j)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (8*CA*Box6jik*sqr(invariant(i,j))*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(j,k))*(invariant(i,j) + invariant(j,k))) - 
-    (16*CF*Box6jik*sqr(invariant(i,j))*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(j,k))*(invariant(i,j) + invariant(j,k))) + 
-    (8*CA*Box6jik*invariant(i,j)*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(j,k))*(invariant(i,j) + invariant(j,k))) - 
-    (16*CF*Box6jik*invariant(i,j)*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(j,k))*(invariant(i,j) + invariant(j,k))) - 
-    (CA*Lij*sqr(invariant(i,j)))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,j) + invariant(j,k))) + 
-    (2*CF*Lij*sqr(invariant(i,j)))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,j) + invariant(j,k))) + 
-    (8*CA*Box6jik*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,j) + invariant(j,k))) - 
-    (16*CF*Box6jik*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,j) + invariant(j,k))) - 
-    (CA*Lij*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,j) + invariant(j,k))) + 
-    (2*CF*Lij*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,j) + invariant(j,k))) - 
-    (CA*Lik*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,j) + invariant(j,k))) + 
-    (2*CF*Lik*invariant(i,j)*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,j) + invariant(j,k))) + 
-    (8*CA*Box6jik*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,j) + invariant(j,k))) - 
-    (16*CF*Box6jik*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,j) + invariant(j,k))) - 
-    (CA*Lik*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,j) + invariant(j,k))) + 
-    (2*CF*Lik*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(i,k))*invariant(j,k)*(invariant(i,j) + invariant(j,k))) - 
-    (8*CA*Box6ijk*invariant(j,k))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (16*CF*Box6ijk*invariant(j,k))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (CA*Ljk*invariant(j,k))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (2*CF*Ljk*invariant(j,k))/((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (8*CA*Box6ijk*invariant(i,j)*invariant(j,k))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (16*CF*Box6ijk*invariant(i,j)*invariant(j,k))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (24*CA*Box6ikj*invariant(i,k)*invariant(j,k))/
-    (invariant(i,j)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (CA*Ljk*invariant(i,k)*invariant(j,k))/
-    (invariant(i,j)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) - 
-    (4*CF*Ljk*invariant(i,k)*invariant(j,k))/
-    (invariant(i,j)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))) + 
-    (24*CA*Box6ikj*sqr(invariant(i,k))*invariant(j,k))/
-    (sqr(invariant(i,j))*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k)));
+    (-8*CA*Box6ijk*ij)/((ij + ik)*(ij + jk)) + 
+    (16*CF*Box6ijk*ij)/((ij + ik)*(ij + jk)) - 
+    (CA*Lij*ij)/((ij + ik)*(ij + jk)) + 
+    (2*CF*Lij*ij)/((ij + ik)*(ij + jk)) - 
+    (CA*Ljk*ij)/((ij + ik)*(ij + jk)) - 
+    (2*CF*Ljk*ij)/((ij + ik)*(ij + jk)) - 
+    (8*CA*Box6ijk*sqr(ij))/
+    (ik*(ij + ik)*(ij + jk)) + 
+    (16*CF*Box6ijk*sqr(ij))/
+    (ik*(ij + ik)*(ij + jk)) + 
+    (24*CA*Box6ikj*ik)/((ij + ik)*(ij + jk)) - 
+    (CA*Lij*ik)/((ij + ik)*(ij + jk)) + 
+    (2*CF*Lij*ik)/((ij + ik)*(ij + jk)) - 
+    (CA*Lik*ik)/((ij + ik)*(ij + jk)) - 
+    (4*CF*Lik*ik)/((ij + ik)*(ij + jk)) - 
+    (CA*Ljk*ik)/((ij + ik)*(ij + jk)) - 
+    (4*CF*Ljk*ik)/((ij + ik)*(ij + jk)) + 
+    (24*CA*Box6ikj*sqr(ik))/
+    (ij*(ij + ik)*(ij + jk)) - 
+    (CA*Lik*sqr(ik))/
+    (ij*(ij + ik)*(ij + jk)) - 
+    (4*CF*Lik*sqr(ik))/
+    (ij*(ij + ik)*(ij + jk)) + 
+    (8*CA*Box6jik*sqr(ij)*ik)/
+    ((ij + ik)*sqr(jk)*(ij + jk)) - 
+    (16*CF*Box6jik*sqr(ij)*ik)/
+    ((ij + ik)*sqr(jk)*(ij + jk)) + 
+    (8*CA*Box6jik*ij*sqr(ik))/
+    ((ij + ik)*sqr(jk)*(ij + jk)) - 
+    (16*CF*Box6jik*ij*sqr(ik))/
+    ((ij + ik)*sqr(jk)*(ij + jk)) - 
+    (CA*Lij*sqr(ij))/
+    ((ij + ik)*jk*(ij + jk)) + 
+    (2*CF*Lij*sqr(ij))/
+    ((ij + ik)*jk*(ij + jk)) + 
+    (8*CA*Box6jik*ij*ik)/
+    ((ij + ik)*jk*(ij + jk)) - 
+    (16*CF*Box6jik*ij*ik)/
+    ((ij + ik)*jk*(ij + jk)) - 
+    (CA*Lij*ij*ik)/
+    ((ij + ik)*jk*(ij + jk)) + 
+    (2*CF*Lij*ij*ik)/
+    ((ij + ik)*jk*(ij + jk)) - 
+    (CA*Lik*ij*ik)/
+    ((ij + ik)*jk*(ij + jk)) + 
+    (2*CF*Lik*ij*ik)/
+    ((ij + ik)*jk*(ij + jk)) + 
+    (8*CA*Box6jik*sqr(ik))/
+    ((ij + ik)*jk*(ij + jk)) - 
+    (16*CF*Box6jik*sqr(ik))/
+    ((ij + ik)*jk*(ij + jk)) - 
+    (CA*Lik*sqr(ik))/
+    ((ij + ik)*jk*(ij + jk)) + 
+    (2*CF*Lik*sqr(ik))/
+    ((ij + ik)*jk*(ij + jk)) - 
+    (8*CA*Box6ijk*jk)/((ij + ik)*(ij + jk)) + 
+    (16*CF*Box6ijk*jk)/((ij + ik)*(ij + jk)) - 
+    (CA*Ljk*jk)/((ij + ik)*(ij + jk)) - 
+    (2*CF*Ljk*jk)/((ij + ik)*(ij + jk)) - 
+    (8*CA*Box6ijk*ij*jk)/
+    (ik*(ij + ik)*(ij + jk)) + 
+    (16*CF*Box6ijk*ij*jk)/
+    (ik*(ij + ik)*(ij + jk)) + 
+    (24*CA*Box6ikj*ik*jk)/
+    (ij*(ij + ik)*(ij + jk)) - 
+    (CA*Ljk*ik*jk)/
+    (ij*(ij + ik)*(ij + jk)) - 
+    (4*CF*Ljk*ik*jk)/
+    (ij*(ij + ik)*(ij + jk)) + 
+    (24*CA*Box6ikj*sqr(ik)*jk)/
+    (sqr(ij)*(ij + ik)*(ij + jk));
 
   qqbargLoops[9] = 
-    (2*CF*invariant(i,j))/sqr(invariant(i,j) + invariant(j,k)) - 
-    (32*CA*Box6jik*invariant(i,j))/sqr(invariant(i,j) + invariant(j,k)) + 
-    (64*CF*Box6jik*invariant(i,j))/sqr(invariant(i,j) + invariant(j,k)) + 
-    (4*CA*Lij*invariant(i,j))/sqr(invariant(i,j) + invariant(j,k)) - 
-    (8*CF*Lij*invariant(i,j))/sqr(invariant(i,j) + invariant(j,k)) - 
-    (4*CF*Lik*invariant(i,j))/sqr(invariant(i,j) + invariant(j,k)) - 
-    (16*CA*Box6jik*invariant(i,k))/sqr(invariant(i,j) + invariant(j,k)) + 
-    (32*CF*Box6jik*invariant(i,k))/sqr(invariant(i,j) + invariant(j,k)) + 
-    (2*CA*Lik*invariant(i,k))/sqr(invariant(i,j) + invariant(j,k)) - 
-    (6*CF*Lik*invariant(i,k))/sqr(invariant(i,j) + invariant(j,k)) - 
-    (16*CA*Box6jik*sqr(invariant(i,j))*invariant(i,k))/
-    (sqr(invariant(j,k))*sqr(invariant(i,j) + invariant(j,k))) + 
-    (32*CF*Box6jik*sqr(invariant(i,j))*invariant(i,k))/
-    (sqr(invariant(j,k))*sqr(invariant(i,j) + invariant(j,k))) - 
-    (16*CA*Box6jik*sqr(invariant(i,j)))/(invariant(j,k)*sqr(invariant(i,j) + invariant(j,k))) + 
-    (32*CF*Box6jik*sqr(invariant(i,j)))/(invariant(j,k)*sqr(invariant(i,j) + invariant(j,k))) + 
-    (2*CA*Lij*sqr(invariant(i,j)))/(invariant(j,k)*sqr(invariant(i,j) + invariant(j,k))) - 
-    (4*CF*Lij*sqr(invariant(i,j)))/(invariant(j,k)*sqr(invariant(i,j) + invariant(j,k))) - 
-    (32*CA*Box6jik*invariant(i,j)*invariant(i,k))/(invariant(j,k)*sqr(invariant(i,j) + invariant(j,k))) + 
-    (64*CF*Box6jik*invariant(i,j)*invariant(i,k))/(invariant(j,k)*sqr(invariant(i,j) + invariant(j,k))) + 
-    (2*CA*Lik*invariant(i,j)*invariant(i,k))/(invariant(j,k)*sqr(invariant(i,j) + invariant(j,k))) - 
-    (4*CF*Lik*invariant(i,j)*invariant(i,k))/(invariant(j,k)*sqr(invariant(i,j) + invariant(j,k))) + 
-    (2*CF*invariant(j,k))/sqr(invariant(i,j) + invariant(j,k)) - 
-    (16*CA*Box6jik*invariant(j,k))/sqr(invariant(i,j) + invariant(j,k)) + 
-    (32*CF*Box6jik*invariant(j,k))/sqr(invariant(i,j) + invariant(j,k)) + 
-    (2*CA*Lij*invariant(j,k))/sqr(invariant(i,j) + invariant(j,k)) - 
-    (4*CF*Lij*invariant(j,k))/sqr(invariant(i,j) + invariant(j,k)) - 
-    (4*CF*Lik*invariant(j,k))/sqr(invariant(i,j) + invariant(j,k));
+    (2*CF*ij)/sqr(ij + jk) - 
+    (32*CA*Box6jik*ij)/sqr(ij + jk) + 
+    (64*CF*Box6jik*ij)/sqr(ij + jk) + 
+    (4*CA*Lij*ij)/sqr(ij + jk) - 
+    (8*CF*Lij*ij)/sqr(ij + jk) - 
+    (4*CF*Lik*ij)/sqr(ij + jk) - 
+    (16*CA*Box6jik*ik)/sqr(ij + jk) + 
+    (32*CF*Box6jik*ik)/sqr(ij + jk) + 
+    (2*CA*Lik*ik)/sqr(ij + jk) - 
+    (6*CF*Lik*ik)/sqr(ij + jk) - 
+    (16*CA*Box6jik*sqr(ij)*ik)/
+    (sqr(jk)*sqr(ij + jk)) + 
+    (32*CF*Box6jik*sqr(ij)*ik)/
+    (sqr(jk)*sqr(ij + jk)) - 
+    (16*CA*Box6jik*sqr(ij))/(jk*sqr(ij + jk)) + 
+    (32*CF*Box6jik*sqr(ij))/(jk*sqr(ij + jk)) + 
+    (2*CA*Lij*sqr(ij))/(jk*sqr(ij + jk)) - 
+    (4*CF*Lij*sqr(ij))/(jk*sqr(ij + jk)) - 
+    (32*CA*Box6jik*ij*ik)/(jk*sqr(ij + jk)) + 
+    (64*CF*Box6jik*ij*ik)/(jk*sqr(ij + jk)) + 
+    (2*CA*Lik*ij*ik)/(jk*sqr(ij + jk)) - 
+    (4*CF*Lik*ij*ik)/(jk*sqr(ij + jk)) + 
+    (2*CF*jk)/sqr(ij + jk) - 
+    (16*CA*Box6jik*jk)/sqr(ij + jk) + 
+    (32*CF*Box6jik*jk)/sqr(ij + jk) + 
+    (2*CA*Lij*jk)/sqr(ij + jk) - 
+    (4*CF*Lij*jk)/sqr(ij + jk) - 
+    (4*CF*Lik*jk)/sqr(ij + jk);
 
   qqbargLoops[10] = 
-    (-8*CA*Box6ijk*sqr(invariant(i,j))*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (16*CF*Box6ijk*sqr(invariant(i,j))*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (2*CA*Lij*sqr(invariant(i,j))*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (4*CF*Lij*sqr(invariant(i,j))*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (CA*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (2*CF*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (8*CA*Box6ijk*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (16*CF*Box6ijk*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (3*CA*Lij*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (6*CF*Lij*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (CA*Ljk*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (2*CF*Ljk*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (CA*sqr(invariant(i,k))*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (2*CF*sqr(invariant(i,k))*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (CA*Lij*sqr(invariant(i,k))*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (2*CF*Lij*sqr(invariant(i,k))*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (CA*Ljk*sqr(invariant(i,k))*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (CF*Ljk*sqr(invariant(i,k))*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (CA*invariant(i,j)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (2*CF*invariant(i,j)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (16*CA*Box6ijk*invariant(i,j)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (32*CF*Box6ijk*invariant(i,j)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (2*CA*Lij*invariant(i,j)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (4*CF*Lij*invariant(i,j)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (2*CA*Ljk*invariant(i,j)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (4*CF*Ljk*invariant(i,j)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (16*CA*Box6ijk*sqr(invariant(i,j))*sqr(invariant(j,k)))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (32*CF*Box6ijk*sqr(invariant(i,j))*sqr(invariant(j,k)))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (CA*Lij*sqr(invariant(i,j))*sqr(invariant(j,k)))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (2*CF*Lij*sqr(invariant(i,j))*sqr(invariant(j,k)))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (CA*invariant(i,k)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (2*CF*invariant(i,k)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (CA*Lij*invariant(i,k)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (2*CF*Lij*invariant(i,k)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (2*CA*Ljk*invariant(i,k)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (2*CF*Ljk*invariant(i,k)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (CA*Ljk*pow(invariant(j,k),3))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (CF*Ljk*pow(invariant(j,k),3))/
-    ((invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (8*CA*Box6ijk*sqr(invariant(i,j))*pow(invariant(j,k),3))/
-    (sqr(invariant(i,k))*(invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (16*CF*Box6ijk*sqr(invariant(i,j))*pow(invariant(j,k),3))/
-    (sqr(invariant(i,k))*(invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (8*CA*Box6ijk*invariant(i,j)*pow(invariant(j,k),3))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (16*CF*Box6ijk*invariant(i,j)*pow(invariant(j,k),3))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (CA*Ljk*invariant(i,j)*pow(invariant(j,k),3))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (2*CF*Ljk*invariant(i,j)*pow(invariant(j,k),3))/
-    (invariant(i,k)*(invariant(i,j) + invariant(i,k))*sqr(invariant(i,k) + invariant(j,k)));
+    (-8*CA*Box6ijk*sqr(ij)*jk)/
+    ((ij + ik)*sqr(ik + jk)) + 
+    (16*CF*Box6ijk*sqr(ij)*jk)/
+    ((ij + ik)*sqr(ik + jk)) + 
+    (2*CA*Lij*sqr(ij)*jk)/
+    ((ij + ik)*sqr(ik + jk)) - 
+    (4*CF*Lij*sqr(ij)*jk)/
+    ((ij + ik)*sqr(ik + jk)) - 
+    (CA*ij*ik*jk)/
+    ((ij + ik)*sqr(ik + jk)) + 
+    (2*CF*ij*ik*jk)/
+    ((ij + ik)*sqr(ik + jk)) - 
+    (8*CA*Box6ijk*ij*ik*jk)/
+    ((ij + ik)*sqr(ik + jk)) + 
+    (16*CF*Box6ijk*ij*ik*jk)/
+    ((ij + ik)*sqr(ik + jk)) + 
+    (3*CA*Lij*ij*ik*jk)/
+    ((ij + ik)*sqr(ik + jk)) - 
+    (6*CF*Lij*ij*ik*jk)/
+    ((ij + ik)*sqr(ik + jk)) + 
+    (CA*Ljk*ij*ik*jk)/
+    ((ij + ik)*sqr(ik + jk)) - 
+    (2*CF*Ljk*ij*ik*jk)/
+    ((ij + ik)*sqr(ik + jk)) - 
+    (CA*sqr(ik)*jk)/
+    ((ij + ik)*sqr(ik + jk)) + 
+    (2*CF*sqr(ik)*jk)/
+    ((ij + ik)*sqr(ik + jk)) + 
+    (CA*Lij*sqr(ik)*jk)/
+    ((ij + ik)*sqr(ik + jk)) - 
+    (2*CF*Lij*sqr(ik)*jk)/
+    ((ij + ik)*sqr(ik + jk)) + 
+    (CA*Ljk*sqr(ik)*jk)/
+    ((ij + ik)*sqr(ik + jk)) - 
+    (CF*Ljk*sqr(ik)*jk)/
+    ((ij + ik)*sqr(ik + jk)) - 
+    (CA*ij*sqr(jk))/
+    ((ij + ik)*sqr(ik + jk)) + 
+    (2*CF*ij*sqr(jk))/
+    ((ij + ik)*sqr(ik + jk)) - 
+    (16*CA*Box6ijk*ij*sqr(jk))/
+    ((ij + ik)*sqr(ik + jk)) + 
+    (32*CF*Box6ijk*ij*sqr(jk))/
+    ((ij + ik)*sqr(ik + jk)) + 
+    (2*CA*Lij*ij*sqr(jk))/
+    ((ij + ik)*sqr(ik + jk)) - 
+    (4*CF*Lij*ij*sqr(jk))/
+    ((ij + ik)*sqr(ik + jk)) + 
+    (2*CA*Ljk*ij*sqr(jk))/
+    ((ij + ik)*sqr(ik + jk)) - 
+    (4*CF*Ljk*ij*sqr(jk))/
+    ((ij + ik)*sqr(ik + jk)) - 
+    (16*CA*Box6ijk*sqr(ij)*sqr(jk))/
+    (ik*(ij + ik)*sqr(ik + jk)) + 
+    (32*CF*Box6ijk*sqr(ij)*sqr(jk))/
+    (ik*(ij + ik)*sqr(ik + jk)) + 
+    (CA*Lij*sqr(ij)*sqr(jk))/
+    (ik*(ij + ik)*sqr(ik + jk)) - 
+    (2*CF*Lij*sqr(ij)*sqr(jk))/
+    (ik*(ij + ik)*sqr(ik + jk)) - 
+    (CA*ik*sqr(jk))/
+    ((ij + ik)*sqr(ik + jk)) + 
+    (2*CF*ik*sqr(jk))/
+    ((ij + ik)*sqr(ik + jk)) + 
+    (CA*Lij*ik*sqr(jk))/
+    ((ij + ik)*sqr(ik + jk)) - 
+    (2*CF*Lij*ik*sqr(jk))/
+    ((ij + ik)*sqr(ik + jk)) + 
+    (2*CA*Ljk*ik*sqr(jk))/
+    ((ij + ik)*sqr(ik + jk)) - 
+    (2*CF*Ljk*ik*sqr(jk))/
+    ((ij + ik)*sqr(ik + jk)) + 
+    (CA*Ljk*pow(jk,3))/
+    ((ij + ik)*sqr(ik + jk)) - 
+    (CF*Ljk*pow(jk,3))/
+    ((ij + ik)*sqr(ik + jk)) - 
+    (8*CA*Box6ijk*sqr(ij)*pow(jk,3))/
+    (sqr(ik)*(ij + ik)*sqr(ik + jk)) + 
+    (16*CF*Box6ijk*sqr(ij)*pow(jk,3))/
+    (sqr(ik)*(ij + ik)*sqr(ik + jk)) - 
+    (8*CA*Box6ijk*ij*pow(jk,3))/
+    (ik*(ij + ik)*sqr(ik + jk)) + 
+    (16*CF*Box6ijk*ij*pow(jk,3))/
+    (ik*(ij + ik)*sqr(ik + jk)) + 
+    (CA*Ljk*ij*pow(jk,3))/
+    (ik*(ij + ik)*sqr(ik + jk)) - 
+    (2*CF*Ljk*ij*pow(jk,3))/
+    (ik*(ij + ik)*sqr(ik + jk));
 
   qqbargLoops[11] = 
-    (16*CA*Box6jik*sqr(invariant(i,j))*invariant(i,k))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (32*CF*Box6jik*sqr(invariant(i,j))*invariant(i,k))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (CA*Lij*sqr(invariant(i,j))*invariant(i,k))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (2*CF*Lij*sqr(invariant(i,j))*invariant(i,k))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (8*CA*Box6jik*invariant(i,j)*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (16*CF*Box6jik*invariant(i,j)*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (CA*Lik*invariant(i,j)*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (2*CF*Lik*invariant(i,j)*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (8*CA*Box6jik*sqr(invariant(i,j))*sqr(invariant(i,k)))/
-    (invariant(j,k)*(invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (16*CF*Box6jik*sqr(invariant(i,j))*sqr(invariant(i,k)))/
-    (invariant(j,k)*(invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (8*CA*Box6jik*sqr(invariant(i,j))*invariant(j,k))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (16*CF*Box6jik*sqr(invariant(i,j))*invariant(j,k))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (2*CA*Lij*sqr(invariant(i,j))*invariant(j,k))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (4*CF*Lij*sqr(invariant(i,j))*invariant(j,k))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (CA*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (2*CF*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (16*CA*Box6jik*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (32*CF*Box6jik*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (2*CA*Lij*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (4*CF*Lij*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (2*CA*Lik*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (4*CF*Lik*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (CA*Lik*sqr(invariant(i,k))*invariant(j,k))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (CF*Lik*sqr(invariant(i,k))*invariant(j,k))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (CA*invariant(i,j)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (2*CF*invariant(i,j)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (8*CA*Box6jik*invariant(i,j)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (16*CF*Box6jik*invariant(i,j)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (3*CA*Lij*invariant(i,j)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (6*CF*Lij*invariant(i,j)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (CA*Lik*invariant(i,j)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (2*CF*Lik*invariant(i,j)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (CA*invariant(i,k)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (2*CF*invariant(i,k)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (CA*Lij*invariant(i,k)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (2*CF*Lij*invariant(i,k)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (2*CA*Lik*invariant(i,k)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (2*CF*Lik*invariant(i,k)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (CA*pow(invariant(j,k),3))/((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (2*CF*pow(invariant(j,k),3))/((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (CA*Lij*pow(invariant(j,k),3))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (2*CF*Lij*pow(invariant(j,k),3))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) - 
-    (CA*Lik*pow(invariant(j,k),3))/
-    ((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k))) + 
-    (CF*Lik*pow(invariant(j,k),3))/((invariant(i,j) + invariant(j,k))*sqr(invariant(i,k) + invariant(j,k)));
+    (16*CA*Box6jik*sqr(ij)*ik)/
+    ((ij + jk)*sqr(ik + jk)) - 
+    (32*CF*Box6jik*sqr(ij)*ik)/
+    ((ij + jk)*sqr(ik + jk)) - 
+    (CA*Lij*sqr(ij)*ik)/
+    ((ij + jk)*sqr(ik + jk)) + 
+    (2*CF*Lij*sqr(ij)*ik)/
+    ((ij + jk)*sqr(ik + jk)) + 
+    (8*CA*Box6jik*ij*sqr(ik))/
+    ((ij + jk)*sqr(ik + jk)) - 
+    (16*CF*Box6jik*ij*sqr(ik))/
+    ((ij + jk)*sqr(ik + jk)) - 
+    (CA*Lik*ij*sqr(ik))/
+    ((ij + jk)*sqr(ik + jk)) + 
+    (2*CF*Lik*ij*sqr(ik))/
+    ((ij + jk)*sqr(ik + jk)) + 
+    (8*CA*Box6jik*sqr(ij)*sqr(ik))/
+    (jk*(ij + jk)*sqr(ik + jk)) - 
+    (16*CF*Box6jik*sqr(ij)*sqr(ik))/
+    (jk*(ij + jk)*sqr(ik + jk)) + 
+    (8*CA*Box6jik*sqr(ij)*jk)/
+    ((ij + jk)*sqr(ik + jk)) - 
+    (16*CF*Box6jik*sqr(ij)*jk)/
+    ((ij + jk)*sqr(ik + jk)) - 
+    (2*CA*Lij*sqr(ij)*jk)/
+    ((ij + jk)*sqr(ik + jk)) + 
+    (4*CF*Lij*sqr(ij)*jk)/
+    ((ij + jk)*sqr(ik + jk)) + 
+    (CA*ij*ik*jk)/
+    ((ij + jk)*sqr(ik + jk)) - 
+    (2*CF*ij*ik*jk)/
+    ((ij + jk)*sqr(ik + jk)) + 
+    (16*CA*Box6jik*ij*ik*jk)/
+    ((ij + jk)*sqr(ik + jk)) - 
+    (32*CF*Box6jik*ij*ik*jk)/
+    ((ij + jk)*sqr(ik + jk)) - 
+    (2*CA*Lij*ij*ik*jk)/
+    ((ij + jk)*sqr(ik + jk)) + 
+    (4*CF*Lij*ij*ik*jk)/
+    ((ij + jk)*sqr(ik + jk)) - 
+    (2*CA*Lik*ij*ik*jk)/
+    ((ij + jk)*sqr(ik + jk)) + 
+    (4*CF*Lik*ij*ik*jk)/
+    ((ij + jk)*sqr(ik + jk)) - 
+    (CA*Lik*sqr(ik)*jk)/
+    ((ij + jk)*sqr(ik + jk)) + 
+    (CF*Lik*sqr(ik)*jk)/
+    ((ij + jk)*sqr(ik + jk)) + 
+    (CA*ij*sqr(jk))/
+    ((ij + jk)*sqr(ik + jk)) - 
+    (2*CF*ij*sqr(jk))/
+    ((ij + jk)*sqr(ik + jk)) + 
+    (8*CA*Box6jik*ij*sqr(jk))/
+    ((ij + jk)*sqr(ik + jk)) - 
+    (16*CF*Box6jik*ij*sqr(jk))/
+    ((ij + jk)*sqr(ik + jk)) - 
+    (3*CA*Lij*ij*sqr(jk))/
+    ((ij + jk)*sqr(ik + jk)) + 
+    (6*CF*Lij*ij*sqr(jk))/
+    ((ij + jk)*sqr(ik + jk)) - 
+    (CA*Lik*ij*sqr(jk))/
+    ((ij + jk)*sqr(ik + jk)) + 
+    (2*CF*Lik*ij*sqr(jk))/
+    ((ij + jk)*sqr(ik + jk)) + 
+    (CA*ik*sqr(jk))/
+    ((ij + jk)*sqr(ik + jk)) - 
+    (2*CF*ik*sqr(jk))/
+    ((ij + jk)*sqr(ik + jk)) - 
+    (CA*Lij*ik*sqr(jk))/
+    ((ij + jk)*sqr(ik + jk)) + 
+    (2*CF*Lij*ik*sqr(jk))/
+    ((ij + jk)*sqr(ik + jk)) - 
+    (2*CA*Lik*ik*sqr(jk))/
+    ((ij + jk)*sqr(ik + jk)) + 
+    (2*CF*Lik*ik*sqr(jk))/
+    ((ij + jk)*sqr(ik + jk)) + 
+    (CA*pow(jk,3))/((ij + jk)*sqr(ik + jk)) - 
+    (2*CF*pow(jk,3))/((ij + jk)*sqr(ik + jk)) - 
+    (CA*Lij*pow(jk,3))/
+    ((ij + jk)*sqr(ik + jk)) + 
+    (2*CF*Lij*pow(jk,3))/
+    ((ij + jk)*sqr(ik + jk)) - 
+    (CA*Lik*pow(jk,3))/
+    ((ij + jk)*sqr(ik + jk)) + 
+    (CF*Lik*pow(jk,3))/((ij + jk)*sqr(ik + jk));
 
   qqbargLoops[12] = -3*CF*Lijk +
-    (CA*sqr(invariant(i,j))*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (9*CF*sqr(invariant(i,j))*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (8*CA*Box6ijk*sqr(invariant(i,j))*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (16*CF*Box6ijk*sqr(invariant(i,j))*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (8*CA*Box6ikj*sqr(invariant(i,j))*invariant(i,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (CA*invariant(i,j)*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (9*CF*invariant(i,j)*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (8*CA*Box6ijk*invariant(i,j)*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (16*CF*Box6ijk*invariant(i,j)*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (8*CA*Box6ikj*invariant(i,j)*sqr(invariant(i,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (CA*sqr(invariant(i,j))*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (9*CF*sqr(invariant(i,j))*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (8*CA*Box6ikj*sqr(invariant(i,j))*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (8*CA*Box6jik*sqr(invariant(i,j))*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (16*CF*Box6jik*sqr(invariant(i,j))*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (2*CA*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (18*CF*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (8*CA*Box6ijk*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (16*CF*Box6ijk*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (40*CA*Box6ikj*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (8*CA*Box6jik*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (16*CF*Box6jik*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (3*CF*Lik*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (3*CF*Ljk*invariant(i,j)*invariant(i,k)*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (CA*sqr(invariant(i,k))*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (9*CF*sqr(invariant(i,k))*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (8*CA*Box6ijk*sqr(invariant(i,k))*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (16*CF*Box6ijk*sqr(invariant(i,k))*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (32*CA*Box6ikj*sqr(invariant(i,k))*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (3*CF*Lik*sqr(invariant(i,k))*invariant(j,k))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (CA*invariant(i,j)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (9*CF*invariant(i,j)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (8*CA*Box6ikj*invariant(i,j)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (8*CA*Box6jik*invariant(i,j)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (16*CF*Box6jik*invariant(i,j)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (CA*invariant(i,k)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (9*CF*invariant(i,k)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (32*CA*Box6ikj*invariant(i,k)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (8*CA*Box6jik*invariant(i,k)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (16*CF*Box6jik*invariant(i,k)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) + 
-    (3*CF*Ljk*invariant(i,k)*sqr(invariant(j,k)))/
-    ((invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*(invariant(i,k) + invariant(j,k))) - 
-    (24*CA*Box6ikj*sqr(invariant(i,k))*sqr(invariant(j,k)))/
-    (invariant(i,j)*(invariant(i,j) + invariant(i,k))*(invariant(i,j) + invariant(j,k))*
-     (invariant(i,k) + invariant(j,k)));
+    (CA*sqr(ij)*ik)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (9*CF*sqr(ij)*ik)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (8*CA*Box6ijk*sqr(ij)*ik)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (16*CF*Box6ijk*sqr(ij)*ik)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (8*CA*Box6ikj*sqr(ij)*ik)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (CA*ij*sqr(ik))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (9*CF*ij*sqr(ik))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (8*CA*Box6ijk*ij*sqr(ik))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (16*CF*Box6ijk*ij*sqr(ik))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (8*CA*Box6ikj*ij*sqr(ik))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (CA*sqr(ij)*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (9*CF*sqr(ij)*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (8*CA*Box6ikj*sqr(ij)*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (8*CA*Box6jik*sqr(ij)*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (16*CF*Box6jik*sqr(ij)*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (2*CA*ij*ik*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (18*CF*ij*ik*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (8*CA*Box6ijk*ij*ik*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (16*CF*Box6ijk*ij*ik*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (40*CA*Box6ikj*ij*ik*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (8*CA*Box6jik*ij*ik*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (16*CF*Box6jik*ij*ik*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (3*CF*Lik*ij*ik*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (3*CF*Ljk*ij*ik*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (CA*sqr(ik)*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (9*CF*sqr(ik)*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (8*CA*Box6ijk*sqr(ik)*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (16*CF*Box6ijk*sqr(ik)*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (32*CA*Box6ikj*sqr(ik)*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (3*CF*Lik*sqr(ik)*jk)/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (CA*ij*sqr(jk))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (9*CF*ij*sqr(jk))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (8*CA*Box6ikj*ij*sqr(jk))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (8*CA*Box6jik*ij*sqr(jk))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (16*CF*Box6jik*ij*sqr(jk))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (CA*ik*sqr(jk))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (9*CF*ik*sqr(jk))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (32*CA*Box6ikj*ik*sqr(jk))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (8*CA*Box6jik*ik*sqr(jk))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (16*CF*Box6jik*ik*sqr(jk))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) + 
+    (3*CF*Ljk*ik*sqr(jk))/
+    ((ij + ik)*(ij + jk)*(ik + jk)) - 
+    (24*CA*Box6ikj*sqr(ik)*sqr(jk))/
+    (ij*(ij + ik)*(ij + jk)*
+     (ik + jk));
 
   /* // idendities implied by gauge invariance and current conservation; checked analytically and numerically
   Complex c1 = qqbargLoops[0] + qqbargLoops[6] + qqbargLoops[7];
@@ -2532,23 +2569,23 @@ void MatchboxCurrents::qqbargLoopCoefficients(int i, int j, int k) {
   Complex c3 = qqbargLoops[3] + qqbargLoops[4];
   Complex c4 = qqbargLoops[2] + qqbargLoops[5] + qqbargLoops[10] + qqbargLoops[11];
   Complex c5 = 
-    2.*qqbargLoops[3]/invariant(i,k) +
-    2.*qqbargLoops[5]/invariant(j,k) +
-    qqbargLoops[6]*(1.+invariant(i,j)/invariant(i,k)) +
-    qqbargLoops[8]*(invariant(j,k)+invariant(i,j))/invariant(i,k) +
-    2.*qqbargLoops[10]*(1./invariant(i,k)+1./invariant(j,k)) +
-    2.*qqbargLoops[12]*(1./invariant(i,k)+1./invariant(j,k));
+    2.*qqbargLoops[3]/ik +
+    2.*qqbargLoops[5]/jk +
+    qqbargLoops[6]*(1.+ij/ik) +
+    qqbargLoops[8]*(jk+ij)/ik +
+    2.*qqbargLoops[10]*(1./ik+1./jk) +
+    2.*qqbargLoops[12]*(1./ik+1./jk);
   Complex c6 = 
-    2.*qqbargLoops[4]/invariant(j,k) +
-    2.*qqbargLoops[5]/invariant(j,k) +
-    qqbargLoops[7]*(invariant(i,k)+invariant(i,j))/invariant(j,k) +
-    qqbargLoops[9]*(1.+invariant(i,j)/invariant(j,k)) +
-    2.*qqbargLoops[11]*(invariant(i,k)/sqr(invariant(j,k))+1./invariant(j,k));
+    2.*qqbargLoops[4]/jk +
+    2.*qqbargLoops[5]/jk +
+    qqbargLoops[7]*(ik+ij)/jk +
+    qqbargLoops[9]*(1.+ij/jk) +
+    2.*qqbargLoops[11]*(ik/sqr(jk)+1./jk);
   Complex c7 =
-    0.5*qqbargLoops[0]*(invariant(i,j)+invariant(i,k)) +
-    0.5*qqbargLoops[1]*(invariant(i,j)+invariant(j,k)) +
-    qqbargLoops[2]*(1.+invariant(i,k)/invariant(j,k)) -
-    qqbargLoops[12]*(1.+invariant(i,k)/invariant(j,k));
+    0.5*qqbargLoops[0]*(ij+ik) +
+    0.5*qqbargLoops[1]*(ij+jk) +
+    qqbargLoops[2]*(1.+ik/jk) -
+    qqbargLoops[12]*(1.+ik/jk);
 
   double x1 = c1 != 0. ? log(abs(real(c1*conj(c1)))) : 0.;
   double x2 = c2 != 0. ? log(abs(real(c2*conj(c2)))) : 0.;
@@ -2571,6 +2608,9 @@ LorentzVector<Complex> MatchboxCurrents::qqbargGeneralLeftLoopCurrent(int i, int
 
   qqbargLoopCoefficients(i,j,k);
 
+  const double ik = invariant(i,k);
+  const double jk = invariant(j,k);
+
   Complex c1  = qqbargLoops[0]; Complex c2  = qqbargLoops[1];  Complex c3  = qqbargLoops[2];
   Complex c4  = qqbargLoops[3]; Complex c5  = qqbargLoops[4];  Complex c6  = qqbargLoops[5];
   Complex c7  = qqbargLoops[6]; Complex c8  = qqbargLoops[7];  Complex c9  = qqbargLoops[8];
@@ -2579,35 +2619,35 @@ LorentzVector<Complex> MatchboxCurrents::qqbargGeneralLeftLoopCurrent(int i, int
 
   if ( gHel == 1 ) {
     return
-      (sqrt(2)*c6*plusProduct(j,k)*minusCurrent(n,k)*minusProduct(i,k))/(invariant(j,k)*minusProduct(k,n)) + 
+      (sqrt(2)*c6*plusProduct(j,k)*minusCurrent(n,k)*minusProduct(i,k))/(jk*minusProduct(k,n)) + 
       (sqrt(2)*c1*plusProduct(j,k)*momentum(i)*minusProduct(i,n))/minusProduct(k,n) + 
       (sqrt(2)*c2*plusProduct(j,k)*momentum(j)*minusProduct(i,n))/minusProduct(k,n) + 
-      (2*sqrt(2)*c3*plusProduct(j,k)*momentum(k)*minusProduct(i,n))/(invariant(j,k)*minusProduct(k,n)) + 
-      (sqrt(2)*c4*plusProduct(i,k)*minusCurrent(i,j)*minusProduct(i,n))/(invariant(i,k)*minusProduct(k,n)) - 
-      (sqrt(2)*c7*plusProduct(i,k)*plusProduct(j,k)*momentum(i)*minusProduct(i,k)*minusProduct(i,n))/(invariant(i,k)*minusProduct(k,n)) - 
-      (sqrt(2)*c9*plusProduct(i,k)*plusProduct(j,k)*momentum(j)*minusProduct(i,k)*minusProduct(i,n))/(invariant(i,k)*minusProduct(k,n)) - 
-      (2*sqrt(2)*c11*plusProduct(i,k)*plusProduct(j,k)*momentum(k)*minusProduct(i,k)*minusProduct(i,n))/(invariant(i,k)*invariant(j,k)*minusProduct(k,n)) + 
-      (sqrt(2)*c5*plusProduct(j,k)*minusCurrent(i,j)*minusProduct(j,n))/(invariant(j,k)*minusProduct(k,n)) - 
-      (sqrt(2)*c8*sqr(plusProduct(j,k))*momentum(i)*minusProduct(i,k)*minusProduct(j,n))/(invariant(j,k)*minusProduct(k,n)) - 
-      (sqrt(2)*c10*sqr(plusProduct(j,k))*momentum(j)*minusProduct(i,k)*minusProduct(j,n))/(invariant(j,k)*minusProduct(k,n)) - 
-      (2*sqrt(2)*c12*sqr(plusProduct(j,k))*momentum(k)*minusProduct(i,k)*minusProduct(j,n))/(sqr(invariant(j,k))*minusProduct(k,n));
+      (2*sqrt(2)*c3*plusProduct(j,k)*momentum(k)*minusProduct(i,n))/(jk*minusProduct(k,n)) + 
+      (sqrt(2)*c4*plusProduct(i,k)*minusCurrent(i,j)*minusProduct(i,n))/(ik*minusProduct(k,n)) - 
+      (sqrt(2)*c7*plusProduct(i,k)*plusProduct(j,k)*momentum(i)*minusProduct(i,k)*minusProduct(i,n))/(ik*minusProduct(k,n)) - 
+      (sqrt(2)*c9*plusProduct(i,k)*plusProduct(j,k)*momentum(j)*minusProduct(i,k)*minusProduct(i,n))/(ik*minusProduct(k,n)) - 
+      (2*sqrt(2)*c11*plusProduct(i,k)*plusProduct(j,k)*momentum(k)*minusProduct(i,k)*minusProduct(i,n))/(ik*jk*minusProduct(k,n)) + 
+      (sqrt(2)*c5*plusProduct(j,k)*minusCurrent(i,j)*minusProduct(j,n))/(jk*minusProduct(k,n)) - 
+      (sqrt(2)*c8*sqr(plusProduct(j,k))*momentum(i)*minusProduct(i,k)*minusProduct(j,n))/(jk*minusProduct(k,n)) - 
+      (sqrt(2)*c10*sqr(plusProduct(j,k))*momentum(j)*minusProduct(i,k)*minusProduct(j,n))/(jk*minusProduct(k,n)) - 
+      (2*sqrt(2)*c12*sqr(plusProduct(j,k))*momentum(k)*minusProduct(i,k)*minusProduct(j,n))/(sqr(jk)*minusProduct(k,n));
   }
 
   if ( gHel == -1 ) {
     return
       -((sqrt(2)*c1*plusProduct(j,n)*momentum(i)*minusProduct(i,k))/plusProduct(k,n)) - 
       (sqrt(2)*c2*plusProduct(j,n)*momentum(j)*minusProduct(i,k))/plusProduct(k,n) - 
-      (2*sqrt(2)*c3*plusProduct(j,n)*momentum(k)*minusProduct(i,k))/(invariant(j,k)*plusProduct(k,n)) - 
-      (sqrt(2)*c4*plusProduct(i,n)*minusCurrent(i,j)*minusProduct(i,k))/(invariant(i,k)*plusProduct(k,n)) + 
-      (sqrt(2)*c13*minusCurrent(k,j)*minusProduct(i,k))/invariant(i,k) + (sqrt(2)*c13*minusCurrent(k,j)*minusProduct(i,k))/invariant(j,k) - 
-      (sqrt(2)*c6*plusProduct(j,k)*minusCurrent(k,n)*minusProduct(i,k))/(invariant(j,k)*plusProduct(k,n)) + 
-      (sqrt(2)*c7*plusProduct(i,n)*plusProduct(j,k)*momentum(i)*sqr(minusProduct(i,k)))/(invariant(i,k)*plusProduct(k,n)) + 
-      (sqrt(2)*c9*plusProduct(i,n)*plusProduct(j,k)*momentum(j)*sqr(minusProduct(i,k)))/(invariant(i,k)*plusProduct(k,n)) + 
-      (2*sqrt(2)*c11*plusProduct(i,n)*plusProduct(j,k)*momentum(k)*sqr(minusProduct(i,k)))/(invariant(i,k)*invariant(j,k)*plusProduct(k,n)) - 
-      (sqrt(2)*c5*plusProduct(j,n)*minusCurrent(i,j)*minusProduct(j,k))/(invariant(j,k)*plusProduct(k,n)) + 
-      (sqrt(2)*c8*plusProduct(j,k)*plusProduct(j,n)*momentum(i)*minusProduct(i,k)*minusProduct(j,k))/(invariant(j,k)*plusProduct(k,n)) + 
-      (sqrt(2)*c10*plusProduct(j,k)*plusProduct(j,n)*momentum(j)*minusProduct(i,k)*minusProduct(j,k))/(invariant(j,k)*plusProduct(k,n)) + 
-      (2*sqrt(2)*c12*plusProduct(j,k)*plusProduct(j,n)*momentum(k)*minusProduct(i,k)*minusProduct(j,k))/(sqr(invariant(j,k))*plusProduct(k,n));
+      (2*sqrt(2)*c3*plusProduct(j,n)*momentum(k)*minusProduct(i,k))/(jk*plusProduct(k,n)) - 
+      (sqrt(2)*c4*plusProduct(i,n)*minusCurrent(i,j)*minusProduct(i,k))/(ik*plusProduct(k,n)) + 
+      (sqrt(2)*c13*minusCurrent(k,j)*minusProduct(i,k))/ik + (sqrt(2)*c13*minusCurrent(k,j)*minusProduct(i,k))/jk - 
+      (sqrt(2)*c6*plusProduct(j,k)*minusCurrent(k,n)*minusProduct(i,k))/(jk*plusProduct(k,n)) + 
+      (sqrt(2)*c7*plusProduct(i,n)*plusProduct(j,k)*momentum(i)*sqr(minusProduct(i,k)))/(ik*plusProduct(k,n)) + 
+      (sqrt(2)*c9*plusProduct(i,n)*plusProduct(j,k)*momentum(j)*sqr(minusProduct(i,k)))/(ik*plusProduct(k,n)) + 
+      (2*sqrt(2)*c11*plusProduct(i,n)*plusProduct(j,k)*momentum(k)*sqr(minusProduct(i,k)))/(ik*jk*plusProduct(k,n)) - 
+      (sqrt(2)*c5*plusProduct(j,n)*minusCurrent(i,j)*minusProduct(j,k))/(jk*plusProduct(k,n)) + 
+      (sqrt(2)*c8*plusProduct(j,k)*plusProduct(j,n)*momentum(i)*minusProduct(i,k)*minusProduct(j,k))/(jk*plusProduct(k,n)) + 
+      (sqrt(2)*c10*plusProduct(j,k)*plusProduct(j,n)*momentum(j)*minusProduct(i,k)*minusProduct(j,k))/(jk*plusProduct(k,n)) + 
+      (2*sqrt(2)*c12*plusProduct(j,k)*plusProduct(j,n)*momentum(k)*minusProduct(i,k)*minusProduct(j,k))/(sqr(jk)*plusProduct(k,n));
   }
 
   static LorentzVector<Complex> czero(0.,0.,0.,0.);
@@ -2621,6 +2661,9 @@ LorentzVector<Complex> MatchboxCurrents::qqbargFixedLeftLoopCurrent(int i, int,
 
   qqbargLoopCoefficients(i,j,k);
 
+  const double ik = invariant(i,k);
+  const double jk = invariant(j,k);
+
   //Complex c1  = qqbargLoops[0]; Complex c2  = qqbargLoops[1];  Complex c3  = qqbargLoops[2];
   Complex c4  = qqbargLoops[3]; Complex c5  = qqbargLoops[4];  Complex c6  = qqbargLoops[5];
   Complex c7  = qqbargLoops[6]; Complex c8  = qqbargLoops[7];  Complex c9  = qqbargLoops[8];
@@ -2629,21 +2672,21 @@ LorentzVector<Complex> MatchboxCurrents::qqbargFixedLeftLoopCurrent(int i, int,
 
   if ( gHel == 1 ) {
     return
-      -((sqrt(2)*c6*plusProduct(j,k)*minusCurrent(i,k))/invariant(j,k)) 
-      - (sqrt(2)*c8*sqr(plusProduct(j,k))*momentum(i)*minusProduct(i,j))/invariant(j,k) - 
-      (sqrt(2)*c10*sqr(plusProduct(j,k))*momentum(j)*minusProduct(i,j))/invariant(j,k) - 
-      (2*sqrt(2)*c12*sqr(plusProduct(j,k))*momentum(k)*minusProduct(i,j))/sqr(invariant(j,k)) + 
-      (sqrt(2)*c5*plusProduct(j,k)*minusCurrent(i,j)*minusProduct(i,j))/(invariant(j,k)*minusProduct(i,k));
+      -((sqrt(2)*c6*plusProduct(j,k)*minusCurrent(i,k))/jk) 
+      - (sqrt(2)*c8*sqr(plusProduct(j,k))*momentum(i)*minusProduct(i,j))/jk - 
+      (sqrt(2)*c10*sqr(plusProduct(j,k))*momentum(j)*minusProduct(i,j))/jk - 
+      (2*sqrt(2)*c12*sqr(plusProduct(j,k))*momentum(k)*minusProduct(i,j))/sqr(jk) + 
+      (sqrt(2)*c5*plusProduct(j,k)*minusCurrent(i,j)*minusProduct(i,j))/(jk*minusProduct(i,k));
   }
 
   if ( gHel == -1 ) {
     return
-      (sqrt(2)*c4*plusProduct(i,j)*minusCurrent(i,j)*minusProduct(i,k))/(invariant(i,k)*plusProduct(j,k)) + 
-      (sqrt(2)*c13*minusCurrent(k,j)*minusProduct(i,k))/invariant(i,k) + (sqrt(2)*c13*minusCurrent(k,j)*minusProduct(i,k))/invariant(j,k) + 
-      (sqrt(2)*c6*minusCurrent(k,j)*minusProduct(i,k))/invariant(j,k) - (sqrt(2)*c7*plusProduct(i,j)*momentum(i)*
-								       sqr(minusProduct(i,k)))/invariant(i,k) - 
-      (sqrt(2)*c9*plusProduct(i,j)*momentum(j)*sqr(minusProduct(i,k)))/invariant(i,k) - 
-      (2*sqrt(2)*c11*plusProduct(i,j)*momentum(k)*sqr(minusProduct(i,k)))/(invariant(i,k)*invariant(j,k));
+      (sqrt(2)*c4*plusProduct(i,j)*minusCurrent(i,j)*minusProduct(i,k))/(ik*plusProduct(j,k)) + 
+      (sqrt(2)*c13*minusCurrent(k,j)*minusProduct(i,k))/ik + (sqrt(2)*c13*minusCurrent(k,j)*minusProduct(i,k))/jk + 
+      (sqrt(2)*c6*minusCurrent(k,j)*minusProduct(i,k))/jk - (sqrt(2)*c7*plusProduct(i,j)*momentum(i)*
+								       sqr(minusProduct(i,k)))/ik - 
+      (sqrt(2)*c9*plusProduct(i,j)*momentum(j)*sqr(minusProduct(i,k)))/ik - 
+      (2*sqrt(2)*c11*plusProduct(i,j)*momentum(k)*sqr(minusProduct(i,k)))/(ik*jk);
   }
 
   static LorentzVector<Complex> czero(0.,0.,0.,0.);
@@ -2658,6 +2701,9 @@ LorentzVector<Complex> MatchboxCurrents::qqbargGeneralRightLoopCurrent(int i,   
 
   qqbargLoopCoefficients(i,j,k);
 
+  const double ik = invariant(i,k);
+  const double jk = invariant(j,k);
+
   Complex c1  = qqbargLoops[0]; Complex c2  = qqbargLoops[1];  Complex c3  = qqbargLoops[2];
   Complex c4  = qqbargLoops[3]; Complex c5  = qqbargLoops[4];  Complex c6  = qqbargLoops[5];
   Complex c7  = qqbargLoops[6]; Complex c8  = qqbargLoops[7];  Complex c9  = qqbargLoops[8];
@@ -2666,36 +2712,36 @@ LorentzVector<Complex> MatchboxCurrents::qqbargGeneralRightLoopCurrent(int i,   
 
   if ( gHel == 1 ) {
     return
-      -((sqrt(2)*c13*plusProduct(i,k)*minusCurrent(j,k))/invariant(i,k)) - (sqrt(2)*c13*plusProduct(i,k)*minusCurrent(j,k))/invariant(j,k) + 
-      (sqrt(2)*c4*plusProduct(i,k)*minusCurrent(j,i)*minusProduct(i,n))/(invariant(i,k)*minusProduct(k,n)) + 
-      (sqrt(2)*c6*plusProduct(i,k)*minusCurrent(n,k)*minusProduct(j,k))/(invariant(j,k)*minusProduct(k,n)) - 
-      (sqrt(2)*c7*sqr(plusProduct(i,k))*momentum(i)*minusProduct(i,n)*minusProduct(j,k))/(invariant(i,k)*minusProduct(k,n)) - 
-      (sqrt(2)*c9*sqr(plusProduct(i,k))*momentum(j)*minusProduct(i,n)*minusProduct(j,k))/(invariant(i,k)*minusProduct(k,n)) - 
-      (2*sqrt(2)*c11*sqr(plusProduct(i,k))*momentum(k)*minusProduct(i,n)*minusProduct(j,k))/(invariant(i,k)*invariant(j,k)*minusProduct(k,n)) + 
+      -((sqrt(2)*c13*plusProduct(i,k)*minusCurrent(j,k))/ik) - (sqrt(2)*c13*plusProduct(i,k)*minusCurrent(j,k))/jk + 
+      (sqrt(2)*c4*plusProduct(i,k)*minusCurrent(j,i)*minusProduct(i,n))/(ik*minusProduct(k,n)) + 
+      (sqrt(2)*c6*plusProduct(i,k)*minusCurrent(n,k)*minusProduct(j,k))/(jk*minusProduct(k,n)) - 
+      (sqrt(2)*c7*sqr(plusProduct(i,k))*momentum(i)*minusProduct(i,n)*minusProduct(j,k))/(ik*minusProduct(k,n)) - 
+      (sqrt(2)*c9*sqr(plusProduct(i,k))*momentum(j)*minusProduct(i,n)*minusProduct(j,k))/(ik*minusProduct(k,n)) - 
+      (2*sqrt(2)*c11*sqr(plusProduct(i,k))*momentum(k)*minusProduct(i,n)*minusProduct(j,k))/(ik*jk*minusProduct(k,n)) + 
       (sqrt(2)*c1*plusProduct(i,k)*momentum(i)*minusProduct(j,n))/minusProduct(k,n) + 
       (sqrt(2)*c2*plusProduct(i,k)*momentum(j)*minusProduct(j,n))/minusProduct(k,n) + 
-      (2*sqrt(2)*c3*plusProduct(i,k)*momentum(k)*minusProduct(j,n))/(invariant(j,k)*minusProduct(k,n)) + 
-      (sqrt(2)*c5*plusProduct(j,k)*minusCurrent(j,i)*minusProduct(j,n))/(invariant(j,k)*minusProduct(k,n)) - 
-      (sqrt(2)*c8*plusProduct(i,k)*plusProduct(j,k)*momentum(i)*minusProduct(j,k)*minusProduct(j,n))/(invariant(j,k)*minusProduct(k,n)) - 
-      (sqrt(2)*c10*plusProduct(i,k)*plusProduct(j,k)*momentum(j)*minusProduct(j,k)*minusProduct(j,n))/(invariant(j,k)*minusProduct(k,n)) - 
-      (2*sqrt(2)*c12*plusProduct(i,k)*plusProduct(j,k)*momentum(k)*minusProduct(j,k)*minusProduct(j,n))/(sqr(invariant(j,k))*minusProduct(k,n));
+      (2*sqrt(2)*c3*plusProduct(i,k)*momentum(k)*minusProduct(j,n))/(jk*minusProduct(k,n)) + 
+      (sqrt(2)*c5*plusProduct(j,k)*minusCurrent(j,i)*minusProduct(j,n))/(jk*minusProduct(k,n)) - 
+      (sqrt(2)*c8*plusProduct(i,k)*plusProduct(j,k)*momentum(i)*minusProduct(j,k)*minusProduct(j,n))/(jk*minusProduct(k,n)) - 
+      (sqrt(2)*c10*plusProduct(i,k)*plusProduct(j,k)*momentum(j)*minusProduct(j,k)*minusProduct(j,n))/(jk*minusProduct(k,n)) - 
+      (2*sqrt(2)*c12*plusProduct(i,k)*plusProduct(j,k)*momentum(k)*minusProduct(j,k)*minusProduct(j,n))/(sqr(jk)*minusProduct(k,n));
   }
 
   if ( gHel == -1 ) {
     return
-      -((sqrt(2)*c4*plusProduct(i,n)*minusCurrent(j,i)*minusProduct(i,k))/(invariant(i,k)*plusProduct(k,n))) - 
+      -((sqrt(2)*c4*plusProduct(i,n)*minusCurrent(j,i)*minusProduct(i,k))/(ik*plusProduct(k,n))) - 
       (sqrt(2)*c1*plusProduct(i,n)*momentum(i)*minusProduct(j,k))/plusProduct(k,n) - 
       (sqrt(2)*c2*plusProduct(i,n)*momentum(j)*minusProduct(j,k))/plusProduct(k,n) - 
-      (2*sqrt(2)*c3*plusProduct(i,n)*momentum(k)*minusProduct(j,k))/(invariant(j,k)*plusProduct(k,n)) - 
-      (sqrt(2)*c5*plusProduct(j,n)*minusCurrent(j,i)*minusProduct(j,k))/(invariant(j,k)*plusProduct(k,n)) - 
-      (sqrt(2)*c6*plusProduct(i,k)*minusCurrent(k,n)*minusProduct(j,k))/(invariant(j,k)*plusProduct(k,n)) + 
-      (sqrt(2)*c7*plusProduct(i,k)*plusProduct(i,n)*momentum(i)*minusProduct(i,k)*minusProduct(j,k))/(invariant(i,k)*plusProduct(k,n)) + 
-      (sqrt(2)*c9*plusProduct(i,k)*plusProduct(i,n)*momentum(j)*minusProduct(i,k)*minusProduct(j,k))/(invariant(i,k)*plusProduct(k,n)) + 
+      (2*sqrt(2)*c3*plusProduct(i,n)*momentum(k)*minusProduct(j,k))/(jk*plusProduct(k,n)) - 
+      (sqrt(2)*c5*plusProduct(j,n)*minusCurrent(j,i)*minusProduct(j,k))/(jk*plusProduct(k,n)) - 
+      (sqrt(2)*c6*plusProduct(i,k)*minusCurrent(k,n)*minusProduct(j,k))/(jk*plusProduct(k,n)) + 
+      (sqrt(2)*c7*plusProduct(i,k)*plusProduct(i,n)*momentum(i)*minusProduct(i,k)*minusProduct(j,k))/(ik*plusProduct(k,n)) + 
+      (sqrt(2)*c9*plusProduct(i,k)*plusProduct(i,n)*momentum(j)*minusProduct(i,k)*minusProduct(j,k))/(ik*plusProduct(k,n)) + 
       (2*sqrt(2)*c11*plusProduct(i,k)*plusProduct(i,n)*momentum(k)*minusProduct(i,k)*minusProduct(j,k))/
-      (invariant(i,k)*invariant(j,k)*plusProduct(k,n)) + 
-      (sqrt(2)*c8*plusProduct(i,k)*plusProduct(j,n)*momentum(i)*sqr(minusProduct(j,k)))/(invariant(j,k)*plusProduct(k,n)) + 
-      (sqrt(2)*c10*plusProduct(i,k)*plusProduct(j,n)*momentum(j)*sqr(minusProduct(j,k)))/(invariant(j,k)*plusProduct(k,n)) + 
-      (2*sqrt(2)*c12*plusProduct(i,k)*plusProduct(j,n)*momentum(k)*sqr(minusProduct(j,k)))/(sqr(invariant(j,k))*plusProduct(k,n));
+      (ik*jk*plusProduct(k,n)) + 
+      (sqrt(2)*c8*plusProduct(i,k)*plusProduct(j,n)*momentum(i)*sqr(minusProduct(j,k)))/(jk*plusProduct(k,n)) + 
+      (sqrt(2)*c10*plusProduct(i,k)*plusProduct(j,n)*momentum(j)*sqr(minusProduct(j,k)))/(jk*plusProduct(k,n)) + 
+      (2*sqrt(2)*c12*plusProduct(i,k)*plusProduct(j,n)*momentum(k)*sqr(minusProduct(j,k)))/(sqr(jk)*plusProduct(k,n));
   }
 
   static LorentzVector<Complex> czero(0.,0.,0.,0.);
@@ -2709,6 +2755,9 @@ LorentzVector<Complex> MatchboxCurrents::qqbargFixedRightLoopCurrent(int i, int,
 
   qqbargLoopCoefficients(i,j,k);
 
+  const double ik = invariant(i,k);
+  const double jk = invariant(j,k);
+
   //Complex c1  = qqbargLoops[0]; Complex c2  = qqbargLoops[1];  Complex c3  = qqbargLoops[2];
   Complex c4  = qqbargLoops[3]; Complex c5  = qqbargLoops[4];  Complex c6  = qqbargLoops[5];
   Complex c7  = qqbargLoops[6]; Complex c8  = qqbargLoops[7];  Complex c9  = qqbargLoops[8];
@@ -2717,22 +2766,22 @@ LorentzVector<Complex> MatchboxCurrents::qqbargFixedRightLoopCurrent(int i, int,
 
   if ( gHel == 1 ) {
     return
-      -((sqrt(2)*c13*plusProduct(i,k)*minusCurrent(j,k))/invariant(i,k)) - 
-      (sqrt(2)*c13*plusProduct(i,k)*minusCurrent(j,k))/invariant(j,k) - 
-      (sqrt(2)*c6*plusProduct(i,k)*minusCurrent(j,k))/invariant(j,k) + 
-      (sqrt(2)*c7*sqr(plusProduct(i,k))*momentum(i)*minusProduct(i,j))/invariant(i,k) + 
-      (sqrt(2)*c9*sqr(plusProduct(i,k))*momentum(j)*minusProduct(i,j))/invariant(i,k) + 
-      (2*sqrt(2)*c11*sqr(plusProduct(i,k))*momentum(k)*minusProduct(i,j))/(invariant(i,k)*invariant(j,k)) - 
-      (sqrt(2)*c4*plusProduct(i,k)*minusCurrent(j,i)*minusProduct(i,j))/(invariant(i,k)*minusProduct(j,k));
+      -((sqrt(2)*c13*plusProduct(i,k)*minusCurrent(j,k))/ik) - 
+      (sqrt(2)*c13*plusProduct(i,k)*minusCurrent(j,k))/jk - 
+      (sqrt(2)*c6*plusProduct(i,k)*minusCurrent(j,k))/jk + 
+      (sqrt(2)*c7*sqr(plusProduct(i,k))*momentum(i)*minusProduct(i,j))/ik + 
+      (sqrt(2)*c9*sqr(plusProduct(i,k))*momentum(j)*minusProduct(i,j))/ik + 
+      (2*sqrt(2)*c11*sqr(plusProduct(i,k))*momentum(k)*minusProduct(i,j))/(ik*jk) - 
+      (sqrt(2)*c4*plusProduct(i,k)*minusCurrent(j,i)*minusProduct(i,j))/(ik*minusProduct(j,k));
   }
 
   if ( gHel == -1 ) {
     return
-      -((sqrt(2)*c5*plusProduct(i,j)*minusCurrent(j,i)*minusProduct(j,k))/(invariant(j,k)*plusProduct(i,k))) + 
-      (sqrt(2)*c6*minusCurrent(k,i)*minusProduct(j,k))/invariant(j,k) + 
-      (sqrt(2)*c8*plusProduct(i,j)*momentum(i)*sqr(minusProduct(j,k)))/invariant(j,k) + 
-      (sqrt(2)*c10*plusProduct(i,j)*momentum(j)*sqr(minusProduct(j,k)))/invariant(j,k) + 
-      (2*sqrt(2)*c12*plusProduct(i,j)*momentum(k)*sqr(minusProduct(j,k)))/sqr(invariant(j,k));
+      -((sqrt(2)*c5*plusProduct(i,j)*minusCurrent(j,i)*minusProduct(j,k))/(jk*plusProduct(i,k))) + 
+      (sqrt(2)*c6*minusCurrent(k,i)*minusProduct(j,k))/jk + 
+      (sqrt(2)*c8*plusProduct(i,j)*momentum(i)*sqr(minusProduct(j,k)))/jk + 
+      (sqrt(2)*c10*plusProduct(i,j)*momentum(j)*sqr(minusProduct(j,k)))/jk + 
+      (2*sqrt(2)*c12*plusProduct(i,j)*momentum(k)*sqr(minusProduct(j,k)))/sqr(jk);
   }
 
   static LorentzVector<Complex> czero(0.,0.,0.,0.);
