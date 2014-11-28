@@ -61,6 +61,7 @@ Makefile\.in$
 ^src/defaults/PDF.in$
 ^src/defaults/done-all-links$
 ^src/tune$
+^src/Matchbox$
 ^src/tests/.*\.(time|mult|Bmult|chisq)$
 ^Tests/.*/.*\.(top|ps|pyc|info|dat|pdf|png)$
 ^Tests/.*\.(top|ps|pyc|info|dat|pdf|png|log|out)$
