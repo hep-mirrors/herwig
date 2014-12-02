@@ -78,6 +78,9 @@ CLEANFILES = HerwigDefaults.rpo \
   multi.test *.output probs.test chisq.value \
   LHC-RS-BR.spc LHC-MSSM-BR.spc LHC-RPV-BR.spc
 
+clean-local:
+	-rm -rf Matchbox
+
 ## checking targets ##
 
 HerwigDefaults.rpo: Herwig++ $(srcdir)/defaults/*.in defaults/PDF.in defaults/Analysis.in $(top_builddir)/lib/*.so
