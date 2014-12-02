@@ -5,7 +5,7 @@ import sys
 import glob
 
 """\
-%prog [--setupfile=FILE] RUNNAME
+%prog [--setupfile=FILE] [--tag=TAG] RUNNAME
 
 Combine Herwig++ grid files
 """
@@ -20,6 +20,11 @@ if __name__ == '__main__':
                       default='',
                       dest='setupFile')
 
+    parser.add_option('-t', '--tag', type='string',
+                      help='Specify the tag name which has been used.',
+                      default='',
+                      dest='tagName')
+
     opts, args = parser.parse_args()
 
     if len(args) < 1:
@@ -27,19 +32,28 @@ if __name__ == '__main__':
         sys.exit(1)
 
     runName=args[0]
+    if runName.endswith('.run'):
+        runName = runName[:-4]
     setupName=opts.setupFile
+    tagName=opts.tagName
     if setupName:
-        runName = runName + '-' + setupName
+        runName = runName + '/' + setupName
+    if tagName:
+        runName = runName + '/' + tagName
 
-    gridId = 'Matchbox/' + runName + '/' + runName
+    gridId = 'Matchbox/' + runName
 
-    gridFiles=glob.glob(gridId + '-integrationJob*-grids.xml')
+    # print 'Looking in ' + gridId
+
+    gridFiles=glob.glob(gridId + '/integrationJob*/HerwigGrids.xml')
 
     if not gridFiles:
         sys.stderr.write('No grid files have been found to combine\n')
-        sys.exit(1)        
+        sys.exit(1)
 
-    gridCombined = open(gridId + '-grids.xml','w')
+    # print gridFiles
+
+    gridCombined = open(gridId + '/HerwigGrids.xml','w')
     gridCombined.write('<Grids>\n')
 
     for gridFile in gridFiles:

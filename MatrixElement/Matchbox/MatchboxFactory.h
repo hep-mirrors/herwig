@@ -672,16 +672,6 @@ public:
   /** @name Data handling */
   //@{
   /**
-   * Return the prefix to store Matchbox data and libraries
-   */
-  const string& prefix() const { return thePrefix; }
-
-  /**
-   * Set the prefix to store Matchbox data and libraries
-   */
-  void prefix(const string& p) { thePrefix = p; }
-
-  /**
    * Return (and possibly create) a directory to contain amplitude
    * information.
    */
@@ -1093,21 +1083,6 @@ private:
    * True, if second incoming partons originate from perturbative PDF
    */
   bool theSecondPerturbativePDF;
-
-  /**
-   * The prefix to store Matchbox data and libraries
-   */
-  string thePrefix;
-
-  /**
-   * The directory to contain amplitude information.
-   */
-  string theBuildStorage;
-
-  /**
-   * The directory to contain grid information.
-   */
-  string theRunStorage;
 
   /**
    * True, if this Factory is in production mode.

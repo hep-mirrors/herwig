@@ -8,7 +8,10 @@ bin_PROGRAMS = Herwig++
 Herwig___SOURCES = Herwig++.cc herwigopts.c herwigopts.h
 BUILT_SOURCES = herwigopts.c herwigopts.h
 Herwig___LDFLAGS = $(AM_LDFLAGS) -export-dynamic $(THEPEGLDFLAGS)
-Herwig___LDADD = $(THEPEGLIB) -ldl
+Herwig___LDADD = $(THEPEGLIB) -ldl \
+$(top_builddir)/Utilities/libHwRunDirectories.la \
+$(BOOST_SYSTEM_LIBS) $(BOOST_FILESYSTEM_LIBS)
+
 Herwig___CPPFLAGS = $(AM_CPPFLAGS) \
 -DHERWIG_PKGDATADIR="\"$(pkgdatadir)\"" \
 -DHERWIG_PKGLIBDIR="\"$(pkglibdir)\"" \
