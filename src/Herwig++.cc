@@ -22,7 +22,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
-
+#include "Herwig++/Utilities/RunDirectories.h"
 
 using namespace ThePEG;
 
@@ -104,7 +104,6 @@ int main(int argc, char * argv[]) {
     int seed = 0;
     if ( args_info.seed_given ) {
       seed = args_info.seed_arg;
-      SamplerBase::setSeed(seed);
     }
 
     // run name tag (default given in ggo file)
@@ -280,6 +279,12 @@ void HerwigRun(string runname, string setupfile,
 	       bool tics, bool resume, int jobs,
 	       bool integrationJob,
 	       string integrationList) {
+
+  if ( integrationJob && jobs > 1 ) {
+    std::cerr << "parallel event generation is not applicable to integrate\n";
+    exit( EXIT_FAILURE );
+  }
+
   PersistentIStream is(runname);
   ThePEG::EGPtr eg;
   is >> eg;
@@ -294,9 +299,28 @@ void HerwigRun(string runname, string setupfile,
     exit( EXIT_FAILURE );
   }
 
+  Herwig::RunDirectories::pushRunId(eg->runName());
+  if ( !setupfile.empty() )
+    Herwig::RunDirectories::pushRunId(setupfile);
+  if ( !tag.empty() )
+    Herwig::RunDirectories::pushRunId(tag);
+  if ( !integrationList.empty() )
+    Herwig::RunDirectories::pushRunId(integrationList);
+  /*
+
+   // need to be consistent with tag handling -- should we
+   // tag with the seed by default?!
+
+  if ( seed > 0 ) {
+    ostringstream sseed;
+    sseed << seed;
+    Herwig::RunDirectories::pushRunId(sseed.str());
+  }
+  */
+
   if ( seed > 0 ) eg->setSeed(seed);
-  if ( !tag.empty() ) eg->addTag(tag);
   if ( !setupfile.empty() ) eg->addTag("-" + setupfile);
+  if ( !tag.empty() ) eg->addTag(tag);
 
   if ( integrationJob ) {
     Ptr<StandardEventHandler>::tptr eh =
@@ -346,6 +370,7 @@ void HerwigRun(string runname, string setupfile,
         // fix numbering to allow n > 10
         assert( n <= 10 );
         eg->addTag( tag + "-" + char( 48 + n ) );
+	Herwig::RunDirectories::pushRunId( tag + "-" + char( 48 + n ) );
         eg->go( resume ? -1 : 1, N / jobs, false );
         break;
       }

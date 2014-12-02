@@ -29,6 +29,8 @@
 #include "ThePEG/Handlers/StandardEventHandler.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 
+#include "Herwig++/Utilities/RunDirectories.h"
+
 #include "Herwig++/Utilities/XML/ElementIO.h"
 
 #include <boost/progress.hpp>
@@ -120,11 +122,8 @@ void GeneralSampler::initialize() {
     while ( !pickfrom.empty() ) {
       size_t idx = UseRandom::irnd(pickfrom.size());
       randomized.push_back(pickfrom[idx]);
-      //check.insert(pickfrom[idx]);
       pickfrom.erase(pickfrom.begin() + idx);
     }
-
-    //assert(check.size() == eventHandler()->nBins());
 
     int b = 0;
     for ( vector<int>::const_iterator bx = randomized.begin();
@@ -136,7 +135,7 @@ void GeneralSampler::initialize() {
 	  jobList = 0;
 	}
 	ostringstream name;
-	string prefix = parallelIntegrationDirectory();
+	string prefix = RunDirectories::buildStorage();
 	if ( prefix.empty() )
 	  prefix = "./";
 	else if ( *prefix.rbegin() != '/' )
@@ -197,7 +196,7 @@ void GeneralSampler::initialize() {
 
   set<int> binsToIntegrate;
   if ( integrationList() != "" ) {
-    string prefix = parallelIntegrationDirectory();
+    string prefix = RunDirectories::buildStorage();
     if ( prefix.empty() )
       prefix = "./";
     else if ( *prefix.rbegin() != '/' )
@@ -527,7 +526,7 @@ void GeneralSampler::currentCrossSections() const {
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 void GeneralSampler::doinit() {
-  if ( integratePerJob() ) {
+  if ( integratePerJob() || integrationJobs() ) {
     theParallelIntegration = true;
     theIntegratePerJob = integratePerJob();
     theIntegrationJobs = integrationJobs();
@@ -587,15 +586,12 @@ void GeneralSampler::dofinish() {
 
   if ( runCombinationData ) {
 
-    string dataName = gridDirectory();
+    string dataName = RunDirectories::runStorage();
     if ( dataName.empty() )
       dataName = "./";
     else if ( *dataName.rbegin() != '/' )
       dataName += "/";
-    dataName += generator()->runName();
-    //ostringstream so; so << seed();
-    //dataName += "-" + so.str() + "-sampling.dat";
-    dataName += "-sampling.dat";
+    dataName += "HerwigSampling.dat";
 
     ofstream data(dataName.c_str());
 
@@ -683,23 +679,15 @@ IVector GeneralSampler::getReferences() {
   return ret;
 }
 
-void GeneralSampler::writeGrids(bool seedIndex) const {
+void GeneralSampler::writeGrids() const {
   if ( theGrids.children().empty() )
     return;
-  string dataName = gridDirectory();
+  string dataName = RunDirectories::runStorage();
   if ( dataName.empty() )
     dataName = "./";
   else if ( *dataName.rbegin() != '/' )
     dataName += "/";
-  dataName += generator()->runName();
-  if ( !integrationList().empty() )
-    dataName += "-" + integrationList();
-  if ( !seedIndex )
-    dataName += "-grids.xml";
-  else {
-    ostringstream so; so << seed();
-    dataName += "-" + so.str() + "-grids.xml";
-  }
+  dataName += "HerwigGrids.xml";
   ofstream out(dataName.c_str());
   XML::ElementIO::put(theGrids,out);
 }
@@ -707,19 +695,27 @@ void GeneralSampler::writeGrids(bool seedIndex) const {
 void GeneralSampler::readGrids() {
   if ( didReadGrids )
     return;
-  string dataName = gridDirectory();
-  if ( dataName.empty() )
-    dataName = "./";
-  else if ( *dataName.rbegin() != '/' )
-    dataName += "/";
-  dataName += generator()->runName() + "-grids.xml";
-  ifstream in(dataName.c_str());
-  if ( !in ) {
-    theGrids = XML::Element(XML::ElementTypes::Element,"Grids");
-    return;
+  RunDirectories directories;
+  while ( directories && !didReadGrids ) {
+    string dataName = directories.nextRunStorage();
+    if ( dataName.empty() )
+      dataName = "./";
+    else if ( *dataName.rbegin() != '/' )
+      dataName += "/";
+    dataName += "HerwigGrids.xml";
+    //cerr << "trying " << dataName << " ... ";
+    ifstream in(dataName.c_str());
+    if ( in ) {
+      //cerr << "yes\n" << flush;
+      theGrids = XML::ElementIO::get(in);
+      didReadGrids = true;
+    }
+    //else {
+    //cerr << "no\n" << flush;
+    //}
   }
-  theGrids = XML::ElementIO::get(in);
-  didReadGrids = true;
+  if ( !didReadGrids )
+    theGrids = XML::Element(XML::ElementTypes::Element,"Grids");
 }
 
 void GeneralSampler::persistentOutput(PersistentOStream & os) const {

@@ -163,7 +163,7 @@ public:
   /**
    * Write out grids
    */
-  void writeGrids(bool seedIndex = false) const;
+  void writeGrids() const;
 
   /**
    * Read in grids

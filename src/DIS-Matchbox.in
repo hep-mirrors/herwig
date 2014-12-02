@@ -15,6 +15,7 @@ set DISGenerator:NumberOfEvents 100000000
 cd /Herwig/EventHandlers
 set DISHandler:Weighted Off
 set DISHandler:Sampler  /Herwig/Samplers/Sampler
+set DISHandler:CascadeHandler:MPIHandler NULL
 
 ##################################################
 ## beam energy 

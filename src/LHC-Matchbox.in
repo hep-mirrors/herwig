@@ -47,12 +47,12 @@ set /Herwig/Particles/pbar-:PDF PDFSet
 
 ## Set the order of the couplings
 cd /Herwig/MatrixElements/Matchbox
-set PPFactory:OrderInAlphaS 1
+set PPFactory:OrderInAlphaS 0
 set PPFactory:OrderInAlphaEW 2
 
 ## Select the process
 ## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
-do PPFactory:Process p p l l j
+do PPFactory:Process p p e+ e-
 
 ##################################################
 ## Cut Selection
@@ -67,9 +67,9 @@ set MassCut:MinM 66*GeV
 set MassCut:MaxM 116*GeV
 
 ## Cuts on jets
-set QCDCuts:JetFinder JetFinder
-insert QCDCuts:MultiCuts 0 JetCuts
-insert JetCuts:JetRegions 0 FirstJet
+# set QCDCuts:JetFinder JetFinder
+# insert QCDCuts:MultiCuts 0 JetCuts
+# insert JetCuts:JetRegions 0 FirstJet
 # insert JetCuts:JetRegions 1 SecondJet
 
 ##################################################

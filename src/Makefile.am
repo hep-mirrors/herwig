@@ -8,7 +8,10 @@ bin_PROGRAMS = Herwig++
 Herwig___SOURCES = Herwig++.cc herwigopts.c herwigopts.h
 BUILT_SOURCES = herwigopts.c herwigopts.h
 Herwig___LDFLAGS = $(AM_LDFLAGS) -export-dynamic $(THEPEGLDFLAGS)
-Herwig___LDADD = $(THEPEGLIB) -ldl
+Herwig___LDADD = $(THEPEGLIB) -ldl \
+$(top_builddir)/Utilities/libHwRunDirectories.la \
+$(BOOST_SYSTEM_LIBS) $(BOOST_FILESYSTEM_LIBS)
+
 Herwig___CPPFLAGS = $(AM_CPPFLAGS) \
 -DHERWIG_PKGDATADIR="\"$(pkgdatadir)\"" \
 -DHERWIG_PKGLIBDIR="\"$(pkglibdir)\"" \
@@ -75,6 +78,9 @@ CLEANFILES = HerwigDefaults.rpo \
   multi.test *.output probs.test chisq.value \
   LHC-RS-BR.spc LHC-MSSM-BR.spc LHC-RPV-BR.spc
 
+clean-local:
+	-rm -rf Matchbox
+
 ## checking targets ##
 
 HerwigDefaults.rpo: Herwig++ $(srcdir)/defaults/*.in defaults/PDF.in defaults/Analysis.in $(top_builddir)/lib/*.so
@@ -108,7 +114,7 @@ check-Powheg: check-LHC-Powheg check-TVT-Powheg
 check-BSM: $(check_BSM_Full)
 
 check_Matchbox= \
-check-LEP-Matchbox check-DIS-Matchbox check-LHC-Matchbox check-TVT-Matchbox
+check-LEP-Matchbox check-DIS-Matchbox check-LHC-Matchbox
 
 check-Matchbox: $(check_Matchbox)
 
