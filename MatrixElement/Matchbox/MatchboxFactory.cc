@@ -26,6 +26,7 @@
 #include "ThePEG/Handlers/SamplerBase.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/DipoleRepository.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/SU2Helper.h"
+#include "Herwig++/Utilities/RunDirectories.h"
 
 #include <boost/progress.hpp>
 #include <boost/filesystem.hpp>
@@ -49,7 +50,6 @@ MatchboxFactory::MatchboxFactory()
     thePoleData(""), theRealEmissionScales(false), theAllProcesses(false),
   theMECorrectionsOnly(false), theLoopSimCorrections(false), ranSetup(false),
   theFirstPerturbativePDF(true), theSecondPerturbativePDF(true),
-  thePrefix("./Matchbox"), theBuildStorage(""), theRunStorage(""),
   inProductionMode(false) {}
 
 MatchboxFactory::~MatchboxFactory() {}
@@ -1033,6 +1033,8 @@ void MatchboxFactory::print(ostream& os) const {
 }
 
 void MatchboxFactory::doinit() {
+  if ( RunDirectories::empty() )
+    RunDirectories::pushRunId(generator()->runName());
   setup();
   if ( theShowerApproximation )
     theShowerApproximation->init();
@@ -1041,8 +1043,6 @@ void MatchboxFactory::doinit() {
   Ptr<StandardEventHandler>::tptr eh =
     dynamic_ptr_cast<Ptr<StandardEventHandler>::tptr>(generator()->eventHandler());
   assert(eh);
-  eh->sampler()->gridDirectory(runStorage());
-  eh->sampler()->parallelIntegrationDirectory(buildStorage());
   SubProcessHandler::doinit();
 }
 
@@ -1052,49 +1052,15 @@ void MatchboxFactory::doinitrun() {
   Ptr<StandardEventHandler>::tptr eh =
     dynamic_ptr_cast<Ptr<StandardEventHandler>::tptr>(generator()->eventHandler());
   assert(eh);
-  eh->sampler()->gridDirectory(runStorage());
-  eh->sampler()->parallelIntegrationDirectory(buildStorage());
   SubProcessHandler::doinitrun();
 }
 
 const string& MatchboxFactory::buildStorage() {
-  if ( !theBuildStorage.empty() )
-    return theBuildStorage;
-  theBuildStorage = prefix();
-  if ( theBuildStorage.empty() )
-    theBuildStorage = "./Matchbox/";
-  else if ( *theBuildStorage.rbegin() != '/' )
-    theBuildStorage += "/";
-  theBuildStorage += "Build/";
-  if ( boost::filesystem::exists(theBuildStorage) ) {
-    if ( !boost::filesystem::is_directory(theBuildStorage) )
-      throw Exception() << "Matchbox build storage '"
-			<< theBuildStorage << "' existing but not a directory."
-			<< Exception::abortnow;
-  } else {
-    boost::filesystem::create_directories(theBuildStorage);
-  }
-  return theBuildStorage;
+  return RunDirectories::buildStorage();
 }
 
 const string& MatchboxFactory::runStorage() {
-  if ( !theRunStorage.empty() )
-    return theRunStorage;
-  theRunStorage = prefix();
-  if ( theRunStorage.empty() )
-    theRunStorage = "./Matchbox/";
-  else if ( *theRunStorage.rbegin() != '/' )
-    theRunStorage += "/";
-  theRunStorage += generator()->runName() + "/";
-  if ( boost::filesystem::exists(theRunStorage) ) {
-    if ( !boost::filesystem::is_directory(theRunStorage) )
-      throw Exception() << "Matchbox run storage '"
-			<< theRunStorage << "' existing but not a directory."
-			<< Exception::abortnow;
-  } else {
-    boost::filesystem::create_directories(theRunStorage);
-  }
-  return theRunStorage;
+  return RunDirectories::runStorage();
 }
 
 
@@ -1120,8 +1086,7 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
      << theSelectedAmplitudes << theDeselectedAmplitudes
      << theDipoleSet << theReweighters << thePreweighters
      << theMECorrectionsOnly<< theLoopSimCorrections<<theHighestVirtualsize << ranSetup
-     << theIncoming << theFirstPerturbativePDF << theSecondPerturbativePDF
-     << thePrefix << inProductionMode;
+     << theIncoming << theFirstPerturbativePDF << theSecondPerturbativePDF << inProductionMode;
 }
 
 void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
@@ -1146,8 +1111,7 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
      >> theSelectedAmplitudes >> theDeselectedAmplitudes
      >> theDipoleSet >> theReweighters >> thePreweighters
      >> theMECorrectionsOnly>> theLoopSimCorrections>>theHighestVirtualsize >> ranSetup
-     >> theIncoming >> theFirstPerturbativePDF >> theSecondPerturbativePDF
-     >> thePrefix >> inProductionMode;
+     >> theIncoming >> theFirstPerturbativePDF >> theSecondPerturbativePDF >> inProductionMode;
 }
 
 string MatchboxFactory::startParticleGroup(string name) {

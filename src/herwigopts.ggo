@@ -12,8 +12,8 @@ usage " (read|build|integrate|run) [OPTIONS]... [FILE]"
 
 description "One of the commands 'read', 'build', 'integrate' or 'run' is required:
     read - reads an input file and creates a run file,
-    build - reads an input file and creates matrix elements, postponing integration
-    integrate - integrate subprocesses, if integration has been postponed
+    build - reads an input file and creates matrix elements,
+    integrate - integrate subprocesses after running `build',
     run  - reads a run file and generates events."
 
 section "Event generation options"
@@ -47,7 +47,8 @@ option "setupfile" x "An input file to modify run parameters."
 
 section "Build and integration options"
 text "
-  -x, --setupfile=FILE     An input file to modify run parameters."
+  -x, --setupfile=FILE     An input file to modify run parameters.
+  -t, --tag=TAG            A tag to append to the run name  (default=`')"
 
 option "jobsize" z "The number of subprocesses to integrate per job ."
   typestr="NUMBER"
