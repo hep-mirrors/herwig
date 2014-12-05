@@ -19,6 +19,7 @@
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -48,7 +49,7 @@ extern "C" void MG_Colour                      (int* proc,int* i,int* j ,int* co
 
 
 MadGraphAmplitude::MadGraphAmplitude()
-  : theMGmodel("loop_sm") {}
+  : theMGmodel("loop_sm"),keepinputtopmass(false) {}
 
 MadGraphAmplitude::~MadGraphAmplitude() {
 
@@ -136,7 +137,26 @@ bool MadGraphAmplitude::initializeExternal() {
   params<<"\n$MZ$ "     <<std::setiosflags(ios::scientific)  <<getParticleData(ParticleID::Z0)->mass() /GeV<<flush;
   params<<"\n$MW$ "    <<std::setiosflags(ios::scientific)   <<getParticleData(ParticleID::Wplus)->mass() /GeV<<flush;
   params<<"\n$sw2$ "    <<std::setiosflags(ios::scientific)   << SM().sin2ThetaW() <<flush;
-  params<<"\n$MT$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::t)->mass() /GeV <<flush;
+  if(theMGmodel=="heft"&&!keepinputtopmass){
+      cerr<<"\n---------------------------------------------------------------";
+      cerr<<"\n---------------------------------------------------------------";
+      cerr<<"\nNote:     You are using the Higgs Effective model (heft) in     ";
+      cerr<<"\n         Madgraph. We assume you try to calculate NLO with ";
+      cerr<<"\n         the GoSam virtual amplitudes. To match the models we ";
+      cerr<<"\n         therefore set the topmass to 10000000 GeV.";
+      cerr<<"\n\n For more information see the tau parameter in:";     
+      cerr<<"\n https://cp3.irmp.ucl.ac.be/projects/madgraph/wiki/Models/HiggsEffective";
+      cerr<<"\n\nThe Effective Higgs model in Gosam is using mT=infinity";
+      cerr<<"\n\n\nIf you want to use the LO matrixelements of MadGraph with ";
+      cerr<<"\n'finite' topmass you need to add:  ";
+      cerr<<"\n set Madgraph:KeepInputTopMass True";
+      cerr<<"\n to your input file.";
+      cerr<<"\n---------------------------------------------------------------";
+      cerr<<"\n---------------------------------------------------------------";
+      params<<"\n$MT$ 10000000" <<flush;
+  }else{
+      params<<"\n$MT$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::t)->mass() /GeV <<flush;
+  }
   params<<"\n$WT$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::t)->width() /GeV <<flush;
   params<<"\n$MB$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::b)->mass() /GeV <<flush;
   params<<"\n$MH$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::h0)->mass() /GeV <<flush;
@@ -555,10 +575,10 @@ void MadGraphAmplitude::evaloneLoopInterference() const  {
 
   size_t j=0;
   for (size_t i=0;i<mePartonData().size();i++){
-    momenta[j]=double(meMomenta()[i].e()/GeV); //cout<<"\n"<< std::setprecision(9)<<double(meMomenta()[i].e()/GeV);
-    momenta[j+1]=double(meMomenta()[i].x()/GeV);//cout<<" "<< std::setprecision(9)<<double(meMomenta()[i].x()/GeV);
-    momenta[j+2]=double(meMomenta()[i].y()/GeV);//cout<<" "<< std::setprecision(9)<<double(meMomenta()[i].y()/GeV);
-    momenta[j+3]=double(meMomenta()[i].z()/GeV);//cout<<" "<< std::setprecision(9)<<double(meMomenta()[i].z()/GeV);
+    momenta[j]=abs(meMomenta()[i].e()/GeV)<1.e-13?0.:double(meMomenta()[i].e()/GeV);
+    momenta[j+1]=abs(meMomenta()[i].x()/GeV)<1.e-13?0.:double(meMomenta()[i].x()/GeV);
+    momenta[j+2]=abs(meMomenta()[i].y()/GeV)<1.e-13?0.:double(meMomenta()[i].y()/GeV);
+    momenta[j+3]=abs(meMomenta()[i].z()/GeV)<1.e-13?0.:double(meMomenta()[i].z()/GeV);
     j+=4;
   }
   int xx=lastMatchboxXComb()->externalId();
@@ -620,6 +640,21 @@ void MadGraphAmplitude::Init() {
     ("Model",
      "The MadGraph-Model.",
      &MadGraphAmplitude::theMGmodel, "loop_sm",false, false);
+  
+  static Switch<MadGraphAmplitude,bool> interfacekeepinputtopmass
+         ("KeepInputTopMass",
+          "Switch On/Off formopt",
+          &MadGraphAmplitude::keepinputtopmass, false, false, false);
+  static SwitchOption interfacekeepinputtopmassTrue
+         (interfacekeepinputtopmass,
+          "On",
+          "On",
+          true);
+  static SwitchOption interfacekeepinputtopmassFalse
+         (interfacekeepinputtopmass,
+          "Off",
+          "Off",
+          false);  
     
     
 

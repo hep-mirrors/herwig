@@ -265,6 +265,8 @@ protected:
    * The path to generate amplitudes in.
    */
   string theMGmodel;
+  
+  bool keepinputtopmass;
 
   /**
    * The process map.

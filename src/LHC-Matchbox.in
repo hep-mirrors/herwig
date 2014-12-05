@@ -99,6 +99,15 @@ cd /Herwig/MatrixElements/Matchbox/Amplitudes
 ## GoSam : requires --with-gosam and --with-gosam-contrib
 # set GenericProcesses:OneLoopAmplitude GoSam
 
+# Note: If you want to calculate NLO corrections in the
+#       Higgs Effectiv Model (smehc) with GoSam virtual 
+#       Amplitudes and MadGraph TreeLevelAmplitude:
+#       cp installpath/Herwig/share/setup.gosam.in .
+#       modify "# model=smdiag" -> "model=smehc"
+#       and: 
+#       set MadGraph:Model heft
+#       
+
 ## NJet : requires --with-njet
 # set GenericProcesses:OneLoopAmplitude NJet
 
