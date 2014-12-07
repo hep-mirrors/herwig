@@ -140,7 +140,7 @@ bool MadGraphAmplitude::initializeExternal() {
   if(theMGmodel=="heft"&&!keepinputtopmass){
       cerr<<"\n---------------------------------------------------------------";
       cerr<<"\n---------------------------------------------------------------";
-      cerr<<"\nNote:     You are using the Higgs Effective model (heft) in     ";
+      cerr<<"\nNote:    You are using the Higgs Effective model (heft) in     ";
       cerr<<"\n         Madgraph. We assume you try to calculate NLO with ";
       cerr<<"\n         the GoSam virtual amplitudes. To match the models we ";
       cerr<<"\n         therefore set the topmass to 10000000 GeV.";
@@ -153,7 +153,7 @@ bool MadGraphAmplitude::initializeExternal() {
       cerr<<"\n\nto your input file.";
       cerr<<"\n---------------------------------------------------------------";
       cerr<<"\n---------------------------------------------------------------";
-      params<<"\n$MT$ 10000000" <<flush;
+      params<<"\n$MT$ 10000000." <<flush;
   }else{
       params<<"\n$MT$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::t)->mass() /GeV <<flush;
   }
@@ -388,7 +388,7 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
     return tmp.find(hel)->second[ii];;
   }
 
-  double units = pow(sqrt(lastSHat())/GeV,hel.size()-4);
+  double units = pow(sqrt(lastSHat())/GeV,int(hel.size())-4);
 
 
   
@@ -408,7 +408,6 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
     momenta[j+3]=abs(meMomenta()[i].z()/GeV)<1.e-13?0.:double(meMomenta()[i].z()/GeV);
     j+=4;
   }
-
   
   MG_Calculate_wavefunctions_born(&xx, &momenta[0],  &heltmp[0]);
   
@@ -431,6 +430,7 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
     lastMatchboxXComb()->pushhelLNjamp(hel,dLN*units);
   }
 
+  
   largeN = resLN;
   return res;
 
