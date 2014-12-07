@@ -151,6 +151,18 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
     // use or don't use formopt
     cmd = "sed -i 's/@FORMOPT@/" + (theFormOpt ? string("") : string(", noformopt")) + "/g' " + gosamSetupInFileName;
     std::system(cmd.c_str());
+  }else{
+    // If user just copys setup.gosam.in to cwd the flags still not set should be set.
+    // set form's tempdir to the current working directory
+    string cmd = "sed -i 's/@FORMTEMPDIR@/" + StringUtils::replace(gosamSourcePath, string("/"), string("\\/")) + "/g' " + gosamSetupInFileName;
+    std::system(cmd.c_str());
+    // set reduction programs to what is specified through the repository
+    cmd = "sed -i 's/@REDUCTIONPROGRAMS@/" + (theNinja ? string("ninja, golem95") : string("samurai, golem95")) + "/g' " + gosamSetupInFileName;
+    std::system(cmd.c_str());
+    if (theNinja && !theFormOpt) throw Exception() << "Ninja reduction needs form optimization!\n" << Exception::abortnow;
+    // use or don't use formopt
+    cmd = "sed -i 's/@FORMOPT@/" + (theFormOpt ? string("") : string(", noformopt")) + "/g' " + gosamSetupInFileName;
+    std::system(cmd.c_str());
   }
 
   // check for old order file and create it if it doesn't already exist

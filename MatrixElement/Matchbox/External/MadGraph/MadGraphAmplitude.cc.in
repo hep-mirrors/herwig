@@ -144,13 +144,13 @@ bool MadGraphAmplitude::initializeExternal() {
       cerr<<"\n         Madgraph. We assume you try to calculate NLO with ";
       cerr<<"\n         the GoSam virtual amplitudes. To match the models we ";
       cerr<<"\n         therefore set the topmass to 10000000 GeV.";
-      cerr<<"\n\n For more information see the tau parameter in:";     
-      cerr<<"\n https://cp3.irmp.ucl.ac.be/projects/madgraph/wiki/Models/HiggsEffective";
+      cerr<<"\n\nFor more information see the tau parameter in:";     
+      cerr<<"\nhttps://cp3.irmp.ucl.ac.be/projects/madgraph/wiki/Models/HiggsEffective";
       cerr<<"\n\nThe Effective Higgs model in Gosam is using mT=infinity";
       cerr<<"\n\n\nIf you want to use the LO matrixelements of MadGraph with ";
       cerr<<"\n'finite' topmass you need to add:  ";
-      cerr<<"\n set Madgraph:KeepInputTopMass True";
-      cerr<<"\n to your input file.";
+      cerr<<"\n\n   set Madgraph:KeepInputTopMass True";
+      cerr<<"\n\nto your input file.";
       cerr<<"\n---------------------------------------------------------------";
       cerr<<"\n---------------------------------------------------------------";
       params<<"\n$MT$ 10000000" <<flush;
