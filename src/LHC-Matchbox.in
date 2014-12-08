@@ -102,8 +102,9 @@ cd /Herwig/MatrixElements/Matchbox/Amplitudes
 # Note: If you want to calculate NLO corrections in the
 #       Higgs Effectiv Model (smehc) with GoSam virtual 
 #       Amplitudes and MadGraph TreeLevelAmplitude:
-#       cp installpath/Herwig/share/setup.gosam.in .
-#       modify "# model=smdiag" -> "model=smehc"
+#       copy installpath/share/Herwig++/defaults/setup.gosam.in to cwd
+#       modify "# model=smdiag" -> "model=smehc" in setup.gosam.in
+#       set GoSam:SetupInFilename setup.gosam.in
 #       and: 
 #       set MadGraph:Model heft
 #       
