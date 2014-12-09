@@ -58,7 +58,7 @@ void VBFNLOPhasespace::setXComb(tStdXCombPtr xco) {
   double zero = 0.0;
 
   double value = sqrt(lastXCombPtr()->lastS())/GeV;
-  if (value != lastSqrtS/GeV) {
+  if (value && (value != lastSqrtS/GeV)) {
     lastSqrtS = value*GeV;
     string name = "sqrtS";
     OLP_SetParameter(const_cast<char*>(name.c_str()),&value,&zero,&pStatus);
@@ -109,6 +109,9 @@ double VBFNLOPhasespace::generateTwoToNKinematics(const double* random,
   }
 
   delete p;
+
+  if ( !matchConstraints(momenta) )
+    return 0.;
 
   Energy beamenergy = sqrt(lastXCombPtr()->lastS())/2.;
   double x1 = momenta[0].e()/beamenergy;
