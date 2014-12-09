@@ -206,6 +206,11 @@ private:
    */
   bool theRanHelSum;
 
+  /**
+   * Switch for anomalous couplings 
+   */
+  bool theAnomCoupl;
+
 };
 
 }

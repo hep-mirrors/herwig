@@ -32,7 +32,8 @@
 
 using namespace Herwig;
 
-VBFNLOAmplitude::VBFNLOAmplitude() {}
+VBFNLOAmplitude::VBFNLOAmplitude() 
+ : theRanHelSum(false), theAnomCoupl(false) {}
 
 VBFNLOAmplitude::~VBFNLOAmplitude() {}
 
@@ -87,6 +88,8 @@ void VBFNLOAmplitude::startOLP(const string& contract, int& status) {
   setOLPParameter("alphas",SM().alphaS());
 
   setOLPParameter("ranhelsum",theRanHelSum);
+
+  setOLPParameter("anomcoupl",theAnomCoupl);
 
   didStartOLP() = true;
 
@@ -227,12 +230,23 @@ void VBFNLOAmplitude::evalSpinColourCorrelator(pair<int,int>) const {
 
   double units = pow(lastSHat()/GeV2,mePartonData().size()-4.);
   fillOLPMomenta(lastXComb().meMomenta());
-  // double scale = sqrt(mu2()/GeV2); // not used
+  double scale = sqrt(mu2()/GeV2); 
+
+  double acc = -1.0;
 
   int n = lastXComb().meMomenta().size();
   spinColourCorrelatorResults.resize(2*n*n);
 
-  // ATTENTION
+  int id = olpId()[ProcessType::spinColourCorrelatedME2];
+
+  if (theRanHelSum && lastHeadMatchboxXComb()) {
+    vector<double> helicityrn = lastHeadMatchboxXComb()->amplitudeRandomNumbers();
+    if (helicityrn.size()>0) {
+      setOLPParameter("HelicityRN",helicityrn[0]);
+    }
+  }
+
+  OLP_EvalSubProcess2(&id, olpMomenta(), &scale, &spinColourCorrelatorResults[0], &acc);
 
   for ( int i = 0; i < n; ++i )
     for ( int j = 0; j < n; ++j ) {
@@ -267,11 +281,11 @@ void VBFNLOAmplitude::doinitrun() {
 
 
 void VBFNLOAmplitude::persistentOutput(PersistentOStream & os) const {
-  os << colourCorrelatorResults << spinColourCorrelatorResults << theRanHelSum;
+  os << colourCorrelatorResults << spinColourCorrelatorResults << theRanHelSum << theAnomCoupl;
 }
 
 void VBFNLOAmplitude::persistentInput(PersistentIStream & is, int) {
-  is >> colourCorrelatorResults >> spinColourCorrelatorResults >> theRanHelSum;
+  is >> colourCorrelatorResults >> spinColourCorrelatorResults >> theRanHelSum >> theAnomCoupl;
 }
 
 
@@ -300,6 +314,20 @@ void VBFNLOAmplitude::Init() {
     (interfaceRandomHelicitySummation, 
      "False", 
      "Sum over all helicity combinations", 
+     false);
+
+  static Switch<VBFNLOAmplitude,bool> interfaceAnomalousCouplings
+    ("AnomalousCouplings", "Switch for anomalous couplings",
+      &VBFNLOAmplitude::theAnomCoupl, false, false, false);
+  static SwitchOption interfaceAnomalousCouplingsTrue
+    (interfaceAnomalousCouplings, 
+     "On", 
+     "Switch anomalous couplings on", 
+     true);
+  static SwitchOption interfaceAnomalousCouplingsFalse
+    (interfaceAnomalousCouplings, 
+     "Off", 
+     "Switch anomalous couplings off", 
      false);
 
 }
