@@ -457,7 +457,7 @@ void Evolver::setupMaximumScales(const vector<ShowerProgenitorPtr> & p,
       if (ptmax == generator()->maximumCMEnergy() ) ptmax = pcm.m();
       if(hardVetoXComb()&&hardVetoReadOption()&&
 	 !ShowerHandler::currentHandler()->firstInteraction()) {
-	ptmax=min(ptmax,sqrt(xcomb->lastScale()));
+	ptmax=min(ptmax,sqrt(xcomb->lastCentralScale()));
       }
     } 
     // decay, incoming() is the decaying particle.
@@ -472,7 +472,7 @@ void Evolver::setupMaximumScales(const vector<ShowerProgenitorPtr> & p,
   else {
     if(currentTree()->isHard()) {
       assert(xcomb);
-      ptmax = sqrt( xcomb->lastScale() );
+      ptmax = sqrt( xcomb->lastCentralScale() );
     }
     else {
       ptmax = currentTree()->incomingLines().begin()->first

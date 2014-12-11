@@ -336,6 +336,7 @@ set MEMatching:EmissionScaleInSubtraction RealScale
 set MEMatching:BornScaleInSplitting ShowerScale
 set MEMatching:RealEmissionScaleInSplitting ShowerScale
 set MEMatching:EmissionScaleInSplitting ShowerScale
+set MEMatching:MaxPtIsMuF Yes
 set MEMatching:FFPtCut 1.0*GeV
 set MEMatching:FIPtCut 1.0*GeV
 set MEMatching:IIPtCut 1.0*GeV
@@ -351,6 +352,7 @@ set DipoleMatching:RestrictPhasespace On
 set DipoleMatching:BornScaleInSubtraction BornScale
 set DipoleMatching:RealEmissionScaleInSubtraction BornScale
 set DipoleMatching:EmissionScaleInSubtraction BornScale
+set DipoleMatching:MaxPtIsMuF Yes
 set DipoleMatching:FFPtCut 1.014259*GeV
 set DipoleMatching:FIPtCut 1.0*GeV
 set DipoleMatching:IIPtCut 1.0*GeV
@@ -363,6 +365,7 @@ set QTildeMatching:BornScaleInSubtraction BornScale
 set QTildeMatching:RealEmissionScaleInSubtraction BornScale
 set QTildeMatching:EmissionScaleInSubtraction BornScale
 set QTildeMatching:QTildeFinder /Herwig/Shower/PartnerFinder
+set QTildeMatching:MaxPtIsMuF Yes
 # just a dummy, since SudakovCommonn can't be used
 # it's only used to get the value of the kinCutoffScale
 set QTildeMatching:QTildeSudakov /Herwig/Shower/QtoQGSudakov
