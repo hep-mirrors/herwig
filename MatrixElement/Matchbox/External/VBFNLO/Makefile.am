@@ -4,6 +4,7 @@ HwMatchboxVBFNLO_la_LDFLAGS = -module -version-info 1:0:0
 
 HwMatchboxVBFNLO_la_CPPFLAGS = $(AM_CPPFLAGS)
 HwMatchboxVBFNLO_la_CPPFLAGS += -I$(VBFNLOINCLUDE)
+HwMatchboxVBFNLO_la_CPPFLAGS += -DVBFNLOLIB=$(VBFNLOLIB)
 
 #HwMatchboxVBFNLO_la_LIBADD = \
 #-L$(VBFNLOLIBS) \

@@ -230,6 +230,8 @@ AM_CONDITIONAL(HAVE_VBFNLO,[test "x$have_vbfnlo" = "xlib" -o "x$have_vbfnlo" = "
 if test "x$have_vbfnlo" = "xlib" -o "x$have_vbfnlo" = "xlib64" ; then
         VBFNLOINCLUDE=${with_vbfnlo}/include
 	AC_SUBST(VBFNLOINCLUDE)
+        VBFNLOLIB=${with_vbfnlo}/${have_vbfnlo}/VBFNLO
+        AC_SUBST(VBFNLOLIB)
      	LOAD_VBFNLO="library"
      	CREATE_VBFNLO="create"
      	INSERT_VBFNLO="insert"

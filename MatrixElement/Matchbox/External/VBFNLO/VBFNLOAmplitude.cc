@@ -30,6 +30,9 @@
 
 #include "VBFNLO/utilities/BLHAinterface.h"
 
+#define DEFSTR(s) CPPSTR(s)
+#define CPPSTR(s) #s
+
 using namespace Herwig;
 
 VBFNLOAmplitude::VBFNLOAmplitude() 
@@ -96,11 +99,13 @@ void VBFNLOAmplitude::startOLP(const string& contract, int& status) {
 }
 
 bool VBFNLOAmplitude::startOLP(const map<pair<Process,int>,int>& procs) {
-
-  if ( !DynamicLoader::load("libVBFNLO.so") )
-    throw Exception() << "failed to load libVBFNLO.so\n"
-		      << DynamicLoader::lastErrorMessage
-		      << Exception::abortnow;
+  string vbfnlolib = DEFSTR(VBFNLOLIB);
+  vbfnlolib += "/";
+  if ( !DynamicLoader::load(vbfnlolib+"libVBFNLO.so") )
+    if ( !DynamicLoader::load("libVBFNLO.so") )
+      throw Exception() << "failed to load libVBFNLO.so\n"
+		        << DynamicLoader::lastErrorMessage
+		        << Exception::abortnow;
 
   string orderFileName = factory()->buildStorage() + name() + ".OLPOrder.lh";
   ofstream orderFile(orderFileName.c_str());
@@ -260,18 +265,24 @@ void VBFNLOAmplitude::evalSpinColourCorrelator(pair<int,int>) const {
 }
 
 void VBFNLOAmplitude::doinit() {
-  if ( !DynamicLoader::load("libVBFNLO.so") )
-    throw Exception() << "failed to load libVBFNLO.so\n"
-		      << DynamicLoader::lastErrorMessage
-		      << Exception::abortnow;
+  string vbfnlolib = DEFSTR(VBFNLOLIB);
+  vbfnlolib += "/";
+  if ( !DynamicLoader::load(vbfnlolib+"libVBFNLO.so") )
+    if ( !DynamicLoader::load("libVBFNLO.so") )
+      throw Exception() << "failed to load libVBFNLO.so\n"
+		        << DynamicLoader::lastErrorMessage
+		        << Exception::abortnow;
   MatchboxOLPME::doinit();
 }
 
 void VBFNLOAmplitude::doinitrun() {
-  if ( !DynamicLoader::load("libVBFNLO.so") )
-    throw Exception() << "failed to load libVBFNLO.so\n"
-		      << DynamicLoader::lastErrorMessage
-		      << Exception::abortnow;
+  string vbfnlolib = DEFSTR(VBFNLOLIB);
+  vbfnlolib += "/";
+  if ( !DynamicLoader::load(vbfnlolib+"libVBFNLO.so") )
+    if ( !DynamicLoader::load("libVBFNLO.so") )
+      throw Exception() << "failed to load libVBFNLO.so\n"
+		        << DynamicLoader::lastErrorMessage
+		        << Exception::abortnow;
   MatchboxOLPME::doinitrun();
 }
 

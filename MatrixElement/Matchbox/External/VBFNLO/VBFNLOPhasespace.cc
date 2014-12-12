@@ -29,14 +29,20 @@
 
 #include "VBFNLO/utilities/BLHAinterface.h"
 
+#define DEFSTR(s) CPPSTR(s)
+#define CPPSTR(s) #s
+
 using namespace Herwig;
 
 VBFNLOPhasespace::VBFNLOPhasespace() : 
   lastSqrtS(0*GeV) {
-  if ( !DynamicLoader::load("libVBFNLO.so") )
-    throw Exception() << "failed to load libVBFNLO.so\n"
-		      << DynamicLoader::lastErrorMessage
-		      << Exception::abortnow;
+  string vbfnlolib = DEFSTR(VBFNLOLIB);
+  vbfnlolib += "/";
+  if ( !DynamicLoader::load(vbfnlolib+"libVBFNLO.so") )
+    if ( !DynamicLoader::load("libVBFNLO.so") )
+      throw Exception() << "failed to load libVBFNLO.so\n"
+		        << DynamicLoader::lastErrorMessage
+		        << Exception::abortnow;
 }
 
 VBFNLOPhasespace::~VBFNLOPhasespace() {}
