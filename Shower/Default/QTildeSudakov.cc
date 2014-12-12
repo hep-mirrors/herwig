@@ -319,12 +319,14 @@ tShowerParticlePtr findCorrelationPartner(ShowerParticle & particle,
 					  bool forward,
 					  ShowerInteraction::Type inter) {
   tPPtr child = &particle;
-  tPPtr mother;
+  tShowerParticlePtr mother;
   if(forward) {
-    mother = !particle.parents().empty() ? particle.parents()[0] : tPPtr();
+    mother = !particle.parents().empty() ? 
+      dynamic_ptr_cast<tShowerParticlePtr>(particle.parents()[0]) : tShowerParticlePtr();
   }
   else {
-    mother = particle.children().size()==2 ? &particle : tPPtr();
+    mother = particle.children().size()==2 ?
+      dynamic_ptr_cast<tShowerParticlePtr>(&particle) : tShowerParticlePtr();
   }
   tShowerParticlePtr partner;
   while(mother) {
@@ -352,12 +354,18 @@ tShowerParticlePtr findCorrelationPartner(ShowerParticle & particle,
     }
     child = mother;
     if(forward) {
-      mother = ! mother->parents().empty() ? mother->parents()[0] : tPPtr();
+      mother = ! mother->parents().empty() ?
+	dynamic_ptr_cast<tShowerParticlePtr>(particle.parents()[0]) : tShowerParticlePtr();
     }
     else {
       if(mother->children()[0]->children().size()!=2)
 	break;
-      mother = mother->children()[0];
+      tShowerParticlePtr mtemp = 
+	dynamic_ptr_cast<tShowerParticlePtr>(mother->children()[0]);
+      if(!mtemp)
+	break;
+      else
+	mother=mtemp;
     }
   }
   if(!partner) {

@@ -11,11 +11,18 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
+#include <boost/asio.hpp>
+
 using namespace Herwig;
 
 ParallelRunAnalysis::ParallelRunAnalysis() {}
 
-void ParallelRunAnalysis::doinitrun() {}
+void ParallelRunAnalysis::doinitrun() {
+  string logfilename = generator()->runName() + ".parallel";
+  ofstream log(logfilename.c_str(),ofstream::app);
+  log << "hostname> " << boost::asio::ip::host_name() << "\n" << flush;
+  log.close();
+}
 
 void ParallelRunAnalysis::dofinish() {
   AnalysisHandler::dofinish();
@@ -37,7 +44,8 @@ void ParallelRunAnalysis::analyze(tEventPtr, long currev, int, int) {
           currev,attempts,totev,
           double(curEvtHandler->integratedXSec()/picobarn),
           double(curEvtHandler->integratedXSecErr()/picobarn));
-  ofstream log("parallel.log",ofstream::app);
+  string logfilename = generator()->runName() + ".parallel";
+  ofstream log(logfilename.c_str(),ofstream::app);
   log << str << flush;
   log.close();
 }

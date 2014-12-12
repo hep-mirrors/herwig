@@ -19,6 +19,7 @@
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -48,7 +49,7 @@ extern "C" void MG_Colour                      (int* proc,int* i,int* j ,int* co
 
 
 MadGraphAmplitude::MadGraphAmplitude()
-  : theMGmodel("loop_sm") {}
+  : theMGmodel("loop_sm"),keepinputtopmass(false) {}
 
 MadGraphAmplitude::~MadGraphAmplitude() {
 
@@ -124,6 +125,19 @@ bool MadGraphAmplitude::initializeExternal() {
   borns.close();
   virts.close();
   
+  Energy MW=getParticleData(ParticleID::Wplus)->mass();
+  Energy MZ=getParticleData(ParticleID::Z0)->mass();
+
+  if( MW!= sqrt(MZ*MZ/2.0+sqrt(MZ*MZ*MZ*MZ/4.0-Constants::pi*SM().alphaEMMZ()*MZ*MZ/ sqrt(2.0)/SM().fermiConstant()))){  
+    cerr<<"\n\n-----!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!-----";
+    cerr << "\nYou are using a EW scheme which is inconsistent with the MadGraph parametisation:\n\n"     
+                      <<MW/GeV<< " GeV==MW!= sqrt(MZ^2/2+sqrt(MZ^4/4.0-pi*alphaEMMZ*MZ^2/ sqrt(2)/G_f))=="<<
+                      sqrt(MZ*MZ/2.0+sqrt(MZ*MZ*MZ*MZ/4.0-Constants::pi*SM().alphaEMMZ()*MZ*MZ/ sqrt(2.0)/SM().fermiConstant()))/GeV
+                      <<" GeV\n\n-----!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!-----\n";
+  }
+  
+  
+  
   
    
   string para= factory()->runStorage()+"/MadGraphAmplitudes"+"/MG-Parameter.dat";
@@ -136,7 +150,25 @@ bool MadGraphAmplitude::initializeExternal() {
   params<<"\n$MZ$ "     <<std::setiosflags(ios::scientific)  <<getParticleData(ParticleID::Z0)->mass() /GeV<<flush;
   params<<"\n$MW$ "    <<std::setiosflags(ios::scientific)   <<getParticleData(ParticleID::Wplus)->mass() /GeV<<flush;
   params<<"\n$sw2$ "    <<std::setiosflags(ios::scientific)   << SM().sin2ThetaW() <<flush;
-  params<<"\n$MT$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::t)->mass() /GeV <<flush;
+  if(theMGmodel=="heft"&&!keepinputtopmass){
+      cerr<<"\n---------------------------------------------------------------";
+      cerr<<"\n---------------------------------------------------------------";
+      cerr<<"\nNote:    You are using the Higgs Effective model (heft) in     ";
+      cerr<<"\n         Madgraph. We assume you try to calculate NLO with ";
+      cerr<<"\n         the GoSam virtual amplitudes. To match the models we ";
+      cerr<<"\n         therefore set the topmass to 10000000 GeV.";
+      cerr<<"\n\n         For more information see the \\tau parameter in:";     
+      cerr<<"\n         https://cp3.irmp.ucl.ac.be/projects/madgraph/wiki/Models/HiggsEffective";
+      cerr<<"\n\n         The Effective Higgs model in Gosam is using mT=infinity";
+      cerr<<"\n\n\n         If you want to use the LO matrixelements of MadGraph with finite' topmass you need to add:  ";
+      cerr<<"\n\n             set Madgraph:KeepInputTopMass True";
+      cerr<<"\n\n         to your input file.";
+      cerr<<"\n---------------------------------------------------------------";
+      cerr<<"\n---------------------------------------------------------------\n";
+      params<<"\n$MT$ 10000000." <<flush;
+  }else{
+      params<<"\n$MT$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::t)->mass() /GeV <<flush;
+  }
   params<<"\n$WT$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::t)->width() /GeV <<flush;
   params<<"\n$MB$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::b)->mass() /GeV <<flush;
   params<<"\n$MH$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::h0)->mass() /GeV <<flush;
@@ -363,12 +395,11 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
     const map<vector<int>,vector < complex<double> > >& tmpLN = lastMatchboxXComb()->helLNjamp();
 
   if( tmp.find(hel) != tmp.end()) {
-    assert(tmpLN.find(hel) != tmpLN.end());
     largeN = tmpLN.find(hel)->second[ii];
     return tmp.find(hel)->second[ii];;
   }
 
-  double units = pow(sqrt(lastSHat())/GeV,hel.size()-4);
+  double units = pow(sqrt(lastSHat())/GeV,int(hel.size())-4);
 
 
   
@@ -388,14 +419,13 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
     momenta[j+3]=abs(meMomenta()[i].z()/GeV)<1.e-13?0.:double(meMomenta()[i].z()/GeV);
     j+=4;
   }
-
   
   MG_Calculate_wavefunctions_born(&xx, &momenta[0],  &heltmp[0]);
   
   
   int ncol=-1;
   MG_NCol(&xx,&ncol);
-  assert(ncol!=-1);
+
   Complex res;
   Complex resLN;
   for( int it = 0; it < ncol; it++ ){
@@ -411,6 +441,7 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
     lastMatchboxXComb()->pushhelLNjamp(hel,dLN*units);
   }
 
+  
   largeN = resLN;
   return res;
 
@@ -424,8 +455,6 @@ LorentzVector<Complex> MadGraphAmplitude::plusPolarization(const Lorentz5Momentu
                                                      
 
   int tmp=i;
-  complex<double> ii(0.0,1.0);
-  double pg[4];double ng[4];
   pg[0]=p.e()/GeV;pg[1]=p.x()/GeV;pg[2]=p.y()/GeV;pg[3]=p.z()/GeV;
   ng[0]=n.e()/GeV;ng[1]=n.x()/GeV;ng[2]=n.y()/GeV;ng[3]=n.z()/GeV;
 
@@ -534,7 +563,6 @@ double MadGraphAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
 
 void MadGraphAmplitude::prepareOneLoopAmplitudes(Ptr<MatchboxMEBase>::tcptr me){
   assert(false);
-  MatchboxAmplitude::prepareAmplitudes(me);
 }
 
 
@@ -555,10 +583,10 @@ void MadGraphAmplitude::evaloneLoopInterference() const  {
 
   size_t j=0;
   for (size_t i=0;i<mePartonData().size();i++){
-    momenta[j]=double(meMomenta()[i].e()/GeV); //cout<<"\n"<< std::setprecision(9)<<double(meMomenta()[i].e()/GeV);
-    momenta[j+1]=double(meMomenta()[i].x()/GeV);//cout<<" "<< std::setprecision(9)<<double(meMomenta()[i].x()/GeV);
-    momenta[j+2]=double(meMomenta()[i].y()/GeV);//cout<<" "<< std::setprecision(9)<<double(meMomenta()[i].y()/GeV);
-    momenta[j+3]=double(meMomenta()[i].z()/GeV);//cout<<" "<< std::setprecision(9)<<double(meMomenta()[i].z()/GeV);
+    momenta[j]=abs(meMomenta()[i].e()/GeV)<1.e-13?0.:double(meMomenta()[i].e()/GeV);
+    momenta[j+1]=abs(meMomenta()[i].x()/GeV)<1.e-13?0.:double(meMomenta()[i].x()/GeV);
+    momenta[j+2]=abs(meMomenta()[i].y()/GeV)<1.e-13?0.:double(meMomenta()[i].y()/GeV);
+    momenta[j+3]=abs(meMomenta()[i].z()/GeV)<1.e-13?0.:double(meMomenta()[i].z()/GeV);
     j+=4;
   }
   int xx=lastMatchboxXComb()->externalId();
@@ -581,8 +609,6 @@ void MadGraphAmplitude::evaloneLoopInterference() const  {
       ifact /= (SM().Nc()*SM().Nc()-1.);
   
 
-
-    assert(lastMatchboxXComb()->matchboxME());
     ifact *= lastMatchboxXComb()->matchboxME()->finalStateSymmetry();
  
 
@@ -591,12 +617,12 @@ void MadGraphAmplitude::evaloneLoopInterference() const  {
  
 void MadGraphAmplitude::persistentOutput(PersistentOStream & os) const {
   os << theOrderInGs << theOrderInGem << BornAmplitudes << VirtAmplitudes
-     << colourindex << theProcessPath << theMGmodel;
+     << colourindex<<crossing << theProcessPath << theMGmodel;
 }
  
 void MadGraphAmplitude::persistentInput(PersistentIStream & is, int) {
   is >> theOrderInGs >> theOrderInGem >> BornAmplitudes >> VirtAmplitudes
-     >> colourindex >> theProcessPath >> theMGmodel;
+     >> colourindex>>crossing >> theProcessPath >> theMGmodel;
 }
  
 // *** Attention *** The following static variable is needed for the type
@@ -620,6 +646,21 @@ void MadGraphAmplitude::Init() {
     ("Model",
      "The MadGraph-Model.",
      &MadGraphAmplitude::theMGmodel, "loop_sm",false, false);
+  
+  static Switch<MadGraphAmplitude,bool> interfacekeepinputtopmass
+         ("KeepInputTopMass",
+          "Switch On/Off formopt",
+          &MadGraphAmplitude::keepinputtopmass, false, false, false);
+  static SwitchOption interfacekeepinputtopmassTrue
+         (interfacekeepinputtopmass,
+          "On",
+          "On",
+          true);
+  static SwitchOption interfacekeepinputtopmassFalse
+         (interfacekeepinputtopmass,
+          "Off",
+          "Off",
+          false);  
     
     
 

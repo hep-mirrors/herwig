@@ -265,6 +265,8 @@ protected:
    * The path to generate amplitudes in.
    */
   string theMGmodel;
+  
+  bool keepinputtopmass;
 
   /**
    * The process map.
@@ -282,15 +284,23 @@ protected:
   void initProcess(const cPDVector&);
 
 
-  mutable vector<string>  BornAmplitudes;
-  mutable vector<string>  VirtAmplitudes;
+  /**
+   * Storage for Amplitudes 
+   */
+  mutable vector<string>  BornAmplitudes,VirtAmplitudes;
    
-  mutable vector<int>  colourindex;
-  mutable vector<int>  crossing;
-  mutable double virt[20];
-  mutable double momenta[50];
+    /**
+   * Helper for color and crossing handling 
+   */ 
+  mutable vector<int>  colourindex, crossing;
+  
+  /**
+   * Give this to Madgraph:
+   */ 
+  
+  mutable double virt[20],momenta[50],pg[4],ng[4],poltmp[8];
   mutable int heltmp[10];
-  mutable double poltmp[8];
+
   
 
   
