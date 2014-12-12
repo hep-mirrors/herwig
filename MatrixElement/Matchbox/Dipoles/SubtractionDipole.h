@@ -382,14 +382,6 @@ public:
   virtual Selector<DiagramIndex> diagrams(const DiagramVector & dv) const;
 
   /**
-   * Select a diagram. Default version uses diagrams(const
-   * DiagramVector &) to select a diagram according to the
-   * weights. This is the only method used that should be outside of
-   * MEBase.
-   */
-  virtual DiagramIndex diagram(const DiagramVector & dv) const;
-
-  /**
    * Return a Selector with possible colour geometries for the selected
    * diagram weighted by their relative probabilities.
    */
