@@ -99,6 +99,16 @@ cd /Herwig/MatrixElements/Matchbox/Amplitudes
 ## GoSam : requires --with-gosam and --with-gosam-contrib
 # set GenericProcesses:OneLoopAmplitude GoSam
 
+# Note: If you want to calculate NLO corrections in the
+#       Higgs Effectiv Model (smehc) with GoSam virtual 
+#       Amplitudes and MadGraph TreeLevelAmplitude:
+#       copy installpath/share/Herwig++/defaults/setup.gosam.in to cwd
+#       modify "# model=smdiag" -> "model=smehc" in setup.gosam.in
+#       set GoSam:SetupInFilename setup.gosam.in
+#       and: 
+#       set MadGraph:Model heft
+#       
+
 ## NJet : requires --with-njet
 # set GenericProcesses:OneLoopAmplitude NJet
 
@@ -145,6 +155,7 @@ cd /Herwig/MatrixElements/Matchbox
 ## MC@NLO-type next-to-leading order for use with default shower
 
 set PPFactory:ShowerApproximation QTildeMatching
+set /Herwig/Shower/Evolver:HardVetoScaleSource Read
 set /Herwig/Shower/Evolver:MECorrMode No
 
 ## MC@NLO-type next-to-leading order for use with dipole shower
@@ -152,7 +163,7 @@ set /Herwig/Shower/Evolver:MECorrMode No
 # set PPFactory:ShowerApproximation DipoleMatching
 # cd /Herwig/EventHandlers
 # set LHCHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
-# set LHCHandler:CascadeHandler:MPIHandler NULL
+# set /Herwig/DipoleShower/DipoleShowerHandler:MaxPtIsMuF Yes
 # set /Herwig/Model:QCD/RunningAlphaS /Herwig/MatrixElements/Matchbox/AlphaS/MatchboxNLOAlphaS
 # read DipoleShowerParameters.in
 # cd /Herwig/MatrixElements/Matchbox

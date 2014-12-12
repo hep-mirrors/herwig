@@ -306,17 +306,12 @@ void HerwigRun(string runname, string setupfile,
     Herwig::RunDirectories::pushRunId(tag);
   if ( !integrationList.empty() )
     Herwig::RunDirectories::pushRunId(integrationList);
-  /*
-
-   // need to be consistent with tag handling -- should we
-   // tag with the seed by default?!
 
   if ( seed > 0 ) {
     ostringstream sseed;
     sseed << seed;
     Herwig::RunDirectories::pushRunId(sseed.str());
   }
-  */
 
   if ( seed > 0 ) eg->setSeed(seed);
   if ( !setupfile.empty() ) eg->addTag("-" + setupfile);

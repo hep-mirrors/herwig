@@ -581,7 +581,7 @@ form.tempdir=@FORMTEMPDIR@
 #       2) haggies.bin=/usr/bin/java -Xmx50m -jar ./haggies.jar      #
 #                                                                    #
 ######################################################################
-# haggies.bin=java -jar /home/reuschle/Downloads/HepTools/GoSam_2.0/local/share/golem/haggies/haggies.jar
+# haggies.bin=/usr/bin/java -jar ./haggies.jar 
 
 ### fc.bin (text) ####################################################
 #    Denotes the executable file of the Fortran90 compiler.          #

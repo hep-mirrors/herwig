@@ -139,6 +139,7 @@ cd /Herwig/MatrixElements/Matchbox
 ## MC@NLO-type next-to-leading order for use with default shower
 
 set DISFactory:ShowerApproximation QTildeMatching
+set /Herwig/Shower/Evolver:HardVetoScaleSource Read
 set /Herwig/Shower/Evolver:MECorrMode No
 cd /Herwig/MatrixElements/Matchbox
 
@@ -147,6 +148,7 @@ cd /Herwig/MatrixElements/Matchbox
 # set DISFactory:ShowerApproximation DipoleMatching
 # cd /Herwig/EventHandlers
 # set DISHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
+# set /Herwig/DipoleShower/DipoleShowerHandler:MaxPtIsMuF Yes
 # set DISHandler:CascadeHandler:MPIHandler NULL
 # set /Herwig/Model:QCD/RunningAlphaS /Herwig/MatrixElements/Matchbox/AlphaS/MatchboxNLOAlphaS
 # read DipoleShowerParameters.in
@@ -191,6 +193,11 @@ set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleFactor 1.0
 set /Herwig/Shower/ShowerHandler:RenormalizationScaleFactor 1.0
 set /Herwig/Shower/ShowerHandler:FactorizationScaleFactor 1.0
 set /Herwig/Shower/ShowerHandler:HardScaleFactor 1.0
+
+# switch off final-state electron/muon FSR
+do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting e-->e-,gamma; /Herwig/Shower/LtoLGammaSudakov
+do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting mu-->mu-,gamma; /Herwig/Shower/LtoLGammaSudakov
+do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting tau-->tau-,gamma; /Herwig/Shower/LtoLGammaSudakov
 
 ##################################################
 ## Analyses
