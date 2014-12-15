@@ -578,7 +578,7 @@ CrossSection MatchboxMEBase::dSigHatDR() const {
     }
     double piWeight = pow(2.*Constants::pi,(int)(3*(meMomenta().size()-2)-4));
     double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
-    bookMEoverDiaWeight(xme2/(diagweightsum*piWeight*units));
+    bookMEoverDiaWeight(log(xme2/(diagweightsum*piWeight*units)));//
   }
 
   
@@ -1502,7 +1502,7 @@ void MatchboxMEBase::doinit() {
         << "#set logscale x\n"
         << "set xrange [" << theDiagramWeightVerboseDown << ":" << theDiagramWeightVerboseUp << "]\n"
         << "set yrange [0.:"<<(m*0.95)<<"]\n"
-        << "set xlabel '$ME/\\sum DiaW$'\n"
+        << "set xlabel '$log(ME/\\sum DiaW)$'\n"
         << "set size 0.7,0.7\n"
         << "plot 1 w lines lc rgbcolor \"#DDDDDD\" notitle, '" << name()<<"-MeoDiaW"
         << ".dat' with histeps lc rgbcolor \"#00AACC\" t '$"<<name()<<"$'";
