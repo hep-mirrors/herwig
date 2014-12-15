@@ -140,12 +140,12 @@ void JetsPlusAnalysis::analyze(ParticleVector& parts, long id, double weight) {
     }
   }
 
-  if ( njets > 0.0 )
+  if ( njets > 0 )
     jetSummedProperties().count(jetSummedPerp,jetSummedRapidity,
 				jetSummedPhi,jetSummedM,
 				weight,id);
 
-  if ( njets > 0.0 )
+  if ( njets > 0 )
     jetAverageProperties().count(jetSummedPerp/njets,jetSummedRapidity/njets,
 				 jetSummedPhi/njets,jetSummedM/njets,
 				 weight,id);
