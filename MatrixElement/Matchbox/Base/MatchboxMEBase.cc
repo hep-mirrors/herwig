@@ -1534,38 +1534,41 @@ void MatchboxMEBase::doinitrun() {
 	  virtuals().begin(); v != virtuals().end(); ++v ) {
     (**v).initrun();
   }
-  
-  for (  int k = 0; k < factory()->diagramWeightVerboseNBins() ; ++k ) {
-    MEoverDiaWeight[theDiagramWeightVerboseDown+
-    double(k)*(theDiagramWeightVerboseUp-
-               theDiagramWeightVerboseDown)
-           /double(factory()->diagramWeightVerboseNBins()) ] = 0.;
-	   
-  }
-  Nevents=0.;
 
+  if ( factory()->verboseDia() ) {
   
-  
-  ofstream out("DiagramWeights.sh");
-  out<<"P=$(pwd)"
-  <<"\ncd "<<RunDirectories::runStorage()
-  <<"\nrm -f DiagramWeights.tex"
-  <<"\n echo \"\\documentclass{article}\" >> DiagramWeights.tex"
-  <<"\n echo \"\\usepackage{amsmath,amsfonts,amssymb,graphicx,color}\" >> DiagramWeights.tex"
-  <<"\n echo \"\\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}\" >> DiagramWeights.tex"
-  <<"\n echo \"\\begin{document}\" >> DiagramWeights.tex"
-  <<"\n echo \"\\setlength{\\parindent}{0cm}\" >> DiagramWeights.tex"
+    for (  int k = 0; k < factory()->diagramWeightVerboseNBins() ; ++k ) {
+      MEoverDiaWeight[theDiagramWeightVerboseDown+
+		      double(k)*(theDiagramWeightVerboseUp-
+				 theDiagramWeightVerboseDown)
+		      /double(factory()->diagramWeightVerboseNBins()) ] = 0.;
+	   
+    }
+    Nevents=0.;
+
+    ofstream out("DiagramWeights.sh");
+    out<<"P=$(pwd)"
+       <<"\ncd "<<RunDirectories::runStorage()
+       <<"\nrm -f DiagramWeights.tex"
+       <<"\n echo \"\\documentclass{article}\" >> DiagramWeights.tex"
+       <<"\n echo \"\\usepackage{amsmath,amsfonts,amssymb,graphicx,color}\" >> DiagramWeights.tex"
+       <<"\n echo \"\\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}\" >> DiagramWeights.tex"
+       <<"\n echo \"\\begin{document}\" >> DiagramWeights.tex"
+       <<"\n echo \"\\setlength{\\parindent}{0cm}\" >> DiagramWeights.tex"
      
-  <<"\n\n for i in $(ls *.gp | sed s/'\\.gp'//g) ; "
-  <<"\n do"
-  <<"\n     echo \"\\input{\"\"$i\"-plot\"}\" >> DiagramWeights.tex"
-  <<"\n done"
-  <<"\n  echo \"\\end{document}\" >> DiagramWeights.tex  "
-  <<"\n  for i in *.gp ; do "
-  <<"\n  gnuplot $i   "
-  <<"\n   done      "
-  <<"\n  pdflatex DiagramWeights.tex  \ncp DiagramWeights.pdf $P";
-  out.close();
+       <<"\n\n for i in $(ls *.gp | sed s/'\\.gp'//g) ; "
+       <<"\n do"
+       <<"\n     echo \"\\input{\"\"$i\"-plot\"}\" >> DiagramWeights.tex"
+       <<"\n done"
+       <<"\n  echo \"\\end{document}\" >> DiagramWeights.tex  "
+       <<"\n  for i in *.gp ; do "
+       <<"\n  gnuplot $i   "
+       <<"\n   done      "
+       <<"\n  pdflatex DiagramWeights.tex  \ncp DiagramWeights.pdf $P";
+    out.close();
+
+  }
+
 }
   
 void MatchboxMEBase::dofinish() {
