@@ -155,10 +155,6 @@ else:
 
   
 if  not args.build:
-  #os.system("ln -s "+args.buildpath+"/MG5/SubProcesses "+pwd )
-  #os.system("ln -s "+args.buildpath+"/MG5/Cards "+pwd )
-  #os.system("cp "+find("ident_card.dat",args.buildpath)+" "+pwd )
-  
   build_matchbox_tmp(pwd,args.buildpath)
   containsall=True
   for filei in [args.buildpath+"/VirtAmplitudes.dat",args.buildpath+"/BornAmplitudes.dat"]:
@@ -215,19 +211,8 @@ if os.path.isfile("InterfaceMadGraph.so"):
  
 Bornlist,Virtlist=fillprocs(args.model)
 os.system("python "+args.madgraph+"/mg5_aMC proc.dat")
-#Bornlist=[]
-#Virtlist=[]
 
 
-
-
-#procs=open("proc.dat","r")
-#for line in procs:
-  #if "@" in line:
-    #if "[ virt=QCD ]" in line:
-      #Virtlist+=[line.split("@")[1].replace("\n","")]
-    #else:
-      #Bornlist+=[line.split("@")[1].replace("\n","")]
 routines=[["","BORN(momenta,hel)"],
 	 ["","SLOOPMATRIX(momenta,virt)"],
 	 ["","GET_JAMP(color,Jamp)"],
@@ -251,14 +236,9 @@ for routine in routines:
        routine[0]+="         ENDIF   \n"
 
 
-#procs.close()
-#procs=open("proc.dat","r")
 
 shutil.copyfile("@prefix@/share/Herwig++/MadGraphInterface/InterfaceMadGraph.f.in", "InterfaceMadGraph.f")
-#if param_card !="":
-#replacetext("InterfaceMadGraph.f","MG_InitProctxt","         CALL setpara(file_card)")
-#else:
-  #replacetext("InterfaceMadGraph.f","MG_InitProctxt","         CALL setpara('Matchbox/MG_tmp/param_card.dat')")
+
 replacetext("InterfaceMadGraph.f","MG_CalculateBORNtxt",routines[0][0])
 replacetext("InterfaceMadGraph.f","MG_CalculateVIRTtxt",routines[1][0])
 replacetext("InterfaceMadGraph.f","MG_Jamptxt",     routines[2][0])

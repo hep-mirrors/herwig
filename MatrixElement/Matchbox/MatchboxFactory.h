@@ -585,7 +585,18 @@ public:
    * Switch on diagnostic information.
    */
   void setVerbose(bool on = true) { theVerbose = on; }
-
+  
+  
+  /**
+   * Return true, if diagram weight is verbose
+   */
+  bool verboseDia() const { return theDiagramWeightVerbose; }
+  /**
+   * Number of bins for diagram weight verbosity
+   */
+  int diagramWeightVerboseNBins() const {return theDiagramWeightVerboseNBins;}
+  
+  
   /**
    * Return true, if verbose while initializing
    */
@@ -904,7 +915,18 @@ private:
    * Switch on or off verbosity
    */
   bool theVerbose;
+  
+  /**
+   * Switch on or off diagram weight verbosity
+   */
+  bool theDiagramWeightVerbose;  
+  
+  /**
+   * Number of bins for diagram weight verbosity
+   */
+  int theDiagramWeightVerboseNBins;
 
+  
   /**
    * True, if verbose while initializing
    */

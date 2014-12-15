@@ -49,7 +49,7 @@ void HJetsAnalysis::analyzeSpecial(long id, double weight) {
   if ( nJets() > 2 )
     thirdJetYStar().count(Statistics::EventContribution(yStar(jetMomentum(1),jetMomentum(2),jetMomentum(3)),weight,0.1),id);
   if ( nJets() > 3 )
-    thirdJetYStar().count(Statistics::EventContribution(yStar(jetMomentum(1),jetMomentum(2),jetMomentum(4)),weight,0.1),id);
+    fourthJetYStar().count(Statistics::EventContribution(yStar(jetMomentum(1),jetMomentum(2),jetMomentum(4)),weight,0.1),id);
 }
 
 void HJetsAnalysis::finalize(XML::Element& xhistos) {

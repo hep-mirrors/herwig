@@ -63,10 +63,16 @@ MatchboxXCombData::MatchboxXCombData(tMEPtr newME)
   flushCaches();
   theMatchboxME = dynamic_ptr_cast<Ptr<MatchboxMEBase>::tptr>(newME);
   theSubtractionDipole = dynamic_ptr_cast<Ptr<SubtractionDipole>::tptr>(newME);
+  Ptr<SubtractedME>::tptr subme = 
+    dynamic_ptr_cast<Ptr<SubtractedME>::tptr>(newME);
+  if ( !theMatchboxME && !theSubtractionDipole && subme )
+    theMatchboxME = dynamic_ptr_cast<Ptr<MatchboxMEBase>::tptr>(subme->head());
+  assert(theMatchboxME || theSubtractionDipole);
   if ( theMatchboxME )
     theFactory = theMatchboxME->factory();
   else if ( theSubtractionDipole )
     theFactory = theSubtractionDipole->realEmissionME()->factory();
+  assert(theFactory);
 }
 
 void MatchboxXCombData::fillOLPMomenta(const vector<Lorentz5Momentum>& memomenta) {

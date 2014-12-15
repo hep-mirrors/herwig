@@ -61,6 +61,9 @@ void SubtractionDipole::setupBookkeeping(const map<Ptr<DiagramBase>::ptr,Subtrac
   theMergingMap.clear();
   theSplittingMap.clear();
 
+  theUnderlyingBornDiagrams.clear();
+  theRealEmissionDiagrams.clear();
+
   int xemitter = -1;
   int xspectator = -1;
   map<int,int> mergeLegs;
@@ -129,8 +132,11 @@ void SubtractionDipole::setupBookkeeping(const map<Ptr<DiagramBase>::ptr,Subtrac
 	gotit = true;
 	break;
       }
-    if ( !gotit )
+    if ( !gotit ) {
       theSplittingMap.insert(make_pair(bornKey,realInfo));
+      theUnderlyingBornDiagrams[process(realKey)].push_back(*bd);
+      theRealEmissionDiagrams[process(bornKey)].push_back(mit->first);
+    }
 
   }
 
@@ -142,30 +148,6 @@ void SubtractionDipole::setupBookkeeping(const map<Ptr<DiagramBase>::ptr,Subtrac
   for ( multimap<UnderlyingBornKey,RealEmissionInfo>::const_iterator s =
 	  theSplittingMap.begin(); s != theSplittingMap.end(); ++s ) {
     theIndexMap[process(s->first)] = make_pair(emitter(s->first),spectator(s->first));
-  }
-
-  theUnderlyingBornDiagrams.clear();
-  for ( map<RealEmissionKey,UnderlyingBornInfo>::const_iterator r =
-	  theMergingMap.begin(); r != theMergingMap.end(); ++r ) {
-    DiagramVector borns;
-    for ( DiagramVector::const_iterator d = theUnderlyingBornME->diagrams().begin();
-	  d != theUnderlyingBornME->diagrams().end(); ++d ) {
-      if ( (**d).partons() == process(r->second.first) )
-	borns.push_back(*d);
-    }
-    theUnderlyingBornDiagrams[process(r->first)] = borns;
-  }
-
-  theRealEmissionDiagrams.clear();
-  for ( multimap<UnderlyingBornKey,RealEmissionInfo>::const_iterator r =
-	  theSplittingMap.begin(); r != theSplittingMap.end(); ++r ) {
-    DiagramVector reals;
-    for ( DiagramVector::const_iterator d = theRealEmissionME->diagrams().begin();
-	  d != theRealEmissionME->diagrams().end(); ++d ) {
-      if ( (**d).partons() == process(r->second.first) )
-	reals.push_back(*d);
-    }
-    theRealEmissionDiagrams[process(r->first)] = reals;
   }
 
 }
@@ -397,19 +379,6 @@ Selector<MEBase::DiagramIndex> SubtractionDipole::diagrams(const DiagramVector &
   }
   return 
     me->diagrams(dv);
-}
-
-MEBase::DiagramIndex SubtractionDipole::diagram(const DiagramVector & dv) const {
-  Ptr<MatchboxMEBase>::tcptr me = 
-    splitting() ?
-    realEmissionME() :
-    underlyingBornME();
-  if ( me->phasespace() ) {
-    me->phasespace()->setXComb(lastXCombPtr());
-    me->phasespace()->fillDiagramWeights();
-  }
-  return 
-    me->diagram(dv);
 }
 
 Selector<const ColourLines *>

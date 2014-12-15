@@ -272,8 +272,13 @@ MatchboxPhasespace::timeLikeWeight(const Tree2toNDiagram& diag,
 		    diag.allPartons()[children.first]->id(),
 		    diag.allPartons()[children.second]->id());
   map<LTriple,double>::const_iterator cit = couplings.find(vertexKey);
-  if ( cit != couplings.end() )
+  if ( cit != couplings.end() ){
     res.first *= cit->second;
+  }else{
+    if(factory()->verboseDia())
+    cout<<"\n MatchboxPhasespace no coupling for (timelike) :" << vertexKey.get<0>()
+    <<" "<<vertexKey.get<1>()<<" " <<vertexKey.get<2>();
+  }
 
   Energy2 mass2 = sqr(diag.allPartons()[branch]->mass());
   Energy2 width2 = sqr(diag.allPartons()[branch]->width());
@@ -318,17 +323,28 @@ double MatchboxPhasespace::spaceLikeWeight(const Tree2toNDiagram& diag,
   pair<double,Lorentz5Momentum> res =
     timeLikeWeight(diag,children.second,flatCut);
 
+  
   LTriple vertexKey(diag.allPartons()[branch]->id(),
 		    diag.allPartons()[children.first]->id(),
 		    diag.allPartons()[children.second]->id());
-  if ( children.first == diag.nSpace() - 1 )
-    vertexKey = LTriple(diag.allPartons()[children.first]->id(),
-			diag.allPartons()[branch]->id(),
-			diag.allPartons()[children.second]->id());
+  if ( children.first == diag.nSpace() - 1 ) {
+    if ( diag.allPartons()[children.first]->CC() )
+      vertexKey = LTriple(diag.allPartons()[branch]->id(),
+			  diag.allPartons()[children.second]->id(),
+			  diag.allPartons()[children.first]->CC()->id());
+    else
+      vertexKey = LTriple(diag.allPartons()[branch]->id(),
+			  diag.allPartons()[children.second]->id(),
+			  diag.allPartons()[children.first]->id());
+  }
   map<LTriple,double>::const_iterator cit = couplings.find(vertexKey);
-  if ( cit != couplings.end() )
+  if ( cit != couplings.end() ){
     res.first *= cit->second;
-
+  }else{
+    if(factory()->verboseDia())
+    cout<<"\n MatchboxPhasespace no coupling for (space) :"<< vertexKey.get<0>()
+    <<" "<<vertexKey.get<1>()<<" " <<vertexKey.get<2>();
+  }
   if ( children.first == diag.nSpace() - 1 ) {
     return res.first;
   }

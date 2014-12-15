@@ -1031,6 +1031,22 @@ private:
    * True, if already checked for which PDFs to include.
    */
   mutable bool checkedPDFs;
+  
+  /**
+  * Diagnostic Diagram for TreePhaseSpace
+  */
+  
+  void bookMEoverDiaWeight(double x) const;
+  
+  mutable map<double,double > MEoverDiaWeight;
+  
+  mutable int Nevents;
+  
+  /**
+   * Range of diagram weight verbosity
+   */
+  mutable double theDiagramWeightVerboseDown, theDiagramWeightVerboseUp;
+  
 
 private:
 

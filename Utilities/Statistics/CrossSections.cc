@@ -48,8 +48,16 @@ CrossSections& CrossSections::operator+=(const CrossSections& other) {
   theIntegral += other.integral();
   theVarianceOfIntegral += other.varianceOfIntegral();
   for ( map<string,Distribution>::iterator h = theDistributions.begin();
-	h != theDistributions.end(); ++h )
+	h != theDistributions.end(); ++h ) {
+    if ( other.distributions().find(h->first) == other.distributions().end() )
+      continue;
     h->second += other.distribution(h->first);
+  }
+  for ( map<string,Distribution>::const_iterator h = other.distributions().begin();
+	h != other.distributions().end(); ++h ) {
+    if ( theDistributions.find(h->first) == theDistributions.end() )
+      theDistributions[h->first] = h->second;
+  }
   return *this;
 }
 

@@ -77,8 +77,16 @@ Run& Run::operator+=(const Run& other) {
   theSumOfWeights += other.sumOfWeights();
   theSumOfSquaredWeights += other.sumOfSquaredWeights();
   for ( map<string,Histogram>::iterator h = theHistograms.begin();
-	h != theHistograms.end(); ++h )
+	h != theHistograms.end(); ++h ) {
+    if ( other.histograms().find(h->first) == other.histograms().end() )
+      continue;
     h->second += other.histogram(h->first);
+  }
+  for ( map<string,Histogram>::const_iterator h = other.histograms().begin();
+	h != other.histograms().end(); ++h ) {
+    if ( theHistograms.find(h->first) == theHistograms.end() )
+      theHistograms[h->first] = h->second;
+  }
   return *this;
 }
 

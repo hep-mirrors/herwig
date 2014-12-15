@@ -5,8 +5,8 @@
        subroutine MGInitProc(file_card)
          IMPLICIT NONE
          character*(*) file_card
-         print*,"Reading inputs from: "
-         print*, TRIM(file_card)
+C         print*,"Reading inputs from: "
+C         print*, TRIM(file_card)
          CALL setpara(file_card)
        END
 

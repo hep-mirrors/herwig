@@ -28,6 +28,7 @@
 #include "Herwig++/MatrixElement/Matchbox/Dipoles/SubtractionDipole.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/DiagramDrawer.h"
 #include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
+#include "Herwig++/Utilities/RunDirectories.h"
 
 #include <iterator>
 using std::ostream_iterator;
@@ -39,7 +40,9 @@ MatchboxMEBase::MatchboxMEBase()
     theOneLoop(false),
     theOneLoopNoBorn(false),
     theNoCorrelations(false),
-    theHavePDFs(false,false), checkedPDFs(false) {}
+    theHavePDFs(false,false), checkedPDFs(false),
+    theDiagramWeightVerboseDown(10000000000000.),
+    theDiagramWeightVerboseUp(0.) {}
 
 MatchboxMEBase::~MatchboxMEBase() {}
 
@@ -565,6 +568,21 @@ CrossSection MatchboxMEBase::dSigHatDR() const {
   double xme2 = me2();
   lastME2(xme2);
 
+ 
+  
+  if (factory()->verboseDia()){
+    double diagweightsum = 0.0;
+    for ( vector<Ptr<DiagramBase>::ptr>::const_iterator d = diagrams().begin();
+        d != diagrams().end(); ++d ) {
+        diagweightsum += phasespace()->diagramWeight(dynamic_cast<const Tree2toNDiagram&>(**d));
+    }
+    double piWeight = pow(2.*Constants::pi,(int)(3*(meMomenta().size()-2)-4));
+    double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
+    bookMEoverDiaWeight(log(xme2/(diagweightsum*piWeight*units)));//
+  }
+
+  
+  
   if ( xme2 == 0. && !oneLoopNoBorn() ) {
     lastMECrossSection(ZERO);
     return lastMECrossSection();
@@ -1402,7 +1420,7 @@ void MatchboxMEBase::persistentOutput(PersistentOStream & os) const {
      << theOneLoopNoBorn
      << epsilonSquarePoleHistograms << epsilonPoleHistograms
      << theOLPProcess << theNoCorrelations
-     << theHavePDFs << checkedPDFs;
+     << theHavePDFs << checkedPDFs<<theDiagramWeightVerboseDown<<theDiagramWeightVerboseUp;
 }
 
 void MatchboxMEBase::persistentInput(PersistentIStream & is, int) {
@@ -1412,7 +1430,7 @@ void MatchboxMEBase::persistentInput(PersistentIStream & is, int) {
      >> theOneLoopNoBorn
      >> epsilonSquarePoleHistograms >> epsilonPoleHistograms
      >> theOLPProcess >> theNoCorrelations
-     >> theHavePDFs >> checkedPDFs;
+     >> theHavePDFs >> checkedPDFs>>theDiagramWeightVerboseDown>>theDiagramWeightVerboseUp;
   lastMatchboxXComb(theLastXComb);
 }
 
@@ -1454,6 +1472,50 @@ void MatchboxMEBase::doinit() {
   }
 }
 
+
+
+ void MatchboxMEBase::bookMEoverDiaWeight(double x) const {
+   
+      if (MEoverDiaWeight.size()==0){
+	theDiagramWeightVerboseDown=min(theDiagramWeightVerboseDown,x*0.9);
+	theDiagramWeightVerboseUp=max(theDiagramWeightVerboseUp,x*1.1);     
+      }
+      
+      map<double,double>::iterator bx =MEoverDiaWeight.upper_bound(x);
+      if ( bx == MEoverDiaWeight.end() ) {
+	return;
+      }
+      bx->second += 1.;
+      Nevents++;
+      if (int(Nevents)%1000==0){
+        ofstream out((RunDirectories::runStorage()+"/"+name()+"-MeoDiaW.dat").c_str());
+	int i=0;
+	double m=0.;
+        for ( map<double,double>::const_iterator bx = MEoverDiaWeight.begin();bx != MEoverDiaWeight.end(); ++bx,i++ ) {
+          out << " " << bx->first<<" "<<( bx->second/double(Nevents))<<"\n ";
+	  m=max(m,bx->second/double(Nevents));
+        }
+        out.close();
+	  ofstream gpout((RunDirectories::runStorage()+"/"+name()+"-MeoDiaW.gp").c_str());
+  gpout << "set terminal epslatex color solid\n"
+        << "set output '" << name()<<"-MeoDiaW"<< "-plot.tex'\n"
+        << "#set logscale x\n"
+        << "set xrange [" << theDiagramWeightVerboseDown << ":" << theDiagramWeightVerboseUp << "]\n"
+        << "set yrange [0.:"<<(m*0.95)<<"]\n"
+        << "set xlabel '$log(ME/\\sum DiaW)$'\n"
+        << "set size 0.7,0.7\n"
+        << "plot 1 w lines lc rgbcolor \"#DDDDDD\" notitle, '" << name()<<"-MeoDiaW"
+        << ".dat' with histeps lc rgbcolor \"#00AACC\" t '$"<<name()<<"$'";
+  
+  gpout.close();
+	
+
+  
+    }
+  
+}
+
+
 void MatchboxMEBase::doinitrun() {
   MEBase::doinitrun();
   if ( matchboxAmplitude() )
@@ -1472,8 +1534,40 @@ void MatchboxMEBase::doinitrun() {
 	  virtuals().begin(); v != virtuals().end(); ++v ) {
     (**v).initrun();
   }
-}
+  
+  for (  int k = 0; k < factory()->diagramWeightVerboseNBins() ; ++k ) {
+    MEoverDiaWeight[theDiagramWeightVerboseDown+
+    double(k)*(theDiagramWeightVerboseUp-
+               theDiagramWeightVerboseDown)
+           /double(factory()->diagramWeightVerboseNBins()) ] = 0.;
+	   
+  }
+  Nevents=0.;
 
+  
+  
+  ofstream out("DiagramWeights.sh");
+  out<<"P=$(pwd)"
+  <<"\ncd "<<RunDirectories::runStorage()
+  <<"\nrm -f DiagramWeights.tex"
+  <<"\n echo \"\\documentclass{article}\" >> DiagramWeights.tex"
+  <<"\n echo \"\\usepackage{amsmath,amsfonts,amssymb,graphicx,color}\" >> DiagramWeights.tex"
+  <<"\n echo \"\\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}\" >> DiagramWeights.tex"
+  <<"\n echo \"\\begin{document}\" >> DiagramWeights.tex"
+  <<"\n echo \"\\setlength{\\parindent}{0cm}\" >> DiagramWeights.tex"
+     
+  <<"\n\n for i in $(ls *.gp | sed s/'\\.gp'//g) ; "
+  <<"\n do"
+  <<"\n     echo \"\\input{\"\"$i\"-plot\"}\" >> DiagramWeights.tex"
+  <<"\n done"
+  <<"\n  echo \"\\end{document}\" >> DiagramWeights.tex  "
+  <<"\n  for i in *.gp ; do "
+  <<"\n  gnuplot $i   "
+  <<"\n   done      "
+  <<"\n  pdflatex DiagramWeights.tex  \ncp DiagramWeights.pdf $P";
+  out.close();
+}
+  
 void MatchboxMEBase::dofinish() {
   MEBase::dofinish();
   for ( map<cPDVector,AccuracyHistogram>::const_iterator

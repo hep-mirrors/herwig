@@ -45,7 +45,9 @@ MatchboxFactory::MatchboxFactory()
     theSubProcessGroups(false),
     theFactorizationScaleFactor(1.0), theRenormalizationScaleFactor(1.0),
     theFixedCouplings(false), theFixedQEDCouplings(false), theVetoScales(false),
-    theDipoleSet(0), theVerbose(false), theInitVerbose(false), 
+    theDipoleSet(0), theVerbose(false), theDiagramWeightVerbose(false),
+    theDiagramWeightVerboseNBins(200),
+    theInitVerbose(false), 
     theSubtractionData(""), theSubtractionPlotType(1), theSubtractionScatterPlot(false),
     thePoleData(""), theRealEmissionScales(false), theAllProcesses(false),
   theMECorrectionsOnly(false), theLoopSimCorrections(false), ranSetup(false),
@@ -1077,7 +1079,9 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
      << theAmplitudes
      << theBornMEs << theVirtuals << theRealEmissionMEs << theLoopInducedMEs
      << theBornVirtualMEs << theSubtractedMEs << theFiniteRealMEs
-     << theVerbose << theInitVerbose << theSubtractionData << theSubtractionPlotType
+     << theVerbose<<theDiagramWeightVerbose
+     <<theDiagramWeightVerboseNBins
+     << theInitVerbose << theSubtractionData << theSubtractionPlotType
      << theSubtractionScatterPlot << thePoleData
      << theParticleGroups << processes << loopInducedProcesses << realEmissionProcesses
      << theShowerApproximation << theSplittingDipoles
@@ -1102,7 +1106,9 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
      >> theAmplitudes
      >> theBornMEs >> theVirtuals >> theRealEmissionMEs >> theLoopInducedMEs
      >> theBornVirtualMEs >> theSubtractedMEs >> theFiniteRealMEs
-     >> theVerbose >> theInitVerbose >> theSubtractionData >> theSubtractionPlotType
+     >> theVerbose >> theDiagramWeightVerbose
+     >> theDiagramWeightVerboseNBins
+     >> theInitVerbose >> theSubtractionData >> theSubtractionPlotType
      >> theSubtractionScatterPlot >> thePoleData
      >> theParticleGroups >> processes >> loopInducedProcesses >> realEmissionProcesses
      >> theShowerApproximation >> theSplittingDipoles
@@ -1476,6 +1482,33 @@ void MatchboxFactory::Init() {
      "Off",
      "Off",
      false);
+    
+    
+  static Switch<MatchboxFactory,bool> interfaceVerboseDia
+    ("DiagramWeightVerbose",
+     "Print full infomation on each evaluated phase space point.",
+     &MatchboxFactory::theDiagramWeightVerbose, false, false, false);
+  static SwitchOption interfaceVerboseDiaOn
+    (interfaceVerboseDia,
+     "On",
+     "On",
+     true);
+  static SwitchOption interfaceVerboseDiaOff
+    (interfaceVerboseDia,
+     "Off",
+     "Off",
+     false);
+    
+    
+  static Parameter<MatchboxFactory,int> interfaceVerboseDiaNbins
+    ("DiagramWeightVerboseNBins",
+     "No. of Bins for DiagramWeightVerbose Diagrams.",
+     &MatchboxFactory::theDiagramWeightVerboseNBins, 200, 0, 0,
+     false, false, Interface::lowerlim); 
+    
+    
+    
+    
 
   static Switch<MatchboxFactory,bool> interfaceInitVerbose
     ("InitVerbose",
