@@ -533,15 +533,14 @@ void GeneralSampler::doinit() {
   }
   readGrids();
   if ( theGrids.children().empty() && runLevel() == RunMode )
-    throw Exception()
+    cout
       << "\n--------------------------------------------------------------------------------\n\n"
-      << "No grid file could be found at the start of this run.\n\n"
+      << "Warning: No grid file could be found at the start of this run.\n\n"
       << "* For a read/run setup intented to be used with --setupfile please consider\n"
       << "  using the build/integrate/run setup.\n"
       << "* For a build/integrate/run setup to be used with --setupfile please ensure\n"
       << "  that the same setupfile is provided to both, the integrate and run steps.\n\n"
-      << "--------------------------------------------------------------------------------\n"
-      << Exception::abortnow;
+      << "--------------------------------------------------------------------------------\n";
   if ( samplers().empty() && runLevel() == RunMode )
     justAfterIntegrate = true;
   SamplerBase::doinit();
@@ -635,15 +634,14 @@ void GeneralSampler::doinitrun() {
   readGrids();
 
   if ( theGrids.children().empty() )
-    throw Exception()
+    cout
       << "\n--------------------------------------------------------------------------------\n\n"
-      << "No grid file could be found at the start of this run.\n\n"
+      << "Warning:No grid file could be found at the start of this run.\n\n"
       << "* For a read/run setup intented to be used with --setupfile please consider\n"
       << "  using the build/integrate/run setup.\n"
       << "* For a build/integrate/run setup to be used with --setupfile please ensure\n"
       << "  that the same setupfile is provided to both, the integrate and run steps.\n\n"
-      << "--------------------------------------------------------------------------------\n"
-      << Exception::abortnow;
+      << "--------------------------------------------------------------------------------\n";
 
   eventHandler()->initrun();
 
