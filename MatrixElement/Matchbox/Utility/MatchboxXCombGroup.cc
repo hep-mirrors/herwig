@@ -35,7 +35,8 @@ MatchboxXCombGroup::MatchboxXCombGroup(Energy newMaxEnergy, const cPDPair & inc,
 		  newExtractor, newCKKW,
 		  newPartonBins, newCuts, newME,
 		  newDiagrams, mir,
-		  newHead) {
+		  newHead),
+  MatchboxXCombData(newME) {
   flushCaches();
 }
 

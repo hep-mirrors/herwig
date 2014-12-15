@@ -533,7 +533,7 @@ void GeneralSampler::doinit() {
   }
   readGrids();
   if ( theGrids.children().empty() && runLevel() == RunMode )
-    cout
+    generator()->log()
       << "\n--------------------------------------------------------------------------------\n\n"
       << "Warning: No grid file could be found at the start of this run.\n\n"
       << "* For a read/run setup intented to be used with --setupfile please consider\n"
@@ -634,7 +634,7 @@ void GeneralSampler::doinitrun() {
   readGrids();
 
   if ( theGrids.children().empty() )
-    cout
+    generator()->log()
       << "\n--------------------------------------------------------------------------------\n\n"
       << "Warning:No grid file could be found at the start of this run.\n\n"
       << "* For a read/run setup intented to be used with --setupfile please consider\n"
@@ -701,16 +701,11 @@ void GeneralSampler::readGrids() {
     else if ( *dataName.rbegin() != '/' )
       dataName += "/";
     dataName += "HerwigGrids.xml";
-    //cerr << "trying " << dataName << " ... ";
     ifstream in(dataName.c_str());
     if ( in ) {
-      //cerr << "yes\n" << flush;
       theGrids = XML::ElementIO::get(in);
       didReadGrids = true;
     }
-    //else {
-    //cerr << "no\n" << flush;
-    //}
   }
   if ( !didReadGrids )
     theGrids = XML::Element(XML::ElementTypes::Element,"Grids");

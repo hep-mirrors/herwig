@@ -327,10 +327,16 @@ double MatchboxPhasespace::spaceLikeWeight(const Tree2toNDiagram& diag,
   LTriple vertexKey(diag.allPartons()[branch]->id(),
 		    diag.allPartons()[children.first]->id(),
 		    diag.allPartons()[children.second]->id());
-  if ( children.first == diag.nSpace() - 1 )
-    vertexKey = LTriple(diag.allPartons()[branch]->id(),
-			diag.allPartons()[children.second]->id(),
-			diag.allPartons()[children.first]->CC()->id());
+  if ( children.first == diag.nSpace() - 1 ) {
+    if ( diag.allPartons()[children.first]->CC() )
+      vertexKey = LTriple(diag.allPartons()[branch]->id(),
+			  diag.allPartons()[children.second]->id(),
+			  diag.allPartons()[children.first]->CC()->id());
+    else
+      vertexKey = LTriple(diag.allPartons()[branch]->id(),
+			  diag.allPartons()[children.second]->id(),
+			  diag.allPartons()[children.first]->id());
+  }
   map<LTriple,double>::const_iterator cit = couplings.find(vertexKey);
   if ( cit != couplings.end() ){
     res.first *= cit->second;
