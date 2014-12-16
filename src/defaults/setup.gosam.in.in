@@ -24,7 +24,7 @@
 #    (Not fully implemented yet)                                     #
 #                                                                    #
 ######################################################################
-# model=smdiag
+@MODEL@
 
 ### model.options (comma separated list) #############################
 #    If the model in use supports options they can be passed via this

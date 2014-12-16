@@ -264,6 +264,7 @@ private:
   bool theCodeExists;
   bool theFormOpt;
   bool theNinja;
+  bool theHiggsEff;
 
   bool isitDR;
   

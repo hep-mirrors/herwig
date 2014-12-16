@@ -47,9 +47,12 @@ namespace bfs = boost::filesystem;
 ////////////////////////////////////////////////////////////////////////////////
 
 
-GoSamAmplitude::GoSamAmplitude() {
-  theCodeExists=false;isitDR=false;theFormOpt=true;theNinja=true;
-}
+GoSamAmplitude::GoSamAmplitude(){
+  theCodeExists=false;
+  isitDR=false;
+  theFormOpt=true;
+  theNinja=true;
+  theHiggsEff=false;}
 
 GoSamAmplitude::~GoSamAmplitude() {}
 
@@ -133,37 +136,24 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
 
   gosamSetupInFileName = gosamSetupInFilenameInterface == "" ? gosamPath + "/setup.gosam.in" : gosamSetupInFilenameInterface;
 
-  // check if setup.gosam.in exists
-  if (!bfs::exists(gosamSetupInFileName)){
-    // if it doesn't, then get it from src/defaults
-    bfs::copy_file("@prefix@/share/Herwig++/defaults/setup.gosam.in", gosamSetupInFileName);
-    // set form's tempdir to the current working directory
-    string cmd = "sed -i 's/@FORMTEMPDIR@/" + StringUtils::replace(gosamSourcePath, string("/"), string("\\/")) + "/g' " + gosamSetupInFileName;
-    std::system(cmd.c_str());
-    // set reduction programs to what is specified through the repository
-    cmd = "sed -i 's/@REDUCTIONPROGRAMS@/" + (theNinja ? string("ninja, golem95") : string("samurai, golem95")) + "/g' " + gosamSetupInFileName;
-    std::system(cmd.c_str());
-    if (theNinja) generator()->log() << "\nGoSam will use Ninja as reduction program.\n" << flush;
-    else if (!theNinja) generator()->log() << "\nGoSam will use Samurai as reduction program.\n" << flush;
-    if (theFormOpt) generator()->log() << "Form optimization switched on.\n" << flush;
-    else if (!theFormOpt) generator()->log() << "Form optimization switched off.\n" << flush;
-    if (theNinja && !theFormOpt) throw Exception() << "Ninja reduction needs form optimization!\n" << Exception::abortnow;
-    // use or don't use formopt
-    cmd = "sed -i 's/@FORMOPT@/" + (theFormOpt ? string("") : string(", noformopt")) + "/g' " + gosamSetupInFileName;
-    std::system(cmd.c_str());
-  }else{
-    // If user just copys setup.gosam.in to cwd the flags still not set should be set.
-    // set form's tempdir to the current working directory
-    string cmd = "sed -i 's/@FORMTEMPDIR@/" + StringUtils::replace(gosamSourcePath, string("/"), string("\\/")) + "/g' " + gosamSetupInFileName;
-    std::system(cmd.c_str());
-    // set reduction programs to what is specified through the repository
-    cmd = "sed -i 's/@REDUCTIONPROGRAMS@/" + (theNinja ? string("ninja, golem95") : string("samurai, golem95")) + "/g' " + gosamSetupInFileName;
-    std::system(cmd.c_str());
-    if (theNinja && !theFormOpt) throw Exception() << "Ninja reduction needs form optimization!\n" << Exception::abortnow;
-    // use or don't use formopt
-    cmd = "sed -i 's/@FORMOPT@/" + (theFormOpt ? string("") : string(", noformopt")) + "/g' " + gosamSetupInFileName;
-    std::system(cmd.c_str());
-  }
+  // if it doesn't, then get it from src/defaults
+  string cmd = "python @prefix@/bin/GoSamHelper.py ";
+  cmd+=" --infile="+gosamSetupInFileName;  
+  cmd+=" --definfile=@prefix@/share/Herwig++/defaults/setup.gosam.in";
+  // set form's tempdir to the current working directory
+  cmd+=" --formtempdir="+StringUtils::replace(gosamSourcePath, string("/"), string("\\/"));    //@FORMTEMPDIR@
+  // set reduction programs to what is specified through the repository
+  cmd+=" --reduction="+(theNinja ? string("ninja,golem95") : string("samurai,golem95"));       //@REDUCTIONPROGRAMS@
+  if (theNinja) generator()->log() << "\nGoSam will use Ninja as reduction program.\n" << flush;
+  else if (!theNinja) generator()->log() << "\nGoSam will use Samurai as reduction program.\n" << flush;
+  if (theFormOpt) generator()->log() << "Form optimization switched on.\n" << flush;
+  else if (!theFormOpt) generator()->log() << "Form optimization switched off.\n" << flush;
+  if (theNinja && !theFormOpt) throw Exception() << "Ninja reduction needs form optimization!\n" << Exception::abortnow;
+  // use or don't use formopt
+  cmd+=" --formopt="+(theFormOpt ? string("") : string(", noformopt"));   //@FORMOPT@
+  cmd+=" --higgseff="+(theHiggsEff ? string("smehc") : string("smdiag"));   //model
+  std::system(cmd.c_str());
+
 
   // check for old order file and create it if it doesn't already exist
   fillOrderFile(procs, orderFileName);
@@ -653,7 +643,7 @@ void GoSamAmplitude::persistentOutput(PersistentOStream & os) const {
      << gosamSourcePath << gosamInstallPath << gosamSetupInFileName
      << orderFileTitle << contractFileTitle
      << contractFileName << orderFileName
-     << theCodeExists << theFormOpt << theNinja << isitDR << massiveParticles;
+     << theCodeExists << theFormOpt << theNinja << isitDR << massiveParticles<<theHiggsEff;
 }
 
 void GoSamAmplitude::persistentInput(PersistentIStream & is, int) {
@@ -662,7 +652,7 @@ void GoSamAmplitude::persistentInput(PersistentIStream & is, int) {
      >> gosamSourcePath >> gosamInstallPath >> gosamSetupInFileName
      >> orderFileTitle >> contractFileTitle
      >> contractFileName >> orderFileName
-     >> theCodeExists >> theFormOpt >> theNinja >> isitDR >> massiveParticles;
+     >> theCodeExists >> theFormOpt >> theNinja >> isitDR >> massiveParticles>>theHiggsEff;
 }
 
 
@@ -747,6 +737,21 @@ void GoSamAmplitude::Init() {
           true);
   static SwitchOption interfaceNinjaOff
          (interfaceNinja,
+          "Off",
+          "Off",
+          false);
+ 
+  static Switch<GoSamAmplitude,bool> interfaceHiggsEff
+         ("HiggsEff",
+          "Switch On/Off for effective higgs model.",
+          &GoSamAmplitude::theHiggsEff, false, false, false);
+  static SwitchOption interfaceHiggsEffOn
+         (interfaceHiggsEff,
+          "On",
+          "On",
+          true);
+  static SwitchOption interfaceHiggsEffOff
+         (interfaceHiggsEff,
           "Off",
           "Off",
           false);
