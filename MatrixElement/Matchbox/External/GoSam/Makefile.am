@@ -6,7 +6,8 @@ GoSamAmplitude.h GoSamAmplitude.cc
 
 
 install-exec-local:
-	$(install_sh_SCRIPT) $(builddir)/GoSamHelper.py $(DESTDIR)$(bindir)/GoSamHelper.py
+	$(install_sh_SCRIPT) $(srcdir)/GoSamHelper.py $(DESTDIR)$(bindir)/GoSamHelper.py
 
 uninstall-local:
 	rm -f  $(DESTDIR)$(bindir)/GoSamHelper.py
+
