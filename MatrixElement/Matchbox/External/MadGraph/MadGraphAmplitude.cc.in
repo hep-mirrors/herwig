@@ -180,6 +180,11 @@ bool MadGraphAmplitude::initializeExternal() {
   cmd +=" --buildpath "+MGProcLibPath;
   cmd +=" --model "+theMGmodel;
   cmd +=" --runpath "+factory()->runStorage()+"/MadGraphAmplitudes " ;  
+
+  cmd +=" --orderas "+static_cast<ostringstream*>(&(ostringstream()<<(factory()->orderInAlphaS())))->str() ;  
+  
+  cmd +=" --orderew "+static_cast<ostringstream*>(&(ostringstream()<<(factory()->orderInAlphaEW())))->str();   
+  
   // TODO move to boost::system
   
   if ( !processmap().empty() ){
@@ -209,6 +214,10 @@ bool MadGraphAmplitude::initializeExternal() {
   cmd +=" --buildpath "+MGProcLibPath;
   cmd +=" --model "+theMGmodel;
   cmd +=" --runpath "+factory()->runStorage()+"/MadGraphAmplitudes " ;
+
+  cmd +=" --orderas "+static_cast<ostringstream*>(&(ostringstream()<<(factory()->orderInAlphaS())))->str() ;  
+  
+  cmd +=" --orderew "+static_cast<ostringstream*>(&(ostringstream()<<(factory()->orderInAlphaEW())))->str();  
   std::system(cmd.c_str());
     
   

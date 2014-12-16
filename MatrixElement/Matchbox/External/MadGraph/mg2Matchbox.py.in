@@ -28,7 +28,7 @@ def find(name, path):
             return os.path.join(root, name)      
  
 # fill the proc.dat and processmap.dat files from BornAmplitudes.dat and VirtAmplitudes.dat. 
-def fillprocs(model):
+def fillprocs(model,oras,orew):
   bornlist=[]
   virtlist=[]
   fileproc=open("proc.dat","w")
@@ -40,32 +40,48 @@ def fillprocs(model):
   procnr=0
   virtlines=""
   bornlines=""
+  
+  
+  
+  minlegs=100;
+  for i in [borns, virts]:
+    file = open(i, "r")
+    for line in file:
+      minlegs=min(len(line.split(" ")),minlegs)
+    file.close()
+  
+  
+  
+  
   file = open(borns, "r")
   for line in file:
+      #this assumes extra QCD emmissions
+      addalphas=len(line.split(" "))-minlegs
       linetmp=line.rstrip()
       procnr+=1
       processmap+=linetmp+" "
       processmap+=str(procnr) +"\n"
       bornlist+=[str(procnr)]
       if first:
-	bornlines+="generate "+linetmp+" @"+str(procnr)+"\n"
+	bornlines+="generate "+linetmp+" QCD="+str(int(oras)+addalphas)+" QED="+str(orew)+" @"+str(procnr)+"\n"
 	first=False
       else:
-	bornlines+="add process "+linetmp+" @"+str(procnr)+"\n"
+	bornlines+="add process "+linetmp+" QCD="+str(int(oras)+addalphas)+" QED="+str(orew)+" @"+str(procnr)+"\n"
   file.close()
   first=True
   file = open(virts, "r")
   for line in file:
-      linetmp=line.rstrip()+" [ virt=QCD ]"
+      addalphas=len(line.split(" "))-minlegs
+      linetmp=line.rstrip()+"  QED="+str(int(orew))+" [ virt=QCD ]"
       procnr+=1
-      processmap+=linetmp+" "
+      processmap+=line.rstrip()+" [ virt=QCD ]"+" "
       processmap+=str(procnr) +"\n"
       virtlist+=[str(procnr)]
       if first:
-	virtlines+="generate "+linetmp+" @"+str(procnr)+"\n"
+	virtlines+="generate "+linetmp+"  @"+str(procnr)+"\n"
 	first=False
       else:
-	virtlines+="add process "+linetmp+" @"+str(procnr)+"\n"
+	virtlines+="add process "+linetmp+"  @"+str(procnr)+"\n"
   file.close()
 
   fileproc.write(bornlines)
@@ -102,8 +118,16 @@ parser.add_argument('--build', help='build', action="store_true")
 parser.add_argument('--madgraph', help='madgraph_installpath')
 parser.add_argument('--runpath', help='runpath')
 parser.add_argument('--model', help='model')
+parser.add_argument('--orderas', help='orderas')
+parser.add_argument('--orderew', help='orderew')
+
+
 
 args = parser.parse_args()
+
+
+
+
 
 
 pwd=os.getcwd() 
@@ -209,7 +233,7 @@ if os.path.isfile("InterfaceMadGraph.so"):
       exit()    
   
  
-Bornlist,Virtlist=fillprocs(args.model)
+Bornlist,Virtlist=fillprocs(args.model,args.orderas,args.orderew)
 os.system("python "+args.madgraph+"/mg5_aMC proc.dat")
 
 
