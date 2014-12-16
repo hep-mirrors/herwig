@@ -25,7 +25,11 @@ WeightAnalyzer::WeightAnalyzer()
     sumGroupWeights(0.0), sumPositiveGroupWeights(0.0),
     sumNegativeGroupWeights(0.0),
     maxDeviationGroupWeight(0.0),
-    maxDeviationEventWeight(0.0) {}
+    maxDeviationEventWeight(0.0),
+    nPositiveWeights(0.0),
+    nNegativeWeights(0.0),
+    maxPositiveWeight(0.0),
+    maxNegativeWeight(0.0) {}
 
 WeightAnalyzer::~WeightAnalyzer() {}
 
@@ -41,11 +45,29 @@ WeightAnalyzer::~WeightAnalyzer() {}
 void WeightAnalyzer::analyze(tEventPtr event, long ieve, int loop, int state) {
   AnalysisHandler::analyze(event, ieve, loop, state);
 
-  sumWeights += event->weight();
-  if ( event->weight() > 0.0 )
-    sumPositiveWeights += event->weight();
-  if ( event->weight() < 0.0 )
-    sumNegativeWeights += event->weight();
+  double weight = event->weight();
+
+  sumWeights += weight;
+  if ( weight > 0.0 ) {
+    sumPositiveWeights += weight;
+    maxPositiveWeight = max(maxPositiveWeight,weight);
+    nPositiveWeights += 1;
+    map<double,double>::iterator b = positiveWeightDistribution.upper_bound(weight);
+    if ( b != positiveWeightDistribution.end() )
+      b->second += 1;
+    else
+      (--positiveWeightDistribution.end())->second += 1;
+  }
+  if ( weight < 0.0 ) {
+    sumNegativeWeights += weight;
+    maxNegativeWeight = max(maxNegativeWeight,abs(weight));
+    nNegativeWeights += 1;
+    map<double,double>::iterator b = negativeWeightDistribution.upper_bound(abs(weight));
+    if ( b != negativeWeightDistribution.end() )
+      b->second += 1;
+    else
+      (--negativeWeightDistribution.end())->second += 1;
+  }
 
   tSubProPtr sub = event->primarySubProcess();
   Ptr<SubProcessGroup>::tptr grp = 
@@ -54,13 +76,13 @@ void WeightAnalyzer::analyze(tEventPtr event, long ieve, int loop, int state) {
   double sumEvents = 0.0;
   double sumGroups = 0.0;
 
-  sumGroupWeights += event->weight()*sub->groupWeight();
-  if ( event->weight()*sub->groupWeight() > 0.0 )
-    sumPositiveGroupWeights += event->weight()*sub->groupWeight();
-  if ( event->weight()*sub->groupWeight() < 0.0 )
-    sumNegativeGroupWeights += event->weight()*sub->groupWeight();
+  sumGroupWeights += weight*sub->groupWeight();
+  if ( weight*sub->groupWeight() > 0.0 )
+    sumPositiveGroupWeights += weight*sub->groupWeight();
+  if ( weight*sub->groupWeight() < 0.0 )
+    sumNegativeGroupWeights += weight*sub->groupWeight();
 
-  sumEvents += event->weight()*sub->groupWeight();
+  sumEvents += weight*sub->groupWeight();
   sumGroups += sub->groupWeight();
 
   if ( grp ) {
@@ -68,14 +90,14 @@ void WeightAnalyzer::analyze(tEventPtr event, long ieve, int loop, int state) {
     for ( SubProcessVector::const_iterator s = grp->dependent().begin();
 	  s != grp->dependent().end(); ++s ) {
 
-      sumGroupWeights += event->weight()*(**s).groupWeight();
+      sumGroupWeights += weight*(**s).groupWeight();
 
-      if ( event->weight()*(**s).groupWeight() > 0.0 )
-	sumPositiveGroupWeights += event->weight()*(**s).groupWeight();
-      if ( event->weight()*(**s).groupWeight() < 0.0 )
-	sumNegativeGroupWeights += event->weight()*(**s).groupWeight();
+      if ( weight*(**s).groupWeight() > 0.0 )
+	sumPositiveGroupWeights += weight*(**s).groupWeight();
+      if ( weight*(**s).groupWeight() < 0.0 )
+	sumNegativeGroupWeights += weight*(**s).groupWeight();
 
-      sumEvents += event->weight()*(**s).groupWeight();
+      sumEvents += weight*(**s).groupWeight();
       sumGroups += (**s).groupWeight();
 
     }
@@ -83,36 +105,101 @@ void WeightAnalyzer::analyze(tEventPtr event, long ieve, int loop, int state) {
   }
 
   maxDeviationGroupWeight = max(maxDeviationGroupWeight,abs(sumGroups-1));
-  maxDeviationEventWeight = max(maxDeviationEventWeight,abs(sumEvents/event->weight()-1));
+  maxDeviationEventWeight = max(maxDeviationEventWeight,abs(sumEvents/weight-1));
 
 }
 
 void WeightAnalyzer::dofinish() {
   AnalysisHandler::dofinish();
 
-  string dataName = generator()->filename() + "-weights.dat";
+  if ( nPositiveWeights != 0 )
+    for ( map<double,double>::iterator b = positiveWeightDistribution.begin();
+	  b != positiveWeightDistribution.end(); ++b ) {
+      b->second /= nPositiveWeights;
+    }
+
+  if ( nNegativeWeights != 0 )
+    for ( map<double,double>::iterator b = negativeWeightDistribution.begin();
+	  b != negativeWeightDistribution.end(); ++b ) {
+      b->second /= nNegativeWeights;
+    }
+
+  string dataName = generator()->filename() + "Weights.dat";
 
   ofstream data(dataName.c_str());
 
   data << setprecision(20)
-       << "--------------------------------------------------------------------------------\n"
-       << "WeightAnalyzer information\n"
-       << "--------------------------------------------------------------------------------\n"
-       << "sum of weights                        : " << sumWeights << "\n"
-       << "sum of positive weights               : " << sumPositiveWeights << "\n"
-       << "sum of negative weights               : " << sumNegativeWeights << "\n" 
-       << "sum of weights (from groups)          : " << sumGroupWeights << "\n"
-       << "sum of positive weights (from groups) : " << sumPositiveGroupWeights << "\n"
-       << "sum of negative weights (from groups) : " << sumNegativeGroupWeights << "\n"
-       << "maximum devation group weights        : " << maxDeviationGroupWeight << "\n"
-       << "maximum devation event weights        : " << maxDeviationEventWeight << "\n"
-       << "--------------------------------------------------------------------------------\n"
+       << "# --------------------------------------------------------------------------------\n"
+       << "# WeightAnalyzer information\n"
+       << "# --------------------------------------------------------------------------------\n"
+       << "# sum of weights                        : " << sumWeights << "\n"
+       << "# sum of positive weights               : " << sumPositiveWeights << "\n"
+       << "# sum of negative weights               : " << sumNegativeWeights << "\n" 
+       << "# sum of weights (from groups)          : " << sumGroupWeights << "\n"
+       << "# sum of positive weights (from groups) : " << sumPositiveGroupWeights << "\n"
+       << "# sum of negative weights (from groups) : " << sumNegativeGroupWeights << "\n"
+       << "# maximum devation group weights        : " << maxDeviationGroupWeight << "\n"
+       << "# maximum devation event weights        : " << maxDeviationEventWeight << "\n"
+       << "# number of positive weights            : " << nPositiveWeights << "\n"
+       << "# number of negative weights            : " << nNegativeWeights << "\n"
+       << "# maximum positive weight               : " << maxPositiveWeight << "\n"
+       << "# maximum negative weight               : " << maxNegativeWeight << "\n"
+       << "# --------------------------------------------------------------------------------\n"
        << flush;
+
+  data << "\n\n";
+  for ( map<double,double>::const_iterator b = positiveWeightDistribution.begin();
+	b != positiveWeightDistribution.end(); ++b ) {
+    if ( b->second != 0 ) {
+      double l,u;
+      if ( b == positiveWeightDistribution.begin() ) {
+	l = 0.; u = b->first;
+      } else if ( b == --positiveWeightDistribution.end() ) {
+	map<double,double>::const_iterator bl = b; --bl;
+	l = bl->first; u = Constants::MaxDouble;      
+      } else {
+	map<double,double>::const_iterator bl = b; --bl;
+	l = bl->first; u = b->first;
+      }
+      data << l << " " << u << " " << b->second << "\n";
+    }
+  }
+  data << flush;
+
+  data << "\n\n";
+  for ( map<double,double>::const_iterator b = negativeWeightDistribution.begin();
+	b != negativeWeightDistribution.end(); ++b ) {
+    if ( b->second != 0 ) {
+      double l,u;
+      if ( b == negativeWeightDistribution.begin() ) {
+	l = 0.; u = b->first;
+      } else if ( b == --negativeWeightDistribution.end() ) {
+	map<double,double>::const_iterator bl = b; --bl;
+	l = bl->first; u = Constants::MaxDouble;      
+      } else {
+	map<double,double>::const_iterator bl = b; --bl;
+	l = bl->first; u = b->first;
+      }
+      data << l << " " << u << " " << b->second << "\n";
+    }
+  }
+  data << flush;
 
 }
 
 void WeightAnalyzer::doinitrun() {
   AnalysisHandler::doinitrun();
+  positiveWeightDistribution.clear();
+  negativeWeightDistribution.clear();
+  unsigned int nbins = 200;
+  nbins += 1;
+  double low = 1.e-8;
+  double up = 1.e8;
+  double c = log10(up/low) / (nbins-1.);
+  for ( unsigned int k = 1; k < nbins + 1; ++k ) { // mind the overflow bin
+    positiveWeightDistribution[low*pow(10.0,k*c)] = 0.;
+    negativeWeightDistribution[low*pow(10.0,k*c)] = 0.;
+  }
 }
 
 

@@ -163,6 +163,36 @@ private:
    */
   double maxDeviationEventWeight;
 
+  /**
+   * Total number of positive weights
+   */
+  double nPositiveWeights;
+
+  /**
+   * Total number of negative weights
+   */
+  double nNegativeWeights;
+
+  /**
+   * The maximum postive weight
+   */
+  double maxPositiveWeight;
+
+  /**
+   * The maximum absolute negative weight
+   */
+  double maxNegativeWeight;
+
+  /**
+   * Histogram of positive weight occurences
+   */
+  map<double,double> positiveWeightDistribution;
+
+  /**
+   * Histogram of negative weight occurences
+   */
+  map<double,double> negativeWeightDistribution;
+
 private:
 
   /**
