@@ -570,7 +570,7 @@ double MadGraphAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
 
 
 
-void MadGraphAmplitude::prepareOneLoopAmplitudes(Ptr<MatchboxMEBase>::tcptr me){
+void MadGraphAmplitude::prepareOneLoopAmplitudes(Ptr<MatchboxMEBase>::tcptr){
   assert(false);
 }
 
