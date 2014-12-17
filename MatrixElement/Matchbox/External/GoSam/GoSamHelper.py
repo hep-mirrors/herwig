@@ -26,8 +26,8 @@ def find(name, path):
     for root, dirs, files in os.walk(path):
         if name in files:
             return os.path.join(root, name)      
-	  
-	  
+
+  
 parser = argparse.ArgumentParser()
 parser.add_argument('--infile', help='infile')
 parser.add_argument('--definfile', help='definfile')
@@ -35,7 +35,19 @@ parser.add_argument('--formtempdir', help='formtempdir')
 parser.add_argument('--reduction', help='reduction')
 parser.add_argument('--formopt', help='formopt')
 parser.add_argument('--higgseff', help='higgseff')
+parser.add_argument('--makelink', help='makelink', action="store_true")
+parser.add_argument('--makelinkfrom', help='makelinkfrom')
+parser.add_argument('--makelinkto', help='makelinkto')
+
 args = parser.parse_args()
+
+
+if args.makelink and not os.path.islink(args.makelinkto):
+   os.symlink(args.makelinkfrom,args.makelinkto)
+   exit()
+  
+
+
 
 if not os.path.isfile(args.infile):
   shutil.copyfile(args.definfile, args.infile)

@@ -134,7 +134,7 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
 
   string orderFileName = gosamPath + "/" + name() + ".OLPOrder.lh";
 
-  gosamSetupInFileName = gosamSetupInFilenameInterface == "" ? gosamPath + "/setup.gosam.in" : gosamSetupInFilenameInterface;
+  gosamSetupInFileName = gosamSetupInFileNameInterface == "" ? gosamPath + "/setup.gosam.in" : gosamSetupInFileNameInterface;
 
   // if it doesn't, then get it from src/defaults
   string cmd = "python @prefix@/bin/GoSamHelper.py ";
@@ -251,32 +251,20 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
   double as = SM().alphaS();
   OLP_SetParameter((char *)"alphaS", &as, &zero, &pStatus);
 
-  // hand over quark masses and widths (iff massive)
-  string mstr;
-  string wstr;
+  // fill massive Particle vector
   if (massiveParticles.empty())
     for (int i=1; i<=6; ++i) 
       if (getParticleData(i)->mass()/GeV > 0.0) massiveParticles.push_back(i);
+      
+  // hand over quark masses and widths (iff massive)     
   if ( massiveParticles.size() != 0 ) {
     for ( vector<int>::const_iterator mID = massiveParticles.begin(); mID != massiveParticles.end(); ++mID ) {
-      int mInt = *mID;
-      double mass=getParticleData(mInt)->mass()/GeV;
-      double width=getParticleData(mInt)->width()/GeV;
-      std::stringstream ss;
-      ss << mInt;
-      string str = ss.str();
-      mstr="mass("+str+")";
-      wstr="width("+str+")";
-      char * mchar = new char[mstr.size()+1];
-      char * wchar = new char[wstr.size()+1];
-      std::copy(mstr.begin(),mstr.end(),mchar);
-      std::copy(wstr.begin(),wstr.end(),wchar);
-      mchar[mstr.size()] = '\0';
-      wchar[wstr.size()] = '\0';
-      OLP_SetParameter( mchar, &mass, &zero, &pStatus );
-      OLP_SetParameter( wchar, &width, &zero, &pStatus );
-      delete[] mchar;
-      delete[] wchar;
+      double mass=getParticleData(*mID)->mass()/GeV;
+      double width=getParticleData(*mID)->width()/GeV;
+      string mstr="mass("+static_cast<ostringstream*>(&(ostringstream()<<(*mID)))->str()+")";
+      string wstr="width("+static_cast<ostringstream*>(&(ostringstream()<<(*mID)))->str()+")";
+      OLP_SetParameter((char *)&mstr,&mass, &zero, &pStatus );
+      OLP_SetParameter((char *)&wstr,&width, &zero, &pStatus );
     }
   }
 
@@ -428,7 +416,10 @@ void GoSamAmplitude::signOLP(const string& order, const string& contract) {
     string cmd = "@GOSAMPREFIX@/bin/gosam.py --olp --output-file=" + contract + " --config=" + 
       gosamSetupInFileName + " --destination=" + gosamSourcePath + " " + order + " > " + cwd + folderMatchboxBuild + "gosam-amplitudes.log 2>&1";
     std::system(cmd.c_str());
-    cmd = "ln -s " + contract + " " + factory()->buildStorage() + name() + ".OLPContract.lh";
+    cmd = "python @prefix@/bin/GoSamHelper.py ";
+    cmd += " --makelink ";
+    cmd += " --makelinkfrom=contract ";
+    cmd += " --makelinkto="+factory()->buildStorage() + name() + ".OLPContract.lh";
     std::system(cmd.c_str());
   }
 }
@@ -468,9 +459,15 @@ bool GoSamAmplitude::checkOLPContract(string contractFileName) {
 
   string ids = factory()->buildStorage() + "GoSam.ids.dat";
   ofstream IDS(ids.c_str());
+  
+  idpair.clear();
+  for ( map<int, gosamprocinfo>::iterator p = processmap.begin() ; p != processmap.end() ; p++ )
+    idpair.push_back(-1);
+  idpair.push_back(-1);
 
   for ( map<int, gosamprocinfo>::iterator p = processmap.begin() ; p != processmap.end() ; p++ ) {
-    idpair.insert ( std::pair<int,int>((*p).second.HID(),(*p).second.GID()) );
+    
+    idpair[(*p).second.HID()]=(*p).second.GID();
     IDS << (*p).second.HID() << " " << (*p).second.GID() << " " << (*p).second.Tstr() << "\n";
     if ( (*p).second.GID() == -1 ) return 0;
   }
@@ -506,10 +503,21 @@ void GoSamAmplitude::getids() const {
   int gid;
   string type;
   while (std::getline(infile, line)) {
-    istringstream(line) >> hid >> gid >> type;
-    idpair.insert ( std::pair<int,int>(hid,gid) );
-    idtypepair.insert ( std::pair<int,string>(hid,type) );
+    idpair.push_back(-1);
+    idtypepair.push_back(" ");
   }
+  infile.close();
+  string line2 = factory()->buildStorage() + "GoSam.ids.dat";
+  ifstream infile2(line2.c_str());
+  idpair.push_back(-1);
+  idtypepair.push_back(" ");
+  while (std::getline(infile2, line2)) {
+    istringstream(line2) >> hid >> gid >> type;
+    idpair[hid]=gid;
+    
+    idtypepair[hid]=type;
+  }
+  infile.close();
 }
 
 
@@ -521,22 +529,20 @@ void GoSamAmplitude::evalSubProcess() const {
 
   useMe();
 
-  double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
+  double units = pow(lastSHat() / GeV2, int(mePartonData().size()) - 4.);
   fillOLPMomenta(lastXComb().meMomenta());
 
   double scale = sqrt(mu2() / GeV2);
 
   double out[7] = { };
-  if ( idpair.size() == 0 ) getids();
-
+  if ( idpair.size() == 0 ){ getids(); }
   int id = -99;
   if ( olpId()[ProcessType::loopInducedME2] ) id = olpId()[ProcessType::loopInducedME2];
   else if ( olpId()[ProcessType::oneLoopInterference] ) id = olpId()[ProcessType::oneLoopInterference];
   else id = olpId()[ProcessType::treeME2];
 
-  int callid(idpair.find(id)->second); // If id denotes the Herwig ID, this returns the GoSam ID
-  string calltype(idtypepair.find(id)->second); // If id denotes the Herwig ID, this returns the amplitude type
-
+  int callid(idpair[id]); // If id denotes the Herwig ID, this returns the GoSam ID
+  string calltype(idtypepair[id]); // If id denotes the Herwig ID, this returns the amplitude type
   double acc;
 
   OLP_EvalSubProcess2(&(callid), olpMomenta(), &scale, out, &acc);
@@ -555,7 +561,7 @@ void GoSamAmplitude::evalSubProcess() const {
 
 void GoSamAmplitude::evalColourCorrelator(pair<int, int> ) const {
 
-  double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
+  double units = pow(lastSHat() / GeV2, int(mePartonData().size()) - 4.);
   fillOLPMomenta(lastXComb().meMomenta());
 
   double scale = sqrt(mu2() / GeV2);
@@ -565,7 +571,7 @@ void GoSamAmplitude::evalColourCorrelator(pair<int, int> ) const {
 
   if ( idpair.size() == 0 ) getids();
 
-  int callid((*(idpair.find(olpId()[ProcessType::colourCorrelatedME2]))).second);
+  int callid(idpair[olpId()[ProcessType::colourCorrelatedME2]]);
   double acc;
   OLP_EvalSubProcess2(&(callid), olpMomenta(), &scale, &colourCorrelatorResults[0], &acc);
 
@@ -581,7 +587,7 @@ void GoSamAmplitude::evalColourCorrelator(pair<int, int> ) const {
 
 void GoSamAmplitude::evalSpinColourCorrelator(pair<int , int > ) const {
 
-  double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
+  double units = pow(lastSHat() / GeV2, int(mePartonData().size()) - 4.);
   fillOLPMomenta(lastXComb().meMomenta());
 
   double scale = sqrt(mu2() / GeV2);
@@ -592,7 +598,7 @@ void GoSamAmplitude::evalSpinColourCorrelator(pair<int , int > ) const {
   if ( idpair.size() == 0 ) getids();
 
   double acc;
-  int callid((*(idpair.find(olpId()[ProcessType::spinColourCorrelatedME2]))).second);
+  int callid(idpair[olpId()[ProcessType::spinColourCorrelatedME2]]);
   OLP_EvalSubProcess2(&(callid), olpMomenta(), &scale, &spinColourCorrelatorResults[0], &acc);
 
   for ( int i = 0; i < n; ++i ) {
@@ -639,7 +645,7 @@ LorentzVector<Complex> GoSamAmplitude::plusPolarization(const Lorentz5Momentum& 
 
 void GoSamAmplitude::persistentOutput(PersistentOStream & os) const {
   os << idpair << idtypepair << processmap << gosamPathInterface
-     << gosamSetupInFilenameInterface << gosamBuildScript << gosamPath
+     << gosamSetupInFileNameInterface << gosamBuildScript << gosamPath
      << gosamSourcePath << gosamInstallPath << gosamSetupInFileName
      << orderFileTitle << contractFileTitle
      << contractFileName << orderFileName
@@ -648,7 +654,7 @@ void GoSamAmplitude::persistentOutput(PersistentOStream & os) const {
 
 void GoSamAmplitude::persistentInput(PersistentIStream & is, int) {
   is >> idpair >> idtypepair >> processmap >> gosamPathInterface
-     >> gosamSetupInFilenameInterface >> gosamBuildScript >> gosamPath
+     >> gosamSetupInFileNameInterface >> gosamBuildScript >> gosamPath
      >> gosamSourcePath >> gosamInstallPath >> gosamSetupInFileName
      >> orderFileTitle >> contractFileTitle
      >> contractFileName >> orderFileName
@@ -676,7 +682,7 @@ void GoSamAmplitude::Init() {
   static Parameter<GoSamAmplitude,string> interfaceSetupInFilename
        ("SetupInFilename",
         "File name of the GoSam infile (typically setup.gosam.in) to be used. If left empty a new setup.gosam.in is created in the location specified in Path",
-        &GoSamAmplitude::gosamSetupInFilenameInterface, "",
+        &GoSamAmplitude::gosamSetupInFileNameInterface, "",
         false, false);
 
   static Switch<GoSamAmplitude,bool> interfaceCodeExists

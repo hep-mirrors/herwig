@@ -237,17 +237,21 @@ private:
   /**
    * first is the olp id from herwig, second the answer from gosam
    */
-  mutable map< int , int > idpair;
+  mutable vector<int> idpair;
 
   /**
    * first is the olp id from herwig, second the amplitude type
    */
-  mutable map< int , string > idtypepair;
+  mutable vector<string> idtypepair;
 
+   /**
+   * Map to store all processes handled by this Amplitude
+   */
   map<int , gosamprocinfo > processmap;
 
+  
   mutable string gosamPathInterface;
-  mutable string gosamSetupInFilenameInterface;
+  mutable string gosamSetupInFileNameInterface;
   mutable string gosamBuildScript;
 
   mutable string gosamPath;

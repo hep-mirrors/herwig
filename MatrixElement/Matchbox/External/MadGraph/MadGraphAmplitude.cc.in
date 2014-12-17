@@ -570,7 +570,7 @@ double MadGraphAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
 
 
 
-void MadGraphAmplitude::prepareOneLoopAmplitudes(Ptr<MatchboxMEBase>::tcptr){
+void MadGraphAmplitude::prepareOneLoopAmplitudes(Ptr<MatchboxMEBase>::tcptr ){
   assert(false);
 }
 
@@ -586,7 +586,7 @@ double MadGraphAmplitude::oneLoopInterference() const {
 void MadGraphAmplitude::evaloneLoopInterference() const  {
   
   
-      double units = pow(lastSHat()/GeV2,mePartonData().size()-4);
+  double units = pow(lastSHat()/GeV2,int(mePartonData().size())-4);
 
 
 
