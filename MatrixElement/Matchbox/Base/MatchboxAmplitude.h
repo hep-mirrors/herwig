@@ -592,6 +592,13 @@ private:
    * The colour basis implementation to be used.
    */
   Ptr<ColourBasis>::ptr theColourBasis;
+  
+  /**
+   * The number of points that are calculated 
+   * before a certain helicity is excluded.
+   * Needed in pp->V
+   */
+  int helpoints;
 
   /**
    * The assignment operator is private and must never be called.
