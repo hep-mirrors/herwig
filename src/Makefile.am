@@ -7,7 +7,8 @@ defaultsdir = ${pkgdatadir}/defaults
 bin_PROGRAMS = Herwig++
 Herwig___SOURCES = Herwig++.cc herwigopts.c herwigopts.h
 BUILT_SOURCES = herwigopts.c herwigopts.h
-Herwig___LDFLAGS = $(AM_LDFLAGS) -export-dynamic $(THEPEGLDFLAGS)
+Herwig___LDFLAGS = $(AM_LDFLAGS) -export-dynamic $(THEPEGLDFLAGS) \
+$(BOOST_SYSTEM_LDFLAGS) $(BOOST_FILESYSTEM_LDFLAGS)
 Herwig___LDADD = $(THEPEGLIB) -ldl \
 $(top_builddir)/Utilities/libHwRunDirectories.la \
 $(BOOST_SYSTEM_LIBS) $(BOOST_FILESYSTEM_LIBS)
