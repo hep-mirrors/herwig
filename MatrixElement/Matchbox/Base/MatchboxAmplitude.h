@@ -592,6 +592,12 @@ private:
    * The colour basis implementation to be used.
    */
   Ptr<ColourBasis>::ptr theColourBasis;
+
+  /**
+   * The number of points after which helicity combinations wil be
+   * cleaned up
+   */
+  int theCleanupAfter;
   
   /**
    * The number of points that are calculated 

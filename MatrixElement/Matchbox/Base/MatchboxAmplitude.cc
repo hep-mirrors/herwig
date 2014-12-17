@@ -14,6 +14,7 @@
 #include "MatchboxAmplitude.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Reference.h"
+#include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -34,16 +35,17 @@ using std::ostream_iterator;
 using namespace Herwig;
 
 MatchboxAmplitude::MatchboxAmplitude() 
-  : Amplitude() {helpoints=0;}
+  : Amplitude(), theCleanupAfter(20), helpoints(0) {
+}
 
 MatchboxAmplitude::~MatchboxAmplitude() {}
 
 void MatchboxAmplitude::persistentOutput(PersistentOStream & os) const {
-  os << theLastXComb << theColourBasis << theFactory;
+  os << theLastXComb << theColourBasis << theFactory << theCleanupAfter;
 }
 
 void MatchboxAmplitude::persistentInput(PersistentIStream & is, int) {
-  is >> theLastXComb >> theColourBasis >> theFactory;
+  is >> theLastXComb >> theColourBasis >> theFactory >> theCleanupAfter;
   lastMatchboxXComb(theLastXComb);
 }
 
@@ -429,7 +431,8 @@ void MatchboxAmplitude::prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr) {
   if ( !calculateTreeAmplitudes() )
     return;
 
-  bool initialized = !lastAmplitudes().empty()&& helpoints>20;
+  bool initialized = 
+    !lastAmplitudes().empty() && helpoints > theCleanupAfter;
 
   if ( !initialized ) {
     helpoints++;
@@ -738,6 +741,12 @@ void MatchboxAmplitude::Init() {
     ("ColourBasis",
      "Set the colour basis implementation.",
      &MatchboxAmplitude::theColourBasis, false, false, true, true, false);
+
+  static Parameter<MatchboxAmplitude,int> interfaceCleanupAfter
+    ("CleanupAfter",
+     "The number of points after which helicity combinations are cleaned up.",
+     &MatchboxAmplitude::theCleanupAfter, 20, 1, 0,
+     false, false, Interface::lowerlim);
 
 }
 
