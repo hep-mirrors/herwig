@@ -10,6 +10,7 @@
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
+#include "ThePEG/Interface/Switch.h"
 
 #include "ThePEG/EventRecord/SubProcess.h"
 #include "ThePEG/EventRecord/SubProcessGroup.h"
@@ -29,9 +30,10 @@ WeightAnalyzer::WeightAnalyzer()
     nPositiveWeights(0.0),
     nNegativeWeights(0.0),
     maxPositiveWeight(0.0),
-    maxNegativeWeight(0.0) {}
+    maxNegativeWeight(0.0),
+    gnuplot(true)  {}
 
-WeightAnalyzer::~WeightAnalyzer() {}
+WeightAnalyzer::~WeightAnalyzer(){}
 
 
 
@@ -124,7 +126,10 @@ void WeightAnalyzer::dofinish() {
       b->second /= nNegativeWeights;
     }
 
-  string dataName = generator()->filename() + "Weights.dat";
+    
+    
+    
+  string dataName = generator()->filename() + "Weights."+(gnuplot?"gp":"dat");
 
   ofstream data(dataName.c_str());
 
@@ -148,6 +153,22 @@ void WeightAnalyzer::dofinish() {
        << flush;
 
   data << "\n\n";
+  if(gnuplot){
+    data << "set terminal pdf\n"
+      << "set xlabel 'weights'\n"
+      << "set ylabel '\n"
+      << "set logscale \n"
+      << "set output '" << generator()->filename()<<"Weights.pdf'\n"
+      << "plot \"-\" using 2:3 with histeps lc rgbcolor \"#00AACC\" t \"positive weights\"\n"
+      << "#  low     up     val\n";
+  }
+  
+  
+  
+  
+  
+  
+  
   for ( map<double,double>::const_iterator b = positiveWeightDistribution.begin();
 	b != positiveWeightDistribution.end(); ++b ) {
     if ( b->second != 0 ) {
@@ -165,8 +186,12 @@ void WeightAnalyzer::dofinish() {
     }
   }
   data << flush;
-
-  data << "\n\n";
+  if(gnuplot)data<< "e";
+  data << "\n\n"; 
+  if(gnuplot && sumNegativeGroupWeights>0.){
+      data<< "plot \"-\" using 2:3 with histeps lc rgbcolor \"#00AACC\" t  \"negative weights\"\n"
+      << "#  low     up     val\n";
+  }
   for ( map<double,double>::const_iterator b = negativeWeightDistribution.begin();
 	b != negativeWeightDistribution.end(); ++b ) {
     if ( b->second != 0 ) {
@@ -183,8 +208,9 @@ void WeightAnalyzer::dofinish() {
       data << l << " " << u << " " << b->second << "\n";
     }
   }
+  
+  if(gnuplot&& sumNegativeGroupWeights>0.)data<< "e";
   data << flush;
-
 }
 
 void WeightAnalyzer::doinitrun() {
@@ -234,5 +260,24 @@ void WeightAnalyzer::Init() {
   static ClassDocumentation<WeightAnalyzer> documentation
     ("There is no documentation for the WeightAnalyzer class");
 
+    
+    static Switch<WeightAnalyzer,bool> interfacekeepinputtopmass
+         ("Gnuplot output",
+          "Switch On/Off gnuplot",
+          &WeightAnalyzer::gnuplot, true, false, false);
+  static SwitchOption interfacekeepinputtopmassTrue
+         (interfacekeepinputtopmass,
+          "On",
+          "On",
+          true);
+  static SwitchOption interfacekeepinputtopmassFalse
+         (interfacekeepinputtopmass,
+          "Off",
+          "Off",
+          false);  
+    
+      
+    
+    
 }
 

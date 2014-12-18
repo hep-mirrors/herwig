@@ -192,6 +192,14 @@ private:
    * Histogram of negative weight occurences
    */
   map<double,double> negativeWeightDistribution;
+  
+  
+  /**
+   * Gnuplot output
+   */
+  bool gnuplot;
+  
+  
 
 private:
 
