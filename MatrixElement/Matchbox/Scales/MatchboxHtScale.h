@@ -109,14 +109,19 @@ private:
   Ptr<JetFinder>::ptr theJetFinder;
 
   /**
-   * Choose to use only jets or to include all other particles, too.
+   * Include the transverse masses of the non-jet objects
    */
-  bool theJetsOnly;
+  bool theIncludeMT;
 
   /**
-   * Set to true to return the average scalar transverse momentum squared
+   * An ovewrall scaling factor for the jet contribution
    */
-  bool theDoAverage;
+  double theHTFactor;
+
+  /**
+   * An ovewrall scaling factor for the non-jet contribution
+   */
+  double theMTFactor;
 
 // If needed, insert declarations of virtual function defined in the
 // InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).

@@ -14,6 +14,7 @@
 #include "MatchboxHtScale.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
+#include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
@@ -26,8 +27,9 @@
 
 using namespace Herwig;
 
-MatchboxHtScale::MatchboxHtScale()
-  : theJetsOnly(true), theDoAverage(false) {}
+MatchboxHtScale::MatchboxHtScale() 
+  : theIncludeMT(true), theHTFactor(1.0),
+    theMTFactor(1.0) {}
 
 MatchboxHtScale::~MatchboxHtScale() {}
 
@@ -48,25 +50,27 @@ Energy2 MatchboxHtScale::renormalizationScale() const {
 
   theJetFinder->cluster(pd, p, cuts, t1, t2);
 
-  Energy sumpt = ZERO;
-  int found = 0;
-  tcPDVector::const_iterator itpd = pd.begin();
-  for (vector<LorentzMomentum>::const_iterator itp = p.begin() ;
-       itp != p.end(); ++itp, ++itpd ) {
-    if ( theJetsOnly ) {
-      if ( (**itpd).coloured() ) {
-	sumpt += (*itp).perp();
-	found++;
-      }
-    }
-    else {
-      sumpt += (*itp).perp();
-      found++;
+  // transverse masses of the non-jet systems
+  Energy mtNonJetSum = ZERO;
+
+  // (weighted) pt of the jet systems
+  Energy ptJetSum = ZERO;
+
+  tcPDVector::const_iterator pdata = pd.begin();
+  vector<LorentzMomentum>::const_iterator mom = p.begin();
+  for ( ; mom != p.end(); ++pdata, ++mom ) {
+    if ( theJetFinder->unresolvedMatcher()->check(**pdata) ) {
+      ptJetSum += mom->perp();
+    } else if ( theIncludeMT ) {
+      mtNonJetSum += sqrt(mom->perp2() + mom->m2());
     }
   }
-  if ( theDoAverage && found != 0) return sqr(sumpt/found);
 
-  return sqr(sumpt);
+  mtNonJetSum *= theMTFactor;
+  ptJetSum *= theHTFactor;
+
+  return sqr(ptJetSum + mtNonJetSum);
+
 }
 
 Energy2 MatchboxHtScale::factorizationScale() const {
@@ -78,11 +82,11 @@ Energy2 MatchboxHtScale::factorizationScale() const {
 
 
 void MatchboxHtScale::persistentOutput(PersistentOStream & os) const {
-  os << theJetFinder << theJetsOnly << theDoAverage;
+  os << theJetFinder << theIncludeMT << theHTFactor << theMTFactor;
 }
 
 void MatchboxHtScale::persistentInput(PersistentIStream & is, int) {
-  is >> theJetFinder >> theJetsOnly >> theDoAverage;
+  is >> theJetFinder >> theIncludeMT >> theHTFactor >> theMTFactor;
 }
 
 
@@ -104,34 +108,32 @@ void MatchboxHtScale::Init() {
      "A reference to the jet finder.",
      &MatchboxHtScale::theJetFinder, false, false, true, false, false);
 
-  static Switch<MatchboxHtScale,bool> interfaceJetsOnly
-    ("JetsOnly",
-     "The mode to use.",
-     &MatchboxHtScale::theJetsOnly, true, false, false);
-  static SwitchOption interfaceJetsOnlyTrue
-    (interfaceJetsOnly,
-     "True",
-     "Only include jets.",
+  static Switch<MatchboxHtScale,bool> interfaceIncludeMT
+    ("IncludeMT",
+     "Include the transverse masses of the non-jet objects.",
+     &MatchboxHtScale::theIncludeMT, true, false, false);
+  static SwitchOption interfaceIncludeMTYes
+    (interfaceIncludeMT,
+     "Yes",
+     "",
      true);
-  static SwitchOption interfaceJetsOnlyFalse
-    (interfaceJetsOnly,
-     "False",
-     "Include all outgoing particles in the matrix element.",
+  static SwitchOption interfaceIncludeMTNo
+    (interfaceIncludeMT,
+     "No",
+     "",
      false);
 
-  static Switch<MatchboxHtScale,bool> interfaceDoAverage
-    ("DoAverage",
-     "The mode to use.",
-     &MatchboxHtScale::theDoAverage, false, false, false);
-  static SwitchOption interfaceDoAverageTrue
-    (interfaceDoAverage,
-     "True",
-     "Average over number of jets/particles",
-     true);
-  static SwitchOption interfaceDoAverageFalse
-    (interfaceDoAverage,
-     "False",
-     "Do not average.",
-     false);
+  static Parameter<MatchboxHtScale,double> interfaceHTFactor
+    ("HTFactor",
+     "A factor to scale the HT contribution.",
+     &MatchboxHtScale::theHTFactor, 1.0, 0.0, 0,
+     false, false, Interface::lowerlim);
+
+  static Parameter<MatchboxHtScale,double> interfaceMTFactor
+    ("MTFactor",
+     "A factor to scale the MT contribution.",
+     &MatchboxHtScale::theMTFactor, 1.0, 0.0, 0,
+     false, false, Interface::lowerlim);
+
 }
 
