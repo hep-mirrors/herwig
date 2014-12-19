@@ -58,6 +58,19 @@ public:
    */
   virtual Energy2 factorizationScale() const;
 
+protected:
+
+  /**
+   * Initialize potential weighting factors for the given final state
+   */
+  virtual void initWeightFactors(const tcPDVector&, const vector<LorentzMomentum>&,
+				 const Ptr<JetFinder>::ptr&) const {}
+
+  /**
+   * Return the jet pt weighting factor for the given jet
+   */
+  virtual double jetPtWeight(const LorentzMomentum&) const { return 1.; }
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
