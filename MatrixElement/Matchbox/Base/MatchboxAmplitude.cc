@@ -539,6 +539,11 @@ double MatchboxAmplitude::me2() const {
   return lastTreeME2();
 }
 
+double MatchboxAmplitude::largeNMe2(const cPDVector& partondata,Ptr<ColourBasis>::tptr largeNBasis) const {
+  return largeNBasis->me2(partondata,lastAmplitudes());
+}
+
+
 double MatchboxAmplitude::oneLoopInterference() const {
   if ( !calculateOneLoopInterference() )
     return lastOneLoopInterference();

@@ -135,7 +135,11 @@ CrossSection QTildeMatching::dSigHatDR() const {
   pair<int,int> ij(dipole()->bornEmitter(),
 		   dipole()->bornSpectator());
   double ccme2 =
-    dipole()->underlyingBornME()->largeNColourCorrelatedME2(ij,theLargeNBasis);
+     dipole()->underlyingBornME()->largeNColourCorrelatedME2(ij,theLargeNBasis);
+
+  //Correcting for the fact that borns are calculated with full color!
+
+   ccme2*=dipole()->underlyingBornME()->matchboxAmplitude()->me2()/dipole()->underlyingBornME()->matchboxAmplitude()->largeNMe2(dipole()->mePartonData(),theLargeNBasis);
 
   Energy2 prop = ZERO;
   if ( dipole()->bornEmitter() > 1 ) {
