@@ -577,7 +577,7 @@ double MatchboxAmplitude::largeNColourCorrelatedME2(pair<int,int> ij,
   if ( !calculateLargeNColourCorrelator(ij) )
     return lastLargeNColourCorrelator(ij)/cfac;
   double res =
-    largeNBasis->colourCorrelatedME2(ij,mePartonData(),lastLargeNAmplitudes());
+    largeNBasis->colourCorrelatedME2(ij,mePartonData(),lastAmplitudes());
   lastLargeNColourCorrelator(ij,res);
   return res/cfac;
 }
