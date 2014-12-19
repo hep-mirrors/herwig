@@ -50,6 +50,32 @@ void HJetsAnalysis::analyzeSpecial(long id, double weight) {
     thirdJetYStar().count(Statistics::EventContribution(yStar(jetMomentum(1),jetMomentum(2),jetMomentum(3)),weight,0.1),id);
   if ( nJets() > 3 )
     fourthJetYStar().count(Statistics::EventContribution(yStar(jetMomentum(1),jetMomentum(2),jetMomentum(4)),weight,0.1),id);
+  if ( nJets() > 1 ) {
+    LorentzMomentum p12 = jetMomentum(1) + jetMomentum(2);
+    double dphi = JetsPlusAnalysis::PairProperties::dPhi(p12,hardObjectMomentum("h"));
+    jet12HiggsDeltaPhi().count(Statistics::EventContribution(dphi,weight,0.1),id);
+    // Jeppe delta phi
+    double minRap = jetMomentum(1).rapidity();
+    double maxRap = minRap;
+    for ( unsigned int k = 2; k <= nJets(); ++k ) {
+      double yjet = jetMomentum(k).rapidity();
+      minRap = min(minRap,yjet);
+      maxRap = max(maxRap,yjet);
+    }
+    double hrap = hardObjectMomentum("h").rapidity();
+    if ( minRap < hrap && hrap < maxRap ) {
+      LorentzMomentum pLeft, pRight;
+      for ( unsigned int k = 1; k <= nJets(); ++k ) {
+	const LorentzMomentum& pjet = jetMomentum(k);
+	if ( pjet.rapidity() < hrap )
+	  pLeft += pjet;
+	else
+	  pRight += pjet;
+      }
+      double jeppedphi = JetsPlusAnalysis::PairProperties::dPhi(pLeft,pRight);
+      jeppeDeltaPhi().count(Statistics::EventContribution(jeppedphi,weight,0.1),id);
+    }
+  }
 }
 
 void HJetsAnalysis::finalize(XML::Element& xhistos) {
@@ -64,6 +90,14 @@ void HJetsAnalysis::finalize(XML::Element& xhistos) {
   if ( !theFourthJetYStar.bins().empty() ) {
     theFourthJetYStar.finalize();
     xhistos.append(theFourthJetYStar.toXML());
+  }
+  if ( !theJet12HiggsDeltaPhi.bins().empty() ) {
+    theJet12HiggsDeltaPhi.finalize();
+    xhistos.append(theJet12HiggsDeltaPhi.toXML());
+  }
+  if ( !theJeppeDeltaPhi.bins().empty() ) {
+    theJeppeDeltaPhi.finalize();
+    xhistos.append(theJeppeDeltaPhi.toXML());
   }
 }
 

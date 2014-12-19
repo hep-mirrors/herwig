@@ -119,6 +119,16 @@ private:
    */
   Statistics::Histogram theFourthJetYStar;
 
+  /**
+   * Delta phi between the Higgs and the two-jet system
+   */
+  Statistics::Histogram theJet12HiggsDeltaPhi;
+
+  /**
+   * Jeppe's delta phi
+   */
+  Statistics::Histogram theJeppeDeltaPhi;
+
 protected:
 
   /**
@@ -161,6 +171,30 @@ protected:
       return theFourthJetYStar;
     return theFourthJetYStar =
       Statistics::Histogram("Jet4YStar",Statistics::Histogram::regularBinEdges(-6,6,120),false,false);
+  }
+
+  /**
+   * Delta phi between the Higgs and the two-jet system
+   */
+  Statistics::Histogram& jet12HiggsDeltaPhi() {
+    if ( !theJet12HiggsDeltaPhi.bins().empty() )
+      return theJet12HiggsDeltaPhi;
+    return theJet12HiggsDeltaPhi =
+      Statistics::Histogram("Jet12hDeltaPhi",
+			    Statistics::Histogram::regularBinEdges(-Constants::pi,Constants::pi,32),
+			    make_pair(-Constants::pi,Constants::pi));
+  }
+
+  /**
+   * Delta phi between the Higgs and the two-jet system
+   */
+  Statistics::Histogram& jeppeDeltaPhi() {
+    if ( !theJeppeDeltaPhi.bins().empty() )
+      return theJeppeDeltaPhi;
+    return theJeppeDeltaPhi =
+      Statistics::Histogram("JeppeDeltaPhi",
+			    Statistics::Histogram::regularBinEdges(-Constants::pi,Constants::pi,32),
+			    make_pair(-Constants::pi,Constants::pi));
   }
 
 private:

@@ -178,32 +178,7 @@ protected:
 // If needed, insert declarations of virtual function defined in the
 // InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
 
-private:
-
-  /**
-   * Switch between fixed order and showered
-   */
-  bool theIsShowered;
-
-  /**
-   * The jet finder to use
-   */
-  Ptr<JetFinder>::ptr theJetFinder;
-
-  /**
-   * The jet regions to match.
-   */
-  vector<Ptr<JetRegion>::ptr> theJetRegions;
-
-  /**
-   * The reconstructed hard objects.
-   */
-  map<string,LorentzMomentum> theHardObjects;
-
-  /**
-   * The reconstructed jets
-   */
-  map<unsigned int,LorentzMomentum> theJets;
+protected:
 
   /**
    * Collection of object histograms; ranges are adjusted to the
@@ -290,8 +265,8 @@ private:
     /**
      * Calculate deltaPhi
      */
-    double dPhi(const LorentzMomentum& a,
-		const LorentzMomentum& b){
+    static double dPhi(const LorentzMomentum& a,
+		       const LorentzMomentum& b){
       double phi1 = a.phi();
       double phi2 = b.phi();
       double diff=phi1-phi2;
@@ -307,24 +282,24 @@ private:
     /**
      * Calculate deltaY
      */
-    double dY(const LorentzMomentum& a,
-	      const LorentzMomentum& b){
+    static double dY(const LorentzMomentum& a,
+		     const LorentzMomentum& b){
       return abs(a.rapidity()-b.rapidity());
     }
 
     /**
      * Calculate deltaR
      */
-    double dR(const LorentzMomentum& a,
-	      const LorentzMomentum& b){
+    static double dR(const LorentzMomentum& a,
+		     const LorentzMomentum& b){
       return sqrt(sqr(dPhi(a,b))+sqr(dY(a,b)));
     }
 
     /**
      * Calculate ydoty
      */
-    double yy(const LorentzMomentum& a,
-	      const LorentzMomentum& b){
+    static double yy(const LorentzMomentum& a,
+		     const LorentzMomentum& b){
       double ya = a.rapidity();
       double yb = b.rapidity();
       double yres = sqrt(abs(ya*yb));
@@ -391,6 +366,33 @@ private:
     }
 
   };
+
+private:
+
+  /**
+   * Switch between fixed order and showered
+   */
+  bool theIsShowered;
+
+  /**
+   * The jet finder to use
+   */
+  Ptr<JetFinder>::ptr theJetFinder;
+
+  /**
+   * The jet regions to match.
+   */
+  vector<Ptr<JetRegion>::ptr> theJetRegions;
+
+  /**
+   * The reconstructed hard objects.
+   */
+  map<string,LorentzMomentum> theHardObjects;
+
+  /**
+   * The reconstructed jets
+   */
+  map<unsigned int,LorentzMomentum> theJets;
 
   /**
    * Hard object properties
