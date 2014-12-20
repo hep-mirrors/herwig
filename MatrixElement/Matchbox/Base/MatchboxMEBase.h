@@ -473,6 +473,13 @@ public:
   virtual double me2() const;
 
   /**
+   * Return the matrix element for the kinematical configuation
+   * previously provided by the last call to setKinematics(), suitably
+   * scaled by sHat() to give a dimension-less number.
+   */
+  virtual double largeNME2(Ptr<ColourBasis>::tptr largeNBasis) const;
+
+  /**
    * Return the symmetry factor for identical final state particles.
    */
   virtual double finalStateSymmetry() const;

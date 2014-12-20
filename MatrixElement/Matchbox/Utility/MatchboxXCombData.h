@@ -258,6 +258,24 @@ namespace Herwig {
     }
 
     /**
+     * True, if the tree-level matrix element squared needs to be
+     * calculated.
+     */
+    bool calculateLargeNME2() const { return theCalculateLargeNME2; }
+
+    /**
+     * The last tree-level matrix element squared
+     */
+    double lastLargeNME2() const { return theLastLargeNME2; }
+
+    /**
+     * The last tree-level matrix element squared
+     */
+    void lastLargeNME2(double v) { 
+      theLastLargeNME2 = v; theCalculateLargeNME2 = false;
+    }
+
+    /**
      * True, if the one-loop/tree-level interference.
      * be calculated.
      */
@@ -825,6 +843,17 @@ namespace Herwig {
      * The last tree-level matrix element squared
      */
     double theLastTreeME2;
+
+    /**
+     * True, if the tree-level matrix element squared needs to be
+     * calculated.
+     */
+    bool theCalculateLargeNME2;
+
+    /**
+     * The last tree-level matrix element squared
+     */
+    double theLastLargeNME2;
 
     /**
      * True, if the one-loop/tree-level interference.

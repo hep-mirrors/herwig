@@ -49,6 +49,10 @@ CrossSection DipoleMatching::dSigHatDR() const {
   double ccme2 = 
     dipole()->underlyingBornME()->largeNColourCorrelatedME2(ij,theLargeNBasis);
 
+  ccme2 *=
+    dipole()->underlyingBornME()->me2() /
+    dipole()->underlyingBornME()->largeNME2(theLargeNBasis);
+
   xme2 = dipole()->me2Avg(ccme2);
 
   xme2 /= dipole()->underlyingBornME()->lastXComb().lastAlphaS();

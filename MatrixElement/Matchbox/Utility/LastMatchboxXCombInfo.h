@@ -122,6 +122,17 @@ public:
   double lastTreeME2() const { return lastMatchboxXComb()->lastTreeME2(); }
 
   /**
+   * True, if the tree-level matrix element squared needs to be
+   * calculated.
+   */
+  bool calculateLargeNME2() const { return lastMatchboxXComb()->calculateLargeNME2(); }
+
+  /**
+   * The last tree-level matrix element squared
+   */
+  double lastLargeNME2() const { return lastMatchboxXComb()->lastLargeNME2(); }
+
+  /**
    * True, if the one-loop/tree-level interference.
    * be calculated.
    */
@@ -354,6 +365,11 @@ protected:
    * The last tree-level matrix element squared
    */
   void lastTreeME2(double v) const { lastMatchboxXComb()->lastTreeME2(v); }
+
+  /**
+   * The last tree-level matrix element squared
+   */
+  void lastLargeNME2(double v) const { lastMatchboxXComb()->lastLargeNME2(v); }
 
   /**
    * The last one-loop/tree-level interference.

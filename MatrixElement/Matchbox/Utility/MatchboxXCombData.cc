@@ -24,7 +24,8 @@ using namespace Herwig;
 MatchboxXCombData::MatchboxXCombData() 
   : theCrossingSign(1.0), theCalculateTreeAmplitudes(true), 
     theCalculateOneLoopAmplitudes(true), theCalculateTreeME2(true), 
-    theLastTreeME2(0.0), theCalculateOneLoopInterference(true), 
+    theLastTreeME2(0.0), theCalculateLargeNME2(true), 
+    theLastLargeNME2(0.0), theCalculateOneLoopInterference(true), 
     theLastOneLoopInterference(0.0), theCalculateOneLoopPoles(true), 
     theLastOneLoopPoles(0.0,0.0), 
     theNLight(0), 
@@ -52,7 +53,8 @@ MatchboxXCombData::~MatchboxXCombData() {
 MatchboxXCombData::MatchboxXCombData(tMEPtr newME) 
   : theCrossingSign(1.0), theCalculateTreeAmplitudes(true), 
     theCalculateOneLoopAmplitudes(true), theCalculateTreeME2(true), 
-    theLastTreeME2(0.0), theCalculateOneLoopInterference(true), 
+    theLastTreeME2(0.0), theCalculateLargeNME2(true), 
+    theLastLargeNME2(0.0), theCalculateOneLoopInterference(true), 
     theLastOneLoopInterference(0.0), theCalculateOneLoopPoles(true), 
     theLastOneLoopPoles(0.0,0.0), theNLight(0), 
     theColourBasisDim(0), theNDimPhasespace(0), 
@@ -124,6 +126,7 @@ void MatchboxXCombData::flushCaches() {
   theCalculateTreeAmplitudes = true;
   theCalculateOneLoopAmplitudes = true;
   theCalculateTreeME2 = true;
+  theCalculateLargeNME2 = true;
   theCalculateOneLoopInterference = true;
   theCalculateOneLoopPoles = true;
   for ( map<pair<int,int>,bool>::iterator f = theCalculateColourCorrelators.begin();
@@ -181,7 +184,9 @@ void MatchboxXCombData::persistentOutput(PersistentOStream & os) const {
      << theCrossingSign << theAmplitudePartonData << ounit(theAmplitudeMomenta,GeV) 
      << theCalculateTreeAmplitudes /* << theLastAmplitudes << theLastLargeNAmplitudes */
      << theCalculateOneLoopAmplitudes /* << theLastOneLoopAmplitudes */
-     << theCalculateTreeME2 << theLastTreeME2 << theCalculateOneLoopInterference 
+     << theCalculateTreeME2 << theLastTreeME2 
+     << theCalculateLargeNME2 << theLastLargeNME2 
+     << theCalculateOneLoopInterference 
      << theLastOneLoopInterference << theCalculateOneLoopPoles
      << theLastOneLoopPoles << theCalculateColourCorrelators 
      << theColourCorrelators << theCalculateLargeNColourCorrelators 
@@ -206,7 +211,9 @@ void MatchboxXCombData::persistentInput(PersistentIStream & is, int) {
      >> theCrossingSign >> theAmplitudePartonData >> iunit(theAmplitudeMomenta,GeV)
      >> theCalculateTreeAmplitudes /* >> theLastAmplitudes >> theLastLargeNAmplitudes */
      >> theCalculateOneLoopAmplitudes /* >> theLastOneLoopAmplitudes */
-     >> theCalculateTreeME2 >> theLastTreeME2 >> theCalculateOneLoopInterference 
+     >> theCalculateTreeME2 >> theLastTreeME2 
+     >> theCalculateLargeNME2 >> theLastLargeNME2 
+     >> theCalculateOneLoopInterference 
      >> theLastOneLoopInterference >> theCalculateOneLoopPoles
      >> theLastOneLoopPoles >> theCalculateColourCorrelators 
      >> theColourCorrelators >> theCalculateLargeNColourCorrelators 

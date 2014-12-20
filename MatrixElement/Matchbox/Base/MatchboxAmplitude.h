@@ -361,7 +361,7 @@ public:
   /**
    * Return the largeN matrix element squared.
    */
-  virtual double largeNMe2(const cPDVector& partondata,Ptr<ColourBasis>::tptr largeNBasis) const;
+  virtual double largeNME2(Ptr<ColourBasis>::tptr largeNBasis) const;
 
   /**
    * Return the colour correlated matrix element.

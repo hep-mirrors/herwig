@@ -539,8 +539,12 @@ double MatchboxAmplitude::me2() const {
   return lastTreeME2();
 }
 
-double MatchboxAmplitude::largeNMe2(const cPDVector& partondata,Ptr<ColourBasis>::tptr largeNBasis) const {
-  return largeNBasis->me2(partondata,lastAmplitudes());
+double MatchboxAmplitude::largeNME2(Ptr<ColourBasis>::tptr largeNBasis) const {
+  if ( !calculateLargeNME2() )
+    return lastLargeNME2();
+  double res = largeNBasis->me2(mePartonData(),lastLargeNAmplitudes());
+  lastLargeNME2(res);
+  return res;
 }
 
 
@@ -582,7 +586,7 @@ double MatchboxAmplitude::largeNColourCorrelatedME2(pair<int,int> ij,
   if ( !calculateLargeNColourCorrelator(ij) )
     return lastLargeNColourCorrelator(ij)/cfac;
   double res =
-    largeNBasis->colourCorrelatedME2(ij,mePartonData(),lastAmplitudes());
+    largeNBasis->colourCorrelatedME2(ij,mePartonData(),lastLargeNAmplitudes());
   lastLargeNColourCorrelator(ij,res);
   return res/cfac;
 }

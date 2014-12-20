@@ -475,6 +475,28 @@ double MatchboxMEBase::me2() const {
 
 }
 
+double MatchboxMEBase::largeNME2(Ptr<ColourBasis>::tptr largeNBasis) const {
+
+  if ( matchboxAmplitude() ) {
+
+    if ( matchboxAmplitude()->treeAmplitudes() )
+      matchboxAmplitude()->prepareAmplitudes(this);
+
+    double res = 
+      matchboxAmplitude()->largeNME2(largeNBasis)*
+      me2Norm();
+
+    return res;
+
+  }
+
+  throw Exception()
+    << "MatchboxMEBase::largeNME2() expects a MatchboxAmplitude object.\n"
+    << "Please check your setup." << Exception::abortnow;
+  return 0.;
+
+}
+
 double MatchboxMEBase::finalStateSymmetry() const {
 
   if ( symmetryFactor() > 0.0 )
