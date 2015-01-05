@@ -295,6 +295,13 @@ public:
   }
 
   /**
+   * Return the largeN matrix element squared.
+   */
+  virtual double largeNME2(Ptr<ColourBasis>::tptr largeNBasis) const {
+    return treeLevelAmplitude()->largeNME2(largeNBasis);
+  }
+
+  /**
    * Return the colour correlated matrix element.
    */
   virtual double colourCorrelatedME2(pair<int,int> ij) const {
