@@ -63,6 +63,9 @@ namespace {
 DescribeClass<Evolver,Interfaced>
 describeEvolver ("Herwig::Evolver","HwShower.so");
 
+bool Evolver::_hardEmissionModeWarn = true;
+bool Evolver::_missingTruncWarn = true;
+
 IBPtr Evolver::clone() const {
   return new_ptr(*this);
 }
@@ -79,6 +82,7 @@ void Evolver::persistentOutput(PersistentOStream & os) const {
      << _vetoes << _trunc_Mode << _hardEmissionMode 
      << _colourEvolutionMethod << _reconOpt
      << isMCatNLOSEvent << isMCatNLOHEvent
+     << isPowhegSEvent << isPowhegHEvent
      << theFactorizationScaleFactor << theRenormalizationScaleFactor
      << interaction_<< interactions_.size();
   for(unsigned int ix=0;ix<interactions_.size();++ix) 
@@ -94,6 +98,7 @@ void Evolver::persistentInput(PersistentIStream & is, int) {
      >> _vetoes >> _trunc_Mode >> _hardEmissionMode
      >> _colourEvolutionMethod >> _reconOpt
      >> isMCatNLOSEvent >> isMCatNLOHEvent
+     >> isPowhegSEvent >> isPowhegHEvent
      >> theFactorizationScaleFactor >> theRenormalizationScaleFactor
      >> interaction_ >> isize;
   interactions_.resize(isize);
@@ -291,8 +296,19 @@ void Evolver::Init() {
   static SwitchOption interfaceHardEmissionModePOWHEG
     (interfaceHardEmissionMode,
      "POWHEG",
-     "Powheg style hard emission",
+     "Powheg style hard emission using internal matrix elements",
      1);
+  static SwitchOption interfaceHardEmissionModeMatchboxPOWHEG
+    (interfaceHardEmissionMode,
+     "MatchboxPOWHEG",
+     "Powheg style emission for the hard process using Matchbox",
+     2);
+  static SwitchOption interfaceHardEmissionModeFullPOWHEG
+    (interfaceHardEmissionMode,
+     "FullPOWHEG",
+     "Powheg style emission for the hard process using Matchbox "
+     "and decays using internal matrix elements",
+     3);
 
   static Switch<Evolver,int> interfaceColourEvolutionMethod
     ("ColourEvolutionMethod",
@@ -417,7 +433,7 @@ void Evolver::generateIntrinsicpT(vector<ShowerProgenitorPtr> particlesToShower)
 void Evolver::setupMaximumScales(const vector<ShowerProgenitorPtr> & p,
 				 XCPtr xcomb) {
   // let POWHEG events radiate freely
-  if(_hardEmissionMode==1&&hardTree()) {
+  if(_hardEmissionMode>0&&hardTree()) {
     vector<ShowerProgenitorPtr>::const_iterator ckt = p.begin();
     for (; ckt != p.end(); ckt++) (*ckt)->maxHardPt(Constants::MaxEnergy);
     return;
@@ -492,36 +508,104 @@ void Evolver::showerHardProcess(ShowerTreePtr hard, XCPtr xcomb) {
 
   isMCatNLOSEvent = false;
   isMCatNLOHEvent = false;
+  isPowhegSEvent  = false;
+  isPowhegHEvent  = false;
 
   Ptr<SubtractedME>::tptr subme;
   Ptr<MatchboxMEBase>::tptr me;
+  Ptr<SubtractionDipole>::tptr dipme;
 
   Ptr<StandardXComb>::ptr sxc = dynamic_ptr_cast<Ptr<StandardXComb>::ptr>(xcomb);
 
   if ( sxc ) {
     subme = dynamic_ptr_cast<Ptr<SubtractedME>::tptr>(sxc->matrixElement());
     me = dynamic_ptr_cast<Ptr<MatchboxMEBase>::tptr>(sxc->matrixElement());
+    dipme = dynamic_ptr_cast<Ptr<SubtractionDipole>::tptr>(sxc->matrixElement());
   }
 
   if ( subme ) {
     if ( subme->showerApproximation() ) {
-      // don't do this for POWHEG-type corrections
+      theShowerApproximation = subme->showerApproximation();
+      // separate MCatNLO and POWHEG-type corrections
       if ( !subme->showerApproximation()->needsSplittingGenerator() ) {
-	theShowerApproximation = subme->showerApproximation();
 	if ( subme->realShowerSubtraction() )
 	  isMCatNLOHEvent = true;
 	else if ( subme->virtualShowerSubtraction() )
 	  isMCatNLOSEvent = true;
       }
+      else {
+  	if ( subme->realShowerSubtraction() )
+  	  isPowhegHEvent = true;
+  	else if ( subme->virtualShowerSubtraction() ||  subme->loopSimSubtraction() )
+  	  isPowhegSEvent = true;
+      }
     }
   } else if ( me ) {
     if ( me->factory()->showerApproximation() ) {
-      if ( !me->factory()->showerApproximation()->needsSplittingGenerator() ) {
-	theShowerApproximation = me->factory()->showerApproximation();
+      theShowerApproximation = me->factory()->showerApproximation();
+      if ( !me->factory()->showerApproximation()->needsSplittingGenerator() ) 
 	isMCatNLOSEvent = true;
-      }
+      else
+  	isPowhegSEvent = true;
     }
   }
+
+  string error = "Inconsistent hard emission set-up in Evolver::showerHardProcess(). "; 
+  if ( ( isMCatNLOSEvent || isMCatNLOHEvent ) ){
+    if (_hardEmissionMode > 1)
+      throw Exception() << error
+			<< "Cannot generate POWHEG matching with MC@NLO shower "
+			<< "approximation.  Add 'set Evolver:HardEmissionMode 0' to input file."
+			<< Exception::runerror;
+    if ( ShowerHandler::currentHandler()->canHandleMatchboxTrunc())
+      throw Exception() << error
+			<< "Cannot use truncated qtilde shower with MC@NLO shower "
+			<< "approximation.  Set LHCGenerator:EventHandler"
+			<< ":CascadeHandler to '/Herwig/Shower/ShowerHandler' or "
+			<< "'/Herwig/DipoleShower/DipoleShowerHandler'."
+			<< Exception::runerror;
+  }
+  else if ( ((isPowhegSEvent || isPowhegHEvent) || dipme) &&
+	    _hardEmissionMode < 2){
+    if ( ShowerHandler::currentHandler()->canHandleMatchboxTrunc())
+      throw Exception() << error
+			<< "Unmatched events requested for POWHEG shower "
+			<< "approximation.  Set Evolver:HardEmissionMode to "
+			<< "'MatchboxPOWHEG' or 'FullPOWHEG'."
+			<< Exception::runerror;
+    else if (_hardEmissionModeWarn){
+      _hardEmissionModeWarn = false;
+      _hardEmissionMode+=2;
+      throw Exception() << error
+			<< "Unmatched events requested for POWHEG shower "
+			<< "approximation. Changing Evolver:HardEmissionMode from "
+			<< _hardEmissionMode-2 << " to " << _hardEmissionMode
+			<< Exception::warning;
+    }
+  }
+
+  if ( isPowhegSEvent || isPowhegHEvent) {
+    if (theShowerApproximation->needsTruncatedShower() &&
+	!ShowerHandler::currentHandler()->canHandleMatchboxTrunc() )
+      throw Exception() << error
+			<< "Current shower handler cannot generate truncated shower.  "
+			<< "Set Generator:EventHandler:CascadeHandler to "
+			<< "'/Herwig/Shower/PowhegShowerHandler'."
+			<< Exception::runerror;
+  }
+  else if ( dipme && _missingTruncWarn){
+    _missingTruncWarn=false;
+    throw Exception() << "Warning: POWHEG shower approximation used without "
+		      << "truncated shower.  Set Generator:EventHandler:"
+		      << "CascadeHandler to '/Herwig/Shower/PowhegShowerHandler' and "
+		      << "'MEMatching:TruncatedShower Yes'."
+		      << Exception::warning;   
+  }
+  else if ( !dipme && _hardEmissionMode > 1)
+    throw Exception() << error
+		      << "POWHEG matching requested for LO events.  Include "
+		      << "'set Factory:ShowerApproximation MEMatching' in input file."
+		      << Exception::runerror;
 
   _hardme = HwMEBasePtr();
   // extract the matrix element
@@ -856,7 +940,7 @@ bool Evolver::spaceLikeDecayShower(tShowerParticlePtr particle,
 
 vector<ShowerProgenitorPtr> Evolver::setupShower(bool hard) {
   // generate POWHEG hard emission if needed
-  if(_hardEmissionMode==1) hardestEmission(hard);
+  if(_hardEmissionMode>0) hardestEmission(hard);
   ShowerInteraction::Type inter = interactions_[0];
   if(_hardtree&&inter!=ShowerInteraction::Both) {
     inter = _hardtree->interaction();
@@ -1122,8 +1206,8 @@ bool Evolver::spaceLikeDecayVetoed( const Branching & fb,
 
 void Evolver::hardestEmission(bool hard) {
   HardTreePtr ISRTree;
-  if( ( _hardme  &&  _hardme->hasPOWHEGCorrection()!=0) ||
-      ( _decayme && _decayme->hasPOWHEGCorrection()!=0)) {
+  if(  ( _hardme  &&  _hardme->hasPOWHEGCorrection()!=0  && _hardEmissionMode< 2) ||
+       ( _decayme && _decayme->hasPOWHEGCorrection()!=0  && _hardEmissionMode!=2) ) {
     if(_hardme) {
       assert(hard);
       if(interaction_==4) {
@@ -1145,9 +1229,127 @@ void Evolver::hardestEmission(bool hard) {
       ISRTree=_hardtree;
   }
 
-  else {
+  else if (_hardEmissionMode>1 && hard) {
+    // Get minimum pT cutoff used in shower approximation
+    Energy maxpt = 1.*GeV;
+    int colouredIn  = 0;
+    int colouredOut = 0;
+    for( map< ShowerProgenitorPtr, tShowerParticlePtr >::iterator it
+	   = currentTree()->outgoingLines().begin(); 
+	 it != currentTree()->outgoingLines().end(); ++it ) {
+      if( it->second->coloured() ) colouredOut+=1;
+    }  
+    for( map< ShowerProgenitorPtr, ShowerParticlePtr >::iterator it
+	   = currentTree()->incomingLines().begin(); 
+	 it != currentTree()->incomingLines().end(); ++it ) {
+      if( ! it->second->coloured() ) colouredIn+=1;
+    }
+
+    if ( theShowerApproximation ){
+      if ( theShowerApproximation->ffPtCut() == theShowerApproximation->fiPtCut() &&
+	   theShowerApproximation->ffPtCut() == theShowerApproximation->iiPtCut() ) 
+	maxpt = theShowerApproximation->ffPtCut();
+      else if ( colouredIn == 2 && colouredOut == 0 )
+	maxpt = theShowerApproximation->iiPtCut();
+      else if ( colouredIn == 0 && colouredOut > 1 )
+	maxpt = theShowerApproximation->ffPtCut();
+      else if ( colouredIn == 2 && colouredOut == 1 )
+	maxpt = min(theShowerApproximation->iiPtCut(), theShowerApproximation->fiPtCut());
+      else if ( colouredIn == 1 && colouredOut > 1 )
+	maxpt = min(theShowerApproximation->ffPtCut(), theShowerApproximation->fiPtCut());
+      else 
+	maxpt = min(min(theShowerApproximation->iiPtCut(), theShowerApproximation->fiPtCut()), 
+		    theShowerApproximation->ffPtCut());
+    }
+
+    // Generate hardtree from born and real emission subprocesses
     _hardtree = ShowerHandler::currentHandler()->generateCKKW(currentTree());
+
+    // Find transverse momentum of hardest emission
+    if (_hardtree){
+      for(set<HardBranchingPtr>::iterator it=_hardtree->branchings().begin();
+     	  it!=_hardtree->branchings().end();++it) {
+      	if ((*it)->parent() && (*it)->status()==HardBranching::Incoming)
+      	  maxpt=(*it)->branchingParticle()->momentum().perp();
+      	if ((*it)->children().size()==2 && (*it)->status()==HardBranching::Outgoing){
+	  if ((*it)->branchingParticle()->id()!=21 &&
+	      abs((*it)->branchingParticle()->id())>5 ){
+	    if ((*it)->children()[0]->branchingParticle()->id()==21 ||
+		abs((*it)->children()[0]->branchingParticle()->id())<6)
+	      maxpt=(*it)->children()[0]->branchingParticle()->momentum().perp();
+	    else if ((*it)->children()[1]->branchingParticle()->id()==21 ||
+		     abs((*it)->children()[1]->branchingParticle()->id())<6)
+	      maxpt=(*it)->children()[1]->branchingParticle()->momentum().perp();
+	  }
+	  else {
+	    if ( abs((*it)->branchingParticle()->id())<6){
+	      if (abs((*it)->children()[0]->branchingParticle()->id())<6)
+		maxpt = (*it)->children()[1]->branchingParticle()->momentum().perp();
+	      else 
+		maxpt = (*it)->children()[0]->branchingParticle()->momentum().perp();
+	    }
+	    else maxpt = (*it)->children()[1]->branchingParticle()->momentum().perp();
+	  }
+      	}
+      } 
+    }
+
+    // Set maxpt to pT of emission when showering POWHEG real-emission subprocesses
+    if (!isPowhegSEvent && !isPowhegHEvent){
+      vector<int> outGluon;
+      vector<int> outQuark;
+      map< ShowerProgenitorPtr, tShowerParticlePtr >::iterator it;
+      for( it = currentTree()->outgoingLines().begin(); 
+	   it != currentTree()->outgoingLines().end(); ++it ) {
+	if ( abs(it->second->id())< 6) outQuark.push_back(it->second->id());
+	if ( it->second->id()==21 )    outGluon.push_back(it->second->id());
+      } 
+      if (outGluon.size() + outQuark.size() == 1){
+	for( it = currentTree()->outgoingLines().begin(); 
+	     it != currentTree()->outgoingLines().end(); ++it ) {
+	  if ( abs(it->second->id())< 6 || it->second->id()==21 )
+	    maxpt = it->second->momentum().perp();
+	}
+      }
+      else if (outGluon.size() + outQuark.size() > 1){
+	// assume qqbar pair from a Z/gamma
+	if (outGluon.size()==1 && outQuark.size() == 2 && outQuark[0]==-outQuark[1]){
+	  for( it = currentTree()->outgoingLines().begin(); 
+	       it != currentTree()->outgoingLines().end(); ++it ) {
+	    if ( it->second->id()==21 )
+	      maxpt = it->second->momentum().perp();
+	  }
+	}
+	// otherwise take the lowest pT avoiding born DY events
+	else {
+	  maxpt = generator()->maximumCMEnergy();
+	  for( it = currentTree()->outgoingLines().begin(); 
+	       it != currentTree()->outgoingLines().end(); ++it ) {
+	    if ( abs(it->second->id())< 6 || it->second->id()==21 )
+	      maxpt = min(maxpt,it->second->momentum().perp());
+	  }
+	}
+      }
+    } 
+
+    // set maximum pT for subsequent emissions from S events
+    if ( isPowhegSEvent  || (!isPowhegSEvent && !isPowhegHEvent)){
+      for( map< ShowerProgenitorPtr, tShowerParticlePtr >::iterator it
+	     = currentTree()->outgoingLines().begin(); 
+	   it != currentTree()->outgoingLines().end(); ++it ) {
+	if( ! it->second->coloured() ) continue;
+	it->first->maximumpT(maxpt, ShowerInteraction::QCD  );
+      }  
+      for( map< ShowerProgenitorPtr, ShowerParticlePtr >::iterator it
+	     = currentTree()->incomingLines().begin(); 
+	   it != currentTree()->incomingLines().end(); ++it ) {
+	if( ! it->second->coloured() ) continue;
+	it->first->maximumpT(maxpt, ShowerInteraction::QCD );
+      }
+    }  
   }
+  else 
+    _hardtree = ShowerHandler::currentHandler()->generateCKKW(currentTree());
 
   // if hard me doesn't have a FSR powheg 
   // correction use decay powheg correction

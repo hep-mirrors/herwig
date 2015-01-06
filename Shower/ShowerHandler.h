@@ -157,6 +157,12 @@ public:
   virtual HardTreePtr generateCKKW(ShowerTreePtr tree) const;
 
   /**
+   * Return true, if the shower handler can generate a truncated 
+   * shower for POWHEG style events generated using Matchbox
+   */
+  virtual bool canHandleMatchboxTrunc() const { return false; }
+
+  /**
    * The factorization scale factor.
    */
   double factorizationScaleFactor() const { 

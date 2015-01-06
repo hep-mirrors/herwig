@@ -56,6 +56,12 @@ public:
    */
   virtual bool hasHEvents() const { return restrictPhasespace() || theScreeningScale != ZERO; }
 
+  /**
+   * Return true, if this shower approximation will require 
+   * a truncated parton shower
+   */
+  virtual bool needsTruncatedShower() const { return theTruncatedShower; }
+
 public:
 
   /**
@@ -134,6 +140,11 @@ private:
    * element correction is exponentiated.
    */
   Energy theScreeningScale;
+
+  /**
+   * True, if a truncated parton shower should be generated
+   */
+  bool theTruncatedShower;
 
 };
 

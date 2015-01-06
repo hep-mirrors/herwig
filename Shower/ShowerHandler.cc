@@ -530,7 +530,8 @@ void ShowerHandler::findShoweringParticles() {
     }
     // add to list of outgoing hard particles if needed
     isHard |=(outgoingset.find(*taggedP) != outgoingset.end());
-    if(isDecayProd) hardParticles.insert(findParent(parent,isHard,outgoingset));
+    if (isDecayProd && evolver_->_hardEmissionMode<2) 
+      hardParticles.insert(findParent(parent,isHard,outgoingset));
     else            hardParticles.insert(*taggedP);
   }
   // there must be something to shower

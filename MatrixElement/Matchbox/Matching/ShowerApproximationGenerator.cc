@@ -197,6 +197,9 @@ void ShowerApproximationGenerator::restore() {
 void ShowerApproximationGenerator::
 handle(EventHandler & eh, const tPVector &,
        const Hint &) {
+  theFactory->setHardTreeEmitter(-1);
+  theFactory->setHardTreeSubprocess(SubProPtr());
+
 
   lastIncomingXComb = dynamic_ptr_cast<tStdXCombPtr>(eh.lastXCombPtr());
   if ( !lastIncomingXComb )
@@ -283,51 +286,57 @@ handle(EventHandler & eh, const tPVector &,
     return;
   }
 
-  tParticleSet firstS = oldSub->incoming().first->siblings();
-  assert(firstS.empty() || firstS.size() == 1);
-  if ( !firstS.empty() ) {
-    eh.currentStep()->removeParticle(*firstS.begin());
+  if ( !theShowerApproximation->needsTruncatedShower() ){
+    tParticleSet firstS = oldSub->incoming().first->siblings();
+    assert(firstS.empty() || firstS.size() == 1);
+    if ( !firstS.empty() ) {
+      eh.currentStep()->removeParticle(*firstS.begin());
+    }
+
+    tParticleSet secondS = oldSub->incoming().second->siblings();
+    assert(secondS.empty() || secondS.size() == 1);
+    if ( !secondS.empty() ) {
+      eh.currentStep()->removeParticle(*secondS.begin());
+    }
+
+    // prevent the colliding particles from disappearing
+    // in the initial state and appearing
+    // in the final state when we've cut off all their
+    // (physical) children; only applies to the case
+    // where we have a parton extractor not build from
+    // noPDF, so check wether the incoming particle
+    // doesnt equal the incoming parton -- this needs fixing in ThePEG
+    PPtr dummy = new_ptr(Particle(getParticleData(ParticleID::gamma)));
+    bool usedDummy = false;
+    if ( eh.currentStep()->incoming().first != oldSub->incoming().first ) {
+      eh.currentStep()->addDecayProduct(eh.currentStep()->incoming().first,dummy);
+      usedDummy = true;
+    }
+    if ( eh.currentStep()->incoming().second != oldSub->incoming().second ) {
+      eh.currentStep()->addDecayProduct(eh.currentStep()->incoming().second,dummy);
+      usedDummy = true;
+    }
+
+    eh.currentStep()->removeSubProcess(oldSub);
+    eh.currentStep()->addSubProcess(newSub);
+
+    // get rid of the dummy
+    if ( usedDummy ) {
+      eh.currentStep()->removeParticle(dummy);
+    }
+
+    eh.select(winnerKernel->realXComb());
+
+    winnerKernel->realXComb()->recreatePartonBinInstances(winnerKernel->realXComb()->lastScale());
+    winnerKernel->realXComb()->refillPartonBinInstances(&(xc.lastRandomNumbers()[0]));
+
+    winnerKernel->realXComb()->pExtractor()->constructRemnants(winnerKernel->realXComb()->partonBinInstances(),
+							       newSub, eh.currentStep());
   }
-
-  tParticleSet secondS = oldSub->incoming().second->siblings();
-  assert(secondS.empty() || secondS.size() == 1);
-  if ( !secondS.empty() ) {
-    eh.currentStep()->removeParticle(*secondS.begin());
+  else{
+    theFactory->setHardTreeSubprocess(newSub);
+    theFactory->setHardTreeEmitter(winnerKernel->dipole()->bornEmitter()); 
   }
-
-  // prevent the colliding particles from disappearing
-  // in the initial state and appearing
-  // in the final state when we've cut off all their
-  // (physical) children; only applies to the case
-  // where we have a parton extractor not build from
-  // noPDF, so check wether the incoming particle
-  // doesnt equal the incoming parton -- this needs fixing in ThePEG
-  PPtr dummy = new_ptr(Particle(getParticleData(ParticleID::gamma)));
-  bool usedDummy = false;
-  if ( eh.currentStep()->incoming().first != oldSub->incoming().first ) {
-    eh.currentStep()->addDecayProduct(eh.currentStep()->incoming().first,dummy);
-    usedDummy = true;
-  }
-  if ( eh.currentStep()->incoming().second != oldSub->incoming().second ) {
-    eh.currentStep()->addDecayProduct(eh.currentStep()->incoming().second,dummy);
-    usedDummy = true;
-  }
-
-  eh.currentStep()->removeSubProcess(oldSub);
-  eh.currentStep()->addSubProcess(newSub);
-
-  // get rid of the dummy
-  if ( usedDummy ) {
-    eh.currentStep()->removeParticle(dummy);
-  }
-
-  eh.select(winnerKernel->realXComb());
-
-  winnerKernel->realXComb()->recreatePartonBinInstances(winnerKernel->realXComb()->lastScale());
-  winnerKernel->realXComb()->refillPartonBinInstances(&(xc.lastRandomNumbers()[0]));
-
-  winnerKernel->realXComb()->pExtractor()->constructRemnants(winnerKernel->realXComb()->partonBinInstances(),
-							     newSub, eh.currentStep());
 
 }
 

@@ -173,6 +173,11 @@ set /Herwig/Shower/Evolver:MECorrMode No
 # insert LHCGenerator:EventHandler:PostSubProcessHandlers[0] /Herwig/MatrixElements/Matchbox/MECorrectionHandler
 # cd /Herwig/MatrixElements/Matchbox
 
+## include truncated angular-ordered shower
+# set /Herwig/Shower/PowhegShowerHandler:Factory PPFactory
+# set /Herwig/EventHandlers/LHCHandler:CascadeHandler /Herwig/Shower/PowhegShowerHandler
+# set /Herwig/MatrixElements/Matchbox/MEMatching:TruncatedShower Yes
+# set /Herwig/Shower/Evolver:HardEmissionMode MatchboxPOWHEG
 ##################################################
 ## Scales variations
 ##################################################

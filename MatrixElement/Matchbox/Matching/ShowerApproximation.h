@@ -66,6 +66,12 @@ public:
    */
   virtual bool needsTildeXCombs() const { return false; }
 
+  /**
+   * Return true, if this shower approximation will require 
+   * a truncated parton shower
+   */
+  virtual bool needsTruncatedShower() const { return false; }
+
 public:
 
   /**

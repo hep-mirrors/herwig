@@ -80,6 +80,12 @@ public:
    */
   void resetReweight(Ptr<DipoleSplittingReweight>::tptr);
 
+  /**
+   * Return true, if the shower handler can generate a truncated 
+   * shower for POWHEG style events generated using Matchbox
+   */
+  virtual bool canHandleMatchboxTrunc() const { return false; }
+
 protected:
 
   typedef multimap<DipoleIndex,Ptr<DipoleSplittingGenerator>::ptr> GeneratorMap;
@@ -423,6 +429,11 @@ private:
    * A pointer to the dipole event reweight object
    */
   Ptr<DipoleEventReweight>::ptr theEventReweight;
+
+  /**
+   * True if no warnings have been issued yet
+   */
+  static bool firstWarn;
 
 private:
 

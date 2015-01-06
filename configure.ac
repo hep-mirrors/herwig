@@ -236,6 +236,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Sampling/Makefile
 		Sampling/CellGrids/Makefile
                 Shower/Makefile
+		Shower/Matching/Makefile
 		DipoleShower/Makefile
 		DipoleShower/Base/Makefile
 		DipoleShower/Kernels/Makefile

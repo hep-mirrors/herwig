@@ -9,6 +9,7 @@
 ############################################################
 library HwMPI.so
 library HwShower.so
+library HwMatching.so
 
 mkdir /Herwig/Shower
 cd /Herwig/Shower
@@ -63,6 +64,14 @@ newdef Evolver:IntrinsicPtIptmax   0*GeV
 #############################################################
 newdef SplittingGenerator:ISR Yes
 newdef SplittingGenerator:FSR Yes
+#############################################################
+# Set up truncated shower handler.
+#############################################################
+
+create Herwig::PowhegShowerHandler PowhegShowerHandler
+set PowhegShowerHandler:MPIHandler /Herwig/UnderlyingEvent/MPIHandler
+set PowhegShowerHandler:RemDecayer /Herwig/Partons/RemnantDecayer
+set PowhegShowerHandler:Evolver /Herwig/Shower/Evolver
 #############################################################
 
 

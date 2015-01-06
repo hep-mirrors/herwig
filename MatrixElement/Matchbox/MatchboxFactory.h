@@ -678,6 +678,32 @@ public:
   bool isIncoming(cPDPtr p) const {
     return theIncoming.find(p->id()) != theIncoming.end();
   }
+
+  //@}
+
+  /** @name Truncated qtilde shower information */
+  //@{
+
+  /**
+   * Return the subprocess of the real emission
+   */
+  tSubProPtr hardTreeSubprocess() { return theHardtreeSubprocess; }
+
+  /**
+   * Set the subprocess of the real emission for use in calculating the shower hardtree
+   */
+  void setHardTreeSubprocess(tSubProPtr hardTree) { theHardtreeSubprocess = hardTree; }
+
+  /**
+   * Return the born emitter 
+   */
+  int hardTreeEmitter() { return theHardtreeEmitter; }
+
+  /**
+   * Set the born emitter for use in calculating the shower hardtree
+   */
+  void setHardTreeEmitter(int emitter) { theHardtreeEmitter = emitter; }
+
   //@}
 
   /** @name Data handling */
@@ -1110,6 +1136,18 @@ private:
    * True, if this Factory is in production mode.
    */
   bool inProductionMode;
+
+  /**
+   * The real emission subprocess used when calculating the hardtree
+   * in the truncated qtilde shower
+   */
+  tSubProPtr theHardtreeSubprocess;
+
+  /**
+   * The born emitter used when calculating the hardtree in
+   * the truncated shower
+   */
+  int theHardtreeEmitter;
 
   /**
    * Command for production mode

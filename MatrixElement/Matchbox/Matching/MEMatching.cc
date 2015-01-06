@@ -31,7 +31,7 @@
 using namespace Herwig;
 
 MEMatching::MEMatching()
-  : theScreeningScale(0*GeV) {}
+  : theScreeningScale(0*GeV), theTruncatedShower(false) {}
 
 MEMatching::~MEMatching() {}
 
@@ -122,11 +122,11 @@ double MEMatching::me2() const {
 
 
 void MEMatching::persistentOutput(PersistentOStream & os) const {
-  os << ounit(theScreeningScale,GeV);
+  os << ounit(theScreeningScale,GeV) << theTruncatedShower;
 }
 
 void MEMatching::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(theScreeningScale,GeV);
+  is >> iunit(theScreeningScale,GeV) >> theTruncatedShower;
 }
 
 
@@ -148,6 +148,21 @@ void MEMatching::Init() {
      "The screening scale to project out singular parts.",
      &MEMatching::theScreeningScale, GeV, 0.0*GeV, 0.0*GeV, 0*GeV,
      false, false, Interface::lowerlim);
+
+  static Switch<MEMatching,bool> interfaceTruncatedShower
+    ("TruncatedShower",
+     "Include a truncated qtilde shower",
+     &MEMatching::theTruncatedShower, false, false, false);
+  static SwitchOption interfaceTruncatedShowerYes
+    (interfaceTruncatedShower,
+     "Yes",
+     "",
+     true);
+  static SwitchOption interfaceTruncatedShowerNo
+    (interfaceTruncatedShower,
+     "No",
+     "",
+     false);
 
 }
 

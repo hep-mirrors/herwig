@@ -119,6 +119,11 @@ public:
    *  Get the SplittingGenerator
    */
   tSplittingGeneratorPtr splittingGenerator() const { return _splittingGenerator; }
+
+  /**
+   * Mode for hard emissions
+   */
+  int hardEmissionMode() const {return _hardEmissionMode;}
   //@}
 
   /**
@@ -813,6 +818,16 @@ private:
   bool isMCatNLOHEvent;
 
   /**
+   * True, if Matchbox Powheg S-event
+   */
+  bool isPowhegSEvent;
+
+  /**
+   * True, if matchbox Powheg H-event
+   */
+  bool isPowhegHEvent;
+
+  /**
    * The shower approximation to provide the hard scale profile
    */
   Ptr<ShowerApproximation>::tptr theShowerApproximation;
@@ -827,6 +842,17 @@ private:
    */
   double theRenormalizationScaleFactor;
 
+  /**
+   * True if no warnings about incorrect hard emission
+   * mode setting have been issued yet
+   */
+  static bool _hardEmissionModeWarn;
+
+  /**
+   * True if no warnings about missing truncated shower 
+   * have been issued yet
+   */
+  static bool _missingTruncWarn;
 };
 
 }
