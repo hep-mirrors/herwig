@@ -35,17 +35,21 @@ using std::ostream_iterator;
 using namespace Herwig;
 
 MatchboxAmplitude::MatchboxAmplitude() 
-  : Amplitude(), theCleanupAfter(20), helpoints(0) {
+  : Amplitude(), theCleanupAfter(20), 
+    treeLevelHelicityPoints(0),
+    oneLoopHelicityPoints(0) {
 }
 
 MatchboxAmplitude::~MatchboxAmplitude() {}
 
 void MatchboxAmplitude::persistentOutput(PersistentOStream & os) const {
-  os << theLastXComb << theColourBasis << theFactory << theCleanupAfter;
+  os << theLastXComb << theColourBasis << theFactory 
+     << theCleanupAfter << treeLevelHelicityPoints << oneLoopHelicityPoints;
 }
 
 void MatchboxAmplitude::persistentInput(PersistentIStream & is, int) {
-  is >> theLastXComb >> theColourBasis >> theFactory >> theCleanupAfter;
+  is >> theLastXComb >> theColourBasis >> theFactory 
+     >> theCleanupAfter >> treeLevelHelicityPoints >> oneLoopHelicityPoints;
   lastMatchboxXComb(theLastXComb);
 }
 
@@ -432,10 +436,10 @@ void MatchboxAmplitude::prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr) {
     return;
 
   bool initialized = 
-    !lastAmplitudes().empty() && helpoints > theCleanupAfter;
+    !lastAmplitudes().empty() && treeLevelHelicityPoints > theCleanupAfter;
 
   if ( !initialized ) {
-    helpoints++;
+    treeLevelHelicityPoints++;
     map<vector<int>,CVector> all;
     map<vector<int>,CVector> allLargeN;
     set<vector<int> > helicities = generateHelicities();
@@ -446,25 +450,24 @@ void MatchboxAmplitude::prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr) {
     }
     AmplitudeIterator amp = all.begin();
     AmplitudeIterator lamp = allLargeN.begin();
-    for ( ;amp != all.end(); ++amp, ++lamp ) {
+    for ( ; amp != all.end(); ++amp, ++lamp ) {
       for ( size_t k = 0; k < colourBasisDim(); ++k ){
         amp->second(k) = evaluate(k,amp->first,lamp->second(k));
-        if ( amp->second(k) != Complex(0.0) ){
-	  if(lastAmplitudes().find(amp->first)!=lastAmplitudes().end()){
-	    lastAmplitudes().find(amp->first)->second=amp->second;
-	    lastAmplitudes().find(lamp->first)->second=lamp->second;
-	  }
-	  else{
+        if ( amp->second(k) != Complex(0.0) ) {
+	  if ( lastAmplitudes().find(amp->first)!=lastAmplitudes().end() ) {
+	    lastAmplitudes().find(amp->first)->second = amp->second;
+	    lastLargeNAmplitudes().find(lamp->first)->second = lamp->second;
+	  } else {
 	    lastAmplitudes().insert(*amp);
 	    lastLargeNAmplitudes().insert(*lamp);
 	  }
-	}else if(lastAmplitudes().find(amp->first)!=lastAmplitudes().end()){
-	  lastAmplitudes().find(amp->first)->second=amp->second;
-	  lastAmplitudes().find(lamp->first)->second=lamp->second;
+	} else if ( lastAmplitudes().find(amp->first)!=lastAmplitudes().end() ){
+	  lastAmplitudes().find(amp->first)->second = amp->second;
+	  lastLargeNAmplitudes().find(lamp->first)->second = lamp->second;
 	}
       }
     }
-  }else{
+  } else {
     AmplitudeIterator amp = lastAmplitudes().begin();
     AmplitudeIterator lamp = lastLargeNAmplitudes().begin();
     for ( ;amp != lastAmplitudes().end(); ++amp, ++lamp ) {
@@ -473,9 +476,6 @@ void MatchboxAmplitude::prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr) {
       }
     }
   }
-  
-  
-  
 
   haveTreeAmplitudes();
 
@@ -486,37 +486,39 @@ void MatchboxAmplitude::prepareOneLoopAmplitudes(Ptr<MatchboxMEBase>::tcptr) {
   if ( !calculateOneLoopAmplitudes() )
     return;
 
-  bool initialized = !lastOneLoopAmplitudes().empty();
+  bool initialized = 
+    !lastOneLoopAmplitudes().empty() && oneLoopHelicityPoints > theCleanupAfter;
 
   if ( !initialized ) {
+    oneLoopHelicityPoints++;
+    map<vector<int>,CVector> all;
     set<vector<int> > helicities = generateHelicities();
     for ( set<vector<int> >::const_iterator h = helicities.begin();
           h != helicities.end(); ++h ) {
-      lastOneLoopAmplitudes().insert(make_pair(*h,CVector(colourBasisDim())));
+      all.insert(make_pair(*h,CVector(colourBasisDim())));
     }
-  }
-
-  for ( AmplitudeIterator amp = lastOneLoopAmplitudes().begin();
-	amp != lastOneLoopAmplitudes().end(); ++amp ) {
-    for ( size_t k = 0; k < colourBasisDim(); ++k )
-      amp->second(k) = evaluateOneLoop(k,amp->first);
-  }
-
-  if ( !initialized ) {
-    map<vector<int>,CVector> clean;
-    for ( map<vector<int>,CVector>::const_iterator amp = lastOneLoopAmplitudes().begin();
-          amp != lastOneLoopAmplitudes().end(); ++amp ) {
-      bool nonZero = false;
-      for ( size_t k = 0; k < colourBasisDim(); ++k ) {
+    AmplitudeIterator amp = all.begin();
+    for ( ; amp != all.end(); ++amp ) {
+      for ( size_t k = 0; k < colourBasisDim(); ++k ){
+        amp->second(k) = evaluateOneLoop(k,amp->first);
         if ( amp->second(k) != Complex(0.0) ) {
-          nonZero = true;
-          break;
-        }
+	  if ( lastOneLoopAmplitudes().find(amp->first)!=lastOneLoopAmplitudes().end() ) {
+	    lastOneLoopAmplitudes().find(amp->first)->second = amp->second;
+	  } else{
+	    lastOneLoopAmplitudes().insert(*amp);
+	  }
+	} else if ( lastOneLoopAmplitudes().find(amp->first)!=lastOneLoopAmplitudes().end() ){
+	  lastOneLoopAmplitudes().find(amp->first)->second = amp->second;
+	}
       }
-      if ( nonZero )
-        clean.insert(*amp);
     }
-    lastOneLoopAmplitudes() = clean;
+  } else {
+    AmplitudeIterator amp = lastOneLoopAmplitudes().begin();
+    for ( ;amp != lastOneLoopAmplitudes().end(); ++amp ) {
+      for ( size_t k = 0; k < colourBasisDim(); ++k ){
+        amp->second(k) = evaluateOneLoop(k,amp->first);
+      }
+    }
   }
 
   haveOneLoopAmplitudes();

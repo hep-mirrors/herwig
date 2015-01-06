@@ -18,6 +18,7 @@
 #include "KinematicsReconstructor.h"
 #include <cassert>
 #include "ThePEG/Repository/CurrentGenerator.h"
+#include "ThePEG/PDT/StandardMatchers.h"
 
 using namespace Herwig;
 using namespace ThePEG;
@@ -117,6 +118,47 @@ ShowerTree::ShowerTree(const PPair incoming, const ParticleVector & out,
   }
 }
 
+void ShowerTree::findDecayProducts(PPtr in, vector<PPtr> & original, vector<PPtr> & copy,
+				   ShowerDecayMap& decay, map<PPtr,ShowerTreePtr> & trees) {
+  ParticleVector children=in->children();
+  for(unsigned int ix=0;ix<children.size();++ix) {
+    // if decayed or should be decayed in shower make the tree
+    PPtr orig=children[ix];
+    in->abandonChild(orig);
+    bool radiates = false;
+    if(!orig->children().empty()) {
+      if(StandardQCDPartonMatcher::Check(orig->id())) {
+	radiates = true;
+      }
+      else
+	for(unsigned int iy=0;iy<orig->children().size();++iy) {
+	  if(orig->children()[iy]->id()==orig->id()) {
+	    radiates = true;
+	    break;
+	  }
+	}
+    }
+    if(radiates) {
+      findDecayProducts(orig,original,copy,decay,trees);
+    }
+    else if(!orig->children().empty()||
+	    (decaysInShower(orig->id())&&!orig->dataPtr()->stable())) {
+      ShowerTreePtr newtree=new_ptr(ShowerTree(orig,decay));
+      trees.insert(make_pair(orig,newtree));
+      Energy width=orig->dataPtr()->generateWidth(orig->mass());
+      decay.insert(make_pair(width,newtree));
+      newtree->setParents();
+      newtree->_parent=this;
+      original.push_back(orig);
+      copy.push_back(new_ptr(Particle(*orig)));
+    }
+    else { 
+      original.push_back(orig);
+      copy.push_back(new_ptr(Particle(*orig)));
+    }
+  }
+}
+
 ShowerTree::ShowerTree(PPtr in,
 		       ShowerDecayMap& decay)
   : _hardMECorrection(false), _wasHard(false), _hasShowered(false) {
@@ -136,17 +178,37 @@ ShowerTree::ShowerTree(PPtr in,
       // if decayed or should be decayed in shower make the tree
       PPtr orig=children[ix];
       in->abandonChild(orig);
-      if(!orig->children().empty()||
-	 (decaysInShower(orig->id())&&!orig->dataPtr()->stable())) {
+      bool radiates = false;
+      if(!orig->children().empty()) {
+	if(StandardQCDPartonMatcher::Check(orig->id())) {
+	  radiates = true;
+	}
+	else
+	  for(unsigned int iy=0;iy<orig->children().size();++iy) {
+	    if(orig->children()[iy]->id()==orig->id()) {
+	      radiates = true;
+	      break;
+	    }
+	  }
+      }
+      if(radiates) {
+	findDecayProducts(orig,original,copy,decay,trees);
+      }
+      else if(!orig->children().empty()||
+	      (decaysInShower(orig->id())&&!orig->dataPtr()->stable())) {
 	ShowerTreePtr newtree=new_ptr(ShowerTree(orig,decay));
 	trees.insert(make_pair(orig,newtree));
 	Energy width=orig->dataPtr()->generateWidth(orig->mass());
 	decay.insert(make_pair(width,newtree));
 	newtree->setParents();
 	newtree->_parent=this;
+	original.push_back(orig);
+	copy.push_back(new_ptr(Particle(*orig)));
       }
-      original.push_back(orig);
-      copy.push_back(new_ptr(Particle(*orig)));
+      else {
+	original.push_back(orig);
+	copy.push_back(new_ptr(Particle(*orig)));
+      }
     }
   }
   // create the incoming particle

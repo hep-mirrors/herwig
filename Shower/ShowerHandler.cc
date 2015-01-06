@@ -522,10 +522,12 @@ void ShowerHandler::findShoweringParticles() {
       continue;
     // find the parent and whether its a colourless s-channel resonance
     bool isDecayProd=false;
-    tPPtr parent;
-    if(!(*taggedP)->parents().empty()) {
-      parent = (*taggedP)->parents()[0];
-      // check if from s channel decaying colourless particle
+    tPPtr parent = *taggedP;
+    // check if from s channel decaying colourless particle
+    while(parent&&!parent->parents().empty()&&!isDecayProd) {
+      parent = parent->parents()[0];
+      if(parent == currentSubProcess()->incoming().first||
+	 parent == currentSubProcess()->incoming().second) break;
       isDecayProd = decayProduct(parent);
     }
     // add to list of outgoing hard particles if needed

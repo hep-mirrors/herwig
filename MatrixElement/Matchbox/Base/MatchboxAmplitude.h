@@ -605,11 +605,16 @@ private:
   int theCleanupAfter;
   
   /**
-   * The number of points that are calculated 
-   * before a certain helicity is excluded.
-   * Needed in pp->V
+   * The number of points that are calculated before a certain
+   * helicity is excluded.  Needed in pp->V
    */
-  int helpoints;
+  int treeLevelHelicityPoints;
+
+  /**
+   * The number of points that are calculated before a certain
+   * helicity is excluded.  Needed in pp->V
+   */
+  int oneLoopHelicityPoints;
 
   /**
    * The assignment operator is private and must never be called.
