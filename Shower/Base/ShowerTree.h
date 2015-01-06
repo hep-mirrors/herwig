@@ -348,6 +348,9 @@ protected:
    */
   void fixColour(tShowerParticlePtr part);
 
+  void findDecayProducts(PPtr in, vector<PPtr> & original, vector<PPtr> & copy,
+			 ShowerDecayMap& decay, map<PPtr,ShowerTreePtr> & trees);
+
 private:
 
   /**
