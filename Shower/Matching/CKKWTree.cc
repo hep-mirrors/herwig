@@ -171,7 +171,7 @@ bool CKKWTree::checkHardOrdering( ) {
   for( set<HardBranchingPtr>::const_iterator it = this->branchings().begin();
        it != this->branchings().end(); ++it)  {
     if( ! (*it)->branchingParticle()->coloured() ) continue;
-    if( ! (*it)->status()==HardBranching::Incoming && ! (*it)->children().empty() ) { 
+    if(   (*it)->status()!=HardBranching::Incoming && ! (*it)->children().empty() ) { 
       vector< pair< Energy, double > > new_hard_line1;
       new_hard_line1.push_back( make_pair( (*it)->scale(), (*it)->children()[0]->z() ) );
       vector< pair< Energy, double > > new_hard_line2;
@@ -331,7 +331,7 @@ Energy CKKWTree::lowestPt( int jetMeasureMode, Energy2 s ){
       assert(false);
     ktsHat_oftest = sqrt( kt_measure );
   }
-  else if( jetMeasureMode == 3 && ! lowestpT_->status() == HardBranching::Incoming ){
+  else if( jetMeasureMode == 3 && lowestpT_->status() != HardBranching::Incoming ){
     Energy2 m1 = sqr( lowestpT_->children()[0]->branchingParticle()->nominalMass() );
     Energy2 m2 = sqr( lowestpT_->children()[1]->branchingParticle()->nominalMass() );
 
