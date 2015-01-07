@@ -10,6 +10,7 @@
 #include "RunDirectories.h"
 
 #include "ThePEG/Utilities/Exception.h"
+#include "ThePEG/Handlers/SamplerBase.h"
 #include <boost/filesystem.hpp>
 
 using namespace ThePEG;
@@ -77,6 +78,13 @@ const string& RunDirectories::runStorage() {
     boost::filesystem::create_directories(theRunDirectories().front());
   }
   return theRunDirectories().front();
+}
+
+const string& RunDirectories::interfaceStorage() {
+  if ( SamplerBase::runLevel() == SamplerBase::IntegrationMode ||
+       SamplerBase::runLevel() == SamplerBase::RunMode )
+    return runStorage();
+  return buildStorage();
 }
 
 void RunDirectories::pushRunId(string p) {

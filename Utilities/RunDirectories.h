@@ -62,6 +62,11 @@ public:
    */
   static const string& runStorage();
 
+  /**
+   * Return the storage to be used for interface order/contract files.
+   */
+  static const string& interfaceStorage();
+
 public:
 
   /**
