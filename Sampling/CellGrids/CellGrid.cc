@@ -52,6 +52,7 @@ void CellGrid::boundaries(const std::vector<double>& newLowerLeft,
     throw runtime_error("[ExSample::CellGrid] Cannot set the boundaries of non-empty grids.");
   theLowerLeft = newLowerLeft;
   theUpperRight = newUpperRight;
+  theUpperBoundInclusive.resize(lowerLeft().size(),true);
   theVolumeOrIntegral = volume(newLowerLeft,newUpperRight);
 }
 
