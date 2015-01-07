@@ -64,7 +64,7 @@ IBPtr PowhegShowerHandler::fullclone() const {
   return new_ptr(*this);
 }
 
-HardTreePtr PowhegShowerHandler::generateCKKW(ShowerTreePtr tree) const {
+HardTreePtr PowhegShowerHandler::generateCKKW(ShowerTreePtr) const {
   parent_=-1;
   // hard subprocess
   tSubProPtr sub = lastXCombPtr()->subProcess();
