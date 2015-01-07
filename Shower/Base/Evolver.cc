@@ -601,7 +601,8 @@ void Evolver::showerHardProcess(ShowerTreePtr hard, XCPtr xcomb) {
 		      << "'MEMatching:TruncatedShower Yes'."
 		      << Exception::warning;   
   }
-  else if ( !dipme && _hardEmissionMode > 1)
+  else if ( !dipme && _hardEmissionMode > 1 && 
+	    ShowerHandler::currentHandler()->firstInteraction())
     throw Exception() << error
 		      << "POWHEG matching requested for LO events.  Include "
 		      << "'set Factory:ShowerApproximation MEMatching' in input file."

@@ -170,7 +170,8 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr,
 			  << "Evolver:HardEmissionMode will be set to 'MatchboxPOWHEG'"
 			  << Exception::warning;
       }
-      else if (!dipme && evolver()->hardEmissionMode()==2)
+      else if (!dipme && evolver()->hardEmissionMode()==2 &&
+	       ShowerHandler::currentHandler()->firstInteraction())
 	throw Exception() << error
 			  << "POWHEG matching requested for LO events.  Include "
 			  << "'set Factory:ShowerApproximation MEMatching' in input file."
