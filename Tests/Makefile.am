@@ -220,7 +220,7 @@ Rivet-LHC-Jets: Rivet-LHC-7-Jets-0  Rivet-LHC-7-Jets-1  Rivet-LHC-7-Jets-2 \
 		Rivet-LHC-7-Jets-7  Rivet-LHC-7-Jets-8 \
 		Rivet-LHC-7-Jets-9  Rivet-LHC-7-Jets-10 \
 		Rivet-LHC-7-Jets-11 Rivet-LHC-7-Jets-12 \
-		Rivet-LHC-7-Jets-13 Rivet-LHC-7-UE \
+		Rivet-LHC-7-Jets-13 Rivet-LHC-7-UE Rivet-LHC-8-UE \
 		Rivet-LHC-2360-UE Rivet-LHC-900-UE Rivet-LHC-2760-UE \
 		Rivet-LHC-7-Heavy-0 \
 		Rivet-LHC-7-Heavy-1 Rivet-LHC-7-Heavy-2 \

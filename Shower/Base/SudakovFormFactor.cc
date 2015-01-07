@@ -338,7 +338,7 @@ RhoDMatrix fermionMapping(ShowerParticle & particle,
   }
   RhoDMatrix mapping=RhoDMatrix(PDT::Spin1Half,false);
   for(unsigned int ix=0;ix<2;++ix) {
-    if(fbasis[0].s2()==SqrtEnergy()) {
+    if(fbasis[0].s2()==complex<SqrtEnergy>()) {
       mapping(ix,0) = sbasis[ix].s3()/fbasis[0].s3();
       mapping(ix,1) = sbasis[ix].s2()/fbasis[1].s2();
     }
