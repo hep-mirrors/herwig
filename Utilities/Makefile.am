@@ -1,5 +1,6 @@
 SUBDIRS = XML Statistics
-noinst_LTLIBRARIES = libHwUtils.la libHwRunDirectories.la
+noinst_LTLIBRARIES = libHwUtils.la 
+pkglib_LTLIBRARIES = libHwRunDirectories.la
 libHwUtils_la_SOURCES = \
 EnumParticles.h \
 Interpolator.tcc Interpolator.h \
