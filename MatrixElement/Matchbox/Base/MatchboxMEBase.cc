@@ -165,7 +165,9 @@ MatchboxMEBase::colourGeometries(tcDiagPtr diag) const {
 void MatchboxMEBase::constructVertex(tSubProPtr sub, const ColourLines* cl) {
 
   // not functional yet
-  return;
+  throw Exception()
+    << "Spin correlations are not yet fully functional."
+    << Exception::abortnow;
 
   if ( !canFillRhoMatrix() || !factory()->spinCorrelations() )
     return;
@@ -187,6 +189,7 @@ void MatchboxMEBase::constructVertex(tSubProPtr sub, const ColourLines* cl) {
     // TODO translate between Matchbox and ProductionMatrixElement conventions here
     pMe(pMeHelicities) = lamp->second[cStructure];
   }
+  // TODO we need to transform to the lab frame
   HardVertexPtr hardvertex = new_ptr(HardVertex());
   hardvertex->ME(pME);
   sub->incoming()[0]->spinInfo()->productionVertex(hardvertex);
@@ -195,6 +198,7 @@ void MatchboxMEBase::constructVertex(tSubProPtr sub, const ColourLines* cl) {
 	p! = sub->outgoing().end(); ++p ) {
     (**p)->spinInfo()->productionVertex(hardvertex);
   }
+
 }
 
 unsigned int MatchboxMEBase::orderInAlphaS() const {
