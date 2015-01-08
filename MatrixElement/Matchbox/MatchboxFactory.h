@@ -682,12 +682,12 @@ public:
   /**
    * Return true, if spin correlation information should be provided, if possible.
    */
-  bool fillRhoMatrices() const { return theFillRhoMatrices; }
+  bool spinCorrelations() const { return theSpinCorrelations; }
 
   /**
    * Indicate that spin correlation information should be provided, if possible.
    */
-  void setFillRhoMatrices(bool yes) { theFillRhoMatrices = yes; }
+  void setSpinCorrelations(bool yes) { theSpinCorrelations = yes; }
 
   //@}
 
@@ -1162,7 +1162,7 @@ private:
   /**
    * True, if spin correlation information should be provided, if possible.
    */
-  bool theFillRhoMatrices;
+  bool theSpinCorrelations;
 
   /**
    * Command for production mode

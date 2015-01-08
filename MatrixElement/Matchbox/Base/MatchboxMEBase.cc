@@ -161,7 +161,7 @@ MatchboxMEBase::colourGeometries(tcDiagPtr diag) const {
 }
 
 void MatchboxMEBase::constructVertex(tSubProPtr sub, const ColourLines* cl) {
-  if ( canFillRhoMatrix() && factory()->fillRhoMatrices() ) {
+  if ( canFillRhoMatrix() && factory()->spinCorrelations() ) {
     assert(colourBasis());
     size_t colourStructureId = 
       colourBasis()->tensorIdFromFlow(lastXComb().lastDiagram(),cl);

@@ -52,7 +52,7 @@ MatchboxFactory::MatchboxFactory()
     thePoleData(""), theRealEmissionScales(false), theAllProcesses(false),
   theMECorrectionsOnly(false), theLoopSimCorrections(false), ranSetup(false),
   theFirstPerturbativePDF(true), theSecondPerturbativePDF(true),
-  inProductionMode(false), theFillRhoMatrices(false) {}
+  inProductionMode(false), theSpinCorrelations(false) {}
 
 MatchboxFactory::~MatchboxFactory() {}
 
@@ -210,9 +210,12 @@ makeMEs(const vector<string>& proc, unsigned int orderas, bool virt) {
       << "To avoid this problem use the SelectAmplitudes or DeselectAmplitudes interfaces.\n";
   }
 
+  bool canDoSpinCorrelations = true;
+
   vector<Ptr<MatchboxMEBase>::ptr> res;
   for ( map<Ptr<MatchboxAmplitude>::ptr,set<Process> >::const_iterator
 	  ap = ampProcs.begin(); ap != ampProcs.end(); ++ap ) {
+    canDoSpinCorrelations &= ap->first->canFillRhoMatrix();
     for ( set<Process>::const_iterator m = ap->second.begin();
 	  m != ap->second.end(); ++m ) {
       Ptr<MatchboxMEBase>::ptr me = ap->first->makeME(m->legs);
@@ -230,6 +233,12 @@ makeMEs(const vector<string>& proc, unsigned int orderas, bool virt) {
       if ( theSecondPerturbativePDF )
 	theIncoming.insert(m->legs[1]->id());
     }
+  }
+
+  if ( spinCorrelations() && !canDoSpinCorrelations ) {
+    generator()->log() << "Warning: Spin correlations have been requested, but no amplitude is "
+		       << "capable of performing these.\n";
+    theSpinCorrelations = false;
   }
 
   generator()->log() << "created "
@@ -290,11 +299,11 @@ void MatchboxFactory::productionMode() {
   }
 
   if ( showerApproximation() ) {
-    if ( fillRhoMatrices() && !showerApproximation()->hasSpinCorrelations() ) {
+    if ( spinCorrelations() && !showerApproximation()->hasSpinCorrelations() ) {
       Repository::clog() << "Warning: Spin correlations have been requested but the matching "
 			 << "object is not capable of these. Spin correlations will be turned of.\n"
 			 << flush;
-      theFillRhoMatrices = false;
+      theSpinCorrelations = false;
     }
   }
 
@@ -1100,7 +1109,7 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
      << theDipoleSet << theReweighters << thePreweighters
      << theMECorrectionsOnly<< theLoopSimCorrections<<theHighestVirtualsize << ranSetup
      << theIncoming << theFirstPerturbativePDF << theSecondPerturbativePDF 
-     << inProductionMode << theFillRhoMatrices;
+     << inProductionMode << theSpinCorrelations;
 }
 
 void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
@@ -1128,7 +1137,7 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
      >> theDipoleSet >> theReweighters >> thePreweighters
      >> theMECorrectionsOnly>> theLoopSimCorrections>>theHighestVirtualsize >> ranSetup
      >> theIncoming >> theFirstPerturbativePDF >> theSecondPerturbativePDF
-     >> inProductionMode >> theFillRhoMatrices;
+     >> inProductionMode >> theSpinCorrelations;
 }
 
 string MatchboxFactory::startParticleGroup(string name) {
@@ -1735,17 +1744,17 @@ void MatchboxFactory::Init() {
      "Switch this factory to production mode.",
      &MatchboxFactory::doProductionMode, false);
 
-  static Switch<MatchboxFactory,bool> interfaceFillRhoMatrices
-    ("FillRhoMatrices",
+  static Switch<MatchboxFactory,bool> interfaceSpinCorrelations
+    ("SpinCorrelations",
      "Fill information for the spin correlations, if possible.",
-     &MatchboxFactory::theFillRhoMatrices, false, false, false);
-  static SwitchOption interfaceFillRhoMatricesYes
-    (interfaceFillRhoMatrices,
+     &MatchboxFactory::theSpinCorrelations, false, false, false);
+  static SwitchOption interfaceSpinCorrelationsYes
+    (interfaceSpinCorrelations,
      "Yes",
      "",
      true);
-  static SwitchOption interfaceFillRhoMatricesNo
-    (interfaceFillRhoMatrices,
+  static SwitchOption interfaceSpinCorrelationsNo
+    (interfaceSpinCorrelations,
      "No",
      "",
      false);

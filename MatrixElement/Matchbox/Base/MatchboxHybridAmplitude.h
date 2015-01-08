@@ -356,6 +356,14 @@ public:
   }
 
   /**
+   * Return true, if this amplitude is capable of consistently filling
+   * the rho matrices for the spin correllations
+   */
+  virtual bool canFillRhoMatrix() const { 
+    return treeLevelAmplitude()->canFillRhoMatrix();
+  }
+
+  /**
    * Return true, if tree-level contributions will be evaluated at amplitude level.
    */
   virtual bool treeAmplitudes() const { 
