@@ -17,8 +17,8 @@
 #include <ThePEG/Handlers/StandardEventHandler.h>
 #include <ThePEG/Handlers/SamplerBase.h>
 #include <iostream>
-
-#include <queue>
+#include <sstream>
+#include <cstdio>
 #include <unistd.h>
 #include <sys/wait.h>
 
@@ -117,7 +117,7 @@ int main(int argc, char * argv[]) {
     // parallel jobs
     int jobs = 1;
     if ( args_info.jobs_given )
-      jobs = min( args_info.jobs_arg, 10 );
+      jobs = args_info.jobs_arg;
 
     setSearchPaths(args_info);
   
@@ -349,38 +349,71 @@ void HerwigRun(string runname, string setupfile,
   
   }
   else { // forked jobs
-    std::queue<pid_t> pids;
     pid_t pid;
 
+    const int maxlen = log10(jobs) + 1;
+
     for (int n=0; n<jobs; n++) {
+      ostringstream tmp;
+      tmp << std::setfill('0') << std::setw(maxlen) << n+1;
+      const string nstr = tmp.str();
+
       pid = fork();
-      if (pid == -1) {
-        std::cerr << "Herwig++: Problem in fork().\n";
+      if (pid == -1) { // fork failed
+        std::perror("Herwig++: fork");
         Repository::cleanup();
         exit( EXIT_FAILURE );
       }
-      else if ( pid == 0 ) {
-        std::cout << "Forked child " << n << ", PID " << getpid() << std::endl;
+      else if ( pid == 0 ) { // we're the child
+        if ( tics ) std::cout << "Forked child " << n << ", PID " << getpid() << std::endl;
         eg->setSeed( seed + n );
-        // fix numbering to allow n > 10
-        assert( n <= 10 );
-        eg->addTag( tag + "-" + char( 48 + n ) );
-	Herwig::RunDirectories::pushRunId( tag + "-" + char( 48 + n ) );
+        eg->addTag( tag + "-" + nstr );
+	Herwig::RunDirectories::pushRunId( nstr );
         eg->go( resume ? -1 : 1, N / jobs, false );
-        break;
+        break; // avoid sub-forks
       }
-      else {
-        pids.push(pid);
-      }
+      // nothing to do here if we're the parent
     }
 
+    // children have nothing else to do
     if (pid == 0) return;
 
-    while (! pids.empty() ) {
-      std::cout << "Waiting for " << pids.size() << " job(s)." << std::endl;
-      waitpid(pids.front(), NULL, 0);
-      std::cout << "PID " << pids.front() << " done." << std::endl;
-      pids.pop();
+    if ( tics ) std::cout << "Waiting for forked jobs." << std::endl;
+    int status;
+    pid_t child;
+    bool cleanrun = true;
+    while (true) {
+    	child = wait(&status);
+    	if (child == -1) {
+    		if (errno == ECHILD) {
+    			if ( tics ) std::cout << "No more forked jobs." << std::endl;
+    			break;
+    		}
+    		else {
+	                std::perror("Herwig++: waitpid");
+	                Repository::cleanup();
+        	        exit(EXIT_FAILURE);
+        	}
+        }
+
+        if (WIFEXITED(status)) {
+            if (WEXITSTATUS(status) != 0) 
+            	cleanrun = false;
+            if ( tics ) std::cout << "PID " << child 
+                      << " exited, status=" << WEXITSTATUS(status)
+                      << std::endl;
+        } else if (WIFSIGNALED(status)) {
+            // a clean SIGTERM is handled in the child
+            // and will count as exit above, so...
+            cleanrun = false;
+            if ( tics ) std::cout << "PID " << child 
+           	<< " killed by signal " << WTERMSIG(status)
+           	<< std::endl;
+        }
+    }
+    if (! cleanrun) {
+    	Repository::cleanup();
+    	exit(EXIT_FAILURE);
     }
   }
 }
