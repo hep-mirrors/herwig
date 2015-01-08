@@ -25,6 +25,7 @@
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/Cuts/Cuts.h"
 #include "ThePEG/Handlers/StdXCombGroup.h"
+#include "ThePEG/EventRecord/SubProcess.h"
 #include "Herwig++/MatrixElement/Matchbox/Dipoles/SubtractionDipole.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/DiagramDrawer.h"
 #include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
@@ -177,7 +178,7 @@ void MatchboxMEBase::constructVertex(tSubProPtr sub, const ColourLines* cl) {
   size_t cStructure = 
     matchboxAmplitude()->colourBasis()->tensorIdFromFlow(lastXComb().lastDiagram(),cl);
   vector<PDT::Spin> out;
-  for ( tcPDVector::const_iterator p = mePartonData().begin() + 2;
+  for ( cPDVector::const_iterator p = mePartonData().begin() + 2;
 	p != mePartonData().end(); ++p )
     out.push_back((**p).iSpin());
   ProductionMatrixElement pMe(mePartonData()[0]->iSpin(),
@@ -191,12 +192,12 @@ void MatchboxMEBase::constructVertex(tSubProPtr sub, const ColourLines* cl) {
   }
   // TODO we need to transform to the lab frame
   HardVertexPtr hardvertex = new_ptr(HardVertex());
-  hardvertex->ME(pME);
-  sub->incoming()[0]->spinInfo()->productionVertex(hardvertex);
-  sub->incoming()[1]->spinInfo()->productionVertex(hardvertex);
+  hardvertex->ME(pMe);
+  sub->incoming().first->spinInfo()->productionVertex(hardvertex);
+  sub->incoming().second->spinInfo()->productionVertex(hardvertex);
   for ( ParticleVector::const_iterator p = sub->outgoing().begin();
-	p! = sub->outgoing().end(); ++p ) {
-    (**p)->spinInfo()->productionVertex(hardvertex);
+	p != sub->outgoing().end(); ++p ) {
+    (**p).spinInfo()->productionVertex(hardvertex);
   }
 
 }
