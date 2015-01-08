@@ -165,13 +165,13 @@ MatchboxMEBase::colourGeometries(tcDiagPtr diag) const {
 
 void MatchboxMEBase::constructVertex(tSubProPtr sub, const ColourLines* cl) {
 
+  if ( !canFillRhoMatrix() || !factory()->spinCorrelations() )
+    return;
+
   // not functional yet
   throw Exception()
     << "Spin correlations are not yet fully functional."
     << Exception::abortnow;
-
-  if ( !canFillRhoMatrix() || !factory()->spinCorrelations() )
-    return;
 
   assert(matchboxAmplitude());
   assert(matchboxAmplitude()->colourBasis());
