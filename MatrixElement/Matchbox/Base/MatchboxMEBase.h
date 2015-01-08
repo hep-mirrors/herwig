@@ -138,6 +138,11 @@ public:
   /**
    * construct the spin information for the interaction
    */
+  virtual void constructVertex(tSubProPtr) {}
+
+  /**
+   * construct the spin information for the interaction
+   */
   virtual void constructVertex(tSubProPtr sub, const ColourLines* cl);
 
   /**
