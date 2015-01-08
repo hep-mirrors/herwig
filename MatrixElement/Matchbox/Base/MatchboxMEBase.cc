@@ -187,10 +187,18 @@ void MatchboxMEBase::constructVertex(tSubProPtr sub, const ColourLines* cl) {
   for ( map<vector<int>,CVector>::const_iterator lamp = lastLargeNAmplitudes().begin();
 	lamp != lastLargeNAmplitudes().end(); ++lamp ) {
     vector<unsigned int> pMeHelicities(lamp->first.size(),0);
-    // TODO translate between Matchbox and ProductionMatrixElement conventions here
+    vector<int>::const_iterator h = lamp->first.begin();
+    vector<unsigned int>::iterator hx = pMeHelicities.begin();
+    cPDVector::const_iterator p = mePartonData().begin();
+    for ( ; h != lamp->first.end(); ++h, ++hx, ++p ) {
+      if ( (**p).iSpin() == PDT::Spin1Half )
+	*hx = *h == -1 ? 0 : 1;
+      else if ( (**p).iSpin() == PDT::Spin1 )
+	*hx = (unsigned int)(*h + 1);
+      else assert(false);
+    }
     pMe(pMeHelicities) = lamp->second[cStructure];
   }
-  // TODO we need to transform to the lab frame
   HardVertexPtr hardvertex = new_ptr(HardVertex());
   hardvertex->ME(pMe);
   sub->incoming().first->spinInfo()->productionVertex(hardvertex);
