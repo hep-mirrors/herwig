@@ -29,6 +29,8 @@
 #include "Herwig++/MatrixElement/Matchbox/Utility/DiagramDrawer.h"
 #include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
 #include "Herwig++/Utilities/RunDirectories.h"
+#include "Herwig++/MatrixElement/ProductionMatrixElement.h"
+#include "Herwig++/MatrixElement/HardVertex.h"
 
 #include <iterator>
 using std::ostream_iterator;
@@ -161,14 +163,37 @@ MatchboxMEBase::colourGeometries(tcDiagPtr diag) const {
 }
 
 void MatchboxMEBase::constructVertex(tSubProPtr sub, const ColourLines* cl) {
-  if ( canFillRhoMatrix() && factory()->spinCorrelations() ) {
-    assert(matchboxAmplitude());
-    assert(matchboxAmplitude()->colourBasis());
-    size_t colourStructureId = 
-      matchboxAmplitude()->colourBasis()->tensorIdFromFlow(lastXComb().lastDiagram(),cl);
-    // then iterate over lastLargeNAmplitudes(), key is helicity assignment,
-    // value[colourStructureId] gives the relevant subamplitude
-    // what then?
+
+  // not functional yet
+  return;
+
+  if ( !canFillRhoMatrix() || !factory()->spinCorrelations() )
+    return;
+
+  assert(matchboxAmplitude());
+  assert(matchboxAmplitude()->colourBasis());
+  size_t cStructure = 
+    matchboxAmplitude()->colourBasis()->tensorIdFromFlow(lastXComb().lastDiagram(),cl);
+  vector<PDT::Spin> out;
+  for ( tcPDVector::const_iterator p = mePartonData().begin() + 2;
+	p != mePartonData().end(); ++p )
+    out.push_back((**p).iSpin());
+  ProductionMatrixElement pMe(mePartonData()[0]->iSpin(),
+			      mePartonData()[1]->iSpin(),
+			      out);
+  for ( map<vector<int>,CVector>::const_iterator lamp = lastLargeNAmplitudes().begin();
+	lamp != lastLargeNAmplitudes().end(); ++lamp ) {
+    vector<unsigned int> pMeHelicities(lamp->first.size(),0);
+    // TODO translate between Matchbox and ProductionMatrixElement conventions here
+    pMe(pMeHelicities) = lamp->second[cStructure];
+  }
+  HardVertexPtr hardvertex = new_ptr(HardVertex());
+  hardvertex->ME(pME);
+  sub->incoming()[0]->spinInfo()->productionVertex(hardvertex);
+  sub->incoming()[1]->spinInfo()->productionVertex(hardvertex);
+  for ( ParticleVector::const_iterator p = sub->outgoing().begin();
+	p! = sub->outgoing().end(); ++p ) {
+    (**p)->spinInfo()->productionVertex(hardvertex);
   }
 }
 
