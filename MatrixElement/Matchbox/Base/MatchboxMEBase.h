@@ -126,6 +126,21 @@ public:
   colourGeometries(tcDiagPtr diag) const;
 
   /**
+   * Return true, if this amplitude is capable of consistently filling
+   * the rho matrices for the spin correllations
+   */
+  virtual bool canFillRhoMatrix() const { 
+    if ( matchboxAmplitude() )
+      return matchboxAmplitude()->canFillRhoMatrix();
+    return false;
+  }
+
+  /**
+   * construct the spin information for the interaction
+   */
+  virtual void constructVertex(tSubProPtr sub, const ColourLines* cl);
+
+  /**
    * Return the order in \f$\alpha_S\f$ in which this matrix element
    * is given.
    */

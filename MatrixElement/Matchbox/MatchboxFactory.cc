@@ -52,7 +52,7 @@ MatchboxFactory::MatchboxFactory()
     thePoleData(""), theRealEmissionScales(false), theAllProcesses(false),
   theMECorrectionsOnly(false), theLoopSimCorrections(false), ranSetup(false),
   theFirstPerturbativePDF(true), theSecondPerturbativePDF(true),
-  inProductionMode(false) {}
+  inProductionMode(false), theFillRhoMatrices(false) {}
 
 MatchboxFactory::~MatchboxFactory() {}
 
@@ -287,6 +287,15 @@ void MatchboxFactory::productionMode() {
   if ( showerApproximation() && (subtractionData() != "" || subProcessGroups()) ) {
     Repository::clog() << "Warning: Matching requested for plain NLO run. Matching disabled.\n" << flush;
     showerApproximation(Ptr<ShowerApproximation>::tptr());
+  }
+
+  if ( showerApproximation() ) {
+    if ( fillRhoMatrices() && !showerApproximation()->hasSpinCorrelations() ) {
+      Repository::clog() << "Warning: Spin correlations have been requested but the matching "
+			 << "object is not capable of these. Spin correlations will be turned of.\n"
+			 << flush;
+      theFillRhoMatrices = false;
+    }
   }
 
   inProductionMode = true;
@@ -1090,7 +1099,8 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
      << theSelectedAmplitudes << theDeselectedAmplitudes
      << theDipoleSet << theReweighters << thePreweighters
      << theMECorrectionsOnly<< theLoopSimCorrections<<theHighestVirtualsize << ranSetup
-     << theIncoming << theFirstPerturbativePDF << theSecondPerturbativePDF << inProductionMode;
+     << theIncoming << theFirstPerturbativePDF << theSecondPerturbativePDF 
+     << inProductionMode << theFillRhoMatrices;
 }
 
 void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
@@ -1117,7 +1127,8 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
      >> theSelectedAmplitudes >> theDeselectedAmplitudes
      >> theDipoleSet >> theReweighters >> thePreweighters
      >> theMECorrectionsOnly>> theLoopSimCorrections>>theHighestVirtualsize >> ranSetup
-     >> theIncoming >> theFirstPerturbativePDF >> theSecondPerturbativePDF >> inProductionMode;
+     >> theIncoming >> theFirstPerturbativePDF >> theSecondPerturbativePDF
+     >> inProductionMode >> theFillRhoMatrices;
 }
 
 string MatchboxFactory::startParticleGroup(string name) {
@@ -1723,6 +1734,21 @@ void MatchboxFactory::Init() {
     ("ProductionMode",
      "Switch this factory to production mode.",
      &MatchboxFactory::doProductionMode, false);
+
+  static Switch<MatchboxFactory,bool> interfaceFillRhoMatrices
+    ("FillRhoMatrices",
+     "Fill information for the spin correlations, if possible.",
+     &MatchboxFactory::theFillRhoMatrices, false, false, false);
+  static SwitchOption interfaceFillRhoMatricesYes
+    (interfaceFillRhoMatrices,
+     "Yes",
+     "",
+     true);
+  static SwitchOption interfaceFillRhoMatricesNo
+    (interfaceFillRhoMatrices,
+     "No",
+     "",
+     false);
 
 }
 

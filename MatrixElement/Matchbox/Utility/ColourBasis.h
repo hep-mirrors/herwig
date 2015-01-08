@@ -216,6 +216,11 @@ public:
 						 const map<vector<int>,CVector>& amps);
 
   /**
+   * Return the colour tensor used for the selected colour flow
+   */
+  size_t tensorIdFromFlow(tcDiagPtr diag, const ColourLines * cl) const;
+
+  /**
    * Match colour representation.
    */
   struct matchRep {

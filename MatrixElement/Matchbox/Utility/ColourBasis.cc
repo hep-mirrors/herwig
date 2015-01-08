@@ -395,6 +395,8 @@ vector<string> ColourBasis::makeFlows(Ptr<Tree2toNDiagram>::tcptr diag,
 	}
       }
       if ( matches ) {
+	assert(res[i] == "" && 
+	       "only support colour bases with unique mapping to large-N colour flows");
 	res[i] = cfstring(*flow);
       }
     }
@@ -745,9 +747,10 @@ Selector<const ColourLines *> ColourBasis::colourGeometries(tcDiagPtr diag,
   assert(dd && theFlowMap.find(dd) != theFlowMap.end());
   map<Ptr<Tree2toNDiagram>::tcptr,vector<ColourLines*> >::const_iterator colit =
     colourLineMap().find(dd);
-  if ( colit == colourLineMap().end() )
+  if ( colit == colourLineMap().end() ) {
     updateColourLines(dd);
-  colit = colourLineMap().find(dd);
+    colit = colourLineMap().find(dd);
+  }
   const vector<ColourLines*>& cl = colit->second;
 
   Selector<const ColourLines *> sel;
@@ -766,6 +769,32 @@ Selector<const ColourLines *> ColourBasis::colourGeometries(tcDiagPtr diag,
   }
   assert(!sel.empty());
   return sel;
+}
+
+size_t ColourBasis::tensorIdFromFlow(tcDiagPtr diag, const ColourLines * flow) const {
+
+ Ptr<Tree2toNDiagram>::tcptr dd = 
+    dynamic_ptr_cast<Ptr<Tree2toNDiagram>::tcptr>(diag);
+  assert(dd && theFlowMap.find(dd) != theFlowMap.end());
+  map<Ptr<Tree2toNDiagram>::tcptr,vector<ColourLines*> >::const_iterator colit =
+    colourLineMap().find(dd);
+  if ( colit == colourLineMap().end() ) {
+    updateColourLines(dd);
+    colit = colourLineMap().find(dd);
+  }
+
+  const vector<ColourLines*>& cl = colit->second;
+
+  size_t res = 0;
+  for ( ; res < cl.size(); ++res ) {
+    if ( flow == *cl )
+      break;
+  }
+
+  assert(res < cl.size());
+
+  return res;
+
 }
 
 const symmetric_matrix<double,upper>& ColourBasis::scalarProducts(const cPDVector& sub) const {

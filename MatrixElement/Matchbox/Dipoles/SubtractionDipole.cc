@@ -1111,6 +1111,13 @@ void SubtractionDipole::constructVertex(tSubProPtr sub) {
     underlyingBornME()->constructVertex(sub);
 }
 
+void SubtractionDipole::constructVertex(tSubProPtr sub, const ColourLines* cl) {
+  if ( splitting() )
+    realEmissionME()->constructVertex(sub,cl);
+  else 
+    underlyingBornME()->constructVertex(sub,cl);
+}
+
 void SubtractionDipole::generateSubCollision(SubProcess & sub) {
   if ( splitting() )
     realEmissionME()->generateSubCollision(sub);

@@ -679,6 +679,16 @@ public:
     return theIncoming.find(p->id()) != theIncoming.end();
   }
 
+  /**
+   * Return true, if spin correlation information should be provided, if possible.
+   */
+  bool fillRhoMatrices() const { return theFillRhoMatrices; }
+
+  /**
+   * Indicate that spin correlation information should be provided, if possible.
+   */
+  void setFillRhoMatrices(bool yes) { theFillRhoMatrices = yes; }
+
   //@}
 
   /** @name Truncated qtilde shower information */
@@ -1148,6 +1158,11 @@ private:
    * the truncated shower
    */
   int theHardtreeEmitter;
+
+  /**
+   * True, if spin correlation information should be provided, if possible.
+   */
+  bool theFillRhoMatrices;
 
   /**
    * Command for production mode

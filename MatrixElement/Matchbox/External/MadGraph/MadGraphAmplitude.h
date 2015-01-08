@@ -178,6 +178,12 @@ public:
    */
   virtual int externalId(const cPDVector&);
 
+  /**
+   * Return true, if this amplitude is capable of consistently filling
+   * the rho matrices for the spin correllations
+   */
+  virtual bool canFillRhoMatrix() const { return true; }
+
 public:
 
   /** @name Functions used by the persistent I/O system. */

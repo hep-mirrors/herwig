@@ -375,6 +375,12 @@ public:
 					   Ptr<ColourBasis>::tptr largeNBasis) const;
 
   /**
+   * Return true, if this amplitude is capable of consistently filling
+   * the rho matrices for the spin correllations
+   */
+  virtual bool canFillRhoMatrix() const { return false; }
+
+  /**
    * Return a positive helicity polarization vector for a gluon of
    * momentum p (with reference vector n) to be used when evaluating
    * spin correlations.

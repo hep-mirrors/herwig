@@ -124,6 +124,11 @@ public:
    */
   Ptr<SubtractionDipole>::tcptr dipole() const;
 
+  /**
+   * Return true, if this matching is capable of spin correlations.
+   */
+  virtual bool hasSpinCorrelations() const { return false; }
+
 public:
 
   /**

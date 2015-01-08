@@ -859,6 +859,11 @@ public:
   virtual void constructVertex(tSubProPtr sub);
 
   /**
+   * construct the spin information for the interaction
+   */
+  virtual void constructVertex(tSubProPtr sub, const ColourLines* cl);
+
+  /**
    * Comlete a SubProcess object using the internal degrees of freedom
    * generated in the last generateKinematics() (and possible other
    * degrees of freedom which was intergated over in dSigHatDR(). This

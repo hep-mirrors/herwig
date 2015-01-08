@@ -160,6 +160,17 @@ MatchboxMEBase::colourGeometries(tcDiagPtr diag) const {
 
 }
 
+void MatchboxMEBase::constructVertex(tSubProPtr sub, const ColourLines* cl) {
+  if ( canFillRhoMatrix() && factory()->fillRhoMatrices() ) {
+    assert(colourBasis());
+    size_t colourStructureId = 
+      colourBasis()->tensorIdFromFlow(lastXComb().lastDiagram(),cl);
+    /*
+      now we can use lastLargeNAmplitudes to get it going
+     */
+  }
+}
+
 unsigned int MatchboxMEBase::orderInAlphaS() const {
   return subProcess().orderInAlphaS;
 }
