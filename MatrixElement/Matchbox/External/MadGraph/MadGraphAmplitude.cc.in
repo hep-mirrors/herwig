@@ -25,7 +25,7 @@
 
 #include "ThePEG/PDT/EnumParticles.h"
 #include <boost/lexical_cast.hpp>
-
+#include <boost/filesystem.hpp>
 
 
 #include <cstdlib>
@@ -107,24 +107,46 @@ bool ranMadGraphInitializeExternal = false;
 bool MadGraphAmplitude::initializeExternal() {
 
   loadProcessMap();
+
   string MGProcLibPath = theProcessPath == "" ? factory()->buildStorage()+"MadGraphAmplitudes" : theProcessPath;
   if (MGProcLibPath.at(MGProcLibPath.length()-1) != '/') MGProcLibPath.append("/");
   
-  std::system(("mkdir -p " + MGProcLibPath).c_str());
-  std::system(("mkdir -p " + factory()->runStorage()+"/MadGraphAmplitudes").c_str());
+  if ( boost::filesystem::exists(MGProcLibPath) ) {
+    if ( !boost::filesystem::is_directory(MGProcLibPath) )
+      throw Exception() << "MadGraph amplitude storage '"
+			<< MGProcLibPath << "' existing but not a directory."
+			<< Exception::abortnow;
+  } else {
+    boost::filesystem::create_directories(MGProcLibPath);
+  }
 
   string born= MGProcLibPath+"BornAmplitudes.dat";
-  ofstream borns(born.c_str());
+  if ( !boost::filesystem::exists(born) ) {
+    ofstream borns(born.c_str());
+    for (vector<string>::iterator amps=BornAmplitudes.begin();amps!=BornAmplitudes.end();amps++)
+      borns<<*amps<<endl;
+    borns.close();
+  }
+
   string virt= MGProcLibPath+"VirtAmplitudes.dat";
-  ofstream virts(virt.c_str());
+  if ( !boost::filesystem::exists(virt) ) {
+    ofstream virts(virt.c_str());
+    for (vector<string>::iterator amps=VirtAmplitudes.begin();amps!=VirtAmplitudes.end();amps++)
+      virts<<*amps<<endl;
+    virts.close();
+  }
+
+  string runAmplitudes = factory()->runStorage() + "/MadGraphAmplitudes";
   
-  for (vector<string>::iterator amps=BornAmplitudes.begin();amps!=BornAmplitudes.end();amps++)
-    borns<<*amps<<endl;
-  for (vector<string>::iterator amps=VirtAmplitudes.begin();amps!=VirtAmplitudes.end();amps++)
-    virts<<*amps<<endl;
-  borns.close();
-  virts.close();
-  
+  if ( boost::filesystem::exists(runAmplitudes) ) {
+    if ( !boost::filesystem::is_directory(runAmplitudes) )
+      throw Exception() << "MadGraph amplitude storage '"
+			<< runAmplitudes << "' existing but not a directory."
+			<< Exception::abortnow;
+  } else {
+    boost::filesystem::create_directories(runAmplitudes);
+  }
+
   Energy MW=getParticleData(ParticleID::Wplus)->mass();
   Energy MZ=getParticleData(ParticleID::Z0)->mass();
 
