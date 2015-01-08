@@ -300,7 +300,14 @@ protected:
   
   mutable double virt[20],momenta[50],pg[4],ng[4],poltmp[8];
   mutable int heltmp[10];
-
+  
+        
+  /**
+  * Static Variables to handle initialization.
+  */
+        
+  static bool ranMadGraphInitializeExternal;
+  static bool initializedMad;
   
 
   

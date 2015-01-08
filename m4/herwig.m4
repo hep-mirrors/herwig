@@ -451,7 +451,17 @@ AS_IF([test "x$with_gosam_contrib" = "xno" -a "x$with_gosam" != "xno"],
       [with_gosam_contrib=${with_gosam}], [])
 ])
 
+AS_IF([test "x$with_gosam_contrib" = "xno" -a "x$with_gosam" != "xno"],
+      [AC_CHECK_FILES(
+      ${with_gosam}/lib/libsamurai.dylib,
+      [with_gosam_contrib=${with_gosam}], [])
+])
 
+AS_IF([test "x$with_gosam_contrib" = "xno" -a "x$with_gosam" != "xno"],
+      [AC_CHECK_FILES(
+      ${with_gosam}/lib64/libsamurai.dylib,
+      [with_gosam_contrib=${with_gosam}], [])
+])
 
 AS_IF([test "x$with_gosam_contrib" = "xno" -a "x$with_gosam" != "xno"],
       [AC_MSG_ERROR([GoSam requested without requesting GoSam-Contrib])])
@@ -466,6 +476,22 @@ AS_IF([test "x$with_gosam_contrib" != "xno" -a "x$have_gosam_contrib" = "xno" ],
       [AC_CHECK_FILES(
       ${with_gosam_contrib}/lib64/libsamurai.so,
       [have_gosam_contrib=lib64], [have_gosam_contrib=no])])
+
+AS_IF([test "x$with_gosam_contrib" != "xno" -a "x$have_gosam_contrib" = "xno" ],
+      [AC_CHECK_FILES(
+      ${with_gosam_contrib}/lib/libsamurai.dylib,
+      [have_gosam_contrib=lib], [have_gosam_contrib=no])])
+
+AS_IF([test "x$with_gosam_contrib" != "xno" -a "x$have_gosam_contrib" = "xno" ],
+      [AC_CHECK_FILES(
+      ${with_gosam_contrib}/lib64/libsamurai.dylib,
+      [have_gosam_contrib=lib64], [have_gosam_contrib=no])])
+
+
+
+
+
+
 
 AS_IF([test "x$have_gosam_contrib" != "xno"],
       [GOSAMCONTRIBPREFIX=${with_gosam_contrib}
@@ -527,8 +553,23 @@ AS_IF([test "x$with_openloops" != "xno"],
 
 AS_IF([test "x$with_openloops" != "xno" -a "x$have_openloops" = "xno" ],
       [AC_CHECK_FILES(
+      ${with_openloops}/lib/libopenloops.dylib,
+      [have_openloops=lib], [have_openloops=no])])
+
+AS_IF([test "x$with_openloops" != "xno" -a "x$have_openloops" = "xno" ],
+      [AC_CHECK_FILES(
       ${with_openloops}/lib64/libopenloops.so,
       [have_openloops=lib64], [have_openloops=no])])
+
+
+AS_IF([test "x$with_openloops" != "xno" -a "x$have_openloops" = "xno" ],
+      [AC_CHECK_FILES(
+      ${with_openloops}/lib64/libopenloops.dylib,
+      [have_openloops=lib64], [have_openloops=no])])
+
+
+
+
 
 AS_IF([test "x$have_openloops" = "xlib"],
       [OPENLOOPSLIBS=${with_openloops}/lib

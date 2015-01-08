@@ -67,10 +67,11 @@ void OpenLoopsAmplitude::doinitrun() {
 void OpenLoopsAmplitude::startOLP(const string& contract, int& status) {
 	string tempcontract=contract;
 
-	bool success = DynamicLoader::load("@OPENLOOPSLIBS@/libopenloops.so");
+	bool success = DynamicLoader::load("@OPENLOOPSLIBS@/libopenloops.so")
+                   ||DynamicLoader::load("@OPENLOOPSLIBS@/libopenloops.dylib") ;
 
 	if ( !success ) {
-	  throw Exception() << "Failed to load libopenloops.so\n"
+	  throw Exception() << "Failed to load libopenloops.so/dylib\n"
 			    << DynamicLoader::lastErrorMessage
 			    << Exception::abortnow;
 	}

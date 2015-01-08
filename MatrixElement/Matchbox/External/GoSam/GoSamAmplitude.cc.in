@@ -167,8 +167,10 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
     throw Exception() << "failed to start GoSam" << Exception::abortnow;
   }
 
-  if (!( DynamicLoader::load(gosamInstallPath+"/lib/libgolem_olp.so") 
-      || DynamicLoader::load(gosamInstallPath+"/lib64/libgolem_olp.so"))) buildGoSam();
+    if (!( DynamicLoader::load(gosamInstallPath+"/lib/libgolem_olp.so")
+          || DynamicLoader::load(gosamInstallPath+"/lib64/libgolem_olp.so")
+          || DynamicLoader::load(gosamInstallPath+"/lib/libgolem_olp.dylib")
+          || DynamicLoader::load(gosamInstallPath+"/lib64/libgolem_olp.dylib"))) buildGoSam();
 
   int status = -1;
   startOLP(contractFileTitle, status);
@@ -194,8 +196,10 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
   // When transitioning to C++ 11 this length()-1 workaround can be replaced by string.back()
   if (gosamPath.at(gosamPath.length()-1) != '/') gosamPath.append("/");
 
-  if (!( DynamicLoader::load(gosamPath+"build/lib/libgolem_olp.so")
-      || DynamicLoader::load(gosamPath+"build/lib64/libgolem_olp.so")))
+    if (!( DynamicLoader::load(gosamPath+"build/lib/libgolem_olp.so")
+          || DynamicLoader::load(gosamPath+"build/lib64/libgolem_olp.so")
+          || DynamicLoader::load(gosamPath+"build/lib/libgolem_olp.dylib")
+          || DynamicLoader::load(gosamPath+"build/lib64/libgolem_olp.dylib")))
     throw Exception() << "Failed to load GoSam. Please check the log file.\n"
 		      << Exception::abortnow;
   tempcontract = gosamPath + tempcontract;
@@ -255,16 +259,41 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
   if (massiveParticles.empty())
     for (int i=1; i<=6; ++i) 
       if (getParticleData(i)->mass()/GeV > 0.0) massiveParticles.push_back(i);
-      
-  // hand over quark masses and widths (iff massive)     
+
+  // hand over quark masses and widths (iff massive)
   if ( massiveParticles.size() != 0 ) {
     for ( vector<int>::const_iterator mID = massiveParticles.begin(); mID != massiveParticles.end(); ++mID ) {
-      double mass=getParticleData(*mID)->mass()/GeV;
-      double width=getParticleData(*mID)->width()/GeV;
-      string mstr="mass("+static_cast<ostringstream*>(&(ostringstream()<<(*mID)))->str()+")";
-      string wstr="width("+static_cast<ostringstream*>(&(ostringstream()<<(*mID)))->str()+")";
-      OLP_SetParameter((char *)&mstr,&mass, &zero, &pStatus );
-      OLP_SetParameter((char *)&wstr,&width, &zero, &pStatus );
+        string mstr;
+        string wstr;
+        int mInt = *mID;
+        double mass=getParticleData(mInt)->mass()/GeV;
+        double width=getParticleData(mInt)->width()/GeV;
+        std::stringstream ss;
+        ss << mInt;
+        string str = ss.str();
+        mstr="mass("+str+")";
+        wstr="width("+str+")";
+        char * mchar = new char[mstr.size()+1];
+        char * wchar = new char[wstr.size()+1];
+        std::copy(mstr.begin(),mstr.end(),mchar);
+        std::copy(wstr.begin(),wstr.end(),wchar);
+        mchar[mstr.size()] = '\0';
+        wchar[wstr.size()] = '\0';
+        OLP_SetParameter( mchar, &mass, &zero, &pStatus );
+        OLP_SetParameter( wchar, &width, &zero, &pStatus );
+        delete[] mchar;
+        delete[] wchar;
+        
+//      Nicer but not working properly:
+        
+//      double mass=getParticleData(*mID)->mass()/GeV;
+//      double width=getParticleData(*mID)->width()/GeV;
+//      string mstr="mass("+static_cast<ostringstream*>(&(ostringstream()<<(*mID)))->str()+")";
+//      string wstr="width("+static_cast<ostringstream*>(&(ostringstream()<<(*mID)))->str()+")";
+//        cout<<"\n massiv "<<mstr;
+//        
+//      OLP_SetParameter((char *)&mstr,&mass, &zero, &pStatus );
+//      OLP_SetParameter((char *)&wstr,&width, &zero, &pStatus );
     }
   }
 
