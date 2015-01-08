@@ -162,12 +162,13 @@ MatchboxMEBase::colourGeometries(tcDiagPtr diag) const {
 
 void MatchboxMEBase::constructVertex(tSubProPtr sub, const ColourLines* cl) {
   if ( canFillRhoMatrix() && factory()->spinCorrelations() ) {
-    assert(colourBasis());
+    assert(matchboxAmplitude());
+    assert(matchboxAmplitude()->colourBasis());
     size_t colourStructureId = 
-      colourBasis()->tensorIdFromFlow(lastXComb().lastDiagram(),cl);
-    /*
-      now we can use lastLargeNAmplitudes to get it going
-     */
+      matchboxAmplitude()->colourBasis()->tensorIdFromFlow(lastXComb().lastDiagram(),cl);
+    // then iterate over lastLargeNAmplitudes(), key is helicity assignment,
+    // value[colourStructureId] gives the relevant subamplitude
+    // what then?
   }
 }
 

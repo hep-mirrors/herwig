@@ -218,7 +218,7 @@ public:
   /**
    * Return the colour tensor used for the selected colour flow
    */
-  size_t tensorIdFromFlow(tcDiagPtr diag, const ColourLines * cl) const;
+  size_t tensorIdFromFlow(tcDiagPtr diag, const ColourLines * cl);
 
   /**
    * Match colour representation.

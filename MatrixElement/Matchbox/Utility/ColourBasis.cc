@@ -771,7 +771,7 @@ Selector<const ColourLines *> ColourBasis::colourGeometries(tcDiagPtr diag,
   return sel;
 }
 
-size_t ColourBasis::tensorIdFromFlow(tcDiagPtr diag, const ColourLines * flow) const {
+size_t ColourBasis::tensorIdFromFlow(tcDiagPtr diag, const ColourLines * flow) {
 
  Ptr<Tree2toNDiagram>::tcptr dd = 
     dynamic_ptr_cast<Ptr<Tree2toNDiagram>::tcptr>(diag);
@@ -787,7 +787,7 @@ size_t ColourBasis::tensorIdFromFlow(tcDiagPtr diag, const ColourLines * flow) c
 
   size_t res = 0;
   for ( ; res < cl.size(); ++res ) {
-    if ( flow == *cl )
+    if ( flow == cl[res] )
       break;
   }
 
