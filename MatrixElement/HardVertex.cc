@@ -53,7 +53,8 @@ RhoDMatrix HardVertex::getDMatrix(int i) const {
   vector<RhoDMatrix> rhoout(outgoing().size());
   for(unsigned int ix=0,N=outgoing().size();ix<N;++ix)
     rhoout[ix] = outgoing()[ix]->DMatrix();
+  unsigned int iother = i==0 ? 1 : 0;
   // calculate the decay matrix
   return _matrixelement.
-    calculateDMatrix(i,incoming()[1]->rhoMatrix(),rhoout);
+    calculateDMatrix(i,incoming()[iother]->rhoMatrix(),rhoout);
 }
