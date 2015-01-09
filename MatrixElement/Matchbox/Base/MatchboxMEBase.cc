@@ -222,10 +222,12 @@ void MatchboxMEBase::constructVertex(tSubProPtr sub, const ColourLines* cl) {
     vector<unsigned int> pMeHelicities(lamp->first.size(),0);
     for ( size_t k = 0; k < lamp->first.size(); ++k ) {
       int kcross = crossingMap()[k];
+      int flipSign =
+	(k > 1 && kcross < 2) || (k < 2 && kcross > 1) ? -1 : 1;
       if ( mePartonData()[kcross]->iSpin() == PDT::Spin1Half )
-	pMeHelicities[kcross] = (lamp->first[k] == -1 ? 0 : 1);
+	pMeHelicities[kcross] = (flipSign*lamp->first[k] == -1 ? 0 : 1);
       else if ( mePartonData()[kcross]->iSpin() == PDT::Spin1 )
-	pMeHelicities[kcross] = (unsigned int)(lamp->first[k] + 1);
+	pMeHelicities[kcross] = (unsigned int)(flipSign*lamp->first[k] + 1);
       else assert(false);
     }
     pMe(pMeHelicities) = lamp->second[cStructure];
