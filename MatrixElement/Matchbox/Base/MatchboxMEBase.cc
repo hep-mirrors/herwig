@@ -226,7 +226,7 @@ void MatchboxMEBase::constructVertex(tSubProPtr sub, const ColourLines* cl) {
     // map Matchbox conventions to Helicity conventions
     for ( ; h != lamp->first.end(); ++h, ++hx, ++p ) {
       if ( (**p).iSpin() == PDT::Spin1Half )
-	*hx = *h == -1 ? 0 : 1;
+	*hx = (*h == -1 ? 0 : 1);
       else if ( (**p).iSpin() == PDT::Spin1 )
 	*hx = (unsigned int)(*h + 1);
       else assert(false);

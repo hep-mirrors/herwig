@@ -526,6 +526,8 @@ void GeneralSampler::currentCrossSections() const {
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 void GeneralSampler::doinit() {
+  if ( RunDirectories::empty() )
+    RunDirectories::pushRunId(generator()->runName());
   if ( integratePerJob() || integrationJobs() ) {
     theParallelIntegration = true;
     theIntegratePerJob = integratePerJob();
