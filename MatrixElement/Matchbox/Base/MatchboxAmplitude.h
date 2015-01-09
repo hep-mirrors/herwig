@@ -342,6 +342,12 @@ public:
    */
   virtual set<vector<int> > generateHelicities() const;
 
+  /**
+   * Return the helicity combination of the physical process in the
+   * conventions used by the spin correlation algorithm.
+   */
+  virtual vector<unsigned int> physicalHelicities(const vector<int>&) const;
+
   //@}
 
   /** @name Tree-level amplitudes */

@@ -430,6 +430,14 @@ void MatchboxAmplitude::doGenerateHelicities(set<vector<int> >& res,
   }
 }
 
+vector<unsigned int> MatchboxAmplitude::physicalHelicities(const vector<int>&) const {
+  throw Exception()
+    << "The amplitude '" << name() << "' does not support the spin correlation algorithm"
+    << Exception::abortnow;
+  static vector<unsigned int> dummy;
+  return dummy;
+}
+
 void MatchboxAmplitude::prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr) {
 
   if ( !calculateTreeAmplitudes() )

@@ -490,6 +490,24 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
 
 }
 
+vector<unsigned int> MadGraphAmplitude::physicalHelicities(const vector<int>& hel) const {
+  vector<unsigned int> res(hel.size(),0);
+  for ( size_t j = 0; j < hel.size(); ++j ) { 
+    int cross = crossingMap()[j];
+    int xhel = 0;
+    if ( (cross > 1 && j <= 1) || (cross <= 1 && j > 1) )
+      xhel = -1*hel[j];
+    else
+      xhel = hel[j];
+    if ( mePartonData()[cross]->iSpin() == PDT::Spin1Half )
+      res[cross] = (xhel == -1 ? 0 : 1);
+    else if ( mePartonData()[cross]->iSpin() == PDT::Spin1 )
+      res[cross] = (unsigned int)(xhel + 1);
+    else assert(false);
+  }
+  return res;
+}
+
 LorentzVector<Complex> MadGraphAmplitude::plusPolarization(const Lorentz5Momentum& p,
                                                            const Lorentz5Momentum& n,
                                                            int i) const {

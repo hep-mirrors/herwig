@@ -364,6 +364,14 @@ public:
   }
 
   /**
+   * Return the helicity combination of the physical process in the
+   * conventions used by the spin correlation algorithm.
+   */
+  virtual vector<unsigned int> physicalHelicities(const vector<int>& hel) const {
+    return treeLevelAmplitude()->physicalHelicities(hel);
+  }
+
+  /**
    * Return true, if tree-level contributions will be evaluated at amplitude level.
    */
   virtual bool treeAmplitudes() const { 

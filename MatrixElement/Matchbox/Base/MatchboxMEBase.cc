@@ -214,23 +214,34 @@ void MatchboxMEBase::constructVertex(tSubProPtr sub, const ColourLines* cl) {
   }
 
   // fill the production matrix element
+
+  /*
+  cerr << "filling the production matrix element for "
+       << mePartonData()[0]->PDGName() << " "
+       << mePartonData()[1]->PDGName() << " "
+       << mePartonData()[2]->PDGName() << " "
+       << mePartonData()[3]->PDGName() << "\n" << flush;
+  */
+
   ProductionMatrixElement pMe(mePartonData()[0]->iSpin(),
 			      mePartonData()[1]->iSpin(),
 			      out);
   for ( map<vector<int>,CVector>::const_iterator lamp = lastLargeNAmplitudes().begin();
 	lamp != lastLargeNAmplitudes().end(); ++lamp ) {
-    vector<unsigned int> pMeHelicities(lamp->first.size(),0);
-    for ( size_t k = 0; k < lamp->first.size(); ++k ) {
-      int kcross = crossingMap()[k];
-      int flipSign =
-	(k > 1 && kcross < 2) || (k < 2 && kcross > 1) ? -1 : 1;
-      if ( mePartonData()[kcross]->iSpin() == PDT::Spin1Half )
-	pMeHelicities[kcross] = (flipSign*lamp->first[k] == -1 ? 0 : 1);
-      else if ( mePartonData()[kcross]->iSpin() == PDT::Spin1 )
-	pMeHelicities[kcross] = (unsigned int)(flipSign*lamp->first[k] + 1);
-      else assert(false);
-    }
+    vector<unsigned int> pMeHelicities
+      = matchboxAmplitude()->physicalHelicities(lamp->first);
+
+    /*
+    cerr << "filling helicity combination "
+	 << pMeHelicities[0] << " "
+	 << pMeHelicities[1] << " "
+	 << pMeHelicities[2] << " "
+	 << pMeHelicities[3] << " : "
+	 << lamp->second[cStructure] << "\n" << flush;
+    */
+
     pMe(pMeHelicities) = lamp->second[cStructure];
+
   }
 
   // set the spin information

@@ -184,6 +184,12 @@ public:
    */
   virtual bool canFillRhoMatrix() const { return true; }
 
+  /**
+   * Return the helicity combination of the physical process in the
+   * conventions used by the spin correlation algorithm.
+   */
+  virtual vector<unsigned int> physicalHelicities(const vector<int>&) const;
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
