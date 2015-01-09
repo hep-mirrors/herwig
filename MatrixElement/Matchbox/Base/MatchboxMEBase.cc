@@ -214,15 +214,6 @@ void MatchboxMEBase::constructVertex(tSubProPtr sub, const ColourLines* cl) {
   }
 
   // fill the production matrix element
-
-  /*
-  cerr << "filling the production matrix element for "
-       << mePartonData()[0]->PDGName() << " "
-       << mePartonData()[1]->PDGName() << " "
-       << mePartonData()[2]->PDGName() << " "
-       << mePartonData()[3]->PDGName() << "\n" << flush;
-  */
-
   ProductionMatrixElement pMe(mePartonData()[0]->iSpin(),
 			      mePartonData()[1]->iSpin(),
 			      out);
@@ -230,18 +221,7 @@ void MatchboxMEBase::constructVertex(tSubProPtr sub, const ColourLines* cl) {
 	lamp != lastLargeNAmplitudes().end(); ++lamp ) {
     vector<unsigned int> pMeHelicities
       = matchboxAmplitude()->physicalHelicities(lamp->first);
-
-    /*
-    cerr << "filling helicity combination "
-	 << pMeHelicities[0] << " "
-	 << pMeHelicities[1] << " "
-	 << pMeHelicities[2] << " "
-	 << pMeHelicities[3] << " : "
-	 << lamp->second[cStructure] << "\n" << flush;
-    */
-
     pMe(pMeHelicities) = lamp->second[cStructure];
-
   }
 
   // set the spin information
