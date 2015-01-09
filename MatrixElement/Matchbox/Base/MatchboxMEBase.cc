@@ -168,19 +168,52 @@ void MatchboxMEBase::constructVertex(tSubProPtr sub, const ColourLines* cl) {
   if ( !canFillRhoMatrix() || !factory()->spinCorrelations() )
     return;
 
-  // not functional yet
-  throw Exception()
-    << "Spin correlations are not yet fully functional."
-    << Exception::abortnow;
-
   assert(matchboxAmplitude());
   assert(matchboxAmplitude()->colourBasis());
+
+  // get the colour structure for the selected colour flow
   size_t cStructure = 
     matchboxAmplitude()->colourBasis()->tensorIdFromFlow(lastXComb().lastDiagram(),cl);
+
+  // hard process for processing the spin info
+  tPVector hard;
+  hard.push_back(sub->incoming().first);
+  hard.push_back(sub->incoming().second);
+  
   vector<PDT::Spin> out;
-  for ( cPDVector::const_iterator p = mePartonData().begin() + 2;
-	p != mePartonData().end(); ++p )
-    out.push_back((**p).iSpin());
+  for ( size_t k = 0; k < sub->outgoing().size(); ++k ) {
+    out.push_back(sub->outgoing()[k]->data().iSpin());
+    hard.push_back(sub->outgoing()[k]);
+  }
+
+  // calculate dummy wave functions to fill the spin info
+  static vector<VectorWaveFunction> dummyPolarizations;
+  static vector<SpinorWaveFunction> dummySpinors;
+  static vector<SpinorBarWaveFunction> dummyBarSpinors;
+  for ( size_t k = 0; k < hard.size(); ++k ) {
+    if ( hard[k]->data().iSpin() == PDT::Spin1Half ) {
+      if ( hard[k]->id() > 0 && k > 1 ) {
+	SpinorBarWaveFunction(dummyBarSpinors,hard[k],
+			      outgoing, true);
+      } else if ( hard[k]->id() < 0 && k > 1 ) {
+	SpinorWaveFunction(dummySpinors,hard[k],
+			   outgoing, true);
+      } else if ( hard[k]->id() > 0 && k < 2 ) {
+	SpinorWaveFunction(dummySpinors,hard[k],
+			   incoming, false);
+      } else if ( hard[k]->id() < 0 && k < 2 ) {
+	SpinorBarWaveFunction(dummyBarSpinors,hard[k],
+			      incoming, false);
+      }
+    } else if ( hard[k]->data().iSpin() == PDT::Spin1 ) {
+      VectorWaveFunction(dummyPolarizations,hard[k],
+			 k > 1 ? outgoing : incoming,
+			 k > 1 ? true : false,
+			 hard[k]->data().mass() == ZERO);
+    } else assert(false);
+  }
+
+  // fill the production matrix element
   ProductionMatrixElement pMe(mePartonData()[0]->iSpin(),
 			      mePartonData()[1]->iSpin(),
 			      out);
@@ -190,6 +223,7 @@ void MatchboxMEBase::constructVertex(tSubProPtr sub, const ColourLines* cl) {
     vector<int>::const_iterator h = lamp->first.begin();
     vector<unsigned int>::iterator hx = pMeHelicities.begin();
     cPDVector::const_iterator p = mePartonData().begin();
+    // map Matchbox conventions to Helicity conventions
     for ( ; h != lamp->first.end(); ++h, ++hx, ++p ) {
       if ( (**p).iSpin() == PDT::Spin1Half )
 	*hx = *h == -1 ? 0 : 1;
@@ -199,13 +233,18 @@ void MatchboxMEBase::constructVertex(tSubProPtr sub, const ColourLines* cl) {
     }
     pMe(pMeHelicities) = lamp->second[cStructure];
   }
+
+  // set the spin information
   HardVertexPtr hardvertex = new_ptr(HardVertex());
   hardvertex->ME(pMe);
-  sub->incoming().first->spinInfo()->productionVertex(hardvertex);
-  sub->incoming().second->spinInfo()->productionVertex(hardvertex);
+  if ( sub->incoming().first->spinInfo() )
+    sub->incoming().first->spinInfo()->productionVertex(hardvertex);
+  if ( sub->incoming().second->spinInfo() )
+    sub->incoming().second->spinInfo()->productionVertex(hardvertex);
   for ( ParticleVector::const_iterator p = sub->outgoing().begin();
 	p != sub->outgoing().end(); ++p ) {
-    (**p).spinInfo()->productionVertex(hardvertex);
+    if ( (**p).spinInfo() )
+      (**p).spinInfo()->productionVertex(hardvertex);
   }
 
 }
