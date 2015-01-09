@@ -220,15 +220,12 @@ void MatchboxMEBase::constructVertex(tSubProPtr sub, const ColourLines* cl) {
   for ( map<vector<int>,CVector>::const_iterator lamp = lastLargeNAmplitudes().begin();
 	lamp != lastLargeNAmplitudes().end(); ++lamp ) {
     vector<unsigned int> pMeHelicities(lamp->first.size(),0);
-    vector<int>::const_iterator h = lamp->first.begin();
-    vector<unsigned int>::iterator hx = pMeHelicities.begin();
-    cPDVector::const_iterator p = mePartonData().begin();
-    // map Matchbox conventions to Helicity conventions
-    for ( ; h != lamp->first.end(); ++h, ++hx, ++p ) {
-      if ( (**p).iSpin() == PDT::Spin1Half )
-	*hx = (*h == -1 ? 0 : 1);
-      else if ( (**p).iSpin() == PDT::Spin1 )
-	*hx = (unsigned int)(*h + 1);
+    for ( size_t k = 0; k < lamp->first.size(); ++k ) {
+      int kcross = crossingMap()[k];
+      if ( mePartonData()[kcross]->iSpin() == PDT::Spin1Half )
+	pMeHelicities[kcross] = (lamp->first[k] == -1 ? 0 : 1);
+      else if ( mePartonData()[kcross]->iSpin() == PDT::Spin1 )
+	pMeHelicities[kcross] = (unsigned int)(lamp->first[k] + 1);
       else assert(false);
     }
     pMe(pMeHelicities) = lamp->second[cStructure];
