@@ -80,7 +80,7 @@ CLEANFILES = HerwigDefaults.rpo \
   LHC-RS-BR.spc LHC-MSSM-BR.spc LHC-RPV-BR.spc
 
 clean-local:
-	-rm -rf Matchbox
+	-rm -rf Herwig
 
 ## checking targets ##
 

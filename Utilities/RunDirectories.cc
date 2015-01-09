@@ -27,7 +27,7 @@ const string& RunDirectories::prefix() {
 }
 
 string& RunDirectories::thePrefix() {
-  static string p = "./Matchbox/";
+  static string p = "./Herwig/";
   return p;
 }
 
@@ -41,13 +41,13 @@ const string& RunDirectories::buildStorage() {
     return theBuildStorage();
   theBuildStorage() = prefix();
   if ( theBuildStorage().empty() )
-    theBuildStorage() = "./Matchbox/";
+    theBuildStorage() = "./Herwig/";
   else if ( *theBuildStorage().rbegin() != '/' )
     theBuildStorage() += "/";
   theBuildStorage() += "Build/";
   if ( boost::filesystem::exists(theBuildStorage()) ) {
     if ( !boost::filesystem::is_directory(theBuildStorage()) )
-      throw Exception() << "Matchbox build storage '"
+      throw Exception() << "Herwig build storage '"
 			<< theBuildStorage() << "' existing but not a directory."
 			<< Exception::abortnow;
   } else {
@@ -71,7 +71,7 @@ const string& RunDirectories::runStorage() {
 		      << Exception::abortnow;
   if ( boost::filesystem::exists(theRunDirectories().front()) ) {
     if ( !boost::filesystem::is_directory(theRunDirectories().front()) )
-      throw Exception() << "Matchbox run storage '"
+      throw Exception() << "Herwig run storage '"
 			<< theRunDirectories().front() << "' existing but not a directory."
 			<< Exception::abortnow;
   } else {
