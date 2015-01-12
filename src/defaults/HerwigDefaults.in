@@ -106,8 +106,6 @@ newdef LEPHandler:Sampler /Herwig/ACDCSampler
 newdef LEPHandler:CascadeHandler /Herwig/Shower/ShowerHandler
 newdef LEPHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
 newdef LEPHandler:DecayHandler /Herwig/Decays/DecayHandler
-# QED radiation off Z decay products in hard process
-insert LEPHandler:PostSubProcessHandlers 0 /Herwig/QEDRadiation/QEDRadiationHandler
 
 # Create LHCHandler
 create ThePEG::StandardEventHandler LHCHandler 
@@ -121,8 +119,6 @@ newdef LHCHandler:Sampler /Herwig/ACDCSampler
 newdef LHCHandler:CascadeHandler /Herwig/Shower/ShowerHandler
 newdef LHCHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
 newdef LHCHandler:DecayHandler /Herwig/Decays/DecayHandler
-# QED radiation off W/Z decay products in hard process
-insert LHCHandler:PostSubProcessHandlers[0] /Herwig/QEDRadiation/QEDRadiationHandler
 
 # Create DISHandler
 create ThePEG::StandardEventHandler DISHandler 

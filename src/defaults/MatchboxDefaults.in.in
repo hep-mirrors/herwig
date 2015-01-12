@@ -330,7 +330,7 @@ cd /Herwig/MatrixElements/Matchbox
 
 create Herwig::MEMatching MEMatching
 set MEMatching:RestrictPhasespace On
-set MEMatching:BornScaleInSubtraction RealScale
+set MEMatching:BornScaleInSubtraction BornScale
 set MEMatching:RealEmissionScaleInSubtraction RealScale
 set MEMatching:EmissionScaleInSubtraction RealScale
 set MEMatching:BornScaleInSplitting ShowerScale

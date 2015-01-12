@@ -50,6 +50,10 @@ insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff
 #
 # Wgamma/Zgamma
 # insert SimpleQCD:MatrixElements[0] MEPP2VGamma
+#
+# add QED radiation off W/Z decay products using YFS formalism
+# cd /Herwig/EventHandlers
+# insert LHCHandler:PostSubProcessHandlers[0] /Herwig/QEDRadiation/QEDRadiationHandler
 
 #
 #  QCD and gamma processes
