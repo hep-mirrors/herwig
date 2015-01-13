@@ -1,15 +1,58 @@
 cd /Herwig/MatrixElements/Matchbox
+do PPFactory:StartParticleGroup t
+insert PPFactory:ParticleGroup 0 /Herwig/Particles/t
+do PPFactory:EndParticleGroup
+do PPFactory:StartParticleGroup tbar
+insert PPFactory:ParticleGroup 0 /Herwig/Particles/tbar
+do PPFactory:EndParticleGroup
+clear PPFactory:ParticleGroup p
+do PPFactory:StartParticleGroup p
+insert PPFactory:ParticleGroup 0 /Herwig/Particles/g
+insert PPFactory:ParticleGroup 0 /Herwig/Particles/u
+insert PPFactory:ParticleGroup 0 /Herwig/Particles/ubar
+do PPFactory:EndParticleGroup
+clear PPFactory:ParticleGroup j
+do PPFactory:StartParticleGroup j
+insert PPFactory:ParticleGroup 0 /Herwig/Particles/g
+insert PPFactory:ParticleGroup 0 /Herwig/Particles/u
+insert PPFactory:ParticleGroup 0 /Herwig/Particles/ubar
+do PPFactory:EndParticleGroup
+
+
+
 set PPFactory:OrderInAlphaS 0
 set PPFactory:OrderInAlphaEW 2
-do PPFactory:Process u ubar e+ e-
+#do PPFactory:Process p p e+ e-
+#do PPFactory:Process p p W+ W-
+#do PPFactory:Process p p W+ Z0
+#do PPFactory:Process p p Z0 Z0
+
+#set PPFactory:OrderInAlphaS 1 
+#set PPFactory:OrderInAlphaEW 2
+#do PPFactory:Process p p e+ e- j
+#do PPFactory:Process p p W+ W- j
+#do PPFactory:Process p p W+ Z0 j
+#do PPFactory:Process p p Z0 Z0 j
+
+set PPFactory:OrderInAlphaS 2
+set PPFactory:OrderInAlphaEW 0
+do PPFactory:Process p p t tbar
+#do PPFactory:Process p p j j
+
+
+set PPFactory:VirtualContributions Off
+set PPFactory:RealContributions Off
 
 cd /Herwig/Cuts
 set MassCut:MinM 66*GeV
 set MassCut:MaxM 116*GeV
 set QCDCuts:JetFinder JetFinder
 insert QCDCuts:MultiCuts 0 JetCuts
-# insert JetCuts:JetRegions 0 FirstJet
+#insert JetCuts:JetRegions 0 FirstJet
 # insert JetCuts:JetRegions 1 SecondJet
+
+
+
 
 
 
