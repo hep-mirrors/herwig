@@ -1,0 +1,68 @@
+cd /Herwig/MatrixElements/Matchbox
+set PPFactory:OrderInAlphaS 0
+set PPFactory:OrderInAlphaEW 2
+do PPFactory:Process u ubar e+ e-
+
+cd /Herwig/Cuts
+set MassCut:MinM 66*GeV
+set MassCut:MaxM 116*GeV
+set QCDCuts:JetFinder JetFinder
+insert QCDCuts:MultiCuts 0 JetCuts
+# insert JetCuts:JetRegions 0 FirstJet
+# insert JetCuts:JetRegions 1 SecondJet
+
+
+
+###########################################################
+#  Only change if you know what you are doing.
+###########################################################
+cd /Herwig/MatrixElements/Matchbox/Amplitudes
+BUILDINclear /Herwig/MatrixElements/Matchbox/PPFactory:Amplitudes
+BUILDINinsert /Herwig/MatrixElements/Matchbox/PPFactory:Amplitudes 0 INTERFACE
+set /Herwig/Analysis/HepMCFile:Filename ../INTERFACE.hepmc
+
+cd /Herwig/Generators
+insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
+set /Herwig/Analysis/HepMCFile:PrintEvent 1000
+
+cd /Herwig/EventHandlers
+set LHCHandler:Weighted On
+set LHCHandler:Sampler  /Herwig/Samplers/Sampler
+set /Herwig/Samplers/Sampler:BinSampler /Herwig/Samplers/FlatBinSampler
+set /Herwig/Samplers/Sampler:FlatSubprocesses On
+set /Herwig/EventHandlers/LHCHandler:LuminosityFunction:Energy 8000.0*GeV
+cd /Herwig/MatrixElements/Matchbox
+insert /Herwig/Generators/LHCGenerator:EventHandler:SubProcessHandlers[0] PPFactory
+cd /Herwig/Generators
+set LHCGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+set LHCGenerator:EventHandler:DecayHandler      NULL
+set LHCGenerator:EventHandler:HadronizationHandler      NULL
+set LHCGenerator:EventHandler:MultipleInteractionHandler      NULL
+set LHCGenerator:EventHandler:CascadeHandler NULL
+# Note: If you want to calculate NLO corrections in the
+#       Higgs Effective Model (smehc) with GoSam virtual 
+#       Amplitudes and MadGraph TreeLevelAmplitude:
+# set GoSam:HiggsEff On
+# set MadGraph:Model heft
+ cd /Herwig/MatrixElements/Matchbox
+ set PPFactory:VirtualContributions Off
+ set PPFactory:RealContributions Off
+## Scale choice
+set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 91.2*GeV
+set PPFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale
+cd /Herwig/Particles
+set d:NominalMass 0*GeV
+set dbar:NominalMass 0*GeV
+set u:NominalMass 0*GeV
+set ubar:NominalMass 0*GeV
+set s:NominalMass 0*GeV
+set sbar:NominalMass 0*GeV
+set c:NominalMass 0*GeV
+set cbar:NominalMass 0*GeV
+set b:NominalMass 0*GeV
+set bbar:NominalMass 0*GeV
+set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
+set /Herwig/Generators/LHCGenerator:EventHandler:CollisionCuts Off
+do /Herwig/MatrixElements/Matchbox/PPFactory:ProductionMode
+cd /Herwig/Generators 
+saverun INTERFACE LHCGenerator

@@ -1,0 +1,39 @@
+This is a comparision tool for external Interfaces.
+
+
+How to:
+
+Define HEPMC and HERWIG paths in makefile. Then:
+
+$make
+
+Define a process in global.in with reasonable cuts.
+
+$make check
+
+This will build folders and compiles code if necessary.
+Log-files are in the subfolders.
+
+$make compare 
+
+produces 100 events and compares the Interfaces which produced events in 'make check' 
+
+$make clean 
+
+removes the folders and hepmc.
+
+$make clean_hepmc
+
+removes hepmc.
+
+
+To set AAA.hepmc to be the "Thuth.hepmc" type:
+
+$make TRUTH=AAA.hepmc settruth 
+
+
+
+
+
+
+
