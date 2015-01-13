@@ -321,7 +321,7 @@ void MatchboxFactory::setup() {
       throw Exception() << "The MatchboxFactory object '"
 			<< name() << "' has not been switched to production mode.\n"
 			<< "Did you use 'do "
-			<< name() << "::ProductionMode' before isolating the event generator?\n"
+			<< name() << ":ProductionMode' before isolating the event generator?\n"
 			<< Exception::abortnow;
 
     olpProcesses().clear();

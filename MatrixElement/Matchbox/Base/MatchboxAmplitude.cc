@@ -279,10 +279,26 @@ void MatchboxAmplitude::fillCrossingMap(size_t shift) {
     set<pair<tcPDPtr,int>,orderPartonData >::iterator next
       = processLegs.begin();
     while ( next->first->id() < 0 ) {
+      
       if ( ++next == processLegs.end() )
 	break;
     }
-    assert(next != processLegs.end());
+    
+    
+    //This happens for e.g. p p-> W- gamma  &   p p->W- W- j j
+    //Still working for pp->W-H-W- e+ nue jj ???
+    if(next == processLegs.end()){
+      next = processLegs.begin();
+      for (;next!=processLegs.end();next++){
+        assert(next->first->id() < 0 );
+	crossingMap()[ampCount] = next->second - shift;
+        amplitudeLegs.insert(make_pair(next->first,ampCount));
+	++ampCount;
+	processLegs.erase(next);
+      }
+      break;
+    }
+    
     crossingMap()[ampCount] = next->second - shift;
     amplitudeLegs.insert(make_pair(next->first,ampCount));
     tcPDPtr check = next->first;
