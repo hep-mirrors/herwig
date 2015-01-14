@@ -611,8 +611,8 @@ void GeneralSampler::dofinish() {
 	 << runXSec << " +/- " << sqrt(runXSecErr) << "\n"
 	 << "PointsAttempted " << theAttempts << "\n"
 	 << "PointsAccepted " << theAccepts << "\n"
-	 << "SumWeights " << theSumWeights << "\n"
-	 << "SumWeights2 " << theSumWeights2 << "\n"
+	 << "SumWeights " << theSumWeights*theMaxWeight << "\n"
+	 << "SumWeights2 " << theSumWeights2*sqr(theMaxWeight) << "\n"
 	 << flush;
 
   }
