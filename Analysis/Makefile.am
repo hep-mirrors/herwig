@@ -23,7 +23,8 @@ HwJetsAnalysis_la_SOURCES = \
 JetsPlusAnalysis.h JetsPlusAnalysis.cc \
 HJetsAnalysis.h HJetsAnalysis.cc \
 ZJetsAnalysis.h ZJetsAnalysis.cc \
-TTJetsAnalysis.h TTJetsAnalysis.cc
+TTJetsAnalysis.h TTJetsAnalysis.cc \
+CrossSectionAnalysis.h CrossSectionAnalysis.cc
 
 pkglib_LTLIBRARIES +=  HwLEPAnalysis.la
 HwLEPAnalysis_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 6:0:0
