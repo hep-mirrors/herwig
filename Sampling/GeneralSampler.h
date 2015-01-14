@@ -437,6 +437,11 @@ private:
    */
   bool justAfterIntegrate;
 
+  /**
+   * True, if grids should be written at the end of a run
+   */
+  bool theWriteGridsOnFinish;
+
 private:
 
   /**

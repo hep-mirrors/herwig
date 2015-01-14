@@ -51,7 +51,7 @@ GeneralSampler::GeneralSampler()
     maximumExceededBy(0.), didReadGrids(false),
     theParallelIntegration(false),
   theIntegratePerJob(0), theIntegrationJobs(0),
-  justAfterIntegrate(false) {}
+  justAfterIntegrate(false), theWriteGridsOnFinish(false) {}
 
 GeneralSampler::~GeneralSampler() {}
 
@@ -626,7 +626,8 @@ void GeneralSampler::dofinish() {
       s->second->saveIntegrationData();
   }
 
-  writeGrids();
+  if ( theWriteGridsOnFinish )
+    writeGrids();
 
   SamplerBase::dofinish();
 
@@ -724,7 +725,7 @@ void GeneralSampler::persistentOutput(PersistentOStream & os) const {
      << theFlatSubprocesses << isSampling << theMinSelection
      << runCombinationData << theAlmostUnweighted << maximumExceeds
      << maximumExceededBy << theParallelIntegration
-     << theIntegratePerJob << theIntegrationJobs;
+     << theIntegratePerJob << theIntegrationJobs << theWriteGridsOnFinish;
 }
 
 void GeneralSampler::persistentInput(PersistentIStream & is, int) {
@@ -738,7 +739,7 @@ void GeneralSampler::persistentInput(PersistentIStream & is, int) {
      >> theFlatSubprocesses >> isSampling >> theMinSelection
      >> runCombinationData >> theAlmostUnweighted >> maximumExceeds
      >> maximumExceededBy >> theParallelIntegration
-     >> theIntegratePerJob >> theIntegrationJobs;
+     >> theIntegratePerJob >> theIntegrationJobs >> theWriteGridsOnFinish;
 }
 
 
@@ -888,6 +889,22 @@ void GeneralSampler::Init() {
      "The maximum number of integration jobs to create.",
      &GeneralSampler::theIntegrationJobs, 0, 0, 0,
      false, false, Interface::lowerlim);
+
+
+  static Switch<GeneralSampler,bool> interfaceWriteGridsOnFinish
+    ("WriteGridsOnFinish",
+     "Write grids on finishing a run.",
+     &GeneralSampler::theWriteGridsOnFinish, false, false, false);
+  static SwitchOption interfaceWriteGridsOnFinishYes
+    (interfaceWriteGridsOnFinish,
+     "Yes",
+     "",
+     true);
+  static SwitchOption interfaceWriteGridsOnFinishNo
+    (interfaceWriteGridsOnFinish,
+     "No",
+     "",
+     false);
 
 }
 
