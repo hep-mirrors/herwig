@@ -634,7 +634,7 @@ void GeneralSampler::dofinish() {
 void GeneralSampler::doinitrun() {
   readGrids();
 
-  if ( theGrids.children().empty() )
+  if ( theGrids.children().empty() && !didReadGrids )
     generator()->log()
       << "\n--------------------------------------------------------------------------------\n\n"
       << "Warning:No grid file could be found at the start of this run.\n\n"

@@ -249,6 +249,21 @@ public:
   bool integrated() const { return theIntegrated; }
 
   /**
+   * Return true, if remappers have been set up
+   */
+  bool remappersFilled() const { return theRemappersFilled; }
+
+  /**
+   * Return true, if this sampler has already read grid data.
+   */
+  bool hasGrids() const { return theHasGrids; }
+
+  /**
+   * Indicate that this sampler has already read grid data.
+   */
+  void didReadGrids() { theHasGrids = true; }
+
+  /**
    * Finalize this sampler.
    */
   virtual void finalize(bool); 
@@ -506,6 +521,16 @@ private:
    * True, if integration has already be performed
    */
   bool theIntegrated;
+
+  /**
+   * True, if remappers have been set up
+   */
+  bool theRemappersFilled;
+
+  /**
+   * True, if this sampler has already read grid data.
+   */
+  bool theHasGrids;
 
 private:
 

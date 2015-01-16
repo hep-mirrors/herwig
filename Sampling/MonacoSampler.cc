@@ -136,6 +136,7 @@ void MonacoSampler::initialize(bool progress) {
   if ( haveGrid ) {
     fromXML(*git);
     sampler()->grids().erase(git);
+    didReadGrids();
   } else {
 // flat grid
     theGrid.resize(dimension(),theGridDivisions);
@@ -153,7 +154,7 @@ void MonacoSampler::initialize(bool progress) {
   }
 
   if ( initialized() ) {
-    if ( !haveGrid )
+    if ( !hasGrids() )
       throw Exception() << "MonacoSampler: Require existing grid when starting to run.\n"
 			<< "Did you miss setting --setupfile?"
 			<< Exception::abortnow;
@@ -182,6 +183,7 @@ void MonacoSampler::initialize(bool progress) {
     }
   }
   adapt();
+  didReadGrids();
   isInitialized();
 }
 

@@ -50,7 +50,9 @@ BinSampler::BinSampler()
     theLuminosityMapperBins(0),
     theGeneralMapperBins(0),
     theRemapperMinSelection(0.00001),
-    theIntegrated(false) {}
+    theIntegrated(false),
+    theRemappersFilled(false),
+    theHasGrids(false) {}
 
 BinSampler::~BinSampler() {}
 
@@ -223,6 +225,9 @@ void BinSampler::saveIntegrationData() const {
 
 void BinSampler::readIntegrationData() {
 
+  if ( theIntegrated )
+    return;
+
   bool haveStats = false;
 
   list<XML::Element>::iterator sit = sampler()->grids().children().begin();
@@ -276,6 +281,9 @@ void BinSampler::saveRemappers() const {
 void BinSampler::setupRemappers(bool progress) {
 
   if ( !theRemapperPoints )
+    return;
+
+  if ( theRemappersFilled )
     return;
 
   lastPoint().resize(dimension());
@@ -352,6 +360,8 @@ void BinSampler::setupRemappers(bool progress) {
     }
 
   }
+
+  theRemappersFilled = true;
 
 }
 
@@ -516,8 +526,7 @@ void BinSampler::persistentOutput(PersistentOStream & os) const {
      << theBin << theInitialized << theLastPoint
      << theEventHandler << theSampler << theRandomNumbers
      << theRemapperPoints << theRemapChannelDimension
-     << theLuminosityMapperBins << theGeneralMapperBins
-     << theIntegrated;
+     << theLuminosityMapperBins << theGeneralMapperBins;
 }
 
 void BinSampler::persistentInput(PersistentIStream & is, int) {
@@ -527,8 +536,7 @@ void BinSampler::persistentInput(PersistentIStream & is, int) {
      >> theBin >> theInitialized >> theLastPoint
      >> theEventHandler >> theSampler >> theRandomNumbers
      >> theRemapperPoints >> theRemapChannelDimension
-     >> theLuminosityMapperBins >> theGeneralMapperBins
-     >> theIntegrated;
+     >> theLuminosityMapperBins >> theGeneralMapperBins;
 }
 
 

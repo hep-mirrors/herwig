@@ -110,6 +110,7 @@ void CellGridSampler::initialize(bool progress) {
   if ( haveGrid ) {
     SimpleCellGrid::fromXML(*git);
     sampler()->grids().erase(git);
+    didReadGrids();
   }
 
   lastPoint().resize(dimension());
@@ -119,7 +120,7 @@ void CellGridSampler::initialize(bool progress) {
   }
 
   if ( initialized() ) {
-    if ( !haveGrid )
+    if ( !hasGrids() )
       throw Exception() << "CellGridSampler: Require existing grid when starting to run.\n"
 			<< "Did you miss setting --setupfile?"
 			<< Exception::abortnow;
@@ -208,6 +209,8 @@ void CellGridSampler::initialize(bool progress) {
       nextIteration();
     }
   }
+
+  didReadGrids();
   isInitialized();
 
 }
