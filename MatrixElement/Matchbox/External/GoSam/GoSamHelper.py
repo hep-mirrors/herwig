@@ -29,6 +29,7 @@ def find(name, path):
 
   
 parser = argparse.ArgumentParser()
+parser.add_argument('--usrinfile', help='usrinfile')
 parser.add_argument('--infile', help='infile')
 parser.add_argument('--definfile', help='definfile')
 parser.add_argument('--formtempdir', help='formtempdir')
@@ -49,8 +50,11 @@ if args.makelink and not os.path.islink(args.makelinkto):
 
 
 
-if not os.path.isfile(args.infile):
+if not os.path.isfile(args.usrinfile):
   shutil.copyfile(args.definfile, args.infile)
+
+if os.path.isfile(args.usrinfile):
+  shutil.copyfile(args.usrinfile, args.infile)
 
 replacetext(args.infile,"@MODEL@", "model="+args.higgseff)
 replacetext(args.infile,"@REDUCTIONPROGRAMS@", args.reduction)

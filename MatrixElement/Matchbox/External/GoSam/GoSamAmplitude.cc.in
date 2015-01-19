@@ -134,26 +134,53 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
 
   string orderFileName = gosamPath + "/" + name() + ".OLPOrder.lh";
 
+  // Set the path variable (plus file name) where to find the GoSam specific input file
   gosamSetupInFileName = gosamSetupInFileNameInterface == "" ? gosamPath + "/setup.gosam.in" : gosamSetupInFileNameInterface;
 
-  // if it doesn't, then get it from src/defaults
+  // Use the python script GoSamHelper.py to make replacements in the GoSam 
+  // specific input file at gosamSetupInFileName. If the GoSam input file
+  // does not exist yet at gosamSetupInFileName the python script will get 
+  // it from src/defaults/ before making the replacements.
   string cmd = "python @prefix@/bin/GoSamHelper.py ";
-  cmd+=" --infile="+gosamSetupInFileName;  
+  cmd+=" --usrinfile="+gosamSetupInFileNameInterface;
+  cmd+=" --infile="+gosamSetupInFileName+".tbu";
   cmd+=" --definfile=@prefix@/share/Herwig++/defaults/setup.gosam.in";
-  // set form's tempdir to the current working directory
   cmd+=" --formtempdir="+StringUtils::replace(gosamSourcePath, string("/"), string("\\/"));    //@FORMTEMPDIR@
-  // set reduction programs to what is specified through the repository
   cmd+=" --reduction="+(theNinja ? string("ninja,golem95") : string("samurai,golem95"));       //@REDUCTIONPROGRAMS@
-  if (theNinja) generator()->log() << "\nGoSam will use Ninja as reduction program.\n" << flush;
-  else if (!theNinja) generator()->log() << "\nGoSam will use Samurai as reduction program.\n" << flush;
-  if (theFormOpt) generator()->log() << "Form optimization switched on.\n" << flush;
-  else if (!theFormOpt) generator()->log() << "Form optimization switched off.\n" << flush;
-  if (theNinja && !theFormOpt) throw Exception() << "Ninja reduction needs form optimization!\n" << Exception::abortnow;
-  // use or don't use formopt
   cmd+=" --formopt="+(theFormOpt ? string("") : string(", noformopt"));   //@FORMOPT@
-  cmd+=" --higgseff="+(theHiggsEff ? string("smehc") : string("smdiag"));   //model
+  cmd+=" --higgseff="+(theHiggsEff ? string("smehc") : string("smdiag"));   //@MODEL@
   std::system(cmd.c_str());
 
+  generator()->log() << "\nAccording to the repository settings for the GoSam interface:\n" << flush;
+
+  if (theHiggsEff) generator()->log() << "\n  -- GoSam will use a model with an effective ggH coupling (model=smehc).\n" << flush;
+  else if (!theHiggsEff) generator()->log() << "\n  -- GoSam will use its default model (model=smdiag).\n" << flush;
+
+  if (theNinja) generator()->log() << "  -- GoSam will use Ninja as reduction program (reduction_programs=ninja,golem95).\n" << flush;
+  else if (!theNinja) generator()->log() << "  -- GoSam will use Samurai as reduction program (reduction_programs=samurai,golem95).\n" << flush;
+
+  if (theFormOpt) generator()->log() << "  -- Form optimization switched on (extensions=autotools).\n" << flush;
+  else if (!theFormOpt) generator()->log() << "  -- Form optimization switched off  (extensions=autotools, noformopt).\n" << flush;
+
+  if (theNinja && !theFormOpt) throw Exception() << "Ninja reduction needs form optimization!\n" << Exception::abortnow;
+
+  if (gosamSetupInFileNameInterface == "") {
+    generator()->log() << "\n  Please be aware that you are using a copy of the default GoSam input file!\n" 
+                       << "  Please note that if you need special options to be considered for the specific\n"
+                       << "  process you are looking at (diagram filtering, etc.) these are not automatically\n"
+                       << "  set for you. In that case please consider to specify your own GoSam input file\n"
+                       << "  via the SetupInFilename repository command.\n\n" << flush; 
+  }
+
+  // If one uses a custom GoSam input file at gosamSetupInFileName = gosamSetupInFileNameInterface
+  // then please note that not all options in there might match the corresponding Herwig repository
+  // options
+  if (gosamSetupInFileNameInterface != "") {
+    generator()->log() << "\n  Please be aware that you are using a custom GoSam input file!\n" 
+                       << "  Please note that if you have set the options for model, reduction_programs,\n" 
+                       << "  extensions and/or form.tempdir manually these will of course not be replaced\n" 
+                       << "  by the corresponding repository settings mentioned above.\n\n" << flush;
+  }
 
   // check for old order file and create it if it doesn't already exist
   fillOrderFile(procs, orderFileName);
@@ -443,7 +470,7 @@ void GoSamAmplitude::signOLP(const string& order, const string& contract) {
     generator()->log() << "\n>>> generating GoSam amplitudes. This may take some time, please be patient.\n"
                        << ">>> see " + cwd + folderMatchboxBuild + "gosam-amplitudes.log for details.\n" << flush;
     string cmd = "@GOSAMPREFIX@/bin/gosam.py --olp --output-file=" + contract + " --config=" + 
-      gosamSetupInFileName + " --destination=" + gosamSourcePath + " " + order + " > " + cwd + folderMatchboxBuild + "gosam-amplitudes.log 2>&1";
+      gosamSetupInFileName+".tbu" + " --destination=" + gosamSourcePath + " " + order + " > " + cwd + folderMatchboxBuild + "gosam-amplitudes.log 2>&1";
     std::system(cmd.c_str());
     cmd = "python @prefix@/bin/GoSamHelper.py ";
     cmd += " --makelink ";
