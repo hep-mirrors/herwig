@@ -335,7 +335,8 @@ clusterAll(const list<vector<Tree2toNGenerator::Vertex> >& current,
   for ( list<vector<Vertex> >::const_iterator c = current.begin();
 	c != current.end(); ++c ) {
     if ( c->size() == 1 ) {
-      res.push_back(*c);
+      if ( orderInGs == 0 && orderInGem == 0 )
+	res.push_back(*c);
       continue;
     }
     for ( unsigned int gs = 0; gs <= maxOrderGs; ++gs )
