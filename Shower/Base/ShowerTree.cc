@@ -1355,11 +1355,11 @@ void ShowerTree::constructTrees(tSubProPtr subProcess, ShowerTreePtr & hard,
   // there must be something to shower
   if(hardParticles.empty()) 
     throw Exception() << "No particles to shower in "
-  		      << "ShowerHandler::fillShoweringParticles" 
+  		      << "ShowerTree::constructTrees()" 
   		      << Exception::eventerror;
   if(!isHard)
     throw Exception() << "Starting on decay not yet implemented in "
-  		      << "ShowerHandler::findShoweringParticles()" 
+  		      << "ShowerTree::constructTrees()" 
   		      << Exception::runerror;
   // create the hard process ShowerTree
   ParticleVector out(hardParticles.begin(),hardParticles.end());

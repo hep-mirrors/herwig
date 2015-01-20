@@ -512,6 +512,8 @@ tPPair ShowerHandler::cascade(tSubProPtr sub,
   unsigned int countFailures=0;
   while (countFailures<maxtry_) {
     try {
+      decay_.clear();
+      done_.clear();
       ShowerTree::constructTrees(currentSubProcess(),hard_,decay_,
 				 firstInteraction() ? tagged() :
 				 tPVector(currentSubProcess()->outgoing().begin(),
