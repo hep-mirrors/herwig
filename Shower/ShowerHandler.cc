@@ -265,7 +265,8 @@ void ShowerHandler::Init() {
 }
 
 void ShowerHandler::cascade() {
-
+  generator()->log() << "TESTING BEFORE SHOWER \n" << *generator()->currentEvent() << "\n";
+  
   tcPDFPtr first  = firstPDF().pdf();
   tcPDFPtr second = secondPDF().pdf();
 
@@ -494,63 +495,6 @@ void ShowerHandler::fillEventRecord() {
   }
 }
 
-void ShowerHandler::findShoweringParticles() {
-  // clear the storage
-  hard_=ShowerTreePtr();
-  decay_.clear();
-  done_.clear();
-  // temporary storage of the particles
-  set<PPtr> hardParticles;
-  // outgoing particles from the hard process
-  PVector outgoing = currentSubProcess()->outgoing();
-  set<PPtr> outgoingset(outgoing.begin(),outgoing.end());
-  // loop over the tagged particles
-  tPVector thetagged;
-  if( firstInteraction() ){
-    thetagged = tagged();
-  }
-  else{
-    thetagged.insert(thetagged.end(),
-		     outgoing.begin(),outgoing.end());
-  }
-  bool isHard=false;
-  for (tParticleVector::const_iterator 
-	 taggedP = thetagged.begin();
-       taggedP != thetagged.end(); ++taggedP) {
-    // if a remnant don't consider
-    if(eventHandler()->currentCollision()->isRemnant(*taggedP))
-      continue;
-    // find the parent and whether its a colourless s-channel resonance
-    bool isDecayProd=false;
-    tPPtr parent = *taggedP;
-    // check if from s channel decaying colourless particle
-    while(parent&&!parent->parents().empty()&&!isDecayProd) {
-      parent = parent->parents()[0];
-      if(parent == currentSubProcess()->incoming().first||
-	 parent == currentSubProcess()->incoming().second) break;
-      isDecayProd = decayProduct(parent);
-    }
-    // add to list of outgoing hard particles if needed
-    isHard |=(outgoingset.find(*taggedP) != outgoingset.end());
-    if (isDecayProd && evolver_->_hardEmissionMode<2) 
-      hardParticles.insert(findParent(parent,isHard,outgoingset));
-    else            hardParticles.insert(*taggedP);
-  }
-  // there must be something to shower
-  if(hardParticles.empty()) 
-    throw Exception() << "No particles to shower in "
-		      << "ShowerHandler::fillShoweringParticles" 
-		      << Exception::eventerror;
-  if(!isHard)
-    throw Exception() << "Starting on decay not yet implemented in "
-		      << "ShowerHandler::findShoweringParticles()" 
-		      << Exception::runerror;
-  // create the hard process ShowerTree
-  ParticleVector out(hardParticles.begin(),hardParticles.end());
-  hard_=new_ptr(ShowerTree(currentSubProcess()->incoming(),out, decay_));
-  hard_->setParents();
-}
-
 void ShowerHandler::prepareCascade(tSubProPtr sub) { 
   current_ = currentStep(); 
   subProcess_ = sub;
@@ -568,8 +512,33 @@ tPPair ShowerHandler::cascade(tSubProPtr sub,
   unsigned int countFailures=0;
   while (countFailures<maxtry_) {
     try {
-      // find the particles in the hard process and the decayed particles to shower
-      findShoweringParticles();
+      ShowerTree::constructTrees(currentSubProcess(),hard_,decay_,
+				 firstInteraction() ? tagged() :
+				 tPVector(currentSubProcess()->outgoing().begin(),
+					  currentSubProcess()->outgoing().end()));
+      generator()->log() << "AFTER FIND PARTICLES\n";
+      generator()->log() << "HARD TREE\n";
+      for(map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator it=hard_->incomingLines().begin();
+	  it!=hard_->incomingLines().end();++it) {
+	generator()->log() << "INCOMING " << *(it->second) << "\n";
+      }
+      for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator it=hard_->outgoingLines().begin();
+	  it!=hard_->outgoingLines().end();++it) {
+	generator()->log() << "OUTGOING " << *(it->second) << "\n";;
+      }
+      for(ShowerDecayMap::const_iterator dit=decay_.begin();dit!=decay_.end();++dit) {
+	generator()->log() << "DECAY TREE\n";
+	for(map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator it=dit->second->incomingLines().begin();
+	    it!=dit->second->incomingLines().end();++it) {
+	  generator()->log() << "INCOMING " << *(it->second) << "\n";
+	}
+	for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator it=dit->second->outgoingLines().begin();
+	    it!=dit->second->outgoingLines().end();++it) {
+	  generator()->log() << "OUTGOING " << *(it->second) << "\n";;
+	}
+      }
+
+
       // if no hard process
       if(!hard_)  throw Exception() << "Shower starting with a decay"
 				    << "is not implemented" 
@@ -631,19 +600,6 @@ tPPair ShowerHandler::cascade(tSubProPtr sub,
   //connected to the remnants.
   return make_pair(findFirstParton(sub->incoming().first ),
 		   findFirstParton(sub->incoming().second));
-}
-
-PPtr ShowerHandler::findParent(PPtr original, bool & isHard, 
-			       set<PPtr> outgoingset) const {
-  PPtr parent=original;
-  isHard |=(outgoingset.find(original) != outgoingset.end());
-  if(!original->parents().empty()) {
-    PPtr orig=original->parents()[0];
-    if(current_->find(orig)&&decayProduct(orig)) {
-      parent=findParent(orig,isHard,outgoingset);
-    }
-  }
-  return parent;
 }
 
 ShowerHandler::RemPair 
@@ -713,35 +669,6 @@ PPtr ShowerHandler::findFirstParton(tPPtr seed) const{
   else return findFirstParton(parent);
 }
 
-bool ShowerHandler::decayProduct(tPPtr particle) const {
-  // must be time-like and not incoming
-  if(particle->momentum().m2()<=ZERO||
-     particle == currentSubProcess()->incoming().first||
-     particle == currentSubProcess()->incoming().second) return false;
-  // if only 1 outgoing and this is it
-  if(currentSubProcess()->outgoing().size()==1 &&
-     currentSubProcess()->outgoing()[0]==particle) return true;
-  // must not be the s-channel intermediate otherwise
-  if(find(currentSubProcess()->incoming().first->children().begin(),
-	  currentSubProcess()->incoming().first->children().end(),particle)!=
-     currentSubProcess()->incoming().first->children().end()&&
-     find(currentSubProcess()->incoming().second->children().begin(),
-	  currentSubProcess()->incoming().second->children().end(),particle)!=
-     currentSubProcess()->incoming().second->children().end()&&
-     currentSubProcess()->incoming().first ->children().size()==1&&
-     currentSubProcess()->incoming().second->children().size()==1)
-    return false;
-  // if non-coloured this is enough
-  if(!particle->dataPtr()->coloured()) return true;
-  // if coloured must be unstable
-  if(particle->dataPtr()->stable()) return false;
-  // must not have same particle type as a child
-  int id = particle->id();
-  for(unsigned int ix=0;ix<particle->children().size();++ix)
-    if(particle->children()[ix]->id()==id) return false;
-  // otherwise its a decaying particle
-  return true;
-}
 
 namespace {
 

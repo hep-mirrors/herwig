@@ -67,6 +67,15 @@ public:
    */
   static Lorentz5Distance spaceTimeDistance(tPPtr particle);
 
+  /**
+   *  Construct the trees from the hard process
+   * @param hard The output ShowerTree for the hard process
+   * @param decay The output ShowerTrees for any decays.
+   * @param 
+   */
+  static void constructTrees(tSubProPtr subProcess, ShowerTreePtr & hard,
+			     ShowerDecayMap & decay, tPVector tagged);
+
 public:
 
   /**

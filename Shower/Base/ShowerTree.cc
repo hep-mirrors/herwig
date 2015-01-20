@@ -1271,3 +1271,98 @@ Lorentz5Distance ShowerTree::spaceTimeDistance(tPPtr particle) {
   Lorentz5Distance output = (hbarc*fact)*particle->momentum();
   return output;
 }
+
+namespace {
+
+bool decayProduct(tSubProPtr subProcess,
+		  tPPtr particle) {
+  // must be time-like and not incoming
+  if(particle->momentum().m2()<=ZERO||
+     particle == subProcess->incoming().first||
+     particle == subProcess->incoming().second) return false;
+  // if only 1 outgoing and this is it
+  if(subProcess->outgoing().size()==1 &&
+     subProcess->outgoing()[0]==particle) return true;
+  // must not be the s-channel intermediate otherwise
+  if(find(subProcess->incoming().first->children().begin(),
+	  subProcess->incoming().first->children().end(),particle)!=
+     subProcess->incoming().first->children().end()&&
+     find(subProcess->incoming().second->children().begin(),
+	  subProcess->incoming().second->children().end(),particle)!=
+     subProcess->incoming().second->children().end()&&
+     subProcess->incoming().first ->children().size()==1&&
+     subProcess->incoming().second->children().size()==1)
+    return false;
+  // if non-coloured this is enough
+  if(!particle->dataPtr()->coloured()) return true;
+  // if coloured must be unstable
+  if(particle->dataPtr()->stable()) return false;
+  // must not have same particle type as a child
+  int id = particle->id();
+  for(unsigned int ix=0;ix<particle->children().size();++ix)
+    if(particle->children()[ix]->id()==id) return false;
+  // otherwise its a decaying particle
+  return true;
+}
+
+PPtr findParent(PPtr original, bool & isHard, 
+			       set<PPtr> outgoingset,
+			       tSubProPtr subProcess) {
+  PPtr parent=original;
+  isHard |=(outgoingset.find(original) != outgoingset.end());
+  if(!original->parents().empty()) {
+    PPtr orig=original->parents()[0];
+    if(CurrentGenerator::current().currentEventHandler()->currentStep()->
+       find(orig)&&decayProduct(subProcess,orig)) {
+      parent=findParent(orig,isHard,outgoingset,subProcess);
+    }
+  }
+  return parent;
+}
+
+}
+
+void ShowerTree::constructTrees(tSubProPtr subProcess, ShowerTreePtr & hard,
+				ShowerDecayMap & decay, tPVector tagged) {
+  // temporary storage of the particles
+  set<PPtr> hardParticles;
+  // loop over the tagged particles
+  bool isHard=false;
+  for (tParticleVector::const_iterator taggedP = tagged.begin();
+       taggedP != tagged.end(); ++taggedP) {
+    // if a remnant don't consider
+    if(CurrentGenerator::current().currentEventHandler()->currentCollision()->isRemnant(*taggedP))
+      continue;
+    // find the parent and whether its a colourless s-channel resonance
+    bool isDecayProd=false;
+    tPPtr parent = *taggedP;
+    // check if from s channel decaying colourless particle
+    while(parent&&!parent->parents().empty()&&!isDecayProd) {
+      parent = parent->parents()[0];
+      if(parent == subProcess->incoming().first ||
+  	 parent == subProcess->incoming().second ) break;
+      isDecayProd = decayProduct(subProcess,parent);
+    }
+    set<PPtr> outgoingset(tagged.begin(),tagged.end());
+    // add to list of outgoing hard particles if needed
+    isHard |=(outgoingset.find(*taggedP) != outgoingset.end());
+    // not sure what the evolver bit was doing here ?
+    // if (isDecayProd && evolver_->_hardEmissionMode<2) 
+    if (isDecayProd) 
+      hardParticles.insert(findParent(parent,isHard,outgoingset,subProcess));
+    else            hardParticles.insert(*taggedP);
+  }
+  // there must be something to shower
+  if(hardParticles.empty()) 
+    throw Exception() << "No particles to shower in "
+  		      << "ShowerHandler::fillShoweringParticles" 
+  		      << Exception::eventerror;
+  if(!isHard)
+    throw Exception() << "Starting on decay not yet implemented in "
+  		      << "ShowerHandler::findShoweringParticles()" 
+  		      << Exception::runerror;
+  // create the hard process ShowerTree
+  ParticleVector out(hardParticles.begin(),hardParticles.end());
+  hard=new_ptr(ShowerTree(subProcess->incoming(),out, decay));
+  hard->setParents();
+}

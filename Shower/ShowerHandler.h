@@ -251,20 +251,6 @@ protected:
   void fillEventRecord();
 
   /**
-   * Identify the particles in the hard process and decayed particles
-   * which need to be showered
-   */
-  void findShoweringParticles();
-
-  /**
-   * Find the final unstable time-like parent of a particle
-   * @param parent The ultimate parent for the decaying particle
-   * @param isHard Whether nay particles in chain are from the hard process
-   * @param outgoing The outgoing particles from the hard process
-   */
-  PPtr findParent(PPtr parent, bool & isHard, set<PPtr> outgoing) const;
-
-  /**
    * Find the parton extracted from the incoming particle after ISR
    */
   PPtr findFirstParton(tPPtr seed) const;
@@ -289,11 +275,6 @@ protected:
    *  Reset the PDF's after the hard collision has been showered
    */
   void setMPIPDFs();
-
-  /**
-   *  Test for decay products
-   */
-  bool decayProduct(tPPtr) const;
 
   /**
    *  Boost all the particles in the collision so that the collision always occurs
