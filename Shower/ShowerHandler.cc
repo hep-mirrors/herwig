@@ -265,7 +265,6 @@ void ShowerHandler::Init() {
 }
 
 void ShowerHandler::cascade() {
-  generator()->log() << "TESTING BEFORE SHOWER \n" << *generator()->currentEvent() << "\n";
   
   tcPDFPtr first  = firstPDF().pdf();
   tcPDFPtr second = secondPDF().pdf();
@@ -518,29 +517,6 @@ tPPair ShowerHandler::cascade(tSubProPtr sub,
 				 firstInteraction() ? tagged() :
 				 tPVector(currentSubProcess()->outgoing().begin(),
 					  currentSubProcess()->outgoing().end()));
-      generator()->log() << "AFTER FIND PARTICLES\n";
-      generator()->log() << "HARD TREE\n";
-      for(map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator it=hard_->incomingLines().begin();
-	  it!=hard_->incomingLines().end();++it) {
-	generator()->log() << "INCOMING " << *(it->second) << "\n";
-      }
-      for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator it=hard_->outgoingLines().begin();
-	  it!=hard_->outgoingLines().end();++it) {
-	generator()->log() << "OUTGOING " << *(it->second) << "\n";;
-      }
-      for(ShowerDecayMap::const_iterator dit=decay_.begin();dit!=decay_.end();++dit) {
-	generator()->log() << "DECAY TREE\n";
-	for(map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator it=dit->second->incomingLines().begin();
-	    it!=dit->second->incomingLines().end();++it) {
-	  generator()->log() << "INCOMING " << *(it->second) << "\n";
-	}
-	for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator it=dit->second->outgoingLines().begin();
-	    it!=dit->second->outgoingLines().end();++it) {
-	  generator()->log() << "OUTGOING " << *(it->second) << "\n";;
-	}
-      }
-
-
       // if no hard process
       if(!hard_)  throw Exception() << "Shower starting with a decay"
 				    << "is not implemented" 

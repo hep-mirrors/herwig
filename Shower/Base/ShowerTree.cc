@@ -183,13 +183,18 @@ ShowerTree::ShowerTree(PPtr in,
 	if(StandardQCDPartonMatcher::Check(orig->id())) {
 	  radiates = true;
 	}
-	else
+	else {
 	  for(unsigned int iy=0;iy<orig->children().size();++iy) {
 	    if(orig->children()[iy]->id()==orig->id()) {
 	      radiates = true;
 	      break;
 	    }
 	  }
+	}
+	// finally assume all non-decaying particles are in this class
+	if(!radiates) {
+	  radiates = !decaysInShower(orig->id());
+	}
       }
       if(radiates) {
 	findDecayProducts(orig,original,copy,decay,trees);
