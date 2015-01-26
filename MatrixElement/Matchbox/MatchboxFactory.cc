@@ -759,15 +759,17 @@ void MatchboxFactory::setup() {
 
 	sub->getDipoles();
 
-	if ( sub->dependent().empty() && realContributions() ) {
+	if ( sub->dependent().empty() ) {
 	  // finite real contribution
-	  Ptr<MatchboxMEBase>::ptr fme = 
-	    dynamic_ptr_cast<Ptr<MatchboxMEBase>::ptr>(sub->head())->cloneMe();
-	  string qname = fullName() + "/" + (**real).name() + ".FiniteReal";
-	  if ( ! (generator()->preinitRegister(fme,qname) ) )
-	    throw InitException() << "ME " << qname << " already existing.";
-	  MEs().push_back(fme);	
-	  finiteRealMEs().push_back(fme);
+	  if ( realContributions() ) {
+	    Ptr<MatchboxMEBase>::ptr fme = 
+	      dynamic_ptr_cast<Ptr<MatchboxMEBase>::ptr>(sub->head())->cloneMe();
+	    string qname = fullName() + "/" + (**real).name() + ".FiniteReal";
+	    if ( ! (generator()->preinitRegister(fme,qname) ) )
+	      throw InitException() << "ME " << qname << " already existing.";
+	    MEs().push_back(fme);	
+	    finiteRealMEs().push_back(fme);
+	  }
 	  sub->head(tMEPtr());
 	  continue;
 	}
