@@ -249,11 +249,11 @@ for routine in routines:
       continue
     if routine[0]=="":
        routine[0]+="         IF (proc .EQ. "+i+") THEN\n            CALL "
-       routine[0]+=   "ML5_"+i+"_"+routine[1]+"\n"
+       routine[0]+=   "MG5_"+i+"_"+routine[1]+"\n"
     else:
        routine[0]+="         ELSE IF (proc .EQ. "+i+") THEN\n"\
                "            CALL "
-       routine[0]+=   "ML5_"+i+"_"+routine[1]+"\n"
+       routine[0]+=   "MG5_"+i+"_"+routine[1]+"\n"
   if routine[0]!="":	     
        routine[0]+="         ELSE\n"
        routine[0]+="             WRITE(*,*) '##W02A WARNING No id found '\n"
