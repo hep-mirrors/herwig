@@ -121,7 +121,7 @@ vector<pair<int, Complex> >
 OneHalfHalfSplitFn::generatePhiBackward(const double, const Energy2, const IdList &,
 					const RhoDMatrix & ) { 
   // no dependance
-  return vector<pair<int, Complex> >(1,make_pair(1,1.));
+  return vector<pair<int, Complex> >(0,make_pair(1,1.));
 }
 
 DecayMEPtr OneHalfHalfSplitFn::matrixElement(const double z, const Energy2 t, 
