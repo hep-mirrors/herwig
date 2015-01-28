@@ -1,0 +1,24 @@
+##################################################
+# Rivet analyses at the Z pole
+##################################################
+read LEPBase-Matchbox.in
+
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+cd /Herwig/Generators
+set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 202.*GeV
+set LEPGenerator:EventHandler:LuminosityFunction:Energy 202.
+
+##################################################
+# select the analyses
+##################################################
+
+# OPAL b/c/light multiplicity
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2002_S5361494
+
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+cd /Herwig/Generators
+saverun LEP-Matchbox-202 LEPGenerator

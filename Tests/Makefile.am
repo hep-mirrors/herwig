@@ -141,11 +141,23 @@ Rivet-LEP: Rivet-LEP-22  Rivet-LEP-35  Rivet-LEP-44  Rivet-LEP-91  \
            Rivet-LEP-Powheg-196 Rivet-LEP-Powheg-197 \
            Rivet-LEP-Powheg-200 Rivet-LEP-Powheg-202 \
            Rivet-LEP-Powheg-206 Rivet-LEP-Powheg-10 \
-           Rivet-LEP-Powheg-91-nopi
+           Rivet-LEP-Powheg-91-nopi \
+           Rivet-LEP-Matchbox-14  Rivet-LEP-Matchbox-22 \
+           Rivet-LEP-Matchbox-35  Rivet-LEP-Matchbox-44  \
+           Rivet-LEP-Matchbox-91  Rivet-LEP-Matchbox-130 \
+           Rivet-LEP-Matchbox-133 Rivet-LEP-Matchbox-136 \
+           Rivet-LEP-Matchbox-161 Rivet-LEP-Matchbox-172 \
+           Rivet-LEP-Matchbox-177 Rivet-LEP-Matchbox-183 \
+           Rivet-LEP-Matchbox-189 Rivet-LEP-Matchbox-192 \
+           Rivet-LEP-Matchbox-196 Rivet-LEP-Matchbox-197 \
+           Rivet-LEP-Matchbox-200 Rivet-LEP-Matchbox-202 \
+           Rivet-LEP-Matchbox-206 Rivet-LEP-Matchbox-10 \
+           Rivet-LEP-Matchbox-91-nopi
 	rm -rf Rivet-LEP
 	python/merge-LEP LEP
 	python/merge-LEP LEP-Powheg
-	rivet-mkhtml -o Rivet-LEP LEP.yoda:Hw++ LEP-Powheg.yoda:Hw++-Powheg
+	python/merge-LEP LEP-Matchbox
+	rivet-mkhtml -o Rivet-LEP LEP.yoda:Hw++ LEP-Powheg.yoda:Hw++-Powheg LEP-Matchbox.yoda:Hw++-Matchbox
 
 Rivet-BFactory: Rivet-BFactory-10.52 Rivet-BFactory-Powheg-10.52 \
                 Rivet-BFactory-10.52-sym Rivet-BFactory-Powheg-10.52-sym \
