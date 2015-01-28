@@ -330,12 +330,18 @@ double ShowerApproximation::channelWeight(int emitter, int emission,
 					  int spectator, int bemitter) const {
   double cfac = 1.;
   double Nc = generator()->standardModel()->Nc();
-  if ( bornCXComb()->mePartonData()[bemitter]->iColour() == PDT::Colour8 ) {
-    cfac = Nc;
-  } else if ( bornCXComb()->mePartonData()[bemitter]->iColour() == PDT::Colour3 ||
-	      bornCXComb()->mePartonData()[bemitter]->iColour() == PDT::Colour3bar ) {
+  if (realCXComb()->mePartonData()[emitter]->iColour() == PDT::Colour8){
+    if (realCXComb()->mePartonData()[emission]->iColour() == PDT::Colour8)
+      cfac = Nc;
+    else if ( realCXComb()->mePartonData()[emission]->iColour() == PDT::Colour3 ||
+              realCXComb()->mePartonData()[emission]->iColour() == PDT::Colour3bar)
+      cfac = 0.5;
+    else assert(false);
+  }
+  else if ((realCXComb()->mePartonData()[emitter] ->iColour() == PDT::Colour3 ||
+            realCXComb()->mePartonData()[emitter] ->iColour() == PDT::Colour3bar))
     cfac = (sqr(Nc)-1.)/(2.*Nc);
-  } else assert(false);
+  else assert(false);
   // do the most simple thing for the time being; needs fixing later
   if ( realCXComb()->mePartonData()[emission]->id() == ParticleID::g ) {
     Energy2 pipk = 
