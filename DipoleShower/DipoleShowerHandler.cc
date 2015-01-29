@@ -296,7 +296,7 @@ void DipoleShowerHandler::hardScales() {
       maxPt *= hardScaleFactor();
     }
   } else {
-    maxPt = sqrt(eventRecord().xcombPtr()->lastCentralScale());
+    maxPt = hardScaleFactor()*sqrt(eventRecord().xcombPtr()->lastCentralScale());
   }
 
   for ( list<DipoleChain>::iterator ch = eventRecord().chains().begin();
