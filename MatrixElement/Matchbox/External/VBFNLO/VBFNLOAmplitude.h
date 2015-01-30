@@ -103,6 +103,28 @@ public:
   virtual void evalColourCorrelator(pair<int,int> ij) const;
 
   /**
+   * Return the large-N matrix element squared.
+   */
+  virtual double largeNME2(Ptr<ColourBasis>::tptr) const;
+
+  /**
+   * Call OLP_EvalSubProcess in the large-N limit and fill in the results
+   */
+  virtual void evalLargeNSubProcess(Ptr<ColourBasis>::tptr) const;
+
+  /**
+   * Return the large-N colour correlated matrix element.
+   */
+  virtual double largeNColourCorrelatedME2(pair<int,int>,
+					   Ptr<ColourBasis>::tptr) const;
+
+  /**
+   * Fill in results for the given large-N colour correlator
+   */
+  virtual void evalLargeNColourCorrelator(pair<int,int> ij,
+                                          Ptr<ColourBasis>::tptr) const;
+
+  /**
    * Return a positive helicity polarization vector for a gluon of
    * momentum p (with reference vector n) to be used when evaluating
    * spin correlations.

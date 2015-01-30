@@ -264,6 +264,97 @@ void VBFNLOAmplitude::evalSpinColourCorrelator(pair<int,int>) const {
 
 }
 
+double VBFNLOAmplitude::largeNME2(Ptr<ColourBasis>::tptr cptr) const {
+  if ( calculateLargeNME2() )
+    evalLargeNSubProcess(cptr);
+  return lastLargeNME2();
+}
+
+void VBFNLOAmplitude::evalLargeNSubProcess(Ptr<ColourBasis>::tptr) const {
+
+  double units = pow(lastSHat()/GeV2,mePartonData().size()-4.);
+  fillOLPMomenta(lastXComb().meMomenta());
+  double scale = sqrt(mu2()/GeV2);
+
+  double acc = -1.0;
+  double out[4]={};
+
+  int id = 
+    olpId()[ProcessType::oneLoopInterference] ?
+    olpId()[ProcessType::oneLoopInterference] :
+    olpId()[ProcessType::treeME2];
+
+  if (theRanHelSum) {
+    vector<double> helicityrn = amplitudeRandomNumbers();
+    if (helicityrn.size()>0) {
+      setOLPParameter("HelicityRN",helicityrn[0]);
+    }
+  }
+
+  setOLPParameter("Nc",-1); // large-N limit
+  OLP_EvalSubProcess2(&id, olpMomenta(), &scale, out, &acc);
+  setOLPParameter("Nc",generator()->standardModel()->Nc()); 
+
+  if ( olpId()[ProcessType::oneLoopInterference] ) {
+    lastTreeME2(out[3]*units);
+    lastOneLoopInterference(out[2]*units);
+    lastOneLoopPoles(pair<double,double>(out[0]*units,out[1]*units));
+  } else if ( olpId()[ProcessType::treeME2] ) {
+    lastTreeME2(out[0]*units);
+  } else assert(false);
+
+}
+
+double VBFNLOAmplitude::largeNColourCorrelatedME2(pair<int,int> ij,
+					          Ptr<ColourBasis>::tptr cptr) const {
+
+  double cfac = 1.;
+  double Nc = generator()->standardModel()->Nc();
+  if ( mePartonData()[ij.first]->iColour() == PDT::Colour8 ) {
+    cfac = Nc;
+  } else if ( mePartonData()[ij.first]->iColour() == PDT::Colour3 ||
+	      mePartonData()[ij.first]->iColour() == PDT::Colour3bar ) {
+    cfac = Nc/2.;
+  } else assert(false);
+  if ( calculateLargeNColourCorrelator(ij) )
+    evalLargeNColourCorrelator(ij,cptr);
+  return lastLargeNColourCorrelator(ij)/cfac;
+
+}
+
+void VBFNLOAmplitude::evalLargeNColourCorrelator(pair<int,int>,
+                                                 Ptr<ColourBasis>::tptr) const {
+
+  double units = pow(lastSHat()/GeV2,mePartonData().size()-4.);
+  fillOLPMomenta(lastXComb().meMomenta());
+  double scale = sqrt(mu2()/GeV2);
+
+  double acc = -1.0;
+
+  int n = lastXComb().meMomenta().size();
+  colourCorrelatorResults.resize(n*(n-1)/2);
+
+  int id = olpId()[ProcessType::colourCorrelatedME2];
+
+  if (theRanHelSum && lastHeadMatchboxXComb()) {
+    vector<double> helicityrn = lastHeadMatchboxXComb()->amplitudeRandomNumbers();
+    if (helicityrn.size()>0) {
+      setOLPParameter("HelicityRN",helicityrn[0]);
+    }
+  }
+
+  setOLPParameter("Nc",-1); // large-N limit
+  OLP_EvalSubProcess2(&id, olpMomenta(), &scale, &colourCorrelatorResults[0], &acc);
+  setOLPParameter("Nc",generator()->standardModel()->Nc()); 
+
+  for ( int i = 0; i < n; ++i )
+    for ( int j = i+1; j < n; ++j ) {
+      lastLargeNColourCorrelator(make_pair(i,j),colourCorrelatorResults[i+j*(j-1)/2]*units);
+    }
+
+}
+
+
 void VBFNLOAmplitude::doinit() {
   string vbfnlolib = DEFSTR(VBFNLOLIB);
   vbfnlolib += "/";
