@@ -190,6 +190,7 @@ protected:
      * Transverse momentum
      */
     Statistics::Histogram pt;
+    Statistics::Histogram pt_logx;
 
     /**
      * Rapidity
@@ -216,6 +217,7 @@ protected:
      */
     ObjectProperties(const string& name, Energy)
       : pt(name + "Pt",Statistics::Histogram::regularBinEdges(0,1000,1000),true,false),
+        pt_logx(name + "PtLogX",Statistics::Histogram::logBinEdges(0.1,1000,1000),true,false),
 	y(name + "Y",Statistics::Histogram::regularBinEdges(-6,6,120),false,false),
 	phi(name + "Phi",Statistics::Histogram::regularBinEdges(-Constants::pi,Constants::pi,32),
 	    make_pair(-Constants::pi,Constants::pi)),
@@ -226,6 +228,7 @@ protected:
      */
     void count(const LorentzMomentum& p, double weight, unsigned int id) {
       pt.count(Statistics::EventContribution(p.perp()/GeV,weight,1.),id);
+      pt_logx.count(Statistics::EventContribution(p.perp()/GeV,weight,1.),id);
       y.count(Statistics::EventContribution(p.rapidity(),weight,0.1),id);
       phi.count(Statistics::EventContribution(p.phi(),weight,0.1),id);
       mass.count(Statistics::EventContribution(p.m()/GeV,weight,1.),id);
@@ -238,6 +241,7 @@ protected:
 	       double xphi, Energy m,
 	       double weight, unsigned int id) {
       pt.count(Statistics::EventContribution(perp/GeV,weight,1.),id);
+      pt_logx.count(Statistics::EventContribution(perp/GeV,weight,1.),id);
       y.count(Statistics::EventContribution(rapidity,weight,0.1),id);
       phi.count(Statistics::EventContribution(xphi,weight,0.1),id);
       mass.count(Statistics::EventContribution(m/GeV,weight,1.),id);
@@ -248,6 +252,7 @@ protected:
      */
     void finalize(XML::Element& elem) {
       pt.finalize(); elem.append(pt.toXML());
+      pt_logx.finalize(); elem.append(pt_logx.toXML());
       y.finalize(); elem.append(y.toXML());
       phi.finalize(); elem.append(phi.toXML());
       mass.finalize(); elem.append(mass.toXML());
