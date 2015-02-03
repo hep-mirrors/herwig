@@ -558,9 +558,10 @@ double MatchboxMEBase::largeNME2(Ptr<ColourBasis>::tptr largeNBasis) const {
 
   if ( matchboxAmplitude() ) {
 
-    largeNBasis->prepare(mePartonData(),false);
-    if ( matchboxAmplitude()->treeAmplitudes() )
+    if ( matchboxAmplitude()->treeAmplitudes() ) {
+      largeNBasis->prepare(mePartonData(),false);
       matchboxAmplitude()->prepareAmplitudes(this);
+    }
 
     double res = 
       matchboxAmplitude()->largeNME2(largeNBasis)*
@@ -1105,9 +1106,10 @@ double MatchboxMEBase::largeNColourCorrelatedME2(pair<int,int> ij,
 
   if ( matchboxAmplitude() ) {
 
-    largeNBasis->prepare(mePartonData(),false);
-    if ( matchboxAmplitude()->treeAmplitudes() )
+    if ( matchboxAmplitude()->treeAmplitudes() ) {
+      largeNBasis->prepare(mePartonData(),false);
       matchboxAmplitude()->prepareAmplitudes(this);
+    }
 
     double res = 
       matchboxAmplitude()->largeNColourCorrelatedME2(ij,largeNBasis)*
