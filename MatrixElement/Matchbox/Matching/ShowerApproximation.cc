@@ -52,10 +52,10 @@ ShowerApproximation::ShowerApproximation()
 ShowerApproximation::~ShowerApproximation() {}
 
 void ShowerApproximation::setLargeNBasis() {
+  assert(dipole()->realEmissionME()->matchboxAmplitude());
+  if ( !dipole()->realEmissionME()->matchboxAmplitude()->treeAmplitudes() )
+    return;
   if ( !theLargeNBasis ) {
-    if ( !dipole()->realEmissionME()->matchboxAmplitude() )
-      throw Exception() << "expecting an amplitude object"
-			<< Exception::abortnow;
     if ( !dipole()->realEmissionME()->matchboxAmplitude()->colourBasis() )
       throw Exception() << "expecting a colour basis object"
 			<< Exception::abortnow;
