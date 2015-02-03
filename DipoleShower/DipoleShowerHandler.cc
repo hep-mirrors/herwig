@@ -276,7 +276,7 @@ void DipoleShowerHandler::hardScales() {
 	restrictPhasespace = true;
   }
 
-  if ( !maxPtIsMuF ) {
+  if ( !maxPtIsMuF || !firstInteraction() ) {
     if ( (eventRecord().incoming().first->coloured() ||
 	  eventRecord().incoming().second->coloured()) &&
 	 restrictPhasespace ) {
