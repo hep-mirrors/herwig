@@ -717,8 +717,8 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
     // update number of emissions
     ++_nfs;
     if(_limitEmissions!=0) {
-      theChildren[0]->spinInfo()->develop();
-      theChildren[1]->spinInfo()->develop();
+      if(theChildren[0]->spinInfo()) theChildren[0]->spinInfo()->develop();
+      if(theChildren[1]->spinInfo()) theChildren[1]->spinInfo()->develop();
       if(particle->spinInfo()) particle->spinInfo()->develop();
       return true;
     }
