@@ -149,6 +149,14 @@ do Factory:StartParticleGroup bbar
 insert Factory:ParticleGroup 0 /Herwig/Particles/bbar
 do Factory:EndParticleGroup
 
+do Factory:StartParticleGroup t
+insert Factory:ParticleGroup 0 /Herwig/Particles/t
+do Factory:EndParticleGroup
+
+do Factory:StartParticleGroup tbar
+insert Factory:ParticleGroup 0 /Herwig/Particles/tbar
+do Factory:EndParticleGroup
+
 do Factory:StartParticleGroup g
 insert Factory:ParticleGroup 0 /Herwig/Particles/g
 do Factory:EndParticleGroup
