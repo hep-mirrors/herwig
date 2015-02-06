@@ -296,11 +296,11 @@ void VBFNLOAmplitude::evalLargeNSubProcess(Ptr<ColourBasis>::tptr) const {
   setOLPParameter("Nc",generator()->standardModel()->Nc()); 
 
   if ( olpId()[ProcessType::oneLoopInterference] ) {
-    lastTreeME2(out[3]*units);
+    lastLargeNME2(out[3]*units);
     lastOneLoopInterference(out[2]*units);
     lastOneLoopPoles(pair<double,double>(out[0]*units,out[1]*units));
   } else if ( olpId()[ProcessType::treeME2] ) {
-    lastTreeME2(out[0]*units);
+    lastLargeNME2(out[0]*units);
   } else assert(false);
 
 }
