@@ -612,10 +612,7 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
   }
 
   if ( factorizationScale == ZERO ) {
-    if ( realEmissionScales() )
-      factorizationScale = realEmissionME()->lastScale();
-    else
-      factorizationScale = underlyingBornME()->lastScale();
+    factorizationScale = underlyingBornME()->lastScale();
   }
 
   if ( havePDFWeight1() ) {
@@ -694,27 +691,6 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
 
   double coupl = lastMECouplings();
   coupl *= underlyingBornME()->lastXComb().lastAlphaS();
-
-  if ( realEmissionScales() ) {
-
-    double rws =
-      pow(realEmissionME()->lastXComb().lastAlphaS()/
-	  underlyingBornME()->lastXComb().lastAlphaS(),
-	  realEmissionME()->orderInAlphaS());
-
-    xme2 *= rws;
-    coupl *= rws;
-
-    double rwe =
-      pow(realEmissionME()->lastXComb().lastAlphaEM()/
-	  underlyingBornME()->lastXComb().lastAlphaEM(),
-	  underlyingBornME()->orderInAlphaEW());
-
-    xme2 *= rwe;
-    coupl *= rwe;
-
-  }
-
   lastMECouplings(coupl);
 
   lastME2(xme2);
