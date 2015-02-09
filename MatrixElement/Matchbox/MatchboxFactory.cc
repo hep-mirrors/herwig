@@ -727,6 +727,12 @@ void MatchboxFactory::setup() {
 				 ProcessType::spinColourCorrelatedME2);
 	    (**born).olpProcess(ProcessType::spinColourCorrelatedME2,id);
 	  }
+          if ( showerApproximation() ) {
+	    id = orderOLPProcess((**born).subProcess(),
+				 (**born).matchboxAmplitude(),
+				 ProcessType::treeME2);
+	    (**born).olpProcess(ProcessType::treeME2,id);
+          }
 	}
 
       }
