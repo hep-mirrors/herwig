@@ -52,8 +52,8 @@ Energy2 MatchboxHtScale::renormalizationScale() const {
 
   initWeightFactors(pd,p,theJetFinder);
 
-  // transverse masses of the non-jet systems
-  Energy mtNonJetSum = ZERO;
+  // momentum of the non-jet system
+  LorentzMomentum nonJetMomentum(ZERO,ZERO,ZERO,ZERO);
 
   // (weighted) pt of the jet systems
   Energy ptJetSum = ZERO;
@@ -64,9 +64,11 @@ Energy2 MatchboxHtScale::renormalizationScale() const {
     if ( theJetFinder->unresolvedMatcher()->check(**pdata) ) {
       ptJetSum += jetPtWeight(*mom)*mom->perp();
     } else if ( theIncludeMT ) {
-      mtNonJetSum += sqrt(mom->perp2() + mom->m2());
+      nonJetMomentum += mom;
     }
   }
+
+  Energy mtNonJetSum = sqrt(nonJetMomentum.perp2() + mtNonJetSum.m2());
 
   mtNonJetSum *= theMTFactor;
   ptJetSum *= theHTFactor;
