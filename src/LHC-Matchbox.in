@@ -169,7 +169,6 @@ set /Herwig/Shower/Evolver:MECorrMode No
 
 # set PPFactory:ShowerApproximation MEMatching
 # set MECorrectionHandler:Factory PPFactory
-# set PPFactory:RealEmissionScales On
 # cd /Herwig/Generators
 # insert LHCGenerator:EventHandler:PostSubProcessHandlers[0] /Herwig/MatrixElements/Matchbox/MECorrectionHandler
 # cd /Herwig/MatrixElements/Matchbox
