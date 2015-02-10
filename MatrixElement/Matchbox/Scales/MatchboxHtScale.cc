@@ -68,7 +68,7 @@ Energy2 MatchboxHtScale::renormalizationScale() const {
     }
   }
 
-  Energy mtNonJetSum = sqrt(nonJetMomentum.perp2() + mtNonJetSum.m2());
+  Energy mtNonJetSum = sqrt(nonJetMomentum.perp2() + nonJetMomentum.m2());
 
   mtNonJetSum *= theMTFactor;
   ptJetSum *= theHTFactor;
