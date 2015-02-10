@@ -28,7 +28,7 @@
 using namespace Herwig;
 
 MatchboxHtScale::MatchboxHtScale() 
-  : theIncludeMT(true), theHTFactor(1.0),
+  : theIncludeMT(false), theHTFactor(1.0),
     theMTFactor(1.0) {}
 
 MatchboxHtScale::~MatchboxHtScale() {}
@@ -113,7 +113,7 @@ void MatchboxHtScale::Init() {
   static Switch<MatchboxHtScale,bool> interfaceIncludeMT
     ("IncludeMT",
      "Include the transverse masses of the non-jet objects.",
-     &MatchboxHtScale::theIncludeMT, true, false, false);
+     &MatchboxHtScale::theIncludeMT, false, false, false);
   static SwitchOption interfaceIncludeMTYes
     (interfaceIncludeMT,
      "Yes",
