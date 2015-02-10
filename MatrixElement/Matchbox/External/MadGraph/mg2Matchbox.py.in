@@ -41,14 +41,34 @@ def fillprocs(model,oras,orew):
   virtlines=""
   bornlines=""
   
-  
-  
-  minlegs=100;
+
+
+    
+  minlegs=100
+  legs=0
   for i in [borns, virts]:
     file = open(i, "r")
     for line in file:
-      minlegs=min(len(line.split(" ")),minlegs)
+      if (len(line.split(" "))<minlegs):
+        minlegs=len(line.split(" "))
+        for it in line.split(" "):
+	  if it.replace("-","").isdigit():
+	    legs+=1
+      
     file.close()
+  
+   
+    
+  #conversion for heft model to go from (2QCD+1QED)->1HIG for each FS HIGGS.
+  HIG=0
+  if (model=="heft"):
+    HIG=(int(oras)+int(orew)-legs+2)/2
+    
+    if (int(oras)+int(orew)-legs+2)%2!=0:
+      print "Warning: No possible coupling power:(int(oras)+int(orew)-legs+2)%2!=0 "
+      exit()
+      return
+
   
   
   
@@ -63,10 +83,17 @@ def fillprocs(model,oras,orew):
       processmap+=str(procnr) +"\n"
       bornlist+=[str(procnr)]
       if first:
-	bornlines+="generate "+linetmp+" QCD="+str(int(oras)+addalphas)+" QED="+str(orew)+" @"+str(procnr)+"\n"
+	if HIG ==0 :
+	  bornlines+="generate "+linetmp+" QCD="+str(int(oras)+addalphas)+" QED="+str(orew)+" @"+str(procnr)+"\n"
+	else:
+	  bornlines+="generate "+linetmp+" HIG="+str(HIG)+" QCD="+str(int(oras)+addalphas-2*HIG)+" QED="+str(int(orew)-HIG)+" @"+str(procnr)+"\n"
 	first=False
       else:
-	bornlines+="add process "+linetmp+" QCD="+str(int(oras)+addalphas)+" QED="+str(orew)+" @"+str(procnr)+"\n"
+	if HIG ==0 :
+	  bornlines+="add process "+linetmp+" QCD="+str(int(oras)+addalphas)+" QED="+str(orew)+" @"+str(procnr)+"\n"
+	else:
+	  bornlines+="add process "+linetmp+" HIG="+str(HIG)+" QCD="+str(int(oras)+addalphas-2*HIG)+" QED="+str(int(orew)-HIG)+" @"+str(procnr)+"\n"
+	
   file.close()
   first=True
   file = open(virts, "r")

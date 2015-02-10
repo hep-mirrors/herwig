@@ -17,6 +17,7 @@ Block mass
    15 $MTA$ # MTA
    23 $MZ$  # MZ 
    25 $MH$ # MH
+   9000006 $MH$ # MP 
 ## Dependent parameters, given by model restrictions.
 ## Those values should be edited following the 
 ## analytical expression. MG5 ignores those values 
