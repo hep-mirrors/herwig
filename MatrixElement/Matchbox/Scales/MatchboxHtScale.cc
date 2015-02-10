@@ -64,11 +64,12 @@ Energy2 MatchboxHtScale::renormalizationScale() const {
     if ( theJetFinder->unresolvedMatcher()->check(**pdata) ) {
       ptJetSum += jetPtWeight(*mom)*mom->perp();
     } else if ( theIncludeMT ) {
-      nonJetMomentum += mom;
+      nonJetMomentum += *mom;
     }
   }
 
-  Energy mtNonJetSum = sqrt(nonJetMomentum.perp2() + nonJetMomentum.m2());
+  Energy mtNonJetSum = 
+    sqrt(nonJetMomentum.perp2() + nonJetMomentum.m2());
 
   mtNonJetSum *= theMTFactor;
   ptJetSum *= theHTFactor;
