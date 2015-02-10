@@ -249,6 +249,7 @@ set cbar:NominalMass 0*GeV
 set b:NominalMass 0*GeV
 set bbar:NominalMass 0*GeV
 set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
+set /Herwig/Cuts/QCDCuts:MHatMin 0.0*GeV
 set /Herwig/Generators/LHCGenerator:EventHandler:CollisionCuts Off
 
 ##################################################
