@@ -137,13 +137,23 @@ AC_SUBST(THEPEGINCLUDE)
 
 AC_MSG_CHECKING([for HepMCAnalysis.so in ThePEG])
 
+THEPEGHASHEPMC="no"
+if test -e ${with_thepeg}/lib/ThePEG/HepMCAnalysis.so ; then
+   THEPEGHASHEPMC="yes"
+fi
+if test "${host_cpu}" == "x86_64" -a -e ${with_thepeg}/lib64/ThePEG/libThePEG.so ; then
+  THEPEGLDFLAGS="-L${with_thepeg}/lib64/ThePEG"
+  if test -e ${with_thepeg}/lib64/ThePEG/HepMCAnalysis.so ; then
+    THEPEGHASHEPMC="yes"
+  fi
+fi
 
-if test -e "$THEPEGPATH/lib/ThePEG/HepMCAnalysis.so" ; then
-     	CREATE_HEPMC="create"
-	AC_MSG_RESULT([found])
+if test "x$THEPEGHASHEPMC" == "xno" ; then
+  CREATE_HEPMC="# create"
+  AC_MSG_RESULT([not found])
 else
-	CREATE_HEPMC="# create"
-	AC_MSG_RESULT([not found])
+  CREATE_HEPMC="create"
+  AC_MSG_RESULT([found])
 fi
 
 AC_SUBST([CREATE_HEPMC])
