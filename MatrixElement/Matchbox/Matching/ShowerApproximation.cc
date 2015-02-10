@@ -327,7 +327,7 @@ double ShowerApproximation::scaleWeight(int rScale, int bScale, int eScale) cons
 }
 
 double ShowerApproximation::channelWeight(int emitter, int emission, 
-					  int spectator, int bemitter) const {
+					  int spectator, int) const {
   double cfac = 1.;
   double Nc = generator()->standardModel()->Nc();
   if (realCXComb()->mePartonData()[emitter]->iColour() == PDT::Colour8){
