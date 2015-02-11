@@ -79,8 +79,7 @@ void Evolver::persistentOutput(PersistentOStream & os) const {
      << _meCorrMode << _hardVetoMode << _hardVetoRead << _hardVetoReadOption
      << _limitEmissions << _spinOpt << _softOpt
      << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << ounit(_iptmax,GeV) 
-     << _vetoes << _trunc_Mode << _hardEmissionMode 
-     << _colourEvolutionMethod << _reconOpt
+     << _vetoes << _trunc_Mode << _hardEmissionMode << _reconOpt
      << isMCatNLOSEvent << isMCatNLOHEvent
      << isPowhegSEvent << isPowhegHEvent
      << theFactorizationScaleFactor << theRenormalizationScaleFactor
@@ -95,8 +94,7 @@ void Evolver::persistentInput(PersistentIStream & is, int) {
      >> _meCorrMode >> _hardVetoMode >> _hardVetoRead >> _hardVetoReadOption
      >> _limitEmissions >> _spinOpt >> _softOpt
      >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> iunit(_iptmax,GeV)
-     >> _vetoes >> _trunc_Mode >> _hardEmissionMode
-     >> _colourEvolutionMethod >> _reconOpt
+     >> _vetoes >> _trunc_Mode >> _hardEmissionMode >> _reconOpt
      >> isMCatNLOSEvent >> isMCatNLOHEvent
      >> isPowhegSEvent >> isPowhegHEvent
      >> theFactorizationScaleFactor >> theRenormalizationScaleFactor
@@ -309,21 +307,6 @@ void Evolver::Init() {
      "Powheg style emission for the hard process using Matchbox "
      "and decays using internal matrix elements",
      3);
-
-  static Switch<Evolver,int> interfaceColourEvolutionMethod
-    ("ColourEvolutionMethod",
-     "Choice of method for choosing the colour factor in gluon evolution",
-     &Evolver::_colourEvolutionMethod, 0, false, false);
-  static SwitchOption interfaceColourEvolutionMethodDefault
-    (interfaceColourEvolutionMethod,
-     "Default",
-     "Colour factor is CA for all scales",
-     0);
-  static SwitchOption interfaceColourEvolutionMethodHalfCA
-    (interfaceColourEvolutionMethod,
-     "HalfCA",
-     "Only use half the normal radiation until second scale is reached",
-     1);
 
   static Switch<Evolver,unsigned int > interfaceInteractions
     ("Interactions",
