@@ -423,6 +423,7 @@ insert DiagramGenerator:Vertices 0 /Herwig/Vertices/WWHVertex
 insert DiagramGenerator:Vertices 0 /Herwig/Vertices/WWWVertex
 insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFHVertex
 insert DiagramGenerator:Vertices 0 /Herwig/Vertices/HGGVertex
+insert DiagramGenerator:Vertices 0 /Herwig/Vertices/HHHVertex
 
 insert DiagramGenerator:ExcludeInternal 0 /Herwig/Particles/h0
 
