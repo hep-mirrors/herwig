@@ -13,6 +13,8 @@
 //
 
 #include "Herwig++/MatrixElement/Matchbox/Dipoles/SubtractionDipole.fh"
+#include "Herwig++/MatrixElement/Matchbox/Phasespace/TildeKinematics.fh"
+#include "Herwig++/MatrixElement/Matchbox/Phasespace/InvertedTildeKinematics.fh"
 
 #include "ThePEG/MatrixElement/MEBase.h"
 #include "ThePEG/Handlers/StandardXComb.h"
@@ -23,9 +25,6 @@
 namespace Herwig {
 
 using namespace ThePEG;
-
-class TildeKinematics;
-class InvertedTildeKinematics;
 
 /**
  * \ingroup Matchbox
@@ -570,6 +569,56 @@ public:
    */
   vector<double>& subtractionParameters() { return theSubtractionParameters; }
 
+  /**
+   * Return the shower hard scale encountered
+   */
+  Energy showerHardScale() const { return theShowerHardScale; }
+
+  /**
+   * Set the shower hard scale encountered
+   */
+  void showerHardScale(Energy s) { theShowerHardScale = s; }
+
+  /**
+   * Return the shower evolution scale encountered
+   */
+  Energy showerScale() const { return theShowerScale; }
+
+  /**
+   * Set the shower evolution scale encountered
+   */
+  void showerScale(Energy s) { theShowerScale = s; }
+
+  /**
+   * Return the shower splitting variables encountered
+   */
+  const vector<double>& showerParameters() const { return theShowerParameters; }
+
+  /**
+   * Access the shower splitting variables encountered
+   */
+  vector<double>& showerParameters() { return theShowerParameters; }
+
+  /**
+   * Return true, if this configuration is in the shower phase space
+   */
+  bool isInShowerPhasespace() const { return theIsInShowerPhasespace; }
+
+  /**
+   * Indicate whether this configuration is in the shower phase space
+   */
+  void isInShowerPhasespace(bool yes) { theIsInShowerPhasespace = yes; }
+
+  /**
+   * Return true, if this configuration is above the shower infrared cutoff
+   */
+  bool isAboveCutoff() const { return theIsAboveCutoff; }
+
+  /**
+   * Indicate whether this configuration is above the shower infrared cutoff
+   */
+  void isAboveCutoff(bool yes) { theIsAboveCutoff = yes; }
+
   //@}
 
   /** @name Scale choices, couplings and PDFs */
@@ -1108,6 +1157,31 @@ private:
    * True, if scales should be calculated from real emission kinematics
    */
   bool theRealEmissionScales;
+
+  /**
+   * Return the shower hard scale encountered
+   */
+  Energy theShowerHardScale;
+
+  /**
+   * The shower evolution scale encountered
+   */
+  Energy theShowerScale;
+
+  /**
+   * The shower splitting variables encountered
+   */
+  vector<double> theShowerParameters;
+
+  /**
+   * True, if this configuration is in the shower phase space
+   */
+  bool theIsInShowerPhasespace;
+
+  /**
+   * True, if this configuration is above the shower infrared cutoff
+   */
+  bool theIsAboveCutoff;
 
 private:
 

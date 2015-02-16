@@ -1,0 +1,13 @@
+// -*- C++ -*-
+// This is the forward declaration of the InvertedTildeKinematics class
+
+#ifndef HERWIG_InvertedTildeKinematics_FH
+#define HERWIG_InvertedTildeKinematics_FH
+
+namespace Herwig {
+
+class InvertedTildeKinematics;
+
+}
+
+#endif // HERWIG_InvertedTildeKinematics_FH

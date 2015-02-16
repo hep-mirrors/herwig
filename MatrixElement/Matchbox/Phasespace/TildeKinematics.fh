@@ -1,0 +1,13 @@
+// -*- C++ -*-
+// This is the forward declaration of the TildeKinematics class
+
+#ifndef HERWIG_TildeKinematics_FH
+#define HERWIG_TildeKinematics_FH
+
+namespace Herwig {
+
+class TildeKinematics;
+
+}
+
+#endif // HERWIG_TildeKinematics_FH

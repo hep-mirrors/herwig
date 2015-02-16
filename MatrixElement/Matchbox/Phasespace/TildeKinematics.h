@@ -108,6 +108,14 @@ public:
   virtual Lorentz5Momentum transform(const Lorentz5Momentum& p) const { return p; }
   //@}
 
+  /**
+   * If this tilde kinematics is implementing a mapping different from
+   * the baseline dipole mapping, return the ratio of phase space
+   * factorization Jacobians for this and the nominal dipole
+   * mapping. This is used for matching subtractions.
+   */
+  virtual double jacobianRatio() const { return 1.; }
+
 public:
 
   /** @name Access to process data. */

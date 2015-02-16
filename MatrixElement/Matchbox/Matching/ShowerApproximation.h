@@ -16,6 +16,8 @@
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "Herwig++/MatrixElement/Matchbox/Dipoles/SubtractionDipole.fh"
 #include "Herwig++/MatrixElement/Matchbox/Utility/ColourBasis.h"
+#include "Herwig++/MatrixElement/Matchbox/Phasespace/TildeKinematics.fh"
+#include "Herwig++/MatrixElement/Matchbox/Phasespace/InvertedTildeKinematics.fh"
 
 namespace Herwig {
 
@@ -71,6 +73,27 @@ public:
    * a truncated parton shower
    */
   virtual bool needsTruncatedShower() const { return false; }
+
+  /**
+   * Return the tilde kinematics object returning the shower
+   * kinematics parametrization if different from the nominal dipole
+   * mappings.
+   */
+  virtual Ptr<TildeKinematics>::tptr showerTildeKinematics() const;
+
+  /**
+   * Return the tilde kinematics object returning the shower
+   * kinematics parametrization if different from the nominal dipole
+   * mappings.
+   */
+  virtual Ptr<InvertedTildeKinematics>::tptr showerInvertedTildeKinematics() const;
+
+  /**
+   * Return true, if the subtraction term kinematic mapping should be used
+   * below the cutoff instead of the shower kinematics overriding the
+   * nominal dipole mappings.
+   */
+  bool useTildeBelowCutoff() const { return theUseTildeBelowCutoff; }
 
 public:
 
@@ -359,6 +382,13 @@ public:
   virtual bool isAboveCutoff() const;
 
   /**
+   * Determine all kinematic variables which are not provided by the
+   * dipole kinematics; store all shower variables in the respective
+   * dipole object for later use.
+   */
+  virtual void getShowerVariables();
+
+  /**
    * Return the shower approximation to the real emission cross
    * section for the given pair of Born and real emission
    * configurations.
@@ -594,6 +624,13 @@ private:
    * True if maximum pt should be deduced from the factorization scale
    */
   bool maxPtIsMuF;
+
+  /**
+   * True, if the subtraction term kinematic mapping should be used
+   * below the cutoff instead of the shower kinematics overriding the
+   * nominal dipole mappings.
+   */
+  bool theUseTildeBelowCutoff;
 
 private:
 

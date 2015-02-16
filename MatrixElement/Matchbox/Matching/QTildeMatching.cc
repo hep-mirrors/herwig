@@ -46,7 +46,7 @@ bool QTildeMatching::isInShowerPhasespace() const {
 
   Energy qtildeHard = ZERO;
 
-  pair<Energy2,double> vars = getShowerVariables();
+  pair<Energy2,double> vars = calculateShowerVariables();
   Energy qtilde = sqrt(vars.first);
   double z = vars.second;
 
@@ -110,7 +110,7 @@ bool QTildeMatching::isInShowerPhasespace() const {
 
 bool QTildeMatching::isAboveCutoff() const {
   assert(theQTildeSudakov->cutOffOption() == 0 && "implementation only provided for default cutoff");
-  pair<Energy2,double> vars = getShowerVariables();
+  pair<Energy2,double> vars = calculateShowerVariables();
   Energy qtilde = sqrt(vars.first);
   double z = vars.second;
   Energy Qg = theQTildeSudakov->kinScale();
@@ -130,7 +130,7 @@ bool QTildeMatching::isAboveCutoff() const {
 
 CrossSection QTildeMatching::dSigHatDR() const {
 
-  pair<Energy2,double> vars = getShowerVariables();
+  pair<Energy2,double> vars = calculateShowerVariables();
 
   pair<int,int> ij(dipole()->bornEmitter(),
 		   dipole()->bornSpectator());
@@ -199,7 +199,7 @@ double QTildeMatching::me2() const {
   return 0.;
 }
 
-pair<Energy2,double> QTildeMatching::getShowerVariables() const {
+pair<Energy2,double> QTildeMatching::calculateShowerVariables() const {
 
   Lorentz5Momentum n;
   Energy2 Q2 = ZERO;

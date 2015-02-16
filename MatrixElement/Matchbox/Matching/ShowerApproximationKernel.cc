@@ -109,7 +109,10 @@ double ShowerApproximationKernel::evaluate(const vector<double>& r) {
   if ( !dipole()->generateKinematics(&r[nDimBorn()]) )
     return 0.;
 
-  double jac = dipole()->invertedTildeKinematics()->jacobian();
+  double jac = 
+    showerApproximation()->showerInvertedTildeKinematics() ?
+    showerApproximation()->showerInvertedTildeKinematics()->jacobian() :
+    dipole()->invertedTildeKinematics()->jacobian();
 
   showerApproximation()->setBornXComb(bornXComb());
   showerApproximation()->setRealXComb(realXComb());

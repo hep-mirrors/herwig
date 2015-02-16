@@ -39,7 +39,9 @@ SubtractionDipole::SubtractionDipole()
     theRealEmitter(-1), theRealEmission(-1), theRealSpectator(-1), 
     theBornEmitter(-1), theBornSpectator(-1),
     theRealShowerSubtraction(false), theVirtualShowerSubtraction(false),
-    theLoopSimSubtraction(false), theRealEmissionScales(false) {}
+    theLoopSimSubtraction(false), theRealEmissionScales(false),
+    theShowerHardScale(ZERO), theShowerScale(ZERO), 
+    theIsInShowerPhasespace(false), theIsAboveCutoff(false) {}
 
 SubtractionDipole::~SubtractionDipole() {}
 
@@ -483,21 +485,33 @@ bool SubtractionDipole::generateTildeKinematics() {
 
   assert(!splitting());
 
-  if ( !tildeKinematics() ) {
+  Ptr<TildeKinematics>::tptr kinematics = theTildeKinematics;
+  if ( showerApproximation() ) {
+    showerApproximation()->setDipole(this);
+    showerApproximation()->getShowerVariables();
+    if ( showerApproximation()->showerTildeKinematics() ) {
+      if ( showerApproximation()->isAboveCutoff() ||
+	   (!showerApproximation()->isAboveCutoff() &&
+	    showerApproximation()->useTildeBelowCutoff()) )
+	kinematics = showerApproximation()->showerTildeKinematics();
+    }
+  }
+
+  if ( !kinematics ) {
     jacobian(0.0);
     return false;
   }
 
-  theTildeKinematics->prepare(lastHeadXCombPtr(),lastXCombPtr());
+  kinematics->prepare(lastHeadXCombPtr(),lastXCombPtr());
 
-  if ( !theTildeKinematics->doMap() ) {
+  if ( !kinematics->doMap() ) {
     jacobian(0.0);
     return false;
   }
 
-  theLastSubtractionScale = theTildeKinematics->lastScale();
-  theLastSubtractionPt = theTildeKinematics->lastPt();
-  theLastSubtractionZ = theTildeKinematics->lastZ();
+  theLastSubtractionScale = kinematics->lastScale();
+  theLastSubtractionPt = kinematics->lastPt();
+  theLastSubtractionZ = kinematics->lastZ();
 
   meMomenta().resize(lastHeadXComb().meMomenta().size() - 1);
 
@@ -509,12 +523,14 @@ bool SubtractionDipole::generateTildeKinematics() {
     if ( k == realEmitter() || k == realEmission() || k == realSpectator() )
       continue;
     meMomenta()[trans[k]] = lastHeadXComb().meMomenta()[k];
-    if ( theTildeKinematics->doesTransform() && k > 1 )
-      meMomenta()[trans[k]] = theTildeKinematics->transform(meMomenta()[trans[k]]);
+    if ( kinematics->doesTransform() && k > 1 )
+      meMomenta()[trans[k]] = kinematics->transform(meMomenta()[trans[k]]);
   }
 
-  meMomenta()[bornEmitter()] = tildeKinematics()->bornEmitterMomentum();
-  meMomenta()[bornSpectator()] = tildeKinematics()->bornSpectatorMomentum();
+  meMomenta()[bornEmitter()] = 
+    const_cast<const TildeKinematics&>(*kinematics).bornEmitterMomentum();
+  meMomenta()[bornSpectator()] = 
+    const_cast<const TildeKinematics&>(*kinematics).bornSpectatorMomentum();
 
   cPDVector::const_iterator pd = mePartonData().begin();
   vector<Lorentz5Momentum>::iterator p = meMomenta().begin();
@@ -545,21 +561,29 @@ bool SubtractionDipole::generateRadiationKinematics(const double * r) {
 
   assert(splitting());
 
-  if ( !invertedTildeKinematics() ) {
+  Ptr<InvertedTildeKinematics>::tptr kinematics = theInvertedTildeKinematics;
+  if ( showerApproximation() ) {
+    showerApproximation()->setDipole(this);
+    if ( showerApproximation()->showerInvertedTildeKinematics() ) {
+      kinematics = showerApproximation()->showerInvertedTildeKinematics();
+    }
+  }
+
+  if ( !kinematics ) {
     jacobian(0.0);
     return false;
   }
 
-  theInvertedTildeKinematics->prepare(lastXCombPtr(),lastHeadXCombPtr());
+  kinematics->prepare(lastXCombPtr(),lastHeadXCombPtr());
 
-  if ( !theInvertedTildeKinematics->doMap(r) ) {
+  if ( !kinematics->doMap(r) ) {
     jacobian(0.0);
     return false;
   }
 
-  theLastSplittingScale = theInvertedTildeKinematics->lastScale();
-  theLastSplittingPt = theInvertedTildeKinematics->lastPt();
-  theLastSplittingZ = theInvertedTildeKinematics->lastZ();
+  theLastSplittingScale = kinematics->lastScale();
+  theLastSplittingPt = kinematics->lastPt();
+  theLastSplittingZ = kinematics->lastZ();
 
   meMomenta().resize(lastHeadXComb().meMomenta().size() + 1);
 
@@ -571,13 +595,16 @@ bool SubtractionDipole::generateRadiationKinematics(const double * r) {
     if ( k == bornEmitter() || k == bornSpectator() )
       continue;
     meMomenta()[trans[k]] = lastHeadXComb().meMomenta()[k];
-    if ( invertedTildeKinematics()->doesTransform() && k > 1 )
-      meMomenta()[trans[k]] = invertedTildeKinematics()->transform(meMomenta()[trans[k]]);
+    if ( kinematics->doesTransform() && k > 1 )
+      meMomenta()[trans[k]] = kinematics->transform(meMomenta()[trans[k]]);
   }
 
-  meMomenta()[realEmitter()] = invertedTildeKinematics()->realEmitterMomentum();
-  meMomenta()[realEmission()] = invertedTildeKinematics()->realEmissionMomentum();
-  meMomenta()[realSpectator()] = invertedTildeKinematics()->realSpectatorMomentum();
+  meMomenta()[realEmitter()] = 
+    const_cast<const InvertedTildeKinematics&>(*kinematics).realEmitterMomentum();
+  meMomenta()[realEmission()] = 
+    const_cast<const InvertedTildeKinematics&>(*kinematics).realEmissionMomentum();
+  meMomenta()[realSpectator()] = 
+    const_cast<const InvertedTildeKinematics&>(*kinematics).realSpectatorMomentum();
 
   cPDVector::const_iterator pd = mePartonData().begin();
   vector<Lorentz5Momentum>::iterator p = meMomenta().begin();
@@ -587,7 +614,7 @@ bool SubtractionDipole::generateRadiationKinematics(const double * r) {
   }
 
   jacobian(underlyingBornME()->lastXComb().jacobian() *
-	   invertedTildeKinematics()->jacobian());
+	   kinematics->jacobian());
 
   logGenerateRadiationKinematics(r);
 
@@ -630,6 +657,9 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
 
   double lastThetaMu = 1.0;
 
+  double dipoleFactor = 1.;
+  double showerFactor = 1.;
+
   if ( showerApproximation() ) {
     assert(!splitting());
     showerApproximation()->setBornXComb(lastXCombPtr());
@@ -638,6 +668,21 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
     if ( !showerApproximation()->isAboveCutoff() ) {
       showerApproximation()->wasBelowCutoff();
       lastThetaMu = 0.0;
+      if ( realShowerSubtraction() ) {
+	// map dipole to shower kinematics, if wanted; as we are
+	// always below the cutoff only the dipole is affected in this
+	// case
+	if ( showerApproximation()->showerTildeKinematics() &&
+	     showerApproximation()->useTildeBelowCutoff() )
+	  dipoleFactor /= 
+	    showerApproximation()->showerTildeKinematics()->jacobianRatio();
+      } else if ( virtualShowerSubtraction() ) {
+	// map shower to dipole kinematics; we are always above the
+	// cutoff in this case
+	if ( showerApproximation()->showerTildeKinematics() )
+	  showerFactor *= 
+	    showerApproximation()->showerTildeKinematics()->jacobianRatio();
+      }
     } else {
       lastThetaMu = 1.0;;
     }
@@ -647,6 +692,7 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
 	shower = showerApproximation()->dSigHatDR()*lastThetaMu;
       if ( virtualShowerSubtraction() || loopSimSubtraction() )
 	shower = -showerApproximation()->dSigHatDR()*lastThetaMu;
+      shower *= showerFactor;
     }
     if ( realShowerSubtraction() && lastThetaMu == 1.0 )
       needTheDipole = false;
@@ -660,7 +706,7 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
   double xme2 = 0.0;
 
   if ( needTheDipole )
-    xme2 = me2();
+    xme2 = dipoleFactor*me2();
 
   if ( factory()->loopSimCorrections() ||
        factory()->meCorrectionsOnly() ) {
@@ -1114,7 +1160,9 @@ void SubtractionDipole::persistentOutput(PersistentOStream & os) const {
      << ounit(theLastSplittingPt,GeV) << theLastSubtractionZ
      << theLastSplittingZ << theShowerApproximation 
      << theRealShowerSubtraction << theVirtualShowerSubtraction 
-     << theLoopSimSubtraction << theRealEmissionScales << theFactory;
+     << theLoopSimSubtraction << theRealEmissionScales << theFactory
+     << ounit(theShowerHardScale,GeV) << ounit(theShowerScale,GeV) 
+     << theShowerParameters << theIsInShowerPhasespace << theIsAboveCutoff;
 }
 
 void SubtractionDipole::persistentInput(PersistentIStream & is, int) {
@@ -1130,7 +1178,9 @@ void SubtractionDipole::persistentInput(PersistentIStream & is, int) {
      >> iunit(theLastSplittingPt,GeV) >> theLastSubtractionZ
      >> theLastSplittingZ >> theShowerApproximation 
      >> theRealShowerSubtraction >> theVirtualShowerSubtraction 
-     >> theLoopSimSubtraction >> theRealEmissionScales >> theFactory;
+     >> theLoopSimSubtraction >> theRealEmissionScales >> theFactory
+     >> iunit(theShowerHardScale,GeV) >> iunit(theShowerScale,GeV) 
+     >> theShowerParameters >> theIsInShowerPhasespace >> theIsAboveCutoff;
   lastMatchboxXComb(theLastXComb);
   typedef multimap<UnderlyingBornKey,RealEmissionInfo>::const_iterator spit;
   pair<spit,spit> kr = theSplittingMap.equal_range(lastUnderlyingBornKey);

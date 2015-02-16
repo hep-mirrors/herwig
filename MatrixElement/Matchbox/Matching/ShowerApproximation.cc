@@ -25,6 +25,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 #include "Herwig++/MatrixElement/Matchbox/Dipoles/SubtractionDipole.h"
+#include "Herwig++/MatrixElement/Matchbox/Phasespace/TildeKinematics.h"
 #include "Herwig++/MatrixElement/Matchbox/Phasespace/InvertedTildeKinematics.h"
 
 using namespace Herwig;
@@ -47,7 +48,8 @@ ShowerApproximation::ShowerApproximation()
     theRenormalizationScaleFreeze(1.*GeV),
     theFactorizationScaleFreeze(1.*GeV),
     theProfileScales(true),
-  theProfileRho(0.3), maxPtIsMuF(false) {}
+  theProfileRho(0.3), maxPtIsMuF(false),
+  theUseTildeBelowCutoff(true) {}
 
 ShowerApproximation::~ShowerApproximation() {}
 
@@ -72,6 +74,19 @@ void ShowerApproximation::setDipole(Ptr<SubtractionDipole>::tcptr dip) {
 }
 
 Ptr<SubtractionDipole>::tcptr ShowerApproximation::dipole() const { return theDipole; }
+
+Ptr<TildeKinematics>::tptr
+ShowerApproximation::showerTildeKinematics() const {
+  return Ptr<TildeKinematics>::tptr();
+}
+
+Ptr<InvertedTildeKinematics>::tptr 
+ShowerApproximation::showerInvertedTildeKinematics() const {
+  return Ptr<InvertedTildeKinematics>::tptr();
+}
+
+void ShowerApproximation::getShowerVariables() {
+}
 
 bool ShowerApproximation::isAboveCutoff() const {
 
@@ -394,7 +409,8 @@ void ShowerApproximation::persistentOutput(PersistentOStream & os) const {
      << theBornScaleInSplitting << theEmissionScaleInSplitting
      << ounit(theRenormalizationScaleFreeze,GeV)
      << ounit(theFactorizationScaleFreeze,GeV)
-     << theProfileScales << theProfileRho << maxPtIsMuF;
+     << theProfileScales << theProfileRho << maxPtIsMuF
+     << theUseTildeBelowCutoff;
 }
 
 void ShowerApproximation::persistentInput(PersistentIStream & is, int) {
@@ -411,7 +427,8 @@ void ShowerApproximation::persistentInput(PersistentIStream & is, int) {
      >> theBornScaleInSplitting >> theEmissionScaleInSplitting
      >> iunit(theRenormalizationScaleFreeze,GeV)
      >> iunit(theFactorizationScaleFreeze,GeV)
-     >> theProfileScales >> theProfileRho >> maxPtIsMuF;
+     >> theProfileScales >> theProfileRho >> maxPtIsMuF
+     >> theUseTildeBelowCutoff;
 }
 
 // *** Attention *** The following static variable is needed for the type
@@ -675,5 +692,21 @@ void ShowerApproximation::Init() {
      "No",
      "",
      false);
+
+  static Switch<ShowerApproximation,bool> interfaceUseTildeBelowCutoff
+    ("UseTildeBelowCutoff",
+     "",
+     &ShowerApproximation::theUseTildeBelowCutoff, false, false, false);
+  static SwitchOption interfaceUseTildeBelowCutoffYes
+    (interfaceUseTildeBelowCutoff,
+     "Yes",
+     "",
+     true);
+  static SwitchOption interfaceUseTildeBelowCutoffNo
+    (interfaceUseTildeBelowCutoff,
+     "No",
+     "",
+     false);
+
 }
 

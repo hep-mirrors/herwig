@@ -30,6 +30,7 @@ IILightInvertedTildeKinematics.h \
 IILightTildeKinematics.cc \
 IILightTildeKinematics.h \
 InvertedTildeKinematics.cc \
+InvertedTildeKinematics.fh \
 InvertedTildeKinematics.h \
 MatchboxPhasespace.cc \
 MatchboxPhasespace.h \
@@ -39,6 +40,7 @@ PhasespaceHelpers.cc \
 PhasespaceHelpers.h \
 RandomHelpers.h \
 TildeKinematics.cc \
+TildeKinematics.fh \
 TildeKinematics.h \
 TreePhasespace.cc \
 TreePhasespace.h \

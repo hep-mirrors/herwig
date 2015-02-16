@@ -237,7 +237,9 @@ public:
   int evolutionVariable() const {
     return
       nDimBorn() +
-      dipole()->invertedTildeKinematics()->evolutionVariable();
+      (showerApproximation()->showerInvertedTildeKinematics() ?
+       showerApproximation()->showerInvertedTildeKinematics()->evolutionVariable() :
+       dipole()->invertedTildeKinematics()->evolutionVariable());
   }
 
   /**
@@ -245,7 +247,10 @@ public:
    * random number corresponding to the pt cut.
    */
   double evolutionCutoff() const {
-    return dipole()->invertedTildeKinematics()->evolutionCutoff();
+    return 
+      showerApproximation()->showerInvertedTildeKinematics() ?
+      showerApproximation()->showerInvertedTildeKinematics()->evolutionCutoff() :
+      dipole()->invertedTildeKinematics()->evolutionCutoff();
   }
 
   /**
