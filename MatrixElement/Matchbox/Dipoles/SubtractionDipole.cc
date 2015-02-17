@@ -492,7 +492,7 @@ bool SubtractionDipole::generateTildeKinematics() {
     if ( showerApproximation()->showerTildeKinematics() ) {
       if ( showerApproximation()->isAboveCutoff() ||
 	   (!showerApproximation()->isAboveCutoff() &&
-	    showerApproximation()->useTildeBelowCutoff()) )
+	    !showerApproximation()->useTildeBelowCutoff()) )
 	kinematics = showerApproximation()->showerTildeKinematics();
     }
   }
