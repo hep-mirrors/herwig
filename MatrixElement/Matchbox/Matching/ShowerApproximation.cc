@@ -48,8 +48,7 @@ ShowerApproximation::ShowerApproximation()
     theRenormalizationScaleFreeze(1.*GeV),
     theFactorizationScaleFreeze(1.*GeV),
     theProfileScales(true),
-  theProfileRho(0.3), maxPtIsMuF(false),
-  theUseTildeBelowCutoff(true) {}
+  theProfileRho(0.3), maxPtIsMuF(false) {}
 
 ShowerApproximation::~ShowerApproximation() {}
 
@@ -83,6 +82,9 @@ ShowerApproximation::showerTildeKinematics() const {
 Ptr<InvertedTildeKinematics>::tptr 
 ShowerApproximation::showerInvertedTildeKinematics() const {
   return Ptr<InvertedTildeKinematics>::tptr();
+}
+
+void ShowerApproximation::checkCutoff() {
 }
 
 void ShowerApproximation::getShowerVariables() {
@@ -409,8 +411,7 @@ void ShowerApproximation::persistentOutput(PersistentOStream & os) const {
      << theBornScaleInSplitting << theEmissionScaleInSplitting
      << ounit(theRenormalizationScaleFreeze,GeV)
      << ounit(theFactorizationScaleFreeze,GeV)
-     << theProfileScales << theProfileRho << maxPtIsMuF
-     << theUseTildeBelowCutoff;
+     << theProfileScales << theProfileRho << maxPtIsMuF;
 }
 
 void ShowerApproximation::persistentInput(PersistentIStream & is, int) {
@@ -427,8 +428,7 @@ void ShowerApproximation::persistentInput(PersistentIStream & is, int) {
      >> theBornScaleInSplitting >> theEmissionScaleInSplitting
      >> iunit(theRenormalizationScaleFreeze,GeV)
      >> iunit(theFactorizationScaleFreeze,GeV)
-     >> theProfileScales >> theProfileRho >> maxPtIsMuF
-     >> theUseTildeBelowCutoff;
+     >> theProfileScales >> theProfileRho >> maxPtIsMuF;
 }
 
 // *** Attention *** The following static variable is needed for the type
@@ -689,21 +689,6 @@ void ShowerApproximation::Init() {
      true);
   static SwitchOption interfaceMaxPtIsMuFNo
     (interfaceMaxPtIsMuF,
-     "No",
-     "",
-     false);
-
-  static Switch<ShowerApproximation,bool> interfaceUseTildeBelowCutoff
-    ("UseTildeBelowCutoff",
-     "",
-     &ShowerApproximation::theUseTildeBelowCutoff, false, false, false);
-  static SwitchOption interfaceUseTildeBelowCutoffYes
-    (interfaceUseTildeBelowCutoff,
-     "Yes",
-     "",
-     true);
-  static SwitchOption interfaceUseTildeBelowCutoffNo
-    (interfaceUseTildeBelowCutoff,
      "No",
      "",
      false);
