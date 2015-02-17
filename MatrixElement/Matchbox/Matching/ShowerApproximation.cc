@@ -86,6 +86,9 @@ ShowerApproximation::showerInvertedTildeKinematics() const {
 }
 
 void ShowerApproximation::getShowerVariables() {
+
+  
+
 }
 
 bool ShowerApproximation::isAboveCutoff() const {
@@ -133,25 +136,6 @@ Energy ShowerApproximation::hardScale() const {
   }
 }
 
-double ShowerApproximation::hardScaleProfile(Energy hard, Energy soft) const {
-  double x = soft/hard;
-  if ( theProfileScales ) {
-    if ( x > 1. ) {
-      return 0.;
-    } else if ( x <= 1. && x > 1. - theProfileRho ) {
-      return sqr(1.-x)/(2.*sqr(theProfileRho));
-    } else if ( x <= 1. - theProfileRho &&
-		x > 1. - 2.*theProfileRho ) {
-      return 1. - sqr(1.-2.*theProfileRho-x)/(2.*sqr(theProfileRho));
-    } else {
-      return 1.;
-    }
-  }
-  if ( x <= 1. )
-    return 1.;
-  return 0.;
-}
-
 bool ShowerApproximation::isInShowerPhasespace() const {
 
   if ( !isAboveCutoff() )
@@ -192,6 +176,25 @@ bool ShowerApproximation::isInShowerPhasespace() const {
 
   return z > zbounds.first && z < zbounds.second;
 
+}
+
+double ShowerApproximation::hardScaleProfile(Energy hard, Energy soft) const {
+  double x = soft/hard;
+  if ( theProfileScales ) {
+    if ( x > 1. ) {
+      return 0.;
+    } else if ( x <= 1. && x > 1. - theProfileRho ) {
+      return sqr(1.-x)/(2.*sqr(theProfileRho));
+    } else if ( x <= 1. - theProfileRho &&
+		x > 1. - 2.*theProfileRho ) {
+      return 1. - sqr(1.-2.*theProfileRho-x)/(2.*sqr(theProfileRho));
+    } else {
+      return 1.;
+    }
+  }
+  if ( x <= 1. )
+    return 1.;
+  return 0.;
 }
 
 Energy2 ShowerApproximation::showerEmissionScale() const {
