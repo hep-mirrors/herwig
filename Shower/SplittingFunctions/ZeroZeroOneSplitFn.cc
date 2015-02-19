@@ -97,7 +97,7 @@ vector<pair<int, Complex> >
 ZeroZeroOneSplitFn::generatePhiForward(const double, const Energy2, const IdList &,
 				const RhoDMatrix &) {
   // scalar so no dependence
-  return vector<pair<int, Complex> >(0,make_pair(0,1.));
+  return vector<pair<int, Complex> >(1,make_pair(0,1.));
 }
 
 vector<pair<int, Complex> > 
@@ -105,7 +105,7 @@ ZeroZeroOneSplitFn::generatePhiBackward(const double, const Energy2, const IdLis
 					const RhoDMatrix &) {
   // scalar so no dependence
   assert(false);
-  return vector<pair<int, Complex> >(0,make_pair(0,1.));
+  return vector<pair<int, Complex> >(1,make_pair(0,1.));
 }
 
 DecayMEPtr ZeroZeroOneSplitFn::matrixElement(const double z, const Energy2 t, 
