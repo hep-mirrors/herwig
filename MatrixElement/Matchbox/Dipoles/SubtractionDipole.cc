@@ -537,7 +537,8 @@ bool SubtractionDipole::generateTildeKinematics() {
     p->rescaleRho();
   }
 
-  showerApproximation()->getShowerVariables();
+  if ( showerApproximation() )
+    showerApproximation()->getShowerVariables();
 
   jacobian(realEmissionME()->lastXComb().jacobian());
 
@@ -613,6 +614,11 @@ bool SubtractionDipole::generateRadiationKinematics(const double * r) {
     p->rescaleRho();
   }
 
+  if ( showerApproximation() ) {
+    showerApproximation()->checkCutoff();
+    showerApproximation()->getShowerVariables();
+  }
+
   jacobian(underlyingBornME()->lastXComb().jacobian() *
 	   kinematics->jacobian());
 
@@ -668,7 +674,7 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
       showerApproximation()->wasBelowCutoff();
       lastThetaMu = 0.0;
     } else {
-      lastThetaMu = 1.0;;
+      lastThetaMu = 1.0;
     }
     if ( lastThetaMu > 0.0 &&
 	 showerApproximation()->isInShowerPhasespace() ) {
