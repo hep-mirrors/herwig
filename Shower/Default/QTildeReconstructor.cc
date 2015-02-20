@@ -191,12 +191,14 @@ struct JetOrdering {
 
 void QTildeReconstructor::persistentOutput(PersistentOStream & os) const {
   os << _reconopt << _initialBoost << ounit(_minQ,GeV) << _noRescale 
-     << _noRescaleVector << _finalStateReconOption;
+     << _noRescaleVector << _finalStateReconOption
+     << _initialStateReconOption;
 }
 
 void QTildeReconstructor::persistentInput(PersistentIStream & is, int) {
   is >> _reconopt >> _initialBoost >> iunit(_minQ,GeV) >> _noRescale 
-     >> _noRescaleVector >> _finalStateReconOption;  
+     >> _noRescaleVector >> _finalStateReconOption
+     >> _initialStateReconOption;  
 }
 
 void QTildeReconstructor::Init() {
@@ -285,6 +287,21 @@ void QTildeReconstructor::Init() {
      "As 3 but recursive treated the currently most-off shell,"
      " only makes a difference if more than 3 partons.",
      4);
+
+  static Switch<QTildeReconstructor,unsigned int> interfaceInitialStateReconOption
+    ("InitialStateReconOption",
+     "Option for the reconstruction of initial state radiation",
+     &QTildeReconstructor::_initialStateReconOption, 0, false, false);
+  static SwitchOption interfaceInitialStateReconOptionRapidity
+    (interfaceInitialStateReconOption,
+     "Rapidity",
+     "Preserve shat and rapidity",
+     0);
+  static SwitchOption interfaceInitialStateReconOptionLongitudinal
+    (interfaceInitialStateReconOption,
+     "Longitudinal",
+     "Preserve longitudinal momentum",
+     1);
 
 }
 
@@ -1808,35 +1825,10 @@ reconstructInitialInitialSystem(bool & applyBoost,
   double x1 = p_in[0].z()/pq[0].z();
   double x2 = p_in[1].z()/pq[1].z();
   Energy MDY = (p_in[0] + p_in[1]).m();
-  Energy2 S = (pq[0]+pq[1]).m2();
+  vector<double> beta=initialStateRescaling(x1,x2,MDY,p,pq);
   // if not need don't apply boosts
   if(!(radiated && p.size() == 2 && pq.size() == 2)) return;
   applyBoost=true;
-  // find alphas and betas in terms of desired basis      
-  Energy2 p12 = pq[0]*pq[1];
-  double a[2] = {p[0]*pq[1]/p12,p[1]*pq[1]/p12};
-  double b[2] = {p[0]*pq[0]/p12,p[1]*pq[0]/p12};
-  Lorentz5Momentum p1p = p[0] - a[0]*pq[0] - b[0]*pq[1];
-  Lorentz5Momentum p2p = p[1] - a[1]*pq[0] - b[1]*pq[1];
-  // compute kappa
-  Energy2 A = a[0]*b[1]*S;
-  Energy2 B = Energy2(sqr(MDY)) - (a[0]*b[0]+a[1]*b[1])*S - (p1p+p2p).m2();
-  Energy2 C = a[1]*b[0]*S; 
-  double rad = 1.-4.*A*C/sqr(B);
-  if(rad < 0.) throw KinematicsReconstructionVeto();
-  double kp = B/(2.*A)*(1.+sqrt(rad));
-  // now compute k1, k2
-  rad = kp*(b[0]+kp*b[1])/(kp*a[0]+a[1])*(x1/x2);  
-  if(rad <= 0.) throw KinematicsReconstructionVeto();
-  double k1 = sqrt(rad);
-  double k2 = kp/k1;
-  double beta[2] = 
-    {getBeta((a[0]+b[0]), (a[0]-b[0]), (k1*a[0]+b[0]/k1), (k1*a[0]-b[0]/k1)),
-     getBeta((a[1]+b[1]), (a[1]-b[1]), (a[1]/k2+k2*b[1]), (a[1]/k2-k2*b[1]))};
-  if (pq[0].z() > ZERO) {
-    beta[0] = -beta[0]; 
-    beta[1] = -beta[1];
-  }
   // apply the boosts
   Lorentz5Momentum newcmf;
   for(unsigned int ix=0;ix<jets.size();++ix) {
@@ -2682,4 +2674,67 @@ Energy QTildeReconstructor::findMass(HardBranchingPtr branch) const {
     }
   }
   return branch->branchingParticle()->dataPtr()->mass();
+}
+
+vector<double>
+QTildeReconstructor::initialStateRescaling(double x1, double x2, Energy MDY,
+					   vector<Lorentz5Momentum> & p,
+					   vector<Lorentz5Momentum> & pq) const {
+  Energy2 S = (pq[0]+pq[1]).m2();
+  // find alphas and betas in terms of desired basis
+  Energy2 p12 = pq[0]*pq[1];
+  double a[2] = {p[0]*pq[1]/p12,p[1]*pq[1]/p12};
+  double b[2] = {p[0]*pq[0]/p12,p[1]*pq[0]/p12};
+  Lorentz5Momentum p1p = p[0] - a[0]*pq[0] - b[0]*pq[1];
+  Lorentz5Momentum p2p = p[1] - a[1]*pq[0] - b[1]*pq[1];
+  // compute kappa
+  Energy2 A = a[0]*b[1]*S;
+  Energy2 B = Energy2(sqr(MDY)) - (a[0]*b[0]+a[1]*b[1])*S - (p1p+p2p).m2();
+  Energy2 C = a[1]*b[0]*S;
+  double rad = 1.-4.*A*C/sqr(B);
+  if(rad < 0.) throw KinematicsReconstructionVeto();
+  double kp = B/(2.*A)*(1.+sqrt(rad));
+  // now compute k1
+  // conserve rapidity
+  double k1(0.);
+  if(_initialStateReconOption==0) {
+    rad = kp*(b[0]+kp*b[1])/(kp*a[0]+a[1])*(x1/x2);
+    if(rad <= 0.) throw KinematicsReconstructionVeto();
+    k1 = sqrt(rad);
+  }
+  // conserve longitudinal momentum
+  else if(_initialStateReconOption==1) {
+    double a2 = (a[0]+a[1]/kp);
+    double b2 = -x2+x1;
+    double c2 = -(b[1]*kp+b[0]);
+    if(abs(b2)>1e-10) {
+      double discrim = 1.-4.*a2*c2/sqr(b2);
+      if(discrim < 0.) throw KinematicsReconstructionVeto();
+      if(b2>0.) {
+	k1 = 0.5*b2/a2*(1.+sqrt(discrim));
+      }
+      else {
+	k1 = 0.5*b2/a2*(1.-sqrt(discrim));
+      }
+      if(discrim<1.) generator()->log() << "testing problem 2 solns??\n";
+    }
+    else {
+      k1 = -c2/a2;
+      if( k1 <= 0.) throw KinematicsReconstructionVeto();
+      k1 = sqrt(k1);
+    }
+  }
+  else
+    assert(false);
+  // and k2
+  double k2 = kp/k1;
+  // calculate the boosts
+  vector<double> beta(2);
+  beta[0] = getBeta((a[0]+b[0]), (a[0]-b[0]), (k1*a[0]+b[0]/k1), (k1*a[0]-b[0]/k1));
+  beta[1] = getBeta((a[1]+b[1]), (a[1]-b[1]), (a[1]/k2+k2*b[1]), (a[1]/k2-k2*b[1]));
+  if (pq[0].z() > ZERO) {
+    beta[0] = -beta[0];
+    beta[1] = -beta[1];
+  }
+  return beta;
 }

@@ -78,7 +78,8 @@ public:
    *  Default constructor
    */
   QTildeReconstructor() : _reconopt(0), _initialBoost(0), 
-			  _finalStateReconOption(0), _minQ(MeV) {};
+			  _finalStateReconOption(0), 
+			  _initialStateReconOption(0), _minQ(MeV) {};
 
   /**
    *  Methods to reconstruct the kinematics of a scattering or decay process
@@ -442,6 +443,13 @@ protected:
    */
   Energy findMass(HardBranchingPtr) const;
 
+  /**
+   *  Calculate the initial-state rescaling factors
+   */
+  vector<double> initialStateRescaling(double x1, double x2, Energy MDY,
+				       vector<Lorentz5Momentum> & p,
+				       vector<Lorentz5Momentum> & pq) const;
+
 protected:
 
   /** @name Clone Methods. */
@@ -492,9 +500,14 @@ private:
   unsigned int _initialBoost;
 
   /**
-   * Option for the reconstruction of final stateb systems
+   * Option for the reconstruction of final state systems
    */
   unsigned int _finalStateReconOption;
+
+  /**
+   * Option for the initial state reconstruction
+   */
+  unsigned int _initialStateReconOption;
 
   /**
    * Minimum invariant mass for initial-final dipoles to allow the
