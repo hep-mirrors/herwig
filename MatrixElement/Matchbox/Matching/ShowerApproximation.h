@@ -88,13 +88,6 @@ public:
    */
   virtual Ptr<InvertedTildeKinematics>::tptr showerInvertedTildeKinematics() const;
 
-  /**
-   * Return true, if the subtraction term kinematic mapping should be used
-   * below the cutoff instead of the shower kinematics overriding the
-   * nominal dipole mappings.
-   */
-  bool useTildeBelowCutoff() const { return theUseTildeBelowCutoff; }
-
 public:
 
   /**
@@ -382,6 +375,11 @@ public:
   virtual bool isAboveCutoff() const;
 
   /**
+   * Determine if the configuration is below or above the cutoff.
+   */
+  virtual void checkCutoff();
+
+  /**
    * Determine all kinematic variables which are not provided by the
    * dipole kinematics; store all shower variables in the respective
    * dipole object for later use.
@@ -624,13 +622,6 @@ private:
    * True if maximum pt should be deduced from the factorization scale
    */
   bool maxPtIsMuF;
-
-  /**
-   * True, if the subtraction term kinematic mapping should be used
-   * below the cutoff instead of the shower kinematics overriding the
-   * nominal dipole mappings.
-   */
-  bool theUseTildeBelowCutoff;
 
 private:
 

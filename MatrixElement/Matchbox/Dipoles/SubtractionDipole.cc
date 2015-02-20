@@ -487,7 +487,10 @@ bool SubtractionDipole::generateTildeKinematics() {
 
   Ptr<TildeKinematics>::tptr kinematics = theTildeKinematics;
   if ( showerApproximation() ) {
+    showerApproximation()->setDipole(this);
+    showerApproximation()->checkCutoff();
     if ( showerApproximation()->showerTildeKinematics() &&
+	 showerApproximation()->isAboveCutoff() &&
 	 realShowerSubtraction() )
       kinematics = showerApproximation()->showerTildeKinematics();
   }
@@ -534,7 +537,6 @@ bool SubtractionDipole::generateTildeKinematics() {
     p->rescaleRho();
   }
 
-  showerApproximation()->setDipole(this);
   showerApproximation()->getShowerVariables();
 
   jacobian(realEmissionME()->lastXComb().jacobian());
@@ -655,7 +657,6 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
 
   double lastThetaMu = 1.0;
 
-  double dipoleFactor = 1.;
   double showerFactor = 1.;
 
   if ( showerApproximation() ) {
@@ -666,20 +667,6 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
     if ( !showerApproximation()->isAboveCutoff() ) {
       showerApproximation()->wasBelowCutoff();
       lastThetaMu = 0.0;
-      if ( realShowerSubtraction() ) {
-	// map dipole to shower kinematics, if wanted; as we are
-	// always below the cutoff only the dipole is affected in this
-	// case
-	if ( showerApproximation()->showerTildeKinematics() )
-	  dipoleFactor /= 
-	    showerApproximation()->showerTildeKinematics()->jacobianRatio();
-      } else if ( virtualShowerSubtraction() ) {
-	// map shower to dipole kinematics; we are always above the
-	// cutoff in this case
-	if ( showerApproximation()->showerTildeKinematics() )
-	  showerFactor *= 
-	    showerApproximation()->showerTildeKinematics()->jacobianRatio();
-      }
     } else {
       lastThetaMu = 1.0;;
     }
@@ -689,6 +676,14 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
 	shower = showerApproximation()->dSigHatDR()*lastThetaMu;
       if ( virtualShowerSubtraction() || loopSimSubtraction() )
 	shower = -showerApproximation()->dSigHatDR()*lastThetaMu;
+      if ( virtualShowerSubtraction() &&
+	   showerApproximation()->isAboveCutoff() &&
+	   showerApproximation()->showerTildeKinematics() ) {
+	// map shower to dipole kinematics; we are always above the
+	// cutoff in this case
+	showerFactor *= 
+	  showerApproximation()->showerTildeKinematics()->jacobianRatio();
+      }
       shower *= showerFactor;
     }
     if ( realShowerSubtraction() && lastThetaMu == 1.0 )
@@ -703,7 +698,7 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
   double xme2 = 0.0;
 
   if ( needTheDipole )
-    xme2 = dipoleFactor*me2();
+    xme2 = me2();
 
   if ( factory()->loopSimCorrections() ||
        factory()->meCorrectionsOnly() ) {
