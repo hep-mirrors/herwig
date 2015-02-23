@@ -67,12 +67,12 @@ void ShowerApproximation::setLargeNBasis() {
   }
 }
 
-void ShowerApproximation::setDipole(Ptr<SubtractionDipole>::tcptr dip) { 
+void ShowerApproximation::setDipole(Ptr<SubtractionDipole>::tptr dip) { 
   theDipole = dip;
   setLargeNBasis();
 }
 
-Ptr<SubtractionDipole>::tcptr ShowerApproximation::dipole() const { return theDipole; }
+Ptr<SubtractionDipole>::tptr ShowerApproximation::dipole() const { return theDipole; }
 
 Ptr<TildeKinematics>::tptr
 ShowerApproximation::showerTildeKinematics() const {
@@ -85,9 +85,25 @@ ShowerApproximation::showerInvertedTildeKinematics() const {
 }
 
 void ShowerApproximation::checkCutoff() {
+  assert(!showerTildeKinematics());
 }
 
 void ShowerApproximation::getShowerVariables() {
+
+  // check for the cutoff
+  dipole()->isAboveCutoff(isAboveCutoff());
+
+  // get the hard scale
+  dipole()->showerHardScale(hardScale());
+
+  // set the shower scale and variables for completeness
+  dipole()->showerScale(dipole()->lastPt());
+  dipole()->showerParameters().resize(1);
+  dipole()->showerParameters()[0] = dipole()->lastZ();
+
+  // check for phase space
+  dipole()->isInShowerPhasespace(isInShowerPhasespace());
+
 }
 
 bool ShowerApproximation::isAboveCutoff() const {
@@ -156,7 +172,7 @@ double ShowerApproximation::hardScaleProfile(Energy hard, Energy soft) const {
 
 bool ShowerApproximation::isInShowerPhasespace() const {
 
-  if ( !isAboveCutoff() )
+  if ( !dipole()->isAboveCutoff() )
     return false;
   if ( !restrictPhasespace() )
     return true;
@@ -167,7 +183,7 @@ bool ShowerApproximation::isInShowerPhasespace() const {
   tcStdXCombPtr tmpborn = kinematics.bornXComb();
   Ptr<SubtractionDipole>::tptr tmpdip = kinematics.dipole();
 
-  Energy hard = hardScale();
+  Energy hard = dipole()->showerHardScale();
   Energy pt = dipole()->lastPt();
   double z = dipole()->lastZ();
 

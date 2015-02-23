@@ -119,7 +119,7 @@ double ShowerApproximationKernel::evaluate(const vector<double>& r) {
   showerApproximation()->setTildeXCombs(tildeXCombs());
   showerApproximation()->setDipole(dipole());
 
-  if ( !showerApproximation()->isInShowerPhasespace() )
+  if ( !dipole()->isInShowerPhasespace() )
     return 0.;
 
   return showerApproximation()->me2() * jac;

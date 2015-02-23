@@ -25,6 +25,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 #include "Herwig++/MatrixElement/Matchbox/Dipoles/SubtractionDipole.h"
+#include "Herwig++/MatrixElement/Matchbox/Phasespace/TildeKinematics.h"
 
 using namespace Herwig;
 
@@ -40,15 +41,44 @@ IBPtr QTildeMatching::fullclone() const {
   return new_ptr(*this);
 }
 
+void QTildeMatching::checkCutoff() {
+  if ( showerTildeKinematics() ) {
+    showerTildeKinematics()->
+      prepare(realCXComb(),bornCXComb());
+    showerTildeKinematics()->dipole(dipole());
+    showerTildeKinematics()->getShowerVariables();
+  }
+}
+
+void QTildeMatching::getShowerVariables() {
+
+  // already filled from checkCutoff in this case
+  if ( showerTildeKinematics() )
+    return;
+
+  // get the shower variables
+  calculateShowerVariables();
+
+  // check for the cutoff
+  dipole()->isAboveCutoff(isAboveCutoff());
+
+  // get the hard scale
+  dipole()->showerHardScale(hardScale());
+
+  // check for phase space
+  dipole()->isInShowerPhasespace(isInShowerPhasespace());
+
+}
+
 bool QTildeMatching::isInShowerPhasespace() const {
 
   assert(theQTildeSudakov->cutOffOption() == 0 && "implementation only provided for default cutoff");
 
   Energy qtildeHard = ZERO;
 
-  pair<Energy2,double> vars = calculateShowerVariables();
-  Energy qtilde = sqrt(vars.first);
-  double z = vars.second;
+  Energy qtilde = dipole()->showerScale();
+  assert(!dipole()->showerParameters().empty());
+  double z = dipole()->showerParameters()[0];
 
   // FF
   if ( dipole()->bornEmitter() > 1 && dipole()->bornSpectator() > 1 ) {
@@ -104,15 +134,15 @@ bool QTildeMatching::isInShowerPhasespace() const {
   if ( pt2 < ZERO )
     return false;
 
-  return qtilde <= qtildeHard && sqrt(pt2) < hardScale();
+  return qtilde <= qtildeHard && sqrt(pt2) < dipole()->showerHardScale();
 
 }
 
 bool QTildeMatching::isAboveCutoff() const {
   assert(theQTildeSudakov->cutOffOption() == 0 && "implementation only provided for default cutoff");
-  pair<Energy2,double> vars = calculateShowerVariables();
-  Energy qtilde = sqrt(vars.first);
-  double z = vars.second;
+  Energy qtilde = dipole()->showerScale();
+  assert(!dipole()->showerParameters().empty());
+  double z = dipole()->showerParameters()[0];
   Energy Qg = theQTildeSudakov->kinScale();
   if ( dipole()->bornEmitter() > 1 ) {
     Energy mu = max(Qg,realCXComb()->meMomenta()[dipole()->realEmitter()].mass());
@@ -130,7 +160,10 @@ bool QTildeMatching::isAboveCutoff() const {
 
 CrossSection QTildeMatching::dSigHatDR() const {
 
-  pair<Energy2,double> vars = calculateShowerVariables();
+  assert(!dipole()->showerParameters().empty());
+  pair<Energy2,double> vars = 
+    make_pair(sqr(dipole()->showerScale()),
+	      dipole()->showerParameters()[0]);
 
   pair<int,int> ij(dipole()->bornEmitter(),
 		   dipole()->bornSpectator());
@@ -180,7 +213,7 @@ CrossSection QTildeMatching::dSigHatDR() const {
     pt2 = sqr((1.-z)*qtilde) - z*sqr(Qg);
   }
   assert(pt2 >= ZERO);
-  xme2 *= hardScaleProfile(hardScale(),sqrt(pt2));
+  xme2 *= hardScaleProfile(dipole()->showerHardScale(),sqrt(pt2));
 
   CrossSection res = 
     sqr(hbarc) * 
@@ -199,7 +232,7 @@ double QTildeMatching::me2() const {
   return 0.;
 }
 
-pair<Energy2,double> QTildeMatching::calculateShowerVariables() const {
+void QTildeMatching::calculateShowerVariables() const {
 
   Lorentz5Momentum n;
   Energy2 Q2 = ZERO;
@@ -265,7 +298,9 @@ pair<Energy2,double> QTildeMatching::calculateShowerVariables() const {
 
   assert(qtilde2 >= ZERO && z >= 0.0 && z <= 1.0);
 
-  return make_pair(qtilde2,z);
+  dipole()->showerScale(sqrt(qtilde2));
+  dipole()->showerParameters().resize(1);
+  dipole()->showerParameters()[0] = z;
 
 }
 

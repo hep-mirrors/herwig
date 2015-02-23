@@ -110,6 +110,14 @@ public:
 
   /**
    * If this tilde kinematics is implementing a mapping different from
+   * the baseline dipole mapping, determine the relevant shower
+   * parameters and check for phase space boundaries. Note that real
+   * emission kinematics only are available at this stage.
+   */
+  virtual void getShowerVariables() const {}
+
+  /**
+   * If this tilde kinematics is implementing a mapping different from
    * the baseline dipole mapping, return the ratio of phase space
    * factorization Jacobians for this and the nominal dipole
    * mapping. This is used for matching subtractions.

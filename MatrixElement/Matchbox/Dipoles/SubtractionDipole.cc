@@ -487,10 +487,12 @@ bool SubtractionDipole::generateTildeKinematics() {
 
   Ptr<TildeKinematics>::tptr kinematics = theTildeKinematics;
   if ( showerApproximation() ) {
+    showerApproximation()->setBornXComb(lastXCombPtr());
+    showerApproximation()->setRealXComb(realEmissionME()->lastXCombPtr());
     showerApproximation()->setDipole(this);
     showerApproximation()->checkCutoff();
     if ( showerApproximation()->showerTildeKinematics() &&
-	 showerApproximation()->isAboveCutoff() &&
+	 isAboveCutoff() &&
 	 realShowerSubtraction() )
       kinematics = showerApproximation()->showerTildeKinematics();
   }
@@ -564,6 +566,8 @@ bool SubtractionDipole::generateRadiationKinematics(const double * r) {
 
   Ptr<InvertedTildeKinematics>::tptr kinematics = theInvertedTildeKinematics;
   if ( showerApproximation() ) {
+    showerApproximation()->setBornXComb(underlyingBornME()->lastXCombPtr());
+    showerApproximation()->setRealXComb(lastXCombPtr());
     showerApproximation()->setDipole(this);
     if ( showerApproximation()->showerInvertedTildeKinematics() ) {
       kinematics = showerApproximation()->showerInvertedTildeKinematics();
@@ -669,21 +673,20 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
     assert(!splitting());
     showerApproximation()->setBornXComb(lastXCombPtr());
     showerApproximation()->setRealXComb(realEmissionME()->lastXCombPtr());
-    showerApproximation()->setDipole(this);
-    if ( !showerApproximation()->isAboveCutoff() ) {
+    showerApproximation()->setDipole(const_cast<SubtractionDipole*>(this));
+    if ( !isAboveCutoff() ) {
       showerApproximation()->wasBelowCutoff();
       lastThetaMu = 0.0;
     } else {
       lastThetaMu = 1.0;
     }
-    if ( lastThetaMu > 0.0 &&
-	 showerApproximation()->isInShowerPhasespace() ) {
+    if ( lastThetaMu > 0.0 && isInShowerPhasespace() ) {
       if ( realShowerSubtraction() )
 	shower = showerApproximation()->dSigHatDR()*lastThetaMu;
       if ( virtualShowerSubtraction() || loopSimSubtraction() )
 	shower = -showerApproximation()->dSigHatDR()*lastThetaMu;
       if ( virtualShowerSubtraction() &&
-	   showerApproximation()->isAboveCutoff() &&
+	   isAboveCutoff() &&
 	   showerApproximation()->showerTildeKinematics() ) {
 	// map shower to dipole kinematics; we are always above the
 	// cutoff in this case

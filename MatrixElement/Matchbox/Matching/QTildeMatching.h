@@ -48,19 +48,6 @@ public:
 public:
 
   /**
-   * Return true, if the shower was able to generate an emission
-   * leading from the given Born to the given real emission process.
-   */
-  virtual bool isInShowerPhasespace() const;
-
-  /**
-   * Return true, if the shower emission leading from the given Born
-   * to the given real emission process would have been generated
-   * above the shower's infrared cutoff.
-   */
-  virtual bool isAboveCutoff() const;
-
-  /**
    * Return the shower approximation to the real emission cross
    * section for the given pair of Born and real emission
    * configurations.
@@ -75,12 +62,37 @@ public:
    */
   virtual double me2() const;
 
+  /**
+   * Determine if the configuration is below or above the cutoff.
+   */
+  virtual void checkCutoff();
+
+  /**
+   * Determine all kinematic variables which are not provided by the
+   * dipole kinematics; store all shower variables in the respective
+   * dipole object for later use.
+   */
+  virtual void getShowerVariables();
+
 protected:
+
+  /**
+   * Return true, if the shower was able to generate an emission
+   * leading from the given Born to the given real emission process.
+   */
+  virtual bool isInShowerPhasespace() const;
+
+  /**
+   * Return true, if the shower emission leading from the given Born
+   * to the given real emission process would have been generated
+   * above the shower's infrared cutoff.
+   */
+  virtual bool isAboveCutoff() const;
 
   /**
    * Calculate qtilde^2 and z for the splitting considered
    */
-  pair<Energy2,double> calculateShowerVariables() const;
+  void calculateShowerVariables() const;
 
   /**
    * Return the splitting function as a function of the kinematic

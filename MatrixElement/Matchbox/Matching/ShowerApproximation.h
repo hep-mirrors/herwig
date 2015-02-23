@@ -133,12 +133,12 @@ public:
   /**
    * Set the dipole in charge for the emission
    */
-  void setDipole(Ptr<SubtractionDipole>::tcptr);
+  void setDipole(Ptr<SubtractionDipole>::tptr);
 
   /**
    * Return the dipole in charge for the emission
    */
-  Ptr<SubtractionDipole>::tcptr dipole() const;
+  Ptr<SubtractionDipole>::tptr dipole() const;
 
   /**
    * Return true, if this matching is capable of spin correlations.
@@ -332,11 +332,6 @@ public:
   void hardScaleFactor(double f) { theHardScaleFactor = f; }
 
   /**
-   * Return the relevant hard scale
-   */
-  virtual Energy hardScale() const;
-
-  /**
    * Return a scale profile towards the hard scale
    */
   virtual double hardScaleProfile(Energy hard, Energy soft) const;
@@ -360,19 +355,6 @@ public:
    * Set the renormalization scale factor
    */
   void renormalizationScaleFactor(double f) { theRenormalizationScaleFactor = f; }
-
-  /**
-   * Return true, if the shower was able to generate an emission
-   * leading from the given Born to the given real emission process.
-   */
-  virtual bool isInShowerPhasespace() const;
-
-  /**
-   * Return true, if the shower emission leading from the given Born
-   * to the given real emission process would have been generated
-   * above the shower's infrared cutoff.
-   */
-  virtual bool isAboveCutoff() const;
 
   /**
    * Determine if the configuration is below or above the cutoff.
@@ -410,6 +392,26 @@ public:
    * Return the real emission PDF weight
    */
   double realPDFWeight(Energy2 muF) const;
+
+protected:
+
+  /**
+   * Return true, if the shower was able to generate an emission
+   * leading from the given Born to the given real emission process.
+   */
+  virtual bool isInShowerPhasespace() const;
+
+  /**
+   * Return true, if the shower emission leading from the given Born
+   * to the given real emission process would have been generated
+   * above the shower's infrared cutoff.
+   */
+  virtual bool isAboveCutoff() const;
+
+  /**
+   * Return the relevant hard scale
+   */
+  virtual Energy hardScale() const;
 
 public:
 
@@ -495,7 +497,7 @@ private:
   /**
    * The dipole in charge for the emission
    */
-  Ptr<SubtractionDipole>::tcptr theDipole;
+  Ptr<SubtractionDipole>::tptr theDipole;
 
   /**
    * True if one of the recently encountered configutations was below

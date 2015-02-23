@@ -76,7 +76,7 @@ CrossSection MEMatching::dSigHatDR() const {
   }
 
   if ( restrictPhasespace() )
-    xme2 *= hardScaleProfile(hardScale(),dipole()->lastPt());
+    xme2 *= hardScaleProfile(dipole()->showerHardScale(),dipole()->lastPt());
 
   return
     sqr(hbarc) * 
@@ -108,7 +108,7 @@ double MEMatching::me2() const {
   }
 
   if ( restrictPhasespace() )
-    rme2 *= hardScaleProfile(hardScale(),dipole()->lastPt());
+    rme2 *= hardScaleProfile(dipole()->showerHardScale(),dipole()->lastPt());
 
   return
     channelWeight() * (rme2/bme2) * 
