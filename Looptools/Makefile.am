@@ -32,7 +32,7 @@ commonCPPFLAGS = $(AM_CPPFLAGS) -I$(srcdir)/include
 
 libHwLooptoolsXFC_la_SOURCES = $(theXFCSOURCES)
 libHwLooptoolsXFC_la_CPPFLAGS = $(commonCPPFLAGS)
-libHwLooptoolsXFC_la_FCFLAGS = $(AM_FCFLAGS) -ffixed-line-length-none
+libHwLooptoolsXFC_la_FCFLAGS = $(AM_FCFLAGS) -O0 -ffixed-line-length-none
 libHwLooptoolsXFC_la_FFLAGS = $(AM_FFLAGS) -ffixed-line-length-none
 
 libHwLooptoolsCFC_la_SOURCES = $(theCFCSOURCES)
