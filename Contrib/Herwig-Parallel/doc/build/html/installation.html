@@ -1,0 +1,163 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Installation and Setup &mdash; Herwig-Parallel  documentation</title>
+    
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Herwig-Parallel  documentation" href="index.html" />
+    <link rel="next" title="Configuration" href="configuration.html" />
+    <link rel="prev" title="Overview" href="overview.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="configuration.html" title="Configuration"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="overview.html" title="Overview"
+             accesskey="P">previous</a> |</li>
+    <li><a href="../../../../index.html">Home</a> &raquo;&nbsp;</li>
+    <li><a href="../../../_build/html/main.html">Documentation</a> &raquo;&nbsp;</li>
+    
+        <li><a href="index.html">Herwig-Parallel  documentation</a> &raquo;</li>
+ 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="overview.html"
+                        title="previous chapter">Overview</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="configuration.html"
+                        title="next chapter">Configuration</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/installation.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="installation-and-setup">
+<h1>Installation and Setup<a class="headerlink" href="#installation-and-setup" title="Permalink to this headline">¶</a></h1>
+<ol class="arabic">
+<li><p class="first">Preparations</p>
+<ul class="simple">
+<li>Place the folder <tt class="docutils literal"><span class="pre">&lt;Herwig-source-folder&gt;/Contrib/Herwig-Parallel/source</span></tt> in your <tt class="docutils literal"><span class="pre">$PATH</span></tt> environment variable in order to enable easier access to the <tt class="docutils literal"><span class="pre">Herwig-Parallel</span></tt> commands.</li>
+</ul>
+</li>
+<li><p class="first">Prepare Rivet 1.9.0</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">At the moment unfortunately only version 1.9.0 of Rivet is supported. This is due to the fact that currently the development and use of patches for specific Rivet versions is necessary
+in order to have the required functionality. Hopefully, this procedure will become obsolete with future releases of Rivet.</p>
+</div>
+<ul>
+<li><p class="first">Copy the following files to the following destinations in your Rivet source location</p>
+<blockquote>
+<div><ul class="simple">
+<li><tt class="docutils literal"><span class="pre">patches/Rivet/AIHistogram1D.h</span></tt> to <tt class="docutils literal"><span class="pre">&lt;your-Rivet-source-folder&gt;/include/LWH</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">patches/Rivet/Histogram1D.h</span></tt> to <tt class="docutils literal"><span class="pre">&lt;your-Rivet-source-folder&gt;/include/LWH</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">patches/Rivet/AnalysisHandler.hh</span></tt> to <tt class="docutils literal"><span class="pre">&lt;your-Rivet-source-folder&gt;/include/Rivet</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">patches/Rivet/Analysis.hh</span></tt> to <tt class="docutils literal"><span class="pre">&lt;your-Rivet-source-folder&gt;/include/Rivet</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">patches/Rivet/AnalysisHandler.cc</span></tt> to <tt class="docutils literal"><span class="pre">&lt;your-Rivet-source-folder&gt;/src/Core</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">patches/Rivet/Analysis.cc</span></tt> to <tt class="docutils literal"><span class="pre">&lt;your-Rivet-source-folder&gt;/src/Core</span></tt></li>
+</ul>
+</div></blockquote>
+<p>and do <tt class="docutils literal"><span class="pre">make</span> <span class="pre">-j4</span> <span class="pre">install</span></tt>.</p>
+</li>
+<li><p class="first">Put the command <tt class="docutils literal"><span class="pre">source</span> <span class="pre">&lt;your-Rivet-source-folder&gt;/rivetenv.sh</span></tt> in your <tt class="docutils literal"><span class="pre">.bashrc</span></tt>. In case of problems it may be necessary to comment out all LaTeX-related lines.</p>
+</li>
+</ul>
+</li>
+<li><p class="first">Prepare ThePEG</p>
+<ul>
+<li><p class="first">Copy the files</p>
+<blockquote>
+<div><ul class="simple">
+<li><tt class="docutils literal"><span class="pre">patches/ThePEG/NLORivetAnalysis.cc</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">patches/ThePEG/RivetAnalysis.cc</span></tt></li>
+</ul>
+</div></blockquote>
+<p>to the <tt class="docutils literal"><span class="pre">Analysis</span></tt> folder of your ThePEG source directory and do <tt class="docutils literal"><span class="pre">make</span> <span class="pre">-j4</span> <span class="pre">install</span></tt>.</p>
+</li>
+</ul>
+</li>
+</ol>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="configuration.html" title="Configuration"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="overview.html" title="Overview"
+             >previous</a> |</li>
+    <li><a href="../../../../index.html">Home</a> &raquo;&nbsp;</li>
+    <li><a href="../../../_build/html/main.html">Documentation</a> &raquo;&nbsp;</li>
+    
+        <li><a href="index.html">Herwig-Parallel  documentation</a> &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Daniel Rauch.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

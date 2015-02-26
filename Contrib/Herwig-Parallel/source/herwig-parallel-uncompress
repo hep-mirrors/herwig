@@ -1,0 +1,55 @@
+#! /usr/bin/env python
+
+## --------------------
+## Herwig-Parallel
+## --------------------
+## Author: Daniel Rauch
+## Date:   25 Feb 2015
+## --------------------
+
+import sys
+import os
+import shutil
+from subprocess import call
+from subprocess import check_output
+from optparse import OptionParser
+
+# setup command line options & parameters
+parser = OptionParser(usage="%prog runname")
+opts, args = parser.parse_args()
+
+if len(args) <> 1:
+  sys.stderr.write("Please specify an unambiguous name of the parallel run that is to be uncompressed again!\n")
+  sys.exit(1)
+
+run_name = args[0]
+cwd = os.getcwd()
+
+# check if run exists
+if not os.path.exists(run_name):
+  sys.stderr.write("The specified run "+run_name+" does not exist!\n")
+  sys.exit(1)
+
+line = '==================================='
+for i in range(len(run_name)): line += '='
+print(line)
+print("HERWIG-PARALLEL: Uncompressing run {}".format(run_name))
+print(line)
+print("")
+
+os.chdir(run_name)
+if os.path.isfile('Jobs.tar.gz'):
+  print('uncompressing jobs... '),
+  output = check_output('tar -xf Jobs.tar.gz ', shell=True)
+  if output == '':
+    print('done')
+    call('rm -rf Jobs.tar.gz', shell=True)
+    print('')
+  else:
+    print('error')
+    print('{}'.format(output))
+    print('exiting...')
+    sys.exit(1)
+else:
+  print('The specified run is not compressed!\n')
+  sys.exit(1)

@@ -1,0 +1,267 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Configuration &mdash; Herwig-Parallel  documentation</title>
+    
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Herwig-Parallel  documentation" href="index.html" />
+    <link rel="next" title="How to Use" href="usage.html" />
+    <link rel="prev" title="Installation and Setup" href="installation.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="usage.html" title="How to Use"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation and Setup"
+             accesskey="P">previous</a> |</li>
+    <li><a href="../../../../index.html">Home</a> &raquo;&nbsp;</li>
+    <li><a href="../../../_build/html/main.html">Documentation</a> &raquo;&nbsp;</li>
+    
+        <li><a href="index.html">Herwig-Parallel  documentation</a> &raquo;</li>
+ 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Configuration</a><ul>
+<li><a class="reference internal" href="#general-configuration-file-herwig-parallel-conf">General Configuration File: <tt class="docutils literal"><span class="pre">herwig-parallel.conf</span></tt></a></li>
+<li><a class="reference internal" href="#cluster-configuration-file-clusters-conf">Cluster Configuration File: <tt class="docutils literal"><span class="pre">clusters.conf</span></tt></a></li>
+<li><a class="reference internal" href="#batch-queue-configuration-file-queues-conf">Batch queue configuration file: <tt class="docutils literal"><span class="pre">queues.conf</span></tt></a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="installation.html"
+                        title="previous chapter">Installation and Setup</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="usage.html"
+                        title="next chapter">How to Use</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/configuration.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="configuration">
+<h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
+<p>Herwig-Parallel comes with three configuration files which reside in the <tt class="docutils literal"><span class="pre">&lt;Herwig-source-folder&gt;/Contrib/Herwig-Parallel/config</span></tt> directory.</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">herwig-parallel.conf</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">clusters.conf</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">queues.conf</span></tt></li>
+</ul>
+<div class="section" id="general-configuration-file-herwig-parallel-conf">
+<h2>General Configuration File: <tt class="docutils literal"><span class="pre">herwig-parallel.conf</span></tt><a class="headerlink" href="#general-configuration-file-herwig-parallel-conf" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre>[tools]
+
+mergeGrids        = mergeGrids.py
+combineRuns       = combineRuns
+makeDistributions = makeDistributions
+rivet             = rivet
+flat2aida         = flat2aida
+
+
+[defaults]
+
+## --------------------
+## herwig-parallel-read
+## --------------------
+generator       = Herwig
+buildscript     = herwig-parallel-build.sh
+buildqueue      = ITP-short
+integratescript = herwig-parallel-integrate.sh
+integratequeue  = ITP-short
+integratejobs   = 1
+
+## -----------------------------------------
+## herwig-parallel-run / -addjobs / -restart
+## -----------------------------------------
+runscript = herwig-parallel-run.sh
+runqueue  = ITP-all
+runjobs   = 1
+events    = 100k
+seedmode  = ascending
+seed      = 1
+
+## -----------------------
+## herwig-parallel-combine
+## -----------------------
+builtin-analysis     =
+hepmc-rivet-analyses =
+
+
+[consistency-checks]
+
+standard-deviations = 4.0
+error-factor        = 2.0
+</pre></div>
+</div>
+<ul>
+<li><p class="first"><tt class="docutils literal"><span class="pre">[tools]</span></tt></p>
+<p>In this section the commands for merging the grid files of the sampling algorithm, combining the histograms from different runs and
+creating the distributions for plotting are specified. The corresponding programs and scripts are located in the <tt class="docutils literal"><span class="pre">bin</span></tt>-folder of
+your Herwig++ installation.</p>
+<p>Additionally, the commands to call <tt class="docutils literal"><span class="pre">Rivet</span></tt> and <tt class="docutils literal"><span class="pre">flat2aida</span></tt> which is part of Rivet need to be provided.</p>
+<p>In case the commands are located in your <tt class="docutils literal"><span class="pre">PATH</span></tt> environment variable the above commands will be sufficient.
+Otherwise the full path has to be specified.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">[defaults]</span></tt></p>
+<p>This section contains the default values for some of the options or arguments that may be given to the various Herwig-Parallel commands.
+Altering the values in this section of the configuration file may save you from specifying the same option over and over again.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">[consistency-checks]</span></tt></p>
+<p>Configuration of the consistency checks that may be applied to all parallel jobs of a run</p>
+<ul>
+<li><p class="first"><tt class="docutils literal"><span class="pre">standard-deviations</span></tt></p>
+<p>Limit for the number of standard deviations that the cross section of each parallel job may deviate from the median cross section
+of all jobs in order to still be considered consistent.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">error-factor</span></tt></p>
+<p>Limit for the factor by which the statistical uncertainty on the total cross section of each parallel job may deviate from the median
+statistical uncertainty in order to still be considered consistent.</p>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="cluster-configuration-file-clusters-conf">
+<h2>Cluster Configuration File: <tt class="docutils literal"><span class="pre">clusters.conf</span></tt><a class="headerlink" href="#cluster-configuration-file-clusters-conf" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre>[ITP]
+jobid = awk &#39;{printf &quot;%%s&quot;, $3}&#39;
+joblist = qstat.py
+status = awk &#39;{printf &quot;%%s&quot;, $3}&#39;
+statusqueued = qw
+statusrunning = r
+abort = qdel @JOBID@
+</pre></div>
+</div>
+<p>For each cluster you want to configure add a section to the cluster configuration file. The label of the section will be used as the cluster name.</p>
+<ul>
+<li><p class="first"><tt class="docutils literal"><span class="pre">jobid</span></tt></p>
+<p>Command to extract the job id from the response output of the cluster&#8217;s batch queue system when a job is submitted.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">joblist</span></tt></p>
+<p>Command to retrieve the list of all jobs from the clusters&#8217;s batch queue.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">status</span></tt></p>
+<p>Command to extract the status of a job from the joblist generated with the <tt class="docutils literal"><span class="pre">joblist</span></tt> command.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">statusqueued</span></tt></p>
+<p>Code for queued jobs used in the joblist generated with the <tt class="docutils literal"><span class="pre">joblist</span></tt> command.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">statusrunning</span></tt></p>
+<p>Code for running jobs used in the joblist generated with the <tt class="docutils literal"><span class="pre">joblist</span></tt> command.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">abort</span></tt></p>
+<p>Command for aborting a certain job identified by its jobid. The placeholder <tt class="docutils literal"><span class="pre">&#64;JOBID&#64;</span></tt> will be replaced by Herwig-Parallel when aborting jobs.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="batch-queue-configuration-file-queues-conf">
+<h2>Batch queue configuration file: <tt class="docutils literal"><span class="pre">queues.conf</span></tt><a class="headerlink" href="#batch-queue-configuration-file-queues-conf" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre>[ITP-all]
+cluster = ITP
+submit = qsub -cwd -notify -l &#39;all=1 mem_free=2.5G&#39; ./@SCRIPT@
+
+[ITP-albatros]
+cluster = ITP
+submit = qsub -cwd -notify -l mem_free=2.5G ./@SCRIPT@
+
+[ITP-short]
+cluster = ITP
+submit = qsub -cwd -notify -l &#39;short mem_free=2.5G&#39; ./@SCRIPT@
+</pre></div>
+</div>
+<p>For each queue you want to configure add a section to the queue configuration file. The label of the section will be used as the queue name.</p>
+<ul>
+<li><p class="first"><tt class="docutils literal"><span class="pre">cluster</span></tt></p>
+<p>Name of the cluster the queue is associated to.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">submit</span></tt></p>
+<p>Command for the submission of jobs to the respective queue. The placeholder <tt class="docutils literal"><span class="pre">&#64;SCRIPT&#64;</span></tt> will be replaced by Herwig-Parallel when starting jobs.</p>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="usage.html" title="How to Use"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation and Setup"
+             >previous</a> |</li>
+    <li><a href="../../../../index.html">Home</a> &raquo;&nbsp;</li>
+    <li><a href="../../../_build/html/main.html">Documentation</a> &raquo;&nbsp;</li>
+    
+        <li><a href="index.html">Herwig-Parallel  documentation</a> &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Daniel Rauch.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>
