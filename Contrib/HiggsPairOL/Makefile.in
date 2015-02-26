@@ -8,10 +8,11 @@
 #
 
 # location of include files
-OPENLOOPS=/afs/cern.ch/user/a/apapaefs/source/OpenLoops
 
+OPENLOOPSPREFIX =
 THEPEGINCLUDE =
 HERWIGINCLUDE =
+HERWIGINSTALL =
 GSLINCLUDE    = 
 FASTJETINCLUDE =
 LDFLAGS = 
@@ -19,8 +20,8 @@ SHARED_FLAG =
 FASTJETLIB = `echo $(FASTJETINCLUDE) | sed "s/-I//" | sed "s/ //"`/../lib/
 LDFLAGS = -L$(FASTJETLIB) -lfastjet 
 INCLUDE = $(THEPEGINCLUDE) $(HERWIGINCLUDE) $(GSLINCLUDE) $(FASTJETINCLUDE)
-OPENLOOPSLIB=$(OPENLOOPS)/lib
-OPENLOOPSPROCLIB=$(OPENLOOPS)/proclib
+OPENLOOPSLIB=$(OPENLOOPSPREFIX)/lib
+OPENLOOPSPROCLIB=$(OPENLOOPSPREFIX)/proclib
 OL = -L$(OPENLOOPSLIB) -lopenloops -L$(OPENLOOBSPROCLIB) -lopenloops
 #
 # C++ flags
@@ -50,3 +51,6 @@ AlpGenHandlerOL.so : AlpGenHandlerOL.o
 
 clean:
 	rm -f HiggsPair.so MEHiggsPairJet.o MEHiggsPairOL.o scalint.o AlpGenHandlerOL.o
+	
+install: 
+	cp *.so $(HERWIGINSTALL)/lib/Herwig++
