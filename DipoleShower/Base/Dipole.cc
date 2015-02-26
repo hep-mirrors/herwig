@@ -227,8 +227,8 @@ pair<Dipole,Dipole> Dipole::split(DipoleSplittingInfo& dsplit,
 
   Energy scale = dsplit.lastPt();
 
-  return make_pair(Dipole(left_particles,left_pdfs,left_fractions,make_pair(scale,scale)),
-		   Dipole(right_particles,right_pdfs,right_fractions),make_pair(scale,scale));
+  return make_pair(Dipole(left_particles,left_pdfs,left_fractions,pair<Energy,Energy>(scale,scale)),
+		   Dipole(right_particles,right_pdfs,right_fractions),pair<Energy,Energy>(scale,scale));
 
 }
 
