@@ -11,7 +11,7 @@
 //
 // This is the declaration of the MEHiggsPair class.
 //
-// The implementation of this process is based upon hep-ph/0112161 by G.F. Giudice, R. Rattazzi, J.D. Wells.
+
 
 #include "Herwig++/MatrixElement/HwMEBase.h"
 #include "ThePEG/Repository/UseRandom.h"
