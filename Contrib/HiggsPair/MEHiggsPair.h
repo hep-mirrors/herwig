@@ -11,7 +11,7 @@
 //
 // This is the declaration of the MEHiggsPair class.
 //
-// The implementation of this process is based upon hep-ph/0112161 by G.F. Giudice, R. Rattazzi, J.D. Wells.
+
 
 #include "Herwig++/MatrixElement/HwMEBase.h"
 #include "ThePEG/Repository/UseRandom.h"
@@ -106,6 +106,22 @@ public:
    */
   virtual CrossSection dSigHatDR() const;
 
+  /*
+   * Fix alphaS
+   */ 
+  unsigned int fixedalphaS() const { return _fixedalphaS; }
+
+  /*
+   * Fixed alphaS value if AlphaS is chosen (option 2 above)
+   */ 
+  double alphasfixedvalue() const { return _alphasfixedvalue; }
+
+  /**
+   *  Return multiplier for scale
+   */
+  double scalemultiplier() const {return _scalemultiplier;}
+
+  
   
 
   /**
@@ -261,6 +277,12 @@ private:
   PDPtr _higgs;
 
   /* 
+   * The W mass
+   */
+  Energy _Wmass;
+
+
+  /* 
    * The top mass
    */
   Energy _topmass;
@@ -307,17 +329,47 @@ private:
    */
   double _selfcoupling;
 
-
   /**
    *  multiplier for the hhH triple-coupling
    */
   double _hhHcoupling;
 
-
   /**
    *  Processes to include
    */
   unsigned int _process;
+
+  /*
+   * Fix alphaS
+   */ 
+  unsigned int _fixedalphaS;
+
+    /*
+   * Scale to use for alpha_S if fixed
+   */
+  Energy _alphascale;
+
+
+  /*
+   * Value of AlphaS if fixed using option 2 above
+   */ 
+  double _alphasfixedvalue;
+
+   /* 
+   * Base scale to use if chosen to be fixed
+   */ 
+  Energy _basescale;
+
+  /* 
+   * scale multiplier 
+   */ 
+  double _scalemultiplier;
+
+  /*
+   * Fix scale of whole process
+   */ 
+  unsigned int _fixedscale;
+  
 
  /**
    *  On-shell mass for the higgs
@@ -329,6 +381,59 @@ private:
    *  On-shell width for the higgs
    */
   Energy _wh; 
+
+ /**
+   *  On-shell mass for the W 
+   */
+  Energy _mW;
+
+
+  
+  /* 
+   * _cH, effective theory coefficient
+   */ 
+  double _cH;
+  
+  /* _c6, effective theory coefficient
+   *
+   */
+  double _c6;
+
+ /* 
+   * _cg1, effective theory coefficient
+   */ 
+  double _cg1;
+  
+  /* _cg2, effective theory coefficient
+   *
+   */
+  double _cg2;
+  
+ /* 
+   * _ct1, effective theory coefficient
+   */ 
+  double _ct1;
+
+ /* 
+   * _ct2, effective theory coefficient
+   */ 
+  double _ct2;
+
+  
+  /* _ct2, effective theory coefficient
+   *
+   */
+  double _cb1;
+
+  /* f_b2, effective theory coefficient
+   *
+   */
+  double _cb2;
+
+  /*  effective theory scale
+   *
+   */
+  Energy _EFTScale;
 
   /* Scalar integral initialization from hpair.f (T.Plehn, M.Spira & P.Zerwas, arXiv:hep-ph/9603205)
      Program found at http://people.web.psi.ch/spira/hpair/ */
@@ -373,7 +478,7 @@ struct ClassTraits<Herwig::MEHiggsPair>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwHiggsPair.so"; }
+  static string library() { return "MEHiggsPair.so"; }
 };
 
 /** @endcond */
