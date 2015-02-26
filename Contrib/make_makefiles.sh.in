@@ -3,6 +3,7 @@
 # for everything else the user is on their own!
 # loop over all the files
 
+OPENLOOPSPREFIX="@OPENLOOPSPREFIX@"
 THEPEGINCLUDE="@THEPEGINCLUDE@"
 GSLINCLUDE="@GSLINCLUDE@"
 FASTJETINCLUDE="@FASTJETINCLUDE@"
@@ -24,6 +25,7 @@ do
 	  file2=`echo $file | sed s!\.in!!`
 	  echo 'Making ' $file2
 	  sed "s!THEPEGINCLUDE *\=!THEPEGINCLUDE=$THEPEGINCLUDE!" < $file | \
+	  sed "s!OPENLOOPSPREFIX *\=!OPENLOOPSPREFIX=$OPENLOOPSPREFIX!" | \
 	  sed "s!FC *\=!FC=$FC!" | \
 	  sed "s!FCLIBS *\=!FCLIBS=$FCLIBS!" | \
           sed "s!CXX *\=!CXX=$CXX!" | \
