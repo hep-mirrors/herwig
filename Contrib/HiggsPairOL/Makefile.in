@@ -1,0 +1,52 @@
+# -*- Makefile -*- (for emacs)
+
+#
+# This Makefile is intended for compiling Herwig++ plugins
+#
+# This Makefile received very little testing, 
+# any bug reports are very welcome!
+#
+
+# location of include files
+OPENLOOPS=/afs/cern.ch/user/a/apapaefs/source/OpenLoops
+
+THEPEGINCLUDE =
+HERWIGINCLUDE =
+GSLINCLUDE    = 
+FASTJETINCLUDE =
+LDFLAGS = 
+SHARED_FLAG = 
+FASTJETLIB = `echo $(FASTJETINCLUDE) | sed "s/-I//" | sed "s/ //"`/../lib/
+LDFLAGS = -L$(FASTJETLIB) -lfastjet 
+INCLUDE = $(THEPEGINCLUDE) $(HERWIGINCLUDE) $(GSLINCLUDE) $(FASTJETINCLUDE)
+OPENLOOPSLIB=$(OPENLOOPS)/lib
+OPENLOOPSPROCLIB=$(OPENLOOPS)/proclib
+OL = -L$(OPENLOOPSLIB) -lopenloops -L$(OPENLOOBSPROCLIB) -lopenloops
+#
+# C++ flags
+# 
+CXX =
+CXXFLAGS =
+FC =
+FCFLAGS =
+FCLIBS =
+
+default : HiggsPair.so AlpGenHandlerOL.so
+
+%.o : %.cc %.h
+	$(CXX) -fPIC $(CPPFLAGS) $(INCLUDE) $(CXXFLAGS) -c $< -o $@  
+
+%.o : %.f
+	$(FC) -fPIC $(CPPFLAGS) $(INCLUDE) $(FCFLAGS) -c $< -o $@  
+
+HiggsPair.so : HiggsPair.o MEHiggsPairOL.o MEHiggsPairJet.o scalint.o 
+	$(CXX) -fPIC $(CPPFLAGS) $(INCLUDE) $(CXXFLAGS) $(SHARED_FLAG) $(OL) $(LDFLAGS)\
+	$(FCLIBS) $^ -o $@
+
+AlpGenHandlerOL.so : AlpGenHandlerOL.o
+	$(CXX) -fPIC $(CPPFLAGS) $(INCLUDE) $(CXXFLAGS) $(SHARED_FLAG) $(LDFLAGS) \
+	-Wl,-undefined -Wl,dynamic_lookup \
+	AlpGenHandlerOL.o -o AlpGenHandlerOL.so
+
+clean:
+	rm -f HiggsPair.so MEHiggsPairJet.o MEHiggsPairOL.o scalint.o AlpGenHandlerOL.o
