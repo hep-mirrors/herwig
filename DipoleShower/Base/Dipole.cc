@@ -23,12 +23,12 @@ Dipole::Dipole()
 
 Dipole::Dipole(const pair<PPtr,PPtr>& newParticles,
 	       const pair<PDF,PDF>& newPDFs,
-	       pair<double,double> newFractions)
+	       pair<double,double> newFractions,
+	       pair<Energy,Energy> newScales)
   : theParticles(newParticles), 
     thePDFs(newPDFs),
     theFractions(newFractions), theIndices(),
-    theScales(sqrt(abs(newParticles.first->scale())),
-	      sqrt(abs(newParticles.second->scale()))) {
+    theScales(newScales) {
   theIndices.first = DipoleIndex(theParticles.first->dataPtr(),
 				 theParticles.second->dataPtr(),
 				 newPDFs.first,newPDFs.second);
@@ -45,8 +45,8 @@ void Dipole::update() {
   assert(DipolePartonSplitter::colourConnected(theParticles.first,theParticles.second));
 }
 
-pair<Dipole,Dipole> Dipole::split (DipoleSplittingInfo& dsplit,
-				   bool colourSpectator) const {
+pair<Dipole,Dipole> Dipole::split(DipoleSplittingInfo& dsplit,
+				  bool colourSpectator) const {
 
   // check contracts
   assert(dsplit.splittingKinematics());
@@ -225,8 +225,10 @@ pair<Dipole,Dipole> Dipole::split (DipoleSplittingInfo& dsplit,
 
   }  
 
-  return make_pair(Dipole(left_particles,left_pdfs,left_fractions),
-		   Dipole(right_particles,right_pdfs,right_fractions));
+  Energy scale = dsplit.lastPt();
+
+  return make_pair(Dipole(left_particles,left_pdfs,left_fractions,make_pair(scale,scale)),
+		   Dipole(right_particles,right_pdfs,right_fractions),make_pair(scale,scale));
 
 }
 

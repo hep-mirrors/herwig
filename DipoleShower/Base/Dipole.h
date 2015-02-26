@@ -41,7 +41,9 @@ public:
    */
   Dipole(const pair<PPtr,PPtr>& newParticles,
 	 const pair<PDF,PDF>& newPDFs,
-	 pair<double,double> newFractions);
+	 pair<double,double> newFractions,
+	 pair<Energy,Energy> newScales =
+	 pair<Energy,Energy>(ZERO,ZERO));
 
 public:
 
