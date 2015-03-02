@@ -118,6 +118,8 @@ double ShowerApproximationKernel::evaluate(const vector<double>& r) {
   showerApproximation()->setRealXComb(realXComb());
   showerApproximation()->setTildeXCombs(tildeXCombs());
   showerApproximation()->setDipole(dipole());
+  showerApproximation()->checkCutoff();
+  showerApproximation()->getShowerVariables();
 
   if ( !dipole()->isInShowerPhasespace() )
     return 0.;

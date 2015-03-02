@@ -459,6 +459,9 @@ bool SubtractionDipole::generateKinematics(const double * r) {
   underlyingBornME()->setScale();
   assert(lastXCombPtr() == underlyingBornME()->lastXCombPtr());
   underlyingBornME()->lastXCombPtr()->setIncomingPartons();
+  // need to have the scale and x's available for checking shower phase space
+  if ( showerApproximation() )
+    showerApproximation()->getShowerVariables();
   lastXCombPtr()->didGenerateKinematics();
   return true;
 }
@@ -539,9 +542,6 @@ bool SubtractionDipole::generateTildeKinematics() {
     p->rescaleRho();
   }
 
-  if ( showerApproximation() )
-    showerApproximation()->getShowerVariables();
-
   jacobian(realEmissionME()->lastXComb().jacobian());
 
   logGenerateTildeKinematics();
@@ -566,7 +566,7 @@ bool SubtractionDipole::generateRadiationKinematics(const double * r) {
 
   Ptr<InvertedTildeKinematics>::tptr kinematics = theInvertedTildeKinematics;
   if ( showerApproximation() ) {
-    showerApproximation()->setBornXComb(underlyingBornME()->lastXCombPtr());
+    showerApproximation()->setBornXComb(lastHeadXCombPtr());
     showerApproximation()->setRealXComb(lastXCombPtr());
     showerApproximation()->setDipole(this);
     if ( showerApproximation()->showerInvertedTildeKinematics() ) {
@@ -616,11 +616,6 @@ bool SubtractionDipole::generateRadiationKinematics(const double * r) {
   for ( ; pd != mePartonData().end(); ++pd, ++p ) {
     p->setMass((**pd).mass());
     p->rescaleRho();
-  }
-
-  if ( showerApproximation() ) {
-    showerApproximation()->checkCutoff();
-    showerApproximation()->getShowerVariables();
   }
 
   jacobian(underlyingBornME()->lastXComb().jacobian() *
