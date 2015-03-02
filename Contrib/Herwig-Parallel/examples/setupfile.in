@@ -1,0 +1,5 @@
+### Here you may override the settings given in the regular infile.
+### This is e.g. useful for scale variations.
+
+set /Herwig/EventHandlers/LHCHandler:LuminosityFunction:Energy 14000.0*GeV
+

@@ -10,6 +10,7 @@
 # location of include files
 THEPEGINCLUDE =
 HERWIGINCLUDE =
+HERWIGINSTALL =
 GSLINCLUDE    = 
 LDFLAGS = 
 SHARED_FLAG = 
@@ -37,3 +38,10 @@ MEHiggsPair.so : MEHiggsPair.o scalint.o
 
 clean:
 	rm -f MEHiggsPair.so MEHiggsPair.o scalint.o
+
+install:
+	cp *.so $(HERWIGINSTALL)/lib/Herwig++
+        
+        
+        
+        

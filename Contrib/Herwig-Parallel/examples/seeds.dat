@@ -1,0 +1,14 @@
+## -------------------------------------------------------------
+## This is an example seed list for Herwig-Parallel.
+## The seeds are read from the beginning so more seeds than
+## actually needed may be specified here.
+## Execute 'herwig-parallel-run' with the options
+## '--seed-mode=file --seed-file=seeds.dat' to use the seeds
+## specified in this file.
+## -------------------------------------------------------------
+
+1234
+5678
+9012
+3456
+7890

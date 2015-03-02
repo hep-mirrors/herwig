@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>How to Use &mdash; Herwig-Parallel  documentation</title>
+    
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Herwig-Parallel  documentation" href="index.html" />
+    <link rel="next" title="Use Herwig-Parallel in Batch Mode" href="batch.html" />
+    <link rel="prev" title="Configuration" href="configuration.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="batch.html" title="Use Herwig-Parallel in Batch Mode"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="configuration.html" title="Configuration"
+             accesskey="P">previous</a> |</li>
+    <li><a href="../../../../index.html">Home</a> &raquo;&nbsp;</li>
+    <li><a href="../../../_build/html/main.html">Documentation</a> &raquo;&nbsp;</li>
+    
+        <li><a href="index.html">Herwig-Parallel  documentation</a> &raquo;</li>
+ 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="configuration.html"
+                        title="previous chapter">Configuration</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="batch.html"
+                        title="next chapter">Use Herwig-Parallel in Batch Mode</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/usage.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="how-to-use">
+<h1>How to Use<a class="headerlink" href="#how-to-use" title="Permalink to this headline">¶</a></h1>
+<p>For using Herwig-Parallel to create parallel Herwig++ runs four files are necessary:</p>
+<ul>
+<li><p class="first">The <strong>infile</strong> for Herwig++, e.g. <tt class="docutils literal"><span class="pre">LHC-Matchbox.in</span></tt>, that is needed for any normal Herwig++ run anyway.</p>
+<p>However, please ensure that the following settings apply:</p>
+<ul>
+<li><p class="first"><tt class="docutils literal"><span class="pre">set</span> <span class="pre">/Herwig/Samplers/Sampler:AddUpSamplers</span> <span class="pre">Off</span></tt></p>
+<p>This is necessary to ensure that the cross section and error are only calculated from &#8216;Herwig run&#8217; step and not from both &#8216;Herwig read&#8217; and &#8216;Herwig run&#8217; as this would compromise the statistical independence of the parallel runs.</p>
+</li>
+<li><div class="first highlight-python"><div class="highlight"><pre>create Herwig::ParallelRunAnalysis /Herwig/Analysis/ParallelRunAnalysis HwAnalysis.so
+insert /Herwig/Generators/LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/ParallelRunAnalysis
+</pre></div>
+</div>
+<p>These lines load an analysis handler that writes status information concerning the Herwig run to a file. This information is necessary for later on combining the jobs of the parallel run.</p>
+</li>
+<li><div class="first highlight-python"><div class="highlight"><pre>set /Herwig/Samplers/Sampler:BinSampler /Herwig/Samplers/CellGridSampler
+set /Herwig/Samplers/CellGridSampler:UseAllIterations No
+</pre></div>
+</div>
+</li>
+</ul>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Please make sure you only use the &#8216;CellGridSampler&#8217; but no other sampler in conjunction with Herwig-Parallel. The cell grid sampler does all adapting in the read step and does not
+change in the run step. The continuous adaption of other samplers during the run step compromises the correct working of the parallelization.</p>
+</div>
+</li>
+<li><p class="first">A bash script, referred to as &#8216;<strong>build script</strong>&#8216;, that conducts the Herwig++ &#8216;build&#8217; step.</p>
+</li>
+<li><p class="first">A bash script, referred to as &#8216;<strong>integrate script</strong>&#8216;, that conducts the Herwig++ &#8216;integrate&#8217; step.</p>
+</li>
+<li><p class="first">A bash script, referred to as &#8216;<strong>run script</strong>&#8216;, that conducts the Herwig++ &#8216;run&#8217; step.</p>
+</li>
+</ul>
+<p>Working examples for the infile and the three scripts are given in the <tt class="docutils literal"><span class="pre">examples</span></tt> directory of Herwig-Parallel.</p>
+<p>Note the keywords <tt class="docutils literal"><span class="pre">&#64;INFILE&#64;</span></tt>, <tt class="docutils literal"><span class="pre">&#64;JOBS&#64;</span></tt>, <tt class="docutils literal"><span class="pre">&#64;RUNFILE&#64;</span></tt>, <tt class="docutils literal"><span class="pre">&#64;JOBID&#64;</span></tt>, <tt class="docutils literal"><span class="pre">&#64;SETUPFILE&#64;</span></tt>, <tt class="docutils literal"><span class="pre">&#64;EVENTS&#64;</span></tt>, <tt class="docutils literal"><span class="pre">&#64;SEED&#64;</span></tt> and <tt class="docutils literal"><span class="pre">&#64;CLEANUP&#64;</span></tt> in the shell scripts which are replaced by Herwig-Parallel when starting parallel runs.
+<tt class="docutils literal"><span class="pre">&#64;CLEANUP&#64;</span></tt> removes unnecessary files and folders after completion of the job in order to save disk space. Since runs with hundred or more jobs easily take up large amounts of disk space
+it is strongly recommended to include this command at the end of the run script. Furthermore, all of the scripts may contain other instructions, e.g. source <tt class="docutils literal"><span class="pre">.bashrc</span></tt> or set the Rivet environment variables.</p>
+<p>To execute the Herwig-Parallel commands enter the folder where you want to create a parallel run in a terminal and run the desired command.</p>
+<ul class="simple">
+<li>First, run <tt class="docutils literal"><span class="pre">herwig-parallel-read</span></tt> to set up a parallel run. This calls the build script which triggers the generation of the matrix elements and prepares the integration jobs.
+For each parallel integration job the integrate script is called. Once all integration jobs are finished, the resulting grid files are merged and <tt class="docutils literal"><span class="pre">herwig-parallel-read</span></tt> indicates
+the successful completion of all tasks.</li>
+<li>Next, run <tt class="docutils literal"><span class="pre">herwig-parallel-run</span></tt> to start the desired number of parallel jobs.</li>
+<li>You may monitor the status of your calculation with <tt class="docutils literal"><span class="pre">herwig-parallel-monitor</span></tt> or <tt class="docutils literal"><span class="pre">herwig-parallel-status</span></tt>, add additional jobs to the run with <tt class="docutils literal"><span class="pre">herwig-parallel-addjobs</span></tt> and
+abort and restart some or all of the jobs with <tt class="docutils literal"><span class="pre">herwig-parallel-abort</span></tt> and <tt class="docutils literal"><span class="pre">herwig-parallel-restart</span></tt>.</li>
+<li>Once your jobs are finished run <tt class="docutils literal"><span class="pre">herwig-parallel-combine</span></tt> to combine the results of all parallel jobs.</li>
+<li>Lastly, you may compress the run with <tt class="docutils literal"><span class="pre">herwig-parallel-compress</span></tt> in order to save disk space. This compresses all the run folders but the combined output and the used infiles will still
+be accessible. If you decide to run more statistics you can uncompress the run again with <tt class="docutils literal"><span class="pre">herwig-parallel-uncompress</span></tt> and do <tt class="docutils literal"><span class="pre">herwig-parallel-addjobs</span></tt>.</li>
+</ul>
+<p>Note that you don&#8217;t need to have the same build, integrate and run scripts in all of your run folders. By passing the option <tt class="docutils literal"><span class="pre">-d</span></tt> to <tt class="docutils literal"><span class="pre">herwig-parallel-read</span></tt> and
+<tt class="docutils literal"><span class="pre">herwig-parallel-run</span></tt> you can use the default scripts that are located in the <tt class="docutils literal"><span class="pre">misc</span></tt> folder of the Herwig-Parallel directory tree. The names of the respective scripts are configurable
+via the file <tt class="docutils literal"><span class="pre">config/herwig-parallel.conf</span></tt>.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="batch.html" title="Use Herwig-Parallel in Batch Mode"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="configuration.html" title="Configuration"
+             >previous</a> |</li>
+    <li><a href="../../../../index.html">Home</a> &raquo;&nbsp;</li>
+    <li><a href="../../../_build/html/main.html">Documentation</a> &raquo;&nbsp;</li>
+    
+        <li><a href="index.html">Herwig-Parallel  documentation</a> &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Daniel Rauch.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

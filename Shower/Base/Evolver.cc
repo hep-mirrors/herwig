@@ -2538,19 +2538,19 @@ void Evolver::doShowering(bool hard,XCPtr xcomb) {
 	  }
 	}
       }
-      // generate the shower
-      // pick random starting point 
-      unsigned int istart=UseRandom::irnd(particlesToShower.size());
-      unsigned int istop = particlesToShower.size();
-      // loop over particles with random starting point
-      for(unsigned int ix=istart;ix<=istop;++ix) {
-	if(ix==particlesToShower.size()) {
-	  if(istart!=0) {
-	    istop = istart-1;
-	    ix=0;
-	  }
-	  else break;
-	}
+      
+        //create random particle vector
+      
+      vector<ShowerProgenitorPtr> tmp;
+      while(particlesToShower.size()>0){
+        unsigned int xx=UseRandom::irnd(particlesToShower.size());
+        tmp.push_back(particlesToShower[xx]);
+        particlesToShower.erase(particlesToShower.begin()+xx);
+      }
+      particlesToShower=tmp;
+     
+      // loop over particles
+    for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
 	// extract the progenitor
 	progenitor(particlesToShower[ix]);
 	// final-state radiation

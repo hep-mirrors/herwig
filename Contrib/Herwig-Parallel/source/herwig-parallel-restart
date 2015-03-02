@@ -1,0 +1,191 @@
+#! /usr/bin/env python
+
+## --------------------
+## Herwig-Parallel
+## --------------------
+## Author: Daniel Rauch
+## Date:   25 Feb 2015
+## --------------------
+
+import sys
+import os
+import re
+import shutil
+import datetime
+from subprocess import call
+from subprocess import check_output
+from ConfigParser import SafeConfigParser
+from optparse import OptionParser
+from hwp import checkConfig
+
+# load Herwig-Parallel configuration file
+configFileName = os.path.dirname(os.path.realpath(sys.argv[0])) + "/../config/herwig-parallel.conf"
+configParser = SafeConfigParser()
+configParser.read(configFileName)
+
+# load cluster configuration file
+configFileNameClusters = os.path.dirname(os.path.realpath(sys.argv[0])) + "/../config/clusters.conf"
+configParserClusters = SafeConfigParser()
+configParserClusters.read(configFileNameClusters)
+
+# load queue configuration file
+configFileNameQueues = os.path.dirname(os.path.realpath(sys.argv[0])) + "/../config/queues.conf"
+configParserQueues = SafeConfigParser()
+configParserQueues.read(configFileNameQueues)
+
+# sanity checks for cluster and queue configuration
+queues = checkConfig(configParserClusters,configParserQueues)
+
+# set defaults
+default_settings  = ['runqueue']
+default_variables = [ queues[0]]
+for i in range(len(default_settings)):
+  try:
+    default_variables[i] = configParser.get('defaults',default_settings[i])
+  except:
+    pass
+
+# setup command line options & parameters
+optionParser = OptionParser(usage="%prog [options] runname\nIf neither the options '-e' not '-i' are specified the whole run will be restarted.")
+optionParser.add_option("-e", "--exclude-jobs", dest="exclude", default='', help="space-separated list of job numbers and/or job number ranges (e.g. '1 3 5..8') to be excluded from the restart")
+optionParser.add_option("-i", "--include-jobs", dest="include", default='', help="space-separated list of job numbers and/or job number ranges (e.g. '1 3 5..8') to be included in the restart")
+optionParser.add_option("-q", "--queue", dest="queue", default=default_variables[0], help=repr(queues).replace('[','').replace(']','').replace("'",'')+" [default: %default]")
+opts, args = optionParser.parse_args()
+
+# sanity checks for command line arguments
+if len(args) <> 1:
+  sys.stderr.write("Must specify an unambiguous name of the parallel run to be restarted!\n")
+  sys.exit(1)
+if len(opts.exclude) > 0 and len(opts.include) > 0:
+  sys.stderr.write("The options '-e/--exclude-jobs' and '-i/--include-jobs' are mutually exclusive!\n Please make up your mind and use only either one of the two!\n")
+  sys.exit(1)
+if not opts.queue in queues:
+  sys.stderr.write("The specified queue '"+opts.queue+"' was not configured in Herwig-Parallel/config/queues.conf! Please choose a different queue or modify the configuration file.")
+  sys.exit(1)
+
+exclude_jobs = []
+include_jobs = []
+for j in opts.exclude.split():
+  if '..' in j: exclude_jobs += range(int(j.split('..')[0]),int(j.split('..')[1])+1)
+  else: exclude_jobs.append(int(j))
+for j in opts.include.split():
+  if '..' in j: include_jobs += range(int(j.split('..')[0]),int(j.split('..')[1])+1)
+  else: include_jobs.append(int(j))
+exclude = len(exclude_jobs) > 0
+include = len(include_jobs) > 0
+mergeAll = not (exclude or include)
+
+run_name = args[0].strip('/')
+cwd = os.getcwd()
+
+line = '================================'
+for i in range(len(run_name)): line += '='
+print(line)
+print("HERWIG-PARALLEL: Restarting run {}".format(run_name))
+print(line)
+print("")
+
+# read required information from 'run.info' file
+jobs = []
+job_ids = []
+seeds = []
+events = []
+f_run_info = open(run_name+'/run.info','r')
+l = 0
+for line in f_run_info:
+  l += 1
+  if l == 1: cluster = line.replace('\n','')
+  elif l == 3: setupfile_title = line.replace('\n','').split('/')[-1]
+  elif l == 4:
+    generator = line.replace('\n','')
+    runfile_title = generator+'.run'
+  elif l == 9: runscript_title = line.replace('\n','').split('/')[-1]
+  elif l > 11:
+    jobs.append(int(line.replace('\n','').split()[1].replace('#','').replace(':','')))
+    job_ids.append(line.replace('\n','').split()[3])
+    seeds.append(line.replace('\n','').split()[5])
+    events.append(line.replace('\n','').split()[7])
+f_run_info.close()
+
+restart_jobs = []
+restart_job_ids = []
+restart_seeds = []
+restart_events = []
+
+for j in range(len(jobs)):
+  if (exclude and not jobs[j] in exclude_jobs) or (include and jobs[j] in include_jobs):
+    restart_jobs.append(jobs[j])
+    restart_job_ids.append(job_ids[j])
+    restart_seeds.append(seeds[j])
+    restart_events.append(events[j])
+
+for j in exclude_jobs:
+  if j not in jobs:
+    print("input error: cannot exclude job #{} from restart because it does not exist\n".format(j))
+for j in include_jobs:
+  if j not in jobs:
+    print("input error: cannot include job #{} in restart because it does not exist\n".format(j))
+
+if len(restart_jobs) == 0:
+  print("No individual jobs given, restarting the whole run!\n")
+  restart_jobs = jobs
+  restart_job_ids = job_ids
+  restart_seeds = seeds
+  restart_events = events
+
+call(configParserClusters.get(configParserQueues.get(opts.queue,'cluster'),'joblist')+' > '+run_name+'/tmp', shell=True)
+ansi_escape = re.compile(r'\x1b[^m]*m')          # remove ANSI color escape characters
+f_run_log = open(run_name+'/run.log','a')
+for j in range(len(restart_jobs)):
+  dir_name = run_name+"/"+str(restart_jobs[j])
+  os.chdir(cwd+'/'+dir_name)
+  try:
+    qstat_l1 = ansi_escape.sub('', check_output("grep '"+restart_job_ids[j]+"' ../tmp", shell=True)).split()
+    print("cannot restart job #{}: job is still running\n".format(restart_jobs[j]))
+    continue
+  except:
+    pass
+  # remove old files and get relevant infiles again
+  file_list = check_output("ls", shell=True).split()
+  for f in file_list:
+    call("rm -rf "+cwd+"/"+dir_name+"/"+f, shell=True)
+  if setupfile_title != '': shutil.copyfile('../read/'+setupfile_title,setupfile_title)
+  shutil.copyfile('../read/'+runfile_title,runfile_title)
+  shutil.copyfile('../in/'+runscript_title,runscript_title)
+  call("chmod u+x "+runscript_title, shell=True) # set execute permission (lost during copying)
+
+  os.makedirs('Herwig')
+  call('cd Herwig; ln -s ../../read/Herwig/Build', shell=True)         # symlink build directory
+  shutil.copytree('../read/Herwig/'+generator,'Herwig/'+generator) # copy run directory
+  if os.path.exists('../read/Herwig/MG_tmp'):
+    shutil.copytree('../read/Herwig/MG_tmp','MG_tmp')
+  if os.path.exists('../read/Matchbox/MG_tmp'):
+    shutil.copytree('../read/Matchbox/MG_tmp','MG_tmp')
+  ##shutil.copytree(run_name+'/read/Matchbox',dir_name+'/Matchbox') # copy run directory
+  ##call('ln -s ../read/Matchbox', shell=True)
+
+  call("sed -i 's/@HOSTNAME@/hostname > parallel.hostname/' "+runscript_title, shell=True)
+  call("sed -i 's/@RUNFILE@/"+runfile_title+"/' "+runscript_title, shell=True)
+  call("sed -i 's/@EVENTS@/"+restart_events[j]+"/' "+runscript_title, shell=True)
+  call("sed -i 's/@SEED@/"+restart_seeds[j]+"/' "+runscript_title, shell=True)
+  call("sed -i 's/@SETUPFILE@/"+('' if setupfile_title=='' else '--setupfile='+setupfile_title)+"/' "+runscript_title, shell=True)
+  call("sed -i 's/@CLEANUP@/rm -f "+runfile_title+"; rm -rf Herwig; rm -rf Matchbox /' "+runscript_title, shell=True)
+  # start job again
+  command = configParserQueues.get(opts.queue, 'submit').replace('@SCRIPT@',runscript_title)
+  print("restarting job #{}: {}".format(restart_jobs[j],command))
+  try:
+    output = check_output("cd "+cwd+"/"+dir_name+"; "+command, shell=True).strip().replace('\n',' ')
+  except Exception, err:
+    sys.stderr.write("\n--------------------------------------------------")
+    sys.stderr.write(err)
+    sys.stderr.write("--------------------------------------------------\n")
+    f_run_log.close()
+    sys.exit(1)
+  else:
+    print(" > {}\n".format(output))
+    jobid = check_output("echo '"+output+"' | "+configParserClusters.get(configParserQueues.get(opts.queue,'cluster'),'jobid'), shell=True)
+    call("sed -i 's/"+restart_job_ids[j]+"/"+jobid+"/' ../run.info", shell=True)
+    f_run_log.write(datetime.datetime.now().isoformat(' ')+': herwig-parallel-restart: restarting job #{}\n'.format(restart_jobs[j]))
+
+f_run_log.close()
+call('rm -f '+run_name+'/tmp', shell=True)

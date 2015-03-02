@@ -1,0 +1,179 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Overview &mdash; Herwig-Parallel  documentation</title>
+    
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Herwig-Parallel  documentation" href="index.html" />
+    <link rel="next" title="Installation and Setup" href="installation.html" />
+    <link rel="prev" title="Welcome to Herwig-Parallel’s documentation!" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="installation.html" title="Installation and Setup"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to Herwig-Parallel’s documentation!"
+             accesskey="P">previous</a> |</li>
+    <li><a href="../../../../index.html">Home</a> &raquo;&nbsp;</li>
+    <li><a href="../../../_build/html/main.html">Documentation</a> &raquo;&nbsp;</li>
+    
+        <li><a href="index.html">Herwig-Parallel  documentation</a> &raquo;</li>
+ 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to Herwig-Parallel&#8217;s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="installation.html"
+                        title="next chapter">Installation and Setup</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/overview.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="overview">
+<h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
+<p>Herwig-Parallel provides the following commands and functionality:</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="76%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Command</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>herwig-parallel-read</td>
+<td>Prepare a run by doing a read step where the generator is set up and the Monte Carlo
+integration is warmed up. The read step may be done in parallel.</td>
+</tr>
+<tr class="row-odd"><td>herwig-parallel-run</td>
+<td>Start a parallel run consisting of an arbitrary number of individual jobs and events per job.</td>
+</tr>
+<tr class="row-even"><td>herwig-parallel-status</td>
+<td>Monitor the progress of the run and the status of the jobs it consists of.
+Monitoring information such as queue and hostnames, status, progress and the estimated
+total cross section and the error are displayed for each job and a preliminary combined
+total cross section are displayed. Furthermore it is possible to configure consistency
+checks.</td>
+</tr>
+<tr class="row-odd"><td>herwig-parallel-monitor</td>
+<td>Continously monitor the status of a run by calling <tt class="docutils literal"><span class="pre">herwig-parallel-status</span></tt> over and
+over again after a certain time interval.</td>
+</tr>
+<tr class="row-even"><td>herwig-parallel-addjobs</td>
+<td>Add an arbitrary number of jobs to an already existing run to increase statistics.</td>
+</tr>
+<tr class="row-odd"><td>herwig-parallel-abort</td>
+<td>Abort either a subset or all of the jobs of a parallel run.</td>
+</tr>
+<tr class="row-even"><td>herwig-parallel-restart</td>
+<td>Restart either a subset or all of the jobs of a parallel run.</td>
+</tr>
+<tr class="row-odd"><td>herwig-parallel-combine</td>
+<td>Combine the jobs of a parallel run to get the complete total cross section and error
+estimate as well as the combined histograms. It is possible to merge either all the jobs of
+a parallel run or only a subset of them by specifying a list of job numbers and/or job
+number ranges to include in or exclude from the combination.</td>
+</tr>
+<tr class="row-even"><td>herwig-parallel-compress</td>
+<td>Compress all the job folders that contain all files related to the individual parallel jobs
+into a <tt class="docutils literal"><span class="pre">.tar.gz</span></tt> archive. This can save a significant amount of disk space.</td>
+</tr>
+<tr class="row-odd"><td>herwig-parallel-uncompress</td>
+<td>This is the counterpart of the <tt class="docutils literal"><span class="pre">Herwig-parallel-compress.py</span></tt> script and extracts the job
+folders from the archive again.</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>Additionally, the command <tt class="docutils literal"><span class="pre">herwig-parallel</span></tt> is provided which takes the name of a run definition file (see <tt class="docutils literal"><span class="pre">examples/testrun.conf</span></tt>
+for a working example) as an argument and combines the commands <tt class="docutils literal"><span class="pre">herwig-parallel-read</span></tt> and <tt class="docutils literal"><span class="pre">herwig-parallel-run</span></tt> for batch use
+(see section <a class="reference internal" href="batch.html#batch"><em>Use Herwig-Parallel in Batch Mode</em></a>).</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="installation.html" title="Installation and Setup"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to Herwig-Parallel’s documentation!"
+             >previous</a> |</li>
+    <li><a href="../../../../index.html">Home</a> &raquo;&nbsp;</li>
+    <li><a href="../../../_build/html/main.html">Documentation</a> &raquo;&nbsp;</li>
+    
+        <li><a href="index.html">Herwig-Parallel  documentation</a> &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Daniel Rauch.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>
