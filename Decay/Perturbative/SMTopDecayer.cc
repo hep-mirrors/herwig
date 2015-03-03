@@ -759,104 +759,100 @@ bool SMTopDecayer::softMatrixElementVeto(ShowerProgenitorPtr initial,
   // check if we need to apply the full correction
   long id[2]={abs(initial->progenitor()->id()),abs(parent->id())};
   // the initial-state correction
-  if(id[0]==ParticleID::t&&id[1]==ParticleID::t)
-    {
-      Energy pt=br.kinematics->pT();
-      // check if hardest so far
-      // if not just need to remove effect of enhancement
-      bool veto(false);
-      // if not hardest so far
-      if(pt<initial->highestpT())
-	veto=!UseRandom::rndbool(1./_initialenhance);
-      // if hardest so far do calculation
-      else
-	{
-	  // values of kappa and z
-	  double z(br.kinematics->z()),kappa(sqr(br.kinematics->scale()/_mt));
-	  // parameters for the translation
-	  double w(1.-(1.-z)*(kappa-1.)),u(1.+_a-_c-(1.-z)*kappa),v(sqr(u)-4.*_a*w*z);
-	  // veto if outside phase space
-	  if(v<0.) 
-	    veto=true;
-	  // otherwise calculate the weight
-	  else
-	    {
-	      v = sqrt(v);
-	      double xa((0.5*(u+v)/w+0.5*(u-v)/z)),xg((1.-z)*kappa);
-	      double f(me(xa,xg)),
-		J(0.5*(u+v)/sqr(w)-0.5*(u-v)/sqr(z)+_a*sqr(w-z)/(v*w*z));
-	      double wgt(f*J*2./kappa/(1.+sqr(z)-2.*z/kappa)/_initialenhance);
-              // This next `if' prevents the hardest emission from the 
-              // top shower ever entering the so-called T2 region of the
-              // phase space if that region is to be populated by the hard MEC.
-              if(_useMEforT2&&xg>xgbcut(_ktb)) wgt = 0.;
-	      if(wgt>1.) {
-		generator()->log() << "Violation of maximum for initial-state "
-				   << " soft veto in "
-				   << "SMTopDecayer::softMatrixElementVeto"
-				   << "xg = " << xg << " xa = " << xa 
-				   << "weight =  " << wgt << "\n";
-		wgt=1.;
-	      }
-	      // compute veto from weight
-	      veto = !UseRandom::rndbool(wgt);
-	    }
-	  // if not vetoed reset max
-	  if(!veto) initial->highestpT(pt);
-	}
-      // if vetoing reset the scale
-      if(veto) parent->vetoEmission(br.type,br.kinematics->scale());
-      // return the veto
-      return veto;
-    }
-  // final-state correction
-  else if(id[0]==ParticleID::b&&id[1]==ParticleID::b)
-    {
-      Energy pt=br.kinematics->pT();
-      // check if hardest so far
-      // if not just need to remove effect of enhancement
-      bool veto(false);
-      // if not hardest so far
-      if(pt<initial->highestpT()) return !UseRandom::rndbool(1./_finalenhance);
-      // if hardest so far do calculation
+  if(id[0]==ParticleID::t&&id[1]==ParticleID::t) {
+    Energy pt=br.kinematics->pT();
+    // check if hardest so far
+    // if not just need to remove effect of enhancement
+    bool veto(false);
+    // if not hardest so far
+    if(pt<initial->highestpT())
+      veto=!UseRandom::rndbool(1./_initialenhance);
+    // if hardest so far do calculation
+    else {
       // values of kappa and z
       double z(br.kinematics->z()),kappa(sqr(br.kinematics->scale()/_mt));
-      // momentum fractions
-      double xa(1.+_a-_c-z*(1.-z)*kappa),r(0.5*(1.+_c/(1.+_a-xa))),root(sqr(xa)-4.*_a);
-      if(root<0.) {
-	  generator()->log() << "Imaginary root for final-state veto in "
+      // parameters for the translation
+      double w(1.-(1.-z)*(kappa-1.)),u(1.+_a-_c-(1.-z)*kappa),v(sqr(u)-4.*_a*w*z);
+      // veto if outside phase space
+      if(v<0.) 
+	veto=true;
+      // otherwise calculate the weight
+      else {
+	v = sqrt(v);
+	double xa((0.5*(u+v)/w+0.5*(u-v)/z)),xg((1.-z)*kappa);
+	double f(me(xa,xg)),
+	  J(0.5*(u+v)/sqr(w)-0.5*(u-v)/sqr(z)+_a*sqr(w-z)/(v*w*z));
+	double wgt(f*J*2./kappa/(1.+sqr(z)-2.*z/kappa)/_initialenhance);
+	// This next `if' prevents the hardest emission from the 
+	// top shower ever entering the so-called T2 region of the
+	// phase space if that region is to be populated by the hard MEC.
+	if(_useMEforT2&&xg>xgbcut(_ktb)) wgt = 0.;
+	if(wgt>1.) {
+	  generator()->log() << "Violation of maximum for initial-state "
+			     << " soft veto in "
 			     << "SMTopDecayer::softMatrixElementVeto"
-			     << "\nz =  " << z  << "\nkappa = " << kappa
-			     << "\nxa = " << xa 
-			     << "\nroot^2= " << root;
-	  parent->vetoEmission(br.type,br.kinematics->scale());
-	  return true;
-      } 
-      root=sqrt(root);
-      double xg((2.-xa)*(1.-r)-(z-r)*root);
-      // xfact (below) is supposed to equal xg/(1-z). 
-      double xfact(z*kappa/2./(z*(1.-z)*kappa+_c)*(2.-xa-root)+root);
-      // calculate the full result
-      double f(me(xa,xg));
-      // jacobian
-      double J(z*root);
-      double wgt(f*J*2.*kappa/(1.+sqr(z)-2.*_c/kappa/z)/sqr(xfact)/_finalenhance);
-      if(wgt>1.) {
-	generator()->log() << "Violation of maximum for final-state  soft veto in "
-			   << "SMTopDecayer::softMatrixElementVeto"
-			   << "xg = " << xg << " xa = " << xa 
-			   << "weight =  " << wgt << "\n";
-	wgt=1.;
+			     << "xg = " << xg << " xa = " << xa 
+			     << "weight =  " << wgt << "\n";
+	  wgt=1.;
+	}
+	// compute veto from weight
+	veto = !UseRandom::rndbool(wgt);
       }
-      // compute veto from weight
-      veto = !UseRandom::rndbool(wgt);
       // if not vetoed reset max
       if(!veto) initial->highestpT(pt);
-      // if vetoing reset the scale
-      if(veto) parent->vetoEmission(br.type,br.kinematics->scale());
-      // return the veto
-      return veto;
     }
+    // if vetoing reset the scale
+    if(veto) parent->vetoEmission(br.type,br.kinematics->scale());
+    // return the veto
+    return veto;
+  }
+  // final-state correction
+  else if(id[0]==ParticleID::b&&id[1]==ParticleID::b) {
+    Energy pt=br.kinematics->pT();
+    // check if hardest so far
+    // if not just need to remove effect of enhancement
+    bool veto(false);
+    // if not hardest so far
+    if(pt<initial->highestpT()) return !UseRandom::rndbool(1./_finalenhance);
+    // if hardest so far do calculation
+    // values of kappa and z
+    double z(br.kinematics->z()),kappa(sqr(br.kinematics->scale()/_mt));
+    // momentum fractions
+    double xa(1.+_a-_c-z*(1.-z)*kappa),r(0.5*(1.+_c/(1.+_a-xa))),root(sqr(xa)-4.*_a);
+    if(root<0.) {
+      generator()->log() << "Imaginary root for final-state veto in "
+			 << "SMTopDecayer::softMatrixElementVeto"
+			 << "\nz =  " << z  << "\nkappa = " << kappa
+			 << "\nxa = " << xa 
+			 << "\nroot^2= " << root;
+      parent->vetoEmission(br.type,br.kinematics->scale());
+      return true;
+    } 
+    root=sqrt(root);
+    double xg((2.-xa)*(1.-r)-(z-r)*root);
+    // xfact (below) is supposed to equal xg/(1-z). 
+    double xfact(z*kappa/2./(z*(1.-z)*kappa+_c)*(2.-xa-root)+root);
+    // calculate the full result
+    double f(me(xa,xg));
+    // jacobian
+    double J(z*root);
+    double wgt(f*J*2.*kappa/(1.+sqr(z)-2.*_c/kappa/z)/sqr(xfact)/_finalenhance);
+    if(wgt>1.) {
+      generator()->log() << "Violation of maximum for final-state  soft veto in "
+			 << "SMTopDecayer::softMatrixElementVeto"
+			 << "xg = " << xg << " xa = " << xa 
+			 << "weight =  " << wgt << "\n";
+      wgt=1.;
+    }
+    // compute veto from weight
+    veto = !UseRandom::rndbool(wgt);
+    // if not vetoed reset max
+    if(!veto) initial->highestpT(pt);
+    // if vetoing reset the scale
+    if(veto) parent->vetoEmission(br.type,br.kinematics->scale());
+    // return the veto
+    return veto;
+  }
   // otherwise don't veto
   else return !UseRandom::rndbool(1./_finalenhance);
 }
