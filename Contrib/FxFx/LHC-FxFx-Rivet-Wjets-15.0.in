@@ -1,0 +1,303 @@
+
+#############################################################
+# Create an event generator taking the default LHCGenerator #
+# as the starting point ...                                 #
+#############################################################
+cd /Herwig/Generators
+# Copy the default LHCGenerator with its settings to a new 
+# which will be the basis of the one we use for showering: 
+cp LHCGenerator theGenerator
+
+#############################################################
+# Create a LH event handler (set up & assigned below) ...   #
+#############################################################
+cd /Herwig/EventHandlers
+library FxFx.so
+create Herwig::FxFxEventHandler theLesHouchesHandler
+
+#############################################################
+# Create a LH reader (set up & assigned below) ...          #
+#############################################################
+cd /Herwig/EventHandlers
+library FxFx.so
+create Herwig::FxFxFileReader theLHReader
+
+#############################################################
+# Create an FxFxHandler (set up & assigned below) ...     #
+#############################################################
+cd /Herwig/Shower
+library FxFxHandler.so
+create Herwig::FxFxHandler FxFxHandler
+
+#############################################################
+# Create an LHAPDF (set up & assigned below) ...            #
+#############################################################
+cd /Herwig/Partons
+create ThePEG::LHAPDF thePDFset ThePEGLHAPDF.so
+
+############################################################
+# Create a cuts object ...                                 #
+############################################################
+cd /Herwig/EventHandlers
+create ThePEG::Cuts   /Herwig/Cuts/NoCuts
+
+#############################################################
+# Setup the LH event handler ...                            #
+#############################################################
+cd /Herwig/EventHandlers
+insert theLesHouchesHandler:FxFxReaders 0 theLHReader
+set theLesHouchesHandler:WeightOption VarNegWeight
+set theLesHouchesHandler:PartonExtractor /Herwig/Partons/QCDExtractor
+set theLesHouchesHandler:CascadeHandler /Herwig/Shower/FxFxHandler
+set theLesHouchesHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
+set theLesHouchesHandler:DecayHandler /Herwig/Decays/DecayHandler
+
+# set the Z decays
+set /Herwig/Particles/Z0/Z0->d,dbar;:OnOff Off
+set /Herwig/Particles/Z0/Z0->s,sbar;:OnOff Off
+set /Herwig/Particles/Z0/Z0->b,bbar;:OnOff Off
+set /Herwig/Particles/Z0/Z0->u,ubar;:OnOff Off
+set /Herwig/Particles/Z0/Z0->c,cbar;:OnOff Off
+set /Herwig/Particles/Z0/Z0->nu_e,nu_ebar;:OnOff Off
+set /Herwig/Particles/Z0/Z0->nu_mu,nu_mubar;:OnOff Off
+set /Herwig/Particles/Z0/Z0->nu_tau,nu_taubar;:OnOff Off
+set /Herwig/Particles/Z0/Z0->e-,e+;:OnOff On
+set /Herwig/Particles/Z0/Z0->mu-,mu+;:OnOff Off
+set /Herwig/Particles/Z0/Z0->tau-,tau+;:OnOff Off
+
+# set the W decays
+set /Herwig/Particles/W+/W+->dbar,u;:OnOff Off
+set /Herwig/Particles/W+/W+->sbar,c;:OnOff Off
+set /Herwig/Particles/W+/W+->mu+,nu_mu;:OnOff Off
+set /Herwig/Particles/W+/W+->e+,nu_e;:OnOff On
+set /Herwig/Particles/W+/W+->tau+,nu_tau;:OnOff Off
+set /Herwig/Particles/W+/W+->sbar,u;:OnOff Off
+set /Herwig/Particles/W+/W+->dbar,c;:OnOff Off
+set /Herwig/Particles/W+/W+->bbar,c;:OnOff Off
+#
+set /Herwig/Particles/W-/W-->d,ubar;:OnOff Off
+set /Herwig/Particles/W-/W-->s,cbar;:OnOff Off
+set /Herwig/Particles/W-/W-->e-,nu_ebar;:OnOff On
+set /Herwig/Particles/W-/W-->mu-,nu_mubar;:OnOff Off
+set /Herwig/Particles/W-/W-->tau-,nu_taubar;:OnOff Off
+set /Herwig/Particles/W-/W-->s,ubar;:OnOff Off
+set /Herwig/Particles/W-/W-->d,cbar;:OnOff Off
+set /Herwig/Particles/W-/W-->b,cbar;:OnOff Off
+
+#############################################################
+# Set up the Evolver to veto hard emissions > scalup ...    #
+#############################################################
+cd /Herwig/Shower
+# MaxTry 100 sets the maximum number of times to try 
+# showering a given shower tree to 100. 
+# HardVetoMode Yes to veto emissions with pT greater than pT_max.
+# HardVetoScaleSource Read means pT_max comes from hepeup.SCALUP.
+# This is what you need to set _along_with_ HardVetoMode Yes in 
+# the case of Powheg external events _AND_ mc@nlo (we know this 
+# from looking at the *MCinput file that mc@nlo generates). 
+# MeCorrMode No turns off ME corrs. IntrinsicPtGaussian  2.2*GeV 
+# is the RMS of intrinsic pT of Gaussian distribution: 
+# 2*(1-Beta)*exp(-sqr(intrinsicpT/RMS))/sqr(RMS) 
+set Evolver:MaxTry               100
+set Evolver:HardVetoMode         Yes
+set Evolver:HardVetoScaleSource  Read
+set Evolver:HardVetoReadOption   PrimaryCollision
+set Evolver:MECorrMode           No
+# Intrinsic pT etc should be set as part of a tune i.e. it 
+# should either be left alone (default) or set by reading in 
+# one of the tunes before theGenerator is created by copying 
+# LHCGenerator (second line of this file). The following 
+# settings were extracted from LHC-UE-EE-3-CTEQ6L1.in - In 
+# light of some bad experience with MPI we prefer to set 
+# these here manually rather than read try to read that .in. 
+set /Herwig/UnderlyingEvent/KtCut:MinKT 2.752 
+set /Herwig/UnderlyingEvent/UECuts:MHatMin 5.504 
+set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.34*GeV 
+# Colour reconnection (re)settings 
+set /Herwig/Hadronization/ColourReconnector:ColourReconnection Yes 
+set /Herwig/Hadronization/ColourReconnector:ReconnectionProbability 0.61
+# Colour Disrupt settings 
+set /Herwig/Partons/RemnantDecayer:colourDisrupt 0.75 
+# Inverse hadron radius 
+set /Herwig/UnderlyingEvent/MPIHandler:InvRadius 1.35 
+set /Herwig/UnderlyingEvent/MPIHandler:softInt Yes 
+set /Herwig/UnderlyingEvent/MPIHandler:twoComp Yes 
+set /Herwig/UnderlyingEvent/MPIHandler:DLmode 2 
+
+#############################################################
+# Set up kinematics reconstructor (relevant only to mc@nlo) #
+#############################################################
+# Options for QTildeReconstructor - not needed for Powheg but
+# critical for mc@nlo. If using Powheg you may either leave 
+# the next two settings as they are or comment them out as 
+# you wish, for mc@nlo though you must leave them as they 
+# are! ReconstructionOption General was the old default, it 
+# ignores the colour structure for all processes - mc@nlo 
+# will give you garbage unless you set this! 
+# ReconstructionOption Colour is the new default - use the 
+# colour structure of the process to determine the 
+# reconstruction procedure. InitialInitialBoostOption 
+# determines how the boost from the system before ISR to that
+# after ISR is applied. mc@nlo requires the old kinematics 
+# reconstruction method: 
+# InitialInitialBoostOption LongTransBoost - first apply a 
+# longitudinal and then a transverse boost. Whereas the 
+# default method now is InitialInitialBoostOption OneBoost - 
+# apply one boost from old CMS to new CMS. Both options 
+# should work with Powheg but probably it's best to use the 
+# defaults in that case by simply commenting this setting. 
+set KinematicsReconstructor:ReconstructionOption General 
+set KinematicsReconstructor:InitialInitialBoostOption LongTransBoost
+
+#############################################################
+# Set up the FxFxHandler ...                              #
+#############################################################
+cd /Herwig/Shower
+set FxFxHandler:MPIHandler  /Herwig/UnderlyingEvent/MPIHandler
+set FxFxHandler:RemDecayer  /Herwig/Partons/RemnantDecayer
+set FxFxHandler:Evolver     Evolver
+set AlphaQCD:AlphaMZ       0.118000
+set AlphaQCD:NumberOfLoops 2
+set FxFxHandler:ShowerAlpha  AlphaQCD
+# Calorimeter granularity settings used by GetJet algorithm
+#set FxFxHandler:NoCellsInRapidity 100
+#set FxFxHandler:NoCellsInPhi       60
+# FxFx hard process code.
+set FxFxHandler:ihrd        3 # For Z/W+jets
+# No. of light jets in maximum-multiplicity FxFx process
+set FxFxHandler:njetsmax      2 # Make sure this is et correctly!
+# Mimimum parton-parton R-sep used for generation.
+set FxFxHandler:drjmin      0
+# heavy flavour in WQQ,ZQQ,2Q etc (4=c, 5=b, 6=t):
+set FxFxHandler:ihvy              -999
+# Number of Higgses in the FxFx process:
+set FxFxHandler:nh          0
+# Number of photons in the FxFx process:
+set FxFxHandler:nph         0
+
+#############################################################
+# Set up the LH reader ...                                  #
+#############################################################
+cd /Herwig/EventHandlers
+set theLHReader:WeightWarnings    false
+# Input event file name:
+set theLHReader:FileName Wjets_HWPP_FxFx_event.lhe
+set theLHReader:MomentumTreatment      RescaleEnergy
+# set theLHReader:IgnoreIDPRUP           Yes
+set theLHReader:Cuts  /Herwig/Cuts/NoCuts
+
+#############################################################
+# Set up the LHAPDF ...                                     #
+#############################################################
+cd /Herwig/Partons
+# Don't try and find PDF index out from the LH file ...
+set /Herwig/EventHandlers/theLHReader:InitPDFs false
+# Instead set them explicitly here:
+set thePDFset:PDFName       NNPDF23_nlo_as_0119.LHgrid
+set thePDFset:RemnantHandler  HadronRemnants
+set /Herwig/EventHandlers/theLHReader:PDFA thePDFset
+set /Herwig/EventHandlers/theLHReader:PDFB thePDFset
+set /Herwig/Particles/p+:PDF    thePDFset
+set /Herwig/Particles/pbar-:PDF thePDFset
+# The PDF for beam particles A/B - overrides particle's own PDF above
+set /Herwig/Shower/FxFxHandler:PDFA    thePDFset
+set /Herwig/Shower/FxFxHandler:PDFB    thePDFset
+set /Herwig/Shower/ShowerHandler:PDFA thePDFset
+set /Herwig/Shower/ShowerHandler:PDFB thePDFset
+
+####################################################
+# Set up the generator ...                         #
+####################################################
+cd /Herwig/Generators
+set theGenerator:EventHandler  /Herwig/EventHandlers/theLesHouchesHandler
+set theGenerator:NumberOfEvents 100000000
+set theGenerator:RandomNumberGenerator:Seed 31122001
+set theGenerator:PrintEvent     10
+set theGenerator:MaxErrors      10000
+
+###################################################################
+# ReDefine particle data like it is in the FxFx parameter file. #
+###################################################################
+
+cd  /Herwig/Particles/ 
+set c:NominalMass           1.5*GeV
+set cbar:NominalMass        1.5*GeV
+set t:NominalMass           173.*GeV
+set tbar:NominalMass        173.*GeV
+set W+:NominalMass          80.419002*GeV
+set W-:NominalMass          80.419002*GeV
+set Z0:NominalMass          91.188*GeV
+set h0:NominalMass          125*GeV
+
+
+######################################################### 
+######################################################### 
+##                                                      # 
+##   --- USER SERVICEABLE PART BELOW HERE ONLY ! ---    # 
+##                                                      # 
+######################################################### 
+######################################################### 
+
+
+######################################################### 
+# Option to off shower / hadronization / decays / MPI.  # 
+######################################################### 
+cd /Herwig/EventHandlers 
+# set theLesHouchesHandler:CascadeHandler        NULL 
+#set theLesHouchesHandler:HadronizationHandler  NULL 
+#set theLesHouchesHandler:DecayHandler          NULL 
+# The handler for multiple parton interactions 
+#set /Herwig/Shower/FxFxHandler:MPIHandler       NULL 
+
+
+######################################################### 
+# Recommended key MLM merging parameters below - change # 
+# for systematic error studies and / or at your peril.  # 
+######################################################### 
+cd /Herwig/Shower
+set FxFxHandler:VetoIsTurnedOff VetoingIsOn
+# Is this the highest multiplicity ME in merging? 
+# 0 = no, 1 = yes . 
+# set FxFxHandler:highestMultiplicity  0 
+# merging scale
+set FxFxHandler:ETClus 15.0*GeV
+# Cone size used in clustering in merging.
+set FxFxHandler:RClus 1.0
+# Max |eta| for jets in clustering in merging.
+set FxFxHandler:EtaClusMax 10
+# Default 1.5 factor used to decide if a jet matches a parton
+# in merging: if DR(parton,jet)<rclusfactor*rclus the parton 
+# and jet are said to have been matched.
+set FxFxHandler:RClusFactor 1.5
+
+
+cd /Herwig/Analysis
+#create Herwig::hepfortr hepfortr hepfortr.so
+#insert /Herwig/Generators/theGenerator:AnalysisHandlers 0 /Herwig/Analysis/hepfortr
+set Basics:CheckQuark false
+
+
+create ThePEG::Cuts /Herwig/Cuts/NoCuts 
+set /Herwig/EventHandlers/theLHReader:Cuts /Herwig/Cuts/NoCuts
+
+set /Herwig/Shower/KinematicsReconstructor:ReconstructionOption General
+set /Herwig/Shower/KinematicsReconstructor:InitialInitialBoostOption LongTransBoost
+
+cd /Herwig/Generators
+# Stuff for rivet:
+create ThePEG::FxFxAnalysis /Herwig/Analysis/FxFxAnalysis FxFxAnalysis.so
+# use the optional weights (WARNING: runs rivet multiple times!)
+set /Herwig/Analysis/FxFxAnalysis:UseOptWeights No
+#insert theGenerator:AnalysisHandlers 0 /Herwig/Analysis/FxFxAnalysis
+#insert /Herwig/Analysis/FxFxAnalysis:Analyses 0 MC_XS
+#insert /Herwig/Analysis/FxFxAnalysis:Analyses 1 MC_WJETS
+#insert /Herwig/Analysis/FxFxAnalysis:Analyses 2 ATLAS_2011_I925932
+#insert /Herwig/Analysis/FxFxAnalysis:Analyses 3 ATLAS_2012_I1083318
+#insert /Herwig/Analysis/FxFxAnalysis:Analyses 4 CMS_2013_I1224539_WJET
+#insert /Herwig/Analysis/FxFxAnalysis:Analyses 5 ATLAS_2010_S8919674
+
+################ 
+# Save the run # 
+################ 
+cd /Herwig/Generators 
+saverun LHC-FxFx-Rivet-Wjets-15.0 theGenerator
