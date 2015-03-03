@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the FxFxEventHandler class.
+//
+#ifndef ThePEG_FxFxEventHandler_FH
+#define ThePEG_FxFxEventHandler_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace ThePEG {
+
+class FxFxEventHandler;
+ThePEG_DECLARE_CLASS_POINTERS(FxFxEventHandler,FxFxEventHandlerPtr);
+
+}
+
+#endif

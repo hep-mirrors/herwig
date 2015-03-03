@@ -65,7 +65,6 @@ IBPtr PowhegShowerHandler::fullclone() const {
 }
 
 HardTreePtr PowhegShowerHandler::generateCKKW(ShowerTreePtr) const {
-  parent_=-1;
   // hard subprocess
   tSubProPtr sub = lastXCombPtr()->subProcess();
   // real emission sub-process
@@ -73,7 +72,7 @@ HardTreePtr PowhegShowerHandler::generateCKKW(ShowerTreePtr) const {
   // born emitter
   parent_ = Factory()->hardTreeEmitter();
 
-  // if no hard emission
+  // if no hard emission return
   if ( !(real && parent_>-1) )
     return HardTreePtr();
 
@@ -318,50 +317,99 @@ PotentialTree PowhegShowerHandler::doClustering(tSubProPtr real) const {
   if (hardTrees_.size()==1)
     chosen_hardTree = hardTrees_[0].first;
   else{
+    // if multiple trees pick the one with matching 
+    // intermediate particle momenta
     for (unsigned int il=0; il<hardTrees_.size(); ++il){
-      PotentialTree test = hardTrees_[il].first;
-      CKKWTreePtr check = test.tree();
-      Lorentz5Momentum parentMom;
-      int parentId=0;
+      vector<pair <long int, Lorentz5Momentum> > particles;      
+      PotentialTree testTree = hardTrees_[il].first;
+      CKKWTreePtr check = testTree.tree();
+      // get id and momenta of particles in hard tree
       for (set< HardBranchingPtr >::iterator it=check->branchings().begin();
 	   it!=check->branchings().end(); ++it){
-	if (!(*it)->children().empty() && (*it)->status()==HardBranching::Outgoing){
-	  parentMom=(*it)->branchingParticle()->momentum();
-	  parentId=(*it)->branchingParticle()->id();
-	}
-	if ((*it)->parent()&& (*it)->status()==HardBranching::Incoming){
-	  parentMom=(*it)->parent()->branchingParticle()->momentum();
-	  parentId=(*it)->parent()->branchingParticle()->id();
-	}
+	particles.push_back(make_pair((*it)->branchingParticle()->id(),
+				      (*it)->branchingParticle()->momentum()));
+	if (!(*it)->children().empty()){
+	  for (unsigned int ic=0; ic<(*it)->children().size(); ++ic)
+	    particles.push_back(make_pair((*it)->branchingParticle()->children()[ic]->id(),
+					  (*it)->branchingParticle()->
+					  children()[ic]->momentum()));
+	}	  	
+	if ((*it)->parent()){
+	  particles.push_back(make_pair((*it)->parent()->branchingParticle()->id(),
+					(*it)->parent()->branchingParticle()->momentum()));
+	  if (!(*it)->parent()->branchingParticle()->children().empty()){
+	    for (unsigned int ic=0; 
+		 ic<(*it)->parent()->branchingParticle()->children().size(); ++ic)
+	      particles.push_back(make_pair((*it)->parent()->branchingParticle()->
+					    children()[ic]->id(),
+					    (*it)->parent()->branchingParticle()->
+					    children()[ic]->momentum()));
+	  }	    
+	} 
       }
 
-      if (parentId == xc.mePartonData()[parent_]->id() && 
-	  xc.mePartonData()[0]->id()!=xc.mePartonData()[1]->id() &&
-	  parent_<2){
-	chosen_hardTree = test;
-	break;
-      }
-      else if (parentId == xc.mePartonData()[parent_]->id() && 
-	       xc.mePartonData()[2]->id()!=xc.mePartonData()[3]->id() &&
-	       parent_>1 ){
-	chosen_hardTree = test;
-	break;
-      }
-      else if (parentId == xc.mePartonData()[parent_]->id() && 
-       	       xc.mePartonData()[0]->id()==xc.mePartonData()[1]->id() && parent_<2){
-	Energy parentEnergy;
-	if (parent_==0) parentEnergy=real->incoming().first ->momentum().e();
-	else            parentEnergy=real->incoming().second->momentum().e();
-	
-	if (parentMom.e()< parentEnergy+0.01*GeV && parentMom.e()> parentEnergy-0.01*GeV){
-	  chosen_hardTree = test;
+      // loop through and match to particles in real subprocess
+      vector<pair <long int, Lorentz5Momentum> >::iterator part = particles.begin();
+      // incoming
+      for (; part!=particles.end(); ++part){
+	if ((*part).first==real->incoming().first->id() &&
+	    fuzzyEqual((*part).second, real->incoming().first->momentum()))
 	  break;
-	}
       }
-
+      if (part!=particles.end()) particles.erase(part);
+      part = particles.begin();
+      for (; part!=particles.end(); ++part){
+	if ((*part).first==real->incoming().second->id() &&
+	    fuzzyEqual((*part).second, real->incoming().second->momentum()))
+	  break;
+      }
+      if (part!=particles.end()) particles.erase(part);
+      // outgoing
+      for (unsigned int io=0; io<real->outgoing().size(); ++io){
+	part = particles.begin();
+	for (; part!=particles.end(); ++part){
+	  if ((*part).first==real->outgoing()[io]->id() &&
+	      fuzzyEqual((*part).second, real->outgoing()[io]->momentum()))
+	    break;
+	}
+	if (part!=particles.end()) particles.erase(part);
+      }     
+      // intermediate
+      for (unsigned int ii=0; ii<real->intermediates().size(); ++ii){
+	part = particles.begin();
+	for (; part!=particles.end(); ++part){
+	  if ((*part).first==real->intermediates()[ii]->id() &&
+	      fuzzyEqual((*part).second, real->intermediates()[ii]->momentum()))
+	    break;
+	}
+	if (part!=particles.end()) particles.erase(part);
+      }     
+      // intermediate CC with -1*momentum
+      for (unsigned int ii=0; ii<real->intermediates().size(); ++ii){
+	part = particles.begin();
+	for (; part!=particles.end(); ++part){
+	  if (!real->intermediates()[ii]->coloured() ||
+	      (real->intermediates()[ii]->hasColour() && 
+	       real->intermediates()[ii]->hasAntiColour())){
+	    if ((*part).first==real->intermediates()[ii]->id() &&
+		fuzzyEqual((*part).second, -1.*real->intermediates()[ii]->momentum()) )
+	      break;
+	  }
+	  else {
+	    if ((*part).first==-1.*real->intermediates()[ii]->id() &&
+		fuzzyEqual((*part).second, -1.*real->intermediates()[ii]->momentum()) )
+	      break;
+	  }
+	}
+	if (part!=particles.end()) particles.erase(part);
+      }
+      // if all particles match, set as hardtree
+      if (particles.empty()){
+	chosen_hardTree = testTree;
+	break;
+      }     
     }
-  }    
-  
+  }
   protoBranchings().clear();
   protoTrees().clear();
   hardTrees_.clear();
@@ -369,7 +417,7 @@ PotentialTree PowhegShowerHandler::doClustering(tSubProPtr real) const {
     return PotentialTree();
   else
     return chosen_hardTree;
- }
+}
 
 bool PowhegShowerHandler::checkDiagram(PotentialTree & tree,
 				       tcDiagPtr loDiagram) const {
@@ -415,7 +463,8 @@ bool PowhegShowerHandler::checkDiagram(PotentialTree & tree,
 
 
 void PowhegShowerHandler::fillProtoTrees( ProtoTreePtr currentProtoTree,long id ) const {
-  if(currentProtoTree->branchings().size()==4) return;
+  if(currentProtoTree->branchings().size()==(lastXCombPtr()->subProcess()->outgoing().size()+2)) 
+    return;
   for( set<tProtoBranchingPtr>::const_iterator 
 	 ita = currentProtoTree->branchings().begin();
        ita!=currentProtoTree->branchings().end();++ita) {
@@ -527,9 +576,8 @@ tProtoBranchingPtr PowhegShowerHandler::getCluster( tProtoBranchingPtr b1,
     pairMomentum.setMass(ZERO);
     clusteredBranch = new_ptr(ProtoBranching(particle_data,HardBranching::Outgoing,
 					     pairMomentum, theBranching.first));
-    if(particle_data->iColour()==PDT::Colour0) {
-      assert(false);
-    }
+    if(particle_data->iColour()==PDT::Colour0)
+      return ProtoBranchingPtr();
     else if(particle_data->iColour()==PDT::Colour3) {
       if(b1->particle()->iColour()==PDT::Colour3 && b2->particle()->iColour()==PDT::Colour8) {
 	if(b1->colourLine()!=b2->antiColourLine())
@@ -695,6 +743,20 @@ BranchingElement PowhegShowerHandler::allowedInitialStateBranching( tProtoBranch
   }
   // not found found null pointer
   return make_pair(SudakovPtr(),IdList());
+}
+
+bool PowhegShowerHandler::fuzzyEqual(Lorentz5Momentum  a, 
+				     Lorentz5Momentum  b) const{
+  // check momenta are within 1% of each other
+  if ( (a.e()==ZERO && b.e()==ZERO) || (a.e()/b.e()>0.99 && a.e()/b.e()<1.01) ){
+    if ((a.x()==ZERO && b.x()==ZERO) || (a.x()/b.x()>0.99 && a.x()/b.x()<1.01) ){
+      if ((a.y()==ZERO && b.y()==ZERO) || (a.y()/b.y()>0.99 && a.y()/b.y()<1.01) ){
+	if ((a.z()==ZERO && b.z()==ZERO) || (a.z()/b.z()>0.99 && a.z()/b.z()<1.01) )
+	  return true;
+      }
+    }
+  }
+  return false;
 }
 
 void PowhegShowerHandler::doinit() {

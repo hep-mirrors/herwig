@@ -1,0 +1,14 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the FxFxFileReader class.
+//
+#ifndef ThePEG_FxFxFileReader_FH
+#define ThePEG_FxFxFileReader_FH
+
+namespace ThePEG {
+
+class FxFxFileReader;
+
+}
+
+#endif

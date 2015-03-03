@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the FxFxReader class.
+//
+#ifndef ThePEG_FxFxReader_FH
+#define ThePEG_FxFxReader_FH
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace ThePEG {
+
+class FxFxReader;
+ThePEG_DECLARE_CLASS_POINTERS(FxFxReader,FxFxReaderPtr);
+
+}
+
+#endif

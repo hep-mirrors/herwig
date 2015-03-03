@@ -97,6 +97,11 @@ protected:
   void hardTree(PotentialTree in) const {hardTree_ = in;}
 
   /**
+   * Check if two momenta are equal within 1%
+   */
+  bool fuzzyEqual(Lorentz5Momentum a, Lorentz5Momentum  b) const;
+
+  /**
    *  Access to the potential branchings
    */
   set<ProtoBranchingPtr> & protoBranchings() const {return protoBranchings_;}
