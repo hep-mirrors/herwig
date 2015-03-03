@@ -846,8 +846,6 @@ bool SMTopDecayer::softMatrixElementVeto(ShowerProgenitorPtr initial,
     }
     // compute veto from weight
     veto = !UseRandom::rndbool(wgt);
-    // if not vetoed reset max
-    if(!veto) initial->highestpT(pt);
     // if vetoing reset the scale
     if(veto) parent->vetoEmission(br.type,br.kinematics->scale());
     // return the veto

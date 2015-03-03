@@ -767,8 +767,7 @@ double SMZDecayer::getHard(double &x1, double &x2) {
 }
 
 bool SMZDecayer::
-softMatrixElementVeto(ShowerProgenitorPtr initial,ShowerParticlePtr parent,Branching br)
-{
+softMatrixElementVeto(ShowerProgenitorPtr initial,ShowerParticlePtr parent,Branching br) {
   // check we should be applying the veto
   if(parent->id()!=initial->progenitor()->id()||
      br.ids[0]!=br.ids[1]||
@@ -786,8 +785,6 @@ softMatrixElementVeto(ShowerProgenitorPtr initial,ShowerParticlePtr parent,Branc
   else weight = qbarWeightX(d_qt, d_z);
   // compute veto from weight
   bool veto = !UseRandom::rndbool(weight);
-  // if not vetoed reset max
-  if(!veto) initial->highestpT(pPerp);
   // if vetoing reset the scale
   if(veto) parent->vetoEmission(br.type,br.kinematics->scale());
   // return the veto

@@ -497,10 +497,7 @@ bool MEee2gZ2qq::softMatrixElementVeto(ShowerProgenitorPtr initial,
   // calculate x and xb
   double kti = sqr(d_qt/d_Q_);
   double w = sqr(d_v_) + kti*(-1. + d_z)*d_z*(2. + kti*(-1. + d_z)*d_z);
-  if (w < 0) {
-    initial->highestpT(pPerp);
-    return false;
-  }  
+  if (w < 0) return false;
   double x  = (1. + sqr(d_v_)*(-1. + d_z) + sqr(kti*(-1. + d_z))*d_z*d_z*d_z 
 	       + d_z*sqrt(w)
 	       - kti*(-1. + d_z)*d_z*(2. + d_z*(-2 + sqrt(w))))/
@@ -510,16 +507,10 @@ bool MEee2gZ2qq::softMatrixElementVeto(ShowerProgenitorPtr initial,
   if(parent->id()<0) swap(x,xb);
   // if exceptionally out of phase space, leave this emission, as there 
   // is no good interpretation for the soft ME correction. 
-  if( x<0 || xb<0) {
-    initial->highestpT(pPerp);
-    return false;
-  }
+  if( x<0 || xb<0) return false;
   double xg = 2. - xb - x;
   // always return one in the soft gluon region
-  if(xg < EPS_) {
-    initial->highestpT(pPerp);
-    return false;
-  }
+  if(xg < EPS_) return false;
   // check it is in the phase space
   if((1.-x)*(1.-xb)*(1.-xg) < d_rho_*xg*xg) {
     parent->vetoEmission(parent->id()>0 ? ShowerPartnerType::QCDColourLine :
@@ -544,7 +535,6 @@ bool MEee2gZ2qq::softMatrixElementVeto(ShowerProgenitorPtr initial,
   // compute veto from weight
   bool veto = !UseRandom::rndbool(weight);
   // if not vetoed reset max
-  if(!veto) initial->highestpT(pPerp);
   // if vetoing reset the scale
   if(veto) {
     parent->vetoEmission(parent->id()>0 ? ShowerPartnerType::QCDColourLine :

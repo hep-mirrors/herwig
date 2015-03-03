@@ -871,10 +871,7 @@ bool MEPP2Higgs::softMatrixElementVeto(ShowerProgenitorPtr initial,
 					<< br.ids[0] << " " << br.ids[1] << " "
 					<< br.ids[2] << "\n";
   // if not vetoed
-  if(UseRandom::rndbool(wgt)) {
-    initial->highestpT(pT);
-    return false;
-  }
+  if(UseRandom::rndbool(wgt)) return false;
   // otherwise
   parent->vetoEmission(br.type,br.kinematics->scale());
   return true;

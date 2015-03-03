@@ -698,10 +698,7 @@ bool DISBase::softMatrixElementVeto(ShowerProgenitorPtr initial,
     }
   }
   // if not vetoed
-  if(UseRandom::rndbool(wgt)) {
-    initial->highestpT(pT);
-    return false;
-  }
+  if(UseRandom::rndbool(wgt)) return false;
   // otherwise
   parent->vetoEmission(br.type,br.kinematics->scale());
   return true;

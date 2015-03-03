@@ -679,6 +679,8 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
     // has emitted
     // Assign the shower kinematics to the emitting particle.
     particle->showerKinematics(fb.kinematics);
+    if(fb.kinematics->pT()>progenitor()->highestpT())
+      progenitor()->highestpT(fb.kinematics->pT());
     // Assign the splitting function to the emitting particle. 
     // For the time being we are considering only 1->2 branching
     // Create the ShowerParticle objects for the two children of
@@ -770,6 +772,8 @@ Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
   }
   // assign the splitting function and shower kinematics
   particle->showerKinematics(bb.kinematics);
+  if(bb.kinematics->pT()>progenitor()->highestpT())
+    progenitor()->highestpT(bb.kinematics->pT());
   // For the time being we are considering only 1->2 branching
   // particles as in Sudakov form factor
   tcPDPtr part[2]={getParticleData(bb.ids[0]),
@@ -891,6 +895,8 @@ bool Evolver::spaceLikeDecayShower(tShowerParticlePtr particle,
   // has emitted
   // Assign the shower kinematics to the emitting particle.
   particle->showerKinematics(fb.kinematics);
+  if(fb.kinematics->pT()>progenitor()->highestpT())
+    progenitor()->highestpT(fb.kinematics->pT());
   // For the time being we are considering only 1->2 branching
   // Create the ShowerParticle objects for the two children of
   // the emitting particle; set the parent/child relationship
@@ -1567,6 +1573,8 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
       fb = Branching( showerKin, idlist, branch->sudakov(),branch->type() );
       // Assign the shower kinematics to the emitting particle.
       particle->showerKinematics( fb.kinematics );
+      if(fb.kinematics->pT()>progenitor()->highestpT())
+	progenitor()->highestpT(fb.kinematics->pT());
       // Assign the splitting function to the emitting particle. 
       // For the time being we are considering only 1->2 branching
       // Create the ShowerParticle objects for the two children of
@@ -1611,6 +1619,8 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
     // has emitted
     // Assign the shower kinematics to the emitting particle.
     particle->showerKinematics(fb.kinematics);
+    if(fb.kinematics->pT()>progenitor()->highestpT())
+      progenitor()->highestpT(fb.kinematics->pT());
     // Assign the splitting function to the emitting particle. 
     // For the time being we are considering only 1->2 branching
     // Create the ShowerParticle objects for the two children of
@@ -1718,6 +1728,8 @@ bool Evolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr beam,
     kinematics->initialize( *particle, beam );
     // assign the splitting function and shower kinematics
     particle->showerKinematics( kinematics );
+    if(kinematics->pT()>progenitor()->highestpT())
+      progenitor()->highestpT(kinematics->pT());
     // For the time being we are considering only 1->2 branching
     // Now create the actual particles, make the otherChild a final state
     // particle, while the newParent is not
@@ -1772,6 +1784,8 @@ bool Evolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr beam,
   }
   // assign the splitting function and shower kinematics
   particle->showerKinematics( bb.kinematics );
+  if(bb.kinematics->pT()>progenitor()->highestpT())
+    progenitor()->highestpT(bb.kinematics->pT());
   // For the time being we are considering only 1->2 branching
   // Now create the actual particles, make the otherChild a final state
   // particle, while the newParent is not
@@ -1891,6 +1905,8 @@ truncatedSpaceLikeDecayShower(tShowerParticlePtr particle,
    fb = Branching( showerKin, idlist, branch->sudakov(),ShowerPartnerType::QCDColourLine  );
    // Assign the shower kinematics to the emitting particle.
    particle->showerKinematics( fb.kinematics );
+   if(fb.kinematics->pT()>progenitor()->highestpT())
+     progenitor()->highestpT(fb.kinematics->pT());
    // Assign the splitting function to the emitting particle. 
    // For the time being we are considering only 1->2 branching
    // Create the ShowerParticle objects for the two children of
@@ -1948,6 +1964,8 @@ truncatedSpaceLikeDecayShower(tShowerParticlePtr particle,
   // has emitted
   // Assign the shower kinematics to the emitting particle.
   particle->showerKinematics(fb.kinematics);
+  if(fb.kinematics->pT()>progenitor()->highestpT())
+    progenitor()->highestpT(fb.kinematics->pT());
   // For the time being we are considering only 1->2 branching
   // Create the ShowerParticle objects for the two children of
   // the emitting particle; set the parent/child relationship

@@ -643,10 +643,7 @@ bool DrellYanBase::softMatrixElementVeto(ShowerProgenitorPtr initial,
 					<< " tbar = " << that/mb2_ 
 					<< "weight = " << wgt << "\n";
   // if not vetoed
-  if(UseRandom::rndbool(wgt)) {
-    initial->highestpT(pT);
-    return false;
-  }
+  if(UseRandom::rndbool(wgt)) return false;
   // otherwise
   parent->vetoEmission(br.type,br.kinematics->scale());
   return true;
