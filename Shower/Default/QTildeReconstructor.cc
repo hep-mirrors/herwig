@@ -2180,33 +2180,7 @@ reconstructGeneralSystem(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
   for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
     used[ShowerHardJets[ix]] = false;
   }
-  // in another
-  if(_reconopt<2) {
-    // first the initial state system
-    ColourSingletSystem in,out;
-    for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
-      if(ShowerHardJets[ix]->progenitor()->isFinalState())
-	out.jets.push_back(ShowerHardJets[ix]);
-      else
-	in.jets.push_back(ShowerHardJets[ix]);
-    }
-    // reconstruct initial-initial system
-    bool doRecon = false;
-    for(unsigned int ix=0;ix<in.jets.size();++ix) {
-      if(!used[in.jets[ix]]) {
-	doRecon = true;
-	continue;
-      }
-    }
-    if(doRecon) {
-      LorentzRotation toRest,fromRest;
-      bool applyBoost(false);
-      reconstructInitialInitialSystem(applyBoost,toRest,fromRest,in.jets);
-      // reconstruct the final-state systems
-      reconstructFinalStateSystem(applyBoost,toRest,fromRest,out.jets);
-    }
-  }
-  else if(_reconopt==2) {
+  if(_reconopt==2) {
     // first to the final-state reconstruction of any systems which need it
     set<ShowerProgenitorPtr> outgoing;
     // first find any particles with final state partners
@@ -2282,29 +2256,6 @@ reconstructGeneralSystem(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
 	}
       }
     }
-    // now we finally need to handle the initial state system
-    ColourSingletSystem in,out;
-    for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
-      if(ShowerHardJets[ix]->progenitor()->isFinalState())
-	out.jets.push_back(ShowerHardJets[ix]);
-      else
-	in.jets.push_back(ShowerHardJets[ix]);
-    }
-    // reconstruct initial-initial system
-    bool doRecon = false;
-    for(unsigned int ix=0;ix<in.jets.size();++ix) {
-      if(!used[in.jets[ix]]) {
-	doRecon = true;
-	continue;
-      }
-    }
-    if(doRecon) {
-      LorentzRotation toRest,fromRest;
-      bool applyBoost(false);
-      reconstructInitialInitialSystem(applyBoost,toRest,fromRest,in.jets);
-      // reconstruct the final-state systems
-      reconstructFinalStateSystem(applyBoost,toRest,fromRest,out.jets);
-    }
   }
   else if(_reconopt==3) {
     // sort the vector by hardness of emission
@@ -2340,6 +2291,7 @@ reconstructGeneralSystem(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
 	jets[0] = ShowerHardJets[ix];
 	jets[1] = progenitorMap[ShowerHardJets[ix]->progenitor()->partner()];
 	if(jets[0]->progenitor()->isFinalState()) swap(jets[0],jets[1]);
+	if(jets[0]->original()&&jets[0]->original()->parents().empty()) continue;
   	reconstructInitialFinalSystem(jets);
 	used[jets[0]] = true;
 	used[jets[1]] = true;
@@ -2367,6 +2319,39 @@ reconstructGeneralSystem(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
   }
   else
     assert(false);
+  // now we finally need to handle the initial state system
+  ColourSingletSystem in,out;
+  for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
+    if(ShowerHardJets[ix]->progenitor()->isFinalState())
+      out.jets.push_back(ShowerHardJets[ix]);
+    else
+      in.jets.push_back(ShowerHardJets[ix]);
+  }
+  // reconstruct initial-initial system
+  bool doRecon = false;
+  for(unsigned int ix=0;ix<in.jets.size();++ix) {
+    if(!used[in.jets[ix]]) {
+      doRecon = true;
+      break;
+    }
+  }
+  LorentzRotation toRest,fromRest;
+  bool applyBoost(false);
+  if(doRecon) {
+    reconstructInitialInitialSystem(applyBoost,toRest,fromRest,in.jets);
+  }
+  // reconstruct the final-state systems
+  if(!doRecon) {
+    for(unsigned int ix=0;ix<out.jets.size();++ix) {
+      if(!used[out.jets[ix]]) {
+	doRecon = true;
+	break;
+      }
+    }
+  }
+  if(doRecon) {
+    reconstructFinalStateSystem(applyBoost,toRest,fromRest,out.jets);
+  }
 }
 
 bool QTildeReconstructor::
