@@ -2250,6 +2250,7 @@ reconstructGeneralSystem(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
 	// skip duplicates
 	if(used[IFSystems[is].jets[0]] &&
 	   used[IFSystems[is].jets[1]] ) continue;
+	if(IFSystems[is].jets[0]->original()&&IFSystems[is].jets[0]->original()->parents().empty()) continue;
 	reconstructInitialFinalSystem(IFSystems[is].jets);
 	for(unsigned int ix=0;ix<IFSystems[is].jets.size();++ix) {
 	  used[IFSystems[is].jets[ix]] = true;
