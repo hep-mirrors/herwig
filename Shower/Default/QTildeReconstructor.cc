@@ -2318,8 +2318,6 @@ reconstructGeneralSystem(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
       }
     }
   }
-  else
-    assert(false);
   // now we finally need to handle the initial state system
   ColourSingletSystem in,out;
   for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
