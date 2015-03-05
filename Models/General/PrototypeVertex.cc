@@ -9,14 +9,17 @@
 #include "ThePEG/Utilities/Throw.h"
 #include "ThePEG/Utilities/Exception.h"
 #include "PrototypeVertex.h"
+#include "NBodyDecayConstructorBase.h"
 
 using namespace Herwig;
 
 void PrototypeVertex::createPrototypes(tPDPtr inpart, VertexBasePtr vertex,
-				       std::stack<PrototypeVertexPtr> & prototypes) {
+				       std::stack<PrototypeVertexPtr> & prototypes,
+				       NBodyDecayConstructorBasePtr decayCon) {
   if(!vertex->isIncoming(inpart)) return;
   tPDPtr ccpart = inpart->CC() ? inpart->CC() : inpart;
   long id = ccpart->id();
+  Energy2 scale = sqr(inpart->mass());
   for(unsigned int list=0;list<vertex->getNpoint();++list) {
     tPDVector decaylist = vertex->search(list, ccpart);
     tPDVector::size_type nd = decaylist.size();
@@ -28,19 +31,32 @@ void PrototypeVertex::createPrototypes(tPDPtr inpart, VertexBasePtr vertex,
 	if(pout[ix]->id() == id ) swap(pout[0], pout[ix]);
 	out.insert(make_pair(pout[ix],PrototypeVertexPtr()));
       }
+      // remove flavour changing vertices
+      if(decayCon->removeFlavourChangingVertices()&&vertex->getNpoint()==3) {
+	if((pout[1]->id()==ParticleID::gamma||
+	    pout[1]->id()==ParticleID::g) &&
+	   inpart!=pout[2]) continue;
+	else if((pout[2]->id()==ParticleID::gamma||
+		 pout[2]->id()==ParticleID::g) &&
+		inpart!=pout[1]) continue;
+      }
+      // remove small vertices if needed
+      if(decayCon->removeSmallVertices()) {
+	if(vertex->getNpoint()==3)
+	  vertex->setCoupling(scale,pout[0],pout[1],pout[2]);
+	else if(vertex->getNpoint()==4)
+	  vertex->setCoupling(scale,pout[0],pout[1],pout[2],pout[3]);
+	if(abs(vertex->norm())<decayCon->minVertexNorm()) continue;
+      }
       if(vertex->getNpoint()==3) {
 	// remove radiation
-	if(
-	   (inpart==pout[1] && (pout[2]->id()==ParticleID::gamma||
+	if((inpart==pout[1] && (pout[2]->id()==ParticleID::gamma||
 				pout[2]->id()==ParticleID::g||
 				pout[2]->id()==ParticleID::Z0)) 
 	   ||
 	   (inpart==pout[2] && (pout[1]->id()==ParticleID::gamma||
 				pout[1]->id()==ParticleID::g||
-				pout[1]->id()==ParticleID::Z0)) 
-	   ||
-	   (inpart->id()==ParticleID::g && pout[1]->CC() && pout[1]->CC() == pout[2])
-	   )
+				pout[1]->id()==ParticleID::Z0)))
 	  continue;
       }
       prototypes.push(new_ptr(PrototypeVertex(inpart,out,vertex,
@@ -70,11 +86,12 @@ PrototypeVertexPtr PrototypeVertex::replicateTree(PrototypeVertexPtr parent,
 
 void PrototypeVertex::expandPrototypes(PrototypeVertexPtr proto, VertexBasePtr vertex,
 				       std::stack<PrototypeVertexPtr> & prototypes,
-				       const set<PDPtr> & excluded) {
+				       const set<PDPtr> & excluded,
+				       NBodyDecayConstructorBasePtr decayCon) {
   for(OrderedVertices::const_iterator it = proto->outgoing.begin();
       it!=proto->outgoing.end();++it) {
     if(it->second) {
-      expandPrototypes(it->second,vertex,prototypes,excluded);
+      expandPrototypes(it->second,vertex,prototypes,excluded,decayCon);
     }
     else {
       if(!vertex->isIncoming(it->first)) continue;
@@ -87,6 +104,7 @@ void PrototypeVertex::expandPrototypes(PrototypeVertexPtr proto, VertexBasePtr v
 
       PrototypeVertexPtr parent=proto;
       while(parent->parent) parent=parent->parent;
+      Energy2 scale(sqr(parent->incoming->mass()));
       for(unsigned int il = 0; il < vertex->getNpoint(); ++il) {
 	tPDVector decaylist = vertex->search(il,ccpart);
 	tPDVector::size_type nd = decaylist.size();
@@ -105,10 +123,7 @@ void PrototypeVertex::expandPrototypes(PrototypeVertexPtr proto, VertexBasePtr v
 	       ||
 	       (it->first==pout[2] && (pout[1]->id()==ParticleID::gamma||
 				       pout[1]->id()==ParticleID::g||
-				       pout[1]->id()==ParticleID::Z0))
-	       ||
-	       (it->first->id()==ParticleID::g && pout[1]->CC() && pout[1]->CC() == pout[2])
-	       )
+				       pout[1]->id()==ParticleID::Z0)))
 	      continue;
 	    // remove weak decays of quarks other than top
 	    if(StandardQCDPartonMatcher::Check(pout[0]->id()) &&
@@ -122,6 +137,23 @@ void PrototypeVertex::expandPrototypes(PrototypeVertexPtr proto, VertexBasePtr v
 		  abs(pout[2]->id())==ParticleID::Wplus)||
 		((abs(pout[2]->id())>=11&&abs(pout[2]->id())<=16)&&
 		 abs(pout[1]->id())==ParticleID::Wplus))) continue;
+	    }
+	  // remove flavour changing vertices
+	  if(decayCon->removeFlavourChangingVertices()&&vertex->getNpoint()==3) {
+	    if((pout[1]->id()==ParticleID::gamma||
+		pout[1]->id()==ParticleID::g) &&
+	       it->first!=pout[2]) continue;
+	    else if((pout[2]->id()==ParticleID::gamma||
+		     pout[2]->id()==ParticleID::g) &&
+		    it->first!=pout[1]) continue;
+	  }
+	  // remove small vertices if needed
+	  if(decayCon->removeSmallVertices()) {
+	    if(vertex->getNpoint()==3)
+	      vertex->setCoupling(scale,pout[0],pout[1],pout[2]);
+	    else if(vertex->getNpoint()==4)
+	      vertex->setCoupling(scale,pout[0],pout[1],pout[2],pout[3]);
+	    if(abs(vertex->norm())<decayCon->minVertexNorm()) continue;
 	  }
 	  PrototypeVertexPtr newBranch = 
 	    new_ptr(PrototypeVertex(it->first,

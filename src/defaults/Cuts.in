@@ -113,3 +113,10 @@ newdef DISCuts:X1Min 1.0e-5
 newdef DISCuts:X2Min 1.0e-5
 insert DISCuts:TwoCuts[0] NeutralCurrentCut
 insert DISCuts:TwoCuts[1] ChargedCurrentCut
+
+# create diffrent cuts object for MinBias to avoid numerical problems
+create ThePEG::Cuts MinBiasCuts
+newdef MinBiasCuts:ScaleMin 2.0*GeV
+newdef MinBiasCuts:X1Min 0.055
+newdef MinBiasCuts:X2Min 0.055
+newdef MinBiasCuts:MHatMin 0.0*GeV

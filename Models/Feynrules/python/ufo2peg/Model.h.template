@@ -10,7 +10,7 @@
 #define HERWIG_${ModelName}_H
 
 // This is the declaration of the ${ModelName} class.
-#include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "Herwig++/Models/General/BSMModel.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -24,10 +24,9 @@ const Complex ii = Complex(0,1);
  *  FeynRules Model class and implements additional FeynRules Model couplings, 
  *  access to vertices for helicity amplitude calculations etc.
  *
- *  @see StandardModel
+ *  @see BSMModel
  */
-//class ${ModelName}: public StandardModel {
-class ${ModelName}: public StandardModel {
+class ${ModelName}: public BSMModel {
 
 public:
   /// Default constructor
@@ -104,6 +103,16 @@ private:
    * Private and non-existent assignment operator.
    */
   ${ModelName} & operator=(const ${ModelName} &);
+
+private:
+
+  /**
+   *  Helper functions for doinit
+   */
+  //@{
+
+${calcfunctions}
+  //@}
   
 private:
 

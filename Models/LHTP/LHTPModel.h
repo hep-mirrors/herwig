@@ -5,7 +5,7 @@
 // This is the declaration of the LHTPModel class.
 //
 
-#include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "Herwig++/Models/General/BSMModel.h"
 #include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
 #include "LHTPModel.fh"
 
@@ -18,7 +18,7 @@ namespace Herwig {
  * @see \ref LHTPModelInterfaces "The interfaces"
  * defined for LHTPModel.
  */
-class LHTPModel: public StandardModel {
+class LHTPModel: public BSMModel {
 
 public:
 

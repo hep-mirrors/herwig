@@ -26,12 +26,13 @@ parser.add_argument(
 	metavar='SLHA_file', 
 	help='SLHA spectrum file.'
 )
+parser.add_argument(
+    '-o','--output',
+    default="FRModel_slha.model",
+    help="Name for the output file"
+)
 
 args = parser.parse_args()
-
-with open(args.modelfile) as f:
-	template = string.Template(f.read())
-
 
 with open(args.slhafile) as f:
 	currentblock = None
@@ -60,34 +61,51 @@ with open(args.slhafile) as f:
 				PARAMS[label] = data
 
 
-while True:
-	try:
-		newcontent = template.substitute(PARAMS)
-	except KeyError as e:
-		problemkey = e.args[0]
-		name, suffix = problemkey.rsplit('_',1)
-		if suffix == 'ABS':
-			mass = PARAMS[name]
-			try:
-				mass = mass.real
-			except:
-				pass
-			PARAMS[problemkey] = abs(mass)
-		elif suffix == 'CTAU':
-			hbarc = 197.3269631e-15
-			width = PARAMS[name]
-			ctau = (hbarc / width) if width != 0 else 0
-			PARAMS[problemkey] = ctau
-		elif suffix == 'WCUT':
-			width = PARAMS[name]
-			wcut = 10.0 * width
-			PARAMS[problemkey] = wcut
-		else:
-			PARAMS[problemkey] = 0.0
-	else:
-		break
+template = open(args.modelfile)
+output   = open(args.output,'w')
 
-
-with open('tmp2','w') as f:
-	f.write(newcontent)
-	f.write('\n')
+line = template.readline()
+while line:
+	split = line.split("${")
+	if (len(split) == 1 ) :
+		output.write(line)
+	else :
+		outputLine = split[0]
+		for i in range(1,len(split)) :
+			split2 = split[i].split("}")
+			key = split2[0]
+			if key in PARAMS :
+				outputLine += str(PARAMS[key]) + split2[1]
+			else :
+				name, suffix = key.rsplit('_',1)
+				if suffix == 'ABS':
+					mass = PARAMS[name]
+					try:
+						mass = mass.real
+					except:
+						pass
+					outputLine += str(abs(mass)) + split2[1]
+				elif suffix == 'CTAU':
+					hbarc = 197.3269631e-15
+					if(name in PARAMS) :
+						width = PARAMS[name]
+						ctau = (hbarc / width) if width != 0 else 0
+					else :
+						ctau = 0
+					outputLine += str(ctau) + split2[1]
+				elif suffix == 'WCUT':
+					if(name in PARAMS) :
+						width = PARAMS[name]
+					else :
+						width = 0.
+					wcut = 10.0 * width
+					outputLine += str(wcut) + split2[1]
+				elif name == 'DECAY':
+					outputLine += str(0.) + split2[1]
+				else :
+					print 'Parameter ',key,'not set in SLHA file, keeping default'
+					outputLine = '#' + outputLine + "${" + split2[0] + "}" + split2[1]
+		output.write(outputLine)
+	line = template.readline()
+output.write("\n")
+print "Output written as : ",args.output

@@ -17,7 +17,9 @@ newdef DecayConstructor:QEDGenerator /Herwig/QEDRadiation/SOPHTY
 create Herwig::TwoBodyDecayConstructor TwoBodyDC
 set TwoBodyDC:ExcludeEffectiveVertices No
 create Herwig::ThreeBodyDecayConstructor ThreeBodyDC
+set ThreeBodyDC:RemoveFlavourChangingVertices Yes
 create Herwig::FourBodyDecayConstructor FourBodyDC
+set FourBodyDC:RemoveFlavourChangingVertices Yes
 
 create Herwig::WeakCurrentDecayConstructor WeakDecayConstructor
 set  WeakDecayConstructor:InitPoints 10000

@@ -25,48 +25,9 @@
 using namespace ThePEG;
 using namespace Herwig;
 
-${ModelName}::${ModelName}()
-${parmconstr}
-{}
-
-IBPtr ${ModelName}::clone() const {
-  return new_ptr(*this);
-}
-
-IBPtr ${ModelName}::fullclone() const {
-  return new_ptr(*this);
-}
-
 void ${ModelName}::doinit() {
   ${doinit}
   BSMModel::doinit();
   ${addVertex}
 
 }
-
-void ${ModelName}::persistentOutput(PersistentOStream & os) const {
-  os << ${ostream} ;
-}
-
-void ${ModelName}::persistentInput(PersistentIStream & is, int) {
-  is >> ${istream} ;
-}
-
-// Static variable needed for the type description system in ThePEG.
-DescribeClass<${ModelName},BSMModel>
-  describeThePEG${ModelName}("Herwig::${ModelName}", "${ModelName}.so");
-
-void ${ModelName}::Init() {
-  ${refs}
-
-
-static ClassDocumentation<${ModelName}> documentation
-  ("The ${ModelName} class inherits from BSMModel"
-   "and supplies additional couplings and access to the ${ModelName}"
-   "vertices for helicity amplitude calculations" );
-
- ${parmextinter}
-
-}
-
-
