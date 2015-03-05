@@ -309,6 +309,11 @@ void QTildeReconstructor::Init() {
      "Longitudinal",
      "Preserve longitudinal momentum",
      1);
+  static SwitchOption interfaceInitialStateReconOptionSofterFraction
+    (interfaceInitialStateReconOption,
+     "SofterFraction",
+     "Preserve the momentum fraction of the parton which has emitted softer.",
+     2);
 
 }
 
@@ -1811,6 +1816,7 @@ reconstructInitialInitialSystem(bool & applyBoost,
   // initial state shuffling
   applyBoost=false;
   vector<Lorentz5Momentum> p, pq, p_in;
+  vector<Energy> pts;
   for(unsigned int ix=0;ix<jets.size();++ix) {
     // at momentum to vector
     p_in.push_back(jets[ix]->progenitor()->momentum());
@@ -1823,6 +1829,7 @@ reconstructInitialInitialSystem(bool & applyBoost,
     Energy etemp = jets[ix]->original()->parents()[0]->momentum().z();
     Lorentz5Momentum ptemp = Lorentz5Momentum(ZERO, ZERO, etemp, abs(etemp));
     pq.push_back(ptemp);
+    pts.push_back(jets[ix]->highestpT());
   }
   // add the intrinsic pt if needed
   radiated |=addIntrinsicPt(jets);
@@ -1832,7 +1839,7 @@ reconstructInitialInitialSystem(bool & applyBoost,
   double x1 = p_in[0].z()/pq[0].z();
   double x2 = p_in[1].z()/pq[1].z();
   Energy MDY = (p_in[0] + p_in[1]).m();
-  vector<double> beta=initialStateRescaling(x1,x2,MDY,p,pq);
+  vector<double> beta=initialStateRescaling(x1,x2,MDY,p,pq,pts);
   // if not need don't apply boosts
   if(!(radiated && p.size() == 2 && pq.size() == 2)) return;
   applyBoost=true;
@@ -2782,7 +2789,8 @@ Energy QTildeReconstructor::findMass(HardBranchingPtr branch) const {
 vector<double>
 QTildeReconstructor::initialStateRescaling(double x1, double x2, Energy MDY,
 					   vector<Lorentz5Momentum> & p,
-					   vector<Lorentz5Momentum> & pq) const {
+					   vector<Lorentz5Momentum> & pq,
+					   const vector<Energy>& highestpts) const {
   Energy2 S = (pq[0]+pq[1]).m2();
   // find alphas and betas in terms of desired basis
   Energy2 p12 = pq[0]*pq[1];
@@ -2791,6 +2799,7 @@ QTildeReconstructor::initialStateRescaling(double x1, double x2, Energy MDY,
   Lorentz5Momentum p1p = p[0] - a[0]*pq[0] - b[0]*pq[1];
   Lorentz5Momentum p2p = p[1] - a[1]*pq[0] - b[1]*pq[1];
   // compute kappa
+  // we always want to preserve the mass of the system
   Energy2 A = a[0]*b[1]*S;
   Energy2 B = Energy2(sqr(MDY)) - (a[0]*b[0]+a[1]*b[1])*S - (p1p+p2p).m2();
   Energy2 C = a[1]*b[0]*S;
@@ -2800,10 +2809,12 @@ QTildeReconstructor::initialStateRescaling(double x1, double x2, Energy MDY,
   // now compute k1
   // conserve rapidity
   double k1(0.);
+  double k2(0.);
   if(_initialStateReconOption==0) {
     rad = kp*(b[0]+kp*b[1])/(kp*a[0]+a[1])*(x1/x2);
     if(rad <= 0.) throw KinematicsReconstructionVeto();
     k1 = sqrt(rad);
+    k2 = kp/k1;
   }
   // conserve longitudinal momentum
   else if(_initialStateReconOption==1) {
@@ -2826,11 +2837,18 @@ QTildeReconstructor::initialStateRescaling(double x1, double x2, Energy MDY,
       if( k1 <= 0.) throw KinematicsReconstructionVeto();
       k1 = sqrt(k1);
     }
+    k2 = kp/k1;
+  }
+  // preserve mass and don't scale the softer system
+  // to reproduce the dipole kinematics
+  else if(_initialStateReconOption==2) {
+    // in this case kp = k1 or k2 depending on who's the harder guy
+    k1 = kp; k2 = 1.;
+    if ( highestpts[0] < highestpts[1] )
+      swap(k1,k2);
   }
   else
     assert(false);
-  // and k2
-  double k2 = kp/k1;
   // calculate the boosts
   vector<double> beta(2);
   beta[0] = getBeta((a[0]+b[0]), (a[0]-b[0]), (k1*a[0]+b[0]/k1), (k1*a[0]-b[0]/k1));

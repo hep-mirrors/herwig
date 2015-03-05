@@ -448,7 +448,8 @@ protected:
    */
   vector<double> initialStateRescaling(double x1, double x2, Energy MDY,
 				       vector<Lorentz5Momentum> & p,
-				       vector<Lorentz5Momentum> & pq) const;
+				       vector<Lorentz5Momentum> & pq,
+				       const vector<Energy>& highespts) const;
 
 protected:
 
