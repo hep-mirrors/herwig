@@ -2176,6 +2176,7 @@ bool sortJets(ShowerProgenitorPtr j1, ShowerProgenitorPtr j2) {
 
 void QTildeReconstructor::
 reconstructGeneralSystem(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
+  static const Energy2 minQ2 = 1e-4*GeV2;
   map<ShowerProgenitorPtr,bool> used;
   for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
     used[ShowerHardJets[ix]] = false;
@@ -2251,9 +2252,18 @@ reconstructGeneralSystem(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
 	if(used[IFSystems[is].jets[0]] &&
 	   used[IFSystems[is].jets[1]] ) continue;
 	if(IFSystems[is].jets[0]->original()&&IFSystems[is].jets[0]->original()->parents().empty()) continue;
-	reconstructInitialFinalSystem(IFSystems[is].jets);
+	Lorentz5Momentum psum;
 	for(unsigned int ix=0;ix<IFSystems[is].jets.size();++ix) {
-	  used[IFSystems[is].jets[ix]] = true;
+	  if(IFSystems[is].jets[ix]->progenitor()->isFinalState())
+	    psum += IFSystems[is].jets[ix]->progenitor()->momentum();
+	  else
+	    psum -= IFSystems[is].jets[ix]->progenitor()->momentum();
+	}
+	if(-psum.m2()>minQ2) {
+	  reconstructInitialFinalSystem(IFSystems[is].jets);
+	  for(unsigned int ix=0;ix<IFSystems[is].jets.size();++ix) {
+	    used[IFSystems[is].jets[ix]] = true;
+	  }
 	}
       }
     }
@@ -2293,9 +2303,18 @@ reconstructGeneralSystem(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
 	jets[1] = progenitorMap[ShowerHardJets[ix]->progenitor()->partner()];
 	if(jets[0]->progenitor()->isFinalState()) swap(jets[0],jets[1]);
 	if(jets[0]->original()&&jets[0]->original()->parents().empty()) continue;
-  	reconstructInitialFinalSystem(jets);
-	used[jets[0]] = true;
-	used[jets[1]] = true;
+	Lorentz5Momentum psum;
+	for(unsigned int iy=0;iy<jets.size();++iy) {
+	  if(jets[iy]->progenitor()->isFinalState())
+	    psum += jets[iy]->progenitor()->momentum();
+	  else
+	    psum -= jets[iy]->progenitor()->momentum();
+	}
+	if(-psum.m2()>minQ2) {
+	  reconstructInitialFinalSystem(jets);
+	  used[jets[0]] = true;
+	  used[jets[1]] = true;
+	}
       }
       // initial-initial
       else if(!ShowerHardJets[ix]->progenitor()->isFinalState() &&
