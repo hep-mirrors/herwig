@@ -2286,8 +2286,10 @@ reconstructGeneralSystem(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
     for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
       // skip jets which have already been handled
       if(ShowerHardJets[ix]->reconstructed()) continue;
+      // already reconstructed
+      if(used[ShowerHardJets[ix]]) continue; 
       // no partner continue
-      if(used[ShowerHardJets[ix]]) continue;
+      if(!ShowerHardJets[ix]->progenitor()->partner()) continue;
       // do the reconstruction
       // final-final
       if(ShowerHardJets[ix]->progenitor()->isFinalState() &&
