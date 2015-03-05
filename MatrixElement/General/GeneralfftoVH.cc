@@ -70,7 +70,7 @@ void GeneralfftoVH::getDiagrams() const {
   }
   else if(process_==HadronWplus||process_==HadronWminus) {
     // possible incoming particles
-    typedef std::vector<pair<long,long> > Pairvector;
+    // typedef std::vector<pair<long,long> > Pairvector;
     // possible parents
     vector<PDPair> parentpair;
     parentpair.reserve(6);

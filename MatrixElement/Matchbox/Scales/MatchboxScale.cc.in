@@ -17,6 +17,7 @@
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/EventRecord/Particle.h"
+#include "ThePEG/Repository/Repository.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
@@ -71,7 +72,8 @@ string MatchboxScale::doFunction(string in) {
 
 
   cmd = "make";
-  std::system(cmd.c_str());
+  int st = std::system(cmd.c_str());
+  Repository::clog() << "scale compilation returned " << st << "\n";
   return "";
 
 }

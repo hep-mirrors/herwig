@@ -65,7 +65,7 @@ void MEPP2WH::getDiagrams() const {
   bool wminus=_plusminus==0||_plusminus==2;
   tPDPtr higgs = getParticleData(ParticleID::h0);
   // possible incoming particles
-  typedef std::vector<pair<long,long> > Pairvector;
+  // typedef std::vector<pair<long,long> > Pairvector;
   // possible parents
   vector<PDPair> parentpair;
   parentpair.reserve(6);

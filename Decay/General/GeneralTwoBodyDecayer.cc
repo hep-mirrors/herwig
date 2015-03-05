@@ -1253,6 +1253,10 @@ GeneralTwoBodyDecayer::colourFlows(const Particle & inpart,
         case PDT::Colour3:     ++trip; break;
         case PDT::Colour3bar: ++atrip; break;
         case PDT::Colour8:      ++oct; break;
+        case PDT::ColourUndefined:     break;
+        case PDT::Coloured:            break;
+        case PDT::Colour6:             break;
+        case PDT::Colour6bar:          break;
     }
   }
 
