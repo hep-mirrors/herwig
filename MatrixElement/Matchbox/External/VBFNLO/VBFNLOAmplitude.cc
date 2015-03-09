@@ -217,10 +217,17 @@ void VBFNLOAmplitude::evalColourCorrelator(pair<int,int>) const {
 
   int id = olpId()[ProcessType::colourCorrelatedME2];
 
-  if (theRanHelSum && lastHeadMatchboxXComb()) {
-    vector<double> helicityrn = lastHeadMatchboxXComb()->amplitudeRandomNumbers();
-    if (helicityrn.size()>0) {
-      setOLPParameter("HelicityRN",helicityrn[0]);
+  if ( theRanHelSum ) { 
+    if ( lastHeadMatchboxXComb() ) {
+      vector<double> helicityrn = lastHeadMatchboxXComb()->amplitudeRandomNumbers();
+      if (helicityrn.size()>0) {
+        setOLPParameter("HelicityRN",helicityrn[0]);
+      }
+    } else if ( amplitudeRandomNumbers().size() > 0 ) {
+      vector<double> helicityrn = amplitudeRandomNumbers();
+      if (helicityrn.size()>0) {
+        setOLPParameter("HelicityRN",helicityrn[0]);
+      }
     }
   }
 
