@@ -106,54 +106,74 @@ def main():
   job_ids = []
   total_events = []
   queues = []
+  clusters = []
   f_run_info = open(run_name+'/run.info','r')
   l = 0
   for line in f_run_info:
     l += 1
-    if l == 1: cluster = line.replace('\n','')
-    elif l == 2:
+    if l == 1:
       infile = line.replace('\n','')
       infile_title = infile.split('/')[-1]
-    elif l == 3:
+    elif l == 2:
       setupfile = line.replace('\n','')
       setupfile_title = setupfile.split('/')[-1]
-    elif l == 4:
+    elif l == 3:
       generator = line.replace('\n','')
       runfile = generator+'.run'
-    elif l == 5:
+    elif l == 4:
       buildscript = line.replace('\n','')
       buildscript_title = buildscript.split('/')[-1]
+    elif l == 5:
+      buildCluster = line.replace('\n','')
+      clusters.append(buildCluster)
     elif l == 7:
       integratescript = line.replace('\n','')
       integratescript_title = integratescript.split('/')[-1]
-    elif l == 8: integrationjobids = line.replace('\n','').split()
-    elif l == 9:
+    elif l == 8:
+      integrateCluster = line.replace('\n','')
+      if not integrateCluster in clusters:
+        clusters.append(integrateCluster)
+    elif l == 9: integrationjobids = line.replace('\n','').split()
+    elif l == 10:
       runscript = line.replace('\n','')
       runscript_title = runscript.split('/')[-1]
-    elif l > 11:
+    elif l > 12:
       data = line.replace('\n','').split()
       jobs.append(int(data[1].strip('#').strip(':')))
+      queues.append(data[2])
       job_ids.append(data[3])
-      total_events.append(int(data[7]))
+      total_events.append(int(data[5]))
+      cluster = 'local' if data[2] == 'local' else configParserQueues.get(data[2],'cluster')
+      if not cluster in clusters:
+        clusters.append(cluster)
   f_run_info.close()
-
+  
   finishedReadStep = os.path.exists(run_name+'/read/'+runfile)
   activeRunStep = len(job_ids) > 0
 
-  try:
-    call(configParserClusters.get(cluster,'joblist')+' > '+run_name+'/tmp', shell=True)
-  except:
-    sys.exit(0)
+  for cluster in clusters:
+    try:
+      if cluster == 'local':
+        call('ps -al > '+run_name+'/joblist.'+cluster, shell=True)
+      else:
+        call(configParserClusters.get(cluster,'joblist')+' > '+run_name+'/joblist.'+cluster, shell=True)
+    except:
+      sys.exit(0)
   ansi_escape = re.compile(r'\x1b[^m]*m')          # remove ANSI color escape characters
 
   runningIntegrationJobs = 0
   queuedIntegrationJobs = 0
   for j in integrationjobids:
-    status = ansi_escape.sub('', check_output('grep '+j+' '+run_name+'/tmp | ' + configParserClusters.get(cluster,'status'), shell=True))
-    if status == configParserClusters.get(cluster,'statusQueued'):
-      queuedIntegrationJobs += 1
-    elif status == configParserClusters.get(cluster,'statusRunning'):
-      runningIntegrationJobs += 1
+    if integrateCluster == 'local':
+      status = check_output('grep '+j+' '+run_name+'/joblist.'+integrateCluster+" | awk '{printf \"%%s\", $4}'", shell=True)
+      if len(status) > 0:
+        runningIntegrationJobs += 1
+    else:
+      status = ansi_escape.sub('', check_output('grep '+j+' '+run_name+'/joblist.'+integrateCluster+' | ' + configParserClusters.get(integrateCluster,'status'), shell=True))
+      if status == configParserClusters.get(integrateCluster,'statusQueued'):
+        queuedIntegrationJobs += 1
+      elif status == configParserClusters.get(integrateCluster,'statusRunning'):
+        runningIntegrationJobs += 1
   finishedIntegrationJobs = len(integrationjobids) - runningIntegrationJobs - queuedIntegrationJobs
 
   if opts.run_info:
@@ -168,7 +188,7 @@ def main():
     print("setupfile:         {}".format(setupfile))
     print("build script:      {}".format(buildscript))
     print("integrate script:  {}".format(integratescript if l > 6 else ''))
-    print("run script:        {}".format(runscript if l > 8 else ''))
+    print("run script:        {}".format(runscript if l > 9 else ''))
     print("")
 
   if not finishedReadStep or not activeRunStep:
@@ -207,24 +227,36 @@ def main():
 
   for j in range(len(jobs)):
     
+    cluster = 'local' if queues[j] == 'local' else configParserQueues.get(queues[j],'cluster')
     fileParallel = run_name+'/'+str(jobs[j])+'/'+generator+('' if setupfile=='' else '-'+setupfile_title)+'.parallel'
     
     # get job status: queued / running / not running
     job_queued = False
     job_running = False
-    status = ansi_escape.sub('', check_output('grep '+job_ids[j]+' '+run_name+'/tmp | ' + configParserClusters.get(cluster,'status'), shell=True))
-    if status == configParserClusters.get(cluster,'statusQueued'):
-      job_queued = True
-      host = 'queued'
-    elif status == configParserClusters.get(cluster,'statusRunning'):
-      if os.path.isfile(fileParallel):
+    if queues[j] == 'local':
+      try:
+        status = check_output('grep '+job_ids[j]+' '+run_name+'/joblist.local', shell=True)
+      except:
+        status = ''
+      if len(status) > 0 and not '<defunct>' in status:
         job_running = True
-        host = open(fileParallel,'r').readline().rstrip().replace('hostname> ','')
+        host = 'local'
       else:
+        host = 'not queued/running'
+    else:
+      status = ansi_escape.sub('', check_output('grep '+job_ids[j]+' '+run_name+'/joblist.'+cluster+' | ' + configParserClusters.get(cluster,'status'), shell=True))
+      if status == configParserClusters.get(cluster,'statusQueued'):
         job_queued = True
         host = 'queued'
-    else:
-      host = 'not queued/running'
+      elif status == configParserClusters.get(cluster,'statusRunning'):
+        if os.path.isfile(fileParallel):
+          job_running = True
+          host = open(fileParallel,'r').readline().rstrip().replace('hostname> ','')
+        else:
+          job_queued = True
+          host = 'queued'
+      else:
+        host = 'not queued/running'
     
     if not os.path.isfile(fileParallel): # job has not been started so far
       progress.append(0.0)
@@ -289,7 +321,8 @@ def main():
         iCrashedRead += 1
         jobsCrashedRead.append(jobs[j])
       continue
-  os.remove(run_name+'/tmp')
+  for cluster in clusters:
+    os.remove(run_name+'/joblist.'+cluster)
   if opts.job_list: print("")
 
   n = 0

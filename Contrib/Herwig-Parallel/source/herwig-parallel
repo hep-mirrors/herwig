@@ -9,76 +9,103 @@
 
 import sys
 import os
+import signal
 import time
 from subprocess import call
 from ConfigParser import SafeConfigParser
 from optparse import OptionParser
 from hwp import checkConfig
 
-# load cluster configuration file
-configFileNameClusters = os.path.dirname(os.path.realpath(sys.argv[0])) + "/../config/clusters.conf"
-configParserClusters = SafeConfigParser()
-configParserClusters.read(configFileNameClusters)
 
-# load queue configuration file
-configFileNameQueues = os.path.dirname(os.path.realpath(sys.argv[0])) + "/../config/queues.conf"
-configParserQueues = SafeConfigParser()
-configParserQueues.read(configFileNameQueues)
+### ------------
+### catch Ctrl+C
+### ------------
+signal.signal(signal.SIGINT, lambda x,y: exit())
 
-# sanity checks for cluster and queue configuration
-queues = checkConfig(configParserClusters,configParserQueues)
 
-# setup command line options & parameters
-optionParser = OptionParser(usage="%prog [options] run-definition-file")
-optionParser.add_option("-m", "--monitor", action="store_true", dest="monitoring", default=False, help="automatically start run monitoring after submission of all jobs [default: do not start monitoring]")
-opts, args = optionParser.parse_args()
+### ------------
+### main program
+### ------------
+def main():
 
-# sanity checks for command line arguments
-if len(args) > 1:
-  sys.stderr.write("Must specify an unambiguous name of the single run definition file to be used!\n")
+  # load cluster configuration file
+  configFileNameClusters = os.path.dirname(os.path.realpath(sys.argv[0])) + "/../config/clusters.conf"
+  configParserClusters = SafeConfigParser()
+  configParserClusters.read(configFileNameClusters)
+
+  # load queue configuration file
+  configFileNameQueues = os.path.dirname(os.path.realpath(sys.argv[0])) + "/../config/queues.conf"
+  configParserQueues = SafeConfigParser()
+  configParserQueues.read(configFileNameQueues)
+
+  # sanity checks for cluster and queue configuration
+  queues = checkConfig(configParserClusters,configParserQueues)
+
+  # setup command line options & parameters
+  optionParser = OptionParser(usage="%prog [options] run-definition-file")
+  optionParser.add_option("-m", "--monitor", action="store_true", dest="monitoring", default=False, help="automatically start run monitoring after submission of all jobs [default: do not start monitoring]")
+  opts, args = optionParser.parse_args()
+
+  # sanity checks for command line arguments
+  if len(args) > 1:
+    sys.stderr.write("Must specify an unambiguous name of the single run definition file to be used!\n")
+    sys.exit(1)
+  if not os.path.isfile(args[0]):
+    sys.stderr.write("The specified run definition file "+args[0]+" does not exist!\n")
+    sys.exit(1)
+
+  # get path where herwig-parallel scripts are located (in order to not be dependent on their inclusion in the PATH environment variable)
+  path = os.path.dirname(os.path.realpath(sys.argv[0]))
+
+  # parse run definition file
+  configRun = SafeConfigParser()
+  configRun.read(args[0])
+  runname = configRun.sections()[0]
+  infile = configRun.get(runname,'infile')
+  setupfile = configRun.get(runname,'setupfile')
+  buildscript = configRun.get(runname,'buildscript')
+  buildqueue = configRun.get(runname,'buildqueue')
+  integratescript = configRun.get(runname,'integratescript')
+  integratequeue = configRun.get(runname,'integratequeue')
+  integratejobs = configRun.get(runname,'integratejobs')
+  runscript = configRun.get(runname,'runscript')
+  runqueue = configRun.get(runname,'runqueue')
+  runjobs = configRun.get(runname,'runjobs')
+  events = configRun.get(runname,'events')
+  seedmode = configRun.get(runname,'seedmode')
+  seed = configRun.get(runname,'seed')
+
+  # use default build/integrate/run scripts if left empty in run definition file
+  if buildscript == '':
+    buildscript = path+'/../misc/herwig-parallel-build.sh'
+  if integratescript == '':
+    integratescript = path+'/../misc/herwig-parallel-integrate.sh'
+  if runscript == '':
+    runscript = path+'/../misc/herwig-parallel-run.sh'
+
+  # call herwig-parallel-read
+  ret = call(path+'/herwig-parallel-read -b '+buildscript+' -Q '+buildqueue+' -i '+integratescript+' -q '+integratequeue+' -j '+integratejobs+' -n '+runname+' '+infile+('' if setupfile=='' else ' '+setupfile), shell=True)
+  if ret != 0: sys.exit(1)
+
+  # call herwig-parallel-run
+  ret = call(path+'/herwig-parallel-run -e'+events+' -j'+runjobs+' -q '+runqueue+' -r '+runscript+' --seed-mode '+seedmode+' --seed '+seed+' '+runname, shell=True)
+  if ret != 0: sys.exit(1)
+
+  # possibly start monitoring
+  if opts.monitoring:
+    call(path+'/herwig-parallel-monitor '+runname, shell=True)
+
+
+### ------------------------------------------
+### remove '^C' outpt when exiting with Ctrl+C
+### ------------------------------------------
+def exit():
+  sys.stderr.write("\r\033[K")
   sys.exit(1)
-if not os.path.isfile(args[0]):
-  sys.stderr.write("The specified run definition file "+args[0]+" does not exist!\n")
-  sys.exit(1)
 
-# get path where herwig-parallel scripts are located (in order to not be dependent on their inclusion in the PATH environment variable)
-path = os.path.dirname(os.path.realpath(sys.argv[0]))
 
-# parse run definition file
-configRun = SafeConfigParser()
-configRun.read(args[0])
-runname = configRun.sections()[0]
-infile = configRun.get(runname,'infile')
-setupfile = configRun.get(runname,'setupfile')
-generator = configRun.get(runname,'generator')
-buildscript = configRun.get(runname,'buildscript')
-buildqueue = configRun.get(runname,'buildqueue')
-integratescript = configRun.get(runname,'integratescript')
-integratequeue = configRun.get(runname,'integratequeue')
-integratejobs = configRun.get(runname,'integratejobs')
-runscript = configRun.get(runname,'runscript')
-runqueue = configRun.get(runname,'runqueue')
-runjobs = configRun.get(runname,'runjobs')
-events = configRun.get(runname,'events')
-seedmode = configRun.get(runname,'seedmode')
-seed = configRun.get(runname,'seed')
-
-# use default build/integrate/run scripts if left empty in run definition file
-if buildscript == '':
-  buildscript = path+'/../misc/herwig-parallel-build.sh'
-if integratescript == '':
-  integratescript = path+'/../misc/herwig-parallel-integrate.sh'
-if runscript == '':
-  runscript = path+'/../misc/herwig-parallel-run.sh'
-
-# call herwig-parallel-read
-ret = call(path+'/herwig-parallel-read -b '+buildscript+' -Q '+buildqueue+' -i '+integratescript+' -q '+integratequeue+' -g '+generator+' -j '+integratejobs+' -n '+runname+' '+infile+('' if setupfile=='' else ' '+setupfile), shell=True)
-if ret != 0: sys.exit(1)
-
-# call herwig-parallel-run
-ret = call(path+'/herwig-parallel-run -e'+events+' -j'+runjobs+' -q '+runqueue+' -r '+runscript+' --seed-mode '+seedmode+' --seed '+seed+' '+runname, shell=True)
-if ret != 0: sys.exit(1)
-
-# possibly start monitoring
-if opts.monitoring:
-  call(path+'/herwig-parallel-monitor '+runname, shell=True)
+### -----------------
+### call main program
+### -----------------
+if __name__ == '__main__':
+  main()

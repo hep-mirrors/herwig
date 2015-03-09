@@ -4,249 +4,318 @@
 ## Herwig-Parallel
 ## --------------------
 ## Author: Daniel Rauch
-## Date:   25 Feb 2015
+## Date:   5 Mar 2015
 ## --------------------
 
 import sys
 import os
 import re
+import signal
 import shutil
 import glob
 import time
 import datetime
 from subprocess import call
 from subprocess import check_output
+from subprocess import Popen
 from ConfigParser import SafeConfigParser
 from optparse import OptionParser
 from hwp import checkConfig
 
-# load Herwig-Parallel configuration file
-configFileName = os.path.dirname(os.path.realpath(sys.argv[0])) + "/../config/herwig-parallel.conf"
-configParser = SafeConfigParser()
-configParser.read(configFileName)
 
-# load cluster configuration file
-configFileNameClusters = os.path.dirname(os.path.realpath(sys.argv[0])) + "/../config/clusters.conf"
-configParserClusters = SafeConfigParser()
-configParserClusters.read(configFileNameClusters)
+### ------------
+### catch Ctrl+C
+### ------------
+signal.signal(signal.SIGINT, lambda x,y: exit())
 
-# load queue configuration file
-configFileNameQueues = os.path.dirname(os.path.realpath(sys.argv[0])) + "/../config/queues.conf"
-configParserQueues = SafeConfigParser()
-configParserQueues.read(configFileNameQueues)
 
-# sanity checks for cluster and queue configuration
-queues = checkConfig(configParserClusters,configParserQueues)
+### ------------
+### main program
+### ------------
+def main():
 
-# set defaults
-default_settings  = ['generator','buildscript',             'buildqueue','integratescript',             'integratequeue','integratejobs']
-default_variables = ['Herwig',   'herwig-parallel-build.sh', queues[0],  'herwig-parallel-integrate.sh', queues[0],      '1']
-for i in range(len(default_settings)):
+  # load Herwig-Parallel configuration file
+  configFileName = os.path.dirname(os.path.realpath(sys.argv[0])) + "/../config/herwig-parallel.conf"
+  configParser = SafeConfigParser()
+  configParser.read(configFileName)
+
+  # load cluster configuration file
+  configFileNameClusters = os.path.dirname(os.path.realpath(sys.argv[0])) + "/../config/clusters.conf"
+  configParserClusters = SafeConfigParser()
+  configParserClusters.read(configFileNameClusters)
+
+  # load queue configuration file
+  configFileNameQueues = os.path.dirname(os.path.realpath(sys.argv[0])) + "/../config/queues.conf"
+  configParserQueues = SafeConfigParser()
+  configParserQueues.read(configFileNameQueues)
+
+  # sanity checks for cluster and queue configuration
+  queues = checkConfig(configParserClusters,configParserQueues)
+
+  # set defaults
+  default_settings  = ['buildscript',             'buildqueue','integratescript',             'integratequeue','integratejobs']
+  default_variables = ['herwig-parallel-build.sh', queues[0],  'herwig-parallel-integrate.sh', queues[0],      '1']
+  for i in range(len(default_settings)):
+    try:
+      default_variables[i] = configParser.get('defaults',default_settings[i])
+    except:
+      pass
+
+  # setup command line options & parameters
+  optionParser = OptionParser(usage="%prog [options] infile [setupfile]")
+  optionParser.add_option("-b", "--buildscript", dest="buildscript", default=default_variables[0], help="file name of script that initiates the Herwig++ build step [default: %default]")
+  optionParser.add_option("-i", "--integratescript", dest="integratescript", default=default_variables[2], help="file name of script that initiates the Herwig++ integrate step [default: %default]")
+  optionParser.add_option("-d", "--defaultscripts", action="store_true", dest="defaultscripts", default=False, help="use the default build and integrate scripts from the <Herwig-Parallel>-folder [default: %default]")
+  optionParser.add_option("-j", "--jobs", dest="jobs", default=default_variables[4], help="number of parallel integration jobs that are requested (note: the actual number of integration jobs that are run may be less, depending on the subprocesses) [default: %default]")
+  optionParser.add_option("-n", "--name", dest="run_name", default="ParallelRun", help="name of parallel run [default: %default]")
+  optionParser.add_option("-Q", "--buildqueue", dest="buildqueue", default=default_variables[1], help="local, "+repr(queues).replace('[','').replace(']','').replace("'",'')+" [default: %default]")
+  optionParser.add_option("-q", "--integratequeue", dest="integratequeue", default=default_variables[3], help="local, "+repr(queues).replace('[','').replace(']','').replace("'",'')+" [default: %default]")
+  opts, args = optionParser.parse_args()
+
+  # sanity checks for command line arguments
+  if len(args) < 1 or len(args) > 2:
+    sys.stderr.write("Must specify an unambiguous name of the infile and possibly a setupfile to be used!\n")
+    sys.exit(1)
+  if opts.buildqueue != 'local' and not opts.buildqueue in queues:
+    sys.stderr.write("The specified buildqueue '"+opts.buildqueue+"' was not configured in Herwig-Parallel/config/queues.conf! Please choose a different buildqueue or modify the configuration file.\n")
+    sys.exit(1)
+  if opts.integratequeue != 'local' and not opts.integratequeue in queues:
+    sys.stderr.write("The specified integratequeue '"+opts.integratequeue+"' was not configured in Herwig-Parallel/config/queues.conf! Please choose a different integratequeue or modify the configuration file.\n")
+    sys.exit(1)
+  if opts.buildqueue != 'local' and opts.integratequeue != 'local':
+    if configParserQueues.get(opts.buildqueue,'cluster') != configParserQueues.get(opts.integratequeue,'cluster'):
+      sys.stderr.write("The specified buildqueue and integratequeue belong to different clusters. This behavior is currently not supported. Please select queues on the same cluster!\n")
+      sys.exit(1)
+
+  path = os.path.dirname(os.path.realpath(sys.argv[0]))
+  run_name = opts.run_name
+  infile = args[0]
+  infile_title = infile.split('/')[-1]
+  setupfile = args[1] if len(args)>1 else ''
+  setupfile_title = setupfile.split('/')[-1]
+  buildscript = opts.buildscript
+  buildscript_title = buildscript.split('/')[-1]
+  integratescript = opts.integratescript
+  integratescript_title = integratescript.split('/')[-1]
+  jobs = int(opts.jobs)
+  buildCluster = 'local' if opts.buildqueue == 'local' else configParserQueues.get(opts.buildqueue,'cluster')
+  integrateCluster = 'local' if opts.integratequeue == 'local' else configParserQueues.get(opts.integratequeue,'cluster')
+  cwd = os.getcwd()
+
+  line = '============================================'
+  for i in range(len(run_name)): line += '='
+  print(line)
+  print("HERWIG-PARALLEL: Starting read step for run {}".format(run_name))
+  print(line)
+  print("")
+
+  # check for all necessary files
+  if not os.path.isfile(infile):
+    sys.stderr.write("The specified infile does not exist!\n")
+    sys.exit(1)
+  if setupfile != '' and not os.path.isfile(setupfile):
+    sys.stderr.write("The specified setupfile does not exist!\n")
+    sys.exit(1)
+  if not opts.defaultscripts and not os.path.isfile(buildscript):
+    sys.stderr.write("The specified build-script does not exist!\n")
+    sys.exit(1)
+  if not opts.defaultscripts and not os.path.isfile(integratescript):
+    sys.stderr.write("The specified integrate-script does not exist!\n")
+    sys.exit(1)
+  if opts.defaultscripts:
+    if not os.path.isfile(path+'/../misc/'+buildscript_title):
+      sys.stderr.write("The default build-script does not exist!\n")
+      sys.exit(1)
+    if not os.path.isfile(path+'/../misc/'+integratescript_title):
+      sys.stderr.write("The default integrate-script does not exist!\n")
+      sys.exit(1)
+
+  # find out generator name
   try:
-    default_variables[i] = configParser.get('defaults',default_settings[i])
+    grep = check_output("grep 'saverun' "+infile, shell=True).split('\n')
   except:
-    pass
-
-# setup command line options & parameters
-optionParser = OptionParser(usage="%prog [options] infile [setupfile]")
-optionParser.add_option("-b", "--buildscript", dest="buildscript", default=default_variables[1], help="file name of script that initiates the Herwig++ build step [default: %default]")
-optionParser.add_option("-i", "--integratescript", dest="integratescript", default=default_variables[3], help="file name of script that initiates the Herwig++ integrate step [default: %default]")
-optionParser.add_option("-d", "--defaultscripts", action="store_true", dest="defaultscripts", default=False, help="use the default build and integrate scripts from the <Herwig-Parallel>-folder [default: %default]")
-optionParser.add_option("-g", "--generator", dest="generator", default=default_variables[0], help="name of generator (= runfile name without file extension) [default: %default]")
-optionParser.add_option("-j", "--jobs", dest="jobs", default=default_variables[5], help="number of parallel integration jobs that are requested (note: the actual number of integration jobs that are run may be less, depending on the subprocesses) [default: %default]")
-optionParser.add_option("-n", "--name", dest="run_name", default="ParallelRun", help="name of parallel run [default: %default]")
-optionParser.add_option("-Q", "--buildqueue", dest="buildqueue", default=default_variables[2], help=repr(queues).replace('[','').replace(']','').replace("'",'')+" [default: %default]")
-optionParser.add_option("-q", "--integratequeue", dest="integratequeue", default=default_variables[4], help=repr(queues).replace('[','').replace(']','').replace("'",'')+" [default: %default]")
-opts, args = optionParser.parse_args()
-
-# sanity checks for command line arguments
-if len(args) < 1 or len(args) > 2:
-  sys.stderr.write("Must specify an unambiguous name of the infile and possibly a setupfile to be used!\n")
-  sys.exit(1)
-if not opts.buildqueue in queues:
-  sys.stderr.write("The specified buildqueue '"+opts.buildqueue+"' was not configured in Herwig-Parallel/config/queues.conf! Please choose a different buildqueue or modify the configuration file.\n")
-  sys.exit(1)
-if not opts.integratequeue in queues:
-  sys.stderr.write("The specified integratequeue '"+opts.integratequeue+"' was not configured in Herwig-Parallel/config/queues.conf! Please choose a different integratequeue or modify the configuration file.\n")
-  sys.exit(1)
-if configParserQueues.get(opts.buildqueue,'cluster') != configParserQueues.get(opts.integratequeue,'cluster'):
-  sys.stderr.write("The specified buildqueue and integratequeue belong to different clusters. This behavior is currently not supported. Please select queues on the same cluster!\n")
-  sys.exit(1)
-
-path = os.path.dirname(os.path.realpath(sys.argv[0]))
-run_name = opts.run_name
-infile = args[0]
-infile_title = infile.split('/')[-1]
-setupfile = args[1] if len(args)>1 else ''
-setupfile_title = setupfile.split('/')[-1]
-buildscript = opts.buildscript
-buildscript_title = buildscript.split('/')[-1]
-integratescript = opts.integratescript
-integratescript_title = integratescript.split('/')[-1]
-jobs = int(opts.jobs)
-runfile = opts.generator+'.run'
-cluster = configParserQueues.get(opts.buildqueue,'cluster')
-cwd = os.getcwd()
-
-line = '============================================'
-for i in range(len(run_name)): line += '='
-print(line)
-print("HERWIG-PARALLEL: Starting read step for run {}".format(run_name))
-print(line)
-print("")
-
-# check for all necessary files
-if not os.path.isfile(infile):
-  sys.stderr.write("The specified infile does not exist!\n")
-  sys.exit(1)
-if setupfile != '' and not os.path.isfile(setupfile):
-  sys.stderr.write("The specified setupfile does not exist!\n")
-  sys.exit(1)
-if not opts.defaultscripts and not os.path.isfile(buildscript):
-  sys.stderr.write("The specified build-script does not exist!\n")
-  sys.exit(1)
-if not opts.defaultscripts and not os.path.isfile(integratescript):
-  sys.stderr.write("The specified integrate-script does not exist!\n")
-  sys.exit(1)
-if opts.defaultscripts:
-  if not os.path.isfile(path+'/../misc/'+buildscript_title):
-    sys.stderr.write("The default build-script does not exist!\n")
+    sys.stderr.write("The event generator is not saved in the infile.\n")
+    sys.stderr.write("Please include a 'saverun' statement at the end of the infile.\n\n")
     sys.exit(1)
-  if not os.path.isfile(path+'/../misc/'+integratescript_title):
-    sys.stderr.write("The default integrate-script does not exist!\n")
+  i = 0
+  for line in grep:
+    cmd = line.split('#')[0].split()
+    if len(cmd) == 3 and cmd[0] == 'saverun':
+      i += 1
+      generator = cmd[1].strip()
+      runfile = generator+'.run'
+  if i == 0:
+    sys.stderr.write("The event generator is not saved in the infile.\n")
+    sys.stderr.write("Please include a 'saverun' statement at the end of the infile.\n\n")
     sys.exit(1)
+  elif i > 1:
+    sys.stderr.write("Multiple occurrences of the 'saverun' statement found in the infile.\n")
+    sys.stderr.write("Only the last occurrence is considered for your run.\n\n")
 
-# set up folder structure
-if not os.path.exists(run_name):
-  os.makedirs(run_name)
-else:
-  sys.stderr.write("WARNING: Run already exists!\n")
-  sys.exit(1)
-if not os.path.exists(run_name+'/read'):
-  os.makedirs(run_name+'/read')
-
-f_run_info = open(run_name+"/run.info","w")
-f_run_info.write(cluster+'\n')
-f_run_info.write(cwd+'/'+infile+'\n')
-f_run_info.write('\n' if setupfile == '' else cwd+'/'+setupfile+'\n')
-f_run_info.write(opts.generator+'\n')
-f_run_info.flush()
-
-# copy infiles to read-folder
-shutil.copyfile(infile, run_name+'/read/'+infile_title)
-if setupfile != '': shutil.copyfile(setupfile, run_name+'/read/'+setupfile_title)
-if opts.defaultscripts:
-  shutil.copyfile(path+'/../misc/'+buildscript_title, run_name+'/read/'+buildscript_title)
-else:
-  shutil.copyfile(buildscript, run_name+'/read/'+buildscript_title)
-call('chmod u+x '+run_name+'/read/'+buildscript_title, shell=True) # set execute permission (lost during copying)
-if opts.defaultscripts:
-  shutil.copyfile(path+'/../misc/'+integratescript_title, run_name+'/read/'+integratescript_title)
-else:
-  shutil.copyfile(integratescript, run_name+'/read/'+integratescript_title)
-call('chmod u+x '+run_name+'/read/'+integratescript_title, shell=True) # set execute permission (lost during copying)
-
-# copy raw infiles to in-folder
-if not os.path.exists(run_name+'/in'):
-  os.makedirs(run_name+'/in')
-  shutil.copyfile(infile, run_name+'/in/'+infile_title)
-  if setupfile != '': shutil.copyfile(setupfile, run_name+'/in/'+setupfile_title)
-  shutil.copyfile(run_name+'/read/'+buildscript_title, run_name+'/in/'+buildscript_title)
-  shutil.copyfile(run_name+'/read/'+integratescript_title, run_name+'/in/'+integratescript_title)
-
-# start build script
-f_run_info.write((cwd+'/' if not buildscript.startswith('/') else '')+buildscript+'\n')
-f_run_log = open(run_name+'/run.log','a')
-os.chdir(run_name+'/read')
-call("sed -i 's/@INFILE@/"+infile_title+"/' "+buildscript_title, shell=True)
-call("sed -i 's/@JOBS@/"+str(jobs)+"/' "+buildscript_title, shell=True)
-command = configParserQueues.get(opts.buildqueue, 'submit').replace('@SCRIPT@',buildscript_title)
-print("starting build job: {}".format(command))
-output = check_output(command, shell=True).strip().replace('\n',' ')
-print(" > {}\n".format(output))
-jobid = check_output("echo '"+output+"' | "+configParserClusters.get(configParserQueues.get(opts.buildqueue,'cluster'),'jobid'), shell=True)
-f_run_info.write(jobid+'\n')
-f_run_info.flush()
-f_run_log.write(datetime.datetime.now().isoformat(' ')+': herwig-parallel-read: starting build job with id {}\n'.format(jobid))
-f_run_log.flush()
-
-# wait for completion of build step
-iCount = 0
-while not (os.path.isfile(runfile)):
-  if iCount % 5 == 0:
-    sys.stdout.write('\r\033[Kwaiting for completion of build-step')
+  # set up folder structure
+  if not os.path.exists(run_name):
+    os.makedirs(run_name)
   else:
-    sys.stdout.write('.')
-  sys.stdout.flush()
-  time.sleep(int(1))
-  iCount += 1
-integrationJobs = len(glob.glob('Herwig/Build/integrationJob*'))
-print("\n > done: prepared {} integration job{}\n".format(integrationJobs, 's' if integrationJobs > 1 else ''))
+    sys.stderr.write("WARNING: Run already exists!\n")
+    sys.exit(1)
+  if not os.path.exists(run_name+'/read'):
+    os.makedirs(run_name+'/read')
 
-# start integrate step/job(s)
-f_run_info.write((cwd+'/' if not integratescript.startswith('/') else '')+integratescript+'\n')
-integrationsJobIDs = []
-for job in range(1,integrationJobs+1):
-  if '.sh' in integratescript_title:
-    script = integratescript_title.replace('.sh','.job'+str(job-1)+'.sh')
-  else:
-    script = integratescript_title+str(job-1)
-  shutil.copyfile(integratescript_title,script)
-  call('chmod u+x '+script, shell=True) # set execute permission (lost during copying)
-  call("sed -i 's/@RUNFILE@/"+runfile+"/' "+script, shell=True)
-  call("sed -i 's/@JOBID@/"+str(job-1)+"/' "+script, shell=True)
-  call("sed -i 's/@SETUPFILE@/"+('' if setupfile=='' else '--setupfile='+setupfile_title)+"/' "+script, shell=True)
-  command = configParserQueues.get(opts.integratequeue, 'submit').replace('@SCRIPT@',script)
-  print("starting integrate job #{}: {}".format(job,command))
-  output = check_output(command, shell=True).strip().replace('\n',' ')
-  print(" > {}\n".format(output))
-  jobid = check_output("echo '"+output+"' | "+configParserClusters.get(configParserQueues.get(opts.integratequeue,'cluster'),'jobid'), shell=True)
-  integrationsJobIDs.append(jobid)
-  f_run_info.write(jobid+' ')
+  f_run_info = open(run_name+"/run.info","w")
+  f_run_info.write(cwd+'/'+infile+'\n')
+  f_run_info.write('\n' if setupfile == '' else cwd+'/'+setupfile+'\n')
+  f_run_info.write(generator+'\n')
   f_run_info.flush()
-  f_run_log.write(datetime.datetime.now().isoformat(' ')+': herwig-parallel-read: starting integrate job #{} with id {}\n'.format(job,jobid))
+
+  # copy infiles to read-folder
+  shutil.copyfile(infile, run_name+'/read/'+infile_title)
+  if setupfile != '': shutil.copyfile(setupfile, run_name+'/read/'+setupfile_title)
+  if opts.defaultscripts:
+    shutil.copyfile(path+'/../misc/'+buildscript_title, run_name+'/read/'+buildscript_title)
+  else:
+    shutil.copyfile(buildscript, run_name+'/read/'+buildscript_title)
+  call('chmod u+x '+run_name+'/read/'+buildscript_title, shell=True) # set execute permission (lost during copying)
+  if opts.defaultscripts:
+    shutil.copyfile(path+'/../misc/'+integratescript_title, run_name+'/read/'+integratescript_title)
+  else:
+    shutil.copyfile(integratescript, run_name+'/read/'+integratescript_title)
+  call('chmod u+x '+run_name+'/read/'+integratescript_title, shell=True) # set execute permission (lost during copying)
+
+  # copy raw infiles to in-folder
+  if not os.path.exists(run_name+'/in'):
+    os.makedirs(run_name+'/in')
+    shutil.copyfile(infile, run_name+'/in/'+infile_title)
+    if setupfile != '': shutil.copyfile(setupfile, run_name+'/in/'+setupfile_title)
+    shutil.copyfile(run_name+'/read/'+buildscript_title, run_name+'/in/'+buildscript_title)
+    shutil.copyfile(run_name+'/read/'+integratescript_title, run_name+'/in/'+integratescript_title)
+
+  # start build script
+  f_run_info.write((cwd+'/' if not buildscript.startswith('/') else '')+buildscript+'\n')
+  f_run_info.write(buildCluster+'\n')
+  f_run_log = open(run_name+'/run.log','a')
+  os.chdir(run_name+'/read')
+  call("sed -i 's/@INFILE@/"+infile_title+"/' "+buildscript_title, shell=True)
+  call("sed -i 's/@JOBS@/"+str(jobs)+"/' "+buildscript_title, shell=True)
+  if opts.buildqueue == 'local': # run on local machine
+    buildLog = open('build.log','w')
+    print("starting build job")
+    buildProc = Popen(cwd+'/'+run_name+'/read/'+buildscript_title,shell=True,stdout=buildLog,stderr=buildLog)
+    jobid = str(buildProc.pid)
+    print(" > starting job with pid {}\n".format(jobid))
+  else: # run on cluster
+    command = configParserQueues.get(opts.buildqueue, 'submit').replace('@SCRIPT@',buildscript_title)
+    print("starting build job: {}".format(command))
+    output = check_output(command, shell=True).strip().replace('\n',' ')
+    print(" > {}\n".format(output))
+    jobid = check_output("echo '"+output+"' | "+configParserClusters.get(configParserQueues.get(opts.buildqueue,'cluster'),'jobid'), shell=True)
+  f_run_info.write(jobid+'\n')
+  f_run_info.flush()
+  f_run_log.write(datetime.datetime.now().isoformat(' ')+': herwig-parallel-read: starting build job with id {}\n'.format(jobid))
   f_run_log.flush()
-f_run_info.write('\n')
-f_run_info.close()
 
-# wait for completion of integrate steps
-iCount = 0
-finishedIntegrationStep = False
-while not finishedIntegrationStep:
-  # for each step check for the existence of the grid files as indication of the completion of the integration jobs
-  finishedIntegrationJobs = 0
-  for job in range(0,integrationJobs):
-    if os.path.isfile('Herwig/'+opts.generator+('' if setupfile=='' else '/'+setupfile_title)+'/integrationJob'+str(job)+'/HerwigGrids.xml'):
-      finishedIntegrationJobs += 1
-  finishedIntegrationStep = (finishedIntegrationJobs == integrationJobs)
-###  # additionally generate and check job list every now and then to see if jobs are still queued or running
-###  if iCount % 20 == 0 or finishedIntegrationStep:
-###    queuedIntegrationJobs = 0
-###    runningIntegrationJobs = 0
-###    call(configParserClusters.get(cluster,'joblist')+' > '+'../tmp', shell=True)
-###    ansi_escape = re.compile(r'\x1b[^m]*m')          # remove ANSI color escape characters
-###    for job in range(0,integrationJobs):
-###      status = ansi_escape.sub('', check_output('grep '+integrationsJobIDs[job]+' '+'../tmp | ' + configParserClusters.get(cluster,'status'), shell=True))
-###      if status == configParserClusters.get(cluster,'statusQueued'):
-###        queuedIntegrationJobs += 1
-###      elif status == configParserClusters.get(cluster,'statusRunning'):
-###        runningIntegrationJobs += 1
-###    os.remove('../tmp')
-  # generate output
-  sys.stdout.write('\r\033[Kwaiting for completion of all integration jobs ({}/{} integration jobs completed)'.format(finishedIntegrationJobs, integrationJobs))
-  for i in range(iCount % 5): sys.stdout.write('.')
-  sys.stdout.flush()
-  time.sleep(int(1))
-  iCount += 1
+  # wait for completion of build step
+  iCount = 0
+  while not (os.path.isfile(runfile)):
+    if iCount % 5 == 0:
+      sys.stdout.write('\r\033[Kwaiting for completion of build-step')
+    else:
+      sys.stdout.write('.')
+    sys.stdout.flush()
+    time.sleep(int(1))
+    iCount += 1
+  integrationJobs = len(glob.glob('Herwig/Build/integrationJob*'))
+  print("\n > done: prepared {} integration job{}\n".format(integrationJobs, 's' if integrationJobs > 1 else ''))
 
-print('\n > done\n')
-f_run_log.write(datetime.datetime.now().isoformat(' ')+': herwig-parallel-read: completed all integration jobs\n')
-f_run_log.flush()
+  # start integrate step/job(s)
+  f_run_info.write((cwd+'/' if not integratescript.startswith('/') else '')+integratescript+'\n')
+  f_run_info.write(integrateCluster+'\n')
+  integrateLog = []
+  integrateProc = []
+  integrationsJobIDs = []
+  for job in range(1,integrationJobs+1):
+    if '.sh' in integratescript_title:
+      script = integratescript_title.replace('.sh','.job'+str(job-1)+'.sh')
+    else:
+      script = integratescript_title+str(job-1)
+    shutil.copyfile(integratescript_title,script)
+    call('chmod u+x '+script, shell=True) # set execute permission (lost during copying)
+    call("sed -i 's/@RUNFILE@/"+runfile+"/' "+script, shell=True)
+    call("sed -i 's/@JOBID@/"+str(job-1)+"/' "+script, shell=True)
+    call("sed -i 's/@SETUPFILE@/"+('' if setupfile=='' else '--setupfile='+setupfile_title)+"/' "+script, shell=True)
+    if opts.integratequeue == 'local':
+      integrateLog.append(open('integrate.job'+str(job-1)+'.log','w'))
+      print("starting integrate job #{}".format(job))
+      integrateProc.append(Popen(cwd+'/'+run_name+'/read/'+script,shell=True,stdout=integrateLog[job-1],stderr=integrateLog[job-1]))
+      jobid = str(integrateProc[job-1].pid)
+      print(" > starting job with pid {}\n".format(jobid))
+    else:
+      command = configParserQueues.get(opts.integratequeue, 'submit').replace('@SCRIPT@',script)
+      print("starting integrate job #{}: {}".format(job,command))
+      output = check_output(command, shell=True).strip().replace('\n',' ')
+      print(" > {}\n".format(output))
+      jobid = check_output("echo '"+output+"' | "+configParserClusters.get(configParserQueues.get(opts.integratequeue,'cluster'),'jobid'), shell=True)
+    integrationsJobIDs.append(jobid)
+    f_run_info.write(jobid+' ')
+    f_run_info.flush()
+    f_run_log.write(datetime.datetime.now().isoformat(' ')+': herwig-parallel-read: starting integrate job #{} with id {}\n'.format(job,jobid))
+    f_run_log.flush()
+  f_run_info.write('\n')
+  f_run_info.close()
 
-# merge grids
-command = configParser.get('tools','mergeGrids')+' '+opts.generator+('' if setupfile=='' else ' --setupfile='+setupfile_title)
-print("merging grids: {}".format(command))
-output = check_output(command, shell=True)
-print(" > {}\n".format('done' if output == '' else output))
-f_run_log.write(datetime.datetime.now().isoformat(' ')+': herwig-parallel-read: merged grids\n')
-f_run_log.close()
+  # wait for completion of integrate steps
+  iCount = 0
+  finishedIntegrationStep = False
+  while not finishedIntegrationStep:
+    # for each step check for the existence of the grid files as indication of the completion of the integration jobs
+    finishedIntegrationJobs = 0
+    for job in range(0,integrationJobs):
+      if os.path.isfile('Herwig/'+generator+('' if setupfile=='' else '/'+setupfile_title)+'/integrationJob'+str(job)+'/HerwigGrids.xml'):
+        finishedIntegrationJobs += 1
+    finishedIntegrationStep = (finishedIntegrationJobs == integrationJobs)
+  ###  # additionally generate and check job list every now and then to see if jobs are still queued or running
+  ###  if iCount % 20 == 0 or finishedIntegrationStep:
+  ###    queuedIntegrationJobs = 0
+  ###    runningIntegrationJobs = 0
+  ###    call(configParserClusters.get(cluster,'joblist')+' > '+'../tmp', shell=True)
+  ###    ansi_escape = re.compile(r'\x1b[^m]*m')          # remove ANSI color escape characters
+  ###    for job in range(0,integrationJobs):
+  ###      status = ansi_escape.sub('', check_output('grep '+integrationsJobIDs[job]+' '+'../tmp | ' + configParserClusters.get(cluster,'status'), shell=True))
+  ###      if status == configParserClusters.get(cluster,'statusQueued'):
+  ###        queuedIntegrationJobs += 1
+  ###      elif status == configParserClusters.get(cluster,'statusRunning'):
+  ###        runningIntegrationJobs += 1
+  ###    os.remove('../tmp')
+    # generate output
+    sys.stdout.write('\r\033[Kwaiting for completion of all integration jobs ({}/{} jobs completed)'.format(finishedIntegrationJobs, integrationJobs))
+    for i in range(iCount % 5): sys.stdout.write('.')
+    sys.stdout.flush()
+    time.sleep(int(1))
+    iCount += 1
+
+  print('\n > done\n')
+  f_run_log.write(datetime.datetime.now().isoformat(' ')+': herwig-parallel-read: completed all integration jobs\n')
+  f_run_log.flush()
+
+  # merge grids
+  command = configParser.get('tools','mergeGrids')+' '+generator+('' if setupfile=='' else ' --setupfile='+setupfile_title)
+  print("merging grids: {}".format(command))
+  output = check_output(command, shell=True)
+  print(" > {}\n".format('done' if output == '' else output))
+  f_run_log.write(datetime.datetime.now().isoformat(' ')+': herwig-parallel-read: merged grids\n')
+  f_run_log.close()
+
+
+### ------------------------------------------
+### remove '^C' outpt when exiting with Ctrl+C
+### ------------------------------------------
+def exit():
+  sys.stderr.write("\r\033[K")
+  sys.stderr.write("Exiting after keyboard interrupt...\n\n")
+  sys.exit(1)
+
+
+### -----------------
+### call main program
+### -----------------
+if __name__ == '__main__':
+  main()

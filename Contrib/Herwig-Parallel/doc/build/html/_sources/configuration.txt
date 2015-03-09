@@ -26,7 +26,6 @@ General Configuration File: ``herwig-parallel.conf``
     ## --------------------
     ## herwig-parallel-read
     ## --------------------
-    generator       = Herwig
     buildscript     = herwig-parallel-build.sh
     buildqueue      = ITP-short
     integratescript = herwig-parallel-integrate.sh

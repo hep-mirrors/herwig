@@ -46,14 +46,6 @@
     </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Frequently Asked Questions</a><ul>
-<li><a class="reference internal" href="#why-does-herwig-parallel-read-start-the-build-job-alright-but-wait-forever-for-its-completion-and-never-start-the-integrate-job-s">Why does herwig-parallel-read start the build job alright but wait forever for its completion and never start the integrate job(s)?</a></li>
-</ul>
-</li>
-</ul>
-
   <h4>Previous topic</h4>
   <p class="topless"><a href="issues.html"
                         title="previous chapter">Caveats, Bugs and Known Issues</a></p>
@@ -88,17 +80,10 @@
 <div class="contents topic" id="contents">
 <p class="topic-title first">Contents</p>
 <ul class="simple">
-<li><a class="reference internal" href="#frequently-asked-questions" id="id1">Frequently Asked Questions</a><ul>
-<li><a class="reference internal" href="#why-does-herwig-parallel-read-start-the-build-job-alright-but-wait-forever-for-its-completion-and-never-start-the-integrate-job-s" id="id2">Why does herwig-parallel-read start the build job alright but wait forever for its completion and never start the integrate job(s)?</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#frequently-asked-questions" id="id1">Frequently Asked Questions</a></li>
 </ul>
 </div>
-<div class="section" id="why-does-herwig-parallel-read-start-the-build-job-alright-but-wait-forever-for-its-completion-and-never-start-the-integrate-job-s">
-<h2><a class="toc-backref" href="#id2">Why does herwig-parallel-read start the build job alright but wait forever for its completion and never start the integrate job(s)?</a><a class="headerlink" href="#why-does-herwig-parallel-read-start-the-build-job-alright-but-wait-forever-for-its-completion-and-never-start-the-integrate-job-s" title="Permalink to this headline">¶</a></h2>
-<p>The condition for the successful completion of the build step and the start of the integrate step is the existence of the runfile <tt class="docutils literal"><span class="pre">&lt;generator</span> <span class="pre">name&gt;.run</span></tt>. The name of the generator is set in the Herwig++ infile by a directive such as <tt class="docutils literal"><span class="pre">saverun</span> <span class="pre">LHC-Matchbox</span> <span class="pre">LHCGenerator</span></tt> which in this case uses <tt class="docutils literal"><span class="pre">LHC-Matchbox</span></tt> as the name of the generator and subsequently names the runfile <tt class="docutils literal"><span class="pre">LHC-Matchbox.run</span></tt>. In order for Herwig-Parallel to work properly you have to call <tt class="docutils literal"><span class="pre">herwig-parallel-read</span></tt> with the option <tt class="docutils literal"><span class="pre">-g</span> <span class="pre">LHC-Matchbox</span></tt> in this particular case. Please check your Herwig++ infile to find out the appropriate generator name.</p>
-<p>In case you are using the command <tt class="docutils literal"><span class="pre">herwig-parallel</span></tt> you have to specify the correct generator name in the run definition file (such as <tt class="docutils literal"><span class="pre">MyRun.conf</span></tt>, see section <a class="reference internal" href="batch.html#batch"><em>Use Herwig-Parallel in Batch Mode</em></a> for further details).</p>
-</div>
+<p>Any questions or commonly found problems will be included here.</p>
 </div>
 
 

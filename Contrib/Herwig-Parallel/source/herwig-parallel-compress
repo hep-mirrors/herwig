@@ -4,13 +4,14 @@
 ## Herwig-Parallel
 ## --------------------
 ## Author: Daniel Rauch
-## Date:   25 Feb 2015
+## Date:   04 Mar 2015
 ## --------------------
 
 import sys
 import os
 import re
 import shutil
+import signal
 from subprocess import call
 from subprocess import check_output
 from ConfigParser import SafeConfigParser
@@ -18,86 +19,139 @@ from optparse import OptionParser
 from hwp import checkConfig
 from hwp import assertRunIsNotCompressed
 
-# load cluster configuration file
-configFileNameClusters = os.path.dirname(os.path.realpath(sys.argv[0])) + "/../config/clusters.conf"
-configParserClusters = SafeConfigParser()
-configParserClusters.read(configFileNameClusters)
 
-# load queue configuration file
-configFileNameQueues = os.path.dirname(os.path.realpath(sys.argv[0])) + "/../config/queues.conf"
-configParserQueues = SafeConfigParser()
-configParserQueues.read(configFileNameQueues)
+### ------------
+### catch Ctrl+C
+### ------------
+signal.signal(signal.SIGINT, lambda x,y: exit())
 
-# sanity checks for cluster and queue configuration
-checkConfig(configParserClusters,configParserQueues)
 
-# setup command line options & parameters
-parser = OptionParser(usage="%prog runname")
-opts, args = parser.parse_args()
+### ------------
+### main program
+### ------------
+def main():
 
-if len(args) <> 1:
-  sys.stderr.write("Please specify an unambiguous name of the parallel run that is to be compressed!\n")
-  sys.exit(1)
+  # load cluster configuration file
+  configFileNameClusters = os.path.dirname(os.path.realpath(sys.argv[0])) + "/../config/clusters.conf"
+  configParserClusters = SafeConfigParser()
+  configParserClusters.read(configFileNameClusters)
 
-run_name = args[0].strip('/')
-cwd = os.getcwd()
+  # load queue configuration file
+  configFileNameQueues = os.path.dirname(os.path.realpath(sys.argv[0])) + "/../config/queues.conf"
+  configParserQueues = SafeConfigParser()
+  configParserQueues.read(configFileNameQueues)
 
-# check if run exists
-if not os.path.exists(run_name):
-  sys.stderr.write("The specified run "+run_name+" does not exist!\n")
-  sys.exit(1)
+  # sanity checks for cluster and queue configuration
+  checkConfig(configParserClusters,configParserQueues)
 
-assertRunIsNotCompressed(run_name)
+  # setup command line options & parameters
+  parser = OptionParser(usage="%prog runname")
+  opts, args = parser.parse_args()
 
-line = '================================='
-for i in range(len(run_name)): line += '='
-print(line)
-print("HERWIG-PARALLEL: Compressing run {}".format(run_name))
-print(line)
-print("")
-
-# read required information from 'run.info' file
-jobs = []
-job_ids = []
-f_run_info = open(run_name+'/run.info','r')
-l = 0
-for line in f_run_info:
-  l += 1
-  if l == 1: cluster = line.replace('\n','')
-  elif l == 3: setupfile_title = line.replace('\n','').split('/')[-1]
-  elif l == 4:
-    generator = line.replace('\n','')
-  elif l > 11:
-    tmp = line.replace('\n','').split()
-    job = int(tmp[1].replace('#','').replace(':',''))
-    jobs.append(job)
-    job_ids.append(tmp[3])
-f_run_info.close()
-
-sys.stdout.write("checking statuses of individual jobs... ")
-sys.stdout.flush()
-compress_jobs = ""
-call(configParserClusters.get(cluster,'joblist')+' > '+run_name+'/tmp', shell=True)
-ansi_escape = re.compile(r'\x1b[^m]*m')          # remove ANSI color escape characters
-for j in range(len(jobs)):
-  status = ansi_escape.sub('', check_output('grep '+job_ids[j]+' '+run_name+'/tmp | ' + configParserClusters.get(cluster,'status'), shell=True))
-  if status == configParserClusters.get(cluster,'statusRunning') or status == configParserClusters.get(cluster,'statusQueued'):
-    print("\njob #{} with id {}: job still running, exiting...".format(jobs[j], job_ids[j]))
+  if len(args) <> 1:
+    sys.stderr.write("Please specify an unambiguous name of the parallel run that is to be compressed!\n")
     sys.exit(1)
-  compress_jobs += str(jobs[j])+" "
-os.remove(run_name+'/tmp')
-print('done')
 
-os.chdir(run_name)
-sys.stdout.write('compressing jobs... ')
-sys.stdout.flush()
-output = check_output('tar -zcf Jobs.tar.gz '+compress_jobs, shell=True)
-if output == '':
+  run_name = args[0].strip('/')
+  cwd = os.getcwd()
+
+  # check if run exists
+  if not os.path.exists(run_name):
+    sys.stderr.write("The specified run "+run_name+" does not exist!\n")
+    sys.exit(1)
+
+  assertRunIsNotCompressed(run_name)
+
+  line = '================================='
+  for i in range(len(run_name)): line += '='
+  print(line)
+  print("HERWIG-PARALLEL: Compressing run {}".format(run_name))
+  print(line)
+  print("")
+
+  # read required information from 'run.info' file
+  jobs = []
+  job_ids = []
+  queues = []
+  clusters = []
+  f_run_info = open(run_name+'/run.info','r')
+  l = 0
+  for line in f_run_info:
+    l += 1
+    if l == 2: setupfile_title = line.replace('\n','').split('/')[-1]
+    elif l == 3:
+      generator = line.replace('\n','')
+    elif l == 5: cluster = line.replace('\n','')
+    elif l > 12:
+      data = line.replace('\n','').split()
+      jobs.append(int(data[1].replace('#','').replace(':','')))
+      queues.append(data[2])
+      job_ids.append(data[3])
+      cluster = 'local' if data[2] == 'local' else configParserQueues.get(data[2],'cluster')
+      if not cluster in clusters:
+        clusters.append(cluster)
+  f_run_info.close()
+
+  # get joblist(s)
+  sys.stdout.write('obtaining joblist'+('s' if len(clusters)>1 else '')+'...')
+  sys.stdout.flush()
+  for cluster in clusters:
+    try:
+      if cluster == 'local':
+        call('ps -al > '+run_name+'/joblist.'+cluster, shell=True)
+      else:
+        call(configParserClusters.get(cluster,'joblist')+' > '+run_name+'/joblist.'+cluster, shell=True)
+    except:
+      sys.exit(1)
+  ansi_escape = re.compile(r'\x1b[^m]*m')          # remove ANSI color escape characters
+  print('\n > done\n')
+
+  sys.stdout.write("checking statuses of individual jobs... ")
+  sys.stdout.flush()
+  compress_jobs = ""
+  for j in range(len(jobs)):
+    if queues[j] == 'local':
+      try:
+        data = check_output('grep '+job_ids[j]+' '+run_name+'/joblist.local', shell=True)
+      except:
+        data = '' # job already finished
+      if data != '' and not '<defunct>' in data:
+        print("\ncannot compress run: job #{} with id {} is still running\n".format(jobs[j], job_ids[j]))
+        sys.exit()
+    else:
+      status = ansi_escape.sub('', check_output('grep '+job_ids[j]+' '+run_name+'/'+configParserQueues.get(queues[j],'cluster')+' | ' + configParserClusters.get(cluster,'status'), shell=True))
+      if status == configParserClusters.get(cluster,'statusRunning') or status == configParserClusters.get(cluster,'statusQueued'):
+        print("\ncannot compress run: job #{} with id {} is still running\n".format(jobs[j], job_ids[j]))
+        sys.exit(1)
+    compress_jobs += str(jobs[j])+" "
+  for cluster in clusters:
+    os.remove(run_name+'/joblist.'+cluster)
   print('done')
-  call('rm -rf '+compress_jobs, shell=True)
-  print('')
-else:
-  print('error')
-  print('{}'.format(output))
-  print('exiting...')
+
+  sys.stdout.write('compressing jobs... ')
+  sys.stdout.flush()
+  output = check_output('cd '+run_name+'; tar -zcf Jobs.tar.gz '+compress_jobs, shell=True)
+  if output == '':
+    print('done')
+    call('cd '+run_name+'; rm -rf '+compress_jobs, shell=True)
+    print('')
+  else:
+    print('error')
+    print('{}'.format(output))
+    print('exiting...')
+    sys.exit(1)
+
+
+### ------------------------------------------
+### remove '^C' outpt when exiting with Ctrl+C
+### ------------------------------------------
+def exit():
+  sys.stderr.write("\r\033[K")
   sys.exit(1)
+
+
+### -----------------
+### call main program
+### -----------------
+if __name__ == '__main__':
+  main()

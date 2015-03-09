@@ -4,7 +4,7 @@
 ## Herwig-Parallel
 ## --------------------
 ## Author: Daniel Rauch
-## Date:   25 Feb 2015
+## Date:   04 Mar 2015
 ## --------------------
 
 import sys
@@ -13,6 +13,7 @@ import shutil
 import time
 import datetime
 import re
+import signal
 from subprocess import call
 from subprocess import check_output
 from math import sqrt
@@ -20,316 +21,386 @@ from ConfigParser import SafeConfigParser
 from optparse import OptionParser
 from hwp import checkConfig
 
-# load Herwig-Parallel configuration file
-configFileName = os.path.dirname(os.path.realpath(sys.argv[0])) + "/../config/herwig-parallel.conf"
-configParser = SafeConfigParser()
-configParser.read(configFileName)
 
-# load cluster configuration file
-configFileNameClusters = os.path.dirname(os.path.realpath(sys.argv[0])) + "/../config/clusters.conf"
-configParserClusters = SafeConfigParser()
-configParserClusters.read(configFileNameClusters)
+### ------------
+### catch Ctrl+C
+### ------------
+signal.signal(signal.SIGINT, lambda x,y: exit())
 
-# load queue configuration file
-configFileNameQueues = os.path.dirname(os.path.realpath(sys.argv[0])) + "/../config/queues.conf"
-configParserQueues = SafeConfigParser()
-configParserQueues.read(configFileNameQueues)
 
-# sanity checks for cluster and queue configuration
-queues = checkConfig(configParserClusters,configParserQueues)
+### ------------
+### main program
+### ------------
+def main():
 
-# set defaults
-default_settings  = ['builtin-analysis','hepmc-rivet-analyses']
-default_variables = [ '',               '']
-for i in range(len(default_settings)):
-  try:
-    default_variables[i] = configParser.get('defaults',default_settings[i])
-  except:
-    pass
+  # load Herwig-Parallel configuration file
+  configFileName = os.path.dirname(os.path.realpath(sys.argv[0])) + "/../config/herwig-parallel.conf"
+  configParser = SafeConfigParser()
+  configParser.read(configFileName)
 
-# setup command line options & parameters
-parser = OptionParser(usage="%prog [options] runname")
-parser.add_option("-b", "--builtin-analysis", dest="builtin_analysis", default=default_variables[0], help="additional built-in analysis that should be included in the combination [default: %default]")
-parser.add_option("-r", "--no-rivet", action="store_false", dest="rivet", default=True, help="veto combination of Rivet analyses [default: combine Rivet analyses if present]")
-parser.add_option("-m", "--hepmc", dest="hepmc", default=default_variables[1], help="list of Rivet analyses that the HepMC outfiles should be passed through [default: combine HepMC event files if present]")
-parser.add_option("-e", "--exclude-jobs", dest="exclude", default='', help="space-separated list of job numbers and/or job number ranges (e.g. '1 3 5..8') to be excluded from the combination")
-parser.add_option("-i", "--include-jobs", dest="include", default='', help="space-separated list of job numbers and/or job number ranges (e.g. '1 3 5..8') to be included in the combination")
-parser.add_option("-o", "--output-folder", dest="outfolder", default='out', help="name of the folder where the combined result is to be stored [default: %default]")
-parser.add_option("-p", "--plot", action="store_true", dest="plot", default=False, help="make plots [default: do not make plots]")
-parser.add_option("-q", "--queue", dest="queue", default='', help="do combination on cluster to avoid load on login nodes [default: run on local machine], queues: "+repr(queues).replace('[','').replace(']','').replace("'",''))
-opts, args = parser.parse_args()
+  # load cluster configuration file
+  configFileNameClusters = os.path.dirname(os.path.realpath(sys.argv[0])) + "/../config/clusters.conf"
+  configParserClusters = SafeConfigParser()
+  configParserClusters.read(configFileNameClusters)
 
-exclude_jobs = []
-include_jobs = []
-for j in opts.exclude.split():
-  if '..' in j: exclude_jobs += range(int(j.split('..')[0]),int(j.split('..')[1])+1)
-  else: exclude_jobs.append(int(j))
-for j in opts.include.split():
-  if '..' in j: include_jobs += range(int(j.split('..')[0]),int(j.split('..')[1])+1)
-  else: include_jobs.append(int(j))
-exclude = len(exclude_jobs) > 0
-include = len(include_jobs) > 0
-mergeAll = not (exclude or include)
+  # load queue configuration file
+  configFileNameQueues = os.path.dirname(os.path.realpath(sys.argv[0])) + "/../config/queues.conf"
+  configParserQueues = SafeConfigParser()
+  configParserQueues.read(configFileNameQueues)
 
-if len(args) <> 1:
-  sys.stderr.write("Must specify an unambiguous name of the parallel run whose status is to be given!\n")
-  sys.exit(1)
-if len(opts.exclude) > 0 and len(opts.include) > 0:
-  sys.stderr.write("The options '-e/--exclude-jobs' and '-i/--include-jobs' are mutually exclusive!\n Please make up your mind and use only either one of the two!\n")
-  sys.exit(1)
+  # sanity checks for cluster and queue configuration
+  queues = checkConfig(configParserClusters,configParserQueues)
 
-run_name = args[0]
-cwd = os.getcwd()
-cluster = configParserQueues.get(opts.queue,'cluster') if opts.queue != '' else ''
-
-if not os.path.exists(run_name):
-  print("The run "+run_name+" does not exist\n")
-  sys.exit(1)
-
-line = '==============================='
-for i in range(len(run_name)): line += '='
-print(line)
-print("HERWIG-PARALLEL: Combining run {}".format(run_name))
-print(line)
-print("")
-print("located at")
-print(" {}/{}\n".format(cwd, run_name))
-
-# read required information from 'run.info' file
-jobs = []
-job_ids = []
-total_events = []
-f_run_info = open(run_name+'/run.info','r')
-l = 0
-for line in f_run_info:
-  l += 1
-  if l == 3: setupfile_title = line.replace('\n','').split('/')[-1]
-  elif l == 4:
-    generator = line.replace('\n','')
-  elif l > 11:
-    tmp = line.replace('\n','').split()
-    job = int(tmp[1].replace('#','').replace(':',''))
-    if mergeAll or (exclude and job not in exclude_jobs) or (include and job in include_jobs):
-      jobs.append(job)
-      job_ids.append(tmp[3])
-      total_events.append(int(tmp[7]))
-f_run_info.close()
-
-print("-------------------------")
-print("status of individual jobs")
-print("-------------------------")
-i = 0
-progress = []
-cs = []
-err = []
-current_events = []
-attempts = []
-builtinanalysisfiles = ''
-aidafiles = ''
-hepmcfiles = ''
-for j in range(len(jobs)):
-  fileParallel = run_name+'/'+str(jobs[j])+'/'+generator+('' if setupfile_title=='' else '-'+setupfile_title)+'.parallel'
-  if not os.path.isfile(fileParallel):
-    print("job #{} with id {}: no events have been created, exiting...".format(jobs[j], job_ids[j]))
-    sys.exit(1)
-  else:
-    output = check_output("grep 'event>' "+fileParallel+" | tail -n 1", shell=True)
-    output_split = output.split()
+  # set defaults
+  default_settings  = ['builtin-analysis','hepmc-rivet-analyses']
+  default_variables = [ '',               '']
+  for i in range(len(default_settings)):
     try:
-      tmp = output_split[1].split('/')
-      progress.append(float(tmp[0]) / float(tmp[2]))
-      current_events.append(int(tmp[0]))
-      attempts.append(int(tmp[1]))
-      cs.append(float(output_split[4]))
-      err.append(float(output_split[7]))
-      print("job #{} with id {}: {:5.1f}% done, xs = {: f} pb +/- {:f} pb".format(jobs[j], job_ids[j], progress[j]*100.0, cs[j], err[j]))
+      default_variables[i] = configParser.get('defaults',default_settings[i])
     except:
-      print("job #{} with id {}: error when trying to retrieve result, exiting...".format(jobs[j], job_ids[j]))
-      sys.exit(1)
-    if progress[j] < 1.0: # check for job progress
-      # print("job #{} with id {} not finished, exiting...".format(jobs[j], job_ids[j]))
-      # sys.exit(1)
       pass
-    elif progress[j] > 1.0:
-      print("job #{} with id {}: something weird has happened, progress = {}, exiting...".format(jobs[j], job_ids[j], progress[j]))
+
+  # setup command line options & parameters
+  parser = OptionParser(usage="%prog [options] runname")
+  parser.add_option("-b", "--builtin-analysis", dest="builtin_analysis", default=default_variables[0], help="additional built-in analysis that should be included in the combination [default: %default]")
+  parser.add_option("-r", "--no-rivet", action="store_false", dest="rivet", default=True, help="veto combination of Rivet analyses [default: combine Rivet analyses if present]")
+  parser.add_option("-m", "--hepmc", dest="hepmc", default=default_variables[1], help="list of Rivet analyses that the HepMC outfiles should be passed through [default: combine HepMC event files if present]")
+  parser.add_option("-e", "--exclude-jobs", dest="exclude", default='', help="space-separated list of job numbers and/or job number ranges (e.g. '1 3 5..8') to be excluded from the combination")
+  parser.add_option("-i", "--include-jobs", dest="include", default='', help="space-separated list of job numbers and/or job number ranges (e.g. '1 3 5..8') to be included in the combination")
+  parser.add_option("-o", "--output-folder", dest="outfolder", default='out', help="name of the folder where the combined result is to be stored [default: %default]")
+  parser.add_option("-p", "--plot", action="store_true", dest="plot", default=False, help="make plots [default: do not make plots]")
+  parser.add_option("-q", "--queue", dest="queue", default='', help="do combination on cluster to avoid load on login nodes [default: run on local machine], queues: "+repr(queues).replace('[','').replace(']','').replace("'",''))
+  opts, args = parser.parse_args()
+
+  exclude_jobs = []
+  include_jobs = []
+  for j in opts.exclude.split():
+    if '..' in j: exclude_jobs += range(int(j.split('..')[0]),int(j.split('..')[1])+1)
+    else: exclude_jobs.append(int(j))
+  for j in opts.include.split():
+    if '..' in j: include_jobs += range(int(j.split('..')[0]),int(j.split('..')[1])+1)
+    else: include_jobs.append(int(j))
+  exclude = len(exclude_jobs) > 0
+  include = len(include_jobs) > 0
+  mergeAll = not (exclude or include)
+
+  if len(args) <> 1:
+    sys.stderr.write("Must specify an unambiguous name of the parallel run whose status is to be given!\n")
+    sys.exit(1)
+  if len(opts.exclude) > 0 and len(opts.include) > 0:
+    sys.stderr.write("The options '-e/--exclude-jobs' and '-i/--include-jobs' are mutually exclusive!\n Please make up your mind and use only either one of the two!\n")
+    sys.exit(1)
+
+  run_name = args[0]
+  cwd = os.getcwd()
+  cluster = configParserQueues.get(opts.queue,'cluster') if opts.queue != '' else ''
+
+  if not os.path.exists(run_name):
+    print("The run "+run_name+" does not exist\n")
+    sys.exit(1)
+
+  line = '==============================='
+  for i in range(len(run_name)): line += '='
+  print(line)
+  print("HERWIG-PARALLEL: Combining run {}".format(run_name))
+  print(line)
+  print("")
+  print("located at")
+  print(" {}/{}\n".format(cwd, run_name))
+
+  # read required information from 'run.info' file
+  jobs = []
+  job_ids = []
+  total_events = []
+  queues = []
+  clusters = []
+  f_run_info = open(run_name+'/run.info','r')
+  l = 0
+  for line in f_run_info:
+    l += 1
+    if l == 2: setupfile_title = line.replace('\n','').split('/')[-1]
+    elif l == 3:
+      generator = line.replace('\n','')
+    elif l > 12:
+      data = line.replace('\n','').split()
+      job = int(data[1].replace('#','').replace(':',''))
+      if mergeAll or (exclude and job not in exclude_jobs) or (include and job in include_jobs):
+        jobs.append(job)
+        queues.append(data[2])
+        job_ids.append(data[3])
+        total_events.append(int(data[5]))
+        cluster = 'local' if data[2] == 'local' else configParserQueues.get(data[2],'cluster')
+        if not cluster in clusters:
+          clusters.append(cluster)
+  f_run_info.close()
+
+  # get joblist(s)
+  sys.stdout.write('obtaining joblist'+('s' if len(clusters)>1 else '')+'...')
+  sys.stdout.flush()
+  for cluster in clusters:
+    try:
+      if cluster == 'local':
+        call('ps -al > '+run_name+'/joblist.'+cluster, shell=True)
+      else:
+        call(configParserClusters.get(cluster,'joblist')+' > '+run_name+'/joblist.'+cluster, shell=True)
+    except:
       sys.exit(1)
+  ansi_escape = re.compile(r'\x1b[^m]*m')          # remove ANSI color escape characters
+  print('\n > done\n')
+
+  print("-------------------------")
+  print("status of individual jobs")
+  print("-------------------------")
+  i = 0
+  progress = []
+  cs = []
+  err = []
+  current_events = []
+  attempts = []
+  builtinanalysisfiles = ''
+  aidafiles = ''
+  hepmcfiles = ''
+  for j in range(len(jobs)):
+    fileParallel = run_name+'/'+str(jobs[j])+'/'+generator+('' if setupfile_title=='' else '-'+setupfile_title)+'.parallel'
+    if not os.path.isfile(fileParallel):
+      print("job #{} with id {}: no events have been created, exiting...".format(jobs[j], job_ids[j]))
+      sys.exit(1)
+    else:
+      # check job status
+      if queues[j] == 'local':
+        try:
+          data = check_output('grep '+job_ids[j]+' '+run_name+'/joblist.local', shell=True)
+        except:
+          data = '' # job already finished
+        if data != '' and not '<defunct>' in data:
+          print("cannot include job #{} in combination: job is still running\n".format(jobs[j]))
+          sys.exit(1)
+      else:
+        cluster = configParserQueues.get(queues[j],'cluster')
+        status = ansi_escape.sub('', check_output("grep '"+job_ids[j]+"' "+run_name+"/joblist."+configParserQueues.get(queues[j],'cluster')+' | ' + configParserClusters.get(cluster,'status'), shell=True))
+        if status == configParserClusters.get(cluster,'statusQueued'):
+          print("cannot include job #{} in combination: job is still queued\n".format(jobs[j]))
+          sys.exit(1)
+        elif status == configParserClusters.get(cluster,'statusRunning'):
+          print("cannot include job #{} in combination: job is still running\n".format(jobs[j]))
+          sys.exit(1)
+
+      # get job result
+      output = check_output("grep 'event>' "+fileParallel+" | tail -n 1", shell=True)
+      output_split = output.split()
+      try:
+        tmp = output_split[1].split('/')
+        progress.append(float(tmp[0]) / float(tmp[2]))
+        current_events.append(int(tmp[0]))
+        attempts.append(int(tmp[1]))
+        cs.append(float(output_split[4]))
+        err.append(float(output_split[7]))
+        print("job #{} with id {}: {:5.1f}% done, xs = {: f} pb +/- {:f} pb".format(jobs[j], job_ids[j], progress[j]*100.0, cs[j], err[j]))
+      except:
+        print("job #{} with id {}: error when trying to retrieve result, exiting...".format(jobs[j], job_ids[j]))
+        sys.exit(1)
+      if progress[j] < 1.0: # check for job progress
+        # print("job #{} with id {} not finished, exiting...".format(jobs[j], job_ids[j]))
+        # sys.exit(1)
+        pass
+      elif progress[j] > 1.0:
+        print("job #{} with id {}: something weird has happened, progress = {}, exiting...".format(jobs[j], job_ids[j], progress[j]))
+        sys.exit(1)
+
+      if opts.builtin_analysis != '':
+        builtinanalysisfiles += "../"+str(jobs[j])+"/"+opts.builtin_analysis+".xml "
+      if os.path.isfile(run_name+'/'+str(jobs[j])+'/'+generator+('' if setupfile_title=='' else '-'+setupfile_title)+'.aida'):
+        aidafiles += "../"+str(jobs[j])+"/"+generator+('' if setupfile_title=='' else '-'+setupfile_title)+".aida "
+      if os.path.isfile(run_name+'/'+str(jobs[j])+'/'+generator+('' if setupfile_title=='' else '-'+setupfile_title)+'.hepmc'):
+        hepmcfiles += '../'+str(jobs[j])+'/'+generator+('' if setupfile_title=='' else '-'+setupfile_title)+'.hepmc '
+
+  for cluster in clusters:
+      os.remove(run_name+'/joblist.'+cluster)
+
+  PROGRESS = 0.0
+  CURRENT_EVENTS = 0
+  TOTAL_EVENTS = 0
+  ATTEMPTS = 0
+  CS = 0.0
+  ERR = 0.0
+  CS = 0.0
+  ERR = 0.0
+  for i in range(len(progress)):
+    CURRENT_EVENTS += current_events[i]
+    TOTAL_EVENTS += total_events[i]
+    ATTEMPTS += attempts[i]
+    CS += attempts[i]*cs[i]
+    ERR += attempts[i]*cs[i]**2.0+attempts[i]*(attempts[i]-1)*err[i]**2.0
+  PROGRESS = float(CURRENT_EVENTS) / float(TOTAL_EVENTS)
+  if ATTEMPTS > 1:
+    ERR = sqrt(ERR - CS**2.0/ATTEMPTS)/sqrt(ATTEMPTS*(ATTEMPTS-1))
+    CS /= ATTEMPTS
+  else:
+    print("something went wrong: ATTEMPTS = {}".format(ATTEMPTS))
+    exit()
+
+  f_run_log = open(run_name+'/run.log','a')
+  f_run_log.write(datetime.datetime.now().isoformat(' ')+": herwig-parallel-combine: beginning combination with command '{}'\n".format(repr(sys.argv).replace(',','').replace("'",'').replace('[','').replace(']','')))
+
+  print("")
+  print("-----------------------------------")
+  print("combination of total cross sections")
+  print("-----------------------------------")
+  print("total progress: {:5.1f}% ({} of {} events done)".format(PROGRESS*100.0,CURRENT_EVENTS,TOTAL_EVENTS))
+  print("total result:   {:f} pb +/- {:f} pb ( = {:f}%)".format(CS, ERR, ERR/CS*100.0 if CS <> 0.0 else 0.0))
+  print("")
+
+  if not os.path.exists(run_name+'/'+opts.outfolder):
+    os.makedirs(run_name+'/'+opts.outfolder)
+
+  f_result = open(run_name+'/'+opts.outfolder+'/combined-result.out','w')
+  f_result.write("total combined result: {: f} pb +/- {: f} pb ( = {:f} % )".format(CS, ERR, ERR/CS*100.0 if CS <> 0.0 else 0.0))
+  f_result.close()
+
+  f_result = open(run_name+'/'+opts.outfolder+'/job-results.out','w')
+  for i in range(len(progress)):
+    f_result.write("{}   {}   {}   {: f}   {: f}   {: f}   {: f}\n".format(i+1,attempts[i],current_events[i],cs[i],err[i],CS,ERR))
+  f_result.close()
+
+  # combination of histograms and event files
+  rivet = opts.rivet and len(aidafiles) > 0
+  hepmc = opts.hepmc and len(hepmcfiles) > 0
+
+  if opts.builtin_analysis != '' or rivet or hepmc:
+
+    print("-----------------------------------------")
+    print("combination of histograms and event files")
+    print("-----------------------------------------")
+    os.chdir(run_name+"/"+opts.outfolder)
 
     if opts.builtin_analysis != '':
-      builtinanalysisfiles += "../"+str(jobs[j])+"/"+opts.builtin_analysis+".xml "
-    if os.path.isfile(run_name+'/'+str(jobs[j])+'/'+generator+('' if setupfile_title=='' else '-'+setupfile_title)+'.aida'):
-      aidafiles += "../"+str(jobs[j])+"/"+generator+('' if setupfile_title=='' else '-'+setupfile_title)+".aida "
-    if os.path.isfile(run_name+'/'+str(jobs[j])+'/'+generator+('' if setupfile_title=='' else '-'+setupfile_title)+'.hepmc'):
-      hepmcfiles += '../'+str(jobs[j])+'/'+generator+('' if setupfile_title=='' else '-'+setupfile_title)+'.hepmc '
+      print("\nBuilt-in analysis:")
 
-PROGRESS = 0.0
-CURRENT_EVENTS = 0
-TOTAL_EVENTS = 0
-ATTEMPTS = 0
-CS = 0.0
-ERR = 0.0
-CS = 0.0
-ERR = 0.0
-for i in range(len(progress)):
-  CURRENT_EVENTS += current_events[i]
-  TOTAL_EVENTS += total_events[i]
-  ATTEMPTS += attempts[i]
-  CS += attempts[i]*cs[i]
-  ERR += attempts[i]*cs[i]**2.0+attempts[i]*(attempts[i]-1)*err[i]**2.0
-PROGRESS = float(CURRENT_EVENTS) / float(TOTAL_EVENTS)
-if ATTEMPTS > 1:
-  ERR = sqrt(ERR - CS**2.0/ATTEMPTS)/sqrt(ATTEMPTS*(ATTEMPTS-1))
-  CS /= ATTEMPTS
-else:
-  print("something went wrong: ATTEMPTS = {}".format(ATTEMPTS))
+      # combine runs
+      if opts.queue == '':
+        print(" Combining jobs...")
+        call(configParser.get('tools','combineRuns')+' '+opts.builtin_analysis+" "+builtinanalysisfiles, shell=True)
+      else:
+        if os.path.isfile(opts.builtin_analysis+".xml"): os.remove(opts.builtin_analysis+".xml")
+        fCombine = open('combineBuiltinAnalysis.sh','w')
+        fCombine.write('#! /bin/bash\n')
+        fCombine.write('source ~/.bashrc\n')
+        fCombine.write(configParser.get('tools','combineRuns')+' '+opts.builtin_analysis+' '+builtinanalysisfiles)
+        fCombine.close()
+        call('chmod u+x combineBuiltinAnalysis.sh',shell=True)
+        output = check_output(configParserQueues.get(opts.queue, 'submit').replace('@SCRIPT@','combineBuiltinAnalysis.sh'), shell=True).strip().replace('\n',' ')
+        jobid = check_output("echo '"+output+"' | "+configParserClusters.get(configParserQueues.get(opts.queue,'cluster'),'jobid'), shell=True)
+        iCount = 0
+        while not (os.path.isfile(opts.builtin_analysis+'.xml')):
+          if iCount % 5 == 0:
+            sys.stdout.write('\r\033[K Combining jobs on cluster with jobid '+jobid)
+          else:
+            sys.stdout.write('.')
+          sys.stdout.flush()
+          time.sleep(int(1))
+          iCount += 1
+        print('\r\033[K Combining jobs on cluster with jobid '+jobid+' > done')
+        os.remove('combineBuiltinAnalysis.sh')
+
+      print(" Making distributions...")
+      call(configParser.get('tools','makeDistributions')+' '+opts.builtin_analysis+" "+opts.builtin_analysis+".xml", shell=True)
+      print(" Creating aida-file...")
+      call(configParser.get('tools','flat2aida')+' -o '+opts.builtin_analysis+".aida $(ls -1 | grep dat)", shell=True)
+      call("rm -f "+opts.builtin_analysis+".xml", shell=True)
+      call("rm -f $(ls -1 | grep dat)", shell=True)
+      
+    if rivet:
+      merge_script_location = os.path.dirname(os.path.realpath(sys.argv[0])) + "/../misc/"
+      print("\nRivet analyses:")
+      # it is necessary to copy the mergeaidas script to the current directory since it does not work otherwise
+      shutil.copyfile(merge_script_location+"mergeaidas-exact.py", 'mergeaidas-exact.py')
+      if opts.queue == '':
+        print(" Combining jobs...")
+        call("python mergeaidas-exact.py -o "+generator+('' if setupfile_title=='' else '-'+setupfile_title)+".aida "+aidafiles, shell=True)
+      else:
+        if os.path.isfile(generator+('' if setupfile_title=='' else '-'+setupfile_title)+'.aida'): os.remove(generator+('' if setupfile_title=='' else '-'+setupfile_title)+'.aida')
+        fCombine = open('combineRivetAnalyses.sh','w')
+        fCombine.write('#! /bin/bash\n')
+        fCombine.write('source ~/.bashrc\n')
+        fCombine.write("python mergeaidas-exact.py -o "+generator+('' if setupfile_title=='' else '-'+setupfile_title)+".aida "+aidafiles)
+        fCombine.close()
+        call('chmod u+x combineRivetAnalyses.sh',shell=True)
+        output = check_output(configParserQueues.get(opts.queue, 'submit').replace('@SCRIPT@','combineRivetAnalyses.sh'), shell=True).strip().replace('\n',' ')
+        jobid = check_output("echo '"+output+"' | "+configParserClusters.get(configParserQueues.get(opts.queue,'cluster'),'jobid'), shell=True)
+        iCount = 0
+        while not (os.path.isfile(generator+('' if setupfile_title=='' else '-'+setupfile_title)+'.aida')):
+          if iCount % 5 == 0:
+            sys.stdout.write('\r\033[K Combining jobs on cluster with jobid '+jobid)
+          else:
+            sys.stdout.write('.')
+          sys.stdout.flush()
+          time.sleep(int(1))
+          iCount += 1
+        print('\r\033[K Combining jobs on cluster with jobid '+jobid+' > done')
+        os.remove('combineRivetAnalyses.sh')
+
+    if opts.plot:
+      print("\nCreating plots...")
+      if opts.builtin_analysis == '':
+        output = check_output("source "+configParser.get('general','rivetenvironment')+"; rivet-mkhtml -o plots "+generator+('' if setupfile_title=='' else '-'+setupfile_title)+".aida", shell=True)
+      else:
+        output = check_output("source "+configParser.get('general','rivetenvironment')+"; rivet-mkhtml -o plots "+generator+('' if setupfile_title=='' else '-'+setupfile_title)+".aida "+opts.builtin_analysis+".aida", shell=True)
+      print("{}".format(output))
+
+    if hepmc:
+      print("\nHepMC event files:")
+
+      if opts.queue == '':
+        for analysis in opts.hepmc.split():
+          print(' Running analysis '+analysis+' on HepMC files...')
+          aidafile = analysis+'.aida'
+          call(configParser.get('tools', 'rivet')+' --analysis='+analysis+' --histo-file='+aidafile+' '+hepmcfiles+' > '+analysis+'.log 2>&1', shell=True)
+      else:
+        fCombine = open('analyzeHepMCFiles.sh','w')
+        fCombine.write('#! /bin/bash\n')
+        fCombine.write('source ~/.bashrc\n')
+        for analysis in opts.hepmc.split():
+          aidafile = analysis+'.aida'
+          fCombine.write(configParser.get('tools', 'rivet')+' --analysis='+analysis+' --histo-file='+aidafile+' '+hepmcfiles+' > '+analysis+'.log 2>&1\n')
+        fCombine.close()
+        call('chmod u+x analyzeHepMCFiles.sh',shell=True)
+        output = check_output(configParserQueues.get(opts.queue, 'submit').replace('@SCRIPT@','analyzeHepMCFiles.sh'), shell=True).strip().replace('\n',' ')
+        jobid = check_output("echo '"+output+"' | "+configParserClusters.get(configParserQueues.get(opts.queue,'cluster'),'jobid'), shell=True)
+        iCount = 0
+        completedHepMC = False
+        while not (completedHepMC):
+          if iCount % 15 == 0:
+            call(configParserClusters.get(cluster,'joblist')+' > '+'../tmp', shell=True)
+            ansi_escape = re.compile(r'\x1b[^m]*m')          # remove ANSI color escape characters
+            status = ansi_escape.sub('', check_output('grep '+jobid+' '+'../tmp | ' + configParserClusters.get(cluster,'status'), shell=True))
+            completedHepMC = (not status == configParserClusters.get(cluster,'statusQueued')) and (not status == configParserClusters.get(cluster,'statusRunning'))
+            os.remove('../tmp')
+          if iCount % 5 == 0:
+            sys.stdout.write('\r\033[K Analyzing HepMC files on cluster with jobid '+jobid)
+          else:
+            sys.stdout.write('.')
+          sys.stdout.flush()
+          time.sleep(int(1))
+          iCount += 1
+        print('\r\033[K Analyzing HepMC files on cluster with jobid '+jobid+' > done')
+        os.remove('analyzeHepMCFiles.sh')
+
+    print('')
+
+  f_run_log.write(datetime.datetime.now().isoformat(' ')+": herwig-parallel-combine: finished combination\n")
+  f_run_log.close()
+
+
+### ------------------------------------------
+### remove '^C' outpt when exiting with Ctrl+C
+### ------------------------------------------
+def exit():
+  sys.stderr.write("\r\033[K")
   sys.exit(1)
 
-f_run_log = open(run_name+'/run.log','a')
-f_run_log.write(datetime.datetime.now().isoformat(' ')+": herwig-parallel-combine: beginning combination with command '{}'\n".format(repr(sys.argv).replace(',','').replace("'",'').replace('[','').replace(']','')))
 
-print("")
-print("-----------------------------------")
-print("combination of total cross sections")
-print("-----------------------------------")
-print("total progress: {:5.1f}% ({} of {} events done)".format(PROGRESS*100.0,CURRENT_EVENTS,TOTAL_EVENTS))
-print("total result:   {:f} pb +/- {:f} pb ( = {:f}%)".format(CS, ERR, ERR/CS*100.0 if CS <> 0.0 else 0.0))
-print("")
-
-if not os.path.exists(run_name+'/'+opts.outfolder):
-  os.makedirs(run_name+'/'+opts.outfolder)
-
-f_result = open(run_name+'/'+opts.outfolder+'/combined-result.out','w')
-f_result.write("total combined result: {: f} pb +/- {: f} pb ( = {:f} % )".format(CS, ERR, ERR/CS*100.0 if CS <> 0.0 else 0.0))
-f_result.close()
-
-f_result = open(run_name+'/'+opts.outfolder+'/job-results.out','w')
-for i in range(len(progress)):
-  f_result.write("{}   {}   {}   {: f}   {: f}   {: f}   {: f}\n".format(i+1,attempts[i],current_events[i],cs[i],err[i],CS,ERR))
-f_result.close()
-
-# combination of histograms and event files
-rivet = opts.rivet and len(aidafiles) > 0
-hepmc = opts.hepmc and len(hepmcfiles) > 0
-
-if opts.builtin_analysis != '' or rivet or hepmc:
-
-  print("-----------------------------------------")
-  print("combination of histograms and event files")
-  print("-----------------------------------------")
-  os.chdir(run_name+"/"+opts.outfolder)
-
-  if opts.builtin_analysis != '':
-    print("\nBuilt-in analysis:")
-
-    # combine runs
-    if opts.queue == '':
-      print(" Combining jobs...")
-      call(configParser.get('tools','combineRuns')+' '+opts.builtin_analysis+" "+builtinanalysisfiles, shell=True)
-    else:
-      if os.path.isfile(opts.builtin_analysis+".xml"): os.remove(opts.builtin_analysis+".xml")
-      fCombine = open('combineBuiltinAnalysis.sh','w')
-      fCombine.write('#! /bin/bash\n')
-      fCombine.write('source ~/.bashrc\n')
-      fCombine.write(configParser.get('tools','combineRuns')+' '+opts.builtin_analysis+' '+builtinanalysisfiles)
-      fCombine.close()
-      call('chmod u+x combineBuiltinAnalysis.sh',shell=True)
-      output = check_output(configParserQueues.get(opts.queue, 'submit').replace('@SCRIPT@','combineBuiltinAnalysis.sh'), shell=True).strip().replace('\n',' ')
-      jobid = check_output("echo '"+output+"' | "+configParserClusters.get(configParserQueues.get(opts.queue,'cluster'),'jobid'), shell=True)
-      iCount = 0
-      while not (os.path.isfile(opts.builtin_analysis+'.xml')):
-        if iCount % 5 == 0:
-          sys.stdout.write('\r\033[K Combining jobs on cluster with jobid '+jobid)
-        else:
-          sys.stdout.write('.')
-        sys.stdout.flush()
-        time.sleep(int(1))
-        iCount += 1
-      print('\r\033[K Combining jobs on cluster with jobid '+jobid+' > done')
-      os.remove('combineBuiltinAnalysis.sh')
-
-    print(" Making distributions...")
-    call(configParser.get('tools','makeDistributions')+' '+opts.builtin_analysis+" "+opts.builtin_analysis+".xml", shell=True)
-    print(" Creating aida-file...")
-    call(configParser.get('tools','flat2aida')+' -o '+opts.builtin_analysis+".aida $(ls -1 | grep dat)", shell=True)
-    call("rm -f "+opts.builtin_analysis+".xml", shell=True)
-    call("rm -f $(ls -1 | grep dat)", shell=True)
-    
-  if rivet:
-    merge_script_location = os.path.dirname(os.path.realpath(sys.argv[0])) + "/../misc/"
-    print("\nRivet analyses:")
-    # it is necessary to copy the mergeaidas script to the current directory since it does not work otherwise
-    shutil.copyfile(merge_script_location+"mergeaidas-exact.py", 'mergeaidas-exact.py')
-    if opts.queue == '':
-      print(" Combining jobs...")
-      call("python mergeaidas-exact.py -o "+generator+('' if setupfile_title=='' else '-'+setupfile_title)+".aida "+aidafiles, shell=True)
-    else:
-      if os.path.isfile(generator+('' if setupfile_title=='' else '-'+setupfile_title)+'.aida'): os.remove(generator+('' if setupfile_title=='' else '-'+setupfile_title)+'.aida')
-      fCombine = open('combineRivetAnalyses.sh','w')
-      fCombine.write('#! /bin/bash\n')
-      fCombine.write('source ~/.bashrc\n')
-      fCombine.write("python mergeaidas-exact.py -o "+generator+('' if setupfile_title=='' else '-'+setupfile_title)+".aida "+aidafiles)
-      fCombine.close()
-      call('chmod u+x combineRivetAnalyses.sh',shell=True)
-      output = check_output(configParserQueues.get(opts.queue, 'submit').replace('@SCRIPT@','combineRivetAnalyses.sh'), shell=True).strip().replace('\n',' ')
-      jobid = check_output("echo '"+output+"' | "+configParserClusters.get(configParserQueues.get(opts.queue,'cluster'),'jobid'), shell=True)
-      iCount = 0
-      while not (os.path.isfile(generator+('' if setupfile_title=='' else '-'+setupfile_title)+'.aida')):
-        if iCount % 5 == 0:
-          sys.stdout.write('\r\033[K Combining jobs on cluster with jobid '+jobid)
-        else:
-          sys.stdout.write('.')
-        sys.stdout.flush()
-        time.sleep(int(1))
-        iCount += 1
-      print('\r\033[K Combining jobs on cluster with jobid '+jobid+' > done')
-      os.remove('combineRivetAnalyses.sh')
-
-  if opts.plot:
-    print("\nCreating plots...")
-    if opts.builtin_analysis == '':
-      output = check_output("source "+configParser.get('general','rivetenvironment')+"; rivet-mkhtml -o plots "+generator+('' if setupfile_title=='' else '-'+setupfile_title)+".aida", shell=True)
-    else:
-      output = check_output("source "+configParser.get('general','rivetenvironment')+"; rivet-mkhtml -o plots "+generator+('' if setupfile_title=='' else '-'+setupfile_title)+".aida "+opts.builtin_analysis+".aida", shell=True)
-    print("{}".format(output))
-
-  if hepmc:
-    print("\nHepMC event files:")
-
-    if opts.queue == '':
-      for analysis in opts.hepmc.split():
-        print(' Running analysis '+analysis+' on HepMC files...')
-        aidafile = analysis+'.aida'
-        call(configParser.get('tools', 'rivet')+' --analysis='+analysis+' --histo-file='+aidafile+' '+hepmcfiles+' > '+analysis+'.log 2>&1', shell=True)
-    else:
-      fCombine = open('analyzeHepMCFiles.sh','w')
-      fCombine.write('#! /bin/bash\n')
-      fCombine.write('source ~/.bashrc\n')
-      for analysis in opts.hepmc.split():
-        aidafile = analysis+'.aida'
-        fCombine.write(configParser.get('tools', 'rivet')+' --analysis='+analysis+' --histo-file='+aidafile+' '+hepmcfiles+' > '+analysis+'.log 2>&1\n')
-      fCombine.close()
-      call('chmod u+x analyzeHepMCFiles.sh',shell=True)
-      output = check_output(configParserQueues.get(opts.queue, 'submit').replace('@SCRIPT@','analyzeHepMCFiles.sh'), shell=True).strip().replace('\n',' ')
-      jobid = check_output("echo '"+output+"' | "+configParserClusters.get(configParserQueues.get(opts.queue,'cluster'),'jobid'), shell=True)
-      iCount = 0
-      completedHepMC = False
-      while not (completedHepMC):
-        if iCount % 15 == 0:
-          call(configParserClusters.get(cluster,'joblist')+' > '+'../tmp', shell=True)
-          ansi_escape = re.compile(r'\x1b[^m]*m')          # remove ANSI color escape characters
-          status = ansi_escape.sub('', check_output('grep '+jobid+' '+'../tmp | ' + configParserClusters.get(cluster,'status'), shell=True))
-          completedHepMC = (not status == configParserClusters.get(cluster,'statusQueued')) and (not status == configParserClusters.get(cluster,'statusRunning'))
-          os.remove('../tmp')
-        if iCount % 5 == 0:
-          sys.stdout.write('\r\033[K Analyzing HepMC files on cluster with jobid '+jobid)
-        else:
-          sys.stdout.write('.')
-        sys.stdout.flush()
-        time.sleep(int(1))
-        iCount += 1
-      print('\r\033[K Analyzing HepMC files on cluster with jobid '+jobid+' > done')
-      os.remove('analyzeHepMCFiles.sh')
-
-  print('')
-
-f_run_log.write(datetime.datetime.now().isoformat(' ')+": herwig-parallel-combine: finished combination\n")
-f_run_log.close()
+### -----------------
+### call main program
+### -----------------
+if __name__ == '__main__':
+  main()

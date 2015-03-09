@@ -4,7 +4,7 @@
 ## Herwig-Parallel
 ## --------------------
 ## Author: Daniel Rauch
-## Date:   25 Feb 2015
+## Date:   04 Mar 2015
 ## --------------------
 
 import sys
@@ -14,6 +14,7 @@ import shutil
 import datetime
 from subprocess import call
 from subprocess import check_output
+from subprocess import Popen
 from ConfigParser import SafeConfigParser
 from optparse import OptionParser
 from hwp import checkConfig
@@ -49,7 +50,7 @@ for i in range(len(default_settings)):
 optionParser = OptionParser(usage="%prog [options] runname\nIf neither the options '-e' not '-i' are specified the whole run will be restarted.")
 optionParser.add_option("-e", "--exclude-jobs", dest="exclude", default='', help="space-separated list of job numbers and/or job number ranges (e.g. '1 3 5..8') to be excluded from the restart")
 optionParser.add_option("-i", "--include-jobs", dest="include", default='', help="space-separated list of job numbers and/or job number ranges (e.g. '1 3 5..8') to be included in the restart")
-optionParser.add_option("-q", "--queue", dest="queue", default=default_variables[0], help=repr(queues).replace('[','').replace(']','').replace("'",'')+" [default: %default]")
+optionParser.add_option("-q", "--queue", dest="queue", default=default_variables[0], help="local, "+repr(queues).replace('[','').replace(']','').replace("'",'')+" [default: %default]")
 opts, args = optionParser.parse_args()
 
 # sanity checks for command line arguments
@@ -59,7 +60,7 @@ if len(args) <> 1:
 if len(opts.exclude) > 0 and len(opts.include) > 0:
   sys.stderr.write("The options '-e/--exclude-jobs' and '-i/--include-jobs' are mutually exclusive!\n Please make up your mind and use only either one of the two!\n")
   sys.exit(1)
-if not opts.queue in queues:
+if opts.queue != 'local' and not opts.queue in queues:
   sys.stderr.write("The specified queue '"+opts.queue+"' was not configured in Herwig-Parallel/config/queues.conf! Please choose a different queue or modify the configuration file.")
   sys.exit(1)
 
@@ -90,21 +91,27 @@ jobs = []
 job_ids = []
 seeds = []
 events = []
+queues = []
+clusters = []
 f_run_info = open(run_name+'/run.info','r')
 l = 0
 for line in f_run_info:
   l += 1
-  if l == 1: cluster = line.replace('\n','')
-  elif l == 3: setupfile_title = line.replace('\n','').split('/')[-1]
-  elif l == 4:
+  if l == 2: setupfile_title = line.replace('\n','').split('/')[-1]
+  elif l == 3:
     generator = line.replace('\n','')
     runfile_title = generator+'.run'
-  elif l == 9: runscript_title = line.replace('\n','').split('/')[-1]
-  elif l > 11:
-    jobs.append(int(line.replace('\n','').split()[1].replace('#','').replace(':','')))
-    job_ids.append(line.replace('\n','').split()[3])
-    seeds.append(line.replace('\n','').split()[5])
-    events.append(line.replace('\n','').split()[7])
+  elif l == 10: runscript_title = line.replace('\n','').split('/')[-1]
+  elif l > 12:
+    data = line.replace('\n','').split()
+    jobs.append(int(data[1].replace('#','').replace(':','')))
+    queues.append(data[2])
+    job_ids.append(data[3])
+    seeds.append(data[4])
+    events.append(data[5])
+    cluster = 'local' if data[2] == 'local' else configParserQueues.get(data[2],'cluster')
+    if not cluster in clusters:
+      clusters.append(cluster)
 f_run_info.close()
 
 restart_jobs = []
@@ -133,19 +140,45 @@ if len(restart_jobs) == 0:
   restart_seeds = seeds
   restart_events = events
 
-call(configParserClusters.get(configParserQueues.get(opts.queue,'cluster'),'joblist')+' > '+run_name+'/tmp', shell=True)
+# get joblist(s)
+sys.stdout.write('obtaining joblist'+('s' if len(clusters)>1 else '')+'...')
+sys.stdout.flush()
+for cluster in clusters:
+  try:
+    if cluster == 'local':
+      call('ps -al > '+run_name+'/joblist.'+cluster, shell=True)
+    else:
+      call(configParserClusters.get(cluster,'joblist')+' > '+run_name+'/joblist.'+cluster, shell=True)
+  except:
+    sys.exit(1)
 ansi_escape = re.compile(r'\x1b[^m]*m')          # remove ANSI color escape characters
+print('\n > done\n')
+
+if opts.queue == 'local':
+  runLog = []
+  runProc = []
+
 f_run_log = open(run_name+'/run.log','a')
 for j in range(len(restart_jobs)):
+  os.chdir(cwd)
+  if queues[restart_jobs[j]-1] == 'local':
+    try:
+      data = check_output('grep '+restart_job_ids[j]+' '+run_name+'/joblist.local', shell=True)
+    except:
+      data = '' # job already finished
+    if data != '' and not '<defunct>' in data:
+      print("cannot restart job #{}: job is still running\n".format(restart_jobs[j]))
+      continue
+  else:
+    try:
+      qstat_l1 = ansi_escape.sub('', check_output("grep '"+restart_job_ids[j]+"' "+run_name+"/joblist."+configParserQueues.get(queues[restart_jobs[j]-1],'cluster'), shell=True)).split()
+      print("cannot restart job #{}: job is still running\n".format(restart_jobs[j]))
+      continue
+    except:
+      pass
+  # remove old files and get relevant infiles again
   dir_name = run_name+"/"+str(restart_jobs[j])
   os.chdir(cwd+'/'+dir_name)
-  try:
-    qstat_l1 = ansi_escape.sub('', check_output("grep '"+restart_job_ids[j]+"' ../tmp", shell=True)).split()
-    print("cannot restart job #{}: job is still running\n".format(restart_jobs[j]))
-    continue
-  except:
-    pass
-  # remove old files and get relevant infiles again
   file_list = check_output("ls", shell=True).split()
   for f in file_list:
     call("rm -rf "+cwd+"/"+dir_name+"/"+f, shell=True)
@@ -161,8 +194,6 @@ for j in range(len(restart_jobs)):
     shutil.copytree('../read/Herwig/MG_tmp','MG_tmp')
   if os.path.exists('../read/Matchbox/MG_tmp'):
     shutil.copytree('../read/Matchbox/MG_tmp','MG_tmp')
-  ##shutil.copytree(run_name+'/read/Matchbox',dir_name+'/Matchbox') # copy run directory
-  ##call('ln -s ../read/Matchbox', shell=True)
 
   call("sed -i 's/@HOSTNAME@/hostname > parallel.hostname/' "+runscript_title, shell=True)
   call("sed -i 's/@RUNFILE@/"+runfile_title+"/' "+runscript_title, shell=True)
@@ -170,22 +201,32 @@ for j in range(len(restart_jobs)):
   call("sed -i 's/@SEED@/"+restart_seeds[j]+"/' "+runscript_title, shell=True)
   call("sed -i 's/@SETUPFILE@/"+('' if setupfile_title=='' else '--setupfile='+setupfile_title)+"/' "+runscript_title, shell=True)
   call("sed -i 's/@CLEANUP@/rm -f "+runfile_title+"; rm -rf Herwig; rm -rf Matchbox /' "+runscript_title, shell=True)
-  # start job again
-  command = configParserQueues.get(opts.queue, 'submit').replace('@SCRIPT@',runscript_title)
-  print("restarting job #{}: {}".format(restart_jobs[j],command))
-  try:
-    output = check_output("cd "+cwd+"/"+dir_name+"; "+command, shell=True).strip().replace('\n',' ')
-  except Exception, err:
-    sys.stderr.write("\n--------------------------------------------------")
-    sys.stderr.write(err)
-    sys.stderr.write("--------------------------------------------------\n")
-    f_run_log.close()
-    sys.exit(1)
+
+  # restart job
+  if opts.queue == 'local':
+    runLog.append(open('run.job'+str(restart_jobs[j])+'.log','w'))
+    print("restarting job #{}".format(restart_jobs[j]))
+    runProc.append(Popen(cwd+'/'+run_name+'/'+str(restart_jobs[j])+'/'+runscript_title,shell=True,stdout=runLog[j],stderr=runLog[j]))
+    jobid = str(runProc[j].pid)
+    print(" > pid {}\n".format(jobid))
   else:
-    print(" > {}\n".format(output))
-    jobid = check_output("echo '"+output+"' | "+configParserClusters.get(configParserQueues.get(opts.queue,'cluster'),'jobid'), shell=True)
-    call("sed -i 's/"+restart_job_ids[j]+"/"+jobid+"/' ../run.info", shell=True)
-    f_run_log.write(datetime.datetime.now().isoformat(' ')+': herwig-parallel-restart: restarting job #{}\n'.format(restart_jobs[j]))
+    command = configParserQueues.get(opts.queue, 'submit').replace('@SCRIPT@',runscript_title)
+    print("restarting job #{}: {}".format(restart_jobs[j],command))
+    try:
+      output = check_output("cd "+cwd+"/"+dir_name+"; "+command, shell=True).strip().replace('\n',' ')
+    except Exception, err:
+      sys.stderr.write("\n--------------------------------------------------")
+      sys.stderr.write(err)
+      sys.stderr.write("--------------------------------------------------\n")
+      f_run_log.close()
+      sys.exit(1)
+    else:
+      print(" > {}\n".format(output))
+      jobid = check_output("echo '"+output+"' | "+configParserClusters.get(configParserQueues.get(opts.queue,'cluster'),'jobid'), shell=True)
+  call("sed -i 's/"+queues[restart_jobs[j]-1]+" "+restart_job_ids[j]+"/"+opts.queue+" "+jobid+"/' ../run.info", shell=True)
+  f_run_log.write(datetime.datetime.now().isoformat(' ')+': herwig-parallel-restart: restarting job #{}\n'.format(restart_jobs[j]))
 
 f_run_log.close()
-call('rm -f '+run_name+'/tmp', shell=True)
+os.chdir(cwd)
+for cluster in clusters:
+    os.remove(run_name+'/joblist.'+cluster)

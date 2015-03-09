@@ -10,228 +10,277 @@
 import sys
 import os
 import shutil
+import signal
 import time
 import datetime
 from subprocess import call
 from subprocess import check_output
+from subprocess import Popen
 from ConfigParser import SafeConfigParser
 from optparse import OptionParser
 from hwp import checkConfig
 
-# load Herwig-Parallel configuration file
-configFileName = os.path.dirname(os.path.realpath(sys.argv[0])) + "/../config/herwig-parallel.conf"
-configParser = SafeConfigParser()
-configParser.read(configFileName)
 
-# load cluster configuration file
-configFileNameClusters = os.path.dirname(os.path.realpath(sys.argv[0])) + "/../config/clusters.conf"
-configParserClusters = SafeConfigParser()
-configParserClusters.read(configFileNameClusters)
+### ------------
+### catch Ctrl+C
+### ------------
+signal.signal(signal.SIGINT, lambda x,y: exit())
 
-# load queue configuration file
-configFileNameQueues = os.path.dirname(os.path.realpath(sys.argv[0])) + "/../config/queues.conf"
-configParserQueues = SafeConfigParser()
-configParserQueues.read(configFileNameQueues)
 
-# sanity checks for cluster and queue configuration
-queues = checkConfig(configParserClusters,configParserQueues)
+### ------------
+### main program
+### ------------
+def main():
 
-# set defaults
-default_settings  = ['runscript',             'runqueue','runjobs','events','seedmode', 'seed']
-default_variables = ['herwig-parallel-run.sh', queues[0],'1',      '1k',    'ascending','1']
-for i in range(len(default_settings)):
-  try:
-    default_variables[i] = configParser.get('defaults',default_settings[i])
-  except:
-    pass
+  # load Herwig-Parallel configuration file
+  configFileName = os.path.dirname(os.path.realpath(sys.argv[0])) + "/../config/herwig-parallel.conf"
+  configParser = SafeConfigParser()
+  configParser.read(configFileName)
 
-# setup command line options & parameters
-optionParser = OptionParser(usage="%prog [options] runname")
-optionParser.add_option("-e", "--events", dest="events", default=default_variables[3], help="number of events per job. The suffixes k/m/g may be used to indicate factors of thousands, millions and billions. [default: %default]")
-optionParser.add_option("-j", "--jobs", dest="jobs", default=default_variables[2], help="number of parallel runs [default: %default]")
-optionParser.add_option("-q", "--queue", dest="queue", default=default_variables[1], help=repr(queues).replace('[','').replace(']','').replace("'",'')+" [default: %default]")
-optionParser.add_option("-r", "--runscript", dest="runscript", default=default_variables[0], help="file name of script that runs Herwig++ [default: %default]")
-optionParser.add_option("-d", "--defaultscripts", action="store_true", dest="defaultscripts", default=False, help="use the default run script from the <Herwig-Parallel>-folder [default: %default]")
-optionParser.add_option("--seed-mode", dest="seed_mode", default=default_variables[4], help="set what random number seeds are used for the runs, possible values are 'ascending' and 'file' [default: %default]")
-optionParser.add_option("--seed", dest="seed", default=default_variables[5], help="first seed for seed mode 'ascending' or name of seed file for seed mode 'file' [default: %default]")
-opts, args = optionParser.parse_args()
+  # load cluster configuration file
+  configFileNameClusters = os.path.dirname(os.path.realpath(sys.argv[0])) + "/../config/clusters.conf"
+  configParserClusters = SafeConfigParser()
+  configParserClusters.read(configFileNameClusters)
 
-# sanity checks for command line arguments
-if len(args) <> 1:
-  sys.stderr.write("Please specify an unambiguous runname!\n")
-  sys.exit(1)
-if not opts.queue in queues:
-  sys.stderr.write("The specified queue '"+opts.queue+"' was not configured in Herwig-Parallel/config/queues.conf. Please choose a different queue or modify the configuration file!")
-  sys.exit(1)
-if not opts.seed_mode in ['ascending','file']:
-  sys.stderr.write("The specified seed mode '"+opts.seed_mode+"' is not allowed. Please chose either 'ascending' or 'file' as the seed mode!\n")
-  sys.exit(1)
-if opts.seed_mode == 'file' and not os.path.isfile(opts.seed):
-  sys.stderr.write("The specified seed file '"+opts.seed+"' does not exist.\n")
-  sys.exit(1)
+  # load queue configuration file
+  configFileNameQueues = os.path.dirname(os.path.realpath(sys.argv[0])) + "/../config/queues.conf"
+  configParserQueues = SafeConfigParser()
+  configParserQueues.read(configFileNameQueues)
 
-cwd = os.getcwd()
-path = os.path.dirname(os.path.realpath(sys.argv[0]))
-run_name = args[0].strip('/')
-runscript = opts.runscript
-runscript_title = runscript.split('/')[-1]
+  # sanity checks for cluster and queue configuration
+  queues = checkConfig(configParserClusters,configParserQueues)
 
-if not os.path.exists(run_name):
-  sys.stderr.write("The specified run '"+run_name+"' does not exist.\n")
-  sys.exit(1)
-if not opts.defaultscripts and not os.path.isfile(runscript):
-  sys.stderr.write("The specified run-script does not exist!\n")
-  sys.exit(1)
-if opts.defaultscripts:
-  if not os.path.isfile(path+'/../misc/'+runscript_title):
-    sys.stderr.write("The default run-script does not exist!\n")
-    sys.exit(1)
-
-line = '==========================================='
-for i in range(len(run_name)): line += '='
-print(line)
-print("HERWIG-PARALLEL: Starting run step for run {}".format(run_name))
-print(line)
-print("")
-
-# read required information from 'run.info' file
-f_run_info = open(run_name+'/run.info','r')
-l = 0
-for line in f_run_info:
-  l += 1
-  if l == 3: setupfile_title = line.replace('\n','').split('/')[-1]
-  elif l == 4: generator = line.replace('\n','')
-f_run_info.close()
-
-events = float(str(opts.events).replace('k','').replace('K','').replace('m','').replace('M','').replace('g','').replace('G',''))
-power = 0
-power += (str(opts.events).count('k')+str(opts.events).count('K'))*3
-power += (str(opts.events).count('m')+str(opts.events).count('M'))*6
-power += (str(opts.events).count('g')+str(opts.events).count('G'))*9
-events = int(events*10.0**power)
-
-runfile = generator+'.run'
-
-seeds = []
-if opts.seed_mode == 'ascending':
-  for s in range(int(opts.jobs)):
-    seeds.append(int(opts.seed)+s)
-elif opts.seed_mode == 'file':
-  f_seeds = open(opts.seed,'r')
-  for line in f_seeds:
+  # set defaults
+  default_settings  = ['runscript',             'runqueue','runjobs','events','seedmode', 'seed']
+  default_variables = ['herwig-parallel-run.sh', queues[0],'1',      '1k',    'ascending','1']
+  for i in range(len(default_settings)):
     try:
-      seeds.append(int(line.replace('\n','')))
+      default_variables[i] = configParser.get('defaults',default_settings[i])
     except:
       pass
-  f_seeds.close()
-  if len(seeds) < int(opts.jobs):
-    sys.stderr.write("The specified seed file only contains "+str(len(seeds))+" seed"+('s' if len(seeds)>1 else '')+".\n")
-    sys.stderr.write("This is too few for the requested number of "+opts.jobs+" job"+('s' if int(opts.jobs)>1 else '')+".\n")
+
+  # setup command line options & parameters
+  optionParser = OptionParser(usage="%prog [options] runname")
+  optionParser.add_option("-e", "--events", dest="events", default=default_variables[3], help="number of events per job. The suffixes k/m/g may be used to indicate factors of thousands, millions and billions. [default: %default]")
+  optionParser.add_option("-j", "--jobs", dest="jobs", default=default_variables[2], help="number of parallel runs [default: %default]")
+  optionParser.add_option("-q", "--queue", dest="queue", default=default_variables[1], help="local, "+repr(queues).replace('[','').replace(']','').replace("'",'')+" [default: %default]")
+  optionParser.add_option("-r", "--runscript", dest="runscript", default=default_variables[0], help="file name of script that runs Herwig++ [default: %default]")
+  optionParser.add_option("-d", "--defaultscripts", action="store_true", dest="defaultscripts", default=False, help="use the default run script from the <Herwig-Parallel>-folder [default: %default]")
+  optionParser.add_option("--seed-mode", dest="seed_mode", default=default_variables[4], help="set what random number seeds are used for the runs, possible values are 'ascending' and 'file' [default: %default]")
+  optionParser.add_option("--seed", dest="seed", default=default_variables[5], help="first seed for seed mode 'ascending' or name of seed file for seed mode 'file' [default: %default]")
+  optionParser.add_option("-m", "--monitor", action="store_true", dest="monitoring", default=False, help="automatically start run monitoring after submission of all jobs [default: do not start monitoring]")
+  opts, args = optionParser.parse_args()
+
+  # sanity checks for command line arguments
+  if len(args) <> 1:
+    sys.stderr.write("Please specify an unambiguous runname!\n")
+    sys.exit(1)
+  if opts.queue != 'local' and not opts.queue in queues:
+    sys.stderr.write("The specified queue '"+opts.queue+"' was not configured in Herwig-Parallel/config/queues.conf. Please choose a different queue or modify the configuration file!")
+    sys.exit(1)
+  if not opts.seed_mode in ['ascending','file']:
+    sys.stderr.write("The specified seed mode '"+opts.seed_mode+"' is not allowed. Please chose either 'ascending' or 'file' as the seed mode!\n")
+    sys.exit(1)
+  if opts.seed_mode == 'file' and not os.path.isfile(opts.seed):
+    sys.stderr.write("The specified seed file '"+opts.seed+"' does not exist.\n")
     sys.exit(1)
 
-# checks for completion of read step
-firsttry = True
-print("checking if read step is completed...")
-if os.path.exists(run_name):
-  iCount = 0
-  while not os.path.isfile(run_name+'/read/Herwig/'+generator+('' if setupfile_title=='' else '/'+setupfile_title)+'/HerwigGrids.xml'):
-    if firsttry:
-      print(" > not yet finished\n")
-      firsttry = False
-    if iCount % 5 == 0:
-      sys.stdout.write('\r\033[Kwaiting for completion of read-step')
-    else:
-      sys.stdout.write('.')
-    sys.stdout.flush()
-    time.sleep(int(1)) # wait 1 second
-    iCount += 1
-  print(" > done\n")
-else:
-  sys.stderr.write("\nWARNING: Read step has not been done yet!\n")
-  sys.stderr.write("Please use 'herwig-parallel-read' to do the read step first.\n")
-  sys.stderr.write("Exiting...\n\n")
-  sys.exit(1)
+  cwd = os.getcwd()
+  path = os.path.dirname(os.path.realpath(sys.argv[0]))
+  run_name = args[0].strip('/')
+  runscript = opts.runscript
+  runscript_title = runscript.split('/')[-1]
 
-# create copy of seed file in 'in'-folder
-if opts.seed_mode == 'file':
-  shutil.copyfile(opts.seed,run_name+'/in/'+opts.seed.split('/')[-1])
-
-# create run directories and copy infiles and run scripts to run folders
-if os.path.exists(run_name):
-  f_run_info = open(run_name+"/run.info","a")
-  f_run_info.write((cwd+'/' if not runscript.startswith('/') else '')+runscript+'\n')
-  f_run_info.write(opts.seed_mode+'\n')
-  if opts.seed_mode == 'file':
-    f_run_info.write(opts.seed+'\n')
-  else:
-    f_run_info.write('\n')
-else:
-  sys.stderr.write("\nWARNING: Read step has not been done yet!\n")
-  sys.stderr.write("Please use 'herwig-parallel-read' to do the read step first.\n")
-  sys.stderr.write("Exiting...\n\n")
-  sys.exit(1)
-
-# copy raw infiles to in-folder
-if os.path.exists(run_name+'/in'):
+  if not os.path.exists(run_name):
+    sys.stderr.write("The specified run '"+run_name+"' does not exist.\n")
+    sys.exit(1)
+  if os.path.exists(run_name + '/1'):
+    sys.stderr.write("Jobs were already started for the run '"+run_name+"'.\n")
+    sys.stderr.write("Please use 'herwig-parallel-addjobs' to add further jobs to the run.\n")
+    sys.exit(1)
+  if not opts.defaultscripts and not os.path.isfile(runscript):
+    sys.stderr.write("The specified run-script does not exist!\n")
+    sys.exit(1)
   if opts.defaultscripts:
-    shutil.copyfile(path+'/../misc/'+runscript_title, run_name+'/in/'+runscript_title)
+    if not os.path.isfile(path+'/../misc/'+runscript_title):
+      sys.stderr.write("The default run-script does not exist!\n")
+      sys.exit(1)
+
+  line = '==========================================='
+  for i in range(len(run_name)): line += '='
+  print(line)
+  print("HERWIG-PARALLEL: Starting run step for run {}".format(run_name))
+  print(line)
+  print("")
+
+  # read required information from 'run.info' file
+  f_run_info = open(run_name+'/run.info','r')
+  l = 0
+  for line in f_run_info:
+    l += 1
+    if l == 2: setupfile_title = line.replace('\n','').split('/')[-1]
+    elif l == 3: generator = line.replace('\n','')
+  f_run_info.close()
+
+  events = float(str(opts.events).replace('k','').replace('K','').replace('m','').replace('M','').replace('g','').replace('G',''))
+  power = 0
+  power += (str(opts.events).count('k')+str(opts.events).count('K'))*3
+  power += (str(opts.events).count('m')+str(opts.events).count('M'))*6
+  power += (str(opts.events).count('g')+str(opts.events).count('G'))*9
+  events = int(events*10.0**power)
+
+  runfile = generator+'.run'
+
+  seeds = []
+  if opts.seed_mode == 'ascending':
+    for s in range(int(opts.jobs)):
+      seeds.append(int(opts.seed)+s)
+  elif opts.seed_mode == 'file':
+    f_seeds = open(opts.seed,'r')
+    for line in f_seeds:
+      try:
+        seeds.append(int(line.replace('\n','')))
+      except:
+        pass
+    f_seeds.close()
+    if len(seeds) < int(opts.jobs):
+      sys.stderr.write("The specified seed file only contains "+str(len(seeds))+" seed"+('s' if len(seeds)>1 else '')+".\n")
+      sys.stderr.write("This is too few for the requested number of "+opts.jobs+" job"+('s' if int(opts.jobs)>1 else '')+".\n")
+      sys.exit(1)
+
+  # checks for completion of read step
+  firsttry = True
+  print("checking if read step is completed...")
+  if os.path.exists(run_name):
+    iCount = 0
+    while not os.path.isfile(run_name+'/read/Herwig/'+generator+('' if setupfile_title=='' else '/'+setupfile_title)+'/HerwigGrids.xml'):
+      if firsttry:
+        print(" > not yet finished\n")
+        firsttry = False
+      if iCount % 5 == 0:
+        sys.stdout.write('\r\033[Kwaiting for completion of read-step')
+      else:
+        sys.stdout.write('.')
+      sys.stdout.flush()
+      time.sleep(int(1)) # wait 1 second
+      iCount += 1
+    print(" > done\n")
   else:
-    shutil.copyfile(runscript, run_name+'/in/'+runscript_title)
-else:
-  sys.stderr.write("\nWARNING: Read step has not been done yet!\n")
-  sys.stderr.write("Please use 'herwig-parallel-read' to do the read step first.\n")
-  sys.stderr.write("Exiting...\n\n")
-  sys.exit(1)
-
-f_run_log = open(run_name+'/run.log','a')
-
-for r in range(1,int(opts.jobs)+1):
-  os.chdir(cwd)
-  dir_name = run_name+"/"+str(r)
-  
-  # create new directories and copy infile and runfiles there
-  if not os.path.exists(dir_name):
-    try:
-      os.makedirs(dir_name)
-    except:
-      print("could not create run directory {}".format(dir_name))
-  if setupfile_title != '': shutil.copyfile(run_name+'/read/'+setupfile_title,dir_name+'/'+setupfile_title)
-  os.link(run_name+'/read/'+runfile, dir_name+'/'+runfile)    # create hardlink of runfile from read-folder in all job folders to save disk space
-  shutil.copyfile(run_name+'/in/'+runscript_title, dir_name+'/'+runscript_title)
-  call("chmod u+x "+dir_name+'/'+runscript_title, shell=True) # set execute permission (lost during copying)
-  os.makedirs(dir_name+'/Herwig')
-  call('cd '+dir_name+'/Herwig; ln -s ../../read/Herwig/Build', shell=True)         # symlink build directory
-  shutil.copytree(run_name+'/read/Herwig/'+generator,dir_name+'/Herwig/'+generator) # copy run directory
-  if os.path.exists(run_name+'/read/Herwig/MG_tmp'):
-    shutil.copytree(run_name+'/read/Herwig/MG_tmp',dir_name+'/Herwig/MG_tmp')
-  if os.path.exists(run_name+'/read/Matchbox/MG_tmp'):
-    shutil.copytree(run_name+'/read/Matchbox/MG_tmp',dir_name+'/Matchbox/MG_tmp')
-  ##shutil.copytree(run_name+'/read/Matchbox',dir_name+'/Matchbox') # copy run directory
-
-  # start jobs
-  os.chdir(cwd+"/"+dir_name)
-  call("sed -i 's/@HOSTNAME@/hostname > parallel.hostname/' "+runscript_title, shell=True)
-  call("sed -i 's/@RUNFILE@/"+runfile+"/' "+runscript_title, shell=True)
-  call("sed -i 's/@EVENTS@/"+str(events)+"/' "+runscript_title, shell=True)
-  call("sed -i 's/@SEED@/"+str(seeds[r-1])+"/' "+runscript_title, shell=True)
-  call("sed -i 's/@SETUPFILE@/"+('' if setupfile_title=='' else '--setupfile='+setupfile_title)+"/' "+runscript_title, shell=True)
-  call("sed -i 's/@CLEANUP@/rm -f "+runfile+"; rm -rf Herwig; rm -rf Matchbox /' "+runscript_title, shell=True)
-  command = configParserQueues.get(opts.queue, 'submit').replace('@SCRIPT@',runscript_title)
-  print("starting job #{}: {}".format(r,command))
-  try:
-    output = check_output(command, shell=True).strip().replace('\n',' ')
-  except Exception, err:
-    sys.stderr.write("\n--------------------------------------------------")
-    sys.stderr.write(err)
-    sys.stderr.write("--------------------------------------------------\n")
-    f_run_info.close()
-    f_run_log.close()
+    sys.stderr.write("\nWARNING: Read step has not been done yet!\n")
+    sys.stderr.write("Please use 'herwig-parallel-read' to do the read step first.\n")
+    sys.stderr.write("Exiting...\n\n")
     sys.exit(1)
+
+  # create copy of seed file in 'in'-folder
+  if opts.seed_mode == 'file':
+    shutil.copyfile(opts.seed,run_name+'/in/'+opts.seed.split('/')[-1])
+
+  # create run directories and copy infiles and run scripts to run folders
+  if os.path.exists(run_name):
+    f_run_info = open(run_name+"/run.info","a")
+    f_run_info.write((cwd+'/' if not runscript.startswith('/') else '')+runscript+'\n')
+    f_run_info.write(opts.seed_mode+'\n')
+    if opts.seed_mode == 'file':
+      f_run_info.write(opts.seed+'\n')
+    else:
+      f_run_info.write('\n')
   else:
-    print(" > {}\n".format(output))
-    jobid = check_output("echo '"+output+"' | "+configParserClusters.get(configParserQueues.get(opts.queue,'cluster'),'jobid'), shell=True)
-    f_run_info.write("job #"+str(r)+": id "+jobid+" seed "+str(seeds[r-1])+" events "+str(events)+"\n")
+    sys.stderr.write("\nWARNING: Read step has not been done yet!\n")
+    sys.stderr.write("Please use 'herwig-parallel-read' to do the read step first.\n")
+    sys.stderr.write("Exiting...\n\n")
+    sys.exit(1)
+
+  # copy raw infiles to in-folder
+  if os.path.exists(run_name+'/in'):
+    if opts.defaultscripts:
+      shutil.copyfile(path+'/../misc/'+runscript_title, run_name+'/in/'+runscript_title)
+    else:
+      shutil.copyfile(runscript, run_name+'/in/'+runscript_title)
+  else:
+    sys.stderr.write("\nWARNING: Read step has not been done yet!\n")
+    sys.stderr.write("Please use 'herwig-parallel-read' to do the read step first.\n")
+    sys.stderr.write("Exiting...\n\n")
+    sys.exit(1)
+
+  f_run_log = open(run_name+'/run.log','a')
+
+  if opts.queue == 'local':
+    runLog = []
+    runProc = []
+
+  for r in range(1,int(opts.jobs)+1):
+    os.chdir(cwd)
+    dir_name = run_name+"/"+str(r)
+    
+    # create new directories and copy infile and runfiles there
+    if not os.path.exists(dir_name):
+      try:
+        os.makedirs(dir_name)
+      except:
+        print("could not create run directory {}".format(dir_name))
+    if setupfile_title != '': shutil.copyfile(run_name+'/read/'+setupfile_title,dir_name+'/'+setupfile_title)
+    os.link(run_name+'/read/'+runfile, dir_name+'/'+runfile)    # create hardlink of runfile from read-folder in all job folders to save disk space
+    shutil.copyfile(run_name+'/in/'+runscript_title, dir_name+'/'+runscript_title)
+    call("chmod u+x "+dir_name+'/'+runscript_title, shell=True) # set execute permission (lost during copying)
+    os.makedirs(dir_name+'/Herwig')
+    call('cd '+dir_name+'/Herwig; ln -s ../../read/Herwig/Build', shell=True)         # symlink build directory
+    shutil.copytree(run_name+'/read/Herwig/'+generator,dir_name+'/Herwig/'+generator) # copy run directory
+    if os.path.exists(run_name+'/read/Herwig/MG_tmp'):
+      shutil.copytree(run_name+'/read/Herwig/MG_tmp',dir_name+'/Herwig/MG_tmp')
+    if os.path.exists(run_name+'/read/Matchbox/MG_tmp'):
+      shutil.copytree(run_name+'/read/Matchbox/MG_tmp',dir_name+'/Matchbox/MG_tmp')
+    ##shutil.copytree(run_name+'/read/Matchbox',dir_name+'/Matchbox') # copy run directory
+
+    # start jobs
+    os.chdir(cwd+"/"+dir_name)
+    call("sed -i 's/@HOSTNAME@/hostname > parallel.hostname/' "+runscript_title, shell=True)
+    call("sed -i 's/@RUNFILE@/"+runfile+"/' "+runscript_title, shell=True)
+    call("sed -i 's/@EVENTS@/"+str(events)+"/' "+runscript_title, shell=True)
+    call("sed -i 's/@SEED@/"+str(seeds[r-1])+"/' "+runscript_title, shell=True)
+    call("sed -i 's/@SETUPFILE@/"+('' if setupfile_title=='' else '--setupfile='+setupfile_title)+"/' "+runscript_title, shell=True)
+    call("sed -i 's/@CLEANUP@/rm -f "+runfile+"; rm -rf Herwig; rm -rf Matchbox /' "+runscript_title, shell=True)
+    if opts.queue == 'local':
+      runLog.append(open('run.job'+str(r)+'.log','w'))
+      print("starting job #{}".format(r))
+      runProc.append(Popen(cwd+'/'+run_name+'/'+str(r)+'/'+runscript_title,shell=True,stdout=runLog[r-1],stderr=runLog[r-1],preexec_fn=os.setpgrp))
+      jobid = str(runProc[r-1].pid)
+      print(" > pid {}\n".format(jobid))
+    else:
+      command = configParserQueues.get(opts.queue, 'submit').replace('@SCRIPT@',runscript_title)
+      print("starting job #{}: {}".format(r,command))
+      try:
+        output = check_output(command, shell=True).strip().replace('\n',' ')
+      except Exception, err:
+        sys.stderr.write("\n--------------------------------------------------")
+        sys.stderr.write(err)
+        sys.stderr.write("--------------------------------------------------\n")
+        f_run_info.close()
+        f_run_log.close()
+        sys.exit(1)
+      print(" > {}\n".format(output))
+      jobid = check_output("echo '"+output+"' | "+configParserClusters.get(configParserQueues.get(opts.queue,'cluster'),'jobid'), shell=True)
+    f_run_info.write("job #{}: {} {} {} {}\n".format(str(r), opts.queue, jobid, str(seeds[r-1]), str(events)))
     f_run_log.write(datetime.datetime.now().isoformat(' ')+': herwig-parallel-run: starting job #{}\n'.format(r))
 
-f_run_info.close()
-f_run_log.close()
+  f_run_info.close()
+  f_run_log.close()
+
+  # possibly start monitoring
+  if opts.monitoring:
+    os.chdir(cwd)
+    call(path+'/herwig-parallel-monitor '+run_name, shell=True)
+
+
+### ------------------------------------------
+### remove '^C' outpt when exiting with Ctrl+C
+### ------------------------------------------
+def exit():
+  sys.stderr.write("\r\033[K")
+  sys.exit(1)
+
+
+### -----------------
+### call main program
+### -----------------
+if __name__ == '__main__':
+  main()
