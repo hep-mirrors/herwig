@@ -88,6 +88,8 @@ void VBFNLOAmplitude::startOLP(const string& contract, int& status) {
   setOLPParameter("sw2",SM().sin2ThetaW());
   setOLPParameter("Gf",SM().fermiConstant()*GeV2);
 
+  setOLPParameter("Nf",factory()->nLight());
+
   setOLPParameter("alphas",SM().alphaS());
 
   setOLPParameter("ranhelsum",theRanHelSum);
