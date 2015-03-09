@@ -4,7 +4,7 @@
 ## Herwig-Parallel
 ## --------------------
 ## Author: Daniel Rauch
-## Date:   04 Mar 2015
+## Date:   09 Mar 2015
 ## --------------------
 
 import sys
@@ -16,6 +16,7 @@ import re
 import signal
 from subprocess import call
 from subprocess import check_output
+from subprocess import Popen
 from math import sqrt
 from ConfigParser import SafeConfigParser
 from optparse import OptionParser
@@ -207,8 +208,8 @@ def main():
         print("job #{} with id {}: something weird has happened, progress = {}, exiting...".format(jobs[j], job_ids[j], progress[j]))
         sys.exit(1)
 
-      if opts.builtin_analysis != '':
-        builtinanalysisfiles += "../"+str(jobs[j])+"/"+opts.builtin_analysis+".xml "
+      if opts.builtin_analysis != '' and os.path.isfile(run_name+'/'+str(jobs[j])+'/'+opts.builtin_analysis+'.xml'):
+        builtinanalysisfiles += '../'+str(jobs[j])+'/'+opts.builtin_analysis+'.xml '
       if os.path.isfile(run_name+'/'+str(jobs[j])+'/'+generator+('' if setupfile_title=='' else '-'+setupfile_title)+'.aida'):
         aidafiles += "../"+str(jobs[j])+"/"+generator+('' if setupfile_title=='' else '-'+setupfile_title)+".aida "
       if os.path.isfile(run_name+'/'+str(jobs[j])+'/'+generator+('' if setupfile_title=='' else '-'+setupfile_title)+'.hepmc'):
@@ -263,127 +264,158 @@ def main():
   f_result.close()
 
   # combination of histograms and event files
+  builtin = opts.builtin_analysis != '' and len(builtinanalysisfiles) > 0
   rivet = opts.rivet and len(aidafiles) > 0
   hepmc = opts.hepmc and len(hepmcfiles) > 0
 
-  if opts.builtin_analysis != '' or rivet or hepmc:
+  if builtin or rivet or hepmc:
 
     print("-----------------------------------------")
     print("combination of histograms and event files")
     print("-----------------------------------------")
     os.chdir(run_name+"/"+opts.outfolder)
 
-    if opts.builtin_analysis != '':
+    if builtin:
       print("\nBuilt-in analysis:")
 
-      # combine runs
-      if opts.queue == '':
-        print(" Combining jobs...")
-        call(configParser.get('tools','combineRuns')+' '+opts.builtin_analysis+" "+builtinanalysisfiles, shell=True)
+      # check for presence of all data files
+      if len(builtinanalysisfiles.split()) < len(jobs):
+        sys.stderr.write(' Could not find all *.xml data files in the job folders!\n')
       else:
-        if os.path.isfile(opts.builtin_analysis+".xml"): os.remove(opts.builtin_analysis+".xml")
-        fCombine = open('combineBuiltinAnalysis.sh','w')
-        fCombine.write('#! /bin/bash\n')
-        fCombine.write('source ~/.bashrc\n')
-        fCombine.write(configParser.get('tools','combineRuns')+' '+opts.builtin_analysis+' '+builtinanalysisfiles)
-        fCombine.close()
-        call('chmod u+x combineBuiltinAnalysis.sh',shell=True)
-        output = check_output(configParserQueues.get(opts.queue, 'submit').replace('@SCRIPT@','combineBuiltinAnalysis.sh'), shell=True).strip().replace('\n',' ')
-        jobid = check_output("echo '"+output+"' | "+configParserClusters.get(configParserQueues.get(opts.queue,'cluster'),'jobid'), shell=True)
-        iCount = 0
-        while not (os.path.isfile(opts.builtin_analysis+'.xml')):
-          if iCount % 5 == 0:
-            sys.stdout.write('\r\033[K Combining jobs on cluster with jobid '+jobid)
-          else:
-            sys.stdout.write('.')
-          sys.stdout.flush()
-          time.sleep(int(1))
-          iCount += 1
-        print('\r\033[K Combining jobs on cluster with jobid '+jobid+' > done')
-        os.remove('combineBuiltinAnalysis.sh')
+        # combine jobs
+        if opts.queue == '':
+          print(" Combining jobs...")
+          call(configParser.get('tools','combineRuns')+' '+opts.builtin_analysis+" "+builtinanalysisfiles, shell=True)
+        else:
+          if os.path.isfile(opts.builtin_analysis+".xml"): os.remove(opts.builtin_analysis+".xml")
+          fCombine = open('combineBuiltinAnalysis.sh','w')
+          fCombine.write('#! /bin/bash\n')
+          fCombine.write('source ~/.bashrc\n')
+          fCombine.write(configParser.get('tools','combineRuns')+' '+opts.builtin_analysis+' '+builtinanalysisfiles)
+          fCombine.close()
+          call('chmod u+x combineBuiltinAnalysis.sh',shell=True)
+          output = check_output(configParserQueues.get(opts.queue, 'submit').replace('@SCRIPT@','combineBuiltinAnalysis.sh'), shell=True).strip().replace('\n',' ')
+          jobid = check_output("echo '"+output+"' | "+configParserClusters.get(configParserQueues.get(opts.queue,'cluster'),'jobid'), shell=True)
+          iCount = 0
+          while not (os.path.isfile(opts.builtin_analysis+'.xml')):
+            if iCount % 5 == 0:
+              sys.stdout.write('\r\033[K Combining jobs on cluster with jobid '+jobid)
+            else:
+              sys.stdout.write('.')
+            sys.stdout.flush()
+            time.sleep(int(1))
+            iCount += 1
+          print('\r\033[K Combining jobs on cluster with jobid '+jobid+' > done')
+          os.remove('combineBuiltinAnalysis.sh')
 
-      print(" Making distributions...")
-      call(configParser.get('tools','makeDistributions')+' '+opts.builtin_analysis+" "+opts.builtin_analysis+".xml", shell=True)
-      print(" Creating aida-file...")
-      call(configParser.get('tools','flat2aida')+' -o '+opts.builtin_analysis+".aida $(ls -1 | grep dat)", shell=True)
-      call("rm -f "+opts.builtin_analysis+".xml", shell=True)
-      call("rm -f $(ls -1 | grep dat)", shell=True)
-      
+        print(" Making distributions...")
+        call(configParser.get('tools','makeDistributions')+' '+opts.builtin_analysis+" "+opts.builtin_analysis+".xml", shell=True)
+        print(" Creating aida-file...")
+        call(configParser.get('tools','flat2aida')+' -o '+opts.builtin_analysis+".aida $(ls -1 | grep dat)", shell=True)
+        call("rm -f "+opts.builtin_analysis+".xml", shell=True)
+        call("rm -f $(ls -1 | grep dat)", shell=True)
+        
+        if opts.plot:
+          print(" Generating plots...")
+          aidafile = opts.builtin_analysis+".aida"
+          f = open(aidafile+'.log','w')
+          Popen('rivet-mkhtml -o plots '+aidafile, shell=True, stdout=f, stderr=f).wait()
+          f.close()
+
     if rivet:
       merge_script_location = os.path.dirname(os.path.realpath(sys.argv[0])) + "/../misc/"
       print("\nRivet analyses:")
       # it is necessary to copy the mergeaidas script to the current directory since it does not work otherwise
       shutil.copyfile(merge_script_location+"mergeaidas-exact.py", 'mergeaidas-exact.py')
-      if opts.queue == '':
-        print(" Combining jobs...")
-        call("python mergeaidas-exact.py -o "+generator+('' if setupfile_title=='' else '-'+setupfile_title)+".aida "+aidafiles, shell=True)
-      else:
-        if os.path.isfile(generator+('' if setupfile_title=='' else '-'+setupfile_title)+'.aida'): os.remove(generator+('' if setupfile_title=='' else '-'+setupfile_title)+'.aida')
-        fCombine = open('combineRivetAnalyses.sh','w')
-        fCombine.write('#! /bin/bash\n')
-        fCombine.write('source ~/.bashrc\n')
-        fCombine.write("python mergeaidas-exact.py -o "+generator+('' if setupfile_title=='' else '-'+setupfile_title)+".aida "+aidafiles)
-        fCombine.close()
-        call('chmod u+x combineRivetAnalyses.sh',shell=True)
-        output = check_output(configParserQueues.get(opts.queue, 'submit').replace('@SCRIPT@','combineRivetAnalyses.sh'), shell=True).strip().replace('\n',' ')
-        jobid = check_output("echo '"+output+"' | "+configParserClusters.get(configParserQueues.get(opts.queue,'cluster'),'jobid'), shell=True)
-        iCount = 0
-        while not (os.path.isfile(generator+('' if setupfile_title=='' else '-'+setupfile_title)+'.aida')):
-          if iCount % 5 == 0:
-            sys.stdout.write('\r\033[K Combining jobs on cluster with jobid '+jobid)
-          else:
-            sys.stdout.write('.')
-          sys.stdout.flush()
-          time.sleep(int(1))
-          iCount += 1
-        print('\r\033[K Combining jobs on cluster with jobid '+jobid+' > done')
-        os.remove('combineRivetAnalyses.sh')
 
-    if opts.plot:
-      print("\nCreating plots...")
-      if opts.builtin_analysis == '':
-        output = check_output("source "+configParser.get('general','rivetenvironment')+"; rivet-mkhtml -o plots "+generator+('' if setupfile_title=='' else '-'+setupfile_title)+".aida", shell=True)
+      # check for presence of all data files
+      if len(aidafiles.split()) < len(jobs):
+        sys.stderr.write(' Could not find all *.aida data files in the job folders!\n')
       else:
-        output = check_output("source "+configParser.get('general','rivetenvironment')+"; rivet-mkhtml -o plots "+generator+('' if setupfile_title=='' else '-'+setupfile_title)+".aida "+opts.builtin_analysis+".aida", shell=True)
-      print("{}".format(output))
+        # combine jobs
+        if opts.queue == '':
+          print(" Combining jobs...")
+          call("python mergeaidas-exact.py -o "+generator+('' if setupfile_title=='' else '-'+setupfile_title)+".aida "+aidafiles, shell=True)
+        else:
+          if os.path.isfile(generator+('' if setupfile_title=='' else '-'+setupfile_title)+'.aida'): os.remove(generator+('' if setupfile_title=='' else '-'+setupfile_title)+'.aida')
+          fCombine = open('combineRivetAnalyses.sh','w')
+          fCombine.write('#! /bin/bash\n')
+          fCombine.write('source ~/.bashrc\n')
+          fCombine.write("python mergeaidas-exact.py -o "+generator+('' if setupfile_title=='' else '-'+setupfile_title)+".aida "+aidafiles)
+          fCombine.close()
+          call('chmod u+x combineRivetAnalyses.sh',shell=True)
+          output = check_output(configParserQueues.get(opts.queue, 'submit').replace('@SCRIPT@','combineRivetAnalyses.sh'), shell=True).strip().replace('\n',' ')
+          jobid = check_output("echo '"+output+"' | "+configParserClusters.get(configParserQueues.get(opts.queue,'cluster'),'jobid'), shell=True)
+          iCount = 0
+          while not (os.path.isfile(generator+('' if setupfile_title=='' else '-'+setupfile_title)+'.aida')):
+            if iCount % 5 == 0:
+              sys.stdout.write('\r\033[K Combining jobs on cluster with jobid '+jobid)
+            else:
+              sys.stdout.write('.')
+            sys.stdout.flush()
+            time.sleep(int(1))
+            iCount += 1
+          print('\r\033[K Combining jobs on cluster with jobid '+jobid+' > done')
+          os.remove('combineRivetAnalyses.sh')
+
+        if opts.plot:
+          print(" Generating plots...")
+          aidafile = generator+('' if setupfile_title=='' else '-'+setupfile_title)+".aida"
+          f = open(aidafile+'.log','w')
+          Popen('rivet-mkhtml -o plots '+aidafile, shell=True, stdout=f, stderr=f).wait()
+          f.close()
 
     if hepmc:
       print("\nHepMC event files:")
 
-      if opts.queue == '':
-        for analysis in opts.hepmc.split():
-          print(' Running analysis '+analysis+' on HepMC files...')
-          aidafile = analysis+'.aida'
-          call(configParser.get('tools', 'rivet')+' --analysis='+analysis+' --histo-file='+aidafile+' '+hepmcfiles+' > '+analysis+'.log 2>&1', shell=True)
+      # check for presence of all data files
+      if len(hepmcfiles.split()) < len(jobs):
+        sys.stderr.write(' Could not find all *.hepmc data files in the job folders!\n')
       else:
-        fCombine = open('analyzeHepMCFiles.sh','w')
-        fCombine.write('#! /bin/bash\n')
-        fCombine.write('source ~/.bashrc\n')
-        for analysis in opts.hepmc.split():
-          aidafile = analysis+'.aida'
-          fCombine.write(configParser.get('tools', 'rivet')+' --analysis='+analysis+' --histo-file='+aidafile+' '+hepmcfiles+' > '+analysis+'.log 2>&1\n')
-        fCombine.close()
-        call('chmod u+x analyzeHepMCFiles.sh',shell=True)
-        output = check_output(configParserQueues.get(opts.queue, 'submit').replace('@SCRIPT@','analyzeHepMCFiles.sh'), shell=True).strip().replace('\n',' ')
-        jobid = check_output("echo '"+output+"' | "+configParserClusters.get(configParserQueues.get(opts.queue,'cluster'),'jobid'), shell=True)
-        iCount = 0
-        completedHepMC = False
-        while not (completedHepMC):
-          if iCount % 15 == 0:
-            call(configParserClusters.get(cluster,'joblist')+' > '+'../tmp', shell=True)
-            ansi_escape = re.compile(r'\x1b[^m]*m')          # remove ANSI color escape characters
-            status = ansi_escape.sub('', check_output('grep '+jobid+' '+'../tmp | ' + configParserClusters.get(cluster,'status'), shell=True))
-            completedHepMC = (not status == configParserClusters.get(cluster,'statusQueued')) and (not status == configParserClusters.get(cluster,'statusRunning'))
-            os.remove('../tmp')
-          if iCount % 5 == 0:
-            sys.stdout.write('\r\033[K Analyzing HepMC files on cluster with jobid '+jobid)
-          else:
-            sys.stdout.write('.')
-          sys.stdout.flush()
-          time.sleep(int(1))
-          iCount += 1
-        print('\r\033[K Analyzing HepMC files on cluster with jobid '+jobid+' > done')
-        os.remove('analyzeHepMCFiles.sh')
+        # combine jobs
+        if opts.queue == '':
+          for analysis in opts.hepmc.split():
+            print(' Running analysis '+analysis+' on HepMC files...')
+            aidafile = analysis+'.aida'
+            call(configParser.get('tools', 'rivet')+' --analysis='+analysis+' --histo-file='+aidafile+' '+hepmcfiles+' > '+analysis+'.log 2>&1', shell=True)
+        else:
+          fCombine = open('analyzeHepMCFiles.sh','w')
+          fCombine.write('#! /bin/bash\n')
+          fCombine.write('source ~/.bashrc\n')
+          for analysis in opts.hepmc.split():
+            aidafile = analysis+'.aida'
+            fCombine.write(configParser.get('tools', 'rivet')+' --analysis='+analysis+' --histo-file='+aidafile+' '+hepmcfiles+' > '+analysis+'.log 2>&1\n')
+          fCombine.close()
+          call('chmod u+x analyzeHepMCFiles.sh',shell=True)
+          output = check_output(configParserQueues.get(opts.queue, 'submit').replace('@SCRIPT@','analyzeHepMCFiles.sh'), shell=True).strip().replace('\n',' ')
+          jobid = check_output("echo '"+output+"' | "+configParserClusters.get(configParserQueues.get(opts.queue,'cluster'),'jobid'), shell=True)
+          iCount = 0
+          completedHepMC = False
+          while not (completedHepMC):
+            if iCount % 15 == 0:
+              call(configParserClusters.get(cluster,'joblist')+' > '+'../tmp', shell=True)
+              ansi_escape = re.compile(r'\x1b[^m]*m')          # remove ANSI color escape characters
+              status = ansi_escape.sub('', check_output('grep '+jobid+' '+'../tmp | ' + configParserClusters.get(cluster,'status'), shell=True))
+              completedHepMC = (not status == configParserClusters.get(cluster,'statusQueued')) and (not status == configParserClusters.get(cluster,'statusRunning'))
+              os.remove('../tmp')
+            if iCount % 5 == 0:
+              sys.stdout.write('\r\033[K Analyzing HepMC files on cluster with jobid '+jobid)
+            else:
+              sys.stdout.write('.')
+            sys.stdout.flush()
+            time.sleep(int(1))
+            iCount += 1
+          print('\r\033[K Analyzing HepMC files on cluster with jobid '+jobid+' > done')
+          os.remove('analyzeHepMCFiles.sh')
+
+        if opts.plot:
+          print(' Generating plots')
+          for analysis in opts.hepmc.split():
+            print('  for analysis '+analysis+'...')
+            aidafile = analysis+'.aida'
+            f = open(aidafile+'.log','w')
+            Popen('rivet-mkhtml -o plots '+aidafile, shell=True, stdout=f, stderr=f).wait()
+            f.close()
 
     print('')
 
