@@ -24,6 +24,7 @@
 #    (Not fully implemented yet)                                     #
 #                                                                    #
 ######################################################################
+# model=smdiag
 @MODEL@
 
 ### model.options (comma separated list) #############################
@@ -142,6 +143,7 @@
 #         See also reduction_interoperation, reduction_interoperation_rescue.
 #                                                                    #
 ######################################################################
+# reduction_programs=ninja,golem95
 reduction_programs=@REDUCTIONPROGRAMS@
 
 ### polvec (text) ####################################################
@@ -171,6 +173,8 @@ reduction_programs=@REDUCTIONPROGRAMS@
 #                        with a custom function (read the manual for this).
 #                                                                    #
 ######################################################################
+# extensions=autotools 
+# extensions=autotools, noformopt
 extensions=autotools @FORMOPT@
 
 ### debug (comma separated list) #####################################
@@ -410,8 +414,8 @@ extensions=autotools @FORMOPT@
 #    Activates Phase-Space Point rescue based on the estimated       #
 #    accuracy on the finite part. It needs PSP_check=True.           #
 #    The accuracy is estimated using information on the single       #
-#    pole accuracy and the cancellation between cut-constructable    #
-#    part and R2.                                                    #
+#    pole accuracy and on the stability of the finite part           #
+#    under rotation of the phase space point.                        #
 #                                                                    #
 #    !!Works only for QCD and with built-in model files!!            #
 #                                                                    #
@@ -423,7 +427,7 @@ extensions=autotools @FORMOPT@
 #                                                                    #
 #    Sets the verbosity of the PSP_check.                            #
 #    verbosity = False: no output                                    #
-#    verbosity = True : bad point are written in a file gs_badpts.log
+#    verbosity = True : bad point are written into gs_badpts.log     #
 #    !!Works only for QCD and with built-in model files!!            #
 #                                                                    #
 ######################################################################
@@ -432,10 +436,10 @@ extensions=autotools @FORMOPT@
 ### PSP_chk_th1 (integer number) #####################################
 #    Sets the same variable in config.f90                            #
 #                                                                    #
-#    Threshold to activate accept the point without further treatments.
-#    The number has to be an integer indicating the wished minimum number
-#    of digits accuracy on the pole. For poles more precise than this
-#    threshold the finite part is not checked.                       #
+#    Threshold to activate accept the point without further          #
+#    treatments. The number has to be an integer indicating the      #
+#    wished minimum number of digits accuracy on the pole. For poles
+#    more precise than this threshold the finite part is not checked.
 #    !!Works only for QCD and with built-in model files!!            #
 #                                                                    #
 ######################################################################
@@ -444,11 +448,13 @@ extensions=autotools @FORMOPT@
 ### PSP_chk_th2 (integer number) #####################################
 #    Sets the same variable in config.f90                            #
 #                                                                    #
-#    Threshold to declare a PSP as bad point, based of the precision of the pole.
-#    Points with precision less than this threshold are directly reprocessed with
-#    the rescue system (if available), or declared as unstable. According to the
-#    verbosity level set, such points are written to a file and not used when
-#    the code is interfaced to an external Monte Carlo using the new BLHA standards.
+#    Threshold to declare a PSP as bad point, based of the precision
+#    of the pole.  Points with precision less than this threshold are
+#    directly reprocessed with the rescue system (if available), or  #
+#    declared as unstable. According to the verbosity level set, such
+#    points are written to a file and not used when the code is      #
+#    interfaced to an external Monte Carlo using the new BLHA        #
+#    standards.                                                      #
 #    !!Works only for QCD and with built-in model files!!            #
 #                                                                    #
 ######################################################################
@@ -457,8 +463,8 @@ extensions=autotools @FORMOPT@
 ### PSP_chk_th3 (integer number) #####################################
 #    Sets the same variable in config.f90                            #
 #                                                                    #
-#    Threshold to declare a PSP as bad point, based on the precision of
-#    the finite part estimated with a rotation. According to the     #
+#    Threshold to declare a PSP as bad point, based on the precision
+#    of the finite part estimated with a rotation. According to the  #
 #    verbosity level set, such points are written to a file and not  #
 #    used when the code is interfaced to an external Monte Carlo     #
 #    using the new BLHA standards.                                   #
@@ -470,14 +476,81 @@ extensions=autotools @FORMOPT@
 ### PSP_chk_kfactor (text) ###########################################
 #    Sets the same variable in config.f90                            #
 #                                                                    #
-#    Threshold on the k-factor to declare a PSP as bad point. According
-#    to the verbosity level set, such points are written to a file and
-#    not used when the code is interfaced to an external Monte Carlo
-#    using the new BLHA standards.                                   #
+#    Threshold on the k-factor to perform a rotation check on the PSP. 
 #    !!Works only for QCD and with built-in model files!!            #
 #                                                                    #
 ######################################################################
-# PSP_chk_kfactor=10000
+# PSP_chk_kfactor=1000
+PSP_chk_kfactor=10000
+
+### PSP_chk_li1 (integer number) #####################################
+#    Sets the same variable in config.f90. For loop-induced          #
+#    processes, it is used instead of PSP_chk_th1.                   #
+#                                                                    #
+#    It is precision of the pole part (which should be zero) in      #
+#    comparison to the finite part. If the pole part is at least     #
+#    PSP_chk_li1 orders smaller than the finite part, the point is   #
+#    accepted without any other check.                               #
+#                                                                    #
+#    If Samurai is used as default reduction program, this needs to  #
+#    be reduced to 8.                                                #
+#                                                                    #
+#    The number has to be an integer.                                #
+#    !!Works only for QCD and with built-in model files!!            #
+#                                                                    #
+######################################################################
+# PSP_chk_li1=16
+
+### PSP_chk_li2 (integer number) #####################################
+#    Sets the same variable in config.f90. For loop-induced          #
+#    processes, it is used instead of PSP_chk_th2.                   #
+#                                                                    #
+#    Threshold to declare a PSP as bad point, based of the precision
+#    of the pole in comparison to the finite part. Points with       #
+#    precision less than this threshold are directly reprocessed with
+#    the rescue system (if available), or declared as unstable.      #
+#    According to the verbosity level set, such points are written to
+#    a file and not used when the code is interfaced to an external  #
+#    Monte Carlo using the new BLHA standards.                       #
+#                                                                    #
+#    If Samurai is used as default reduction program, this needs to  #
+#    be reduced to 6.                                                #
+#                                                                    #
+#    !!Works only for QCD and with built-in model files!!            #
+#                                                                    #
+######################################################################
+# PSP_chk_li2=7
+
+### PSP_chk_li3 (integer number) #####################################
+#    Sets the same variable in config.f90. For loop-induced          #
+#    processes, it is used instead of PSP_chk_th3.                   #
+#                                                                    #
+#    Threshold to declare a PSP as bad point, based on the precision
+#    of the finite part estimated with a rotation. Points with       #
+#    precision less than this threshold are reprocessed with the     #
+#    rescue system (if available) or declared as unstable.  According
+#    to the verbosity level set, such points are written to a file   #
+#    and not used when the code is interfaced to an external Monte   #
+#    Carlo using the new BLHA standards.                             #
+#    !!Works only for QCD and with built-in model files!!            #
+#                                                                    #
+######################################################################
+# PSP_chk_li3=6
+
+### PSP_chk_li4 (integer number) #####################################
+#    Sets the same variable in config.f90. Similar to PSP_chk_li2,   #
+#    but for the rescue system (by default Golem95).                 #
+#                                                                    #
+#    Threshold to declare a PSP as bad point in the rescue system,   #
+#    based on the precision of the pole part in comparison to the    #
+#    finite part. According to the verbosity level set, such points  #
+#    are written to a file and not used when the code is interfaced  #
+#    to an external Monte Carlo using the new BLHA standards.        #
+#                                                                    #
+#    !!Works only for QCD and with built-in model files!!            #
+#                                                                    #
+######################################################################
+# PSP_chk_li4=19
 
 ### reference-vectors (comma separated list) #########################
 #    A list of reference vectors for massive and higher spin particles.
@@ -568,6 +641,7 @@ extensions=autotools @FORMOPT@
 #    form.tempdir=/scratch                                           #
 #                                                                    #
 ######################################################################
+# form.tempdir=
 form.tempdir=@FORMTEMPDIR@
 
 ### haggies.bin (text) ###############################################
