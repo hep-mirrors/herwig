@@ -53,9 +53,9 @@ GoSamAmplitude::GoSamAmplitude(){
   theFormOpt=true;
   theNinja=true;
   theHiggsEff=false;
-  theAccuracyFileFirstCall=false;
   theFirstInaccuratePoint=false;
-  theAccuracyTarget=6;}
+  theAccuracyTarget=6;
+  theMassiveLeptons=false;}
 
 GoSamAmplitude::~GoSamAmplitude() {}
 
@@ -286,11 +286,17 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
   OLP_SetParameter((char *)"alphaS", &as, &zero, &pStatus);
 
   // fill massive Particle vector
-  if (massiveParticles.empty())
+  if (massiveParticles.empty()) {
+    // with quark masses
     for (int i=1; i<=6; ++i) 
       if (getParticleData(i)->mass()/GeV > 0.0) massiveParticles.push_back(i);
+    // with lepton masses
+      if (theMassiveLeptons && getParticleData(11)->mass()/GeV > 0.0) massiveParticles.push_back(11);
+      if (theMassiveLeptons && getParticleData(13)->mass()/GeV > 0.0) massiveParticles.push_back(13);
+      if (theMassiveLeptons && getParticleData(15)->mass()/GeV > 0.0) massiveParticles.push_back(15);
+  }
 
-  // hand over quark masses and widths (iff massive)
+  // hand over quark (and possibly lepton) masses and widths (iff massive)
   if ( massiveParticles.size() != 0 ) {
     for ( vector<int>::const_iterator mID = massiveParticles.begin(); mID != massiveParticles.end(); ++mID ) {
         string mstr;
@@ -405,6 +411,12 @@ void GoSamAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs, st
 
   // loop over quarks to check if they have non-zero masses
   for (int i=1; i<=6; ++i) if (getParticleData(i)->mass()/GeV > 0.0) massiveParticles.push_back(i);
+
+  // check if leptons have non-zero masses (iff theMassiveLeptons==true)
+  if (theMassiveLeptons && getParticleData(11)->mass()/GeV > 0.0) massiveParticles.push_back(11);
+  if (theMassiveLeptons && getParticleData(13)->mass()/GeV > 0.0) massiveParticles.push_back(13);
+  if (theMassiveLeptons && getParticleData(15)->mass()/GeV > 0.0) massiveParticles.push_back(15);
+
   if ( massiveParticles.size() != 0 ) {
     orderFile << "MassiveParticles         ";
     for ( vector<int>::const_iterator mID = massiveParticles.begin(); mID != massiveParticles.end(); ++mID ) {
@@ -870,6 +882,22 @@ void GoSamAmplitude::Init() {
         "If acc > 10^-AccuracyTarget the corresponding phase space point is being written to file and disposed of.",
         &GoSamAmplitude::theAccuracyTarget, 6, 0, 0,
         false, false, Interface::lowerlim);
+
+  static Switch<GoSamAmplitude,bool> interfaceMassiveLeptons
+         ("MassiveLeptons",
+          "If set to Yes, then pass on the light lepton masses - as well as the tau mass - to GoSam."
+          "Otherwise GoSam will use light leptons of zero mass as default, as well as its own default tau mass.",
+          &GoSamAmplitude::theMassiveLeptons, false, false, false);
+  static SwitchOption interfaceMassiveLeptonsNo
+         (interfaceMassiveLeptons,
+          "No",
+          "No",
+          false);
+  static SwitchOption interfaceMassiveLeptonsYes
+         (interfaceMassiveLeptons,
+          "Yes",
+          "Yes",
+          true);
 
 }
 

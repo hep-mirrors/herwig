@@ -268,7 +268,6 @@ private:
   mutable string accuracyFileTitle;
   mutable string accuracyFile;
 
-  mutable bool theAccuracyFileFirstCall;
   mutable bool theFirstInaccuratePoint;
 
   int theAccuracyTarget;
@@ -277,6 +276,7 @@ private:
   bool theFormOpt;
   bool theNinja;
   bool theHiggsEff;
+  bool theMassiveLeptons;
 
   bool isitDR;
   
