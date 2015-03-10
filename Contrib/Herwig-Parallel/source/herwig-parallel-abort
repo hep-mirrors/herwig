@@ -57,7 +57,7 @@ exclude = len(exclude_jobs) > 0
 include = len(include_jobs) > 0
 mergeAll = not (exclude or include)
 
-run_name = args[0]
+run_name = args[0].strip('/')
 
 line = '=============================='
 for i in range(len(run_name)): line += '='
@@ -70,55 +70,125 @@ print("")
 integrationjobids = []
 jobs = []
 job_ids = []
+queues = []
+clusters = []
 f_run_info = open(run_name+'/run.info','r')
 l = 0
 for line in f_run_info:
   l += 1
-  if l == 1: cluster = line.replace('\n','')
+  if l == 2:
+    setupfile = line.replace('\n','').split('/')[-1]
+  elif l == 3:
+    generator = line.replace('\n','')
+    runfile = generator+'.run'
+  elif l == 4:
+    buildScript = line.replace('\n','')
+    buildScriptTitle = buildScript.split('/')[-1]
+  elif l == 5:
+    buildCluster = line.replace('\n','')
+    clusters.append(buildCluster)
   elif l == 6: buildjobid = line.replace('\n','')
-  elif l == 8: integrationjobids = line.replace('\n','').split()
-  elif l > 11:
-    jobs.append(int(line.replace('\n','').split()[1].replace('#','').replace(':','')))
-    job_ids.append(line.replace('\n','').split()[3])
+  elif l == 7:
+    integrateScript = line.replace('\n','')
+    integrateScriptTitle = integrateScript.split('/')[-1]
+  elif l == 8:
+    integrateCluster = line.replace('\n','')
+    if not integrateCluster in clusters:
+      clusters.append(integrateCluster)
+  elif l == 9: integrationjobids = line.replace('\n','').split()
+  elif l == 10:
+    runScript = line.replace('\n','')
+    runScriptTitle = runScript.split('/')[-1]
+  elif l > 12:
+    data = line.replace('\n','').split()
+    jobs.append(int(data[1].replace('#','').replace(':','')))
+    queues.append(data[2])
+    job_ids.append(data[3])
+    cluster = 'local' if data[2] == 'local' else configParserQueues.get(data[2],'cluster')
+    if not cluster in clusters:
+      clusters.append(cluster)
 f_run_info.close()
 
 # get joblist
-sys.stdout.write('obtaining joblist...')
+sys.stdout.write('obtaining joblist'+('s' if len(clusters)>1 else '')+'...')
 sys.stdout.flush()
-call(configParserClusters.get(cluster,'joblist')+' > '+run_name+'/tmp', shell=True)
+for cluster in clusters:
+  try:
+    if cluster == 'local':
+      call('ps -al > '+run_name+'/joblist.'+cluster, shell=True)
+    else:
+      call(configParserClusters.get(cluster,'joblist')+' > '+run_name+'/joblist.'+cluster, shell=True)
+  except:
+    sys.exit(1)
 ansi_escape = re.compile(r'\x1b[^m]*m')          # remove ANSI color escape characters
 print('\n > done\n')
 
 f_run_log = open(run_name+'/run.log','a')
 
-if buildjobid != '':
+# abort build job
+if buildjobid != '' and not os.path.isfile(run_name+'/read/'+runfile):
 
-  status = ansi_escape.sub('', check_output('grep '+buildjobid+' '+run_name+'/tmp | ' + configParserClusters.get(cluster,'status'), shell=True))
-  if status == configParserClusters.get(cluster,'statusQueued') or status == configParserClusters.get(cluster,'statusRunning'):
-    print("aborting build job with id {}...".format(buildjobid))
-    f_run_log.write(datetime.datetime.now().isoformat(' ')+': herwig-parallel-abort: aborting build job with id {}\n'.format(buildjobid))
+  jobRunning = False
+  if buildCluster == 'local':
     try:
-      command = configParserClusters.get(cluster,'abort').replace('@JOBID@',buildjobid)
-      output = check_output(command, shell=True).strip().replace('\n',' ')
-      print(' > {}\n'.format(output))
+      ps = check_output('grep '+buildjobid+' '+run_name+'/joblist.local', shell=True)
     except:
-      print(" > error when trying to abort build job with id {}\n".format(buildjobid))
+      ps = '' # job already finished
+    for line in ps.split('\n'):
+      data = line.split()
+      if len(data) >= 13:
+        if data[3] == buildjobid and (buildScriptTitle[:10] in data[13] or buildScript[:10] in data[13]) and not '<defunct>' in line:
+          print("aborting build job with id {}...".format(buildjobid))
+          buildChildID = check_output('ps -o pid --ppid '+buildjobid+' --noheaders',shell=True)
+          call('kill '+buildChildID, shell=True) # kill child process 'Herwig++ build ...' first!
+          call('kill '+buildjobid, shell=True)   # kill parent process 'herwig-parallel-build.sh' afterwards!
+          print(' > killing job\n')
+          break
+  else:
+    status = ansi_escape.sub('', check_output('grep '+buildjobid+' '+run_name+'/joblist.'+buildCluster+' | ' + configParserClusters.get(buildCluster,'status'), shell=True))
+    if status == configParserClusters.get(buildCluster,'statusQueued') or status == configParserClusters.get(buildCluster,'statusRunning'):
+      print("aborting build job with id {}...".format(buildjobid))
+      f_run_log.write(datetime.datetime.now().isoformat(' ')+': herwig-parallel-abort: aborting build job with id {}\n'.format(buildjobid))
+      command = configParserClusters.get(buildCluster,'abort').replace('@JOBID@',buildjobid)
+      try:
+        output = check_output(command, shell=True).strip().replace('\n',' ')
+        print(' > {}\n'.format(output))
+      except:
+        print(" > error when trying to abort build job with id {}\n".format(buildjobid))
 
-if len(integrationjobids) > 0:
+# abort integration jobs
+if len(integrationjobids) > 0 and not os.path.isfile(run_name+'/read/Herwig/'+generator+'/'+('' if setupfile=='' else setupfile+'/')+'HerwigGrids.xml'):
 
-  abort_integration_jobs = []
-  for j in range(len(integrationjobids)):
-    status = ansi_escape.sub('', check_output('grep '+integrationjobids[j]+' '+run_name+'/tmp | ' + configParserClusters.get(cluster,'status'), shell=True))
-    if status == configParserClusters.get(cluster,'statusQueued') or status == configParserClusters.get(cluster,'statusRunning'):
-      abort_integration_jobs.append(j)
-
-  if len(abort_integration_jobs) > 0:
+  if integrateCluster == 'local':
     for j in range(len(integrationjobids)):
-      if j in abort_integration_jobs:
+      killedJob = False
+      try:
+        ps = check_output('grep '+integrationjobids[j]+' '+run_name+"/joblist.local", shell=True)
+      except:
+        ps = ''
+      for line in ps.split('\n'):
+        data = line.split()
+        if len(data) >= 13:
+          if data[3] == integrationjobids[j] and (integrateScriptTitle[:10] in data[13] or integrateScript[:10] in data[13]) and not '<defunct>' in line:
+            print("aborting integration job #{} with id {}...".format(j+1,integrationjobids[j]))
+            f_run_log.write(datetime.datetime.now().isoformat(' ')+': herwig-parallel-abort: aborting integration job #{} with id {}\n'.format(j+1,integrationjobids[j]))
+            integrateChildID = check_output('ps -o pid --ppid '+integrationjobids[j]+' --noheaders',shell=True)
+            call('kill '+integrateChildID, shell=True)     # kill child process 'Herwig++ integrate ...' first!
+            call('kill '+integrationjobids[j], shell=True) # kill parent process 'herwig-parallel-integrate.sh' afterwards!
+            print(' > killing job\n')
+            killedJob = True
+            break
+      if not killedJob:
+        print("integration job #{} with id {} already completed...\n".format(j+1,integrationjobids[j]))
+        f_run_log.write(datetime.datetime.now().isoformat(' ')+': herwig-parallel-abort: integration job #{} with id {} already completed\n'.format(j+1,integrationjobids[j]))
+  else:
+    for j in range(len(integrationjobids)):
+      status = ansi_escape.sub('', check_output('grep '+integrationjobids[j]+' '+run_name+'/joblist.'+integrateCluster+' | ' + configParserClusters.get(cluster,'status'), shell=True))
+      if status == configParserClusters.get(integrateCluster,'statusQueued') or status == configParserClusters.get(integrateCluster,'statusRunning'):
         print("aborting integration job #{} with id {}...".format(j+1,integrationjobids[j]))
         f_run_log.write(datetime.datetime.now().isoformat(' ')+': herwig-parallel-abort: aborting integration job #{} with id {}\n'.format(j+1,integrationjobids[j]))
         try:
-          command = configParserClusters.get(cluster,'abort').replace('@JOBID@',integrationjobids[j])
+          command = configParserClusters.get(integrateCluster,'abort').replace('@JOBID@',integrationjobids[j])
           output = check_output(command, shell=True).strip().replace('\n',' ')
           print(' > {}\n'.format(output))
         except:
@@ -127,6 +197,7 @@ if len(integrationjobids) > 0:
         print("integration job #{} with id {} already completed...\n".format(j+1,integrationjobids[j]))
         f_run_log.write(datetime.datetime.now().isoformat(' ')+': herwig-parallel-abort: integration job #{} with id {} already completed\n'.format(j+1,integrationjobids[j]))
 
+# abort run jobs
 if len(jobs) > 0:
 
   abort_jobs = []
@@ -150,18 +221,41 @@ if len(jobs) > 0:
     abort_job_ids = job_ids
 
   for j in range(len(abort_jobs)):
-    status = ansi_escape.sub('', check_output('grep '+abort_job_ids[j]+' '+run_name+'/tmp | ' + configParserClusters.get(cluster,'status'), shell=True))
-    if status == configParserClusters.get(cluster,'statusQueued') or status == configParserClusters.get(cluster,'statusRunning'):
-      print("aborting job #{} with id {}...".format(abort_jobs[j],abort_job_ids[j]))
-      f_run_log.write(datetime.datetime.now().isoformat(' ')+': herwig-parallel-abort: aborting job #{} with id {}\n'.format(abort_jobs[j],abort_job_ids[j]))
+    cluster = 'local' if queues[abort_jobs[j]-1] == 'local' else configParserQueues.get(queues[abort_jobs[j]-1], 'cluster')
+    if cluster == 'local':
+      killedJob = False
       try:
-        command = configParserClusters.get(cluster,'abort').replace('@JOBID@',abort_job_ids[j])
-        output = check_output(command, shell=True).strip().replace('\n',' ')
-        print(' > {}\n'.format(output))
+        ps = check_output('grep '+abort_job_ids[j]+' '+run_name+'/joblist.local', shell=True)
       except:
-        print(" > error when trying to abort job #{} with id {}\n".format(abort_jobs[j],abort_job_ids[j]))
+        ps = ''
+      for line in ps.split('\n'):
+        data = line.split()
+        if len(data) >= 13:
+          if data[3] == abort_job_ids[j] and (runScriptTitle[:10] in data[13] or runScript[:10] in data[13]) and not '<defunct>' in line:
+            print("aborting job #{} with id {}...".format(abort_jobs[j],abort_job_ids[j]))
+            f_run_log.write(datetime.datetime.now().isoformat(' ')+': herwig-parallel-abort: aborting job #{} with id {}\n'.format(abort_jobs[j],abort_job_ids[j]))
+            childID = check_output('ps -o pid --ppid '+abort_job_ids[j]+' --noheaders',shell=True)
+            call('kill '+childID, shell=True)          # kill child process 'Herwig++ run ...' first!
+            call('kill '+abort_job_ids[j], shell=True) # kill parent process 'herwig-parallel-run.sh' afterwards!
+            print(' > killing job\n')
+            killedJob = True
+            break
+      if not killedJob:
+        print("job #{} with id {} can't be aborted because it is neither queued nor running...\n".format(abort_jobs[j],abort_job_ids[j]))
     else:
-      print("job #{} with id {} can't be aborted because it is neither queued nor running...\n".format(abort_jobs[j],abort_job_ids[j]))
+      status = ansi_escape.sub('', check_output('grep '+abort_job_ids[j]+' '+run_name+'/joblist.'+cluster+' | ' + configParserClusters.get(cluster,'status'), shell=True))
+      if status == configParserClusters.get(cluster,'statusQueued') or status == configParserClusters.get(cluster,'statusRunning'):
+        print("aborting job #{} with id {}...".format(abort_jobs[j],abort_job_ids[j]))
+        f_run_log.write(datetime.datetime.now().isoformat(' ')+': herwig-parallel-abort: aborting job #{} with id {}\n'.format(abort_jobs[j],abort_job_ids[j]))
+        try:
+          command = configParserClusters.get(cluster,'abort').replace('@JOBID@',abort_job_ids[j])
+          output = check_output(command, shell=True).strip().replace('\n',' ')
+          print(' > {}\n'.format(output))
+        except:
+          print(" > error when trying to abort job #{} with id {}\n".format(abort_jobs[j],abort_job_ids[j]))
+      else:
+        print("job #{} with id {} can't be aborted because it is neither queued nor running...\n".format(abort_jobs[j],abort_job_ids[j]))
 
-os.remove(run_name+'/tmp')
+for cluster in clusters:
+  os.remove(run_name+'/joblist.'+cluster)
 f_run_log.close()

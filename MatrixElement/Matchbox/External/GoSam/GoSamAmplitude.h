@@ -120,7 +120,7 @@ public:
   /**
    * Call OLP_EvalSubProcess and fill in the results
    */
-   void evalSubProcess() const;
+  void evalSubProcess() const;
 
   /**
    * Fill in results for the given colour correlator
@@ -142,6 +142,7 @@ public:
 
   void getids() const;
 
+  int accuracyTargetNegExp() const { return theAccuracyTarget; }
 
 public:
 
@@ -249,7 +250,6 @@ private:
    */
   map<int , gosamprocinfo > processmap;
 
-  
   mutable string gosamPathInterface;
   mutable string gosamSetupInFileNameInterface;
   mutable string gosamBuildScript;
@@ -265,10 +265,18 @@ private:
   mutable string contractFileName;
   mutable string orderFileName;
 
+  mutable string accuracyFileTitle;
+  mutable string accuracyFile;
+
+  mutable bool theFirstInaccuratePoint;
+
+  int theAccuracyTarget;
+
   bool theCodeExists;
   bool theFormOpt;
   bool theNinja;
   bool theHiggsEff;
+  bool theMassiveLeptons;
 
   bool isitDR;
   

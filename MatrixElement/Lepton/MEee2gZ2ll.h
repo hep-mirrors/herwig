@@ -204,7 +204,7 @@ protected:
 protected:
 
   /**
-   *  Calculate the matrix element for \f$e^-e^-\to q \bar q$.
+   *  Calculate the matrix element for \f$e^+e^-\to \ell^+ \ell^-\f$.
    * @param partons The incoming and outgoing particles
    * @param momenta The momenta of the incoming and outgoing particles
    */  
@@ -234,7 +234,7 @@ protected:
    *  The ratio of the matrix element for one additional jet over the
    * leading order result. In practice
    * \[\frac{\hat{s}|\overline{\mathcal{M}}|^2_2|D_{\rm emit}|}{4\pi C_F\alpha_S|\overline{\mathcal{M}}|^2_3\left(|D_{\rm emit}|+|D_{\rm spect}\right)}}\]
-   * is returned where \f$\|\overline{\mathcal{M}}|^2f$ is 
+   * is returned where \f$\|\overline{\mathcal{M}}|^2\f$ is 
    * the spin and colour summed/averaged matrix element.
    * @param partons The incoming and outgoing particles
    * @param momenta The momenta of the incoming and outgoing particles

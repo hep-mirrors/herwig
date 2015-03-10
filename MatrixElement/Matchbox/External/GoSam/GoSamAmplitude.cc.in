@@ -52,7 +52,10 @@ GoSamAmplitude::GoSamAmplitude(){
   isitDR=false;
   theFormOpt=true;
   theNinja=true;
-  theHiggsEff=false;}
+  theHiggsEff=false;
+  theFirstInaccuratePoint=false;
+  theAccuracyTarget=6;
+  theMassiveLeptons=false;}
 
 GoSamAmplitude::~GoSamAmplitude() {}
 
@@ -151,7 +154,7 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
   cmd+=" --higgseff="+(theHiggsEff ? string("smehc") : string("smdiag"));   //@MODEL@
   std::system(cmd.c_str());
 
-  generator()->log() << "\nAccording to the repository settings for the GoSam interface:\n" << flush;
+  generator()->log() << "\n  According to the repository settings for the GoSam interface:\n" << flush;
 
   if (theHiggsEff) generator()->log() << "\n  -- GoSam will use a model with an effective ggH coupling (model=smehc).\n" << flush;
   else if (!theHiggsEff) generator()->log() << "\n  -- GoSam will use its default model (model=smdiag).\n" << flush;
@@ -283,11 +286,17 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
   OLP_SetParameter((char *)"alphaS", &as, &zero, &pStatus);
 
   // fill massive Particle vector
-  if (massiveParticles.empty())
+  if (massiveParticles.empty()) {
+    // with quark masses
     for (int i=1; i<=6; ++i) 
       if (getParticleData(i)->mass()/GeV > 0.0) massiveParticles.push_back(i);
+    // with lepton masses
+      if (theMassiveLeptons && getParticleData(11)->mass()/GeV > 0.0) massiveParticles.push_back(11);
+      if (theMassiveLeptons && getParticleData(13)->mass()/GeV > 0.0) massiveParticles.push_back(13);
+      if (theMassiveLeptons && getParticleData(15)->mass()/GeV > 0.0) massiveParticles.push_back(15);
+  }
 
-  // hand over quark masses and widths (iff massive)
+  // hand over quark (and possibly lepton) masses and widths (iff massive)
   if ( massiveParticles.size() != 0 ) {
     for ( vector<int>::const_iterator mID = massiveParticles.begin(); mID != massiveParticles.end(); ++mID ) {
         string mstr;
@@ -402,6 +411,12 @@ void GoSamAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs, st
 
   // loop over quarks to check if they have non-zero masses
   for (int i=1; i<=6; ++i) if (getParticleData(i)->mass()/GeV > 0.0) massiveParticles.push_back(i);
+
+  // check if leptons have non-zero masses (iff theMassiveLeptons==true)
+  if (theMassiveLeptons && getParticleData(11)->mass()/GeV > 0.0) massiveParticles.push_back(11);
+  if (theMassiveLeptons && getParticleData(13)->mass()/GeV > 0.0) massiveParticles.push_back(13);
+  if (theMassiveLeptons && getParticleData(15)->mass()/GeV > 0.0) massiveParticles.push_back(15);
+
   if ( massiveParticles.size() != 0 ) {
     orderFile << "MassiveParticles         ";
     for ( vector<int>::const_iterator mID = massiveParticles.begin(); mID != massiveParticles.end(); ++mID ) {
@@ -580,7 +595,6 @@ void GoSamAmplitude::getids() const {
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-
 void GoSamAmplitude::evalSubProcess() const {
 
   useMe();
@@ -591,6 +605,8 @@ void GoSamAmplitude::evalSubProcess() const {
   double scale = sqrt(mu2() / GeV2);
 
   double out[7] = { };
+  double acc;
+
   if ( idpair.size() == 0 ){ getids(); }
   int id = -99;
   if ( olpId()[ProcessType::loopInducedME2] ) id = olpId()[ProcessType::loopInducedME2];
@@ -599,9 +615,43 @@ void GoSamAmplitude::evalSubProcess() const {
 
   int callid(idpair[id]); // If id denotes the Herwig ID, this returns the GoSam ID
   string calltype(idtypepair[id]); // If id denotes the Herwig ID, this returns the amplitude type
-  double acc;
 
   OLP_EvalSubProcess2(&(callid), olpMomenta(), &scale, out, &acc);
+
+  accuracyFileTitle = name() + ".OLPAccuracy.lh";
+  accuracyFile = factory()->buildStorage() + accuracyFileTitle;
+  ofstream accuracyFileStream;
+
+  double accuracyTarget = 1.0/pow(10.0,accuracyTargetNegExp());
+  if ( (olpId()[ProcessType::oneLoopInterference]||olpId()[ProcessType::loopInducedME2]) &&  acc > accuracyTarget ) {
+    if (theFirstInaccuratePoint==false) {
+      cerr << "\n\n  GoSam returned one-loop interference or loop induced ME2 at given PSP\n" 
+           << "  with acc = " << acc << " > target accuracy = " << accuracyTarget << ".\n" << flush;
+      cerr << "  PSPs with acc > " << accuracyTarget << " will be discarded and recorded in\n" 
+           << "  " + accuracyFile << ".\n" << flush;
+      cerr << "  Note: Please re-evaluate your process setup (accuracy target, masses,\n"
+           << "  cuts, etc.), if the amount of PSPs with acc > " << accuracyTarget << " is significant!\n\n" << flush;
+      theFirstInaccuratePoint=true;
+    }
+    vector<Lorentz5Momentum> currentpsp = lastXComb().meMomenta();
+    time_t rawtime;
+    time (&rawtime);
+    accuracyFileStream << "Sub-process with Herwig ID = " << id << " and GoSam ID = " << callid << ", " << ctime(&rawtime);
+    accuracyFileStream << "GoSam evaluated one-loop interference or loop induced ME2 with acc = " << acc 
+                       << " > target accuracy = " << accuracyTarget << ", at PSP [in units of GeV]:" << endl;
+    for (size_t i=0; i!=currentpsp.size(); ++i) {
+      accuracyFileStream << "(t,x,y,z,mass;m)[" << i << "]=("
+                         << currentpsp[i].t()/GeV << ","
+                         << currentpsp[i].x()/GeV << ","
+                         << currentpsp[i].y()/GeV << ","
+                         << currentpsp[i].z()/GeV << ","
+                         << currentpsp[i].mass()/GeV << ";"
+                         << currentpsp[i].m()/GeV << ")"
+                         << endl;
+    }
+    accuracyFileStream << endl;
+    throw Veto(); // Dispose of PSP
+  }
 
   if ( olpId()[ProcessType::oneLoopInterference] ) {
     if (calculateTreeME2()) lastTreeME2(out[3] * units);
@@ -705,7 +755,8 @@ void GoSamAmplitude::persistentOutput(PersistentOStream & os) const {
      << gosamSourcePath << gosamInstallPath << gosamSetupInFileName
      << orderFileTitle << contractFileTitle
      << contractFileName << orderFileName
-     << theCodeExists << theFormOpt << theNinja << isitDR << massiveParticles<<theHiggsEff;
+     << theCodeExists << theFormOpt << theNinja << isitDR << massiveParticles << theHiggsEff
+     << theAccuracyTarget;
 }
 
 void GoSamAmplitude::persistentInput(PersistentIStream & is, int) {
@@ -714,7 +765,8 @@ void GoSamAmplitude::persistentInput(PersistentIStream & is, int) {
      >> gosamSourcePath >> gosamInstallPath >> gosamSetupInFileName
      >> orderFileTitle >> contractFileTitle
      >> contractFileName >> orderFileName
-     >> theCodeExists >> theFormOpt >> theNinja >> isitDR >> massiveParticles>>theHiggsEff;
+     >> theCodeExists >> theFormOpt >> theNinja >> isitDR >> massiveParticles >> theHiggsEff
+     >> theAccuracyTarget;
 }
 
 
@@ -745,13 +797,11 @@ void GoSamAmplitude::Init() {
          ("CodeExists",
           "Switch on or off if Code already exists/not exists.",
           &GoSamAmplitude::theCodeExists, true, false, false);
-
   static SwitchOption interfaceCodeExistsOn
          (interfaceCodeExists,
           "True",
           "Switch True if Code already exists.",
           true);
-
   static SwitchOption interfaceCodeExistsOff
          (interfaceCodeExists,
           "False",
@@ -824,6 +874,30 @@ void GoSamAmplitude::Init() {
         "and 'make install'. It can be used for parallelization.",
         &GoSamAmplitude::gosamBuildScript, "",
         false, false);
+
+  static Parameter<GoSamAmplitude,int> interfaceAccuracyTarget
+       ("AccuracyTarget",
+        "Integer to parametrize the threshold value for the BLHA2 acc parameter, returned by GoSam in the case of "
+        "sub-processes with one-loop intereference terms or loop induced sub-processes."
+        "If acc > 10^-AccuracyTarget the corresponding phase space point is being written to file and disposed of.",
+        &GoSamAmplitude::theAccuracyTarget, 6, 0, 0,
+        false, false, Interface::lowerlim);
+
+  static Switch<GoSamAmplitude,bool> interfaceMassiveLeptons
+         ("MassiveLeptons",
+          "If set to Yes, then pass on the light lepton masses - as well as the tau mass - to GoSam."
+          "Otherwise GoSam will use light leptons of zero mass as default, as well as its own default tau mass.",
+          &GoSamAmplitude::theMassiveLeptons, false, false, false);
+  static SwitchOption interfaceMassiveLeptonsNo
+         (interfaceMassiveLeptons,
+          "No",
+          "No",
+          false);
+  static SwitchOption interfaceMassiveLeptonsYes
+         (interfaceMassiveLeptons,
+          "Yes",
+          "Yes",
+          true);
 
 }
 
