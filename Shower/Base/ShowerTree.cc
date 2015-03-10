@@ -1028,7 +1028,7 @@ void ShowerTree::clear() {
     for(unsigned int ix=0;ix<children.size();++ix) orig->abandonChild(children[ix]);
     _outgoingLines[cit->first]=orig;
     cit->first->hasEmitted(false);
-    cit->first->reconstructed(false);
+    cit->first->reconstructed(ShowerProgenitor::notReconstructed);
   }
   // forward products
   _forward.clear();
@@ -1040,7 +1040,7 @@ void ShowerTree::clear() {
     orig->set5Momentum(_incomingLines.begin()->first->copy()->momentum());
     ParticleVector children=orig->children();
     for(unsigned int ix=0;ix<children.size();++ix) orig->abandonChild(children[ix]);
-    _incomingLines.begin()->first->reconstructed(false);
+    _incomingLines.begin()->first->reconstructed(ShowerProgenitor::notReconstructed);
   }
   // if a hard process
   else {
@@ -1058,7 +1058,7 @@ void ShowerTree::clear() {
 	parent->abandonChild(cjt->second);
       cjt->first->progenitor(temp);
       _incomingLines[cjt->first]=temp;
-      cjt->first->reconstructed(false);
+      cjt->first->reconstructed(ShowerProgenitor::notReconstructed);
     }
   }
   // reset the particles at the end of the shower

@@ -232,8 +232,16 @@ void QTildeReconstructor::Init() {
     (interfaceReconstructionOption,
      "Colour3",
      "Make the most use possible of the colour structure of the process to determine the reconstruction procedure. "
-     "Do the colour connections in order of the pT's emitted in the shower starting with the hardest",
+     "Do the colour connections in order of the pT's emitted in the shower starting with the hardest."
+     " The colour partner is fully reconstructed at the same time.",
      3);
+  static SwitchOption interfaceReconstructionOptionColour4
+    (interfaceReconstructionOption,
+     "Colour4",
+     "Make the most use possible of the colour structure of the process to determine the reconstruction procedure. "
+     "Do the colour connections in order of the pT's emitted in the shower starting with the hardest, while leaving"
+     " the colour partner on mass-shell",
+     4);
 
   static Parameter<QTildeReconstructor,Energy> interfaceMinimumQ2
     ("MinimumQ2",
@@ -750,9 +758,9 @@ reconstructDecayJets(ShowerTreePtr decay,
       tempJetKin.p = ShowerHardJets[ix]->progenitor()->momentum();
       if(gottaBoost) tempJetKin.p.boost(boosttorest,gammarest);
       _progenitor=tempJetKin.parent;
-      if(!ShowerHardJets[ix]->reconstructed()) {
+      if(ShowerHardJets[ix]->reconstructed()==ShowerProgenitor::notReconstructed) {
 	atLeastOnce |= reconstructTimeLikeJet(tempJetKin.parent);
-	ShowerHardJets[ix]->reconstructed(true);
+	ShowerHardJets[ix]->reconstructed(ShowerProgenitor::done);
       }
       if(gottaBoost) deepTransform(tempJetKin.parent,restboost);
       tempJetKin.q = ShowerHardJets[ix]->progenitor()->momentum();
@@ -1457,17 +1465,17 @@ reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
     if(jets[ix]->progenitor()->isFinalState()) {
       pout[0] +=jets[ix]->progenitor()->momentum();
       _progenitor = jets[ix]->progenitor();
-      if(!jets[ix]->reconstructed()) {
+      if(jets[ix]->reconstructed()==ShowerProgenitor::notReconstructed) {
 	reconstructTimeLikeJet(jets[ix]->progenitor());
-	jets[ix]->reconstructed(true);
+	jets[ix]->reconstructed(ShowerProgenitor::done);
       }
     }
     // initial-state parton
     else {
       pin[0]  +=jets[ix]->progenitor()->momentum();
-      if(!jets[ix]->reconstructed()) {
+      if(jets[ix]->reconstructed()==ShowerProgenitor::notReconstructed) {
 	reconstructSpaceLikeJet(jets[ix]->progenitor());
-	jets[ix]->reconstructed(true);
+	jets[ix]->reconstructed(ShowerProgenitor::done);
       }
       assert(!jets[ix]->original()->parents().empty());
     }
@@ -1506,12 +1514,20 @@ reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
   a[0] = n2*qbp/n1n2;
   b[0] = n1*qbp/n1n2;
   Lorentz5Momentum qperp = qbp-a[0]*n1-b[0]*n2;
-  a[1] = 0.5*(qcp.m2()-qperp.m2())/n1n2;
-  b[1] = 1.;
-  double A(0.5*a[0]),B(b[0]*a[0]-a[1]*b[1]-0.25),C(-0.5*b[0]);
-  if(sqr(B)-4.*A*C<0.) throw KinematicsReconstructionVeto();
-  double kb = 0.5*(-B+sqrt(sqr(B)-4.*A*C))/A;
-  double kc = (a[0]*kb-0.5)/a[1];
+  b[1] = 0.5;
+  a[1] = 0.5*(qcp.m2()-qperp.m2())/n1n2/b[1];
+  double kb;
+  if(a[0]!=0.) {
+    double A(0.5*a[0]),B(b[0]*a[0]-a[1]*b[1]-0.25),C(-0.5*b[0]);
+    if(sqr(B)-4.*A*C<0.) throw KinematicsReconstructionVeto();
+    kb = 0.5*(-B+sqrt(sqr(B)-4.*A*C))/A;
+
+  }
+  else {
+    kb = 0.5*b[0]/(b[0]*a[0]-a[1]*b[1]-0.25);
+  }
+  // changed to improve stability
+  double kc = (a[1]>b[1]) ? (a[0]*kb-0.5)/a[1] : b[1]/(0.5+b[0]/kb);
   if(kc==0.) throw KinematicsReconstructionVeto();
   Lorentz5Momentum pnew[2] = { a[0]*kb*n1+b[0]/kb*n2+qperp,
 			       a[1]*kc*n1+b[1]/kc*n2+qperp};
@@ -1697,9 +1713,9 @@ reconstructFinalStateSystem(bool applyBoost,
     }
     tempJetKin.p = (*cit)->progenitor()->momentum();
     _progenitor=tempJetKin.parent;
-    if(!(**cit).reconstructed()) {
+    if((**cit).reconstructed()==ShowerProgenitor::notReconstructed) {
       radiated |= reconstructTimeLikeJet((*cit)->progenitor());
-      (**cit).reconstructed(true);
+      (**cit).reconstructed(ShowerProgenitor::done);
     }
     else {
       radiated |= !(*cit)->progenitor()->children().empty();
@@ -1821,9 +1837,9 @@ reconstructInitialInitialSystem(bool & applyBoost,
     // at momentum to vector
     p_in.push_back(jets[ix]->progenitor()->momentum());
     // reconstruct the jet
-    if(!jets[ix]->reconstructed()) {
+    if(jets[ix]->reconstructed()==ShowerProgenitor::notReconstructed) {
       radiated |= reconstructSpaceLikeJet(jets[ix]->progenitor());
-      jets[ix]->reconstructed(true);
+      jets[ix]->reconstructed(ShowerProgenitor::done);
     }
     assert(!jets[ix]->original()->parents().empty());
     Energy etemp = jets[ix]->original()->parents()[0]->momentum().z();
@@ -2275,7 +2291,7 @@ reconstructGeneralSystem(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
       }
     }
   }
-  else if(_reconopt==3) {
+  else if(_reconopt==3 || _reconopt==4 ) {
     // sort the vector by hardness of emission
     std::sort(ShowerHardJets.begin(),ShowerHardJets.end(),sortJets);
     // map between particles and progenitors for easy lookup
@@ -2285,7 +2301,7 @@ reconstructGeneralSystem(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
     }
     for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
       // skip jets which have already been handled
-      if(ShowerHardJets[ix]->reconstructed()) continue;
+      if(ShowerHardJets[ix]->reconstructed()==ShowerProgenitor::done) continue;
       // already reconstructed
       if(used[ShowerHardJets[ix]]) continue; 
       // no partner continue
@@ -2298,9 +2314,13 @@ reconstructGeneralSystem(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
 	vector<ShowerProgenitorPtr> jets(2);
 	jets[0] = ShowerHardJets[ix];
 	jets[1] = progenitorMap[ShowerHardJets[ix]->progenitor()->partner()];
+	if(_reconopt==4 && jets[1]->reconstructed()==ShowerProgenitor::notReconstructed)
+	  jets[1]->reconstructed(ShowerProgenitor::dontReconstruct);
 	reconstructFinalStateSystem(false,toRest,fromRest,jets);
+	if(_reconopt==4 && jets[1]->reconstructed()==ShowerProgenitor::dontReconstruct)
+	  jets[1]->reconstructed(ShowerProgenitor::notReconstructed);
 	used[jets[0]] = true;
-	used[jets[1]] = true;
+	if(_reconopt==3) used[jets[1]] = true;
       }
       // initial-final
       else if((ShowerHardJets[ix]->progenitor()->isFinalState() &&
@@ -2320,26 +2340,44 @@ reconstructGeneralSystem(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
 	    psum -= jets[iy]->progenitor()->momentum();
 	}
 	if(-psum.m2()>minQ2) {
+	  if(_reconopt==4 && progenitorMap[ShowerHardJets[ix]->progenitor()->partner()]->reconstructed()==ShowerProgenitor::notReconstructed)
+	    progenitorMap[ShowerHardJets[ix]->progenitor()->partner()]->reconstructed(ShowerProgenitor::dontReconstruct);
 	  reconstructInitialFinalSystem(jets);
-	  used[jets[0]] = true;
-	  used[jets[1]] = true;
+	  if(_reconopt==4 && progenitorMap[ShowerHardJets[ix]->progenitor()->partner()]->reconstructed()==ShowerProgenitor::dontReconstruct)
+	    progenitorMap[ShowerHardJets[ix]->progenitor()->partner()]->reconstructed(ShowerProgenitor::notReconstructed);
+	  used[ShowerHardJets[ix]] = true;
+	  if(_reconopt==3) used[progenitorMap[ShowerHardJets[ix]->progenitor()->partner()]] = true;
 	}
       }
       // initial-initial
       else if(!ShowerHardJets[ix]->progenitor()->isFinalState() &&
 	      !ShowerHardJets[ix]->progenitor()->partner()->isFinalState() ) {
 	ColourSingletSystem in,out;
+	in.jets.push_back(ShowerHardJets[ix]);
+	in.jets.push_back(progenitorMap[ShowerHardJets[ix]->progenitor()->partner()]);
 	for(unsigned int iy=0;iy<ShowerHardJets.size();++iy) {
 	  if(ShowerHardJets[iy]->progenitor()->isFinalState())
 	    out.jets.push_back(ShowerHardJets[iy]);
-	  else
-	    in.jets.push_back(ShowerHardJets[iy]);
 	}
 	LorentzRotation toRest,fromRest;
 	bool applyBoost(false);
+	if(_reconopt==4 && in.jets[1]->reconstructed()==ShowerProgenitor::notReconstructed)
+	  in.jets[1]->reconstructed(ShowerProgenitor::dontReconstruct);
 	reconstructInitialInitialSystem(applyBoost,toRest,fromRest,in.jets);
+	if(_reconopt==4 && in.jets[1]->reconstructed()==ShowerProgenitor::dontReconstruct)
+	  in.jets[1]->reconstructed(ShowerProgenitor::notReconstructed);
+	used[in.jets[0]] = true;
+	if(_reconopt==3) used[in.jets[1]] = true;
+	for(unsigned int iy=0;iy<out.jets.size();++iy) {
+	  if(out.jets[iy]->reconstructed()==ShowerProgenitor::notReconstructed)
+	    out.jets[iy]->reconstructed(ShowerProgenitor::dontReconstruct);
+	}
 	// reconstruct the final-state systems
 	reconstructFinalStateSystem(applyBoost,toRest,fromRest,out.jets);
+	for(unsigned int iy=0;iy<out.jets.size();++iy) {
+	  if(out.jets[iy]->reconstructed()==ShowerProgenitor::dontReconstruct)
+	    out.jets[iy]->reconstructed(ShowerProgenitor::notReconstructed);
+	}
       }
       else {
 	assert(false);
