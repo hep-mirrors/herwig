@@ -621,6 +621,7 @@ void GoSamAmplitude::evalSubProcess() const {
   accuracyFileTitle = name() + ".OLPAccuracy.lh";
   accuracyFile = factory()->buildStorage() + accuracyFileTitle;
   ofstream accuracyFileStream;
+  accuracyFileStream.open(accuracyFile.c_str(),ios::app);
 
   double accuracyTarget = 1.0/pow(10.0,accuracyTargetNegExp());
   if ( (olpId()[ProcessType::oneLoopInterference]||olpId()[ProcessType::loopInducedME2]) &&  acc > accuracyTarget ) {
