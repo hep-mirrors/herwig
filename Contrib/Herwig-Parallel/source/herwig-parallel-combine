@@ -65,7 +65,7 @@ def main():
   parser = OptionParser(usage="%prog [options] runname")
   parser.add_option("-b", "--builtin-analysis", dest="builtin_analysis", default=default_variables[0], help="additional built-in analysis that should be included in the combination [default: %default]")
   parser.add_option("-r", "--no-rivet", action="store_false", dest="rivet", default=True, help="veto combination of Rivet analyses [default: combine Rivet analyses if present]")
-  parser.add_option("-m", "--hepmc", dest="hepmc", default=default_variables[1], help="list of Rivet analyses that the HepMC outfiles should be passed through [default: combine HepMC event files if present]")
+  parser.add_option("-m", "--hepmc", dest="hepmc", default=default_variables[1], help="list of Rivet analyses that the HepMC outfiles should be passed through [default: %default]")
   parser.add_option("-e", "--exclude-jobs", dest="exclude", default='', help="space-separated list of job numbers and/or job number ranges (e.g. '1 3 5..8') to be excluded from the combination")
   parser.add_option("-i", "--include-jobs", dest="include", default='', help="space-separated list of job numbers and/or job number ranges (e.g. '1 3 5..8') to be included in the combination")
   parser.add_option("-o", "--output-folder", dest="outfolder", default='out', help="name of the folder where the combined result is to be stored [default: %default]")
@@ -178,7 +178,7 @@ def main():
           sys.exit(1)
       else:
         cluster = configParserQueues.get(queues[j],'cluster')
-        status = ansi_escape.sub('', check_output("grep '"+job_ids[j]+"' "+run_name+"/joblist."+configParserQueues.get(queues[j],'cluster')+' | ' + configParserClusters.get(cluster,'status'), shell=True))
+        status = ansi_escape.sub('', check_output("grep '"+job_ids[j]+"' "+run_name+"/joblist."+cluster+' | ' + configParserClusters.get(cluster,'status'), shell=True))
         if status == configParserClusters.get(cluster,'statusQueued'):
           print("cannot include job #{} in combination: job is still queued\n".format(jobs[j]))
           sys.exit(1)

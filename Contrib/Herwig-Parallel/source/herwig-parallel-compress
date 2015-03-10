@@ -110,7 +110,8 @@ def main():
   sys.stdout.flush()
   compress_jobs = ""
   for j in range(len(jobs)):
-    if queues[j] == 'local':
+    cluster = 'local' if queues[j] == 'local' else configParserQueues.get(queues[j],'cluster')
+    if cluster == 'local':
       try:
         data = check_output('grep '+job_ids[j]+' '+run_name+'/joblist.local', shell=True)
       except:
@@ -119,7 +120,7 @@ def main():
         print("\ncannot compress run: job #{} with id {} is still running\n".format(jobs[j], job_ids[j]))
         sys.exit()
     else:
-      status = ansi_escape.sub('', check_output('grep '+job_ids[j]+' '+run_name+'/'+configParserQueues.get(queues[j],'cluster')+' | ' + configParserClusters.get(cluster,'status'), shell=True))
+      status = ansi_escape.sub('', check_output('grep '+job_ids[j]+' '+run_name+'/joblist.'+cluster+' | ' + configParserClusters.get(cluster,'status'), shell=True))
       if status == configParserClusters.get(cluster,'statusRunning') or status == configParserClusters.get(cluster,'statusQueued'):
         print("\ncannot compress run: job #{} with id {} is still running\n".format(jobs[j], job_ids[j]))
         sys.exit(1)
