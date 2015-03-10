@@ -229,7 +229,7 @@ protected:
 protected:
 
   /**
-   *  Calculate the matrix element for \f$e^-e^-\to q \bar q\f$.
+   *  Calculate the matrix element for \f$e^+e^-\to q \bar{q}\f$.
    * @param partons The incoming and outgoing particles
    * @param momenta The momenta of the incoming and outgoing particles
    * @param first Whether or not to calculate the spin correlations
