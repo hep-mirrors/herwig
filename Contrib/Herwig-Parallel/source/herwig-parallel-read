@@ -215,12 +215,37 @@ def main():
 
   # wait for completion of build step
   iCount = 0
+  iCrash = 0
   while not (os.path.isfile(runfile)):
     if iCount % 5 == 0:
       sys.stdout.write('\r\033[Kwaiting for completion of build-step')
     else:
       sys.stdout.write('.')
     sys.stdout.flush()
+    # have a look at the process list or the batch queue system to check wether build process/job is still running
+    if iCount % 15 == 0:
+      pending = True
+      if opts.buildqueue == 'local': # build job running on local machine
+        pending = True
+        status = check_output('ps -al', shell=True)
+        for line in status.split('\n'):
+          data = line.split()
+          if len(data) > 3 and data[3] == jobid:
+            pending = not '<defunct>' in line
+            break
+      else: # build job running on cluster
+        call(configParserClusters.get(buildCluster,'joblist')+' > ../joblist.'+buildCluster, shell=True)
+        ansi_escape = re.compile(r'\x1b[^m]*m')          # remove ANSI color escape characters
+        status = ansi_escape.sub('', check_output('grep '+jobid+' '+'../joblist.'+buildCluster+' | ' + configParserClusters.get(buildCluster,'status'), shell=True))
+        pending = status == configParserClusters.get(buildCluster,'statusQueued') or status == configParserClusters.get(buildCluster,'statusRunning')
+        os.remove('../joblist.'+buildCluster)
+      if not pending: # job neither queued nor running
+        iCrash += 1
+        if iCrash == 2:
+          sys.stderr.write('\r\033[K! It appears that the build job has terminated unsuccessfully.\n')
+          sys.stderr.write("! Please check whether the file '"+run_name+'/read/'+generator+".run' exists.\n")
+          sys.stderr.write("! In case it doesn't exist please check the log files for possible errors.\n\n")
+          iCount = -1 # display full waiting message again
     time.sleep(int(1))
     iCount += 1
   integrationJobs = len(glob.glob('Herwig/Build/integrationJob*'))
