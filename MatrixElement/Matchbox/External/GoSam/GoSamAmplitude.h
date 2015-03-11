@@ -267,9 +267,6 @@ private:
 
   mutable string accuracyFileTitle;
   mutable string accuracyFile;
-
-  mutable bool theFirstInaccuratePoint;
-
   int theAccuracyTarget;
 
   bool theCodeExists;
