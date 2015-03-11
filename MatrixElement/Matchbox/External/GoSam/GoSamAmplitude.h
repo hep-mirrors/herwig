@@ -276,6 +276,9 @@ private:
   bool theMassiveLeptons;
 
   bool isitDR;
+
+  mutable bool doneGoSamInit;
+  mutable bool doneGoSamInitRun;
   
   /**
    * The PDG codes of those quarks with mass

@@ -54,7 +54,9 @@ GoSamAmplitude::GoSamAmplitude(){
   theNinja=true;
   theHiggsEff=false;
   theAccuracyTarget=6;
-  theMassiveLeptons=false;}
+  theMassiveLeptons=false;
+  doneGoSamInit=false;
+  doneGoSamInitRun=false;}
 
 GoSamAmplitude::~GoSamAmplitude() {}
 
@@ -74,11 +76,13 @@ IBPtr GoSamAmplitude::fullclone() const {
 void GoSamAmplitude::doinit() {
   optionalContractFile() = name() + ".OLPContract.lh";
   MatchboxOLPME::doinit();
+  doneGoSamInit = true;
 }
 
 void GoSamAmplitude::doinitrun() {
   optionalContractFile() = name() + ".OLPContract.lh";
   MatchboxOLPME::doinitrun();
+  doneGoSamInitRun = true;
 }
 
 
@@ -191,8 +195,8 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
   accuracyFile = factory()->buildStorage() + accuracyFileTitle;
   ofstream accuracyFileStream;
   accuracyFileStream.open(accuracyFile.c_str()); // Opening accuracyFile once here removes all previous content before the read step
-  accuracyFileStream << "\nFile to contain those PSPs for which GoSam evaluated one-loop interference terms or loop induced\n"
-                     << "ME2s with acc > target accuracy = " << accuracyTarget << ". Date/Time: " << ctime(&rawtime) << endl;
+  accuracyFileStream << "\nFile to contain those PSPs for which GoSam evaluated one-loop interference terms or loop induced ME2s\n"
+                     << "with acc > target accuracy = " << accuracyTarget << ". Date/Time: " << ctime(&rawtime) << endl;
   generator()->log() << "\n>>> NOTE: GoSam will return the accuracy of one-loop interference terms or loop induced ME2s\n"
                      << "    at every PSP via the BLHA2 acc parameter:\n\n"
                      << "    -- In cases where acc > 10^-AccuracyTarget = " << accuracyTarget << " the corresponding PSPs are being dis-\n"
@@ -645,6 +649,8 @@ void GoSamAmplitude::evalSubProcess() const {
     vector<Lorentz5Momentum> currentpsp = lastXComb().meMomenta();
     time_t rawtime;
     time (&rawtime);
+    if (doneGoSamInit) accuracyFileStream << "READ phase: ";
+    else if (doneGoSamInitRun) accuracyFileStream << "RUN phase: ";
     accuracyFileStream << "Sub-process with Herwig ID = " << id << " and GoSam ID = " << callid << ", " << ctime(&rawtime);
     accuracyFileStream << "GoSam evaluated one-loop interference or loop induced ME2 with acc = " << acc 
                        << " > target accuracy = " << accuracyTarget << ", at PSP [in units of GeV]:" << endl;
