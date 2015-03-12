@@ -4,7 +4,7 @@
 ## Herwig-Parallel
 ## --------------------
 ## Author: Daniel Rauch
-## Date:   5 Mar 2015
+## Date:   12 Mar 2015
 ## --------------------
 
 import sys
@@ -21,6 +21,8 @@ from subprocess import Popen
 from ConfigParser import SafeConfigParser
 from optparse import OptionParser
 from hwp import checkConfig
+from hwp import addToIndex
+from hwp import checkIndex
 
 
 ### ------------
@@ -130,6 +132,9 @@ def main():
       sys.stderr.write("The default integrate-script does not exist!\n")
       sys.exit(1)
 
+  # check for run index file size and possibly trim it down
+  checkIndex()
+
   # find out generator name
   try:
     grep = check_output("grep 'saverun' "+infile, shell=True).split('\n')
@@ -210,6 +215,7 @@ def main():
     jobid = check_output("echo '"+output+"' | "+configParserClusters.get(configParserQueues.get(opts.buildqueue,'cluster'),'jobid'), shell=True)
   f_run_info.write(jobid+'\n')
   f_run_info.flush()
+  addToIndex(jobid, cwd+'/'+run_name)
   f_run_log.write(datetime.datetime.now().isoformat(' ')+': herwig-parallel-read: starting build job with id {}\n'.format(jobid))
   f_run_log.flush()
 
@@ -282,6 +288,7 @@ def main():
     integrationsJobIDs.append(jobid)
     f_run_info.write(jobid+' ')
     f_run_info.flush()
+    addToIndex(jobid, cwd+'/'+run_name)
     f_run_log.write(datetime.datetime.now().isoformat(' ')+': herwig-parallel-read: starting integrate job #{} with id {}\n'.format(job,jobid))
     f_run_log.flush()
   f_run_info.write('\n')

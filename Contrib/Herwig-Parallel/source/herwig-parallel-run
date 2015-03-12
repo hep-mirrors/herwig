@@ -4,7 +4,7 @@
 ## Herwig-Parallel
 ## --------------------
 ## Author: Daniel Rauch
-## Date:   25 Feb 2015
+## Date:   12 Mar 2015
 ## --------------------
 
 import sys
@@ -19,6 +19,7 @@ from subprocess import Popen
 from ConfigParser import SafeConfigParser
 from optparse import OptionParser
 from hwp import checkConfig
+from hwp import addToIndex
 
 
 ### ------------
@@ -260,6 +261,7 @@ def main():
       print(" > {}\n".format(output))
       jobid = check_output("echo '"+output+"' | "+configParserClusters.get(configParserQueues.get(opts.queue,'cluster'),'jobid'), shell=True)
     f_run_info.write("job #{}: {} {} {} {}\n".format(str(r), opts.queue, jobid, str(seeds[r-1]), str(events)))
+    addToIndex(jobid, cwd+'/'+run_name)
     f_run_log.write(datetime.datetime.now().isoformat(' ')+': herwig-parallel-run: starting job #{}\n'.format(r))
 
   f_run_info.close()
