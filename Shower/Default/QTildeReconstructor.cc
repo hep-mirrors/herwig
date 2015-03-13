@@ -1497,7 +1497,6 @@ reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
   }
   // work out the boost to the Breit frame
   Lorentz5Momentum pa = pout[0]-pin[0];
-  Lorentz5Momentum pb = pin[0];
   Axis axis(pa.vect().unit());
   LorentzRotation rot;
   double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
@@ -1883,20 +1882,17 @@ reconstructInitialInitialSystem(bool & applyBoost,
   else if(_initialBoost==1) {
     // boost to rest frame
     // first transverse
-    Energy pT = sqrt(sqr(pcm.x())+sqr(pcm.y()));
-    double beta = pT/pcm.t();
-    toRest = Boost(-beta*pcm.x()/pT,-beta*pcm.y()/pT,0.);
+    toRest = Boost(-pcm.x()/pcm.t(),-pcm.y()/pcm.t(),0.);
     // then longitudinal
-    beta = pcm.z()/sqrt(pcm.m2()+sqr(pcm.z()));
+    double beta = pcm.z()/sqrt(pcm.m2()+sqr(pcm.z()));
     toRest.boost((Boost(0.,0.,-beta)));
     // boost from rest frame
     // first apply longitudinal boost
     beta = newcmf.z()/sqrt(newcmf.m2()+sqr(newcmf.z()));
     fromRest=LorentzRotation(Boost(0.,0.,beta));
     // then transverse one
-    pT = sqrt(sqr(newcmf.x())+sqr(newcmf.y()));
-    beta = pT/newcmf.t();
-    fromRest.boost(Boost(beta*newcmf.x()/pT,beta*newcmf.y()/pT,0.));
+    fromRest.boost(Boost(newcmf.x()/newcmf.t(),
+			 newcmf.y()/newcmf.t(),0.));
   }
   else
     assert(false);
