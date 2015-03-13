@@ -1459,7 +1459,7 @@ findPartners(unsigned int iloc ,
 
 void QTildeReconstructor::
 reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
-  Lorentz5Momentum pin[2],pout[2];
+  Lorentz5Momentum pin[2],pout[2],pbeam;
   for(unsigned int ix=0;ix<jets.size();++ix) {
     // final-state parton
     if(jets[ix]->progenitor()->isFinalState()) {
@@ -1473,6 +1473,12 @@ reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
     // initial-state parton
     else {
       pin[0]  +=jets[ix]->progenitor()->momentum();
+      if(jets[ix]->progenitor()->showerKinematics()) {
+	pbeam = jets[ix]->progenitor()->x()*jets[ix]->progenitor()->showerKinematics()->getBasis()[0];
+      }
+      else {
+	pbeam = jets[ix]->progenitor()->momentum();
+      }
       if(jets[ix]->reconstructed()==ShowerProgenitor::notReconstructed) {
 	reconstructSpaceLikeJet(jets[ix]->progenitor());
 	jets[ix]->reconstructed(ShowerProgenitor::done);
@@ -1498,7 +1504,7 @@ reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
   rot.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
   rot.rotateX(Constants::pi);
   rot.boostZ( pa.e()/pa.vect().mag());
-  Lorentz5Momentum ptemp=rot*pb;
+  Lorentz5Momentum ptemp=rot*pbeam;
   Boost trans = -1./ptemp.e()*ptemp.vect();
   trans.setZ(0.);
   rot.boost(trans);
@@ -1521,7 +1527,6 @@ reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
     double A(0.5*a[0]),B(b[0]*a[0]-a[1]*b[1]-0.25),C(-0.5*b[0]);
     if(sqr(B)-4.*A*C<0.) throw KinematicsReconstructionVeto();
     kb = 0.5*(-B+sqrt(sqr(B)-4.*A*C))/A;
-
   }
   else {
     kb = 0.5*b[0]/(b[0]*a[0]-a[1]*b[1]-0.25);
@@ -1729,9 +1734,7 @@ reconstructFinalStateSystem(bool applyBoost,
     double k = 0.0;
     if(radiated) {
       k = solveKfactor(pcm.m(), jetKinematics);
-    }
-    // perform the rescaling and boosts
-    if(radiated) {
+      // perform the rescaling and boosts
       for(JetKinVect::iterator it = jetKinematics.begin();
 	  it != jetKinematics.end(); ++it) {
 	LorentzRotation Trafo = solveBoost(k, it->q, it->p);
@@ -1825,6 +1828,7 @@ reconstructInitialInitialSystem(bool & applyBoost,
     radiated |= jets[ix]->hasEmitted();
     pcm += jets[ix]->progenitor()->momentum();
   }
+  pcm.rescaleMass();
   // check if intrinsic pt to be added
   radiated |= !_intrinsic.empty();
   // if no radiation return
@@ -1872,16 +1876,25 @@ reconstructInitialInitialSystem(bool & applyBoost,
   }
   if(newcmf.m()<ZERO||newcmf.e()<ZERO) throw KinematicsReconstructionVeto();
   // do one boost
-  toRest   = LorentzRotation(pcm.findBoostToCM());
   if(_initialBoost==0) {
+    toRest   = LorentzRotation(pcm.findBoostToCM());
     fromRest = LorentzRotation(newcmf.boostVector());
   }
   else if(_initialBoost==1) {
+    // boost to rest frame
+    // first transverse
+    Energy pT = sqrt(sqr(pcm.x())+sqr(pcm.y()));
+    double beta = pT/pcm.t();
+    toRest = Boost(-beta*pcm.x()/pT,-beta*pcm.y()/pT,0.);
+    // then longitudinal
+    beta = pcm.z()/sqrt(pcm.m2()+sqr(pcm.z()));
+    toRest.boost((Boost(0.,0.,-beta)));
+    // boost from rest frame
     // first apply longitudinal boost
-    double beta = newcmf.z()/sqrt(newcmf.m2()+sqr(newcmf.z()));
+    beta = newcmf.z()/sqrt(newcmf.m2()+sqr(newcmf.z()));
     fromRest=LorentzRotation(Boost(0.,0.,beta));
     // then transverse one
-    Energy pT = sqrt(sqr(newcmf.x())+sqr(newcmf.y()));
+    pT = sqrt(sqr(newcmf.x())+sqr(newcmf.y()));
     beta = pT/newcmf.t();
     fromRest.boost(Boost(beta*newcmf.x()/pT,beta*newcmf.y()/pT,0.));
   }
@@ -2373,7 +2386,12 @@ reconstructGeneralSystem(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
 	    out.jets[iy]->reconstructed(ShowerProgenitor::dontReconstruct);
 	}
 	// reconstruct the final-state systems
-	reconstructFinalStateSystem(applyBoost,toRest,fromRest,out.jets);
+	LorentzRotation finalBoosts;
+	finalBoosts.transform(  toRest);
+	finalBoosts.transform(fromRest);
+	for(unsigned int iy=0;iy<out.jets.size();++iy) {
+	  deepTransform(out.jets[iy]->progenitor(),finalBoosts);
+	}
 	for(unsigned int iy=0;iy<out.jets.size();++iy) {
 	  if(out.jets[iy]->reconstructed()==ShowerProgenitor::dontReconstruct)
 	    out.jets[iy]->reconstructed(ShowerProgenitor::notReconstructed);
@@ -2727,6 +2745,11 @@ void QTildeReconstructor::deepTransform(PPtr particle,
 		  particle->children()[i]->id()==original->id()&&match,original);
   }
   particle->transform(r);
+  // transform the p and n vectors
+  ShowerParticlePtr sparticle = dynamic_ptr_cast<ShowerParticlePtr>(particle);
+  if(sparticle && sparticle->showerKinematics()) {
+    sparticle->showerKinematics()->transform(r);
+  }
   if ( particle->next() ) deepTransform(particle->next(),r,match,original);
   if(!match) return;
   if(!particle->children().empty()) return;
@@ -2864,13 +2887,7 @@ QTildeReconstructor::initialStateRescaling(double x1, double x2, Energy MDY,
     if(abs(b2)>1e-10) {
       double discrim = 1.-4.*a2*c2/sqr(b2);
       if(discrim < 0.) throw KinematicsReconstructionVeto();
-      if(b2>0.) {
-	k1 = 0.5*b2/a2*(1.+sqrt(discrim));
-      }
-      else {
-	k1 = 0.5*b2/a2*(1.-sqrt(discrim));
-      }
-      if(discrim<1.) generator()->log() << "testing problem 2 solns??\n";
+      k1 = b2>0. ? 0.5*b2/a2*(1.+sqrt(discrim)) : 0.5*b2/a2*(1.-sqrt(discrim));
     }
     else {
       k1 = -c2/a2;

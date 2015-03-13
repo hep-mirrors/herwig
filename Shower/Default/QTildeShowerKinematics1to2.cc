@@ -146,3 +146,7 @@ void QTildeShowerKinematics1to2::constructSpinInfo(tShowerParticlePtr particle,
 		      << Exception::runerror;
   }
 }
+void QTildeShowerKinematics1to2::transform(const LorentzRotation & r) {
+  _pVector *= r;
+  //_nVector *= r;
+}

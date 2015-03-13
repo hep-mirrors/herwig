@@ -53,18 +53,23 @@ void ShowerKinematics::reconstructParent(const tShowerParticlePtr,
 void ShowerKinematics::reconstructLast(const tShowerParticlePtr,
 				       Energy) const {
   throw Exception() << "Base class ShowerKinematics::reconstructLast called,"
-		    << " should have been overriden in an inheriting class" 
+		    << " should have been overriden in an inheriting class"
 		    << Exception::runerror;
 }
 
 void ShowerKinematics::updateLast(const tShowerParticlePtr,
 				  Energy,Energy) const {
   throw Exception() << "Base class ShowerKinematics::updatetLast called,"
-		    << " should have been overriden in an inheriting class" 
+		    << " should have been overriden in an inheriting class"
 		    << Exception::runerror;
 }
 
 void ShowerKinematics::initialize(ShowerParticle &,PPtr) {
-  throw Exception() << "Base class ShowerKinematics::initialize called " 
+  throw Exception() << "Base class ShowerKinematics::initialize called "
+		    << Exception::runerror;
+}
+
+void ShowerKinematics::transform(const LorentzRotation & r) {
+  throw Exception() << "Base class ShowerKinematics::transform called "
 		    << Exception::runerror;
 }

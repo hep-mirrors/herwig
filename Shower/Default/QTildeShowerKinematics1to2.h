@@ -71,6 +71,11 @@ public:
   Lorentz5Momentum sudakov2Momentum(double alpha, double beta,
 				    Energy px, Energy py) const;
 
+  /**
+   *  Transform the shower kinematics (usually the reference vectors)
+   */
+  virtual void transform(const LorentzRotation & r);
+
 protected:
 
   /**
