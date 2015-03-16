@@ -72,7 +72,8 @@ void QTildeMatching::getShowerVariables() {
 
 bool QTildeMatching::isInShowerPhasespace() const {
 
-  assert(theQTildeSudakov->cutOffOption() == 0 && "implementation only provided for default cutoff");
+  assert((theQTildeSudakov->cutOffOption() == 0 || theQTildeSudakov->cutOffOption() == 2) && 
+	 "implementation only provided for default and pt cutoff");
 
   Energy qtildeHard = ZERO;
 
@@ -131,7 +132,7 @@ bool QTildeMatching::isInShowerPhasespace() const {
     pt2 = sqr((1.-z)*qtilde) - z*sqr(Qg);
   }
 
-  if ( pt2 < ZERO )
+  if ( pt2 < theQTildeSudakov->pT2min() )
     return false;
 
   return qtilde <= qtildeHard && sqrt(pt2) < dipole()->showerHardScale();
@@ -139,7 +140,10 @@ bool QTildeMatching::isInShowerPhasespace() const {
 }
 
 bool QTildeMatching::isAboveCutoff() const {
-  assert(theQTildeSudakov->cutOffOption() == 0 && "implementation only provided for default cutoff");
+
+  assert((theQTildeSudakov->cutOffOption() == 0 || theQTildeSudakov->cutOffOption() == 2) && 
+	 "implementation only provided for default and pt cutoff");
+
   Energy qtilde = dipole()->showerScale();
   assert(!dipole()->showerParameters().empty());
   double z = dipole()->showerParameters()[0];
@@ -147,13 +151,13 @@ bool QTildeMatching::isAboveCutoff() const {
   if ( dipole()->bornEmitter() > 1 ) {
     Energy mu = max(Qg,realCXComb()->meMomenta()[dipole()->realEmitter()].mass());
     if ( bornCXComb()->mePartonData()[dipole()->bornEmitter()]->id() == ParticleID::g )
-      return sqr(z*(1.-z)*qtilde) - sqr(mu) >= ZERO;
+      return sqr(z*(1.-z)*qtilde) - sqr(mu) >= theQTildeSudakov->pT2min();
     else
-      return sqr(z*(1.-z)*qtilde) - sqr((1.-z)*mu) - z*sqr(Qg) >= ZERO;
+      return sqr(z*(1.-z)*qtilde) - sqr((1.-z)*mu) - z*sqr(Qg) >= theQTildeSudakov->pT2min();
   }
   if ( dipole()->bornEmitter() < 2 ) {
     return
-      sqr((1.-z)*qtilde) - z*sqr(Qg) >= ZERO;
+      sqr((1.-z)*qtilde) - z*sqr(Qg) >= theQTildeSudakov->pT2min();
   }
   return false;
 }
