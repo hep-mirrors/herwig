@@ -139,6 +139,7 @@ create Herwig::QTildeSudakov SudakovCommon
 newdef SudakovCommon:Alpha AlphaQCD
 newdef SudakovCommon:cutoffKinScale 2.650*GeV
 newdef SudakovCommon:PDFmax 1.0
+newdef SudakovCommon:CutOffOption pT
 
 cp SudakovCommon QtoQGSudakov
 newdef QtoQGSudakov:SplittingFunction QtoQGSplitFn
