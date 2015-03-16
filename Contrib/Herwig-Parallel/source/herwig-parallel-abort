@@ -67,6 +67,7 @@ print(line)
 print("")
 
 # read required information from 'run.info' file
+integrateQueues = []
 integrationjobids = []
 jobs = []
 job_ids = []
@@ -92,9 +93,11 @@ for line in f_run_info:
     integrateScript = line.replace('\n','')
     integrateScriptTitle = integrateScript.split('/')[-1]
   elif l == 8:
-    integrateCluster = line.replace('\n','')
-    if not integrateCluster in clusters:
-      clusters.append(integrateCluster)
+    integrateQueues = line.replace('\n','').strip().split()
+    for queue in integrateQueues:
+      cluster = 'local' if queue == 'local' else configParserQueues.get(queue,'cluster')
+      if not cluster in clusters:
+        clusters.append(cluster)
   elif l == 9: integrationjobids = line.replace('\n','').split()
   elif l == 10:
     runScript = line.replace('\n','')
@@ -159,8 +162,9 @@ if buildjobid != '' and not os.path.isfile(run_name+'/read/'+runfile):
 # abort integration jobs
 if len(integrationjobids) > 0 and not os.path.isfile(run_name+'/read/Herwig/'+generator+'/'+('' if setupfile=='' else setupfile+'/')+'HerwigGrids.xml'):
 
-  if integrateCluster == 'local':
-    for j in range(len(integrationjobids)):
+  for j in range(len(integrationjobids)):
+    integrateCluster = 'local' if integrateQueues[j] == 'local' else configParserQueues.get(integrateQueues[j],'cluster')
+    if integrateCluster == 'local':
       killedJob = False
       try:
         ps = check_output('grep '+integrationjobids[j]+' '+run_name+"/joblist.local", shell=True)
@@ -181,8 +185,7 @@ if len(integrationjobids) > 0 and not os.path.isfile(run_name+'/read/Herwig/'+ge
       if not killedJob:
         print("integration job #{} with id {} already completed...\n".format(j+1,integrationjobids[j]))
         f_run_log.write(datetime.datetime.now().isoformat(' ')+': herwig-parallel-abort: integration job #{} with id {} already completed\n'.format(j+1,integrationjobids[j]))
-  else:
-    for j in range(len(integrationjobids)):
+    else:
       status = ansi_escape.sub('', check_output('grep '+integrationjobids[j]+' '+run_name+'/joblist.'+integrateCluster+' | ' + configParserClusters.get(cluster,'status'), shell=True))
       if status == configParserClusters.get(integrateCluster,'statusQueued') or status == configParserClusters.get(integrateCluster,'statusRunning'):
         print("aborting integration job #{} with id {}...".format(j+1,integrationjobids[j]))

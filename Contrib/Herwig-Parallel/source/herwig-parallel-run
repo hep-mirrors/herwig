@@ -115,12 +115,18 @@ def main():
   print("")
 
   # read required information from 'run.info' file
+  integrateJobIDs = []
   f_run_info = open(run_name+'/run.info','r')
   l = 0
   for line in f_run_info:
     l += 1
-    if l == 2: setupfile_title = line.replace('\n','').split('/')[-1]
-    elif l == 3: generator = line.replace('\n','')
+    if l == 2:
+      setupfile = line.replace('\n','')
+      setupfile_title = setupfile.split('/')[-1]
+    elif l == 3:
+      generator = line.replace('\n','')
+      runfile = generator+'.run'
+    elif l == 9: integrateJobIDs = line.replace('\n','').split()
   f_run_info.close()
 
   events = float(str(opts.events).replace('k','').replace('K','').replace('m','').replace('M','').replace('g','').replace('G',''))
@@ -129,8 +135,6 @@ def main():
   power += (str(opts.events).count('m')+str(opts.events).count('M'))*6
   power += (str(opts.events).count('g')+str(opts.events).count('G'))*9
   events = int(events*10.0**power)
-
-  runfile = generator+'.run'
 
   seeds = []
   if opts.seed_mode == 'ascending':
@@ -149,28 +153,50 @@ def main():
       sys.stderr.write("This is too few for the requested number of "+opts.jobs+" job"+('s' if int(opts.jobs)>1 else '')+".\n")
       sys.exit(1)
 
+  f_run_log = open(run_name+'/run.log','a')
+
   # checks for completion of read step
   firsttry = True
   print("checking if read step is completed...")
-  if os.path.exists(run_name):
-    iCount = 0
-    while not os.path.isfile(run_name+'/read/Herwig/'+generator+('' if setupfile_title=='' else '/'+setupfile_title)+'/HerwigGrids.xml'):
-      if firsttry:
-        print(" > not yet finished\n")
-        firsttry = False
-      if iCount % 5 == 0:
-        sys.stdout.write('\r\033[Kwaiting for completion of read-step')
-      else:
-        sys.stdout.write('.')
-      sys.stdout.flush()
-      time.sleep(int(1)) # wait 1 second
-      iCount += 1
-    print(" > done\n")
+  if os.path.exists(run_name+'/read'):
+    if not os.path.isfile(run_name+'/read/Herwig/'+generator+('' if setupfile_title=='' else '/'+setupfile_title)+'/HerwigGrids.xml'):
+      print("> not yet\n")
+      os.chdir(run_name+'/read')
+      iCount = 0
+      finishedIntegrationStep = False
+      while not finishedIntegrationStep:
+        # for each step check for the existence of the grid files as indication of the completion of the integration jobs
+        finishedIntegrationJobs = 0
+        for job in range(len(integrateJobIDs)):
+          if os.path.isfile('Herwig/'+generator+('' if setupfile=='' else '/'+setupfile_title)+'/integrationJob'+str(job)+'/HerwigGrids.xml'):
+            finishedIntegrationJobs += 1
+        finishedIntegrationStep = (finishedIntegrationJobs == len(integrateJobIDs))
+        if iCount == 0 and not finishedIntegrationStep:
+          print("Please consider using 'herwig-parallel-status' to check if the missing integration jobs are running.")
+          print("If that is not the case you can restart them with 'herwig-parallel-restart'.\n")
+        sys.stdout.write('\r\033[Kwaiting for completion of all integration jobs ({}/{} jobs completed)'.format(finishedIntegrationJobs, len(integrateJobIDs)))
+        for i in range(iCount % 5): sys.stdout.write('.')
+        sys.stdout.flush()
+        time.sleep(int(1))
+        iCount += 1
+
+      print('\n > done\n')
+      f_run_log.write(datetime.datetime.now().isoformat(' ')+': herwig-parallel-run: completed all integration jobs\n')
+      f_run_log.flush()
+
+      # merge grids
+      command = configParser.get('tools','mergeGrids')+' '+generator+('' if setupfile=='' else ' --setupfile='+setupfile_title)
+      print("merging grids: {}".format(command))
+      output = check_output(command, shell=True)
+      print(" > {}\n".format('done' if output == '' else output))
+      f_run_log.write(datetime.datetime.now().isoformat(' ')+': herwig-parallel-run: merged grids\n')
   else:
     sys.stderr.write("\nWARNING: Read step has not been done yet!\n")
     sys.stderr.write("Please use 'herwig-parallel-read' to do the read step first.\n")
     sys.stderr.write("Exiting...\n\n")
     sys.exit(1)
+
+  os.chdir(cwd)
 
   # create copy of seed file in 'in'-folder
   if opts.seed_mode == 'file':
@@ -203,8 +229,6 @@ def main():
     sys.stderr.write("Exiting...\n\n")
     sys.exit(1)
 
-  f_run_log = open(run_name+'/run.log','a')
-
   if opts.queue == 'local':
     runLog = []
     runProc = []
@@ -230,7 +254,6 @@ def main():
       shutil.copytree(run_name+'/read/Herwig/MG_tmp',dir_name+'/Herwig/MG_tmp')
     if os.path.exists(run_name+'/read/Matchbox/MG_tmp'):
       shutil.copytree(run_name+'/read/Matchbox/MG_tmp',dir_name+'/Matchbox/MG_tmp')
-    ##shutil.copytree(run_name+'/read/Matchbox',dir_name+'/Matchbox') # copy run directory
 
     # start jobs
     os.chdir(cwd+"/"+dir_name)
@@ -262,7 +285,7 @@ def main():
       jobid = check_output("echo '"+output+"' | "+configParserClusters.get(configParserQueues.get(opts.queue,'cluster'),'jobid'), shell=True)
     f_run_info.write("job #{}: {} {} {} {}\n".format(str(r), opts.queue, jobid, str(seeds[r-1]), str(events)))
     addToIndex(jobid, cwd+'/'+run_name)
-    f_run_log.write(datetime.datetime.now().isoformat(' ')+': herwig-parallel-run: starting job #{}\n'.format(r))
+    f_run_log.write(datetime.datetime.now().isoformat(' ')+': herwig-parallel-run: starting run job #{} with id {}\n'.format(r, jobid))
 
   f_run_info.close()
   f_run_log.close()
@@ -278,6 +301,7 @@ def main():
 ### ------------------------------------------
 def exit():
   sys.stderr.write("\r\033[K")
+  sys.stderr.write("Exiting after keyboard interrupt...\n\n")
   sys.exit(1)
 
 

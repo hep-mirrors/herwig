@@ -6,6 +6,8 @@
 ## Herwig/Matchbox with and then execute 'herwig-parallel-read'.
 ## -------------------------------------------------------------
 
+@HOSTNAME@
+
 echo ''
 echo '---------------------------------------------'
 echo 'J O B   D A T A   A N D   H O S T   U S A G E'

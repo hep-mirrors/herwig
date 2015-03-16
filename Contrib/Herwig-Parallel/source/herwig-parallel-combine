@@ -260,7 +260,8 @@ def main():
 
   f_result = open(run_name+'/'+opts.outfolder+'/job-results.out','w')
   for i in range(len(progress)):
-    f_result.write("{}   {}   {}   {: f}   {: f}   {: f}   {: f}\n".format(i+1,attempts[i],current_events[i],cs[i],err[i],CS,ERR))
+    # f_result.write("{}   {}   {}   {: f}   {: f}   {: f}   {: f}\n".format(i+1,attempts[i],current_events[i],cs[i],err[i],CS,ERR))
+    f_result.write("{}   {}   {}   {: f}   {: f}\n".format(i+1,attempts[i],current_events[i],cs[i],err[i]))
   f_result.close()
 
   # combination of histograms and event files

@@ -1,0 +1,70 @@
+#! /usr/bin/env python
+
+## --------------------
+## Herwig-Parallel
+## --------------------
+## Author: Daniel Rauch
+## Date:   12 Mar 2015
+## --------------------
+
+import os
+import signal
+import sys
+from optparse import OptionParser
+from hwp import findInIndex
+
+
+### ------------
+### catch Ctrl+C
+### ------------
+signal.signal(signal.SIGINT, lambda x,y: exit())
+
+
+### ------------
+### main program
+### ------------
+def main():
+
+  # setup command line options & parameters
+  optionParser = OptionParser(usage="%prog jobid [more jobids]")
+  opts, args = optionParser.parse_args()
+
+  line = '==================================='
+  print(line)
+  print("HERWIG-PARALLEL: Looking up job ids")
+  print(line)
+  print("")
+
+  # sanity checks for command line arguments
+  if len(args) < 1:
+    sys.stderr.write("Must specify at least one job id to be looked up!\n")
+    sys.exit(1)
+
+  paths = findInIndex(args)
+  if paths is None: sys.exit(1)
+
+  print('If the same job id is found in multiple run folders, the most recent entries are listed first.')
+  print('')
+  for item in paths:
+    if len(item[1]) == 0:
+      print("Could not find job with id {}".format(item[0]))
+    else:
+      print('Found job{} with the id {} in the run folder{}:'.format('s' if len(item[1])>1 else '', item[0], 's' if len(item[1])>1 else ''))
+      for path in item[1]:
+        print('  '+path)
+    print('')
+
+
+### ------------------------------------------
+### remove '^C' outpt when exiting with Ctrl+C
+### ------------------------------------------
+def exit():
+  sys.stderr.write("\r\033[K")
+  sys.exit(1)
+
+
+### -----------------
+### call main program
+### -----------------
+if __name__ == '__main__':
+  main()

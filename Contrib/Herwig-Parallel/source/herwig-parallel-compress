@@ -81,7 +81,6 @@ def main():
     if l == 2: setupfile_title = line.replace('\n','').split('/')[-1]
     elif l == 3:
       generator = line.replace('\n','')
-    elif l == 5: cluster = line.replace('\n','')
     elif l > 12:
       data = line.replace('\n','').split()
       jobs.append(int(data[1].replace('#','').replace(':','')))
@@ -91,6 +90,11 @@ def main():
       if not cluster in clusters:
         clusters.append(cluster)
   f_run_info.close()
+
+  # check if run stage was begun
+  if len(jobs) == 0:
+    sys.stderr.write("! Cannot compress run {} because no run jobs exist.\n\n".format(run_name))
+    sys.exit(1)
 
   # get joblist(s)
   sys.stdout.write('obtaining joblist'+('s' if len(clusters)>1 else '')+'...')

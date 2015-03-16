@@ -102,7 +102,6 @@ def main():
     elif l == 3:
       generator = line.replace('\n','')
       runfile_title = generator+'.run'
-    elif l == 5: buildCluster = line.replace('\n','')
     elif l == 10: runscript_title = line.replace('\n','').split('/')[-1]
     elif l == 11: seed_mode = line.replace('\n','')
     elif l == 12:

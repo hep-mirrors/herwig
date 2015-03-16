@@ -199,6 +199,7 @@ def main():
   f_run_info.write(buildCluster+'\n')
   f_run_log = open(run_name+'/run.log','a')
   os.chdir(run_name+'/read')
+  call("sed -i 's/@HOSTNAME@/hostname > build.hostname/' "+buildscript_title, shell=True)
   call("sed -i 's/@INFILE@/"+infile_title+"/' "+buildscript_title, shell=True)
   call("sed -i 's/@JOBS@/"+str(jobs)+"/' "+buildscript_title, shell=True)
   if opts.buildqueue == 'local': # run on local machine
@@ -259,17 +260,20 @@ def main():
 
   # start integrate step/job(s)
   f_run_info.write((cwd+'/' if not integratescript.startswith('/') else '')+integratescript+'\n')
-  f_run_info.write(integrateCluster+'\n')
+  for job in range(integrationJobs): f_run_info.write(opts.integratequeue+' ')
+  f_run_info.write('\n')
   integrateLog = []
   integrateProc = []
   integrationsJobIDs = []
   for job in range(1,integrationJobs+1):
-    if '.sh' in integratescript_title:
-      script = integratescript_title.replace('.sh','.job'+str(job-1)+'.sh')
-    else:
-      script = integratescript_title+str(job-1)
+###    if '.sh' in integratescript_title:
+###      script = integratescript_title.replace('.sh','.job'+str(job-1)+'.sh')
+###    else:
+###      script = integratescript_title+str(job-1)
+    script = 'integrate.job'+str(job-1)+'.sh'
     shutil.copyfile(integratescript_title,script)
     call('chmod u+x '+script, shell=True) # set execute permission (lost during copying)
+    call("sed -i 's/@HOSTNAME@/hostname > integrate.job"+str(job-1)+".hostname/' "+script, shell=True)
     call("sed -i 's/@RUNFILE@/"+runfile+"/' "+script, shell=True)
     call("sed -i 's/@JOBID@/"+str(job-1)+"/' "+script, shell=True)
     call("sed -i 's/@SETUPFILE@/"+('' if setupfile=='' else '--setupfile='+setupfile_title)+"/' "+script, shell=True)
