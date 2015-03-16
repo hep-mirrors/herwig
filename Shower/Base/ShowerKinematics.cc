@@ -69,7 +69,7 @@ void ShowerKinematics::initialize(ShowerParticle &,PPtr) {
 		    << Exception::runerror;
 }
 
-void ShowerKinematics::transform(const LorentzRotation & r) {
+void ShowerKinematics::transform(const LorentzRotation & ) {
   throw Exception() << "Base class ShowerKinematics::transform called "
 		    << Exception::runerror;
 }
