@@ -1680,9 +1680,9 @@ reconstructFinalStateSystem(bool applyBoost,
 			    const LorentzRotation &   toRest,
 			    const LorentzRotation & fromRest, 
 			    vector<ShowerProgenitorPtr> jets) const {
+  LorentzRotation trans = applyBoost? toRest : LorentzRotation();
   // special for case of individual particle
   if(jets.size()==1) {
-    LorentzRotation trans(toRest);
     trans.transform(fromRest);
     deepTransform(jets[0]->progenitor(),trans);
     return;
@@ -1695,9 +1695,14 @@ reconstructFinalStateSystem(bool applyBoost,
     radiated |=jets[ix]->hasEmitted();
     pcm += jets[ix]->progenitor()->momentum();
   }
+  if(applyBoost) pcm *= trans;
   // check if in CMF frame
   Boost beta_cm = pcm.findBoostToCM();
-  bool gottaBoost = (beta_cm.mag() > 1e-12);
+  bool gottaBoost(false);
+  if(beta_cm.mag() > 1e-12) {
+    gottaBoost = true;
+    trans.boost(beta_cm);
+  }
   // collection of pointers to initial hard particle and jet momenta
   // for final boosts
   JetKinVect jetKinematics;
@@ -1705,15 +1710,8 @@ reconstructFinalStateSystem(bool applyBoost,
   for(cit = jets.begin(); cit != jets.end(); cit++) {
     JetKinStruct tempJetKin;      
     tempJetKin.parent = (*cit)->progenitor();
-    if(gottaBoost) {
-      tempJetKin.parent->deepBoost(beta_cm);
-      map<tShowerTreePtr,pair<tShowerProgenitorPtr,
-	tShowerParticlePtr> >::const_iterator tit;
-      for(tit  = _currentTree->treelinks().begin();
-	  tit != _currentTree->treelinks().end();++tit) {
-	if(tit->second.first && tit->second.second==tempJetKin.parent)
-	  tit->first->transform(LorentzRotation(beta_cm),false);
-      }
+    if(applyBoost || gottaBoost) {
+      deepTransform(tempJetKin.parent,trans);
     }
     tempJetKin.p = (*cit)->progenitor()->momentum();
     _progenitor=tempJetKin.parent;
@@ -1804,10 +1802,7 @@ reconstructFinalStateSystem(bool applyBoost,
   if(gottaBoost || applyBoost) { 
     LorentzRotation finalBoosts;
     if(gottaBoost) finalBoosts.boost(-beta_cm);
-    if(applyBoost) {
-      finalBoosts.transform(  toRest);
-      finalBoosts.transform(fromRest);
-    }
+    if(applyBoost) finalBoosts.transform(fromRest);
     for(JetKinVect::iterator it = jetKinematics.begin();
 	it != jetKinematics.end(); ++it) {
       deepTransform(it->parent,finalBoosts);
