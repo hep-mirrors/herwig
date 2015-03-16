@@ -264,7 +264,7 @@ bool QTildeSudakov::computeTimeLikeLimits(Energy2 & t) {
   pair<double,double> limits;
   if(ids_[0]==ParticleID::g||ids_[0]==ParticleID::gamma) {
     // no emission possible
-    if(t<16.*masssquared_[1]) {
+    if(t<16.*(masssquared_[1]+pT2min())) {
       t=-1.*GeV2;
       return false;
     }
