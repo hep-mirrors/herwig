@@ -59,37 +59,53 @@ bool ShowerApproximationGenerator::prepare() {
 
   tcStdXCombPtr cIncomingXC = lastIncomingXComb;
 
+  bool hasFractions =
+    thePhasespace->haveX1X2() ||
+    cIncomingXC->mePartonData().size() == 3;
+
   theLastMomenta.resize(cIncomingXC->mePartonData().size());
-  theLastRandomNumbers.resize(thePhasespace->nDim(theLastMomenta.size()-2) + 2);
 
-  double x1 =
-    oldSub->incoming().first->momentum().plus() /
-    lastIncomingXComb->lastParticles().first->momentum().plus();
+  if ( !hasFractions )
+    theLastRandomNumbers.resize(thePhasespace->nDim(theLastMomenta.size()-2) + 2);
+  else
+    theLastRandomNumbers.resize(thePhasespace->nDim(theLastMomenta.size()-2));
 
-  theLastRandomNumbers[0] = invertFraction(oldSub->incoming().first->dataPtr(),x1,
-					   lastIncomingXComb->cuts()->x1Min());
+  if ( !hasFractions ) {
 
-  double x2 =
-    oldSub->incoming().second->momentum().minus() /
-    lastIncomingXComb->lastParticles().second->momentum().minus();
+    double x1 =
+      oldSub->incoming().first->momentum().plus() /
+      lastIncomingXComb->lastParticles().first->momentum().plus();
 
-  theLastRandomNumbers[1] = invertFraction(oldSub->incoming().second->dataPtr(),x2,
-					   lastIncomingXComb->cuts()->x2Min());
+    theLastRandomNumbers[0] = invertFraction(oldSub->incoming().first->dataPtr(),x1,
+					     lastIncomingXComb->cuts()->x1Min());
+
+    double x2 =
+      oldSub->incoming().second->momentum().minus() /
+      lastIncomingXComb->lastParticles().second->momentum().minus();
+
+    theLastRandomNumbers[1] = invertFraction(oldSub->incoming().second->dataPtr(),x2,
+					     lastIncomingXComb->cuts()->x2Min());
+
+  }
 
   Boost toCMS = 
     (oldSub->incoming().first->momentum() +
      oldSub->incoming().second->momentum()).findBoostToCM();
 
   theLastMomenta[0] = oldSub->incoming().first->momentum();
-  theLastMomenta[0].boost(toCMS);
+  if ( !hasFractions )
+    theLastMomenta[0].boost(toCMS);
   theLastMomenta[1] = oldSub->incoming().second->momentum();
-  theLastMomenta[1].boost(toCMS);
+  if ( !hasFractions )
+    theLastMomenta[1].boost(toCMS);
 
-  ParticleVector::const_iterator out = oldSub->outgoing().begin();
-  vector<Lorentz5Momentum>::iterator p = theLastMomenta.begin() + 2;
-  for ( ; out != oldSub->outgoing().end(); ++out, ++p ) {
-    *p = (**out).momentum();
-    p->boost(toCMS);
+  if ( !hasFractions ) {
+    ParticleVector::const_iterator out = oldSub->outgoing().begin();
+    vector<Lorentz5Momentum>::iterator p = theLastMomenta.begin() + 2;
+    for ( ; out != oldSub->outgoing().end(); ++out, ++p ) {
+      *p = (**out).momentum();
+      p->boost(toCMS);
+    }
   }
 
   theLastPartons.first = 
@@ -97,7 +113,9 @@ bool ShowerApproximationGenerator::prepare() {
   theLastPartons.second = 
     oldSub->incoming().second->data().produceParticle(oldSub->incoming().second->momentum());
 
-  thePhasespace->invertKinematics(theLastMomenta,&theLastRandomNumbers[2]);
+  thePhasespace->setXComb(lastIncomingXComb);
+  thePhasespace->invertKinematics(theLastMomenta,
+				  !hasFractions ? &theLastRandomNumbers[2] : &theLastRandomNumbers[0]);
 
   theLastBornXComb->clean();
   theLastBornXComb->fill(lastIncomingXComb->lastParticles(),theLastPartons,
@@ -110,7 +128,7 @@ bool ShowerApproximationGenerator::prepare() {
 
   theLastBornME->setXComb(theLastBornXComb);
 
-  if ( !theLastBornME->generateKinematics(&theLastRandomNumbers[2]) )
+  if ( !theLastBornME->generateKinematics(!hasFractions ? &theLastRandomNumbers[2] : &theLastRandomNumbers[0]) )
     return false;
 
   CrossSection bornXS = theLastBornME->dSigHatDR();
@@ -126,23 +144,44 @@ bool ShowerApproximationGenerator::generate(const vector<double>& r) {
 
   theLastBornXComb->clean();
 
-  double x = generateFraction(theLastPartons.first->dataPtr(),r[0],
-			      lastIncomingXComb->cuts()->x1Min());
-  Energy Q = lastIncomingXComb->lastParticles().first->momentum().plus();
-  Energy mass = theLastPartons.first->dataPtr()->mass();
-  double xi = (sqr(x*Q) - sqr(mass))/(sqr(Q)*x);
-  Lorentz5Momentum p1(ZERO,ZERO,xi*Q/2.);
-  p1.setMass(mass); p1.rescaleEnergy();
-  theLastPartons.first->set5Momentum(p1);
+  bool hasFractions =
+    thePhasespace->haveX1X2() ||
+    theLastBornXComb->mePartonData().size() == 3;
 
-  x = generateFraction(theLastPartons.second->dataPtr(),r[1],
-		       lastIncomingXComb->cuts()->x2Min());
-  Q = lastIncomingXComb->lastParticles().second->momentum().minus();
-  mass = theLastPartons.second->dataPtr()->mass();
-  xi = (sqr(x*Q) - sqr(mass))/(sqr(Q)*x);
-  Lorentz5Momentum p2(ZERO,ZERO,-xi*Q/2.);
-  p2.setMass(mass); p2.rescaleEnergy();
-  theLastPartons.second->set5Momentum(p2);
+  if ( !hasFractions ) {
+
+    double x = generateFraction(theLastPartons.first->dataPtr(),r[0],
+				lastIncomingXComb->cuts()->x1Min());
+    Energy Q = lastIncomingXComb->lastParticles().first->momentum().plus();
+    Energy mass = theLastPartons.first->dataPtr()->mass();
+    double xi = (sqr(x*Q) - sqr(mass))/(sqr(Q)*x);
+    Lorentz5Momentum p1(ZERO,ZERO,xi*Q/2.);
+    p1.setMass(mass); p1.rescaleEnergy();
+    theLastPartons.first->set5Momentum(p1);
+
+    x = generateFraction(theLastPartons.second->dataPtr(),r[1],
+			 lastIncomingXComb->cuts()->x2Min());
+    Q = lastIncomingXComb->lastParticles().second->momentum().minus();
+    mass = theLastPartons.second->dataPtr()->mass();
+    xi = (sqr(x*Q) - sqr(mass))/(sqr(Q)*x);
+    Lorentz5Momentum p2(ZERO,ZERO,-xi*Q/2.);
+    p2.setMass(mass); p2.rescaleEnergy();
+    theLastPartons.second->set5Momentum(p2);
+
+  } else {
+
+    theLastBornME->setXComb(theLastBornXComb);
+    theLastBornXComb->lastParticles(lastIncomingXComb->lastParticles());
+    theLastBornXComb->lastP1P2(make_pair(0.0, 0.0));
+    theLastBornXComb->lastS(lastIncomingXComb->lastS());
+
+    if ( !theLastBornME->generateKinematics(&r[0]) )
+      return false;
+
+    theLastPartons.first->set5Momentum(theLastBornME->lastMEMomenta()[0]);
+    theLastPartons.second->set5Momentum(theLastBornME->lastMEMomenta()[1]);
+
+  }
 
   theLastPresamplingMomenta.resize(theLastMomenta.size());
 
@@ -151,9 +190,11 @@ bool ShowerApproximationGenerator::generate(const vector<double>& r) {
      theLastPartons.second->momentum()).findBoostToCM();
 
   theLastPresamplingMomenta[0] = theLastPartons.first->momentum();
-  theLastPresamplingMomenta[0].boost(toCMS);
+  if ( !hasFractions )
+    theLastPresamplingMomenta[0].boost(toCMS);
   theLastPresamplingMomenta[1] = theLastPartons.second->momentum();
-  theLastPresamplingMomenta[1].boost(toCMS);
+  if ( !hasFractions )
+    theLastPresamplingMomenta[1].boost(toCMS);
 
   theLastBornXComb->fill(lastIncomingXComb->lastParticles(),theLastPartons,
 			 theLastPresamplingMomenta,r);
@@ -163,10 +204,11 @@ bool ShowerApproximationGenerator::generate(const vector<double>& r) {
 						 theLastBornXComb->mirror()) )
     return false;
 
-  theLastBornME->setXComb(theLastBornXComb);
-
-  if ( !theLastBornME->generateKinematics(&r[2]) )
-    return false;
+  if ( !hasFractions ) {
+    theLastBornME->setXComb(theLastBornXComb);
+    if ( !theLastBornME->generateKinematics(&r[2]) )
+      return false;
+  }
 
   CrossSection bornXS = theLastBornME->dSigHatDR();
 
