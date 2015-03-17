@@ -2556,9 +2556,7 @@ void Evolver::doShowering(bool hard,XCPtr xcomb) {
 	  }
 	}
       }
-      
-        //create random particle vector
-      
+      // create random particle vector
       vector<ShowerProgenitorPtr> tmp;
       while(particlesToShower.size()>0){
         unsigned int xx=UseRandom::irnd(particlesToShower.size());
@@ -2566,9 +2564,8 @@ void Evolver::doShowering(bool hard,XCPtr xcomb) {
         particlesToShower.erase(particlesToShower.begin()+xx);
       }
       particlesToShower=tmp;
-     
       // loop over particles
-    for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
+      for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
 	// extract the progenitor
 	progenitor(particlesToShower[ix]);
 	// final-state radiation

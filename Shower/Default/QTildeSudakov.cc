@@ -355,7 +355,7 @@ tShowerParticlePtr findCorrelationPartner(ShowerParticle & particle,
     child = mother;
     if(forward) {
       mother = ! mother->parents().empty() ?
-	dynamic_ptr_cast<tShowerParticlePtr>(particle.parents()[0]) : tShowerParticlePtr();
+	dynamic_ptr_cast<tShowerParticlePtr>(mother->parents()[0]) : tShowerParticlePtr();
     }
     else {
       if(mother->children()[0]->children().size()!=2)
