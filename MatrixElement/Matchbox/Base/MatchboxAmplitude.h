@@ -278,6 +278,11 @@ public:
    */
   virtual int externalId(const cPDVector&) { return 0; }
 
+  /**
+   * Return the map with masses to be used for amplitude evaluation
+   */
+  const map<long,Energy>& reshuffleMasses() const { return theReshuffleMasses; }
+
   //@}
 
   /** @name Colour basis. */
@@ -627,6 +632,21 @@ private:
    * helicity is excluded.  Needed in pp->V
    */
   int oneLoopHelicityPoints;
+
+  /**
+   * The map with masses to be used for amplitude evaluation
+   */
+  map<long,Energy> theReshuffleMasses;
+
+  /**
+   * A command to fill the reshuffle mass map
+   */
+  string doReshuffle(string);
+
+  /**
+   * A command to fill the reshuffle mass map
+   */
+  string doMassless(string);
 
   /**
    * The assignment operator is private and must never be called.

@@ -15,6 +15,7 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Command.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -25,6 +26,7 @@
 #include "Herwig++/MatrixElement/Matchbox/Utility/SpinorHelicity.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/SU2Helper.h"
 #include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
+#include "ThePEG/Utilities/StringUtils.h"
 #include "MatchboxMEBase.h"
 
 #include <boost/numeric/ublas/io.hpp>
@@ -44,12 +46,27 @@ MatchboxAmplitude::~MatchboxAmplitude() {}
 
 void MatchboxAmplitude::persistentOutput(PersistentOStream & os) const {
   os << theLastXComb << theColourBasis << theFactory 
-     << theCleanupAfter << treeLevelHelicityPoints << oneLoopHelicityPoints;
+     << theCleanupAfter << treeLevelHelicityPoints << oneLoopHelicityPoints
+     << theReshuffleMasses.size();
+  if ( !theReshuffleMasses.empty() ) {
+    for ( map<long,Energy>::const_iterator r = theReshuffleMasses.begin();
+	  r != theReshuffleMasses.end(); ++r )
+      os << r->first << ounit(r->second,GeV);
+  }
 }
 
 void MatchboxAmplitude::persistentInput(PersistentIStream & is, int) {
+  size_t reshuffleSize;
   is >> theLastXComb >> theColourBasis >> theFactory 
-     >> theCleanupAfter >> treeLevelHelicityPoints >> oneLoopHelicityPoints;
+     >> theCleanupAfter >> treeLevelHelicityPoints >> oneLoopHelicityPoints
+     >> reshuffleSize;
+  theReshuffleMasses.clear();
+  while ( reshuffleSize > 0 ) {
+    long id; Energy m;
+    is >> id >> iunit(m,GeV);
+    theReshuffleMasses[id] = m;
+    --reshuffleSize;
+  }
   lastMatchboxXComb(theLastXComb);
 }
 
@@ -765,6 +782,35 @@ double MatchboxAmplitude::spinCorrelatedME2(pair<int,int> ij,
 
 }
 
+string MatchboxAmplitude::doReshuffle(string in) {
+  in = StringUtils::stripws(in);
+  if ( in.empty() )
+    throw Exception() << "expecting PDG id and mass value"
+		      << Exception::abortnow;
+  istringstream ins(in);
+  long id;
+  ins >> id;
+  if ( ins.eof() )
+    throw Exception() << "expecting PDG id and mass value"
+		      << Exception::abortnow;
+  Energy m;
+  ins >> iunit(m,GeV);
+  theReshuffleMasses[id] = m;
+  return "";
+}
+
+string MatchboxAmplitude::doMassless(string in) {
+  in = StringUtils::stripws(in);
+  if ( in.empty() )
+    throw Exception() << "expecting PDG id"
+		      << Exception::abortnow;
+  istringstream ins(in);
+  long id;
+  ins >> id;
+  theReshuffleMasses[id] = ZERO;
+  return "";
+}
+
 
 void MatchboxAmplitude::Init() {
 
@@ -782,6 +828,16 @@ void MatchboxAmplitude::Init() {
      "The number of points after which helicity combinations are cleaned up.",
      &MatchboxAmplitude::theCleanupAfter, 20, 1, 0,
      false, false, Interface::lowerlim);
+
+  static Command<MatchboxAmplitude> interfaceReshuffle
+    ("Reshuffle",
+     "Reshuffle the mass for the given PDG id to a different mass shell for amplitude evaluation.",
+     &MatchboxAmplitude::doReshuffle, false);
+
+  static Command<MatchboxAmplitude> interfaceMassless
+    ("Massless",
+     "Reshuffle the mass for the given PDG id to be massless for amplitude evaluation.",
+     &MatchboxAmplitude::doMassless, false);
 
 }
 
