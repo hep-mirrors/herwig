@@ -345,6 +345,7 @@ insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudelnuqqbarqqb
 
 insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudehgg
 insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudehggg
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudehqqbarg
 
 insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqqbarttbar
 insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqqbarttbarg
