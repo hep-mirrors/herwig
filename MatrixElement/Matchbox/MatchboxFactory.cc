@@ -777,6 +777,7 @@ void MatchboxFactory::setup() {
 	    finiteRealMEs().push_back(fme);
 	  }
 	  sub->head(tMEPtr());
+	  ++(*progressBar);
 	  continue;
 	}
 

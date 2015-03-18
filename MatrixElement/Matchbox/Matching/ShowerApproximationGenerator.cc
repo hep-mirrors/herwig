@@ -99,13 +99,12 @@ bool ShowerApproximationGenerator::prepare() {
   if ( !hasFractions )
     theLastMomenta[1].boost(toCMS);
 
-  if ( !hasFractions ) {
-    ParticleVector::const_iterator out = oldSub->outgoing().begin();
-    vector<Lorentz5Momentum>::iterator p = theLastMomenta.begin() + 2;
-    for ( ; out != oldSub->outgoing().end(); ++out, ++p ) {
-      *p = (**out).momentum();
+  ParticleVector::const_iterator out = oldSub->outgoing().begin();
+  vector<Lorentz5Momentum>::iterator p = theLastMomenta.begin() + 2;
+  for ( ; out != oldSub->outgoing().end(); ++out, ++p ) {
+    *p = (**out).momentum();
+    if ( !hasFractions )
       p->boost(toCMS);
-    }
   }
 
   theLastPartons.first = 
@@ -195,6 +194,11 @@ bool ShowerApproximationGenerator::generate(const vector<double>& r) {
   theLastPresamplingMomenta[1] = theLastPartons.second->momentum();
   if ( !hasFractions )
     theLastPresamplingMomenta[1].boost(toCMS);
+
+  if ( hasFractions ) {
+    for ( size_t k = 2; k < theLastBornME->lastMEMomenta().size(); ++k )
+      theLastPresamplingMomenta[k] = theLastBornME->lastMEMomenta()[k];
+  }
 
   theLastBornXComb->fill(lastIncomingXComb->lastParticles(),theLastPartons,
 			 theLastPresamplingMomenta,r);
