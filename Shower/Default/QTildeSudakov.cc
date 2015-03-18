@@ -18,6 +18,7 @@
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/Repository/EventGenerator.h"
+#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "Herwig++/Shower/Default/FS_QTildeShowerKinematics1to2.h"
 #include "Herwig++/Shower/Default/IS_QTildeShowerKinematics1to2.h"
@@ -391,6 +392,25 @@ tShowerParticlePtr findCorrelationPartner(ShowerParticle & particle,
   return partner;
 }
 
+pair<double,double> softPhiMin(double phi0, double phi1, double A, double B, double C, double D) {
+  double c01 = cos(phi0 - phi1);
+  double s01 = sin(phi0 - phi1);
+  double s012(sqr(s01)), c012(sqr(c01));
+  double A2(A*A), B2(B*B), C2(C*C), D2(D*D);
+  if(abs(B/A)<1e-10 && abs(D/C)<1e-10) return make_pair(phi0,phi0+Constants::pi);
+  double root = sqr(B2)*C2*D2*sqr(s012) + 2.*A*B2*B*C2*C*D*c01*s012 + 2.*A*B2*B*C*D2*D*c01*s012
+		     + 4.*A2*B2*C2*D2*c012 - A2*B2*C2*D2*s012 - A2*B2*sqr(D2)*s012 - sqr(B2)*sqr(C2)*s012 
+		     - sqr(B2)*C2*D2*s012 - 4.*A2*A*B*C*D2*D*c01 - 4.*A*B2*B*C2*C*D*c01 + sqr(A2)*sqr(D2)
+		     + 2.*A2*B2*C2*D2 + sqr(B2)*sqr(C2);
+  if(root<0.) return make_pair(phi0,phi0+Constants::pi);
+  root = sqrt(root);
+  double denom  = (-2.*A*B*C*D*c01 + A2*D2 + B2*C2);
+  double denom2 = (-B*C*c01 + A*D);
+  double num    = B2*C*D*s012;
+  return make_pair(atan2(B*s01*(-C*(num + root) / denom + D) / denom2, -(num + root ) / denom) + phi0,
+		   atan2(B*s01*(-C*(num - root) / denom + D) / denom2, -(num - root ) / denom) + phi0);
+}
+
 }
 
 double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
@@ -414,18 +434,16 @@ double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
   InvEnergy2 aziMax(ZERO);
   bool softAllowed = ShowerHandler::currentHandler()->evolver()->softCorrelations()&&
     (canBeSoft[0] || canBeSoft[1]);
-  bool swapOrder;
   if(softAllowed) {
     // find the partner for the soft correlations
     tShowerParticlePtr partner=findCorrelationPartner(particle,true,splittingFn()->interactionType());
     // remember we want the softer gluon 
-    swapOrder = !canBeSoft[1] || (canBeSoft[0] && canBeSoft[1] && z < 0.5);
+    bool swapOrder = !canBeSoft[1] || (canBeSoft[0] && canBeSoft[1] && z < 0.5);
     double zFact = !swapOrder ? (1.-z) : z;
     // compute the transforms to the shower reference frame
     // first the boost
     vector<Lorentz5Momentum> basis = kinematics->getBasis();
-    Lorentz5Momentum pVect = basis[0];
-    Lorentz5Momentum nVect = basis[1];
+    Lorentz5Momentum pVect = basis[0], nVect = basis[1];
     Boost beta_bb;
     if(kinematics->frame()==ShowerKinematics::BackToBack) {
       beta_bb = -(pVect + nVect).boostVector();
@@ -459,8 +477,7 @@ double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
     pVect *= rot;
     nVect *= rot;
     // shower parameters
-    Energy2 pn = pVect*nVect;
-    Energy2 m2 = pVect.m2();
+    Energy2 pn = pVect*nVect, m2 = pVect.m2();
     double alpha0 = particle.showerParameters().alpha;
     double  beta0 = 0.5/alpha0/pn*
       (sqr(particle.dataPtr()->mass())-sqr(alpha0)*m2+sqr(particle.showerParameters().pt));
@@ -488,23 +505,36 @@ double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
       pjk[1] *= -1.;
       pjk[2] *= -1.;
     }
+    Ek[0] = zFact*(alpha0*pVect.t()-0.5*nVect.t()/pn*(alpha0*m2-sqr(particle.showerParameters().pt)/alpha0))
+      +0.5*sqr(pT)*nVect.t()/pn/zFact/alpha0;
+    Ek[1] = -nVect.t()/alpha0/pn*qperp0.x()*pT;
+    Ek[2] = -nVect.t()/alpha0/pn*qperp0.y()*pT;
+    if(swapOrder) {
+      Ek[1] *= -1.;
+      Ek[2] *= -1.;
+    }
+    Energy mag2=sqrt(sqr(Ek[1])+sqr(Ek[2]));
+    Ei = alpha0*pVect.t()+beta0*nVect.t();
+    Ej = pj.t();
+    double phi0 = atan2(-pjk[2],-pjk[1]);
+    if(phi0<0.) phi0 += Constants::twopi;
+    double phi1 = atan2(-Ek[2],-Ek[1]);
+    if(phi1<0.) phi1 += Constants::twopi;
+    double xi_min = pik/Ei/(Ek[0]+mag2), xi_max = pik/Ei/(Ek[0]-mag2), xi_ij = pipj/Ei/Ej;
+    if(xi_min>xi_max) swap(xi_min,xi_max);
+    if(xi_min>xi_ij) softAllowed = false;
     Energy2 mag = sqrt(sqr(pjk[1])+sqr(pjk[2]));
     if(ShowerHandler::currentHandler()->evolver()->softCorrelations()==1) {
       aziMax = -m12/sqr(pik) -m22/sqr(pjk[0]+mag) +2.*pipj/pik/(pjk[0]-mag);
     }
     else if(ShowerHandler::currentHandler()->evolver()->softCorrelations()==2) {
-      Ek[0] = zFact*(alpha0*pVect.t()-0.5*nVect.t()/pn*(alpha0*m2-sqr(particle.showerParameters().pt)/alpha0))
-	+0.5*sqr(pT)*nVect.t()/pn/zFact/alpha0;
-      Ek[1] = -nVect.t()/alpha0/pn*qperp0.x()*pT;
-      Ek[2] = -nVect.t()/alpha0/pn*qperp0.y()*pT;
-      if(swapOrder) {
-	Ek[1] *= -1.;
-	Ek[2] *= -1.;
-      }
-      Energy mag2=sqrt(sqr(Ek[1])+sqr(Ek[2]));
-      Ei = alpha0*pVect.t()+beta0*nVect.t();
-      Ej = pj.t();
-      aziMax = 0.5/pik/(Ek[0]-mag2)*(Ei-m12*(Ek[0]-mag2)/pik  + pipj*(Ek[0]+mag2)/(pjk[0]-mag) - Ej*pik/(pjk[0]+mag) );
+      double A = (pipj*Ek[0]- Ej*pik)/Ej/sqr(Ej);
+      double B = -sqrt(sqr(pipj)*(sqr(Ek[1])+sqr(Ek[2])))/Ej/sqr(Ej);
+      double C = pjk[0]/sqr(Ej);
+      double D = -sqrt(sqr(pjk[1])+sqr(pjk[2]))/sqr(Ej);
+      pair<double,double> minima = softPhiMin(phi0,phi1,A,B,C,D);
+      aziMax = 0.5/pik/(Ek[0]-mag2)*(Ei-m12*(Ek[0]-mag2)/pik  + max(Ej*(A+B*cos(minima.first -phi1))/(C+D*cos(minima.first -phi0)),
+								    Ej*(A+B*cos(minima.second-phi1))/(C+D*cos(minima.second-phi0))));
     }
     else
       assert(false);
@@ -568,16 +598,26 @@ double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
     double aziWgt = 1.;
     if(softAllowed) {
       Energy2 dot = pjk[0]+pjk[1]*cos(phi)+pjk[2]*sin(phi);
-      if(ShowerHandler::currentHandler()->evolver()->softCorrelations()==1) {
-	aziWgt = (-m12/sqr(pik) -m22/sqr(dot) +2.*pipj/pik/dot)/aziMax;
+      Energy  Eg  = Ek[0]+Ek[1]*cos(phi)+Ek[2]*sin(phi);
+      if(pipj/Ei/Ej>pik/Ei/Eg) {
+	if(ShowerHandler::currentHandler()->evolver()->softCorrelations()==1) {
+	  aziWgt = (-m12/sqr(pik) -m22/sqr(dot) +2.*pipj/pik/dot)/aziMax;
+	}
+	else if(ShowerHandler::currentHandler()->evolver()->softCorrelations()==2) {
+	  
+	  
+	  
+	  aziWgt = max(ZERO,0.5/pik/Eg*(Ei-m12*Eg/pik  + (pipj*Eg - Ej*pik)/dot)/aziMax);
+	  
+	  
+	}
+	if(aziWgt-1.>1e-10||aziWgt<-1e-10) {
+	  generator()->log() << "Forward soft weight problem " << aziWgt << " " << aziWgt-1. 
+			     << " " << ids[0] << " " << ids[1] << " " << ids[2] << " " << " " << phi << "\n";
+	}
       }
-      else if(ShowerHandler::currentHandler()->evolver()->softCorrelations()==2) {
-	Energy Eg = Ek[0]+Ek[1]*cos(phi)+Ek[2]*sin(phi);
-	aziWgt = max(ZERO,0.5/pik/Eg*(Ei-m12*Eg/pik  + pipj*Eg/dot - Ej*pik/dot)/aziMax);
-      }
-      if(aziWgt-1.>1e-10||aziWgt<-1e-10) {
-	generator()->log() << "Forward soft weight problem " << aziWgt << " " << aziWgt-1. 
-			   << " " << ids[0] << " " << ids[1] << " " << ids[2] << " " << " " << phi << "\n";
+      else {
+	aziWgt = 0.;
       }
     }
     wgt *= aziWgt;
@@ -589,8 +629,8 @@ double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
   }
   while(wgt<UseRandom::rnd()&&ntry<10000);
   if(ntry==10000) {
-    phi = phiMax;
     generator()->log() << "Too many tries to generate phi in forward evolution\n";
+    phi = phiMax;
   }
   // return the azimuthal angle
   return phi;
@@ -667,7 +707,12 @@ double QTildeSudakov::generatePhiBackward(ShowerParticle & particle,
       Ek = alpha0*zFact/(1.-zFact)*pVect.t()+beta2*nVect.t();
       Ei = alpha0*pVect.t()+beta0*nVect.t();
       Ej = pj.t();
-      aziMax = 0.5/pik/Ek*(Ei-m12*Ek/pik  + pipj*Ek/(pjk[0]-mag) - Ej*pik/(pjk[0]+mag));
+      if(pipj*Ek> Ej*pik) {
+	aziMax = 0.5/pik/Ek*(Ei-m12*Ek/pik  + (pipj*Ek- Ej*pik)/(pjk[0]-mag));
+      }
+      else {
+	aziMax = 0.5/pik/Ek*(Ei-m12*Ek/pik);
+      }
     }
     else {
       assert(ShowerHandler::currentHandler()->evolver()->softCorrelations()==0);
@@ -709,8 +754,6 @@ double QTildeSudakov::generatePhiBackward(ShowerParticle & particle,
   static const Complex ii(0.,1.);
   unsigned int ntry(0);
   double phiMax(0.),wgtMax(0.);
-
-
   do {
     phi = Constants::twopi*UseRandom::rnd();
     Complex spinWgt = 0.;
@@ -752,8 +795,8 @@ double QTildeSudakov::generatePhiBackward(ShowerParticle & particle,
   }
   while(wgt<UseRandom::rnd()&&ntry<10000);
   if(ntry==10000) {
-    phi = phiMax;
     generator()->log() << "Too many tries to generate phi in backward evolution\n";
+    phi = phiMax;
   }
   // return the azimuthal angle
   return phi;
