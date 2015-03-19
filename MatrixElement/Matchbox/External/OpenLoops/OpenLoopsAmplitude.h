@@ -282,11 +282,34 @@ private:
    */
   mutable map< int , int > idpair;
 
+  
+  /**
+   * Helper map to store information in different procs.
+   */
+  
   map<int , OpenLoopsProcInfo > processmap;
-
-  bool theCodeExists;
+  
+  
+  /**
+   * Extra argument of BLHA2 to tell the Amplitude which OpenLoops installation to use.
+   */
 
   mutable string extraOpenLoopsPath;
+  
+  
+  /**
+   * Complex Mass Scheme.
+   */
+  
+  bool use_cms;
+  
+  
+  /**
+   * parameter to set Phase space tolerance for massiv particles.
+   * Should not be used. Better: set Openloops:Massless 11
+   */
+  
+  int psp_tolerance;
 
 
 };

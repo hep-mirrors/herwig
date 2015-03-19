@@ -36,7 +36,7 @@
 
 using namespace Herwig;
 
-OpenLoopsAmplitude::OpenLoopsAmplitude() {theCodeExists=false;
+OpenLoopsAmplitude::OpenLoopsAmplitude():use_cms(true),psp_tolerance(12) {
 }
 
 OpenLoopsAmplitude::~OpenLoopsAmplitude() {
@@ -83,8 +83,8 @@ void OpenLoopsAmplitude::startOLP(const string& contract, int& status) {
 
 	OLP_Start(tempcontract.c_str(), &status);
 	int a=0;double null=0.0;double one=1.0;
-	int part[9]={1,2,3,4,5,6,23,24,25};string stri;
-	for (int i=0;i<9;i++){
+	int part[10]={1,2,3,4,5,6,15,23,24,25};string stri;
+	for (int i=0;i<10;i++){
 	 double mass=getParticleData(part[i])->mass()/GeV;
 	 double width=getParticleData(part[i])->width()/GeV;
 	 std::stringstream ss;
@@ -92,8 +92,8 @@ void OpenLoopsAmplitude::startOLP(const string& contract, int& status) {
 	 string str = ss.str();
 	 stri="mass("+str+")";
 	 OLP_SetParameter(stri.c_str(),&mass,&null,&a);
-	 stri="width("+str+")";
-	  OLP_SetParameter(stri.c_str(),&width,&null,&a);
+     stri="width("+str+")";
+     OLP_SetParameter(stri.c_str(),&width,&null,&a);
 	}
 	stri="alphas";one=SM().alphaS();
 	OLP_SetParameter( stri.c_str(),&one ,&null,&a);
@@ -121,6 +121,8 @@ void OpenLoopsAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs
 	orderFile << "CorrectionType           QCD\n";
 	orderFile << "IRregularization         " << (isDR() ? "DRED" : "CDR") << "\n";
 	orderFile << "extra answerfile      " << (factory()->buildStorage() + name() + ".OLPAnswer.lh") << "\n";
+    orderFile << "extra psp_tolerance "<<psp_tolerance<<"\n";
+    orderFile << "extra use_cms "<<(use_cms?"1":"0")<< "\n";
 	orderFile << "\n";
 
 	if (extraOpenLoopsPath!="")
@@ -254,9 +256,12 @@ void OpenLoopsAmplitude::evalSubProcess() const {
 		  OLP_PrintParameter(parfile.c_str());
 		}
 		
-	}
+    }
+  
 
 	OLP_EvalSubProcess2(&((*(idpair.find(id))).second), olpMomenta(), &scale, out,&acc );
+  
+  
 	if ( olpId()[ProcessType::oneLoopInterference] ) {
 		if(calculateTreeME2())lastTreeME2(out[3] * units);
 		lastOneLoopInterference((out[2])* units);
@@ -355,11 +360,11 @@ double OpenLoopsAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 void OpenLoopsAmplitude::persistentOutput(PersistentOStream & os) const {
-	os << idpair <<theCodeExists;
+	os << idpair ;
 }
 
 void OpenLoopsAmplitude::persistentInput(PersistentIStream & is, int) {
-	is >> idpair >>theCodeExists;
+	is >> idpair ;
 }
 
 // *** Attention *** The following static variable is needed for the type
@@ -372,22 +377,27 @@ DescribeClass<OpenLoopsAmplitude, MatchboxOLPME> describeHerwigOpenLoopsAmplitud
 void OpenLoopsAmplitude::Init() {
 
   static ClassDocumentation<OpenLoopsAmplitude> documentation("OpenLoopsAmplitude implements an interface to OpenLoops.","Matrix elements have been calculated using OpenLoops.");
-
-  static Switch<OpenLoopsAmplitude,bool> interfaceCodeExists
-    ("CodeExists",
-     "Switch on or off if Code already exists/not exists.",
-     &OpenLoopsAmplitude::theCodeExists, true, false, false);
-  static SwitchOption interfaceCodeExistsOn
-    (interfaceCodeExists,
-     "True",
-     "Switch True if Code already exists.",
-     true);
-  static SwitchOption interfaceCodeExistsOff
-    (interfaceCodeExists,
-     "False",
-     "Switch False if Code has to be build.",
-     false);
-
-
+  
+  static Switch<OpenLoopsAmplitude,bool> interfaceUseComplMass
+  ("ComplexMassScheme",
+   "Switch on or off if Compex Masses.",
+   &OpenLoopsAmplitude::use_cms, true, false, false);
+  static SwitchOption interfaceUseComplMassOn
+  (interfaceUseComplMass,
+   "True",
+   "True for Compex Masses.",
+   true);
+  static SwitchOption interfaceUseComplMassOff
+  (interfaceUseComplMass,
+   "False",
+   "False for no Compex Masses.",
+   false);
+  
+  static Parameter<OpenLoopsAmplitude,int> interfacepsp_tolerance
+  ("PSP_tolerance",
+   "(Debug)Phase Space Tolerance. Better use e.g.: set OpenLoops:Massless 13",
+   &OpenLoopsAmplitude::psp_tolerance, 12, 0, 0,
+   false, false, Interface::lowerlim);
+  
 }
 

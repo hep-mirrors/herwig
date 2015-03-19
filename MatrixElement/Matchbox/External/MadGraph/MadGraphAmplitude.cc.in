@@ -460,13 +460,20 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
     else{heltmp[cross]=hel[j];}
   }
 
+  
+  vector<Lorentz5Momentum> reshuffled = meMomenta();
+  const cPDVector pdata=mePartonData();
+  const map<long,Energy> masses=reshuffleMasses();
+  if (!masses.empty()) {
+    lastMatchboxXComb()->reshuffle(reshuffled,pdata,masses);
+  }
 
   size_t j=0;
   for (size_t i=0;i<mePartonData().size();i++){
-    momenta[j]=abs(meMomenta()[i].e()/GeV)<1.e-13?0.:double(meMomenta()[i].e()/GeV);
-    momenta[j+1]=abs(meMomenta()[i].x()/GeV)<1.e-13?0.:double(meMomenta()[i].x()/GeV);
-    momenta[j+2]=abs(meMomenta()[i].y()/GeV)<1.e-13?0.:double(meMomenta()[i].y()/GeV);
-    momenta[j+3]=abs(meMomenta()[i].z()/GeV)<1.e-13?0.:double(meMomenta()[i].z()/GeV);
+    momenta[j]=abs(reshuffled[i].e()/GeV)<1.e-13?0.:double(reshuffled[i].e()/GeV);
+    momenta[j+1]=abs(reshuffled[i].x()/GeV)<1.e-13?0.:double(reshuffled[i].x()/GeV);
+    momenta[j+2]=abs(reshuffled[i].y()/GeV)<1.e-13?0.:double(reshuffled[i].y()/GeV);
+    momenta[j+3]=abs(reshuffled[i].z()/GeV)<1.e-13?0.:double(reshuffled[i].z()/GeV);
     j+=4;
   }
   
@@ -569,8 +576,17 @@ vector<size_t> MadGraphAmplitude::gluonsFirst(vector<size_t> vec) {
 double MadGraphAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
                                                   const SpinCorrelationTensor& c) const {
 
-  Lorentz5Momentum p = meMomenta()[ij.first];
-  Lorentz5Momentum n = meMomenta()[ij.second];
+  
+  vector<Lorentz5Momentum> reshuffled = meMomenta();
+
+  if (!reshuffleMasses().empty()) {
+    const cPDVector pdata=mePartonData();
+    const map<long,Energy> masses=reshuffleMasses();
+    lastMatchboxXComb()->reshuffle(reshuffled,pdata,masses);
+  }
+  
+  Lorentz5Momentum p = reshuffled[ij.first];
+  Lorentz5Momentum n = reshuffled[ij.second];
 
   LorentzVector<Complex> polarization = plusPolarization(p,n,ij.first);
 
@@ -646,17 +662,24 @@ void MadGraphAmplitude::evaloneLoopInterference() const  {
   
   
   double units = pow(lastSHat()/GeV2,int(mePartonData().size())-4);
-
-
-
+  
+  
+  vector<Lorentz5Momentum> reshuffled = meMomenta();
+  const cPDVector pdata=mePartonData();
+  const map<long,Energy> masses=reshuffleMasses();
+  if (!masses.empty()) {
+    lastMatchboxXComb()->reshuffle(reshuffled,pdata,masses);
+  }
+  
   size_t j=0;
   for (size_t i=0;i<mePartonData().size();i++){
-    momenta[j]=abs(meMomenta()[i].e()/GeV)<1.e-13?0.:double(meMomenta()[i].e()/GeV);
-    momenta[j+1]=abs(meMomenta()[i].x()/GeV)<1.e-13?0.:double(meMomenta()[i].x()/GeV);
-    momenta[j+2]=abs(meMomenta()[i].y()/GeV)<1.e-13?0.:double(meMomenta()[i].y()/GeV);
-    momenta[j+3]=abs(meMomenta()[i].z()/GeV)<1.e-13?0.:double(meMomenta()[i].z()/GeV);
+    momenta[j]=abs(reshuffled[i].e()/GeV)<1.e-13?0.:double(reshuffled[i].e()/GeV);
+    momenta[j+1]=abs(reshuffled[i].x()/GeV)<1.e-13?0.:double(reshuffled[i].x()/GeV);
+    momenta[j+2]=abs(reshuffled[i].y()/GeV)<1.e-13?0.:double(reshuffled[i].y()/GeV);
+    momenta[j+3]=abs(reshuffled[i].z()/GeV)<1.e-13?0.:double(reshuffled[i].z()/GeV);
     j+=4;
   }
+
   int xx=lastMatchboxXComb()->externalId();
   
   MG_Calculate_wavefunctions_virt(&xx,&momenta[0],&virt[0]);
