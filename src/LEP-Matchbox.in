@@ -125,7 +125,6 @@ set /Herwig/Shower/Evolver:MECorrMode No
 # set LEPHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
 # set /Herwig/DipoleShower/DipoleShowerHandler:MaxPtIsMuF Yes
 # set LEPHandler:CascadeHandler:MPIHandler NULL
-# set /Herwig/Model:QCD/RunningAlphaS /Herwig/MatrixElements/Matchbox/AlphaS/MatchboxNLOAlphaS
 # read DipoleShowerParameters.in
 # cd /Herwig/MatrixElements/Matchbox
 

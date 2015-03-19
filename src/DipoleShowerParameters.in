@@ -4,6 +4,8 @@
 # Please comment out when using the angular ordered shower.
 #=============================================================================
 
+set /Herwig/Model:QCD/RunningAlphaS /Herwig/MatrixElements/Matchbox/AlphaS/MatchboxNLOAlphaS
+
 cd /Herwig/Hadronization
 
 set ClusterFissioner:ClMaxLight                  3.274090*GeV
