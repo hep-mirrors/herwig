@@ -15,6 +15,7 @@
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.h"
 #include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
 #include "Herwig++/MatrixElement/Matchbox/Dipoles/SubtractionDipole.h"
+#include "Herwig++/Utilities/GSLBisection.h"
 
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -77,9 +78,95 @@ MatchboxXCombData::MatchboxXCombData(tMEPtr newME)
   assert(theFactory);
 }
 
-void MatchboxXCombData::fillOLPMomenta(const vector<Lorentz5Momentum>& memomenta) {
+double MatchboxXCombData::ReshuffleEquation::operator() (double xi) const {
+
+  double res = -q/GeV;
+
+  cPDVector::const_iterator dit = dBegin;
+  vector<Lorentz5Momentum>::const_iterator mit = mBegin;
+
+  for ( ; dit != dEnd; ++dit, ++mit ) {
+    map<long,Energy>::const_iterator rm =
+      reshuffleMap->find((**dit).id());
+    Energy2 tmass2 = 
+      rm == reshuffleMap->end() ?
+      mit->mass2() : sqr(rm->second);
+    res += sqrt(sqr(xi)*(mit->vect().mag2()) + tmass2)/GeV;
+  }
+
+  return res;
+
+}
+
+void MatchboxXCombData::reshuffle(vector<Lorentz5Momentum>& momenta,
+				  const cPDVector& mePartonData,
+				  const map<long,Energy>& reshuffleMap) const {
+
+  if ( momenta.size() == 3 )
+    throw Exception() << "cannot reshuffle 2 -> 1 processes"
+		      << Exception::abortnow;
+
+  Lorentz5Momentum Q(ZERO,ZERO,ZERO,ZERO);
+  for ( vector<Lorentz5Momentum>::const_iterator p = momenta.begin()+2;
+	p != momenta.end(); ++p )
+    Q += *p;
+
+  Boost beta = Q.findBoostToCM();
+  bool needBoost = (beta.mag2() > Constants::epsilon);
+
+  if ( needBoost ) {
+    for ( vector<Lorentz5Momentum>::iterator p = momenta.begin()+2;
+	  p != momenta.end(); ++p )
+      p->boost(beta);
+  }
+
+  ReshuffleEquation solve(Q.m(),
+			  mePartonData.begin() + 2,
+			  mePartonData.end(),
+			  momenta.begin() + 2, &reshuffleMap);
+
+  double xi = 1.;
+
+  GSLBisection solver(1e-10,1e-8,10000);
+
+  try {
+    xi = solver.value(solve,0.0,1.1);
+  } catch (GSLBisection::GSLerror) {
+    throw Veto();
+  } catch (GSLBisection::IntervalError) {
+    throw Veto();
+  }
+
+  cPDVector::const_iterator d = mePartonData.begin() + 2;
+  vector<Lorentz5Momentum>::iterator p = momenta.begin() + 2;
+  for ( ; d != mePartonData.end(); ++d, ++p ) {
+    p->setVect(xi*p->vect());
+    map<long,Energy>::const_iterator mit = 
+      reshuffleMap.find((**d).id());
+    Energy2 newMass2 = mit == reshuffleMap.end() ? p->mass2() : sqr(mit->second);
+    p->setE(sqrt(p->vect().mag2() + newMass2));
+    p->rescaleMass();
+  }
+
+  if ( needBoost ) {
+    for ( vector<Lorentz5Momentum>::iterator p = momenta.begin()+2;
+	  p != momenta.end(); ++p )
+      p->boost(-beta);
+  }
+
+}
+
+void MatchboxXCombData::fillOLPMomenta(const vector<Lorentz5Momentum>& memomenta,
+				       const cPDVector& mePartonData,
+				       const map<long,Energy>& reshuffleMap) {
   if ( filledOLPMomenta )
     return;
+  if ( !reshuffleMap.empty() ) {
+    vector<Lorentz5Momentum> reshuffled = memomenta;
+    reshuffle(reshuffled,mePartonData,reshuffleMap);
+    fillOLPMomenta(reshuffled);
+    return;
+  }
   if ( !theOLPMomenta ) {
     theOLPMomenta = new double[5*memomenta.size()];
   }

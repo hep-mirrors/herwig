@@ -174,7 +174,7 @@ void VBFNLOAmplitude::evalSubProcess() const {
   useMe();
 
   double units = pow(lastSHat()/GeV2,mePartonData().size()-4.);
-  fillOLPMomenta(lastXComb().meMomenta());
+  fillOLPMomenta(lastXComb().meMomenta(),mePartonData(),reshuffleMasses());
   double scale = sqrt(mu2()/GeV2);
 
   double acc = -1.0;
@@ -207,7 +207,7 @@ void VBFNLOAmplitude::evalSubProcess() const {
 void VBFNLOAmplitude::evalColourCorrelator(pair<int,int>) const {
 
   double units = pow(lastSHat()/GeV2,mePartonData().size()-4.);
-  fillOLPMomenta(lastXComb().meMomenta());
+  fillOLPMomenta(lastXComb().meMomenta(),mePartonData(),reshuffleMasses());
   double scale = sqrt(mu2()/GeV2);
 
   double acc = -1.0;
@@ -243,7 +243,7 @@ void VBFNLOAmplitude::evalColourCorrelator(pair<int,int>) const {
 void VBFNLOAmplitude::evalSpinColourCorrelator(pair<int,int>) const {
 
   double units = pow(lastSHat()/GeV2,mePartonData().size()-4.);
-  fillOLPMomenta(lastXComb().meMomenta());
+  fillOLPMomenta(lastXComb().meMomenta(),mePartonData(),reshuffleMasses());
   double scale = sqrt(mu2()/GeV2); 
 
   double acc = -1.0;
@@ -282,7 +282,7 @@ double VBFNLOAmplitude::largeNME2(Ptr<ColourBasis>::tptr cptr) const {
 void VBFNLOAmplitude::evalLargeNSubProcess(Ptr<ColourBasis>::tptr) const {
 
   double units = pow(lastSHat()/GeV2,mePartonData().size()-4.);
-  fillOLPMomenta(lastXComb().meMomenta());
+  fillOLPMomenta(lastXComb().meMomenta(),mePartonData(),reshuffleMasses());
   double scale = sqrt(mu2()/GeV2);
 
   double acc = -1.0;
@@ -335,7 +335,7 @@ void VBFNLOAmplitude::evalLargeNColourCorrelator(pair<int,int>,
                                                  Ptr<ColourBasis>::tptr) const {
 
   double units = pow(lastSHat()/GeV2,mePartonData().size()-4.);
-  fillOLPMomenta(lastXComb().meMomenta());
+  fillOLPMomenta(lastXComb().meMomenta(),mePartonData(),reshuffleMasses());
   double scale = sqrt(mu2()/GeV2);
 
   double acc = -1.0;

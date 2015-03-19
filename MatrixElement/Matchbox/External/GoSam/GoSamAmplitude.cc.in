@@ -622,7 +622,7 @@ void GoSamAmplitude::evalSubProcess() const {
   useMe();
 
   double units = pow(lastSHat() / GeV2, int(mePartonData().size()) - 4.);
-  fillOLPMomenta(lastXComb().meMomenta());
+  fillOLPMomenta(lastXComb().meMomenta(),mePartonData(),reshuffleMasses());
 
   double scale = sqrt(mu2() / GeV2);
 
@@ -683,7 +683,7 @@ void GoSamAmplitude::evalSubProcess() const {
 void GoSamAmplitude::evalColourCorrelator(pair<int, int> ) const {
 
   double units = pow(lastSHat() / GeV2, int(mePartonData().size()) - 4.);
-  fillOLPMomenta(lastXComb().meMomenta());
+  fillOLPMomenta(lastXComb().meMomenta(),mePartonData(),reshuffleMasses());
 
   double scale = sqrt(mu2() / GeV2);
 
@@ -709,7 +709,7 @@ void GoSamAmplitude::evalColourCorrelator(pair<int, int> ) const {
 void GoSamAmplitude::evalSpinColourCorrelator(pair<int , int > ) const {
 
   double units = pow(lastSHat() / GeV2, int(mePartonData().size()) - 4.);
-  fillOLPMomenta(lastXComb().meMomenta());
+  fillOLPMomenta(lastXComb().meMomenta(),mePartonData(),reshuffleMasses());
 
   double scale = sqrt(mu2() / GeV2);
 

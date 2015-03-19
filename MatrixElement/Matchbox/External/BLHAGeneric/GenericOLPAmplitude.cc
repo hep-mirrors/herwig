@@ -53,7 +53,7 @@ LorentzVector<Complex> GenericOLPAmplitude::plusPolarization(const Lorentz5Momen
 void GenericOLPAmplitude::evalSubProcess() const {
 
   double units = pow(lastSHat()/GeV2,mePartonData().size()-4.);
-  fillOLPMomenta(lastXComb().meMomenta());
+  fillOLPMomenta(lastXComb().meMomenta(),mePartonData(),reshuffleMasses());
   //double as = SM().alphaS();
   //double scale = sqrt(mu2()/GeV2);
 
@@ -66,7 +66,7 @@ void GenericOLPAmplitude::evalSubProcess() const {
 void GenericOLPAmplitude::evalColourCorrelator(pair<int,int> ij) const {
 
   double units = pow(lastSHat()/GeV2,mePartonData().size()-4.);
-  fillOLPMomenta(lastXComb().meMomenta());
+  fillOLPMomenta(lastXComb().meMomenta(),mePartonData(),reshuffleMasses());
   //double as = SM().alphaS();
   //double scale = sqrt(mu2()/GeV2);
 
@@ -77,7 +77,7 @@ void GenericOLPAmplitude::evalColourCorrelator(pair<int,int> ij) const {
 void GenericOLPAmplitude::evalSpinColourCorrelator(pair<int,int> ij) const {
 
   double units = pow(lastSHat()/GeV2,mePartonData().size()-4.);
-  fillOLPMomenta(lastXComb().meMomenta());
+  fillOLPMomenta(lastXComb().meMomenta(),mePartonData(),reshuffleMasses());
   //double as = SM().alphaS();
   //double scale = sqrt(mu2()/GeV2);
 

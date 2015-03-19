@@ -161,7 +161,7 @@ void NJetsAmplitude::evalSubProcess() const {
   useMe();
 
   double units = pow(lastSHat()/GeV2,mePartonData().size()-4.);
-  fillOLPMomenta(lastXComb().meMomenta());
+  fillOLPMomenta(lastXComb().meMomenta(),mePartonData(),reshuffleMasses());
   double as = SM().alphaS();
   double scale = sqrt(mu2()/GeV2);
 
@@ -187,7 +187,7 @@ void NJetsAmplitude::evalSubProcess() const {
 void NJetsAmplitude::evalColourCorrelator(pair<int,int>) const {
 
   double units = pow(lastSHat()/GeV2,mePartonData().size()-4.);
-  fillOLPMomenta(lastXComb().meMomenta());
+  fillOLPMomenta(lastXComb().meMomenta(),mePartonData(),reshuffleMasses());
   double as = SM().alphaS();
   double scale = sqrt(mu2()/GeV2);
 
@@ -207,7 +207,7 @@ void NJetsAmplitude::evalColourCorrelator(pair<int,int>) const {
 void NJetsAmplitude::evalSpinColourCorrelator(pair<int,int>) const {
 
   double units = pow(lastSHat()/GeV2,mePartonData().size()-4.);
-  fillOLPMomenta(lastXComb().meMomenta());
+  fillOLPMomenta(lastXComb().meMomenta(),mePartonData(),reshuffleMasses());
   double as = SM().alphaS();
   double scale = sqrt(mu2()/GeV2);
 

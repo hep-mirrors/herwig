@@ -638,7 +638,45 @@ namespace Herwig {
     /**
      * Fill the olp momentum vector
      */
-    void fillOLPMomenta(const vector<Lorentz5Momentum>&);
+    void fillOLPMomenta(const vector<Lorentz5Momentum>& mm,
+			const cPDVector& mePartonData = cPDVector(),
+			const map<long,Energy>& reshuffleMap = map<long,Energy>());
+
+    /**
+     * Helper struct to define the reshuffling equation
+     */
+    struct ReshuffleEquation {
+
+      ReshuffleEquation(Energy xq,
+			cPDVector::const_iterator xdBegin,
+			cPDVector::const_iterator xdEnd,
+			vector<Lorentz5Momentum>::const_iterator xmBegin,
+			const map<long,Energy>* xreshuffleMap)
+	: q(xq), dBegin(xdBegin), dEnd(xdEnd), mBegin(xmBegin),
+	  reshuffleMap(xreshuffleMap) {}
+
+      typedef double ArgType;
+      typedef double ValType;
+
+      static double aUnit() { return 1.; }
+      static double vUnit() { return 1.; }
+
+      double operator() (double xi) const;
+
+      Energy q;
+      cPDVector::const_iterator dBegin;
+      cPDVector::const_iterator dEnd;
+      vector<Lorentz5Momentum>::const_iterator mBegin;
+      const map<long,Energy>* reshuffleMap;
+
+    };
+
+    /**
+     * Perform a reshuffling to the mass shells contained in the map
+     */
+    void reshuffle(vector<Lorentz5Momentum>& momenta,
+		   const cPDVector& mePartonData,
+		   const map<long,Energy>& reshuffleMap) const;
 
     /**
      * Return a generic process id to communicate with external codes

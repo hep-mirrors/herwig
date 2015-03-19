@@ -293,8 +293,10 @@ public:
   /**
    * Fill the olp momentum vector
    */
-  void fillOLPMomenta(const vector<Lorentz5Momentum>& mm) const { 
-    lastMatchboxXComb()->fillOLPMomenta(mm);
+  void fillOLPMomenta(const vector<Lorentz5Momentum>& mm,
+		      const cPDVector& mePartonData,
+		      const map<long,Energy>& reshuffleMap) const { 
+    lastMatchboxXComb()->fillOLPMomenta(mm,mePartonData,reshuffleMap);
   }
 
 protected:

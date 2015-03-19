@@ -240,7 +240,7 @@ bool OpenLoopsAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
 void OpenLoopsAmplitude::evalSubProcess() const {
   useMe();
 	double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
-	fillOLPMomenta(lastXComb().meMomenta());
+	fillOLPMomenta(lastXComb().meMomenta(),mePartonData(),reshuffleMasses());
 	double acc ;
 	double scale = sqrt(mu2() / GeV2);
         double out[7]={};
@@ -268,7 +268,7 @@ void OpenLoopsAmplitude::evalSubProcess() const {
 
 void OpenLoopsAmplitude::evalColourCorrelator(pair<int, int>  ) const {
 	double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
-	fillOLPMomenta(lastXComb().meMomenta());
+	fillOLPMomenta(lastXComb().meMomenta(),mePartonData(),reshuffleMasses());
 	double acc ;
 	double scale = sqrt(mu2() / GeV2);
 	int n = lastXComb().meMomenta().size();
@@ -303,7 +303,7 @@ double OpenLoopsAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
 					 const SpinCorrelationTensor& c) const{
 
 	double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
-	fillOLPMomenta(lastXComb().meMomenta());
+	fillOLPMomenta(lastXComb().meMomenta(),mePartonData(),reshuffleMasses());
 
 	int emitter=ij.first+1;
 	int n = lastXComb().meMomenta().size();
