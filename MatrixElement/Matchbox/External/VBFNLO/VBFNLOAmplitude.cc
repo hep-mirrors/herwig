@@ -411,7 +411,22 @@ DescribeClass<VBFNLOAmplitude,MatchboxOLPME>
 void VBFNLOAmplitude::Init() {
 
   static ClassDocumentation<VBFNLOAmplitude> documentation
-    ("VBFNLOAmplitude implements an interface to VBFNLO.","Matrix elements have been calculated using VBFNLO.");
+    ("VBFNLOAmplitude implements an interface to VBFNLO.",
+     "Matrix elements have been calculated using VBFNLO "
+     "(Ref.~\\cite{VBFNLO} and process-specific references)\n",
+     "%\\cite{VBFNLO}\n"
+     "\\bibitem{Arnold:2008rz}\n"
+     "K.~Arnold, M.~Bahr, G.~Bozzi, F.~Campanario, C.~Englert, T.~Figy, "
+     "N.~Greiner and C.~Hackstein {\\it et al.},\n"
+     "``VBFNLO: A Parton level Monte Carlo for processes with electroweak bosons,''\n"
+     "Comput.\\ Phys.\\ Commun.\\  {\\bf 180} (2009) 1661\n"
+     "[arXiv:0811.4559 [hep-ph]];\n"
+     "%%CITATION = ARXIV:0811.4559;%%\n"
+     "J.~Baglio, J.~Bellm, F.~Campanario, B.~Feigl, J.~Frank, T.~Figy, "
+     "M.~Kerner and L.~D.~Ninh {\\it et al.},\n"
+     "``Release Note - VBFNLO 2.7.0,''\n"
+     "arXiv:1404.3940 [hep-ph].\n"
+     "%%CITATION = ARXIV:1404.3940;%%\n");
 
   static Switch<VBFNLOAmplitude,bool> interfaceRandomHelicitySummation
     ("RandomHelicitySummation", "Switch for random helicity summation of leptons and photons",

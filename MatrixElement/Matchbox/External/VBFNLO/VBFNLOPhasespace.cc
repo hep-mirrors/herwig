@@ -92,7 +92,6 @@ double VBFNLOPhasespace::generateTwoToNKinematics(const double* random,
 
   if (weight < 0) {
     throw Exception() << "negative weight in VBFNLOPhaseSpace\n"
-		      << DynamicLoader::lastErrorMessage
 		      << Exception::abortnow;
   }
 
