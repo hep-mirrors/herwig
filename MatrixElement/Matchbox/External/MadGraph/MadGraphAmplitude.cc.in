@@ -460,11 +460,10 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
     else{heltmp[cross]=hel[j];}
   }
 
-  
   vector<Lorentz5Momentum> reshuffled = meMomenta();
-  const cPDVector pdata=mePartonData();
-  const map<long,Energy> masses=reshuffleMasses();
-  if (!masses.empty()) {
+  if ( !reshuffleMasses().empty() && reshuffled.size() > 3 ) {
+    const cPDVector& pdata = mePartonData();
+    const map<long,Energy>& masses = reshuffleMasses();
     lastMatchboxXComb()->reshuffle(reshuffled,pdata,masses);
   }
 
@@ -578,10 +577,9 @@ double MadGraphAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
 
   
   vector<Lorentz5Momentum> reshuffled = meMomenta();
-
-  if (!reshuffleMasses().empty()) {
-    const cPDVector pdata=mePartonData();
-    const map<long,Energy> masses=reshuffleMasses();
+  if ( !reshuffleMasses().empty() && reshuffled.size() > 3 ) {
+    const cPDVector& pdata = mePartonData();
+    const map<long,Energy>& masses = reshuffleMasses();
     lastMatchboxXComb()->reshuffle(reshuffled,pdata,masses);
   }
   
@@ -663,11 +661,10 @@ void MadGraphAmplitude::evaloneLoopInterference() const  {
   
   double units = pow(lastSHat()/GeV2,int(mePartonData().size())-4);
   
-  
   vector<Lorentz5Momentum> reshuffled = meMomenta();
-  const cPDVector pdata=mePartonData();
-  const map<long,Energy> masses=reshuffleMasses();
-  if (!masses.empty()) {
+  if ( !reshuffleMasses().empty() && reshuffled.size() > 3 ) {
+    const cPDVector& pdata = mePartonData();
+    const map<long,Energy>& masses = reshuffleMasses();
     lastMatchboxXComb()->reshuffle(reshuffled,pdata,masses);
   }
   

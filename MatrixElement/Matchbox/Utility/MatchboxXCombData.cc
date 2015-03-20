@@ -102,10 +102,8 @@ void MatchboxXCombData::reshuffle(vector<Lorentz5Momentum>& momenta,
 				  const cPDVector& mePartonData,
 				  const map<long,Energy>& reshuffleMap) const {
 
-  if ( momenta.size() == 3 )
-    throw Exception() << "MatchboxXCombData: cannot reshuffle 2 -> 1 processes."
-              << "Remove statements like: set OLPProvider:massless 13 "
-		      << Exception::abortnow;
+  if ( momenta.size() == 3 ) // nothing to do; don't thro an exception
+    return;
 
   Lorentz5Momentum Q(ZERO,ZERO,ZERO,ZERO);
   for ( vector<Lorentz5Momentum>::const_iterator p = momenta.begin()+2;
@@ -162,7 +160,7 @@ void MatchboxXCombData::fillOLPMomenta(const vector<Lorentz5Momentum>& memomenta
 				       const map<long,Energy>& reshuffleMap) {
   if ( filledOLPMomenta )
     return;
-  if ( !reshuffleMap.empty() ) {
+  if ( !reshuffleMap.empty() && memomenta.size() > 3 ) {
     vector<Lorentz5Momentum> reshuffled = memomenta;
     reshuffle(reshuffled,mePartonData,reshuffleMap);
     fillOLPMomenta(reshuffled);
