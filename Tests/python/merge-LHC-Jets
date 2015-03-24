@@ -108,7 +108,7 @@ if __name__ == "__main__":
     ## Prefix used in dat file headers
     headerprefix = "# " 
 yodafiles=["-900-UE.yoda"   ,"-2360-UE.yoda"    ,"-2760-UE.yoda"    ,
-           "-7-UE.yoda"     ,"-900-UE-Long.yoda","-8-UE.yoda"
+           "-7-UE.yoda"     ,"-900-UE-Long.yoda","-8-UE.yoda",
            "-7-UE-Long.yoda","-7-Jets-0.yoda",
            "-7-Jets-All-1.yoda","-7-Jets-All-2.yoda",
            "-7-Jets-All-3.yoda","-7-Jets-All-4.yoda","-7-Jets-All-5.yoda",
