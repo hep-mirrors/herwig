@@ -394,6 +394,7 @@ void MatchboxMEBase::setScale() const {
   Energy2 ewrscale = renormalizationScaleQED();
   lastXCombPtr()->lastScale(fscale);
   lastXCombPtr()->lastCentralScale(fcscale);
+  lastMatchboxXComb()->lastRenormalizationScale(rscale);
   if ( !fixedCouplings() ) {
     if ( rscale > lastCuts().scaleMin() )
       lastXCombPtr()->lastAlphaS(SM().alphaS(rscale));

@@ -268,6 +268,7 @@ void MatchboxXCombData::persistentOutput(PersistentOStream & os) const {
   os << theFactory << theMatchboxME << theSubtractionDipole << theCrossingMap 
      << theAmplitudeToColourMap << theColourToAmplitudeMap 
      << theCrossingSign << theAmplitudePartonData << ounit(theAmplitudeMomenta,GeV) 
+     << ounit(theLastRenormalizationScale,GeV2)
      << theCalculateTreeAmplitudes /* << theLastAmplitudes << theLastLargeNAmplitudes */
      << theCalculateOneLoopAmplitudes /* << theLastOneLoopAmplitudes */
      << theCalculateTreeME2 << theLastTreeME2 
@@ -295,6 +296,7 @@ void MatchboxXCombData::persistentInput(PersistentIStream & is, int) {
   is >> theFactory >> theMatchboxME >> theSubtractionDipole >> theCrossingMap 
      >> theAmplitudeToColourMap >> theColourToAmplitudeMap 
      >> theCrossingSign >> theAmplitudePartonData >> iunit(theAmplitudeMomenta,GeV)
+     >> iunit(theLastRenormalizationScale,GeV2)
      >> theCalculateTreeAmplitudes /* >> theLastAmplitudes >> theLastLargeNAmplitudes */
      >> theCalculateOneLoopAmplitudes /* >> theLastOneLoopAmplitudes */
      >> theCalculateTreeME2 >> theLastTreeME2 

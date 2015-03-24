@@ -164,6 +164,16 @@ namespace Herwig {
     void crossingSign(double c) { theCrossingSign = c; }
 
     /**
+     * The last renormalization scale
+     */
+    Energy2 lastRenormalizationScale() const { return theLastRenormalizationScale; }
+
+    /**
+     * The last renormalization scale
+     */
+    void lastRenormalizationScale(Energy2 lrs) { theLastRenormalizationScale = lrs; }
+
+    /**
      * The amplitude parton data.
      */
     const cPDVector& amplitudePartonData() const { return theAmplitudePartonData; }
@@ -832,6 +842,11 @@ namespace Herwig {
      * fillCrossingMap()
      */
     double theCrossingSign;
+
+    /**
+     * The last renormalization scale
+     */
+    Energy2 theLastRenormalizationScale;
 
     /**
      * The amplitude parton data.
