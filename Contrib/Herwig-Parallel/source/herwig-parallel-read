@@ -205,7 +205,7 @@ def main():
   if opts.buildqueue == 'local': # run on local machine
     buildLog = open('build.log','w')
     print("starting build job")
-    buildProc = Popen(cwd+'/'+run_name+'/read/'+buildscript_title,shell=True,stdout=buildLog,stderr=buildLog)
+    buildProc = Popen(cwd+'/'+run_name+'/read/'+buildscript_title,shell=True,stdout=buildLog,stderr=buildLog,preexec_fn=os.setpgrp)
     jobid = str(buildProc.pid)
     print(" > starting job with pid {}\n".format(jobid))
   else: # run on cluster
@@ -280,7 +280,7 @@ def main():
     if opts.integratequeue == 'local':
       integrateLog.append(open('integrate.job'+str(job-1)+'.log','w'))
       print("starting integrate job #{}".format(job))
-      integrateProc.append(Popen(cwd+'/'+run_name+'/read/'+script,shell=True,stdout=integrateLog[job-1],stderr=integrateLog[job-1]))
+      integrateProc.append(Popen(cwd+'/'+run_name+'/read/'+script,shell=True,stdout=integrateLog[job-1],stderr=integrateLog[job-1],preexec_fn=os.setpgrp))
       jobid = str(integrateProc[job-1].pid)
       print(" > starting job with pid {}\n".format(jobid))
     else:
@@ -347,6 +347,8 @@ def main():
 def exit():
   sys.stderr.write("\r\033[K")
   sys.stderr.write("Exiting after keyboard interrupt...\n\n")
+  sys.stderr.write("!  Any pending build/integrate jobs will continue to run.\n")
+  sys.stderr.write("!  To terminate them please use 'herwig-parallel-abort'.\n\n")
   sys.exit(1)
 
 

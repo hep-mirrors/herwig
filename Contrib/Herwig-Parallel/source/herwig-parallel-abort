@@ -173,18 +173,18 @@ if len(integrationjobids) > 0 and not os.path.isfile(run_name+'/read/Herwig/'+ge
       for line in ps.split('\n'):
         data = line.split()
         if len(data) >= 13:
-          if data[3] == integrationjobids[j] and (integrateScriptTitle[:10] in data[13] or integrateScript[:10] in data[13]) and not '<defunct>' in line:
+          if data[3] == integrationjobids[j] and 'integrate.' in data[13] and not '<defunct>' in line:
             print("aborting integration job #{} with id {}...".format(j+1,integrationjobids[j]))
             f_run_log.write(datetime.datetime.now().isoformat(' ')+': herwig-parallel-abort: aborting integration job #{} with id {}\n'.format(j+1,integrationjobids[j]))
             integrateChildID = check_output('ps -o pid --ppid '+integrationjobids[j]+' --noheaders',shell=True)
-            call('kill '+integrateChildID, shell=True)     # kill child process 'Herwig++ integrate ...' first!
-            call('kill '+integrationjobids[j], shell=True) # kill parent process 'herwig-parallel-integrate.sh' afterwards!
+            call('kill '+integrationjobids[j], shell=True) # kill parent process 'integrate.jobX.sh' first!
+            call('kill '+integrateChildID, shell=True)     # kill child process 'Herwig++ integrate ...' afterwards!
             print(' > killing job\n')
             killedJob = True
             break
       if not killedJob:
-        print("integration job #{} with id {} already completed...\n".format(j+1,integrationjobids[j]))
-        f_run_log.write(datetime.datetime.now().isoformat(' ')+': herwig-parallel-abort: integration job #{} with id {} already completed\n'.format(j+1,integrationjobids[j]))
+        print("integration job #{} with id {} not running...\n".format(j+1,integrationjobids[j]))
+        f_run_log.write(datetime.datetime.now().isoformat(' ')+': herwig-parallel-abort: integration job #{} with id {} not running\n'.format(j+1,integrationjobids[j]))
     else:
       status = ansi_escape.sub('', check_output('grep '+integrationjobids[j]+' '+run_name+'/joblist.'+integrateCluster+' | ' + configParserClusters.get(cluster,'status'), shell=True))
       if status == configParserClusters.get(integrateCluster,'statusQueued') or status == configParserClusters.get(integrateCluster,'statusRunning'):

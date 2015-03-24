@@ -190,6 +190,8 @@ def main():
       output = check_output(command, shell=True)
       print(" > {}\n".format('done' if output == '' else output))
       f_run_log.write(datetime.datetime.now().isoformat(' ')+': herwig-parallel-run: merged grids\n')
+    else:
+      print(' > done\n')
   else:
     sys.stderr.write("\nWARNING: Read step has not been done yet!\n")
     sys.stderr.write("Please use 'herwig-parallel-read' to do the read step first.\n")
