@@ -51,12 +51,12 @@ double MatchboxPhasespace::generateKinematics(const double* r,
 
   if ( useMassGenerators() ) {
     Energy gmass = ZERO;
-    tGenericMassGeneratorPtr mgen = 
-      processData()->massGenerator(*pd);
+    tGenericMassGeneratorPtr mgen;
     Energy maxMass = 
       (!haveX1X2() && momenta.size() > 3) ? 
       sqrt(lastSHat()) : sqrt(lastS());
     for ( ; pd != mePartonData().end(); ++pd, ++p ) {
+      mgen = processData()->massGenerator(*pd);
       if ( mgen && !isInvertible() ) {
 	Energy massMax = min((**pd).massMax(),maxMass);
 	Energy massMin = (**pd).massMin();
