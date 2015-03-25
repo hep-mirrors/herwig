@@ -1563,6 +1563,7 @@ void MatchboxMEBase::doinit() {
     matchboxAmplitude()->init();
   if ( phasespace() ) {
     phasespace()->init();
+    matchboxAmplitude()->checkReshuffling(phasespace());
   }
   if ( scaleChoice() ) {
     scaleChoice()->init();

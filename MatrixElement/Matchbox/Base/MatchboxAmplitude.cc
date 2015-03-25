@@ -782,6 +782,24 @@ double MatchboxAmplitude::spinCorrelatedME2(pair<int,int> ij,
 
 }
 
+void MatchboxAmplitude::checkReshuffling(Ptr<MatchboxPhasespace>::tptr ps) {
+  set<long> noReshuffle;
+  for ( map<long,Energy>::const_iterator m = reshuffleMasses().begin();
+	m != reshuffleMasses().end(); ++m ) {
+    tcPDPtr data = getParticleData(m->first);
+    assert(data);
+    bool needReshuffle = m->second != data->mass();
+    needReshuffle |=
+      (data->width() != ZERO || data->massGenerator()) &&
+      ps->useMassGenerators();
+    if ( !needReshuffle )
+      noReshuffle.insert(m->first);
+  }
+  for ( set<long>::const_iterator rm = noReshuffle.begin();
+	rm != noReshuffle.end(); ++rm )
+    theReshuffleMasses.erase(*rm);
+}
+
 string MatchboxAmplitude::doReshuffle(string in) {
   in = StringUtils::stripws(in);
   if ( in.empty() )
@@ -811,6 +829,19 @@ string MatchboxAmplitude::doMassless(string in) {
   return "";
 }
 
+string MatchboxAmplitude::doOnShell(string in) {
+  in = StringUtils::stripws(in);
+  if ( in.empty() )
+    throw Exception() << "expecting PDG id"
+		      << Exception::abortnow;
+  istringstream ins(in);
+  long id;
+  ins >> id;
+  tcPDPtr data = getParticleData(id);
+  assert(data);
+  theReshuffleMasses[id] = data->mass();
+  return "";
+}
 
 void MatchboxAmplitude::Init() {
 
@@ -838,6 +869,11 @@ void MatchboxAmplitude::Init() {
     ("Massless",
      "Reshuffle the mass for the given PDG id to be massless for amplitude evaluation.",
      &MatchboxAmplitude::doMassless, false);
+
+  static Command<MatchboxAmplitude> interfaceOnShell
+    ("OnShell",
+     "Reshuffle the mass for the given PDG id to be the on-shell mass for amplitude evaluation.",
+     &MatchboxAmplitude::doOnShell, false);
 
 }
 
