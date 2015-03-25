@@ -375,15 +375,18 @@ if test "x$have_njet" = "xlib" -o "x$have_njet" = "xlib64" ; then
      	LOAD_NJET="library"
      	CREATE_NJET="create"
      	INSERT_NJET="insert"
+     	DO_NJET="do"
 else
      	LOAD_NJET="# library"
 	CREATE_NJET="# create"
      	INSERT_NJET="# insert"
+     	DO_NJET="# do"
 fi
 
 AC_SUBST([LOAD_NJET])
 AC_SUBST([CREATE_NJET])
 AC_SUBST([INSERT_NJET])
+AC_SUBST([DO_NJET])
 
 ])
 
@@ -422,15 +425,18 @@ if test "x$have_gosam" = "xlib"  ; then
      	LOAD_GOSAM="library"
      	CREATE_GOSAM="create"
      	INSERT_GOSAM="insert"
+     	DO_GOSAM="do"
 else
      	LOAD_GOSAM="# library"
 	CREATE_GOSAM="# create"
      	INSERT_GOSAM="# insert"
+     	DO_GOSAM="# do"
 fi
 
 AC_SUBST([LOAD_GOSAM])
 AC_SUBST([CREATE_GOSAM])
 AC_SUBST([INSERT_GOSAM])
+AC_SUBST([DO_GOSAM])
 
 
 ])
@@ -602,12 +608,14 @@ if test "x$have_openloops" = "xlib" -o "x$have_openloops" = "xlib64" ; then
      	CREATE_OPENLOOPS="create"
      	INSERT_OPENLOOPS="insert"
      	SET_OPENLOOPS="set"
+     	DO_OPENLOOPS="do"
      	MKDIR_OPENLOOPS="mkdir"
 else
      	LOAD_OPENLOOPS="# library"
 	CREATE_OPENLOOPS="# create"
      	INSERT_OPENLOOPS="# insert"
      	SET_OPENLOOPS="# set"
+     	DO_OPENLOOPS="# do"
      	MKDIR_OPENLOOPS="# mkdir"
 fi
 
@@ -616,6 +624,7 @@ AC_SUBST([LOAD_OPENLOOPS])
 AC_SUBST([CREATE_OPENLOOPS])
 AC_SUBST([INSERT_OPENLOOPS])
 AC_SUBST([SET_OPENLOOPS])
+AC_SUBST([DO_OPENLOOPS])
 AC_SUBST([MKDIR_OPENLOOPS])
 
 ])
@@ -656,17 +665,19 @@ if test "x$have_madgraph" = "xyes"  ; then
      	CREATE_MADGRAPH="create"
      	INSERT_MADGRAPH="insert"
      	SET_MADGRAPH="set"
+     	DO_MADGRAPH="do"
 else
      	LOAD_MADGRAPH="# library"
 	CREATE_MADGRAPH="# create"
      	INSERT_MADGRAPH="# insert"
-     	SET_MADGRAPH="# set"
+     	DO_MADGRAPH="# do"
 fi
 
 AC_SUBST([LOAD_MADGRAPH])
 AC_SUBST([CREATE_MADGRAPH])
 AC_SUBST([INSERT_MADGRAPH])
 AC_SUBST([SET_MADGRAPH])
+AC_SUBST([DO_MADGRAPH])
 
 ])
 
