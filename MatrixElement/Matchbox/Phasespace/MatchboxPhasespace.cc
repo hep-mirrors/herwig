@@ -494,7 +494,6 @@ void MatchboxPhasespace::Init() {
      &MatchboxPhasespace::singularCutoff, GeV, 10.0*GeV, 0.0*GeV, 0*GeV,
      false, false, Interface::lowerlim);
 
-  /*
   static Switch<MatchboxPhasespace,bool> interfaceUseMassGenerators
     ("UseMassGenerators",
      "Use mass generators instead of fixed masses.",
@@ -509,7 +508,6 @@ void MatchboxPhasespace::Init() {
      "No",
      "Do not use mass generators.",
      false);
-  */
 
   static Command<MatchboxPhasespace> interfaceSetCoupling
     ("SetCoupling",

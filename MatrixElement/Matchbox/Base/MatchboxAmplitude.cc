@@ -843,6 +843,11 @@ string MatchboxAmplitude::doOnShell(string in) {
   return "";
 }
 
+string MatchboxAmplitude::doClearReshuffling(string) {
+  theReshuffleMasses.clear();
+  return "";
+}
+
 void MatchboxAmplitude::Init() {
 
   static ClassDocumentation<MatchboxAmplitude> documentation
@@ -874,6 +879,11 @@ void MatchboxAmplitude::Init() {
     ("OnShell",
      "Reshuffle the mass for the given PDG id to be the on-shell mass for amplitude evaluation.",
      &MatchboxAmplitude::doOnShell, false);
+
+  static Command<MatchboxAmplitude> interfaceClearReshuffling
+    ("ClearReshuffling",
+     "Do not perform any reshuffling.",
+     &MatchboxAmplitude::doClearReshuffling, false);
 
 }
 
