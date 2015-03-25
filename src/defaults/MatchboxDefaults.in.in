@@ -341,19 +341,19 @@ create Herwig::MatchboxHybridAmplitude GenericProcesses
 @LOAD_VBFNLO@ HwMatchboxVBFNLO.so
 @CREATE_VBFNLO@ Herwig::VBFNLOAmplitude VBFNLOProcesses
 
-@DO_VBFNLO@ VBFNLO:Massless 11
-@DO_VBFNLO@ VBFNLO:Massless -11
-@DO_VBFNLO@ VBFNLO:Massless 12
-@DO_VBFNLO@ VBFNLO:Massless -12
-@DO_VBFNLO@ VBFNLO:Massless 13
-@DO_VBFNLO@ VBFNLO:Massless -13
-@DO_VBFNLO@ VBFNLO:Massless 14
-@DO_VBFNLO@ VBFNLO:Massless -14
-@DO_VBFNLO@ VBFNLO:Massless 15
-@DO_VBFNLO@ VBFNLO:Massless -15
-@DO_VBFNLO@ VBFNLO:Massless 16
-@DO_VBFNLO@ VBFNLO:Massless -16
-@DO_VBFNLO@ VBFNLO:OnShell 25
+@DO_VBFNLO@ VBFNLOProcesses:Massless 11
+@DO_VBFNLO@ VBFNLOProcesses:Massless -11
+@DO_VBFNLO@ VBFNLOProcesses:Massless 12
+@DO_VBFNLO@ VBFNLOProcesses:Massless -12
+@DO_VBFNLO@ VBFNLOProcesses:Massless 13
+@DO_VBFNLO@ VBFNLOProcesses:Massless -13
+@DO_VBFNLO@ VBFNLOProcesses:Massless 14
+@DO_VBFNLO@ VBFNLOProcesses:Massless -14
+@DO_VBFNLO@ VBFNLOProcesses:Massless 15
+@DO_VBFNLO@ VBFNLOProcesses:Massless -15
+@DO_VBFNLO@ VBFNLOProcesses:Massless 16
+@DO_VBFNLO@ VBFNLOProcesses:Massless -16
+@DO_VBFNLO@ VBFNLOProcesses:OnShell 25
 
 mkdir Builtin
 cd Builtin
