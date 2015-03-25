@@ -246,12 +246,14 @@ if test "x$have_vbfnlo" = "xlib" -o "x$have_vbfnlo" = "xlib64" ; then
      	CREATE_VBFNLO="create"
      	INSERT_VBFNLO="insert"
      	SET_VBFNLO="set"
+     	DO_VBFNLO="do"
      	MKDIR_VBFNLO="mkdir"
 else
      	LOAD_VBFNLO="# library"
 	CREATE_VBFNLO="# create"
      	INSERT_VBFNLO="# insert"
      	SET_VBFNLO="# set"
+     	DO_VBFNLO="# do"
      	MKDIR_VBFNLO="# mkdir"
 fi
 
@@ -259,6 +261,7 @@ AC_SUBST([LOAD_VBFNLO])
 AC_SUBST([CREATE_VBFNLO])
 AC_SUBST([INSERT_VBFNLO])
 AC_SUBST([SET_VBFNLO])
+AC_SUBST([DO_VBFNLO])
 AC_SUBST([MKDIR_VBFNLO])
 
 ])
