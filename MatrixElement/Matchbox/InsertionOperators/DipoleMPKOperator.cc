@@ -120,9 +120,11 @@ void DipoleMPKOperator::setXComb(tStdXCombPtr xc) {
     CA = SM().Nc();
     CF = (SM().Nc()*SM().Nc()-1.0)/(2.*SM().Nc());
     gammaQuark = (3./2.)*CF;
-    gammaGluon = (11./6.)*CA - (1./3.)*NLightJetVec().size();
+    // gammaGluon = (11./6.)*CA - (1./3.)*NLightJetVec().size();
+    gammaGluon = (11./6.)*CA - (1./3.)*lastBorn()->nLightJetVec().size();
     KQuark = (7./2.-sqr(pi)/6.)*CF;
-    KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*NLightJetVec().size();
+    // KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*NLightJetVec().size();
+    KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*lastBorn()->nLightJetVec().size();
   }
 }
 
@@ -320,7 +322,8 @@ double DipoleMPKOperator::sumParton(int id) const {
   // z_+ (zbar_+ in the method of appendix B) as there are heavy quark
   // flavours in the jet.
   vector<double> nullPDFCacheVector;
-  for( size_t f=0; f<NHeavyJetVec().size(); ++f ) nullPDFCacheVector.push_back(0.0);
+  // for( size_t f=0; f<NHeavyJetVec().size(); ++f ) nullPDFCacheVector.push_back(0.0);
+  for( size_t f=0; f<lastBorn()->nHeavyJetVec().size(); ++f ) nullPDFCacheVector.push_back(0.0);
   nullPDFCacheVector.push_back(0.0);
   nullPDFCacheVector.push_back(0.0);
 
@@ -418,7 +421,8 @@ double DipoleMPKOperator::sumParton(int id) const {
 //     }
 
     // For m_j=0 and {m_F}=empty we can use the exact massless case.
-    if ( (**i).mass() == ZERO && NHeavyJetVec().size() == 0 ) {
+    // if ( (**i).mass() == ZERO && NHeavyJetVec().size() == 0 ) {
+    if ( (**i).mass() == ZERO && lastBorn()->nHeavyJetVec().size() == 0 ) {
       // Last term in massless K operator in (C.31) in massless paper.
       res +=
         ( (**i).id() == ParticleID::g ? gammaGluon : gammaQuark ) *
@@ -475,7 +479,8 @@ double DipoleMPKOperator::sumParton(int id) const {
       if (!appendixB) {
         if ( mePartonData()[id]->id() == ParticleID::g ) {
           double quarkpdfsum = 0.0;
-          int nlp = NLightProtonVec().size();
+          // int nlp = NLightProtonVec().size();
+          int nlp = lastBorn()->nLightProtonVec().size();
           for ( int f = -nlp; f <= nlp; ++f ) {
             if ( f == 0 ) continue;
             quarkpdfsum += PDFxByz(getParticleData(f));
@@ -495,7 +500,8 @@ double DipoleMPKOperator::sumParton(int id) const {
       else if (appendixB) {
         if ( mePartonData()[id]->id() == ParticleID::g ) {
           double quarkpdfsum = 0.0;
-          int nlp = NLightProtonVec().size();
+          // int nlp = NLightProtonVec().size();
+          int nlp = lastBorn()->nLightProtonVec().size();
           for ( int f = -nlp; f <= nlp; ++f ) {
             if ( f == 0 ) continue;
             quarkpdfsum += PDFxByz(getParticleData(f));
@@ -700,7 +706,8 @@ double DipoleMPKOperator::KBarqg() const {
     return 0.0;
   double res = 0.0;
   double factor = CF * ( ( (1.+sqr(1.-z)) / z ) * log((1.-z)/z) + z ) / z;
-  int nlp = NLightProtonVec().size();
+  // int nlp = NLightProtonVec().size();
+  int nlp = lastBorn()->nLightProtonVec().size();
   for ( int f = -nlp; f <= nlp; ++f ) {
     if ( f == 0 )
       continue;
@@ -721,7 +728,8 @@ double DipoleMPKOperator::Pqg() const {
     return 0.0;
   double res = 0.0;
   double factor = CF * ( 1. + sqr(1.-z) ) / sqr(z);
-  int nlp = NLightProtonVec().size();
+  // int nlp = NLightProtonVec().size();
+  int nlp = lastBorn()->nLightProtonVec().size();
   for ( int f = -nlp; f <= nlp; ++f ) {
     if ( f == 0 )
       continue;
@@ -757,7 +765,8 @@ double DipoleMPKOperator::KBargg() const {
   assert(parton->id() == ParticleID::g);
   double res = 
     2.* CA* softLogByz(parton) +
-    ( CA*( sqr(pi) - 50./9. ) + (8./9.)*NLightJetVec().size() ) * PDFx(parton);
+    // ( CA*( sqr(pi) - 50./9. ) + (8./9.)*NLightJetVec().size() ) * PDFx(parton);
+    ( CA*( sqr(pi) - 50./9. ) + (8./9.)*lastBorn()->nLightJetVec().size() ) * PDFx(parton);
   if ( z > x ) {
     res += 2.*CA*((1.-z)/z-1.+z*(1.-z))*log((1.-z)/z)*PDFxByz(parton)/z;
   }
@@ -777,7 +786,8 @@ double DipoleMPKOperator::KTildegg() const {
 double DipoleMPKOperator::Pgg() const {
   assert(parton->id() == ParticleID::g);
   double res = 
-    ( (11./6.) * CA - (1./3.)*NLightJetVec().size() + 2.*CA*log(1.-x) ) * PDFx(parton);
+    // ( (11./6.) * CA - (1./3.)*NLightJetVec().size() + 2.*CA*log(1.-x) ) * PDFx(parton);
+    ( (11./6.) * CA - (1./3.)*lastBorn()->nLightJetVec().size() + 2.*CA*log(1.-x) ) * PDFx(parton);
   if ( z > x ) {
     res += 2. * CA * ( PDFxByz(parton) - z*PDFx(parton) ) / (z*(1.-z));
     res += 2.* CA *( (1.-z)/z - 1. + z*(1.-z) ) * PDFxByz(parton) / z;
@@ -846,7 +856,8 @@ double DipoleMPKOperator::Kscriptqg_q(Energy2 sja, Energy2 mj2) const {
   double muQ2 = mj2/sja;
   double res = 0.0;
   double factor = 1./z * ( 2.*CF/CA*muQ2/z*log(muQ2/(1.-z+muQ2)) );
-  int nlp = NLightProtonVec().size();
+  // int nlp = NLightProtonVec().size();
+  int nlp = lastBorn()->nLightProtonVec().size();
   for ( int f = -nlp; f <= nlp; ++f ) {
     if ( f == 0 )
       continue;
@@ -995,8 +1006,10 @@ double DipoleMPKOperator::Kscriptqq_g(Energy2 sja, bool appendixB) const {
 
   double res = -1.*gammaGluon/CA*gammaSoft();
 
-  for( size_t f=0; f<NHeavyJetVec().size(); ++f ) { // sum over heavy flavours
-    Energy2 mF2 = sqr( getParticleData(NHeavyJetVec()[f])->mass() );
+  // for( size_t f=0; f<NHeavyJetVec().size(); ++f ) { // sum over heavy flavours
+  //   Energy2 mF2 = sqr( getParticleData(NHeavyJetVec()[f])->mass() );
+  for( size_t f=0; f<lastBorn()->nHeavyJetVec().size(); ++f ) { // sum over heavy flavours
+    Energy2 mF2 = sqr( getParticleData(lastBorn()->nHeavyJetVec()[f])->mass() );
     double muQ2 = mF2/sja;
     double muQ2prime = mF2/(z*sja);
     double muQ2bar = mF2/(-z*sja); // only for modified zplus, see appendix B, remember that m_j=m_g=0
@@ -1038,8 +1051,10 @@ double DipoleMPKOperator::Kscriptgg_g(Energy2 sja, bool appendixB) const {
 
   double res = -1.*gammaGluon/CA*gammaSoft();
 
-  for( size_t f=0; f<NHeavyJetVec().size(); ++f ) { // sum over heavy flavours
-    Energy2 mF2 = sqr( getParticleData(NHeavyJetVec()[f])->mass() );
+  // for( size_t f=0; f<NHeavyJetVec().size(); ++f ) { // sum over heavy flavours
+  //   Energy2 mF2 = sqr( getParticleData(NHeavyJetVec()[f])->mass() );
+  for( size_t f=0; f<lastBorn()->nHeavyJetVec().size(); ++f ) { // sum over heavy flavours
+    Energy2 mF2 = sqr( getParticleData(lastBorn()->nHeavyJetVec()[f])->mass() );
     double muQ2 = mF2/sja;
     double muQ2prime = mF2/(z*sja);
     double muQ2bar = mF2/(-z*sja); // only for modified zplus, see appendix B, remember that m_j=m_g=0
@@ -1072,8 +1087,10 @@ double DipoleMPKOperator::Kscriptbarqq_g(Energy2 Qja2, bool appendixB) const {
   res += Kscriptqq_g(sjamod,appendixB); // z_+ is automatically modified
 
   // + \deltaqq*\delta(zplusbar-z)*T_R/C_A*\sum_{N_F}DeltaJbaraNS_QQbar(mF2/-Qja2) contribution
-  for( size_t f=0; f<NHeavyJetVec().size(); ++f ) { // sum over heavy flavours
-    Energy2 mF2 = sqr( getParticleData(NHeavyJetVec()[f])->mass() );
+  // for( size_t f=0; f<NHeavyJetVec().size(); ++f ) { // sum over heavy flavours
+  //   Energy2 mF2 = sqr( getParticleData(NHeavyJetVec()[f])->mass() );
+  for( size_t f=0; f<lastBorn()->nHeavyJetVec().size(); ++f ) { // sum over heavy flavours
+    Energy2 mF2 = sqr( getParticleData(lastBorn()->nHeavyJetVec()[f])->mass() );
     double mubarQ2 = mF2/(-Qja2);
     double zplus = 1./(1.+4.*mubarQ2); // actually zbar_plus, see appendix B
     res += 1./(2.*CA)*PDFxByzplus(parton,f,zplus)
@@ -1107,8 +1124,10 @@ double DipoleMPKOperator::Kscriptbargg_g(Energy2 Qja2, bool appendixB) const {
   res += Kscriptgg_g(sjamod,appendixB); // z_+ is automatically modified
 
   // + \deltagg*\delta(zplusbar-z)*T_R/C_A*\sum_{N_F}DeltaJbaraNS_QQbar(mF2/-Qja2) contribution
-  for( size_t f=0; f<NHeavyJetVec().size(); ++f ) { // sum over heavy flavours
-    Energy2 mF2 = sqr( getParticleData(NHeavyJetVec()[f])->mass() );
+  // for( size_t f=0; f<NHeavyJetVec().size(); ++f ) { // sum over heavy flavours
+  //   Energy2 mF2 = sqr( getParticleData(NHeavyJetVec()[f])->mass() );
+  for( size_t f=0; f<lastBorn()->nHeavyJetVec().size(); ++f ) { // sum over heavy flavours
+    Energy2 mF2 = sqr( getParticleData(lastBorn()->nHeavyJetVec()[f])->mass() );
     double mubarQ2 = mF2/(-Qja2);
     double zplus = 1./(1.+4.*mubarQ2); // actually zbar_plus, see appendix B
     res += 1./(2.*CA)*PDFxByzplus(parton,f,zplus)
@@ -1128,7 +1147,8 @@ double DipoleMPKOperator::Kscriptbargg_g(Energy2 Qja2, bool appendixB) const {
 double DipoleMPKOperator::PDFx(tcPDPtr pd) const {
 
   vector<double> nullPDFCacheVector;
-  for( size_t f=0; f<NHeavyJetVec().size(); ++f ) nullPDFCacheVector.push_back(0.0);
+  // for( size_t f=0; f<NHeavyJetVec().size(); ++f ) nullPDFCacheVector.push_back(0.0);
+  for( size_t f=0; f<lastBorn()->nHeavyJetVec().size(); ++f ) nullPDFCacheVector.push_back(0.0);
   nullPDFCacheVector.push_back(0.0);
   nullPDFCacheVector.push_back(0.0);
 
@@ -1148,7 +1168,8 @@ double DipoleMPKOperator::PDFx(tcPDPtr pd) const {
 double DipoleMPKOperator::PDFxByz(tcPDPtr pd) const {
 
   vector<double> nullPDFCacheVector;
-  for( size_t f=0; f<NHeavyJetVec().size(); ++f ) nullPDFCacheVector.push_back(0.0);
+  // for( size_t f=0; f<NHeavyJetVec().size(); ++f ) nullPDFCacheVector.push_back(0.0);
+  for( size_t f=0; f<lastBorn()->nHeavyJetVec().size(); ++f ) nullPDFCacheVector.push_back(0.0);
   nullPDFCacheVector.push_back(0.0);
   nullPDFCacheVector.push_back(0.0);
 
@@ -1176,7 +1197,8 @@ double DipoleMPKOperator::PDFxByz(tcPDPtr pd) const {
 double DipoleMPKOperator::PDFxByzplus(tcPDPtr pd, int F, double zplus) const {
 
   vector<double> nullPDFCacheVector;
-  for( size_t f=0; f<NHeavyJetVec().size(); ++f ) nullPDFCacheVector.push_back(0.0);
+  // for( size_t f=0; f<NHeavyJetVec().size(); ++f ) nullPDFCacheVector.push_back(0.0);
+  for( size_t f=0; f<lastBorn()->nHeavyJetVec().size(); ++f ) nullPDFCacheVector.push_back(0.0);
   nullPDFCacheVector.push_back(0.0);
   nullPDFCacheVector.push_back(0.0);
 

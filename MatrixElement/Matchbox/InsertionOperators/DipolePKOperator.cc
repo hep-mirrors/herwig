@@ -96,9 +96,11 @@ void DipolePKOperator::setXComb(tStdXCombPtr xc) {
     CA = SM().Nc();
     CF = (SM().Nc()*SM().Nc()-1.0)/(2.*SM().Nc());
     gammaQuark = (3./2.)*CF;
-    gammaGluon = (11./6.)*CA - (1./3.)*NLightJetVec().size();
+    // gammaGluon = (11./6.)*CA - (1./3.)*NLightJetVec().size();
+    gammaGluon = (11./6.)*CA - (1./3.)*lastBorn()->nLightJetVec().size();
     KQuark = (7./2.-sqr(pi)/6.)*CF;
-    KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*NLightJetVec().size();
+    // KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*NLightJetVec().size();
+    KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*lastBorn()->nLightJetVec().size();
     if ( isDR() ) {
       gammaQuark -= CF/2.;
       gammaGluon -= CA/6.;
@@ -519,7 +521,8 @@ double DipolePKOperator::KBarqg() const {
     return 0.0;
   double res = 0.0;
   double factor = CF * ( ( (1.+sqr(1.-z)) / z ) * log((1.-z)/z) + z ) / z;
-  int nlp = NLightProtonVec().size();
+  // int nlp = NLightProtonVec().size();
+  int nlp = lastBorn()->nLightProtonVec().size();
   for ( int f = -nlp; f <= nlp; ++f ) {
     if ( f == 0 )
       continue;
@@ -540,7 +543,8 @@ double DipolePKOperator::Pqg() const {
     return 0.0;
   double res = 0.0;
   double factor = CF * ( 1. + sqr(1.-z) ) / sqr(z);
-  int nlp = NLightProtonVec().size();
+  // int nlp = NLightProtonVec().size();
+  int nlp = lastBorn()->nLightProtonVec().size();
   for ( int f = -nlp; f <= nlp; ++f ) {
     if ( f == 0 )
       continue;
@@ -576,7 +580,8 @@ double DipolePKOperator::KBargg() const {
   assert(parton->id() == ParticleID::g);
   double res = 
     2.* CA* softLogByz(parton) +
-    ( CA*( sqr(pi) - 50./9. ) + (8./9.)*NLightJetVec().size() ) * PDFx(parton);
+    // ( CA*( sqr(pi) - 50./9. ) + (8./9.)*NLightJetVec().size() ) * PDFx(parton);
+    ( CA*( sqr(pi) - 50./9. ) + (8./9.)*lastBorn()->nLightJetVec().size() ) * PDFx(parton);
   if ( z > x ) {
     res += 2.*CA*((1.-z)/z-1.+z*(1.-z))*log((1.-z)/z)*PDFxByz(parton)/z;
   }
@@ -596,7 +601,8 @@ double DipolePKOperator::KTildegg() const {
 double DipolePKOperator::Pgg() const {
   assert(parton->id() == ParticleID::g);
   double res = 
-    ( (11./6.) * CA - (1./3.)*NLightJetVec().size() + 2.*CA*log(1.-x) ) * PDFx(parton);
+    // ( (11./6.) * CA - (1./3.)*NLightJetVec().size() + 2.*CA*log(1.-x) ) * PDFx(parton);
+    ( (11./6.) * CA - (1./3.)*lastBorn()->nLightJetVec().size() + 2.*CA*log(1.-x) ) * PDFx(parton);
   if ( z > x ) {
     res += 2. * CA * ( PDFxByz(parton) - z*PDFx(parton) ) / (z*(1.-z));
     res += 2.* CA *( (1.-z)/z - 1. + z*(1.-z) ) * PDFxByz(parton) / z;
