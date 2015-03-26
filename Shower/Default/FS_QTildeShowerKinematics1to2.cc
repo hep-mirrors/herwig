@@ -106,17 +106,17 @@ reconstructParent(const tShowerParticlePtr parent,
   parent->set5Momentum( c1->momentum() + c2->momentum() );
 }
 
-void FS_QTildeShowerKinematics1to2::reconstructLast(const tShowerParticlePtr theLast,
+void FS_QTildeShowerKinematics1to2::reconstructLast(const tShowerParticlePtr last,
 						    Energy mass) const {
   // set beta component and consequently all missing data from that,
   // using the nominal (i.e. PDT) mass.
-  Energy theMass = mass > ZERO  ?  mass : theLast->data().constituentMass();
-  ShowerParticle::Parameters & last = theLast->showerParameters();
-  last.beta = ( sqr(theMass) + sqr(last.pt) - sqr(last.alpha) * pVector().m2() )
-    / ( 2. * last.alpha * p_dot_n() );
+  Energy theMass = mass > ZERO  ?  mass : last->data().constituentMass();
+  ShowerParticle::Parameters & lastParam = last->showerParameters();
+  lastParam.beta = ( sqr(theMass) + sqr(lastParam.pt) - sqr(lastParam.alpha) * pVector().m2() )
+    / ( 2. * lastParam.alpha * p_dot_n() );
   // set that new momentum
-  theLast->set5Momentum(sudakov2Momentum( last.alpha, last.beta, 
-					  last.ptx, last.pty) );
+  last->set5Momentum(sudakov2Momentum( lastParam.alpha, lastParam.beta,
+				       lastParam.ptx  , lastParam.pty) );
 }
 
 void FS_QTildeShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr) {
