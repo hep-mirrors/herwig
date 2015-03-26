@@ -98,7 +98,7 @@ void NLOJetPhasespace<N,I,F>::prepare(tStdXCombPtr xc, bool) {
 }
 
 template<unsigned int N, unsigned int I, unsigned int F>
-int NLOJetPhasespace<N,I,F>::nDim(int nFinal) const { 
+int NLOJetPhasespace<N,I,F>::nDimPhasespace(int nFinal) const { 
   // rambo + x's + dipoles
   return
     4*(N+nHard) + 2*I + 8*(nFinal-N-nHard);

@@ -444,6 +444,24 @@ bool MatchboxPhasespace::matchConstraints(const vector<Lorentz5Momentum>& moment
 
 }
 
+int MatchboxPhasespace::nDim(const cPDVector& data) const {
+
+  int ndimps = nDimPhasespace(data.size()-2);
+
+  if ( useMassGenerators() ) {
+    for ( cPDVector::const_iterator pd = data.begin();
+	  pd != data.end(); ++pd ) {
+      if ( (**pd).massGenerator() ||
+	   (**pd).width() != ZERO ) {
+	++ndimps;
+      }
+    }
+  }
+
+  return ndimps;
+
+}
+
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 

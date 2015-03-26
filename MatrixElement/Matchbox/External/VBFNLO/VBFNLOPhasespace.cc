@@ -135,7 +135,7 @@ double VBFNLOPhasespace::generateTwoToNKinematics(const double* random,
 
 }
 
-int VBFNLOPhasespace::nDim(int nFinal) const {
+int VBFNLOPhasespace::nDimPhasespace(int nFinal) const {
   return 3*nFinal;
 
 //get this from within VBFNLO

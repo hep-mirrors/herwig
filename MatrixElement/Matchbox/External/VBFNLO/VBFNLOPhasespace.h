@@ -71,7 +71,7 @@ public:
    * Return the number of random numbers required to produce a given
    * multiplicity final state.
    */
-  virtual int nDim(int nFinal) const;
+  virtual int nDimPhasespace(int nFinal) const;
 
   /**
    * Return true, if this phasespace generator will generate incoming
