@@ -117,63 +117,63 @@ void ZprimeModelZPQQVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcPDPtr 
 
   long ccc(cc->id()), aaa(aa->id()), bbb(bb->id());
 
-  if( fabs(aaa) == 6 || fabs(bbb) == 6  || fabs(ccc) == 6 ) {
-    if( fabs(aaa) !=2 && fabs(bbb) !=2  && fabs(ccc) != 2 ) {
+  if( abs(aaa) == 6 || abs(bbb) == 6  || abs(ccc) == 6 ) {
+    if( abs(aaa) !=2 && abs(bbb) !=2  && abs(ccc) != 2 ) {
     _cL = _cZPTT_L; _cR = _cZPTT_R;
-    } else if( fabs(aaa) ==2 || fabs(bbb) ==2  || fabs(ccc) == 2 ) {
+    } else if( abs(aaa) ==2 || abs(bbb) ==2  || abs(ccc) == 2 ) {
       _cL = _cZPTU_L; _cR = _cZPTU_R;
     }
   }
   
-  if( fabs(aaa) == 5 || fabs(bbb) == 5  || fabs(ccc) == 5 ) {
+  if( abs(aaa) == 5 || abs(bbb) == 5  || abs(ccc) == 5 ) {
     _cL = _cZPBB_L; _cR = _cZPBB_R;
   }
     
-  if( fabs(aaa) == 4 || fabs(bbb) == 4  || fabs(ccc) == 4 ) {
+  if( abs(aaa) == 4 || abs(bbb) == 4  || abs(ccc) == 4 ) {
     _cL = _cZPCC_L; _cR = _cZPCC_R;
   }
   
   
-  if( fabs(aaa) == 3 || fabs(bbb) == 3  || fabs(ccc) == 3 ) {
+  if( abs(aaa) == 3 || abs(bbb) == 3  || abs(ccc) == 3 ) {
     _cL = _cZPSS_L; _cR = _cZPSS_R;
   }
   
   
-  if( (fabs(aaa) == 2 || fabs(bbb) == 2  || fabs(ccc) == 2) &&  (fabs(aaa) !=6 && fabs(bbb) !=6  && fabs(ccc) != 6)) {
+  if( (abs(aaa) == 2 || abs(bbb) == 2  || abs(ccc) == 2) &&  (abs(aaa) !=6 && abs(bbb) !=6  && abs(ccc) != 6)) {
     _cL = _cZPUU_L; _cR = _cZPUU_R;
   }
 
  
-  if( fabs(aaa) == 1 || fabs(bbb) == 1  || fabs(ccc) == 1 ) {
+  if( abs(aaa) == 1 || abs(bbb) == 1  || abs(ccc) == 1 ) {
     _cL = _cZPDD_L; _cR = _cZPDD_R;
   }
   
-   if( fabs(aaa) == 11 || fabs(bbb) == 11  || fabs(ccc) == 11 ) {
+   if( abs(aaa) == 11 || abs(bbb) == 11  || abs(ccc) == 11 ) {
     _cL = _cZPee_L; _cR = _cZPee_R;
   }
   
   
-  if( fabs(aaa) == 13 || fabs(bbb) == 13  || fabs(ccc) == 13 ) {
+  if( abs(aaa) == 13 || abs(bbb) == 13  || abs(ccc) == 13 ) {
     _cL = _cZPmm_L; _cR = _cZPmm_R;
   }
 
  
-  if( fabs(aaa) == 15 || fabs(bbb) == 15  || fabs(ccc) == 15 ) {
+  if( abs(aaa) == 15 || abs(bbb) == 15  || abs(ccc) == 15 ) {
     _cL = _cZPtt_L; _cR = _cZPtt_R;
   }
 
 
-   if( fabs(aaa) == 12 || fabs(bbb) == 12  || fabs(ccc) == 12 ) {
+   if( abs(aaa) == 12 || abs(bbb) == 12  || abs(ccc) == 12 ) {
     _cL = _cZPnuenue_L; _cR = _cZPnuenue_R;
   }
   
   
-  if( fabs(aaa) == 14 || fabs(bbb) == 14 || fabs(ccc) == 14 ) {
+  if( abs(aaa) == 14 || abs(bbb) == 14 || abs(ccc) == 14 ) {
     _cL = _cZPnumnum_L; _cR = _cZPnumnum_R;
   }
 
  
-  if( fabs(aaa) == 16 || fabs(bbb) == 16  || fabs(ccc) == 16 ) {
+  if( abs(aaa) == 16 || abs(bbb) == 16  || abs(ccc) == 16 ) {
     _cL = _cZPnutnut_L; _cR = _cZPnutnut_R;
   }
 

@@ -184,16 +184,16 @@ void LeptoquarkModelSLQFFVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcP
   long lqid = isc;
   long smid_1 = ism;
   long smid_2 = ichg;
-  if(fabs(lqid) < 9900000) { 
+  if(abs(lqid) < 9900000) { 
     lqid = ism; 
     smid_1 = ichg;
     smid_2 = isc; 
   }
-  if(fabs(lqid) < 9900000) {
+  if(abs(lqid) < 9900000) {
     smid_1 = ism;
     smid_2 = isc;
   }
-  if( fabs(smid_1) > fabs(smid_2) ) { swap(smid_1, smid_2); }
+  if( abs(smid_1) > abs(smid_2) ) { swap(smid_1, smid_2); }
 
   const Energy denom = sqrt(2.) * _derivscale;
   const double mtop = getParticleData(ParticleID::t)->mass()        / denom;
@@ -202,48 +202,48 @@ void LeptoquarkModelSLQFFVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcP
 
   //set the couplings to left and right 
   //S0
-  if( fabs(isc) == 9911561 || fabs(ism) == 9911561 || fabs(ichg) == 9911561 ) {
-    if(fabs(isc) == 5 || fabs(ism) == 5 || fabs(ichg) == 5) { 
+  if( abs(isc) == 9911561 || abs(ism) == 9911561 || abs(ichg) == 9911561 ) {
+    if(abs(isc) == 5 || abs(ism) == 5 || abs(ichg) == 5) { 
       _cL = -_cL0; _cR = Complex(0.);
     }
-    if(fabs(isc) == 6 || fabs(ism) == 6 || fabs(ichg) == 6) { 
+    if(abs(isc) == 6 || abs(ism) == 6 || abs(ichg) == 6) { 
       _cL = _cL0;
       _cR = _cR0;
     }
   }
   //~S0
-  if( fabs(isc) == 9921551 || fabs(ism) == 9921551 || fabs(ichg) == 9921551 ) {
+  if( abs(isc) == 9921551 || abs(ism) == 9921551 || abs(ichg) == 9921551 ) {
     _cL = Complex(0.); _cR = _cR0t;
   }
   
   //S1 triplet
   //Q = + 4/3
-  if( fabs(isc) == 9931551 || fabs(ism) == 9931551 || fabs(ichg) == 9931551 ) {
+  if( abs(isc) == 9931551 || abs(ism) == 9931551 || abs(ichg) == 9931551 ) {
     _cL = sqrt(2.)* _cL1; _cR = Complex(0.);
   }
   //Q = + 1/3
-  if( fabs(isc) == 9931561 || fabs(ism) == 9931561 || fabs(ichg) == 9931561 ) {
+  if( abs(isc) == 9931561 || abs(ism) == 9931561 || abs(ichg) == 9931561 ) {
     _cL = - _cL1; _cR = Complex(0.);
   }
   //Q = - 2/3
-  if( fabs(isc) == 9931661 || fabs(ism) == 9931661 || fabs(ichg) == 9931661 ) {
+  if( abs(isc) == 9931661 || abs(ism) == 9931661 || abs(ichg) == 9931661 ) {
     _cL = sqrt(2.) * _cL1; _cR = Complex(0.);
   }
   
   //S1/2 doublet
 
   //Q = + 5/3 
-  if( fabs(isc) == 9941561 || fabs(ism) == 9941561 || fabs(ichg) == 9941561 ) {
+  if( abs(isc) == 9941561 || abs(ism) == 9941561 || abs(ichg) == 9941561 ) {
     _cR = _cL12; _cL = _cR12;
   }
   
   
   //Q = + 2/3 
-  if( fabs(isc) == 9941551 || fabs(ism) == 9941551 || fabs(ichg) == 9941551 ) {
-    if(fabs(isc) == 5 || fabs(ism) == 5 || fabs(ichg) == 5) { 
+  if( abs(isc) == 9941551 || abs(ism) == 9941551 || abs(ichg) == 9941551 ) {
+    if(abs(isc) == 5 || abs(ism) == 5 || abs(ichg) == 5) { 
       _cR = Complex(0.); _cL = - _cR12;
     }
-    if(fabs(isc) == 6 || fabs(ism) == 6 || fabs(ichg) == 6) { 
+    if(abs(isc) == 6 || abs(ism) == 6 || abs(ichg) == 6) { 
       _cL = Complex(0.); _cR = _cL12;
     }
   }
@@ -251,81 +251,81 @@ void LeptoquarkModelSLQFFVertex::setCoupling(Energy2,tcPDPtr aa ,tcPDPtr bb, tcP
   //S1/2 tilde doublet
 
   //Q = + 2/3 
-  if( fabs(isc) == 9951551 || fabs(ism) == 9951551 || fabs(ichg) == 9951551 ) {
+  if( abs(isc) == 9951551 || abs(ism) == 9951551 || abs(ichg) == 9951551 ) {
     _cR = _cL12t; _cL = Complex(0.);
   }
   
   
   //Q = - 1/3 
-  if( fabs(isc) == 9951651 || fabs(ism) == 9951651 || fabs(ichg) == 9951651 ) {
+  if( abs(isc) == 9951651 || abs(ism) == 9951651 || abs(ichg) == 9951651 ) {
     _cR = _cL12t; _cL = Complex(0.);
   }
 
 
 
   //dS0
-  if( fabs(isc) == 9961551 || fabs(ism) == 9961551 || fabs(ichg) == 9961551) {
-    if(fabs(isc) == 5 || fabs(ism) == 5 || fabs(ichg) == 5) { 
+  if( abs(isc) == 9961551 || abs(ism) == 9961551 || abs(ichg) == 9961551) {
+    if(abs(isc) == 5 || abs(ism) == 5 || abs(ichg) == 5) { 
       _cR = _dcL0 * mbot +_dcR0 * mtau; 
       _cL = _dcR0 * mbot + _dcL0 * mtau;
     }
-    if(fabs(isc) == 6 || fabs(ism) == 6 || fabs(ichg) == 6) { 
+    if(abs(isc) == 6 || abs(ism) == 6 || abs(ichg) == 6) { 
       _cR = _dcL0 * mtop; 
       _cL = Complex(0.);
     }
   }
 
   //d~S0
-  if( fabs(isc) == 9971561 || fabs(ism) == 9971561 || fabs(ichg) ==  9971561) {
+  if( abs(isc) == 9971561 || abs(ism) == 9971561 || abs(ichg) ==  9971561) {
     _cR = _dcR0t * mtau;
     _cL = _dcR0t * mtop;
   }
 
   //dS1 triplet
-  if( fabs(isc) == 9981561 || fabs(ism) == 9981561 || fabs(ichg) ==  9981561) {
+  if( abs(isc) == 9981561 || abs(ism) == 9981561 || abs(ichg) ==  9981561) {
     _cR = sqrt(2.) * _dcL1 * mtop;
     _cL = sqrt(2.) * _dcL1 * mtau;
   }
-  if( fabs(isc) == 9981551 || fabs(ism) == 9981551 || fabs(ichg) ==  9981551) {
-    if(fabs(isc) == 5 || fabs(ism) == 5 || fabs(ichg) == 5) { 
+  if( abs(isc) == 9981551 || abs(ism) == 9981551 || abs(ichg) ==  9981551) {
+    if(abs(isc) == 5 || abs(ism) == 5 || abs(ichg) == 5) { 
       _cR = -_dcL1 * mbot; 
       _cL = -_dcL1 * mtau;
     }
-    if(fabs(isc) == 6 || fabs(ism) == 6 || fabs(ichg) == 6) { 
+    if(abs(isc) == 6 || abs(ism) == 6 || abs(ichg) == 6) { 
       _cR = _dcL1 * mtop;
       _cL = Complex(0.);
     }
   }
 
-  if( fabs(isc) == 9981651 || fabs(ism) == 9981651 || fabs(ichg) ==  9981651) {
+  if( abs(isc) == 9981651 || abs(ism) == 9981651 || abs(ichg) ==  9981651) {
     _cL = sqrt(2.) * _dcL1 * mbot;
     _cR = Complex(0.);
   }
   
   
   //dS1/2 doublet
-  if( fabs(isc) == 9991551 || fabs(ism) == 9991551 || fabs(ichg) == 9991551 ) {
+  if( abs(isc) == 9991551 || abs(ism) == 9991551 || abs(ichg) == 9991551 ) {
     _cL = _dcL12 * mbot + _dcR12 * mtau;
     _cR = _dcR12 * mbot + _dcL12 * mtau;
   }
 
-  if( fabs(isc) == 9991561 || fabs(ism) == 9991561 || fabs(ichg) == 9991561 ) {
-    if(fabs(isc) == 6 || fabs(ism) == 6 || fabs(ichg) == 6) { 
+  if( abs(isc) == 9991561 || abs(ism) == 9991561 || abs(ichg) == 9991561 ) {
+    if(abs(isc) == 6 || abs(ism) == 6 || abs(ichg) == 6) { 
       _cL = _dcR12 * mtau; 
       _cR = _dcR12 * mtop;
     }
-    if(fabs(isc) == 5 || fabs(ism) == 5 || fabs(ichg) == 5) { 
+    if(abs(isc) == 5 || abs(ism) == 5 || abs(ichg) == 5) { 
       _cL = _dcL12 * mbot;
     }    
   }
 
   //dS1/2 tilde doublet
-  if( fabs(isc) == 9901561 || fabs(ism) == 9901561  || fabs(ichg) == 9901561 ) {
+  if( abs(isc) == 9901561 || abs(ism) == 9901561  || abs(ichg) == 9901561 ) {
     _cL = _dcL12t * mtop; 
     _cR = _dcL12t * mtau;
   }
   
-  if( fabs(isc) == 9901661 || fabs(ism) == 9901661  || fabs(ichg) == 9901661 ) {
+  if( abs(isc) == 9901661 || abs(ism) == 9901661  || abs(ichg) == 9901661 ) {
     _cL = _dcL12t * mtop;
     _cR = Complex(0.);
   }

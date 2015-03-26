@@ -5,7 +5,7 @@
 // This is the declaration of the ZprimeModel class.
 //
 
-#include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "Herwig++/Models/General/BSMModel.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ZprimeModel.fh"
 
@@ -20,7 +20,7 @@ using namespace ThePEG::Helicity;
  * @see \ref ZprimeModelInterfaces "The interfaces"
  * defined for ZprimeModel.
  */
-class ZprimeModel: public StandardModel {
+class ZprimeModel: public BSMModel {
 
 public:
 

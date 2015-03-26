@@ -13,6 +13,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Utilities/EnumIO.h"
+#include "NBodyDecayConstructorBase.fh"
 //
 // This is the declaration of the PrototypeVertex class.
 //
@@ -209,14 +210,16 @@ public:
    *  Create a \f$1\to2\f$ prototype
    */
   static  void createPrototypes(tPDPtr inpart, VertexBasePtr vertex,
-				std::stack<PrototypeVertexPtr> & prototypes);
+				std::stack<PrototypeVertexPtr> & prototypes,
+				NBodyDecayConstructorBasePtr decayCon);
 
   /**
    *  Expand the prototypes by adding more legs
    */
   static void expandPrototypes(PrototypeVertexPtr proto, VertexBasePtr vertex,
 			       std::stack<PrototypeVertexPtr> & prototypes,
-			       const set<PDPtr> & excluded);
+			       const set<PDPtr> & excluded,
+			       NBodyDecayConstructorBasePtr decayCon);
 
   /**
    *  Copy the whole structure with a new branching

@@ -5,7 +5,7 @@
 // This is the declaration of the LHModel class.
 //
 
-#include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "Herwig++/Models/General/BSMModel.h"
 #include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSSVertex.h"
 #include "LHModel.fh"
@@ -22,7 +22,7 @@ using namespace ThePEG;
  * @see \ref LHModelInterfaces "The interfaces"
  * defined for LHModel.
  */
-class LHModel: public StandardModel {
+class LHModel: public BSMModel {
 
 public:
 

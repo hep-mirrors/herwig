@@ -23,6 +23,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "DecayConstructor.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig; 
 using namespace ThePEG;
@@ -32,7 +33,9 @@ void NBodyDecayConstructorBase::persistentOutput(PersistentOStream & os ) const 
      << createModes_ << minReleaseFraction_ << maxBoson_ << maxList_
      << removeOnShell_ << excludeEffective_ << includeTopOnShell_
      << excludedVerticesVector_ << excludedVerticesSet_ 
-     << excludedParticlesVector_ << excludedParticlesSet_;
+     << excludedParticlesVector_ << excludedParticlesSet_
+     << removeFlavourChangingVertices_ << removeSmallVertices_
+     << minVertexNorm_;
 }
 
 void NBodyDecayConstructorBase::persistentInput(PersistentIStream & is , int) {
@@ -40,8 +43,14 @@ void NBodyDecayConstructorBase::persistentInput(PersistentIStream & is , int) {
      >> createModes_ >> minReleaseFraction_ >> maxBoson_ >> maxList_
      >> removeOnShell_ >> excludeEffective_ >> includeTopOnShell_
      >> excludedVerticesVector_ >> excludedVerticesSet_
-     >> excludedParticlesVector_ >> excludedParticlesSet_;
+     >> excludedParticlesVector_ >> excludedParticlesSet_
+     >> removeFlavourChangingVertices_ >> removeSmallVertices_
+     >> minVertexNorm_;
 }
+
+// Static variable needed for the type description system in ThePEG.
+DescribeAbstractClass<NBodyDecayConstructorBase,Interfaced>
+describeThePEGNBodyDecayConstructorBase("Herwig::NBodyDecayConstructorBase", "Herwig.so");
 
 AbstractClassDescription<NBodyDecayConstructorBase> 
 NBodyDecayConstructorBase::initNBodyDecayConstructorBase;
@@ -236,6 +245,43 @@ void NBodyDecayConstructorBase::Init() {
      "No",
      "Don't include them",
      true);
+
+  static Switch<NBodyDecayConstructorBase,bool> interfaceRemoveSmallVertices
+    ("RemoveSmallVertices",
+     "Remove vertices with norm() below minVertexNorm",
+     &NBodyDecayConstructorBase::removeSmallVertices_, false, false, false);
+  static SwitchOption interfaceRemoveSmallVerticesYes
+    (interfaceRemoveSmallVertices,
+     "Yes",
+     "Remove them",
+     true);
+  static SwitchOption interfaceRemoveSmallVerticesNo
+    (interfaceRemoveSmallVertices,
+     "No",
+     "Don't remove them",
+     false);
+
+  static Parameter<NBodyDecayConstructorBase,double> interfaceMinVertexNorm
+    ("MinVertexNorm",
+     "Minimum allowed value of the notm() of the vertex if removing small vertices",
+     &NBodyDecayConstructorBase::minVertexNorm_, 1e-8, 1e-300, 1.,
+     false, false, Interface::limited);
+
+  static Switch<NBodyDecayConstructorBase,bool> interfaceRemoveFlavourChangingVertices
+    ("RemoveFlavourChangingVertices",
+     "Remove flavour changing interactions with the photon and gluon",
+     &NBodyDecayConstructorBase::removeFlavourChangingVertices_, false, false, false);
+  static SwitchOption interfaceRemoveFlavourChangingVerticesYes
+    (interfaceRemoveFlavourChangingVertices,
+     "Yes",
+     "Remove them",
+     true);
+  static SwitchOption interfaceRemoveFlavourChangingVerticesNo
+    (interfaceRemoveFlavourChangingVertices,
+     "No",
+     "Don't remove them",
+     false);
+
 }
 
 void NBodyDecayConstructorBase::setBranchingRatio(tDMPtr dm, Energy pwidth) {
@@ -401,7 +447,7 @@ void NBodyDecayConstructorBase::DecayList(const set<PDPtr> & particles) {
     for(unsigned int iv = 0; iv < nv; ++iv) {
       VertexBasePtr vertex = model->vertex(iv);
       if(excluded(vertex)) continue;
-      PrototypeVertex::createPrototypes(parent, vertex, prototypes);
+      PrototypeVertex::createPrototypes(parent, vertex, prototypes,this);
     }
     // now expand them into potential decay modes
     list<vector<PrototypeVertexPtr> > modes;
@@ -417,7 +463,7 @@ void NBodyDecayConstructorBase::DecayList(const set<PDPtr> & particles) {
 	  if(excluded(vertex) ||
 	     proto->npart+vertex->getNpoint()>numBodies()+2) continue;
 	  PrototypeVertex::expandPrototypes(proto,vertex,prototypes,
-					    excludedParticlesSet_);
+					    excludedParticlesSet_,this);
 	}
       }
       // multiplcity too high disgard

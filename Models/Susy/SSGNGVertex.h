@@ -194,24 +194,29 @@ private:
   long _idlast;
 
   /**
-   * Store the value at which the coupling when it was last evalutated
+   * Store the value at which the coupling when it was last evaluated
    */
   Energy2 _q2last;
 
   /**
-   * Store the value of the coupling when it was last evalutated
+   * Store the value of the coupling when it was last evaluated
    */
   Complex _couplast;
 
   /**
-   * Store the value of the left-coupling when it was last evalutated
+   * Store the value of the left-coupling when it was last evaluated
    */
   complex<InvEnergy> _leftlast;
 
   /**
-   * Store the value of the right-coupling when it was last evalutated
+   * Store the value of the right-coupling when it was last evaluated
    */
   complex<InvEnergy> _rightlast;
+
+  /**
+   *  Whether or not initialised
+   */
+  bool _initLoops;
 };
 }
 

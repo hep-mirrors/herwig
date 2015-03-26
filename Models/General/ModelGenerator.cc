@@ -12,7 +12,7 @@
 //
 
 #include "ModelGenerator.h"
-#include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/RefVector.h"
 #include "ThePEG/Interface/Switch.h"
@@ -48,8 +48,10 @@ void ModelGenerator::persistentInput(PersistentIStream & is, int) {
      >> Npoints_ >> Iorder_ >> BWshape_ >> brMin_ >> decayOutput_;
 }
 
-ClassDescription<ModelGenerator> ModelGenerator::initModelGenerator;
-// Definition of the static class description member.
+// Static variable needed for the type description system in ThePEG.
+DescribeClass<ModelGenerator,Interfaced>
+describeThePEGModelGenerator("Herwig::ModelGenerator", "Herwig.so");
+
 
 void ModelGenerator::Init() {
 

@@ -5,7 +5,7 @@
 // This is the declaration of the TTbAModel class.
 //
 
-#include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "Herwig++/Models/General/BSMModel.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "TTbAModel.fh"
 
@@ -20,7 +20,7 @@ using namespace ThePEG::Helicity;
  * @see \ref TTbAModelInterfaces "The interfaces"
  * defined for TTbAModel.
  */
-class TTbAModel: public StandardModel {
+class TTbAModel: public BSMModel {
 
 public:
 
