@@ -102,6 +102,9 @@ void MatchboxXCombData::reshuffle(vector<Lorentz5Momentum>& momenta,
 				  const cPDVector& mePartonData,
 				  const map<long,Energy>& reshuffleMap) const {
 
+  if ( momenta.size() == 3 ) // nothing to do; don't throw an exception
+    return;
+
   bool needDoSomething = false;
   for ( cPDVector::const_iterator d = mePartonData.begin() + 2;
 	d != mePartonData.end(); ++d )
@@ -165,7 +168,7 @@ void MatchboxXCombData::fillOLPMomenta(const vector<Lorentz5Momentum>& memomenta
 				       const map<long,Energy>& reshuffleMap) {
   if ( filledOLPMomenta )
     return;
-  if ( !reshuffleMap.empty() ) {
+  if ( !reshuffleMap.empty() && memomenta.size() > 3 ) {
     vector<Lorentz5Momentum> reshuffled = memomenta;
     reshuffle(reshuffled,mePartonData,reshuffleMap);
     fillOLPMomenta(reshuffled);
