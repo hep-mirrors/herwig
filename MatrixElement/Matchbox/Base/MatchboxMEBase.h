@@ -708,6 +708,18 @@ public:
    */
   bool oneLoopNoBorn() const { return theOneLoopNoBorn || onlyOneLoop(); }
 
+  /**
+   * Instruct this matrix element to include one-loop corrections but
+   * no actual loop contributions
+   */
+  void doOneLoopNoLoops() { theOneLoop = true; theOneLoopNoLoops = true; }
+
+  /**
+   * Return true, if this matrix element includes one-loop corrections
+   * but no actual loop contributions
+   */
+  bool oneLoopNoLoops() const { return theOneLoopNoLoops; }
+
   //@}
 
   /** @name Dipole subtraction */
@@ -1027,6 +1039,12 @@ private:
    * but no Born contributions
    */
   bool theOneLoopNoBorn;
+
+  /**
+   * True, if this matrix element includes one-loop corrections
+   * but no actual loop contributions (e.g. finite collinear terms)
+   */
+  bool theOneLoopNoLoops;
 
   /**
    * The process index, if this is an OLP handled matrix element

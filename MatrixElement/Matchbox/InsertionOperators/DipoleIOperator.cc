@@ -394,7 +394,7 @@ void DipoleIOperator::Init() {
   static ClassDocumentation<DipoleIOperator> documentation
     ("DipoleIOperator");
 
-  DipoleRepository::registerInsertionOperator<0,DipoleIOperator>("LightIOperator");
+  DipoleRepository::registerInsertionIOperator<0,DipoleIOperator>("LightIOperator");
 
 }
 

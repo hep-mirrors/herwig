@@ -666,7 +666,7 @@ void DipolePKOperator::Init() {
   static ClassDocumentation<DipolePKOperator> documentation
     ("DipolePKOperator");
 
-  DipoleRepository::registerInsertionOperator<0,DipolePKOperator>("LightPKOperator");
+  DipoleRepository::registerInsertionPKOperator<0,DipolePKOperator>("LightPKOperator");
 
 }
 

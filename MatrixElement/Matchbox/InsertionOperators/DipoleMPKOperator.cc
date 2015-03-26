@@ -1220,7 +1220,7 @@ void DipoleMPKOperator::Init() {
   static ClassDocumentation<DipoleMPKOperator> documentation
     ("DipoleMPKOperator");
 
-  DipoleRepository::registerInsertionOperator<0,DipoleMPKOperator>("MassivePKOperator");
+  DipoleRepository::registerInsertionPKOperator<0,DipoleMPKOperator>("MassivePKOperator");
 
 }
 

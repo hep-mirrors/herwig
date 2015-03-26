@@ -42,6 +42,7 @@ MatchboxMEBase::MatchboxMEBase()
   : MEBase(), 
     theOneLoop(false),
     theOneLoopNoBorn(false),
+    theOneLoopNoLoops(false),
     theNoCorrelations(false),
     theHavePDFs(false,false), checkedPDFs(false),
     theDiagramWeightVerboseDown(10000000000000.),
@@ -692,7 +693,7 @@ CrossSection MatchboxMEBase::dSigHatDR() const {
   }
 
   double vme2 = 0.;
-  if ( oneLoop() )
+  if ( oneLoop() && !oneLoopNoLoops() )
     vme2 = oneLoopInterference();
 
   CrossSection res = ZERO;
@@ -702,7 +703,7 @@ CrossSection MatchboxMEBase::dSigHatDR() const {
       (sqr(hbarc)/(2.*lastSHat())) *
       jacobian()* lastMEPDFWeight() * xme2;
 
-  if ( oneLoop() )
+  if ( oneLoop() && !oneLoopNoLoops() )
     res += 
       (sqr(hbarc)/(2.*lastSHat())) *
       jacobian()* lastMEPDFWeight() * vme2;
@@ -1205,6 +1206,8 @@ void MatchboxMEBase::print(ostream& os) const {
   os << " including " << (oneLoop() ? "" : "no ") << "virtual corrections";
   if ( oneLoopNoBorn() )
     os << " without Born contributions";
+  if ( oneLoopNoLoops() )
+    os << " without loop contributions";
   os << "\n";
 
   if ( oneLoop() && !onlyOneLoop() ) {
@@ -1521,7 +1524,7 @@ void MatchboxMEBase::persistentOutput(PersistentOStream & os) const {
   os << theLastXComb << theFactory << thePhasespace 
      << theAmplitude << theScaleChoice << theVirtuals 
      << theReweights << theSubprocess << theOneLoop 
-     << theOneLoopNoBorn
+     << theOneLoopNoBorn << theOneLoopNoLoops
      << epsilonSquarePoleHistograms << epsilonPoleHistograms
      << theOLPProcess << theNoCorrelations
      << theHavePDFs << checkedPDFs<<theDiagramWeightVerboseDown<<theDiagramWeightVerboseUp;
@@ -1531,7 +1534,7 @@ void MatchboxMEBase::persistentInput(PersistentIStream & is, int) {
   is >> theLastXComb >> theFactory >> thePhasespace 
      >> theAmplitude >> theScaleChoice >> theVirtuals 
      >> theReweights >> theSubprocess >> theOneLoop 
-     >> theOneLoopNoBorn
+     >> theOneLoopNoBorn >> theOneLoopNoLoops
      >> epsilonSquarePoleHistograms >> epsilonPoleHistograms
      >> theOLPProcess >> theNoCorrelations
      >> theHavePDFs >> checkedPDFs>>theDiagramWeightVerboseDown>>theDiagramWeightVerboseUp;

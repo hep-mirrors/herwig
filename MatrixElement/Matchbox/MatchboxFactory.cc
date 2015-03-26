@@ -42,6 +42,7 @@ MatchboxFactory::MatchboxFactory()
     theOrderInAlphaS(0), theOrderInAlphaEW(0),
     theBornContributions(true), theVirtualContributions(true),
     theRealContributions(true), theIndependentVirtuals(false),
+    theIndependentPKs(false),
     theSubProcessGroups(false),
     theFactorizationScaleFactor(1.0), theRenormalizationScaleFactor(1.0),
     theFixedCouplings(false), theFixedQEDCouplings(false), theVetoScales(false),
@@ -495,8 +496,25 @@ void MatchboxFactory::setup() {
       // prepare dipole insertion operators
       if ( virtualContributions() ) {
 	for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt
-		= DipoleRepository::insertionOperators(dipoleSet()).begin(); 
-	      virt != DipoleRepository::insertionOperators(dipoleSet()).end(); ++virt ) {
+		= DipoleRepository::insertionIOperators(dipoleSet()).begin(); 
+	      virt != DipoleRepository::insertionIOperators(dipoleSet()).end(); ++virt ) {
+	  (**virt).factory(this);
+	  if ( virtualsAreDRbar )
+	    (**virt).useDRbar();
+	  if ( virtualsAreDR )
+	    (**virt).useDR();
+	  else
+	    (**virt).useCDR();
+	  if ( virtualsAreCS )
+	    (**virt).useCS();
+	  if ( virtualsAreBDK )
+	    (**virt).useBDK();
+	  if ( virtualsAreExpanded )
+	    (**virt).useExpanded();
+	}
+	for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt
+		= DipoleRepository::insertionPKOperators(dipoleSet()).begin(); 
+	      virt != DipoleRepository::insertionPKOperators(dipoleSet()).end(); ++virt ) {
 	  (**virt).factory(this);
 	  if ( virtualsAreDRbar )
 	    (**virt).useDRbar();
@@ -611,7 +629,9 @@ void MatchboxFactory::setup() {
 	string pname = fullName() + "/" + (**born).name();
 	if ( !independentVirtuals() && !(!bornContributions() && virtualContributions()) )
 	  pname += ".BornVirtual";
-	else
+	else if ( independentPKs() && !nlo->onlyOneLoop() )
+	  pname += ".VirtualVI";
+        else 
 	  pname += ".Virtual";
 	if ( ! (generator()->preinitRegister(nlo,pname) ) )
 	  throw InitException() << "NLO ME " << pname << " already existing.";
@@ -625,11 +645,19 @@ void MatchboxFactory::setup() {
 	      nlo->virtuals().push_back(*virt);
 	  }
 	  for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt
-		  = DipoleRepository::insertionOperators(dipoleSet()).begin(); 
-		virt != DipoleRepository::insertionOperators(dipoleSet()).end(); ++virt ) {
+		  = DipoleRepository::insertionIOperators(dipoleSet()).begin(); 
+		virt != DipoleRepository::insertionIOperators(dipoleSet()).end(); ++virt ) {
 	    if ( (**virt).apply((**born).diagrams().front()->partons()) )
 	      nlo->virtuals().push_back(*virt);
 	  }
+          if ( !independentVirtuals() || ( independentVirtuals() && !independentPKs() ) ) { 
+	    for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt
+	            = DipoleRepository::insertionPKOperators(dipoleSet()).begin(); 
+	          virt != DipoleRepository::insertionPKOperators(dipoleSet()).end(); ++virt ) {
+	      if ( (**virt).apply((**born).diagrams().front()->partons()) )
+	        nlo->virtuals().push_back(*virt);
+	    }
+          }
 	  if ( nlo->virtuals().empty() )
 	    throw InitException() << "No insertion operators have been found for "
 				  << (**born).name() << "\n";
@@ -665,6 +693,52 @@ void MatchboxFactory::setup() {
 
 	bornVirtualMEs().push_back(nlo);
 	MEs().push_back(nlo);
+
+	if ( independentVirtuals() && independentPKs() && !nlo->onlyOneLoop() ) {
+
+	  Ptr<MatchboxMEBase>::ptr nlopk = (**born).cloneMe();
+	  string pnamepk = fullName() + "/" + (**born).name();
+	  pnamepk += ".VirtualPK";
+	  if ( ! (generator()->preinitRegister(nlopk,pnamepk) ) )
+	    throw InitException() << "NLO ME " << pnamepk << " already existing.";
+
+	  nlopk->virtuals().clear();
+
+	  for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt
+	          = DipoleRepository::insertionPKOperators(dipoleSet()).begin(); 
+	        virt != DipoleRepository::insertionPKOperators(dipoleSet()).end(); ++virt ) {
+	    if ( (**virt).apply((**born).diagrams().front()->partons()) )
+	      nlopk->virtuals().push_back(*virt);
+	  }
+
+	  if ( !nlopk->virtuals().empty() ) {
+
+	    nlopk->doOneLoopNoBorn();
+	    nlopk->doOneLoopNoLoops();
+
+	    if ( nlopk->isOLPLoop() ) {
+	      int id = orderOLPProcess(nlopk->subProcess(),
+	        		             (**born).matchboxAmplitude(),
+	        		             ProcessType::treeME2);
+	      nlopk->olpProcess(ProcessType::treeME2,id);	  
+	      if ( nlopk->needsOLPCorrelators() ) {
+	        id = orderOLPProcess(nlopk->subProcess(),
+	    			   (**born).matchboxAmplitude(),
+	    			   ProcessType::colourCorrelatedME2);
+	        nlopk->olpProcess(ProcessType::colourCorrelatedME2,id);	  
+              }
+	    }
+
+	    nlopk->needsCorrelations();
+
+	    nlopk->cloneDependencies();
+
+	    bornVirtualMEs().push_back(nlopk);
+	    MEs().push_back(nlopk);
+
+          }
+
+        }
 
 	++(*progressBar);
 
@@ -1099,7 +1173,8 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
      << theNLightJetVec << theNHeavyJetVec << theNLightProtonVec 
      << theOrderInAlphaS << theOrderInAlphaEW 
      << theBornContributions << theVirtualContributions
-     << theRealContributions << theIndependentVirtuals << theSubProcessGroups
+     << theRealContributions << theIndependentVirtuals << theIndependentPKs
+     << theSubProcessGroups
      << thePhasespace << theScaleChoice
      << theFactorizationScaleFactor << theRenormalizationScaleFactor
      << theFixedCouplings << theFixedQEDCouplings << theVetoScales
@@ -1127,7 +1202,8 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
      >> theNLightJetVec >> theNHeavyJetVec >> theNLightProtonVec 
      >> theOrderInAlphaS >> theOrderInAlphaEW 
      >> theBornContributions >> theVirtualContributions
-     >> theRealContributions >> theIndependentVirtuals >> theSubProcessGroups
+     >> theRealContributions >> theIndependentVirtuals >> theIndependentPKs
+     >> theSubProcessGroups
      >> thePhasespace >> theScaleChoice
      >> theFactorizationScaleFactor >> theRenormalizationScaleFactor
      >> theFixedCouplings >> theFixedQEDCouplings >> theVetoScales
@@ -1377,6 +1453,21 @@ void MatchboxFactory::Init() {
     (interfaceIndependentVirtuals,
      "Off",
      "Switch off virtual contributions as separate subprocesses.",
+     false);
+
+  static Switch<MatchboxFactory,bool> interfaceIndependentPKs
+    ("IndependentPKOperators",
+     "Switch on or off PK oeprators as separate subprocesses.",
+     &MatchboxFactory::theIndependentPKs, true, false, false);
+  static SwitchOption interfaceIndependentPKsOn
+    (interfaceIndependentPKs,
+     "On",
+     "Switch on PK operators as separate subprocesses.",
+     true);
+  static SwitchOption interfaceIndependentPKsOff
+    (interfaceIndependentPKs,
+     "Off",
+     "Switch off PK operators as separate subprocesses.",
      false);
 
   static Switch<MatchboxFactory,bool> interfaceSubProcessGroups

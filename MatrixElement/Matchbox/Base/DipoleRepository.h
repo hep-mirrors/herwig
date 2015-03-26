@@ -20,7 +20,8 @@ using namespace ThePEG;
 
 #define HERWIG_MatchboxDipoles "/Herwig/MatrixElements/Matchbox/Dipoles/"
 #define HERWIG_MatchboxTildes "/Herwig/MatrixElements/Matchbox/TildeKinematics/"
-#define HERWIG_MatchboxInsertionOperators "/Herwig/MatrixElements/Matchbox/InsertionOperators/"
+#define HERWIG_MatchboxInsertionIOperators "/Herwig/MatrixElements/Matchbox/InsertionIOperators/"
+#define HERWIG_MatchboxInsertionPKOperators "/Herwig/MatrixElements/Matchbox/InsertionPKOperators/"
 
 /**
  * \ingroup Matchbox
@@ -40,10 +41,17 @@ public:
   }
 
   /**
-   * Return the known insertion operators
+   * Return the known I insertion operators
    */
-  static const vector<Ptr<MatchboxInsertionOperator>::ptr>& insertionOperators(int id) {
-    return theInsertionOperators(id);
+  static const vector<Ptr<MatchboxInsertionOperator>::ptr>& insertionIOperators(int id) {
+    return theInsertionIOperators(id);
+  }
+
+  /**
+   * Return the known PK insertion operators
+   */
+  static const vector<Ptr<MatchboxInsertionOperator>::ptr>& insertionPKOperators(int id) {
+    return theInsertionPKOperators(id);
   }
 
 public:
@@ -93,18 +101,36 @@ public:
   }
 
   /**
-   * Register an insertion operator
+   * Register an I insertion operator
    */
   template<int id, class InsertionOperatorT>
-  static void registerInsertionOperator(string name) {
+  static void registerInsertionIOperator(string name) {
 
     setup();
 
-    BaseRepository::PushDirectory(HERWIG_MatchboxInsertionOperators);
+    BaseRepository::PushDirectory(HERWIG_MatchboxInsertionIOperators);
     typename Ptr<InsertionOperatorT>::ptr iop = new_ptr(InsertionOperatorT());
     BaseRepository::Register(iop,name);
 
-    theInsertionOperators(id).push_back(iop);
+    theInsertionIOperators(id).push_back(iop);
+
+    BaseRepository::PopDirectory();
+
+  }
+
+  /**
+   * Register an PK insertion operator
+   */
+  template<int id, class InsertionOperatorT>
+  static void registerInsertionPKOperator(string name) {
+
+    setup();
+
+    BaseRepository::PushDirectory(HERWIG_MatchboxInsertionPKOperators);
+    typename Ptr<InsertionOperatorT>::ptr iop = new_ptr(InsertionOperatorT());
+    BaseRepository::Register(iop,name);
+
+    theInsertionPKOperators(id).push_back(iop);
 
     BaseRepository::PopDirectory();
 
@@ -118,9 +144,14 @@ private:
   static vector<Ptr<SubtractionDipole>::ptr>& theDipoles(int id);
 
   /**
-   * The known insertion operators
+   * The known I insertion operators
    */
-  static vector<Ptr<MatchboxInsertionOperator>::ptr>& theInsertionOperators(int id);
+  static vector<Ptr<MatchboxInsertionOperator>::ptr>& theInsertionIOperators(int id);
+
+  /**
+   * The known PK insertion operators
+   */
+  static vector<Ptr<MatchboxInsertionOperator>::ptr>& theInsertionPKOperators(int id);
 
   /**
    * True, if initialized.

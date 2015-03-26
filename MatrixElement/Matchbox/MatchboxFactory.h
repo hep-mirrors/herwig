@@ -224,6 +224,16 @@ public:
   void setIndependentVirtuals(bool on = true) { theIndependentVirtuals = on; }
 
   /**
+   * Return true, if PK operator contributions should be treated as independent subprocesses
+   */
+  bool independentPKs() const { return theIndependentPKs; }
+
+  /**
+   * Switch on/off PK operator contributions should be treated as independent subprocesses
+   */
+  void setIndependentPKs(bool on = true) { theIndependentPKs = on; }
+
+  /**
    * Return true, if SubProcessGroups should be
    * setup from this MEGroup. If not, a single SubProcess
    * is constructed from the data provided by the
@@ -857,6 +867,11 @@ private:
    * True if virtual contributions should be treated as independent subprocesses
    */
   bool theIndependentVirtuals;
+
+  /**
+   * True if PK operator contributions should be treated as independent subprocesses
+   */
+  bool theIndependentPKs;
 
   /**
    * True, if SubProcessGroups should be
