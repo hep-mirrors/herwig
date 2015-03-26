@@ -52,6 +52,8 @@ do EEFactory:Process e- e+ j j
 ## for other cut options and different jet algorithms.
 cd /Herwig/Cuts
 
+set MatchboxJetMatcher:Factory /Herwig/MatrixElements/Matchbox/EEFactory
+
 ## Cut on lepton pair invariant mass
 # set MassCut:MinM 66*GeV
 # set MassCut:MaxM 116*GeV

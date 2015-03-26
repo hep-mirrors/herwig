@@ -645,8 +645,12 @@ set /Herwig/MatrixElements/Matchbox/Factory:Phasespace TreePhasespace
 
 cd /Herwig/Cuts
 
+create Herwig::MatchboxFactoryMatcher MatchboxJetMatcher
+set MatchboxJetMatcher:Group j
+set MatchboxJetMatcher:Factory /Herwig/MatrixElements/Matchbox/Factory
+
 create ThePEG::FastJetFinder JetFinder
-set JetFinder:UnresolvedMatcher /Herwig/Matchers/StandardQCDParton
+set JetFinder:UnresolvedMatcher MatchboxJetMatcher
 set JetFinder:Variant AntiKt
 set JetFinder:RecombinationScheme E
 set JetFinder:Mode Inclusive
@@ -685,11 +689,11 @@ set FourthJet:RapidityCutWidth 0.4
 insert FourthJet:Accepts[0] 4
 
 create ThePEG::NJetsCut NJetsCut
-set NJetsCut:UnresolvedMatcher /Herwig/Matchers/StandardQCDParton
+set NJetsCut:UnresolvedMatcher MatchboxJetMatcher
 set NJetsCut:NJetsMin 2
 
 create ThePEG::JetCuts JetCuts
-set JetCuts:UnresolvedMatcher  /Herwig/Matchers/StandardQCDParton
+set JetCuts:UnresolvedMatcher  MatchboxJetMatcher
 set JetCuts:Ordering OrderPt
 
 create Herwig::FrixionePhotonSeparationCut FrixionePhotonSeparationCut
