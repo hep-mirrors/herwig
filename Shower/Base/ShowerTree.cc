@@ -75,16 +75,38 @@ ShowerTree::ShowerTree(const PPair incoming, const ParticleVector & out,
        it != out.end(); ++it) {
     // if decayed or should be decayed in shower make the tree
     PPtr orig = *it;
-    if(!orig->children().empty() ||
-       (decaysInShower(orig->id())&&!orig->dataPtr()->stable())) {
+    bool radiates = false;
+    if(!orig->children().empty()) {
+      // remove d,u,s,c,b quarks and leptons other than on-shell taus
+      if(StandardQCDPartonMatcher::Check(orig->id())||
+	 (LeptonMatcher::Check(orig->id())&& !(abs(orig->id())==ParticleID::tauminus && abs(orig->mass()-orig->dataPtr()->mass())<MeV))) {
+	radiates = true;
+      }
+      else
+	for(unsigned int iy=0;iy<orig->children().size();++iy) {
+	  if(orig->children()[iy]->id()==orig->id()) {
+	    radiates = true;
+	    break;
+	  }
+	}
+    }
+    if(radiates) {
+      findDecayProducts(orig,original,copy,decay,trees);
+    }
+    else if(!orig->children().empty()||
+	    (decaysInShower(orig->id())&&!orig->dataPtr()->stable())) {
       ShowerTreePtr newtree=new_ptr(ShowerTree(orig,decay));
       newtree->setParents();
       trees.insert(make_pair(orig,newtree));
       Energy width=orig->dataPtr()->generateWidth(orig->mass());
       decay.insert(make_pair(width,newtree));
+      original.push_back(orig);
+      copy.push_back(new_ptr(Particle(*orig)));
     }
-    original.push_back(orig);
-    copy.push_back(new_ptr(Particle(*orig)));
+    else { 
+      original.push_back(orig);
+      copy.push_back(new_ptr(Particle(*orig)));
+    }
   }
   // colour isolate the hard process
   colourIsolate(original,copy);
@@ -127,7 +149,9 @@ void ShowerTree::findDecayProducts(PPtr in, vector<PPtr> & original, vector<PPtr
     in->abandonChild(orig);
     bool radiates = false;
     if(!orig->children().empty()) {
-      if(StandardQCDPartonMatcher::Check(orig->id())) {
+      // remove d,u,s,c,b quarks and leptons other than on-shell taus
+      if(StandardQCDPartonMatcher::Check(orig->id())||
+	 (LeptonMatcher::Check(orig->id())&& !(abs(orig->id())==ParticleID::tauminus && abs(orig->mass()-orig->dataPtr()->mass())<MeV))) {
 	radiates = true;
       }
       else
@@ -180,7 +204,8 @@ ShowerTree::ShowerTree(PPtr in,
       in->abandonChild(orig);
       bool radiates = false;
       if(!orig->children().empty()) {
-	if(StandardQCDPartonMatcher::Check(orig->id())) {
+	if(StandardQCDPartonMatcher::Check(orig->id())||
+	   (LeptonMatcher::Check(orig->id())&& !(abs(orig->id())==ParticleID::tauminus && abs(orig->mass()-orig->dataPtr()->mass())<MeV))) {
 	  radiates = true;
 	}
 	else {
