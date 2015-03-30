@@ -102,7 +102,15 @@ void MatchboxXCombData::reshuffle(vector<Lorentz5Momentum>& momenta,
 				  const cPDVector& mePartonData,
 				  const map<long,Energy>& reshuffleMap) const {
 
-  if ( momenta.size() == 3 ) // nothing to do; don't thro an exception
+  if ( momenta.size() == 3 ) // nothing to do; don't throw an exception
+    return;
+
+  bool needDoSomething = false;
+  for ( cPDVector::const_iterator d = mePartonData.begin() + 2;
+	d != mePartonData.end(); ++d )
+    needDoSomething |= reshuffleMap.find((**d).id()) != reshuffleMap.end();
+
+  if ( !needDoSomething )
     return;
 
   Lorentz5Momentum Q(ZERO,ZERO,ZERO,ZERO);
@@ -268,6 +276,7 @@ void MatchboxXCombData::persistentOutput(PersistentOStream & os) const {
   os << theFactory << theMatchboxME << theSubtractionDipole << theCrossingMap 
      << theAmplitudeToColourMap << theColourToAmplitudeMap 
      << theCrossingSign << theAmplitudePartonData << ounit(theAmplitudeMomenta,GeV) 
+     << ounit(theLastRenormalizationScale,GeV2)
      << theCalculateTreeAmplitudes /* << theLastAmplitudes << theLastLargeNAmplitudes */
      << theCalculateOneLoopAmplitudes /* << theLastOneLoopAmplitudes */
      << theCalculateTreeME2 << theLastTreeME2 
@@ -295,6 +304,7 @@ void MatchboxXCombData::persistentInput(PersistentIStream & is, int) {
   is >> theFactory >> theMatchboxME >> theSubtractionDipole >> theCrossingMap 
      >> theAmplitudeToColourMap >> theColourToAmplitudeMap 
      >> theCrossingSign >> theAmplitudePartonData >> iunit(theAmplitudeMomenta,GeV)
+     >> iunit(theLastRenormalizationScale,GeV2)
      >> theCalculateTreeAmplitudes /* >> theLastAmplitudes >> theLastLargeNAmplitudes */
      >> theCalculateOneLoopAmplitudes /* >> theLastOneLoopAmplitudes */
      >> theCalculateTreeME2 >> theLastTreeME2 

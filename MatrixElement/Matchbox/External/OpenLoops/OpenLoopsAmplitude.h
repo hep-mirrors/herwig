@@ -164,7 +164,13 @@ public:
   virtual void startOLP(const string&, int& status);
   virtual void getids() const ;
 
-  virtual Energy2 mu2() const { return lastSHat(); }
+  /**
+   * Return the value of the dimensional regularization
+   * parameter. Note that renormalization scale dependence is fully
+   * restored in DipoleIOperator.
+   */
+  // virtual Energy2 mu2() const { return lastSHat(); }
+
   /**
    * Start the one loop provider, if appropriate. This default
    * implementation writes an BLHA 2.0 order file and starts the OLP

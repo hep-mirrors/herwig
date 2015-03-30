@@ -57,6 +57,11 @@ MatchboxFactory::MatchboxFactory()
 
 MatchboxFactory::~MatchboxFactory() {}
 
+bool& MatchboxFactory::theIsMatchboxRun() {
+  static bool flag = false;
+  return flag;
+}
+
 IBPtr MatchboxFactory::clone() const {
   return new_ptr(*this);
 }
@@ -1136,6 +1141,7 @@ void MatchboxFactory::print(ostream& os) const {
 }
 
 void MatchboxFactory::doinit() {
+  theIsMatchboxRun() = true;
   if ( RunDirectories::empty() )
     RunDirectories::pushRunId(generator()->runName());
   setup();
@@ -1150,6 +1156,7 @@ void MatchboxFactory::doinit() {
 }
 
 void MatchboxFactory::doinitrun() {
+  theIsMatchboxRun() = true;
   if ( theShowerApproximation )
     theShowerApproximation->initrun();
   Ptr<StandardEventHandler>::tptr eh =

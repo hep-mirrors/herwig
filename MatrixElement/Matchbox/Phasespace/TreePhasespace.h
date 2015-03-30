@@ -64,7 +64,7 @@ public:
    * Return the number of random numbers required to produce a given
    * multiplicity final state.
    */
-  virtual int nDim(int nFinal) const {
+  virtual int nDimPhasespace(int nFinal) const {
     if ( nFinal == 1 )
       return 1;
     return 3*(nFinal - 1); // one additional number needed for channel selection

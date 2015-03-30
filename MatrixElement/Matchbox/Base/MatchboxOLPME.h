@@ -162,7 +162,7 @@ public:
    * parameter. Note that renormalization scale dependence is fully
    * restored in DipoleIOperator.
    */
-  virtual Energy2 mu2() const { return lastSHat(); }
+  virtual Energy2 mu2() const;
 
   /**
    * If defined, return the coefficient of the pole in epsilon^2
@@ -292,6 +292,11 @@ private:
    */
   unsigned int theOrderInGem;
 
+  /**
+   * Set the value of the dimensional regularization parameter 
+   * to the value of the renormalization scale
+   */
+  bool theSetMuToMuR;
 
 };
 

@@ -361,21 +361,8 @@ int MatchboxMEBase::nDimBorn() const {
   if ( lastMatchboxXComb() )
     return nDimPhasespace();
 
-  if ( phasespace() ) {
-    size_t nout = diagrams().front()->partons().size()-2;
-    int n = phasespace()->nDim(nout);
-    if ( phasespace()->useMassGenerators() ) {
-      for ( cPDVector::const_iterator pd = 
-	      diagrams().front()->partons().begin();
-	    pd != diagrams().front()->partons().end(); ++pd ) {
-	if ( processData()->massGenerator(*pd) ||
-	     (**pd).width() != ZERO ) {
-	  ++n;
-	}
-      }
-    }
-    return n;
-  }
+  if ( phasespace() )
+    return phasespace()->nDim(diagrams().front()->partons());
 
   throw Exception()
     << "MatchboxMEBase::nDim() expects a MatchboxPhasespace object.\n"
@@ -395,6 +382,7 @@ void MatchboxMEBase::setScale() const {
   Energy2 ewrscale = renormalizationScaleQED();
   lastXCombPtr()->lastScale(fscale);
   lastXCombPtr()->lastCentralScale(fcscale);
+  lastMatchboxXComb()->lastRenormalizationScale(rscale);
   if ( !fixedCouplings() ) {
     if ( rscale > lastCuts().scaleMin() )
       lastXCombPtr()->lastAlphaS(SM().alphaS(rscale));
@@ -1426,10 +1414,8 @@ void MatchboxMEBase::prepareXComb(MatchboxXCombData& xc) const {
   // fixme We need to pass on the partons from the xcmob here, not
   // assuming one subprocess per matrix element
 
-  if ( phasespace() ) {
-    size_t nout = diagrams().front()->partons().size()-2;
-    xc.nDimPhasespace(phasespace()->nDim(nout));
-  }
+  if ( phasespace() )
+    xc.nDimPhasespace(phasespace()->nDim(diagrams().front()->partons()));
 
   if ( matchboxAmplitude() ) {
     xc.nDimAmplitude(matchboxAmplitude()->nDimAdditional());
@@ -1565,6 +1551,7 @@ void MatchboxMEBase::doinit() {
     matchboxAmplitude()->init();
   if ( phasespace() ) {
     phasespace()->init();
+    matchboxAmplitude()->checkReshuffling(phasespace());
   }
   if ( scaleChoice() ) {
     scaleChoice()->init();

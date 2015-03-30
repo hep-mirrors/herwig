@@ -28,5 +28,6 @@ MatchboxXCombGroup.h \
 MatchboxXCombGroup.cc \
 MatchboxXCombData.h \
 MatchboxXCombData.cc \
-LastMatchboxXCombInfo.h
-
+LastMatchboxXCombInfo.h \
+MatchboxFactoryMatcher.h \
+MatchboxFactoryMatcher.cc

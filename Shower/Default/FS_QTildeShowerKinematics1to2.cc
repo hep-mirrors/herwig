@@ -67,14 +67,14 @@ updateChildren(const tShowerParticlePtr parent,
   // make the products children of the parent
   parent->addChild(children[0]);
   parent->addChild(children[1]);
+  // set the momenta of the children
+  for(ShowerParticleVector::const_iterator pit=children.begin();
+      pit!=children.end();++pit) {
+    setMomentum(*pit,true);
+  }
   // sort out the helicity stuff 
   if(! ShowerHandler::currentHandler()->evolver()->correlations()) return;
   SpinPtr pspin(parent->spinInfo());
-  // set the momenta of the children
-  ShowerParticleVector::const_iterator pit;
-  for(pit=children.begin();pit!=children.end();++pit) {
-    setMomentum(*pit,true);
-  }
   if(!pspin ||  !ShowerHandler::currentHandler()->evolver()->spinCorrelations() ) return;
   Energy2 t = sqr(scale())*z()*(1.-z());
   IdList ids;
@@ -87,7 +87,8 @@ updateChildren(const tShowerParticlePtr parent,
   vertex->ME(splittingFn()->matrixElement(z(),t,ids,phi()));
   // set the incoming particle for the vertex
   parent->spinInfo()->decayVertex(vertex);
-  for(pit=children.begin();pit!=children.end();++pit) {
+  for(ShowerParticleVector::const_iterator pit=children.begin();
+      pit!=children.end();++pit) {
     // construct the spin info for the children
     constructSpinInfo(*pit,true);
     // connect the spinInfo object to the vertex
@@ -106,17 +107,17 @@ reconstructParent(const tShowerParticlePtr parent,
   parent->set5Momentum( c1->momentum() + c2->momentum() );
 }
 
-void FS_QTildeShowerKinematics1to2::reconstructLast(const tShowerParticlePtr theLast,
+void FS_QTildeShowerKinematics1to2::reconstructLast(const tShowerParticlePtr last,
 						    Energy mass) const {
   // set beta component and consequently all missing data from that,
   // using the nominal (i.e. PDT) mass.
-  Energy theMass = mass > ZERO  ?  mass : theLast->data().constituentMass();
-  ShowerParticle::Parameters & last = theLast->showerParameters();
-  last.beta = ( sqr(theMass) + sqr(last.pt) - sqr(last.alpha) * pVector().m2() )
-    / ( 2. * last.alpha * p_dot_n() );
+  Energy theMass = mass > ZERO  ?  mass : last->data().constituentMass();
+  ShowerParticle::Parameters & lastParam = last->showerParameters();
+  lastParam.beta = ( sqr(theMass) + sqr(lastParam.pt) - sqr(lastParam.alpha) * pVector().m2() )
+    / ( 2. * lastParam.alpha * p_dot_n() );
   // set that new momentum
-  theLast->set5Momentum(sudakov2Momentum( last.alpha, last.beta, 
-					  last.ptx, last.pty) );
+  last->set5Momentum(sudakov2Momentum( lastParam.alpha, lastParam.beta,
+				       lastParam.ptx  , lastParam.pty) );
 }
 
 void FS_QTildeShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr) {

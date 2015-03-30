@@ -112,10 +112,13 @@ void DipoleMIOperator::setXComb(tStdXCombPtr xc) {
     CA = SM().Nc();
     CF = (SM().Nc()*SM().Nc()-1.0)/(2.*SM().Nc());
     gammaQuark = (3./2.)*CF;
-    gammaGluon = (11./6.)*CA - (1./3.)*NLightJetVec().size();
-    betaZero = (11./6.)*CA - (1./3.)*(NLightJetVec().size()+NHeavyJetVec().size());
+    // gammaGluon = (11./6.)*CA - (1./3.)*NLightJetVec().size();
+    // betaZero = (11./6.)*CA - (1./3.)*(NLightJetVec().size()+NHeavyJetVec().size());
+    gammaGluon = (11./6.)*CA - (1./3.)*lastBorn()->nLightJetVec().size();
+    betaZero = (11./6.)*CA - (1./3.)*(lastBorn()->nLightJetVec().size()+lastBorn()->nHeavyJetVec().size());
     KQuark = (7./2.-sqr(pi)/6.)*CF;
-    KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*NLightJetVec().size();
+    // KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*NLightJetVec().size();
+    KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*lastBorn()->nLightJetVec().size();
   }
 }
 
@@ -575,8 +578,10 @@ double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k,
       if( j.id() == ParticleID::g ) {
         // sum over all quark flavours
         if( !mFSetEmpty )
-          for( size_t f=0; f<NHeavyJetVec().size(); ++f ) { // only heavy quarks in jet (aka g->QQbar at NLO)
-            Energy2 mF2 = sqr( getParticleData(NHeavyJetVec()[f])->mass() );
+          // for( size_t f=0; f<NHeavyJetVec().size(); ++f ) { // only heavy quarks in jet (aka g->QQbar at NLO)
+          //   Energy2 mF2 = sqr( getParticleData(NHeavyJetVec()[f])->mass() );
+          for( size_t f=0; f<lastBorn()->nHeavyJetVec().size(); ++f ) { // only heavy quarks in jet (aka g->QQbar at NLO)
+            Energy2 mF2 = sqr( getParticleData(lastBorn()->nHeavyJetVec()[f])->mass() );
             // sum only over quarks which meet special condition
             // but not if method of appendix B is used (see note
             // at the end of appendix B)
@@ -601,11 +606,14 @@ double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k,
       else if( j.id() == ParticleID::g ) {
         // part independent of other heavy quark flavours
         res += gammaGluon/CA * ( log(sjk/Qjk2) - 2.*log((Qjk-mk)/Qjk) - 2.*mk/(Qjk+mk) ) +
-          (kappa-2./3.) * mk2/sjk * (1./CA*NLightJetVec().size()-1.) * log(2.*mk/(Qjk+mk));
+          // (kappa-2./3.) * mk2/sjk * (1./CA*NLightJetVec().size()-1.) * log(2.*mk/(Qjk+mk));
+          (kappa-2./3.) * mk2/sjk * (1./CA*lastBorn()->nLightJetVec().size()-1.) * log(2.*mk/(Qjk+mk));
         // part containing other heavy quark flavours
         if( !mFSetEmpty )
-        for( size_t f=0; f<NHeavyJetVec().size(); ++f ) { // only heavy quarks in jet (aka g->QQbar at NLO)
-          Energy2 mF2 = sqr( getParticleData(NHeavyJetVec()[f])->mass() );
+        // for( size_t f=0; f<NHeavyJetVec().size(); ++f ) { // only heavy quarks in jet (aka g->QQbar at NLO)
+        //   Energy2 mF2 = sqr( getParticleData(NHeavyJetVec()[f])->mass() );
+        for( size_t f=0; f<lastBorn()->nHeavyJetVec().size(); ++f ) { // only heavy quarks in jet (aka g->QQbar at NLO)
+          Energy2 mF2 = sqr( getParticleData(lastBorn()->nHeavyJetVec()[f])->mass() );
           // sum only over quarks which meet special condition
           // but not if method of appendix B is used (see note
           // at the end of appendix B)

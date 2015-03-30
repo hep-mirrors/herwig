@@ -69,7 +69,9 @@ public:
    *              parameterisation
    */
   Lorentz5Momentum sudakov2Momentum(double alpha, double beta,
-				    Energy px, Energy py) const;
+				    Energy px, Energy py) const {
+    return alpha*_pVector + beta*_nVector + px*_xPerp+py*_yPerp;
+  }
 
   /**
    *  Transform the shower kinematics (usually the reference vectors)
@@ -81,7 +83,8 @@ protected:
   /**
    *  Set the basis vectors
    */
-  void setBasis(const Lorentz5Momentum &p, const Lorentz5Momentum & n, Frame frame);
+  void setBasis(const Lorentz5Momentum &p, const Lorentz5Momentum & n,
+		Frame frame);
 
   /**
    *  Set a preliminary momentum for the particle
@@ -113,6 +116,15 @@ private:
    */
   Lorentz5Momentum _nVector;
 
+  /**
+   *  x \f$q_\perp\f$ reference vector
+   */
+  LorentzVector<double> _xPerp;
+
+  /**
+   *  y \f$q_\perp\f$reference vector
+   */
+  LorentzVector<double> _yPerp;
 };
 
 }

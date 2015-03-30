@@ -56,6 +56,13 @@ public:
 
 public:
 
+  /**
+   * Flag to indicate that at least one MatchboxFactory object is in action
+   */
+  static bool isMatchboxRun() {
+    return theIsMatchboxRun();
+  }
+
   /** @name Process and diagram information */
   //@{
 
@@ -803,6 +810,11 @@ protected:
   //@}
 
 private:
+
+  /**
+   * Flag to indicate that at least one MatchboxFactory object is in action
+   */
+  static bool& theIsMatchboxRun();
 
   /**
    * The diagram generator.

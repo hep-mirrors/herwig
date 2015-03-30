@@ -18,6 +18,7 @@
 #include "Herwig++/MatrixElement/Matchbox/Utility/SpinCorrelationTensor.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/LastMatchboxXCombInfo.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxXComb.h"
+#include "Herwig++/MatrixElement/Matchbox/Phasespace/MatchboxPhasespace.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.fh"
 #include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.fh"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -282,6 +283,11 @@ public:
    * Return the map with masses to be used for amplitude evaluation
    */
   const map<long,Energy>& reshuffleMasses() const { return theReshuffleMasses; }
+
+  /**
+   * Check if reshuffling is needed at all
+   */
+  void checkReshuffling(Ptr<MatchboxPhasespace>::tptr);
 
   //@}
 
@@ -647,6 +653,16 @@ private:
    * A command to fill the reshuffle mass map
    */
   string doMassless(string);
+
+  /**
+   * A command to fill the reshuffle mass map
+   */
+  string doOnShell(string);
+
+  /**
+   * Clear the reshuffling map
+   */
+  string doClearReshuffling(string);
 
   /**
    * The assignment operator is private and must never be called.

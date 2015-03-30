@@ -17,7 +17,6 @@
 #include "Herwig++/MatrixElement/Matchbox/Utility/Tree2toNGenerator.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxScaleChoice.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/ProcessData.h"
-#include "Herwig++/MatrixElement/Matchbox/Phasespace/MatchboxPhasespace.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxAmplitude.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxReweightBase.h"
 #include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.fh"

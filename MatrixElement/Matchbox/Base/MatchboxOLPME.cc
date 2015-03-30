@@ -19,6 +19,7 @@
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "MatchboxMEBase.h"
 #include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
+#include "ThePEG/Interface/Switch.h"
 
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -26,7 +27,7 @@
 using namespace Herwig;
 
 MatchboxOLPME::MatchboxOLPME() 
-  : theOrderInGs(0), theOrderInGem(0) {}
+  : theOrderInGs(0), theOrderInGem(0), theSetMuToMuR(false) {}
 
 MatchboxOLPME::~MatchboxOLPME() {}
 
@@ -216,12 +217,20 @@ void MatchboxOLPME::doinitrun() {
   MatchboxAmplitude::doinitrun();
 }
 
+
+Energy2 MatchboxOLPME::mu2() const { 
+  if (theSetMuToMuR) {
+    return lastMatchboxXComb()->lastRenormalizationScale();
+  }
+  return lastSHat(); 
+}
+
 void MatchboxOLPME::persistentOutput(PersistentOStream & os) const {
-  os << theOrderInGs << theOrderInGem;
+  os << theOrderInGs << theOrderInGem << theSetMuToMuR;
 }
 
 void MatchboxOLPME::persistentInput(PersistentIStream & is, int) {
-  is >> theOrderInGs >> theOrderInGem;
+  is >> theOrderInGs >> theOrderInGem >> theSetMuToMuR;
 }
 
 
@@ -237,6 +246,23 @@ void MatchboxOLPME::Init() {
 
   static ClassDocumentation<MatchboxOLPME> documentation
     ("MatchboxOLPME implements OLP interfaces.");
+
+  static Switch<MatchboxOLPME,bool> interfaceSetMuToMuR
+         ("SetMuToMuR",
+          "Switch On to set the value of the dimensional regularization parameter mu2 for this OLP"
+          "to the value of the renormalization scale muR2. Default is Off. The restoration for the "
+          "full renormalization scale dependence in the DipoleIOperator isn't needed in this case.",
+          &MatchboxOLPME::theSetMuToMuR, false, false, false);
+  static SwitchOption interfaceSetMuToMuROn
+         (interfaceSetMuToMuR,
+          "On",
+          "On",
+          true);
+  static SwitchOption interfaceSetMuToMuROff
+         (interfaceSetMuToMuR,
+          "Off",
+          "Off",
+          false);
 
 }
 

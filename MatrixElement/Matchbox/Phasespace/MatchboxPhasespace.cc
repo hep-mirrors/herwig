@@ -51,12 +51,12 @@ double MatchboxPhasespace::generateKinematics(const double* r,
 
   if ( useMassGenerators() ) {
     Energy gmass = ZERO;
-    tGenericMassGeneratorPtr mgen = 
-      processData()->massGenerator(*pd);
+    tGenericMassGeneratorPtr mgen;
     Energy maxMass = 
       (!haveX1X2() && momenta.size() > 3) ? 
       sqrt(lastSHat()) : sqrt(lastS());
     for ( ; pd != mePartonData().end(); ++pd, ++p ) {
+      mgen = processData()->massGenerator(*pd);
       if ( mgen && !isInvertible() ) {
 	Energy massMax = min((**pd).massMax(),maxMass);
 	Energy massMin = (**pd).massMin();
@@ -441,6 +441,24 @@ bool MatchboxPhasespace::matchConstraints(const vector<Lorentz5Momentum>& moment
   }
 
   return lastSingularLimit() != singularLimits().end();
+
+}
+
+int MatchboxPhasespace::nDim(const cPDVector& data) const {
+
+  int ndimps = nDimPhasespace(data.size()-2);
+
+  if ( useMassGenerators() ) {
+    for ( cPDVector::const_iterator pd = data.begin();
+	  pd != data.end(); ++pd ) {
+      if ( (**pd).massGenerator() ||
+	   (**pd).width() != ZERO ) {
+	++ndimps;
+      }
+    }
+  }
+
+  return ndimps;
 
 }
 

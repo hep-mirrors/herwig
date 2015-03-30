@@ -694,8 +694,13 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
 	if(cc) pdata[ix]=cc;
       }
     }
-    theChildren.push_back(new_ptr(ShowerParticle(pdata[0],true))); 
-    theChildren.push_back(new_ptr(ShowerParticle(pdata[1],true)));
+    for(unsigned int ix=0;ix<2;++ix) {
+      theChildren.push_back(new_ptr(ShowerParticle(pdata[ix],true)));
+      if(theChildren[ix]->id()==_progenitor->id()&&!pdata[ix]->stable())
+	theChildren[ix]->set5Momentum(Lorentz5Momentum(_progenitor->progenitor()->mass()));
+      else
+	theChildren[ix]->set5Momentum(Lorentz5Momentum(pdata[ix]->mass()));
+    }
     // update the children
     particle->showerKinematics()->
       updateChildren(particle, theChildren,fb.type);
@@ -910,8 +915,13 @@ bool Evolver::spaceLikeDecayShower(tShowerParticlePtr particle,
     }
   }
   ShowerParticleVector theChildren; 
-  theChildren.push_back(new_ptr(ShowerParticle(pdata[0],true))); 
-  theChildren.push_back(new_ptr(ShowerParticle(pdata[1],true))); 
+  for(unsigned int ix=0;ix<2;++ix) {
+    theChildren.push_back(new_ptr(ShowerParticle(pdata[ix],true)));
+    if(theChildren[ix]->id()==_progenitor->id()&&!pdata[ix]->stable())
+      theChildren[ix]->set5Momentum(Lorentz5Momentum(_progenitor->progenitor()->mass()));
+    else
+      theChildren[ix]->set5Momentum(Lorentz5Momentum(pdata[ix]->mass()));
+  }
   // some code moved to updateChildren
   particle->showerKinematics()->
     updateChildren(particle, theChildren, fb.type);
@@ -1581,10 +1591,14 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
       // the emitting particle; set the parent/child relationship
       // if same as definition create particles, otherwise create cc
       ShowerParticleVector theChildren;
-      theChildren.push_back(new_ptr(ShowerParticle(branch->children()[0]->
-						   branchingParticle()->dataPtr(),true)));
-      theChildren.push_back(new_ptr(ShowerParticle(branch->children()[1]->
-						   branchingParticle()->dataPtr(),true)));
+      for(unsigned int ix=0;ix<2;++ix) {
+	theChildren.push_back(new_ptr(ShowerParticle(branch->children()[ix]->
+						     branchingParticle()->dataPtr(),true)));
+	if(theChildren[ix]->id()==_progenitor->id()&&!theChildren[ix]->dataPtr()->stable())
+	  theChildren[ix]->set5Momentum(Lorentz5Momentum(_progenitor->progenitor()->mass()));
+	else
+	  theChildren[ix]->set5Momentum(Lorentz5Momentum(theChildren[ix]->dataPtr()->mass()));
+      }
       particle->showerKinematics()->
 	updateChildren(particle, theChildren,fb.type);
       // shower the first  particle
@@ -1627,8 +1641,13 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
     // the emitting particle; set the parent/child relationship
     // if same as definition create particles, otherwise create cc
     ShowerParticleVector theChildren; 
-    theChildren.push_back( new_ptr( ShowerParticle( pdata[0], true ) ) ); 
-    theChildren.push_back( new_ptr( ShowerParticle( pdata[1], true ) ) );
+    for(unsigned int ix=0;ix<2;++ix) {
+      theChildren.push_back( new_ptr( ShowerParticle( pdata[ix], true ) ) );
+      if(theChildren[ix]->id()==_progenitor->id()&&!pdata[ix]->stable())
+	theChildren[ix]->set5Momentum(Lorentz5Momentum(_progenitor->progenitor()->mass()));
+      else
+	theChildren[ix]->set5Momentum(Lorentz5Momentum(pdata[ix]->mass()));
+    }
     particle->showerKinematics()->
       updateChildren( particle, theChildren , fb.type);
     // shower the first  particle
@@ -2456,7 +2475,13 @@ void Evolver::connectTrees(ShowerTreePtr showerTree,
     }
     if(iloc<0) throw Exception() << "Failed to match shower and hard trees in Evolver::hardestEmission"
 				 << Exception::eventerror;
-    particlesToShower[iloc]->progenitor()->set5Momentum((**cit).showerMomentum());
+    if(particlesToShower[iloc]->progenitor()->dataPtr()->stable()) {
+      particlesToShower[iloc]->progenitor()->set5Momentum((**cit).showerMomentum());
+    }
+    else {
+      particlesToShower[iloc]->progenitor()->boost(particlesToShower[iloc]->progenitor()->momentum().findBoostToCM());
+      particlesToShower[iloc]->progenitor()->boost((**cit).showerMomentum().boostVector());
+    }
     matched[iloc] = true;
   }
   // correction boosts for daughter trees

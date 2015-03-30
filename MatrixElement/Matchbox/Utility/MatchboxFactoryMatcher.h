@@ -1,18 +1,19 @@
 // -*- C++ -*-
 //
-// MatchboxReference.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MatchboxFactoryMatcher.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef Herwig_MatchboxReference_H
-#define Herwig_MatchboxReference_H
+#ifndef Herwig_MatchboxFactoryMatcher_H
+#define Herwig_MatchboxFactoryMatcher_H
 //
-// This is the declaration of the MatchboxReference class.
+// This is the declaration of the MatchboxFactoryMatcher class.
 //
 
-#include "Herwig++/MatrixElement/Matchbox/Phasespace/MatchboxPhasespace.h"
+#include "ThePEG/PDT/MatcherBase.h"
+#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
 
 namespace Herwig {
 
@@ -22,10 +23,13 @@ using namespace ThePEG;
  * \ingroup Matchbox
  * \author Simon Platzer
  *
- * \brief MatchboxReference implements reference sample phase space generation.
+ * \brief MatchboxFactoryMatcher matches particles according to
+ * MatchboxFatory particle groups
  *
+ * @see \ref MatchboxFactoryMatcherInterfaces "The interfaces"
+ * defined for MatchboxFactoryMatcher.
  */
-class MatchboxReference: public MatchboxPhasespace {
+class MatchboxFactoryMatcher: public ThePEG::MatcherBase {
 
 public:
 
@@ -34,43 +38,27 @@ public:
   /**
    * The default constructor.
    */
-  MatchboxReference();
+  MatchboxFactoryMatcher();
 
   /**
    * The destructor.
    */
-  virtual ~MatchboxReference();
+  virtual ~MatchboxFactoryMatcher();
   //@}
 
 public:
 
   /**
-   * Generate a phase space point and return its weight.
+   * Check if a particle type meets the criteria.
    */
-  virtual double generateTwoToNKinematics(const double*,
-					  vector<Lorentz5Momentum>& momenta);
+  virtual bool check(const ParticleData &) const;
 
   /**
-   * Return the number of random numbers required to produce a given
-   * multiplicity final state.
+   * Specialized clone method for MatcherBase used by the
+   * Repository. A sub class must make sure that also the MatcherBase
+   * object corresponding to the complex conjugate of this is cloned.
    */
-  virtual int nDimPhasespace(int nFinal) const {
-    if ( nFinal == 1 )
-      return 1;
-    return 4*nFinal + 2;
-  }
-
-  /**
-   * Return true, if this phasespace generator will generate incoming
-   * partons itself.
-   */
-  virtual bool haveX1X2() const { return true; }
-
-  /**
-   * Return true, if this phase space generator expects
-   * the incoming partons in their center-of-mass system
-   */
-  virtual bool wantCMS() const { return false; }
+  virtual PMPtr pmclone() const;
 
 public:
 
@@ -120,21 +108,45 @@ protected:
 // InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
 
 
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+  //@}
+
+private:
+
+  /**
+   * A pointer to the factory to be used
+   */
+  Ptr<MatchboxFactory>::ptr theFactory;
+
+  /**
+   * The particle group to be matched
+   */
+  string theGroup;
+
+  /**
+   * The set of particle ids to be matched
+   */
+  set<long> theIds;
+
 private:
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MatchboxReference & operator=(const MatchboxReference &);
-
-  /**
-   * Stream to read the reference samples.
-   */
-  map<cPDVector,ifstream*> referenceSamples;
+  MatchboxFactoryMatcher & operator=(const MatchboxFactoryMatcher &);
 
 };
 
 }
 
-#endif /* Herwig_MatchboxReference_H */
+#endif /* Herwig_MatchboxFactoryMatcher_H */

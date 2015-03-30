@@ -73,6 +73,11 @@ public:
   double crossingSign() const { return lastMatchboxXComb()->crossingSign(); }
 
   /**
+   * The last renormalization scale
+   */
+  Energy2 lastRenormalizationScale() const { return lastMatchboxXComb()->lastRenormalizationScale(); }
+
+  /**
    * The amplitude parton data.
    */
   const cPDVector& amplitudePartonData() const { return lastMatchboxXComb()->amplitudePartonData(); }
@@ -324,6 +329,11 @@ protected:
    * fillCrossingMap()
    */
   void crossingSign(double c) { lastMatchboxXComb()->crossingSign(c); }
+
+  /**
+   * The last renormalization scale
+   */
+  void lastRenormalizationScale(Energy2 lrs) { lastMatchboxXComb()->lastRenormalizationScale(lrs); }
 
   /**
    * The amplitude parton data.

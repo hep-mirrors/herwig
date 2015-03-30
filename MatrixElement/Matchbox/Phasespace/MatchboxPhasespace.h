@@ -154,7 +154,13 @@ public:
    * Return the number of random numbers required to produce a given
    * multiplicity final state.
    */
-  virtual int nDim(int nFinal) const = 0;
+  virtual int nDim(const cPDVector&) const;
+
+  /**
+   * Return the number of random numbers required to produce a given
+   * multiplicity final state.
+   */
+  virtual int nDimPhasespace(int nFinal) const = 0;
 
   /**
    * Return true, if this phasespace generator will generate incoming

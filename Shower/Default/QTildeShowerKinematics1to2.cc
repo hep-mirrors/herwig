@@ -36,14 +36,6 @@ void QTildeShowerKinematics1to2::setBasis(const Lorentz5Momentum &p,
   _pVector=p;
   _nVector=n;
   frame(inframe);
-}
-
-Lorentz5Momentum QTildeShowerKinematics1to2::
-sudakov2Momentum(double alpha, double beta, Energy px, Energy py) const {
-  if(isnan(beta)||isinf(beta)) 
-    throw Exception() << "beta infinite in "
-		      << "QTildeShowerKinematics1to2::sudakov2Momentum()"
-		      << Exception::eventerror;
   Boost beta_bb;
   if(frame()==BackToBack) {
     beta_bb = -(_pVector + _nVector).boostVector();
@@ -57,21 +49,6 @@ sudakov2Momentum(double alpha, double beta, Energy px, Energy py) const {
   Lorentz5Momentum n_bb = nVector(); 
   p_bb.boost( beta_bb );
   n_bb.boost( beta_bb );
-  // momentum without transverse components
-  Lorentz5Momentum dq;
-  if(frame()==BackToBack) {
-    dq=Lorentz5Momentum(ZERO, ZERO, (alpha - beta)*p_bb.vect().mag(), 
-			alpha*p_bb.t() + beta*n_bb.t());
-  }
-  else if(frame()==Rest) {
-    dq=Lorentz5Momentum (ZERO, ZERO, 0.5*beta*pVector().mass(), 
-			 alpha*pVector().mass() + 0.5*beta*pVector().mass());
-  }
-  else
-    assert(false);
-  // add transverse components
-  dq.setX(px);
-  dq.setY(py);
   // rotate to have z-axis parallel to p/n
   Axis axis;
   if(frame()==BackToBack) {
@@ -90,16 +67,18 @@ sudakov2Momentum(double alpha, double beta, Energy px, Energy py) const {
   else if(axis.z()<0.) {
     rot.rotate(Constants::pi,Axis(1.,0.,0.));
   }
-  dq.transform(rot);
+  _xPerp=LorentzVector<double>(1.,0.,0.,0.);
+  _yPerp=LorentzVector<double>(0.,1.,0.,0.);
+  _xPerp.transform(rot);
+  _yPerp.transform(rot);
   // boost back 
-  dq.boost( -beta_bb ); 
-  dq.rescaleMass();
-  return dq; 
+  _xPerp.boost( -beta_bb );
+  _yPerp.boost( -beta_bb );
 }
 
 void QTildeShowerKinematics1to2::setMomentum(tShowerParticlePtr particle,
 					     bool timeLike) const {
-  Energy mass = particle->data().mass(); 
+  Energy mass = particle->mass() > ZERO ? particle->mass() : particle->data().mass();
   // calculate the momentum of the assuming on-shell
   Energy2 pt2 = sqr(particle->showerParameters().pt);
   double alpha = timeLike ? particle->showerParameters().alpha : particle->x();
@@ -148,5 +127,7 @@ void QTildeShowerKinematics1to2::constructSpinInfo(tShowerParticlePtr particle,
 }
 void QTildeShowerKinematics1to2::transform(const LorentzRotation & r) {
   _pVector *= r;
-  //_nVector *= r;
+  _nVector *= r;
+  _xPerp   *= r;
+  _yPerp   *= r;
 }

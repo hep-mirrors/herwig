@@ -701,6 +701,7 @@ void MadGraphAmplitude::evaloneLoopInterference() const  {
  
 
   lastOneLoopInterference(virt[1]/ifact*units);
+  lastOneLoopPoles(pair<double, double>(virt[2]/ifact*units,virt[3]/ifact*units));
 }
  
 void MadGraphAmplitude::persistentOutput(PersistentOStream & os) const {

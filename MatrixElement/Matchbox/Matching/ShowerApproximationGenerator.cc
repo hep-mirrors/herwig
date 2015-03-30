@@ -66,9 +66,9 @@ bool ShowerApproximationGenerator::prepare() {
   theLastMomenta.resize(cIncomingXC->mePartonData().size());
 
   if ( !hasFractions )
-    theLastRandomNumbers.resize(thePhasespace->nDim(theLastMomenta.size()-2) + 2);
+    theLastRandomNumbers.resize(thePhasespace->nDim(cIncomingXC->mePartonData()) + 2);
   else
-    theLastRandomNumbers.resize(thePhasespace->nDim(theLastMomenta.size()-2));
+    theLastRandomNumbers.resize(thePhasespace->nDim(cIncomingXC->mePartonData()));
 
   if ( !hasFractions ) {
 

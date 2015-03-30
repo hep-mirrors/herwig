@@ -269,17 +269,74 @@ create Herwig::MatchboxHybridAmplitude GenericProcesses
 @CREATE_MADGRAPH@ Herwig::MadGraphAmplitude MadGraph
 @SET_MADGRAPH@ MadGraph:ColourBasis TraceBasis
 
+@DO_MADGRAPH@ MadGraph:Massless 11
+@DO_MADGRAPH@ MadGraph:Massless -11
+@DO_MADGRAPH@ MadGraph:Massless 12
+@DO_MADGRAPH@ MadGraph:Massless -12
+@DO_MADGRAPH@ MadGraph:Massless 13
+@DO_MADGRAPH@ MadGraph:Massless -13
+@DO_MADGRAPH@ MadGraph:Massless 14
+@DO_MADGRAPH@ MadGraph:Massless -14
+@DO_MADGRAPH@ MadGraph:Massless 16
+@DO_MADGRAPH@ MadGraph:Massless -16
+
 @LOAD_GOSAM@ HwMatchboxGoSam.so
 @CREATE_GOSAM@ Herwig::GoSamAmplitude GoSam
+
+@DO_GOSAM@ GoSam:Massless 11
+@DO_GOSAM@ GoSam:Massless -11
+@DO_GOSAM@ GoSam:Massless 12
+@DO_GOSAM@ GoSam:Massless -12
+@DO_GOSAM@ GoSam:Massless 13
+@DO_GOSAM@ GoSam:Massless -13
+@DO_GOSAM@ GoSam:Massless 14
+@DO_GOSAM@ GoSam:Massless -14
+@DO_GOSAM@ GoSam:Massless 16
+@DO_GOSAM@ GoSam:Massless -16
 
 @LOAD_NJET@ HwMatchboxNJet.so
 @CREATE_NJET@ Herwig::NJetsAmplitude NJet
 
+@DO_NJET@ NJet:Massless 11
+@DO_NJET@ NJet:Massless -11
+@DO_NJET@ NJet:Massless 12
+@DO_NJET@ NJet:Massless -12
+@DO_NJET@ NJet:Massless 13
+@DO_NJET@ NJet:Massless -13
+@DO_NJET@ NJet:Massless 14
+@DO_NJET@ NJet:Massless -14
+@DO_NJET@ NJet:Massless 16
+@DO_NJET@ NJet:Massless -16
+
 @LOAD_OPENLOOPS@ HwMatchboxOpenLoops.so
 @CREATE_OPENLOOPS@ Herwig::OpenLoopsAmplitude OpenLoops
 
+@DO_OPENLOOPS@ OpenLoops:Massless 11
+@DO_OPENLOOPS@ OpenLoops:Massless -11
+@DO_OPENLOOPS@ OpenLoops:Massless 12
+@DO_OPENLOOPS@ OpenLoops:Massless -12
+@DO_OPENLOOPS@ OpenLoops:Massless 13
+@DO_OPENLOOPS@ OpenLoops:Massless -13
+@DO_OPENLOOPS@ OpenLoops:Massless 14
+@DO_OPENLOOPS@ OpenLoops:Massless -14
+@DO_OPENLOOPS@ OpenLoops:Massless 16
+@DO_OPENLOOPS@ OpenLoops:Massless -16
+
 @LOAD_VBFNLO@ HwMatchboxVBFNLO.so
 @CREATE_VBFNLO@ Herwig::VBFNLOAmplitude VBFNLOProcesses
+
+@DO_VBFNLO@ VBFNLOProcesses:Massless 11
+@DO_VBFNLO@ VBFNLOProcesses:Massless -11
+@DO_VBFNLO@ VBFNLOProcesses:Massless 12
+@DO_VBFNLO@ VBFNLOProcesses:Massless -12
+@DO_VBFNLO@ VBFNLOProcesses:Massless 13
+@DO_VBFNLO@ VBFNLOProcesses:Massless -13
+@DO_VBFNLO@ VBFNLOProcesses:Massless 14
+@DO_VBFNLO@ VBFNLOProcesses:Massless -14
+@DO_VBFNLO@ VBFNLOProcesses:Massless 15
+@DO_VBFNLO@ VBFNLOProcesses:Massless -15
+@DO_VBFNLO@ VBFNLOProcesses:Massless 16
+@DO_VBFNLO@ VBFNLOProcesses:Massless -16
 
 mkdir Builtin
 cd Builtin
@@ -561,8 +618,11 @@ set /Herwig/MatrixElements/Matchbox/Factory:Phasespace TreePhasespace
 
 cd /Herwig/Cuts
 
+create Herwig::MatchboxFactoryMatcher MatchboxJetMatcher
+set MatchboxJetMatcher:Group j
+
 create ThePEG::FastJetFinder JetFinder
-set JetFinder:UnresolvedMatcher /Herwig/Matchers/StandardQCDParton
+set JetFinder:UnresolvedMatcher MatchboxJetMatcher
 set JetFinder:Variant AntiKt
 set JetFinder:RecombinationScheme E
 set JetFinder:Mode Inclusive
@@ -601,11 +661,11 @@ set FourthJet:RapidityCutWidth 0.4
 insert FourthJet:Accepts[0] 4
 
 create ThePEG::NJetsCut NJetsCut
-set NJetsCut:UnresolvedMatcher /Herwig/Matchers/StandardQCDParton
+set NJetsCut:UnresolvedMatcher MatchboxJetMatcher
 set NJetsCut:NJetsMin 2
 
 create ThePEG::JetCuts JetCuts
-set JetCuts:UnresolvedMatcher  /Herwig/Matchers/StandardQCDParton
+set JetCuts:UnresolvedMatcher  MatchboxJetMatcher
 set JetCuts:Ordering OrderPt
 
 create Herwig::FrixionePhotonSeparationCut FrixionePhotonSeparationCut
