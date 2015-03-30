@@ -279,12 +279,6 @@ create Herwig::MatchboxHybridAmplitude GenericProcesses
 @DO_MADGRAPH@ MadGraph:Massless -14
 @DO_MADGRAPH@ MadGraph:Massless 16
 @DO_MADGRAPH@ MadGraph:Massless -16
-@DO_MADGRAPH@ MadGraph:OnShell 23
-@DO_MADGRAPH@ MadGraph:OnShell 24
-@DO_MADGRAPH@ MadGraph:OnShell -24
-@DO_MADGRAPH@ MadGraph:OnShell 25
-@DO_MADGRAPH@ MadGraph:OnShell 6
-@DO_MADGRAPH@ MadGraph:OnShell -6
 
 @LOAD_GOSAM@ HwMatchboxGoSam.so
 @CREATE_GOSAM@ Herwig::GoSamAmplitude GoSam
@@ -299,12 +293,6 @@ create Herwig::MatchboxHybridAmplitude GenericProcesses
 @DO_GOSAM@ GoSam:Massless -14
 @DO_GOSAM@ GoSam:Massless 16
 @DO_GOSAM@ GoSam:Massless -16
-@DO_GOSAM@ GoSam:OnShell 23
-@DO_GOSAM@ GoSam:OnShell 24
-@DO_GOSAM@ GoSam:OnShell -24
-@DO_GOSAM@ GoSam:OnShell 25
-@DO_GOSAM@ GoSam:OnShell 6
-@DO_GOSAM@ GoSam:OnShell -6
 
 @LOAD_NJET@ HwMatchboxNJet.so
 @CREATE_NJET@ Herwig::NJetsAmplitude NJet
@@ -319,12 +307,6 @@ create Herwig::MatchboxHybridAmplitude GenericProcesses
 @DO_NJET@ NJet:Massless -14
 @DO_NJET@ NJet:Massless 16
 @DO_NJET@ NJet:Massless -16
-@DO_NJET@ NJet:OnShell 23
-@DO_NJET@ NJet:OnShell 24
-@DO_NJET@ NJet:OnShell -24
-@DO_NJET@ NJet:OnShell 25
-@DO_NJET@ NJet:OnShell 6
-@DO_NJET@ NJet:OnShell -6
 
 @LOAD_OPENLOOPS@ HwMatchboxOpenLoops.so
 @CREATE_OPENLOOPS@ Herwig::OpenLoopsAmplitude OpenLoops
@@ -339,12 +321,6 @@ create Herwig::MatchboxHybridAmplitude GenericProcesses
 @DO_OPENLOOPS@ OpenLoops:Massless -14
 @DO_OPENLOOPS@ OpenLoops:Massless 16
 @DO_OPENLOOPS@ OpenLoops:Massless -16
-@DO_OPENLOOPS@ OpenLoops:OnShell 23
-@DO_OPENLOOPS@ OpenLoops:OnShell 24
-@DO_OPENLOOPS@ OpenLoops:OnShell -24
-@DO_OPENLOOPS@ OpenLoops:OnShell 25
-@DO_OPENLOOPS@ OpenLoops:OnShell 6
-@DO_OPENLOOPS@ OpenLoops:OnShell -6
 
 @LOAD_VBFNLO@ HwMatchboxVBFNLO.so
 @CREATE_VBFNLO@ Herwig::VBFNLOAmplitude VBFNLOProcesses
@@ -361,9 +337,6 @@ create Herwig::MatchboxHybridAmplitude GenericProcesses
 @DO_VBFNLO@ VBFNLOProcesses:Massless -15
 @DO_VBFNLO@ VBFNLOProcesses:Massless 16
 @DO_VBFNLO@ VBFNLOProcesses:Massless -16
-@DO_VBFNLO@ VBFNLOProcesses:OnShell 25
-@DO_VBFNLO@ VBFNLOProcesses:OnShell 6
-@DO_VBFNLO@ VBFNLOProcesses:OnShell -6
 
 mkdir Builtin
 cd Builtin
