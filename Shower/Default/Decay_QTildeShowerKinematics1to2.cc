@@ -53,11 +53,9 @@ updateChildren(const tShowerParticlePtr parent,
   // make the products children of the parent
   parent->addChild(children[0]);
   parent->addChild(children[1]);
-  if(! ShowerHandler::currentHandler()->evolver()->correlations()) return;
-  SpinPtr pspin(parent->spinInfo());
   // set the momenta of the children
-  ShowerParticleVector::const_iterator pit;
-  for(pit=children.begin();pit!=children.end();++pit) {
+  for(ShowerParticleVector::const_iterator pit=children.begin();
+      pit!=children.end();++pit) {
     setMomentum(*pit,true);
   }
 }
