@@ -60,8 +60,12 @@ void MatchboxFactoryMatcher::persistentInput(PersistentIStream & is, int) {
 }
 
 void MatchboxFactoryMatcher::doinit() {
-  MatcherBase::doinit();
-  assert(theFactory);
+  if ( !MatchboxFactory::isMatchboxRun() )
+    return;
+  if ( !theFactory )
+    throw InitException()
+      << "No factory object has been set for the matcher '"
+      << name() << "'" << Exception::abortnow;
   map<string,PDVector>::const_iterator grp
     = theFactory->particleGroups().find(theGroup);
   if ( grp == theFactory->particleGroups().end() )
@@ -72,6 +76,7 @@ void MatchboxFactoryMatcher::doinit() {
   for ( PDVector::const_iterator p = grp->second.begin();
 	p != grp->second.end(); ++p )
     theIds.insert((**p).id());
+  MatcherBase::doinit();
 }
 
 // *** Attention *** The following static variable is needed for the type
@@ -90,7 +95,7 @@ void MatchboxFactoryMatcher::Init() {
   static Reference<MatchboxFactoryMatcher,MatchboxFactory> interfaceFactory
     ("Factory",
      "Set the factory to query for particle groups.",
-     &MatchboxFactoryMatcher::theFactory, false, false, true, false, false);
+     &MatchboxFactoryMatcher::theFactory, false, false, true, true, false);
 
   static Parameter<MatchboxFactoryMatcher,string> interfaceGroup
     ("Group",

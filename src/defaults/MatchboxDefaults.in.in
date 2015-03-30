@@ -620,7 +620,6 @@ cd /Herwig/Cuts
 
 create Herwig::MatchboxFactoryMatcher MatchboxJetMatcher
 set MatchboxJetMatcher:Group j
-set MatchboxJetMatcher:Factory /Herwig/MatrixElements/Matchbox/Factory
 
 create ThePEG::FastJetFinder JetFinder
 set JetFinder:UnresolvedMatcher MatchboxJetMatcher
