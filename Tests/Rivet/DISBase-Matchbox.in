@@ -1,0 +1,128 @@
+##################################################
+# Example generator based on DIS parameters
+# usage: Herwig++ read DIS.in
+##################################################
+##################################################
+## Technical parameters for this run
+##################################################
+cd /Herwig/Generators
+set DISGenerator:RandomNumberGenerator:Seed 31122001
+set DISGenerator:DebugLevel 0
+set DISGenerator:PrintEvent 10
+set DISGenerator:MaxErrors 1000000
+set DISGenerator:NumberOfEvents 100000000
+
+cd /Herwig/EventHandlers
+set DISHandler:Weighted Off
+set DISHandler:Sampler  /Herwig/Samplers/Sampler
+set DISHandler:CascadeHandler:MPIHandler NULL
+
+cd /Herwig/MatrixElements/Matchbox
+insert /Herwig/Generators/DISGenerator:EventHandler:SubProcessHandlers[0] DISFactory
+
+##################################################
+## PDF choice
+##################################################
+
+cd /Herwig/Partons
+create ThePEG::LHAPDF PDFSet ThePEGLHAPDF.so
+set PDFSet:RemnantHandler HadronRemnants
+set /Herwig/Partons/PDFSet:PDFName CT10.LHgrid
+set /Herwig/Particles/p+:PDF PDFSet
+set /Herwig/Particles/pbar-:PDF PDFSet
+
+##################################################
+## Process Selection
+##################################################
+## Set the order of the couplings
+cd /Herwig/MatrixElements/Matchbox
+set DISFactory:OrderInAlphaS 0
+set DISFactory:OrderInAlphaEW 2
+
+
+## If a swap of beams, p e+/- is needed comment in this
+# set DISFactory:FirstPerturbativePDF Yes
+# set DISFactory:SecondPerturbativePDF No
+
+##################################################
+## Cut Selection
+##################################################
+cd /Herwig/Cuts
+
+set MatchboxJetMatcher:Factory /Herwig/MatrixElements/Matchbox/DISFactory
+
+##################################################
+## Matching
+##################################################
+cd /Herwig/MatrixElements/Matchbox
+
+## MC@NLO-type next-to-leading order for use with default shower
+
+set DISFactory:ShowerApproximation QTildeMatching
+set /Herwig/Shower/Evolver:HardVetoScaleSource Read
+set /Herwig/Shower/Evolver:MECorrMode No
+cd /Herwig/MatrixElements/Matchbox
+
+
+##################################################
+## Scales variations
+##################################################
+cd /Herwig/MatrixElements/Matchbox
+
+## Scale choice
+set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 91.2*GeV
+set DISFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale
+
+## Hard process scale variation
+set DISFactory:RenormalizationScaleFactor 1.0
+set DISFactory:FactorizationScaleFactor 1.0
+
+## Matching scale variation for MEMatching
+## - other scale factors are deduced from the shower handlers
+set MEMatching:RenormalizationScaleFactor 1.0
+set MEMatching:FactorizationScaleFactor 1.0
+
+## Shower scale variations
+set /Herwig/DipoleShower/DipoleShowerHandler:RenormalizationScaleFactor 1.0
+set /Herwig/DipoleShower/DipoleShowerHandler:FactorizationScaleFactor 1.0
+set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleFactor 1.0
+
+set /Herwig/Shower/ShowerHandler:RenormalizationScaleFactor 1.0
+set /Herwig/Shower/ShowerHandler:FactorizationScaleFactor 1.0
+set /Herwig/Shower/ShowerHandler:HardScaleFactor 1.0
+
+# switch off final-state electron/muon FSR
+do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting e-->e-,gamma; /Herwig/Shower/LtoLGammaSudakov
+do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting mu-->mu-,gamma; /Herwig/Shower/LtoLGammaSudakov
+do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting tau-->tau-,gamma; /Herwig/Shower/LtoLGammaSudakov
+
+# switch off initial state QED radiation
+set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
+set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
+
+# create the Rivet analysis
+create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
+insert /Herwig/Generators/DISGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
+
+
+##################################################
+## Cleanup
+##################################################
+
+## Change only if you know what you are doing.
+## For the moment, we only deal with massless partons
+cd /Herwig/Particles
+set d:NominalMass 0*GeV
+set dbar:NominalMass 0*GeV
+set u:NominalMass 0*GeV
+set ubar:NominalMass 0*GeV
+set s:NominalMass 0*GeV
+set sbar:NominalMass 0*GeV
+set c:NominalMass 0*GeV
+set cbar:NominalMass 0*GeV
+set b:NominalMass 0*GeV
+set bbar:NominalMass 0*GeV
+set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
+set /Herwig/Generators/DISGenerator:EventHandler:CollisionCuts Off
+
+do /Herwig/MatrixElements/Matchbox/DISFactory:ProductionMode

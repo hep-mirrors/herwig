@@ -176,12 +176,15 @@ Rivet-DIS: Rivet-DIS-e--LowQ2 \
            Rivet-DIS-Powheg-e--LowQ2 \
 	   Rivet-DIS-Powheg-e+-LowQ2 Rivet-DIS-Powheg-e+-HighQ2\
            Rivet-DIS-NoME-e--LowQ2 \
-	   Rivet-DIS-NoME-e+-LowQ2 Rivet-DIS-NoME-e+-HighQ2
+	   Rivet-DIS-NoME-e+-LowQ2 Rivet-DIS-NoME-e+-HighQ2\
+           Rivet-DIS-Matchbox-e--LowQ2 \
+	   Rivet-DIS-Matchbox-e+-LowQ2 Rivet-DIS-Matchbox-e+-HighQ2
 	rm -rf Rivet-DIS
 	python/merge-DIS DIS 
 	python/merge-DIS DIS-Powheg
 	python/merge-DIS DIS-NoME
-	rivet-mkhtml -o Rivet-DIS DIS.yoda:Hw++ DIS-Powheg.yoda:Hw++-Powheg DIS-NoME.yoda:Hw++-NoME
+	python/merge-DIS DIS-Matchbox
+	rivet-mkhtml -o Rivet-DIS DIS.yoda:Hw++ DIS-Powheg.yoda:Hw++-Powheg DIS-NoME.yoda:Hw++-NoME DIS-Matchbox.yoda:Hw++-Matchbox
 
 Rivet-TVT-WZ: Rivet-TVT-Run-I-Z     Rivet-TVT-Powheg-Run-I-Z \
               Rivet-TVT-Run-I-W     Rivet-TVT-Powheg-Run-I-W \
