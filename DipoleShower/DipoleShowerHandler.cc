@@ -493,7 +493,7 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
     gen->second->generate(candidate,optHardPt,optCutoff);
     Energy nextScale = evolutionOrdering()->evolutionScale(gen->second->lastSplitting(),*(gen->second->splittingKernel()));
 
-    if ( isMCatNLOSEvent && nextScale > ircutoff ) {
+    if ( isMCatNLOSEvent && !didRadiate && nextScale > ircutoff ) {
       if ( eventRecord().incoming().first->coloured() ||
 	   eventRecord().incoming().second->coloured() ) {
 	assert(theShowerApproximation);

@@ -1116,7 +1116,7 @@ bool Evolver::timeLikeVetoed(const Branching & fb,
     double weight = theShowerApproximation->hardScaleProfile(_progenitor->maxHardPt(),fb.kinematics->pT());
     if ( UseRandom::rnd() > weight )
       return true;
-    _progenitor->didProfileVeto();
+    //_progenitor->didProfileVeto();
   }
   return false;
 }
@@ -1164,7 +1164,7 @@ bool Evolver::spaceLikeVetoed(const Branching & bb,
     double weight = theShowerApproximation->hardScaleProfile(_progenitor->maxHardPt(),bb.kinematics->pT());
     if ( UseRandom::rnd() > weight )
       return true;
-    _progenitor->didProfileVeto();
+    //_progenitor->didProfileVeto();
   }
   return false;
 }
