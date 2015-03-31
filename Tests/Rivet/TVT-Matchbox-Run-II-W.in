@@ -1,0 +1,53 @@
+##################################################
+# Rivet analyses at the Z pole
+##################################################
+read TVTBase-Matchbox.in
+
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+cd /Herwig/Generators
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 1960.0
+
+## Set the order of the couplings
+cd /Herwig/MatrixElements/Matchbox
+set PPFactory:OrderInAlphaS 0
+set PPFactory:OrderInAlphaEW 2
+
+## Select the process
+## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
+do PPFactory:Process p pbar e+ nu
+do PPFactory:Process p pbar e- nu
+
+## Scale choice
+set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 80.4*GeV
+set PPFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale
+
+##################################################
+## Cut Selection
+##################################################
+
+## For finite calculations make resonable cuts! Check the wiki and manual
+## for other cut options and different jet algorithms.
+cd /Herwig/Cuts
+
+set MatchboxJetMatcher:Factory /Herwig/MatrixElements/Matchbox/PPFactory
+
+## Cut on lepton pair invariant mass
+set MassCut:MinM 66*GeV
+set MassCut:MaxM 116*GeV
+
+##################################################
+# select the analyses
+##################################################
+
+# D0 Run II charge asymmetry
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0  D0_2008_S7837160
+# CDF Run II W+jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2008_S7541902
+
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+cd /Herwig/Generators
+saverun TVT-Matchbox-Run-II-W LHCGenerator

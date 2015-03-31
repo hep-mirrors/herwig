@@ -1,0 +1,63 @@
+##################################################
+# Rivet analyses at the Z pole
+##################################################
+read TVTBase-Matchbox.in
+
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+cd /Herwig/Generators
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 1960.0
+
+## Set the order of the couplings
+cd /Herwig/MatrixElements/Matchbox
+set PPFactory:OrderInAlphaS 0
+set PPFactory:OrderInAlphaEW 2
+
+## Select the process
+## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
+do PPFactory:Process p pbar e+ e-
+
+## Scale choice
+set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 91.2*GeV
+set PPFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale
+
+##################################################
+## Cut Selection
+##################################################
+
+## For finite calculations make resonable cuts! Check the wiki and manual
+## for other cut options and different jet algorithms.
+cd /Herwig/Cuts
+
+set MatchboxJetMatcher:Factory /Herwig/MatrixElements/Matchbox/PPFactory
+
+## Cut on lepton pair invariant mass
+set MassCut:MinM 66*GeV
+set MassCut:MaxM 116*GeV
+
+##################################################
+# select the analyses
+##################################################
+
+# CDF Run II Z+jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2008_S7540469
+# CDF Z+b jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2008_S8095620
+# CDF Run II Z cross section and rapidity
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2009_S8383952
+# D0 Run II Z cross section and rapidity
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2007_S7075677
+# D0 Run II jet ratios
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2008_S6879055
+# D0 Run II
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2008_S7554427
+# D0 Run II
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2009_S8202443
+# D0 run II
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2010_S8821313
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+cd /Herwig/Generators
+saverun TVT-Matchbox-Run-II-Z-e LHCGenerator

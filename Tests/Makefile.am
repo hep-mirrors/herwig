@@ -186,18 +186,20 @@ Rivet-DIS: Rivet-DIS-e--LowQ2 \
 	python/merge-DIS DIS-Matchbox
 	rivet-mkhtml -o Rivet-DIS DIS.yoda:Hw++ DIS-Powheg.yoda:Hw++-Powheg DIS-NoME.yoda:Hw++-NoME DIS-Matchbox.yoda:Hw++-Matchbox
 
-Rivet-TVT-WZ: Rivet-TVT-Run-I-Z     Rivet-TVT-Powheg-Run-I-Z \
-              Rivet-TVT-Run-I-W     Rivet-TVT-Powheg-Run-I-W \
-              Rivet-TVT-Run-I-WZ    Rivet-TVT-Powheg-Run-I-WZ\
-              Rivet-TVT-Run-II-Z-e  Rivet-TVT-Powheg-Run-II-Z-e  \
-              Rivet-TVT-Run-II-Z-mu Rivet-TVT-Powheg-Run-II-Z-mu \
-              Rivet-TVT-Run-II-W    Rivet-TVT-Powheg-Run-II-W
+Rivet-TVT-WZ: Rivet-TVT-Run-I-Z     Rivet-TVT-Powheg-Run-I-Z     Rivet-TVT-Matchbox-Run-I-Z     \
+              Rivet-TVT-Run-I-W     Rivet-TVT-Powheg-Run-I-W     Rivet-TVT-Matchbox-Run-I-W     \
+              Rivet-TVT-Run-I-WZ    Rivet-TVT-Powheg-Run-I-WZ    Rivet-TVT-Matchbox-Run-I-WZ    \
+              Rivet-TVT-Run-II-Z-e  Rivet-TVT-Powheg-Run-II-Z-e  Rivet-TVT-Matchbox-Run-II-Z-e  \
+              Rivet-TVT-Run-II-Z-mu Rivet-TVT-Powheg-Run-II-Z-mu Rivet-TVT-Matchbox-Run-II-Z-mu \
+              Rivet-TVT-Run-II-W    Rivet-TVT-Powheg-Run-II-W    Rivet-TVT-Matchbox-Run-II-W
 	rm -rf Rivet-TVT-WZ
 	python/merge-TVT-EW TVT-Run-II-W.yoda TVT-Run-II-Z-{e,mu}.yoda\
                             TVT-Run-I-{W,Z,WZ}.yoda -o TVT-WZ.yoda
 	python/merge-TVT-EW TVT-Powheg-Run-II-W.yoda   TVT-Powheg-Run-II-Z-{e,mu}.yoda\
                             TVT-Powheg-Run-I-{W,Z,WZ}.yoda -o TVT-Powheg-WZ.yoda
-	rivet-mkhtml -o Rivet-TVT-WZ TVT-WZ.yoda:Hw++ TVT-Powheg-WZ.yoda:Hw++-Powheg
+	python/merge-TVT-EW TVT-Matchbox-Run-II-W.yoda   TVT-Matchbox-Run-II-Z-{e,mu}.yoda\
+                            TVT-Matchbox-Run-I-{W,Z,WZ}.yoda -o TVT-Matchbox-WZ.yoda
+	rivet-mkhtml -o Rivet-TVT-WZ TVT-WZ.yoda:Hw++ TVT-Powheg-WZ.yoda:Hw++-Powheg TVT-Matchbox-WZ.yoda:Hw++-Matchbox
 
 Rivet-TVT-Photon: Rivet-TVT-Run-II-DiPhoton Rivet-TVT-Run-II-PromptPhoton
 #                  Rivet-TVT-Run-I-PromptPhoton 
