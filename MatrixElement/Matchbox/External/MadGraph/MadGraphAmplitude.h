@@ -177,6 +177,23 @@ public:
    * Return a generic process id for the given process
    */
   virtual int externalId(const cPDVector&);
+      
+  
+  /**
+   * Write out BornAmplitudes.dat and VirtualAmplitudes.dat,
+   * return true if new files are written.
+   */
+      
+  virtual bool writeAmplitudesDat();
+      
+  /**
+   * CHeck if all amplitudes are in the Libary.
+   */
+      
+  virtual bool checkAmplitudes();
+      
+  
+  string mgProcLibPath();
 
   /**
    * Return true, if this amplitude is capable of consistently filling
@@ -265,8 +282,6 @@ protected:
    * element is given.
    */
   unsigned int theOrderInGem;
-
-
   
   /**
    * The path for the process libraries.
@@ -280,15 +295,6 @@ protected:
   
   bool keepinputtopmass;
 
-  /**
-   * The process map.
-   */
-  static map<string,int>& processmap();
-
-  /**
-   * Load the process map
-   */
-  void loadProcessMap();
 
   /**
    * Initialize the given process

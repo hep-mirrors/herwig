@@ -64,19 +64,6 @@ IBPtr MadGraphAmplitude::fullclone() const {
   return new_ptr(*this);
 }
 
-map<string,int>& MadGraphAmplitude::processmap() {
-  static map<string,int> theProcessMap;
-  return theProcessMap;
-}
-
-template<class ProcType>
-string processId(const ProcType& p) {
-  string orderFileName =  "";
-  for (typename ProcType::const_iterator it=p.begin();it!=p.end();it++)
-    orderFileName +=boost::lexical_cast<string>( (*it)->id());
-  orderFileName+=".MG";
-  return orderFileName;
-}
 
 bool MadGraphAmplitude::initializedMad=false;
 
@@ -86,10 +73,8 @@ void MadGraphAmplitude::initProcess(const cPDVector& ) {
   if ( lastMatchboxXComb()->initialized() )
     return;
 
-  string MGProcLibPath = theProcessPath == "" ? factory()->buildStorage()+"MadGraphAmplitudes" : theProcessPath;
-  if (MGProcLibPath.at(MGProcLibPath.length()-1) != '/') MGProcLibPath.append("/");
 
-  if ( !DynamicLoader::load(MGProcLibPath+"InterfaceMadGraph.so") )
+  if ( !DynamicLoader::load(mgProcLibPath()+"InterfaceMadGraph.so") )
     throw Exception() << "Failed to load MadGraph amplitudes\n"
                       << DynamicLoader::lastErrorMessage
                       << Exception::abortnow;
@@ -105,37 +90,91 @@ void MadGraphAmplitude::initProcess(const cPDVector& ) {
 
 
 
-bool MadGraphAmplitude::initializeExternal() {
+bool MadGraphAmplitude::writeAmplitudesDat(){
+  bool res=false;
 
-  loadProcessMap();
-
-  string MGProcLibPath = theProcessPath == "" ? factory()->buildStorage()+"MadGraphAmplitudes" : theProcessPath;
-  if (MGProcLibPath.at(MGProcLibPath.length()-1) != '/') MGProcLibPath.append("/");
-  
-  if ( boost::filesystem::exists(MGProcLibPath) ) {
-    if ( !boost::filesystem::is_directory(MGProcLibPath) )
-      throw Exception() << "MadGraph amplitude storage '"
-			<< MGProcLibPath << "' existing but not a directory."
-			<< Exception::abortnow;
-  } else {
-    boost::filesystem::create_directories(MGProcLibPath);
-  }
-
-  string born= MGProcLibPath+"BornAmplitudes.dat";
+  string born= mgProcLibPath()+"BornAmplitudes.dat";
   if ( !boost::filesystem::exists(born) ) {
     ofstream borns(born.c_str());
     for (vector<string>::iterator amps=BornAmplitudes.begin();amps!=BornAmplitudes.end();amps++)
       borns<<*amps<<endl;
     borns.close();
+    res=true;
   }
-
-  string virt= MGProcLibPath+"VirtAmplitudes.dat";
+  string virt= mgProcLibPath()+"VirtAmplitudes.dat";
   if ( !boost::filesystem::exists(virt) ) {
     ofstream virts(virt.c_str());
     for (vector<string>::iterator amps=VirtAmplitudes.begin();amps!=VirtAmplitudes.end();amps++)
       virts<<*amps<<endl;
+    virts.flush();
     virts.close();
+    res=true;
   }
+  return res;
+}
+
+
+
+bool MadGraphAmplitude::checkAmplitudes(){
+  
+  string born= mgProcLibPath()+"BornAmplitudes.dat";
+  string virt= mgProcLibPath()+"VirtAmplitudes.dat";
+  assert ( boost::filesystem::exists(born)|| boost::filesystem::exists(virt));
+  
+  bool foundallborns=true;
+  for (vector<string>::iterator amps=BornAmplitudes.begin();amps!=BornAmplitudes.end();amps++){
+    ifstream borns(born.c_str());
+    string line;
+    bool foundthisborn=false;
+    while (std::getline(borns, line)) {
+      if(line==*amps)foundthisborn=true;
+    }
+    foundallborns&=foundthisborn;
+  }
+  
+  bool foundallvirts=true;
+  for (vector<string>::iterator amps=VirtAmplitudes.begin();amps!=VirtAmplitudes.end();amps++){
+    ifstream virts(virt.c_str());
+    string line;
+    bool foundthisvirt=false;
+    while (std::getline(virts, line)) {
+      if(line==*amps)foundthisvirt=true;
+    }
+    foundallvirts&=foundthisvirt;
+  }
+  
+  if (!foundallborns||!foundallvirts)
+  throw Exception() << "One amplitude has no externalId. Please remove the MadGraphAmplitude-folder and rebuild.\n"     << Exception::abortnow;
+  
+  return foundallborns && foundallvirts;
+  
+}
+
+
+
+string MadGraphAmplitude::mgProcLibPath(){
+  string res=theProcessPath == "" ? factory()->buildStorage()+"MadGraphAmplitudes" : theProcessPath;
+  if (res.at(res.length()-1) != '/') res.append("/");
+  return res;
+}
+
+
+
+
+bool MadGraphAmplitude::initializeExternal() {
+
+
+  
+  if ( boost::filesystem::exists(mgProcLibPath()) ) {
+    if ( !boost::filesystem::is_directory(mgProcLibPath()) )
+      throw Exception() << "MadGraph amplitude storage '"
+			<< mgProcLibPath() << "' existing but not a directory."
+			<< Exception::abortnow;
+  } else {
+    boost::filesystem::create_directories(mgProcLibPath());
+  }
+
+
 
   string runAmplitudes = factory()->runStorage() + "/MadGraphAmplitudes";
   if ( boost::filesystem::exists(runAmplitudes) ) {
@@ -163,8 +202,6 @@ bool MadGraphAmplitude::initializeExternal() {
   
       
   string para= factory()->runStorage()+"/MadGraphAmplitudes"+"/MG-Parameter.dat";
-    
-    
     
   
   ofstream params(para.c_str());
@@ -203,7 +240,7 @@ bool MadGraphAmplitude::initializeExternal() {
 
   
   string cmd = "python @prefix@/bin/mg2Matchbox.py ";
-  cmd +=" --buildpath "+MGProcLibPath;
+  cmd +=" --buildpath "+mgProcLibPath();
   cmd +=" --model "+theMGmodel;
   cmd +=" --runpath "+factory()->runStorage()+"/MadGraphAmplitudes " ;  
   std::stringstream as,aem;
@@ -213,10 +250,13 @@ bool MadGraphAmplitude::initializeExternal() {
   cmd +=" --orderew "+aem.str();
   
   // TODO move to boost::system
-  
-  if ( !processmap().empty() ){
-    //set the parameters
+  writeAmplitudesDat();
 
+  if (boost::filesystem::exists(mgProcLibPath()+"InterfaceMadGraph.so") ){
+    //set the parameters
+    
+    checkAmplitudes();
+    
     std::system(cmd.c_str());
     ranMadGraphInitializeExternal = true;
     return true;
@@ -228,17 +268,17 @@ bool MadGraphAmplitude::initializeExternal() {
      
   cmd +=" --madgraph @MADGRAPHPREFIX@/bin " ;
   cmd +="--build > ";
-  cmd +=  MGProcLibPath+"MG.log 2>&1";
+  cmd +=  mgProcLibPath()+"MG.log 2>&1";
   
   
   generator()->log() << "\n\nCompiling MadGraph amplitudes. This may take some time -- please be patient.\n"
-                     << "In case of problems see " << MGProcLibPath << "MG.log for details.\n\n"
+                     << "In case of problems see " << mgProcLibPath() << "MG.log for details.\n\n"
                      << flush;
   std::system(cmd.c_str());
   
   
   cmd = "python @prefix@/bin/mg2Matchbox.py ";
-  cmd +=" --buildpath "+MGProcLibPath;
+  cmd +=" --buildpath "+mgProcLibPath();
   cmd +=" --model "+theMGmodel;
   cmd +=" --runpath "+factory()->runStorage()+"/MadGraphAmplitudes " ;
     as.clear();
@@ -247,22 +287,12 @@ bool MadGraphAmplitude::initializeExternal() {
   cmd +=" --orderas "+as.str() ;
   aem <<factory()->orderInAlphaEW();
   cmd +=" --orderew "+aem.str();
-    
-    
-    
-    
+  
   std::system(cmd.c_str());
-    
-  
-  
-  
-  
-
-  loadProcessMap();
 
   ranMadGraphInitializeExternal = true;
 
-  return !processmap().empty();
+  return boost::filesystem::exists(mgProcLibPath()+"InterfaceMadGraph.so");
 
 }
 
@@ -272,44 +302,37 @@ int MadGraphAmplitude::externalId(const cPDVector& proc) {
   }
   assert(!BornAmplitudes.empty()||!VirtAmplitudes.empty());
   
+  writeAmplitudesDat();
+  
   int res=0;
   string amp="";
   int k=0;
   for (cPDVector::const_iterator it=proc.begin();it!=proc.end();it++,k++){
     amp+=boost::lexical_cast<string>( (*it)->id())+" ";if (k==1)amp+=" > ";
   }
-
   
-  for (vector<string>::iterator amps=BornAmplitudes.begin();amps!=BornAmplitudes.end();amps++,res++)
-    if(amp==*amps)return res+1;
-  for (vector<string>::iterator amps=VirtAmplitudes.begin();amps!=VirtAmplitudes.end();amps++,res++)
-    if(amp==*amps)return res+1;
+  
+  string born= mgProcLibPath()+"BornAmplitudes.dat";
+  string virt= mgProcLibPath()+"VirtAmplitudes.dat";
+  assert ( boost::filesystem::exists(born)|| boost::filesystem::exists(virt));
+  
+  
+  ifstream borns(born.c_str());
+  string line;
+  while (std::getline(borns, line)) {
+    res+=1;
+    if(line==amp)return res;
+  }
+  ifstream virts(virt.c_str());
+  while (std::getline(virts, line)) {
+    res+=1;
+    if(line==amp)return res;
+  }
   
   throw Exception() << "One amplitude has no externalId. Please remove the MadGraphAmplitude-folder and rebuild.\n"     << Exception::abortnow;
-  
-
-
   return res;
 }
 
-void MadGraphAmplitude::loadProcessMap() {
-  if ( !processmap().empty() )
-    return;
-  string MGProcLibPath = theProcessPath == "" ? factory()->buildStorage()+"MadGraphAmplitudes" : theProcessPath;
-  if (MGProcLibPath.at(MGProcLibPath.length()-1) != '/') MGProcLibPath.append("/");
-  string line = MGProcLibPath+"processmap.dat";
-  ifstream infile(line.c_str());
-  if ( !infile )
-    return;
-  string process;
-  int id;
-  while (std::getline(infile, line)) {
-    std::stringstream ss(line);
-    getline( ss, process, ' ' );
-    ss >> id;
-    processmap().insert(make_pair(process,id));
-  }
-}
 bool MadGraphAmplitude::ranMadGraphInitializeExternal = false;
 
 void MadGraphAmplitude::doinit() {
@@ -729,8 +752,8 @@ void MadGraphAmplitude::Init() {
   static Parameter<MadGraphAmplitude,string> interfaceProcessPath
     ("ProcessPath",
      "The Process Path.",
-     &MadGraphAmplitude::theProcessPath, "",false, false);  
-
+     &MadGraphAmplitude::theProcessPath, "",false, false);
+  
   static Parameter<MadGraphAmplitude,string> interfaceModel
     ("Model",
      "The MadGraph-Model.",
