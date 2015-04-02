@@ -294,7 +294,7 @@ Rivet-LHC-EW: Rivet-LHC-W-e    Rivet-LHC-Powheg-W-e    Rivet-LHC-Matchbox-W-e   
               Rivet-LHC-7-Z-Jet-2-e Rivet-LHC-7-Z-Jet-3-e
 	rm -rf Rivet-LHC-EW;
 	python/merge-LHC-EW LHC-{W-e,W-mu,Z-e,Z-mu,WW-emu,WW-ll,WZ,ZZ-ll,ZZ-lv}.yoda LHC-7-{W,Z}-Jet-{1,2,3}-e.yoda -o LHC-EW.yoda;
-	python/merge-LHC-EW LHC-Matchbox-{W-e,W-mu,Z-e,Z-mu,WW-emu,WW-ll,WZ,ZZ-ll,ZZ-lv}.yoda LHC-Matchbox-7-{W,Z}-Jet-{1,2,3}-e.yoda -o LHC-MatchboxEW-.yoda;
+	python/merge-LHC-EW LHC-Matchbox-{W-e,W-mu,Z-e,Z-mu,WW-emu,WW-ll,WZ,ZZ-ll,ZZ-lv}.yoda LHC-Matchbox-7-{W,Z}-Jet-{1,2,3}-e.yoda -o LHC-Matchbox-EW.yoda;
 	python/merge-LHC-EW LHC-Powheg-{W-e,W-mu,Z-e,Z-mu,WW-emu,WW-ll,WZ,ZZ-ll,ZZ-lv}.yoda -o LHC-Powheg-EW.yoda;
 	rivet-mkhtml -o Rivet-LHC-EW LHC-EW.yoda:Hw++ LHC-Powheg-EW.yoda:Hw++-Powheg LHC-Matchbox-EW.yoda:Hw++-Matchbox;
 
