@@ -194,9 +194,6 @@ else:
     shutil.copyfile(args.buildpath +"/MG5/Cards/param_card.dat", args.runpath+"/"+"param_card_"+args.model+".dat")
   time.sleep(1)
 
-
-
-
 if not os.path.isdir(args.buildpath):
    print "The MadGraph Install path was not existend. It has been created for you."
    print "Just start Herwig++ read again.."
@@ -204,7 +201,8 @@ if not os.path.isdir(args.buildpath):
    exit()
 
 os.chdir(args.buildpath)
-  
+if os.path.isfile("InterfaceMadGraph.so"):
+  exit()
  
 Bornlist,Virtlist=fillprocs(args.model,args.orderas,args.orderew)
 
