@@ -1,0 +1,49 @@
+##################################################
+# Rivet analyses at the Z pole
+##################################################
+read LHCBase-Matchbox.in
+
+## Set the order of the couplings
+cd /Herwig/MatrixElements/Matchbox
+set PPFactory:OrderInAlphaS 1
+set PPFactory:OrderInAlphaEW 2
+
+## Select the process
+## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
+do PPFactory:Process p p e+ nu j
+do PPFactory:Process p p e- nu j
+
+## Scale choice
+set PPFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/HTScale
+
+##################################################
+## Cut Selection
+##################################################
+
+## For finite calculations make resonable cuts! Check the wiki and manual
+## for other cut options and different jet algorithms.
+cd /Herwig/Cuts
+
+set QCDCuts:JetFinder JetFinder
+insert QCDCuts:MultiCuts 0 JetCuts
+insert JetCuts:JetRegions 0 FirstJet
+set FirstJet:PtMin 100.*GeV
+
+set MatchboxJetMatcher:Factory /Herwig/MatrixElements/Matchbox/PPFactory
+
+## Cut on lepton pair invariant mass
+set MassCut:MinM 66*GeV
+set MassCut:MaxM 116*GeV
+
+##################################################
+# select the analyses
+##################################################
+
+# CMS jet mass
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1224539_WJET
+
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+cd /Herwig/Generators
+saverun LHC-Matchbox-7-W-Jet-1-e LHCGenerator
