@@ -38,6 +38,8 @@ set EEFactory:OrderInAlphaEW 2
 ## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
 do EEFactory:Process e- e+ j j
 
+set /Herwig/Cuts/MatchboxJetMatcher:Factory /Herwig/MatrixElements/Matchbox/EEFactory
+
 ##################################################
 ## Cleanup
 ##################################################
