@@ -379,6 +379,24 @@ public:
   void setScale() const;
 
   /**
+   * Indicate that this matrix element is running alphas by itself.
+   */
+  virtual bool hasRunningAlphaS() const { 
+    if ( matchboxAmplitude() )
+      return matchboxAmplitude()->hasRunningAlphaS();
+    return false;
+  }
+
+  /**
+   * Indicate that this matrix element  is running alphaew by itself.
+   */
+  virtual bool hasRunningAlphaEW() const {
+    if ( matchboxAmplitude() )
+      return matchboxAmplitude()->hasRunningAlphaEW();
+    return false;
+  }
+
+  /**
    * Return the scale associated with the phase space point provided
    * by the last call to setKinematics().
    */

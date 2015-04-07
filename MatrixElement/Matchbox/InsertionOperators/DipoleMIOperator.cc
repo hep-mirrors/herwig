@@ -324,14 +324,16 @@ double DipoleMIOperator::me2() const {
   // if \mu of the OLP differs from \mu_R - same as in massless case.
   // Note: In the GoSam OLP interface, it is possible to directly set 
   // \mu = \mu_R, via the switch SetMuToMuR (for debugging purposes).
-  Energy2 muR2 = 
-    lastBorn()->renormalizationScale()*
-    sqr(lastBorn()->renormalizationScaleFactor());
-  if ( muR2 != mu2 ) {
-    res -=
-      betaZero *
-      lastBorn()->orderInAlphaS() * log(muR2/mu2) *
-      lastBorn()->me2();
+  if ( !lastBorn()->hasRunningAlphaS() ) {
+    Energy2 muR2 = 
+      lastBorn()->renormalizationScale()*
+      sqr(lastBorn()->renormalizationScaleFactor());
+    if ( muR2 != mu2 ) {
+      res -=
+	betaZero *
+	lastBorn()->orderInAlphaS() * log(muR2/mu2) *
+	lastBorn()->me2();
+    }
   }
 
 //   // include the finite renormalization for DR here; ATTENTION this

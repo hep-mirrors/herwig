@@ -58,6 +58,10 @@ bool MatchboxHybridAmplitude::isConsistent() const {
     oneLoopAmplitude()->orderInGs() &&
     treeLevelAmplitude()->orderInGem() ==
     oneLoopAmplitude()->orderInGem() &&
+    treeLevelAmplitude()->hasRunningAlphaS() ==
+    oneLoopAmplitude()->hasRunningAlphaS() &&
+    treeLevelAmplitude()->hasRunningAlphaEW() ==
+    oneLoopAmplitude()->hasRunningAlphaEW() &&
     !(treeLevelAmplitude()->nDimAdditional() != 0 &&
       oneLoopAmplitude()->nDimAdditional() != 0);
 }

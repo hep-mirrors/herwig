@@ -480,6 +480,20 @@ public:
   double symmetryRatio() const;
 
   /**
+   * Indicate that this amplitude is running alphas by itself.
+   */
+  virtual bool hasRunningAlphaS() const { 
+    return treeLevelAmplitude()->hasRunningAlphaS();
+  }
+
+  /**
+   * Indicate that this amplitude is running alphaew by itself.
+   */
+  virtual bool hasRunningAlphaEW() const { 
+    return treeLevelAmplitude()->hasRunningAlphaEW();
+  }
+
+  /**
    * If defined, return the coefficient of the pole in epsilon^2
    */
   virtual double oneLoopDoublePole() const { 

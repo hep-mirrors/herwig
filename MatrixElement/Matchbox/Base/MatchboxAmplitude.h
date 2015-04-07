@@ -504,6 +504,16 @@ public:
   virtual Energy2 mu2() const { return 0.*GeV2; }
 
   /**
+   * Indicate that this amplitude is running alphas by itself.
+   */
+  virtual bool hasRunningAlphaS() const { return false; }
+
+  /**
+   * Indicate that this amplitude is running alphaew by itself.
+   */
+  virtual bool hasRunningAlphaEW() const { return false; }
+
+  /**
    * If defined, return the coefficient of the pole in epsilon^2
    */
   virtual double oneLoopDoublePole() const { return 0.; }

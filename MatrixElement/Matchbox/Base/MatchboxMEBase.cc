@@ -619,11 +619,11 @@ double MatchboxMEBase::me2Norm(unsigned int addAlphaS) const {
     fac = 1.;
 
   double couplings = 1.0;
-  if ( orderInAlphaS() > 0 || addAlphaS != 0 ) {
+  if ( (orderInAlphaS() > 0 || addAlphaS != 0) && !hasRunningAlphaS() ) {
     fac *= pow(lastAlphaS()/SM().alphaS(),double(orderInAlphaS()+addAlphaS));
     couplings *= pow(lastAlphaS(),double(orderInAlphaS()+addAlphaS));
   }
-  if ( orderInAlphaEW() > 0 ) {
+  if ( orderInAlphaEW() > 0 && !hasRunningAlphaEW() ) {
     fac *= pow(lastAlphaEM()/SM().alphaEMMZ(),double(orderInAlphaEW()));
     couplings *= pow(lastAlphaEM(),double(orderInAlphaEW()));
   }
