@@ -1627,6 +1627,7 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
 	for(unsigned int ix=0;ix<theChildren.size();++ix)
 	  particle->abandonChild(theChildren[ix]);
 	theChildren.clear();
+	continue;
       }
       else return true;
     }
