@@ -1,4 +1,4 @@
-SUBDIRS = defaults
+SUBDIRS = defaults snippets
 
 AUTOMAKE_OPTIONS = -Wno-portability
 
@@ -68,8 +68,7 @@ TVT.in \
 TVT-Powheg.in \
 TVT-TTBA.in \
 LHC-LH.in \
-LHC-LHTP.in \
-DipoleShowerParameters.in
+LHC-LHTP.in
 
 dist_pkgdata_DATA = $(INPUTFILES) $(HELPERFILES)
 pkgdata_DATA = Makefile-UserModules
@@ -155,7 +154,7 @@ THEPEGREPO=$(THEPEGLIBPATH)/ThePEGDefaults.rpo
 
 install-data-hook:
 	@echo Creating repository
-	@./Herwig++ init -L$(DESTDIR)$(pkglibdir) -i$(DESTDIR)$(pkgdatadir) $(DESTDIR)$(defaultsdir)/HerwigDefaults.in --repo=$(DESTDIR)$(pkgdatadir)/HerwigDefaults.rpo
+	@./Herwig++ init -L$(DESTDIR)$(pkglibdir) -i$(DESTDIR)$(pkgdatadir) -i$(DESTDIR)$(pkgdatadir)/snippets $(DESTDIR)$(defaultsdir)/HerwigDefaults.in --repo=$(DESTDIR)$(pkgdatadir)/HerwigDefaults.rpo
 	@if test -n "$(DESTDIR)"; \
         then sed -i.bak -e "s@$(DESTDIR)@@g" $(DESTDIR)$(pkgdatadir)/HerwigDefaults.rpo; \
 	rm -f $(DESTDIR)$(pkgdatadir)/HerwigDefaults.rpo.bak; \
