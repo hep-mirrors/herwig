@@ -55,6 +55,7 @@ GoSamAmplitude::GoSamAmplitude(){
   theHiggsEff=false;
   theAccuracyTarget=6;
   theMassiveLeptons=false;
+  theLoopInducedOption=0;
   doneGoSamInit=false;
   doneGoSamInitRun=false;}
 
@@ -806,7 +807,8 @@ void GoSamAmplitude::persistentOutput(PersistentOStream & os) const {
      << orderFileTitle << contractFileTitle
      << contractFileName << orderFileName
      << theCodeExists << theFormOpt << theNinja << isitDR << massiveParticles << theHiggsEff
-     << theAccuracyTarget;
+     << theAccuracyTarget << theMassiveLeptons << theLoopInducedOption
+     << doneGoSamInit << doneGoSamInitRun;
 }
 
 void GoSamAmplitude::persistentInput(PersistentIStream & is, int) {
@@ -816,7 +818,8 @@ void GoSamAmplitude::persistentInput(PersistentIStream & is, int) {
      >> orderFileTitle >> contractFileTitle
      >> contractFileName >> orderFileName
      >> theCodeExists >> theFormOpt >> theNinja >> isitDR >> massiveParticles >> theHiggsEff
-     >> theAccuracyTarget;
+     >> theAccuracyTarget >> theMassiveLeptons >> theLoopInducedOption
+     >> doneGoSamInit >> doneGoSamInitRun;
 }
 
 
@@ -949,6 +952,59 @@ void GoSamAmplitude::Init() {
           "Yes",
           "Yes",
           true);
+
+  static Switch<GoSamAmplitude,int> interfaceLoopInducedOption
+         ("LoopInducedOption",
+          "Options for the GoSam interface, in the case that a loop induced process is being considered. The default "
+          "option is 0, for which only the squared one-loop amplitude in the Standard Model is being considered. All "
+          "other options consider additional contributions from a model with an effective interaction, which lead to "
+          "the same final state,  such as the squared effective amplitude, or the interference term between the one- "
+          "loop amplitude in the Standard Model and the effective amplitude, or any additive combinations therefrom. "
+          "In order to use those options an appropriate model has to be used.",
+          &GoSamAmplitude::theLoopInducedOption, 0, false, false);
+  static SwitchOption interfaceLoopInducedOptionLI2
+         (interfaceLoopInducedOption,
+          "LI2",
+          "Only consider the squared one-loop amplitude in the Standard Model.",
+          0);
+  static SwitchOption interfaceLoopInducedOptionEff2
+         (interfaceLoopInducedOption,
+          "Eff2",
+          "Only consider the squared effective amplitude.",
+          1);
+  static SwitchOption interfaceLoopInducedOptionLIEffInterference
+         (interfaceLoopInducedOption,
+          "LIEffInterference",
+          "Only consider the interference term between the one-loop amplitude "
+          "in the Standard Model and the effective amplitude.",
+          2);
+  static SwitchOption interfaceLoopInducedOptionLI2plusEff2
+         (interfaceLoopInducedOption,
+          "LI2plusEff2",
+          "Consider the sum of the squared one-loop amplitude in the Standard "
+          "Model plus the squared effective amplitude.",
+          3);
+  static SwitchOption interfaceLoopInducedOptionLI2plusLIEffInterference
+         (interfaceLoopInducedOption,
+          "LI2plusEffInterference",
+          "Consider the sum of the squared one-loop amplitude in the Standard "
+          "Model plus the interference term between the one-loop amplitude in "
+          "the Standard Model and the effective amplitude.",
+          4);
+  static SwitchOption interfaceLoopInducedOptionEff2plusLIEffInterference
+         (interfaceLoopInducedOption,
+          "Eff2plusEffInterference",
+          "Consider the sum of the squared effective amplitude plus the inter- "
+          "ference term between the one-loop amplitude in the Standard Model "
+          "and the effective amplitude.",
+          5);
+  static SwitchOption interfaceLoopInducedOptionAllAdditions
+         (interfaceLoopInducedOption,
+          "AllAdditions",
+          "Consider the sum of the squared one-loop amplitude in the Standard "
+          "Model plus all other contributions,  which come with the effective "
+          "Model.",
+          6);
 
 }
 

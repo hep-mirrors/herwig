@@ -280,6 +280,8 @@ private:
   bool theHiggsEff;
   bool theMassiveLeptons;
 
+  int theLoopInducedOption;
+
   bool isitDR;
 
   mutable bool doneGoSamInit;
