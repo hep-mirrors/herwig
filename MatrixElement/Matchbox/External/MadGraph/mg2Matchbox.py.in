@@ -207,6 +207,10 @@ if os.path.isfile("InterfaceMadGraph.so"):
  
 Bornlist,Virtlist=fillprocs(args.model,args.orderas,args.orderew)
 
+if not args.madgraph and not os.path.isfile("InterfaceMadGraph.so"):
+  print "*** warning *** MadGraph build failed, check logfile for details"
+  exit()
+
 os.system("python "+args.madgraph+"/mg5_aMC proc.dat")
 
 
@@ -378,7 +382,7 @@ file.write("include MG5/Source/make_opts  ")
 if Virtlist!=[]:
     file.write("\nLIBDIR = MG5/lib\nLINKLIBS =  -L$(LIBDIR) -lcts  -liregi -L$(LIBDIR)/golem95_lib -lgolem") 
     file.write("\nLIBS = $(LIBDIR)libcts.$(libext) $(LIBDIR)libgolem.$(libext) $(LIBDIR)libiregi.$(libext)")
-file.write("\nPROCESS= InterfaceMadGraph.f "+make+"\n\nall:  \n\t gfortran  $(FFLAGS) -fPIC -fno-f2c -shared -s -o  InterfaceMadGraph.so -IMG5/SubProcesses/" )
+file.write("\nPROCESS= InterfaceMadGraph.f "+make+"\n\nall:  \n\t @FC@  @FFLAGS@ -w -fbounds-check -ffixed-line-length-132 -fPIC -fno-f2c -shared -s -o  InterfaceMadGraph.so -IMG5/SubProcesses/" )
 if Virtlist!=[]:
   file.write(" -IMG5/lib/golem95_include ")
 
