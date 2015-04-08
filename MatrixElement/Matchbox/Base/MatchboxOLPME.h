@@ -165,6 +165,16 @@ public:
   virtual Energy2 mu2() const;
 
   /**
+   * Indicate that this amplitude is running alphas by itself.
+   */
+  virtual bool hasRunningAlphaS() const;
+
+  /**
+   * Indicate that this amplitude is running alphaew by itself.
+   */
+  virtual bool hasRunningAlphaEW() const;
+
+  /**
    * If defined, return the coefficient of the pole in epsilon^2
    */
   virtual double oneLoopDoublePole() const;
@@ -297,6 +307,18 @@ private:
    * to the value of the renormalization scale
    */
   bool theSetMuToMuR;
+
+  /**
+   * Use the running alpha_s instead of the reference alpha_s.
+   * This also sets hasRunningAlphaS() to true.
+   */
+  bool theUseRunningAlphaS;
+
+  /**
+   * Use the running alpha_ew instead of the reference alpha_ew.
+   * This also sets hasRunningAlphaEW() to true.
+   */
+  bool theUseRunningAlphaEW;
 
 };
 

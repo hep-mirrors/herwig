@@ -95,9 +95,11 @@ void OpenLoopsAmplitude::startOLP(const string& contract, int& status) {
      stri="width("+str+")";
      OLP_SetParameter(stri.c_str(),&width,&null,&a);
 	}
-	stri="alphas";one=SM().alphaS();
-	OLP_SetParameter( stri.c_str(),&one ,&null,&a);
-	stri="alpha";one=SM().alphaEMMZ();
+	// stri="alphas";
+        // one=SM().alphaS();
+	// OLP_SetParameter( stri.c_str(),&one ,&null,&a);
+	stri="alpha";
+        one=SM().alphaEMMZ();
 	OLP_SetParameter(stri.c_str(),&one ,&null,&a);
 
   didStartOLP() = true;
@@ -245,6 +247,11 @@ void OpenLoopsAmplitude::evalSubProcess() const {
 	fillOLPMomenta(lastXComb().meMomenta(),mePartonData(),reshuffleMasses());
 	double acc ;
 	double scale = sqrt(mu2() / GeV2);
+	int a=0;double null=0.0;double one=1.0;
+	string stri="alphas";
+        if (!hasRunningAlphaS()) one=SM().alphaS();
+        else if (hasRunningAlphaS()) one=lastAlphaS();
+	OLP_SetParameter( stri.c_str(),&one ,&null,&a);
         double out[7]={};
 
 	int id = olpId()[ProcessType::oneLoopInterference] ? olpId()[ProcessType::oneLoopInterference] : olpId()[ProcessType::treeME2];
@@ -276,6 +283,11 @@ void OpenLoopsAmplitude::evalColourCorrelator(pair<int, int>  ) const {
 	fillOLPMomenta(lastXComb().meMomenta(),mePartonData(),reshuffleMasses());
 	double acc ;
 	double scale = sqrt(mu2() / GeV2);
+	int a=0;double null=0.0;double one=1.0;
+	string stri="alphas";
+        if (!hasRunningAlphaS()) one=SM().alphaS();
+        else if (hasRunningAlphaS()) one=lastAlphaS();
+	OLP_SetParameter( stri.c_str(),&one ,&null,&a);
 	int n = lastXComb().meMomenta().size();
 
 	colourCorrelatorResults.resize(n * (n - 1) / 2);
@@ -309,6 +321,12 @@ double OpenLoopsAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
 
 	double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
 	fillOLPMomenta(lastXComb().meMomenta(),mePartonData(),reshuffleMasses());
+
+	int a=0;double null=0.0;double one=1.0;
+	string stri="alphas";
+        if (!hasRunningAlphaS()) one=SM().alphaS();
+        else if (hasRunningAlphaS()) one=lastAlphaS();
+	OLP_SetParameter( stri.c_str(),&one ,&null,&a);
 
 	int emitter=ij.first+1;
 	int n = lastXComb().meMomenta().size();

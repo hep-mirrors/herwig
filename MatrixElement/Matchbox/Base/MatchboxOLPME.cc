@@ -27,7 +27,8 @@
 using namespace Herwig;
 
 MatchboxOLPME::MatchboxOLPME() 
-  : theOrderInGs(0), theOrderInGem(0), theSetMuToMuR(false) {}
+  : theOrderInGs(0), theOrderInGem(0), theSetMuToMuR(false), 
+    theUseRunningAlphaS(false), theUseRunningAlphaEW(false) {}
 
 MatchboxOLPME::~MatchboxOLPME() {}
 
@@ -225,12 +226,26 @@ Energy2 MatchboxOLPME::mu2() const {
   return lastSHat(); 
 }
 
+bool MatchboxOLPME::hasRunningAlphaS() const { 
+  if (theUseRunningAlphaS) {
+    return true;
+  }
+  return false; 
+}
+
+bool MatchboxOLPME::hasRunningAlphaEW() const { 
+  if (theUseRunningAlphaEW) {
+    return true;
+  }
+  return false; 
+}
+
 void MatchboxOLPME::persistentOutput(PersistentOStream & os) const {
-  os << theOrderInGs << theOrderInGem << theSetMuToMuR;
+  os << theOrderInGs << theOrderInGem << theSetMuToMuR << theUseRunningAlphaS << theUseRunningAlphaEW;
 }
 
 void MatchboxOLPME::persistentInput(PersistentIStream & is, int) {
-  is >> theOrderInGs >> theOrderInGem >> theSetMuToMuR;
+  is >> theOrderInGs >> theOrderInGem >> theSetMuToMuR >> theUseRunningAlphaS >> theUseRunningAlphaEW;
 }
 
 
@@ -260,6 +275,40 @@ void MatchboxOLPME::Init() {
           true);
   static SwitchOption interfaceSetMuToMuROff
          (interfaceSetMuToMuR,
+          "Off",
+          "Off",
+          false);
+
+  static Switch<MatchboxOLPME,bool> interfaceUseRunningAlphaS
+         ("UseRunningAlphaS",
+          "Switch On to set the value of alpha_s for this OLP to the value of the running alpha_s "
+          "instead of to the value of the reference alpha_s. Default is Off. This also sets the value "
+          "for hasRunningAlphaS() to true.",
+          &MatchboxOLPME::theUseRunningAlphaS, false, false, false);
+  static SwitchOption interfaceUseRunningAlphaSOn
+         (interfaceUseRunningAlphaS,
+          "On",
+          "On",
+          true);
+  static SwitchOption interfaceUseRunningAlphaSOff
+         (interfaceUseRunningAlphaS,
+          "Off",
+          "Off",
+          false);
+
+  static Switch<MatchboxOLPME,bool> interfaceUseRunningAlphaEW
+         ("UseRunningAlphaEW",
+          "Switch On to set the value of alpha_ew for this OLP to the value of the running alpha_ew "
+          "instead of to the value of the reference alpha_ew. Default is Off. This also sets the value "
+          "for hasRunningAlphaEW() to true.",
+          &MatchboxOLPME::theUseRunningAlphaEW, false, false, false);
+  static SwitchOption interfaceUseRunningAlphaEWOn
+         (interfaceUseRunningAlphaEW,
+          "On",
+          "On",
+          true);
+  static SwitchOption interfaceUseRunningAlphaEWOff
+         (interfaceUseRunningAlphaEW,
           "Off",
           "Off",
           false);
