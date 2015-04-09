@@ -30,7 +30,8 @@ create Herwig::QTildeFinder PartnerFinder
 newdef PartnerFinder:PartnerMethod 1
 newdef PartnerFinder:ScaleChoice 1
 create Herwig::QTildeReconstructor KinematicsReconstructor
-newdef KinematicsReconstructor:ReconstructionOption Colour
+newdef KinematicsReconstructor:ReconstructionOption Colour4
+newdef KinematicsReconstructor:InitialStateReconOption SofterFraction
 newdef KinematicsReconstructor:InitialInitialBoostOption LongTransBoost
 
 newdef /Herwig/Partons/RemnantDecayer:AlphaS  AlphaQCD
@@ -44,7 +45,6 @@ newdef Evolver:SplittingGenerator SplittingGenerator
 newdef Evolver:Interactions BothAtOnce
 newdef Evolver:SpinCorrelations Yes
 newdef Evolver:SoftCorrelations Singular
-
 
 ##################################################################
 # Intrinsic pT
@@ -87,12 +87,13 @@ set PowhegShowerHandler:Evolver /Herwig/Shower/Evolver
 #
 # a few default values
 newdef Evolver:MECorrMode 1
+newdef Evolver:ReconstructionOption OffShell
 newdef AlphaQCD:ScaleFactor 1.0
 newdef AlphaQCD:NPAlphaS 2
 newdef AlphaQCD:Qmin 0.935
 newdef AlphaQCD:NumberOfLoops 3
 newdef AlphaQCD:InputOption 1
-newdef AlphaQCD:AlphaMZ 0.120
+newdef AlphaQCD:AlphaMZ 0.131
 #
 #
 # Lets set up all the splittings
@@ -140,7 +141,7 @@ newdef SudakovCommon:Alpha AlphaQCD
 newdef SudakovCommon:cutoffKinScale 0.0*GeV
 newdef SudakovCommon:PDFmax 1.0
 newdef SudakovCommon:CutOffOption pT
-newdef SudakovCommon:pTmin 1.0*GeV
+newdef SudakovCommon:pTmin 1.37*GeV
 
 cp SudakovCommon QtoQGSudakov
 newdef QtoQGSudakov:SplittingFunction QtoQGSplitFn
