@@ -1865,10 +1865,20 @@ newdef K_30Mass:NGenerate 100
 newdef /Herwig/Particles/K_3*bar0:Mass_generator K_30Mass
 newdef /Herwig/Particles/K_3*0:Mass_generator K_30Mass
 #
-create Herwig::SMHiggsMassGenerator  HiggsMass
+#
+create Herwig::GenericMassGenerator  HiggsMass
 newdef HiggsMass:Particle /Herwig/Particles/h0 
-newdef HiggsMass:HiggsShape 1
+newdef /Herwig/Masses/HiggsMass:BreitWignerShape 0
+newdef /Herwig/Masses/HiggsMass:MaximumWeight 0.968276
+newdef /Herwig/Masses/HiggsMass:NGenerate 100
+newdef /Herwig/Masses/HiggsMass:WidthOption 0
+
 newdef /Herwig/Particles/h0:Mass_generator HiggsMass
+
+#create Herwig::SMHiggsMassGenerator  HiggsMass
+#newdef HiggsMass:Particle /Herwig/Particles/h0 
+#newdef HiggsMass:HiggsShape 1
+#newdef /Herwig/Particles/h0:Mass_generator HiggsMass
 #
 create Herwig::GenericMassGenerator  chi_c22Pmass
 newdef chi_c22Pmass:Particle /Herwig/Particles/chi_c2(2P) 

@@ -47277,6 +47277,239 @@ insert ZWidth:NumberofEntries 10 0
 
 newdef /Herwig/Particles/Z0:Width_generator ZWidth
 #
+create Herwig::GenericWidthGenerator  hWidth
+newdef hWidth:Particle /Herwig/Particles/h0 
+newdef hWidth:Prefactor 0.302206
+newdef hWidth:BRNormalize 1
+newdef hWidth:BRMinimum 0.01
+newdef hWidth:Points 50
+newdef hWidth:InterpolationOrder 1
+insert hWidth:MEtype 0 1
+insert hWidth:MEtype 1 2
+insert hWidth:MEtype 2 1
+insert hWidth:MEtype 3 0
+insert hWidth:MEtype 4 1
+insert hWidth:MEtype 5 2
+insert hWidth:MEtype 6 0
+insert hWidth:MEtype 7 0
+insert hWidth:MEtype 8 1
+insert hWidth:MEtype 9 1
+insert hWidth:MEcode 0 -1
+insert hWidth:MEcode 1 0
+insert hWidth:MEcode 2 -1
+insert hWidth:MEcode 3 0
+insert hWidth:MEcode 4 -1
+insert hWidth:MEcode 5 0
+insert hWidth:MEcode 6 0
+insert hWidth:MEcode 7 0
+insert hWidth:MEcode 8 -1
+insert hWidth:MEcode 9 -1
+insert hWidth:MEcoupling 0 0.754565
+insert hWidth:MEcoupling 1 23485
+insert hWidth:MEcoupling 2 0.250599
+insert hWidth:MEcoupling 3 0.085
+insert hWidth:MEcoupling 4 0.162481
+insert hWidth:MEcoupling 5 1
+insert hWidth:MEcoupling 6 0.00159
+insert hWidth:MEcoupling 7 0.00229
+insert hWidth:MEcoupling 8 0.0208087
+insert hWidth:MEcoupling 9 0.0147648
+insert hWidth:ModeOn 0 1
+insert hWidth:ModeOn 1 1
+insert hWidth:ModeOn 2 1
+insert hWidth:ModeOn 3 1
+insert hWidth:ModeOn 4 1
+insert hWidth:ModeOn 5 1
+insert hWidth:ModeOn 6 0
+insert hWidth:ModeOn 7 0
+insert hWidth:ModeOn 8 0
+insert hWidth:ModeOn 9 0
+insert hWidth:MinimumMasses 0 8.4
+insert hWidth:MinimumMasses 1 117.986
+insert hWidth:MinimumMasses 2 3.55398
+insert hWidth:MinimumMasses 3 0
+insert hWidth:MinimumMasses 4 2.5
+insert hWidth:MinimumMasses 5 132.471
+insert hWidth:MinimumMasses 6 66.2356
+insert hWidth:MinimumMasses 7 0
+insert hWidth:MinimumMasses 8 0.19
+insert hWidth:MinimumMasses 9 0.211317
+insert hWidth:MEmass1 0 4.2
+insert hWidth:MEmass1 1 80.403
+insert hWidth:MEmass1 2 1.77699
+insert hWidth:MEmass1 3 0
+insert hWidth:MEmass1 4 1.25
+insert hWidth:MEmass1 5 91.1876
+insert hWidth:MEmass1 6 0
+insert hWidth:MEmass1 7 0
+insert hWidth:MEmass1 8 0.095
+insert hWidth:MEmass1 9 0.105658
+insert hWidth:MEmass2 0 4.2
+insert hWidth:MEmass2 1 80.403
+insert hWidth:MEmass2 2 1.77699
+insert hWidth:MEmass2 3 0
+insert hWidth:MEmass2 4 1.25
+insert hWidth:MEmass2 5 91.1876
+insert hWidth:MEmass2 6 0
+insert hWidth:MEmass2 7 0
+insert hWidth:MEmass2 8 0.095
+insert hWidth:MEmass2 9 0.105658
+insert hWidth:DecayModes 0 h0->b,bbar; 
+insert hWidth:DecayModes 1 h0->W+,W-; 
+insert hWidth:DecayModes 2 h0->tau-,tau+; 
+insert hWidth:DecayModes 3 h0->g,g; 
+insert hWidth:DecayModes 4 h0->c,cbar; 
+insert hWidth:DecayModes 5 h0->Z0,Z0; 
+insert hWidth:DecayModes 6 h0->Z0,gamma; 
+insert hWidth:DecayModes 7 h0->gamma,gamma; 
+insert hWidth:DecayModes 8 h0->s,sbar; 
+insert hWidth:DecayModes 9 h0->mu-,mu+; 
+insert hWidth:InterpolationMasses 0 125.65554
+insert hWidth:InterpolationMasses 1 125.65722
+insert hWidth:InterpolationMasses 2 125.6589
+insert hWidth:InterpolationMasses 3 125.66058
+insert hWidth:InterpolationMasses 4 125.66226
+insert hWidth:InterpolationMasses 5 125.66393
+insert hWidth:InterpolationMasses 6 125.66561
+insert hWidth:InterpolationMasses 7 125.66729
+insert hWidth:InterpolationMasses 8 125.66897
+insert hWidth:InterpolationMasses 9 125.67064
+insert hWidth:InterpolationMasses 10 125.67232
+insert hWidth:InterpolationMasses 11 125.674
+insert hWidth:InterpolationMasses 12 125.67568
+insert hWidth:InterpolationMasses 13 125.67735
+insert hWidth:InterpolationMasses 14 125.67903
+insert hWidth:InterpolationMasses 15 125.68071
+insert hWidth:InterpolationMasses 16 125.68239
+insert hWidth:InterpolationMasses 17 125.68406
+insert hWidth:InterpolationMasses 18 125.68574
+insert hWidth:InterpolationMasses 19 125.68742
+insert hWidth:InterpolationMasses 20 125.6891
+insert hWidth:InterpolationMasses 21 125.69077
+insert hWidth:InterpolationMasses 22 125.69245
+insert hWidth:InterpolationMasses 23 125.69413
+insert hWidth:InterpolationMasses 24 125.69581
+insert hWidth:InterpolationMasses 25 125.69748
+insert hWidth:InterpolationMasses 26 125.69916
+insert hWidth:InterpolationMasses 27 125.70084
+insert hWidth:InterpolationMasses 28 125.70252
+insert hWidth:InterpolationMasses 29 125.70419
+insert hWidth:InterpolationMasses 30 125.70587
+insert hWidth:InterpolationMasses 31 125.70755
+insert hWidth:InterpolationMasses 32 125.70923
+insert hWidth:InterpolationMasses 33 125.7109
+insert hWidth:InterpolationMasses 34 125.71258
+insert hWidth:InterpolationMasses 35 125.71426
+insert hWidth:InterpolationMasses 36 125.71594
+insert hWidth:InterpolationMasses 37 125.71761
+insert hWidth:InterpolationMasses 38 125.71929
+insert hWidth:InterpolationMasses 39 125.72097
+insert hWidth:InterpolationMasses 40 125.72265
+insert hWidth:InterpolationMasses 41 125.72432
+insert hWidth:InterpolationMasses 42 125.726
+insert hWidth:InterpolationMasses 43 125.72768
+insert hWidth:InterpolationMasses 44 125.72936
+insert hWidth:InterpolationMasses 45 125.73103
+insert hWidth:InterpolationMasses 46 125.73271
+insert hWidth:InterpolationMasses 47 125.73439
+insert hWidth:InterpolationMasses 48 125.73607
+insert hWidth:InterpolationMasses 49 125.73774
+insert hWidth:InterpolationMasses 50 125.73942
+insert hWidth:InterpolationMasses 51 125.7411
+insert hWidth:InterpolationMasses 52 125.74278
+insert hWidth:InterpolationMasses 53 125.74446
+insert hWidth:InterpolationMasses 54 132.7459
+insert hWidth:InterpolationMasses 55 132.60855
+insert hWidth:InterpolationMasses 56 132.4712
+insert hWidth:InterpolationMasses 57 132.45746
+insert hWidth:InterpolationMasses 58 132.44372
+insert hWidth:InterpolationMasses 59 132.42998
+insert hWidth:InterpolationMasses 60 132.41624
+insert hWidth:InterpolationMasses 61 132.40251
+insert hWidth:InterpolationMasses 62 132.38877
+insert hWidth:InterpolationMasses 63 132.37504
+insert hWidth:InterpolationMasses 64 132.36131
+insert hWidth:InterpolationMasses 65 132.34758
+insert hWidth:InterpolationMasses 66 132.33385
+insert hWidth:InterpolationWidths 0 3.8550844e-08
+insert hWidth:InterpolationWidths 1 3.8575233e-08
+insert hWidth:InterpolationWidths 2 3.8599635e-08
+insert hWidth:InterpolationWidths 3 3.8624048e-08
+insert hWidth:InterpolationWidths 4 3.8648473e-08
+insert hWidth:InterpolationWidths 5 3.8672911e-08
+insert hWidth:InterpolationWidths 6 3.8697361e-08
+insert hWidth:InterpolationWidths 7 3.8721823e-08
+insert hWidth:InterpolationWidths 8 3.8746297e-08
+insert hWidth:InterpolationWidths 9 3.8770784e-08
+insert hWidth:InterpolationWidths 10 3.8795282e-08
+insert hWidth:InterpolationWidths 11 3.8819793e-08
+insert hWidth:InterpolationWidths 12 3.8844316e-08
+insert hWidth:InterpolationWidths 13 3.8868851e-08
+insert hWidth:InterpolationWidths 14 3.8893399e-08
+insert hWidth:InterpolationWidths 15 3.8917958e-08
+insert hWidth:InterpolationWidths 16 3.894253e-08
+insert hWidth:InterpolationWidths 17 3.8967114e-08
+insert hWidth:InterpolationWidths 18 3.8991711e-08
+insert hWidth:InterpolationWidths 19 3.9016319e-08
+insert hWidth:InterpolationWidths 20 3.904094e-08
+insert hWidth:InterpolationWidths 21 3.9065573e-08
+insert hWidth:InterpolationWidths 22 3.9090218e-08
+insert hWidth:InterpolationWidths 23 3.9114876e-08
+insert hWidth:InterpolationWidths 24 3.9139546e-08
+insert hWidth:InterpolationWidths 25 3.9164228e-08
+insert hWidth:InterpolationWidths 26 3.9188922e-08
+insert hWidth:InterpolationWidths 27 3.9213629e-08
+insert hWidth:InterpolationWidths 28 3.9238348e-08
+insert hWidth:InterpolationWidths 29 3.9263079e-08
+insert hWidth:InterpolationWidths 30 3.9287822e-08
+insert hWidth:InterpolationWidths 31 3.9312578e-08
+insert hWidth:InterpolationWidths 32 3.9337346e-08
+insert hWidth:InterpolationWidths 33 3.9362127e-08
+insert hWidth:InterpolationWidths 34 3.938692e-08
+insert hWidth:InterpolationWidths 35 3.9411725e-08
+insert hWidth:InterpolationWidths 36 3.9436542e-08
+insert hWidth:InterpolationWidths 37 3.9461372e-08
+insert hWidth:InterpolationWidths 38 3.9486214e-08
+insert hWidth:InterpolationWidths 39 3.9511068e-08
+insert hWidth:InterpolationWidths 40 3.9535935e-08
+insert hWidth:InterpolationWidths 41 3.9560814e-08
+insert hWidth:InterpolationWidths 42 3.9585706e-08
+insert hWidth:InterpolationWidths 43 3.961061e-08
+insert hWidth:InterpolationWidths 44 3.9635526e-08
+insert hWidth:InterpolationWidths 45 3.9660455e-08
+insert hWidth:InterpolationWidths 46 3.9685396e-08
+insert hWidth:InterpolationWidths 47 3.9710349e-08
+insert hWidth:InterpolationWidths 48 3.9735315e-08
+insert hWidth:InterpolationWidths 49 3.9760293e-08
+insert hWidth:InterpolationWidths 50 3.9785283e-08
+insert hWidth:InterpolationWidths 51 3.9810286e-08
+insert hWidth:InterpolationWidths 52 3.9835302e-08
+insert hWidth:InterpolationWidths 53 3.986033e-08
+insert hWidth:InterpolationWidths 54 0
+insert hWidth:InterpolationWidths 55 0
+insert hWidth:InterpolationWidths 56 0
+insert hWidth:InterpolationWidths 57 0
+insert hWidth:InterpolationWidths 58 0
+insert hWidth:InterpolationWidths 59 0
+insert hWidth:InterpolationWidths 60 0
+insert hWidth:InterpolationWidths 61 0
+insert hWidth:InterpolationWidths 62 0
+insert hWidth:InterpolationWidths 63 0
+insert hWidth:InterpolationWidths 64 0
+insert hWidth:InterpolationWidths 65 0
+insert hWidth:InterpolationWidths 66 0
+insert hWidth:NumberofEntries 0 0
+insert hWidth:NumberofEntries 1 54
+insert hWidth:NumberofEntries 2 54
+insert hWidth:NumberofEntries 3 54
+insert hWidth:NumberofEntries 4 54
+insert hWidth:NumberofEntries 5 67
+insert hWidth:NumberofEntries 6 67
+insert hWidth:NumberofEntries 7 67
+insert hWidth:NumberofEntries 8 67
+insert hWidth:NumberofEntries 9 67
+newdef /Herwig/Particles/h0:Width_generator hWidth
+#
 create Herwig::GenericWidthGenerator  WWidth
 newdef WWidth:Particle /Herwig/Particles/W+ 
 
@@ -50707,10 +50940,10 @@ insert Sigma*+Width:ModeLocation 2 13
 newdef /Herwig/Particles/Sigma*+:Width_generator Sigma*+Width
 newdef /Herwig/Particles/Sigma*bar-:Width_generator Sigma*+Width
 #
-create Herwig::SMHiggsWidthGenerator  HiggsWidth
-newdef HiggsWidth:WidthScheme 2
-newdef HiggsWidth:Particle /Herwig/Particles/h0
-newdef /Herwig/Particles/h0:Width_generator HiggsWidth
+# create Herwig::SMHiggsWidthGenerator  HiggsWidth
+# newdef HiggsWidth:WidthScheme 2
+# newdef HiggsWidth:Particle /Herwig/Particles/h0
+# newdef /Herwig/Particles/h0:Width_generator HiggsWidth
 #
 create Herwig::BaryonWidthGenerator  Xi*-Width
 newdef Xi*-Width:Particle /Herwig/Particles/Xi*- 

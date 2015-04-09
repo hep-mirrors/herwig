@@ -24101,15 +24101,15 @@ newdef Top:PhotonGenerator /Herwig/QEDRadiation/SOPHTY
 
 #
 create Herwig::SMHiggsFermionsPOWHEGDecayer  Hff
-newdef Hff:MaxWeights 0 3e-6
-newdef Hff:MaxWeights 1 5e-7
-newdef Hff:MaxWeights 2 9e-4
-newdef Hff:MaxWeights 3 1.2
-newdef Hff:MaxWeights 4 1.2
-newdef Hff:MaxWeights 5 1.2
-newdef Hff:MaxWeights 6 7e-9
-newdef Hff:MaxWeights 7 1.2
-newdef Hff:MaxWeights 8 1.2
+newdef Hff:MaxWeights 0 2.116e-06
+newdef Hff:MaxWeights 1 4.47418e-07
+newdef Hff:MaxWeights 2 0.000763237
+newdef Hff:MaxWeights 3 0.0276405
+newdef Hff:MaxWeights 4 0.571455
+newdef Hff:MaxWeights 5 0
+newdef Hff:MaxWeights 6 5.76739e-09
+newdef Hff:MaxWeights 7 0.000246492
+newdef Hff:MaxWeights 8 0.0696381
 newdef Hff:Iteration 1
 newdef Hff:Ntry 500
 newdef Hff:Points 10000
@@ -24119,14 +24119,14 @@ newdef Hff:PhotonGenerator /Herwig/QEDRadiation/SOPHTY
 
 #
 create Herwig::SMHiggsWWDecayer  HWW
-newdef HWW:WMaximum 0 22.
-newdef HWW:ZMaximum 0 2.1
-newdef HWW:WMaximum 1 200.
-newdef HWW:ZMaximum 1 100.
+newdef HWW:WMaximum 0 19.5935
+newdef HWW:ZMaximum 0 1.84109
+newdef HWW:WMaximum 1 183.963
+newdef HWW:ZMaximum 1 39.4542
 newdef HWW:Iteration 1
 newdef HWW:Ntry 2000
 newdef HWW:Points 10000
-newdef HWW:GenerateIntermediates 0 
+newdef HWW:GenerateIntermediates 0
 newdef HWW:PhotonGenerator /Herwig/QEDRadiation/SOPHTY
 
 #
