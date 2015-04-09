@@ -58,26 +58,26 @@ newdef ColourReconnector:AnnealingSteps 10
 newdef ColourReconnector:TriesPerStepFactor 0.66
 
 # Clustering parameters for light quarks
-newdef ClusterFissioner:ClMaxLight  3.25*GeV
-newdef ClusterFissioner:ClPowLight  1.28
-newdef ClusterFissioner:PSplitLight 1.14
+newdef ClusterFissioner:ClMaxLight  3.56*GeV
+newdef ClusterFissioner:ClPowLight  2.35
+newdef ClusterFissioner:PSplitLight 0.836
 newdef ClusterDecayer:ClDirLight 1
 newdef ClusterDecayer:ClSmrLight 0.78
 
 # Clustering parameters for b-quarks
-newdef ClusterFissioner:ClMaxBottom  3.2*GeV
-newdef ClusterFissioner:ClPowBottom  1.24
-newdef ClusterFissioner:PSplitBottom 0.75
+newdef ClusterFissioner:ClMaxBottom  2.61*GeV
+newdef ClusterFissioner:ClPowBottom  0.69
+newdef ClusterFissioner:PSplitBottom 0.56
 newdef ClusterDecayer:ClDirBottom 1
 newdef ClusterDecayer:ClSmrBottom 0.00
-newdef LightClusterDecayer:SingleHadronLimitBottom 0.12
+newdef LightClusterDecayer:SingleHadronLimitBottom 0.13
 
 # Clustering parameters for c-quarks
-newdef ClusterFissioner:ClMaxCharm  2.95*GeV
-newdef ClusterFissioner:ClPowCharm  1.52
-newdef ClusterFissioner:PSplitCharm 1.11
+newdef ClusterFissioner:ClMaxCharm  3.41*GeV
+newdef ClusterFissioner:ClPowCharm  2.03
+newdef ClusterFissioner:PSplitCharm 1.15
 newdef ClusterDecayer:ClDirCharm 1
-newdef ClusterDecayer:ClSmrCharm 0.26
+newdef ClusterDecayer:ClSmrCharm 0.
 newdef LightClusterDecayer:SingleHadronLimitCharm 0.0
 
 # Clustering parameters for exotic quarks
@@ -92,10 +92,12 @@ newdef LightClusterDecayer:SingleHadronLimitExotic 0.1
 # 
 newdef HadronSelector:PwtDquark  1.0
 newdef HadronSelector:PwtUquark  1.0
-newdef HadronSelector:PwtSquark  0.68
+newdef HadronSelector:PwtSquark  0.64
 newdef HadronSelector:PwtCquark  1.0
 newdef HadronSelector:PwtBquark  1.0
-newdef HadronSelector:PwtDIquark 0.49
+newdef HadronSelector:PwtDIquark 0.37
 newdef HadronSelector:SngWt      0.74
 newdef HadronSelector:DecWt      0.62
 newdef HadronSelector:Mode 1
+
+
