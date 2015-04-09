@@ -78,7 +78,7 @@ void CellGridSampler::adapt() {
   UseRandom rnd;
   set<SimpleCellGrid*> newCells;
   SimpleCellGrid::adapt(theGain,theEpsilon,newCells);
-  SimpleCellGrid::explore(theExplorationPoints,rnd,*this,newCells);
+  SimpleCellGrid::explore(theExplorationPoints,rnd,*this,newCells,Repository::clog());
   SimpleCellGrid::setWeights();
   SimpleCellGrid::updateIntegral();
   SimpleCellGrid::minimumSelection(theMinimumSelection);
@@ -171,7 +171,7 @@ void CellGridSampler::initialize(bool progress) {
   for(int splitdim=0; splitdim<min(dimension(),(int)pre_adaption_splits().size());splitdim++)
       SimpleCellGrid::splitter(splitdim,pre_adaption_splits()[splitdim]);
   
-  SimpleCellGrid::explore(theExplorationPoints,rnd,*this,newCells);
+  SimpleCellGrid::explore(theExplorationPoints,rnd,*this,newCells,Repository::clog());
 
   
   bool notAll = false;
@@ -184,7 +184,7 @@ void CellGridSampler::initialize(bool progress) {
       notAll = true;
       break;
     }
-    SimpleCellGrid::explore(theExplorationPoints,rnd,*this,newCells);
+    SimpleCellGrid::explore(theExplorationPoints,rnd,*this,newCells,Repository::clog());
   }
 
   if ( progressBar )

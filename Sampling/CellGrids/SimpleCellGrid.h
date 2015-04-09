@@ -231,11 +231,12 @@ namespace ExSample {
     void explore(std::size_t nPoints,
 		 RndGenerator& rnd,
 		 Function& f,
-		 std::set<SimpleCellGrid*>& newCells) {
-
+		 std::set<SimpleCellGrid*>& newCells,
+		 std::ostream& warn) {
+      unsigned long nanPoints = 0;
       if ( !isLeaf() ) {
-	firstChild().explore(nPoints,rnd,f,newCells);
-	secondChild().explore(nPoints,rnd,f,newCells);
+	firstChild().explore(nPoints,rnd,f,newCells,warn);
+	secondChild().explore(nPoints,rnd,f,newCells,warn);
 	return;
       }
       if ( !newCells.empty() ) {
@@ -246,7 +247,16 @@ namespace ExSample {
       for ( std::size_t k = 0; k < nPoints; ++k ) {
 	sampleFlatPoint(point,rnd);
 	double w = f.evaluate(point);
+	if ( isnan(w) || isinf(w) ) {
+	  ++nanPoints;
+	  continue;
+	}
 	updateWeightInformation(point,std::abs(w));
+      }
+      if ( nanPoints ) {
+	warn << "Warning: " << nanPoints << " out of "
+	     << nPoints << " points with nan or inf weight encountered while "
+	     << "exploring a cell.\n" << std::flush;
       }
     }
 

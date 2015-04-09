@@ -177,6 +177,8 @@ void BinSampler::fillRemappers(bool progress) {
   if ( remappers.empty() )
     return;
 
+  unsigned long nanPoints = 0;
+
   boost::progress_display* progressBar = 0;
   if ( progress ) {
     Repository::clog() << "warming up " << process();
@@ -197,6 +199,9 @@ void BinSampler::fillRemappers(bool progress) {
       throw;
     }
 
+    if ( isnan(w) || isinf(w) )
+      ++nanPoints;
+
     if ( w != 0.0 ) {
       for ( map<size_t,Remapper>::iterator r = remappers.begin();
 	    r != remappers.end(); ++r )
@@ -210,6 +215,12 @@ void BinSampler::fillRemappers(bool progress) {
 
   if ( progressBar ) {
     delete progressBar;
+  }
+
+  if ( nanPoints ) {
+    Repository::clog() << "Warning: " << nanPoints 
+		       << " out of " << theRemapperPoints << " points with nan or inf "
+		       << "weight encountered while filling remappers.\n" << flush;
   }
 
 }
