@@ -196,6 +196,18 @@ void MatchboxOLPME::doinit() {
 	<< "Failed to restart one loop provider for amplitude '"
 	<< name() << "'\n" << Exception::abortnow;
     }
+    if ( theUseRunningAlphaS && !theSetMuToMuR ) {
+      throw Exception()
+      << "Amplitude '" << name() << "' "
+      << "uses a running alpha_s but fixed renormalization scale!\n"
+      << Exception::abortnow;
+    }
+    if ( !theUseRunningAlphaS && theSetMuToMuR ) {
+      throw Exception()
+      << "Amplitude '" << name() << "' "
+      << "uses a fixed alpha_s but running renormalization scale!\n"
+      << Exception::abortnow;
+    }
   }
   MatchboxAmplitude::doinit();
 }
@@ -213,6 +225,18 @@ void MatchboxOLPME::doinitrun() {
       throw Exception()
 	<< "Failed to restart one loop provider for amplitude '"
 	<< name() << "'\n" << Exception::abortnow;
+    }
+    if ( theUseRunningAlphaS && !theSetMuToMuR ) {
+      throw Exception()
+      << "Amplitude '" << name() << "' "
+      << "uses a running alpha_s but fixed renormalization scale!\n"
+      << Exception::abortnow;
+    }
+    if ( !theUseRunningAlphaS && theSetMuToMuR ) {
+      throw Exception()
+      << "Amplitude '" << name() << "' "
+      << "uses a fixed alpha_s but running renormalization scale!\n"
+      << Exception::abortnow;
     }
   }
   MatchboxAmplitude::doinitrun();
