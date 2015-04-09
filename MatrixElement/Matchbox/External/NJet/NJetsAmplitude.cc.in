@@ -164,7 +164,7 @@ void NJetsAmplitude::evalSubProcess() const {
   fillOLPMomenta(lastXComb().meMomenta(),mePartonData(),reshuffleMasses());
   double as;
   if (!hasRunningAlphaS()) as = SM().alphaS();
-  else if (hasRunningAlphasS()) as = lastAlphaS();
+  else if (hasRunningAlphaS()) as = lastAlphaS();
   double scale = sqrt(mu2()/GeV2);
 
   double out[7]={};
@@ -192,7 +192,7 @@ void NJetsAmplitude::evalColourCorrelator(pair<int,int>) const {
   fillOLPMomenta(lastXComb().meMomenta(),mePartonData(),reshuffleMasses());
   double as;
   if (!hasRunningAlphaS()) as = SM().alphaS();
-  else if (hasRunningAlphasS()) as = lastAlphaS();
+  else if (hasRunningAlphaS()) as = lastAlphaS();
   double scale = sqrt(mu2()/GeV2);
 
   int n = lastXComb().meMomenta().size();
@@ -214,7 +214,7 @@ void NJetsAmplitude::evalSpinColourCorrelator(pair<int,int>) const {
   fillOLPMomenta(lastXComb().meMomenta(),mePartonData(),reshuffleMasses());
   double as;
   if (!hasRunningAlphaS()) as = SM().alphaS();
-  else if (hasRunningAlphasS()) as = lastAlphaS();
+  else if (hasRunningAlphaS()) as = lastAlphaS();
   double scale = sqrt(mu2()/GeV2);
 
   int n = lastXComb().meMomenta().size();
