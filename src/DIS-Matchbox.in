@@ -152,7 +152,7 @@ cd /Herwig/MatrixElements/Matchbox
 # set DISHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
 # set /Herwig/DipoleShower/DipoleShowerHandler:MaxPtIsMuF Yes
 # set DISHandler:CascadeHandler:MPIHandler NULL
-# read DipoleShowerParameters.in
+# read snippets/DipoleShowerParameters.in
 # cd /Herwig/MatrixElements/Matchbox
 
 ## POWHEG-type next-to-leading order

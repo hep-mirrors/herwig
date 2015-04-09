@@ -127,7 +127,7 @@ set /Herwig/Shower/Evolver:MECorrMode No
 # set LEPHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
 # set /Herwig/DipoleShower/DipoleShowerHandler:MaxPtIsMuF Yes
 # set LEPHandler:CascadeHandler:MPIHandler NULL
-# read DipoleShowerParameters.in
+# read snippets/DipoleShowerParameters.in
 # cd /Herwig/MatrixElements/Matchbox
 
 ## POWHEG-type next-to-leading order
