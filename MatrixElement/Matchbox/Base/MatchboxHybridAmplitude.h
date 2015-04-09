@@ -88,14 +88,7 @@ public:
    */
   virtual bool canHandle(const PDVector& p,
 			 Ptr<MatchboxFactory>::tptr f,
-			 bool virt) const { 
-    if ( !virt )
-      return treeLevelAmplitude()->canHandle(p,f,false);
-    return 
-      treeLevelAmplitude()->canHandle(p,f,false) &&
-      oneLoopAmplitude()->canHandle(p,f,true)
-      && isConsistent();
-  }
+			 bool virt) const;
 
   /**
    * Return the number of random numbers required to evaluate this

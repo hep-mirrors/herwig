@@ -66,6 +66,23 @@ bool MatchboxHybridAmplitude::isConsistent() const {
       oneLoopAmplitude()->nDimAdditional() != 0);
 }
 
+bool MatchboxHybridAmplitude::canHandle(const PDVector& p,
+					Ptr<MatchboxFactory>::tptr f,
+					bool virt) const { 
+  if ( !virt )
+    return treeLevelAmplitude()->canHandle(p,f,false);
+  if ( treeLevelAmplitude()->canHandle(p,f,false) &&
+       oneLoopAmplitude()->canHandle(p,f,true) ) {
+    if ( !isConsistent() ) {
+      generator()->log() << "Warning: Inconsistent settings encountered for MatchboxHybridAmplitude '"
+			 << name() << "'\n" << flush;
+      return false;
+    }
+    return true;
+  }
+  return false;
+}
+
 void MatchboxHybridAmplitude::prepareAmplitudes(Ptr<MatchboxMEBase>::tcptr me) {
   treeLevelAmplitude()->prepareAmplitudes(me);
 }
