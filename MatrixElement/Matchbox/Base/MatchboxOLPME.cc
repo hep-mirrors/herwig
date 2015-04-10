@@ -183,6 +183,18 @@ double MatchboxOLPME::largeNColourCorrelatedME2(pair<int,int>,
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 void MatchboxOLPME::doinit() {
+  if ( theUseRunningAlphaS && !theSetMuToMuR ) {
+    throw Exception()
+    << "Amplitude '" << name() << "' "
+    << "uses a running alpha_s but fixed renormalization scale!\n"
+    << Exception::abortnow;
+  }
+  if ( !theUseRunningAlphaS && theSetMuToMuR ) {
+    throw Exception()
+    << "Amplitude '" << name() << "' "
+    << "uses a fixed alpha_s but running renormalization scale!\n"
+    << Exception::abortnow;
+  }
   if ( !didStartOLP() ) {
     string contractFileName = 
       optionalContractFile().empty() ? 
@@ -195,24 +207,24 @@ void MatchboxOLPME::doinit() {
       throw Exception()
 	<< "Failed to restart one loop provider for amplitude '"
 	<< name() << "'\n" << Exception::abortnow;
-    }
-    if ( theUseRunningAlphaS && !theSetMuToMuR ) {
-      throw Exception()
-      << "Amplitude '" << name() << "' "
-      << "uses a running alpha_s but fixed renormalization scale!\n"
-      << Exception::abortnow;
-    }
-    if ( !theUseRunningAlphaS && theSetMuToMuR ) {
-      throw Exception()
-      << "Amplitude '" << name() << "' "
-      << "uses a fixed alpha_s but running renormalization scale!\n"
-      << Exception::abortnow;
     }
   }
   MatchboxAmplitude::doinit();
 }
 
 void MatchboxOLPME::doinitrun() {
+  if ( theUseRunningAlphaS && !theSetMuToMuR ) {
+    throw Exception()
+    << "Amplitude '" << name() << "' "
+    << "uses a running alpha_s but fixed renormalization scale!\n"
+    << Exception::abortnow;
+  }
+  if ( !theUseRunningAlphaS && theSetMuToMuR ) {
+    throw Exception()
+    << "Amplitude '" << name() << "' "
+    << "uses a fixed alpha_s but running renormalization scale!\n"
+    << Exception::abortnow;
+  }
   if ( !didStartOLP() ) {
     string contractFileName = 
       optionalContractFile().empty() ? 
@@ -225,18 +237,6 @@ void MatchboxOLPME::doinitrun() {
       throw Exception()
 	<< "Failed to restart one loop provider for amplitude '"
 	<< name() << "'\n" << Exception::abortnow;
-    }
-    if ( theUseRunningAlphaS && !theSetMuToMuR ) {
-      throw Exception()
-      << "Amplitude '" << name() << "' "
-      << "uses a running alpha_s but fixed renormalization scale!\n"
-      << Exception::abortnow;
-    }
-    if ( !theUseRunningAlphaS && theSetMuToMuR ) {
-      throw Exception()
-      << "Amplitude '" << name() << "' "
-      << "uses a fixed alpha_s but running renormalization scale!\n"
-      << Exception::abortnow;
     }
   }
   MatchboxAmplitude::doinitrun();
