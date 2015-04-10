@@ -900,7 +900,7 @@ double QTildeSudakov::generatePhiDecay(ShowerParticle & particle,
       }
       else {
 	Energy Eg = Ek[0]+Ek[1]*cos(phi)+Ek[2]*sin(phi);
-	wgt = 0.5/pik/Eg*(Ei-m12*Eg/pik  + pipj*Eg/dot - Ej*pik/dot)/aziMax;
+	wgt = max(ZERO,0.5/pik/Eg*(Ei-m12*Eg/pik  + (pipj*Eg - Ej*pik)/dot)/aziMax);
       }	
     }
     if(wgt-1.>1e-10||wgt<-1e-10) {
