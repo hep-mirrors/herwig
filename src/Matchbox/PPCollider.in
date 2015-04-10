@@ -1,0 +1,10 @@
+read Matchbox/GenericCollider.in
+
+cd /Herwig/EventHandlers
+set FixedLuminosity:Energy 8000.0
+set EventHandler:BeamA /Herwig/Particles/p+
+set EventHandler:BeamB /Herwig/Particles/p+
+cd /Herwig/MatrixElements/Matchbox
+set Factory:FirstPerturbativePDF Yes
+set Factory:SecondPerturbativePDF Yes
+

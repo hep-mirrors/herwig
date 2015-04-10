@@ -1,0 +1,18 @@
+cd /Herwig/EventHandlers
+
+set EventHandler:CascadeHandler NULL
+set EventHandler:HadronizationHandler NULL
+set EventHandler:DecayHandler NULL
+erase EventHandler:PostSubProcessHandlers[0]
+
+cd /Herwig/Analysis
+
+set Basics:CheckQuark No
+
+cd /Herwig/MatrixElements/Matchbox
+
+set Factory:SubProcessGroups On
+
+cd /Herwig/Analysis
+
+create ThePEG::NLORivetAnalysis RivetAnalysis RivetAnalysis.so

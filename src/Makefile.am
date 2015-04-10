@@ -1,4 +1,4 @@
-SUBDIRS = defaults snippets
+SUBDIRS = defaults snippets Matchbox
 
 AUTOMAKE_OPTIONS = -Wno-portability
 

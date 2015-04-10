@@ -1,0 +1,20 @@
+read Matchbox/Powheg.in
+
+cd /Herwig/EventHandlers
+
+set EventHandler:CascadeHandler /Herwig/Shower/PowhegShowerHandler
+
+cd /Herwig/MatrixElements/Matchbox
+
+set MEMatching:TruncatedShower Yes
+
+cd /Herwig/Shower
+
+set PowhegShowerHandler:Factory Factory
+
+set Evolver:HardEmissionMode MatchboxPOWHEG
+
+cd /Herwig/Analysis
+
+create ThePEG::RivetAnalysis RivetAnalysis RivetAnalysis.so
+

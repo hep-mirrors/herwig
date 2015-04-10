@@ -1,0 +1,6 @@
+cd /Herwig/MatrixElements/Matchbox
+
+set Factory:VirtualContributions Off
+set Factory:RealContributions Off
+set Factory:ShowerApproximation NULL
+

@@ -1,0 +1,10 @@
+read Matchbox/Powheg.in
+
+cd /Herwig/EventHandlers
+
+set EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
+
+cd /Herwig/Analysis
+
+create ThePEG::RivetAnalysis RivetAnalysis RivetAnalysis.so
+

@@ -1,0 +1,11 @@
+cd /Herwig/EventHandlers
+
+set EventHandler:CascadeHandler /Herwig/Shower/ShowerHandler
+
+cd /Herwig/MatrixElements/Matchbox
+
+set Factory:ShowerApproximation QTildeMatching
+
+cd /Herwig/Analysis
+
+create ThePEG::RivetAnalysis RivetAnalysis RivetAnalysis.so

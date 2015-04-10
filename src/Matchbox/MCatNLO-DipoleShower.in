@@ -1,0 +1,13 @@
+cd /Herwig/EventHandlers
+
+set EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
+
+cd /Herwig/MatrixElements/Matchbox
+
+set Factory:ShowerApproximation DipoleMatching
+
+read snippets/DipoleShowerParameters.in
+
+cd /Herwig/Analysis
+
+create ThePEG::RivetAnalysis RivetAnalysis RivetAnalysis.so
