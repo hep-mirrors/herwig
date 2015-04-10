@@ -409,87 +409,6 @@ insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeqqbarttbarg
 insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeggttbar
 insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 Amplitudeggttbarg
 
-
-################################################################################
-# Setup utilities for matching
-################################################################################
-
-cd /Herwig/MatrixElements/Matchbox
-
-create Herwig::MEMatching MEMatching
-set MEMatching:RestrictPhasespace On
-set MEMatching:BornScaleInSubtraction BornScale
-set MEMatching:RealEmissionScaleInSubtraction RealScale
-set MEMatching:EmissionScaleInSubtraction RealScale
-set MEMatching:BornScaleInSplitting ShowerScale
-set MEMatching:RealEmissionScaleInSplitting ShowerScale
-set MEMatching:EmissionScaleInSplitting ShowerScale
-set MEMatching:MaxPtIsMuF Yes
-set MEMatching:FFPtCut 1.0*GeV
-set MEMatching:FIPtCut 1.0*GeV
-set MEMatching:IIPtCut 1.0*GeV
-
-create Herwig::ShowerApproximationGenerator MECorrectionHandler
-set MECorrectionHandler:ShowerApproximation MEMatching
-create Herwig::FlatInvertiblePhasespace InvertiblePhasespace
-set MECorrectionHandler:Phasespace InvertiblePhasespace
-set MECorrectionHandler:FreezeGrid 100000
-
-create Herwig::DipoleMatching DipoleMatching HwDipoleMatching.so
-set DipoleMatching:RestrictPhasespace On
-set DipoleMatching:BornScaleInSubtraction BornScale
-set DipoleMatching:RealEmissionScaleInSubtraction BornScale
-set DipoleMatching:EmissionScaleInSubtraction BornScale
-set DipoleMatching:MaxPtIsMuF Yes
-set DipoleMatching:FFPtCut 1.014259*GeV
-set DipoleMatching:FIPtCut 1.0*GeV
-set DipoleMatching:IIPtCut 1.0*GeV
-
-create Herwig::QTildeMatching QTildeMatching HwQTildeMatching.so
-set QTildeMatching:ShowerHandler /Herwig/Shower/ShowerHandler
-# set this to off, if the shower pt veto is off
-set QTildeMatching:RestrictPhasespace On
-set QTildeMatching:BornScaleInSubtraction BornScale
-set QTildeMatching:RealEmissionScaleInSubtraction BornScale
-set QTildeMatching:EmissionScaleInSubtraction BornScale
-set QTildeMatching:QTildeFinder /Herwig/Shower/PartnerFinder
-set QTildeMatching:MaxPtIsMuF Yes
-# just a dummy, since SudakovCommonn can't be used
-# it's only used to get the value of the kinCutoffScale
-set QTildeMatching:QTildeSudakov /Herwig/Shower/QtoQGSudakov
-
-################################################################################
-# Setup utilities for process generation
-################################################################################
-
-cd /Herwig/MatrixElements/Matchbox
-mkdir Utility
-cd Utility
-
-create Herwig::Tree2toNGenerator DiagramGenerator
-insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFGVertex
-insert DiagramGenerator:Vertices 0 /Herwig/Vertices/GGGVertex
-
-insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFPVertex
-insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFZVertex
-
-cp /Herwig/Vertices/FFWVertex /Herwig/Vertices/FFWDiagonalVertex
-set /Herwig/Vertices/FFWDiagonalVertex:Diagonal Yes
-insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFWDiagonalVertex
-
-insert DiagramGenerator:Vertices 0 /Herwig/Vertices/WWHVertex
-insert DiagramGenerator:Vertices 0 /Herwig/Vertices/WWWVertex
-insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFHVertex
-insert DiagramGenerator:Vertices 0 /Herwig/Vertices/HGGVertex
-insert DiagramGenerator:Vertices 0 /Herwig/Vertices/HHHVertex
-
-insert DiagramGenerator:ExcludeInternal 0 /Herwig/Particles/h0
-
-create Herwig::ProcessData ProcessData
-
-set /Herwig/MatrixElements/Matchbox/Factory:DiagramGenerator DiagramGenerator
-set /Herwig/MatrixElements/Matchbox/Factory:ProcessData ProcessData 
-
 ################################################################################
 # Setup phasespace generators
 ################################################################################
@@ -498,15 +417,20 @@ cd /Herwig/MatrixElements/Matchbox
 mkdir Phasespace
 cd Phasespace
 
-create Herwig::MatchboxRambo Rambo
+create Herwig::PhasespaceCouplings PhasespaceCouplings
 
-create Herwig::FlatInvertiblePhasespace DetPhasespace
+create Herwig::MatchboxRambo Rambo
+set Rambo:CouplingData PhasespaceCouplings
+
+create Herwig::FlatInvertiblePhasespace InvertiblePhasespace
+set InvertiblePhasespace:CouplingData PhasespaceCouplings
 
 create Herwig::TreePhasespaceChannels TreePhasespaceChannels
 create Herwig::TreePhasespace TreePhasespace
 set TreePhasespace:ChannelMap TreePhasespaceChannels
 set TreePhasespace:M0 0.0001*GeV
 set TreePhasespace:MC 0.000001*GeV
+set TreePhasespace:CouplingData PhasespaceCouplings
 
 do TreePhasespace:SetPhysicalCoupling 21 -1 1 0.059
 do TreePhasespace:SetPhysicalCoupling 21 -2 2 0.059
@@ -611,6 +535,86 @@ do TreePhasespace:SetCoupling 22 24 -24 0.00755391226478475287
 do TreePhasespace:SetCoupling 23 24 -24 0.02637401475019835008
 
 set /Herwig/MatrixElements/Matchbox/Factory:Phasespace TreePhasespace
+
+
+################################################################################
+# Setup utilities for matching
+################################################################################
+
+cd /Herwig/MatrixElements/Matchbox
+
+create Herwig::MEMatching MEMatching
+set MEMatching:RestrictPhasespace On
+set MEMatching:BornScaleInSubtraction BornScale
+set MEMatching:RealEmissionScaleInSubtraction RealScale
+set MEMatching:EmissionScaleInSubtraction RealScale
+set MEMatching:BornScaleInSplitting ShowerScale
+set MEMatching:RealEmissionScaleInSplitting ShowerScale
+set MEMatching:EmissionScaleInSplitting ShowerScale
+set MEMatching:MaxPtIsMuF Yes
+set MEMatching:FFPtCut 1.0*GeV
+set MEMatching:FIPtCut 1.0*GeV
+set MEMatching:IIPtCut 1.0*GeV
+
+create Herwig::ShowerApproximationGenerator MECorrectionHandler
+set MECorrectionHandler:ShowerApproximation MEMatching
+set MECorrectionHandler:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/InvertiblePhasespace
+set MECorrectionHandler:FreezeGrid 100000
+
+create Herwig::DipoleMatching DipoleMatching HwDipoleMatching.so
+set DipoleMatching:RestrictPhasespace On
+set DipoleMatching:BornScaleInSubtraction BornScale
+set DipoleMatching:RealEmissionScaleInSubtraction BornScale
+set DipoleMatching:EmissionScaleInSubtraction BornScale
+set DipoleMatching:MaxPtIsMuF Yes
+set DipoleMatching:FFPtCut 1.014259*GeV
+set DipoleMatching:FIPtCut 1.0*GeV
+set DipoleMatching:IIPtCut 1.0*GeV
+
+create Herwig::QTildeMatching QTildeMatching HwQTildeMatching.so
+set QTildeMatching:ShowerHandler /Herwig/Shower/ShowerHandler
+# set this to off, if the shower pt veto is off
+set QTildeMatching:RestrictPhasespace On
+set QTildeMatching:BornScaleInSubtraction BornScale
+set QTildeMatching:RealEmissionScaleInSubtraction BornScale
+set QTildeMatching:EmissionScaleInSubtraction BornScale
+set QTildeMatching:QTildeFinder /Herwig/Shower/PartnerFinder
+set QTildeMatching:MaxPtIsMuF Yes
+# just a dummy, since SudakovCommonn can't be used
+# it's only used to get the value of the kinCutoffScale
+set QTildeMatching:QTildeSudakov /Herwig/Shower/QtoQGSudakov
+
+################################################################################
+# Setup utilities for process generation
+################################################################################
+
+cd /Herwig/MatrixElements/Matchbox
+mkdir Utility
+cd Utility
+
+create Herwig::Tree2toNGenerator DiagramGenerator
+insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFGVertex
+insert DiagramGenerator:Vertices 0 /Herwig/Vertices/GGGVertex
+
+insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFPVertex
+insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFZVertex
+
+cp /Herwig/Vertices/FFWVertex /Herwig/Vertices/FFWDiagonalVertex
+set /Herwig/Vertices/FFWDiagonalVertex:Diagonal Yes
+insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFWDiagonalVertex
+
+insert DiagramGenerator:Vertices 0 /Herwig/Vertices/WWHVertex
+insert DiagramGenerator:Vertices 0 /Herwig/Vertices/WWWVertex
+insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFHVertex
+insert DiagramGenerator:Vertices 0 /Herwig/Vertices/HGGVertex
+insert DiagramGenerator:Vertices 0 /Herwig/Vertices/HHHVertex
+
+insert DiagramGenerator:ExcludeInternal 0 /Herwig/Particles/h0
+
+create Herwig::ProcessData ProcessData
+
+set /Herwig/MatrixElements/Matchbox/Factory:DiagramGenerator DiagramGenerator
+set /Herwig/MatrixElements/Matchbox/Factory:ProcessData ProcessData 
 
 ################################################################################
 # Setup jet cuts

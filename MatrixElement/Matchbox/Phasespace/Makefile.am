@@ -49,4 +49,6 @@ TreePhasespaceChannels.h \
 MatchboxReference.h \
 MatchboxReference.cc \
 FlatInvertiblePhasespace.h \
-FlatInvertiblePhasespace.cc
+FlatInvertiblePhasespace.cc \
+PhasespaceCouplings.h \
+PhasespaceCouplings.cc

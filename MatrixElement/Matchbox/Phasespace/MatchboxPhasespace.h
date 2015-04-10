@@ -18,26 +18,11 @@
 #include "Herwig++/MatrixElement/Matchbox/Utility/LastMatchboxXCombInfo.h"
 #include "Herwig++/MatrixElement/Matchbox/Utility/ProcessData.fh"
 #include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.fh"
-#include "ThePEG/Persistency/PersistentOStream.h"
-#include "ThePEG/Persistency/PersistentIStream.h"
-
-#include <boost/tuple/tuple.hpp>
-#include <boost/tuple/tuple_comparison.hpp>
+#include "Herwig++/MatrixElement/Matchbox/Phasespace/PhasespaceCouplings.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
-typedef boost::tuple<long,long,long> LTriple;
-
-inline PersistentOStream& operator<<(PersistentOStream& os, const LTriple& t) {
-  os << t.get<0>() << t.get<1>() << t.get<2>();
-  return os;
-}
-
-inline PersistentIStream& operator>>(PersistentIStream& is, LTriple& t) {
-  is >> t.get<0>() >> t.get<1>() >> t.get<2>();
-  return is;
-}
 
 /**
  * \ingroup Matchbox
@@ -335,7 +320,7 @@ private:
   /**
    * Couplings to be used in diagram weighting
    */
-  map<LTriple,double> couplings;
+  Ptr<PhasespaceCouplings>::ptr theCouplings;
 
   /**
    * Interface function to setcoupling

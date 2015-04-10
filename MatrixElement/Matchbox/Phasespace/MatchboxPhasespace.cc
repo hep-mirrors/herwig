@@ -16,6 +16,7 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Command.h"
+#include "ThePEG/Interface/Reference.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -26,7 +27,8 @@
 using namespace Herwig;
 
 MatchboxPhasespace::MatchboxPhasespace() 
-  : singularCutoff(10*GeV), theUseMassGenerators(false), theLoopParticleIdMin(200001), theLoopParticleIdMax(200100) {}
+  : singularCutoff(10*GeV), theUseMassGenerators(false),
+    theLoopParticleIdMin(200001), theLoopParticleIdMax(200100) {}
 
 MatchboxPhasespace::~MatchboxPhasespace() {}
 
@@ -202,29 +204,29 @@ void MatchboxPhasespace::setCoupling(long a, long b, long c,
     return;
   }
   if ( !includeCrossings ) {
-    couplings[LTriple(a,b,c)] = coupling;
+    theCouplings->couplings()[LTriple(a,b,c)] = coupling;
     return;
   }
   if ( A->CC() ) {
-    couplings[LTriple(-a,b,c)] = coupling;
-    couplings[LTriple(-a,c,b)] = coupling;
+    theCouplings->couplings()[LTriple(-a,b,c)] = coupling;
+    theCouplings->couplings()[LTriple(-a,c,b)] = coupling;
   } else {
-    couplings[LTriple(a,b,c)] = coupling;
-    couplings[LTriple(a,c,b)] = coupling;
+    theCouplings->couplings()[LTriple(a,b,c)] = coupling;
+    theCouplings->couplings()[LTriple(a,c,b)] = coupling;
   }
   if ( B->CC() ) {
-    couplings[LTriple(-b,a,c)] = coupling;
-    couplings[LTriple(-b,c,a)] = coupling;
+    theCouplings->couplings()[LTriple(-b,a,c)] = coupling;
+    theCouplings->couplings()[LTriple(-b,c,a)] = coupling;
   } else {
-    couplings[LTriple(b,a,c)] = coupling;
-    couplings[LTriple(b,c,a)] = coupling;
+    theCouplings->couplings()[LTriple(b,a,c)] = coupling;
+    theCouplings->couplings()[LTriple(b,c,a)] = coupling;
   }
   if ( C->CC() ) {
-    couplings[LTriple(-c,a,b)] = coupling;
-    couplings[LTriple(-c,b,a)] = coupling;
+    theCouplings->couplings()[LTriple(-c,a,b)] = coupling;
+    theCouplings->couplings()[LTriple(-c,b,a)] = coupling;
   } else {
-    couplings[LTriple(c,a,b)] = coupling;
-    couplings[LTriple(c,b,a)] = coupling;
+    theCouplings->couplings()[LTriple(c,a,b)] = coupling;
+    theCouplings->couplings()[LTriple(c,b,a)] = coupling;
   }
 }
 
@@ -271,8 +273,8 @@ MatchboxPhasespace::timeLikeWeight(const Tree2toNDiagram& diag,
   LTriple vertexKey(diag.allPartons()[branch]->id(),
 		    diag.allPartons()[children.first]->id(),
 		    diag.allPartons()[children.second]->id());
-  map<LTriple,double>::const_iterator cit = couplings.find(vertexKey);
-  if ( cit != couplings.end() ){
+  map<LTriple,double>::const_iterator cit = theCouplings->couplings().find(vertexKey);
+  if ( cit != theCouplings->couplings().end() ){
     res.first *= cit->second;
   }else{
     if(factory()->verboseDia())
@@ -337,8 +339,8 @@ double MatchboxPhasespace::spaceLikeWeight(const Tree2toNDiagram& diag,
 			  diag.allPartons()[children.second]->id(),
 			  diag.allPartons()[children.first]->id());
   }
-  map<LTriple,double>::const_iterator cit = couplings.find(vertexKey);
-  if ( cit != couplings.end() ){
+  map<LTriple,double>::const_iterator cit = theCouplings->couplings().find(vertexKey);
+  if ( cit != theCouplings->couplings().end() ){
     res.first *= cit->second;
   }else{
     if(factory()->verboseDia())
@@ -467,26 +469,16 @@ int MatchboxPhasespace::nDim(const cPDVector& data) const {
 
 void MatchboxPhasespace::persistentOutput(PersistentOStream & os) const {
   os << theLastXComb
-     << ounit(singularCutoff,GeV) << theUseMassGenerators << theLoopParticleIdMin << theLoopParticleIdMax;
-  //<< couplings; // no idea why this isn't working
-  os << couplings.size();
-  for ( map<LTriple,double>::const_iterator cit = 
-	  couplings.begin(); cit != couplings.end(); ++cit )
-    os << cit->first << cit->second;
+     << ounit(singularCutoff,GeV) << theUseMassGenerators 
+     << theLoopParticleIdMin << theLoopParticleIdMax
+     << theCouplings;
 }
 
 void MatchboxPhasespace::persistentInput(PersistentIStream & is, int) {
   is >> theLastXComb
-     >> iunit(singularCutoff,GeV) >> theUseMassGenerators >> theLoopParticleIdMin >> theLoopParticleIdMax;
-  //>> couplings;  // no idea why this isn't working
-  couplings.clear();
-  size_t size;
-  LTriple k;
-  is >> size;
-  while ( size-- && is ) {
-    is >> k;
-    is >> couplings[k];
-  }
+     >> iunit(singularCutoff,GeV) >> theUseMassGenerators
+     >> theLoopParticleIdMin >> theLoopParticleIdMax
+     >> theCouplings;
   lastMatchboxXComb(theLastXComb);
 }
 
@@ -554,6 +546,12 @@ void MatchboxPhasespace::Init() {
      "in loop induced processes.",
      &MatchboxPhasespace::theLoopParticleIdMax, 200100, 0, 0,
      false, false, Interface::lowerlim);
+
+
+  static Reference<MatchboxPhasespace,PhasespaceCouplings> interfaceCouplingData
+    ("CouplingData",
+     "Set the storage for the couplings.",
+     &MatchboxPhasespace::theCouplings, false, false, true, false, false);
 
 }
 
