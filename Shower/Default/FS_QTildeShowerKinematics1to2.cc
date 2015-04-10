@@ -116,8 +116,15 @@ void FS_QTildeShowerKinematics1to2::reconstructLast(const tShowerParticlePtr las
   lastParam.beta = ( sqr(theMass) + sqr(lastParam.pt) - sqr(lastParam.alpha) * pVector().m2() )
     / ( 2. * lastParam.alpha * p_dot_n() );
   // set that new momentum
-  last->set5Momentum(sudakov2Momentum( lastParam.alpha, lastParam.beta,
-				       lastParam.ptx  , lastParam.pty) );
+  Lorentz5Momentum newMomentum = sudakov2Momentum( lastParam.alpha, lastParam.beta,
+						   lastParam.ptx  , lastParam.pty);
+  if(last->data().stable()) {
+    last->set5Momentum( newMomentum );
+  }
+  else {
+    last->boost(last->momentum().findBoostToCM());
+    last->boost(newMomentum.boostVector());
+  }
 }
 
 void FS_QTildeShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr) {
