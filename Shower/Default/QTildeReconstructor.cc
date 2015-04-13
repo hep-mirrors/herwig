@@ -397,6 +397,9 @@ reconstructHardJets(ShowerTreePtr hard,
   _intrinsic=intrinsic;
   // extract the particles from the ShowerTree
   vector<ShowerProgenitorPtr> ShowerHardJets=hard->extractProgenitors();
+  for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
+    _boosts[ShowerHardJets[ix]->progenitor()] = LorentzRotation();
+  }
   try {
     // old recon method, using new member functions
     if(_reconopt==0) {
@@ -539,6 +542,11 @@ reconstructHardJets(ShowerTreePtr hard,
     _progenitor=tShowerParticlePtr();
     _intrinsic.clear();
     _currentTree = tShowerTreePtr();
+    for(map<tPPtr,LorentzRotation >::const_iterator bit=_boosts.begin();bit!=_boosts.end();++bit) {
+      LorentzRotation rot = bit->second.inverse();
+      bit->first->transform(rot);
+    }
+    _boosts.clear();
     return false;
   }
   _progenitor=tShowerParticlePtr();
@@ -559,10 +567,18 @@ reconstructHardJets(ShowerTreePtr hard,
     }
     if( ! (hadron->id() == parent->id() && hadron->children().size() <= 1)
        && parent->momentum().rho() > hadron->momentum().rho()) {
+      _progenitor=tShowerParticlePtr();
+      _intrinsic.clear();
       _currentTree = tShowerTreePtr();
+      for(map<tPPtr,LorentzRotation >::const_iterator bit=_boosts.begin();bit!=_boosts.end();++bit) {
+	LorentzRotation rot = bit->second.inverse();
+	bit->first->transform(rot);
+      }
+      _boosts.clear();
       return false;
     }
   }
+  _boosts.clear();
   _currentTree = tShowerTreePtr();
   return true;
 }
@@ -2729,6 +2745,9 @@ void QTildeReconstructor::deepTransform(PPtr particle,
 					const LorentzRotation & r,
 					bool match,
 					PPtr original) const {
+  if(_boosts.find(particle)!=_boosts.end()) {
+    _boosts[particle] *= r;
+  }
   Lorentz5Momentum porig = particle->momentum();
   if(!original) original = particle;
   for ( int i = 0, N = particle->children().size(); i < N; ++i ) {

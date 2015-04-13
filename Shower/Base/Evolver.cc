@@ -1383,11 +1383,11 @@ void Evolver::hardestEmission(bool hard) {
       tag = inParticle + outParticles[it] + "," + outParticles[(it+1)%2] + ";";
       dm = generator()->findDecayMode(tag);
       if(dm) break;
-    }     
+    }
 
     // get the decayer
     HwDecayerBasePtr decayer;   
-    if(dm) decayer = dynamic_ptr_cast<HwDecayerBasePtr>(dm->decayer());   
+    if(dm) decayer = dynamic_ptr_cast<HwDecayerBasePtr>(dm->decayer());
     // check if decayer has a FSR POWHEG correction 
     if (!decayer || decayer->hasPOWHEGCorrection()<2){
       if(_hardtree) connectTrees(currentTree(),_hardtree,hard);
@@ -2478,10 +2478,13 @@ void Evolver::connectTrees(ShowerTreePtr showerTree,
 				 << Exception::eventerror;
     if(particlesToShower[iloc]->progenitor()->dataPtr()->stable()) {
       particlesToShower[iloc]->progenitor()->set5Momentum((**cit).showerMomentum());
+      particlesToShower[iloc]->copy()->set5Momentum((**cit).showerMomentum());
     }
     else {
-      particlesToShower[iloc]->progenitor()->boost(particlesToShower[iloc]->progenitor()->momentum().findBoostToCM());
-      particlesToShower[iloc]->progenitor()->boost((**cit).showerMomentum().boostVector());
+      LorentzRotation boost(particlesToShower[iloc]->progenitor()->momentum().findBoostToCM());
+      boost.boost((**cit).showerMomentum().boostVector());
+      particlesToShower[iloc]->progenitor()->transform(boost);
+      particlesToShower[iloc]->copy()      ->transform(boost);
     }
     matched[iloc] = true;
   }

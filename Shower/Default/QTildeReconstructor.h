@@ -542,6 +542,11 @@ private:
    * set for quick access
    */
   set<cPDPtr> _noRescale;
+
+  /**
+   * Storage of the boosts applied to enable resetting after failure
+   */
+  mutable map<tPPtr,LorentzRotation > _boosts;
 };
 
 }
