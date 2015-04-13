@@ -1,0 +1,15 @@
+#=============================================================================
+#                ::::: Use NNPDF3.0 NLO from LHAPDF 6:::::
+#
+# The LHAPDF6 library must be available to use this snippet.
+#=============================================================================
+
+cd /Herwig/Partons
+create ThePEG::LHAPDF PDFSet ThePEGLHAPDF.so
+set PDFSet:PDFName NNPDF30_nlo_as_0118.LHgrid
+set PDFSet:RemnantHandler HadronRemnants
+set /Herwig/Particles/p+:PDF PDFSet
+set /Herwig/Particles/pbar-:PDF PDFSet
+
+cd /
+

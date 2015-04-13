@@ -1,0 +1,11 @@
+#=============================================================================
+#                ::::: Switch off the underlying event :::::
+#
+# 
+#=============================================================================
+
+cd /Herwig/EventHandlers
+set /Herwig/Shower/ShowerHandler:MPIHandler    NULL
+
+cd /
+

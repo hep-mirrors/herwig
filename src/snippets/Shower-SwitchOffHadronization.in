@@ -1,0 +1,12 @@
+#=============================================================================
+#                ::::: Switch off hadronization and decay:::::
+#
+# 
+#=============================================================================
+
+cd /Herwig/EventHandlers
+set theLesHouchesHandler:HadronizationHandler  NULL	# Switch off hadronization
+set theLesHouchesHandler:DecayHandler          NULL	# Switch off decay
+
+cd /
+

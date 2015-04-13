@@ -1,0 +1,12 @@
+#=============================================================================
+#                ::::: Use a center-of-mass energy of 14 TeV:::::
+#
+#
+#=============================================================================
+
+cd /Herwig/Generators
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 14000.0
+set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
+
+cd /
+

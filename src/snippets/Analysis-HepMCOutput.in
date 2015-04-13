@@ -1,0 +1,14 @@
+#=============================================================================
+#                ::::: Create HepMC output:::::
+#
+# Warning: Do not use this snippet together with Rivet analysis handler.
+#=============================================================================
+
+insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
+set /Herwig/Analysis/HepMCFile:PrintEvent 10000000 		# Number of events which should be written to output
+set /Herwig/Analysis/HepMCFile:Format GenEvent 			# Switch to default IO_GenEvent format
+set /Herwig/Analysis/HepMCFile:Units GeV_mm			# Units which were set while compiling HepMC
+set /Herwig/Analysis/HepMCFile:Filename   example.hepmc 	# Name of HepMC output file
+
+cd /
+

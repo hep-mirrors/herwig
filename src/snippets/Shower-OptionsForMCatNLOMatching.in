@@ -1,0 +1,18 @@
+#=============================================================================
+#                ::::: Shower options for MC@NLO Matching:::::
+#
+# Use these options if you use MC@NLO Matching.
+# These options set up the evolver to veto hard emissions > scale up
+#=============================================================================
+
+cd /Herwig/Shower
+	set Evolver:MaxTry               100 # MaxTry 100 sets the maximum number of times to try showering a given shower tree to 100.
+	set Evolver:HardVetoMode         Yes 	# HardVetoMode Yes to veto emissions with pT greater than pT_max.
+	set Evolver:HardVetoScaleSource  Read 	# HardVetoScaleSource Read means pT_max comes from hepeup.SCALUP.
+	set Evolver:HardVetoReadOption   PrimaryCollision
+						# This is what you need to set _along_with_ HardVetoMode Yes in
+						# the case of Powheg external events _AND_ mc@nlo.
+	set Evolver:MECorrMode           No 	# MeCorrMode No turns off ME corrs.
+
+cd /
+

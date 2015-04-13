@@ -1,0 +1,14 @@
+#=============================================================================
+#                ::::: Create Rivet output:::::
+#
+# Warning: Do not use this snippet together with HepMC analysis handler.
+#=============================================================================
+
+
+cd /Herwig/Analysis
+create ThePEG::RivetAnalysis RivetAnalysis RivetAnalysis.so
+insert /Herwig/Generators/LHCGenerator:AnalysisHandlers 1 /Herwig/Analysis/RivetAnalysis
+insert RivetAnalysis:Analyses 0 MC_TTBAR # Name of Rivet Analysis
+
+cd /
+

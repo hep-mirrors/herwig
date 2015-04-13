@@ -1,0 +1,11 @@
+#=============================================================================
+#                ::::: Switch off decay:::::
+#
+# 
+#=============================================================================
+
+cd /Herwig/EventHandlers
+set theLesHouchesHandler:DecayHandler          NULL	# Switch off decay
+
+cd /
+
