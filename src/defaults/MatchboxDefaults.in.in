@@ -690,7 +690,7 @@ cp SHatScale FixedScale
 set FixedScale:FixedScale 100.*GeV
 create Herwig::MatchboxPtScale MaxptScale
 set MaxptScale:JetFinder /Herwig/Cuts/JetFinder
-create Herwig::MatchboxLeptonMassScale LeptonMassScale
+create Herwig::MatchboxLeptonMassScale LeptonPairMassScale
 create Herwig::MatchboxLeptonPtScale LeptonPtScale
 create Herwig::MatchboxHtScale HTScale
 create Herwig::MatchboxTopMassScale TopMassScale
@@ -698,6 +698,9 @@ create Herwig::MatchboxTopMTScale TopMTScale
 create Herwig::MatchboxTopMinMTScale TopMinMTScale
 set HTScale:JetFinder /Herwig/Cuts/JetFinder
 set HTScale:IncludeMT No
+cp HTScale HTPrimeScale
+set HTPrimeScale:IncludeMT Yes
+cp LeptonPairMassScale LeptonQ2Scale
 
 set /Herwig/MatrixElements/Matchbox/Factory:ScaleChoice LeptonMassScale
 

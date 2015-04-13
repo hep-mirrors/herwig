@@ -149,7 +149,7 @@ set EEFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale
 # set EEFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPtScale
 # set EEFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/MaxptScale
 # set EEFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/HTScale
-# set EEFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonMassScale
+# set EEFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale
 
 ## Hard process scale variation
 set EEFactory:RenormalizationScaleFactor 1.0

@@ -175,7 +175,7 @@ set DISFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale
 # set DISFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPtScale
 # set DISFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/MaxptScale
 # set DISFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/HTScale
-# set DISFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonMassScale
+# set DISFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonQ2Scale
 
 ## Hard process scale variation
 set DISFactory:RenormalizationScaleFactor 1.0
