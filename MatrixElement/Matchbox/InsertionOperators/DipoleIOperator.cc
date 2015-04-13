@@ -92,12 +92,19 @@ void DipoleIOperator::setXComb(tStdXCombPtr xc) {
     CA = SM().Nc();
     CF = (SM().Nc()*SM().Nc()-1.0)/(2.*SM().Nc());
     gammaQuark = (3./2.)*CF;
-    // gammaGluon = (11./6.)*CA - (1./3.)*NLightJetVec().size();
+      // gammaGluon = (11./6.)*CA - (1./3.)*NLightJetVec().size();
     gammaGluon = (11./6.)*CA - (1./3.)*lastBorn()->nLightJetVec().size();
     betaZero = gammaGluon;
+    double alpha=factory()->alpha_parameter();
     KQuark = (7./2.-sqr(pi)/6.)*CF;
-    // KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*NLightJetVec().size();
+    KQuark +=-CF*sqr(log(alpha))+gammaQuark*(alpha-1-log(alpha));
+    
+    
+      // KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*NLightJetVec().size();
     KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*lastBorn()->nLightJetVec().size();
+    KGluon +=-CA*sqr(log(alpha))+gammaGluon*(alpha-1-log(alpha));
+                                            
+                                            
     if ( isDR() ) {
       gammaQuark -= CF/2.;
       gammaGluon -= CA/6.;

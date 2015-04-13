@@ -59,6 +59,10 @@ double FIqqxDipole::me2Avg(double ccme2) const {
 
   double x = subtractionParameters()[0];
   double z = subtractionParameters()[1];
+  
+  if (alpha()<1-x) {
+    return false;
+  }
 
   Energy2 prop = 
     2.*((realEmissionME()->lastXComb().meMomenta()[realEmitter()])*
@@ -90,6 +94,10 @@ double FIqqxDipole::me2() const {
 
   double x = subtractionParameters()[0];
   double z = subtractionParameters()[1];
+  
+  if (alpha()<1-x) {
+    return false;
+  }
 
   Energy2 prop = 
     2.*((realEmissionME()->lastXComb().meMomenta()[realEmitter()])*

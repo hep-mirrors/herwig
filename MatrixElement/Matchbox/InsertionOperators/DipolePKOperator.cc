@@ -286,6 +286,7 @@ double DipolePKOperator::sumParton(int id) const {
   assert(pdf);
 
   double res = 0.;
+  
 
   ////////////////////////////
   // K operator             //
@@ -484,35 +485,60 @@ double DipolePKOperator::softLog(tcPDPtr p) const {
   return res;
 }
 
+
+
 double DipolePKOperator::KBarqq() const {
   assert(abs(parton->id()) < 7);
-  double res = 
-    2.*softLogByz(parton) +
-    (sqr(pi) - 5.)*PDFx(parton);
+  double res =  2.* CF*softLogByz(parton);
+  
+  res +=  CF*(sqr(pi) - 5.)*PDFx(parton);//(C.17)
+  
   if ( z > x ) {
-    res += PDFxByz(parton)*( (1.-z) - (1.+z)*log((1.-z)/z) ) / z;
+    res += ( CF*(1.-z) - CF*(1.+z)*log(factory()->alpha_parameter()*(1.-z)/z) )* PDFxByz(parton)/ z;
   }
-  return (res * CF);
+  
+  double alpha=factory()->alpha_parameter();
+  if (alpha<1.) {
+    
+    res+=PDFx(parton)*(2*CF*sqr(log(alpha))-gammaQuark*(alpha-1.-log(alpha)));
+    if ( z > x ) {
+      res+=CF*(2/(1-z)*(log(alpha*(2-z)/(1+alpha-z))-log((2-z)/(1-z))*(z<(1-alpha)?1.:0.)))*PDFxByz(parton)/z;
+    }
+  }
+  
+  return res ;
 }
 
-double DipolePKOperator::KTildeqq() const {
-  assert(abs(parton->id()) < 7);
-  double res =
-    2.*CF*softLog(parton) - CF*(sqr(pi)/3.)*PDFx(parton);
+double DipolePKOperator::KBargg() const {
+
+  assert(parton->id() == ParticleID::g);
+  double res = 
+    2.* CA* softLogByz(parton);
+  
+  res +=   ( CA*( sqr(pi) - 50./9. ) + (8./9.)*lastBorn()->nLightJetVec().size() ) * PDFx(parton);
   if ( z > x ) {
-    res -= ( CF * (1.+z) * log(1.-z) ) * PDFxByz(parton) / z;
+    res += 2.*CA*((1.-z)/z-1.+z*(1.-z))*log(factory()->alpha_parameter()*(1.-z)/z)*PDFxByz(parton)/z;
   }
+  
+  if (factory()->alpha_parameter()<1.) {
+    double alpha=factory()->alpha_parameter();
+    res+=PDFx(parton)*(2*CA*sqr(log(alpha))-gammaGluon*(alpha-1.-log(alpha)));
+    if ( z > x ) {
+      res+=CA*(2/(1-z)*(log(alpha*(2-z)/(1+alpha-z))-log((2-z)/(1-z))*(z<(1-alpha)?1.:0.)))*PDFxByz(parton)/z;
+    }
+  }
+  
+  
   return res;
 }
 
-double DipolePKOperator::Pqq() const {
+double DipolePKOperator::KBargq() const {
   assert(abs(parton->id()) < 7);
-  double res = (3./2.+2.*log(1.-x)) * PDFx(parton);
-  if ( z > x ) {
-    res += 2.*(PDFxByz(parton) - z*PDFx(parton))/(z*(1.-z));
-    res -= PDFxByz(parton) * (1.+z)/z;
-  }
-  return (CF*res);
+  if ( z < x )
+    return 0.0;
+  return
+    PDFxByz(getParticleData(ParticleID::g)) *
+    ( 0.5*(sqr(z)+sqr(1.-z))*log(factory()->alpha_parameter()*(1.-z)/z) + z*(1.-z) ) / z;
 }
 
 double DipolePKOperator::KBarqg() const {
@@ -520,7 +546,7 @@ double DipolePKOperator::KBarqg() const {
   if ( z < x )
     return 0.0;
   double res = 0.0;
-  double factor = CF * ( ( (1.+sqr(1.-z)) / z ) * log((1.-z)/z) + z ) / z;
+  double factor = CF * ( ( (1.+sqr(1.-z)) / z ) * log(factory()->alpha_parameter()*(1.-z)/z) + z ) / z;
   // int nlp = NLightProtonVec().size();
   int nlp = lastBorn()->nLightProtonVec().size();
   for ( int f = -nlp; f <= nlp; ++f ) {
@@ -531,10 +557,95 @@ double DipolePKOperator::KBarqg() const {
   return res;
 }
 
+
+
+
+
+
+
+
+double DipolePKOperator::KTildeqq() const {
+  assert(abs(parton->id()) < 7);
+  double res =
+    2.*CF*softLog(parton) - CF*(sqr(pi)/3.)*PDFx(parton);
+  if ( z > x ) {
+    res -= ( CF * (1.+z) * log((1.-z)/factory()->alpha_parameter()) ) * PDFxByz(parton) / z;
+  }
+  
+  if (factory()->alpha_parameter()!=1.) {
+    
+    
+    
+    double alpha=factory()->alpha_parameter();
+    //(...)_\beta
+    res+=CF *(2./(1.-z)*log(1-z))*((z<(1-alpha))?1.:0.)*PDFx(parton);
+    if ( z > x ) {
+        res+= -1.*CF*((2./(1.-z)*log(1-z))*((z<(1-alpha))?1.:0.))*PDFxByz(parton)/z;
+    }
+    
+    if ( z > x ) {
+      double AP_Pqqhat=CF *((1+z*z)/(1-z));
+      res+=AP_Pqqhat*log(min(1.,alpha/(1-z))) *PDFxByz(parton)/z;
+      res+= (CF*2/(1-z)*(log((1+alpha-z)/alpha)-((z>(1-alpha))?1.:0.)*log(2-z))   *PDFxByz(parton)/z);
+    }
+  }
+  
+  return res;
+}
+
+double DipolePKOperator::KTildegg() const {
+  
+  assert(parton->id() == ParticleID::g);
+  double res =
+    2.*CA*softLog(parton) - CA*(sqr(pi)/3.)*PDFx(parton);
+  if ( z > x ) {
+    res += ( 2.*CA * ( (1.-z)/z -1. + z*(1.-z) ) * log((1.-z)/factory()->alpha_parameter()) ) * PDFxByz(parton) / z;
+  }
+  
+  if (factory()->alpha_parameter()!=1.) {
+    double alpha=factory()->alpha_parameter();
+    
+    //(...)_\beta
+    res+=CA *(2./(1.-z)*log(1-z))*(z<(1-alpha)?1.:0.)*PDFx(parton);
+    if ( z > x ) {
+      res+= -1.*CA*((2./(1.-z)*log(1-z))*((z<(1-alpha))?1.:0.))*PDFxByz(parton)/z;
+    }
+    
+    if ( z > x ) {
+      double AP_Pqqhat=2.*CA *((z)/(1-z)+(1-z)/(z)+z*(1-z));
+      res+=AP_Pqqhat*log(min(1.,alpha/(1-z))) *PDFxByz(parton)/z;
+      res+= (CA*2/(1-z)*(log((1+alpha-z)/alpha)-(z>(1-alpha)?1.:0.)*log(2-z))   *PDFxByz(parton)/z);
+    }
+  }
+  
+  return res;
+}
+
 double DipolePKOperator::KTildeqg() const {
+  assert(parton->id() == ParticleID::g);
+  if ( z < x )
+     return 0.0;
+  return Pqg() * (log((1.-z)/factory()->alpha_parameter()) + log(min(1.,factory()->alpha_parameter()/(1-z))));
+}
+
+double DipolePKOperator::KTildegq() const {
+  assert(abs(parton->id()) < 7);
   if ( z < x )
     return 0.0;
-  return Pqg() * log(1.-z);
+  return Pgq() * (log((1.-z)/factory()->alpha_parameter())+ log(min(1.,factory()->alpha_parameter()/(1-z))));
+}
+
+
+
+
+double DipolePKOperator::Pqq() const {
+  assert(abs(parton->id()) < 7);
+  double res = (3./2.+2.*log(1.-x)) * PDFx(parton);
+  if ( z > x ) {
+    res += 2.*(PDFxByz(parton) - z*PDFx(parton))/(z*(1.-z));
+    res -= PDFxByz(parton) * (1.+z)/z;
+  }
+  return (CF*res);
 }
 
 double DipolePKOperator::Pqg() const {
@@ -553,49 +664,11 @@ double DipolePKOperator::Pqg() const {
   return res;
 }
 
-double DipolePKOperator::KBargq() const {
-  assert(abs(parton->id()) < 7);
-  if ( z < x )
-    return 0.0;
-  return
-    PDFxByz(getParticleData(ParticleID::g)) *
-    ( 0.5*(sqr(z)+sqr(1.-z))*log((1.-z)/z) + z*(1.-z) ) / z;
-}
-
-double DipolePKOperator::KTildegq() const {
-  assert(abs(parton->id()) < 7);
-  if ( z < x )
-    return 0.0;
-  return Pgq() * log(1.-z);
-}
-
 double DipolePKOperator::Pgq() const {
   assert(abs(parton->id()) < 7);
   if ( z < x )
     return 0.0;
   return 0.5 * ( sqr(z) + sqr(1.-z) ) * PDFxByz(getParticleData(ParticleID::g)) / z;
-}
-
-double DipolePKOperator::KBargg() const {
-  assert(parton->id() == ParticleID::g);
-  double res = 
-    2.* CA* softLogByz(parton) +
-    // ( CA*( sqr(pi) - 50./9. ) + (8./9.)*NLightJetVec().size() ) * PDFx(parton);
-    ( CA*( sqr(pi) - 50./9. ) + (8./9.)*lastBorn()->nLightJetVec().size() ) * PDFx(parton);
-  if ( z > x ) {
-    res += 2.*CA*((1.-z)/z-1.+z*(1.-z))*log((1.-z)/z)*PDFxByz(parton)/z;
-  }
-  return res;
-}
-
-double DipolePKOperator::KTildegg() const {
-  assert(parton->id() == ParticleID::g);
-  double res =
-    2.*CA*softLog(parton) - CA*(sqr(pi)/3.)*PDFx(parton);
-  if ( z > x ) {
-    res += ( 2.*CA * ( (1.-z)/z -1. + z*(1.-z) ) * log(1.-z) ) * PDFxByz(parton) / z;
-  }
-  return res;
 }
 
 double DipolePKOperator::Pgg() const {

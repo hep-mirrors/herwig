@@ -55,6 +55,12 @@ double IFgqxDipole::me2Avg(double ccme2) const {
     return 0.0;
 
   double x = subtractionParameters()[0];
+  double u = subtractionParameters()[1];
+  
+  if (alpha()<u) {
+    return false;
+  }
+  
 
   Energy2 prop = 
     2.*((realEmissionME()->lastXComb().meMomenta()[realEmitter()])*
@@ -86,8 +92,13 @@ double IFgqxDipole::me2() const {
     return 0.0;
 
   double x = subtractionParameters()[0];
-
-  Energy2 prop = 
+  double u = subtractionParameters()[1];
+  
+  if (alpha()<u) {
+    return false;
+  }
+  
+  Energy2 prop =
     2.*((realEmissionME()->lastXComb().meMomenta()[realEmitter()])*
 	(realEmissionME()->lastXComb().meMomenta()[realEmission()]))*x;
 

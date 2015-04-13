@@ -53,7 +53,7 @@ MatchboxFactory::MatchboxFactory()
     thePoleData(""), theRealEmissionScales(false), theAllProcesses(false),
   theMECorrectionsOnly(false), theLoopSimCorrections(false), ranSetup(false),
   theFirstPerturbativePDF(true), theSecondPerturbativePDF(true),
-  inProductionMode(false), theSpinCorrelations(false) {}
+  inProductionMode(false), theSpinCorrelations(false),theAlphaParameter(1.) {}
 
 MatchboxFactory::~MatchboxFactory() {}
 
@@ -69,6 +69,10 @@ IBPtr MatchboxFactory::clone() const {
 IBPtr MatchboxFactory::fullclone() const {
   return new_ptr(*this);
 }
+
+
+
+double MatchboxFactory::alpha_parameter() const{return theAlphaParameter;}
 
 void MatchboxFactory::prepareME(Ptr<MatchboxMEBase>::ptr me) {
 
@@ -1200,7 +1204,7 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
      << theDipoleSet << theReweighters << thePreweighters
      << theMECorrectionsOnly<< theLoopSimCorrections<<theHighestVirtualsize << ranSetup
      << theIncoming << theFirstPerturbativePDF << theSecondPerturbativePDF 
-     << inProductionMode << theSpinCorrelations;
+     << inProductionMode << theSpinCorrelations<<theAlphaParameter;
 }
 
 void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
@@ -1229,7 +1233,7 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
      >> theDipoleSet >> theReweighters >> thePreweighters
      >> theMECorrectionsOnly>> theLoopSimCorrections>>theHighestVirtualsize >> ranSetup
      >> theIncoming >> theFirstPerturbativePDF >> theSecondPerturbativePDF
-     >> inProductionMode >> theSpinCorrelations;
+     >> inProductionMode >> theSpinCorrelations>>theAlphaParameter;
 }
 
 string MatchboxFactory::startParticleGroup(string name) {
@@ -1865,6 +1869,13 @@ void MatchboxFactory::Init() {
      "No",
      "",
      false);
+  
+  
+  static Parameter<MatchboxFactory,double> interfaceAlphaParameter
+  ("AlphaParameter",
+   "Nagy-AlphaParameter.",
+   &MatchboxFactory::theAlphaParameter, 1.0, 0.0, 0,
+   false, false, Interface::lowerlim);
 
 }
 
