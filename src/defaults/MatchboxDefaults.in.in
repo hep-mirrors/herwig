@@ -702,7 +702,7 @@ cp HTScale HTPrimeScale
 set HTPrimeScale:IncludeMT Yes
 cp LeptonPairMassScale LeptonQ2Scale
 
-set /Herwig/MatrixElements/Matchbox/Factory:ScaleChoice LeptonMassScale
+set /Herwig/MatrixElements/Matchbox/Factory:ScaleChoice LeptonPairMassScale
 
 ################################################################################
 # AlphaS
