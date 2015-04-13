@@ -15,3 +15,7 @@ cd /Herwig/MatrixElements/Matchbox
 set Factory:FirstPerturbativePDF No
 set Factory:SecondPerturbativePDF Yes
 
+do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting e-->e-,gamma; /Herwig/Shower/LtoLGammaSudakov
+do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting mu-->mu-,gamma; /Herwig/Shower/LtoLGammaSudakov
+do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting tau-->tau-,gamma; /Herwig/Shower/LtoLGammaSudakov
+
