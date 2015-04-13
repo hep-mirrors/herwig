@@ -45,6 +45,10 @@ SubtractionDipole::SubtractionDipole()
 
 SubtractionDipole::~SubtractionDipole() {}
 
+
+double SubtractionDipole::alpha() const{return factory()->alpha_parameter();}
+
+
 void SubtractionDipole::clearBookkeeping() {
   theRealEmitter = -1;
   theRealEmission = -1;

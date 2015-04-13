@@ -920,6 +920,15 @@ public:
    * future.
    */
   virtual void generateSubCollision(SubProcess & sub);
+      
+      
+      
+  /**
+   * Alpha parameter as in Nagy (http://arxiv.org/pdf/hep-ph/0307268v2.pdf) to restrict
+   *  dipole phase space
+   **/
+      
+  double alpha() const;
 
   //@}
 

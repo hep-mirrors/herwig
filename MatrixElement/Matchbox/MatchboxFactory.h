@@ -746,6 +746,27 @@ public:
    * information.
    */
   const string& runStorage();
+  
+  
+  /**
+   *  alpha of http://arxiv.org/pdf/hep-ph/0307268v2.pdf to restrict 
+   *  dipole phase space
+  **/
+  
+  double alpha_parameter() const;
+  
+  
+  /**
+   *  set the alpha parameter (needed for massive PK-Operator)
+   **/
+
+  
+  void setAlpha_parameter(double a){theAlphaParameter=a;}
+  
+  
+  
+  
+  
   //@}
 
 public:
@@ -1190,6 +1211,8 @@ private:
    * True, if spin correlation information should be provided, if possible.
    */
   bool theSpinCorrelations;
+  
+  double theAlphaParameter;
 
   /**
    * Command for production mode
