@@ -86,6 +86,11 @@ generateHardest(ShowerTreePtr tree) {
   higgs_ = tree->incomingLines().begin()->first->copy();
   // Get the Higgs boson mass.
   mh2_ = (quark_[0] + quark_[1]).m2();
+  mHiggs_ = sqrt(mh2_);
+  aS_ = SM().alphaS(sqr(mHiggs_));
+  Energy particleMass = QProgenitor   ->copy()->dataPtr()->mass();
+  mu_  = particleMass/mHiggs_;
+  mu2_ = sqr(mu_);
   // Generate emission and set _quark[0,1] and _gauge to be the 
   // momenta of q, qbar and g after the hardest emission:
   if(!getEvent()) {
