@@ -70,10 +70,6 @@ IBPtr MatchboxFactory::fullclone() const {
   return new_ptr(*this);
 }
 
-
-
-double MatchboxFactory::alpha_parameter() const{return theAlphaParameter;}
-
 void MatchboxFactory::prepareME(Ptr<MatchboxMEBase>::ptr me) {
 
   Ptr<MatchboxAmplitude>::ptr amp =

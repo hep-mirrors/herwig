@@ -95,7 +95,7 @@ void DipoleIOperator::setXComb(tStdXCombPtr xc) {
       // gammaGluon = (11./6.)*CA - (1./3.)*NLightJetVec().size();
     gammaGluon = (11./6.)*CA - (1./3.)*lastBorn()->nLightJetVec().size();
     betaZero = gammaGluon;
-    double alpha=factory()->alpha_parameter();
+    double alpha = factory()->alphaParameter();
     KQuark = (7./2.-sqr(pi)/6.)*CF;
     KQuark +=-CF*sqr(log(alpha))+gammaQuark*(alpha-1-log(alpha));
     

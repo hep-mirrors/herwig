@@ -500,12 +500,12 @@ double DipolePKOperator::KBarqq() const {
   res +=  CF*(sqr(pi) - 5.)*PDFx(parton);//(C.17)
   
   if ( z > x ) {
-    res += ( CF*(1.-z) - CF*(1.+z)*log(factory()->alpha_parameter()*(1.-z)/z) )* PDFxByz(parton)/ z;
+    res += ( CF*(1.-z) - CF*(1.+z)*log(factory()->alphaParameter()*(1.-z)/z) )* PDFxByz(parton)/ z;
   }
   
-  double alpha=factory()->alpha_parameter();
-  if (alpha<1.) {
-    
+  double alpha = factory()->alphaParameter();
+
+  if ( alpha < 1. ) {
     res+=PDFx(parton)*(2*CF*sqr(log(alpha))-gammaQuark*(alpha-1.-log(alpha)));
     if ( z > x ) {
       res+=CF*(2/(1-z)*(log(alpha*(2-z)/(1+alpha-z))-log((2-z)/(1-z))*(z<(1-alpha)?1.:0.)))*PDFxByz(parton)/z;
@@ -523,12 +523,12 @@ double DipolePKOperator::KBargg() const {
   
   res +=   ( CA*( sqr(pi) - 50./9. ) + (8./9.)*lastBorn()->nLightJetVec().size() ) * PDFx(parton);
   if ( z > x ) {
-    res += 2.*CA*((1.-z)/z-1.+z*(1.-z))*log(factory()->alpha_parameter()*(1.-z)/z)*PDFxByz(parton)/z;
+    res += 2.*CA*((1.-z)/z-1.+z*(1.-z))*log(factory()->alphaParameter()*(1.-z)/z)*PDFxByz(parton)/z;
   }
   
-  if (factory()->alpha_parameter()<1.) {
-    double alpha=factory()->alpha_parameter();
-    res+=PDFx(parton)*(2*CA*sqr(log(alpha))-gammaGluon*(alpha-1.-log(alpha)));
+  if ( factory()->alphaParameter() < 1. ) {
+    double alpha = factory()->alphaParameter();
+    res += PDFx(parton)*(2*CA*sqr(log(alpha))-gammaGluon*(alpha-1.-log(alpha)));
     if ( z > x ) {
       res+=CA*(2/(1-z)*(log(alpha*(2-z)/(1+alpha-z))-log((2-z)/(1-z))*(z<(1-alpha)?1.:0.)))*PDFxByz(parton)/z;
     }
@@ -544,7 +544,7 @@ double DipolePKOperator::KBargq() const {
     return 0.0;
   return
     PDFxByz(getParticleData(ParticleID::g)) *
-    ( 0.5*(sqr(z)+sqr(1.-z))*log(factory()->alpha_parameter()*(1.-z)/z) + z*(1.-z) ) / z;
+    ( 0.5*(sqr(z)+sqr(1.-z))*log(factory()->alphaParameter()*(1.-z)/z) + z*(1.-z) ) / z;
 }
 
 double DipolePKOperator::KBarqg() const {
@@ -552,7 +552,7 @@ double DipolePKOperator::KBarqg() const {
   if ( z < x )
     return 0.0;
   double res = 0.0;
-  double factor = CF * ( ( (1.+sqr(1.-z)) / z ) * log(factory()->alpha_parameter()*(1.-z)/z) + z ) / z;
+  double factor = CF * ( ( (1.+sqr(1.-z)) / z ) * log(factory()->alphaParameter()*(1.-z)/z) + z ) / z;
   // int nlp = NLightProtonVec().size();
   int nlp = lastBorn()->nLightProtonVec().size();
   for ( int f = -nlp; f <= nlp; ++f ) {
@@ -563,26 +563,16 @@ double DipolePKOperator::KBarqg() const {
   return res;
 }
 
-
-
-
-
-
-
-
 double DipolePKOperator::KTildeqq() const {
   assert(abs(parton->id()) < 7);
   double res =
     2.*CF*softLog(parton) - CF*(sqr(pi)/3.)*PDFx(parton);
   if ( z > x ) {
-    res -= ( CF * (1.+z) * log((1.-z)/factory()->alpha_parameter()) ) * PDFxByz(parton) / z;
+    res -= ( CF * (1.+z) * log((1.-z)/factory()->alphaParameter()) ) * PDFxByz(parton) / z;
   }
   
-  if (factory()->alpha_parameter()!=1.) {
-    
-    
-    
-    double alpha=factory()->alpha_parameter();
+  if ( factory()->alphaParameter() != 1. ) {
+    double alpha=factory()->alphaParameter();
     //(...)_\beta
     res+=CF *(2./(1.-z)*log(1-z))*((z<(1-alpha))?1.:0.)*PDFx(parton);
     if ( z > x ) {
@@ -605,12 +595,11 @@ double DipolePKOperator::KTildegg() const {
   double res =
     2.*CA*softLog(parton) - CA*(sqr(pi)/3.)*PDFx(parton);
   if ( z > x ) {
-    res += ( 2.*CA * ( (1.-z)/z -1. + z*(1.-z) ) * log((1.-z)/factory()->alpha_parameter()) ) * PDFxByz(parton) / z;
+    res += ( 2.*CA * ( (1.-z)/z -1. + z*(1.-z) ) * log((1.-z)/factory()->alphaParameter()) ) * PDFxByz(parton) / z;
   }
   
-  if (factory()->alpha_parameter()!=1.) {
-    double alpha=factory()->alpha_parameter();
-    
+  if ( factory()->alphaParameter() != 1. ) {
+    double alpha = factory()->alphaParameter();
     //(...)_\beta
     res+=CA *(2./(1.-z)*log(1-z))*(z<(1-alpha)?1.:0.)*PDFx(parton);
     if ( z > x ) {
@@ -631,14 +620,14 @@ double DipolePKOperator::KTildeqg() const {
   assert(parton->id() == ParticleID::g);
   if ( z < x )
      return 0.0;
-  return Pqg() * (log((1.-z)/factory()->alpha_parameter()) + log(min(1.,factory()->alpha_parameter()/(1-z))));
+  return Pqg() * (log((1.-z)/factory()->alphaParameter()) + log(min(1.,factory()->alphaParameter()/(1-z))));
 }
 
 double DipolePKOperator::KTildegq() const {
   assert(abs(parton->id()) < 7);
   if ( z < x )
     return 0.0;
-  return Pgq() * (log((1.-z)/factory()->alpha_parameter())+ log(min(1.,factory()->alpha_parameter()/(1-z))));
+  return Pgq() * (log((1.-z)/factory()->alphaParameter())+ log(min(1.,factory()->alphaParameter()/(1-z))));
 }
 
 

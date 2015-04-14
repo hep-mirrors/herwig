@@ -747,25 +747,16 @@ public:
    */
   const string& runStorage();
   
-  
   /**
    *  alpha of http://arxiv.org/pdf/hep-ph/0307268v2.pdf to restrict 
    *  dipole phase space
-  **/
-  
-  double alpha_parameter() const;
-  
+   */
+  double alphaParameter() const { return theAlphaParameter; }
   
   /**
    *  set the alpha parameter (needed for massive PK-Operator)
-   **/
-
-  
-  void setAlpha_parameter(double a){theAlphaParameter=a;}
-  
-  
-  
-  
+   */
+  void setAlphaParameter(double a) { theAlphaParameter = a; }
   
   //@}
 
