@@ -27,12 +27,12 @@ set EventHandler:LuminosityFunction:Energy 8000.0*GeV
 
 ## Set the order of the couplings
 cd /Herwig/MatrixElements/Matchbox
-set PPFactory:OrderInAlphaS 0
-set PPFactory:OrderInAlphaEW 2
+set Factory:OrderInAlphaS 0
+set Factory:OrderInAlphaEW 2
 
 ## Select the process
 ## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
-do PPFactory:Process p p e+ e-
+do Factory:Process p p e+ e-
 
 ##################################################
 ## Matrix element library selection
