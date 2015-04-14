@@ -204,6 +204,7 @@ set PPFactory:FactorizationScaleFactor 1.0
 ## - other scale factors are deduced from the shower handlers
 set MEMatching:RenormalizationScaleFactor 1.0
 set MEMatching:FactorizationScaleFactor 1.0
+set MEMatching:HardScaleFactor 1.0
 
 ## Shower scale variations
 set /Herwig/DipoleShower/DipoleShowerHandler:RenormalizationScaleFactor 1.0
