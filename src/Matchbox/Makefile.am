@@ -25,6 +25,9 @@ MadGraph-NJet.in \
 MadGraph-OpenLoops.in \
 MCatNLO-DefaultShower.in \
 MCatNLO-DipoleShower.in \
+MuDown.in \
+MuQDown.in \
+MuUp.in \
 NLO-NoShower.in \
 Powheg-DefaultShower.in \
 Powheg-DipoleShower.in \

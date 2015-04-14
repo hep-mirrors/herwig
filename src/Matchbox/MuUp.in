@@ -1,0 +1,16 @@
+cd /Herwig/MatrixElements/Matchbox
+
+set Factory:RenormalizationScaleFactor 2.0
+set Factory:FactorizationScaleFactor 2.0
+
+set MEMatching:RenormalizationScaleFactor 2.0
+set MEMatching:FactorizationScaleFactor 2.0
+
+set /Herwig/DipoleShower/DipoleShowerHandler:RenormalizationScaleFactor 2.0
+set /Herwig/DipoleShower/DipoleShowerHandler:FactorizationScaleFactor 2.0
+
+set /Herwig/Shower/ShowerHandler:RenormalizationScaleFactor 2.0
+set /Herwig/Shower/ShowerHandler:FactorizationScaleFactor 2.0
+
+
+

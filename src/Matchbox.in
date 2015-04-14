@@ -56,17 +56,55 @@ do Factory:Process p p e+ e-
 ## Cut selection
 ##################################################
 
+## hard to do generically
+
 ##################################################
 ## Scale choice
 ##################################################
 
+## hard to do generically
+
 ##################################################
-## (Shower) uncertainties
+## Matching and shower selection
 ##################################################
+
+read Matchbox/MCatNLO-DefaultShower.in
+# read Matchbox/Powheg-DefaultShower.in
+# read Matchbox/LO-DefaultShower.in
+
+# read Matchbox/MCatNLO-DipoleShower.in
+# read Matchbox/Powheg-DipoleShower.in
+# read Matchbox/LO-DipoleShower.in
+
+# read Matchbox/NLO-NoShower.in
+# read Matchbox/LO-NoShower.in
+
+##################################################
+## Scale uncertainties
+##################################################
+
+# read Matchbox/MuDown.in
+# read Matchbox/MuUp.in
+
+##################################################
+## Shower scale uncertainties
+##################################################
+
+# read Matchbox/MuQDown.in
+# read Matchbox/MuQUp.in
 
 ##################################################
 ## PDF choice
 ##################################################
 
 set /Herwig/Partons/PDFSet:PDFName CT10.LHgrid
+
+##################################################
+## Save the generator
+##################################################
+
+do /Herwig/MatrixElements/Matchbox/Factory:ProductionMode
+
+cd /Herwig/Generators
+saverun Matchbox EventGenerator
 

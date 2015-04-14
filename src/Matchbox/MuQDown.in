@@ -1,0 +1,7 @@
+
+set /Herwig/MatrixElements/Matchbox/MEMatching:HardScaleFactor 0.5
+set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleFactor 0.5
+set /Herwig/Shower/ShowerHandler:HardScaleFactor 0.5
+
+
+
