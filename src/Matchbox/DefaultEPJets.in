@@ -1,0 +1,10 @@
+cd /Herwig/Cuts
+
+set JetFinder:Variant SphericalKt
+set JetFinder:RecombinationScheme E
+set JetFinder:Mode Inclusive
+set JetFinder:ConeRadius 0.7
+
+set Cuts:JetFinder JetFinder
+insert Cuts:MultiCuts 0 JetCuts
+

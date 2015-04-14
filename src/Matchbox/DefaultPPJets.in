@@ -1,0 +1,5 @@
+cd /Herwig/Cuts
+
+set Cuts:JetFinder JetFinder
+insert Cuts:MultiCuts 0 JetCuts
+

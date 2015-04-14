@@ -1,0 +1,7 @@
+cd /Herwig/MatrixElements/Matchbox
+
+clear Factory:Amplitudes
+insert Factory:Amplitudes 0 GenericProcesses
+
+set GenericProcesses:TreeLevelAmplitude MadGraph
+set GenericProcesses:OneLoopAmplitude NJet

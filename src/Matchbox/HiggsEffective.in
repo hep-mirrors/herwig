@@ -1,0 +1,5 @@
+cd /Herwig/MatrixElements/Matchbox/Amplitudes
+
+set GoSam:HiggsEff On
+set MadGraph:Model heft
+

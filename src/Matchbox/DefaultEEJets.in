@@ -1,0 +1,11 @@
+cd /Herwig/Cuts
+
+set JetFinder:Variant SphericalKt
+set JetFinder:RecombinationScheme E
+set JetFinder:Mode Exclusive
+set JetFinder:ConeRadius 6.283185307
+set JetFinder:DCut 50*GeV2
+set Cuts:JetFinder JetFinder
+set NJetsCut:NJetsMin 3
+insert Cuts:MultiCuts 0 NJetsCut
+

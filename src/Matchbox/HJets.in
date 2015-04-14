@@ -1,0 +1,6 @@
+cd /Herwig/MatrixElements/Matchbox/Amplitudes
+
+clear Factory:Amplitudes
+library HJets.so
+read HJetsProcesses.in
+

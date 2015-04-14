@@ -1,0 +1,11 @@
+cd /Herwig/MatrixElements/Matchbox/Amplitudes
+
+clear Factory:Amplitudes
+insert Factory:Amplitudes 0 VBFNLOProcesses
+
+cd /Herwig/MatrixElements/Matchbox
+insert Factory:DiagramGenerator:RestrictLines /Herwig/Particles/Z0
+insert Factory:DiagramGenerator:RestrictLines /Herwig/Particles/Wplus
+insert Factory:DiagramGenerator:RestrictLines /Herwig/Particles/Wminus
+do Factory:DiagramGenerator:TimeLikeRange 0 0
+
