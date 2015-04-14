@@ -380,8 +380,10 @@ double DipoleMPKOperator::sumParton(int id) const {
   int idi = 2;
   vector<Lorentz5Momentum>::const_iterator Pi = meMomenta().begin() + 2;
 
+  /*
   double disFinite = 0.0;
   double glueFinite = 0.0;
+  */
 
   //////////////////////////////////////////////////////////
   // Initial-Final and Final-Initial contributions        //
@@ -561,27 +563,36 @@ double DipoleMPKOperator::sumParton(int id) const {
         // ( Pqq() + Pgq() ) * theLog * ifCorrelated;
       // if ( disFinite == 0.0 && z > x ) { 
       // extra terms only present in massless dipoles, idi is spectator
+      /*
       if ( disFinite == 0.0 && z > x && mePartonData()[idi]->mass() == ZERO ) {
         disFinite = CF*PDFxByz(parton)*(1.+3.*z/2.)/z;
       }
+      */
       // if ( z > x ) 
       // extra terms only present in massless dipoles, idi is spectator
+      /*
       if ( z > x && mePartonData()[idi]->mass() == ZERO )
         res -= disFinite*ifCorrelated;
+      */
     }
 
     if ( abs(mePartonData()[idi]->id()) < 7 ) {
       // if ( disFinite == 0.0 && z > x ) { 
       // extra terms only present in massless dipoles, idi is emitter
+      /*
       if ( disFinite == 0.0 && z > x && mePartonData()[idi]->mass() == ZERO ) {
         disFinite = CF*PDFxByz(parton)*(1.+3.*z/2.)/z;
       }
+      */
       // if ( z > x ) 
       // extra terms only present in massless dipoles, idi is emitter
+      /*
       if ( z > x && mePartonData()[idi]->mass() == ZERO )
         res -= disFinite*fiCorrelated;
+      */
     }
 
+    /*
     if ( mePartonData()[idi]->id() == ParticleID::g ) {
       if ( glueFinite == 0.0 && z > x ) {
         glueFinite = 2.*CA*PDFxByz(parton)*(1.+z/6.)/z;
@@ -589,6 +600,7 @@ double DipoleMPKOperator::sumParton(int id) const {
       if ( z > x )
         res -= glueFinite*fiCorrelated;
     }
+    */
 
   } // end loop over i
 

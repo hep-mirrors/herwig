@@ -57,10 +57,6 @@ double IFqgxDipole::me2Avg(double ccme2) const {
   double x = subtractionParameters()[0];
   double u = subtractionParameters()[1];
   
-  if (alpha()<u) {
-    return false;
-  }
-
   Energy2 prop = 
     2.*((realEmissionME()->lastXComb().meMomenta()[realEmitter()])*
 	(realEmissionME()->lastXComb().meMomenta()[realEmission()]))*x;
@@ -98,11 +94,8 @@ double IFqgxDipole::me2() const {
   double x = subtractionParameters()[0];
   double u = subtractionParameters()[1];
   
-  if (alpha()<u) {
-    return false;
-  }
-  
-
+  if ( alpha() < u )
+    return 0.0;
 
   Energy2 prop = 
     2.*((realEmissionME()->lastXComb().meMomenta()[realEmitter()])*
@@ -116,7 +109,7 @@ double IFqgxDipole::me2() const {
 
   res *= ( 
     2./(1.-x+u) - (1.+x) 
-    + u*(1.+3.*x*(1.-u)) 
+    //+ u*(1.+3.*x*(1.-u)) 
     );
 
   res *= -underlyingBornME()->colourCorrelatedME2(make_pair(bornEmitter(),bornSpectator()));

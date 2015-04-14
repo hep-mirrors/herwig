@@ -57,15 +57,9 @@ double FIggxDipole::me2Avg(double ccme2) const {
   double x = subtractionParameters()[0];
   double z = subtractionParameters()[1];
   
-  
-  if (alpha()<1-x) {
-    return false;
-  }
-
   Energy2 prop = 
     2.*((realEmissionME()->lastXComb().meMomenta()[realEmitter()])*
 	(realEmissionME()->lastXComb().meMomenta()[realEmission()]))*x;
-
 
   double res = 
     1./((1.-z)+(1.-x)) + 1./(z+(1.-x)) - 2.+z*(1.-z) 
@@ -97,10 +91,8 @@ double FIggxDipole::me2() const {
   double x = subtractionParameters()[0];
   double z = subtractionParameters()[1];
   
-  
-  if (alpha()<1-x) {
-    return false;
-  }
+  if ( alpha() < 1-x )
+    return 0.0;
 
   Energy2 prop = 
     2.*((realEmissionME()->lastXComb().meMomenta()[realEmitter()])*
@@ -108,7 +100,7 @@ double FIggxDipole::me2() const {
 
   double diag = 
     1./(1.-z+1.-x) + 1./(z+1.-x) - 2. 
-    + (1.-x)*(1.+x*z*(1.-z))
+    //+ (1.-x)*(1.+x*z*(1.-z))
     ;
   Lorentz5Momentum pc = 
     z*realEmissionME()->lastXComb().meMomenta()[realEmitter()] -

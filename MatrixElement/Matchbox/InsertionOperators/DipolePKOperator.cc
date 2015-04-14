@@ -314,8 +314,10 @@ double DipolePKOperator::sumParton(int id) const {
   int idi = 2;
   vector<Lorentz5Momentum>::const_iterator Pi = meMomenta().begin() + 2;
 
+  /*
   double disFinite = 0.0;
   double glueFinite = 0.0;
+  */
 
   //////////////////////////////////////////////////////////
   // Initial-Final and Final-Initial contributions        //
@@ -379,13 +381,16 @@ double DipolePKOperator::sumParton(int id) const {
     if ( abs(mePartonData()[id]->id()) < 7 ) {
       res +=
 	( thePqq + thePgq ) * theLog * ifCorrelated;
+      /*
       if ( disFinite == 0.0 && z > x ) {
         disFinite = CF*PDFxByz(parton)*(1.+3.*z/2.)/z;
       }
       if ( z > x )
         res -= disFinite*ifCorrelated;
+      */
     }
 
+    /*
     if ( abs(mePartonData()[idi]->id()) < 7 ) {
       if ( disFinite == 0.0 && z > x ) {
         disFinite = CF*PDFxByz(parton)*(1.+3.*z/2.)/z;
@@ -401,6 +406,7 @@ double DipolePKOperator::sumParton(int id) const {
       if ( z > x )
         res -= glueFinite*fiCorrelated;
     }
+    */
 
   } // end loop over i
 
