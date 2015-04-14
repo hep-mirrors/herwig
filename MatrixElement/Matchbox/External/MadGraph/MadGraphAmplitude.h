@@ -305,19 +305,12 @@ protected:
   /**
    * Storage for Amplitudes 
    */
-  mutable vector<string>  BornAmplitudes,VirtAmplitudes;
+  static vector<string>  BornAmplitudes,VirtAmplitudes;
    
     /**
    * Helper for color and crossing handling 
    */ 
   mutable vector<int>  colourindex, crossing;
-  
-  /**
-   * Give this to Madgraph:
-   */ 
-  
-  mutable double virt[20],momenta[50],pg[4],ng[4],poltmp[8];
-  mutable int heltmp[10];
   
         
   /**

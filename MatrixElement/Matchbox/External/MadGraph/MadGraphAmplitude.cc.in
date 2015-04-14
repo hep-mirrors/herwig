@@ -66,7 +66,8 @@ IBPtr MadGraphAmplitude::fullclone() const {
 
 
 bool MadGraphAmplitude::initializedMad=false;
-
+vector<string> MadGraphAmplitude::BornAmplitudes=vector<string>();
+vector<string> MadGraphAmplitude::VirtAmplitudes=vector<string>();
 
 void MadGraphAmplitude::initProcess(const cPDVector& ) {
     
@@ -474,7 +475,7 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
 
   double units = pow(sqrt(lastSHat())/GeV,int(hel.size())-4);
 
-
+  int heltmp[10];
   
   for(size_t j=0;j<hel.size();j++){
     int cross=crossingMap()[j];
@@ -490,6 +491,8 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
     lastMatchboxXComb()->reshuffle(reshuffled,pdata,masses);
   }
 
+  double momenta[50];
+  
   size_t j=0;
   for (size_t i=0;i<mePartonData().size();i++){
     momenta[j]=abs(reshuffled[i].e()/GeV)<1.e-13?0.:double(reshuffled[i].e()/GeV);
@@ -552,6 +555,9 @@ LorentzVector<Complex> MadGraphAmplitude::plusPolarization(const Lorentz5Momentu
                                                      
 
   int tmp=i;
+  double pg[4],ng[4],poltmp[8];
+  
+
   pg[0]=p.e()/GeV;pg[1]=p.x()/GeV;pg[2]=p.y()/GeV;pg[3]=p.z()/GeV;
   ng[0]=n.e()/GeV;ng[1]=n.x()/GeV;ng[2]=n.y()/GeV;ng[3]=n.z()/GeV;
 
@@ -690,6 +696,9 @@ void MadGraphAmplitude::evaloneLoopInterference() const  {
     const map<long,Energy>& masses = reshuffleMasses();
     lastMatchboxXComb()->reshuffle(reshuffled,pdata,masses);
   }
+  
+  double virt[20];
+  double momenta[50];
   
   size_t j=0;
   for (size_t i=0;i<mePartonData().size();i++){
