@@ -55,7 +55,6 @@ double IIgqxDipole::me2Avg(double ccme2) const {
     return 0.0;
 
   double x = subtractionParameters()[0];
-  double v = subtractionParameters()[1];
   
   Energy2 prop = 
     2.*((realEmissionME()->lastXComb().meMomenta()[realEmitter()])*

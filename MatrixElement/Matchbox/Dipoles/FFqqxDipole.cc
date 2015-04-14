@@ -57,7 +57,6 @@ double FFqqxDipole::me2Avg(double ccme2) const {
   if ( jacobian() == 0.0 )
     return 0.0;
 
-  double y = subtractionParameters()[0];
   double z = subtractionParameters()[1];
   
   Energy2 prop = 
