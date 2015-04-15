@@ -157,6 +157,29 @@ else
 fi
 
 AC_SUBST([CREATE_HEPMC])
+
+AC_MSG_CHECKING([for RivetAnalysis.so in ThePEG])
+
+THEPEGHASRIVET="no"
+if test -e ${with_thepeg}/lib/ThePEG/RivetAnalysis.so ; then
+   THEPEGHASRIVET="yes"
+fi
+if test "${host_cpu}" == "x86_64" -a -e ${with_thepeg}/lib64/ThePEG/libThePEG.so ; then
+  THEPEGLDFLAGS="-L${with_thepeg}/lib64/ThePEG"
+  if test -e ${with_thepeg}/lib64/ThePEG/RivetAnalysis.so ; then
+    THEPEGHASRIVET="yes"
+  fi
+fi
+
+if test "x$THEPEGHASRIVET" == "xno" ; then
+  CREATE_RIVET="# create"
+  AC_MSG_RESULT([not found])
+else
+  CREATE_RIVET="create"
+  AC_MSG_RESULT([found])
+fi
+
+AC_SUBST([CREATE_RIVET])
 ])
 
 dnl ##### LOOPTOOLS #####
