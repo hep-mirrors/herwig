@@ -10,3 +10,4 @@ cd /Herwig/MatrixElements/Matchbox
 set Factory:FirstPerturbativePDF No
 set Factory:SecondPerturbativePDF No
 
+set /Herwig/Shower/PartnerFinder:QEDPartner IIandFF
