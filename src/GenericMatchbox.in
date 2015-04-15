@@ -32,7 +32,7 @@ set Factory:OrderInAlphaEW 2
 
 ## Select the process
 ## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
-do Factory:Process p p e+ e-
+do Factory:Process p p -> e+ e-
 
 ##################################################
 ## Matrix element library selection
@@ -54,12 +54,14 @@ do Factory:Process p p e+ e-
 
 ##################################################
 ## Cut selection
+## See the documentation for more options
 ##################################################
 
 ## hard to do generically
 
 ##################################################
 ## Scale choice
+## See the documentation for more options
 ##################################################
 
 ## hard to do generically
@@ -97,7 +99,17 @@ read Matchbox/MCatNLO-DefaultShower.in
 ## PDF choice
 ##################################################
 
+read Matchbox/FiveFlavourScheme.in
 set /Herwig/Partons/PDFSet:PDFName CT10.LHgrid
+
+##################################################
+## Analyses
+##################################################
+
+# cd /Herwig/Analysis
+# insert Rivet:Analyses 0 XXX_2015_ABC123
+# insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 Rivet
+# insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 HepMC
 
 ##################################################
 ## Save the generator
