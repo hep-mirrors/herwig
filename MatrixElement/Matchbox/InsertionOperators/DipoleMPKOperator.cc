@@ -100,8 +100,8 @@ bool DipoleMPKOperator::apply(const cPDVector& pd) const {
   }
   if ( first && second && (finalmass || mFSet) && !initialmass && 
        (factory()->alphaParameter() < 1.) ) {
-    cerr << "DipoleMPKOperator: Warning: The alpha parameter will be set to 1.";
-    cerr << "                            The massiv PK Operator does not support alpha";
+    Repository::clog() << "DipoleMPKOperator: Warning: The alpha parameter will be set to 1.";
+    Repository::clog() << "                            The massive PK Operator does not support alpha.";
     factory()->setAlphaParameter(1.);
   }
 

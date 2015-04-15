@@ -97,6 +97,13 @@ bool DipoleMIOperator::apply(const cPDVector& pd) const {
     }
   }
 
+  if ( first && second && (finalmass || mFSet) && !initialmass && 
+       (factory()->alphaParameter() < 1.) ) {
+    Repository::clog() << "DipoleMIOperator: Warning: The alpha parameter will be set to 1.";
+    Repository::clog() << "                           The massive I Operator does not support alpha.";
+    factory()->setAlphaParameter(1.);
+  }
+
   return first && second && (finalmass || mFSet) && !initialmass;
 
 }
