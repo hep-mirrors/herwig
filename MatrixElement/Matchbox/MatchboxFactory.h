@@ -1064,6 +1064,11 @@ private:
   string endParticleGroup(string);
 
   /**
+   * Parse a process description
+   */
+  vector<string> parseProcess(string);
+
+  /**
    * Command to set the process.
    */
   string doProcess(string);

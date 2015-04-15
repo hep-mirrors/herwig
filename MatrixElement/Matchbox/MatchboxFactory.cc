@@ -1246,7 +1246,7 @@ string MatchboxFactory::endParticleGroup(string) {
   return "";
 }
 
-string MatchboxFactory::doProcess(string in) {
+vector<string> MatchboxFactory::parseProcess(string in) {
   vector<string> process = StringUtils::split(in);
   if ( process.size() < 3 )
     throw InitException() << "Invalid process.";
@@ -1254,31 +1254,29 @@ string MatchboxFactory::doProcess(string in) {
 	p != process.end(); ++p ) {
     *p = StringUtils::stripws(*p);
   }
-  processes.push_back(process);
+  vector<string> pprocess;
+  for ( vector<string>::const_iterator p = process.begin();
+	p != process.end(); ++p ) {
+    if ( *p == "->" )
+      continue;
+    pprocess.push_back(*p);
+  }
+  return pprocess;
+}
+
+
+string MatchboxFactory::doProcess(string in) {
+  processes.push_back(parseProcess(in));
   return "";
 }
 
 string MatchboxFactory::doLoopInducedProcess(string in) {
-  vector<string> loopInducedProcess = StringUtils::split(in);
-  if ( loopInducedProcess.size() < 3 )
-    throw InitException() << "Invalid process.";
-  for ( vector<string>::iterator p = loopInducedProcess.begin();
-	p != loopInducedProcess.end(); ++p ) {
-    *p = StringUtils::stripws(*p);
-  }
-  loopInducedProcesses.push_back(loopInducedProcess);
+  loopInducedProcesses.push_back(parseProcess(in));
   return "";
 }
 
 string MatchboxFactory::doSingleRealProcess(string in) {
-  vector<string> realEmissionProcess = StringUtils::split(in);
-  if ( realEmissionProcess.size() < 3 )
-    throw InitException() << "Invalid process.";
-  for ( vector<string>::iterator p = realEmissionProcess.begin();
-	p != realEmissionProcess.end(); ++p ) {
-    *p = StringUtils::stripws(*p);
-  }
-  realEmissionProcesses.push_back(realEmissionProcess);
+  realEmissionProcesses.push_back(parseProcess(in));
   return "";
 }
 
