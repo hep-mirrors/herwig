@@ -6,16 +6,14 @@
 ## Collider type
 ##################################################
 
-# read Matchbox/EECollider.in
-# read Matchbox/EPCollider.in
-read Matchbox/PPCollider.in
+read Matchbox/EECollider.in
 
 ##################################################
 ## Beam energy sqrt(s)
 ##################################################
 
 cd /Herwig/EventHandlers
-set EventHandler:LuminosityFunction:Energy 8000.0*GeV
+set EventHandler:LuminosityFunction:Energy 91.2*GeV
 
 ##################################################
 ## Process selection
@@ -32,7 +30,7 @@ set Factory:OrderInAlphaEW 2
 
 ## Select the process
 ## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
-do Factory:Process p p e+ e-
+do Factory:Process e- e+ -> j j
 
 ##################################################
 ## Matrix element library selection
@@ -54,15 +52,21 @@ do Factory:Process p p e+ e-
 
 ##################################################
 ## Cut selection
+## See the documentation for more options
 ##################################################
 
-## hard to do generically
+## cuts on additional jets
+
+# read Matchbox/DefaultEEJets.in
+
+# set NJetsCut:NJetsMin 3
 
 ##################################################
 ## Scale choice
+## See the documentation for more options
 ##################################################
 
-## hard to do generically
+set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/SHatScale
 
 ##################################################
 ## Matching and shower selection
@@ -94,10 +98,19 @@ read Matchbox/MCatNLO-DefaultShower.in
 # read Matchbox/MuQUp.in
 
 ##################################################
-## PDF choice
+## Massless b quarks
 ##################################################
 
-set /Herwig/Partons/PDFSet:PDFName CT10.LHgrid
+read Matchbox/FiveFlavourScheme.in
+
+##################################################
+## Analyses
+##################################################
+
+# cd /Herwig/Analysis
+# insert Rivet:Analyses 0 XXX_2015_ABC123
+# insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 Rivet
+# insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 HepMC
 
 ##################################################
 ## Save the generator
@@ -107,4 +120,3 @@ do /Herwig/MatrixElements/Matchbox/Factory:ProductionMode
 
 cd /Herwig/Generators
 saverun Matchbox EventGenerator
-
