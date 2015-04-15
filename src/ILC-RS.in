@@ -46,6 +46,7 @@ set LEPGenerator:PrintEvent 10
 set LEPGenerator:MaxErrors 10000
 set LEPGenerator:EventHandler:LuminosityFunction:Energy 800.0
 set LEPGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+set /Herwig/Shower/PartnerFinder:QEDPartner IIandFF
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'

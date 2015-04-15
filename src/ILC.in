@@ -48,6 +48,7 @@ set LEPGenerator:MaxErrors 10000
 ##################################################
 set LEPGenerator:EventHandler:LuminosityFunction:Energy 500.0
 set LEPGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+set /Herwig/Shower/PartnerFinder:QEDPartner IIandFF
 
 ##################################################
 #  Useful analysis handlers for HepMC related output

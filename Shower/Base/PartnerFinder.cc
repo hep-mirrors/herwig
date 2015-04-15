@@ -333,7 +333,7 @@ void PartnerFinder::setInitialQEDEvolutionScales(const ShowerParticleVector &par
     // not charge continue
     if(!(**cit).dataPtr()->charged()) continue;
     // find the potential partners
-    vector<pair<double,tShowerParticlePtr> > partners = findQEDPartners(*cit,particles);
+    vector<pair<double,tShowerParticlePtr> > partners = findQEDPartners(*cit,particles,isDecayCase);
     if(partners.empty()) {
       throw Exception() << "Failed to partner in " 
 			<< "PartnerFinder::setQEDInitialEvolutionScales"
@@ -504,18 +504,19 @@ PartnerFinder::findQCDPartners(tShowerParticlePtr particle,
 
 vector< pair<double, tShowerParticlePtr> > 
 PartnerFinder::findQEDPartners(tShowerParticlePtr particle,
-			       const ShowerParticleVector &particles) {
+			       const ShowerParticleVector &particles,
+			       const bool isDecayCase) {
   vector< pair<double, tShowerParticlePtr> > partners;
   ShowerParticleVector::const_iterator cjt;
   for(cjt = particles.begin(); cjt != particles.end(); ++cjt) {
     if(!(*cjt)->data().charged() || particle == *cjt) continue;
     double charge = double(particle->data().iCharge()*(*cjt)->data().iCharge());
     if( FS(particle) != FS(*cjt) ) charge *=-1.;
-    if( QEDPartner_ != 0 ) {
+    if( QEDPartner_ != 0 && !isDecayCase ) {
       // only include II and FF as requested
       if( QEDPartner_ == 1 && FS(particle) != FS(*cjt) )
 	continue;
-      // ony include IF is requested
+      // only include IF is requested
       else if(QEDPartner_ == 2 && FS(particle) == FS(*cjt) )
 	continue;
     }
