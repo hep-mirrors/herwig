@@ -33,6 +33,7 @@ set LEPGenerator:MaxErrors 10000
 ##################################################
 set LEPGenerator:EventHandler:LuminosityFunction:Energy 500.
 set LEPGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+set /Herwig/Shower/PartnerFinder:QEDPartner IIandFF
 
 cd /Herwig/Generators
 

@@ -142,7 +142,8 @@ protected:
    * @param particles The full set of particles to search
    */
   vector< pair<double, tShowerParticlePtr> > 
-  findQEDPartners(tShowerParticlePtr particle, const ShowerParticleVector &particles);
+  findQEDPartners(tShowerParticlePtr particle, const ShowerParticleVector &particles,
+		  const bool isDecayCase);
 
   /**
    * Given a pair of particles, supposedly partners w.r.t. an interaction,
