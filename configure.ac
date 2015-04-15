@@ -262,6 +262,14 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		src/defaults/Analysis.in
 		src/defaults/MatchboxDefaults.in
 		src/defaults/setup.gosam.in
+		src/Matchbox/LO-DefaultShower.in
+		src/Matchbox/LO-DipoleShower.in
+		src/Matchbox/LO-NoShower.in
+		src/Matchbox/MCatNLO-DefaultShower.in
+		src/Matchbox/MCatNLO-DipoleShower.in
+		src/Matchbox/NLO-NoShower.in
+		src/Matchbox/Powheg-DefaultShower.in
+		src/Matchbox/Powheg-DipoleShower.in
 		Contrib/Makefile
 		Contrib/make_makefiles.sh
 		Tests/Makefile

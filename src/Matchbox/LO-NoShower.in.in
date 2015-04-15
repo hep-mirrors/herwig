@@ -1,3 +1,5 @@
+read Matchbox/LO.in
+
 cd /Herwig/EventHandlers
 
 set EventHandler:CascadeHandler NULL
@@ -9,10 +11,7 @@ cd /Herwig/Analysis
 
 set Basics:CheckQuark No
 
-cd /Herwig/MatrixElements/Matchbox
-
-set Factory:SubProcessGroups On
-
 cd /Herwig/Analysis
 
-create ThePEG::NLORivetAnalysis RivetAnalysis RivetAnalysis.so
+@CREATE_RIVET@ ThePEG::NLORivetAnalysis Rivet RivetAnalysis.so
+@CREATE_HEPMC@ ThePEG::NLOHepMCFile HepMC HepMCAnalysis.so

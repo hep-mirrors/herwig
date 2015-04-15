@@ -1,5 +1,3 @@
-read Matchbox/Powheg.in
-
 set /Herwig/Shower/Evolver:HardVetoScaleSource Read
 set /Herwig/Shower/Evolver:MECorrMode No
 set /Herwig/Shower/KinematicsReconstructor:ReconstructionOption Colour4
@@ -8,19 +6,14 @@ set /Herwig/Shower/PartnerFinder:PartnerMethod 0
 
 cd /Herwig/EventHandlers
 
-set EventHandler:CascadeHandler /Herwig/Shower/PowhegShowerHandler
+set EventHandler:CascadeHandler /Herwig/Shower/ShowerHandler
 
 cd /Herwig/MatrixElements/Matchbox
 
-set MEMatching:TruncatedShower Yes
-
-cd /Herwig/Shower
-
-set PowhegShowerHandler:Factory Factory
-
-set Evolver:HardEmissionMode MatchboxPOWHEG
+set Factory:ShowerApproximation QTildeMatching
 
 cd /Herwig/Analysis
 
-create ThePEG::RivetAnalysis RivetAnalysis RivetAnalysis.so
+@CREATE_RIVET@ ThePEG::RivetAnalysis Rivet RivetAnalysis.so
+@CREATE_HEPMC@ ThePEG::HepMCFile HepMC HepMCAnalysis.so
 

@@ -6,5 +6,6 @@ set EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
 
 cd /Herwig/Analysis
 
-create ThePEG::RivetAnalysis RivetAnalysis RivetAnalysis.so
+@CREATE_RIVET@ ThePEG::RivetAnalysis Rivet RivetAnalysis.so
+@CREATE_HEPMC@ ThePEG::HepMCFile HepMC HepMCAnalysis.so
 
