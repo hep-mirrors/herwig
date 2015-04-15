@@ -604,12 +604,7 @@ double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
 	  aziWgt = (-m12/sqr(pik) -m22/sqr(dot) +2.*pipj/pik/dot)/aziMax;
 	}
 	else if(ShowerHandler::currentHandler()->evolver()->softCorrelations()==2) {
-	  
-	  
-	  
 	  aziWgt = max(ZERO,0.5/pik/Eg*(Ei-m12*Eg/pik  + (pipj*Eg - Ej*pik)/dot)/aziMax);
-	  
-	  
 	}
 	if(aziWgt-1.>1e-10||aziWgt<-1e-10) {
 	  generator()->log() << "Forward soft weight problem " << aziWgt << " " << aziWgt-1. 
