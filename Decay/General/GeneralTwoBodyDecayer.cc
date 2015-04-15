@@ -581,10 +581,16 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
       eventFrame     = trialEventFrame;
       finalEmitter   = trialEmitter;
       finalSpectator = trialSpectator;
-    }
-  }  
-  pT_ = trialpT;
 
+      if (dipoles[i]==FFc || dipoles[i]==FFa ) {
+	if(momenta[3].z()*momenta[1].z()<ZERO) {
+	  swap(finalEmitter,finalSpectator);
+	  swap(momenta[1],momenta[2]);
+	}
+      }
+    }
+  }
+  pT_ = trialpT;
   // if no emission return
   if(momenta.empty()) {
     bProgenitor->maximumpT(pTmin_,ShowerInteraction::QCD);
