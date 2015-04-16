@@ -9,5 +9,6 @@ set /Herwig/DipoleShower/DipoleShowerHandler:MPIHandler NULL
 cd /Herwig/MatrixElements/Matchbox
 set Factory:FirstPerturbativePDF No
 set Factory:SecondPerturbativePDF No
+set Factory:PartonExtractor /Herwig/Partons/EEExtractor
 
 set /Herwig/Shower/PartnerFinder:QEDPartner IIandFF

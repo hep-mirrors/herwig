@@ -14,6 +14,7 @@ set /Herwig/DipoleShower/DipoleShowerHandler:MPIHandler NULL
 cd /Herwig/MatrixElements/Matchbox
 set Factory:FirstPerturbativePDF No
 set Factory:SecondPerturbativePDF Yes
+set Factory:PartonExtractor /Herwig/Partons/DISExtractor
 
 do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting e-->e-,gamma; /Herwig/Shower/LtoLGammaSudakov
 do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting mu-->mu-,gamma; /Herwig/Shower/LtoLGammaSudakov
