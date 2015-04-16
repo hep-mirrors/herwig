@@ -1516,12 +1516,14 @@ reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
   Axis axis(pa.vect().unit());
   LorentzRotation rot;
   double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
-  rot.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+  if ( sinth > 1.e-9 )
+    rot.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
   rot.rotateX(Constants::pi);
   rot.boostZ( pa.e()/pa.vect().mag());
   Lorentz5Momentum ptemp=rot*pbeam;
   Boost trans = -1./ptemp.e()*ptemp.vect();
   trans.setZ(0.);
+  if ( trans.mag2() - 1. >= 0. ) throw KinematicsReconstructionVeto();
   rot.boost(trans);
   pa *=rot;
   // project and calculate rescaling
@@ -1648,7 +1650,7 @@ LorentzRotation QTildeReconstructor::solveBoost(const Lorentz5Momentum & q,
   Energy modp = p.vect().mag();
   Energy modq = q.vect().mag();
   double betam = (p.e()*modp-q.e()*modq)/(sqr(modq)+sqr(modp)+p.mass2());
-  if(abs(betam)-1.>0.) throw KinematicsReconstructionVeto();
+  if ( abs(betam)-1. >= 0. ) throw KinematicsReconstructionVeto();
   Boost beta = -betam*q.vect().unit();
   ThreeVector<Energy2> ax = p.vect().cross( q.vect() ); 
   double delta = p.vect().angle( q.vect() );
