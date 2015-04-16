@@ -1602,6 +1602,7 @@ solveBoost(const double k, const Lorentz5Momentum & newq,
   Energy kp = k*(oldp.vect().mag()); 
   Energy2 kps = sqr(kp);
   double betam = (q*newq.e() - kp*sqrt(kps + Q2))/(kps + qs + Q2); 
+  if ( abs(betam) - 1. >= 0. ) throw KinematicsReconstructionVeto();
   Boost beta = -betam*(k/kp)*oldp.vect();
   double gamma = 0.;
   if(Q2/sqr(oldp.e())>1e-4) {
@@ -1656,6 +1657,7 @@ LorentzRotation QTildeReconstructor::solveBoost(const Lorentz5Momentum & q,
   double delta = p.vect().angle( q.vect() );
   LorentzRotation R;
   using Constants::pi;
+  if ( beta.mag2() - 1. >= 0. ) throw KinematicsReconstructionVeto();
   if ( ax.mag2()/GeV2/MeV2 > 1e-16 ) {
     R.rotate( delta, unitVector(ax) ).boost( beta );
   } 
@@ -1686,6 +1688,7 @@ LorentzRotation QTildeReconstructor::solveBoostZ(const Lorentz5Momentum & q,
     beta = num/den;
     
   }
+  if ( abs(beta) - 1. >= 0. ) throw KinematicsReconstructionVeto();
   R.boostZ(beta);
   Lorentz5Momentum ptest = R*p;
   if(ptest.z()/q.z() < 0. || ptest.t()/q.t() < 0. ) {
