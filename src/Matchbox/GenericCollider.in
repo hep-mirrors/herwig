@@ -10,7 +10,6 @@ cd /Herwig/MatrixElements/Matchbox
 
 set MECorrectionHandler:Factory Factory
 set Factory:Cuts /Herwig/Cuts/Cuts
-set Factory:PartonExtractor /Herwig/Partons/QCDExtractor
 
 cd /Herwig/EventHandlers
 
