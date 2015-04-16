@@ -1648,6 +1648,7 @@ LorentzRotation QTildeReconstructor::solveBoost(const Lorentz5Momentum & q,
   Energy modp = p.vect().mag();
   Energy modq = q.vect().mag();
   double betam = (p.e()*modp-q.e()*modq)/(sqr(modq)+sqr(modp)+p.mass2());
+  if(abs(betam)-1.>0.) throw KinematicsReconstructionVeto();
   Boost beta = -betam*q.vect().unit();
   ThreeVector<Energy2> ax = p.vect().cross( q.vect() ); 
   double delta = p.vect().angle( q.vect() );
