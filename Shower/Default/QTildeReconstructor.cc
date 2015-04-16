@@ -599,6 +599,7 @@ QTildeReconstructor::solveKfactor(const Energy & root_s,
 	 sqr(jets[0].p.z()+jets[1].p.z()) < eps ) {
       Energy test = (jets[0].p+jets[1].p).vect().mag();
       if(test > 1.0e-4 * MeV) throw KinematicsReconstructionVeto();
+      if ( jets[0].p.vect().mag2() < eps ) throw KinematicsReconstructionVeto();
       Energy2 m1sq(jets[0].q.m2()),m2sq(jets[1].q.m2());
       return sqrt( ( sqr(s - m1sq - m2sq) - 4.*m1sq*m2sq )
 		   /(4.*s*jets[0].p.vect().mag2()) );
