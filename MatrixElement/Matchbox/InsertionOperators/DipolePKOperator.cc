@@ -467,13 +467,7 @@ double DipolePKOperator::sumParton(int id) const {
 
 //////////////////////////////////////////////////////////////////////
 
-double DipolePKOperator::gammaSoft() const {
-  double res = (1.+log(1.-x))*PDFx(parton);
-  if ( z > x )
-    res +=
-      (PDFxByz(parton) - z*PDFx(parton)) / (z*(1.-z));
-  return res;
-}
+
 
 double DipolePKOperator::softLogByz(tcPDPtr p) const {
   double res = ( sqr(log(1.-x))/2. - sqr(pi)/6. ) * PDFx(p);
@@ -485,13 +479,27 @@ double DipolePKOperator::softLogByz(tcPDPtr p) const {
 }
 
 double DipolePKOperator::softLog(tcPDPtr p) const {
-  double res = sqr(log(1.-x)) * PDFx(p) / 2.;
-  if ( z > x ) {
-    res += (PDFxByz(p) - z*PDFx(p))*log(1.-z)/(z*(1.-z));
-  }
+  if(z<(1.-factory()->alphaParameter()))return 0.;
+  double res =(sqr(1-x) -1*sqr(log(factory()->alphaParameter()))) * PDFx(p) / 2.;
+  
+  if(z>x?1.:0.)
+  res += (PDFxByz(p)/z  - PDFx(p))*log(1.-z)/(1.-z);
+  
   return res;
 }
 
+double DipolePKOperator::gammaSoft() const {
+  if(z<(1.-factory()->alphaParameter()))return factory()->alphaParameter();
+  double res = (factory()->alphaParameter()+
+                 log(1-x)- log(factory()->alphaParameter()) )*PDFx(parton);
+  if(z>x?1.:0.)
+  res += (PDFxByz(parton)/z  - PDFx(parton)) / (1.-z);
+  
+      
+    
+    
+  return res;
+}
 
 
 double DipolePKOperator::KBarqq() const {
@@ -507,9 +515,9 @@ double DipolePKOperator::KBarqq() const {
   double alpha = factory()->alphaParameter();
 
   if ( alpha < 1. ) {
-    res+=PDFx(parton)*(2*CF*sqr(log(alpha))-gammaQuark*(alpha-1.-log(alpha)));
+    res+=PDFx(parton)*(2.*CF*sqr(log(alpha))-gammaQuark*(alpha-1.-log(alpha)));
     if ( z > x ) {
-      res+=CF*(2/(1-z)*(log(alpha*(2-z)/(1+alpha-z))-log((2-z)/(1-z))*(z<(1-alpha)?1.:0.)))*PDFxByz(parton)/z;
+      res+=CF*(2./(1.-z)*(log(alpha*(2.-z)/(1.+alpha-z))-log((2.-z)/(1.-z))*((z<(1.-alpha))?1.:0.)))*PDFxByz(parton)/z;
     }
   }
   
@@ -529,9 +537,9 @@ double DipolePKOperator::KBargg() const {
   
   if ( factory()->alphaParameter() < 1. ) {
     double alpha = factory()->alphaParameter();
-    res += PDFx(parton)*(2*CA*sqr(log(alpha))-gammaGluon*(alpha-1.-log(alpha)));
+    res += PDFx(parton)*(2.*CA*sqr(log(alpha))-gammaGluon*(alpha-1.-log(alpha)));
     if ( z > x ) {
-      res+=CA*(2/(1-z)*(log(alpha*(2-z)/(1+alpha-z))-log((2-z)/(1-z))*(z<(1-alpha)?1.:0.)))*PDFxByz(parton)/z;
+      res+=CA*(2./(1.-z)*(log(alpha*(2.-z)/(1.+alpha-z))-log((2.-z)/(1.-z))*((z<(1.-alpha))?1.:0.)))*PDFxByz(parton)/z;
     }
   }
   
@@ -574,16 +582,10 @@ double DipolePKOperator::KTildeqq() const {
   
   if ( factory()->alphaParameter() != 1. ) {
     double alpha=factory()->alphaParameter();
-    //(...)_\beta
-    res+=CF *(2./(1.-z)*log(1-z))*((z<(1-alpha))?1.:0.)*PDFx(parton);
     if ( z > x ) {
-        res+= -1.*CF*((2./(1.-z)*log(1-z))*((z<(1-alpha))?1.:0.))*PDFxByz(parton)/z;
-    }
-    
-    if ( z > x ) {
-      double AP_Pqqhat=CF *((1+z*z)/(1-z));
-      res+=AP_Pqqhat*log(min(1.,alpha/(1-z))) *PDFxByz(parton)/z;
-      res+= (CF*2/(1-z)*(log((1+alpha-z)/alpha)-((z>(1-alpha))?1.:0.)*log(2-z))   *PDFxByz(parton)/z);
+      double AP_Pqqhat=CF *((1.+z*z)/(1.-z));
+      res+=AP_Pqqhat*log(min(1.,alpha/(1.-z))) *PDFxByz(parton)/z;
+      res+= (CF*2./(1.-z)*(log((1.+alpha-z)/alpha)-((z>(1.-alpha))?1.:0.)*log(2.-z))   *PDFxByz(parton)/z);
     }
   }
   
@@ -598,19 +600,12 @@ double DipolePKOperator::KTildegg() const {
   if ( z > x ) {
     res += ( 2.*CA * ( (1.-z)/z -1. + z*(1.-z) ) * log((1.-z)/factory()->alphaParameter()) ) * PDFxByz(parton) / z;
   }
-  
-  if ( factory()->alphaParameter() != 1. ) {
-    double alpha = factory()->alphaParameter();
-    //(...)_\beta
-    res+=CA *(2./(1.-z)*log(1-z))*(z<(1-alpha)?1.:0.)*PDFx(parton);
+  double alpha = factory()->alphaParameter();
+  if ( alpha != 1. ) {
     if ( z > x ) {
-      res+= -1.*CA*((2./(1.-z)*log(1-z))*((z<(1-alpha))?1.:0.))*PDFxByz(parton)/z;
-    }
-    
-    if ( z > x ) {
-      double AP_Pqqhat=2.*CA *((z)/(1-z)+(1-z)/(z)+z*(1-z));
-      res+=AP_Pqqhat*log(min(1.,alpha/(1-z))) *PDFxByz(parton)/z;
-      res+= (CA*2/(1-z)*(log((1+alpha-z)/alpha)-(z>(1-alpha)?1.:0.)*log(2-z))   *PDFxByz(parton)/z);
+      double AP_Pqqhat=2.*CA *((z)/(1.-z)+(1.-z)/(z)+z*(1.-z));
+      res+=AP_Pqqhat*log(min(1.,alpha/(1.-z))) *PDFxByz(parton)/z;
+      res+= (CA*2./(1.-z)*(log((1.+alpha-z)/alpha)-((z>(1.-alpha))?1.:0.)*log(2.-z))   *PDFxByz(parton)/z);
     }
   }
   
