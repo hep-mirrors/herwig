@@ -132,6 +132,7 @@ void GeneralSampler::initialize() {
       if ( b == 0 || b % theIntegratePerJob == 0 ) {
 	if ( jobList ) {
 	  jobList->close();
+	  delete jobList;
 	  jobList = 0;
 	}
 	ostringstream name;
@@ -144,9 +145,11 @@ void GeneralSampler::initialize() {
 	++jobCount;
 	string fname = name.str();
 	jobList = new ofstream(fname.c_str());
-	if ( !*jobList )
+	if ( !*jobList ) {
+	  delete jobList;
 	  throw Exception() << "Failed to write integration job list"
 			    << Exception::abortnow;
+	}
       }
 
       *jobList << *bx << " ";
@@ -163,6 +166,7 @@ void GeneralSampler::initialize() {
 
     if ( jobList ) {
       jobList->close();
+      delete jobList;
       jobList = 0;
     }
 

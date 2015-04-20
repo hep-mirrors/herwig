@@ -397,7 +397,7 @@ double ShowerApproximation::channelWeight() const {
   if ( currentChannel == 0. )
     return 0.;
   double sum = 0.;
-  for ( vector<Ptr<SubtractionDipole>::ptr>::const_iterator dip =
+  for ( vector<Ptr<SubtractionDipole>::tptr>::const_iterator dip =
 	  dipole()->partnerDipoles().begin();
 	dip != dipole()->partnerDipoles().end(); ++dip )
     sum += channelWeight((**dip).realEmitter(),

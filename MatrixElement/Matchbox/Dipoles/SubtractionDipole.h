@@ -724,14 +724,14 @@ public:
   /**
    * Set the dipoles which have been found along with this dipole
    */
-  void partnerDipoles(const vector<Ptr<SubtractionDipole>::ptr>& p) {
+  void partnerDipoles(const vector<Ptr<SubtractionDipole>::tptr>& p) {
     thePartners = p;
   }
 
   /**
    * Return the dipoles which have been found along with this dipole
    */
-  const vector<Ptr<SubtractionDipole>::ptr>& partnerDipoles() const {
+  const vector<Ptr<SubtractionDipole>::tptr>& partnerDipoles() const {
     return thePartners;
   }
 
@@ -1015,7 +1015,7 @@ private:
   /**
    * The dipoles which have been found along with this dipole
    */
-  vector<Ptr<SubtractionDipole>::ptr> thePartners;
+  vector<Ptr<SubtractionDipole>::tptr> thePartners;
 
   /**
    * The TildeKinematics to be used.

@@ -968,7 +968,8 @@ MatchboxMEBase::getDipoles(const vector<Ptr<SubtractionDipole>::ptr>& dipoles,
 
       for ( DiagramVector::const_iterator d = diagrams().begin(); d != diagrams().end(); ++d ) {
 
-	Ptr<Tree2toNDiagram>::ptr check(new Tree2toNDiagram(*dynamic_ptr_cast<Ptr<Tree2toNDiagram>::ptr>(*d)));
+	Ptr<Tree2toNDiagram>::ptr check =
+	  new_ptr(Tree2toNDiagram(*dynamic_ptr_cast<Ptr<Tree2toNDiagram>::ptr>(*d)));
 
 	map<int,int> theMergeLegs;
 
@@ -1031,8 +1032,8 @@ MatchboxMEBase::getDipoles(const vector<Ptr<SubtractionDipole>::ptr>& dipoles,
 	    (**d).underlyingBornME(*b);
 	    (**d).setupBookkeeping(mergeInfo);
 	    if ( !((**d).empty()) ) {
-	      Ptr<SubtractionDipole>::ptr nDipole = (**d).cloneMe();
-	      res.push_back(nDipole);
+	      res.push_back((**d).cloneMe());
+	      Ptr<SubtractionDipole>::tptr nDipole = res.back();
 	      done.insert(make_pair(make_pair(make_pair(emitter,emission),spectator),make_pair(*b,*d)));
 	      if ( nDipole->isSymmetric() )
 		done.insert(make_pair(make_pair(make_pair(emission,emitter),spectator),make_pair(*b,*d)));
@@ -1060,9 +1061,11 @@ MatchboxMEBase::getDipoles(const vector<Ptr<SubtractionDipole>::ptr>& dipoles,
     }
   }
 
+  vector<Ptr<SubtractionDipole>::tptr> partners;
+  copy(res.begin(),res.end(),back_inserter(partners));
   for ( vector<Ptr<SubtractionDipole>::ptr>::iterator d = res.begin();
 	d != res.end(); ++d )
-    (**d).partnerDipoles(res);
+    (**d).partnerDipoles(partners);
 
   return res;
 

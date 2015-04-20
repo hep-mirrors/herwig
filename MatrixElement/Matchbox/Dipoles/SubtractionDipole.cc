@@ -1039,7 +1039,7 @@ void SubtractionDipole::doinit() {
   if ( showerApproximation() ) {
     theShowerApproximation->init();
   }
-  for ( vector<Ptr<SubtractionDipole>::ptr>::iterator p = thePartners.begin();
+  for ( vector<Ptr<SubtractionDipole>::tptr>::iterator p = thePartners.begin();
 	p != thePartners.end(); ++p ) {
     (**p).init();
   }
@@ -1066,7 +1066,7 @@ void SubtractionDipole::doinitrun() {
   if ( showerApproximation() ) {
     theShowerApproximation->initrun();
   }
-  for ( vector<Ptr<SubtractionDipole>::ptr>::iterator p = thePartners.begin();
+  for ( vector<Ptr<SubtractionDipole>::tptr>::iterator p = thePartners.begin();
 	p != thePartners.end(); ++p ) {
     (**p).initrun();
   }

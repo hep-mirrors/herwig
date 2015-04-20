@@ -1057,7 +1057,7 @@ MatchboxFactory::getSplittingChannels(tStdXCombPtr xcptr) const {
       if ( showerApproximation()->needsTildeXCombs() ) {
 	channel.tildeXCombs.clear();
 	assert(!channel.dipole->partnerDipoles().empty());
-	for ( vector<Ptr<SubtractionDipole>::ptr>::const_iterator p =
+	for ( vector<Ptr<SubtractionDipole>::tptr>::const_iterator p =
 		channel.dipole->partnerDipoles().begin();
 	      p != channel.dipole->partnerDipoles().end(); ++p ) {
 	  StdXCombPtr txc = channel.dipole->makeBornXComb(channel.realXComb);
