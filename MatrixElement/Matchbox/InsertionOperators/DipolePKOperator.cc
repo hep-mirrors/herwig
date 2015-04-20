@@ -32,7 +32,8 @@ DipolePKOperator::DipolePKOperator()
   : MatchboxInsertionOperator(),
     CA(-1.0), CF(-1.0), 
     gammaQuark(-1.0), gammaGluon(-1.0),
-    KQuark(-1.0), KGluon(-1.0) {}
+    KQuark(-1.0), KGluon(-1.0),
+    scale(ZERO), x(0.), z(0.) {}
 
 DipolePKOperator::~DipolePKOperator() {}
 
