@@ -94,8 +94,8 @@ double FIqgxDipole::me2() const {
   double x = subtractionParameters()[0];
   double z = subtractionParameters()[1];
   
-  if ( alpha() < 1-x )
-    return false;
+  if ( alpha() < (1.-x) )
+    return 0.0;
 
   Energy2 prop = 
     2.*((realEmissionME()->lastXComb().meMomenta()[realEmitter()])*
