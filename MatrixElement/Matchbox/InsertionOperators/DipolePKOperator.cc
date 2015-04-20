@@ -479,25 +479,22 @@ double DipolePKOperator::softLogByz(tcPDPtr p) const {
 }
 
 double DipolePKOperator::softLog(tcPDPtr p) const {
-  if(z<(1.-factory()->alphaParameter()))return 0.;
-  double res =(sqr(1-x) -1*sqr(log(factory()->alphaParameter()))) * PDFx(p) / 2.;
+  double res =0.;
+  if(x>(1.-factory()->alphaParameter()))
+     res +=(sqr(log(1.-x)) - sqr(log(factory()->alphaParameter()))) * PDFx(p) / 2.;
   
-  if(z>x?1.:0.)
-  res += (PDFxByz(p)/z  - PDFx(p))*log(1.-z)/(1.-z);
+  if(z>x&&z>(1.-factory()->alphaParameter()))
+     res += (PDFxByz(p)/z  - PDFx(p))*log(1.-z)/(1.-z);
   
   return res;
 }
 
 double DipolePKOperator::gammaSoft() const {
-  if(z<(1.-factory()->alphaParameter()))return factory()->alphaParameter();
-  double res = (factory()->alphaParameter()+
-                 log(1-x)- log(factory()->alphaParameter()) )*PDFx(parton);
-  if(z>x?1.:0.)
-  res += (PDFxByz(parton)/z  - PDFx(parton)) / (1.-z);
-  
-      
-    
-    
+  double res =factory()->alphaParameter();
+  if(x>(1.-factory()->alphaParameter()))
+     res += ( log(1.-x)- log(factory()->alphaParameter()) )*PDFx(parton);
+  if(z>x&&z>(1.-factory()->alphaParameter()))
+     res += (PDFxByz(parton)/z  - PDFx(parton)) / (1.-z);
   return res;
 }
 
