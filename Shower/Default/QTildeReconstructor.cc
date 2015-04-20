@@ -549,6 +549,13 @@ reconstructHardJets(ShowerTreePtr hard,
     _boosts.clear();
     return false;
   }
+  catch (Exception & ex) {
+    _progenitor=tShowerParticlePtr();
+    _intrinsic.clear();
+    _currentTree = tShowerTreePtr();
+    _boosts.clear();
+    throw ex;
+  }
   _progenitor=tShowerParticlePtr();
   _intrinsic.clear();
   // ensure x<1
