@@ -465,6 +465,7 @@ bool SubtractionDipole::generateKinematics(const double * r) {
   }
   if ( !generateTildeKinematics() )
     return false;
+  underlyingBornME()->lastXCombPtr()->setIncomingPartons();
   underlyingBornME()->setScale();
   assert(lastXCombPtr() == underlyingBornME()->lastXCombPtr());
   underlyingBornME()->lastXCombPtr()->setIncomingPartons();
