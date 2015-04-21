@@ -127,17 +127,13 @@ link-helper-files:
 	if test -f $(srcdir)/$$i -a ! -e $$i; then \
 	$(LN_S) -f $(srcdir)/$$i; fi; done
 
-CHECKCOMMAND = ./Herwig++ run  $(notdir $(subst .in,.run,$<)) -N500 -d1 -D
-
-check-%: $(srcdir)/%.in HerwigDefaults.rpo link-helper-files
-	./Herwig++ read $< -D
-	@echo $(CHECKCOMMAND)
-	@$(CHECKCOMMAND) && echo "# $@ OK #" \
-			 || (echo "###### $@ BAD ######"; false)
-
 ## valgrind targets ##
 
 VALGRIND=valgrind --leak-check=full --num-callers=25 --freelist-vol=100000000 --leak-resolution=med --trace-children=yes
+
+check-valgrind-%: $(srcdir)/%.in HerwigDefaults.rpo link-helper-files
+	$(VALGRIND) ./Herwig++ read -d1 -D $< &> valgrind-$(notdir $(subst .in,,$<))-read.log
+	$(VALGRIND) ./Herwig++ run $(notdir $(subst .in,.run,$<)) -N 500 -d1 -D &> valgrind-$(notdir $(subst .in,,$<))-run.log
 
 valgrind: valgrind-init valgrind-read valgrind-run
 
@@ -149,6 +145,13 @@ valgrind-read:
 valgrind-run:
 	$(VALGRIND) ./Herwig++ run -d1 -D -N5 LHC.run &> /tmp/valgrind-run.log
 
+CHECKCOMMAND = ./Herwig++ run  $(notdir $(subst .in,.run,$<)) -N500 -d1 -D
+
+check-%: $(srcdir)/%.in HerwigDefaults.rpo link-helper-files
+	./Herwig++ read $< -D
+	@echo $(CHECKCOMMAND)
+	@$(CHECKCOMMAND) && echo "# $@ OK #" \
+			 || (echo "###### $@ BAD ######"; false)
 SETUPTHEPEG=$(THEPEGPATH)/bin/setupThePEG
 THEPEGREPO=$(THEPEGLIBPATH)/ThePEGDefaults.rpo
 
