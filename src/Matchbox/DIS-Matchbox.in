@@ -13,7 +13,9 @@ read Matchbox/EPCollider.in
 ##################################################
 
 cd /Herwig/EventHandlers
+set EventHandler:BeamA /Herwig/Particles/e+
 set EventHandler:LuminosityFunction:BeamEMaxA 27.5.*GeV
+set EventHandler:BeamB /Herwig/Particles/p+
 set EventHandler:LuminosityFunction:BeamEMaxB 820.*GeV
 
 ##################################################
