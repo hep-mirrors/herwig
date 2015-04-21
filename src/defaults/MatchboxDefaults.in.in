@@ -551,6 +551,7 @@ set MEMatching:EmissionScaleInSubtraction RealScale
 set MEMatching:BornScaleInSplitting ShowerScale
 set MEMatching:RealEmissionScaleInSplitting ShowerScale
 set MEMatching:EmissionScaleInSplitting ShowerScale
+set MEMatching:TruncatedShower Yes
 set MEMatching:MaxPtIsMuF Yes
 set MEMatching:FFPtCut 1.0*GeV
 set MEMatching:FIPtCut 1.0*GeV

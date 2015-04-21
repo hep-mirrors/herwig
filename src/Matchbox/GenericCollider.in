@@ -1,9 +1,6 @@
 cd /Herwig/Cuts
 
 create ThePEG::Cuts Cuts
-set Cuts:ScaleMin 1.0*GeV
-set Cuts:X1Min 1.0e-5
-set Cuts:X2Min 1.0e-5
 set MatchboxJetMatcher:Factory /Herwig/MatrixElements/Matchbox/Factory
 
 cd /Herwig/MatrixElements/Matchbox
@@ -14,8 +11,6 @@ set Factory:Cuts /Herwig/Cuts/Cuts
 cd /Herwig/EventHandlers
 
 create ThePEG::StandardEventHandler EventHandler
-create ThePEG::FixedCMSLuminosity FixedLuminosity
-set EventHandler:LuminosityFunction FixedLuminosity
 
 set EventHandler:CascadeHandler /Herwig/Shower/ShowerHandler
 set EventHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
@@ -23,7 +18,7 @@ set EventHandler:DecayHandler /Herwig/Decays/DecayHandler
 set EventHandler:Cuts /Herwig/Cuts/Cuts
 
 set EventHandler:Sampler /Herwig/Samplers/Sampler
-
+set EventHandler:Weighted Off
 set EventHandler:CollisionCuts Off
 
 insert EventHandler:SubProcessHandlers[0] /Herwig/MatrixElements/Matchbox/Factory
@@ -36,20 +31,12 @@ set EventGenerator:StandardModelParameters /Herwig/Model
 set EventGenerator:EventHandler /Herwig/EventHandlers/EventHandler
 set EventGenerator:Strategy DefaultStrategy
 set EventGenerator:DumpPeriod -1
+
 set EventGenerator:RandomNumberGenerator:Seed 31122001
 set EventGenerator:DebugLevel 1
 set EventGenerator:PrintEvent 10
 set EventGenerator:MaxErrors 10000
 set EventGenerator:NumberOfEvents 100000000
-
-cd /Herwig/Shower
-
-set Evolver:HardVetoScaleSource Read
-set Evolver:MECorrMode No
-
-cd /Herwig/DipoleShower
-
-set DipoleShowerHandler:MaxPtIsMuF Yes
 
 cd /Herwig/Particles
 

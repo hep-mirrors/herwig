@@ -1,14 +1,12 @@
 read Matchbox/GenericCollider.in
 
-cd /Herwig/Cuts
-insert Cuts:TwoCuts[0] NeutralCurrentCut
-insert Cuts:TwoCuts[1] ChargedCurrentCut
 cd /Herwig/EventHandlers
+create ThePEG::LuminosityFunction Luminosity
 set EventHandler:BeamA /Herwig/Particles/p+
-set DISLuminosity:BeamEMaxA 920.*GeV
+set Luminosity:BeamEMaxA 920.*GeV
 set EventHandler:BeamB /Herwig/Particles/e-
-set DISLuminosity:BeamEMaxB 30.*GeV
-set EventHandler:LuminosityFunction DISLuminosity
+set Luminosity:BeamEMaxB 30.*GeV
+set EventHandler:LuminosityFunction Luminosity
 set /Herwig/Shower/ShowerHandler:MPIHandler NULL
 set /Herwig/DipoleShower/DipoleShowerHandler:MPIHandler NULL
 cd /Herwig/MatrixElements/Matchbox
@@ -26,3 +24,13 @@ set PDFSet:RemnantHandler HadronRemnants
 set /Herwig/Partons/PDFSet:PDFName CT10.LHgrid
 set /Herwig/Particles/p+:PDF PDFSet
 set /Herwig/Particles/pbar-:PDF PDFSet
+
+cd /Herwig/Cuts
+
+set Cuts:ScaleMin 1.0*GeV
+set Cuts:X1Min 1.0e-5
+set Cuts:X2Min 1.0e-5
+set Cuts:MHatMin 0.0*GeV
+insert Cuts:TwoCuts[0] NeutralCurrentCut
+insert Cuts:TwoCuts[1] ChargedCurrentCut
+

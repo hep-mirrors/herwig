@@ -1,7 +1,10 @@
 read Matchbox/GenericCollider.in
 
 cd /Herwig/EventHandlers
-set FixedLuminosity:Energy 8000.0
+
+create ThePEG::FixedCMSLuminosity Luminosity FixedCMSLuminosity.so
+set Luminosity:Energy 8000.0
+set EventHandler:LuminosityFunction Luminosity
 set EventHandler:BeamA /Herwig/Particles/p+
 set EventHandler:BeamB /Herwig/Particles/p+
 cd /Herwig/MatrixElements/Matchbox
@@ -15,3 +18,20 @@ set PDFSet:RemnantHandler HadronRemnants
 set /Herwig/Partons/PDFSet:PDFName CT10.LHgrid
 set /Herwig/Particles/p+:PDF PDFSet
 set /Herwig/Particles/pbar-:PDF PDFSet
+
+cd /Herwig/Cuts
+
+set Cuts:ScaleMin 2.0*GeV
+set Cuts:X1Min 1.0e-5
+set Cuts:X2Min 1.0e-5
+set Cuts:MHatMin 0.0*GeV
+
+insert Cuts:OneCuts[0] PhotonKtCut
+insert Cuts:OneCuts[1] LeptonKtCut
+insert Cuts:OneCuts[2] TopKtCut
+insert Cuts:OneCuts[3] WBosonKtCut
+insert Cuts:OneCuts[4] ZBosonKtCut
+insert Cuts:OneCuts[5] HiggsBosonKtCut
+insert Cuts:OneCuts[6] ChargedLeptonKtCut
+insert Cuts:MultiCuts[0] MassCut
+

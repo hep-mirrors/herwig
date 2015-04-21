@@ -13,8 +13,8 @@ read Matchbox/EPCollider.in
 ##################################################
 
 cd /Herwig/EventHandlers
-set DISLuminosity:BeamEMaxA 27.5.*GeV
-set DISLuminosity:BeamEMaxB 820.*GeV
+set EventHandler:LuminosityFunction:BeamEMaxA 27.5.*GeV
+set EventHandler:LuminosityFunction:BeamEMaxB 820.*GeV
 
 ##################################################
 ## Process selection

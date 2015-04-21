@@ -2,6 +2,9 @@ cd /Herwig/EventHandlers
 
 set EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
 
+set /Herwig/DipoleShower/Kinematics/IFLightKinematics:CollinearScheme On
+set /Herwig/DipoleShower/Kinematics/IILightKinematics:CollinearScheme On
+
 cd /Herwig/MatrixElements/Matchbox
 
 set Factory:ShowerApproximation DipoleMatching
