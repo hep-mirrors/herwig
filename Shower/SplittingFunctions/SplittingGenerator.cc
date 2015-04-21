@@ -181,18 +181,26 @@ void SplittingGenerator::deleteFromMap(const IdList &ids,
   if(isISRadiationON() && !final) {
     pair<BranchingList::iterator,BranchingList::iterator> 
       range = _bbranchings.equal_range(ids[1]);
-    for(BranchingList::iterator it=range.first;it!=range.second&&it->first==ids[1];++it) {
-      if(it->second.first==s&&it->second.second==ids)
-	_bbranchings.erase(it);
+    for(BranchingList::iterator it=range.first;
+	it!=range.second&&it!=_bbranchings.end()&&it->first==ids[1];++it) {
+      if(it->second.first==s&&it->second.second==ids) {
+	BranchingList::iterator it2=it;
+	--it;
+	_bbranchings.erase(it2);
+      }
     }
     s->removeSplitting(ids);
   }
   if(isFSRadiationON() &&  final) {
     pair<BranchingList::iterator,BranchingList::iterator> 
       range = _fbranchings.equal_range(ids[0]);
-    for(BranchingList::iterator it=range.first;it!=range.second&&it->first==ids[0];++it) {
-      if(it->second.first==s&&it->second.second==ids)
-	_fbranchings.erase(it);
+    for(BranchingList::iterator it=range.first;
+	it!=range.second&&it!=_fbranchings.end()&&it->first==ids[0];++it) {
+      if(it->second.first==s&&it->second.second==ids) {
+	BranchingList::iterator it2 = it;
+	--it;
+	_fbranchings.erase(it2);
+      }
     }
     s->removeSplitting(ids);
   }
