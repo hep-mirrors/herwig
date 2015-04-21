@@ -729,6 +729,7 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
       for(unsigned int ix=0;ix<theChildren.size();++ix)
 	particle->abandonChild(theChildren[ix]);
       theChildren.clear();
+      if(particle->spinInfo()) particle->spinInfo()->decayVertex(VertexPtr());
     } 
   }
   while(particle->virtualMass()==ZERO&&ntry<50);
