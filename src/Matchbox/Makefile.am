@@ -33,10 +33,7 @@ Powheg-DefaultShower.in \
 Powheg-DipoleShower.in \
 Powheg.in \
 PPCollider.in \
-VBFNLO.in \
-LEP-Matchbox.in \
-DIS-Matchbox.in \
-LHC-Matchbox.in
+VBFNLO.in
 
 dist_Matchbox_DATA = $(INPUTFILES)
 

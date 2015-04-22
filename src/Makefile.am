@@ -148,7 +148,7 @@ valgrind-run:
 CHECKCOMMAND = ./Herwig++ run  $(notdir $(subst .in,.run,$<)) -N500 -d1 -D
 
 check-%: $(srcdir)/%.in HerwigDefaults.rpo link-helper-files
-	./Herwig++ read $< -D
+	./Herwig++ read -i . $< -D
 	@echo $(CHECKCOMMAND)
 	@$(CHECKCOMMAND) && echo "# $@ OK #" \
 			 || (echo "###### $@ BAD ######"; false)
