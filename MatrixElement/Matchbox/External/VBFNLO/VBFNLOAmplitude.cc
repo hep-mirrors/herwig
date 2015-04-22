@@ -73,7 +73,13 @@ void VBFNLOAmplitude::startOLP(const string& contract, int& status) {
 
   OLP_Start(const_cast<char*>(contract.c_str()), &status);
 
-  setOLPParameter("mass(5)",getParticleData(ParticleID::b)->mass()/GeV);
+  map<long,Energy>::const_iterator it=reshuffleMasses().find(ParticleID::b);
+  double bmass;
+  if(it==reshuffleMasses().end())
+    bmass = getParticleData(ParticleID::b)->mass()/GeV;
+  else
+    bmass = it->second/GeV;
+  setOLPParameter("mass(5)",bmass);
   setOLPParameter("mass(6)",getParticleData(ParticleID::t)->mass()/GeV);
 
   setOLPParameter("mass(23)",getParticleData(ParticleID::Z0)->mass()/GeV);

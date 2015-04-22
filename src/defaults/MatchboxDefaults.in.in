@@ -307,6 +307,10 @@ create Herwig::MatchboxHybridAmplitude GenericProcesses
 @DO_NJET@ NJet:Massless -14
 @DO_NJET@ NJet:Massless 16
 @DO_NJET@ NJet:Massless -16
+@DO_NJET@ NJet:Massless 4
+@DO_NJET@ NJet:Massless -4
+@DO_NJET@ NJet:Massless 5
+@DO_NJET@ NJet:Massless -5
 
 @LOAD_OPENLOOPS@ HwMatchboxOpenLoops.so
 @CREATE_OPENLOOPS@ Herwig::OpenLoopsAmplitude OpenLoops
@@ -321,6 +325,8 @@ create Herwig::MatchboxHybridAmplitude GenericProcesses
 @DO_OPENLOOPS@ OpenLoops:Massless -14
 @DO_OPENLOOPS@ OpenLoops:Massless 16
 @DO_OPENLOOPS@ OpenLoops:Massless -16
+@DO_OPENLOOPS@ OpenLoops:Massless 4
+@DO_OPENLOOPS@ OpenLoops:Massless -4
 
 @LOAD_VBFNLO@ HwMatchboxVBFNLO.so
 @CREATE_VBFNLO@ Herwig::VBFNLOAmplitude VBFNLOProcesses
@@ -337,6 +343,8 @@ create Herwig::MatchboxHybridAmplitude GenericProcesses
 @DO_VBFNLO@ VBFNLOProcesses:Massless -15
 @DO_VBFNLO@ VBFNLOProcesses:Massless 16
 @DO_VBFNLO@ VBFNLOProcesses:Massless -16
+@DO_VBFNLO@ VBFNLOProcesses:Massless 5
+@DO_VBFNLO@ VBFNLOProcesses:Massless -5
 
 mkdir Builtin
 cd Builtin
