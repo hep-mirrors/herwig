@@ -20,6 +20,9 @@ LO-DefaultShower.in \
 LO-DipoleShower.in \
 LO.in \
 LO-NoShower.in \
+MadGraph-MadGraph.in \
+GoSam-GoSam.in \
+OpenLoops-OpenLoops.in \
 MadGraph-GoSam.in \
 MadGraph-NJet.in \
 MadGraph-OpenLoops.in \
