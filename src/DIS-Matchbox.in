@@ -120,4 +120,4 @@ set /Herwig/Partons/PDFSet:PDFName CT10.LHgrid
 do /Herwig/MatrixElements/Matchbox/Factory:ProductionMode
 
 cd /Herwig/Generators
-saverun Matchbox EventGenerator
+saverun DIS-Matchbox EventGenerator

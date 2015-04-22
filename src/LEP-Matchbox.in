@@ -119,4 +119,4 @@ read Matchbox/FiveFlavourScheme.in
 do /Herwig/MatrixElements/Matchbox/Factory:ProductionMode
 
 cd /Herwig/Generators
-saverun Matchbox EventGenerator
+saverun LEP-Matchbox EventGenerator
