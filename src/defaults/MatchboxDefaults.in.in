@@ -57,6 +57,7 @@ set Sampler:FlatSubprocesses Off
 set Sampler:MinSelection 0.000001
 set Sampler:AlmostUnweighted Off
 set Sampler:RunCombinationData Off
+set Sampler:WriteGridsOnFinish No
 
 ################################################################################
 # Setup the factory object
@@ -329,22 +330,22 @@ create Herwig::MatchboxHybridAmplitude GenericProcesses
 @DO_OPENLOOPS@ OpenLoops:Massless -4
 
 @LOAD_VBFNLO@ HwMatchboxVBFNLO.so
-@CREATE_VBFNLO@ Herwig::VBFNLOAmplitude VBFNLOProcesses
+@CREATE_VBFNLO@ Herwig::VBFNLOAmplitude VBFNLO
 
-@DO_VBFNLO@ VBFNLOProcesses:Massless 11
-@DO_VBFNLO@ VBFNLOProcesses:Massless -11
-@DO_VBFNLO@ VBFNLOProcesses:Massless 12
-@DO_VBFNLO@ VBFNLOProcesses:Massless -12
-@DO_VBFNLO@ VBFNLOProcesses:Massless 13
-@DO_VBFNLO@ VBFNLOProcesses:Massless -13
-@DO_VBFNLO@ VBFNLOProcesses:Massless 14
-@DO_VBFNLO@ VBFNLOProcesses:Massless -14
-@DO_VBFNLO@ VBFNLOProcesses:Massless 15
-@DO_VBFNLO@ VBFNLOProcesses:Massless -15
-@DO_VBFNLO@ VBFNLOProcesses:Massless 16
-@DO_VBFNLO@ VBFNLOProcesses:Massless -16
-@DO_VBFNLO@ VBFNLOProcesses:Massless 5
-@DO_VBFNLO@ VBFNLOProcesses:Massless -5
+@DO_VBFNLO@ VBFNLO:Massless 11
+@DO_VBFNLO@ VBFNLO:Massless -11
+@DO_VBFNLO@ VBFNLO:Massless 12
+@DO_VBFNLO@ VBFNLO:Massless -12
+@DO_VBFNLO@ VBFNLO:Massless 13
+@DO_VBFNLO@ VBFNLO:Massless -13
+@DO_VBFNLO@ VBFNLO:Massless 14
+@DO_VBFNLO@ VBFNLO:Massless -14
+@DO_VBFNLO@ VBFNLO:Massless 15
+@DO_VBFNLO@ VBFNLO:Massless -15
+@DO_VBFNLO@ VBFNLO:Massless 16
+@DO_VBFNLO@ VBFNLO:Massless -16
+@DO_VBFNLO@ VBFNLO:Massless 5
+@DO_VBFNLO@ VBFNLO:Massless -5
 
 mkdir Builtin
 cd Builtin

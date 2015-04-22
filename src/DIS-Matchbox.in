@@ -66,6 +66,7 @@ do Factory:Process e+ p -> e+ j
 ## See the documentation for more options
 ##################################################
 
+cd /Herwig/MatrixElements/Matchbox
 set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonQ2Scale
 
 ##################################################

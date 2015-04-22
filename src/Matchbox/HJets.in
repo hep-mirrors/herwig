@@ -1,4 +1,4 @@
-cd /Herwig/MatrixElements/Matchbox/Amplitudes
+cd /Herwig/MatrixElements/Matchbox
 
 clear Factory:Amplitudes
 library HJets.so
