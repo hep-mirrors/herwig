@@ -630,6 +630,7 @@ tPPair ShowerHandler::remakeRemnant(tPPair oldp){
   // if the same do nothing
   if(newp == oldp) return oldp;
   // Creates the new remnants and returns the new PartonBinInstances
+  // ATTENTION Broken here for very strange configuration
   PBIPair newbins = pex.newRemnants(oldp, newp, newStep());
   newStep()->addIntermediate(newp.first);
   newStep()->addIntermediate(newp.second);
