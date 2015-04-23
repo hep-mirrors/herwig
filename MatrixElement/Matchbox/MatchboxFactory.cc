@@ -569,7 +569,7 @@ void MatchboxFactory::setup() {
 
 	Ptr<MatchboxMEBase>::ptr bornme = (**born).cloneMe();
 	string pname = fullName() + "/" + (**born).name();
-	if ( independentVirtuals() )
+	if ( virtualContributions() && independentVirtuals() )
 	  pname += ".Born";
 	if ( ! (generator()->preinitRegister(bornme,pname) ) )
 	  throw InitException() << "Matrix element " << pname << " already existing.";
