@@ -81,7 +81,6 @@ void OpenLoopsAmplitude::startOLP(const string& contract, int& status) {
 
 	ol_setparameter_string("stability_logdir",stabilityPrefix.c_str());
 
-	OLP_Start(tempcontract.c_str(), &status);
 	int a=0;double null=0.0;double one=1.0;
 	int part[10]={1,2,3,4,5,6,15,23,24,25};string stri;
 	for (int i=0;i<10;i++){
@@ -96,8 +95,10 @@ void OpenLoopsAmplitude::startOLP(const string& contract, int& status) {
 	 ss << part[i];
 	 string str = ss.str();
 	 stri="mass("+str+")";
+	 cerr << stri << " -> " << mass << "\n" << flush;
 	 OLP_SetParameter(stri.c_str(),&mass,&null,&a);
      stri="width("+str+")";
+	 cerr << stri << " -> " << width << "\n" << flush;
      OLP_SetParameter(stri.c_str(),&width,&null,&a);
 	}
 	// stri="alphas";
@@ -106,6 +107,8 @@ void OpenLoopsAmplitude::startOLP(const string& contract, int& status) {
 	stri="alpha";
         one=SM().alphaEMMZ();
 	OLP_SetParameter(stri.c_str(),&one ,&null,&a);
+
+	OLP_Start(tempcontract.c_str(), &status);
 
   didStartOLP() = true;
 
@@ -128,6 +131,7 @@ void OpenLoopsAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs
 	orderFile << "CorrectionType           QCD\n";
 	orderFile << "IRregularization         " << (isDR() ? "DRED" : "CDR") << "\n";
 	orderFile << "extra answerfile      " << (factory()->buildStorage() + name() + ".OLPAnswer.lh") << "\n";
+	orderFile << "extra verbose 2\n";
     orderFile << "extra psp_tolerance "<<psp_tolerance<<"\n";
     orderFile << "extra use_cms "<<(use_cms?"1":"0")<< "\n";
 	orderFile << "\n";

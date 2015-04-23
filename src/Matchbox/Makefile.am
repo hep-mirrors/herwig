@@ -18,6 +18,8 @@ InclusiveDurhamJets.in \
 IncreaseVerbosity.in \
 LO-DefaultShower.in \
 LO-DipoleShower.in \
+MCatLO-DefaultShower.in \
+MCatLO-DipoleShower.in \
 LO.in \
 LO-NoShower.in \
 MadGraph-MadGraph.in \

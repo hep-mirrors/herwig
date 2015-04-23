@@ -264,6 +264,8 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		src/defaults/setup.gosam.in
 		src/Matchbox/LO-DefaultShower.in
 		src/Matchbox/LO-DipoleShower.in
+		src/Matchbox/MCatLO-DefaultShower.in
+		src/Matchbox/MCatLO-DipoleShower.in
 		src/Matchbox/LO-NoShower.in
 		src/Matchbox/MCatNLO-DefaultShower.in
 		src/Matchbox/MCatNLO-DipoleShower.in
