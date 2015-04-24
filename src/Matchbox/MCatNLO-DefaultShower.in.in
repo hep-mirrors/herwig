@@ -1,4 +1,5 @@
 set /Herwig/Shower/Evolver:HardVetoScaleSource Read
+set /Herwig/Shower/Evolver:HardVetoReadOption PrimaryCollision
 set /Herwig/Shower/Evolver:MECorrMode No
 set /Herwig/Shower/Evolver:SpinCorrelations No
 set /Herwig/Shower/KinematicsReconstructor:ReconstructionOption Colour4
