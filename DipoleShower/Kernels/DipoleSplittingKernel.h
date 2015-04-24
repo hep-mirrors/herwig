@@ -259,7 +259,8 @@ protected:
   /**
    * Return the common factor of (alphas/2pi)*(pdf ratio)
    */
-  double alphaPDF(const DipoleSplittingInfo&) const;
+  double alphaPDF(const DipoleSplittingInfo&,
+		  Energy optScale = ZERO) const;
 
 public:
 

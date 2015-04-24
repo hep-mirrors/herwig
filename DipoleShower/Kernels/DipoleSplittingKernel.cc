@@ -59,9 +59,10 @@ void DipoleSplittingKernel::persistentInput(PersistentIStream & is, int) {
      >> iunit(theFactorizationScaleFreeze,GeV);
 }
 
-double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split) const {
+double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
+				       Energy optScale) const {
 
-  Energy pt = split.lastPt();
+  Energy pt = optScale == ZERO ? split.lastPt() : optScale;
 
   Energy2 scale = sqr(pt) + sqr(theScreeningScale);
 
