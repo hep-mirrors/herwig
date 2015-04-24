@@ -34,3 +34,4 @@ set /Herwig/Generators/LHCGenerator:StandardModelParameters:QCD/RunningAlphaS /H
 set /Herwig/Shower/Evolver:HardEmissionMode POWHEG
 set /Herwig/Shower/AlphaQCD:AlphaMZ 0.118
 insert /Herwig/MatrixElements/SimpleEE:MatrixElements 0 /Herwig/MatrixElements/PowhegMEee2gZ2qq
+set /Herwig/Shower/PartnerFinder:QEDPartner IIandFF

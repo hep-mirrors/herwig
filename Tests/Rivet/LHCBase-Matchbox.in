@@ -34,6 +34,7 @@ set LHCHandler:Sampler  /Herwig/Samplers/Sampler
 
 cd /Herwig/MatrixElements/Matchbox
 insert /Herwig/Generators/LHCGenerator:EventHandler:SubProcessHandlers[0] PPFactory
+set /Herwig/Cuts/MatchboxJetMatcher:Factory /Herwig/MatrixElements/Matchbox/PPFactory
 
 ##################################################
 ## PDF choice

@@ -19,6 +19,7 @@ set DISHandler:CascadeHandler:MPIHandler NULL
 
 cd /Herwig/MatrixElements/Matchbox
 insert /Herwig/Generators/DISGenerator:EventHandler:SubProcessHandlers[0] DISFactory
+set /Herwig/Cuts/MatchboxJetMatcher:Factory /Herwig/MatrixElements/Matchbox/DISFactory
 
 ##################################################
 ## PDF choice

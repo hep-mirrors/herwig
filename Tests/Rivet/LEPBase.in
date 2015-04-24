@@ -30,3 +30,4 @@ insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
 ##################################################
 # default e+e- > q qbar (5 flavours d,u,s,c,b)
 insert  /Herwig/MatrixElements/SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEee2gZ2qq
+set /Herwig/Shower/PartnerFinder:QEDPartner IIandFF

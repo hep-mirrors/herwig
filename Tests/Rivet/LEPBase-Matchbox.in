@@ -82,6 +82,9 @@ set /Herwig/Shower/ShowerHandler:RenormalizationScaleFactor 1.0
 set /Herwig/Shower/ShowerHandler:FactorizationScaleFactor 1.0
 set /Herwig/Shower/ShowerHandler:HardScaleFactor 1.0
 
+set /Herwig/Shower/PartnerFinder:QEDPartner IIandFF
+
+
 ## Hard process scale variation
 set EEFactory:RenormalizationScaleFactor 1.0
 set EEFactory:FactorizationScaleFactor 1.0
