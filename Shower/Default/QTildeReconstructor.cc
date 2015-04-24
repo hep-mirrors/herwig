@@ -2239,91 +2239,126 @@ reconstructGeneralSystem(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
   for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
     used[ShowerHardJets[ix]] = false;
   }
-  if(_reconopt==2) {
-    // first to the final-state reconstruction of any systems which need it
-    set<ShowerProgenitorPtr> outgoing;
-    // first find any particles with final state partners
-    for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
-      if(ShowerHardJets[ix]->progenitor()->isFinalState()&&
-	 ShowerHardJets[ix]->progenitor()->partner()&&
-	 ShowerHardJets[ix]->progenitor()->partner()->isFinalState()) outgoing.insert(ShowerHardJets[ix]);
-    }
-    // then find the colour partners
-    if(!outgoing.empty()) {
-      set<ShowerProgenitorPtr> partners;
-      for(set<ShowerProgenitorPtr>::const_iterator it=outgoing.begin();it!=outgoing.end();++it) {
-	for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
-	  if((**it).progenitor()->partner()==ShowerHardJets[ix]->progenitor()) {
-	    partners.insert(ShowerHardJets[ix]);
-	    break;
-	  }
-	}
-      }
-      outgoing.insert(partners.begin(),partners.end());
-    }
-    // to the final-state reconstruction if needed
-    if(!outgoing.empty()) {
-      assert(outgoing.size()!=1);
-      LorentzRotation toRest,fromRest;
-      vector<ShowerProgenitorPtr> outgoingJets(outgoing.begin(),outgoing.end());
-      reconstructFinalStateSystem(false,toRest,fromRest,outgoingJets);
-    }
-    // Now do any initial-final systems which are needed
-    vector<ColourSingletSystem> IFSystems;
-    // find the systems N.B. can have duplicates
-    // find initial-state with FS partners or FS with IS partners
-    for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
-      if(!ShowerHardJets[ix]->progenitor()->isFinalState()&&
-	 ShowerHardJets[ix]->progenitor()->partner()&&
-	 ShowerHardJets[ix]->progenitor()->partner()->isFinalState()) {
-	IFSystems.push_back(ColourSingletSystem(IF,ShowerHardJets[ix]));
-      }
-      else if(ShowerHardJets[ix]->progenitor()->isFinalState()&&
-	      ShowerHardJets[ix]->progenitor()->partner()&&
-	      !ShowerHardJets[ix]->progenitor()->partner()->isFinalState()) {
-	IFSystems.push_back(ColourSingletSystem(IF,ShowerHardJets[ix]));
-      }
-    }
-    // then add the partners
-    for(unsigned int is=0;is<IFSystems.size();++is) {
+  if(_reconopt<=2) {
+    if(_reconopt==2) {
+      // first to the final-state reconstruction of any systems which need it
+      set<ShowerProgenitorPtr> outgoing;
+      // first find any particles with final state partners
       for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
-	if(IFSystems[is].jets[0]->progenitor()->partner()==ShowerHardJets[ix]->progenitor()) {
-	  IFSystems[is].jets.push_back(ShowerHardJets[ix]);
+	if(ShowerHardJets[ix]->progenitor()->isFinalState()&&
+	   ShowerHardJets[ix]->progenitor()->partner()&&
+	   ShowerHardJets[ix]->progenitor()->partner()->isFinalState()) outgoing.insert(ShowerHardJets[ix]);
+      }
+      // then find the colour partners
+      if(!outgoing.empty()) {
+	set<ShowerProgenitorPtr> partners;
+	for(set<ShowerProgenitorPtr>::const_iterator it=outgoing.begin();it!=outgoing.end();++it) {
+	  for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
+	    if((**it).progenitor()->partner()==ShowerHardJets[ix]->progenitor()) {
+	      partners.insert(ShowerHardJets[ix]);
+	      break;
+	    }
+	  }
+	}
+	outgoing.insert(partners.begin(),partners.end());
+      }
+      // to the final-state reconstruction if needed
+      if(!outgoing.empty()) {
+	assert(outgoing.size()!=1);
+	LorentzRotation toRest,fromRest;
+	vector<ShowerProgenitorPtr> outgoingJets(outgoing.begin(),outgoing.end());
+	reconstructFinalStateSystem(false,toRest,fromRest,outgoingJets);
+      }
+      // Now do any initial-final systems which are needed
+      vector<ColourSingletSystem> IFSystems;
+      // find the systems N.B. can have duplicates
+      // find initial-state with FS partners or FS with IS partners
+      for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
+	if(!ShowerHardJets[ix]->progenitor()->isFinalState()&&
+	   ShowerHardJets[ix]->progenitor()->partner()&&
+	   ShowerHardJets[ix]->progenitor()->partner()->isFinalState()) {
+	  IFSystems.push_back(ColourSingletSystem(IF,ShowerHardJets[ix]));
+	}
+	else if(ShowerHardJets[ix]->progenitor()->isFinalState()&&
+		ShowerHardJets[ix]->progenitor()->partner()&&
+		!ShowerHardJets[ix]->progenitor()->partner()->isFinalState()) {
+	  IFSystems.push_back(ColourSingletSystem(IF,ShowerHardJets[ix]));
 	}
       }
-      // ensure incoming first
-      if(IFSystems[is].jets[0]->progenitor()->isFinalState())
-	swap(IFSystems[is].jets[0],IFSystems[is].jets[1]);
-    }
-    if(!IFSystems.empty()) {
-      unsigned int istart = UseRandom::irnd(IFSystems.size());
-      unsigned int istop=IFSystems.size();
-      for(unsigned int is=istart;is<=istop;++is) {
-	if(is==IFSystems.size()) {
-	  if(istart!=0) {
-	    istop = istart-1;
-	    is=0;
+      // then add the partners
+      for(unsigned int is=0;is<IFSystems.size();++is) {
+	for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
+	  if(IFSystems[is].jets[0]->progenitor()->partner()==ShowerHardJets[ix]->progenitor()) {
+	    IFSystems[is].jets.push_back(ShowerHardJets[ix]);
 	  }
-	  else break;
 	}
-	// skip duplicates
-	if(used[IFSystems[is].jets[0]] &&
-	   used[IFSystems[is].jets[1]] ) continue;
-	if(IFSystems[is].jets[0]->original()&&IFSystems[is].jets[0]->original()->parents().empty()) continue;
-	Lorentz5Momentum psum;
-	for(unsigned int ix=0;ix<IFSystems[is].jets.size();++ix) {
-	  if(IFSystems[is].jets[ix]->progenitor()->isFinalState())
-	    psum += IFSystems[is].jets[ix]->progenitor()->momentum();
-	  else
-	    psum -= IFSystems[is].jets[ix]->progenitor()->momentum();
-	}
-	if(-psum.m2()>minQ2) {
-	  reconstructInitialFinalSystem(IFSystems[is].jets);
+	// ensure incoming first
+	if(IFSystems[is].jets[0]->progenitor()->isFinalState())
+	  swap(IFSystems[is].jets[0],IFSystems[is].jets[1]);
+      }
+      if(!IFSystems.empty()) {
+	unsigned int istart = UseRandom::irnd(IFSystems.size());
+	unsigned int istop=IFSystems.size();
+	for(unsigned int is=istart;is<=istop;++is) {
+	  if(is==IFSystems.size()) {
+	    if(istart!=0) {
+	      istop = istart-1;
+	      is=0;
+	    }
+	    else break;
+	  }
+	  // skip duplicates
+	  if(used[IFSystems[is].jets[0]] &&
+	     used[IFSystems[is].jets[1]] ) continue;
+	  if(IFSystems[is].jets[0]->original()&&IFSystems[is].jets[0]->original()->parents().empty()) continue;
+	  Lorentz5Momentum psum;
 	  for(unsigned int ix=0;ix<IFSystems[is].jets.size();++ix) {
-	    used[IFSystems[is].jets[ix]] = true;
+	    if(IFSystems[is].jets[ix]->progenitor()->isFinalState())
+	      psum += IFSystems[is].jets[ix]->progenitor()->momentum();
+	    else
+	      psum -= IFSystems[is].jets[ix]->progenitor()->momentum();
+	  }
+	  if(-psum.m2()>minQ2) {
+	    reconstructInitialFinalSystem(IFSystems[is].jets);
+	    for(unsigned int ix=0;ix<IFSystems[is].jets.size();++ix) {
+	      used[IFSystems[is].jets[ix]] = true;
+	    }
 	  }
 	}
       }
+    }
+    // now we finally need to handle the initial state system
+    ColourSingletSystem in,out;
+    for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
+      if(ShowerHardJets[ix]->progenitor()->isFinalState())
+	out.jets.push_back(ShowerHardJets[ix]);
+      else
+	in.jets.push_back(ShowerHardJets[ix]);
+    }
+    // reconstruct initial-initial system
+    bool doRecon = false;
+    for(unsigned int ix=0;ix<in.jets.size();++ix) {
+      if(!used[in.jets[ix]]) {
+	doRecon = true;
+	break;
+      }
+    }
+    LorentzRotation toRest,fromRest;
+    bool applyBoost(false);
+    if(doRecon) {
+      reconstructInitialInitialSystem(applyBoost,toRest,fromRest,in.jets);
+    }
+    // reconstruct the final-state systems
+    if(!doRecon) {
+      for(unsigned int ix=0;ix<out.jets.size();++ix) {
+	if(!used[out.jets[ix]]) {
+	  doRecon = true;
+	  break;
+	}
+      }
+    }
+    if(doRecon) {
+      reconstructFinalStateSystem(applyBoost,toRest,fromRest,out.jets);
     }
   }
   else if(_reconopt==3 || _reconopt==4 ) {
@@ -2423,39 +2458,6 @@ reconstructGeneralSystem(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
 	assert(false);
       }
     }
-  }
-  // now we finally need to handle the initial state system
-  ColourSingletSystem in,out;
-  for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
-    if(ShowerHardJets[ix]->progenitor()->isFinalState())
-      out.jets.push_back(ShowerHardJets[ix]);
-    else
-      in.jets.push_back(ShowerHardJets[ix]);
-  }
-  // reconstruct initial-initial system
-  bool doRecon = false;
-  for(unsigned int ix=0;ix<in.jets.size();++ix) {
-    if(!used[in.jets[ix]]) {
-      doRecon = true;
-      break;
-    }
-  }
-  LorentzRotation toRest,fromRest;
-  bool applyBoost(false);
-  if(doRecon) {
-    reconstructInitialInitialSystem(applyBoost,toRest,fromRest,in.jets);
-  }
-  // reconstruct the final-state systems
-  if(!doRecon) {
-    for(unsigned int ix=0;ix<out.jets.size();++ix) {
-      if(!used[out.jets[ix]]) {
-	doRecon = true;
-	break;
-      }
-    }
-  }
-  if(doRecon) {
-    reconstructFinalStateSystem(applyBoost,toRest,fromRest,out.jets);
   }
 }
 
