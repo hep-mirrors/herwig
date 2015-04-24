@@ -93,6 +93,30 @@ test-LEP-% : Inputs/LEP-%.in LeptonTest.la
 	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
 endif
 
+Rivet-LHC-Matchbox-% : Rivet/LHC-Matchbox-%.in
+	if [ ! -d Rivet-$(notdir $(subst .in,,$<))  ]; then mkdir Rivet-$(notdir $(subst .in,,$<)); fi;
+	cd Rivet-$(notdir $(subst .in,,$<)); echo `pwd`; \
+	../$(HERWIG) read --repo ../$(REPO) -L ../$(top_builddir)/lib ../$<; \
+	../$(HERWIG) run $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}; \
+	mv $(notdir $(subst .in,.yoda,$<)) ..; \
+	cd ..
+
+Rivet-LEP-Matchbox-% : Rivet/LEP-Matchbox-%.in
+	if [ ! -d Rivet-$(notdir $(subst .in,,$<))  ]; then mkdir Rivet-$(notdir $(subst .in,,$<)); fi;
+	cd Rivet-$(notdir $(subst .in,,$<)); echo `pwd`; \
+	../$(HERWIG) read --repo ../$(REPO) -L ../$(top_builddir)/lib ../$<; \
+	../$(HERWIG) run $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}; \
+	mv $(notdir $(subst .in,.yoda,$<)) ..; \
+	cd ..
+
+Rivet-BFactory-Matchbox-% : Rivet/BFactory-Matchbox-%.in
+	if [ ! -d Rivet-$(notdir $(subst .in,,$<))  ]; then mkdir Rivet-$(notdir $(subst .in,,$<)); fi;
+	cd Rivet-$(notdir $(subst .in,,$<)); echo `pwd`; \
+	../$(HERWIG) read --repo ../$(REPO) -L ../$(top_builddir)/lib ../$<; \
+	../$(HERWIG) run $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}; \
+	mv $(notdir $(subst .in,.yoda,$<)) ..; \
+	cd ..
+
 Rivet-LEP-% : Rivet/LEP-%.in
 	$(HWREAD) $<
 	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
@@ -109,13 +133,6 @@ Rivet-DIS-% : Rivet/DIS-%.in
 	$(HWREAD) $<
 	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
 
-Rivet-LHC-Matchbox-% : Rivet/LHC-Matchbox-%.in
-	if [ ! -d Rivet-LHC-Matchbox-% ]; then mkdir Rivet-$(notdir $(subst .in,,$<)); fi;
-	cd Rivet-$(notdir $(subst .in,,$<)); echo `pwd`; \
-	../$(HERWIG) read --repo ../$(REPO) -L ../$(top_builddir)/lib ../$<; \
-	../$(HERWIG) run $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}; \
-	mv $(notdir $(subst .in,.yoda,$<)) ..; \
-	cd ..
 
 Rivet-LHC-% : Rivet/LHC-%.in
 	$(HWREAD) $<
@@ -167,17 +184,18 @@ Rivet-LEP: Rivet-LEP-22  Rivet-LEP-35  Rivet-LEP-44  Rivet-LEP-91  \
 	python/merge-LEP LEP-Matchbox
 	rivet-mkhtml -o Rivet-LEP LEP.yoda:Hw++ LEP-Powheg.yoda:Hw++-Powheg LEP-Matchbox.yoda:Hw++-Matchbox
 
-Rivet-BFactory: Rivet-BFactory-10.52 Rivet-BFactory-Powheg-10.52 \
-                Rivet-BFactory-10.52-sym Rivet-BFactory-Powheg-10.52-sym \
-                Rivet-BFactory-10.54 Rivet-BFactory-Powheg-10.54 \
-                Rivet-BFactory-10.45 Rivet-BFactory-Powheg-10.45 \
-                Rivet-BFactory-10.58 Rivet-BFactory-Powheg-10.58 \
+Rivet-BFactory: Rivet-BFactory-10.52     Rivet-BFactory-Powheg-10.52     Rivet-BFactory-Matchbox-10.52     \
+                Rivet-BFactory-10.52-sym Rivet-BFactory-Powheg-10.52-sym Rivet-BFactory-Matchbox-10.52-sym \
+                Rivet-BFactory-10.54     Rivet-BFactory-Powheg-10.54     Rivet-BFactory-Matchbox-10.54     \
+                Rivet-BFactory-10.45     Rivet-BFactory-Powheg-10.45     Rivet-BFactory-Matchbox-10.45     \
+                Rivet-BFactory-10.58     Rivet-BFactory-Powheg-10.58     Rivet-BFactory-Matchbox-10.58     \
                 Rivet-BFactory-Upsilon Rivet-BFactory-Upsilon2 Rivet-BFactory-Upsilon4 \
                 Rivet-BFactory-Tau
 	rm -rf Rivet-BFactory
 	python/merge-BFactory BFactory
 	python/merge-BFactory BFactory-Powheg
-	rivet-mkhtml -o Rivet-BFactory BFactory.yoda:Hw++ BFactory-Powheg.yoda:Hw++-Powheg
+	python/merge-BFactory BFactory-Matchbox
+	rivet-mkhtml -o Rivet-BFactory BFactory.yoda:Hw++ BFactory-Powheg.yoda:Hw++-Powheg BFactory-Matchbox.yoda:Hw++-Matchbox
 
 Rivet-DIS: Rivet-DIS-e--LowQ2 \
 	   Rivet-DIS-e+-LowQ2 Rivet-DIS-e+-HighQ2\
