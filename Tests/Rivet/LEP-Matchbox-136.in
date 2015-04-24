@@ -3,6 +3,9 @@
 ##################################################
 read LEPBase-Matchbox.in
 
+## Select the process
+do /Herwig/MatrixElements/Matchbox/EEFactory:Process e- e+ j j
+
 ##################################################
 # LEP physics parameters (override defaults) 
 ##################################################
