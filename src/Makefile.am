@@ -106,21 +106,36 @@ check-LHC-LQ \
 check-LHC-Sextet
 
 endif
+check_BSM_Full_valgrind = $(subst check,check-valgrind,$(check_BSM_Full))
+check_BSM_valgrind = $(subst check,check-valgrind,$(check_BSM))
 
 check-local: check-LEP check-LHC $(check_BSM) check-DIS check-ILC check-GammaGamma check-LHC-Powheg
 
+check-valgrind-local: check-valgrind-LEP check-valgrind-LHC $(check_BSM_valgrind) check-valgrind-DIS check-valgrind-ILC check-valgrind-GammaGamma check-valgrind-LHC-Powheg
+
 check-Powheg: check-LHC-Powheg check-TVT-Powheg
+
+check-valgrind-Powheg: check-valgrind-LHC-Powheg check-valgrind-TVT-Powheg
 
 check-BSM: $(check_BSM_Full)
 
+check-valgrind-BSM: $(check_BSM_Full_valgrind)
+
 check_Matchbox= \
 check-LEP-Matchbox check-DIS-Matchbox check-LHC-Matchbox
+check_Matchbox_valgrind = $(subst check,check-valgrind,$(check_Matchbox))
 
 check-Matchbox: $(check_Matchbox)
 
+check-valgrind-Matchbox: $(check_Matchbox_valgrind)
+
 check-extra: check-LHC-diffractive check-LHC-GammaGamma check-LHC-MB check-TVT
 
+check-valgrind-extra: check-valgrind-LHC-diffractive check-valgrind-LHC-GammaGamma check-valgrind-LHC-MB check-valgrind-TVT
+
 check-all: check-local check-Powheg check-BSM check-Matchbox check-extra
+
+check-valgrind-all: check-valgrind-local check-valgrind-Powheg check-valgrind-BSM check-valgrind-Matchbox check-valgrind-extra
 
 link-helper-files:
 	@for i in $(HELPERFILES); do \
