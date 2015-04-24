@@ -38,8 +38,6 @@ do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig
 ## for other cut options and different jet algorithms.
 cd /Herwig/Cuts
 
-set MatchboxJetMatcher:Factory /Herwig/MatrixElements/Matchbox/PPFactory
-
 ## Cut on lepton pair invariant mass
 set MassCut:MinM 66*GeV
 set MassCut:MaxM 116*GeV

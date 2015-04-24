@@ -38,8 +38,6 @@ do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig
 ## for other cut options and different jet algorithms.
 cd /Herwig/Cuts
 
-set MatchboxJetMatcher:Factory /Herwig/MatrixElements/Matchbox/PPFactory
-
 # put BR's into cross section
 create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter
 insert /Herwig/EventHandlers/LHCHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter

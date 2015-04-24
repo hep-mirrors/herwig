@@ -28,8 +28,6 @@ insert QCDCuts:MultiCuts 0 JetCuts
 insert JetCuts:JetRegions 0 FirstJet
 set FirstJet:PtMin 270.*GeV
 
-set MatchboxJetMatcher:Factory /Herwig/MatrixElements/Matchbox/PPFactory
-
 ## Cut on lepton pair invariant mass
 set MassCut:MinM 66*GeV
 set MassCut:MaxM 116*GeV

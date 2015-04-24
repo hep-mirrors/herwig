@@ -46,13 +46,6 @@ set DISFactory:OrderInAlphaEW 2
 # set DISFactory:SecondPerturbativePDF No
 
 ##################################################
-## Cut Selection
-##################################################
-cd /Herwig/Cuts
-
-set MatchboxJetMatcher:Factory /Herwig/MatrixElements/Matchbox/DISFactory
-
-##################################################
 ## Matching
 ##################################################
 cd /Herwig/MatrixElements/Matchbox
