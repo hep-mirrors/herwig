@@ -119,6 +119,7 @@ void FS_QTildeShowerKinematics1to2::reconstructLast(const tShowerParticlePtr las
   Lorentz5Momentum newMomentum = sudakov2Momentum( lastParam.alpha, lastParam.beta,
 						   lastParam.ptx  , lastParam.pty);
   newMomentum.setMass(theMass);
+  newMomentum.rescaleEnergy();
   if(last->data().stable()) {
     last->set5Momentum( newMomentum );
   }

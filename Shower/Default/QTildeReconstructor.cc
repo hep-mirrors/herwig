@@ -372,7 +372,7 @@ reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent) const {
 	Lorentz5Momentum dum =  particleJetParent->momentum();
 	if(dm>dum.e()) throw KinematicsReconstructionVeto();
 	dum.setMass(dm); 
-	dum.rescaleRho(); 
+	dum.rescaleRho();
 	particleJetParent->set5Momentum(dum);
       } 
       else {
@@ -1563,15 +1563,17 @@ reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
   Lorentz5Momentum pnew[2] = { a[0]*kb*n1+b[0]/kb*n2+qperp,
 			       a[1]*kc*n1+b[1]/kc*n2+qperp};
   LorentzRotation rotinv=rot.inverse();
-  LorentzRotation transb=rotinv*solveBoostZ(pnew[0],qbp)*rot;
-  LorentzRotation transc=rotinv*solveBoost(pnew[1],qcp)*rot;
-
   for(unsigned int ix=0;ix<jets.size();++ix) {
-    if(jets[ix]->progenitor()->isFinalState())
-      deepTransform(jets[ix]->progenitor(),transc);
+    if(jets[ix]->progenitor()->isFinalState()) {
+      deepTransform(jets[ix]->progenitor(),rot);
+      deepTransform(jets[ix]->progenitor(),solveBoost(pnew[1],qcp));
+      deepTransform(jets[ix]->progenitor(),rotinv);
+    }
     else {
       tPPtr parent;
-      boostChain(jets[ix]->progenitor(),transb,parent);
+      boostChain(jets[ix]->progenitor(),rot,parent);
+      boostChain(jets[ix]->progenitor(),solveBoostZ(pnew[0],qbp),parent);
+      boostChain(jets[ix]->progenitor(),rotinv,parent);
     }
   }
 }
