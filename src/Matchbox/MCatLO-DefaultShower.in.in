@@ -7,6 +7,7 @@ set /Herwig/Shower/Evolver:SpinCorrelations No
 set /Herwig/Shower/KinematicsReconstructor:ReconstructionOption Colour4
 set /Herwig/Shower/KinematicsReconstructor:InitialStateReconOption SofterFraction
 set /Herwig/Shower/PartnerFinder:PartnerMethod 0
+set /Herwig/Shower/PartnerFinder:ScaleChoice 0
 
 cd /Herwig/EventHandlers
 
