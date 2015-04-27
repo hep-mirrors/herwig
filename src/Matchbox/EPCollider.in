@@ -18,13 +18,6 @@ do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting e-->e-,gamma; /Herwig/
 do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting mu-->mu-,gamma; /Herwig/Shower/LtoLGammaSudakov
 do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting tau-->tau-,gamma; /Herwig/Shower/LtoLGammaSudakov
 
-cd /Herwig/Partons
-create ThePEG::LHAPDF PDFSet ThePEGLHAPDF.so
-set PDFSet:RemnantHandler HadronRemnants
-set /Herwig/Partons/PDFSet:PDFName CT10.LHgrid
-set /Herwig/Particles/p+:PDF PDFSet
-set /Herwig/Particles/pbar-:PDF PDFSet
-
 cd /Herwig/Cuts
 
 set Cuts:ScaleMin 1.0*GeV

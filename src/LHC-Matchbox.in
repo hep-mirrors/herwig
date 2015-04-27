@@ -113,7 +113,7 @@ read Matchbox/MCatNLO-DefaultShower.in
 ##################################################
 
 read Matchbox/FiveFlavourScheme.in
-set /Herwig/Partons/PDFSet:PDFName CT10.LHgrid
+read Matchbox/MMHT2014.in
 
 ##################################################
 ## Analyses

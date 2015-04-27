@@ -723,6 +723,7 @@ mkdir AlphaS
 cd AlphaS
 
 create Herwig::O2AlphaS NLOAlphaS
+set NLOAlphaS:LambdaType MSBar
 insert NLOAlphaS:QuarkMasses[0] 0.005
 insert NLOAlphaS:QuarkMasses[1] 0.0023
 insert NLOAlphaS:QuarkMasses[2] 0.095

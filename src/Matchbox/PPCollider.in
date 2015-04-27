@@ -12,13 +12,6 @@ set Factory:FirstPerturbativePDF Yes
 set Factory:SecondPerturbativePDF Yes
 set Factory:PartonExtractor /Herwig/Partons/QCDExtractor
 
-cd /Herwig/Partons
-create ThePEG::LHAPDF PDFSet ThePEGLHAPDF.so
-set PDFSet:RemnantHandler HadronRemnants
-set /Herwig/Partons/PDFSet:PDFName CT10.LHgrid
-set /Herwig/Particles/p+:PDF PDFSet
-set /Herwig/Particles/pbar-:PDF PDFSet
-
 cd /Herwig/Cuts
 
 set Cuts:ScaleMin 2.0*GeV

@@ -4,7 +4,8 @@
 # Please comment out when using the angular ordered shower.
 #=============================================================================
 
-set /Herwig/Model:QCD/RunningAlphaS /Herwig/MatrixElements/Matchbox/AlphaS/MatchboxNLOAlphaS
+## ATTENTION need to set the tuned alphas value here
+set /Herwig/Model:QCD/RunningAlphaS /Herwig/DipoleShower/NLOAlphaS
 
 cd /Herwig/Hadronization
 
