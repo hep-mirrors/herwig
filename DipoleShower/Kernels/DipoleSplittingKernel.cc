@@ -30,7 +30,8 @@ DipoleSplittingKernel::DipoleSplittingKernel()
     theFactorizationScaleFactor(1.0),
     theRenormalizationScaleFactor(1.0),
     theRenormalizationScaleFreeze(1.*GeV), 
-    theFactorizationScaleFreeze(1.*GeV) {}
+    theFactorizationScaleFreeze(1.*GeV),
+    theVirtualitySplittingScale(false) {}
 
 DipoleSplittingKernel::~DipoleSplittingKernel() {}
 
@@ -46,7 +47,8 @@ void DipoleSplittingKernel::persistentOutput(PersistentOStream & os) const {
      << theFactorizationScaleFactor
      << theRenormalizationScaleFactor
      << ounit(theRenormalizationScaleFreeze,GeV)
-     << ounit(theFactorizationScaleFreeze,GeV);
+     << ounit(theFactorizationScaleFreeze,GeV)
+     << theVirtualitySplittingScale;
 }
 
 void DipoleSplittingKernel::persistentInput(PersistentIStream & is, int) {
@@ -56,7 +58,8 @@ void DipoleSplittingKernel::persistentInput(PersistentIStream & is, int) {
      >> theFactorizationScaleFactor
      >> theRenormalizationScaleFactor
      >> iunit(theRenormalizationScaleFreeze,GeV)
-     >> iunit(theFactorizationScaleFreeze,GeV);
+     >> iunit(theFactorizationScaleFreeze,GeV)
+     >> theVirtualitySplittingScale;
 }
 
 double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
@@ -64,7 +67,12 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
 
   Energy pt = optScale == ZERO ? split.lastPt() : optScale;
 
-  Energy2 scale = sqr(pt) + sqr(theScreeningScale);
+  Energy2 scale = ZERO;
+  if ( !virtualitySplittingScale() ) {
+    scale = sqr(pt) + sqr(theScreeningScale);
+  } else {
+    scale = sqr(splittingKinematics()->QFromPt(pt,split)) + sqr(theScreeningScale);
+  }
 
   Energy2 rScale = sqr(theRenormalizationScaleFactor)*scale;
   rScale = rScale > sqr(renormalizationScaleFreeze()) ? rScale : sqr(renormalizationScaleFreeze());
@@ -208,6 +216,20 @@ void DipoleSplittingKernel::Init() {
      &DipoleSplittingKernel::theFactorizationScaleFreeze, GeV, 1.0*GeV, 0.0*GeV, 0*GeV,
      false, false, Interface::lowerlim);
 
+  static Switch<DipoleSplittingKernel,bool> interfaceVirtualitySplittingScale
+    ("VirtualitySplittingScale",
+     "Use the virtuality as the splitting scale.",
+     &DipoleSplittingKernel::theVirtualitySplittingScale, false, false, false);
+  static SwitchOption interfaceVirtualitySplittingScaleYes
+    (interfaceVirtualitySplittingScale,
+     "Yes",
+     "Use vrituality.",
+     true);
+  static SwitchOption interfaceVirtualitySplittingScaleNo
+    (interfaceVirtualitySplittingScale,
+     "No",
+     "Use transverse momentum.",
+     false);
 
 }
 

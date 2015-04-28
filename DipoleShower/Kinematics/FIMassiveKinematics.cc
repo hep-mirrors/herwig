@@ -87,16 +87,24 @@ Energy FIMassiveKinematics::QMax(Energy dScale,
   return dScale * sqrt((1.-specX)/specX);
 }
 
-Energy FIMassiveKinematics::PtFromQ(Energy, const DipoleSplittingInfo&) const {
-  assert(false && "add this");
-  return 0.0*GeV;
+Energy FIMassiveKinematics::PtFromQ(Energy scale, const DipoleSplittingInfo& split) const {
+  // from Martin's thesis
+  double z = split.lastZ();
+  Energy mi = split.emitterData()->mass();
+  Energy m = split.emissionData()->mass();
+  Energy2 pt2 = z*(1.-z)*sqr(scale) - (1-z)*sqr(mi) - z*sqr(m);
+  assert(pt2 >= ZERO);
+  return sqrt(pt2);
 }
 
-Energy FIMassiveKinematics::QFromPt(Energy, const DipoleSplittingInfo&) const {
-  assert(false && "add this");
-  return 0.0*GeV;
+Energy FIMassiveKinematics::QFromPt(Energy scale, const DipoleSplittingInfo& split) const {
+  // from Martin's thesis
+  double z = split.lastZ();
+  Energy mi = split.emitterData()->mass();
+  Energy m = split.emissionData()->mass();
+  Energy2 Q2 = (sqr(scale) + (1-z)*sqr(mi) + z*sqr(m))/(z*(1.-z));
+  return sqrt(Q2);
 }
-
 
 double FIMassiveKinematics::ptToRandom(Energy pt, Energy,
 				       double,double,

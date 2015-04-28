@@ -9,6 +9,24 @@ set /Herwig/DipoleShower/NLOAlphaS:input_alpha_s 0.118
 set /Herwig/DipoleShower/NLOAlphaS:input_scale 91.18*GeV
 
 ##################################################
+## special scale choices
+##################################################
+
+cd /Herwig/DipoleShower/Kernels
+
+set FFMgx2ddxDipoleKernel:VirtualitySplittingScale Yes
+set FFMgx2uuxDipoleKernel:VirtualitySplittingScale Yes
+set FFMgx2ccxDipoleKernel:VirtualitySplittingScale Yes
+set FFMgx2ssxDipoleKernel:VirtualitySplittingScale Yes
+set FFMgx2bbxDipoleKernel:VirtualitySplittingScale Yes
+
+set FIMgx2ddxDipoleKernel:VirtualitySplittingScale Yes
+set FIMgx2uuxDipoleKernel:VirtualitySplittingScale Yes
+set FIMgx2ccxDipoleKernel:VirtualitySplittingScale Yes
+set FIMgx2ssxDipoleKernel:VirtualitySplittingScale Yes
+set FIMgx2bbxDipoleKernel:VirtualitySplittingScale Yes
+
+##################################################
 ## cutoffs
 ##################################################
 set /Herwig/DipoleShower/Kinematics/FFLightKinematics:IRCutoff 1.0*GeV

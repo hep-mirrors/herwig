@@ -262,6 +262,12 @@ protected:
   double alphaPDF(const DipoleSplittingInfo&,
 		  Energy optScale = ZERO) const;
 
+  /**
+   * Return true, if the virtuality of the splitting should be used as the
+   * argument of alphas rather than the pt
+   */
+  bool virtualitySplittingScale() const { return theVirtualitySplittingScale; }
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -370,6 +376,12 @@ private:
    * A freezing value for the factorization scale
    */
   Energy theFactorizationScaleFreeze;
+
+  /**
+   * True, if the virtuality of the splitting should be used as the
+   * argument of alphas rather than the pt
+   */
+  bool theVirtualitySplittingScale;
 
 private:
 
