@@ -1896,7 +1896,7 @@ reconstructInitialInitialSystem(bool & applyBoost,
     tPPtr toBoost = jets[ix]->progenitor();
     Boost betaboost(0, 0, beta[ix]);
     tPPtr parent;
-    boostChain(toBoost, LorentzRotation(betaboost),parent);
+    boostChain(toBoost, LorentzRotation(0.,0.,beta[ix]),parent);
     if(parent->momentum().e()/pq[ix].e()>1.||
        parent->momentum().z()/pq[ix].z()>1.) throw KinematicsReconstructionVeto();
     newcmf+=toBoost->momentum();
@@ -2782,6 +2782,10 @@ void QTildeReconstructor::deepTransform(PPtr particle,
   if ( particle->next() ) deepTransform(particle->next(),r,match,original);
   if(!match) return;
   if(!particle->children().empty()) return;
+  // force the mass shell
+  Lorentz5Momentum ptemp = particle->momentum();
+  ptemp.rescaleEnergy();
+  particle->set5Momentum(ptemp);
   // check if there's a daughter tree which also needs boosting
   map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> >::const_iterator tit;
   for(tit  = _currentTree->treelinks().begin();
