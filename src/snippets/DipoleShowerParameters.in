@@ -1,12 +1,41 @@
-#=============================================================================
-#                :::::DIPOLE SHOWER HADRONIZATION SETTINGS:::::
-#
-# Please comment out when using the angular ordered shower.
-#=============================================================================
+##################################################
+## Dipole shower tune settings
+##################################################
 
-## ATTENTION need to set the tuned alphas value here
-set /Herwig/Model:QCD/RunningAlphaS /Herwig/DipoleShower/NLOAlphaS
+##################################################
+## (two-loop) alpha_s
+##################################################
+set /Herwig/DipoleShower/NLOAlphaS:input_alpha_s 0.118
+set /Herwig/DipoleShower/NLOAlphaS:input_scale 91.18*GeV
 
+##################################################
+## cutoffs
+##################################################
+set /Herwig/DipoleShower/Kinematics/FFLightKinematics:IRCutoff 1.0*GeV
+set /Herwig/DipoleShower/Kinematics/FFMassiveKinematics:IRCutoff 1.0*GeV
+
+set /Herwig/DipoleShower/Kinematics/FILightKinematics:IRCutoff 1.0*GeV
+set /Herwig/DipoleShower/Kinematics/FIMassiveKinematics:IRCutoff 1.0*GeV
+
+set /Herwig/DipoleShower/Kinematics/IFLightKinematics:IRCutoff 1.0*GeV
+set /Herwig/DipoleShower/Kinematics/IFMassiveKinematics:IRCutoff 1.0*GeV
+
+set /Herwig/DipoleShower/Kinematics/IILightKinematics:IRCutoff  1.0*GeV
+
+## needs to be synchronized with settings above
+set /Herwig/MatrixElements/Matchbox/DipoleMatching:FFPtCut 1.0*GeV
+set /Herwig/MatrixElements/Matchbox/DipoleMatching:FIPtCut 1.0*GeV
+set /Herwig/MatrixElements/Matchbox/DipoleMatching:IIPtCut 1.0*GeV
+
+##################################################
+## intrinsic pt
+##################################################
+set /Herwig/DipoleShower/IntrinsicPtGenerator:ValenceIntrinsicPtScale 2.0*GeV
+set /Herwig/DipoleShower/IntrinsicPtGenerator:SeaIntrinsicPtScale 2.0*GeV
+
+##################################################
+## hadronization parameters -- complete?
+##################################################
 cd /Herwig/Hadronization
 
 set ClusterFissioner:ClMaxLight                  3.274090*GeV
