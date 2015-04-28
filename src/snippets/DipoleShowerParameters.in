@@ -14,6 +14,18 @@ set /Herwig/DipoleShower/NLOAlphaS:input_scale 91.18*GeV
 
 cd /Herwig/DipoleShower/Kernels
 
+set FFgx2ddxDipoleKernel:VirtualitySplittingScale Yes
+set FFgx2uuxDipoleKernel:VirtualitySplittingScale Yes
+set FFgx2ccxDipoleKernel:VirtualitySplittingScale Yes
+set FFgx2ssxDipoleKernel:VirtualitySplittingScale Yes
+set FFgx2bbxDipoleKernel:VirtualitySplittingScale Yes
+
+set FIgx2ddxDipoleKernel:VirtualitySplittingScale Yes
+set FIgx2uuxDipoleKernel:VirtualitySplittingScale Yes
+set FIgx2ccxDipoleKernel:VirtualitySplittingScale Yes
+set FIgx2ssxDipoleKernel:VirtualitySplittingScale Yes
+set FIgx2bbxDipoleKernel:VirtualitySplittingScale Yes
+
 set FFMgx2ddxDipoleKernel:VirtualitySplittingScale Yes
 set FFMgx2uuxDipoleKernel:VirtualitySplittingScale Yes
 set FFMgx2ccxDipoleKernel:VirtualitySplittingScale Yes
