@@ -5,7 +5,7 @@
 #=============================================================================
 
 set /Herwig/Samplers/Sampler:Verbose On
-set /Herwig/MatrixElements/Matchbox/PPFactory:InitVerbose On
+set /Herwig/MatrixElements/Matchbox/Factory:InitVerbose On
 
 cd /
 
