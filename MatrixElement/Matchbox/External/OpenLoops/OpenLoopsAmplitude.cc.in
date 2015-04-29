@@ -129,7 +129,6 @@ void OpenLoopsAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs
 	orderFile << "CorrectionType           QCD\n";
 	orderFile << "IRregularization         " << (isDR() ? "DRED" : "CDR") << "\n";
 	orderFile << "extra answerfile      " << (factory()->buildStorage() + name() + ".OLPAnswer.lh") << "\n";
-	orderFile << "extra verbose 2\n";
     orderFile << "extra psp_tolerance "<<psp_tolerance<<"\n";
     orderFile << "extra use_cms "<<(use_cms?"1":"0")<< "\n";
 	orderFile << "\n";
