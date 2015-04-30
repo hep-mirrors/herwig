@@ -1716,8 +1716,8 @@ reconstructFinalStateSystem(bool applyBoost,
   LorentzRotation trans = applyBoost? toRest : LorentzRotation();
   // special for case of individual particle
   if(jets.size()==1) {
-    trans.transform(fromRest);
     deepTransform(jets[0]->progenitor(),trans);
+    deepTransform(jets[0]->progenitor(),fromRest);
     return;
   }
   bool radiated(false);
@@ -2021,11 +2021,10 @@ deconstructFinalStateSystem(const LorentzRotation &   toRest,
 			    cEvolverPtr evolver,
 			    ShowerInteraction::Type type) const {
   if(jets.size()==1) {
-    LorentzRotation R(toRest);
-    R.transform(fromRest);
-    // \todo What does this do?    tree->showerRot( R );
-    jets[0]->original(R*jets[0]->branchingParticle()->momentum());
-    jets[0]->showerMomentum(R*jets[0]->branchingParticle()->momentum());
+    Lorentz5Momentum pnew = toRest*(jets[0]->branchingParticle()->momentum());
+    pnew *= fromRest;
+    jets[0]->      original(pnew);
+    jets[0]->showerMomentum(pnew);
     // find the colour partners
     ShowerParticleVector particles;
     vector<Lorentz5Momentum> ptemp;
@@ -2783,9 +2782,11 @@ void QTildeReconstructor::deepTransform(PPtr particle,
   if(!match) return;
   if(!particle->children().empty()) return;
   // force the mass shell
-  Lorentz5Momentum ptemp = particle->momentum();
-  ptemp.rescaleEnergy();
-  particle->set5Momentum(ptemp);
+  if(particle->dataPtr()->stable()) {
+    Lorentz5Momentum ptemp = particle->momentum();
+    ptemp.rescaleEnergy();
+    particle->set5Momentum(ptemp);
+  }
   // check if there's a daughter tree which also needs boosting
   map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> >::const_iterator tit;
   for(tit  = _currentTree->treelinks().begin();

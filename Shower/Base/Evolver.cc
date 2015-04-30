@@ -1745,7 +1745,7 @@ bool Evolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr beam,
     //do the hard emission
     ShoKinPtr kinematics =
       branch->sudakov()->createInitialStateBranching( branch->scale(), z, branch->phi(),
-						      branch->children()[0]->pT() );
+    						      branch->children()[0]->pT() );
     kinematics->initialize( *particle, beam );
     // assign the splitting function and shower kinematics
     particle->showerKinematics( kinematics );
@@ -1758,7 +1758,7 @@ bool Evolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr beam,
       new_ptr( ShowerParticle( branch->branchingParticle()->dataPtr(), false ) );
     ShowerParticlePtr otherChild = 
       new_ptr( ShowerParticle( timelike->branchingParticle()->dataPtr(),
-			       true, true ) );
+    			       true, true ) );
     ShowerParticleVector theChildren;
     theChildren.push_back( particle ); 
     theChildren.push_back( otherChild );
@@ -1773,21 +1773,21 @@ bool Evolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr beam,
     bool emitted=false;
     if(!hardOnly()) {
       if( branch->parent() ) {
-	emitted = truncatedSpaceLikeShower( newParent, beam, branch->parent() , type);
+    	emitted = truncatedSpaceLikeShower( newParent, beam, branch->parent() , type);
       }
       else {
-	emitted = spaceLikeShower( newParent, beam , type);
+    	emitted = spaceLikeShower( newParent, beam , type);
       }
     }
     if( !emitted ) {
       if( intrinsicpT().find( progenitor() ) == intrinsicpT().end() ) {
-	kinematics->updateLast( newParent, ZERO, ZERO );
+    	kinematics->updateLast( newParent, ZERO, ZERO );
       }
       else {
-	pair<Energy,double> kt = intrinsicpT()[progenitor()];
-	kinematics->updateLast( newParent,
-				kt.first*cos( kt.second ),
-				kt.first*sin( kt.second ) );
+    	pair<Energy,double> kt = intrinsicpT()[progenitor()];
+    	kinematics->updateLast( newParent,
+    				kt.first*cos( kt.second ),
+    				kt.first*sin( kt.second ) );
       }
     }
     particle->showerKinematics()->
@@ -2432,10 +2432,11 @@ void Evolver::connectTrees(ShowerTreePtr showerTree,
 			      !hardTree->partnersSet());
   hardTree->partnersSet(true);
   // inverse reconstruction
-  if(hard)
+  if(hard) {
     showerModel()->kinematicsReconstructor()->
       deconstructHardJets(hardTree,ShowerHandler::currentHandler()->evolver(),
 			  hardTree->interaction());
+  }
   else
     showerModel()->kinematicsReconstructor()->
       deconstructDecayJets(hardTree,ShowerHandler::currentHandler()->evolver(),
@@ -2482,8 +2483,12 @@ void Evolver::connectTrees(ShowerTreePtr showerTree,
       particlesToShower[iloc]->copy()->set5Momentum((**cit).showerMomentum());
     }
     else {
-      LorentzRotation boost(particlesToShower[iloc]->progenitor()->momentum().findBoostToCM());
-      boost.boost((**cit).showerMomentum().boostVector());
+      Lorentz5Momentum oldMomentum = particlesToShower[iloc]->progenitor()->momentum();
+      Lorentz5Momentum newMomentum = (**cit).showerMomentum();
+      LorentzRotation boost( oldMomentum.findBoostToCM(),oldMomentum.e()/oldMomentum.mass());
+      particlesToShower[iloc]->progenitor()->transform(boost);
+      particlesToShower[iloc]->copy()      ->transform(boost);
+      boost = LorentzRotation(-newMomentum.findBoostToCM(),newMomentum.e()/newMomentum.mass());
       particlesToShower[iloc]->progenitor()->transform(boost);
       particlesToShower[iloc]->copy()      ->transform(boost);
     }
@@ -2500,7 +2505,8 @@ void Evolver::connectTrees(ShowerTreePtr showerTree,
     Lorentz5Momentum oldMomentum = cit->first->progenitor()->momentum();
     Lorentz5Momentum newMomentum = tit->second.second->momentum();
     LorentzRotation boost( oldMomentum.findBoostToCM(),oldMomentum.e()/oldMomentum.mass());
-    boost.boost          (-newMomentum.findBoostToCM(),newMomentum.e()/newMomentum.mass());
+    decayTree->transform(boost,true);
+    boost = LorentzRotation(-newMomentum.findBoostToCM(),newMomentum.e()/newMomentum.mass());
     decayTree->transform(boost,true);
   }
 }
