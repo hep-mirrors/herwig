@@ -490,7 +490,7 @@ double DipolePKOperator::softLog(tcPDPtr p) const {
 }
 
 double DipolePKOperator::gammaSoft() const {
-  double res =factory()->alphaParameter();
+  double res =factory()->alphaParameter()*PDFx(parton);
   if(x>(1.-factory()->alphaParameter()))
      res += ( log(1.-x)- log(factory()->alphaParameter()) )*PDFx(parton);
   if(z>x&&z>(1.-factory()->alphaParameter()))
