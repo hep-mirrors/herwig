@@ -312,9 +312,9 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
   OLP_SetParameter((char*)"width(25)",&wH,&zero,&pStatus);
   OLP_SetParameter((char*)"mass(25)",&mH,&zero,&pStatus);
 
-  // hand over input parameter for alphaS
-  // double as = SM().alphaS();
-  // OLP_SetParameter((char *)"alphaS", &as, &zero, &pStatus);
+  // hand over initial input parameter for alphaS
+  double as = SM().alphaS();
+  OLP_SetParameter((char *)"alphaS", &as, &zero, &pStatus);
 
   // fill massive Particle vector
   if (massiveParticles.empty()) {
@@ -635,12 +635,13 @@ void GoSamAmplitude::evalSubProcess() const {
 
   double scale = sqrt(mu2() / GeV2);
 
-  int pStatus = 0;
-  double zero = 0.0;
-  double as;
-  if (!hasRunningAlphaS()) as = SM().alphaS();
-  else if (hasRunningAlphaS()) as = lastAlphaS();
-  OLP_SetParameter((char *)"alphaS", &as, &zero, &pStatus);
+  if (hasRunningAlphaS()) {
+    int pStatus = 0;
+    double zero = 0.0;
+    double as;
+    as = lastAlphaS();
+    OLP_SetParameter((char *)"alphaS", &as, &zero, &pStatus);
+  }
 
   double out[7] = { };
   double acc;
@@ -709,12 +710,13 @@ void GoSamAmplitude::evalColourCorrelator(pair<int, int> ) const {
 
   double scale = sqrt(mu2() / GeV2);
 
-  int pStatus = 0;
-  double zero = 0.0;
-  double as;
-  if (!hasRunningAlphaS()) as = SM().alphaS();
-  else if (hasRunningAlphaS()) as = lastAlphaS();
-  OLP_SetParameter((char *)"alphaS", &as, &zero, &pStatus);
+  if (hasRunningAlphaS()) {
+    int pStatus = 0;
+    double zero = 0.0;
+    double as;
+    as = lastAlphaS();
+    OLP_SetParameter((char *)"alphaS", &as, &zero, &pStatus);
+  }
 
   int n = lastXComb().meMomenta().size();
   colourCorrelatorResults.resize(n * (n - 1) / 2);
@@ -742,12 +744,13 @@ void GoSamAmplitude::evalSpinColourCorrelator(pair<int , int > ) const {
 
   double scale = sqrt(mu2() / GeV2);
 
-  int pStatus = 0;
-  double zero = 0.0;
-  double as;
-  if (!hasRunningAlphaS()) as = SM().alphaS();
-  else if (hasRunningAlphaS()) as = lastAlphaS();
-  OLP_SetParameter((char *)"alphaS", &as, &zero, &pStatus);
+  if (hasRunningAlphaS()) {
+    int pStatus = 0;
+    double zero = 0.0;
+    double as;
+    as = lastAlphaS();
+    OLP_SetParameter((char *)"alphaS", &as, &zero, &pStatus);
+  }
 
   int n = lastXComb().meMomenta().size();
   spinColourCorrelatorResults.resize(2*n*n);

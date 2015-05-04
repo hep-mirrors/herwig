@@ -96,7 +96,7 @@ void VBFNLOAmplitude::startOLP(const string& contract, int& status) {
 
   setOLPParameter("Nf",factory()->nLight());
 
-  // setOLPParameter("alphas",SM().alphaS());
+  setOLPParameter("alphas",SM().alphaS());
 
   setOLPParameter("ranhelsum",theRanHelSum);
 
@@ -183,8 +183,7 @@ void VBFNLOAmplitude::evalSubProcess() const {
   fillOLPMomenta(lastXComb().meMomenta(),mePartonData(),reshuffleMasses());
   double scale = sqrt(mu2()/GeV2);
 
-  if (!hasRunningAlphaS()) setOLPParameter("alphas",SM().alphaS());
-  else if (hasRunningAlphaS()) setOLPParameter("alphas",lastAlphaS());
+  if (hasRunningAlphaS()) setOLPParameter("alphas",lastAlphaS());
 
   double acc = -1.0;
   double out[4]={};
@@ -219,8 +218,7 @@ void VBFNLOAmplitude::evalColourCorrelator(pair<int,int>) const {
   fillOLPMomenta(lastXComb().meMomenta(),mePartonData(),reshuffleMasses());
   double scale = sqrt(mu2()/GeV2);
 
-  if (!hasRunningAlphaS()) setOLPParameter("alphas",SM().alphaS());
-  else if (hasRunningAlphaS()) setOLPParameter("alphas",lastAlphaS());
+  if (hasRunningAlphaS()) setOLPParameter("alphas",lastAlphaS());
 
   double acc = -1.0;
 
@@ -258,8 +256,7 @@ void VBFNLOAmplitude::evalSpinColourCorrelator(pair<int,int>) const {
   fillOLPMomenta(lastXComb().meMomenta(),mePartonData(),reshuffleMasses());
   double scale = sqrt(mu2()/GeV2); 
 
-  if (!hasRunningAlphaS()) setOLPParameter("alphas",SM().alphaS());
-  else if (hasRunningAlphaS()) setOLPParameter("alphas",lastAlphaS());
+  if (hasRunningAlphaS()) setOLPParameter("alphas",lastAlphaS());
 
   double acc = -1.0;
 
@@ -300,8 +297,7 @@ void VBFNLOAmplitude::evalLargeNSubProcess(Ptr<ColourBasis>::tptr) const {
   fillOLPMomenta(lastXComb().meMomenta(),mePartonData(),reshuffleMasses());
   double scale = sqrt(mu2()/GeV2);
 
-  if (!hasRunningAlphaS()) setOLPParameter("alphas",SM().alphaS());
-  else if (hasRunningAlphaS()) setOLPParameter("alphas",lastAlphaS());
+  if (hasRunningAlphaS()) setOLPParameter("alphas",lastAlphaS());
 
   double acc = -1.0;
   double out[4]={};
@@ -356,8 +352,7 @@ void VBFNLOAmplitude::evalLargeNColourCorrelator(pair<int,int>,
   fillOLPMomenta(lastXComb().meMomenta(),mePartonData(),reshuffleMasses());
   double scale = sqrt(mu2()/GeV2);
 
-  if (!hasRunningAlphaS()) setOLPParameter("alphas",SM().alphaS());
-  else if (hasRunningAlphaS()) setOLPParameter("alphas",lastAlphaS());
+  if (hasRunningAlphaS()) setOLPParameter("alphas",lastAlphaS());
 
   double acc = -1.0;
 
