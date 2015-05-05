@@ -282,6 +282,11 @@ public:
    */
   vector<ShowerParticlePtr> extractProgenitorParticles();
 
+  /**
+   *    Check the momentum conservation in the tree
+   */
+  void checkMomenta();
+
 protected:
 
   /**

@@ -1399,3 +1399,63 @@ void ShowerTree::constructTrees(tSubProPtr subProcess, ShowerTreePtr & hard,
   hard=new_ptr(ShowerTree(subProcess->incoming(),out, decay));
   hard->setParents();
 }
+
+namespace {
+
+Lorentz5Momentum sumMomenta(tPPtr particle) {
+  if(particle->children().empty())
+    return particle->momentum();
+  Lorentz5Momentum output;
+  for(unsigned int ix=0;ix<particle->children().size();++ix) {
+    output += sumMomenta(particle->children()[ix]);
+  }
+  return output;
+}
+
+}
+
+void ShowerTree::checkMomenta() {
+  vector<Lorentz5Momentum> pin;
+  for(map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator it=_incomingLines.begin();
+      it!=_incomingLines.end();++it) {
+    if(isDecay()) {
+      tPPtr parent = it->first->progenitor();
+      pin.push_back(parent->momentum());
+      while(!parent->children().empty()) {
+	pin.back() -= sumMomenta(parent->children()[1]);
+	parent = parent->children()[0];
+      }
+    }
+    else {
+      tPPtr parent = it->second;
+      pin.push_back(parent->momentum());
+      while(!parent->children().empty()&&parent->children().size()==2) {
+	pin.back() -= sumMomenta(parent->children()[1]);
+	parent = parent->children()[0];
+	if(parent==it->first->progenitor()) break;
+      }
+    }
+    CurrentGenerator::log() << "!!!! IN !!!" << *it->first->progenitor() << "\n"
+			    << *it->second << "\n";
+  }
+  vector<Lorentz5Momentum> pout;
+  for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator it= _outgoingLines.begin();
+      it!=_outgoingLines.end();++it) {
+    pout.push_back(sumMomenta(it->first->progenitor()));
+    CurrentGenerator::log() << "!!!! OUT !!!" << *it->first->progenitor() << "\n"
+			    << *it->second << "\n";
+  }
+  Lorentz5Momentum psum;
+  for(unsigned int ix=0;ix< pin.size();++ix) {
+    CurrentGenerator::log() << "pin " << ix << pin[ix]/GeV << "\n";
+    psum +=pin[ix];
+  }
+  CurrentGenerator::log() << "In  total " << psum/GeV << " " << psum.m()/GeV << "\n";
+  Lorentz5Momentum psum2;
+  for(unsigned int ix=0;ix< pout.size();++ix) {
+    CurrentGenerator::log() << "pout " << ix << pout[ix]/GeV << "\n";
+    psum2 +=pout[ix];
+  }
+  CurrentGenerator::log() << "Out total " << psum2/GeV << " " << psum2.m()/GeV << "\n";
+  CurrentGenerator::log() << "Total " << (psum-psum2)/GeV << "\n";
+}
