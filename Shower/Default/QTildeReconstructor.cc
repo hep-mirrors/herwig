@@ -1501,7 +1501,12 @@ reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
 	pbeam = jets[ix]->progenitor()->x()*jets[ix]->progenitor()->showerKinematics()->getBasis()[0];
       }
       else {
-	pbeam = jets[ix]->progenitor()->momentum();
+	if ( jets[ix]->original()->parents().empty() ) {
+	  pbeam = jets[ix]->progenitor()->momentum();
+	}
+	else {
+	  pbeam = jets[ix]->original()->parents()[0]->momentum();
+	}
       }
       if(jets[ix]->reconstructed()==ShowerProgenitor::notReconstructed) {
 	reconstructSpaceLikeJet(jets[ix]->progenitor());
@@ -1540,7 +1545,9 @@ reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
   Lorentz5Momentum n2(ZERO,ZERO, pa.z(),-pa.z());
   Energy2 n1n2 = n1*n2;
   // decompose the momenta
-  Lorentz5Momentum qbp=rot*pin[1],qcp= rot*pout[1];
+  Lorentz5Momentum qbp=rot*pin[1],qcp=rot*pout[1];
+  qbp.rescaleMass();
+  qcp.rescaleMass();
   double a[2],b[2];
   a[0] = n2*qbp/n1n2;
   b[0] = n1*qbp/n1n2;
@@ -1584,7 +1591,8 @@ bool QTildeReconstructor::addIntrinsicPt(vector<ShowerProgenitorPtr> jets) const
   for(unsigned int ix=0;ix<jets.size();++ix) {
     // only for initial-state particles which haven't radiated
     if(jets[ix]->progenitor()->isFinalState()||
-       jets[ix]->hasEmitted()) continue;
+       jets[ix]->hasEmitted()||
+       jets[ix]->reconstructed()==ShowerProgenitor::dontReconstruct) continue;
     if(_intrinsic.find(jets[ix])==_intrinsic.end()) continue;
     pair<Energy,double> pt=_intrinsic[jets[ix]];
     Energy etemp = jets[ix]->original()->parents()[0]->momentum().z();
@@ -1684,8 +1692,10 @@ LorentzRotation QTildeReconstructor::solveBoostZ(const Lorentz5Momentum & q,
   static const Energy  eps  = 1e-4 *GeV;
   LorentzRotation R;
   double beta;
-  Energy2 den = (p.t()*q.t()-p.z()*q.z());
-  Energy2 num = -(p.z()*q.t()-q.z()*p.t());
+  Energy2 mt2  = p.mass()<ZERO ? -sqr(p.mass())+sqr(p.x())+sqr(p.y()) : sqr(p.mass())+sqr(p.x())+sqr(p.y())  ;
+  double erat  = (q.t()+q.z())/(p.t()+p.z());
+  Energy2 den = mt2*(erat+1./erat);
+  Energy2 num = (q.z()-p.z())*(q.t()+p.t()) + (p.z()+q.z())*(p.t()-q.t());
   if(abs(den)<eps2||abs(num)<eps2) {
     if(abs(p.t()-abs(p.z()))<eps&&abs(q.t()-abs(q.z()))<eps) {
       double ratio = sqr(q.t()/p.t());
@@ -1697,7 +1707,6 @@ LorentzRotation QTildeReconstructor::solveBoostZ(const Lorentz5Momentum & q,
   }
   else {
     beta = num/den;
-    
   }
   if ( abs(beta) - 1. >= 0. ) throw KinematicsReconstructionVeto();
   R.boostZ(beta);
