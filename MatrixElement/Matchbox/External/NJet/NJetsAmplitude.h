@@ -181,6 +181,11 @@ private:
    */
   mutable vector<double> spinColourCorrelatorResults;
 
+  /**
+   *  Location of NJETs
+   */
+  string NJetPrefix_;
+
 };
 
 }

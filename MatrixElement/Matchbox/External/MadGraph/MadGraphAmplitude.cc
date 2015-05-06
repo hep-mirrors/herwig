@@ -22,19 +22,24 @@
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-
 #include "ThePEG/PDT/EnumParticles.h"
 #include <boost/lexical_cast.hpp>
 #include <boost/filesystem.hpp>
-
-
 #include <cstdlib>
 #include <dlfcn.h>
 #include <errno.h>
 #include <sstream>
 
 using namespace Herwig;
-
+#ifndef HERWIG_BINDIR
+#error Makefile.am needs to define HERWIG_BINDIR
+#endif
+#ifndef HERWIG_PKGDATADIR
+#error Makefile.am needs to define HERWIG_PKGDATADIR
+#endif
+#ifndef MADGRAPH_PREFIX
+#error Makefile.am needs to define MADGRAPH_PREFIX
+#endif
 
 extern "C" void mginitproc_(char *i,int);
 extern "C" void MG_Calculate_wavefunctions_virt(int* proc,double*,double*);
@@ -46,13 +51,10 @@ extern "C" void MG_NCol                        (int* proc,int*);
 extern "C" void MG_vxxxxx                      (double* p,double* n,int* inc,double*  );
 extern "C" void MG_Colour                      (int* proc,int* i,int* j ,int* color);
 
-
-
-
 MadGraphAmplitude::MadGraphAmplitude()
   : theMGmodel("loop_sm"),keepinputtopmass(false),
-    prefix_("@prefix@"), madgraphPrefix_("@MADGRAPHPREFIX@")
- {}
+    bindir_(HERWIG_BINDIR), pkgdatadir_(HERWIG_PKGDATADIR), madgraphPrefix_(MADGRAPH_PREFIX)
+{}
 
 MadGraphAmplitude::~MadGraphAmplitude() {
 
@@ -242,10 +244,11 @@ bool MadGraphAmplitude::initializeExternal() {
   params<<"\n$MTA$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::tauplus)->mass() /GeV <<flush;
 
   
-  string cmd = "python " + prefix_ + "/bin/mg2Matchbox.py ";
+  string cmd = "python " + bindir_ + "/mg2Matchbox.py ";
   cmd +=" --buildpath "+mgProcLibPath();
   cmd +=" --model "+theMGmodel;
   cmd +=" --runpath "+factory()->runStorage()+"/MadGraphAmplitudes " ;  
+  cmd +=" --datadir "+pkgdatadir_;  
   std::stringstream as,aem;
   as << factory()->orderInAlphaS();
   cmd +=" --orderas "+as.str() ;
@@ -280,7 +283,7 @@ bool MadGraphAmplitude::initializeExternal() {
   std::system(cmd.c_str());
   
   
-  cmd = "python " + prefix_ + "/bin/mg2Matchbox.py ";
+  cmd = "python " + bindir_ + "/mg2Matchbox.py ";
   cmd +=" --buildpath "+mgProcLibPath();
   cmd +=" --model "+theMGmodel;
   cmd +=" --runpath "+factory()->runStorage()+"/MadGraphAmplitudes " ;
@@ -740,12 +743,14 @@ void MadGraphAmplitude::evaloneLoopInterference() const  {
  
 void MadGraphAmplitude::persistentOutput(PersistentOStream & os) const {
   os << theOrderInGs << theOrderInGem << BornAmplitudes << VirtAmplitudes
-     << colourindex<<crossing << theProcessPath << theMGmodel << prefix_ << madgraphPrefix_;
+     << colourindex<<crossing << theProcessPath << theMGmodel << bindir_
+     << pkgdatadir_ << madgraphPrefix_;
 }
  
 void MadGraphAmplitude::persistentInput(PersistentIStream & is, int) {
   is >> theOrderInGs >> theOrderInGem >> BornAmplitudes >> VirtAmplitudes
-     >> colourindex>>crossing >> theProcessPath >> theMGmodel >> prefix_ >> madgraphPrefix_;
+     >> colourindex>>crossing >> theProcessPath >> theMGmodel >> bindir_
+     >> pkgdatadir_ >> madgraphPrefix_;
 }
  
 // *** Attention *** The following static variable is needed for the type
@@ -785,16 +790,22 @@ void MadGraphAmplitude::Init() {
           "Off",
           false);  
     
-  static Parameter<MadGraphAmplitude,string> interfacePrefix
-    ("Prefix",
-     "The prefix for the installed location of the code",
-     &MadGraphAmplitude::prefix_, "@prefix@",
+  static Parameter<MadGraphAmplitude,string> interfaceBinDir
+    ("BinDir",
+     "The location for the installed executable",
+     &MadGraphAmplitude::bindir_, string(HERWIG_BINDIR),
+     false, false);
+
+  static Parameter<MadGraphAmplitude,string> interfacePKGDATADIR
+    ("DataDir",
+     "The location for the installed Herwig++ data files",
+     &MadGraphAmplitude::pkgdatadir_, string(HERWIG_PKGDATADIR),
      false, false);
     
   static Parameter<MadGraphAmplitude,string> interfaceMadgraphPrefix
     ("MadgraphPrefix",
      "The prefix for the location of MadGraph",
-     &MadGraphAmplitude::madgraphPrefix_, "@MADGRAPHPREFIX@",
+     &MadGraphAmplitude::madgraphPrefix_, string(MADGRAPH_PREFIX),
      false, false);
 
 }

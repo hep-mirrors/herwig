@@ -225,13 +225,9 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/Matchbox/External/VBFNLO/Makefile
                 MatrixElement/Matchbox/External/HEJ/Makefile
                 MatrixElement/Matchbox/External/NJet/Makefile
-                MatrixElement/Matchbox/External/NJet/NJetsAmplitude.cc
 		MatrixElement/Matchbox/External/GoSam/Makefile
-                MatrixElement/Matchbox/External/GoSam/GoSamAmplitude.cc
                 MatrixElement/Matchbox/External/OpenLoops/Makefile
-                MatrixElement/Matchbox/External/OpenLoops/OpenLoopsAmplitude.cc
                 MatrixElement/Matchbox/External/MadGraph/Makefile
-                MatrixElement/Matchbox/External/MadGraph/MadGraphAmplitude.cc
                 MatrixElement/Matchbox/External/MadGraph/mg2Matchbox.py
 		Sampling/Makefile
 		Sampling/CellGrids/Makefile

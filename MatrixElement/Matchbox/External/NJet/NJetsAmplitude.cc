@@ -29,9 +29,13 @@
 
 #include <cstdlib>
 
+#ifndef NJET_PREFIX
+#error Makefile.am needs to define NJET_PREFIX
+#endif
+
 using namespace Herwig;
 
-NJetsAmplitude::NJetsAmplitude() {}
+NJetsAmplitude::NJetsAmplitude() : NJetsPrefix_(NJET_PREFIX) {}
 
 NJetsAmplitude::~NJetsAmplitude() {}
 
@@ -44,7 +48,7 @@ IBPtr NJetsAmplitude::fullclone() const {
 }
 
 void NJetsAmplitude::signOLP(const string& order, const string& contract) {
-  string cmd = "@NJETPREFIX@/bin/njet.py -o " + contract + " " + order;
+  string cmd = NJetsPrefix_+"/bin/njet.py -o " + contract + " " + order;
   std::system(cmd.c_str());
 }
 
@@ -275,6 +279,12 @@ void NJetsAmplitude::Init() {
 
   static ClassDocumentation<NJetsAmplitude> documentation
     ("NJetsAmplitude implements an interface to NJets.", "Matrix elements have been calculated using NJet.");
+    
+  static Parameter<NJetsAmplitude,string> interfaceNJetsPrefix
+    ("NJetsPrefix",
+     "The prefix for the location of NJets",
+     &NJetAmplitude::NJetsPrefix_, string(NJET_PREFIX),
+     false, false);
 
 }
 

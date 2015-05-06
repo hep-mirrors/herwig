@@ -43,21 +43,26 @@ using namespace Herwig;
 
 namespace bfs = boost::filesystem;
 
+#ifndef HERWIG_BINDIR
+#error Makefile.am needs to define HERWIG_BINDIR
+#endif
+#ifndef HERWIG_PKGDATADIR
+#error Makefile.am needs to define HERWIG_PKGDATADIR
+#endif
+#ifndef GOSAM_PREFIX
+#error Makefile.am needs to define GOSAM_PREFIX
+#endif
+
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
 
-GoSamAmplitude::GoSamAmplitude(){
-  theCodeExists=false;
-  isitDR=false;
-  theFormOpt=true;
-  theNinja=true;
-  theHiggsEff=false;
-  theAccuracyTarget=6;
-  theMassiveLeptons=false;
-  theLoopInducedOption=0;
-  doneGoSamInit=false;
-  doneGoSamInitRun=false;}
+GoSamAmplitude::GoSamAmplitude() : 
+  theAccuracyTarget(6),theCodeExists(false),theFormOpt(true),theNinja(true),
+  theHiggsEff(false),theMassiveLeptons(false),theLoopInducedOption(0),
+  isitDR(false),doneGoSamInit(false),doneGoSamInitRun(false),
+  bindir_(HERWIG_BINDIR), pkgdatadir_(HERWIG_PKGDATADIR), GoSamPrefix_(GOSAM_PREFIX)
+{}
 
 GoSamAmplitude::~GoSamAmplitude() {}
 
@@ -148,10 +153,10 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
   // specific input file at gosamSetupInFileName. If the GoSam input file
   // does not exist yet at gosamSetupInFileName the python script will get 
   // it from src/defaults/ before making the replacements.
-  string cmd = "python @prefix@/bin/GoSamHelper.py ";
+  string cmd = "python "+bindir_+"/GoSamHelper.py ";
   cmd+=" --usrinfile="+gosamSetupInFileNameInterface;
   cmd+=" --infile="+gosamSetupInFileName+".tbu";
-  cmd+=" --definfile=@prefix@/share/Herwig++/defaults/setup.gosam.in";
+  cmd+=" --definfile="+pkgdatadir_+"/defaults/setup.gosam.in";
   cmd+=" --formtempdir="+StringUtils::replace(gosamSourcePath, string("/"), string("\\/"));    //@FORMTEMPDIR@
   cmd+=" --reduction="+(theNinja ? string("ninja,golem95") : string("samurai,golem95"));       //@REDUCTIONPROGRAMS@
   cmd+=" --formopt="+(theFormOpt ? string("") : string(", noformopt"));   //@FORMOPT@
@@ -515,10 +520,10 @@ void GoSamAmplitude::signOLP(const string& order, const string& contract) {
 
     generator()->log() << "\n>>> generating GoSam amplitudes. This may take some time, please be patient.\n"
                        << ">>> see " + cwd + folderMatchboxBuild + "gosam-amplitudes.log for details.\n" << flush;
-    string cmd = "@GOSAMPREFIX@/bin/gosam.py --olp --output-file=" + contract + " --config=" + 
+    string cmd = GoSamPrefix_+"/bin/gosam.py --olp --output-file=" + contract + " --config=" + 
       gosamSetupInFileName+".tbu" + " --destination=" + gosamSourcePath + " " + order + " > " + cwd + folderMatchboxBuild + "gosam-amplitudes.log 2>&1";
     std::system(cmd.c_str());
-    cmd = "python @prefix@/bin/GoSamHelper.py ";
+    cmd = "python "+bindir_+"/GoSamHelper.py ";
     cmd += " --makelink ";
     cmd += " --makelinkfrom=contract ";
     cmd += " --makelinkto="+factory()->buildStorage() + name() + ".OLPContract.lh";
@@ -1008,6 +1013,23 @@ void GoSamAmplitude::Init() {
           "Model plus all other contributions,  which come with the effective "
           "Model.",
           6);
+    
+  static Parameter<GoSamAmplitude,string> interfaceBinDir
+    ("BinDir",
+     "The location for the installed executable",
+     &GoSamAmplitude::bindir_, string(HERWIG_BINDIR),
+     false, false);
 
+  static Parameter<GoSamAmplitude,string> interfacePKGDATADIR
+    ("DataDir",
+     "The location for the installed Herwig++ data files",
+     &GoSamAmplitude::pkgdatadir_, string(HERWIG_PKGDATADIR),
+     false, false);
+    
+  static Parameter<GoSamAmplitude,string> interfaceGoSamPrefix
+    ("GoSamPrefix",
+     "The prefix for the location of GoSam",
+     &GoSamAmplitude::GoSamPrefix_, string(GOSAM_PREFIX),
+     false, false);
 }
 

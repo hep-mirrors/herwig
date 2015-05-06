@@ -297,6 +297,23 @@ private:
    */
   void setupGoSamIn(string setupGoSamInFile);
 
+protected:
+
+  /**
+   *   Location of the installed executables
+   */
+  string bindir_;
+
+  /**
+   *   Location of the data files
+   */
+  string pkgdatadir_;
+
+  /**
+   *  Location of GOSAM
+   */
+  string GoSamPrefix_;
+
 }; // end "class GoSamAmplitude: public MatchboxOLPME"
 
   inline PersistentOStream& operator<<(PersistentOStream& os, const gosamprocinfo& p) {

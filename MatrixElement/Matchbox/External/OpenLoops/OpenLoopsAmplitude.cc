@@ -25,8 +25,6 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-#include "ThePEG/Utilities/DynamicLoader.h"
-
 #include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
 
 #include <fstream>
@@ -66,15 +64,6 @@ void OpenLoopsAmplitude::doinitrun() {
 
 void OpenLoopsAmplitude::startOLP(const string& contract, int& status) {
 	string tempcontract=contract;
-
-	bool success = DynamicLoader::load("@OPENLOOPSLIBS@/libopenloops.so")
-                   ||DynamicLoader::load("@OPENLOOPSLIBS@/libopenloops.dylib") ;
-
-	if ( !success ) {
-	  throw Exception() << "Failed to load libopenloops.so/dylib\n"
-			    << DynamicLoader::lastErrorMessage
-			    << Exception::abortnow;
-	}
 
 	string stabilityPrefix = factory()->runStorage() + "OpenLoops.StabilityLog";
 	assert(stabilityPrefix.size() < 256);

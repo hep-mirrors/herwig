@@ -13,6 +13,11 @@ param_card_heft.dat.in
 
 dist_madgraph_DATA = $(INPUTFILES)
 
+HwMatchboxMadGraph_la_CPPFLAGS = $(AM_CPPFLAGS) \
+-DHERWIG_BINDIR="\"$(bindir)\"" \
+-DHERWIG_PKGDATADIR="\"$(pkgdatadir)\"" \
+-DMADGRAPH_PREFIX="\"$(MADGRAPHPREFIX)\""
+
 install-exec-local:
 	$(install_sh_SCRIPT) $(builddir)/mg2Matchbox.py $(DESTDIR)$(bindir)/mg2Matchbox.py
 
