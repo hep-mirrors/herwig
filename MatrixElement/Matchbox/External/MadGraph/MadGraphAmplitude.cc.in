@@ -50,7 +50,9 @@ extern "C" void MG_Colour                      (int* proc,int* i,int* j ,int* co
 
 
 MadGraphAmplitude::MadGraphAmplitude()
-  : theMGmodel("loop_sm"),keepinputtopmass(false) {}
+  : theMGmodel("loop_sm"),keepinputtopmass(false),
+    prefix_("@prefix@"), madgraphPrefix_("@MADGRAPHPREFIX@")
+ {}
 
 MadGraphAmplitude::~MadGraphAmplitude() {
 
@@ -240,7 +242,7 @@ bool MadGraphAmplitude::initializeExternal() {
   params<<"\n$MTA$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::tauplus)->mass() /GeV <<flush;
 
   
-  string cmd = "python @prefix@/bin/mg2Matchbox.py ";
+  string cmd = "python " + prefix_ + "/bin/mg2Matchbox.py ";
   cmd +=" --buildpath "+mgProcLibPath();
   cmd +=" --model "+theMGmodel;
   cmd +=" --runpath "+factory()->runStorage()+"/MadGraphAmplitudes " ;  
@@ -267,7 +269,7 @@ bool MadGraphAmplitude::initializeExternal() {
     throw Exception() << "failed to determine current working directory\n"
                       << Exception::abortnow;
      
-  cmd +=" --madgraph @MADGRAPHPREFIX@/bin " ;
+  cmd +=" --madgraph " + madgraphPrefix_ + "/bin " ;
   cmd +="--build > ";
   cmd +=  mgProcLibPath()+"MG.log 2>&1";
   
@@ -278,7 +280,7 @@ bool MadGraphAmplitude::initializeExternal() {
   std::system(cmd.c_str());
   
   
-  cmd = "python @prefix@/bin/mg2Matchbox.py ";
+  cmd = "python " + prefix_ + "/bin/mg2Matchbox.py ";
   cmd +=" --buildpath "+mgProcLibPath();
   cmd +=" --model "+theMGmodel;
   cmd +=" --runpath "+factory()->runStorage()+"/MadGraphAmplitudes " ;
@@ -738,12 +740,12 @@ void MadGraphAmplitude::evaloneLoopInterference() const  {
  
 void MadGraphAmplitude::persistentOutput(PersistentOStream & os) const {
   os << theOrderInGs << theOrderInGem << BornAmplitudes << VirtAmplitudes
-     << colourindex<<crossing << theProcessPath << theMGmodel;
+     << colourindex<<crossing << theProcessPath << theMGmodel << prefix_ << madgraphPrefix_;
 }
  
 void MadGraphAmplitude::persistentInput(PersistentIStream & is, int) {
   is >> theOrderInGs >> theOrderInGem >> BornAmplitudes >> VirtAmplitudes
-     >> colourindex>>crossing >> theProcessPath >> theMGmodel;
+     >> colourindex>>crossing >> theProcessPath >> theMGmodel >> prefix_ >> madgraphPrefix_;
 }
  
 // *** Attention *** The following static variable is needed for the type
@@ -783,8 +785,16 @@ void MadGraphAmplitude::Init() {
           "Off",
           false);  
     
+  static Parameter<MadGraphAmplitude,string> interfacePrefix
+    ("Prefix",
+     "The prefix for the installed location of the code",
+     &MadGraphAmplitude::prefix_, "@prefix@",
+     false, false);
     
+  static Parameter<MadGraphAmplitude,string> interfaceMadgraphPrefix
+    ("MadgraphPrefix",
+     "The prefix for the location of MadGraph",
+     &MadGraphAmplitude::madgraphPrefix_, "@MADGRAPHPREFIX@",
+     false, false);
 
 }
- 
- 

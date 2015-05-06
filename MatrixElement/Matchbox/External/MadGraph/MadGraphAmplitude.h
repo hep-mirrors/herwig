@@ -324,6 +324,18 @@ protected:
   
   //@}
 
+protected:
+
+  /**
+   *   Location of the installed executables
+   */
+  string prefix_;
+
+  /**
+   *  Location of MADGRAPH
+   */
+  string madgraphPrefix_;
+
 private:
 
   /**
