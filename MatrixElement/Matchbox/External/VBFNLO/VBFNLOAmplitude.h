@@ -233,6 +233,18 @@ private:
    */
   bool theAnomCoupl;
 
+protected:
+
+  /**
+   * Location of the VBFNLO library
+   */
+  string VBFNLOlib_;
+
+  /**
+   *  load the VBFNLO library
+   */
+  void loadVBFNLO();
+
 };
 
 }

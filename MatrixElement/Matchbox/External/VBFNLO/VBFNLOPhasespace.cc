@@ -38,8 +38,8 @@ VBFNLOPhasespace::VBFNLOPhasespace() :
   lastSqrtS(0*GeV) {
   string vbfnlolib = DEFSTR(VBFNLOLIB);
   vbfnlolib += "/";
-  if ( !DynamicLoader::load(vbfnlolib+"libVBFNLO.so") )
-    if ( !DynamicLoader::load("libVBFNLO.so") )
+  if ( ! (DynamicLoader::load(vbfnlolib+"libVBFNLO.so") ||
+	  DynamicLoader::load("libVBFNLO.so") ) )
       throw Exception() << "failed to load libVBFNLO.so\n"
 		        << DynamicLoader::lastErrorMessage
 		        << Exception::abortnow;

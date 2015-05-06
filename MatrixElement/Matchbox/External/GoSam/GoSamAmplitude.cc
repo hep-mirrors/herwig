@@ -816,7 +816,8 @@ void GoSamAmplitude::persistentOutput(PersistentOStream & os) const {
      << contractFileName << orderFileName
      << theCodeExists << theFormOpt << theNinja << isitDR << massiveParticles << theHiggsEff
      << theAccuracyTarget << theMassiveLeptons << theLoopInducedOption
-     << doneGoSamInit << doneGoSamInitRun;
+     << doneGoSamInit << doneGoSamInitRun
+     << bindir_ << pkgdatadir_ << GoSamPrefix_;
 }
 
 void GoSamAmplitude::persistentInput(PersistentIStream & is, int) {
@@ -827,7 +828,8 @@ void GoSamAmplitude::persistentInput(PersistentIStream & is, int) {
      >> contractFileName >> orderFileName
      >> theCodeExists >> theFormOpt >> theNinja >> isitDR >> massiveParticles >> theHiggsEff
      >> theAccuracyTarget >> theMassiveLeptons >> theLoopInducedOption
-     >> doneGoSamInit >> doneGoSamInitRun;
+     >> doneGoSamInit >> doneGoSamInitRun
+     >> bindir_ >> pkgdatadir_ >> GoSamPrefix_;
 }
 
 

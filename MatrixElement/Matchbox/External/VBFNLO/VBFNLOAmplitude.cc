@@ -36,7 +36,8 @@
 using namespace Herwig;
 
 VBFNLOAmplitude::VBFNLOAmplitude() 
- : theRanHelSum(false), theAnomCoupl(false) {}
+  : theRanHelSum(false), theAnomCoupl(false), VBFNLOlib_(DEFSTR(VBFNLOLIB)) 
+{}
 
 VBFNLOAmplitude::~VBFNLOAmplitude() {}
 
@@ -106,15 +107,16 @@ void VBFNLOAmplitude::startOLP(const string& contract, int& status) {
 
 }
 
-bool VBFNLOAmplitude::startOLP(const map<pair<Process,int>,int>& procs) {
-  string vbfnlolib = DEFSTR(VBFNLOLIB);
-  vbfnlolib += "/";
-  if ( !DynamicLoader::load(vbfnlolib+"libVBFNLO.so") )
-    if ( !DynamicLoader::load("libVBFNLO.so") )
-      throw Exception() << "failed to load libVBFNLO.so\n"
-		        << DynamicLoader::lastErrorMessage
-		        << Exception::abortnow;
+void VBFNLOAmplitude::loadVBFNLO() {
+  if ( ! (DynamicLoader::load(VBFNLOlib_+"/libVBFNLO.so") || 
+	  DynamicLoader::load("libVBFNLO.so") ) )
+    throw Exception() << "failed to load libVBFNLO.so/dylib\n"
+		      << DynamicLoader::lastErrorMessage
+		      << Exception::abortnow;
+}
 
+bool VBFNLOAmplitude::startOLP(const map<pair<Process,int>,int>& procs) {
+  loadVBFNLO();
   string orderFileName = factory()->buildStorage() + name() + ".OLPOrder.lh";
   ofstream orderFile(orderFileName.c_str());
 
@@ -379,48 +381,27 @@ void VBFNLOAmplitude::evalLargeNColourCorrelator(pair<int,int>,
 
 }
 
-
 void VBFNLOAmplitude::doinit() {
-  string vbfnlolib = DEFSTR(VBFNLOLIB);
-  vbfnlolib += "/";
-  if ( !DynamicLoader::load(vbfnlolib+"libVBFNLO.so") )
-    if ( !DynamicLoader::load("libVBFNLO.so") )
-      throw Exception() << "failed to load libVBFNLO.so\n"
-		        << DynamicLoader::lastErrorMessage
-		        << Exception::abortnow;
+  loadVBFNLO();
   MatchboxOLPME::doinit();
 }
 
 void VBFNLOAmplitude::doinitrun() {
-  string vbfnlolib = DEFSTR(VBFNLOLIB);
-  vbfnlolib += "/";
-  if ( !DynamicLoader::load(vbfnlolib+"libVBFNLO.so") )
-    if ( !DynamicLoader::load("libVBFNLO.so") )
-      throw Exception() << "failed to load libVBFNLO.so\n"
-		        << DynamicLoader::lastErrorMessage
-		        << Exception::abortnow;
+  loadVBFNLO();
   MatchboxOLPME::doinitrun();
 }
 
-
-// If needed, insert default implementations of virtual function defined
-// in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
-
-
 void VBFNLOAmplitude::persistentOutput(PersistentOStream & os) const {
-  os << colourCorrelatorResults << spinColourCorrelatorResults << theRanHelSum << theAnomCoupl;
+  os << colourCorrelatorResults << spinColourCorrelatorResults << theRanHelSum << theAnomCoupl << VBFNLOlib_;
 }
 
 void VBFNLOAmplitude::persistentInput(PersistentIStream & is, int) {
-  is >> colourCorrelatorResults >> spinColourCorrelatorResults >> theRanHelSum >> theAnomCoupl;
+  is >> colourCorrelatorResults >> spinColourCorrelatorResults >> theRanHelSum >> theAnomCoupl >> VBFNLOlib_;
 }
 
 
-// *** Attention *** The following static variable is needed for the type
-// description system in ThePEG. Please check that the template arguments
-// are correct (the class and its base class), and that the constructor
-// arguments are correct (the class name and the name of the dynamically
-// loadable library where the class implementation can be found).
+// The following static variable is needed for the type
+// description system in ThePEG.
 DescribeClass<VBFNLOAmplitude,MatchboxOLPME>
   describeHerwigVBFNLOAmplitude("Herwig::VBFNLOAmplitude", "HwMatchboxVBFNLO.so");
 

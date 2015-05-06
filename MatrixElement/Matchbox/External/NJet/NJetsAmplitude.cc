@@ -13,6 +13,7 @@
 
 #include "NJetsAmplitude.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -259,11 +260,13 @@ void NJetsAmplitude::doinitrun() {
 
 
 void NJetsAmplitude::persistentOutput(PersistentOStream & os) const {
-  os << colourCorrelatorResults << spinColourCorrelatorResults;
+  os << colourCorrelatorResults << spinColourCorrelatorResults
+     << NJetsPrefix_;
 }
 
 void NJetsAmplitude::persistentInput(PersistentIStream & is, int) {
-  is >> colourCorrelatorResults >> spinColourCorrelatorResults;
+  is >> colourCorrelatorResults >> spinColourCorrelatorResults
+     >> NJetsPrefix_;
 }
 
 
@@ -283,7 +286,7 @@ void NJetsAmplitude::Init() {
   static Parameter<NJetsAmplitude,string> interfaceNJetsPrefix
     ("NJetsPrefix",
      "The prefix for the location of NJets",
-     &NJetAmplitude::NJetsPrefix_, string(NJET_PREFIX),
+     &NJetsAmplitude::NJetsPrefix_, string(NJET_PREFIX),
      false, false);
 
 }

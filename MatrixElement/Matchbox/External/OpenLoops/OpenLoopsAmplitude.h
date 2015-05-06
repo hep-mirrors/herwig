@@ -317,7 +317,10 @@ private:
   
   int psp_tolerance;
 
-
+  /**
+   *   Location of the OpenLoops libraries
+   */
+  string OpenLoopsLibs_;
 };
 
 }

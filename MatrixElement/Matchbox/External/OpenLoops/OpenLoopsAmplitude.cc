@@ -25,6 +25,8 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
+#include "ThePEG/Utilities/DynamicLoader.h"
+
 #include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
 
 #include <fstream>
@@ -34,7 +36,11 @@
 
 using namespace Herwig;
 
-OpenLoopsAmplitude::OpenLoopsAmplitude():use_cms(true),psp_tolerance(12) {
+#ifndef OPENLOOPSLIBS
+#error Makefile.am needs to define OPENLOOPSLIBS
+#endif
+
+OpenLoopsAmplitude::OpenLoopsAmplitude():use_cms(true),psp_tolerance(12), OpenLoopsLibs_(OPENLOOPSLIBS) {
 }
 
 OpenLoopsAmplitude::~OpenLoopsAmplitude() {
@@ -64,6 +70,13 @@ void OpenLoopsAmplitude::doinitrun() {
 
 void OpenLoopsAmplitude::startOLP(const string& contract, int& status) {
 	string tempcontract=contract;
+
+	if ( ! (DynamicLoader::load(OpenLoopsLibs_+"libopenloops.so") ||
+		DynamicLoader::load("libopenloops.so") ) ) {
+	  throw Exception() << "Failed to load libopenloops.so/dylib\n"
+			    << DynamicLoader::lastErrorMessage
+			    << Exception::abortnow;
+	}
 
 	string stabilityPrefix = factory()->runStorage() + "OpenLoops.StabilityLog";
 	assert(stabilityPrefix.size() < 256);
@@ -376,11 +389,11 @@ double OpenLoopsAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 void OpenLoopsAmplitude::persistentOutput(PersistentOStream & os) const {
-	os << idpair ;
+  os << idpair << OpenLoopsLibs_;
 }
 
 void OpenLoopsAmplitude::persistentInput(PersistentIStream & is, int) {
-	is >> idpair ;
+  is >> idpair >> OpenLoopsLibs_ ;
 }
 
 // *** Attention *** The following static variable is needed for the type
@@ -401,12 +414,12 @@ void OpenLoopsAmplitude::Init() {
   static SwitchOption interfaceUseComplMassOn
   (interfaceUseComplMass,
    "True",
-   "True for Compex Masses.",
+   "True for Complex Masses.",
    true);
   static SwitchOption interfaceUseComplMassOff
   (interfaceUseComplMass,
    "False",
-   "False for no Compex Masses.",
+   "False for no Complex Masses.",
    false);
   
   static Parameter<OpenLoopsAmplitude,int> interfacepsp_tolerance
@@ -414,6 +427,12 @@ void OpenLoopsAmplitude::Init() {
    "(Debug)Phase Space Tolerance. Better use e.g.: set OpenLoops:Massless 13",
    &OpenLoopsAmplitude::psp_tolerance, 12, 0, 0,
    false, false, Interface::lowerlim);
+    
+  static Parameter<OpenLoopsAmplitude,string> interfaceOpenLoopsPrefix
+    ("OpenLoopsPrefix",
+     "The location of OpenLoops libraries",
+     &OpenLoopsAmplitude::OpenLoopsLibs_, string(OPENLOOPSLIBS),
+     false, false);
   
 }
 

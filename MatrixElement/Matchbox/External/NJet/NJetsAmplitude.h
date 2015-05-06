@@ -184,7 +184,7 @@ private:
   /**
    *  Location of NJETs
    */
-  string NJetPrefix_;
+  string NJetsPrefix_;
 
 };
 
