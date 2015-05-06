@@ -36,7 +36,7 @@
 using namespace Herwig;
 
 VBFNLOAmplitude::VBFNLOAmplitude() 
-  : theRanHelSum(false), theAnomCoupl(false), VBFNLOlib_(DEFSTR(VBFNLOLIB)) 
+  : theRanHelSum(false), theAnomCoupl(false), VBFNLOlib_(DEFSTR(VBFNLOLIB))
 {}
 
 VBFNLOAmplitude::~VBFNLOAmplitude() {}

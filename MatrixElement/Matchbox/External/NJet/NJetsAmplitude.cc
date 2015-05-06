@@ -33,10 +33,14 @@
 #ifndef NJET_PREFIX
 #error Makefile.am needs to define NJET_PREFIX
 #endif
+#ifndef NJET_LIBS
+#error Makefile.am needs to define NJET_LIBS
+#endif
 
 using namespace Herwig;
 
-NJetsAmplitude::NJetsAmplitude() : NJetsPrefix_(NJET_PREFIX) {}
+NJetsAmplitude::NJetsAmplitude() : NJetsPrefix_(NJET_PREFIX),
+				   NJetsLibs_(NJET_LIBS) {}
 
 NJetsAmplitude::~NJetsAmplitude() {}
 
@@ -96,12 +100,16 @@ void NJetsAmplitude::startOLP(const string& contract, int& status) {
 
 }
 
-bool NJetsAmplitude::startOLP(const map<pair<Process,int>,int>& procs) {
-
-  if ( !DynamicLoader::load("libnjet2.so") )
+void NJetsAmplitude::loadNJET() {
+  if ( ! (DynamicLoader::load(NJetsLibs_+"/libnjet2.so") ||
+	  DynamicLoader::load("libnjet2.so") ) )
     throw Exception() << "failed to load libnjet2.so\n"
 		      << DynamicLoader::lastErrorMessage
 		      << Exception::abortnow;
+}
+
+bool NJetsAmplitude::startOLP(const map<pair<Process,int>,int>& procs) {
+  loadNJET();
 
   // TODO throw exception on massive leptons in procs
 
@@ -240,18 +248,12 @@ void NJetsAmplitude::evalSpinColourCorrelator(pair<int,int>) const {
 }
 
 void NJetsAmplitude::doinit() {
-  if ( !DynamicLoader::load("libnjet2.so") )
-    throw Exception() << "failed to load libnjet2.so\n"
-		      << DynamicLoader::lastErrorMessage
-		      << Exception::abortnow;
+  loadNJET();
   MatchboxOLPME::doinit();
 }
 
 void NJetsAmplitude::doinitrun() {
-  if ( !DynamicLoader::load("libnjet2.so") )
-    throw Exception() << "failed to load libnjet2.so\n"
-		      << DynamicLoader::lastErrorMessage
-		      << Exception::abortnow;
+  loadNJET();
   MatchboxOLPME::doinitrun();
 }
 
@@ -261,32 +263,36 @@ void NJetsAmplitude::doinitrun() {
 
 void NJetsAmplitude::persistentOutput(PersistentOStream & os) const {
   os << colourCorrelatorResults << spinColourCorrelatorResults
-     << NJetsPrefix_;
+     << NJetsPrefix_ << NJetsLibs_;
 }
 
 void NJetsAmplitude::persistentInput(PersistentIStream & is, int) {
   is >> colourCorrelatorResults >> spinColourCorrelatorResults
-     >> NJetsPrefix_;
+     >> NJetsPrefix_ >> NJetsLibs_;
 }
 
 
-// *** Attention *** The following static variable is needed for the type
-// description system in ThePEG. Please check that the template arguments
-// are correct (the class and its base class), and that the constructor
-// arguments are correct (the class name and the name of the dynamically
-// loadable library where the class implementation can be found).
+// The following static variable is needed for the type
+// description system in ThePEG.
 DescribeClass<NJetsAmplitude,MatchboxOLPME>
-  describeHerwigNJetsAmplitude("Herwig::NJetsAmplitude", "HwMatchboxNJet.so");
+describeHerwigNJetsAmplitude("Herwig::NJetsAmplitude", "HwMatchboxNJet.so");
 
 void NJetsAmplitude::Init() {
 
   static ClassDocumentation<NJetsAmplitude> documentation
-    ("NJetsAmplitude implements an interface to NJets.", "Matrix elements have been calculated using NJet.");
+    ("NJetsAmplitude implements an interface to NJets.",
+     "Matrix elements have been calculated using NJet.");
     
   static Parameter<NJetsAmplitude,string> interfaceNJetsPrefix
     ("NJetsPrefix",
      "The prefix for the location of NJets",
      &NJetsAmplitude::NJetsPrefix_, string(NJET_PREFIX),
+     false, false);
+    
+  static Parameter<NJetsAmplitude,string> interfaceNJetsLibs
+    ("NJetsLibs",
+     "The location of the NJets library",
+     &NJetsAmplitude::NJetsLibs_, string(NJET_LIBS),
      false, false);
 
 }

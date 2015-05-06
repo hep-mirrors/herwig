@@ -186,6 +186,16 @@ private:
    */
   string NJetsPrefix_;
 
+  /**
+   *  Location of NJET librarys
+   */
+  string NJetsLibs_;
+
+  /**
+   * Load the NJET library
+   */
+  void loadNJET();
+
 };
 
 }

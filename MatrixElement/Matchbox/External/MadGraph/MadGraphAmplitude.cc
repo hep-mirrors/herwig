@@ -247,8 +247,8 @@ bool MadGraphAmplitude::initializeExternal() {
   string cmd = "python " + bindir_ + "/mg2Matchbox.py ";
   cmd +=" --buildpath "+mgProcLibPath();
   cmd +=" --model "+theMGmodel;
-  cmd +=" --runpath "+factory()->runStorage()+"/MadGraphAmplitudes " ;  
-  cmd +=" --datadir "+pkgdatadir_;  
+  cmd +=" --runpath "+factory()->runStorage()+"/MadGraphAmplitudes ";
+  cmd +=" --datadir "+pkgdatadir_;
   std::stringstream as,aem;
   as << factory()->orderInAlphaS();
   cmd +=" --orderas "+as.str() ;
@@ -286,9 +286,10 @@ bool MadGraphAmplitude::initializeExternal() {
   cmd = "python " + bindir_ + "/mg2Matchbox.py ";
   cmd +=" --buildpath "+mgProcLibPath();
   cmd +=" --model "+theMGmodel;
-  cmd +=" --runpath "+factory()->runStorage()+"/MadGraphAmplitudes " ;
-    as.clear();
-    aem.clear();
+  cmd +=" --runpath "+factory()->runStorage()+"/MadGraphAmplitudes ";
+  cmd +=" --datadir "+pkgdatadir_;  
+  as.clear();
+  aem.clear();
   as << factory()->orderInAlphaS();
   cmd +=" --orderas "+as.str() ;
   aem <<factory()->orderInAlphaEW();
