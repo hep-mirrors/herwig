@@ -543,8 +543,8 @@ do TreePhasespace:SetCoupling 25 23 23 362.91922658249853887524
 do TreePhasespace:SetCoupling 22 24 -24 0.00755391226478475287
 do TreePhasespace:SetCoupling 23 24 -24 0.02637401475019835008
 
-@CREATE_VBFNLO@create Herwig::VBFNLOPhasespace VBFNLOPhasespace
-@CREATE_VBFNLO@set VBFNLOPhasespace:CouplingData PhasespaceCouplings
+@CREATE_VBFNLO@ Herwig::VBFNLOPhasespace VBFNLOPhasespace
+@SET_VBFNLO@ VBFNLOPhasespace:CouplingData PhasespaceCouplings
 
 set /Herwig/MatrixElements/Matchbox/Factory:Phasespace TreePhasespace
 
