@@ -124,14 +124,6 @@ read Matchbox/MMHT2014.in
 # insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 Rivet
 # insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 HepMC
 
-# Switch off basis consistency checkes, see tutorial
-# set BasicConsistency:CheckQuark No
-
-# Plot a single event using Graphviz, see tutorial
-# insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 Plot
-# set Plot:EventNumber 42
-
-
 ##################################################
 ## Save the generator
 ##################################################
