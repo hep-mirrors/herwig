@@ -112,7 +112,7 @@ ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
     if(!guessTimeLike(t,tmin,enhance)) break;
   }
   while(PSVeto(t) || SplittingFnVeto(z()*(1.-z())*t,ids,true) || 
-	alphaSVeto(sqr(z()*(1.-z()))*t));
+	alphaSVeto(splittingFn()->angularOrdered() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t));
   q_ = t > ZERO ? Energy(sqrt(t)) : -1.*MeV;
   if(q_ < ZERO) return ShoKinPtr();
   // return the ShowerKinematics object
@@ -151,7 +151,7 @@ generateNextSpaceBranching(const Energy startingQ,
   }
   while(z() > zLimits().second || 
 	SplittingFnVeto((1.-z())*t/z(),ids,true) || 
-	alphaSVeto(sqr(1.-z())*t) || 
+	alphaSVeto(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t) ||
 	PDFVeto(t,x,parton0,parton1,beam) || pt2 < pT2min() );
   if(t > ZERO && zLimits().first < zLimits().second)  q_ = sqrt(t);
   else return ShoKinPtr();
@@ -200,7 +200,7 @@ ShoKinPtr QTildeSudakov::generateNextDecayBranching(const Energy startingScale,
     pt2 = sqr(1.-z())*(t-masssquared_[0])-z()*masssquared_[2];
   }
   while(SplittingFnVeto((1.-z())*t/z(),ids,true)|| 
-	alphaSVeto(sqr(1.-z())*t) ||
+	alphaSVeto(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t ) ||
 	pt2<pT2min() ||
 	t*(1.-z())>masssquared_[0]-sqr(minmass));
   if(t > ZERO) {
