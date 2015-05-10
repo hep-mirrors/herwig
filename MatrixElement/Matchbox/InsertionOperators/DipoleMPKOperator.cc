@@ -488,11 +488,15 @@ double DipoleMPKOperator::sumParton(int id) const {
       if (!appendixB) {
         if ( mePartonData()[id]->id() == ParticleID::g ) {
           double quarkpdfsum = 0.0;
-          // int nlp = NLightProtonVec().size();
-          int nlp = lastBorn()->nLightProtonVec().size();
-          for ( int f = -nlp; f <= nlp; ++f ) {
-            if ( f == 0 ) continue;
-            quarkpdfsum += PDFxByz(getParticleData(f));
+          // // int nlp = NLightProtonVec().size();
+          // int nlp = lastBorn()->nLightProtonVec().size();
+          // for ( int f = -nlp; f <= nlp; ++f ) {
+          //   if ( f == 0 ) continue;
+          //   quarkpdfsum += PDFxByz(getParticleData(f));
+          // }
+          for ( size_t f=0; f!=lastBorn()->nLightProtonVec().size(); ++f ) {
+            quarkpdfsum += PDFxByz(getParticleData(lastBorn()->nLightProtonVec()[f]));
+            quarkpdfsum += PDFxByz(getParticleData(-lastBorn()->nLightProtonVec()[f]));
           }
           res -=
             ifCorrelated * 
@@ -509,11 +513,15 @@ double DipoleMPKOperator::sumParton(int id) const {
       else if (appendixB) {
         if ( mePartonData()[id]->id() == ParticleID::g ) {
           double quarkpdfsum = 0.0;
-          // int nlp = NLightProtonVec().size();
-          int nlp = lastBorn()->nLightProtonVec().size();
-          for ( int f = -nlp; f <= nlp; ++f ) {
-            if ( f == 0 ) continue;
-            quarkpdfsum += PDFxByz(getParticleData(f));
+          // // int nlp = NLightProtonVec().size();
+          // int nlp = lastBorn()->nLightProtonVec().size();
+          // for ( int f = -nlp; f <= nlp; ++f ) {
+          //   if ( f == 0 ) continue;
+          //   quarkpdfsum += PDFxByz(getParticleData(f));
+          // }
+          for ( size_t f=0; f!=lastBorn()->nLightProtonVec().size(); ++f ) {
+            quarkpdfsum += PDFxByz(getParticleData(lastBorn()->nLightProtonVec()[f]));
+            quarkpdfsum += PDFxByz(getParticleData(-lastBorn()->nLightProtonVec()[f]));
           }
           res -=
             ifCorrelated * 
@@ -725,12 +733,16 @@ double DipoleMPKOperator::KBarqg() const {
     return 0.0;
   double res = 0.0;
   double factor = CF * ( ( (1.+sqr(1.-z)) / z ) * log((1.-z)/z) + z ) / z;
-  // int nlp = NLightProtonVec().size();
-  int nlp = lastBorn()->nLightProtonVec().size();
-  for ( int f = -nlp; f <= nlp; ++f ) {
-    if ( f == 0 )
-      continue;
-    res += PDFxByz(getParticleData(f));
+  // // int nlp = NLightProtonVec().size();
+  // int nlp = lastBorn()->nLightProtonVec().size();
+  // for ( int f = -nlp; f <= nlp; ++f ) {
+  //   if ( f == 0 )
+  //     continue;
+  //   res += PDFxByz(getParticleData(f));
+  // }
+  for ( size_t f=0; f!=lastBorn()->nLightProtonVec().size(); ++f ) {
+    res += PDFxByz(getParticleData(lastBorn()->nLightProtonVec()[f]));
+    res += PDFxByz(getParticleData(-lastBorn()->nLightProtonVec()[f]));
   }
   return res*factor;
 }
@@ -747,12 +759,16 @@ double DipoleMPKOperator::Pqg() const {
     return 0.0;
   double res = 0.0;
   double factor = CF * ( 1. + sqr(1.-z) ) / sqr(z);
-  // int nlp = NLightProtonVec().size();
-  int nlp = lastBorn()->nLightProtonVec().size();
-  for ( int f = -nlp; f <= nlp; ++f ) {
-    if ( f == 0 )
-      continue;
-    res += PDFxByz(getParticleData(f));
+  // // int nlp = NLightProtonVec().size();
+  // int nlp = lastBorn()->nLightProtonVec().size();
+  // for ( int f = -nlp; f <= nlp; ++f ) {
+  //   if ( f == 0 )
+  //     continue;
+  //   res += PDFxByz(getParticleData(f));
+  // }
+  for ( size_t f=0; f!=lastBorn()->nLightProtonVec().size(); ++f ) {
+    res += PDFxByz(getParticleData(lastBorn()->nLightProtonVec()[f]));
+    res += PDFxByz(getParticleData(-lastBorn()->nLightProtonVec()[f]));
   }
   return res*factor;
 }
@@ -875,12 +891,16 @@ double DipoleMPKOperator::Kscriptqg_q(Energy2 sja, Energy2 mj2) const {
   double muQ2 = mj2/sja;
   double res = 0.0;
   double factor = 1./z * ( 2.*CF/CA*muQ2/z*log(muQ2/(1.-z+muQ2)) );
-  // int nlp = NLightProtonVec().size();
-  int nlp = lastBorn()->nLightProtonVec().size();
-  for ( int f = -nlp; f <= nlp; ++f ) {
-    if ( f == 0 )
-      continue;
-    res += PDFxByz(getParticleData(f));
+  // // int nlp = NLightProtonVec().size();
+  // int nlp = lastBorn()->nLightProtonVec().size();
+  // for ( int f = -nlp; f <= nlp; ++f ) {
+  //   if ( f == 0 )
+  //     continue;
+  //   res += PDFxByz(getParticleData(f));
+  // }
+  for ( size_t f=0; f!=lastBorn()->nLightProtonVec().size(); ++f ) {
+    res += PDFxByz(getParticleData(lastBorn()->nLightProtonVec()[f]));
+    res += PDFxByz(getParticleData(-lastBorn()->nLightProtonVec()[f]));
   }
   return res*factor;
 }

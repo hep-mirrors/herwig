@@ -559,12 +559,16 @@ double DipolePKOperator::KBarqg() const {
     return 0.0;
   double res = 0.0;
   double factor = CF * ( ( (1.+sqr(1.-z)) / z ) * log(factory()->alphaParameter()*(1.-z)/z) + z ) / z;
-  // int nlp = NLightProtonVec().size();
-  int nlp = lastBorn()->nLightProtonVec().size();
-  for ( int f = -nlp; f <= nlp; ++f ) {
-    if ( f == 0 )
-      continue;
-    res += PDFxByz(getParticleData(f))*factor;
+  // // int nlp = NLightProtonVec().size();
+  // int nlp = lastBorn()->nLightProtonVec().size();
+  // for ( int f = -nlp; f <= nlp; ++f ) {
+  //   if ( f == 0 )
+  //     continue;
+  //   res += PDFxByz(getParticleData(f))*factor;
+  // }
+  for ( size_t f=0; f!=lastBorn()->nLightProtonVec().size(); ++f ) {
+    res += PDFxByz(getParticleData(lastBorn()->nLightProtonVec()[f]))*factor;
+    res += PDFxByz(getParticleData(-lastBorn()->nLightProtonVec()[f]))*factor;
   }
   return res;
 }
@@ -642,12 +646,16 @@ double DipolePKOperator::Pqg() const {
     return 0.0;
   double res = 0.0;
   double factor = CF * ( 1. + sqr(1.-z) ) / sqr(z);
-  // int nlp = NLightProtonVec().size();
-  int nlp = lastBorn()->nLightProtonVec().size();
-  for ( int f = -nlp; f <= nlp; ++f ) {
-    if ( f == 0 )
-      continue;
-    res += PDFxByz(getParticleData(f))*factor;
+  // // int nlp = NLightProtonVec().size();
+  // int nlp = lastBorn()->nLightProtonVec().size();
+  // for ( int f = -nlp; f <= nlp; ++f ) {
+  //   if ( f == 0 )
+  //     continue;
+  //   res += PDFxByz(getParticleData(f))*factor;
+  // }
+  for ( size_t f=0; f!=lastBorn()->nLightProtonVec().size(); ++f ) {
+    res += PDFxByz(getParticleData(lastBorn()->nLightProtonVec()[f]))*factor;
+    res += PDFxByz(getParticleData(-lastBorn()->nLightProtonVec()[f]))*factor;
   }
   return res;
 }
