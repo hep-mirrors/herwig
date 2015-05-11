@@ -398,7 +398,7 @@ reconstructHardJets(ShowerTreePtr hard,
   // extract the particles from the ShowerTree
   vector<ShowerProgenitorPtr> ShowerHardJets=hard->extractProgenitors();
   for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
-    _boosts[ShowerHardJets[ix]->progenitor()] = LorentzRotation();
+    _boosts[ShowerHardJets[ix]->progenitor()] = vector<LorentzRotation>();
   }
   try {
     // old recon method, using new member functions
@@ -542,9 +542,11 @@ reconstructHardJets(ShowerTreePtr hard,
     _progenitor=tShowerParticlePtr();
     _intrinsic.clear();
     _currentTree = tShowerTreePtr();
-    for(map<tPPtr,LorentzRotation >::const_iterator bit=_boosts.begin();bit!=_boosts.end();++bit) {
-      LorentzRotation rot = bit->second.inverse();
-      bit->first->transform(rot);
+    for(map<tPPtr,vector<LorentzRotation> >::const_iterator bit=_boosts.begin();bit!=_boosts.end();++bit) {
+      for(vector<LorentzRotation>::const_reverse_iterator rit=bit->second.rbegin();rit!=bit->second.rend();++rit) {
+	LorentzRotation rot = rit->inverse();
+	bit->first->transform(rot);
+      }
     }
     _boosts.clear();
     return false;
@@ -577,9 +579,11 @@ reconstructHardJets(ShowerTreePtr hard,
       _progenitor=tShowerParticlePtr();
       _intrinsic.clear();
       _currentTree = tShowerTreePtr();
-      for(map<tPPtr,LorentzRotation >::const_iterator bit=_boosts.begin();bit!=_boosts.end();++bit) {
-	LorentzRotation rot = bit->second.inverse();
-	bit->first->transform(rot);
+      for(map<tPPtr,vector<LorentzRotation> >::const_iterator bit=_boosts.begin();bit!=_boosts.end();++bit) {
+	for(vector<LorentzRotation>::const_reverse_iterator rit=bit->second.rbegin();rit!=bit->second.rend();++rit) {
+	  LorentzRotation rot = rit->inverse();
+	  bit->first->transform(rot);
+	}
       }
       _boosts.clear();
       return false;
@@ -2773,7 +2777,7 @@ void QTildeReconstructor::deepTransform(PPtr particle,
 					bool match,
 					PPtr original) const {
   if(_boosts.find(particle)!=_boosts.end()) {
-    _boosts[particle] *= r;
+    _boosts[particle].push_back(r);
   }
   Lorentz5Momentum porig = particle->momentum();
   if(!original) original = particle;
