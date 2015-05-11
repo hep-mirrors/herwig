@@ -196,8 +196,8 @@ bool MadGraphAmplitude::initializeExternal() {
   Energy MW=getParticleData(ParticleID::Wplus)->mass();
   Energy MZ=getParticleData(ParticleID::Z0)->mass();
   if( MW!= sqrt(MZ*MZ/2.0+sqrt(MZ*MZ*MZ*MZ/4.0-Constants::pi*SM().alphaEMMZ()*MZ*MZ/ sqrt(2.0)/SM().fermiConstant()))){  
-    cerr<<"\n\n-----!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!-----";
-    cerr << "\nYou are using a EW scheme which is inconsistent with the MadGraph parametisation:\n\n"     
+    generator()->log()<<"\n\n-----!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!-----";
+    generator()->log() << "\nYou are using a EW scheme which is inconsistent with the MadGraph parametisation:\n\n"     
                       <<MW/GeV<< " GeV==MW!= sqrt(MZ^2/2+sqrt(MZ^4/4.0-pi*alphaEMMZ*MZ^2/ sqrt(2)/G_f))=="<<
                       sqrt(MZ*MZ/2.0+sqrt(MZ*MZ*MZ*MZ/4.0-Constants::pi*SM().alphaEMMZ()*MZ*MZ/ sqrt(2.0)/SM().fermiConstant()))/GeV
                       <<" GeV\n\n-----!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!-----\n";
@@ -219,21 +219,23 @@ bool MadGraphAmplitude::initializeExternal() {
   params<<"\n$MW$ "    <<std::setiosflags(ios::scientific)   <<getParticleData(ParticleID::Wplus)->mass() /GeV<<flush;
   params<<"\n$sw2$ "    <<std::setiosflags(ios::scientific)   << SM().sin2ThetaW() <<flush;
   if(theMGmodel=="heft"&&!keepinputtopmass){
-      cerr<<"\n---------------------------------------------------------------";
-      cerr<<"\n---------------------------------------------------------------";
-      cerr<<"\nNote:    You are using the Higgs Effective model (heft) in     ";
-      cerr<<"\n         Madgraph. We assume you try to calculate NLO with ";
-      cerr<<"\n         the GoSam virtual amplitudes. To match the models we ";
-      cerr<<"\n         therefore set the topmass to 10000000 GeV.";
-      cerr<<"\n\n         For more information see the \\tau parameter in:";     
-      cerr<<"\n         https://cp3.irmp.ucl.ac.be/projects/madgraph/wiki/Models/HiggsEffective";
-      cerr<<"\n\n         The Effective Higgs model in Gosam is using mT=infinity";
-      cerr<<"\n\n\n         If you want to use the LO matrixelements of MadGraph with finite' topmass you need to add:  ";
-      cerr<<"\n\n             set Madgraph:KeepInputTopMass True";
-      cerr<<"\n\n         to your input file.";
-      cerr<<"\n---------------------------------------------------------------";
-      cerr<<"\n---------------------------------------------------------------\n";
-      params<<"\n$MT$ 10000000." <<flush;
+    if ( factory()->initVerbose() ) {
+      generator()->log()<<"\n---------------------------------------------------------------";
+      generator()->log()<<"\n---------------------------------------------------------------";
+      generator()->log()<<"\nNote:    You are using the Higgs Effective model (heft) in     ";
+      generator()->log()<<"\n         Madgraph. We assume you try to calculate NLO with ";
+      generator()->log()<<"\n         the GoSam virtual amplitudes. To match the models we ";
+      generator()->log()<<"\n         therefore set the topmass to 10000000 GeV.";
+      generator()->log()<<"\n\n         For more information see the \\tau parameter in:";     
+      generator()->log()<<"\n         https://cp3.irmp.ucl.ac.be/projects/madgraph/wiki/Models/HiggsEffective";
+      generator()->log()<<"\n\n         The Effective Higgs model in Gosam is using mT=infinity";
+      generator()->log()<<"\n\n\n         If you want to use the LO matrixelements of MadGraph with finite' topmass you need to add:  ";
+      generator()->log()<<"\n\n             set Madgraph:KeepInputTopMass True";
+      generator()->log()<<"\n\n         to your input file.";
+      generator()->log()<<"\n---------------------------------------------------------------";
+      generator()->log()<<"\n---------------------------------------------------------------\n";
+    }
+    params<<"\n$MT$ 10000000." <<flush;
   }else{
       params<<"\n$MT$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::t)->mass() /GeV <<flush;
   }
@@ -277,8 +279,8 @@ bool MadGraphAmplitude::initializeExternal() {
   cmd +=  mgProcLibPath()+"MG.log 2>&1";
   
   
-  generator()->log() << "\n\nCompiling MadGraph amplitudes. This may take some time -- please be patient.\n"
-                     << "In case of problems see " << mgProcLibPath() << "MG.log for details.\n\n"
+  generator()->log() << "\n>>> Compiling MadGraph amplitudes. This may take some time -- please be patient.\n"
+                     << ">>> In case of problems see " << mgProcLibPath() << "MG.log for details.\n\n"
                      << flush;
   std::system(cmd.c_str());
   

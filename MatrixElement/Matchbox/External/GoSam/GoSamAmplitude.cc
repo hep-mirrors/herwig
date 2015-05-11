@@ -163,39 +163,43 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
   cmd+=" --higgseff="+(theHiggsEff ? string("smehc") : string("smdiag"));   //@MODEL@
   std::system(cmd.c_str());
 
-  generator()->log() << "\n\n>>> NOTE: According to the repository settings for the GoSam interface:\n" << flush;
+  if ( factory()->initVerbose() ) {
 
-  if (theHiggsEff) generator()->log() << "\n    -- GoSam will use a model with an effective ggH coupling (model=smehc).\n" << flush;
-  else if (!theHiggsEff) generator()->log() << "\n    -- GoSam will use its default model (model=smdiag).\n" << flush;
+    generator()->log() << "\n\n>>> NOTE: According to the repository settings for the GoSam interface:\n" << flush;
 
-  if (theNinja) generator()->log() << "    -- GoSam will use Ninja as reduction program (reduction_programs=ninja,golem95).\n" << flush;
-  else if (!theNinja) generator()->log() << "    -- GoSam will use Samurai as reduction program (reduction_programs=samurai,golem95).\n" << flush;
+    if (theHiggsEff) generator()->log() << "\n    -- GoSam will use a model with an effective ggH coupling (model=smehc).\n" << flush;
+    else if (!theHiggsEff) generator()->log() << "\n    -- GoSam will use its default model (model=smdiag).\n" << flush;
 
-  if (theFormOpt) generator()->log() << "    -- Form optimization switched on (extensions=autotools).\n" << flush;
-  else if (!theFormOpt) generator()->log() << "    -- Form optimization switched off  (extensions=autotools, noformopt).\n" << flush;
+    if (theNinja) generator()->log() << "    -- GoSam will use Ninja as reduction program (reduction_programs=ninja,golem95).\n" << flush;
+    else if (!theNinja) generator()->log() << "    -- GoSam will use Samurai as reduction program (reduction_programs=samurai,golem95).\n" << flush;
 
-  if (theNinja && !theFormOpt) throw Exception() << "\n\n>>> NOTE: Ninja reduction needs form optimization!\n" << Exception::abortnow;
+    if (theFormOpt) generator()->log() << "    -- Form optimization switched on (extensions=autotools).\n" << flush;
+    else if (!theFormOpt) generator()->log() << "    -- Form optimization switched off  (extensions=autotools, noformopt).\n" << flush;
 
-  if (gosamSetupInFileNameInterface == "") {
-    generator()->log() << "\n    Please be aware that you are using a copy of the default GoSam input file!\n" 
-                       << "    Please note that if you need special options to be considered for the specific\n"
-                       << "    process you are looking at (diagram filtering, etc.) these are not automatically\n"
-                       << "    set for you. In that case please consider to specify your own GoSam input file\n"
-                       << "    via 'set " << name() << ":SetupInFilename' in the input file.\n\n" << flush; 
+    if (theNinja && !theFormOpt) throw Exception() << "\n\n>>> NOTE: Ninja reduction needs form optimization!\n" << Exception::abortnow;
+
+    if (gosamSetupInFileNameInterface == "") {
+      generator()->log() << "\n    Please be aware that you are using a copy of the default GoSam input file!\n" 
+			 << "    Please note that if you need special options to be considered for the specific\n"
+			 << "    process you are looking at (diagram filtering, etc.) these are not automatically\n"
+			 << "    set for you. In that case please consider to specify your own GoSam input file\n"
+			 << "    via 'set " << name() << ":SetupInFilename' in the input file.\n\n" << flush; 
+    }
+
+    // If one uses a custom GoSam input file at gosamSetupInFileName = gosamSetupInFileNameInterface
+    // then please note that not all options in there might match the corresponding Herwig repository
+    // options
+    if (gosamSetupInFileNameInterface != "") {
+      generator()->log() << "\n    Please be aware that you are using a custom GoSam input file!\n" 
+			 << "    Please note that if you have set the options for model, reduction_programs,\n" 
+			 << "    extensions and/or form.tempdir manually these will of course not be replaced\n" 
+			 << "    by the corresponding repository settings mentioned above.\n\n" << flush;
+    }
+
+    generator()->log() << "\n>>> NOTE: GoSam may return the set of used parameters for this process via the OLP_PrintParameter() function:\n\n"
+		       << "    -- If Debug::level > 1, the OLP parameters are being written to file: at " << factory()->runStorage() + name() + ".OLPParameters.lh.\n\n" << flush;
+
   }
-
-  // If one uses a custom GoSam input file at gosamSetupInFileName = gosamSetupInFileNameInterface
-  // then please note that not all options in there might match the corresponding Herwig repository
-  // options
-  if (gosamSetupInFileNameInterface != "") {
-    generator()->log() << "\n    Please be aware that you are using a custom GoSam input file!\n" 
-                       << "    Please note that if you have set the options for model, reduction_programs,\n" 
-                       << "    extensions and/or form.tempdir manually these will of course not be replaced\n" 
-                       << "    by the corresponding repository settings mentioned above.\n\n" << flush;
-  }
-
-  generator()->log() << "\n>>> NOTE: GoSam may return the set of used parameters for this process via the OLP_PrintParameter() function:\n\n"
-                     << "    -- If Debug::level > 1, the OLP parameters are being written to file: at " << factory()->runStorage() + name() + ".OLPParameters.lh.\n\n" << flush;
 
   double accuracyTarget = 1.0/pow(10.0,accuracyTargetNegExp());
   time_t rawtime;
@@ -210,16 +214,20 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
                        << "with acc > target accuracy = " << accuracyTarget << ". Date/Time: " << ctime(&rawtime) << endl;
   }
 
-  generator()->log() << "\n>>> NOTE: GoSam will return the accuracy of one-loop interference terms or loop induced ME2s\n"
-                     << "    at every PSP via the BLHA2 acc parameter:\n\n"
-                     << "    -- In cases where acc > 10^-AccuracyTarget = " << accuracyTarget << " the corresponding PSPs are being dis-\n"
-                     << "       carded.\n"
-                     << "    -- The default value for AccuracyTarget is 6, but you may consider setting it otherwise\n"
-                     << "       via 'set " << name() << ":AccuracyTarget' in the input file.\n"
-                     << "    -- Currently the value for AccuracyTarget is set to " << accuracyTargetNegExp() << ".\n"
-                     << "    -- If Debug::level > 1, the discarded PSPs are being written to file: at " + accuracyFile << ".\n"
-                     << "    -- If the amount of PSPs with acc > " << accuracyTarget << " is significant, please consider to re-evaluate\n"
-                     << "       your process setup (accuracy target, masses, cuts, etc.)!\n\n\n" << flush;
+  if ( factory()->initVerbose() ) {
+
+    generator()->log() << "\n>>> NOTE: GoSam will return the accuracy of one-loop interference terms or loop induced ME2s\n"
+		       << "    at every PSP via the BLHA2 acc parameter:\n\n"
+		       << "    -- In cases where acc > 10^-AccuracyTarget = " << accuracyTarget << " the corresponding PSPs are being dis-\n"
+		       << "       carded.\n"
+		       << "    -- The default value for AccuracyTarget is 6, but you may consider setting it otherwise\n"
+		       << "       via 'set " << name() << ":AccuracyTarget' in the input file.\n"
+		       << "    -- Currently the value for AccuracyTarget is set to " << accuracyTargetNegExp() << ".\n"
+		       << "    -- If Debug::level > 1, the discarded PSPs are being written to file: at " + accuracyFile << ".\n"
+		       << "    -- If the amount of PSPs with acc > " << accuracyTarget << " is significant, please consider to re-evaluate\n"
+		       << "       your process setup (accuracy target, masses, cuts, etc.)!\n\n\n" << flush;
+
+  }
 
   // check for old order file and create it if it doesn't already exist
   fillOrderFile(procs, orderFileName);
