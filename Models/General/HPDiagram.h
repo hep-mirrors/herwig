@@ -100,8 +100,14 @@ struct HPDiagram {
     if( x.incoming == y.incoming && x.outgoing == y.outgoing &&
 	x.ordered == y.ordered ) {
       if( !y.intermediate && !x.intermediate ) return true;
-      if( abs(y.intermediate->id()) == abs(x.intermediate->id()) )
-	return true;
+      if(x.channelType==HPDiagram::tChannel) {
+	if( abs(y.intermediate->id()) == abs(x.intermediate->id()) )
+	  return true;
+      }
+      else if(x.channelType==HPDiagram::sChannel) {
+	if( y.intermediate->id() == x.intermediate->id() )
+	  return true;
+      }
     }
     //diagram is also the same if the outgoing particles are
     //swapped and the ordering is opposite

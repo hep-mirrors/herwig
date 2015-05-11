@@ -396,7 +396,16 @@ void ModelGenerator::checkDecays(PDPtr parent) {
       newwidth += (**dit).brat()*oldwidth;
     }
   }
-  if( ( rescalebrat || abs(brsum - 1.) > 1e-12 ) && !parent->decayModes().empty()) {
+  // if no modes left set stable
+  if(newwidth==ZERO) {
+    parent->stable(true);
+    parent->width(ZERO);
+    parent->widthCut(ZERO);
+    parent->massGenerator(tGenericMassGeneratorPtr());
+    parent->widthGenerator(tGenericWidthGeneratorPtr());
+  }
+  // otherwise rescale if needed
+  else if( ( rescalebrat || abs(brsum - 1.) > 1e-12 ) && !parent->decayModes().empty()) {
     dit = parent->decayModes().begin();
     dend = parent->decayModes().end();
     double factor = oldwidth/newwidth;
@@ -413,7 +422,6 @@ void ModelGenerator::checkDecays(PDPtr parent) {
     parent->width(newwidth);
     if( newwidth > ZERO ) parent->cTau(hbarc/newwidth);
   }
-  
 }
 
 namespace {
