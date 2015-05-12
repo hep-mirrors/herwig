@@ -1,5 +1,8 @@
 cd /Herwig/MatrixElements/Matchbox/Amplitudes
 
 set GoSam:HiggsEff On
+## accuracy check is buggy in this case, so push to a level
+## where it is not doing any harm to virtual contribbutions
+set GoSam:AccuracyTarget 2
 set MadGraph:Model heft
 
