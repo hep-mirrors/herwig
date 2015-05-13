@@ -452,7 +452,7 @@ void MatchboxAmplitude::doGenerateHelicities(set<vector<int> >& res,
     current[pos] = -1;
     doGenerateHelicities(res,current,pos+1);
   }else if (amplitudePartonData()[pos]->iSpin() == PDT::Spin1 ) {
-    if (amplitudePartonData()[pos]->mass() != ZERO){
+    if (amplitudePartonData()[pos]->hardProcessMass() != ZERO){
     current[pos] = 0;
     doGenerateHelicities(res,current,pos+1);
     }
@@ -788,9 +788,9 @@ void MatchboxAmplitude::checkReshuffling(Ptr<MatchboxPhasespace>::tptr ps) {
 	m != reshuffleMasses().end(); ++m ) {
     tcPDPtr data = getParticleData(m->first);
     assert(data);
-    bool needReshuffle = m->second != data->mass();
+    bool needReshuffle = m->second != data->hardProcessMass();
     needReshuffle |=
-      (data->width() != ZERO || data->massGenerator()) &&
+      (data->hardProcessWidth() != ZERO || data->massGenerator()) &&
       ps->useMassGenerators();
     if ( !needReshuffle )
       noReshuffle.insert(m->first);
@@ -839,7 +839,7 @@ string MatchboxAmplitude::doOnShell(string in) {
   ins >> id;
   tcPDPtr data = getParticleData(id);
   assert(data);
-  theReshuffleMasses[id] = data->mass();
+  theReshuffleMasses[id] = data->hardProcessMass();
   return "";
 }
 

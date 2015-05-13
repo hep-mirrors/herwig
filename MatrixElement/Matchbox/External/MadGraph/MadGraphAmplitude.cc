@@ -22,19 +22,24 @@
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-
 #include "ThePEG/PDT/EnumParticles.h"
 #include <boost/lexical_cast.hpp>
 #include <boost/filesystem.hpp>
-
-
 #include <cstdlib>
 #include <dlfcn.h>
 #include <errno.h>
 #include <sstream>
 
 using namespace Herwig;
-
+#ifndef HERWIG_BINDIR
+#error Makefile.am needs to define HERWIG_BINDIR
+#endif
+#ifndef HERWIG_PKGDATADIR
+#error Makefile.am needs to define HERWIG_PKGDATADIR
+#endif
+#ifndef MADGRAPH_PREFIX
+#error Makefile.am needs to define MADGRAPH_PREFIX
+#endif
 
 extern "C" void mginitproc_(char *i,int);
 extern "C" void MG_Calculate_wavefunctions_virt(int* proc,double*,double*);
@@ -46,13 +51,10 @@ extern "C" void MG_NCol                        (int* proc,int*);
 extern "C" void MG_vxxxxx                      (double* p,double* n,int* inc,double*  );
 extern "C" void MG_Colour                      (int* proc,int* i,int* j ,int* color);
 
-
-
-
 MadGraphAmplitude::MadGraphAmplitude()
   : theMGmodel("loop_sm"),keepinputtopmass(false),
-    prefix_("@prefix@"), madgraphPrefix_("@MADGRAPHPREFIX@")
- {}
+    bindir_(HERWIG_BINDIR), pkgdatadir_(HERWIG_PKGDATADIR), madgraphPrefix_(MADGRAPH_PREFIX)
+{}
 
 MadGraphAmplitude::~MadGraphAmplitude() {
 
@@ -191,11 +193,11 @@ bool MadGraphAmplitude::initializeExternal() {
  
     
   //EW-consistency check:
-  Energy MW=getParticleData(ParticleID::Wplus)->mass();
-  Energy MZ=getParticleData(ParticleID::Z0)->mass();
+  Energy MW=getParticleData(ParticleID::Wplus)->hardProcessMass();
+  Energy MZ=getParticleData(ParticleID::Z0)->hardProcessMass();
   if( MW!= sqrt(MZ*MZ/2.0+sqrt(MZ*MZ*MZ*MZ/4.0-Constants::pi*SM().alphaEMMZ()*MZ*MZ/ sqrt(2.0)/SM().fermiConstant()))){  
-    cerr<<"\n\n-----!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!-----";
-    cerr << "\nYou are using a EW scheme which is inconsistent with the MadGraph parametisation:\n\n"     
+    generator()->log()<<"\n\n-----!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!-----";
+    generator()->log() << "\nYou are using a EW scheme which is inconsistent with the MadGraph parametisation:\n\n"     
                       <<MW/GeV<< " GeV==MW!= sqrt(MZ^2/2+sqrt(MZ^4/4.0-pi*alphaEMMZ*MZ^2/ sqrt(2)/G_f))=="<<
                       sqrt(MZ*MZ/2.0+sqrt(MZ*MZ*MZ*MZ/4.0-Constants::pi*SM().alphaEMMZ()*MZ*MZ/ sqrt(2.0)/SM().fermiConstant()))/GeV
                       <<" GeV\n\n-----!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!-----\n";
@@ -208,44 +210,47 @@ bool MadGraphAmplitude::initializeExternal() {
     
   
   ofstream params(para.c_str());
-  params<<"$WZ$ "    <<std::setiosflags(ios::scientific)  <<getParticleData(ParticleID::Z0)->width()     /GeV;
-  params<<"\n$WW$ "    <<std::setiosflags(ios::scientific)   <<getParticleData(ParticleID::Wplus)->width()/GeV;
+  params<<"$WZ$ "    <<std::setiosflags(ios::scientific)  <<getParticleData(ParticleID::Z0)->hardProcessWidth()     /GeV;
+  params<<"\n$WW$ "    <<std::setiosflags(ios::scientific)   <<getParticleData(ParticleID::Wplus)->hardProcessWidth()/GeV;
   params<<"\n$alphas$ " <<std::setiosflags(ios::scientific)  <<SM().alphaS();
   params<<"\n$GF$ "     <<std::setiosflags(ios::scientific)  <<SM().fermiConstant()*GeV2   ;
   params<<"\n$alphaMZ$ " <<std::setiosflags(ios::scientific) <<1/SM().alphaEMMZ();
-  params<<"\n$MZ$ "     <<std::setiosflags(ios::scientific)  <<getParticleData(ParticleID::Z0)->mass() /GeV<<flush;
-  params<<"\n$MW$ "    <<std::setiosflags(ios::scientific)   <<getParticleData(ParticleID::Wplus)->mass() /GeV<<flush;
+  params<<"\n$MZ$ "     <<std::setiosflags(ios::scientific)  <<getParticleData(ParticleID::Z0)->hardProcessMass() /GeV<<flush;
+  params<<"\n$MW$ "    <<std::setiosflags(ios::scientific)   <<getParticleData(ParticleID::Wplus)->hardProcessMass() /GeV<<flush;
   params<<"\n$sw2$ "    <<std::setiosflags(ios::scientific)   << SM().sin2ThetaW() <<flush;
   if(theMGmodel=="heft"&&!keepinputtopmass){
-      cerr<<"\n---------------------------------------------------------------";
-      cerr<<"\n---------------------------------------------------------------";
-      cerr<<"\nNote:    You are using the Higgs Effective model (heft) in     ";
-      cerr<<"\n         Madgraph. We assume you try to calculate NLO with ";
-      cerr<<"\n         the GoSam virtual amplitudes. To match the models we ";
-      cerr<<"\n         therefore set the topmass to 10000000 GeV.";
-      cerr<<"\n\n         For more information see the \\tau parameter in:";     
-      cerr<<"\n         https://cp3.irmp.ucl.ac.be/projects/madgraph/wiki/Models/HiggsEffective";
-      cerr<<"\n\n         The Effective Higgs model in Gosam is using mT=infinity";
-      cerr<<"\n\n\n         If you want to use the LO matrixelements of MadGraph with finite' topmass you need to add:  ";
-      cerr<<"\n\n             set Madgraph:KeepInputTopMass True";
-      cerr<<"\n\n         to your input file.";
-      cerr<<"\n---------------------------------------------------------------";
-      cerr<<"\n---------------------------------------------------------------\n";
-      params<<"\n$MT$ 10000000." <<flush;
+    if ( factory()->initVerbose() ) {
+      generator()->log()<<"\n---------------------------------------------------------------";
+      generator()->log()<<"\n---------------------------------------------------------------";
+      generator()->log()<<"\nNote:    You are using the Higgs Effective model (heft) in     ";
+      generator()->log()<<"\n         Madgraph. We assume you try to calculate NLO with ";
+      generator()->log()<<"\n         the GoSam virtual amplitudes. To match the models we ";
+      generator()->log()<<"\n         therefore set the topmass to 10000000 GeV.";
+      generator()->log()<<"\n\n         For more information see the \\tau parameter in:";     
+      generator()->log()<<"\n         https://cp3.irmp.ucl.ac.be/projects/madgraph/wiki/Models/HiggsEffective";
+      generator()->log()<<"\n\n         The Effective Higgs model in Gosam is using mT=infinity";
+      generator()->log()<<"\n\n\n         If you want to use the LO matrixelements of MadGraph with finite' topmass you need to add:  ";
+      generator()->log()<<"\n\n             set Madgraph:KeepInputTopMass True";
+      generator()->log()<<"\n\n         to your input file.";
+      generator()->log()<<"\n---------------------------------------------------------------";
+      generator()->log()<<"\n---------------------------------------------------------------\n";
+    }
+    params<<"\n$MT$ 10000000." <<flush;
   }else{
-      params<<"\n$MT$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::t)->mass() /GeV <<flush;
+      params<<"\n$MT$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::t)->hardProcessMass() /GeV <<flush;
   }
-  params<<"\n$WT$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::t)->width() /GeV <<flush;
-  params<<"\n$MB$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::b)->mass() /GeV <<flush;
-  params<<"\n$MH$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::h0)->mass() /GeV <<flush;
-  params<<"\n$WH$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::h0)->width() /GeV <<flush;
-  params<<"\n$MTA$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::tauplus)->mass() /GeV <<flush;
+  params<<"\n$WT$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::t)->hardProcessWidth() /GeV <<flush;
+  params<<"\n$MB$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::b)->hardProcessMass() /GeV <<flush;
+  params<<"\n$MH$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::h0)->hardProcessMass() /GeV <<flush;
+  params<<"\n$WH$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::h0)->hardProcessWidth() /GeV <<flush;
+  params<<"\n$MTA$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::tauplus)->hardProcessMass() /GeV <<flush;
 
   
-  string cmd = "python " + prefix_ + "/bin/mg2Matchbox.py ";
+  string cmd = "python " + bindir_ + "/mg2Matchbox.py ";
   cmd +=" --buildpath "+mgProcLibPath();
   cmd +=" --model "+theMGmodel;
-  cmd +=" --runpath "+factory()->runStorage()+"/MadGraphAmplitudes " ;  
+  cmd +=" --runpath "+factory()->runStorage()+"/MadGraphAmplitudes ";
+  cmd +=" --datadir "+pkgdatadir_;
   std::stringstream as,aem;
   as << factory()->orderInAlphaS();
   cmd +=" --orderas "+as.str() ;
@@ -274,18 +279,19 @@ bool MadGraphAmplitude::initializeExternal() {
   cmd +=  mgProcLibPath()+"MG.log 2>&1";
   
   
-  generator()->log() << "\n\nCompiling MadGraph amplitudes. This may take some time -- please be patient.\n"
-                     << "In case of problems see " << mgProcLibPath() << "MG.log for details.\n\n"
+  generator()->log() << "\n>>> Compiling MadGraph amplitudes. This may take some time -- please be patient.\n"
+                     << ">>> In case of problems see " << mgProcLibPath() << "MG.log for details.\n\n"
                      << flush;
   std::system(cmd.c_str());
   
   
-  cmd = "python " + prefix_ + "/bin/mg2Matchbox.py ";
+  cmd = "python " + bindir_ + "/mg2Matchbox.py ";
   cmd +=" --buildpath "+mgProcLibPath();
   cmd +=" --model "+theMGmodel;
-  cmd +=" --runpath "+factory()->runStorage()+"/MadGraphAmplitudes " ;
-    as.clear();
-    aem.clear();
+  cmd +=" --runpath "+factory()->runStorage()+"/MadGraphAmplitudes ";
+  cmd +=" --datadir "+pkgdatadir_;  
+  as.clear();
+  aem.clear();
   as << factory()->orderInAlphaS();
   cmd +=" --orderas "+as.str() ;
   aem <<factory()->orderInAlphaEW();
@@ -740,12 +746,14 @@ void MadGraphAmplitude::evaloneLoopInterference() const  {
  
 void MadGraphAmplitude::persistentOutput(PersistentOStream & os) const {
   os << theOrderInGs << theOrderInGem << BornAmplitudes << VirtAmplitudes
-     << colourindex<<crossing << theProcessPath << theMGmodel << prefix_ << madgraphPrefix_;
+     << colourindex<<crossing << theProcessPath << theMGmodel << bindir_
+     << pkgdatadir_ << madgraphPrefix_;
 }
  
 void MadGraphAmplitude::persistentInput(PersistentIStream & is, int) {
   is >> theOrderInGs >> theOrderInGem >> BornAmplitudes >> VirtAmplitudes
-     >> colourindex>>crossing >> theProcessPath >> theMGmodel >> prefix_ >> madgraphPrefix_;
+     >> colourindex>>crossing >> theProcessPath >> theMGmodel >> bindir_
+     >> pkgdatadir_ >> madgraphPrefix_;
 }
  
 // *** Attention *** The following static variable is needed for the type
@@ -785,16 +793,22 @@ void MadGraphAmplitude::Init() {
           "Off",
           false);  
     
-  static Parameter<MadGraphAmplitude,string> interfacePrefix
-    ("Prefix",
-     "The prefix for the installed location of the code",
-     &MadGraphAmplitude::prefix_, "@prefix@",
+  static Parameter<MadGraphAmplitude,string> interfaceBinDir
+    ("BinDir",
+     "The location for the installed executable",
+     &MadGraphAmplitude::bindir_, string(HERWIG_BINDIR),
+     false, false);
+
+  static Parameter<MadGraphAmplitude,string> interfacePKGDATADIR
+    ("DataDir",
+     "The location for the installed Herwig++ data files",
+     &MadGraphAmplitude::pkgdatadir_, string(HERWIG_PKGDATADIR),
      false, false);
     
   static Parameter<MadGraphAmplitude,string> interfaceMadgraphPrefix
     ("MadgraphPrefix",
      "The prefix for the location of MadGraph",
-     &MadGraphAmplitude::madgraphPrefix_, "@MADGRAPHPREFIX@",
+     &MadGraphAmplitude::madgraphPrefix_, string(MADGRAPH_PREFIX),
      false, false);
 
 }

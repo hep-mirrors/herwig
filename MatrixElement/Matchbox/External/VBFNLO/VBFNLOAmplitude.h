@@ -200,11 +200,6 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
-
-// If needed, insert declarations of virtual function defined in the
-// InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
-
-
 private:
 
   /**
@@ -232,6 +227,18 @@ private:
    * Switch for anomalous couplings 
    */
   bool theAnomCoupl;
+
+protected:
+
+  /**
+   * Location of the VBFNLO library
+   */
+  string VBFNLOlib_;
+
+  /**
+   *  load the VBFNLO library
+   */
+  void loadVBFNLO();
 
 };
 

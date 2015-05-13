@@ -548,7 +548,7 @@ bool SubtractionDipole::generateTildeKinematics() {
   cPDVector::const_iterator pd = mePartonData().begin();
   vector<Lorentz5Momentum>::iterator p = meMomenta().begin();
   for ( ; pd != mePartonData().end(); ++pd, ++p ) {
-    p->setMass((**pd).mass());
+    p->setMass((**pd).hardProcessMass());
     p->rescaleRho();
   }
 
@@ -624,7 +624,7 @@ bool SubtractionDipole::generateRadiationKinematics(const double * r) {
   cPDVector::const_iterator pd = mePartonData().begin();
   vector<Lorentz5Momentum>::iterator p = meMomenta().begin();
   for ( ; pd != mePartonData().end(); ++pd, ++p ) {
-    p->setMass((**pd).mass());
+    p->setMass((**pd).hardProcessMass());
     p->rescaleRho();
   }
 

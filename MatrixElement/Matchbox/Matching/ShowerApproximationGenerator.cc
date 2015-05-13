@@ -88,24 +88,7 @@ bool ShowerApproximationGenerator::prepare() {
 
   }
 
-  Boost toCMS = 
-    (oldSub->incoming().first->momentum() +
-     oldSub->incoming().second->momentum()).findBoostToCM();
-
-  theLastMomenta[0] = oldSub->incoming().first->momentum();
-  if ( !hasFractions )
-    theLastMomenta[0].boost(toCMS);
-  theLastMomenta[1] = oldSub->incoming().second->momentum();
-  if ( !hasFractions )
-    theLastMomenta[1].boost(toCMS);
-
-  ParticleVector::const_iterator out = oldSub->outgoing().begin();
-  vector<Lorentz5Momentum>::iterator p = theLastMomenta.begin() + 2;
-  for ( ; out != oldSub->outgoing().end(); ++out, ++p ) {
-    *p = (**out).momentum();
-    if ( !hasFractions )
-      p->boost(toCMS);
-  }
+  theLastMomenta = cIncomingXC->meMomenta();
 
   theLastPartons.first = 
     oldSub->incoming().first->data().produceParticle(oldSub->incoming().first->momentum());
@@ -184,16 +167,8 @@ bool ShowerApproximationGenerator::generate(const vector<double>& r) {
 
   theLastPresamplingMomenta.resize(theLastMomenta.size());
 
-  Boost toCMS = 
-    (theLastPartons.first->momentum() +
-     theLastPartons.second->momentum()).findBoostToCM();
-
-  theLastPresamplingMomenta[0] = theLastPartons.first->momentum();
-  if ( !hasFractions )
-    theLastPresamplingMomenta[0].boost(toCMS);
-  theLastPresamplingMomenta[1] = theLastPartons.second->momentum();
-  if ( !hasFractions )
-    theLastPresamplingMomenta[1].boost(toCMS);
+  theLastPresamplingMomenta[0] = theLastBornME->lastMEMomenta()[0];
+  theLastPresamplingMomenta[1] = theLastBornME->lastMEMomenta()[1];
 
   if ( hasFractions ) {
     for ( size_t k = 2; k < theLastBornME->lastMEMomenta().size(); ++k )

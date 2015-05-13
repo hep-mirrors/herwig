@@ -46,8 +46,8 @@ bool FFMqgxDipole::canHandle(const cPDVector& partons,
     partons[emission]->id() == ParticleID::g &&
 //     abs(partons[emitter]->id()) < 7 &&
     ( abs(partons[emitter]->id()) < 7 || abs(partons[emitter]->id()) == 1000021 ) &&
-    !(partons[emitter]->mass() == ZERO &&
-      partons[spectator]->mass() == ZERO);
+    !(partons[emitter]->hardProcessMass() == ZERO &&
+      partons[spectator]->hardProcessMass() == ZERO);
 }
 
 double FFMqgxDipole::me2Avg(double ccme2) const {
@@ -59,8 +59,8 @@ double FFMqgxDipole::me2Avg(double ccme2) const {
   double z = subtractionParameters()[1];
 
   // masses
-  double muQ2 = sqr( realEmissionME()->lastXComb().mePartonData()[realEmitter()]->mass() / lastDipoleScale() );
-  double muj2 = sqr( realEmissionME()->lastXComb().mePartonData()[realSpectator()]->mass() / lastDipoleScale() );
+  double muQ2 = sqr( realEmissionME()->lastXComb().mePartonData()[realEmitter()]->hardProcessMass() / lastDipoleScale() );
+  double muj2 = sqr( realEmissionME()->lastXComb().mePartonData()[realSpectator()]->hardProcessMass() / lastDipoleScale() );
   // massive extra terms
   double vijk = sqrt( sqr(2.*muj2+(1.-muQ2-muj2)*(1.-y))-4.*muj2 ) / ((1.-muQ2-muj2)*(1.-y));
   double vbar = sqrt( 1.+sqr(muQ2)+sqr(muj2)-2.*(muQ2+muj2+muQ2*muj2) ) / (1.-muQ2-muj2);
@@ -99,8 +99,8 @@ double FFMqgxDipole::me2() const {
   double z = subtractionParameters()[1];
   
   // masses
-  double muQ2 = sqr( realEmissionME()->lastXComb().mePartonData()[realEmitter()]->mass() / lastDipoleScale() );
-  double muj2 = sqr( realEmissionME()->lastXComb().mePartonData()[realSpectator()]->mass() / lastDipoleScale() );
+  double muQ2 = sqr( realEmissionME()->lastXComb().mePartonData()[realEmitter()]->hardProcessMass() / lastDipoleScale() );
+  double muj2 = sqr( realEmissionME()->lastXComb().mePartonData()[realSpectator()]->hardProcessMass() / lastDipoleScale() );
   // massive extra terms
   double vijk = sqrt( sqr(2.*muj2+(1.-muQ2-muj2)*(1.-y))-4.*muj2 ) / ((1.-muQ2-muj2)*(1.-y));
   double vbar = sqrt( 1.+sqr(muQ2)+sqr(muj2)-2.*(muQ2+muj2+muQ2*muj2) ) / (1.-muQ2-muj2);

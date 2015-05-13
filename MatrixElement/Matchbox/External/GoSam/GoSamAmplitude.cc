@@ -43,21 +43,26 @@ using namespace Herwig;
 
 namespace bfs = boost::filesystem;
 
+#ifndef HERWIG_BINDIR
+#error Makefile.am needs to define HERWIG_BINDIR
+#endif
+#ifndef HERWIG_PKGDATADIR
+#error Makefile.am needs to define HERWIG_PKGDATADIR
+#endif
+#ifndef GOSAM_PREFIX
+#error Makefile.am needs to define GOSAM_PREFIX
+#endif
+
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
 
-GoSamAmplitude::GoSamAmplitude(){
-  theCodeExists=false;
-  isitDR=false;
-  theFormOpt=true;
-  theNinja=true;
-  theHiggsEff=false;
-  theAccuracyTarget=6;
-  theMassiveLeptons=false;
-  theLoopInducedOption=0;
-  doneGoSamInit=false;
-  doneGoSamInitRun=false;}
+GoSamAmplitude::GoSamAmplitude() : 
+  theAccuracyTarget(6),theCodeExists(false),theFormOpt(true),theNinja(true),
+  theHiggsEff(false),theMassiveLeptons(false),theLoopInducedOption(0),
+  isitDR(false),doneGoSamInit(false),doneGoSamInitRun(false),
+  bindir_(HERWIG_BINDIR), pkgdatadir_(HERWIG_PKGDATADIR), GoSamPrefix_(GOSAM_PREFIX)
+{}
 
 GoSamAmplitude::~GoSamAmplitude() {}
 
@@ -148,49 +153,53 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
   // specific input file at gosamSetupInFileName. If the GoSam input file
   // does not exist yet at gosamSetupInFileName the python script will get 
   // it from src/defaults/ before making the replacements.
-  string cmd = "python @prefix@/bin/GoSamHelper.py ";
+  string cmd = "python "+bindir_+"/GoSamHelper.py ";
   cmd+=" --usrinfile="+gosamSetupInFileNameInterface;
   cmd+=" --infile="+gosamSetupInFileName+".tbu";
-  cmd+=" --definfile=@prefix@/share/Herwig++/defaults/setup.gosam.in";
+  cmd+=" --definfile="+pkgdatadir_+"/defaults/setup.gosam.in";
   cmd+=" --formtempdir="+StringUtils::replace(gosamSourcePath, string("/"), string("\\/"));    //@FORMTEMPDIR@
   cmd+=" --reduction="+(theNinja ? string("ninja,golem95") : string("samurai,golem95"));       //@REDUCTIONPROGRAMS@
   cmd+=" --formopt="+(theFormOpt ? string("") : string(", noformopt"));   //@FORMOPT@
   cmd+=" --higgseff="+(theHiggsEff ? string("smehc") : string("smdiag"));   //@MODEL@
   std::system(cmd.c_str());
 
-  generator()->log() << "\n\n>>> NOTE: According to the repository settings for the GoSam interface:\n" << flush;
+  if ( factory()->initVerbose() ) {
 
-  if (theHiggsEff) generator()->log() << "\n    -- GoSam will use a model with an effective ggH coupling (model=smehc).\n" << flush;
-  else if (!theHiggsEff) generator()->log() << "\n    -- GoSam will use its default model (model=smdiag).\n" << flush;
+    generator()->log() << "\n\n>>> NOTE: According to the repository settings for the GoSam interface:\n" << flush;
 
-  if (theNinja) generator()->log() << "    -- GoSam will use Ninja as reduction program (reduction_programs=ninja,golem95).\n" << flush;
-  else if (!theNinja) generator()->log() << "    -- GoSam will use Samurai as reduction program (reduction_programs=samurai,golem95).\n" << flush;
+    if (theHiggsEff) generator()->log() << "\n    -- GoSam will use a model with an effective ggH coupling (model=smehc).\n" << flush;
+    else if (!theHiggsEff) generator()->log() << "\n    -- GoSam will use its default model (model=smdiag).\n" << flush;
 
-  if (theFormOpt) generator()->log() << "    -- Form optimization switched on (extensions=autotools).\n" << flush;
-  else if (!theFormOpt) generator()->log() << "    -- Form optimization switched off  (extensions=autotools, noformopt).\n" << flush;
+    if (theNinja) generator()->log() << "    -- GoSam will use Ninja as reduction program (reduction_programs=ninja,golem95).\n" << flush;
+    else if (!theNinja) generator()->log() << "    -- GoSam will use Samurai as reduction program (reduction_programs=samurai,golem95).\n" << flush;
 
-  if (theNinja && !theFormOpt) throw Exception() << "\n\n>>> NOTE: Ninja reduction needs form optimization!\n" << Exception::abortnow;
+    if (theFormOpt) generator()->log() << "    -- Form optimization switched on (extensions=autotools).\n" << flush;
+    else if (!theFormOpt) generator()->log() << "    -- Form optimization switched off  (extensions=autotools, noformopt).\n" << flush;
 
-  if (gosamSetupInFileNameInterface == "") {
-    generator()->log() << "\n    Please be aware that you are using a copy of the default GoSam input file!\n" 
-                       << "    Please note that if you need special options to be considered for the specific\n"
-                       << "    process you are looking at (diagram filtering, etc.) these are not automatically\n"
-                       << "    set for you. In that case please consider to specify your own GoSam input file\n"
-                       << "    via 'set " << name() << ":SetupInFilename' in the input file.\n\n" << flush; 
+    if (theNinja && !theFormOpt) throw Exception() << "\n\n>>> NOTE: Ninja reduction needs form optimization!\n" << Exception::abortnow;
+
+    if (gosamSetupInFileNameInterface == "") {
+      generator()->log() << "\n    Please be aware that you are using a copy of the default GoSam input file!\n" 
+			 << "    Please note that if you need special options to be considered for the specific\n"
+			 << "    process you are looking at (diagram filtering, etc.) these are not automatically\n"
+			 << "    set for you. In that case please consider to specify your own GoSam input file\n"
+			 << "    via 'set " << name() << ":SetupInFilename' in the input file.\n\n" << flush; 
+    }
+
+    // If one uses a custom GoSam input file at gosamSetupInFileName = gosamSetupInFileNameInterface
+    // then please note that not all options in there might match the corresponding Herwig repository
+    // options
+    if (gosamSetupInFileNameInterface != "") {
+      generator()->log() << "\n    Please be aware that you are using a custom GoSam input file!\n" 
+			 << "    Please note that if you have set the options for model, reduction_programs,\n" 
+			 << "    extensions and/or form.tempdir manually these will of course not be replaced\n" 
+			 << "    by the corresponding repository settings mentioned above.\n\n" << flush;
+    }
+
+    generator()->log() << "\n>>> NOTE: GoSam may return the set of used parameters for this process via the OLP_PrintParameter() function:\n\n"
+		       << "    -- If Debug::level > 1, the OLP parameters are being written to file: at " << factory()->runStorage() + name() + ".OLPParameters.lh.\n\n" << flush;
+
   }
-
-  // If one uses a custom GoSam input file at gosamSetupInFileName = gosamSetupInFileNameInterface
-  // then please note that not all options in there might match the corresponding Herwig repository
-  // options
-  if (gosamSetupInFileNameInterface != "") {
-    generator()->log() << "\n    Please be aware that you are using a custom GoSam input file!\n" 
-                       << "    Please note that if you have set the options for model, reduction_programs,\n" 
-                       << "    extensions and/or form.tempdir manually these will of course not be replaced\n" 
-                       << "    by the corresponding repository settings mentioned above.\n\n" << flush;
-  }
-
-  generator()->log() << "\n>>> NOTE: GoSam may return the set of used parameters for this process via the OLP_PrintParameter() function:\n\n"
-                     << "    -- If Debug::level > 1, the OLP parameters are being written to file: at " << factory()->runStorage() + name() + ".OLPParameters.lh.\n\n" << flush;
 
   double accuracyTarget = 1.0/pow(10.0,accuracyTargetNegExp());
   time_t rawtime;
@@ -205,16 +214,20 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
                        << "with acc > target accuracy = " << accuracyTarget << ". Date/Time: " << ctime(&rawtime) << endl;
   }
 
-  generator()->log() << "\n>>> NOTE: GoSam will return the accuracy of one-loop interference terms or loop induced ME2s\n"
-                     << "    at every PSP via the BLHA2 acc parameter:\n\n"
-                     << "    -- In cases where acc > 10^-AccuracyTarget = " << accuracyTarget << " the corresponding PSPs are being dis-\n"
-                     << "       carded.\n"
-                     << "    -- The default value for AccuracyTarget is 6, but you may consider setting it otherwise\n"
-                     << "       via 'set " << name() << ":AccuracyTarget' in the input file.\n"
-                     << "    -- Currently the value for AccuracyTarget is set to " << accuracyTargetNegExp() << ".\n"
-                     << "    -- If Debug::level > 1, the discarded PSPs are being written to file: at " + accuracyFile << ".\n"
-                     << "    -- If the amount of PSPs with acc > " << accuracyTarget << " is significant, please consider to re-evaluate\n"
-                     << "       your process setup (accuracy target, masses, cuts, etc.)!\n\n\n" << flush;
+  if ( factory()->initVerbose() ) {
+
+    generator()->log() << "\n>>> NOTE: GoSam will return the accuracy of one-loop interference terms or loop induced ME2s\n"
+		       << "    at every PSP via the BLHA2 acc parameter:\n\n"
+		       << "    -- In cases where acc > 10^-AccuracyTarget = " << accuracyTarget << " the corresponding PSPs are being dis-\n"
+		       << "       carded.\n"
+		       << "    -- The default value for AccuracyTarget is 6, but you may consider setting it otherwise\n"
+		       << "       via 'set " << name() << ":AccuracyTarget' in the input file.\n"
+		       << "    -- Currently the value for AccuracyTarget is set to " << accuracyTargetNegExp() << ".\n"
+		       << "    -- If Debug::level > 1, the discarded PSPs are being written to file: at " + accuracyFile << ".\n"
+		       << "    -- If the amount of PSPs with acc > " << accuracyTarget << " is significant, please consider to re-evaluate\n"
+		       << "       your process setup (accuracy target, masses, cuts, etc.)!\n\n\n" << flush;
+
+  }
 
   // check for old order file and create it if it doesn't already exist
   fillOrderFile(procs, orderFileName);
@@ -277,15 +290,15 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
     throw Exception() << "`mW' scheme is not supported by GoSam"
                       << Exception::abortnow;
   } else if ( SM().ewScheme() == 1 ) { // EW/Scheme GMuScheme (uses mW,mZ,GF)
-    double in1=getParticleData(ParticleID::Z0)->mass()/GeV;
-    double in2=getParticleData(ParticleID::Wplus)->mass()/GeV;
+    double in1=getParticleData(ParticleID::Z0)->hardProcessMass()/GeV;
+    double in2=getParticleData(ParticleID::Wplus)->hardProcessMass()/GeV;
     double in3=SM().fermiConstant()*GeV2;
     OLP_SetParameter((char *)"mass(23)",&in1,&zero,&pStatus);
     OLP_SetParameter((char *)"mass(24)",&in2,&zero,&pStatus);
     OLP_SetParameter((char *)"Gf",&in3,&zero,&pStatus);
   } else if ( SM().ewScheme() == 2 ) { // EW/Scheme alphaMZScheme (uses mW,mZ,alpha(mZ))
-    double in1=getParticleData(ParticleID::Z0)->mass()/GeV;
-    double in2=getParticleData(ParticleID::Wplus)->mass()/GeV;
+    double in1=getParticleData(ParticleID::Z0)->hardProcessMass()/GeV;
+    double in2=getParticleData(ParticleID::Wplus)->hardProcessMass()/GeV;
     double in3=SM().alphaEMMZ();
     OLP_SetParameter((char *)"mass(23)",&in1,&zero,&pStatus);
     OLP_SetParameter((char *)"mass(24)",&in2,&zero,&pStatus);
@@ -298,7 +311,7 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
     OLP_SetParameter((char *)"alpha",&in2,&zero,&pStatus);
     OLP_SetParameter((char *)"sw2",&in3,&zero,&pStatus);
   } else if ( SM().ewScheme() == 5 ) { // EW/Scheme mZ (uses mZ,alphaEM,sin2thetaW)
-    double in1=getParticleData(ParticleID::Z0)->mass()/GeV;
+    double in1=getParticleData(ParticleID::Z0)->hardProcessMass()/GeV;
     double in2=SM().alphaEMMZ();
     double in3=SM().sin2ThetaW();
     OLP_SetParameter((char *)"mass(23)",&in1,&zero,&pStatus);
@@ -307,8 +320,8 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
   }
 	
   // hand over mass and width of the Higgs
-  double wH = getParticleData(25)->width()/GeV;
-  double mH = getParticleData(25)->mass()/GeV;
+  double wH = getParticleData(25)->hardProcessWidth()/GeV;
+  double mH = getParticleData(25)->hardProcessMass()/GeV;
   OLP_SetParameter((char*)"width(25)",&wH,&zero,&pStatus);
   OLP_SetParameter((char*)"mass(25)",&mH,&zero,&pStatus);
 
@@ -320,11 +333,11 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
   if (massiveParticles.empty()) {
     // with quark masses
     for (int i=1; i<=6; ++i) 
-      if (getParticleData(i)->mass()/GeV > 0.0) massiveParticles.push_back(i);
+      if (getParticleData(i)->hardProcessMass()/GeV > 0.0) massiveParticles.push_back(i);
     // with lepton masses
-      if (theMassiveLeptons && getParticleData(11)->mass()/GeV > 0.0) massiveParticles.push_back(11);
-      if (theMassiveLeptons && getParticleData(13)->mass()/GeV > 0.0) massiveParticles.push_back(13);
-      if (theMassiveLeptons && getParticleData(15)->mass()/GeV > 0.0) massiveParticles.push_back(15);
+      if (theMassiveLeptons && getParticleData(11)->hardProcessMass()/GeV > 0.0) massiveParticles.push_back(11);
+      if (theMassiveLeptons && getParticleData(13)->hardProcessMass()/GeV > 0.0) massiveParticles.push_back(13);
+      if (theMassiveLeptons && getParticleData(15)->hardProcessMass()/GeV > 0.0) massiveParticles.push_back(15);
   }
 
   // hand over quark (and possibly lepton) masses and widths (iff massive)
@@ -333,8 +346,8 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
         string mstr;
         string wstr;
         int mInt = *mID;
-        double mass=getParticleData(mInt)->mass()/GeV;
-        double width=getParticleData(mInt)->width()/GeV;
+        double mass=getParticleData(mInt)->hardProcessMass()/GeV;
+        double width=getParticleData(mInt)->hardProcessWidth()/GeV;
         std::stringstream ss;
         ss << mInt;
         string str = ss.str();
@@ -353,8 +366,8 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
         
 //      Nicer but not working properly:
         
-//      double mass=getParticleData(*mID)->mass()/GeV;
-//      double width=getParticleData(*mID)->width()/GeV;
+//      double mass=getParticleData(*mID)->hardProcessMass()/GeV;
+//      double width=getParticleData(*mID)->hardProcessWidth()/GeV;
 //      string mstr="mass("+static_cast<ostringstream*>(&(ostringstream()<<(*mID)))->str()+")";
 //      string wstr="width("+static_cast<ostringstream*>(&(ostringstream()<<(*mID)))->str()+")";
 //        cout<<"\n massiv "<<mstr;
@@ -441,12 +454,12 @@ void GoSamAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs, st
   orderFile << "IRregularisation         " << (isDR() ? "DRED" : "CDR") << "\n";
 
   // loop over quarks to check if they have non-zero masses
-  for (int i=1; i<=6; ++i) if (getParticleData(i)->mass()/GeV > 0.0) massiveParticles.push_back(i);
+  for (int i=1; i<=6; ++i) if (getParticleData(i)->hardProcessMass()/GeV > 0.0) massiveParticles.push_back(i);
 
   // check if leptons have non-zero masses (iff theMassiveLeptons==true)
-  if (theMassiveLeptons && getParticleData(11)->mass()/GeV > 0.0) massiveParticles.push_back(11);
-  if (theMassiveLeptons && getParticleData(13)->mass()/GeV > 0.0) massiveParticles.push_back(13);
-  if (theMassiveLeptons && getParticleData(15)->mass()/GeV > 0.0) massiveParticles.push_back(15);
+  if (theMassiveLeptons && getParticleData(11)->hardProcessMass()/GeV > 0.0) massiveParticles.push_back(11);
+  if (theMassiveLeptons && getParticleData(13)->hardProcessMass()/GeV > 0.0) massiveParticles.push_back(13);
+  if (theMassiveLeptons && getParticleData(15)->hardProcessMass()/GeV > 0.0) massiveParticles.push_back(15);
 
   if ( massiveParticles.size() != 0 ) {
     orderFile << "MassiveParticles         ";
@@ -515,10 +528,10 @@ void GoSamAmplitude::signOLP(const string& order, const string& contract) {
 
     generator()->log() << "\n>>> generating GoSam amplitudes. This may take some time, please be patient.\n"
                        << ">>> see " + cwd + folderMatchboxBuild + "gosam-amplitudes.log for details.\n" << flush;
-    string cmd = "@GOSAMPREFIX@/bin/gosam.py --olp --output-file=" + contract + " --config=" + 
+    string cmd = GoSamPrefix_+"/bin/gosam.py --olp --output-file=" + contract + " --config=" + 
       gosamSetupInFileName+".tbu" + " --destination=" + gosamSourcePath + " " + order + " > " + cwd + folderMatchboxBuild + "gosam-amplitudes.log 2>&1";
     std::system(cmd.c_str());
-    cmd = "python @prefix@/bin/GoSamHelper.py ";
+    cmd = "python "+bindir_+"/GoSamHelper.py ";
     cmd += " --makelink ";
     cmd += " --makelinkfrom=contract ";
     cmd += " --makelinkto="+factory()->buildStorage() + name() + ".OLPContract.lh";
@@ -811,7 +824,8 @@ void GoSamAmplitude::persistentOutput(PersistentOStream & os) const {
      << contractFileName << orderFileName
      << theCodeExists << theFormOpt << theNinja << isitDR << massiveParticles << theHiggsEff
      << theAccuracyTarget << theMassiveLeptons << theLoopInducedOption
-     << doneGoSamInit << doneGoSamInitRun;
+     << doneGoSamInit << doneGoSamInitRun
+     << bindir_ << pkgdatadir_ << GoSamPrefix_;
 }
 
 void GoSamAmplitude::persistentInput(PersistentIStream & is, int) {
@@ -822,7 +836,8 @@ void GoSamAmplitude::persistentInput(PersistentIStream & is, int) {
      >> contractFileName >> orderFileName
      >> theCodeExists >> theFormOpt >> theNinja >> isitDR >> massiveParticles >> theHiggsEff
      >> theAccuracyTarget >> theMassiveLeptons >> theLoopInducedOption
-     >> doneGoSamInit >> doneGoSamInitRun;
+     >> doneGoSamInit >> doneGoSamInitRun
+     >> bindir_ >> pkgdatadir_ >> GoSamPrefix_;
 }
 
 
@@ -1008,6 +1023,23 @@ void GoSamAmplitude::Init() {
           "Model plus all other contributions,  which come with the effective "
           "Model.",
           6);
+    
+  static Parameter<GoSamAmplitude,string> interfaceBinDir
+    ("BinDir",
+     "The location for the installed executable",
+     &GoSamAmplitude::bindir_, string(HERWIG_BINDIR),
+     false, false);
 
+  static Parameter<GoSamAmplitude,string> interfacePKGDATADIR
+    ("DataDir",
+     "The location for the installed Herwig++ data files",
+     &GoSamAmplitude::pkgdatadir_, string(HERWIG_PKGDATADIR),
+     false, false);
+    
+  static Parameter<GoSamAmplitude,string> interfaceGoSamPrefix
+    ("GoSamPrefix",
+     "The prefix for the location of GoSam",
+     &GoSamAmplitude::GoSamPrefix_, string(GOSAM_PREFIX),
+     false, false);
 }
 

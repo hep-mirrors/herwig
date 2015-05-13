@@ -36,7 +36,17 @@
 
 using namespace Herwig;
 
-OpenLoopsAmplitude::OpenLoopsAmplitude():use_cms(true),psp_tolerance(12) {
+#ifndef OPENLOOPSLIBS
+#error Makefile.am needs to define OPENLOOPSLIBS
+#endif
+
+#ifndef OPENLOOPSPREFIX
+#error Makefile.am needs to define OPENLOOPSPREFIX
+#endif
+
+OpenLoopsAmplitude::OpenLoopsAmplitude() :
+  use_cms(true),psp_tolerance(12),
+  OpenLoopsLibs_(OPENLOOPSLIBS), OpenLoopsPrefix_(OPENLOOPSPREFIX) {
 }
 
 OpenLoopsAmplitude::~OpenLoopsAmplitude() {
@@ -67,10 +77,9 @@ void OpenLoopsAmplitude::doinitrun() {
 void OpenLoopsAmplitude::startOLP(const string& contract, int& status) {
 	string tempcontract=contract;
 
-	bool success = DynamicLoader::load("@OPENLOOPSLIBS@/libopenloops.so")
-                   ||DynamicLoader::load("@OPENLOOPSLIBS@/libopenloops.dylib") ;
-
-	if ( !success ) {
+	if ( ! (DynamicLoader::load(OpenLoopsLibs_+"/libopenloops.so") ||
+		DynamicLoader::load(OpenLoopsPrefix_+"/lib/libopenloops.so") ||
+		DynamicLoader::load("libopenloops.so") ) ) {
 	  throw Exception() << "Failed to load libopenloops.so/dylib\n"
 			    << DynamicLoader::lastErrorMessage
 			    << Exception::abortnow;
@@ -81,16 +90,18 @@ void OpenLoopsAmplitude::startOLP(const string& contract, int& status) {
 
 	ol_setparameter_string("stability_logdir",stabilityPrefix.c_str());
 
+	ol_setparameter_string("install_path",OpenLoopsPrefix_.c_str());
+
 	int a=0;double null=0.0;double one=1.0;
 	int part[10]={1,2,3,4,5,6,15,23,24,25};string stri;
 	for (int i=0;i<10;i++){
 	 map<long,Energy>::const_iterator it=reshuffleMasses().find(part[i]);
 	 double mass;
 	 if(it==reshuffleMasses().end())
-	   mass = getParticleData(part[i])->mass()/GeV;
+	   mass = getParticleData(part[i])->hardProcessMass()/GeV;
 	 else
 	   mass = it->second/GeV;
-	 double width=getParticleData(part[i])->width()/GeV;
+	 double width=getParticleData(part[i])->hardProcessWidth()/GeV;
 	 std::stringstream ss;
 	 ss << part[i];
 	 string str = ss.str();
@@ -387,11 +398,11 @@ double OpenLoopsAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 void OpenLoopsAmplitude::persistentOutput(PersistentOStream & os) const {
-	os << idpair ;
+  os << idpair << OpenLoopsLibs_ << OpenLoopsPrefix_;
 }
 
 void OpenLoopsAmplitude::persistentInput(PersistentIStream & is, int) {
-	is >> idpair ;
+  is >> idpair >> OpenLoopsLibs_ >> OpenLoopsPrefix_;
 }
 
 // *** Attention *** The following static variable is needed for the type
@@ -412,12 +423,12 @@ void OpenLoopsAmplitude::Init() {
   static SwitchOption interfaceUseComplMassOn
   (interfaceUseComplMass,
    "True",
-   "True for Compex Masses.",
+   "True for Complex Masses.",
    true);
   static SwitchOption interfaceUseComplMassOff
   (interfaceUseComplMass,
    "False",
-   "False for no Compex Masses.",
+   "False for no Complex Masses.",
    false);
   
   static Parameter<OpenLoopsAmplitude,int> interfacepsp_tolerance
@@ -425,6 +436,18 @@ void OpenLoopsAmplitude::Init() {
    "(Debug)Phase Space Tolerance. Better use e.g.: set OpenLoops:Massless 13",
    &OpenLoopsAmplitude::psp_tolerance, 12, 0, 0,
    false, false, Interface::lowerlim);
+    
+  static Parameter<OpenLoopsAmplitude,string> interfaceOpenLoopsLibs
+    ("OpenLoopsLibs",
+     "The location of OpenLoops libraries",
+     &OpenLoopsAmplitude::OpenLoopsLibs_, string(OPENLOOPSLIBS),
+     false, false);
+    
+  static Parameter<OpenLoopsAmplitude,string> interfaceOpenLoopsPrefix
+    ("OpenLoopsPrefix",
+     "The location of OpenLoops libraries",
+     &OpenLoopsAmplitude::OpenLoopsPrefix_, string(OPENLOOPSPREFIX),
+     false, false);
   
 }
 

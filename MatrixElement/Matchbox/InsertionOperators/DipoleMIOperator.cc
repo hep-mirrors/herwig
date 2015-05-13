@@ -80,10 +80,10 @@ bool DipoleMIOperator::apply(const cPDVector& pd) const {
   int idp = 0;
   for ( cPDVector::const_iterator p = pd.begin();
 	p != pd.end(); ++p, ++idp ) {
-    if ( (*p)->coloured() && (*p)->mass()!=ZERO && idp > 1 ) {
+    if ( (*p)->coloured() && (*p)->hardProcessMass()!=ZERO && idp > 1 ) {
       finalmass = true;
     }
-    if ( (*p)->coloured() && (*p)->mass()!=ZERO && idp < 2 ) {
+    if ( (*p)->coloured() && (*p)->hardProcessMass()!=ZERO && idp < 2 ) {
       initialmass = true;
     }
     if ( !first ) {
@@ -144,7 +144,7 @@ vector<int> DipoleMIOperator::NLightJetVec() const {
 
   for ( PDVector::const_iterator theP = theJetConstitutents.begin();
         theP != theJetConstitutents.end(); ++theP ) {
-    if ( (**theP).id() > 0 && (**theP).id() < 7 && (**theP).mass() == ZERO )
+    if ( (**theP).id() > 0 && (**theP).id() < 7 && (**theP).hardProcessMass() == ZERO )
       theNLightJetVec.push_back( (**theP).id() );
   }
 
@@ -165,7 +165,7 @@ vector<int> DipoleMIOperator::NHeavyJetVec() const {
 
   for ( PDVector::const_iterator theP = theJetConstitutents.begin();
         theP != theJetConstitutents.end(); ++theP ) {
-    if ( (**theP).id() > 0 && (**theP).id() < 7 && (**theP).mass() != ZERO )
+    if ( (**theP).id() > 0 && (**theP).id() < 7 && (**theP).hardProcessMass() != ZERO )
       theNHeavyJetVec.push_back( (**theP).id() );
   }
 
@@ -182,7 +182,7 @@ vector<int> DipoleMIOperator::NLightBornVec() const {
 
   for ( cPDVector::const_iterator j = mePartonData().begin();
 	j != mePartonData().end(); ++j ) {
-    if ( abs((**j).id()) < 7 && (**j).mass() == ZERO )
+    if ( abs((**j).id()) < 7 && (**j).hardProcessMass() == ZERO )
       theNLightBornVec.push_back( (**j).id() );
   }
 
@@ -199,7 +199,7 @@ vector<int> DipoleMIOperator::NHeavyBornVec() const {
 
   for ( cPDVector::const_iterator j = mePartonData().begin();
 	j != mePartonData().end(); ++j ) {
-    if ( abs((**j).id()) < 7 && (**j).mass() != ZERO )
+    if ( abs((**j).id()) < 7 && (**j).hardProcessMass() != ZERO )
       theNHeavyBornVec.push_back( (**j).id() );
   }
 
@@ -220,7 +220,7 @@ vector<int> DipoleMIOperator::NLightProtonVec() const {
 
   for ( PDVector::const_iterator theP = theProtonConstitutents.begin();
         theP != theProtonConstitutents.end(); ++theP ) {
-    if ( (**theP).id() > 0 && (**theP).id() < 7 && (**theP).mass() == ZERO )
+    if ( (**theP).id() > 0 && (**theP).id() < 7 && (**theP).hardProcessMass() == ZERO )
       theNLightProtonVec.push_back( (**theP).id() );
   }
 
@@ -269,7 +269,7 @@ double DipoleMIOperator::me2() const {
       continue;
     }
 
-    if ( apply(*j) && idj < 2 && (**j).mass() != ZERO )
+    if ( apply(*j) && idj < 2 && (**j).hardProcessMass() != ZERO )
       throw InitException() << "DipoleMIOperator: Initial state partons must not be massive!";
 
     idk = 0;
@@ -285,7 +285,7 @@ double DipoleMIOperator::me2() const {
         continue;
       }
 
-      if ( apply(*k) && idk < 2 && (**k).mass() != ZERO )
+      if ( apply(*k) && idk < 2 && (**k).hardProcessMass() != ZERO )
         throw InitException() << "DipoleMIOperator: Initial state partons must not be massive!";
 
       double delta = 0.0;
@@ -376,7 +376,7 @@ double DipoleMIOperator::oneLoopDoublePole() const {
       continue;
     }
 
-    if ( apply(*j) && idj < 2 && (**j).mass() != ZERO )
+    if ( apply(*j) && idj < 2 && (**j).hardProcessMass() != ZERO )
       throw InitException() << "DipoleMIOperator: Initial state partons must not be massive!";
 
     idk = 0;
@@ -392,7 +392,7 @@ double DipoleMIOperator::oneLoopDoublePole() const {
         continue;
       }
 
-      if ( apply(*k) && idk < 2 && (**k).mass() != ZERO )
+      if ( apply(*k) && idk < 2 && (**k).hardProcessMass() != ZERO )
         throw InitException() << "DipoleMIOperator: Initial state partons must not be massive!";
 
       double delta = 0.0;
@@ -442,7 +442,7 @@ double DipoleMIOperator::oneLoopSinglePole() const {
       continue;
     }
 
-    if ( apply(*j) && idj < 2 && (**j).mass() != ZERO )
+    if ( apply(*j) && idj < 2 && (**j).hardProcessMass() != ZERO )
       throw InitException() << "DipoleMIOperator: Initial state partons must not be massive!";
 
     idk = 0;
@@ -458,7 +458,7 @@ double DipoleMIOperator::oneLoopSinglePole() const {
         continue;
       }
 
-      if ( apply(*k) && idk < 2 && (**k).mass() != ZERO )
+      if ( apply(*k) && idk < 2 && (**k).hardProcessMass() != ZERO )
         throw InitException() << "DipoleMIOperator: Initial state partons must not be massive!";
 
       double delta = 0.0;
@@ -504,8 +504,8 @@ double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k,
   // sjk is being handed over as input parameter to DipoleMIOperator::Vj()
   // kappa is being handed over as input parameter to DipoleMIOperator::Vj()
 
-  Energy2 mj2 = sqr(j.mass()), mk2 = sqr(k.mass());
-  Energy mj = j.mass(), mk = k.mass();
+  Energy2 mj2 = sqr(j.hardProcessMass()), mk2 = sqr(k.hardProcessMass());
+  Energy mj = j.hardProcessMass(), mk = k.hardProcessMass();
   Energy2 Qjk2 = sjk + mj2 + mk2;
   Energy Qjk = sqrt(Qjk2);
   
@@ -532,7 +532,7 @@ double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k,
 
   // one mass zero
   else if( mj2 == ZERO || mk2 == ZERO ) {
-    Energy2 m2 = sqr(l.mass());
+    Energy2 m2 = sqr(l.hardProcessMass());
     res += -1./4.*sqr(log(m2/sjk)) - sqr(pi)/12. -
       1./2.*log(m2/sjk)*log(sjk/Qjk2) - 1./2.*log(m2/Qjk2)*log(sjk/Qjk2);
     // Expanded
@@ -588,9 +588,9 @@ double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k,
         // sum over all quark flavours
         if( !mFSetEmpty )
           // for( size_t f=0; f<NHeavyJetVec().size(); ++f ) { // only heavy quarks in jet (aka g->QQbar at NLO)
-          //   Energy2 mF2 = sqr( getParticleData(NHeavyJetVec()[f])->mass() );
+          //   Energy2 mF2 = sqr( getParticleData(NHeavyJetVec()[f])->hardProcessMass() );
           for( size_t f=0; f<lastBorn()->nHeavyJetVec().size(); ++f ) { // only heavy quarks in jet (aka g->QQbar at NLO)
-            Energy2 mF2 = sqr( getParticleData(lastBorn()->nHeavyJetVec()[f])->mass() );
+            Energy2 mF2 = sqr( getParticleData(lastBorn()->nHeavyJetVec()[f])->hardProcessMass() );
             // sum only over quarks which meet special condition
             // but not if method of appendix B is used (see note
             // at the end of appendix B)
@@ -620,9 +620,9 @@ double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k,
         // part containing other heavy quark flavours
         if( !mFSetEmpty )
         // for( size_t f=0; f<NHeavyJetVec().size(); ++f ) { // only heavy quarks in jet (aka g->QQbar at NLO)
-        //   Energy2 mF2 = sqr( getParticleData(NHeavyJetVec()[f])->mass() );
+        //   Energy2 mF2 = sqr( getParticleData(NHeavyJetVec()[f])->hardProcessMass() );
         for( size_t f=0; f<lastBorn()->nHeavyJetVec().size(); ++f ) { // only heavy quarks in jet (aka g->QQbar at NLO)
-          Energy2 mF2 = sqr( getParticleData(lastBorn()->nHeavyJetVec()[f])->mass() );
+          Energy2 mF2 = sqr( getParticleData(lastBorn()->nHeavyJetVec()[f])->hardProcessMass() );
           // sum only over quarks which meet special condition
           // but not if method of appendix B is used (see note
           // at the end of appendix B)
@@ -654,7 +654,7 @@ double DipoleMIOperator::VsDoublePole(const ParticleData& j, const ParticleData&
   // Expanded convention                        //
   ////////////////////////////////////////////////
   
-  Energy2 mj2 = sqr(j.mass()), mk2 = sqr(k.mass());
+  Energy2 mj2 = sqr(j.hardProcessMass()), mk2 = sqr(k.hardProcessMass());
   
   // both masses zero
   if( mj2 == ZERO && mk2 == ZERO ) {
@@ -684,7 +684,7 @@ double DipoleMIOperator::VsSinglePole(const ParticleData& j, const ParticleData&
   
   // sjk is being handed over as input parameter to DipoleMIOperator::VsDoublePole()
 
-  Energy2 mj2 = sqr(j.mass()), mk2 = sqr(k.mass());
+  Energy2 mj2 = sqr(j.hardProcessMass()), mk2 = sqr(k.hardProcessMass());
   Energy2 Qjk2 = sjk + mj2 + mk2;
   
   double vjk = rootOfKallen(Qjk2,mj2,mk2) / sjk;
@@ -704,7 +704,7 @@ double DipoleMIOperator::VsSinglePole(const ParticleData& j, const ParticleData&
 
   // one mass zero
   else if( mj2 == ZERO || mk2 == ZERO ) {
-    Energy2 m2 = sqr(l.mass());
+    Energy2 m2 = sqr(l.hardProcessMass());
     res += 1./2.*(log(mu2/sjk) + log(m2/sjk));
   }
 
@@ -718,10 +718,10 @@ double DipoleMIOperator::VsSinglePole(const ParticleData& j, const ParticleData&
 }
 
 double DipoleMIOperator::GammaQuark(const ParticleData& j) const {
-  if ( j.mass() == ZERO )
+  if ( j.hardProcessMass() == ZERO )
     return 0.;
   Energy2 mu2 = lastBorn()->mu2();
-  return CF * ( 0.5*log(sqr(j.mass())/mu2) - 2. );
+  return CF * ( 0.5*log(sqr(j.hardProcessMass())/mu2) - 2. );
 }
 
 double DipoleMIOperator::GammaGluon() const {
@@ -730,7 +730,7 @@ double DipoleMIOperator::GammaGluon() const {
 }
 
 double DipoleMIOperator::GammaQuarkSinglePole(const ParticleData& j) const {
-  if ( j.mass() == ZERO ) {
+  if ( j.hardProcessMass() == ZERO ) {
     return gammaQuark;
   }
   return CF;

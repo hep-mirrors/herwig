@@ -38,17 +38,17 @@ IBPtr MatchboxAmplitudeggttbar::fullclone() const {
 void MatchboxAmplitudeggttbar::setupParams(map<string, double> &MGParams){
   // create parameter map for adapted Madgraph amplitude to use
   MGParams["aS"]     = SM().alphaS();
-  MGParams["MZ"]     = getParticleData(ParticleID::Z0)    -> mass()/GeV;
-  MGParams["MW"]     = getParticleData(ParticleID::Wplus) -> mass()/GeV;
-  MGParams["MH"]     = getParticleData(ParticleID::h0)    -> mass()/GeV;
-  MGParams["WW"]     = getParticleData(ParticleID::Wplus) ->width()/GeV;
-  MGParams["WZ"]     = getParticleData(ParticleID::Z0)    ->width()/GeV;
-  MGParams["WH"]     = getParticleData(ParticleID::h0)    ->width()/GeV;
-  MGParams["MT"]     = getParticleData(ParticleID::t)     -> mass()/GeV;
-  MGParams["MB"]     = getParticleData(ParticleID::b)     -> mass()/GeV;
-  MGParams["WT"]     = getParticleData(ParticleID::t)     ->width()/GeV;
-  MGParams["WB"]     = getParticleData(ParticleID::b)     ->width()/GeV;
-  MGParams["MTA"]    = getParticleData(ParticleID::tauminus)-> mass()/GeV;
+  MGParams["MZ"]     = getParticleData(ParticleID::Z0)    -> hardProcessMass()/GeV;
+  MGParams["MW"]     = getParticleData(ParticleID::Wplus) -> hardProcessMass()/GeV;
+  MGParams["MH"]     = getParticleData(ParticleID::h0)    -> hardProcessMass()/GeV;
+  MGParams["WW"]     = getParticleData(ParticleID::Wplus) ->hardProcessWidth()/GeV;
+  MGParams["WZ"]     = getParticleData(ParticleID::Z0)    ->hardProcessWidth()/GeV;
+  MGParams["WH"]     = getParticleData(ParticleID::h0)    ->hardProcessWidth()/GeV;
+  MGParams["MT"]     = getParticleData(ParticleID::t)     -> hardProcessMass()/GeV;
+  MGParams["MB"]     = getParticleData(ParticleID::b)     -> hardProcessMass()/GeV;
+  MGParams["WT"]     = getParticleData(ParticleID::t)     ->hardProcessWidth()/GeV;
+  MGParams["WB"]     = getParticleData(ParticleID::b)     ->hardProcessWidth()/GeV;
+  MGParams["MTA"]    = getParticleData(ParticleID::tauminus)-> hardProcessMass()/GeV;
   MGParams["GF"]     = SM().fermiConstant()*GeV2;
   MGParams["aEWM1"]  = 1./SM().alphaEMMZ();
   return;

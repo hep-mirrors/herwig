@@ -22,8 +22,8 @@ MatchboxAmplitudelnuqqbarqqbar::~MatchboxAmplitudelnuqqbarqqbar() {}
 
 void MatchboxAmplitudelnuqqbarqqbar::doinit() {
   MatchboxAmplitude::doinit();
-  MW = getParticleData(ParticleID::Wplus)->mass();
-  GW = getParticleData(ParticleID::Wplus)->width();
+  MW = getParticleData(ParticleID::Wplus)->hardProcessMass();
+  GW = getParticleData(ParticleID::Wplus)->hardProcessWidth();
   CA = SM().Nc();
   CF = (SM().Nc()*SM().Nc()-1.)/(2.*SM().Nc());
   theCKM = standardCKM(SM())->getUnsquaredMatrix(6);
@@ -65,7 +65,7 @@ bool MatchboxAmplitudelnuqqbarqqbar::canHandle(const PDVector& proc) const {
   PDVector::iterator quark = xproc.begin();
   for ( ; quark != xproc.end(); ++quark ) 
     if ( abs((*quark)->id()) >= 1 && abs((*quark)->id()) <= 6 ) {
-      assert( (*quark)->mass() == ZERO );
+      assert( (*quark)->hardProcessMass() == ZERO );
       break;
     } 
   if ( quark == xproc.end() ) return false;
@@ -74,7 +74,7 @@ bool MatchboxAmplitudelnuqqbarqqbar::canHandle(const PDVector& proc) const {
   quark = xproc.begin();
   for ( ; quark != xproc.end(); ++quark ) 
     if ( abs((*quark)->id()) >= 1 && abs((*quark)->id()) <= 6 ) {
-      assert( (*quark)->mass() == ZERO );
+      assert( (*quark)->hardProcessMass() == ZERO );
       break;
     } 
   if ( quark == xproc.end() ) return false;
@@ -83,7 +83,7 @@ bool MatchboxAmplitudelnuqqbarqqbar::canHandle(const PDVector& proc) const {
   quark = xproc.begin();
   for ( ; quark != xproc.end(); ++quark ) 
     if ( abs((*quark)->id()) >= 1 && abs((*quark)->id()) <= 6 ) {
-      assert( (*quark)->mass() == ZERO );
+      assert( (*quark)->hardProcessMass() == ZERO );
       break;
     } 
   if ( quark == xproc.end() ) return false;
@@ -92,7 +92,7 @@ bool MatchboxAmplitudelnuqqbarqqbar::canHandle(const PDVector& proc) const {
   quark = xproc.begin();
   for ( ; quark != xproc.end(); ++quark ) 
     if ( abs((*quark)->id()) >= 1 && abs((*quark)->id()) <= 6 ) {
-      assert( (*quark)->mass() == ZERO );
+      assert( (*quark)->hardProcessMass() == ZERO );
       break;
     } 
   if ( quark == xproc.end() ) return false;

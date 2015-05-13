@@ -38,9 +38,9 @@ bool FIMassiveTildeKinematics::doMap() {
   Lorentz5Momentum emission = realEmissionMomentum();
   Lorentz5Momentum spectator = realSpectatorMomentum();
 
-  Energy2 mi2 = sqr(realEmitterData()->mass());
-  Energy2 m2  = sqr(realEmissionData()->mass());
-  Energy2 Mi2 = sqr(bornEmitterData()->mass());
+  Energy2 mi2 = sqr(realEmitterData()->hardProcessMass());
+  Energy2 m2  = sqr(realEmissionData()->hardProcessMass());
+  Energy2 Mi2 = sqr(bornEmitterData()->hardProcessMass());
 
   double x = 
     (- emission*emitter + emission*spectator + emitter*spectator +
@@ -55,9 +55,9 @@ bool FIMassiveTildeKinematics::doMap() {
   bornEmitterMomentum() = emitter+emission-(1.-x)*spectator;
   bornSpectatorMomentum() = x*spectator;
 
-  bornEmitterMomentum().setMass(bornEmitterData()->mass());
+  bornEmitterMomentum().setMass(bornEmitterData()->hardProcessMass());
   bornEmitterMomentum().rescaleEnergy();
-  bornSpectatorMomentum().setMass(bornSpectatorData()->mass());
+  bornSpectatorMomentum().setMass(bornSpectatorData()->hardProcessMass());
   bornSpectatorMomentum().rescaleEnergy();
 
   return true;
@@ -66,9 +66,9 @@ bool FIMassiveTildeKinematics::doMap() {
 
 Energy FIMassiveTildeKinematics::lastPt() const {
 
-  Energy2 Mi2 = sqr(bornEmitterData()->mass());
-  Energy2 mi2 = sqr(realEmitterData()->mass());
-  Energy2 m2  = sqr(realEmissionData()->mass());
+  Energy2 Mi2 = sqr(bornEmitterData()->hardProcessMass());
+  Energy2 mi2 = sqr(realEmitterData()->hardProcessMass());
+  Energy2 m2  = sqr(realEmissionData()->hardProcessMass());
 
   Energy2 scale = Mi2 - (realEmitterMomentum()+realEmissionMomentum()-realSpectatorMomentum()).m2();
   double x = subtractionParameters()[0];

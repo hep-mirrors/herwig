@@ -317,7 +317,7 @@ double QTildeMatching::splitFn(const pair<Energy2,double>& vars) const {
   if ( dipole()->bornEmitter() > 1 ) {
     // final state quark quark branching
     if ( abs(bornCXComb()->mePartonData()[dipole()->bornEmitter()]->id()) < 7 ) {
-      Energy m = bornCXComb()->mePartonData()[dipole()->bornEmitter()]->mass();
+      Energy m = bornCXComb()->mePartonData()[dipole()->bornEmitter()]->hardProcessMass();
       return
 	((sqr(Nc)-1.)/(2.*Nc))*(1+sqr(z)-2.*sqr(m)/(z*qtilde2))/(1.-z);
     }
@@ -329,7 +329,7 @@ double QTildeMatching::splitFn(const pair<Energy2,double>& vars) const {
 	return 2.*Nc*(z/(1.-z)+(1.-z)/z+z*(1.-z));
       }
       if ( abs(realCXComb()->mePartonData()[dipole()->realEmission()]->id()) < 7 ) {
-	Energy m = realCXComb()->mePartonData()[dipole()->realEmission()]->mass();
+	Energy m = realCXComb()->mePartonData()[dipole()->realEmission()]->hardProcessMass();
 	return (1./2.)*(1.-2.*z*(1.-z)+2.*sqr(m)/(z*(1.-z)*qtilde2));
       }
     }
@@ -338,12 +338,12 @@ double QTildeMatching::splitFn(const pair<Energy2,double>& vars) const {
 	 abs(bornCXComb()->mePartonData()[dipole()->bornEmitter()]->id()) < 1000007) ||
 	(abs(bornCXComb()->mePartonData()[dipole()->bornEmitter()]->id()) > 2000000 && 
 	 abs(bornCXComb()->mePartonData()[dipole()->bornEmitter()]->id()) < 2000007)){
-      Energy m = bornCXComb()->mePartonData()[dipole()->bornEmitter()]->mass();
+      Energy m = bornCXComb()->mePartonData()[dipole()->bornEmitter()]->hardProcessMass();
       return ((sqr(Nc)-1.)/Nc)*(z-sqr(m)/(z*qtilde2))/(1.-z);
     }
     // final state gluino branching
     if (bornCXComb()->mePartonData()[dipole()->bornEmitter()]->id() == 1000021){
-      Energy m = bornCXComb()->mePartonData()[dipole()->bornEmitter()]->mass();
+      Energy m = bornCXComb()->mePartonData()[dipole()->bornEmitter()]->hardProcessMass();
       return Nc*(1.+sqr(z)-2.*sqr(m)/(z*qtilde2))/(1.-z);
     }
   }

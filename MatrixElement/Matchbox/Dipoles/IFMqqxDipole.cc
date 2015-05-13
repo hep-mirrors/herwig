@@ -51,12 +51,12 @@ bool IFMqqxDipole::canHandle(const cPDVector& partons,
     abs(partons[emission]->id()) < 7 &&
     abs(partons[emitter]->id()) < 7 &&
     partons[emission]->id() - partons[emitter]->id() == 0 &&
-//    !(partons[emitter]->mass() == ZERO &&
-//      partons[emission]->mass() == ZERO &&
-//      partons[spectator]->mass() == ZERO);
-    partons[emitter]->mass() == ZERO &&
-    partons[emission]->mass() == ZERO &&
-    partons[spectator]->mass() != ZERO;
+//    !(partons[emitter]->hardProcessMass() == ZERO &&
+//      partons[emission]->hardProcessMass() == ZERO &&
+//      partons[spectator]->hardProcessMass() == ZERO);
+    partons[emitter]->hardProcessMass() == ZERO &&
+    partons[emission]->hardProcessMass() == ZERO &&
+    partons[spectator]->hardProcessMass() != ZERO;
 }
 
 double IFMqqxDipole::me2Avg(double ccme2) const {
@@ -71,7 +71,7 @@ double IFMqqxDipole::me2Avg(double ccme2) const {
     2.*((realEmissionME()->lastXComb().meMomenta()[realEmitter()])*
 	(realEmissionME()->lastXComb().meMomenta()[realEmission()]))*x;
 
-  double muj2 = sqr( (realEmissionME()->lastXComb().mePartonData()[realSpectator()]->mass()) ) /
+  double muj2 = sqr( (realEmissionME()->lastXComb().mePartonData()[realSpectator()]->hardProcessMass()) ) /
     (2.* (realEmissionME()->lastXComb().meMomenta()[bornSpectator()])*
      (realEmissionME()->lastXComb().meMomenta()[realEmitter()]) );
 

@@ -46,7 +46,7 @@ bool IFMggxDipole::canHandle(const cPDVector& partons,
     emitter < 2 && spectator > 1 &&
     partons[emission]->id() == ParticleID::g &&
     partons[emitter]->id() == ParticleID::g &&
-    partons[spectator]->mass() != ZERO;
+    partons[spectator]->hardProcessMass() != ZERO;
 }
 
 double IFMggxDipole::me2Avg(double ccme2) const {
@@ -61,7 +61,7 @@ double IFMggxDipole::me2Avg(double ccme2) const {
     2.*((realEmissionME()->lastXComb().meMomenta()[realEmitter()])*
 	(realEmissionME()->lastXComb().meMomenta()[realEmission()]))*x;
 
-  double muj2 = sqr( (realEmissionME()->lastXComb().mePartonData()[realSpectator()]->mass()) ) /
+  double muj2 = sqr( (realEmissionME()->lastXComb().mePartonData()[realSpectator()]->hardProcessMass()) ) /
     (2.* (realEmissionME()->lastXComb().meMomenta()[bornSpectator()])*
      (realEmissionME()->lastXComb().meMomenta()[realEmitter()]) );
 

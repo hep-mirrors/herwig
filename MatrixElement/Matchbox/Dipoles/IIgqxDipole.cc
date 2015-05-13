@@ -45,8 +45,8 @@ bool IIgqxDipole::canHandle(const cPDVector& partons,
     emitter < 2 && spectator < 2 &&
     partons[emitter]->id() == ParticleID::g &&
     abs(partons[emission]->id()) < 6 &&
-    partons[emission]->mass() == ZERO &&
-    partons[spectator]->mass() == ZERO;
+    partons[emission]->hardProcessMass() == ZERO &&
+    partons[spectator]->hardProcessMass() == ZERO;
 }
 
 double IIgqxDipole::me2Avg(double ccme2) const {

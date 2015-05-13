@@ -57,11 +57,11 @@ bool FFMassiveInvertedTildeKinematics::doMap(const double * r) {
   
   Energy scale = (emitter+spectator).m();
   // masses
-  double mui2 = sqr( realEmitterData()->mass() / scale );
-  double mu2  = sqr( realEmissionData()->mass() / scale );
-  double muj2 = sqr( realSpectatorData()->mass() / scale );
-  double Mui2 = sqr( bornEmitterData()->mass() / scale );
-  double Muj2 = sqr( bornSpectatorData()->mass() / scale );
+  double mui2 = sqr( realEmitterData()->hardProcessMass() / scale );
+  double mu2  = sqr( realEmissionData()->hardProcessMass() / scale );
+  double muj2 = sqr( realSpectatorData()->hardProcessMass() / scale );
+  double Mui2 = sqr( bornEmitterData()->hardProcessMass() / scale );
+  double Muj2 = sqr( bornSpectatorData()->hardProcessMass() / scale );
   
   double y = ( sqr( pt / scale ) + sqr(1.-z)*mui2 + z*z*mu2 ) /
       (z*(1.-z)*(1.-mui2-mu2-muj2));
@@ -153,9 +153,9 @@ Energy FFMassiveInvertedTildeKinematics::lastPt() const {
   
   Energy scale = (bornEmitterMomentum()+bornSpectatorMomentum()).m();
   // masses
-  double mui2 = sqr( realEmitterData()->mass() / scale );
-  double mu2  = sqr( realEmissionData()->mass() / scale );
-  double muj2 = sqr( realSpectatorData()->mass() / scale );
+  double mui2 = sqr( realEmitterData()->hardProcessMass() / scale );
+  double mu2  = sqr( realEmissionData()->hardProcessMass() / scale );
+  double muj2 = sqr( realSpectatorData()->hardProcessMass() / scale );
   
   double y = subtractionParameters()[0];
   double z = subtractionParameters()[1];
@@ -173,9 +173,9 @@ Energy FFMassiveInvertedTildeKinematics::ptMax() const {
   
   Energy scale = (bornEmitterMomentum()+bornSpectatorMomentum()).m();
   // masses
-  double mui2 = sqr( realEmitterData()->mass() / scale );
-  double mu2  = sqr( realEmissionData()->mass() / scale );
-  double muj2 = sqr( realSpectatorData()->mass() / scale );
+  double mui2 = sqr( realEmitterData()->hardProcessMass() / scale );
+  double mu2  = sqr( realEmissionData()->hardProcessMass() / scale );
+  double muj2 = sqr( realSpectatorData()->hardProcessMass() / scale );
   
   Energy ptmax = rootOfKallen( mui2, mu2, sqr(1.-sqrt(muj2)) ) /
     ( 2.-2.*sqrt(muj2) ) * scale;
@@ -190,9 +190,9 @@ pair<double,double> FFMassiveInvertedTildeKinematics::zBounds(Energy pt, Energy 
   
   Energy scale = (bornEmitterMomentum()+bornSpectatorMomentum()).m();
   // masses
-  double mui2 = sqr( realEmitterData()->mass() / scale );
-  double mu2  = sqr( realEmissionData()->mass() / scale );
-  double muj2 = sqr( realSpectatorData()->mass() / scale );
+  double mui2 = sqr( realEmitterData()->hardProcessMass() / scale );
+  double mu2  = sqr( realEmissionData()->hardProcessMass() / scale );
+  double muj2 = sqr( realSpectatorData()->hardProcessMass() / scale );
   
   double zp = ( 1.+mui2-mu2+muj2-2.*sqrt(muj2) +
     rootOfKallen(mui2,mu2,sqr(1-sqrt(muj2))) *
@@ -208,9 +208,9 @@ pair<double,double> FFMassiveInvertedTildeKinematics::zBounds(Energy pt, Energy 
 
 bool FFMassiveInvertedTildeKinematics::ptzAllowed(pair<Energy,double> ptz) const {
   // masses
-  double mui2 = sqr( realEmitterData()->mass() / lastScale() );
-  double mu2  = sqr( realEmissionData()->mass() / lastScale() );
-  double muj2 = sqr( realSpectatorData()->mass() / lastScale() );
+  double mui2 = sqr( realEmitterData()->hardProcessMass() / lastScale() );
+  double mu2  = sqr( realEmissionData()->hardProcessMass() / lastScale() );
+  double muj2 = sqr( realSpectatorData()->hardProcessMass() / lastScale() );
   
   Energy pt = ptz.first;
   double z = ptz.second;

@@ -71,11 +71,7 @@ Makefile\.in$
 ^Tests/.*index.html$
 ^Herwig\+\+\-
 ^Models/Feynrules/python/Makefile-FR$
-^MatrixElement/Matchbox/External/GoSam/GoSamAmplitude.cc$
-^MatrixElement/Matchbox/External/MadGraph/MadGraphAmplitude.cc$
 ^MatrixElement/Matchbox/External/MadGraph/mg2Matchbox.py$
-^MatrixElement/Matchbox/External/NJet/NJetsAmplitude.cc$
-^MatrixElement/Matchbox/External/OpenLoops/OpenLoopsAmplitude.cc$
 ^MatrixElement/Matchbox/Scales/MatchboxScale.cc$
 ^Utilities/Statistics/combineDistributions$
 ^Utilities/Statistics/combineRuns$

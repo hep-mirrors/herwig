@@ -1602,6 +1602,14 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
       }
       particle->showerKinematics()->
 	updateChildren(particle, theChildren,fb.type);
+      for(unsigned int ix=0;ix<2;++ix) {
+	theChildren[ix]->scales().QED         = min(theChildren[ix]->scales().QED        ,particle->scales().QED        );
+	theChildren[ix]->scales().QED_noAO    = min(theChildren[ix]->scales().QED_noAO   ,particle->scales().QED_noAO   );
+	theChildren[ix]->scales().QCD_c       = min(theChildren[ix]->scales().QCD_c      ,particle->scales().QCD_c      );
+	theChildren[ix]->scales().QCD_c_noAO  = min(theChildren[ix]->scales().QCD_c_noAO ,particle->scales().QCD_c_noAO );
+	theChildren[ix]->scales().QCD_ac      = min(theChildren[ix]->scales().QCD_ac     ,particle->scales().QCD_ac     );
+	theChildren[ix]->scales().QCD_ac_noAO = min(theChildren[ix]->scales().QCD_ac_noAO,particle->scales().QCD_ac_noAO);
+      }
       // shower the first  particle
       if( branch->children()[0]->children().empty() ) {
 	if( ! hardOnly() )

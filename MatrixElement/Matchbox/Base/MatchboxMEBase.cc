@@ -210,7 +210,7 @@ void MatchboxMEBase::constructVertex(tSubProPtr sub, const ColourLines* cl) {
       VectorWaveFunction(dummyPolarizations,hard[k],
 			 k > 1 ? outgoing : incoming,
 			 k > 1 ? true : false,
-			 hard[k]->data().mass() == ZERO);
+			 hard[k]->data().hardProcessMass() == ZERO);
     } else assert(false);
   }
 

@@ -40,19 +40,19 @@ IBPtr MatchboxAmplitudellbarqqbarqqbar::fullclone() const {
 
 void MatchboxAmplitudellbarqqbarqqbar::doinit() {
   MatchboxZGammaAmplitude::doinit();
-  MZ = getParticleData(ParticleID::Z0)->mass();
-  GZ = getParticleData(ParticleID::Z0)->width();
-  MW = getParticleData(ParticleID::Wplus)->mass();
-  GW = getParticleData(ParticleID::Wplus)->width();
+  MZ = getParticleData(ParticleID::Z0)->hardProcessMass();
+  GZ = getParticleData(ParticleID::Z0)->hardProcessWidth();
+  MW = getParticleData(ParticleID::Wplus)->hardProcessMass();
+  GW = getParticleData(ParticleID::Wplus)->hardProcessWidth();
   nPoints(6);
 }
 
 void MatchboxAmplitudellbarqqbarqqbar::doinitrun() {
   MatchboxZGammaAmplitude::doinitrun();
-  MZ = getParticleData(ParticleID::Z0)->mass();
-  GZ = getParticleData(ParticleID::Z0)->width();
-  MW = getParticleData(ParticleID::Wplus)->mass();
-  GW = getParticleData(ParticleID::Wplus)->width();
+  MZ = getParticleData(ParticleID::Z0)->hardProcessMass();
+  GZ = getParticleData(ParticleID::Z0)->hardProcessWidth();
+  MW = getParticleData(ParticleID::Wplus)->hardProcessMass();
+  GW = getParticleData(ParticleID::Wplus)->hardProcessWidth();
   nPoints(6);
 }
 
@@ -89,7 +89,7 @@ bool MatchboxAmplitudellbarqqbarqqbar::canHandle(const PDVector& proc) const {
   for ( ; quark != xproc.end(); ++quark )
     if ( abs((**quark).id()) < 6 &&
 	 (**quark).id() > 0 &&
-	 (**quark).mass() == ZERO ) {
+	 (**quark).hardProcessMass() == ZERO ) {
       break;
     }
   if ( quark == xproc.end() )
@@ -109,7 +109,7 @@ bool MatchboxAmplitudellbarqqbarqqbar::canHandle(const PDVector& proc) const {
   for ( ; quark != xproc.end(); ++quark )
     if ( abs((**quark).id()) < 6 &&
 	 (**quark).id() > 0 &&
-	 (**quark).mass() == ZERO ) {
+	 (**quark).hardProcessMass() == ZERO ) {
       break;
     }
   if ( quark == xproc.end() )

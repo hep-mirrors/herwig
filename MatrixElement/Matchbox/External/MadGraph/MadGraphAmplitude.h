@@ -329,7 +329,12 @@ protected:
   /**
    *   Location of the installed executables
    */
-  string prefix_;
+  string bindir_;
+
+  /**
+   *   Location of the data files
+   */
+  string pkgdatadir_;
 
   /**
    *  Location of MADGRAPH

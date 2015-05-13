@@ -434,8 +434,8 @@ void BtoSGammaKagan::doinit() {
 Energy BtoSGammaKagan::hadronicMass(Energy mb,Energy mquark) {
   useMe();
   Energy minmass(max(minMass(),mquark)),maxmass(min(maxMass(),mb)),mass;
-  Energy minegamma(0.5*_MB*(1. - _deltacut)),maxegamma(0.5*_MB);
-  minmass=max(minmass,sqrt(_MB*_MB-2.*_MB*maxegamma));
+  Energy minegamma(0.5*_MB*(1. - _deltacut));//,maxegamma(0.5*_MB);
+  minmass=max(minmass,ZERO); // ZERO==sqrt(_MB*_MB-2.*_MB*maxegamma));
   maxmass=min(maxmass,sqrt(_MB*_MB-2.*_MB*minegamma));
   unsigned int ntry(0);
   double rand;

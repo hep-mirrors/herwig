@@ -139,6 +139,7 @@ parser.add_argument('--runpath', help='runpath')
 parser.add_argument('--model', help='model')
 parser.add_argument('--orderas', help='orderas')
 parser.add_argument('--orderew', help='orderew')
+parser.add_argument('--datadir', help='datadir')
 
 
 
@@ -167,7 +168,7 @@ if args.model=="loop_sm" or args.model=="heft":
   else:
     param_card="param_card_"+args.model+".dat"  
     
-  file = open("@prefix@/share/Herwig++/MadGraphInterface/"+param_card+".in", "r") 
+  file = open("%s/MadGraphInterface/%s.in" % (args.datadir,param_card) , "r") 
   paramcard = file.read() 
   file.close()
   file = open(args.runpath+"/"+param_card, "w")
@@ -235,10 +236,8 @@ for routine in routines:
        routine[0]+="         ELSE\n"
        routine[0]+="             WRITE(*,*) '##W02A WARNING No id found '\n"
        routine[0]+="         ENDIF   \n"
-
-
-
-shutil.copyfile("@prefix@/share/Herwig++/MadGraphInterface/InterfaceMadGraph.f.in", "InterfaceMadGraph.f")
+ 
+shutil.copyfile("%s/MadGraphInterface/InterfaceMadGraph.f.in" % args.datadir, "InterfaceMadGraph.f")
 
 replacetext("InterfaceMadGraph.f","MG_CalculateBORNtxt",routines[0][0])
 replacetext("InterfaceMadGraph.f","MG_CalculateVIRTtxt",routines[1][0])

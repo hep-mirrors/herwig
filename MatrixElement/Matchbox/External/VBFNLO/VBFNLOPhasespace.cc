@@ -35,14 +35,15 @@
 using namespace Herwig;
 
 VBFNLOPhasespace::VBFNLOPhasespace() : 
-  lastSqrtS(0*GeV) {
-  string vbfnlolib = DEFSTR(VBFNLOLIB);
-  vbfnlolib += "/";
-  if ( !DynamicLoader::load(vbfnlolib+"libVBFNLO.so") )
-    if ( !DynamicLoader::load("libVBFNLO.so") )
-      throw Exception() << "failed to load libVBFNLO.so\n"
-		        << DynamicLoader::lastErrorMessage
-		        << Exception::abortnow;
+  lastSqrtS(0*GeV), VBFNLOlib_(DEFSTR(VBFNLOLIB))
+{}
+
+void VBFNLOPhasespace::loadVBFNLO() {
+  if ( ! (DynamicLoader::load(VBFNLOlib_+"/libVBFNLO.so") || 
+	  DynamicLoader::load("libVBFNLO.so") ) )
+    throw Exception() << "failed to load libVBFNLO.so/dylib\n"
+		      << DynamicLoader::lastErrorMessage
+		      << Exception::abortnow;
 }
 
 VBFNLOPhasespace::~VBFNLOPhasespace() {}
@@ -153,14 +154,13 @@ int VBFNLOPhasespace::nDimPhasespace(int nFinal) const {
   return value+2; 
 }
 
-// If needed, insert default implementations of virtual function defined
-// in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
-
 void VBFNLOPhasespace::doinit() {
+  loadVBFNLO();
   MatchboxPhasespace::doinit();
 }
 
 void VBFNLOPhasespace::doinitrun() {
+  loadVBFNLO();
   MatchboxPhasespace::doinitrun();
 }
 

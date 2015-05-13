@@ -57,7 +57,7 @@ void MatchboxRambo::setXComb(tStdXCombPtr xc) {
   if ( xc ) {
     for ( cPDVector::const_iterator d = mePartonData().begin();
 	  d != mePartonData().end(); ++d ) {
-      if ( (**d).mass() != ZERO ) {
+      if ( (**d).hardProcessMass() != ZERO ) {
 	needToReshuffle = true;
 	break;
       }
@@ -185,11 +185,11 @@ double MatchboxRambo::generateTwoToNKinematics(const double* r,
 	k != momenta.end(); ++k, ++d ) {
     num += (*k).vect().mag2()/(*k).t();
     Energy q = (*k).t();
-    (*k).setT(sqrt(sqr((**d).mass())+xi*xi*sqr((*k).t())));
+    (*k).setT(sqrt(sqr((**d).hardProcessMass())+xi*xi*sqr((*k).t())));
     (*k).setVect(xi*(*k).vect());
     weight *= q/(*k).t();
     den += (*k).vect().mag2()/(*k).t();
-    (*k).setMass((**d).mass());
+    (*k).setMass((**d).hardProcessMass());
   }
 
   if ( !matchConstraints(momenta) )
@@ -211,7 +211,7 @@ Energy MatchboxRambo::ReshuffleEquation::operator() (double xi) const {
   vector<Lorentz5Momentum>::const_iterator p = momentaBegin;
   Energy res = -w;
   for ( ; d != dataEnd; ++d, ++p ) {
-    res += sqrt(sqr((**d).mass()) +
+    res += sqrt(sqr((**d).hardProcessMass()) +
 		xi*xi*sqr(p->t()));
   }
   return res;

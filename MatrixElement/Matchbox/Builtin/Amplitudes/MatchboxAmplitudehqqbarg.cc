@@ -43,13 +43,13 @@ IBPtr MatchboxAmplitudehqqbarg::fullclone() const {
 
 void MatchboxAmplitudehqqbarg::doinit() {
   MatchboxAmplitude::doinit();
-  MW = getParticleData(ParticleID::Wplus)->mass();
+  MW = getParticleData(ParticleID::Wplus)->hardProcessMass();
   nPoints(4);;
 }
 
 void MatchboxAmplitudehqqbarg::doinitrun() {
   MatchboxAmplitude::doinitrun();
-  MW = getParticleData(ParticleID::Wplus)->mass();
+  MW = getParticleData(ParticleID::Wplus)->hardProcessMass();
   nPoints(4);
 }
 

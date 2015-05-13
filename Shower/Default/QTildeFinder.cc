@@ -191,9 +191,7 @@ calculateInitialInitialScales(const Lorentz5Momentum& p1, const Lorentz5Momentum
   // that ktilde_b = ktilde_c = 1. In this case we have the process
   // b+c->a so we need merely boost to the CM frame of the two incoming
   // particles and then qtilde is equal to the energy in that frame
-  Lorentz5Momentum p(p1+p2);
-  p.boost(p.findBoostToCM());
-  Energy Q = sqrt(p.m2());
+  Energy Q = sqrt((p1+p2).m2());
   if(_initialInitialConditions==1) {
     return pair<Energy,Energy>(sqrt(2.0)*Q,sqrt(0.5)*Q);
   } else if(_initialInitialConditions==2) {
@@ -219,12 +217,8 @@ calculateFinalFinalScales(Lorentz5Momentum p1, Lorentz5Momentum p2,
   // Using JHEP 12(2003)045 we find that we need ktilde = 1/2(1+b-c+lambda)
   // ktilde = qtilde^2/Q^2 therefore qtilde = sqrt(ktilde*Q^2)
   // find momenta in rest frame of system
-  Lorentz5Momentum p12(p1+p2);
-  Boost boostv=p12.findBoostToCM();
-  p1.boost(boostv);
-  p2.boost(boostv);
   // calculate quantities for the scales
-  Energy2 Q2 = p12.m2();
+  Energy2 Q2 = (p1+p2).m2();
   double b = p1.mass2()/Q2;
   double c = p2.mass2()/Q2;
   if(b<0.) {
