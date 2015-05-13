@@ -46,8 +46,8 @@ bool FIMsqgxDipole::canHandle(const cPDVector& partons,
     partons[emission]->id() == ParticleID::g &&
     ((abs(partons[emitter]->id())> 1000000 && abs(partons[emitter]->id())< 1000007) ||
      (abs(partons[emitter]->id())> 2000000 && abs(partons[emitter]->id())< 2000007)) &&
-    partons[emitter]->mass() != ZERO &&
-    partons[spectator]->mass() == ZERO;
+    partons[emitter]->hardProcessMass() != ZERO &&
+    partons[spectator]->hardProcessMass() == ZERO;
 }
 
 double FIMsqgxDipole::me2Avg(double ccme2) const {
@@ -70,11 +70,11 @@ double FIMsqgxDipole::me2Avg(double ccme2) const {
 
 //   // NOTE: extra term taken from FIqgxDipole implementation??
 //   res *= ( 2./(1.-z+(1.-x)) - 2. +(1.-x)*(1.+3.*x*z) -
-//   	   sqr(realEmissionME()->lastXComb().mePartonData()[realEmission()]->mass()) / prop * 2.*x);
+//   	   sqr(realEmissionME()->lastXComb().mePartonData()[realEmission()]->hardProcessMass()) / prop * 2.*x);
   // NOTE: CR: extra term switched off in massive implementation for the moment,
   //           mass of realEmission changed to mass of realEmitter
   res *= ( 2./(1.-z+(1.-x)) - 2. -
-  	   sqr(realEmissionME()->lastXComb().mePartonData()[realEmitter()]->mass()) / prop * 2.*x);
+  	   sqr(realEmissionME()->lastXComb().mePartonData()[realEmitter()]->hardProcessMass()) / prop * 2.*x);
 
   res *= -ccme2;
 
@@ -110,11 +110,11 @@ double FIMsqgxDipole::me2() const {
 
 //   // NOTE: extra term taken from FIqgxDipole implementation
 //   res *= ( 2./(1.-z+(1.-x)) -2. +(1.-x)*(1.+3.*x*z) -
-//   	   sqr(realEmissionME()->lastXComb().mePartonData()[realEmission()]->mass()) / prop * 2.*x);
+//   	   sqr(realEmissionME()->lastXComb().mePartonData()[realEmission()]->hardProcessMass()) / prop * 2.*x);
   // NOTE: CR: extra term switched off in massive implementation for the moment,
   //           mass of realEmission changed to mass of realEmitter
   res *= ( 2./(1.-z+(1.-x)) - 2. -
-  	   sqr(realEmissionME()->lastXComb().mePartonData()[realEmitter()]->mass()) / prop * 2.*x);
+  	   sqr(realEmissionME()->lastXComb().mePartonData()[realEmitter()]->hardProcessMass()) / prop * 2.*x);
 
   res *= -underlyingBornME()->colourCorrelatedME2(make_pair(bornEmitter(),bornSpectator()));
 

@@ -83,10 +83,10 @@ bool DipoleMPKOperator::apply(const cPDVector& pd) const {
   int idp = 0;
   for ( cPDVector::const_iterator p = pd.begin();
 	p != pd.end(); ++p, ++idp ) {
-    if ( (*p)->coloured() && (*p)->mass()!=ZERO && idp > 1 ) {
+    if ( (*p)->coloured() && (*p)->hardProcessMass()!=ZERO && idp > 1 ) {
       finalmass = true;
     }
-    if ( (*p)->coloured() && (*p)->mass()!=ZERO && idp < 2 ) {
+    if ( (*p)->coloured() && (*p)->hardProcessMass()!=ZERO && idp < 2 ) {
       initialmass = true;
     }
     if ( !first ) {
@@ -112,7 +112,7 @@ bool DipoleMPKOperator::apply(const cPDVector& pd) const {
 
 bool DipoleMPKOperator::apply(tcPDPtr pd) const {
   return
-    pd->mass() == ZERO &&
+    pd->hardProcessMass() == ZERO &&
     (abs(pd->id()) < 7 || pd->id() == ParticleID::g);
 }
 
@@ -150,7 +150,7 @@ vector<int> DipoleMPKOperator::NLightJetVec() const {
 
   for ( PDVector::const_iterator theP = theJetConstitutents.begin();
         theP != theJetConstitutents.end(); ++theP ) {
-    if ( (**theP).id() > 0 && (**theP).id() < 7 && (**theP).mass() == ZERO )
+    if ( (**theP).id() > 0 && (**theP).id() < 7 && (**theP).hardProcessMass() == ZERO )
       theNLightJetVec.push_back( (**theP).id() );
   }
 
@@ -171,7 +171,7 @@ vector<int> DipoleMPKOperator::NHeavyJetVec() const {
 
   for ( PDVector::const_iterator theP = theJetConstitutents.begin();
         theP != theJetConstitutents.end(); ++theP ) {
-    if ( (**theP).id() > 0 && (**theP).id() < 7 && (**theP).mass() != ZERO )
+    if ( (**theP).id() > 0 && (**theP).id() < 7 && (**theP).hardProcessMass() != ZERO )
       theNHeavyJetVec.push_back( (**theP).id() );
   }
 
@@ -188,7 +188,7 @@ vector<int> DipoleMPKOperator::NLightBornVec() const {
 
   for ( cPDVector::const_iterator j = mePartonData().begin();
 	j != mePartonData().end(); ++j ) {
-    if ( abs((**j).id()) < 7 && (**j).mass() == ZERO )
+    if ( abs((**j).id()) < 7 && (**j).hardProcessMass() == ZERO )
       theNLightBornVec.push_back( (**j).id() );
   }
 
@@ -205,7 +205,7 @@ vector<int> DipoleMPKOperator::NHeavyBornVec() const {
 
   for ( cPDVector::const_iterator j = mePartonData().begin();
 	j != mePartonData().end(); ++j ) {
-    if ( abs((**j).id()) < 7 && (**j).mass() != ZERO )
+    if ( abs((**j).id()) < 7 && (**j).hardProcessMass() != ZERO )
       theNHeavyBornVec.push_back( (**j).id() );
   }
 
@@ -226,7 +226,7 @@ vector<int> DipoleMPKOperator::NLightProtonVec() const {
 
   for ( PDVector::const_iterator theP = theProtonConstitutents.begin();
         theP != theProtonConstitutents.end(); ++theP ) {
-    if ( (**theP).id() > 0 && (**theP).id() < 7 && (**theP).mass() == ZERO )
+    if ( (**theP).id() > 0 && (**theP).id() < 7 && (**theP).hardProcessMass() == ZERO )
       theNLightProtonVec.push_back( (**theP).id() );
   }
 
@@ -420,7 +420,7 @@ double DipoleMPKOperator::sumParton(int id) const {
 
 //     // For m_j=0 and {m_F}=empty we can use the exact massless case.
 //     // This case, however, should actually not occur here.
-//     if ( (**i).mass() == ZERO && NHeavyJetVec().size() == 0 ) {
+//     if ( (**i).hardProcessMass() == ZERO && NHeavyJetVec().size() == 0 ) {
 //       throw InitException() << "DipoleMPKOperator::sumParton: m_j=0 and {m_F}=empty. This should not have happened.";
 //       // Last term in massless K operator in (C.31) in massless paper.
 //       res +=
@@ -430,8 +430,8 @@ double DipoleMPKOperator::sumParton(int id) const {
 //     }
 
     // For m_j=0 and {m_F}=empty we can use the exact massless case.
-    // if ( (**i).mass() == ZERO && NHeavyJetVec().size() == 0 ) {
-    if ( (**i).mass() == ZERO && lastBorn()->nHeavyJetVec().size() == 0 ) {
+    // if ( (**i).hardProcessMass() == ZERO && NHeavyJetVec().size() == 0 ) {
+    if ( (**i).hardProcessMass() == ZERO && lastBorn()->nHeavyJetVec().size() == 0 ) {
       // Last term in massless K operator in (C.31) in massless paper.
       res +=
         ( (**i).id() == ParticleID::g ? gammaGluon : gammaQuark ) *
@@ -442,7 +442,7 @@ double DipoleMPKOperator::sumParton(int id) const {
     // For m_j!=0 or {m_F}!=empty we use the massive formulae.
     else {
 
-      Energy2 mj2 = sqr((**i).mass());
+      Energy2 mj2 = sqr((**i).hardProcessMass());
       Energy2 sja = 2.*( (*Pi) * meMomenta()[id]/z );
 
       Energy2 Qja2 = mj2 - z*sja;
@@ -573,14 +573,14 @@ double DipoleMPKOperator::sumParton(int id) const {
       // if ( disFinite == 0.0 && z > x ) { 
       // extra terms only present in massless dipoles, idi is spectator
       /*
-      if ( disFinite == 0.0 && z > x && mePartonData()[idi]->mass() == ZERO ) {
+      if ( disFinite == 0.0 && z > x && mePartonData()[idi]->hardProcessMass() == ZERO ) {
         disFinite = CF*PDFxByz(parton)*(1.+3.*z/2.)/z;
       }
       */
       // if ( z > x ) 
       // extra terms only present in massless dipoles, idi is spectator
       /*
-      if ( z > x && mePartonData()[idi]->mass() == ZERO )
+      if ( z > x && mePartonData()[idi]->hardProcessMass() == ZERO )
         res -= disFinite*ifCorrelated;
       */
     }
@@ -589,14 +589,14 @@ double DipoleMPKOperator::sumParton(int id) const {
       // if ( disFinite == 0.0 && z > x ) { 
       // extra terms only present in massless dipoles, idi is emitter
       /*
-      if ( disFinite == 0.0 && z > x && mePartonData()[idi]->mass() == ZERO ) {
+      if ( disFinite == 0.0 && z > x && mePartonData()[idi]->hardProcessMass() == ZERO ) {
         disFinite = CF*PDFxByz(parton)*(1.+3.*z/2.)/z;
       }
       */
       // if ( z > x ) 
       // extra terms only present in massless dipoles, idi is emitter
       /*
-      if ( z > x && mePartonData()[idi]->mass() == ZERO )
+      if ( z > x && mePartonData()[idi]->hardProcessMass() == ZERO )
         res -= disFinite*fiCorrelated;
       */
     }
@@ -1046,9 +1046,9 @@ double DipoleMPKOperator::Kscriptqq_g(Energy2 sja, bool appendixB) const {
   double res = -1.*gammaGluon/CA*gammaSoft();
 
   // for( size_t f=0; f<NHeavyJetVec().size(); ++f ) { // sum over heavy flavours
-  //   Energy2 mF2 = sqr( getParticleData(NHeavyJetVec()[f])->mass() );
+  //   Energy2 mF2 = sqr( getParticleData(NHeavyJetVec()[f])->hardProcessMass() );
   for( size_t f=0; f<lastBorn()->nHeavyJetVec().size(); ++f ) { // sum over heavy flavours
-    Energy2 mF2 = sqr( getParticleData(lastBorn()->nHeavyJetVec()[f])->mass() );
+    Energy2 mF2 = sqr( getParticleData(lastBorn()->nHeavyJetVec()[f])->hardProcessMass() );
     double muQ2 = mF2/sja;
     double muQ2prime = mF2/(z*sja);
     double muQ2bar = mF2/(-z*sja); // only for modified zplus, see appendix B, remember that m_j=m_g=0
@@ -1091,9 +1091,9 @@ double DipoleMPKOperator::Kscriptgg_g(Energy2 sja, bool appendixB) const {
   double res = -1.*gammaGluon/CA*gammaSoft();
 
   // for( size_t f=0; f<NHeavyJetVec().size(); ++f ) { // sum over heavy flavours
-  //   Energy2 mF2 = sqr( getParticleData(NHeavyJetVec()[f])->mass() );
+  //   Energy2 mF2 = sqr( getParticleData(NHeavyJetVec()[f])->hardProcessMass() );
   for( size_t f=0; f<lastBorn()->nHeavyJetVec().size(); ++f ) { // sum over heavy flavours
-    Energy2 mF2 = sqr( getParticleData(lastBorn()->nHeavyJetVec()[f])->mass() );
+    Energy2 mF2 = sqr( getParticleData(lastBorn()->nHeavyJetVec()[f])->hardProcessMass() );
     double muQ2 = mF2/sja;
     double muQ2prime = mF2/(z*sja);
     double muQ2bar = mF2/(-z*sja); // only for modified zplus, see appendix B, remember that m_j=m_g=0
@@ -1127,9 +1127,9 @@ double DipoleMPKOperator::Kscriptbarqq_g(Energy2 Qja2, bool appendixB) const {
 
   // + \deltaqq*\delta(zplusbar-z)*T_R/C_A*\sum_{N_F}DeltaJbaraNS_QQbar(mF2/-Qja2) contribution
   // for( size_t f=0; f<NHeavyJetVec().size(); ++f ) { // sum over heavy flavours
-  //   Energy2 mF2 = sqr( getParticleData(NHeavyJetVec()[f])->mass() );
+  //   Energy2 mF2 = sqr( getParticleData(NHeavyJetVec()[f])->hardProcessMass() );
   for( size_t f=0; f<lastBorn()->nHeavyJetVec().size(); ++f ) { // sum over heavy flavours
-    Energy2 mF2 = sqr( getParticleData(lastBorn()->nHeavyJetVec()[f])->mass() );
+    Energy2 mF2 = sqr( getParticleData(lastBorn()->nHeavyJetVec()[f])->hardProcessMass() );
     double mubarQ2 = mF2/(-Qja2);
     double zplus = 1./(1.+4.*mubarQ2); // actually zbar_plus, see appendix B
     res += 1./(2.*CA)*PDFxByzplus(parton,f,zplus)
@@ -1164,9 +1164,9 @@ double DipoleMPKOperator::Kscriptbargg_g(Energy2 Qja2, bool appendixB) const {
 
   // + \deltagg*\delta(zplusbar-z)*T_R/C_A*\sum_{N_F}DeltaJbaraNS_QQbar(mF2/-Qja2) contribution
   // for( size_t f=0; f<NHeavyJetVec().size(); ++f ) { // sum over heavy flavours
-  //   Energy2 mF2 = sqr( getParticleData(NHeavyJetVec()[f])->mass() );
+  //   Energy2 mF2 = sqr( getParticleData(NHeavyJetVec()[f])->hardProcessMass() );
   for( size_t f=0; f<lastBorn()->nHeavyJetVec().size(); ++f ) { // sum over heavy flavours
-    Energy2 mF2 = sqr( getParticleData(lastBorn()->nHeavyJetVec()[f])->mass() );
+    Energy2 mF2 = sqr( getParticleData(lastBorn()->nHeavyJetVec()[f])->hardProcessMass() );
     double mubarQ2 = mF2/(-Qja2);
     double zplus = 1./(1.+4.*mubarQ2); // actually zbar_plus, see appendix B
     res += 1./(2.*CA)*PDFxByzplus(parton,f,zplus)

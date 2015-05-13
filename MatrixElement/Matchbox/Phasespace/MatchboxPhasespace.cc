@@ -74,14 +74,14 @@ double MatchboxPhasespace::generateKinematics(const double* r,
 	// use a standard Breit Wigner here which we can invert
 	// see invertKinematics as well
 	double bwILow = 
-	  atan((sqr(massMin)-sqr((**pd).mass()))/((**pd).mass() * (**pd).hardProcessWidth()));
+	  atan((sqr(massMin)-sqr((**pd).hardProcessMass()))/((**pd).hardProcessMass() * (**pd).hardProcessWidth()));
 	double bwIUp = 
-	  atan((sqr(massMax)-sqr((**pd).mass()))/((**pd).mass() * (**pd).hardProcessWidth()));
-	gmass = sqrt(sqr((**pd).mass()) + 
-		     (**pd).mass()*(**pd).hardProcessWidth()*tan(bwILow+r[0]*(bwIUp-bwILow)));
+	  atan((sqr(massMax)-sqr((**pd).hardProcessMass()))/((**pd).hardProcessMass() * (**pd).hardProcessWidth()));
+	gmass = sqrt(sqr((**pd).hardProcessMass()) + 
+		     (**pd).hardProcessMass()*(**pd).hardProcessWidth()*tan(bwILow+r[0]*(bwIUp-bwILow)));
 	++r;
       } else {
-	gmass = (**pd).mass();
+	gmass = (**pd).hardProcessMass();
       }
       maxMass -= gmass;
       p->setMass(gmass);
@@ -89,8 +89,8 @@ double MatchboxPhasespace::generateKinematics(const double* r,
     }
   } else {
     for ( ; pd != mePartonData().end(); ++pd, ++p ) {
-      summ += (**pd).mass();
-      p->setMass((**pd).mass());
+      summ += (**pd).hardProcessMass();
+      p->setMass((**pd).hardProcessMass());
     }
   }
 
@@ -158,16 +158,16 @@ double MatchboxPhasespace::invertKinematics(const vector<Lorentz5Momentum>& mome
 	if ( massMin > massMax )
 	  return 0.0;
 	double bwILow = 
-	  atan((sqr(massMin)-sqr((**pd).mass()))/((**pd).mass() * (**pd).hardProcessWidth()));
+	  atan((sqr(massMin)-sqr((**pd).hardProcessMass()))/((**pd).hardProcessMass() * (**pd).hardProcessWidth()));
 	double bwIUp = 
-	  atan((sqr(massMax)-sqr((**pd).mass()))/((**pd).mass() * (**pd).hardProcessWidth()));
+	  atan((sqr(massMax)-sqr((**pd).hardProcessMass()))/((**pd).hardProcessMass() * (**pd).hardProcessWidth()));
 	gmass = p->mass();
 	double bw =
-	  atan((sqr(gmass)-sqr((**pd).mass()))/((**pd).mass() * (**pd).hardProcessWidth()));
+	  atan((sqr(gmass)-sqr((**pd).hardProcessMass()))/((**pd).hardProcessMass() * (**pd).hardProcessWidth()));
 	r[0] = (bw-bwILow)/(bwIUp-bwILow);
 	++r;
       } else {
-	gmass = (**pd).mass();
+	gmass = (**pd).hardProcessMass();
       }
       maxMass -= gmass;
 
@@ -282,7 +282,7 @@ MatchboxPhasespace::timeLikeWeight(const Tree2toNDiagram& diag,
     <<" "<<vertexKey.get<1>()<<" " <<vertexKey.get<2>();
   }
 
-  Energy2 mass2 = sqr(diag.allPartons()[branch]->mass());
+  Energy2 mass2 = sqr(diag.allPartons()[branch]->hardProcessMass());
   Energy2 width2 = sqr(diag.allPartons()[branch]->hardProcessWidth());
 
   if ( abs(diag.allPartons()[branch]->id()) >= theLoopParticleIdMin
@@ -353,7 +353,7 @@ double MatchboxPhasespace::spaceLikeWeight(const Tree2toNDiagram& diag,
 
   res.second = incoming - res.second;
 
-  Energy2 mass2 = sqr(diag.allPartons()[children.first]->mass());
+  Energy2 mass2 = sqr(diag.allPartons()[children.first]->hardProcessMass());
   Energy2 width2 = sqr(diag.allPartons()[children.first]->hardProcessWidth());
 
   if ( abs(diag.allPartons()[children.first]->id()) >= theLoopParticleIdMin

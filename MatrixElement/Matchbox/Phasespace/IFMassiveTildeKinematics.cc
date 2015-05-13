@@ -52,7 +52,7 @@ bool IFMassiveTildeKinematics::doMap() {
 
   bornEmitterMomentum().setMass(ZERO);
   bornEmitterMomentum().rescaleEnergy();
-  bornSpectatorMomentum().setMass(bornSpectatorData()->mass());
+  bornSpectatorMomentum().setMass(bornSpectatorData()->hardProcessMass());
   bornSpectatorMomentum().rescaleEnergy();
 
   return true;

@@ -290,15 +290,15 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
     throw Exception() << "`mW' scheme is not supported by GoSam"
                       << Exception::abortnow;
   } else if ( SM().ewScheme() == 1 ) { // EW/Scheme GMuScheme (uses mW,mZ,GF)
-    double in1=getParticleData(ParticleID::Z0)->mass()/GeV;
-    double in2=getParticleData(ParticleID::Wplus)->mass()/GeV;
+    double in1=getParticleData(ParticleID::Z0)->hardProcessMass()/GeV;
+    double in2=getParticleData(ParticleID::Wplus)->hardProcessMass()/GeV;
     double in3=SM().fermiConstant()*GeV2;
     OLP_SetParameter((char *)"mass(23)",&in1,&zero,&pStatus);
     OLP_SetParameter((char *)"mass(24)",&in2,&zero,&pStatus);
     OLP_SetParameter((char *)"Gf",&in3,&zero,&pStatus);
   } else if ( SM().ewScheme() == 2 ) { // EW/Scheme alphaMZScheme (uses mW,mZ,alpha(mZ))
-    double in1=getParticleData(ParticleID::Z0)->mass()/GeV;
-    double in2=getParticleData(ParticleID::Wplus)->mass()/GeV;
+    double in1=getParticleData(ParticleID::Z0)->hardProcessMass()/GeV;
+    double in2=getParticleData(ParticleID::Wplus)->hardProcessMass()/GeV;
     double in3=SM().alphaEMMZ();
     OLP_SetParameter((char *)"mass(23)",&in1,&zero,&pStatus);
     OLP_SetParameter((char *)"mass(24)",&in2,&zero,&pStatus);
@@ -311,7 +311,7 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
     OLP_SetParameter((char *)"alpha",&in2,&zero,&pStatus);
     OLP_SetParameter((char *)"sw2",&in3,&zero,&pStatus);
   } else if ( SM().ewScheme() == 5 ) { // EW/Scheme mZ (uses mZ,alphaEM,sin2thetaW)
-    double in1=getParticleData(ParticleID::Z0)->mass()/GeV;
+    double in1=getParticleData(ParticleID::Z0)->hardProcessMass()/GeV;
     double in2=SM().alphaEMMZ();
     double in3=SM().sin2ThetaW();
     OLP_SetParameter((char *)"mass(23)",&in1,&zero,&pStatus);
@@ -321,7 +321,7 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
 	
   // hand over mass and width of the Higgs
   double wH = getParticleData(25)->hardProcessWidth()/GeV;
-  double mH = getParticleData(25)->mass()/GeV;
+  double mH = getParticleData(25)->hardProcessMass()/GeV;
   OLP_SetParameter((char*)"width(25)",&wH,&zero,&pStatus);
   OLP_SetParameter((char*)"mass(25)",&mH,&zero,&pStatus);
 
@@ -333,11 +333,11 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
   if (massiveParticles.empty()) {
     // with quark masses
     for (int i=1; i<=6; ++i) 
-      if (getParticleData(i)->mass()/GeV > 0.0) massiveParticles.push_back(i);
+      if (getParticleData(i)->hardProcessMass()/GeV > 0.0) massiveParticles.push_back(i);
     // with lepton masses
-      if (theMassiveLeptons && getParticleData(11)->mass()/GeV > 0.0) massiveParticles.push_back(11);
-      if (theMassiveLeptons && getParticleData(13)->mass()/GeV > 0.0) massiveParticles.push_back(13);
-      if (theMassiveLeptons && getParticleData(15)->mass()/GeV > 0.0) massiveParticles.push_back(15);
+      if (theMassiveLeptons && getParticleData(11)->hardProcessMass()/GeV > 0.0) massiveParticles.push_back(11);
+      if (theMassiveLeptons && getParticleData(13)->hardProcessMass()/GeV > 0.0) massiveParticles.push_back(13);
+      if (theMassiveLeptons && getParticleData(15)->hardProcessMass()/GeV > 0.0) massiveParticles.push_back(15);
   }
 
   // hand over quark (and possibly lepton) masses and widths (iff massive)
@@ -346,7 +346,7 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
         string mstr;
         string wstr;
         int mInt = *mID;
-        double mass=getParticleData(mInt)->mass()/GeV;
+        double mass=getParticleData(mInt)->hardProcessMass()/GeV;
         double width=getParticleData(mInt)->hardProcessWidth()/GeV;
         std::stringstream ss;
         ss << mInt;
@@ -366,7 +366,7 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
         
 //      Nicer but not working properly:
         
-//      double mass=getParticleData(*mID)->mass()/GeV;
+//      double mass=getParticleData(*mID)->hardProcessMass()/GeV;
 //      double width=getParticleData(*mID)->hardProcessWidth()/GeV;
 //      string mstr="mass("+static_cast<ostringstream*>(&(ostringstream()<<(*mID)))->str()+")";
 //      string wstr="width("+static_cast<ostringstream*>(&(ostringstream()<<(*mID)))->str()+")";
@@ -454,12 +454,12 @@ void GoSamAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs, st
   orderFile << "IRregularisation         " << (isDR() ? "DRED" : "CDR") << "\n";
 
   // loop over quarks to check if they have non-zero masses
-  for (int i=1; i<=6; ++i) if (getParticleData(i)->mass()/GeV > 0.0) massiveParticles.push_back(i);
+  for (int i=1; i<=6; ++i) if (getParticleData(i)->hardProcessMass()/GeV > 0.0) massiveParticles.push_back(i);
 
   // check if leptons have non-zero masses (iff theMassiveLeptons==true)
-  if (theMassiveLeptons && getParticleData(11)->mass()/GeV > 0.0) massiveParticles.push_back(11);
-  if (theMassiveLeptons && getParticleData(13)->mass()/GeV > 0.0) massiveParticles.push_back(13);
-  if (theMassiveLeptons && getParticleData(15)->mass()/GeV > 0.0) massiveParticles.push_back(15);
+  if (theMassiveLeptons && getParticleData(11)->hardProcessMass()/GeV > 0.0) massiveParticles.push_back(11);
+  if (theMassiveLeptons && getParticleData(13)->hardProcessMass()/GeV > 0.0) massiveParticles.push_back(13);
+  if (theMassiveLeptons && getParticleData(15)->hardProcessMass()/GeV > 0.0) massiveParticles.push_back(15);
 
   if ( massiveParticles.size() != 0 ) {
     orderFile << "MassiveParticles         ";

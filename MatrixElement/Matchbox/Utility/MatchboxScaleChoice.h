@@ -84,7 +84,7 @@ public:
   virtual Energy2 renormalizationScaleQED() const { 
     if ( theFixedQEDScale != ZERO )
       return sqr(theFixedQEDScale);
-    Energy mZ = getParticleData(ParticleID::Z0)->mass();
+    Energy mZ = getParticleData(ParticleID::Z0)->hardProcessMass();
     return mZ*mZ; 
   }
 

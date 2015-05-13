@@ -46,8 +46,8 @@ bool FFMsqgxDipole::canHandle(const cPDVector& partons,
     partons[emission]->id() == ParticleID::g &&
     ((abs(partons[emitter]->id())> 1000000 && abs(partons[emitter]->id())< 1000007) ||
      (abs(partons[emitter]->id())> 2000000 && abs(partons[emitter]->id())< 2000007)) &&
-    !(partons[emitter]->mass() == ZERO &&
-      partons[spectator]->mass() == ZERO);
+    !(partons[emitter]->hardProcessMass() == ZERO &&
+      partons[spectator]->hardProcessMass() == ZERO);
 }
 
 
@@ -60,8 +60,8 @@ double FFMsqgxDipole::me2Avg(double ccme2) const {
   double z = subtractionParameters()[1];
 
   // masses
-  double muSQ2 = sqr( realEmissionME()->lastXComb().mePartonData()[realEmitter()]->mass() / lastDipoleScale() );
-  double muj2 = sqr( realEmissionME()->lastXComb().mePartonData()[realSpectator()]->mass() / lastDipoleScale() );
+  double muSQ2 = sqr( realEmissionME()->lastXComb().mePartonData()[realEmitter()]->hardProcessMass() / lastDipoleScale() );
+  double muj2 = sqr( realEmissionME()->lastXComb().mePartonData()[realSpectator()]->hardProcessMass() / lastDipoleScale() );
   // massive extra terms
   double vijk = sqrt( sqr(2.*muj2+(1.-muSQ2-muj2)*(1.-y))-4.*muj2 ) / ((1.-muSQ2-muj2)*(1.-y));
   double vbar = sqrt( 1.+sqr(muSQ2)+sqr(muj2)-2.*(muSQ2+muj2+muSQ2*muj2) ) / (1.-muSQ2-muj2);
@@ -97,8 +97,8 @@ double FFMsqgxDipole::me2() const {
   double z = subtractionParameters()[1];
   
   // masses
-  double muSQ2 = sqr( realEmissionME()->lastXComb().mePartonData()[realEmitter()]->mass() / lastDipoleScale() );
-  double muj2 = sqr( realEmissionME()->lastXComb().mePartonData()[realSpectator()]->mass() / lastDipoleScale() );
+  double muSQ2 = sqr( realEmissionME()->lastXComb().mePartonData()[realEmitter()]->hardProcessMass() / lastDipoleScale() );
+  double muj2 = sqr( realEmissionME()->lastXComb().mePartonData()[realSpectator()]->hardProcessMass() / lastDipoleScale() );
   // massive extra terms
   double vijk = sqrt( sqr(2.*muj2+(1.-muSQ2-muj2)*(1.-y))-4.*muj2 ) / ((1.-muSQ2-muj2)*(1.-y));
   double vbar = sqrt( 1.+sqr(muSQ2)+sqr(muj2)-2.*(muSQ2+muj2+muSQ2*muj2) ) / (1.-muSQ2-muj2);

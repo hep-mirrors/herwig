@@ -77,15 +77,15 @@ void VBFNLOAmplitude::startOLP(const string& contract, int& status) {
   map<long,Energy>::const_iterator it=reshuffleMasses().find(ParticleID::b);
   double bmass;
   if(it==reshuffleMasses().end())
-    bmass = getParticleData(ParticleID::b)->mass()/GeV;
+    bmass = getParticleData(ParticleID::b)->hardProcessMass()/GeV;
   else
     bmass = it->second/GeV;
   setOLPParameter("mass(5)",bmass);
-  setOLPParameter("mass(6)",getParticleData(ParticleID::t)->mass()/GeV);
+  setOLPParameter("mass(6)",getParticleData(ParticleID::t)->hardProcessMass()/GeV);
 
-  setOLPParameter("mass(23)",getParticleData(ParticleID::Z0)->mass()/GeV);
-  setOLPParameter("mass(24)",getParticleData(ParticleID::Wplus)->mass()/GeV);
-  setOLPParameter("mass(25)",getParticleData(ParticleID::h0)->mass()/GeV);
+  setOLPParameter("mass(23)",getParticleData(ParticleID::Z0)->hardProcessMass()/GeV);
+  setOLPParameter("mass(24)",getParticleData(ParticleID::Wplus)->hardProcessMass()/GeV);
+  setOLPParameter("mass(25)",getParticleData(ParticleID::h0)->hardProcessMass()/GeV);
 
   setOLPParameter("width(23)",getParticleData(ParticleID::Z0)->hardProcessWidth()/GeV);
   setOLPParameter("width(24)",getParticleData(ParticleID::Wplus)->hardProcessWidth()/GeV);

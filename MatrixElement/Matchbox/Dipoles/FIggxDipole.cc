@@ -46,7 +46,7 @@ bool FIggxDipole::canHandle(const cPDVector& partons,
     emitter > 1 && spectator < 2 &&
     partons[emission]->id() == ParticleID::g &&
     partons[emitter]->id() == ParticleID::g &&
-    partons[spectator]->mass() == ZERO;
+    partons[spectator]->hardProcessMass() == ZERO;
 }
 
 double FIggxDipole::me2Avg(double ccme2) const {

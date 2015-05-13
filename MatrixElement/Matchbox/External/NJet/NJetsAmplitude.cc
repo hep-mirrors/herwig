@@ -73,12 +73,12 @@ void NJetsAmplitude::startOLP(const string& contract, int& status) {
   if ( status != 1 )
     return;
 
-  param = getParticleData(ParticleID::Z0)->mass()/GeV;
+  param = getParticleData(ParticleID::Z0)->hardProcessMass()/GeV;
   NJet::LH_OLP::OLP_SetParameter("mass(23)",&param,&zero,&status);
   if ( status != 1 )
     return;
 
-  param = getParticleData(ParticleID::Wplus)->mass()/GeV;
+  param = getParticleData(ParticleID::Wplus)->hardProcessMass()/GeV;
   NJet::LH_OLP::OLP_SetParameter("mass(24)",&param,&zero,&status);
   if ( status != 1 )
     return;

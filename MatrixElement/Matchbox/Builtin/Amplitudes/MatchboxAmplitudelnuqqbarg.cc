@@ -24,7 +24,7 @@ MatchboxAmplitudelnuqqbarg::~MatchboxAmplitudelnuqqbarg() {}
 
 void MatchboxAmplitudelnuqqbarg::doinit() {
   MatchboxAmplitude::doinit();
-  MW = getParticleData(ParticleID::Wplus)->mass();
+  MW = getParticleData(ParticleID::Wplus)->hardProcessMass();
   GW = getParticleData(ParticleID::Wplus)->hardProcessWidth();
   CA = SM().Nc();
   CF = (SM().Nc()*SM().Nc()-1.)/(2.*SM().Nc());
@@ -66,7 +66,7 @@ bool MatchboxAmplitudelnuqqbarg::canHandle(const PDVector& proc) const {
   PDVector::iterator quark = xproc.begin();
   for ( ; quark != xproc.end(); ++quark ) 
     if ( abs((*quark)->id()) >= 1 && abs((*quark)->id()) <= 6 && abs((*quark)->id()) % 2 == 1 ) {
-      assert( (*quark)->mass() == ZERO );
+      assert( (*quark)->hardProcessMass() == ZERO );
       break;
     } 
   if ( quark == xproc.end() ) return false;
@@ -75,7 +75,7 @@ bool MatchboxAmplitudelnuqqbarg::canHandle(const PDVector& proc) const {
   quark = xproc.begin();
   for ( ; quark != xproc.end(); ++quark ) 
     if ( abs((*quark)->id()) >= 1 && abs((*quark)->id()) <= 6 && abs((*quark)->id()) % 2 == 0 ) {
-      assert( (*quark)->mass() == ZERO );
+      assert( (*quark)->hardProcessMass() == ZERO );
       break;
     } 
   if ( quark == xproc.end() ) return false;

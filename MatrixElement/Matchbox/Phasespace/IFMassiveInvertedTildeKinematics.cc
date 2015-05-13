@@ -57,7 +57,7 @@ bool IFMassiveInvertedTildeKinematics::doMap(const double * r) {
   // x
   double u = ratio/(1.-z);
   double x = (z*(1.-z)-ratio)/(1.-z-ratio);
-  double up = (1.-x) / (1.-x+(x*sqr(bornSpectatorData()->mass())/scale));
+  double up = (1.-x) / (1.-x+(x*sqr(bornSpectatorData()->hardProcessMass())/scale));
 
   if ( x < emitterX() || x > 1. || u > up) {
     jacobian(0.0);
@@ -65,7 +65,7 @@ bool IFMassiveInvertedTildeKinematics::doMap(const double * r) {
   }
 
   pt = sqrt(scale*u*(1.-u)*(1.-x));  
-  Energy magKt = sqrt(scale*u*(1.-u)*(1.-x)/x - sqr(u*bornSpectatorData()->mass()));
+  Energy magKt = sqrt(scale*u*(1.-u)*(1.-x)/x - sqr(u*bornSpectatorData()->hardProcessMass()));
 
   // TODO: why not mapping /= sqr(z*(1.-z)-ratio)/(1.-z) ? (see phd thesis, (5.74))
   mapping /= sqr(z*(1.-z)-ratio)/(1.-z-ratio);
@@ -79,16 +79,16 @@ bool IFMassiveInvertedTildeKinematics::doMap(const double * r) {
   subtractionParameters()[1] = u;
   
   realEmitterMomentum() = (1./x)*emitter;
-  realEmissionMomentum() = (-kt*kt-u*u*sqr(bornSpectatorData()->mass()))/(u*scale)*emitter +  
+  realEmissionMomentum() = (-kt*kt-u*u*sqr(bornSpectatorData()->hardProcessMass()))/(u*scale)*emitter +  
     u*spectator - kt;
-  realSpectatorMomentum() = (-kt*kt+sqr(bornSpectatorData()->mass())*u*(2.-u))/((1.-u)*scale)*emitter + 
+  realSpectatorMomentum() = (-kt*kt+sqr(bornSpectatorData()->hardProcessMass())*u*(2.-u))/((1.-u)*scale)*emitter + 
     (1.-u)*spectator + kt;
 
   realEmitterMomentum().setMass(ZERO);
   realEmitterMomentum().rescaleEnergy();
   realEmissionMomentum().setMass(ZERO);
   realEmissionMomentum().rescaleEnergy();
-  realSpectatorMomentum().setMass(bornSpectatorData()->mass());
+  realSpectatorMomentum().setMass(bornSpectatorData()->hardProcessMass());
   realSpectatorMomentum().rescaleEnergy();
   return true;
 

@@ -69,7 +69,7 @@ bool DipolePKOperator::apply(const cPDVector& pd) const {
     // Since this loop only checks for at least one exis-
     // ting combination: Return false if any massive par-
     // tons are present (covered by DipoleMPKOperator).
-    if ( (*p)->coloured() && (*p)->mass()!=ZERO ) {
+    if ( (*p)->coloured() && (*p)->hardProcessMass()!=ZERO ) {
       return false;
     }
     if ( !first ) {
@@ -87,7 +87,7 @@ bool DipolePKOperator::apply(const cPDVector& pd) const {
 
 bool DipolePKOperator::apply(tcPDPtr pd) const {
   return
-    pd->mass() == ZERO &&
+    pd->hardProcessMass() == ZERO &&
     (abs(pd->id()) < 7 || pd->id() == ParticleID::g);
 }
 
@@ -124,7 +124,7 @@ vector<int> DipolePKOperator::NLightJetVec() const {
 
   for ( PDVector::const_iterator theP = theJetConstitutents.begin();
         theP != theJetConstitutents.end(); ++theP ) {
-    if ( (**theP).id() > 0 && (**theP).id() < 7 && (**theP).mass() == ZERO )
+    if ( (**theP).id() > 0 && (**theP).id() < 7 && (**theP).hardProcessMass() == ZERO )
       theNLightJetVec.push_back( (**theP).id() );
   }
 
@@ -145,7 +145,7 @@ vector<int> DipolePKOperator::NHeavyJetVec() const {
 
   for ( PDVector::const_iterator theP = theJetConstitutents.begin();
         theP != theJetConstitutents.end(); ++theP ) {
-    if ( (**theP).id() > 0 && (**theP).id() < 7 && (**theP).mass() != ZERO )
+    if ( (**theP).id() > 0 && (**theP).id() < 7 && (**theP).hardProcessMass() != ZERO )
       theNHeavyJetVec.push_back( (**theP).id() );
   }
 
@@ -162,7 +162,7 @@ vector<int> DipolePKOperator::NLightBornVec() const {
 
   for ( cPDVector::const_iterator j = mePartonData().begin();
 	j != mePartonData().end(); ++j ) {
-    if ( abs((**j).id()) < 7 && (**j).mass() == ZERO )
+    if ( abs((**j).id()) < 7 && (**j).hardProcessMass() == ZERO )
       theNLightBornVec.push_back( (**j).id() );
   }
 
@@ -179,7 +179,7 @@ vector<int> DipolePKOperator::NHeavyBornVec() const {
 
   for ( cPDVector::const_iterator j = mePartonData().begin();
 	j != mePartonData().end(); ++j ) {
-    if ( abs((**j).id()) < 7 && (**j).mass() != ZERO )
+    if ( abs((**j).id()) < 7 && (**j).hardProcessMass() != ZERO )
       theNHeavyBornVec.push_back( (**j).id() );
   }
 
@@ -200,7 +200,7 @@ vector<int> DipolePKOperator::NLightProtonVec() const {
 
   for ( PDVector::const_iterator theP = theProtonConstitutents.begin();
         theP != theProtonConstitutents.end(); ++theP ) {
-    if ( (**theP).id() > 0 && (**theP).id() < 7 && (**theP).mass() == ZERO )
+    if ( (**theP).id() > 0 && (**theP).id() < 7 && (**theP).hardProcessMass() == ZERO )
       theNLightProtonVec.push_back( (**theP).id() );
   }
 

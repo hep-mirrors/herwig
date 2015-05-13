@@ -48,11 +48,11 @@ bool FFMassiveTildeKinematics::doMap() {
   Lorentz5Momentum pTot = emitter+emission+spectator;
   Energy scale = pTot.m();
   // masses
-  double mui2 = sqr( realEmitterData()->mass() / scale );
-  double mu2  = sqr( realEmissionData()->mass() / scale );
-  double muj2 = sqr( realSpectatorData()->mass() / scale );
-  double Mui2 = sqr( bornEmitterData()->mass() / scale );
-  double Muj2 = sqr( bornSpectatorData()->mass() / scale );
+  double mui2 = sqr( realEmitterData()->hardProcessMass() / scale );
+  double mu2  = sqr( realEmissionData()->hardProcessMass() / scale );
+  double muj2 = sqr( realSpectatorData()->hardProcessMass() / scale );
+  double Mui2 = sqr( bornEmitterData()->hardProcessMass() / scale );
+  double Muj2 = sqr( bornSpectatorData()->hardProcessMass() / scale );
   
   double bar = 1.-mui2-mu2-muj2;
   
@@ -81,9 +81,9 @@ Energy FFMassiveTildeKinematics::lastPt() const {
   double z = subtractionParameters()[1];
   
   // masses
-  double mui2 = sqr( realEmitterData()->mass() / scale );
-  double mu2  = sqr( realEmissionData()->mass() / scale );
-  double muj2 = sqr( realSpectatorData()->mass() / scale );
+  double mui2 = sqr( realEmitterData()->hardProcessMass() / scale );
+  double mu2  = sqr( realEmissionData()->hardProcessMass() / scale );
+  double muj2 = sqr( realSpectatorData()->hardProcessMass() / scale );
     
   Energy ret = scale * sqrt( y * (1.-mui2-mu2-muj2) * z*(1.-z) - sqr(1.-z)*mui2 - sqr(z)*mu2 );
   

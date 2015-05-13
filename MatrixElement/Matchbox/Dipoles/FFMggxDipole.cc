@@ -46,7 +46,7 @@ bool FFMggxDipole::canHandle(const cPDVector& partons,
     emitter > 1 && spectator > 1 &&
     partons[emission]->id() == ParticleID::g &&
     partons[emitter]->id() == ParticleID::g &&
-    partons[spectator]->mass() != ZERO;
+    partons[spectator]->hardProcessMass() != ZERO;
 }
 
 double FFMggxDipole::me2Avg(double ccme2) const {
@@ -58,7 +58,7 @@ double FFMggxDipole::me2Avg(double ccme2) const {
   double z = subtractionParameters()[1];
 
   // masses, g->gg all masses zero except spectator
-  double muj2 = sqr( realEmissionME()->lastXComb().mePartonData()[realSpectator()]->mass() / lastDipoleScale() );
+  double muj2 = sqr( realEmissionME()->lastXComb().mePartonData()[realSpectator()]->hardProcessMass() / lastDipoleScale() );
   // massive extra terms, viji = 1
   double vijk = sqrt( sqr(2.*muj2+(1.-muj2)*(1.-y))-4.*muj2 ) / ((1.-muj2)*(1.-y));
 
@@ -94,7 +94,7 @@ double FFMggxDipole::me2() const {
   double z = subtractionParameters()[1];
   
   // masses, g->gg all masses zero except spectator
-  double muj2 = sqr( realEmissionME()->lastXComb().mePartonData()[realSpectator()]->mass() / lastDipoleScale() );
+  double muj2 = sqr( realEmissionME()->lastXComb().mePartonData()[realSpectator()]->hardProcessMass() / lastDipoleScale() );
   // massive extra terms
   double vijk = sqrt( sqr(2.*muj2+(1.-muj2)*(1.-y))-4.*muj2 ) / ((1.-muj2)*(1.-y));
   

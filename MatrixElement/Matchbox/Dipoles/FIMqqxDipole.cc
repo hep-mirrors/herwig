@@ -47,12 +47,12 @@ bool FIMqqxDipole::canHandle(const cPDVector& partons,
     abs(partons[emission]->id()) < 7 &&
     abs(partons[emitter]->id()) < 7 &&
     partons[emission]->id() + partons[emitter]->id() == 0 &&
-//    !(partons[emitter]->mass() == ZERO &&
-//      partons[emission]->mass() == ZERO &&
-//      partons[spectator]->mass() == ZERO);
-    !(partons[emitter]->mass() == ZERO &&
-      partons[emission]->mass() == ZERO) &&
-      partons[spectator]->mass() == ZERO;
+//    !(partons[emitter]->hardProcessMass() == ZERO &&
+//      partons[emission]->hardProcessMass() == ZERO &&
+//      partons[spectator]->hardProcessMass() == ZERO);
+    !(partons[emitter]->hardProcessMass() == ZERO &&
+      partons[emission]->hardProcessMass() == ZERO) &&
+      partons[spectator]->hardProcessMass() == ZERO;
 }
 
 double FIMqqxDipole::me2Avg(double ccme2) const {
@@ -67,7 +67,7 @@ double FIMqqxDipole::me2Avg(double ccme2) const {
     2.*((realEmissionME()->lastXComb().meMomenta()[realEmitter()])*
 	(realEmissionME()->lastXComb().meMomenta()[realEmission()]))*x;
 
-  Energy2 mQ2 = sqr(realEmissionME()->lastXComb().mePartonData()[realEmitter()]->mass());
+  Energy2 mQ2 = sqr(realEmissionME()->lastXComb().mePartonData()[realEmitter()]->hardProcessMass());
 //  double muQ2 = x * mQ2 /
   double muQ2 = 0.5 * z * mQ2 /
     ((realEmissionME()->lastXComb().meMomenta()[realEmitter()])*
@@ -110,7 +110,7 @@ double FIMqqxDipole::me2() const {
     2.*((realEmissionME()->lastXComb().meMomenta()[realEmitter()])*
 	(realEmissionME()->lastXComb().meMomenta()[realEmission()]))*x;
 
-  Energy2 mQ2 = sqr((realEmissionME()->lastXComb().mePartonData()[realEmitter()])->mass());
+  Energy2 mQ2 = sqr((realEmissionME()->lastXComb().mePartonData()[realEmitter()])->hardProcessMass());
 
   Lorentz5Momentum pc = 
     z*realEmissionME()->lastXComb().meMomenta()[realEmitter()] -

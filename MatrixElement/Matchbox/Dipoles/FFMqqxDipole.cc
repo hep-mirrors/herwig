@@ -47,9 +47,9 @@ bool FFMqqxDipole::canHandle(const cPDVector& partons,
     abs(partons[emission]->id()) < 7 &&
     abs(partons[emitter]->id()) < 7 &&
     partons[emission]->id() + partons[emitter]->id() == 0 &&
-    !(partons[emission]->mass() == ZERO &&
-      partons[emitter]->mass() == ZERO &&
-      partons[spectator]->mass() == ZERO);
+    !(partons[emission]->hardProcessMass() == ZERO &&
+      partons[emitter]->hardProcessMass() == ZERO &&
+      partons[spectator]->hardProcessMass() == ZERO);
 }
 
 double FFMqqxDipole::me2Avg(double ccme2) const {
@@ -61,9 +61,9 @@ double FFMqqxDipole::me2Avg(double ccme2) const {
   double z = subtractionParameters()[1];
 
   // masses
-  double muQ2 = sqr( realEmissionME()->lastXComb().mePartonData()[realEmission()]->mass() / lastDipoleScale() );
-  double muj2 = sqr( realEmissionME()->lastXComb().mePartonData()[realSpectator()]->mass() / lastDipoleScale() );
-  Energy2 mQ2 = sqr( realEmissionME()->lastXComb().mePartonData()[realEmission()]->mass() );
+  double muQ2 = sqr( realEmissionME()->lastXComb().mePartonData()[realEmission()]->hardProcessMass() / lastDipoleScale() );
+  double muj2 = sqr( realEmissionME()->lastXComb().mePartonData()[realSpectator()]->hardProcessMass() / lastDipoleScale() );
+  Energy2 mQ2 = sqr( realEmissionME()->lastXComb().mePartonData()[realEmission()]->hardProcessMass() );
   // massive extra terms
   double t = 1.-2.*muQ2-muj2;
   double vijk = sqrt( sqr(2.*muj2+t*(1.-y))-4.*muj2 ) / (t*(1.-y));
@@ -102,9 +102,9 @@ double FFMqqxDipole::me2() const {
   double z = subtractionParameters()[1];
   
   // masses
-  double muQ2 = sqr( realEmissionME()->lastXComb().mePartonData()[realEmission()]->mass() / lastDipoleScale() );
-  double muj2 = sqr( realEmissionME()->lastXComb().mePartonData()[realSpectator()]->mass() / lastDipoleScale() );
-  Energy2 mQ2 = sqr( realEmissionME()->lastXComb().mePartonData()[realEmission()]->mass() );
+  double muQ2 = sqr( realEmissionME()->lastXComb().mePartonData()[realEmission()]->hardProcessMass() / lastDipoleScale() );
+  double muj2 = sqr( realEmissionME()->lastXComb().mePartonData()[realSpectator()]->hardProcessMass() / lastDipoleScale() );
+  Energy2 mQ2 = sqr( realEmissionME()->lastXComb().mePartonData()[realEmission()]->hardProcessMass() );
   // massive extra terms
   double vijk = sqrt( sqr(2.*muj2+(1.-2.*muQ2-muj2)*(1.-y))-4.*muj2 ) / ((1.-2.*muQ2-muj2)*(1.-y));
 

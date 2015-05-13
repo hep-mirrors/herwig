@@ -193,8 +193,8 @@ bool MadGraphAmplitude::initializeExternal() {
  
     
   //EW-consistency check:
-  Energy MW=getParticleData(ParticleID::Wplus)->mass();
-  Energy MZ=getParticleData(ParticleID::Z0)->mass();
+  Energy MW=getParticleData(ParticleID::Wplus)->hardProcessMass();
+  Energy MZ=getParticleData(ParticleID::Z0)->hardProcessMass();
   if( MW!= sqrt(MZ*MZ/2.0+sqrt(MZ*MZ*MZ*MZ/4.0-Constants::pi*SM().alphaEMMZ()*MZ*MZ/ sqrt(2.0)/SM().fermiConstant()))){  
     generator()->log()<<"\n\n-----!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!-----";
     generator()->log() << "\nYou are using a EW scheme which is inconsistent with the MadGraph parametisation:\n\n"     
@@ -215,8 +215,8 @@ bool MadGraphAmplitude::initializeExternal() {
   params<<"\n$alphas$ " <<std::setiosflags(ios::scientific)  <<SM().alphaS();
   params<<"\n$GF$ "     <<std::setiosflags(ios::scientific)  <<SM().fermiConstant()*GeV2   ;
   params<<"\n$alphaMZ$ " <<std::setiosflags(ios::scientific) <<1/SM().alphaEMMZ();
-  params<<"\n$MZ$ "     <<std::setiosflags(ios::scientific)  <<getParticleData(ParticleID::Z0)->mass() /GeV<<flush;
-  params<<"\n$MW$ "    <<std::setiosflags(ios::scientific)   <<getParticleData(ParticleID::Wplus)->mass() /GeV<<flush;
+  params<<"\n$MZ$ "     <<std::setiosflags(ios::scientific)  <<getParticleData(ParticleID::Z0)->hardProcessMass() /GeV<<flush;
+  params<<"\n$MW$ "    <<std::setiosflags(ios::scientific)   <<getParticleData(ParticleID::Wplus)->hardProcessMass() /GeV<<flush;
   params<<"\n$sw2$ "    <<std::setiosflags(ios::scientific)   << SM().sin2ThetaW() <<flush;
   if(theMGmodel=="heft"&&!keepinputtopmass){
     if ( factory()->initVerbose() ) {
@@ -237,13 +237,13 @@ bool MadGraphAmplitude::initializeExternal() {
     }
     params<<"\n$MT$ 10000000." <<flush;
   }else{
-      params<<"\n$MT$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::t)->mass() /GeV <<flush;
+      params<<"\n$MT$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::t)->hardProcessMass() /GeV <<flush;
   }
   params<<"\n$WT$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::t)->hardProcessWidth() /GeV <<flush;
-  params<<"\n$MB$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::b)->mass() /GeV <<flush;
-  params<<"\n$MH$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::h0)->mass() /GeV <<flush;
+  params<<"\n$MB$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::b)->hardProcessMass() /GeV <<flush;
+  params<<"\n$MH$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::h0)->hardProcessMass() /GeV <<flush;
   params<<"\n$WH$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::h0)->hardProcessWidth() /GeV <<flush;
-  params<<"\n$MTA$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::tauplus)->mass() /GeV <<flush;
+  params<<"\n$MTA$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::tauplus)->hardProcessMass() /GeV <<flush;
 
   
   string cmd = "python " + bindir_ + "/mg2Matchbox.py ";

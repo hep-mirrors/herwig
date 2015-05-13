@@ -47,9 +47,9 @@ bool FIqqxDipole::canHandle(const cPDVector& partons,
     abs(partons[emission]->id()) < 6 &&
     abs(partons[emitter]->id()) < 6 &&
     partons[emission]->id() + partons[emitter]->id() == 0 &&
-    partons[emitter]->mass() == ZERO &&
-    partons[emission]->mass() == ZERO &&
-    partons[spectator]->mass() == ZERO;
+    partons[emitter]->hardProcessMass() == ZERO &&
+    partons[emission]->hardProcessMass() == ZERO &&
+    partons[spectator]->hardProcessMass() == ZERO;
 }
 
 double FIqqxDipole::me2Avg(double ccme2) const {

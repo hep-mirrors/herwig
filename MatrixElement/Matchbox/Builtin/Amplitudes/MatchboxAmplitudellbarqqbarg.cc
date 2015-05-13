@@ -40,9 +40,9 @@ IBPtr MatchboxAmplitudellbarqqbarg::fullclone() const {
 
 void MatchboxAmplitudellbarqqbarg::doinit() {
   MatchboxZGammaAmplitude::doinit();
-  MZ = getParticleData(ParticleID::Z0)->mass();
+  MZ = getParticleData(ParticleID::Z0)->hardProcessMass();
   GZ = getParticleData(ParticleID::Z0)->hardProcessWidth();
-  MW = getParticleData(ParticleID::Wplus)->mass();
+  MW = getParticleData(ParticleID::Wplus)->hardProcessMass();
   GW = getParticleData(ParticleID::Wplus)->hardProcessWidth();
   CA = SM().Nc();
   CF = (SM().Nc()*SM().Nc()-1.)/(2.*SM().Nc());
@@ -51,9 +51,9 @@ void MatchboxAmplitudellbarqqbarg::doinit() {
 
 void MatchboxAmplitudellbarqqbarg::doinitrun() {
   MatchboxZGammaAmplitude::doinitrun();
-  MZ = getParticleData(ParticleID::Z0)->mass();
+  MZ = getParticleData(ParticleID::Z0)->hardProcessMass();
   GZ = getParticleData(ParticleID::Z0)->hardProcessWidth();
-  MW = getParticleData(ParticleID::Wplus)->mass();
+  MW = getParticleData(ParticleID::Wplus)->hardProcessMass();
   GW = getParticleData(ParticleID::Wplus)->hardProcessWidth();
   CA = SM().Nc();
   CF = (SM().Nc()*SM().Nc()-1.)/(2.*SM().Nc());
@@ -93,7 +93,7 @@ bool MatchboxAmplitudellbarqqbarg::canHandle(const PDVector& proc) const {
   for ( ; quark != xproc.end(); ++quark )
     if ( abs((**quark).id()) < 6 &&
 	 (**quark).id() > 0 &&
-	 (**quark).mass() == ZERO ) {
+	 (**quark).hardProcessMass() == ZERO ) {
       break;
     }
   if ( quark == xproc.end() )

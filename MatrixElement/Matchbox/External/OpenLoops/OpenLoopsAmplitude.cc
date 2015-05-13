@@ -98,7 +98,7 @@ void OpenLoopsAmplitude::startOLP(const string& contract, int& status) {
 	 map<long,Energy>::const_iterator it=reshuffleMasses().find(part[i]);
 	 double mass;
 	 if(it==reshuffleMasses().end())
-	   mass = getParticleData(part[i])->mass()/GeV;
+	   mass = getParticleData(part[i])->hardProcessMass()/GeV;
 	 else
 	   mass = it->second/GeV;
 	 double width=getParticleData(part[i])->hardProcessWidth()/GeV;

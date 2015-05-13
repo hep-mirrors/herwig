@@ -364,11 +364,11 @@ void MatchboxFactory::setup() {
 
       for ( PDVector::const_iterator p = partons.begin();
 	    p != partons.end(); ++p ) {
-	if ( abs((**p).id()) < 7 && (**p).mass() == ZERO )
+	if ( abs((**p).id()) < 7 && (**p).hardProcessMass() == ZERO )
 	  ++nl;
-	if ( (**p).id() > 0 && (**p).id() < 7 && (**p).mass() == ZERO )
+	if ( (**p).id() > 0 && (**p).id() < 7 && (**p).hardProcessMass() == ZERO )
 	  nLightJetVec( (**p).id() );
-	if ( (**p).id() > 0 && (**p).id() < 7 && (**p).mass() != ZERO )
+	if ( (**p).id() > 0 && (**p).id() < 7 && (**p).hardProcessMass() != ZERO )
 	  nHeavyJetVec( (**p).id() );
       }
       nLight(nl/2);
@@ -376,7 +376,7 @@ void MatchboxFactory::setup() {
       const PDVector& partonsInP = particleGroups()["p"];
       for ( PDVector::const_iterator pip = partonsInP.begin();
 	    pip != partonsInP.end(); ++pip ) {
-	if ( (**pip).id() > 0 && (**pip).id() < 7 && (**pip).mass() == ZERO )
+	if ( (**pip).id() > 0 && (**pip).id() < 7 && (**pip).hardProcessMass() == ZERO )
 	  nLightProtonVec( (**pip).id() );
       }
 

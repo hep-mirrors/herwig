@@ -25,7 +25,7 @@ Energy PhasespaceInfo::generateMass(tcPDPtr data,
   if ( range.second < ZERO )
     xup = -xup;
 
-  double mu = sqr(data->mass())/sHat;
+  double mu = sqr(data->hardProcessMass())/sHat;
   double gamma = sqr(data->hardProcessWidth())/sHat;
 
   if ( M0 != ZERO )

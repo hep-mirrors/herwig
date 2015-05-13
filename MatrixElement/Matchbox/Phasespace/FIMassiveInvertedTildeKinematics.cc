@@ -50,9 +50,9 @@ bool FIMassiveInvertedTildeKinematics::doMap(const double * r) {
   Energy pt = ptz.first;
   double z = ptz.second;
 
-  Energy2 mi2 = sqr(realEmitterData()->mass());
-  Energy2 m2  = sqr(realEmissionData()->mass());
-  Energy2 Mi2 = sqr(bornEmitterData()->mass());
+  Energy2 mi2 = sqr(realEmitterData()->hardProcessMass());
+  Energy2 m2  = sqr(realEmissionData()->hardProcessMass());
+  Energy2 Mi2 = sqr(bornEmitterData()->hardProcessMass());
 
   Energy2 scale=2.*emitter*spectator;
   double y = (pt*pt+(1.-z)*mi2+z*m2-z*(1.-z)*Mi2) / (z*(1.-z)*scale);
@@ -104,9 +104,9 @@ bool FIMassiveInvertedTildeKinematics::doMap(const double * r) {
 }
 
 Energy FIMassiveInvertedTildeKinematics::lastPt() const {
-  Energy2 mi2 = sqr(realEmitterData()->mass());
-  Energy2 m2  = sqr(realEmissionData()->mass());
-  Energy2 Mi2 = sqr(bornEmitterData()->mass());
+  Energy2 mi2 = sqr(realEmitterData()->hardProcessMass());
+  Energy2 m2  = sqr(realEmissionData()->hardProcessMass());
+  Energy2 Mi2 = sqr(bornEmitterData()->hardProcessMass());
 
   Energy2 scale = Mi2 - (realEmitterMomentum()+realEmissionMomentum()-realSpectatorMomentum()).m2();
   double x = subtractionParameters()[0];
@@ -122,9 +122,9 @@ double FIMassiveInvertedTildeKinematics::lastZ() const {
 }
 
 Energy FIMassiveInvertedTildeKinematics::ptMax() const {
-  Energy2 mi2 = sqr(realEmitterData()->mass());
-  Energy2 m2  = sqr(realEmissionData()->mass());
-  Energy2 Mi2 = sqr(bornEmitterData()->mass());
+  Energy2 mi2 = sqr(realEmitterData()->hardProcessMass());
+  Energy2 m2  = sqr(realEmissionData()->hardProcessMass());
+  Energy2 Mi2 = sqr(bornEmitterData()->hardProcessMass());
   double x = spectatorX();
   // s^star/x
   Energy2 scale=2.*bornEmitterMomentum()*bornSpectatorMomentum();
@@ -135,9 +135,9 @@ Energy FIMassiveInvertedTildeKinematics::ptMax() const {
 
 pair<double,double> FIMassiveInvertedTildeKinematics::zBounds(Energy pt, Energy hardPt) const {
   hardPt = hardPt == ZERO ? ptMax() : min(hardPt,ptMax());
-  Energy2 mi2 = sqr(realEmitterData()->mass());
-  Energy2 m2  = sqr(realEmissionData()->mass());
-  Energy2 Mi2 = sqr(bornEmitterData()->mass());
+  Energy2 mi2 = sqr(realEmitterData()->hardProcessMass());
+  Energy2 m2  = sqr(realEmissionData()->hardProcessMass());
+  Energy2 Mi2 = sqr(bornEmitterData()->hardProcessMass());
   // s^star/x
   Energy2 scale=2.*bornEmitterMomentum()*bornSpectatorMomentum();
   Energy2 s = scale * (1.-spectatorX())/spectatorX() +  Mi2;
