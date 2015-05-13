@@ -689,6 +689,7 @@ create Herwig::FrixionePhotonSeparationCut FrixionePhotonSeparationCut
 create Herwig::IdentifiedParticleCut IdentifiedParticleCut
 create Herwig::MatchboxDeltaRCut MatchboxDeltaRCut
 create Herwig::MissingPtCut MissingPtCut
+create Herwig::InvariantMassCut InvariantMassCut
 
 ################################################################################
 # Setup scale choices

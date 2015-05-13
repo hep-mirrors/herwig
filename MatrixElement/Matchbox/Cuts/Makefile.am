@@ -10,4 +10,6 @@ MatchboxDeltaRCut.h \
 MissingPtCut.cc \
 MissingPtCut.h \
 FrixionePhotonSeparationCut.cc \
-FrixionePhotonSeparationCut.h
+FrixionePhotonSeparationCut.h \
+InvariantMassCut.cc \
+InvariantMassCut.h 
