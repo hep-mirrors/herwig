@@ -583,10 +583,10 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
       finalSpectator = trialSpectator;
 
       if (dipoles[i]==FFc || dipoles[i]==FFa ) {
-	if(momenta[3].z()*momenta[1].z()<ZERO) {
-	  swap(finalEmitter,finalSpectator);
-	  swap(momenta[1],momenta[2]);
-	}
+      	if((momenta[3]+momenta[1]).m2()-momenta[1].m2()>(momenta[3]+momenta[2]).m2()-momenta[2].m2()) {
+      	  swap(finalEmitter,finalSpectator);
+      	  swap(momenta[1],momenta[2]);
+      	}
       }
     }
   }
@@ -844,9 +844,10 @@ bool GeneralTwoBodyDecayer::calcMomenta(int j, Energy pT, double y, double phi,
   // check value of xe is physical
   if (xe>(1.+e2_-s2_) || xe<2.*e_) return false;       
 
-  // calculate xe_z  
-  double epsilon_p =  -sqrt(sqr(xs)-4.*s2_)+xT*sinh(y)+sqrt(sqr(xe)-4.*e2_-sqr(xT));
-  double epsilon_m =  -sqrt(sqr(xs)-4.*s2_)+xT*sinh(y)-sqrt(sqr(xe)-4.*e2_-sqr(xT));
+  // calculate xe_z
+  double root1 = sqrt(max(0.,sqr(xs)-4.*s2_)), root2 = sqrt(max(0.,sqr(xe)-4.*e2_-sqr(xT)));
+  double epsilon_p =  -root1+xT*sinh(y)+root2;
+  double epsilon_m =  -root1+xT*sinh(y)-root2;
 
   // find direction of emitter
   if      (fabs(epsilon_p) < 1.e-10) xe_z =  sqrt(sqr(xe)-4.*e2_-sqr(xT));
