@@ -790,7 +790,7 @@ void MatchboxAmplitude::checkReshuffling(Ptr<MatchboxPhasespace>::tptr ps) {
     assert(data);
     bool needReshuffle = m->second != data->mass();
     needReshuffle |=
-      (data->width() != ZERO || data->massGenerator()) &&
+      (data->hardProcessWidth() != ZERO || data->massGenerator()) &&
       ps->useMassGenerators();
     if ( !needReshuffle )
       noReshuffle.insert(m->first);

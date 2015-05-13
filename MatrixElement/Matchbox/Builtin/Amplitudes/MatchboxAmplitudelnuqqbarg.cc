@@ -25,7 +25,7 @@ MatchboxAmplitudelnuqqbarg::~MatchboxAmplitudelnuqqbarg() {}
 void MatchboxAmplitudelnuqqbarg::doinit() {
   MatchboxAmplitude::doinit();
   MW = getParticleData(ParticleID::Wplus)->mass();
-  GW = getParticleData(ParticleID::Wplus)->width();
+  GW = getParticleData(ParticleID::Wplus)->hardProcessWidth();
   CA = SM().Nc();
   CF = (SM().Nc()*SM().Nc()-1.)/(2.*SM().Nc());
   theCKM = standardCKM(SM())->getUnsquaredMatrix(6);

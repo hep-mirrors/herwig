@@ -87,9 +87,9 @@ void VBFNLOAmplitude::startOLP(const string& contract, int& status) {
   setOLPParameter("mass(24)",getParticleData(ParticleID::Wplus)->mass()/GeV);
   setOLPParameter("mass(25)",getParticleData(ParticleID::h0)->mass()/GeV);
 
-  setOLPParameter("width(23)",getParticleData(ParticleID::Z0)->width()/GeV);
-  setOLPParameter("width(24)",getParticleData(ParticleID::Wplus)->width()/GeV);
-  setOLPParameter("width(25)",getParticleData(ParticleID::h0)->width()/GeV);
+  setOLPParameter("width(23)",getParticleData(ParticleID::Z0)->hardProcessWidth()/GeV);
+  setOLPParameter("width(24)",getParticleData(ParticleID::Wplus)->hardProcessWidth()/GeV);
+  setOLPParameter("width(25)",getParticleData(ParticleID::h0)->hardProcessWidth()/GeV);
 
   setOLPParameter("alpha",SM().alphaEMMZ());
   setOLPParameter("sw2",SM().sin2ThetaW());

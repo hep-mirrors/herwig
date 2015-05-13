@@ -320,7 +320,7 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
   }
 	
   // hand over mass and width of the Higgs
-  double wH = getParticleData(25)->width()/GeV;
+  double wH = getParticleData(25)->hardProcessWidth()/GeV;
   double mH = getParticleData(25)->mass()/GeV;
   OLP_SetParameter((char*)"width(25)",&wH,&zero,&pStatus);
   OLP_SetParameter((char*)"mass(25)",&mH,&zero,&pStatus);
@@ -347,7 +347,7 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
         string wstr;
         int mInt = *mID;
         double mass=getParticleData(mInt)->mass()/GeV;
-        double width=getParticleData(mInt)->width()/GeV;
+        double width=getParticleData(mInt)->hardProcessWidth()/GeV;
         std::stringstream ss;
         ss << mInt;
         string str = ss.str();
@@ -367,7 +367,7 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
 //      Nicer but not working properly:
         
 //      double mass=getParticleData(*mID)->mass()/GeV;
-//      double width=getParticleData(*mID)->width()/GeV;
+//      double width=getParticleData(*mID)->hardProcessWidth()/GeV;
 //      string mstr="mass("+static_cast<ostringstream*>(&(ostringstream()<<(*mID)))->str()+")";
 //      string wstr="width("+static_cast<ostringstream*>(&(ostringstream()<<(*mID)))->str()+")";
 //        cout<<"\n massiv "<<mstr;

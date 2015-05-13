@@ -83,12 +83,12 @@ void NJetsAmplitude::startOLP(const string& contract, int& status) {
   if ( status != 1 )
     return;
 
-  param = getParticleData(ParticleID::Z0)->width()/GeV;
+  param = getParticleData(ParticleID::Z0)->hardProcessWidth()/GeV;
   NJet::LH_OLP::OLP_SetParameter("width(23)",&param,&zero,&status);
   if ( status != 1 )
     return;
 
-  param = getParticleData(ParticleID::Wplus)->width()/GeV;
+  param = getParticleData(ParticleID::Wplus)->hardProcessWidth()/GeV;
   NJet::LH_OLP::OLP_SetParameter("width(24)",&param,&zero,&status);
   if ( status != 1 )
     return;

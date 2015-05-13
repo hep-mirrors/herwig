@@ -101,7 +101,7 @@ void OpenLoopsAmplitude::startOLP(const string& contract, int& status) {
 	   mass = getParticleData(part[i])->mass()/GeV;
 	 else
 	   mass = it->second/GeV;
-	 double width=getParticleData(part[i])->width()/GeV;
+	 double width=getParticleData(part[i])->hardProcessWidth()/GeV;
 	 std::stringstream ss;
 	 ss << part[i];
 	 string str = ss.str();

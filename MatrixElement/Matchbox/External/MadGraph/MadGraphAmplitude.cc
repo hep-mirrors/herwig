@@ -210,8 +210,8 @@ bool MadGraphAmplitude::initializeExternal() {
     
   
   ofstream params(para.c_str());
-  params<<"$WZ$ "    <<std::setiosflags(ios::scientific)  <<getParticleData(ParticleID::Z0)->width()     /GeV;
-  params<<"\n$WW$ "    <<std::setiosflags(ios::scientific)   <<getParticleData(ParticleID::Wplus)->width()/GeV;
+  params<<"$WZ$ "    <<std::setiosflags(ios::scientific)  <<getParticleData(ParticleID::Z0)->hardProcessWidth()     /GeV;
+  params<<"\n$WW$ "    <<std::setiosflags(ios::scientific)   <<getParticleData(ParticleID::Wplus)->hardProcessWidth()/GeV;
   params<<"\n$alphas$ " <<std::setiosflags(ios::scientific)  <<SM().alphaS();
   params<<"\n$GF$ "     <<std::setiosflags(ios::scientific)  <<SM().fermiConstant()*GeV2   ;
   params<<"\n$alphaMZ$ " <<std::setiosflags(ios::scientific) <<1/SM().alphaEMMZ();
@@ -239,10 +239,10 @@ bool MadGraphAmplitude::initializeExternal() {
   }else{
       params<<"\n$MT$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::t)->mass() /GeV <<flush;
   }
-  params<<"\n$WT$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::t)->width() /GeV <<flush;
+  params<<"\n$WT$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::t)->hardProcessWidth() /GeV <<flush;
   params<<"\n$MB$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::b)->mass() /GeV <<flush;
   params<<"\n$MH$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::h0)->mass() /GeV <<flush;
-  params<<"\n$WH$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::h0)->width() /GeV <<flush;
+  params<<"\n$WH$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::h0)->hardProcessWidth() /GeV <<flush;
   params<<"\n$MTA$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::tauplus)->mass() /GeV <<flush;
 
   

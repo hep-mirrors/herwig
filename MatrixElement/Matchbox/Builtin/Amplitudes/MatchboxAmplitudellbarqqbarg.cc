@@ -41,9 +41,9 @@ IBPtr MatchboxAmplitudellbarqqbarg::fullclone() const {
 void MatchboxAmplitudellbarqqbarg::doinit() {
   MatchboxZGammaAmplitude::doinit();
   MZ = getParticleData(ParticleID::Z0)->mass();
-  GZ = getParticleData(ParticleID::Z0)->width();
+  GZ = getParticleData(ParticleID::Z0)->hardProcessWidth();
   MW = getParticleData(ParticleID::Wplus)->mass();
-  GW = getParticleData(ParticleID::Wplus)->width();
+  GW = getParticleData(ParticleID::Wplus)->hardProcessWidth();
   CA = SM().Nc();
   CF = (SM().Nc()*SM().Nc()-1.)/(2.*SM().Nc());
   nPoints(5);
@@ -52,9 +52,9 @@ void MatchboxAmplitudellbarqqbarg::doinit() {
 void MatchboxAmplitudellbarqqbarg::doinitrun() {
   MatchboxZGammaAmplitude::doinitrun();
   MZ = getParticleData(ParticleID::Z0)->mass();
-  GZ = getParticleData(ParticleID::Z0)->width();
+  GZ = getParticleData(ParticleID::Z0)->hardProcessWidth();
   MW = getParticleData(ParticleID::Wplus)->mass();
-  GW = getParticleData(ParticleID::Wplus)->width();
+  GW = getParticleData(ParticleID::Wplus)->hardProcessWidth();
   CA = SM().Nc();
   CF = (SM().Nc()*SM().Nc()-1.)/(2.*SM().Nc());
   nPoints(5);
