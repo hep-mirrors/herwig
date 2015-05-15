@@ -1,0 +1,594 @@
+// -*- C++ -*-
+//
+// This is the implementation of the non-inlined, non-templated member
+// functions of the LeptonsJetsAnalysis class.
+//
+
+#include "LeptonsJetsAnalysis.h"
+#include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/EventRecord/Particle.h"
+#include "ThePEG/Repository/UseRandom.h"
+#include "ThePEG/Utilities/DescribeClass.h"
+
+#include "ThePEG/Interface/Reference.h"
+#include "ThePEG/Interface/RefVector.h"
+#include "ThePEG/Interface/Switch.h"
+
+#include "ThePEG/EventRecord/SubProcess.h"
+#include "ThePEG/EventRecord/SubProcessGroup.h"
+
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+
+#include "ThePEG/Handlers/EventHandler.h"
+#include "ThePEG/Handlers/StandardEventHandler.h"
+#include "Herwig++/Sampling/GeneralSampler.h"
+
+#include "Herwig++/Utilities/XML/ElementIO.h"
+
+using namespace Herwig;
+
+LeptonsJetsAnalysis::LeptonsJetsAnalysis() 
+  : theIsShowered(false), theApplyCuts(false) {}
+
+LeptonsJetsAnalysis::~LeptonsJetsAnalysis() {}
+
+
+
+#ifndef LWH_AIAnalysisFactory_H
+#ifndef LWH 
+#define LWH ThePEGLWH
+#endif
+#include "ThePEG/Analysis/LWH/AnalysisFactory.h"
+#endif
+
+struct SortPt {
+
+  inline bool operator()(const LorentzMomentum& a,
+			 const LorentzMomentum& b) const {
+    return a.perp() > b.perp();
+  }
+
+};
+
+struct SortId {
+
+  inline bool operator()(const pair<PID,LorentzMomentum>& a,
+			 const pair<PID,LorentzMomentum>& b) const {
+    // sort by abs(pid); if equal, first particle, then antiparticle
+    // this puts pairs forming bosons next to each other
+    long p1 = a.first;
+    long p2 = b.first;
+    if (abs(p1)==abs(p2)) {
+      return p1 > p2;
+    } else {
+      return abs(p1) < abs(p2);
+    }
+  }
+
+};
+
+void LeptonsJetsAnalysis::reconstructJets(const ParticleVector& parts) {
+
+  tcPDVector outType;
+  vector<LorentzMomentum> outMomenta;
+
+  for ( ParticleVector::const_iterator p = parts.begin();
+	p != parts.end(); ++p ) {
+    outType.push_back((**p).dataPtr());
+    outMomenta.push_back((**p).momentum());
+  }
+
+  jetFinder()->cluster(outType, outMomenta,
+		       tcCutsPtr(), tcPDPtr(),tcPDPtr());
+
+  sort(outMomenta.begin(),outMomenta.end(),SortPt());
+
+  for ( vector<Ptr<JetRegion>::ptr>::iterator j =
+	  theJetRegions.begin(); j != theJetRegions.end(); ++j )
+    (**j).reset();
+
+  for ( size_t k = 0; k < outMomenta.size(); ++k ) {
+    for ( vector<Ptr<JetRegion>::ptr>::const_iterator r = jetRegions().begin();
+  	  r != jetRegions().end(); ++r ) {
+      if ( (**r).matches(tCutsPtr(),k+1,outMomenta[k])) {
+	jetMomentum(k+1) = outMomenta[k];
+  	break;	
+      }
+    }
+  }
+
+}
+
+void LeptonsJetsAnalysis::reconstructEWParticles(ParticleVector& parts) {
+
+  vector< pair<PID,LorentzMomentum> > partall;
+  vector<LorentzMomentum> partl, partnu, parth;
+  LorentzMomentum ptmiss = LorentzMomentum(ZERO,ZERO,ZERO,ZERO);;
+
+  ParticleVector::iterator p = parts.begin();
+  while (p != parts.end()) {
+    PID pid = (**p).id();
+    if ( ( static_cast<long>(pid) == ParticleID::eminus    ) || 
+         ( static_cast<long>(pid) == ParticleID::eplus     ) || 
+         ( static_cast<long>(pid) == ParticleID::muminus   ) || 
+         ( static_cast<long>(pid) == ParticleID::muplus    ) || 
+         ( static_cast<long>(pid) == ParticleID::tauminus  ) || 
+         ( static_cast<long>(pid) == ParticleID::tauplus   ) ) {
+      partall.push_back(pair<PID,LorentzMomentum>(pid,(**p).momentum()));
+      partl.push_back((**p).momentum());
+      p = parts.erase(p);
+    } else
+    if ( ( static_cast<long>(pid) == ParticleID::nu_e      ) || 
+         ( static_cast<long>(pid) == ParticleID::nu_ebar   ) || 
+         ( static_cast<long>(pid) == ParticleID::nu_mu     ) || 
+         ( static_cast<long>(pid) == ParticleID::nu_mubar  ) || 
+         ( static_cast<long>(pid) == ParticleID::nu_tau    ) || 
+         ( static_cast<long>(pid) == ParticleID::nu_taubar ) ) {
+      partall.push_back(pair<PID,LorentzMomentum>(pid,(**p).momentum()));
+      partnu.push_back((**p).momentum());
+      ptmiss += (**p).momentum();
+      p = parts.erase(p);
+    } else
+    if (   static_cast<long>(pid) == ParticleID::h0          ) {
+      partall.push_back(pair<PID,LorentzMomentum>(pid,(**p).momentum()));
+      parth.push_back((**p).momentum());
+      p = parts.erase(p);
+    } else 
+      p++;
+
+  }
+
+  sort(partall.begin(),partall.end(),SortId());
+  sort(partl.begin(),partl.end(),SortPt());
+  sort(partnu.begin(),partnu.end(),SortPt());
+  sort(parth.begin(),parth.end(),SortPt());
+
+  // make missing transverse momentum transverse and add as last entry in leptonID and neutrino
+  ptmiss.setE(ptmiss.perp());
+  ptmiss.setZ(0*GeV);
+  partall.push_back(pair<PID,LorentzMomentum>(ParticleID::nu_e,ptmiss));
+  partnu.push_back(ptmiss);
+
+  for ( size_t k = 0; k < partall.size(); ++k ) 
+    leptonIDMomentum(k+1) = partall[k].second;
+  for ( size_t k = 0; k < partl.size(); ++k ) 
+    leptonPTMomentum(k+1) = partl[k];
+  for ( size_t k = 0; k < partnu.size(); ++k ) 
+    neutrinoMomentum(k+1) = partnu[k];
+  for ( size_t k = 0; k < parth.size(); ++k ) 
+    higgsMomentum(k+1) = parth[k];
+
+}
+
+void LeptonsJetsAnalysis::analyze(ParticleVector& parts, long id, double weight) {
+
+  clear();
+  reconstructEWParticles(parts);
+  reconstructJets(parts);
+
+  if ( theApplyCuts ) {
+// VBF cuts
+    if ( nJets()<2 ) return;
+    if ( (jetMomentum(1)+jetMomentum(2)).m() < 600*GeV ) return;
+    if ( abs(jetMomentum(1).rapidity()-jetMomentum(2).rapidity()) < 3.6 ) return;
+    if ( jetMomentum(1).rapidity()*jetMomentum(2).rapidity() > 0 ) return;
+    for ( map<unsigned int,LorentzMomentum>::const_iterator h = theLeptonPTs.begin();
+          h != theLeptonPTs.end(); ++h ) {
+      if ( h->second.perp() < 20*GeV ) return;
+      if ( abs(h->second.rapidity()) > 2.5 ) return;
+    }
+  }
+
+  unsigned int njets = 0;
+  Energy jetSummedPerp = ZERO;
+  double jetSummedRapidity = 0.0;
+  double jetSummedPhi = 0.0;
+  Energy jetSummedM = ZERO;
+
+  nJetsInclusive().count(Statistics::EventContribution(njets,weight,0.0),id);
+  if ( njets == theJets.size() )
+    nJetsExclusive().count(Statistics::EventContribution(njets,weight,0.0),id);
+
+  for ( map<unsigned int,LorentzMomentum>::const_iterator h = theJets.begin();
+	h != theJets.end(); ++h ) {
+    njets += 1;
+    jetProperties(h->first).count(h->second,weight,id);
+    jetInclusiveProperties().count(h->second,weight,id);
+    nJetsInclusive().count(Statistics::EventContribution(njets,weight,0.0),id);
+    if ( njets == theJets.size() ) {
+      exclusiveJetProperties(h->first).count(h->second,weight,id);
+      nJetsExclusive().count(Statistics::EventContribution(njets,weight,0.0),id);
+    }
+    jetSummedPerp += h->second.perp();
+    jetSummedRapidity += h->second.rapidity();
+    jetSummedPhi += h->second.phi();
+    jetSummedM += h->second.m();
+    map<unsigned int,LorentzMomentum>::const_iterator g = h; ++g;
+    for ( ; g != theJets.end(); ++g ) {
+      jetPairProperties(h->first,g->first).count(h->second,g->second,weight,id);
+      map<unsigned int,LorentzMomentum>::const_iterator g1 = g; ++g1;
+      for ( ; g1 != theJets.end(); ++g1 ) {
+	threeJetProperties(h->first,g->first,g1->first).count(h->second,g->second,g1->second,weight,id);
+	map<unsigned int,LorentzMomentum>::const_iterator g2 = g1; ++g2;
+	for ( ; g2 != theJets.end(); ++g2 ) {
+	  LorentzMomentum p1234 =
+	    h->second + g->second + g1->second + g2->second;
+	  fourJetProperties(h->first,g->first,g1->first,g2->first).count(p1234,weight,id);
+	}
+      }
+      for ( map<unsigned int,LorentzMomentum>::const_iterator g1 = theLeptonIDs.begin();
+          g1 != theLeptonIDs.end(); ++g1 ) 
+        jetPairLeptonIDTripleProperties(h->first,g->first,g1->first).count(h->second,g->second,g1->second,weight,id);
+      for ( map<unsigned int,LorentzMomentum>::const_iterator g1 = theLeptonPTs.begin();
+          g1 != theLeptonPTs.end(); ++g1 ) 
+        jetPairLeptonPTTripleProperties(h->first,g->first,g1->first).count(h->second,g->second,g1->second,weight,id);
+      for ( map<unsigned int,LorentzMomentum>::const_iterator g1 = theNeutrinos.begin();
+          g1 != theNeutrinos.end(); ++g1 ) 
+        jetPairNeutrinoTripleProperties(h->first,g->first,g1->first).count(h->second,g->second,g1->second,weight,id);
+      for ( map<unsigned int,LorentzMomentum>::const_iterator g1 = theHiggs.begin();
+          g1 != theHiggs.end(); ++g1 ) 
+        jetPairHiggsTripleProperties(h->first,g->first,g1->first).count(h->second,g->second,g1->second,weight,id);
+    }
+    for ( map<unsigned int,LorentzMomentum>::const_iterator g = theLeptonIDs.begin();
+	g != theLeptonIDs.end(); ++g ) 
+      jetLeptonIDPairProperties(h->first,g->first).count(h->second,g->second,weight,id);
+    for ( map<unsigned int,LorentzMomentum>::const_iterator g = theLeptonPTs.begin();
+	g != theLeptonPTs.end(); ++g ) 
+      jetLeptonPTPairProperties(h->first,g->first).count(h->second,g->second,weight,id);
+    for ( map<unsigned int,LorentzMomentum>::const_iterator g = theNeutrinos.begin();
+	g != theNeutrinos.end(); ++g ) 
+      jetNeutrinoPairProperties(h->first,g->first).count(h->second,g->second,weight,id);
+    for ( map<unsigned int,LorentzMomentum>::const_iterator g = theHiggs.begin();
+	g != theHiggs.end(); ++g ) 
+      jetHiggsPairProperties(h->first,g->first).count(h->second,g->second,weight,id);
+  }
+
+  if ( njets > 0 )
+    jetSummedProperties().count(jetSummedPerp,jetSummedRapidity,
+				jetSummedPhi,jetSummedM,
+				weight,id);
+
+  if ( njets > 0 )
+    jetAverageProperties().count(jetSummedPerp/njets,jetSummedRapidity/njets,
+				 jetSummedPhi/njets,jetSummedM/njets,
+				 weight,id);
+
+  for ( map<unsigned int,LorentzMomentum>::const_iterator h = theLeptonIDs.begin();
+	h != theLeptonIDs.end(); ++h ) {
+    leptonIDProperties(h->first).count(h->second,weight,id);
+    map<unsigned int,LorentzMomentum>::const_iterator g = h; ++g;
+    for ( ; g != theLeptonIDs.end(); ++g ) {
+      leptonIDPairProperties(h->first,g->first).count(h->second,g->second,weight,id);
+      map<unsigned int,LorentzMomentum>::const_iterator g1 = g; ++g1;
+      for ( ; g1 != theLeptonIDs.end(); ++g1 ) {
+	threeLeptonIDProperties(h->first,g->first,g1->first).count(h->second,g->second,g1->second,weight,id);
+	map<unsigned int,LorentzMomentum>::const_iterator g2 = g1; ++g2;
+	for ( ; g2 != theLeptonIDs.end(); ++g2 ) {
+	  LorentzMomentum p1234 =
+	    h->second + g->second + g1->second + g2->second;
+	  fourLeptonIDProperties(h->first,g->first,g1->first,g2->first).count(p1234,weight,id);
+	}
+      }
+    }
+  }
+
+  for ( map<unsigned int,LorentzMomentum>::const_iterator h = theLeptonPTs.begin();
+	h != theLeptonPTs.end(); ++h ) {
+    leptonPTProperties(h->first).count(h->second,weight,id);
+    map<unsigned int,LorentzMomentum>::const_iterator g = h; ++g;
+    for ( ; g != theLeptonPTs.end(); ++g ) {
+      leptonPTPairProperties(h->first,g->first).count(h->second,g->second,weight,id);
+      map<unsigned int,LorentzMomentum>::const_iterator g1 = g; ++g1;
+      for ( ; g1 != theLeptonPTs.end(); ++g1 ) {
+	threeLeptonPTProperties(h->first,g->first,g1->first).count(h->second,g->second,g1->second,weight,id);
+	map<unsigned int,LorentzMomentum>::const_iterator g2 = g1; ++g2;
+	for ( ; g2 != theLeptonPTs.end(); ++g2 ) {
+	  LorentzMomentum p1234 =
+	    h->second + g->second + g1->second + g2->second;
+	  fourLeptonPTProperties(h->first,g->first,g1->first,g2->first).count(p1234,weight,id);
+	}
+      }
+    }
+  }
+
+  for ( map<unsigned int,LorentzMomentum>::const_iterator h = theNeutrinos.begin();
+	h != theNeutrinos.end(); ++h ) {
+    neutrinoProperties(h->first).count(h->second,weight,id);
+  }
+
+  for ( map<unsigned int,LorentzMomentum>::const_iterator h = theHiggs.begin();
+	h != theHiggs.end(); ++h ) {
+    higgsProperties(h->first).count(h->second,weight,id);
+  }
+
+  analyzeSpecial(id,weight);
+
+}
+
+void LeptonsJetsAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
+  AnalysisHandler::analyze(event, ieve, loop, state);
+
+  Ptr<StandardEventHandler>::tptr seh =
+    dynamic_ptr_cast<Ptr<StandardEventHandler>::tptr>(generator()->eventHandler());
+  Ptr<GeneralSampler>::tptr sampler =
+    dynamic_ptr_cast<Ptr<GeneralSampler>::tptr>(seh->sampler());
+
+  double norm = sampler->maxXSec()/picobarn;
+
+  if ( !theIsShowered ) {
+
+    tSubProPtr sub = event->primarySubProcess();
+    Ptr<SubProcessGroup>::tptr grp = 
+      dynamic_ptr_cast<Ptr<SubProcessGroup>::tptr>(sub);
+
+    ParticleVector hfs = sub->outgoing();
+
+    analyze(hfs,ieve,norm*event->weight()*sub->groupWeight());
+
+    if ( grp ) {
+    
+      for ( SubProcessVector::const_iterator s = grp->dependent().begin();
+	    s != grp->dependent().end(); ++s ) {
+	ParticleVector fs = (**s).outgoing();
+	analyze(fs,ieve,norm*event->weight()*(**s).groupWeight());
+      }
+
+    }
+
+  } else {
+
+    ParticleVector fs;
+    event->getFinalState(fs);
+    analyze(fs,ieve,norm*event->weight());
+
+  }
+
+}
+
+void LeptonsJetsAnalysis::dofinish() {
+  AnalysisHandler::dofinish();
+
+  Ptr<StandardEventHandler>::tptr seh =
+    dynamic_ptr_cast<Ptr<StandardEventHandler>::tptr>(generator()->eventHandler());
+  Ptr<GeneralSampler>::tptr sampler =
+    dynamic_ptr_cast<Ptr<GeneralSampler>::tptr>(seh->sampler());
+
+  unsigned long attemptedPoints = sampler->attempts();
+  double sumOfWeights = sampler->sumWeights();
+  double sumOfSquaredWeights = sampler->sumWeights2();
+  CrossSection maxXSection = sampler->maxXSec();
+
+  XML::Element elem(XML::ElementTypes::Element,"Run");
+
+  elem.appendAttribute("name",generator()->runName());
+  elem.appendAttribute("attemptedPoints",attemptedPoints);
+  elem.appendAttribute("sumOfWeights",sumOfWeights*maxXSection/nanobarn);
+  elem.appendAttribute("sumOfSquaredWeights",sumOfSquaredWeights*sqr(maxXSection/nanobarn));
+
+  XML::Element xhistos(XML::ElementTypes::Element,"Histograms");
+
+  for ( map<unsigned int,ObjectProperties>::iterator h = theJetProperties.begin();
+	h != theJetProperties.end(); ++h ) {
+    h->second.finalize(xhistos);
+  }
+
+  for ( map<unsigned int,ObjectProperties>::iterator h = theExclusiveJetProperties.begin();
+	h != theExclusiveJetProperties.end(); ++h ) {
+    h->second.finalize(xhistos);
+  }
+
+  if ( !theJetInclusiveProperties.pt.bins().empty() ) {
+    theJetInclusiveProperties.finalize(xhistos);
+  }
+
+  if ( !theJetSummedProperties.pt.bins().empty() ) {
+    theJetSummedProperties.finalize(xhistos);
+  }
+
+  if ( !theJetAverageProperties.pt.bins().empty() ) {
+    theJetAverageProperties.finalize(xhistos);
+  }
+
+  if ( !theNJetsInclusive.bins().empty() ) {
+    theNJetsInclusive.finalize();
+    xhistos.append(theNJetsInclusive.toXML());
+  }
+
+  if ( !theNJetsExclusive.bins().empty() ) {
+    theNJetsExclusive.finalize();
+    xhistos.append(theNJetsExclusive.toXML());
+  }
+
+  for ( map<unsigned int,ObjectProperties>::iterator h = theLeptonIDProperties.begin();
+	h != theLeptonIDProperties.end(); ++h ) {
+    h->second.finalize(xhistos);
+  }
+
+  for ( map<unsigned int,ObjectProperties>::iterator h = theLeptonPTProperties.begin();
+	h != theLeptonPTProperties.end(); ++h ) {
+    h->second.finalize(xhistos);
+  }
+
+  for ( map<unsigned int,ObjectProperties>::iterator h = theNeutrinoProperties.begin();
+	h != theNeutrinoProperties.end(); ++h ) {
+    h->second.finalize(xhistos);
+  }
+
+  for ( map<unsigned int,ObjectProperties>::iterator h = theHiggsProperties.begin();
+	h != theHiggsProperties.end(); ++h ) {
+    h->second.finalize(xhistos);
+  }
+
+  for ( map<pair<unsigned int,unsigned int>,PairProperties>::iterator h = theJetPairProperties.begin();
+	h != theJetPairProperties.end(); ++h ) {
+    h->second.finalize(xhistos);
+  }
+
+  for ( map<pair<unsigned int,unsigned int>,PairProperties>::iterator h = theJetLeptonIDPairProperties.begin();
+	h != theJetLeptonIDPairProperties.end(); ++h ) {
+    h->second.finalize(xhistos);
+  }
+
+  for ( map<pair<unsigned int,unsigned int>,PairProperties>::iterator h = theJetLeptonPTPairProperties.begin();
+	h != theJetLeptonPTPairProperties.end(); ++h ) {
+    h->second.finalize(xhistos);
+  }
+
+  for ( map<pair<unsigned int,unsigned int>,PairProperties>::iterator h = theJetNeutrinoPairProperties.begin();
+	h != theJetNeutrinoPairProperties.end(); ++h ) {
+    h->second.finalize(xhistos);
+  }
+
+  for ( map<pair<unsigned int,unsigned int>,PairProperties>::iterator h = theJetHiggsPairProperties.begin();
+	h != theJetHiggsPairProperties.end(); ++h ) {
+    h->second.finalize(xhistos);
+  }
+
+  for ( map<pair<unsigned int,unsigned int>,PairProperties>::iterator h = theLeptonIDPairProperties.begin();
+	h != theLeptonIDPairProperties.end(); ++h ) {
+    h->second.finalize(xhistos);
+  }
+
+  for ( map<pair<unsigned int,unsigned int>,PairProperties>::iterator h = theLeptonPTPairProperties.begin();
+	h != theLeptonPTPairProperties.end(); ++h ) {
+    h->second.finalize(xhistos);
+  }
+
+  for ( map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator h =
+	  theThreeJetProperties.begin(); h != theThreeJetProperties.end(); ++h ) {
+    h->second.finalize(xhistos);
+  }
+
+  for ( map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator h =
+	  theJetPairLeptonIDTripleProperties.begin(); h != theJetPairLeptonIDTripleProperties.end(); ++h ) {
+    h->second.finalize(xhistos);
+  }
+
+  for ( map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator h =
+	  theJetPairLeptonPTTripleProperties.begin(); h != theJetPairLeptonPTTripleProperties.end(); ++h ) {
+    h->second.finalize(xhistos);
+  }
+
+  for ( map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator h =
+	  theJetPairNeutrinoTripleProperties.begin(); h != theJetPairNeutrinoTripleProperties.end(); ++h ) {
+    h->second.finalize(xhistos);
+  }
+
+  for ( map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator h =
+	  theJetPairHiggsTripleProperties.begin(); h != theJetPairHiggsTripleProperties.end(); ++h ) {
+    h->second.finalize(xhistos);
+  }
+
+  for ( map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator h =
+	  theThreeLeptonIDProperties.begin(); h != theThreeLeptonIDProperties.end(); ++h ) {
+    h->second.finalize(xhistos);
+  }
+
+  for ( map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator h =
+	  theThreeLeptonPTProperties.begin(); h != theThreeLeptonPTProperties.end(); ++h ) {
+    h->second.finalize(xhistos);
+  }
+
+  for ( map<boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties>::iterator h =
+	  theFourJetProperties.begin(); h != theFourJetProperties.end(); ++h ) {
+    h->second.finalize(xhistos);
+  }
+
+  for ( map<boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties>::iterator h =
+	  theFourLeptonIDProperties.begin(); h != theFourLeptonIDProperties.end(); ++h ) {
+    h->second.finalize(xhistos);
+  }
+
+  for ( map<boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties>::iterator h =
+	  theFourLeptonPTProperties.begin(); h != theFourLeptonPTProperties.end(); ++h ) {
+    h->second.finalize(xhistos);
+  }
+
+  finalize(xhistos);
+
+  elem.append(xhistos);
+
+  string fname = name() + ".xml";
+  ofstream runXML(fname.c_str());
+  XML::ElementIO::put(elem,runXML);
+
+}
+
+IBPtr LeptonsJetsAnalysis::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr LeptonsJetsAnalysis::fullclone() const {
+  return new_ptr(*this);
+}
+
+
+// If needed, insert default implementations of virtual function defined
+// in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
+
+
+void LeptonsJetsAnalysis::persistentOutput(PersistentOStream & os) const {
+  os << theIsShowered << theApplyCuts << theJetFinder << theJetRegions;
+}
+
+void LeptonsJetsAnalysis::persistentInput(PersistentIStream & is, int) {
+  is >> theIsShowered >> theApplyCuts >> theJetFinder >> theJetRegions;
+}
+
+
+// *** Attention *** The following static variable is needed for the type
+// description system in ThePEG. Please check that the template arguments
+// are correct (the class and its base class), and that the constructor
+// arguments are correct (the class name and the name of the dynamically
+// loadable library where the class implementation can be found).
+DescribeClass<LeptonsJetsAnalysis,AnalysisHandler>
+  describeHerwigLeptonsJetsAnalysis("Herwig::LeptonsJetsAnalysis", "JetCuts.so HwJetsAnalysis.so");
+
+void LeptonsJetsAnalysis::Init() {
+
+  static ClassDocumentation<LeptonsJetsAnalysis> documentation
+    ("There is no documentation for the LeptonsJetsAnalysis class");
+
+  static Reference<LeptonsJetsAnalysis,JetFinder> interfaceJetFinder
+    ("JetFinder",
+     "",
+     &LeptonsJetsAnalysis::theJetFinder, false, false, true, false, false);
+
+  static RefVector<LeptonsJetsAnalysis,JetRegion> interfaceJetRegions
+    ("JetRegions",
+     "",
+     &LeptonsJetsAnalysis::theJetRegions, -1, false, false, true, false, false);
+
+  static Switch<LeptonsJetsAnalysis,bool> interfaceIsShowered
+    ("IsShowered",
+     "",
+     &LeptonsJetsAnalysis::theIsShowered, false, false, false);
+  static SwitchOption interfaceIsShoweredYes
+    (interfaceIsShowered,
+     "Yes",
+     "",
+     true);
+  static SwitchOption interfaceIsShoweredNo
+    (interfaceIsShowered,
+     "No",
+     "",
+     false);
+
+  static Switch<LeptonsJetsAnalysis,bool> interfaceApplyCuts
+    ("ApplyCuts",
+     "",
+     &LeptonsJetsAnalysis::theApplyCuts, false, false, false);
+  static SwitchOption interfaceApplyCutsYes
+    (interfaceApplyCuts,
+     "Yes",
+     "",
+     true);
+  static SwitchOption interfaceApplyCutsNo
+    (interfaceApplyCuts,
+     "No",
+     "",
+     false);
+
+}
+
