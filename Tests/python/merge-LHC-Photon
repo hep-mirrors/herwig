@@ -125,7 +125,8 @@ for hpath,hsets in inhistos.iteritems():
     if( hpath.find("1263495")>0  or 
         hpath.find("1093738")>0 or 
         hpath.find("921594")>0 or 
-        hpath.find("8914702")>0 ) :
+        hpath.find("8914702")>0 or 
+        hpath.find("1244522")>0 ) :
         if(type(hsets.values()[0])==yoda.core.Scatter2D) :
             outhistos[hpath] = yoda.core.Scatter2D(hsets.values()[0].path,
                                                    hsets.values()[0].title)
@@ -178,6 +179,15 @@ useOnePt("/CMS_2013_I1258128/d05-x01-y01", "35" )
 useOnePt("/CMS_2013_I1258128/d06-x01-y01", "35" )
 useOnePt("/CMS_2013_I1258128/d07-x01-y01", "35" )
 useOnePt("/CMS_2013_I1258128/d08-x01-y01", "35" )
+
+logging.info("Processing ATLAS_2013_I1244522")
+mergeByPt("/ATLAS_2013_I1244522/d01-x01-y01")
+mergeByPt("/ATLAS_2013_I1244522/d02-x01-y01")
+useOnePt("/ATLAS_2013_I1244522/d03-x01-y01", "35" )
+useOnePt("/ATLAS_2013_I1244522/d04-x01-y01", "35" )
+useOnePt("/ATLAS_2013_I1244522/d05-x01-y01", "35" )
+useOnePt("/ATLAS_2013_I1244522/d06-x01-y01", "35" )
+useOnePt("/ATLAS_2013_I1244522/d07-x01-y01", "35" )
 
 logging.info("Processing /MC_PHOTONJETS")
 useOnePt("/MC_PHOTONJETS/jet_HT","0")

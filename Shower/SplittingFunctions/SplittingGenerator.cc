@@ -567,8 +567,8 @@ void SplittingGenerator::factorizationScaleFactor(double f) {
 void SplittingGenerator::renormalizationScaleFactor(double f) {
   BranchingList::iterator cit;
   for(cit=_fbranchings.begin();cit!=_fbranchings.end();++cit)
-    {(cit->second).first->factorizationScaleFactor(f);}
+    {(cit->second).first->renormalizationScaleFactor(f);}
   for(cit=_bbranchings.begin();cit!=_bbranchings.end();++cit)
-    {(cit->second).first->factorizationScaleFactor(f);}
+    {(cit->second).first->renormalizationScaleFactor(f);}
 }
 

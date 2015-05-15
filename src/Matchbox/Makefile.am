@@ -32,6 +32,7 @@ MCatNLO-DefaultShower.in \
 MCatNLO-DipoleShower.in \
 MuDown.in \
 MuQDown.in \
+MuQUp.in \
 MuUp.in \
 NLO-NoShower.in \
 Powheg-DefaultShower.in \
