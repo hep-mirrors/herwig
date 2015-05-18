@@ -40,6 +40,7 @@ Powheg-DipoleShower.in \
 Powheg.in \
 PPCollider.in \
 VBFNLO.in \
+VBFDiagramsOnly.in \
 MMHT2014.in
 
 dist_Matchbox_DATA = $(INPUTFILES)
