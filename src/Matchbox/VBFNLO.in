@@ -1,8 +1,4 @@
 cd /Herwig/MatrixElements/Matchbox
 clear Factory:Amplitudes
 insert Factory:Amplitudes 0 /Herwig/MatrixElements/Matchbox/Amplitudes/VBFNLO
-insert Factory:DiagramGenerator:RestrictLines 0 /Herwig/Particles/Z0
-insert Factory:DiagramGenerator:RestrictLines 0 /Herwig/Particles/W+
-insert Factory:DiagramGenerator:RestrictLines 0 /Herwig/Particles/W-
-do Factory:DiagramGenerator:TimeLikeRange 0 0
 

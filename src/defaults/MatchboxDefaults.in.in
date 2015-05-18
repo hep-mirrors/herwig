@@ -344,6 +344,8 @@ create Herwig::MatchboxHybridAmplitude GenericProcesses
 @DO_VBFNLO@ VBFNLO:Massless -15
 @DO_VBFNLO@ VBFNLO:Massless 16
 @DO_VBFNLO@ VBFNLO:Massless -16
+@DO_VBFNLO@ VBFNLO:Massless 4
+@DO_VBFNLO@ VBFNLO:Massless -4
 @DO_VBFNLO@ VBFNLO:Massless 5
 @DO_VBFNLO@ VBFNLO:Massless -5
 
