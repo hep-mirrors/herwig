@@ -174,6 +174,11 @@ private:
    */
   VBFNLOPhasespace & operator=(const VBFNLOPhasespace &);
 
+  /**
+   * Whether or not we need to reshuffle.
+   */
+  bool needToReshuffle;
+
 protected:
 
   /**
@@ -185,6 +190,38 @@ protected:
    *  load the VBFNLO library
    */
   void loadVBFNLO();
+
+  /**
+   * The function object defining the equation
+   * to be solved.
+   */
+  struct ReshuffleEquation {
+
+    typedef double ArgType;
+    typedef Energy ValType;
+
+    static double aUnit() { return 1.; }
+    static Energy vUnit() { return 1.*GeV; }
+
+    Energy operator() (double xi) const;
+
+    Energy w;
+    cPDVector::const_iterator dataBegin;
+    cPDVector::const_iterator dataEnd;
+    vector<Lorentz5Momentum>::const_iterator momentaBegin;
+    vector<Lorentz5Momentum>::const_iterator momentaEnd;
+
+    ReshuffleEquation(Energy q,
+		      cPDVector::const_iterator dBegin,
+		      cPDVector::const_iterator dEnd,
+		      vector<Lorentz5Momentum>::const_iterator mBegin,
+		      vector<Lorentz5Momentum>::const_iterator mEnd)
+      : w(q),
+	dataBegin(dBegin), dataEnd(dEnd),
+	momentaBegin(mBegin),
+	momentaEnd(mEnd) {}
+
+  };
 
 };
 

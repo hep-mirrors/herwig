@@ -20,6 +20,7 @@
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
+#include "Herwig++/Utilities/GSLBisection.h"
 #include "ThePEG/Utilities/DynamicLoader.h"
 
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -35,7 +36,7 @@
 using namespace Herwig;
 
 VBFNLOPhasespace::VBFNLOPhasespace() : 
-  lastSqrtS(0*GeV), VBFNLOlib_(DEFSTR(VBFNLOLIB))
+  lastSqrtS(0*GeV), needToReshuffle(false), VBFNLOlib_(DEFSTR(VBFNLOLIB))
 {}
 
 void VBFNLOPhasespace::loadVBFNLO() {
@@ -59,6 +60,18 @@ IBPtr VBFNLOPhasespace::fullclone() const {
 void VBFNLOPhasespace::setXComb(tStdXCombPtr xco) {
 
   MatchboxPhasespace::setXComb(xco);
+// test for resuffling
+  needToReshuffle = false;
+  if ( xco ) {
+    for ( cPDVector::const_iterator d = mePartonData().begin();
+	  d != mePartonData().end(); ++d ) {
+// Higgs is massive -> does not need reshuffling
+      if ( ( (**d).id() != ParticleID::h0 ) && ( (**d).hardProcessMass() != ZERO ) ) {
+	needToReshuffle = true;
+	break;
+      }
+    }
+  }
 
 // set CMS energy 
   int pStatus = 0;
@@ -106,23 +119,64 @@ double VBFNLOPhasespace::generateTwoToNKinematics(const double* random,
     momenta[i].setX(p[4*i+1]*GeV);
     momenta[i].setY(p[4*i+2]*GeV);
     momenta[i].setZ(p[4*i+3]*GeV);
-    double masssq = p[4*i]*p[4*i]-p[4*i+1]*p[4*i+1]-p[4*i+2]*p[4*i+2]-p[4*i+3]*p[4*i+3];
-    if (masssq/p[4*i]*p[4*i] <= 1e-12) { // no abs: negative masssq always -> 0
-      momenta[i].setMass(0*GeV);
-    } else {
-      momenta[i].setMass(sqrt(masssq)*GeV);
-    }
   }
 
   delete p;
-
-  if ( !matchConstraints(momenta) )
-    return 0.;
 
   Energy beamenergy = sqrt(lastXCombPtr()->lastS())/2.;
   double x1 = momenta[0].e()/beamenergy;
   double x2 = momenta[1].e()/beamenergy;
   Energy2 thisSHat = (momenta[0] + momenta[1]).m2();
+
+  // reshuffle so that particles have correct mass
+  // boost final-state into partonic CMS
+  Boost toCMS = (momenta[0]+momenta[1]).findBoostToCM();
+  for ( size_t i = 2; i < momenta.size(); ++i ) {
+    momenta[i].boost(toCMS);
+  }
+  // copied from MatchboxRambo phasespace
+  if ( needToReshuffle ) {
+
+    double xi;
+
+    ReshuffleEquation solve(sqrt(thisSHat),mePartonData().begin()+2,mePartonData().end(),
+          		  momenta.begin()+2,momenta.end());
+
+    GSLBisection solver(1e-10,1e-8,10000);
+
+    try {
+      xi = solver.value(solve,0.0,1.1);
+    } catch (GSLBisection::GSLerror) {
+      return 0.;
+    } catch (GSLBisection::IntervalError) {
+      return 0.;
+    }
+
+    weight *= pow(xi,3.*(momenta.size()-3.));
+
+    Energy num = ZERO;
+    Energy den = ZERO;
+
+    cPDVector::const_iterator d = mePartonData().begin()+2;
+    for ( vector<Lorentz5Momentum>::iterator k = momenta.begin()+2;
+          k != momenta.end(); ++k, ++d ) {
+      num += (*k).vect().mag2()/(*k).t();
+      Energy q = (*k).t();
+      (*k).setT(sqrt(sqr((**d).hardProcessMass())+xi*xi*sqr((*k).t())));
+      (*k).setVect(xi*(*k).vect());
+      weight *= q/(*k).t();
+      den += (*k).vect().mag2()/(*k).t();
+      (*k).setMass((**d).hardProcessMass());
+    }
+
+  }
+  // unboost
+  for ( size_t i = 2; i < momenta.size(); ++i ) {
+    momenta[i].boost(-toCMS);
+  }
+
+  if ( !matchConstraints(momenta) )
+    return 0.;
 
   lastXCombPtr()->lastX1X2(make_pair(x1,x2));
   lastXCombPtr()->lastSHat(thisSHat);
@@ -154,6 +208,17 @@ int VBFNLOPhasespace::nDimPhasespace(int nFinal) const {
   return value+2; 
 }
 
+Energy VBFNLOPhasespace::ReshuffleEquation::operator() (double xi) const {
+  cPDVector::const_iterator d = dataBegin;
+  vector<Lorentz5Momentum>::const_iterator p = momentaBegin;
+  Energy res = -w;
+  for ( ; d != dataEnd; ++d, ++p ) {
+    res += sqrt(sqr((**d).hardProcessMass()) +
+		xi*xi*sqr(p->t()));
+  }
+  return res;
+}
+
 void VBFNLOPhasespace::doinit() {
   loadVBFNLO();
   MatchboxPhasespace::doinit();
@@ -165,11 +230,11 @@ void VBFNLOPhasespace::doinitrun() {
 }
 
 void VBFNLOPhasespace::persistentOutput(PersistentOStream & os) const {
-  os << theLastXComb;
+  os << needToReshuffle << theLastXComb;
 }
 
 void VBFNLOPhasespace::persistentInput(PersistentIStream & is, int) {
-  is >> theLastXComb;
+  is >> needToReshuffle >> theLastXComb;
 }
 
 
