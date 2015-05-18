@@ -9,6 +9,7 @@ DefaultPPJets.in \
 EECollider.in \
 EPCollider.in \
 FiveFlavourScheme.in \
+FiveFlavourNoBMassScheme.in \
 FourFlavourScheme.in \
 GenericCollider.in \
 HiggsEffective.in \

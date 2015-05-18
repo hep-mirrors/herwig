@@ -113,6 +113,8 @@ read Matchbox/MCatNLO-DefaultShower.in
 ##################################################
 
 read Matchbox/FiveFlavourScheme.in
+## required for dipole shower in five flavour scheme
+# read Matchbox/FiveFlavourNoBMassScheme.in
 read Matchbox/MMHT2014.in
 
 ##################################################

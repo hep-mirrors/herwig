@@ -327,14 +327,6 @@ cp IFgx2qqxDipoleKernel IFgx2sbarsxDipoleKernel
 set IFgx2sbarsxDipoleKernel:Flavour /Herwig/Particles/sbar
 insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IFgx2sbarsxDipoleKernel
 
-cp IFgx2qqxDipoleKernel IFgx2bbbarxDipoleKernel
-set IFgx2bbbarxDipoleKernel:Flavour /Herwig/Particles/b
-insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IFgx2bbbarxDipoleKernel
-
-cp IFgx2qqxDipoleKernel IFgx2bbarbxDipoleKernel
-set IFgx2bbarbxDipoleKernel:Flavour /Herwig/Particles/bbar
-insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IFgx2bbarbxDipoleKernel
-
 ### massive dipoles
 
 create Herwig::IFMgx2ggxDipoleKernel IFMgx2ggxDipoleKernel
@@ -387,15 +379,6 @@ insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IFMgx2ssbarxDipoleKern
 cp IFMgx2qqxDipoleKernel IFMgx2sbarsxDipoleKernel
 set IFMgx2sbarsxDipoleKernel:Flavour /Herwig/Particles/sbar
 insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IFMgx2sbarsxDipoleKernel
-
-cp IFMgx2qqxDipoleKernel IFMgx2bbbarxDipoleKernel
-set IFMgx2bbbarxDipoleKernel:Flavour /Herwig/Particles/b
-insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IFMgx2bbbarxDipoleKernel
-
-cp IFMgx2qqxDipoleKernel IFMgx2bbarbxDipoleKernel
-set IFMgx2bbarbxDipoleKernel:Flavour /Herwig/Particles/bbar
-insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IFMgx2bbarbxDipoleKernel
-
 
 ################################################################################
 # II
@@ -451,14 +434,6 @@ insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IIgx2ssbarxDipoleKerne
 cp IIgx2qqxDipoleKernel IIgx2sbarsxDipoleKernel
 set IIgx2sbarsxDipoleKernel:Flavour /Herwig/Particles/sbar
 insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IIgx2sbarsxDipoleKernel
-
-cp IIgx2qqxDipoleKernel IIgx2bbbarxDipoleKernel
-set IIgx2bbbarxDipoleKernel:Flavour /Herwig/Particles/b
-insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IIgx2bbbarxDipoleKernel
-
-cp IIgx2qqxDipoleKernel IIgx2bbarbxDipoleKernel
-set IIgx2bbarbxDipoleKernel:Flavour /Herwig/Particles/bbar
-insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IIgx2bbarbxDipoleKernel
 
 cd /
 

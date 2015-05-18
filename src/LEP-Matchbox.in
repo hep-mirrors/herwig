@@ -43,8 +43,6 @@ do Factory:Process e- e+ -> j j
 # read Matchbox/MadGraph-MadGraph.in
 # read Matchbox/MadGraph-NJet.in
 # read Matchbox/MadGraph-OpenLoops.in
-# read Matchbox/HJets.in
-# read Matchbox/VBFNLO.in
 
 ## Uncomment this to use ggh effective couplings
 ## currently only supported by MadGraph-GoSam
@@ -104,12 +102,6 @@ read Matchbox/MCatNLO-DefaultShower.in
 
 # read Matchbox/MuQDown.in
 # read Matchbox/MuQUp.in
-
-##################################################
-## Massless b quarks
-##################################################
-
-read Matchbox/FiveFlavourScheme.in
 
 ##################################################
 ## Analyses

@@ -4,3 +4,9 @@ cd /Herwig/MatrixElements/Matchbox/Amplitudes
 
 clear /Herwig/MatrixElements/Matchbox/Factory:Amplitudes
 insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 MadGraph
+
+cd /Herwig/Particles
+
+do b:UnsetHardProcessMass
+do bbar:UnsetHardProcessMass
+
