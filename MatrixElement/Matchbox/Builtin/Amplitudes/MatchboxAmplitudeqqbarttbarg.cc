@@ -149,8 +149,7 @@ Complex MatchboxAmplitudeqqbarttbarg::evaluate(size_t a, const vector<int>& hel,
   	   ((partons[1]->id()<0 && partons[1]->id()>-6) && 
   	    partons[0]->id()==ParticleID::g)) crossed=3;
   else 
-    throw Exception() << "Unrecognised process in "
-  		      << "MatchboxAmplitudeqqbarststbarg::evaluate\n"
+    throw Exception() << "MatchboxAmplitudeqqbarststbarg::evaluate(): Unrecognised process\n"
   		      << Exception::runerror;
 
 

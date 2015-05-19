@@ -174,7 +174,7 @@ double MatchboxOLPME::oneLoopInterference() const {
 
 double MatchboxOLPME::largeNColourCorrelatedME2(pair<int,int>,
 						Ptr<ColourBasis>::tptr) const {
-  throw Exception() << "largeNColourCorrelatedME2 not supported by MatchboxOLPME"
+  throw Exception() << "MatchboxOLPME::largeNColourCorrelatedME2(): not supported"
 		    << Exception::abortnow;
   return 0.;
 }
@@ -184,13 +184,13 @@ double MatchboxOLPME::largeNColourCorrelatedME2(pair<int,int>,
 
 void MatchboxOLPME::doinit() {
   if ( theUseRunningAlphaS && !theSetMuToMuR ) {
-    throw Exception()
+    throw Exception() << "MatchboxOLPME::doinit(): "
     << "Amplitude '" << name() << "' "
     << "uses a running alpha_s but fixed renormalization scale!\n"
     << Exception::abortnow;
   }
   if ( !theUseRunningAlphaS && theSetMuToMuR ) {
-    throw Exception()
+    throw Exception() << "MatchboxOLPME::doinit(): "
     << "Amplitude '" << name() << "' "
     << "uses a fixed alpha_s but running renormalization scale!\n"
     << Exception::abortnow;
@@ -204,7 +204,7 @@ void MatchboxOLPME::doinit() {
     startOLP(contractFileName,status);
     didStartOLP()=true;
     if ( status != 1 ) {
-      throw Exception()
+      throw Exception() << "MatchboxOLPME::doinit(): "
 	<< "Failed to restart one loop provider for amplitude '"
 	<< name() << "'\n" << Exception::abortnow;
     }
@@ -214,13 +214,13 @@ void MatchboxOLPME::doinit() {
 
 void MatchboxOLPME::doinitrun() {
   if ( theUseRunningAlphaS && !theSetMuToMuR ) {
-    throw Exception()
+    throw Exception() << "MatchboxOLPME::doinitrun(): "
     << "Amplitude '" << name() << "' "
     << "uses a running alpha_s but fixed renormalization scale!\n"
     << Exception::abortnow;
   }
   if ( !theUseRunningAlphaS && theSetMuToMuR ) {
-    throw Exception()
+    throw Exception() << "MatchboxOLPME::doinitrun(): "
     << "Amplitude '" << name() << "' "
     << "uses a fixed alpha_s but running renormalization scale!\n"
     << Exception::abortnow;
@@ -234,7 +234,7 @@ void MatchboxOLPME::doinitrun() {
     startOLP(contractFileName,status);
     didStartOLP()=true;
     if ( status != 1 ) {
-      throw Exception()
+      throw Exception() << "MatchboxOLPME::doinitrun(): "
 	<< "Failed to restart one loop provider for amplitude '"
 	<< name() << "'\n" << Exception::abortnow;
     }

@@ -59,7 +59,7 @@ Energy2 MatchboxPtScale::renormalizationScale() const {
     }
 
   if ( !gotone )
-    throw Exception() << "No jet could be found in MatchboxPtScale. Check your setup."
+    throw Exception() << "MatchboxPtScale::renormalizationScale(): No jet could be found. Check your setup."
 		      << Exception::abortnow;
 
   return maxpt2;

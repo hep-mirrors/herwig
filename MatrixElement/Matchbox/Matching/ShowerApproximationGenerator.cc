@@ -224,7 +224,7 @@ handle(EventHandler & eh, const tPVector &,
 
   lastIncomingXComb = dynamic_ptr_cast<tStdXCombPtr>(eh.lastXCombPtr());
   if ( !lastIncomingXComb )
-    throw Exception() << "expecting a standard event handler"
+    throw Exception() << "ShowerApproximationGenerator::handle(): Expecting a standard event handler."
 		      << Exception::abortnow;
 
   if ( lastIncomingXComb->lastProjector() )

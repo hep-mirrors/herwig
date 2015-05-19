@@ -50,7 +50,7 @@ size_t SimpleColourBasis::prepareBasis(const vector<PDT::Colour>& basis) {
   if ( basis == id8888 )
     return 6;
 
-  throw Exception() << "Cannot handle colour configuration" << Exception::abortnow;
+  throw Exception() << "SimpleColourBasis::prepareBasis(): Cannot handle colour configuration" << Exception::abortnow;
 
   return 0;
 
@@ -148,7 +148,7 @@ double SimpleColourBasis::scalarProduct(size_t a, size_t b,
 
   }
 
-  throw Exception() << "Cannot handle colour configuration" << Exception::abortnow;
+  throw Exception() << "SimpleColourBasis::scalarProduct(): Cannot handle colour configuration" << Exception::abortnow;
 
 }
 
@@ -214,7 +214,7 @@ double SimpleColourBasis::tMatrixElement(size_t i, size_t a,
       return a == 0 ? 1. : -1.;
   }
 
-  throw Exception() << "Cannot handle colour configuration" << Exception::abortnow;
+  throw Exception() << "SimpleColourBasis::tMatrixElement(): Cannot handle colour configuration" << Exception::abortnow;
 
   return 0.;
 

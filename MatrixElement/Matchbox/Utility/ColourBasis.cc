@@ -1071,7 +1071,7 @@ void ColourBasis::writeBasis(const string& prefix) const {
     if ( check ) continue;
     ofstream out(fname.c_str());
     if ( !out )
-      throw Exception() << "ColourBasis failed to open "
+      throw Exception() << "ColourBasis: Failed to open "
 			<< fname << " for storing colour basis information."
 			<< Exception::abortnow;
     out << setprecision(18);
@@ -1161,7 +1161,7 @@ void ColourBasis::readBasis() {
       continue;
     string fname = searchPath + file(*known) + ".cdat";
     if ( !readBasis(*known) )
-      throw Exception() << "ColourBasis failed to open "
+      throw Exception() << "ColourBasis: Failed to open "
 			<< fname << " for reading colour basis information."
 			<< Exception::abortnow;
   }

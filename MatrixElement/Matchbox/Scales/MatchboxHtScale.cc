@@ -72,7 +72,8 @@ Energy2 MatchboxHtScale::renormalizationScale() const {
   }
 
   if ( !gotone )
-    throw Exception() << "No jets could be found in MatchboxHtScale. Check your setup."
+    throw Exception() << "MatchboxHtScale::renormalizationScale(): "
+		      << "No jets could be found. Check your setup."
 		      << Exception::abortnow;
 
   Energy mtNonJetSum = 

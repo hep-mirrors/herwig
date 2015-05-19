@@ -54,7 +54,7 @@ Energy2 MatchboxParticlePtScale::renormalizationScale() const {
   if ( found == 1 )
     return pt2;
   else
-    throw Exception() << "MatchboxParticlePtScale has found "
+    throw Exception() << "MatchboxParticlePtScale: Found "
 		      << found << " particles of the requested type "
 		      << "where exactly 1 was expected. Aborting this event."
 		      << Exception::eventerror;

@@ -80,7 +80,7 @@ void MadGraphAmplitude::initProcess(const cPDVector& ) {
 
 
   if ( !DynamicLoader::load(mgProcLibPath()+"InterfaceMadGraph.so") )
-    throw Exception() << "Failed to load MadGraph amplitudes\n"
+    throw Exception() << "MadGraphAmplitude: Failed to load MadGraph amplitudes\n"
                       << DynamicLoader::lastErrorMessage
                       << Exception::abortnow;
 
@@ -149,7 +149,7 @@ bool MadGraphAmplitude::checkAmplitudes(){
   }
   
   if (!foundallborns||!foundallvirts)
-  throw Exception() << "One amplitude has no externalId. Please remove the MadGraphAmplitude-folder and rebuild.\n"     << Exception::abortnow;
+  throw Exception() << "MadGraphAmplitude: One amplitude has no externalId. Please remove the MadGraphAmplitude-folder and rebuild.\n"     << Exception::abortnow;
   
   return foundallborns && foundallvirts;
   
@@ -172,7 +172,7 @@ bool MadGraphAmplitude::initializeExternal() {
   
   if ( boost::filesystem::exists(mgProcLibPath()) ) {
     if ( !boost::filesystem::is_directory(mgProcLibPath()) )
-      throw Exception() << "MadGraph amplitude storage '"
+      throw Exception() << "MadGraphAmplitude: MadGraph amplitude storage '"
 			<< mgProcLibPath() << "' existing but not a directory."
 			<< Exception::abortnow;
   } else {
@@ -184,7 +184,7 @@ bool MadGraphAmplitude::initializeExternal() {
   string runAmplitudes = factory()->runStorage() + "/MadGraphAmplitudes";
   if ( boost::filesystem::exists(runAmplitudes) ) {
     if ( !boost::filesystem::is_directory(runAmplitudes) )
-      throw Exception() << "MadGraph amplitude storage '"
+      throw Exception() << "MadGraphAmplitude: MadGraph amplitude storage '"
 			<< runAmplitudes << "' existing but not a directory."
 			<< Exception::abortnow;
   } else {
@@ -271,7 +271,7 @@ bool MadGraphAmplitude::initializeExternal() {
   }
   char cwd[1024];
   if ( !getcwd(cwd,sizeof(cwd)) )
-    throw Exception() << "failed to determine current working directory\n"
+    throw Exception() << "MadGraphAmplitude: failed to determine current working directory\n"
                       << Exception::abortnow;
      
   cmd +=" --madgraph " + madgraphPrefix_ + "/bin " ;
@@ -338,7 +338,7 @@ int MadGraphAmplitude::externalId(const cPDVector& proc) {
     if(line==amp)return res;
   }
   
-  throw Exception() << "One amplitude has no externalId. Please remove the MadGraphAmplitude-folder and rebuild.\n"     << Exception::abortnow;
+  throw Exception() << "MadGraphAmplitude: One amplitude has no externalId. Please remove the MadGraphAmplitude-folder and rebuild.\n"     << Exception::abortnow;
   return res;
 }
 

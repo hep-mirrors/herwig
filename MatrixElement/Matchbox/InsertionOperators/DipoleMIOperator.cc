@@ -233,9 +233,9 @@ vector<int> DipoleMIOperator::NLightProtonVec() const {
 double DipoleMIOperator::me2() const {
 
   if ( !isExpanded() )
-    throw InitException() << "DipoleMIOperator only implemented in the expanded convention.";
+    throw InitException() << "DipoleMIOperator: Only implemented in the expanded convention.";
   if ( isDR() )
-    throw InitException() << "DipoleMIOperator not implemented for dimensional reduction.";
+    throw InitException() << "DipoleMIOperator: Not implemented for dimensional reduction.";
 
   Energy2 mu2 = lastBorn()->mu2();
 
@@ -359,9 +359,9 @@ double DipoleMIOperator::me2() const {
 double DipoleMIOperator::oneLoopDoublePole() const {
 
   if ( !isExpanded() )
-    throw InitException() << "DipoleMIOperator only implemented in the expanded convention.";
+    throw InitException() << "DipoleMIOperator: Only implemented in the expanded convention.";
   if ( isDR() )
-    throw InitException() << "DipoleMIOperator not implemented for dimensional reduction.";
+    throw InitException() << "DipoleMIOperator: Not implemented for dimensional reduction.";
 
   double res = 0.;
 
@@ -423,9 +423,9 @@ double DipoleMIOperator::oneLoopDoublePole() const {
 double DipoleMIOperator::oneLoopSinglePole() const {
 
   if ( !isExpanded() )
-    throw InitException() << "DipoleMIOperator only implemented in the expanded convention.";
+    throw InitException() << "DipoleMIOperator: Only implemented in the expanded convention.";
   if ( isDR() )
-    throw InitException() << "DipoleMIOperator not implemented for dimensional reduction.";
+    throw InitException() << "DipoleMIOperator: Not implemented for dimensional reduction.";
 
   Energy2 mu2 = lastBorn()->mu2();
 
