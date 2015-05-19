@@ -58,15 +58,22 @@ Energy2 MatchboxHtScale::renormalizationScale() const {
   // (weighted) pt of the jet systems
   Energy ptJetSum = ZERO;
 
+  bool gotone = false;
+
   tcPDVector::const_iterator pdata = pd.begin();
   vector<LorentzMomentum>::const_iterator mom = p.begin();
   for ( ; mom != p.end(); ++pdata, ++mom ) {
     if ( theJetFinder->unresolvedMatcher()->check(**pdata) ) {
+      gotone = true;
       ptJetSum += jetPtWeight(*mom)*mom->perp();
     } else if ( theIncludeMT ) {
       nonJetMomentum += *mom;
     }
   }
+
+  if ( !gotone )
+    throw Exception() << "No jets could be found in MatchboxHtScale. Check your setup."
+		      << Exception::abortnow;
 
   Energy mtNonJetSum = 
     sqrt(nonJetMomentum.perp2() + nonJetMomentum.m2());
