@@ -358,6 +358,16 @@ private:
   PDFPtr PDFB_;
 
   /**
+   * The PDF for beam particle A for remnant splitting. Overrides the particle's own PDF setting.
+   */
+  PDFPtr PDFARemnant_;
+
+  /**
+   * The PDF for beam particle B for remnant splitting. Overrides the particle's own PDF setting.
+   */
+  PDFPtr PDFBRemnant_;
+
+  /**
    * The PDF freezing scale
    */
   Energy pdfFreezingScale_;
@@ -446,6 +456,16 @@ private:
    * The MPI PDF's to be used for secondary scatters.
    */
   pair <PDFPtr, PDFPtr> mpipdfs_;
+
+  /**
+   * The MPI PDF's to be used for secondary scatters.
+   */
+  pair <PDFPtr, PDFPtr> rempdfs_;
+
+  /**
+   * The MPI PDF's to be used for secondary scatters.
+   */
+  pair <PDFPtr, PDFPtr> remmpipdfs_;
 
   /**
    * The factorization scale factor.
