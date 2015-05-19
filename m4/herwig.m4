@@ -923,14 +923,14 @@ cat << _HW_EOF_ > config.herwig
 *** ThePEG:		$with_thepeg
 *** ThePEG headers:	$with_thepeg_headers
 ***
-*** VBFNLO:		$with_vbfnlo
-*** nlojet:		$with_nlojet
-*** njet:		$with_njet
 *** GoSam:		$with_gosam
 *** GoSam-Contrib:      $with_gosam_contrib
-*** OpenLoops:		$with_openloops
-*** MadGraph:        	$with_madgraph
 *** HEJ:		$with_hej
+*** MadGraph:        	$with_madgraph
+*** njet:		$with_njet
+*** nlojet:		$with_nlojet
+*** OpenLoops:		$with_openloops
+*** VBFNLO:		$with_vbfnlo
 ***
 *** GSL:		$with_gsl
 *** boost:              ${BOOST_CPPFLAGS:-system}
