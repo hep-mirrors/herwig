@@ -15,3 +15,30 @@ cd /Herwig/Analysis
 
 @CREATE_RIVET@ ThePEG::NLORivetAnalysis Rivet RivetAnalysis.so
 @CREATE_HEPMC@ ThePEG::NLOHepMCFile HepMC HepMCAnalysis.so
+
+cd /Herwig/Particles
+
+do d:AdjustNominalMass
+do dbar:AdjustNominalMass
+do u:AdjustNominalMass
+do ubar:AdjustNominalMass
+do s:AdjustNominalMass
+do sbar:AdjustNominalMass
+do c:AdjustNominalMass
+do cbar:AdjustNominalMass
+do b:AdjustNominalMass
+do bbar:AdjustNominalMass
+
+do e+:AdjustNominalMass
+do e-:AdjustNominalMass
+do mu+:AdjustNominalMass
+do mu-:AdjustNominalMass
+do tau+:AdjustNominalMass
+do tau-:AdjustNominalMass
+do nu_e:AdjustNominalMass
+do nu_ebar:AdjustNominalMass
+do nu_mu:AdjustNominalMass
+do nu_mubar:AdjustNominalMass
+do nu_tau:AdjustNominalMass
+do nu_taubar:AdjustNominalMass
+
