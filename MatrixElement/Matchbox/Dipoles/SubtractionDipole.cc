@@ -470,7 +470,8 @@ bool SubtractionDipole::generateKinematics(const double * r) {
   assert(lastXCombPtr() == underlyingBornME()->lastXCombPtr());
   underlyingBornME()->lastXCombPtr()->setIncomingPartons();
   // need to have the scale and x's available for checking shower phase space
-  if ( showerApproximation() )
+  if ( showerApproximation() &&
+       lastXCombPtr()->willPassCuts() )
     showerApproximation()->getShowerVariables();
   lastXCombPtr()->didGenerateKinematics();
   return true;
