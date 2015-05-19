@@ -9,10 +9,12 @@ HiggsPairOL \
 LeptonME \
 PGSInterface \
 RadiativeZPrime \
-TauAnalysis
+TauAnalysis \
+HJets++
 
 dist-hook:
-	rm -rf `find $(distdir) -name '.svn' -or -name 'Makefile'`
+	rm -rf `find $(distdir) -name '.svn' -or -name 'Makefile' -or -name '.hg'`
+	cd HJets++; autoreconf -vi
 
 all:  
 	bash make_makefiles.sh
