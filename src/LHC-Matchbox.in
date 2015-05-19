@@ -32,6 +32,12 @@ set Factory:OrderInAlphaEW 2
 ## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
 do Factory:Process p p -> e+ e-
 
+## Special settings required for on-shell production of unstable particles
+## enable for on-shell top production
+# read Matchbox/OnShellTopProduction.in
+## enable for on-shell W or Z production
+# read Matchbox/OnShellEWProduction.in
+
 ##################################################
 ## Matrix element library selection
 ##################################################

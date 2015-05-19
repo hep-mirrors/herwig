@@ -36,6 +36,8 @@ MuQDown.in \
 MuQUp.in \
 MuUp.in \
 NLO-NoShower.in \
+OnShellEWProduction.in \
+OnShellTopProduction.in \
 Powheg-DefaultShower.in \
 Powheg-DipoleShower.in \
 Powheg.in \
