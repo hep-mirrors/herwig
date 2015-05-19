@@ -35,7 +35,9 @@ struct FrixionePartonInfo {
 
 void FrixionePhotonSeparationCut::describe() const {
   CurrentGenerator::log() 
-    << fullName() << ":\n"
+    << fullName()
+    << " matching unresolved particles from '"
+    << matcher()->name() << "':\n"
     << "DeltaZero = " << theDeltaZero << " \n"
     << "Exponent n = " << theExponentn << " \n"
     << "Efficiency = " << theEfficiency << " \n"
@@ -61,8 +63,7 @@ bool FrixionePhotonSeparationCut::passCuts(tcCutsPtr parent, const tcPDVector & 
       vector<FrixionePartonInfo> partonvec;
       for ( int j = 0, M = ptype.size(); j < M; ++j ) {
 
-        long idj = ptype[j]->id();
-        if ( !(idj && ( abs(idj) <= 5 || idj == ParticleID::g ) ) ) continue;
+	if ( !matcher()->matches(ptype[j]) ) continue;
 
         FrixionePartonInfo finfo;
         double dphi = abs(p[i].phi() - p[j].phi());
@@ -100,11 +101,11 @@ bool FrixionePhotonSeparationCut::passCuts(tcCutsPtr parent, const tcPDVector & 
 }
 
 void FrixionePhotonSeparationCut::persistentOutput(PersistentOStream & os) const {
-  os << theDeltaZero << theExponentn << theEfficiency << theCutType;
+  os << theDeltaZero << theExponentn << theEfficiency << theCutType << theMatcher;
 }
 
 void FrixionePhotonSeparationCut::persistentInput(PersistentIStream & is, int) {
-  is >> theDeltaZero >> theExponentn >> theEfficiency >> theCutType;
+  is >> theDeltaZero >> theExponentn >> theEfficiency >> theCutType >> theMatcher;
 }
 
 ClassDescription<FrixionePhotonSeparationCut> FrixionePhotonSeparationCut::initFrixionePhotonSeparationCut;
@@ -148,6 +149,11 @@ void FrixionePhotonSeparationCut::Init() {
      "MCFM",
      "Switch to Frixione cut a la MCFM",
      2);
+
+  static Reference<FrixionePhotonSeparationCut,MatcherBase> interfaceMatcher
+    ("UnresolvedMatcher",
+     "A matcher for particles to isolate on.",
+     &FrixionePhotonSeparationCut::theMatcher, false, false, true, false, false);
 
   interfaceDeltaZero.setHasDefault(false);
   interfaceExponentn.setHasDefault(false);

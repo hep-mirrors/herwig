@@ -29,7 +29,9 @@
 using namespace Herwig;
 
 MatchboxDeltaRCut::MatchboxDeltaRCut() 
-  : theDeltaRMin(0.0), theDeltaRMax(Constants::MaxRapidity), theDeltaYMin(0.0), theDeltaYMax(Constants::MaxRapidity), theDeltaPhiMin(0.0), theDeltaPhiMax(2.0*Constants::pi) {}
+  : theDeltaRMin(0.0), theDeltaRMax(Constants::MaxRapidity), 
+    theDeltaYMin(0.0), theDeltaYMax(Constants::MaxRapidity),
+    theDeltaPhiMin(0.0), theDeltaPhiMax(2.0*Constants::pi) {}
 
 MatchboxDeltaRCut::~MatchboxDeltaRCut() {}
 
@@ -81,7 +83,10 @@ bool MatchboxDeltaRCut::passCuts(tcCutsPtr parent, tcPDPtr pitype, tcPDPtr pjtyp
 void MatchboxDeltaRCut::describe() const {
 
   CurrentGenerator::log() 
-    << fullName() << ":\n"
+    << fullName() << "\n"
+    << "matching distances between: '"
+    << theFirstMatcher->name() << "' and '"
+    << theSecondMatcher->name() << "':\n"
     << "DeltaRMin = " << theDeltaRMin << " \n"
     << "DeltaRMax = " << theDeltaRMax << " \n"
     << "DeltaPhiMin = " << theDeltaPhiMin << " \n"

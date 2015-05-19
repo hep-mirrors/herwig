@@ -9,6 +9,7 @@ mkdir /Herwig/Matchers
 cd /Herwig/Matchers
 
 create ThePEG::Matcher<Lepton> Lepton
+create ThePEG::Matcher<Neutrino> Neutrino
 create ThePEG::Matcher<ChargedLepton> ChargedLepton
 create ThePEG::Matcher<LightQuark> LightQuark
 create ThePEG::Matcher<LightAntiQuark> LightAntiQuark

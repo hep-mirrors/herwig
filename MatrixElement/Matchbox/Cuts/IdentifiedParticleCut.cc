@@ -71,7 +71,8 @@ bool IdentifiedParticleCut::passCuts(tcCutsPtr parent,
 void IdentifiedParticleCut::describe() const {
 
   CurrentGenerator::log()
-    << "IdentifiedParticleCut '" << name() << "' matching ";
+    << "IdentifiedParticleCut '" << name() << "' matching "
+    << "'" << matcher()->name() << "'";
   CurrentGenerator::log() << " within:\n";
 
   CurrentGenerator::log() 

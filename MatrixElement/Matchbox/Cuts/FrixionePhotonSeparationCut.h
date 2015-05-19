@@ -59,6 +59,11 @@ public:
    */
   virtual void describe() const;
 
+  /**
+   * Return the matcher for particles to isolate on.
+   */
+  Ptr<MatcherBase>::tptr matcher() const { return theMatcher; }
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -123,6 +128,11 @@ private:
    * The cut type of the algorithm
    */
   int theCutType;
+
+  /**
+   * A matcher for particles to isolate on.
+   */
+  Ptr<MatcherBase>::ptr theMatcher;
 
 private:
 
