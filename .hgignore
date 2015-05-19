@@ -78,3 +78,15 @@ Makefile\.in$
 ^Utilities/Statistics/makeDistributions$
 ^src/defaults/MatchboxDefaults.in$
 ^src/defaults/setup.gosam.in$
+^src/Matchbox/LO-DefaultShower.in$
+^src/Matchbox/LO-DipoleShower.in$
+^src/Matchbox/LO-NoShower.in$
+^src/Matchbox/MCatLO-DefaultShower.in$
+^src/Matchbox/MCatLO-DipoleShower.in$
+^src/Matchbox/MCatNLO-DefaultShower.in$
+^src/Matchbox/MCatNLO-DipoleShower.in$
+^src/Matchbox/NLO-NoShower.in$
+^src/Matchbox/Powheg-DefaultShower.in$
+^src/Matchbox/Powheg-DipoleShower.in$
+^src/Matchbox/done-all-links$
+^src/snippets/done-all-links$
