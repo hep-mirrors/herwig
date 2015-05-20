@@ -32,6 +32,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1217867
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1216670
 # CMS double parton scattering
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1272853
+# CMS W+ jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2014_I1303894
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'

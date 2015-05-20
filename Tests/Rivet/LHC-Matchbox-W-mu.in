@@ -48,6 +48,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1217867
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1272853
 # W DPI
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1216670
+# CMS W+ jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2014_I1303894
 
 
 
