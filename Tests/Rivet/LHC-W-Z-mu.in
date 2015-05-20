@@ -1,0 +1,31 @@
+##################################################
+# Rivet analyses at the Z pole
+##################################################
+read LHCBase.in
+
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+cd /Herwig/Generators
+
+##################################################
+#  Use the q qbar matrix element
+##################################################
+cd /Herwig/MatrixElements
+# Drell-Yan Z/gamma
+insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff
+set MEqq2gZ2ff:Process Muon
+insert SimpleQCD:MatrixElements[0] MEqq2W2ff
+set MEqq2W2ff:Process Muon
+
+##################################################
+# select the analyses
+##################################################
+
+# ATLAS W/Z ratio
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1312627_MU
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+cd /Herwig/Generators
+saverun LHC-W-Z-mu LHCGenerator

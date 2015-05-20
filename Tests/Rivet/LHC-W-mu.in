@@ -30,6 +30,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1083318
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1217867
 # CMS double parton scattering
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1272853
+# W DPI
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1216670
 
 
 

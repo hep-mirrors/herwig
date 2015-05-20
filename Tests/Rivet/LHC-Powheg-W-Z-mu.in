@@ -14,6 +14,8 @@ cd /Herwig/MatrixElements
 # Drell-Yan Z/gamma
 insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff
 set PowhegMEqq2gZ2ff:Process Muon
+insert SimpleQCD:MatrixElements[0] PowhegMEqq2W2ff
+set PowhegMEqq2W2ff:Process Muon
 
 # No QED radiation
 #erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
@@ -21,29 +23,12 @@ set PowhegMEqq2gZ2ff:Process Muon
 ##################################################
 # select the analyses
 ##################################################
-
-# ATLAS pT
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S9131140
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1300647
-# ATLAS Z+jets
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I945498
-# CMS underlying event in Z events
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1107658
-# ATLAS phi*
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1204784
-# Z and real photon + jet
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1258128
-# CMS Z + b-hadron
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1256943
-# CMS Z ang correlations and event shapes
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1209721
-# CMS Z pt and y
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I941555
-# ATLAS MPI in Z events
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1315949
+# ATLAS W/Z ratio
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1312627
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1312627_MU
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################
 cd /Herwig/Generators
-saverun LHC-Powheg-Z-mu LHCGenerator
+saverun LHC-Powheg-W-Z-mu LHCGenerator

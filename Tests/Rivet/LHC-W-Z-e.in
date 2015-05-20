@@ -4,36 +4,29 @@
 read LHCBase.in
 
 ##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+cd /Herwig/Generators
+
+##################################################
 #  Use the q qbar matrix element
 ##################################################
 cd /Herwig/MatrixElements
 # Drell-Yan Z/gamma
+insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff
+set MEqq2gZ2ff:Process Electron
 insert SimpleQCD:MatrixElements[0] MEqq2W2ff
 set MEqq2W2ff:Process Electron
-
-# No QED radiation
-erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
 
 ##################################################
 # select the analyses
 ##################################################
 
-# general analysis
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_WJETS
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_WPOL
-# ATLAS W+jets
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8919674
-# ATLAS W pT
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I925932
-# ATLAS W kT scales
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1217867
-# W DPI
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1216670
-# W +b 
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1219109
-
+# ATLAS W/Z ratio
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1312627
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1312627_EL
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################
 cd /Herwig/Generators
-saverun LHC-W-e LHCGenerator
+saverun LHC-W-Z-e LHCGenerator

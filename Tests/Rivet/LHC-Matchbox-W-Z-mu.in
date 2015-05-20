@@ -10,7 +10,9 @@ set PPFactory:OrderInAlphaEW 2
 
 ## Select the process
 ## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
-do PPFactory:Process p p e+ e-
+do PPFactory:Process p p mu+ mu-
+do PPFactory:Process p p mu+ nu
+do PPFactory:Process p p mu- nu
 
 ## Scale choice
 set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 91.2*GeV
@@ -32,26 +34,11 @@ set MassCut:MaxM 116*GeV
 # select the analyses
 ##################################################
 
-# General analysis
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_ZJETS
-# ATLAS pT
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S9131140
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1300647
-# ATLAS Z+jets
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I945498
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1230812
-# ATLAS phi*
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1204784
-# CMS Z + b-hadron
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1256943
-# CMS Z ang correlations and event shapes
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1209721
-# CMS Z pt and y
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I941555
-# ATLAS Z + bjets
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1306294
+# ATLAS WZ ratio
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1312627
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1312627_MU
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################
 cd /Herwig/Generators
-saverun LHC-Matchbox-Z-e LHCGenerator
+saverun LHC-Matchbox-W-Z-mu LHCGenerator

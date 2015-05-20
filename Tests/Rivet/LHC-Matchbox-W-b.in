@@ -5,10 +5,6 @@ read LHCBase-Matchbox.in
 
 cd /Herwig/MatrixElements/Matchbox/Amplitudes
 
-set /Herwig/Particles/W+:HardProcessWidth 0.*GeV
-set /Herwig/Particles/W-:HardProcessWidth 0.*GeV
-set /Herwig/Particles/Z0:HardProcessWidth 0.*GeV
-
 ##################################################
 ## Generic Procsses
 ##################################################
@@ -18,24 +14,22 @@ clear /Herwig/MatrixElements/Matchbox/PPFactory:Amplitudes
 insert /Herwig/MatrixElements/Matchbox/PPFactory:Amplitudes 0 GenericProcesses
 set GenericProcesses:TreeLevelAmplitude MadGraph
 set GenericProcesses:OneLoopAmplitude OpenLoops
+set /Herwig/Particles/b:HardProcessMass 4.2*GeV
+set /Herwig/Particles/bbar:HardProcessMass 4.2*GeV
 
 ## Set the order of the couplings
 cd /Herwig/MatrixElements/Matchbox
-set PPFactory:OrderInAlphaS 0
+set PPFactory:OrderInAlphaS 2
 set PPFactory:OrderInAlphaEW 2
 
 ## Select the process
 ## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
-do PPFactory:Process pnob pnob W+ W-
+do PPFactory:Process p p e+ nu b bbar
+do PPFactory:Process p p e- nu b bbar
 
 ## Scale choice
-set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 160.8*GeV
+set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 80.4*GeV
 set PPFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale
-
-set /Herwig/Particles/W+:Synchronized 0
-set /Herwig/Particles/W-:Synchronized 0
-do /Herwig/Particles/W+:SelectDecayModes /Herwig/Particles/W+/W+->nu_e,e+;
-do /Herwig/Particles/W-:SelectDecayModes /Herwig/Particles/W-/W-->nu_mubar,mu-;
 
 ##################################################
 ## Cut Selection
@@ -49,6 +43,11 @@ cd /Herwig/Cuts
 set MassCut:MinM 66*GeV
 set MassCut:MaxM 116*GeV
 
+set QCDCuts:JetFinder JetFinder
+insert QCDCuts:MultiCuts 0 JetCuts
+insert JetCuts:JetRegions 0 FirstJet
+set FirstJet:PtMin 30.*GeV
+
 # put BR's into cross section
 create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter
 insert /Herwig/EventHandlers/LHCHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter
@@ -58,10 +57,10 @@ insert /Herwig/EventHandlers/LHCHandler:PostHadronizationHandlers 0 /Herwig/Gene
 ##################################################
 
 # general analysis
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_WWJETS
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1219109
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################
 cd /Herwig/Generators
-saverun LHC-Matchbox-WW-emu LHCGenerator
+saverun LHC-Matchbox-W-b LHCGenerator

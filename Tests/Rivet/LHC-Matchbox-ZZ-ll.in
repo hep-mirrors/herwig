@@ -5,6 +5,10 @@ read LHCBase-Matchbox.in
 
 cd /Herwig/MatrixElements/Matchbox/Amplitudes
 
+set /Herwig/Particles/W+:HardProcessWidth 0.*GeV
+set /Herwig/Particles/W-:HardProcessWidth 0.*GeV
+set /Herwig/Particles/Z0:HardProcessWidth 0.*GeV
+
 ##################################################
 ## Generic Procsses
 ##################################################

@@ -1,0 +1,46 @@
+###################################################
+# Rivet analyses at the Z pole
+##################################################
+read LHCBase-Matchbox.in
+
+cd /Herwig/MatrixElements/Matchbox/Amplitudes
+
+set /Herwig/Particles/t:HardProcessWidth 0.*GeV
+set /Herwig/Particles/tbar:HardProcessWidth 0.*GeV
+
+# Enable generic processes
+clear /Herwig/MatrixElements/Matchbox/PPFactory:Amplitudes
+insert /Herwig/MatrixElements/Matchbox/PPFactory:Amplitudes 0 GenericProcesses
+set GenericProcesses:TreeLevelAmplitude MadGraph
+set GenericProcesses:OneLoopAmplitude OpenLoops
+
+## Set the order of the couplings
+cd /Herwig/MatrixElements/Matchbox
+set PPFactory:OrderInAlphaS 2
+set PPFactory:OrderInAlphaEW 0
+
+## Select the process
+## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
+do PPFactory:Process p p t tbar
+
+## Scale choice
+set PPFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/TopMTScale
+
+create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter
+insert /Herwig/EventHandlers/LHCHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter
+
+##################################################
+# select the analyses
+##################################################
+
+# ATLAS top with jet veto
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1094568
+# ATLAS b-jet shapes in top events
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1243871
+
+
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+cd /Herwig/Generators
+saverun LHC-Matchbox-7-Top-L LHCGenerator

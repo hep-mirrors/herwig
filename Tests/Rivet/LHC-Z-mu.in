@@ -23,8 +23,9 @@ set MEqq2gZ2ff:Process Muon
 # select the analyses
 ##################################################
 
-# General analysis
+# ATLAS Z pt
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S9131140
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1300647
 # ATLAS Z+jets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I945498
 # CMS underlying event in Z events
@@ -39,6 +40,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1256943
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1209721
 # CMS Z pt and y
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I941555
+# ATLAS MPI in Z events
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1315949
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################
