@@ -101,7 +101,9 @@ Energy2 MatchboxTriVecScales::HtPrimeScale() const {
 
   // Check for consistency in number of lepton pairs and members therein
   for (int i = 0; i<3; ++i ) {
-    if (foundlept[i]>2 || foundlept[i]%2!=0) throw InitException() << "MatchboxTriVecScales::HtPrimeScale(): Inconsistency in number of lepton pairs and members therein!";
+    if (foundlept[i]>2 || foundlept[i]%2!=0) 
+      throw Exception() << "MatchboxTriVecScales::HtPrimeScale(): Inconsistency in number of lepton pairs and members therein!"
+			<< Exception::abortnow;
   }
 
   return sqr(sumpartpt+sumvecet);

@@ -172,7 +172,7 @@ MEBase::DiagramVector SubtractedME::dependentDiagrams(const cPDVector& proc,
     dynamic_ptr_cast<Ptr<SubtractionDipole>::tptr>(depME);
 
   if ( !dipole ) {
-    Throw<InitException>() << "A dependent matrix element of SubtractedME "
+    throw InitException() << "SubtractedME: A dependent matrix element of SubtractedME "
 			   << "has not been derived from SubtractionDipole. "
 			   << "Please check the corresponding input file.";
   }
@@ -201,7 +201,7 @@ void SubtractedME::getDipoles() {
     dynamic_ptr_cast<Ptr<MatchboxMEBase>::tptr>(head());
 
   if ( borns().empty() || !real )
-    Throw<InitException>() << "The SubtractedME '"
+    throw InitException() << "SubtractedME: The SubtractedME '"
 			   << name() << "' could not generate "
 			   << "subtraction terms for the real emission "
 			   << "matrix element '" << real->name() << "'. "
@@ -211,7 +211,7 @@ void SubtractedME::getDipoles() {
   ostringstream pname;
   pname << fullName() << "/" << myRealEmissionME->name();
   if ( ! (generator()->preinitRegister(myRealEmissionME,pname.str()) ) )
-    throw InitException() << "Matrix element " << pname.str() << " already existing.";
+    throw InitException() << "SubtractedME: Matrix element " << pname.str() << " already existing.";
   myRealEmissionME->cloneDependencies(pname.str());
   head(myRealEmissionME);
   real = myRealEmissionME;
@@ -268,7 +268,7 @@ void SubtractedME::cloneRealME(const string& prefix) {
     ostringstream pname;
     pname << (prefix == "" ? fullName() : prefix) << "/" << myRealEmissionME->name();
     if ( ! (generator()->preinitRegister(myRealEmissionME,pname.str()) ) )
-      throw InitException() << "Matrix element " << pname.str() << " already existing.";
+      throw InitException() << "SubtractedME: Matrix element " << pname.str() << " already existing.";
     myRealEmissionME->cloneDependencies(pname.str());
     theReal = myRealEmissionME;
   }
@@ -291,7 +291,7 @@ void SubtractedME::cloneDipoles(const string& prefix) {
     ostringstream pname;
     pname << (prefix == "" ? fullName() : prefix) << "/" << cloned->name();
     if ( ! (generator()->preinitRegister(cloned,pname.str()) ) )
-      throw InitException() << "Subtraction dipole " << pname.str() << " already existing.";
+      throw InitException() << "SubtractedME: Subtraction dipole " << pname.str() << " already existing.";
     cloned->cloneDependencies(pname.str());
     dipMEs.push_back(cloned);
 

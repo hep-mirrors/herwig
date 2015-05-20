@@ -42,7 +42,7 @@ VBFNLOPhasespace::VBFNLOPhasespace() :
 void VBFNLOPhasespace::loadVBFNLO() {
   if ( ! (DynamicLoader::load(VBFNLOlib_+"/libVBFNLO.so") || 
 	  DynamicLoader::load("libVBFNLO.so") ) )
-    throw Exception() << "failed to load libVBFNLO.so/dylib\n"
+    throw Exception() << "VBFNLOPhasespace::loadVBFNLO(): Failed to load libVBFNLO.so/dylib\n"
 		      << DynamicLoader::lastErrorMessage
 		      << Exception::abortnow;
 }
@@ -83,7 +83,7 @@ void VBFNLOPhasespace::setXComb(tStdXCombPtr xco) {
     string name = "sqrtS";
     OLP_SetParameter(const_cast<char*>(name.c_str()),&value,&zero,&pStatus);
     if ( !pStatus )
-      throw Exception() << "VBFNLO failed to set parameter '"
+      throw Exception() << "VBFNLOPhasespace::setXComb(): VBFNLO failed to set parameter '"
                         << name << "' to " << value << "\n"
                         << Exception::abortnow;
   }
@@ -105,7 +105,7 @@ double VBFNLOPhasespace::generateTwoToNKinematics(const double* random,
   OLP_PhaseSpacePoint(&id, const_cast<double*>(random), const_cast<double*>(random+1), p, &weight);
 
   if (weight < 0) {
-    throw Exception() << "negative weight in VBFNLOPhaseSpace\n"
+    throw Exception() << "VBFNLOPhasespace::generateTwoToNKinematics(): Negative weight in VBFNLOPhaseSpace\n"
 		      << Exception::abortnow;
   }
 
@@ -199,7 +199,7 @@ int VBFNLOPhasespace::nDimPhasespace(int nFinal) const {
   string name = "PSdimension";
   OLP_GetParameter(const_cast<char*>(name.c_str()),&value,&zero,&pStatus);
   if ( pStatus != 1) {
-    throw Exception() << "cannot get phasespace dimension in VBFNLOPhaseSpace\n"
+    throw Exception() << "VBFNLOPhasespace::nDimPhasespace(): Cannot get phasespace dimension in VBFNLOPhaseSpace\n"
 		      << "error code: " << pStatus << "\n"
 		      << Exception::abortnow;
   }

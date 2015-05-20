@@ -60,8 +60,8 @@ Energy2 MatchboxTopMassScale::renormalizationScale() const {
   }
 
   if ( top < 2 || antitop < 2 ){
-    cerr << "MatchboxTopMassScale: Could not find a top-antitop-pair in the final state!\n";
-    assert(false);
+    throw Exception() << "MatchboxTopMassScale: Could not find a top-antitop-pair in the final state!\n"
+		      << Exception::abortnow;
   }
   // cerr << " sqrt(TopMassScale)  = "
   //      << sqrt((meMomenta()[top]+meMomenta()[antitop]).m2())/GeV

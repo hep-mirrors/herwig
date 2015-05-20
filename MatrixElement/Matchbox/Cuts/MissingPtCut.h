@@ -74,6 +74,11 @@ public:
    * Describe the currently active cuts in the log file.
    */
   virtual void describe() const;
+
+  /**
+   * Return the matcher for particles to cut on.
+   */
+  Ptr<MatcherBase>::tptr matcher() const { return theMatcher; }
   //@}
 
 public:
@@ -162,6 +167,11 @@ private:
    * The maximum missing pt.
    */
   Energy thePtMissMax;
+
+  /**
+   * A matcher for particles to cut on.
+   */
+  Ptr<MatcherBase>::ptr theMatcher;
 
 private:
 

@@ -176,7 +176,7 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
     if (theFormOpt) generator()->log() << "    -- Form optimization switched on (extensions=autotools).\n" << flush;
     else if (!theFormOpt) generator()->log() << "    -- Form optimization switched off  (extensions=autotools, noformopt).\n" << flush;
 
-    if (theNinja && !theFormOpt) throw Exception() << "\n\n>>> NOTE: Ninja reduction needs form optimization!\n" << Exception::abortnow;
+    if (theNinja && !theFormOpt) throw Exception() << "GoSamAmplitude: Ninja reduction needs form optimization!\n" << Exception::abortnow;
 
     if (gosamSetupInFileNameInterface == "") {
       generator()->log() << "\n    Please be aware that you are using a copy of the default GoSam input file!\n" 
@@ -238,7 +238,7 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
   }
 
   if ( !checkOLPContract(contractFileName) ) {
-    throw Exception() << "failed to start GoSam" << Exception::abortnow;
+    throw Exception() << "GoSamAmplitude: failed to start GoSam" << Exception::abortnow;
   }
 
     if (!( DynamicLoader::load(gosamInstallPath+"/lib/libgolem_olp.so")
@@ -274,7 +274,7 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
           || DynamicLoader::load(gosamPath+"build/lib64/libgolem_olp.so")
           || DynamicLoader::load(gosamPath+"build/lib/libgolem_olp.dylib")
           || DynamicLoader::load(gosamPath+"build/lib64/libgolem_olp.dylib")))
-    throw Exception() << "Failed to load GoSam. Please check the log file.\n"
+    throw Exception() << "GoSamAmplitude: Failed to load GoSam. Please check the log file.\n"
 		      << Exception::abortnow;
   tempcontract = gosamPath + tempcontract;
 
@@ -284,10 +284,10 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
   int pStatus = 0;
   double zero = 0.0;
   if ( SM().ewScheme() == 0 || SM().ewScheme() == 6 ) { // EW/Scheme Default and EW/Scheme Independent
-    throw Exception() << "`Best value' schemes are not supported by GoSam"
+    throw Exception() << "GoSamAmplitude: `Best value' schemes are not supported by GoSam"
                       << Exception::abortnow;
   } else if ( SM().ewScheme() == 4 ) { // EW/Scheme mW (uses mW,GF,sin2thetaW) seems not to be supported by GoSam
-    throw Exception() << "`mW' scheme is not supported by GoSam"
+    throw Exception() << "GoSamAmplitude: `mW' scheme is not supported by GoSam"
                       << Exception::abortnow;
   } else if ( SM().ewScheme() == 1 ) { // EW/Scheme GMuScheme (uses mW,mZ,GF)
     double in1=getParticleData(ParticleID::Z0)->hardProcessMass()/GeV;
@@ -561,7 +561,7 @@ bool GoSamAmplitude::checkOLPContract(string contractFileName) {
         if ( (*linex).find((*p).second.Pstr()) != std::string::npos && (*p).second.Pstr().length() == (*linex).find("|") ) {
           string sub = (*linex).substr((*linex).find("|") + 1, (*linex).find("#") - (*linex).find("|") - 1); // | 1 23 # buggy??
           if ( sub.find(" 1 ") != 0 ) 
-	    throw Exception() << "Failed to check contractfile. Please check the logfile.\n"
+	    throw Exception() << "GoSamAmplitude: Failed to check contractfile. Please check the logfile.\n"
 			      << Exception::abortnow;
           string subx = sub.substr(3);
           int subint;

@@ -623,11 +623,54 @@ create ThePEG::JetCuts JetCuts
 set JetCuts:UnresolvedMatcher  MatchboxJetMatcher
 set JetCuts:Ordering OrderPt
 
-create Herwig::FrixionePhotonSeparationCut FrixionePhotonSeparationCut
 create Herwig::IdentifiedParticleCut IdentifiedParticleCut
+
+cp IdentifiedParticleCut LeptonCut
+set LeptonCut:Matcher /Herwig/Matchers/Lepton
+
+cp IdentifiedParticleCut ChargedLeptonCut
+set ChargedLeptonCut:Matcher /Herwig/Matchers/ChargedLepton
+
+cp IdentifiedParticleCut TopQuarkCut
+set TopQuarkCut:Matcher /Herwig/Matchers/Top
+
+cp IdentifiedParticleCut WBosonCut
+set WBosonCut:Matcher /Herwig/Matchers/WBoson
+
+cp IdentifiedParticleCut ZBosonCut
+set ZBosonCut:Matcher /Herwig/Matchers/ZBoson
+
+cp IdentifiedParticleCut HiggsBosonCut
+set HiggsBosonCut:Matcher /Herwig/Matchers/HiggsBoson
+
+cp IdentifiedParticleCut PhotonCut
+set PhotonCut:Matcher /Herwig/Matchers/Photon
+
+create Herwig::FrixionePhotonSeparationCut PhotonIsolationCut
+set PhotonIsolationCut:UnresolvedMatcher  MatchboxJetMatcher
+
 create Herwig::MatchboxDeltaRCut MatchboxDeltaRCut
-create Herwig::MissingPtCut MissingPtCut
+
+cp MatchboxDeltaRCut LeptonDeltaRCut
+set LeptonDeltaRCut:FirstMatcher /Herwig/Matchers/Lepton
+set LeptonDeltaRCut:SecondMatcher /Herwig/Matchers/Lepton
+
+cp MatchboxDeltaRCut ChargedLeptonDeltaRCut
+set ChargedLeptonDeltaRCut:FirstMatcher /Herwig/Matchers/ChargedLepton
+set ChargedLeptonDeltaRCut:SecondMatcher /Herwig/Matchers/ChargedLepton
+
 create Herwig::InvariantMassCut InvariantMassCut
+
+cp InvariantMassCut LeptonPairMassCut
+set LeptonPairMassCut:FirstMatcher /Herwig/Matchers/Lepton
+set LeptonPairMassCut:SecondMatcher /Herwig/Matchers/Lepton
+
+cp InvariantMassCut ChargedLeptonPairMassCut
+set ChargedLeptonPairMassCut:FirstMatcher /Herwig/Matchers/ChargedLepton
+set ChargedLeptonPairMassCut:SecondMatcher /Herwig/Matchers/ChargedLepton
+
+create Herwig::MissingPtCut MissingPtCut
+set MissingPtCut:Matcher /Herwig/Matchers/Neutrino
 
 ################################################################################
 # Setup scale choices
@@ -640,14 +683,13 @@ cd Scales
 create Herwig::MatchboxScaleChoice SHatScale
 cp SHatScale FixedScale
 set FixedScale:FixedScale 100.*GeV
-create Herwig::MatchboxPtScale MaxptScale
-set MaxptScale:JetFinder /Herwig/Cuts/JetFinder
+create Herwig::MatchboxPtScale MaxJetPtScale
+set MaxJetPtScale:JetFinder /Herwig/Cuts/JetFinder
 create Herwig::MatchboxLeptonMassScale LeptonPairMassScale
-create Herwig::MatchboxLeptonPtScale LeptonPtScale
+create Herwig::MatchboxLeptonPtScale LeptonPairPtScale
 create Herwig::MatchboxHtScale HTScale
-create Herwig::MatchboxTopMassScale TopMassScale
+create Herwig::MatchboxTopMassScale TopPairMassScale
 create Herwig::MatchboxTopMTScale TopMTScale
-create Herwig::MatchboxTopMinMTScale TopMinMTScale
 set HTScale:JetFinder /Herwig/Cuts/JetFinder
 set HTScale:IncludeMT No
 cp HTScale HTPrimeScale

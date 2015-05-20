@@ -465,7 +465,7 @@ void MatchboxAmplitude::doGenerateHelicities(set<vector<int> >& res,
 
 vector<unsigned int> MatchboxAmplitude::physicalHelicities(const vector<int>&) const {
   throw Exception()
-    << "The amplitude '" << name() << "' does not support the spin correlation algorithm"
+    << "MatchboxAmplitude::physicalHelicities(): The amplitude '" << name() << "' does not support the spin correlation algorithm"
     << Exception::abortnow;
   static vector<unsigned int> dummy;
   return dummy;
@@ -570,7 +570,7 @@ Complex MatchboxAmplitude::value(const tcPDVector&,
 				 const vector<Lorentz5Momentum>&, 
 				 const vector<int>&) {
   assert(false && "ThePEG::Amplitude interface is not sufficient at the moment.");
-  throw Exception() << "ThePEG::Amplitude interface is not sufficient at the moment."
+  throw Exception() << "MatchboxAmplitude::value(): ThePEG::Amplitude interface is not sufficient at the moment."
 		    << Exception::abortnow;
   return 0.;
 }
@@ -803,13 +803,13 @@ void MatchboxAmplitude::checkReshuffling(Ptr<MatchboxPhasespace>::tptr ps) {
 string MatchboxAmplitude::doReshuffle(string in) {
   in = StringUtils::stripws(in);
   if ( in.empty() )
-    throw Exception() << "expecting PDG id and mass value"
+    throw Exception() << "MatchboxAmplitude::doReshuffle(): Expecting PDG id and mass value"
 		      << Exception::abortnow;
   istringstream ins(in);
   long id;
   ins >> id;
   if ( ins.eof() )
-    throw Exception() << "expecting PDG id and mass value"
+    throw Exception() << "MatchboxAmplitude::doReshuffle(): expecting PDG id and mass value"
 		      << Exception::abortnow;
   Energy m;
   ins >> iunit(m,GeV);
@@ -820,7 +820,7 @@ string MatchboxAmplitude::doReshuffle(string in) {
 string MatchboxAmplitude::doMassless(string in) {
   in = StringUtils::stripws(in);
   if ( in.empty() )
-    throw Exception() << "expecting PDG id"
+    throw Exception() << "MatchboxAmplitude::doMassless(): Expecting PDG id"
 		      << Exception::abortnow;
   istringstream ins(in);
   long id;
@@ -832,7 +832,7 @@ string MatchboxAmplitude::doMassless(string in) {
 string MatchboxAmplitude::doOnShell(string in) {
   in = StringUtils::stripws(in);
   if ( in.empty() )
-    throw Exception() << "expecting PDG id"
+    throw Exception() << "MatchboxAmplitude::doOnShell(): Expecting PDG id"
 		      << Exception::abortnow;
   istringstream ins(in);
   long id;

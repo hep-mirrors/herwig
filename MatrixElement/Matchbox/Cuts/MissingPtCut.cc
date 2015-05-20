@@ -53,7 +53,7 @@ bool MissingPtCut::passCuts(tcCutsPtr parent, const tcPDVector & ptype,
   for ( int i = 0, N = ptype.size(); i < N; ++i ) {
 
     if ( invisibleParticles().size() == 0 ) {
-      if ( abs(ptype[i]->id())==ParticleID::nu_e || abs(ptype[i]->id())==ParticleID::nu_mu || abs(ptype[i]->id())==ParticleID::nu_tau ) {
+      if ( matcher()->matches(ptype[i]) ) {
         // ptMissSum = ptMissSum + p[i].perp();
         momentumMissSum = momentumMissSum + p[i];
         nonu = false;
@@ -100,7 +100,8 @@ string MissingPtCut::doInvisibleParticles(string in) {
 void MissingPtCut::describe() const {
 
   CurrentGenerator::log()
-    << "MissingPtCut '" << name() << "' matching ";
+    << "MissingPtCut '" << name() << "' matching "
+    << "'" << matcher()->name() << "'";
   CurrentGenerator::log() << " within:\n";
 
   CurrentGenerator::log() 
@@ -115,12 +116,14 @@ void MissingPtCut::describe() const {
 
 void MissingPtCut::persistentOutput(PersistentOStream & os) const {
 //   os << ounit(thePtMissMin,GeV) << ounit(thePtMissMax,GeV);
-  os << ounit(thePtMissMin,GeV) << ounit(thePtMissMax,GeV) << theInvisibleParticles;
+  os << ounit(thePtMissMin,GeV) << ounit(thePtMissMax,GeV) 
+     << theInvisibleParticles << theMatcher;
 }
 
 void MissingPtCut::persistentInput(PersistentIStream & is, int) {
 //   is >> iunit(thePtMissMin,GeV) >> iunit(thePtMissMax,GeV);
-  is >> iunit(thePtMissMin,GeV) >> iunit(thePtMissMax,GeV) >> theInvisibleParticles;
+  is >> iunit(thePtMissMin,GeV) >> iunit(thePtMissMax,GeV)
+     >> theInvisibleParticles >> theMatcher;
 }
 
 
@@ -162,6 +165,11 @@ void MissingPtCut::Init() {
      "The maximum missing pt allowed.",
      &MissingPtCut::thePtMissMax, GeV, Constants::MaxEnergy, 0.0*GeV, 0*GeV,
      false, false, Interface::lowerlim);
+
+  static Reference<MissingPtCut,MatcherBase> interfaceMatcher
+    ("Matcher",
+     "A matcher for particles to cut on.",
+     &MissingPtCut::theMatcher, false, false, true, false, false);
 
 }
 

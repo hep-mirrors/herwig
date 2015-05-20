@@ -152,7 +152,7 @@ void MatchboxHybridAmplitude::cloneDependencies(const std::string& prefix) {
     ostringstream pname;
     pname << (prefix == "" ? fullName() : prefix) << "/" << myTreeLevelAmplitude->name();
     if ( ! (generator()->preinitRegister(myTreeLevelAmplitude,pname.str()) ) )
-      throw InitException() << "Amplitude " << pname.str() << " already existing.";
+      throw InitException() << "MatchboxHybridAmplitude::cloneDependencies(): Amplitude " << pname.str() << " already existing.";
     myTreeLevelAmplitude->cloneDependencies(pname.str());
     treeLevelAmplitude(myTreeLevelAmplitude);
   }
@@ -162,7 +162,7 @@ void MatchboxHybridAmplitude::cloneDependencies(const std::string& prefix) {
     ostringstream pname;
     pname << (prefix == "" ? fullName() : prefix) << "/" << myOneLoopAmplitude->name();
     if ( ! (generator()->preinitRegister(myOneLoopAmplitude,pname.str()) ) )
-      throw InitException() << "Amplitude " << pname.str() << " already existing.";
+      throw InitException() << "MatchboxHybridAmplitude::cloneDependencies(): Amplitude " << pname.str() << " already existing.";
     myOneLoopAmplitude->cloneDependencies(pname.str());
     oneLoopAmplitude(myOneLoopAmplitude);
   }

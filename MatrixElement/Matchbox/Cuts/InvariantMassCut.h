@@ -37,7 +37,9 @@ public:
   /**
    * The default constructor.
    */
-  InvariantMassCut() : theMinMass(0*GeV), theMaxMass(Constants::MaxEnergy), theSameFlavourOnly(true), theOppositeSignOnly(true) {}
+  InvariantMassCut() : 
+    theMinMass(0*GeV), theMaxMass(Constants::MaxEnergy),
+    theSameFlavourOnly(false), theOppositeSignOnly(false) {}
   //@}
 
 public:

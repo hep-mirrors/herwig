@@ -47,12 +47,20 @@ Energy2 MatchboxPtScale::renormalizationScale() const {
 
   theJetFinder->cluster(pd, p, cuts, t1, t2);
 
+  bool gotone = false;
+
   Energy2 maxpt2 = ZERO;
   tcPDVector::const_iterator itpd = pd.begin();
   for (vector<LorentzMomentum>::const_iterator itp = p.begin() ;
        itp != p.end(); ++itp, ++itpd )
-    if ( (**itpd).coloured() )
+    if ( theJetFinder->unresolvedMatcher()->matches(*itpd) ) {
+      gotone = true;
       maxpt2 = max(maxpt2,(*itp).perp2());
+    }
+
+  if ( !gotone )
+    throw Exception() << "MatchboxPtScale::renormalizationScale(): No jet could be found. Check your setup."
+		      << Exception::abortnow;
 
   return maxpt2;
 }

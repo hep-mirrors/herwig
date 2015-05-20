@@ -1085,7 +1085,7 @@ void SubtractionDipole::cloneDependencies(const std::string& prefix) {
     ostringstream pname;
     pname << (prefix == "" ? fullName() : prefix) << "/" << myUnderlyingBornME->name();
     if ( ! (generator()->preinitRegister(myUnderlyingBornME,pname.str()) ) )
-      throw InitException() << "Matrix element " << pname.str() << " already existing.";
+      throw InitException() << "SubtractionDipole::cloneDependencies(): Matrix element " << pname.str() << " already existing.";
     myUnderlyingBornME->cloneDependencies(pname.str());
     underlyingBornME(myUnderlyingBornME);
   }
@@ -1095,7 +1095,7 @@ void SubtractionDipole::cloneDependencies(const std::string& prefix) {
     ostringstream pname;
     pname << (prefix == "" ? fullName() : prefix) << "/" << myRealEmissionME->name();
     if ( ! (generator()->preinitRegister(myRealEmissionME,pname.str()) ) )
-      throw InitException() << "Matrix element " << pname.str() << " already existing.";
+      throw InitException() << "SubtractionDipole::cloneDependencies(): Matrix element " << pname.str() << " already existing.";
     myRealEmissionME->cloneDependencies(pname.str());
     realEmissionME(myRealEmissionME);
   }
@@ -1105,7 +1105,7 @@ void SubtractionDipole::cloneDependencies(const std::string& prefix) {
     ostringstream pname;
     pname << (prefix == "" ? fullName() : prefix) << "/" << myTildeKinematics->name();
     if ( ! (generator()->preinitRegister(myTildeKinematics,pname.str()) ) )
-      throw InitException() << "Tilde kinematics " << pname.str() << " already existing.";
+      throw InitException() << "SubtractionDipole::cloneDependencies(): Tilde kinematics " << pname.str() << " already existing.";
     myTildeKinematics->dipole(this);
     tildeKinematics(myTildeKinematics);
   }
@@ -1115,7 +1115,7 @@ void SubtractionDipole::cloneDependencies(const std::string& prefix) {
     ostringstream pname;
     pname << (prefix == "" ? fullName() : prefix) << "/" << myInvertedTildeKinematics->name();
     if ( ! (generator()->preinitRegister(myInvertedTildeKinematics,pname.str()) ) )
-      throw InitException() << "Inverted tilde kinematics " << pname.str() << " already existing.";
+      throw InitException() << "SubtractionDipole::cloneDependencies(): Inverted tilde kinematics " << pname.str() << " already existing.";
     myInvertedTildeKinematics->dipole(this);
     invertedTildeKinematics(myInvertedTildeKinematics);
   }
@@ -1126,7 +1126,7 @@ void SubtractionDipole::cloneDependencies(const std::string& prefix) {
     ostringstream pname;
     pname << (prefix == "" ? fullName() : prefix) << "/" << (**rw).name();
     if ( ! (generator()->preinitRegister(myReweight,pname.str()) ) )
-      throw InitException() << "Reweight " << pname.str() << " already existing.";
+      throw InitException() << "SubtractionDipole::cloneDependencies(): Reweight " << pname.str() << " already existing.";
     myReweight->cloneDependencies(pname.str());
     *rw = myReweight;
   }

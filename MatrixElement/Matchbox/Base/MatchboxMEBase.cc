@@ -1042,7 +1042,7 @@ MatchboxMEBase::getDipoles(const vector<Ptr<SubtractionDipole>::ptr>& dipoles,
 		    << (**d).name() << ".[(" 
 		    << emitter << "," << emission << ")," << spectator << "]";
 	      if ( ! (generator()->preinitRegister(nDipole,dname.str()) ) )
-		throw InitException() << "Dipole " << dname.str() << " already existing.";
+		throw InitException() << "MatchboxMEBase::getDipoles(): Dipole " << dname.str() << " already existing.";
 	      if ( !factory()->reweighters().empty() ) {
 		for ( vector<ReweightPtr>::const_iterator rw = factory()->reweighters().begin();
 		      rw != factory()->reweighters().end(); ++rw )
@@ -1360,7 +1360,7 @@ void MatchboxMEBase::cloneDependencies(const std::string& prefix) {
     ostringstream pname;
     pname << (prefix == "" ? fullName() : prefix) << "/" << myPhasespace->name();
     if ( ! (generator()->preinitRegister(myPhasespace,pname.str()) ) )
-      throw InitException() << "Phasespace generator " << pname.str() << " already existing.";
+      throw InitException() << "MatchboxMEBase::cloneDependencies(): Phasespace generator " << pname.str() << " already existing.";
     myPhasespace->cloneDependencies(pname.str());
     phasespace(myPhasespace);
   }
@@ -1372,7 +1372,7 @@ void MatchboxMEBase::cloneDependencies(const std::string& prefix) {
     ostringstream pname;
     pname << (prefix == "" ? fullName() : prefix) << "/" << myAmplitude->name();
     if ( ! (generator()->preinitRegister(myAmplitude,pname.str()) ) )
-      throw InitException() << "Amplitude " << pname.str() << " already existing.";
+      throw InitException() << "MatchboxMEBase::cloneDependencies(): Amplitude " << pname.str() << " already existing.";
     myAmplitude->cloneDependencies(pname.str());
     matchboxAmplitude(myAmplitude);
     amplitude(myAmplitude);
@@ -1385,7 +1385,7 @@ void MatchboxMEBase::cloneDependencies(const std::string& prefix) {
     ostringstream pname;
     pname << (prefix == "" ? fullName() : prefix) << "/" << myScaleChoice->name();
     if ( ! (generator()->preinitRegister(myScaleChoice,pname.str()) ) )
-      throw InitException() << "Scale choice " << pname.str() << " already existing.";
+      throw InitException() << "MatchboxMEBase::cloneDependencies(): Scale choice " << pname.str() << " already existing.";
     scaleChoice(myScaleChoice);
   }
 
@@ -1395,7 +1395,7 @@ void MatchboxMEBase::cloneDependencies(const std::string& prefix) {
     ostringstream pname;
     pname << (prefix == "" ? fullName() : prefix) << "/" << (**rw).name();
     if ( ! (generator()->preinitRegister(myReweight,pname.str()) ) )
-      throw InitException() << "Reweight " << pname.str() << " already existing.";
+      throw InitException() << "MatchboxMEBase::cloneDependencies(): Reweight " << pname.str() << " already existing.";
     myReweight->cloneDependencies(pname.str());
     *rw = myReweight;
   }
@@ -1406,7 +1406,7 @@ void MatchboxMEBase::cloneDependencies(const std::string& prefix) {
     ostringstream pname;
     pname << (prefix == "" ? fullName() : prefix) << "/" << (**v).name();
     if ( ! (generator()->preinitRegister(myIOP,pname.str()) ) )
-      throw InitException() << "Insertion operator " << pname.str() << " already existing.";
+      throw InitException() << "MatchboxMEBase::cloneDependencies(): Insertion operator " << pname.str() << " already existing.";
     *v = myIOP;
   }
 
