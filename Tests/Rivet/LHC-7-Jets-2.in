@@ -49,6 +49,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1273574
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1298811
 # ATLAS jet veto
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1307243
+# CMS jet ratios
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2014_I1298810
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'

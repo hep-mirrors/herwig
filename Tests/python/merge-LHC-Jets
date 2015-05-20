@@ -221,6 +221,7 @@ for f in yodafiles:
            aopath.find("I1261026")>0 or
            aopath.find("I1307243")>0 or
            aopath.find("I1325553")>0 or
+           aopath.find("I1298810")>0 or
            aopath.find("CMS_2012_PAS_QCD_11_010")>0 or
            aopath.find("ATLAS_2014_I1298811")>0) :
            if not inhistos_pt.has_key(aopath):
@@ -329,6 +330,7 @@ for hpath,hsets in inhistos_pt.iteritems():
         hpath.find("QCD_11_010")>0 or
         hpath.find("1298811")>0 or
         hpath.find("I1325553")>0 or
+        hpath.find("I1298810")>0 or
         hpath.find("1307243")>0) :
         if(type(hsets.values()[0].values()[0])==yoda.core.Scatter2D) :
             outhistos[hpath] = yoda.core.Scatter2D(hsets.values()[0].values()[0].path,
@@ -1723,6 +1725,13 @@ mergeByPt("/ATLAS_2014_I1325553/d01-x02-y03", "7000")
 mergeByPt("/ATLAS_2014_I1325553/d01-x02-y04", "7000")
 mergeByPt("/ATLAS_2014_I1325553/d01-x02-y05", "7000")
 mergeByPt("/ATLAS_2014_I1325553/d01-x02-y06", "7000")
+
+logging.info("Processing CMS_2014_I1298810")
+for i in range(1,19) :
+    if(i<10) :
+        mergeByPt("/CMS_2014_I1298810/d0"+str(i)+"-x01-y01", "7000")
+    else :
+        mergeByPt("/CMS_2014_I1298810/d"+str(i)+"-x01-y01", "7000")
 
 # Choose output file
 name = "LHC"+"-Jets.yoda"
