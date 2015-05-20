@@ -300,6 +300,7 @@ Rivet-LHC-EW: Rivet-LHC-W-e    Rivet-LHC-Powheg-W-e    Rivet-LHC-Matchbox-W-e   
               Rivet-LHC-Z-e    Rivet-LHC-Powheg-Z-e    Rivet-LHC-Matchbox-Z-e    \
               Rivet-LHC-Z-mu   Rivet-LHC-Powheg-Z-mu   Rivet-LHC-Matchbox-Z-mu   \
               Rivet-LHC-Z-LowMass-e    Rivet-LHC-Powheg-Z-LowMass-e    Rivet-LHC-Matchbox-Z-LowMass-e    \
+              Rivet-LHC-Z-MedMass-e    Rivet-LHC-Powheg-Z-MedMass-e    Rivet-LHC-Matchbox-Z-MedMass-e    \
               Rivet-LHC-Z-LowMass-mu   Rivet-LHC-Powheg-Z-LowMass-mu   Rivet-LHC-Matchbox-Z-LowMass-mu   \
               Rivet-LHC-WZ     Rivet-LHC-Powheg-WZ     Rivet-LHC-Matchbox-WZ     \
               Rivet-LHC-WW-emu Rivet-LHC-Powheg-WW-emu Rivet-LHC-Matchbox-WW-emu \
@@ -317,9 +318,9 @@ Rivet-LHC-EW: Rivet-LHC-W-e    Rivet-LHC-Powheg-W-e    Rivet-LHC-Matchbox-W-e   
               Rivet-LHC-Matchbox-W-Z-e Rivet-LHC-Matchbox-W-Z-mu \
               Rivet-LHC-Matchbox-Z-b Rivet-LHC-Matchbox-Z-bb Rivet-LHC-Matchbox-W-b 
 	rm -rf Rivet-LHC-EW;
-	python/merge-LHC-EW LHC-{W-e,W-mu,Z-e,Z-mu,Z-LowMass-e,Z-LowMass-mu,W-Z-e,W-Z-mu,WW-emu,WW-ll,WZ,ZZ-ll,ZZ-lv}.yoda LHC-7-{W,Z}-Jet-{1,2,3}-e.yoda -o LHC-EW.yoda;
-	python/merge-LHC-EW LHC-Matchbox-{W-e,W-mu,Z-e,Z-mu,Z-LowMass-e,Z-LowMass-mu,W-Z-e,W-Z-mu,WW-emu,WW-ll,WZ,ZZ-ll,ZZ-lv}.yoda LHC-Matchbox-7-{W,Z}-Jet-{1,2,3}-e.yoda -o LHC-Matchbox-EW.yoda;
-	python/merge-LHC-EW LHC-Powheg-{W-e,W-mu,Z-e,Z-mu,Z-LowMass-e,Z-LowMass-mu,W-Z-e,W-Z-mu,WW-emu,WW-ll,WZ,ZZ-ll,ZZ-lv}.yoda -o LHC-Powheg-EW.yoda;
+	python/merge-LHC-EW LHC-{W-e,W-mu,Z-e,Z-mu,Z-LowMass-e,Z-MedMass-e,Z-LowMass-mu,W-Z-e,W-Z-mu,WW-emu,WW-ll,WZ,ZZ-ll,ZZ-lv}.yoda LHC-7-{W,Z}-Jet-{1,2,3}-e.yoda -o LHC-EW.yoda;
+	python/merge-LHC-EW LHC-Matchbox-{W-e,W-mu,Z-e,Z-mu,Z-LowMass-e,Z-MedMass-e,Z-LowMass-mu,W-Z-e,W-Z-mu,WW-emu,WW-ll,WZ,ZZ-ll,ZZ-lv}.yoda LHC-Matchbox-7-{W,Z}-Jet-{1,2,3}-e.yoda -o LHC-Matchbox-EW.yoda;
+	python/merge-LHC-EW LHC-Powheg-{W-e,W-mu,Z-e,Z-mu,Z-LowMass-e,Z-MedMass-e,Z-LowMass-mu,W-Z-e,W-Z-mu,WW-emu,WW-ll,WZ,ZZ-ll,ZZ-lv}.yoda -o LHC-Powheg-EW.yoda;
 	rivet-mkhtml -o Rivet-LHC-EW LHC-EW.yoda:Hw++ LHC-Powheg-EW.yoda:Hw++-Powheg LHC-Matchbox-EW.yoda:Hw++-Matchbox LHC-Matchbox-Z-b.yoda:Hw++-Matchbox-Zb LHC-Matchbox-Z-bb.yoda:Hw++-Matchbox-Zbb LHC-Matchbox-W-b.yoda:Hw++-Matchbox-W-bb;
 
 Rivet-LHC-Photon: Rivet-LHC-7-PromptPhoton-1  Rivet-LHC-7-PromptPhoton-2 Rivet-LHC-7-PromptPhoton-3 \
