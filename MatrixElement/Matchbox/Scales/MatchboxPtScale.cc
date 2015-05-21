@@ -58,7 +58,7 @@ Energy2 MatchboxPtScale::renormalizationScale() const {
       maxpt2 = max(maxpt2,(*itp).perp2());
     }
 
-  if ( !gotone )
+  if ( !gotone && lastXCombPtr()->willPassCuts() )
     throw Exception() << "MatchboxPtScale::renormalizationScale(): No jet could be found. Check your setup."
 		      << Exception::abortnow;
 
