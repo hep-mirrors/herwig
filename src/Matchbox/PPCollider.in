@@ -19,12 +19,12 @@ set Cuts:X1Min 1.0e-5
 set Cuts:X2Min 1.0e-5
 set Cuts:MHatMin 0.0*GeV
 
-insert Cuts:OneCuts[0] PhotonKtCut
-insert Cuts:OneCuts[1] LeptonKtCut
-insert Cuts:OneCuts[2] TopKtCut
-insert Cuts:OneCuts[3] WBosonKtCut
-insert Cuts:OneCuts[4] ZBosonKtCut
-insert Cuts:OneCuts[5] HiggsBosonKtCut
-insert Cuts:OneCuts[6] ChargedLeptonKtCut
-insert Cuts:MultiCuts[0] MassCut
+insert Cuts:OneCuts[0] PhotonCut
+insert Cuts:OneCuts[1] LeptonCut
+insert Cuts:OneCuts[2] TopQuarkCut
+insert Cuts:OneCuts[3] WBosonCut
+insert Cuts:OneCuts[4] ZBosonCut
+insert Cuts:OneCuts[5] HiggsBosonCut
+insert Cuts:OneCuts[6] ChargedLeptonCut
+insert Cuts:MultiCuts[0] ChargedLeptonPairMassCut
 
