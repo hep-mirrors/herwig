@@ -30,7 +30,10 @@ using namespace Herwig;
 
 void InvariantMassCut::describe() const {
   CurrentGenerator::log() 
-    << fullName() << ":\n"
+    << fullName() << "\n"
+    << "matching distances between: '"
+    << theFirstMatcher->name() << "' and '"
+    << theSecondMatcher->name() << "':\n"
     << "M = " << theMinMass/GeV << " .. " << theMaxMass/GeV << " GeV\n"
     << "same flavour only = " << (theSameFlavourOnly?"true":"false") << " \n"
     << "opposite sign only = " << (theOppositeSignOnly?"true":"false") << " \n"
