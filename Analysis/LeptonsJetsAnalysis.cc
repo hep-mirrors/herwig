@@ -104,7 +104,7 @@ void LeptonsJetsAnalysis::reconstructEWParticles(ParticleVector& parts) {
 
   vector< pair<PID,LorentzMomentum> > partall;
   vector<LorentzMomentum> partl, partnu, parth;
-  LorentzMomentum ptmiss = LorentzMomentum(ZERO,ZERO,ZERO,ZERO);;
+  LorentzMomentum ptmiss = LorentzMomentum(ZERO,ZERO,ZERO,ZERO);
 
   ParticleVector::iterator p = parts.begin();
   while (p != parts.end()) {
@@ -144,20 +144,20 @@ void LeptonsJetsAnalysis::reconstructEWParticles(ParticleVector& parts) {
   sort(partnu.begin(),partnu.end(),SortPt());
   sort(parth.begin(),parth.end(),SortPt());
 
-  // make missing transverse momentum transverse and add as last entry in leptonID and neutrino
+  // make missing transverse momentum transverse and also add as last entry in EWID
   ptmiss.setE(ptmiss.perp());
   ptmiss.setZ(0*GeV);
   partall.push_back(pair<PID,LorentzMomentum>(ParticleID::nu_e,ptmiss));
-  partnu.push_back(ptmiss);
 
   for ( size_t k = 0; k < partall.size(); ++k ) 
-    leptonIDMomentum(k+1) = partall[k].second;
+    eWIDMomentum(k+1) = partall[k].second;
   for ( size_t k = 0; k < partl.size(); ++k ) 
-    leptonPTMomentum(k+1) = partl[k];
+    chargedLeptonMomentum(k+1) = partl[k];
   for ( size_t k = 0; k < partnu.size(); ++k ) 
     neutrinoMomentum(k+1) = partnu[k];
   for ( size_t k = 0; k < parth.size(); ++k ) 
     higgsMomentum(k+1) = parth[k];
+  pTmissMomentum() = ptmiss;
 
 }
 
@@ -172,9 +172,9 @@ void LeptonsJetsAnalysis::analyze(ParticleVector& parts, long id, double weight)
     if ( nJets()<2 ) return;
     if ( (jetMomentum(1)+jetMomentum(2)).m() < 600*GeV ) return;
     if ( abs(jetMomentum(1).rapidity()-jetMomentum(2).rapidity()) < 3.6 ) return;
-    if ( jetMomentum(1).rapidity()*jetMomentum(2).rapidity() > 0 ) return;
-    for ( map<unsigned int,LorentzMomentum>::const_iterator h = theLeptonPTs.begin();
-          h != theLeptonPTs.end(); ++h ) {
+    // if ( jetMomentum(1).rapidity()*jetMomentum(2).rapidity() > 0 ) return;
+    for ( map<unsigned int,LorentzMomentum>::const_iterator h = theChargedLeptons.begin();
+          h != theChargedLeptons.end(); ++h ) {
       if ( h->second.perp() < 20*GeV ) return;
       if ( abs(h->second.rapidity()) > 2.5 ) return;
     }
@@ -217,28 +217,30 @@ void LeptonsJetsAnalysis::analyze(ParticleVector& parts, long id, double weight)
 	  fourJetProperties(h->first,g->first,g1->first,g2->first).count(p1234,weight,id);
 	}
       }
-      for ( map<unsigned int,LorentzMomentum>::const_iterator g1 = theLeptonIDs.begin();
-          g1 != theLeptonIDs.end(); ++g1 ) 
-        jetPairLeptonIDTripleProperties(h->first,g->first,g1->first).count(h->second,g->second,g1->second,weight,id);
-      for ( map<unsigned int,LorentzMomentum>::const_iterator g1 = theLeptonPTs.begin();
-          g1 != theLeptonPTs.end(); ++g1 ) 
-        jetPairLeptonPTTripleProperties(h->first,g->first,g1->first).count(h->second,g->second,g1->second,weight,id);
+      for ( map<unsigned int,LorentzMomentum>::const_iterator g1 = theEWIDs.begin();
+          g1 != theEWIDs.end(); ++g1 ) 
+        jetPairEWIDTripleProperties(h->first,g->first,g1->first).count(h->second,g->second,g1->second,weight,id);
+      for ( map<unsigned int,LorentzMomentum>::const_iterator g1 = theChargedLeptons.begin();
+          g1 != theChargedLeptons.end(); ++g1 ) 
+        jetPairChargedLeptonTripleProperties(h->first,g->first,g1->first).count(h->second,g->second,g1->second,weight,id);
       for ( map<unsigned int,LorentzMomentum>::const_iterator g1 = theNeutrinos.begin();
           g1 != theNeutrinos.end(); ++g1 ) 
         jetPairNeutrinoTripleProperties(h->first,g->first,g1->first).count(h->second,g->second,g1->second,weight,id);
+      jetPairPTmissTripleProperties(h->first,g->first).count(h->second,g->second,pTmissMomentum(),weight,id);
       for ( map<unsigned int,LorentzMomentum>::const_iterator g1 = theHiggs.begin();
           g1 != theHiggs.end(); ++g1 ) 
         jetPairHiggsTripleProperties(h->first,g->first,g1->first).count(h->second,g->second,g1->second,weight,id);
     }
-    for ( map<unsigned int,LorentzMomentum>::const_iterator g = theLeptonIDs.begin();
-	g != theLeptonIDs.end(); ++g ) 
-      jetLeptonIDPairProperties(h->first,g->first).count(h->second,g->second,weight,id);
-    for ( map<unsigned int,LorentzMomentum>::const_iterator g = theLeptonPTs.begin();
-	g != theLeptonPTs.end(); ++g ) 
-      jetLeptonPTPairProperties(h->first,g->first).count(h->second,g->second,weight,id);
+    for ( map<unsigned int,LorentzMomentum>::const_iterator g = theEWIDs.begin();
+	g != theEWIDs.end(); ++g ) 
+      jetEWIDPairProperties(h->first,g->first).count(h->second,g->second,weight,id);
+    for ( map<unsigned int,LorentzMomentum>::const_iterator g = theChargedLeptons.begin();
+	g != theChargedLeptons.end(); ++g ) 
+      jetChargedLeptonPairProperties(h->first,g->first).count(h->second,g->second,weight,id);
     for ( map<unsigned int,LorentzMomentum>::const_iterator g = theNeutrinos.begin();
 	g != theNeutrinos.end(); ++g ) 
       jetNeutrinoPairProperties(h->first,g->first).count(h->second,g->second,weight,id);
+    jetPTmissPairProperties(h->first).count(h->second,pTmissMomentum(),weight,id);
     for ( map<unsigned int,LorentzMomentum>::const_iterator g = theHiggs.begin();
 	g != theHiggs.end(); ++g ) 
       jetHiggsPairProperties(h->first,g->first).count(h->second,g->second,weight,id);
@@ -254,39 +256,39 @@ void LeptonsJetsAnalysis::analyze(ParticleVector& parts, long id, double weight)
 				 jetSummedPhi/njets,jetSummedM/njets,
 				 weight,id);
 
-  for ( map<unsigned int,LorentzMomentum>::const_iterator h = theLeptonIDs.begin();
-	h != theLeptonIDs.end(); ++h ) {
-    leptonIDProperties(h->first).count(h->second,weight,id);
+  for ( map<unsigned int,LorentzMomentum>::const_iterator h = theEWIDs.begin();
+	h != theEWIDs.end(); ++h ) {
+    eWIDProperties(h->first).count(h->second,weight,id);
     map<unsigned int,LorentzMomentum>::const_iterator g = h; ++g;
-    for ( ; g != theLeptonIDs.end(); ++g ) {
-      leptonIDPairProperties(h->first,g->first).count(h->second,g->second,weight,id);
+    for ( ; g != theEWIDs.end(); ++g ) {
+      eWIDPairProperties(h->first,g->first).count(h->second,g->second,weight,id);
       map<unsigned int,LorentzMomentum>::const_iterator g1 = g; ++g1;
-      for ( ; g1 != theLeptonIDs.end(); ++g1 ) {
-	threeLeptonIDProperties(h->first,g->first,g1->first).count(h->second,g->second,g1->second,weight,id);
+      for ( ; g1 != theEWIDs.end(); ++g1 ) {
+	threeEWIDProperties(h->first,g->first,g1->first).count(h->second,g->second,g1->second,weight,id);
 	map<unsigned int,LorentzMomentum>::const_iterator g2 = g1; ++g2;
-	for ( ; g2 != theLeptonIDs.end(); ++g2 ) {
+	for ( ; g2 != theEWIDs.end(); ++g2 ) {
 	  LorentzMomentum p1234 =
 	    h->second + g->second + g1->second + g2->second;
-	  fourLeptonIDProperties(h->first,g->first,g1->first,g2->first).count(p1234,weight,id);
+	  fourEWIDProperties(h->first,g->first,g1->first,g2->first).count(p1234,weight,id);
 	}
       }
     }
   }
 
-  for ( map<unsigned int,LorentzMomentum>::const_iterator h = theLeptonPTs.begin();
-	h != theLeptonPTs.end(); ++h ) {
-    leptonPTProperties(h->first).count(h->second,weight,id);
+  for ( map<unsigned int,LorentzMomentum>::const_iterator h = theChargedLeptons.begin();
+	h != theChargedLeptons.end(); ++h ) {
+    chargedLeptonProperties(h->first).count(h->second,weight,id);
     map<unsigned int,LorentzMomentum>::const_iterator g = h; ++g;
-    for ( ; g != theLeptonPTs.end(); ++g ) {
-      leptonPTPairProperties(h->first,g->first).count(h->second,g->second,weight,id);
+    for ( ; g != theChargedLeptons.end(); ++g ) {
+      chargedLeptonPairProperties(h->first,g->first).count(h->second,g->second,weight,id);
       map<unsigned int,LorentzMomentum>::const_iterator g1 = g; ++g1;
-      for ( ; g1 != theLeptonPTs.end(); ++g1 ) {
-	threeLeptonPTProperties(h->first,g->first,g1->first).count(h->second,g->second,g1->second,weight,id);
+      for ( ; g1 != theChargedLeptons.end(); ++g1 ) {
+	threeChargedLeptonProperties(h->first,g->first,g1->first).count(h->second,g->second,g1->second,weight,id);
 	map<unsigned int,LorentzMomentum>::const_iterator g2 = g1; ++g2;
-	for ( ; g2 != theLeptonPTs.end(); ++g2 ) {
+	for ( ; g2 != theChargedLeptons.end(); ++g2 ) {
 	  LorentzMomentum p1234 =
 	    h->second + g->second + g1->second + g2->second;
-	  fourLeptonPTProperties(h->first,g->first,g1->first,g2->first).count(p1234,weight,id);
+	  fourChargedLeptonProperties(h->first,g->first,g1->first,g2->first).count(p1234,weight,id);
 	}
       }
     }
@@ -296,6 +298,7 @@ void LeptonsJetsAnalysis::analyze(ParticleVector& parts, long id, double weight)
 	h != theNeutrinos.end(); ++h ) {
     neutrinoProperties(h->first).count(h->second,weight,id);
   }
+  pTmissProperties().count(pTmissMomentum(),weight,id);
 
   for ( map<unsigned int,LorentzMomentum>::const_iterator h = theHiggs.begin();
 	h != theHiggs.end(); ++h ) {
@@ -400,13 +403,13 @@ void LeptonsJetsAnalysis::dofinish() {
     xhistos.append(theNJetsExclusive.toXML());
   }
 
-  for ( map<unsigned int,ObjectProperties>::iterator h = theLeptonIDProperties.begin();
-	h != theLeptonIDProperties.end(); ++h ) {
+  for ( map<unsigned int,ObjectProperties>::iterator h = theEWIDProperties.begin();
+	h != theEWIDProperties.end(); ++h ) {
     h->second.finalize(xhistos);
   }
 
-  for ( map<unsigned int,ObjectProperties>::iterator h = theLeptonPTProperties.begin();
-	h != theLeptonPTProperties.end(); ++h ) {
+  for ( map<unsigned int,ObjectProperties>::iterator h = theChargedLeptonProperties.begin();
+	h != theChargedLeptonProperties.end(); ++h ) {
     h->second.finalize(xhistos);
   }
 
@@ -414,6 +417,9 @@ void LeptonsJetsAnalysis::dofinish() {
 	h != theNeutrinoProperties.end(); ++h ) {
     h->second.finalize(xhistos);
   }
+
+  thePTmissProperties.finalize(xhistos);
+ 
 
   for ( map<unsigned int,ObjectProperties>::iterator h = theHiggsProperties.begin();
 	h != theHiggsProperties.end(); ++h ) {
@@ -425,13 +431,13 @@ void LeptonsJetsAnalysis::dofinish() {
     h->second.finalize(xhistos);
   }
 
-  for ( map<pair<unsigned int,unsigned int>,PairProperties>::iterator h = theJetLeptonIDPairProperties.begin();
-	h != theJetLeptonIDPairProperties.end(); ++h ) {
+  for ( map<pair<unsigned int,unsigned int>,PairProperties>::iterator h = theJetEWIDPairProperties.begin();
+	h != theJetEWIDPairProperties.end(); ++h ) {
     h->second.finalize(xhistos);
   }
 
-  for ( map<pair<unsigned int,unsigned int>,PairProperties>::iterator h = theJetLeptonPTPairProperties.begin();
-	h != theJetLeptonPTPairProperties.end(); ++h ) {
+  for ( map<pair<unsigned int,unsigned int>,PairProperties>::iterator h = theJetChargedLeptonPairProperties.begin();
+	h != theJetChargedLeptonPairProperties.end(); ++h ) {
     h->second.finalize(xhistos);
   }
 
@@ -440,18 +446,23 @@ void LeptonsJetsAnalysis::dofinish() {
     h->second.finalize(xhistos);
   }
 
+  for ( map<unsigned int,PairProperties>::iterator h = theJetPTmissPairProperties.begin();
+	h != theJetPTmissPairProperties.end(); ++h ) {
+    h->second.finalize(xhistos);
+  }
+
   for ( map<pair<unsigned int,unsigned int>,PairProperties>::iterator h = theJetHiggsPairProperties.begin();
 	h != theJetHiggsPairProperties.end(); ++h ) {
     h->second.finalize(xhistos);
   }
 
-  for ( map<pair<unsigned int,unsigned int>,PairProperties>::iterator h = theLeptonIDPairProperties.begin();
-	h != theLeptonIDPairProperties.end(); ++h ) {
+  for ( map<pair<unsigned int,unsigned int>,PairProperties>::iterator h = theEWIDPairProperties.begin();
+	h != theEWIDPairProperties.end(); ++h ) {
     h->second.finalize(xhistos);
   }
 
-  for ( map<pair<unsigned int,unsigned int>,PairProperties>::iterator h = theLeptonPTPairProperties.begin();
-	h != theLeptonPTPairProperties.end(); ++h ) {
+  for ( map<pair<unsigned int,unsigned int>,PairProperties>::iterator h = theChargedLeptonPairProperties.begin();
+	h != theChargedLeptonPairProperties.end(); ++h ) {
     h->second.finalize(xhistos);
   }
 
@@ -461,17 +472,22 @@ void LeptonsJetsAnalysis::dofinish() {
   }
 
   for ( map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator h =
-	  theJetPairLeptonIDTripleProperties.begin(); h != theJetPairLeptonIDTripleProperties.end(); ++h ) {
+	  theJetPairEWIDTripleProperties.begin(); h != theJetPairEWIDTripleProperties.end(); ++h ) {
     h->second.finalize(xhistos);
   }
 
   for ( map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator h =
-	  theJetPairLeptonPTTripleProperties.begin(); h != theJetPairLeptonPTTripleProperties.end(); ++h ) {
+	  theJetPairChargedLeptonTripleProperties.begin(); h != theJetPairChargedLeptonTripleProperties.end(); ++h ) {
     h->second.finalize(xhistos);
   }
 
   for ( map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator h =
 	  theJetPairNeutrinoTripleProperties.begin(); h != theJetPairNeutrinoTripleProperties.end(); ++h ) {
+    h->second.finalize(xhistos);
+  }
+
+  for ( map<pair<unsigned int,unsigned int>,TripleProperties>::iterator h =
+	  theJetPairPTmissTripleProperties.begin(); h != theJetPairPTmissTripleProperties.end(); ++h ) {
     h->second.finalize(xhistos);
   }
 
@@ -481,12 +497,12 @@ void LeptonsJetsAnalysis::dofinish() {
   }
 
   for ( map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator h =
-	  theThreeLeptonIDProperties.begin(); h != theThreeLeptonIDProperties.end(); ++h ) {
+	  theThreeEWIDProperties.begin(); h != theThreeEWIDProperties.end(); ++h ) {
     h->second.finalize(xhistos);
   }
 
   for ( map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator h =
-	  theThreeLeptonPTProperties.begin(); h != theThreeLeptonPTProperties.end(); ++h ) {
+	  theThreeChargedLeptonProperties.begin(); h != theThreeChargedLeptonProperties.end(); ++h ) {
     h->second.finalize(xhistos);
   }
 
@@ -496,12 +512,12 @@ void LeptonsJetsAnalysis::dofinish() {
   }
 
   for ( map<boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties>::iterator h =
-	  theFourLeptonIDProperties.begin(); h != theFourLeptonIDProperties.end(); ++h ) {
+	  theFourEWIDProperties.begin(); h != theFourEWIDProperties.end(); ++h ) {
     h->second.finalize(xhistos);
   }
 
   for ( map<boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties>::iterator h =
-	  theFourLeptonPTProperties.begin(); h != theFourLeptonPTProperties.end(); ++h ) {
+	  theFourChargedLeptonProperties.begin(); h != theFourChargedLeptonProperties.end(); ++h ) {
     h->second.finalize(xhistos);
   }
 

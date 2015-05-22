@@ -77,8 +77,8 @@ protected:
    */
   void clear() {
     theJets.clear();
-    theLeptonIDs.clear();
-    theLeptonPTs.clear();
+    theEWIDs.clear();
+    theChargedLeptons.clear();
     theNeutrinos.clear();
     theHiggs.clear();
   }
@@ -118,17 +118,17 @@ protected:
   virtual void reconstructEWParticles(ParticleVector&);
 
   /**
-   * Set the momentum of the indicated leptonID.
+   * Set the momentum of the indicated electroweak particle.
    */
-  LorentzMomentum& leptonIDMomentum(const unsigned int id) {
-    return theLeptonIDs[id];
+  LorentzMomentum& eWIDMomentum(const unsigned int id) {
+    return theEWIDs[id];
   }
 
   /**
-   * Set the momentum of the indicated leptonPT.
+   * Set the momentum of the indicated charged lepton.
    */
-  LorentzMomentum& leptonPTMomentum(const unsigned int id) {
-    return theLeptonPTs[id];
+  LorentzMomentum& chargedLeptonMomentum(const unsigned int id) {
+    return theChargedLeptons[id];
   }
 
   /**
@@ -136,6 +136,13 @@ protected:
    */
   LorentzMomentum& neutrinoMomentum(const unsigned int id) {
     return theNeutrinos[id];
+  }
+
+  /**
+   * Set the missing pT momentum.
+   */
+  LorentzMomentum& pTmissMomentum() {
+    return thePTmiss;
   }
 
   /**
@@ -485,19 +492,24 @@ private:
   map<unsigned int,LorentzMomentum> theJets;
 
   /**
-   * The reconstructed leptons -- all ordered by ID
+   * The reconstructed electroweak particles 
    */
-  map<unsigned int,LorentzMomentum> theLeptonIDs;
+  map<unsigned int,LorentzMomentum> theEWIDs;
 
   /**
-   * The reconstructed leptons --charged ordered by PT
+   * The reconstructed charged leptons 
    */
-  map<unsigned int,LorentzMomentum> theLeptonPTs;
+  map<unsigned int,LorentzMomentum> theChargedLeptons;
 
   /**
    * The reconstructed neutrinos
    */
   map<unsigned int,LorentzMomentum> theNeutrinos;
+
+  /**
+   * The reconstructed missing pT
+   */
+  LorentzMomentum thePTmiss;
 
   /**
    * The reconstructed Higgs
@@ -540,19 +552,24 @@ private:
   Statistics::Histogram theNJetsExclusive;
 
   /**
-   * Lepton properties -- all sorted by ID
+   * Electroweak properties 
    */
-  map<unsigned int,ObjectProperties> theLeptonIDProperties;
+  map<unsigned int,ObjectProperties> theEWIDProperties;
 
   /**
-   * Lepton properties -- charged sorted by PT
+   * Charged lepton properties 
    */
-  map<unsigned int,ObjectProperties> theLeptonPTProperties;
+  map<unsigned int,ObjectProperties> theChargedLeptonProperties;
 
   /**
    * Neutrino properties
    */
   map<unsigned int,ObjectProperties> theNeutrinoProperties;
+
+  /**
+   * missing pT properties
+   */
+  ObjectProperties thePTmissProperties;
 
   /**
    * Higgs properties
@@ -565,14 +582,14 @@ private:
   map<pair<unsigned int,unsigned int>,PairProperties> theJetPairProperties;
 
   /**
-   * Jet/lepton(all sorted by ID) pair properties
+   * Jet/electroweak pair properties
    */
-  map<pair<unsigned int,unsigned int>,PairProperties> theJetLeptonIDPairProperties;
+  map<pair<unsigned int,unsigned int>,PairProperties> theJetEWIDPairProperties;
 
   /**
-   * Jet/lepton(charged sorted by PT) pair properties
+   * Jet/charged lepton pair properties
    */
-  map<pair<unsigned int,unsigned int>,PairProperties> theJetLeptonPTPairProperties;
+  map<pair<unsigned int,unsigned int>,PairProperties> theJetChargedLeptonPairProperties;
 
   /**
    * Jet/neutrino pair properties
@@ -580,19 +597,24 @@ private:
   map<pair<unsigned int,unsigned int>,PairProperties> theJetNeutrinoPairProperties;
 
   /**
+   * Jet/missing pT pair properties
+   */
+  map<unsigned int,PairProperties> theJetPTmissPairProperties;
+
+  /**
    * Jet/Higgs pair properties
    */
   map<pair<unsigned int,unsigned int>,PairProperties> theJetHiggsPairProperties;
 
   /**
-   * Lepton pair properties -- all sorted by ID
+   * Electroweak pair properties 
    */
-  map<pair<unsigned int,unsigned int>,PairProperties> theLeptonIDPairProperties;
+  map<pair<unsigned int,unsigned int>,PairProperties> theEWIDPairProperties;
 
   /**
-   * Lepton pair properties -- charged sorted by PT
+   * Charged lepton pair properties 
    */
-  map<pair<unsigned int,unsigned int>,PairProperties> theLeptonPTPairProperties;
+  map<pair<unsigned int,unsigned int>,PairProperties> theChargedLeptonPairProperties;
 
   /**
    * Trijet properties
@@ -600,14 +622,14 @@ private:
   map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties> theThreeJetProperties;
 
   /**
-   * Jet-pair/lepton(all sorted by ID) triple properties
+   * Jet-pair/electroweak triple properties
    */
-  map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties> theJetPairLeptonIDTripleProperties;
+  map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties> theJetPairEWIDTripleProperties;
 
   /**
-   * Jet-pair/lepton(charged sorted by PT) triple properties
+   * Jet-pair/charged lepton triple properties
    */
-  map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties> theJetPairLeptonPTTripleProperties;
+  map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties> theJetPairChargedLeptonTripleProperties;
 
   /**
    * Jet-pair/neutrino triple properties
@@ -615,19 +637,24 @@ private:
   map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties> theJetPairNeutrinoTripleProperties;
 
   /**
+   * Jet-pair/missing pT triple properties
+   */
+  map<pair<unsigned int,unsigned int>,TripleProperties> theJetPairPTmissTripleProperties;
+
+  /**
    * Jet-pair/Higgs triple properties
    */
   map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties> theJetPairHiggsTripleProperties;
 
   /**
-   * Trilepton properties -- all sorted by ID
+   * Triple electroweak properties 
    */
-  map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties> theThreeLeptonIDProperties;
+  map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties> theThreeEWIDProperties;
 
   /**
-   * Trilepton properties -- charged sorted by PT
+   * Triple charged lepton properties 
    */
-  map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties> theThreeLeptonPTProperties;
+  map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties> theThreeChargedLeptonProperties;
 
   /**
    * Fourjet properties
@@ -635,14 +662,14 @@ private:
   map<boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties> theFourJetProperties;
 
   /**
-   * Fourlepton properties -- all sorted by ID
+   * Four electroweak properties 
    */
-  map<boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties> theFourLeptonIDProperties;
+  map<boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties> theFourEWIDProperties;
 
   /**
-   * Fourlepton properties -- charged sorted by PT
+   * Four charged lepton properties 
    */
-  map<boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties> theFourLeptonPTProperties;
+  map<boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties> theFourChargedLeptonProperties;
 
 protected:
 
@@ -739,28 +766,28 @@ protected:
   /**
    * Lepton properties -- all sorted by ID
    */
-  ObjectProperties& leptonIDProperties(const unsigned int id) {
+  ObjectProperties& eWIDProperties(const unsigned int id) {
     map<unsigned int,ObjectProperties>::iterator h = 
-      theLeptonIDProperties.find(id);
-    if ( h != theLeptonIDProperties.end() )
+      theEWIDProperties.find(id);
+    if ( h != theEWIDProperties.end() )
       return h->second;
-    ostringstream ids; ids << "LeptonID" << id;
+    ostringstream ids; ids << "EWID" << id;
     return 
-      theLeptonIDProperties[id] = 
+      theEWIDProperties[id] = 
       ObjectProperties(ids.str(),generator()->maximumCMEnergy());
   }
 
   /**
-   * Lepton properties -- charged sorted by PT
+   * Charged lepton properties 
    */
-  ObjectProperties& leptonPTProperties(const unsigned int id) {
+  ObjectProperties& chargedLeptonProperties(const unsigned int id) {
     map<unsigned int,ObjectProperties>::iterator h = 
-      theLeptonPTProperties.find(id);
-    if ( h != theLeptonPTProperties.end() )
+      theChargedLeptonProperties.find(id);
+    if ( h != theChargedLeptonProperties.end() )
       return h->second;
-    ostringstream ids; ids << "LeptonPT" << id;
+    ostringstream ids; ids << "ChargedLepton" << id;
     return 
-      theLeptonPTProperties[id] = 
+      theChargedLeptonProperties[id] = 
       ObjectProperties(ids.str(),generator()->maximumCMEnergy());
   }
 
@@ -776,6 +803,17 @@ protected:
     return 
       theNeutrinoProperties[id] = 
       ObjectProperties(ids.str(),generator()->maximumCMEnergy());
+  }
+
+  /**
+   * Missing pT properties
+   */
+  ObjectProperties& pTmissProperties() {
+    if ( !thePTmissProperties.pt.bins().empty() )
+      return thePTmissProperties;
+    return
+      thePTmissProperties = 
+      ObjectProperties("PTmiss",generator()->maximumCMEnergy());
   }
 
   /**
@@ -808,26 +846,26 @@ protected:
   /**
    * Jet/lepton(all sorted by ID) pair properties
    */
-  PairProperties& jetLeptonIDPairProperties(const unsigned int id, const unsigned int jd) {
+  PairProperties& jetEWIDPairProperties(const unsigned int id, const unsigned int jd) {
     map<pair<unsigned int,unsigned int>,PairProperties>::iterator h = 
-      theJetLeptonIDPairProperties.find(make_pair(id,jd));
-    if ( h != theJetLeptonIDPairProperties.end() )
+      theJetEWIDPairProperties.find(make_pair(id,jd));
+    if ( h != theJetEWIDPairProperties.end() )
       return h->second;
-    ostringstream ids; ids << "Jet" << id << "LeptonID" << jd;
-    return theJetLeptonIDPairProperties[make_pair(id,jd)] = 
+    ostringstream ids; ids << "Jet" << id << "EWID" << jd;
+    return theJetEWIDPairProperties[make_pair(id,jd)] = 
       PairProperties(ids.str(),generator()->maximumCMEnergy());
   }
 
   /**
-   * Jet/lepton(charged sorted by PT) pair properties
+   * Jet/charged lepton pair properties
    */
-  PairProperties& jetLeptonPTPairProperties(const unsigned int id, const unsigned int jd) {
+  PairProperties& jetChargedLeptonPairProperties(const unsigned int id, const unsigned int jd) {
     map<pair<unsigned int,unsigned int>,PairProperties>::iterator h = 
-      theJetLeptonPTPairProperties.find(make_pair(id,jd));
-    if ( h != theJetLeptonPTPairProperties.end() )
+      theJetChargedLeptonPairProperties.find(make_pair(id,jd));
+    if ( h != theJetChargedLeptonPairProperties.end() )
       return h->second;
-    ostringstream ids; ids << "Jet" << id << "LeptonPT" << jd;
-    return theJetLeptonPTPairProperties[make_pair(id,jd)] = 
+    ostringstream ids; ids << "Jet" << id << "ChargedLepton" << jd;
+    return theJetChargedLeptonPairProperties[make_pair(id,jd)] = 
       PairProperties(ids.str(),generator()->maximumCMEnergy());
   }
 
@@ -845,6 +883,19 @@ protected:
   }
 
   /**
+   * Jet/missing pT pair properties
+   */
+  PairProperties& jetPTmissPairProperties(const unsigned int id) {
+    map<unsigned int,PairProperties>::iterator h = 
+      theJetPTmissPairProperties.find(id);
+    if ( h != theJetPTmissPairProperties.end() )
+      return h->second;
+    ostringstream ids; ids << "Jet" << id << "PTmiss";
+    return theJetPTmissPairProperties[id] = 
+      PairProperties(ids.str(),generator()->maximumCMEnergy());
+  }
+
+  /**
    * Jet/Higgs pair properties
    */
   PairProperties& jetHiggsPairProperties(const unsigned int id, const unsigned int jd) {
@@ -858,28 +909,28 @@ protected:
   }
 
   /**
-   * Lepton pair properties -- all sorted by ID
+   * Electroweak pair properties 
    */
-  PairProperties& leptonIDPairProperties(const unsigned int id, const unsigned int jd) {
+  PairProperties& eWIDPairProperties(const unsigned int id, const unsigned int jd) {
     map<pair<unsigned int,unsigned int>,PairProperties>::iterator h = 
-      theLeptonIDPairProperties.find(make_pair(id,jd));
-    if ( h != theLeptonIDPairProperties.end() )
+      theEWIDPairProperties.find(make_pair(id,jd));
+    if ( h != theEWIDPairProperties.end() )
       return h->second;
-    ostringstream ids; ids << "LeptonID" << id << jd;
-    return theLeptonIDPairProperties[make_pair(id,jd)] = 
+    ostringstream ids; ids << "EWID" << id << jd;
+    return theEWIDPairProperties[make_pair(id,jd)] = 
       PairProperties(ids.str(),generator()->maximumCMEnergy());
   }
 
   /**
-   * Lepton pair properties -- charged sorted by PT
+   * Charged lepton pair properties 
    */
-  PairProperties& leptonPTPairProperties(const unsigned int id, const unsigned int jd) {
+  PairProperties& chargedLeptonPairProperties(const unsigned int id, const unsigned int jd) {
     map<pair<unsigned int,unsigned int>,PairProperties>::iterator h = 
-      theLeptonPTPairProperties.find(make_pair(id,jd));
-    if ( h != theLeptonPTPairProperties.end() )
+      theChargedLeptonPairProperties.find(make_pair(id,jd));
+    if ( h != theChargedLeptonPairProperties.end() )
       return h->second;
-    ostringstream ids; ids << "LeptonPT" << id << jd;
-    return theLeptonPTPairProperties[make_pair(id,jd)] = 
+    ostringstream ids; ids << "ChargedLepton" << id << jd;
+    return theChargedLeptonPairProperties[make_pair(id,jd)] = 
       PairProperties(ids.str(),generator()->maximumCMEnergy());
   }
 
@@ -899,32 +950,32 @@ protected:
   }
 
   /**
-   * Jet-pair/lepton(all sorted by ID) triple properties
+   * Jet-pair/electroweak triple properties
    */
-  TripleProperties& jetPairLeptonIDTripleProperties(const unsigned int id1, const unsigned int id2,
+  TripleProperties& jetPairEWIDTripleProperties(const unsigned int id1, const unsigned int id2,
 				              const unsigned int id3) {
     map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator it =
-      theJetPairLeptonIDTripleProperties.find(boost::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3));
-    if ( it != theJetPairLeptonIDTripleProperties.end() )
+      theJetPairEWIDTripleProperties.find(boost::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3));
+    if ( it != theJetPairEWIDTripleProperties.end() )
       return it->second;
     ostringstream ids; 
-    ids << "Jet" << id1 << id2 << "LeptonID" << id3;
-    return theJetPairLeptonIDTripleProperties[boost::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3)] =
+    ids << "Jet" << id1 << id2 << "EWID" << id3;
+    return theJetPairEWIDTripleProperties[boost::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3)] =
       TripleProperties(ids.str(),generator()->maximumCMEnergy());
   }
 
   /**
-   * Jet-pair/lepton(charged sorted by PT) triple properties
+   * Jet-pair/charged lepton triple properties
    */
-  TripleProperties& jetPairLeptonPTTripleProperties(const unsigned int id1, const unsigned int id2,
+  TripleProperties& jetPairChargedLeptonTripleProperties(const unsigned int id1, const unsigned int id2,
 				              const unsigned int id3) {
     map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator it =
-      theJetPairLeptonPTTripleProperties.find(boost::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3));
-    if ( it != theJetPairLeptonPTTripleProperties.end() )
+      theJetPairChargedLeptonTripleProperties.find(boost::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3));
+    if ( it != theJetPairChargedLeptonTripleProperties.end() )
       return it->second;
     ostringstream ids; 
-    ids << "Jet" << id1 << id2 << "LeptonPT" << id3;
-    return theJetPairLeptonPTTripleProperties[boost::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3)] =
+    ids << "Jet" << id1 << id2 << "ChargedLepton" << id3;
+    return theJetPairChargedLeptonTripleProperties[boost::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3)] =
       TripleProperties(ids.str(),generator()->maximumCMEnergy());
   }
 
@@ -944,6 +995,20 @@ protected:
   }
 
   /**
+   * Jet-pair/missing pT triple properties
+   */
+  TripleProperties& jetPairPTmissTripleProperties(const unsigned int id1, const unsigned int id2) {
+    map<pair<unsigned int,unsigned int>,TripleProperties>::iterator it =
+      theJetPairPTmissTripleProperties.find(pair<unsigned int,unsigned int>(id1,id2));
+    if ( it != theJetPairPTmissTripleProperties.end() )
+      return it->second;
+    ostringstream ids; 
+    ids << "Jet" << id1 << id2 << "PTmiss";
+    return theJetPairPTmissTripleProperties[pair<unsigned int,unsigned int>(id1,id2)] =
+      TripleProperties(ids.str(),generator()->maximumCMEnergy());
+  }
+
+  /**
    * Jet-pair/Higgs triple properties
    */
   TripleProperties& jetPairHiggsTripleProperties(const unsigned int id1, const unsigned int id2,
@@ -959,32 +1024,32 @@ protected:
   }
 
   /**
-   * Trilepton properties -- all sorted by ID
+   * Triple electroweak properties -- all sorted by ID
    */
-  TripleProperties& threeLeptonIDProperties(const unsigned int id1, const unsigned int id2,
-				       const unsigned int id3) {
+  TripleProperties& threeEWIDProperties(const unsigned int id1, const unsigned int id2,
+				        const unsigned int id3) {
     map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator it =
-      theThreeLeptonIDProperties.find(boost::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3));
-    if ( it != theThreeLeptonIDProperties.end() )
+      theThreeEWIDProperties.find(boost::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3));
+    if ( it != theThreeEWIDProperties.end() )
       return it->second;
     ostringstream ids; 
-    ids << "LeptonID" << id1 << id2 << id3;
-    return theThreeLeptonIDProperties[boost::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3)] =
+    ids << "EWID" << id1 << id2 << id3;
+    return theThreeEWIDProperties[boost::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3)] =
       TripleProperties(ids.str(),generator()->maximumCMEnergy());
   }
 
   /**
-   * Trilepton properties -- charged sorted by PT
+   * Triple charged lepton properties 
    */
-  TripleProperties& threeLeptonPTProperties(const unsigned int id1, const unsigned int id2,
+  TripleProperties& threeChargedLeptonProperties(const unsigned int id1, const unsigned int id2,
 				       const unsigned int id3) {
     map<boost::tuple<unsigned int,unsigned int,unsigned int>,TripleProperties>::iterator it =
-      theThreeLeptonPTProperties.find(boost::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3));
-    if ( it != theThreeLeptonPTProperties.end() )
+      theThreeChargedLeptonProperties.find(boost::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3));
+    if ( it != theThreeChargedLeptonProperties.end() )
       return it->second;
     ostringstream ids; 
-    ids << "LeptonPT" << id1 << id2 << id3;
-    return theThreeLeptonPTProperties[boost::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3)] =
+    ids << "ChargedLepton" << id1 << id2 << id3;
+    return theThreeChargedLeptonProperties[boost::tuple<unsigned int,unsigned int,unsigned int>(id1,id2,id3)] =
       TripleProperties(ids.str(),generator()->maximumCMEnergy());
   }
 
@@ -1004,32 +1069,32 @@ protected:
   }  
 
   /**
-   * Fourlepton properties -- all sorted by ID
+   * Four electroweak properties 
    */
-  ObjectProperties& fourLeptonIDProperties(const unsigned int id1, const unsigned int id2,
+  ObjectProperties& fourEWIDProperties(const unsigned int id1, const unsigned int id2,
 				      const unsigned int id3, const unsigned int id4) {
     map<boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties>::iterator it =
-      theFourLeptonIDProperties.find(boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>(id1,id2,id3,id4));
-    if ( it != theFourLeptonIDProperties.end() )
+      theFourEWIDProperties.find(boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>(id1,id2,id3,id4));
+    if ( it != theFourEWIDProperties.end() )
       return it->second;
     ostringstream ids; 
-    ids << "LeptonID" << id1 << id2 << id3 << id4;
-    return theFourLeptonIDProperties[boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>(id1,id2,id3,id4)] =
+    ids << "EWID" << id1 << id2 << id3 << id4;
+    return theFourEWIDProperties[boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>(id1,id2,id3,id4)] =
       ObjectProperties(ids.str(),generator()->maximumCMEnergy());
   }  
 
   /**
-   * Fourlepton properties -- charged sorted by PT
+   * Four charged lepton properties 
    */
-  ObjectProperties& fourLeptonPTProperties(const unsigned int id1, const unsigned int id2,
+  ObjectProperties& fourChargedLeptonProperties(const unsigned int id1, const unsigned int id2,
 				      const unsigned int id3, const unsigned int id4) {
     map<boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>,ObjectProperties>::iterator it =
-      theFourLeptonPTProperties.find(boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>(id1,id2,id3,id4));
-    if ( it != theFourLeptonPTProperties.end() )
+      theFourChargedLeptonProperties.find(boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>(id1,id2,id3,id4));
+    if ( it != theFourChargedLeptonProperties.end() )
       return it->second;
     ostringstream ids; 
-    ids << "LeptonPT" << id1 << id2 << id3 << id4;
-    return theFourLeptonPTProperties[boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>(id1,id2,id3,id4)] =
+    ids << "ChargedLepton" << id1 << id2 << id3 << id4;
+    return theFourChargedLeptonProperties[boost::tuple<unsigned int,unsigned int,unsigned int,unsigned int>(id1,id2,id3,id4)] =
       ObjectProperties(ids.str(),generator()->maximumCMEnergy());
   }  
 
