@@ -15,7 +15,7 @@ set EventHandler:CascadeHandler /Herwig/Shower/PowhegShowerHandler
 
 cd /Herwig/Shower
 
-set PowhegShowerHandler:Factory Factory
+set PowhegShowerHandler:Factory /Herwig/MatrixElements/Matchbox/Factory
 
 set Evolver:HardEmissionMode MatchboxPOWHEG
 

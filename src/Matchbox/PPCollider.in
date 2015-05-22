@@ -26,5 +26,5 @@ insert Cuts:OneCuts[3] WBosonCut
 insert Cuts:OneCuts[4] ZBosonCut
 insert Cuts:OneCuts[5] HiggsBosonCut
 insert Cuts:OneCuts[6] ChargedLeptonCut
-insert Cuts:MultiCuts[0] ChargedLeptonPairMassCut
+insert Cuts:TwoCuts[0] ChargedLeptonPairMassCut
 
