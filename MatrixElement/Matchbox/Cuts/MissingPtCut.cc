@@ -53,7 +53,7 @@ bool MissingPtCut::passCuts(tcCutsPtr parent, const tcPDVector & ptype,
   for ( int i = 0, N = ptype.size(); i < N; ++i ) {
 
     if ( invisibleParticles().size() == 0 ) {
-      if ( matcher()->matches(ptype[i]) ) {
+      if ( matcher()->check(*ptype[i]) ) {
         // ptMissSum = ptMissSum + p[i].perp();
         momentumMissSum = momentumMissSum + p[i];
         nonu = false;

@@ -63,7 +63,7 @@ bool FrixionePhotonSeparationCut::passCuts(tcCutsPtr parent, const tcPDVector & 
       vector<FrixionePartonInfo> partonvec;
       for ( int j = 0, M = ptype.size(); j < M; ++j ) {
 
-	if ( !matcher()->matches(ptype[j]) ) continue;
+	if ( !matcher()->check(*ptype[j]) ) continue;
 
         FrixionePartonInfo finfo;
         double dphi = abs(p[i].phi() - p[j].phi());

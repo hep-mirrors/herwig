@@ -53,7 +53,7 @@ Energy2 MatchboxPtScale::renormalizationScale() const {
   tcPDVector::const_iterator itpd = pd.begin();
   for (vector<LorentzMomentum>::const_iterator itp = p.begin() ;
        itp != p.end(); ++itp, ++itpd )
-    if ( theJetFinder->unresolvedMatcher()->matches(*itpd) ) {
+    if ( theJetFinder->unresolvedMatcher()->check(**itpd) ) {
       gotone = true;
       maxpt2 = max(maxpt2,(*itp).perp2());
     }

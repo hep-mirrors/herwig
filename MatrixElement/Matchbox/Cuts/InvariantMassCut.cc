@@ -51,8 +51,8 @@ bool InvariantMassCut::passCuts(tcCutsPtr parent, tcPDPtr pitype, tcPDPtr pjtype
 		                 bool inci, bool incj) const {
 
   bool match = false;
-  if ( theFirstMatcher->matches(*pitype) && theSecondMatcher->matches(*pjtype) ) match = true;
-  if ( theFirstMatcher->matches(*pjtype) && theSecondMatcher->matches(*pitype) ) match = true;
+  if ( theFirstMatcher->check(*pitype) && theSecondMatcher->check(*pjtype) ) match = true;
+  if ( theFirstMatcher->check(*pjtype) && theSecondMatcher->check(*pitype) ) match = true;
   if ( !match ) return true;
   if ( inci || incj ) return true;  
 
