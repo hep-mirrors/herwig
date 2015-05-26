@@ -28,7 +28,6 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S8968497
 # CMS central and forward jets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1087342
 # CMS dijet
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1184941
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1090423
 # CMS High mass jets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1268975

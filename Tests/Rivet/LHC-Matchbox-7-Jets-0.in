@@ -1,0 +1,57 @@
+###################################################
+# Rivet analyses at the Z pole
+##################################################
+read LHCBase-Matchbox.in
+
+cd /Herwig/MatrixElements/Matchbox/Amplitudes
+
+##################################################
+## Generic Procsses
+##################################################
+
+## Enable generic processes
+clear /Herwig/MatrixElements/Matchbox/PPFactory:Amplitudes
+insert /Herwig/MatrixElements/Matchbox/PPFactory:Amplitudes 0 GenericProcesses
+set GenericProcesses:TreeLevelAmplitude MadGraph
+set GenericProcesses:OneLoopAmplitude OpenLoops
+
+## Set the order of the couplings
+cd /Herwig/MatrixElements/Matchbox
+set PPFactory:OrderInAlphaS 2
+set PPFactory:OrderInAlphaEW 0
+
+## Select the process
+## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
+do PPFactory:Process p p j j
+
+## Scale choice
+set PPFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/MaxJetPtScale
+
+##################################################
+## Cut Selection
+##################################################
+
+## For finite calculations make resonable cuts! Check the wiki and manual
+## for other cut options and different jet algorithms.
+cd /Herwig/Cuts
+set QCDCuts:JetFinder JetFinder
+insert QCDCuts:MultiCuts 0 JetCuts
+insert JetCuts:JetRegions 0  FirstJet
+set FirstJet:PtMin 5.*GeV
+
+set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0
+
+##################################################
+# select the analyses
+##################################################
+
+# CMS jet cross section
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S9086218
+# ATLAS track jet
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I919017
+
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+cd /Herwig/Generators
+saverun LHC-Matchbox-7-Jets-0 LHCGenerator
