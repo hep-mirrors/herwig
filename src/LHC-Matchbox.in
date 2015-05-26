@@ -25,16 +25,16 @@ set EventHandler:LuminosityFunction:Energy 8000*GeV
 
 ## Set the order of the couplings
 cd /Herwig/MatrixElements/Matchbox
-set Factory:OrderInAlphaS 0
-set Factory:OrderInAlphaEW 2
+set Factory:OrderInAlphaS 2
+set Factory:OrderInAlphaEW 0
 
 ## Select the process
 ## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
-do Factory:Process p p -> e+ e-
+do Factory:Process p p -> t tbar
 
 ## Special settings required for on-shell production of unstable particles
 ## enable for on-shell top production
-# read Matchbox/OnShellTopProduction.in
+read Matchbox/OnShellTopProduction.in
 ## enable for on-shell W or Z production
 # read Matchbox/OnShellEWProduction.in
 
@@ -48,7 +48,7 @@ do Factory:Process p p -> e+ e-
 # read Matchbox/MadGraph-GoSam.in
 # read Matchbox/MadGraph-MadGraph.in
 # read Matchbox/MadGraph-NJet.in
-# read Matchbox/MadGraph-OpenLoops.in
+read Matchbox/MadGraph-OpenLoops.in
 # read Matchbox/HJets.in
 # read Matchbox/VBFNLO.in
 
@@ -77,18 +77,22 @@ do Factory:Process p p -> e+ e-
 ##################################################
 
 cd /Herwig/MatrixElements/Matchbox
-set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale
+set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/TopMTScale
 
 ##################################################
 ## Matching and shower selection
 ##################################################
 
-read Matchbox/MCatNLO-DefaultShower.in
-# read Matchbox/Powheg-DefaultShower.in
+#read Matchbox/MCatNLO-DefaultShower.in
+read Matchbox/Powheg-DefaultShower.in
 ## use for strict LO/NLO comparisons
 # read Matchbox/MCatLO-DefaultShower.in
 ## use for improved LO showering
 # read Matchbox/LO-DefaultShower.in
+
+set /Herwig/MatrixElements/Matchbox/Factory:VirtualContributions Off
+# set /Herwig/MatrixElements/Matchbox/PPFactory:RealContributions Off
+set /Herwig/MatrixElements/Matchbox/Factory:MECorrectionsOnly Yes
 
 # read Matchbox/MCatNLO-DipoleShower.in
 # read Matchbox/Powheg-DipoleShower.in
