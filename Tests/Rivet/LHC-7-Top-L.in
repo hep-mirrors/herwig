@@ -11,6 +11,9 @@ set MEHeavyQuark:QuarkType Top
 insert SimpleQCD:MatrixElements[0] MEHeavyQuark
 do /Herwig/Particles/t:SelectDecayModes t->nu_e,e+,b; t->nu_mu,mu+,b;
 
+create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter
+insert /Herwig/EventHandlers/LHCHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter
+
 # No QED radiation
 erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0
 

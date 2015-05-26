@@ -104,6 +104,7 @@ void ShowerHandler::persistentOutput(PersistentOStream & os) const {
   os << evolver_ << remDec_ << ounit(pdfFreezingScale_,GeV) << maxtry_ 
      << maxtryMPI_ << maxtryDP_ << inputparticlesDecayInShower_
      << particlesDecayInShower_ << MPIHandler_ << PDFA_ << PDFB_
+     << PDFARemnant_ << PDFBRemnant_
      << includeSpaceTime_ << ounit(vMin_,GeV2)
      << theFactorizationScaleFactor << theRenormalizationScaleFactor
      << theHardScaleFactor << theScaleFactorOption;
@@ -113,6 +114,7 @@ void ShowerHandler::persistentInput(PersistentIStream & is, int) {
   is >> evolver_ >> remDec_ >> iunit(pdfFreezingScale_,GeV) >> maxtry_ 
      >> maxtryMPI_ >> maxtryDP_ >> inputparticlesDecayInShower_
      >> particlesDecayInShower_ >> MPIHandler_ >> PDFA_ >> PDFB_
+     >> PDFARemnant_ >> PDFBRemnant_
      >> includeSpaceTime_ >> iunit(vMin_,GeV2)
      >> theFactorizationScaleFactor >> theRenormalizationScaleFactor
      >> theHardScaleFactor >> theScaleFactorOption;
@@ -195,13 +197,28 @@ void ShowerHandler::Init() {
 
   static Reference<ShowerHandler,PDFBase> interfacePDFA
     ("PDFA",
-     "The PDF for beam particle A. Overrides the particle's own PDF setting.",
+     "The PDF for beam particle A. Overrides the particle's own PDF setting."
+     "By default used for both the shower and forced splitting in the remnant",
      &ShowerHandler::PDFA_, false, false, true, true, false);
 
   static Reference<ShowerHandler,PDFBase> interfacePDFB
     ("PDFB",
-     "The PDF for beam particle B. Overrides the particle's own PDF setting.",
+     "The PDF for beam particle B. Overrides the particle's own PDF setting."
+     "By default used for both the shower and forced splitting in the remnant",
      &ShowerHandler::PDFB_, false, false, true, true, false);
+
+  static Reference<ShowerHandler,PDFBase> interfacePDFARemnant
+    ("PDFARemnant",
+     "The PDF for beam particle A used to generate forced splittings of the remnant."
+     " This overrides both the particle's own PDF setting and the value set by PDFA if used.",
+     &ShowerHandler::PDFARemnant_, false, false, true, true, false);
+
+  static Reference<ShowerHandler,PDFBase> interfacePDFBRemnant
+    ("PDFBRemnant",
+     "The PDF for beam particle B used to generate forced splittings of the remnant."
+     " This overrides both the particle's own PDF setting and the value set by PDFB if used.",
+     &ShowerHandler::PDFBRemnant_, false, false, true, true, false);
+
 
   static Switch<ShowerHandler,bool> interfaceIncludeSpaceTime
     ("IncludeSpaceTime",
@@ -274,6 +291,11 @@ void ShowerHandler::cascade() {
 
   resetPDFs(make_pair(first,second));
 
+  if( ! rempdfs_.first)
+    rempdfs_.first  = PDFARemnant_ ? PDFPtr(PDFARemnant_) : const_ptr_cast<PDFPtr>(first);
+  if( ! rempdfs_.second)
+    rempdfs_.second = PDFBRemnant_ ? PDFPtr(PDFBRemnant_) : const_ptr_cast<PDFPtr>(second);
+
   // get the incoming partons
   tPPair  incomingPartons = 
     eventHandler()->currentCollision()->primarySubProcess()->incoming();
@@ -333,8 +355,7 @@ void ShowerHandler::cascade() {
   remDec_->initialize(remnants, incoming_, *currentStep(), pdfFreezingScale());
   // do the first forcedSplitting
   try {
-    remDec_->doSplit(incomingPartons, make_pair(firstPDF() .pdf(), 
-						secondPDF().pdf()), true);
+    remDec_->doSplit(incomingPartons, make_pair(rempdfs_.first,rempdfs_.second), true);
   }
   catch (ExtraScatterVeto) {
     throw Exception() << "Remnant extraction failed in "
@@ -388,8 +409,7 @@ void ShowerHandler::cascade() {
       }
       try {
 	// do the forcedSplitting
-	remDec_->doSplit(incomingPartons, make_pair(firstPDF().pdf(), 
-						    secondPDF().pdf()), false);
+	remDec_->doSplit(incomingPartons, make_pair(remmpipdfs_.first,remmpipdfs_.second), false);
       } 
       catch(ExtraScatterVeto){
 	//remove all particles associated with the subprocess
@@ -447,8 +467,7 @@ void ShowerHandler::cascade() {
     }
     try{
       //do the forcedSplitting
-      remDec_->doSplit(incomingPartons, make_pair(firstPDF().pdf(), 
-						  secondPDF().pdf()), false);
+      remDec_->doSplit(incomingPartons, make_pair(remmpipdfs_.first,remmpipdfs_.second), false);
     }
     catch (ExtraScatterVeto) {
       //remove all particles associated with the subprocess
@@ -701,6 +720,21 @@ void ShowerHandler::setMPIPDFs() {
       mpipdfs_.second = new_ptr(MPIPDF(secondPDF().pdf()));
   }
 
+  if( !remmpipdfs_.first ) {
+    tcMinBiasPDFPtr first = dynamic_ptr_cast<tcMinBiasPDFPtr>(rempdfs_.first);
+    if(first)
+      remmpipdfs_.first = new_ptr(MPIPDF(first->originalPDF()));
+    else
+      remmpipdfs_.first = new_ptr(MPIPDF(rempdfs_.first));
+  }
+
+  if( !remmpipdfs_.second ) {
+    tcMinBiasPDFPtr second = dynamic_ptr_cast<tcMinBiasPDFPtr>(rempdfs_.second);
+    if(second)
+      remmpipdfs_.second = new_ptr(MPIPDF(second->originalPDF()));
+    else
+      remmpipdfs_.second = new_ptr(MPIPDF(rempdfs_.second));
+  }
   // reset the PDFs stored in the base class
   resetPDFs(mpipdfs_);
 

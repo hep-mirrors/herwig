@@ -71,7 +71,7 @@ Energy2 MatchboxHtScale::renormalizationScale() const {
     }
   }
 
-  if ( !gotone )
+  if ( !gotone && lastXCombPtr()->willPassCuts() )
     throw Exception() << "MatchboxHtScale::renormalizationScale(): "
 		      << "No jets could be found. Check your setup."
 		      << Exception::abortnow;

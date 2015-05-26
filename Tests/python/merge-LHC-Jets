@@ -219,6 +219,9 @@ for f in yodafiles:
            aopath.find("I1224539")>0 or
            aopath.find("I1273574")>0 or
            aopath.find("I1261026")>0 or
+           aopath.find("I1307243")>0 or
+           aopath.find("I1325553")>0 or
+           aopath.find("I1298810")>0 or
            aopath.find("CMS_2012_PAS_QCD_11_010")>0 or
            aopath.find("ATLAS_2014_I1298811")>0) :
            if not inhistos_pt.has_key(aopath):
@@ -325,7 +328,10 @@ for hpath,hsets in inhistos_pt.iteritems():
         hpath.find("I1261026")>0 or 
         hpath.find("I1090423")>0 or
         hpath.find("QCD_11_010")>0 or
-        hpath.find("1298811")>0) :
+        hpath.find("1298811")>0 or
+        hpath.find("I1325553")>0 or
+        hpath.find("I1298810")>0 or
+        hpath.find("1307243")>0) :
         if(type(hsets.values()[0].values()[0])==yoda.core.Scatter2D) :
             outhistos[hpath] = yoda.core.Scatter2D(hsets.values()[0].values()[0].path,
                                                    hsets.values()[0].values()[0].title)
@@ -1662,6 +1668,71 @@ mergeByMass("/ATLAS_2014_I1268975/d02-x01-y03", "7000", 1000.)
 mergeByMass("/ATLAS_2014_I1268975/d02-x01-y04", "7000", 1000.)
 mergeByMass("/ATLAS_2014_I1268975/d02-x01-y05", "7000", 1000.)
 mergeByMass("/ATLAS_2014_I1268975/d02-x01-y06", "7000", 1000.)
+
+logging.info("Processing ATLAS_2014_I1307243")
+useOnePt( "/ATLAS_2014_I1307243/d01-x01-y01",  "7000", "80" )
+mergeByPt("/ATLAS_2014_I1307243/d02-x01-y01", "7000")
+useOnePt( "/ATLAS_2014_I1307243/d03-x01-y01",  "7000", "80" )
+mergeByPt("/ATLAS_2014_I1307243/d04-x01-y01", "7000")
+useOnePt( "/ATLAS_2014_I1307243/d05-x01-y01",  "7000", "80" )
+mergeByPt("/ATLAS_2014_I1307243/d06-x01-y01", "7000")
+useOnePt( "/ATLAS_2014_I1307243/d07-x01-y01",  "7000", "80" )
+mergeByPt("/ATLAS_2014_I1307243/d08-x01-y01", "7000")
+useOnePt( "/ATLAS_2014_I1307243/d09-x01-y01",  "7000", "80" )
+mergeByPt("/ATLAS_2014_I1307243/d10-x01-y01", "7000")
+useOnePt( "/ATLAS_2014_I1307243/d11-x01-y01",  "7000", "80" )
+mergeByPt("/ATLAS_2014_I1307243/d12-x01-y01", "7000")
+useOnePt( "/ATLAS_2014_I1307243/d13-x01-y01",  "7000", "80" )
+useOnePt( "/ATLAS_2014_I1307243/d14-x01-y01",  "7000", "80" )
+useOnePt( "/ATLAS_2014_I1307243/d15-x01-y01",  "7000", "80" )
+useOnePt( "/ATLAS_2014_I1307243/d16-x01-y01",  "7000", "80" )
+useOnePt( "/ATLAS_2014_I1307243/d17-x01-y01",  "7000", "80" )
+useOnePt( "/ATLAS_2014_I1307243/d18-x01-y01",  "7000", "80" )
+useOnePt( "/ATLAS_2014_I1307243/d19-x01-y01",  "7000", "80" )
+useOnePt( "/ATLAS_2014_I1307243/d20-x01-y01",  "7000", "80" )
+useOnePt( "/ATLAS_2014_I1307243/d21-x01-y01",  "7000", "80" )
+useOnePt( "/ATLAS_2014_I1307243/d22-x01-y01",  "7000", "80" )
+useOnePt( "/ATLAS_2014_I1307243/d23-x01-y01",  "7000", "80" )
+useOnePt( "/ATLAS_2014_I1307243/d24-x01-y01",  "7000", "80" )
+useOnePt( "/ATLAS_2014_I1307243/d25-x01-y01",  "7000", "80" )
+useOnePt( "/ATLAS_2014_I1307243/d26-x01-y01",  "7000", "80" )
+useOnePt( "/ATLAS_2014_I1307243/d27-x01-y01",  "7000", "80" )
+useOnePt( "/ATLAS_2014_I1307243/d28-x01-y01",  "7000", "80" )
+useOnePt( "/ATLAS_2014_I1307243/d29-x01-y01",  "7000", "80" )
+useOnePt( "/ATLAS_2014_I1307243/d30-x01-y01",  "7000", "80" )
+useOnePt( "/ATLAS_2014_I1307243/d31-x01-y01",  "7000", "80" )
+useOnePt( "/ATLAS_2014_I1307243/d32-x01-y01",  "7000", "80" )
+useOnePt( "/ATLAS_2014_I1307243/d33-x01-y01",  "7000", "80" )
+useOnePt( "/ATLAS_2014_I1307243/d34-x01-y01",  "7000", "80" )
+useOnePt( "/ATLAS_2014_I1307243/d35-x01-y01",  "7000", "80" )
+useOnePt( "/ATLAS_2014_I1307243/d36-x01-y01",  "7000", "80" )
+useOnePt( "/ATLAS_2014_I1307243/d37-x01-y01",  "7000", "80" )
+mergeByPt("/ATLAS_2014_I1307243/d38-x01-y01", "7000")
+useOnePt( "/ATLAS_2014_I1307243/d39-x01-y01",  "7000", "80" )
+mergeByPt("/ATLAS_2014_I1307243/d40-x01-y01", "7000")
+
+
+logging.info("Processing ATLAS_2014_I1325553")
+mergeByPt("/ATLAS_2014_I1325553/d01-x01-y01", "7000")
+mergeByPt("/ATLAS_2014_I1325553/d01-x01-y02", "7000")
+mergeByPt("/ATLAS_2014_I1325553/d01-x01-y03", "7000")
+mergeByPt("/ATLAS_2014_I1325553/d01-x01-y04", "7000")
+mergeByPt("/ATLAS_2014_I1325553/d01-x01-y05", "7000")
+mergeByPt("/ATLAS_2014_I1325553/d01-x01-y06", "7000")
+mergeByPt("/ATLAS_2014_I1325553/d01-x02-y01", "7000")
+mergeByPt("/ATLAS_2014_I1325553/d01-x02-y02", "7000")
+mergeByPt("/ATLAS_2014_I1325553/d01-x02-y03", "7000")
+mergeByPt("/ATLAS_2014_I1325553/d01-x02-y04", "7000")
+mergeByPt("/ATLAS_2014_I1325553/d01-x02-y05", "7000")
+mergeByPt("/ATLAS_2014_I1325553/d01-x02-y06", "7000")
+
+logging.info("Processing CMS_2014_I1298810")
+for i in range(1,19) :
+    if(i<10) :
+        mergeByPt("/CMS_2014_I1298810/d0"+str(i)+"-x01-y01", "7000")
+    else :
+        mergeByPt("/CMS_2014_I1298810/d"+str(i)+"-x01-y01", "7000")
+
 # Choose output file
 name = "LHC"+"-Jets.yoda"
 yoda.writeYODA(outhistos,name)

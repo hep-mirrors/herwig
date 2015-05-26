@@ -221,21 +221,23 @@ routines=[["","BORN(momenta,hel)"],
 	 ["","GET_LNJAMP(color,Jamp)"],
 	 ["","GET_NCOL(color)"],
 	 ["","GET_NCOLOR(i,j,color)"]]
+
 for routine in routines:
   for i in Bornlist + list(set(Virtlist) - set(Bornlist)):
     if routine[1]=="Virt(amp)" or routine[1]=="SLOOPMATRIX(momenta,virt)" and i not in  Virtlist:
       continue
     if routine[0]=="":
-       routine[0]+="         IF (proc .EQ. "+i+") THEN\n            CALL "
+       routine[0]+="         SELECT CASE (proc) \n"
+       routine[0]+="         CASE("+i+") \n            CALL "
        routine[0]+=   "MG5_"+i+"_"+routine[1]+"\n"
     else:
-       routine[0]+="         ELSE IF (proc .EQ. "+i+") THEN\n"\
+       routine[0]+="         CASE("+i+") \n"\
                "            CALL "
        routine[0]+=   "MG5_"+i+"_"+routine[1]+"\n"
   if routine[0]!="":	     
-       routine[0]+="         ELSE\n"
+       routine[0]+="         CASE DEFAULT\n"
        routine[0]+="             WRITE(*,*) '##W02A WARNING No id found '\n"
-       routine[0]+="         ENDIF   \n"
+       routine[0]+="         END SELECT    \n"
  
 shutil.copyfile("%s/MadGraphInterface/InterfaceMadGraph.f.in" % args.datadir, "InterfaceMadGraph.f")
 

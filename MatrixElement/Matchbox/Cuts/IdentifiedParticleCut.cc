@@ -44,7 +44,7 @@ IBPtr IdentifiedParticleCut::fullclone() const {
 bool IdentifiedParticleCut::passCuts(tcCutsPtr parent,
 				     tcPDPtr ptype, LorentzMomentum p) const {
 
-  if ( !matcher()->matches(ptype) )
+  if ( !matcher()->check(*ptype) )
     return true;
 
   double weight = 1.0;

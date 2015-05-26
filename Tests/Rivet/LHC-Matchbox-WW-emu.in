@@ -5,6 +5,10 @@ read LHCBase-Matchbox.in
 
 cd /Herwig/MatrixElements/Matchbox/Amplitudes
 
+set /Herwig/Particles/W+:HardProcessWidth 0.*GeV
+set /Herwig/Particles/W-:HardProcessWidth 0.*GeV
+set /Herwig/Particles/Z0:HardProcessWidth 0.*GeV
+
 ##################################################
 ## Generic Procsses
 ##################################################
@@ -22,7 +26,7 @@ set PPFactory:OrderInAlphaEW 2
 
 ## Select the process
 ## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
-do PPFactory:Process p p W+ W-
+do PPFactory:Process pnob pnob W+ W-
 
 ## Scale choice
 set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 160.8*GeV

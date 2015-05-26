@@ -1,0 +1,41 @@
+##################################################
+# Rivet analyses at the Z pole
+##################################################
+read LHCBase-Matchbox.in
+
+## Set the order of the couplings
+cd /Herwig/MatrixElements/Matchbox
+set PPFactory:OrderInAlphaS 0
+set PPFactory:OrderInAlphaEW 2
+
+## Select the process
+## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
+do PPFactory:Process p p e+ e-
+
+## Scale choice
+set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 91.2*GeV
+set PPFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale
+
+##################################################
+## Cut Selection
+##################################################
+
+## For finite calculations make resonable cuts! Check the wiki and manual
+## for other cut options and different jet algorithms.
+cd /Herwig/Cuts
+
+## Cut on lepton pair invariant mass
+set MassCut:MinM 20.*GeV
+set MassCut:MaxM 70.*GeV
+
+##################################################
+# select the analyses
+##################################################
+
+# ATLAS Low mass Z
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1288706
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+cd /Herwig/Generators
+saverun LHC-Matchbox-Z-LowMass-e LHCGenerator

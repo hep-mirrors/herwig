@@ -1569,6 +1569,10 @@ reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
   }
   // changed to improve stability
   if(kb==0.) throw KinematicsReconstructionVeto();
+  if ( a[1]>b[1] && abs(a[1]) < 1e-12 )
+    throw KinematicsReconstructionVeto();
+  if ( a[1]<=b[1] && abs(0.5+b[0]/kb) < 1e-12 )
+    throw KinematicsReconstructionVeto();
   double kc = (a[1]>b[1]) ? (a[0]*kb-0.5)/a[1] : b[1]/(0.5+b[0]/kb);
   if(kc==0.) throw KinematicsReconstructionVeto();
   Lorentz5Momentum pnew[2] = { a[0]*kb*n1+b[0]/kb*n2+qperp,

@@ -7,6 +7,7 @@ set ShowerLOPDF:PDFName MMHT2014lo68cl
 set ShowerNLOPDF:PDFName MMHT2014nlo68cl
 
 set MPIPDF:PDFName MMHT2014lo68cl
+set RemnantPDF:PDFName MMHT2014lo68cl
 
 cd /Herwig/MatrixElements/Matchbox/AlphaS
 

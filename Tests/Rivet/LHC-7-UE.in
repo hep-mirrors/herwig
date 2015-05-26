@@ -93,6 +93,8 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1124167
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1261026
 # ATLAS leading jet UE
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1298811
+# LHCB charged particles in min bias
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2014_I1281685
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'
