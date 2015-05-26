@@ -118,7 +118,7 @@ BOOST_FIND_HEADER([boost/progress.hpp])
 BOOST_FIND_HEADER([boost/scoped_array.hpp])
 BOOST_FIND_HEADER([boost/scoped_ptr.hpp])
 BOOST_FIND_HEADER([boost/utility.hpp])
-BOOST_FILESYSTEM
+BOOST_FILESYSTEM([mt])
 
 HERWIG_CHECK_VBFNLO
 
