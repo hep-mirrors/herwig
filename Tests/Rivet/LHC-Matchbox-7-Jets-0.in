@@ -1,4 +1,4 @@
-##################################################
+###################################################
 # Rivet analyses at the Z pole
 ##################################################
 read LHCBase-Matchbox.in
@@ -14,21 +14,18 @@ clear /Herwig/MatrixElements/Matchbox/PPFactory:Amplitudes
 insert /Herwig/MatrixElements/Matchbox/PPFactory:Amplitudes 0 GenericProcesses
 set GenericProcesses:TreeLevelAmplitude MadGraph
 set GenericProcesses:OneLoopAmplitude OpenLoops
-set /Herwig/Particles/b:HardProcessMass 4.2*GeV
-set /Herwig/Particles/bbar:HardProcessMass 4.2*GeV
 
 ## Set the order of the couplings
 cd /Herwig/MatrixElements/Matchbox
 set PPFactory:OrderInAlphaS 2
-set PPFactory:OrderInAlphaEW 2
+set PPFactory:OrderInAlphaEW 0
 
 ## Select the process
 ## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
-do PPFactory:Process pnob pnob e+ e- b bbar
+do PPFactory:Process p p j j
 
 ## Scale choice
-set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 91.2*GeV
-set PPFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale
+set PPFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/MaxJetPtScale
 
 ##################################################
 ## Cut Selection
@@ -37,27 +34,24 @@ set PPFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale
 ## For finite calculations make resonable cuts! Check the wiki and manual
 ## for other cut options and different jet algorithms.
 cd /Herwig/Cuts
-
-## Cut on lepton pair invariant mass
-set MassCut:MinM 66*GeV
-set MassCut:MaxM 116*GeV
-
 set QCDCuts:JetFinder JetFinder
 insert QCDCuts:MultiCuts 0 JetCuts
 insert JetCuts:JetRegions 0  FirstJet
-insert JetCuts:JetRegions 1  SecondJet
-set FirstJet:PtMin 18.*GeV
-set SecondJet:PtMin 15.*GeV
+set FirstJet:PtMin 5.*GeV
+
+set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0
 
 ##################################################
 # select the analyses
 ##################################################
 
-# general analysis
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1306294
+# CMS jet cross section
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S9086218
+# ATLAS track jet
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I919017
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################
 cd /Herwig/Generators
-saverun LHC-Matchbox-Z-bb LHCGenerator
+saverun LHC-Matchbox-7-Jets-0 LHCGenerator

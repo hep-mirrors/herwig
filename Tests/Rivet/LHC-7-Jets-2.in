@@ -37,8 +37,6 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S9120041
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1087342
 # CMS dijets with large rapidity intervals
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1102908
-# CMS dijet
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I1184941
 # strange particles in underlying event
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_PAS_QCD_11_010
 # ATLAS charged particle in min bias
