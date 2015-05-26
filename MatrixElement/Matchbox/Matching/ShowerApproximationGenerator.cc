@@ -167,8 +167,16 @@ bool ShowerApproximationGenerator::generate(const vector<double>& r) {
 
   theLastPresamplingMomenta.resize(theLastMomenta.size());
 
-  theLastPresamplingMomenta[0] = theLastBornME->lastMEMomenta()[0];
-  theLastPresamplingMomenta[1] = theLastBornME->lastMEMomenta()[1];
+  Boost toCMS = 
+    (theLastPartons.first->momentum() +
+     theLastPartons.second->momentum()).findBoostToCM();
+
+  theLastPresamplingMomenta[0] = theLastPartons.first->momentum();
+  if ( !hasFractions )
+    theLastPresamplingMomenta[0].boost(toCMS);
+  theLastPresamplingMomenta[1] = theLastPartons.second->momentum();
+  if ( !hasFractions )
+    theLastPresamplingMomenta[1].boost(toCMS);
 
   if ( hasFractions ) {
     for ( size_t k = 2; k < theLastBornME->lastMEMomenta().size(); ++k )
