@@ -1435,25 +1435,20 @@ LorentzRotation QTildeReconstructor::solveBoost(const Lorentz5Momentum & q,
 
 LorentzRotation QTildeReconstructor::solveBoostZ(const Lorentz5Momentum & q, 
 						 const Lorentz5Momentum & p ) const {
-  static const Energy2 eps2 = 1e-8*GeV2;
-  static const Energy  eps  = 1e-4 *GeV;
+  static const double eps = 1e-8;
   LorentzRotation R;
   double beta;
   Energy2 mt2  = p.mass()<ZERO ? -sqr(p.mass())+sqr(p.x())+sqr(p.y()) : sqr(p.mass())+sqr(p.x())+sqr(p.y())  ;
-  double erat  = (q.t()+q.z())/(p.t()+p.z());
-  Energy2 den = mt2*(erat+1./erat);
-  Energy2 num = (q.z()-p.z())*(q.t()+p.t()) + (p.z()+q.z())*(p.t()-q.t());
-  if(abs(den)<eps2||abs(num)<eps2) {
-    if(abs(p.t()-abs(p.z()))<eps&&abs(q.t()-abs(q.z()))<eps) {
-      double ratio = sqr(q.t()/p.t());
-      beta  = -(1.-ratio)/(1.+ratio); 
-    }
-    else {
-      beta=0.;
-    }
+  double ratio = mt2/(sqr(p.t())+sqr(q.t()));
+  if(abs(ratio)>eps) {
+    double erat  = (q.t()+q.z())/(p.t()+p.z());
+    Energy2 den = mt2*(erat+1./erat);
+    Energy2 num = (q.z()-p.z())*(q.t()+p.t()) + (p.z()+q.z())*(p.t()-q.t());
+    beta = num/den;
   }
   else {
-    beta = num/den;
+    double er = sqr(p.t()/q.t());
+    beta  = -(p.t()-q.t())*(p.t()+q.t())/(sqr(p.t())+sqr(q.t()))*(1.+ratio+0.125*(er+10.+1./er)*sqr(ratio));
   }
   if ( abs(beta) - 1. >= 0. ) throw KinematicsReconstructionVeto();
   R.boostZ(beta);
