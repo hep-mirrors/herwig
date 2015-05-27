@@ -1164,12 +1164,14 @@ deconstructColourPartner(HardTreePtr tree,cEvolverPtr evolver,
      emitter->colourPartner()->status() == HardBranching::Outgoing ) {
     system.type=F;
     // need to boost to rest frame if QED ISR
-    if(!incomingShower.jets[0]->branchingParticle()->coloured() &&
-       !incomingShower.jets[1]->branchingParticle()->coloured() ) {
-      toRest = LorentzRotation(ptotal.findBoostToCM());
-      fromRest = toRest;
-      fromRest.invert();
+    if(  !incomingShower.jets[0]->branchingParticle()->coloured() &&
+	 !incomingShower.jets[1]->branchingParticle()->coloured() ) {
+      Boost boost = ptotal.findBoostToCM();
+      toRest   = LorentzRotation( boost);
+      fromRest = LorentzRotation(-boost);
     }
+    else
+      findInitialBoost(ptotal,ptotal,toRest,fromRest);
     deconstructFinalStateSystem(toRest,fromRest,tree,
 				system.jets,evolver,type);
   }
@@ -1656,28 +1658,7 @@ reconstructInitialInitialSystem(bool & applyBoost,
     newcmf+=toBoost->momentum();
   }
   if(newcmf.m()<ZERO||newcmf.e()<ZERO) throw KinematicsReconstructionVeto();
-  // do one boost
-  if(_initialBoost==0) {
-    toRest   = LorentzRotation(pcm.findBoostToCM());
-    fromRest = LorentzRotation(newcmf.boostVector());
-  }
-  else if(_initialBoost==1) {
-    // boost to rest frame
-    // first transverse
-    toRest = Boost(-pcm.x()/pcm.t(),-pcm.y()/pcm.t(),0.);
-    // then longitudinal
-    double beta = pcm.z()/sqrt(pcm.m2()+sqr(pcm.z()));
-    toRest.boost((Boost(0.,0.,-beta)));
-    // boost from rest frame
-    // first apply longitudinal boost
-    beta = newcmf.z()/sqrt(newcmf.m2()+sqr(newcmf.z()));
-    fromRest=LorentzRotation(Boost(0.,0.,beta));
-    // then transverse one
-    fromRest.boost(Boost(newcmf.x()/newcmf.t(),
-			 newcmf.y()/newcmf.t(),0.));
-  }
-  else
-    assert(false);
+  findInitialBoost(pcm,newcmf,toRest,fromRest);
 }
 
 void QTildeReconstructor::
@@ -2729,4 +2710,32 @@ reconstructColourSinglets(vector<ShowerProgenitorPtr> & ShowerHardJets,
   else {
     reconstructGeneralSystem(ShowerHardJets);
   }
+}
+
+void QTildeReconstructor::findInitialBoost(const Lorentz5Momentum & pold,
+					   const Lorentz5Momentum & pnew,
+					   LorentzRotation & toRest,
+					   LorentzRotation & fromRest) const {
+  // do one boost
+  if(_initialBoost==0) {
+    toRest   = LorentzRotation(pold.findBoostToCM());
+    fromRest = LorentzRotation(pnew.boostVector());
+  }
+  else if(_initialBoost==1) {
+    // boost to rest frame
+    // first transverse
+    toRest = Boost(-pold.x()/pold.t(),-pold.y()/pold.t(),0.);
+    // then longitudinal
+    double beta = pold.z()/sqrt(pold.m2()+sqr(pold.z()));
+    toRest.boost((Boost(0.,0.,-beta)));
+    // boost from rest frame
+    // first apply longitudinal boost
+    beta = pnew.z()/sqrt(pnew.m2()+sqr(pnew.z()));
+    fromRest=LorentzRotation(Boost(0.,0.,beta));
+    // then transverse one
+    fromRest.boost(Boost(pnew.x()/pnew.t(),
+			 pnew.y()/pnew.t(),0.));
+  }
+  else
+    assert(false);
 }

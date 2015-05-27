@@ -469,6 +469,10 @@ protected:
    */
   Energy momConsEq(const double & k, const Energy & root_s,
 		   const JetKinVect & jets) const;
+
+
+  void findInitialBoost(const Lorentz5Momentum & pold, const Lorentz5Momentum & pnew,
+			LorentzRotation & toRest, LorentzRotation & fromRest) const;
   //@}
 
   /**
