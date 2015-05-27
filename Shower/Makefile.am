@@ -23,7 +23,7 @@ Default/FS_QTildeShowerKinematics1to2.cc    Default/FS_QTildeShowerKinematics1to
 Default/QTildeShowerKinematics1to2.cc Default/QTildeShowerKinematics1to2.fh\
 Default/QTildeShowerKinematics1to2.h  \
 Default/QTildeFinder.cc Default/QTildeFinder.h\
-Default/QTildeReconstructor.cc Default/QTildeReconstructor.h \
+Default/QTildeReconstructor.cc Default/QTildeReconstructor.h Default/QTildeReconstructor.tcc \
 Base/KinematicsReconstructor.cc \
 Base/KinematicsReconstructor.h \
 Base/KinematicsReconstructor.fh \

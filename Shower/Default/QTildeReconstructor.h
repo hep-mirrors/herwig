@@ -45,6 +45,45 @@ struct JetKinStruct {
  */  
 typedef vector<JetKinStruct> JetKinVect;
 
+/**
+ *  Enum to identify types of colour singlet systems
+ */
+enum SystemType { UNDEFINED=-1, II, IF, F ,I };
+
+/**
+ *  Struct to store colour singlets
+ */
+template<typename Value> struct ColourSinglet {
+
+  typedef vector<ColourSinglet<Value> > VecType;
+  
+  ColourSinglet() : type(UNDEFINED) {}
+  
+  ColourSinglet(SystemType intype,Value inpart) 
+    : type(intype),jets(1,inpart) {}
+  
+  /**
+   * The type of system
+   */
+  SystemType type;
+  
+  /**
+   *  The jets in the system
+   */
+  vector<Value> jets;
+
+};
+
+/**
+ *  Struct to store a colour singlet system of particles
+ */
+typedef ColourSinglet<ShowerProgenitorPtr> ColourSingletSystem;
+
+/**
+ * Struct to store a colour singlet shower
+ */
+typedef ColourSinglet<HardBranchingPtr> ColourSingletShower;
+
 /** \ingroup Shower
  *
  * This class is responsible for the kinematical reconstruction 
@@ -225,6 +264,24 @@ protected:
   void reconstructGeneralSystem(vector<ShowerProgenitorPtr> & ShowerHardJets) const;
 
   /**
+   * Reconstruction of a general coloured system doing 
+   * final-final, then initial-final and then initial-initial
+   */
+  void reconstructFinalFirst(vector<ShowerProgenitorPtr> & ShowerHardJets) const;
+
+  /**
+   *  Reconstruction of a general coloured system doing
+   *  colour parners
+   */
+  void reconstructColourPartner(vector<ShowerProgenitorPtr> & ShowerHardJets) const;
+
+  /**
+   *  Reconstruction based on colour singlet systems
+   */
+  void reconstructColourSinglets(vector<ShowerProgenitorPtr> & ShowerHardJets,
+				 ShowerInteraction::Type type) const;
+
+  /**
    *  Perform the reconstruction of a system with only final-state
    *  particles
    */
@@ -271,6 +328,12 @@ protected:
 				     ShowerInteraction::Type ) const;
 
   bool deconstructGeneralSystem(HardTreePtr, cEvolverPtr,
+				ShowerInteraction::Type) const;
+
+  bool deconstructColourSinglets(HardTreePtr, cEvolverPtr,
+				 ShowerInteraction::Type) const;
+
+  bool deconstructColourPartner(HardTreePtr, cEvolverPtr,
 				ShowerInteraction::Type) const;
   //@}
 
@@ -412,15 +475,9 @@ protected:
    *  Find the colour partners of a particle to identify the colour singlet
    *  systems for the reconstruction.
    */
-  vector<unsigned int> findPartners(unsigned int ,vector<ShowerProgenitorPtr>) const;
-
-  /**
-   *  Find the colour partners for as branching  to identify the colour singlet
-   *  systems for the inverse reconstruction.
-   */
-  void findPartners(HardBranchingPtr branch,set<HardBranchingPtr> & done,
-		    const set<HardBranchingPtr> & branchings,
-		    vector<HardBranchingPtr> & jets) const;
+  template<typename Value> void findPartners(Value branch,set<Value> & done,
+					     const set<Value> & branchings,
+					     vector<Value> & jets) const;
 
   /**
    *  Add the intrinsic \f$p_T\f$ to the system if needed
@@ -450,6 +507,21 @@ protected:
 				       vector<Lorentz5Momentum> & p,
 				       vector<Lorentz5Momentum> & pq,
 				       const vector<Energy>& highespts) const;
+
+  /**
+   *  Find the colour singlet systems
+   */
+  template<typename Value >
+  typename ColourSinglet<Value>::VecType identifySystems(set<Value> jets,
+							 unsigned int & nnun,unsigned int & nnii,
+							 unsigned int & nnif,unsigned int & nnf,
+							 unsigned int & nni) const;
+
+  /**
+   *  Combine final-state colour systems
+   */
+  template<typename Value>
+  void combineFinalState(vector<ColourSinglet<Value> > & systems) const;
 
 protected:
 
@@ -551,4 +623,5 @@ private:
 
 }
 
+#include "QTildeReconstructor.tcc"
 #endif /* HERWIG_QTildeReconstructor_H */
