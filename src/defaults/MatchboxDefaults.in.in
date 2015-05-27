@@ -46,6 +46,11 @@ set CellGridSampler:RemapChannelDimension Yes
 set CellGridSampler:LuminosityMapperBins 20
 set CellGridSampler:GeneralMapperBins 0
 
+create Herwig::MonacoSampler MonacoSampler
+set MonacoSampler:InitialPoints 10000
+set MonacoSampler:NIterations 4
+set MonacoSampler:EnhancementFactor 2
+
 create Herwig::GeneralSampler Sampler
 set Sampler:UpdateAfter 1000
 
