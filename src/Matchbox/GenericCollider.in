@@ -1,6 +1,7 @@
 cd /Herwig/Cuts
 
 create ThePEG::Cuts Cuts
+set Cuts:Fuzzy FuzzyTheta
 set MatchboxJetMatcher:Factory /Herwig/MatrixElements/Matchbox/Factory
 
 cd /Herwig/MatrixElements/Matchbox

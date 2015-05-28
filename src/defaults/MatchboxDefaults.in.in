@@ -620,6 +620,11 @@ set FourthJet:EnergyCutWidth 4.0*GeV
 set FourthJet:RapidityCutWidth 0.4
 insert FourthJet:Accepts[0] 4
 
+create ThePEG::FuzzyTheta FuzzyTheta
+set FuzzyTheta:EnergyWidth 4.0*GeV
+set FuzzyTheta:RapidityWidth 0.4
+set FuzzyTheta:AngularWidth 0.4
+
 create ThePEG::NJetsCut NJetsCut
 set NJetsCut:UnresolvedMatcher MatchboxJetMatcher
 set NJetsCut:NJetsMin 2
