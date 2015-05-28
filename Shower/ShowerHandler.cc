@@ -282,7 +282,7 @@ void ShowerHandler::Init() {
 }
 
 void ShowerHandler::cascade() {
-  
+  generator()->log() << "before the shower " << *generator()->currentEvent() << "\n";
   tcPDFPtr first  = firstPDF().pdf();
   tcPDFPtr second = secondPDF().pdf();
 

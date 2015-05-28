@@ -133,5 +133,15 @@ read Matchbox/MMHT2014.in
 
 do /Herwig/MatrixElements/Matchbox/Factory:ProductionMode
 
+
 cd /Herwig/Generators
+insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/Basics
+set  /Herwig/Analysis/Basics:AbsoluteMomentumTolerance 0.1
+set  /Herwig/Analysis/Basics:RelativeMomentumTolerance 1e-12
+set  /Herwig/Analysis/Basics:CheckQuark 0
+set EventGenerator:EventHandler:DecayHandler NULL
+set EventGenerator:EventHandler:HadronizationHandler NULL
+set EventGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+
+
 saverun DIS-Matchbox EventGenerator
