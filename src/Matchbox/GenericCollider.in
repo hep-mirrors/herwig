@@ -39,6 +39,8 @@ set EventGenerator:PrintEvent 10
 set EventGenerator:MaxErrors 10000
 set EventGenerator:NumberOfEvents 100000000
 
+insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/Basics
+
 cd /Herwig/Particles
 
 set d:NominalMass 0*GeV
