@@ -56,7 +56,8 @@ bool InvariantMassCut::passCuts(tcCutsPtr parent, tcPDPtr pitype, tcPDPtr pjtype
   bool match = false;
   if ( theFirstMatcher->check(*pitype) && theSecondMatcher->check(*pjtype) ) match = true;
   if ( theFirstMatcher->check(*pjtype) && theSecondMatcher->check(*pitype) ) match = true;
-  if ( !match ) return true;
+  if ( !match ||
+       ( theMinMass == ZERO && theMaxMass == Constants::MaxEnergy ) ) return true;
   if ( inci || incj ) return true;  
 
   if ( sameFlavourOnly() || oppositeSignOnly() ) {

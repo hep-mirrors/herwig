@@ -50,7 +50,10 @@ bool MatchboxDeltaRCut::passCuts(tcCutsPtr parent, tcPDPtr pitype, tcPDPtr pjtyp
   bool match = false;
   if ( theFirstMatcher->check(*pitype) && theSecondMatcher->check(*pjtype) ) match = true;
   if ( theFirstMatcher->check(*pjtype) && theSecondMatcher->check(*pitype) ) match = true;
-  if ( !match ) return true;
+  if ( !match ||
+       (theDeltaRMin == 0.0 && theDeltaRMax == Constants::MaxRapidity && 
+	theDeltaYMin == 0.0 && theDeltaYMax == Constants::MaxRapidity &&
+	theDeltaPhiMin == 0.0 && theDeltaPhiMax == 2.0*Constants::pi) ) return true;
   if ( inci || incj ) return true;
 
   double weight = 1.0;

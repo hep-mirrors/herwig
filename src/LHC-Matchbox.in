@@ -62,6 +62,9 @@ do Factory:Process p p -> e+ e-
 ## See the documentation for more options
 ##################################################
 
+set /Herwig/Cuts/ChargedLeptonPairMassCut:MinMass 60*GeV
+set /Herwig/Cuts/ChargedLeptonPairMassCut:MaxMass 120*GeV
+
 ## cuts on additional jets
 
 # read Matchbox/DefaultPPJets.in
