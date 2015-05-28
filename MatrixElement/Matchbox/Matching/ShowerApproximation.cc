@@ -32,13 +32,12 @@ using namespace Herwig;
 
 ShowerApproximation::ShowerApproximation() 
   : HandlerBase(),
-    theBelowCutoff(false),
+    theExtrapolationX(1.0), theBelowCutoff(false),
     theFFPtCut(1.0*GeV), theFFScreeningScale(ZERO),
     theFIPtCut(1.0*GeV), theFIScreeningScale(ZERO),
     theIIPtCut(1.0*GeV), theIIScreeningScale(ZERO),
     theRestrictPhasespace(true), theHardScaleFactor(1.0),
     theRenormalizationScaleFactor(1.0), theFactorizationScaleFactor(1.0),
-    theExtrapolationX(1.0),
     theRealEmissionScaleInSubtraction(showerScale), 
     theBornScaleInSubtraction(showerScale), 
     theEmissionScaleInSubtraction(showerScale), 

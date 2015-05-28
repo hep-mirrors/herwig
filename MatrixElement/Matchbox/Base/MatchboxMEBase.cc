@@ -482,13 +482,13 @@ void MatchboxMEBase::getPDFWeight(Energy2 factorizationScale) const {
 
 }
 
-double MatchboxMEBase::pdf1(Energy2 fscale, double xEx) const {
+double MatchboxMEBase::pdf1(Energy2 fscale, double xEx, double xFactor) const {
 
   assert(lastXCombPtr()->partonBins().first->pdf());
 
-  if ( xEx < 1. && lastX1() >= xEx ) {
+  if ( xEx < 1. && lastX1()*xFactor >= xEx ) {
     return
-      ( ( 1. - lastX1() ) / ( 1. - xEx ) ) *
+      ( ( 1. - lastX1()*xFactor ) / ( 1. - xEx ) ) *
       lastXCombPtr()->partonBins().first->pdf()->xfx(lastParticles().first->dataPtr(),
 						     lastPartons().first->dataPtr(),
 						     fscale == ZERO ? lastScale() : fscale,
@@ -498,16 +498,16 @@ double MatchboxMEBase::pdf1(Energy2 fscale, double xEx) const {
   return lastXCombPtr()->partonBins().first->pdf()->xfx(lastParticles().first->dataPtr(),
 							lastPartons().first->dataPtr(),
 							fscale == ZERO ? lastScale() : fscale,
-							lastX1())/lastX1();
+							lastX1()*xFactor)/lastX1()/xFactor;
 }
 
-double MatchboxMEBase::pdf2(Energy2 fscale, double xEx) const {
+double MatchboxMEBase::pdf2(Energy2 fscale, double xEx, double xFactor) const {
 
   assert(lastXCombPtr()->partonBins().second->pdf());
 
-  if ( xEx < 1. && lastX2() >= xEx ) {
+  if ( xEx < 1. && lastX2()*xFactor >= xEx ) {
     return
-      ( ( 1. - lastX2() ) / ( 1. - xEx ) ) *
+      ( ( 1. - lastX2()*xFactor ) / ( 1. - xEx ) ) *
       lastXCombPtr()->partonBins().second->pdf()->xfx(lastParticles().second->dataPtr(),
 						      lastPartons().second->dataPtr(),
 						      fscale == ZERO ? lastScale() : fscale,
@@ -517,7 +517,7 @@ double MatchboxMEBase::pdf2(Energy2 fscale, double xEx) const {
   return lastXCombPtr()->partonBins().second->pdf()->xfx(lastParticles().second->dataPtr(),
 							 lastPartons().second->dataPtr(),
 							 fscale == ZERO ? lastScale() : fscale,
-							 lastX2())/lastX2();
+							 lastX2()*xFactor)/lastX2()/xFactor;
 
 }
 

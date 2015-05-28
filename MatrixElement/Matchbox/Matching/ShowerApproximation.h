@@ -477,6 +477,11 @@ protected:
    */
   void setLargeNBasis();
 
+  /**
+   * The x value from which on we extrapolate PDFs for numerically stable ratios.
+   */
+  double theExtrapolationX;
+
 private:
 
   /**
@@ -558,11 +563,6 @@ private:
    * The scale factor for the factorization scale
    */
   double theFactorizationScaleFactor;
-
-  /**
-   * The x value from which on we extrapolate PDFs for numerically stable ratios.
-   */
-  double theExtrapolationX;
 
   /**
    * The scale choice in the real emission cross section to be
