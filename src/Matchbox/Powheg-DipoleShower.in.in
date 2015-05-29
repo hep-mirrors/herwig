@@ -5,6 +5,7 @@ read Matchbox/Powheg.in
 cd /Herwig/EventHandlers
 
 set EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
+set /Herwig/DipoleShower/DipoleShowerHandler:MaxPtIsMuF Yes
 
 set /Herwig/DipoleShower/Kinematics/IFLightKinematics:CollinearScheme On
 set /Herwig/DipoleShower/Kinematics/IILightKinematics:CollinearScheme On

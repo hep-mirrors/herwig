@@ -8,6 +8,7 @@ set /Herwig/DipoleShower/Kinematics/IILightKinematics:CollinearScheme On
 cd /Herwig/EventHandlers
 
 set EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
+set /Herwig/DipoleShower/DipoleShowerHandler:MaxPtIsMuF Yes
 read snippets/DipoleShowerParameters.in
 
 cd /Herwig/Analysis
