@@ -1,3 +1,5 @@
+# -*- ThePEG-repository -*-
+
 # adjust the diagram generator to VBF topologies
 
 cd /Herwig/MatrixElements/Matchbox/Utility

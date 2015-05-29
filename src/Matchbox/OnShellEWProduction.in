@@ -1,3 +1,5 @@
+# -*- ThePEG-repository -*-
+
 cd /Herwig/Particles
 
 set W+:HardProcessWidth 0*GeV

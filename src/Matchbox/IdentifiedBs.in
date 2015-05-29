@@ -1,3 +1,5 @@
+# -*- ThePEG-repository -*-
+
 read Matchbox/FourFlavourScheme.in
 
 cd /Herwig/MatrixElements/Matchbox

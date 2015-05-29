@@ -1,3 +1,5 @@
+# -*- ThePEG-repository -*-
+
 # OpenLoops as the one and only matrix element provider
 
 cd /Herwig/MatrixElements/Matchbox/Amplitudes

@@ -1,3 +1,5 @@
+# -*- ThePEG-repository -*-
+
 #####################################################################
 # Herwig now gets all its particle information from the database
 # at URL HERE

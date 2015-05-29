@@ -1,3 +1,5 @@
+# -*- ThePEG-repository -*-
+
 read Matchbox/LO.in
 
 cd /Herwig/EventHandlers

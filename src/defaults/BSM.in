@@ -1,3 +1,5 @@
+# -*- ThePEG-repository -*-
+
 #################################################
 # Create the BSM machinery
 # This only gets switched on in read if it is

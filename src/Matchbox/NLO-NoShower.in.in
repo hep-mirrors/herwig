@@ -1,3 +1,5 @@
+# -*- ThePEG-repository -*-
+
 cd /Herwig/EventHandlers
 
 set EventHandler:CascadeHandler NULL

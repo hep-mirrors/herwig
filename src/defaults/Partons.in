@@ -1,3 +1,5 @@
+# -*- ThePEG-repository -*-
+
 mkdir /Herwig/Partons
 cd /Herwig/Partons
 

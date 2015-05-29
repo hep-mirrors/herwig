@@ -1,3 +1,5 @@
+# -*- ThePEG-repository -*-
+
 cd /Herwig/Partons
 
 set HardLOPDF:PDFName MMHT2014lo68cl

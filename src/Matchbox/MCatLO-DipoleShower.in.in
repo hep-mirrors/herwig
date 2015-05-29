@@ -1,3 +1,5 @@
+# -*- ThePEG-repository -*-
+
 read Matchbox/LO.in
 
 set /Herwig/DipoleShower/Kinematics/IFLightKinematics:CollinearScheme On

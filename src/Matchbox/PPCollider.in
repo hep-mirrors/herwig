@@ -1,3 +1,5 @@
+# -*- ThePEG-repository -*-
+
 read Matchbox/GenericCollider.in
 
 cd /Herwig/EventHandlers

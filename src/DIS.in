@@ -1,3 +1,5 @@
+# -*- ThePEG-repository -*-
+
 ##################################################
 # Example generator based on DIS parameters
 # usage: Herwig++ read DIS.in
