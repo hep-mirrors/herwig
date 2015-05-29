@@ -1337,6 +1337,14 @@ makeSubProcesses(const vector<string>& proc) const {
       charge += proto[k]->iCharge();
 
     if ( charge == 0 ) {
+      for ( int i = 0; i < 2; ++i ) {
+	if ( proto[i]->coloured() &&
+	     proto[i]->hardProcessMass() != ZERO )
+	  throw Exception()
+	    << "Inconsistent flavour scheme detected with massive incoming "
+	    << proto[i]->PDGName() << ". Check your setup."
+	    << Exception::abortnow;
+      }
       sort(proto.begin()+2,proto.end(),SortPID());
       allProcs.insert(proto);
     }
