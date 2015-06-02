@@ -330,7 +330,7 @@ void DrellYanBase::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
       if(cit->first->progenitor()->id()==newin->id()) {
 	// remove old particles from colour line
 	col->removeAntiColoured(cit->first->copy());
-	col->removeColoured(cit->first->progenitor());
+	col->removeAntiColoured(cit->first->progenitor());
 	// insert new particles
 	cit->first->copy(newin);
 	ShowerParticlePtr sp(new_ptr(ShowerParticle(*newin,1,false)));
