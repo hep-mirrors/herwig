@@ -75,7 +75,6 @@ HardTreePtr PowhegShowerHandler::generateCKKW(ShowerTreePtr) const {
   // if no hard emission return
   if ( !(real && parent_>-1) )
     return HardTreePtr();
-
   // check emission
   if(sub->outgoing().size()>=real->outgoing().size())
     return HardTreePtr();
@@ -182,81 +181,6 @@ PotentialTree PowhegShowerHandler::doClustering(tSubProPtr real) const {
 	 it != newTree.tree()->branchings().end(); ++it ) {
       branchingParticles.push_back((**it).branchingParticle());
       branchingMap.insert(make_pair((**it).branchingParticle(),*it));
-      // incoming
-      if((**it).status()==HardBranching::Incoming) {
-	HardBranchingPtr parent = *it;
-	while(parent->parent()) {
-	  parent = parent->parent();
-	}
-	tPPtr match = (parent->branchingParticle()->momentum().z()/incoming.first->momentum().z()>0.)
-	  ? incomingBorn.first : incomingBorn.second;
-	// do the colour
-	if(match->colourLine()) {
-	  ColinePtr newLine;
-	  if(cmap.find(match->colourLine())!=cmap.end()) {
-	    newLine = cmap[match->colourLine()];
-	  }
-	  else {
-	    newLine = new_ptr(ColourLine());
-	    cmap[match->colourLine()] = newLine;
-	  }
-	  newLine->addColoured(branchingParticles.back());
-	}
-	if(match->antiColourLine()) {
-	  ColinePtr newLine;
-	  if(cmap.find(match->antiColourLine())!=cmap.end()) {
-	    newLine = cmap[match->antiColourLine()];
-	  }
-	  else {
-	    newLine = new_ptr(ColourLine());
-	    cmap[match->antiColourLine()] = newLine;
-	  }
-	  newLine->addAntiColoured(branchingParticles.back());
-	}
-      }
-      // outgoing
-      else {
-	int imatch(-1);
-	Energy2 minDiff(sqr(Constants::MaxEnergy));
-	for(unsigned int ix=0;ix<outgoingBorn.size();++ix) {
-	  if(matched[ix]) continue;
-	  if(outgoingBorn[ix]->id()!=(**it).branchingParticle()->id()) continue;
-	  Energy2 diff = 
-	    sqr(outgoingBorn[ix]->momentum().x()-(**it).branchingParticle()->momentum().t()) +
-	    sqr(outgoingBorn[ix]->momentum().y()-(**it).branchingParticle()->momentum().y()) +
-	    sqr(outgoingBorn[ix]->momentum().z()-(**it).branchingParticle()->momentum().z()) +
-	    sqr(outgoingBorn[ix]->momentum().t()-(**it).branchingParticle()->momentum().t());
-	  if(diff<minDiff) {
-	    imatch = ix;
-	    minDiff = diff;
-	  }
-	}
-	assert(imatch>=0);
-	matched[imatch] = true;
-	tPPtr match = outgoingBorn[imatch];
-	if(match->colourLine()) {
-	  ColinePtr newLine;
-	  if(cmap.find(match->colourLine())!=cmap.end()) {
-	    newLine = cmap[match->colourLine()];
-	  }
-	  else {
-	    newLine = new_ptr(ColourLine());
-	    cmap[match->colourLine()] = newLine;
-	  }
-	  newLine->addColoured(branchingParticles.back());
-	}
-	if(match->antiColourLine()) {
-	  ColinePtr newLine;
-	  if(cmap.find(match->antiColourLine())!=cmap.end()) {
-	    newLine = cmap[match->antiColourLine()];
-	  }
-	  else {
-	    newLine = new_ptr(ColourLine());
-	    cmap[match->antiColourLine()] = newLine;
-	  }
-	  newLine->addAntiColoured(branchingParticles.back());
-	}
-      }
     }
     // find the colour partners
     evolver()->showerModel()->partnerFinder()
@@ -389,7 +313,7 @@ PotentialTree PowhegShowerHandler::doClustering(tSubProPtr real) const {
 	part = particles.begin();
 	for (; part!=particles.end(); ++part){
 	  if (!real->intermediates()[ii]->coloured() ||
-	      (real->intermediates()[ii]->hasColour() && 
+	      (real->intermediates()[ii]->hasColour() &&
 	       real->intermediates()[ii]->hasAntiColour())){
 	    if ((*part).first==real->intermediates()[ii]->id() &&
 		fuzzyEqual((*part).second, -1.*real->intermediates()[ii]->momentum()) )
@@ -472,14 +396,14 @@ void PowhegShowerHandler::fillProtoTrees( ProtoTreePtr currentProtoTree,long id 
 	   itb = currentProtoTree->branchings().begin();
 	 itb!=ita;++itb) {
       // can't merge two incoming branchings
-      if( (**ita).status() == HardBranching::Incoming && 
+      if( (**ita).status() == HardBranching::Incoming &&
 	  (**itb).status() == HardBranching::Incoming ) continue;
       // if branching must be outgoing, skip incoming
       if(parent_>=2 && ( (**ita).status() == HardBranching::Incoming || 
 			 (**itb).status() == HardBranching::Incoming ))
 	continue;
       // if branching must be incoming, skip outgoing
-      if(parent_<2 && ( (**ita).status() != HardBranching::Incoming && 
+      if(parent_<2 && ( (**ita).status() != HardBranching::Incoming &&
 			(**itb).status() != HardBranching::Incoming ))
 	continue;
       // get a new branching for this pair
@@ -597,7 +521,7 @@ tProtoBranchingPtr PowhegShowerHandler::getCluster( tProtoBranchingPtr b1,
       if(b1->particle()->iColour()==PDT::Colour3bar && b2->particle()->iColour()==PDT::Colour8) {
 	if(b1->antiColourLine()!=b2->colourLine())
 	  return ProtoBranchingPtr();
-	clusteredBranch->colourLine(b2->antiColourLine());
+	clusteredBranch->antiColourLine(b2->antiColourLine());
       }
       else if(b2->particle()->iColour()==PDT::Colour3bar && b1->particle()->iColour()==PDT::Colour8) {
 	if(b2->antiColourLine()!=b1->colourLine())
@@ -610,12 +534,12 @@ tProtoBranchingPtr PowhegShowerHandler::getCluster( tProtoBranchingPtr b1,
     }
     else if(particle_data->iColour()==PDT::Colour8) {
       tProtoBranchingPtr coloured,antiColoured;
-      if(b1->particle()->iColour()==PDT::Colour3 && 
+      if(b1->particle()->iColour()==PDT::Colour3 &&
 	 b2->particle()->iColour()==PDT::Colour3bar) {
 	coloured     = b1;
 	antiColoured = b2;
       }
-      else if(b2->particle()->iColour()==PDT::Colour3 && 
+      else if(b2->particle()->iColour()==PDT::Colour3 &&
 	      b1->particle()->iColour()==PDT::Colour3bar) {
 	coloured     = b2;
 	antiColoured = b1;
@@ -658,24 +582,71 @@ tProtoBranchingPtr PowhegShowerHandler::getCluster( tProtoBranchingPtr b1,
     }
     clusteredBranch = new_ptr(ProtoBranching(particle_data,HardBranching::Incoming,
 					     pairMomentum,theBranching.first));
-    // work out the type of the branching
-    if(b1->particle()->hasColour() && !b1->particle()->hasAntiColour()) {
+    // work out the type of branching
+    if(b1->particle()->iColour()==PDT::Colour3) {
       b1->type(ShowerPartnerType::QCDColourLine);
+      if(b2->particle()->iColour()==PDT::Colour3 &&
+	 particle_data->iColour()==PDT::Colour8) {
+	clusteredBranch->    colourLine(b1->colourLine());
+	clusteredBranch->antiColourLine(b2->colourLine());
+      }
+      else if(b2->particle()->iColour()==PDT::Colour8 &&
+	      particle_data->iColour()==PDT::Colour3) {
+	if(b1->colourLine()!=b2->colourLine())
+	  return ProtoBranchingPtr();
+	clusteredBranch->colourLine(b2->antiColourLine());
+      }
+      else
+	assert(false);
     }
-    else if(b1->particle()->hasAntiColour() && !b1->particle()->hasColour()) {
+    else if(b1->particle()->iColour()==PDT::Colour3bar) {
       b1->type(ShowerPartnerType::QCDAntiColourLine);
+      if(b2->particle()->iColour()==PDT::Colour3bar &&
+	 particle_data->iColour()==PDT::Colour8) {
+	clusteredBranch->    colourLine(b2->antiColourLine());
+	clusteredBranch->antiColourLine(b1->antiColourLine());
+      }
+      else if(b2->particle()->iColour()==PDT::Colour8 &&
+	      particle_data->iColour()==PDT::Colour3bar) {
+	if(b1->antiColourLine()!=b2->antiColourLine())
+	  return ProtoBranchingPtr();
+	clusteredBranch->antiColourLine(b2->colourLine());
+      }
+      else
+	assert(false);
     }
-    else if(b1->particle()->hasAntiColour() && b1->particle()->hasColour()) {
-      // // 8 -> 88
-      // if(b2->particle()->colourLine()==b1->particle()->colourLine()) {
-      // 	b1->type(ShowerPartnerType::QCDColourLine);
-      // }
-      // else {
-      // 	b1->type(ShowerPartnerType::QCDAntiColourLine);
-      // }
-      b1->type(UseRandom::rndbool() ? ShowerPartnerType::QCDColourLine :
-	       ShowerPartnerType::QCDAntiColourLine);
+    else if(b1->particle()->iColour()==PDT::Colour8) {
+      if(b2->particle()->iColour()==PDT::Colour3) {
+	if(b1->colourLine()!=b2->colourLine())
+	  return ProtoBranchingPtr();
+	clusteredBranch->antiColourLine(b1->antiColourLine());	
+	b1->type(ShowerPartnerType::QCDColourLine);
+      }
+      else if(b2->particle()->iColour()==PDT::Colour3bar) {
+	if(b1->antiColourLine()!=b2->antiColourLine())
+	  return ProtoBranchingPtr();
+	clusteredBranch->    colourLine(b1->colourLine());
+	b1->type(ShowerPartnerType::QCDAntiColourLine);
+      }
+      else if(b2->particle()->iColour()==PDT::Colour8) {
+	if(b1->colourLine()==b2->colourLine()) {	
+	  b1->type(ShowerPartnerType::QCDColourLine);
+	  clusteredBranch->antiColourLine(b1->antiColourLine());
+	  clusteredBranch->colourLine(b2->antiColourLine());
+	}
+	if(b1->antiColourLine()==b2->antiColourLine()) {
+	  b1->type(ShowerPartnerType::QCDAntiColourLine);
+	  clusteredBranch->    colourLine(b1->colourLine());
+	  clusteredBranch->antiColourLine(b2->colourLine());
+	}
+	else
+	  return ProtoBranchingPtr();
+      }
+      else
+	assert(false);
     }
+    else
+      assert(false);
   }
   protoBranchings().insert(clusteredBranch);
   //set children relations 
