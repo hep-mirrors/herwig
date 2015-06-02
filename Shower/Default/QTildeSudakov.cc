@@ -599,7 +599,7 @@ double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
     if(softAllowed) {
       Energy2 dot = pjk[0]+pjk[1]*cos(phi)+pjk[2]*sin(phi);
       Energy  Eg  = Ek[0]+Ek[1]*cos(phi)+Ek[2]*sin(phi);
-      if(pipj/Ei/Ej>pik/Ei/Eg) {
+      if(pipj*Eg>pik*Ej) {
 	if(ShowerHandler::currentHandler()->evolver()->softCorrelations()==1) {
 	  aziWgt = (-m12/sqr(pik) -m22/sqr(dot) +2.*pipj/pik/dot)/aziMax;
 	}
