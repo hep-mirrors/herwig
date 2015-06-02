@@ -496,6 +496,11 @@ protected:
    */
   void setupMaximumScales(const vector<ShowerProgenitorPtr> &,XCPtr);
 
+  /**
+   *  Convert the HardTree into an extra shower emission 
+   */
+  void convertHardTree(bool hard,ShowerInteraction::Type type);
+
 protected:
 
   /**
@@ -799,6 +804,11 @@ private:
    *  Option for the kernal for soft correlations
    */
   unsigned int _softOpt;
+
+  /**
+   *  Option for hard radiation in POWHEG events
+   */
+  bool _hardPOWHEG;
 
   /**
    * True, if Matchbox MC@NLO S-event
