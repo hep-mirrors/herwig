@@ -21,6 +21,7 @@
 #include <cstdio>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <boost/filesystem.hpp>
 
 #include "Herwig++/Utilities/RunDirectories.h"
 
@@ -214,7 +215,10 @@ int main(int argc, char * argv[]) {
 
 
 void setSearchPaths(const gengetopt_args_info & args_info) {
-  // Search path for read command
+  // Search path for read command uses CWD first
+  string cwd = boost::filesystem::current_path().string();
+  Repository::prependReadDir( cwd );
+  // append command line choices
   for ( size_t i = 0; i < args_info.append_read_given; ++i )
     Repository::appendReadDir( args_info.append_read_arg[i] );
   for ( size_t i = 0; i < args_info.prepend_read_given; ++i )
