@@ -78,6 +78,8 @@ set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonQ2Scale
 
 ##################################################
 ## Matching and shower selection
+## Please also see flavour scheme settings
+## towards the end of the input file.
 ##################################################
 
 read Matchbox/MCatNLO-DefaultShower.in
