@@ -2855,6 +2855,7 @@ void Evolver:: convertHardTree(bool hard,ShowerInteraction::Type type) {
     // put the colour lines in the map
     ShowerParticlePtr oldParticle = cit->first->progenitor();
     ShowerParticlePtr newParticle = mit->second->branchingParticle();
+    ShowerParticlePtr newOut;
     ColinePtr cLine = oldParticle->    colourLine();
     ColinePtr aLine = oldParticle->antiColourLine();
     if(newParticle->colourLine() &&
@@ -2867,6 +2868,9 @@ void Evolver:: convertHardTree(bool hard,ShowerInteraction::Type type) {
     bool emission = !mit->second->children().empty();
     if(emission) {
       newParticle = mit->second->children()[0]->branchingParticle();
+      newOut      = mit->second->children()[1]->branchingParticle();
+      if(newParticle->id()!=oldParticle->id()&&newParticle->id()==newOut->id())
+	swap(newParticle,newOut);
     }
     // remove colour lines from old particle
     if(aLine) {
@@ -2877,31 +2881,46 @@ void Evolver:: convertHardTree(bool hard,ShowerInteraction::Type type) {
       cLine->removeColoured(cit->first->copy());
       cLine->removeColoured(cit->first->progenitor());
     }
+    // get the new colour lines
+    ColinePtr newCLine,newALine;
     // sort out colour lines
     if(newParticle->colourLine()) {
       ColinePtr ctemp = newParticle->    colourLine();
       ctemp->removeColoured(newParticle);
       if(cmap.find(ctemp)!=cmap.end()) {
-	cmap[ctemp]->addColoured    (newParticle);
+	newCLine = cmap[ctemp];
       }
       else {
-	ColinePtr newLine(new_ptr(ColourLine()));
-	cmap[ctemp] = newLine;
-	newLine->addColoured    (newParticle);
+	newCLine = new_ptr(ColourLine());
+	cmap[ctemp] = newCLine;
       }
     }
+    // and anticolour lines
     if(newParticle->antiColourLine()) {
       ColinePtr ctemp = newParticle->antiColourLine();
       ctemp->removeAntiColoured(newParticle);
       if(cmap.find(ctemp)!=cmap.end()) {
-	cmap[ctemp]->addAntiColoured(newParticle);
+	newALine = cmap[ctemp];
       }
       else {
-	ColinePtr newLine(new_ptr(ColourLine()));
-	cmap[ctemp] = newLine;
-	newLine->addAntiColoured(newParticle);
+	newALine = new_ptr(ColourLine());
+	cmap[ctemp] = newALine;
       }
     }
+    // special for unstable particles
+    if(newParticle->id()==oldParticle->id() &&
+       (tit!=currentTree()->treelinks().end()||!oldParticle->dataPtr()->stable())) {
+      Lorentz5Momentum oldMomentum = oldParticle->momentum();
+      Lorentz5Momentum newMomentum = newParticle->momentum();
+      LorentzRotation boost( oldMomentum.findBoostToCM(),oldMomentum.e()/oldMomentum.mass());
+      oldParticle->transform(boost);
+      boost = LorentzRotation(-newMomentum.findBoostToCM(),newMomentum.e()/newMomentum.mass());
+      oldParticle->transform(boost);
+      newParticle=oldParticle;
+    }
+    // add particle to colour lines
+    if(newCLine) newCLine->addColoured    (newParticle);
+    if(newALine) newALine->addAntiColoured(newParticle);
     // insert new particles
     cit->first->copy(newParticle);
     ShowerParticlePtr sp(new_ptr(ShowerParticle(*newParticle,1,true)));
@@ -2910,7 +2929,6 @@ void Evolver:: convertHardTree(bool hard,ShowerInteraction::Type type) {
     cit->first->perturbative(!emission);
     // and the emitted particle if needed
     if(emission) {
-      ShowerParticlePtr newOut = mit->second->children()[1]->branchingParticle();
       if(newOut->colourLine()) {
 	ColinePtr ctemp = newOut->    colourLine();
 	ctemp->removeColoured(newOut);
