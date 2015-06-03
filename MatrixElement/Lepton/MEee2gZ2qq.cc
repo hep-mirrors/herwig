@@ -945,6 +945,21 @@ HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree,
     else if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3bar)
       newline->addAntiColoured((**cit).branchingParticle());
   }
+  allBranchings[2]->colourPartner(allBranchings[3]);
+  allBranchings[3]->colourPartner(allBranchings[2]);
+  if(hardParticles[4]->dataPtr()->iColour()==PDT::Colour8) {
+    ColinePtr newLine2=new_ptr(ColourLine());
+    if(emitterBranch->branchingParticle()->dataPtr()->iColour()==PDT::Colour3) {
+      emitterBranch->branchingParticle()->colourLine()->addColoured(hardParticles[4]);
+      newLine2->addColoured(hardParticles[iemit]);
+      newLine2->addAntiColoured(hardParticles[4]);
+    }
+    else {
+      emitterBranch->branchingParticle()->antiColourLine()->addAntiColoured(hardParticles[4]);
+      newLine2->addAntiColoured(hardParticles[iemit]);
+      newLine2->addColoured(hardParticles[4]);
+    }
+  }
   // Return the HardTree
   return hardtree;
 }
