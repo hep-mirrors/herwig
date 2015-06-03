@@ -960,6 +960,14 @@ HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree,
       newLine2->addColoured(hardParticles[4]);
     }
   }
+  else {
+    if(emitterBranch->branchingParticle()->dataPtr()->iColour()==PDT::Colour3) {
+      emitterBranch->branchingParticle()->colourLine()->addColoured(hardParticles[iemit]);
+    }
+    else {
+      emitterBranch->branchingParticle()->antiColourLine()->addAntiColoured(hardParticles[iemit]);
+    }
+  }
   // Return the HardTree
   return hardtree;
 }
