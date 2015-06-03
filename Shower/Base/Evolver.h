@@ -69,7 +69,7 @@ public:
 	      _iptrms(ZERO), _beta(0.), _gamma(ZERO), _iptmax(),
 	      _limitEmissions(0), _initialenhance(1.), _finalenhance(1.),
 	       interaction_(1), _trunc_Mode(true), _hardEmissionMode(0),
-	      _spinOpt(1), _softOpt(2),
+	      _spinOpt(1), _softOpt(2), _hardPOWHEG(false),
 	      theFactorizationScaleFactor(1.0), 
 	      theRenormalizationScaleFactor(1.0)
   {}

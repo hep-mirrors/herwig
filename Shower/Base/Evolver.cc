@@ -2879,7 +2879,7 @@ void Evolver:: convertHardTree(bool hard,ShowerInteraction::Type type) {
     }
     // sort out colour lines
     if(newParticle->colourLine()) {
-      tColinePtr ctemp = newParticle->    colourLine();
+      ColinePtr ctemp = newParticle->    colourLine();
       ctemp->removeColoured(newParticle);
       if(cmap.find(ctemp)!=cmap.end()) {
 	cmap[ctemp]->addColoured    (newParticle);
@@ -2891,7 +2891,7 @@ void Evolver:: convertHardTree(bool hard,ShowerInteraction::Type type) {
       }
     }
     if(newParticle->antiColourLine()) {
-      tColinePtr ctemp = newParticle->antiColourLine();
+      ColinePtr ctemp = newParticle->antiColourLine();
       ctemp->removeAntiColoured(newParticle);
       if(cmap.find(ctemp)!=cmap.end()) {
 	cmap[ctemp]->addAntiColoured(newParticle);
@@ -2912,13 +2912,13 @@ void Evolver:: convertHardTree(bool hard,ShowerInteraction::Type type) {
     if(emission) {
       ShowerParticlePtr newOut = mit->second->children()[1]->branchingParticle();
       if(newOut->colourLine()) {
-	tColinePtr ctemp = newOut->    colourLine();
+	ColinePtr ctemp = newOut->    colourLine();
 	ctemp->removeColoured(newOut);
 	assert(cmap.find(ctemp)!=cmap.end());
 	cmap[ctemp]->addColoured    (newOut);
       }
       if(newOut->antiColourLine()) {
-	tColinePtr ctemp = newOut->antiColourLine();
+	ColinePtr ctemp = newOut->antiColourLine();
 	ctemp->removeAntiColoured(newOut);
 	assert(cmap.find(ctemp)!=cmap.end());
 	cmap[ctemp]->addAntiColoured(newOut);
@@ -2932,6 +2932,8 @@ void Evolver:: convertHardTree(bool hard,ShowerInteraction::Type type) {
     if(tit!=currentTree()->treelinks().end())
       currentTree()->updateLink(tit->first,make_pair(cit->first,sp));
   }
+  // reset the tree
+  currentTree()->resetShowerProducts();
   // reextract the particles and set the colour partners
   vector<ShowerParticlePtr> particles = 
     currentTree()->extractProgenitorParticles();
