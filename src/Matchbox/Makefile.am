@@ -42,6 +42,7 @@ Powheg-DefaultShower.in \
 Powheg-DipoleShower.in \
 Powheg.in \
 PPCollider.in \
+PQCDLevel.in \
 VBFNLO.in \
 VBFDiagramsOnly.in \
 MMHT2014.in
