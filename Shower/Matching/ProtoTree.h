@@ -52,14 +52,15 @@ public:
    */
   CKKWTreePtr createHardTree() {
     vector<HardBranchingPtr> branchings,spacelike;
+    map<ColinePtr,ColinePtr> cmap;
     for(set<tProtoBranchingPtr>::const_iterator it=branchings_.begin();
 	it!=branchings_.end();++it) {
       if((**it).status()==HardBranching::Outgoing) {
-	branchings.push_back(createTimeLikeBranching(*it));
+	branchings.push_back(createTimeLikeBranching(*it,cmap));
       }
       else {
 	HardBranchingPtr space;
-	branchings.push_back(createSpaceLikeBranching(*it,space));
+	branchings.push_back(createSpaceLikeBranching(*it,space,cmap));
 	spacelike.push_back(space);
       }
     }
@@ -72,33 +73,34 @@ protected:
   /**
    *  Create a timelike branching
    */
-  HardBranchingPtr createTimeLikeBranching(tProtoBranchingPtr branch) {
+  HardBranchingPtr createTimeLikeBranching(tProtoBranchingPtr branch,map<ColinePtr,ColinePtr> & cmap) {
     ShowerParticlePtr particle = new_ptr( ShowerParticle( branch->particle() , true ) );
     particle->set5Momentum( branch->momentum() );
-
-    //CHANGED
-    // Lorentz5Momentum test =branch->momentum();
-    // test.setMass(branch->particle()->mass());    
-    // particle->set5Momentum(test);
-
     HardBranchingPtr newBranch = new_ptr( HardBranching( particle, branch->sudakov(),
 							 HardBranchingPtr(), 
 							 HardBranching::Outgoing ) );
+    if(branch->colourLine()) {
+      if(cmap.find((branch->colourLine()))==cmap.end())
+	cmap[branch->colourLine()] = new_ptr(ColourLine());
+      cmap[branch->colourLine()]->addColoured(particle);
+    }
+    if(branch->antiColourLine()) {
+      if(cmap.find((branch->antiColourLine()))==cmap.end())
+	cmap[branch->antiColourLine()] = new_ptr(ColourLine());
+      cmap[branch->antiColourLine()]->addAntiColoured(particle);
+    }
     Lorentz5Momentum pnew;
     if(branch->children().empty()) {
       pnew = branch->momentum();
     }
     else {
       for(unsigned int ix=0;ix<branch->children().size();++ix) {
-	HardBranchingPtr child = createTimeLikeBranching(branch->children()[ix]);
+	HardBranchingPtr child = createTimeLikeBranching(branch->children()[ix],cmap);
 	newBranch->addChild(child);
 	child->parent(newBranch);
 	pnew += child->branchingParticle()->momentum();
-	//CHANGED
 	pnew.setMass(branch->particle()->mass());
       }
-      //pnew.rescaleMass();
-      
     }
     particle->set5Momentum( pnew );
     if(branch->type()!=ShowerPartnerType::Undefined)
@@ -110,16 +112,27 @@ protected:
    *  Create a spacelike branching
    */
   HardBranchingPtr createSpaceLikeBranching(tProtoBranchingPtr branch,
-					    HardBranchingPtr & spacelike) {
+					    HardBranchingPtr & spacelike,
+					    map<ColinePtr,ColinePtr> & cmap) {
     ShowerParticlePtr particle = new_ptr( ShowerParticle( branch->particle() , false ) );
     particle->set5Momentum( branch->momentum() );
+    if(branch->colourLine()) {
+      if(cmap.find((branch->colourLine()))==cmap.end())
+	cmap[branch->colourLine()] = new_ptr(ColourLine());
+      cmap[branch->colourLine()]->addColoured(particle);
+    }
+    if(branch->antiColourLine()) {
+      if(cmap.find((branch->antiColourLine()))==cmap.end())
+	cmap[branch->antiColourLine()] = new_ptr(ColourLine());
+      cmap[branch->antiColourLine()]->addAntiColoured(particle);
+    }
     HardBranchingPtr newBranch = new_ptr( HardBranching( particle, SudakovPtr(),
 							 HardBranchingPtr(), 
 							 HardBranching::Incoming ) );
     if(!branch->backChildren().empty()) {
-      HardBranchingPtr newTimeLike  =  createTimeLikeBranching(branch->backChildren()[1]);
+      HardBranchingPtr newTimeLike  =  createTimeLikeBranching(branch->backChildren()[1],cmap);
       HardBranchingPtr newSpaceLike = createSpaceLikeBranching(branch->backChildren()[0],
-							       spacelike);
+							       spacelike,cmap);
       newBranch  ->parent(newSpaceLike);
       newTimeLike->parent(newSpaceLike);
       newSpaceLike->addChild(newBranch);

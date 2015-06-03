@@ -1124,7 +1124,7 @@ void ShowerTree::updateAfterShower(ShowerDecayMap & decay) {
   // shower but didn't come from the hard process
   set<tShowerParticlePtr>::const_iterator cit;
   for(cit=_forward.begin();cit!=_forward.end();++cit) {
-    if(decaysInShower((**cit).id())&&
+    if((decaysInShower((**cit).id())&&!(**cit).dataPtr()->stable())&&
        hard.find(*cit)==hard.end()) {
       ShowerTreePtr newtree=new_ptr(ShowerTree(*cit,decay));
       newtree->setParents();

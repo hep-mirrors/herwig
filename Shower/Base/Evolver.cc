@@ -77,7 +77,7 @@ IBPtr Evolver::fullclone() const {
 void Evolver::persistentOutput(PersistentOStream & os) const {
   os << _model << _splittingGenerator << _maxtry 
      << _meCorrMode << _hardVetoMode << _hardVetoRead << _hardVetoReadOption
-     << _limitEmissions << _spinOpt << _softOpt
+     << _limitEmissions << _spinOpt << _softOpt << _hardPOWHEG
      << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << ounit(_iptmax,GeV) 
      << _vetoes << _trunc_Mode << _hardEmissionMode << _reconOpt
      << isMCatNLOSEvent << isMCatNLOHEvent
@@ -92,7 +92,7 @@ void Evolver::persistentInput(PersistentIStream & is, int) {
   unsigned int isize;
   is >> _model >> _splittingGenerator >> _maxtry 
      >> _meCorrMode >> _hardVetoMode >> _hardVetoRead >> _hardVetoReadOption
-     >> _limitEmissions >> _spinOpt >> _softOpt
+     >> _limitEmissions >> _spinOpt >> _softOpt >> _hardPOWHEG
      >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> iunit(_iptmax,GeV)
      >> _vetoes >> _trunc_Mode >> _hardEmissionMode >> _reconOpt
      >> isMCatNLOSEvent >> isMCatNLOHEvent
@@ -388,6 +388,21 @@ void Evolver::Init() {
      "Singular",
      "Use original Webber-Marchisini form",
      2);
+
+  static Switch<Evolver,bool> interfaceHardPOWHEG
+    ("HardPOWHEG",
+     "Treatment of powheg emissions which are too hard to have a shower interpretation",
+     &Evolver::_hardPOWHEG, false, false, false);
+  static SwitchOption interfaceHardPOWHEGAsShower
+    (interfaceHardPOWHEG,
+     "AsShower",
+     "Still interpret as shower emissions",
+     false);
+  static SwitchOption interfaceHardPOWHEGRealEmission
+    (interfaceHardPOWHEG,
+     "RealEmission",
+     "Generate shower from the real emmission configuration",
+     true);
 
 }
 
@@ -954,7 +969,7 @@ vector<ShowerProgenitorPtr> Evolver::setupShower(bool hard) {
   vector<ShowerProgenitorPtr> particlesToShower = 
     currentTree()->extractProgenitors();
   // remake the colour partners if needed
-  if(_hardEmissionMode==0 && _currenttree->hardMatrixElementCorrection()) {
+  if(_currenttree->hardMatrixElementCorrection()) {
     setEvolutionPartners(hard,interactions_[0],true);
     _currenttree->resetShowerProducts();
   }
@@ -1000,6 +1015,43 @@ void Evolver::setEvolutionPartners(bool hard,ShowerInteraction::Type type,
   // Set the initial evolution scales
   showerModel()->partnerFinder()->
     setInitialEvolutionScales(particles,!hard,type,!_hardtree);
+  if(hardTree() && _hardPOWHEG) {
+    bool tooHard=false;
+    map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator 
+      eit=hardTree()->particles().end();
+    for(unsigned int ix=0;ix<particles.size();++ix) {
+      map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator 
+	mit = hardTree()->particles().find(particles[ix]);
+      Energy hardScale(ZERO);
+      ShowerPartnerType::Type type(ShowerPartnerType::Undefined);
+      // final-state
+      if(particles[ix]->isFinalState()) {
+	if(mit!= eit && !mit->second->children().empty()) {
+	  hardScale = mit->second->scale();
+	  type = mit->second->type();
+	}
+      }
+      // initial-state
+      else {
+	if(mit!= eit && mit->second->parent()) {
+	  hardScale = mit->second->parent()->scale();
+	  type = mit->second->parent()->type();
+	}
+      }
+      if(type!=ShowerPartnerType::Undefined) {
+	if(type==ShowerPartnerType::QED) {
+	  tooHard |= particles[ix]->scales().QED_noAO<hardScale;
+	}
+	else if(type==ShowerPartnerType::QCDColourLine) {
+	  tooHard |= particles[ix]->scales().QCD_c_noAO<hardScale;
+	}
+	else if(type==ShowerPartnerType::QCDAntiColourLine) {
+	  tooHard |= particles[ix]->scales().QCD_ac_noAO<hardScale;
+	}
+      }
+    }
+    if(tooHard) convertHardTree(hard,type);
+  }
 }
 
 void Evolver::updateHistory(tShowerParticlePtr particle) {
@@ -2461,46 +2513,50 @@ void Evolver::connectTrees(ShowerTreePtr showerTree,
 	cit!=showerTree->outgoingLines().end();++cit )
     particlesToShower.push_back(cit->first);
   // match them
-  vector<bool> matched(particlesToShower.size(),false);
-  for(set<HardBranchingPtr>::const_iterator cit=hardTree->branchings().begin();
-      cit!=hardTree->branchings().end();++cit) {
+  map<ShowerProgenitorPtr,HardBranchingPtr> partners;
+  for(set<HardBranchingPtr>::const_iterator bit=hardTree->branchings().begin();
+      bit!=hardTree->branchings().end();++bit) {
     Energy2 dmin( 1e30*GeV2 );
-    int iloc(-1);
-    for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
-      if(matched[ix]) continue;
-      if( (**cit).branchingParticle()->id() !=  particlesToShower[ix]->progenitor()->id() ) continue;
-      if( (**cit).branchingParticle()->isFinalState() !=
-	  particlesToShower[ix]->progenitor()->isFinalState() ) continue;
+    ShowerProgenitorPtr partner;
+    for(vector<ShowerProgenitorPtr>::const_iterator pit=particlesToShower.begin();
+	pit!=particlesToShower.end();++pit) {
+      if(partners.find(*pit)!=partners.end()) continue;
+      if( (**bit).branchingParticle()->id() !=  (**pit).progenitor()->id() ) continue;
+      if( (**bit).branchingParticle()->isFinalState() !=
+	  (**pit).progenitor()->isFinalState() ) continue;
       Energy2 dtest = 
-	sqr( particlesToShower[ix]->progenitor()->momentum().x() - (**cit).showerMomentum().x() ) +
-	sqr( particlesToShower[ix]->progenitor()->momentum().y() - (**cit).showerMomentum().y() ) +
-	sqr( particlesToShower[ix]->progenitor()->momentum().z() - (**cit).showerMomentum().z() ) +
-	sqr( particlesToShower[ix]->progenitor()->momentum().t() - (**cit).showerMomentum().t() );
+	sqr( (**pit).progenitor()->momentum().x() - (**bit).showerMomentum().x() ) +
+	sqr( (**pit).progenitor()->momentum().y() - (**bit).showerMomentum().y() ) +
+	sqr( (**pit).progenitor()->momentum().z() - (**bit).showerMomentum().z() ) +
+	sqr( (**pit).progenitor()->momentum().t() - (**bit).showerMomentum().t() );
       // add mass difference for identical particles (e.g. Z0 Z0 production)
-      dtest += 1e10*sqr(particlesToShower[ix]->progenitor()->momentum().m()-
-			(**cit).showerMomentum().m());
+      dtest += 1e10*sqr((**pit).progenitor()->momentum().m()-(**bit).showerMomentum().m());
       if( dtest < dmin ) {
-	iloc = ix;
+	partner = *pit;
 	dmin = dtest;
       }
     }
-    if(iloc<0) throw Exception() << "Failed to match shower and hard trees in Evolver::hardestEmission"
-				 << Exception::eventerror;
-    if(particlesToShower[iloc]->progenitor()->dataPtr()->stable()) {
-      particlesToShower[iloc]->progenitor()->set5Momentum((**cit).showerMomentum());
-      particlesToShower[iloc]->copy()->set5Momentum((**cit).showerMomentum());
+    if(!partner) throw Exception() << "Failed to match shower and hard trees in Evolver::hardestEmission"
+				   << Exception::eventerror;
+    partners[partner] = *bit;
+  }
+  for(vector<ShowerProgenitorPtr>::const_iterator pit=particlesToShower.begin();
+      pit!=particlesToShower.end();++pit) {
+    HardBranchingPtr partner = partners[*pit];
+    if((**pit).progenitor()->dataPtr()->stable()) {
+      (**pit).progenitor()->set5Momentum(partner->showerMomentum());
+      (**pit).copy()->set5Momentum(partner->showerMomentum());
     }
     else {
-      Lorentz5Momentum oldMomentum = particlesToShower[iloc]->progenitor()->momentum();
-      Lorentz5Momentum newMomentum = (**cit).showerMomentum();
+      Lorentz5Momentum oldMomentum = (**pit).progenitor()->momentum();
+      Lorentz5Momentum newMomentum = partner->showerMomentum();
       LorentzRotation boost( oldMomentum.findBoostToCM(),oldMomentum.e()/oldMomentum.mass());
-      particlesToShower[iloc]->progenitor()->transform(boost);
-      particlesToShower[iloc]->copy()      ->transform(boost);
+      (**pit).progenitor()->transform(boost);
+      (**pit).copy()      ->transform(boost);
       boost = LorentzRotation(-newMomentum.findBoostToCM(),newMomentum.e()/newMomentum.mass());
-      particlesToShower[iloc]->progenitor()->transform(boost);
-      particlesToShower[iloc]->copy()      ->transform(boost);
+      (**pit).progenitor()->transform(boost);
+      (**pit).copy()      ->transform(boost);
     }
-    matched[iloc] = true;
   }
   // correction boosts for daughter trees
   for(map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> >::const_iterator 
@@ -2688,4 +2744,205 @@ void Evolver::doShowering(bool hard,XCPtr xcomb) {
   _currenttree->hasShowered(true);
   if(!showerOrder) swap(interactions_[0],interactions_[1]);
   hardTree(HardTreePtr());
+}
+
+void Evolver:: convertHardTree(bool hard,ShowerInteraction::Type type) {
+  map<ColinePtr,ColinePtr> cmap;
+  // incoming particles
+  for(map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator 
+	cit=currentTree()->incomingLines().begin();cit!=currentTree()->incomingLines().end();++cit) {
+    map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator 
+      mit = hardTree()->particles().find(cit->first->progenitor());
+    // put the colour lines in the map
+    ShowerParticlePtr oldParticle = cit->first->progenitor();
+    ShowerParticlePtr newParticle = mit->second->branchingParticle();
+    ColinePtr cLine = oldParticle->    colourLine();
+    ColinePtr aLine = oldParticle->antiColourLine();
+    if(newParticle->colourLine() &&
+       cmap.find(newParticle->    colourLine())==cmap.end())
+      cmap[newParticle->    colourLine()] = cLine;
+    if(newParticle->antiColourLine() &&
+       cmap.find(newParticle->antiColourLine())==cmap.end())
+      cmap[newParticle->antiColourLine()] = aLine;
+    // check whether or not particle emits
+    bool emission = mit->second->parent();
+    if(emission) {
+      newParticle = mit->second->parent()->branchingParticle();
+    }
+    // remove colour lines from old particle
+    if(aLine) {
+      aLine->removeAntiColoured(cit->first->copy());
+      aLine->removeAntiColoured(cit->first->progenitor());
+    }
+    if(cLine) {
+      cLine->removeColoured(cit->first->copy());
+      cLine->removeColoured(cit->first->progenitor());
+    }
+    // sort out colour lines
+    if(newParticle->colourLine()) {
+      ColinePtr ctemp = newParticle->    colourLine();
+      ctemp->removeColoured(newParticle);
+      if(cmap.find(ctemp)!=cmap.end()) {
+	cmap[ctemp]->addColoured    (newParticle);
+      }
+      else {
+	ColinePtr newLine(new_ptr(ColourLine()));
+	cmap[ctemp] = newLine;
+	newLine->addColoured    (newParticle);
+      }
+    }
+    if(newParticle->antiColourLine()) {
+      ColinePtr ctemp = newParticle->antiColourLine();
+      ctemp->removeAntiColoured(newParticle);
+      if(cmap.find(ctemp)!=cmap.end()) {
+	cmap[ctemp]->addAntiColoured(newParticle);
+      }
+      else {
+	ColinePtr newLine(new_ptr(ColourLine()));
+	cmap[ctemp] = newLine;
+	newLine->addAntiColoured(newParticle);
+      }
+    }
+    // insert new particles
+    cit->first->copy(newParticle);
+    ShowerParticlePtr sp(new_ptr(ShowerParticle(*newParticle,1,false)));
+    cit->first->progenitor(sp);
+    currentTree()->incomingLines()[cit->first]=sp;
+    cit->first->perturbative(!emission);
+    // and the emitted particle if needed
+    if(emission) {
+      ShowerParticlePtr newOut = mit->second->parent()->children()[1]->branchingParticle();
+      if(newOut->colourLine()) {
+	ColinePtr ctemp = newOut->    colourLine();
+	ctemp->removeColoured(newOut);
+	assert(cmap.find(ctemp)!=cmap.end());
+	cmap[ctemp]->addColoured    (newOut);
+      }
+      if(newOut->antiColourLine()) {
+	ColinePtr ctemp = newOut->antiColourLine();
+	ctemp->removeAntiColoured(newOut);
+	assert(cmap.find(ctemp)!=cmap.end());
+	cmap[ctemp]->addAntiColoured(newOut);
+      }
+      ShowerParticlePtr sout=new_ptr(ShowerParticle(*newOut,1,true));
+      ShowerProgenitorPtr out=new_ptr(ShowerProgenitor(cit->first->original(),newOut,sout));
+      out->perturbative(false);
+      currentTree()->outgoingLines().insert(make_pair(out,sout));
+    }
+    if(hard) {
+      // sort out the value of x
+      if(mit->second->beam()->momentum().z()>ZERO) {
+	sp->x(newParticle->momentum(). plus()/mit->second->beam()->momentum(). plus());
+      }
+      else {
+	sp->x(newParticle->momentum().minus()/mit->second->beam()->momentum().minus());
+      }
+    }
+  }
+  // outgoing particles
+  for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator 
+	cit=currentTree()->outgoingLines().begin();cit!=currentTree()->outgoingLines().end();++cit) {
+    map<tShowerTreePtr,pair<tShowerProgenitorPtr,
+			    tShowerParticlePtr> >::const_iterator tit;
+    for(tit  = currentTree()->treelinks().begin();
+	tit != currentTree()->treelinks().end();++tit) {
+      if(tit->second.first && tit->second.second==cit->first->progenitor())
+	break;
+    }
+    map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator 
+      mit = hardTree()->particles().find(cit->first->progenitor());
+    if(mit==hardTree()->particles().end()) continue;
+    // put the colour lines in the map
+    ShowerParticlePtr oldParticle = cit->first->progenitor();
+    ShowerParticlePtr newParticle = mit->second->branchingParticle();
+    ColinePtr cLine = oldParticle->    colourLine();
+    ColinePtr aLine = oldParticle->antiColourLine();
+    if(newParticle->colourLine() &&
+       cmap.find(newParticle->    colourLine())==cmap.end())
+      cmap[newParticle->    colourLine()] = cLine;
+    if(newParticle->antiColourLine() &&
+       cmap.find(newParticle->antiColourLine())==cmap.end())
+      cmap[newParticle->antiColourLine()] = aLine;
+    // check whether or not particle emits
+    bool emission = !mit->second->children().empty();
+    if(emission) {
+      newParticle = mit->second->children()[0]->branchingParticle();
+    }
+    // remove colour lines from old particle
+    if(aLine) {
+      aLine->removeAntiColoured(cit->first->copy());
+      aLine->removeAntiColoured(cit->first->progenitor());
+    }
+    if(cLine) {
+      cLine->removeColoured(cit->first->copy());
+      cLine->removeColoured(cit->first->progenitor());
+    }
+    // sort out colour lines
+    if(newParticle->colourLine()) {
+      tColinePtr ctemp = newParticle->    colourLine();
+      ctemp->removeColoured(newParticle);
+      if(cmap.find(ctemp)!=cmap.end()) {
+	cmap[ctemp]->addColoured    (newParticle);
+      }
+      else {
+	ColinePtr newLine(new_ptr(ColourLine()));
+	cmap[ctemp] = newLine;
+	newLine->addColoured    (newParticle);
+      }
+    }
+    if(newParticle->antiColourLine()) {
+      tColinePtr ctemp = newParticle->antiColourLine();
+      ctemp->removeAntiColoured(newParticle);
+      if(cmap.find(ctemp)!=cmap.end()) {
+	cmap[ctemp]->addAntiColoured(newParticle);
+      }
+      else {
+	ColinePtr newLine(new_ptr(ColourLine()));
+	cmap[ctemp] = newLine;
+	newLine->addAntiColoured(newParticle);
+      }
+    }
+    // insert new particles
+    cit->first->copy(newParticle);
+    ShowerParticlePtr sp(new_ptr(ShowerParticle(*newParticle,1,true)));
+    cit->first->progenitor(sp);
+    currentTree()->outgoingLines()[cit->first]=sp;
+    cit->first->perturbative(!emission);
+    // and the emitted particle if needed
+    if(emission) {
+      ShowerParticlePtr newOut = mit->second->children()[1]->branchingParticle();
+      if(newOut->colourLine()) {
+	tColinePtr ctemp = newOut->    colourLine();
+	ctemp->removeColoured(newOut);
+	assert(cmap.find(ctemp)!=cmap.end());
+	cmap[ctemp]->addColoured    (newOut);
+      }
+      if(newOut->antiColourLine()) {
+	tColinePtr ctemp = newOut->antiColourLine();
+	ctemp->removeAntiColoured(newOut);
+	assert(cmap.find(ctemp)!=cmap.end());
+	cmap[ctemp]->addAntiColoured(newOut);
+      }
+      ShowerParticlePtr sout=new_ptr(ShowerParticle(*newOut,1,true));
+      ShowerProgenitorPtr out=new_ptr(ShowerProgenitor(cit->first->original(),newOut,sout));
+      out->perturbative(false);
+      currentTree()->outgoingLines().insert(make_pair(out,sout));
+    }
+    // update any decay products
+    if(tit!=currentTree()->treelinks().end())
+      currentTree()->updateLink(tit->first,make_pair(cit->first,sp));
+  }
+  // reextract the particles and set the colour partners
+  vector<ShowerParticlePtr> particles = 
+    currentTree()->extractProgenitorParticles();
+  // clear the partners
+  for(unsigned int ix=0;ix<particles.size();++ix) {
+    particles[ix]->partner(ShowerParticlePtr());
+    particles[ix]->clearPartners();
+  }
+  // clear the tree
+  hardTree(HardTreePtr());
+  // Set the initial evolution scales
+  showerModel()->partnerFinder()->
+    setInitialEvolutionScales(particles,!hard,type,!_hardtree);
 }
