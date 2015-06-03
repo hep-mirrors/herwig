@@ -1,3 +1,5 @@
+# -*- ThePEG-repository -*-
+
 # for MEMinBias:
 create ThePEG::BeamParticleData pomeron 
 setup pomeron 990 pomeron 0.0 0.0 0.0 0.0 0 0 0 1

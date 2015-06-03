@@ -46,6 +46,9 @@ IBPtr MissingPtCut::fullclone() const {
 bool MissingPtCut::passCuts(tcCutsPtr parent, const tcPDVector & ptype, 
                             const vector<LorentzMomentum> & p) const {
 
+  if ( thePtMissMin == ZERO && thePtMissMax == Constants::MaxEnergy )
+    return true;
+
   // Energy ptMissSum = 0.0*GeV;
   LorentzMomentum momentumMissSum;
   bool nonu = true;

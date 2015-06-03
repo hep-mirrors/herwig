@@ -1,3 +1,5 @@
+# -*- ThePEG-repository -*-
+
 ##################################################
 ## Herwig++/Matchbox example input file
 ##################################################
@@ -62,6 +64,9 @@ do Factory:Process p p -> e+ e-
 ## See the documentation for more options
 ##################################################
 
+set /Herwig/Cuts/ChargedLeptonPairMassCut:MinMass 60*GeV
+set /Herwig/Cuts/ChargedLeptonPairMassCut:MaxMass 120*GeV
+
 ## cuts on additional jets
 
 # read Matchbox/DefaultPPJets.in
@@ -81,6 +86,8 @@ set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassSca
 
 ##################################################
 ## Matching and shower selection
+## Please also see flavour scheme settings
+## towards the end of the input file.
 ##################################################
 
 read Matchbox/MCatNLO-DefaultShower.in

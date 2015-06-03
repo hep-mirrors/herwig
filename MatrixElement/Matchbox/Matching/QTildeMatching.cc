@@ -29,7 +29,8 @@
 
 using namespace Herwig;
 
-QTildeMatching::QTildeMatching() {}
+QTildeMatching::QTildeMatching() 
+  : theCorrectForXZMismatch(false) {}
 
 QTildeMatching::~QTildeMatching() {}
 
@@ -201,6 +202,35 @@ CrossSection QTildeMatching::dSigHatDR() const {
     return ZERO;
 
   xme2 *= bornPDF;
+
+  // take care of mismatch between z and x as we are approaching the
+  // hard phase space boundary
+  // TODO get rid of this useless scale option business and simplify PDF handling in here
+  if ( dipole()->bornEmitter() < 2 && theCorrectForXZMismatch ) {
+    Energy2 emissionScale = ZERO;
+    if ( emissionScaleInSubtraction() == showerScale ) {
+      emissionScale = showerFactorizationScale();
+    } else if ( emissionScaleInSubtraction() == realScale ) {
+      emissionScale = dipole()->realEmissionME()->lastScale();
+    } else if ( emissionScaleInSubtraction() == bornScale ) {
+      emissionScale = dipole()->underlyingBornME()->lastScale();
+    }
+    double xzMismatch = 
+      dipole()->subtractionParameters()[0] / dipole()->showerParameters()[0];
+    double realCorrectedPDF = 
+      dipole()->bornEmitter() == 0 ?
+      dipole()->realEmissionME()->pdf1(emissionScale,theExtrapolationX,
+				       xzMismatch) :
+      dipole()->realEmissionME()->pdf2(emissionScale,theExtrapolationX,
+				       xzMismatch);
+    double realPDF = 
+      dipole()->bornEmitter() == 0 ?
+      dipole()->realEmissionME()->pdf1(emissionScale,theExtrapolationX,1.0) :
+      dipole()->realEmissionME()->pdf2(emissionScale,theExtrapolationX,1.0);
+    if ( realPDF == 0.0 || realCorrectedPDF == 0.0 )
+      return ZERO;
+    xme2 *= realCorrectedPDF / realPDF;
+  }
 
   Energy qtilde = sqrt(vars.first);
   double z = vars.second;
@@ -405,11 +435,13 @@ void QTildeMatching::doinitrun() {
 
 
 void QTildeMatching::persistentOutput(PersistentOStream & os) const {
-  os << theQTildeFinder << theQTildeSudakov << theShowerHandler;
+  os << theQTildeFinder << theQTildeSudakov
+     << theShowerHandler << theCorrectForXZMismatch;
 }
 
 void QTildeMatching::persistentInput(PersistentIStream & is, int) {
-  is >> theQTildeFinder >> theQTildeSudakov >> theShowerHandler;
+  is >> theQTildeFinder >> theQTildeSudakov
+     >> theShowerHandler >> theCorrectForXZMismatch;
 }
 
 
@@ -440,6 +472,21 @@ void QTildeMatching::Init() {
     ("ShowerHandler",
      "",
      &QTildeMatching::theShowerHandler, false, false, true, true, false);
+
+  static Switch<QTildeMatching,bool> interfaceCorrectForXZMismatch
+    ("CorrectForXZMismatch",
+     "Correct for x/z mismatch near hard phase space boundary.",
+     &QTildeMatching::theCorrectForXZMismatch, false, false, false);
+  static SwitchOption interfaceCorrectForXZMismatchYes
+    (interfaceCorrectForXZMismatch,
+     "Yes",
+     "Include the correction factor.",
+     true);
+  static SwitchOption interfaceCorrectForXZMismatchNo
+    (interfaceCorrectForXZMismatch,
+     "No",
+     "Do not include the correction factor.",
+     false);
 
 }
 

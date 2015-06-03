@@ -1,3 +1,5 @@
+# -*- ThePEG-repository -*-
+
 # adjust the diagram generator to VBF topologies
 
 cd /Herwig/MatrixElements/Matchbox/Utility
@@ -7,7 +9,7 @@ insert DiagramGenerator:RestrictLines 0 /Herwig/Particles/W-
 insert DiagramGenerator:RestrictLines 0 /Herwig/Particles/Z0
 insert DiagramGenerator:RestrictLines 0 /Herwig/Particles/gamma
 
-do DiagramGenerator:SpaceLikeRange 1 
+do DiagramGenerator:SpaceLikeRange 1 100
 
 do DiagramGenerator:ClearRestrictLines
 

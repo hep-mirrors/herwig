@@ -1,3 +1,5 @@
+# -*- ThePEG-repository -*-
+
 cd /Herwig/Cuts
 
 set Cuts:JetFinder JetFinder

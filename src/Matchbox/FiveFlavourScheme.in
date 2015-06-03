@@ -1,3 +1,5 @@
+# -*- ThePEG-repository -*-
+
 cd /Herwig/MatrixElements/Matchbox
 
 do Factory:StartParticleGroup p

@@ -1,6 +1,9 @@
+# -*- ThePEG-repository -*-
+
 cd /Herwig/EventHandlers
 
 set EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
+set /Herwig/DipoleShower/DipoleShowerHandler:MaxPtIsMuF Yes
 
 set /Herwig/DipoleShower/Kinematics/IFLightKinematics:CollinearScheme On
 set /Herwig/DipoleShower/Kinematics/IILightKinematics:CollinearScheme On
@@ -15,3 +18,10 @@ cd /Herwig/Analysis
 
 @CREATE_RIVET@ ThePEG::RivetAnalysis Rivet RivetAnalysis.so
 @CREATE_HEPMC@ ThePEG::HepMCFile HepMC HepMCAnalysis.so
+
+cd /Herwig/Particles
+
+do c:UnsetHardProcessMass
+do cbar:UnsetHardProcessMass
+set c:NominalMass 0*GeV
+set cbar:NominalMass 0*GeV

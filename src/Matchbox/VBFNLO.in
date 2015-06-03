@@ -1,3 +1,5 @@
+# -*- ThePEG-repository -*-
+
 cd /Herwig/MatrixElements/Matchbox
 clear Factory:Amplitudes
 insert Factory:Amplitudes 0 /Herwig/MatrixElements/Matchbox/Amplitudes/VBFNLO

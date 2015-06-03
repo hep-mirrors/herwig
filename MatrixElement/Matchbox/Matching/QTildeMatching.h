@@ -188,6 +188,12 @@ private:
    */
   Ptr<QTildeSudakov>::ptr theQTildeSudakov;
 
+  /**
+   * True, if PDF weight should be corrected for z/x mismatch at the
+   * hard phase space boundary
+   */
+  bool theCorrectForXZMismatch;
+
 };
 
 }

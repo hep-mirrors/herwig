@@ -1,6 +1,9 @@
+# -*- ThePEG-repository -*-
+
 cd /Herwig/Cuts
 
 create ThePEG::Cuts Cuts
+set Cuts:Fuzzy FuzzyTheta
 set MatchboxJetMatcher:Factory /Herwig/MatrixElements/Matchbox/Factory
 
 cd /Herwig/MatrixElements/Matchbox
@@ -37,6 +40,8 @@ set EventGenerator:DebugLevel 1
 set EventGenerator:PrintEvent 10
 set EventGenerator:MaxErrors 10000
 set EventGenerator:NumberOfEvents 100000000
+
+insert EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/Basics
 
 cd /Herwig/Particles
 

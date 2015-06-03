@@ -1,3 +1,5 @@
+# -*- ThePEG-repository -*-
+
 read Matchbox/LO.in
 
 set /Herwig/Shower/Evolver:HardVetoScaleSource Read
