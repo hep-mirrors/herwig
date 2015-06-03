@@ -36,7 +36,7 @@ void InvariantMassCut::describe() const {
     << theSecondMatcher->name() << "':\n"
     << "M = " << theMinMass/GeV << " .. " << theMaxMass/GeV << " GeV\n"
     << "same flavour only = " << (theSameFlavourOnly?"true":"false") << " \n"
-    << "opposite sign only = " << (theOppositeSignOnly?"true":"false") << " \n";
+    << "opposite sign only = " << (theOppositeSignOnly?"true":"false") << " \n\n";
 }
 
 IBPtr InvariantMassCut::clone() const {

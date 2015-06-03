@@ -95,9 +95,7 @@ void MatchboxDeltaRCut::describe() const {
     << "DeltaPhiMin = " << theDeltaPhiMin << " \n"
     << "DeltaPhiMax = " << theDeltaPhiMax << " \n"
     << "DeltaYMin = " << theDeltaYMin << " \n"
-    << "DeltaYMax = " << theDeltaYMax << " \n"
-    << "FirstMatcher = " << theFirstMatcher << " \n"
-    << "SecondMatcher = " << theSecondMatcher << " \n\n";
+    << "DeltaYMax = " << theDeltaYMax << " \n\n"
 
 }
 
