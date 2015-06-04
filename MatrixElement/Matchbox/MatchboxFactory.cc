@@ -120,6 +120,32 @@ makeMEs(const vector<string>& proc, unsigned int orderas, bool virt) {
   map<Process,set<Ptr<MatchboxAmplitude>::ptr> > procAmps;
   set<PDVector> processes = makeSubProcesses(proc);
 
+  // TODO Fix me for 3.0.x
+  // At the moment we got troubles with processes with no coloured
+  // legs so they will not be supported
+  set<PDVector> colouredProcesses;
+  for ( set<PDVector>::const_iterator pr = processes.begin();
+	pr != processes.end(); ++pr ) {
+    for ( PDVector::const_iterator pp = pr->begin();
+	  pp != pr->end(); ++pp ) {
+      if ( (**pp).coloured() ) {
+	colouredProcesses.insert(*pr);
+	break;
+      }
+    }
+  }
+  if ( colouredProcesses.size() != processes.size() ) {
+    generator()->log()
+      << "Some or all of the generated subprocesses do not contain coloured legs.\n"
+      << "Processes of this kind are currently not supported.\n" << flush;
+  }
+  if ( colouredProcesses.empty() ) {
+    throw InitException() << "No processes with coloured legs have been found. "
+			  << "This run will be aborted.";
+  }
+  processes = colouredProcesses;
+  // end unsupported processes
+
   vector<Ptr<MatchboxAmplitude>::ptr> matchAmplitudes;
 
   unsigned int lowestAsOrder =
