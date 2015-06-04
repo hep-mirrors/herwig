@@ -32,6 +32,7 @@ def fillprocs(model,oras,orew):
   bornlist=[]
   virtlist=[]
   fileproc=open("proc.dat","w")
+  fileproc.write("set fortran_compiler @FC@\n")
   fileproc.write("import model "+model+"\n")
   borns="BornAmplitudes.dat"
   virts="VirtAmplitudes.dat"
