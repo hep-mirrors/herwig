@@ -1402,4 +1402,28 @@ void GeneralTwoBodyDecayer::getColourLines(vector<ColinePtr> & newline,
       newline[1]->addAntiColoured(branchingPart[oct[1]]);
     }
   }
+  // finally sort out the emitted particles
+  for(set<HardBranchingPtr>::const_iterator cit=hardtree->branchings().begin();
+      cit!=hardtree->branchings().end();++cit) {
+    if((**cit).children().empty()) continue;
+    tPPtr emitter = (**cit).children()[0]->branchingParticle();
+    tPPtr gauge   = (**cit).children()[1]->branchingParticle();
+    if(emitter->id()!=(**cit).branchingParticle()->id()) swap(emitter,gauge);
+    if((**cit).type()==ShowerPartnerType::QCDColourLine) {
+      (**cit).branchingParticle()->colourLine()->addColoured(gauge);
+      ColinePtr newline(new_ptr(ColourLine()));
+      newline->    addColoured(emitter);
+      newline->addAntiColoured(gauge  );
+      if((**cit).branchingParticle()->antiColourLine())
+	(**cit).branchingParticle()->antiColourLine()->addAntiColoured(emitter);
+    }
+    else {
+      (**cit).branchingParticle()->antiColourLine()->addAntiColoured(gauge);
+      ColinePtr newline(new_ptr(ColourLine()));
+      newline->addAntiColoured(emitter);
+      newline->    addColoured(gauge  );
+      if((**cit).branchingParticle()->colourLine())
+	(**cit).branchingParticle()->colourLine()->addColoured(emitter);
+    }
+  }
 }
