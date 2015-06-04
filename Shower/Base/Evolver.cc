@@ -843,6 +843,7 @@ Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
   }
   // perform the shower of the final-state particle
   timeLikeShower(otherChild,type,true);
+  updateHistory(otherChild);
   if(theChildren[1]->spinInfo()) theChildren[1]->spinInfo()->develop();
   // return the emitted
   if(particle->spinInfo()) particle->spinInfo()->develop();
@@ -950,6 +951,7 @@ bool Evolver::spaceLikeDecayShower(tShowerParticlePtr particle,
   spaceLikeDecayShower(theChildren[0],maxScales,minmass,type);
   // shower the second particle
   timeLikeShower(theChildren[1],type,true);
+  updateHistory(theChildren[1]);
   // branching has happened
   return true;
 }
@@ -1860,6 +1862,7 @@ bool Evolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr beam,
     else {
       truncatedTimeLikeShower( otherChild, timelike , type);
     }
+    updateHistory(otherChild);
     // return the emitted
     return true;
   }
@@ -1900,6 +1903,7 @@ bool Evolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr beam,
     updateChildren( newParent, theChildren, bb.type);
   // perform the shower of the final-state particle
   timeLikeShower( otherChild , type,true);
+  updateHistory(otherChild);
   // return the emitted
   return true;
 }
@@ -2019,6 +2023,7 @@ truncatedSpaceLikeDecayShower(tShowerParticlePtr particle,
      else {
 	truncatedTimeLikeShower( theChildren[1],branch->children()[1] ,type);
      }
+     updateHistory(theChildren[1]);
    }
    else {
      // update the history if needed
@@ -2039,6 +2044,7 @@ truncatedSpaceLikeDecayShower(tShowerParticlePtr particle,
      else {
 	truncatedTimeLikeShower( theChildren[0],branch->children()[0] ,type);
      }
+     updateHistory(theChildren[0]);
    }
    return true;
  }
@@ -2064,6 +2070,7 @@ truncatedSpaceLikeDecayShower(tShowerParticlePtr particle,
   truncatedSpaceLikeDecayShower(theChildren[0],maxScales,minmass,branch,type);
   // shower the second particle
   timeLikeShower(theChildren[1],type,true);
+  updateHistory(theChildren[1]);
   // branching has happened
   return true;
 }
@@ -2767,6 +2774,14 @@ void Evolver:: convertHardTree(bool hard,ShowerInteraction::Type type) {
     // check whether or not particle emits
     bool emission = mit->second->parent();
     if(emission) {
+      if(newParticle->colourLine()) {
+	ColinePtr ctemp = newParticle->    colourLine();
+	ctemp->removeColoured(newParticle);
+      }
+      if(newParticle->antiColourLine()) {
+	ColinePtr ctemp = newParticle->antiColourLine();
+	ctemp->removeAntiColoured(newParticle);
+      }
       newParticle = mit->second->parent()->branchingParticle();
     }
     // remove colour lines from old particle
@@ -2867,6 +2882,14 @@ void Evolver:: convertHardTree(bool hard,ShowerInteraction::Type type) {
     // check whether or not particle emits
     bool emission = !mit->second->children().empty();
     if(emission) {
+      if(newParticle->colourLine()) {
+	ColinePtr ctemp = newParticle->    colourLine();
+	ctemp->removeColoured(newParticle);
+      }
+      if(newParticle->antiColourLine()) {
+	ColinePtr ctemp = newParticle->antiColourLine();
+	ctemp->removeAntiColoured(newParticle);
+      }
       newParticle = mit->second->children()[0]->branchingParticle();
       newOut      = mit->second->children()[1]->branchingParticle();
       if(newParticle->id()!=oldParticle->id()&&newParticle->id()==newOut->id())
