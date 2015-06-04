@@ -957,6 +957,7 @@ HardTreePtr MEPP2Higgs::generateHardest(ShowerTreePtr tree,
     newparticles[1] = new_ptr(ShowerParticle(partons_[1]      ,false));
     iemit = 0;
   }
+  unsigned int ispect = iemit==0 ? 1 : 0;
   // create the jet
   newparticles[3] = new_ptr(ShowerParticle(out_             , true));
   // create the boson
@@ -973,19 +974,46 @@ HardTreePtr MEPP2Higgs::generateHardest(ShowerTreePtr tree,
 					   HardBranchingPtr(),HardBranching::Incoming)));
   inBranch.push_back(new_ptr(HardBranching(newparticles[1],SudakovPtr(),
 					   HardBranchingPtr(),HardBranching::Incoming)));
-  // create the branching for the emitted jet
-  inBranch[iemit]->addChild(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
-						  inBranch[iemit],HardBranching::Outgoing)));
   // intermediate IS particle
   hardBranch.push_back(new_ptr(HardBranching(newparticles[4],SudakovPtr(),
 					     inBranch[iemit],HardBranching::Incoming)));
   inBranch[iemit]->addChild(hardBranch.back());
+  // create the branching for the emitted jet
+  inBranch[iemit]->addChild(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
+						  inBranch[iemit],HardBranching::Outgoing)));
+  ColinePtr cline1 = new_ptr(ColourLine());
+  ColinePtr cline2 = new_ptr(ColourLine());
+  ColinePtr cline3 = new_ptr(ColourLine());
   if(newparticles[3]->id()<0||
      (newparticles[3]->id()==ParticleID::g&&UseRandom::rndbool())) {
     inBranch[iemit]->type(ShowerPartnerType::QCDColourLine);
+    generator()->log() << "Higgs colour A1\n";
+    cline1->addAntiColoured(newparticles[3]);
+    cline1->addColoured    (newparticles[4]);
+    cline1->addAntiColoured(newparticles[ispect]);
+    cline2->addColoured    (newparticles[ispect]);
+    cline2->addAntiColoured(newparticles[4]);
+    cline2->addAntiColoured(newparticles[iemit]);
+    if(newparticles[3]->id()==ParticleID::g) {
+      generator()->log() << "Higgs colour A2\n";
+      cline3->addColoured(newparticles[iemit]);
+      cline3->addColoured(newparticles[3]);
+    }
   }
   else {
     inBranch[iemit]->type(ShowerPartnerType::QCDAntiColourLine);
+    generator()->log() << "Higgs colour B1\n";
+    cline1->addColoured    (newparticles[3]);
+    cline1->addAntiColoured(newparticles[4]);
+    cline1->addColoured    (newparticles[ispect]);
+    cline2->addAntiColoured(newparticles[ispect]);
+    cline2->addColoured    (newparticles[4]);
+    cline2->addColoured    (newparticles[iemit]);
+    if(newparticles[3]->id()==ParticleID::g) {
+      generator()->log() << "Higgs colour B2\n";
+      cline3->addAntiColoured(newparticles[iemit]);
+      cline3->addAntiColoured(newparticles[3]);
+    }
   }
   // set the colour partners
   hardBranch.back()->colourPartner(inBranch[iemit==0 ? 1 : 0]);
@@ -1022,22 +1050,6 @@ HardTreePtr MEPP2Higgs::generateHardest(ShowerTreePtr tree,
  	  parent=parent->parent();
  	};
       }
-    }
-  }
-  ColinePtr cline1 = new_ptr(ColourLine());
-  ColinePtr cline2 = new_ptr(ColourLine());
-  unsigned int ng(0);
-  for(set<HardBranchingPtr>::const_iterator cit=hardtree->branchings().begin();
-      cit!=hardtree->branchings().end();++cit) {
-    if((**cit).branchingParticle()->dataPtr()->iColour()!=PDT::Colour8) continue;
-    if(ng==0) {
-      cline1->addColoured    ((**cit).branchingParticle());
-      cline2->addAntiColoured((**cit).branchingParticle());
-      ++ng;
-    }
-    else {
-      cline2->addColoured    ((**cit).branchingParticle());
-      cline1->addAntiColoured((**cit).branchingParticle());
     }
   }
   // return the answer
