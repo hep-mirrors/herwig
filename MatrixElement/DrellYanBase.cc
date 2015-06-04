@@ -709,10 +709,15 @@ HardTreePtr DrellYanBase::generateHardest(ShowerTreePtr tree,
   // create the partons
   int iemit;
   // q qbar -> g V
+  ColinePtr newline[2]={new_ptr(ColourLine()),new_ptr(ColourLine())};
   if(emission_type==0) {
     newparticles.push_back(new_ptr(ShowerParticle(_partons[0]      ,false)));
     newparticles.push_back(new_ptr(ShowerParticle(_partons[1]      ,false)));
     newparticles.push_back(new_ptr(ShowerParticle(gluon            , true)));
+    newline[1]->addColoured(newparticles[0]);
+    newline[1]->addColoured(newparticles[2]);
+    newline[0]->addAntiColoured(newparticles[1]);
+    newline[0]->addAntiColoured(newparticles[2]);
     iemit = (pnew[0]-pnew[2]).m2()>(pnew[1]-pnew[2]).m2() ? 0 : 1;
   }
   // q g    -> q V
@@ -721,6 +726,10 @@ HardTreePtr DrellYanBase::generateHardest(ShowerTreePtr tree,
     newparticles.push_back(new_ptr(ShowerParticle(_partons[0]      ,false)));
     newparticles.push_back(new_ptr(ShowerParticle(gluon            ,false)));
     newparticles.push_back(new_ptr(ShowerParticle(_partons[1]->CC(), true)));
+    newline[1]->addColoured(newparticles[0]);
+    newline[1]->addAntiColoured(newparticles[1]);
+    newline[0]->addColoured(newparticles[1]);
+    newline[0]->addColoured(newparticles[2]);
   }
   // g qbar -> qbar V
   else {
@@ -728,6 +737,10 @@ HardTreePtr DrellYanBase::generateHardest(ShowerTreePtr tree,
     newparticles.push_back(new_ptr(ShowerParticle(gluon            ,false)));
     newparticles.push_back(new_ptr(ShowerParticle(_partons[1]      ,false)));
     newparticles.push_back(new_ptr(ShowerParticle(_partons[0]->CC(), true)));
+    newline[0]->addAntiColoured(newparticles[1]);
+    newline[0]->addColoured(newparticles[0]);
+    newline[1]->addAntiColoured(newparticles[0]);
+    newline[1]->addAntiColoured(newparticles[2]);
   }
   // set the momenta
   for(unsigned int ix=0;ix<3;++ix) newparticles[ix]->set5Momentum(pnew[ix]);
@@ -736,6 +749,12 @@ HardTreePtr DrellYanBase::generateHardest(ShowerTreePtr tree,
   poff.rescaleMass();
   newparticles.push_back(new_ptr(ShowerParticle(_partons[iemit],false)));
   newparticles.back()->set5Momentum(poff);
+  if(iemit==0) {
+    newline[0]->addColoured(newparticles.back());
+  }
+  else {
+    newline[1]->addAntiColoured(newparticles.back());
+  }
   // compute the boost for the bosons
   LorentzRotation boost(pboson.findBoostToCM());
   boost.boost(pnew[3].boostVector());
@@ -749,9 +768,9 @@ HardTreePtr DrellYanBase::generateHardest(ShowerTreePtr tree,
   vector<HardBranchingPtr> inBranch,hardBranch;
   // create the branchings for the incoming particles
   inBranch.push_back(new_ptr(HardBranching(newparticles[0],SudakovPtr(),
-					  HardBranchingPtr(),HardBranching::Incoming)));
+					   HardBranchingPtr(),HardBranching::Incoming)));
   inBranch.push_back(new_ptr(HardBranching(newparticles[1],SudakovPtr(),
-					  HardBranchingPtr(),HardBranching::Incoming)));
+					   HardBranchingPtr(),HardBranching::Incoming)));
   // intermediate IS particle
   hardBranch.push_back(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
 					    inBranch[iemit],HardBranching::Incoming)));
@@ -797,14 +816,6 @@ HardTreePtr DrellYanBase::generateHardest(ShowerTreePtr tree,
 	};
       }
     }
-  }
-  ColinePtr newline=new_ptr(ColourLine());
-  for(set<HardBranchingPtr>::const_iterator cit=hardtree->branchings().begin();
-      cit!=hardtree->branchings().end();++cit) {
-    if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3)
-      newline->addColoured((**cit).branchingParticle());
-    else if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3bar)
-      newline->addAntiColoured((**cit).branchingParticle());
   }
   // return the tree
   return hardtree;

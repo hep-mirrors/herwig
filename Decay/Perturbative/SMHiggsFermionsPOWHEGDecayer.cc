@@ -168,6 +168,17 @@ generateHardest(ShowerTreePtr tree) {
     else if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3bar)
       newline->addAntiColoured((**cit).branchingParticle());
   }
+  ColinePtr newLine2=new_ptr(ColourLine());
+  if(emitterBranch->branchingParticle()->dataPtr()->iColour()==PDT::Colour3) {
+    emitterBranch->branchingParticle()->colourLine()->addColoured(gauge);
+    newLine2->addColoured(emitter);
+    newLine2->addAntiColoured(gauge);
+  }
+  else {
+    emitterBranch->branchingParticle()->antiColourLine()->addAntiColoured(gauge);
+    newLine2->addAntiColoured(emitter);
+    newLine2->addColoured(gauge);
+  }
   // return the tree
   return hardtree;
 }

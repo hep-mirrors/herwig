@@ -990,14 +990,11 @@ HardTreePtr DISBase::generateHardest(ShowerTreePtr tree,
       allBranchings.push_back(offBranch);
       allBranchings.push_back(outBranch);
       ColinePtr newin(new_ptr(ColourLine())),newout(new_ptr(ColourLine()));
-      newin->addColoured(newqin,partons_[0]->id()<0);
-      newin->addColoured(newg  ,partons_[0]->id()<0);
+      newin ->addColoured(newqin  ,partons_[0]->id()<0);
+      newin ->addColoured(newg    ,partons_[0]->id()<0);
       newout->addColoured(newspace,partons_[0]->id()<0);
-      newout->addColoured(newqout,partons_[1]->id()<0);
-      newout->addColoured(newg  ,partons_[1]->id()>0);
-      ColinePtr newline(new_ptr(ColourLine())); 
-      newline->addColoured(newspace,newspace->dataPtr()->iColour()!=PDT::Colour3); 
-      newline->addColoured(newqout ,newspace->dataPtr()->iColour()!=PDT::Colour3); 
+      newout->addColoured(newqout ,partons_[1]->id()<0);
+      newout->addColoured(newg    ,partons_[1]->id()>0);
     }
     else {
       ShowerParticlePtr newtime(new_ptr(ShowerParticle(partons_[1],true)));
@@ -1019,9 +1016,12 @@ HardTreePtr DISBase::generateHardest(ShowerTreePtr tree,
       spaceBranchings.push_back(spaceBranch);
       allBranchings.push_back(spaceBranch);
       allBranchings.push_back(offBranch);	 
-      ColinePtr newline(new_ptr(ColourLine())); 
-      newline->addColoured(newqin ,newqin->dataPtr()->iColour()!=PDT::Colour3); 
-      newline->addColoured(newtime,newqin->dataPtr()->iColour()!=PDT::Colour3); 
+      ColinePtr newin(new_ptr(ColourLine())),newout(new_ptr(ColourLine()));
+      newin ->addColoured(newqin ,newqin->dataPtr()->iColour()!=PDT::Colour3);
+      newin ->addColoured(newtime,newqin->dataPtr()->iColour()!=PDT::Colour3);
+      newin ->addColoured(newg   ,newqin->dataPtr()->iColour()!=PDT::Colour3);
+      newout->addColoured(newg   ,newqin->dataPtr()->iColour()==PDT::Colour3);
+      newout->addColoured(newqout,newqin->dataPtr()->iColour()!=PDT::Colour3);
     }
   }
   // BGF hardest
@@ -1054,9 +1054,12 @@ HardTreePtr DISBase::generateHardest(ShowerTreePtr tree,
     spaceBranchings.push_back(spaceBranch);
     allBranchings.push_back(offBranch);
     allBranchings.push_back(outBranch); 	
-    ColinePtr newline(new_ptr(ColourLine())); 
-    newline->addColoured(newspace,newspace->dataPtr()->iColour()!=PDT::Colour3); 
-    newline->addColoured(newq    ,newspace->dataPtr()->iColour()!=PDT::Colour3); 
+    ColinePtr newin(new_ptr(ColourLine())),newout(new_ptr(ColourLine()));
+    newout->addColoured(newspace,newspace->dataPtr()->iColour()!=PDT::Colour3);
+    newout->addColoured(newq    ,newspace->dataPtr()->iColour()!=PDT::Colour3);
+    newout->addColoured(newg    ,newspace->dataPtr()->iColour()!=PDT::Colour3);
+    newin ->addColoured(newg    ,newspace->dataPtr()->iColour()==PDT::Colour3);
+    newin ->addColoured(newqbar ,newspace->dataPtr()->iColour()==PDT::Colour3);
   }
   HardTreePtr newTree(new_ptr(HardTree(allBranchings,spaceBranchings,
 				       ShowerInteraction::QCD)));

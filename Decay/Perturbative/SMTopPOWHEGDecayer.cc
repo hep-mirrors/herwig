@@ -168,6 +168,17 @@ HardTreePtr SMTopPOWHEGDecayer::generateHardest(ShowerTreePtr tree) {
       newline->addAntiColoured((**cit).branchingParticle());
   }
 
+  ColinePtr newLine2=new_ptr(ColourLine());
+  if(emitter->dataPtr()->iColour()==PDT::Colour3) {
+    allBranchings[1]->branchingParticle()->colourLine()->addColoured(gauge);
+    newLine2->addColoured(emitter);
+    newLine2->addAntiColoured(gauge);
+  }
+  else {
+    allBranchings[1]->branchingParticle()->antiColourLine()->addAntiColoured(gauge);
+    newLine2->addAntiColoured(emitter);
+    newLine2->addColoured(gauge);
+  }
   //return the tree
   return hardtree;
 }
