@@ -226,14 +226,10 @@ public:
    */
   double gammaSoft2(double muQ2) const;
 
-  double Ja_gQplusmod(double muQ2) const;
-
-  double gammaSoft2mod(double muQ2) const;
-
   /**
    * The Kscript^{qq}_q contribution
    */
-  double Kscriptqq_q(Energy2 sja, Energy2 mj2, bool) const;
+  double Kscriptqq_q(Energy2 sja, Energy2 mj2) const;
 
   /**
    * The Kscript^{qg}_q contribution
@@ -248,12 +244,12 @@ public:
   /**
    * The Kscript^{gg}_q contribution
    */
-  double Kscriptgg_q(Energy2 sja, Energy2 mj2, bool) const;
+  double Kscriptgg_q(Energy2 sja, Energy2 mj2) const;
 
   /**
    * The Kscriptbar^{qq}_q contribution (B.17)
    */
-  double Kscriptbarqq_q(Energy2 Qja2, Energy2 mj2, bool) const;
+  double Kscriptbarqq_q(Energy2 Qja2, Energy2 mj2) const;
 
   /**
    * The Kscriptbar^{qg}_q contribution (B.17)
@@ -268,7 +264,7 @@ public:
   /**
    * The Kscriptbar^{gg}_q contribution (B.17)
    */
-  double Kscriptbargg_q(Energy2 Qja2, Energy2 mj2, bool) const;
+  double Kscriptbargg_q(Energy2 Qja2, Energy2 mj2) const;
 
   ////////////////////////////
 
@@ -288,12 +284,10 @@ public:
    */
   double Ja_QQzplus(double muQ2, int F, double zplus) const;
 
-  double Ja_QQzplusmod(double muQ2, int F, double zplus) const;
-
   /**
    * The Kscript^{qq}_g contribution
    */
-  double Kscriptqq_g(Energy2 sja, bool) const;
+  double Kscriptqq_g(Energy2 sja) const;
 
   /**
    * The Kscript^{qg}_g contribution
@@ -309,12 +303,12 @@ public:
    * The Kscript^{gg}_g contribution
    * equals the Kscript^{qq}_g contribution
    */
-  double Kscriptgg_g(Energy2 sja, bool) const;
+  double Kscriptgg_g(Energy2 sja) const;
 
   /**
    * The Kscriptbar^{qq}_g contribution (B.18)
    */
-  double Kscriptbarqq_g(Energy2 Qja2, bool) const;
+  double Kscriptbarqq_g(Energy2 Qja2) const;
 
   /**
    * The Kscriptbar^{qg}_g contribution (B.18)
@@ -329,7 +323,7 @@ public:
   /**
    * The Kscriptbar^{gg}_g contribution (B.18)
    */
-  double Kscriptbargg_g(Energy2 Qja2, bool) const;
+  double Kscriptbargg_g(Energy2 Qja2) const;
 
   //////////////////////////////////////
 
