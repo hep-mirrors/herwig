@@ -41,6 +41,8 @@
 #    A list of symbols that should be treated as identically         #
 #    zero throughout the whole calculation. All of these             #
 #    symbols must be defined by the model file.                      #
+#    If you do not use built-in models, you probably                 #
+#    need to overwrite the default value.                            #
 #                                                                    #
 #    Examples:                                                       #
 #    1) # Light masses are set to zero here:                         #
@@ -55,6 +57,7 @@
 #    See also: model, one                                            #
 #                                                                    #
 ######################################################################
+# zero=mU,mD,mS,mC,mB,me,mmu
 # zero=
 
 ### one (comma separated list) #######################################
@@ -552,6 +555,24 @@ PSP_chk_kfactor=10000
 ######################################################################
 # PSP_chk_li4=19
 
+### PSP_chk_method (text) ############################################
+#    This option can be used to overwrite the automatic phase-space point
+#    test method enabled with PSP_check=True.                        #
+#    Except in some BSM scenarios, the user does not need to change this.
+#                                                                    #
+#    Possible options:                                               #
+#    Automatic    - chooses automatically a suitable phase-space point test
+#                   method (default).                                #
+#    PoleRotation - check first the pole and then rotate if necessary.
+#    Rotation     - force a rotation check on every phase space point.
+#    LoopInduced  - check that the pole part is zero and rotate if necessary.
+#                   Needed e.g. for interferience between BSM Born and
+#                   SM loop-induced virtual.                         #
+#                                                                    #
+######################################################################
+# PSP_chk_method=Automatic
+
+
 ### reference-vectors (comma separated list) #########################
 #    A list of reference vectors for massive and higher spin particles.
 #    For vectors which are not assigned here, the program picks a    #
@@ -643,6 +664,16 @@ PSP_chk_kfactor=10000
 ######################################################################
 # form.tempdir=
 form.tempdir=@FORMTEMPDIR@
+
+### form.workspace (integer number) ##################################
+#    Size of the heap (in megabytes) used by FORM.                   #
+#                                                                    #
+#    Example (for machines with <= 2GB RAM):                         #
+#    form.workspace=100                                              #
+#    set WorkSpace to 100M in FORM via form.set file.                #
+#                                                                    #
+######################################################################
+# form.workspace=1000
 
 ### haggies.bin (text) ###############################################
 #    Points to the Haggies executable.                               #
