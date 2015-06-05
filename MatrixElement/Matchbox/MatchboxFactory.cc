@@ -140,11 +140,33 @@ makeMEs(const vector<string>& proc, unsigned int orderas, bool virt) {
       << "Processes of this kind are currently not supported.\n" << flush;
   }
   if ( colouredProcesses.empty() ) {
-    throw InitException() << "No processes with coloured legs have been found. "
+    throw InitException() << "MatchboxFactory::makeMEs(): No processes with coloured legs have been found. "
 			  << "This run will be aborted.";
   }
   processes = colouredProcesses;
   // end unsupported processes
+
+  // detect external particles with non-zero width for the hard process
+  bool trouble = false;
+  string troubleMaker;
+  for ( set<PDVector>::const_iterator pr = processes.begin();
+	pr != processes.end(); ++pr ) {
+    for ( PDVector::const_iterator pp = pr->begin();
+	  pp != pr->end(); ++pp ) {
+      if ( (**pp).hardProcessWidth() != ZERO ) {
+	trouble = true;
+	troubleMaker = (**pp).PDGName();
+	break;
+      }
+    }
+  }
+  if ( trouble ) {
+    throw InitException()
+      << "MatchboxFactory::makeMEs(): Particle '"
+      << troubleMaker << "' appears as external\nprocess leg with non-zero "
+      << "width to be used in the hard process calculation.\n"
+      << "Please check your setup and consider setting HardProcessWidth to zero.";
+  }
 
   vector<Ptr<MatchboxAmplitude>::ptr> matchAmplitudes;
 
