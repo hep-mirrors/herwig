@@ -33,6 +33,9 @@
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 #include "Herwig++/MatrixElement/HardVertex.h"
 
+#include <boost/foreach.hpp>
+#include <cctype>
+
 #include <iterator>
 using std::ostream_iterator;
 
@@ -1453,7 +1456,20 @@ void MatchboxMEBase::prepareXComb(MatchboxXCombData& xc) const {
   xc.olpId(olpProcess());
 
   if ( initVerbose() ) {
-    string fname = name() + ".diagrams";
+    ostringstream fname_strm;
+    // only allow alphanumeric, / and _ in filename
+    BOOST_FOREACH (const char c, name()) {
+        switch (c) {
+          case '+' : fname_strm << "+"; break;
+          case '-' : fname_strm << "-"; break;
+          case '~' : fname_strm << "_tilde"; break;
+          case ']' : break;
+          case ',' : fname_strm << "__"; break;
+          default  : fname_strm << (isalnum(c) ? c : '_'); break;
+        }
+    }
+    fname_strm << ".diagrams";
+    const string fname = fname_strm.str();
     ifstream test(fname.c_str());
     if ( !test ) {
       test.close();
