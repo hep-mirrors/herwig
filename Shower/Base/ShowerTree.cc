@@ -1190,12 +1190,7 @@ void ShowerTree::transform(const LorentzRotation & boost, bool applyNow) {
     }
   }
   else {
-    Lorentz5Momentum ptemp1 = _incomingLines.begin()->first->progenitor()->momentum();
-    Lorentz5Momentum ptemp2 = ptemp1;
-    ptemp1 *= _transforms;
-    ptemp1 *= boost;
     _transforms.transform(boost);
-    ptemp2 *= _transforms;
   }
   // child trees
   for(map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> >::const_iterator
