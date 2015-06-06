@@ -1061,6 +1061,8 @@ HardTreePtr DISBase::generateHardest(ShowerTreePtr tree,
     newin ->addColoured(newg    ,newspace->dataPtr()->iColour()==PDT::Colour3);
     newin ->addColoured(newqbar ,newspace->dataPtr()->iColour()==PDT::Colour3);
   }
+  allBranchings[2]->colourPartner(allBranchings[3]);
+  allBranchings[3]->colourPartner(allBranchings[2]);
   HardTreePtr newTree(new_ptr(HardTree(allBranchings,spaceBranchings,
 				       ShowerInteraction::QCD)));
   // Set the maximum pt for all other emissions and connect hard and shower tree

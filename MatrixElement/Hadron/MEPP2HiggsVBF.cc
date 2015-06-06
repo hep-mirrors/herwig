@@ -511,6 +511,8 @@ HardTreePtr MEPP2HiggsVBF::generateHardest(ShowerTreePtr tree,
   allBranchings.push_back(new_ptr(HardBranching(higgs_,SudakovPtr(),
 						HardBranchingPtr(),
 						HardBranching::Outgoing)));
+  allBranchings[0]->colourPartner(allBranchings[1]);
+  allBranchings[1]->colourPartner(allBranchings[0]);
   rot_[system].invert();
   // compton hardest
   if(isCompton) {
@@ -544,9 +546,12 @@ HardTreePtr MEPP2HiggsVBF::generateHardest(ShowerTreePtr tree,
       spaceBranchings.push_back(spaceBranch);
       allBranchings.push_back(offBranch);
       allBranchings.push_back(outBranch);
-      ColinePtr newline(new_ptr(ColourLine()));
-      newline->addColoured(newspace,newspace->dataPtr()->iColour()!=PDT::Colour3);
-      newline->addColoured(newqout ,newspace->dataPtr()->iColour()!=PDT::Colour3);
+      ColinePtr newin(new_ptr(ColourLine())),newout(new_ptr(ColourLine()));
+      newin ->addColoured(newqin  ,newspace->dataPtr()->iColour()!=PDT::Colour3);
+      newin ->addColoured(newg    ,newspace->dataPtr()->iColour()!=PDT::Colour3);
+      newout->addColoured(newspace,newspace->dataPtr()->iColour()!=PDT::Colour3);
+      newout->addColoured(newqout ,newspace->dataPtr()->iColour()!=PDT::Colour3);
+      newout->addColoured(newg    ,newspace->dataPtr()->iColour()==PDT::Colour3);
     }
     else {
       ShowerParticlePtr newtime(new_ptr(ShowerParticle(partons_[system][1],true)));
@@ -569,9 +574,12 @@ HardTreePtr MEPP2HiggsVBF::generateHardest(ShowerTreePtr tree,
       allBranchings.push_back(spaceBranch);
       allBranchings.push_back(offBranch);
 
-      ColinePtr newline(new_ptr(ColourLine()));
-      newline->addColoured(newqin ,newqin->dataPtr()->iColour()!=PDT::Colour3);
-      newline->addColoured(newtime,newqin->dataPtr()->iColour()!=PDT::Colour3);
+      ColinePtr newin(new_ptr(ColourLine())),newout(new_ptr(ColourLine()));
+      newin ->addColoured(newqin  ,newqin->dataPtr()->iColour()!=PDT::Colour3);
+      newin ->addColoured(newtime ,newqin->dataPtr()->iColour()!=PDT::Colour3);
+      newin ->addColoured(newg    ,newqin->dataPtr()->iColour()!=PDT::Colour3);
+      newout->addColoured(newg    ,newqin->dataPtr()->iColour()==PDT::Colour3);
+      newout->addColoured(newqout ,newqin->dataPtr()->iColour()!=PDT::Colour3);
     }
   }
   // BGF hardest
@@ -604,10 +612,15 @@ HardTreePtr MEPP2HiggsVBF::generateHardest(ShowerTreePtr tree,
     allBranchings.push_back(offBranch);
     allBranchings.push_back(outBranch);
 
-    ColinePtr newline(new_ptr(ColourLine()));
-    newline->addColoured(newspace,newspace->dataPtr()->iColour()!=PDT::Colour3);
-    newline->addColoured(newq    ,newspace->dataPtr()->iColour()!=PDT::Colour3);
+    ColinePtr newin(new_ptr(ColourLine())),newout(new_ptr(ColourLine()));
+    newout->addColoured(newspace,newspace->dataPtr()->iColour()!=PDT::Colour3);
+    newout->addColoured(newq    ,newspace->dataPtr()->iColour()!=PDT::Colour3);
+    newout->addColoured(newg    ,newspace->dataPtr()->iColour()!=PDT::Colour3);
+    newin ->addColoured(newg    ,newspace->dataPtr()->iColour()==PDT::Colour3);
+    newin ->addColoured(newqbar ,newspace->dataPtr()->iColour()==PDT::Colour3);
   }
+  allBranchings[3]->colourPartner(allBranchings[4]);
+  allBranchings[4]->colourPartner(allBranchings[3]);
   HardTreePtr newTree(new_ptr(HardTree(allBranchings,spaceBranchings,
 				       ShowerInteraction::QCD)));
   // Set the maximum pt for all other emissions and connect hard and shower tree
