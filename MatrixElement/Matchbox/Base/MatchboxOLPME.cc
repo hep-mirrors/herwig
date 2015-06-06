@@ -148,7 +148,7 @@ double MatchboxOLPME::spinCorrelatedME2(pair<int,int> ij,
 void MatchboxOLPME::evalSpinCorrelator(pair<int,int>) const {
   throw Exception()
     << "MatchboxOLPME::spinCorrelatedME2() is not implemented.\n"
-    << "Please check your setup." << Exception::abortnow;
+    << "Please check your setup." << Exception::runerror;
 }
 
 double MatchboxOLPME::oneLoopDoublePole() const {
@@ -175,7 +175,7 @@ double MatchboxOLPME::oneLoopInterference() const {
 double MatchboxOLPME::largeNColourCorrelatedME2(pair<int,int>,
 						Ptr<ColourBasis>::tptr) const {
   throw Exception() << "MatchboxOLPME::largeNColourCorrelatedME2(): not supported"
-		    << Exception::abortnow;
+		    << Exception::runerror;
   return 0.;
 }
 
@@ -187,13 +187,13 @@ void MatchboxOLPME::doinit() {
     throw Exception() << "MatchboxOLPME::doinit(): "
     << "Amplitude '" << name() << "' "
     << "uses a running alpha_s but fixed renormalization scale!\n"
-    << Exception::abortnow;
+    << Exception::runerror;
   }
   if ( !theUseRunningAlphaS && theSetMuToMuR ) {
     throw Exception() << "MatchboxOLPME::doinit(): "
     << "Amplitude '" << name() << "' "
     << "uses a fixed alpha_s but running renormalization scale!\n"
-    << Exception::abortnow;
+    << Exception::runerror;
   }
   if ( !didStartOLP() ) {
     string contractFileName = 
@@ -206,7 +206,7 @@ void MatchboxOLPME::doinit() {
     if ( status != 1 ) {
       throw Exception() << "MatchboxOLPME::doinit(): "
 	<< "Failed to restart one loop provider for amplitude '"
-	<< name() << "'\n" << Exception::abortnow;
+	<< name() << "'\n" << Exception::runerror;
     }
   }
   MatchboxAmplitude::doinit();
@@ -217,13 +217,13 @@ void MatchboxOLPME::doinitrun() {
     throw Exception() << "MatchboxOLPME::doinitrun(): "
     << "Amplitude '" << name() << "' "
     << "uses a running alpha_s but fixed renormalization scale!\n"
-    << Exception::abortnow;
+    << Exception::runerror;
   }
   if ( !theUseRunningAlphaS && theSetMuToMuR ) {
     throw Exception() << "MatchboxOLPME::doinitrun(): "
     << "Amplitude '" << name() << "' "
     << "uses a fixed alpha_s but running renormalization scale!\n"
-    << Exception::abortnow;
+    << Exception::runerror;
   }
   if ( !didStartOLP() ) {
     string contractFileName = 
@@ -236,7 +236,7 @@ void MatchboxOLPME::doinitrun() {
     if ( status != 1 ) {
       throw Exception() << "MatchboxOLPME::doinitrun(): "
 	<< "Failed to restart one loop provider for amplitude '"
-	<< name() << "'\n" << Exception::abortnow;
+	<< name() << "'\n" << Exception::runerror;
     }
   }
   MatchboxAmplitude::doinitrun();

@@ -58,7 +58,7 @@ void ShowerApproximation::setLargeNBasis() {
   if ( !theLargeNBasis ) {
     if ( !dipole()->realEmissionME()->matchboxAmplitude()->colourBasis() )
       throw Exception() << "ShowerApproximation::setLargeNBasis(): Expecting a colour basis object."
-			<< Exception::abortnow;
+			<< Exception::runerror;
     theLargeNBasis = 
       dipole()->realEmissionME()->matchboxAmplitude()->colourBasis()->cloneMe();
     theLargeNBasis->clear();

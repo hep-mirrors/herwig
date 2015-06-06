@@ -127,7 +127,7 @@ double NLOJetAmplitudeq4::treeLevelCC(pair<int,int> ij,
 pair<double,Complex> NLOJetAmplitudeq4::treeLevelSCC(pair<int,int>,
 						     const vector<int>&) const {
   throw Exception() << name() << " does not provide spin-colour-correlated matrix elements"
-		    << Exception::abortnow;
+		    << Exception::runerror;
   return make_pair(0.,0.);
 }
 

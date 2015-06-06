@@ -172,9 +172,9 @@ MEBase::DiagramVector SubtractedME::dependentDiagrams(const cPDVector& proc,
     dynamic_ptr_cast<Ptr<SubtractionDipole>::tptr>(depME);
 
   if ( !dipole ) {
-    throw InitException() << "SubtractedME: A dependent matrix element of SubtractedME "
+    throw Exception() << "SubtractedME: A dependent matrix element of SubtractedME "
 			   << "has not been derived from SubtractionDipole. "
-			   << "Please check the corresponding input file.";
+			   << "Please check the corresponding input file." << Exception::runerror;
   }
 
   return dipole->underlyingBornDiagrams(proc);
@@ -201,17 +201,17 @@ void SubtractedME::getDipoles() {
     dynamic_ptr_cast<Ptr<MatchboxMEBase>::tptr>(head());
 
   if ( borns().empty() || !real )
-    throw InitException() << "SubtractedME: The SubtractedME '"
+    throw Exception() << "SubtractedME: The SubtractedME '"
 			   << name() << "' could not generate "
 			   << "subtraction terms for the real emission "
 			   << "matrix element '" << real->name() << "'. "
-			   << "Please check the corresponding input file.";
+			   << "Please check the corresponding input file." << Exception::runerror;
 
   Ptr<MatchboxMEBase>::ptr myRealEmissionME = real->cloneMe();
   ostringstream pname;
   pname << fullName() << "/" << myRealEmissionME->name();
   if ( ! (generator()->preinitRegister(myRealEmissionME,pname.str()) ) )
-    throw InitException() << "SubtractedME: Matrix element " << pname.str() << " already existing.";
+    throw Exception() << "SubtractedME: Matrix element " << pname.str() << " already existing." << Exception::runerror;
   myRealEmissionME->cloneDependencies(pname.str());
   head(myRealEmissionME);
   real = myRealEmissionME;
@@ -268,7 +268,7 @@ void SubtractedME::cloneRealME(const string& prefix) {
     ostringstream pname;
     pname << (prefix == "" ? fullName() : prefix) << "/" << myRealEmissionME->name();
     if ( ! (generator()->preinitRegister(myRealEmissionME,pname.str()) ) )
-      throw InitException() << "SubtractedME: Matrix element " << pname.str() << " already existing.";
+      throw Exception() << "SubtractedME: Matrix element " << pname.str() << " already existing." << Exception::runerror;
     myRealEmissionME->cloneDependencies(pname.str());
     theReal = myRealEmissionME;
   }
@@ -291,7 +291,7 @@ void SubtractedME::cloneDipoles(const string& prefix) {
     ostringstream pname;
     pname << (prefix == "" ? fullName() : prefix) << "/" << cloned->name();
     if ( ! (generator()->preinitRegister(cloned,pname.str()) ) )
-      throw InitException() << "SubtractedME: Subtraction dipole " << pname.str() << " already existing.";
+      throw Exception() << "SubtractedME: Subtraction dipole " << pname.str() << " already existing." << Exception::runerror;
     cloned->cloneDependencies(pname.str());
     dipMEs.push_back(cloned);
 

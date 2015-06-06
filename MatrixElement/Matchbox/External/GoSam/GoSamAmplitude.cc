@@ -128,14 +128,15 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
     try {
       bfs::create_directory(gosamPath);
     } catch (exception& e) {
-      cerr << "--------------------------------------------------------------------------------\n";
-      cerr << "The following exception occured:\n\n";
-      cerr << " " << e.what() << "\n\n";
-      cerr << " -> Please create the parent directory of\n";
-      cerr << "      " << gosamPath << "\n";
-      cerr << "    manually!\n";
-      cerr << "--------------------------------------------------------------------------------\n";
-      abort();
+      throw Exception()
+	<< "--------------------------------------------------------------------------------\n"
+	<< "The following exception occured:\n\n"
+	<< " " << e.what() << "\n\n"
+	<< " -> Please create the parent directory of\n"
+	<< "      " << gosamPath << "\n"
+	<< "    manually!\n"
+	<< "--------------------------------------------------------------------------------\n"
+	<< Exception::runerror;
     }
   }
   if (!bfs::is_directory(gosamSourcePath)) bfs::create_directory(gosamSourcePath);
@@ -176,7 +177,7 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
     if (theFormOpt) generator()->log() << "    -- Form optimization switched on (extensions=autotools).\n" << flush;
     else if (!theFormOpt) generator()->log() << "    -- Form optimization switched off  (extensions=autotools, noformopt).\n" << flush;
 
-    if (theNinja && !theFormOpt) throw Exception() << "GoSamAmplitude: Ninja reduction needs form optimization!\n" << Exception::abortnow;
+    if (theNinja && !theFormOpt) throw Exception() << "GoSamAmplitude: Ninja reduction needs form optimization!\n" << Exception::runerror;
 
     if (gosamSetupInFileNameInterface == "") {
       generator()->log() << "\n    Please be aware that you are using a copy of the default GoSam input file!\n" 
@@ -238,7 +239,7 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
   }
 
   if ( !checkOLPContract(contractFileName) ) {
-    throw Exception() << "GoSamAmplitude: failed to start GoSam" << Exception::abortnow;
+    throw Exception() << "GoSamAmplitude: failed to start GoSam" << Exception::runerror;
   }
 
     if (!( DynamicLoader::load(gosamInstallPath+"/lib/libgolem_olp.so")
@@ -275,7 +276,7 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
           || DynamicLoader::load(gosamPath+"build/lib/libgolem_olp.dylib")
           || DynamicLoader::load(gosamPath+"build/lib64/libgolem_olp.dylib")))
     throw Exception() << "GoSamAmplitude: Failed to load GoSam. Please check the log file.\n"
-		      << Exception::abortnow;
+		      << Exception::runerror;
   tempcontract = gosamPath + tempcontract;
 
   OLP_Start(tempcontract.c_str(), &status);
@@ -285,10 +286,10 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
   double zero = 0.0;
   if ( SM().ewScheme() == 0 || SM().ewScheme() == 6 ) { // EW/Scheme Default and EW/Scheme Independent
     throw Exception() << "GoSamAmplitude: `Best value' schemes are not supported by GoSam"
-                      << Exception::abortnow;
+                      << Exception::runerror;
   } else if ( SM().ewScheme() == 4 ) { // EW/Scheme mW (uses mW,GF,sin2thetaW) seems not to be supported by GoSam
     throw Exception() << "GoSamAmplitude: `mW' scheme is not supported by GoSam"
-                      << Exception::abortnow;
+                      << Exception::runerror;
   } else if ( SM().ewScheme() == 1 ) { // EW/Scheme GMuScheme (uses mW,mZ,GF)
     double in1=getParticleData(ParticleID::Z0)->hardProcessMass()/GeV;
     double in2=getParticleData(ParticleID::Wplus)->hardProcessMass()/GeV;
@@ -562,7 +563,7 @@ bool GoSamAmplitude::checkOLPContract(string contractFileName) {
           string sub = (*linex).substr((*linex).find("|") + 1, (*linex).find("#") - (*linex).find("|") - 1); // | 1 23 # buggy??
           if ( sub.find(" 1 ") != 0 ) 
 	    throw Exception() << "GoSamAmplitude: Failed to check contractfile. Please check the logfile.\n"
-			      << Exception::abortnow;
+			      << Exception::runerror;
           string subx = sub.substr(3);
           int subint;
           istringstream(subx) >> subint;

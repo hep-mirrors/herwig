@@ -117,7 +117,7 @@ vector<int> DipolePKOperator::NLightJetVec() const {
   const map<string,PDVector>& theParticleGroups = factory()->particleGroups();
   map<string,PDVector>::const_iterator theIt = theParticleGroups.find("j");
   if ( theIt == theParticleGroups.end() )
-    throw Exception() << "DipolePKOperator::NLightJetVec(): Could not find a jet particle group named 'j'" << Exception::abortnow;
+    throw Exception() << "DipolePKOperator::NLightJetVec(): Could not find a jet particle group named 'j'" << Exception::runerror;
 
   const PDVector& theJetConstitutents = theIt->second;
   vector<int> theNLightJetVec;
@@ -138,7 +138,7 @@ vector<int> DipolePKOperator::NHeavyJetVec() const {
   const map<string,PDVector>& theParticleGroups = factory()->particleGroups();
   map<string,PDVector>::const_iterator theIt = theParticleGroups.find("j");
   if ( theIt == theParticleGroups.end() )
-    throw Exception() << "DipolePKOperator::NHeavyJetVec(): Could not find a jet particle group named 'j'" << Exception::abortnow;
+    throw Exception() << "DipolePKOperator::NHeavyJetVec(): Could not find a jet particle group named 'j'" << Exception::runerror;
 
   const PDVector& theJetConstitutents = theIt->second;
   vector<int> theNHeavyJetVec;
@@ -193,7 +193,7 @@ vector<int> DipolePKOperator::NLightProtonVec() const {
   const map<string,PDVector>& theParticleGroups = factory()->particleGroups();
   map<string,PDVector>::const_iterator theIt = theParticleGroups.find("p");
   if ( theIt == theParticleGroups.end() )
-    throw Exception() << "DipolePKOperator::NLightProtonVec(): Could not find a proton particle group named 'p'" << Exception::abortnow;
+    throw Exception() << "DipolePKOperator::NLightProtonVec(): Could not find a proton particle group named 'p'" << Exception::runerror;
 
   const PDVector& theProtonConstitutents = theIt->second;
   vector<int> theNLightProtonVec;

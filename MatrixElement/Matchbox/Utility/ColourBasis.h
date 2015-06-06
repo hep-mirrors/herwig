@@ -128,7 +128,7 @@ public:
    */
   const set<vector<size_t> >& ordering(const cPDVector& sub, 
 				       const map<size_t,size_t>& colourToAmplitude,
-				       size_t tensorId);
+				       size_t tensorId, size_t shift = 0);
 
   /**
    * For the given subprocess and amplitude vectors

@@ -56,7 +56,7 @@ Energy2 MatchboxLeptonPtScale::renormalizationScale() const {
   if ( firstLepton < 0 || secondLepton < 0 )
     throw Exception() << "MatchboxLeptonPtScale::renormalizationScale(): "
 		      << "No lepton pair could be found. Check your setup."
-		      << Exception::abortnow;
+		      << Exception::runerror;
 
   return
     (meMomenta()[firstLepton] +
@@ -87,7 +87,7 @@ Energy2 MatchboxLeptonPtScale::renormalizationScaleQED() const {
   if ( firstLepton < 0 || secondLepton < 0 )
     throw Exception() << "MatchboxLeptonPtScale::renormalizationScaleQED(): "
 		      << "No lepton pair could be found. Check your setup."
-		      << Exception::abortnow;
+		      << Exception::runerror;
 
   return
     (meMomenta()[firstLepton] +

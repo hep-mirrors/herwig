@@ -262,7 +262,7 @@ CrossSection QTildeMatching::dSigHatDR() const {
 
 double QTildeMatching::me2() const {
   throw Exception() << "QTildeMatching::me2(): Not intented to use. Disable the ShowerApproximationGenerator."
-		    << Exception::abortnow;
+		    << Exception::runerror;
   return 0.;
 }
 

@@ -63,15 +63,15 @@ void MatchboxFactoryMatcher::doinit() {
   if ( !MatchboxFactory::isMatchboxRun() )
     return;
   if ( !theFactory )
-    throw InitException()
+    throw Exception()
       << "MatchboxFactoryMatcher::doinit(): No factory object has been set for the matcher '"
-      << name() << "'" << Exception::abortnow;
+      << name() << "'" << Exception::runerror;
   map<string,PDVector>::const_iterator grp
     = theFactory->particleGroups().find(theGroup);
   if ( grp == theFactory->particleGroups().end() )
-    throw InitException()
+    throw Exception()
       << "MatchboxFactoryMatcher::doinit(): Particle group '" << theGroup << "' not defined in factory object '"
-      << theFactory->name() << "'" << Exception::abortnow;
+      << theFactory->name() << "'" << Exception::runerror;
   theIds.clear();
   for ( PDVector::const_iterator p = grp->second.begin();
 	p != grp->second.end(); ++p )

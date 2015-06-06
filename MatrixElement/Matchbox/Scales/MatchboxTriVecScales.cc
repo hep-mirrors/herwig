@@ -103,7 +103,7 @@ Energy2 MatchboxTriVecScales::HtPrimeScale() const {
   for (int i = 0; i<3; ++i ) {
     if (foundlept[i]>2 || foundlept[i]%2!=0) 
       throw Exception() << "MatchboxTriVecScales::HtPrimeScale(): Inconsistency in number of lepton pairs and members therein!"
-			<< Exception::abortnow;
+			<< Exception::runerror;
   }
 
   return sqr(sumpartpt+sumvecet);
@@ -111,11 +111,11 @@ Energy2 MatchboxTriVecScales::HtPrimeScale() const {
 }
 
 Energy2 MatchboxTriVecScales::HtPrimeModScale() const {
-  throw InitException() << "MatchboxTriVecScales::HtPrimeModScale(): Not yet implemented!";
+  throw Exception() << "MatchboxTriVecScales::HtPrimeModScale(): Not yet implemented!" << Exception::runerror;
 }
 
 Energy2 MatchboxTriVecScales::EtScale() const {
-  throw InitException() << "MatchboxTriVecScales::EtScale(): Not yet implemented!";
+  throw Exception() << "MatchboxTriVecScales::EtScale(): Not yet implemented!" << Exception::runerror;
 }
 
 Energy2 MatchboxTriVecScales::renormalizationScale() const {

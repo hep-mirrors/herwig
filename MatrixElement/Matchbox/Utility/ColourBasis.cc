@@ -139,7 +139,7 @@ const string& ColourBasis::orderingString(const cPDVector& sub,
 
 const set<vector<size_t> >& ColourBasis::ordering(const cPDVector& sub, 
 						  const map<size_t,size_t>& colourToAmplitude,
-						  size_t tensorId) {
+						  size_t tensorId, size_t shift) {
 
   map<size_t,set<vector<size_t> > >& tensors = theOrderingIdentifiers[sub];
   if ( !tensors.empty() ) {
@@ -162,7 +162,7 @@ const set<vector<size_t> >& ColourBasis::ordering(const cPDVector& sub,
 	map<size_t,size_t>::const_iterator trans = 
 	  colourToAmplitude.find(*l);
 	assert(trans != colourToAmplitude.end());
-	crossed.push_back(trans->second);
+	crossed.push_back(trans->second + shift);
       }
       xordering.insert(crossed);
     }
@@ -1073,7 +1073,7 @@ void ColourBasis::writeBasis(const string& prefix) const {
     if ( !out )
       throw Exception() << "ColourBasis: Failed to open "
 			<< fname << " for storing colour basis information."
-			<< Exception::abortnow;
+			<< Exception::runerror;
     out << setprecision(18);
     const symmetric_matrix<double,upper>& sp = 
       theScalarProducts.find(*known)->second;
@@ -1163,7 +1163,7 @@ void ColourBasis::readBasis() {
     if ( !readBasis(*known) )
       throw Exception() << "ColourBasis: Failed to open "
 			<< fname << " for reading colour basis information."
-			<< Exception::abortnow;
+			<< Exception::runerror;
   }
 
   didRead = true;

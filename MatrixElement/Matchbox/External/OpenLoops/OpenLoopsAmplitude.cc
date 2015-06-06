@@ -82,7 +82,7 @@ void OpenLoopsAmplitude::startOLP(const string& contract, int& status) {
 		DynamicLoader::load("libopenloops.so") ) ) {
 	  throw Exception() << "OpenLoopsAmplitude::startOLP(): Failed to load libopenloops.so/dylib\n"
 			    << DynamicLoader::lastErrorMessage
-			    << Exception::abortnow;
+			    << Exception::runerror;
 	}
 
 	string stabilityPrefix = factory()->runStorage() + "OpenLoops.StabilityLog";

@@ -44,7 +44,7 @@ void VBFNLOPhasespace::loadVBFNLO() {
 	  DynamicLoader::load("libVBFNLO.so") ) )
     throw Exception() << "VBFNLOPhasespace::loadVBFNLO(): Failed to load libVBFNLO.so/dylib\n"
 		      << DynamicLoader::lastErrorMessage
-		      << Exception::abortnow;
+		      << Exception::runerror;
 }
 
 VBFNLOPhasespace::~VBFNLOPhasespace() {}
@@ -85,7 +85,7 @@ void VBFNLOPhasespace::setXComb(tStdXCombPtr xco) {
     if ( !pStatus )
       throw Exception() << "VBFNLOPhasespace::setXComb(): VBFNLO failed to set parameter '"
                         << name << "' to " << value << "\n"
-                        << Exception::abortnow;
+                        << Exception::runerror;
   }
 
 }
@@ -106,7 +106,7 @@ double VBFNLOPhasespace::generateTwoToNKinematics(const double* random,
 
   if (weight < 0) {
     throw Exception() << "VBFNLOPhasespace::generateTwoToNKinematics(): Negative weight in VBFNLOPhaseSpace\n"
-		      << Exception::abortnow;
+		      << Exception::runerror;
   }
 
   if (weight == 0) {
@@ -201,7 +201,7 @@ int VBFNLOPhasespace::nDimPhasespace(int nFinal) const {
   if ( pStatus != 1) {
     throw Exception() << "VBFNLOPhasespace::nDimPhasespace(): Cannot get phasespace dimension in VBFNLOPhaseSpace\n"
 		      << "error code: " << pStatus << "\n"
-		      << Exception::abortnow;
+		      << Exception::runerror;
   }
   // one additional number (first) needed for channel selection
   // one additional number (last) needed for global phi integration
