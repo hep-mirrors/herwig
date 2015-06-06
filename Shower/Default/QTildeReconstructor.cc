@@ -267,6 +267,12 @@ reconstructHardJets(ShowerTreePtr hard,
   for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
     _boosts[ShowerHardJets[ix]->progenitor()] = vector<LorentzRotation>();
   }
+  unsigned int itemp =  _currentTree->treelinks().size();
+  for(map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> >::const_iterator
+	tit  = _currentTree->treelinks().begin();
+      tit != _currentTree->treelinks().end();++tit) {
+    _treeBoosts[tit->first] = vector<LorentzRotation>();
+  }
   try {
     // old recon method, using new member functions
     if(_reconopt == 0 ) {
@@ -298,6 +304,13 @@ reconstructHardJets(ShowerTreePtr hard,
       }
     }
     _boosts.clear();
+    for(map<tShowerTreePtr,vector<LorentzRotation> >::const_iterator bit=_treeBoosts.begin();bit!=_treeBoosts.end();++bit) {
+      for(vector<LorentzRotation>::const_reverse_iterator rit=bit->second.rbegin();rit!=bit->second.rend();++rit) {
+	LorentzRotation rot = rit->inverse();
+	bit->first->transform(rot,false);
+      }
+    }
+    _treeBoosts.clear();
     return false;
   }
   catch (Exception & ex) {
@@ -305,6 +318,7 @@ reconstructHardJets(ShowerTreePtr hard,
     _intrinsic.clear();
     _currentTree = tShowerTreePtr();
     _boosts.clear();
+    _treeBoosts.clear();
     throw ex;
   }
   _progenitor=tShowerParticlePtr();
@@ -335,10 +349,18 @@ reconstructHardJets(ShowerTreePtr hard,
 	}
       }
       _boosts.clear();
+      for(map<tShowerTreePtr,vector<LorentzRotation> >::const_iterator bit=_treeBoosts.begin();bit!=_treeBoosts.end();++bit) {
+	for(vector<LorentzRotation>::const_reverse_iterator rit=bit->second.rbegin();rit!=bit->second.rend();++rit) {
+	  LorentzRotation rot = rit->inverse();
+	  bit->first->transform(rot,false);
+	}
+      }
+      _treeBoosts.clear();
       return false;
     }
   }
   _boosts.clear();
+  _treeBoosts.clear();
   _currentTree = tShowerTreePtr();
   return true;
 }
@@ -2479,6 +2501,7 @@ void QTildeReconstructor::deepTransform(PPtr particle,
       LorentzRotation rot;
       if(test>1e-6*GeV2) rot = solveBoost(porig,pnew);
       tit->first->transform(r*rot,false);
+      _treeBoosts[tit->first].push_back(r*rot);
     }
   }
 }

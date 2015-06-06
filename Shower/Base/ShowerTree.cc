@@ -1226,10 +1226,10 @@ void ShowerTree::applyTransforms() {
 
 void ShowerTree::clearTransforms() {
   _transforms = LorentzRotation();
-  // child trees
-  for(map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> >::const_iterator
-	tit=_treelinks.begin();tit!=_treelinks.end();++tit)
-    tit->first->clearTransforms();
+  // // child trees
+  // for(map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> >::const_iterator
+  // 	tit=_treelinks.begin();tit!=_treelinks.end();++tit)
+  //   tit->first->clearTransforms();
 }
 
 void ShowerTree::fixColour(tShowerParticlePtr part) {

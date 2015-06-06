@@ -623,6 +623,11 @@ private:
    * Storage of the boosts applied to enable resetting after failure
    */
   mutable map<tPPtr,vector<LorentzRotation> > _boosts;
+
+  /**
+   * Storage of the boosts applied to enable resetting after failure
+   */
+  mutable map<tShowerTreePtr,vector<LorentzRotation> > _treeBoosts;
 };
 
 }
