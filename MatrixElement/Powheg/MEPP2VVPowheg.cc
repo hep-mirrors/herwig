@@ -4069,9 +4069,33 @@ HardTreePtr MEPP2VVPowheg::generateHardest(ShowerTreePtr tree,
   if(fermionNumberOfMother_== 1) {
     bornColourLine->addColoured(mother);
     bornColourLine->addAntiColoured(spectator);
+    if(timelikeSon->id()==ParticleID::g) {
+      bornColourLine->addAntiColoured(timelikeSon);
+      ColinePtr newLine=new_ptr(ColourLine());
+      newLine->addColoured(timelikeSon);
+      newLine->addColoured(spacelikeSon);
+    }
+    else {
+      bornColourLine->addColoured(spacelikeSon);
+      ColinePtr newLine=new_ptr(ColourLine());
+      newLine->addAntiColoured(timelikeSon);
+      newLine->addAntiColoured(spacelikeSon);
+    }
   } else if(fermionNumberOfMother_==-1) {
     bornColourLine->addAntiColoured(mother);
     bornColourLine->addColoured(spectator);
+    if(timelikeSon->id()==ParticleID::g) {
+      bornColourLine->addColoured(timelikeSon);
+      ColinePtr newLine=new_ptr(ColourLine());
+      newLine->addAntiColoured(timelikeSon);
+      newLine->addAntiColoured(spacelikeSon);
+    }
+    else {
+      bornColourLine->addAntiColoured(spacelikeSon);
+      ColinePtr newLine=new_ptr(ColourLine());
+      newLine->addColoured(timelikeSon);
+      newLine->addColoured(spacelikeSon);
+    }
   }
   // this is a pain but we need the boost, which we don't have yet here!!
   vector<Lorentz5Momentum> pin(2);
