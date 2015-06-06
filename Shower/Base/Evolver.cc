@@ -2940,9 +2940,11 @@ void Evolver:: convertHardTree(bool hard,ShowerInteraction::Type type) {
       Lorentz5Momentum oldMomentum = oldParticle->momentum();
       Lorentz5Momentum newMomentum = newParticle->momentum();
       LorentzRotation boost( oldMomentum.findBoostToCM(),oldMomentum.e()/oldMomentum.mass());
+      if(tit!=currentTree()->treelinks().end()) tit->first->transform(boost,false);
       oldParticle->transform(boost);
       boost = LorentzRotation(-newMomentum.findBoostToCM(),newMomentum.e()/newMomentum.mass());
       oldParticle->transform(boost);
+      if(tit!=currentTree()->treelinks().end()) tit->first->transform(boost,false);
       newParticle=oldParticle;
     }
     // add particle to colour lines
