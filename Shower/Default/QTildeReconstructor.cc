@@ -267,7 +267,6 @@ reconstructHardJets(ShowerTreePtr hard,
   for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
     _boosts[ShowerHardJets[ix]->progenitor()] = vector<LorentzRotation>();
   }
-  unsigned int itemp =  _currentTree->treelinks().size();
   for(map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> >::const_iterator
 	tit  = _currentTree->treelinks().begin();
       tit != _currentTree->treelinks().end();++tit) {
