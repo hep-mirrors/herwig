@@ -139,7 +139,7 @@ const string& ColourBasis::orderingString(const cPDVector& sub,
 
 const set<vector<size_t> >& ColourBasis::ordering(const cPDVector& sub, 
 						  const map<size_t,size_t>& colourToAmplitude,
-						  size_t tensorId) {
+						  size_t tensorId, size_t shift) {
 
   map<size_t,set<vector<size_t> > >& tensors = theOrderingIdentifiers[sub];
   if ( !tensors.empty() ) {
@@ -162,7 +162,7 @@ const set<vector<size_t> >& ColourBasis::ordering(const cPDVector& sub,
 	map<size_t,size_t>::const_iterator trans = 
 	  colourToAmplitude.find(*l);
 	assert(trans != colourToAmplitude.end());
-	crossed.push_back(trans->second);
+	crossed.push_back(trans->second + shift);
       }
       xordering.insert(crossed);
     }
