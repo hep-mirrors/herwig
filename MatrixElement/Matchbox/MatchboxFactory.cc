@@ -140,8 +140,8 @@ makeMEs(const vector<string>& proc, unsigned int orderas, bool virt) {
       << "Processes of this kind are currently not supported.\n" << flush;
   }
   if ( colouredProcesses.empty() ) {
-    throw InitException() << "MatchboxFactory::makeMEs(): No processes with coloured legs have been found. "
-			  << "This run will be aborted.";
+    throw Exception() << "MatchboxFactory::makeMEs(): No processes with coloured legs have been found. "
+		      << "This run will be aborted." << Exception::runerror;
   }
   processes = colouredProcesses;
   // end unsupported processes
@@ -161,11 +161,12 @@ makeMEs(const vector<string>& proc, unsigned int orderas, bool virt) {
     }
   }
   if ( trouble ) {
-    throw InitException()
+    throw Exception()
       << "MatchboxFactory::makeMEs(): Particle '"
       << troubleMaker << "' appears as external\nprocess leg with non-zero "
       << "width to be used in the hard process calculation.\n"
-      << "Please check your setup and consider setting HardProcessWidth to zero.";
+      << "Please check your setup and consider setting HardProcessWidth to zero."
+      << Exception::runerror;
   }
 
   vector<Ptr<MatchboxAmplitude>::ptr> matchAmplitudes;
@@ -259,8 +260,9 @@ makeMEs(const vector<string>& proc, unsigned int orderas, bool virt) {
     }
   }
   if ( clash ) {
-    throw InitException() << "MatchboxFactory: Ambiguous amplitude setup - please check your input files.\n"
-      << "To avoid this problem use the SelectAmplitudes or DeselectAmplitudes interfaces.\n";
+    throw Exception() << "MatchboxFactory: Ambiguous amplitude setup - please check your input files.\n"
+      << "To avoid this problem use the SelectAmplitudes or DeselectAmplitudes interfaces.\n"
+		      << Exception::runerror;
   }
 
   bool canDoSpinCorrelations = true;
@@ -278,7 +280,8 @@ makeMEs(const vector<string>& proc, unsigned int orderas, bool virt) {
       prepareME(me);
       string pname = "ME" + ap->first->name() + pid(m->legs);
       if ( ! (generator()->preinitRegister(me,pname) ) )
-	throw InitException() << "MatchboxFactory: Matrix element " << pname << " already existing.";
+	throw Exception() << "MatchboxFactory: Matrix element " << pname << " already existing."
+			  << Exception::runerror;
       if ( me->diagrams().empty() )continue;
       res.push_back(me);
       if ( theFirstPerturbativePDF )
@@ -323,9 +326,9 @@ void MatchboxFactory::productionMode() {
     return;
 
   if ( !bornContributions() && !virtualContributions() && !realContributions() )
-    throw InitException() << "MatchboxFactory: At least one cross section contribution needs to be enabled.\n"
+    throw Exception() << "MatchboxFactory: At least one cross section contribution needs to be enabled.\n"
       << "Please check your setup.\n"
-      << Exception::abortnow;
+      << Exception::runerror;
 
   bool needTrueVirtuals =
     virtualContributions() && !meCorrectionsOnly() && !loopSimCorrections();
@@ -370,11 +373,11 @@ void MatchboxFactory::setup() {
   if ( !ranSetup ) {
 
     if ( !inProductionMode )
-      throw InitException() << "MatchboxFactory: The MatchboxFactory object '"
-			    << name() << "' has not been switched to production mode.\n"
-			    << "Did you use 'do "
-			    << name() << ":ProductionMode' before isolating the event generator?\n"
-			    << Exception::abortnow;
+      throw Exception() << "MatchboxFactory: The MatchboxFactory object '"
+			<< name() << "' has not been switched to production mode.\n"
+			<< "Did you use 'do "
+			<< name() << ":ProductionMode' before isolating the event generator?\n"
+			<< Exception::runerror;
 
     olpProcesses().clear();
     externalAmplitudes().clear();
@@ -391,7 +394,8 @@ void MatchboxFactory::setup() {
     if ( bornMEs().empty() ) {
 
       if ( particleGroups().find("j") == particleGroups().end() )
-	throw InitException() << "MatchboxFactory: Could not find a jet particle group named 'j'";
+	throw Exception() << "MatchboxFactory: Could not find a jet particle group named 'j'"
+			  << Exception::runerror;
 
       // rebind the particle data objects
       for ( map<string,PDVector>::iterator g = particleGroups().begin();
@@ -472,8 +476,9 @@ void MatchboxFactory::setup() {
     }
 
     if( bornMEs().empty() && realEmissionMEs().empty() && loopInducedMEs().empty() )
-      throw InitException() << "MatchboxFactory: No matrix elements have been found.\n\
-      Please check if your order of Alpha_s and Alpha_ew have the right value.\n";
+      throw Exception() << "MatchboxFactory: No matrix elements have been found.\n\
+      Please check if your order of Alpha_s and Alpha_ew have the right value.\n"
+			<< Exception::runerror;
 
     // check if we have virtual contributions
     bool haveVirtuals = true;
@@ -531,16 +536,19 @@ void MatchboxFactory::setup() {
       // check for consistent conventions on virtuals, if we are to include them
       if ( virtualContributions() ) {
 	if ( !haveVirtuals ) {
-	  throw InitException() << "MatchboxFactory: Could not find amplitudes for all virtual contributions needed.\n";
+	  throw Exception() << "MatchboxFactory: Could not find amplitudes for all virtual contributions needed.\n"
+			    << Exception::runerror;
 	}
 	if ( virtualsAreDR && virtualsAreCDR ) {
-	  throw InitException() << "MatchboxFactory: Virtual corrections use inconsistent regularization schemes.\n";
+	  throw Exception() << "MatchboxFactory: Virtual corrections use inconsistent regularization schemes.\n"
+			    << Exception::runerror;
 	}
 	if ( (virtualsAreCS && virtualsAreBDK) ||
 	     (virtualsAreCS && virtualsAreExpanded) ||
 	     (virtualsAreBDK && virtualsAreExpanded) ||
 	     (!virtualsAreCS && !virtualsAreBDK && !virtualsAreExpanded) ) {
-	  throw InitException() << "MatchboxFactory: Virtual corrections use inconsistent conventions on finite terms.\n";
+	  throw Exception() << "MatchboxFactory: Virtual corrections use inconsistent conventions on finite terms.\n"
+			    << Exception::runerror;
 	}
       }
 
@@ -618,7 +626,8 @@ void MatchboxFactory::setup() {
 	if ( virtualContributions() && independentVirtuals() )
 	  pname += ".Born";
 	if ( ! (generator()->preinitRegister(bornme,pname) ) )
-	  throw InitException() << "MatchboxFactory: Matrix element " << pname << " already existing.";
+	  throw Exception() << "MatchboxFactory: Matrix element " << pname << " already existing."
+			    << Exception::runerror;
 
 	if ( bornme->isOLPTree() ) {
 	  int id = orderOLPProcess(bornme->subProcess(),
@@ -644,7 +653,8 @@ void MatchboxFactory::setup() {
 	Ptr<MatchboxMEBase>::ptr loopme = (**looped).cloneMe();
 	string pname = fullName() + "/" + (**looped).name() + ".LoopInduced";
 	if ( ! (generator()->preinitRegister(loopme,pname) ) )
-	  throw InitException() << "MatchboxFactory: Matrix element " << pname << " already existing.";
+	  throw Exception() << "MatchboxFactory: Matrix element " << pname << " already existing."
+			    << Exception::runerror;
 
 	if ( loopme->isOLPTree() ) {
 	  int id = orderOLPProcess(loopme->subProcess(),
@@ -685,7 +695,8 @@ void MatchboxFactory::setup() {
         else 
 	  pname += ".Virtual";
 	if ( ! (generator()->preinitRegister(nlo,pname) ) )
-	  throw InitException() << "MatchboxFactory: NLO ME " << pname << " already existing.";
+	  throw Exception() << "MatchboxFactory: NLO ME " << pname << " already existing."
+			    << Exception::runerror;
 
 	nlo->virtuals().clear();
 
@@ -710,11 +721,14 @@ void MatchboxFactory::setup() {
 	    }
           }
 	  if ( nlo->virtuals().empty() )
-	    throw InitException() << "MatchboxFactory: No insertion operators have been found for "
-				  << (**born).name() << "\n";
+	    throw Exception() << "MatchboxFactory: No insertion operators have been found for "
+				  << (**born).name() << "\n"
+			      << Exception::runerror;
 	  if ( checkPoles() ) {
 	    if ( !virtualsAreExpanded ) {
-	      throw InitException() << "MatchboxFactory: Cannot check epsilon poles if virtuals are not in `expanded' convention.\n";
+	      throw Exception() 
+		<< "MatchboxFactory: Cannot check epsilon poles if virtuals are not in `expanded' convention.\n"
+		<< Exception::runerror;
 	    }
 	  }
 	}
@@ -751,7 +765,8 @@ void MatchboxFactory::setup() {
 	  string pnamepk = fullName() + "/" + (**born).name();
 	  pnamepk += ".VirtualPK";
 	  if ( ! (generator()->preinitRegister(nlopk,pnamepk) ) )
-	    throw InitException() << "MatchboxFactory: NLO ME " << pnamepk << " already existing.";
+	    throw Exception() << "MatchboxFactory: NLO ME " << pnamepk << " already existing."
+			      << Exception::runerror;
 
 	  nlopk->virtuals().clear();
 
@@ -871,7 +886,8 @@ void MatchboxFactory::setup() {
 	Ptr<SubtractedME>::ptr sub = new_ptr(SubtractedME());
 	string pname = fullName() + "/" + (**real).name() + ".SubtractedReal";
 	if ( ! (generator()->preinitRegister(sub,pname) ) )
-	  throw InitException() << "MatchboxFactory: Subtracted ME " << pname << " already existing.";
+	  throw Exception() << "MatchboxFactory: Subtracted ME " << pname << " already existing."
+			    << Exception::runerror;
 
 	sub->factory(this);
 
@@ -897,7 +913,8 @@ void MatchboxFactory::setup() {
 	      dynamic_ptr_cast<Ptr<MatchboxMEBase>::ptr>(sub->head())->cloneMe();
 	    string qname = fullName() + "/" + (**real).name() + ".FiniteReal";
 	    if ( ! (generator()->preinitRegister(fme,qname) ) )
-	      throw InitException() << "MatchboxFactory: ME " << qname << " already existing.";
+	      throw Exception() << "MatchboxFactory: ME " << qname << " already existing."
+				<< Exception::runerror;
 	    MEs().push_back(fme);	
 	    finiteRealMEs().push_back(fme);
 	  }
@@ -919,7 +936,8 @@ void MatchboxFactory::setup() {
 	    Ptr<SubtractedME>::ptr subv = new_ptr(*sub);
 	    string vname = sub->fullName() + ".SubtractionIntegral";
 	    if ( ! (generator()->preinitRegister(subv,vname) ) )
-	      throw InitException() << "MatchboxFactory: Subtracted ME " << vname << " already existing.";
+	      throw Exception() << "MatchboxFactory: Subtracted ME " << vname << " already existing."
+				<< Exception::runerror;
 	    subv->cloneDependencies(vname);
 	    subv->doVirtualShowerSubtraction();
 	    subtractedMEs().push_back(subv);
@@ -929,7 +947,8 @@ void MatchboxFactory::setup() {
 	    Ptr<SubtractedME>::ptr subv = new_ptr(*sub);
 	    string vname = sub->fullName() + ".SubtractionIntegral";
 	    if ( ! (generator()->preinitRegister(subv,vname) ) )
-	      throw InitException() << "MatchboxFactory: Subtracted ME " << vname << " already existing.";
+	      throw Exception() << "MatchboxFactory: Subtracted ME " << vname << " already existing."
+				<< Exception::runerror;
 	    subv->cloneDependencies(vname);
 	    subv->doLoopSimSubtraction();
 	    subtractedMEs().push_back(subv);
@@ -970,7 +989,8 @@ void MatchboxFactory::setup() {
 	Ptr<SubtractionDipole>::ptr cloned = cd->first->cloneMe();
 	string dname = cd->first->fullName() + ".splitting";
 	if ( ! (generator()->preinitRegister(cloned,dname)) )
-	  throw InitException() << "MatchboxFactory: Dipole '" << dname << "' already existing.";
+	  throw Exception() << "MatchboxFactory: Dipole '" << dname << "' already existing."
+			    << Exception::runerror;
 	cloned->cloneDependencies();
 	cloned->showerApproximation(Ptr<ShowerApproximation>::tptr());
 	cloned->doSplitting();
@@ -992,7 +1012,8 @@ void MatchboxFactory::setup() {
       for ( set<Ptr<MatchboxAmplitude>::tptr>::const_iterator ext =
 	      externalAmplitudes().begin(); ext != externalAmplitudes().end(); ++ext ) {
 	if ( !(**ext).initializeExternal() ) {
-	  throw InitException()  << "Failed to initialize amplitude '" << (**ext).name() << "'\n";
+	  throw Exception()  << "Failed to initialize amplitude '" << (**ext).name() << "'\n"
+			     << Exception::runerror;
 	}
       }
       generator()->log() << "--------------------------------------------------------------------------------\n"
@@ -1009,7 +1030,8 @@ void MatchboxFactory::setup() {
       for ( map<Ptr<MatchboxAmplitude>::tptr,map<pair<Process,int>,int> >::const_iterator
 	      olpit = olps.begin(); olpit != olps.end(); ++olpit ) {
 	if ( !olpit->first->startOLP(olpit->second) ) {
-	  throw InitException() << "MatchboxFactory: Failed to start OLP for amplitude '" << olpit->first->name() << "'\n";
+	  throw Exception() << "MatchboxFactory: Failed to start OLP for amplitude '" << olpit->first->name() << "'\n"
+			    << Exception::runerror;
 	}
       }
       generator()->log() << "--------------------------------------------------------------------------------\n"
@@ -1284,7 +1306,8 @@ string MatchboxFactory::startParticleGroup(string name) {
 
 string MatchboxFactory::endParticleGroup(string) {
   if ( particleGroup.empty() )
-    throw InitException() << "MatchboxFactory: Empty particle group.";
+    throw Exception() << "MatchboxFactory: Empty particle group."
+		      << Exception::runerror;
   particleGroups()[particleGroupName] = particleGroup;
   particleGroup.clear();
   return "";
@@ -1293,7 +1316,8 @@ string MatchboxFactory::endParticleGroup(string) {
 vector<string> MatchboxFactory::parseProcess(string in) {
   vector<string> process = StringUtils::split(in);
   if ( process.size() < 3 )
-    throw InitException() << "MatchboxFactory: Invalid process.";
+    throw Exception() << "MatchboxFactory: Invalid process."
+		      << Exception::runerror;
   for ( vector<string>::iterator p = process.begin();
 	p != process.end(); ++p ) {
     *p = StringUtils::stripws(*p);
@@ -1334,7 +1358,8 @@ set<PDVector> MatchboxFactory::
 makeSubProcesses(const vector<string>& proc) const {
 
   if ( proc.empty() )
-    throw InitException() << "MatchboxFactory: No process specified.";
+    throw Exception() << "MatchboxFactory: No process specified."
+		      << Exception::runerror;
 
   vector<PDVector> groups;
   typedef map<string,PDVector>::const_iterator GroupIterator;
@@ -1342,8 +1367,8 @@ makeSubProcesses(const vector<string>& proc) const {
 	gr != proc.end(); ++gr ) {
     GroupIterator git = particleGroups().find(*gr);
     if ( git == particleGroups().end() ) {
-      throw InitException() << "MatchboxFactory: Particle group '"
-			    << *gr << "' not defined.";
+      throw Exception() << "MatchboxFactory: Particle group '"
+			<< *gr << "' not defined." << Exception::runerror;
     }
     groups.push_back(git->second);
   }
@@ -1391,7 +1416,7 @@ makeSubProcesses(const vector<string>& proc) const {
 	  throw Exception()
 	    << "Inconsistent flavour scheme detected with massive incoming "
 	    << proto[i]->PDGName() << ". Check your setup."
-	    << Exception::abortnow;
+	    << Exception::runerror;
       }
       sort(proto.begin()+2,proto.end(),SortPID());
       allProcs.insert(proto);

@@ -81,7 +81,7 @@ size_t SimpleColourBasis2::prepareBasis(const vector<PDT::Colour>& basis) {
     return 4;
   }
 
-  throw Exception() << "SimpleColourBasis2::prepareBasis(): Cannot handle colour configuration" << Exception::abortnow;
+  throw Exception() << "SimpleColourBasis2::prepareBasis(): Cannot handle colour configuration" << Exception::runerror;
 
   return 0;
 
@@ -1359,7 +1359,7 @@ double SimpleColourBasis2::scalarProduct(size_t a, size_t b,
 
   }
 
-  throw Exception() << "SimpleColourBasis2::scalarProduct(): Cannot handle colour configuration" << Exception::abortnow;
+  throw Exception() << "SimpleColourBasis2::scalarProduct(): Cannot handle colour configuration" << Exception::runerror;
 
 }
 
@@ -1519,7 +1519,7 @@ double SimpleColourBasis2::tMatrixElement(size_t i, size_t a,
     return 0.;
   }
 
-  throw Exception() << "SimpleColourBasis2::tMatrixElement(): Cannot handle colour configuration" << Exception::abortnow;
+  throw Exception() << "SimpleColourBasis2::tMatrixElement(): Cannot handle colour configuration" << Exception::runerror;
 
   return 0.;
 
@@ -1998,7 +1998,7 @@ bool SimpleColourBasis2::colourConnected(const cPDVector& sub,
 	(idColoured == 4 && idAntiColoured == 3)));
   }
 
-  throw Exception() << "SimpleColourBasis2::colourConnected(): Cannot handle colour configuration" << Exception::abortnow;
+  throw Exception() << "SimpleColourBasis2::colourConnected(): Cannot handle colour configuration" << Exception::runerror;
 
   return false;
 
@@ -2799,7 +2799,7 @@ map<size_t,vector<vector<size_t> > > SimpleColourBasis2::basisList(const vector<
     return blist;
   }
 
-  throw Exception() << "SimpleColourBasis2::basisList(): Cannot handle colour configuration" << Exception::abortnow;
+  throw Exception() << "SimpleColourBasis2::basisList(): Cannot handle colour configuration" << Exception::runerror;
 
   return blist;
 

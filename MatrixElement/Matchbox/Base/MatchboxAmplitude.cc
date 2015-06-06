@@ -466,7 +466,7 @@ void MatchboxAmplitude::doGenerateHelicities(set<vector<int> >& res,
 vector<unsigned int> MatchboxAmplitude::physicalHelicities(const vector<int>&) const {
   throw Exception()
     << "MatchboxAmplitude::physicalHelicities(): The amplitude '" << name() << "' does not support the spin correlation algorithm"
-    << Exception::abortnow;
+    << Exception::runerror;
   static vector<unsigned int> dummy;
   return dummy;
 }
@@ -571,7 +571,7 @@ Complex MatchboxAmplitude::value(const tcPDVector&,
 				 const vector<int>&) {
   assert(false && "ThePEG::Amplitude interface is not sufficient at the moment.");
   throw Exception() << "MatchboxAmplitude::value(): ThePEG::Amplitude interface is not sufficient at the moment."
-		    << Exception::abortnow;
+		    << Exception::runerror;
   return 0.;
 }
 
@@ -804,13 +804,13 @@ string MatchboxAmplitude::doReshuffle(string in) {
   in = StringUtils::stripws(in);
   if ( in.empty() )
     throw Exception() << "MatchboxAmplitude::doReshuffle(): Expecting PDG id and mass value"
-		      << Exception::abortnow;
+		      << Exception::runerror;
   istringstream ins(in);
   long id;
   ins >> id;
   if ( ins.eof() )
     throw Exception() << "MatchboxAmplitude::doReshuffle(): expecting PDG id and mass value"
-		      << Exception::abortnow;
+		      << Exception::runerror;
   Energy m;
   ins >> iunit(m,GeV);
   theReshuffleMasses[id] = m;
@@ -821,7 +821,7 @@ string MatchboxAmplitude::doMassless(string in) {
   in = StringUtils::stripws(in);
   if ( in.empty() )
     throw Exception() << "MatchboxAmplitude::doMassless(): Expecting PDG id"
-		      << Exception::abortnow;
+		      << Exception::runerror;
   istringstream ins(in);
   long id;
   ins >> id;
@@ -833,7 +833,7 @@ string MatchboxAmplitude::doOnShell(string in) {
   in = StringUtils::stripws(in);
   if ( in.empty() )
     throw Exception() << "MatchboxAmplitude::doOnShell(): Expecting PDG id"
-		      << Exception::abortnow;
+		      << Exception::runerror;
   istringstream ins(in);
   long id;
   ins >> id;

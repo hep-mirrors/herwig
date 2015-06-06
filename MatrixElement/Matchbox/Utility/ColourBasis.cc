@@ -1073,7 +1073,7 @@ void ColourBasis::writeBasis(const string& prefix) const {
     if ( !out )
       throw Exception() << "ColourBasis: Failed to open "
 			<< fname << " for storing colour basis information."
-			<< Exception::abortnow;
+			<< Exception::runerror;
     out << setprecision(18);
     const symmetric_matrix<double,upper>& sp = 
       theScalarProducts.find(*known)->second;
@@ -1163,7 +1163,7 @@ void ColourBasis::readBasis() {
     if ( !readBasis(*known) )
       throw Exception() << "ColourBasis: Failed to open "
 			<< fname << " for reading colour basis information."
-			<< Exception::abortnow;
+			<< Exception::runerror;
   }
 
   didRead = true;

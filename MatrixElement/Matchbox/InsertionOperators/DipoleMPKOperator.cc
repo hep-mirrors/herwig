@@ -133,34 +133,12 @@ void DipoleMPKOperator::setXComb(tStdXCombPtr xc) {
   }
 }
 
-//////////////////////////////////////////////////////////////////////
-
-// vector<int> DipoleMPKOperator::NLightJetVec() const {
-// 
-//   const map<string,PDVector>& theParticleGroups = factory()->particleGroups();
-//   map<string,PDVector>::const_iterator theIt = theParticleGroups.find("j");
-//   if ( theIt == theParticleGroups.end() )
-//     throw Exception() << "DipolePKOperator::NLightJetVec(): Could not find a jet particle group named 'j'" << Exception::abortnow;
-// 
-//   const PDVector& theJetConstitutents = theIt->second;
-//   vector<int> theNLightJetVec;
-// 
-//   for ( PDVector::const_iterator theP = theJetConstitutents.begin();
-//         theP != theJetConstitutents.end(); ++theP ) {
-//     if ( (**theP).id() > 0 && (**theP).id() < 7 && (**theP).hardProcessMass() == ZERO )
-//       theNLightJetVec.push_back( (**theP).id() );
-//   }
-// 
-//   return theNLightJetVec;
-// 
-// }
-
 vector<int> DipoleMPKOperator::NHeavyJetVec() const {
 
   const map<string,PDVector>& theParticleGroups = factory()->particleGroups();
   map<string,PDVector>::const_iterator theIt = theParticleGroups.find("j");
   if ( theIt == theParticleGroups.end() )
-    throw Exception() << "DipolePKOperator::NHeavyJetVec(): Could not find a jet particle group named 'j'" << Exception::abortnow;
+    throw Exception() << "DipolePKOperator::NHeavyJetVec(): Could not find a jet particle group named 'j'" << Exception::runerror;
 
   const PDVector& theJetConstitutents = theIt->second;
   vector<int> theNHeavyJetVec;
@@ -175,66 +153,12 @@ vector<int> DipoleMPKOperator::NHeavyJetVec() const {
 
 }
 
-// vector<int> DipoleMPKOperator::NLightBornVec() const {
-// 
-//   // For the moment just count all quark and antiquark
-//   // constituents in the Born process.
-// 
-//   vector<int> theNLightBornVec;
-// 
-//   for ( cPDVector::const_iterator j = mePartonData().begin();
-// 	j != mePartonData().end(); ++j ) {
-//     if ( abs((**j).id()) < 7 && (**j).hardProcessMass() == ZERO )
-//       theNLightBornVec.push_back( (**j).id() );
-//   }
-// 
-//   return theNLightBornVec;
-// 
-// }
-
-// vector<int> DipoleMPKOperator::NHeavyBornVec() const {
-// 
-//   // For the moment just count all quark and antiquark
-//   // constituents in the Born process.
-// 
-//   vector<int> theNHeavyBornVec;
-// 
-//   for ( cPDVector::const_iterator j = mePartonData().begin();
-// 	j != mePartonData().end(); ++j ) {
-//     if ( abs((**j).id()) < 7 && (**j).hardProcessMass() != ZERO )
-//       theNHeavyBornVec.push_back( (**j).id() );
-//   }
-// 
-//   return theNHeavyBornVec;
-// 
-// }
-
-// vector<int> DipoleMPKOperator::NLightProtonVec() const {
-// 
-//   const map<string,PDVector>& theParticleGroups = factory()->particleGroups();
-//   map<string,PDVector>::const_iterator theIt = theParticleGroups.find("p");
-//   if ( theIt == theParticleGroups.end() )
-//     throw Exception() << "DipoleMPKOperator::NLightProtonVec(): Could not find a proton particle group named 'p'" << Exception::abortnow;
-// 
-//   const PDVector& theProtonConstitutents = theIt->second;
-//   vector<int> theNLightProtonVec;
-// 
-//   for ( PDVector::const_iterator theP = theProtonConstitutents.begin();
-//         theP != theProtonConstitutents.end(); ++theP ) {
-//     if ( (**theP).id() > 0 && (**theP).id() < 7 && (**theP).hardProcessMass() == ZERO )
-//       theNLightProtonVec.push_back( (**theP).id() );
-//   }
-// 
-//   return theNLightProtonVec;
-// 
-// }
-
 //////////////////////////////////////////////////////////////////////
 
 double DipoleMPKOperator::me2() const {
 
   if ( isDR() )
-    throw InitException() << "DipoleMPKOperator not implemented for dimensional reduction.";
+    throw Exception() << "DipoleMPKOperator not implemented for dimensional reduction." << Exception::runerror;
 
   scale = lastBorn()->lastScale();
 

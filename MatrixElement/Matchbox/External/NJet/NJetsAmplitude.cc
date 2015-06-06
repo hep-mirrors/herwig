@@ -105,7 +105,7 @@ void NJetsAmplitude::loadNJET() {
 	  DynamicLoader::load("libnjet2.so") ) )
     throw Exception() << "NJetsAmplitude: Failed to load libnjet2.so\n"
 		      << DynamicLoader::lastErrorMessage
-		      << Exception::abortnow;
+		      << Exception::runerror;
 }
 
 bool NJetsAmplitude::startOLP(const map<pair<Process,int>,int>& procs) {

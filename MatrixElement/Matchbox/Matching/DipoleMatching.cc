@@ -77,7 +77,7 @@ CrossSection DipoleMatching::dSigHatDR() const {
 
 double DipoleMatching::me2() const {
   throw Exception() << "DipoleMatching::me2(): Not intented to use. Disable the ShowerApproximationGenerator."
-		    << Exception::abortnow;
+		    << Exception::runerror;
   return 0.;
 }
 

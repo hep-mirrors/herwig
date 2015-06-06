@@ -55,7 +55,7 @@ void VBFNLOAmplitude::signOLP(const string& order, const string& contract) {
 	    const_cast<char*>(contract.c_str()),&status);
   if ( status != 1 )
     throw Exception() << "VBFNLOAmplitude: Failed to sign contract with VBFNLO"
-		      << Exception::abortnow;
+		      << Exception::runerror;
 }
 
 void VBFNLOAmplitude::setOLPParameter(const string& name, double value) const {
@@ -66,7 +66,7 @@ void VBFNLOAmplitude::setOLPParameter(const string& name, double value) const {
   if ( !pStatus )
     throw Exception() << "VBFNLOAmplitude: VBFNLO failed to set parameter '"
 		      << name << "' to " << value << "\n"
-		      << Exception::abortnow;
+		      << Exception::runerror;
 
 }
 
@@ -112,7 +112,7 @@ void VBFNLOAmplitude::loadVBFNLO() {
 	  DynamicLoader::load("libVBFNLO.so") ) )
     throw Exception() << "VBFNLOAmplitude: failed to load libVBFNLO.so/dylib\n"
 		      << DynamicLoader::lastErrorMessage
-		      << Exception::abortnow;
+		      << Exception::runerror;
 }
 
 bool VBFNLOAmplitude::startOLP(const map<pair<Process,int>,int>& procs) {

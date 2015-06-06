@@ -81,21 +81,21 @@ double NLOJetAmplitudeg6::treeLevel2(const vector<int>& c) const {
 
 double NLOJetAmplitudeg6::treeOneLoop(const vector<int>&) const {
   throw Exception() << name() << " does not provide one-loop matrix elements"
-		    << Exception::abortnow;
+		    << Exception::runerror;
   return 0.;
 }
 
 double NLOJetAmplitudeg6::treeLevelCC(pair<int,int>,
 				      const vector<int>&) const {
   throw Exception() << name() << " does not provide colour-correlated matrix elements"
-		    << Exception::abortnow;
+		    << Exception::runerror;
   return 0.;
 }
 
 pair<double,Complex> NLOJetAmplitudeg6::treeLevelSCC(pair<int,int>,
 						      const vector<int>&) const {
   throw Exception() << name() << " does not provide colour-correlated matrix elements"
-		    << Exception::abortnow;
+		    << Exception::runerror;
   return make_pair(0.,0.);
 }
 

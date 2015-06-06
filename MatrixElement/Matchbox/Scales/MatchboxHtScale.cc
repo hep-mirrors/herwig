@@ -74,7 +74,7 @@ Energy2 MatchboxHtScale::renormalizationScale() const {
   if ( !gotone && lastXCombPtr()->willPassCuts() )
     throw Exception() << "MatchboxHtScale::renormalizationScale(): "
 		      << "No jets could be found. Check your setup."
-		      << Exception::abortnow;
+		      << Exception::runerror;
 
   Energy mtNonJetSum = 
     sqrt(nonJetMomentum.perp2() + nonJetMomentum.m2());

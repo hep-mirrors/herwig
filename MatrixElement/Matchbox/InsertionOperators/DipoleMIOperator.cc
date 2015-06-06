@@ -126,34 +126,12 @@ void DipoleMIOperator::setXComb(tStdXCombPtr xc) {
   }
 }
 
-//////////////////////////////////////////////////////////////////////
-
-// vector<int> DipoleMIOperator::NLightJetVec() const {
-// 
-//   const map<string,PDVector>& theParticleGroups = factory()->particleGroups();
-//   map<string,PDVector>::const_iterator theIt = theParticleGroups.find("j");
-//   if ( theIt == theParticleGroups.end() )
-//     throw Exception() << "DipoleMIOperator::NLightJetVec(): Could not find a jet particle group named 'j'" << Exception::abortnow;
-// 
-//   const PDVector& theJetConstitutents = theIt->second;
-//   vector<int> theNLightJetVec;
-// 
-//   for ( PDVector::const_iterator theP = theJetConstitutents.begin();
-//         theP != theJetConstitutents.end(); ++theP ) {
-//     if ( (**theP).id() > 0 && (**theP).id() < 7 && (**theP).hardProcessMass() == ZERO )
-//       theNLightJetVec.push_back( (**theP).id() );
-//   }
-// 
-//   return theNLightJetVec;
-// 
-// }
-
 vector<int> DipoleMIOperator::NHeavyJetVec() const {
 
   const map<string,PDVector>& theParticleGroups = factory()->particleGroups();
   map<string,PDVector>::const_iterator theIt = theParticleGroups.find("j");
   if ( theIt == theParticleGroups.end() )
-    throw Exception() << "DipoleMIOperator::NHeavyJetVec(): Could not find a jet particle group named 'j'" << Exception::abortnow;
+    throw Exception() << "DipoleMIOperator::NHeavyJetVec(): Could not find a jet particle group named 'j'" << Exception::runerror;
 
   const PDVector& theJetConstitutents = theIt->second;
   vector<int> theNHeavyJetVec;
@@ -167,62 +145,6 @@ vector<int> DipoleMIOperator::NHeavyJetVec() const {
   return theNHeavyJetVec;
 
 }
-
-// vector<int> DipoleMIOperator::NLightBornVec() const {
-// 
-//   // For the moment just count all quark and antiquark
-//   // constituents in the Born process.
-// 
-//   vector<int> theNLightBornVec;
-// 
-//   for ( cPDVector::const_iterator j = mePartonData().begin();
-// 	j != mePartonData().end(); ++j ) {
-//     if ( abs((**j).id()) < 7 && (**j).hardProcessMass() == ZERO )
-//       theNLightBornVec.push_back( (**j).id() );
-//   }
-// 
-//   return theNLightBornVec;
-// 
-// }
-
-// vector<int> DipoleMIOperator::NHeavyBornVec() const {
-// 
-//   // For the moment just count all quark and antiquark
-//   // constituents in the Born process.
-// 
-//   vector<int> theNHeavyBornVec;
-// 
-//   for ( cPDVector::const_iterator j = mePartonData().begin();
-// 	j != mePartonData().end(); ++j ) {
-//     if ( abs((**j).id()) < 7 && (**j).hardProcessMass() != ZERO )
-//       theNHeavyBornVec.push_back( (**j).id() );
-//   }
-// 
-//   return theNHeavyBornVec;
-// 
-// }
-
-// vector<int> DipoleMIOperator::NLightProtonVec() const {
-// 
-//   const map<string,PDVector>& theParticleGroups = factory()->particleGroups();
-//   map<string,PDVector>::const_iterator theIt = theParticleGroups.find("p");
-//   if ( theIt == theParticleGroups.end() )
-//     throw Exception() << "DipoleMIOperator::NLightProtonVec(): Could not find a proton particle group named 'p'" << Exception::abortnow;
-// 
-//   const PDVector& theProtonConstitutents = theIt->second;
-//   vector<int> theNLightProtonVec;
-// 
-//   for ( PDVector::const_iterator theP = theProtonConstitutents.begin();
-//         theP != theProtonConstitutents.end(); ++theP ) {
-//     if ( (**theP).id() > 0 && (**theP).id() < 7 && (**theP).hardProcessMass() == ZERO )
-//       theNLightProtonVec.push_back( (**theP).id() );
-//   }
-// 
-//   return theNLightProtonVec;
-// 
-// }
-
-//////////////////////////////////////////////////////////////////////
 
 double DipoleMIOperator::me2() const {
 
@@ -240,9 +162,9 @@ double DipoleMIOperator::me2() const {
   // The sum over N_F is performed in DipoleMIOperator::Vj().
 
   if ( !isExpanded() )
-    throw InitException() << "DipoleMIOperator: Only implemented in the expanded convention.";
+    throw Exception() << "DipoleMIOperator: Only implemented in the expanded convention." << Exception::runerror;
   if ( isDR() )
-    throw InitException() << "DipoleMIOperator: Not implemented for dimensional reduction.";
+    throw Exception() << "DipoleMIOperator: Not implemented for dimensional reduction." << Exception::runerror;
 
   Energy2 mu2 = lastBorn()->mu2();
 
@@ -262,7 +184,7 @@ double DipoleMIOperator::me2() const {
     }
 
     if ( apply(*j) && idj < 2 && (**j).hardProcessMass() != ZERO )
-      throw InitException() << "DipoleMIOperator: Initial state partons must not be massive!";
+      throw Exception() << "DipoleMIOperator: Initial state partons must not be massive!" << Exception::runerror;
 
     idk = 0;
 
@@ -278,7 +200,7 @@ double DipoleMIOperator::me2() const {
       }
 
       if ( apply(*k) && idk < 2 && (**k).hardProcessMass() != ZERO )
-        throw InitException() << "DipoleMIOperator: Initial state partons must not be massive!";
+        throw Exception() << "DipoleMIOperator: Initial state partons must not be massive!" << Exception::runerror;
 
       double delta = 0.0;
 
@@ -352,9 +274,9 @@ double DipoleMIOperator::me2() const {
 double DipoleMIOperator::oneLoopDoublePole() const {
 
   if ( !isExpanded() )
-    throw InitException() << "DipoleMIOperator: Only implemented in the expanded convention.";
+    throw Exception() << "DipoleMIOperator: Only implemented in the expanded convention." << Exception::runerror;
   if ( isDR() )
-    throw InitException() << "DipoleMIOperator: Not implemented for dimensional reduction.";
+    throw Exception() << "DipoleMIOperator: Not implemented for dimensional reduction." << Exception::runerror;
 
   double res = 0.;
 
@@ -370,7 +292,7 @@ double DipoleMIOperator::oneLoopDoublePole() const {
     }
 
     if ( apply(*j) && idj < 2 && (**j).hardProcessMass() != ZERO )
-      throw InitException() << "DipoleMIOperator: Initial state partons must not be massive!";
+      throw Exception() << "DipoleMIOperator: Initial state partons must not be massive!" << Exception::runerror;
 
     idk = 0;
 
@@ -386,7 +308,7 @@ double DipoleMIOperator::oneLoopDoublePole() const {
       }
 
       if ( apply(*k) && idk < 2 && (**k).hardProcessMass() != ZERO )
-        throw InitException() << "DipoleMIOperator: Initial state partons must not be massive!";
+        throw Exception() << "DipoleMIOperator: Initial state partons must not be massive!" << Exception::runerror;
 
       double delta = 0.0;
 
@@ -416,9 +338,9 @@ double DipoleMIOperator::oneLoopDoublePole() const {
 double DipoleMIOperator::oneLoopSinglePole() const {
 
   if ( !isExpanded() )
-    throw InitException() << "DipoleMIOperator: Only implemented in the expanded convention.";
+    throw Exception() << "DipoleMIOperator: Only implemented in the expanded convention." << Exception::runerror;
   if ( isDR() )
-    throw InitException() << "DipoleMIOperator: Not implemented for dimensional reduction.";
+    throw Exception() << "DipoleMIOperator: Not implemented for dimensional reduction." << Exception::runerror;
 
   Energy2 mu2 = lastBorn()->mu2();
 
@@ -436,7 +358,7 @@ double DipoleMIOperator::oneLoopSinglePole() const {
     }
 
     if ( apply(*j) && idj < 2 && (**j).hardProcessMass() != ZERO )
-      throw InitException() << "DipoleMIOperator: Initial state partons must not be massive!";
+      throw Exception() << "DipoleMIOperator: Initial state partons must not be massive!" << Exception::runerror;
 
     idk = 0;
 
@@ -452,7 +374,7 @@ double DipoleMIOperator::oneLoopSinglePole() const {
       }
 
       if ( apply(*k) && idk < 2 && (**k).hardProcessMass() != ZERO )
-        throw InitException() << "DipoleMIOperator: Initial state partons must not be massive!";
+        throw Exception() << "DipoleMIOperator: Initial state partons must not be massive!" << Exception::runerror;
 
       double delta = 0.0;
 

@@ -69,7 +69,7 @@ void HEJFactory::makeME(cPDPtr ini, cPDPtr inj, unsigned int n) {
   string pname = mename.str();
   Ptr<HEJMEBase>::ptr myme = theHEJME->cloneMe();
   if ( ! (generator()->preinitRegister(myme,pname) ) )
-    throw InitException() << "HEJFactory: Matrix element " << pname << " already existing.";
+    throw Exception() << "HEJFactory: Matrix element " << pname << " already existing." << Exception::runerror;
   myme->cloneDependencies();
   myme->factory(this);
   MEs().push_back(myme);
@@ -83,7 +83,7 @@ SGeneratorFlags HEJFactory::setup(tStdXCombPtr) const {
   if ( abs(generator()->eventHandler()->incoming().first->id()) != ParticleID::pplus ||
        abs(generator()->eventHandler()->incoming().second->id()) != ParticleID::pplus )
     throw Exception() << "HEJFactory: Can only handle proton/antiproton beams so far\n"
-		      << Exception::abortnow;
+		      << Exception::runerror;
 
   flags.beam[0] = generator()->eventHandler()->incoming().first->id() > 0 ? 1 : -1;
   flags.beam[1] = generator()->eventHandler()->incoming().second->id() > 0 ? 1 : -1;
@@ -93,7 +93,7 @@ SGeneratorFlags HEJFactory::setup(tStdXCombPtr) const {
 
   if ( theExtremalPTMin > theJetPTMin )
     throw Exception() << "HEJFactory: Minimum jet pt in Cuts needs to be smaller than HEJFactory:JetPTMin"
-		      << Exception::abortnow;
+		      << Exception::runerror;
 
   flags.jetptmin = theJetPTMin/GeV;
   flags.extpartonptmin =  theExtremalPTMin/GeV;

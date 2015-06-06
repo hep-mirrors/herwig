@@ -56,7 +56,7 @@ Energy2 MatchboxLeptonMassScale::renormalizationScale() const {
   if ( firstLepton < 0 || secondLepton < 0 )
     throw Exception() << "MatchboxLeptonMassScale::renormalizationScale(): "
 		      << "No lepton pair could be found. Check your setup."
-		      << Exception::abortnow;
+		      << Exception::runerror;
 
   if ( (firstLepton < 2 && secondLepton > 1) || 
        (firstLepton > 1 && secondLepton < 2) )

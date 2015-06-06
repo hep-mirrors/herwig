@@ -111,7 +111,7 @@ void MatchboxMEBase::getDiagrams() const {
 
   throw Exception()
     << "MatchboxMEBase::getDiagrams() expects a Tree2toNGenerator and ProcessData object.\n"
-    << "Please check your setup." << Exception::abortnow;
+    << "Please check your setup." << Exception::runerror;
 
 }
 
@@ -124,7 +124,7 @@ MatchboxMEBase::diagrams(const DiagramVector & diags) const {
 
   throw Exception()
     << "MatchboxMEBase::diagrams() expects a MatchboxPhasespace object.\n"
-    << "Please check your setup." << Exception::abortnow;
+    << "Please check your setup." << Exception::runerror;
   return Selector<MEBase::DiagramIndex>();
 
 }
@@ -333,7 +333,7 @@ bool MatchboxMEBase::generateKinematics(const double * r) {
 
   throw Exception()
     << "MatchboxMEBase::generateKinematics() expects a MatchboxPhasespace object.\n"
-    << "Please check your setup." << Exception::abortnow;
+    << "Please check your setup." << Exception::runerror;
 
   return false;
 
@@ -369,7 +369,7 @@ int MatchboxMEBase::nDimBorn() const {
 
   throw Exception()
     << "MatchboxMEBase::nDim() expects a MatchboxPhasespace object.\n"
-    << "Please check your setup." << Exception::abortnow;
+    << "Please check your setup." << Exception::runerror;
 
   return 0;
 
@@ -409,7 +409,7 @@ Energy2 MatchboxMEBase::factorizationScale() const {
 
   throw Exception()
     << "MatchboxMEBase::factorizationScale() expects a MatchboxScaleChoice object.\n"
-    << "Please check your setup." << Exception::abortnow;
+    << "Please check your setup." << Exception::runerror;
 
   return ZERO;
 
@@ -422,7 +422,7 @@ Energy2 MatchboxMEBase::renormalizationScale() const {
 
   throw Exception()
     << "MatchboxMEBase::renormalizationScale() expects a MatchboxScaleChoice object.\n"
-    << "Please check your setup." << Exception::abortnow;
+    << "Please check your setup." << Exception::runerror;
 
   return ZERO;
 
@@ -541,7 +541,7 @@ double MatchboxMEBase::me2() const {
 
   throw Exception()
     << "MatchboxMEBase::me2() expects a MatchboxAmplitude object.\n"
-    << "Please check your setup." << Exception::abortnow;
+    << "Please check your setup." << Exception::runerror;
   return 0.;
 
 }
@@ -565,7 +565,7 @@ double MatchboxMEBase::largeNME2(Ptr<ColourBasis>::tptr largeNBasis) const {
 
   throw Exception()
     << "MatchboxMEBase::largeNME2() expects a MatchboxAmplitude object.\n"
-    << "Please check your setup." << Exception::abortnow;
+    << "Please check your setup." << Exception::runerror;
   return 0.;
 
 }
@@ -744,7 +744,7 @@ double MatchboxMEBase::oneLoopInterference() const {
 
   throw Exception()
     << "MatchboxMEBase::oneLoopInterference() expects a MatchboxAmplitude object.\n"
-    << "Please check your setup." << Exception::abortnow;
+    << "Please check your setup." << Exception::runerror;
   return 0.;
 
 }
@@ -1045,7 +1045,7 @@ MatchboxMEBase::getDipoles(const vector<Ptr<SubtractionDipole>::ptr>& dipoles,
 		    << (**d).name() << ".[(" 
 		    << emitter << "," << emission << ")," << spectator << "]";
 	      if ( ! (generator()->preinitRegister(nDipole,dname.str()) ) )
-		throw InitException() << "MatchboxMEBase::getDipoles(): Dipole " << dname.str() << " already existing.";
+		throw Exception() << "MatchboxMEBase::getDipoles(): Dipole " << dname.str() << " already existing." << Exception::runerror;
 	      if ( !factory()->reweighters().empty() ) {
 		for ( vector<ReweightPtr>::const_iterator rw = factory()->reweighters().begin();
 		      rw != factory()->reweighters().end(); ++rw )
@@ -1091,7 +1091,7 @@ double MatchboxMEBase::colourCorrelatedME2(pair<int,int> ij) const {
 
   throw Exception()
     << "MatchboxMEBase::colourCorrelatedME2() expects a MatchboxAmplitude object.\n"
-    << "Please check your setup." << Exception::abortnow;
+    << "Please check your setup." << Exception::runerror;
   return 0.;
 
 }
@@ -1116,7 +1116,7 @@ double MatchboxMEBase::largeNColourCorrelatedME2(pair<int,int> ij,
 
   throw Exception()
     << "MatchboxMEBase::largeNColourCorrelatedME2() expects a MatchboxAmplitude object.\n"
-    << "Please check your setup." << Exception::abortnow;
+    << "Please check your setup." << Exception::runerror;
   return 0.;
 
 }
@@ -1139,7 +1139,7 @@ double MatchboxMEBase::spinColourCorrelatedME2(pair<int,int> ij,
 
   throw Exception()
     << "MatchboxMEBase::spinColourCorrelatedME2() expects a MatchboxAmplitude object.\n"
-    << "Please check your setup." << Exception::abortnow;
+    << "Please check your setup." << Exception::runerror;
   return 0.;
 
 }
@@ -1162,7 +1162,7 @@ double MatchboxMEBase::spinCorrelatedME2(pair<int,int> ij,
 
   throw Exception()
     << "MatchboxMEBase::spinCorrelatedME2() expects a MatchboxAmplitude object.\n"
-    << "Please check your setup." << Exception::abortnow;
+    << "Please check your setup." << Exception::runerror;
   return 0.;
 
 }
@@ -1363,7 +1363,7 @@ void MatchboxMEBase::cloneDependencies(const std::string& prefix) {
     ostringstream pname;
     pname << (prefix == "" ? fullName() : prefix) << "/" << myPhasespace->name();
     if ( ! (generator()->preinitRegister(myPhasespace,pname.str()) ) )
-      throw InitException() << "MatchboxMEBase::cloneDependencies(): Phasespace generator " << pname.str() << " already existing.";
+      throw Exception() << "MatchboxMEBase::cloneDependencies(): Phasespace generator " << pname.str() << " already existing." << Exception::runerror;
     myPhasespace->cloneDependencies(pname.str());
     phasespace(myPhasespace);
   }
@@ -1375,7 +1375,7 @@ void MatchboxMEBase::cloneDependencies(const std::string& prefix) {
     ostringstream pname;
     pname << (prefix == "" ? fullName() : prefix) << "/" << myAmplitude->name();
     if ( ! (generator()->preinitRegister(myAmplitude,pname.str()) ) )
-      throw InitException() << "MatchboxMEBase::cloneDependencies(): Amplitude " << pname.str() << " already existing.";
+      throw Exception() << "MatchboxMEBase::cloneDependencies(): Amplitude " << pname.str() << " already existing." << Exception::runerror;
     myAmplitude->cloneDependencies(pname.str());
     matchboxAmplitude(myAmplitude);
     amplitude(myAmplitude);
@@ -1388,7 +1388,7 @@ void MatchboxMEBase::cloneDependencies(const std::string& prefix) {
     ostringstream pname;
     pname << (prefix == "" ? fullName() : prefix) << "/" << myScaleChoice->name();
     if ( ! (generator()->preinitRegister(myScaleChoice,pname.str()) ) )
-      throw InitException() << "MatchboxMEBase::cloneDependencies(): Scale choice " << pname.str() << " already existing.";
+      throw Exception() << "MatchboxMEBase::cloneDependencies(): Scale choice " << pname.str() << " already existing." << Exception::runerror;
     scaleChoice(myScaleChoice);
   }
 
@@ -1398,7 +1398,7 @@ void MatchboxMEBase::cloneDependencies(const std::string& prefix) {
     ostringstream pname;
     pname << (prefix == "" ? fullName() : prefix) << "/" << (**rw).name();
     if ( ! (generator()->preinitRegister(myReweight,pname.str()) ) )
-      throw InitException() << "MatchboxMEBase::cloneDependencies(): Reweight " << pname.str() << " already existing.";
+      throw Exception() << "MatchboxMEBase::cloneDependencies(): Reweight " << pname.str() << " already existing." << Exception::runerror;
     myReweight->cloneDependencies(pname.str());
     *rw = myReweight;
   }
@@ -1409,7 +1409,7 @@ void MatchboxMEBase::cloneDependencies(const std::string& prefix) {
     ostringstream pname;
     pname << (prefix == "" ? fullName() : prefix) << "/" << (**v).name();
     if ( ! (generator()->preinitRegister(myIOP,pname.str()) ) )
-      throw InitException() << "MatchboxMEBase::cloneDependencies(): Insertion operator " << pname.str() << " already existing.";
+      throw Exception() << "MatchboxMEBase::cloneDependencies(): Insertion operator " << pname.str() << " already existing." << Exception::runerror;
     *v = myIOP;
   }
 
