@@ -295,7 +295,6 @@ reconstructHardJets(ShowerTreePtr hard,
   catch(KinematicsReconstructionVeto) {
     _progenitor=tShowerParticlePtr();
     _intrinsic.clear();
-    _currentTree = tShowerTreePtr();
     for(map<tPPtr,vector<LorentzRotation> >::const_iterator bit=_boosts.begin();bit!=_boosts.end();++bit) {
       for(vector<LorentzRotation>::const_reverse_iterator rit=bit->second.rbegin();rit!=bit->second.rend();++rit) {
 	LorentzRotation rot = rit->inverse();
@@ -309,6 +308,7 @@ reconstructHardJets(ShowerTreePtr hard,
 	bit->first->transform(rot,false);
       }
     }
+    _currentTree = tShowerTreePtr();
     _treeBoosts.clear();
     return false;
   }
@@ -340,7 +340,6 @@ reconstructHardJets(ShowerTreePtr hard,
        && parent->momentum().rho() > hadron->momentum().rho()) {
       _progenitor=tShowerParticlePtr();
       _intrinsic.clear();
-      _currentTree = tShowerTreePtr();
       for(map<tPPtr,vector<LorentzRotation> >::const_iterator bit=_boosts.begin();bit!=_boosts.end();++bit) {
 	for(vector<LorentzRotation>::const_reverse_iterator rit=bit->second.rbegin();rit!=bit->second.rend();++rit) {
 	  LorentzRotation rot = rit->inverse();
@@ -354,6 +353,7 @@ reconstructHardJets(ShowerTreePtr hard,
 	  bit->first->transform(rot,false);
 	}
       }
+      _currentTree = tShowerTreePtr();
       _treeBoosts.clear();
       return false;
     }
@@ -474,9 +474,17 @@ bool QTildeReconstructor::
 reconstructDecayJets(ShowerTreePtr decay,
 		     ShowerInteraction::Type) const {
   _currentTree = decay;
+  // extract the particles from the ShowerTree
+  vector<ShowerProgenitorPtr> ShowerHardJets=decay->extractProgenitors();
+  for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
+    _boosts[ShowerHardJets[ix]->progenitor()] = vector<LorentzRotation>();
+  }
+  for(map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> >::const_iterator
+	tit  = _currentTree->treelinks().begin();
+      tit != _currentTree->treelinks().end();++tit) {
+    _treeBoosts[tit->first] = vector<LorentzRotation>();
+  }
   try {
-    // extract the particles from the ShowerTree
-    vector<ShowerProgenitorPtr> ShowerHardJets=decay->extractProgenitors();
     bool radiated[2]={false,false};
     // find the decaying particle and check if particles radiated
     ShowerProgenitorPtr initial;
@@ -617,9 +625,25 @@ reconstructDecayJets(ShowerTreePtr decay,
     }
   }
   catch(KinematicsReconstructionVeto) {
+    for(map<tPPtr,vector<LorentzRotation> >::const_iterator bit=_boosts.begin();bit!=_boosts.end();++bit) {
+      for(vector<LorentzRotation>::const_reverse_iterator rit=bit->second.rbegin();rit!=bit->second.rend();++rit) {
+	LorentzRotation rot = rit->inverse();
+	bit->first->transform(rot);
+      }
+    }
+    _boosts.clear();
+    for(map<tShowerTreePtr,vector<LorentzRotation> >::const_iterator bit=_treeBoosts.begin();bit!=_treeBoosts.end();++bit) {
+      for(vector<LorentzRotation>::const_reverse_iterator rit=bit->second.rbegin();rit!=bit->second.rend();++rit) {
+	LorentzRotation rot = rit->inverse();
+	bit->first->transform(rot,false);
+      }
+    }
+    _treeBoosts.clear();
     _currentTree = tShowerTreePtr();
     return false;
   }
+  _boosts.clear();
+  _treeBoosts.clear();
   _currentTree = tShowerTreePtr();
   return true;
 }
