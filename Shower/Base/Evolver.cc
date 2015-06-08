@@ -2531,16 +2531,25 @@ void Evolver::connectTrees(ShowerTreePtr showerTree,
       if( (**bit).branchingParticle()->id() !=  (**pit).progenitor()->id() ) continue;
       if( (**bit).branchingParticle()->isFinalState() !=
 	  (**pit).progenitor()->isFinalState() ) continue;
-      Energy2 dtest = 
-	sqr( (**pit).progenitor()->momentum().x() - (**bit).showerMomentum().x() ) +
-	sqr( (**pit).progenitor()->momentum().y() - (**bit).showerMomentum().y() ) +
-	sqr( (**pit).progenitor()->momentum().z() - (**bit).showerMomentum().z() ) +
-	sqr( (**pit).progenitor()->momentum().t() - (**bit).showerMomentum().t() );
-      // add mass difference for identical particles (e.g. Z0 Z0 production)
-      dtest += 1e10*sqr((**pit).progenitor()->momentum().m()-(**bit).showerMomentum().m());
-      if( dtest < dmin ) {
-	partner = *pit;
-	dmin = dtest;
+      if( (**pit).progenitor()->isFinalState() ) {
+	Energy2 dtest =
+	  sqr( (**pit).progenitor()->momentum().x() - (**bit).showerMomentum().x() ) +
+	  sqr( (**pit).progenitor()->momentum().y() - (**bit).showerMomentum().y() ) +
+	  sqr( (**pit).progenitor()->momentum().z() - (**bit).showerMomentum().z() ) +
+	  sqr( (**pit).progenitor()->momentum().t() - (**bit).showerMomentum().t() );
+	// add mass difference for identical particles (e.g. Z0 Z0 production)
+	dtest += 1e10*sqr((**pit).progenitor()->momentum().m()-(**bit).showerMomentum().m());
+	if( dtest < dmin ) {
+	  partner = *pit;
+	  dmin = dtest;
+	}
+      }
+      else {
+	// ensure directions are right
+	if((**pit).progenitor()->momentum().z()/(**bit).showerMomentum().z()>ZERO) {
+	  partner = *pit;
+	  break;
+	}
       }
     }
     if(!partner) throw Exception() << "Failed to match shower and hard trees in Evolver::hardestEmission"
