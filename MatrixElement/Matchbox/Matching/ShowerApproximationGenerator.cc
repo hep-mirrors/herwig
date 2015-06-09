@@ -227,6 +227,7 @@ void ShowerApproximationGenerator::
 handle(EventHandler & eh, const tPVector &,
        const Hint &) {
   theFactory->setHardTreeEmitter(-1);
+  theFactory->setHardTreeSpectator(-1);
   theFactory->setHardTreeSubprocess(SubProPtr());
 
 
@@ -365,6 +366,7 @@ handle(EventHandler & eh, const tPVector &,
   else{
     theFactory->setHardTreeSubprocess(newSub);
     theFactory->setHardTreeEmitter(winnerKernel->dipole()->bornEmitter()); 
+    theFactory->setHardTreeSpectator(winnerKernel->dipole()->bornSpectator()); 
   }
 
 }
