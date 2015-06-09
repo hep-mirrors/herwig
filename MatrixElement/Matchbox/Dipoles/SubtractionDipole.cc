@@ -893,8 +893,6 @@ void SubtractionDipole::logME2() const {
   generator()->log() << "with x1 = " << realxc->lastX1() << " x2 = " << realxc->lastX2() << "\n"
 		     << "sHat/GeV2 = " << (realxc->lastSHat()/GeV2) << "\n";
 
-  generator()->log() << "me2 = " << lastME2() << "\n" << flush;
-
 }
 
 void SubtractionDipole::logDSigHatDR(double effectiveJac) const {

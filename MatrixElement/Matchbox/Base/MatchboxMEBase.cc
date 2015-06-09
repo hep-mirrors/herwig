@@ -655,15 +655,11 @@ CrossSection MatchboxMEBase::dSigHatDR() const {
   getPDFWeight();
 
   if ( !lastXCombPtr()->willPassCuts() ) {
-    lastME2(0.0);
     lastMECrossSection(ZERO);
     return lastMECrossSection();
   }
 
   double xme2 = me2();
-  lastME2(xme2);
-
- 
   
   if (factory()->verboseDia()){
     double diagweightsum = 0.0;
@@ -675,8 +671,6 @@ CrossSection MatchboxMEBase::dSigHatDR() const {
     double units = pow(lastSHat() / GeV2, mePartonData().size() - 4.);
     bookMEoverDiaWeight(log(xme2/(diagweightsum*piWeight*units)));//
   }
-
-  
   
   if ( xme2 == 0. && !oneLoopNoBorn() ) {
     lastMECrossSection(ZERO);
@@ -1338,8 +1332,7 @@ void MatchboxMEBase::logME2() const {
 		       << (*pit/GeV) << "\n";
 
   generator()->log() << "with x1 = " << lastX1() << " x2 = " << lastX2() << "\n"
-		     << "sHat/GeV2 = " << (lastSHat()/GeV2) 
-		     << " me2 = " << lastME2() << "\n" << flush;
+		     << "sHat/GeV2 = " << (lastSHat()/GeV2) << "\n" << flush;
 
 }
 
