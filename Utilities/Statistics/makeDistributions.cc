@@ -15,6 +15,7 @@
 #include <fstream>
 #include <vector>
 #include <cmath>
+#include <iomanip>
 
 using namespace Statistics;
 using namespace XML;
@@ -39,6 +40,7 @@ int main(int argc, char* argv[]) {
 
   Run combined;
   ifstream firstIn(argv[2]);
+  firstIn >> setprecision(16);
   XML::Element elemx = ElementIO::get(firstIn);
   combined.fromXML(elemx);
   combined.name(outName);
@@ -46,6 +48,7 @@ int main(int argc, char* argv[]) {
   for ( int k = 3; k < argc; ++k ) {
     Run next;
     ifstream nextIn(argv[k]);
+    nextIn >> setprecision(16);
     elemx = ElementIO::get(nextIn);
     next.fromXML(elemx);
     combined += next;
@@ -78,6 +81,7 @@ int main(int argc, char* argv[]) {
   elem.append(xhistos);
 
   ofstream out(outFileName.c_str());
+  out << setprecision(16);
   ElementIO::put(elem,out);
 
 }

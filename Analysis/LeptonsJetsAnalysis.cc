@@ -366,8 +366,8 @@ void LeptonsJetsAnalysis::dofinish() {
 
   elem.appendAttribute("name",generator()->runName());
   elem.appendAttribute("attemptedPoints",attemptedPoints);
-  elem.appendAttribute("sumOfWeights",sumOfWeights*maxXSection/nanobarn);
-  elem.appendAttribute("sumOfSquaredWeights",sumOfSquaredWeights*sqr(maxXSection/nanobarn));
+  elem.appendAttribute("sumOfWeights",sumOfWeights*maxXSection/picobarn);
+  elem.appendAttribute("sumOfSquaredWeights",sumOfSquaredWeights*sqr(maxXSection/picobarn));
 
   XML::Element xhistos(XML::ElementTypes::Element,"Histograms");
 
@@ -527,6 +527,7 @@ void LeptonsJetsAnalysis::dofinish() {
 
   string fname = name() + ".xml";
   ofstream runXML(fname.c_str());
+  runXML << setprecision(16);
   XML::ElementIO::put(elem,runXML);
 
 }
