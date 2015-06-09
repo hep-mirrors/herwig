@@ -13,7 +13,12 @@ insert Cuts:OneCuts[3] WBosonCut
 insert Cuts:OneCuts[4] ZBosonCut
 insert Cuts:OneCuts[5] HiggsBosonCut
 insert Cuts:OneCuts[6] ChargedLeptonCut
-insert Cuts:TwoCuts[0] ChargedLeptonPairMassCut
+insert Cuts:TwoCuts[0] LeptonPairMassCut
+insert Cuts:TwoCuts[1] ChargedLeptonPairMassCut
+insert Cuts:TwoCuts[2] LeptonDeltaRCut
+insert Cuts:TwoCuts[3] ChargedLeptonDeltaRCut
+insert Cuts:MultiCuts[0] PhotonIsolationCut
+insert Cuts:MultiCuts[1] MissingPtCut
 
 cd /Herwig/MatrixElements/Matchbox
 
