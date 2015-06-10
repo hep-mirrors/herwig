@@ -768,7 +768,7 @@ void MadGraphAmplitude::Init() {
    
   static ClassDocumentation<MadGraphAmplitude> 
     documentation("MadGraphAmplitude",
-		  "Matrix elements have been calculated using MadGraph5 \cite{Alwall:2011uj}",
+		  "Matrix elements have been calculated using MadGraph5 \\cite{Alwall:2011uj}",
 		  "%\\cite{Alwall:2011uj}\n"
 		  "\\bibitem{Alwall:2011uj}\n"
 		  "J. Alwall et al.,\n"

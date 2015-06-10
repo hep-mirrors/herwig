@@ -416,7 +416,7 @@ void OpenLoopsAmplitude::Init() {
 
   static ClassDocumentation<OpenLoopsAmplitude> 
     documentation("OpenLoopsAmplitude implements an interface to OpenLoops.",
-		  "Matrix elements have been calculated using OpenLoops \cite{Cascioli:2011va}"
+		  "Matrix elements have been calculated using OpenLoops \\cite{Cascioli:2011va}"
 		  "%\\cite{Cascioli:2011va}\n"
 		  "\\bibitem{Cascioli:2011va}\n"
 		  "F.~Cascioli et al.,\n"
