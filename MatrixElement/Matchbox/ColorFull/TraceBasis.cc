@@ -226,7 +226,13 @@ void TraceBasis::Init() {
 
   static ClassDocumentation<TraceBasis> documentation
     ("TraceBasis implements the trace colour basis.",
-     "The colour algebra has been performed using ColorFull.");
+     "The colour algebra has been performed using ColorFull \\cite{Sjodahl:2014opa}",
+     "%\\cite{Sjodahl:2014opa}\n"
+     "\\bibitem{Sjodahl:2014opa}\n"
+     "M.~Sjodahl,\n"
+     "``ColorFull -- a C++ library for calculations in SU(Nc)color space,''\n"
+     "arXiv:1412.3967 [hep-ph].\n"
+     "%%CITATION = ARXIV:1412.3967;%%");
 
 }
 

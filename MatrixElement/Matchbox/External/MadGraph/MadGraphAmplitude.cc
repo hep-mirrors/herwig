@@ -766,7 +766,15 @@ describeHerwigMadGraphAmplitude("Herwig::MadGraphAmplitude", "HwMatchboxMadGraph
  
 void MadGraphAmplitude::Init() {
    
-  static ClassDocumentation<MadGraphAmplitude> documentation  ("MadGraphAmplitude","Matrix elements have been calculated using MadGraph5");
+  static ClassDocumentation<MadGraphAmplitude> 
+    documentation("MadGraphAmplitude",
+		  "Matrix elements have been calculated using MadGraph5 \cite{Alwall:2011uj}",
+		  "%\\cite{Alwall:2011uj}\n"
+		  "\\bibitem{Alwall:2011uj}\n"
+		  "J. Alwall et al.,\n"
+		  "``MadGraph 5 : Going Beyond,''\n"
+		  "arXiv:1106.0522 [hep-ph].\n"
+		  "%%CITATION = ARXIV:1106.0522;%%");
    
   static Parameter<MadGraphAmplitude,string> interfaceProcessPath
     ("ProcessPath",

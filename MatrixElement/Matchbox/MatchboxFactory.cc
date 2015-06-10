@@ -1446,14 +1446,18 @@ void MatchboxFactory::Init() {
   static ClassDocumentation<MatchboxFactory> documentation
     ("MatchboxFactory",
      "NLO QCD corrections have been calculated "
-     "using Matchbox \\cite{Platzer:2011bc}",
+     "using Matchbox \\cite{Platzer:2011bc}, \\cite{Matchbox:2015}",
      "%\\cite{Platzer:2011bc}\n"
      "\\bibitem{Platzer:2011bc}\n"
      "S.~Platzer and S.~Gieseke,\n"
      "``Dipole Showers and Automated NLO Matching in Herwig++,''\n"
      "arXiv:1109.6256 [hep-ph].\n"
-     "%%CITATION = ARXIV:1109.6256;%%");
-
+     "%%CITATION = ARXIV:1109.6256;%%\n"
+     "%\\cite{Matchbox:2015}\n"
+     "\\bibitem{Matchbox:2015}\n"
+     "Herwig++ collaboration,\n"
+     "``Precision LHC Event Generation with Herwig++,''\n"
+     "in preparation.");
 
   static Reference<MatchboxFactory,Tree2toNGenerator> interfaceDiagramGenerator
     ("DiagramGenerator",

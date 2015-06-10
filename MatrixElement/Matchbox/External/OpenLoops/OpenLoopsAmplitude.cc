@@ -414,7 +414,15 @@ DescribeClass<OpenLoopsAmplitude, MatchboxOLPME> describeHerwigOpenLoopsAmplitud
 
 void OpenLoopsAmplitude::Init() {
 
-  static ClassDocumentation<OpenLoopsAmplitude> documentation("OpenLoopsAmplitude implements an interface to OpenLoops.","Matrix elements have been calculated using OpenLoops.");
+  static ClassDocumentation<OpenLoopsAmplitude> 
+    documentation("OpenLoopsAmplitude implements an interface to OpenLoops.",
+		  "Matrix elements have been calculated using OpenLoops \cite{Cascioli:2011va}"
+		  "%\\cite{Cascioli:2011va}\n"
+		  "\\bibitem{Cascioli:2011va}\n"
+		  "F.~Cascioli et al.,\n"
+		  "``Scattering Amplitudes with Open Loops,''\n"
+		  "arXiv:1111.5206 [hep-ph].\n"
+		  "%%CITATION = ARXIV:1111.5206;%%");
   
   static Switch<OpenLoopsAmplitude,bool> interfaceUseComplMass
   ("ComplexMassScheme",

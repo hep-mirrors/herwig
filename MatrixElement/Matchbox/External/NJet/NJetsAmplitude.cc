@@ -281,7 +281,13 @@ void NJetsAmplitude::Init() {
 
   static ClassDocumentation<NJetsAmplitude> documentation
     ("NJetsAmplitude implements an interface to NJets.",
-     "Matrix elements have been calculated using NJet.");
+     "Matrix elements have been calculated using NJet \cite{Badger:2012pg}"
+     "%\\cite{Badger:2012pg}\n"
+     "\\bibitem{Badger:2012pg}\n"
+     "S.~Badger et al.,\n"
+     "``Numerical evaluation of virtual corrections to multi-jet production in massless QCD,''\n"
+     "arXiv:1209.0100 [hep-ph].\n"
+     "%%CITATION = ARXIV:1209.0100;%%");
     
   static Parameter<NJetsAmplitude,string> interfaceNJetsPrefix
     ("NJetsPrefix",

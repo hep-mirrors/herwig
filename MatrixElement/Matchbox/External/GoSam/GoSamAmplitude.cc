@@ -851,7 +851,21 @@ DescribeClass<GoSamAmplitude, MatchboxOLPME> describeHerwigGoSamAmplitude("Herwi
 
 void GoSamAmplitude::Init() {
 
-  static ClassDocumentation<GoSamAmplitude> documentation("GoSamAmplitude implements an interface to GoSam.", "Matrix elements have been calculated using GoSam");
+  static ClassDocumentation<GoSamAmplitude> 
+    documentation("GoSamAmplitude implements an interface to GoSam.",
+		  "Matrix elements have been calculated using GoSam \\cite{Cullen:2011xs}, \\cite{Cullen:2014yla}",
+		  "%\\cite{Cullen:2011xs}\n"
+		  "\\bibitem{Cullen:2011xs}\n"
+		  "G.~Cullen et al.,\n"
+		  "``GoSam: A Program for Automated One-Loop Calculations,''\n"
+		  "arXiv:1111.6534 [hep-ph].\n"
+		  "%%CITATION = ARXIV:1111.6534;%%\n"
+		  "%\\cite{Cullen:2014yla}\n"
+		  "\\bibitem{Cullen:2014yla}\n"
+		  "G.~Cullen et al.,\n"
+		  "``GoSaam-2.0: a tool for automated one-loop calculations within the Standard Model and beyond,''\n"
+		  "arXiv:1404.7096 [hep-ph].\n"
+		  "%%CITATION = ARXIV:1404.7096;%%");
 
   static Parameter<GoSamAmplitude,string> interfaceProcessPath
        ("ProcessPath",

@@ -236,7 +236,13 @@ void ColourFlowBasis::Init() {
 
   static ClassDocumentation<ColourFlowBasis> documentation
     ("ColourFlowBasis implements the colour flow basis.",
-     "The colour algebra has been performed using CVolver.");
+     "The colour algebra has been performed using CVolver \\cite{Platzer:2013fha}",
+     "%\\cite{Platzer:2013fha}\n"
+     "\\bibitem{Platzer:2013fha}\n"
+     "S.~Platzer,\n"
+     "``Summming Large-N Towers in Colour Flow Evolution,''\n"
+     "arXiv:1312.2448 [hep-ph].\n"
+     "%%CITATION = ARXIV:1312.2448;%%");
 
 }
 
