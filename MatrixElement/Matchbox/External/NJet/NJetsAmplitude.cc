@@ -281,7 +281,7 @@ void NJetsAmplitude::Init() {
 
   static ClassDocumentation<NJetsAmplitude> documentation
     ("NJetsAmplitude implements an interface to NJets.",
-     "Matrix elements have been calculated using NJet \\cite{Badger:2012pg}"
+     "Matrix elements have been calculated using NJet \\cite{Badger:2012pg}",
      "%\\cite{Badger:2012pg}\n"
      "\\bibitem{Badger:2012pg}\n"
      "S.~Badger et al.,\n"
