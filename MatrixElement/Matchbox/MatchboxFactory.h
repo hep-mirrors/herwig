@@ -731,6 +731,16 @@ public:
    */
   void setHardTreeEmitter(int emitter) { theHardtreeEmitter = emitter; }
 
+  /**
+   * Return the born spectator 
+   */
+  int hardTreeSpectator() { return theHardtreeSpectator; }
+
+  /**
+   * Set the born spectator for use in calculating the shower hardtree
+   */
+  void setHardTreeSpectator(int spectator) { theHardtreeSpectator = spectator; }
+
   //@}
 
   /** @name Data handling */
@@ -1202,6 +1212,12 @@ private:
    * the truncated shower
    */
   int theHardtreeEmitter;
+
+  /**
+   * The born spectator used when calculating the hardtree in
+   * the truncated shower
+   */
+  int theHardtreeSpectator;
 
   /**
    * True, if spin correlation information should be provided, if possible.
