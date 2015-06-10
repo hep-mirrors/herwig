@@ -24,7 +24,7 @@ set PPFactory:OrderInAlphaEW 0
 do PPFactory:Process p p t tbar
 
 ## Scale choice
-set PPFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/TopMTScale
+set PPFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/TopPairMTScale
 
 # select semileptonic
 set /Herwig/Particles/t:Synchronized Not_synchronized

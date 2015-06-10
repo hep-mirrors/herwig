@@ -24,7 +24,7 @@ set PPFactory:OrderInAlphaEW 0
 do PPFactory:Process p p t tbar
 
 ## Scale choice
-set PPFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/TopMTScale
+set PPFactory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/TopPairMTScale
 
 create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter
 insert /Herwig/EventHandlers/LHCHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter
