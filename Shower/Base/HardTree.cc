@@ -74,6 +74,7 @@ ostream & Herwig::operator<<(ostream & os, const HardTree & x) {
        <<  (**it).branchingParticle()->antiColourLine() << "\n";
     os << "Its basis vectors are " << (**it).pVector()/GeV 
        << " " << (**it).nVector()/GeV << "\n";
+    os << "Its shower momentum is " << (**it).showerMomentum()/GeV << "\n";
     for(unsigned int iy=0;iy<(**it).children().size();++iy) {
       os << "\t Children : " << *(**it).children()[iy]->branchingParticle()
 	 << "\n";
