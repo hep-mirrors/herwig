@@ -701,7 +701,7 @@ create Herwig::MatchboxLeptonMassScale LeptonPairMassScale
 create Herwig::MatchboxLeptonPtScale LeptonPairPtScale
 create Herwig::MatchboxHtScale HTScale
 create Herwig::MatchboxTopMassScale TopPairMassScale
-create Herwig::MatchboxTopMTScale TopMTScale
+create Herwig::MatchboxTopMTScale TopPairMTScale
 set HTScale:JetFinder /Herwig/Cuts/JetFinder
 set HTScale:IncludeMT No
 cp HTScale HTPrimeScale
