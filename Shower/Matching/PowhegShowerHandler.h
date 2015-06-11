@@ -50,7 +50,9 @@ public:
   /**
    * The default constructor.
    */
-  PowhegShowerHandler() : subtractionIntegral_(false)
+  PowhegShowerHandler() : subtractionIntegral_(false),
+			  enforceColourConsistency_(false),
+			  forcePartners_(false)
   {}
 
 public:
@@ -258,15 +260,38 @@ protected:
 
 private:
 
-  mutable int parent_;
-
-  mutable bool subtractionIntegral_;
-
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
   PowhegShowerHandler & operator=(const PowhegShowerHandler &);
+
+private:
+
+  /**
+   *  Emitter particle from the original generation
+   */
+  mutable int emitter_;
+
+  /**
+   *  Spectator particle from the original generation
+   */
+  mutable int spectator_;
+
+  /**
+   *  Whether or not a subtraction integral
+   */
+  mutable bool subtractionIntegral_;
+
+  /**
+   * Whether or not do enforce consistency of the Born and real colour flows
+   */
+  bool enforceColourConsistency_;
+
+  /**
+   *  Force emitter and spectator partners
+   */
+  bool forcePartners_;
 
 };
 

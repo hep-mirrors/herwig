@@ -70,10 +70,10 @@ HardTreePtr PowhegShowerHandler::generateCKKW(ShowerTreePtr) const {
   // real emission sub-process
   tSubProPtr real = Factory()->hardTreeSubprocess();
   // born emitter
-  parent_ = Factory()->hardTreeEmitter();
-
+  emitter_   = Factory()->hardTreeEmitter();
+  spectator_ = Factory()->hardTreeSpectator();
   // if no hard emission return
-  if ( !(real && parent_>-1) )
+  if ( !(real && emitter_>-1) )
     return HardTreePtr();
   // check emission
   if(sub->outgoing().size()>=real->outgoing().size())
@@ -123,12 +123,12 @@ PotentialTree PowhegShowerHandler::doClustering(tSubProPtr real) const {
   else
     lastXC = dynamic_ptr_cast<tStdXCombPtr>(lastXCombPtr());
   const StandardXComb xc= *lastXC;
-
-  // get particles from the XComb object
+  // get the particles for the born process
+  PPair          incomingBorn = xc.subProcess()->incoming();
+  ParticleVector outgoingBorn = xc.subProcess()->outgoing();
+  // get particles from the XComb object for the  real process
   ParticleVector outgoing  = real->outgoing();
-  PPair incoming = real->incoming();
-  // all outgoing particles as a set for checking
-  set<PPtr> outgoingset(outgoing.begin(),outgoing.end());
+  PPair incoming           = real->incoming();
   // loop through the FS particles and create ProtoBranchings
   for( unsigned int i = 0; i < outgoing.size(); ++i) {
     tPPtr parent = outgoing[i]->parents()[0];
@@ -160,38 +160,133 @@ PotentialTree PowhegShowerHandler::doClustering(tSubProPtr real) const {
   }
   // fill _proto_trees with all possible trees
   protoTrees().insert(initialProtoTree );
-  fillProtoTrees( initialProtoTree , xc.mePartonData()[parent_]->id() );
+  fillProtoTrees( initialProtoTree , xc.mePartonData()[emitter_]->id() );
   // create a HardTree from each ProtoTree and fill hardTrees()
-  PPair          incomingBorn = xc.subProcess()->incoming();
-  ParticleVector outgoingBorn = xc.subProcess()->outgoing();
   for( set< ProtoTreePtr >::const_iterator cit = protoTrees().begin(); 
        cit != protoTrees().end(); ++cit ) {
+    set<tPPtr> bornParticles(outgoingBorn.begin(),outgoingBorn.end());
+    bornParticles.insert(incomingBorn.first );
+    bornParticles.insert(incomingBorn.second);
     PotentialTree newTree;
     newTree.tree((**cit).createHardTree());
-    // check the created CKKWTree corresponds to an allowed LO configuration
-    // (does matrix element have a corresponding diagram)
-    if(!checkDiagram( newTree,xc.lastDiagram() )) 
-      continue;
-    // now make the colour connections in the tree
+    // new check based on the colour structure
+    map<ColinePtr,ColinePtr> cmap;
+    // make the colour connections in the tree
     ShowerParticleVector branchingParticles;
     map<ShowerParticlePtr,HardBranchingPtr> branchingMap;
-    map<tcColinePtr,ColinePtr> cmap;
-    vector<bool> matched(false,outgoingBorn.size());
+    bool matched(true);
+    int iemitter(-1); 
+    HardBranchingPtr emitter;
+    map<int,HardBranchingPtr> locMap;
     for( set< HardBranchingPtr >::iterator it = newTree.tree()->branchings().begin();
 	 it != newTree.tree()->branchings().end(); ++it ) {
+      matched = true;
+      // map the particle to the branching for future use
       branchingParticles.push_back((**it).branchingParticle());
       branchingMap.insert(make_pair((**it).branchingParticle(),*it));
+      tPPtr bornPartner;
+      if((**it).status()==HardBranching::Incoming) {
+	HardBranchingPtr parent=*it;
+	while(parent->parent()) {
+	  parent = parent->parent();
+	};
+	if(parent->branchingParticle()->momentum().z()/incomingBorn.first->momentum().z()>0.) {
+	  bornPartner = incomingBorn.first;
+	  if(!parent->children().empty()) {
+	    iemitter = 0;
+	    emitter = *it;
+	  }
+	  locMap[0] = *it;
+	}
+	else {
+	  bornPartner = incomingBorn.second;
+	  if(!parent->children().empty()) {
+	    iemitter = 1;
+	    emitter = *it;
+	  }
+	  locMap[1] = *it;
+	}
+      }
+      else {
+	Energy2 dmin( 1e30*GeV2 );
+	for(set<tPPtr>::const_iterator bit=bornParticles.begin();bit!=bornParticles.end();
+	    ++bit) {
+	  if((**it).branchingParticle()->id()!=(**bit).id()) continue;
+	  if(*bit==incomingBorn.first||*bit==incomingBorn.second) continue;
+	  Energy2 dtest =
+	    sqr( (**bit).momentum().x() - (**it).branchingParticle()->momentum().x() ) +
+	    sqr( (**bit).momentum().y() - (**it).branchingParticle()->momentum().y() ) +
+	    sqr( (**bit).momentum().z() - (**it).branchingParticle()->momentum().z() ) +
+	    sqr( (**bit).momentum().t() - (**it).branchingParticle()->momentum().t() );
+	  dtest += 1e10*sqr((**bit).momentum().m()-(**it).branchingParticle()->momentum().m());
+	  if( dtest < dmin ) {
+	    bornPartner = *bit;
+	    dmin = dtest;
+	  }
+	}
+	// find the map
+	int iloc(-1);
+	for(unsigned int ix=0;ix<outgoingBorn.size();++ix) {
+	  if(outgoingBorn[ix]==bornPartner) {
+	    iloc = ix+2;
+	    break;
+	  }
+	}
+	if(!(**it).children().empty()) {
+	  emitter = *it;
+	  iemitter = iloc;
+	}
+	locMap[iloc]= *it;
+      }
+      if(!bornPartner) {
+	matched=false;
+	break;
+      }
+      bornParticles.erase(bornPartner);
+      // skip the next block if not enforcing colour consistency
+      if(!enforceColourConsistency_) continue;
+      if((**it).branchingParticle()->colourLine()) {
+	if(cmap.find((**it).branchingParticle()->colourLine())!=cmap.end()) {
+	  if(cmap[(**it).branchingParticle()->colourLine()]!=bornPartner->colourLine()) {
+	    matched=false;
+	  }
+	}
+	else {
+	  cmap[(**it).branchingParticle()->colourLine()] = bornPartner->colourLine();
+	}
+      }
+      if((**it).branchingParticle()->antiColourLine()) {
+	if(cmap.find((**it).branchingParticle()->antiColourLine())!=cmap.end()) {
+	  if(cmap[(**it).branchingParticle()->antiColourLine()]!=bornPartner->antiColourLine()) {
+	    matched=false;
+	  }
+	}
+	else {
+	  cmap[(**it).branchingParticle()->antiColourLine()] = bornPartner->antiColourLine();
+	}
+      }
+      // require a match
+      if(!matched) break;
     }
+    // if no match continue
+    if(!matched) continue;
     // find the colour partners
     evolver()->showerModel()->partnerFinder()
       ->setInitialEvolutionScales(branchingParticles,false,
-    				ShowerInteraction::QCD,true);
+				  ShowerInteraction::QCD,true);
     for(unsigned int ix=0;ix<branchingParticles.size();++ix) {
       if(branchingParticles[ix]->partner()) {
         HardBranchingPtr partner = branchingMap[branchingParticles[ix]->partner()];
         branchingMap[branchingParticles[ix]]->colourPartner(partner);
       }
     }
+    if(forcePartners_) {
+      locMap[emitter_  ]->colourPartner(locMap[spectator_]);
+      locMap[spectator_]->colourPartner(locMap[emitter_  ]);
+      locMap[emitter_  ]->branchingParticle()->partner(locMap[spectator_]->branchingParticle());
+      locMap[spectator_]->branchingParticle()->partner(locMap[emitter_  ]->branchingParticle());
+    }
+    newTree.tree()->partnersSet(true);
     // set the beam particles
     PPair beams = lastXCombPtr()->lastParticles();
     // remove children of beams
@@ -223,24 +318,22 @@ PotentialTree PowhegShowerHandler::doClustering(tSubProPtr real) const {
       }
       br->beam( beams.second );
     }
+    // check the emitter and the spectator some how
+    if(iemitter!=emitter_) continue;
     //do inverse momentum reconstruction
     if( !evolver()->showerModel()->kinematicsReconstructor()
 	->deconstructHardJets( newTree.tree(), evolver(), ShowerInteraction::QCD ) ) continue;
     newTree.tree()->findNodes();
-    if( newTree.tree()->ordered() ) {
-      // find the wgt and fill hardTrees() map
-      double treeWeight = 1.;
-      //if(reWeight_) treeWeight = meWgt*sudakovWeight( newTree.tree() );
-      newTree.weight(treeWeight);
-      hardTrees_.push_back( make_pair( newTree, treeWeight ) );
-    }
+    newTree.weight(1.);
+    hardTrees_.push_back( make_pair( newTree, 1. ) );
   }
 
   // select the tree
   PotentialTree chosen_hardTree;
-  if (hardTrees_.size()==1)
+  if (hardTrees_.size()==1) {
     chosen_hardTree = hardTrees_[0].first;
-  else{
+  }
+  else {
     // if multiple trees pick the one with matching 
     // intermediate particle momenta
     for (unsigned int il=0; il<hardTrees_.size(); ++il){
@@ -337,8 +430,9 @@ PotentialTree PowhegShowerHandler::doClustering(tSubProPtr real) const {
   protoBranchings().clear();
   protoTrees().clear();
   hardTrees_.clear();
-  if(! chosen_hardTree.tree() )
+  if(! chosen_hardTree.tree() ) {
     return PotentialTree();
+  }
   else
     return chosen_hardTree;
 }
@@ -399,11 +493,11 @@ void PowhegShowerHandler::fillProtoTrees( ProtoTreePtr currentProtoTree,long id 
       if( (**ita).status() == HardBranching::Incoming &&
 	  (**itb).status() == HardBranching::Incoming ) continue;
       // if branching must be outgoing, skip incoming
-      if(parent_>=2 && ( (**ita).status() == HardBranching::Incoming || 
+      if(emitter_>=2 && ( (**ita).status() == HardBranching::Incoming || 
 			 (**itb).status() == HardBranching::Incoming ))
 	continue;
       // if branching must be incoming, skip outgoing
-      if(parent_<2 && ( (**ita).status() != HardBranching::Incoming &&
+      if(emitter_<2 && ( (**ita).status() != HardBranching::Incoming &&
 			(**itb).status() != HardBranching::Incoming ))
 	continue;
       // get a new branching for this pair
@@ -493,9 +587,9 @@ tProtoBranchingPtr PowhegShowerHandler::getCluster( tProtoBranchingPtr b1,
 
   // create clustered ProtoBranching
   ProtoBranchingPtr clusteredBranch;
+
   // outgoing
   if( !incoming ){
-
     Lorentz5Momentum pairMomentum = b1->momentum() + b2->momentum(); 
     pairMomentum.setMass(ZERO);
     clusteredBranch = new_ptr(ProtoBranching(particle_data,HardBranching::Outgoing,
@@ -634,13 +728,14 @@ tProtoBranchingPtr PowhegShowerHandler::getCluster( tProtoBranchingPtr b1,
 	  clusteredBranch->antiColourLine(b1->antiColourLine());
 	  clusteredBranch->colourLine(b2->antiColourLine());
 	}
-	if(b1->antiColourLine()==b2->antiColourLine()) {
+	else if(b1->antiColourLine()==b2->antiColourLine()) {
 	  b1->type(ShowerPartnerType::QCDAntiColourLine);
 	  clusteredBranch->    colourLine(b1->colourLine());
 	  clusteredBranch->antiColourLine(b2->colourLine());
 	}
-	else
+	else {
 	  return ProtoBranchingPtr();
+	}
       }
       else
 	assert(false);
@@ -753,12 +848,12 @@ void PowhegShowerHandler::doinit() {
 
 void PowhegShowerHandler::persistentOutput(PersistentOStream & os) const {
   os << theFactory << allowedInitial_ << allowedFinal_
-     << subtractionIntegral_;
+     << subtractionIntegral_ << enforceColourConsistency_ << forcePartners_;
 }
 
 void PowhegShowerHandler::persistentInput(PersistentIStream & is, int) {
   is >> theFactory >> allowedInitial_ >> allowedFinal_
-     >> subtractionIntegral_;
+     >> subtractionIntegral_ >> enforceColourConsistency_ >> forcePartners_;
 }
 
 
@@ -776,5 +871,35 @@ void PowhegShowerHandler::Init() {
     ("Factory",
      "The factory object to use.",
      &PowhegShowerHandler::theFactory, false, false, true, false, false);
+
+  static Switch<PowhegShowerHandler,bool> interfaceEnforceColourConsistency
+    ("EnforceColourConsistency",
+     "Force the Born and real emission colour flows to be consistent",
+     &PowhegShowerHandler::enforceColourConsistency_, false, false, false);
+  static SwitchOption interfaceEnforceColourConsistencyYes
+    (interfaceEnforceColourConsistency,
+     "Yes",
+     "Enforce the consistency",
+     true);
+  static SwitchOption interfaceEnforceColourConsistencyNo
+    (interfaceEnforceColourConsistency,
+     "No",
+     "Don't enforce consistency",
+     false);
+
+  static Switch<PowhegShowerHandler,bool> interfaceForcePartners
+    ("ForcePartners",
+     "Whether or not to force the partners to be those from the kinematic generation",
+     &PowhegShowerHandler::forcePartners_, false, false, false);
+  static SwitchOption interfaceForcePartnersYes
+    (interfaceForcePartners,
+     "Yes",
+     "Force them",
+     true);
+  static SwitchOption interfaceForcePartnersNo
+    (interfaceForcePartners,
+     "No",
+     "Don't force them",
+     false);
 
 }
