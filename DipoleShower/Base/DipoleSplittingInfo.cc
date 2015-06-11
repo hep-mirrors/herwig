@@ -12,7 +12,6 @@
 //
 
 #include "DipoleSplittingInfo.h"
-#include "ThePEG/Handlers/StandardXComb.h"
 
 #include <iterator>
 

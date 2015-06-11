@@ -96,88 +96,92 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr,
       isMCatNLOSEvent = false;
       isMCatNLOHEvent = false;
 
-      Ptr<SubtractedME>::tptr subme =
-	dynamic_ptr_cast<Ptr<SubtractedME>::tptr>(eventRecord().xcombPtr()->matrixElement());
-      Ptr<MatchboxMEBase>::tptr me =
-	dynamic_ptr_cast<Ptr<MatchboxMEBase>::tptr>(eventRecord().xcombPtr()->matrixElement());
-      Ptr<SubtractionDipole>::tptr dipme =  
-	dynamic_ptr_cast<Ptr<SubtractionDipole>::tptr>(eventRecord().xcombPtr()->matrixElement());
+      if ( eventRecord().xcombPtr() ) {
+
+	Ptr<SubtractedME>::tptr subme =
+	  dynamic_ptr_cast<Ptr<SubtractedME>::tptr>(eventRecord().xcombPtr()->matrixElement());
+	Ptr<MatchboxMEBase>::tptr me =
+	  dynamic_ptr_cast<Ptr<MatchboxMEBase>::tptr>(eventRecord().xcombPtr()->matrixElement());
+	Ptr<SubtractionDipole>::tptr dipme =  
+	  dynamic_ptr_cast<Ptr<SubtractionDipole>::tptr>(eventRecord().xcombPtr()->matrixElement());
 
 
-      if ( subme ) {
-	if ( subme->showerApproximation() ) {
-	  // don't do this for POWHEG-type corrections
-	  if ( !subme->showerApproximation()->needsSplittingGenerator() ) {
-	    theShowerApproximation = subme->showerApproximation();
-	    if ( subme->realShowerSubtraction() )
-	      isMCatNLOHEvent = true;
-	    else if ( subme->virtualShowerSubtraction() )
+	if ( subme ) {
+	  if ( subme->showerApproximation() ) {
+	    // don't do this for POWHEG-type corrections
+	    if ( !subme->showerApproximation()->needsSplittingGenerator() ) {
+	      theShowerApproximation = subme->showerApproximation();
+	      if ( subme->realShowerSubtraction() )
+		isMCatNLOHEvent = true;
+	      else if ( subme->virtualShowerSubtraction() )
+		isMCatNLOSEvent = true;
+	    }
+	  }
+	} else if ( me ) {
+	  if ( me->factory()->showerApproximation() ) {
+	    if ( !me->factory()->showerApproximation()->needsSplittingGenerator() ) {
+	      theShowerApproximation = me->factory()->showerApproximation();
 	      isMCatNLOSEvent = true;
+	    }
 	  }
 	}
-      } else if ( me ) {
-	if ( me->factory()->showerApproximation() ) {
-	  if ( !me->factory()->showerApproximation()->needsSplittingGenerator() ) {
-	    theShowerApproximation = me->factory()->showerApproximation();
-	    isMCatNLOSEvent = true;
-	  }
-	}
-      }
 
-      string error = "Inconsistent hard emission set-up in DipoleShowerHandler::cascade. ";      
-      if (evolver()->hardEmissionMode()==1 || evolver()->hardEmissionMode()==3 )
-	throw Exception() << error
-			  << "Cannot generate POWHEG corrections "
-			  << "for particle decays using DipoleShowerHandler.  "
-			  << "Check value of Evolver:HardEmissionMode."
-			  << Exception::runerror; 
-      if ( ( isMCatNLOSEvent || isMCatNLOHEvent ) &&  evolver()->hardEmissionMode()==2)
-	throw Exception() << error
-			  << "Cannot generate POWHEG matching with MC@NLO shower approximation. "
-			  << "Add 'set Evolver:HardEmissionMode 0' to input file."
-			  << Exception::runerror;
-      if (me && me->factory()->showerApproximation()){
-	if(me->factory()->showerApproximation()->needsTruncatedShower())
+	string error = "Inconsistent hard emission set-up in DipoleShowerHandler::cascade. ";      
+	if (evolver()->hardEmissionMode()==1 || evolver()->hardEmissionMode()==3 )
 	  throw Exception() << error
-			    << "No truncated shower needed with DipoleShowerHandler.  Add "
-			    << "'set MEMatching:TruncatedShower No' to input file."
+			    << "Cannot generate POWHEG corrections "
+			    << "for particle decays using DipoleShowerHandler.  "
+			    << "Check value of Evolver:HardEmissionMode."
+			    << Exception::runerror; 
+	if ( ( isMCatNLOSEvent || isMCatNLOHEvent ) &&  evolver()->hardEmissionMode()==2)
+	  throw Exception() << error
+			    << "Cannot generate POWHEG matching with MC@NLO shower approximation. "
+			    << "Add 'set Evolver:HardEmissionMode 0' to input file."
 			    << Exception::runerror;
-	if (!( isMCatNLOSEvent || isMCatNLOHEvent ) &&
-	    evolver()->hardEmissionMode()==0 && firstWarn){
+	if (me && me->factory()->showerApproximation()){
+	  if(me->factory()->showerApproximation()->needsTruncatedShower())
+	    throw Exception() << error
+			      << "No truncated shower needed with DipoleShowerHandler.  Add "
+			      << "'set MEMatching:TruncatedShower No' to input file."
+			      << Exception::runerror;
+	  if (!( isMCatNLOSEvent || isMCatNLOHEvent ) &&
+	      evolver()->hardEmissionMode()==0 && firstWarn){
+	    firstWarn=false;
+	    throw Exception() << error
+			      << "Evolver:HardEmissionMode will be set to 'MatchboxPOWHEG'"
+			      << Exception::warning;
+	  }  
+	}
+	else if (subme && subme->factory()->showerApproximation()){
+	  if(subme->factory()->showerApproximation()->needsTruncatedShower())
+	    throw Exception() << error
+			      << "No truncated shower needed with DipoleShowerHandler.  Add "
+			      << "'set MEMatching:TruncatedShower No' to input file."
+			      << Exception::runerror;
+	  if (!( isMCatNLOSEvent || isMCatNLOHEvent ) &&
+	      evolver()->hardEmissionMode()==0 && firstWarn){
+	    firstWarn=false;
+	    throw Exception() << error
+			      << "Evolver:HardEmissionMode will be set to 'MatchboxPOWHEG'"
+			      << Exception::warning;
+	  }  
+	}
+	else if (dipme && evolver()->hardEmissionMode() == 0 && firstWarn){
 	  firstWarn=false;
 	  throw Exception() << error
 			    << "Evolver:HardEmissionMode will be set to 'MatchboxPOWHEG'"
 			    << Exception::warning;
-	}  
-      }
-      else if (subme && subme->factory()->showerApproximation()){
-	if(subme->factory()->showerApproximation()->needsTruncatedShower())
+	}
+	else if (!dipme && evolver()->hardEmissionMode()==2 &&
+		 ShowerHandler::currentHandler()->firstInteraction())
 	  throw Exception() << error
-			    << "No truncated shower needed with DipoleShowerHandler.  Add "
-			    << "'set MEMatching:TruncatedShower No' to input file."
+			    << "POWHEG matching requested for LO events.  Include "
+			    << "'set Factory:ShowerApproximation MEMatching' in input file."
 			    << Exception::runerror;
-	if (!( isMCatNLOSEvent || isMCatNLOHEvent ) &&
-	    evolver()->hardEmissionMode()==0 && firstWarn){
-	  firstWarn=false;
-	  throw Exception() << error
-			    << "Evolver:HardEmissionMode will be set to 'MatchboxPOWHEG'"
-			    << Exception::warning;
-	}  
-      }
-      else if (dipme && evolver()->hardEmissionMode() == 0 && firstWarn){
-	firstWarn=false;
-	throw Exception() << error
-			  << "Evolver:HardEmissionMode will be set to 'MatchboxPOWHEG'"
-			  << Exception::warning;
-      }
-      else if (!dipme && evolver()->hardEmissionMode()==2 &&
-	       ShowerHandler::currentHandler()->firstInteraction())
-	throw Exception() << error
-			  << "POWHEG matching requested for LO events.  Include "
-			  << "'set Factory:ShowerApproximation MEMatching' in input file."
-			  << Exception::runerror;
 
-      hardScales();
+      }
+
+      hardScales(lastXCombPtr()->lastCentralScale());
 
       if ( verbosity > 1 ) {
 	generator()->log() << "DipoleShowerHandler starting off:\n";
@@ -261,14 +265,13 @@ void DipoleShowerHandler::constituentReshuffle() {
 
 }
 
-void DipoleShowerHandler::hardScales() {
+void DipoleShowerHandler::hardScales(Energy2 muf) {
 
   Energy maxPt = generator()->maximumCMEnergy();
 
   bool restrictPhasespace = !hardFirstEmission;
 
-  if ( !restrictPhasespace ) {
-    assert(eventRecord().xcombPtr());
+  if ( !restrictPhasespace && eventRecord().xcombPtr() ) {
     Ptr<SubtractedME>::tptr subme =
       dynamic_ptr_cast<Ptr<SubtractedME>::tptr>(eventRecord().xcombPtr()->matrixElement());
     if ( subme )
@@ -296,7 +299,7 @@ void DipoleShowerHandler::hardScales() {
       maxPt *= hardScaleFactor();
     }
   } else {
-    maxPt = hardScaleFactor()*sqrt(eventRecord().xcombPtr()->lastCentralScale());
+    maxPt = hardScaleFactor()*sqrt(muf);
   }
 
   for ( list<DipoleChain>::iterator ch = eventRecord().chains().begin();

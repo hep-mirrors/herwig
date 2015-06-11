@@ -14,7 +14,6 @@
 
 #include "ThePEG/PDF/PDF.h"
 #include "ThePEG/PDT/ParticleData.h"
-#include "ThePEG/Handlers/StandardXComb.fh"
 
 #include "Herwig++/DipoleShower/Kinematics/DipoleSplittingKinematics.h"
 

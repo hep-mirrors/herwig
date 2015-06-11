@@ -114,7 +114,7 @@ protected:
   /**
    * Setup the hard scales.
    */
-  void hardScales();
+  void hardScales(Energy2 scale);
 
   /**
    * Return the evolution ordering
