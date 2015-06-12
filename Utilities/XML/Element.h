@@ -13,6 +13,7 @@
 #include <map>
 #include <list>
 #include <sstream>
+#include <iomanip>
 
 namespace XML {
 
@@ -111,7 +112,7 @@ namespace XML {
     Element& operator<<(const T& t) {
       assertContent();
       std::ostringstream out;
-      out << t;
+      out << std::setprecision(16) << t;
       theNameOrContent += out.str();
       return *this;
     }
@@ -170,7 +171,7 @@ namespace XML {
 		const T& newValue)
 	: name(newName) {
 	std::ostringstream valueOut;
-	valueOut << newValue;
+	valueOut << std::setprecision(16) << newValue;
 	value = valueOut.str();
       }
 
@@ -195,7 +196,7 @@ namespace XML {
     template<class T>
     void getFromAttribute(const std::string& name, T& t) const {
       std::istringstream in(attribute(name));
-      in >> t;
+      in >> std::setprecision(16) >> t;
     }
 
   public:
