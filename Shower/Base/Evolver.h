@@ -247,7 +247,7 @@ protected:
    * @param particle The particle to be showered
    */
   virtual bool timeLikeShower(tShowerParticlePtr particle, ShowerInteraction::Type,
-			      bool first); 
+			      Branching fb, bool first);
 
   /**
    * It does the backward evolution of the space-like input particle 
@@ -526,6 +526,18 @@ protected:
 			    Energy minimumMass,ShowerInteraction::Type);
 
   /**
+   *   Select the branching for the next time-like emission
+   */
+  Branching selectTimeLikeBranching(tShowerParticlePtr particle,
+				    ShowerInteraction::Type type);
+
+  /**
+   *  Create the timelike child of a branching
+   */
+  ShowerParticleVector createTimeLikeChildren(tShowerParticlePtr particle,
+					      IdList ids);
+
+  /**
    *  Vetos for the timelike shower
    */
   virtual bool timeLikeVetoed(const Branching &,ShowerParticlePtr);
@@ -621,11 +633,6 @@ protected:
   //@}
 
 private:
-
-  /**
-   * Get the octet -> octet octet reduction factor.
-   */
-  double getReductionFactor(tShowerParticlePtr particle);
 
   /**
    * The assignment operator is private and must never be called.
