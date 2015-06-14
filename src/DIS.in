@@ -86,8 +86,6 @@ cd /Herwig/Generators
 # set /Herwig/Analysis/HepMCFile:Format GenEvent
 # set /Herwig/Analysis/HepMCFile:Units GeV_mm
 
-set /Herwig/Shower/KinematicsReconstructor:ReconstructionOption 1
-
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################
