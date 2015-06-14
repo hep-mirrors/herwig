@@ -1650,6 +1650,7 @@ reconstructInitialInitialSystem(bool & applyBoost,
   for( unsigned int ix = 0; ix < jets.size(); ++ix ) {
     radiated |= jets[ix]->hasEmitted();
     pcm += jets[ix]->progenitor()->momentum();
+    if(jets[ix]->original()->parents().empty()) return;
   }
   pcm.rescaleMass();
   // check if intrinsic pt to be added
