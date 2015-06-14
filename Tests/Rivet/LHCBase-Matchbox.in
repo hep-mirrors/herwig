@@ -107,6 +107,13 @@ set c:HardProcessMass 0*GeV
 set cbar:HardProcessMass 0*GeV
 set b:HardProcessMass 0*GeV
 set bbar:HardProcessMass 0*GeV
+set /Herwig/Particles/mu+:HardProcessWidth 0.*GeV
+set /Herwig/Particles/tau+:HardProcessWidth 0.*GeV
+set /Herwig/Particles/mu-:HardProcessWidth 0.*GeV
+set /Herwig/Particles/tau-:HardProcessWidth 0.*GeV
+
+
+
 set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
 set /Herwig/Cuts/QCDCuts:MHatMin 0.0*GeV
 set /Herwig/Generators/LHCGenerator:EventHandler:CollisionCuts Off
