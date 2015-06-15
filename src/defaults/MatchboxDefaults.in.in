@@ -262,6 +262,15 @@ insert Factory:ParticleGroup 0 /Herwig/Particles/mu-
 do Factory:EndParticleGroup
 
 ################################################################################
+# Default settings for hard process widths
+################################################################################
+
+set /Herwig/Particles/mu+:HardProcessWidth 0*GeV
+set /Herwig/Particles/mu-:HardProcessWidth 0*GeV
+set /Herwig/Particles/tau+:HardProcessWidth 0*GeV
+set /Herwig/Particles/tau-:HardProcessWidth 0*GeV
+
+################################################################################
 # Setup amplitudes
 ################################################################################
 
@@ -766,6 +775,8 @@ insert MatchboxLOAlphaS:QuarkMasses[5] 174.2
 
 ################################################################################
 # Factories for different colliders
+# only provided for backwards compatibility; refer to Matchbox/*.in input file
+# snippets for generic handling
 ################################################################################
 
 cd /Herwig/MatrixElements/Matchbox
