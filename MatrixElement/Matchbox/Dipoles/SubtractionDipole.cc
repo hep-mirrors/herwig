@@ -650,7 +650,6 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
 
   if ( splitting() && jac == 0.0 ) {
     lastMECrossSection(ZERO);
-    lastME2(0.0);
     return ZERO;
   }
 
@@ -745,8 +744,6 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
   double coupl = lastMECouplings();
   coupl *= underlyingBornME()->lastXComb().lastAlphaS();
   lastMECouplings(coupl);
-
-  lastME2(xme2);
 
   CrossSection res = 
     sqr(hbarc) * jac * pdfweight * xme2 /

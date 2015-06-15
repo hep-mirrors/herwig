@@ -5,3 +5,4 @@ cd /Herwig/Particles
 set W+:HardProcessWidth 0*GeV
 set W-:HardProcessWidth 0*GeV
 set Z0:HardProcessWidth 0*GeV
+set h0:HardProcessWidth 0*GeV

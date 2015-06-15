@@ -331,11 +331,6 @@ private:
    */
   int realignmentScheme;
 
-  /**
-   * True, if first emission should use the available phase space
-   */
-  bool hardFirstEmission;
-
 private:
 
   /**
@@ -415,11 +410,6 @@ private:
   bool theDoCompensate;
 
   /**
-   * True if maximum pt should be deduced from the factorization scale
-   */
-  bool maxPtIsMuF;
-
-  /**
    * Return the number of accepted points after which the grid should
    * be frozen
    */
@@ -434,6 +424,11 @@ private:
    * True if no warnings have been issued yet
    */
   static bool firstWarn;
+
+  /**
+   * The shower starting scale for the last event encountered
+   */
+  Energy maxPt;
 
 private:
 

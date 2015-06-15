@@ -2,6 +2,8 @@ noinst_LTLIBRARIES = libHwMatchboxMatching.la
 pkglib_LTLIBRARIES = HwQTildeMatching.la HwDipoleMatching.la
 
 libHwMatchboxMatching_la_SOURCES = \
+HardScaleProfile.h \
+HardScaleProfile.cc \
 ShowerApproximation.h \
 ShowerApproximation.cc \
 ShowerApproximationKernel.h \

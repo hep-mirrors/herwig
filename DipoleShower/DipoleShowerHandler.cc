@@ -45,14 +45,13 @@ DipoleShowerHandler::DipoleShowerHandler()
   : ShowerHandler(), chainOrderVetoScales(true),
     nEmissions(0), discardNoEmissions(false), firstMCatNLOEmission(false),
     doFSR(true), doISR(true), realignmentScheme(0),
-    hardFirstEmission(false),
     verbosity(0), printEvent(0), nTries(0), 
     didRadiate(false), didRealign(false),
     theRenormalizationScaleFreeze(1.*GeV), 
     theFactorizationScaleFreeze(2.*GeV),
     isMCatNLOSEvent(false),
-  isMCatNLOHEvent(false), theDoCompensate(false),
-    maxPtIsMuF(false), theFreezeGrid(500000) {}
+    isMCatNLOHEvent(false), theDoCompensate(false),
+    theFreezeGrid(500000), maxPt(ZERO) {}
 
 DipoleShowerHandler::~DipoleShowerHandler() {}
 
@@ -267,22 +266,10 @@ void DipoleShowerHandler::constituentReshuffle() {
 
 void DipoleShowerHandler::hardScales(Energy2 muf) {
 
-  Energy maxPt = generator()->maximumCMEnergy();
+  maxPt = generator()->maximumCMEnergy();
 
-  bool restrictPhasespace = !hardFirstEmission;
-
-  if ( !restrictPhasespace && eventRecord().xcombPtr() ) {
-    Ptr<SubtractedME>::tptr subme =
-      dynamic_ptr_cast<Ptr<SubtractedME>::tptr>(eventRecord().xcombPtr()->matrixElement());
-    if ( subme )
-      if ( subme->realShowerSubtraction() )
-	restrictPhasespace = true;
-  }
-
-  if ( !maxPtIsMuF || !firstInteraction() ) {
-    if ( (eventRecord().incoming().first->coloured() ||
-	  eventRecord().incoming().second->coloured()) &&
-	 restrictPhasespace ) {
+  if ( restrictPhasespace() ) {
+    if ( !hardScaleIsMuF() || !firstInteraction() ) {
       if ( !eventRecord().outgoing().empty() ) {
 	for ( PList::const_iterator p = eventRecord().outgoing().begin();
 	      p != eventRecord().outgoing().end(); ++p )
@@ -297,9 +284,9 @@ void DipoleShowerHandler::hardScales(Energy2 muf) {
 	maxPt = mhard;
       }
       maxPt *= hardScaleFactor();
+    } else {
+      maxPt = hardScaleFactor()*sqrt(muf);
     }
-  } else {
-    maxPt = hardScaleFactor()*sqrt(muf);
   }
 
   for ( list<DipoleChain>::iterator ch = eventRecord().chains().begin();
@@ -496,27 +483,18 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
     gen->second->generate(candidate,optHardPt,optCutoff);
     Energy nextScale = evolutionOrdering()->evolutionScale(gen->second->lastSplitting(),*(gen->second->splittingKernel()));
 
-    if ( isMCatNLOSEvent && !didRadiate && nextScale > ircutoff ) {
-      if ( eventRecord().incoming().first->coloured() ||
-	   eventRecord().incoming().second->coloured() ) {
-	assert(theShowerApproximation);
-	if ( theShowerApproximation->restrictPhasespace() &&
-	     theShowerApproximation->profileScales() ) {
-	  while ( UseRandom::rnd() > theShowerApproximation->hardScaleProfile(hardScale,nextScale) ) {
-	    candidate.continuesEvolving();
-	    Energy nextHardScale = evolutionOrdering()->maxPt(nextScale,candidate,*(gen->second->splittingKernel()));
-	    candidate.hardPt(nextHardScale);
-	    gen->second->generate(candidate,optHardPt,optCutoff);
-	    nextScale = evolutionOrdering()->evolutionScale(gen->second->lastSplitting(),*(gen->second->splittingKernel()));
-	    if ( nextScale <= ircutoff || candidate.stoppedEvolving() )
-	      break;
-	  }
-	}
+    if ( firstInteraction() && profileScales() && nextScale > ircutoff ) {
+      while ( UseRandom::rnd() > profileScales()->hardScaleProfile(maxPt,nextScale) ) {
+	candidate.continuesEvolving();
+	Energy nextHardScale = evolutionOrdering()->maxPt(nextScale,candidate,*(gen->second->splittingKernel()));
+	candidate.hardPt(nextHardScale);
+	gen->second->generate(candidate,optHardPt,optCutoff);
+	nextScale = evolutionOrdering()->evolutionScale(gen->second->lastSplitting(),*(gen->second->splittingKernel()));
+	if ( nextScale <= ircutoff || candidate.stoppedEvolving() )
+	  break;
       }
     }
-
-    // ATTENTION other profiles go here
-
+   
     if ( nextScale > winnerScale ) {
       winner.fill(candidate);
       gen->second->completeSplitting(winner);
@@ -871,12 +849,12 @@ void DipoleShowerHandler::persistentOutput(PersistentOStream & os) const {
      << constituentReshuffler << intrinsicPtGenerator
      << theGlobalAlphaS << chainOrderVetoScales
      << nEmissions << discardNoEmissions << firstMCatNLOEmission << doFSR << doISR
-     << realignmentScheme << hardFirstEmission << verbosity << printEvent
+     << realignmentScheme << verbosity << printEvent
      << ounit(theRenormalizationScaleFreeze,GeV)
      << ounit(theFactorizationScaleFreeze,GeV)
      << isMCatNLOSEvent << isMCatNLOHEvent << theShowerApproximation
-     << theDoCompensate << maxPtIsMuF << theFreezeGrid
-     << theEventReweight;
+     << theDoCompensate << theFreezeGrid
+     << theEventReweight << ounit(maxPt,GeV);
 }
 
 void DipoleShowerHandler::persistentInput(PersistentIStream & is, int) {
@@ -884,12 +862,12 @@ void DipoleShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> constituentReshuffler >> intrinsicPtGenerator
      >> theGlobalAlphaS >> chainOrderVetoScales
      >> nEmissions >> discardNoEmissions >> firstMCatNLOEmission >> doFSR >> doISR
-     >> realignmentScheme >> hardFirstEmission >> verbosity >> printEvent
+     >> realignmentScheme >> verbosity >> printEvent
      >> iunit(theRenormalizationScaleFreeze,GeV)
      >> iunit(theFactorizationScaleFreeze,GeV)
      >> isMCatNLOSEvent >> isMCatNLOHEvent >> theShowerApproximation
-     >> theDoCompensate >> maxPtIsMuF >> theFreezeGrid
-     >> theEventReweight;
+     >> theDoCompensate >> theFreezeGrid
+     >> theEventReweight >> iunit(maxPt,GeV);
 }
 
 ClassDescription<DipoleShowerHandler> DipoleShowerHandler::initDipoleShowerHandler;
@@ -974,22 +952,6 @@ void DipoleShowerHandler::Init() {
      "Off",
      "Switch off initial state radiation.",
      false);
-
-  static Switch<DipoleShowerHandler,bool> interfaceHardFirstEmission
-    ("HardFirstEmission",
-     "Switch on or off hard first emission.",
-     &DipoleShowerHandler::hardFirstEmission, false, false, false);
-  static SwitchOption interfaceHardFirstEmissionOn
-    (interfaceHardFirstEmission,
-     "On",
-     "Switch on hard first emission.",
-     true);
-  static SwitchOption interfaceHardFirstEmissionOff
-    (interfaceHardFirstEmission,
-     "Off",
-     "Switch off hard first emission.",
-     false);
-
 
   static Switch<DipoleShowerHandler,int> interfaceRealignmentScheme
     ("RealignmentScheme",
@@ -1114,21 +1076,6 @@ void DipoleShowerHandler::Init() {
      true);
   static SwitchOption interfaceDoCompensateNo
     (interfaceDoCompensate,
-     "No",
-     "",
-     false);
-
-  static Switch<DipoleShowerHandler,bool> interfaceMaxPtIsMuF
-    ("MaxPtIsMuF",
-     "",
-     &DipoleShowerHandler::maxPtIsMuF, false, false, false);
-  static SwitchOption interfaceMaxPtIsMuFYes
-    (interfaceMaxPtIsMuF,
-     "Yes",
-     "",
-     true);
-  static SwitchOption interfaceMaxPtIsMuFNo
-    (interfaceMaxPtIsMuF,
      "No",
      "",
      false);

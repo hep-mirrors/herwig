@@ -123,6 +123,26 @@ public:
    * Mode for hard emissions
    */
   int hardEmissionMode() const {return _hardEmissionMode;}
+
+  /**
+   * Switch on or off hard vetoes
+   */
+  void restrictPhasespace(bool yes) {
+    if ( yes )
+      _hardVetoMode = 1;
+    else
+      _hardVetoMode = 0;
+  }
+
+  /**
+   * Switch on or off hard veto scale from muF
+   */
+  void hardScaleIsMuF(bool yes) {
+    if ( yes )
+      _hardVetoRead = 1;
+    else
+      _hardVetoRead = 0;
+  }
   //@}
 
   /**
@@ -869,6 +889,7 @@ private:
    * have been issued yet
    */
   static bool _missingTruncWarn;
+
 };
 
 }

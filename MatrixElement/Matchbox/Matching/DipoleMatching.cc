@@ -61,8 +61,8 @@ CrossSection DipoleMatching::dSigHatDR() const {
     return ZERO;
   xme2 *= bornPDF;
 
-  if ( restrictPhasespace() )
-    xme2 *= hardScaleProfile(dipole()->showerHardScale(),dipole()->lastPt());
+  if ( profileScales() )
+    xme2 *= profileScales()->hardScaleProfile(dipole()->showerHardScale(),dipole()->lastPt());
 
   CrossSection res = 
     sqr(hbarc) * 
@@ -101,6 +101,9 @@ void DipoleMatching::doinit() {
       factorizationScaleFactor(theShowerHandler->factorizationScaleFactor());
       renormalizationScaleFactor(theShowerHandler->renormalizationScaleFactor());
     }
+    profileScales(theShowerHandler->profileScales());
+    restrictPhasespace(theShowerHandler->restrictPhasespace());
+    hardScaleIsMuF(theShowerHandler->hardScaleIsMuF());
   }
 }
 

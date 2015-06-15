@@ -381,8 +381,10 @@ void SubtractedME::fillProjectors() {
     if ( !(**d).matrixElement()->apply() ||
 	 !(**d).kinematicsGenerated() )
       continue;
-    if ( (**d).willPassCuts() )
-      lastXCombPtr()->projectors().insert((**d).cutWeight(),*d);
+    if ( (**d).willPassCuts() &&
+	 (**d).lastMECrossSection()/picobarn != 0.0 ) {
+      lastXCombPtr()->projectors().insert(abs((**d).cutWeight()*(**d).lastMECrossSection()/picobarn),*d);
+    }
   }
 }
 
@@ -423,13 +425,14 @@ double SubtractedME::reweightDependent(tStdXCombPtr xc, const vector<tStdXCombPt
 	if ( !(**d).matrixElement()->apply() ||
 	     !(**d).kinematicsGenerated() )
 	  continue;
-	if ( (**d).willPassCuts() ) {
-	  invPAlpha += (**d).cutWeight();
+	if ( (**d).willPassCuts() &&
+	     (**d).lastMECrossSection()/picobarn != 0.0 ) {
+	  invPAlpha += abs((**d).cutWeight()*(**d).lastMECrossSection()/picobarn);
 	}
       }
 
-      assert(invPAlpha != 0.0);
-      double palpha = xc->cutWeight()/invPAlpha;
+      assert(invPAlpha != 0.0 && xc->cutWeight() != 0.0 && xc->lastMECrossSection()/picobarn != 0.0);
+      double palpha = abs((xc->cutWeight())*(xc->lastMECrossSection()/picobarn))/invPAlpha;
 
       return 1./palpha;
 

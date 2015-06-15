@@ -37,7 +37,7 @@ do Factory:Process e- e+ -> j j
 ## Special settings required for on-shell production of unstable particles
 ## enable for on-shell top production
 # read Matchbox/OnShellTopProduction.in
-## enable for on-shell W or Z production
+## enable for on-shell W, Z or h production
 # read Matchbox/OnShellEWProduction.in
 
 ##################################################
@@ -119,6 +119,14 @@ read Matchbox/MCatNLO-DefaultShower.in
 # insert Rivet:Analyses 0 XXX_2015_ABC123
 # insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 Rivet
 # insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 HepMC
+
+##################################################
+## Do not apply profile scales for LEP as hard
+## scale coincides with kinematic limit
+##################################################
+
+set /Herwig/Shower/ShowerHandler:HardScaleProfile NULL
+set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleProfile NULL
 
 ##################################################
 ## Save the generator

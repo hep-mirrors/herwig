@@ -75,7 +75,8 @@ ShowerHandler::ShowerHandler() :
   includeSpaceTime_(false), vMin_(0.1*GeV2), subProcess_(),
   theFactorizationScaleFactor(1.0),
   theRenormalizationScaleFactor(1.0),
-  theHardScaleFactor(1.0), theScaleFactorOption(0) {
+  theHardScaleFactor(1.0), theScaleFactorOption(0),
+  theRestrictPhasespace(true), maxPtIsMuF(false) {
   inputparticlesDecayInShower_.push_back( 6  ); //  top 
   inputparticlesDecayInShower_.push_back( 23 ); // Z0
   inputparticlesDecayInShower_.push_back( 24 ); // W+/-
@@ -107,7 +108,8 @@ void ShowerHandler::persistentOutput(PersistentOStream & os) const {
      << PDFARemnant_ << PDFBRemnant_
      << includeSpaceTime_ << ounit(vMin_,GeV2)
      << theFactorizationScaleFactor << theRenormalizationScaleFactor
-     << theHardScaleFactor << theScaleFactorOption;
+     << theHardScaleFactor << theScaleFactorOption
+     << theRestrictPhasespace << maxPtIsMuF << theHardScaleProfile;
 }
 
 void ShowerHandler::persistentInput(PersistentIStream & is, int) {
@@ -117,7 +119,8 @@ void ShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> PDFARemnant_ >> PDFBRemnant_
      >> includeSpaceTime_ >> iunit(vMin_,GeV2)
      >> theFactorizationScaleFactor >> theRenormalizationScaleFactor
-     >> theHardScaleFactor >> theScaleFactorOption;
+     >> theHardScaleFactor >> theScaleFactorOption
+     >> theRestrictPhasespace >> maxPtIsMuF >> theHardScaleProfile;
 }
 
 void ShowerHandler::Init() {
@@ -278,6 +281,42 @@ void ShowerHandler::Init() {
      "Secondary",
      "Only apply to secondary scatterings.",
      2);
+
+  static Reference<ShowerHandler,HardScaleProfile> interfaceHardScaleProfile
+    ("HardScaleProfile",
+     "The hard scale profile to use.",
+     &ShowerHandler::theHardScaleProfile, false, false, true, true, false);
+
+  static Switch<ShowerHandler,bool> interfaceMaxPtIsMuF
+    ("MaxPtIsMuF",
+     "",
+     &ShowerHandler::maxPtIsMuF, false, false, false);
+  static SwitchOption interfaceMaxPtIsMuFYes
+    (interfaceMaxPtIsMuF,
+     "Yes",
+     "",
+     true);
+  static SwitchOption interfaceMaxPtIsMuFNo
+    (interfaceMaxPtIsMuF,
+     "No",
+     "",
+     false);
+
+  static Switch<ShowerHandler,bool> interfaceRestrictPhasespace
+    ("RestrictPhasespace",
+     "Switch on or off phasespace restrictions",
+     &ShowerHandler::theRestrictPhasespace, true, false, false);
+  static SwitchOption interfaceRestrictPhasespaceOn
+    (interfaceRestrictPhasespace,
+     "On",
+     "Perform phasespace restrictions",
+     true);
+  static SwitchOption interfaceRestrictPhasespaceOff
+    (interfaceRestrictPhasespace,
+     "Off",
+     "Do not perform phasespace restrictions",
+     false);
+
  
 }
 
@@ -526,6 +565,8 @@ tPPair ShowerHandler::cascade(tSubProPtr sub,
   // scatters
   evolver()->renormalizationScaleFactor(renormalizationScaleFactor());
   evolver()->factorizationScaleFactor(factorizationScaleFactor());
+  evolver()->restrictPhasespace(restrictPhasespace());
+  evolver()->hardScaleIsMuF(hardScaleIsMuF());
   // start of the try block for the whole showering process
   unsigned int countFailures=0;
   while (countFailures<maxtry_) {

@@ -31,7 +31,7 @@
 using namespace Herwig;
 
 MEMatching::MEMatching()
-  : theScreeningScale(0*GeV), theTruncatedShower(false) {}
+  : theTruncatedShower(false) {}
 
 MEMatching::~MEMatching() {}
 
@@ -70,13 +70,8 @@ CrossSection MEMatching::dSigHatDR() const {
 
   xme2 *= bornPDF;
 
-  if ( theScreeningScale != ZERO ) {
-    xme2 *= sqr(theScreeningScale) /
-      ( sqr(dipole()->lastPt()) + sqr(theScreeningScale) );
-  }
-
-  if ( restrictPhasespace() )
-    xme2 *= hardScaleProfile(dipole()->showerHardScale(),dipole()->lastPt());
+  if ( profileScales() )
+    xme2 *= profileScales()->hardScaleProfile(dipole()->showerHardScale(),dipole()->lastPt());
 
   return
     sqr(hbarc) * 
@@ -102,13 +97,8 @@ double MEMatching::me2() const {
     pow(bornXComb()->lastSHat()/realXComb()->lastSHat(),
 	realCXComb()->mePartonData().size()-4.);
 
-  if ( theScreeningScale != ZERO ) {
-    rme2 *= sqr(theScreeningScale) /
-      ( sqr(dipole()->lastPt()) + sqr(theScreeningScale) );
-  }
-
-  if ( restrictPhasespace() )
-    rme2 *= hardScaleProfile(dipole()->showerHardScale(),dipole()->lastPt());
+  if ( profileScales() )
+    rme2 *= profileScales()->hardScaleProfile(dipole()->showerHardScale(),dipole()->lastPt());
 
   return
     channelWeight() * (rme2/bme2) * 
@@ -122,11 +112,11 @@ double MEMatching::me2() const {
 
 
 void MEMatching::persistentOutput(PersistentOStream & os) const {
-  os << ounit(theScreeningScale,GeV) << theTruncatedShower;
+  os << theTruncatedShower;
 }
 
 void MEMatching::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(theScreeningScale,GeV) >> theTruncatedShower;
+  is >> theTruncatedShower;
 }
 
 
@@ -142,12 +132,6 @@ void MEMatching::Init() {
 
   static ClassDocumentation<MEMatching> documentation
     ("MEMatching implements NLO matching with matrix element correction (aka Powheg).");
-
-  static Parameter<MEMatching,Energy> interfaceScreeningScale
-    ("ScreeningScale",
-     "The screening scale to project out singular parts.",
-     &MEMatching::theScreeningScale, GeV, 0.0*GeV, 0.0*GeV, 0*GeV,
-     false, false, Interface::lowerlim);
 
   static Switch<MEMatching,bool> interfaceTruncatedShower
     ("TruncatedShower",

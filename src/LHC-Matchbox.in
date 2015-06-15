@@ -37,7 +37,7 @@ do Factory:Process p p -> e+ e-
 ## Special settings required for on-shell production of unstable particles
 ## enable for on-shell top production
 # read Matchbox/OnShellTopProduction.in
-## enable for on-shell W or Z production
+## enable for on-shell W, Z or h production
 # read Matchbox/OnShellEWProduction.in
 
 ##################################################
