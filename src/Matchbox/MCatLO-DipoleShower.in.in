@@ -10,8 +10,11 @@ cd /Herwig/EventHandlers
 insert EventHandler:PreCascadeHandlers[0] /Herwig/Decays/DecayHandler
 
 set EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
-set /Herwig/DipoleShower/DipoleShowerHandler:MaxPtIsMuF Yes
 read snippets/DipoleShowerParameters.in
+
+set /Herwig/DipoleShower/DipoleShowerHandler:RestrictPhasespace On
+set /Herwig/DipoleShower/DipoleShowerHandler:MaxPtIsMuF Yes
+set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleProfile /Herwig/MatrixElements/Matchbox/HardScaleProfile
 
 cd /Herwig/Analysis
 

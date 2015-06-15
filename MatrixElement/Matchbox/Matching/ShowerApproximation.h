@@ -18,6 +18,7 @@
 #include "Herwig++/MatrixElement/Matchbox/Utility/ColourBasis.h"
 #include "Herwig++/MatrixElement/Matchbox/Phasespace/TildeKinematics.fh"
 #include "Herwig++/MatrixElement/Matchbox/Phasespace/InvertedTildeKinematics.fh"
+#include "HardScaleProfile.h"
 
 namespace Herwig {
 
@@ -317,9 +318,30 @@ public:
   bool restrictPhasespace() const { return theRestrictPhasespace; }
 
   /**
-   * Return true if we are to use profile scales
+   * Indicate that the phase space restrictions of the dipole shower should
+   * be applied.
    */
-  bool profileScales() const { return theProfileScales; }
+  void restrictPhasespace(bool yes) { theRestrictPhasespace = yes; }
+
+  /**
+   * Return profile scales
+   */
+  Ptr<HardScaleProfile>::tptr profileScales() const { return theHardScaleProfile; }
+
+  /**
+   * Set profile scales
+   */
+  void profileScales(Ptr<HardScaleProfile>::ptr prof) { theHardScaleProfile = prof; }
+
+  /**
+   * Return true if maximum pt should be deduced from the factorization scale
+   */
+  bool hardScaleIsMuF() const { return maxPtIsMuF; }
+
+  /**
+   * Indicate that maximum pt should be deduced from the factorization scale
+   */
+  void hardScaleIsMuF(bool yes) { maxPtIsMuF = yes; }
 
   /**
    * Return the scale factor for the hard scale
@@ -330,11 +352,6 @@ public:
    * Set the scale factor for the hard scale
    */
   void hardScaleFactor(double f) { theHardScaleFactor = f; }
-
-  /**
-   * Return a scale profile towards the hard scale
-   */
-  virtual double hardScaleProfile(Energy hard, Energy soft) const;
 
   /**
    * Get the factorization scale factor
@@ -611,19 +628,14 @@ private:
   Energy theFactorizationScaleFreeze;
 
   /**
-   * True if we are to use profile scales
-   */
-  bool theProfileScales;
-
-  /**
-   * The profile scale parameter
-   */
-  double theProfileRho;
-
-  /**
    * True if maximum pt should be deduced from the factorization scale
    */
   bool maxPtIsMuF;
+
+  /**
+   * The profile scales
+   */
+  Ptr<HardScaleProfile>::ptr theHardScaleProfile;
 
 private:
 

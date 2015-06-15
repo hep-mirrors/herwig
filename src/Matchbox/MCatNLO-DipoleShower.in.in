@@ -3,12 +3,15 @@
 cd /Herwig/EventHandlers
 
 set EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
-set /Herwig/DipoleShower/DipoleShowerHandler:MaxPtIsMuF Yes
 
 insert EventHandler:PreCascadeHandlers[0] /Herwig/Decays/DecayHandler
 
 set /Herwig/DipoleShower/Kinematics/IFLightKinematics:CollinearScheme On
 set /Herwig/DipoleShower/Kinematics/IILightKinematics:CollinearScheme On
+
+set /Herwig/DipoleShower/DipoleShowerHandler:RestrictPhasespace On
+set /Herwig/DipoleShower/DipoleShowerHandler:MaxPtIsMuF Yes
+set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleProfile /Herwig/MatrixElements/Matchbox/HardScaleProfile
 
 cd /Herwig/MatrixElements/Matchbox
 

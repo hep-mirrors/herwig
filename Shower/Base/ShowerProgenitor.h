@@ -55,7 +55,7 @@ public:
 		   Energy pT=ZERO,bool emitted=false)
     : _original(original), _copy(copy), _perturbative(true),
       _particle(particle), _highestpT(pT), 
-      _maxHardPt(ZERO), _hasEmitted(emitted), _didProfileVeto(false),
+      _maxHardPt(ZERO), _hasEmitted(emitted),
       _reconstructed(notReconstructed) {
     // get the BeamParticleData object
     if ( original->parents().empty() ) {
@@ -174,16 +174,6 @@ public:
   tcBeamPtr beam() { return _beam; }
 
   /**
-   * Return true, if the profile scale veto has been applied
-   */
-  bool profileVetoed() const { return _didProfileVeto; }
-
-  /**
-   * Indicate that the profile scale veto has been applied
-   */
-  void didProfileVeto(bool yes = true) { _didProfileVeto = yes; }
-
-  /**
    *  Whether or not the recon has been performed
    */
   Reconstructed reconstructed() const {return _reconstructed;}
@@ -240,11 +230,6 @@ private:
    *  The BeamParticleData object
    */
   tcBeamPtr _beam;
-
-  /**
-   * True, if the profile scale veto has been applied
-   */
-  bool _didProfileVeto;
 
   /**
    *  Whether or not the reconstruction has been performed

@@ -46,8 +46,7 @@ ShowerApproximation::ShowerApproximation()
     theEmissionScaleInSplitting(showerScale),
     theRenormalizationScaleFreeze(1.*GeV),
     theFactorizationScaleFreeze(1.*GeV),
-    theProfileScales(true),
-  theProfileRho(0.3), maxPtIsMuF(false) {}
+  maxPtIsMuF(false) {}
 
 ShowerApproximation::~ShowerApproximation() {}
 
@@ -148,25 +147,6 @@ Energy ShowerApproximation::hardScale() const {
   } else {
     return hardScaleFactor()*sqrt(bornCXComb()->lastCentralScale());
   }
-}
-
-double ShowerApproximation::hardScaleProfile(Energy hard, Energy soft) const {
-  double x = soft/hard;
-  if ( theProfileScales ) {
-    if ( x > 1. ) {
-      return 0.;
-    } else if ( x <= 1. && x > 1. - theProfileRho ) {
-      return sqr(1.-x)/(2.*sqr(theProfileRho));
-    } else if ( x <= 1. - theProfileRho &&
-		x > 1. - 2.*theProfileRho ) {
-      return 1. - sqr(1.-2.*theProfileRho-x)/(2.*sqr(theProfileRho));
-    } else {
-      return 1.;
-    }
-  }
-  if ( x <= 1. )
-    return 1.;
-  return 0.;
 }
 
 bool ShowerApproximation::isInShowerPhasespace() const {
@@ -425,8 +405,8 @@ void ShowerApproximation::persistentOutput(PersistentOStream & os) const {
      << theEmissionScaleInSubtraction << theRealEmissionScaleInSplitting
      << theBornScaleInSplitting << theEmissionScaleInSplitting
      << ounit(theRenormalizationScaleFreeze,GeV)
-     << ounit(theFactorizationScaleFreeze,GeV)
-     << theProfileScales << theProfileRho << maxPtIsMuF;
+     << ounit(theFactorizationScaleFreeze,GeV) << maxPtIsMuF
+     << theHardScaleProfile;
 }
 
 void ShowerApproximation::persistentInput(PersistentIStream & is, int) {
@@ -442,8 +422,8 @@ void ShowerApproximation::persistentInput(PersistentIStream & is, int) {
      >> theEmissionScaleInSubtraction >> theRealEmissionScaleInSplitting
      >> theBornScaleInSplitting >> theEmissionScaleInSplitting
      >> iunit(theRenormalizationScaleFreeze,GeV)
-     >> iunit(theFactorizationScaleFreeze,GeV)
-     >> theProfileScales >> theProfileRho >> maxPtIsMuF;
+     >> iunit(theFactorizationScaleFreeze,GeV) >> maxPtIsMuF
+     >> theHardScaleProfile;
 }
 
 // *** Attention *** The following static variable is needed for the type
@@ -667,26 +647,10 @@ void ShowerApproximation::Init() {
      &ShowerApproximation::theFactorizationScaleFreeze, GeV, 1.0*GeV, 0.0*GeV, 0*GeV,
      false, false, Interface::lowerlim);
 
-  static Switch<ShowerApproximation,bool> interfaceProfileScales
-    ("ProfileScales",
-     "Switch on or off use of profile scales.",
-     &ShowerApproximation::theProfileScales, true, false, false);
-  static SwitchOption interfaceProfileScalesYes
-    (interfaceProfileScales,
-     "Yes",
-     "Use profile scales.",
-     true);
-  static SwitchOption interfaceProfileScalesNo
-    (interfaceProfileScales,
-     "No",
-     "Use a hard cutoff.",
-     false);
-
-  static Parameter<ShowerApproximation,double> interfaceProfileRho
-    ("ProfileRho",
-     "The rho parameter of the profile scales.",
-     &ShowerApproximation::theProfileRho, 0.3, 0.0, 1.0,
-     false, false, Interface::limited);
+  static Reference<ShowerApproximation,HardScaleProfile> interfaceHardScaleProfile
+    ("HardScaleProfile",
+     "The hard scale profile to use.",
+     &ShowerApproximation::theHardScaleProfile, false, false, true, true, false);
 
   static Reference<ShowerApproximation,ColourBasis> interfaceLargeNBasis
     ("LargeNBasis",

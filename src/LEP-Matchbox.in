@@ -121,6 +121,14 @@ read Matchbox/MCatNLO-DefaultShower.in
 # insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 HepMC
 
 ##################################################
+## Do not apply profile scales for LEP as hard
+## scale coincides with kinematic limit
+##################################################
+
+set /Herwig/Shower/ShowerHandler:HardScaleProfile NULL
+set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleProfile NULL
+
+##################################################
 ## Save the generator
 ##################################################
 

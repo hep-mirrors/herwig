@@ -22,6 +22,7 @@
 #include "Herwig++/PDF/HwRemDecayer.fh"
 #include "ThePEG/EventRecord/RemnantParticle.fh"
 #include "ShowerHandler.fh"
+#include "Herwig++/MatrixElement/Matchbox/Matching/HardScaleProfile.h"
 
 namespace Herwig {
 
@@ -205,6 +206,22 @@ public:
    * The option on when to apply the scale factors
    */
   int scaleFactorOption() const { return theScaleFactorOption; }
+
+  /**
+   * Return true, if the phase space restrictions of the dipole shower should
+   * be applied.
+   */
+  bool restrictPhasespace() const { return theRestrictPhasespace; }
+
+  /**
+   * Return profile scales
+   */
+  Ptr<HardScaleProfile>::tptr profileScales() const { return theHardScaleProfile; }
+
+  /**
+   * Return true if maximum pt should be deduced from the factorization scale
+   */
+  bool hardScaleIsMuF() const { return maxPtIsMuF; }
 
 protected:
 
@@ -486,6 +503,22 @@ private:
    * The option on when to apply the scale factors
    */
   int theScaleFactorOption;
+
+  /**
+   * True, if the phase space restrictions of the dipole shower should
+   * be applied.
+   */
+  bool theRestrictPhasespace;
+
+  /**
+   * True if maximum pt should be deduced from the factorization scale
+   */
+  bool maxPtIsMuF;
+
+  /**
+   * The profile scales
+   */
+  Ptr<HardScaleProfile>::ptr theHardScaleProfile;
 
 public:
 

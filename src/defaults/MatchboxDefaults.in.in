@@ -500,8 +500,11 @@ set /Herwig/MatrixElements/Matchbox/Factory:Phasespace TreePhasespace
 
 cd /Herwig/MatrixElements/Matchbox
 
+create Herwig::HardScaleProfile HardScaleProfile
+
 create Herwig::MEMatching MEMatching
 set MEMatching:RestrictPhasespace On
+set MEMatching:HardScaleProfile /Herwig/MatrixElements/Matchbox/HardScaleProfile
 set MEMatching:BornScaleInSubtraction BornScale
 set MEMatching:RealEmissionScaleInSubtraction RealScale
 set MEMatching:EmissionScaleInSubtraction RealScale
@@ -520,24 +523,21 @@ set MECorrectionHandler:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/In
 set MECorrectionHandler:FreezeGrid 100000
 
 create Herwig::DipoleMatching DipoleMatching HwDipoleMatching.so
-set DipoleMatching:RestrictPhasespace On
+# set in DipoleShowerDefaults.in as not available at this point
+# set DipoleMatching:ShowerHandler /Herwig/DipoleShower/DipoleShowerHandler
 set DipoleMatching:BornScaleInSubtraction BornScale
 set DipoleMatching:RealEmissionScaleInSubtraction BornScale
 set DipoleMatching:EmissionScaleInSubtraction BornScale
-set DipoleMatching:MaxPtIsMuF Yes
-set DipoleMatching:FFPtCut 1.014259*GeV
+set DipoleMatching:FFPtCut 1.0*GeV
 set DipoleMatching:FIPtCut 1.0*GeV
 set DipoleMatching:IIPtCut 1.0*GeV
 
 create Herwig::QTildeMatching QTildeMatching HwQTildeMatching.so
 set QTildeMatching:ShowerHandler /Herwig/Shower/ShowerHandler
-# set this to off, if the shower pt veto is off
-set QTildeMatching:RestrictPhasespace On
 set QTildeMatching:BornScaleInSubtraction BornScale
 set QTildeMatching:RealEmissionScaleInSubtraction BornScale
 set QTildeMatching:EmissionScaleInSubtraction BornScale
 set QTildeMatching:QTildeFinder /Herwig/Shower/PartnerFinder
-set QTildeMatching:MaxPtIsMuF Yes
 # just a dummy, since SudakovCommonn can't be used
 # it's only used to get the value of the kinCutoffScale
 set QTildeMatching:QTildeSudakov /Herwig/Shower/QtoQGSudakov

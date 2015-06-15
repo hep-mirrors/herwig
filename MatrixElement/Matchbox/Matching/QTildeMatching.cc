@@ -136,7 +136,8 @@ bool QTildeMatching::isInShowerPhasespace() const {
   if ( pt2 < theQTildeSudakov->pT2min() )
     return false;
 
-  return qtilde <= qtildeHard && sqrt(pt2) < dipole()->showerHardScale();
+  bool hardVeto = restrictPhasespace() && sqrt(pt2) >= dipole()->showerHardScale();
+  return qtilde <= qtildeHard && !hardVeto;
 
 }
 
@@ -247,7 +248,9 @@ CrossSection QTildeMatching::dSigHatDR() const {
     pt2 = sqr((1.-z)*qtilde) - z*sqr(Qg);
   }
   assert(pt2 >= ZERO);
-  xme2 *= hardScaleProfile(dipole()->showerHardScale(),sqrt(pt2));
+
+  if ( profileScales() )
+    xme2 *= profileScales()->hardScaleProfile(dipole()->showerHardScale(),sqrt(pt2));
 
   CrossSection res = 
     sqr(hbarc) * 
@@ -422,6 +425,9 @@ void QTildeMatching::doinit() {
     factorizationScaleFactor(theShowerHandler->factorizationScaleFactor());
     renormalizationScaleFactor(theShowerHandler->renormalizationScaleFactor());
   }
+  profileScales(theShowerHandler->profileScales());
+  restrictPhasespace(theShowerHandler->restrictPhasespace());
+  hardScaleIsMuF(theShowerHandler->hardScaleIsMuF());
   ShowerApproximation::doinit();
 }
 
