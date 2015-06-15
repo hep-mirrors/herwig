@@ -79,8 +79,8 @@ void Evolver::persistentOutput(PersistentOStream & os) const {
      << _meCorrMode << _hardVetoMode << _hardVetoRead << _hardVetoReadOption
      << _limitEmissions << _spinOpt << _softOpt << _hardPOWHEG
      << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << ounit(_iptmax,GeV) 
-     << _vetoes << _trunc_Mode << _hardEmissionMode << _reconOpt
-     << isMCatNLOSEvent << isMCatNLOHEvent
+     << _vetoes << _trunc_Mode << _hardEmissionMode << _reconOpt 
+     << _massVetoOption << isMCatNLOSEvent << isMCatNLOHEvent
      << isPowhegSEvent << isPowhegHEvent
      << theFactorizationScaleFactor << theRenormalizationScaleFactor
      << interaction_<< interactions_.size();
@@ -95,7 +95,7 @@ void Evolver::persistentInput(PersistentIStream & is, int) {
      >> _limitEmissions >> _spinOpt >> _softOpt >> _hardPOWHEG
      >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> iunit(_iptmax,GeV)
      >> _vetoes >> _trunc_Mode >> _hardEmissionMode >> _reconOpt
-     >> isMCatNLOSEvent >> isMCatNLOHEvent
+     >> _massVetoOption >> isMCatNLOSEvent >> isMCatNLOHEvent
      >> isPowhegSEvent >> isPowhegHEvent
      >> theFactorizationScaleFactor >> theRenormalizationScaleFactor
      >> interaction_ >> isize;
@@ -358,6 +358,22 @@ void Evolver::Init() {
      "OffShell2",
      "Use the off-shell masses in the calculation but only locally for each branching",
      2);
+
+  static Switch<Evolver,unsigned int> interfaceMassVetoOption
+    ("MassVetoOption",
+     "Option for the handling of the mass vetos",
+     &Evolver::_massVetoOption, 0, false, false);
+  static SwitchOption interfaceMassVetoOptionReset
+    (interfaceMassVetoOption,
+     "Reset",
+     "Try another branching without resetting the starting scale",
+     0);
+  static SwitchOption interfaceMassVetoOptionInclude
+    (interfaceMassVetoOption,
+     "Include",
+     "Include the veto in the scale generation via the veto algorithm",
+     1);
+
 
   static Switch<Evolver,unsigned int> interfaceSpinCorrelations
     ("SpinCorrelations",
@@ -778,6 +794,7 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
 	  particle->abandonChild(children[ix]);
 	children.clear();
 	if(particle->spinInfo()) particle->spinInfo()->decayVertex(VertexPtr());
+	if(_massVetoOption==1) particle->vetoEmission(fb.type,fb.kinematics->scale());
 	fb = Branching();
 	continue;
       }
@@ -805,15 +822,6 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
 			      +sqr(masses[0]))
 	- sqr(masses[1])*(1.-z) - sqr(masses[2])*z;
       if(pt2>=ZERO) {
-	particle->showerKinematics(ShoKinPtr());
-	for(unsigned int ix=0;ix<children.size();++ix)
-	  particle->abandonChild(children[ix]);
-	children.clear();
-	if(particle->spinInfo()) particle->spinInfo()->decayVertex(VertexPtr());
-	fb = Branching();
-	continue;
-      }
-      else {
 	// branching has happened
 	particle->showerKinematics()->
 	  updateParent(particle, children,fb.type);
@@ -823,6 +831,16 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
 	// shower the second particle
 	if(fc[1].kinematics) timeLikeShower(children[1],type,fc[1],false);
 	if(children[1]->spinInfo()) children[1]->spinInfo()->develop();
+      }
+      else {
+	particle->showerKinematics(ShoKinPtr());
+	for(unsigned int ix=0;ix<children.size();++ix)
+	  particle->abandonChild(children[ix]);
+	children.clear();
+	if(_massVetoOption==1) particle->vetoEmission(fb.type,fb.kinematics->scale());
+	if(particle->spinInfo()) particle->spinInfo()->decayVertex(VertexPtr());
+	fb = Branching();
+	continue;
       }
     }
     break;

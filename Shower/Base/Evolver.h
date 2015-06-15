@@ -65,7 +65,8 @@ public:
    *  Default Constructor
    */
   Evolver() : _maxtry(100), _meCorrMode(1), _hardVetoMode(1),
-	      _hardVetoRead(0), _reconOpt(0), _hardVetoReadOption(false),
+	      _hardVetoRead(0), _reconOpt(0),
+	      _massVetoOption(0), _hardVetoReadOption(false),
 	      _iptrms(ZERO), _beta(0.), _gamma(ZERO), _iptmax(),
 	      _limitEmissions(0), _initialenhance(1.), _finalenhance(1.),
 	       interaction_(1), _trunc_Mode(true), _hardEmissionMode(0),
@@ -676,6 +677,11 @@ private:
    *  Control of the reconstruction option
    */
   unsigned int _reconOpt;
+
+  /**
+   *   Option for inclusion of mass veto
+   */
+  unsigned int _massVetoOption;
 
   /**
    * If hard veto pT scale is being read-in this determines
