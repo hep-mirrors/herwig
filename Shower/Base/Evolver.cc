@@ -362,7 +362,7 @@ void Evolver::Init() {
   static Switch<Evolver,unsigned int> interfaceMassVetoOption
     ("MassVetoOption",
      "Option for the handling of the mass vetos",
-     &Evolver::_massVetoOption, 0, false, false);
+     &Evolver::_massVetoOption, 1, false, false);
   static SwitchOption interfaceMassVetoOptionReset
     (interfaceMassVetoOption,
      "Reset",
