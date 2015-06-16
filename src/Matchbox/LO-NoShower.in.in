@@ -31,16 +31,7 @@ do cbar:AdjustNominalMass
 do b:AdjustNominalMass
 do bbar:AdjustNominalMass
 
-do e+:AdjustNominalMass
-do e-:AdjustNominalMass
 do mu+:AdjustNominalMass
 do mu-:AdjustNominalMass
 do tau+:AdjustNominalMass
 do tau-:AdjustNominalMass
-do nu_e:AdjustNominalMass
-do nu_ebar:AdjustNominalMass
-do nu_mu:AdjustNominalMass
-do nu_mubar:AdjustNominalMass
-do nu_tau:AdjustNominalMass
-do nu_taubar:AdjustNominalMass
-
