@@ -30,7 +30,7 @@
 using namespace Herwig;
 
 QTildeMatching::QTildeMatching() 
-  : theCorrectForXZMismatch(false) {}
+  : theCorrectForXZMismatch(true) {}
 
 QTildeMatching::~QTildeMatching() {}
 
@@ -482,7 +482,7 @@ void QTildeMatching::Init() {
   static Switch<QTildeMatching,bool> interfaceCorrectForXZMismatch
     ("CorrectForXZMismatch",
      "Correct for x/z mismatch near hard phase space boundary.",
-     &QTildeMatching::theCorrectForXZMismatch, false, false, false);
+     &QTildeMatching::theCorrectForXZMismatch, true, false, false);
   static SwitchOption interfaceCorrectForXZMismatchYes
     (interfaceCorrectForXZMismatch,
      "Yes",
