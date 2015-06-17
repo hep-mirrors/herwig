@@ -223,11 +223,12 @@ constructVertex2(IDPair in, VertexBasePtr vertex,
     }
   }
   else {
+    long idRes = !partc->CC() ? partc->id() : partc->CC()->id();
     for(size_t iv = 0; iv < nvertices; ++iv) {
       VBPtr vertex2 = model()->vertex(iv);
       if(vertex2->getNpoint() > 3) continue;
       for(unsigned int ix = 0;ix < 3; ++ix) {
-	vector<long> pdlist = vertex2->search(ix, partc->id());
+	vector<long> pdlist = vertex2->search(ix, idRes);
 	for(unsigned int iy=0;iy<pdlist.size();iy+=3) {
 	  long out1 = ix==0 ? pdlist.at(iy+1) : pdlist.at(iy  );
 	  long out2 = ix==2 ? pdlist.at(iy+1) : pdlist.at(iy+2);
