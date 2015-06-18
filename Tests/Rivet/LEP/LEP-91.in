@@ -1,14 +1,7 @@
 ##################################################
-# Rivet analyses at the Z pole
-##################################################
-read LEPBase-Powheg.in
-
-##################################################
 # LEP physics parameters (override defaults) 
 ##################################################
-cd /Herwig/Generators
-set LEPGenerator:EventHandler:LuminosityFunction:Energy 91.2
-
+set /Herwig/Generators/LEPGenerator:EventHandler:LuminosityFunction:Energy 91.2
 ##################################################
 # select the analyses
 ##################################################
@@ -74,9 +67,3 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_HADRON_MULTIPLICITIES_RATIO
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2001_S4553896
 # DELPHI 4 jet angles 
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2003_WUD_03_11
-
-##################################################
-# Save run for later usage with 'Herwig++ run'
-##################################################
-cd /Herwig/Generators
-saverun LEP-Powheg-91 LEPGenerator
