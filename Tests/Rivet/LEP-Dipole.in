@@ -1,7 +1,6 @@
 ##################################################
 ## Herwig++/Matchbox example input file
 ##################################################
-
 ##################################################
 ## Collider type
 ##################################################
@@ -28,7 +27,7 @@ set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/SHatScale
 ##################################################
 ## Matching and shower selection
 ##################################################
-read Matchbox/MCatNLO-DefaultShower.in
+read Matchbox/MCatNLO-DipoleShower.in
 ##################################################
 #  Switch off ISR
 ##################################################
