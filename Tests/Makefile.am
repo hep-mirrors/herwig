@@ -101,6 +101,18 @@ Rivet-LHC-Matchbox-% : Rivet/LHC-Matchbox-%.in
 	mv $(notdir $(subst .in,.yoda,$<)) ..; \
 	cd ..
 
+Rivet/LEP-Powheg-%.in : Rivet/LEP-Powheg.in
+	infile=$(subst LEP-Powheg,,$(notdir $(subst .in,,$@))); \
+	sed s"!RUNNAME!LEP-Powheg$${infile}!" < Rivet/LEP-Powheg.in | sed s"!PARAMETERS!LEP/LEP$${infile}!" > $@
+
+Rivet/LEP-Matchbox-%.in : Rivet/LEP-Matchbox.in
+	infile=$(subst LEP-Matchbox,,$(notdir $(subst .in,,$@))); \
+	sed s"!RUNNAME!LEP-Matchbox$${infile}!" < Rivet/LEP-Matchbox.in | sed s"!PARAMETERS!LEP/LEP$${infile}!" > $@
+
+Rivet/LEP-%.in : Rivet/LEP.in
+	infile=$(subst LEP,,$(notdir $(subst .in,,$@))); \
+	sed s"!RUNNAME!LEP$${infile}!" < Rivet/LEP.in | sed s"!PARAMETERS!LEP/LEP$${infile}!" > $@
+
 Rivet-LEP-Matchbox-% : Rivet/LEP-Matchbox-%.in
 	if [ ! -d Rivet-$(notdir $(subst .in,,$<))  ]; then mkdir Rivet-$(notdir $(subst .in,,$<)); fi;
 	cd Rivet-$(notdir $(subst .in,,$<)); echo `pwd`; \

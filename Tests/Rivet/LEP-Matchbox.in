@@ -1,0 +1,13 @@
+##################################################
+# Rivet analyses at the Z pole
+##################################################
+read LEPBase-Matchbox.in
+
+read PARAMETERS.in
+
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+cd /Herwig/Generators
+saverun RUNNAME LEPGenerator
+
