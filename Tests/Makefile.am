@@ -109,11 +109,23 @@ Rivet/LEP-Matchbox-%.in : Rivet/LEP-Matchbox.in
 	infile=$(subst LEP-Matchbox,,$(notdir $(subst .in,,$@))); \
 	sed s"!RUNNAME!LEP-Matchbox$${infile}!" < Rivet/LEP-Matchbox.in | sed s"!PARAMETERS!LEP/LEP$${infile}!" > $@
 
+Rivet/LEP-Dipole-%.in : Rivet/LEP-Dipole.in
+	infile=$(subst LEP-Dipole,,$(notdir $(subst .in,,$@))); \
+	sed s"!RUNNAME!LEP-Dipole$${infile}!" < Rivet/LEP-Dipole.in | sed s"!PARAMETERS!LEP/LEP$${infile}!" > $@
+
 Rivet/LEP-%.in : Rivet/LEP.in
 	infile=$(subst LEP,,$(notdir $(subst .in,,$@))); \
 	sed s"!RUNNAME!LEP$${infile}!" < Rivet/LEP.in | sed s"!PARAMETERS!LEP/LEP$${infile}!" > $@
 
 Rivet-LEP-Matchbox-% : Rivet/LEP-Matchbox-%.in
+	if [ ! -d Rivet-$(notdir $(subst .in,,$<))  ]; then mkdir Rivet-$(notdir $(subst .in,,$<)); fi;
+	cd Rivet-$(notdir $(subst .in,,$<)); echo `pwd`; \
+	../$(HERWIG) read --repo ../$(REPO) -L ../$(top_builddir)/lib ../$<; \
+	../$(HERWIG) run $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}; \
+	mv $(notdir $(subst .in,.yoda,$<)) ..; \
+	cd ..
+
+Rivet-LEP-Dipole-% : Rivet/LEP-Dipole-%.in
 	if [ ! -d Rivet-$(notdir $(subst .in,,$<))  ]; then mkdir Rivet-$(notdir $(subst .in,,$<)); fi;
 	cd Rivet-$(notdir $(subst .in,,$<)); echo `pwd`; \
 	../$(HERWIG) read --repo ../$(REPO) -L ../$(top_builddir)/lib ../$<; \
@@ -162,39 +174,16 @@ Rivet-ISR-% : Rivet/ISR-%.in
 	$(HWREAD) $<
 	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
 
-Rivet-LEP: Rivet-LEP-22  Rivet-LEP-35  Rivet-LEP-44  Rivet-LEP-91  \
-           Rivet-LEP-130 Rivet-LEP-133 Rivet-LEP-136 Rivet-LEP-161 \
-           Rivet-LEP-172 Rivet-LEP-177 Rivet-LEP-183 Rivet-LEP-189 \
-           Rivet-LEP-192 Rivet-LEP-196 Rivet-LEP-197 Rivet-LEP-200 \
-           Rivet-LEP-202 Rivet-LEP-206 Rivet-LEP-14  Rivet-LEP-10\
-           Rivet-LEP-91-nopi \
-           Rivet-LEP-Powheg-14  Rivet-LEP-Powheg-22 \
-           Rivet-LEP-Powheg-35  Rivet-LEP-Powheg-44  \
-           Rivet-LEP-Powheg-91  Rivet-LEP-Powheg-130 \
-           Rivet-LEP-Powheg-133 Rivet-LEP-Powheg-136 \
-           Rivet-LEP-Powheg-161 Rivet-LEP-Powheg-172 \
-           Rivet-LEP-Powheg-177 Rivet-LEP-Powheg-183 \
-           Rivet-LEP-Powheg-189 Rivet-LEP-Powheg-192 \
-           Rivet-LEP-Powheg-196 Rivet-LEP-Powheg-197 \
-           Rivet-LEP-Powheg-200 Rivet-LEP-Powheg-202 \
-           Rivet-LEP-Powheg-206 Rivet-LEP-Powheg-10 \
-           Rivet-LEP-Powheg-91-nopi \
-           Rivet-LEP-Matchbox-14  Rivet-LEP-Matchbox-22 \
-           Rivet-LEP-Matchbox-35  Rivet-LEP-Matchbox-44  \
-           Rivet-LEP-Matchbox-91  Rivet-LEP-Matchbox-130 \
-           Rivet-LEP-Matchbox-133 Rivet-LEP-Matchbox-136 \
-           Rivet-LEP-Matchbox-161 Rivet-LEP-Matchbox-172 \
-           Rivet-LEP-Matchbox-177 Rivet-LEP-Matchbox-183 \
-           Rivet-LEP-Matchbox-189 Rivet-LEP-Matchbox-192 \
-           Rivet-LEP-Matchbox-196 Rivet-LEP-Matchbox-197 \
-           Rivet-LEP-Matchbox-200 Rivet-LEP-Matchbox-202 \
-           Rivet-LEP-Matchbox-206 Rivet-LEP-Matchbox-10 \
-           Rivet-LEP-Matchbox-91-nopi
+Rivet-LEP: $(shell echo          Rivet-LEP-{10,14,22,35,44,91,130,133,136,161,172,177,183,189,192,196,197,200,202,206,91-nopi}) \
+           $(shell echo   Rivet-LEP-Powheg-{10,14,22,35,44,91,130,133,136,161,172,177,183,189,192,196,197,200,202,206,91-nopi}) \
+           $(shell echo Rivet-LEP-Matchbox-{10,14,22,35,44,91,130,133,136,161,172,177,183,189,192,196,197,200,202,206,91-nopi}) \
+           $(shell echo   Rivet-LEP-Dipole-{10,14,22,35,44,91,130,133,136,161,172,177,183,189,192,196,197,200,202,206,91-nopi})
 	rm -rf Rivet-LEP
 	python/merge-LEP LEP
 	python/merge-LEP LEP-Powheg
 	python/merge-LEP LEP-Matchbox
-	rivet-mkhtml -o Rivet-LEP LEP.yoda:Hw++ LEP-Powheg.yoda:Hw++-Powheg LEP-Matchbox.yoda:Hw++-Matchbox
+	python/merge-LEP LEP-Dipole
+	rivet-mkhtml -o Rivet-LEP LEP.yoda:Hw++ LEP-Powheg.yoda:Hw++-Powheg LEP-Matchbox.yoda:Hw++-Matchbox LEP-Dipole.yoda:Hw++-Dipole
 
 Rivet-BFactory: Rivet-BFactory-10.52     Rivet-BFactory-Powheg-10.52     Rivet-BFactory-Matchbox-10.52     \
                 Rivet-BFactory-10.52-sym Rivet-BFactory-Powheg-10.52-sym Rivet-BFactory-Matchbox-10.52-sym \

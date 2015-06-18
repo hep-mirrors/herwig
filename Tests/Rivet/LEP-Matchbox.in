@@ -1,7 +1,36 @@
 ##################################################
-# Rivet analyses at the Z pole
+# base parameters for LEP analyses
 ##################################################
-read LEPBase-Matchbox.in
+##################################################
+# Technical parameters for this run
+##################################################
+cd /Herwig/Generators
+set LEPGenerator:NumberOfEvents 100000000
+set LEPGenerator:RandomNumberGenerator:Seed 31122001
+set LEPGenerator:PrintEvent 10
+set LEPGenerator:MaxErrors 10000
+# no MPI
+set LEPGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+
+##################################################
+#  Switch off ISR
+##################################################
+set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
+set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
+
+##################################################
+#  Create the Herwig analysis
+##################################################
+create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
+insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
+
+##################################################
+#  Use the q qbar matrix element
+##################################################
+# default e+e- > q qbar (5 flavours d,u,s,c,b)
+insert  /Herwig/MatrixElements/SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEee2gZ2qq
+set /Herwig/Shower/PartnerFinder:QEDPartner IIandFF
+mv /Herwig/Generators/LEPGenerator /Herwig/Generators/EventGenerator
 
 read PARAMETERS.in
 
@@ -9,5 +38,4 @@ read PARAMETERS.in
 # Save run for later usage with 'Herwig++ run'
 ##################################################
 cd /Herwig/Generators
-saverun RUNNAME LEPGenerator
-
+saverun RUNNAME EventGenerator

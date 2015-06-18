@@ -1,7 +1,7 @@
 ##################################################
 # LEP physics parameters (override defaults) 
 ##################################################
-set /Herwig/Generators/LEPGenerator:EventHandler:LuminosityFunction:Energy 189.
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 189.
 # ALEPH jet and event shapes at many energies
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_2004_S5765862
 # OPAL/JADE jet rates at many energies

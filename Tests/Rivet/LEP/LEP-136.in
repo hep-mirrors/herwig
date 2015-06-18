@@ -1,7 +1,7 @@
 ##################################################
 # LEP physics parameters (override defaults) 
 ##################################################
-set /Herwig/Generators/LEPGenerator:EventHandler:LuminosityFunction:Energy 136.
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 136.
 ##################################################
 # select the analyses
 ##################################################
