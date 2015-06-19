@@ -67,6 +67,8 @@ Makefile\.in$
 ^Tests/.*\.(top|ps|pyc|info|dat|pdf|png|log|out)$
 ^Tests/.*\.(top|run|tex|mult|Bmult|aida|yoda)$
 ^Tests/Rivet-.*$
+^Tests/Rivet/LEP-(Powheg|Matchbox|Dipole)-.*\.in$
+^Tests/Rivet/LEP-(..|...|91-nopi)\.in$
 ^Tests/plots$
 ^Tests/.*index.html$
 ^Herwig\+\+\-
