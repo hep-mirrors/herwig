@@ -6,17 +6,17 @@ read LEPBase-Matchbox.in
 create ThePEG::LuminosityFunction BFactoryLuminosity
 set BFactoryLuminosity:BeamEMaxA 3.5*GeV
 set BFactoryLuminosity:BeamEMaxB 7.91*GeV
-set /Herwig/Cuts/EECuts:MHatMin 9.99
-set /Herwig/EventHandlers/LEPHandler:LuminosityFunction BFactoryLuminosity
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 9.99
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction BFactoryLuminosity
 
 ##################################################
 # LEP physics parameters (override defaults) 
 ##################################################
 cd /Herwig/Generators
-do /Herwig/MatrixElements/Matchbox/EEFactory:Process e- e+ d dbar
-do /Herwig/MatrixElements/Matchbox/EEFactory:Process e- e+ u ubar
-do /Herwig/MatrixElements/Matchbox/EEFactory:Process e- e+ s sbar
-do /Herwig/MatrixElements/Matchbox/EEFactory:Process e- e+ c cbar
+do /Herwig/MatrixElements/Matchbox/Factory:Process e- e+ d dbar
+do /Herwig/MatrixElements/Matchbox/Factory:Process e- e+ u ubar
+do /Herwig/MatrixElements/Matchbox/Factory:Process e- e+ s sbar
+do /Herwig/MatrixElements/Matchbox/Factory:Process e- e+ c cbar
 ##################################################
 # select the analyses 
 ##################################################
@@ -28,4 +28,4 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BELLE_2013_I1216515
 # Save run for later usage with 'Herwig++ run'
 ##################################################
 cd /Herwig/Generators
-saverun BFactory-Matchbox-10.52 LEPGenerator
+saverun BFactory-Matchbox-10.52 EventGenerator

@@ -1,14 +1,12 @@
 ##################################################
 # Rivet analyses at the Z pole
 ##################################################
-read LEPBase-Matchbox.in
+read LEPBase-Dipole.in
 
 create ThePEG::LuminosityFunction BFactoryLuminosity
-set BFactoryLuminosity:BeamEMaxA 3.5*GeV
-set BFactoryLuminosity:BeamEMaxB 7.94*GeV
+set BFactoryLuminosity:BeamEMaxA 5.225
+set BFactoryLuminosity:BeamEMaxB 5.225
 set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 9.99
-set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
-set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction BFactoryLuminosity
 
 ##################################################
@@ -24,12 +22,11 @@ do /Herwig/MatrixElements/Matchbox/Factory:Process e- e+ c cbar
 ##################################################
 
 # BELLE charm hadron production
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2005_S6181155
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2007_S6895344
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2013_I1238276
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_S2789213
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_S2669951
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################
 cd /Herwig/Generators
-saverun BFactory-Matchbox-10.54 EventGenerator
+saverun BFactory-Dipole-10.45 EventGenerator

@@ -22,7 +22,7 @@ set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/SHatScale
 ##################################################
 ## Matching and shower selection
 ##################################################
-read Matchbox/MCatNLO-DefaultShower.in
+read Matchbox/MCatNLO-DipoleShower.in
 ##################################################
 #  Switch off ISR
 ##################################################

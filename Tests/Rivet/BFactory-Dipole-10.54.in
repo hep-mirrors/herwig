@@ -1,7 +1,7 @@
 ##################################################
 # Rivet analyses at the Z pole
 ##################################################
-read LEPBase-Matchbox.in
+read LEPBase-Dipole.in
 
 create ThePEG::LuminosityFunction BFactoryLuminosity
 set BFactoryLuminosity:BeamEMaxA 3.5*GeV
@@ -32,4 +32,4 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 BABAR_2013_I1238276
 # Save run for later usage with 'Herwig++ run'
 ##################################################
 cd /Herwig/Generators
-saverun BFactory-Matchbox-10.54 EventGenerator
+saverun BFactory-Dipole-10.54 EventGenerator

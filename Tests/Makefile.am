@@ -182,10 +182,7 @@ Rivet-ISR-% : Rivet/ISR-%.in
 	$(HWREAD) $<
 	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
 
-Rivet-LEP: $(shell echo          Rivet-LEP-{10,14,22,35,44,91,130,133,136,161,172,177,183,189,192,196,197,200,202,206,91-nopi}) \
-           $(shell echo   Rivet-LEP-Powheg-{10,14,22,35,44,91,130,133,136,161,172,177,183,189,192,196,197,200,202,206,91-nopi}) \
-           $(shell echo Rivet-LEP-Matchbox-{10,14,22,35,44,91,130,133,136,161,172,177,183,189,192,196,197,200,202,206,91-nopi}) \
-           $(shell echo   Rivet-LEP-Dipole-{10,14,22,35,44,91,130,133,136,161,172,177,183,189,192,196,197,200,202,206,91-nopi})
+Rivet-LEP: $(shell echo Rivet-LEP{,-Powheg,-Matchbox,-Dipole}-{10,14,22,35,44,91,130,133,136,161,172,177,183,189,192,196,197,200,202,206,91-nopi})
 	rm -rf Rivet-LEP
 	python/merge-LEP LEP
 	python/merge-LEP LEP-Powheg
@@ -193,18 +190,15 @@ Rivet-LEP: $(shell echo          Rivet-LEP-{10,14,22,35,44,91,130,133,136,161,17
 	python/merge-LEP LEP-Dipole
 	rivet-mkhtml -o Rivet-LEP LEP.yoda:Hw++ LEP-Powheg.yoda:Hw++-Powheg LEP-Matchbox.yoda:Hw++-Matchbox LEP-Dipole.yoda:Hw++-Dipole
 
-Rivet-BFactory: Rivet-BFactory-10.52     Rivet-BFactory-Powheg-10.52     Rivet-BFactory-Matchbox-10.52     \
-                Rivet-BFactory-10.52-sym Rivet-BFactory-Powheg-10.52-sym Rivet-BFactory-Matchbox-10.52-sym \
-                Rivet-BFactory-10.54     Rivet-BFactory-Powheg-10.54     Rivet-BFactory-Matchbox-10.54     \
-                Rivet-BFactory-10.45     Rivet-BFactory-Powheg-10.45     Rivet-BFactory-Matchbox-10.45     \
-                Rivet-BFactory-10.58     Rivet-BFactory-Powheg-10.58     Rivet-BFactory-Matchbox-10.58     \
+Rivet-BFactory: $(shell echo Rivet-BFactory{,-Powheg,-Matchbox,-Dipole}-{10.52,10.52-sym,10.54,10.45,10.58}) \
                 Rivet-BFactory-Upsilon Rivet-BFactory-Upsilon2 Rivet-BFactory-Upsilon4 \
                 Rivet-BFactory-Tau
 	rm -rf Rivet-BFactory
 	python/merge-BFactory BFactory
 	python/merge-BFactory BFactory-Powheg
 	python/merge-BFactory BFactory-Matchbox
-	rivet-mkhtml -o Rivet-BFactory BFactory.yoda:Hw++ BFactory-Powheg.yoda:Hw++-Powheg BFactory-Matchbox.yoda:Hw++-Matchbox
+	python/merge-BFactory BFactory-Dipole
+	rivet-mkhtml -o Rivet-BFactory BFactory.yoda:Hw++ BFactory-Powheg.yoda:Hw++-Powheg BFactory-Matchbox.yoda:Hw++-Matchbox BFactory-Dipole.yoda:Hw++-Dipole
 
 Rivet-DIS: Rivet-DIS-e--LowQ2 \
 	   Rivet-DIS-e+-LowQ2 Rivet-DIS-e+-HighQ2\
