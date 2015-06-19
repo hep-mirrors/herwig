@@ -103,19 +103,27 @@ Rivet-LHC-Matchbox-% : Rivet/LHC-Matchbox-%.in
 
 Rivet/LEP-Powheg-%.in : Rivet/LEP-Powheg.in
 	infile=$(subst LEP-Powheg,,$(notdir $(subst .in,,$@))); \
-	sed s"!RUNNAME!LEP-Powheg$${infile}!" < Rivet/LEP-Powheg.in | sed s"!PARAMETERS!LEP/LEP$${infile}!" > $@
+	PROC=''; \
+	if [ $${infile} == '-10' ]; then PROC='set /Herwig/MatrixElements/PowhegMEee2gZ2qq:MaximumFlavour 4'; fi; \
+	sed s"!RUNNAME!LEP-Powheg$${infile}!" < Rivet/LEP-Powheg.in | sed s"!PARAMETERS!LEP/LEP$${infile}!" | sed s"!PROCESS!$${PROC}!" > $@
 
 Rivet/LEP-Matchbox-%.in : Rivet/LEP-Matchbox.in
 	infile=$(subst LEP-Matchbox,,$(notdir $(subst .in,,$@))); \
-	sed s"!RUNNAME!LEP-Matchbox$${infile}!" < Rivet/LEP-Matchbox.in | sed s"!PARAMETERS!LEP/LEP$${infile}!" > $@
+	PROC="do Factory:Process e- e+ -> j j"; \
+	if [ $${infile} == '-10' ]; then PROC="do Factory:Process e- e+ -> u ubar\ndo Factory:Process e- e+ -> d dbar\ndo Factory:Process e- e+ -> c cbar\ndo Factory:Process e- e+ -> s sbar"; fi; \
+	sed s"!RUNNAME!LEP-Matchbox$${infile}!" < Rivet/LEP-Matchbox.in | sed s"!PARAMETERS!LEP/LEP$${infile}!" | sed s"!PROCESS!$${PROC}!" > $@
 
 Rivet/LEP-Dipole-%.in : Rivet/LEP-Dipole.in
 	infile=$(subst LEP-Dipole,,$(notdir $(subst .in,,$@))); \
-	sed s"!RUNNAME!LEP-Dipole$${infile}!" < Rivet/LEP-Dipole.in | sed s"!PARAMETERS!LEP/LEP$${infile}!" > $@
+	PROC="do Factory:Process e- e+ -> j j"; \
+	if [ $${infile} == '-10' ]; then PROC="do Factory:Process e- e+ -> u ubar\ndo Factory:Process e- e+ -> d dbar\ndo Factory:Process e- e+ -> c cbar\ndo Factory:Process e- e+ -> s sbar"; fi; \
+	sed s"!RUNNAME!LEP-Dipole$${infile}!" < Rivet/LEP-Dipole.in | sed s"!PARAMETERS!LEP/LEP$${infile}!" | sed s"!PROCESS!$${PROC}!" > $@
 
 Rivet/LEP-%.in : Rivet/LEP.in
 	infile=$(subst LEP,,$(notdir $(subst .in,,$@))); \
-	sed s"!RUNNAME!LEP$${infile}!" < Rivet/LEP.in | sed s"!PARAMETERS!LEP/LEP$${infile}!" > $@
+	PROC=''; \
+	if [ $${infile} == '-10' ]; then PROC='set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 4'; fi; \
+	sed s"!RUNNAME!LEP$${infile}!" < Rivet/LEP.in | sed s"!PARAMETERS!LEP/LEP$${infile}!" | sed s"!PROCESS!$${PROC}!" > $@
 
 Rivet-LEP-Matchbox-% : Rivet/LEP-Matchbox-%.in
 	if [ ! -d Rivet-$(notdir $(subst .in,,$<))  ]; then mkdir Rivet-$(notdir $(subst .in,,$<)); fi;

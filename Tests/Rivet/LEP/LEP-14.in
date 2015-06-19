@@ -2,7 +2,7 @@
 # LEP physics parameters (override defaults) 
 ##################################################
 set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 14.
-set /Herwig/Cuts/EECuts:MHatMin 13.*GeV
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 13.*GeV
 ##################################################
 # select the analyses 
 ##################################################

@@ -115,12 +115,12 @@ for f in yodafiles:
 
     if not os.access(file, os.R_OK):
         logging.error("%s can not be read" % file)
-        break
+        continue
     try:
         aos = yoda.read(file)
     except:
         logging.error("%s can not be parsed as yoda" % file)
-        break
+        continue
     ## Get histos from this YODA file
     for aopath, ao in aos.iteritems() :
         # jet shapes

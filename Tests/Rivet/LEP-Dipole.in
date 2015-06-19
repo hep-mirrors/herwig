@@ -13,7 +13,7 @@ cd /Herwig/MatrixElements/Matchbox
 set Factory:OrderInAlphaS 0
 set Factory:OrderInAlphaEW 2
 ## Select the process
-do Factory:Process e- e+ -> j j
+PROCESS
 ##################################################
 ## Matrix element library selection
 ##################################################
@@ -37,7 +37,7 @@ set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 ## Analyses
 ##################################################
 create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
-insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
+insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
 ##################################################
 ## Do not apply profile scales for LEP as hard
 ## scale coincides with kinematic limit
