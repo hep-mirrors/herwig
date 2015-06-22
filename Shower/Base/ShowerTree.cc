@@ -82,13 +82,19 @@ ShowerTree::ShowerTree(const PPair incoming, const ParticleVector & out,
 	 (LeptonMatcher::Check(orig->id())&& !(abs(orig->id())==ParticleID::tauminus && abs(orig->mass()-orig->dataPtr()->mass())<MeV))) {
 	radiates = true;
       }
-      else
+      else {
+	bool foundParticle(false),foundGauge(false);
 	for(unsigned int iy=0;iy<orig->children().size();++iy) {
 	  if(orig->children()[iy]->id()==orig->id()) {
-	    radiates = true;
-	    break;
+	    foundParticle = true;
+	  }
+	  else if(orig->children()[iy]->id()==ParticleID::g ||
+		  orig->children()[iy]->id()==ParticleID::gamma) {
+	    foundGauge = true;
 	  }
 	}
+	radiates = foundParticle && foundGauge;
+      }
     }
     if(radiates) {
       findDecayProducts(orig,original,copy,decay,trees);
@@ -146,7 +152,7 @@ void ShowerTree::findDecayProducts(PPtr in, vector<PPtr> & original, vector<PPtr
   for(unsigned int ix=0;ix<children.size();++ix) {
     // if decayed or should be decayed in shower make the tree
     PPtr orig=children[ix];
-    in->abandonChild(orig);
+    // in->abandonChild(orig);
     bool radiates = false;
     if(!orig->children().empty()) {
       // remove d,u,s,c,b quarks and leptons other than on-shell taus
@@ -154,13 +160,19 @@ void ShowerTree::findDecayProducts(PPtr in, vector<PPtr> & original, vector<PPtr
 	 (LeptonMatcher::Check(orig->id())&& !(abs(orig->id())==ParticleID::tauminus && abs(orig->mass()-orig->dataPtr()->mass())<MeV))) {
 	radiates = true;
       }
-      else
+      else {
+	bool foundParticle(false),foundGauge(false);
 	for(unsigned int iy=0;iy<orig->children().size();++iy) {
 	  if(orig->children()[iy]->id()==orig->id()) {
-	    radiates = true;
-	    break;
+	    foundParticle = true;
+	  }
+	  else if(orig->children()[iy]->id()==ParticleID::g ||
+		  orig->children()[iy]->id()==ParticleID::gamma) {
+	    foundGauge = true;
 	  }
 	}
+	radiates = foundParticle && foundGauge;
+      }
     }
     if(radiates) {
       findDecayProducts(orig,original,copy,decay,trees);
@@ -209,12 +221,17 @@ ShowerTree::ShowerTree(PPtr in,
 	  radiates = true;
 	}
 	else {
+	  bool foundParticle(false),foundGauge(false);
 	  for(unsigned int iy=0;iy<orig->children().size();++iy) {
 	    if(orig->children()[iy]->id()==orig->id()) {
-	      radiates = true;
-	      break;
+	      foundParticle = true;
+	    }
+	    else if(orig->children()[iy]->id()==ParticleID::g ||
+		    orig->children()[iy]->id()==ParticleID::gamma) {
+	      foundGauge = true;
 	    }
 	  }
+	  radiates = foundParticle && foundGauge;
 	}
 	// finally assume all non-decaying particles are in this class
 	if(!radiates) {
