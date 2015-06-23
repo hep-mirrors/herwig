@@ -163,7 +163,9 @@ void JetsPlusAnalysis::analyze(ParticleVector& parts, long id, double weight) {
 }
 
 void JetsPlusAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
-  AnalysisHandler::analyze(event, ieve, loop, state);
+
+  // doing nothing
+  // AnalysisHandler::analyze(event, ieve, loop, state);
 
   Ptr<StandardEventHandler>::tptr seh =
     dynamic_ptr_cast<Ptr<StandardEventHandler>::tptr>(generator()->eventHandler());
