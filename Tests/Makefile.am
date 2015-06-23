@@ -125,6 +125,30 @@ Rivet/LEP-%.in : Rivet/LEP.in
 	if [ $${infile} == '-10' ]; then PROC='set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 4'; fi; \
 	sed s"!RUNNAME!LEP$${infile}!" < Rivet/LEP.in | sed s"!PARAMETERS!LEP/LEP$${infile}!" | sed s"!PROCESS!$${PROC}!" > $@
 
+Rivet/DIS-Dipole-%.in : Rivet/DIS-Dipole.in
+	infile=$(subst DIS-Dipole,,$(notdir $(subst .in,,$@))); \
+	PROC="do /Herwig/MatrixElements/Dipole/DISFactory:Process e+ p e+ j"; \
+	if [ $${infile} ~= 'e-' ]; then PROC="do /Herwig/MatrixElements/Dipole/DISFactory:Process e- p e- j"; fi; \
+	sed s"!RUNNAME!DIS-Dipole$${infile}!" < Rivet/DIS-Dipole.in | sed s"!PARAMETERS!DIS/DIS$${infile}!" | sed s"!PROCESS!$${PROC}!" > $@
+
+Rivet/DIS-Matchbox-%.in : Rivet/DIS-Matchbox.in
+	infile=$(subst DIS-Matchbox,,$(notdir $(subst .in,,$@))); \
+	PROC="do /Herwig/MatrixElements/Matchbox/DISFactory:Process e+ p e+ j"; \
+	if [ $${infile} ~= 'e-' ]; then PROC="do /Herwig/MatrixElements/Matchbox/DISFactory:Process e- p e- j"; fi; \
+	sed s"!RUNNAME!DIS-Matchbox$${infile}!" < Rivet/DIS-Matchbox.in | sed s"!PARAMETERS!DIS/DIS$${infile}!" | sed s"!PROCESS!$${PROC}!" > $@
+
+Rivet/DIS-Powheg-%.in : Rivet/DIS-Powheg.in
+	infile=$(subst DIS-Powheg,,$(notdir $(subst .in,,$@))); \
+	PROC=''; \
+	if [ $${infile} ~= '-NoME' ]; then PROC='set /Herwig/Shower/Evolver:MECorrMode 0'; fi; \
+	sed s"!RUNNAME!DIS-Powheg$${infile}!" < Rivet/DIS-Powheg.in | sed s"!PARAMETERS!DIS/DIS$${infile}!" | sed s"!PROCESS!$${PROC}!" > $@
+
+Rivet/DIS-%.in : Rivet/DIS.in
+	infile=$(subst DIS,,$(notdir $(subst .in,,$@))); \
+	PROC=''; \
+	if [ $${infile} ~= '-NoME' ]; then PROC='set /Herwig/Shower/Evolver:MECorrMode 0'; fi; \
+	sed s"!RUNNAME!DIS$${infile}!" < Rivet/DIS.in | sed s"!PARAMETERS!DIS/DIS$${infile}!" | sed s"!PROCESS!$${PROC}!" > $@
+
 Rivet/BFactory-Dipole-%.in : Rivet/LEP-Dipole.in
 	infile=$(subst BFactory-Dipole,,$(notdir $(subst .in,,$@))); \
 	PROC="do Factory:Process e- e+ -> u ubar\ndo Factory:Process e- e+ -> d dbar\ndo Factory:Process e- e+ -> c cbar\ndo Factory:Process e- e+ -> s sbar"; \
@@ -224,20 +248,14 @@ Rivet-BFactory: $(shell echo Rivet-BFactory{,-Powheg,-Matchbox,-Dipole}-{10.52,1
 	python/merge-BFactory BFactory-Dipole
 	rivet-mkhtml -o Rivet-BFactory BFactory.yoda:Hw++ BFactory-Powheg.yoda:Hw++-Powheg BFactory-Matchbox.yoda:Hw++-Matchbox BFactory-Dipole.yoda:Hw++-Dipole
 
-Rivet-DIS: Rivet-DIS-e--LowQ2 \
-	   Rivet-DIS-e+-LowQ2 Rivet-DIS-e+-HighQ2\
-           Rivet-DIS-Powheg-e--LowQ2 \
-	   Rivet-DIS-Powheg-e+-LowQ2 Rivet-DIS-Powheg-e+-HighQ2\
-           Rivet-DIS-NoME-e--LowQ2 \
-	   Rivet-DIS-NoME-e+-LowQ2 Rivet-DIS-NoME-e+-HighQ2\
-           Rivet-DIS-Matchbox-e--LowQ2 \
-	   Rivet-DIS-Matchbox-e+-LowQ2 Rivet-DIS-Matchbox-e+-HighQ2
+Rivet-DIS: $(shell echo Rivet-DIS{,-NoME,-Powheg,-Matchbox,-Dipole}-{e--LowQ2,e+-LowQ2,e+-HighQ2})
 	rm -rf Rivet-DIS
 	python/merge-DIS DIS 
 	python/merge-DIS DIS-Powheg
 	python/merge-DIS DIS-NoME
 	python/merge-DIS DIS-Matchbox
-	rivet-mkhtml -o Rivet-DIS DIS.yoda:Hw++ DIS-Powheg.yoda:Hw++-Powheg DIS-NoME.yoda:Hw++-NoME DIS-Matchbox.yoda:Hw++-Matchbox
+	python/merge-DIS DIS-Dipole
+	rivet-mkhtml -o Rivet-DIS DIS.yoda:Hw++ DIS-Powheg.yoda:Hw++-Powheg DIS-NoME.yoda:Hw++-NoME DIS-Matchbox.yoda:Hw++-Matchbox DIS-Dipole.yoda:Hw++-Dipole
 
 Rivet-TVT-WZ: Rivet-TVT-Run-I-Z     Rivet-TVT-Powheg-Run-I-Z     Rivet-TVT-Matchbox-Run-I-Z     \
               Rivet-TVT-Run-I-W     Rivet-TVT-Powheg-Run-I-W     Rivet-TVT-Matchbox-Run-I-W     \

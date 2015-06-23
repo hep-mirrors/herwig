@@ -52,11 +52,3 @@ read PARAMETERS.in
 
 cd /Herwig/Generators
 saverun RUNNAME EventGenerator
-
-cd /Herwig/MatrixElements/Matchbox
-PROCESS
-
-read PARAMETERS.in
-
-cd /Herwig/Generators
-saverun RUNNAME EventGenerator
