@@ -28,11 +28,6 @@ fi
 if test "x$CFLAGS" = "x"; then
    CFLAGS=-O3
 fi
-dnl Looptools manual requires optimization off
-dnl if test "x$FCFLAGS" = "x"; then
-dnl   FCFLAGS=-O0
-dnl fi
-dnl ==========================================
 
 AC_LANG([C++])
 
