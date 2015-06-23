@@ -127,27 +127,27 @@ Rivet/LEP-%.in : Rivet/LEP.in
 
 Rivet/DIS-Dipole-%.in : Rivet/DIS-Dipole.in
 	infile=$(subst DIS-Dipole,,$(notdir $(subst .in,,$@))); \
-	PROC="do /Herwig/MatrixElements/Dipole/DISFactory:Process e+ p e+ j"; \
-	if [ $${infile} ~= 'e-' ]; then PROC="do /Herwig/MatrixElements/Dipole/DISFactory:Process e- p e- j"; fi; \
+	PROC="do Factory:Process e+ p -> e+ j"; \
+	if [[ $${infile} =~ 'e-' ]]; then PROC="do Factory:Process e- p -> e- j"; fi; \
 	sed s"!RUNNAME!DIS-Dipole$${infile}!" < Rivet/DIS-Dipole.in | sed s"!PARAMETERS!DIS/DIS$${infile}!" | sed s"!PROCESS!$${PROC}!" > $@
 
 Rivet/DIS-Matchbox-%.in : Rivet/DIS-Matchbox.in
 	infile=$(subst DIS-Matchbox,,$(notdir $(subst .in,,$@))); \
-	PROC="do /Herwig/MatrixElements/Matchbox/DISFactory:Process e+ p e+ j"; \
-	if [ $${infile} ~= 'e-' ]; then PROC="do /Herwig/MatrixElements/Matchbox/DISFactory:Process e- p e- j"; fi; \
+	PROC="do Factory:Process e+ p -> e+ j"; \
+	if [[ $${infile} =~ 'e-' ]]; then PROC="do Factory:Process e- p -> e- j"; fi; \
 	sed s"!RUNNAME!DIS-Matchbox$${infile}!" < Rivet/DIS-Matchbox.in | sed s"!PARAMETERS!DIS/DIS$${infile}!" | sed s"!PROCESS!$${PROC}!" > $@
 
 Rivet/DIS-Powheg-%.in : Rivet/DIS-Powheg.in
 	infile=$(subst DIS-Powheg,,$(notdir $(subst .in,,$@))); \
 	PROC=''; \
-	if [ $${infile} ~= '-NoME' ]; then PROC='set /Herwig/Shower/Evolver:MECorrMode 0'; fi; \
 	sed s"!RUNNAME!DIS-Powheg$${infile}!" < Rivet/DIS-Powheg.in | sed s"!PARAMETERS!DIS/DIS$${infile}!" | sed s"!PROCESS!$${PROC}!" > $@
 
 Rivet/DIS-%.in : Rivet/DIS.in
 	infile=$(subst DIS,,$(notdir $(subst .in,,$@))); \
 	PROC=''; \
-	if [ $${infile} ~= '-NoME' ]; then PROC='set /Herwig/Shower/Evolver:MECorrMode 0'; fi; \
-	sed s"!RUNNAME!DIS$${infile}!" < Rivet/DIS.in | sed s"!PARAMETERS!DIS/DIS$${infile}!" | sed s"!PROCESS!$${PROC}!" > $@
+	if [[ "$${infile}" =~ "NoME" ]]; then PROC='set /Herwig/Shower/Evolver:MECorrMode 0'; fi; \
+	infile2=$(subst -NoME,,$(subst DIS,,$(notdir $(subst .in,,$@)))); \
+	sed s"!RUNNAME!DIS$${infile}!" < Rivet/DIS.in | sed s"!PARAMETERS!DIS/DIS$${infile2}!" | sed s"!PROCESS!$${PROC}!" > $@
 
 Rivet/BFactory-Dipole-%.in : Rivet/LEP-Dipole.in
 	infile=$(subst BFactory-Dipole,,$(notdir $(subst .in,,$@))); \

@@ -22,7 +22,6 @@ read Matchbox/EPCollider.in
 cd /Herwig/MatrixElements/Matchbox
 set Factory:OrderInAlphaS 0
 set Factory:OrderInAlphaEW 2
-cd /Herwig/MatrixElements/Matchbox
 set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonQ2Scale
 read Matchbox/MCatNLO-DipoleShower.in
 read Matchbox/FiveFlavourScheme.in
@@ -31,9 +30,6 @@ read Matchbox/FiveFlavourScheme.in
 read Matchbox/MMHT2014.in
 
 do /Herwig/MatrixElements/Matchbox/Factory:ProductionMode
-
-cd /Herwig/Generators
-saverun DIS-Matchbox EventGenerator
 
 # switch off final-state electron/muon FSR
 do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting e-->e-,gamma; /Herwig/Shower/LtoLGammaSudakov
@@ -46,13 +42,14 @@ set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 
 # create the Rivet analysis
 create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
-insert /Herwig/Generators/DISGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
+insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
+
+
+read PARAMETERS.in
 
 ## Select the process
 cd /Herwig/MatrixElements/Matchbox
 PROCESS
-
-read PARAMETERS.in
 
 cd /Herwig/Generators
 saverun RUNNAME EventGenerator
