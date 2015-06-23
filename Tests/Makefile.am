@@ -125,6 +125,30 @@ Rivet/LEP-%.in : Rivet/LEP.in
 	if [ $${infile} == '-10' ]; then PROC='set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 4'; fi; \
 	sed s"!RUNNAME!LEP$${infile}!" < Rivet/LEP.in | sed s"!PARAMETERS!LEP/LEP$${infile}!" | sed s"!PROCESS!$${PROC}!" > $@
 
+Rivet/BFactory-Dipole-%.in : Rivet/LEP-Dipole.in
+	infile=$(subst BFactory-Dipole,,$(notdir $(subst .in,,$@))); \
+	PROC="do Factory:Process e- e+ -> u ubar\ndo Factory:Process e- e+ -> d dbar\ndo Factory:Process e- e+ -> c cbar\ndo Factory:Process e- e+ -> s sbar"; \
+	if [ $${infile} == '-10.58' ]; then PROC='do Factory:Process e- e+ -> u ubar\ndo Factory:Process e- e+ -> d dbar\ndo Factory:Process e- e+ -> c cbar\ndo Factory:Process e- e+ -> s sbar\ninsert /Herwig/Generators/EventGenerator:EventHandler:SubProcessHandlers 0 /Herwig/MatrixElements/SimpleEE\ncreate Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so\nset /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)\nset /Herwig/MatrixElements/MEUpsilon:Coupling 0.0004151809\ninsert /Herwig/MatrixElements/SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon'; elif [ $${infile} == '-Upsilon' ]; then PROC='erase /Herwig/MatrixElements/SimpleEE:MatrixElements 0'; fi; \
+	sed s"!RUNNAME!BFactory-Dipole$${infile}!" < Rivet/LEP-Dipole.in | sed s"!PARAMETERS!BFactory/BFactory$${infile}!" | sed s"!PROCESS!$${PROC}!" > $@
+
+Rivet/BFactory-Matchbox-%.in : Rivet/LEP-Matchbox.in
+	infile=$(subst BFactory-Matchbox,,$(notdir $(subst .in,,$@))); \
+	PROC="do Factory:Process e- e+ -> u ubar\ndo Factory:Process e- e+ -> d dbar\ndo Factory:Process e- e+ -> c cbar\ndo Factory:Process e- e+ -> s sbar"; \
+	if [ $${infile} == '-10.58' ]; then PROC='do Factory:Process e- e+ -> u ubar\ndo Factory:Process e- e+ -> d dbar\ndo Factory:Process e- e+ -> c cbar\ndo Factory:Process e- e+ -> s sbar\ninsert /Herwig/Generators/EventGenerator:EventHandler:SubProcessHandlers 0 /Herwig/MatrixElements/SimpleEE\ncreate Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so\nset /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)\nset /Herwig/MatrixElements/MEUpsilon:Coupling 0.0004151809\ninsert /Herwig/MatrixElements/SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon'; elif [ $${infile} == '-Upsilon' ]; then PROC='erase /Herwig/MatrixElements/SimpleEE:MatrixElements 0'; fi; \
+	sed s"!RUNNAME!BFactory-Matchbox$${infile}!" < Rivet/LEP-Matchbox.in | sed s"!PARAMETERS!BFactory/BFactory$${infile}!" | sed s"!PROCESS!$${PROC}!" > $@
+
+Rivet/BFactory-Powheg-%.in : Rivet/LEP-Powheg.in
+	infile=$(subst BFactory-Powheg,,$(notdir $(subst .in,,$@))); \
+	PROC='set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 4'; \
+	if [ $${infile} == '-10.58' ]; then PROC='set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 4\ncreate Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so\nset /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)\nset /Herwig/MatrixElements/MEUpsilon:Coupling 0.0004151809\ninsert /Herwig/MatrixElements/SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon'; elif [ $${infile} == '-Upsilon' ]; then PROC='erase /Herwig/MatrixElements/SimpleEE:MatrixElements 0'; fi; \
+	sed s"!RUNNAME!BFactory-Powheg$${infile}!" < Rivet/LEP-Powheg.in | sed s"!PARAMETERS!BFactory/BFactory$${infile}!" | sed s"!PROCESS!$${PROC}!" > $@
+
+Rivet/BFactory-%.in : Rivet/LEP.in
+	infile=$(subst BFactory,,$(notdir $(subst .in,,$@))); \
+	PROC='set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 4'; \
+	if [ $${infile} == '-10.58' ]; then PROC='set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 4\ncreate Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so\nset /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)\nset /Herwig/MatrixElements/MEUpsilon:Coupling 0.0004151809\ninsert /Herwig/MatrixElements/SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon'; fi; \
+	sed s"!RUNNAME!BFactory$${infile}!" < Rivet/LEP.in | sed s"!PARAMETERS!BFactory/BFactory$${infile}!" | sed s"!PROCESS!$${PROC}!" > $@
+
 Rivet-LEP-Matchbox-% : Rivet/LEP-Matchbox-%.in
 	if [ ! -d Rivet-$(notdir $(subst .in,,$<))  ]; then mkdir Rivet-$(notdir $(subst .in,,$<)); fi;
 	cd Rivet-$(notdir $(subst .in,,$<)); echo `pwd`; \
