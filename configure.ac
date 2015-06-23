@@ -36,7 +36,7 @@ dnl ==========================================
 
 AC_LANG([C++])
 
-AM_INIT_AUTOMAKE([1.11 subdir-objects gnu dist-bzip2 -Wall])
+AM_INIT_AUTOMAKE([1.11 subdir-objects gnu dist-bzip2 no-dist-gzip -Wall])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 
