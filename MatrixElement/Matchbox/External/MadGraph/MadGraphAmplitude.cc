@@ -412,6 +412,14 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
   //find the colourline:
   int ii = -1;
   int xx=lastMatchboxXComb()->externalId();
+  
+  if (colourindex.size()<=i) {
+    colourindex.clear();
+    for (size_t l=0;l<=i+10;l++){
+      colourindex.push_back(-2);
+    }
+  }
+  
   if(colourindex[i]!=-2){
 
     ii = colourindex[i];
@@ -624,18 +632,23 @@ double MadGraphAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
   Lorentz5Momentum n = reshuffled[ij.second];
 
   LorentzVector<Complex> polarization = plusPolarization(p,n,ij.first);
-
-  Complex pFactor = (polarization*c.momentum())/sqrt(abs(c.scale()));
-
-  double avg =
-    colourCorrelatedME2(ij)*(-c.diagonal()+ (c.scale() > ZERO ? 1. : -1.)*norm(pFactor));
-  int iCrossed = crossingMap()[ij.first];
-  iCrossed = ij.first;
+  
+  
+  int iCrossed = -1;
   for ( unsigned int k = 0; k < crossingMap().size(); ++k )
     if ( crossingMap()[k] == ij.first ) {
       iCrossed = k;
       break;
-    }   
+    }
+  assert(iCrossed!=-1);
+  
+  if( iCrossed<2)  polarization =polarization.conjugate();
+  
+  Complex pFactor = (polarization*c.momentum())/sqrt(abs(c.scale()));
+
+  double avg =
+    colourCorrelatedME2(ij)*(-c.diagonal()+ (c.scale() > ZERO ? 1. : -1.)*norm(pFactor));
+   
   
   Complex csCorr = 0.0;
 
