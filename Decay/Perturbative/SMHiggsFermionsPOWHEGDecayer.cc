@@ -186,13 +186,14 @@ generateHardest(ShowerTreePtr tree) {
 double SMHiggsFermionsPOWHEGDecayer::
 me2(const int ichan, const Particle & part,
     const ParticleVector & decay, MEOption meopt) const {
+  // fermion mass
+  Energy particleMass = decay[0]->dataPtr()->mass();
+  if(particleMass==ZERO) return 0.;
   // leading-order result
   double output = SMHiggsFermionsDecayer::me2(ichan,part,decay,meopt);
   // check decay products coloured, otherwise return
   if(!decay[0]->dataPtr()->coloured()) return output;
-  //inital masses, couplings  etc
-  // fermion mass
-  Energy particleMass = decay[0]->dataPtr()->mass();
+  // inital masses, couplings  etc
   // higgs mass
   mHiggs_ = part.mass();
   // strong coupling
