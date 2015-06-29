@@ -71,11 +71,16 @@ double IFMgx2ggxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
   double ratio = sqr(split.lastPt()/split.scale());
   double muj2 = sqr(split.spectatorData()->mass()/split.scale());
   double alpha = 1. - 2.*muj2;
-  double x = ( sqr(alpha)*ratio + 2.*z - alpha*(1.+z) +
-	       alpha*sqrt( sqr(1.-z+alpha*ratio) - 4.*ratio*(1.-z) ) ) /
+  double root  = sqr(1.-z+alpha*ratio) - 4.*ratio*(1.-z);
+  if(root < 0. && root > -1e-10)
+    root = 0.;
+  else if(root < 0.)
+    return 0.;
+  root = sqrt(root);
+
+  double x = ( sqr(alpha)*ratio + 2.*z - alpha*(1.+z) + alpha*root ) /
     (2.*(1.-alpha));
-  double u = ( 1.-z + alpha*ratio -
-	       sqrt( sqr(1.-z+alpha*ratio) - 4.*ratio*(1.-z) ) ) /
+  double u = ( 1.-z + alpha*ratio - root ) /
     (2.*(1.-z));
 
   // careful: CSmassless u is CSmassive z_i
