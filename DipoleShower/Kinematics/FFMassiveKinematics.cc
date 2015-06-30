@@ -69,7 +69,10 @@ Energy FFMassiveKinematics::ptMax(Energy dScale,
   double mu  = split.emission(ind)->mass() / dScale;
   double muj = split.spectator(ind)->mass() / dScale;
   double mui2 = sqr( mui ), mu2  = sqr( mu ), muj2 = sqr( muj );
-  if(mui>1.+mu-muj) {
+
+  if(mui>(1.+mu-muj)&&
+    ( mui2*mui2 + mu2*mu2 + sqr(1.-muj)*sqr(1.-muj) - 2.*( mui2*mu2+mui2*sqr(1.-muj)+mu2*sqr(1.-muj) ))>0
+  ) {
     return rootOfKallen( mui2, mu2, sqr(1.-muj) ) / ( 2.-2.*sqrt(muj2) ) * dScale;
   }
   else

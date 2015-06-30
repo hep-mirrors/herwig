@@ -203,6 +203,9 @@ CrossSection QTildeMatching::dSigHatDR() const {
     return ZERO;
 
   xme2 *= bornPDF;
+  
+  xme2 *= dipole()->realEmissionME()->finalStateSymmetry() /
+    dipole()->underlyingBornME()->finalStateSymmetry(); 
 
   // take care of mismatch between z and x as we are approaching the
   // hard phase space boundary

@@ -6,6 +6,7 @@
 
 #include "FFgx2ggxDipoleKernel.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Parameter.h"
 
 
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -14,7 +15,7 @@
 using namespace Herwig;
 
 FFgx2ggxDipoleKernel::FFgx2ggxDipoleKernel() 
-  : DipoleSplittingKernel() {}
+  : DipoleSplittingKernel(),theSymmetryFactor(0.5){}
 
 FFgx2ggxDipoleKernel::~FFgx2ggxDipoleKernel() {}
 
@@ -68,9 +69,10 @@ double FFgx2ggxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
   double z = split.lastZ();
   double y = sqr(split.lastPt() / split.scale()) / (z*(1.-z));
 
-  ret *= 3.*(1./(1.-z*(1.-y))+1./(1.-(1.-z)*(1.-y))-2.+z*(1.-z));
+  ret *=theSymmetryFactor*3.*(1./(1.-z*(1.-y))+1./(1.-(1.-z)*(1.-y))-2.+z*(1.-z));
+  
 
-  return ret;
+  return ret > 0. ? ret : 0.;
 
 }
 
@@ -78,10 +80,13 @@ double FFgx2ggxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 
-void FFgx2ggxDipoleKernel::persistentOutput(PersistentOStream & ) const {
+void FFgx2ggxDipoleKernel::persistentOutput(PersistentOStream & os) const {
+
+  os<<theSymmetryFactor;
 }
 
-void FFgx2ggxDipoleKernel::persistentInput(PersistentIStream & , int) {
+void FFgx2ggxDipoleKernel::persistentInput(PersistentIStream & is, int) {
+  is>>theSymmetryFactor;
 }
 
 ClassDescription<FFgx2ggxDipoleKernel> FFgx2ggxDipoleKernel::initFFgx2ggxDipoleKernel;
@@ -92,5 +97,10 @@ void FFgx2ggxDipoleKernel::Init() {
   static ClassDocumentation<FFgx2ggxDipoleKernel> documentation
     ("FFgx2ggxDipoleKernel");
 
+  static Parameter<FFgx2ggxDipoleKernel,double> interfaceSymmetryFactor
+    ("SymmetryFactor",
+     "The symmetry factor for final state gluon spliitings.",
+     &FFgx2ggxDipoleKernel::theSymmetryFactor, 1.0, 0.0, 0,
+     false, false, Interface::lowerlim);
 }
 

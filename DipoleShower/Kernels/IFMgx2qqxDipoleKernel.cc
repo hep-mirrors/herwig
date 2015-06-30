@@ -77,6 +77,10 @@ double IFMgx2qqxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
   double ratio = sqr(split.lastPt()/split.scale());
   double muj2 = sqr(split.spectatorData()->mass()/split.scale());
   double alpha = 1. - 2.*muj2;
+  
+  
+  if (alpha != 1.&&( sqr(1.-z+alpha*ratio) - 4.*ratio*(1.-z) )<0.)return 0.;
+  
   double x = alpha == 1. ? ( z*(1.-z) - ratio ) / ( 1. - z - ratio ) :
     ( sqr(alpha)*ratio + 2.*z - alpha*(1.+z) +
       alpha*sqrt( sqr(1.-z+alpha*ratio) - 4.*ratio*(1.-z) ) ) /

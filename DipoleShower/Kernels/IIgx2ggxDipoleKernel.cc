@@ -74,7 +74,7 @@ double IIgx2ggxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
 
   ret *= 3. * ( x/(1.-x) + (1.-x)/x +x*(1.-x) );
 
-  return ret;
+  return ret > 0. ? ret : 0.;
 
 }
 
