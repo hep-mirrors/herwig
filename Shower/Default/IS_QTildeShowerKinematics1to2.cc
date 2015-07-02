@@ -85,7 +85,7 @@ updateParent(const tShowerParticlePtr parent,
   // create the vertex
   SVertexPtr vertex(new_ptr(ShowerVertex()));
   // set the matrix element
-  vertex->ME(splittingFn()->matrixElement(z(),t,ids,phi()));
+  vertex->ME(splittingFn()->matrixElement(z(),t,ids,phi(),false));
   // set the incoming particle for the vertex 
   // (in reality the first child as going backwards)
   pspin->decayVertex(vertex);

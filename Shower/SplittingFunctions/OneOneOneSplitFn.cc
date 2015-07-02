@@ -115,7 +115,8 @@ OneOneOneSplitFn::generatePhiBackward(const double z, const Energy2, const IdLis
 }
 
 DecayMEPtr OneOneOneSplitFn::matrixElement(const double z, const Energy2, 
-					   const IdList &, const double phi) {
+					   const IdList &, const double phi,
+                                           bool) {
   // calculate the kernal
   DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin1)));
   double omz = 1.-z;

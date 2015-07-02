@@ -231,7 +231,6 @@ public:
    * @param z The energy fraction
    * @param t The scale \f$t=2p_j\cdot p_k\f$.
    * @param ids The PDG codes for the particles in the splitting.
-   * @param The azimuthal angle, \f$\phi\f$.
    * @return The weight
    */
   virtual vector<pair<int,Complex> > 
@@ -243,10 +242,12 @@ public:
    * @param z The energy fraction
    * @param t The scale \f$t=2p_j\cdot p_k\f$.
    * @param ids The PDG codes for the particles in the splitting.
-   * @param The azimuthal angle, \f$\phi\f$.
+   * @param phi The azimuthal angle, \f$\phi\f$.
+   * @param timeLike Whether timelike or spacelike, affects inclusive of mass terms
    */
   virtual DecayMEPtr matrixElement(const double z, const Energy2 t, 
-				   const IdList & ids, const double phi) = 0;
+				   const IdList & ids, const double phi,
+                                   bool timeLike) = 0;
 
   /**
    *  Whether or not the interaction is angular ordered

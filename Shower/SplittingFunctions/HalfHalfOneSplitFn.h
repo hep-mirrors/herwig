@@ -142,7 +142,7 @@ public:
    * @param The azimuthal angle, \f$\phi\f$.
    */
   virtual DecayMEPtr matrixElement(const double z, const Energy2 t, 
-					   const IdList & ids, const double phi);
+				   const IdList & ids, const double phi, bool timeLike);
 
 public:
 
