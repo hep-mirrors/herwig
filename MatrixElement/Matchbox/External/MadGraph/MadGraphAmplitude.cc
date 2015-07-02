@@ -587,7 +587,7 @@ LorentzVector<Complex> MadGraphAmplitude::plusPolarization(const Lorentz5Momentu
 
   LorentzVector<Complex> polarization(pol[1],pol[2],pol[3],pol[0]);
 
-  return polarization.conjugate();
+  return polarization;
 }
  
 bool equalsModulo(unsigned int i, const vector<int>& a, const vector<int>& b) {
@@ -631,7 +631,7 @@ double MadGraphAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
   Lorentz5Momentum p = reshuffled[ij.first];
   Lorentz5Momentum n = reshuffled[ij.second];
 
-  LorentzVector<Complex> polarization = plusPolarization(p,n,ij.first);
+  LorentzVector<Complex> polarization = plusPolarization(p,n,ij.first<2?-1:1);
   
   
   int iCrossed = -1;
@@ -642,9 +642,10 @@ double MadGraphAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
     }
   assert(iCrossed!=-1);
   
-  if( iCrossed<2)  polarization =polarization.conjugate();
-  
+  if(ij.first>1) polarization =polarization.conjugate();
+  if(iCrossed<2) polarization =polarization.conjugate();
   Complex pFactor = (polarization*c.momentum())/sqrt(abs(c.scale()));
+
 
   double avg =
     colourCorrelatedME2(ij)*(-c.diagonal()+ (c.scale() > ZERO ? 1. : -1.)*norm(pFactor));
