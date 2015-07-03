@@ -208,6 +208,14 @@ def colorfactor(vertex,L,pos):
         label = ('K6Bar({sb},{q1},{q2})'.format(sb=pos[-6][0],q1=pos[3][0],q2=pos[3][1]),)
         if match(label): return ('1',)
 
+    elif l(3) == L == 3:
+        label = ('Epsilon(1,2,3)',)
+        if match(label): return ('1',) # TODO check factor!
+
+    elif l(-3) == L == 3:
+        label = ('EpsilonBar(1,2,3)',)
+        if match(label): return ('1',) # TODO check factor!
+
     elif l(8) == L == 3:
         # if lorentz is FFV get extra minus sign
         lorentztag = unique_lorentztag(vertex)
