@@ -14,7 +14,6 @@
 
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/AnalysisHandler.h"
-#include "MultiWeight.fh"
 #include "Herwig++/Utilities/Histogram.h"
 
 
