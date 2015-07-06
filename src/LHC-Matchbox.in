@@ -28,11 +28,11 @@ set EventHandler:LuminosityFunction:Energy 8000*GeV
 ## Set the order of the couplings
 cd /Herwig/MatrixElements/Matchbox
 set Factory:OrderInAlphaS 0
-set Factory:OrderInAlphaEW 6
+set Factory:OrderInAlphaEW 2
 
 ## Select the process
 ## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
-do Factory:Process p p -> mu+ nu e- nu j j
+do Factory:Process p p -> e+ e-
 
 ## Special settings required for on-shell production of unstable particles
 ## enable for on-shell top production
@@ -52,7 +52,7 @@ do Factory:Process p p -> mu+ nu e- nu j j
 # read Matchbox/MadGraph-NJet.in
 # read Matchbox/MadGraph-OpenLoops.in
 # read Matchbox/HJets.in
-read Matchbox/VBFNLO.in
+# read Matchbox/VBFNLO.in
 
 ## Uncomment this to use ggh effective couplings
 ## currently only supported by MadGraph-GoSam
@@ -90,8 +90,8 @@ set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassSca
 ## towards the end of the input file.
 ##################################################
 
-#read Matchbox/MCatNLO-DefaultShower.in
-read Matchbox/Powheg-DefaultShower.in
+read Matchbox/MCatNLO-DefaultShower.in
+# read Matchbox/Powheg-DefaultShower.in
 ## use for strict LO/NLO comparisons
 # read Matchbox/MCatLO-DefaultShower.in
 ## use for improved LO showering
