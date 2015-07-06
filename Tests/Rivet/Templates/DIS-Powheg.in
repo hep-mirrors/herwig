@@ -34,7 +34,7 @@ cd /Herwig/MatrixElements/
 # Neutral current DIS
 
 insert SimpleDIS:MatrixElements[0] /Herwig/MatrixElements/PowhegMEDISNC
-PROCESS
+${process}
 cd /Herwig/Generators
 set DISGenerator:NumberOfEvents 10000000
 set DISGenerator:RandomNumberGenerator:Seed 31122001
@@ -48,10 +48,10 @@ create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
 insert DISGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
 mv /Herwig/Generators/DISGenerator /Herwig/Generators/EventGenerator
 
-read PARAMETERS.in
+read ${parameterFile}
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################
 cd /Herwig/Generators
-saverun RUNNAME EventGenerator
+saverun ${runname} EventGenerator

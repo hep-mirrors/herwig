@@ -14,7 +14,7 @@ do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting tau-->tau-,gamma; /Her
 cd /Herwig/MatrixElements/
 # Neutral current DIS
 insert SimpleDIS:MatrixElements[0] MEDISNC
-PROCESS
+${process}
 
 cd /Herwig/Generators
 set DISGenerator:NumberOfEvents 10000000
@@ -29,10 +29,10 @@ create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
 insert DISGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
 mv /Herwig/Generators/DISGenerator /Herwig/Generators/EventGenerator
 
-read PARAMETERS.in
+read ${parameterFile}
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'
 ##################################################
 cd /Herwig/Generators
-saverun RUNNAME EventGenerator
+saverun ${runname} EventGenerator

@@ -44,11 +44,11 @@ set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
 insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
 
-read PARAMETERS.in
+read ${parameterFile}
 
 ## Select the process
 cd /Herwig/MatrixElements/Matchbox
-PROCESS
+${process}
 
 cd /Herwig/Generators
-saverun RUNNAME EventGenerator
+saverun ${runname} EventGenerator

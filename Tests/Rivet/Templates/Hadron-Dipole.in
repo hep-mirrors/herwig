@@ -1,0 +1,42 @@
+##################################################
+## Collider type
+##################################################
+read Matchbox/PPCollider.in
+
+##################################################
+## Matrix element library selection
+##################################################
+read Matchbox/MadGraph-OpenLoops.in
+##################################################
+## Matching and shower selection
+## Please also see flavour scheme settings
+## towards the end of the input file.
+##################################################
+read Matchbox/MCatNLO-DipoleShower.in
+##################################################
+## PDF choice
+##################################################
+read Matchbox/FiveFlavourScheme.in
+## required for dipole shower in five flavour scheme
+# read Matchbox/FiveFlavourNoBMassScheme.in
+read Matchbox/MMHT2014.in
+##################################################
+#  Create the Herwig analysis
+##################################################
+create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
+insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
+set /Herwig/Analysis/RivetAnalysis:Debug No
+
+##################################################
+## Save the generator
+##################################################
+do /Herwig/MatrixElements/Matchbox/Factory:ProductionMode
+
+## Select the process
+cd /Herwig/MatrixElements/Matchbox
+${process}
+
+read ${parameterFile}
+
+cd /Herwig/Generators
+saverun ${runname} EventGenerator

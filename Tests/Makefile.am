@@ -101,77 +101,17 @@ Rivet-LHC-Matchbox-% : Rivet/LHC-Matchbox-%.in
 	mv $(notdir $(subst .in,.yoda,$<)) ..; \
 	cd ..
 
-Rivet/LEP-Powheg-%.in : Rivet/LEP-Powheg.in
-	infile=$(subst LEP-Powheg,,$(notdir $(subst .in,,$@))); \
-	PROC=''; \
-	if [ $${infile} == '-10' ]; then PROC='set /Herwig/MatrixElements/PowhegMEee2gZ2qq:MaximumFlavour 4'; fi; \
-	sed s"!RUNNAME!LEP-Powheg$${infile}!" < Rivet/LEP-Powheg.in | sed s"!PARAMETERS!LEP/LEP$${infile}!" | sed s"!PROCESS!$${PROC}!" > $@
+Rivet/LEP-%.in :
+	python/make_input_files.py $(notdir $(subst .in,,$@))
 
-Rivet/LEP-Matchbox-%.in : Rivet/LEP-Matchbox.in
-	infile=$(subst LEP-Matchbox,,$(notdir $(subst .in,,$@))); \
-	PROC="do Factory:Process e- e+ -> j j"; \
-	if [ $${infile} == '-10' ]; then PROC="do Factory:Process e- e+ -> u ubar\ndo Factory:Process e- e+ -> d dbar\ndo Factory:Process e- e+ -> c cbar\ndo Factory:Process e- e+ -> s sbar"; fi; \
-	sed s"!RUNNAME!LEP-Matchbox$${infile}!" < Rivet/LEP-Matchbox.in | sed s"!PARAMETERS!LEP/LEP$${infile}!" | sed s"!PROCESS!$${PROC}!" > $@
+Rivet/DIS-%.in : 
+	python/make_input_files.py $(notdir $(subst .in,,$@))
 
-Rivet/LEP-Dipole-%.in : Rivet/LEP-Dipole.in
-	infile=$(subst LEP-Dipole,,$(notdir $(subst .in,,$@))); \
-	PROC="do Factory:Process e- e+ -> j j"; \
-	if [ $${infile} == '-10' ]; then PROC="do Factory:Process e- e+ -> u ubar\ndo Factory:Process e- e+ -> d dbar\ndo Factory:Process e- e+ -> c cbar\ndo Factory:Process e- e+ -> s sbar"; fi; \
-	sed s"!RUNNAME!LEP-Dipole$${infile}!" < Rivet/LEP-Dipole.in | sed s"!PARAMETERS!LEP/LEP$${infile}!" | sed s"!PROCESS!$${PROC}!" > $@
+Rivet/BFactory-%.in:
+	python/make_input_files.py $(notdir $(subst .in,,$@))
 
-Rivet/LEP-%.in : Rivet/LEP.in
-	infile=$(subst LEP,,$(notdir $(subst .in,,$@))); \
-	PROC=''; \
-	if [ $${infile} == '-10' ]; then PROC='set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 4'; fi; \
-	sed s"!RUNNAME!LEP$${infile}!" < Rivet/LEP.in | sed s"!PARAMETERS!LEP/LEP$${infile}!" | sed s"!PROCESS!$${PROC}!" > $@
-
-Rivet/DIS-Dipole-%.in : Rivet/DIS-Dipole.in
-	infile=$(subst DIS-Dipole,,$(notdir $(subst .in,,$@))); \
-	PROC="do Factory:Process e+ p -> e+ j"; \
-	if [[ $${infile} =~ 'e-' ]]; then PROC="do Factory:Process e- p -> e- j"; fi; \
-	sed s"!RUNNAME!DIS-Dipole$${infile}!" < Rivet/DIS-Dipole.in | sed s"!PARAMETERS!DIS/DIS$${infile}!" | sed s"!PROCESS!$${PROC}!" > $@
-
-Rivet/DIS-Matchbox-%.in : Rivet/DIS-Matchbox.in
-	infile=$(subst DIS-Matchbox,,$(notdir $(subst .in,,$@))); \
-	PROC="do Factory:Process e+ p -> e+ j"; \
-	if [[ $${infile} =~ 'e-' ]]; then PROC="do Factory:Process e- p -> e- j"; fi; \
-	sed s"!RUNNAME!DIS-Matchbox$${infile}!" < Rivet/DIS-Matchbox.in | sed s"!PARAMETERS!DIS/DIS$${infile}!" | sed s"!PROCESS!$${PROC}!" > $@
-
-Rivet/DIS-Powheg-%.in : Rivet/DIS-Powheg.in
-	infile=$(subst DIS-Powheg,,$(notdir $(subst .in,,$@))); \
-	PROC=''; \
-	sed s"!RUNNAME!DIS-Powheg$${infile}!" < Rivet/DIS-Powheg.in | sed s"!PARAMETERS!DIS/DIS$${infile}!" | sed s"!PROCESS!$${PROC}!" > $@
-
-Rivet/DIS-%.in : Rivet/DIS.in
-	infile=$(subst DIS,,$(notdir $(subst .in,,$@))); \
-	PROC=''; \
-	if [[ "$${infile}" =~ "NoME" ]]; then PROC='set /Herwig/Shower/Evolver:MECorrMode 0'; fi; \
-	infile2=$(subst -NoME,,$(subst DIS,,$(notdir $(subst .in,,$@)))); \
-	sed s"!RUNNAME!DIS$${infile}!" < Rivet/DIS.in | sed s"!PARAMETERS!DIS/DIS$${infile2}!" | sed s"!PROCESS!$${PROC}!" > $@
-
-Rivet/BFactory-Dipole-%.in : Rivet/LEP-Dipole.in
-	infile=$(subst BFactory-Dipole,,$(notdir $(subst .in,,$@))); \
-	PROC="do Factory:Process e- e+ -> u ubar\ndo Factory:Process e- e+ -> d dbar\ndo Factory:Process e- e+ -> c cbar\ndo Factory:Process e- e+ -> s sbar"; \
-	if [ $${infile} == '-10.58' ]; then PROC='do Factory:Process e- e+ -> u ubar\ndo Factory:Process e- e+ -> d dbar\ndo Factory:Process e- e+ -> c cbar\ndo Factory:Process e- e+ -> s sbar\ninsert /Herwig/Generators/EventGenerator:EventHandler:SubProcessHandlers 0 /Herwig/MatrixElements/SimpleEE\ncreate Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so\nset /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)\nset /Herwig/MatrixElements/MEUpsilon:Coupling 0.0004151809\ninsert /Herwig/MatrixElements/SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon'; elif [ $${infile} == '-Upsilon' ]; then PROC='erase /Herwig/MatrixElements/SimpleEE:MatrixElements 0'; fi; \
-	sed s"!RUNNAME!BFactory-Dipole$${infile}!" < Rivet/LEP-Dipole.in | sed s"!PARAMETERS!BFactory/BFactory$${infile}!" | sed s"!PROCESS!$${PROC}!" > $@
-
-Rivet/BFactory-Matchbox-%.in : Rivet/LEP-Matchbox.in
-	infile=$(subst BFactory-Matchbox,,$(notdir $(subst .in,,$@))); \
-	PROC="do Factory:Process e- e+ -> u ubar\ndo Factory:Process e- e+ -> d dbar\ndo Factory:Process e- e+ -> c cbar\ndo Factory:Process e- e+ -> s sbar"; \
-	if [ $${infile} == '-10.58' ]; then PROC='do Factory:Process e- e+ -> u ubar\ndo Factory:Process e- e+ -> d dbar\ndo Factory:Process e- e+ -> c cbar\ndo Factory:Process e- e+ -> s sbar\ninsert /Herwig/Generators/EventGenerator:EventHandler:SubProcessHandlers 0 /Herwig/MatrixElements/SimpleEE\ncreate Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so\nset /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)\nset /Herwig/MatrixElements/MEUpsilon:Coupling 0.0004151809\ninsert /Herwig/MatrixElements/SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon'; elif [ $${infile} == '-Upsilon' ]; then PROC='erase /Herwig/MatrixElements/SimpleEE:MatrixElements 0'; fi; \
-	sed s"!RUNNAME!BFactory-Matchbox$${infile}!" < Rivet/LEP-Matchbox.in | sed s"!PARAMETERS!BFactory/BFactory$${infile}!" | sed s"!PROCESS!$${PROC}!" > $@
-
-Rivet/BFactory-Powheg-%.in : Rivet/LEP-Powheg.in
-	infile=$(subst BFactory-Powheg,,$(notdir $(subst .in,,$@))); \
-	PROC='set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 4'; \
-	if [ $${infile} == '-10.58' ]; then PROC='set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 4\ncreate Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so\nset /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)\nset /Herwig/MatrixElements/MEUpsilon:Coupling 0.0004151809\ninsert /Herwig/MatrixElements/SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon'; elif [ $${infile} == '-Upsilon' ]; then PROC='erase /Herwig/MatrixElements/SimpleEE:MatrixElements 0'; fi; \
-	sed s"!RUNNAME!BFactory-Powheg$${infile}!" < Rivet/LEP-Powheg.in | sed s"!PARAMETERS!BFactory/BFactory$${infile}!" | sed s"!PROCESS!$${PROC}!" > $@
-
-Rivet/BFactory-%.in : Rivet/LEP.in
-	infile=$(subst BFactory,,$(notdir $(subst .in,,$@))); \
-	PROC='set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 4'; \
-	if [ $${infile} == '-10.58' ]; then PROC='set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 4\ncreate Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so\nset /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)\nset /Herwig/MatrixElements/MEUpsilon:Coupling 0.0004151809\ninsert /Herwig/MatrixElements/SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon'; fi; \
-	sed s"!RUNNAME!BFactory$${infile}!" < Rivet/LEP.in | sed s"!PARAMETERS!BFactory/BFactory$${infile}!" | sed s"!PROCESS!$${PROC}!" > $@
+Rivet/TVT-%.in:
+	python/make_input_files.py $(notdir $(subst .in,,$@))
 
 Rivet-LEP-Matchbox-% : Rivet/LEP-Matchbox-%.in
 	if [ ! -d Rivet-$(notdir $(subst .in,,$<))  ]; then mkdir Rivet-$(notdir $(subst .in,,$<)); fi;
@@ -257,12 +197,7 @@ Rivet-DIS: $(shell echo Rivet-DIS{,-NoME,-Powheg,-Matchbox,-Dipole}-{e--LowQ2,e+
 	python/merge-DIS DIS-Dipole
 	rivet-mkhtml -o Rivet-DIS DIS.yoda:Hw++ DIS-Powheg.yoda:Hw++-Powheg DIS-NoME.yoda:Hw++-NoME DIS-Matchbox.yoda:Hw++-Matchbox DIS-Dipole.yoda:Hw++-Dipole
 
-Rivet-TVT-WZ: Rivet-TVT-Run-I-Z     Rivet-TVT-Powheg-Run-I-Z     Rivet-TVT-Matchbox-Run-I-Z     \
-              Rivet-TVT-Run-I-W     Rivet-TVT-Powheg-Run-I-W     Rivet-TVT-Matchbox-Run-I-W     \
-              Rivet-TVT-Run-I-WZ    Rivet-TVT-Powheg-Run-I-WZ    Rivet-TVT-Matchbox-Run-I-WZ    \
-              Rivet-TVT-Run-II-Z-e  Rivet-TVT-Powheg-Run-II-Z-e  Rivet-TVT-Matchbox-Run-II-Z-e  \
-              Rivet-TVT-Run-II-Z-mu Rivet-TVT-Powheg-Run-II-Z-mu Rivet-TVT-Matchbox-Run-II-Z-mu \
-              Rivet-TVT-Run-II-W    Rivet-TVT-Powheg-Run-II-W    Rivet-TVT-Matchbox-Run-II-W
+Rivet-TVT-WZ:  $(shell echo Rivet-TVT{-Powheg,-Matchbox,-Dipole}-{Run-I-Z,Run-I-W,Run-I-WZ,Run-II-Z-e,Run-II-Z-mu,Run-II-W})
 	rm -rf Rivet-TVT-WZ
 	python/merge-TVT-EW TVT-Run-II-W.yoda TVT-Run-II-Z-{e,mu}.yoda\
                             TVT-Run-I-{W,Z,WZ}.yoda -o TVT-WZ.yoda
@@ -270,7 +205,9 @@ Rivet-TVT-WZ: Rivet-TVT-Run-I-Z     Rivet-TVT-Powheg-Run-I-Z     Rivet-TVT-Match
                             TVT-Powheg-Run-I-{W,Z,WZ}.yoda -o TVT-Powheg-WZ.yoda
 	python/merge-TVT-EW TVT-Matchbox-Run-II-W.yoda   TVT-Matchbox-Run-II-Z-{e,mu}.yoda\
                             TVT-Matchbox-Run-I-{W,Z,WZ}.yoda -o TVT-Matchbox-WZ.yoda
-	rivet-mkhtml -o Rivet-TVT-WZ TVT-WZ.yoda:Hw++ TVT-Powheg-WZ.yoda:Hw++-Powheg TVT-Matchbox-WZ.yoda:Hw++-Matchbox
+	python/merge-TVT-EW TVT-Dipole-Run-II-W.yoda   TVT-Dipole-Run-II-Z-{e,mu}.yoda\
+                            TVT-Dipole-Run-I-{W,Z,WZ}.yoda -o TVT-Dipole-WZ.yoda
+	rivet-mkhtml -o Rivet-TVT-WZ TVT-WZ.yoda:Hw++ TVT-Powheg-WZ.yoda:Hw++-Powheg TVT-Matchbox-WZ.yoda:Hw++-Matchbox TVT-Dipole-WZ.yoda:Hw++-Dipole
 
 Rivet-TVT-Photon: Rivet-TVT-Run-II-DiPhoton Rivet-TVT-Run-II-PromptPhoton
 #                  Rivet-TVT-Run-I-PromptPhoton 

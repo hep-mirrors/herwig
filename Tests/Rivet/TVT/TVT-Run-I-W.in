@@ -1,0 +1,9 @@
+##################################################
+# select the analyses
+##################################################
+# CDF Run I W pT corrections and normalization are CRAP
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_1991_S2313472
+# D0 Run I W pT corrections and normalization are CRAP
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0  D0_1998_S3711838
+# D0 Run I W pT 
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0  D0_2000_S4480767

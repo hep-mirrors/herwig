@@ -46,9 +46,9 @@ do /Herwig/MatrixElements/Matchbox/Factory:ProductionMode
 
 ## Select the process
 cd /Herwig/MatrixElements/Matchbox
-PROCESS
+${process}
 
-read PARAMETERS.in
+read ${parameterFile}
 
 cd /Herwig/Generators
-saverun RUNNAME EventGenerator
+saverun ${runname} EventGenerator
