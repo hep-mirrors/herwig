@@ -242,15 +242,6 @@ namespace matchbox {
     virtual inline void doinit() throw(InitException) {
       match_thresholds();
       AlphaSBase::doinit();
-      Energy scale = 0.45*GeV, step=0.1*GeV;
-      cerr << "# BEGIN HISTOGRAM matchbox\n";
-      while(scale<200.*GeV) {
-	cerr << (scale-step/2.)/GeV << "\t" << (scale+step/2.)/GeV << "\t" << operator() (sqr(scale)) << "\t" << 0. << "\n";
-	scale += step;
-      }
-      cerr << "SmoothLine=1\n";
-      cerr << "LineColor=green\n";
-      cerr << "# END HISTOGRAM\n";
     }
 
     //@}
