@@ -24,7 +24,7 @@ read Matchbox/MMHT2014.in
 #  Create the Herwig analysis
 ##################################################
 create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
-insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
+insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
 set /Herwig/Analysis/RivetAnalysis:Debug No
 
 ##################################################
@@ -34,6 +34,18 @@ do /Herwig/MatrixElements/Matchbox/Factory:ProductionMode
 
 ## Select the process
 cd /Herwig/MatrixElements/Matchbox
+do Factory:StartParticleGroup pnob
+insert Factory:ParticleGroup 0 /Herwig/Particles/c
+insert Factory:ParticleGroup 0 /Herwig/Particles/cbar
+insert Factory:ParticleGroup 0 /Herwig/Particles/s
+insert Factory:ParticleGroup 0 /Herwig/Particles/sbar
+insert Factory:ParticleGroup 0 /Herwig/Particles/d
+insert Factory:ParticleGroup 0 /Herwig/Particles/dbar
+insert Factory:ParticleGroup 0 /Herwig/Particles/u
+insert Factory:ParticleGroup 0 /Herwig/Particles/ubar
+insert Factory:ParticleGroup 0 /Herwig/Particles/g
+do Factory:EndParticleGroup
+
 ${process}
 
 read ${parameterFile}

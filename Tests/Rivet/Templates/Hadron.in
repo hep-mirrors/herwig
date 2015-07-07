@@ -14,9 +14,11 @@ create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
 insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
 set /Herwig/Analysis/RivetAnalysis:Debug No
 
-${process}
 mv /Herwig/Generators/LHCGenerator /Herwig/Generators/EventGenerator
+cd /Herwig/MatrixElements
+${process}
 
+cd /Herwig/Generators
 read ${parameterFile}
 
 ##################################################
