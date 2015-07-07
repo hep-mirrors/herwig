@@ -14,5 +14,8 @@ set /Herwig/DipoleShower/DipoleShowerHandler:FactorizationScaleFactor 2.0
 set /Herwig/Shower/ShowerHandler:RenormalizationScaleFactor 2.0
 set /Herwig/Shower/ShowerHandler:FactorizationScaleFactor 2.0
 
+set /Herwig/Shower/PowhegShowerHandler:RenormalizationScaleFactor 2.0
+set /Herwig/Shower/PowhegShowerHandler:FactorizationScaleFactor 2.0
+
 
 

@@ -231,6 +231,12 @@ void alpha_s::match_thresholds () {
 
   matched_ = true;
 
+  for(unsigned int ix=0;ix<7;++ix)
+    cerr << "MATCHBOX THRESHOLDS " << ix << " " << sqrt(quark_masses_squared_[ix])/GeV << "\n";
+  for(unsigned int ix=0;ix<7;++ix)
+    cerr << "MATCHBOX LAMBDA " << ix << " " << sqrt(lambda_squared_[ix])/GeV << "\n";
+
+
   return;
 
 }

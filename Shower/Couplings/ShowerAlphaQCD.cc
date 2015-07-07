@@ -205,6 +205,21 @@ void ShowerAlphaQCD::doinit() {
     Throw<InitException>() << "The value of Qmin is less than Lambda_3 in"
 			   << " ShowerAlphaQCD::doinit " << Exception::abortnow;
 
+  Energy scale = 0.45*GeV, step = 0.1*GeV;
+  for(unsigned int ix=0;ix<_thresholds.size();++ix) {
+    cerr << "THRESHOLDS FOR SHOWER " << _thresholds[ix]/GeV << "\n";
+  }
+  for(unsigned int ix=0;ix<_lambda.size();++ix) {
+    cerr << "LAMBDA     FOR SHOWER " << _lambda[ix]/GeV << "\n";
+  }
+  cerr << "# BEGIN HISTOGRAM shower\n";
+  while(scale<200.*GeV) {
+    cerr << (scale-step/2.)/GeV << "\t" << (scale+step/2.)/GeV << "\t" << value(sqr(scale)) << "\t" << 0. << "\n";
+    scale += step;
+  }
+  cerr << "LineColor=red\n";
+  cerr << "SmoothLine=1\n";
+  cerr << "# END HISTOGRAM\n";
 }
 
 double ShowerAlphaQCD::value(const Energy2 scale) const {
