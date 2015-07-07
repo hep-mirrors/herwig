@@ -16,9 +16,7 @@ read Matchbox/MCatNLO-DefaultShower.in
 ##################################################
 ## PDF choice
 ##################################################
-read Matchbox/FiveFlavourScheme.in
-## required for dipole shower in five flavour scheme
-# read Matchbox/FiveFlavourNoBMassScheme.in
+${bscheme}
 read Matchbox/MMHT2014.in
 ##################################################
 #  Create the Herwig analysis
