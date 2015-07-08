@@ -69,7 +69,7 @@ double FIgx2ggxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
   double z = split.lastZ();
   double x = 1. / ( 1. + sqr(split.lastPt()/split.scale()) / (z*(1.-z)) );
 
-  ret *= 3. * ( 1./(1.-z+(1.-x)) + 1./(z+(1.-x)) - 2.+z*(1.-z) + (1.-x)*(1.+x*z*(1.-z)) );
+  ret *=theSymmetryFactor* 3. * ( 1./(1.-z+(1.-x)) + 1./(z+(1.-x)) - 2.+z*(1.-z) + (1.-x)*(1.+x*z*(1.-z)) );
 
   return ret > 0. ? ret : 0.;
 

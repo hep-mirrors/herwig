@@ -383,7 +383,7 @@ void SubtractedME::fillProjectors() {
       continue;
     if ( (**d).willPassCuts() &&
 	 (**d).lastMECrossSection()/picobarn != 0.0 ) {
-      lastXCombPtr()->projectors().insert(1.,*d);//abs((**d).cutWeight()*(**d).lastMECrossSection()/picobarn)
+      lastXCombPtr()->projectors().insert(abs((**d).cutWeight()*(**d).lastMECrossSection()/picobarn),*d);//
     }
   }
 }
@@ -427,12 +427,12 @@ double SubtractedME::reweightDependent(tStdXCombPtr xc, const vector<tStdXCombPt
 	  continue;
 	if ( (**d).willPassCuts() &&
 	     (**d).lastMECrossSection()/picobarn != 0.0 ) {
-	  invPAlpha += 1.;// abs((**d).cutWeight()//*(**d).lastMECrossSection()/picobarn);
+	  invPAlpha += abs((**d).cutWeight()*(**d).lastMECrossSection()/picobarn);
 	}
       }
 
       assert(invPAlpha != 0.0 && xc->cutWeight() != 0.0 && xc->lastMECrossSection()/picobarn != 0.0);
-      double palpha = 1./invPAlpha;//abs((xc->cutWeight())*(xc->lastMECrossSection()/picobarn))
+      double palpha = abs((xc->cutWeight())*(xc->lastMECrossSection()/picobarn))/invPAlpha;
 
       return 1./palpha;
 
