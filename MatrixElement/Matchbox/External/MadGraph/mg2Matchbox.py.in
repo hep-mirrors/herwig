@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
-import os,sys,glob,errno,shutil,argparse,time
- 
+import os,sys,glob,errno,shutil,time    #argparse 
+from optparse import OptionParser
 
 #  helper to replace all sourceText in fileName with replaceText
 def replacetext(fileName, sourceText, replaceText):
@@ -131,20 +131,39 @@ def build_matchbox_tmp(pwd,buildpath):
    os.chdir(cwd)    
 
 
-  
-parser = argparse.ArgumentParser()
-parser.add_argument('--buildpath', help='installpath')
-parser.add_argument('--build', help='build', action="store_true")
-parser.add_argument('--madgraph', help='madgraph_installpath')
-parser.add_argument('--runpath', help='runpath')
-parser.add_argument('--model', help='model')
-parser.add_argument('--orderas', help='orderas')
-parser.add_argument('--orderew', help='orderew')
-parser.add_argument('--datadir', help='datadir')
 
 
 
-args = parser.parse_args()
+
+
+parser = OptionParser()
+parser.add_option("-a", "--buildpath", dest="buildpath",help="Do not use this script. Only for Herwig internal use. ")
+parser.add_option("-b", "--build", action="store_true", dest="build", default=True,help="Do not use this script. Only for Herwig internal use.")
+parser.add_option("-c", "--madgraph", dest="madgraph",help="Do not use this script. Only for Herwig internal use.")
+parser.add_option("-d", "--runpath", dest="runpath",help="Do not use this script. Only for Herwig internal use.")
+parser.add_option("-e", "--model", dest="model",help="Do not use this script. Only for Herwig internal use.")
+parser.add_option("-f", "--orderas", dest="orderas",help="Do not use this script. Only for Herwig internal use.")
+parser.add_option("-g", "--orderew", dest="orderew",help="Do not use this script. Only for Herwig internal use.")
+parser.add_option("-i", "--datadir",dest="datadir",help="Do not use this script. Only for Herwig internal use.")
+
+
+(options, args) = parser.parse_args()
+
+
+
+
+
+
+#parser = argparse.ArgumentParser()
+#parser.add_argument('--buildpath', help='installpath')
+#parser.add_argument('--build', help='build', action="store_true")
+#parser.add_argument('--madgraph', help='madgraph_installpath')
+#parser.add_argument('--runpath', help='runpath')
+#parser.add_argument('--model', help='model')
+#parser.add_argument('--orderas', help='orderas')
+#parser.add_argument('--orderew', help='orderew')
+#parser.add_argument('--datadir', help='datadir')
+#args = parser.parse_args()
 
 
 
@@ -162,19 +181,19 @@ mkdir_p(pwd+"/Herwig/MG_tmp/")
 
 
 
-if args.model=="loop_sm" or args.model=="heft":
+if options.model=="loop_sm" or options.model=="heft":
 
-  if args.model=="loop_sm":
+  if options.model=="loop_sm":
     param_card="param_card.dat"
   else:
-    param_card="param_card_"+args.model+".dat"  
+    param_card="param_card_"+options.model+".dat"  
     
-  file = open("%s/MadGraphInterface/%s.in" % (args.datadir,param_card) , "r") 
+  file = open("%s/MadGraphInterface/%s.in" % (options.datadir,param_card) , "r") 
   paramcard = file.read() 
   file.close()
-  file = open(args.runpath+"/"+param_card, "w")
+  file = open(options.runpath+"/"+param_card, "w")
 
-  params=open(args.runpath+"/MG-Parameter.dat", "r")
+  params=open(options.runpath+"/MG-Parameter.dat", "r")
 
   for line in params:
     a=line.split()
@@ -187,33 +206,33 @@ else:
   print "---------------------------------------------------------------"
   print "Warning: The model set for the MadGraph Interface "
   print "         needs a parameter setting by hand."
-  print "         Please fill the param_card_"+args.model+".dat"
+  print "         Please fill the param_card_"+options.model+".dat"
   print "         with your favourite assumptions."
   print "         And make sure Herwig uses the same parameters."
   print "---------------------------------------------------------------"
   print "---------------------------------------------------------------"
-  if os.path.isfile(args.buildpath +"/MG5/Cards/param_card.dat") and not os.path.isfile(args.runpath+"/"+"param_card_"+args.model+".dat"):
-    shutil.copyfile(args.buildpath +"/MG5/Cards/param_card.dat", args.runpath+"/"+"param_card_"+args.model+".dat")
+  if os.path.isfile(options.buildpath +"/MG5/Cards/param_card.dat") and not os.path.isfile(options.runpath+"/"+"param_card_"+options.model+".dat"):
+    shutil.copyfile(options.buildpath +"/MG5/Cards/param_card.dat", options.runpath+"/"+"param_card_"+options.model+".dat")
   time.sleep(1)
 
-if not os.path.isdir(args.buildpath):
+if not os.path.isdir(options.buildpath):
    print "The MadGraph Install path was not existend. It has been created for you."
    print "Just start Herwig++ read again.."
-   mkdir_p(args.buildpath)
+   mkdir_p(options.buildpath)
    exit()
 
-os.chdir(args.buildpath)
+os.chdir(options.buildpath)
 if os.path.isfile("InterfaceMadGraph.so"):
-  build_matchbox_tmp(pwd,args.buildpath)
+  build_matchbox_tmp(pwd,options.buildpath)
   exit()
  
-Bornlist,Virtlist=fillprocs(args.model,args.orderas,args.orderew)
+Bornlist,Virtlist=fillprocs(options.model,options.orderas,options.orderew)
 
-if not args.madgraph and not os.path.isfile("InterfaceMadGraph.so"):
+if not options.madgraph and not os.path.isfile("InterfaceMadGraph.so"):
   print "*** warning *** MadGraph build failed, check logfile for details"
   exit()
 
-os.system("python "+args.madgraph+"/mg5_aMC proc.dat")
+os.system("python "+options.madgraph+"/mg5_aMC proc.dat")
 
 
 routines=[["","BORN(momenta,hel)"],
@@ -240,7 +259,7 @@ for routine in routines:
        routine[0]+="             WRITE(*,*) '##W02A WARNING No id found '\n"
        routine[0]+="         END SELECT    \n"
  
-shutil.copyfile("%s/MadGraphInterface/InterfaceMadGraph.f.in" % args.datadir, "InterfaceMadGraph.f")
+shutil.copyfile("%s/MadGraphInterface/InterfaceMadGraph.f.in" % options.datadir, "InterfaceMadGraph.f")
 
 replacetext("InterfaceMadGraph.f","MG_CalculateBORNtxt",routines[0][0])
 replacetext("InterfaceMadGraph.f","MG_CalculateVIRTtxt",routines[1][0])
@@ -323,7 +342,7 @@ file.close()
 
 
 os.chdir(pwd)
-os.chdir(args.buildpath)
+os.chdir(options.buildpath)
 replacetext("MG5/Source/MODEL/lha_read.f", "ident_card.dat","Herwig/MG_tmp/ident_card.dat")
 replacetext("MG5/Source/MODEL/lha_read.f", "param.log","Herwig/MG_tmp/param.log")
 if Virtlist!=[]:
@@ -332,5 +351,5 @@ if Virtlist!=[]:
 os.system("make")
 
 
-build_matchbox_tmp(pwd,args.buildpath)
+build_matchbox_tmp(pwd,options.buildpath)
 
