@@ -49,9 +49,19 @@ CrossSection DipoleMatching::dSigHatDR() const {
   double ccme2 = 
     dipole()->underlyingBornME()->largeNColourCorrelatedME2(ij,theLargeNBasis);
 
+   if(ccme2==0.)return 0.*nanobarn;
+      
+   double lnme2=dipole()->underlyingBornME()->largeNME2(theLargeNBasis);
+   if(lnme2==0){
+     generator()->log() <<"\nQTildeMatching: ";
+     generator()->log() <<"\n  LargeNME2 is ZERO, while largeNColourCorrelatedME2 is not ZERO." ;
+     generator()->log() <<"\n  This is too seriuos.\n" ;
+     generator()->log() << Exception::runerror;
+   }    
+    
+    
   ccme2 *=
-    dipole()->underlyingBornME()->me2() /
-    dipole()->underlyingBornME()->largeNME2(theLargeNBasis);
+    dipole()->underlyingBornME()->me2() /lnme2;
 
   xme2 = dipole()->me2Avg(ccme2);
 
