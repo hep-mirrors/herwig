@@ -83,16 +83,19 @@ double MonacoSampler::generate() {
   } catch (...) {
     throw;
   }
+// only store numbers
+  double wgt = w;
+  if ( isnan(wgt) || isinf(wgt) ) wgt = 0;
 // save results for later grid optimization 
   theIterationPoints++;
   for ( int k = 0; k < dimension(); ++k ) {
-    theGridData(k,upperb[k]) += w*w;
+    theGridData(k,upperb[k]) += wgt*wgt;
   }
 
   if (randomNumberString()!="") 
   for ( size_t k = 0; k < lastPoint().size(); ++k ) {
-    RandomNumberHistograms[RandomNumberIndex(id(),k)].first.book(lastPoint()[k],w);
-    RandomNumberHistograms[RandomNumberIndex(id(),k)].second+=w;
+    RandomNumberHistograms[RandomNumberIndex(id(),k)].first.book(lastPoint()[k],wgt);
+    RandomNumberHistograms[RandomNumberIndex(id(),k)].second+=wgt;
   }
 
   if ( !weighted() && initialized() ) {
