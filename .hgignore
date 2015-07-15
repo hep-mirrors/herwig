@@ -93,3 +93,4 @@ Makefile\.in$
 ^src/Matchbox/Powheg-DipoleShower.in$
 ^src/Matchbox/done-all-links$
 ^src/snippets/done-all-links$
+^Utilities/XML/xml_test$

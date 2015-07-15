@@ -34,6 +34,7 @@
 #include "Herwig++/Utilities/XML/ElementIO.h"
 
 #include <boost/progress.hpp>
+#include <boost/filesystem.hpp>
 #include <cstdlib>
 
 using namespace Herwig;
@@ -544,7 +545,7 @@ void GeneralSampler::doinit() {
       << "  using the build/integrate/run setup.\n"
       << "* For a build/integrate/run setup to be used with --setupfile please ensure\n"
       << "  that the same setupfile is provided to both, the integrate and run steps.\n\n"
-      << "--------------------------------------------------------------------------------\n";
+      << "--------------------------------------------------------------------------------\n" << flush;
   if ( samplers().empty() && runLevel() == RunMode )
     justAfterIntegrate = true;
   SamplerBase::doinit();
@@ -646,9 +647,7 @@ void GeneralSampler::doinitrun() {
       << "  using the build/integrate/run setup.\n"
       << "* For a build/integrate/run setup to be used with --setupfile please ensure\n"
       << "  that the same setupfile is provided to both, the integrate and run steps.\n\n"
-      << "--------------------------------------------------------------------------------\n";
-
-  eventHandler()->initrun();
+      << "--------------------------------------------------------------------------------\n" << flush;
 
   if ( samplers().empty() ) {
     justAfterIntegrate = true;
@@ -705,11 +704,39 @@ void GeneralSampler::readGrids() {
       dataName = "./";
     else if ( *dataName.rbegin() != '/' )
       dataName += "/";
+    string directoryName = dataName;
     dataName += "HerwigGrids.xml";
+      generator()->log() << "\n \n In readGrids dataName: " << dataName << flush;
     ifstream in(dataName.c_str());
     if ( in ) {
       theGrids = XML::ElementIO::get(in);
       didReadGrids = true;
+    }
+    else {
+  // Check if integrationJob was splitted and try to merge single integrationJobs together
+      int currentProcessedIntegrationJobNum = 0;
+      string currentProcessedIntegrationJob = directoryName + string("integrationJob") + static_cast<ostringstream*>( &(ostringstream() << currentProcessedIntegrationJobNum))->str() + string("/HerwigGrids.xml");
+      generator()->log() << "\nCurrentProcessedIntegrationJob " << currentProcessedIntegrationJob << flush;
+      if(boost::filesystem::exists(boost::filesystem::path(currentProcessedIntegrationJob))) {
+	generator()->log() << "\nGlobal HerwigGrids.xml does not exist yet,"
+			   << "\nbut at least one IntegrationJob folder was found with a HerwigGrids.xml file."
+			   << "\nTrying to combine single integration jobs to a global HerwigGrids.xml file." << flush;
+	string globalGridFile = directoryName + "HerwigGrids.xml";
+	ofstream globalGridFileOF(globalGridFile.c_str());
+	theGrids = XML::Element(XML::ElementTypes::Element,"Grids");
+	while(boost::filesystem::exists(boost::filesystem::path(currentProcessedIntegrationJob))) {
+	  ifstream localGridFileIN(currentProcessedIntegrationJob.c_str());
+	  //if(localGridFileIN)
+	    //theGrids = theGrids + XML::ElementIO::get(localGridFileIN);
+	  generator()->log() << "\nAdded integration job " << currentProcessedIntegrationJobNum << " to global HerwigGrids.xml file.";
+	  currentProcessedIntegrationJobNum++;
+	  currentProcessedIntegrationJob = directoryName + string("integrationJob") + static_cast<ostringstream*>( &(ostringstream() << currentProcessedIntegrationJobNum))->str() + string("/HerwigGrids.xml");
+	}
+	XML::ElementIO::put(theGrids,globalGridFileOF);
+	generator()->log() << "\nGlobal HerwigGrids.xml was created, the integration jobs 0 to " << currentProcessedIntegrationJobNum << " were combined."
+	                   << "\nPlease check if further integration jobs exist which must be combined." << flush;
+        didReadGrids = true;
+      }
     }
   }
   if ( !didReadGrids )

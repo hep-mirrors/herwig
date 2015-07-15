@@ -80,6 +80,13 @@ namespace XML {
      * Assignment
      */
     Element& operator=(const Element& other);
+  
+    /** 
+     * Comparison operator
+     * @todo Compare attributes
+     */
+    friend bool operator==(const XML::Element &one, const XML::Element &two);
+    friend bool operator!=(const XML::Element &one, const XML::Element &two);
 
   public:
 

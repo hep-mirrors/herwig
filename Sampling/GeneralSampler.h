@@ -312,7 +312,7 @@ private:
   mutable CrossSection theIntegratedXSec;
 
   /**
-   * The integrated cross section
+   * The integrated cross section error
    */
   mutable CrossSection theIntegratedXSecErr;
 

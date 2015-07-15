@@ -31,6 +31,22 @@ Element& Element::operator=(const Element& other) {
   return *this;
 }
 
+namespace XML {
+  bool operator==(const XML::Element &one, const XML::Element &two) {
+    return(one.theType == two.theType &&
+    one.theNameOrContent == two.theNameOrContent &&
+    //theAttributes == other.theAttributes &&
+    one.theChildren == two.theChildren
+    );
+  }
+
+  bool operator!=(const XML::Element &one, const XML::Element &two)
+  {
+    return !(one == two);
+  }
+}
+
+
 const string& Element::name() const {
   assertNamed();
   return theNameOrContent;
