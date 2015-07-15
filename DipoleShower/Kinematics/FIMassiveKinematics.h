@@ -138,7 +138,9 @@ public:
    */
   template <class T>
   inline double rootOfKallen (T a, T b, T c) const {
-    return sqrt( a*a + b*b + c*c - 2.*( a*b+a*c+b*c ) ); }
+    double sres=a*a + b*b + c*c - 2.*( a*b+a*c+b*c );
+    return sres>0.?sqrt( sres ):0.; }
+
 
 public:
 

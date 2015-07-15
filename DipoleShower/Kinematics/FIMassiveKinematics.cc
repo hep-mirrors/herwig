@@ -72,10 +72,7 @@ Energy FIMassiveKinematics::ptMax(Energy dScale,
   // s^star/x
   Energy2 s = sqr(dScale) * (1.-specX)/specX + Mi2;
   Energy roots = sqrt(s);
-  if(roots>mi+m)
-    return .5 * sqrt(s) * rootOfKallen( s/s, mi2/s, m2/s );
-  else
-    return ZERO;
+  return .5 * sqrt(s) * rootOfKallen( s/s, mi2/s, m2/s );
 }
 
 // what is this? in FF it is given by y+*dScale = sqrt( 2qi*q / bar )->max

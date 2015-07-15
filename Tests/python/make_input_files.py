@@ -108,16 +108,17 @@ elif(collider=="DIS") :
             process="do Factory:Process e+ p -> e+ j"
 # LEP
 elif(collider=="LEP") :
+    print parameterName
     if(simulation=="") :
         process=""
-        if(parameterName=="-10") :
+        if(parameterName=="10") :
             process="set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 4"
     elif(simulation=="Powheg") :
         process=""
-        if(parameterName=="-10") :
+        if(parameterName=="10") :
             process="set /Herwig/MatrixElements/PowhegMEee2gZ2qq:MaximumFlavour 4"
     elif(simulation=="Matchbox" or simulation == "Dipole" ) :
-        if(parameterName=="-10") :
+        if(parameterName=="10") :
             process="do Factory:Process e- e+ -> u ubar\ndo Factory:Process e- e+ -> d dbar\ndo Factory:Process e- e+ -> c cbar\ndo Factory:Process e- e+ -> s sbar"
         else :
             process="do Factory:Process e- e+ -> j j"

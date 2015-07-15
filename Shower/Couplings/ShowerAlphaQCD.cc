@@ -172,13 +172,14 @@ void ShowerAlphaQCD::doinit() {
   // calculate the value of 5-flavour lambda 
   // evaluate the initial
   // value of Lambda from alphas if needed using Newton-Raphson
-  if(_inopt)
-    {_lambda[2]=computeLambda(getParticleData(ParticleID::Z0)->mass(),_alphain,5);}
+  if(_inopt) {
+    _lambda[2]=computeLambda(getParticleData(ParticleID::Z0)->mass(),_alphain,5);
+  }
   // otherwise it was an input parameter
   else{_lambda[2]=_lambdain;}
   // convert lambda to the Monte Carlo scheme if needed
   using Constants::pi;
-  if(_lambdaopt){_lambda[2] *=exp(0.5*(67.-3.*sqr(pi)-50./3.)/23.)/sqrt(2.);}
+  if(_lambdaopt) _lambda[2] *=exp(0.5*(67.-3.*sqr(pi)-50./3.)/23.)/sqrt(2.);
   // compute the threshold matching
   // top threshold
   for(int ix=1;ix<4;++ix) {
@@ -204,7 +205,6 @@ void ShowerAlphaQCD::doinit() {
   if(_lambda[0]>_qmin)
     Throw<InitException>() << "The value of Qmin is less than Lambda_3 in"
 			   << " ShowerAlphaQCD::doinit " << Exception::abortnow;
-
 }
 
 double ShowerAlphaQCD::value(const Energy2 scale) const {
@@ -322,19 +322,18 @@ Energy ShowerAlphaQCD::computeLambda(Energy match,
   Energy lamtest=200.0*MeV;
   double xtest;
   unsigned int ntry=0;
-  do
-    {
-      ++ntry;
-      xtest=log(sqr(match/lamtest));
-      xtest+= (alpha-alphaS(match,lamtest,nflav))/derivativealphaS(match,lamtest,nflav);
-      lamtest=match/exp(0.5*xtest);
-    }
+  do {
+    ++ntry;
+    xtest  = log(sqr(match/lamtest));
+    xtest += (alpha-alphaS(match,lamtest,nflav))/derivativealphaS(match,lamtest,nflav);
+    Energy newLambda = match/exp(0.5*xtest);
+    lamtest = newLambda<match ? newLambda : 0.5*(lamtest+match);
+  }
   while(abs(alpha-alphaS(match,lamtest,nflav)) > _tolerance && ntry < _maxtry);
   return lamtest;
 }
 
-double ShowerAlphaQCD::derivativealphaS(Energy q, Energy lam, int nf) const
-{
+double ShowerAlphaQCD::derivativealphaS(Energy q, Energy lam, int nf) const {
   using Constants::pi;
   double lx = log(sqr(q/lam));
   double b0 = 11. - 2./3.*nf;
@@ -343,16 +342,12 @@ double ShowerAlphaQCD::derivativealphaS(Energy q, Energy lam, int nf) const
   if(_nloop==1)
     return -4.*pi/(b0*sqr(lx));
   else if(_nloop==2)
-    return -4.*pi/(b0*sqr(lx))*(1.-2.*b1/sqr(b0)/lx*(1.-2.*log(lx)));
+    return -4.*pi/(b0*sqr(lx))*(1.+2.*b1/sqr(b0)/lx*(1.-2.*log(lx)));
   else
-    return -4.*pi/(b0*sqr(lx))*(1.
-				- 2.*b1/sqr(b0)/lx*(1.-2.*log(lx))
-				+ 4.*sqr(b1)/(sqr(sqr(b0))*sqr(lx))*
-				  (1.
-				   - 2.*log(lx)
-				   + 3.*(sqr(log(lx) - 0.5)+b2*b0/(8.*sqr(b1))-1.25)
-				   )
-				);
+    return -4.*pi/(b0*sqr(lx))*
+      (1.  + 2.*b1/sqr(b0)/lx*(1.-2.*log(lx))
+       + 4.*sqr(b1)/(sqr(sqr(b0))*sqr(lx))*(1. - 2.*log(lx)
+					    + 3.*(sqr(log(lx) - 0.5)+b2*b0/(8.*sqr(b1))-1.25)));
 }
 
 double ShowerAlphaQCD::alphaS(Energy q, Energy lam, int nf) const {
