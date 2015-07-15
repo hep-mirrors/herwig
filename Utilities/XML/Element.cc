@@ -35,7 +35,7 @@ namespace XML {
   bool operator==(const XML::Element &one, const XML::Element &two) {
     return(one.theType == two.theType &&
     one.theNameOrContent == two.theNameOrContent &&
-    //theAttributes == other.theAttributes &&
+    one.theAttributes == two.theAttributes &&
     one.theChildren == two.theChildren
     );
   }

@@ -12,7 +12,7 @@
 #include <boost/test/included/unit_test.hpp>
 
 /*
- * Fixture which defines the common variables for testing
+ * Fixture which defines the common variables for testing Element class
  */
 struct Fix1 {
     Fix1() : elementUnknown(XML::ElementTypes::Unknown,""), 
@@ -50,7 +50,7 @@ BOOST_FIXTURE_TEST_SUITE(xmlTestElement, Fix1 )
 
 /*
  * Boost unit tests for Element.h
- * @todo Implement tests for child operations
+ * @todo Implement further tests for child operations
  */
 BOOST_AUTO_TEST_CASE(elementTypes)
 {
@@ -137,13 +137,55 @@ BOOST_AUTO_TEST_CASE(attributes)
     std::string elementAttributeOutput;
     elementElementWithAttributes.getFromAttribute("Entry3", elementAttributeOutput);
     BOOST_CHECK_EQUAL(elementAttributeOutput, "Value3");
+    
+    XML::Element::Attribute elementAttribute4 = XML::Element::Attribute("Entry4","Value4");
+    XML::Element::Attribute elementAttribute5 = XML::Element::Attribute("Entry5","Value5"); 
+    
+    BOOST_CHECK(elementAttribute4 == XML::Element::Attribute("Entry4","Value4"));
+    BOOST_CHECK(elementAttribute4 != XML::Element::Attribute("Entry4",""));
+    BOOST_CHECK(elementAttribute4 != XML::Element::Attribute("","Value4"));
+    BOOST_CHECK(elementAttribute4 != elementAttribute5);   
 } 
+    
+BOOST_AUTO_TEST_CASE(children)
+{
+    BOOST_CHECK(elementRoot.hasChildren());
+    BOOST_CHECK(elementElement.hasChildren());
+    BOOST_CHECK(elementGrids.hasChildren());
+    
+    std::list<XML::Element> listWithoutElement;
+    BOOST_CHECK(elementRoot.children() == listWithoutElement);
+    BOOST_CHECK(elementElement.children() == listWithoutElement);    
+    
+
+    std::list<XML::Element> listWithElement;
+    listWithElement.push_back(elementComment);
+    listWithElement.push_front(elementParsedCharacterData);
+    XML::Element elementWithChildren = XML::Element(elementElement);
+    elementWithChildren.append(elementComment);
+    elementWithChildren.prepend(elementParsedCharacterData);
+    BOOST_CHECK(elementWithChildren.children() == listWithElement);
+    
+    elementWithChildren << elementGrids;
+    listWithElement.push_back(elementGrids);
+    BOOST_CHECK(elementWithChildren.children() == listWithElement);
+}
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
 BOOST_AUTO_TEST_CASE(generalTest)
 {
-   // BOOST_FAIL( "Test finished" );
+   BOOST_FAIL( "Test finished" );
 }    
     
     
