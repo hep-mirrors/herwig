@@ -47,7 +47,6 @@ struct Fix1 {
  */
 BOOST_FIXTURE_TEST_SUITE(xmlTestElement, Fix1 )
 
-
 /*
  * Boost unit tests for Element.h
  * @todo Implement further tests for child operations
@@ -81,7 +80,24 @@ BOOST_AUTO_TEST_CASE(constructors)
     BOOST_CHECK(elementAssignment == elementGrids);
 }
 
-
+BOOST_AUTO_TEST_CASE(combineOperator)
+{
+  
+    BOOST_CHECK(elementElement + elementElement == elementElement);
+    BOOST_CHECK_THROW((elementElement + elementComment), std::logic_error);
+    XML::Element elementName1 = XML::Element(XML::ElementTypes::Element, "Name1") ;
+    XML::Element elementName2 = XML::Element(XML::ElementTypes::Element, "Name2") ;
+    BOOST_CHECK_THROW(elementElement + elementGrids, std::logic_error);
+    
+    XML::Element elementWithBothChildren = XML::Element(elementElement);
+    elementWithBothChildren.append(elementComment);
+    elementWithBothChildren.append(elementParsedCharacterData);
+    XML::Element elementWithChild1 = XML::Element(elementElement);
+    elementWithChild1.append(elementComment);
+    XML::Element elementWithChild2 = XML::Element(elementElement);
+    elementWithChild2.append(elementParsedCharacterData);
+    BOOST_CHECK(elementWithChild1 + elementWithChild2 == elementWithBothChildren);   
+}
 
 BOOST_AUTO_TEST_CASE(type)
 {
@@ -106,7 +122,6 @@ BOOST_AUTO_TEST_CASE(content)
     BOOST_CHECK_EQUAL(elementAppendContent.content(), "CommentTest");
 }
     
-
 BOOST_AUTO_TEST_CASE(attributes)
 {    
     BOOST_CHECK(elementEmpty.hasAttributes());
@@ -170,9 +185,7 @@ BOOST_AUTO_TEST_CASE(children)
     listWithElement.push_back(elementGrids);
     BOOST_CHECK(elementWithChildren.children() == listWithElement);
 }
-    
-    
-    
+       
     
     
     

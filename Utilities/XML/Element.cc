@@ -40,11 +40,19 @@ namespace XML {
     );
   }
 
-  bool operator!=(const XML::Element &one, const XML::Element &two)
-  {
+  bool operator!=(const XML::Element &one, const XML::Element &two) {
     return !(one == two);
   }
+ 
+  XML::Element operator+(const XML::Element& one, const XML::Element& two) {
+    if ( one.type() != two.type())
+      throw logic_error("[XML::Element] Trying to combine elements with different types");
+    
+    XML::Element returnElement = XML::Element(one);
+    return returnElement; 
+  }
 }
+
 
 
 const string& Element::name() const {

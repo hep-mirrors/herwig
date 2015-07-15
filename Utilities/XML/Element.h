@@ -88,6 +88,13 @@ namespace XML {
     friend bool operator==(const XML::Element &one, const XML::Element &two);
     friend bool operator!=(const XML::Element &one, const XML::Element &two);
 
+    /**
+     * Combine operator
+     * 
+     * Operator checks if type and name is equal otherwises throws exception
+     */
+    friend XML::Element operator+(const XML::Element& one, const XML::Element& two);
+    
   public:
 
     /**
