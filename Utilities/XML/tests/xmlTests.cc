@@ -82,7 +82,6 @@ BOOST_AUTO_TEST_CASE(constructors)
 
 BOOST_AUTO_TEST_CASE(combineOperator)
 {
-  
     BOOST_CHECK(elementElement + elementElement == elementElement);
     BOOST_CHECK_THROW((elementElement + elementComment), std::logic_error);
     XML::Element elementName1 = XML::Element(XML::ElementTypes::Element, "Name1") ;
@@ -97,6 +96,15 @@ BOOST_AUTO_TEST_CASE(combineOperator)
     XML::Element elementWithChild2 = XML::Element(elementElement);
     elementWithChild2.append(elementParsedCharacterData);
     BOOST_CHECK(elementWithChild1 + elementWithChild2 == elementWithBothChildren);   
+    
+    XML::Element elementWithBothAttributes = XML::Element(elementElement);
+    elementWithBothAttributes.appendAttribute("Entry1", "Value1");
+    elementWithBothAttributes.appendAttribute("Entry2", "Value2");
+    XML::Element elementWithAttribute1 = XML::Element(elementElement);
+    elementWithAttribute1.appendAttribute("Entry1", "Value1");
+    XML::Element elementWithAttribute2 = XML::Element(elementElement);
+    elementWithAttribute2.appendAttribute("Entry2", "Value2");
+    BOOST_CHECK(elementWithAttribute1 + elementWithAttribute2 == elementWithBothAttributes);  
 }
 
 BOOST_AUTO_TEST_CASE(type)
@@ -185,21 +193,5 @@ BOOST_AUTO_TEST_CASE(children)
     listWithElement.push_back(elementGrids);
     BOOST_CHECK(elementWithChildren.children() == listWithElement);
 }
-       
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-BOOST_AUTO_TEST_CASE(generalTest)
-{
-   BOOST_FAIL( "Test finished" );
-}    
-    
     
 BOOST_AUTO_TEST_SUITE_END()
