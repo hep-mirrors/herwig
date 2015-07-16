@@ -706,7 +706,6 @@ void GeneralSampler::readGrids() {
       dataName += "/";
     string directoryName = dataName;
     dataName += "HerwigGrids.xml";
-      generator()->log() << "\n \n In readGrids dataName: " << dataName << flush;
     ifstream in(dataName.c_str());
     if ( in ) {
       theGrids = XML::ElementIO::get(in);
@@ -716,7 +715,6 @@ void GeneralSampler::readGrids() {
   // Check if integrationJob was splitted and try to merge single integrationJobs together
       int currentProcessedIntegrationJobNum = 0;
       string currentProcessedIntegrationJob = directoryName + string("integrationJob") + static_cast<ostringstream*>( &(ostringstream() << currentProcessedIntegrationJobNum))->str() + string("/HerwigGrids.xml");
-      generator()->log() << "\nCurrentProcessedIntegrationJob " << currentProcessedIntegrationJob << flush;
       if(boost::filesystem::exists(boost::filesystem::path(currentProcessedIntegrationJob))) {
 	generator()->log() << "\nGlobal HerwigGrids.xml does not exist yet,"
 			   << "\nbut at least one IntegrationJob folder was found with a HerwigGrids.xml file."
@@ -726,15 +724,15 @@ void GeneralSampler::readGrids() {
 	theGrids = XML::Element(XML::ElementTypes::Element,"Grids");
 	while(boost::filesystem::exists(boost::filesystem::path(currentProcessedIntegrationJob))) {
 	  ifstream localGridFileIN(currentProcessedIntegrationJob.c_str());
-	  //if(localGridFileIN)
-	    //theGrids = theGrids + XML::ElementIO::get(localGridFileIN);
+	  if(localGridFileIN)
+	    theGrids = theGrids + XML::ElementIO::get(localGridFileIN);
 	  generator()->log() << "\nAdded integration job " << currentProcessedIntegrationJobNum << " to global HerwigGrids.xml file.";
 	  currentProcessedIntegrationJobNum++;
 	  currentProcessedIntegrationJob = directoryName + string("integrationJob") + static_cast<ostringstream*>( &(ostringstream() << currentProcessedIntegrationJobNum))->str() + string("/HerwigGrids.xml");
 	}
 	XML::ElementIO::put(theGrids,globalGridFileOF);
 	generator()->log() << "\nGlobal HerwigGrids.xml was created, the integration jobs 0 to " << currentProcessedIntegrationJobNum << " were combined."
-	                   << "\nPlease check if further integration jobs exist which must be combined." << flush;
+	                   << "\nPlease check if further integration jobs exist which must be combined.\n\n" << flush;
         didReadGrids = true;
       }
     }
