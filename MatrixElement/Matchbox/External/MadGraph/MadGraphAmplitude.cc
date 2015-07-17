@@ -515,6 +515,9 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
     momenta[j+1]=abs(reshuffled[i].x()/GeV)<1.e-13?0.:double(reshuffled[i].x()/GeV);
     momenta[j+2]=abs(reshuffled[i].y()/GeV)<1.e-13?0.:double(reshuffled[i].y()/GeV);
     momenta[j+3]=abs(reshuffled[i].z()/GeV)<1.e-13?0.:double(reshuffled[i].z()/GeV);
+    if(momenta[j  ] == 0. && momenta[j+1] == 0. &&
+       momenta[j+2] == 0. && momenta[j+3] == 0. )
+      return 0.;
     j+=4;
   }
   
