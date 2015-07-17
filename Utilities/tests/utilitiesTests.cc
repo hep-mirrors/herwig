@@ -7,14 +7,44 @@
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 
+#include "Herwig++/Utilities/Kinematics.h"
 #include "Herwig++/Utilities/Maths.h"
 #include "Herwig++/Utilities/Statistic.h"
 #define BOOST_TEST_MODULE utilitiesTest
 #include <boost/test/included/unit_test.hpp>
 
+
+/*
+ * Start of boost unit tests for Kinematics.h
+ * 
+ */
+BOOST_AUTO_TEST_SUITE(utilitiesKinematicsTest)
+
+/*
+ * Boost unit tests
+ * @todo solve problem with linking to ThePEG library
+ */
+/*
+BOOST_AUTO_TEST_CASE(generateAngles)
+{
+  double flatMinusPiToPlusPi, flatNullToTwoPi;
+  for(int i = 0; i < 100; ++i) {
+    Herwig::Kinematics::generateAngles(flatMinusPiToPlusPi, flatNullToTwoPi);
+    //BOOST_CHECK( -M_PI <= flatMinusPiToPlusPi );
+    //BOOST_CHECK( flatMinusPiToPlusPi <= M_PI);
+    //BOOST_CHECK( 0. <= flatNullToTwoPi);
+    //BOOST_CHECK(flatNullToTwoPi <= M_PI);
+  }
+}
+*/
+    
+BOOST_AUTO_TEST_SUITE_END()
+
+//____________________________________________________________________________//
+
 /*
  * Start of boost unit tests for Maths.h
- * @todo dilog function complex input
+ * 
  */
 BOOST_AUTO_TEST_SUITE(utilitiesMathsTest)
 
@@ -29,6 +59,11 @@ BOOST_AUTO_TEST_CASE(dilogFunction)
   BOOST_CHECK_CLOSE(Herwig::Math::Li2(-1).imag(), 0., 1e-5);
   BOOST_CHECK_CLOSE(Herwig::Math::Li2(1).real(), 1./6. * M_PI * M_PI, 1e-5);
   BOOST_CHECK_CLOSE(Herwig::Math::Li2(1).imag(), 0., 1e-5);
+  
+  BOOST_CHECK_CLOSE(Herwig::Math::Li2(Herwig::Complex(0.5, 1)).real(), 0.203354, 2e-4);
+  BOOST_CHECK_CLOSE(Herwig::Math::Li2(Herwig::Complex(0.5, 1)).imag(), 1.13194, 1e-4);
+  BOOST_CHECK_CLOSE(Herwig::Math::Li2(Herwig::Complex(-0.5, -1)).real(), -0.578503, 1e-4);
+  BOOST_CHECK_CLOSE(Herwig::Math::Li2(Herwig::Complex(-0.5, -1)).imag(), -0.772714, 1e-4);
 }
 
 BOOST_AUTO_TEST_CASE(realDilogFunction)
@@ -81,13 +116,13 @@ BOOST_AUTO_TEST_SUITE_END()
  * Fixture which defines the common variables for testing Statistic class
  */
 struct FixStatistic1 {
-    FixStatistic1() : statisticDefault(), statisticTest()  
-    {BOOST_TEST_MESSAGE( "setup fixture for utilitiesStatisticTest" ); }
-    
-    ~FixStatistic1()  { BOOST_TEST_MESSAGE( "teardown fixture for utilitiesStatisticTest" ); }
+  FixStatistic1() : statisticDefault(), statisticTest()  
+  {BOOST_TEST_MESSAGE( "setup fixture for utilitiesStatisticTest" ); }
+  
+  ~FixStatistic1()  { BOOST_TEST_MESSAGE( "teardown fixture for utilitiesStatisticTest" ); }
 
-    Herwig::Statistic statisticDefault;
-    Herwig::Statistic statisticTest;
+  Herwig::Statistic statisticDefault;
+  Herwig::Statistic statisticTest;
 };
 
 /*
@@ -102,55 +137,55 @@ BOOST_FIXTURE_TEST_SUITE(utilitiesStatisticTest, FixStatistic1 )
  */
 BOOST_AUTO_TEST_CASE(defaultConstructor)
 {
-    BOOST_CHECK_EQUAL(statisticDefault.numberOfPoints(), static_cast<unsigned int>(0));
-    BOOST_CHECK_EQUAL(statisticDefault.total(), 0.);
-    BOOST_CHECK_EQUAL(statisticDefault.mean(), 0.);
-    BOOST_CHECK_EQUAL(statisticDefault.minimum(), -1e100);
-    BOOST_CHECK_EQUAL(statisticDefault.maximum(), 1e100);
-    BOOST_CHECK_EQUAL(statisticDefault.var(), 0);
-    BOOST_CHECK_EQUAL(statisticDefault.mean_var(), 0);
+  BOOST_CHECK_EQUAL(statisticDefault.numberOfPoints(), static_cast<unsigned int>(0));
+  BOOST_CHECK_EQUAL(statisticDefault.total(), 0.);
+  BOOST_CHECK_EQUAL(statisticDefault.mean(), 0.);
+  BOOST_CHECK_EQUAL(statisticDefault.minimum(), -1e100);
+  BOOST_CHECK_EQUAL(statisticDefault.maximum(), 1e100);
+  BOOST_CHECK_EQUAL(statisticDefault.var(), 0);
+  BOOST_CHECK_EQUAL(statisticDefault.mean_var(), 0);
 }
 
 BOOST_AUTO_TEST_CASE(operations)
 {
-    statisticTest += 2;
-    BOOST_CHECK_EQUAL(statisticTest.minimum(), 2);
-    BOOST_CHECK_EQUAL(statisticTest.maximum(), 2);
-    
-    statisticTest += -2;
-    BOOST_CHECK_EQUAL(statisticTest.numberOfPoints(), static_cast<unsigned int>(2));
-    BOOST_CHECK_EQUAL(statisticTest.total(), 0.);
-    BOOST_CHECK_EQUAL(statisticTest.mean(), 0.);
-    BOOST_CHECK_EQUAL(statisticTest.minimum(), -2);
-    BOOST_CHECK_EQUAL(statisticTest.maximum(), 2);
-    BOOST_CHECK_EQUAL(statisticTest.var(), 8);
-    BOOST_CHECK_EQUAL(statisticTest.stdDev(), sqrt(8));
-    BOOST_CHECK_EQUAL(statisticTest.mean_var(), 4);
-    BOOST_CHECK_EQUAL(statisticTest.mean_stdDev(), 2);
-    
-    statisticTest += 2;
-    BOOST_CHECK_EQUAL(statisticTest.numberOfPoints(), static_cast<unsigned int>(3));
-    BOOST_CHECK_EQUAL(statisticTest.total(), 2.);
-    BOOST_CHECK_EQUAL(statisticTest.mean(), 2./3.);
-    BOOST_CHECK_EQUAL(statisticTest.minimum(), -2);
-    BOOST_CHECK_EQUAL(statisticTest.maximum(), 2);
-    BOOST_CHECK_EQUAL(statisticTest.var(), 16./3.);
-    BOOST_CHECK_EQUAL(statisticTest.stdDev(), sqrt(16./3.));
-    BOOST_CHECK_EQUAL(statisticTest.mean_var(), 16./9.);
-    BOOST_CHECK_EQUAL(statisticTest.mean_stdDev(), sqrt(16./9.));
-    
-    statisticTest += 4.5;
-    BOOST_CHECK_EQUAL(statisticTest.minimum(), -2);
-    BOOST_CHECK_EQUAL(statisticTest.maximum(), 4.5);
-    
-    statisticTest += -3.5;
-    BOOST_CHECK_EQUAL(statisticTest.minimum(), -3.5);
-    BOOST_CHECK_EQUAL(statisticTest.maximum(), 4.5);   
+  statisticTest += 2;
+  BOOST_CHECK_EQUAL(statisticTest.minimum(), 2);
+  BOOST_CHECK_EQUAL(statisticTest.maximum(), 2);
+  
+  statisticTest += -2;
+  BOOST_CHECK_EQUAL(statisticTest.numberOfPoints(), static_cast<unsigned int>(2));
+  BOOST_CHECK_EQUAL(statisticTest.total(), 0.);
+  BOOST_CHECK_EQUAL(statisticTest.mean(), 0.);
+  BOOST_CHECK_EQUAL(statisticTest.minimum(), -2);
+  BOOST_CHECK_EQUAL(statisticTest.maximum(), 2);
+  BOOST_CHECK_EQUAL(statisticTest.var(), 8);
+  BOOST_CHECK_EQUAL(statisticTest.stdDev(), sqrt(8));
+  BOOST_CHECK_EQUAL(statisticTest.mean_var(), 4);
+  BOOST_CHECK_EQUAL(statisticTest.mean_stdDev(), 2);
+  
+  statisticTest += 2;
+  BOOST_CHECK_EQUAL(statisticTest.numberOfPoints(), static_cast<unsigned int>(3));
+  BOOST_CHECK_EQUAL(statisticTest.total(), 2.);
+  BOOST_CHECK_EQUAL(statisticTest.mean(), 2./3.);
+  BOOST_CHECK_EQUAL(statisticTest.minimum(), -2);
+  BOOST_CHECK_EQUAL(statisticTest.maximum(), 2);
+  BOOST_CHECK_EQUAL(statisticTest.var(), 16./3.);
+  BOOST_CHECK_EQUAL(statisticTest.stdDev(), sqrt(16./3.));
+  BOOST_CHECK_EQUAL(statisticTest.mean_var(), 16./9.);
+  BOOST_CHECK_EQUAL(statisticTest.mean_stdDev(), sqrt(16./9.));
+  
+  statisticTest += 4.5;
+  BOOST_CHECK_EQUAL(statisticTest.minimum(), -2);
+  BOOST_CHECK_EQUAL(statisticTest.maximum(), 4.5);
+  
+  statisticTest += -3.5;
+  BOOST_CHECK_EQUAL(statisticTest.minimum(), -3.5);
+  BOOST_CHECK_EQUAL(statisticTest.maximum(), 4.5);   
 }    
 
 BOOST_AUTO_TEST_CASE(fail)
 {
-    //BOOST_FAIL("Ende");
+  BOOST_FAIL("Ende");
 }
 
     

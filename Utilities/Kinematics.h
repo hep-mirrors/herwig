@@ -39,7 +39,7 @@ namespace Herwig {
      * The return value indicates success or failure.
      * @param p The momentum of the decaying particle
      * @param m1 The mass of the first decay product
-     * @param m2 The mass of the seocnd decay product
+     * @param m2 The mass of the second decay product
      * @param unitDir1 Direction for the products in the rest frame of
      * the decaying particle
      * @param p1 The momentum of the first decay product
@@ -117,7 +117,7 @@ namespace Herwig {
      */
     static void generateAngles(double & ct, double & az) {
       ct = UseRandom::rnd()*2.0 - 1.0;  // Flat from -1..1
-      az = UseRandom::rnd()*2.0*Constants::pi;   
+      az = UseRandom::rnd()*Constants::twopi;   
     }
     
   private:
