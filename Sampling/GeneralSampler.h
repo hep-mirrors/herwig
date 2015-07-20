@@ -169,6 +169,13 @@ public:
    * Read in grids
    */
   void readGrids();
+  
+  /**
+   * Return the number of integration jobs which were actually created.
+   */
+  unsigned int integrationJobsCreated() {
+    return theIntegrationJobsCreated;
+  }
 
 protected:
 
@@ -432,6 +439,11 @@ private:
    */
   unsigned int theIntegrationJobs;
 
+  /**
+   * The number of integration jobs which were actually created
+   */
+  unsigned int theIntegrationJobsCreated;
+  
   /**
    * Indicate that initialization is only reading a grid.
    */

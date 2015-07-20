@@ -51,7 +51,7 @@ GeneralSampler::GeneralSampler()
     theAlmostUnweighted(false), maximumExceeds(0),
     maximumExceededBy(0.), didReadGrids(false),
     theParallelIntegration(false),
-  theIntegratePerJob(0), theIntegrationJobs(0),
+  theIntegratePerJob(0), theIntegrationJobs(0), theIntegrationJobsCreated(1),
   justAfterIntegrate(false), theWriteGridsOnFinish(false) {}
 
 GeneralSampler::~GeneralSampler() {}
@@ -156,6 +156,7 @@ void GeneralSampler::initialize() {
       *jobList << *bx << " ";
 
     }
+    theIntegrationJobsCreated = jobCount;
 
     generator()->log() 
       << "--------------------------------------------------------------------------------\n\n"
@@ -712,28 +713,47 @@ void GeneralSampler::readGrids() {
       didReadGrids = true;
     }
     else {
-  // Check if integrationJob was splitted and try to merge single integrationJobs together
-      int currentProcessedIntegrationJobNum = 0;
-      string currentProcessedIntegrationJob = directoryName + string("integrationJob") + static_cast<ostringstream*>( &(ostringstream() << currentProcessedIntegrationJobNum))->str() + string("/HerwigGrids.xml");
-      if(boost::filesystem::exists(boost::filesystem::path(currentProcessedIntegrationJob))) {
-	generator()->log() << "\nGlobal HerwigGrids.xml does not exist yet,"
-			   << "\nbut at least one IntegrationJob folder was found with a HerwigGrids.xml file."
-			   << "\nTrying to combine single integration jobs to a global HerwigGrids.xml file." << flush;
-	string globalGridFile = directoryName + "HerwigGrids.xml";
-	ofstream globalGridFileOF(globalGridFile.c_str());
+      // Check if integrationJob was splitted and try to merge single integrationJobs together
+      if(integrationJobsCreated() > 1 && runLevel() == RunMode) {
+	BaseRepository::cout() << "\n\nGlobal HerwigGrids.xml file does not exist yet"
+				<< "\nand integration jobs were splitted into " << integrationJobsCreated() << " integration jobs."
+				<< "\nTrying to combine single integration jobs to a global HerwigGrids.xml file." << flush;
+
+
 	theGrids = XML::Element(XML::ElementTypes::Element,"Grids");
-	while(boost::filesystem::exists(boost::filesystem::path(currentProcessedIntegrationJob))) {
-	  ifstream localGridFileIN(currentProcessedIntegrationJob.c_str());
-	  if(localGridFileIN)
-	    theGrids = theGrids + XML::ElementIO::get(localGridFileIN);
-	  generator()->log() << "\nAdded integration job " << currentProcessedIntegrationJobNum << " to global HerwigGrids.xml file.";
-	  currentProcessedIntegrationJobNum++;
-	  currentProcessedIntegrationJob = directoryName + string("integrationJob") + static_cast<ostringstream*>( &(ostringstream() << currentProcessedIntegrationJobNum))->str() + string("/HerwigGrids.xml");
+	
+	bool integrationJobCombinationSuccessful = true;
+			    
+	for(unsigned int currentProcessedIntegrationJobNum = 0; currentProcessedIntegrationJobNum < integrationJobsCreated(); ++currentProcessedIntegrationJobNum) {
+	  string currentProcessedIntegrationJob = directoryName + string("integrationJob") + static_cast<ostringstream*>( &(ostringstream() << currentProcessedIntegrationJobNum))->str() + string("/HerwigGrids.xml");
+	  if(boost::filesystem::exists(boost::filesystem::path(currentProcessedIntegrationJob))) {
+	    ifstream localGridFileIN(currentProcessedIntegrationJob.c_str());
+	    if(localGridFileIN) {
+	      theGrids = theGrids + XML::ElementIO::get(localGridFileIN);
+	      BaseRepository::cout()  << "\nAdded integration job " << currentProcessedIntegrationJobNum << " to global HerwigGrids.xml file.";
+	    } 
+	    else {
+	      integrationJobCombinationSuccessful = false;
+	      BaseRepository::cout() << "\n Could not open/add integration job " << currentProcessedIntegrationJobNum << " to global HerwigGrids.xml file.";
+	    }
+	  }  
+	  else {
+	    integrationJobCombinationSuccessful = false;
+	    BaseRepository::cout() << "\n Could not find integration job " << currentProcessedIntegrationJob;
+	  }
 	}
-	XML::ElementIO::put(theGrids,globalGridFileOF);
-	generator()->log() << "\nGlobal HerwigGrids.xml was created, the integration jobs 0 to " << currentProcessedIntegrationJobNum << " were combined."
-	                   << "\nPlease check if further integration jobs exist which must be combined.\n\n" << flush;
-        didReadGrids = true;
+	
+	if(integrationJobCombinationSuccessful) {
+	  string globalGridFile = directoryName + "HerwigGrids.xml";
+	  ofstream globalGridFileOF(globalGridFile.c_str());
+	  XML::ElementIO::put(theGrids,globalGridFileOF);
+	  BaseRepository::cout() << "\nGlobal HerwigGrids.xml file was created, the integration jobs 0 to " << integrationJobsCreated() << " were combined.\n\n" << flush;
+	  didReadGrids = true;
+	}
+	else {
+	  BaseRepository::cout() << "\nGlobal HerwigGrids.xml file could not be created due to failed combination of integration jobs."
+				  << "\nPlease check the above-mentioned missing/failed integration jobs which are needed for the combination.\n\n" << flush;
+	}
       }
     }
   }
@@ -752,7 +772,8 @@ void GeneralSampler::persistentOutput(PersistentOStream & os) const {
      << theFlatSubprocesses << isSampling << theMinSelection
      << runCombinationData << theAlmostUnweighted << maximumExceeds
      << maximumExceededBy << theParallelIntegration
-     << theIntegratePerJob << theIntegrationJobs << theWriteGridsOnFinish;
+     << theIntegratePerJob << theIntegrationJobs 
+     << theIntegrationJobsCreated << theWriteGridsOnFinish;
 }
 
 void GeneralSampler::persistentInput(PersistentIStream & is, int) {
@@ -766,7 +787,8 @@ void GeneralSampler::persistentInput(PersistentIStream & is, int) {
      >> theFlatSubprocesses >> isSampling >> theMinSelection
      >> runCombinationData >> theAlmostUnweighted >> maximumExceeds
      >> maximumExceededBy >> theParallelIntegration
-     >> theIntegratePerJob >> theIntegrationJobs >> theWriteGridsOnFinish;
+     >> theIntegratePerJob >> theIntegrationJobs 
+     >> theIntegrationJobsCreated >> theWriteGridsOnFinish;
 }
 
 
@@ -916,7 +938,12 @@ void GeneralSampler::Init() {
      "The maximum number of integration jobs to create.",
      &GeneralSampler::theIntegrationJobs, 0, 0, 0,
      false, false, Interface::lowerlim);
-
+    
+  static Parameter<GeneralSampler,unsigned int> interfaceIntegrationJobsCreated
+    ("IntegrationJobsCreated",
+     "The number of integration jobs which were actually created.",
+     &GeneralSampler::theIntegrationJobsCreated, 1, 1, 0,
+     false, false, Interface::lowerlim);    
 
   static Switch<GeneralSampler,bool> interfaceWriteGridsOnFinish
     ("WriteGridsOnFinish",
