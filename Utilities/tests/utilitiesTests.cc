@@ -185,7 +185,7 @@ BOOST_AUTO_TEST_CASE(operations)
 
 BOOST_AUTO_TEST_CASE(fail)
 {
-  BOOST_FAIL("Ende");
+  // BOOST_FAIL("Ende");
 }
 
     
