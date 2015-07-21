@@ -1,0 +1,13 @@
+##################################################
+# select the analyses
+##################################################
+# ATLAS UE
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8918562
+# ALICE charged particles
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2010_S8625980
+# ALICE charged particles
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2010_S8624100
+# CMS charged particle multiplicity
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S8884919
+# CMS charged particle pT and rapidity
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2010_S8547297

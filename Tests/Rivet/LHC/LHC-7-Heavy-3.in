@@ -1,0 +1,15 @@
+##################################################
+# select the analyses
+##################################################
+# ATLAS inclusive lepton
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I926145
+# CMS inclusive lepton
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S8941262
+# CMS displaced vertex
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S8973270
+# b-hadron cross section
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1118269
+# J/Psi production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S9035664
+# b-jet cross section
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I930220

@@ -1,0 +1,7 @@
+##################################################
+# select the analyses
+##################################################
+# run I CDF di jet angles
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_1996_S3418421
+# run I CDF di jet
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2000_S4266730

@@ -1,0 +1,13 @@
+##################################################
+# select the analyses
+##################################################
+# forward B production 
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2010_I867355
+# J/Psi production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S9035664
+# b-jet cross section
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I930220
+# ATLAS inclusive lepton
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I926145
+# CMS inclusive lepton
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S8941262

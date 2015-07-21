@@ -1,0 +1,8 @@
+##################################################
+# select the analyses
+##################################################
+# ATLAS diphoton
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S9120807
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1199269
+# MC diphoton
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 MC_DIPHOTON

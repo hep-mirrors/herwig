@@ -1,0 +1,5 @@
+##################################################
+# select the analyses
+##################################################
+# b-jet cross section
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I930220

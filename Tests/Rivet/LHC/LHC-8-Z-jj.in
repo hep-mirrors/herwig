@@ -1,0 +1,5 @@
+##################################################
+# select the analyses
+##################################################
+# ATLAS Z + dijets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1279489
