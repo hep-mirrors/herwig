@@ -31,6 +31,43 @@ Element& Element::operator=(const Element& other) {
   return *this;
 }
 
+namespace XML {
+  bool operator==(const XML::Element &one, const XML::Element &two) {
+    return(one.theType == two.theType &&
+    one.theNameOrContent == two.theNameOrContent &&
+    one.theAttributes == two.theAttributes &&
+    one.theChildren == two.theChildren
+    );
+  }
+
+  bool operator!=(const XML::Element &one, const XML::Element &two) {
+    return !(one == two);
+  }
+ 
+  XML::Element operator+(const XML::Element& one, const XML::Element& two) {
+    if ( one.type() != two.type())
+      throw logic_error("[XML::Element] Trying to combine elements with different types.");
+    if ( one.name() != two.name())
+      throw logic_error("[XML::Element] Trying to combine elements with different names.");
+    
+    XML::Element returnElement = XML::Element(one);
+    if(two.hasAttributes()) {
+      std::map<std::string,std::string> attributesOfSecond = two.attributes();
+      for(std::map<std::string,std::string>::const_iterator attributesofSecondIter=attributesOfSecond.begin(); attributesofSecondIter!=attributesOfSecond.end(); ++attributesofSecondIter) {
+	returnElement.appendAttribute(attributesofSecondIter->first, attributesofSecondIter->second);
+      }
+    }
+    if(two.hasChildren()) {
+     std::list<Element> childrenOfSecond = two.children();
+     for(std::list<Element>::const_iterator childrenOfSecondIter = childrenOfSecond.begin(); childrenOfSecondIter != childrenOfSecond.end(); ++childrenOfSecondIter)
+       returnElement.append(*childrenOfSecondIter);
+    }
+    return returnElement; 
+  }
+}
+
+
+
 const string& Element::name() const {
   assertNamed();
   return theNameOrContent;

@@ -620,6 +620,7 @@ Energy2 SudakovFormFactor::guesst(Energy2 t1,unsigned int iopt,
   assert(iopt<=2);
   if(iopt==1) {
     c/=pdfmax_;
+    //symmetry of FS gluon splitting
     if(ident) c*=0.5;
   }
   else if(iopt==2) c*=-1.;

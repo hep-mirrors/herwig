@@ -109,10 +109,11 @@ ZeroZeroOneSplitFn::generatePhiBackward(const double, const Energy2, const IdLis
 }
 
 DecayMEPtr ZeroZeroOneSplitFn::matrixElement(const double z, const Energy2 t, 
-					     const IdList & ids, const double phi) {
+					     const IdList & ids, const double phi,
+                                             bool timeLike) {
   // calculate the kernal
   DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin1)));
-  Energy m = getParticleData(ids[0])->mass();
+  Energy m = timeLike ? getParticleData(ids[0])->mass() : ZERO;
   (*kernal)(0,0,0) = -exp(Complex(0.,1.)*phi)*sqrt(1.-(1.-z)*sqr(m)/z/t)*sqrt(z/(1.-z));
   (*kernal)(0,0,2) = -conj((*kernal)(0,0,0));
   return kernal;

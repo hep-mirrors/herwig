@@ -76,7 +76,7 @@ double IFqx2qgxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
 
   ret *= (!strictLargeN() ? 4./3. : 3./2.) * ( 2./(1.-x+u) - (1.+x) + u*(1.+3.*x*(1.-u) ) );
 
-  return ret;
+  return ret > 0. ? ret : 0.;
 
 }
 

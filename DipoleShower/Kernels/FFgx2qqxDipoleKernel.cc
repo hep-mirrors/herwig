@@ -75,7 +75,7 @@ double FFgx2qqxDipoleKernel::evaluate(const DipoleSplittingInfo& split) const {
 
   ret *= .25 * ( 1. - 2.*z*(1.-z) );
 
-  return ret;
+  return ret > 0. ? ret : 0.;
 
 }
 

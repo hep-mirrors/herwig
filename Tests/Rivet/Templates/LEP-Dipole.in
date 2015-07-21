@@ -1,0 +1,54 @@
+##################################################
+## Collider type
+##################################################
+read Matchbox/EECollider.in
+##################################################
+## Process selection
+##################################################
+## Set the order of the couplings
+cd /Herwig/MatrixElements/Matchbox
+set Factory:OrderInAlphaS 0
+set Factory:OrderInAlphaEW 2
+##################################################
+## Matrix element library selection
+##################################################
+read Matchbox/MadGraph-OpenLoops.in
+##################################################
+## Scale choice
+## See the documentation for more options
+##################################################
+cd /Herwig/MatrixElements/Matchbox
+set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/SHatScale
+##################################################
+## Matching and shower selection
+##################################################
+read Matchbox/MCatNLO-DipoleShower.in
+##################################################
+#  Switch off ISR
+##################################################
+set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
+set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
+##################################################
+#  Create the Herwig analysis
+##################################################
+create ThePEG::RivetAnalysis /Herwig/Analysis/RivetAnalysis RivetAnalysis.so
+insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
+##################################################
+## Do not apply profile scales for LEP as hard
+## scale coincides with kinematic limit
+##################################################
+set /Herwig/Shower/ShowerHandler:HardScaleProfile NULL
+set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleProfile NULL
+##################################################
+## Save the generator
+##################################################
+do /Herwig/MatrixElements/Matchbox/Factory:ProductionMode
+
+## Select the process
+cd /Herwig/MatrixElements/Matchbox
+${process}
+
+read ${parameterFile}
+
+cd /Herwig/Generators
+saverun ${runname} EventGenerator

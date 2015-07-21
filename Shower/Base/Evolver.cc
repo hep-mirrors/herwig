@@ -1445,6 +1445,10 @@ void Evolver::hardestEmission(bool hard) {
       	}
       } 
     }
+     
+    
+    // Hardest (pt) emission should be the first powheg emission.
+    maxpt=min(sqrt(ShowerHandler::currentHandler()->lastXCombPtr()->lastCentralScale()),maxpt);
 
     // Set maxpt to pT of emission when showering POWHEG real-emission subprocesses
     if (!isPowhegSEvent && !isPowhegHEvent){

@@ -1,0 +1,4 @@
+##################################################
+# select the analyses
+##################################################
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1219109

@@ -63,17 +63,16 @@ Energy FIMassiveKinematics::ptMax(Energy dScale,
 				double, double specX,
 				const DipoleIndex& ind,
 				const DipoleSplittingKernel& split) const {
-  Energy2 mi2 = sqr(split.emitter(ind)->mass());
-  Energy2 m2  = sqr(split.emission(ind)->mass());
+  Energy mi = split.emitter(ind)->mass(), m = split.emission(ind)->mass();
+  Energy2 mi2 = sqr(mi), m2  = sqr(m);
   // Energy2 Mi2 = split.emitter(int)->id() + split.emission(int)->id() == 0 ?
   //   0.*GeV2 : mi2;
   Energy2 Mi2 = mi2 == m2 ? 0.*GeV2 : mi2;
 
   // s^star/x
   Energy2 s = sqr(dScale) * (1.-specX)/specX + Mi2;
-
-  Energy ptmax = .5 * sqrt(s) * rootOfKallen( s/s, mi2/s, m2/s );
-  return ptmax > 0.*GeV ? ptmax : 0.*GeV;
+  Energy roots = sqrt(s);
+  return .5 * sqrt(s) * rootOfKallen( s/s, mi2/s, m2/s );
 }
 
 // what is this? in FF it is given by y+*dScale = sqrt( 2qi*q / bar )->max
@@ -185,13 +184,17 @@ bool FIMassiveKinematics::generateSplitting(double kappa, double xi, double rphi
   double mu2  = x*m2/sqr(info.scale());
   double Mui2 = x*Mi2/sqr(info.scale());
   double xp = 1. + Mui2 - sqr(sqrt(mui2)+sqrt(mu2));
-  double zm = .5*( 1.-x+Mui2+mui2-mui2 -
-		   sqrt( sqr(1.-x+Mui2-mui2-mu2)-4.*mui2*mu2 ) ) /
-    (1.-x+Mui2);
-  double zp = .5*( 1.-x+Mui2+mui2-mui2 +
-		   sqrt( sqr(1.-x+Mui2-mui2-mu2)-4.*mui2*mu2 ) ) /
-    (1.-x+Mui2);
+  double root = sqr(1.-x+Mui2-mui2-mu2)-4.*mui2*mu2;
+  if( root < 0. && root>-1e-10 )
+    root = 0.;
+  else if (root <0. ) {
+    jacobian(0.0);
+    return false;
+  }
 
+  root = sqrt(root);
+  double zm = .5*( 1.-x+Mui2+mui2-mui2 - root ) / (1.-x+Mui2);
+  double zp = .5*( 1.-x+Mui2+mui2-mui2 + root ) / (1.-x+Mui2);
   if (x > xp ||
       z > zp || z < zm ) {
     jacobian(0.0);

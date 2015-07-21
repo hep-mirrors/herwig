@@ -1,0 +1,11 @@
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 10.
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 9.99
+##################################################
+# select the analyses 
+##################################################
+# PDG hadron multiplicities and ratios
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_HADRON_MULTIPLICITIES
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_HADRON_MULTIPLICITIES_RATIOS

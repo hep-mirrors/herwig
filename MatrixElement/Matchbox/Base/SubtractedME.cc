@@ -383,7 +383,7 @@ void SubtractedME::fillProjectors() {
       continue;
     if ( (**d).willPassCuts() &&
 	 (**d).lastMECrossSection()/picobarn != 0.0 ) {
-      lastXCombPtr()->projectors().insert(abs((**d).cutWeight()*(**d).lastMECrossSection()/picobarn),*d);
+      lastXCombPtr()->projectors().insert(abs((**d).cutWeight()*(**d).lastMECrossSection()/picobarn),*d);//
     }
   }
 }

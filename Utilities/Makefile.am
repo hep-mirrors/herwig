@@ -24,3 +24,8 @@ Statistics/libHwStatistics.la
 
 CLEANFILES=
 include $(srcdir)/Makefile.am.versionstring
+
+check_PROGRAMS = utilities_test
+utilities_test_SOURCES = tests/utilitiesTests.cc 
+utilities_test_LDADD = $(BOOST_FILESYSTEM_LIB) $(BOOST_SYSTEM_LIB) $(BOOST_UNIT_TEST_FRAMEWORK_LIB) libHwUtils.la
+TESTS = utilities_test

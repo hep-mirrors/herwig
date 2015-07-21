@@ -1,7 +1,7 @@
 SUBDIRS =
 
 pkglib_LTLIBRARIES = HwHEJ.la
-HwHEJ_la_LDFLAGS = -module -version-info 11:1:0
+HwHEJ_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 11:1:0
 
 HwHEJ_la_LIBADD = \
 -L$(HEJLIBPATH) -lJets

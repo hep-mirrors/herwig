@@ -123,10 +123,11 @@ HalfOneHalfSplitFn::generatePhiBackward(const double z, const Energy2 t, const I
 }
 
 DecayMEPtr HalfOneHalfSplitFn::matrixElement(const double z, const Energy2 t, 
-					     const IdList & ids, const double phi) {
+					     const IdList & ids, const double phi,
+                                             bool timeLike) {
   // calculate the kernal
   DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1Half,PDT::Spin1,PDT::Spin1Half)));
-  Energy m = getParticleData(ids[0])->mass();
+  Energy m = !timeLike ? ZERO : getParticleData(ids[0])->mass();
   double mt = m/sqrt(t);
   double root = sqrt(1.-z*sqr(m)/(1.-z)/t);
   double romz = sqrt(1.-z); 

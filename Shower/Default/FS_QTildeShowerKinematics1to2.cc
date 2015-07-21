@@ -84,7 +84,7 @@ updateChildren(const tShowerParticlePtr parent,
   // create the vertex
   SVertexPtr vertex(new_ptr(ShowerVertex()));
   // set the matrix element
-  vertex->ME(splittingFn()->matrixElement(z(),t,ids,phi()));
+  vertex->ME(splittingFn()->matrixElement(z(),t,ids,phi(),true));
   // set the incoming particle for the vertex
   parent->spinInfo()->decayVertex(vertex);
   for(ShowerParticleVector::const_iterator pit=children.begin();

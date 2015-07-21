@@ -62,7 +62,7 @@ double FFggxDipole::me2Avg(double ccme2) const {
 	(realEmissionME()->lastXComb().meMomenta()[realEmission()]));
 
   double res = 
-    1./(1.-z*(1.-y)) + 1./(1.-(1.-z)*(1.-y)) - 2 + z*(1.-z);
+    1./(1.-z*(1.-y)) + 1./(1.-(1.-z)*(1.-y)) - 2. + z*(1.-z);
 
   res *= -ccme2;
 

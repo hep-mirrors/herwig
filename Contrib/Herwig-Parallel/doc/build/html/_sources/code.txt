@@ -1,7 +1,0 @@
-Source Code Documentation
-=========================
-
-bla bla bla bla
-
-.. automodule:: Herwig_parallel_run
-   :members:

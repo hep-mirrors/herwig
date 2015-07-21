@@ -1,0 +1,5 @@
+##################################################
+# select the analyses
+##################################################
+# ATLAS Low mass Z
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1288706

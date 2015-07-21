@@ -3,7 +3,7 @@ Amplitudes \
 PP2Jets
 
 pkglib_LTLIBRARIES = HwMatchboxNLOJet.la
-HwMatchboxNLOJet_la_LDFLAGS = -module -version-info 11:1:0
+HwMatchboxNLOJet_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 11:1:0
 
 HwMatchboxNLOJet_la_LIBADD = \
 -L$(NLOJETLIBPATH) -lnlo++ \

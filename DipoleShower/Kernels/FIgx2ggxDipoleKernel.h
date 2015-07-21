@@ -126,6 +126,11 @@ protected:
 
 
 private:
+  /**
+   * Symmetry factor for final state gluon splittings (should be 1/2).
+   */ 
+
+ double theSymmetryFactor;
 
   /**
    * The static object used to initialize the description of this class.

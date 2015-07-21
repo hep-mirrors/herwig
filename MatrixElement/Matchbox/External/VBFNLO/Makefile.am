@@ -1,6 +1,6 @@
 pkglib_LTLIBRARIES = HwMatchboxVBFNLO.la
 
-HwMatchboxVBFNLO_la_LDFLAGS = -module -version-info 1:0:0
+HwMatchboxVBFNLO_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 1:0:0
 
 HwMatchboxVBFNLO_la_CPPFLAGS = $(AM_CPPFLAGS)
 HwMatchboxVBFNLO_la_CPPFLAGS += -I$(VBFNLOINCLUDE)

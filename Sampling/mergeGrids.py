@@ -45,7 +45,7 @@ if __name__ == '__main__':
 
     # print 'Looking in ' + gridId
 
-    gridFiles=glob.glob(gridId + '/integrationJob*/HerwigGrids.xml')
+    gridFiles=sorted(glob.glob(gridId + '/integrationJob*/HerwigGrids.xml'))
 
     if not gridFiles:
         sys.stderr.write('No grid files have been found to combine\n')
@@ -56,11 +56,13 @@ if __name__ == '__main__':
     gridCombined = open(gridId + '/HerwigGrids.xml','w')
     gridCombined.write('<Grids>\n')
 
+
     for gridFile in gridFiles:
         grid = open(gridFile,'r')
+	print(gridFile)
         gridContent = grid.read()
-        gridContent = gridContent.replace('<Grids>','')
-        gridContent = gridContent.replace('</Grids>','')
+        gridContent = gridContent.replace('<Grids>\n','')
+        gridContent = gridContent.replace('</Grids>\n','')
         gridCombined.write(gridContent)
         grid.close()
 

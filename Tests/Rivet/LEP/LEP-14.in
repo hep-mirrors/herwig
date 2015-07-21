@@ -1,0 +1,10 @@
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 14.
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 13.*GeV
+##################################################
+# select the analyses 
+##################################################
+# tasso event shapes at various low energies
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 TASSO_1990_S2148048

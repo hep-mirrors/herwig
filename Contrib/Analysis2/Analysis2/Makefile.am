@@ -1,7 +1,7 @@
 SUBDIRS = Data
 
 pkglib_LTLIBRARIES = Analysis2.la
-Analysis2_la_LDFLAGS = -module -version-info 0:0:0
+Analysis2_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 0:0:0
 Analysis2_la_CPPFLAGS = $(AM_CPPFLAGS)
 Analysis2_la_LIBADD = $(top_builddir)/Histogram2/libHistogram2.la
 Analysis2_la_SOURCES = \
@@ -19,7 +19,7 @@ FourJetCorrelations.icc FourJetCorrelations.cc
 
 # if WITH_LIBFASTJET
 # pkglib_LTLIBRARIES += FastJetFinder.la
-# FastJetFinder_la_LDFLAGS = -module -version-info 3:0:0
+# FastJetFinder_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 3:0:0
 # FastJetFinder_la_CPPFLAGS = $(AM_CPPFLAGS) $(FASTJETINCLUDE)
 # FastJetFinder_la_LIBADD = $(FASTJETLIBS)
 # FastJetFinder_la_SOURCES = \
@@ -30,7 +30,7 @@ FourJetCorrelations.icc FourJetCorrelations.cc
 
 if WITH_LIBKTJET
 pkglib_LTLIBRARIES += KtJetFinder.la
-KtJetFinder_la_LDFLAGS = -module -version-info 3:0:0
+KtJetFinder_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 3:0:0
 KtJetFinder_la_CPPFLAGS = $(AM_CPPFLAGS) $(KTJETINCLUDE) -I$(KTJETPATH)
 KtJetFinder_la_LIBADD = $(KTJETLIBS) -L$(CLHEPPATH)  $(CLHEPLIB)
 KtJetFinder_la_SOURCES = \

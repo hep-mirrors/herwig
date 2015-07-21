@@ -134,7 +134,7 @@ def thepeg_particles(FR,parameters,modelname,modelparameters):
 set /Herwig/Particles/h0:Mass_generator NULL
 set /Herwig/Particles/h0:Width_generator NULL
 rm /Herwig/Masses/HiggsMass
-rm /Herwig/Widths/HiggsWidth
+rm /Herwig/Widths/hWidth
 """
 )
         subs = ParticleConverter(p,parameters,modelparameters).subs()

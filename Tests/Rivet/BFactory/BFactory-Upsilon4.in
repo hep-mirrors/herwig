@@ -1,0 +1,14 @@
+create ThePEG::LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
+set /Herwig/EventHandlers/BFactoryLuminosity:BeamEMaxA 5.29*GeV
+set /Herwig/EventHandlers/BFactoryLuminosity:BeamEMaxB 5.29*GeV
+set /Herwig/Generators/EventGenerator:EventHandler:Cuts:MHatMin 10.5799
+set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
+set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction /Herwig/EventHandlers/BFactoryLuminosity
+create Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so
+set /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)
+set /Herwig/MatrixElements/MEUpsilon:Coupling 0.0004151809
+set /Herwig/MatrixElements/SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon
+# BELLE charm hadron production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_S2653028
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ARGUS_1993_S2789213

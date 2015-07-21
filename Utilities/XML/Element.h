@@ -80,7 +80,21 @@ namespace XML {
      * Assignment
      */
     Element& operator=(const Element& other);
+  
+    /** 
+     * Comparison operator
+     *
+     */
+    friend bool operator==(const XML::Element &one, const XML::Element &two);
+    friend bool operator!=(const XML::Element &one, const XML::Element &two);
 
+    /**
+     * Combine operator
+     * 
+     * Operator checks if type and name is equal otherwises throws exception
+     */
+    friend XML::Element operator+(const XML::Element& one, const XML::Element& two);
+    
   public:
 
     /**
@@ -173,8 +187,21 @@ namespace XML {
 	std::ostringstream valueOut;
 	valueOut << std::setprecision(16) << newValue;
 	value = valueOut.str();
-      }
+	
 
+	  
+      }
+	
+    /**
+      * Comparison operators for attributes
+      */
+    inline bool operator==(const Attribute& other) {
+      return ( name == other.name &&
+      value == other.value);
+    }
+    inline bool operator!=(const Attribute& other) {
+      return !(*this == other);
+    }
     };
 
     /**

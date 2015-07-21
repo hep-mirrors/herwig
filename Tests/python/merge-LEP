@@ -115,12 +115,12 @@ for f in yodafiles:
 
     if not os.access(file, os.R_OK):
         logging.error("%s can not be read" % file)
-        break
+        continue
     try:
         aos = yoda.read(file)
     except:
         logging.error("%s can not be parsed as yoda" % file)
-        break
+        continue
     ## Get histos from this YODA file
     for aopath, ao in aos.iteritems() :
         # jet shapes
@@ -703,14 +703,14 @@ useOne("/PDG_HADRON_MULTIPLICITIES/d06-x01-y03","91")
 useOne("/PDG_HADRON_MULTIPLICITIES/d07-x01-y03","91")
 useOne("/PDG_HADRON_MULTIPLICITIES/d08-x01-y03","91")
 useOne("/PDG_HADRON_MULTIPLICITIES/d09-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d10-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d11-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d12-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d10-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d11-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d12-x01-y01","91")
 useOne("/PDG_HADRON_MULTIPLICITIES/d13-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d14-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d14-x01-y01","91")
 useOne("/PDG_HADRON_MULTIPLICITIES/d15-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d16-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d17-x01-y03","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d16-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d17-x01-y02","91")
 useOne("/PDG_HADRON_MULTIPLICITIES/d18-x01-y03","91")
 useOne("/PDG_HADRON_MULTIPLICITIES/d19-x01-y03","91")
 useOne("/PDG_HADRON_MULTIPLICITIES/d20-x01-y03","91")
@@ -736,7 +736,7 @@ useOne("/PDG_HADRON_MULTIPLICITIES/d41-x01-y01","91")
 useOne("/PDG_HADRON_MULTIPLICITIES/d42-x01-y01","91")
 useOne("/PDG_HADRON_MULTIPLICITIES/d43-x01-y01","91")
 useOne("/PDG_HADRON_MULTIPLICITIES/d44-x01-y03","91")
-useOne("/PDG_HADRON_MULTIPLICITIES/d45-x01-y01","91")
+useOne("/PDG_HADRON_MULTIPLICITIES/d45-x01-y02","91")
 useOne("/PDG_HADRON_MULTIPLICITIES/d46-x01-y03","91")
 useOne("/PDG_HADRON_MULTIPLICITIES/d47-x01-y03","91")
 useOne("/PDG_HADRON_MULTIPLICITIES/d48-x01-y03","91")

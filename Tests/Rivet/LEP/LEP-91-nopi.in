@@ -1,0 +1,15 @@
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 91.2
+set /Herwig/Decays/DecayHandler:MaxLifeTime 10*mm
+set /Herwig/Particles/pi0:Stable Stable
+set /Herwig/Particles/eta:Stable Stable
+
+##################################################
+# select the analyses
+##################################################
+# ALEPH photon analysis
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALEPH_1996_S3196992
+# OPAL photon analysis
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_1993_S2692198

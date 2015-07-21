@@ -48,8 +48,8 @@ public:
     ++_n;
     _xsum  += input;
     _x2sum += input * input;
-    if (_min > input) _min = input;
-    if (_max < input) _max = input;
+    if (_min > input || _n == 1) _min = input;
+    if (_max < input || _n == 1) _max = input;
   }
 
   /**

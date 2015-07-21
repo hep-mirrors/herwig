@@ -139,6 +139,12 @@ private:
    */
   FFgx2ggxDipoleKernel & operator=(const FFgx2ggxDipoleKernel &);
 
+  /**
+   * Symmetry factor for final state gluon splittings (should be 1/2).
+   */ 
+
+   double theSymmetryFactor;
+
 };
 
 }

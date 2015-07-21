@@ -412,6 +412,14 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
   //find the colourline:
   int ii = -1;
   int xx=lastMatchboxXComb()->externalId();
+  
+  if (colourindex.size()<=i) {
+    colourindex.clear();
+    for (size_t l=0;l<=i+10;l++){
+      colourindex.push_back(-2);
+    }
+  }
+  
   if(colourindex[i]!=-2){
 
     ii = colourindex[i];
@@ -507,6 +515,9 @@ Complex MadGraphAmplitude::evaluate(size_t i, const vector<int>& hel, Complex& l
     momenta[j+1]=abs(reshuffled[i].x()/GeV)<1.e-13?0.:double(reshuffled[i].x()/GeV);
     momenta[j+2]=abs(reshuffled[i].y()/GeV)<1.e-13?0.:double(reshuffled[i].y()/GeV);
     momenta[j+3]=abs(reshuffled[i].z()/GeV)<1.e-13?0.:double(reshuffled[i].z()/GeV);
+    if(momenta[j  ] == 0. && momenta[j+1] == 0. &&
+       momenta[j+2] == 0. && momenta[j+3] == 0. )
+      return 0.;
     j+=4;
   }
   
@@ -579,7 +590,7 @@ LorentzVector<Complex> MadGraphAmplitude::plusPolarization(const Lorentz5Momentu
 
   LorentzVector<Complex> polarization(pol[1],pol[2],pol[3],pol[0]);
 
-  return polarization.conjugate();
+  return polarization;
 }
  
 bool equalsModulo(unsigned int i, const vector<int>& a, const vector<int>& b) {
@@ -623,19 +634,25 @@ double MadGraphAmplitude::spinColourCorrelatedME2(pair<int,int> ij,
   Lorentz5Momentum p = reshuffled[ij.first];
   Lorentz5Momentum n = reshuffled[ij.second];
 
-  LorentzVector<Complex> polarization = plusPolarization(p,n,ij.first);
-
-  Complex pFactor = (polarization*c.momentum())/sqrt(abs(c.scale()));
-
-  double avg =
-    colourCorrelatedME2(ij)*(-c.diagonal()+ (c.scale() > ZERO ? 1. : -1.)*norm(pFactor));
-  int iCrossed = crossingMap()[ij.first];
-  iCrossed = ij.first;
+  LorentzVector<Complex> polarization = plusPolarization(p,n,ij.first<2?-1:1);
+  
+  
+  int iCrossed = -1;
   for ( unsigned int k = 0; k < crossingMap().size(); ++k )
     if ( crossingMap()[k] == ij.first ) {
       iCrossed = k;
       break;
-    }   
+    }
+  assert(iCrossed!=-1);
+  
+  if(ij.first>1) polarization =polarization.conjugate();
+  if(iCrossed<2) polarization =polarization.conjugate();
+  Complex pFactor = (polarization*c.momentum())/sqrt(abs(c.scale()));
+
+
+  double avg =
+    colourCorrelatedME2(ij)*(-c.diagonal()+ (c.scale() > ZERO ? 1. : -1.)*norm(pFactor));
+   
   
   Complex csCorr = 0.0;
 
