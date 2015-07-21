@@ -332,6 +332,11 @@ void QTildeMatching::calculateShowerVariables() const {
     (n*realCXComb()->meMomenta()[dipole()->realEmission()])/
     (n*realCXComb()->meMomenta()[dipole()->realEmitter()]);
   }
+  if ( z <= 0 ) {
+    z = std::numeric_limits<double>::epsilon();
+  } else if ( z >= 1 ) {
+    z = 1-std::numeric_limits<double>::epsilon();
+  }
 
   Energy2 qtilde2 = ZERO;
   Energy2 q2 = ZERO;
@@ -344,6 +349,9 @@ void QTildeMatching::calculateShowerVariables() const {
     q2 = 
       -(realCXComb()->meMomenta()[dipole()->realEmitter()] - realCXComb()->meMomenta()[dipole()->realEmission()]).m2();
     qtilde2 = (q2 + bornCXComb()->meMomenta()[dipole()->bornEmitter()].m2())/(1.-z);
+  }
+  if ( qtilde2 < ZERO ) {
+    qtilde2 = ZERO;
   }
 
   assert(qtilde2 >= ZERO && z >= 0.0 && z <= 1.0);
