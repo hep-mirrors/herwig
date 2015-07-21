@@ -1,0 +1,5 @@
+##################################################
+# select the analyses
+##################################################
+# run I CDF UE
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2012_NOTE10874

@@ -1,0 +1,9 @@
+##################################################
+# select the analyses
+##################################################
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_1988_S1865951
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_1990_S2089246
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2001_S4751469
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2002_S4796047
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2004_S5839831
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 E735_1998_S3905616

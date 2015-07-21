@@ -1,0 +1,4 @@
+##################################################
+# select the analyses
+##################################################
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 STAR_2009_UE_HELEN

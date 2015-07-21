@@ -1,0 +1,10 @@
+##################################################
+# select the analyses
+##################################################
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 STAR_2006_S6500200
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 STAR_2006_S6860818
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 STAR_2006_S6870392
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 STAR_2008_S7869363
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 STAR_2009_UE_HELEN
+# this one is d-Au, supposed to be pp like but omit
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 STAR_2008_S7993412

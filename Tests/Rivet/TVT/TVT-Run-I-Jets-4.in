@@ -1,0 +1,15 @@
+##################################################
+# select the analyses
+##################################################
+# run I CDF large total ET
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_1998_S3618439
+# run I CDF di jet
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2001_S4517016
+# run I CDF inclusive jet
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2001_S4563131
+# run I CDF UE
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2004_S5839831
+# run I coherence
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_1994_S2952106
+# run I D0 3 and 4 jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0  D0_1996_S3214044

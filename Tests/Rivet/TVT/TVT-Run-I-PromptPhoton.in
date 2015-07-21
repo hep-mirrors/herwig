@@ -1,0 +1,5 @@
+##################################################
+# select the analyses
+##################################################
+# CDF Run I prompt photon
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_1993_S2742446

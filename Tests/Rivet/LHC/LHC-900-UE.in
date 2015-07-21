@@ -1,0 +1,51 @@
+##################################################
+# select the analyses
+##################################################
+# ATLAS UE
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S8994773
+# ATLAS UE
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8918562
+# ATLAS UE
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8894728
+# ATLAS charged particles
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2010_S8591806
+# ALICE charged particles
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2010_S8706239
+# ALICE charged particles
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2010_S8625980
+# ALICE charged particles
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2010_S8624100
+# ALICE particle spectra
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2011_S8945144
+# ALICE strange particle production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2011_S8909580
+# CMS particle spectra
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S8978280
+# CMS charged particle multiplicity
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S8884919
+# CMS charged particle pT and rapidity
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2010_S8547297
+# CMS UE
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S9120041
+# LHCB k_s0
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2010_S8758301
+# LHCB promt hadron production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2012_I1119400
+# CMS forward energy flow
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2011_S9215166
+# CMS charged particle rapidity
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_QCD_10_024
+# LHC K0s/Lambda
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 LHCB_2011_I917009
+# ATLAS Azimuthal ordering of charged hadrons
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1091481
+# ALICE single/double diffractive and inelastic sigma
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ALICE_2012_I1181770
+# ATLAS inelastic cross section
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I894867
+# underlying event forward rapidities
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1218372
+# ATLAS two particle correlation
+#insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1094061
+# ATLAS correlations
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1093734

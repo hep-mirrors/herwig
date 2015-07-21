@@ -1,0 +1,5 @@
+##################################################
+# select the analyses
+##################################################
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 UA5_1982_S875503
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 SFM_1984_S1178091

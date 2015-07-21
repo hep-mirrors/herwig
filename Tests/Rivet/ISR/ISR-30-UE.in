@@ -1,0 +1,4 @@
+##################################################
+# select the analyses
+##################################################
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 SFM_1984_S1178091
