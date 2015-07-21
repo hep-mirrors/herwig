@@ -831,10 +831,10 @@ void ShowerTree::addInitialStateShower(PPtr p, PPtr hadron,
 void ShowerTree::decay(ShowerDecayMap & decay) {
   // must be one incoming particle
   assert(_incomingLines.size()==1);
-  // if already decayed return
-  if(!_outgoingLines.empty()) return;
   // otherwise decay it
   applyTransforms();
+  // if already decayed return
+  if(!_outgoingLines.empty()) return;
   // now we need to replace the particle with a new copy after the shower
   // find particle after the shower
   ShowerParticlePtr newparent=_parent->_treelinks[this].second;

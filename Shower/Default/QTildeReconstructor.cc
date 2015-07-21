@@ -2175,7 +2175,28 @@ reconstructColourPartner(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
     // already reconstructed
     if(used[ShowerHardJets[ix]]) continue; 
     // no partner continue
-    if(!ShowerHardJets[ix]->progenitor()->partner()) continue;
+    if(!ShowerHardJets[ix]->progenitor()->partner()) {
+      // check if there's a daughter tree which also needs boosting
+      Lorentz5Momentum porig = ShowerHardJets[ix]->progenitor()->momentum();
+      map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> >::const_iterator tit;
+      for(tit  = _currentTree->treelinks().begin();
+	  tit != _currentTree->treelinks().end();++tit) {
+	// if there is, boost it
+	if(tit->second.first && tit->second.second==ShowerHardJets[ix]->progenitor()) {
+	  Lorentz5Momentum pnew = tit->first->incomingLines().begin()
+	    ->first->progenitor()->momentum();
+	  pnew *=  tit->first->transform();
+	  Lorentz5Momentum pdiff = porig-pnew;
+	  Energy2 test = sqr(pdiff.x()) + sqr(pdiff.y()) + 
+	    sqr(pdiff.z()) + sqr(pdiff.t());
+	  LorentzRotation rot;
+	  if(test>1e-6*GeV2) rot = solveBoost(porig,pnew);
+	  tit->first->transform(rot,false);
+	  _treeBoosts[tit->first].push_back(rot);
+	}
+      }
+      continue;
+    }
     // do the reconstruction
     // final-final
     if(ShowerHardJets[ix]->progenitor()->isFinalState() &&
