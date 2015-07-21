@@ -95,3 +95,6 @@ Makefile\.in$
 ^src/snippets/done-all-links$
 ^Utilities/XML/xml_test$
 ^Utilities/utilities_test$
+test\.(log|trs)$
+test-suite\.log$
+^Config/test-driver$
