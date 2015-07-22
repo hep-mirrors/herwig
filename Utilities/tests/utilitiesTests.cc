@@ -7,12 +7,26 @@
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 
+#define BOOST_TEST_DYN_LINK
+#define BOOST_TEST_MAIN
+#include <boost/test/unit_test.hpp>
+#define BOOST_TEST_MODULE utilitiesTest
+
+
+
 #include "Herwig++/Utilities/Kinematics.h"
 #include "Herwig++/Utilities/Maths.h"
 #include "Herwig++/Utilities/Statistic.h"
-#define BOOST_TEST_MODULE utilitiesTest
-#include <boost/test/included/unit_test.hpp>
 
+#include "ThePEG/Repository/StandardRandom.h"
+#include "ThePEG/Repository/UseRandom.h"
+
+struct FixKinematics1 {
+  FixKinematics1()  
+  {BOOST_TEST_MESSAGE( "setup fixture for utilitiesKinematicsTestTest" ); }
+  
+  ~FixKinematics1()  { BOOST_TEST_MESSAGE( "teardown fixture for utilitiesKinematicsTest" ); }
+};
 
 /*
  * Start of boost unit tests for Kinematics.h
@@ -24,19 +38,21 @@ BOOST_AUTO_TEST_SUITE(utilitiesKinematicsTest)
  * Boost unit tests
  * @todo solve problem with linking to ThePEG library
  */
-/*
-BOOST_AUTO_TEST_CASE(generateAngles)
+
+BOOST_FIXTURE_TEST_CASE(generateAnglestest, FixKinematics1)
 {
+  ThePEG::StandardRandom randomNumberStandardGenerator = ThePEG::StandardRandom();
+  ThePEG::UseRandom testUseRandom = ThePEG::UseRandom(&randomNumberStandardGenerator);
   double flatMinusPiToPlusPi, flatNullToTwoPi;
   for(int i = 0; i < 100; ++i) {
     Herwig::Kinematics::generateAngles(flatMinusPiToPlusPi, flatNullToTwoPi);
-    //BOOST_CHECK( -M_PI <= flatMinusPiToPlusPi );
-    //BOOST_CHECK( flatMinusPiToPlusPi <= M_PI);
-    //BOOST_CHECK( 0. <= flatNullToTwoPi);
-    //BOOST_CHECK(flatNullToTwoPi <= M_PI);
+    BOOST_CHECK( -M_PI <= flatMinusPiToPlusPi );
+    BOOST_CHECK( flatMinusPiToPlusPi <= M_PI);
+    BOOST_CHECK( 0. <= flatNullToTwoPi);
+    BOOST_CHECK(flatNullToTwoPi <= 2*M_PI);
   }
 }
-*/
+
     
 BOOST_AUTO_TEST_SUITE_END()
 
@@ -185,7 +201,7 @@ BOOST_AUTO_TEST_CASE(operations)
 
 BOOST_AUTO_TEST_CASE(fail)
 {
-  // BOOST_FAIL("Ende");
+   //BOOST_FAIL("Ende");
 }
 
     

@@ -5,11 +5,13 @@
 //
 // myXML is licenced under version 2 of the GPL, see COPYING for details.
 //
+#define BOOST_TEST_DYN_LINK
+#define BOOST_TEST_MAIN
+#include <boost/test/unit_test.hpp>
+#define BOOST_TEST_MODULE xmlTest
 
 #include "Herwig++/Utilities/XML/Element.h"
 #include "Herwig++/Utilities/XML/ElementIO.h"
-#define BOOST_TEST_MODULE xmlTest
-#include <boost/test/included/unit_test.hpp>
 
 /*
  * Fixture which defines the common variables for testing Element class
