@@ -8,23 +8,6 @@ if sys.version_info[:3] < (2,4,0):
 
 import os, yoda
 
-if __name__ == "__main__":
-    import logging
-    from optparse import OptionParser, OptionGroup
-    parser = OptionParser(usage="%prog name [...]")
-    parser.add_option("--with-ue",
-                      action='store_true' ,
-                      dest=ue,
-                      default=True,
-                      help="Include UE analyses")
-    parser.add_option("--without-ue",
-                      action='store_false',
-                      dest=ue,
-                      default=True,
-                      help="Don\'t include UE analyses")
-
-(opts, args) = parser.parse_args()
-
 # #############################################
 
 
@@ -113,6 +96,16 @@ if __name__ == "__main__":
     from optparse import OptionParser, OptionGroup
     parser = OptionParser(usage="%prog name")
     verbgroup = OptionGroup(parser, "Verbosity control")
+    parser.add_option("--with-ue",
+                      action='store_true' ,
+                      dest="ue",
+                      default=True,
+                      help="Include UE analyses")
+    parser.add_option("--without-ue",
+                      action='store_false',
+                      dest="ue",
+                      default=True,
+                      help="Don\'t include UE analyses")
     verbgroup.add_option("-v", "--verbose", action="store_const", const=logging.DEBUG, dest="LOGLEVEL",
                          default=logging.INFO, help="print debug (very verbose) messages")
     verbgroup.add_option("-q", "--quiet", action="store_const", const=logging.WARNING, dest="LOGLEVEL",
@@ -121,9 +114,9 @@ if __name__ == "__main__":
     (opts, args) = parser.parse_args()
     logging.basicConfig(level=opts.LOGLEVEL, format="%(message)s")
 
+    (opts, args) = parser.parse_args()
 
-    ## Prefix used in dat file headers
-    headerprefix = "# "
+
  
 yodafiles=["-7-Jets-0.yoda","-7-Jets-1.yoda","-7-Jets-2.yoda",
            "-7-Jets-3.yoda","-7-Jets-4.yoda","-7-Jets-5.yoda",
@@ -132,9 +125,10 @@ yodafiles=["-7-Jets-0.yoda","-7-Jets-1.yoda","-7-Jets-2.yoda",
            "-7-Heavy-3.yoda","-7-Heavy-4.yoda","-7-Heavy-5.yoda",
            "-7-Top-SL.yoda","-7-Top-L.yoda"]
 
-if(opts.ue) yodafiles += ["-900-UE.yoda"   ,"-2360-UE.yoda"    ,"-2760-UE.yoda"    ,
-                          "-7-UE.yoda"     ,"-900-UE-Long.yoda","-8-UE.yoda",
-                          "-7-UE-Long.yoda",]
+if(opts.ue) :
+    yodafiles += ["-900-UE.yoda"   ,"-2360-UE.yoda"    ,"-2760-UE.yoda"    ,
+                  "-7-UE.yoda"     ,"-900-UE-Long.yoda","-8-UE.yoda",
+                  "-7-UE-Long.yoda",]
 ## Get histos
 inhistos_pt   = {}
 inhistos_mass = {}
@@ -1107,12 +1101,12 @@ useOnePt("/CMS_2011_S8973270/d05-x01-y01",  "7000", "100" )
 useOnePt("/CMS_2011_S8973270/d06-x01-y01",  "7000", "130" )
 
 logging.info("Processing ATLAS_2012_I1082009")
-useOnePt("/ATLAS_2012_I1082009/d08-x01-y01", "7000", "25" )
-useOnePt("/ATLAS_2012_I1082009/d09-x01-y01", "7000", "25" )
-useOnePt("/ATLAS_2012_I1082009/d10-x01-y01", "7000", "25" )
-useOnePt("/ATLAS_2012_I1082009/d11-x01-y01", "7000", "50" )
-useOnePt("/ATLAS_2012_I1082009/d12-x01-y01", "7000", "50" )
-useOnePt("/ATLAS_2012_I1082009/d13-x01-y01", "7000", "25" )
+useOnePt("/ATLAS_2012_I1082009/d08-x01-y01", "7000", "40" )
+useOnePt("/ATLAS_2012_I1082009/d09-x01-y01", "7000", "40" )
+useOnePt("/ATLAS_2012_I1082009/d10-x01-y01", "7000", "40" )
+useOnePt("/ATLAS_2012_I1082009/d11-x01-y01", "7000", "80" )
+useOnePt("/ATLAS_2012_I1082009/d12-x01-y01", "7000", "80" )
+useOnePt("/ATLAS_2012_I1082009/d13-x01-y01", "7000", "40" )
 
 logging.info("Processing ATLAS_2012_I1118269")
 mergeByPt("/ATLAS_2012_I1118269/d01-x01-y01", "7000")

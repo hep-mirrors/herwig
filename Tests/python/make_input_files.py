@@ -23,6 +23,7 @@ name=args[0]
 collider=""
 # select the template to load
 # collider
+parameters = {}
 if(name.find("BFactory")==0) :
     collider="BFactory"
 elif(name.find("LEP")==0) :
@@ -42,12 +43,28 @@ elif(name.find("SppS")==0) :
 elif(name.find("Star")==0) :
     collider="Star"
 simulation=""
-if(name.find("Matchbox")>0) :
+istart = 1
+print name
+if(name.find("Matchbox-Powheg")>0) :
+    istart = 3
     simulation="Matchbox"
+    parameters["shower"] = "read Matchbox/Powheg-DefaultShower.in\n"
+elif(name.find("Matchbox")>0) :
+    istart = 2
+    simulation="Matchbox"
+    parameters["shower"] = "read Matchbox/MCatNLO-DefaultShower.in\n"
 elif(name.find("Dipole")>0) :
-    simulation="Dipole"
+    istart = 2
+    simulation="Matchbox"
+    parameters["shower"]  = "read Matchbox/MCatNLO-DipoleShower.in\n"
 elif(name.find("Powheg")>0) :
+    istart = 2
     simulation="Powheg"
+
+if(simulation=="Matchbox") :
+    parameters["bscheme"] = "read Matchbox/FiveFlavourScheme.in\n"
+    if(collider.find("DIS")<0) :
+        parameters["nlo"] = "read Matchbox/MadGraph-OpenLoops.in\n"
 
 if(collider=="") :
     logging.error("Can\'t find collider")
@@ -56,6 +73,7 @@ if(collider=="") :
 # find the template
 if(simulation=="") :
     if(collider.find("LHC-GammaGamma") >=0) :
+        istart += 1
         templateName="Hadron-Gamma.in"
     elif(collider.find("TVT")>=0 or collider.find("LHC") >=0 or
        collider.find("ISR")>=0 or collider.find("SppS")>=0 or
@@ -78,11 +96,6 @@ with open(os.path.join("Rivet/Templates",templateName), 'r') as f:
     templateText = f.read()
 template = Template( templateText )
 # work out the name of the parameter file
-if(simulation=="") : 
-    istart = 1
-    if(collider=="LHC-GammaGamma") : istart = 2
-else :
-    istart = 2
 nameSplit=name.split("-")
 parameterName=nameSplit[istart]
 for i in range(istart+1,len(nameSplit)) :
@@ -90,7 +103,6 @@ for i in range(istart+1,len(nameSplit)) :
 
 # work out the process and parameters
 process=""
-bscheme="read Matchbox/FiveFlavourScheme.in"
 # Bfactory
 if(collider=="BFactory") :
     if(simulation=="") :
@@ -101,7 +113,7 @@ if(collider=="BFactory") :
         process = "set /Herwig/MatrixElements/PowhegMEee2gZ2qq:MaximumFlavour 4"
         if(parameterName=="10.58") :
             process += "\ncreate Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so\nset /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)\nset /Herwig/MatrixElements/MEUpsilon:Coupling 0.0004151809\ninsert /Herwig/MatrixElements/SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon"
-    elif(simulation=="Matchbox" or simulation == "Dipole" ) :
+    elif(simulation=="Matchbox" ) :
         process = "do Factory:Process e- e+ -> u ubar\ndo Factory:Process e- e+ -> d dbar\ndo Factory:Process e- e+ -> c cbar\ndo Factory:Process e- e+ -> s sbar"
         if(parameterName=="10.58") :
             process += "\ninsert /Herwig/Generators/EventGenerator:EventHandler:SubProcessHandlers 0 /Herwig/MatrixElements/SimpleEE\ncreate Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so\nset /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)\nset /Herwig/MatrixElements/MEUpsilon:Coupling 0.0004151809\ninsert /Herwig/MatrixElements/SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon\n"
@@ -115,7 +127,7 @@ elif(collider=="DIS") :
             process = ""
     elif(simulation=="Powheg") :
         process = ""
-    elif(simulation=="Matchbox" or simulation == "Dipole" ) :
+    elif(simulation=="Matchbox" ) :
         if(parameterName.find("e-")>=0) :
             process="do Factory:Process e- p -> e- j"
         else :
@@ -130,7 +142,7 @@ elif(collider=="LEP") :
         process=""
         if(parameterName=="10") :
             process="set /Herwig/MatrixElements/PowhegMEee2gZ2qq:MaximumFlavour 4"
-    elif(simulation=="Matchbox" or simulation == "Dipole" ) :
+    elif(simulation=="Matchbox" ) :
         if(parameterName=="10") :
             process="do Factory:Process e- e+ -> u ubar\ndo Factory:Process e- e+ -> d dbar\ndo Factory:Process e- e+ -> c cbar\ndo Factory:Process e- e+ -> s sbar"
         else :
@@ -246,7 +258,7 @@ elif(collider=="TVT") :
             process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
         elif(parameterName.find("Run-II-Z-mu")>=0) :
             process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
-    elif(simulation=="Matchbox" or simulation == "Dipole" ) :
+    elif(simulation=="Matchbox" ) :
         if(parameterName.find("Jets")>=0) :
             process+="set Factory:OrderInAlphaS 2\nset Factory:OrderInAlphaEW 0\n"
             process+="do Factory:Process p p j j\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/MaxJetPtScale\n"
@@ -635,7 +647,7 @@ elif(collider=="LHC") :
             process+="set /Herwig/Cuts/QCDCuts:MHatMin 40.*GeV\nset /Herwig/Cuts/MassCut:MinM 40.*GeV\nset /Herwig/Cuts/MassCut:MaxM 130.*GeV\n"
         elif(parameterName.find("Z-LowMass-mu")>=0) :
             process+="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
-            process+="set /Herwig/Cuts/QCDCuts:MHatMin 20.*GeV\nset /Herwig/Cuts/MassCut:MinM 10.*GeV\nset /Herwig/Cuts/MassCut:MaxM 70.*GeV\n"
+            process+="set /Herwig/Cuts/QCDCuts:MHatMin 10.*GeV\nset /Herwig/Cuts/MassCut:MinM 10.*GeV\nset /Herwig/Cuts/MassCut:MaxM 70.*GeV\n"
         elif(parameterName.find("W-Jet")>=0) :
             process+="insert SimpleQCD:MatrixElements[0] MEWJet\nset MEWJet:WDecay Electron\n"
             if(parameterName.find("W-Jet-1-e")>=0) :
@@ -763,26 +775,47 @@ elif(collider=="LHC") :
             process+="set /Herwig/Cuts/QCDCuts:MHatMin 40.*GeV\nset /Herwig/Cuts/MassCut:MinM 40.*GeV\nset /Herwig/Cuts/MassCut:MaxM 130.*GeV\n"
         elif(parameterName.find("Z-LowMass-mu")>=0) :
             process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
-            process+="set /Herwig/Cuts/QCDCuts:MHatMin 20.*GeV\nset /Herwig/Cuts/MassCut:MinM 10.*GeV\nset /Herwig/Cuts/MassCut:MaxM 70.*GeV\n"
+            process+="set /Herwig/Cuts/QCDCuts:MHatMin 10.*GeV\nset /Herwig/Cuts/MassCut:MinM 10.*GeV\nset /Herwig/Cuts/MassCut:MaxM 70.*GeV\n"
         else :
             logging.error(" Process %s not supported for internal POWHEG matrix elements" % name)
             sys.exit(1)
             
-    elif(simulation=="Matchbox" or simulation == "Dipole" ) :
+    elif(simulation=="Matchbox" ) :
         if(parameterName.find("VBF")>=0) :
             process+="do /Herwig/Particles/h0:SelectDecayModes h0->tau-,tau+;\n"
             process+="set /Herwig/Particles/tau-:Stable Stable\n"
-            process+="insert SimpleQCD:MatrixElements[0] PowhegMEPP2HiggsVBF\n"
+            parameters["nlo"] = "read Matchbox/VBFNLO.in\n"
+            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 3\n"
+            process+="do Factory:Process p p h0 j j\n"
+            process+="set /Herwig/Particles/h0:HardProcessWidth 0.\n"
+            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
+            process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 125.7\n"
         elif(parameterName.find("ggHJet")>=0) :
-            logging.error(" Process %s not supported for POWHEG matrix elements" % name)
-            sys.exit(1)
-        elif(parameterName.find("ggH")>=0) :
+            parameters["nlo"] = "read Matchbox/MadGraph-GoSam.in\nread Matchbox/HiggsEffective.in\n"
             process+="do /Herwig/Particles/h0:SelectDecayModes h0->tau-,tau+;\n"
             process+="set /Herwig/Particles/tau-:Stable Stable\n"
-            process+="insert SimpleQCD:MatrixElements[0] PowhegMEHiggs\n"
+            process+="set Factory:OrderInAlphaS 3\nset Factory:OrderInAlphaEW 1\n"
+            process+="set /Herwig/Particles/h0:HardProcessWidth 0.\n"
+            process+="do Factory:Process p p h0 j\n"
+            process+="set /Herwig/Cuts/Cuts:JetFinder /Herwig/Cuts/JetFinder\n"
+            process+="insert /Herwig/Cuts/Cuts:MultiCuts 0 /Herwig/Cuts/JetCuts\n"
+            process+="insert /Herwig/Cuts/JetCuts:JetRegions 0 /Herwig/Cuts/FirstJet\n"
+            process+="set /Herwig/Cuts/FirstJet:PtMin 20.\n"
+            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
+            process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 125.7\n"
+        elif(parameterName.find("ggH")>=0) :
+            parameters["nlo"] = "read Matchbox/MadGraph-GoSam.in\nread Matchbox/HiggsEffective.in\n"
+            process+="do /Herwig/Particles/h0:SelectDecayModes h0->tau-,tau+;\n"
+            process+="set /Herwig/Particles/tau-:Stable Stable\n"
+            process+="set Factory:OrderInAlphaS 2\nset Factory:OrderInAlphaEW 1\n"
+            process+="set /Herwig/Particles/h0:HardProcessWidth 0.\n"
+            process+="do Factory:Process p p h0\n"
+            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
+            process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 125.7\n"
         elif(parameterName.find("WH")>=0) :
             process+="do /Herwig/Particles/h0:SelectDecayModes h0->b,bbar;\n"
             process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 3\n"
+            process+="set /Herwig/Particles/h0:HardProcessWidth 0.\n"
             process+="do Factory:Process p p e+ nu h0\n"
             process+="do Factory:Process p p e- nu h0\n"
             process+="do Factory:Process p p mu+ nu h0\n"
@@ -791,6 +824,7 @@ elif(collider=="LHC") :
         elif(parameterName.find("ZH")>=0) :
             process+="do /Herwig/Particles/h0:SelectDecayModes h0->b,bbar;\n"
             process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 3\n"
+            process+="set /Herwig/Particles/h0:HardProcessWidth 0.\n"
             process+="do Factory:Process p p e+ e- h0\n"
             process+="do Factory:Process p p mu+ mu- h0\n"
             process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
@@ -1025,7 +1059,7 @@ elif(collider=="LHC") :
             process+="set /Herwig/Cuts/ChargedLeptonPairMassCut:MinMass 40*GeV\nset /Herwig/Cuts/ChargedLeptonPairMassCut:MaxMass 130*GeV\n"
         elif(parameterName.find("Z-LowMass-mu")>=0) :
             process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p mu+ mu-\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
-            process+="set /Herwig/Cuts/ChargedLeptonPairMassCut:MinMass 20*GeV\nset /Herwig/Cuts/ChargedLeptonPairMassCut:MaxMass 70*GeV\n"
+            process+="set /Herwig/Cuts/ChargedLeptonPairMassCut:MinMass 10*GeV\nset /Herwig/Cuts/ChargedLeptonPairMassCut:MaxMass 70*GeV\n"
         elif(parameterName.find("W-Jet")>=0) :
             process+="set Factory:OrderInAlphaS 1\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ nu j\ndo Factory:Process p p e- nu j\n\n"
             process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/HTScale\n"
@@ -1057,7 +1091,7 @@ elif(collider=="LHC") :
                 process+="set /Herwig/Cuts/FirstJet:PtMin 270.0*GeV\n"
                 parameterName=parameterName.replace("Z-Jet-3-e","Z-Jet-e")
         elif(parameterName.find("Z-bb")>=0) :
-            bscheme="read Matchbox/FourFlavourScheme.in"
+            parameters["bscheme"]="read Matchbox/FourFlavourScheme.in"
             process+="set /Herwig/Particles/b:HardProcessMass 4.2*GeV\nset /Herwig/Particles/bbar:HardProcessMass 4.2*GeV\n"
             process+="set Factory:OrderInAlphaS 2\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ e- b bbar\n"
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 91.2*GeV\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
@@ -1078,7 +1112,7 @@ elif(collider=="LHC") :
             process+="insert  /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/FirstJet\n"
             process+="set  /Herwig/Cuts/FirstJet:PtMin 15.*GeV\n"
         elif(parameterName.find("W-b")>=0) :
-            bscheme="read Matchbox/FourFlavourScheme.in"
+            parameters["bscheme"]="read Matchbox/FourFlavourScheme.in"
             process += "set /Herwig/Particles/b:HardProcessMass 4.2*GeV\nset /Herwig/Particles/bbar:HardProcessMass 4.2*GeV\n"
             process += "set Factory:OrderInAlphaS 2\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ nu b bbar\ndo Factory:Process p p e- nu b bbar\n"
             process += "set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 80.4*GeV\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
@@ -1108,18 +1142,18 @@ elif(collider=="LHC-GammaGamma" ) :
         logging.error("LHC-GammaGamma not supported for %s " % simulation)
         sys.exit(1)
 
+
+parameters['parameterFile'] = os.path.join(collider,collider+"-"+parameterName+".in")
+parameters['runname'] = name
+parameters['process'] = process
+
 # write the file
-if(simulation=="Matchbox" or simulation =="Dipole") :
+if(simulation=="Matchbox" ) :
     with open(os.path.join("Rivet",name+".in") ,'w') as f:
-        f.write( template.substitute({ 'process' : process,
-                                       'runname' : name,
-                                       'bscheme' : bscheme,
-                                       'parameterFile' : os.path.join(collider,collider+"-"+parameterName+".in") }))
+        f.write( template.substitute(parameters))
 else :
     with open(os.path.join("Rivet",name+".in") ,'w') as f:
-        f.write( template.substitute({ 'process' : process,
-                                       'runname' : name,
-                                       'parameterFile' : os.path.join(collider,collider+"-"+parameterName+".in") }))
+        f.write( template.substitute(parameters))
 
 
 

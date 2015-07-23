@@ -23,7 +23,7 @@ cd /Herwig/MatrixElements/Matchbox
 set Factory:OrderInAlphaS 0
 set Factory:OrderInAlphaEW 2
 set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonQ2Scale
-read Matchbox/MCatNLO-DefaultShower.in
+${shower}
 read Matchbox/FiveFlavourScheme.in
 ## required for dipole shower in five flavour scheme
 # read Matchbox/FiveFlavourNoBMassScheme.in

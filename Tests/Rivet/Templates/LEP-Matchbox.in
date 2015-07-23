@@ -12,7 +12,7 @@ set Factory:OrderInAlphaEW 2
 ##################################################
 ## Matrix element library selection
 ##################################################
-read Matchbox/MadGraph-OpenLoops.in
+${nlo}
 ##################################################
 ## Scale choice
 ## See the documentation for more options
@@ -22,7 +22,7 @@ set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/SHatScale
 ##################################################
 ## Matching and shower selection
 ##################################################
-read Matchbox/MCatNLO-DefaultShower.in
+${shower}
 ##################################################
 #  Switch off ISR
 ##################################################
