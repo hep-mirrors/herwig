@@ -6,13 +6,13 @@ read Matchbox/PPCollider.in
 ##################################################
 ## Matrix element library selection
 ##################################################
-read Matchbox/MadGraph-OpenLoops.in
+${nlo}
 ##################################################
 ## Matching and shower selection
 ## Please also see flavour scheme settings
 ## towards the end of the input file.
 ##################################################
-read Matchbox/MCatNLO-DefaultShower.in
+${shower}
 ##################################################
 ## PDF choice
 ##################################################
