@@ -26,7 +26,12 @@ CLEANFILES=
 include $(srcdir)/Makefile.am.versionstring
 
 check_PROGRAMS = utilities_test
-utilities_test_SOURCES = tests/utilitiesTests.cc 
+utilities_test_SOURCES = \
+tests/utilitiesTestsMain.cc \
+tests/utilitiesTestsGlobalFixture.h \
+tests/utilitiesTestsKinematics.h \
+tests/utilitiesTestsMaths.h \
+tests/utilitiesTestsStatistic.h
 utilities_test_LDADD = $(BOOST_UNIT_TEST_FRAMEWORK_LIBS) $(BOOST_FILESYSTEM_LIBS) $(BOOST_SYSTEM_LIBS) $(THEPEGLIB) -ldl libHwUtils.la
 utilities_test_LDFLAGS = $(AM_LDFLAGS) -export-dynamic $(BOOST_UNIT_TEST_FRAMEWORK_LDFLAGS) $(BOOST_SYSTEM_LDFLAGS) $(BOOST_FILESYSTEM_LDFLAGS) $(THEPEGLDFLAGS)
 utilities_test_CPPFLAGS = $(AM_CPPFLAGS) $(BOOST_CPPFLAGS) -DHERWIG_PKGDATADIR="\"$(pkgdatadir)\"" -DHERWIG_PKGLIBDIR="\"$(pkglibdir)\"" -DTHEPEG_PKGLIBDIR="\"$(THEPEGLIBPATH)\""
