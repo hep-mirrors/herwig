@@ -713,10 +713,10 @@ void GeneralSampler::readGrids() {
       didReadGrids = true;
     }
     else {
-      // Check if integrationJob was splitted and try to merge single integrationJobs together
+      // Check if integrationJob was split and try to merge single integrationJobs together
       if(integrationJobsCreated() > 1 && runLevel() == RunMode) {
 	BaseRepository::cout() << "\n\nGlobal HerwigGrids.xml file does not exist yet"
-				<< "\nand integration jobs were splitted into " << integrationJobsCreated() << " integration jobs."
+				<< "\nand integration jobs were split into " << integrationJobsCreated() << " integration jobs."
 				<< "\nTrying to combine single integration jobs to a global HerwigGrids.xml file." << flush;
 
 
