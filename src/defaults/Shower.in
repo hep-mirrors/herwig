@@ -96,7 +96,6 @@ newdef AlphaQCD:Qmin 0.935
 newdef AlphaQCD:NumberOfLoops 2
 newdef AlphaQCD:InputOption 1
 newdef AlphaQCD:AlphaMZ 0.132
-newdef set /Herwig/MatrixElements/Matchbox/AlphaS/MatchboxNLOAlphaS:input_alpha_s .132
 #
 #
 # Lets set up all the splittings
