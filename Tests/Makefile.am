@@ -214,8 +214,7 @@ Rivet-LEP: $(shell echo Rivet-LEP{,-Powheg,-Matchbox,-Dipole}-{10,14,22,35,44,91
 	rivet-mkhtml -o Rivet-LEP LEP.yoda:Hw++ LEP-Powheg.yoda:Hw++-Powheg LEP-Matchbox.yoda:Hw++-Matchbox LEP-Dipole.yoda:Hw++-Dipole
 
 Rivet-BFactory: $(shell echo Rivet-BFactory{,-Powheg,-Matchbox,-Dipole}-{10.52,10.52-sym,10.54,10.45,10.58}) \
-                Rivet-BFactory-Upsilon Rivet-BFactory-Upsilon2 Rivet-BFactory-Upsilon4 \
-                Rivet-BFactory-Tau
+                $(shell echo Rivet-BFactory-{Upsilon,Upsilon2,Upsilon4,Tau})
 	rm -rf Rivet-BFactory
 	python/merge-BFactory BFactory
 	python/merge-BFactory BFactory-Powheg
@@ -232,7 +231,7 @@ Rivet-DIS: $(shell echo Rivet-DIS{,-NoME,-Powheg,-Matchbox,-Dipole}-{e--LowQ2,e+
 	python/merge-DIS DIS-Dipole
 	rivet-mkhtml -o Rivet-DIS DIS.yoda:Hw++ DIS-Powheg.yoda:Hw++-Powheg DIS-NoME.yoda:Hw++-NoME DIS-Matchbox.yoda:Hw++-Matchbox DIS-Dipole.yoda:Hw++-Dipole
 
-Rivet-TVT-WZ:  $(shell echo Rivet-TVT{-Powheg,-Matchbox,-Dipole}-{Run-I-Z,Run-I-W,Run-I-WZ,Run-II-Z-e,Run-II-Z-mu,Run-II-W})
+Rivet-TVT-WZ:  $(shell echo Rivet-TVT{,-Powheg,-Matchbox,-Dipole}-{Run-I-Z,Run-I-W,Run-I-WZ,Run-II-Z-e,Run-II-Z-mu,Run-II-W})
 	rm -rf Rivet-TVT-WZ
 	python/merge-TVT-EW TVT-Run-II-W.yoda TVT-Run-II-Z-{e,mu}.yoda\
                             TVT-Run-I-{W,Z,WZ}.yoda -o TVT-WZ.yoda
@@ -244,7 +243,7 @@ Rivet-TVT-WZ:  $(shell echo Rivet-TVT{-Powheg,-Matchbox,-Dipole}-{Run-I-Z,Run-I-
                             TVT-Dipole-Run-I-{W,Z,WZ}.yoda -o TVT-Dipole-WZ.yoda
 	rivet-mkhtml -o Rivet-TVT-WZ TVT-WZ.yoda:Hw++ TVT-Powheg-WZ.yoda:Hw++-Powheg TVT-Matchbox-WZ.yoda:Hw++-Matchbox TVT-Dipole-WZ.yoda:Hw++-Dipole
 
-Rivet-TVT-Photon: Rivet-TVT-Run-II-DiPhoton Rivet-TVT-Run-II-PromptPhoton
+Rivet-TVT-Photon: $(shell echo Rivet-TVT-Run-II-{DiPhoton,PromptPhoton})
 #                  Rivet-TVT-Run-I-PromptPhoton 
 	rm -rf Rivet-TVT-Photon 
 	yodamerge TVT-Run-II-DiPhoton.yoda TVT-Run-II-PromptPhoton.yoda\
