@@ -725,9 +725,10 @@ void GeneralSampler::readGrids() {
 	bool integrationJobCombinationSuccessful = true;
 			    
 	for(unsigned int currentProcessedIntegrationJobNum = 0; currentProcessedIntegrationJobNum < integrationJobsCreated(); ++currentProcessedIntegrationJobNum) {
-	  string currentProcessedIntegrationJob = directoryName + string("integrationJob") + static_cast<ostringstream*>( &(ostringstream() << currentProcessedIntegrationJobNum))->str() + string("/HerwigGrids.xml");
-	  if(boost::filesystem::exists(boost::filesystem::path(currentProcessedIntegrationJob))) {
-	    ifstream localGridFileIN(currentProcessedIntegrationJob.c_str());
+    ostringstream currentProcessedIntegrationJob;
+	  currentProcessedIntegrationJob << directoryName << "integrationJob" << currentProcessedIntegrationJobNum << "/HerwigGrids.xml";
+	  if(boost::filesystem::exists(boost::filesystem::path(currentProcessedIntegrationJob.str()))) {
+	    ifstream localGridFileIN(currentProcessedIntegrationJob.str().c_str());
 	    if(localGridFileIN) {
 	      theGrids = theGrids + XML::ElementIO::get(localGridFileIN);
 	      BaseRepository::cout()  << "\nAdded integration job " << currentProcessedIntegrationJobNum << " to global HerwigGrids.xml file.";
@@ -739,7 +740,7 @@ void GeneralSampler::readGrids() {
 	  }  
 	  else {
 	    integrationJobCombinationSuccessful = false;
-	    BaseRepository::cout() << "\n Could not find integration job " << currentProcessedIntegrationJob;
+	    BaseRepository::cout() << "\n Could not find integration job " << currentProcessedIntegrationJob.str();
 	  }
 	}
 	
