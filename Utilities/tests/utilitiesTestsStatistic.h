@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// utilitiesTestStatistic.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// utilitiesTestStatistic.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration, 2015 Marco A. Harrendorf
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.

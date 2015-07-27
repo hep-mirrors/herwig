@@ -10,6 +10,7 @@
 
 #include "ThePEG/Repository/StandardRandom.h"
 #include "ThePEG/Repository/UseRandom.h"
+#include "ThePEG/Config/Unitsystem.h"
 
 #include <iostream>
 
