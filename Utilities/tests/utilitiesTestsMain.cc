@@ -27,6 +27,7 @@
  */
 #include "Herwig++/Utilities/tests/utilitiesTestsKinematics.h"
 #include "Herwig++/Utilities/tests/utilitiesTestMaths.h"
+#include "Herwig++/Utilities/tests/utilitiesTestSmearing.h"
 #include "Herwig++/Utilities/tests/utilitiesTestsStatistic.h"
 
 
