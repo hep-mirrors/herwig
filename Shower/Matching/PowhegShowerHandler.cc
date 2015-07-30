@@ -342,25 +342,23 @@ PotentialTree PowhegShowerHandler::doClustering(tSubProPtr real) const {
       CKKWTreePtr check = testTree.tree();
       // get id and momenta of particles in hard tree
       for (set< HardBranchingPtr >::iterator it=check->branchings().begin();
-	   it!=check->branchings().end(); ++it){
+	   it!=check->branchings().end(); ++it) {
 	particles.push_back(make_pair((*it)->branchingParticle()->id(),
 				      (*it)->branchingParticle()->momentum()));
 	if (!(*it)->children().empty()){
 	  for (unsigned int ic=0; ic<(*it)->children().size(); ++ic)
-	    particles.push_back(make_pair((*it)->branchingParticle()->children()[ic]->id(),
-					  (*it)->branchingParticle()->
-					  children()[ic]->momentum()));
+	    particles.push_back(make_pair((*it)->children()[ic]->branchingParticle()->id(),
+					  (*it)->children()[ic]->branchingParticle()->momentum()));
 	}	  	
 	if ((*it)->parent()){
 	  particles.push_back(make_pair((*it)->parent()->branchingParticle()->id(),
 					(*it)->parent()->branchingParticle()->momentum()));
-	  if (!(*it)->parent()->branchingParticle()->children().empty()){
-	    for (unsigned int ic=0; 
-		 ic<(*it)->parent()->branchingParticle()->children().size(); ++ic)
-	      particles.push_back(make_pair((*it)->parent()->branchingParticle()->
-					    children()[ic]->id(),
-					    (*it)->parent()->branchingParticle()->
-					    children()[ic]->momentum()));
+	  if (!(*it)->parent()->children().empty()) {
+	    for (unsigned int ic=0; ic<(*it)->parent()->children().size(); ++ic) {
+	      if(*it==(*it)->parent()->children()[ic]) continue;
+	      particles.push_back(make_pair((*it)->parent()->children()[ic]->branchingParticle()->id(),
+					    (*it)->parent()->children()[ic]->branchingParticle()->momentum()));
+	    }
 	  }	    
 	} 
       }
@@ -589,7 +587,7 @@ tProtoBranchingPtr PowhegShowerHandler::getCluster( tProtoBranchingPtr b1,
   ProtoBranchingPtr clusteredBranch;
 
   // outgoing
-  if( !incoming ){
+  if( !incoming ) {
     Lorentz5Momentum pairMomentum = b1->momentum() + b2->momentum(); 
     pairMomentum.setMass(ZERO);
     clusteredBranch = new_ptr(ProtoBranching(particle_data,HardBranching::Outgoing,
@@ -650,9 +648,11 @@ tProtoBranchingPtr PowhegShowerHandler::getCluster( tProtoBranchingPtr b1,
 	}
 	else
 	  return ProtoBranchingPtr();
-      } 
+      }
       else
 	assert(false);
+      clusteredBranch->    colourLine(    coloured->    colourLine());
+      clusteredBranch->antiColourLine(antiColoured->antiColourLine());
       // softest particle is the emitted
       if(coloured->momentum().t()>antiColoured->momentum().t()) {
 	clusteredBranch->type(ShowerPartnerType::QCDAntiColourLine);
@@ -681,6 +681,8 @@ tProtoBranchingPtr PowhegShowerHandler::getCluster( tProtoBranchingPtr b1,
       b1->type(ShowerPartnerType::QCDColourLine);
       if(b2->particle()->iColour()==PDT::Colour3 &&
 	 particle_data->iColour()==PDT::Colour8) {
+	if(b1->colourLine()==b2->colourLine())
+	  return ProtoBranchingPtr();
 	clusteredBranch->    colourLine(b1->colourLine());
 	clusteredBranch->antiColourLine(b2->colourLine());
       }
@@ -697,6 +699,8 @@ tProtoBranchingPtr PowhegShowerHandler::getCluster( tProtoBranchingPtr b1,
       b1->type(ShowerPartnerType::QCDAntiColourLine);
       if(b2->particle()->iColour()==PDT::Colour3bar &&
 	 particle_data->iColour()==PDT::Colour8) {
+	if(b1->antiColourLine()==b2->antiColourLine())
+	  return ProtoBranchingPtr();
 	clusteredBranch->    colourLine(b2->antiColourLine());
 	clusteredBranch->antiColourLine(b1->antiColourLine());
       }
