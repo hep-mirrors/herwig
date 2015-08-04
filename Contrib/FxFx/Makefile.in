@@ -14,7 +14,7 @@ RIVETINCLUDE = -I$(shell rivet-config --includedir --cppflags)
 HEPMCINCLUDE = 
 # Messy hack, not guaranteed to work:
 FASTJETLIB = `echo $(FASTJETINCLUDE) | sed "s/-I//" | sed "s/ //"`/../lib/
-LDFLAGS = -L$(FASTJETLIB) -lfastjet
+LDFLAGS = -L$(FASTJETLIB) -lfastjet $(shell rivet-config --ldflags --libs)
 SHARED_FLAG = 
 INCLUDE = $(THEPEGINCLUDE) $(HERWIGINCLUDE) $(GSLINCLUDE) $(FASTJETINCLUDE) $(RIVETINCLUDE) $(HEPMCINCLUDE)
 # C++ flags
@@ -45,4 +45,4 @@ FxFxAnalysis.so : FxFxAnalysis.o
 
 clean:
 	rm -f $(ALLCCFILES:.cc=.o) \
-	FxFx.so FxFxHandler.so 
+	FxFx.so FxFxHandler.so FxFxAnalysis.so 
