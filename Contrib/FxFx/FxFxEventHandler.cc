@@ -53,11 +53,11 @@ void FxFxEventHandler::doinit() {
   
   for ( int i = 0, N = readers().size(); i < N; ++i ) {
     readers()[i]->init();
-    FxFxReader & reader = *readers()[i];
-    reader.initialize(*this);
-    weightnames = reader.optWeightsNamesFunc();
+    //FxFxReader & reader = *readers()[i];
+    //reader.initialize(*this);
+    //weightnames = reader.optWeightsNamesFunc();
   }
-
+  /*
   XSecStat* initxsecs = new XSecStat[weightnames.size()];
 
   for(int ww = 0; ww < weightnames.size(); ww++){
@@ -66,7 +66,7 @@ void FxFxEventHandler::doinit() {
     opthistStats.insert(std::make_pair<string,XSecStat>(weightnames[ww], initxsecs[ww]));
     CrossSection initxs = 0.*picobarn;
     optxs.insert(std::make_pair<string,CrossSection>(weightnames[ww], initxs));
-  }
+    }*/
   ntries = 0;
  
 }
