@@ -14,6 +14,7 @@ $(top_builddir)/Models/General/libHwModelGenerator.la \
 $(top_builddir)/Decay/General/libHwGeneralDecay.la \
 $(top_builddir)/MatrixElement/General/libHwGeneralME.la \
 $(top_builddir)/MatrixElement/libHwME.la \
+$(top_builddir)/MatrixElement/Reweighters/libHwReweighters.la \
 $(top_builddir)/MatrixElement/Matchbox/libHwMatchbox.la \
 $(top_builddir)/Decay/WeakCurrents/libHwWeakCurrent.la \
 $(top_builddir)/Looptools/libHwLooptools.la \
