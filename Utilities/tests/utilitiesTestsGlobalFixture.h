@@ -12,8 +12,6 @@
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Config/Unitsystem.h"
 
-#include <iostream>
-
 struct FixGlobal1 {
   FixGlobal1() {
     BOOST_TEST_MESSAGE( "setup global fixture for utilitiesTest" ); 

@@ -117,7 +117,7 @@ private:
   /** Compute the positions of the new hadrons based on the clusters position.
    *
    *  This method calculates the positions of the children hadrons by a
-   *  call to Herwig::Smearing::gaussianSmearing with width inversely 
+   *  call to ThePEG::RandomGenerator::rndGaussTwoNumbers with width inversely 
    *  proportional to the cluster mass, around the parent cluster position.
    */
   void calculatePositions( const Lorentz5Momentum &, const LorentzPoint &, 
