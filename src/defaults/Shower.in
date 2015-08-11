@@ -93,9 +93,9 @@ newdef Evolver:ReconstructionOption OffShell
 newdef AlphaQCD:ScaleFactor 1.0
 newdef AlphaQCD:NPAlphaS 2
 newdef AlphaQCD:Qmin 0.935
-newdef AlphaQCD:NumberOfLoops 3
+newdef AlphaQCD:NumberOfLoops 2
 newdef AlphaQCD:InputOption 1
-newdef AlphaQCD:AlphaMZ 0.131
+newdef AlphaQCD:AlphaMZ 0.132
 #
 #
 # Lets set up all the splittings
@@ -141,7 +141,7 @@ newdef SudakovCommon:Alpha AlphaQCD
 newdef SudakovCommon:cutoffKinScale 0.0*GeV
 newdef SudakovCommon:PDFmax 1.0
 newdef SudakovCommon:CutOffOption pT
-newdef SudakovCommon:pTmin 1.37*GeV
+newdef SudakovCommon:pTmin 1.45*GeV
 
 cp SudakovCommon QtoQGSudakov
 newdef QtoQGSudakov:SplittingFunction QtoQGSplitFn

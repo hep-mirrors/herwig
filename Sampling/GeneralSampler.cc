@@ -713,10 +713,10 @@ void GeneralSampler::readGrids() {
       didReadGrids = true;
     }
     else {
-      // Check if integrationJob was splitted and try to merge single integrationJobs together
+      // Check if integrationJob was split and try to merge single integrationJobs together
       if(integrationJobsCreated() > 1 && runLevel() == RunMode) {
 	BaseRepository::cout() << "\n\nGlobal HerwigGrids.xml file does not exist yet"
-				<< "\nand integration jobs were splitted into " << integrationJobsCreated() << " integration jobs."
+				<< "\nand integration jobs were split into " << integrationJobsCreated() << " integration jobs."
 				<< "\nTrying to combine single integration jobs to a global HerwigGrids.xml file." << flush;
 
 
@@ -725,9 +725,10 @@ void GeneralSampler::readGrids() {
 	bool integrationJobCombinationSuccessful = true;
 			    
 	for(unsigned int currentProcessedIntegrationJobNum = 0; currentProcessedIntegrationJobNum < integrationJobsCreated(); ++currentProcessedIntegrationJobNum) {
-	  string currentProcessedIntegrationJob = directoryName + string("integrationJob") + static_cast<ostringstream*>( &(ostringstream() << currentProcessedIntegrationJobNum))->str() + string("/HerwigGrids.xml");
-	  if(boost::filesystem::exists(boost::filesystem::path(currentProcessedIntegrationJob))) {
-	    ifstream localGridFileIN(currentProcessedIntegrationJob.c_str());
+    ostringstream currentProcessedIntegrationJob;
+	  currentProcessedIntegrationJob << directoryName << "integrationJob" << currentProcessedIntegrationJobNum << "/HerwigGrids.xml";
+	  if(boost::filesystem::exists(boost::filesystem::path(currentProcessedIntegrationJob.str()))) {
+	    ifstream localGridFileIN(currentProcessedIntegrationJob.str().c_str());
 	    if(localGridFileIN) {
 	      theGrids = theGrids + XML::ElementIO::get(localGridFileIN);
 	      BaseRepository::cout()  << "\nAdded integration job " << currentProcessedIntegrationJobNum << " to global HerwigGrids.xml file.";
@@ -739,7 +740,7 @@ void GeneralSampler::readGrids() {
 	  }  
 	  else {
 	    integrationJobCombinationSuccessful = false;
-	    BaseRepository::cout() << "\n Could not find integration job " << currentProcessedIntegrationJob;
+	    BaseRepository::cout() << "\n Could not find integration job " << currentProcessedIntegrationJob.str();
 	  }
 	}
 	

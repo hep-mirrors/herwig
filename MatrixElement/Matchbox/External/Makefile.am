@@ -1,16 +1,8 @@
 SUBDIRS = \
 BLHAGeneric
 
-if HAVE_NLOJET
-SUBDIRS += NLOJet
-endif
-
 if HAVE_VBFNLO
 SUBDIRS += VBFNLO
-endif
-
-if HAVE_HEJ
-SUBDIRS += HEJ
 endif
 
 if HAVE_NJET

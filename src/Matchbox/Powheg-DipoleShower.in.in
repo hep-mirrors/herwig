@@ -1,6 +1,7 @@
 # -*- ThePEG-repository -*-
 
 read Matchbox/Powheg.in
+set /Herwig/MatrixElements/Matchbox/MEMatching:TruncatedShower No
 
 cd /Herwig/EventHandlers
 

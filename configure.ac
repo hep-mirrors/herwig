@@ -118,8 +118,6 @@ BOOST_TEST()
 
 HERWIG_CHECK_VBFNLO
 
-HERWIG_CHECK_NLOJET
-
 HERWIG_CHECK_NJET
 
 HERWIG_CHECK_GOSAM
@@ -127,8 +125,6 @@ HERWIG_CHECK_GOSAM
 HERWIG_CHECK_GOSAM_CONTRIB
 
 HERWIG_CHECK_OPENLOOPS
-
-HERWIG_CHECK_HEJ
 
 HERWIG_CHECK_MADGRAPH
 
@@ -198,6 +194,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/DIS/Makefile
                 MatrixElement/Powheg/Makefile
                 MatrixElement/Gamma/Makefile
+                MatrixElement/Reweighters/Makefile
                 MatrixElement/Matchbox/Makefile
                 MatrixElement/Matchbox/Base/Makefile
                 MatrixElement/Matchbox/Utility/Makefile
@@ -215,11 +212,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/Matchbox/Tests/Makefile
                 MatrixElement/Matchbox/External/Makefile
                 MatrixElement/Matchbox/External/BLHAGeneric/Makefile
-                MatrixElement/Matchbox/External/NLOJet/Makefile
-                MatrixElement/Matchbox/External/NLOJet/Amplitudes/Makefile
-                MatrixElement/Matchbox/External/NLOJet/PP2Jets/Makefile
                 MatrixElement/Matchbox/External/VBFNLO/Makefile
-                MatrixElement/Matchbox/External/HEJ/Makefile
                 MatrixElement/Matchbox/External/NJet/Makefile
 		MatrixElement/Matchbox/External/GoSam/Makefile
                 MatrixElement/Matchbox/External/OpenLoops/Makefile

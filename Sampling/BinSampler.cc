@@ -266,7 +266,7 @@ void BinSampler::readIntegrationData() {
       << "* When using the build setup make sure the integrate command has been run.\n\n"
       << "* Check the [EventGenerator].log file for further information.\n\n"
       << "* Make sure that the Herwig folder can be found and that it contains a HerwigGrids.xml file.\n\n"
-      << "* If you have splitted the integration jobs, make sure that each integration job was finished.\n"
+      << "* If you have split the integration jobs, make sure that each integration job was finished.\n"
       << "  Afterwards delete the global HerwigGrids.xml file in the Herwig subfolder\n"
       << "  to automatically create an updated version of the global HerwigGrids.xml file.\n\n"
       << "--------------------------------------------------------------------------------\n"
