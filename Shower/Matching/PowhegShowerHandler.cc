@@ -64,7 +64,7 @@ IBPtr PowhegShowerHandler::fullclone() const {
   return new_ptr(*this);
 }
 
-HardTreePtr PowhegShowerHandler::generateCKKW(ShowerTreePtr) const {
+HardTreePtr PowhegShowerHandler::generateCKKW(ShowerTreePtr showerTree) const {
   // hard subprocess
   tSubProPtr sub = lastXCombPtr()->subProcess();
   // real emission sub-process
@@ -105,6 +105,65 @@ HardTreePtr PowhegShowerHandler::generateCKKW(ShowerTreePtr) const {
   // zero to avoid MPI problems
   Factory()->setHardTreeEmitter(-1);
   Factory()->setHardTreeSubprocess(SubProPtr());
+  // now sort out any decays
+  if(showerTree->outgoingLines().size()+showerTree->incomingLines().size()
+     != hardtree->branchings().size()) {
+    if(showerTree->treelinks().empty()) {
+      throw Exception() << "PowhegShowerHandler::generateCKKW(). Size of shower and hard trees"
+			<< " doesn't match and no decays involved."
+			<< Exception::eventerror;
+    }
+    // loop over the decay trees
+    for(map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> >::const_iterator
+	  tit=showerTree->treelinks().begin(); tit != showerTree->treelinks().end(); ++tit) {
+      set<HardBranchingPtr> decayProducts;
+      set<HardBranchingPtr> branchings = hardtree->branchings();
+      // match the particles
+      for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator oit=tit->first->outgoingLines().begin();
+	  oit!=tit->first->outgoingLines().end();++oit) {
+	HardBranchingPtr decayProd;
+	Energy2 dmin( 1e30*GeV2 );
+	tPPtr part = oit->second->original();
+	for( set< HardBranchingPtr >::iterator it = branchings.begin(); it != branchings.end(); ++it ) {
+	  if((**it).status()==HardBranching::Incoming    ) continue;
+	  if((**it).branchingParticle()->id()!=part->id()) continue;
+	  Energy2 dtest =
+	    sqr( part->momentum().x() - (**it).branchingParticle()->momentum().x() ) +
+	    sqr( part->momentum().y() - (**it).branchingParticle()->momentum().y() ) +
+	    sqr( part->momentum().z() - (**it).branchingParticle()->momentum().z() ) +
+	    sqr( part->momentum().t() - (**it).branchingParticle()->momentum().t() );
+	  dtest += 1e10*sqr(part->momentum().m()-(**it).branchingParticle()->momentum().m());
+	  if( dtest < dmin ) {
+	    decayProd = *it;
+	    dmin = dtest;
+	  }
+	}
+	if(!decayProd) {
+	  throw Exception() << "PowhegShowerHandler::generateCKKW(). Can't match shower and hard trees."
+			    << Exception::eventerror;
+	}
+	branchings   .erase (decayProd);
+	decayProducts.insert(decayProd);
+      }
+      // erase the decay products
+      Lorentz5Momentum pnew,pshower;
+      for(set<HardBranchingPtr>::iterator it = decayProducts.begin(); it!=decayProducts.end(); ++it) {
+	hardtree->branchings().erase(*it);
+	pnew    += (**it).branchingParticle()->momentum();
+	pshower += (**it).showerMomentum();
+      }
+      pnew   .rescaleMass();
+      pshower.rescaleMass();
+      // create the decaying particle
+      ShowerParticlePtr particle = new_ptr( ShowerParticle( tit->second.second->dataPtr() , true ) );
+      particle->set5Momentum( pnew );
+      HardBranchingPtr newBranch = new_ptr( HardBranching( particle, tSudakovPtr(),
+							   HardBranchingPtr(),
+							   HardBranching::Outgoing ) );
+      newBranch->showerMomentum(pshower);
+      hardtree->branchings().insert(newBranch);
+    }
+  }
   return hardtree;
 }
 
