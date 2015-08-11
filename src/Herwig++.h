@@ -113,22 +113,56 @@ struct HerwigRunMode {
  * Helper class to simplify read in and handling of command line parameters
  * 
  * Class is not needed if one links directly to the different Herwig++ run mode functions.
+ * Class is defined as a singleton, so that setSearchPaths function can later be used in HerwigGenericRead function.
  */
 class HelperReadInCommandLineParameters {
   private:
     /// Make default constructor private since argc and argv must be provided
     HelperReadInCommandLineParameters() {}
     
-  public:
-    /// Constructor
+    /// Constructor is used but private since class should be a singleton.
     HelperReadInCommandLineParameters(int argc, char * argv[]);
+    
+    /// Forbid further instance creation by forbidding copy constructor
+    HelperReadInCommandLineParameters( const HelperReadInCommandLineParameters& );
+    
+    /// Forbid further instance creation by copying instance
+    HelperReadInCommandLineParameters& operator = (const HelperReadInCommandLineParameters &);
+    
+  public:
+    
     ~HelperReadInCommandLineParameters() {cmdline_parser_free( &m_args_info );}
+    
+    /// Generates / returns singleton of this class
+    static HelperReadInCommandLineParameters* instance(int argc, char * argv[])
+    {
+      if (!_instance)
+	_instance = new HelperReadInCommandLineParameters(argc, argv);
+      return _instance;
+    }
+    
+    /*
+     * Returns singleton after singleton was already created
+     * 
+     * Function is needed for use in HerwigRead to get a pre-initialized singleton instance
+     */
+    static HelperReadInCommandLineParameters* instance()
+    {
+      if (_instance && _instance->getReadInWasSuccessful()) {
+	return _instance;
+      } else {
+	std::cerr << "Read in of command line parameters was not finished yet.";
+	return NULL;
+      }
+    }
   
-  private:
     /// Searches path of Herwig++ repo
     void setSearchPaths();
     
   private:
+    /// static class object to make class a singleton, is initialized to null outside of class (see below)
+    static HelperReadInCommandLineParameters* _instance;
+    
     ///Gengetopt member variable which contains command line options
     gengetopt_args_info m_args_info;
        
@@ -182,6 +216,8 @@ class HelperReadInCommandLineParameters {
     unsigned int getJobSize() {return m_jobsize;}
     unsigned int getMaxJobs() {return m_maxjobs;} 
 };
+/// Initialize static singleton class object to Null
+HelperReadInCommandLineParameters* HelperReadInCommandLineParameters::_instance = NULL;
 
 
 #endif /* SRC_HERWIG_H */

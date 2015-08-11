@@ -14,33 +14,33 @@ int main(int argc, char * argv[]) {
  
   try {
 
-    // read in command line options 
-    HelperReadInCommandLineParameters comLineParam = HelperReadInCommandLineParameters(argc, argv);  
-    if(!comLineParam.getReadInWasSuccessful()) {
+    // read in command line options by using a singleton object
+    HelperReadInCommandLineParameters* comLineParam = HelperReadInCommandLineParameters::instance(argc, argv);  
+    if(!comLineParam->getReadInWasSuccessful()) {
       std::cerr << "Read in of command line parameters was not successful. Program execution will stop now.";
       return EXIT_FAILURE;
     }
     
   
     // Call program switches according to runMode
-    switch ( comLineParam.getRunMode() ) {
-    case HerwigRunMode::INIT:        HerwigInit(comLineParam.getRunName(), comLineParam.getRepoName()); break;
-    case HerwigRunMode::READ:        HerwigRead(comLineParam.getRepoName(), comLineParam.getRunName()); break;
-    case HerwigRunMode::BUILD:       HerwigBuild(comLineParam.getRepoName(), comLineParam.getRunName()); break;
-    case HerwigRunMode::INTEGRATE:   HerwigIntegrate(comLineParam.getRunName(), comLineParam.getSetupFile(),
-						      comLineParam.getSeed(), comLineParam.getTag(), 
-						      comLineParam.getN(), comLineParam.getTics(),
-						      comLineParam.getResume(), comLineParam.getJobs(), 
-						      comLineParam.getIntegrationList());  
+    switch ( comLineParam->getRunMode() ) {
+    case HerwigRunMode::INIT:        HerwigInit(comLineParam->getRunName(), comLineParam->getRepoName()); break;
+    case HerwigRunMode::READ:        HerwigRead(comLineParam->getRepoName(), comLineParam->getRunName()); break;
+    case HerwigRunMode::BUILD:       HerwigBuild(comLineParam->getRepoName(), comLineParam->getRunName()); break;
+    case HerwigRunMode::INTEGRATE:   HerwigIntegrate(comLineParam->getRunName(), comLineParam->getSetupFile(),
+						      comLineParam->getSeed(), comLineParam->getTag(), 
+						      comLineParam->getN(), comLineParam->getTics(),
+						      comLineParam->getResume(), comLineParam->getJobs(), 
+						      comLineParam->getIntegrationList());  
 				      break;
-    case HerwigRunMode::RUN:         HerwigRun(comLineParam.getRunName(), comLineParam.getSetupFile(),
-						      comLineParam.getSeed(), comLineParam.getTag(), 
-						      comLineParam.getN(), comLineParam.getTics(),
-						      comLineParam.getResume(), comLineParam.getJobs(), 
-					              comLineParam.getIntegrationList());  
+    case HerwigRunMode::RUN:         HerwigRun(comLineParam->getRunName(), comLineParam->getSetupFile(),
+						      comLineParam->getSeed(), comLineParam->getTag(), 
+						      comLineParam->getN(), comLineParam->getTics(),
+						      comLineParam->getResume(), comLineParam->getJobs(), 
+					              comLineParam->getIntegrationList());  
 				      break;
     case HerwigRunMode::ERROR:       std::cerr << "Error during read in of command line parameters. Program execution will stop now."; return EXIT_FAILURE;
-    default:          printUsageAndExit();
+    default:          		      printUsageAndExit();
     }
 
 
@@ -127,11 +127,9 @@ void HerwigGenericRead(string reponame, string runname) {
   string msg = Repository::load(reponame);
   if ( ! msg.empty() ) cerr << msg << '\n';
   
-  /* Necessary????
-  
-  setSearchPaths(args_info);
-  
-  */
+  // Invocation of setSearchPaths is necessary since Repository::load revokes all setted paths.  
+  // Singleton class is used to return instance
+  HelperReadInCommandLineParameters::instance()->setSearchPaths();
   
   breakThePEG();
   if ( !runname.empty() && runname != "-" ) {
