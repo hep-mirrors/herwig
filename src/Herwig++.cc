@@ -6,187 +6,49 @@
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-
-#include "herwigopts.h"
-#include <ThePEG/Persistency/PersistentIStream.h>
-#include <ThePEG/Repository/EventGenerator.h>
-#include <ThePEG/Utilities/DynamicLoader.h>
-#include <ThePEG/Repository/Repository.h>
-#include <ThePEG/Utilities/Exception.h>
-#include <ThePEG/Utilities/Debug.h>
-#include <ThePEG/Handlers/StandardEventHandler.h>
-#include <ThePEG/Handlers/SamplerBase.h>
-#include <iostream>
-#include <sstream>
-#include <cstdio>
-#include <unistd.h>
-#include <sys/wait.h>
-#include <boost/filesystem.hpp>
-
-#include "Herwig++/Utilities/RunDirectories.h"
+#include "Herwig++.h"
 
 using namespace ThePEG;
-
-void printUsageAndExit();
-
-void HerwigInit(string infile, string reponame);
-void HerwigRead(string reponame, string runname,
-		const gengetopt_args_info & args_info);
-void HerwigRun(string runname, string setupfile,
-	       int seed, string tag, long N, 
-	       bool tics, bool resume, int jobs,
-	       bool integrationJob,
-	       string integrationList);
-
-void setSearchPaths(const gengetopt_args_info & args_info);
 
 int main(int argc, char * argv[]) {
  
   try {
 
-    // read command line options 
-    gengetopt_args_info args_info;
-    if ( cmdline_parser( argc, argv, &args_info ) != 0 ) {
-      std::cerr << "Could not parse command line.\n";
+    // read in command line options 
+    HelperReadInCommandLineParameters comLineParam = HelperReadInCommandLineParameters(argc, argv);  
+    if(!comLineParam.getReadInWasSuccessful()) {
+      std::cerr << "Read in of command line parameters was not successful. Program execution will stop now.";
       return EXIT_FAILURE;
     }
- 
-    // require one command
-    if ( args_info.inputs_num < 1 )
-      printUsageAndExit();
-
-    // Interpret command status
-    enum { INIT, READ, BUILD, INTEGRATE, RUN, ERROR } status;
-    std::string runType = args_info.inputs[0];
-    if ( runType == "init" ) {
-      status = INIT;
-      SamplerBase::setRunLevel(SamplerBase::InitMode);
-    } else if ( runType == "read" ) {
-      status = READ;
-      SamplerBase::setRunLevel(SamplerBase::ReadMode);
-    } else if ( runType == "build" ) {
-      status = BUILD;
-      SamplerBase::setRunLevel(SamplerBase::BuildMode);
-    } else if ( runType == "integrate" ) {
-      status = INTEGRATE;
-      SamplerBase::setRunLevel(SamplerBase::IntegrationMode);
-    } else if ( runType == "run" ) {
-      status = RUN;
-      SamplerBase::setRunLevel(SamplerBase::RunMode);
-    } else {
-      status = ERROR;
-      printUsageAndExit();
-    }
-
-    // Use second argument as input- or runfile name
-    string runname;
-    if ( args_info.inputs_num > 1 )
-      runname = args_info.inputs[1];
-
-    // If status is RUN, we need a runname
-    if ( ( status == RUN || status == INTEGRATE ) && runname.empty() ) {
-      cerr << "Error: You need to supply a runfile name.\n";
-      printUsageAndExit();
-    }
-
-    // If status is INIT, we need a runname
-    if ( status == INIT && runname.empty() )
-	runname = "HerwigDefaults.in";
-
-    // Defaults for these filenames are set in the ggo file
-    std::string reponame = args_info.repo_arg;
-
-    // Number of events
-    long N = -1;
-    if ( args_info.numevents_given )
-      N = args_info.numevents_arg;
-
-    // RNG seed
-    int seed = 0;
-    if ( args_info.seed_given ) {
-      seed = args_info.seed_arg;
-    }
-
-    // run name tag (default given in ggo file)
-    string tag = args_info.tag_arg;
-
-    // run modifccation file
-    string setupfile = "";
-    if ( args_info.setupfile_given )
-      setupfile = args_info.setupfile_arg;
-
-    // parallel jobs
-    int jobs = 1;
-    if ( args_info.jobs_given )
-      jobs = args_info.jobs_arg;
-
-    setSearchPaths(args_info);
-  
-    // Library search path for dlopen()
-    for ( size_t i = 0; i < args_info.append_given; ++i )
-      DynamicLoader::appendPath( args_info.append_arg[i] );
-    for ( size_t i = 0; i < args_info.prepend_given; ++i )
-      DynamicLoader::prependPath( args_info.prepend_arg[i] );
     
-    // Debugging level
-    if ( args_info.debug_given )
-      Debug::setDebug( args_info.debug_arg );
-
-    // Floating point exceptions
-    if ( args_info.debug_fpe_flag ) 
-      Debug::unmaskFpuErrors();
-
-    // Exit-on-error flag
-    if ( ! args_info.noexitonerror_flag )
-      Repository::exitOnError() = 1;
-
-    // Tics
-    bool tics = true;
-    if ( args_info.quiet_flag )
-      tics = false;
-
-    // integration list
-    string integrationList = "";
-    if ( args_info.jobid_given ) {
-      integrationList = "integrationJob" + string(args_info.jobid_arg);
-    }
-
-    // job size
-    unsigned int jobsize = 0;
-    if ( args_info.jobsize_given ) {
-      jobsize = args_info.jobsize_arg;
-      SamplerBase::setIntegratePerJob(jobsize);
-    }
-
-    // max integration jobs
-    unsigned int maxjobs = 0;
-    if ( args_info.maxjobs_given ) {
-      maxjobs = args_info.maxjobs_arg;
-      SamplerBase::setIntegrationJobs(maxjobs);
-    }
-
-    // Resume
-    bool resume = false;
-    if ( args_info.resume_flag )
-      resume = true;
-
-    // *** End of command line parsing ***
-   
-    // Call mode
-    switch ( status ) {
-    case INIT:        HerwigInit( runname, reponame ); break;
-    case READ:        HerwigRead( reponame, runname, args_info ); break;
-    case BUILD:       HerwigRead( reponame, runname, args_info ); break;
-    case INTEGRATE:   HerwigRun( runname, setupfile , seed, tag, N, tics, resume, jobs, true, integrationList );  break;
-    case RUN:         HerwigRun( runname, setupfile , seed, tag, N, tics, resume, jobs, false, integrationList );  break;
+  
+    // Call program switches according to runMode
+    switch ( comLineParam.getRunMode() ) {
+    case HerwigRunMode::INIT:        HerwigInit(comLineParam.getRunName(), comLineParam.getRepoName()); break;
+    case HerwigRunMode::READ:        HerwigRead(comLineParam.getRepoName(), comLineParam.getRunName()); break;
+    case HerwigRunMode::BUILD:       HerwigBuild(comLineParam.getRepoName(), comLineParam.getRunName()); break;
+    case HerwigRunMode::INTEGRATE:   HerwigIntegrate(comLineParam.getRunName(), comLineParam.getSetupFile(),
+						      comLineParam.getSeed(), comLineParam.getTag(), 
+						      comLineParam.getN(), comLineParam.getTics(),
+						      comLineParam.getResume(), comLineParam.getJobs(), 
+						      comLineParam.getIntegrationList());  
+				      break;
+    case HerwigRunMode::RUN:         HerwigRun(comLineParam.getRunName(), comLineParam.getSetupFile(),
+						      comLineParam.getSeed(), comLineParam.getTag(), 
+						      comLineParam.getN(), comLineParam.getTics(),
+						      comLineParam.getResume(), comLineParam.getJobs(), 
+					              comLineParam.getIntegrationList());  
+				      break;
+    case HerwigRunMode::ERROR:       std::cerr << "Error during read in of command line parameters. Program execution will stop now."; return EXIT_FAILURE;
     default:          printUsageAndExit();
     }
 
 
-    Repository::cleanup(); 
-    cmdline_parser_free( &args_info );
+    // Clean repository after program was running.
+    Repository::cleanup();     
     return EXIT_SUCCESS;
 
+    // end try block, catching of exceptions
   }
   catch ( ThePEG::Exception & e ) {
     std::cerr << argv[0] << ": ThePEG::Exception caught. "
@@ -209,23 +71,8 @@ int main(int argc, char * argv[]) {
     std::cerr << argv[0] << ": Unknown exception caught.\n";
     Repository::cleanup(); 
     return EXIT_FAILURE;
-  }
-  
-}
-
-
-void setSearchPaths(const gengetopt_args_info & args_info) {
-  // Search path for read command uses CWD first
-  string cwd = boost::filesystem::current_path().string();
-  Repository::prependReadDir( cwd );
-  // append command line choices
-  for ( size_t i = 0; i < args_info.append_read_given; ++i )
-    Repository::appendReadDir( args_info.append_read_arg[i] );
-  for ( size_t i = 0; i < args_info.prepend_read_given; ++i )
-    Repository::prependReadDir( args_info.prepend_read_arg[i] );
-}
-
-
+  }  
+} 
 
 void printUsageAndExit() {
   std::cerr << gengetopt_args_info_usage << '\n';
@@ -233,9 +80,13 @@ void printUsageAndExit() {
   exit( EXIT_FAILURE );
 }
 
-
-
 void HerwigInit(string infile, string reponame) {
+  SamplerBase::setRunLevel(SamplerBase::InitMode);
+  
+  // If status is INIT, we need an infile name / runname
+  if (infile.empty())
+    infile = "HerwigDefaults.in";
+  
   breakThePEG();
   {
 #   ifdef HERWIG_PKGLIBDIR
@@ -252,9 +103,20 @@ void HerwigInit(string infile, string reponame) {
   Repository::save(reponame);
 }
 
+void HerwigRead(string reponame, string runname) {
+  SamplerBase::setRunLevel(SamplerBase::ReadMode);
+  
+  HerwigGenericRead(reponame, runname);
+}
 
-void HerwigRead(string reponame, string runname, 
-		const gengetopt_args_info & args_info) {
+void HerwigBuild(string reponame, string runname) {
+  SamplerBase::setRunLevel(SamplerBase::BuildMode);
+  
+  HerwigGenericRead(reponame, runname);
+}
+
+//void HerwigGenericRead(string reponame, string runname, const gengetopt_args_info & args_info)
+void HerwigGenericRead(string reponame, string runname) {
 #ifdef HERWIG_PKGDATADIR
   ifstream test(reponame.c_str());
   if ( !test ) {
@@ -264,7 +126,13 @@ void HerwigRead(string reponame, string runname,
 #endif
   string msg = Repository::load(reponame);
   if ( ! msg.empty() ) cerr << msg << '\n';
+  
+  /* Necessary????
+  
   setSearchPaths(args_info);
+  
+  */
+  
   breakThePEG();
   if ( !runname.empty() && runname != "-" ) {
     string msg = Repository::read(runname, std::cout);
@@ -276,13 +144,34 @@ void HerwigRead(string reponame, string runname,
   }
 }
 
-
-
 void HerwigRun(string runname, string setupfile,
+	       int seed, string tag, long int N,
+	       bool tics, bool resume, int jobs,
+	       string integrationList) {
+  SamplerBase::setRunLevel(SamplerBase::RunMode);
+  
+  HerwigGenericRun(runname, setupfile, seed, tag, N, tics, resume, jobs, false, integrationList);
+}
+
+void HerwigIntegrate(string runname, string setupfile,
+	       int seed, string tag, long int N,
+	       bool tics, bool resume, int jobs,
+	       string integrationList) {
+  SamplerBase::setRunLevel(SamplerBase::IntegrationMode);
+  
+  HerwigGenericRun(runname, setupfile, seed, tag, N, tics, resume, jobs, true, integrationList);
+}
+
+void HerwigGenericRun(string runname, string setupfile,
 	       int seed, string tag, long N, 
 	       bool tics, bool resume, int jobs,
 	       bool integrationJob,
 	       string integrationList) {
+  // If runMode is integration or run, we need a runname
+  if (runname.empty() ) {
+    std::cerr << "Error: You need to supply a runfile name.\n";
+    printUsageAndExit();
+  }
 
   if ( integrationJob && jobs > 1 ) {
     std::cerr << "parallel event generation is not applicable to integrate\n";
@@ -421,3 +310,134 @@ void HerwigRun(string runname, string setupfile,
     }
   }
 }
+
+HelperReadInCommandLineParameters::HelperReadInCommandLineParameters(int argc, char* argv[]) {
+  // Define default values for errors first
+  m_readInWasSuccessful = false;
+  m_runMode = HerwigRunMode::ERROR;
+  
+  
+  // read command line options 
+    
+  if ( cmdline_parser( argc, argv, &m_args_info ) != 0 ) {
+    std::cerr << "Could not parse command line.\n";
+    return;
+  }
+
+  // require one command
+  if ( m_args_info.inputs_num < 1 )
+    printUsageAndExit();
+
+  // Define runMode of program
+  std::string tmpRunMode = m_args_info.inputs[0];
+  if ( tmpRunMode == "init" ) {
+    m_runMode = HerwigRunMode::INIT;
+  } else if ( tmpRunMode == "read" ) {
+    m_runMode = HerwigRunMode::READ;
+  } else if ( tmpRunMode == "build" ) {
+    m_runMode = HerwigRunMode::BUILD;
+  } else if ( tmpRunMode == "integrate" ) {
+    m_runMode = HerwigRunMode::INTEGRATE;
+  } else if ( tmpRunMode == "run" ) {
+    m_runMode = HerwigRunMode::RUN;
+  } else {
+    m_runMode = HerwigRunMode::ERROR;
+    printUsageAndExit();
+  }
+
+  // Use second argument as input- or runfile name
+  if ( m_args_info.inputs_num > 1 )
+    m_runname = m_args_info.inputs[1];
+  
+  // Defaults for these filenames are set in the ggo file
+  m_reponame = m_args_info.repo_arg;
+
+  // Number of events
+  m_N = -1;
+  if ( m_args_info.numevents_given )
+    m_N = m_args_info.numevents_arg;
+
+  // RNG seed
+  m_seed = 0;
+  if ( m_args_info.seed_given ) {
+    m_seed = m_args_info.seed_arg;
+  }
+
+  // run name tag (default given in ggo file)
+  m_tag = m_args_info.tag_arg;
+
+  // run modification file
+  m_setupfile = "";
+  if ( m_args_info.setupfile_given )
+    m_setupfile = m_args_info.setupfile_arg;
+
+  // parallel jobs
+  m_jobs = 1;
+  if ( m_args_info.jobs_given )
+    m_jobs = m_args_info.jobs_arg;
+
+  this->setSearchPaths();
+
+  // Library search path for dlopen()
+  for ( size_t i = 0; i < m_args_info.append_given; ++i )
+    DynamicLoader::appendPath( m_args_info.append_arg[i] );
+  for ( size_t i = 0; i < m_args_info.prepend_given; ++i )
+    DynamicLoader::prependPath( m_args_info.prepend_arg[i] );
+  
+  // Debugging level
+  if ( m_args_info.debug_given )
+    Debug::setDebug( m_args_info.debug_arg );
+
+  // Floating point exceptions
+  if ( m_args_info.debug_fpe_flag ) 
+    Debug::unmaskFpuErrors();
+
+  // Exit-on-error flag
+  if ( ! m_args_info.noexitonerror_flag )
+    Repository::exitOnError() = 1;
+
+  // Tics
+  m_tics = true;
+  if ( m_args_info.quiet_flag )
+    m_tics = false;
+
+  // integration list
+  m_integrationList = "";
+  if ( m_args_info.jobid_given ) {
+    m_integrationList = "integrationJob" + string(m_args_info.jobid_arg);
+  }
+
+  // job size
+  m_jobsize = 0;
+  if ( m_args_info.jobsize_given ) {
+    m_jobsize = m_args_info.jobsize_arg;
+    SamplerBase::setIntegratePerJob(m_jobsize);
+  }
+
+  // max integration jobs
+  m_maxjobs = 0;
+  if ( m_args_info.maxjobs_given ) {
+    m_maxjobs = m_args_info.maxjobs_arg;
+    SamplerBase::setIntegrationJobs(m_maxjobs);
+  }
+
+  // Resume
+  m_resume = false;
+  if ( m_args_info.resume_flag )
+    m_resume = true;
+  
+  m_readInWasSuccessful = true;
+  return;
+}
+
+void HelperReadInCommandLineParameters::setSearchPaths() {
+  // Search path for read command uses CWD first
+  string cwd = boost::filesystem::current_path().string();
+  Repository::prependReadDir( cwd );
+  // append command line choices
+  for ( size_t i = 0; i < m_args_info.append_read_given; ++i )
+    Repository::appendReadDir( m_args_info.append_read_arg[i] );
+  for ( size_t i = 0; i < m_args_info.prepend_read_given; ++i )
+    Repository::prependReadDir( m_args_info.prepend_read_arg[i] );
+}
+
