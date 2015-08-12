@@ -36,8 +36,23 @@ using namespace ThePEG;
 void printUsageAndExit();
 
 /**
+ * Searches path of Herwig++ repo
+ * 
+ * You can define two string vectors with directories which Herwig++ will use to look in for files.
+ * A vector with directories which will be prepended and a vector with directories which will be appended.
+ * By default both vectors are optional.
+ * 
+ * @param[in] prependReadDirectories Directories from which Herwig++ read files, directories will be prepended to read path
+ * @param[in] appendReadDirectories Directories from which Herwig++ read files, directories will be appended to read path
+ */
+void setSearchPaths(std::vector<std::string> prependReadDirectories = std::vector<std::string>(), 
+		    std::vector<std::string> appendReadDirectories = std::vector<std::string>());
+
+/**
  * Herwig init run mode
  * 
+ * @param[in] infile Name of infile
+ * @param[in] reponame Name of repository
  */
 void HerwigInit(string infile, string reponame);
 
@@ -46,20 +61,50 @@ void HerwigInit(string infile, string reponame);
  * 
  * Function is used by built and read mode of Herwig++.
  * Difference between both run modes is setting of SamplerBase::setRunLevel flag.
+ * You can define two string vectors with directories which Herwig++ will use to look in for files.
+ * A vector with directories which will be prepended and a vector with directories which will be appended.
+ * By default both vectors are optional.
+ * 
+ * @param[in] reponame Name of repository
+ * @param[in] runname Name of the run 
+ * @param[in] prependReadDirectories Directories from which Herwig++ read files, directories will be prepended to read path
+ * @param[in] appendReadDirectories Directories from which Herwig++ read files, directories will be appended to read path
  */
-void HerwigGenericRead(string reponame, string runname);
+void HerwigGenericRead(string reponame, string runname,
+		std::vector<std::string> prependReadDirectories = std::vector<std::string>(), 
+		std::vector<std::string> appendReadDirectories = std::vector<std::string>());
 
 /**
  * Herwig read mode
  * 
+ * You can define two string vectors with directories which Herwig++ will use to look in for files.
+ * A vector with directories which will be prepended and a vector with directories which will be appended.
+ * By default both vectors are optional.
+ * 
+ * @param[in] reponame Name of repository
+ * @param[in] runname Name of the run 
+ * @param[in] prependReadDirectories Directories from which Herwig++ read files, directories will be prepended to read path
+ * @param[in] appendReadDirectories Directories from which Herwig++ read files, directories will be appended to read path
  */
-void HerwigRead(string reponame, string runname);
+void HerwigRead(string reponame, string runname,
+		std::vector<std::string> prependReadDirectories = std::vector<std::string>(), 
+		std::vector<std::string> appendReadDirectories = std::vector<std::string>());
 
 /**
  * Herwig build mode
+ *
+ * You can define two string vectors with directories which Herwig++ will use to look in for files.
+ * A vector with directories which will be prepended and a vector with directories which will be appended.
+ * By default both vectors are optional. 
  * 
+ * @param[in] reponame Name of repository
+ * @param[in] runname Name of the run
+ * @param[in] prependReadDirectories Directories from which Herwig++ read files, directories will be prepended to read path
+ * @param[in] appendReadDirectories Directories from which Herwig++ read files, directories will be appended to read path
  */
-void HerwigBuild(string reponame, string runname);
+void HerwigBuild(string reponame, string runname,
+		std::vector<std::string> prependReadDirectories = std::vector<std::string>(), 
+		std::vector<std::string> appendReadDirectories = std::vector<std::string>());
 
 /**
  * Herwig generic run mode
@@ -67,6 +112,17 @@ void HerwigBuild(string reponame, string runname);
  * Function is used by integrate and run mode of Herwig++.
  * Difference between both run modes is either bool integrationJob is true or false.
  * Furthermore the SamplerBase::setRunLevel flag is set accordingly.
+ * 
+ * @param[in] runname Name of the run
+ * @param[in] setupfile Name of an optional setupfile
+ * @param[in] seed Seed value for the random number generator
+ * @param[in] tag Name of the run tag
+ * @param[in] N Number of events to generate
+ * @param[in] tics Defines if tics should be shown
+ * @param[in] resume Defines if previous job should be resumed
+ * @param[in] jobs Defines how many cpu jobs should be used
+ * @param[in] integrationJob Defines if either integration or run runMode should be activated
+ * @param[in] integrationList List containing the integration jobs 
  */
 void HerwigGenericRun(string runname, string setupfile,
 	       int seed, string tag, long N, 
@@ -77,6 +133,15 @@ void HerwigGenericRun(string runname, string setupfile,
 /**
  * Herwig run mode
  * 
+ * @param[in] runname Name of the run
+ * @param[in] setupfile Name of an optional setupfile
+ * @param[in] seed Seed value for the random number generator
+ * @param[in] tag Name of the run tag
+ * @param[in] N Number of events to generate
+ * @param[in] tics Defines if tics should be shown
+ * @param[in] resume Defines if previous job should be resumed
+ * @param[in] jobs Defines how many cpu jobs should be used
+ * @param[in] integrationList List containing the integration jobs 
  */
 void HerwigRun(string runname, string setupfile,
 	       int seed, string tag, long N, 
@@ -86,6 +151,16 @@ void HerwigRun(string runname, string setupfile,
 /**
  * Herwig integration mode
  * 
+ * @param[in] runname Name of the run
+ * @param[in] setupfile Name of an optional setupfile
+ * @param[in] seed Seed value for the random number generator
+ * @param[in] tag Name of the run tag
+ * @param[in] N Number of events to generate
+ * @param[in] tics Defines if tics should be shown
+ * @param[in] resume Defines if previous job should be resumed
+ * @param[in] jobs Defines how many cpu jobs should be used
+ * @param[in] integrationJob Defines if either integration or run runMode should be activated
+ * @param[in] integrationList List containing the integration jobs 
  */
 void HerwigIntegrate(string runname, string setupfile,
 	       int seed, string tag, long N, 
@@ -97,6 +172,9 @@ void HerwigIntegrate(string runname, string setupfile,
  * 
  * Event generation - it all starts from here. :-)
  * Function is only used in standalone mode, otherwise one can directly make use of the above run mode functions.
+ * 
+ * @param[in] argc Number of commandline arguments
+ * @param[in] argv Char array containing commandline arguments
  */
 int main(int argc, char * argv[]);
 
@@ -156,8 +234,7 @@ class HelperReadInCommandLineParameters {
       }
     }
   
-    /// Searches path of Herwig++ repo
-    void setSearchPaths();
+
     
   private:
     /// static class object to make class a singleton, is initialized to null outside of class (see below)
@@ -188,6 +265,10 @@ class HelperReadInCommandLineParameters {
     std::string m_setupfile;
     /// List with integration jobs
     std::string m_integrationList;
+    /// string vector with prepend read directories
+    std::vector<std::string> m_prependReadDirectories;
+    /// string vector with append read directories
+    std::vector<std::string> m_appendReadDirectories;
     /// Number of events
     long m_N;
     /// Random number generator seed
@@ -210,6 +291,8 @@ class HelperReadInCommandLineParameters {
     std::string getTag() {return m_tag;}
     std::string getSetupFile() {return m_setupfile;}
     std::string getIntegrationList() {return m_integrationList;}
+    std::vector<std::string> getPrependReadDirectories() {return m_prependReadDirectories;}
+    std::vector<std::string> getAppendReadDirectories() {return m_appendReadDirectories;}
     long getN() {return m_N;}
     int getSeed() {return m_seed;}
     int getJobs() {return m_jobs;}

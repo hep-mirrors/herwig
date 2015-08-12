@@ -25,8 +25,12 @@ int main(int argc, char * argv[]) {
     // Call program switches according to runMode
     switch ( comLineParam->getRunMode() ) {
     case HerwigRunMode::INIT:        HerwigInit(comLineParam->getRunName(), comLineParam->getRepoName()); break;
-    case HerwigRunMode::READ:        HerwigRead(comLineParam->getRepoName(), comLineParam->getRunName()); break;
-    case HerwigRunMode::BUILD:       HerwigBuild(comLineParam->getRepoName(), comLineParam->getRunName()); break;
+    case HerwigRunMode::READ:        HerwigRead(comLineParam->getRepoName(), comLineParam->getRunName(),
+						  comLineParam->getPrependReadDirectories(), comLineParam->getAppendReadDirectories()); 
+				      break;
+    case HerwigRunMode::BUILD:       HerwigBuild(comLineParam->getRepoName(), comLineParam->getRunName(),
+						  comLineParam->getPrependReadDirectories(), comLineParam->getAppendReadDirectories()); 
+				      break;
     case HerwigRunMode::INTEGRATE:   HerwigIntegrate(comLineParam->getRunName(), comLineParam->getSetupFile(),
 						      comLineParam->getSeed(), comLineParam->getTag(), 
 						      comLineParam->getN(), comLineParam->getTics(),
@@ -80,6 +84,15 @@ void printUsageAndExit() {
   exit( EXIT_FAILURE );
 }
 
+void setSearchPaths(std::vector<std::string> prependReadDirectories, std::vector<std::string> appendReadDirectories) {
+  // Search path for read command uses CWD first
+  string cwd = boost::filesystem::current_path().string();
+  Repository::prependReadDir( cwd );
+  // append command line choices for directories from which Herwig++ will read.
+  Repository::appendReadDir(appendReadDirectories);
+  Repository::prependReadDir(prependReadDirectories);
+}
+
 void HerwigInit(string infile, string reponame) {
   SamplerBase::setRunLevel(SamplerBase::InitMode);
   
@@ -103,20 +116,23 @@ void HerwigInit(string infile, string reponame) {
   Repository::save(reponame);
 }
 
-void HerwigRead(string reponame, string runname) {
+void HerwigRead(string reponame, string runname, 
+		std::vector<std::string> prependReadDirectories, std::vector<std::string> appendReadDirectories) {
   SamplerBase::setRunLevel(SamplerBase::ReadMode);
   
-  HerwigGenericRead(reponame, runname);
+  HerwigGenericRead(reponame, runname, prependReadDirectories, appendReadDirectories);
 }
 
-void HerwigBuild(string reponame, string runname) {
+void HerwigBuild(string reponame, string runname, 
+		std::vector<std::string> prependReadDirectories, std::vector<std::string> appendReadDirectories) {
   SamplerBase::setRunLevel(SamplerBase::BuildMode);
   
-  HerwigGenericRead(reponame, runname);
+  HerwigGenericRead(reponame, runname, prependReadDirectories, appendReadDirectories);
 }
 
 //void HerwigGenericRead(string reponame, string runname, const gengetopt_args_info & args_info)
-void HerwigGenericRead(string reponame, string runname) {
+void HerwigGenericRead(string reponame, string runname, 
+		       std::vector<std::string> prependReadDirectories, std::vector<std::string> appendReadDirectories) {
 #ifdef HERWIG_PKGDATADIR
   ifstream test(reponame.c_str());
   if ( !test ) {
@@ -127,9 +143,8 @@ void HerwigGenericRead(string reponame, string runname) {
   string msg = Repository::load(reponame);
   if ( ! msg.empty() ) cerr << msg << '\n';
   
-  // Invocation of setSearchPaths is necessary since Repository::load revokes all setted paths.  
-  // Singleton class is used to return instance
-  HelperReadInCommandLineParameters::instance()->setSearchPaths();
+  // Repeated invocation of setSearchPaths is necessary since Repository::load revokes all setted paths.  
+  setSearchPaths(prependReadDirectories, appendReadDirectories);
   
   breakThePEG();
   if ( !runname.empty() && runname != "-" ) {
@@ -373,8 +388,13 @@ HelperReadInCommandLineParameters::HelperReadInCommandLineParameters(int argc, c
   m_jobs = 1;
   if ( m_args_info.jobs_given )
     m_jobs = m_args_info.jobs_arg;
-
-  this->setSearchPaths();
+  
+  // Directories from which Herwig++ reads filesystemfor ( size_t i = 0; i < m_args_info.append_read_given; ++i )
+  for ( size_t i = 0; i < m_args_info.append_read_given; ++i )
+    m_appendReadDirectories.push_back( m_args_info.append_read_arg[i] );
+  for ( size_t i = 0; i < m_args_info.prepend_read_given; ++i )
+    m_prependReadDirectories.push_back( m_args_info.prepend_read_arg[i] );
+  setSearchPaths(m_prependReadDirectories, m_appendReadDirectories);
 
   // Library search path for dlopen()
   for ( size_t i = 0; i < m_args_info.append_given; ++i )
@@ -424,18 +444,10 @@ HelperReadInCommandLineParameters::HelperReadInCommandLineParameters(int argc, c
   if ( m_args_info.resume_flag )
     m_resume = true;
   
+  
   m_readInWasSuccessful = true;
   return;
 }
 
-void HelperReadInCommandLineParameters::setSearchPaths() {
-  // Search path for read command uses CWD first
-  string cwd = boost::filesystem::current_path().string();
-  Repository::prependReadDir( cwd );
-  // append command line choices
-  for ( size_t i = 0; i < m_args_info.append_read_given; ++i )
-    Repository::appendReadDir( m_args_info.append_read_arg[i] );
-  for ( size_t i = 0; i < m_args_info.prepend_read_given; ++i )
-    Repository::prependReadDir( m_args_info.prepend_read_arg[i] );
-}
+
 
