@@ -62,57 +62,57 @@ BOOST_AUTO_TEST_CASE(unitDirection)
     
 BOOST_AUTO_TEST_CASE(pstarTwoBodyDecay)
 {
-  BOOST_CHECK_EQUAL(Herwig::Kinematics::pstarTwoBodyDecay(ThePEG::Units::Energy(-100), ThePEG::Units::Energy(60), ThePEG::Units::Energy(60)), ThePEG::Units::Energy(0));
-  BOOST_CHECK_EQUAL(Herwig::Kinematics::pstarTwoBodyDecay(ThePEG::Units::Energy(100), ThePEG::Units::Energy(-40), ThePEG::Units::Energy(40)), ThePEG::Units::Energy(0));
-  BOOST_CHECK_EQUAL(Herwig::Kinematics::pstarTwoBodyDecay(ThePEG::Units::Energy(100), ThePEG::Units::Energy(-40), ThePEG::Units::Energy(-40)), ThePEG::Units::Energy(0));
+  BOOST_CHECK_EQUAL(Herwig::Kinematics::pstarTwoBodyDecay(ThePEG::Units::Energy(-100*ThePEG::Units::GeV), ThePEG::Units::Energy(60*ThePEG::Units::GeV), ThePEG::Units::Energy(60*ThePEG::Units::GeV))/ThePEG::Units::GeV, ThePEG::Units::Energy(0*ThePEG::Units::GeV)/ThePEG::Units::GeV);
+  BOOST_CHECK_EQUAL(Herwig::Kinematics::pstarTwoBodyDecay(ThePEG::Units::Energy(100*ThePEG::Units::GeV), ThePEG::Units::Energy(-40*ThePEG::Units::GeV), ThePEG::Units::Energy(40*ThePEG::Units::GeV))/ThePEG::Units::GeV, ThePEG::Units::Energy(0*ThePEG::Units::GeV)/ThePEG::Units::GeV);
+  BOOST_CHECK_EQUAL(Herwig::Kinematics::pstarTwoBodyDecay(ThePEG::Units::Energy(100*ThePEG::Units::GeV), ThePEG::Units::Energy(-40*ThePEG::Units::GeV), ThePEG::Units::Energy(-40*ThePEG::Units::GeV))/ThePEG::Units::GeV, ThePEG::Units::Energy(0*ThePEG::Units::GeV)/ThePEG::Units::GeV);
   
-  BOOST_CHECK_EQUAL(Herwig::Kinematics::pstarTwoBodyDecay(ThePEG::Units::Energy(100), ThePEG::Units::Energy(60), ThePEG::Units::Energy(60)), ThePEG::Units::Energy(0));
-  BOOST_CHECK_EQUAL(Herwig::Kinematics::pstarTwoBodyDecay(ThePEG::Units::Energy(100), ThePEG::Units::Energy(50), ThePEG::Units::Energy(50)), ThePEG::Units::Energy(0));
+  BOOST_CHECK_EQUAL(Herwig::Kinematics::pstarTwoBodyDecay(ThePEG::Units::Energy(100*ThePEG::Units::GeV), ThePEG::Units::Energy(60*ThePEG::Units::GeV), ThePEG::Units::Energy(60*ThePEG::Units::GeV))/ThePEG::Units::GeV, ThePEG::Units::Energy(0*ThePEG::Units::GeV)/ThePEG::Units::GeV);
+  BOOST_CHECK_EQUAL(Herwig::Kinematics::pstarTwoBodyDecay(ThePEG::Units::Energy(100*ThePEG::Units::GeV), ThePEG::Units::Energy(50*ThePEG::Units::GeV), ThePEG::Units::Energy(50*ThePEG::Units::GeV))/ThePEG::Units::GeV, ThePEG::Units::Energy(0*ThePEG::Units::GeV)/ThePEG::Units::GeV);
   
-  BOOST_CHECK_EQUAL(Herwig::Kinematics::pstarTwoBodyDecay(ThePEG::Units::Energy(10), ThePEG::Units::Energy(6), ThePEG::Units::Energy(3)), ThePEG::Units::Energy(std::sqrt(19*91)/20.));
-  BOOST_CHECK_EQUAL(Herwig::Kinematics::pstarTwoBodyDecay(ThePEG::Units::Energy(10), ThePEG::Units::Energy(3), ThePEG::Units::Energy(6)), ThePEG::Units::Energy(std::sqrt(19*91)/20.));
+  BOOST_CHECK_EQUAL(Herwig::Kinematics::pstarTwoBodyDecay(ThePEG::Units::Energy(10*ThePEG::Units::GeV), ThePEG::Units::Energy(6*ThePEG::Units::GeV), ThePEG::Units::Energy(3*ThePEG::Units::GeV))/ThePEG::Units::GeV, ThePEG::Units::Energy(std::sqrt(19*91)/20.*ThePEG::Units::GeV)/ThePEG::Units::GeV);
+  BOOST_CHECK_EQUAL(Herwig::Kinematics::pstarTwoBodyDecay(ThePEG::Units::Energy(10*ThePEG::Units::GeV), ThePEG::Units::Energy(3*ThePEG::Units::GeV), ThePEG::Units::Energy(6*ThePEG::Units::GeV))/ThePEG::Units::GeV, ThePEG::Units::Energy(std::sqrt(19*91)/20.*ThePEG::Units::GeV)/ThePEG::Units::GeV);
 }
     
 BOOST_AUTO_TEST_CASE(twoBodyDecay1)
 {
- ThePEG::Units::Lorentz5Momentum decayProductOne(1);
- ThePEG::Units::Lorentz5Momentum decayProductTwo(1);
- BOOST_CHECK(Herwig::Kinematics::twoBodyDecay(ThePEG::Units::Lorentz5Momentum(100), ThePEG::Units::Energy(40), ThePEG::Units::Energy(40), ThePEG::Units::Axis(), decayProductOne, decayProductTwo));
- BOOST_CHECK(Herwig::Kinematics::twoBodyDecay(ThePEG::Units::Lorentz5Momentum(100), ThePEG::Units::Energy(50), ThePEG::Units::Energy(50), ThePEG::Units::Axis(), decayProductOne, decayProductTwo));
+ ThePEG::Units::Lorentz5Momentum decayProductOne(ThePEG::Units::GeV);
+ ThePEG::Units::Lorentz5Momentum decayProductTwo(ThePEG::Units::GeV);
+ BOOST_CHECK(Herwig::Kinematics::twoBodyDecay(ThePEG::Units::Lorentz5Momentum(100*ThePEG::Units::GeV), ThePEG::Units::Energy(40*ThePEG::Units::GeV), ThePEG::Units::Energy(40*ThePEG::Units::GeV), ThePEG::Units::Axis(), decayProductOne, decayProductTwo));
+ BOOST_CHECK(Herwig::Kinematics::twoBodyDecay(ThePEG::Units::Lorentz5Momentum(100*ThePEG::Units::GeV), ThePEG::Units::Energy(50*ThePEG::Units::GeV), ThePEG::Units::Energy(50*ThePEG::Units::GeV), ThePEG::Units::Axis(), decayProductOne, decayProductTwo));
  
- BOOST_CHECK(!(Herwig::Kinematics::twoBodyDecay(ThePEG::Units::Lorentz5Momentum(100), ThePEG::Units::Energy(60), ThePEG::Units::Energy(60), ThePEG::Units::Axis(), decayProductOne, decayProductTwo))); 
- BOOST_CHECK(!(Herwig::Kinematics::twoBodyDecay(ThePEG::Units::Lorentz5Momentum(-100), ThePEG::Units::Energy(40), ThePEG::Units::Energy(40), ThePEG::Units::Axis(), decayProductOne, decayProductTwo)));
- BOOST_CHECK(!(Herwig::Kinematics::twoBodyDecay(ThePEG::Units::Lorentz5Momentum(100), ThePEG::Units::Energy(-40), ThePEG::Units::Energy(40), ThePEG::Units::Axis(), decayProductOne, decayProductTwo)));
- BOOST_CHECK(!(Herwig::Kinematics::twoBodyDecay(ThePEG::Units::Lorentz5Momentum(100), ThePEG::Units::Energy(40), ThePEG::Units::Energy(-40), ThePEG::Units::Axis(), decayProductOne, decayProductTwo)));
+ BOOST_CHECK(!(Herwig::Kinematics::twoBodyDecay(ThePEG::Units::Lorentz5Momentum(100*ThePEG::Units::GeV), ThePEG::Units::Energy(60*ThePEG::Units::GeV), ThePEG::Units::Energy(60*ThePEG::Units::GeV), ThePEG::Units::Axis(), decayProductOne, decayProductTwo))); 
+ BOOST_CHECK(!(Herwig::Kinematics::twoBodyDecay(ThePEG::Units::Lorentz5Momentum(-100*ThePEG::Units::GeV), ThePEG::Units::Energy(40*ThePEG::Units::GeV), ThePEG::Units::Energy(40*ThePEG::Units::GeV), ThePEG::Units::Axis(), decayProductOne, decayProductTwo)));
+ BOOST_CHECK(!(Herwig::Kinematics::twoBodyDecay(ThePEG::Units::Lorentz5Momentum(100*ThePEG::Units::GeV), ThePEG::Units::Energy(-40*ThePEG::Units::GeV), ThePEG::Units::Energy(40*ThePEG::Units::GeV), ThePEG::Units::Axis(), decayProductOne, decayProductTwo)));
+ BOOST_CHECK(!(Herwig::Kinematics::twoBodyDecay(ThePEG::Units::Lorentz5Momentum(100*ThePEG::Units::GeV), ThePEG::Units::Energy(40*ThePEG::Units::GeV), ThePEG::Units::Energy(-40*ThePEG::Units::GeV), ThePEG::Units::Axis(), decayProductOne, decayProductTwo)));
  
- Herwig::Kinematics::twoBodyDecay(ThePEG::Units::Lorentz5Momentum(100), ThePEG::Units::Energy(50), ThePEG::Units::Energy(50), ThePEG::Units::Axis(1,0,0), decayProductOne, decayProductTwo);
- BOOST_CHECK_EQUAL(decayProductOne, ThePEG::Units::Lorentz5Momentum(50));
- BOOST_CHECK_EQUAL(decayProductTwo, ThePEG::Units::Lorentz5Momentum(50)); 
+ Herwig::Kinematics::twoBodyDecay(ThePEG::Units::Lorentz5Momentum(100*ThePEG::Units::GeV), ThePEG::Units::Energy(50*ThePEG::Units::GeV), ThePEG::Units::Energy(50*ThePEG::Units::GeV), ThePEG::Units::Axis(1,0,0), decayProductOne, decayProductTwo);
+ BOOST_CHECK_EQUAL(decayProductOne/ThePEG::Units::GeV, ThePEG::Units::Lorentz5Momentum(50*ThePEG::Units::GeV)/ThePEG::Units::GeV);
+ BOOST_CHECK_EQUAL(decayProductTwo/ThePEG::Units::GeV, ThePEG::Units::Lorentz5Momentum(50*ThePEG::Units::GeV)/ThePEG::Units::GeV); 
  
- Herwig::Kinematics::twoBodyDecay(ThePEG::Units::Lorentz5Momentum(10), ThePEG::Units::Energy(6), ThePEG::Units::Energy(3), ThePEG::Units::Axis(1,0,0), decayProductOne, decayProductTwo);
- BOOST_CHECK_EQUAL(decayProductOne, ThePEG::Units::Lorentz5Momentum(6, ThePEG::Units::Momentum3(std::sqrt(19*91)/20., 0, 0)));
- BOOST_CHECK_EQUAL(decayProductTwo, ThePEG::Units::Lorentz5Momentum(3, ThePEG::Units::Momentum3(-(std::sqrt(19*91)/20.), 0, 0)));
+ Herwig::Kinematics::twoBodyDecay(ThePEG::Units::Lorentz5Momentum(10*ThePEG::Units::GeV), ThePEG::Units::Energy(6*ThePEG::Units::GeV), ThePEG::Units::Energy(3*ThePEG::Units::GeV), ThePEG::Units::Axis(1,0,0), decayProductOne, decayProductTwo);
+ BOOST_CHECK_EQUAL(decayProductOne/ThePEG::Units::GeV, ThePEG::Units::Lorentz5Momentum(6*ThePEG::Units::GeV, ThePEG::Units::Momentum3(std::sqrt(19*91)/20.*ThePEG::Units::GeV, ThePEG::ZERO, ThePEG::ZERO))/ThePEG::Units::GeV);
+ BOOST_CHECK_EQUAL(decayProductTwo/ThePEG::Units::GeV, ThePEG::Units::Lorentz5Momentum(3*ThePEG::Units::GeV, ThePEG::Units::Momentum3(-(std::sqrt(19*91)/20.*ThePEG::Units::GeV), ThePEG::ZERO, ThePEG::ZERO))/ThePEG::Units::GeV);
 }
 
 BOOST_AUTO_TEST_CASE(twoBodyDecay2)
 {
- ThePEG::Units::Lorentz5Momentum decayProductOne(1);
- ThePEG::Units::Lorentz5Momentum decayProductTwo(1);
- BOOST_CHECK(Herwig::Kinematics::twoBodyDecay(ThePEG::Units::Lorentz5Momentum(100), ThePEG::Units::Energy(40), ThePEG::Units::Energy(40), 1, M_PI/2., decayProductOne, decayProductTwo));
- BOOST_CHECK(Herwig::Kinematics::twoBodyDecay(ThePEG::Units::Lorentz5Momentum(100), ThePEG::Units::Energy(50), ThePEG::Units::Energy(50), 1, M_PI/2., decayProductOne, decayProductTwo));
+ ThePEG::Units::Lorentz5Momentum decayProductOne(ThePEG::Units::GeV);
+ ThePEG::Units::Lorentz5Momentum decayProductTwo(ThePEG::Units::GeV);
+ BOOST_CHECK(Herwig::Kinematics::twoBodyDecay(ThePEG::Units::Lorentz5Momentum(100*ThePEG::Units::GeV), ThePEG::Units::Energy(40*ThePEG::Units::GeV), ThePEG::Units::Energy(40*ThePEG::Units::GeV), 1, M_PI/2., decayProductOne, decayProductTwo));
+ BOOST_CHECK(Herwig::Kinematics::twoBodyDecay(ThePEG::Units::Lorentz5Momentum(100*ThePEG::Units::GeV), ThePEG::Units::Energy(50*ThePEG::Units::GeV), ThePEG::Units::Energy(50*ThePEG::Units::GeV), 1, M_PI/2., decayProductOne, decayProductTwo));
  
- BOOST_CHECK(!(Herwig::Kinematics::twoBodyDecay(ThePEG::Units::Lorentz5Momentum(100), ThePEG::Units::Energy(60), ThePEG::Units::Energy(60), 1, M_PI/2., decayProductOne, decayProductTwo))); 
- BOOST_CHECK(!(Herwig::Kinematics::twoBodyDecay(ThePEG::Units::Lorentz5Momentum(-100), ThePEG::Units::Energy(40), ThePEG::Units::Energy(40), 1, M_PI/2., decayProductOne, decayProductTwo)));
- BOOST_CHECK(!(Herwig::Kinematics::twoBodyDecay(ThePEG::Units::Lorentz5Momentum(100), ThePEG::Units::Energy(-40), ThePEG::Units::Energy(40), 1, M_PI/2., decayProductOne, decayProductTwo)));
- BOOST_CHECK(!(Herwig::Kinematics::twoBodyDecay(ThePEG::Units::Lorentz5Momentum(100), ThePEG::Units::Energy(40), ThePEG::Units::Energy(-40), 1, M_PI/2., decayProductOne, decayProductTwo)));
+ BOOST_CHECK(!(Herwig::Kinematics::twoBodyDecay(ThePEG::Units::Lorentz5Momentum(100*ThePEG::Units::GeV), ThePEG::Units::Energy(60*ThePEG::Units::GeV), ThePEG::Units::Energy(60*ThePEG::Units::GeV), 1, M_PI/2., decayProductOne, decayProductTwo))); 
+ BOOST_CHECK(!(Herwig::Kinematics::twoBodyDecay(ThePEG::Units::Lorentz5Momentum(-100*ThePEG::Units::GeV), ThePEG::Units::Energy(40*ThePEG::Units::GeV), ThePEG::Units::Energy(40*ThePEG::Units::GeV), 1, M_PI/2., decayProductOne, decayProductTwo)));
+ BOOST_CHECK(!(Herwig::Kinematics::twoBodyDecay(ThePEG::Units::Lorentz5Momentum(100*ThePEG::Units::GeV), ThePEG::Units::Energy(-40*ThePEG::Units::GeV), ThePEG::Units::Energy(40*ThePEG::Units::GeV), 1, M_PI/2., decayProductOne, decayProductTwo)));
+ BOOST_CHECK(!(Herwig::Kinematics::twoBodyDecay(ThePEG::Units::Lorentz5Momentum(100*ThePEG::Units::GeV), ThePEG::Units::Energy(40*ThePEG::Units::GeV), ThePEG::Units::Energy(-40*ThePEG::Units::GeV), 1, M_PI/2., decayProductOne, decayProductTwo)));
  
- Herwig::Kinematics::twoBodyDecay(ThePEG::Units::Lorentz5Momentum(100), ThePEG::Units::Energy(50), ThePEG::Units::Energy(50), 1, M_PI/2., decayProductOne, decayProductTwo);
- BOOST_CHECK_EQUAL(decayProductOne, ThePEG::Units::Lorentz5Momentum(50));
- BOOST_CHECK_EQUAL(decayProductTwo, ThePEG::Units::Lorentz5Momentum(50)); 
+ Herwig::Kinematics::twoBodyDecay(ThePEG::Units::Lorentz5Momentum(100*ThePEG::Units::GeV), ThePEG::Units::Energy(50*ThePEG::Units::GeV), ThePEG::Units::Energy(50*ThePEG::Units::GeV), 1, M_PI/2., decayProductOne, decayProductTwo);
+ BOOST_CHECK_EQUAL(decayProductOne/ThePEG::Units::GeV, ThePEG::Units::Lorentz5Momentum(50*ThePEG::Units::GeV)/ThePEG::Units::GeV);
+ BOOST_CHECK_EQUAL(decayProductTwo/ThePEG::Units::GeV, ThePEG::Units::Lorentz5Momentum(50*ThePEG::Units::GeV)/ThePEG::Units::GeV); 
  
- Herwig::Kinematics::twoBodyDecay(ThePEG::Units::Lorentz5Momentum(10), ThePEG::Units::Energy(6), ThePEG::Units::Energy(3), 1, M_PI/2., decayProductOne, decayProductTwo);
- BOOST_CHECK_EQUAL(decayProductOne, ThePEG::Units::Lorentz5Momentum(6, ThePEG::Units::Momentum3(0, 0, std::sqrt(19*91)/20.)));
- BOOST_CHECK_EQUAL(decayProductTwo, ThePEG::Units::Lorentz5Momentum(3, ThePEG::Units::Momentum3(0, 0, -(std::sqrt(19*91)/20.))));
+ Herwig::Kinematics::twoBodyDecay(ThePEG::Units::Lorentz5Momentum(10*ThePEG::Units::GeV), ThePEG::Units::Energy(6*ThePEG::Units::GeV), ThePEG::Units::Energy(3*ThePEG::Units::GeV), 1, M_PI/2., decayProductOne, decayProductTwo);
+ BOOST_CHECK_EQUAL(decayProductOne/ThePEG::Units::GeV, ThePEG::Units::Lorentz5Momentum(6*ThePEG::Units::GeV, ThePEG::Units::Momentum3(ThePEG::ZERO, ThePEG::ZERO,   std::sqrt(19*91)/20.*ThePEG::Units::GeV))/ThePEG::Units::GeV);
+ BOOST_CHECK_EQUAL(decayProductTwo/ThePEG::Units::GeV, ThePEG::Units::Lorentz5Momentum(3*ThePEG::Units::GeV, ThePEG::Units::Momentum3(ThePEG::ZERO, ThePEG::ZERO, -(std::sqrt(19*91)/20.*ThePEG::Units::GeV)))/ThePEG::Units::GeV);
 }
 
 
