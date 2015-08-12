@@ -22,7 +22,6 @@
 #include <ThePEG/Repository/EventGenerator.h>
 #include "Herwig++/Utilities/Kinematics.h"
 #include "CheckId.h"
-#include "Herwig++/Utilities/Smearing.h"
 #include "Cluster.h"
 #include <ThePEG/Utilities/DescribeClass.h>
 #include <ThePEG/Repository/RandomGenerator.h>
