@@ -725,7 +725,6 @@ void GeneralSampler::readGrids() {
       globalHerwigGridsFileFound = true;
     }
     else {
-      messageBuffer << "\n\n####################### Begin Combination of integration grids #######################";
       // Check if integrationJob was split and try to merge single integrationJobs together
       if(integrationJobsCreated() > 1 && runLevel() == RunMode) {
 	messageBuffer << "\n\n* Global HerwigGrids.xml file does not exist yet"
@@ -775,8 +774,7 @@ void GeneralSampler::readGrids() {
 				  << "\n* Note: It can be that the HerwigGrids.xml file is searched and can be found in further directories."
 				  << "\n  In this case you can ignore this warning message.\n" << flush;
 	}
-      }
-    messageBuffer << "\n######################## End Combination of integration grids ########################\n";  
+      }  
     }  
   }
   
