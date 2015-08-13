@@ -36,6 +36,7 @@
 #include <boost/progress.hpp>
 #include <boost/filesystem.hpp>
 #include <cstdlib>
+#include <sstream> 
 
 using namespace Herwig;
 
@@ -696,8 +697,17 @@ void GeneralSampler::writeGrids() const {
 }
 
 void GeneralSampler::readGrids() {
+  // return if grids were already read
   if ( didReadGrids )
     return;
+  
+  // check for global HerwigGrids.xml file or combine integration jobs to a global HerwigGrids.xml file
+  // Show messages of integration job combination only in the first run  (if no global HerwigGrids.xml file is found in one of the directories)
+  // or in case of an error
+  // Check if a globalHerwigGridsFileFound was found and keep messages in a stringstream buffer beforehand
+  bool globalHerwigGridsFileFound = false;
+  std::stringstream messageBuffer;  
+  messageBuffer << "\n\n####################### Begin Combination of integration grids #######################";
   RunDirectories directories;
   while ( directories && !didReadGrids ) {
     string dataName = directories.nextRunStorage();
@@ -711,13 +721,16 @@ void GeneralSampler::readGrids() {
     if ( in ) {
       theGrids = XML::ElementIO::get(in);
       didReadGrids = true;
+      // Set to true if in any of the directories a global HerwigGrid.xml file was found
+      globalHerwigGridsFileFound = true;
     }
     else {
       // Check if integrationJob was split and try to merge single integrationJobs together
       if(integrationJobsCreated() > 1 && runLevel() == RunMode) {
-	BaseRepository::cout() << "\n\nGlobal HerwigGrids.xml file does not exist yet"
-				<< "\nand integration jobs were split into " << integrationJobsCreated() << " integration jobs."
-				<< "\nTrying to combine single integration jobs to a global HerwigGrids.xml file." << flush;
+	messageBuffer << "\n\n* Global HerwigGrids.xml file does not exist yet"
+		      << "\n  and integration jobs were split into " << integrationJobsCreated() << " integration jobs."
+		      << "\n  Trying to combine single integration jobs to a global HerwigGrids.xml file"
+		      << "\n  using the following directory " << directoryName  << ".";
 
 
 	theGrids = XML::Element(XML::ElementTypes::Element,"Grids");
@@ -731,16 +744,16 @@ void GeneralSampler::readGrids() {
 	    ifstream localGridFileIN(currentProcessedIntegrationJob.str().c_str());
 	    if(localGridFileIN) {
 	      theGrids = theGrids + XML::ElementIO::get(localGridFileIN);
-	      BaseRepository::cout()  << "\nAdded integration job " << currentProcessedIntegrationJobNum << " to global HerwigGrids.xml file.";
+	      messageBuffer  << "\n* Added integration job " << currentProcessedIntegrationJobNum << " to global HerwigGrids.xml file.";
 	    } 
 	    else {
 	      integrationJobCombinationSuccessful = false;
-	      BaseRepository::cout() << "\n Could not open/add integration job " << currentProcessedIntegrationJobNum << " to global HerwigGrids.xml file.";
+	      messageBuffer << "\n* Could not open/add integration job " << currentProcessedIntegrationJobNum << " to global HerwigGrids.xml file.";
 	    }
 	  }  
 	  else {
 	    integrationJobCombinationSuccessful = false;
-	    BaseRepository::cout() << "\n Could not find integration job " << currentProcessedIntegrationJob.str();
+	    messageBuffer << "\n* Could not find integration job " << currentProcessedIntegrationJob.str();
 	  }
 	}
 	
@@ -748,16 +761,27 @@ void GeneralSampler::readGrids() {
 	  string globalGridFile = directoryName + "HerwigGrids.xml";
 	  ofstream globalGridFileOF(globalGridFile.c_str());
 	  XML::ElementIO::put(theGrids,globalGridFileOF);
-	  BaseRepository::cout() << "\nGlobal HerwigGrids.xml file was created, the integration jobs 0 to " << integrationJobsCreated() << " were combined.\n\n" << flush;
+	  messageBuffer << "\n* Global HerwigGrids.xml file was created, the integration jobs 0 to " << integrationJobsCreated() 
+			<< " were combined."
+			<< "\n* If previous warnings in regards to the HerwigGrids.xml file occured, these can be safely ignored."
+			<< "\n* Note: This message will occur only in the first run and will be suppressed in further runs.\n" 
+			<< flush;
 	  didReadGrids = true;
 	}
 	else {
-	  BaseRepository::cout() << "\nGlobal HerwigGrids.xml file could not be created due to failed combination of integration jobs."
-				  << "\nPlease check the above-mentioned missing/failed integration jobs which are needed for the combination.\n\n" << flush;
+	  messageBuffer << "\n* Global HerwigGrids.xml file could not be created due to failed combination of integration jobs."
+				  << "\n  Please check the above-mentioned missing/failed integration jobs which are needed for the combination."
+				  << "\n* Note: It can be that the HerwigGrids.xml file is searched and can be found in further directories."
+				  << "\n  In this case you can ignore this warning message.\n" << flush;
 	}
       }
     }
   }
+  messageBuffer << "\n######################## End Combination of integration grids ########################\n";
+  // Show messages if global HerwigGrids.xml file was not found or first combination run 
+  if (!globalHerwigGridsFileFound)
+    BaseRepository::cout() << messageBuffer.str() << "\n" << flush;
+  
   if ( !didReadGrids )
     theGrids = XML::Element(XML::ElementTypes::Element,"Grids");
 }
