@@ -707,7 +707,7 @@ void GeneralSampler::readGrids() {
   // Check if a globalHerwigGridsFileFound was found and keep messages in a stringstream buffer beforehand
   bool globalHerwigGridsFileFound = false;
   std::stringstream messageBuffer;  
-  messageBuffer << "\n\n####################### Begin Combination of integration grids #######################";
+  
   RunDirectories directories;
   while ( directories && !didReadGrids ) {
     string dataName = directories.nextRunStorage();
@@ -725,6 +725,7 @@ void GeneralSampler::readGrids() {
       globalHerwigGridsFileFound = true;
     }
     else {
+      messageBuffer << "\n\n####################### Begin Combination of integration grids #######################";
       // Check if integrationJob was split and try to merge single integrationJobs together
       if(integrationJobsCreated() > 1 && runLevel() == RunMode) {
 	messageBuffer << "\n\n* Global HerwigGrids.xml file does not exist yet"
@@ -775,9 +776,10 @@ void GeneralSampler::readGrids() {
 				  << "\n  In this case you can ignore this warning message.\n" << flush;
 	}
       }
-    }
+    messageBuffer << "\n######################## End Combination of integration grids ########################\n";  
+    }  
   }
-  messageBuffer << "\n######################## End Combination of integration grids ########################\n";
+  
   // Show messages if global HerwigGrids.xml file was not found or first combination run 
   if (!globalHerwigGridsFileFound)
     BaseRepository::cout() << messageBuffer.str() << "\n" << flush;
