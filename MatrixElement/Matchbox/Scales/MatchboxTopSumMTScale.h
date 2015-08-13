@@ -1,15 +1,15 @@
 // -*- C++ -*-
 //
-// MatchboxTopMTScale.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MatchboxTopSumMTScale.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2014 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef Herwig_MatchboxTopMTScale_H
-#define Herwig_MatchboxTopMTScale_H
+#ifndef Herwig_MatchboxTopSumMTScale_H
+#define Herwig_MatchboxTopSumMTScale_H
 //
-// This is the declaration of the MatchboxTopMTScale class.
+// This is the declaration of the MatchboxTopSumMTScale class.
 //
 
 #include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxScaleChoice.h"
@@ -22,11 +22,11 @@ using namespace ThePEG;
  * \ingroup Matchbox
  * \author Daniel Rauch
  *
- * \brief MatchboxTopMTScale implements a scale choice related to the average
- *        of the transverse masses of a top and antitop quark.
+ * \brief MatchboxTopSumMTScale implements a scale choice related to the quadratic
+ *        sum of transverse masses of a top and antitop quark.
  *
  */
-class MatchboxTopMTScale: public MatchboxScaleChoice {
+class MatchboxTopSumMTScale: public MatchboxScaleChoice {
 
 public:
 
@@ -35,12 +35,12 @@ public:
   /**
    * The default constructor.
    */
-  MatchboxTopMTScale();
+  MatchboxTopSumMTScale();
 
   /**
    * The destructor.
    */
-  virtual ~MatchboxTopMTScale();
+  virtual ~MatchboxTopSumMTScale();
   //@}
 
 public:
@@ -111,10 +111,10 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MatchboxTopMTScale & operator=(const MatchboxTopMTScale &);
+  MatchboxTopSumMTScale & operator=(const MatchboxTopSumMTScale &);
 
 };
 
 }
 
-#endif /* Herwig_MatchboxTopMTScale_H */
+#endif /* Herwig_MatchboxTopSumMTScale_H */
