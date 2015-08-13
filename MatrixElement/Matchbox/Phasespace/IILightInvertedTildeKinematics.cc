@@ -77,6 +77,13 @@ bool IILightInvertedTildeKinematics::doMap(const double * r) {
   realEmissionMomentum() = ((1.-x-v)/x)*emitter+v*spectator+kt;
   realSpectatorMomentum() = spectator;
 
+  realEmitterMomentum().setMass(ZERO);
+  realEmitterMomentum().rescaleEnergy();
+  realEmissionMomentum().setMass(ZERO);
+  realEmissionMomentum().rescaleEnergy();
+  realSpectatorMomentum().setMass(ZERO);
+  realSpectatorMomentum().rescaleEnergy();
+
   K = realEmitterMomentum() + realSpectatorMomentum() - realEmissionMomentum();
   K2 = K.m2();
 
@@ -84,13 +91,6 @@ bool IILightInvertedTildeKinematics::doMap(const double * r) {
   KplusKtilde = K + Ktilde;
 
   KplusKtilde2 = KplusKtilde.m2();
-
-  realEmitterMomentum().setMass(ZERO);
-  realEmitterMomentum().rescaleEnergy();
-  realEmissionMomentum().setMass(ZERO);
-  realEmissionMomentum().rescaleEnergy();
-  realSpectatorMomentum().setMass(ZERO);
-  realSpectatorMomentum().rescaleEnergy();
 
   return true;
 
