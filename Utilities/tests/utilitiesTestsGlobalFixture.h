@@ -10,8 +10,7 @@
 
 #include "ThePEG/Repository/StandardRandom.h"
 #include "ThePEG/Repository/UseRandom.h"
-
-#include <iostream>
+#include "ThePEG/Config/Unitsystem.h"
 
 struct FixGlobal1 {
   FixGlobal1() {

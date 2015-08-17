@@ -22,9 +22,9 @@
 #include <ThePEG/Repository/EventGenerator.h>
 #include "Herwig++/Utilities/Kinematics.h"
 #include "CheckId.h"
-#include "Herwig++/Utilities/Smearing.h"
 #include "Cluster.h"
 #include <ThePEG/Utilities/DescribeClass.h>
+#include <ThePEG/Repository/UseRandom.h>
 
 using namespace Herwig;
 
@@ -448,14 +448,15 @@ calculatePositions(const Lorentz5Momentum &pClu,
   Length smearingWidth = hbarc / pClu.m();
   LorentzDistance distanceHad[2];
   for ( int i = 0; i < 2; i++ ) {   // i==0 is the first hadron; i==1 is the second one
-    double delta[4]={0.,0.,0.,0.};
-    // smearing of the four components of the LorentzDistance
-    for ( int j = 0; j < 4; j++ ) {
-      while ( ! Smearing::gaussianSmearing( 0.0, smearingWidth/femtometer, delta[j] ) ) { }
+    Length delta[4]={ZERO,ZERO,ZERO,ZERO};
+    // smearing of the four components of the LorentzDistance, two at the same time to improve speed
+    for ( int j = 0; j < 3; j += 2 ) {
+      delta[j] = UseRandom::rndGauss(smearingWidth, Length(ZERO));
+      delta[j+1] = UseRandom::rndGauss(smearingWidth, Length(ZERO));
     }
     // set the distance
     delta[0] = abs(delta[0]) +sqrt(sqr(delta[1])+sqr(delta[2])+sqr(delta[3]));
-    distanceHad[i] = LorentzVector<double>(delta[1],delta[2],delta[3],delta[0])*femtometer;
+    distanceHad[i] = LorentzDistance(delta[1],delta[2],delta[3],delta[0]);
     // Boost such relative positions of the children hadrons,
     // with respect to their parent cluster,
     // from the cluster reference frame to the Lab frame.

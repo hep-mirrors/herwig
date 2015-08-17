@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// MatchboxTopMTScale.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MatchboxTopSumMTScale.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
@@ -8,10 +8,10 @@
 //
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the MatchboxTopMTScale class.
+// functions of the MatchboxTopSumMTScale class.
 //
 
-#include "MatchboxTopMTScale.h"
+#include "MatchboxTopSumMTScale.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Reference.h"
@@ -26,19 +26,19 @@
 
 using namespace Herwig;
 
-MatchboxTopMTScale::MatchboxTopMTScale() {}
+MatchboxTopSumMTScale::MatchboxTopSumMTScale() {}
 
-MatchboxTopMTScale::~MatchboxTopMTScale() {}
+MatchboxTopSumMTScale::~MatchboxTopSumMTScale() {}
 
-IBPtr MatchboxTopMTScale::clone() const {
+IBPtr MatchboxTopSumMTScale::clone() const {
   return new_ptr(*this);
 }
 
-IBPtr MatchboxTopMTScale::fullclone() const {
+IBPtr MatchboxTopSumMTScale::fullclone() const {
   return new_ptr(*this);
 }
 
-Energy2 MatchboxTopMTScale::renormalizationScale() const {
+Energy2 MatchboxTopSumMTScale::renormalizationScale() const {
   
   size_t k = 2;
   int top = -1;
@@ -60,17 +60,17 @@ Energy2 MatchboxTopMTScale::renormalizationScale() const {
   }
 
   if ( top < 2 || antitop < 2 ){
-    throw Exception() << "MatchboxTopMTScale: Could not find a top-antitop-pair in the final state!\n"
+    throw Exception() << "MatchboxTopSumMTScale: Could not find a top-antitop-pair in the final state!\n"
 		      << Exception::runerror;
   }
-  // cerr << " sqrt(TopMTScale)  = "
+  // cerr << " sqrt(TopSumMTScale)  = "
   //      << sqrt(meMomenta()[top].mt2()+meMomenta()[antitop].mt2())/GeV
   //      << "\n" << flush;
-  return 0.5*(meMomenta()[top].mt2()+meMomenta()[antitop].mt2());
+  return(meMomenta()[top].mt2()+meMomenta()[antitop].mt2());
 
 }
 
-Energy2 MatchboxTopMTScale::factorizationScale() const {
+Energy2 MatchboxTopSumMTScale::factorizationScale() const {
   return(renormalizationScale());
 }
 
@@ -78,9 +78,9 @@ Energy2 MatchboxTopMTScale::factorizationScale() const {
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 
-void MatchboxTopMTScale::persistentOutput(PersistentOStream &) const {}
+void MatchboxTopSumMTScale::persistentOutput(PersistentOStream &) const {}
 
-void MatchboxTopMTScale::persistentInput(PersistentIStream &, int) {}
+void MatchboxTopSumMTScale::persistentInput(PersistentIStream &, int) {}
 
 
 // *** Attention *** The following static variable is needed for the type
@@ -88,13 +88,13 @@ void MatchboxTopMTScale::persistentInput(PersistentIStream &, int) {}
 // are correct (the class and its base class), and that the constructor
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
-DescribeClass<MatchboxTopMTScale,MatchboxScaleChoice>
-  describeHerwigMatchboxTopMTScale("Herwig::MatchboxTopMTScale", "HwMatchboxScales.so");
+DescribeClass<MatchboxTopSumMTScale,MatchboxScaleChoice>
+  describeHerwigMatchboxTopSumMTScale("Herwig::MatchboxTopSumMTScale", "HwMatchboxScales.so");
 
-void MatchboxTopMTScale::Init() {
+void MatchboxTopSumMTScale::Init() {
 
-  static ClassDocumentation<MatchboxTopMTScale> documentation
-    ("MatchboxTopMTScale implements the quadratic sum of the transverse masses of the top and antitop quark as a scale choice.");
+  static ClassDocumentation<MatchboxTopSumMTScale> documentation
+    ("MatchboxTopSumMTScale implements the quadratic sum of the transverse masses of the top and antitop quark as a scale choice.");
 
 
 }

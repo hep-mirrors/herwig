@@ -22,6 +22,8 @@ MatchboxTopMassScale.h \
 MatchboxTopMassScale.cc \
 MatchboxTopMTScale.h \
 MatchboxTopMTScale.cc \
+MatchboxTopSumMTScale.h \
+MatchboxTopSumMTScale.cc \
 MatchboxTopMinMTScale.h \
 MatchboxTopMinMTScale.cc \
 MatchboxTriVecScales.h \
