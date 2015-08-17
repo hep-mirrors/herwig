@@ -24,8 +24,7 @@
 #include "CheckId.h"
 #include "Cluster.h"
 #include <ThePEG/Utilities/DescribeClass.h>
-#include <ThePEG/Repository/RandomGenerator.h>
-#include <ThePEG/Repository/StandardRandom.h>
+#include <ThePEG/Repository/UseRandom.h>
 
 using namespace Herwig;
 
@@ -446,14 +445,14 @@ calculatePositions(const Lorentz5Momentum &pClu,
   // with respect to their parent cluster, in the cluster reference frame,
   // assuming gaussian smearing with width inversely proportional to the 
   // parent cluster mass.
-  ThePEG::StandardRandom* randomNumberStandardGenerator = new ThePEG::StandardRandom();
   Length smearingWidth = hbarc / pClu.m();
   LorentzDistance distanceHad[2];
   for ( int i = 0; i < 2; i++ ) {   // i==0 is the first hadron; i==1 is the second one
     Length delta[4]={ZERO,ZERO,ZERO,ZERO};
     // smearing of the four components of the LorentzDistance, two at the same time to improve speed
     for ( int j = 0; j < 3; j += 2 ) {
-      randomNumberStandardGenerator->rndGaussTwoNumbers(delta[j], delta[j+1], smearingWidth, Length(ZERO));
+      delta[j] = UseRandom::rndGauss(smearingWidth, Length(ZERO));
+      delta[j+1] = UseRandom::rndGauss(smearingWidth, Length(ZERO));
     }
     // set the distance
     delta[0] = abs(delta[0]) +sqrt(sqr(delta[1])+sqr(delta[2])+sqr(delta[3]));
