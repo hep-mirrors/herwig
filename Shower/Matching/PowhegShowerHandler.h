@@ -85,7 +85,7 @@ protected:
  /**
    * Creates all (ordered) cluster histories and selects one.
    */
-  PotentialTree doClustering(tSubProPtr sub) const;
+  PotentialTree doClustering(tSubProPtr sub,ShowerTreePtr showerTree) const;
 
   /**
    *  Access to the select tree
