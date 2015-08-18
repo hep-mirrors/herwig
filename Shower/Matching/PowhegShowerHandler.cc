@@ -64,7 +64,7 @@ IBPtr PowhegShowerHandler::fullclone() const {
   return new_ptr(*this);
 }
 
-HardTreePtr PowhegShowerHandler::generateCKKW(ShowerTreePtr) const {
+HardTreePtr PowhegShowerHandler::generateCKKW(ShowerTreePtr showerTree) const {
   // hard subprocess
   tSubProPtr sub = lastXCombPtr()->subProcess();
   // real emission sub-process
@@ -99,7 +99,7 @@ HardTreePtr PowhegShowerHandler::generateCKKW(ShowerTreePtr) const {
   assert(matrixElement_);
 
   // create a hard tree by clustering the event
-  hardTree(doClustering(real));
+  hardTree(doClustering(real,showerTree));
   // Get the HardTree from the CKKW handler.
   CKKWTreePtr hardtree = hardTree().tree();
   // zero to avoid MPI problems
@@ -108,7 +108,7 @@ HardTreePtr PowhegShowerHandler::generateCKKW(ShowerTreePtr) const {
   return hardtree;
 }
 
-PotentialTree PowhegShowerHandler::doClustering(tSubProPtr real) const {
+PotentialTree PowhegShowerHandler::doClustering(tSubProPtr real,ShowerTreePtr showerTree) const {
   // clear storage of the protoTrees
   protoBranchings().clear();
   protoTrees().clear();
@@ -267,6 +267,70 @@ PotentialTree PowhegShowerHandler::doClustering(tSubProPtr real) const {
       }
       // require a match
       if(!matched) break;
+    }
+    // if no match continue
+    if(!matched) continue;
+    // now sort out any decays
+    if(showerTree->outgoingLines().size()+showerTree->incomingLines().size()
+       != newTree.tree()->branchings().size()) {
+      if(showerTree->treelinks().empty()) {
+	matched = false;
+	continue;
+      }
+      // loop over the decay trees
+      for(map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> >::const_iterator
+	    tit=showerTree->treelinks().begin(); tit != showerTree->treelinks().end(); ++tit) {
+	set<HardBranchingPtr> decayProducts;
+	set<HardBranchingPtr> branchings = newTree.tree()->branchings();
+	// match the particles
+	for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator oit=tit->first->outgoingLines().begin();
+	    oit!=tit->first->outgoingLines().end();++oit) {
+	  HardBranchingPtr decayProd;
+	  Energy2 dmin( 1e30*GeV2 );
+	  tPPtr part = oit->second->original();
+	  for( set< HardBranchingPtr >::iterator it = branchings.begin(); it != branchings.end(); ++it ) {
+	    if((**it).status()==HardBranching::Incoming    ) continue;
+	    if((**it).branchingParticle()->id()!=part->id()) continue;
+	    Energy2 dtest =
+	      sqr( part->momentum().x() - (**it).branchingParticle()->momentum().x() ) +
+	      sqr( part->momentum().y() - (**it).branchingParticle()->momentum().y() ) +
+	      sqr( part->momentum().z() - (**it).branchingParticle()->momentum().z() ) +
+	      sqr( part->momentum().t() - (**it).branchingParticle()->momentum().t() );
+	    dtest += 1e10*sqr(part->momentum().m()-(**it).branchingParticle()->momentum().m());
+	    if( dtest < dmin ) {
+	      decayProd = *it;
+	      dmin = dtest;
+	    }
+	  }
+	  if(!decayProd) {
+	    throw Exception() << "PowhegShowerHandler::generateCKKW(). Can't match shower and hard trees."
+			      << Exception::eventerror;
+	  }
+	  branchings   .erase (decayProd);
+	  decayProducts.insert(decayProd);
+	}
+	// erase the decay products
+	Lorentz5Momentum pnew,pshower;
+	for(set<HardBranchingPtr>::iterator it = decayProducts.begin(); it!=decayProducts.end(); ++it) {
+	  newTree.tree()->branchings().erase(*it);
+	  pnew    += (**it).branchingParticle()->momentum();
+	  pshower += (**it).showerMomentum();
+	}
+	pnew   .rescaleMass();
+	pshower.rescaleMass();
+	// pnew   .setMass(tit->second.second->mass());
+	// pshower.setMass(tit->second.second->mass());
+	// pnew   .rescaleEnergy();
+	// pshower.rescaleEnergy();
+	// create the decaying particle
+	ShowerParticlePtr particle = new_ptr( ShowerParticle( tit->second.second->dataPtr() , true ) );
+	particle->set5Momentum( pnew );
+	HardBranchingPtr newBranch = new_ptr( HardBranching( particle, tSudakovPtr(),
+							     HardBranchingPtr(),
+							     HardBranching::Outgoing ) );
+	newBranch->showerMomentum(pshower);
+	newTree.tree()->branchings().insert(newBranch);
+      }
     }
     // if no match continue
     if(!matched) continue;
