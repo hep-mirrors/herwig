@@ -699,7 +699,7 @@ CrossSection MatchboxMEBase::dSigHatDR() const {
       (**v).setXComb(lastXCombPtr());
       res += (**v).dSigHatDR();
     }
-    if ( checkPoles() )
+    if ( checkPoles() && oneLoop() )
       logPoles();
   }
 
