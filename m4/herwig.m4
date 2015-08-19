@@ -704,16 +704,19 @@ if test "x$with_gsl" = "xsystem"; then
 			]
 		     )
 	GSLLIBS="$LIBS"
+	GSLPATH="$with_gsl"
 	LIBS=$oldlibs
 else
 	if test "`uname -m`" = "x86_64" -a -e "$with_gsl/lib64/libgsl.a" -a -d "$with_gsl/include/gsl"; then
 		AC_MSG_RESULT([found in $with_gsl])
 		GSLLIBS="-L$with_gsl/lib64 -R$with_gsl/lib64 -lgslcblas -lgsl"
 		GSLINCLUDE="-I$with_gsl/include"
+		GSLPATH="$with_gsl"
 	elif test -e "$with_gsl/lib/libgsl.a" -a -d "$with_gsl/include/gsl"; then
 		AC_MSG_RESULT([found in $with_gsl])
 		GSLLIBS="-L$with_gsl/lib -R$with_gsl/lib -lgslcblas -lgsl"
 		GSLINCLUDE="-I$with_gsl/include"
+		GSLPATH="$with_gsl"
 	else
 		AC_MSG_RESULT([not found])
 		AC_MSG_ERROR([Can't find $with_gsl/lib/libgsl.a or the headers in $with_gsl/include])
@@ -722,6 +725,7 @@ fi
 
 AC_SUBST(GSLINCLUDE)
 AC_SUBST(GSLLIBS)
+AC_SUBST(GSLPATH)
 ])
 
 AC_DEFUN([HERWIG_VERSIONSTRING],

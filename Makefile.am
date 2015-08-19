@@ -6,7 +6,7 @@ SUBDIRS = include \
 
 EXTRA_DIST = GUIDELINES
 
-DISTCHECK_CONFIGURE_FLAGS = --enable-debug --with-thepeg=$(THEPEGPATH)
+DISTCHECK_CONFIGURE_FLAGS = --enable-debug --with-thepeg=$(THEPEGPATH) --with-gsl=$(GSLPATH)
 
 ACLOCAL_AMFLAGS = -I m4
 
