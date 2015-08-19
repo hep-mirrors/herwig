@@ -15,7 +15,7 @@ MultiWeight
 
 dist-hook:
 	rm -rf `find $(distdir) -name '.svn' -or -name 'Makefile' -or -name '.hg'`
-        chmod u+w $(distdir)/HJets++ $(distdir)/HJets++/autom4te.cache
+	chmod u+w $(distdir)/HJets++ $(distdir)/HJets++/autom4te.cache;
 	cd $(distdir)/HJets++; autoreconf -vi
 
 all:  
