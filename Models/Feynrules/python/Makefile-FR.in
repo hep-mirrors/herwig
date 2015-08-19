@@ -39,4 +39,5 @@ ALLOBJFILES=$(ALLCCFILES:.cc=.o)
 clean:
 	@echo "Removing all generated files"
 	@rm -f FeynrulesModel.so $(ALLOBJFILES) $(ALLCCFILES) *.h
-	@rm -f *.run *.log *.out *.tex *.dot *.svg *.model *.spc *.in Makefile
+	@rm -f *.run *.log *.out *.tex *.dot *.svg 
+	@rm -f *.model *.spc *.in *.template Makefile
