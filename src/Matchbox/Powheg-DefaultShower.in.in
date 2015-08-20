@@ -25,17 +25,17 @@ set PowhegShowerHandler:Factory /Herwig/MatrixElements/Matchbox/Factory
 set Evolver:HardEmissionMode MatchboxPOWHEG
 
 # TUNE PARAMETERS
-set /Herwig/Shower/AlphaQCD:AlphaMZ .1185
+set /Herwig/Shower/AlphaQCD:AlphaMZ .127
 set /Herwig/Shower/AlphaQCD:NumberOfLoops 2
-set /Herwig/MatrixElements/Matchbox/AlphaS/MatchboxNLOAlphaS:input_alpha_s .1185
-set /Herwig/Shower/QtoQGSudakov:pTmin 1.92
-set /Herwig/Shower/GtoGGSudakov:pTmin 1.92
-set /Herwig/Shower/GtoQQbarSudakov:pTmin 1.92
-set /Herwig/Shower/GtobbbarSudakov:pTmin 1.92
-set /Herwig/Shower/GtoccbarSudakov:pTmin 1.92
-set /Herwig/Shower/QtoGQSudakov:pTmin 1.92
-set /Herwig/Shower/utoGuSudakov:pTmin 1.92
-set /Herwig/Shower/dtoGdSudakov:pTmin 1.92
+set /Herwig/MatrixElements/Matchbox/AlphaS/MatchboxNLOAlphaS:input_alpha_s .127
+set /Herwig/Shower/QtoQGSudakov:pTmin 1.55
+set /Herwig/Shower/GtoGGSudakov:pTmin 1.55
+set /Herwig/Shower/GtoQQbarSudakov:pTmin 1.55
+set /Herwig/Shower/GtobbbarSudakov:pTmin 1.55
+set /Herwig/Shower/GtoccbarSudakov:pTmin 1.55
+set /Herwig/Shower/QtoGQSudakov:pTmin 1.55
+set /Herwig/Shower/utoGuSudakov:pTmin 1.55
+set /Herwig/Shower/dtoGdSudakov:pTmin 1.55
 set /Herwig/Shower/QtoQGSudakov:CutOffOption pT
 set /Herwig/Shower/GtoGGSudakov:CutOffOption pT
 set /Herwig/Shower/GtoQQbarSudakov:CutOffOption pT
@@ -44,11 +44,11 @@ set /Herwig/Shower/GtoccbarSudakov:CutOffOption pT
 set /Herwig/Shower/QtoGQSudakov:CutOffOption pT
 set /Herwig/Shower/utoGuSudakov:CutOffOption pT
 set /Herwig/Shower/dtoGdSudakov:CutOffOption pT
-set /Herwig/Hadronization/ClusterFissioner:ClMaxLight 2.8
-set /Herwig/Hadronization/ClusterFissioner:ClPowLight 0.84
-set /Herwig/Hadronization/ClusterFissioner:PSplitLight 0.82
-set /Herwig/Hadronization/HadronSelector:PwtSquark 0.49
-set /Herwig/Hadronization/HadronSelector:PwtDIquark 0.33
+set /Herwig/Hadronization/ClusterFissioner:ClMaxLight 3.44
+set /Herwig/Hadronization/ClusterFissioner:ClPowLight 1.55
+set /Herwig/Hadronization/ClusterFissioner:PSplitLight 0.92
+set /Herwig/Hadronization/HadronSelector:PwtSquark 0.52
+set /Herwig/Hadronization/HadronSelector:PwtDIquark 0.35
 
 cd /Herwig/Analysis
 
