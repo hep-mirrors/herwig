@@ -13,8 +13,6 @@ param_card_heft.dat.in
 
 dist_madgraph_DATA = $(INPUTFILES)
 
-bin_SCRIPTS = mg2Matchbox.py
-
 HwMatchboxMadGraph_la_CPPFLAGS = $(AM_CPPFLAGS) \
 -DHERWIG_BINDIR="\"$(bindir)\"" \
 -DHERWIG_PKGDATADIR="\"$(pkgdatadir)\"" \

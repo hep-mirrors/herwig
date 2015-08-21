@@ -9,6 +9,7 @@ HwMatchboxGoSam_la_CPPFLAGS = $(AM_CPPFLAGS) \
 -DHERWIG_PKGDATADIR="\"$(pkgdatadir)\"" \
 -DGOSAM_PREFIX="\"$(GOSAMPREFIX)\""
 
+EXTRA_DIST = GoSamHelper.py
 
 install-exec-local:
 	$(install_sh_SCRIPT) $(srcdir)/GoSamHelper.py $(DESTDIR)$(bindir)/GoSamHelper.py
