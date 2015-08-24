@@ -280,6 +280,7 @@ PotentialTree PowhegShowerHandler::doClustering(tSubProPtr real,ShowerTreePtr sh
       // loop over the decay trees
       for(map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> >::const_iterator
 	    tit=showerTree->treelinks().begin(); tit != showerTree->treelinks().end(); ++tit) {
+	if(tit->first->outgoingLines().empty()) continue;
 	set<HardBranchingPtr> decayProducts;
 	set<HardBranchingPtr> branchings = newTree.tree()->branchings();
 	// match the particles
