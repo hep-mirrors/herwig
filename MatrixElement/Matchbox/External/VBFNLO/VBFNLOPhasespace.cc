@@ -119,6 +119,7 @@ double VBFNLOPhasespace::generateTwoToNKinematics(const double* random,
     momenta[i].setX(p[4*i+1]*GeV);
     momenta[i].setY(p[4*i+2]*GeV);
     momenta[i].setZ(p[4*i+3]*GeV);
+    momenta[i].rescaleMass();
   }
 
   delete p;
@@ -129,14 +130,15 @@ double VBFNLOPhasespace::generateTwoToNKinematics(const double* random,
   Energy2 thisSHat = (momenta[0] + momenta[1]).m2();
 
   // reshuffle so that particles have correct mass
-  // boost final-state into partonic CMS
-  Boost toCMS = (momenta[0]+momenta[1]).findBoostToCM();
-  for ( size_t i = 2; i < momenta.size(); ++i ) {
-    momenta[i].boost(toCMS);
-  }
-  // copied from MatchboxRambo phasespace
   if ( needToReshuffle ) {
 
+    // boost final-state into partonic CMS
+    Boost toCMS = (momenta[0]+momenta[1]).findBoostToCM();
+    for ( size_t i = 2; i < momenta.size(); ++i ) {
+      momenta[i].boost(toCMS);
+    }
+
+    // copied from MatchboxRambo phasespace
     double xi;
 
     ReshuffleEquation solve(sqrt(thisSHat),mePartonData().begin()+2,mePartonData().end(),
@@ -169,10 +171,10 @@ double VBFNLOPhasespace::generateTwoToNKinematics(const double* random,
       (*k).setMass((**d).hardProcessMass());
     }
 
-  }
-  // unboost
-  for ( size_t i = 2; i < momenta.size(); ++i ) {
-    momenta[i].boost(-toCMS);
+    // unboost
+    for ( size_t i = 2; i < momenta.size(); ++i ) {
+      momenta[i].boost(-toCMS);
+    }
   }
 
   if ( !matchConstraints(momenta) )

@@ -332,9 +332,10 @@ void QTildeMatching::calculateShowerVariables() const {
     (n*realCXComb()->meMomenta()[dipole()->realEmission()])/
     (n*realCXComb()->meMomenta()[dipole()->realEmitter()]);
   }
-  if ( z <= 0 ) {
+  // allow small violations (numerical inaccuracies)
+  if ( z <= 0 && z >= -1e-6 ) {
     z = std::numeric_limits<double>::epsilon();
-  } else if ( z >= 1 ) {
+  } else if ( z >= 1 && z <= 1+1e-6 ) {
     z = 1-std::numeric_limits<double>::epsilon();
   }
 
@@ -354,7 +355,7 @@ void QTildeMatching::calculateShowerVariables() const {
     qtilde2 = ZERO;
   }
 
-  assert(qtilde2 >= ZERO && z >= 0.0 && z <= 1.0);
+  assert(qtilde2 >= ZERO && z > 0.0 && z < 1.0);
 
   dipole()->showerScale(sqrt(qtilde2));
   dipole()->showerParameters().resize(1);
