@@ -16,7 +16,7 @@ Makefile\.in$
 ^config.log$
 ^config.status$
 ^configure$
-^include/Herwig\+\+$
+^include/Herwig$
 ^Config/config.guess$
 ^Config/config.h$
 ^Config/config.h.in$
