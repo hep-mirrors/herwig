@@ -4,9 +4,9 @@
 //
 // This is the declaration of the Baryon1MesonDecayerBase class.
 //
-#include "Herwig++/Decay/DecayIntegrator.h"
-#include "Herwig++/PDT/BaryonWidthGenerator.fh"
-#include "Herwig++/Decay/DecayPhaseSpaceMode.h"
+#include "Herwig/Decay/DecayIntegrator.h"
+#include "Herwig/PDT/BaryonWidthGenerator.fh"
+#include "Herwig/Decay/DecayPhaseSpaceMode.h"
 #include "ThePEG/Helicity/LorentzSpinor.h"
 #include "ThePEG/Helicity/LorentzSpinorBar.h"
 #include "ThePEG/Helicity/LorentzRSSpinor.h"

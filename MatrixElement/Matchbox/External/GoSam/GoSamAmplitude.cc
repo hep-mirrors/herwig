@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// GoSamAmplitude.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// GoSamAmplitude.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -28,7 +28,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Utilities/StringUtils.h"
 
-#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
+#include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
 
 #include <boost/progress.hpp>
 #include <boost/filesystem.hpp>
@@ -448,7 +448,7 @@ void GoSamAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs, st
     maxaewPower = max(maxaewPower, static_cast<int>(t->first.first.orderInAlphaEW));
   }
 
-  orderFile << "# OLP order file created by Herwig++/Matchbox for GoSam\n\n";
+  orderFile << "# OLP order file created by Herwig/Matchbox for GoSam\n\n";
   orderFile << "InterfaceVersion         BLHA2\n";
   orderFile << "MatrixElementSquareType  CHsummed\n";
   orderFile << "CorrectionType           QCD\n";
@@ -1047,7 +1047,7 @@ void GoSamAmplitude::Init() {
 
   static Parameter<GoSamAmplitude,string> interfacePKGDATADIR
     ("DataDir",
-     "The location for the installed Herwig++ data files",
+     "The location for the installed Herwig data files",
      &GoSamAmplitude::pkgdatadir_, string(HERWIG_PKGDATADIR),
      false, false);
     

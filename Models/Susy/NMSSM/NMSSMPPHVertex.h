@@ -5,9 +5,9 @@
 // This is the declaration of the NMSSMPPHVertex class.
 //
 
-#include "Herwig++/Models/General/VVSLoopVertex.h"
-#include "Herwig++/Models/StandardModel/StandardModel.fh"
-#include "Herwig++/Models/Susy/MixingMatrix.h"
+#include "Herwig/Models/General/VVSLoopVertex.h"
+#include "Herwig/Models/StandardModel/StandardModel.fh"
+#include "Herwig/Models/Susy/MixingMatrix.h"
 
 namespace Herwig {
 using namespace ThePEG;

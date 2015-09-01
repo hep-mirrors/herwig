@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// DecayRadiationGenerator.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// DecayRadiationGenerator.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_DecayRadiationGenerator_H
@@ -13,7 +13,7 @@
 //
 
 #include "ThePEG/Interface/Interfaced.h"
-#include "Herwig++/Decay/DecayIntegrator.fh"
+#include "Herwig/Decay/DecayIntegrator.fh"
 #include "DecayRadiationGenerator.fh"
 
 namespace Herwig {
@@ -22,7 +22,7 @@ using namespace ThePEG;
 
 /**
  * The DecayRadiationGenerator class is the base class for classes generating
- * QED radiation in particle decays in Herwig++. Classes implementing specific
+ * QED radiation in particle decays in Herwig. Classes implementing specific
  * algorithms must inherit from this class and implement the virtual generatePhotons
  * member.
  * 

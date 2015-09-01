@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// a1SimpleDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// a1SimpleDecayer.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -17,11 +17,11 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/PDT/WidthCalculatorBase.h"
-#include "Herwig++/PDT/ThreeBodyAllOnCalculator.h"
+#include "Herwig/PDT/WidthCalculatorBase.h"
+#include "Herwig/PDT/ThreeBodyAllOnCalculator.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
-#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
+#include "Herwig/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;

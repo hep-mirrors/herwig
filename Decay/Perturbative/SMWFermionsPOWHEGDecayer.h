@@ -6,7 +6,7 @@
 //
 
 #include "SMWDecayer.h"
-#include "Herwig++/Utilities/Maths.h"
+#include "Herwig/Utilities/Maths.h"
 
 namespace Herwig {
 

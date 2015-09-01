@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// MEee2VectorMeson.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MEee2VectorMeson.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef THEPEG_MEee2VectorMeson_H
@@ -13,8 +13,8 @@
 //
 
 #include "ThePEG/MatrixElement/MEBase.h"
-#include "Herwig++/PDT/GenericMassGenerator.fh"
-#include "Herwig++/MatrixElement/ProductionMatrixElement.h"
+#include "Herwig/PDT/GenericMassGenerator.fh"
+#include "Herwig/MatrixElement/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"

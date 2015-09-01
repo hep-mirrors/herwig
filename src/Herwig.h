@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// Herwig++.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Herwig.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration, 2015 Marco A. Harrendorf
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef SRC_HERWIG_H
@@ -25,7 +25,7 @@
 #include <sys/wait.h>
 #include <boost/filesystem.hpp>
 
-#include "Herwig++/Utilities/RunDirectories.h"
+#include "Herwig/Utilities/RunDirectories.h"
 
 using namespace ThePEG;
 
@@ -36,14 +36,14 @@ using namespace ThePEG;
 void printUsageAndExit();
 
 /**
- * Searches path of Herwig++ repo
+ * Searches path of Herwig repo
  * 
- * You can define two string vectors with directories which Herwig++ will use to look in for files.
+ * You can define two string vectors with directories which Herwig will use to look in for files.
  * A vector with directories which will be prepended and a vector with directories which will be appended.
  * By default both vectors are optional.
  * 
- * @param[in] prependReadDirectories Directories from which Herwig++ read files, directories will be prepended to read path
- * @param[in] appendReadDirectories Directories from which Herwig++ read files, directories will be appended to read path
+ * @param[in] prependReadDirectories Directories from which Herwig read files, directories will be prepended to read path
+ * @param[in] appendReadDirectories Directories from which Herwig read files, directories will be appended to read path
  */
 void setSearchPaths(std::vector<std::string> prependReadDirectories = std::vector<std::string>(), 
 		    std::vector<std::string> appendReadDirectories = std::vector<std::string>());
@@ -59,16 +59,16 @@ void HerwigInit(string infile, string reponame);
 /**
  * Herwig generic read mode
  * 
- * Function is used by built and read mode of Herwig++.
+ * Function is used by built and read mode of Herwig.
  * Difference between both run modes is setting of SamplerBase::setRunLevel flag.
- * You can define two string vectors with directories which Herwig++ will use to look in for files.
+ * You can define two string vectors with directories which Herwig will use to look in for files.
  * A vector with directories which will be prepended and a vector with directories which will be appended.
  * By default both vectors are optional.
  * 
  * @param[in] reponame Name of repository
  * @param[in] runname Name of the run 
- * @param[in] prependReadDirectories Directories from which Herwig++ read files, directories will be prepended to read path
- * @param[in] appendReadDirectories Directories from which Herwig++ read files, directories will be appended to read path
+ * @param[in] prependReadDirectories Directories from which Herwig read files, directories will be prepended to read path
+ * @param[in] appendReadDirectories Directories from which Herwig read files, directories will be appended to read path
  */
 void HerwigGenericRead(string reponame, string runname,
 		std::vector<std::string> prependReadDirectories = std::vector<std::string>(), 
@@ -77,14 +77,14 @@ void HerwigGenericRead(string reponame, string runname,
 /**
  * Herwig read mode
  * 
- * You can define two string vectors with directories which Herwig++ will use to look in for files.
+ * You can define two string vectors with directories which Herwig will use to look in for files.
  * A vector with directories which will be prepended and a vector with directories which will be appended.
  * By default both vectors are optional.
  * 
  * @param[in] reponame Name of repository
  * @param[in] runname Name of the run 
- * @param[in] prependReadDirectories Directories from which Herwig++ read files, directories will be prepended to read path
- * @param[in] appendReadDirectories Directories from which Herwig++ read files, directories will be appended to read path
+ * @param[in] prependReadDirectories Directories from which Herwig read files, directories will be prepended to read path
+ * @param[in] appendReadDirectories Directories from which Herwig read files, directories will be appended to read path
  */
 void HerwigRead(string reponame, string runname,
 		std::vector<std::string> prependReadDirectories = std::vector<std::string>(), 
@@ -93,14 +93,14 @@ void HerwigRead(string reponame, string runname,
 /**
  * Herwig build mode
  *
- * You can define two string vectors with directories which Herwig++ will use to look in for files.
+ * You can define two string vectors with directories which Herwig will use to look in for files.
  * A vector with directories which will be prepended and a vector with directories which will be appended.
  * By default both vectors are optional. 
  * 
  * @param[in] reponame Name of repository
  * @param[in] runname Name of the run
- * @param[in] prependReadDirectories Directories from which Herwig++ read files, directories will be prepended to read path
- * @param[in] appendReadDirectories Directories from which Herwig++ read files, directories will be appended to read path
+ * @param[in] prependReadDirectories Directories from which Herwig read files, directories will be prepended to read path
+ * @param[in] appendReadDirectories Directories from which Herwig read files, directories will be appended to read path
  */
 void HerwigBuild(string reponame, string runname,
 		std::vector<std::string> prependReadDirectories = std::vector<std::string>(), 
@@ -109,7 +109,7 @@ void HerwigBuild(string reponame, string runname,
 /**
  * Herwig generic run mode
  * 
- * Function is used by integrate and run mode of Herwig++.
+ * Function is used by integrate and run mode of Herwig.
  * Difference between both run modes is either bool integrationJob is true or false.
  * Furthermore the SamplerBase::setRunLevel flag is set accordingly.
  * 
@@ -168,7 +168,7 @@ void HerwigIntegrate(string runname, string setupfile,
 	       string integrationList);
 
 /**
- * Herwig++ main function
+ * Herwig main function
  * 
  * Event generation - it all starts from here. :-)
  * Function is only used in standalone mode, otherwise one can directly make use of the above run mode functions.
@@ -179,9 +179,9 @@ void HerwigIntegrate(string runname, string setupfile,
 int main(int argc, char * argv[]);
 
 /**
- * Struct with enum to define runMode of Herwig++
+ * Struct with enum to define runMode of Herwig
  * 
- * Enum defines which runMode of Herwig++ should be used.
+ * Enum defines which runMode of Herwig should be used.
  */
 struct HerwigRunMode {
   enum runMode { ERROR = -1, INIT = 1 , READ = 2, BUILD = 3, INTEGRATE = 4, RUN = 5 };
@@ -190,7 +190,7 @@ struct HerwigRunMode {
 /**
  * Helper class to simplify read in and handling of command line parameters
  * 
- * Class is not needed if one links directly to the different Herwig++ run mode functions.
+ * Class is not needed if one links directly to the different Herwig run mode functions.
  * Class is defined as a singleton, so that setSearchPaths function can later be used in HerwigGenericRead function.
  */
 class HelperReadInCommandLineParameters {

@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// MEee2gZ2qq.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MEee2gZ2qq.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -21,10 +21,10 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/Handlers/StandardXComb.h"
-#include "Herwig++/MatrixElement/HardVertex.h"
-#include "Herwig++/Shower/Base/Evolver.h"
-#include "Herwig++/Shower/Base/KinematicsReconstructor.h"
-#include "Herwig++/Shower/Base/PartnerFinder.h"
+#include "Herwig/MatrixElement/HardVertex.h"
+#include "Herwig/Shower/Base/Evolver.h"
+#include "Herwig/Shower/Base/KinematicsReconstructor.h"
+#include "Herwig/Shower/Base/PartnerFinder.h"
 #include "ThePEG/PDF/PolarizedBeamParticleData.h"
 #include <numeric>
 #include "ThePEG/Utilities/DescribeClass.h"
@@ -51,7 +51,7 @@ void MEee2gZ2qq::doinit() {
   // do the initialisation
   if(!hwsm) throw InitException() 
 	      << "Wrong type of StandardModel object in "
-	      << "MEee2gZ2qq::doinit() the Herwig++ version must be used" 
+	      << "MEee2gZ2qq::doinit() the Herwig version must be used" 
 	      << Exception::runerror;
   FFZVertex_ = hwsm->vertexFFZ();
   FFPVertex_ = hwsm->vertexFFP();

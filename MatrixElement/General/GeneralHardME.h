@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// GeneralHardME.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// GeneralHardME.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_GeneralHardME_H
@@ -12,13 +12,13 @@
 // This is the declaration of the GeneralHardME class.
 //
 
-#include "Herwig++/MatrixElement/HwMEBase.h"
+#include "Herwig/MatrixElement/HwMEBase.h"
 #include "ThePEG/Utilities/Exception.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Models/General/HPDiagram.h"
-#include "Herwig++/MatrixElement/ProductionMatrixElement.h"
-#include "Herwig++/MatrixElement/HardVertex.h"
+#include "Herwig/Models/General/HPDiagram.h"
+#include "Herwig/MatrixElement/ProductionMatrixElement.h"
+#include "Herwig/MatrixElement/HardVertex.h"
 #include "ThePEG/EventRecord/SpinInfo.h"
 #include "ThePEG/PDF/PolarizedBeamParticleData.h"
 #include "GeneralHardME.fh"

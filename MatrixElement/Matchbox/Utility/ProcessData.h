@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// ProcessData.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// ProcessData.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef Herwig_ProcessData_H
@@ -15,8 +15,8 @@
 #include "ThePEG/Handlers/HandlerBase.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/Handlers/StandardXComb.h"
-#include "Herwig++/PDT/GenericMassGenerator.h"
-#include "Herwig++/MatrixElement/Matchbox/Utility/ProcessData.fh"
+#include "Herwig/PDT/GenericMassGenerator.h"
+#include "Herwig/MatrixElement/Matchbox/Utility/ProcessData.fh"
 
 namespace Herwig {
 

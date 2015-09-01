@@ -85,7 +85,7 @@ void PGSInterface::Init() {
 
   static ClassDocumentation<PGSInterface> documentation
     ("The PGSInterface class is designed to allow the PGS detector"
-     " simulation to be used as an analysis handler in Herwig++");
+     " simulation to be used as an analysis handler in Herwig");
 
 }
 

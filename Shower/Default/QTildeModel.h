@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// QTildeModel.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// QTildeModel.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_QTildeModel_H
@@ -12,7 +12,7 @@
 // This is the declaration of the QTildeModel class.
 //
 
-#include "Herwig++/Shower/Base/ShowerModel.h"
+#include "Herwig/Shower/Base/ShowerModel.h"
 
 namespace Herwig {
 
@@ -20,7 +20,7 @@ using namespace ThePEG;
 
 /** \ingroup Shower
  * The QTildeModel class inherits from the ShowerModel class and implements the
- * checkConsistency member for the default Herwig++ Shower.
+ * checkConsistency member for the default Herwig Shower.
  *
  * @see \ref QTildeModelInterfaces "The interfaces"
  * defined for QTildeModel.

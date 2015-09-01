@@ -5,7 +5,7 @@
 // This is the declaration of the RadiativeZPrimeModel class.
 //
 
-#include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "Herwig/Models/StandardModel/StandardModel.h"
 
 namespace RadiativeZPrime {
 

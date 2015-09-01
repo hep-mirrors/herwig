@@ -20,18 +20,18 @@ LOOPTOOLHEADERS = $(top_srcdir)/Looptools/include/clooptools.h
 CLEANFILES = done-all-links 
 
 done-all-links: $(DIRLINKS) $(LOOPTOOLHEADERS)
-	mkdir -p Herwig++/Config Herwig++/Looptools
-	$(LN_S) -f $(addprefix ../, $(DIRLINKS)) Herwig++
-	$(LN_S) -f $(addprefix ../../, $(LOOPTOOLHEADERS)) Herwig++/Looptools
+	mkdir -p Herwig/Config Herwig/Looptools
+	$(LN_S) -f $(addprefix ../, $(DIRLINKS)) Herwig
+	$(LN_S) -f $(addprefix ../../, $(LOOPTOOLHEADERS)) Herwig/Looptools
 	touch done-all-links
 
 install-data-local:
-	find Herwig++ -follow \( -name '*.h' -or -name '*.icc' \
+	find Herwig -follow \( -name '*.h' -or -name '*.icc' \
 	-or -name '*.tcc' -or -name '*.fh' -or -name '*.xh' \) \
           -exec $(install_sh_DATA) \{\} $(DESTDIR)$(includedir)/\{\} \;
 
 uninstall-local:
-	rm -rf $(DESTDIR)$(includedir)/Herwig++
+	rm -rf $(DESTDIR)$(includedir)/Herwig
 
 clean-local:
-	rm -rf Herwig++
+	rm -rf Herwig

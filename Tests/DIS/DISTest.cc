@@ -10,7 +10,7 @@
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "Herwig++/PDT/StandardMatchers.h"
+#include "Herwig/PDT/StandardMatchers.h"
 
 using namespace Herwig;
 

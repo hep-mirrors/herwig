@@ -5,7 +5,7 @@
 // This is the declaration of the MEee2HiggsVBF class.
 //
 
-#include "Herwig++/MatrixElement/MEfftoffH.h"
+#include "Herwig/MatrixElement/MEfftoffH.h"
 
 namespace Herwig {
 

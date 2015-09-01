@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// SubtractionDipole.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// SubtractionDipole.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -24,9 +24,9 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDF/PartonBin.h"
 #include "ThePEG/PDF/PartonExtractor.h"
-#include "Herwig++/MatrixElement/Matchbox/Phasespace/TildeKinematics.h"
-#include "Herwig++/MatrixElement/Matchbox/Phasespace/InvertedTildeKinematics.h"
-#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
+#include "Herwig/MatrixElement/Matchbox/Phasespace/TildeKinematics.h"
+#include "Herwig/MatrixElement/Matchbox/Phasespace/InvertedTildeKinematics.h"
+#include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
 
 #include <iterator>
 using std::ostream_iterator;

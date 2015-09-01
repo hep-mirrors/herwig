@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// MatchboxAmplitudeggttbar.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MatchboxAmplitudeggttbar.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef Herwig_MatchboxAmplitudeggttbar_H
@@ -12,8 +12,8 @@
 // This is the declaration of the MatchboxAmplitudeggttbar class.
 //
 
-#include "Herwig++/MatrixElement/Matchbox/Base/MatchboxAmplitude.h"
-#include "Herwig++/MatrixElement/Matchbox/Builtin/Amplitudes/MatchboxCurrents.h"
+#include "Herwig/MatrixElement/Matchbox/Base/MatchboxAmplitude.h"
+#include "Herwig/MatrixElement/Matchbox/Builtin/Amplitudes/MatchboxCurrents.h"
 #include "MG_gg2ttx.h"
 #include "HelAmps_sm.h"
 
@@ -185,7 +185,7 @@ private:
   double mom3 [4];
 
   /**
-   * Fill MGParams_ with Herwig++ values of parameters
+   * Fill MGParams_ with Herwig values of parameters
    */
   void setupParams(map<string, double> & MGParams);
 

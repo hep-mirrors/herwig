@@ -17,11 +17,11 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/RSSpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/RSSpinorBarWaveFunction.h"
-#include "Herwig++/Decay/DecayVertex.h"
+#include "Herwig/Decay/DecayVertex.h"
 #include "ThePEG/Helicity/FermionSpinInfo.h"
 #include "ThePEG/Helicity/RSFermionSpinInfo.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
-#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
+#include "Herwig/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;

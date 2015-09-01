@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// TTbAModelSU2XVertex.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// TTbAModelSU2XVertex.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_TTbAModelSU2XVertex_H
@@ -12,7 +12,7 @@
 // This is the declaration of the TTbAModelSU2XVertex class.
 
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
-#include "Herwig++/Models/TTbAsymm/TTbAModel.h"
+#include "Herwig/Models/TTbAsymm/TTbAModel.h"
 #include "ThePEG/PDT/EnumParticles.h"
 
 namespace Herwig {

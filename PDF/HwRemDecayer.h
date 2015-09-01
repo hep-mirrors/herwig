@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// HwRemDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// HwRemDecayer.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_HwRemDecayer_H
@@ -17,8 +17,8 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/EventRecord/SubProcess.h"
 #include "ThePEG/PDF/BeamParticleData.h"
-#include "Herwig++/Shower/Couplings/ShowerAlpha.h"
-#include "Herwig++/PDT/StandardMatchers.h"
+#include "Herwig/Shower/Couplings/ShowerAlpha.h"
+#include "Herwig/PDT/StandardMatchers.h"
 #include "ThePEG/PDT/StandardMatchers.h"
 #include "HwRemDecayer.fh"
 

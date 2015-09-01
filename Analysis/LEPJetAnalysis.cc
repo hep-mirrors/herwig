@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// LEPJetAnalysis.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// LEPJetAnalysis.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -15,7 +15,7 @@
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "Herwig++/Utilities/HerwigStrategy.h"
+#include "Herwig/Utilities/HerwigStrategy.h"
 #include "fastjet/PseudoJet.hh"
 #include "fastjet/ClusterSequence.hh"
 

@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// SudakovFormFactor.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// SudakovFormFactor.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_SudakovFormFactor_H
@@ -13,9 +13,9 @@
 //
 
 #include "ThePEG/Interface/Interfaced.h"
-#include "Herwig++/Shower/SplittingFunctions/SplittingFunction.h"
-#include "Herwig++/Shower/Couplings/ShowerAlpha.h"
-#include "Herwig++/Shower/SplittingFunctions/SplittingGenerator.fh"
+#include "Herwig/Shower/SplittingFunctions/SplittingFunction.h"
+#include "Herwig/Shower/Couplings/ShowerAlpha.h"
+#include "Herwig/Shower/SplittingFunctions/SplittingGenerator.fh"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/PDF/BeamParticleData.h"
 #include "ThePEG/EventRecord/RhoDMatrix.h"
@@ -35,7 +35,7 @@ typedef Ptr<BeamParticleData>::transient_const_pointer tcBeamPtr;
 /**  \ingroup Shower
  *
  *  This is the definition of the Sudakov form factor class. In general this
- *  is the base class for the implementation of Sudakov form factors in Herwig++.
+ *  is the base class for the implementation of Sudakov form factors in Herwig.
  *  The methods generateNextTimeBranching(), generateNextDecayBranching() and
  *  generateNextSpaceBranching need to be implemented in classes inheriting from this
  *  one.
@@ -562,7 +562,7 @@ private:
   unsigned int cutOffOption_;
 
   /**
-   *  Parameters for the default Herwig++ cut-off option, i.e. the parameters for
+   *  Parameters for the default Herwig cut-off option, i.e. the parameters for
    *  the \f$Q_g=\max(\frac{\delta-am_q}{b},c)\f$ kinematic cut-off
    */
   //@{

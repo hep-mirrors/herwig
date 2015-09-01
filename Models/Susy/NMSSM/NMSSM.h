@@ -5,7 +5,7 @@
 // This is the declaration of the NMSSM class.
 //
 
-#include "Herwig++/Models/Susy/MSSM.h"
+#include "Herwig/Models/Susy/MSSM.h"
 #include "NMSSM.fh"
 
 namespace Herwig {

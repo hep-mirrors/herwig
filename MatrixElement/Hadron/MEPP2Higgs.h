@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// MEPP2Higgs.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MEPP2Higgs.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_MEPP2Higgs_H
@@ -12,16 +12,16 @@
 // This is the declaration of the MEPP2Higgs class.
 //
 
-#include "Herwig++/MatrixElement/HwMEBase.h"
+#include "Herwig/MatrixElement/HwMEBase.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
-#include "Herwig++/PDT/GenericMassGenerator.h"
-#include "Herwig++/MatrixElement/ProductionMatrixElement.h"
-#include "Herwig++/Shower/Couplings/ShowerAlpha.h"
+#include "Herwig/PDT/GenericMassGenerator.h"
+#include "Herwig/MatrixElement/ProductionMatrixElement.h"
+#include "Herwig/Shower/Couplings/ShowerAlpha.h"
 
 namespace Herwig {
 using namespace ThePEG;

@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// MatchboxXComb.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MatchboxXComb.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef Herwig_LastMatchboxXCombInfo_H
@@ -12,7 +12,7 @@
 // This is the declaration of the MatchboxXComb class.
 //
 
-#include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxXCombData.h"
+#include "Herwig/MatrixElement/Matchbox/Utility/MatchboxXCombData.h"
 
 namespace Herwig {
 
@@ -276,7 +276,7 @@ public:
   const set<pair<size_t,size_t> >::const_iterator& lastSingularLimit() const { return lastMatchboxXComb()->lastSingularLimit(); }
 
   /**
-   * Get the Herwig++ StandardModel object
+   * Get the Herwig StandardModel object
    */
   Ptr<StandardModel>::tcptr hwStandardModel() const { return lastMatchboxXComb()->hwStandardModel(); }
 
@@ -485,7 +485,7 @@ protected:
   set<pair<size_t,size_t> >::const_iterator& lastSingularLimit() { return lastMatchboxXComb()->lastSingularLimit(); }
 
   /**
-   * Set the Herwig++ StandardModel object
+   * Set the Herwig StandardModel object
    */
   void hwStandardModel(Ptr<StandardModel>::tcptr sm) { lastMatchboxXComb()->hwStandardModel(sm); }
 

@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// ShowerHandler.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// ShowerHandler.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_ShowerHandler_H
@@ -14,15 +14,15 @@
 
 #include "ThePEG/Handlers/EventHandler.h"
 #include "ThePEG/Handlers/CascadeHandler.h"
-#include "Herwig++/Shower/UEBase.h" 
-#include "Herwig++/Shower/Base/Evolver.fh"
-#include "Herwig++/Shower/Base/ShowerParticle.fh"
-#include "Herwig++/Shower/Base/ShowerTree.fh"
-#include "Herwig++/Shower/Base/HardTree.fh"
-#include "Herwig++/PDF/HwRemDecayer.fh"
+#include "Herwig/Shower/UEBase.h" 
+#include "Herwig/Shower/Base/Evolver.fh"
+#include "Herwig/Shower/Base/ShowerParticle.fh"
+#include "Herwig/Shower/Base/ShowerTree.fh"
+#include "Herwig/Shower/Base/HardTree.fh"
+#include "Herwig/PDF/HwRemDecayer.fh"
 #include "ThePEG/EventRecord/RemnantParticle.fh"
 #include "ShowerHandler.fh"
-#include "Herwig++/MatrixElement/Matchbox/Matching/HardScaleProfile.h"
+#include "Herwig/MatrixElement/Matchbox/Matching/HardScaleProfile.h"
 
 namespace Herwig {
 

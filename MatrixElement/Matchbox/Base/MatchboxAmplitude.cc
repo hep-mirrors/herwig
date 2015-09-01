@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// MatchboxAmplitude.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MatchboxAmplitude.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -23,9 +23,9 @@
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/MatrixElement/Matchbox/Utility/SpinorHelicity.h"
-#include "Herwig++/MatrixElement/Matchbox/Utility/SU2Helper.h"
-#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
+#include "Herwig/MatrixElement/Matchbox/Utility/SpinorHelicity.h"
+#include "Herwig/MatrixElement/Matchbox/Utility/SU2Helper.h"
+#include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
 #include "ThePEG/Utilities/StringUtils.h"
 #include "MatchboxMEBase.h"
 
@@ -106,7 +106,7 @@ Selector<const ColourLines *> MatchboxAmplitude::colourGeometries(tcDiagPtr d) c
 
 void MatchboxAmplitude::olpOrderFileHeader(ostream& os) const {
 
-  os << "# OLP order file created by Herwig++/Matchbox\n\n";
+  os << "# OLP order file created by Herwig/Matchbox\n\n";
 
   os << "InterfaceVersion          BLHA2\n\n";
 

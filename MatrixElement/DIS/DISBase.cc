@@ -13,19 +13,19 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
-#include "Herwig++/Utilities/Maths.h"
+#include "Herwig/Utilities/Maths.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/PDT/StandardMatchers.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
-#include "Herwig++/PDT/StandardMatchers.h"
-#include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "Herwig/PDT/StandardMatchers.h"
+#include "Herwig/Models/StandardModel/StandardModel.h"
 #include <numeric>
-#include "Herwig++/Shower/Base/ShowerProgenitor.h"
-#include "Herwig++/Shower/Base/ShowerTree.h"
-#include "Herwig++/Shower/Base/Branching.h"
-#include "Herwig++/Shower/Base/HardTree.h"
+#include "Herwig/Shower/Base/ShowerProgenitor.h"
+#include "Herwig/Shower/Base/ShowerTree.h"
+#include "Herwig/Shower/Base/Branching.h"
+#include "Herwig/Shower/Base/HardTree.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;

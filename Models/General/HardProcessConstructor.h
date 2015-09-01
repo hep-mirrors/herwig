@@ -7,11 +7,11 @@
 
 #include "ThePEG/Interface/Interfaced.h"
 #include "HPDiagram.h"
-#include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "Herwig/Models/StandardModel/StandardModel.h"
 #include "ThePEG/Handlers/SubProcessHandler.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Handlers/StandardEventHandler.h"
-#include "Herwig++/MatrixElement/General/GeneralHardME.h"
+#include "Herwig/MatrixElement/General/GeneralHardME.h"
 #include "HardProcessConstructor.fh"
 
 namespace Herwig {

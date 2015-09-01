@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// HardVertex.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// HardVertex.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_HardVertex_H
@@ -24,7 +24,7 @@ using namespace ThePEG;
  *  \author Peter Richardson
  *
  *  The HardVertex class is designed to implement the vertex for a 
- *  hard interaction for the Herwig++ spin correlation algorithm. 
+ *  hard interaction for the Herwig spin correlation algorithm. 
  *  It inherits from the HelicityVertex class of ThePEG and implements 
  *  the methods to calculate the \f$\rho\f$ and \f$D\f$ matrices.
  * 

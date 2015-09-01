@@ -1,12 +1,12 @@
 // -*- C++ -*-
 //
-// Herwig++.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Herwig.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#include "Herwig++.h"
+#include "Herwig.h"
 
 using namespace ThePEG;
 
@@ -88,7 +88,7 @@ void setSearchPaths(std::vector<std::string> prependReadDirectories, std::vector
   // Search path for read command uses CWD first
   string cwd = boost::filesystem::current_path().string();
   Repository::prependReadDir( cwd );
-  // append command line choices for directories from which Herwig++ will read.
+  // append command line choices for directories from which Herwig will read.
   Repository::appendReadDir(appendReadDirectories);
   Repository::prependReadDir(prependReadDirectories);
 }
@@ -153,7 +153,7 @@ void HerwigGenericRead(string reponame, string runname,
   }
   else {
     Repository::exitOnError() = 0;
-    Repository::read(std::cin, std::cout, "Herwig++> ");
+    Repository::read(std::cin, std::cout, "Herwig> ");
   }
 }
 
@@ -199,7 +199,7 @@ void HerwigGenericRun(string runname, string setupfile,
   breakThePEG();
 
   if ( !eg ) {
-    std::cerr << "Herwig++: EventGenerator not available.\n"
+    std::cerr << "Herwig: EventGenerator not available.\n"
 	      << "Check if '" << runname << "' is a valid run file.\n";
     Repository::cleanup();
     exit( EXIT_FAILURE );
@@ -227,7 +227,7 @@ void HerwigGenericRun(string runname, string setupfile,
     Ptr<StandardEventHandler>::tptr eh =
       dynamic_ptr_cast<Ptr<StandardEventHandler>::tptr>(eg->eventHandler());
     if ( !eh ) {
-      std::cerr << "Herwig++: Cannot set integration mode for a non-standard EventHandler.\n";
+      std::cerr << "Herwig: Cannot set integration mode for a non-standard EventHandler.\n";
       Repository::cleanup();
       exit( EXIT_FAILURE );
     }
@@ -266,7 +266,7 @@ void HerwigGenericRun(string runname, string setupfile,
 
       pid = fork();
       if (pid == -1) { // fork failed
-        std::perror("Herwig++: fork");
+        std::perror("Herwig: fork");
         Repository::cleanup();
         exit( EXIT_FAILURE );
       }
@@ -296,7 +296,7 @@ void HerwigGenericRun(string runname, string setupfile,
     			break;
     		}
     		else {
-	                std::perror("Herwig++: waitpid");
+	                std::perror("Herwig: waitpid");
 	                Repository::cleanup();
         	        exit(EXIT_FAILURE);
         	}
@@ -389,7 +389,7 @@ HelperReadInCommandLineParameters::HelperReadInCommandLineParameters(int argc, c
   if ( m_args_info.jobs_given )
     m_jobs = m_args_info.jobs_arg;
   
-  // Directories from which Herwig++ reads filesystemfor ( size_t i = 0; i < m_args_info.append_read_given; ++i )
+  // Directories from which Herwig reads filesystemfor ( size_t i = 0; i < m_args_info.append_read_given; ++i )
   for ( size_t i = 0; i < m_args_info.append_read_given; ++i )
     m_appendReadDirectories.push_back( m_args_info.append_read_arg[i] );
   for ( size_t i = 0; i < m_args_info.prepend_read_given; ++i )

@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// SSHGGVertex.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// SSHGGVertex.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_SSHGGVertex_H
@@ -12,7 +12,7 @@
 // This is the declaration of the SSHGGVertex class.
 //
 
-#include "Herwig++/Models/General/VVSLoopVertex.h"
+#include "Herwig/Models/General/VVSLoopVertex.h"
 #include "MSSM.h"
 
 namespace Herwig {

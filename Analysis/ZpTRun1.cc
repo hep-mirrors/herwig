@@ -15,7 +15,7 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Utilities/Histogram.h"
+#include "Herwig/Utilities/Histogram.h"
 
 
 using namespace Herwig;

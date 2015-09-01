@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// DecayVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// DecayVertex.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -28,7 +28,7 @@ void DecayVertex::Init() {
   
   static ClassDocumentation<DecayVertex> documentation
     ("The DecayVertex class is the implementation of a "
-     "vertex for a decay for the Herwig++ spin correlation algorithm");
+     "vertex for a decay for the Herwig spin correlation algorithm");
   
 }
 

@@ -5,7 +5,7 @@
 // This is the declaration of the BSMModel class.
 //
 
-#include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "Herwig/Models/StandardModel/StandardModel.h"
 #include "ThePEG/Utilities/CFileLineReader.h"
 
 namespace Herwig {
@@ -172,7 +172,7 @@ private:
   double tolerance_;
 
   /**
-   *  Map of ids from files to those used by Herwig++
+   *  Map of ids from files to those used by Herwig
    */
   map<long,long> idMap_;
 

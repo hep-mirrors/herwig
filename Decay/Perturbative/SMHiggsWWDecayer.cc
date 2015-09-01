@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// SMHiggsWWDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// SMHiggsWWDecayer.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -17,11 +17,11 @@
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "Herwig/Models/StandardModel/StandardModel.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/PDT/ParticleData.h"
-#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
+#include "Herwig/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 typedef Selector<tDMPtr> DecaySelector;
@@ -57,7 +57,7 @@ void SMHiggsWWDecayer::doinit() {
   tcHwSMPtr hwsm=dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   if(!hwsm) 
     throw InitException() << "SMHiggsWWDecayer needs the StandardModel class"
-			  << " to be either the Herwig++ one or a class inheriting"
+			  << " to be either the Herwig one or a class inheriting"
 			  << " from it";
   _theFFWVertex = hwsm->vertexFFW();
   _theFFZVertex = hwsm->vertexFFZ();

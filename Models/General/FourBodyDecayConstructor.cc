@@ -16,9 +16,9 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Models/StandardModel/StandardModel.h"
-#include "Herwig++/Decay/General/GeneralFourBodyDecayer.h"
-#include "Herwig++/Decay/DecayPhaseSpaceMode.h"
+#include "Herwig/Models/StandardModel/StandardModel.h"
+#include "Herwig/Decay/General/GeneralFourBodyDecayer.h"
+#include "Herwig/Decay/DecayPhaseSpaceMode.h"
 #include "DecayConstructor.h"
 
 using namespace Herwig;

@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// OpenLoopsAmplitude.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// OpenLoopsAmplitude.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -27,7 +27,7 @@
 
 #include "ThePEG/Utilities/DynamicLoader.h"
 
-#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
+#include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
 
 #include <fstream>
 #include <sstream>
@@ -136,7 +136,7 @@ void OpenLoopsAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs
 		maxlegs = max(maxlegs, static_cast<size_t>(t->first.first.legs.size()));
 	}
 
-	orderFile << "# OLP order file created by Herwig++/Matchbox for OpenLoops\n\n";
+	orderFile << "# OLP order file created by Herwig/Matchbox for OpenLoops\n\n";
 	orderFile << "CorrectionType           QCD\n";
 	orderFile << "IRregularization         " << (isDR() ? "DRED" : "CDR") << "\n";
 	orderFile << "extra answerfile      " << (factory()->buildStorage() + name() + ".OLPAnswer.lh") << "\n";

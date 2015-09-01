@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// MEee2Z.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MEee2Z.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_MEee2Z_H
@@ -14,11 +14,11 @@
 
 #include "ThePEG/MatrixElement/ME2to2Base.h"
 #include "ThePEG/MatrixElement/MEBase.h"
-#include "Herwig++/Models/RSModel/RSModel.h"
+#include "Herwig/Models/RSModel/RSModel.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Utilities/Rebinder.h"
-#include "Herwig++/MatrixElement/ProductionMatrixElement.h"
+#include "Herwig/MatrixElement/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"

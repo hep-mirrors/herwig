@@ -9,8 +9,8 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "Herwig++/Models/Susy/NMSSM/NMSSM.h"
-#include "Herwig++/Looptools/clooptools.h"
+#include "Herwig/Models/Susy/NMSSM/NMSSM.h"
+#include "Herwig/Looptools/clooptools.h"
 
 using namespace Herwig;
 

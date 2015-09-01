@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// StandardModel.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// StandardModel.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_StandardModel_H
@@ -12,7 +12,7 @@
 // This is the declaration of the StandardModel class.
 
 #include "ThePEG/StandardModel/StandardModelBase.h"
-#include "Herwig++/Models/StandardModel/RunningMassBase.h"
+#include "Herwig/Models/StandardModel/RunningMassBase.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
@@ -21,7 +21,7 @@
 #include "ThePEG/Helicity/Vertex/AbstractSSSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractSSSSVertex.h"
-#include "Herwig++/Models/General/ModelGenerator.fh"
+#include "Herwig/Models/General/ModelGenerator.fh"
 #include "StandardModel.fh"
 
 namespace Herwig {
@@ -30,7 +30,7 @@ using namespace ThePEG::Helicity;
 
 /** \ingroup Models
  *  
- *  This is the Herwig++ StandardModel class which inherits from ThePEG 
+ *  This is the Herwig StandardModel class which inherits from ThePEG 
  *  Standard Model class and implements additional Standard Model couplings, 
  *  access to vertices for helicity amplitude calculations etc.
  *

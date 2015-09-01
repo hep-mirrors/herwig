@@ -12,7 +12,7 @@
 // This is the declaration of the ColourFlowBasis class.
 //
 
-#include "Herwig++/MatrixElement/Matchbox/Utility/ColourBasis.h"
+#include "Herwig/MatrixElement/Matchbox/Utility/ColourBasis.h"
 #include "ColourFlows.h"
 
 namespace CVolver {

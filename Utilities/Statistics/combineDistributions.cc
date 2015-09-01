@@ -8,7 +8,7 @@
 
 #include "CrossSections.h"
 
-#include "Herwig++/Utilities/XML/ElementIO.h"
+#include "Herwig/Utilities/XML/ElementIO.h"
 
 #include <iostream>
 #include <fstream>

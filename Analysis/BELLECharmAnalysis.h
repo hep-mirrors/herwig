@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// BELLECharmAnalysis.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// BELLECharmAnalysis.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_BELLECharmAnalysis_H
@@ -13,7 +13,7 @@
 //
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
-#include "Herwig++/Utilities/Histogram.h"
+#include "Herwig/Utilities/Histogram.h"
 
 namespace Herwig {
 
@@ -21,7 +21,7 @@ using namespace ThePEG;
 
 /** \ingroup Analysis
  * The BELLECharmAnalysis class is designed to compared the results of
- * Herwig++ at 10.52 GeV with data from the BELLE experiment.
+ * Herwig at 10.52 GeV with data from the BELLE experiment.
  *
  * @see \ref BELLECharmAnalysisInterfaces "The interfaces"
  * defined for BELLECharmAnalysis.

@@ -35,7 +35,7 @@ FxFxAnalysis::FxFxAnalysis()
 HepMC::GenEvent * FxFxAnalysis::makeEvent(tEventPtr event, tSubProPtr sub, long no,
 					  Energy eUnit, Length lUnit, 
 					  CrossSection xsec, CrossSection xsecErr) const {
-  //convert the event from the Herwig++ format to the HepMC format and write it to the common block
+  //convert the event from the Herwig format to the HepMC format and write it to the common block
   HepMC::GenEvent * ev = HepMCConverter<HepMC::GenEvent>::convert(*event, false,eUnit, lUnit);
  
   //reset the event 
@@ -50,7 +50,7 @@ HepMC::GenEvent * FxFxAnalysis::makeEventW(tEventPtr event, tSubProPtr sub, long
 					  Energy eUnit, Length lUnit, 
 					       CrossSection xsec, CrossSection xsecErr, double evoptweight) const {
 
-  //convert the event from the Herwig++ format to the HepMC format and write it to the common block
+  //convert the event from the Herwig format to the HepMC format and write it to the common block
   HepMC::GenEvent * ev = HepMCConverter<HepMC::GenEvent>::convert(*event, false,eUnit, lUnit);
  
   //reset the event 

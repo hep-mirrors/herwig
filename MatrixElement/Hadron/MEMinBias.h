@@ -5,7 +5,7 @@
 // This is the declaration of the MEMinBias class.
 //
 
-#include "Herwig++/MatrixElement/HwMEBase.h"
+#include "Herwig/MatrixElement/HwMEBase.h"
 
 namespace Herwig {
 

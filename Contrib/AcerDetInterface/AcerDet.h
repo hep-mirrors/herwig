@@ -14,7 +14,7 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The AcerDet class is designed to interface Herwig++ with the
+ * The AcerDet class is designed to interface Herwig with the
  * AcerDet fast detector simulation
  *
  * @see \ref AcerDetInterfaces "The interfaces"

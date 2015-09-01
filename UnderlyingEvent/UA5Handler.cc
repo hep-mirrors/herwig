@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// UA5Handler.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// UA5Handler.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #include <ThePEG/Repository/UseRandom.h>
@@ -15,9 +15,9 @@
 #include <ThePEG/Interface/ClassDocumentation.h>
 #include <ThePEG/Handlers/DecayHandler.h>
 #include <ThePEG/Handlers/EventHandler.h>
-#include "Herwig++/Hadronization/Cluster.h"
-#include "Herwig++/Hadronization/ClusterFissioner.h"
-#include "Herwig++/Hadronization/ClusterDecayer.h"
+#include "Herwig/Hadronization/Cluster.h"
+#include "Herwig/Hadronization/ClusterFissioner.h"
+#include "Herwig/Hadronization/ClusterDecayer.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/Throw.h"
 #include <cassert>

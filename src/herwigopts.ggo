@@ -3,7 +3,7 @@ args "--file-name=herwigopts --unamed-opts --long-help"
 
 ##################################################
 
-purpose "Herwig++ is a multi-purpose Monte-Carlo event generator \
+purpose "Herwig is a multi-purpose Monte-Carlo event generator \
 for particle physics. See arXiv:0803.0883 for a detailed manual, \
 or arXiv:1101.2599 for a more general description of the physics \
 behind MC event generation."
@@ -84,7 +84,7 @@ option "prepend" L "Prepend a search path for dynamically loaded libraries."
   typestr="PATH"
   string optional multiple
 
-text "\nUsage: Herwig++ init [OPTIONS] FILE\n"
+text "\nUsage: Herwig init [OPTIONS] FILE\n"
 text "    creates a new default repository (not useful for end users).\n"
 
 section "Advanced options"

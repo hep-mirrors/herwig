@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// HwRemDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// HwRemDecayer.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -22,7 +22,7 @@
 #include "ThePEG/Utilities/SimplePhaseSpace.h"
 #include "ThePEG/Utilities/Throw.h"
 
-#include "Herwig++/Shower/ShowerHandler.h"
+#include "Herwig/Shower/ShowerHandler.h"
 
 using namespace Herwig;
 
@@ -1106,7 +1106,7 @@ ClassDescription<HwRemDecayer> HwRemDecayer::initHwRemDecayer;
 void HwRemDecayer::Init() {
 
   static ClassDocumentation<HwRemDecayer> documentation
-    ("The HwRemDecayer class decays the remnant for Herwig++");
+    ("The HwRemDecayer class decays the remnant for Herwig");
 
   static Parameter<HwRemDecayer,double> interfaceZBinSize
     ("ZBinSize",

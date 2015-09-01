@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// BSMWidthGenerator.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// BSMWidthGenerator.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_BSMWidthGenerator_H
@@ -12,8 +12,8 @@
 // This is the declaration of the BSMWidthGenerator class.
 //
 
-#include "Herwig++/PDT/GenericWidthGenerator.h"
-#include "Herwig++/Decay/General/GeneralTwoBodyDecayer.fh"
+#include "Herwig/PDT/GenericWidthGenerator.h"
+#include "Herwig/Decay/General/GeneralTwoBodyDecayer.fh"
 #include "BSMWidthGenerator.fh"
 
 namespace Herwig {

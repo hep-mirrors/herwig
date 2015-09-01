@@ -1,17 +1,17 @@
 // -*- C++ -*-
 //
-// ShowerTree.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// ShowerTree.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #include "ShowerProgenitor.h"
 #include "ThePEG/EventRecord/MultiColour.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ShowerTree.h"
-#include "Herwig++/Shower/Base/ShowerParticle.h"
-#include "Herwig++/Shower/ShowerHandler.h"
+#include "Herwig/Shower/Base/ShowerParticle.h"
+#include "Herwig/Shower/ShowerHandler.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Handlers/EventHandler.h"
 #include "ThePEG/Handlers/XComb.h"

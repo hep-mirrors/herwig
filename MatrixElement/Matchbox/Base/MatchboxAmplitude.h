@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// MatchboxAmplitude.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MatchboxAmplitude.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_MatchboxAmplitude_H
@@ -14,13 +14,13 @@
 
 #include "ThePEG/MatrixElement/Amplitude.h"
 #include "ThePEG/Handlers/LastXCombInfo.h"
-#include "Herwig++/MatrixElement/Matchbox/Utility/ColourBasis.h"
-#include "Herwig++/MatrixElement/Matchbox/Utility/SpinCorrelationTensor.h"
-#include "Herwig++/MatrixElement/Matchbox/Utility/LastMatchboxXCombInfo.h"
-#include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxXComb.h"
-#include "Herwig++/MatrixElement/Matchbox/Phasespace/MatchboxPhasespace.h"
-#include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.fh"
-#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.fh"
+#include "Herwig/MatrixElement/Matchbox/Utility/ColourBasis.h"
+#include "Herwig/MatrixElement/Matchbox/Utility/SpinCorrelationTensor.h"
+#include "Herwig/MatrixElement/Matchbox/Utility/LastMatchboxXCombInfo.h"
+#include "Herwig/MatrixElement/Matchbox/Utility/MatchboxXComb.h"
+#include "Herwig/MatrixElement/Matchbox/Phasespace/MatchboxPhasespace.h"
+#include "Herwig/MatrixElement/Matchbox/Base/MatchboxMEBase.fh"
+#include "Herwig/MatrixElement/Matchbox/MatchboxFactory.fh"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -199,7 +199,7 @@ public:
   virtual unsigned int orderInGem() const = 0;
 
   /**
-   * Return the Herwig++ StandardModel object
+   * Return the Herwig StandardModel object
    */
   Ptr<StandardModel>::tcptr standardModel() { 
     if ( !hwStandardModel() )

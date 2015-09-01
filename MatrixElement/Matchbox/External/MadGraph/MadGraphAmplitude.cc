@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// MadGraphAmplitude.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MadGraphAmplitude.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -17,7 +17,7 @@
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
-#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
+#include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -826,7 +826,7 @@ void MadGraphAmplitude::Init() {
 
   static Parameter<MadGraphAmplitude,string> interfacePKGDATADIR
     ("DataDir",
-     "The location for the installed Herwig++ data files",
+     "The location for the installed Herwig data files",
      &MadGraphAmplitude::pkgdatadir_, string(HERWIG_PKGDATADIR),
      false, false);
     

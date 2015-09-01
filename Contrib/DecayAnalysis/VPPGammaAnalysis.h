@@ -6,7 +6,7 @@
 //
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
-#include "Herwig++/Utilities/Histogram.h"
+#include "Herwig/Utilities/Histogram.h"
 #include "ThePEG/PDT/EnumParticles.h"
 
 namespace Herwig {

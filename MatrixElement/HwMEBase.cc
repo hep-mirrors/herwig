@@ -10,10 +10,10 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Utilities/SimplePhaseSpace.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "Herwig++/PDT/GenericMassGenerator.h"
+#include "Herwig/PDT/GenericMassGenerator.h"
 #include "ThePEG/Cuts/Cuts.h"
-#include "Herwig++/Shower/Base/HardTree.h"
-#include "Herwig++/Shower/Base/Branching.h"
+#include "Herwig/Shower/Base/HardTree.h"
+#include "Herwig/Shower/Base/Branching.h"
 
 using namespace Herwig;
 
@@ -31,7 +31,7 @@ AbstractClassDescription<HwMEBase> HwMEBase::initHwMEBase;
 void HwMEBase::Init() {
 
   static ClassDocumentation<HwMEBase> documentation
-    ("The HwMEBase class is the base class for matrix elements in Herwig++"
+    ("The HwMEBase class is the base class for matrix elements in Herwig"
      " and provides the virtual members for hard radiation corrections in the"
      " shower.");
 

@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// MatchboxMEBase.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MatchboxMEBase.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -26,12 +26,12 @@
 #include "ThePEG/Cuts/Cuts.h"
 #include "ThePEG/Handlers/StdXCombGroup.h"
 #include "ThePEG/EventRecord/SubProcess.h"
-#include "Herwig++/MatrixElement/Matchbox/Dipoles/SubtractionDipole.h"
-#include "Herwig++/MatrixElement/Matchbox/Utility/DiagramDrawer.h"
-#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
-#include "Herwig++/Utilities/RunDirectories.h"
-#include "Herwig++/MatrixElement/ProductionMatrixElement.h"
-#include "Herwig++/MatrixElement/HardVertex.h"
+#include "Herwig/MatrixElement/Matchbox/Dipoles/SubtractionDipole.h"
+#include "Herwig/MatrixElement/Matchbox/Utility/DiagramDrawer.h"
+#include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
+#include "Herwig/Utilities/RunDirectories.h"
+#include "Herwig/MatrixElement/ProductionMatrixElement.h"
+#include "Herwig/MatrixElement/HardVertex.h"
 
 #include <boost/foreach.hpp>
 #include <cctype>

@@ -5,12 +5,12 @@
 // This is the declaration of the MatchingHandler class.
 //
 
-#include "Herwig++/Shower/ShowerHandler.h"
+#include "Herwig/Shower/ShowerHandler.h"
 #include "ThePEG/MatrixElement/MEBase.h"
-#include "Herwig++/MatrixElement/HwMEBase.h"
+#include "Herwig/MatrixElement/HwMEBase.h"
 #include "ThePEG/MatrixElement/DiagramBase.fh"
 #include "ThePEG/PDF/PartonExtractor.h"
-#include "Herwig++/Shower/Base/HardBranching.h"
+#include "Herwig/Shower/Base/HardBranching.h"
 #include "ProtoTree.h"
 #include "PotentialTree.h"
 

@@ -24,7 +24,7 @@
 #include <string>
 #endif
 
-#include "Herwig++/Utilities/XML/Element.h"
+#include "Herwig/Utilities/XML/Element.h"
 
 namespace ExSample {
 

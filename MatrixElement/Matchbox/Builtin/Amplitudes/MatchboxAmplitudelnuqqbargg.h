@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// MatchboxAmplitudelnuqqbargg.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MatchboxAmplitudelnuqqbargg.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef Herwig_MatchboxAmplitudelnuqqbargg_H
@@ -12,8 +12,8 @@
 // This is the declaration of the MatchboxAmplitudelnuqqbargg class.
 //
 
-#include "Herwig++/MatrixElement/Matchbox/Base/MatchboxAmplitude.h"
-#include "Herwig++/MatrixElement/Matchbox/Builtin/Amplitudes/MatchboxCurrents.h"
+#include "Herwig/MatrixElement/Matchbox/Base/MatchboxAmplitude.h"
+#include "Herwig/MatrixElement/Matchbox/Builtin/Amplitudes/MatchboxCurrents.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/EventRecord/Particle.h"
@@ -23,7 +23,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "Herwig++/MatrixElement/Matchbox/Utility/SU2Helper.h"
+#include "Herwig/MatrixElement/Matchbox/Utility/SU2Helper.h"
 
 namespace Herwig {
 

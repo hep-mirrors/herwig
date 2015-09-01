@@ -3,7 +3,7 @@
    the C/C++ header file with all definitions for LoopTools
    this file is part of LoopTools
    last modified 9 Dec 10 th
-   dgrell 2011-01-21 for Herwig++: moved definitions and extern declarations to our clooptools.cc
+   dgrell 2011-01-21 for Herwig: moved definitions and extern declarations to our clooptools.cc
 */
 
 

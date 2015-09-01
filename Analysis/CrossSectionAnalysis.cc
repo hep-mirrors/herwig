@@ -17,9 +17,9 @@
 
 #include "ThePEG/Handlers/EventHandler.h"
 #include "ThePEG/Handlers/StandardEventHandler.h"
-#include "Herwig++/Sampling/GeneralSampler.h"
+#include "Herwig/Sampling/GeneralSampler.h"
 
-#include "Herwig++/Utilities/XML/ElementIO.h"
+#include "Herwig/Utilities/XML/ElementIO.h"
 
 using namespace Herwig;
 

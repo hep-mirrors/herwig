@@ -5,9 +5,9 @@
 // This is the declaration of the MEPP2SingleTop class.
 //
 
-#include "Herwig++/MatrixElement/HwMEBase.h"
+#include "Herwig/MatrixElement/HwMEBase.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
-#include "Herwig++/MatrixElement/ProductionMatrixElement.h"
+#include "Herwig/MatrixElement/ProductionMatrixElement.h"
 
 namespace Herwig {
 

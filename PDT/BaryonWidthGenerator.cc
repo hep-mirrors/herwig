@@ -10,7 +10,7 @@
 #include "ThePEG/Interface/RefVector.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Decay/Baryon/Baryon1MesonDecayerBase.h"
+#include "Herwig/Decay/Baryon/Baryon1MesonDecayerBase.h"
 
 using namespace Herwig;
 using namespace ThePEG;

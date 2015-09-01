@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// MatchboxXCombData.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MatchboxXCombData.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef Herwig_MatchboxXCombData_H
@@ -18,10 +18,10 @@
 #include <boost/numeric/ublas/vector.hpp>
 
 #include "ThePEG/MatrixElement/MEBase.h"
-#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.fh"
-#include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.fh"
-#include "Herwig++/MatrixElement/Matchbox/Dipoles/SubtractionDipole.fh"
-#include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "Herwig/MatrixElement/Matchbox/MatchboxFactory.fh"
+#include "Herwig/MatrixElement/Matchbox/Base/MatchboxMEBase.fh"
+#include "Herwig/MatrixElement/Matchbox/Dipoles/SubtractionDipole.fh"
+#include "Herwig/Models/StandardModel/StandardModel.h"
 
 #include "ThePEG/Persistency/PersistentOStream.fh"
 #include "ThePEG/Persistency/PersistentIStream.fh"
@@ -600,12 +600,12 @@ namespace Herwig {
     set<pair<size_t,size_t> >::const_iterator& lastSingularLimit() { return theLastSingularLimit; }
 
     /**
-     * Set the Herwig++ StandardModel object
+     * Set the Herwig StandardModel object
      */
     void hwStandardModel(Ptr<StandardModel>::tcptr sm) { theStandardModel = sm; }
 
     /**
-     * Get the Herwig++ StandardModel object
+     * Get the Herwig StandardModel object
      */
     Ptr<StandardModel>::tcptr hwStandardModel() const { return theStandardModel; }
 
@@ -1045,7 +1045,7 @@ namespace Herwig {
     set<pair<size_t,size_t> >::const_iterator theLastSingularLimit;
 
     /**
-     * The Herwig++ StandardModel object
+     * The Herwig StandardModel object
      */
     Ptr<StandardModel>::tcptr theStandardModel;
 

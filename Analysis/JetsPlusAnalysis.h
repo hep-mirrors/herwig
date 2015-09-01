@@ -9,7 +9,7 @@
 #include "ThePEG/Cuts/JetFinder.h"
 #include "ThePEG/Cuts/JetRegion.h"
 #include "ThePEG/Repository/EventGenerator.h"
-#include "Herwig++/Utilities/Statistics/Histogram.h"
+#include "Herwig/Utilities/Statistics/Histogram.h"
 
 #include <boost/tuple/tuple.hpp>
 #include <boost/tuple/tuple_comparison.hpp>

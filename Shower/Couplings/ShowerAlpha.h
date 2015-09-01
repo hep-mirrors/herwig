@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// ShowerAlpha.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// ShowerAlpha.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_ShowerAlpha_H
@@ -41,7 +41,7 @@ using namespace ThePEG;
  *  and it appears more sensible than the rough and one-sided evaluation
  *  obtained
  *  via turning off the I.S.R. and/or F.S.R. (possibilities which are,
- *  anyway, provided by Herwig++). 
+ *  anyway, provided by Herwig). 
  *
  * @see \ref ShowerAlphaInterfaces "The interfaces"
  * defined for ShowerAlpha.

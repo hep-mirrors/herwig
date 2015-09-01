@@ -5,7 +5,7 @@
 // This is the declaration of the MEPP2ZH class.
 //
 
-#include "Herwig++/MatrixElement/MEfftoVH.h"
+#include "Herwig/MatrixElement/MEfftoVH.h"
 
 namespace Herwig {
 

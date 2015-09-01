@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// SudakovFormFactor.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// SudakovFormFactor.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -26,7 +26,7 @@
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Utilities/DescribeClass.h"
-#include "Herwig++/Shower/ShowerHandler.h"
+#include "Herwig/Shower/ShowerHandler.h"
 
 using namespace Herwig;
 
@@ -53,7 +53,7 @@ void SudakovFormFactor::Init() {
 
   static ClassDocumentation<SudakovFormFactor> documentation
     ("The SudakovFormFactor class is the base class for the implementation of Sudakov"
-     " form factors in Herwig++");
+     " form factors in Herwig");
 
   static Reference<SudakovFormFactor,SplittingFunction>
     interfaceSplittingFunction("SplittingFunction",
@@ -106,7 +106,7 @@ void SudakovFormFactor::Init() {
   static SwitchOption interfaceCutOffOptionDefault
     (interfaceCutOffOption,
      "Default",
-     "Use the standard Herwig++ cut-off on virtualities with the minimum"
+     "Use the standard Herwig cut-off on virtualities with the minimum"
      " virtuality depending on the mass of the branching particle",
      0);
   static SwitchOption interfaceCutOffOptionFORTRAN

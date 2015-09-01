@@ -5,7 +5,7 @@
 // This is the declaration of the GravitonMassGenerator class.
 //
 
-#include "Herwig++/PDT/GenericMassGenerator.h"
+#include "Herwig/PDT/GenericMassGenerator.h"
 
 namespace Herwig {
 

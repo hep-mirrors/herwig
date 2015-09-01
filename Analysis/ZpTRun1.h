@@ -7,7 +7,7 @@
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Handlers/AnalysisHandler.h"
-#include "Herwig++/Utilities/Histogram.h"
+#include "Herwig/Utilities/Histogram.h"
 
 
 namespace Herwig {

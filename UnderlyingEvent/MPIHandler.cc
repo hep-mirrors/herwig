@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// MPIHandler.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MPIHandler.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -652,13 +652,13 @@ void MPIHandler::Init() {
      "%\\cite{Bahr:2008dy}\n"
      "\\bibitem{Bahr:2008dy}\n"
      "  M.~Bahr, S.~Gieseke and M.~H.~Seymour,\n"
-     "  ``Simulation of multiple partonic interactions in Herwig++,''\n"
+     "  ``Simulation of multiple partonic interactions in Herwig,''\n"
      "  JHEP {\\bf 0807}, 076 (2008)\n"
      "  [arXiv:0803.3633 [hep-ph]].\n"
      "  %%CITATION = JHEPA,0807,076;%%\n"
     "\\bibitem{Bahr:2009ek}\n"
      "  M.~Bahr, J.~M.~Butterworth, S.~Gieseke and M.~H.~Seymour,\n"
-     "  ``Soft interactions in Herwig++,''\n"
+     "  ``Soft interactions in Herwig,''\n"
      "  arXiv:0905.4671 [hep-ph].\n"
      "  %%CITATION = ARXIV:0905.4671;%%\n"
      );

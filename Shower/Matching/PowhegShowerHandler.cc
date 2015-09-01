@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// PowhegShowerHandler.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// PowhegShowerHandler.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -24,24 +24,24 @@
 #include "ThePEG/Utilities/DescribeClass.h"
 
 // include theses to have complete types
-#include "Herwig++/Shower/Base/Evolver.h"
-#include "Herwig++/Shower/Base/ShowerParticle.h"
-#include "Herwig++/PDF/MPIPDF.h"
-#include "Herwig++/PDF/MinBiasPDF.h"
-#include "Herwig++/Shower/Base/ShowerTree.h"
-#include "Herwig++/Shower/Base/KinematicsReconstructor.h"
-#include "Herwig++/Shower/Base/PartnerFinder.h"
-#include "Herwig++/PDF/HwRemDecayer.h"
+#include "Herwig/Shower/Base/Evolver.h"
+#include "Herwig/Shower/Base/ShowerParticle.h"
+#include "Herwig/PDF/MPIPDF.h"
+#include "Herwig/PDF/MinBiasPDF.h"
+#include "Herwig/Shower/Base/ShowerTree.h"
+#include "Herwig/Shower/Base/KinematicsReconstructor.h"
+#include "Herwig/Shower/Base/PartnerFinder.h"
+#include "Herwig/PDF/HwRemDecayer.h"
 
-#include "Herwig++/Shower/Base/ShowerProgenitor.h"
-#include "Herwig++/Shower/Base/HardBranching.h"
-#include "Herwig++/Shower/Base/HardTree.h"
-#include "Herwig++/MatrixElement/HwMEBase.h"
+#include "Herwig/Shower/Base/ShowerProgenitor.h"
+#include "Herwig/Shower/Base/HardBranching.h"
+#include "Herwig/Shower/Base/HardTree.h"
+#include "Herwig/MatrixElement/HwMEBase.h"
 #include "ThePEG/MatrixElement/MEBase.h"
 #include "ThePEG/MatrixElement/DiagramBase.fh"
 #include "ThePEG/PDF/PartonExtractor.h"
-#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
-#include "Herwig++/MatrixElement/Matchbox/Utility/DiagramDrawer.h"
+#include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
+#include "Herwig/MatrixElement/Matchbox/Utility/DiagramDrawer.h"
 
 
 using namespace Herwig;

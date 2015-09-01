@@ -1,16 +1,16 @@
 // -*- C++ -*-
 //
-// Cluster.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Cluster.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_Cluster_H
 #define HERWIG_Cluster_H
 
 #include <ThePEG/EventRecord/Particle.h>
-#include "Herwig++/Utilities/EnumParticles.h"
+#include "Herwig/Utilities/EnumParticles.h"
 #include "CluHadConfig.h"
 #include "ClusterHadronizationHandler.fh"
 #include "Cluster.fh"

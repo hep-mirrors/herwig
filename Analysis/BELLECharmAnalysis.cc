@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// BELLECharmAnalysis.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// BELLECharmAnalysis.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -93,7 +93,7 @@ void BELLECharmAnalysis::Init() {
 
   static ClassDocumentation<BELLECharmAnalysis> documentation
     ("The BELLECharmAnalysis class implements the analysis of hep-ex/0506068",
-     "The results of Herwig++ were compared with the data of the Belle collaboration"
+     "The results of Herwig were compared with the data of the Belle collaboration"
      "\\cite{Seuster:2005tr} on charm fragmentation functions.",
      "\\bibitem{Seuster:2005tr} R.~Seuster {\\it et al.}  [Belle Collaboration],"
      "Phys.\\ Rev.\\  D {\\bf 73} (2006) 032002 [arXiv:hep-ex/0506068].\n"

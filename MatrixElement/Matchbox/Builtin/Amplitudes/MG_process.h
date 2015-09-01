@@ -22,7 +22,7 @@ class MG_process
     // Initialize process using parameter card (slow)
     virtual void initProc(string param_card_name); 
 
-    // Initialize process using Herwig++ parameters
+    // Initialize process using Herwig parameters
     virtual void initProc(map<string, double> & MGParams); 
 
     // Calculate flavour-independent parts of cross section.

@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// ShowerHandler.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// ShowerHandler.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -19,24 +19,24 @@
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/PDF/PartonExtractor.h"
 #include "ThePEG/PDF/PartonBinInstance.h"
-#include "Herwig++/PDT/StandardMatchers.h"
+#include "Herwig/PDT/StandardMatchers.h"
 #include "ThePEG/Cuts/Cuts.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Utilities/Throw.h"
-#include "Herwig++/Shower/Base/Evolver.h"
-#include "Herwig++/Shower/Base/ShowerParticle.h"
+#include "Herwig/Shower/Base/Evolver.h"
+#include "Herwig/Shower/Base/ShowerParticle.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Repository/EventGenerator.h"
-#include "Herwig++/Utilities/EnumParticles.h"
-#include "Herwig++/PDF/MPIPDF.h"
-#include "Herwig++/PDF/MinBiasPDF.h"
+#include "Herwig/Utilities/EnumParticles.h"
+#include "Herwig/PDF/MPIPDF.h"
+#include "Herwig/PDF/MinBiasPDF.h"
 #include "ThePEG/Handlers/EventHandler.h"
-#include "Herwig++/Shower/Base/ShowerTree.h"
-#include "Herwig++/Shower/Base/HardTree.h"
-#include "Herwig++/Shower/Base/KinematicsReconstructor.h"
-#include "Herwig++/Shower/Base/PartnerFinder.h"
-#include "Herwig++/PDF/HwRemDecayer.h"
+#include "Herwig/Shower/Base/ShowerTree.h"
+#include "Herwig/Shower/Base/HardTree.h"
+#include "Herwig/Shower/Base/KinematicsReconstructor.h"
+#include "Herwig/Shower/Base/PartnerFinder.h"
+#include "Herwig/PDF/HwRemDecayer.h"
 #include <cassert>
 #include "ThePEG/Utilities/DescribeClass.h"
 

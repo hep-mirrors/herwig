@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// MEPP2Higgs.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MEPP2Higgs.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -22,13 +22,13 @@
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Cuts/Cuts.h"
-#include "Herwig++/MatrixElement/HardVertex.h"
-#include "Herwig++/Models/StandardModel/StandardModel.h"
-#include "Herwig++/Utilities/Maths.h"
-#include "Herwig++/Shower/Base/ShowerProgenitor.h"
-#include "Herwig++/Shower/Base/ShowerTree.h"
-#include "Herwig++/Shower/Base/Branching.h"
-#include "Herwig++/Shower/Base/HardTree.h"
+#include "Herwig/MatrixElement/HardVertex.h"
+#include "Herwig/Models/StandardModel/StandardModel.h"
+#include "Herwig/Utilities/Maths.h"
+#include "Herwig/Shower/Base/ShowerProgenitor.h"
+#include "Herwig/Shower/Base/ShowerTree.h"
+#include "Herwig/Shower/Base/Branching.h"
+#include "Herwig/Shower/Base/HardTree.h"
 
 using namespace Herwig;
 
@@ -311,7 +311,7 @@ void MEPP2Higgs::doinit() {
   // do the initialisation
   if(!theSM) {
     throw InitException() << "Wrong type of StandardModel object in MEPP2Higgs::doinit(),"
-                          << " the Herwig++ version must be used" 
+                          << " the Herwig version must be used" 
                           << Exception::runerror;
   }
   HGGVertex_ = theSM->vertexHGG();

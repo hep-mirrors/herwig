@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// MatchboxFactory.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MatchboxFactory.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -24,9 +24,9 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Handlers/EventHandler.h"
 #include "ThePEG/Handlers/SamplerBase.h"
-#include "Herwig++/MatrixElement/Matchbox/Base/DipoleRepository.h"
-#include "Herwig++/MatrixElement/Matchbox/Utility/SU2Helper.h"
-#include "Herwig++/Utilities/RunDirectories.h"
+#include "Herwig/MatrixElement/Matchbox/Base/DipoleRepository.h"
+#include "Herwig/MatrixElement/Matchbox/Utility/SU2Helper.h"
+#include "Herwig/Utilities/RunDirectories.h"
 
 #include <boost/progress.hpp>
 #include <boost/filesystem.hpp>
@@ -1450,13 +1450,13 @@ void MatchboxFactory::Init() {
      "%\\cite{Platzer:2011bc}\n"
      "\\bibitem{Platzer:2011bc}\n"
      "S.~Platzer and S.~Gieseke,\n"
-     "``Dipole Showers and Automated NLO Matching in Herwig++,''\n"
+     "``Dipole Showers and Automated NLO Matching in Herwig,''\n"
      "arXiv:1109.6256 [hep-ph].\n"
      "%%CITATION = ARXIV:1109.6256;%%\n"
      "%\\cite{Matchbox:2015}\n"
      "\\bibitem{Matchbox:2015}\n"
-     "Herwig++ collaboration,\n"
-     "``Precision LHC Event Generation with Herwig++,''\n"
+     "Herwig collaboration,\n"
+     "``Precision LHC Event Generation with Herwig,''\n"
      "in preparation.");
 
   static Reference<MatchboxFactory,Tree2toNGenerator> interfaceDiagramGenerator

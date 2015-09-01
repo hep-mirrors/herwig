@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// DecayIntegrator.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// DecayIntegrator.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_DecayIntegrator_H
@@ -14,9 +14,9 @@
 #include <ThePEG/PDT/Decayer.h>
 #include "DecayPhaseSpaceChannel.h"
 #include <ThePEG/PDT/EnumParticles.h>
-#include <Herwig++/Decay/DecayVertex.h>
+#include <Herwig/Decay/DecayVertex.h>
 #include "DecayPhaseSpaceMode.fh"
-#include "Herwig++/PDT/WidthCalculatorBase.fh"
+#include "Herwig/PDT/WidthCalculatorBase.fh"
 #include "Radiation/DecayRadiationGenerator.h"
 #include "HwDecayerBase.h"
 #include "DecayIntegrator.fh"
@@ -29,7 +29,7 @@ using namespace ThePEG;
    * \brief Main class for Decayers implementing multi-channel phase space integration.
    * \author Peter Richardson
    *
-   *  This class is designed to be the base class for Herwig++ decays including
+   *  This class is designed to be the base class for Herwig decays including
    *  the implementation of a multichannel decayer or n-body phase space decays.
    *
    *  The <code>DecayIntegrator</code> class inherits from ThePEG's Decayer class

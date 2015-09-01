@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// MG_gg2ttxg.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MG_gg2ttxg.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -25,7 +25,7 @@ using namespace MG5_sm;
 
 void MG_gg2ttxg::initProc(map<string, double> & MGParams) 
 {
-  // Instantiate the model class and set parameters using Herwig++ values
+  // Instantiate the model class and set parameters using Herwig values
   pars = Parameters_sm::getInstance(); 
   pars->setIndependentParameters(MGParams); 
   pars->setIndependentCouplings(); 

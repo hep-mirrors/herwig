@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// MPIHandler.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MPIHandler.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_MPIHandler_H
@@ -14,11 +14,11 @@
 #include "ThePEG/Interface/Interfaced.h"
 #include "ThePEG/Handlers/StandardEventHandler.h"
 #include "ThePEG/Repository/EventGenerator.h"
-#include "Herwig++/PDT/StandardMatchers.h"
-#include "Herwig++/Utilities/GSLBisection.h"
-//#include "Herwig++/Utilities/GSLMultiRoot.h"
-#include "Herwig++/Utilities/GSLIntegrator.h"
-#include "Herwig++/Shower/UEBase.h"
+#include "Herwig/PDT/StandardMatchers.h"
+#include "Herwig/Utilities/GSLBisection.h"
+//#include "Herwig/Utilities/GSLMultiRoot.h"
+#include "Herwig/Utilities/GSLIntegrator.h"
+#include "Herwig/Shower/UEBase.h"
 
 #include <cassert>
 #include "ProcessHandler.h"

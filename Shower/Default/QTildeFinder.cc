@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// QTildeFinder.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// QTildeFinder.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -18,7 +18,7 @@
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/EventRecord/Event.h"
-#include "Herwig++/Shower/Base/ShowerParticle.h"
+#include "Herwig/Shower/Base/ShowerParticle.h"
 #include "ThePEG/Repository/UseRandom.h" 
 #include "ThePEG/Utilities/DescribeClass.h"
 

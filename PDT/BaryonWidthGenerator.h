@@ -7,7 +7,7 @@
 
 #include "GenericWidthGenerator.h"
 #include "BaryonWidthGenerator.fh"
-#include "Herwig++/Decay/Baryon/Baryon1MesonDecayerBase.h"
+#include "Herwig/Decay/Baryon/Baryon1MesonDecayerBase.h"
 
 namespace Herwig {
 using namespace ThePEG;

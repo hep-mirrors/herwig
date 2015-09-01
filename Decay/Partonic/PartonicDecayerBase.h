@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// PartonicDecayerBase.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// PartonicDecayerBase.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_PartonicDecayerBase_H
@@ -12,13 +12,13 @@
 // This is the declaration of the PartonicDecayerBase class.
 //
 
-#include "Herwig++/Decay/HwDecayerBase.h"
-#include "Herwig++/Hadronization/PartonSplitter.h"
-#include "Herwig++/Hadronization/ClusterFinder.h"
-#include "Herwig++/Hadronization/ClusterFissioner.h"
-#include "Herwig++/Hadronization/LightClusterDecayer.h"
-#include "Herwig++/Hadronization/ClusterDecayer.h"
-#include "Herwig++/Hadronization/Cluster.h"
+#include "Herwig/Decay/HwDecayerBase.h"
+#include "Herwig/Hadronization/PartonSplitter.h"
+#include "Herwig/Hadronization/ClusterFinder.h"
+#include "Herwig/Hadronization/ClusterFissioner.h"
+#include "Herwig/Hadronization/LightClusterDecayer.h"
+#include "Herwig/Hadronization/ClusterDecayer.h"
+#include "Herwig/Hadronization/Cluster.h"
 
 namespace Herwig {
 

@@ -6,8 +6,8 @@
 //
 
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
-#include "Herwig++/Models/Susy/SusyBase.h"
-#include "Herwig++/Models/Susy/MixingMatrix.fh"
+#include "Herwig/Models/Susy/SusyBase.h"
+#include "Herwig/Models/Susy/MixingMatrix.fh"
 
 namespace Herwig {
 

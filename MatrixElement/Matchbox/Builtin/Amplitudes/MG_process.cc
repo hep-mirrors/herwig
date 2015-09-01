@@ -31,7 +31,7 @@ void MG_process::initProc(string param_card_name)
 
 void MG_process::initProc(map<string, double> & MGParams) 
 {
-  // Instantiate the model class and set parameters using Herwig++ values
+  // Instantiate the model class and set parameters using Herwig values
   pars = Parameters_mssm::getInstance(); 
   pars->setIndependentParameters(MGParams); 
   pars->setIndependentCouplings(); 

@@ -5,8 +5,8 @@
 // This is the declaration of the GeneralThreeBodyDecayer class.
 //
 
-#include "Herwig++/Decay/DecayIntegrator.h"
-#include "Herwig++/Models/General/TBDiagram.h"
+#include "Herwig/Decay/DecayIntegrator.h"
+#include "Herwig/Models/General/TBDiagram.h"
 #include "GeneralThreeBodyDecayer.fh"
 
 namespace Herwig {

@@ -5,10 +5,10 @@
 // This is the declaration of the MEPP2VGamma class.
 //
 
-#include "Herwig++/MatrixElement/HwMEBase.h"
+#include "Herwig/MatrixElement/HwMEBase.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
-#include "Herwig++/MatrixElement/ProductionMatrixElement.h"
+#include "Herwig/MatrixElement/ProductionMatrixElement.h"
 
 namespace Herwig {
 

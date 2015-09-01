@@ -7,7 +7,7 @@
 
 #include "SMWFermionsPOWHEGDecayer.h"
 #include <numeric>
-#include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "Herwig/Models/StandardModel/StandardModel.h"
 #include "ThePEG/PDF/PolarizedBeamParticleData.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
@@ -15,11 +15,11 @@
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Shower/Base/HardTree.h"
-#include "Herwig++/Shower/Base/ShowerTree.h"
-#include "Herwig++/Shower/Base/ShowerProgenitor.h"
-#include "Herwig++/Shower/Base/ShowerParticle.h"
-#include "Herwig++/Shower/Base/Branching.h"
+#include "Herwig/Shower/Base/HardTree.h"
+#include "Herwig/Shower/Base/ShowerTree.h"
+#include "Herwig/Shower/Base/ShowerProgenitor.h"
+#include "Herwig/Shower/Base/ShowerParticle.h"
+#include "Herwig/Shower/Base/Branching.h"
 
 using namespace Herwig;
 
@@ -385,7 +385,7 @@ void SMWFermionsPOWHEGDecayer::doinit() {
   if(!hwsm) throw InitException() 
 	      << "Wrong type of StandardModel object in "
 	      << "SMWFermionsPOWHEGDecayer::doinit() "
-	      << "the Herwig++ version must be used." 
+	      << "the Herwig version must be used." 
 	      << Exception::runerror;
   // cast the vertices
   FFWVertex_ = hwsm->vertexFFW();

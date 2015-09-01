@@ -1,15 +1,15 @@
 // -*- C++ -*-
 //
-// AmplitudeCache.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// AmplitudeCache.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_AmplitudeCache_H
 #define HERWIG_AmplitudeCache_H
 
-#include "Herwig++/MatrixElement/Matchbox/Utility/SpinorHelicity.h"
+#include "Herwig/MatrixElement/Matchbox/Utility/SpinorHelicity.h"
 #include "ThePEG/Config/algorithm.h"
 
 namespace Herwig {

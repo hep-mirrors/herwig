@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// HwDecayerBase.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// HwDecayerBase.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_HwDecayerBase_H
@@ -13,10 +13,10 @@
 //
 
 #include "ThePEG/PDT/Decayer.h"
-#include "Herwig++/Shower/Base/ShowerParticle.fh"
-#include "Herwig++/Shower/Base/ShowerProgenitor.fh"
-#include "Herwig++/Shower/Base/ShowerTree.fh"
-#include "Herwig++/Shower/Base/HardTree.fh"
+#include "Herwig/Shower/Base/ShowerParticle.fh"
+#include "Herwig/Shower/Base/ShowerProgenitor.fh"
+#include "Herwig/Shower/Base/ShowerTree.fh"
+#include "Herwig/Shower/Base/HardTree.fh"
 #include "HwDecayerBase.fh"
 
 namespace Herwig {
@@ -26,7 +26,7 @@ struct Branching;
 using namespace ThePEG;
 
 /**
- * The HwDecayerBase class is the base class for Decayers in Herwig++. It inherits
+ * The HwDecayerBase class is the base class for Decayers in Herwig. It inherits
  * from the Decayer class of ThePEG and implements additional functionality for the 
  * output of the results to the particle database and initialization of the datbase.
  *

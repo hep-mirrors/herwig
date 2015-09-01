@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// LeptoquarkModelSLQSLQGGVertex.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// LeptoquarkModelSLQSLQGGVertex.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_LeptoquarkModelSLQSLQGGVertex_H
@@ -12,7 +12,7 @@
 // This is the declaration of the LeptoquarkModelSLQSLQGGVertex class.
 
 #include "ThePEG/Helicity/Vertex/Scalar/VVSSVertex.h"
-#include "Herwig++/Models/Leptoquarks/LeptoquarkModel.h"
+#include "Herwig/Models/Leptoquarks/LeptoquarkModel.h"
 
 namespace Herwig {
 using namespace ThePEG;

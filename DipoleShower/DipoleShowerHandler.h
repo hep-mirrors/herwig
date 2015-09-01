@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// DipoleShowerHandler.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// DipoleShowerHandler.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_DipoleShowerHandler_H
@@ -12,18 +12,18 @@
 // This is the declaration of the DipoleShowerHandler class.
 //
 
-#include "Herwig++/Shower/ShowerHandler.h"
+#include "Herwig/Shower/ShowerHandler.h"
 
-#include "Herwig++/DipoleShower/Base/DipoleSplittingInfo.h"
-#include "Herwig++/DipoleShower/Base/DipoleSplittingReweight.h"
-#include "Herwig++/DipoleShower/Kernels/DipoleSplittingKernel.h"
-#include "Herwig++/DipoleShower/Base/DipoleSplittingGenerator.h"
-#include "Herwig++/DipoleShower/Base/DipoleEventRecord.h"
-#include "Herwig++/DipoleShower/Base/DipoleEvolutionOrdering.h"
-#include "Herwig++/DipoleShower/Base/DipoleEventReweight.h"
-#include "Herwig++/DipoleShower/Utility/ConstituentReshuffler.h"
-#include "Herwig++/DipoleShower/Utility/IntrinsicPtGenerator.h"
-#include "Herwig++/MatrixElement/Matchbox/Matching/ShowerApproximation.h"
+#include "Herwig/DipoleShower/Base/DipoleSplittingInfo.h"
+#include "Herwig/DipoleShower/Base/DipoleSplittingReweight.h"
+#include "Herwig/DipoleShower/Kernels/DipoleSplittingKernel.h"
+#include "Herwig/DipoleShower/Base/DipoleSplittingGenerator.h"
+#include "Herwig/DipoleShower/Base/DipoleEventRecord.h"
+#include "Herwig/DipoleShower/Base/DipoleEvolutionOrdering.h"
+#include "Herwig/DipoleShower/Base/DipoleEventReweight.h"
+#include "Herwig/DipoleShower/Utility/ConstituentReshuffler.h"
+#include "Herwig/DipoleShower/Utility/IntrinsicPtGenerator.h"
+#include "Herwig/MatrixElement/Matchbox/Matching/ShowerApproximation.h"
 
 namespace Herwig {
 

@@ -6,7 +6,7 @@
 //
 
 #include "ThePEG/Helicity/Vertex/Scalar/VVSSVertex.h"
-#include "Herwig++/Models/Susy/MixingMatrix.h"
+#include "Herwig/Models/Susy/MixingMatrix.h"
 
 namespace Herwig {
 

@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// MEee2VectorMeson.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MEee2VectorMeson.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -21,9 +21,9 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/Cuts/Cuts.h"
-#include "Herwig++/PDT/GenericMassGenerator.h"
+#include "Herwig/PDT/GenericMassGenerator.h"
 #include "ThePEG/Handlers/StandardXComb.h"
-#include "Herwig++/MatrixElement/HardVertex.h"
+#include "Herwig/MatrixElement/HardVertex.h"
 
 using namespace Herwig;
 using namespace ThePEG;

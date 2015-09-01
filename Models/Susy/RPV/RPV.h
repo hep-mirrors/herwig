@@ -5,7 +5,7 @@
 // This is the declaration of the RPV class.
 //
 
-#include "Herwig++/Models/Susy/MSSM.h"
+#include "Herwig/Models/Susy/MSSM.h"
 #include "RPV.fh"
 
 namespace Herwig {

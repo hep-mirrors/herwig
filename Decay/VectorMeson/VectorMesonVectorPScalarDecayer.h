@@ -1,17 +1,17 @@
 // -*- C++ -*-
 //
-// VectorMesonVectorPScalarDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// VectorMesonVectorPScalarDecayer.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_VectorMesonVectorPScalarDecayer_H
 #define HERWIG_VectorMesonVectorPScalarDecayer_H
 // This is the declaration of the VectorMesonVectorPScalarDecayer class.
 
-#include "Herwig++/Decay/DecayIntegrator.h"
-#include "Herwig++/Decay/DecayPhaseSpaceMode.h"
+#include "Herwig/Decay/DecayIntegrator.h"
+#include "Herwig/Decay/DecayPhaseSpaceMode.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
 
 namespace Herwig {
