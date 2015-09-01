@@ -2,7 +2,7 @@
 
 ##################################################
 # Example generator based on DIS parameters
-# usage: Herwig++ read DIS.in
+# usage: Herwig read DIS.in
 ##################################################
 
 ##################################################
@@ -87,7 +87,7 @@ cd /Herwig/Generators
 # set /Herwig/Analysis/HepMCFile:Units GeV_mm
 
 ##################################################
-# Save run for later usage with 'Herwig++ run'
+# Save run for later usage with 'Herwig run'
 ##################################################
 saverun DIS DISGenerator
 

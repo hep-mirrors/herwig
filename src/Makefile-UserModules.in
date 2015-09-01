@@ -3,7 +3,7 @@
 #
 # @PACKAGE_STRING@
 #
-# This Makefile is intended for compiling Herwig++ plugins
+# This Makefile is intended for compiling Herwig plugins
 # You can find example plugins in the Contrib directory
 #
 # This Makefile received very little testing, 

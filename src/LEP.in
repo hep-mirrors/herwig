@@ -2,7 +2,7 @@
 
 ##################################################
 # Example generator based on LEP parameters
-# usage: Herwig++ read LEP.in
+# usage: Herwig read LEP.in
 ##################################################
 
 ##################################################
@@ -98,7 +98,7 @@ cd /Herwig/Generators
 # set /Herwig/Analysis/HepMCFile:Units GeV_mm
 
 ###################################################
-# Save run for later usage with 'Herwig++ run'
+# Save run for later usage with 'Herwig run'
 ##################################################
 saverun LEP LEPGenerator
 

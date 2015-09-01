@@ -168,7 +168,7 @@ cd /Analysis2
 
 ## Selection of jet finder #####################################################
 # 
-# Two jet finders are currently provided. As these depend on the mode Herwig++
+# Two jet finders are currently provided. As these depend on the mode Herwig
 # has been built, we only give commented examples here.
 #
 ################################################################################

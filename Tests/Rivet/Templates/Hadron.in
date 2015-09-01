@@ -22,7 +22,7 @@ cd /Herwig/Generators
 read ${parameterFile}
 
 ##################################################
-# Save run for later usage with 'Herwig++ run'
+# Save run for later usage with 'Herwig run'
 ##################################################
 cd /Herwig/Generators
 saverun ${runname} EventGenerator

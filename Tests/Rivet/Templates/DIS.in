@@ -1,6 +1,6 @@
 ##################################################
 # Example generator based on DIS parameters
-# usage: Herwig++ read DIS.in
+# usage: Herwig read DIS.in
 ##################################################
 
 set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
@@ -32,7 +32,7 @@ mv /Herwig/Generators/DISGenerator /Herwig/Generators/EventGenerator
 read ${parameterFile}
 
 ##################################################
-# Save run for later usage with 'Herwig++ run'
+# Save run for later usage with 'Herwig run'
 ##################################################
 cd /Herwig/Generators
 saverun ${runname} EventGenerator

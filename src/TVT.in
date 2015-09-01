@@ -2,7 +2,7 @@
 
 ##################################################
 # Example generator based on Tevatron parameters
-# usage: Herwig++ read TVT.in
+# usage: Herwig read TVT.in
 #
 # Since most parameters are identical to LHC,
 # we use the default LHCGenerator and adapt only
@@ -143,7 +143,7 @@ cd /Herwig/Generators
 # set /Herwig/Analysis/HepMCFile:Units GeV_mm
 
 ##################################################
-# Save run for later usage with 'Herwig++ run'
+# Save run for later usage with 'Herwig run'
 ##################################################
 saverun TVT LHCGenerator
 

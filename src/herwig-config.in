@@ -7,7 +7,7 @@ datarootdir=@datarootdir@
 
 tmp=$(echo $* | egrep -- '--\<help\>|-\<h\>')
 if test $# -eq 0 || test -n "$tmp"; then
-    echo "herwig-config: configuration tool for the Herwig++ event generator"
+    echo "herwig-config: configuration tool for the Herwig event generator"
     echo "               http://projects.hepforge.org/herwig/"
     echo
     echo "Usage: `basename $0` [Option]"
@@ -17,9 +17,9 @@ if test $# -eq 0 || test -n "$tmp"; then
     echo "  --datadir      : show the path to the directory containing shared data"
     echo "  --libdir       : show the path to the directory containing the libraries"
     echo "  --includedir   : show the path to the directory containing the headers"
-    echo "  --cppflags     : show the required CPPFLAGS for building against Herwig++"
-    echo "  --ldflags      : show the required LDFLAGS for linking against Herwig++"
-    echo "  --ldlibs       : show the required libraries for linking against Herwig++"
+    echo "  --cppflags     : show the required CPPFLAGS for building against Herwig"
+    echo "  --ldflags      : show the required LDFLAGS for linking against Herwig"
+    echo "  --ldlibs       : show the required libraries for linking against Herwig"
 
     echo
 fi

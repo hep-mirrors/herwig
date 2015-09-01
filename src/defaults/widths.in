@@ -1,8 +1,8 @@
 # -*- ThePEG-repository -*-
 
 #
-# This file contains the set-up of the width generators for Herwig++ outputted
-# from the Herwig++ Particles Database at 13:42:2 on the 15/11/2007.
+# This file contains the set-up of the width generators for Herwig outputted
+# from the Herwig Particles Database at 13:42:2 on the 15/11/2007.
 #
 create Herwig::GenericWidthGenerator  rho+width
 newdef rho+width:Particle /Herwig/Particles/rho+ 

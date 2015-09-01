@@ -1,6 +1,6 @@
 ##################################################
 # Example generator based on LHC parameters
-# usage: Herwig++ read LHC.in
+# usage: Herwig read LHC.in
 ##################################################
 
 cd /Herwig
@@ -21,7 +21,7 @@ set /Herwig/Particles/W-:NominalMass 80.42
 set /Herwig/Masses/HiggsMass:HiggsShape 0
 
 cd /Herwig/Partons
-setup MRST /usr/local/share/Herwig++/PDF/mrst/1998/lo05a.dat
+setup MRST /usr/local/share/Herwig/PDF/mrst/1998/lo05a.dat
 set MRST:Interpolation Linear
 
 ##################################################
@@ -95,7 +95,7 @@ create Herwig::QuickVBFHadron /Herwig/Analysis/QuickVBFHadron QuickVBFHadron.so
 insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/QuickVBFHadron
 
 ##################################################
-# Save run for later usage with 'Herwig++ run'
+# Save run for later usage with 'Herwig run'
 ##################################################
 #saverun LHC LHCGenerator
 

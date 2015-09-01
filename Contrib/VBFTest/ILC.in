@@ -1,6 +1,6 @@
 ##################################################
 # Example generator based on ILC parameters
-# usage: Herwig++ read ILC.in
+# usage: Herwig read ILC.in
 #
 # Since most parameters are identical to LEP,
 # we use the default LEPGenerator and adapt only
@@ -78,7 +78,7 @@ create Herwig::QuickVBF /Herwig/Analysis/QuickVBF QuickVBF.so
 insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/QuickVBF
 
 ##################################################
-# Save run for later usage with 'Herwig++ run'
+# Save run for later usage with 'Herwig run'
 ##################################################
 #saverun ILC LEPGenerator
 

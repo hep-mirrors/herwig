@@ -1,6 +1,6 @@
 ##################################################
 # Example generator based on LHC parameters
-# usage: Herwig++ read LHC.in
+# usage: Herwig read LHC.in
 ##################################################
 
 cd /Herwig/Particles
@@ -288,6 +288,6 @@ cd /Herwig/Generators
 # set /Herwig/Analysis/HepMCFile:Units GeV_mm
 
 ##################################################
-# Save run for later usage with 'Herwig++ run'
+# Save run for later usage with 'Herwig run'
 ##################################################
 saverun LHC-HH-OL-01jinc LHCGenerator

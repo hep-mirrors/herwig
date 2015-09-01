@@ -217,7 +217,7 @@ else:
 
 if not os.path.isdir(options.buildpath):
    print "The MadGraph Install path was not existend. It has been created for you."
-   print "Just start Herwig++ read again.."
+   print "Just start Herwig read again.."
    mkdir_p(options.buildpath)
    exit()
 

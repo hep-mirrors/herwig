@@ -1,12 +1,12 @@
 ##################################################
 # Higgs Boson pair production at LO incl. D=6 EFT
 # and heavy intermediate Higgs bosons
-# Herwig++
+# Herwig
 # (based on M. Spira's HPAIR)
 # see arXiv:1410.3471, Goertz, Papaefstathiou, Yang
 # for further details
-# usage: Herwig++ read LHC-HH.in
-# Herwig++ run LHC-HH.run -NXXX
+# usage: Herwig read LHC-HH.in
+# Herwig run LHC-HH.run -NXXX
 ##################################################
 
 # set particle parameters 
@@ -178,6 +178,6 @@ cd /Herwig/Generators
 # set /Herwig/Analysis/HepMCFile:Units GeV_mm
 
 ##################################################
-# Save run for later usage with 'Herwig++ run'
+# Save run for later usage with 'Herwig run'
 ##################################################
 saverun LHC-HH LHCGenerator

@@ -2,7 +2,7 @@
 
 ##################################################
 # Example generator based on ILC parameters
-# usage: Herwig++ read ILC.in
+# usage: Herwig read ILC.in
 #
 # Since most parameters are identical to LEP,
 # we use the default LEPGenerator and adapt only
@@ -65,7 +65,7 @@ set /Herwig/Shower/PartnerFinder:QEDPartner IIandFF
 # set /Herwig/Analysis/HepMCFile:Units GeV_mm
 
 ##################################################
-# Save run for later usage with 'Herwig++ run'
+# Save run for later usage with 'Herwig run'
 ##################################################
 saverun ILC LEPGenerator
 

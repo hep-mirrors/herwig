@@ -2,7 +2,7 @@
 
 ##################################################
 # Example generator based on LHC parameters
-# usage: Herwig++ read LHC-diffractive.in
+# usage: Herwig read LHC-diffractive.in
 ##################################################
 
 ##################################################
@@ -94,7 +94,7 @@ set LHCGenerator:EventHandler:CascadeHandler:MPIHandler NULL
 # set /Herwig/Analysis/HepMCFile:Units GeV_mm
 
 ##################################################
-# Save run for later usage with 'Herwig++ run'
+# Save run for later usage with 'Herwig run'
 ##################################################
 
 saverun LHC-diffractive LHCGenerator

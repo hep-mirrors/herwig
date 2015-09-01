@@ -5,7 +5,7 @@
 #
 # Only one ME is activated by default, but this file lists 
 # some alternatives. All available MEs can be found in the
-# 'include/Herwig++/MatrixElements' subdirectory of your Herwig++ 
+# 'include/Herwig/MatrixElements' subdirectory of your Herwig 
 # installation.
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 

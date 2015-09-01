@@ -3,7 +3,7 @@
 ################################################################################
 # This file contains our best tune to UE data from ATLAS at 7 TeV. More recent
 # tunes and tunes for other centre-of-mass energies as well as more usage
-# instructions can be obtained from this Herwig++ wiki page:
+# instructions can be obtained from this Herwig wiki page:
 # http://projects.hepforge.org/herwig/trac/wiki/MB_UE_tunes
 ################################################################################
 
@@ -50,7 +50,7 @@ set LHCGenerator:EventHandler:Cuts /Herwig/Cuts/MinBiasCuts
 #set /Herwig/Analysis/HepMCFile:Filename events.fifo
 
 ##################################################
-# Save run for later usage with 'Herwig++ run'
+# Save run for later usage with 'Herwig run'
 ##################################################
 saverun LHC-MB LHCGenerator
 
