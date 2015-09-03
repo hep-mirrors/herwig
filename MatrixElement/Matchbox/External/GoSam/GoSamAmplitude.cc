@@ -150,11 +150,11 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
   // Set the path variable (plus file name) where to find the GoSam specific input file
   gosamSetupInFileName = gosamSetupInFileNameInterface == "" ? gosamPath + "/setup.gosam.in" : gosamSetupInFileNameInterface;
 
-  // Use the python script GoSamHelper.py to make replacements in the GoSam 
+  // Use the python script gosam2herwig to make replacements in the GoSam 
   // specific input file at gosamSetupInFileName. If the GoSam input file
   // does not exist yet at gosamSetupInFileName the python script will get 
   // it from src/defaults/ before making the replacements.
-  string cmd = "python "+bindir_+"/GoSamHelper.py ";
+  string cmd = "python "+bindir_+"/gosam2herwig ";
   cmd+=" --usrinfile="+gosamSetupInFileNameInterface;
   cmd+=" --infile="+gosamSetupInFileName+".tbu";
   cmd+=" --definfile="+pkgdatadir_+"/defaults/setup.gosam.in";
@@ -532,7 +532,7 @@ void GoSamAmplitude::signOLP(const string& order, const string& contract) {
     string cmd = GoSamPrefix_+"/bin/gosam.py --olp --output-file=" + contract + " --config=" + 
       gosamSetupInFileName+".tbu" + " --destination=" + gosamSourcePath + " " + order + " > " + cwd + folderMatchboxBuild + "gosam-amplitudes.log 2>&1";
     std::system(cmd.c_str());
-    cmd = "python "+bindir_+"/GoSamHelper.py ";
+    cmd = "python "+bindir_+"/gosam2herwig ";
     cmd += " --makelink ";
     cmd += " --makelinkfrom=contract ";
     cmd += " --makelinkto="+factory()->buildStorage() + name() + ".OLPContract.lh";

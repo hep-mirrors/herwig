@@ -18,10 +18,10 @@ HwMatchboxMadGraph_la_CPPFLAGS = $(AM_CPPFLAGS) \
 -DHERWIG_PKGDATADIR="\"$(pkgdatadir)\"" \
 -DMADGRAPH_PREFIX="\"$(MADGRAPHPREFIX)\""
 
-EXTRA_DIST = mg2Matchbox.py
+EXTRA_DIST = mg2herwig.py
 
 install-exec-local:
-	$(install_sh_SCRIPT) $(builddir)/mg2Matchbox.py $(DESTDIR)$(bindir)/mg2Matchbox.py
+	$(install_sh_SCRIPT) $(builddir)/mg2herwig.py $(DESTDIR)$(bindir)/mg2herwig
 
 uninstall-local:
-	rm -f  $(DESTDIR)$(bindir)/mg2Matchbox.py
+	rm -f  $(DESTDIR)$(bindir)/mg2herwig
