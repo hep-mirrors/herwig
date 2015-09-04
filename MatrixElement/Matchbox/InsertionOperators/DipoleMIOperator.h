@@ -222,7 +222,8 @@ private:
   /**
    * V_j, non-singular terms
    */
-  double Vj(const ParticleData&, const ParticleData&, Energy2, double, bool=false) const;
+  // double Vj(const ParticleData&, const ParticleData&, Energy2, double, bool=false) const;
+  double Vj(const ParticleData&, const ParticleData&, Energy2, double, double, int, bool=false) const;
 
   /**
    * V^{(s)}, double pole part in expanded convention.

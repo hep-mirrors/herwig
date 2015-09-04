@@ -287,7 +287,8 @@ public:
   /**
    * The Kscript^{qq}_g contribution
    */
-  double Kscriptqq_g(Energy2 sja) const;
+  // double Kscriptqq_g(Energy2 sja) const;
+  double Kscriptqq_g(Energy2 sja, double lambda) const;
 
   /**
    * The Kscript^{qg}_g contribution
@@ -303,12 +304,14 @@ public:
    * The Kscript^{gg}_g contribution
    * equals the Kscript^{qq}_g contribution
    */
-  double Kscriptgg_g(Energy2 sja) const;
+  // double Kscriptgg_g(Energy2 sja) const;
+  double Kscriptgg_g(Energy2 sja, double lambda) const;
 
   /**
    * The Kscriptbar^{qq}_g contribution (B.18)
    */
-  double Kscriptbarqq_g(Energy2 Qja2) const;
+  // double Kscriptbarqq_g(Energy2 Qja2) const;
+  double Kscriptbarqq_g(Energy2 Qja2, double lambda) const;
 
   /**
    * The Kscriptbar^{qg}_g contribution (B.18)
@@ -323,7 +326,8 @@ public:
   /**
    * The Kscriptbar^{gg}_g contribution (B.18)
    */
-  double Kscriptbargg_g(Energy2 Qja2) const;
+  // double Kscriptbargg_g(Energy2 Qja2) const;
+  double Kscriptbargg_g(Energy2 Qja2, double lambda) const;
 
   //////////////////////////////////////
 
