@@ -118,16 +118,16 @@ def fillprocs(model,oras,orew):
 def build_matchbox_tmp(pwd,buildpath):
    cwd=os.getcwd() 
    os.chdir(pwd)
-   mkdir_p(pwd+"/Herwig/MG_tmp/")
+   mkdir_p(pwd+"/Herwig-scratch/MG_tmp/")
    if not buildpath.startswith("/"):
      buildpath=pwd+"/"+buildpath.lstrip("./")
    resources=glob.glob(buildpath +"/MG5/SubProcesses/MadLoop5_resources/*")
    resources+=glob.glob(buildpath +"/MG5/Cards/*")
    resources+=glob.glob(buildpath +"/MG5/Cards/SubProcesses/*")
    for i in resources:
-     if not os.path.isfile( pwd+"/Herwig/MG_tmp/"+os.path.basename(i)) \
-       and not os.path.islink( pwd+"/Herwig/MG_tmp/"+os.path.basename(i)):
-        os.symlink(i, pwd+"/Herwig/MG_tmp/"+os.path.basename(i))
+     if not os.path.isfile( pwd+"/Herwig-scratch/MG_tmp/"+os.path.basename(i)) \
+       and not os.path.islink( pwd+"/Herwig-scratch/MG_tmp/"+os.path.basename(i)):
+        os.symlink(i, pwd+"/Herwig-scratch/MG_tmp/"+os.path.basename(i))
    os.chdir(cwd)    
 
 
@@ -174,7 +174,7 @@ pwd=os.getcwd()
 
 
 param_card=""
-mkdir_p(pwd+"/Herwig/MG_tmp/")
+mkdir_p(pwd+"/Herwig-scratch/MG_tmp/")
 
 
 
@@ -343,10 +343,10 @@ file.close()
 
 os.chdir(pwd)
 os.chdir(options.buildpath)
-replacetext("MG5/Source/MODEL/lha_read.f", "ident_card.dat","Herwig/MG_tmp/ident_card.dat")
-replacetext("MG5/Source/MODEL/lha_read.f", "param.log","Herwig/MG_tmp/param.log")
+replacetext("MG5/Source/MODEL/lha_read.f", "ident_card.dat","Herwig-scratch/MG_tmp/ident_card.dat")
+replacetext("MG5/Source/MODEL/lha_read.f", "param.log","Herwig-scratch/MG_tmp/param.log")
 if Virtlist!=[]:
-  replacetext("MG5/SubProcesses/MadLoopCommons.f", "PREFIX='./'","PREFIX='./Herwig/MG_tmp/'")
+  replacetext("MG5/SubProcesses/MadLoopCommons.f", "PREFIX='./'","PREFIX='./Herwig-scratch/MG_tmp/'")
 
 os.system("make")
 
