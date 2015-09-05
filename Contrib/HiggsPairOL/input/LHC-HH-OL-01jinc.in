@@ -268,9 +268,9 @@ set /Herwig/Particles/h0/h0->Z0,Z0;:OnOff Off
 set /Herwig/Particles/h0/h0->gamma,gamma;:OnOff Off
 set /Herwig/Particles/h0/h0->mu-,mu+;:OnOff On
 set /Herwig/Particles/h0/h0->t,tbar;:OnOff Off 
-set /Herwig/Widths/HiggsWidth:WidthScheme Fixed
-set /Herwig/Masses/HiggsMass:HiggsShape Normal
-set /Herwig/Decays/Hff:PhotonGenerator NULL
+#set /Herwig/Widths/HiggsWidth:WidthScheme Fixed
+#set /Herwig/Masses/HiggsMass:HiggsShape Normal
+#set /Herwig/Decays/Hff:PhotonGenerator NULL
 #set /Herwig/Particles/h0:Stable Stable
 
 cd /Herwig/Generators
