@@ -71,7 +71,6 @@ Energy FIMassiveKinematics::ptMax(Energy dScale,
 
   // s^star/x
   Energy2 s = sqr(dScale) * (1.-specX)/specX + Mi2;
-  Energy roots = sqrt(s);
   return .5 * sqrt(s) * rootOfKallen( s/s, mi2/s, m2/s );
 }
 
