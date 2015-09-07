@@ -46,3 +46,6 @@ FxFxAnalysis.so : FxFxAnalysis.o
 clean:
 	rm -f $(ALLCCFILES:.cc=.o) \
 	FxFx.so FxFxHandler.so FxFxAnalysis.so 
+
+install:
+        cp *.so $(HERWIGINSTALL)/lib/Herwig
