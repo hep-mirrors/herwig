@@ -423,6 +423,10 @@ void MatchboxFactory::setup() {
       }
       nLight(nl/2);
 
+      if ( particleGroups().find("p") == particleGroups().end() )
+	throw Exception() << "MatchboxFactory: Could not find a hadron particle group named 'p'"
+			  << Exception::runerror;
+
       const PDVector& partonsInP = particleGroups()["p"];
       for ( PDVector::const_iterator pip = partonsInP.begin();
 	    pip != partonsInP.end(); ++pip ) {
