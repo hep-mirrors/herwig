@@ -40,8 +40,4 @@ clean:
 	rm -f MEHiggsPair.so MEHiggsPair.o scalint.o
 
 install:
-	cp *.so $(HERWIGINSTALL)/lib/Herwig
-        
-        
-        
-        
+	cp *.so $(HERWIGINSTALL)/lib/Herwig++
