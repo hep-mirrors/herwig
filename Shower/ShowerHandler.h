@@ -76,6 +76,12 @@ public:
    */
   virtual bool showerHardProcessVeto() { return false; };
 
+  /**
+   * Return true, if this cascade handler will perform reshuffling from hard
+   * process masses.
+   */
+  virtual bool isReshuffling() const { return true; }
+
 public:
 
   /**@name Methods related to PDF freezing */

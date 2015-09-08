@@ -86,6 +86,12 @@ public:
    */
   virtual bool canHandleMatchboxTrunc() const { return false; }
 
+  /**
+   * Return true, if this cascade handler will perform reshuffling from hard
+   * process masses.
+   */
+  virtual bool isReshuffling() const { return false; }
+
 protected:
 
   typedef multimap<DipoleIndex,Ptr<DipoleSplittingGenerator>::ptr> GeneratorMap;
