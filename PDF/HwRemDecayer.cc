@@ -1205,8 +1205,17 @@ void HwRemDecayer::Init() {
 }
 
 bool HwRemDecayer::canHandle(tcPDPtr particle, tcPDPtr parton) const {
-  if(!(StandardQCDPartonMatcher::Check(*parton) ||
-       parton->id()==ParticleID::gamma)) return false;
+  if(abs(parton->id())!=6 && abs(parton->id())!=22) { 
+    if((!StandardQCDPartonMatcher::Check(*parton) ||
+        parton->id()==ParticleID::gamma)) return false;
+  } else {
+    Throw<Exception>() << "Warning partons of type "
+                       << parton->id()
+                       << " cannot be currently handled by the remnant handler"
+                       << " and will be ignored."
+                       << " It is recommended to use a PDF that does not include these partons for the remnant handler."
+                       << Exception::warning;
+  }
   return HadronMatcher::Check(*particle) || particle->id()==ParticleID::gamma 
     || particle->id()==ParticleID::pomeron || particle->id()==ParticleID::reggeon;
 }
