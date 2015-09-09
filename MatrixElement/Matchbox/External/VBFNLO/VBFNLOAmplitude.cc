@@ -109,7 +109,9 @@ void VBFNLOAmplitude::startOLP(const string& contract, int& status) {
 
 void VBFNLOAmplitude::loadVBFNLO() {
   if ( ! (DynamicLoader::load(VBFNLOlib_+"/libVBFNLO.so") || 
-	  DynamicLoader::load("libVBFNLO.so") ) )
+	  DynamicLoader::load("libVBFNLO.so") ||
+	  DynamicLoader::load(VBFNLOlib_+"/libVBFNLO.dylib") || 
+	  DynamicLoader::load("libVBFNLO.dylib") ) )
     throw Exception() << "VBFNLOAmplitude: failed to load libVBFNLO.so/dylib\n"
 		      << DynamicLoader::lastErrorMessage
 		      << Exception::runerror;

@@ -102,7 +102,9 @@ void NJetsAmplitude::startOLP(const string& contract, int& status) {
 
 void NJetsAmplitude::loadNJET() {
   if ( ! (DynamicLoader::load(NJetsLibs_+"/libnjet2.so") ||
-	  DynamicLoader::load("libnjet2.so") ) )
+	  DynamicLoader::load("libnjet2.so") ||
+	  DynamicLoader::load(NJetsLibs_+"/libnjet2.dylib") ||
+	  DynamicLoader::load("libnjet2.dylib") ) )
     throw Exception() << "NJetsAmplitude: Failed to load libnjet2.so\n"
 		      << DynamicLoader::lastErrorMessage
 		      << Exception::runerror;

@@ -41,7 +41,9 @@ VBFNLOPhasespace::VBFNLOPhasespace() :
 
 void VBFNLOPhasespace::loadVBFNLO() {
   if ( ! (DynamicLoader::load(VBFNLOlib_+"/libVBFNLO.so") || 
-	  DynamicLoader::load("libVBFNLO.so") ) )
+	  DynamicLoader::load("libVBFNLO.so") ||
+	  DynamicLoader::load(VBFNLOlib_+"/libVBFNLO.dylib") || 
+	  DynamicLoader::load("libVBFNLO.dylib") ) )
     throw Exception() << "VBFNLOPhasespace::loadVBFNLO(): Failed to load libVBFNLO.so/dylib\n"
 		      << DynamicLoader::lastErrorMessage
 		      << Exception::runerror;
