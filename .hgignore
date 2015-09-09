@@ -35,7 +35,7 @@ Makefile\.in$
 ^Doc/refman.h$
 ^Doc/AllInterfaces.h$
 ^Doc/HerwigDefaults.rpo$
-^Doc/Herwig\+\+-refman.tag$
+^Doc/Herwig-refman.tag$
 ^Doc/tagfileThePEG.tag$
 ^Doc/.*\.log$
 ^(src|Utilities)/version.tmp$
@@ -57,7 +57,6 @@ Makefile\.in$
 ^src/Makefile-UserModules$
 ^lib/done-all-links$
 ^lib/apple-fixes$
-^src/Herwig\+\+
 ^src/defaults/PDF.in$
 ^src/defaults/done-all-links$
 ^src/tune$
@@ -72,7 +71,7 @@ Makefile\.in$
 ^Tests/plots$
 ^Tests/Herwig$
 ^Tests/.*index.html$
-^Herwig\+\+\-
+^Herwig\-
 ^Models/Feynrules/python/Makefile-FR$
 ^MatrixElement/Matchbox/External/MadGraph/mg2Matchbox.py$
 ^MatrixElement/Matchbox/Scales/MatchboxScale.cc$
