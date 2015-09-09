@@ -245,6 +245,16 @@ AS_IF([test "x$with_vbfnlo" != "xno" -a "x$have_vbfnlo" = "xno" ],
       ${with_vbfnlo}/lib64/VBFNLO/libVBFNLO.so,
       [have_vbfnlo=lib64], [have_vbfnlo=no])])
 
+AS_IF([test "x$with_vbfnlo" != "xno" -a "x$have_vbfnlo" = "xno" ],
+      [AC_CHECK_FILES(
+      ${with_vbfnlo}/lib/VBFNLO/libVBFNLO.dylib,
+      [have_vbfnlo=lib], [have_vbfnlo=no])])
+
+AS_IF([test "x$with_vbfnlo" != "xno" -a "x$have_vbfnlo" = "xno" ],
+      [AC_CHECK_FILES(
+      ${with_vbfnlo}/lib64/VBFNLO/libVBFNLO.dylib,
+      [have_vbfnlo=lib64], [have_vbfnlo=no])])
+
 AS_IF([test "x$have_vbfnlo" = "xlib"],
       [VBFNLOLIBS=${with_vbfnlo}/lib/VBFNLO
       AC_SUBST(VBFNLOLIBS)
