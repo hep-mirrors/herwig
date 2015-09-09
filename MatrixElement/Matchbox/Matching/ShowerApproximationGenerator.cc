@@ -318,6 +318,10 @@ handle(EventHandler & eh, const tPVector &,
   SubProPtr newSub;
 
   try {
+    tcDiagPtr bornDiag = lastIncomingXComb->lastDiagram();
+    tcDiagPtr realDiag = 
+      winnerKernel->dipole()->realEmissionDiagram(bornDiag);
+    winnerKernel->realXComb()->externalDiagram(realDiag);
     newSub = winnerKernel->realXComb()->construct();
   } catch(Veto&) {
     return;

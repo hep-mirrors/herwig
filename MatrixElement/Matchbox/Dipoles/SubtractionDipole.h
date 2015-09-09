@@ -353,10 +353,20 @@ public:
   const DiagramVector& underlyingBornDiagrams(const cPDVector& real) const;
 
   /**
+   * Find the underlying Born diagram for the given real emission diagram
+   */
+  tcDiagPtr underlyingBornDiagram(tcDiagPtr realDiag) const;
+
+  /**
    * Return the real emission diagrams to be considered
    * for the given Born process.
    */
   const DiagramVector& realEmissionDiagrams(const cPDVector& born) const;
+
+  /**
+   * Find the real emission diagram for the given underlying Born diagram
+   */
+  tcDiagPtr realEmissionDiagram(tcDiagPtr bornDiag) const;
 
   /**
    * Add all possible diagrams with the add() function.
@@ -1082,6 +1092,16 @@ private:
    * Map Born processes to real emission diagrams
    */
   map<cPDVector,DiagramVector> theRealEmissionDiagrams;
+
+  /**
+   * Map underlying Born diagrams to real emission diagrams.
+   */
+  map<tcDiagPtr,tcDiagPtr> theBornToRealDiagrams;
+
+  /**
+   * Map real emission diagrams to underlying Born diagrams.
+   */
+  map<tcDiagPtr,tcDiagPtr> theRealToBornDiagrams;
 
   /**
    * The last real emission key encountered
