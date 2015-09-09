@@ -24,4 +24,4 @@ struct FixGlobal1 {
   ~FixGlobal1()  { BOOST_TEST_MESSAGE( "teardown global fixture for utilitiesTest" ); }
 };
 
-BOOST_GLOBAL_FIXTURE(FixGlobal1)
+BOOST_GLOBAL_FIXTURE(FixGlobal1);
