@@ -1211,10 +1211,9 @@ bool HwRemDecayer::canHandle(tcPDPtr particle, tcPDPtr parton) const {
   } else {
     Throw<Exception>() << "Warning partons of type "
                        << parton->id()
-                       << " cannot be currently handled by the remnant handler"
-                       << " and will be ignored."
-                       << " It is recommended to use a PDF that does not include these partons for the remnant handler."
-                       << Exception::warning;
+                       << " cannot be currently handled by the remnant handler."
+                       << " Use a PDF that does not include these partons for the remnants."
+                       << Exception::runerror;
   }
   return HadronMatcher::Check(*particle) || particle->id()==ParticleID::gamma 
     || particle->id()==ParticleID::pomeron || particle->id()==ParticleID::reggeon;
