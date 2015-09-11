@@ -620,7 +620,7 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
     if ( theEventReweight ) {
       double w = theEventReweight->weight(eventRecord().incoming(),
 					  eventRecord().outgoing(),
-					  eventRecord().hard());
+					  eventRecord().hard(),theGlobalAlphaS);
       Ptr<StandardEventHandler>::tptr eh = 
 	dynamic_ptr_cast<Ptr<StandardEventHandler>::tptr>(eventHandler());
       assert(eh);

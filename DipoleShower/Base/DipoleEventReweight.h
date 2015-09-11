@@ -13,6 +13,8 @@
 //
 
 #include "ThePEG/Handlers/HandlerBase.h"
+#include "ThePEG/StandardModel/AlphaSBase.h"
+
 
 namespace Herwig {
 
@@ -49,7 +51,7 @@ public:
    * Return the weight for the given incoming, outgoing coloured and
    * hard colour neutral particles
    */
-  virtual double weight(const PPair& in, const PList& out, const PList& hard) const = 0;
+  virtual double weight(const PPair& in, const PList& out, const PList& hard,  Ptr<AlphaSBase>::tptr as) const = 0;
 
 public:
 
