@@ -31,6 +31,8 @@ exsample/statistics.icc
 HwSampling_la_LIBADD = \
 CellGrids/libHwCellGrids.la
 
+EXTRA_DIST = herwig-mergegrids.py
+
 install-exec-local:
 	$(install_sh_SCRIPT) $(srcdir)/herwig-mergegrids.py $(DESTDIR)$(bindir)/herwig-mergegrids
 
