@@ -4,6 +4,8 @@ snippetsdir = ${pkgdatadir}/snippets
 
 INPUTFILES = \
 DipoleShowerParameters.in \
+DipoleShowerFiveFlavours.in \
+DipoleShowerFourFlavours.in \
 Particles-SetLonglivedParticlesStable.in \
 PDF-CT10.in \
 PDF-NNPDF30NLO.in \
