@@ -65,7 +65,7 @@ public:
   /**
    * The default constructor.
    */
-  HwRemDecayer() : ptmin_(-1.*GeV), beta_(ZERO),
+  HwRemDecayer() : allowTop_(false),ptmin_(-1.*GeV), beta_(ZERO),
 		   maxtrySoft_(10), 
 		   colourDisrupt_(1.0), 
 		   _kinCutoff(0.75*GeV), 
@@ -498,6 +498,11 @@ private:
   mutable tcPDFPtr _pdf; 
   
 private:
+
+  /**
+   *  Switch to control handling of top quarks in proton
+   */
+  bool allowTop_;
 
   /** @name Soft interaction variables. */
   //@{
