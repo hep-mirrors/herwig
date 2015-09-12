@@ -420,12 +420,10 @@ PotentialTree PowhegShowerHandler::doClustering(tSubProPtr real,ShowerTreePtr sh
 	  pnew    += (**it).branchingParticle()->momentum();
 	  pshower += (**it).showerMomentum();
 	}
-	pnew   .rescaleMass();
-	pshower.rescaleMass();
-	// pnew   .setMass(tit->second.second->mass());
-	// pshower.setMass(tit->second.second->mass());
-	// pnew   .rescaleEnergy();
-	// pshower.rescaleEnergy();
+	pnew   .setMass(tit->second.second->mass());
+	pshower.setMass(tit->second.second->mass());
+	pnew   .rescaleEnergy();
+	pshower.rescaleEnergy();
 	// create the decaying particle
 	ShowerParticlePtr particle = new_ptr( ShowerParticle( tit->second.second->dataPtr() , true ) );
 	particle->set5Momentum( pnew );
