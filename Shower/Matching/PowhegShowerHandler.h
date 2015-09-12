@@ -52,7 +52,8 @@ public:
    */
   PowhegShowerHandler() : subtractionIntegral_(false),
 			  enforceColourConsistency_(false),
-			  forcePartners_(false)
+			  forcePartners_(false),
+			  decayRadiation_(0)
   {}
 
 public:
@@ -292,6 +293,11 @@ private:
    *  Force emitter and spectator partners
    */
   bool forcePartners_;
+
+  /**
+   *  Handling of radiation in decays
+   */
+  unsigned int decayRadiation_;
 
 };
 

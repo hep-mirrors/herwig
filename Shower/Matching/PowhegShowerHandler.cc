@@ -78,6 +78,109 @@ HardTreePtr PowhegShowerHandler::generateCKKW(ShowerTreePtr showerTree) const {
   // check emission
   if(sub->outgoing().size()>=real->outgoing().size())
     return HardTreePtr();
+  // check if decay has radiated don't add it
+  if(showerTree->outgoingLines().size()  != sub->outgoing().size()) {
+    // loop over the decay trees
+    for(map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> >::const_iterator
+	  tit=showerTree->treelinks().begin(); tit != showerTree->treelinks().end(); ++tit) {
+      if(tit->first->outgoingLines().empty()) continue;
+      // match the particles
+      set<tPPtr> decayProducts;
+      set<PPtr> outgoing(real->outgoing().begin(),real->outgoing().end());
+      for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator oit=tit->first->outgoingLines().begin();
+	  oit!=tit->first->outgoingLines().end();++oit) {
+	tPPtr decayProd;
+	Energy2 dmin( 1e30*GeV2 );
+	tPPtr part = oit->second->original();
+	for( set<PPtr>::const_iterator it = outgoing.begin(); it != outgoing.end(); ++it ) {
+	  if((**it).id()!=part->id()) continue;
+	  Energy2 dtest = 
+	    sqr( part->momentum().x() - (**it).momentum().x() ) +
+	    sqr( part->momentum().y() - (**it).momentum().y() ) +
+	    sqr( part->momentum().z() - (**it).momentum().z() ) +
+	    sqr( part->momentum().t() - (**it).momentum().t() );
+	  dtest += 1e10*sqr(part->momentum().m()-(**it).momentum().m());
+	  if( dtest < dmin ) {
+	    decayProd = *it;
+	    dmin = dtest;
+	  }
+	}
+        if(!decayProd) {
+          throw Exception() << "PowhegShowerHandler::generateCKKW(). Can't match shower and hard trees."
+			    << Exception::eventerror;
+        }
+	outgoing     .erase (decayProd);
+	decayProducts.insert(decayProd);
+      }
+      bool coloured = false, foundParent = true;
+      tPPtr parent,emitted;
+      unsigned int nprod(0);
+      for( set<tPPtr>::const_iterator it = decayProducts.begin(); it != decayProducts.end(); ++it ) {
+	coloured |= (**it).dataPtr()->coloured();
+	tPPtr newParent = !(**it).parents().empty() ? (**it).parents()[0] : tPPtr();
+	++nprod;
+	// check if from emission
+	if(newParent->id()==(**it).id()) {
+	  if(newParent->children().size()!=2) foundParent=false;
+	  bool foundChild(false), foundGluon(false);
+	  for(unsigned int ix=0;ix<newParent->children().size();++ix) {
+	    if(newParent->children()[ix]==*it) {
+	      foundChild = true;
+	      continue;
+	    }
+	    else if(newParent->children()[ix]->id()==ParticleID::g) {
+	      foundGluon = true;
+	      continue;
+	    }
+	  }
+	  if(foundChild && foundGluon) {
+	    newParent = !newParent->parents().empty() ? newParent->parents()[0] : tPPtr();
+	    ++nprod;
+	  }
+	  else
+	    foundParent = false;
+	} 
+	if(!newParent) {
+	  foundParent = false;
+	}
+	else if(!parent) {
+	  parent = newParent;
+	}
+	else {
+	  if(parent!=newParent) foundParent = false;
+	}
+      }
+      if(nprod!=tit->first->outgoingLines().size()&&foundParent) {
+	if(decayRadiation_==0) {
+	  throw Exception() << "The radiation generated in this event\n "
+			    << *real << "\n has been interepted as occuring in the "
+			    << "decay \nof a colour-singlet object and cannot be handled "
+			    << "you can either not simulated this process, "
+			    << "veto this class of events by using\n"
+			    << "set " << fullName() << ":DecayRadiation VetoEvent\n"
+			    << "or throw the hard radiation away using \n"
+			    <<  "set " << fullName() << ":DecayRadiation VetoRadiation\n"
+			    << Exception::runerror;
+	}
+	else if(decayRadiation_==1) {
+	  throw Exception() << "The radiation generated in this event\n "
+			    << *real << "\n has been interepted as occuring in the "
+			    << "decay \nof a colour-singlet object and cannot be handled "
+			    << "vetoing event\n"
+			    << Exception::eventerror;
+	}
+	else if(decayRadiation_==2) {
+	  generator()->log() << "The radiation generated in this event\n "
+			     << *real << "\n has been interepted as occuring in the "
+			     << "decay \nof a colour-singlet object and cannot be handled "
+			     << "vetoing radiation\n";
+	  return HardTreePtr();
+	}
+	else
+	  assert(false);
+      }
+    }
+  }
 
   tStdXCombPtr lastXC = dynamic_ptr_cast<tStdXCombPtr>(lastXCombPtr());
   tStdXCombPtr headXC = lastXC->head();
@@ -917,12 +1020,14 @@ void PowhegShowerHandler::doinit() {
 
 void PowhegShowerHandler::persistentOutput(PersistentOStream & os) const {
   os << theFactory << allowedInitial_ << allowedFinal_
-     << subtractionIntegral_ << enforceColourConsistency_ << forcePartners_;
+     << subtractionIntegral_ << enforceColourConsistency_ << forcePartners_
+     << decayRadiation_;
 }
 
 void PowhegShowerHandler::persistentInput(PersistentIStream & is, int) {
   is >> theFactory >> allowedInitial_ >> allowedFinal_
-     >> subtractionIntegral_ >> enforceColourConsistency_ >> forcePartners_;
+     >> subtractionIntegral_ >> enforceColourConsistency_ >> forcePartners_
+     >> decayRadiation_;
 }
 
 
@@ -970,5 +1075,25 @@ void PowhegShowerHandler::Init() {
      "No",
      "Don't force them",
      false);
+
+  static Switch<PowhegShowerHandler,unsigned int> interfaceDecayRadiation
+    ("DecayRadiation",
+     "Handling of radiation which is interpretted as having come from decays",
+     &PowhegShowerHandler::decayRadiation_, 0, false,false);
+  static SwitchOption interfaceDecayRadiationNotAllowed
+    (interfaceDecayRadiation,
+     "NotAllowed",
+     "Not allowed at all, run error will be thrown",
+     0);
+  static SwitchOption interfaceDecayRadiationVetoEvent
+    (interfaceDecayRadiation,
+     "VetoEvent",
+     "Veto the whole event",
+     1);
+  static SwitchOption interfaceDecayRadiationVetoRadiation
+    (interfaceDecayRadiation,
+     "VetoRadiation",
+     "Throw the radiation away but keep the event",
+     2);
 
 }
