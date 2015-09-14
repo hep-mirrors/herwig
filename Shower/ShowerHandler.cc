@@ -73,10 +73,10 @@ ShowerHandler::ShowerHandler() :
   pdfFreezingScale_(2.5*GeV),
   maxtry_(10),maxtryMPI_(10),maxtryDP_(10),
   includeSpaceTime_(false), vMin_(0.1*GeV2), subProcess_(),
-  theFactorizationScaleFactor(1.0),
-  theRenormalizationScaleFactor(1.0),
-  theHardScaleFactor(1.0), theScaleFactorOption(0),
-  theRestrictPhasespace(true), maxPtIsMuF(false) {
+  factorizationScaleFactor_(1.0),
+  renormalizationScaleFactor_(1.0),
+  hardScaleFactor_(1.0), scaleFactorOption_(0),
+  restrictPhasespace_(true), maxPtIsMuF_(false) {
   inputparticlesDecayInShower_.push_back( 6  ); //  top 
   inputparticlesDecayInShower_.push_back( 23 ); // Z0
   inputparticlesDecayInShower_.push_back( 24 ); // W+/-
@@ -107,9 +107,9 @@ void ShowerHandler::persistentOutput(PersistentOStream & os) const {
      << particlesDecayInShower_ << MPIHandler_ << PDFA_ << PDFB_
      << PDFARemnant_ << PDFBRemnant_
      << includeSpaceTime_ << ounit(vMin_,GeV2)
-     << theFactorizationScaleFactor << theRenormalizationScaleFactor
-     << theHardScaleFactor << theScaleFactorOption
-     << theRestrictPhasespace << maxPtIsMuF << theHardScaleProfile;
+     << factorizationScaleFactor_ << renormalizationScaleFactor_
+     << hardScaleFactor_ << scaleFactorOption_
+     << restrictPhasespace_ << maxPtIsMuF_ << theHardScaleProfile;
 }
 
 void ShowerHandler::persistentInput(PersistentIStream & is, int) {
@@ -118,9 +118,9 @@ void ShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> particlesDecayInShower_ >> MPIHandler_ >> PDFA_ >> PDFB_
      >> PDFARemnant_ >> PDFBRemnant_
      >> includeSpaceTime_ >> iunit(vMin_,GeV2)
-     >> theFactorizationScaleFactor >> theRenormalizationScaleFactor
-     >> theHardScaleFactor >> theScaleFactorOption
-     >> theRestrictPhasespace >> maxPtIsMuF >> theHardScaleProfile;
+     >> factorizationScaleFactor_ >> renormalizationScaleFactor_
+     >> hardScaleFactor_ >> scaleFactorOption_
+     >> restrictPhasespace_ >> maxPtIsMuF_ >> theHardScaleProfile;
 }
 
 void ShowerHandler::Init() {
@@ -247,25 +247,25 @@ void ShowerHandler::Init() {
   static Parameter<ShowerHandler,double> interfaceFactorizationScaleFactor
     ("FactorizationScaleFactor",
      "The factorization scale factor.",
-     &ShowerHandler::theFactorizationScaleFactor, 1.0, 0.0, 0,
+     &ShowerHandler::factorizationScaleFactor_, 1.0, 0.0, 0,
      false, false, Interface::lowerlim);
 
   static Parameter<ShowerHandler,double> interfaceRenormalizationScaleFactor
     ("RenormalizationScaleFactor",
      "The renormalization scale factor.",
-     &ShowerHandler::theRenormalizationScaleFactor, 1.0, 0.0, 0,
+     &ShowerHandler::renormalizationScaleFactor_, 1.0, 0.0, 0,
      false, false, Interface::lowerlim);
 
   static Parameter<ShowerHandler,double> interfaceHardScaleFactor
     ("HardScaleFactor",
      "The hard scale factor.",
-     &ShowerHandler::theHardScaleFactor, 1.0, 0.0, 0,
+     &ShowerHandler::hardScaleFactor_, 1.0, 0.0, 0,
      false, false, Interface::lowerlim);
 
   static Switch<ShowerHandler,int> interfaceScaleFactorOption
     ("ScaleFactorOption",
      "Where to apply scale factors.",
-     &ShowerHandler::theScaleFactorOption, 0, false, false);
+     &ShowerHandler::scaleFactorOption_, 0, false, false);
   static SwitchOption interfaceScaleFactorOptionAll
     (interfaceScaleFactorOption,
      "All",
@@ -290,7 +290,7 @@ void ShowerHandler::Init() {
   static Switch<ShowerHandler,bool> interfaceMaxPtIsMuF
     ("MaxPtIsMuF",
      "",
-     &ShowerHandler::maxPtIsMuF, false, false, false);
+     &ShowerHandler::maxPtIsMuF_, false, false, false);
   static SwitchOption interfaceMaxPtIsMuFYes
     (interfaceMaxPtIsMuF,
      "Yes",
@@ -305,7 +305,7 @@ void ShowerHandler::Init() {
   static Switch<ShowerHandler,bool> interfaceRestrictPhasespace
     ("RestrictPhasespace",
      "Switch on or off phasespace restrictions",
-     &ShowerHandler::theRestrictPhasespace, true, false, false);
+     &ShowerHandler::restrictPhasespace_, true, false, false);
   static SwitchOption interfaceRestrictPhasespaceOn
     (interfaceRestrictPhasespace,
      "On",

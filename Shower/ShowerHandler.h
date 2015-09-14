@@ -173,12 +173,12 @@ public:
    * The factorization scale factor.
    */
   double factorizationScaleFactor() const { 
-    if ( theScaleFactorOption == 0 || !subProcess_ )
-      return theFactorizationScaleFactor;
-    if ( theScaleFactorOption == 1 )
-      return firstInteraction() ? theFactorizationScaleFactor : 1.0;
-    if ( theScaleFactorOption == 2 )
-      return !firstInteraction() ? theFactorizationScaleFactor : 1.0;
+    if ( scaleFactorOption_ == 0 || !subProcess_ )
+      return factorizationScaleFactor_;
+    if ( scaleFactorOption_ == 1 )
+      return firstInteraction() ? factorizationScaleFactor_ : 1.0;
+    if ( scaleFactorOption_ == 2 )
+      return !firstInteraction() ? factorizationScaleFactor_ : 1.0;
     return 1.0;
   }
 
@@ -186,12 +186,12 @@ public:
    * The renormalization scale factor.
    */
   double renormalizationScaleFactor() const { 
-    if ( theScaleFactorOption == 0 || !subProcess_ )
-      return theRenormalizationScaleFactor;
-    if ( theScaleFactorOption == 1 )
-      return firstInteraction() ? theRenormalizationScaleFactor : 1.0;
-    if ( theScaleFactorOption == 2 )
-      return !firstInteraction() ? theRenormalizationScaleFactor : 1.0;
+    if ( scaleFactorOption_ == 0 || !subProcess_ )
+      return renormalizationScaleFactor_;
+    if ( scaleFactorOption_ == 1 )
+      return firstInteraction() ? renormalizationScaleFactor_ : 1.0;
+    if ( scaleFactorOption_ == 2 )
+      return !firstInteraction() ? renormalizationScaleFactor_ : 1.0;
     return 1.0;
   }
 
@@ -199,25 +199,25 @@ public:
    * The scale factor for the hard scale
    */
   double hardScaleFactor() const { 
-    if ( theScaleFactorOption == 0 || !subProcess_ )
-      return theHardScaleFactor;
-    if ( theScaleFactorOption == 1 )
-      return firstInteraction() ? theHardScaleFactor : 1.0;
-    if ( theScaleFactorOption == 2 )
-      return !firstInteraction() ? theHardScaleFactor : 1.0;
+    if ( scaleFactorOption_ == 0 || !subProcess_ )
+      return hardScaleFactor_;
+    if ( scaleFactorOption_ == 1 )
+      return firstInteraction() ? hardScaleFactor_ : 1.0;
+    if ( scaleFactorOption_ == 2 )
+      return !firstInteraction() ? hardScaleFactor_ : 1.0;
     return 1.0;
   }
 
   /**
    * The option on when to apply the scale factors
    */
-  int scaleFactorOption() const { return theScaleFactorOption; }
+  int scaleFactorOption() const { return scaleFactorOption_; }
 
   /**
    * Return true, if the phase space restrictions of the dipole shower should
    * be applied.
    */
-  bool restrictPhasespace() const { return theRestrictPhasespace; }
+  bool restrictPhasespace() const { return restrictPhasespace_; }
 
   /**
    * Return profile scales
@@ -227,7 +227,7 @@ public:
   /**
    * Return true if maximum pt should be deduced from the factorization scale
    */
-  bool hardScaleIsMuF() const { return maxPtIsMuF; }
+  bool hardScaleIsMuF() const { return maxPtIsMuF_; }
 
 protected:
 
@@ -493,33 +493,33 @@ private:
   /**
    * The factorization scale factor.
    */
-  double theFactorizationScaleFactor;
+  double factorizationScaleFactor_;
 
   /**
    * The renormalization scale factor.
    */
-  double theRenormalizationScaleFactor;
+  double renormalizationScaleFactor_;
 
   /**
    * The scale factor for the hard scale
    */
-  double theHardScaleFactor;
+  double hardScaleFactor_;
 
   /**
    * The option on when to apply the scale factors
    */
-  int theScaleFactorOption;
+  int scaleFactorOption_;
 
   /**
    * True, if the phase space restrictions of the dipole shower should
    * be applied.
    */
-  bool theRestrictPhasespace;
+  bool restrictPhasespace_;
 
   /**
    * True if maximum pt should be deduced from the factorization scale
    */
-  bool maxPtIsMuF;
+  bool maxPtIsMuF_;
 
   /**
    * The profile scales
