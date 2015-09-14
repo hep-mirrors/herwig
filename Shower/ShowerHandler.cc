@@ -76,7 +76,8 @@ ShowerHandler::ShowerHandler() :
   factorizationScaleFactor_(1.0),
   renormalizationScaleFactor_(1.0),
   hardScaleFactor_(1.0), scaleFactorOption_(0),
-  restrictPhasespace_(true), maxPtIsMuF_(false) {
+  restrictPhasespace_(true), maxPtIsMuF_(false),
+  splitHardProcess_(true) {
   inputparticlesDecayInShower_.push_back( 6  ); //  top 
   inputparticlesDecayInShower_.push_back( 23 ); // Z0
   inputparticlesDecayInShower_.push_back( 24 ); // W+/-
@@ -109,7 +110,8 @@ void ShowerHandler::persistentOutput(PersistentOStream & os) const {
      << includeSpaceTime_ << ounit(vMin_,GeV2)
      << factorizationScaleFactor_ << renormalizationScaleFactor_
      << hardScaleFactor_ << scaleFactorOption_
-     << restrictPhasespace_ << maxPtIsMuF_ << theHardScaleProfile;
+     << restrictPhasespace_ << maxPtIsMuF_ << hardScaleProfile_
+     << splitHardProcess_;
 }
 
 void ShowerHandler::persistentInput(PersistentIStream & is, int) {
@@ -120,7 +122,8 @@ void ShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> includeSpaceTime_ >> iunit(vMin_,GeV2)
      >> factorizationScaleFactor_ >> renormalizationScaleFactor_
      >> hardScaleFactor_ >> scaleFactorOption_
-     >> restrictPhasespace_ >> maxPtIsMuF_ >> theHardScaleProfile;
+     >> restrictPhasespace_ >> maxPtIsMuF_ >> hardScaleProfile_
+     >> splitHardProcess_;
 }
 
 void ShowerHandler::Init() {
@@ -285,7 +288,7 @@ void ShowerHandler::Init() {
   static Reference<ShowerHandler,HardScaleProfile> interfaceHardScaleProfile
     ("HardScaleProfile",
      "The hard scale profile to use.",
-     &ShowerHandler::theHardScaleProfile, false, false, true, true, false);
+     &ShowerHandler::hardScaleProfile_, false, false, true, true, false);
 
   static Switch<ShowerHandler,bool> interfaceMaxPtIsMuF
     ("MaxPtIsMuF",
@@ -317,6 +320,21 @@ void ShowerHandler::Init() {
      "Do not perform phasespace restrictions",
      false);
 
+
+  static Switch<ShowerHandler,bool> interfaceSplitHardProcess
+    ("SplitHardProcess",
+     "Whether or not to try and split the hard process into production and decay processes",
+     &ShowerHandler::splitHardProcess_, true, false, false);
+  static SwitchOption interfaceSplitHardProcessYes
+    (interfaceSplitHardProcess,
+     "Yes",
+     "Split the hard process",
+     true);
+  static SwitchOption interfaceSplitHardProcessNo
+    (interfaceSplitHardProcess,
+     "No",
+     "Don't split the hard process",
+     false);
  
 }
 
@@ -576,7 +594,8 @@ tPPair ShowerHandler::cascade(tSubProPtr sub,
       ShowerTree::constructTrees(currentSubProcess(),hard_,decay_,
 				 firstInteraction() ? tagged() :
 				 tPVector(currentSubProcess()->outgoing().begin(),
-					  currentSubProcess()->outgoing().end()));
+					  currentSubProcess()->outgoing().end()),
+				 splitHardProcess_);
       // if no hard process
       if(!hard_)  throw Exception() << "Shower starting with a decay"
 				    << "is not implemented" 

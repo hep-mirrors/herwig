@@ -71,10 +71,13 @@ public:
    *  Construct the trees from the hard process
    * @param hard The output ShowerTree for the hard process
    * @param decay The output ShowerTrees for any decays.
-   * @param 
+   * @param decay Map for the decay trees
+   * @param tagged The tagged particles
+   * @param splitTrees Whether or not to split the process
    */
   static void constructTrees(tSubProPtr subProcess, ShowerTreePtr & hard,
-			     ShowerDecayMap & decay, tPVector tagged);
+			     ShowerDecayMap & decay, tPVector tagged,
+			     bool splitTrees);
 
 public:
 

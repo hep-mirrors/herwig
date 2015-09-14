@@ -222,7 +222,7 @@ public:
   /**
    * Return profile scales
    */
-  Ptr<HardScaleProfile>::tptr profileScales() const { return theHardScaleProfile; }
+  Ptr<HardScaleProfile>::tptr profileScales() const { return hardScaleProfile_; }
 
   /**
    * Return true if maximum pt should be deduced from the factorization scale
@@ -524,7 +524,12 @@ private:
   /**
    * The profile scales
    */
-  Ptr<HardScaleProfile>::ptr theHardScaleProfile;
+  Ptr<HardScaleProfile>::ptr hardScaleProfile_;
+
+  /**
+   *  Whether or not to split into hard and decay trees
+   */
+  bool splitHardProcess_;
 
 public:
 

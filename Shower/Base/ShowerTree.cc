@@ -1368,11 +1368,13 @@ PPtr findParent(PPtr original, bool & isHard,
 }
 
 void ShowerTree::constructTrees(tSubProPtr subProcess, ShowerTreePtr & hard,
-				ShowerDecayMap & decay, tPVector tagged) {
+				ShowerDecayMap & decay, tPVector tagged,
+				bool splitTrees) {
   // temporary storage of the particles
   set<PPtr> hardParticles;
   // loop over the tagged particles
   bool isHard=false;
+  set<PPtr> outgoingset(tagged.begin(),tagged.end());
   for (tParticleVector::const_iterator taggedP = tagged.begin();
        taggedP != tagged.end(); ++taggedP) {
     // if a remnant don't consider
@@ -1380,22 +1382,22 @@ void ShowerTree::constructTrees(tSubProPtr subProcess, ShowerTreePtr & hard,
       continue;
     // find the parent and whether its a colourless s-channel resonance
     bool isDecayProd=false;
-    tPPtr parent = *taggedP;
-    // check if from s channel decaying colourless particle
-    while(parent&&!parent->parents().empty()&&!isDecayProd) {
-      parent = parent->parents()[0];
-      if(parent == subProcess->incoming().first ||
-  	 parent == subProcess->incoming().second ) break;
-      isDecayProd = decayProduct(subProcess,parent);
-    }
-    set<PPtr> outgoingset(tagged.begin(),tagged.end());
-    // add to list of outgoing hard particles if needed
+    // check if hard
     isHard |=(outgoingset.find(*taggedP) != outgoingset.end());
-    // not sure what the evolver bit was doing here ?
-    // if (isDecayProd && evolver_->_hardEmissionMode<2) 
+    if(splitTrees) {
+      tPPtr parent = *taggedP;
+      // check if from s channel decaying colourless particle
+      while(parent&&!parent->parents().empty()&&!isDecayProd) {
+	parent = parent->parents()[0];
+	if(parent == subProcess->incoming().first ||
+	   parent == subProcess->incoming().second ) break;
+	isDecayProd = decayProduct(subProcess,parent);
+      }
     if (isDecayProd) 
       hardParticles.insert(findParent(parent,isHard,outgoingset,subProcess));
-    else            hardParticles.insert(*taggedP);
+    }
+    if (!isDecayProd) 
+      hardParticles.insert(*taggedP);
   }
   // there must be something to shower
   if(hardParticles.empty()) 
