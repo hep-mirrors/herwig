@@ -160,6 +160,8 @@ HardTreePtr PowhegShowerHandler::generateCKKW(ShowerTreePtr showerTree) const {
 			    << "set " << fullName() << ":DecayRadiation VetoEvent\n"
 			    << "or throw the hard radiation away using \n"
 			    <<  "set " << fullName() << ":DecayRadiation VetoRadiation\n"
+			    << "Please contact us at herwig@hepforge.org for advice\n"
+			    << "on how to simulate this process\n"
 			    << Exception::runerror;
 	}
 	else if(decayRadiation_==1) {
