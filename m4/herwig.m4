@@ -22,7 +22,7 @@ AC_RUN_IFELSE([
 			int foo (int i) { return -2 * std::abs(i - 2); }
 			]],
 			[[
-			if (foo(1) != -2 || foo(3) != -2) return 1; 
+			if (foo(1) != -2 || foo(3) != -2) return 1;
 			]]
 		)],
 		[
@@ -34,7 +34,7 @@ AC_RUN_IFELSE([
 		AC_MSG_RESULT([no. Setting -fno-builtin.])
 		AC_MSG_WARN([
 *****************************************************************************
-For this version of gcc, -fno-builtin-abs alone did not work to avoid the 
+For this version of gcc, -fno-builtin-abs alone did not work to avoid the
 gcc abs() bug. Instead, all gcc builtin functions are now disabled.
 Update gcc if possible.
 *****************************************************************************])
@@ -228,7 +228,7 @@ AC_MSG_CHECKING([for VBFNLO])
 AC_ARG_WITH([vbfnlo],
     AS_HELP_STRING([--with-vbfnlo=DIR], [Installation path of VBFNLO]),
     [],
-    [with_vbfnlo=no]    
+    [with_vbfnlo=no]
 
 )
 
@@ -307,7 +307,7 @@ AC_MSG_CHECKING([for njet])
 AC_ARG_WITH([njet],
     AS_HELP_STRING([--with-njet=DIR], [Installation path of njet]),
     [],
-    [with_njet=no]    
+    [with_njet=no]
 
 )
 
@@ -522,7 +522,7 @@ AC_SUBST([INSERT_GOSAM_CONTRIB])
 
 ])
 
-      
+
 dnl ##### OpenLoops #####
 AC_DEFUN([HERWIG_CHECK_OPENLOOPS],
 [
@@ -531,7 +531,7 @@ AC_MSG_CHECKING([for OpenLoops])
 AC_ARG_WITH([openloops],
     AS_HELP_STRING([--with-openloops=DIR], [Installation path of OpenLoops]),
     [],
-    [with_openloops=no]    
+    [with_openloops=no]
 
 )
 
@@ -752,6 +752,7 @@ AC_DEFUN([HERWIG_COMPILERFLAGS],
 AC_REQUIRE([HERWIG_CHECK_GSL])
 AC_REQUIRE([HERWIG_CHECK_THEPEG])
 AC_REQUIRE([BOOST_REQUIRE])
+AC_REQUIRE([AX_COMPILER_VENDOR])
 
 AM_CPPFLAGS="-I\$(top_builddir)/include $THEPEGINCLUDE \$(GSLINCLUDE) \$(BOOST_CPPFLAGS)"
 
@@ -781,16 +782,31 @@ fi
 
 dnl do an actual capability check on ld instead of this workaround
 case "${host}" in
-  *-darwin*) 
+  *-darwin*)
      ;;
   *)
      AM_LDFLAGS="-Wl,--enable-new-dtags"
      ;;
 esac
 
+case "${ax_cv_cxx_compiler_vendor}" in
+     gnu)
+        AM_CXXFLAGS="-ansi -pedantic -Wall -W"
+        ;;
+     clang)
+        AM_CXXFLAGS="-ansi -pedantic -Wall -Wno-overloaded-virtual -Wno-unused-function"
+dnl  -Wno-unneeded-internal-declaration
+        ;;
+     intel)
+        AM_CXXFLAGS="-strict-ansi -Wall -wd13000,1418,981,444,383,1599,1572,2259,980"
+        ;;
+esac
+
+
+
 AC_SUBST(AM_CPPFLAGS)
 AC_SUBST(AM_CFLAGS,  ["$warnflags $debugflags"])
-AC_SUBST(AM_CXXFLAGS,["$warnflags $debugflags"])
+AC_SUBST(AM_CXXFLAGS,["$AM_CXXFLAGS $warnflags $debugflags"])
 AC_SUBST(AM_FCFLAGS,  ["$debugflags"])
 AC_SUBST(AM_LDFLAGS)
 ])
