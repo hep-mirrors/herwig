@@ -25,6 +25,9 @@ set /Herwig/Partons/QCDExtractor:FlatSHatY 0
 ##################################################
 set /Herwig/Particles/p+:PDF    /Herwig/Partons/BudnevPDF
 set /Herwig/Particles/pbar-:PDF /Herwig/Partons/BudnevPDF
+set /Herwig/Partons/QCDExtractor:FirstPDF /Herwig/Partons/BudnevPDF
+set /Herwig/Partons/QCDExtractor:SecondPDF /Herwig/Partons/BudnevPDF
+
 
 ##################################################
 #  Cuts
