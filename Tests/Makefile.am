@@ -51,7 +51,7 @@ Hadron/QQHTest.h  Hadron/QQHTest.cc
 
 
 REPO = $(top_builddir)/src/HerwigDefaults.rpo
-HERWIG = $(top_builddir)/src/Herwig++
+HERWIG = $(top_builddir)/src/Herwig
 HWREAD = $(HERWIG) read --repo $(REPO) -L $(builddir)/.libs
 HWRUN = $(HERWIG) run
 
@@ -204,6 +204,30 @@ Rivet-SppS-% : Rivet/SppS-%.in
 Rivet-ISR-% : Rivet/ISR-%.in
 	$(HWREAD) $<
 	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
+
+Rivet-inputfiles: $(shell echo Rivet/LEP{,-Powheg,-Matchbox,-Dipole}-{10,14,22,35,44,91,130,133,136,161,172,177,183,189,192,196,197,200,202,206,91-nopi}.in) \
+                  $(shell echo Rivet/BFactory{,-Powheg,-Matchbox,-Dipole}-{10.52,10.52-sym,10.54,10.45,10.58}.in) \
+                  $(shell echo Rivet/BFactory-{Upsilon,Upsilon2,Upsilon4,Tau}.in) \
+                  $(shell echo Rivet/DIS{,-NoME,-Powheg,-Matchbox,-Dipole}-{e--LowQ2,e+-LowQ2,e+-HighQ2}.in) \
+                  $(shell echo Rivet/TVT{,-Powheg,-Matchbox,-Dipole}-{Run-I-Z,Run-I-W,Run-I-WZ,Run-II-Z-e,Run-II-Z-mu,Run-II-W}.in) \
+	          $(shell echo Rivet/TVT-Run-II-{DiPhoton,PromptPhoton}.in) \
+                  $(shell echo Rivet/TVT-{Run-II-Jets-{0..11},Run-I-Jets-{1..8}}.in ) \
+	          $(shell echo Rivet/TVT-{630-Jets-{1..3},300-Jets-1,900-Jets-1}.in ) \
+                  $(shell echo Rivet/TVT-{Run-I,Run-II,300,630,900}-UE.in) \
+                  $(shell echo Rivet/LHC-7-Jets-{0..13}.in ) \
+	          $(shell echo Rivet/LHC-{900,2360,2760,7,8}-UE.in ) \
+	          $(shell echo Rivet/LHC-{900,7}-UE-Long.in ) \
+		  $(shell echo Rivet/LHC-7-Heavy-{0..8}.in) \
+		  $(shell echo Rivet/LHC-7-Top-{L,SL}.in) \
+                  $(shell echo Rivet/Star-{UE,Jets-{1..4}}.in ) \
+                  $(shell echo Rivet/ISR-{30,44,53,62}-UE.in ) \
+	          $(shell echo Rivet/SppS-{53,63,200,500,900,546}-UE.in ) \
+                  $(shell echo Rivet/LHC{,-Matchbox,-Powheg,-Dipole}-{W-{e,mu},Z-{e,mu},Z-LowMass-{e,mu},Z-MedMass-e,WZ,WW-{emu,ll},ZZ-{ll,lv},W-Z-{e,mu},8-Z-mu}.in) \
+	          $(shell echo Rivet/LHC{,-Matchbox,-Dipole}-{7-W-Jet-{1..3}-e,7-Z-Jet-{1..3}-e}.in) \
+	          $(shell echo Rivet/LHC{-Matchbox,-Dipole}-{Z-b,Z-bb,W-b,8-Z-jj}.in) \
+                  $(shell echo Rivet/LHC-7-PromptPhoton-{1..4}.in) \
+	          Rivet/LHC-7-DiPhoton.in Rivet/LHC-GammaGamma-7.in \
+                  $(shell echo Rivet/LHC{,-Powheg}-{ggH,VBF,WH,ZH}.in) Rivet/LHC-ggHJet.in
 
 Rivet-LEP: $(shell echo Rivet-LEP{,-Powheg,-Matchbox,-Dipole}-{10,14,22,35,44,91,130,133,136,161,172,177,183,189,192,196,197,200,202,206,91-nopi})
 	rm -rf Rivet-LEP
