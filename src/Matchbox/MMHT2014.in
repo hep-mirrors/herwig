@@ -12,9 +12,3 @@ set MPIPDF:PDFName MMHT2014lo68cl
 set RemnantPDF:PDFName MMHT2014lo68cl
 
 cd /Herwig/MatrixElements/Matchbox/AlphaS
-
-set MatchboxLOAlphaS:input_scale 91.1876*GeV
-set MatchboxLOAlphaS:input_alpha_s 0.135
-
-set MatchboxNLOAlphaS:input_scale 91.1876*GeV
-set MatchboxNLOAlphaS:input_alpha_s 0.12
