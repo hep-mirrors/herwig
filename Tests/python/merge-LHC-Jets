@@ -116,7 +116,10 @@ if __name__ == "__main__":
 
     (opts, args) = parser.parse_args()
 
-
+    ## Check args
+    if len(args) < 1:
+        logging.error("Must specify at least the name of the files")
+        sys.exit(1)
  
 yodafiles=["-7-Jets-0.yoda","-7-Jets-1.yoda","-7-Jets-2.yoda",
            "-7-Jets-3.yoda","-7-Jets-4.yoda","-7-Jets-5.yoda",
@@ -135,7 +138,7 @@ inhistos_mass = {}
 outhistos={}
 weights = {}
 for f in yodafiles:
-    file="LHC"+f
+    file=args[0]+f
     sqrts=7000
     if(file.find("-900-UE")>0) :
         sqrts=900
@@ -1742,6 +1745,6 @@ for i in range(1,19) :
         mergeByPt("/CMS_2014_I1298810/d"+str(i)+"-x01-y01", "7000")
 
 # Choose output file
-name = "LHC"+"-Jets.yoda"
+name = args[0]+"-Jets.yoda"
 yoda.writeYODA(outhistos,name)
 sys.exit(0)
