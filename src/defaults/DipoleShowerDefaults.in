@@ -17,6 +17,11 @@ cd /Herwig/DipoleShower
 
 create Herwig::DipoleShowerHandler DipoleShowerHandler
 set DipoleShowerHandler:FreezeGrid 100000
+newdef DipoleShowerHandler:PDFA /Herwig/Partons/ShowerLOPDF
+newdef DipoleShowerHandler:PDFB /Herwig/Partons/ShowerLOPDF
+
+newdef DipoleShowerHandler:PDFARemnant /Herwig/Partons/RemnantPDF
+newdef DipoleShowerHandler:PDFBRemnant /Herwig/Partons/RemnantPDF
 
 ################################################################################
 # Setup the underlying event and fix missing reference.

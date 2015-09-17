@@ -85,37 +85,6 @@ set nu_taubar:HardProcessMass 0*GeV
 
 cd /Herwig/Partons
 
-library ThePEGLHAPDF.so
-
-create ThePEG::LHAPDF HardLOPDF 
-set HardLOPDF:RemnantHandler HadronRemnants
-
-create ThePEG::LHAPDF HardNLOPDF 
-set HardNLOPDF:RemnantHandler HadronRemnants
-
-create ThePEG::LHAPDF ShowerLOPDF 
-set ShowerLOPDF:RemnantHandler HadronRemnants
-
-create ThePEG::LHAPDF ShowerNLOPDF 
-set ShowerNLOPDF:RemnantHandler HadronRemnants
-
-create ThePEG::LHAPDF MPIPDF 
-set MPIPDF:RemnantHandler HadronRemnants
-
-create ThePEG::LHAPDF RemnantPDF 
-set RemnantPDF:RemnantHandler HadronRemnants
-
-# need some defaults to avoid exceptions at this stage
-
-set HardLOPDF:PDFName MMHT2014lo68cl
-set HardNLOPDF:PDFName MMHT2014nlo68cl
-
-set ShowerLOPDF:PDFName MMHT2014lo68cl
-set ShowerNLOPDF:PDFName MMHT2014nlo68cl
-
-set MPIPDF:PDFName MMHT2014lo68cl
-set RemnantPDF:PDFName MMHT2014lo68cl
-
 set /Herwig/Particles/p+:PDF HardNLOPDF
 set /Herwig/Particles/pbar-:PDF HardNLOPDF
 set /Herwig/Partons/QCDExtractor:FirstPDF HardNLOPDF
@@ -125,14 +94,6 @@ set /Herwig/Shower/ShowerHandler:PDFA ShowerNLOPDF
 set /Herwig/Shower/ShowerHandler:PDFB ShowerNLOPDF
 set /Herwig/DipoleShower/DipoleShowerHandler:PDFA ShowerNLOPDF
 set /Herwig/DipoleShower/DipoleShowerHandler:PDFB ShowerNLOPDF
-
-set /Herwig/Partons/MPIExtractor:FirstPDF MPIPDF
-set /Herwig/Partons/MPIExtractor:SecondPDF MPIPDF
-
-set /Herwig/Shower/ShowerHandler:PDFARemnant RemnantPDF
-set /Herwig/Shower/ShowerHandler:PDFBRemnant RemnantPDF
-set /Herwig/DipoleShower/DipoleShowerHandler:PDFARemnant RemnantPDF
-set /Herwig/DipoleShower/DipoleShowerHandler:PDFBRemnant RemnantPDF
 
 cd /Herwig/MatrixElements/Matchbox/AlphaS
 

@@ -19,6 +19,11 @@ cd /Herwig/Shower
 create Herwig::ShowerHandler ShowerHandler
 newdef ShowerHandler:MPIHandler /Herwig/UnderlyingEvent/MPIHandler
 newdef ShowerHandler:RemDecayer /Herwig/Partons/RemnantDecayer
+# use LO PDFs for Shower, can be changed later
+newdef /Herwig/Shower/ShowerHandler:PDFA /Herwig/Partons/ShowerLOPDF
+newdef /Herwig/Shower/ShowerHandler:PDFB /Herwig/Partons/ShowerLOPDF
+newdef /Herwig/Shower/ShowerHandler:PDFARemnant /Herwig/Partons/RemnantPDF
+newdef /Herwig/Shower/ShowerHandler:PDFBRemnant /Herwig/Partons/RemnantPDF
 
 #####################################
 # initial setup, don't change these!

@@ -41,8 +41,11 @@ insert SimpleDIS:MatrixElements[0] MEDISCC
 ###################################################
 ##  Need to use an NLO PDF
 ###################################################
-#set /Herwig/Particles/p+:PDF    /Herwig/Partons/MRST-NLO
-#set /Herwig/Particles/pbar-:PDF /Herwig/Partons/MRST-NLO
+# set /Herwig/Particles/p+:PDF    /Herwig/Partons/HardNLOPDF
+# set /Herwig/Particles/pbar-:PDF /Herwig/Partons/HardNLOPDF
+# set /Herwig/Shower/ShowerHandler:PDFA /Herwig/Partons/ShowerLOPDF
+# set /Herwig/Partons/MPIExtractor:FirstPDF  /Herwig/Partons/MPIPDF
+# set /Herwig/Partons/QCDExtractor:FirstPDF  /Herwig/Partons/HardNLOPDF
 #
 ###################################################
 ##  Setup the POWHEG shower
