@@ -482,7 +482,8 @@ bool SubtractionDipole::generateKinematics(const double * r) {
   if ( splitting() ) {
     if ( !generateRadiationKinematics(r) )
       return false;
-    realEmissionME()->lastXCombPtr()->setIncomingPartons();
+    if( ! realEmissionME()->lastXCombPtr()->setIncomingPartons())
+      return false;
     realEmissionME()->setScale();
     double jac = jacobian();
     jac *= pow(underlyingBornME()->lastXComb().lastSHat() / realEmissionME()->lastXComb().lastSHat(),
@@ -494,10 +495,12 @@ bool SubtractionDipole::generateKinematics(const double * r) {
   }
   if ( !generateTildeKinematics() )
     return false;
-  underlyingBornME()->lastXCombPtr()->setIncomingPartons();
+  if( ! underlyingBornME()->lastXCombPtr()->setIncomingPartons() )
+    return false;
   underlyingBornME()->setScale();
   assert(lastXCombPtr() == underlyingBornME()->lastXCombPtr());
-  underlyingBornME()->lastXCombPtr()->setIncomingPartons();
+  if( ! underlyingBornME()->lastXCombPtr()->setIncomingPartons() )
+    return false;
   // need to have the scale and x's available for checking shower phase space
   if ( showerApproximation() &&
        lastXCombPtr()->willPassCuts() )
