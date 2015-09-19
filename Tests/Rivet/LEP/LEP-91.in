@@ -65,5 +65,3 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 PDG_HADRON_MULTIPLICITIES_RATIO
 ##################################################
 # OPAL 4 jet angles 
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 OPAL_2001_S4553896
-# DELPHI 4 jet angles 
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 DELPHI_2003_WUD_03_11
