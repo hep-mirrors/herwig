@@ -1184,14 +1184,14 @@ bool MEPP2Higgs::applyHard(ShowerParticleVector gluons,
 	out = quarkFlavour(pdf[0],scale,xnew[0],beams[0],fxnew[0],false);
 	fxnew[1]=pdf[1]->xfx(beams[1],gluons[1]->dataPtr(),scale,xnew[1]);
 	iemit = 0;
-	mewgt = qgME(shat,uhat,that)/lome*mh2_/sqr(shat);
+	mewgt = out ? qgME(shat,uhat,that)/lome*mh2_/sqr(shat) : ZERO;
       }
       // g q -> H q
       else {
 	fxnew[0]=pdf[0]->xfx(beams[0],gluons[0]->dataPtr(),scale,xnew[0]);
 	out = quarkFlavour(pdf[1],scale,xnew[1],beams[1],fxnew[1],false);
 	iemit = 1;
-	mewgt = qgME(shat,that,uhat)/lome*mh2_/sqr(shat);
+	mewgt = out ? qgME(shat,that,uhat)/lome*mh2_/sqr(shat) : ZERO;
       }
       jacobian2 /= (channelWeights_[1]-channelWeights_[0]);
     }
@@ -1202,14 +1202,14 @@ bool MEPP2Higgs::applyHard(ShowerParticleVector gluons,
 	out = quarkFlavour(pdf[0],scale,xnew[0],beams[0],fxnew[0],true);
 	fxnew[1]=pdf[1]->xfx(beams[1],gluons[1]->dataPtr(),scale,xnew[1]);
 	iemit = 0;
-	mewgt = qbargME(shat,uhat,that)/lome*mh2_/sqr(shat);
+	mewgt = out ? qbargME(shat,uhat,that)/lome*mh2_/sqr(shat) : ZERO;
       }
       // g qbar -> H qbar
       else {
 	fxnew[0]=pdf[0]->xfx(beams[0],gluons[0]->dataPtr(),scale,xnew[0]);
 	out = quarkFlavour(pdf[1],scale,xnew[1],beams[1],fxnew[1],true);
 	iemit = 1;
-	mewgt = qbargME(shat,that,uhat)/lome*mh2_/sqr(shat);
+	mewgt = out ? qbargME(shat,that,uhat)/lome*mh2_/sqr(shat) : ZERO;
       }
       jacobian2/=(channelWeights_[2]-channelWeights_[1]);
     }
@@ -1362,17 +1362,18 @@ tPDPtr MEPP2Higgs::quarkFlavour(tcPDFPtr pdf, Energy2 scale,
   if(!anti) {
     for(unsigned int ix=1;ix<=5;++ix) {
       partons.push_back(getParticleData(long(ix)));
-      weights.push_back(pdf->xfx(beam,partons.back(),scale,x));
+      weights.push_back(max(0.,pdf->xfx(beam,partons.back(),scale,x)));
       pdfweight += weights.back();
     }
   }
   else {
     for(unsigned int ix=1;ix<=5;++ix) {
       partons.push_back(getParticleData(-long(ix)));
-      weights.push_back(pdf->xfx(beam,partons.back(),scale,x));
+      weights.push_back(max(0,pdf->xfx(beam,partons.back(),scale,x)));
       pdfweight += weights.back();
     }
   }
+  if(pdfweight==0.) return tPDPtr();
   double wgt=UseRandom::rnd()*pdfweight;
   for(unsigned int ix=0;ix<weights.size();++ix) {
     if(wgt<=weights[ix]) return partons[ix];
@@ -1593,25 +1594,25 @@ double MEPP2Higgs::getResult(int emis_type, Energy pt, double yj,
   else if(emis_type==1) {
     outParton = quarkFlavour(beams_[0]->pdf(),scale,x,beams_[0],pdf[2],false);
     pdf[3]=beams_[1]->pdf()->xfx(beams_[1],partons_[1],scale,y);
-    res = qgME(sh,uh,th)/loME();
+    res = outParton ? qgME(sh,uh,th)/loME() : ZERO;
   }
   // g q -> H q
   else if(emis_type==2) {
     pdf[2]=beams_[0]->pdf()->xfx(beams_[0],partons_[0],scale,x);
     outParton = quarkFlavour(beams_[1]->pdf(),scale,y,beams_[1],pdf[3],false);
-    res = qgME(sh,th,uh)/loME();
+    res = outParton ? qgME(sh,th,uh)/loME() : ZERO;
   }
   // qbar g -> H qbar
   else if(emis_type==3) {
     outParton = quarkFlavour(beams_[0]->pdf(),scale,x,beams_[0],pdf[2],true);
     pdf[3]=beams_[1]->pdf()->xfx(beams_[1],partons_[1],scale,y);
-    res = qbargME(sh,uh,th)/loME();
+    res = outParton ? qbargME(sh,uh,th)/loME() : ZERO;
   }
   // g qbar -> H qbar
   else if(emis_type==4) {
     pdf[2]=beams_[0]->pdf()->xfx(beams_[0],partons_[0],scale,x);
     outParton = quarkFlavour(beams_[1]->pdf(),scale,y,beams_[1],pdf[3],true);
-    res = qbargME(sh,th,uh)/loME();
+    res = outParton ? qbargME(sh,th,uh)/loME() : ZERO;
   }
   //deals with pdf zero issue at large x
   if(pdf[0]<=0.||pdf[1]<=0.||pdf[2]<=0.||pdf[3]<=0.) {
