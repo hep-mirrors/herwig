@@ -1369,7 +1369,7 @@ tPDPtr MEPP2Higgs::quarkFlavour(tcPDFPtr pdf, Energy2 scale,
   else {
     for(unsigned int ix=1;ix<=5;++ix) {
       partons.push_back(getParticleData(-long(ix)));
-      weights.push_back(max(0,pdf->xfx(beam,partons.back(),scale,x)));
+      weights.push_back(max(0.,pdf->xfx(beam,partons.back(),scale,x)));
       pdfweight += weights.back();
     }
   }
