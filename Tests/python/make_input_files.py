@@ -378,15 +378,15 @@ elif(collider=="TVT") :
                 process+="set /Herwig/Cuts/FirstJet:PtMin 10.\n"
         elif(parameterName.find("Run-I-WZ")>=0) :
             process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p pbar e+ e-\ndo Factory:Process p pbar e+ nu\ndo Factory:Process p pbar e- nu\n"
-            process+="set /Herwig/Cuts/ChargedLeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/ChargedLeptonPairMassCut:MaxMass 120*GeV\n"
+            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/ChyargedLeptonPairMassCut:MaxMass 120*GeV\n"
         elif(parameterName.find("Run-I-W")>=0 or parameterName.find("Run-II-W")>=0) :
             process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p pbar e+ nu\ndo Factory:Process p pbar e- nu\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
         elif(parameterName.find("Run-I-Z")>=0 or parameterName.find("Run-II-Z-e")>=0) :
             process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p pbar e+ e-\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
-            process+="set /Herwig/Cuts/ChargedLeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/ChargedLeptonPairMassCut:MaxMass 120*GeV\n"
+            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
         elif(parameterName.find("Run-II-Z-mu")>=0) :
             process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p pbar mu+ mu-\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
-            process+="set /Herwig/Cuts/ChargedLeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/ChargedLeptonPairMassCut:MaxMass 120*GeV\n"
+            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
 # Star
 elif(collider=="Star" ) :
     process = "set /Herwig/Decays/DecayHandler:LifeTimeOption 0\n"
@@ -1033,22 +1033,22 @@ elif(collider=="LHC") :
             process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\n"
             process+="do Factory:Process p p e+ e-\ndo Factory:Process p p e+ nu\ndo Factory:Process p p e- nu\n"
             process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
-            process+="set /Herwig/Cuts/ChargedLeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/ChargedLeptonPairMassCut:MaxMass 120*GeV\n"
+            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
         elif(parameterName.find("W-Z-mu")>=0) :
             process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\n"
             process+="do Factory:Process p p mu+ mu-\ndo Factory:Process p p mu+ nu\ndo Factory:Process p p mu- nu\n"
             process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
-            process+="set /Herwig/Cuts/ChargedLeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/ChargedLeptonPairMassCut:MaxMass 120*GeV\n"
+            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
         elif(parameterName.find("W-e")>=0) :
             process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ nu\ndo Factory:Process p p e- nu\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
         elif(parameterName.find("W-mu")>=0) :
             process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p mu+ nu\ndo Factory:Process p p mu- nu\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
         elif(parameterName.find("Z-e")>=0) :
             process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ e-\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
-            process+="set /Herwig/Cuts/ChargedLeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/ChargedLeptonPairMassCut:MaxMass 120*GeV\n"
+            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
         elif(parameterName.find("Z-mu")>=0) :
             process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p mu+ mu-\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
-            process+="set /Herwig/Cuts/ChargedLeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/ChargedLeptonPairMassCut:MaxMass 120*GeV\n"
+            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
         elif(parameterName.find("Z-jj")>=0) :
             process+="set Factory:OrderInAlphaS 2\nset Factory:OrderInAlphaEW 2\n"
             process+="do Factory:Process p p e+ e- j j\n"
@@ -1059,16 +1059,16 @@ elif(collider=="LHC") :
             process+="insert  /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
             process+="set /Herwig/Cuts/FirstJet:PtMin 40.*GeV\n"
             process+="set /Herwig/Cuts/SecondJet:PtMin 30.*GeV\n"
-            process+="set /Herwig/Cuts/ChargedLeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/ChargedLeptonPairMassCut:MaxMass 120*GeV\n"
+            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
         elif(parameterName.find("Z-LowMass-e")>=0) :
             process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ e-\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
-            process+="set /Herwig/Cuts/ChargedLeptonPairMassCut:MinMass 20*GeV\nset /Herwig/Cuts/ChargedLeptonPairMassCut:MaxMass 70*GeV\n"
+            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 20*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 70*GeV\n"
         elif(parameterName.find("Z-MedMass-e")>=0) :
             process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ e-\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
-            process+="set /Herwig/Cuts/ChargedLeptonPairMassCut:MinMass 40*GeV\nset /Herwig/Cuts/ChargedLeptonPairMassCut:MaxMass 130*GeV\n"
+            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 40*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 130*GeV\n"
         elif(parameterName.find("Z-LowMass-mu")>=0) :
             process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p mu+ mu-\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
-            process+="set /Herwig/Cuts/ChargedLeptonPairMassCut:MinMass 10*GeV\nset /Herwig/Cuts/ChargedLeptonPairMassCut:MaxMass 70*GeV\n"
+            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 10*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 70*GeV\n"
         elif(parameterName.find("W-Jet")>=0) :
             process+="set Factory:OrderInAlphaS 1\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ nu j\ndo Factory:Process p p e- nu j\n\n"
             process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/HTScale\n"
@@ -1111,7 +1111,7 @@ elif(collider=="LHC") :
             process+="insert  /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
             process+="set  /Herwig/Cuts/FirstJet:PtMin 18.*GeV\n"
             process+="set  /Herwig/Cuts/SecondJet:PtMin 15.*GeV\n"
-            process+="set /Herwig/Cuts/ChargedLeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/ChargedLeptonPairMassCut:MaxMass 120*GeV\n"
+            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
         elif(parameterName.find("Z-b")>=0) :
             process+="set Factory:OrderInAlphaS 1\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ e- b\ndo Factory:Process p p e+ e- bbar\n"
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 91.2*GeV\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
