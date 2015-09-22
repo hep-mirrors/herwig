@@ -422,10 +422,8 @@ void PhasespaceTree::generateKinematics(PhasespaceInfo& info,
     children[0].momentum.setY(p*sinPhi*sinTheta);
     children[0].momentum.setZ(p*cosTheta);
     children[0].momentum.rescaleEnergy();
-    if ( momentum.m2() <= ZERO ) {
-      cerr << "cannot boost in decay ... " << (momentum.m2()/GeV2) << "\n";
+    if ( momentum.m2() <= ZERO )
       throw Veto();
-    }
     Boost out = momentum.boostVector();
     if ( out.mag2() > Constants::epsilon ) {
       children[0].momentum.boost(out);
