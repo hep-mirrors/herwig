@@ -296,12 +296,17 @@ handle(EventHandler & eh, const tPVector &,
   Energy winnerPt = ZERO;
   Ptr<ShowerApproximationKernel>::ptr winnerKernel;
 
-  for ( set<Ptr<ShowerApproximationKernel>::ptr>::const_iterator k =
-	  kernels.begin(); k != kernels.end(); ++k ) {
-    if ( (**k).generate() != 0. && (*k)->dipole()->lastPt() > winnerPt){
-      winnerKernel = *k;
-      winnerPt = winnerKernel->dipole()->lastPt();
+  try {
+    for ( set<Ptr<ShowerApproximationKernel>::ptr>::const_iterator k =
+	    kernels.begin(); k != kernels.end(); ++k ) {
+      if ( (**k).generate() != 0. && (*k)->dipole()->lastPt() > winnerPt){
+	winnerKernel = *k;
+	winnerPt = winnerKernel->dipole()->lastPt();
+      }
     }
+  } catch(ShowerApproximationKernel::MaxTryException&) {
+    throw Exception() << "Too many tries needed to generate the matrix element correction in '"
+		      << name() << "'" << Exception::eventerror;
   }
 
   if ( !winnerKernel || winnerPt == ZERO )

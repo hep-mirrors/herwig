@@ -37,6 +37,13 @@ class ShowerApproximationKernel: public HandlerBase {
 
 public:
 
+  /**
+   * Exception to communicate sampler maxtry events.
+   */
+  struct MaxTryException {};
+
+public:
+
   /** @name Standard constructors and destructors. */
   //@{
   /**

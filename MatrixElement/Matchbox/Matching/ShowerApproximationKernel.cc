@@ -150,9 +150,9 @@ double ShowerApproximationKernel::generate() {
     } catch (exsample::exponential_regenerate&) {
       continue;
     } catch (exsample::hit_and_miss_maxtry&) {
-      throw Veto();
+      throw MaxTryException();
     } catch (exsample::selection_maxtry&) {
-      throw Veto();
+      throw MaxTryException();
     } 
     break;
   }
