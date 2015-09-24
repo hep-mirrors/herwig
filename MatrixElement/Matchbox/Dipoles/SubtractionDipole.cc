@@ -90,29 +90,18 @@ void SubtractionDipole::setupBookkeeping(const map<Ptr<DiagramBase>::ptr,Subtrac
 
   for ( map<Ptr<DiagramBase>::ptr,MergeInfo>::const_iterator mit = mergeInfo.begin();
 	mit != mergeInfo.end(); ++mit ) {
+
     DiagramVector::const_iterator bd = 
       theUnderlyingBornME->diagrams().end();
 
-    // changed to find best (i.e. fewest permutations of legs),
-    // not the first match PR 15/9/2015
     map<int,int> theRemapLegs;
-    unsigned int ndiff(1000);
+
     for ( DiagramVector::const_iterator b = 
 	    theUnderlyingBornME->diagrams().begin();
-	  b != theUnderlyingBornME->diagrams().end(); ++b ) {
-      map<int,int> remap;
-      if ( mit->second.diagram->isSame(*b,remap) ) {
-	unsigned int ntemp(0);
-	for(map<int,int>::const_iterator it=remap.begin();it!=remap.end();++it) {
-	  if(it->first!=it->second) ++ntemp;
-	}
-	if(theRemapLegs.empty() || ntemp<ndiff) {
-	  ndiff = ntemp;
-	  bd = b;
-	  theRemapLegs = remap;
-	}
+	  b != theUnderlyingBornME->diagrams().end(); ++b )
+      if ( mit->second.diagram->isSame(*b,theRemapLegs) ) {
+	bd = b; break;
       }
-    }
 
     // no underlying Born
     if ( bd == theUnderlyingBornME->diagrams().end() )
