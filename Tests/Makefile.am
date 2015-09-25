@@ -223,7 +223,7 @@ Rivet-inputfiles: $(shell echo Rivet/LEP{,-Powheg,-Matchbox,-Dipole}-{10,14,22,3
                   $(shell echo Rivet/ISR-{30,44,53,62}-UE.in ) \
 	          $(shell echo Rivet/SppS-{53,63,200,500,900,546}-UE.in ) \
                   $(shell echo Rivet/LHC{,-Matchbox,-Powheg,-Dipole}-{W-{e,mu},Z-{e,mu},Z-LowMass-{e,mu},Z-MedMass-e,WZ,WW-{emu,ll},ZZ-{ll,lv},W-Z-{e,mu},8-Z-mu}.in) \
-	          $(shell echo Rivet/LHC{,-Matchbox,-Dipole}-{7-W-Jet-{1..3}-e,7-Z-Jet-{1..3}-e}.in) \
+	          $(shell echo Rivet/LHC{,-Matchbox,-Dipole}-{7-W-Jet-{1..3}-e,7-Z-Jet-{0..3}-e,7-Z-Jet-0-mu}.in) \
 	          $(shell echo Rivet/LHC{-Matchbox,-Dipole}-{Z-b,Z-bb,W-b,8-Z-jj}.in) \
                   $(shell echo Rivet/LHC-7-PromptPhoton-{1..4}.in) \
 	          Rivet/LHC-7-DiPhoton.in Rivet/LHC-GammaGamma-7.in \
@@ -270,8 +270,7 @@ Rivet-TVT-WZ:  $(shell echo Rivet-TVT{,-Powheg,-Matchbox,-Dipole}-{Run-I-Z,Run-I
 Rivet-TVT-Photon: $(shell echo Rivet-TVT-Run-II-{DiPhoton,PromptPhoton})
 #                  Rivet-TVT-Run-I-PromptPhoton 
 	rm -rf Rivet-TVT-Photon 
-	yodamerge TVT-Run-II-DiPhoton.yoda TVT-Run-II-PromptPhoton.yoda\
-                           -o TVT-Photon.yoda
+	cat TVT-Run-II-DiPhoton.yoda TVT-Run-II-PromptPhoton.yoda > TVT-Photon.yoda
 	rivet-mkhtml -o Rivet-TVT-Photon TVT-Photon.yoda:Hw++
 
 Rivet-TVT-Jets:  $(shell echo Rivet-TVT-{Run-II-Jets-{0..11},Run-I-Jets-{1..8}} ) \
@@ -305,7 +304,7 @@ Rivet-SppS: $(shell echo Rivet-ISR-{30,44,53,62}-UE ) \
 	rivet-mkhtml -o Rivet-SppS SppS.yoda
 
 Rivet-LHC-EW: $(shell echo Rivet-LHC{,-Matchbox,-Powheg,-Dipole}-{W-{e,mu},Z-{e,mu},Z-LowMass-{e,mu},Z-MedMass-e,WZ,WW-{emu,ll},ZZ-{ll,lv},W-Z-{e,mu},8-Z-mu}) \
-	      $(shell echo Rivet-LHC{,-Matchbox,-Dipole}-{7-W-Jet-{1..3}-e,7-Z-Jet-{1..3}-e}) \
+	      $(shell echo Rivet-LHC{,-Matchbox,-Dipole}-{7-W-Jet-{1..3}-e,7-Z-Jet-{1..3}-e,7-Z-Jet-0-mu}) \
 	      $(shell echo Rivet-LHC{-Matchbox,-Dipole}-{Z-b,Z-bb,W-b,8-Z-jj})
 	rm -rf Rivet-LHC-EW;
 	python/merge-LHC-EW LHC-{W-e,W-mu,Z-e,Z-mu,Z-LowMass-e,Z-MedMass-e,Z-LowMass-mu,W-Z-{e,mu},WW-emu,WW-ll,WZ,ZZ-ll,ZZ-lv}.yoda LHC-7-{W,Z}-Jet-{1,2,3}-e.yoda -o LHC-EW.yoda;

@@ -378,7 +378,7 @@ elif(collider=="TVT") :
                 process+="set /Herwig/Cuts/FirstJet:PtMin 10.\n"
         elif(parameterName.find("Run-I-WZ")>=0) :
             process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p pbar e+ e-\ndo Factory:Process p pbar e+ nu\ndo Factory:Process p pbar e- nu\n"
-            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/ChyargedLeptonPairMassCut:MaxMass 120*GeV\n"
+            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
         elif(parameterName.find("Run-I-W")>=0 or parameterName.find("Run-II-W")>=0) :
             process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p pbar e+ nu\ndo Factory:Process p pbar e- nu\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
         elif(parameterName.find("Run-I-Z")>=0 or parameterName.find("Run-II-Z-e")>=0) :
@@ -663,8 +663,13 @@ elif(collider=="LHC") :
                 process+="set /Herwig/Cuts/WBosonKtCut:MinKT 270.0*GeV\n"
                 parameterName=parameterName.replace("W-Jet-3-e","W-Jet-e")
         elif(parameterName.find("Z-Jet")>=0) :
-            process+="insert SimpleQCD:MatrixElements[0] MEZJet\nset MEZJet:ZDecay Electron\n"
-            if(parameterName.find("Z-Jet-1-e")>=0) :
+
+            if(parameterName.find("-e")>=0) :
+                process+="insert SimpleQCD:MatrixElements[0] MEZJet\nset MEZJet:ZDecay Electron\n"
+            if(parameterName.find("Z-Jet-0-e")>=0) :
+                process+="set /Herwig/Cuts/ZBosonKtCut:MinKT 35.0*GeV\n"
+                parameterName=parameterName.replace("Z-Jet-0-e","Z-Jet-e")
+            elif(parameterName.find("Z-Jet-1-e")>=0) :
                 process+="set /Herwig/Cuts/ZBosonKtCut:MinKT 100.0*GeV\n"
                 parameterName=parameterName.replace("Z-Jet-1-e","Z-Jet-e")
             elif(parameterName.find("Z-Jet-2-e")>=0) :
@@ -673,6 +678,10 @@ elif(collider=="LHC") :
             elif(parameterName.find("Z-Jet-3-e")>=0) :
                 process+="set /Herwig/Cuts/ZBosonKtCut:MinKT 270.0*GeV\n"
                 parameterName=parameterName.replace("Z-Jet-3-e","Z-Jet-e")
+            else :
+                process+="insert SimpleQCD:MatrixElements[0] MEZJet\nset MEZJet:ZDecay Electron\n"
+                process+="set /Herwig/Cuts/ZBosonKtCut:MinKT 35.0*GeV\n"
+                parameterName=parameterName.replace("Z-Jet-0-mu","Z-Jet-mu")
         else :
             logging.error(" Process %s not supported for internal matrix elements" % name)
             sys.exit(1)
@@ -1094,20 +1103,33 @@ elif(collider=="LHC") :
                 process+="set /Herwig/Cuts/FirstJet:PtMin 270.0*GeV\n"
                 parameterName=parameterName.replace("W-Jet-3-e","W-Jet-e")
         elif(parameterName.find("Z-Jet")>=0) :
-            process+="set Factory:OrderInAlphaS 1\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ e- j\n"
+            process+="set Factory:OrderInAlphaS 1\nset Factory:OrderInAlphaEW 2\n"
+            if(parameterName.find("-e")>=0) :
+                process+="do Factory:Process p p e+ e- j\n"
+                if(parameterName.find("Z-Jet-0-e")>=0) :
+                    process+="set /Herwig/Cuts/FirstJet:PtMin 35.*GeV\n"
+                    parameterName=parameterName.replace("Z-Jet-0-e","Z-Jet-e")
+                elif(parameterName.find("Z-Jet-1-e")>=0) :
+                    process+="set /Herwig/Cuts/FirstJet:PtMin 100.*GeV\n"
+                    parameterName=parameterName.replace("Z-Jet-1-e","Z-Jet-e")
+                elif(parameterName.find("Z-Jet-2-e")>=0) :
+                    process+="set /Herwig/Cuts/FirstJet:PtMin 190.0*GeV\n"
+                    parameterName=parameterName.replace("Z-Jet-2-e","Z-Jet-e")
+                elif(parameterName.find("Z-Jet-3-e")>=0) :
+                    process+="set /Herwig/Cuts/FirstJet:PtMin 270.0*GeV\n"
+                    parameterName=parameterName.replace("Z-Jet-3-e","Z-Jet-e")
+            else :
+                process+="do Factory:Process p p mu+ mu- j\n"
+                process+="set /Herwig/Cuts/FirstJet:PtMin 35.*GeV\n"
+                parameterName=parameterName.replace("Z-Jet-0-mu","Z-Jet-mu")
             process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/HTScale\n"
             process+="set /Herwig/Cuts/Cuts:JetFinder /Herwig/Cuts/JetFinder\n"
             process+="insert /Herwig/Cuts/Cuts:MultiCuts 0 /Herwig/Cuts/JetCuts\n"
             process+="insert /Herwig/Cuts/JetCuts:JetRegions 0 /Herwig/Cuts/FirstJet\n"
-            if(parameterName.find("Z-Jet-1-e")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 100.*GeV\n"
-                parameterName=parameterName.replace("Z-Jet-1-e","Z-Jet-e")
-            elif(parameterName.find("Z-Jet-2-e")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 190.0*GeV\n"
-                parameterName=parameterName.replace("Z-Jet-2-e","Z-Jet-e")
-            elif(parameterName.find("Z-Jet-3-e")>=0) :
-                process+="set /Herwig/Cuts/FirstJet:PtMin 270.0*GeV\n"
-                parameterName=parameterName.replace("Z-Jet-3-e","Z-Jet-e")
+
+
+
+
         elif(parameterName.find("Z-bb")>=0) :
             parameters["bscheme"]="read Matchbox/FourFlavourScheme.in"
             process+="set /Herwig/Particles/b:HardProcessMass 4.2*GeV\nset /Herwig/Particles/bbar:HardProcessMass 4.2*GeV\n"
