@@ -585,7 +585,7 @@ elif(collider=="LHC") :
             process+="insert SimpleQCD:MatrixElements[0] MEHeavyQuark\n"
             process+="do /Herwig/Particles/t:SelectDecayModes t->nu_e,e+,b; t->nu_mu,mu+,b;\n"
             process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/EventHandlers/LHCHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
         elif(parameterName.find("7-Top-SL")>=0) :
             process+="set MEHeavyQuark:QuarkType Top\n"
             process+="insert SimpleQCD:MatrixElements[0] MEHeavyQuark\n"
@@ -594,7 +594,7 @@ elif(collider=="LHC") :
             process+="do /Herwig/Particles/t:SelectDecayModes t->nu_e,e+,b; t->nu_mu,mu+,b;\n"
             process+="do /Herwig/Particles/tbar:SelectDecayModes tbar->b,bbar,cbar; tbar->bbar,cbar,d; tbar->bbar,cbar,s; tbar->bbar,s,ubar; tbar->bbar,ubar,d;\n"
             process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/EventHandlers/LHCHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"-        
         elif(parameterName.find("7-Top-All")>=0) :
             process+="set MEHeavyQuark:QuarkType Top\n"
             process+="insert SimpleQCD:MatrixElements[0] MEHeavyQuark\n"
@@ -604,7 +604,7 @@ elif(collider=="LHC") :
             process+="do /Herwig/Particles/W-:SelectDecayModes /Herwig/Particles/W-/W-->nu_ebar,e-; /Herwig/Particles/W-/W-->nu_mubar,mu-;\n"
             process+="do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig/Particles/Z0/Z0->mu-,mu+;\n"
             process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/EventHandlers/LHCHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
         elif(parameterName.find("WW-emu")>=0) :
             process+="insert SimpleQCD:MatrixElements[0] MEPP2VV\nset MEPP2VV:Process WW\n"
             process+="set /Herwig/Particles/W+:Synchronized 0\n"
@@ -612,22 +612,22 @@ elif(collider=="LHC") :
             process+="do /Herwig/Particles/W+:SelectDecayModes /Herwig/Particles/W+/W+->nu_e,e+;\n"
             process+="do /Herwig/Particles/W-:SelectDecayModes /Herwig/Particles/W-/W-->nu_mubar,mu-;\n"
             process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/EventHandlers/LHCHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
         elif(parameterName.find("WW-ll")>=0) :
             process+="insert SimpleQCD:MatrixElements[0] MEPP2VV\nset MEPP2VV:Process WW\n"
             process+="do /Herwig/Particles/W+:SelectDecayModes /Herwig/Particles/W+/W+->nu_e,e+; /Herwig/Particles/W+/W+->nu_mu,mu+; /Herwig/Particles/W+/W+->nu_tau,tau+;\n"
             process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/EventHandlers/LHCHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
         elif(parameterName.find("ZZ-ll")>=0) :
             process+="insert SimpleQCD:MatrixElements[0] MEPP2VV\nset MEPP2VV:Process ZZ\n"
             process+="do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig/Particles/Z0/Z0->mu-,mu+; /Herwig/Particles/Z0/Z0->tau-,tau+;\n"
             process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/EventHandlers/LHCHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
         elif(parameterName.find("ZZ-lv")>=0) :
             process+="insert SimpleQCD:MatrixElements[0] MEPP2VV\nset MEPP2VV:Process ZZ\n"
             process+="do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig/Particles/Z0/Z0->mu-,mu+; /Herwig/Particles/Z0/Z0->tau-,tau+; /Herwig/Particles/Z0/Z0->nu_e,nu_ebar; /Herwig/Particles/Z0/Z0->nu_mu,nu_mubar; /Herwig/Particles/Z0/Z0->nu_tau,nu_taubar;\n"
             process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/EventHandlers/LHCHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
         elif(parameterName.find("W-Z-e")>=0) :
             process+="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
             process+="insert SimpleQCD:MatrixElements[0] MEqq2W2ff\nset MEqq2W2ff:Process Electron\n"
@@ -663,23 +663,22 @@ elif(collider=="LHC") :
                 process+="set /Herwig/Cuts/WBosonKtCut:MinKT 270.0*GeV\n"
                 parameterName=parameterName.replace("W-Jet-3-e","W-Jet-e")
         elif(parameterName.find("Z-Jet")>=0) :
-
             if(parameterName.find("-e")>=0) :
                 process+="insert SimpleQCD:MatrixElements[0] MEZJet\nset MEZJet:ZDecay Electron\n"
-            if(parameterName.find("Z-Jet-0-e")>=0) :
-                process+="set /Herwig/Cuts/ZBosonKtCut:MinKT 35.0*GeV\n"
-                parameterName=parameterName.replace("Z-Jet-0-e","Z-Jet-e")
-            elif(parameterName.find("Z-Jet-1-e")>=0) :
-                process+="set /Herwig/Cuts/ZBosonKtCut:MinKT 100.0*GeV\n"
-                parameterName=parameterName.replace("Z-Jet-1-e","Z-Jet-e")
-            elif(parameterName.find("Z-Jet-2-e")>=0) :
-                process+="set /Herwig/Cuts/ZBosonKtCut:MinKT 190.0*GeV\n"
-                parameterName=parameterName.replace("Z-Jet-2-e","Z-Jet-e")
-            elif(parameterName.find("Z-Jet-3-e")>=0) :
-                process+="set /Herwig/Cuts/ZBosonKtCut:MinKT 270.0*GeV\n"
-                parameterName=parameterName.replace("Z-Jet-3-e","Z-Jet-e")
+                if(parameterName.find("Z-Jet-0-e")>=0) :
+                    process+="set /Herwig/Cuts/ZBosonKtCut:MinKT 35.0*GeV\n"
+                    parameterName=parameterName.replace("Z-Jet-0-e","Z-Jet-e")
+                elif(parameterName.find("Z-Jet-1-e")>=0) :
+                    process+="set /Herwig/Cuts/ZBosonKtCut:MinKT 100.0*GeV\n"
+                    parameterName=parameterName.replace("Z-Jet-1-e","Z-Jet-e")
+                elif(parameterName.find("Z-Jet-2-e")>=0) :
+                    process+="set /Herwig/Cuts/ZBosonKtCut:MinKT 190.0*GeV\n"
+                    parameterName=parameterName.replace("Z-Jet-2-e","Z-Jet-e")
+                elif(parameterName.find("Z-Jet-3-e")>=0) :
+                    process+="set /Herwig/Cuts/ZBosonKtCut:MinKT 270.0*GeV\n"
+                    parameterName=parameterName.replace("Z-Jet-3-e","Z-Jet-e")
             else :
-                process+="insert SimpleQCD:MatrixElements[0] MEZJet\nset MEZJet:ZDecay Electron\n"
+                process+="insert SimpleQCD:MatrixElements[0] MEZJet\nset MEZJet:ZDecay Muon\n"
                 process+="set /Herwig/Cuts/ZBosonKtCut:MinKT 35.0*GeV\n"
                 parameterName=parameterName.replace("Z-Jet-0-mu","Z-Jet-mu")
         else :
@@ -734,7 +733,7 @@ elif(collider=="LHC") :
             process+="do /Herwig/Particles/W+:SelectDecayModes /Herwig/Particles/W+/W+->nu_e,e+;\n"
             process+="do /Herwig/Particles/W-:SelectDecayModes /Herwig/Particles/W-/W-->nu_mubar,mu-;\n"
             process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/EventHandlers/LHCHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
         elif(parameterName.find("WW-ll")>=0) :
             process+="create Herwig::HwDecayHandler /Herwig/NewPhysics/DecayHandler\n"
             process+="set /Herwig/NewPhysics/DecayHandler:NewStep No\n"
@@ -744,7 +743,7 @@ elif(collider=="LHC") :
             process+="insert SimpleQCD:MatrixElements[0] PowhegMEPP2VV\nset PowhegMEPP2VV:Process WW\n"
             process+="do /Herwig/Particles/W+:SelectDecayModes /Herwig/Particles/W+/W+->nu_e,e+; /Herwig/Particles/W+/W+->nu_mu,mu+; /Herwig/Particles/W+/W+->nu_tau,tau+;\n"
             process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/EventHandlers/LHCHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
         elif(parameterName.find("ZZ-ll")>=0) :
             process+="create Herwig::HwDecayHandler /Herwig/NewPhysics/DecayHandler\n"
             process+="set /Herwig/NewPhysics/DecayHandler:NewStep No\n"
@@ -754,7 +753,7 @@ elif(collider=="LHC") :
             process+="insert SimpleQCD:MatrixElements[0] PowhegMEPP2VV\nset PowhegMEPP2VV:Process ZZ\n"
             process+="do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig/Particles/Z0/Z0->mu-,mu+; /Herwig/Particles/Z0/Z0->tau-,tau+;\n"
             process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/EventHandlers/LHCHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
         elif(parameterName.find("ZZ-lv")>=0) :
             process+="create Herwig::HwDecayHandler /Herwig/NewPhysics/DecayHandler\n"
             process+="set /Herwig/NewPhysics/DecayHandler:NewStep No\n"
@@ -764,7 +763,7 @@ elif(collider=="LHC") :
             process+="insert SimpleQCD:MatrixElements[0] PowhegMEPP2VV\nset PowhegMEPP2VV:Process ZZ\n"
             process+="do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig/Particles/Z0/Z0->mu-,mu+; /Herwig/Particles/Z0/Z0->tau-,tau+; /Herwig/Particles/Z0/Z0->nu_e,nu_ebar; /Herwig/Particles/Z0/Z0->nu_mu,nu_mubar; /Herwig/Particles/Z0/Z0->nu_tau,nu_taubar;\n"
             process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/EventHandlers/LHCHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
         elif(parameterName.find("W-Z-e")>=0) :
             process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
             process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2W2ff\nset PowhegMEqq2W2ff:Process Electron\n"
@@ -977,7 +976,7 @@ elif(collider=="LHC") :
             process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/TopPairMTScale\n"
             process+="do /Herwig/Particles/t:SelectDecayModes t->nu_e,e+,b; t->nu_mu,mu+,b;\n"
             process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/EventHandlers/LHCHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
         elif(parameterName.find("7-Top-SL")>=0) :
             process+="set /Herwig/Particles/t:HardProcessWidth 0.*GeV\n"
             process+="set /Herwig/Particles/tbar:HardProcessWidth 0.*GeV\n"
@@ -989,7 +988,7 @@ elif(collider=="LHC") :
             process+="do /Herwig/Particles/t:SelectDecayModes t->nu_e,e+,b; t->nu_mu,mu+,b;\n"
             process+="do /Herwig/Particles/tbar:SelectDecayModes tbar->b,bbar,cbar; tbar->bbar,cbar,d; tbar->bbar,cbar,s; tbar->bbar,s,ubar; tbar->bbar,ubar,d;\n"
             process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/EventHandlers/LHCHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"-        
         elif(parameterName.find("7-Top-All")>=0) :
             process+="set /Herwig/Particles/t:HardProcessWidth 0.*GeV\n"
             process+="set /Herwig/Particles/tbar:HardProcessWidth 0.*GeV\n"
@@ -1019,7 +1018,7 @@ elif(collider=="LHC") :
             process+="do /Herwig/Particles/W+:SelectDecayModes /Herwig/Particles/W+/W+->nu_e,e+;\n"
             process+="do /Herwig/Particles/W-:SelectDecayModes /Herwig/Particles/W-/W-->nu_mubar,mu-;\n"
             process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/EventHandlers/LHCHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
         elif(parameterName.find("WW-ll")>=0) :
             process+="set /Herwig/Particles/W+:HardProcessWidth 0.*GeV\n"
             process+="set /Herwig/Particles/W-:HardProcessWidth 0.*GeV\n"
@@ -1028,7 +1027,7 @@ elif(collider=="LHC") :
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 160.8*GeV\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
             process+="do /Herwig/Particles/W+:SelectDecayModes /Herwig/Particles/W+/W+->nu_e,e+; /Herwig/Particles/W+/W+->nu_mu,mu+; /Herwig/Particles/W+/W+->nu_tau,tau+;\n"
             process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/EventHandlers/LHCHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
         elif(parameterName.find("ZZ-ll")>=0) :
             process+="set /Herwig/Particles/W+:HardProcessWidth 0.*GeV\n"
             process+="set /Herwig/Particles/W-:HardProcessWidth 0.*GeV\n"
@@ -1037,7 +1036,7 @@ elif(collider=="LHC") :
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 182.2*GeV\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
             process+="do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig/Particles/Z0/Z0->mu-,mu+; /Herwig/Particles/Z0/Z0->tau-,tau+;\n"
             process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/EventHandlers/LHCHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
         elif(parameterName.find("ZZ-lv")>=0) :
             process+="set /Herwig/Particles/W+:HardProcessWidth 0.*GeV\n"
             process+="set /Herwig/Particles/W-:HardProcessWidth 0.*GeV\n"
@@ -1046,7 +1045,7 @@ elif(collider=="LHC") :
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 182.2*GeV\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
             process+="do /Herwig/Particles/Z0:SelectDecayModes /Herwig/Particles/Z0/Z0->e-,e+; /Herwig/Particles/Z0/Z0->mu-,mu+; /Herwig/Particles/Z0/Z0->tau-,tau+; /Herwig/Particles/Z0/Z0->nu_e,nu_ebar; /Herwig/Particles/Z0/Z0->nu_mu,nu_mubar; /Herwig/Particles/Z0/Z0->nu_tau,nu_taubar;\n"
             process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/EventHandlers/LHCHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
         elif(parameterName.find("W-Z-e")>=0) :
             process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\n"
             process+="do Factory:Process p p e+ e-\ndo Factory:Process p p e+ nu\ndo Factory:Process p p e- nu\n"
@@ -1129,10 +1128,6 @@ elif(collider=="LHC") :
             process+="set /Herwig/Cuts/Cuts:JetFinder /Herwig/Cuts/JetFinder\n"
             process+="insert /Herwig/Cuts/Cuts:MultiCuts 0 /Herwig/Cuts/JetCuts\n"
             process+="insert /Herwig/Cuts/JetCuts:JetRegions 0 /Herwig/Cuts/FirstJet\n"
-
-
-
-
         elif(parameterName.find("Z-bb")>=0) :
             parameters["bscheme"]="read Matchbox/FourFlavourScheme.in"
             process+="set /Herwig/Particles/b:HardProcessMass 4.2*GeV\nset /Herwig/Particles/bbar:HardProcessMass 4.2*GeV\n"
