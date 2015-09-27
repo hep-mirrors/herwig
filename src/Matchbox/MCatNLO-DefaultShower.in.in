@@ -20,6 +20,13 @@ cd /Herwig/MatrixElements/Matchbox
 
 set Factory:ShowerApproximation QTildeMatching
 
+cd /Herwig/Hadronization
+set ClusterFissioner:ClMaxCharm  3.70*GeV
+set ClusterFissioner:ClPowCharm  2.35
+set ClusterFissioner:PSplitCharm 1.19
+set ClusterDecayer:ClDirCharm 1
+set ClusterDecayer:ClSmrCharm 0.
+set LightClusterDecayer:SingleHadronLimitCharm 0.0
 cd /Herwig/Analysis
 
 @CREATE_RIVET@ ThePEG::RivetAnalysis Rivet RivetAnalysis.so
