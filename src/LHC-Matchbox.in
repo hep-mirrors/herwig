@@ -15,7 +15,7 @@ read Matchbox/PPCollider.in
 ##################################################
 
 cd /Herwig/EventHandlers
-set EventHandler:LuminosityFunction:Energy 8000*GeV
+set EventHandler:LuminosityFunction:Energy 13000*GeV
 
 ##################################################
 ## Process selection
