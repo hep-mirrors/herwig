@@ -5712,7 +5712,7 @@ decaymode Upsilon_3(2D)->chi_b2,gamma; 0.1947 1 /Herwig/Decays/DecayME0
 # the 3^1S_0 multiplet
 #
 #
-decaymode eta_b(3S)->g,g; 0.9983 1 /Herwig/Decays/DecayME0
+decaymode eta_b(3S)->g,g; 0.9983 1 /Herwig/Decays/QDecayME0
 decaymode eta_b(3S)->h_b(2P),gamma; 0.0012 1 /Herwig/Decays/DecayME0
 decaymode eta_b(3S)->h_b,gamma; 0.0005 1 /Herwig/Decays/DecayME0
 #
