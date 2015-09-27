@@ -92,8 +92,8 @@ set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassSca
 ## towards the end of the input file.
 ##################################################
 
-#read Matchbox/MCatNLO-DefaultShower.in
-read Matchbox/Powheg-DefaultShower.in
+read Matchbox/MCatNLO-DefaultShower.in
+# read Matchbox/Powheg-DefaultShower.in
 ## use for strict LO/NLO comparisons
 # read Matchbox/MCatLO-DefaultShower.in
 ## use for improved LO showering
