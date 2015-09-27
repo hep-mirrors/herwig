@@ -49,7 +49,7 @@ set /Herwig/Hadronization/ClusterFissioner:ClPowLight 2.44
 set /Herwig/Hadronization/ClusterFissioner:PSplitLight 0.88
 set /Herwig/Hadronization/ClusterFissioner:ClMaxCharm 3.56
 set /Herwig/Hadronization/ClusterFissioner:ClPowCharm 2.10
-set /Herwig/Hadronization/ClusterFissioner:PSplitcharm 1.30
+set /Herwig/Hadronization/ClusterFissioner:PSplitCharm 1.30
 set /Herwig/Hadronization/HadronSelector:PwtSquark 0.55
 set /Herwig/Hadronization/HadronSelector:PwtDIquark 0.36
 
