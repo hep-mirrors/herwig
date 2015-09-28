@@ -302,6 +302,10 @@ private:
 
   mutable string extraOpenLoopsPath;
   
+  /**
+   * Interface for Higgs Effective
+   */
+  bool theHiggsEff;
   
   /**
    * Complex Mass Scheme.
