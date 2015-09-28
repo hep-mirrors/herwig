@@ -1,0 +1,8 @@
+# -*- ThePEG-repository -*-
+
+# NJet as the one and only matrix element provider
+
+cd /Herwig/MatrixElements/Matchbox/Amplitudes
+
+clear /Herwig/MatrixElements/Matchbox/Factory:Amplitudes
+insert /Herwig/MatrixElements/Matchbox/Factory:Amplitudes 0 NJet
