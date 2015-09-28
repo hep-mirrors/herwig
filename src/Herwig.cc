@@ -17,7 +17,8 @@ int main(int argc, char * argv[]) {
     // read in command line options by using a singleton object
     HelperReadInCommandLineParameters* comLineParam = HelperReadInCommandLineParameters::instance(argc, argv);  
     if(!comLineParam->getReadInWasSuccessful()) {
-      std::cerr << "Read in of command line parameters was not successful. Program execution will stop now.";
+      std::cerr << "Read in of command line parameters was not successful. Program execution will stop now.\n"
+		<< std::flush;
       return EXIT_FAILURE;
     }
     
@@ -428,6 +429,11 @@ HelperReadInCommandLineParameters::HelperReadInCommandLineParameters(int argc, c
   // job size
   m_jobsize = 0;
   if ( m_args_info.jobsize_given ) {
+    if ( m_runMode != HerwigRunMode::BUILD ) {
+      std::cerr << "--jobsize option is only available to build.\n";
+      m_readInWasSuccessful = false;
+      return;
+    }
     m_jobsize = m_args_info.jobsize_arg;
     SamplerBase::setIntegratePerJob(m_jobsize);
   }
@@ -435,6 +441,11 @@ HelperReadInCommandLineParameters::HelperReadInCommandLineParameters(int argc, c
   // max integration jobs
   m_maxjobs = 0;
   if ( m_args_info.maxjobs_given ) {
+    if ( m_runMode != HerwigRunMode::BUILD ) {
+      std::cerr << "--maxjobs option is only available to build.\n";
+      m_readInWasSuccessful = false;
+      return;
+    }
     m_maxjobs = m_args_info.maxjobs_arg;
     SamplerBase::setIntegrationJobs(m_maxjobs);
   }

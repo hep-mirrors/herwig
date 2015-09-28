@@ -52,7 +52,7 @@ GeneralSampler::GeneralSampler()
     theAlmostUnweighted(false), maximumExceeds(0),
     maximumExceededBy(0.), didReadGrids(false),
     theParallelIntegration(false),
-  theIntegratePerJob(0), theIntegrationJobs(0), theIntegrationJobsCreated(1),
+  theIntegratePerJob(0), theIntegrationJobs(0), theIntegrationJobsCreated(0),
   justAfterIntegrate(false), theWriteGridsOnFinish(false) {}
 
 GeneralSampler::~GeneralSampler() {}
@@ -726,7 +726,9 @@ void GeneralSampler::readGrids() {
     }
     else {
       // Check if integrationJob was split and try to merge single integrationJobs together
-      if(integrationJobsCreated() > 1 && runLevel() == RunMode) {
+      // integrationJobsCreated() == 0 indicates that parallel integration has not been
+      // requested, while the parallel integration parameters may well yield a single job
+      if(integrationJobsCreated() >= 1 && runLevel() == RunMode) {
 	messageBuffer << "\n\n* Global HerwigGrids.xml file does not exist yet"
 		      << "\n  and integration jobs were split into " << integrationJobsCreated() << " integration jobs."
 		      << "\n  Trying to combine single integration jobs to a global HerwigGrids.xml file"
