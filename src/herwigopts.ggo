@@ -50,11 +50,11 @@ text "
   -x, --setupfile=FILE     An input file to modify run parameters.
   -t, --tag=TAG            A tag to append to the run name  (default=`')"
 
-option "jobsize" z "The number of subprocesses to integrate per job ."
+option "jobsize" z "The number of subprocesses to integrate per job (build only)."
   typestr="NUMBER"
   long optional
 
-option "maxjobs" y "The maximum number of integration jobs to be created."
+option "maxjobs" y "The maximum number of integration jobs to be created (build only)."
   typestr="NUMBER"
   long optional
 
