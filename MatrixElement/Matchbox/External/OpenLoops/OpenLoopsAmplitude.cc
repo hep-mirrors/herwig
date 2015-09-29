@@ -45,7 +45,7 @@ using namespace Herwig;
 #endif
 
 OpenLoopsAmplitude::OpenLoopsAmplitude() :
-  use_cms(true),psp_tolerance(12),
+  theHiggsEff(false), use_cms(true), psp_tolerance(12),
   OpenLoopsLibs_(OPENLOOPSLIBS), OpenLoopsPrefix_(OPENLOOPSPREFIX) {
 }
 
@@ -143,8 +143,10 @@ void OpenLoopsAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs
 	orderFile << "CorrectionType           QCD\n";
 	orderFile << "IRregularization         " << (isDR() ? "DRED" : "CDR") << "\n";
 	orderFile << "extra answerfile      " << (factory()->buildStorage() + name() + ".OLPAnswer.lh") << "\n";
-    orderFile << "extra psp_tolerance "<<psp_tolerance<<"\n";
-    orderFile << "extra use_cms "<<(use_cms?"1":"0")<< "\n";
+	orderFile << "extra psp_tolerance "<<psp_tolerance<<"\n";
+	orderFile << "extra use_cms "<<(use_cms?"1":"0")<< "\n";
+	if (theHiggsEff)
+		orderFile << "model heft\n";
 	orderFile << "\n";
 
 	if (extraOpenLoopsPath!="")
@@ -427,9 +429,24 @@ void OpenLoopsAmplitude::Init() {
 		  "arXiv:1111.5206 [hep-ph].\n"
 		  "%%CITATION = ARXIV:1111.5206;%%");
   
+  static Switch<OpenLoopsAmplitude,bool> interfaceHiggsEff
+         ("HiggsEff",
+          "Switch On/Off for effective higgs model.",
+          &OpenLoopsAmplitude::theHiggsEff, false, false, false);
+  static SwitchOption interfaceHiggsEffOn
+         (interfaceHiggsEff,
+          "On",
+          "On",
+          true);
+  static SwitchOption interfaceHiggsEffOff
+         (interfaceHiggsEff,
+          "Off",
+          "Off",
+          false);
+
   static Switch<OpenLoopsAmplitude,bool> interfaceUseComplMass
   ("ComplexMassScheme",
-   "Switch on or off if Compex Masses.",
+   "Switch on or off if Complex Masses.",
    &OpenLoopsAmplitude::use_cms, true, false, false);
   static SwitchOption interfaceUseComplMassOn
   (interfaceUseComplMass,

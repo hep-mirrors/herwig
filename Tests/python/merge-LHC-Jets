@@ -11,7 +11,7 @@ import os, yoda
 # #############################################
 
 
-def fillAbove(scale,desthisto, sourcehistosbyptmin):
+def fillAbove(scale,desthisto, sourcehistosbyptmin) :
     pthigh= 1e100
     ptlow =-1e100
     for pt, h in sorted(sourcehistosbyptmin.iteritems(),reverse=True):
@@ -37,7 +37,7 @@ def fillAbove(scale,desthisto, sourcehistosbyptmin):
             sys.exit(1)
         pthigh=pt
 
-def mergeByPt(hpath, sqrts, scale=1.):
+def mergeByPt(hpath, sqrts, scale=1.) :
     global inhistos_pt
     global outhistos
     try:
@@ -126,7 +126,7 @@ yodafiles=["-7-Jets-0.yoda","-7-Jets-1.yoda","-7-Jets-2.yoda",
            "-7-Jets-6.yoda","-7-Jets-7.yoda","-7-Jets-8.yoda",
            "-7-Heavy-0.yoda","-7-Heavy-1.yoda","-7-Heavy-2.yoda",
            "-7-Heavy-3.yoda","-7-Heavy-4.yoda","-7-Heavy-5.yoda",
-           "-7-Top-SL.yoda","-7-Top-L.yoda"]
+           "-7-Top-SL.yoda","-7-Top-L.yoda","-7-Top-All.yoda"]
 
 if(opts.ue) :
     yodafiles += ["-900-UE.yoda"   ,"-2360-UE.yoda"    ,"-2760-UE.yoda"    ,
@@ -154,7 +154,10 @@ for f in yodafiles:
     elif(file.find("-7-Jets-0")>0) :
         ptmin=4.
     elif(file.find("-7-Jets-1")>0) :
-        ptmin=30.
+        if( not opts.ue) :
+            ptmin = 10.
+        else :
+            ptmin = 20.
     elif(file.find("-7-Jets-2")>0) :
         ptmin=40.
     elif(file.find("-7-Jets-3")>0) :
@@ -181,25 +184,19 @@ for f in yodafiles:
         ptmin=100.
     elif(file.find("-7-Heavy-5.yoda")>0) :
         ptmin=130.
-    elif(file.find("-7-Top-SL.yoda")>0 or file.find("-7-Top-L.yoda")>0):
+    elif(file.find("-7-Top-SL.yoda")>0 or file.find("-7-Top-L.yoda")>0 or \
+         file.find("-7-Top-All.yoda")>0):
         ptmin=0.
     if not os.access(file, os.R_OK):
         logging.error("%s can not be read" % file)
-        break
+        continue
     try:
         aos = yoda.read(file)
     except:
         logging.error("%s can not be parsed as YODA" % file)
-        break
+        continue
     ## Get histos from this YODA file
     for aopath, ao in aos.iteritems() :
-        if( not opts.ue and 
-            (aopath.find("I1125575")>0 or
-             aopath.find("I1261026")>0 or
-             aopath.find("S9120041")>0 or 
-             aopath.find("ATLAS_2014_I1298811")>0 or
-             aopath.find("CMS_2012_PAS_QCD_11_010")>0) ) :
-            continue
         if(aopath.find("S8924791")>0 or 
            aopath.find("S8971293")>0 or 
            aopath.find("S8817804")>0 or 
@@ -288,12 +285,12 @@ for f in yodafiles:
         mass=550
     if not os.access(file, os.R_OK):
         logging.error("%s can not be read" % file)
-        break
+        continue
     try:
         aos = yoda.read(file)
     except:
         logging.error("%s can not be parsed as YODA" % file)
-        break
+        continue
     ## Get histos from this YODA file
     for aopath, ao in aos.iteritems() :
         if(aopath.find("8817804")>0 or
@@ -312,7 +309,6 @@ for f in yodafiles:
                tmpP[mass] = ao
            else:
                 raise Exception("A set with mass = %s already exists" % ( mass))
-
 
 ## Make empty output histos if needed
 for hpath,hsets in inhistos_pt.iteritems():
@@ -339,10 +335,10 @@ for hpath,hsets in inhistos_pt.iteritems():
         hpath.find("I1261026")>0 or 
         hpath.find("I1090423")>0 or
         hpath.find("QCD_11_010")>0 or
-        hpath.find("1298811")>0 or
-        hpath.find("I1325553")>0 or
-        hpath.find("I1298810")>0 or
-        hpath.find("1307243")>0) :
+        hpath.find("1298811"   )>0 or
+        hpath.find("I1325553"  )>0 or
+        hpath.find("I1298810"  )>0 or
+        hpath.find("1307243"   )>0) :
         if(type(hsets.values()[0].values()[0])==yoda.core.Scatter2D) :
             outhistos[hpath] = yoda.core.Scatter2D(hsets.values()[0].values()[0].path,
                                                    hsets.values()[0].values()[0].title)
@@ -360,7 +356,6 @@ for hpath,hsets in inhistos_pt.iteritems():
                                         hsets.values()[0].values()[0].bins[i].xMax)
         else :
             logging.error("Histogram %s is of unknown type" % hpath)
-            print hpath,type(hsets.values()[0].values()[0])
             sys.exit(1) 
 
 ## Make empty output histos if needed
@@ -383,7 +378,6 @@ for hpath,hsets in inhistos_mass.iteritems():
                                         hsets.values()[0].values()[0].bins[i].xMax)
         else :
             logging.error("Histogram %s is of unknown type" % hpath)
-            print hpath,type(hsets.values()[0].values()[0])
             sys.exit(1)
         
 

@@ -154,12 +154,12 @@ for f in yodafiles:
 
     if not os.access(file, os.R_OK):
         logging.error("%s can not be read" % file)
-        break
+        continue
     try:
         aos = yoda.read(file)
     except:
         logging.error("%s can not be parsed as YODA" % file)
-        break
+        continue
     ## Get histos from this YODA file
     for aopath, ao in aos.iteritems() :
         # di-jet decorrelations
@@ -221,12 +221,12 @@ for f in yodafiles:
         ptmin=0.8
     if not os.access(file, os.R_OK):
         logging.error("%s can not be read" % file)
-        break
+        continue
     try:
         aos = yoda.read(file)
     except:
         logging.error("%s can not be parsed as YODA" % file)
-        break
+        continue
     ## Get histos from this AIDA file
     for aopath, ao in aos.iteritems() :
         if(aopath.find("8566488")>0 or aopath.find("8320160")>0) :

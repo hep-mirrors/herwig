@@ -41,7 +41,7 @@ if __name__ == '__main__':
     if tagName:
         runName = runName + '/' + tagName
 
-    gridId = 'Herwig/' + runName
+    gridId = 'Herwig-scratch/' + runName
 
     # print 'Looking in ' + gridId
 

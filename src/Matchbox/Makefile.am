@@ -28,6 +28,7 @@ GoSam-GoSam.in \
 OpenLoops-OpenLoops.in \
 MadGraph-GoSam.in \
 MadGraph-NJet.in \
+NJet-NJet.in \
 MadGraph-OpenLoops.in \
 MCatNLO-DefaultShower.in \
 MCatNLO-DipoleShower.in \
