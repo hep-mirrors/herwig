@@ -227,16 +227,6 @@ double FlatInvertiblePhasespace::generateKinematics(vector<Lorentz5Momentum>& P,
 
   P.back() = Q;
 
-  // find boost to the relevant partonic frame note final state kinematics are
-  // always generated in the CMS for this phase space algorithm
-  Lorentz5Momentum pinitial = P[0]+P[1];
-  if ( pinitial.rho2() > 1e-12*GeV2 ) {
-    Boost boostinitial = pinitial.findBoostToCM();
-    for ( vector<Lorentz5Momentum>::iterator pit =
-	    P.begin()+2; pit != P.end(); ++pit )
-      pit->boost(-boostinitial);
-  }
-
   return weight;
 
 }
@@ -244,19 +234,6 @@ double FlatInvertiblePhasespace::generateKinematics(vector<Lorentz5Momentum>& P,
 double FlatInvertiblePhasespace::invertKinematics(const vector<Lorentz5Momentum>& P,
 						  Energy Ecm,
 						  double* r) const {
-
-  Lorentz5Momentum pinitial = P[0]+P[1];
-  if ( pinitial.rho2() > 1e-12*GeV2 ) {
-
-    vector<Lorentz5Momentum> Pcms = P;
-    Boost toCMS = (Pcms[0]+Pcms[1]).findBoostToCM();
-    for ( vector<Lorentz5Momentum>::iterator pit =
-          Pcms.begin(); pit != Pcms.end(); ++pit )
-      pit->boost(toCMS);
-
-    return invertKinematics(Pcms,Ecm,r);
-
-  } 
 
   vector<Energy> m;
   for ( vector<Lorentz5Momentum>::const_iterator p =

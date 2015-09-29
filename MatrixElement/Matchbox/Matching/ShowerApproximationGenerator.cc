@@ -287,6 +287,13 @@ handle(EventHandler & eh, const tPVector &,
   const set<Ptr<ShowerApproximationKernel>::ptr>& kernels = kernelit->second;
 
   theLastBornME = (**kernels.begin()).dipole()->underlyingBornME();
+  if ( theLastBornME->phasespace()->wantCMS() != thePhasespace->wantCMS() ) {
+    throw Exception() << "Mismatch in centre-of-mass-system requirements of hard matrix element phasespace ("
+                      << (theLastBornME->phasespace()->wantCMS()?"true":"false")
+                      << ") and shower approximation phasespace ("
+                      << (thePhasespace->wantCMS()?"true":"false") << ")"
+                      << Exception::abortnow;
+  }
   theLastBornME->phasespace(thePhasespace);
   theLastBornXComb = (**kernels.begin()).bornXComb();
 

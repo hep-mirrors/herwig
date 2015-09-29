@@ -388,6 +388,9 @@ set Rambo:CouplingData PhasespaceCouplings
 create Herwig::FlatInvertiblePhasespace InvertiblePhasespace
 set InvertiblePhasespace:CouplingData PhasespaceCouplings
 
+create Herwig::FlatInvertibleLabframePhasespace InvertibleLabframePhasespace
+set InvertibleLabframePhasespace:CouplingData PhasespaceCouplings
+
 create Herwig::TreePhasespaceChannels TreePhasespaceChannels
 create Herwig::TreePhasespace TreePhasespace
 set TreePhasespace:ChannelMap TreePhasespaceChannels

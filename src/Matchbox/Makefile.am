@@ -45,6 +45,7 @@ Powheg.in \
 PPCollider.in \
 PQCDLevel.in \
 VBFNLO.in \
+VBFNLOPhasespace.in \
 VBFDiagramsOnly.in \
 MMHT2014.in
 
