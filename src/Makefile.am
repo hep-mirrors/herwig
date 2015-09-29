@@ -5,7 +5,11 @@ AUTOMAKE_OPTIONS = -Wno-portability
 defaultsdir = ${pkgdatadir}/defaults
 
 bin_PROGRAMS = Herwig
-Herwig_SOURCES = Herwig.h Herwig.cc herwigopts.c herwigopts.h
+
+Herwig_SOURCES = \
+HerwigMain.cc Herwig.h Herwig.cc HerwigCLI.cc HerwigCLI.h HerwigUI.h \
+herwigopts.c herwigopts.h
+
 BUILT_SOURCES = herwigopts.c herwigopts.h
 Herwig_LDFLAGS = $(AM_LDFLAGS) -export-dynamic $(THEPEGLDFLAGS) \
 $(BOOST_SYSTEM_LDFLAGS) $(BOOST_FILESYSTEM_LDFLAGS)
