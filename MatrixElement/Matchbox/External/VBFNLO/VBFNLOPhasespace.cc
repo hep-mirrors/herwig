@@ -112,7 +112,7 @@ double VBFNLOPhasespace::generateTwoToNKinematics(const double* random,
   }
 
   if (weight == 0) {
-    delete p;
+    delete[] p;
     return 0;
   }
 
@@ -124,7 +124,7 @@ double VBFNLOPhasespace::generateTwoToNKinematics(const double* random,
     momenta[i].rescaleMass();
   }
 
-  delete p;
+  delete[] p;
 
   Energy beamenergy = sqrt(lastXCombPtr()->lastS())/2.;
   double x1 = momenta[0].e()/beamenergy;
