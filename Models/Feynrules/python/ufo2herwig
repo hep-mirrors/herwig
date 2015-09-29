@@ -51,12 +51,9 @@ args = parser.parse_args()
 def should_print():
     return not vertex_skipped or args.ignore_skipped
 
-modeldir = args.ufodir.rstrip('/')
-modelpath, module = os.path.split(modeldir)
-if modelpath:
-    sys.path.append(os.path.abspath(modelpath))
-
-FR = __import__(module)
+import imp
+path,mod = os.path.split(os.path.abspath(args.ufodir))
+FR = imp.load_module(mod,*imp.find_module(mod,[path]))
 
 ##################################################
 ##################################################
