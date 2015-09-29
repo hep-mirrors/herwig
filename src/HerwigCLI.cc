@@ -120,12 +120,20 @@ HerwigCLI::HerwigCLI(int argc, char * argv[])
 
   // job size
   if ( args_info.jobsize_given ) {
+    if ( runMode_ != RunMode::BUILD ) {
+      std::cerr << "--jobsize option is only available in 'build' mode.\n";
+      quitWithError();
+    }
     jobsize_ = args_info.jobsize_arg;
     ThePEG::SamplerBase::setIntegratePerJob(jobsize_);
   }
 
   // max integration jobs
   if ( args_info.maxjobs_given ) {
+    if ( runMode_ != RunMode::BUILD ) {
+      std::cerr << "--maxjobs option is only available in 'build' mode.\n";
+      quitWithError();
+    }
     maxjobs_ = args_info.maxjobs_arg;
     ThePEG::SamplerBase::setIntegrationJobs(maxjobs_);
   }
