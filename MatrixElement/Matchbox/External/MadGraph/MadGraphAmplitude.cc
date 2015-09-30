@@ -53,7 +53,7 @@ extern "C" void MG_Colour                      (int* proc,int* i,int* j ,int* co
 
 MadGraphAmplitude::MadGraphAmplitude()
   : theMGmodel("loop_sm"),keepinputtopmass(false),
-    bindir_(HERWIG_BINDIR), pkgdatadir_(HERWIG_PKGDATADIR), madgraphPrefix_(MADGRAPH_PREFIX)
+    bindir_(HERWIG_BINDIR), includedir_(HERWIG_INCLUDEDIR), pkgdatadir_(HERWIG_PKGDATADIR), madgraphPrefix_(MADGRAPH_PREFIX)
 {}
 
 MadGraphAmplitude::~MadGraphAmplitude() {
@@ -251,6 +251,7 @@ bool MadGraphAmplitude::initializeExternal() {
   cmd +=" --model "+theMGmodel;
   cmd +=" --runpath "+factory()->runStorage()+"/MadGraphAmplitudes ";
   cmd +=" --datadir "+pkgdatadir_;
+  cmd +=" --includedir "+includedir_;
   std::stringstream as,aem;
   as << factory()->orderInAlphaS();
   cmd +=" --orderas "+as.str() ;

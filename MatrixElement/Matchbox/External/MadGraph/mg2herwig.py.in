@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-import os,sys,glob,errno,shutil,time    #argparse 
+import os,sys,glob,errno,shutil,time,fnmatch    #argparse 
 from optparse import OptionParser
 
 #  helper to replace all sourceText in fileName with replaceText
@@ -26,6 +26,14 @@ def find(name, path):
     for root, dirs, files in os.walk(path):
         if name in files:
             return os.path.join(root, name)      
+ 
+#  helper to find all file paths which contain file names matching filepattern
+def finddirs(filepattern, path):
+    founddirs = []
+    for root, dirs, files in os.walk(path):
+        if fnmatch.filter(files, filepattern):
+            founddirs.append(root)
+    return founddirs
  
 # fill the proc.dat file from BornAmplitudes.dat and VirtAmplitudes.dat.
 def fillprocs(model,oras,orew):
@@ -145,6 +153,7 @@ parser.add_option("-e", "--model", dest="model",help="Do not use this script. On
 parser.add_option("-f", "--orderas", dest="orderas",help="Do not use this script. Only for Herwig internal use.")
 parser.add_option("-g", "--orderew", dest="orderew",help="Do not use this script. Only for Herwig internal use.")
 parser.add_option("-i", "--datadir",dest="datadir",help="Do not use this script. Only for Herwig internal use.")
+parser.add_option("-I", "--includedir",dest="includedir",help="Do not use this script. Only for Herwig internal use.")
 
 
 (options, args) = parser.parse_args()
@@ -334,6 +343,9 @@ if Virtlist!=[]:
 file.write("\nPROCESS= InterfaceMadGraph.f "+make+"\n\nall:  \n\t @FC@  @FFLAGS@ -w -fbounds-check -ffixed-line-length-132 -fPIC -fno-f2c -shared -s -o  InterfaceMadGraph.so -IMG5/SubProcesses/" )
 if Virtlist!=[]:
   file.write(" -IMG5/lib/golem95_include ")
+  moddirs=finddirs('*.mod',options.includedir)
+  for moddir in moddirs:
+    file.write(" -I%s " % moddir)
 
 if coefdir != "":
    file.write(coefdir)

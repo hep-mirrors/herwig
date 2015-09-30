@@ -332,6 +332,11 @@ protected:
   string bindir_;
 
   /**
+   *   Location of the installed include files
+   */
+  string includedir_;
+
+  /**
    *   Location of the data files
    */
   string pkgdatadir_;

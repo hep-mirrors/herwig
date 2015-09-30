@@ -15,6 +15,7 @@ dist_madgraph_DATA = $(INPUTFILES)
 
 HwMatchboxMadGraph_la_CPPFLAGS = $(AM_CPPFLAGS) \
 -DHERWIG_BINDIR="\"$(bindir)\"" \
+-DHERWIG_INCLUDEDIR="\"$(includedir)\"" \
 -DHERWIG_PKGDATADIR="\"$(pkgdatadir)\"" \
 -DMADGRAPH_PREFIX="\"$(MADGRAPHPREFIX)\""
 
