@@ -180,7 +180,7 @@ void HerwigGenericRun(const Herwig::HerwigUI & ui) {
 
   if ( ui.seed() > 0 ) eg->setSeed(ui.seed());
   if ( !ui.setupfile().empty() ) eg->addTag("-" + ui.setupfile());
-  if ( !ui.tag().empty() ) eg->addTag(ui.tag());
+  if ( !ui.tag().empty() ) eg->addTag("-" + ui.tag());
 
   if ( ui.integrationJob() ) {
     Ptr<StandardEventHandler>::tptr eh =
@@ -232,7 +232,7 @@ void HerwigGenericRun(const Herwig::HerwigUI & ui) {
       else if ( pid == 0 ) { // we're the child
         if ( ui.tics() ) std::cout << "Forked child " << n << ", PID " << getpid() << std::endl;
         eg->setSeed( ui.seed() + n );
-        eg->addTag( ui.tag() + "-" + nstr );
+        eg->addTag( "-" + nstr );
 	Herwig::RunDirectories::pushRunId( nstr );
         eg->go( ui.resume() ? -1 : 1, ui.N() / ui.jobs(), false );
         break; // avoid sub-forks
