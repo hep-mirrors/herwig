@@ -29,12 +29,6 @@ set /Herwig/Partons/QCDExtractor:FirstPDF  /Herwig/Partons/HardNLOPDF
 set /Herwig/Partons/QCDExtractor:SecondPDF /Herwig/Partons/HardNLOPDF
 
 ##################################################
-#  and strong coupling
-##################################################
-create Herwig::O2AlphaS O2AlphaS 
-set /Herwig/Generators/LHCGenerator:StandardModelParameters:QCD/RunningAlphaS O2AlphaS
-
-##################################################
 #  Setup the POWHEG shower
 ##################################################
 cd /Herwig/Shower
