@@ -7,7 +7,7 @@ import glob
 """\
 %prog [--setupfile=FILE] [--tag=TAG] RUNNAME
 
-Combine Herwig++ grid files
+Combine Herwig grid files
 """
 
 if __name__ == '__main__':

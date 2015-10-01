@@ -706,6 +706,7 @@ void GeneralSampler::readGrids() {
   // or in case of an error
   // Check if a globalHerwigGridsFileFound was found and keep messages in a stringstream buffer beforehand
   bool globalHerwigGridsFileFound = false;
+  bool integrationJobCombinationSuccessful = true;
   std::stringstream messageBuffer;  
   
   RunDirectories directories;
@@ -736,8 +737,6 @@ void GeneralSampler::readGrids() {
 
 
 	theGrids = XML::Element(XML::ElementTypes::Element,"Grids");
-	
-	bool integrationJobCombinationSuccessful = true;
 			    
 	for(unsigned int currentProcessedIntegrationJobNum = 0; currentProcessedIntegrationJobNum < integrationJobsCreated(); ++currentProcessedIntegrationJobNum) {
     ostringstream currentProcessedIntegrationJob;
@@ -781,7 +780,7 @@ void GeneralSampler::readGrids() {
   }
   
   // Show messages if global HerwigGrids.xml file was not found or first combination run 
-  if (!globalHerwigGridsFileFound)
+  if (!globalHerwigGridsFileFound && (theVerbose || !integrationJobCombinationSuccessful))
     BaseRepository::cout() << messageBuffer.str() << "\n" << flush;
   
   if ( !didReadGrids )
