@@ -58,12 +58,6 @@ insert SimpleDIS:MatrixElements[0] MEDISCC
 #cd /Herwig/Shower
 #set Evolver:HardEmissionMode POWHEG
 #
-##################################################
-#  and strong coupling
-##################################################
-#create Herwig::O2AlphaS O2AlphaS 
-#set /Herwig/Model:QCD/RunningAlphaS O2AlphaS
-#
 ###################################################
 ## NLO Matrix Elements for lepton-hadron collisions 
 ## in the POWHEG approach

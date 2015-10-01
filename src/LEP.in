@@ -34,10 +34,7 @@ insert SimpleEE:MatrixElements 0 MEee2gZ2qq
 ##################################################
 # NLO powheg processes
 ##################################################
-#create Herwig::O2AlphaS O2AlphaS 
-#set /Herwig/Generators/LHCGenerator:StandardModelParameters:QCD/RunningAlphaS O2AlphaS
 #set /Herwig/Shower/Evolver:HardEmissionMode POWHEG
-#set /Herwig/Shower/AlphaQCD:AlphaMZ 0.118
 #insert SimpleEE:MatrixElements 0 PowhegMEee2gZ2qq
 #insert SimpleEE:MatrixElements 0 PowhegMEee2gZ2ll
 

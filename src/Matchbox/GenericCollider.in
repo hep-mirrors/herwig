@@ -95,7 +95,5 @@ set /Herwig/Shower/ShowerHandler:PDFB ShowerNLOPDF
 set /Herwig/DipoleShower/DipoleShowerHandler:PDFA ShowerNLOPDF
 set /Herwig/DipoleShower/DipoleShowerHandler:PDFB ShowerNLOPDF
 
-cd /Herwig/MatrixElements/Matchbox/AlphaS
-
-set /Herwig/Generators/EventGenerator:StandardModelParameters:QCD/RunningAlphaS MatchboxNLOAlphaS
+set /Herwig/Generators/EventGenerator:StandardModelParameters:QCD/RunningAlphaS /Herwig/Couplings/NLOAlphaS
 

@@ -12,19 +12,50 @@ create Herwig::StandardModel Model
 
 ## Couplings
 
-# the strong coupling
-create Herwig::O2AlphaS AlphaS O2AlphaS.so
-newdef Model:QCD/RunningAlphaS AlphaS
-insert AlphaS:QuarkMasses[0] 0.005
-insert AlphaS:QuarkMasses[1] 0.0023
-insert AlphaS:QuarkMasses[2] 0.095
-insert AlphaS:QuarkMasses[3] 1.25
-insert AlphaS:QuarkMasses[4] 4.2
-insert AlphaS:QuarkMasses[5] 174.2
+
+################################################################################
+# AlphaS
+################################################################################
+
+mkdir Couplings
+cd Couplings
+
+library HwDipoleShowerAlphaS.so
+
+create matchbox::nlo_alpha_s NLOAlphaS
+newdef NLOAlphaS:exact_evaluation large_scale
+newdef NLOAlphaS:freezing_scale 0.0*GeV
+newdef NLOAlphaS:min_active_flavours 3
+newdef NLOAlphaS:max_active_flavours 6
+newdef NLOAlphaS:input_scale 91.188*GeV
+newdef NLOAlphaS:input_alpha_s 0.118
+insert NLOAlphaS:QuarkMasses[0] 0.005
+insert NLOAlphaS:QuarkMasses[1] 0.0023
+insert NLOAlphaS:QuarkMasses[2] 0.095
+insert NLOAlphaS:QuarkMasses[3] 1.25
+insert NLOAlphaS:QuarkMasses[4] 4.2
+insert NLOAlphaS:QuarkMasses[5] 174.2
+
+create matchbox::lo_alpha_s LOAlphaS
+newdef LOAlphaS:freezing_scale 0.0*GeV
+newdef LOAlphaS:min_active_flavours 3
+newdef LOAlphaS:max_active_flavours 6
+newdef LOAlphaS:input_scale 91.188*GeV
+newdef LOAlphaS:input_alpha_s 0.1283827
+insert LOAlphaS:QuarkMasses[0] 0.005
+insert LOAlphaS:QuarkMasses[1] 0.0023
+insert LOAlphaS:QuarkMasses[2] 0.095
+insert LOAlphaS:QuarkMasses[3] 1.25
+insert LOAlphaS:QuarkMasses[4] 4.2
+insert LOAlphaS:QuarkMasses[5] 174.2
 
 # the electromagetic coupling
 create ThePEG::SimpleAlphaEM AlphaEM SimpleAlphaEM.so
-newdef Model:EW/RunningAlphaEM AlphaEM
+
+# set the couplings
+cd /Herwig
+newdef Model:EW/RunningAlphaEM Couplings/AlphaEM
+newdef Model:QCD/RunningAlphaS Couplings/NLOAlphaS
 
 # the default EW scheme is G_mu
 set Model:EW/Scheme GMuScheme
