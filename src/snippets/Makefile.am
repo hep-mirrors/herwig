@@ -3,7 +3,6 @@ BUILT_SOURCES = done-all-links
 snippetsdir = ${pkgdatadir}/snippets
 
 INPUTFILES = \
-DipoleShowerParameters.in \
 DipoleShowerFiveFlavours.in \
 DipoleShowerFourFlavours.in \
 Particles-SetLonglivedParticlesStable.in \

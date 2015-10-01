@@ -52,7 +52,7 @@ Hadron/QQHTest.h  Hadron/QQHTest.cc
 
 REPO = $(top_builddir)/src/HerwigDefaults.rpo
 HERWIG = $(top_builddir)/src/Herwig
-HWREAD = $(HERWIG) read --repo $(REPO) -L $(builddir)/.libs
+HWREAD = $(HERWIG) read --repo $(REPO) -L $(builddir)/.libs -i $(top_builddir)/src
 HWRUN = $(HERWIG) run
 
 tests : tests-LEP tests-DIS tests-LHC tests-Gamma
@@ -96,7 +96,7 @@ endif
 Rivet-LHC-Matchbox-% : Rivet/LHC-Matchbox-%.in
 	if [ ! -d Rivet-$(notdir $(subst .in,,$<))  ]; then mkdir Rivet-$(notdir $(subst .in,,$<)); fi;
 	cd Rivet-$(notdir $(subst .in,,$<)); echo `pwd`; \
-	../$(HERWIG) read --repo ../$(REPO) -L ../$(top_builddir)/lib ../$<; \
+	../$(HERWIG) read --repo ../$(REPO) -L ../$(top_builddir)/lib -i ../$(top_builddir)/src ../$<; \
 	../$(HERWIG) run $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}; \
 	mv $(notdir $(subst .in,.yoda,$<)) ..; \
 	cd ..
@@ -104,7 +104,7 @@ Rivet-LHC-Matchbox-% : Rivet/LHC-Matchbox-%.in
 Rivet-TVT-Matchbox-% : Rivet/TVT-Matchbox-%.in
 	if [ ! -d Rivet-$(notdir $(subst .in,,$<))  ]; then mkdir Rivet-$(notdir $(subst .in,,$<)); fi;
 	cd Rivet-$(notdir $(subst .in,,$<)); echo `pwd`; \
-	../$(HERWIG) read --repo ../$(REPO) -L ../$(top_builddir)/lib ../$<; \
+	../$(HERWIG) read --repo ../$(REPO) -L ../$(top_builddir)/lib -i ../$(top_builddir)/src ../$<; \
 	../$(HERWIG) run $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}; \
 	mv $(notdir $(subst .in,.yoda,$<)) ..; \
 	cd ..
@@ -112,7 +112,7 @@ Rivet-TVT-Matchbox-% : Rivet/TVT-Matchbox-%.in
 Rivet-TVT-Dipole-% : Rivet/TVT-Dipole-%.in
 	if [ ! -d Rivet-$(notdir $(subst .in,,$<))  ]; then mkdir Rivet-$(notdir $(subst .in,,$<)); fi;
 	cd Rivet-$(notdir $(subst .in,,$<)); echo `pwd`; \
-	../$(HERWIG) read --repo ../$(REPO) -L ../$(top_builddir)/lib ../$<; \
+	../$(HERWIG) read --repo ../$(REPO) -L ../$(top_builddir)/lib -i ../$(top_builddir)/src ../$<; \
 	../$(HERWIG) run $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}; \
 	mv $(notdir $(subst .in,.yoda,$<)) ..; \
 	cd ..
@@ -120,7 +120,7 @@ Rivet-TVT-Dipole-% : Rivet/TVT-Dipole-%.in
 Rivet-LHC-Dipole-% : Rivet/LHC-Dipole-%.in
 	if [ ! -d Rivet-$(notdir $(subst .in,,$<))  ]; then mkdir Rivet-$(notdir $(subst .in,,$<)); fi;
 	cd Rivet-$(notdir $(subst .in,,$<)); echo `pwd`; \
-	../$(HERWIG) read --repo ../$(REPO) -L ../$(top_builddir)/lib ../$<; \
+	../$(HERWIG) read --repo ../$(REPO) -L ../$(top_builddir)/lib -i ../$(top_builddir)/src ../$<; \
 	../$(HERWIG) run $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}; \
 	mv $(notdir $(subst .in,.yoda,$<)) ..; \
 	cd ..
@@ -152,7 +152,7 @@ Rivet/ISR-%.in:
 Rivet-LEP-Matchbox-% : Rivet/LEP-Matchbox-%.in
 	if [ ! -d Rivet-$(notdir $(subst .in,,$<))  ]; then mkdir Rivet-$(notdir $(subst .in,,$<)); fi;
 	cd Rivet-$(notdir $(subst .in,,$<)); echo `pwd`; \
-	../$(HERWIG) read --repo ../$(REPO) -L ../$(top_builddir)/lib ../$<; \
+	../$(HERWIG) read --repo ../$(REPO) -L ../$(top_builddir)/lib -i ../$(top_builddir)/src ../$<; \
 	../$(HERWIG) run $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}; \
 	mv $(notdir $(subst .in,.yoda,$<)) ..; \
 	cd ..
@@ -160,7 +160,7 @@ Rivet-LEP-Matchbox-% : Rivet/LEP-Matchbox-%.in
 Rivet-LEP-Dipole-% : Rivet/LEP-Dipole-%.in
 	if [ ! -d Rivet-$(notdir $(subst .in,,$<))  ]; then mkdir Rivet-$(notdir $(subst .in,,$<)); fi;
 	cd Rivet-$(notdir $(subst .in,,$<)); echo `pwd`; \
-	../$(HERWIG) read --repo ../$(REPO) -L ../$(top_builddir)/lib ../$<; \
+	../$(HERWIG) read --repo ../$(REPO) -L ../$(top_builddir)/lib -i ../$(top_builddir)/src ../$<; \
 	../$(HERWIG) run $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}; \
 	mv $(notdir $(subst .in,.yoda,$<)) ..; \
 	cd ..
@@ -168,7 +168,7 @@ Rivet-LEP-Dipole-% : Rivet/LEP-Dipole-%.in
 Rivet-BFactory-Matchbox-% : Rivet/BFactory-Matchbox-%.in
 	if [ ! -d Rivet-$(notdir $(subst .in,,$<))  ]; then mkdir Rivet-$(notdir $(subst .in,,$<)); fi;
 	cd Rivet-$(notdir $(subst .in,,$<)); echo `pwd`; \
-	../$(HERWIG) read --repo ../$(REPO) -L ../$(top_builddir)/lib ../$<; \
+	../$(HERWIG) read --repo ../$(REPO) -L ../$(top_builddir)/lib -i ../$(top_builddir)/src ../$<; \
 	../$(HERWIG) run $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}; \
 	mv $(notdir $(subst .in,.yoda,$<)) ..; \
 	cd ..

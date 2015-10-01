@@ -10,7 +10,7 @@ cd /Herwig/EventHandlers
 insert EventHandler:PreCascadeHandlers[0] /Herwig/Decays/DecayHandler
 
 set EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
-read snippets/DipoleShowerParameters.in
+read Matchbox/MCatNLO-Dipole-HardAlphaSTune.in
 
 set /Herwig/DipoleShower/DipoleShowerHandler:RestrictPhasespace On
 set /Herwig/DipoleShower/DipoleShowerHandler:MaxPtIsMuF Yes
