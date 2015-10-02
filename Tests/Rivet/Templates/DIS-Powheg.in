@@ -27,12 +27,6 @@ cd /Herwig/Shower
 set Evolver:IntrinsicPtGaussian 1.9*GeV
 set Evolver:HardEmissionMode POWHEG
 
-##################################################
-#  and strong coupling
-##################################################
-create Herwig::O2AlphaS O2AlphaS 
-set /Herwig/Model:QCD/RunningAlphaS O2AlphaS
-
 cd /Herwig/MatrixElements/
 # Neutral current DIS
 
