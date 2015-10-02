@@ -49,7 +49,8 @@ set /Herwig/Particles/g:ConstituentMass 0.7899848*GeV
 ##################################################
 set /Herwig/DipoleShower/NLOAlphaS:input_alpha_s 0.139
 set /Herwig/DipoleShower/NLOAlphaS:input_scale 91.18*GeV
-set /Herwig/MatrixElements/Matchbox/AlphaS/MatchboxNLOAlphaS:input_alpha_s 0.139
+set /Herwig/Couplings/NLOAlphaS:input_alpha_s 0.139
+set /Herwig/Couplings/NLOAlphaS:input_scale 91.18*GeV
 
 
 ##################################################
