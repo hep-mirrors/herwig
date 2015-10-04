@@ -737,6 +737,8 @@ void GeneralSampler::readGrids() {
 
 
 	theGrids = XML::Element(XML::ElementTypes::Element,"Grids");
+
+	integrationJobCombinationSuccessful = true;
 			    
 	for(unsigned int currentProcessedIntegrationJobNum = 0; currentProcessedIntegrationJobNum < integrationJobsCreated(); ++currentProcessedIntegrationJobNum) {
     ostringstream currentProcessedIntegrationJob;
