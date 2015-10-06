@@ -42,13 +42,30 @@
 using namespace Herwig;
 
 namespace {
+
+  /**
+   *  A struct to order the particles in the same way as in the DecayMode's
+   */
+  struct ParticleOrdering {
+    /**
+     *  Operator for the ordering
+     * @param p1 The first ParticleData object
+     * @param p2 The second ParticleData object
+     */
+    bool operator() (tcPDPtr p1, tcPDPtr p2) {
+      return abs(p1->id()) > abs(p2->id()) ||
+	( abs(p1->id()) == abs(p2->id()) && p1->id() > p2->id() ) ||
+	( p1->id() == p2->id() && p1->fullName() > p2->fullName() );
+    }
+  };
+  typedef multiset<tcPDPtr,ParticleOrdering> OrderedParticles;
+
   /**
    * Cached lookup of decay modes.
    * Generator::findDecayMode() is not efficient.
    */
   tDMPtr findDecayMode(const string & tag) {
     static map<string,DMPtr> cache;
-
     map<string,DMPtr>::const_iterator pos = cache.find(tag);
 
     if ( pos != cache.end() ) 
@@ -959,10 +976,25 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
   if(!dm) {
     string tag = decay->incomingLines().begin()->first->original()->dataPtr()->name() 
       + "->";
+    OrderedParticles outgoing;
     for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator 
 	  it=decay->outgoingLines().begin();it!=decay->outgoingLines().end();++it) {
-      if(it!=decay->outgoingLines().begin()) tag += ",";
-      tag += it->first->original()->dataPtr()->name();
+      if(abs(decay->incomingLines().begin()->first->original()->id()) == ParticleID::t &&
+	 abs(it->first->original()->id())==ParticleID::Wplus &&
+	 decay->treelinks().size() == 1) {
+	ShowerTreePtr Wtree = decay->treelinks().begin()->first;
+	for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator
+	      it2=Wtree->outgoingLines().begin();it2!=Wtree->outgoingLines().end();++it2) {
+	  outgoing.insert(it2->first->original()->dataPtr());
+	}
+      }
+      else {
+	outgoing.insert(it->first->original()->dataPtr());
+      }
+    }
+    for(OrderedParticles::const_iterator it=outgoing.begin(); it!=outgoing.end();++it) {
+      if(it!=outgoing.begin()) tag += ",";
+      tag +=(**it).name();
     }
     tag += ";";
     dm = findDecayMode(tag);
