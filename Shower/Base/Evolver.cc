@@ -299,10 +299,15 @@ void Evolver::Init() {
   static SwitchOption interfaceTruncMode1
     (interfaceTruncMode,"Yes","Truncated Shower is ON", 1);
 
-  static Switch<Evolver,unsigned int> interfaceHardEmissionMode
+  static Switch<Evolver,int> interfaceHardEmissionMode
     ("HardEmissionMode",
      "Whether to use ME corrections or POWHEG for the hardest emission",
      &Evolver::_hardEmissionMode, 0, false, false);
+  static SwitchOption interfaceHardEmissionModeDecayMECorrection
+    (interfaceHardEmissionMode,
+     "DecayMECorrection",
+     "Old fashioned ME correction for decays only",
+     -1);
   static SwitchOption interfaceHardEmissionModeMECorrection
     (interfaceHardEmissionMode,
      "MECorrection",
@@ -679,14 +684,14 @@ void Evolver::hardMatrixElementCorrection(bool hard) {
   _initialenhance = 1.;
   _finalenhance   = 1.;
   // if hard matrix element switched off return
-  if(!MECOn()) return;
+  if(!MECOn(hard)) return;
   // see if we can get the correction from the matrix element
   // or decayer
   if(hard) {
     if(_hardme&&_hardme->hasMECorrection()) {
       _hardme->initializeMECorrection(_currenttree,
 				      _initialenhance,_finalenhance);
-      if(hardMEC())
+      if(hardMEC(hard))
 	_hardme->applyHardMatrixElementCorrection(_currenttree);
     }
   }
@@ -694,7 +699,7 @@ void Evolver::hardMatrixElementCorrection(bool hard) {
     if(_decayme&&_decayme->hasMECorrection()) {
       _decayme->initializeMECorrection(_currenttree,
 				       _initialenhance,_finalenhance);
-      if(hardMEC())
+      if(hardMEC(hard))
 	_decayme->applyHardMatrixElementCorrection(_currenttree);
     }
   }
@@ -1095,7 +1100,8 @@ vector<ShowerProgenitorPtr> Evolver::setupShower(bool hard) {
   // set the initial colour partners
   setEvolutionPartners(hard,inter,false);
   // generate hard me if needed
-  if(_hardEmissionMode==0) hardMatrixElementCorrection(hard);
+  if(_hardEmissionMode==0 ||
+     (!hard && _hardEmissionMode==-1)) hardMatrixElementCorrection(hard);
   // get the particles to be showered
   vector<ShowerProgenitorPtr> particlesToShower = 
     currentTree()->extractProgenitors();

@@ -3,8 +3,8 @@
 read Matchbox/LO.in
 
 set /Herwig/Shower/Evolver:HardVetoReadOption PrimaryCollision
-set /Herwig/Shower/Evolver:MECorrMode No
 set /Herwig/Shower/Evolver:SpinCorrelations No
+set /Herwig/Shower/Evolver:HardEmissionMode DecayMECorrection
 set /Herwig/Shower/KinematicsReconstructor:ReconstructionOption Colour4
 set /Herwig/Shower/KinematicsReconstructor:InitialStateReconOption SofterFraction
 set /Herwig/Shower/PartnerFinder:PartnerMethod 0

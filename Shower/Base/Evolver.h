@@ -325,22 +325,28 @@ protected:
   /**
    * Any ME correction?   
    */
-  bool MECOn() const {
-    return _meCorrMode > 0 && _hardEmissionMode==0;
+  bool MECOn(bool hard) const {
+    return ( _hardEmissionMode == 0 ||
+	     (!hard && _hardEmissionMode ==-1) ) &&
+      _meCorrMode > 0;
   }
 
   /**
    * Any hard ME correction? 
    */
-  bool hardMEC() const {
-    return (_meCorrMode == 1 || _meCorrMode == 2) && _hardEmissionMode==0;
+  bool hardMEC(bool hard) const {
+    return ( _hardEmissionMode == 0 ||
+	     (!hard && _hardEmissionMode ==-1) ) &&
+      (_meCorrMode == 1 || _meCorrMode == 2);
   }
 
   /**
    * Any soft ME correction? 
    */
   bool softMEC() const {
-    return (_meCorrMode == 1 || _meCorrMode > 2) && _hardEmissionMode==0;
+    return ( _hardEmissionMode == 0 ||
+	     (_currenttree->isDecay() && _hardEmissionMode ==-1) ) &&
+      (_meCorrMode == 1 || _meCorrMode > 2);
   }
   //@}
 
@@ -826,7 +832,7 @@ private:
   /**
    *  Mode for the hard emissions
    */
-  unsigned int _hardEmissionMode;
+  int _hardEmissionMode;
 
   /**
    *  Option to include spin correlations
