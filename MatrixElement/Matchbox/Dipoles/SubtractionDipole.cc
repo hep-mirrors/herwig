@@ -88,30 +88,52 @@ void SubtractionDipole::setupBookkeeping(const map<Ptr<DiagramBase>::ptr,Subtrac
   map<int,int> realBornMap;
   map<int,int> bornRealMap;
 
+  set<Ptr<DiagramBase>::cptr> usedDiagrams;
+
   for ( map<Ptr<DiagramBase>::ptr,MergeInfo>::const_iterator mit = mergeInfo.begin();
 	mit != mergeInfo.end(); ++mit ) {
 
     DiagramVector::const_iterator bd = 
       theUnderlyingBornME->diagrams().end();
 
-    map<int,int> theRemapLegs;
-
+    // work out the most similar underlying Born diagram
+    map<int,int> xRemapLegs;
+    int nomapScore = 0;
     for ( DiagramVector::const_iterator b = 
 	    theUnderlyingBornME->diagrams().begin();
-	  b != theUnderlyingBornME->diagrams().end(); ++b )
-      if ( mit->second.diagram->isSame(*b,theRemapLegs) ) {
-	bd = b; break;
+	  b != theUnderlyingBornME->diagrams().end(); ++b ) {
+      map<int,int> theRemapLegs;
+      if ( mit->second.diagram->isSame(*b,theRemapLegs) &&
+	   usedDiagrams.find(*b) == usedDiagrams.end() ) {
+	int theNomapScore = 0;
+	for ( map<int,int>::const_iterator m = theRemapLegs.begin();
+	      m != theRemapLegs.end(); ++m )
+	  if ( m->first == m->second )
+	    theNomapScore += 1;
+	if ( theNomapScore >= nomapScore ) {
+	  nomapScore = theNomapScore;
+	  xRemapLegs = theRemapLegs;
+	  bd = b;
+	}
       }
+    }
 
     // no underlying Born
     if ( bd == theUnderlyingBornME->diagrams().end() )
       continue;
 
+    // as we deal with one splitting only we now mark this diagram as used
+    // since we fixed the overall remapping of the process from the first
+    // occurence, see below. TODO: This confuses this code even more, and
+    // clearly calls for a cleanup. This is just grown historically and got
+    // messed up with experiencing different processes and setups.
+    usedDiagrams.insert(*bd);
+
     if ( xemitter == -1 ) {
 
       xemitter = mit->second.emitter;
       mergeLegs = mit->second.mergeLegs;
-      remapLegs = theRemapLegs;
+      remapLegs = xRemapLegs;
 
       assert(remapLegs.find(xemitter) != remapLegs.end());
       xemitter = remapLegs[xemitter];
@@ -155,6 +177,7 @@ void SubtractionDipole::setupBookkeeping(const map<Ptr<DiagramBase>::ptr,Subtrac
     theRealEmissionDiagrams[process(bornKey)].push_back(mit->first);
     theBornToRealDiagrams[*bd] = mit->first;
     theRealToBornDiagrams[mit->first] = *bd;
+
   }
 
   if ( theSplittingMap.empty() )
