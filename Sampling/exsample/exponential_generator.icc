@@ -141,10 +141,11 @@ namespace exsample {
 
   template<class Function, class Random>
   void exponential_generator<Function,Random>::compensate() {
-    if (!did_split_) {
+    if (!did_split_ || !docompensate_) {
+      assert(did_split_ || last_cell_ == root_cell_.begin());
       exponents_.clear();
-      root_cell_.value().info().overestimate(last_value_,last_point_);
-      root_cell_.value().integral(root_cell_.value().info().volume() * root_cell_.value().info().overestimate());
+      last_cell_->info().overestimate(last_value_,last_point_);
+      last_cell_->integral(last_cell_->info().volume() * last_cell_->info().overestimate());
       last_point_ = function_->parameter_point();
       get_exponent();
       return;
@@ -228,13 +229,11 @@ namespace exsample {
 	  else
 	    scaling = 0.;
 	}
-	if ( docompensate_ ) {
-	  it->info().parametric_missing(last_parameter_bin_,
-					it->info().parametric_missing(last_parameter_bin_) +
-					static_cast<int>(round(scaling * it->info().attempted())));
-	  if (it->info().parametric_missing(last_parameter_bin_) != 0) {
-	    compensating_ = true;
-	  }
+	it->info().parametric_missing(last_parameter_bin_,
+				      it->info().parametric_missing(last_parameter_bin_) +
+				      static_cast<int>(round(scaling * it->info().attempted())));
+	if (it->info().parametric_missing(last_parameter_bin_) != 0) {
+	  compensating_ = true;
 	}
       }
     }
