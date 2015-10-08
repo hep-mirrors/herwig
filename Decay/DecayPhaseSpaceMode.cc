@@ -335,9 +335,14 @@ ParticleVector DecayPhaseSpaceMode::generate(bool intermediates,bool cc,
   pre = prewid>ZERO ? 1./prewid : 1./MeV;
   // Particle vector for the output
   ParticleVector particles;
+  // boosts to/from rest
+  Boost bv =-inpart.momentum().boostVector();
+  double gammarest = inpart.momentum().e()/inpart.momentum().mass();
+  LorentzRotation boostToRest( bv,gammarest);
+  LorentzRotation boostFromRest(-bv,gammarest);
   // construct a new particle which is at rest
   Particle inrest(inpart);
-  inrest.boost(-inpart.momentum().boostVector());
+  inrest.transform(boostToRest);
   int ncount(0),ichan; double wgt(0.);
   unsigned int ix;
   try {
@@ -368,8 +373,7 @@ ParticleVector DecayPhaseSpaceMode::generate(bool intermediates,bool cc,
   }
   catch (Veto) {
     // restore the incoming particle to its original state
-    Boost boostv(inpart.momentum().boostVector());
-    inrest.boost(boostv);
+    inrest.transform(boostFromRest);
     throw Veto();
   }
   // set up the vertex for spin correlations
@@ -377,15 +381,14 @@ ParticleVector DecayPhaseSpaceMode::generate(bool intermediates,bool cc,
   const_ptr_cast<tPPtr>(&inpart)->spinInfo(inrest.spinInfo());
   constructVertex(inpart,particles);
   // return if intermediate particles not required
-  Boost boostv(inpart.momentum().boostVector());
   if(_channelwgts.empty()||!intermediates) {
-    for(ix=0;ix<particles.size();++ix) particles[ix]->boost(boostv);
+    for(ix=0;ix<particles.size();++ix) particles[ix]->transform(boostFromRest);
   }
   // find the intermediate particles
   else {
     // select the channel
     _ichannel = selectChannel(inpart,particles);
-    for(ix=0;ix<particles.size();++ix) particles[ix]->boost(boostv);
+    for(ix=0;ix<particles.size();++ix) particles[ix]->transform(boostFromRest);
     // generate the particle vector
     _channels[_ichannel]->generateIntermediates(cc,inpart,particles);
   }

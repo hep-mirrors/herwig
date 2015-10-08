@@ -55,9 +55,10 @@ namespace Herwig {
 	p1 = Lorentz5Momentum(m1, pstarVector);
 	p2 = Lorentz5Momentum(m2,-pstarVector);
 	// boost from CM to LAB
-	Boost bv=p.boostVector();
-	p1.boost( bv );   
-	p2.boost( bv );
+	Boost bv = p.boostVector();
+	double gammarest = p.e()/p.mass();
+	p1.boost( bv ,gammarest);
+	p2.boost( bv ,gammarest);
 	return true;
       }
       return false;
