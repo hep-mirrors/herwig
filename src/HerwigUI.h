@@ -23,7 +23,8 @@ namespace RunMode {
 
 /**
  * HerwigUI is an interface to abstract the command line parameters.
- * This allows an inherited class to configure Herwig wihtout actually 
+ *
+ * This allows any inheriting class to configure Herwig wihtout actually 
  * having to interact via main()
  */
  class HerwigUI {
@@ -31,10 +32,6 @@ namespace RunMode {
 
     /// Requested Herwig run mode
     virtual RunMode::Mode runMode() const = 0;
-
-    bool integrationJob() const {
-        return runMode() == RunMode::INTEGRATE;
-    }
 
     /// Repository name to operate on
     virtual std::string repository() const = 0;
@@ -45,9 +42,13 @@ namespace RunMode {
     /// Name of the setup file to be read, to modify the repository
     virtual std::string setupfile() const = 0;
 
-    //bool readInWasSuccessful() const = 0;
+    /// Try to resume execution from an earlier interrupted run.
     virtual bool resume() const = 0;
+
+    /// Require verbose progress markers
     virtual bool tics() const = 0;
+
+    /// A user-defined tag to append to the run name.
     virtual std::string tag() const = 0;
 
     virtual std::string integrationList() const = 0;
@@ -64,9 +65,15 @@ namespace RunMode {
     virtual unsigned int jobSize() const = 0;
     virtual unsigned int maxJobs() const = 0;
 
-    virtual void quitWithError() const = 0;
+    virtual void quitWithHelp() const = 0;
+
+    virtual void quit() const = 0;
 
     virtual ~HerwigUI() {}
+
+    bool integrationJob() const {
+        return runMode() == RunMode::INTEGRATE;
+    }
 
  };
 

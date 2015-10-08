@@ -21,7 +21,6 @@
 
 #include <iostream>
 #include <sstream>
-#include <cstdio>
 
 #include <unistd.h>
 #include <sys/wait.h>
@@ -33,6 +32,13 @@
 using namespace ThePEG;
 
 namespace {
+/**
+ * Search paths for Repository read
+ * 
+ * You can pass two string vectors with directories which Herwig will use to look in for files.
+ * A vector with directories which will be prepended and a vector with directories which will be appended.
+ * Both vectors are optional.
+ */
 void setSearchPaths(const Herwig::HerwigUI & ui,
                     bool usePWD = true);
 
@@ -142,12 +148,12 @@ void HerwigGenericRun(const Herwig::HerwigUI & ui) {
   const string runname = ui.inputfile();
   if (runname.empty() ) {
     std::cerr << "Error: You need to supply a runfile name.\n";
-    ui.quitWithError();
+    ui.quitWithHelp();
   }
 
   if ( ui.integrationJob() && ui.jobs() > 1 ) {
     std::cerr << "parallel event generation is not applicable to integrate\n";
-    exit( EXIT_FAILURE );
+    ui.quit();
   }
 
   PersistentIStream is(runname);
@@ -160,8 +166,7 @@ void HerwigGenericRun(const Herwig::HerwigUI & ui) {
   if ( !eg ) {
     std::cerr << "Herwig: EventGenerator not available.\n"
 	      << "Check if '" << runname << "' is a valid run file.\n";
-    Repository::cleanup();
-    exit( EXIT_FAILURE );
+    ui.quit();
   }
 
   Herwig::RunDirectories::pushRunId(eg->runName());
@@ -187,8 +192,7 @@ void HerwigGenericRun(const Herwig::HerwigUI & ui) {
       dynamic_ptr_cast<Ptr<StandardEventHandler>::tptr>(eg->eventHandler());
     if ( !eh ) {
       std::cerr << "Herwig: Cannot set integration mode for a non-standard EventHandler.\n";
-      Repository::cleanup();
-      exit( EXIT_FAILURE );
+      ui.quit();
     }
     if ( !ui.integrationList().empty() )
       eh->sampler()->integrationList(ui.integrationList());
@@ -226,8 +230,7 @@ void HerwigGenericRun(const Herwig::HerwigUI & ui) {
       pid = fork();
       if (pid == -1) { // fork failed
         std::perror("Herwig: fork");
-        Repository::cleanup();
-        exit( EXIT_FAILURE );
+        ui.quit();
       }
       else if ( pid == 0 ) { // we're the child
         if ( ui.tics() ) std::cout << "Forked child " << n << ", PID " << getpid() << std::endl;
@@ -256,8 +259,7 @@ void HerwigGenericRun(const Herwig::HerwigUI & ui) {
     		}
     		else {
 	                std::perror("Herwig: waitpid");
-	                Repository::cleanup();
-        	        exit(EXIT_FAILURE);
+	                ui.quit();
         	}
         }
 
@@ -277,8 +279,7 @@ void HerwigGenericRun(const Herwig::HerwigUI & ui) {
         }
     }
     if (! cleanrun) {
-    	Repository::cleanup();
-    	exit(EXIT_FAILURE);
+    	ui.quit();
     }
   }
 }

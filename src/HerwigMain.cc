@@ -32,7 +32,7 @@ int main(int argc, char * argv[]) {
                 << "Program execution will stop now."; 
       return EXIT_FAILURE;
     default:          		     
-      cl.quitWithError();
+      cl.quitWithHelp();
     }
 
     return EXIT_SUCCESS;

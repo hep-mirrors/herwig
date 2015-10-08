@@ -13,20 +13,40 @@
 
 namespace Herwig {
 
+/**
+ * HerwigCLI is the default implementation of the HerwigUI interface.
+ * 
+ * Using the gengetopt tool, we fill all required pieces from reading
+ * command line flags from the main executable.
+ */
 class HerwigCLI : public HerwigUI {
 public:
+
+  /// Constructor from the arguments provided by main()
   HerwigCLI(int argc, char * argv[]);
 
+  /// Destructor to leave a clean ThePEG::Repository behind
   ~HerwigCLI();
 
+  /// Requested Herwig run mode
   RunMode::Mode runMode() const { return runMode_; }
 
+  /// Try to resume execution from an earlier interrupted run.
   bool resume() const { return resume_; }
+
+  /// Require verbose progress markers
   bool tics() const { return tics_; }
+
+  /// A user-defined tag to append to the run name.
   std::string tag() const { return tag_; }
 
+  /// Name of the file to be read
   std::string inputfile() const { return inputfile_; }
+
+  /// Repository name to operate on
   std::string repository() const { return repository_; }
+
+  /// Name of the setup file to be read, to modify the repository
   std::string setupfile() const { return setupfile_; }
  
   std::string integrationList() const { return integrationList_; }
@@ -44,7 +64,9 @@ public:
   unsigned int jobSize() const { return jobsize_; }
   unsigned int maxJobs() const { return maxjobs_; }  
 
-  void quitWithError() const;
+  void quitWithHelp() const;
+
+  void quit() const;
 
 private:
 

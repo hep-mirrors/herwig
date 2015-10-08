@@ -17,8 +17,12 @@
 
 namespace Herwig {
 
-void HerwigCLI::quitWithError() const {
+void HerwigCLI::quitWithHelp() const {
   std::cerr << gengetopt_args_info_usage << '\n';
+  quit();
+}
+
+void HerwigCLI::quit() const {
   ThePEG::Repository::cleanup();
   exit( EXIT_FAILURE );
 }
@@ -44,7 +48,7 @@ HerwigCLI::HerwigCLI(int argc, char * argv[])
 
   // require one command
   if ( args_info.inputs_num < 1 )
-    quitWithError();
+    quitWithHelp();
 
   // Define runMode of program
   std::string tmpRunMode = args_info.inputs[0];
@@ -55,7 +59,7 @@ HerwigCLI::HerwigCLI(int argc, char * argv[])
   else if ( tmpRunMode == "run" )       { runMode_ = RunMode::RUN; }
   else {
     runMode_ = RunMode::ERROR;
-    quitWithError();
+    quitWithHelp();
   }
 
   // Use second argument as input- or runfile name
@@ -122,7 +126,7 @@ HerwigCLI::HerwigCLI(int argc, char * argv[])
   if ( args_info.jobsize_given ) {
     if ( runMode_ != RunMode::BUILD ) {
       std::cerr << "--jobsize option is only available in 'build' mode.\n";
-      quitWithError();
+      quitWithHelp();
     }
     jobsize_ = args_info.jobsize_arg;
     ThePEG::SamplerBase::setIntegratePerJob(jobsize_);
@@ -132,7 +136,7 @@ HerwigCLI::HerwigCLI(int argc, char * argv[])
   if ( args_info.maxjobs_given ) {
     if ( runMode_ != RunMode::BUILD ) {
       std::cerr << "--maxjobs option is only available in 'build' mode.\n";
-      quitWithError();
+      quitWithHelp();
     }
     maxjobs_ = args_info.maxjobs_arg;
     ThePEG::SamplerBase::setIntegrationJobs(maxjobs_);
