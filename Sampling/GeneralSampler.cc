@@ -764,7 +764,7 @@ void GeneralSampler::readGrids() {
 	  string globalGridFile = directoryName + "HerwigGrids.xml";
 	  ofstream globalGridFileOF(globalGridFile.c_str());
 	  XML::ElementIO::put(theGrids,globalGridFileOF);
-	  messageBuffer << "\n* Global HerwigGrids.xml file was created, the integration jobs 0 to " << integrationJobsCreated() 
+	  messageBuffer << "\n* Global HerwigGrids.xml file was created, the integration jobs 0 to " << integrationJobsCreated()-1 
 			<< " were combined."
 			<< "\n* If previous warnings in regards to the HerwigGrids.xml file occured, these can be safely ignored."
 			<< "\n* Note: This message will occur only in the first run and will be suppressed in further runs.\n" 
