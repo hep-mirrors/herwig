@@ -320,7 +320,7 @@ Energy DecayPhaseSpaceMode::channelPhaseSpace(bool cc,
   // set up the momenta
   for(ix=0;ix<outpart.size();++ix) outpart[ix]->set5Momentum(momenta[ix+1]);
   // return the weight
-  return inpart.mass()*masswgt/wgt;
+  return wgt!=0. ? inpart.mass()*masswgt/wgt : ZERO;
 }
 
 // generate the decay
