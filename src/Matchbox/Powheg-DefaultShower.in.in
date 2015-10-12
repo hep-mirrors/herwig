@@ -25,7 +25,7 @@ set PowhegShowerHandler:Factory /Herwig/MatrixElements/Matchbox/Factory
 set Evolver:HardEmissionMode FullPOWHEG
 
 # tunes
-read Matchbox/MCatNLO-Default-HardAlphaSTune.in
+read Matchbox/Powheg-Default-HardAlphaSTune.in
 
 cd /Herwig/Analysis
 
