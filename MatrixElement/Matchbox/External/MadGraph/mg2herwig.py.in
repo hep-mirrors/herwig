@@ -343,9 +343,18 @@ if Virtlist!=[]:
 file.write("\nPROCESS= InterfaceMadGraph.f "+make+"\n\nall:  \n\t @FC@  @FFLAGS@ -w -fbounds-check -ffixed-line-length-132 -fPIC -fno-f2c -shared -s -o  InterfaceMadGraph.so -IMG5/SubProcesses/" )
 if Virtlist!=[]:
   file.write(" -IMG5/lib/golem95_include ")
+  # Find all .mod files also in /usr/include if golem was build there.
+  # There can be an error message in the MadGraph output to add the golem include path to the makefiles.
+  # Usually MadGraph finds the path if its Golem was build in an separate dictionary.
+  # Our bootstrap script installs golem with gosam beside boost. Here MadGraph creates a  link (->errormessage).
+  # If we can find the modfiles easily the user doesn't need to change the makefiles. 
   moddirs=finddirs('*.mod',options.includedir)
   for moddir in moddirs:
     file.write(" -I%s " % moddir)
+  if os.path.isdir("/usr/include"):
+    moddirs=finddirs('*.mod',"/usr/include")
+    for moddir in moddirs:
+      file.write(" -I%s " % moddir)
 
 if coefdir != "":
    file.write(coefdir)
