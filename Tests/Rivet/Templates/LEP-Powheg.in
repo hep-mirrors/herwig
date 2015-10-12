@@ -6,6 +6,7 @@
 # Technical parameters for this run
 ##################################################
 cd /Herwig/Generators
+read Matchbox/Powheg-Default-ShowerAlphaSTune.in
 set LEPGenerator:NumberOfEvents 100000000
 set LEPGenerator:RandomNumberGenerator:Seed 31122001
 set LEPGenerator:DebugLevel 0

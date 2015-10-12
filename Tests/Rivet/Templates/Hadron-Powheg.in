@@ -24,6 +24,7 @@ set /Herwig/Partons/QCDExtractor:SecondPDF /Herwig/Partons/HardNLOPDF
 cd /Herwig/Shower
 set Evolver:IntrinsicPtGaussian 1.9*GeV
 set Evolver:HardEmissionMode POWHEG
+read Matchbox/Powheg-Default-ShowerAlphaSTune.in
 
 ##################################################
 #  Create the Herwig analysis
