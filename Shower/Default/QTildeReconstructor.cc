@@ -1812,6 +1812,7 @@ deconstructFinalStateSystem(const LorentzRotation &   toRest,
 			    HardTreePtr tree, vector<HardBranchingPtr> jets,
 			    cEvolverPtr evolver,
 			    ShowerInteraction::Type type) const {
+  LorentzRotation trans = toRest;
   if(jets.size()==1) {
     Lorentz5Momentum pnew = toRest*(jets[0]->branchingParticle()->momentum());
     pnew *= fromRest;
@@ -1859,28 +1860,36 @@ deconstructFinalStateSystem(const LorentzRotation &   toRest,
   vector<HardBranchingPtr>::iterator cit;
   vector<Lorentz5Momentum> pout;
   vector<Energy> mon;
+  Lorentz5Momentum pin;
   for(cit=jets.begin();cit!=jets.end();++cit) {
     pout.push_back((*cit)->branchingParticle()->momentum());
     mon.push_back(findMass(*cit));
+    pin+=pout.back();
   }
-
   // boost all the momenta to the rest frame of the decaying particle
-  Lorentz5Momentum pin;
-  for(unsigned int ix=0;ix<pout.size();++ix) {
-    pout[ix].transform(toRest);
-    pin += pout[ix];
-  }
   pin.rescaleMass();
+  pin *=trans;
+  Boost beta_cm = pin.findBoostToCM();
+  bool gottaBoost(false);
+  if(beta_cm.mag() > 1e-12) {
+    gottaBoost = true;
+    trans.boost(beta_cm);
+    pin.boost(beta_cm);
+  }
+  for(unsigned int ix=0;ix<pout.size();++ix) {
+    pout[ix].transform(trans);
+  }
   // rescaling factor
   double lambda=inverseRescalingFactor(pout,mon,pin.mass());
-  if (lambda< 1.e-10) throw KinematicsReconstructionVeto(); 
+  if (lambda< 1.e-10) throw KinematicsReconstructionVeto();
   // now calculate the p reference vectors 
   for(unsigned int ix=0;ix<jets.size();++ix) {
     Lorentz5Momentum pvect = jets[ix]->branchingParticle()->momentum();
-    pvect.transform(toRest);
+    pvect.transform(trans);
     pvect /= lambda;
     pvect.setMass(mon[ix]);
     pvect.rescaleEnergy();
+    if(gottaBoost) pvect.boost(-beta_cm);
     pvect.transform(fromRest);
     jets[ix]->pVector(pvect);
     jets[ix]->showerMomentum(pvect);

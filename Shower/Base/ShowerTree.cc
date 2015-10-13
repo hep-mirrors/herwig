@@ -1449,15 +1449,11 @@ void ShowerTree::checkMomenta() {
 	if(parent==it->first->progenitor()) break;
       }
     }
-    CurrentGenerator::log() << "!!!! IN !!!" << *it->first->progenitor() << "\n"
-			    << *it->second << "\n";
   }
   vector<Lorentz5Momentum> pout;
   for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator it= _outgoingLines.begin();
       it!=_outgoingLines.end();++it) {
     pout.push_back(sumMomenta(it->first->progenitor()));
-    CurrentGenerator::log() << "!!!! OUT !!!" << *it->first->progenitor() << "\n"
-			    << *it->second << "\n";
   }
   Lorentz5Momentum psum;
   for(unsigned int ix=0;ix< pin.size();++ix) {
