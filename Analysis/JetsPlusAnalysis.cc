@@ -162,7 +162,7 @@ void JetsPlusAnalysis::analyze(ParticleVector& parts, long id, double weight) {
 
 }
 
-void JetsPlusAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
+void JetsPlusAnalysis::analyze(tEventPtr event, long ieve, int, int) {
 
   // doing nothing
   // AnalysisHandler::analyze(event, ieve, loop, state);
