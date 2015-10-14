@@ -1,0 +1,5 @@
+##################################################
+# select the analyses
+##################################################
+# J/Psi production
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_S9035664

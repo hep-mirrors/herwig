@@ -217,7 +217,8 @@ Rivet-inputfiles: $(shell echo Rivet/LEP{,-Powheg,-Matchbox,-Dipole}-{10,14,22,3
                   $(shell echo Rivet/LHC-7-Jets-{0..13}.in ) \
 	          $(shell echo Rivet/LHC-{900,2360,2760,7,8}-UE.in ) \
 	          $(shell echo Rivet/LHC-{900,7}-UE-Long.in ) \
-		  $(shell echo Rivet/LHC-7-Heavy-{0..8}.in) \
+		  $(shell echo Rivet/LHC-7-Charm-{1..5}.in) \
+		  $(shell echo Rivet/LHC-7-Bottom-{0..8}.in) \
 		  $(shell echo Rivet/LHC-7-Top-{L,SL,All}.in) \
                   $(shell echo Rivet/Star-{UE,Jets-{1..4}}.in ) \
                   $(shell echo Rivet/ISR-{30,44,53,62}-UE.in ) \
@@ -286,7 +287,8 @@ Rivet-TVT-Jets:  $(shell echo Rivet-TVT-{Run-II-Jets-{0..11},Run-I-Jets-{1..8}} 
 Rivet-LHC-Jets: $(shell echo Rivet-LHC-7-Jets-{0..13} ) \
 	        $(shell echo Rivet-LHC-{900,2360,2760,7,8}-UE ) \
 	        $(shell echo Rivet-LHC-{900,7}-UE-Long ) \
-		$(shell echo Rivet-LHC-7-Heavy-{0..8}) \
+		$(shell echo Rivet-LHC-7-Charm-{1..5}) \
+		$(shell echo Rivet-LHC-7-Bottom-{0..8}) \
 		$(shell echo Rivet-LHC-7-Top-{L,SL,All})
 	rm -rf Rivet-LHC-Jets
 	python/merge-LHC-Jets
