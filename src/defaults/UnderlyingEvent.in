@@ -35,6 +35,7 @@ newdef /Herwig/Partons/MPIExtractor:FirstPDF /Herwig/Partons/MPIPDF
 newdef /Herwig/Partons/MPIExtractor:SecondPDF /Herwig/Partons/MPIPDF
 
 ######## MPI Handler ##########################################
+library JetCuts.so
 library HwMPI.so
 create Herwig::MPIHandler MPIHandler
 

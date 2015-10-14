@@ -20,10 +20,10 @@ create Herwig::ShowerHandler ShowerHandler
 newdef ShowerHandler:MPIHandler /Herwig/UnderlyingEvent/MPIHandler
 newdef ShowerHandler:RemDecayer /Herwig/Partons/RemnantDecayer
 # use LO PDFs for Shower, can be changed later
-newdef /Herwig/Shower/ShowerHandler:PDFA /Herwig/Partons/ShowerLOPDF
-newdef /Herwig/Shower/ShowerHandler:PDFB /Herwig/Partons/ShowerLOPDF
-newdef /Herwig/Shower/ShowerHandler:PDFARemnant /Herwig/Partons/RemnantPDF
-newdef /Herwig/Shower/ShowerHandler:PDFBRemnant /Herwig/Partons/RemnantPDF
+newdef ShowerHandler:PDFA /Herwig/Partons/ShowerLOPDF
+newdef ShowerHandler:PDFB /Herwig/Partons/ShowerLOPDF
+newdef ShowerHandler:PDFARemnant /Herwig/Partons/RemnantPDF
+newdef ShowerHandler:PDFBRemnant /Herwig/Partons/RemnantPDF
 
 #####################################
 # initial setup, don't change these!
@@ -80,6 +80,11 @@ create Herwig::PowhegShowerHandler PowhegShowerHandler
 set PowhegShowerHandler:MPIHandler /Herwig/UnderlyingEvent/MPIHandler
 set PowhegShowerHandler:RemDecayer /Herwig/Partons/RemnantDecayer
 set PowhegShowerHandler:Evolver /Herwig/Shower/Evolver
+newdef PowhegShowerHandler:PDFA /Herwig/Partons/ShowerLOPDF
+newdef PowhegShowerHandler:PDFB /Herwig/Partons/ShowerLOPDF
+newdef PowhegShowerHandler:PDFARemnant /Herwig/Partons/RemnantPDF
+newdef PowhegShowerHandler:PDFBRemnant /Herwig/Partons/RemnantPDF
+
 #############################################################
 
 
