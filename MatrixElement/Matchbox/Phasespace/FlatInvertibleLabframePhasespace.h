@@ -81,6 +81,14 @@ public:
   virtual double invertTwoToNKinematics(const vector<Lorentz5Momentum>& momenta,
 					double* r) const;
 
+private:
+
+  /**
+   * True if SHat should be generated flat in log(SHat/S),
+   * false if SHat should be generated flat in SHat.
+   */
+  bool theLogSHat;
+
 public:
 
   /** @name Functions used by the persistent I/O system. */

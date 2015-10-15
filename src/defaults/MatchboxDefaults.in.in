@@ -390,6 +390,7 @@ set InvertiblePhasespace:CouplingData PhasespaceCouplings
 
 create Herwig::FlatInvertibleLabframePhasespace InvertibleLabframePhasespace
 set InvertibleLabframePhasespace:CouplingData PhasespaceCouplings
+set InvertibleLabframePhasespace:LogSHat False
 
 create Herwig::TreePhasespaceChannels TreePhasespaceChannels
 create Herwig::TreePhasespace TreePhasespace
