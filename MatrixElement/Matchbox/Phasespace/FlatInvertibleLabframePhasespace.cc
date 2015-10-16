@@ -44,11 +44,16 @@ double FlatInvertibleLabframePhasespace::invertTwoToNKinematics(const vector<Lor
 
   double weight = 1.;
 
+  Energy finalstatemass = 0*GeV;
+  for ( vector<Lorentz5Momentum>::const_iterator p =
+        momenta.begin()+2; p != momenta.end(); ++p )
+    finalstatemass += p->mass();
+
   Lorentz5Momentum pinitial = momenta[0]+momenta[1];
   Energy2 sh = pinitial.m2();
   double tau = sh/lastS();
   Energy2 shmax = lastCuts().sHatMax();
-  Energy2 shmin = lastCuts().sHatMin();
+  Energy2 shmin = max(lastCuts().sHatMin(),sqr(finalstatemass));
   if (theLogSHat) {
     r[0] = log(sh/shmin)/log(shmax/shmin);
     weight *= tau*log(shmax/shmin);
@@ -78,9 +83,14 @@ double FlatInvertibleLabframePhasespace::generateTwoToNKinematics(const double* 
 
   double weight = 1.;
 
+  Energy finalstatemass = 0*GeV;
+  for ( vector<Lorentz5Momentum>::const_iterator p =
+        momenta.begin()+2; p != momenta.end(); ++p )
+    finalstatemass += p->mass();
+
   Energy beamenergy = sqrt(lastS())/2.;
   Energy2 shmax = lastCuts().sHatMax();
-  Energy2 shmin = lastCuts().sHatMin();
+  Energy2 shmin = max(lastCuts().sHatMin(),sqr(finalstatemass));
   Energy2 sh;
   double tau; 
   if (theLogSHat) {
