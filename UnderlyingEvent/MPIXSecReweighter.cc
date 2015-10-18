@@ -87,7 +87,7 @@ void MPIXSecReweighter::persistentInput(PersistentIStream &, int) {}
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeClass<MPIXSecReweighter,StepHandler>
-  describeHerwigMPIXSecReweighter("Herwig::MPIXSecReweighter", "SimpleKTCut.so HwMPI.so");
+  describeHerwigMPIXSecReweighter("Herwig::MPIXSecReweighter", "JetCuts.so SimpleKTCut.so HwMPI.so");
 
 void MPIXSecReweighter::Init() {
 
