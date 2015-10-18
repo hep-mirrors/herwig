@@ -104,7 +104,11 @@ reconstructParent(const tShowerParticlePtr parent,
   ShowerParticlePtr c2 = dynamic_ptr_cast<ShowerParticlePtr>(children[1]);
   parent->showerParameters().beta= 
     c1->showerParameters().beta + c2->showerParameters().beta; 
-  parent->set5Momentum( c1->momentum() + c2->momentum() );
+  Lorentz5Momentum pnew = c1->momentum() + c2->momentum();
+  Energy2 m2 = sqr(pT())/z()/(1.-z()) + sqr(c1->mass())/z()
+    + sqr(c2->mass())/(1.-z());
+  pnew.setMass(sqrt(m2));
+  parent->set5Momentum( pnew );
 }
 
 void FS_QTildeShowerKinematics1to2::reconstructLast(const tShowerParticlePtr last,

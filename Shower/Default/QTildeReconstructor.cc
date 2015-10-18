@@ -1366,6 +1366,8 @@ reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
     if(jets[ix]->progenitor()->isFinalState()) {
       deepTransform(jets[ix]->progenitor(),rot);
       deepTransform(jets[ix]->progenitor(),solveBoost(pnew[1],qcp));
+      Energy delta = jets[ix]->progenitor()->momentum().m()-jets[ix]->progenitor()->momentum().mass();
+      if ( abs(delta) > MeV ) throw KinematicsReconstructionVeto();
       deepTransform(jets[ix]->progenitor(),rotinv);
     }
     else {
@@ -1678,7 +1680,7 @@ reconstructInitialInitialSystem(bool & applyBoost,
   vector<Lorentz5Momentum> p, pq, p_in;
   vector<Energy> pts;
   for(unsigned int ix=0;ix<jets.size();++ix) {
-    // at momentum to vector
+    // add momentum to vector
     p_in.push_back(jets[ix]->progenitor()->momentum());
     // reconstruct the jet
     if(jets[ix]->reconstructed()==ShowerProgenitor::notReconstructed) {
@@ -2302,6 +2304,25 @@ reconstructColourPartner(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
 	  out.jets[iy]->reconstructed(ShowerProgenitor::notReconstructed);
       }
     }
+  }
+  for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
+    // skip jets which have already been handled
+    if(ShowerHardJets[ix]->reconstructed()==ShowerProgenitor::done) continue;
+    tShowerParticlePtr progenitor = ShowerHardJets[ix]->progenitor();
+    tShowerParticlePtr partner    = progenitor->partner();
+    if(!partner || !(( progenitor->isFinalState() && !partner->isFinalState()) ||
+		     (!progenitor->isFinalState() &&  partner->isFinalState())) )
+      throw Exception() << "Failed to reconstruct " << *ShowerHardJets[ix]->progenitor()
+			<< "\n in QTildeReconstructor::reconstructColourPartner()\n"
+			<< Exception::eventerror;
+    vector<ShowerProgenitorPtr> jets(2);
+    jets[0] = ShowerHardJets[ix];
+    jets[1] = progenitorMap[partner];
+    if(jets[0]->progenitor()->isFinalState()) swap(jets[0],jets[1]);
+    if(jets[0]->original()&&jets[0]->original()->parents().empty()) continue;
+    reconstructInitialFinalSystem(jets);
+    used[ShowerHardJets[ix]] = true;
+    if(_reconopt==3) used[progenitorMap[partner]] = true;
   }
 }
 
