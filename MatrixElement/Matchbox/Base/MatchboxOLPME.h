@@ -118,6 +118,11 @@ public:
 					   Ptr<ColourBasis>::tptr) const;
 
   /**
+   * Return the largeN matrix element squared.
+   */
+  virtual double largeNME2(Ptr<ColourBasis>::tptr largeNBasis) const;
+
+  /**
    * Return the colour and spin correlated matrix element.
    */
   virtual double spinColourCorrelatedME2(pair<int,int> ij,
