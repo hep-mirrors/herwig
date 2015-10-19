@@ -1510,7 +1510,7 @@ LorentzRotation QTildeReconstructor::solveBoostZ(const Lorentz5Momentum & q,
     double x = ratio+0.125*(er+10.+1./er)*sqr(ratio);
     beta = -(p.t()-q.t())*(p.t()+q.t())/(sqr(p.t())+sqr(q.t()))*(1.+x);
     double gamma = (4.*sqr(p.t()*q.t()) +sqr(p.t()-q.t())*sqr(p.t()+q.t())*
-		    (-2.*x+sqr(x)))/sqr(sqr(p.t())+sqr(q.t()));sqr(p.t())+sqr(q.t());
+		    (-2.*x+sqr(x)))/sqr(sqr(p.t())+sqr(q.t()));
     if ( abs(beta) - 1. >= 0. ) throw KinematicsReconstructionVeto();
     gamma  = 1./sqrt(gamma);
     R.boost(0.,0.,beta,gamma);
@@ -1674,7 +1674,13 @@ reconstructInitialInitialSystem(bool & applyBoost,
   // check if intrinsic pt to be added
   radiated |= !_intrinsic.empty();
   // if no radiation return
-  if(!radiated) return;
+  if(!radiated) {
+    for(unsigned int ix=0;ix<jets.size();++ix) {
+      if(jets[ix]->reconstructed()==ShowerProgenitor::notReconstructed)
+	jets[ix]->reconstructed(ShowerProgenitor::done);
+    }
+    return;
+  }
   // initial state shuffling
   applyBoost=false;
   vector<Lorentz5Momentum> p, pq, p_in;
@@ -2184,17 +2190,47 @@ reconstructFinalFirst(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
 
 void QTildeReconstructor::
 reconstructColourPartner(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
-  static const Energy2 minQ2 = 1e-4*GeV2;
-  map<ShowerProgenitorPtr,bool> used;
-  for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
-    used[ShowerHardJets[ix]] = false;
-  }
+  static const Energy2 minQ2 = 1e-6*GeV2;
   // sort the vector by hardness of emission
   std::sort(ShowerHardJets.begin(),ShowerHardJets.end(),sortJets);
   // map between particles and progenitors for easy lookup
   map<ShowerParticlePtr,ShowerProgenitorPtr> progenitorMap;
   for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
     progenitorMap[ShowerHardJets[ix]->progenitor()] = ShowerHardJets[ix];
+  }
+  // check that the IF systems can be reconstructed
+  bool canReconstruct = true;
+  for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
+    tShowerParticlePtr progenitor = ShowerHardJets[ix]->progenitor();
+    tShowerParticlePtr partner    = progenitor->partner();
+    if(!partner) continue;
+    else if((progenitor->isFinalState() &&
+	     !partner->isFinalState()) ||
+	    (!progenitor->isFinalState() &&
+	     partner->isFinalState()) ) {
+      vector<ShowerProgenitorPtr> jets(2);
+      jets[0] = ShowerHardJets[ix];
+      jets[1] = progenitorMap[partner];
+      Lorentz5Momentum psum;
+      for(unsigned int iy=0;iy<jets.size();++iy) {
+	if(jets[iy]->progenitor()->isFinalState())
+	  psum += jets[iy]->progenitor()->momentum();
+	else
+	  psum -= jets[iy]->progenitor()->momentum();
+      }
+      if(-psum.m2()<minQ2) {
+	canReconstruct  = false;
+	break;
+      }
+    }
+  }
+  if(!canReconstruct) {
+    reconstructGeneralSystem(ShowerHardJets);
+    return;
+  }
+  map<ShowerProgenitorPtr,bool> used;
+  for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
+    used[ShowerHardJets[ix]] = false;
   }
   for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
     // skip jets which have already been handled
@@ -2224,6 +2260,7 @@ reconstructColourPartner(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
 	  _treeBoosts[tit->first].push_back(rot);
 	}
       }
+      ShowerHardJets[ix]->reconstructed(ShowerProgenitor::done);
       continue;
     }
     // do the reconstruction
@@ -2259,15 +2296,13 @@ reconstructColourPartner(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
 	else
 	  psum -= jets[iy]->progenitor()->momentum();
       }
-      if(-psum.m2()>minQ2) {
-	if(_reconopt==4 && progenitorMap[partner]->reconstructed()==ShowerProgenitor::notReconstructed)
-	  progenitorMap[partner]->reconstructed(ShowerProgenitor::dontReconstruct);
-	reconstructInitialFinalSystem(jets);
-	if(_reconopt==4 && progenitorMap[partner]->reconstructed()==ShowerProgenitor::dontReconstruct)
-	  progenitorMap[partner]->reconstructed(ShowerProgenitor::notReconstructed);
-	used[ShowerHardJets[ix]] = true;
-	if(_reconopt==3) used[progenitorMap[partner]] = true;
-      }
+      if(_reconopt==4 && progenitorMap[partner]->reconstructed()==ShowerProgenitor::notReconstructed)
+	progenitorMap[partner]->reconstructed(ShowerProgenitor::dontReconstruct);
+      reconstructInitialFinalSystem(jets);
+      if(_reconopt==4 && progenitorMap[partner]->reconstructed()==ShowerProgenitor::dontReconstruct)
+	progenitorMap[partner]->reconstructed(ShowerProgenitor::notReconstructed);
+      used[ShowerHardJets[ix]] = true;
+      if(_reconopt==3) used[progenitorMap[partner]] = true;
     }
     // initial-initial
     else if(!progenitor->isFinalState() &&
@@ -2304,25 +2339,6 @@ reconstructColourPartner(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
 	  out.jets[iy]->reconstructed(ShowerProgenitor::notReconstructed);
       }
     }
-  }
-  for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
-    // skip jets which have already been handled
-    if(ShowerHardJets[ix]->reconstructed()==ShowerProgenitor::done) continue;
-    tShowerParticlePtr progenitor = ShowerHardJets[ix]->progenitor();
-    tShowerParticlePtr partner    = progenitor->partner();
-    if(!partner || !(( progenitor->isFinalState() && !partner->isFinalState()) ||
-		     (!progenitor->isFinalState() &&  partner->isFinalState())) )
-      throw Exception() << "Failed to reconstruct " << *ShowerHardJets[ix]->progenitor()
-			<< "\n in QTildeReconstructor::reconstructColourPartner()\n"
-			<< Exception::eventerror;
-    vector<ShowerProgenitorPtr> jets(2);
-    jets[0] = ShowerHardJets[ix];
-    jets[1] = progenitorMap[partner];
-    if(jets[0]->progenitor()->isFinalState()) swap(jets[0],jets[1]);
-    if(jets[0]->original()&&jets[0]->original()->parents().empty()) continue;
-    reconstructInitialFinalSystem(jets);
-    used[ShowerHardJets[ix]] = true;
-    if(_reconopt==3) used[progenitorMap[partner]] = true;
   }
 }
 
