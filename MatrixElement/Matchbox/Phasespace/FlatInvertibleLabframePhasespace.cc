@@ -26,7 +26,8 @@
 
 using namespace Herwig;
 
-FlatInvertibleLabframePhasespace::FlatInvertibleLabframePhasespace() {}
+FlatInvertibleLabframePhasespace::FlatInvertibleLabframePhasespace()
+  : theLogSHat(false) {}
 
 FlatInvertibleLabframePhasespace::~FlatInvertibleLabframePhasespace() {}
 
@@ -41,16 +42,28 @@ IBPtr FlatInvertibleLabframePhasespace::fullclone() const {
 double FlatInvertibleLabframePhasespace::invertTwoToNKinematics(const vector<Lorentz5Momentum>& momenta,
 								double* r) const {
 
+  double weight = 1.;
+
+  Energy finalstatemass = 0*GeV;
+  for ( vector<Lorentz5Momentum>::const_iterator p =
+        momenta.begin()+2; p != momenta.end(); ++p )
+    finalstatemass += p->mass();
+
   Lorentz5Momentum pinitial = momenta[0]+momenta[1];
   Energy2 sh = pinitial.m2();
   double tau = sh/lastS();
-  double ltau = log(tau);
   Energy2 shmax = lastCuts().sHatMax();
-  Energy2 shmin = lastCuts().sHatMin();
-  r[0] = log(sh/shmin)/log(shmax/shmin);
+  Energy2 shmin = max(lastCuts().sHatMin(),sqr(finalstatemass));
+  if (theLogSHat) {
+    r[0] = log(sh/shmin)/log(shmax/shmin);
+    weight *= tau*log(shmax/shmin);
+  } else {
+    r[0] = (sh-shmin)/(shmax-shmin);
+    weight *= (shmax-shmin)/lastS();
+  }
+  double ltau = log(tau);
   r[1] = 0.5 - pinitial.rapidity()/ltau;
-
-  double weight = -ltau*tau*log(shmax/shmin);
+  weight *= -ltau;
 
   vector<Lorentz5Momentum> Pcms = momenta;
   Boost toCMS = pinitial.findBoostToCM();
@@ -68,13 +81,31 @@ double FlatInvertibleLabframePhasespace::invertTwoToNKinematics(const vector<Lor
 double FlatInvertibleLabframePhasespace::generateTwoToNKinematics(const double* r,
 							          vector<Lorentz5Momentum>& momenta) {
 
+  double weight = 1.;
+
+  Energy finalstatemass = 0*GeV;
+  for ( vector<Lorentz5Momentum>::const_iterator p =
+        momenta.begin()+2; p != momenta.end(); ++p )
+    finalstatemass += p->mass();
+
   Energy beamenergy = sqrt(lastS())/2.;
   Energy2 shmax = lastCuts().sHatMax();
-  Energy2 shmin = lastCuts().sHatMin();
-  Energy2 sh = shmin*pow(shmax/shmin, r[0]);
-  double tau = sh/lastS();
+  Energy2 shmin = max(lastCuts().sHatMin(),sqr(finalstatemass));
+  Energy2 sh;
+  double tau; 
+  if (theLogSHat) {
+    sh = shmin*pow(shmax/shmin, r[0]);
+    tau = sh/lastS(); 
+    weight *= tau*log(shmax/shmin);
+  } else {
+    sh = r[0]*(shmax-shmin)+shmin;
+    tau = sh/lastS(); 
+    weight *= (shmax-shmin)/lastS();
+  }
   double ltau = log(tau);
   double y = ltau*(0.5 - r[1]);
+  weight *= -ltau;
+
   double x1 = sqrt(tau)*exp(y);
   double x2 = sqrt(tau)*exp(-y);
   momenta[0] = Lorentz5Momentum(0*GeV,0*GeV,+x1*beamenergy,x1*beamenergy);
@@ -82,7 +113,6 @@ double FlatInvertibleLabframePhasespace::generateTwoToNKinematics(const double* 
   lastXCombPtr()->lastX1X2(make_pair(x1,x2));
   lastXCombPtr()->lastSHat(sh);
 
-  double weight = -ltau*tau*log(shmax/shmin);
   weight *= FlatInvertiblePhasespace::generateTwoToNKinematics(r+2, momenta);
 
   // find boost to the relevant partonic frame note final state kinematics are
@@ -102,9 +132,13 @@ double FlatInvertibleLabframePhasespace::generateTwoToNKinematics(const double* 
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 
-void FlatInvertibleLabframePhasespace::persistentOutput(PersistentOStream &) const {}
+void FlatInvertibleLabframePhasespace::persistentOutput(PersistentOStream & os) const {
+  os << theLogSHat;
+}
 
-void FlatInvertibleLabframePhasespace::persistentInput(PersistentIStream &, int) {}
+void FlatInvertibleLabframePhasespace::persistentInput(PersistentIStream & is, int) {
+  is >> theLogSHat;
+}
 
 
 // *** Attention *** The following static variable is needed for the type
@@ -119,6 +153,19 @@ void FlatInvertibleLabframePhasespace::Init() {
 
   static ClassDocumentation<FlatInvertibleLabframePhasespace> documentation
     ("FlatInvertibleLabframePhasespace implements flat, invertible phase space generation in the lab frame.");
+
+  static Switch<FlatInvertibleLabframePhasespace,bool> interfaceLogSHat
+    ("LogSHat",
+     "Generate a flat distribution in \\f$\\log(\\hat{s})\\f$.",
+     &FlatInvertibleLabframePhasespace::theLogSHat, false, false, false);
+
+  static SwitchOption interfaceLogSHatOn
+    (interfaceLogSHat,
+     "True", "Generate flat in \\f$\\log(\\hat{s})\\f$", true);
+
+  static SwitchOption interfaceLogSHatOff
+    (interfaceLogSHat,
+     "False", "Generate flat in \\f$\\hat{s}\\f$", false);
 
 }
 
