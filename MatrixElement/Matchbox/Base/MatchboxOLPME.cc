@@ -172,12 +172,23 @@ double MatchboxOLPME::oneLoopInterference() const {
   return lastOneLoopInterference();
 }
 
-double MatchboxOLPME::largeNColourCorrelatedME2(pair<int,int>,
-						Ptr<ColourBasis>::tptr) const {
+double MatchboxOLPME::largeNColourCorrelatedME2(pair<int,int> ij,
+						Ptr<ColourBasis>::tptr basis) const {
+  if ( trivialColourLegs() )
+    return MatchboxAmplitude::largeNColourCorrelatedME2(ij,basis);
   throw Exception() << "MatchboxOLPME::largeNColourCorrelatedME2(): not supported"
 		    << Exception::runerror;
   return 0.;
 }
+
+double MatchboxOLPME::largeNME2(Ptr<ColourBasis>::tptr basis) const {
+  if ( trivialColourLegs() )
+    return MatchboxAmplitude::largeNME2(basis);
+  throw Exception() << "MatchboxOLPME::largeNME2(): not supported"
+		    << Exception::runerror;
+  return 0.;
+}
+
 
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).

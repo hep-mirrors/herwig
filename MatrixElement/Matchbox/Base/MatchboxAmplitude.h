@@ -374,6 +374,16 @@ public:
    * Return the matrix element squared.
    */
   virtual double me2() const;
+
+  /**
+   * Return the colour charge of a given leg
+   */
+  double colourCharge(tcPDPtr) const;
+
+  /**
+   * Return the large-N charge of a given leg
+   */
+  double largeNColourCharge(tcPDPtr) const;
   
   /**
    * Return the largeN matrix element squared.
@@ -390,6 +400,11 @@ public:
    */
   virtual double largeNColourCorrelatedME2(pair<int,int> ij,
 					   Ptr<ColourBasis>::tptr largeNBasis) const;
+
+  /**
+   * Return true if trivial colour configuration.
+   */
+  bool trivialColourLegs() const { return theTrivialColourLegs; }
 
   /**
    * Return true, if this amplitude is capable of consistently filling
@@ -653,6 +668,11 @@ private:
    * The map with masses to be used for amplitude evaluation
    */
   map<long,Energy> theReshuffleMasses;
+
+  /**
+   * True if trivial colour configuration.
+   */
+  bool theTrivialColourLegs;
 
   /**
    * A command to fill the reshuffle mass map
