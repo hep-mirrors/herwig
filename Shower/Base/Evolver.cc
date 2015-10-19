@@ -1216,7 +1216,7 @@ bool Evolver::startTimeLikeShower(ShowerInteraction::Type type) {
       mit = hardTree()->particles().find(progenitor()->progenitor());
     if( mit != eit && !mit->second->children().empty() ) {
       bool output=truncatedTimeLikeShower(progenitor()->progenitor(),
-					  mit->second ,type);
+					  mit->second ,type,true);
       if(output) updateHistory(progenitor()->progenitor());
       return output;
     }
@@ -1694,7 +1694,7 @@ void Evolver::hardestEmission(bool hard) {
 
 bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
 				      HardBranchingPtr branch,
-				      ShowerInteraction::Type type) {
+				      ShowerInteraction::Type type,bool first) {
   int ntry=0;
   do {
     ++ntry;
@@ -1761,7 +1761,7 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
       }
       break;
     }
-    // if no branching force trunctaed emission
+    // if no branching force truncated emission
     if(!fb.kinematics) {
       // construct the kinematics for the hard emission
       ShoKinPtr showerKin=
@@ -1809,7 +1809,7 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
 	  timeLikeShower(theChildren[0],type,Branching(),false);
       }
       else {
-	truncatedTimeLikeShower( theChildren[0],branch->children()[0],type);
+	truncatedTimeLikeShower( theChildren[0],branch->children()[0],type,false);
       } 
       // shower the second particle
       if( branch->children()[1]->children().empty() ) {
@@ -1817,7 +1817,7 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
 	  timeLikeShower( theChildren[1] , type,Branching(),false);
       }
       else {
-	truncatedTimeLikeShower( theChildren[1],branch->children()[1] ,type);
+	truncatedTimeLikeShower( theChildren[1],branch->children()[1] ,type,false);
       }
       // that's if for old approach
       if(_reconOpt==0) return true;
@@ -1831,7 +1831,12 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
 	theChildren.clear();
 	continue;
       }
-      else return true;
+      else {
+	if(first&&!theChildren.empty())
+	  particle->showerKinematics()->resetChildren(particle,theChildren);
+	if(particle->spinInfo()) particle->spinInfo()->develop();
+	return true;
+      }
     }
     // has emitted
     // Assign the shower kinematics to the emitting particle.
@@ -1854,10 +1859,10 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
     particle->showerKinematics()->
       updateChildren( particle, theChildren , fb.type);
     // shower the first  particle
-    if( iout == 1 ) truncatedTimeLikeShower( theChildren[0], branch , type );
+    if( iout == 1 ) truncatedTimeLikeShower( theChildren[0], branch , type ,false);
     else            timeLikeShower( theChildren[0]  , type,Branching(),false);
     // shower the second particle
-    if( iout == 2 ) truncatedTimeLikeShower( theChildren[1], branch , type );
+    if( iout == 2 ) truncatedTimeLikeShower( theChildren[1], branch , type ,false);
     else            timeLikeShower( theChildren[1]  , type,Branching(),false);
     // that's if for old approach
     if(_reconOpt==0) return true;
@@ -1870,7 +1875,12 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
 	particle->abandonChild(theChildren[ix]);
       theChildren.clear();
     }
-    else return true;
+    else {
+      if(first&&!theChildren.empty())
+	particle->showerKinematics()->resetChildren(particle,theChildren);
+      if(particle->spinInfo()) particle->spinInfo()->develop();
+      return true;
+    }
   }
   while(ntry<50);
   return false;
@@ -1999,7 +2009,7 @@ bool Evolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr beam,
       timeLikeShower( otherChild , type,Branching(),true);
     }
     else {
-      truncatedTimeLikeShower( otherChild, timelike , type);
+      truncatedTimeLikeShower( otherChild, timelike , type,true);
     }
     updateHistory(otherChild);
     // return the emitted
@@ -2160,7 +2170,7 @@ truncatedSpaceLikeDecayShower(tShowerParticlePtr particle,
        if( ! hardOnly() ) timeLikeShower( theChildren[1] , type,Branching(), true);
      }
      else {
-	truncatedTimeLikeShower( theChildren[1],branch->children()[1] ,type);
+       truncatedTimeLikeShower( theChildren[1],branch->children()[1] ,type,true);
      }
      updateHistory(theChildren[1]);
    }
@@ -2181,7 +2191,7 @@ truncatedSpaceLikeDecayShower(tShowerParticlePtr particle,
        if( ! hardOnly() ) timeLikeShower( theChildren[0] , type, Branching(),true);
      }
      else {
-	truncatedTimeLikeShower( theChildren[0],branch->children()[0] ,type);
+       truncatedTimeLikeShower( theChildren[0],branch->children()[0] ,type,true);
      }
      updateHistory(theChildren[0]);
    }

@@ -300,7 +300,7 @@ protected:
    */
   virtual bool truncatedTimeLikeShower(tShowerParticlePtr particle,
 				       HardBranchingPtr branch,
-				       ShowerInteraction::Type type);
+				       ShowerInteraction::Type type, bool first);
  
   /**
    * Truncated shower from a space-like particle
