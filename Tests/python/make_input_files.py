@@ -378,6 +378,7 @@ elif(collider=="TVT") :
             process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
         elif(parameterName.find("Run-I-W")>=0 or parameterName.find("Run-II-W")>=0) :
             process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p pbar e+ nu\ndo Factory:Process p pbar e- nu\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
+            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
         elif(parameterName.find("Run-I-Z")>=0 or parameterName.find("Run-II-Z-e")>=0) :
             process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p pbar e+ e-\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
             process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
@@ -916,11 +917,14 @@ elif(collider=="LHC") :
                 process+="set /Herwig/Cuts/JetPairMass:MassMin 90.*GeV\n"
         elif(parameterName.find("7-Charm")>=0 or \
              parameterName.find("7-Bottom")>=0) :
+            parameters["bscheme"]="read Matchbox/FourFlavourScheme.in"
+            process+="set /Herwig/Particles/b:HardProcessMass 4.2*GeV\n"
+            process+="set /Herwig/Particles/bbar:HardProcessMass 4.2*GeV\n"
             process+="set Factory:OrderInAlphaS 2\nset Factory:OrderInAlphaEW 0\n"
             if(parameterName.find("7-Bottom")>=0) :
-                process+="do Factory:Process p p b bbar\n"
+                process+="do Factory:Process pnob pnob b bbar\n"
             else:
-                process+="do Factory:Process p p c cbar\n"
+                process+="do Factory:Process pnob pnob c cbar\n"
             process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/MaxJetPtScale\n"
             process+="set  /Herwig/Cuts/Cuts:JetFinder  /Herwig/Cuts/JetFinder\n"
             process+="insert  /Herwig/Cuts/Cuts:MultiCuts 0  /Herwig/Cuts/JetCuts\n"
@@ -1128,7 +1132,7 @@ elif(collider=="LHC") :
         elif(parameterName.find("Z-bb")>=0) :
             parameters["bscheme"]="read Matchbox/FourFlavourScheme.in"
             process+="set /Herwig/Particles/b:HardProcessMass 4.2*GeV\nset /Herwig/Particles/bbar:HardProcessMass 4.2*GeV\n"
-            process+="set Factory:OrderInAlphaS 2\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ e- b bbar\n"
+            process+="set Factory:OrderInAlphaS 2\nset Factory:OrderInAlphaEW 2\ndo Factory:Process pnob pnob e+ e- b bbar\n"
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 91.2*GeV\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
             process+="set /Herwig/Cuts/MassCut:MinM 66*GeV\nset /Herwig/Cuts/MassCut:MaxM 116*GeV\n"
             process+="set /Herwig/Cuts/Cuts:JetFinder /Herwig/Cuts/JetFinder\n"
