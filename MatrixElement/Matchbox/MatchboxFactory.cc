@@ -442,10 +442,9 @@ void MatchboxFactory::setup() {
 	}
 	mes = makeMEs(*p,orderInAlphaS(),needTrueVirtuals);
 	copy(mes.begin(),mes.end(),back_inserter(bornMEs()));
-	if ( (realContributions() || meCorrectionsOnly() ||
+	if ( realContributions() || meCorrectionsOnly() ||
 	      (showerApproximation() && virtualContributions()) ||
-	      (showerApproximation() && loopSimCorrections()))
-	     && realEmissionMEs().empty() ) {
+	      (showerApproximation() && loopSimCorrections()) ) {
 	  if ( realEmissionProcesses.empty() ) {
 	    vector<string> rproc = *p;
 	    rproc.push_back("j");
@@ -454,10 +453,9 @@ void MatchboxFactory::setup() {
 	  }
 	}
       }
-      if ( (realContributions() || meCorrectionsOnly() ||
+      if ( realContributions() || meCorrectionsOnly() ||
 	    (showerApproximation() && virtualContributions()) ||
-	    (showerApproximation() && loopSimCorrections()))
-	   && realEmissionMEs().empty() ) {
+	    (showerApproximation() && loopSimCorrections()) ) {
 	if ( !realEmissionProcesses.empty() ) {
 	  for ( vector<vector<string> >::const_iterator q =
 		  realEmissionProcesses.begin(); q != realEmissionProcesses.end(); ++q ) {
