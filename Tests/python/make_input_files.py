@@ -244,6 +244,12 @@ elif(collider=="TVT") :
             process+="insert SimpleQCD:MatrixElements[0] MEqq2W2ff\nset MEqq2W2ff:Process Electron\n"
         elif(parameterName.find("Run-I-Z")>=0 or parameterName.find("Run-II-Z-e")>=0) :
             process +="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
+        elif(parameterName.find("Run-II-Z-LowMass-mu")>=0) :
+            process +="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
+            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 25*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 70*GeV\n"
+        elif(parameterName.find("Run-II-Z-HighMass-mu")>=0) :
+            process +="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
+            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 150*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 600*GeV\n"
         elif(parameterName.find("Run-II-Z-mu")>=0) :
             process +="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
     elif(simulation=="Powheg") :
@@ -253,6 +259,12 @@ elif(collider=="TVT") :
             process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2W2ff\nset PowhegMEqq2W2ff:Process Electron\n"
         elif(parameterName.find("Run-I-Z")>=0 or parameterName.find("Run-II-Z-e")>=0) :
             process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
+        elif(parameterName.find("Run-II-Z-LowMass-mu")>=0) :
+            process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
+            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 25*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 70*GeV\n"
+        elif(parameterName.find("Run-II-Z-HighMass-mu")>=0) :
+            process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
+            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 150*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 600*GeV\n"
         elif(parameterName.find("Run-II-Z-mu")>=0) :
             process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
     elif(simulation=="Matchbox" ) :
@@ -382,6 +394,12 @@ elif(collider=="TVT") :
         elif(parameterName.find("Run-I-Z")>=0 or parameterName.find("Run-II-Z-e")>=0) :
             process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p pbar e+ e-\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
             process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
+        elif(parameterName.find("Run-II-Z-LowMass-mu")>=0) :
+            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p pbar mu+ mu-\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
+            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 25*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 70*GeV\n"
+        elif(parameterName.find("Run-II-Z-HighMass-mu")>=0) :
+            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p pbar mu+ mu-\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
+            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 150.*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 600*GeV\n"
         elif(parameterName.find("Run-II-Z-mu")>=0) :
             process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p pbar mu+ mu-\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
             process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
