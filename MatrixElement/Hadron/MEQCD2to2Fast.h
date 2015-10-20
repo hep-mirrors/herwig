@@ -35,7 +35,7 @@ public:
   /**
    * The default constructor.
    */
-  MEQCD2to2Fast() :_maxflavour(5),_process(0) {
+  MEQCD2to2Fast() :_maxflavour(5),_process(0),_strictFlavourScheme(false) {
     massOption(vector<unsigned int>(2,0));
   }
 
@@ -323,6 +323,12 @@ private:
    *  Diagram
    */
   mutable unsigned int _diagram;
+
+  /**
+   * Exclude contributions with massive incominbg quarks
+   */
+  bool _strictFlavourScheme;
+
 };
 
 }

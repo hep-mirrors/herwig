@@ -41,11 +41,11 @@ Energy2 MEQCD2to2Fast::scale() const {
 }
 
 void MEQCD2to2Fast::persistentOutput(PersistentOStream & os) const {
-  os << _maxflavour << _process;
+  os << _maxflavour << _process << _strictFlavourScheme;
 }
 
 void MEQCD2to2Fast::persistentInput(PersistentIStream & is, int) {
-  is >> _maxflavour >> _process;
+  is >> _maxflavour >> _process >> _strictFlavourScheme;
 }
 
 unsigned int MEQCD2to2Fast::orderInAlphaS() const {
@@ -120,6 +120,21 @@ void MEQCD2to2Fast::Init() {
      "qqbar2qqbar",
      "Include only q qbar -> q qbar processes",
      8);
+
+  static Switch<MEQCD2to2Fast,bool> interfaceStrictFlavourScheme
+    ("StrictFlavourScheme",
+     "Switch to not include massive initial state quarks.",
+     &MEQCD2to2Fast::_strictFlavourScheme, false, false, false);
+  static SwitchOption interfaceStrictFlavourSchemeOn
+    (interfaceStrictFlavourScheme,
+     "On",
+     "Do not include massive initial states.",
+     true);
+  static SwitchOption interfaceStrictFlavourSchemeOff
+    (interfaceStrictFlavourScheme,
+     "Off",
+     "Allow massive initial states.",
+     false);
 }
 
 Selector<MEBase::DiagramIndex>
@@ -168,7 +183,7 @@ void MEQCD2to2Fast::getDiagrams() const {
 		   3,quark[ix], 3, antiquark[ix], -6)));
     }
     // q qbar -> g g subprocesses
-    if(_process==0||_process==3) {
+    if((_process==0||_process==3) && (quark[ix]->mass() == ZERO || !_strictFlavourScheme)) {
       // first t-channel
       add(new_ptr((Tree2toNDiagram(3),quark[ix],antiquark[ix],antiquark[ix],
 		   1,gluon, 2,gluon,-7)));
@@ -180,7 +195,7 @@ void MEQCD2to2Fast::getDiagrams() const {
 		   1, gluon, 3, gluon, 3, gluon,-9)));
     }
     // q g -> q g subprocesses
-    if(_process==0||_process==4) {
+    if((_process==0||_process==4) && (quark[ix]->mass() == ZERO || !_strictFlavourScheme)) {
       // s-channel
       add(new_ptr((Tree2toNDiagram(2),quark[ix], gluon,
 		   1, quark[ix], 3, quark[ix], 3, gluon,-10)));
@@ -192,7 +207,7 @@ void MEQCD2to2Fast::getDiagrams() const {
 		   1,quark[ix],2,gluon,-12)));
     }
     // qbar g -> qbar g subprocesses
-    if(_process==0||_process==5) {
+    if((_process==0||_process==5) && (antiquark[ix]->mass() == ZERO || !_strictFlavourScheme)) {
       // s-channel
       add(new_ptr((Tree2toNDiagram(2),antiquark[ix], gluon,
 		   1, antiquark[ix], 3, antiquark[ix], 3, gluon,-13)));
@@ -206,7 +221,8 @@ void MEQCD2to2Fast::getDiagrams() const {
     // processes involving two quark lines
     for(unsigned int iy=ix;iy<_maxflavour;++iy) {
       // q q -> q q subprocesses
-      if(_process==0||_process==6) {
+      if((_process==0||_process==6) && 
+	 ((quark[ix]->mass() == ZERO && quark[iy]->mass() == ZERO) || !_strictFlavourScheme)) {
 	// gluon t-channel
 	add(new_ptr((Tree2toNDiagram(3),quark[ix],gluon,quark[iy],
 		     1,quark[ix],2,quark[iy],-16)));
@@ -216,7 +232,8 @@ void MEQCD2to2Fast::getDiagrams() const {
 		       2,quark[ix],1,quark[iy],-17)));
       }
       // qbar qbar -> qbar qbar subprocesses
-      if(_process==0||_process==7) {
+      if((_process==0||_process==7) && 
+	 ((antiquark[ix]->mass() == ZERO && antiquark[iy]->mass() == ZERO) || !_strictFlavourScheme)) {
 	// gluon t-channel
 	add(new_ptr((Tree2toNDiagram(3),antiquark[ix],gluon,antiquark[iy],
 		     1,antiquark[ix],2,antiquark[iy],-18)));
@@ -230,11 +247,14 @@ void MEQCD2to2Fast::getDiagrams() const {
       // q qbar -> q qbar
       if(_process==0||_process==8) {
 	// gluon s-channel
-	add(new_ptr((Tree2toNDiagram(2),quark[ix], antiquark[ix],
-		     1, gluon, 3, quark[iy], 3, antiquark[iy],-20)));
+	if ( quark[ix]->mass() == ZERO || !_strictFlavourScheme )
+	  add(new_ptr((Tree2toNDiagram(2),quark[ix], antiquark[ix],
+		       1, gluon, 3, quark[iy], 3, antiquark[iy],-20)));
 	// gluon t-channel
-	add(new_ptr((Tree2toNDiagram(3),quark[ix],gluon,antiquark[iy],
-		     1,quark[ix],2,antiquark[iy],-21)));
+	if ( (quark[ix]->mass() == ZERO && antiquark[iy]->mass() == ZERO) || 
+	     !_strictFlavourScheme )
+	  add(new_ptr((Tree2toNDiagram(3),quark[ix],gluon,antiquark[iy],
+		       1,quark[ix],2,antiquark[iy],-21)));
       }
     }
   }
