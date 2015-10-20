@@ -20,3 +20,7 @@ do c:UnsetHardProcessMass
 do cbar:UnsetHardProcessMass
 set c:NominalMass 0*GeV
 set cbar:NominalMass 0*GeV
+
+cd /Herwig/UnderlyingEvent
+set MEQCD2to2Fast:StrictFlavourScheme On
+
