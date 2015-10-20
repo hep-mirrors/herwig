@@ -421,3 +421,9 @@ double MEQCD2to2Fast::me2() const {
   double alphas(4.*Constants::pi*SM().alphaS(scale()));
   return me*sqr(alphas);
 }
+
+void MEQCD2to2Fast::doinit() {
+  if ( _strictFlavourScheme )
+    massOption(vector<unsigned int>(2,1));
+  HwMEBase::doinit();
+}
