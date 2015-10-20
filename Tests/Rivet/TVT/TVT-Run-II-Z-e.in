@@ -17,3 +17,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2008_S7554427
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2009_S8202443
 # D0 run II
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2010_S8821313
+# CDF run II Z pT
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CDF_2012_I1124333

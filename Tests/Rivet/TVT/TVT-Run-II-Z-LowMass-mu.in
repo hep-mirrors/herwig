@@ -1,0 +1,5 @@
+##################################################
+# select the analyses
+##################################################
+# D0 run II phi star
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 D0_2015_I1324946
