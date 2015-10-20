@@ -1,0 +1,5 @@
+##################################################
+# select the analyses
+##################################################
+# ATLAS Z
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_CONF_2015_041_EL
