@@ -124,8 +124,10 @@ if __name__ == "__main__":
 yodafiles=["-7-Jets-0.yoda","-7-Jets-1.yoda","-7-Jets-2.yoda",
            "-7-Jets-3.yoda","-7-Jets-4.yoda","-7-Jets-5.yoda",
            "-7-Jets-6.yoda","-7-Jets-7.yoda","-7-Jets-8.yoda",
-           "-7-Heavy-0.yoda","-7-Heavy-1.yoda","-7-Heavy-2.yoda",
-           "-7-Heavy-3.yoda","-7-Heavy-4.yoda","-7-Heavy-5.yoda",
+           "-7-Bottom-0.yoda","-7-Bottom-1.yoda","-7-Bottom-2.yoda",
+           "-7-Bottom-3.yoda","-7-Bottom-4.yoda","-7-Bottom-5.yoda",
+           "-7-Charm-1.yoda","-7-Charm-2.yoda",
+           "-7-Charm-3.yoda","-7-Charm-4.yoda","-7-Charm-5.yoda",
            "-7-Top-SL.yoda","-7-Top-L.yoda","-7-Top-All.yoda"]
 
 if(opts.ue) :
@@ -172,17 +174,17 @@ for f in yodafiles:
         ptmin=400.
     elif(file.find("-7-Jets-8")>0) :
         ptmin=600.
-    elif(file.find("-7-Heavy-0.yoda")>0) :
+    elif(file.find("-7-Bottom-0")>0) :
         ptmin=0.
-    elif(file.find("-7-Heavy-1.yoda")>0) :
+    elif(file.find("-7-Bottom-1")>0 or file.find("-7-Charm-1")>0) :
         ptmin=10.
-    elif(file.find("-7-Heavy-2.yoda")>0) :
+    elif(file.find("-7-Bottom-2")>0 or file.find("-7-Charm-2")>0) :
         ptmin=30.
-    elif(file.find("-7-Heavy-3.yoda")>0) :
+    elif(file.find("-7-Bottom-3")>0 or file.find("-7-Charm-3")>0) :
         ptmin=70.
-    elif(file.find("-7-Heavy-4.yoda")>0) :
+    elif(file.find("-7-Bottom-4")>0 or file.find("-7-Charm-4")>0) :
         ptmin=100.
-    elif(file.find("-7-Heavy-5.yoda")>0) :
+    elif(file.find("-7-Bottom-5")>0 or file.find("-7-Charm-5")>0) :
         ptmin=130.
     elif(file.find("-7-Top-SL.yoda")>0 or file.find("-7-Top-L.yoda")>0 or \
          file.find("-7-Top-All.yoda")>0):
@@ -240,7 +242,11 @@ for f in yodafiles:
            if not tmpE[sqrts].has_key(ptmin):
                tmpE[sqrts][ptmin] = ao
            else:
-                raise Exception("A set with ptmin = %s already exists" % ( ptmin))
+               tmpE[sqrts][ptmin] += ao
+               #raise Exception("A set with ptmin = %s already exists" % ( ptmin))
+
+
+
         else :
             if(aopath.find("I1243871")>0) :
                 if(aopath.find("x01")>0 and file.find("-7-Top-L.yoda")>0 ) :
@@ -252,10 +258,10 @@ for f in yodafiles:
 
 yodafiles=["-7-Jets-1.yoda" ,"-7-Jets-9.yoda" ,"-7-Jets-10.yoda",
            "-7-Jets-11.yoda","-7-Jets-12.yoda","-7-Jets-13.yoda",
-           "-7-Heavy-6.yoda","-7-Heavy-7.yoda","-7-Heavy-8.yoda"]
+           "-7-Bottom-6.yoda","-7-Bottom-7.yoda","-7-Bottom-8.yoda"]
 
 for f in yodafiles:
-    file="LHC"+f
+    file=args[0]+f
     if(file.find("-7-Jets-1.yoda")>0) :
         sqrts=7000
         mass=0
@@ -274,13 +280,13 @@ for f in yodafiles:
     elif(file.find("-7-Jets-13.yoda")>0) :
         sqrts=7000
         mass=2000
-    elif(file.find("-7-Heavy-6.yoda")>0) :
+    elif(file.find("-7-Bottom-6.yoda")>0) :
         sqrts=7000
         mass=110
-    elif(file.find("-7-Heavy-7.yoda")>0) :
+    elif(file.find("-7-Bottom-7.yoda")>0) :
         sqrts=7000
         mass=370
-    elif(file.find("-7-Heavy-8.yoda")>0) :
+    elif(file.find("-7-Bottom-8.yoda")>0) :
         sqrts=7000
         mass=550
     if not os.access(file, os.R_OK):
