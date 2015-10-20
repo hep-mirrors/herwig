@@ -1,0 +1,10 @@
+##################################################
+# select the analyses
+##################################################
+# General analysis
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1306615
+
+do /Herwig/Particles/h0:SelectDecayModes h0->gamma,gamma;
+create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter
+insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter
+

@@ -18,3 +18,10 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1256943
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2012_I941555
 # ATLAS MPI in Z events
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1315949
+# ATLAS Z
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I928289_Z
+# CMS Z AFB
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1122847
+# CMS Z+jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2015_I1310737
+

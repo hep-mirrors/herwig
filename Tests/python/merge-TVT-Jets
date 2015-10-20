@@ -92,7 +92,8 @@ if __name__ == "__main__":
         logging.error("Must specify at least the name of the files")
         sys.exit(1)
 
-yodafiles=["-Run-II-UE.yoda"    ,"-Run-II-Jets-1.yoda","-Run-II-Jets-2.yoda",\
+yodafiles=["-Run-II-UE.yoda"    ,"-Run-II-Jets-0.yoda","-Run-II-Jets-1.yoda",\
+           "-Run-II-Jets-2.yoda",\
            "-Run-II-Jets-3.yoda","-Run-II-Jets-4.yoda","-Run-II-Jets-5.yoda",\
            "-Run-II-Jets-6.yoda","-Run-II-Jets-7.yoda",\
            "-Run-I-UE.yoda"    ,"-Run-I-Jets-1.yoda","-Run-I-Jets-2.yoda",\
@@ -110,6 +111,9 @@ for f in yodafiles:
     if(file.find("Run-II-UE")>0) :
         sqrts=1960
         ptmin=0.
+    elif(file.find("Run-II-Jets-0")>0) :
+        sqrts=1960
+        ptmin=20.
     elif(file.find("Run-II-Jets-1")>0) :
         sqrts=1960
         ptmin=36.

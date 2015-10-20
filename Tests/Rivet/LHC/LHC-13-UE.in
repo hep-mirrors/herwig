@@ -1,0 +1,5 @@
+##################################################
+# select the analyses
+##################################################
+# CMS UE
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2015_I1384119
