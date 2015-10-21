@@ -117,8 +117,12 @@ void FS_QTildeShowerKinematics1to2::reconstructLast(const tShowerParticlePtr las
   // using the nominal (i.e. PDT) mass.
   Energy theMass = mass > ZERO  ?  mass : last->data().constituentMass();
   ShowerParticle::Parameters & lastParam = last->showerParameters();
+  Energy2 denom = 2. * lastParam.alpha * p_dot_n();
+  if(abs(denom)/(sqr(pVector().e())+pVector().rho2())<1e-10) {
+    throw KinematicsReconstructionVeto();
+  }
   lastParam.beta = ( sqr(theMass) + sqr(lastParam.pt) - sqr(lastParam.alpha) * pVector().m2() )
-    / ( 2. * lastParam.alpha * p_dot_n() );
+    / denom;
   // set that new momentum
   Lorentz5Momentum newMomentum = sudakov2Momentum( lastParam.alpha, lastParam.beta,
 						   lastParam.ptx  , lastParam.pty);
