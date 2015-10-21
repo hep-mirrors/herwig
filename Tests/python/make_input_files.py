@@ -278,7 +278,7 @@ elif(collider=="TVT") :
             if(parameterName.find("Run-II-Jets-10")>=0) :
                 process+="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
                 process+="set /Herwig/Cuts/FirstJet:PtMin 30.*GeV\n"
-                process+="set /Herwig/Cuts/SecondJet:PtMin 30.*GeV\n"
+                process+="set /Herwig/Cuts/SecondJet:PtMin 25.*GeV\n"
                 process+="create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so\n"
                 process+="set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet\n"
                 process+="set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet\n"
@@ -287,7 +287,7 @@ elif(collider=="TVT") :
             elif(parameterName.find("Run-II-Jets-11")>=0) :
                 process+="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
                 process+="set /Herwig/Cuts/FirstJet:PtMin 30.*GeV\n"
-                process+="set /Herwig/Cuts/SecondJet:PtMin 30.*GeV\n"
+                process+="set /Herwig/Cuts/SecondJet:PtMin 25.*GeV\n"
                 process+="create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so\n"
                 process+="set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet\n"
                 process+="set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet\n"
@@ -296,7 +296,7 @@ elif(collider=="TVT") :
             elif(parameterName.find("Run-II-Jets-12")>=0) :
                 process+="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
                 process+="set /Herwig/Cuts/FirstJet:PtMin 30.*GeV\n"
-                process+="set /Herwig/Cuts/SecondJet:PtMin 30.*GeV\n"
+                process+="set /Herwig/Cuts/SecondJet:PtMin 25.*GeV\n"
                 process+="create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so\n"
                 process+="set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet\n"
                 process+="set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet\n"
@@ -315,7 +315,7 @@ elif(collider=="TVT") :
             elif(parameterName.find("Run-I-Jets-6")>=0) :
                 process+="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
                 process+="set /Herwig/Cuts/FirstJet:PtMin 30.*GeV\n"
-                process+="set /Herwig/Cuts/SecondJet:PtMin 30.*GeV\n"
+                process+="set /Herwig/Cuts/SecondJet:PtMin 25.*GeV\n"
                 process+="create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so\n"
                 process+="set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet\n"
                 process+="set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet\n"
@@ -324,7 +324,7 @@ elif(collider=="TVT") :
             elif(parameterName.find("Run-I-Jets-7")>=0) :
                 process+="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
                 process+="set /Herwig/Cuts/FirstJet:PtMin 30.*GeV\n"
-                process+="set /Herwig/Cuts/SecondJet:PtMin 30.*GeV\n"
+                process+="set /Herwig/Cuts/SecondJet:PtMin 25.*GeV\n"
                 process+="create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so\n"
                 process+="set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet\n"
                 process+="set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet\n"
@@ -333,7 +333,7 @@ elif(collider=="TVT") :
             elif(parameterName.find("Run-I-Jets-8")>=0) :
                 process+="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
                 process+="set /Herwig/Cuts/FirstJet:PtMin 30.*GeV\n"
-                process+="set /Herwig/Cuts/SecondJet:PtMin 30.*GeV\n"
+                process+="set /Herwig/Cuts/SecondJet:PtMin 25.*GeV\n"
                 process+="create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so\n"
                 process+="set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet\n"
                 process+="set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet\n"
@@ -358,7 +358,7 @@ elif(collider=="TVT") :
             elif(parameterName.find("Run-II-Jets-8")>=0) :
                 process+="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
                 process+="set /Herwig/Cuts/FirstJet:PtMin 30.*GeV\n"
-                process+="set /Herwig/Cuts/SecondJet:PtMin 30.*GeV\n"
+                process+="set /Herwig/Cuts/SecondJet:PtMin 25.*GeV\n"
                 process+="create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so\n"
                 process+="set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet\n"
                 process+="set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet\n"
@@ -367,7 +367,7 @@ elif(collider=="TVT") :
             elif(parameterName.find("Run-II-Jets-9")>=0) :
                 process+="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
                 process+="set /Herwig/Cuts/FirstJet:PtMin 30.*GeV\n"
-                process+="set /Herwig/Cuts/SecondJet:PtMin 30.*GeV\n"
+                process+="set /Herwig/Cuts/SecondJet:PtMin 25.*GeV\n"
                 process+="create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so\n"
                 process+="set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet\n"
                 process+="set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet\n"
@@ -952,7 +952,7 @@ elif(collider=="LHC") :
             elif(parameterName.find("7-Jets-10")>=0) :
                 process+="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
                 process+="set /Herwig/Cuts/FirstJet:PtMin 20.*GeV\n"
-                process+="set /Herwig/Cuts/SecondJet:PtMin 20.*GeV\n"
+                process+="set /Herwig/Cuts/SecondJet:PtMin 15.*GeV\n"
                 process+="create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so\n"
                 process+="set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet\n"
                 process+="set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet\n"
@@ -961,7 +961,7 @@ elif(collider=="LHC") :
             elif(parameterName.find("7-Jets-11")>=0) :
                 process+="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
                 process+="set /Herwig/Cuts/FirstJet:PtMin 20.*GeV\n"
-                process+="set /Herwig/Cuts/SecondJet:PtMin 20.*GeV\n"
+                process+="set /Herwig/Cuts/SecondJet:PtMin 15.*GeV\n"
                 process+="create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so\n"
                 process+="set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet\n"
                 process+="set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet\n"
@@ -970,7 +970,7 @@ elif(collider=="LHC") :
             elif(parameterName.find("7-Jets-12")>=0) :
                 process+="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
                 process+="set /Herwig/Cuts/FirstJet:PtMin 20.*GeV\n"
-                process+="set /Herwig/Cuts/SecondJet:PtMin 20.*GeV\n"
+                process+="set /Herwig/Cuts/SecondJet:PtMin 15.*GeV\n"
                 process+="create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so\n"
                 process+="set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet\n"
                 process+="set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet\n"
@@ -979,7 +979,7 @@ elif(collider=="LHC") :
             elif(parameterName.find("7-Jets-13")>=0) :
                 process+="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
                 process+="set /Herwig/Cuts/FirstJet:PtMin 20.*GeV\n"
-                process+="set /Herwig/Cuts/SecondJet:PtMin 20.*GeV\n"
+                process+="set /Herwig/Cuts/SecondJet:PtMin 15.*GeV\n"
                 process+="create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so\n"
                 process+="set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet\n"
                 process+="set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet\n"
@@ -988,7 +988,7 @@ elif(collider=="LHC") :
             elif(parameterName.find("7-Jets-14")>=0) :
                 process+="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
                 process+="set /Herwig/Cuts/FirstJet:PtMin 20.*GeV\n"
-                process+="set /Herwig/Cuts/SecondJet:PtMin 20.*GeV\n"
+                process+="set /Herwig/Cuts/SecondJet:PtMin 15.*GeV\n"
                 process+="create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so\n"
                 process+="set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet\n"
                 process+="set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet\n"
@@ -997,7 +997,7 @@ elif(collider=="LHC") :
             elif(parameterName.find("7-Jets-15")>=0) :
                 process+="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
                 process+="set /Herwig/Cuts/FirstJet:PtMin 20.*GeV\n"
-                process+="set /Herwig/Cuts/SecondJet:PtMin 20.*GeV\n"
+                process+="set /Herwig/Cuts/SecondJet:PtMin 15.*GeV\n"
                 process+="create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so\n"
                 process+="set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet\n"
                 process+="set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet\n"
@@ -1022,7 +1022,7 @@ elif(collider=="LHC") :
             elif(parameterName.find("7-Jets-9")>=0) :
                 process+="insert /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/SecondJet\n"
                 process+="set /Herwig/Cuts/FirstJet:PtMin 20.*GeV\n"
-                process+="set /Herwig/Cuts/SecondJet:PtMin 20.*GeV\n"
+                process+="set /Herwig/Cuts/SecondJet:PtMin 15.*GeV\n"
                 process+="create ThePEG::JetPairRegion /Herwig/Cuts/JetPairMass JetCuts.so\n"
                 process+="set /Herwig/Cuts/JetPairMass:FirstRegion /Herwig/Cuts/FirstJet\n"
                 process+="set /Herwig/Cuts/JetPairMass:SecondRegion /Herwig/Cuts/SecondJet\n"
