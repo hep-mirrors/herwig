@@ -318,6 +318,13 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
     OLP_SetParameter((char *)"mass(23)",&in1,&zero,&pStatus);
     OLP_SetParameter((char *)"alpha",&in2,&zero,&pStatus);
     OLP_SetParameter((char *)"sw2",&in3,&zero,&pStatus);
+  } else if ( SM().ewScheme() == 7 ) { // EW/Scheme FeynRulesUFO (uses mZ,GF,alpha(mZ))
+    double in1=getParticleData(ParticleID::Z0)->hardProcessMass()/GeV;
+    double in2=SM().alphaEMMZ();
+    double in3=SM().fermiConstant()*GeV2;
+    OLP_SetParameter((char *)"mass(23)",&in1,&zero,&pStatus);
+    OLP_SetParameter((char *)"alpha",&in2,&zero,&pStatus);
+    OLP_SetParameter((char *)"Gf",&in3,&zero,&pStatus);
   }
 	
   // hand over mass and width of the Higgs
@@ -676,12 +683,9 @@ void GoSamAmplitude::evalSubProcess() const {
   accuracyFile = factory()->buildStorage() + accuracyFileTitle;
   ofstream accuracyFileStream;
 
-  if ( Debug::level > 1 ) {
-    accuracyFileStream.open(accuracyFile.c_str(),ios::app);
-  }
-
   if ( (olpId()[ProcessType::oneLoopInterference]||olpId()[ProcessType::loopInducedME2]) &&  acc > accuracyTarget ) {
     if ( Debug::level > 1 ) {
+      accuracyFileStream.open(accuracyFile.c_str(),ios::app);
       vector<Lorentz5Momentum> currentpsp = lastXComb().meMomenta();
       time_t rawtime;
       time (&rawtime);
