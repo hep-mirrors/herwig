@@ -616,6 +616,7 @@ void MatchboxFactory::setup() {
     }
 
     if ( (bornContributions() && !virtualContributions()) || 
+	 (bornContributions() && meCorrectionsOnly()) || 
 	 (bornContributions() && virtualContributions() && independentVirtuals()) ) {
       for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born
 	      = bornMEs().begin(); born != bornMEs().end(); ++born ) {
