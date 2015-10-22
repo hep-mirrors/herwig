@@ -12,4 +12,9 @@ MissingPtCut.h \
 FrixionePhotonSeparationCut.cc \
 FrixionePhotonSeparationCut.h \
 InvariantMassCut.cc \
-InvariantMassCut.h 
+InvariantMassCut.h \
+PairPtCut.cc \
+PairPtCut.h \
+PairRapidityCut.cc \
+PairRapidityCut.h
+ 
