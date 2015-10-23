@@ -183,7 +183,7 @@ void MEQCD2to2Fast::getDiagrams() const {
 		   3,quark[ix], 3, antiquark[ix], -6)));
     }
     // q qbar -> g g subprocesses
-    if((_process==0||_process==3) && (quark[ix]->mass() == ZERO || !_strictFlavourScheme)) {
+    if((_process==0||_process==3) && (quark[ix]->hardProcessMass() == ZERO || !_strictFlavourScheme)) {
       // first t-channel
       add(new_ptr((Tree2toNDiagram(3),quark[ix],antiquark[ix],antiquark[ix],
 		   1,gluon, 2,gluon,-7)));
@@ -195,7 +195,7 @@ void MEQCD2to2Fast::getDiagrams() const {
 		   1, gluon, 3, gluon, 3, gluon,-9)));
     }
     // q g -> q g subprocesses
-    if((_process==0||_process==4) && (quark[ix]->mass() == ZERO || !_strictFlavourScheme)) {
+    if((_process==0||_process==4) && (quark[ix]->hardProcessMass() == ZERO || !_strictFlavourScheme)) {
       // s-channel
       add(new_ptr((Tree2toNDiagram(2),quark[ix], gluon,
 		   1, quark[ix], 3, quark[ix], 3, gluon,-10)));
@@ -207,7 +207,7 @@ void MEQCD2to2Fast::getDiagrams() const {
 		   1,quark[ix],2,gluon,-12)));
     }
     // qbar g -> qbar g subprocesses
-    if((_process==0||_process==5) && (antiquark[ix]->mass() == ZERO || !_strictFlavourScheme)) {
+    if((_process==0||_process==5) && (antiquark[ix]->hardProcessMass() == ZERO || !_strictFlavourScheme)) {
       // s-channel
       add(new_ptr((Tree2toNDiagram(2),antiquark[ix], gluon,
 		   1, antiquark[ix], 3, antiquark[ix], 3, gluon,-13)));
@@ -222,7 +222,7 @@ void MEQCD2to2Fast::getDiagrams() const {
     for(unsigned int iy=ix;iy<_maxflavour;++iy) {
       // q q -> q q subprocesses
       if((_process==0||_process==6) && 
-	 ((quark[ix]->mass() == ZERO && quark[iy]->mass() == ZERO) || !_strictFlavourScheme)) {
+	 ((quark[ix]->hardProcessMass() == ZERO && quark[iy]->hardProcessMass() == ZERO) || !_strictFlavourScheme)) {
 	// gluon t-channel
 	add(new_ptr((Tree2toNDiagram(3),quark[ix],gluon,quark[iy],
 		     1,quark[ix],2,quark[iy],-16)));
@@ -233,7 +233,7 @@ void MEQCD2to2Fast::getDiagrams() const {
       }
       // qbar qbar -> qbar qbar subprocesses
       if((_process==0||_process==7) && 
-	 ((antiquark[ix]->mass() == ZERO && antiquark[iy]->mass() == ZERO) || !_strictFlavourScheme)) {
+	 ((antiquark[ix]->hardProcessMass() == ZERO && antiquark[iy]->hardProcessMass() == ZERO) || !_strictFlavourScheme)) {
 	// gluon t-channel
 	add(new_ptr((Tree2toNDiagram(3),antiquark[ix],gluon,antiquark[iy],
 		     1,antiquark[ix],2,antiquark[iy],-18)));
@@ -247,11 +247,11 @@ void MEQCD2to2Fast::getDiagrams() const {
       // q qbar -> q qbar
       if(_process==0||_process==8) {
 	// gluon s-channel
-	if ( quark[ix]->mass() == ZERO || !_strictFlavourScheme )
+	if ( quark[ix]->hardProcessMass() == ZERO || !_strictFlavourScheme )
 	  add(new_ptr((Tree2toNDiagram(2),quark[ix], antiquark[ix],
 		       1, gluon, 3, quark[iy], 3, antiquark[iy],-20)));
 	// gluon t-channel
-	if ( (quark[ix]->mass() == ZERO && antiquark[iy]->mass() == ZERO) || 
+	if ( (quark[ix]->hardProcessMass() == ZERO && antiquark[iy]->hardProcessMass() == ZERO) || 
 	     !_strictFlavourScheme )
 	  add(new_ptr((Tree2toNDiagram(3),quark[ix],gluon,antiquark[iy],
 		       1,quark[ix],2,antiquark[iy],-21)));
