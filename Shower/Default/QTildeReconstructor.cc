@@ -578,6 +578,20 @@ reconstructDecayJets(ShowerTreePtr decay,
     Lorentz5Momentum qt;
     if(!solveDecayKFactor(initial->progenitor()->mass(),nvect,pjet,
 			  jetKinematics,partner,ppartner,k1,k2,qt)) {
+      for(map<tPPtr,vector<LorentzRotation> >::const_iterator bit=_boosts.begin();bit!=_boosts.end();++bit) {
+	for(vector<LorentzRotation>::const_reverse_iterator rit=bit->second.rbegin();rit!=bit->second.rend();++rit) {
+	  LorentzRotation rot = rit->inverse();
+	  bit->first->transform(rot);
+	}
+      }
+      _boosts.clear();
+      for(map<tShowerTreePtr,vector<LorentzRotation> >::const_iterator bit=_treeBoosts.begin();bit!=_treeBoosts.end();++bit) {
+	for(vector<LorentzRotation>::const_reverse_iterator rit=bit->second.rbegin();rit!=bit->second.rend();++rit) {
+	  LorentzRotation rot = rit->inverse();
+	  bit->first->transform(rot,false);
+	}
+      }
+      _treeBoosts.clear();
       _currentTree = tShowerTreePtr();
       return false;
     }
@@ -641,6 +655,12 @@ reconstructDecayJets(ShowerTreePtr decay,
     _treeBoosts.clear();
     _currentTree = tShowerTreePtr();
     return false;
+  }
+  catch (Exception & ex) {
+    _currentTree = tShowerTreePtr();
+    _boosts.clear();
+    _treeBoosts.clear();
+    throw ex;
   }
   _boosts.clear();
   _treeBoosts.clear();
