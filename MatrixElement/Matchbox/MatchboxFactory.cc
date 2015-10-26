@@ -344,6 +344,11 @@ void MatchboxFactory::productionMode() {
     }
   }
 
+  if ( subtractionData() != "" && !subProcessGroups() ) {
+    throw Exception() << "MatchboxFactory: Plain NLO settings are required for subtraction checks.\n"
+      << "Please check your setup.\n"
+      << Exception::runerror;
+  }
   if ( showerApproximation() && !virtualContributions() && !realContributions() ) {
     Repository::clog() << "Warning: Matching requested for LO run. Matching disabled.\n" << flush;
     showerApproximation(Ptr<ShowerApproximation>::tptr());
