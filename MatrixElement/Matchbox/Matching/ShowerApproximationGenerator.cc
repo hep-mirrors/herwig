@@ -53,7 +53,7 @@ double ShowerApproximationGenerator::invertFraction(tcPDPtr pd, double x, double
   return log((1.-x+x0)/x0)/log((1.+x0)/x0);
 }
 
-bool ShowerApproximationGenerator::prepare() {
+bool ShowerApproximationGenerator::prepare(bool didproject) {
 
   tSubProPtr oldSub = lastIncomingXComb->subProcess();
 
@@ -96,6 +96,18 @@ bool ShowerApproximationGenerator::prepare() {
     oldSub->incoming().second->data().produceParticle(oldSub->incoming().second->momentum());
 
   thePhasespace->setXComb(lastIncomingXComb);
+
+  // this is a brute force fix for private ticket #241 ; only done to get fixed
+  // for the release but will need to be looked at in more detail later on by
+  // cleaning up the XCombs for these cases
+  if ( theLastMomenta.size() == 3 && didproject ) {
+    // boost them where they belong so invertKinematics is doing something sensible
+    Boost toLab = (lastIncomingXComb->lastPartons().first->momentum() + 
+		   lastIncomingXComb->lastPartons().second->momentum()).boostVector();
+    for ( int i = 0; i < 3; ++i )
+      theLastMomenta[i].boost(toLab);
+  }
+
   thePhasespace->invertKinematics(theLastMomenta,
 				  !hasFractions ? &theLastRandomNumbers[2] : &theLastRandomNumbers[0]);
 
@@ -260,8 +272,12 @@ handle(EventHandler & eh, const tPVector &,
     throw Exception() << "ShowerApproximationGenerator::handle(): Expecting a standard event handler."
 		      << Exception::runerror;
 
-  if ( lastIncomingXComb->lastProjector() )
+  bool didproject = false;
+
+  if ( lastIncomingXComb->lastProjector() ) {
     lastIncomingXComb = lastIncomingXComb->lastProjector();
+    didproject = true;
+  }
 
   const StandardXComb& xc = *lastIncomingXComb;
 
@@ -321,7 +337,7 @@ handle(EventHandler & eh, const tPVector &,
   theLastBornME->phasespace(thePhasespace);
   theLastBornXComb = (**kernels.begin()).bornXComb();
 
-  if ( !prepare() )
+  if ( !prepare(didproject) )
     return;
 
   Energy winnerPt = ZERO;

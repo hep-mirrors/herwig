@@ -74,7 +74,7 @@ public:
   /**
    * Fill information on the Born process
    */
-  bool prepare();
+  bool prepare(bool didproject);
 
   /**
    * Generate a Born phase space point while kernels are being
