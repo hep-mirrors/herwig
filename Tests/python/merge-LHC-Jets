@@ -236,6 +236,7 @@ for f in yodafiles:
            aopath.find("I1325553")>0 or
            aopath.find("I1298810")>0 or
            aopath.find("CMS_2012_PAS_QCD_11_010")>0 or
+           aopath.find("CMS_2013_I1208923")>0 or
            aopath.find("ATLAS_2014_I1298811")>0) :
            if not inhistos_pt.has_key(aopath):
                inhistos_pt[aopath] = {}
@@ -314,7 +315,8 @@ for f in yodafiles:
            aopath.find("I930220")>0 or
            aopath.find("1261026")>0 or
            aopath.find("1090423")>0 or
-           aopath.find("1268975")>0) :
+           aopath.find("1268975")>0 or
+           aopath.find("CMS_2013_I1208923")>0) :
            if not inhistos_mass.has_key(aopath):
                inhistos_mass[aopath] = {}
            tmpE = inhistos_mass[aopath]
@@ -354,7 +356,8 @@ for hpath,hsets in inhistos_pt.iteritems():
         hpath.find("1298811"   )>0 or
         hpath.find("I1325553"  )>0 or
         hpath.find("I1298810"  )>0 or
-        hpath.find("1307243"   )>0) :
+        hpath.find("1307243"   )>0 or
+        hpath.find("CMS_2013_I1208923"   )>0) :
         if(type(hsets.values()[0].values()[0])==yoda.core.Scatter2D) :
             outhistos[hpath] = yoda.core.Scatter2D(hsets.values()[0].values()[0].path,
                                                    hsets.values()[0].values()[0].title)
@@ -1278,6 +1281,11 @@ mergeByPt("/ATLAS_2014_I1325553/d02-x01-y03", "7000")
 mergeByPt("/ATLAS_2014_I1325553/d02-x01-y04", "7000")
 mergeByPt("/ATLAS_2014_I1325553/d02-x01-y05", "7000")
 mergeByPt("/ATLAS_2014_I1325553/d02-x01-y06", "7000")
+
+logging.info("Processing CMS_2013_I1208923")
+for i in range(1,6) :
+    mergeByPt  ("/CMS_2013_I1208923/d01-x01-y0%s" % i, "7000")
+    mergeByMass("/CMS_2013_I1208923/d02-x01-y0%s" % i, "7000", 1.)
 
 logging.info("Processing CMS_2014_I1298810")
 for i in range(1,19) :
