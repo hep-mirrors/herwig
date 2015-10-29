@@ -1333,8 +1333,10 @@ public:
    * given a flat random number on the unit interval.
    */
   double operator()(double r) const { 
-    return
-      pole() + sqrtWidth()*tan(sqrtWidth()*(scale()*r+offset()));
+    double res = pole() + sqrtWidth()*tan(sqrtWidth()*(scale()*r+offset()));
+    if ( res <= lower() ) return lower()*(1+std::numeric_limits<double>::epsilon());
+    else if ( res >= upper() ) return upper()*(1-std::numeric_limits<double>::epsilon());
+    else return res;
   }
 
 };
