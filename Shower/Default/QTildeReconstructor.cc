@@ -1399,7 +1399,9 @@ reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
       // this is a kludge but it reduces momentum non-conservation dramatically
       Lorentz5Momentum pdiff = pnew[0]-jets[ix]->progenitor()->momentum();
       Energy2 delta = sqr(pdiff.x())+sqr(pdiff.y())+sqr(pdiff.z())+sqr(pdiff.t());
-      if(delta>1e-6*GeV2) {
+      unsigned int ntry=0;
+      while(delta>1e-6*GeV2 && ntry<5 ) {
+	ntry +=1;
 	boostChain(jets[ix]->progenitor(),solveBoostZ(pnew[0],jets[ix]->progenitor()->momentum()),parent);
 	pdiff = pnew[0]-jets[ix]->progenitor()->momentum();
 	delta = sqr(pdiff.x())+sqr(pdiff.y())+sqr(pdiff.z())+sqr(pdiff.t());
@@ -2210,7 +2212,7 @@ reconstructFinalFirst(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
 
 void QTildeReconstructor::
 reconstructColourPartner(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
-  static const Energy2 minQ2 = 1e-6*GeV2;
+  static const Energy2 minQ2 = 1e-4*GeV2;
   // sort the vector by hardness of emission
   std::sort(ShowerHardJets.begin(),ShowerHardJets.end(),sortJets);
   // map between particles and progenitors for easy lookup
