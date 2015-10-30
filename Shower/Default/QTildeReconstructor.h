@@ -507,10 +507,19 @@ protected:
   /**
    *  Calculate the initial-state rescaling factors
    */
-  vector<double> initialStateRescaling(double x1, double x2, Energy MDY,
-				       vector<Lorentz5Momentum> & p,
-				       vector<Lorentz5Momentum> & pq,
+  vector<double> initialStateRescaling(double x1, double x2, 
+				       const Lorentz5Momentum & pold,
+				       const vector<Lorentz5Momentum> & p,
+				       const vector<Lorentz5Momentum> & pq,
 				       const vector<Energy>& highespts) const;
+
+  /**
+   *  Calculate the inverse of the initial-state rescaling factor
+   */
+  vector<double> inverseInitialStateRescaling(double & x1, double & x2,
+					      const Lorentz5Momentum & pold,
+					      const vector<Lorentz5Momentum> & p,
+					      const vector<Lorentz5Momentum> & pq) const;
 
   /**
    *  Find the colour singlet systems

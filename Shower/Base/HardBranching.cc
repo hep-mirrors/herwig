@@ -68,7 +68,8 @@ void HardBranching::setMomenta(LorentzRotation R,double aparent,
     	vect.transform(rot);
       }
       else if(axis.z()<0.) {
-	vect.setZ(vect.z());
+	vect.setZ( vect.z());
+	vect.setY(-vect.y());
       }
       _phi= atan2(vect.y(),vect.x());
       if(_phi<0.) _phi+=Constants::twopi;

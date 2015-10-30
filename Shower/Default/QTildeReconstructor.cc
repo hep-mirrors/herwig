@@ -1728,8 +1728,7 @@ reconstructInitialInitialSystem(bool & applyBoost,
   }
   double x1 = p_in[0].z()/pq[0].z();
   double x2 = p_in[1].z()/pq[1].z();
-  Energy MDY = (p_in[0] + p_in[1]).m();
-  vector<double> beta=initialStateRescaling(x1,x2,MDY,p,pq,pts);
+  vector<double> beta=initialStateRescaling(x1,x2,p_in[0]+p_in[1],p,pq,pts);
   // if not need don't apply boosts
   if(!(radiated && p.size() == 2 && pq.size() == 2)) return;
   applyBoost=true;
@@ -1766,35 +1765,12 @@ deconstructInitialInitialSystem(bool & applyBoost,
   }
   bool order = (*tree->incoming().begin())->beam()->momentum().z()/pq[0].z()<0.;
   assert(pin.size()==2);
-  // decompose the momenta
-  double alpha[2],beta[2];
-  Energy2 p12=pq[0]*pq[1];
-  Lorentz5Momentum pt[2];
-  for(unsigned int ix=0;ix<2;++ix) {
-    alpha[ix] = pin[ix]*pq[1]/p12;
-    beta [ix] = pin[ix]*pq[0]/p12;
-    pt[ix]    = pin[ix]-alpha[ix]*pq[0]-beta[ix]*pq[1];
-  }
-  // parton level centre-of-mass
-  Lorentz5Momentum pcm=pin[0]+pin[1];
-  pcm.rescaleMass();
-  double rap=pcm.rapidity();
-  // hadron level cmf
-  Energy2 s  = (pq[0] +pq[1] ).m2();
   // calculate the x values 
+  double x[2];
+  Lorentz5Momentum pcm=pin[0]+pin[1];
   assert(pcm.mass2()>ZERO);
-  double x0 = sqrt(pcm.mass2()/s*exp(2.*rap));
-  double x[2]={x0, pcm.mass2()/s/x0};
-  if(pq[0].z()<ZERO) swap(x[0],x[1]);
-  double k1=alpha[0]/x[0],k2=beta[1]/x[1];
-  double alphanew[2]={alpha[0]/k1,alpha[1]*k2};
-  double betanew [2]={beta [0]*k1,beta [1]/k2};
-  double boost[2];
-  for(unsigned int ix=0;ix<2;++ix) {
-    boost[ix] = getBeta(alpha   [ix]+beta   [ix], alpha[ix]   -beta   [ix], 
-			alphanew[ix]+betanew[ix], alphanew[ix]-betanew[ix]);
-    if (pq[0].z() > ZERO) beta[ix]*=-1.;
-  }
+  pcm.rescaleMass();
+  vector<double> boost = inverseInitialStateRescaling(x[0],x[1],pcm,pin,pq);
   // apply the boost the the particles
   // first incoming particle
   if(order) swap(pq[0],pq[1]);
@@ -2715,9 +2691,81 @@ Energy QTildeReconstructor::findMass(HardBranchingPtr branch) const {
 }
 
 vector<double>
-QTildeReconstructor::initialStateRescaling(double x1, double x2, Energy MDY,
-					   vector<Lorentz5Momentum> & p,
-					   vector<Lorentz5Momentum> & pq,
+QTildeReconstructor::inverseInitialStateRescaling(double & x1, double & x2,
+						  const Lorentz5Momentum & pold,
+						  const vector<Lorentz5Momentum> & p,
+						  const vector<Lorentz5Momentum> & pq) const {
+  // hadronic CMS
+  Energy2 s  = (pq[0] +pq[1] ).m2();
+  // partonic CMS
+  Energy MDY = pold.m();
+  // find alpha, beta and pt
+  Energy2 p12=pq[0]*pq[1];
+  double a[2],b[2];
+  Lorentz5Momentum pt[2];
+  for(unsigned int ix=0;ix<2;++ix) {
+    a[ix] = p[ix]*pq[1]/p12;
+    b [ix] = p[ix]*pq[0]/p12;
+    pt[ix]    = p[ix]-a[ix]*pq[0]-b[ix]*pq[1];
+  }
+  // compute kappa
+  // we always want to preserve the mass of the system
+  double k1(1.),k2(1.);
+  if(_initialStateReconOption==0) {
+    double rap=pold.rapidity();
+    x1 = MDY/sqrt(s*exp(2.*rap));
+    x2 = sqr(MDY)/s/x1;
+    if(pq[0].z()>ZERO) swap(x1,x2);
+    k1=a[0]/x1;
+    k2=b[1]/x2;
+  }
+  // longitudinal momentum
+  else if(_initialStateReconOption==1) {
+    double A = 1.;
+    double C = -sqr(MDY)/s;
+    double B = pq[0].z()>ZERO ? 2.*pold.z()/sqrt(s) : -2.*pold.z()/sqrt(s);
+    if(abs(B)>1e-10) {
+      double discrim = 1.-4.*A*C/sqr(B);
+      if(discrim < 0.) throw KinematicsReconstructionVeto();
+      x1 = B>0. ? 0.5*B/A*(1.+sqrt(discrim)) : 0.5*B/A*(1.-sqrt(discrim));
+    }
+    else {
+      x1 = -C/A;
+      if( x1 <= 0.) throw KinematicsReconstructionVeto();
+      x1 = sqrt(x1);
+    }
+    x2 = sqr(MDY)/s/x1;
+    k1=a[0]/x1;
+    k2=b[1]/x2;
+  }
+  // preserve mass and don't scale the softer system
+  // to reproduce the dipole kinematics
+  else if(_initialStateReconOption==2) {
+    // in this case kp = k1 or k2 depending on who's the harder guy
+    k1 = a[0]*b[1]*s/sqr(MDY);
+    if ( pt[0].perp2() < pt[1].perp2() ) swap(k1,k2);
+    x1 = a[0]/k1;
+    x2 = b[1]/k2;
+  }
+  else
+    assert(false);
+  // decompose the momenta
+  double anew[2] = {a[0]/k1,a[1]*k2};
+  double bnew[2] = {b[0]*k1,b[1]/k2};
+  vector<double> boost(2);
+  for(unsigned int ix=0;ix<2;++ix) {
+    boost[ix] = getBeta(a   [ix]+b   [ix], a[ix]   -b   [ix], 
+			anew[ix]+bnew[ix], anew[ix]-bnew[ix]);
+    if (pq[0].z() > ZERO) boost[ix] *= -1.;
+  }
+  return boost;
+}
+
+vector<double>
+QTildeReconstructor::initialStateRescaling(double x1, double x2, 
+					   const Lorentz5Momentum & pold,
+					   const vector<Lorentz5Momentum> & p,
+					   const vector<Lorentz5Momentum> & pq,
 					   const vector<Energy>& highestpts) const {
   Energy2 S = (pq[0]+pq[1]).m2();
   // find alphas and betas in terms of desired basis
@@ -2728,6 +2776,7 @@ QTildeReconstructor::initialStateRescaling(double x1, double x2, Energy MDY,
   Lorentz5Momentum p2p = p[1] - a[1]*pq[0] - b[1]*pq[1];
   // compute kappa
   // we always want to preserve the mass of the system
+  Energy MDY = pold.m();
   Energy2 A = a[0]*b[1]*S;
   Energy2 B = Energy2(sqr(MDY)) - (a[0]*b[0]+a[1]*b[1])*S - (p1p+p2p).m2();
   Energy2 C = a[1]*b[0]*S;
@@ -2739,7 +2788,8 @@ QTildeReconstructor::initialStateRescaling(double x1, double x2, Energy MDY,
   double k1(0.);
   double k2(0.);
   if(_initialStateReconOption==0) {
-    rad = kp*(b[0]+kp*b[1])/(kp*a[0]+a[1])*(x1/x2);
+    rad = kp*(b[0]+kp*b[1])/(kp*a[0]+a[1]);
+    rad *= pq[0].z()<ZERO ? exp(-2.*pold.rapidity()) : exp(2.*pold.rapidity());
     if(rad <= 0.) throw KinematicsReconstructionVeto();
     k1 = sqrt(rad);
     k2 = kp/k1;
