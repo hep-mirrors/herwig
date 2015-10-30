@@ -406,7 +406,7 @@ void PhasespaceTree::generateKinematics(PhasespaceInfo& info,
 
     // perform the decay
     Energy4 lambda2 = sqr(mij2-mi2-mj2)-4.*mi2*mj2;
-    if ( lambda2 < ZERO )
+    if ( lambda2 <= ZERO )
       throw Veto();
     Energy2 lambda = sqrt(lambda2);
     double phi = 2.*Constants::pi*info.rnd();
