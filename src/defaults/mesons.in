@@ -664,7 +664,9 @@ setup chi_b1(2P) 120553 chi_b1(2P) 10.25546 7.87E-5 0.000787 0 0 0 3 0
 # the 2^3P_2 multiplet
 #
 create ThePEG::ParticleData chi_c2(2P)
-setup chi_c2(2P) 100445 chi_c2(2P) 3.929 0.029 0.29 0 0 0 5 0 
+setup chi_c2(2P) 100445 chi_c2(2P) 3.929 0.029 0.24 0 0 0 5 0 
+newdef chi_c2(2P):WidthLoCut 0.190
+newdef chi_c2(2P):WidthUpCut 0.29
 create ThePEG::ParticleData chi_b2(2P)
 setup chi_b2(2P) 100555 chi_b2(2P) 10.26865 0.0001847 0.001847 0 0 0 5 0 
 #
