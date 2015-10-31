@@ -204,7 +204,12 @@ HardTreePtr PowhegShowerHandler::generateCKKW(ShowerTreePtr showerTree) const {
   assert(matrixElement_);
 
   // create a hard tree by clustering the event
-  hardTree(doClustering(real,showerTree));
+  try {
+    hardTree(doClustering(real,showerTree));
+  } catch(exception &e) {
+    throw Exception() << "Caught a problem in PowhegShowerHandler::doClustering " << e.what() 
+		      << Exception::eventerror;
+  }
   // Get the HardTree from the CKKW handler.
   CKKWTreePtr hardtree = hardTree().tree();
   // zero to avoid MPI problems
@@ -439,9 +444,17 @@ PotentialTree PowhegShowerHandler::doClustering(tSubProPtr real,ShowerTreePtr sh
     // if no match continue
     if(!matched) continue;
     // find the colour partners
-    evolver()->showerModel()->partnerFinder()
-      ->setInitialEvolutionScales(branchingParticles,false,
-				  ShowerInteraction::QCD,true);
+    try {
+      evolver()->showerModel()->partnerFinder()
+	->setInitialEvolutionScales(branchingParticles,false,
+				    ShowerInteraction::QCD,true);
+    }
+    catch( Exception & e ) {
+      generator()->log() << "Problem in set evolution scales in "
+			 << "PowhegShowerHandler::doClustering(). Exception was"
+			 << e.what();
+      continue;
+    }
     for(unsigned int ix=0;ix<branchingParticles.size();++ix) {
       if(branchingParticles[ix]->partner()) {
         HardBranchingPtr partner = branchingMap[branchingParticles[ix]->partner()];
@@ -819,6 +832,9 @@ tProtoBranchingPtr PowhegShowerHandler::getCluster( tProtoBranchingPtr b1,
       }
       else
 	assert(false);
+      // can't have colour self connected gluons
+      if(coloured->    colourLine()==antiColoured->antiColourLine())
+	return ProtoBranchingPtr();
       clusteredBranch->    colourLine(    coloured->    colourLine());
       clusteredBranch->antiColourLine(antiColoured->antiColourLine());
       // softest particle is the emitted
