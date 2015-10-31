@@ -562,6 +562,8 @@ vector<unsigned int> MadGraphAmplitude::physicalHelicities(const vector<int>& he
       res[cross] = (xhel == -1 ? 0 : 1);
     else if ( mePartonData()[cross]->iSpin() == PDT::Spin1 )
       res[cross] = (unsigned int)(xhel + 1);
+    else if ( mePartonData()[cross]->iSpin() == PDT::Spin0 )
+      res[cross] = 0;
     else assert(false);
   }
   return res;

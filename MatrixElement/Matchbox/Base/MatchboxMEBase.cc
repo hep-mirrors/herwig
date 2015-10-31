@@ -209,12 +209,19 @@ void MatchboxMEBase::constructVertex(tSubProPtr sub, const ColourLines* cl) {
 	SpinorBarWaveFunction(dummyBarSpinors,hard[k],
 			      incoming, false);
       }
-    } else if ( hard[k]->data().iSpin() == PDT::Spin1 ) {
+    } 
+    else if ( hard[k]->data().iSpin() == PDT::Spin1 ) {
       VectorWaveFunction(dummyPolarizations,hard[k],
 			 k > 1 ? outgoing : incoming,
 			 k > 1 ? true : false,
 			 hard[k]->data().hardProcessMass() == ZERO);
-    } else assert(false);
+    }
+    else if (hard[k]->data().iSpin() == PDT::Spin0 ) {
+      ScalarWaveFunction(hard[k],k > 1 ? outgoing : incoming,
+			 k > 1 ? true : false);
+    }
+    else
+      assert(false);
   }
 
   // fill the production matrix element
