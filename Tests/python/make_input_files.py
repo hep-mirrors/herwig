@@ -63,6 +63,8 @@ elif(name.find("Powheg")>0) :
 
 if(simulation=="Matchbox") :
     parameters["bscheme"] = "read Matchbox/FiveFlavourScheme.in\n"
+    if(parameters["shower"].find("Dipole")>=0) :
+        parameters["bscheme"] += "read Matchbox/FiveFlavourNoBMassScheme.in\n"
     if(collider.find("DIS")<0) :
         parameters["nlo"] = "read Matchbox/MadGraph-OpenLoops.in\n"
 

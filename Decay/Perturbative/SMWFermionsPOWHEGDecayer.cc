@@ -601,21 +601,26 @@ bool SMWFermionsPOWHEGDecayer::checkZMomenta(double x1, double x2, double x3,
 					     double y, Energy pT, double muj,
 					     double muk) const {
   double xPerp2 = 4.*pT*pT/mW_/mW_;
+  double root1 = sqr(x2)-4.*sqr(muk);
+  double root2 = sqr(x1)-xPerp2 - 4.*sqr(muj);
+  if(root1<0. || root2<0.) cerr << "problem in root " << root1 << " " << root2 << "\n";
+  root1 = max(root1,0.);
+  root2 = max(root2,0.);
   static double tolerance = 1e-6; 
   bool isMomentaReconstructed = false;  
 
   if(pT*sinh(y) > ZERO) {
-    if(abs(-sqrt(sqr(x2)-4.*sqr(muk)) + sqrt(sqr(x3)-xPerp2)  + sqrt(sqr(x1)-xPerp2 - 4.*sqr(muj))) <= tolerance ||
-       abs(-sqrt(sqr(x2)-4.*sqr(muk)) + sqrt(sqr(x3)-xPerp2)  - sqrt(sqr(x1)-xPerp2 - 4.*sqr(muj)))  <= tolerance)
+    if(abs(-sqrt(root1) + sqrt(sqr(x3)-xPerp2)  + sqrt(root2)) <= tolerance ||
+       abs(-sqrt(root1) + sqrt(sqr(x3)-xPerp2)  - sqrt(root2))  <= tolerance)
       isMomentaReconstructed=true;
   }
   else if(pT*sinh(y) < ZERO){
-    if(abs(-sqrt(sqr(x2)-4.*sqr(muk)) - sqrt(sqr(x3)-xPerp2)  + sqrt(sqr(x1)-xPerp2 - 4.*sqr(muj))) <= tolerance ||
-       abs(-sqrt(sqr(x2)-4.*sqr(muk)) - sqrt(sqr(x3)-xPerp2)  - sqrt(sqr(x1)-xPerp2 - 4.*sqr(muj)))  <= tolerance) 
+    if(abs(-sqrt(root1) - sqrt(sqr(x3)-xPerp2)  + sqrt(root2)) <= tolerance ||
+       abs(-sqrt(root1) - sqrt(sqr(x3)-xPerp2)  - sqrt(root2))  <= tolerance) 
 	isMomentaReconstructed=true;
   }
   else 
-    if(abs(-sqrt(sqr(x2)-4.*sqr(muk))+ sqrt(sqr(x1)-xPerp2 - 4.*(muj))) <= tolerance) 
+    if(abs(-sqrt(root1)+ sqrt(sqr(x1)-xPerp2 - 4.*(muj))) <= tolerance) 
       isMomentaReconstructed=true;
       
   return isMomentaReconstructed;
