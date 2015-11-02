@@ -181,6 +181,11 @@ public:
   Energy iiPtCut() const { return theIIPtCut; }
 
   /**
+   * Return the pt cut to be applied for initial-initial dipoles.
+   */
+  Energy safeCut() const { return theSafeCut;}
+
+  /**
    * Return the screening scale to be applied for final-final dipoles.
    */
   Energy ffScreeningScale() const { return theFFScreeningScale; }
@@ -559,6 +564,11 @@ private:
    * DipoleSplittingKernel
    */
   Energy theIIScreeningScale;
+
+  /**
+   * The cut to be applied as an enhanced shower cutoff.
+   */
+  Energy theSafeCut;
 
   /**
    * True, if the phase space restrictions of the dipole shower should

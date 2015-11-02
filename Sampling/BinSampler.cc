@@ -31,7 +31,6 @@
 #include <boost/progress.hpp>
 
 #include "GeneralSampler.h"
-#include <boost/math/distributions/chi_squared.hpp>
 
 using namespace Herwig;
 
@@ -493,22 +492,19 @@ dump(const std::string& folder,const std::string& prefix, const std::string& pro
        sumofweights2+=b->second;  
   map<double,double >::const_iterator b2 = binsw1.begin();
   if ( sumofweights == 0 ) {
-    cerr << "too little statistics accumulated for "
-	 << process << " ; skipping random number diagnostic.\n"
+    cerr << "Not enough statistic accumulated for "
+	 << process << " skipping random number diagnostic.\n"
 	 << flush;
     return;
   }
-  double chisq=0.;
+
   for ( map<double,double >::const_iterator b = bins.begin();
 	b != bins.end(); ++b, ++b2) {
       out << " " << b->first
 	  << " " << b->second/sumofweights*100.
 	  << " " << b2->second/sumofweights2*100.
 	  << "\n" << flush;
-	  chisq+=pow(b->second/sumofweights*sumofweights2-b2->second,2.)/max(b2->second,0.00000001);
   }   
-  boost::math::chi_squared mydist(bins.size()-1);
-  double p = boost::math::cdf(mydist,chisq);
   double xmin = -0.01;
   double xmax = 1.01;
   ofstream gpout((folder+"/"+prefix2+fname.str()+".gp").c_str());
@@ -520,7 +516,7 @@ dump(const std::string& folder,const std::string& prefix, const std::string& pro
     gpout << "plot '" << prefix2+fname.str()
     << ".dat' u ($1):($2)  w boxes  lc rgbcolor \"blue\" t '{\\tiny "<<process <<" }',";
     gpout << " '" << prefix2+fname.str();
-    gpout << ".dat' u ($1):($3)  w boxes  lc rgbcolor \"red\" t '"<<1-p <<"';";
+    gpout << ".dat' u ($1):($3)  w boxes  lc rgbcolor \"red\" t '';";
   gpout << "reset\n";
 }
 

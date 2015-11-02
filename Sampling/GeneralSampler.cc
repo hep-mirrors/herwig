@@ -314,19 +314,22 @@ double GeneralSampler::generate() {
 
   lastSampler(samplers().upper_bound(UseRandom::rnd())->second);
 
+
   double weight = 0.;
 
   while ( true ) {
-
     try {
       weight = 1.0;
       double p = lastSampler()->referenceWeight()/lastSampler()->bias()/theMaxWeight;
       if ( weighted() )
-	weight *= p;
-      else if ( p < UseRandom::rnd() )
-	weight = 0.0;
+        weight *= p;
+      else if ( p < UseRandom::rnd() ){
+        weight = 0.0;
+        // The lastSampler was picked according to the bias of the process.
+        --excptTries;
+      }
       if ( weight != 0.0 )
-	weight *= lastSampler()->generate()/lastSampler()->referenceWeight();
+        weight *= lastSampler()->generate()/lastSampler()->referenceWeight();
     } catch(BinSampler::NextIteration) {
       updateSamplers();
       lastSampler(samplers().upper_bound(UseRandom::rnd())->second);
@@ -355,13 +358,13 @@ double GeneralSampler::generate() {
 
     if ( !eventHandler()->weighted() && !theAlmostUnweighted ) {
       if ( abs(weight) > 1. ) {
-	++maximumExceeds;
-	maximumExceededBy += abs(weight)-1.;
+	      ++maximumExceeds;
+	      maximumExceededBy += abs(weight)-1.;
       }
       if ( weight > 0.0 )
-	weight = 1.;
+	      weight = 1.;
       else
-	weight = -1.;
+	      weight = -1.;
     }
 
     break;

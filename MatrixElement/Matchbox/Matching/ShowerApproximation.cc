@@ -36,6 +36,7 @@ ShowerApproximation::ShowerApproximation()
     theFFPtCut(1.0*GeV), theFFScreeningScale(ZERO),
     theFIPtCut(1.0*GeV), theFIScreeningScale(ZERO),
     theIIPtCut(1.0*GeV), theIIScreeningScale(ZERO),
+    theSafeCut(0.0*GeV),
     theRestrictPhasespace(true), theHardScaleFactor(1.0),
     theRenormalizationScaleFactor(1.0), theFactorizationScaleFactor(1.0),
     theRealEmissionScaleInSubtraction(showerScale), 
@@ -108,16 +109,16 @@ bool ShowerApproximation::isAboveCutoff() const {
 
   if ( dipole()->bornEmitter() > 1 &&
        dipole()->bornSpectator() > 1 ) {
-    return dipole()->lastPt() >= ffPtCut();
+    return dipole()->lastPt() >= max(ffPtCut(),safeCut());
   } else if ( ( dipole()->bornEmitter() > 1 &&
 		dipole()->bornSpectator() < 2 ) ||
 	      ( dipole()->bornEmitter() < 2 &&
 		dipole()->bornSpectator() > 1 ) ) {
-    return dipole()->lastPt() >= fiPtCut();
+    return dipole()->lastPt() >= max(fiPtCut(),safeCut());
   } else {
     assert(dipole()->bornEmitter() < 2 &&
 	   dipole()->bornSpectator() < 2);
-    return dipole()->lastPt() >= iiPtCut();
+    return dipole()->lastPt() >= max(iiPtCut(),safeCut());
   }
 
   return true;
@@ -397,7 +398,8 @@ void ShowerApproximation::persistentOutput(PersistentOStream & os) const {
      << theBornXComb << theRealXComb << theTildeXCombs << theDipole << theBelowCutoff
      << ounit(theFFPtCut,GeV) << ounit(theFFScreeningScale,GeV) 
      << ounit(theFIPtCut,GeV) << ounit(theFIScreeningScale,GeV) 
-     << ounit(theIIPtCut,GeV) << ounit(theIIScreeningScale,GeV) 
+     << ounit(theIIPtCut,GeV) << ounit(theIIScreeningScale,GeV)
+     << ounit(theSafeCut,GeV) 
      << theRestrictPhasespace << theHardScaleFactor
      << theRenormalizationScaleFactor << theFactorizationScaleFactor
      << theExtrapolationX
@@ -415,6 +417,7 @@ void ShowerApproximation::persistentInput(PersistentIStream & is, int) {
      >> iunit(theFFPtCut,GeV) >> iunit(theFFScreeningScale,GeV) 
      >> iunit(theFIPtCut,GeV) >> iunit(theFIScreeningScale,GeV) 
      >> iunit(theIIPtCut,GeV) >> iunit(theIIScreeningScale,GeV) 
+     >> iunit(theSafeCut,GeV)
      >> theRestrictPhasespace >> theHardScaleFactor
      >> theRenormalizationScaleFactor >> theFactorizationScaleFactor
      >> theExtrapolationX
@@ -456,6 +459,12 @@ void ShowerApproximation::Init() {
     ("IIPtCut",
      "Set the pt infrared cutoff",
      &ShowerApproximation::theIIPtCut, GeV, 1.0*GeV, 0.0*GeV, 0*GeV,
+     false, false, Interface::lowerlim);
+    
+  static Parameter<ShowerApproximation,Energy> interfaceSafeCut
+    ("SafeCut",
+     "Set the enhanced infrared cutoff for the Matching.",
+     &ShowerApproximation::theSafeCut, GeV, 0.0*GeV, 0.0*GeV, 0*GeV,
      false, false, Interface::lowerlim);
 
   static Parameter<ShowerApproximation,Energy> interfaceFFScreeningScale
