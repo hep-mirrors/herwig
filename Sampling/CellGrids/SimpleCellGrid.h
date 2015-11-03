@@ -10,8 +10,12 @@
 #define EXSAMPLE_SimpleCellGrid_hpp_included
 
 #include "CellGrid.h"
+#include <cmath>
 
 namespace ExSample {
+
+using std::isnan;
+using std::isinf;
 
   /**
    * \brief A simple cell grid providing basic adaption and sampling
