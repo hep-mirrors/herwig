@@ -453,6 +453,26 @@ private:
   double theEnhancementFactor;
 
   /**
+   * Switch to count only non zero weights in presampling.
+   */
+
+  bool theNonZeroInPresampling; 
+  
+  /**
+   * Switch to require that we get half of the points 
+   * in each iteration below the maximum weight of the iteration.
+   */    
+    
+  bool theHalfPoints;
+
+  /**
+   * The maximum number of allowed new maxima, 
+   * in combination with HalfPoints, in order to prevent unstable
+   * processes.
+   */
+  int theMaxNewMax;
+
+  /**
    * The reference weight to be used
    */
   double theReferenceWeight;

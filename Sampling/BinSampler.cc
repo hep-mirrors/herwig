@@ -41,6 +41,9 @@ BinSampler::BinSampler()
     theInitialPoints(1000000),
     theNIterations(1),
     theEnhancementFactor(1.0),
+    theNonZeroInPresampling(false),
+    theHalfPoints(false),
+    theMaxNewMax(30),
     theReferenceWeight(1.0),
     theBin(-1),
     theInitialized(false),
@@ -184,11 +187,12 @@ void BinSampler::fillRemappers(bool progress) {
     progressBar = new boost::progress_display(theRemapperPoints,Repository::clog());
   }
 
-  for ( unsigned long k = 0; k < theRemapperPoints; ++k ) {
-
+  unsigned long countzero =0;
+  for ( unsigned long k = 0; k < theRemapperPoints; ++k,++countzero ) {
+    if (countzero>=theRemapperPoints)break;
     double w = 1.;
-    for ( size_t k = 0; k < lastPoint().size(); ++k ) {
-      lastPoint()[k] = UseRandom::rnd();
+    for ( size_t j = 0; j < lastPoint().size(); ++j ) {
+      lastPoint()[j] = UseRandom::rnd();
     }
     try {
       w = evaluate(lastPoint(),false);
@@ -200,8 +204,14 @@ void BinSampler::fillRemappers(bool progress) {
 
     if ( isnan(w) || isinf(w) )
       ++nanPoints;
+    
+    if ( theNonZeroInPresampling &&  w==0. ){
+      k--;
+      continue; 
+    }
 
     if ( w != 0.0 ) {
+      countzero=0;
       for ( map<size_t,Remapper>::iterator r = remappers.begin();
 	    r != remappers.end(); ++r )
 	r->second.fill(lastPoint()[r->first],w);
@@ -389,9 +399,45 @@ void BinSampler::runIteration(unsigned long points, bool progress) {
     progressBar = new boost::progress_display(points,Repository::clog());
   }
 
-  for ( unsigned long k = 0; k < points; ++k ) {
+  double w=0.;
+  double maxweight=0;
+  int numlastmax=0;
+  unsigned long countzero =0;
+  int newmax=0;
+  for ( unsigned long k = 0; k < points; ++k,++countzero ) {
+    if (countzero>=points)break;  
+    w=abs(generate());
+    
+    if(theNonZeroInPresampling && w==0.0){
+      k--;
+      continue;
+    }
+    if (w!=0.0)
+      countzero =0;
+    numlastmax++;
+    if (theHalfPoints&&maxweight<w&&
+        numlastmax<(int)(points/2.)){
+      if(++newmax>theMaxNewMax){
+          throw Exception()
+             << "\n--------------------------------------------------------------------------------\n\n"
+             << "To many new Maxima.\n\n"
+             << "* With the option:\n\n"
+             << "* set Sampler:BinSampler:HalfPoints Yes\n\n"
+             << "* for every new maximum weight found until the half of the persampling points\n"
+             << "* the counter is set to zero. We count the number of new maxima.\n" 
+             << "* You have reached: "<<newmax<<"\n"
+             << "* Did you apply reasonable cuts to the process?\n"
+             << "* You can set the maximum allowed new maxima by:"
+             << "* set Sampler:BinSampler:MaxNewMax N\n\n"  
+             << "--------------------------------------------------------------------------------\n"
+             << Exception::abortnow;
+      }
 
-    generate();
+
+      maxweight=w;
+      k=0;
+      numlastmax=0;
+    }
 
     if ( progress ) {
       ++(*progressBar);
@@ -534,7 +580,8 @@ dump(const std::string& folder,const std::string& prefix, const std::string& pro
 void BinSampler::persistentOutput(PersistentOStream & os) const {
   MultiIterationStatistics::put(os);
   os << theBias << theWeighted << theInitialPoints << theNIterations 
-     << theEnhancementFactor << theReferenceWeight
+     << theEnhancementFactor << theNonZeroInPresampling << theHalfPoints 
+     << theMaxNewMax << theReferenceWeight
      << theBin << theInitialized << theLastPoint
      << theEventHandler << theSampler << theRandomNumbers
      << theRemapperPoints << theRemapChannelDimension
@@ -544,7 +591,8 @@ void BinSampler::persistentOutput(PersistentOStream & os) const {
 void BinSampler::persistentInput(PersistentIStream & is, int) {
   MultiIterationStatistics::get(is);
   is >> theBias >> theWeighted >> theInitialPoints >> theNIterations 
-     >> theEnhancementFactor >> theReferenceWeight
+     >> theEnhancementFactor >> theNonZeroInPresampling >> theHalfPoints 
+     >> theMaxNewMax >> theReferenceWeight
      >> theBin >> theInitialized >> theLastPoint
      >> theEventHandler >> theSampler >> theRandomNumbers
      >> theRemapperPoints >> theRemapChannelDimension
@@ -582,6 +630,43 @@ void BinSampler::Init() {
      "The enhancement factor for the number of points in the next iteration.",
      &BinSampler::theEnhancementFactor, 2.0, 1.0, 0,
      false, false, Interface::lowerlim);
+
+  static Switch<BinSampler,bool> interfaceNonZeroInPresampling
+    ("NonZeroInPresampling",
+     "Switch on to count only non zero weights in presampling.",
+     &BinSampler::theNonZeroInPresampling, true, false, false);
+  static SwitchOption interfaceNonZeroInPresamplingYes
+    (interfaceNonZeroInPresampling,
+     "Yes",
+     "",
+     true);
+  static SwitchOption interfaceNonZeroInPresamplingNo
+    (interfaceNonZeroInPresampling,
+     "No",
+     "",
+     false);
+
+  static Switch<BinSampler,bool> interfaceHalfPoints
+    ("HalfPoints",
+     "Switch on to reset the counter of points if new maximumis was found in the first 1/2 points.",
+     &BinSampler::theHalfPoints, true, false, false);
+  static SwitchOption interfaceHalfPointsYes
+    (interfaceHalfPoints,
+     "Yes",
+     "",
+     true);
+  static SwitchOption interfaceHalfPointsNo
+    (interfaceHalfPoints,
+     "No",
+     "",
+     false);
+
+  static Parameter<BinSampler,int> interfaceMaxNewMax
+    ("MaxNewMax",
+     "The maximum number of allowed new maxima in combination with the HalfPoints option.",
+     &BinSampler::theMaxNewMax, 30, 1, 0,
+     false, false, Interface::lowerlim);
+
 
   static Parameter<BinSampler,string> interfaceRandomNumbers
     ("RandomNumbers",

@@ -50,7 +50,7 @@ GeneralSampler::GeneralSampler()
     theGlobalMaximumWeight(true), theFlatSubprocesses(false),
     isSampling(false), theMinSelection(0.01), runCombinationData(false),
     theAlmostUnweighted(false), maximumExceeds(0),
-    maximumExceededBy(0.), didReadGrids(false),
+    maximumExceededBy(0.), correctWeights(0.),theMaxEnhancement(1.05), didReadGrids(false),
     theParallelIntegration(false),
   theIntegratePerJob(0), theIntegrationJobs(0), theIntegrationJobsCreated(0),
   justAfterIntegrate(false), theWriteGridsOnFinish(false) {}
@@ -361,6 +361,7 @@ double GeneralSampler::generate() {
 	      ++maximumExceeds;
 	      maximumExceededBy += abs(weight)-1.;
       }
+      correctWeights+=weight;
       if ( weight > 0.0 )
 	      weight = 1.;
       else
@@ -440,7 +441,7 @@ void GeneralSampler::updateSamplers() {
       bias *= s->second->averageAbsWeight();
     s->second->bias(bias);
     sumbias += bias;
-    allMax = max(allMax,s->second->maxWeight());
+    allMax = max(allMax,s->second->maxWeight()*theMaxEnhancement);
   }
 
   double nsumbias = 0.0;
@@ -467,14 +468,14 @@ void GeneralSampler::updateSamplers() {
   theMaxWeight = 0.0;
   for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers().begin();
 	s != samplers().end(); ++s ) {
-    double wref = theGlobalMaximumWeight ? allMax : s->second->maxWeight();
+    double wref = theGlobalMaximumWeight ? allMax : 
+                                 s->second->maxWeight()*theMaxEnhancement;
     s->second->referenceWeight(wref);
     theMaxWeight = max(theMaxWeight,wref/s->second->bias());
     if ( (isSampling && s->second == lastSampler()) ||
 	 !isSampling )
       s->second->nextIteration();
   }
-
   map<double,Ptr<BinSampler>::ptr> newSamplers;
   double current = 0.;
 
@@ -587,10 +588,29 @@ void GeneralSampler::dofinish() {
     generator()->log() << "Warning: Some samplers are still in compensating mode.\n" << flush;
   }
   if ( maximumExceeds != 0 ) {
-    generator()->log() << maximumExceeds << " of " << theAttempts
-			    << " attempted points exceeded the guessed maximum weight\n"
-			    << "with an average relative deviation of "
-		       << maximumExceededBy/maximumExceeds << "\n" << flush;
+    //generator()->log() << maximumExceeds << " of " << theAttempts
+		//	    << " attempted points exceeded the guessed maximum weight\n"
+		//	    << "with an average relative deviation of "
+		//       << maximumExceededBy/maximumExceeds << "\n\n" << flush;
+    generator()->log() <<"\n\n\nNote: In this run "<<maximumExceeds<<" of the "<<theAccepts<<" accepted Events\n"
+                       <<"were found with a weight W larger than the exspected Wmax.\n";
+    
+    generator()->log() <<"This correspondes to a cross section change of:\n"
+                       <<"   AlmostUnweighted:  "<< theMaxWeight*correctWeights/theAttempts<< "nb"<<
+                      " (set Sampler:AlmostUnweighted On )\n"
+                       <<"   UnitWeights:       "<< theMaxWeight*theSumWeights/theAttempts<<"nb\n"<<flush;
+
+    generator()->log() <<"The maximum weight determined in the read/integrate step is enhanced by \n"<<
+                         "   set /Herwig/Samplers/Sampler:MaxEnhancement "<< theMaxEnhancement<<
+                         ".\nIf the ratio W/Wmax = "<<(double)maximumExceeds/(double)theAccepts<<
+                         " or the change of the cross section is large,\nyou can try:\n"<<
+                         "Enhance the number of points used in the read/integrate step\n"<<
+                         "   set /Herwig/Samplers/Sampler:BinSampler:InitialPoints ...\n"<<
+                         "or/and enhance reference weight found in the read/integrate step\n"<<  
+                         "   set /Herwig/Samplers/Sampler:MaxEnhancement 1.x\n"<<
+                         "If this does not help (and your process is well defined by cuts)\n"<<
+                         "dont hesitate to contact herwig@projects.hepforge.org.\n\n";
+
   }
 
   if ( runCombinationData ) {
@@ -802,7 +822,8 @@ void GeneralSampler::persistentOutput(PersistentOStream & os) const {
      << theAddUpSamplers << theGlobalMaximumWeight
      << theFlatSubprocesses << isSampling << theMinSelection
      << runCombinationData << theAlmostUnweighted << maximumExceeds
-     << maximumExceededBy << theParallelIntegration
+     << maximumExceededBy << correctWeights << theMaxEnhancement     
+     << theParallelIntegration
      << theIntegratePerJob << theIntegrationJobs 
      << theIntegrationJobsCreated << theWriteGridsOnFinish;
 }
@@ -817,7 +838,8 @@ void GeneralSampler::persistentInput(PersistentIStream & is, int) {
      >> theAddUpSamplers >> theGlobalMaximumWeight
      >> theFlatSubprocesses >> isSampling >> theMinSelection
      >> runCombinationData >> theAlmostUnweighted >> maximumExceeds
-     >> maximumExceededBy >> theParallelIntegration
+     >> maximumExceededBy >> correctWeights >> theMaxEnhancement
+     >> theParallelIntegration
      >> theIntegratePerJob >> theIntegrationJobs 
      >> theIntegrationJobsCreated >> theWriteGridsOnFinish;
 }
@@ -891,6 +913,14 @@ void GeneralSampler::Init() {
      "Off",
      "",
      false);
+
+
+  static Parameter<GeneralSampler,double> interfaceMaxEnhancement
+    ("MaxEnhancement",
+     "Enhance the maximum reference weight found in the read step.",
+     &GeneralSampler::theMaxEnhancement, 1.1, 1.0, 1.5,
+     false, false, Interface::limited);
+
 
   static Switch<GeneralSampler,bool> interfaceFlatSubprocesses
     ("FlatSubprocesses",

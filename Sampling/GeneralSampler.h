@@ -420,6 +420,20 @@ private:
   double maximumExceededBy;
 
   /**
+   * The correct cross section as one would exspect with
+   * almostUnweighted. 
+   */
+
+  double correctWeights;
+
+  /**
+   * Enhancement factor to the maximum weight.
+   * This is to get less maximumExceeds. 
+   */
+
+  double theMaxEnhancement;
+
+  /**
    * True, if grids have already been read.
    */
   bool didReadGrids;
