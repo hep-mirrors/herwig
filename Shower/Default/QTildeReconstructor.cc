@@ -1306,7 +1306,7 @@ reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
     else {
       pin[0]  +=jets[ix]->progenitor()->momentum();
       if(jets[ix]->progenitor()->showerKinematics()) {
-	pbeam = jets[ix]->progenitor()->x()*jets[ix]->progenitor()->showerKinematics()->getBasis()[0];
+	pbeam = jets[ix]->progenitor()->showerKinematics()->getBasis()[0];
       }
       else {
 	if ( jets[ix]->original()->parents().empty() ) {
@@ -1407,6 +1407,9 @@ reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
 	delta = sqr(pdiff.x())+sqr(pdiff.y())+sqr(pdiff.z())+sqr(pdiff.t());
       }
       boostChain(jets[ix]->progenitor(),rotinv,parent);
+      if(parent->momentum().z()/pbeam.z()<0. || parent->momentum().z()/pbeam.z()>1.) {
+	throw KinematicsReconstructionVeto();
+      }
     }
   }
 }
