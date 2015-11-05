@@ -24,9 +24,7 @@ set Factory:OrderInAlphaS 0
 set Factory:OrderInAlphaEW 2
 set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonQ2Scale
 ${shower}
-read Matchbox/FiveFlavourScheme.in
-## required for dipole shower in five flavour scheme
-# read Matchbox/FiveFlavourNoBMassScheme.in
+${bscheme}
 read Matchbox/MMHT2014.in
 
 do /Herwig/MatrixElements/Matchbox/Factory:ProductionMode
