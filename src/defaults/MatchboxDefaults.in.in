@@ -540,6 +540,7 @@ set MEMatching:MaxPtIsMuF Yes
 set MEMatching:FFPtCut 1.0*GeV
 set MEMatching:FIPtCut 1.0*GeV
 set MEMatching:IIPtCut 1.0*GeV
+set MEMatching:SafeCut 4.*GeV
 
 create Herwig::ShowerApproximationGenerator MECorrectionHandler
 set MECorrectionHandler:ShowerApproximation MEMatching
@@ -555,6 +556,7 @@ set DipoleMatching:EmissionScaleInSubtraction BornScale
 set DipoleMatching:FFPtCut 1.0*GeV
 set DipoleMatching:FIPtCut 1.0*GeV
 set DipoleMatching:IIPtCut 1.0*GeV
+set DipoleMatching:SafeCut 4.*GeV
 
 create Herwig::QTildeMatching QTildeMatching HwQTildeMatching.so
 set QTildeMatching:ShowerHandler /Herwig/Shower/ShowerHandler
@@ -562,6 +564,7 @@ set QTildeMatching:BornScaleInSubtraction BornScale
 set QTildeMatching:RealEmissionScaleInSubtraction BornScale
 set QTildeMatching:EmissionScaleInSubtraction BornScale
 set QTildeMatching:QTildeFinder /Herwig/Shower/PartnerFinder
+set QTildeMatching:SafeCut 4.*GeV
 # just a dummy, since SudakovCommonn can't be used
 # it's only used to get the value of the kinCutoffScale
 set QTildeMatching:QTildeSudakov /Herwig/Shower/QtoQGSudakov
