@@ -37,7 +37,7 @@ create Herwig::QTildeFinder PartnerFinder
 newdef PartnerFinder:PartnerMethod 1
 newdef PartnerFinder:ScaleChoice 1
 create Herwig::QTildeReconstructor KinematicsReconstructor
-newdef KinematicsReconstructor:ReconstructionOption Colour4
+newdef KinematicsReconstructor:ReconstructionOption Colour3
 newdef KinematicsReconstructor:InitialStateReconOption SofterFraction
 newdef KinematicsReconstructor:InitialInitialBoostOption LongTransBoost
 
