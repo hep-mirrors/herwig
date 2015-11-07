@@ -35,10 +35,8 @@ RhoDMatrix HardVertex::getRhoMatrix(int i,bool) const {
   // get the rho matrices for the outgoing particles
   vector<RhoDMatrix> rhoout(outgoing().size()-1);
   for(int ix=0,N=outgoing().size();ix<N;++ix) {
-    if(ix<i)      rhoout[ix  ] = 
-		    outgoing()[ix]->DMatrix();
-    else if(ix>i) rhoout[ix-1] = 
-		    outgoing()[ix]->DMatrix();
+    if(ix<i)      rhoout[ix  ] = outgoing()[ix]->DMatrix();
+    else if(ix>i) rhoout[ix-1] = outgoing()[ix]->DMatrix();
   }
   // calculate the spin density matrix
   return _matrixelement.

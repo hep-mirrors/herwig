@@ -520,7 +520,7 @@ void MEPP2Higgs::constructVertex(tSubProPtr sub) {
   hardvertex->ME(me_);
   // set the pointers and to and from the vertex
   for(unsigned int i = 0; i < 3; ++i)
-    (hard[i]->spinInfo())->productionVertex(hardvertex);
+    hard[i]->spinInfo()->productionVertex(hardvertex);
 }
 
 double MEPP2Higgs::ggME(vector<VectorWaveFunction> g1, 
