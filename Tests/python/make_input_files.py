@@ -1253,7 +1253,11 @@ elif(collider=="LHC") :
             process+="set  /Herwig/Cuts/SecondJet:PtMin 15.*GeV\n"
             process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
         elif(parameterName.find("Z-b")>=0) :
-            process+="set Factory:OrderInAlphaS 1\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ e- b\ndo Factory:Process p p e+ e- bbar\n"
+            process+="do Factory:StartParticleGroup bjet\n"
+            process+="insert Factory:ParticleGroup 0 /Herwig/Particles/b\n"
+            process+="insert Factory:ParticleGroup 0 /Herwig/Particles/bbar\n"
+            process+="do Factory:EndParticleGroup\n"
+            process+="set Factory:OrderInAlphaS 1\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ e- bjet\n"
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 91.2*GeV\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
             process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
             process+="set /Herwig/Cuts/Cuts:JetFinder /Herwig/Cuts/JetFinder\n"
