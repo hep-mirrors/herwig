@@ -92,16 +92,18 @@ if __name__ == "__main__":
         logging.error("Must specify at least the name of the files")
         sys.exit(1)
 
-yodafiles=["-Run-II-UE.yoda"    ,"-Run-II-Jets-0.yoda","-Run-II-Jets-1.yoda",\
+yodafiles=["-Run-II-Jets-0.yoda","-Run-II-Jets-1.yoda",\
            "-Run-II-Jets-2.yoda",\
            "-Run-II-Jets-3.yoda","-Run-II-Jets-4.yoda","-Run-II-Jets-5.yoda",\
            "-Run-II-Jets-6.yoda","-Run-II-Jets-7.yoda",\
-           "-Run-I-UE.yoda"    ,"-Run-I-Jets-1.yoda","-Run-I-Jets-2.yoda",\
+           "-Run-I-Jets-1.yoda","-Run-I-Jets-2.yoda",\
            "-Run-I-Jets-3.yoda","-Run-I-Jets-4.yoda","-Run-I-Jets-5.yoda",\
-           "-630-UE.yoda"      ,"-630-Jets-1.yoda"  ,"-630-Jets-2.yoda"  ,\
+           "-630-Jets-1.yoda"  ,"-630-Jets-2.yoda"  ,\
            "-630-Jets-3.yoda", "-300-Energy.yoda", "-900-Energy.yoda", "-1960-Energy.yoda",
 #           "-RatioPlots.yoda"
            ]
+if(opts.ue) :
+    yodafiles += ["-Run-II-UE.yoda"    ,"-Run-I-UE.yoda"    ,"-630-UE.yoda"      ,]
 
 ## Get histos
 inhistos = {}
