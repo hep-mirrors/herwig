@@ -49,4 +49,5 @@ cd /Herwig/MatrixElements/Matchbox
 ${process}
 
 cd /Herwig/Generators
+set EventGenerator:MaxErrors 1000000
 saverun ${runname} EventGenerator

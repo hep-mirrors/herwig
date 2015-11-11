@@ -11,7 +11,7 @@ set LEPGenerator:NumberOfEvents 100000000
 set LEPGenerator:RandomNumberGenerator:Seed 31122001
 set LEPGenerator:DebugLevel 0
 set LEPGenerator:PrintEvent 10
-set LEPGenerator:MaxErrors 10000
+set LEPGenerator:MaxErrors 1000000
 # no MPI
 set LEPGenerator:EventHandler:CascadeHandler:MPIHandler NULL
 

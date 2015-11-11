@@ -5,7 +5,7 @@ cd /Herwig/Generators
 set LHCGenerator:NumberOfEvents 10000000
 set LHCGenerator:RandomNumberGenerator:Seed 31122001
 set LHCGenerator:PrintEvent 10
-set LHCGenerator:MaxErrors 100000
+set LHCGenerator:MaxErrors 1000000
 set LHCGenerator:EventHandler:StatLevel Full
 set LHCGenerator:EventHandler:Sampler:Ntry 10000
 set /Herwig/Partons/QCDExtractor:FlatSHatY 0

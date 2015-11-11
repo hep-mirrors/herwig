@@ -868,6 +868,12 @@ HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree,
       qbProgenitor->maximumpT(pTveto,inter[ix]);
     }
   }
+  // perform final check to ensure energy greater than constituent mass
+  if (emmision[2].e() < qkProgenitor->progenitor()->data().constituentMass()) return HardTreePtr();
+  if (emmision[3].e() < qbProgenitor->progenitor()->data().constituentMass()) return HardTreePtr();
+  if(force!=ShowerInteraction::QED &&
+     emmision[4].e() < gluon_->constituentMass()) return HardTreePtr();
+
   // Make the particles for the hard tree
   ShowerParticleVector hardParticles;
   for(unsigned int ix=0;ix<partons_.size();++ix) {
@@ -969,6 +975,7 @@ HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree,
     }
   }
   // Return the HardTree
+  generator()->log() << "hard tree " << *hardtree << "\n";
   return hardtree;
 }
 
