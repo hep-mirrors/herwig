@@ -975,7 +975,6 @@ HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree,
     }
   }
   // Return the HardTree
-  generator()->log() << "hard tree " << *hardtree << "\n";
   return hardtree;
 }
 
