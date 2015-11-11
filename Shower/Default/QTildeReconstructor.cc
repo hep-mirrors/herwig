@@ -259,7 +259,6 @@ reconstructHardJets(ShowerTreePtr hard,
 		    const map<tShowerProgenitorPtr,
 		    pair<Energy,double> > & intrinsic,
 		    ShowerInteraction::Type type) const {
-  generator()->log() << "START OF HARD RECON\n";
   _currentTree = hard;
   _intrinsic=intrinsic;
   // extract the particles from the ShowerTree
@@ -275,22 +274,18 @@ reconstructHardJets(ShowerTreePtr hard,
   try {
     // old recon method, using new member functions
     if(_reconopt == 0 ) {
-      generator()->log() << "general\n";
       reconstructGeneralSystem(ShowerHardJets);
     }
     // reconstruction based on coloured systems
     else if( _reconopt == 1) {
-      generator()->log() << "colour singlets\n";
       reconstructColourSinglets(ShowerHardJets,type);
     }
     // reconstruction of FF, then IF, then II
     else if( _reconopt == 2) {
-      generator()->log() << "final first\n";
       reconstructFinalFirst(ShowerHardJets);
     }
     // reconstruction based on coloured systems
     else if( _reconopt == 3 || _reconopt == 4) {
-      generator()->log() << "colour partner\n";
       reconstructColourPartner(ShowerHardJets);
     }
     else
@@ -1295,7 +1290,6 @@ deconstructColourPartner(HardTreePtr tree,cEvolverPtr evolver,
 
 void QTildeReconstructor::
 reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
-  generator()->log() << "in IF recon " << __LINE__ << "\n";
   Lorentz5Momentum pin[2],pout[2],pbeam;
   for(unsigned int ix=0;ix<jets.size();++ix) {
     // final-state parton
@@ -1328,7 +1322,6 @@ reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
       assert(!jets[ix]->original()->parents().empty());
     }
   }
-  generator()->log() << "in IF recon " << __LINE__ << "\n";
   // add intrinsic pt if needed
   addIntrinsicPt(jets);
   // momenta after showering
@@ -1388,29 +1381,21 @@ reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
   Lorentz5Momentum pnew[2] = { a[0]*kb*n1+b[0]/kb*n2+qperp,
 			       a[1]*kc*n1+b[1]/kc*n2+qperp};
   LorentzRotation rotinv=rot.inverse();
-  generator()->log() << "in IF recon " << __LINE__ << "\n";
-
   for(unsigned int ix=0;ix<jets.size();++ix) {
-    generator()->log() << "in IF recon loop " << *jets[ix]->progenitor() << "\n";
     if(jets[ix]->progenitor()->isFinalState()) {
-      generator()->log() << "in IF recon loop FS\n";
       deepTransform(jets[ix]->progenitor(),rot);
       deepTransform(jets[ix]->progenitor(),solveBoost(pnew[1],qcp));
       Energy delta = jets[ix]->progenitor()->momentum().m()-jets[ix]->progenitor()->momentum().mass();
-      generator()->log() << "in IF recon loop FS " << delta/GeV << "\n";
       if ( abs(delta) > MeV ) throw KinematicsReconstructionVeto();
       deepTransform(jets[ix]->progenitor(),rotinv);
     }
     else {
-      generator()->log() << "in IF recon loop IS " << __LINE__ << "\n";
       tPPtr parent;
-      generator()->log() << "in IF recon loop IS " << __LINE__ << "\n";
       boostChain(jets[ix]->progenitor(),rot,parent);
       boostChain(jets[ix]->progenitor(),solveBoostZ(pnew[0],qbp),parent);
       // check the first boost worked, and if not apply small correction to
       // fix energy/momentum conservation
       // this is a kludge but it reduces momentum non-conservation dramatically
-      // check the first boost worked, and if not apply small correction to
       Lorentz5Momentum pdiff = pnew[0]-jets[ix]->progenitor()->momentum();
       Energy2 delta = sqr(pdiff.x())+sqr(pdiff.y())+sqr(pdiff.z())+sqr(pdiff.t());
       unsigned int ntry=0;
@@ -1586,7 +1571,6 @@ reconstructFinalStateSystem(bool applyBoost,
   if(applyBoost) pcm *= trans;
   // check if in CMF frame
   Boost beta_cm = pcm.findBoostToCM();
-  generator()->log() << "testing FS PCM " << pcm/GeV << " " << pcm.m()/GeV << "\n";
   bool gottaBoost(false);
   if(beta_cm.mag() > 1e-12) {
     gottaBoost = true;
@@ -1597,7 +1581,6 @@ reconstructFinalStateSystem(bool applyBoost,
   JetKinVect jetKinematics;
   vector<ShowerProgenitorPtr>::const_iterator cit;
   for(cit = jets.begin(); cit != jets.end(); cit++) {
-    generator()->log() << "START OF JET LOOP " << *(*cit)->progenitor() << "\n";
     JetKinStruct tempJetKin;      
     tempJetKin.parent = (*cit)->progenitor();
     if(applyBoost || gottaBoost) {
@@ -1606,18 +1589,14 @@ reconstructFinalStateSystem(bool applyBoost,
     tempJetKin.p = (*cit)->progenitor()->momentum();
     _progenitor=tempJetKin.parent;
     if((**cit).reconstructed()==ShowerProgenitor::notReconstructed) {
-      generator()->log() << "testing jet A1 " << *(*cit)->progenitor() << "\n";
       radiated |= reconstructTimeLikeJet((*cit)->progenitor());
-      generator()->log() << "testing jet A2 " << *(*cit)->progenitor() << "\n";
       (**cit).reconstructed(ShowerProgenitor::done);
     }
     else {
-      generator()->log() << "testing jet B " << *(*cit)->progenitor() << "\n";
       radiated |= !(*cit)->progenitor()->children().empty();
     }
     tempJetKin.q = (*cit)->progenitor()->momentum();
     jetKinematics.push_back(tempJetKin);
-    generator()->log() << "END OF JET LOOP\n";
   }
   // default option rescale everything with the same factor
   if( _finalStateReconOption == 0 || jetKinematics.size() <= 2 ) {
@@ -2213,7 +2192,6 @@ reconstructFinalFirst(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
 
 void QTildeReconstructor::
 reconstructColourPartner(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
-  generator()->log() << "START OF COLOUR PARTNER RECON\n";
   static const Energy2 minQ2 = 1e-4*GeV2;
   // sort the vector by hardness of emission
   std::sort(ShowerHardJets.begin(),ShowerHardJets.end(),sortJets);
@@ -2242,7 +2220,6 @@ reconstructColourPartner(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
 	else
 	  psum -= jets[iy]->progenitor()->momentum();
       }
-      generator()->log() << "testing q2 " << psum/GeV << " "<< psum.m2()/GeV2 << "\n";
       if(-psum.m2()<minQ2) {
 	canReconstruct  = false;
 	break;
@@ -2288,14 +2265,10 @@ reconstructColourPartner(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
       ShowerHardJets[ix]->reconstructed(ShowerProgenitor::done);
       continue;
     }
-    generator()->log() << "looking at recon for\n" 
-		       << *progenitor << "\n" 
-		       << *partner << "\n";
     // do the reconstruction
     // final-final
     if(progenitor->isFinalState() &&
        partner->isFinalState() ) {
-      generator()->log() << "Final state recon\n";
       LorentzRotation toRest,fromRest;
       vector<ShowerProgenitorPtr> jets(2);
       jets[0] = ShowerHardJets[ix];
@@ -2313,7 +2286,6 @@ reconstructColourPartner(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
 	     !partner->isFinalState()) ||
 	    (!progenitor->isFinalState() &&
 	     partner->isFinalState()) ) {
-      generator()->log() << "IF recon\n";
       vector<ShowerProgenitorPtr> jets(2);
       jets[0] = ShowerHardJets[ix];
       jets[1] = progenitorMap[partner];
@@ -2337,7 +2309,6 @@ reconstructColourPartner(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
     // initial-initial
     else if(!progenitor->isFinalState() &&
 	    !partner->isFinalState() ) {
-      generator()->log() << "II recon\n";
       ColourSingletSystem in,out;
       in.jets.push_back(ShowerHardJets[ix]);
       in.jets.push_back(progenitorMap[partner]);
@@ -2894,7 +2865,6 @@ reconstructColourSinglets(vector<ShowerProgenitorPtr> & ShowerHardJets,
   // DIS and VBF type
   else if(nnun==0&&nnii==0&&((nnif==1&&nnf>0&&nni==1)||
 			     (nnif==2&&       nni==0))) {
-    generator()->log() << "in dis type\n";
     // check these systems can be reconstructed
     for(unsigned int ix=0;ix<systems.size();++ix) {
       // compute q^2
@@ -2919,7 +2889,6 @@ reconstructColourSinglets(vector<ShowerProgenitorPtr> & ShowerHardJets,
     }
     if(!general) {
       for(unsigned int ix=0;ix<systems.size();++ix) {
-	generator()->log() << "calling initial final\n";
 	if(systems[ix].type==IF)
 	  reconstructInitialFinalSystem(systems[ix].jets);
       }
