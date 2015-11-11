@@ -1406,10 +1406,12 @@ reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
 	pdiff = pnew[0]-jets[ix]->progenitor()->momentum();
 	delta = sqr(pdiff.x())+sqr(pdiff.y())+sqr(pdiff.z())+sqr(pdiff.t());
       }
+      // apply test in breit-frame
+      Lorentz5Momentum ptest1 = parent->momentum();
+      Lorentz5Momentum ptest2 = rot*pbeam;
+      if(ptest1.z()/ptest2.z()<0. || ptest1.z()/ptest2.z()>1.)
+      	throw KinematicsReconstructionVeto();
       boostChain(jets[ix]->progenitor(),rotinv,parent);
-      if(parent->momentum().z()/pbeam.z()<0. || parent->momentum().z()/pbeam.z()>1.) {
-	throw KinematicsReconstructionVeto();
-      }
     }
   }
 }
