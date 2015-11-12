@@ -149,6 +149,7 @@ rm /Herwig/Widths/hWidth
 
         else:
             plist.append( 'insert /Herwig/NewPhysics/NewModel:DecayParticles 0 %s\n' % name )
+            plist.append( 'insert /Herwig/Shower/ShowerHandler:DecayInShower 0 %s #  %s' % (pdg, name) )
             antis[pdg] = name
             selfconjugate = 1
 
