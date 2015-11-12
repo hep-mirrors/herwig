@@ -73,7 +73,7 @@ Makefile\.in$
 ^Tests/.*index.html$
 ^Herwig\-
 ^Models/Feynrules/python/Makefile-FR$
-^MatrixElement/Matchbox/External/MadGraph/mg2Matchbox.py$
+^MatrixElement/Matchbox/External/MadGraph/mg2herwig.py$
 ^MatrixElement/Matchbox/Scales/MatchboxScale.cc$
 ^Utilities/Statistics/combineDistributions$
 ^Utilities/Statistics/combineRuns$
