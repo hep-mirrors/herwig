@@ -71,7 +71,8 @@ public:
   virtual bool reconstructHardJets(ShowerTreePtr hard,
 				   const map<tShowerProgenitorPtr,
 				   pair<Energy,double> > & pt,
-				   ShowerInteraction::Type type) const=0;
+				   ShowerInteraction::Type type,
+				   bool switchRecon) const=0;
 
   /**
    * Given the ShowerTree for a decay shower

@@ -135,7 +135,8 @@ public:
   virtual bool reconstructHardJets(ShowerTreePtr hard,
 				   const map<tShowerProgenitorPtr,
 				   pair<Energy,double> > & pt,
-				   ShowerInteraction::Type type) const;
+				   ShowerInteraction::Type type,
+				   bool switchRecon) const;
 
   /**
    * Given in input a vector of the particles which initiated the showers

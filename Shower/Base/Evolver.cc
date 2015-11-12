@@ -2799,6 +2799,20 @@ void Evolver::doShowering(bool hard,XCPtr xcomb) {
 	   constructDecayTree(particlesToShower,interactions_[inter]))) 
 	throw InteractionVeto();
     }
+    // create random particle vector (only need to do once)
+    vector<ShowerProgenitorPtr> tmp;
+    unsigned int nColouredIncoming = 0;
+    while(particlesToShower.size()>0){
+      unsigned int xx=UseRandom::irnd(particlesToShower.size());
+      tmp.push_back(particlesToShower[xx]);
+      particlesToShower.erase(particlesToShower.begin()+xx);
+    }
+    particlesToShower=tmp;
+    for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
+      if(!particlesToShower[ix]->progenitor()->isFinalState() &&
+	 particlesToShower[ix]->progenitor()->coloured()) ++nColouredIncoming;
+    }
+    bool switchRecon = hard && nColouredIncoming !=1;
     // main shower loop
     unsigned int ntry(0);
     bool reconstructed = false;
@@ -2821,14 +2835,6 @@ void Evolver::doShowering(bool hard,XCPtr xcomb) {
 	  }
 	}
       }
-      // create random particle vector
-      vector<ShowerProgenitorPtr> tmp;
-      while(particlesToShower.size()>0){
-        unsigned int xx=UseRandom::irnd(particlesToShower.size());
-        tmp.push_back(particlesToShower[xx]);
-        particlesToShower.erase(particlesToShower.begin()+xx);
-      }
-      particlesToShower=tmp;
       // loop over particles
       for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
 	// extract the progenitor
@@ -2890,7 +2896,8 @@ void Evolver::doShowering(bool hard,XCPtr xcomb) {
       // do the kinematic reconstruction, checking if it worked
       reconstructed = hard ?
 	showerModel()->kinematicsReconstructor()->
-	reconstructHardJets (currentTree(),intrinsicpT(),interactions_[inter]) :
+	reconstructHardJets (currentTree(),intrinsicpT(),interactions_[inter],
+			     switchRecon && ntry>maximumTries()/2) :
 	showerModel()->kinematicsReconstructor()->
 	reconstructDecayJets(currentTree(),interactions_[inter]);
     }

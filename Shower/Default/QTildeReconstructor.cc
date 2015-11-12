@@ -258,7 +258,8 @@ bool QTildeReconstructor::
 reconstructHardJets(ShowerTreePtr hard,
 		    const map<tShowerProgenitorPtr,
 		    pair<Energy,double> > & intrinsic,
-		    ShowerInteraction::Type type) const {
+		    ShowerInteraction::Type type,
+		    bool switchRecon) const {
   _currentTree = hard;
   _intrinsic=intrinsic;
   // extract the particles from the ShowerTree
@@ -273,7 +274,7 @@ reconstructHardJets(ShowerTreePtr hard,
   }
   try {
     // old recon method, using new member functions
-    if(_reconopt == 0 ) {
+    if(_reconopt == 0 || switchRecon ) {
       reconstructGeneralSystem(ShowerHardJets);
     }
     // reconstruction based on coloured systems
