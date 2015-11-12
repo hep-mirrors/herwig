@@ -987,7 +987,6 @@ HardTreePtr MEPP2Higgs::generateHardest(ShowerTreePtr tree,
   if(newparticles[3]->id()<0||
      (newparticles[3]->id()==ParticleID::g&&UseRandom::rndbool())) {
     inBranch[iemit]->type(ShowerPartnerType::QCDColourLine);
-    generator()->log() << "Higgs colour A1\n";
     cline1->addAntiColoured(newparticles[3]);
     cline1->addColoured    (newparticles[4]);
     cline1->addAntiColoured(newparticles[ispect]);
@@ -995,14 +994,12 @@ HardTreePtr MEPP2Higgs::generateHardest(ShowerTreePtr tree,
     cline2->addAntiColoured(newparticles[4]);
     cline2->addAntiColoured(newparticles[iemit]);
     if(newparticles[3]->id()==ParticleID::g) {
-      generator()->log() << "Higgs colour A2\n";
       cline3->addColoured(newparticles[iemit]);
       cline3->addColoured(newparticles[3]);
     }
   }
   else {
     inBranch[iemit]->type(ShowerPartnerType::QCDAntiColourLine);
-    generator()->log() << "Higgs colour B1\n";
     cline1->addColoured    (newparticles[3]);
     cline1->addAntiColoured(newparticles[4]);
     cline1->addColoured    (newparticles[ispect]);
@@ -1010,7 +1007,6 @@ HardTreePtr MEPP2Higgs::generateHardest(ShowerTreePtr tree,
     cline2->addColoured    (newparticles[4]);
     cline2->addColoured    (newparticles[iemit]);
     if(newparticles[3]->id()==ParticleID::g) {
-      generator()->log() << "Higgs colour B2\n";
       cline3->addAntiColoured(newparticles[iemit]);
       cline3->addAntiColoured(newparticles[3]);
     }
