@@ -18,7 +18,7 @@ set /Herwig/Shower/ShowerHandler:MPIHandler NULL
 do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting e-->e-,gamma; /Herwig/Shower/LtoLGammaSudakov
 do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting mu-->mu-,gamma; /Herwig/Shower/LtoLGammaSudakov
 do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting tau-->tau-,gamma; /Herwig/Shower/LtoLGammaSudakov
-
+set /Herwig/Shower/KinematicsReconstructor:ReconstructionOption Colour
 # no pdfs for leptons
 set /Herwig/Shower/ShowerHandler:PDFB /Herwig/Partons/ShowerLOPDF
 set /Herwig/Partons/MPIExtractor:SecondPDF  /Herwig/Partons/MPIPDF
