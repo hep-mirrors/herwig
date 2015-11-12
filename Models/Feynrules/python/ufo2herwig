@@ -11,7 +11,7 @@ from ufo2peg import *
 
 # set up the option parser for command line input 
 parser = argparse.ArgumentParser(
-    description='Create Herwig++ model files from Feynrules UFO input.'
+    description='Create Herwig model files from Feynrules UFO input.'
 )
 parser.add_argument(
     'ufodir', 
@@ -542,7 +542,7 @@ if not should_print():
 Error: The conversion was unsuccessful, some vertices could not be
        generated. If you think the missing vertices are not important 
        and want to go ahead anyway, use --ignore-skipped. 
-       Herwig++ may not give correct results, though.
+       Herwig may not give correct results, though.
 
 """
     )

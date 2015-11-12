@@ -1,16 +1,16 @@
 // -*- C++ -*-
 //
-// ${ModelName}.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// ${ModelName}.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2013 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_${ModelName}_H
 #define HERWIG_${ModelName}_H
 
 // This is the declaration of the ${ModelName} class.
-#include "Herwig++/Models/General/BSMModel.h"
+#include "Herwig/Models/General/BSMModel.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -20,7 +20,7 @@ const Complex ii = Complex(0,1);
 
 /** \ingroup Models
  *  
- *  This is the Herwig++ ${ModelName} class which inherits from ThePEG 
+ *  This is the Herwig ${ModelName} class which inherits from ThePEG 
  *  FeynRules Model class and implements additional FeynRules Model couplings, 
  *  access to vertices for helicity amplitude calculations etc.
  *

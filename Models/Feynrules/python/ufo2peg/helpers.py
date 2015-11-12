@@ -4,7 +4,7 @@ import sys,itertools,cmath
 import re
 
 """
-Helper functions for the Herwig++ Feynrules converter
+Helper functions for the Herwig Feynrules converter
 """
 
 class CheckUnique:
