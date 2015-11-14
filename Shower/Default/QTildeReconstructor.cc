@@ -1759,43 +1759,38 @@ deconstructInitialInitialSystem(bool & applyBoost,
 				HardTreePtr tree,
 				vector<HardBranchingPtr> jets,
 				ShowerInteraction::Type) const {
+  assert(jets.size()==2);
+  // put beam with +z first
+  if(jets[0]->beam()->momentum().z()<ZERO) swap(jets[0],jets[1]);
   // get the momenta of the particles
-  vector<Lorentz5Momentum> pin;
-  vector<Lorentz5Momentum> pq;
-  vector<HardBranchingPtr>::iterator cit;
-  for(cit=jets.begin();cit!=jets.end();++cit) {
-    pin.push_back((*cit)->branchingParticle()->momentum());
-    Energy etemp = (*cit)->beam()->momentum().z();
+  vector<Lorentz5Momentum> pin,pq;
+  for(unsigned int ix=0;ix<jets.size();++ix) {
+    pin.push_back(jets[ix]->branchingParticle()->momentum());
+    Energy etemp = jets[ix]->beam()->momentum().z();
     pq.push_back(Lorentz5Momentum(ZERO, ZERO,etemp, abs(etemp)));
   }
-  bool order = (*tree->incoming().begin())->beam()->momentum().z()/pq[0].z()<0.;
-  assert(pin.size()==2);
-  // calculate the x values 
+  // calculate the rescaling
   double x[2];
   Lorentz5Momentum pcm=pin[0]+pin[1];
   assert(pcm.mass2()>ZERO);
   pcm.rescaleMass();
   vector<double> boost = inverseInitialStateRescaling(x[0],x[1],pcm,pin,pq);
-  // apply the boost the the particles
-  // first incoming particle
-  if(order) swap(pq[0],pq[1]);
-  // now apply the boosts
-  Boost betaboost(0.,0.,-boost[0]);
-  LorentzRotation R;
-  R.boost(betaboost);
   set<HardBranchingPtr>::const_iterator cjt=tree->incoming().begin();
-  (*cjt)->pVector(pq[0]);
-  (*cjt)->nVector(pq[1]);
-  (*cjt)->setMomenta(R,1.,Lorentz5Momentum());
-  // second incoming particle
-  betaboost = Boost(0.,0.,-boost[1]);
-  R=LorentzRotation(betaboost);
+  HardBranchingPtr incoming[2];
+  incoming[0] = *cjt;
   ++cjt;
-  (*cjt)->pVector(pq[1]);
-  (*cjt)->nVector(pq[0]);
-  (*cjt)->setMomenta(R,1.,Lorentz5Momentum());
-  jets[0]->showerMomentum(x[0]*jets[0]->pVector());
-  jets[1]->showerMomentum(x[1]*jets[1]->pVector());
+  incoming[1] = *cjt;
+  if((*tree->incoming().begin())->beam()->momentum().z()/pq[0].z()<0.)
+    swap(incoming[0],incoming[1]);
+  // apply the boost the the particles
+  unsigned int iswap[2]={1,0};
+  for(unsigned int ix=0;ix<2;++ix) {
+    LorentzRotation R(0.,0.,-boost[ix]);
+    incoming[ix]->pVector(pq[ix]);
+    incoming[ix]->nVector(pq[iswap[ix]]);
+    incoming[ix]->setMomenta(R,1.,Lorentz5Momentum());
+    jets[ix]->showerMomentum(x[ix]*jets[ix]->pVector());
+  }
   // and calculate the boosts 
   applyBoost=true;
   // do one boost
@@ -1814,7 +1809,7 @@ deconstructInitialInitialSystem(bool & applyBoost,
   else
     assert(false);
   fromRest = LorentzRotation((jets[0]->showerMomentum()+
-			      jets[1]->showerMomentum()).boostVector());
+  			      jets[1]->showerMomentum()).boostVector());
 }
 
 void QTildeReconstructor::
@@ -2718,9 +2713,8 @@ QTildeReconstructor::inverseInitialStateRescaling(double & x1, double & x2,
   double k1(1.),k2(1.);
   if(_initialStateReconOption==0) {
     double rap=pold.rapidity();
-    x1 = MDY/sqrt(s*exp(2.*rap));
-    x2 = sqr(MDY)/s/x1;
-    if(pq[0].z()>ZERO) swap(x1,x2);
+    x2 = MDY/sqrt(s*exp(2.*rap));
+    x1 = sqr(MDY)/s/x2;
     k1=a[0]/x1;
     k2=b[1]/x2;
   }
@@ -2728,7 +2722,7 @@ QTildeReconstructor::inverseInitialStateRescaling(double & x1, double & x2,
   else if(_initialStateReconOption==1) {
     double A = 1.;
     double C = -sqr(MDY)/s;
-    double B = pq[0].z()>ZERO ? 2.*pold.z()/sqrt(s) : -2.*pold.z()/sqrt(s);
+    double B = 2.*pold.z()/sqrt(s);
     if(abs(B)>1e-10) {
       double discrim = 1.-4.*A*C/sqr(B);
       if(discrim < 0.) throw KinematicsReconstructionVeto();
@@ -2761,7 +2755,6 @@ QTildeReconstructor::inverseInitialStateRescaling(double & x1, double & x2,
   for(unsigned int ix=0;ix<2;++ix) {
     boost[ix] = getBeta(a   [ix]+b   [ix], a[ix]   -b   [ix], 
 			anew[ix]+bnew[ix], anew[ix]-bnew[ix]);
-    if (pq[0].z() > ZERO) boost[ix] *= -1.;
   }
   return boost;
 }
