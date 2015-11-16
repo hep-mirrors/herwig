@@ -77,6 +77,16 @@ public:
   virtual bool canHandle(const cPDVector& partons,
 			 int emitter, int emission, int spectator) const;
 
+ /**
+   *  How to sample the z-distribution.
+   *  FlatZ = 1
+   *  OneOverZ = 2
+   *  OneOverOneMinusZ = 3
+   *  OneOverZOneMinusZ = 4
+   */
+
+  virtual int samplingZ() const {return 1;}
+  
   /**
    * Return true, if this dipole is symmetric with respect to emitter
    * and emission.
