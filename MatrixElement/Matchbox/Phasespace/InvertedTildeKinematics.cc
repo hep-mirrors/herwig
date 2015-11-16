@@ -137,9 +137,28 @@ pair<Energy,double> InvertedTildeKinematics::generatePtZ(double& jac, const doub
 
   pair<double,double> zLims = zBounds(pt);
 
-  pair<double,double> zw =
-    generate(inverse(0.,zLims.first,zLims.second)+
-	     inverse(1.,zLims.first,zLims.second),r[1]);
+  pair<double,double> zw(0,0);// =
+  //  generate(inverse(0.,zLims.first,zLims.second)+
+	//     inverse(1.,zLims.first,zLims.second),r[1]);
+
+
+  // FlatZ = 1
+  if ( theDipole->samplingZ() == 1 ) {
+    zw = generate(flat(zLims.first,zLims.second),r[1]);
+  }
+  // OneOverZ = 2
+  if ( theDipole->samplingZ() == 2 ) {
+    zw = generate(inverse(0.0,zLims.first,zLims.second),r[1]);
+  }
+  // OneOverOneMinusZ = 3
+  if ( theDipole->samplingZ() == 3 ) {
+    zw = generate(inverse(1.0,zLims.first,zLims.second),r[1]);
+  }
+  // OneOverZOneMinusZ = 4
+  if ( theDipole->samplingZ() == 4 ) {
+    zw = generate(inverse(0.0,zLims.first,zLims.second) +
+                                inverse(1.0,zLims.first,zLims.second),r[1]);
+  }
 
   double z = zw.first;
   jac *= zw.second;

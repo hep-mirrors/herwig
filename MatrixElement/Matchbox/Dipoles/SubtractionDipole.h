@@ -688,6 +688,15 @@ public:
    */
   virtual bool havePDFWeight2() const { return realEmissionME()->havePDFWeight2(); }
 
+  /**
+   *  How to sample the z-distribution.
+   *  FlatZ = 1
+   *  OneOverZ = 2
+   *  OneOverOneMinusZ = 3
+   *  OneOverZOneMinusZ = 4
+   */
+
+  virtual int samplingZ() const {return 4;}
   //@}
 
   /** @name Matrix elements and evaluation */
