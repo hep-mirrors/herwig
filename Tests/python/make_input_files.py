@@ -1027,9 +1027,9 @@ elif(collider=="LHC") :
             process+="set /Herwig/Particles/bbar:HardProcessMass 4.2*GeV\n"
             process+="set Factory:OrderInAlphaS 2\nset Factory:OrderInAlphaEW 0\n"
             if(parameterName.find("7-Bottom")>=0) :
-                process+="do Factory:Process pnob pnob b bbar\n"
+                process+="do Factory:Process p p b bbar\n"
             else:
-                process+="do Factory:Process pnob pnob c cbar\n"
+                process+="do Factory:Process p p c cbar\n"
             process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/MaxJetPtScale\n"
             process+="set  /Herwig/Cuts/Cuts:JetFinder  /Herwig/Cuts/JetFinder\n"
             process+="insert  /Herwig/Cuts/Cuts:MultiCuts 0  /Herwig/Cuts/JetCuts\n"
@@ -1117,7 +1117,7 @@ elif(collider=="LHC") :
             process+="set /Herwig/Particles/W+:HardProcessWidth 0.*GeV\n"
             process+="set /Herwig/Particles/W-:HardProcessWidth 0.*GeV\n"
             process+="set /Herwig/Particles/Z0:HardProcessWidth 0.*GeV\n"
-            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process pnob pnob W+ W-\n"
+            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p W+ W-\n"
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 160.8*GeV\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
             process+="set /Herwig/Particles/W+:Synchronized 0\n"
             process+="set /Herwig/Particles/W-:Synchronized 0\n"
@@ -1130,7 +1130,7 @@ elif(collider=="LHC") :
             process+="set /Herwig/Particles/W+:HardProcessWidth 0.*GeV\n"
             process+="set /Herwig/Particles/W-:HardProcessWidth 0.*GeV\n"
             process+="set /Herwig/Particles/Z0:HardProcessWidth 0.*GeV\n"
-            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process pnob pnob W+ W-\n"
+            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p W+ W-\n"
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 160.8*GeV\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
             process+="do /Herwig/Particles/W+:SelectDecayModes /Herwig/Particles/W+/W+->nu_e,e+; /Herwig/Particles/W+/W+->nu_mu,mu+; /Herwig/Particles/W+/W+->nu_tau,tau+;\n"
             process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
@@ -1242,7 +1242,7 @@ elif(collider=="LHC") :
         elif(parameterName.find("Z-bb")>=0) :
             parameters["bscheme"]="read Matchbox/FourFlavourScheme.in"
             process+="set /Herwig/Particles/b:HardProcessMass 4.2*GeV\nset /Herwig/Particles/bbar:HardProcessMass 4.2*GeV\n"
-            process+="set Factory:OrderInAlphaS 2\nset Factory:OrderInAlphaEW 2\ndo Factory:Process pnob pnob e+ e- b bbar\n"
+            process+="set Factory:OrderInAlphaS 2\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ e- b bbar\n"
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 91.2*GeV\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
             process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 66*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 116*GeV\n"
             process+="set /Herwig/Cuts/Cuts:JetFinder /Herwig/Cuts/JetFinder\n"
