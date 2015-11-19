@@ -239,7 +239,8 @@ public:
   /**
    * Generate pt and z
    */
-  virtual pair<Energy,double> generatePtZ(double& jac, const double * r) const;
+  virtual pair<Energy,double> generatePtZ(double& jac, const double * r,
+					  double power=1.) const;
 
   /**
    * Return the single particle phasespace weight in units

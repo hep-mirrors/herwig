@@ -108,7 +108,8 @@ Energy InvertedTildeKinematics::lastScale() const {
   return (bornEmitterMomentum()+bornSpectatorMomentum()).m();
 }
 
-pair<Energy,double> InvertedTildeKinematics::generatePtZ(double& jac, const double * r) const {
+pair<Energy,double> InvertedTildeKinematics::generatePtZ(double& jac, const double * r,
+							 double pow) const {
 
   double kappaMin = 
     ptCut() != ZERO ?
@@ -120,8 +121,9 @@ pair<Energy,double> InvertedTildeKinematics::generatePtZ(double& jac, const doub
   using namespace RandomHelpers;
 
   if ( ptCut() > ZERO ) {
-    pair<double,double> kw =
-      generate(inverse(0.,kappaMin,1.),r[0]);
+    pair<double,double> kw = pow==1. ?
+      generate(inverse(0.,kappaMin,1.),r[0]) :
+      generate(power(0.,-pow,kappaMin,1.),r[0]);
     kappa = kw.first;
     jac *= kw.second;
   } else {
@@ -140,7 +142,6 @@ pair<Energy,double> InvertedTildeKinematics::generatePtZ(double& jac, const doub
   pair<double,double> zw(0,0);// =
   //  generate(inverse(0.,zLims.first,zLims.second)+
 	//     inverse(1.,zLims.first,zLims.second),r[1]);
-
 
   // FlatZ = 1
   if ( theDipole->samplingZ() == 1 ) {

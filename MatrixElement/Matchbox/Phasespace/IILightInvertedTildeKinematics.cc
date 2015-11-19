@@ -40,7 +40,7 @@ bool IILightInvertedTildeKinematics::doMap(const double * r) {
   Lorentz5Momentum spectator = bornSpectatorMomentum();
 
   double mapping = 1.0;
-  pair<Energy,double> ptz = generatePtZ(mapping,r);
+  pair<Energy,double> ptz = generatePtZ(mapping,r,2.0);
   if ( mapping == 0.0 ) {
     jacobian(0.0);
     return false;
