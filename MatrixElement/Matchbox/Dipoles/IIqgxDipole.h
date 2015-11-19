@@ -83,7 +83,7 @@ public:
    *  OneOverZOneMinusZ = 4
    */
 
-  virtual int samplingZ() const {return 4;}
+  virtual int samplingZ() const {return 3;}
 			 
   /**
    * Return the matrix element for the kinematical configuation
