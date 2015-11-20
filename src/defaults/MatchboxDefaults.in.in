@@ -540,11 +540,12 @@ set MEMatching:MaxPtIsMuF Yes
 set MEMatching:FFPtCut 1.0*GeV
 set MEMatching:FIPtCut 1.0*GeV
 set MEMatching:IIPtCut 1.0*GeV
-set MEMatching:SafeCut 4.*GeV
+set MEMatching:SafeCut 0.*GeV
 
 create Herwig::ShowerApproximationGenerator MECorrectionHandler
 set MECorrectionHandler:ShowerApproximation MEMatching
 set MECorrectionHandler:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/InvertiblePhasespace
+set MECorrectionHandler:PresamplingPoints 50000
 set MECorrectionHandler:FreezeGrid 100000
 
 create Herwig::DipoleMatching DipoleMatching HwDipoleMatching.so
