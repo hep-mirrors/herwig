@@ -80,9 +80,10 @@ public:
    *  OneOverZ = 2
    *  OneOverOneMinusZ = 3
    *  OneOverZOneMinusZ = 4
+   * N.B. not the perturbative result chosen to improve sampling
    */
 
-  virtual int samplingZ() const {return 1;}
+  virtual int samplingZ() const {return 2;}
   
   /**
    * Return the matrix element for the kinematical configuation
