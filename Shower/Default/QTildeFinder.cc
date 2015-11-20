@@ -213,7 +213,7 @@ calculateFinalFinalScales(const ShowerPPair & pp) {
 pair<Energy,Energy> QTildeFinder::
 calculateFinalFinalScales(Lorentz5Momentum p1, Lorentz5Momentum p2,
 			  bool colouredFirst) {
-  static const double eps=1e-8;
+  static const double eps=1e-7;
   // Using JHEP 12(2003)045 we find that we need ktilde = 1/2(1+b-c+lambda)
   // ktilde = qtilde^2/Q^2 therefore qtilde = sqrt(ktilde*Q^2)
   // find momenta in rest frame of system
