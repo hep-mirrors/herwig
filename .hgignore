@@ -75,9 +75,9 @@ Makefile\.in$
 ^Models/Feynrules/python/Makefile-FR$
 ^MatrixElement/Matchbox/External/MadGraph/mg2herwig.py$
 ^MatrixElement/Matchbox/Scales/MatchboxScale.cc$
-^Utilities/Statistics/combineDistributions$
-^Utilities/Statistics/combineRuns$
-^Utilities/Statistics/makeDistributions$
+^Utilities/Statistics/herwig-combinedistributions$
+^Utilities/Statistics/herwig-combineruns$
+^Utilities/Statistics/herwig-makedistributions$
 ^src/defaults/MatchboxDefaults.in$
 ^src/defaults/setup.gosam.in$
 ^src/Matchbox/LO-DefaultShower.in$
