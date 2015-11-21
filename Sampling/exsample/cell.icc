@@ -44,20 +44,53 @@ namespace exsample {
     std::vector<double> ur = upper_right_;
     double val = 0.;
     std::vector<double> pos (ll.size());
+    std::vector< std::pair<double,std::vector<double> > > vals;
+    unsigned long ivalnonzero = 0;
     while (n_sampled < ainfo.presampling_points) {
       std::transform(ll.begin(),ll.end(),
 		     ur.begin(),pos.begin(),
 		     rnd_gen);
       val = function->evaluate(pos);
-      stats->presampled(val);
-      opt.select(val);
-      if (std::abs(val) > std::abs(overestimate_)) {
-	overestimate_ = std::abs(val);
-	last_max_position_ = pos;
-      }
-      selected(pos,std::abs(val),ainfo);
+      vals.push_back( std::pair<double,std::vector<double> > (val,pos) );
+      if ( val != 0 ) ivalnonzero++;
       ++n_sampled;
     }
+    while ( ivalnonzero > 0 ) {
+      double avg = 0;
+      double err = 0;
+      double maxval = 0;
+      std::vector<double> maxpos (ll.size());
+      unsigned long imax;
+      for ( unsigned long ival=0; ival < vals.size(); ival++ ) {
+        val = std::abs(vals[ival].first);
+        if ( val == 0 ) continue;
+        avg += val;
+        err += sqr(val);
+        if ( val > maxval ) {
+          maxval = val;
+          maxpos = vals[ival].second;
+          imax = ival;
+        }
+      }
+      avg /= ivalnonzero;
+      err /= ivalnonzero;
+      err = sqrt(err-sqr(avg));
+      if ( maxval <= avg+sqrt(ivalnonzero/2.)*err ) {
+        overestimate_ = maxval;
+        last_max_position_ = maxpos;
+        break;
+      }
+      vals.erase(vals.begin()+imax);
+      ivalnonzero--;
+    }
+    
+    for ( unsigned long ival=0; ival < vals.size(); ival++ ) {
+      val = vals[ival].first;
+      stats->presampled(val);
+      opt.select(val);
+      selected(pos,std::abs(val),ainfo);
+    }
+
     function->stop_presampling();
   }
 
@@ -71,19 +104,43 @@ namespace exsample {
     std::vector<double> ur = upper_right_;
     double val = 0.;
     std::vector<double> pos (ll.size());
-    std::vector<double> next_to_largest (ll.size());
+    std::vector< std::pair<double,std::vector<double> > > vals;
     while (n_sampled < ainfo.presampling_points) {
       std::transform(ll.begin(),ll.end(),
 		     ur.begin(),pos.begin(),
 		     rnd_gen);
       val = function->evaluate(pos);
-      if (std::abs(val) > std::abs(overestimate_)) {
-	next_to_largest = last_max_position_;
-	overestimate_ = std::abs(val);
-	last_max_position_ = pos;
-      }
+      if ( std::abs(val) > 0 )
+        vals.push_back( std::pair<double,std::vector<double> > (std::abs(val),pos) );
       ++n_sampled;
     }
+    while ( vals.size() > 0 ) {
+      double avg = 0;
+      double err = 0;
+      double maxval = 0;
+      std::vector<double> maxpos (ll.size());
+      unsigned long imax;
+      for ( unsigned long ival=0; ival < vals.size(); ival++ ) {
+        double thisval = vals[ival].first;
+        avg += thisval;
+        err += sqr(thisval);
+        if ( thisval > maxval ) {
+          maxval = thisval;
+          maxpos = vals[ival].second;
+          imax = ival;
+        }
+      }
+      avg /= vals.size();
+      err /= vals.size();
+      err = sqrt(err-sqr(avg));
+      if ( maxval <= avg+sqrt(vals.size()/2.)*err ) {
+        overestimate_ = maxval;
+        last_max_position_ = maxpos;
+        break;
+      }
+      vals.erase(vals.begin()+imax);
+    }
+
     function->stop_presampling();
   }
 
