@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// ShowerApproximationKernel.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// ShowerApproximationKernel.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef Herwig_ShowerApproximationKernel_H
@@ -14,10 +14,10 @@
 
 #include "ThePEG/Handlers/HandlerBase.h"
 #include "ThePEG/Handlers/StandardXComb.h"
-#include "Herwig++/MatrixElement/Matchbox/Matching/ShowerApproximation.h"
-#include "Herwig++/MatrixElement/Matchbox/Phasespace/InvertedTildeKinematics.h"
-#include "Herwig++/MatrixElement/Matchbox/Dipoles/SubtractionDipole.h"
-#include "Herwig++/Sampling/exsample/exponential_generator.h"
+#include "Herwig/MatrixElement/Matchbox/Matching/ShowerApproximation.h"
+#include "Herwig/MatrixElement/Matchbox/Phasespace/InvertedTildeKinematics.h"
+#include "Herwig/MatrixElement/Matchbox/Dipoles/SubtractionDipole.h"
+#include "Herwig/Sampling/exsample/exponential_generator.h"
 
 namespace Herwig {
 
@@ -34,6 +34,13 @@ class ShowerApproximationGenerator;
  *
  */
 class ShowerApproximationKernel: public HandlerBase {
+
+public:
+
+  /**
+   * Exception to communicate sampler maxtry events.
+   */
+  struct MaxTryException {};
 
 public:
 

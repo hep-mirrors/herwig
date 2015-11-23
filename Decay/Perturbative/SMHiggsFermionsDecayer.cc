@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// SMHiggsFermionsDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// SMHiggsFermionsDecayer.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -17,12 +17,12 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
-#include "Herwig++/Decay/DecayVertex.h"
+#include "Herwig/Decay/DecayVertex.h"
 #include "ThePEG/Helicity/ScalarSpinInfo.h"
 #include "ThePEG/Helicity/FermionSpinInfo.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
-#include "Herwig++/Models/StandardModel/StandardModel.h"
-#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
+#include "Herwig/Models/StandardModel/StandardModel.h"
+#include "Herwig/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -46,7 +46,7 @@ void SMHiggsFermionsDecayer::doinit() {
   tcHwSMPtr hwsm=dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   if(!hwsm)
     throw InitException() << "SMHiggsFermionsDecayer needs the StandardModel class"
-			  << " to be either the Herwig++ one or a class inheriting"
+			  << " to be either the Herwig one or a class inheriting"
 			  << " from it";
   _hvertex = hwsm->vertexFFH();
   // make sure they are initialized

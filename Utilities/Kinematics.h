@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// Kinematics.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Kinematics.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -23,16 +23,14 @@ namespace Herwig {
   using namespace ThePEG;
 
   /** \ingroup Utilities
-   *  This is a pure static class which provides some useful methods
+   *  This is a namespace which provides some useful methods
    *  for kinematics computation, as the two body decays.
    * 
    *  NB) For other useful kinematical methods (and probably even those
    *      implemented in Kinematics class!):
    *          @see UtilityBase
    */
-  class Kinematics {
-
-  public:
+  namespace Kinematics {
 
     /**
      *  Calculate the momenta for a two body decay
@@ -45,22 +43,18 @@ namespace Herwig {
      * @param p1 The momentum of the first decay product
      * @param p2 The momentum of the second decay product
      */
-    static bool twoBodyDecay(const Lorentz5Momentum & p, 
+    bool twoBodyDecay(const Lorentz5Momentum & p, 
 			     const Energy m1, const Energy m2,
 			     const Axis & unitDir1,
-			     Lorentz5Momentum & p1, Lorentz5Momentum & p2) {
-      Energy min=p.mass();
-      if ( min >= m1 + m2  &&  m1 >= ZERO  &&  m2 >= ZERO  ) {
-	Momentum3 pstarVector = unitDir1 * pstarTwoBodyDecay(min,m1,m2);
-	p1 = Lorentz5Momentum(m1, pstarVector);
-	p2 = Lorentz5Momentum(m2,-pstarVector);
-	// boost from CM to LAB
-	Boost bv=p.boostVector();
-	p1.boost( bv );   
-	p2.boost( bv );
-	return true;
-      }
-      return false;
+			     Lorentz5Momentum & p1, Lorentz5Momentum & p2);
+    
+    /**
+     * It returns the unit 3-vector with the given  cosTheta  and  phi.
+     */
+    inline Axis unitDirection(const double cosTheta, const double phi) {
+      return ( fabs( cosTheta ) <= 1.0  ? 
+         Axis( cos(phi)*sqrt(1.0-cosTheta*cosTheta) , 
+         sin(phi)*sqrt(1.0-cosTheta*cosTheta) , cosTheta) : Axis() );
     }
 
     /**
@@ -74,7 +68,7 @@ namespace Herwig {
      * @param p1 The momentum of the first decay product
      * @param p2 The momentum of the second decay product
      */
-    static bool twoBodyDecay(const Lorentz5Momentum & p, 
+    inline bool twoBodyDecay(const Lorentz5Momentum & p, 
 			     const Energy m1, const Energy m2,
 			     const double cosThetaStar1, 
 			     const double phiStar1,
@@ -88,7 +82,7 @@ namespace Herwig {
      * weights. If it is not used, the default is just flat in phasespace.
      * The return value indicates success or failure.
      */
-    static bool threeBodyDecay(Lorentz5Momentum p0, Lorentz5Momentum &p1, 
+    bool threeBodyDecay(Lorentz5Momentum p0, Lorentz5Momentum &p1, 
 			       Lorentz5Momentum &p2, Lorentz5Momentum &p3,
 			       double (*fcn)(Energy2,Energy2,Energy2,InvEnergy4) = NULL);
 
@@ -96,7 +90,7 @@ namespace Herwig {
      * For the two body decay  M -> m1 + m2  it gives the module of the 
      * 3-momentum of the decay product in the rest frame of M.
      */
-    static Energy pstarTwoBodyDecay(const Energy M, 
+    inline Energy pstarTwoBodyDecay(const Energy M, 
 				    const Energy m1, const Energy m2) {
       return ( M > ZERO &&  m1 >=ZERO && m2 >= ZERO  && M > m1+m2 ?  
 	       Energy(sqrt(( sqr(M) - sqr(m1+m2) )*( sqr(M) - sqr(m1-m2) )) 
@@ -104,46 +98,13 @@ namespace Herwig {
     }
     
     /**
-     * It returns the unit 3-vector with the given  cosTheta  and  phi.
-     */
-    static Axis unitDirection(const double cosTheta, const double phi) {
-      return ( fabs( cosTheta ) <= 1.0  ? 
-	       Axis( cos(phi)*sqrt(1.0-cosTheta*cosTheta) , 
-		     sin(phi)*sqrt(1.0-cosTheta*cosTheta) , cosTheta) : Axis() );
-    }
-    
-    /**
      * This just generates angles. First flat -1..1, second flat 0..2Pi
      */
-    static void generateAngles(double & ct, double & az) {
+    inline void generateAngles(double & ct, double & az) {
       ct = UseRandom::rnd()*2.0 - 1.0;  // Flat from -1..1
       az = UseRandom::rnd()*Constants::twopi;   
     }
-    
-  private:
-
-    /**
-     * Pure static class so default constructor private
-     */
-    Kinematics();
-
-    /**
-     * Pure static class so copy constructor private
-     */
-    Kinematics(const Kinematics & x);
-
-    /**
-     * The assignment operator is private and must never be called.
-     * In fact, it should not even be implemented.
-     */
-    Kinematics & operator=(const Kinematics & x);
-
-    /**
-     *  Maximum number of attempts to generate a 3, 4 or 5 body decay.
-     */
-    static const unsigned int _ntry=100;
-
-  };
+  }
 
 }
 

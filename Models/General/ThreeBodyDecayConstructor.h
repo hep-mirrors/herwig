@@ -9,7 +9,7 @@
 #include "ThePEG/Helicity/Vertex/VertexBase.h"
 #include "TBDiagram.h"
 #include "PrototypeVertex.h"
-#include "Herwig++/Decay/General/GeneralThreeBodyDecayer.fh"
+#include "Herwig/Decay/General/GeneralThreeBodyDecayer.fh"
 
 namespace Herwig {
 using namespace ThePEG;

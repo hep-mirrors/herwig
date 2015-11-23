@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// MEPP2Higgs.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MEPP2Higgs.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -22,13 +22,13 @@
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Cuts/Cuts.h"
-#include "Herwig++/MatrixElement/HardVertex.h"
-#include "Herwig++/Models/StandardModel/StandardModel.h"
-#include "Herwig++/Utilities/Maths.h"
-#include "Herwig++/Shower/Base/ShowerProgenitor.h"
-#include "Herwig++/Shower/Base/ShowerTree.h"
-#include "Herwig++/Shower/Base/Branching.h"
-#include "Herwig++/Shower/Base/HardTree.h"
+#include "Herwig/MatrixElement/HardVertex.h"
+#include "Herwig/Models/StandardModel/StandardModel.h"
+#include "Herwig/Utilities/Maths.h"
+#include "Herwig/Shower/Base/ShowerProgenitor.h"
+#include "Herwig/Shower/Base/ShowerTree.h"
+#include "Herwig/Shower/Base/Branching.h"
+#include "Herwig/Shower/Base/HardTree.h"
 
 using namespace Herwig;
 
@@ -311,7 +311,7 @@ void MEPP2Higgs::doinit() {
   // do the initialisation
   if(!theSM) {
     throw InitException() << "Wrong type of StandardModel object in MEPP2Higgs::doinit(),"
-                          << " the Herwig++ version must be used" 
+                          << " the Herwig version must be used" 
                           << Exception::runerror;
   }
   HGGVertex_ = theSM->vertexHGG();
@@ -520,7 +520,7 @@ void MEPP2Higgs::constructVertex(tSubProPtr sub) {
   hardvertex->ME(me_);
   // set the pointers and to and from the vertex
   for(unsigned int i = 0; i < 3; ++i)
-    (hard[i]->spinInfo())->productionVertex(hardvertex);
+    hard[i]->spinInfo()->productionVertex(hardvertex);
 }
 
 double MEPP2Higgs::ggME(vector<VectorWaveFunction> g1, 
@@ -987,7 +987,6 @@ HardTreePtr MEPP2Higgs::generateHardest(ShowerTreePtr tree,
   if(newparticles[3]->id()<0||
      (newparticles[3]->id()==ParticleID::g&&UseRandom::rndbool())) {
     inBranch[iemit]->type(ShowerPartnerType::QCDColourLine);
-    generator()->log() << "Higgs colour A1\n";
     cline1->addAntiColoured(newparticles[3]);
     cline1->addColoured    (newparticles[4]);
     cline1->addAntiColoured(newparticles[ispect]);
@@ -995,14 +994,12 @@ HardTreePtr MEPP2Higgs::generateHardest(ShowerTreePtr tree,
     cline2->addAntiColoured(newparticles[4]);
     cline2->addAntiColoured(newparticles[iemit]);
     if(newparticles[3]->id()==ParticleID::g) {
-      generator()->log() << "Higgs colour A2\n";
       cline3->addColoured(newparticles[iemit]);
       cline3->addColoured(newparticles[3]);
     }
   }
   else {
     inBranch[iemit]->type(ShowerPartnerType::QCDAntiColourLine);
-    generator()->log() << "Higgs colour B1\n";
     cline1->addColoured    (newparticles[3]);
     cline1->addAntiColoured(newparticles[4]);
     cline1->addColoured    (newparticles[ispect]);
@@ -1010,7 +1007,6 @@ HardTreePtr MEPP2Higgs::generateHardest(ShowerTreePtr tree,
     cline2->addColoured    (newparticles[4]);
     cline2->addColoured    (newparticles[iemit]);
     if(newparticles[3]->id()==ParticleID::g) {
-      generator()->log() << "Higgs colour B2\n";
       cline3->addAntiColoured(newparticles[iemit]);
       cline3->addAntiColoured(newparticles[3]);
     }
@@ -1184,14 +1180,14 @@ bool MEPP2Higgs::applyHard(ShowerParticleVector gluons,
 	out = quarkFlavour(pdf[0],scale,xnew[0],beams[0],fxnew[0],false);
 	fxnew[1]=pdf[1]->xfx(beams[1],gluons[1]->dataPtr(),scale,xnew[1]);
 	iemit = 0;
-	mewgt = qgME(shat,uhat,that)/lome*mh2_/sqr(shat);
+	mewgt = out ? qgME(shat,uhat,that)/lome*mh2_/sqr(shat) : ZERO;
       }
       // g q -> H q
       else {
 	fxnew[0]=pdf[0]->xfx(beams[0],gluons[0]->dataPtr(),scale,xnew[0]);
 	out = quarkFlavour(pdf[1],scale,xnew[1],beams[1],fxnew[1],false);
 	iemit = 1;
-	mewgt = qgME(shat,that,uhat)/lome*mh2_/sqr(shat);
+	mewgt = out ? qgME(shat,that,uhat)/lome*mh2_/sqr(shat) : ZERO;
       }
       jacobian2 /= (channelWeights_[1]-channelWeights_[0]);
     }
@@ -1202,14 +1198,14 @@ bool MEPP2Higgs::applyHard(ShowerParticleVector gluons,
 	out = quarkFlavour(pdf[0],scale,xnew[0],beams[0],fxnew[0],true);
 	fxnew[1]=pdf[1]->xfx(beams[1],gluons[1]->dataPtr(),scale,xnew[1]);
 	iemit = 0;
-	mewgt = qbargME(shat,uhat,that)/lome*mh2_/sqr(shat);
+	mewgt = out ? qbargME(shat,uhat,that)/lome*mh2_/sqr(shat) : ZERO;
       }
       // g qbar -> H qbar
       else {
 	fxnew[0]=pdf[0]->xfx(beams[0],gluons[0]->dataPtr(),scale,xnew[0]);
 	out = quarkFlavour(pdf[1],scale,xnew[1],beams[1],fxnew[1],true);
 	iemit = 1;
-	mewgt = qbargME(shat,that,uhat)/lome*mh2_/sqr(shat);
+	mewgt = out ? qbargME(shat,that,uhat)/lome*mh2_/sqr(shat) : ZERO;
       }
       jacobian2/=(channelWeights_[2]-channelWeights_[1]);
     }
@@ -1362,17 +1358,18 @@ tPDPtr MEPP2Higgs::quarkFlavour(tcPDFPtr pdf, Energy2 scale,
   if(!anti) {
     for(unsigned int ix=1;ix<=5;++ix) {
       partons.push_back(getParticleData(long(ix)));
-      weights.push_back(pdf->xfx(beam,partons.back(),scale,x));
+      weights.push_back(max(0.,pdf->xfx(beam,partons.back(),scale,x)));
       pdfweight += weights.back();
     }
   }
   else {
     for(unsigned int ix=1;ix<=5;++ix) {
       partons.push_back(getParticleData(-long(ix)));
-      weights.push_back(pdf->xfx(beam,partons.back(),scale,x));
+      weights.push_back(max(0.,pdf->xfx(beam,partons.back(),scale,x)));
       pdfweight += weights.back();
     }
   }
+  if(pdfweight==0.) return tPDPtr();
   double wgt=UseRandom::rnd()*pdfweight;
   for(unsigned int ix=0;ix<weights.size();++ix) {
     if(wgt<=weights[ix]) return partons[ix];
@@ -1593,25 +1590,25 @@ double MEPP2Higgs::getResult(int emis_type, Energy pt, double yj,
   else if(emis_type==1) {
     outParton = quarkFlavour(beams_[0]->pdf(),scale,x,beams_[0],pdf[2],false);
     pdf[3]=beams_[1]->pdf()->xfx(beams_[1],partons_[1],scale,y);
-    res = qgME(sh,uh,th)/loME();
+    res = outParton ? qgME(sh,uh,th)/loME() : ZERO;
   }
   // g q -> H q
   else if(emis_type==2) {
     pdf[2]=beams_[0]->pdf()->xfx(beams_[0],partons_[0],scale,x);
     outParton = quarkFlavour(beams_[1]->pdf(),scale,y,beams_[1],pdf[3],false);
-    res = qgME(sh,th,uh)/loME();
+    res = outParton ? qgME(sh,th,uh)/loME() : ZERO;
   }
   // qbar g -> H qbar
   else if(emis_type==3) {
     outParton = quarkFlavour(beams_[0]->pdf(),scale,x,beams_[0],pdf[2],true);
     pdf[3]=beams_[1]->pdf()->xfx(beams_[1],partons_[1],scale,y);
-    res = qbargME(sh,uh,th)/loME();
+    res = outParton ? qbargME(sh,uh,th)/loME() : ZERO;
   }
   // g qbar -> H qbar
   else if(emis_type==4) {
     pdf[2]=beams_[0]->pdf()->xfx(beams_[0],partons_[0],scale,x);
     outParton = quarkFlavour(beams_[1]->pdf(),scale,y,beams_[1],pdf[3],true);
-    res = qbargME(sh,th,uh)/loME();
+    res = outParton ? qbargME(sh,th,uh)/loME() : ZERO;
   }
   //deals with pdf zero issue at large x
   if(pdf[0]<=0.||pdf[1]<=0.||pdf[2]<=0.||pdf[3]<=0.) {

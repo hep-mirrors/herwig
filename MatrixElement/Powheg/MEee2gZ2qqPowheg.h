@@ -5,7 +5,7 @@
 // This is the declaration of the MEee2gZ2qqPowheg class.
 //
 
-#include "Herwig++/MatrixElement/Lepton/MEee2gZ2qq.h"
+#include "Herwig/MatrixElement/Lepton/MEee2gZ2qq.h"
 
 namespace Herwig {
 

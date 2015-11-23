@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// DipoleEventRecord.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// DipoleEventRecord.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -12,8 +12,8 @@
 //
 
 #include "DipoleEventRecord.h"
-#include "Herwig++/DipoleShower/Utility/DipolePartonSplitter.h"
-#include "Herwig++/Shower/ShowerHandler.h"
+#include "Herwig/DipoleShower/Utility/DipolePartonSplitter.h"
+#include "Herwig/Shower/ShowerHandler.h"
 
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/PDF/PartonExtractor.h"
@@ -291,6 +291,8 @@ void DipoleEventRecord::findChains(const PList& ordered) {
 
   DipoleChain current_chain;
 
+  // this whole thing needs to have a more elegant implementation at some point
+
   bool startIsTriplet =
     (ordered.front()->hasColour() && !ordered.front()->hasAntiColour()) ||
     (!ordered.front()->hasColour() && ordered.front()->hasAntiColour());
@@ -303,6 +305,9 @@ void DipoleEventRecord::findChains(const PList& ordered) {
 
   if (!is33bar) {
 
+    PList::const_iterator theStart = ordered.begin();
+    bool onceMore = false;
+
     for (PList::const_iterator p = ordered.begin();
 	 p != ordered.end(); ++p) {
 
@@ -310,10 +315,23 @@ void DipoleEventRecord::findChains(const PList& ordered) {
 	p != --ordered.end() ? boost::next(p) : ordered.begin();
 
       if (!DipolePartonSplitter::colourConnected(*p,*next_it)) {
-	current_chain.check();
-	theChains.push_back(current_chain);
-	current_chain.dipoles().clear();
-	continue;
+	// it may have happened that we need to close the chain due to another
+	// chain starting right now; see the above global comment for this fix
+	bool startIsOctet =
+	  (**theStart).hasColour() && (**theStart).hasAntiColour();
+	bool endIsOctet =
+	  (**p).hasColour() && (**p).hasAntiColour();
+	if ( DipolePartonSplitter::colourConnected(*p,*theStart) &&
+	     startIsOctet && endIsOctet ) {
+	  swap(next_it,theStart);
+	  onceMore = true;
+	} else {
+	  theStart = next_it;
+	  current_chain.check();
+	  theChains.push_back(current_chain);
+	  current_chain.dipoles().clear();
+	  continue;
+	}
       }
 
       pair<bool,bool> initial_state (false,false);
@@ -345,6 +363,14 @@ void DipoleEventRecord::findChains(const PList& ordered) {
 	pdf.second = pdfs().second;
 
       current_chain.dipoles().push_back(Dipole(make_pair(*p,*next_it),pdf,xs));
+
+      if ( onceMore ) {
+	next_it = theStart;
+	current_chain.check();
+	theChains.push_back(current_chain);
+	current_chain.dipoles().clear();
+	onceMore = false;
+      }
 
     }
   } else {

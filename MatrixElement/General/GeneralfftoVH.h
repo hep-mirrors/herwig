@@ -5,7 +5,7 @@
 // This is the declaration of the GeneralfftoVH class.
 //
 
-#include "Herwig++/MatrixElement/MEfftoVH.h"
+#include "Herwig/MatrixElement/MEfftoVH.h"
 #include "GeneralfftoVH.fh"
 
 namespace Herwig {

@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// SubtractionDipole.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// SubtractionDipole.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -24,9 +24,10 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDF/PartonBin.h"
 #include "ThePEG/PDF/PartonExtractor.h"
-#include "Herwig++/MatrixElement/Matchbox/Phasespace/TildeKinematics.h"
-#include "Herwig++/MatrixElement/Matchbox/Phasespace/InvertedTildeKinematics.h"
-#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
+#include "Herwig/MatrixElement/Matchbox/Phasespace/TildeKinematics.h"
+#include "Herwig/MatrixElement/Matchbox/Phasespace/InvertedTildeKinematics.h"
+#include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
+#include "Herwig/MatrixElement/Matchbox/Utility/DiagramDrawer.h"
 
 #include <iterator>
 using std::ostream_iterator;
@@ -65,6 +66,8 @@ void SubtractionDipole::clearBookkeeping() {
   theIndexMap.clear();
   theUnderlyingBornDiagrams.clear();
   theRealEmissionDiagrams.clear();
+  theBornToRealDiagrams.clear();
+  theRealToBornDiagrams.clear();
 }
 
 void SubtractionDipole::setupBookkeeping(const map<Ptr<DiagramBase>::ptr,SubtractionDipole::MergeInfo>& mergeInfo) {
@@ -75,6 +78,9 @@ void SubtractionDipole::setupBookkeeping(const map<Ptr<DiagramBase>::ptr,Subtrac
   theUnderlyingBornDiagrams.clear();
   theRealEmissionDiagrams.clear();
 
+  theBornToRealDiagrams.clear();
+  theRealToBornDiagrams.clear();
+
   int xemitter = -1;
   int xspectator = -1;
   map<int,int> mergeLegs;
@@ -82,30 +88,52 @@ void SubtractionDipole::setupBookkeeping(const map<Ptr<DiagramBase>::ptr,Subtrac
   map<int,int> realBornMap;
   map<int,int> bornRealMap;
 
+  set<Ptr<DiagramBase>::cptr> usedDiagrams;
+
   for ( map<Ptr<DiagramBase>::ptr,MergeInfo>::const_iterator mit = mergeInfo.begin();
 	mit != mergeInfo.end(); ++mit ) {
 
     DiagramVector::const_iterator bd = 
       theUnderlyingBornME->diagrams().end();
 
-    map<int,int> theRemapLegs;
-
+    // work out the most similar underlying Born diagram
+    map<int,int> xRemapLegs;
+    int nomapScore = 0;
     for ( DiagramVector::const_iterator b = 
 	    theUnderlyingBornME->diagrams().begin();
-	  b != theUnderlyingBornME->diagrams().end(); ++b )
-      if ( mit->second.diagram->isSame(*b,theRemapLegs) ) {
-	bd = b; break;
+	  b != theUnderlyingBornME->diagrams().end(); ++b ) {
+      map<int,int> theRemapLegs;
+      if ( mit->second.diagram->isSame(*b,theRemapLegs) &&
+	   usedDiagrams.find(*b) == usedDiagrams.end() ) {
+	int theNomapScore = 0;
+	for ( map<int,int>::const_iterator m = theRemapLegs.begin();
+	      m != theRemapLegs.end(); ++m )
+	  if ( m->first == m->second )
+	    theNomapScore += 1;
+	if ( theNomapScore >= nomapScore ) {
+	  nomapScore = theNomapScore;
+	  xRemapLegs = theRemapLegs;
+	  bd = b;
+	}
       }
+    }
 
     // no underlying Born
     if ( bd == theUnderlyingBornME->diagrams().end() )
       continue;
 
+    // as we deal with one splitting only we now mark this diagram as used
+    // since we fixed the overall remapping of the process from the first
+    // occurence, see below. TODO: This confuses this code even more, and
+    // clearly calls for a cleanup. This is just grown historically and got
+    // messed up with experiencing different processes and setups.
+    usedDiagrams.insert(*bd);
+
     if ( xemitter == -1 ) {
 
       xemitter = mit->second.emitter;
       mergeLegs = mit->second.mergeLegs;
-      remapLegs = theRemapLegs;
+      remapLegs = xRemapLegs;
 
       assert(remapLegs.find(xemitter) != remapLegs.end());
       xemitter = remapLegs[xemitter];
@@ -143,11 +171,12 @@ void SubtractionDipole::setupBookkeeping(const map<Ptr<DiagramBase>::ptr,Subtrac
 	gotit = true;
 	break;
       }
-    if ( !gotit ) {
+    if ( !gotit )
       theSplittingMap.insert(make_pair(bornKey,realInfo));
-      theUnderlyingBornDiagrams[process(realKey)].push_back(*bd);
-      theRealEmissionDiagrams[process(bornKey)].push_back(mit->first);
-    }
+    theUnderlyingBornDiagrams[process(realKey)].push_back(*bd);
+    theRealEmissionDiagrams[process(bornKey)].push_back(mit->first);
+    theBornToRealDiagrams[*bd] = mit->first;
+    theRealToBornDiagrams[mit->first] = *bd;
 
   }
 
@@ -361,12 +390,24 @@ const MEBase::DiagramVector& SubtractionDipole::underlyingBornDiagrams(const cPD
   return k->second;
 }
 
+tcDiagPtr SubtractionDipole::underlyingBornDiagram(tcDiagPtr realDiag) const {
+  map<tcDiagPtr,tcDiagPtr>::const_iterator it = theRealToBornDiagrams.find(realDiag);
+  assert(it != theRealToBornDiagrams.end());
+  return it->second;
+}
+
 const MEBase::DiagramVector& SubtractionDipole::realEmissionDiagrams(const cPDVector& born) const {
   static DiagramVector empty;
   map<cPDVector,DiagramVector>::const_iterator k = theRealEmissionDiagrams.find(born);
   if ( k == theRealEmissionDiagrams.end() )
     return empty;
   return k->second;
+}
+
+tcDiagPtr SubtractionDipole::realEmissionDiagram(tcDiagPtr bornDiag) const {
+  map<tcDiagPtr,tcDiagPtr>::const_iterator it = theBornToRealDiagrams.find(bornDiag);
+  assert(it != theBornToRealDiagrams.end());
+  return it->second;
 }
 
 void SubtractionDipole::getDiagrams() const {
@@ -453,7 +494,8 @@ bool SubtractionDipole::generateKinematics(const double * r) {
   if ( splitting() ) {
     if ( !generateRadiationKinematics(r) )
       return false;
-    realEmissionME()->lastXCombPtr()->setIncomingPartons();
+    if( ! realEmissionME()->lastXCombPtr()->setIncomingPartons())
+      return false;
     realEmissionME()->setScale();
     double jac = jacobian();
     jac *= pow(underlyingBornME()->lastXComb().lastSHat() / realEmissionME()->lastXComb().lastSHat(),
@@ -465,10 +507,12 @@ bool SubtractionDipole::generateKinematics(const double * r) {
   }
   if ( !generateTildeKinematics() )
     return false;
-  underlyingBornME()->lastXCombPtr()->setIncomingPartons();
+  if( ! underlyingBornME()->lastXCombPtr()->setIncomingPartons() )
+    return false;
   underlyingBornME()->setScale();
   assert(lastXCombPtr() == underlyingBornME()->lastXCombPtr());
-  underlyingBornME()->lastXCombPtr()->setIncomingPartons();
+  if( ! underlyingBornME()->lastXCombPtr()->setIncomingPartons() )
+    return false;
   // need to have the scale and x's available for checking shower phase space
   if ( showerApproximation() &&
        lastXCombPtr()->willPassCuts() )
@@ -1156,6 +1200,7 @@ void SubtractionDipole::persistentOutput(PersistentOStream & os) const {
      << theReweights << theRealEmitter << theRealEmission << theRealSpectator 
      << theSubtractionParameters << theMergingMap << theSplittingMap 
      << theIndexMap << theUnderlyingBornDiagrams << theRealEmissionDiagrams 
+     << theBornToRealDiagrams << theRealToBornDiagrams
      << lastRealEmissionKey << lastUnderlyingBornKey 
      << theBornEmitter << theBornSpectator << ounit(theLastSubtractionScale,GeV) 
      << ounit(theLastSplittingScale,GeV) << ounit(theLastSubtractionPt,GeV) 
@@ -1174,6 +1219,7 @@ void SubtractionDipole::persistentInput(PersistentIStream & is, int) {
      >> theReweights >> theRealEmitter >> theRealEmission >> theRealSpectator 
      >> theSubtractionParameters >> theMergingMap >> theSplittingMap 
      >> theIndexMap >> theUnderlyingBornDiagrams >> theRealEmissionDiagrams 
+     >> theBornToRealDiagrams >> theRealToBornDiagrams
      >> lastRealEmissionKey >> lastUnderlyingBornKey 
      >> theBornEmitter >> theBornSpectator >> iunit(theLastSubtractionScale,GeV) 
      >> iunit(theLastSplittingScale,GeV) >> iunit(theLastSubtractionPt,GeV) 

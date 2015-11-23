@@ -15,9 +15,9 @@
 #include "ThePEG/Utilities/SimplePhaseSpace.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Cuts/Cuts.h"
-#include "Herwig++/Models/StandardModel/StandardModel.h"
-#include "Herwig++/MatrixElement/HardVertex.h"
-#include "Herwig++/Utilities/Kinematics.h"
+#include "Herwig/Models/StandardModel/StandardModel.h"
+#include "Herwig/MatrixElement/HardVertex.h"
+#include "Herwig/Utilities/Kinematics.h"
 #include "ThePEG/PDF/PolarizedBeamParticleData.h"
 
 using namespace Herwig;
@@ -126,7 +126,7 @@ void MEfftoVH::doinit() {
     _vertexFFZ = hwsm->vertexFFZ();
   }
   else throw InitException() << "Wrong type of StandardModel object in "
-			     << "MEfftoVH::doinit() the Herwig++"
+			     << "MEfftoVH::doinit() the Herwig"
 			     << " version must be used" 
 			     << Exception::runerror;
   // get the particle data objects for the intermediates

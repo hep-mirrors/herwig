@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// BinSampler.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// BinSampler.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef Herwig_BinSampler_H
@@ -451,6 +451,26 @@ private:
    * Factor to enhance the number of points for the next iteration.
    */
   double theEnhancementFactor;
+
+  /**
+   * Switch to count only non zero weights in presampling.
+   */
+
+  bool theNonZeroInPresampling; 
+  
+  /**
+   * Switch to require that we get half of the points 
+   * in each iteration below the maximum weight of the iteration.
+   */    
+    
+  bool theHalfPoints;
+
+  /**
+   * The maximum number of allowed new maxima, 
+   * in combination with HalfPoints, in order to prevent unstable
+   * processes.
+   */
+  int theMaxNewMax;
 
   /**
    * The reference weight to be used

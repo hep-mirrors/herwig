@@ -9,7 +9,7 @@
 #include "Run.h"
 #include "Distribution.h"
 
-#include "Herwig++/Utilities/XML/ElementIO.h"
+#include "Herwig/Utilities/XML/ElementIO.h"
 
 #include <iostream>
 #include <fstream>

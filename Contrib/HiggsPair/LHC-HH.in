@@ -1,12 +1,12 @@
 ##################################################
 # Higgs Boson pair production at LO incl. D=6 EFT
 # and heavy intermediate Higgs bosons
-# Herwig++
+# Herwig
 # (based on M. Spira's HPAIR)
 # see arXiv:1410.3471, Goertz, Papaefstathiou, Yang
 # for further details
-# usage: Herwig++ read LHC-HH.in
-# Herwig++ run LHC-HH.run -NXXX
+# usage: Herwig read LHC-HH.in
+# Herwig run LHC-HH.run -NXXX
 ##################################################
 
 # set particle parameters 
@@ -17,20 +17,10 @@ create ThePEG::ParticleData boxon
 setup boxon 99926 boxon 0.0 0.0 0.0 0.0 0 0 0 1
 create ThePEG::ParticleData triangon
 setup triangon 99927 triangon 0.0 0.0 0.0 0.0 0 0 0 1
-create ThePEG::ParticleData h0
+
 setup h0 25 h0 125 0.003196 0.03196 0 0 0 1 0 
 create ThePEG::ParticleData H # heavy higgs
 setup H 35 H 800 0.01 0.1 0 0 0 1 0 
-create ThePEG::ParticleData t
-setup t 6 t 174.3 1.4 14 0 2 3 2 0 
-create ThePEG::ParticleData tbar
-setup tbar -6 tbar 174.3 1.4 14 0 -2 -3 2 0 
-makeanti tbar t
-create ThePEG::ConstituentParticleData b
-setup b 5 b 4.7 0.  0 0 -1 3 2 1  5
-create ThePEG::ConstituentParticleData bbar
-setup bbar -5 bbar 4.7 0.  0 0 1 -3 2 1  5
-makeanti bbar b
 
 # Disable/Enable Higgs decays
 #set /Herwig/Particles/h0/h0->b,bbar;:OnOff On
@@ -178,6 +168,6 @@ cd /Herwig/Generators
 # set /Herwig/Analysis/HepMCFile:Units GeV_mm
 
 ##################################################
-# Save run for later usage with 'Herwig++ run'
+# Save run for later usage with 'Herwig run'
 ##################################################
 saverun LHC-HH LHCGenerator

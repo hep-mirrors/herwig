@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// FIMassiveKinematics.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// FIMassiveKinematics.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -20,8 +20,8 @@
 
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
-#include "Herwig++/DipoleShower/Base/DipoleSplittingInfo.h"
-#include "Herwig++/DipoleShower/Kernels/DipoleSplittingKernel.h"
+#include "Herwig/DipoleShower/Base/DipoleSplittingInfo.h"
+#include "Herwig/DipoleShower/Kernels/DipoleSplittingKernel.h"
 
 using namespace Herwig;
 
@@ -71,7 +71,6 @@ Energy FIMassiveKinematics::ptMax(Energy dScale,
 
   // s^star/x
   Energy2 s = sqr(dScale) * (1.-specX)/specX + Mi2;
-  Energy roots = sqrt(s);
   return .5 * sqrt(s) * rootOfKallen( s/s, mi2/s, m2/s );
 }
 

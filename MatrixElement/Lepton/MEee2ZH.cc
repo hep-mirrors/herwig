@@ -11,7 +11,7 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/PDT/DecayMode.h"
-#include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "Herwig/Models/StandardModel/StandardModel.h"
 
 using namespace Herwig;
 
@@ -54,7 +54,7 @@ void MEee2ZH::doinit() {
   tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   if(!hwsm)
     throw InitException() << "Wrong type of StandardModel object in "
-			  << "MEeeto2ZH::doinit() the Herwig++"
+			  << "MEeeto2ZH::doinit() the Herwig"
 			  << " version must be used" 
 			  << Exception::runerror;
   // set the vertex

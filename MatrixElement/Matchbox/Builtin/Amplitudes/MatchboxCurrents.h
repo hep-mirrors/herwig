@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// MatchboxCurrents.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MatchboxCurrents.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef Herwig_MatchboxCurrents_H
@@ -12,9 +12,9 @@
 // This is the declaration of the MatchboxCurrents class.
 //
 
-#include "Herwig++/MatrixElement/Matchbox/Utility/AmplitudeCache.h"
-#include "Herwig++/MatrixElement/Matchbox/Utility/SpinorHelicity.h"
-#include "Herwig++/Models/StandardModel/StandardCKM.h"
+#include "Herwig/MatrixElement/Matchbox/Utility/AmplitudeCache.h"
+#include "Herwig/MatrixElement/Matchbox/Utility/SpinorHelicity.h"
+#include "Herwig/Models/StandardModel/StandardCKM.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 
 namespace Herwig {
@@ -33,12 +33,12 @@ struct MatchboxCurrents
 
     
   /**
-   * The Herwig++ StandardCKM object
+   * The Herwig StandardCKM object
    */
   Ptr<StandardCKM>::tcptr theStandardCKM;
   
   /**
-   * Return the Herwig++ StandardCKM object
+   * Return the Herwig StandardCKM object
    */
   Ptr<StandardCKM>::tcptr standardCKM(const StandardModelBase& SM) {
     if ( !theStandardCKM )

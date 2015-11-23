@@ -1,0 +1,41 @@
+# -*- ThePEG-repository -*-
+
+cd /Herwig/Particles
+
+set d:NominalMass 0*GeV
+set dbar:NominalMass 0*GeV
+set u:NominalMass 0*GeV
+set ubar:NominalMass 0*GeV
+set s:NominalMass 0*GeV
+set sbar:NominalMass 0*GeV
+set c:HardProcessMass 0*GeV
+set cbar:HardProcessMass 0*GeV
+set b:HardProcessMass 0*GeV
+set bbar:HardProcessMass 0*GeV
+
+cd /Herwig/DipoleShower/Kernels
+
+cp IFgx2qqxDipoleKernel IFgx2bbbarxDipoleKernel
+set IFgx2bbbarxDipoleKernel:Flavour /Herwig/Particles/b
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IFgx2bbbarxDipoleKernel
+
+cp IFgx2qqxDipoleKernel IFgx2bbarbxDipoleKernel
+set IFgx2bbarbxDipoleKernel:Flavour /Herwig/Particles/bbar
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IFgx2bbarbxDipoleKernel
+
+cp IFMgx2qqxDipoleKernel IFMgx2bbbarxDipoleKernel
+set IFMgx2bbbarxDipoleKernel:Flavour /Herwig/Particles/b
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IFMgx2bbbarxDipoleKernel
+
+cp IFMgx2qqxDipoleKernel IFMgx2bbarbxDipoleKernel
+set IFMgx2bbarbxDipoleKernel:Flavour /Herwig/Particles/bbar
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IFMgx2bbarbxDipoleKernel
+
+cp IIgx2qqxDipoleKernel IIgx2bbbarxDipoleKernel
+set IIgx2bbbarxDipoleKernel:Flavour /Herwig/Particles/b
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IIgx2bbbarxDipoleKernel
+
+cp IIgx2qqxDipoleKernel IIgx2bbarbxDipoleKernel
+set IIgx2bbarbxDipoleKernel:Flavour /Herwig/Particles/bbar
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 IIgx2bbarbxDipoleKernel
+

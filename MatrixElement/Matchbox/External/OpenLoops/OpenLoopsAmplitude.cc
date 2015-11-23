@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// OpenLoopsAmplitude.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// OpenLoopsAmplitude.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -27,7 +27,7 @@
 
 #include "ThePEG/Utilities/DynamicLoader.h"
 
-#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
+#include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
 
 #include <fstream>
 #include <sstream>
@@ -45,7 +45,7 @@ using namespace Herwig;
 #endif
 
 OpenLoopsAmplitude::OpenLoopsAmplitude() :
-  use_cms(true),psp_tolerance(12),
+  theHiggsEff(false), use_cms(true), psp_tolerance(12),
   OpenLoopsLibs_(OPENLOOPSLIBS), OpenLoopsPrefix_(OPENLOOPSPREFIX) {
 }
 
@@ -79,7 +79,10 @@ void OpenLoopsAmplitude::startOLP(const string& contract, int& status) {
 
 	if ( ! (DynamicLoader::load(OpenLoopsLibs_+"/libopenloops.so") ||
 		DynamicLoader::load(OpenLoopsPrefix_+"/lib/libopenloops.so") ||
-		DynamicLoader::load("libopenloops.so") ) ) {
+		DynamicLoader::load("libopenloops.so") ||
+		DynamicLoader::load(OpenLoopsLibs_+"/libopenloops.dylib") ||
+		DynamicLoader::load(OpenLoopsPrefix_+"/lib/libopenloops.dylib") ||
+		DynamicLoader::load("libopenloops.dylib") ) ) {
 	  throw Exception() << "OpenLoopsAmplitude::startOLP(): Failed to load libopenloops.so/dylib\n"
 			    << DynamicLoader::lastErrorMessage
 			    << Exception::runerror;
@@ -136,12 +139,14 @@ void OpenLoopsAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs
 		maxlegs = max(maxlegs, static_cast<size_t>(t->first.first.legs.size()));
 	}
 
-	orderFile << "# OLP order file created by Herwig++/Matchbox for OpenLoops\n\n";
+	orderFile << "# OLP order file created by Herwig/Matchbox for OpenLoops\n\n";
 	orderFile << "CorrectionType           QCD\n";
 	orderFile << "IRregularization         " << (isDR() ? "DRED" : "CDR") << "\n";
 	orderFile << "extra answerfile      " << (factory()->buildStorage() + name() + ".OLPAnswer.lh") << "\n";
-    orderFile << "extra psp_tolerance "<<psp_tolerance<<"\n";
-    orderFile << "extra use_cms "<<(use_cms?"1":"0")<< "\n";
+	orderFile << "extra psp_tolerance "<<psp_tolerance<<"\n";
+	orderFile << "extra use_cms "<<(use_cms?"1":"0")<< "\n";
+	if (theHiggsEff)
+		orderFile << "model heft\n";
 	orderFile << "\n";
 
 	if (extraOpenLoopsPath!="")
@@ -424,9 +429,24 @@ void OpenLoopsAmplitude::Init() {
 		  "arXiv:1111.5206 [hep-ph].\n"
 		  "%%CITATION = ARXIV:1111.5206;%%");
   
+  static Switch<OpenLoopsAmplitude,bool> interfaceHiggsEff
+         ("HiggsEff",
+          "Switch On/Off for effective higgs model.",
+          &OpenLoopsAmplitude::theHiggsEff, false, false, false);
+  static SwitchOption interfaceHiggsEffOn
+         (interfaceHiggsEff,
+          "On",
+          "On",
+          true);
+  static SwitchOption interfaceHiggsEffOff
+         (interfaceHiggsEff,
+          "Off",
+          "Off",
+          false);
+
   static Switch<OpenLoopsAmplitude,bool> interfaceUseComplMass
   ("ComplexMassScheme",
-   "Switch on or off if Compex Masses.",
+   "Switch on or off if Complex Masses.",
    &OpenLoopsAmplitude::use_cms, true, false, false);
   static SwitchOption interfaceUseComplMassOn
   (interfaceUseComplMass,

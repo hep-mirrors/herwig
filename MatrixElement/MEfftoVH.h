@@ -8,8 +8,8 @@
 #include "DrellYanBase.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
-#include "Herwig++/MatrixElement/ProductionMatrixElement.h"
-#include "Herwig++/PDT/GenericMassGenerator.h"
+#include "Herwig/MatrixElement/ProductionMatrixElement.h"
+#include "Herwig/PDT/GenericMassGenerator.h"
 
 namespace Herwig {
 using namespace ThePEG;

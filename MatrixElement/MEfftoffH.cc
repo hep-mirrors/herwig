@@ -14,8 +14,8 @@
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Cuts/Cuts.h"
-#include "Herwig++/Models/StandardModel/StandardModel.h"
-#include "Herwig++/MatrixElement/HardVertex.h"
+#include "Herwig/Models/StandardModel/StandardModel.h"
+#include "Herwig/MatrixElement/HardVertex.h"
 #include "ThePEG/PDF/PolarizedBeamParticleData.h"
 
 using namespace Herwig;
@@ -40,7 +40,7 @@ AbstractClassDescription<MEfftoffH> MEfftoffH::initMEfftoffH;
 void MEfftoffH::Init() {
 
   static ClassDocumentation<MEfftoffH> documentation
-    ("The MEfftoffH class is the base class for VBF processes in Herwig++");
+    ("The MEfftoffH class is the base class for VBF processes in Herwig");
 
   static Switch<MEfftoffH,unsigned int> interfaceShapeOption
     ("ShapeScheme",
@@ -166,7 +166,7 @@ void MEfftoffH::doinit() {
     _vertexFFZ = hwsm->vertexFFZ();
   }
   else throw InitException() << "Wrong type of StandardModel object in "
-			     << "MEfftoffH::doinit() the Herwig++"
+			     << "MEfftoffH::doinit() the Herwig"
 			     << " version must be used" 
 			     << Exception::runerror;
   // get the particle data objects for the intermediates

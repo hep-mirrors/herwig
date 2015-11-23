@@ -5,8 +5,8 @@
 // This is the declaration of the MEPP2HiggsVBF class.
 //
 
-#include "Herwig++/MatrixElement/MEfftoffH.h"
-#include "Herwig++/Shower/Couplings/ShowerAlpha.h"
+#include "Herwig/MatrixElement/MEfftoffH.h"
+#include "Herwig/Shower/Couplings/ShowerAlpha.h"
 
 namespace Herwig {
 

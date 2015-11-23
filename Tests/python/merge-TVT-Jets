@@ -73,6 +73,16 @@ if __name__ == "__main__":
                          default=logging.INFO, help="print debug (very verbose) messages")
     verbgroup.add_option("-q", "--quiet", action="store_const", const=logging.WARNING, dest="LOGLEVEL",
                          default=logging.INFO, help="be very quiet")
+    parser.add_option("--with-ue",
+                      action='store_true' ,
+                      dest="ue",
+                      default=True,
+                      help="Include UE analyses")
+    parser.add_option("--without-ue",
+                      action='store_false',
+                      dest="ue",
+                      default=True,
+                      help="Don\'t include UE analyses")
     parser.add_option_group(verbgroup)
     (opts, args) = parser.parse_args()
     logging.basicConfig(level=opts.LOGLEVEL, format="%(message)s")
@@ -82,15 +92,18 @@ if __name__ == "__main__":
         logging.error("Must specify at least the name of the files")
         sys.exit(1)
 
-yodafiles=["-Run-II-UE.yoda"    ,"-Run-II-Jets-1.yoda","-Run-II-Jets-2.yoda",\
+yodafiles=["-Run-II-Jets-0.yoda","-Run-II-Jets-1.yoda",\
+           "-Run-II-Jets-2.yoda",\
            "-Run-II-Jets-3.yoda","-Run-II-Jets-4.yoda","-Run-II-Jets-5.yoda",\
            "-Run-II-Jets-6.yoda","-Run-II-Jets-7.yoda",\
-           "-Run-I-UE.yoda"    ,"-Run-I-Jets-1.yoda","-Run-I-Jets-2.yoda",\
+           "-Run-I-Jets-1.yoda","-Run-I-Jets-2.yoda",\
            "-Run-I-Jets-3.yoda","-Run-I-Jets-4.yoda","-Run-I-Jets-5.yoda",\
-           "-630-UE.yoda"      ,"-630-Jets-1.yoda"  ,"-630-Jets-2.yoda"  ,\
+           "-630-Jets-1.yoda"  ,"-630-Jets-2.yoda"  ,\
            "-630-Jets-3.yoda", "-300-Energy.yoda", "-900-Energy.yoda", "-1960-Energy.yoda",
 #           "-RatioPlots.yoda"
            ]
+if(opts.ue) :
+    yodafiles += ["-Run-II-UE.yoda"    ,"-Run-I-UE.yoda"    ,"-630-UE.yoda"      ,]
 
 ## Get histos
 inhistos = {}
@@ -100,6 +113,9 @@ for f in yodafiles:
     if(file.find("Run-II-UE")>0) :
         sqrts=1960
         ptmin=0.
+    elif(file.find("Run-II-Jets-0")>0) :
+        sqrts=1960
+        ptmin=20.
     elif(file.find("Run-II-Jets-1")>0) :
         sqrts=1960
         ptmin=36.
@@ -154,12 +170,12 @@ for f in yodafiles:
 
     if not os.access(file, os.R_OK):
         logging.error("%s can not be read" % file)
-        break
+        continue
     try:
         aos = yoda.read(file)
     except:
         logging.error("%s can not be parsed as YODA" % file)
-        break
+        continue
     ## Get histos from this YODA file
     for aopath, ao in aos.iteritems() :
         # di-jet decorrelations
@@ -221,12 +237,12 @@ for f in yodafiles:
         ptmin=0.8
     if not os.access(file, os.R_OK):
         logging.error("%s can not be read" % file)
-        break
+        continue
     try:
         aos = yoda.read(file)
     except:
         logging.error("%s can not be parsed as YODA" % file)
-        break
+        continue
     ## Get histos from this AIDA file
     for aopath, ao in aos.iteritems() :
         if(aopath.find("8566488")>0 or aopath.find("8320160")>0) :
@@ -287,35 +303,33 @@ for hpath,hsets in inhistos.iteritems():
 ## Field analysis
 logging.info("Processing CDF_2001_S4751469")
 ## Angular distributions in different pT bins
-useOnePt("/CDF_2001_S4751469/d01-x01-y01", "1800", "0")
-useOnePt("/CDF_2001_S4751469/d01-x01-y02", "1800", "0")
+if(opts.ue) :
+    useOnePt("/CDF_2001_S4751469/d01-x01-y01", "1800", "0")
+    useOnePt("/CDF_2001_S4751469/d01-x01-y02", "1800", "0")
+    useOnePt("/CDF_2001_S4751469/d02-x01-y01", "1800", "0")
+    useOnePt("/CDF_2001_S4751469/d02-x01-y02", "1800", "0")
 useOnePt("/CDF_2001_S4751469/d01-x01-y03", "1800", "30")
-useOnePt("/CDF_2001_S4751469/d02-x01-y01", "1800", "0")
-useOnePt("/CDF_2001_S4751469/d02-x01-y02", "1800", "0")
 useOnePt("/CDF_2001_S4751469/d02-x01-y03", "1800", "30")
 ## Number, profile in pT_lead (True?)
-useOnePt("/CDF_2001_S4751469/d03-x01-y01", "1800", "0")
-useOnePt("/CDF_2001_S4751469/d03-x01-y02", "1800", "0")
-useOnePt("/CDF_2001_S4751469/d03-x01-y03", "1800", "0")
-#mergeByPt("/CDF_2001_S4751469/d04-x01-y01", "1800")
-#mergeByPt("/CDF_2001_S4751469/d04-x01-y02", "1800")
-#mergeByPt("/CDF_2001_S4751469/d04-x01-y03", "1800")
+if(opts.ue) :
+    useOnePt("/CDF_2001_S4751469/d03-x01-y01", "1800", "0")
+    useOnePt("/CDF_2001_S4751469/d03-x01-y02", "1800", "0")
+    useOnePt("/CDF_2001_S4751469/d03-x01-y03", "1800", "0")
 useOnePt("/CDF_2001_S4751469/d04-x01-y01", "1800", "30")
 useOnePt("/CDF_2001_S4751469/d04-x01-y02", "1800", "30")
 useOnePt("/CDF_2001_S4751469/d04-x01-y03", "1800", "30")
 ## pT sums, profile in pT_lead (True?)
-useOnePt("/CDF_2001_S4751469/d05-x01-y01", "1800",  "0")
-useOnePt("/CDF_2001_S4751469/d05-x01-y02", "1800",  "0")
-useOnePt("/CDF_2001_S4751469/d05-x01-y03", "1800",  "0")
-# mergeByPt("/CDF_2001_S4751469/d06-x01-y01", "1800")
-# mergeByPt("/CDF_2001_S4751469/d06-x01-y02", "1800")
-# mergeByPt("/CDF_2001_S4751469/d06-x01-y03", "1800")
+if(opts.ue) :
+    useOnePt("/CDF_2001_S4751469/d05-x01-y01", "1800",  "0")
+    useOnePt("/CDF_2001_S4751469/d05-x01-y02", "1800",  "0")
+    useOnePt("/CDF_2001_S4751469/d05-x01-y03", "1800",  "0")
 useOnePt("/CDF_2001_S4751469/d06-x01-y01", "1800", "30")
 useOnePt("/CDF_2001_S4751469/d06-x01-y02", "1800", "30")
 useOnePt("/CDF_2001_S4751469/d06-x01-y03", "1800", "30")
-## pT distributions (use a specific pT cut run?)
-useOnePt("/CDF_2001_S4751469/d07-x01-y01", "1800", "0")
-useOnePt("/CDF_2001_S4751469/d07-x01-y02", "1800", "0")
+## pT distributions (use a specific pT cut run)
+if(opts.ue) :
+    useOnePt("/CDF_2001_S4751469/d07-x01-y01", "1800", "0")
+    useOnePt("/CDF_2001_S4751469/d07-x01-y02", "1800", "0")
 useOnePt("/CDF_2001_S4751469/d07-x01-y03", "1800", "30")
 
 ## Acosta analysis
@@ -337,8 +351,9 @@ useOnePt("/CDF_2004_S5839831/d03-x01-y05", "1800", "175")
 mergeByPt("/CDF_2004_S5839831/d04-x01-y01", "1800")
 mergeByPt("/CDF_2004_S5839831/d04-x01-y02", "1800")
 ## Min bias dbs (want to use min bias pT cut)
-useOnePt("/CDF_2004_S5839831/d05-x01-y01", "1800", "0")
-useOnePt("/CDF_2004_S5839831/d06-x01-y01", "1800", "0")
+if(opts.ue) :
+    useOnePt("/CDF_2004_S5839831/d05-x01-y01", "1800", "0")
+    useOnePt("/CDF_2004_S5839831/d06-x01-y01", "1800", "0")
 ## Swiss Cheese, profile in ET_lead
 mergeByPt("/CDF_2004_S5839831/d07-x01-y01", "1800")
 mergeByPt("/CDF_2004_S5839831/d07-x01-y02", "1800")
@@ -350,8 +365,9 @@ mergeByPt("/CDF_2004_S5839831/d08-x01-y03", "630")
 mergeByPt("/CDF_2004_S5839831/d09-x01-y01", "630")
 mergeByPt("/CDF_2004_S5839831/d09-x01-y02", "630")
 ## Min bias dbs (want to use min bias pT cut)
-useOnePt("/CDF_2004_S5839831/d10-x01-y01", "630", "0")
-useOnePt("/CDF_2004_S5839831/d11-x01-y01", "630", "0")
+if(opts.ue) :
+    useOnePt("/CDF_2004_S5839831/d10-x01-y01", "630", "0")
+    useOnePt("/CDF_2004_S5839831/d11-x01-y01", "630", "0")
 
 ## CDF jet shape analysis
 logging.info("Processing CDF_2005_S6217184")

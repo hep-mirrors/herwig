@@ -14,13 +14,13 @@
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/PDT/StandardMatchers.h"
 #include <numeric>
-#include "Herwig++/Utilities/Maths.h"
-#include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "Herwig/Utilities/Maths.h"
+#include "Herwig/Models/StandardModel/StandardModel.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
-#include "Herwig++/Shower/Base/ShowerProgenitor.h"
-#include "Herwig++/Shower/Base/ShowerTree.h"
-#include "Herwig++/Shower/Base/Branching.h"
-#include "Herwig++/Shower/Base/HardTree.h"
+#include "Herwig/Shower/Base/ShowerProgenitor.h"
+#include "Herwig/Shower/Base/ShowerTree.h"
+#include "Herwig/Shower/Base/Branching.h"
+#include "Herwig/Shower/Base/HardTree.h"
 
 using namespace Herwig;
 
@@ -191,7 +191,7 @@ void MEPP2HiggsVBF::doinit() {
   tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   if(!hwsm)
     throw InitException() << "Wrong type of StandardModel object in "
-			  << "MEPP2HiggsVBF::doinit() the Herwig++"
+			  << "MEPP2HiggsVBF::doinit() the Herwig"
 			  << " version must be used" 
 			  << Exception::runerror;
   // set the vertex

@@ -11,10 +11,10 @@
 #include "ThePEG/Interface/RefVector.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Models/StandardModel/StandardModel.h"
-#include "Herwig++/Decay/General/GeneralThreeBodyDecayer.h"
-#include "Herwig++/Decay/DecayPhaseSpaceMode.h"
-#include "Herwig++/PDT/ThreeBodyAllOnCalculator.h"
+#include "Herwig/Models/StandardModel/StandardModel.h"
+#include "Herwig/Decay/General/GeneralThreeBodyDecayer.h"
+#include "Herwig/Decay/DecayPhaseSpaceMode.h"
+#include "Herwig/PDT/ThreeBodyAllOnCalculator.h"
 #include "ThePEG/PDT/StandardMatchers.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Utilities/Throw.h"
@@ -361,11 +361,11 @@ createDecayMode(vector<NBDiagram> & mode,
 				make_pair(pb,pb->mass()) , 
 				make_pair(pc,pc->mass()));
 	if(width/(dm->brat()*inpart->width())<1e-10) {
-	  string message = "Herwig++ calculation of the partial width for the decay mode "
+	  string message = "Herwig calculation of the partial width for the decay mode "
 	    + inpart->PDGName() + " -> " + pa->PDGName() + " " + pb->PDGName() + " " + pc->PDGName()
 	    + " is zero.\n This will cause problems with the calculation of"
 	    + " spin correlations.\n It is probably due to inconsistent parameters"
-	    + " and decay modes being passed to Herwig++ via the SLHA file.\n"
+	    + " and decay modes being passed to Herwig via the SLHA file.\n"
 	    + " Zeroing the branching ratio for this mode.";
 	  setBranchingRatio(dm,ZERO);
 	  generator()->logWarning(NBodyDecayConstructorError(message,Exception::warning));

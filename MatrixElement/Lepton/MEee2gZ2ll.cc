@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// MEee2gZ2ll.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MEee2gZ2ll.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -22,15 +22,15 @@
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Handlers/StandardXComb.h"
-#include "Herwig++/MatrixElement/HardVertex.h"
+#include "Herwig/MatrixElement/HardVertex.h"
 #include "ThePEG/PDF/PolarizedBeamParticleData.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include <numeric>
-#include "Herwig++/Shower/Base/ShowerTree.h"
-#include "Herwig++/Shower/Base/ShowerProgenitor.h"
-#include "Herwig++/Shower/Base/ShowerParticle.h"
-#include "Herwig++/Shower/Base/Branching.h"
-#include "Herwig++/Shower/Base/HardTree.h"
+#include "Herwig/Shower/Base/ShowerTree.h"
+#include "Herwig/Shower/Base/ShowerProgenitor.h"
+#include "Herwig/Shower/Base/ShowerParticle.h"
+#include "Herwig/Shower/Base/Branching.h"
+#include "Herwig/Shower/Base/HardTree.h"
 
 using namespace Herwig;
 
@@ -304,7 +304,7 @@ void MEee2gZ2ll::doinit() {
   tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   // do the initialisation
   if(!hwsm) throw InitException() << "Wrong type of StandardModel object in "
-				  << "MEee2gZ2ll::doinit() the Herwig++"
+				  << "MEee2gZ2ll::doinit() the Herwig"
 				  << " version must be used"
 				  << Exception::runerror;
   FFZVertex_ = hwsm->vertexFFZ();

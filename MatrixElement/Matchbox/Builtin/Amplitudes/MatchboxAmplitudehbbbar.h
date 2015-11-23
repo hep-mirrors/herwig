@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// MatchboxAmplitudebbbarh.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MatchboxAmplitudebbbarh.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef Herwig_MatchboxAmplitudehbbbar_H
@@ -12,8 +12,8 @@
 // This is the declaration of the MatchboxAmplitudehbbbar class.
 //
 
-#include "Herwig++/MatrixElement/Matchbox/Base/MatchboxAmplitude.h"
-#include "Herwig++/MatrixElement/Matchbox/Builtin/Amplitudes/MatchboxCurrents.h"
+#include "Herwig/MatrixElement/Matchbox/Base/MatchboxAmplitude.h"
+#include "Herwig/MatrixElement/Matchbox/Builtin/Amplitudes/MatchboxCurrents.h"
 
 namespace Herwig {
 

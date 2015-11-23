@@ -5,11 +5,11 @@
 // This is the declaration of the MEGammaGamma2WW class.
 //
 
-#include "Herwig++/MatrixElement/HwMEBase.h"
+#include "Herwig/MatrixElement/HwMEBase.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.fh"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVVertex.fh"
-#include "Herwig++/MatrixElement/ProductionMatrixElement.h"
+#include "Herwig/MatrixElement/ProductionMatrixElement.h"
 
 namespace Herwig {
 using namespace ThePEG;

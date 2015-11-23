@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// HwppSelector.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// HwppSelector.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -16,7 +16,7 @@
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Utilities/Kinematics.h"
+#include "Herwig/Utilities/Kinematics.h"
 #include "ThePEG/Utilities/Selector.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "CheckId.h"
@@ -51,7 +51,7 @@ void HwppSelector::persistentInput(PersistentIStream & is, int) {
 void HwppSelector::Init() {
 
   static ClassDocumentation<HwppSelector> documentation
-    ("The HwppSelector class implements the Herwig++ algorithm for selecting"
+    ("The HwppSelector class implements the Herwig algorithm for selecting"
      " the hadrons",
      "The hadronization used the selection algorithm described in \\cite{Kupco:1998fx}.",
      "%\\cite{Kupco:1998fx}\n"
@@ -76,7 +76,7 @@ void HwppSelector::Init() {
   static SwitchOption interfaceModeHwpp
     (interfaceMode,
      "Hwpp",
-     "Use the Herwig++ approach",
+     "Use the Herwig approach",
      1);
 
 }
@@ -88,7 +88,7 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPt
   // produced
   bool diquark = !(DiquarkMatcher::Check(par1->id()) || DiquarkMatcher::Check(par2->id()));
   bool quark = true;
-  // if the Herwig++ algorithm 
+  // if the Herwig algorithm 
   if(_mode ==1) {
     if(cluMass > massLightestBaryonPair(par1,par2) && 
        UseRandom::rnd() > 1./(1.+pwtDIquark())) {

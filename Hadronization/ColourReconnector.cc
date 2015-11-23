@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// ColourReconnector.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// ColourReconnector.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -13,7 +13,7 @@
 
 #include "ColourReconnector.h"
 #include "Cluster.h"
-#include "Herwig++/Utilities/Maths.h"
+#include "Herwig/Utilities/Maths.h"
 #include <ThePEG/Interface/Switch.h>
 #include "ThePEG/Interface/Parameter.h"
 #include <ThePEG/Persistency/PersistentOStream.h>
@@ -407,7 +407,7 @@ void ColourReconnector::Init() {
   static SwitchOption interfaceAlgorithmPlain
     (interfaceAlgorithm,
      "Plain",
-     "Plain colour reconnection as in Herwig++ 2.5.0",
+     "Plain colour reconnection as in Herwig 2.5.0",
      0);
   static SwitchOption interfaceAlgorithmStatistical
     (interfaceAlgorithm,

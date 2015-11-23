@@ -5,7 +5,7 @@ read Matchbox/GenericCollider.in
 cd /Herwig/EventHandlers
 
 create ThePEG::FixedCMSLuminosity Luminosity FixedCMSLuminosity.so
-set Luminosity:Energy 8000.0
+set Luminosity:Energy 13000.0
 set EventHandler:LuminosityFunction Luminosity
 set EventHandler:BeamA /Herwig/Particles/p+
 set EventHandler:BeamB /Herwig/Particles/p+

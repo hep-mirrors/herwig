@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// TauDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// TauDecayer.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -25,8 +25,8 @@
 #include "ThePEG/Helicity/VectorSpinInfo.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
-#include "Herwig++/Decay/DecayVertex.h"
-#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
+#include "Herwig/Decay/DecayVertex.h"
+#include "Herwig/Decay/GeneralDecayMatrixElement.h"
 #include "ThePEG/Helicity/FermionSpinInfo.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 

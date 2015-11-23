@@ -4,7 +4,7 @@
 # Example generator based on LHC parameters
 # using NLO matrix elements and matching in
 # the Powheg formalism
-# usage: Herwig++ read LHC.in
+# usage: Herwig read LHC.in
 ##################################################
 
 ##################################################
@@ -19,32 +19,27 @@ set LHCGenerator:MaxErrors 10000
 ##################################################
 #  Need to use an NLO PDF
 ##################################################
-set /Herwig/Particles/p+:PDF    /Herwig/Partons/MRST-NLO
-set /Herwig/Particles/pbar-:PDF /Herwig/Partons/MRST-NLO
-set /Herwig/Shower/ShowerHandler:PDFA /Herwig/Partons/MRST
-set /Herwig/Shower/ShowerHandler:PDFB /Herwig/Partons/MRST
-set /Herwig/Partons/MPIExtractor:FirstPDF  /Herwig/Partons/MRST
-set /Herwig/Partons/MPIExtractor:SecondPDF /Herwig/Partons/MRST
-set /Herwig/Partons/QCDExtractor:FirstPDF  /Herwig/Partons/MRST-NLO
-set /Herwig/Partons/QCDExtractor:SecondPDF /Herwig/Partons/MRST-NLO
-
-##################################################
-#  and strong coupling
-##################################################
-create Herwig::O2AlphaS O2AlphaS 
-set /Herwig/Generators/LHCGenerator:StandardModelParameters:QCD/RunningAlphaS O2AlphaS
+set /Herwig/Particles/p+:PDF    /Herwig/Partons/HardNLOPDF
+set /Herwig/Particles/pbar-:PDF /Herwig/Partons/HardNLOPDF
+set /Herwig/Shower/ShowerHandler:PDFA /Herwig/Partons/ShowerLOPDF
+set /Herwig/Shower/ShowerHandler:PDFB /Herwig/Partons/ShowerLOPDF
+set /Herwig/Partons/MPIExtractor:FirstPDF  /Herwig/Partons/MPIPDF
+set /Herwig/Partons/MPIExtractor:SecondPDF /Herwig/Partons/MPIPDF
+set /Herwig/Partons/QCDExtractor:FirstPDF  /Herwig/Partons/HardNLOPDF
+set /Herwig/Partons/QCDExtractor:SecondPDF /Herwig/Partons/HardNLOPDF
 
 ##################################################
 #  Setup the POWHEG shower
 ##################################################
 cd /Herwig/Shower
 set Evolver:HardEmissionMode POWHEG
+read Matchbox/Powheg-Default-ShowerAlphaSTune.in
 
 ##################################################
 # LHC physics parameters (override defaults here) 
 ##################################################
 cd /Herwig/Generators
-set LHCGenerator:EventHandler:LuminosityFunction:Energy 8000.0
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 13000.0
 
 # Intrinsic pT tune extrapolated to LHC energy
 set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
@@ -106,7 +101,7 @@ cd /Herwig/Generators
 # set /Herwig/Analysis/HepMCFile:Units GeV_mm
 
 ##################################################
-# Save run for later usage with 'Herwig++ run'
+# Save run for later usage with 'Herwig run'
 ##################################################
 saverun LHC-Powheg LHCGenerator
 

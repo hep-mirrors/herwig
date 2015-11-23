@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// FlatInvertiblePhasespace.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// FlatInvertiblePhasespace.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -18,7 +18,7 @@
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
-#include "Herwig++/Utilities/GSLBisection.h"
+#include "Herwig/Utilities/GSLBisection.h"
 #include "ThePEG/Cuts/Cuts.h"
 
 #include "ThePEG/Persistency/PersistentOStream.h"

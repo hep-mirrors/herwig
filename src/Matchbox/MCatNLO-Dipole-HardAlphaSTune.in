@@ -1,15 +1,6 @@
 # -*- ThePEG-repository -*-
-
-##################################################
-## Dipole shower tune settings
-##################################################
-
-##################################################
-## (two-loop) alpha_s
-##################################################
-set /Herwig/DipoleShower/NLOAlphaS:input_alpha_s 0.139
-set /Herwig/DipoleShower/NLOAlphaS:input_scale 91.18*GeV
-set /Herwig/MatrixElements/Matchbox/AlphaS/MatchboxNLOAlphaS:input_alpha_s 0.139
+# tune where the world average perutbative alphaS is used for the hard me
+# and matching and the shower alpha_S tuned seperately
 
 ##################################################
 ## special scale choices
@@ -42,65 +33,75 @@ set FIMgx2ssxDipoleKernel:VirtualitySplittingScale Yes
 set FIMgx2bbxDipoleKernel:VirtualitySplittingScale Yes
 
 ##################################################
-## cutoffs
-##################################################
-set /Herwig/DipoleShower/Kinematics/FFLightKinematics:IRCutoff 1.12*GeV
-set /Herwig/DipoleShower/Kinematics/FFMassiveKinematics:IRCutoff 1.12*GeV
-
-set /Herwig/DipoleShower/Kinematics/FILightKinematics:IRCutoff 1.12*GeV
-set /Herwig/DipoleShower/Kinematics/FIMassiveKinematics:IRCutoff 1.12*GeV
-
-set /Herwig/DipoleShower/Kinematics/IFLightKinematics:IRCutoff 1.12*GeV
-set /Herwig/DipoleShower/Kinematics/IFMassiveKinematics:IRCutoff 1.12*GeV
-
-set /Herwig/DipoleShower/Kinematics/IILightKinematics:IRCutoff  1.12*GeV
-
-## needs to be synchronized with settings above
-set /Herwig/MatrixElements/Matchbox/DipoleMatching:FFPtCut 1.12*GeV
-set /Herwig/MatrixElements/Matchbox/DipoleMatching:FIPtCut 1.12*GeV
-set /Herwig/MatrixElements/Matchbox/DipoleMatching:IIPtCut 1.12*GeV
-
-set /Herwig/Particles/g:ConstituentMass 0.7899848*GeV
-
-##################################################
 ## intrinsic pt
 ##################################################
 set /Herwig/DipoleShower/IntrinsicPtGenerator:ValenceIntrinsicPtScale 2.0*GeV
 set /Herwig/DipoleShower/IntrinsicPtGenerator:SeaIntrinsicPtScale 2.0*GeV
 
 ##################################################
+## Dipole shower tune settings
+##################################################
+
+set /Herwig/Particles/g:ConstituentMass 0.7899848*GeV
+
+##################################################
+## (two-loop) alpha_s
+##################################################
+set /Herwig/DipoleShower/NLOAlphaS:input_alpha_s 0.125
+set /Herwig/DipoleShower/NLOAlphaS:input_scale 91.18*GeV
+
+##################################################
+## cutoffs
+##################################################
+set /Herwig/DipoleShower/Kinematics/FFLightKinematics:IRCutoff 0.45*GeV
+set /Herwig/DipoleShower/Kinematics/FFMassiveKinematics:IRCutoff 0.45*GeV
+
+set /Herwig/DipoleShower/Kinematics/FILightKinematics:IRCutoff 0.45*GeV
+set /Herwig/DipoleShower/Kinematics/FIMassiveKinematics:IRCutoff 0.45*GeV
+
+set /Herwig/DipoleShower/Kinematics/IFLightKinematics:IRCutoff 0.45*GeV
+set /Herwig/DipoleShower/Kinematics/IFMassiveKinematics:IRCutoff 0.45*GeV
+
+set /Herwig/DipoleShower/Kinematics/IILightKinematics:IRCutoff  0.45*GeV
+
+## needs to be synchronized with settings above
+set /Herwig/MatrixElements/Matchbox/DipoleMatching:FFPtCut 0.45*GeV
+set /Herwig/MatrixElements/Matchbox/DipoleMatching:FIPtCut 0.45*GeV
+set /Herwig/MatrixElements/Matchbox/DipoleMatching:IIPtCut 0.45*GeV
+
+##################################################
 ## hadronization parameters -- complete?
 ##################################################
 cd /Herwig/Hadronization
 
-set ClusterFissioner:ClMaxLight                  3.03
-set ClusterFissioner:ClPowLight                  0.92
-set ClusterFissioner:PSplitLight                 0.57
+set ClusterFissioner:ClMaxLight                  3.30
+set ClusterFissioner:ClPowLight                  2.50
+set ClusterFissioner:PSplitLight                 1.29
 set ClusterDecayer:ClDirLight                    1
 set ClusterDecayer:ClSmrLight                    3.118342
 
-set ClusterFissioner:ClMaxCharm                  3.274090*GeV
-set ClusterFissioner:ClPowCharm                  10.0
-set ClusterFissioner:PSplitCharm                 0.7183601
+set ClusterFissioner:ClMaxCharm                  3.11*GeV
+set ClusterFissioner:ClPowCharm                  1.62
+set ClusterFissioner:PSplitCharm                 2.54
 set ClusterDecayer:ClDirCharm                    1
-set ClusterDecayer:ClSmrCharm                    3.118342
+set ClusterDecayer:ClSmrCharm                    0.
 set LightClusterDecayer:SingleHadronLimitCharm   0.0
 
-set ClusterFissioner:ClMaxBottom                 3.274090*GeV
-set ClusterFissioner:ClPowBottom                 10.0
-set ClusterFissioner:PSplitBottom                0.7183601
+set ClusterFissioner:ClMaxBottom                 1.38*GeV
+set ClusterFissioner:ClPowBottom                 0.62
+set ClusterFissioner:PSplitBottom                0.20
 set ClusterDecayer:ClDirBottom                   1
-set ClusterDecayer:ClSmrBottom                   3.118342
-set LightClusterDecayer:SingleHadronLimitBottom  0.0
+set ClusterDecayer:ClSmrBottom                   0.
+set LightClusterDecayer:SingleHadronLimitBottom  0.12
 
 set HadronSelector:PwtUquark                     1.0
 set HadronSelector:PwtDquark                     1.0
-set HadronSelector:PwtSquark                     0.61
+set HadronSelector:PwtSquark                     1.09
 set HadronSelector:PwtCquark                     1.0
 set HadronSelector:PwtBquark                     1.0
-set HadronSelector:PwtDIquark                    0.46
+set HadronSelector:PwtDIquark                    0.66
 set HadronSelector:SngWt                         1.0
 set HadronSelector:DecWt                         1.0
 
-cd /
 
+cd /

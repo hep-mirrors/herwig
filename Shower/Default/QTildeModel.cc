@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// QTildeModel.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// QTildeModel.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -17,7 +17,7 @@
 #include "QTildeFinder.h"
 #include "QTildeSudakov.h"
 #include "ThePEG/Utilities/Throw.h"
-#include "Herwig++/Shower/Base/Evolver.h"
+#include "Herwig/Shower/Base/Evolver.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig;
@@ -36,7 +36,7 @@ IBPtr QTildeModel::fullclone() const {
 void QTildeModel::Init() {
 
   static ClassDocumentation<QTildeModel> documentation
-    ("The QTildeModel class is the ShowerModel object for the Herwig++ shower.");
+    ("The QTildeModel class is the ShowerModel object for the Herwig shower.");
 
 }
 

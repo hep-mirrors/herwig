@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// GenericWidthGenerator.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// GenericWidthGenerator.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_GenericWidthGenerator_H
@@ -15,9 +15,9 @@
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "GenericWidthGenerator.fh"
-#include "Herwig++/Decay/DecayIntegrator.h"
-#include "Herwig++/Decay/DecayPhaseSpaceMode.h"
-#include "Herwig++/Utilities/Interpolator.h"
+#include "Herwig/Decay/DecayIntegrator.h"
+#include "Herwig/Decay/DecayPhaseSpaceMode.h"
+#include "Herwig/Utilities/Interpolator.h"
 #include "GenericMassGenerator.h"
 #include <iostream>
 

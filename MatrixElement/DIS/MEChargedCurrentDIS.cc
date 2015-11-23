@@ -13,9 +13,9 @@
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
-#include "Herwig++/MatrixElement/HardVertex.h"
+#include "Herwig/MatrixElement/HardVertex.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "Herwig/Models/StandardModel/StandardModel.h"
 #include "ThePEG/Cuts/Cuts.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/PDF/PolarizedBeamParticleData.h"
@@ -36,7 +36,7 @@ void MEChargedCurrentDIS::doinit() {
   // cast the SM pointer to the Herwig SM pointer
   tcHwSMPtr hwsm=ThePEG::dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   if(!hwsm) throw InitException() 
-    << "Must be the Herwig++ StandardModel class in "
+    << "Must be the Herwig StandardModel class in "
     << "MEChargedCurrentDIS::doinit" << Exception::abortnow;
   // vertices
   _theFFWVertex = hwsm->vertexFFW();

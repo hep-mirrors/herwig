@@ -5,7 +5,7 @@
 //
 
 #include "GeneralFourBodyDecayer.h"
-#include "Herwig++/Decay/DecayPhaseSpaceMode.h"
+#include "Herwig/Decay/DecayPhaseSpaceMode.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/EventRecord/Particle.h"
@@ -35,7 +35,7 @@ void GeneralFourBodyDecayer::Init() {
 
   static ClassDocumentation<GeneralFourBodyDecayer> documentation
     ("The GeneralFourBodyDecayer class is the base class for the implementation "
-     "of all four-body decays based on spin structures in Herwig++.");
+     "of all four-body decays based on spin structures in Herwig.");
 
   static Switch<GeneralFourBodyDecayer,unsigned int> interfaceWidthOption
     ("WidthOption",

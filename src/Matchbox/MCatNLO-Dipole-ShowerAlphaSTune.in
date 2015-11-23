@@ -1,0 +1,109 @@
+# -*- ThePEG-repository -*-
+# tune wherre the alphaS used for the hard me
+# and matching and the shower alpha_S are the same
+
+##################################################
+## special scale choices
+##################################################
+
+cd /Herwig/DipoleShower/Kernels
+
+set FFgx2ddxDipoleKernel:VirtualitySplittingScale Yes
+set FFgx2uuxDipoleKernel:VirtualitySplittingScale Yes
+set FFgx2ccxDipoleKernel:VirtualitySplittingScale Yes
+set FFgx2ssxDipoleKernel:VirtualitySplittingScale Yes
+set FFgx2bbxDipoleKernel:VirtualitySplittingScale Yes
+
+set FIgx2ddxDipoleKernel:VirtualitySplittingScale Yes
+set FIgx2uuxDipoleKernel:VirtualitySplittingScale Yes
+set FIgx2ccxDipoleKernel:VirtualitySplittingScale Yes
+set FIgx2ssxDipoleKernel:VirtualitySplittingScale Yes
+set FIgx2bbxDipoleKernel:VirtualitySplittingScale Yes
+
+set FFMgx2ddxDipoleKernel:VirtualitySplittingScale Yes
+set FFMgx2uuxDipoleKernel:VirtualitySplittingScale Yes
+set FFMgx2ccxDipoleKernel:VirtualitySplittingScale Yes
+set FFMgx2ssxDipoleKernel:VirtualitySplittingScale Yes
+set FFMgx2bbxDipoleKernel:VirtualitySplittingScale Yes
+
+set FIMgx2ddxDipoleKernel:VirtualitySplittingScale Yes
+set FIMgx2uuxDipoleKernel:VirtualitySplittingScale Yes
+set FIMgx2ccxDipoleKernel:VirtualitySplittingScale Yes
+set FIMgx2ssxDipoleKernel:VirtualitySplittingScale Yes
+set FIMgx2bbxDipoleKernel:VirtualitySplittingScale Yes
+
+##################################################
+## intrinsic pt
+##################################################
+set /Herwig/DipoleShower/IntrinsicPtGenerator:ValenceIntrinsicPtScale 2.0*GeV
+set /Herwig/DipoleShower/IntrinsicPtGenerator:SeaIntrinsicPtScale 2.0*GeV
+
+##################################################
+## Dipole shower tune settings
+##################################################
+
+set /Herwig/Particles/g:ConstituentMass 0.7899848*GeV
+
+##################################################
+## (two-loop) alpha_s
+##################################################
+set /Herwig/DipoleShower/NLOAlphaS:input_alpha_s 0.139
+set /Herwig/DipoleShower/NLOAlphaS:input_scale 91.18*GeV
+set /Herwig/Couplings/NLOAlphaS:input_alpha_s 0.139
+set /Herwig/Couplings/NLOAlphaS:input_scale 91.18*GeV
+
+
+##################################################
+## cutoffs
+##################################################
+set /Herwig/DipoleShower/Kinematics/FFLightKinematics:IRCutoff 1.12*GeV
+set /Herwig/DipoleShower/Kinematics/FFMassiveKinematics:IRCutoff 1.12*GeV
+
+set /Herwig/DipoleShower/Kinematics/FILightKinematics:IRCutoff 1.12*GeV
+set /Herwig/DipoleShower/Kinematics/FIMassiveKinematics:IRCutoff 1.12*GeV
+
+set /Herwig/DipoleShower/Kinematics/IFLightKinematics:IRCutoff 1.12*GeV
+set /Herwig/DipoleShower/Kinematics/IFMassiveKinematics:IRCutoff 1.12*GeV
+
+set /Herwig/DipoleShower/Kinematics/IILightKinematics:IRCutoff  1.12*GeV
+
+## needs to be synchronized with settings above
+set /Herwig/MatrixElements/Matchbox/DipoleMatching:FFPtCut 1.12*GeV
+set /Herwig/MatrixElements/Matchbox/DipoleMatching:FIPtCut 1.12*GeV
+set /Herwig/MatrixElements/Matchbox/DipoleMatching:IIPtCut 1.12*GeV
+
+##################################################
+## hadronization parameters -- complete?
+##################################################
+cd /Herwig/Hadronization
+
+set ClusterFissioner:ClMaxLight                  3.03
+set ClusterFissioner:ClPowLight                  0.92
+set ClusterFissioner:PSplitLight                 0.57
+set ClusterDecayer:ClDirLight                    1
+set ClusterDecayer:ClSmrLight                    3.118342
+
+set ClusterFissioner:ClMaxCharm                  3.58*GeV
+set ClusterFissioner:ClPowCharm                  2.36
+set ClusterFissioner:PSplitCharm                 1.08
+set ClusterDecayer:ClDirCharm                    1
+set ClusterDecayer:ClSmrCharm                    0.
+set LightClusterDecayer:SingleHadronLimitCharm   0.0
+
+set ClusterFissioner:ClMaxBottom                 2.03*GeV
+set ClusterFissioner:ClPowBottom                 0.67
+set ClusterFissioner:PSplitBottom                0.01
+set ClusterDecayer:ClDirBottom                   1
+set ClusterDecayer:ClSmrBottom                   0.
+set LightClusterDecayer:SingleHadronLimitBottom  0.12
+
+set HadronSelector:PwtUquark                     1.0
+set HadronSelector:PwtDquark                     1.0
+set HadronSelector:PwtSquark                     0.61
+set HadronSelector:PwtCquark                     1.0
+set HadronSelector:PwtBquark                     1.0
+set HadronSelector:PwtDIquark                    0.46
+set HadronSelector:SngWt                         1.0
+set HadronSelector:DecWt                         1.0
+
+cd /

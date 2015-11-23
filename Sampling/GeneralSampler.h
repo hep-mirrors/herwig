@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// GeneralSampler.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// GeneralSampler.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef Herwig_GeneralSampler_H
@@ -418,6 +418,20 @@ private:
    * The average relative deviation from the maximum weight
    */
   double maximumExceededBy;
+
+  /**
+   * The correct cross section as one would exspect with
+   * almostUnweighted. 
+   */
+
+  double correctWeights;
+
+  /**
+   * Enhancement factor to the maximum weight.
+   * This is to get less maximumExceeds. 
+   */
+
+  double theMaxEnhancement;
 
   /**
    * True, if grids have already been read.

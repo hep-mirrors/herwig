@@ -5,7 +5,7 @@
 // This is the declaration of the LHModel class.
 //
 
-#include "Herwig++/Models/General/BSMModel.h"
+#include "Herwig/Models/General/BSMModel.h"
 #include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSSVertex.h"
 #include "LHModel.fh"
@@ -15,7 +15,7 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The LHModel class is the main class for the implementation of the Little Higgs model in Herwig++.
+ * The LHModel class is the main class for the implementation of the Little Higgs model in Herwig.
  * In inherits from the StandardModel class and implements the calcuation of the couplings 
  * and masses in the Little Higgs model and storage of the additional couplings.
  *

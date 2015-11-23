@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// MatchboxAmplitude.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MatchboxAmplitude.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_MatchboxAmplitude_H
@@ -14,13 +14,13 @@
 
 #include "ThePEG/MatrixElement/Amplitude.h"
 #include "ThePEG/Handlers/LastXCombInfo.h"
-#include "Herwig++/MatrixElement/Matchbox/Utility/ColourBasis.h"
-#include "Herwig++/MatrixElement/Matchbox/Utility/SpinCorrelationTensor.h"
-#include "Herwig++/MatrixElement/Matchbox/Utility/LastMatchboxXCombInfo.h"
-#include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxXComb.h"
-#include "Herwig++/MatrixElement/Matchbox/Phasespace/MatchboxPhasespace.h"
-#include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.fh"
-#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.fh"
+#include "Herwig/MatrixElement/Matchbox/Utility/ColourBasis.h"
+#include "Herwig/MatrixElement/Matchbox/Utility/SpinCorrelationTensor.h"
+#include "Herwig/MatrixElement/Matchbox/Utility/LastMatchboxXCombInfo.h"
+#include "Herwig/MatrixElement/Matchbox/Utility/MatchboxXComb.h"
+#include "Herwig/MatrixElement/Matchbox/Phasespace/MatchboxPhasespace.h"
+#include "Herwig/MatrixElement/Matchbox/Base/MatchboxMEBase.fh"
+#include "Herwig/MatrixElement/Matchbox/MatchboxFactory.fh"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -199,7 +199,7 @@ public:
   virtual unsigned int orderInGem() const = 0;
 
   /**
-   * Return the Herwig++ StandardModel object
+   * Return the Herwig StandardModel object
    */
   Ptr<StandardModel>::tcptr standardModel() { 
     if ( !hwStandardModel() )
@@ -374,6 +374,16 @@ public:
    * Return the matrix element squared.
    */
   virtual double me2() const;
+
+  /**
+   * Return the colour charge of a given leg
+   */
+  double colourCharge(tcPDPtr) const;
+
+  /**
+   * Return the large-N charge of a given leg
+   */
+  double largeNColourCharge(tcPDPtr) const;
   
   /**
    * Return the largeN matrix element squared.
@@ -390,6 +400,11 @@ public:
    */
   virtual double largeNColourCorrelatedME2(pair<int,int> ij,
 					   Ptr<ColourBasis>::tptr largeNBasis) const;
+
+  /**
+   * Return true if trivial colour configuration.
+   */
+  bool trivialColourLegs() const { return theTrivialColourLegs; }
 
   /**
    * Return true, if this amplitude is capable of consistently filling
@@ -653,6 +668,11 @@ private:
    * The map with masses to be used for amplitude evaluation
    */
   map<long,Energy> theReshuffleMasses;
+
+  /**
+   * True if trivial colour configuration.
+   */
+  bool theTrivialColourLegs;
 
   /**
    * A command to fill the reshuffle mass map

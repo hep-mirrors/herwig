@@ -31,8 +31,8 @@ create Herwig::${ModelName} ${ModelName}
 
 # SM couplings
 
-set ${ModelName}:QCD/RunningAlphaS /Herwig/AlphaS
-set ${ModelName}:EW/RunningAlphaEM /Herwig/AlphaEM
+set ${ModelName}:QCD/RunningAlphaS /Herwig/Couplings/NLOAlphaS
+set ${ModelName}:EW/RunningAlphaEM /Herwig/Couplings/AlphaEM
 set ${ModelName}:EW/CKM /Herwig/CKM
 set ${ModelName}:RunningMass /Herwig/RunningMass
 

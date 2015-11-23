@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// QTildeMatching.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// QTildeMatching.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -24,8 +24,8 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-#include "Herwig++/MatrixElement/Matchbox/Dipoles/SubtractionDipole.h"
-#include "Herwig++/MatrixElement/Matchbox/Phasespace/TildeKinematics.h"
+#include "Herwig/MatrixElement/Matchbox/Dipoles/SubtractionDipole.h"
+#include "Herwig/MatrixElement/Matchbox/Phasespace/TildeKinematics.h"
 
 using namespace Herwig;
 
@@ -120,6 +120,7 @@ bool QTildeMatching::isInShowerPhasespace() const {
   }
 
 
+
   Energy Qg = theQTildeSudakov->kinScale();
   Energy2 pt2 = ZERO;
   if ( dipole()->bornEmitter() > 1 ) {
@@ -133,7 +134,7 @@ bool QTildeMatching::isInShowerPhasespace() const {
     pt2 = sqr((1.-z)*qtilde) - z*sqr(Qg);
   }
 
-  if ( pt2 < theQTildeSudakov->pT2min() )
+  if ( pt2 < max(theQTildeSudakov->pT2min(),sqr(safeCut()) ))
     return false;
 
   bool hardVeto = restrictPhasespace() && sqrt(pt2) >= dipole()->showerHardScale();
@@ -145,7 +146,6 @@ bool QTildeMatching::isAboveCutoff() const {
 
   assert((theQTildeSudakov->cutOffOption() == 0 || theQTildeSudakov->cutOffOption() == 2) && 
 	 "implementation only provided for default and pt cutoff");
-
   Energy qtilde = dipole()->showerScale();
   assert(!dipole()->showerParameters().empty());
   double z = dipole()->showerParameters()[0];
@@ -153,13 +153,16 @@ bool QTildeMatching::isAboveCutoff() const {
   if ( dipole()->bornEmitter() > 1 ) {
     Energy mu = max(Qg,realCXComb()->meMomenta()[dipole()->realEmitter()].mass());
     if ( bornCXComb()->mePartonData()[dipole()->bornEmitter()]->id() == ParticleID::g )
-      return sqr(z*(1.-z)*qtilde) - sqr(mu) >= theQTildeSudakov->pT2min();
+      return sqr(z*(1.-z)*qtilde) - sqr(mu) >= 
+             max(theQTildeSudakov->pT2min(),sqr(safeCut()));
     else
-      return sqr(z*(1.-z)*qtilde) - sqr((1.-z)*mu) - z*sqr(Qg) >= theQTildeSudakov->pT2min();
+      return sqr(z*(1.-z)*qtilde) - sqr((1.-z)*mu) - z*sqr(Qg) >= 
+             max(theQTildeSudakov->pT2min(),sqr(safeCut()));
   }
   if ( dipole()->bornEmitter() < 2 ) {
     return
-      sqr((1.-z)*qtilde) - z*sqr(Qg) >= theQTildeSudakov->pT2min();
+      sqr((1.-z)*qtilde) - z*sqr(Qg) >= 
+      max(theQTildeSudakov->pT2min(),sqr(safeCut()));
   }
   return false;
 }
@@ -332,9 +335,10 @@ void QTildeMatching::calculateShowerVariables() const {
     (n*realCXComb()->meMomenta()[dipole()->realEmission()])/
     (n*realCXComb()->meMomenta()[dipole()->realEmitter()]);
   }
-  if ( z <= 0 ) {
+  // allow small violations (numerical inaccuracies)
+  if ( z <= 0 && z >= -1e-6 ) {
     z = std::numeric_limits<double>::epsilon();
-  } else if ( z >= 1 ) {
+  } else if ( z >= 1 && z <= 1+1e-6 ) {
     z = 1-std::numeric_limits<double>::epsilon();
   }
 
@@ -354,7 +358,7 @@ void QTildeMatching::calculateShowerVariables() const {
     qtilde2 = ZERO;
   }
 
-  assert(qtilde2 >= ZERO && z >= 0.0 && z <= 1.0);
+  assert(qtilde2 >= ZERO && z > 0.0 && z < 1.0);
 
   dipole()->showerScale(sqrt(qtilde2));
   dipole()->showerParameters().resize(1);

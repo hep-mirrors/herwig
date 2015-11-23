@@ -5,8 +5,8 @@
 // This is the declaration of the MEGammaGamma2ff class.
 //
 
-#include "Herwig++/MatrixElement/HwMEBase.h"
-#include "Herwig++/MatrixElement/ProductionMatrixElement.h"
+#include "Herwig/MatrixElement/HwMEBase.h"
+#include "Herwig/MatrixElement/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"

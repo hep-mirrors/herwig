@@ -6,11 +6,12 @@
 # Technical parameters for this run
 ##################################################
 cd /Herwig/Generators
+read Matchbox/Powheg-Default-ShowerAlphaSTune.in
 set LEPGenerator:NumberOfEvents 100000000
 set LEPGenerator:RandomNumberGenerator:Seed 31122001
 set LEPGenerator:DebugLevel 0
 set LEPGenerator:PrintEvent 10
-set LEPGenerator:MaxErrors 10000
+set LEPGenerator:MaxErrors 1000000
 # no MPI
 set LEPGenerator:EventHandler:CascadeHandler:MPIHandler NULL
 
@@ -29,10 +30,7 @@ insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/RivetAnalysis
 ##################################################
 #  Use the NLO q qbar matrix element
 ##################################################
-create Herwig::O2AlphaS /Herwig/O2AlphaS 
-set /Herwig/Generators/LHCGenerator:StandardModelParameters:QCD/RunningAlphaS /Herwig/O2AlphaS
 set /Herwig/Shower/Evolver:HardEmissionMode POWHEG
-set /Herwig/Shower/AlphaQCD:AlphaMZ 0.118
 insert /Herwig/MatrixElements/SimpleEE:MatrixElements 0 /Herwig/MatrixElements/PowhegMEee2gZ2qq
 ${process}
 set /Herwig/Shower/PartnerFinder:QEDPartner IIandFF
@@ -41,7 +39,7 @@ mv /Herwig/Generators/LEPGenerator /Herwig/Generators/EventGenerator
 read ${parameterFile}
 
 ##################################################
-# Save run for later usage with 'Herwig++ run'
+# Save run for later usage with 'Herwig run'
 ##################################################
 cd /Herwig/Generators
 saverun ${runname} EventGenerator

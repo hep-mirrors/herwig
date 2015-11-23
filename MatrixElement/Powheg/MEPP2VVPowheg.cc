@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// MEPP2VVPowheg.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MEPP2VVPowheg.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -21,13 +21,13 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/Handlers/StandardXComb.h"
-#include "Herwig++/Models/StandardModel/StandardModel.h"
-#include "Herwig++/MatrixElement/HardVertex.h"
-#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
-#include "Herwig++/Shower/Base/ShowerProgenitor.h"
-#include "Herwig++/Shower/Base/ShowerTree.h"
-#include "Herwig++/Shower/Base/Branching.h"
-#include "Herwig++/Shower/Base/HardTree.h"
+#include "Herwig/Models/StandardModel/StandardModel.h"
+#include "Herwig/MatrixElement/HardVertex.h"
+#include "Herwig/Decay/GeneralDecayMatrixElement.h"
+#include "Herwig/Shower/Base/ShowerProgenitor.h"
+#include "Herwig/Shower/Base/ShowerTree.h"
+#include "Herwig/Shower/Base/Branching.h"
+#include "Herwig/Shower/Base/HardTree.h"
 
 using namespace Herwig;
 
@@ -2426,7 +2426,7 @@ bool MEPP2VVPowheg::sanityCheck() const {
   Energy2 t_u_qqb_WW(t_u_M_R_qqb_WW(H_));
   Energy2 t_u_qqb_ZZ(t_u_M_R_qqb_ZZ(H_));
 
-  // Check that the native leading order Herwig++ matrix 
+  // Check that the native leading order Herwig matrix 
   // element is equivalent to the WZ leading order matrix 
   // element in NPB 383 (1992) 3-44, with the relevant WZ->WW
   // WZ->ZZ transformation applied (M_Born_).

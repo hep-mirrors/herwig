@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// SplittingGenerator.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// SplittingGenerator.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_SplittingGenerator_H
@@ -13,11 +13,11 @@
 //
 
 #include "ThePEG/Interface/Interfaced.h"
-#include "Herwig++/Shower/Base/Branching.h"
-#include "Herwig++/Shower/Base/SudakovFormFactor.h"
+#include "Herwig/Shower/Base/Branching.h"
+#include "Herwig/Shower/Base/SudakovFormFactor.h"
 #include "SplittingGenerator.fh"
-#include "Herwig++/Shower/Base/ShowerParticle.h"
-#include "Herwig++/Shower/Base/ShowerKinematics.h"
+#include "Herwig/Shower/Base/ShowerParticle.h"
+#include "Herwig/Shower/Base/ShowerKinematics.h"
 
 namespace Herwig {
 

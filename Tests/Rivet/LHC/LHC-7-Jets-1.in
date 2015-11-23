@@ -28,3 +28,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1273574
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2014_I1298811
 # ATLAS jet shapes
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1082009
+# CMS Jets
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1208923

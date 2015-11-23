@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// PowhegShowerHandler.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// PowhegShowerHandler.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_PowhegShowerHandler_H
@@ -12,31 +12,31 @@
 // This is the declaration of the PowhegShowerHandler class.
 //
 
-#include "Herwig++/Shower/ShowerHandler.h"
-#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
-#include "Herwig++/MatrixElement/HwMEBase.h"
-#include "Herwig++/Shower/Base/HardBranching.h"
+#include "Herwig/Shower/ShowerHandler.h"
+#include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
+#include "Herwig/MatrixElement/HwMEBase.h"
+#include "Herwig/Shower/Base/HardBranching.h"
 
-#include "Herwig++/Shower/Matching/CKKWTree.h"
-#include "Herwig++/Shower/Matching/ProtoTree.h"
-#include "Herwig++/Shower/Matching/ProtoBranching.h"
-#include "Herwig++/Shower/Matching/PotentialTree.h"
+#include "Herwig/Shower/Matching/CKKWTree.h"
+#include "Herwig/Shower/Matching/ProtoTree.h"
+#include "Herwig/Shower/Matching/ProtoBranching.h"
+#include "Herwig/Shower/Matching/PotentialTree.h"
 
 #include "ThePEG/MatrixElement/DiagramBase.fh"
 #include "ThePEG/MatrixElement/MEBase.h"
 #include "ThePEG/PDF/PartonExtractor.h"
-#include "Herwig++/Shower/Base/HardTree.h"
+#include "Herwig/Shower/Base/HardTree.h"
 
-// #include "Herwig++/Shower/SplittingFunctions/SplittingGenerator.h"
-// #include "Herwig++/Shower/Base/ShowerModel.h"
+// #include "Herwig/Shower/SplittingFunctions/SplittingGenerator.h"
+// #include "Herwig/Shower/Base/ShowerModel.h"
 // #include "ThePEG/PDF/BeamParticleData.h"
-// #include "Herwig++/Shower/Base/ShowerTree.h"
-// #include "Herwig++/Shower/Base/ShowerProgenitor.fh"
-// #include "Herwig++/Shower/ShowerHandler.fh"
-// #include "Herwig++/Shower/Base/Branching.h"
-// #include "Herwig++/Shower/Base/ShowerVeto.h"
+// #include "Herwig/Shower/Base/ShowerTree.h"
+// #include "Herwig/Shower/Base/ShowerProgenitor.fh"
+// #include "Herwig/Shower/ShowerHandler.fh"
+// #include "Herwig/Shower/Base/Branching.h"
+// #include "Herwig/Shower/Base/ShowerVeto.h"
 // #include "ThePEG/Handlers/XComb.h"
-// #include "Herwig++/Decay/HwDecayerBase.h"
+// #include "Herwig/Decay/HwDecayerBase.h"
 
 
 namespace Herwig {
@@ -52,7 +52,8 @@ public:
    */
   PowhegShowerHandler() : subtractionIntegral_(false),
 			  enforceColourConsistency_(false),
-			  forcePartners_(false)
+			  forcePartners_(false),
+			  decayRadiation_(0)
   {}
 
 public:
@@ -292,6 +293,11 @@ private:
    *  Force emitter and spectator partners
    */
   bool forcePartners_;
+
+  /**
+   *  Handling of radiation in decays
+   */
+  unsigned int decayRadiation_;
 
 };
 

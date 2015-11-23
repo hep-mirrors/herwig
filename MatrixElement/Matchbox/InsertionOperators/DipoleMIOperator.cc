@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// DipoleMIOperator.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// DipoleMIOperator.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -20,10 +20,10 @@
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/MatrixElement/Matchbox/Base/DipoleRepository.h"
+#include "Herwig/MatrixElement/Matchbox/Base/DipoleRepository.h"
 #include "ThePEG/PDT/DecayMode.h"
 
-#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
+#include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
 
 #include <gsl/gsl_sf_dilog.h>
 
@@ -120,7 +120,8 @@ void DipoleMIOperator::setXComb(tStdXCombPtr xc) {
     CF = (SM().Nc()*SM().Nc()-1.0)/(2.*SM().Nc());
     gammaQuark = (3./2.)*CF;
     gammaGluon = (11./6.)*CA - (1./3.)*lastBorn()->nLightJetVec().size();
-    betaZero = (11./6.)*CA - (1./3.)*(lastBorn()->nLightJetVec().size()+lastBorn()->nHeavyJetVec().size());
+    // betaZero = (11./6.)*CA - (1./3.)*(lastBorn()->nLightJetVec().size()+lastBorn()->nHeavyJetVec().size());
+    betaZero = (11./6.)*CA - (1./3.)*(lastBorn()->nLightJetVec().size());
     KQuark = (7./2.-sqr(pi)/6.)*CF;
     KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*lastBorn()->nLightJetVec().size();
   }
@@ -168,7 +169,16 @@ double DipoleMIOperator::me2() const {
 
   Energy2 mu2 = lastBorn()->mu2();
 
+  // kappa=0 is currently hard coded in the FFMggx and FFMqqx dipoles.
+  // If chosen coherently the physical cross section has to be inde-
+  // pendent of kappa.
   double kappa=0.;
+
+  // lambda tests the ln(m_F^2/s_ja) term between the I operator
+  // (for j=gluon and k=initial state spectator) and K operator
+  // (for j=gluon). If chosen coherently the physical cross
+  // section has to be independent of lambda.
+  double lambda=1.0;
 
   double res = 0.;
 
@@ -209,7 +219,8 @@ double DipoleMIOperator::me2() const {
       if ( idj > 1 ) { // Involves idk > 1 as well as idk < 2
         delta +=
           ( ((**j).id() == ParticleID::g ? CA : CF) *
-            ( Vj(**j,**k,sjk,kappa) - sqr(pi)/3. ) +
+            // ( Vj(**j,**k,sjk,kappa) - sqr(pi)/3. ) +
+            ( Vj(**j,**k,sjk,kappa,lambda,idk) - sqr(pi)/3. ) +
             ((**j).id() == ParticleID::g ? GammaGluon() : GammaQuark(**j)) +
             ((**j).id() == ParticleID::g ? gammaGluon : gammaQuark) * (1 + log(mu2/sjk)) +
             ((**j).id() == ParticleID::g ? KGluon : KQuark) );
@@ -218,7 +229,8 @@ double DipoleMIOperator::me2() const {
       if ( idj < 2 && idk > 1 ) {
         delta +=
           ( ((**j).id() == ParticleID::g ? CA : CF) *
-            ( Vj(**j,**k,sjk,2./3.,true) - sqr(pi)/3. ) +
+            // ( Vj(**j,**k,sjk,2./3.,true) - sqr(pi)/3. ) +
+            ( Vj(**j,**k,sjk,2./3.,lambda,idk,true) - sqr(pi)/3. ) +
             ((**j).id() == ParticleID::g ? gammaGluon : gammaQuark) * (1 + log(mu2/sjk)) +
             ((**j).id() == ParticleID::g ? KGluon : KQuark) );
       }
@@ -408,8 +420,11 @@ double DipoleMIOperator::oneLoopSinglePole() const {
 
 //////////////////////////////////////////////////////////////////////
 
+// double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k, 
+// 			                      Energy2 sjk, double kappa, 
+//                             bool mFSetEmpty) const {
 double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k, 
-			                      Energy2 sjk, double kappa, 
+			                      Energy2 sjk, double kappa, double lambda, int idk, 
                             bool mFSetEmpty) const {
   
   Energy2 mu2 = lastBorn()->mu2();
@@ -423,11 +438,12 @@ double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k,
   
   double vjk = rootOfKallen(Qjk2,mj2,mk2) / sjk;
   double rho = sqrt( abs(1.-vjk)/(1.+vjk) ); // abs() because for small mass 1.-vjk can get O(-1.e-16)
-  double rhoj = sqrt( ( 1. - vjk + 2.*mj2/Qjk2 / (1.-mj2/Qjk2-mk2/Qjk2) ) /
-    ( 1. + vjk + 2.*mj2/Qjk2 / (1.-mj2/Qjk2-mk2/Qjk2) ) );
-  double rhok = sqrt( ( 1. - vjk + 2.*mk2/Qjk2 / (1.-mj2/Qjk2-mk2/Qjk2) ) /
-    ( 1. + vjk + 2.*mk2/Qjk2 / (1.-mj2/Qjk2-mk2/Qjk2) ) );
-  
+  double rhoj = ( 1. - vjk + 2.*mj2/Qjk2 / (1.-mj2/Qjk2-mk2/Qjk2) ) /
+    ( 1. + vjk + 2.*mj2/Qjk2 / (1.-mj2/Qjk2-mk2/Qjk2) );
+  rhoj = sqrt( max(0.,rhoj) );
+  double rhok = ( 1. - vjk + 2.*mk2/Qjk2 / (1.-mj2/Qjk2-mk2/Qjk2) ) /
+    ( 1. + vjk + 2.*mk2/Qjk2 / (1.-mj2/Qjk2-mk2/Qjk2) );
+  rhok = sqrt( max(0.,rhok) );
   //////////////////////////////////////
   // Finite terms of S part (6.20)    //
   // Expanded convention              //
@@ -501,11 +517,17 @@ double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k,
         if( !mFSetEmpty )
           for( size_t f=0; f<lastBorn()->nHeavyJetVec().size(); ++f ) { // only heavy quarks in jet (aka g->QQbar at NLO)
             Energy2 mF2 = sqr( getParticleData(lastBorn()->nHeavyJetVec()[f])->hardProcessMass() );
-            // sum only over quarks which meet special condition
-            // but not if method of appendix B in massive CS pa-
-            // per is used (see note at the end of appendix B)
-            double rho1 = sqrt( 1. - 4.*mF2 / sqr(Qjk-mk) );
-            res += 2./3./CA * ( log((1.+rho1)/2.) - rho1/3.*(3.+sqr(rho1)) - 0.5*log(mF2/sjk) );
+            // Sum only over massive quarks which meet special condition.
+            // If method of appendix B in massive CS paper is used (see 
+            // note at the end of appendix B), then only if k is in final
+            // state (otherwise sum over all massive quarks in the jet).
+            // Here k is not always in final state.
+            if( idk>1 && sjk <= 4.*sqrt(mF2)*(sqrt(mF2)+mk) ) continue;
+            double rho1 = 1.0;
+            if ( idk<2 && 1. - 4.*mF2 / sqr(Qjk-mk) <= 0.0 ) rho1 *= 0.0;
+            else rho1 *= sqrt( 1. - 4.*mF2 / sqr(Qjk-mk) );
+            // res += 2./3./CA * ( log((1.+rho1)/2.) - rho1/3.*(3.+sqr(rho1)) - 0.5*log(mF2/sjk) );
+            res += 2./3./CA * ( log((1.+rho1)/2.) - rho1/3.*(3.+sqr(rho1)) - (idk<2?lambda:1.0)*0.5*log(mF2/sjk) );
           } // The last term with Q_{aux} in (6.26) cancels against a similar term in GammaGluon().
       }
     }
@@ -527,9 +549,12 @@ double DipoleMIOperator::Vj(const ParticleData& j, const ParticleData& k,
         if( !mFSetEmpty )
         for( size_t f=0; f<lastBorn()->nHeavyJetVec().size(); ++f ) { // only heavy quarks in jet (aka g->QQbar at NLO)
           Energy2 mF2 = sqr( getParticleData(lastBorn()->nHeavyJetVec()[f])->hardProcessMass() );
-          // sum only over quarks which meet special condition
-          // but not if method of appendix B in massive CS pa-
-          // per is used (see note at the end of appendix B)
+          // Sum only over massive quarks which meet special condition.
+          // If method of appendix B in massive CS paper is used (see 
+          // note at the end of appendix B), then only if k is in final
+          // state (otherwise sum over all massive quarks in the jet).
+          // Here k (since massive quark) is always in final state.
+          if( sjk <= 4.*sqrt(mF2)*(sqrt(mF2)+mk) ) continue;
           double rho1 = sqrt( 1. - 4.*mF2 / sqr(Qjk-mk) );
           double rho2 = sqrt( 1. - 4.*mF2 / (Qjk2-mk2) );
           res += 2./3./CA * ( log((Qjk-mk)/Qjk) + mk*rho1*rho1*rho1/(Qjk+mk) + log((1.+rho1)/2.) -

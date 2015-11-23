@@ -12,11 +12,11 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
-#include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "Herwig/Models/StandardModel/StandardModel.h"
 #include "ThePEG/Utilities/SimplePhaseSpace.h"
-#include "Herwig++/Utilities/Kinematics.h"
+#include "Herwig/Utilities/Kinematics.h"
 #include "ThePEG/Cuts/Cuts.h"
-#include "Herwig++/MatrixElement/HardVertex.h"
+#include "Herwig/MatrixElement/HardVertex.h"
 
 using namespace Herwig;
 
@@ -160,7 +160,7 @@ void MEPP2QQHiggs::doinit() {
   tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   // do the initialisation
   if(!hwsm) throw InitException() << "Wrong type of StandardModel object in "
-				  << "MEPP2QQHiggs::doinit() the Herwig++"
+				  << "MEPP2QQHiggs::doinit() the Herwig"
 				  << " version must be used" 
 				  << Exception::runerror;
   GGGVertex_ = hwsm->vertexGGG();

@@ -6,11 +6,11 @@
 //
 
 #include "ThePEG/MatrixElement/MEBase.h"
-#include "Herwig++/Shower/Base/ShowerParticle.fh"
-#include "Herwig++/Shower/Base/ShowerProgenitor.fh"
-#include "Herwig++/Shower/Base/ShowerTree.fh"
-#include "Herwig++/Shower/Base/HardTree.fh"
-#include "Herwig++/Shower/ShowerConfig.h"
+#include "Herwig/Shower/Base/ShowerParticle.fh"
+#include "Herwig/Shower/Base/ShowerProgenitor.fh"
+#include "Herwig/Shower/Base/ShowerTree.fh"
+#include "Herwig/Shower/Base/HardTree.fh"
+#include "Herwig/Shower/ShowerConfig.h"
 #include "ThePEG/PDF/BeamParticleData.h"
 #include "HwMEBase.fh"
 
@@ -30,7 +30,7 @@ typedef Ptr<BeamParticleData>::transient_const_pointer tcBeamPtr;
  *   particles so that they can be
  *   - set massless where required by gauge invariance
  *   - have their off-shell masses generated using the sophisticated approaches
- *     available in Herwig++.
+ *     available in Herwig.
  *
  * @see \ref HwMEBaseInterfaces "The interfaces"
  * defined for HwMEBase.

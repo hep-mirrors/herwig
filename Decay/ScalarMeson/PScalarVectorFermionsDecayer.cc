@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// PScalarVectorFermionsDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// PScalarVectorFermionsDecayer.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -22,8 +22,8 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/epsilon.h"
-#include "Herwig++/PDT/ThreeBodyAllOn1IntegralCalculator.h"
-#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
+#include "Herwig/PDT/ThreeBodyAllOn1IntegralCalculator.h"
+#include "Herwig/Decay/GeneralDecayMatrixElement.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;

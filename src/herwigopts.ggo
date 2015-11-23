@@ -3,7 +3,7 @@ args "--file-name=herwigopts --unamed-opts --long-help"
 
 ##################################################
 
-purpose "Herwig++ is a multi-purpose Monte-Carlo event generator \
+purpose "Herwig is a multi-purpose Monte-Carlo event generator \
 for particle physics. See arXiv:0803.0883 for a detailed manual, \
 or arXiv:1101.2599 for a more general description of the physics \
 behind MC event generation."
@@ -50,11 +50,11 @@ text "
   -x, --setupfile=FILE     An input file to modify run parameters.
   -t, --tag=TAG            A tag to append to the run name  (default=`')"
 
-option "jobsize" z "The number of subprocesses to integrate per job ."
+option "jobsize" z "The number of subprocesses to integrate per job (build only)."
   typestr="NUMBER"
   long optional
 
-option "maxjobs" y "The maximum number of integration jobs to be created."
+option "maxjobs" y "The maximum number of integration jobs to be created (build only)."
   typestr="NUMBER"
   long optional
 
@@ -84,7 +84,7 @@ option "prepend" L "Prepend a search path for dynamically loaded libraries."
   typestr="PATH"
   string optional multiple
 
-text "\nUsage: Herwig++ init [OPTIONS] FILE\n"
+text "\nUsage: Herwig init [OPTIONS] FILE\n"
 text "    creates a new default repository (not useful for end users).\n"
 
 section "Advanced options"

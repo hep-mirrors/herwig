@@ -52,7 +52,7 @@ void BSMModel::Init() {
 
   static Switch<BSMModel,bool> interfaceTopModes
     ("TopModes",
-     "Whether ro use the Herwig++ SM top decays or those from the SLHA file",
+     "Whether ro use the Herwig SM top decays or those from the SLHA file",
      &BSMModel::topModesFromFile_, false, false, false);
   static SwitchOption interfaceTopModesFile
     (interfaceTopModes,

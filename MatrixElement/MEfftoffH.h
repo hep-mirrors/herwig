@@ -8,8 +8,8 @@
 #include "HwMEBase.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
-#include "Herwig++/MatrixElement/ProductionMatrixElement.h"
-#include "Herwig++/PDT/GenericMassGenerator.h"
+#include "Herwig/MatrixElement/ProductionMatrixElement.h"
+#include "Herwig/PDT/GenericMassGenerator.h"
 
 namespace Herwig {
 
@@ -17,7 +17,7 @@ using namespace ThePEG;
 
 /**
  * The MEfftoffH class is the base class for vector boson fusion type
- * processes in Herwig++.
+ * processes in Herwig.
  *
  * @see \ref MEfftoffHInterfaces "The interfaces"
  * defined for MEfftoffH.

@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// DipoleMPKOperator.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// DipoleMPKOperator.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -20,10 +20,10 @@
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/MatrixElement/Matchbox/Base/DipoleRepository.h"
-#include "Herwig++/MatrixElement/Matchbox/Phasespace/RandomHelpers.h"
+#include "Herwig/MatrixElement/Matchbox/Base/DipoleRepository.h"
+#include "Herwig/MatrixElement/Matchbox/Phasespace/RandomHelpers.h"
 
-#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
+#include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
 
 #include <gsl/gsl_sf_dilog.h>
 
@@ -205,6 +205,12 @@ double DipoleMPKOperator::sumParton(int id) const {
   // which is not only important for the massive PK operator here but actually 
   // also for the I operator in the massive case.
 
+  // lambda tests the ln(m_F^2/s_ja) term between the I operator
+  // (for j=gluon and k=initial state spectator) and K operator
+  // (for j=gluon). If chosen coherently the physical cross
+  // section has to be independent of lambda.
+  double lambda=1.0;
+
   pdf =
     id == 0 ?
     lastXCombPtr()->partonBins().first->pdf() :
@@ -358,14 +364,16 @@ double DipoleMPKOperator::sumParton(int id) const {
         res -=
           ( (**i).id() == ParticleID::g ? CA : CF ) *
           fiCorrelated * 
-          ( (**i).id() == ParticleID::g ? ( Kscriptbarqg_g() + Kscriptbargg_g(Qja2) ) 
+          // ( (**i).id() == ParticleID::g ? ( Kscriptbarqg_g() + Kscriptbargg_g(Qja2) ) 
+          ( (**i).id() == ParticleID::g ? ( Kscriptbarqg_g() + Kscriptbargg_g(Qja2,lambda) ) 
                                         : ( Kscriptbarqg_q(Qja2,mj2) + Kscriptbargg_q(Qja2,mj2) ) );
       }
       if ( abs(mePartonData()[id]->id()) < 7 ) {
         res -=
           ( (**i).id() == ParticleID::g ? CA : CF ) *
           fiCorrelated * 
-          ( (**i).id() == ParticleID::g ? ( Kscriptbarqq_g(Qja2) + Kscriptbargq_g() ) 
+          // ( (**i).id() == ParticleID::g ? ( Kscriptbarqq_g(Qja2) + Kscriptbargq_g() ) 
+          ( (**i).id() == ParticleID::g ? ( Kscriptbarqq_g(Qja2,lambda) + Kscriptbargq_g() ) 
                                         : ( Kscriptbarqq_q(Qja2,mj2) + Kscriptbargq_q() ) );
       }
 
@@ -835,9 +843,12 @@ double DipoleMPKOperator::Kscriptbargg_q(Energy2 Qja2, Energy2 mj2) const {
 
 double DipoleMPKOperator::JaNS_QQ(double muQ2) const {
   double res = 
-    10./9. * ( 1. - sqrt(1.-4.*muQ2) ) - 
-    8./9. * muQ2 * sqrt(1.-4.*muQ2) + 
-    4./3. * log( (1.+sqrt(1.-4.*muQ2))/2. );
+    // 10./9. * ( 1. - sqrt(1.-4.*muQ2) ) - 
+    // 8./9. * muQ2 * sqrt(1.-4.*muQ2) + 
+    // 4./3. * log( (1.+sqrt(1.-4.*muQ2))/2. );
+    10./9. * ( 1. - ( (1.-4.*muQ2)<=0.0 ? 0.0 : sqrt(1.-4.*muQ2) ) ) - 
+    8./9. * muQ2 * ( (1.-4.*muQ2)<=0.0 ? 0.0 : sqrt(1.-4.*muQ2) ) + 
+    4./3. * log( ( 1. + ( (1.-4.*muQ2)<=0.0 ? 0.0 : sqrt(1.-4.*muQ2) ) ) / 2. );
   return res;
 }
 
@@ -854,7 +865,8 @@ double DipoleMPKOperator::Ja_QQzplus(double muQ2, int F, double zplus) const {
 
 //////////////////////////////
 
-double DipoleMPKOperator::Kscriptqq_g(Energy2 sja) const {
+// double DipoleMPKOperator::Kscriptqq_g(Energy2 sja) const {
+double DipoleMPKOperator::Kscriptqq_g(Energy2 sja, double lambda) const {
   assert(abs(parton->id()) < 7);
 
   double res = -1.*gammaGluon/CA*gammaSoft();
@@ -869,11 +881,13 @@ double DipoleMPKOperator::Kscriptqq_g(Energy2 sja) const {
     // but not if method of appendix B in massive CS pa-
     // per is used (see note at the end of appendix B)
     res += 1./(2.*CA) * (
-      PDFx(parton)*( 2./3.*(log(muQ2prime)+5./3.) - JaNS_QQ(muQ2prime) ) -
+      // PDFx(parton)*( 2./3.*(log(muQ2prime)+5./3.) - JaNS_QQ(muQ2prime) ) -
+      PDFx(parton)*( 2./3.*(lambda*log(muQ2prime)+5./3.) - JaNS_QQ(muQ2prime) ) -
       ( x<zplus ? ( 1./zplus*PDFxByzplus(parton,f,zplus)*( 2./3.*(log(zplus*muQ2prime)+5./3.) - JaNS_QQ(zplus*muQ2prime) ) ) 
                 : 0. ) + 
       Ja_QQzplus(muQ2,f,zplus) + 
-      PDFx(parton)*( 2./3.*sqrt((1.-4.*muQ2prime)*(1.-4.*muQ2prime)*(1.-4.*muQ2prime)) ) 
+      // PDFx(parton)*( 2./3.*sqrt((1.-4.*muQ2prime)*(1.-4.*muQ2prime)*(1.-4.*muQ2prime)) ) 
+      PDFx(parton)*( 2./3. * ( (1.-4.*muQ2prime)<=0.0 ? 0.0 : sqrt((1.-4.*muQ2prime)*(1.-4.*muQ2prime)*(1.-4.*muQ2prime)) ) ) 
     );
   }
 
@@ -893,7 +907,8 @@ double DipoleMPKOperator::Kscriptgq_g() const {
   return res;
 }
 
-double DipoleMPKOperator::Kscriptgg_g(Energy2 sja) const {
+// double DipoleMPKOperator::Kscriptgg_g(Energy2 sja) const {
+double DipoleMPKOperator::Kscriptgg_g(Energy2 sja, double lambda) const {
   assert(parton->id() == ParticleID::g);
 
   double res = -1.*gammaGluon/CA*gammaSoft();
@@ -908,11 +923,13 @@ double DipoleMPKOperator::Kscriptgg_g(Energy2 sja) const {
     // but not if method of appendix B in massive CS pa-
     // per is used (see note at the end of appendix B)
     res += 1./(2.*CA) * (
-      PDFx(parton)*( 2./3.*(log(muQ2prime)+5./3.) - JaNS_QQ(muQ2prime) ) -
+      // PDFx(parton)*( 2./3.*(log(muQ2prime)+5./3.) - JaNS_QQ(muQ2prime) ) -
+      PDFx(parton)*( 2./3.*(lambda*log(muQ2prime)+5./3.) - JaNS_QQ(muQ2prime) ) -
       ( x<zplus ? ( 1./zplus*PDFxByzplus(parton,f,zplus)*( 2./3.*(log(zplus*muQ2prime)+5./3.) - JaNS_QQ(zplus*muQ2prime) ) ) 
                 : 0. ) + 
       Ja_QQzplus(muQ2,f,zplus) + 
-      PDFx(parton)*( 2./3.*sqrt((1.-4.*muQ2prime)*(1.-4.*muQ2prime)*(1.-4.*muQ2prime)) ) 
+      // PDFx(parton)*( 2./3.*sqrt((1.-4.*muQ2prime)*(1.-4.*muQ2prime)*(1.-4.*muQ2prime)) ) 
+      PDFx(parton)*( 2./3. * ( (1.-4.*muQ2prime)<=0.0 ? 0.0 : sqrt((1.-4.*muQ2prime)*(1.-4.*muQ2prime)*(1.-4.*muQ2prime)) ) ) 
     );
   }
 
@@ -922,11 +939,13 @@ double DipoleMPKOperator::Kscriptgg_g(Energy2 sja) const {
 
 //////////////////////////////
 
-double DipoleMPKOperator::Kscriptbarqq_g(Energy2 Qja2) const {
+// double DipoleMPKOperator::Kscriptbarqq_g(Energy2 Qja2) const {
+double DipoleMPKOperator::Kscriptbarqq_g(Energy2 Qja2, double lambda) const {
   assert(abs(parton->id()) < 7);
 
   Energy2 sjamod = -Qja2/z; // Since Qja2=-z*sja (mj2=0) this gives sja again
-  double res = Kscriptqq_g(sjamod);
+  // double res = Kscriptqq_g(sjamod);
+  double res = Kscriptqq_g(sjamod,lambda);
 
   // \deltaqq*\delta(zplusbar-z)*T_R/C_A*\sum_{N_F}DeltaJbaraNS_QQbar(mF2/-Qja2) contribution
   for( size_t f=0; f<lastBorn()->nHeavyJetVec().size(); ++f ) { // sum over heavy flavours
@@ -961,11 +980,13 @@ double DipoleMPKOperator::Kscriptbargq_g() const {
 }
 
 
-double DipoleMPKOperator::Kscriptbargg_g(Energy2 Qja2) const {
+// double DipoleMPKOperator::Kscriptbargg_g(Energy2 Qja2) const {
+double DipoleMPKOperator::Kscriptbargg_g(Energy2 Qja2, double lambda) const {
   assert(parton->id() == ParticleID::g);
 
   Energy2 sjamod = -Qja2/z; // Since Qja2=-z*sja (mj2=0) this gives sja again
-  double res = Kscriptgg_g(sjamod);
+  // double res = Kscriptgg_g(sjamod);
+  double res = Kscriptgg_g(sjamod,lambda);
 
   // \deltagg*\delta(zplusbar-z)*T_R/C_A*\sum_{N_F}DeltaJbaraNS_QQbar(mF2/-Qja2) contribution
   for( size_t f=0; f<lastBorn()->nHeavyJetVec().size(); ++f ) { // sum over heavy flavours

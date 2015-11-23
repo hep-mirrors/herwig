@@ -50,5 +50,7 @@ MatchboxReference.h \
 MatchboxReference.cc \
 FlatInvertiblePhasespace.h \
 FlatInvertiblePhasespace.cc \
+FlatInvertibleLabframePhasespace.h \
+FlatInvertibleLabframePhasespace.cc \
 PhasespaceCouplings.h \
 PhasespaceCouplings.cc

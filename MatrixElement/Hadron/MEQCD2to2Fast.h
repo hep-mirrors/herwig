@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// MEQCD2to2Fast.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MEQCD2to2Fast.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_MEQCD2to2Fast_H
@@ -12,7 +12,7 @@
 // This is the declaration of the MEQCD2to2Fast class.
 //
 
-#include "Herwig++/MatrixElement/HwMEBase.h"
+#include "Herwig/MatrixElement/HwMEBase.h"
 #include "ThePEG/Repository/UseRandom.h"
 
 namespace Herwig {
@@ -35,7 +35,7 @@ public:
   /**
    * The default constructor.
    */
-  MEQCD2to2Fast() :_maxflavour(5),_process(0) {
+  MEQCD2to2Fast() :_maxflavour(5),_process(0),_strictFlavourScheme(false) {
     massOption(vector<unsigned int>(2,0));
   }
 
@@ -288,6 +288,17 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
+protected:
+
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+
+  //@}
+
 private:
 
   /**
@@ -323,6 +334,12 @@ private:
    *  Diagram
    */
   mutable unsigned int _diagram;
+
+  /**
+   * Exclude contributions with massive incominbg quarks
+   */
+  bool _strictFlavourScheme;
+
 };
 
 }

@@ -8,7 +8,7 @@
 #ifndef MYSTATISTICS_Counter_hpp_included
 #define MYSTATISTICS_Counter_hpp_included
 
-#include "Herwig++/Utilities/XML/Element.h"
+#include "Herwig/Utilities/XML/Element.h"
 
 namespace Statistics {
 

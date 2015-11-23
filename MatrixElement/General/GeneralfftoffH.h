@@ -5,7 +5,7 @@
 // This is the declaration of the GeneralfftoffH class.
 //
 
-#include "Herwig++/MatrixElement/MEfftoffH.h"
+#include "Herwig/MatrixElement/MEfftoffH.h"
 #include "GeneralfftoffH.fh"
 
 namespace Herwig {

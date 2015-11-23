@@ -14,26 +14,26 @@ Distribution.cc \
 Histogram.cc \
 Run.cc
 
-bin_PROGRAMS = combineDistributions combineRuns makeDistributions
+bin_PROGRAMS = herwig-combinedistributions herwig-combineruns herwig-makedistributions
 
-combineDistributions_LDADD = \
+herwig_combinedistributions_LDADD = \
 $(top_builddir)/Utilities/XML/libHwXML.la \
 libHwStatistics.la
 
-combineDistributions_SOURCES = \
-combineDistributions.cc
+herwig_combinedistributions_SOURCES = \
+herwig-combinedistributions.cc
 
-combineRuns_LDADD = \
+herwig_combineruns_LDADD = \
 $(top_builddir)/Utilities/XML/libHwXML.la \
 libHwStatistics.la
 
-combineRuns_SOURCES = \
-combineRuns.cc
+herwig_combineruns_SOURCES = \
+herwig-combineruns.cc
 
-makeDistributions_LDADD = \
+herwig_makedistributions_LDADD = \
 $(top_builddir)/Utilities/XML/libHwXML.la \
 libHwStatistics.la
 
-makeDistributions_SOURCES = \
-makeDistributions.cc
+herwig_makedistributions_SOURCES = \
+herwig-makedistributions.cc
 

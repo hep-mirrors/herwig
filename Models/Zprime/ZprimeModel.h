@@ -5,7 +5,7 @@
 // This is the declaration of the ZprimeModel class.
 //
 
-#include "Herwig++/Models/General/BSMModel.h"
+#include "Herwig/Models/General/BSMModel.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ZprimeModel.fh"
 

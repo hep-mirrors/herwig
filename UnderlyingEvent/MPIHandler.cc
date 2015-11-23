@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// MPIHandler.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MPIHandler.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -24,6 +24,7 @@
 #include "ThePEG/MatrixElement/MEBase.h"
 #include "ThePEG/Handlers/CascadeHandler.h"
 #include "ThePEG/Cuts/Cuts.h"
+#include "ThePEG/Cuts/JetCuts.h"
 #include "ThePEG/Cuts/SimpleKTCut.h"
 #include "ThePEG/PDF/PartonExtractor.h"
 
@@ -109,22 +110,37 @@ void MPIHandler::initialize() {
   //determine ptmin
   Ptmin_ = cuts()[0]->minKT(gluon);
 
-
   if(identicalToUE_ == -1){
     algorithm_ = 2;
   }else{
     if(identicalToUE_ == 0){
       //Need to work a bit, in case of LesHouches events for QCD2to2
-      if( dynamic_ptr_cast<Ptr<StandardEventHandler>::pointer>(eventHandler()) ){
-	PtOfQCDProc_ = dynamic_ptr_cast
-	  <Ptr<StandardEventHandler>::pointer>(eventHandler())->cuts()->minKT(gluon);
-      }else{
+      Ptr<StandardEventHandler>::pointer eH =
+	dynamic_ptr_cast<Ptr<StandardEventHandler>::pointer>(eventHandler());
+
+      if( eH ) {
+	PtOfQCDProc_ = eH->cuts()->minKT(gluon);
+	// find the jet cut in the new style cuts
+	for(unsigned int ix=0;ix<eH->cuts()->multiCuts().size();++ix) {
+	  Ptr<JetCuts>::pointer jetCuts =
+	    dynamic_ptr_cast<Ptr<JetCuts>::pointer>(eH->cuts()->multiCuts()[ix]);
+	  if(jetCuts) {
+	    Energy ptMin=1e30*GeV;
+	    for(unsigned int iy=0;iy<jetCuts->jetRegions().size();++iy) {
+	      ptMin = min(ptMin,jetCuts->jetRegions()[iy]->ptMin());
+	    }
+	    if(ptMin<1e29*GeV&&ptMin>PtOfQCDProc_) PtOfQCDProc_ = ptMin;
+	  }
+	}
+      }
+      else {
 	if(PtOfQCDProc_ == -1.0*GeV)
 	  throw Exception() << "MPIHandler: You need to specify the pt cutoff "
 			    << "used to in the LesHouches file for QCD2to2 events"
 			    << Exception::runerror;
       }
-    }else{
+    }
+    else {
       PtOfQCDProc_ = cuts()[identicalToUE_]->minKT(gluon);
     }
 
@@ -652,13 +668,13 @@ void MPIHandler::Init() {
      "%\\cite{Bahr:2008dy}\n"
      "\\bibitem{Bahr:2008dy}\n"
      "  M.~Bahr, S.~Gieseke and M.~H.~Seymour,\n"
-     "  ``Simulation of multiple partonic interactions in Herwig++,''\n"
+     "  ``Simulation of multiple partonic interactions in Herwig,''\n"
      "  JHEP {\\bf 0807}, 076 (2008)\n"
      "  [arXiv:0803.3633 [hep-ph]].\n"
      "  %%CITATION = JHEPA,0807,076;%%\n"
     "\\bibitem{Bahr:2009ek}\n"
      "  M.~Bahr, J.~M.~Butterworth, S.~Gieseke and M.~H.~Seymour,\n"
-     "  ``Soft interactions in Herwig++,''\n"
+     "  ``Soft interactions in Herwig,''\n"
      "  arXiv:0905.4671 [hep-ph].\n"
      "  %%CITATION = ARXIV:0905.4671;%%\n"
      );

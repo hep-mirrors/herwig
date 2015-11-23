@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// QTildeSudakov.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// QTildeSudakov.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -20,17 +20,17 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "Herwig++/Shower/Default/FS_QTildeShowerKinematics1to2.h"
-#include "Herwig++/Shower/Default/IS_QTildeShowerKinematics1to2.h"
-#include "Herwig++/Shower/Default/Decay_QTildeShowerKinematics1to2.h"
+#include "Herwig/Shower/Default/FS_QTildeShowerKinematics1to2.h"
+#include "Herwig/Shower/Default/IS_QTildeShowerKinematics1to2.h"
+#include "Herwig/Shower/Default/Decay_QTildeShowerKinematics1to2.h"
 #include "ThePEG/Utilities/DescribeClass.h"
-#include "Herwig++/Shower/Base/ShowerVertex.h"
-#include "Herwig++/Shower/Base/ShowerParticle.h"
-#include "Herwig++/Shower/ShowerHandler.h"
-#include "Herwig++/Shower/Base/Evolver.h"
-#include "Herwig++/Shower/Base/PartnerFinder.h"
-#include "Herwig++/Shower/Base/ShowerModel.h"
-#include "Herwig++/Shower/Base/KinematicsReconstructor.h"
+#include "Herwig/Shower/Base/ShowerVertex.h"
+#include "Herwig/Shower/Base/ShowerParticle.h"
+#include "Herwig/Shower/ShowerHandler.h"
+#include "Herwig/Shower/Base/Evolver.h"
+#include "Herwig/Shower/Base/PartnerFinder.h"
+#include "Herwig/Shower/Base/ShowerModel.h"
+#include "Herwig/Shower/Base/KinematicsReconstructor.h"
 
 using namespace Herwig;
 

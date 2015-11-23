@@ -83,8 +83,8 @@ mkdir /Herwig/NewPhysics/Sextet
 cd /Herwig/NewPhysics/Sextet
 create Herwig::SextetModel Model
 # SM couplings
-set Model:QCD/RunningAlphaS /Herwig/AlphaS
-set Model:EW/RunningAlphaEM /Herwig/AlphaEM
+set Model:QCD/RunningAlphaS /Herwig/Couplings/NLOAlphaS
+set Model:EW/RunningAlphaEM /Herwig/Couplings/AlphaEM
 set Model:EW/CKM /Herwig/CKM
 set Model:RunningMass /Herwig/RunningMass
 ###################################################

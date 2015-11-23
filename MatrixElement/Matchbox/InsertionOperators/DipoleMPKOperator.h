@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// DipoleMPKOperator.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// DipoleMPKOperator.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_DipoleMPKOperator_H
@@ -12,8 +12,8 @@
 // This is the declaration of the DipoleMPKOperator class.
 //
 
-#include "Herwig++/MatrixElement/Matchbox/InsertionOperators/MatchboxInsertionOperator.h"
-#include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.h"
+#include "Herwig/MatrixElement/Matchbox/InsertionOperators/MatchboxInsertionOperator.h"
+#include "Herwig/MatrixElement/Matchbox/Base/MatchboxMEBase.h"
 #include "ThePEG/PDF/PDF.h"
 
 namespace Herwig {
@@ -287,7 +287,8 @@ public:
   /**
    * The Kscript^{qq}_g contribution
    */
-  double Kscriptqq_g(Energy2 sja) const;
+  // double Kscriptqq_g(Energy2 sja) const;
+  double Kscriptqq_g(Energy2 sja, double lambda) const;
 
   /**
    * The Kscript^{qg}_g contribution
@@ -303,12 +304,14 @@ public:
    * The Kscript^{gg}_g contribution
    * equals the Kscript^{qq}_g contribution
    */
-  double Kscriptgg_g(Energy2 sja) const;
+  // double Kscriptgg_g(Energy2 sja) const;
+  double Kscriptgg_g(Energy2 sja, double lambda) const;
 
   /**
    * The Kscriptbar^{qq}_g contribution (B.18)
    */
-  double Kscriptbarqq_g(Energy2 Qja2) const;
+  // double Kscriptbarqq_g(Energy2 Qja2) const;
+  double Kscriptbarqq_g(Energy2 Qja2, double lambda) const;
 
   /**
    * The Kscriptbar^{qg}_g contribution (B.18)
@@ -323,7 +326,8 @@ public:
   /**
    * The Kscriptbar^{gg}_g contribution (B.18)
    */
-  double Kscriptbargg_g(Energy2 Qja2) const;
+  // double Kscriptbargg_g(Energy2 Qja2) const;
+  double Kscriptbargg_g(Energy2 Qja2, double lambda) const;
 
   //////////////////////////////////////
 

@@ -11,9 +11,9 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/Interface/Switch.h"
-#include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "Herwig/Models/StandardModel/StandardModel.h"
 #include "ThePEG/Handlers/StandardXComb.h"
-#include "Herwig++/MatrixElement/HardVertex.h"
+#include "Herwig/MatrixElement/HardVertex.h"
 
 using namespace Herwig;
 
@@ -27,7 +27,7 @@ void MEGammaGamma2ff::doinit() {
   tcHwSMPtr hwsm=ThePEG::dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   // do the initialisation
   if(!hwsm)
-    throw InitException() << "Must be the Herwig++ StandardModel class in "
+    throw InitException() << "Must be the Herwig StandardModel class in "
 			  << "MEGammaGamma2ff::doinit" << Exception::abortnow;
   vertex_ = hwsm->vertexFFP();
 }

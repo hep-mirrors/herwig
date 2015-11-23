@@ -2,7 +2,7 @@
 
 ##################################################
 # Example generator based on LHC parameters
-# usage: Herwig++ read LHC-diffractive.in
+# usage: Herwig read LHC-diffractive.in
 ##################################################
 
 ##################################################
@@ -18,7 +18,7 @@ set LHCGenerator:EventHandler:StatLevel Full
 ##################################################
 # LHC physics parameters (override defaults here) 
 ##################################################
-set LHCGenerator:EventHandler:LuminosityFunction:Energy 8000.0
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 13000.0
 
 # Intrinsic pT tune extrapolated to LHC energy
 set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
@@ -94,7 +94,7 @@ set LHCGenerator:EventHandler:CascadeHandler:MPIHandler NULL
 # set /Herwig/Analysis/HepMCFile:Units GeV_mm
 
 ##################################################
-# Save run for later usage with 'Herwig++ run'
+# Save run for later usage with 'Herwig run'
 ##################################################
 
 saverun LHC-diffractive LHCGenerator

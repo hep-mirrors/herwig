@@ -5,7 +5,7 @@
 // This is the declaration of the TTJetsAnalysis class.
 //
 
-#include "Herwig++/Analysis/JetsPlusAnalysis.h"
+#include "Herwig/Analysis/JetsPlusAnalysis.h"
 
 namespace Herwig {
 

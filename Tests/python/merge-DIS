@@ -91,6 +91,8 @@ for f in yodafiles:
                 raise Exception("A set with q2    = %s already exists" % ( q2   ))
         elif(aopath.find("2919893")>0 ) :
             outhistos[aopath] = ao
+        elif(aopath.find("_XSEC")>=0 or aopath.find("_EVTCOUNT")>=0) :
+            continue
         else :
             logging.error("Analysis %s is unknown" % aopath)
             sys.exit(1)

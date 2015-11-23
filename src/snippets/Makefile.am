@@ -3,12 +3,11 @@ BUILT_SOURCES = done-all-links
 snippetsdir = ${pkgdatadir}/snippets
 
 INPUTFILES = \
-DipoleShowerParameters.in \
+DipoleShowerFiveFlavours.in \
+DipoleShowerFourFlavours.in \
 Particles-SetLonglivedParticlesStable.in \
 PDF-CT10.in \
-PDF-NNPDF30NLO.in \
-Tune-UE-EE-5-CTEQ6L1.in \
-Tune-UE-EE-5-MRST.in
+PDF-NNPDF30NLO.in
 
 dist_snippets_DATA = $(INPUTFILES)
 

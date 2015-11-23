@@ -1,6 +1,6 @@
 ##################################################
 # Example generator based on LHC parameters
-# usage: Herwig++ read LHC.in
+# usage: Herwig read LHC.in
 ##################################################
 
 ##################################################
@@ -36,7 +36,7 @@ insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/ZAnalysis
 
 
 ##################################################
-# Save run for later usage with 'Herwig++ run'
+# Save run for later usage with 'Herwig run'
 ##################################################
 saverun LHC LHCGenerator
 

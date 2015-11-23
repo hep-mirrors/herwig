@@ -12,7 +12,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/StandardModel/CKMBase.h"
-#include "Herwig++/Models/StandardModel/StandardCKM.h"
+#include "Herwig/Models/StandardModel/StandardCKM.h"
 
 using namespace Herwig;
 

@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// IS_QTildeShowerKinematics1to2.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// IS_QTildeShowerKinematics1to2.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -14,14 +14,14 @@
 #include "IS_QTildeShowerKinematics1to2.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "Herwig++/Shower/Base/ShowerParticle.h"
+#include "Herwig/Shower/Base/ShowerParticle.h"
 #include "ThePEG/Utilities/Debug.h"
-#include "Herwig++/Shower/ShowerHandler.h"
-#include "Herwig++/Shower/Base/Evolver.h"
-#include "Herwig++/Shower/Base/PartnerFinder.h"
-#include "Herwig++/Shower/Base/ShowerModel.h"
-#include "Herwig++/Shower/Base/KinematicsReconstructor.h"
-#include "Herwig++/Shower/Base/ShowerVertex.h"
+#include "Herwig/Shower/ShowerHandler.h"
+#include "Herwig/Shower/Base/Evolver.h"
+#include "Herwig/Shower/Base/PartnerFinder.h"
+#include "Herwig/Shower/Base/ShowerModel.h"
+#include "Herwig/Shower/Base/KinematicsReconstructor.h"
+#include "Herwig/Shower/Base/ShowerVertex.h"
 #include <cassert>
 
 using namespace Herwig;
@@ -164,8 +164,6 @@ void IS_QTildeShowerKinematics1to2::initialize(ShowerParticle & particle, PPtr p
       }
       if(abs(1.-pa.e()/pa.vect().mag())>1e-6) rot.boostZ( pa.e()/pa.vect().mag());
       pb *= rot;
-
-
       if(pb.perp2()/GeV2>1e-20) {
 	Boost trans = -1./pb.e()*pb.vect();
 	trans.setZ(0.);

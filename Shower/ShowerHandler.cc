@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// ShowerHandler.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// ShowerHandler.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -19,24 +19,24 @@
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/PDF/PartonExtractor.h"
 #include "ThePEG/PDF/PartonBinInstance.h"
-#include "Herwig++/PDT/StandardMatchers.h"
+#include "Herwig/PDT/StandardMatchers.h"
 #include "ThePEG/Cuts/Cuts.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Utilities/Throw.h"
-#include "Herwig++/Shower/Base/Evolver.h"
-#include "Herwig++/Shower/Base/ShowerParticle.h"
+#include "Herwig/Shower/Base/Evolver.h"
+#include "Herwig/Shower/Base/ShowerParticle.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Repository/EventGenerator.h"
-#include "Herwig++/Utilities/EnumParticles.h"
-#include "Herwig++/PDF/MPIPDF.h"
-#include "Herwig++/PDF/MinBiasPDF.h"
+#include "Herwig/Utilities/EnumParticles.h"
+#include "Herwig/PDF/MPIPDF.h"
+#include "Herwig/PDF/MinBiasPDF.h"
 #include "ThePEG/Handlers/EventHandler.h"
-#include "Herwig++/Shower/Base/ShowerTree.h"
-#include "Herwig++/Shower/Base/HardTree.h"
-#include "Herwig++/Shower/Base/KinematicsReconstructor.h"
-#include "Herwig++/Shower/Base/PartnerFinder.h"
-#include "Herwig++/PDF/HwRemDecayer.h"
+#include "Herwig/Shower/Base/ShowerTree.h"
+#include "Herwig/Shower/Base/HardTree.h"
+#include "Herwig/Shower/Base/KinematicsReconstructor.h"
+#include "Herwig/Shower/Base/PartnerFinder.h"
+#include "Herwig/PDF/HwRemDecayer.h"
 #include <cassert>
 #include "ThePEG/Utilities/DescribeClass.h"
 
@@ -73,10 +73,11 @@ ShowerHandler::ShowerHandler() :
   pdfFreezingScale_(2.5*GeV),
   maxtry_(10),maxtryMPI_(10),maxtryDP_(10),
   includeSpaceTime_(false), vMin_(0.1*GeV2), subProcess_(),
-  theFactorizationScaleFactor(1.0),
-  theRenormalizationScaleFactor(1.0),
-  theHardScaleFactor(1.0), theScaleFactorOption(0),
-  theRestrictPhasespace(true), maxPtIsMuF(false) {
+  factorizationScaleFactor_(1.0),
+  renormalizationScaleFactor_(1.0),
+  hardScaleFactor_(1.0), scaleFactorOption_(0),
+  restrictPhasespace_(true), maxPtIsMuF_(false),
+  splitHardProcess_(true) {
   inputparticlesDecayInShower_.push_back( 6  ); //  top 
   inputparticlesDecayInShower_.push_back( 23 ); // Z0
   inputparticlesDecayInShower_.push_back( 24 ); // W+/-
@@ -107,9 +108,10 @@ void ShowerHandler::persistentOutput(PersistentOStream & os) const {
      << particlesDecayInShower_ << MPIHandler_ << PDFA_ << PDFB_
      << PDFARemnant_ << PDFBRemnant_
      << includeSpaceTime_ << ounit(vMin_,GeV2)
-     << theFactorizationScaleFactor << theRenormalizationScaleFactor
-     << theHardScaleFactor << theScaleFactorOption
-     << theRestrictPhasespace << maxPtIsMuF << theHardScaleProfile;
+     << factorizationScaleFactor_ << renormalizationScaleFactor_
+     << hardScaleFactor_ << scaleFactorOption_
+     << restrictPhasespace_ << maxPtIsMuF_ << hardScaleProfile_
+     << splitHardProcess_;
 }
 
 void ShowerHandler::persistentInput(PersistentIStream & is, int) {
@@ -118,9 +120,10 @@ void ShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> particlesDecayInShower_ >> MPIHandler_ >> PDFA_ >> PDFB_
      >> PDFARemnant_ >> PDFBRemnant_
      >> includeSpaceTime_ >> iunit(vMin_,GeV2)
-     >> theFactorizationScaleFactor >> theRenormalizationScaleFactor
-     >> theHardScaleFactor >> theScaleFactorOption
-     >> theRestrictPhasespace >> maxPtIsMuF >> theHardScaleProfile;
+     >> factorizationScaleFactor_ >> renormalizationScaleFactor_
+     >> hardScaleFactor_ >> scaleFactorOption_
+     >> restrictPhasespace_ >> maxPtIsMuF_ >> hardScaleProfile_
+     >> splitHardProcess_;
 }
 
 void ShowerHandler::Init() {
@@ -247,25 +250,25 @@ void ShowerHandler::Init() {
   static Parameter<ShowerHandler,double> interfaceFactorizationScaleFactor
     ("FactorizationScaleFactor",
      "The factorization scale factor.",
-     &ShowerHandler::theFactorizationScaleFactor, 1.0, 0.0, 0,
+     &ShowerHandler::factorizationScaleFactor_, 1.0, 0.0, 0,
      false, false, Interface::lowerlim);
 
   static Parameter<ShowerHandler,double> interfaceRenormalizationScaleFactor
     ("RenormalizationScaleFactor",
      "The renormalization scale factor.",
-     &ShowerHandler::theRenormalizationScaleFactor, 1.0, 0.0, 0,
+     &ShowerHandler::renormalizationScaleFactor_, 1.0, 0.0, 0,
      false, false, Interface::lowerlim);
 
   static Parameter<ShowerHandler,double> interfaceHardScaleFactor
     ("HardScaleFactor",
      "The hard scale factor.",
-     &ShowerHandler::theHardScaleFactor, 1.0, 0.0, 0,
+     &ShowerHandler::hardScaleFactor_, 1.0, 0.0, 0,
      false, false, Interface::lowerlim);
 
   static Switch<ShowerHandler,int> interfaceScaleFactorOption
     ("ScaleFactorOption",
      "Where to apply scale factors.",
-     &ShowerHandler::theScaleFactorOption, 0, false, false);
+     &ShowerHandler::scaleFactorOption_, 0, false, false);
   static SwitchOption interfaceScaleFactorOptionAll
     (interfaceScaleFactorOption,
      "All",
@@ -285,12 +288,12 @@ void ShowerHandler::Init() {
   static Reference<ShowerHandler,HardScaleProfile> interfaceHardScaleProfile
     ("HardScaleProfile",
      "The hard scale profile to use.",
-     &ShowerHandler::theHardScaleProfile, false, false, true, true, false);
+     &ShowerHandler::hardScaleProfile_, false, false, true, true, false);
 
   static Switch<ShowerHandler,bool> interfaceMaxPtIsMuF
     ("MaxPtIsMuF",
      "",
-     &ShowerHandler::maxPtIsMuF, false, false, false);
+     &ShowerHandler::maxPtIsMuF_, false, false, false);
   static SwitchOption interfaceMaxPtIsMuFYes
     (interfaceMaxPtIsMuF,
      "Yes",
@@ -305,7 +308,7 @@ void ShowerHandler::Init() {
   static Switch<ShowerHandler,bool> interfaceRestrictPhasespace
     ("RestrictPhasespace",
      "Switch on or off phasespace restrictions",
-     &ShowerHandler::theRestrictPhasespace, true, false, false);
+     &ShowerHandler::restrictPhasespace_, true, false, false);
   static SwitchOption interfaceRestrictPhasespaceOn
     (interfaceRestrictPhasespace,
      "On",
@@ -317,6 +320,21 @@ void ShowerHandler::Init() {
      "Do not perform phasespace restrictions",
      false);
 
+
+  static Switch<ShowerHandler,bool> interfaceSplitHardProcess
+    ("SplitHardProcess",
+     "Whether or not to try and split the hard process into production and decay processes",
+     &ShowerHandler::splitHardProcess_, true, false, false);
+  static SwitchOption interfaceSplitHardProcessYes
+    (interfaceSplitHardProcess,
+     "Yes",
+     "Split the hard process",
+     true);
+  static SwitchOption interfaceSplitHardProcessNo
+    (interfaceSplitHardProcess,
+     "No",
+     "Don't split the hard process",
+     false);
  
 }
 
@@ -576,7 +594,8 @@ tPPair ShowerHandler::cascade(tSubProPtr sub,
       ShowerTree::constructTrees(currentSubProcess(),hard_,decay_,
 				 firstInteraction() ? tagged() :
 				 tPVector(currentSubProcess()->outgoing().begin(),
-					  currentSubProcess()->outgoing().end()));
+					  currentSubProcess()->outgoing().end()),
+				 splitHardProcess_);
       // if no hard process
       if(!hard_)  throw Exception() << "Shower starting with a decay"
 				    << "is not implemented" 

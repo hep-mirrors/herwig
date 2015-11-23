@@ -1,0 +1,38 @@
+# tune where the world average perutbative alphaS is used for the hard me
+# and matching and the shower alpha_S tuned seperately
+
+# shower
+
+set /Herwig/Shower/QtoQGSudakov:pTmin 1.55
+set /Herwig/Shower/GtoGGSudakov:pTmin 1.55
+set /Herwig/Shower/GtoQQbarSudakov:pTmin 1.55
+set /Herwig/Shower/GtobbbarSudakov:pTmin 1.55
+set /Herwig/Shower/GtoccbarSudakov:pTmin 1.55
+set /Herwig/Shower/QtoGQSudakov:pTmin 1.55
+set /Herwig/Shower/utoGuSudakov:pTmin 1.55
+set /Herwig/Shower/dtoGdSudakov:pTmin 1.55
+
+set /Herwig/Shower/AlphaQCD:AlphaMZ 0.135
+
+# hadronization
+set /Herwig/Hadronization/ClusterFissioner:ClMaxLight  3.44*GeV
+set /Herwig/Hadronization/ClusterFissioner:ClPowLight  2.67
+set /Herwig/Hadronization/ClusterFissioner:PSplitLight 0.82
+set /Herwig/Hadronization/ClusterDecayer:ClDirLight    1
+set /Herwig/Hadronization/ClusterDecayer:ClSmrLight    0.78
+set /Herwig/Hadronization/HadronSelector:PwtSquark     0.58
+set /Herwig/Hadronization/HadronSelector:PwtDIquark    0.41
+
+set /Herwig/Hadronization/ClusterFissioner:ClMaxCharm  3.38*GeV
+set /Herwig/Hadronization/ClusterFissioner:ClPowCharm  2.02
+set /Herwig/Hadronization/ClusterFissioner:PSplitCharm 1.20
+set /Herwig/Hadronization/ClusterDecayer:ClDirCharm 1
+set /Herwig/Hadronization/ClusterDecayer:ClSmrCharm 0.
+set /Herwig/Hadronization/LightClusterDecayer:SingleHadronLimitCharm 0.0
+
+set /Herwig/Hadronization/ClusterFissioner:ClMaxBottom  4.06*GeV
+set /Herwig/Hadronization/ClusterFissioner:ClPowBottom  1.48
+set /Herwig/Hadronization/ClusterFissioner:PSplitBottom 0.21
+set /Herwig/Hadronization/ClusterDecayer:ClDirBottom 1
+set /Herwig/Hadronization/ClusterDecayer:ClSmrBottom 0.
+set /Herwig/Hadronization/LightClusterDecayer:SingleHadronLimitBottom 0.12

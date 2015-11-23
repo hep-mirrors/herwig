@@ -1,0 +1,6 @@
+##################################################
+# select the analyses
+##################################################
+# General analysis
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1364361
+set /Herwig/Particles/h0:Stable Stable

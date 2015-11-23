@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// ShowerApproximationGenerator.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// ShowerApproximationGenerator.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -53,7 +53,7 @@ double ShowerApproximationGenerator::invertFraction(tcPDPtr pd, double x, double
   return log((1.-x+x0)/x0)/log((1.+x0)/x0);
 }
 
-bool ShowerApproximationGenerator::prepare() {
+bool ShowerApproximationGenerator::prepare(bool didproject) {
 
   tSubProPtr oldSub = lastIncomingXComb->subProcess();
 
@@ -96,6 +96,18 @@ bool ShowerApproximationGenerator::prepare() {
     oldSub->incoming().second->data().produceParticle(oldSub->incoming().second->momentum());
 
   thePhasespace->setXComb(lastIncomingXComb);
+
+  // this is a brute force fix for private ticket #241 ; only done to get fixed
+  // for the release but will need to be looked at in more detail later on by
+  // cleaning up the XCombs for these cases
+  if ( theLastMomenta.size() == 3 && didproject ) {
+    // boost them where they belong so invertKinematics is doing something sensible
+    Boost toLab = (lastIncomingXComb->lastPartons().first->momentum() + 
+		   lastIncomingXComb->lastPartons().second->momentum()).boostVector();
+    for ( int i = 0; i < 3; ++i )
+      theLastMomenta[i].boost(toLab);
+  }
+
   thePhasespace->invertKinematics(theLastMomenta,
 				  !hasFractions ? &theLastRandomNumbers[2] : &theLastRandomNumbers[0]);
 
@@ -208,17 +220,41 @@ bool ShowerApproximationGenerator::generate(const vector<double>& r) {
 
 void ShowerApproximationGenerator::restore() {
 
-  tSubProPtr oldSub = lastIncomingXComb->subProcess();
-
-  theLastPartons.first->set5Momentum(oldSub->incoming().first->momentum());
-  theLastPartons.second->set5Momentum(oldSub->incoming().second->momentum());
-
   theLastBornXComb->clean();
+
+  bool hasFractions =
+    thePhasespace->haveX1X2() ||
+    theLastBornXComb->mePartonData().size() == 3;
+
+  if ( !hasFractions ) {
+
+    tSubProPtr oldSub = lastIncomingXComb->subProcess();
+    
+    theLastPartons.first->set5Momentum(oldSub->incoming().first->momentum());
+    theLastPartons.second->set5Momentum(oldSub->incoming().second->momentum());
+
+  } else {
+
+    theLastBornME->setXComb(theLastBornXComb);
+    theLastBornXComb->lastParticles(lastIncomingXComb->lastParticles());
+    theLastBornXComb->lastP1P2(make_pair(0.0, 0.0));
+    theLastBornXComb->lastS(lastIncomingXComb->lastS());
+
+    theLastBornME->generateKinematics(&theLastRandomNumbers[0]);
+
+    theLastPartons.first->set5Momentum(theLastBornME->lastMEMomenta()[0]);
+    theLastPartons.second->set5Momentum(theLastBornME->lastMEMomenta()[1]);
+
+  }
+
   theLastBornXComb->fill(lastIncomingXComb->lastParticles(),theLastPartons,
 			 theLastMomenta,theLastRandomNumbers);
 
-  theLastBornME->setXComb(theLastBornXComb);
-  theLastBornME->generateKinematics(&theLastRandomNumbers[2]);
+  if ( !hasFractions ) {
+    theLastBornME->setXComb(theLastBornXComb);
+    theLastBornME->generateKinematics(&theLastRandomNumbers[2]);
+  }
+
   theLastBornME->dSigHatDR();
 
 }
@@ -236,8 +272,12 @@ handle(EventHandler & eh, const tPVector &,
     throw Exception() << "ShowerApproximationGenerator::handle(): Expecting a standard event handler."
 		      << Exception::runerror;
 
-  if ( lastIncomingXComb->lastProjector() )
+  bool didproject = false;
+
+  if ( lastIncomingXComb->lastProjector() ) {
     lastIncomingXComb = lastIncomingXComb->lastProjector();
+    didproject = true;
+  }
 
   const StandardXComb& xc = *lastIncomingXComb;
 
@@ -287,21 +327,33 @@ handle(EventHandler & eh, const tPVector &,
   const set<Ptr<ShowerApproximationKernel>::ptr>& kernels = kernelit->second;
 
   theLastBornME = (**kernels.begin()).dipole()->underlyingBornME();
+  if ( theLastBornME->phasespace()->wantCMS() != thePhasespace->wantCMS() ) {
+    throw Exception() << "Mismatch in centre-of-mass-system requirements of hard matrix element phasespace ("
+                      << (theLastBornME->phasespace()->wantCMS()?"true":"false")
+                      << ") and shower approximation phasespace ("
+                      << (thePhasespace->wantCMS()?"true":"false") << ")"
+                      << Exception::abortnow;
+  }
   theLastBornME->phasespace(thePhasespace);
   theLastBornXComb = (**kernels.begin()).bornXComb();
 
-  if ( !prepare() )
+  if ( !prepare(didproject) )
     return;
 
   Energy winnerPt = ZERO;
   Ptr<ShowerApproximationKernel>::ptr winnerKernel;
 
-  for ( set<Ptr<ShowerApproximationKernel>::ptr>::const_iterator k =
-	  kernels.begin(); k != kernels.end(); ++k ) {
-    if ( (**k).generate() != 0. && (*k)->dipole()->lastPt() > winnerPt){
-      winnerKernel = *k;
-      winnerPt = winnerKernel->dipole()->lastPt();
+  try {
+    for ( set<Ptr<ShowerApproximationKernel>::ptr>::const_iterator k =
+	    kernels.begin(); k != kernels.end(); ++k ) {
+      if ( (**k).generate() != 0. && (*k)->dipole()->lastPt() > winnerPt){
+	winnerKernel = *k;
+	winnerPt = winnerKernel->dipole()->lastPt();
+      }
     }
+  } catch(ShowerApproximationKernel::MaxTryException&) {
+    throw Exception() << "Too many tries needed to generate the matrix element correction in '"
+		      << name() << "'" << Exception::eventerror;
   }
 
   if ( !winnerKernel || winnerPt == ZERO )
@@ -318,6 +370,10 @@ handle(EventHandler & eh, const tPVector &,
   SubProPtr newSub;
 
   try {
+    tcDiagPtr bornDiag = lastIncomingXComb->lastDiagram();
+    tcDiagPtr realDiag = 
+      winnerKernel->dipole()->realEmissionDiagram(bornDiag);
+    winnerKernel->realXComb()->externalDiagram(realDiag);
     newSub = winnerKernel->realXComb()->construct();
   } catch(Veto&) {
     return;

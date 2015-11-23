@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// FS_QTildeShowerKinematics1to2.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// FS_QTildeShowerKinematics1to2.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -13,15 +13,15 @@
 
 #include "FS_QTildeShowerKinematics1to2.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "Herwig++/Shower/SplittingFunctions/SplittingFunction.h"
-#include "Herwig++/Shower/Base/ShowerParticle.h"
+#include "Herwig/Shower/SplittingFunctions/SplittingFunction.h"
+#include "Herwig/Shower/Base/ShowerParticle.h"
 #include "ThePEG/Utilities/Debug.h"
-#include "Herwig++/Shower/ShowerHandler.h"
-#include "Herwig++/Shower/Base/Evolver.h"
-#include "Herwig++/Shower/Base/PartnerFinder.h"
-#include "Herwig++/Shower/Base/ShowerModel.h"
-#include "Herwig++/Shower/Base/KinematicsReconstructor.h"
-#include "Herwig++/Shower/Base/ShowerVertex.h"
+#include "Herwig/Shower/ShowerHandler.h"
+#include "Herwig/Shower/Base/Evolver.h"
+#include "Herwig/Shower/Base/PartnerFinder.h"
+#include "Herwig/Shower/Base/ShowerModel.h"
+#include "Herwig/Shower/Base/KinematicsReconstructor.h"
+#include "Herwig/Shower/Base/ShowerVertex.h"
 
 using namespace Herwig;
 
@@ -104,7 +104,11 @@ reconstructParent(const tShowerParticlePtr parent,
   ShowerParticlePtr c2 = dynamic_ptr_cast<ShowerParticlePtr>(children[1]);
   parent->showerParameters().beta= 
     c1->showerParameters().beta + c2->showerParameters().beta; 
-  parent->set5Momentum( c1->momentum() + c2->momentum() );
+  Lorentz5Momentum pnew = c1->momentum() + c2->momentum();
+  Energy2 m2 = sqr(pT())/z()/(1.-z()) + sqr(c1->mass())/z()
+    + sqr(c2->mass())/(1.-z());
+  pnew.setMass(sqrt(m2));
+  parent->set5Momentum( pnew );
 }
 
 void FS_QTildeShowerKinematics1to2::reconstructLast(const tShowerParticlePtr last,
@@ -113,8 +117,12 @@ void FS_QTildeShowerKinematics1to2::reconstructLast(const tShowerParticlePtr las
   // using the nominal (i.e. PDT) mass.
   Energy theMass = mass > ZERO  ?  mass : last->data().constituentMass();
   ShowerParticle::Parameters & lastParam = last->showerParameters();
+  Energy2 denom = 2. * lastParam.alpha * p_dot_n();
+  if(abs(denom)/(sqr(pVector().e())+pVector().rho2())<1e-10) {
+    throw KinematicsReconstructionVeto();
+  }
   lastParam.beta = ( sqr(theMass) + sqr(lastParam.pt) - sqr(lastParam.alpha) * pVector().m2() )
-    / ( 2. * lastParam.alpha * p_dot_n() );
+    / denom;
   // set that new momentum
   Lorentz5Momentum newMomentum = sudakov2Momentum( lastParam.alpha, lastParam.beta,
 						   lastParam.ptx  , lastParam.pty);

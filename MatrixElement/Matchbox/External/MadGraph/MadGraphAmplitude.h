@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// MadGraphAmplitude.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MadGraphAmplitude.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef Herwig_MadGraphAmplitude_H
@@ -12,8 +12,8 @@
 // This is the declaration of the MadGraphAmplitude class.
 //
 
-#include "Herwig++/MatrixElement/Matchbox/Base/MatchboxAmplitude.h"
-#include "Herwig++/MatrixElement/Matchbox/Builtin/Amplitudes/MatchboxCurrents.h"
+#include "Herwig/MatrixElement/Matchbox/Base/MatchboxAmplitude.h"
+#include "Herwig/MatrixElement/Matchbox/Builtin/Amplitudes/MatchboxCurrents.h"
 #include "ThePEG/Utilities/DynamicLoader.h"
 
 namespace Herwig {
@@ -330,6 +330,11 @@ protected:
    *   Location of the installed executables
    */
   string bindir_;
+
+  /**
+   *   Location of the installed include files
+   */
+  string includedir_;
 
   /**
    *   Location of the data files

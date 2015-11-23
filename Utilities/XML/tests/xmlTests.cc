@@ -10,8 +10,8 @@
 #include <boost/test/unit_test.hpp>
 #define BOOST_TEST_MODULE xmlTest
 
-#include "Herwig++/Utilities/XML/Element.h"
-#include "Herwig++/Utilities/XML/ElementIO.h"
+#include "Herwig/Utilities/XML/Element.h"
+#include "Herwig/Utilities/XML/ElementIO.h"
 
 /*
  * Fixture which defines the common variables for testing Element class

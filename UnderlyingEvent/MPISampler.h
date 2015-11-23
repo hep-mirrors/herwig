@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// MPISampler.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MPISampler.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef Herwig_MPISampler_H
@@ -303,7 +303,7 @@ struct ClassTraits<Herwig::MPISampler>: public ClassTraitsBase<Herwig::MPISample
    * access to this class and every other class it uses
    * (except the base class).
    */
-  static string library() { return "SimpleKTCut.so HwMPI.so"; }
+  static string library() { return "JetCuts.so SimpleKTCut.so HwMPI.so"; }
 
 };
 

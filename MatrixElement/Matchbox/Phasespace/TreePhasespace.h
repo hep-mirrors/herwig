@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// TreePhasespace.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// TreePhasespace.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef Herwig_TreePhasespace_H
@@ -12,8 +12,8 @@
 // This is the declaration of the TreePhasespace class.
 //
 
-#include "Herwig++/MatrixElement/Matchbox/Phasespace/MatchboxPhasespace.h"
-#include "Herwig++/MatrixElement/Matchbox/Phasespace/TreePhasespaceChannels.h"
+#include "Herwig/MatrixElement/Matchbox/Phasespace/MatchboxPhasespace.h"
+#include "Herwig/MatrixElement/Matchbox/Phasespace/TreePhasespaceChannels.h"
 
 namespace Herwig {
 

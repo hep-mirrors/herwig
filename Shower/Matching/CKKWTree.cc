@@ -6,7 +6,7 @@
 
 #include "CKKWTree.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "Herwig++/Utilities/Maths.h"
+#include "Herwig/Utilities/Maths.h"
 
 using namespace Herwig;
 

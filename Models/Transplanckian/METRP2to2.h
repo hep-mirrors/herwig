@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// METRP2to2.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// METRP2to2.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2009-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_METRP2to2_H
@@ -13,9 +13,9 @@
 //
 // The implementation of this process is based upon hep-ph/0112161 by G.F. Giudice, R. Rattazzi, J.D. Wells.
 
-#include "Herwig++/MatrixElement/HwMEBase.h"
+#include "Herwig/MatrixElement/HwMEBase.h"
 #include "ThePEG/Repository/UseRandom.h"
-#include "Herwig++/Utilities/Interpolator.h"
+#include "Herwig/Utilities/Interpolator.h"
 
 
 namespace Herwig {

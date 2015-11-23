@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// Evolver.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Evolver.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_Evolver_H
@@ -13,20 +13,20 @@
 //
 
 #include "ThePEG/Interface/Interfaced.h"
-#include "Herwig++/Shower/SplittingFunctions/SplittingGenerator.h"
+#include "Herwig/Shower/SplittingFunctions/SplittingGenerator.h"
 #include "ShowerModel.h"
 #include "ThePEG/PDF/BeamParticleData.h"
 #include "ShowerTree.h"
 #include "ShowerProgenitor.fh"
-#include "Herwig++/Shower/ShowerHandler.fh"
+#include "Herwig/Shower/ShowerHandler.fh"
 #include "Branching.h"
 #include "ShowerVeto.h"
 #include "HardTree.h"
 #include "ThePEG/Handlers/XComb.h"
 #include "Evolver.fh"
-#include "Herwig++/MatrixElement/HwMEBase.h"
-#include "Herwig++/Decay/HwDecayerBase.h"
-#include "Herwig++/MatrixElement/Matchbox/Matching/ShowerApproximation.h"
+#include "Herwig/MatrixElement/HwMEBase.h"
+#include "Herwig/Decay/HwDecayerBase.h"
+#include "Herwig/MatrixElement/Matchbox/Matching/ShowerApproximation.h"
 
 namespace Herwig {
 
@@ -40,7 +40,7 @@ struct InteractionVeto {};
 
 /** \ingroup Shower
  * The Evolver class class performs the sohwer evolution of hard scattering 
- * and decay processes in Herwig++.
+ * and decay processes in Herwig.
  *
  * @see \ref EvolverInterfaces "The interfaces"
  * defined for Evolver.
@@ -300,7 +300,7 @@ protected:
    */
   virtual bool truncatedTimeLikeShower(tShowerParticlePtr particle,
 				       HardBranchingPtr branch,
-				       ShowerInteraction::Type type);
+				       ShowerInteraction::Type type, bool first);
  
   /**
    * Truncated shower from a space-like particle
@@ -325,22 +325,28 @@ protected:
   /**
    * Any ME correction?   
    */
-  bool MECOn() const {
-    return _meCorrMode > 0 && _hardEmissionMode==0;
+  bool MECOn(bool hard) const {
+    return ( _hardEmissionMode == 0 ||
+	     (!hard && _hardEmissionMode ==-1) ) &&
+      _meCorrMode > 0;
   }
 
   /**
    * Any hard ME correction? 
    */
-  bool hardMEC() const {
-    return (_meCorrMode == 1 || _meCorrMode == 2) && _hardEmissionMode==0;
+  bool hardMEC(bool hard) const {
+    return ( _hardEmissionMode == 0 ||
+	     (!hard && _hardEmissionMode ==-1) ) &&
+      (_meCorrMode == 1 || _meCorrMode == 2);
   }
 
   /**
    * Any soft ME correction? 
    */
   bool softMEC() const {
-    return (_meCorrMode == 1 || _meCorrMode > 2) && _hardEmissionMode==0;
+    return ( _hardEmissionMode == 0 ||
+	     (_currenttree->isDecay() && _hardEmissionMode ==-1) ) &&
+      (_meCorrMode == 1 || _meCorrMode > 2);
   }
   //@}
 
@@ -826,7 +832,7 @@ private:
   /**
    *  Mode for the hard emissions
    */
-  unsigned int _hardEmissionMode;
+  int _hardEmissionMode;
 
   /**
    *  Option to include spin correlations

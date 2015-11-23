@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// WeakDecayCurrent.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// WeakDecayCurrent.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_WeakDecayCurrent_H
@@ -13,8 +13,8 @@
 //
 #include "ThePEG/Interface/Interfaced.h"
 #include "WeakDecayCurrent.fh"
-#include "Herwig++/Decay/DecayPhaseSpaceMode.h"
-#include "Herwig++/Decay/DecayPhaseSpaceChannel.h"
+#include "Herwig/Decay/DecayPhaseSpaceMode.h"
+#include "Herwig/Decay/DecayPhaseSpaceChannel.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
 
 namespace Herwig {
@@ -48,7 +48,7 @@ using ThePEG::Helicity::LorentzPolarizationVectorE;
  *   workout which modes is being performed.
  *
  * - dataBaseOutput() which should output the information on all the Interfaces so
- *   that the WeakDecayCurrent can be reconstructed by the Herwig++ particle
+ *   that the WeakDecayCurrent can be reconstructed by the Herwig particle
  *   properties database.
  *
  * @see Interfaced.

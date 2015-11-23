@@ -7,7 +7,7 @@
 
 #include "SMWFermionsPOWHEGDecayer.h"
 #include <numeric>
-#include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "Herwig/Models/StandardModel/StandardModel.h"
 #include "ThePEG/PDF/PolarizedBeamParticleData.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
@@ -15,11 +15,11 @@
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Shower/Base/HardTree.h"
-#include "Herwig++/Shower/Base/ShowerTree.h"
-#include "Herwig++/Shower/Base/ShowerProgenitor.h"
-#include "Herwig++/Shower/Base/ShowerParticle.h"
-#include "Herwig++/Shower/Base/Branching.h"
+#include "Herwig/Shower/Base/HardTree.h"
+#include "Herwig/Shower/Base/ShowerTree.h"
+#include "Herwig/Shower/Base/ShowerProgenitor.h"
+#include "Herwig/Shower/Base/ShowerParticle.h"
+#include "Herwig/Shower/Base/Branching.h"
 
 using namespace Herwig;
 
@@ -385,7 +385,7 @@ void SMWFermionsPOWHEGDecayer::doinit() {
   if(!hwsm) throw InitException() 
 	      << "Wrong type of StandardModel object in "
 	      << "SMWFermionsPOWHEGDecayer::doinit() "
-	      << "the Herwig++ version must be used." 
+	      << "the Herwig version must be used." 
 	      << Exception::runerror;
   // cast the vertices
   FFWVertex_ = hwsm->vertexFFW();
@@ -601,21 +601,23 @@ bool SMWFermionsPOWHEGDecayer::checkZMomenta(double x1, double x2, double x3,
 					     double y, Energy pT, double muj,
 					     double muk) const {
   double xPerp2 = 4.*pT*pT/mW_/mW_;
+  double root1 = sqrt(max(0.,sqr(x2)-4.*sqr(muk)));
+  double root2 = sqrt(max(0.,sqr(x1)-xPerp2 - 4.*sqr(muj)));
   static double tolerance = 1e-6; 
   bool isMomentaReconstructed = false;  
 
   if(pT*sinh(y) > ZERO) {
-    if(abs(-sqrt(sqr(x2)-4.*sqr(muk)) + sqrt(sqr(x3)-xPerp2)  + sqrt(sqr(x1)-xPerp2 - 4.*sqr(muj))) <= tolerance ||
-       abs(-sqrt(sqr(x2)-4.*sqr(muk)) + sqrt(sqr(x3)-xPerp2)  - sqrt(sqr(x1)-xPerp2 - 4.*sqr(muj)))  <= tolerance)
+    if(abs(-root1 + sqrt(sqr(x3)-xPerp2)  + root2) <= tolerance ||
+       abs(-root1 + sqrt(sqr(x3)-xPerp2)  - root2)  <= tolerance)
       isMomentaReconstructed=true;
   }
   else if(pT*sinh(y) < ZERO){
-    if(abs(-sqrt(sqr(x2)-4.*sqr(muk)) - sqrt(sqr(x3)-xPerp2)  + sqrt(sqr(x1)-xPerp2 - 4.*sqr(muj))) <= tolerance ||
-       abs(-sqrt(sqr(x2)-4.*sqr(muk)) - sqrt(sqr(x3)-xPerp2)  - sqrt(sqr(x1)-xPerp2 - 4.*sqr(muj)))  <= tolerance) 
+    if(abs(-root1 - sqrt(sqr(x3)-xPerp2)  + root2) <= tolerance ||
+       abs(-root1 - sqrt(sqr(x3)-xPerp2)  - root2)  <= tolerance)
 	isMomentaReconstructed=true;
   }
   else 
-    if(abs(-sqrt(sqr(x2)-4.*sqr(muk))+ sqrt(sqr(x1)-xPerp2 - 4.*(muj))) <= tolerance) 
+    if(abs(-root1+ sqrt(sqr(x1)-xPerp2 - 4.*(muj))) <= tolerance)
       isMomentaReconstructed=true;
       
   return isMomentaReconstructed;

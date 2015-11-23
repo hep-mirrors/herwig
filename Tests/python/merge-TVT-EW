@@ -51,6 +51,16 @@ if __name__ == "__main__":
                     outhistos[aopath] = ao
                 elif(aopath.find("d02")>0 and file.find("-mu")>0) : 
                     outhistos[aopath] = ao
+            elif(aopath.find("D0_2015_I1324946")>0) :
+                if(file.find("LowMass")>0) : 
+                    if(aopath.find("d02")>0) :
+                        outhistos[aopath] = ao
+                elif(file.find("HighMass")>0) : 
+                    if(aopath.find("d03")>0 or aopath.find("d04")>0) :
+                        outhistos[aopath] = ao
+                else:
+                    if(aopath.find("d01")>0) :
+                        outhistos[aopath] = ao
             else :
                 outhistos[aopath] = ao
 

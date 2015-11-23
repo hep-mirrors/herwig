@@ -6,7 +6,7 @@
 //
 
 #include "PGSInterface.h"
-#include "Herwig++/Utilities/Histogram.h"
+#include "Herwig/Utilities/Histogram.h"
 
 namespace Herwig {
 

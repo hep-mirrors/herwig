@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// Evolver.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Evolver.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_Evolver_H
@@ -13,13 +13,13 @@
 //
 
 #include "ThePEG/Interface/Interfaced.h"
-#include "Herwig++/Shower/SplittingFunctions/SplittingGenerator.h"
+#include "Herwig/Shower/SplittingFunctions/SplittingGenerator.h"
 #include "ShowerModel.h"
 #include "ThePEG/PDF/BeamParticleData.h"
 #include "ShowerTree.h"
 #include "MECorrectionBase.fh"
 #include "ShowerProgenitor.fh"
-#include "Herwig++/Shower/ShowerHandler.fh"
+#include "Herwig/Shower/ShowerHandler.fh"
 #include "ShowerVeto.h"
 #include "Evolver.fh"
 

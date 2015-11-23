@@ -30,7 +30,12 @@ insert FastQCD:MatrixElements 0 MEQCD2to2Fast
 cp /Herwig/Partons/QCDExtractor /Herwig/Partons/MPIExtractor
 newdef FastQCD:PartonExtractor /Herwig/Partons/MPIExtractor
 
+# always use LO PDF for MPI and remnants
+newdef /Herwig/Partons/MPIExtractor:FirstPDF /Herwig/Partons/MPIPDF
+newdef /Herwig/Partons/MPIExtractor:SecondPDF /Herwig/Partons/MPIPDF
+
 ######## MPI Handler ##########################################
+library JetCuts.so
 library HwMPI.so
 create Herwig::MPIHandler MPIHandler
 

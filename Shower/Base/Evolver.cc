@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// Evolver.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Evolver.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -18,7 +18,7 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Shower/Base/ShowerParticle.h"
+#include "Herwig/Shower/Base/ShowerParticle.h"
 #include "ThePEG/Utilities/EnumIO.h"
 #include "ShowerKinematics.h"
 #include "ThePEG/PDT/EnumParticles.h"
@@ -31,24 +31,41 @@
 #include "PartnerFinder.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/PDT/DecayMode.h"
-#include "Herwig++/Shower/ShowerHandler.h" 
+#include "Herwig/Shower/ShowerHandler.h" 
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ShowerVertex.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
-#include "Herwig++/MatrixElement/Matchbox/Base/SubtractedME.h"
-#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
+#include "Herwig/MatrixElement/Matchbox/Base/SubtractedME.h"
+#include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 
 using namespace Herwig;
 
 namespace {
+
+  /**
+   *  A struct to order the particles in the same way as in the DecayMode's
+   */
+  struct ParticleOrdering {
+    /**
+     *  Operator for the ordering
+     * @param p1 The first ParticleData object
+     * @param p2 The second ParticleData object
+     */
+    bool operator() (tcPDPtr p1, tcPDPtr p2) {
+      return abs(p1->id()) > abs(p2->id()) ||
+	( abs(p1->id()) == abs(p2->id()) && p1->id() > p2->id() ) ||
+	( p1->id() == p2->id() && p1->fullName() > p2->fullName() );
+    }
+  };
+  typedef multiset<tcPDPtr,ParticleOrdering> OrderedParticles;
+
   /**
    * Cached lookup of decay modes.
    * Generator::findDecayMode() is not efficient.
    */
   tDMPtr findDecayMode(const string & tag) {
     static map<string,DMPtr> cache;
-
     map<string,DMPtr>::const_iterator pos = cache.find(tag);
 
     if ( pos != cache.end() ) 
@@ -282,10 +299,15 @@ void Evolver::Init() {
   static SwitchOption interfaceTruncMode1
     (interfaceTruncMode,"Yes","Truncated Shower is ON", 1);
 
-  static Switch<Evolver,unsigned int> interfaceHardEmissionMode
+  static Switch<Evolver,int> interfaceHardEmissionMode
     ("HardEmissionMode",
      "Whether to use ME corrections or POWHEG for the hardest emission",
      &Evolver::_hardEmissionMode, 0, false, false);
+  static SwitchOption interfaceHardEmissionModeDecayMECorrection
+    (interfaceHardEmissionMode,
+     "DecayMECorrection",
+     "Old fashioned ME correction for decays only",
+     -1);
   static SwitchOption interfaceHardEmissionModeMECorrection
     (interfaceHardEmissionMode,
      "MECorrection",
@@ -662,14 +684,14 @@ void Evolver::hardMatrixElementCorrection(bool hard) {
   _initialenhance = 1.;
   _finalenhance   = 1.;
   // if hard matrix element switched off return
-  if(!MECOn()) return;
+  if(!MECOn(hard)) return;
   // see if we can get the correction from the matrix element
   // or decayer
   if(hard) {
     if(_hardme&&_hardme->hasMECorrection()) {
       _hardme->initializeMECorrection(_currenttree,
 				      _initialenhance,_finalenhance);
-      if(hardMEC())
+      if(hardMEC(hard))
 	_hardme->applyHardMatrixElementCorrection(_currenttree);
     }
   }
@@ -677,7 +699,7 @@ void Evolver::hardMatrixElementCorrection(bool hard) {
     if(_decayme&&_decayme->hasMECorrection()) {
       _decayme->initializeMECorrection(_currenttree,
 				       _initialenhance,_finalenhance);
-      if(hardMEC())
+      if(hardMEC(hard))
 	_decayme->applyHardMatrixElementCorrection(_currenttree);
     }
   }
@@ -959,10 +981,25 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
   if(!dm) {
     string tag = decay->incomingLines().begin()->first->original()->dataPtr()->name() 
       + "->";
+    OrderedParticles outgoing;
     for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator 
 	  it=decay->outgoingLines().begin();it!=decay->outgoingLines().end();++it) {
-      if(it!=decay->outgoingLines().begin()) tag += ",";
-      tag += it->first->original()->dataPtr()->name();
+      if(abs(decay->incomingLines().begin()->first->original()->id()) == ParticleID::t &&
+	 abs(it->first->original()->id())==ParticleID::Wplus &&
+	 decay->treelinks().size() == 1) {
+	ShowerTreePtr Wtree = decay->treelinks().begin()->first;
+	for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator
+	      it2=Wtree->outgoingLines().begin();it2!=Wtree->outgoingLines().end();++it2) {
+	  outgoing.insert(it2->first->original()->dataPtr());
+	}
+      }
+      else {
+	outgoing.insert(it->first->original()->dataPtr());
+      }
+    }
+    for(OrderedParticles::const_iterator it=outgoing.begin(); it!=outgoing.end();++it) {
+      if(it!=outgoing.begin()) tag += ",";
+      tag +=(**it).name();
     }
     tag += ";";
     dm = findDecayMode(tag);
@@ -1063,7 +1100,8 @@ vector<ShowerProgenitorPtr> Evolver::setupShower(bool hard) {
   // set the initial colour partners
   setEvolutionPartners(hard,inter,false);
   // generate hard me if needed
-  if(_hardEmissionMode==0) hardMatrixElementCorrection(hard);
+  if(_hardEmissionMode==0 ||
+     (!hard && _hardEmissionMode==-1)) hardMatrixElementCorrection(hard);
   // get the particles to be showered
   vector<ShowerProgenitorPtr> particlesToShower = 
     currentTree()->extractProgenitors();
@@ -1178,7 +1216,7 @@ bool Evolver::startTimeLikeShower(ShowerInteraction::Type type) {
       mit = hardTree()->particles().find(progenitor()->progenitor());
     if( mit != eit && !mit->second->children().empty() ) {
       bool output=truncatedTimeLikeShower(progenitor()->progenitor(),
-					  mit->second ,type);
+					  mit->second ,type,true);
       if(output) updateHistory(progenitor()->progenitor());
       return output;
     }
@@ -1656,7 +1694,7 @@ void Evolver::hardestEmission(bool hard) {
 
 bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
 				      HardBranchingPtr branch,
-				      ShowerInteraction::Type type) {
+				      ShowerInteraction::Type type,bool first) {
   int ntry=0;
   do {
     ++ntry;
@@ -1723,7 +1761,7 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
       }
       break;
     }
-    // if no branching force trunctaed emission
+    // if no branching force truncated emission
     if(!fb.kinematics) {
       // construct the kinematics for the hard emission
       ShoKinPtr showerKin=
@@ -1771,7 +1809,7 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
 	  timeLikeShower(theChildren[0],type,Branching(),false);
       }
       else {
-	truncatedTimeLikeShower( theChildren[0],branch->children()[0],type);
+	truncatedTimeLikeShower( theChildren[0],branch->children()[0],type,false);
       } 
       // shower the second particle
       if( branch->children()[1]->children().empty() ) {
@@ -1779,7 +1817,7 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
 	  timeLikeShower( theChildren[1] , type,Branching(),false);
       }
       else {
-	truncatedTimeLikeShower( theChildren[1],branch->children()[1] ,type);
+	truncatedTimeLikeShower( theChildren[1],branch->children()[1] ,type,false);
       }
       // that's if for old approach
       if(_reconOpt==0) return true;
@@ -1793,7 +1831,12 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
 	theChildren.clear();
 	continue;
       }
-      else return true;
+      else {
+	if(first&&!theChildren.empty())
+	  particle->showerKinematics()->resetChildren(particle,theChildren);
+	if(particle->spinInfo()) particle->spinInfo()->develop();
+	return true;
+      }
     }
     // has emitted
     // Assign the shower kinematics to the emitting particle.
@@ -1816,10 +1859,10 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
     particle->showerKinematics()->
       updateChildren( particle, theChildren , fb.type);
     // shower the first  particle
-    if( iout == 1 ) truncatedTimeLikeShower( theChildren[0], branch , type );
+    if( iout == 1 ) truncatedTimeLikeShower( theChildren[0], branch , type ,false);
     else            timeLikeShower( theChildren[0]  , type,Branching(),false);
     // shower the second particle
-    if( iout == 2 ) truncatedTimeLikeShower( theChildren[1], branch , type );
+    if( iout == 2 ) truncatedTimeLikeShower( theChildren[1], branch , type ,false);
     else            timeLikeShower( theChildren[1]  , type,Branching(),false);
     // that's if for old approach
     if(_reconOpt==0) return true;
@@ -1832,7 +1875,12 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
 	particle->abandonChild(theChildren[ix]);
       theChildren.clear();
     }
-    else return true;
+    else {
+      if(first&&!theChildren.empty())
+	particle->showerKinematics()->resetChildren(particle,theChildren);
+      if(particle->spinInfo()) particle->spinInfo()->develop();
+      return true;
+    }
   }
   while(ntry<50);
   return false;
@@ -1961,7 +2009,7 @@ bool Evolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr beam,
       timeLikeShower( otherChild , type,Branching(),true);
     }
     else {
-      truncatedTimeLikeShower( otherChild, timelike , type);
+      truncatedTimeLikeShower( otherChild, timelike , type,true);
     }
     updateHistory(otherChild);
     // return the emitted
@@ -2122,7 +2170,7 @@ truncatedSpaceLikeDecayShower(tShowerParticlePtr particle,
        if( ! hardOnly() ) timeLikeShower( theChildren[1] , type,Branching(), true);
      }
      else {
-	truncatedTimeLikeShower( theChildren[1],branch->children()[1] ,type);
+       truncatedTimeLikeShower( theChildren[1],branch->children()[1] ,type,true);
      }
      updateHistory(theChildren[1]);
    }
@@ -2143,7 +2191,7 @@ truncatedSpaceLikeDecayShower(tShowerParticlePtr particle,
        if( ! hardOnly() ) timeLikeShower( theChildren[0] , type, Branching(),true);
      }
      else {
-	truncatedTimeLikeShower( theChildren[0],branch->children()[0] ,type);
+       truncatedTimeLikeShower( theChildren[0],branch->children()[0] ,type,true);
      }
      updateHistory(theChildren[0]);
    }
@@ -2751,6 +2799,20 @@ void Evolver::doShowering(bool hard,XCPtr xcomb) {
 	   constructDecayTree(particlesToShower,interactions_[inter]))) 
 	throw InteractionVeto();
     }
+    // create random particle vector (only need to do once)
+    vector<ShowerProgenitorPtr> tmp;
+    unsigned int nColouredIncoming = 0;
+    while(particlesToShower.size()>0){
+      unsigned int xx=UseRandom::irnd(particlesToShower.size());
+      tmp.push_back(particlesToShower[xx]);
+      particlesToShower.erase(particlesToShower.begin()+xx);
+    }
+    particlesToShower=tmp;
+    for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
+      if(!particlesToShower[ix]->progenitor()->isFinalState() &&
+	 particlesToShower[ix]->progenitor()->coloured()) ++nColouredIncoming;
+    }
+    bool switchRecon = hard && nColouredIncoming !=1;
     // main shower loop
     unsigned int ntry(0);
     bool reconstructed = false;
@@ -2773,14 +2835,6 @@ void Evolver::doShowering(bool hard,XCPtr xcomb) {
 	  }
 	}
       }
-      // create random particle vector
-      vector<ShowerProgenitorPtr> tmp;
-      while(particlesToShower.size()>0){
-        unsigned int xx=UseRandom::irnd(particlesToShower.size());
-        tmp.push_back(particlesToShower[xx]);
-        particlesToShower.erase(particlesToShower.begin()+xx);
-      }
-      particlesToShower=tmp;
       // loop over particles
       for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
 	// extract the progenitor
@@ -2842,7 +2896,8 @@ void Evolver::doShowering(bool hard,XCPtr xcomb) {
       // do the kinematic reconstruction, checking if it worked
       reconstructed = hard ?
 	showerModel()->kinematicsReconstructor()->
-	reconstructHardJets (currentTree(),intrinsicpT(),interactions_[inter]) :
+	reconstructHardJets (currentTree(),intrinsicpT(),interactions_[inter],
+			     switchRecon && ntry>maximumTries()/2) :
 	showerModel()->kinematicsReconstructor()->
 	reconstructDecayJets(currentTree(),interactions_[inter]);
     }

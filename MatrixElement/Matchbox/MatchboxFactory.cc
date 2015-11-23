@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// MatchboxFactory.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MatchboxFactory.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -24,9 +24,9 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Handlers/EventHandler.h"
 #include "ThePEG/Handlers/SamplerBase.h"
-#include "Herwig++/MatrixElement/Matchbox/Base/DipoleRepository.h"
-#include "Herwig++/MatrixElement/Matchbox/Utility/SU2Helper.h"
-#include "Herwig++/Utilities/RunDirectories.h"
+#include "Herwig/MatrixElement/Matchbox/Base/DipoleRepository.h"
+#include "Herwig/MatrixElement/Matchbox/Utility/SU2Helper.h"
+#include "Herwig/Utilities/RunDirectories.h"
 
 #include <boost/progress.hpp>
 #include <boost/filesystem.hpp>
@@ -344,6 +344,11 @@ void MatchboxFactory::productionMode() {
     }
   }
 
+  if ( subtractionData() != "" && !subProcessGroups() ) {
+    throw Exception() << "MatchboxFactory: Plain NLO settings are required for subtraction checks.\n"
+      << "Please check your setup.\n"
+      << Exception::runerror;
+  }
   if ( showerApproximation() && !virtualContributions() && !realContributions() ) {
     Repository::clog() << "Warning: Matching requested for LO run. Matching disabled.\n" << flush;
     showerApproximation(Ptr<ShowerApproximation>::tptr());
@@ -423,6 +428,10 @@ void MatchboxFactory::setup() {
       }
       nLight(nl/2);
 
+      if ( particleGroups().find("p") == particleGroups().end() )
+	throw Exception() << "MatchboxFactory: Could not find a hadron particle group named 'p'"
+			  << Exception::runerror;
+
       const PDVector& partonsInP = particleGroups()["p"];
       for ( PDVector::const_iterator pip = partonsInP.begin();
 	    pip != partonsInP.end(); ++pip ) {
@@ -438,10 +447,9 @@ void MatchboxFactory::setup() {
 	}
 	mes = makeMEs(*p,orderInAlphaS(),needTrueVirtuals);
 	copy(mes.begin(),mes.end(),back_inserter(bornMEs()));
-	if ( (realContributions() || meCorrectionsOnly() ||
+	if ( realContributions() || meCorrectionsOnly() ||
 	      (showerApproximation() && virtualContributions()) ||
-	      (showerApproximation() && loopSimCorrections()))
-	     && realEmissionMEs().empty() ) {
+	      (showerApproximation() && loopSimCorrections()) ) {
 	  if ( realEmissionProcesses.empty() ) {
 	    vector<string> rproc = *p;
 	    rproc.push_back("j");
@@ -450,10 +458,9 @@ void MatchboxFactory::setup() {
 	  }
 	}
       }
-      if ( (realContributions() || meCorrectionsOnly() ||
+      if ( realContributions() || meCorrectionsOnly() ||
 	    (showerApproximation() && virtualContributions()) ||
-	    (showerApproximation() && loopSimCorrections()))
-	   && realEmissionMEs().empty() ) {
+	    (showerApproximation() && loopSimCorrections()) ) {
 	if ( !realEmissionProcesses.empty() ) {
 	  for ( vector<vector<string> >::const_iterator q =
 		  realEmissionProcesses.begin(); q != realEmissionProcesses.end(); ++q ) {
@@ -614,6 +621,7 @@ void MatchboxFactory::setup() {
     }
 
     if ( (bornContributions() && !virtualContributions()) || 
+	 (bornContributions() && meCorrectionsOnly()) || 
 	 (bornContributions() && virtualContributions() && independentVirtuals()) ) {
       for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born
 	      = bornMEs().begin(); born != bornMEs().end(); ++born ) {
@@ -1450,13 +1458,13 @@ void MatchboxFactory::Init() {
      "%\\cite{Platzer:2011bc}\n"
      "\\bibitem{Platzer:2011bc}\n"
      "S.~Platzer and S.~Gieseke,\n"
-     "``Dipole Showers and Automated NLO Matching in Herwig++,''\n"
+     "``Dipole Showers and Automated NLO Matching in Herwig,''\n"
      "arXiv:1109.6256 [hep-ph].\n"
      "%%CITATION = ARXIV:1109.6256;%%\n"
      "%\\cite{Matchbox:2015}\n"
      "\\bibitem{Matchbox:2015}\n"
-     "Herwig++ collaboration,\n"
-     "``Precision LHC Event Generation with Herwig++,''\n"
+     "Herwig collaboration,\n"
+     "``Precision LHC Event Generation with Herwig,''\n"
      "in preparation.");
 
   static Reference<MatchboxFactory,Tree2toNGenerator> interfaceDiagramGenerator

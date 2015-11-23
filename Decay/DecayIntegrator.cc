@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// DecayIntegrator.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// DecayIntegrator.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -25,10 +25,10 @@
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/RefVector.h"
 #include "ThePEG/Utilities/Debug.h"
-#include "Herwig++/Utilities/Kinematics.h"
-#include "Herwig++/PDT/GenericMassGenerator.h"
+#include "Herwig/Utilities/Kinematics.h"
+#include "Herwig/PDT/GenericMassGenerator.h"
 #include "DecayPhaseSpaceMode.h"
-#include "Herwig++/PDT/WidthCalculatorBase.h"
+#include "Herwig/PDT/WidthCalculatorBase.h"
 #include "ThePEG/Interface/Reference.h"
 
 using namespace Herwig; 

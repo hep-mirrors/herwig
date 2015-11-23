@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// VBFNLOPhasespace.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// VBFNLOPhasespace.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -20,13 +20,13 @@
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
-#include "Herwig++/Utilities/GSLBisection.h"
+#include "Herwig/Utilities/GSLBisection.h"
 #include "ThePEG/Utilities/DynamicLoader.h"
 
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-#include "Herwig++/MatrixElement/Matchbox/Base/MatchboxAmplitude.h"
+#include "Herwig/MatrixElement/Matchbox/Base/MatchboxAmplitude.h"
 
 #include "VBFNLO/utilities/BLHAinterface.h"
 
@@ -41,7 +41,9 @@ VBFNLOPhasespace::VBFNLOPhasespace() :
 
 void VBFNLOPhasespace::loadVBFNLO() {
   if ( ! (DynamicLoader::load(VBFNLOlib_+"/libVBFNLO.so") || 
-	  DynamicLoader::load("libVBFNLO.so") ) )
+	  DynamicLoader::load("libVBFNLO.so") ||
+	  DynamicLoader::load(VBFNLOlib_+"/libVBFNLO.dylib") || 
+	  DynamicLoader::load("libVBFNLO.dylib") ) )
     throw Exception() << "VBFNLOPhasespace::loadVBFNLO(): Failed to load libVBFNLO.so/dylib\n"
 		      << DynamicLoader::lastErrorMessage
 		      << Exception::runerror;
@@ -110,7 +112,7 @@ double VBFNLOPhasespace::generateTwoToNKinematics(const double* random,
   }
 
   if (weight == 0) {
-    delete p;
+    delete[] p;
     return 0;
   }
 
@@ -119,9 +121,10 @@ double VBFNLOPhasespace::generateTwoToNKinematics(const double* random,
     momenta[i].setX(p[4*i+1]*GeV);
     momenta[i].setY(p[4*i+2]*GeV);
     momenta[i].setZ(p[4*i+3]*GeV);
+    momenta[i].rescaleMass();
   }
 
-  delete p;
+  delete[] p;
 
   Energy beamenergy = sqrt(lastXCombPtr()->lastS())/2.;
   double x1 = momenta[0].e()/beamenergy;
@@ -129,14 +132,15 @@ double VBFNLOPhasespace::generateTwoToNKinematics(const double* random,
   Energy2 thisSHat = (momenta[0] + momenta[1]).m2();
 
   // reshuffle so that particles have correct mass
-  // boost final-state into partonic CMS
-  Boost toCMS = (momenta[0]+momenta[1]).findBoostToCM();
-  for ( size_t i = 2; i < momenta.size(); ++i ) {
-    momenta[i].boost(toCMS);
-  }
-  // copied from MatchboxRambo phasespace
   if ( needToReshuffle ) {
 
+    // boost final-state into partonic CMS
+    Boost toCMS = (momenta[0]+momenta[1]).findBoostToCM();
+    for ( size_t i = 2; i < momenta.size(); ++i ) {
+      momenta[i].boost(toCMS);
+    }
+
+    // copied from MatchboxRambo phasespace
     double xi;
 
     ReshuffleEquation solve(sqrt(thisSHat),mePartonData().begin()+2,mePartonData().end(),
@@ -169,10 +173,10 @@ double VBFNLOPhasespace::generateTwoToNKinematics(const double* random,
       (*k).setMass((**d).hardProcessMass());
     }
 
-  }
-  // unboost
-  for ( size_t i = 2; i < momenta.size(); ++i ) {
-    momenta[i].boost(-toCMS);
+    // unboost
+    for ( size_t i = 2; i < momenta.size(); ++i ) {
+      momenta[i].boost(-toCMS);
+    }
   }
 
   if ( !matchConstraints(momenta) )

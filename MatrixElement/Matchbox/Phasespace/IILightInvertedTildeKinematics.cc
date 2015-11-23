@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// IILightInvertedTildeKinematics.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// IILightInvertedTildeKinematics.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -20,10 +20,6 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
-
-IILightInvertedTildeKinematics::IILightInvertedTildeKinematics() {}
-
-IILightInvertedTildeKinematics::~IILightInvertedTildeKinematics() {}
 
 IBPtr IILightInvertedTildeKinematics::clone() const {
   return new_ptr(*this);
@@ -44,7 +40,7 @@ bool IILightInvertedTildeKinematics::doMap(const double * r) {
   Lorentz5Momentum spectator = bornSpectatorMomentum();
 
   double mapping = 1.0;
-  pair<Energy,double> ptz = generatePtZ(mapping,r);
+  pair<Energy,double> ptz = generatePtZ(mapping,r,2.0);
   if ( mapping == 0.0 ) {
     jacobian(0.0);
     return false;
@@ -112,21 +108,14 @@ double IILightInvertedTildeKinematics::lastZ() const {
 }
 
 Energy IILightInvertedTildeKinematics::ptMax() const {
-  double tau = emitterX()*spectatorX();
-  return (1.-tau)*lastScale()/(2.*sqrt(tau));
+  return 0.5*(1.-emitterX())/sqrt(emitterX())*lastScale();
 }
 
-pair<double,double> IILightInvertedTildeKinematics::zBounds(Energy pt, Energy hardPt) const {
-  hardPt = hardPt == ZERO ? ptMax() : min(hardPt,ptMax());
-  double tau = emitterX()*spectatorX();
-  double s = sqrt(1.-sqr(pt/hardPt));
-  return make_pair(0.5*(1.+tau-(1.-tau)*s),0.5*(1.+tau+(1.-tau)*s));
+pair<double,double> IILightInvertedTildeKinematics::zBounds(Energy pt, Energy) const {
+  double root = sqr(1.-emitterX())-4*emitterX()*sqr(pt/lastScale());
+  root=sqrt(max(root,0.));
+  return make_pair(0.5*( 1.+emitterX() - root),0.5*( 1.+emitterX() + root));
 }
-
-
-// If needed, insert default implementations of virtual function defined
-// in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
-
 
 void IILightInvertedTildeKinematics::persistentOutput(PersistentOStream & os) const {
   os << ounit(K,GeV) << ounit(K2,GeV2) << ounit(Ktilde,GeV)

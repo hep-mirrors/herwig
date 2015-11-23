@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// DipoleSplittingKinematics.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// DipoleSplittingKinematics.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_DipoleSplittingKinematics_H
@@ -15,7 +15,7 @@
 #include "ThePEG/Handlers/HandlerBase.h"
 #include "ThePEG/Vectors/Lorentz5Vector.h"
 
-#include "Herwig++/DipoleShower/Utility/DipoleMCCheck.h"
+#include "Herwig/DipoleShower/Utility/DipoleMCCheck.h"
 
 namespace Herwig {
 

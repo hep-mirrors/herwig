@@ -10,7 +10,7 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/MatrixElement/General/GeneralQQHiggs.h"
+#include "Herwig/MatrixElement/General/GeneralQQHiggs.h"
 
 using namespace Herwig;
 

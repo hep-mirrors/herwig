@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// MEHiggsPair.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MEHiggsPair.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2009-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_HiggsPair_H
@@ -13,11 +13,11 @@
 //
 // The implementation of this process is based upon hep-ph/0112161 by G.F. Giudice, R. Rattazzi, J.D. Wells.
 
-#include "Herwig++/Models/General/BSMModel.h"
+#include "Herwig/Models/General/BSMModel.h"
 #include "ThePEG/Repository/UseRandom.h"
-#include "Herwig++/PDT/GenericMassGenerator.h"
-#include "Herwig++/Utilities/Kinematics.h"
-#include "Herwig++/MatrixElement/ProductionMatrixElement.h"
+#include "Herwig/PDT/GenericMassGenerator.h"
+#include "Herwig/Utilities/Kinematics.h"
+#include "Herwig/MatrixElement/ProductionMatrixElement.h"
 #include "ThePEG/Config/Pointers.h"
 
 namespace Herwig {

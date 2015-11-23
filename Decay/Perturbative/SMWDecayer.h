@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// SMWDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// SMWDecayer.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_SMWDecayer_H
@@ -11,11 +11,11 @@
 //
 // This is the declaration of the SMWDecayer class.
 //
-#include "Herwig++/Decay/DecayIntegrator.h"
+#include "Herwig/Decay/DecayIntegrator.h"
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
-#include "Herwig++/Decay/DecayPhaseSpaceMode.h"
-#include "Herwig++/Shower/Couplings/ShowerAlpha.fh"
+#include "Herwig/Decay/DecayPhaseSpaceMode.h"
+#include "Herwig/Shower/Couplings/ShowerAlpha.fh"
 
 namespace Herwig {
 using namespace ThePEG;

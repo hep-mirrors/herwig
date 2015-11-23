@@ -5,7 +5,6 @@ read Matchbox/Powheg.in
 set /Herwig/Shower/Evolver:HardVetoReadOption PrimaryCollision
 set /Herwig/Shower/Evolver:MECorrMode No
 set /Herwig/Shower/Evolver:SpinCorrelations No
-set /Herwig/Shower/KinematicsReconstructor:ReconstructionOption Colour4
 set /Herwig/Shower/KinematicsReconstructor:InitialStateReconOption SofterFraction
 set /Herwig/Shower/PartnerFinder:PartnerMethod 0
 set /Herwig/Shower/PartnerFinder:ScaleChoice 0
@@ -22,33 +21,10 @@ cd /Herwig/Shower
 
 set PowhegShowerHandler:Factory /Herwig/MatrixElements/Matchbox/Factory
 
-set Evolver:HardEmissionMode MatchboxPOWHEG
+set Evolver:HardEmissionMode FullPOWHEG
 
-# TUNE PARAMETERS
-set /Herwig/Shower/AlphaQCD:AlphaMZ .1185
-set /Herwig/Shower/AlphaQCD:NumberOfLoops 2
-set /Herwig/MatrixElements/Matchbox/AlphaS/MatchboxNLOAlphaS:input_alpha_s .1185
-set /Herwig/Shower/QtoQGSudakov:pTmin 1.92
-set /Herwig/Shower/GtoGGSudakov:pTmin 1.92
-set /Herwig/Shower/GtoQQbarSudakov:pTmin 1.92
-set /Herwig/Shower/GtobbbarSudakov:pTmin 1.92
-set /Herwig/Shower/GtoccbarSudakov:pTmin 1.92
-set /Herwig/Shower/QtoGQSudakov:pTmin 1.92
-set /Herwig/Shower/utoGuSudakov:pTmin 1.92
-set /Herwig/Shower/dtoGdSudakov:pTmin 1.92
-set /Herwig/Shower/QtoQGSudakov:CutOffOption pT
-set /Herwig/Shower/GtoGGSudakov:CutOffOption pT
-set /Herwig/Shower/GtoQQbarSudakov:CutOffOption pT
-set /Herwig/Shower/GtobbbarSudakov:CutOffOption pT
-set /Herwig/Shower/GtoccbarSudakov:CutOffOption pT
-set /Herwig/Shower/QtoGQSudakov:CutOffOption pT
-set /Herwig/Shower/utoGuSudakov:CutOffOption pT
-set /Herwig/Shower/dtoGdSudakov:CutOffOption pT
-set /Herwig/Hadronization/ClusterFissioner:ClMaxLight 2.8
-set /Herwig/Hadronization/ClusterFissioner:ClPowLight 0.84
-set /Herwig/Hadronization/ClusterFissioner:PSplitLight 0.82
-set /Herwig/Hadronization/HadronSelector:PwtSquark 0.49
-set /Herwig/Hadronization/HadronSelector:PwtDIquark 0.33
+# tunes
+read Matchbox/Powheg-Default-HardAlphaSTune.in
 
 cd /Herwig/Analysis
 

@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// InvertedTildeKinematics.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// InvertedTildeKinematics.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -21,7 +21,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-#include "Herwig++/MatrixElement/Matchbox/Phasespace/RandomHelpers.h"
+#include "Herwig/MatrixElement/Matchbox/Phasespace/RandomHelpers.h"
 
 using namespace Herwig;
 
@@ -108,7 +108,8 @@ Energy InvertedTildeKinematics::lastScale() const {
   return (bornEmitterMomentum()+bornSpectatorMomentum()).m();
 }
 
-pair<Energy,double> InvertedTildeKinematics::generatePtZ(double& jac, const double * r) const {
+pair<Energy,double> InvertedTildeKinematics::generatePtZ(double& jac, const double * r,
+							 double pow) const {
 
   double kappaMin = 
     ptCut() != ZERO ?
@@ -120,8 +121,9 @@ pair<Energy,double> InvertedTildeKinematics::generatePtZ(double& jac, const doub
   using namespace RandomHelpers;
 
   if ( ptCut() > ZERO ) {
-    pair<double,double> kw =
-      generate(inverse(0.,kappaMin,1.),r[0]);
+    pair<double,double> kw = pow==1. ?
+      generate(inverse(0.,kappaMin,1.),r[0]) :
+      generate(power(0.,-pow,kappaMin,1.),r[0]);
     kappa = kw.first;
     jac *= kw.second;
   } else {
@@ -137,9 +139,27 @@ pair<Energy,double> InvertedTildeKinematics::generatePtZ(double& jac, const doub
 
   pair<double,double> zLims = zBounds(pt);
 
-  pair<double,double> zw =
-    generate(inverse(0.,zLims.first,zLims.second)+
-	     inverse(1.,zLims.first,zLims.second),r[1]);
+  pair<double,double> zw(0,0);// =
+  //  generate(inverse(0.,zLims.first,zLims.second)+
+	//     inverse(1.,zLims.first,zLims.second),r[1]);
+
+  // FlatZ = 1
+  if ( theDipole->samplingZ() == 1 ) {
+    zw = generate(flat(zLims.first,zLims.second),r[1]);
+  }
+  // OneOverZ = 2
+  if ( theDipole->samplingZ() == 2 ) {
+    zw = generate(inverse(0.0,zLims.first,zLims.second),r[1]);
+  }
+  // OneOverOneMinusZ = 3
+  if ( theDipole->samplingZ() == 3 ) {
+    zw = generate(inverse(1.0,zLims.first,zLims.second),r[1]);
+  }
+  // OneOverZOneMinusZ = 4
+  if ( theDipole->samplingZ() == 4 ) {
+    zw = generate(inverse(0.0,zLims.first,zLims.second) +
+                                inverse(1.0,zLims.first,zLims.second),r[1]);
+  }
 
   double z = zw.first;
   jac *= zw.second;

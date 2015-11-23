@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// ModelGenerator.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// ModelGenerator.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -22,8 +22,8 @@
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "BSMWidthGenerator.h"
-#include "Herwig++/PDT/GenericMassGenerator.h"
-#include "Herwig++/Decay/DecayIntegrator.h"
+#include "Herwig/PDT/GenericMassGenerator.h"
+#include "Herwig/Decay/DecayIntegrator.h"
 #include "ThePEG/Repository/BaseRepository.h"
 
 using namespace Herwig;
@@ -277,9 +277,9 @@ void ModelGenerator::doinit() {
 	  << "# correlations included when they are generated.\n#\n#";
     }
     else {
-      ofs << "#  Herwig++ decay tables in SUSY Les Houches accord format\n";
+      ofs << "#  Herwig decay tables in SUSY Les Houches accord format\n";
       ofs << "Block DCINFO                           # Program information\n";
-      ofs << "1   Herwig++          # Decay Calculator\n";
+      ofs << "1   Herwig          # Decay Calculator\n";
       ofs << "2   " << generator()->strategy()->versionstring() 
 	  << "     # Version number\n";
     }

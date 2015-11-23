@@ -28,6 +28,7 @@ GoSam-GoSam.in \
 OpenLoops-OpenLoops.in \
 MadGraph-GoSam.in \
 MadGraph-NJet.in \
+NJet-NJet.in \
 MadGraph-OpenLoops.in \
 MCatNLO-DefaultShower.in \
 MCatNLO-DipoleShower.in \
@@ -44,8 +45,15 @@ Powheg.in \
 PPCollider.in \
 PQCDLevel.in \
 VBFNLO.in \
+VBFNLOPhasespace.in \
 VBFDiagramsOnly.in \
-MMHT2014.in
+MMHT2014.in \
+MCatNLO-Default-HardAlphaSTune.in \
+MCatNLO-Default-ShowerAlphaSTune.in \
+Powheg-Default-HardAlphaSTune.in \
+Powheg-Default-ShowerAlphaSTune.in \
+MCatNLO-Dipole-HardAlphaSTune.in \
+MCatNLO-Dipole-ShowerAlphaSTune.in
 
 dist_Matchbox_DATA = $(INPUTFILES)
 

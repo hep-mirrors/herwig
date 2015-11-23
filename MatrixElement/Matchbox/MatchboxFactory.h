@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// MatchboxFactory.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MatchboxFactory.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_MatchboxFactory_H
@@ -14,14 +14,14 @@
 
 #include "ThePEG/Handlers/SubProcessHandler.h"
 
-#include "Herwig++/MatrixElement/Matchbox/Base/MatchboxAmplitude.h"
-#include "Herwig++/MatrixElement/Matchbox/Utility/Tree2toNGenerator.h"
-#include "Herwig++/MatrixElement/Matchbox/Utility/ProcessData.h"
-#include "Herwig++/MatrixElement/Matchbox/Utility/MatchboxScaleChoice.h"
-#include "Herwig++/MatrixElement/Matchbox/Phasespace/MatchboxPhasespace.h"
-#include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.h"
-#include "Herwig++/MatrixElement/Matchbox/Base/SubtractedME.h"
-#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.fh"
+#include "Herwig/MatrixElement/Matchbox/Base/MatchboxAmplitude.h"
+#include "Herwig/MatrixElement/Matchbox/Utility/Tree2toNGenerator.h"
+#include "Herwig/MatrixElement/Matchbox/Utility/ProcessData.h"
+#include "Herwig/MatrixElement/Matchbox/Utility/MatchboxScaleChoice.h"
+#include "Herwig/MatrixElement/Matchbox/Phasespace/MatchboxPhasespace.h"
+#include "Herwig/MatrixElement/Matchbox/Base/MatchboxMEBase.h"
+#include "Herwig/MatrixElement/Matchbox/Base/SubtractedME.h"
+#include "Herwig/MatrixElement/Matchbox/MatchboxFactory.fh"
 
 namespace Herwig {
 

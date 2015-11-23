@@ -5,12 +5,12 @@
 //
 
 #include "GeneralThreeBodyDecayer.h"
-#include "Herwig++/Decay/DecayPhaseSpaceMode.h"
+#include "Herwig/Decay/DecayPhaseSpaceMode.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/PDT/ThreeBodyAllOnCalculator.h"
+#include "Herwig/PDT/ThreeBodyAllOnCalculator.h"
 
 using namespace Herwig;
 
@@ -32,7 +32,7 @@ void GeneralThreeBodyDecayer::Init() {
 
   static ClassDocumentation<GeneralThreeBodyDecayer> documentation
     ("The GeneralThreeBodyDecayer class is the base class for the implementation of"
-     " all three body decays based on spin structures in Herwig++.");
+     " all three body decays based on spin structures in Herwig.");
 
   static Switch<GeneralThreeBodyDecayer,unsigned int> interfaceWidthOption
     ("WidthOption",

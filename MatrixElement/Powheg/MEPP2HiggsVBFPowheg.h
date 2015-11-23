@@ -5,7 +5,7 @@
 // This is the declaration of the MEPP2HiggsVBFPowheg class.
 //
 
-#include "Herwig++/MatrixElement/Hadron/MEPP2HiggsVBF.h"
+#include "Herwig/MatrixElement/Hadron/MEPP2HiggsVBF.h"
 
 namespace Herwig {
 

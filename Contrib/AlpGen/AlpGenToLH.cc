@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
 
   cout << "\n";
   cout << "------------------------------------------------------------------\n";
-  cout << "  AlpGenToLH: Convert Alpgen Les Houches to Herwig++ Les Houches \n";
+  cout << "  AlpGenToLH: Convert Alpgen Les Houches to Herwig Les Houches \n";
   cout << "                               v2.0-beta \n";
   cout << "------------------------------------------------------------------\n";
   cout << "\n";

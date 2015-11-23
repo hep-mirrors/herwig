@@ -4,16 +4,20 @@ AUTOMAKE_OPTIONS = -Wno-portability
 
 defaultsdir = ${pkgdatadir}/defaults
 
-bin_PROGRAMS = Herwig++
-Herwig___SOURCES = Herwig++.h Herwig++.cc herwigopts.c herwigopts.h
+bin_PROGRAMS = Herwig
+
+Herwig_SOURCES = \
+HerwigMain.cc Herwig.h Herwig.cc HerwigCLI.cc HerwigCLI.h HerwigUI.h \
+herwigopts.c herwigopts.h
+
 BUILT_SOURCES = herwigopts.c herwigopts.h
-Herwig___LDFLAGS = $(AM_LDFLAGS) -export-dynamic $(THEPEGLDFLAGS) \
+Herwig_LDFLAGS = $(AM_LDFLAGS) -export-dynamic $(THEPEGLDFLAGS) \
 $(BOOST_SYSTEM_LDFLAGS) $(BOOST_FILESYSTEM_LDFLAGS)
-Herwig___LDADD = $(THEPEGLIB) -ldl \
+Herwig_LDADD = $(THEPEGLIB) -ldl \
 $(top_builddir)/Utilities/libHwRunDirectories.la \
 $(BOOST_SYSTEM_LIBS) $(BOOST_FILESYSTEM_LIBS)
 
-Herwig___CPPFLAGS = $(AM_CPPFLAGS) \
+Herwig_CPPFLAGS = $(AM_CPPFLAGS) \
 -DHERWIG_PKGDATADIR="\"$(pkgdatadir)\"" \
 -DHERWIG_PKGLIBDIR="\"$(pkglibdir)\"" \
 -DTHEPEG_PKGLIBDIR="\"$(THEPEGLIBPATH)\""
@@ -83,8 +87,8 @@ clean-local:
 
 ## checking targets ##
 
-HerwigDefaults.rpo: Herwig++ $(srcdir)/defaults/*.in defaults/PDF.in defaults/Analysis.in $(top_builddir)/lib/*.so
-	./Herwig++ init -L$(top_builddir)/lib defaults/HerwigDefaults.in -D
+HerwigDefaults.rpo: Herwig $(srcdir)/defaults/*.in defaults/PDF.in defaults/Analysis.in $(top_builddir)/lib/*.so
+	./Herwig init -L$(top_builddir)/lib defaults/HerwigDefaults.in -D
 
 check_BSM_Full=
 check_BSM=
@@ -147,32 +151,39 @@ link-helper-files:
 VALGRIND=valgrind --leak-check=full --num-callers=25 --freelist-vol=100000000 --leak-resolution=med --trace-children=yes
 
 check-valgrind-%: $(srcdir)/%.in HerwigDefaults.rpo link-helper-files
-	$(VALGRIND) ./Herwig++ read -d1 -D $< &> valgrind-$(notdir $(subst .in,,$<))-read.log
-	$(VALGRIND) ./Herwig++ run $(notdir $(subst .in,.run,$<)) -N 500 -d1 -D &> valgrind-$(notdir $(subst .in,,$<))-run.log
+	$(VALGRIND) ./Herwig read -d1 -D $< &> valgrind-$(notdir $(subst .in,,$<))-read.log
+	$(VALGRIND) ./Herwig run $(notdir $(subst .in,.run,$<)) -N 500 -d1 -D &> valgrind-$(notdir $(subst .in,,$<))-run.log
 
 valgrind: valgrind-init valgrind-read valgrind-run
 
 valgrind-init:
-	$(VALGRIND) ./Herwig++ init -d1 -D -L$(top_builddir)/lib defaults/HerwigDefaults.in \
+	$(VALGRIND) ./Herwig init -d1 -D -L$(top_builddir)/lib defaults/HerwigDefaults.in \
 &> /tmp/valgrind-init.log
 valgrind-read:
-	$(VALGRIND) ./Herwig++ read -d1 -D LHC.in &> /tmp/valgrind-read.log
+	$(VALGRIND) ./Herwig read -d1 -D LHC.in &> /tmp/valgrind-read.log
 valgrind-run:
-	$(VALGRIND) ./Herwig++ run -d1 -D -N5 LHC.run &> /tmp/valgrind-run.log
+	$(VALGRIND) ./Herwig run -d1 -D -N5 LHC.run &> /tmp/valgrind-run.log
 
-CHECKCOMMAND = ./Herwig++ run  $(notdir $(subst .in,.run,$<)) -N500 -d1 -D
+CHECKCOMMAND = ./Herwig run  $(notdir $(subst .in,.run,$<)) -N500 -d1 -D
 
 check-%: $(srcdir)/%.in HerwigDefaults.rpo link-helper-files
-	./Herwig++ read -i . $< -D
+	./Herwig read -i . $< -D
 	@echo $(CHECKCOMMAND)
 	@$(CHECKCOMMAND) && echo "# $@ OK #" \
 			 || (echo "###### $@ BAD ######"; false)
 SETUPTHEPEG=$(THEPEGPATH)/bin/setupThePEG
 THEPEGREPO=$(THEPEGLIBPATH)/ThePEGDefaults.rpo
 
+install-exec-local:
+	$(install_sh_SCRIPT) $(srcdir)/Herwig++ $(DESTDIR)$(bindir)/Herwig++
+	sed -e's!@BINDIR@!$(bindir)!' $(srcdir)/Herwig++ > $(DESTDIR)$(bindir)/Herwig++
+
+uninstall-local:
+	rm -f  $(DESTDIR)$(bindir)/Herwig++
+
 install-data-hook:
 	@echo Creating repository
-	@./Herwig++ init -L$(DESTDIR)$(pkglibdir) -i$(DESTDIR)$(pkgdatadir) -i$(DESTDIR)$(pkgdatadir)/snippets $(DESTDIR)$(defaultsdir)/HerwigDefaults.in --repo=$(DESTDIR)$(pkgdatadir)/HerwigDefaults.rpo
+	@./Herwig init -L$(DESTDIR)$(pkglibdir) -i$(DESTDIR)$(pkgdatadir) -i$(DESTDIR)$(pkgdatadir)/snippets $(DESTDIR)$(defaultsdir)/HerwigDefaults.in --repo=$(DESTDIR)$(pkgdatadir)/HerwigDefaults.rpo
 	@if test -n "$(DESTDIR)"; \
         then sed -i.bak -e "s@$(DESTDIR)@@g" $(DESTDIR)$(pkgdatadir)/HerwigDefaults.rpo; \
 	rm -f $(DESTDIR)$(pkgdatadir)/HerwigDefaults.rpo.bak; \
@@ -205,7 +216,7 @@ unregister-from-thepeg-repo:
 		-l$(DESTDIR)$(pkglibdir) ; \
 	fi
 
-EXTRA_DIST = herwigopts.ggo
+EXTRA_DIST = herwigopts.ggo Herwig++
 
 GENGETOPT = gengetopt
 

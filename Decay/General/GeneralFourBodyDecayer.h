@@ -5,8 +5,8 @@
 // This is the declaration of the GeneralFourBodyDecayer class.
 //
 
-#include "Herwig++/Decay/DecayIntegrator.h"
-#include "Herwig++/Models/General/PrototypeVertex.h"
+#include "Herwig/Decay/DecayIntegrator.h"
+#include "Herwig/Models/General/PrototypeVertex.h"
 
 namespace Herwig {
 

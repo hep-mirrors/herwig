@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// DecayPhaseSpaceChannel.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// DecayPhaseSpaceChannel.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -261,8 +261,11 @@ double DecayPhaseSpaceChannel::generateWeight(const vector<Lorentz5Momentum> & o
     // both on-shell
     else {
       pcm = Kinematics::pstarTwoBodyDecay(intmass[ix],output[idau[1]].mass(),
-				   output[idau[0]].mass());
-      wgt *=intmass[ix]*8.*pi*pi/pcm;
+					  output[idau[0]].mass());
+      if(pcm!=ZERO)
+	wgt *=intmass[ix]*8.*pi*pi/pcm;
+      else
+	wgt = 0.;
     }
   }
   // finally the overall factor
@@ -582,7 +585,8 @@ void DecayPhaseSpaceChannel::twoBodyDecay(const Lorentz5Momentum & p,
   p1 = Lorentz5Momentum(m1, pstarVector);
   p2 = Lorentz5Momentum(m2,-pstarVector);
   // boost from CM to LAB
-  Boost bv = p.vect() * (1./p.t());
-  p1.boost( bv );   
-  p2.boost( bv );
+  Boost bv = p.boostVector();
+  double gammarest = p.e()/p.mass();
+  p1.boost( bv , gammarest );
+  p2.boost( bv , gammarest );
 }

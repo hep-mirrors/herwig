@@ -2,7 +2,7 @@
 
 ##################################################
 # Example generator based on LEP parameters
-# usage: Herwig++ read LEP.in
+# usage: Herwig read LEP.in
 ##################################################
 
 ##################################################
@@ -25,6 +25,9 @@ set /Herwig/Partons/QCDExtractor:FlatSHatY 0
 ##################################################
 set /Herwig/Particles/p+:PDF    /Herwig/Partons/BudnevPDF
 set /Herwig/Particles/pbar-:PDF /Herwig/Partons/BudnevPDF
+set /Herwig/Partons/QCDExtractor:FirstPDF /Herwig/Partons/BudnevPDF
+set /Herwig/Partons/QCDExtractor:SecondPDF /Herwig/Partons/BudnevPDF
+
 
 ##################################################
 #  Cuts
@@ -54,7 +57,7 @@ set /Herwig/MatrixElements/MEgg2ff:Process Muon
 # LHC physics parameters (override defaults) 
 ##################################################
 cd /Herwig/Generators
-set LHCGenerator:EventHandler:LuminosityFunction:Energy 8000.
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 13000.
 set LHCGenerator:EventHandler:CascadeHandler:MPIHandler NULL
 
 
@@ -71,6 +74,6 @@ set LHCGenerator:EventHandler:CascadeHandler:MPIHandler NULL
 # set /Herwig/Analysis/HepMCFile:Units GeV_mm
 
 ###################################################
-# Save run for later usage with 'Herwig++ run'
+# Save run for later usage with 'Herwig run'
 ##################################################
 saverun LHC-GammaGamma LHCGenerator

@@ -27,8 +27,8 @@ mkdir /Herwig/NewPhysics/Zprime
 cd /Herwig/NewPhysics/Zprime
 create Herwig::ZprimeModel Model HwZprimeModel.so
 # SM couplings
-set Model:QCD/RunningAlphaS /Herwig/AlphaS
-set Model:EW/RunningAlphaEM /Herwig/AlphaEM
+set Model:QCD/RunningAlphaS /Herwig/Couplings/NLOAlphaS
+set Model:EW/RunningAlphaEM /Herwig/Couplings/AlphaEM
 set Model:EW/CKM /Herwig/CKM
 set Model:RunningMass /Herwig/RunningMass
 

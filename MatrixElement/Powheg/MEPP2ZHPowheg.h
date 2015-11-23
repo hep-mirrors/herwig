@@ -5,7 +5,7 @@
 // This is the declaration of the MEPP2ZHPowheg class.
 //
 
-#include "Herwig++/MatrixElement/Hadron/MEPP2ZH.h"
+#include "Herwig/MatrixElement/Hadron/MEPP2ZH.h"
 #include "ThePEG/PDF/BeamParticleData.h"
 
 namespace Herwig {

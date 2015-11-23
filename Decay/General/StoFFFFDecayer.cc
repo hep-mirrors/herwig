@@ -13,11 +13,11 @@
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Decay/DecayPhaseSpaceMode.h"
+#include "Herwig/Decay/DecayPhaseSpaceMode.h"
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 #include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
-#include "Herwig++/Models/StandardModel/StandardModel.h"
-#include "Herwig++/Decay/GeneralDecayMatrixElement.h"
+#include "Herwig/Models/StandardModel/StandardModel.h"
+#include "Herwig/Decay/GeneralDecayMatrixElement.h"
 #include <numeric>
 
 using namespace Herwig;
@@ -618,7 +618,7 @@ double StoFFFFDecayer::me2(const int ichan, const Particle & inpart,
 // 			       const ParticleVector & decay,
 // 			       InvEnergy2 me2) const;
 
-// #include "Herwig++/Models/StandardModel/StandardModel.h"
+// #include "Herwig/Models/StandardModel/StandardModel.h"
 // InvEnergy2 StoFFFFDecayer::stopMatrixElement(const Particle & inpart,
 // 					     const ParticleVector & decay,
 // 					     InvEnergy2 me2) const {

@@ -35,7 +35,6 @@ endif
 all-local: $(POSTPROCESSING)
 
 done-all-links: Herwig.la
-	if test ! -L Herwig++ ; then $(LN_S) -f . Herwig++ ; fi
 	find $(top_builddir) \( -name '*.so.*' -or -name '*.so' \) \
   -not -name 'lib*' -not -path '$(top_builddir)/lib/*' \
   -not -path '$(top_builddir)/.hg/*' -exec $(LN_S) -f \{\} \;

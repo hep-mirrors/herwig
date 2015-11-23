@@ -13,17 +13,52 @@ newdef /Herwig/Particles/e-:PDF LeptonPDF
 newdef /Herwig/Particles/e+:PDF LeptonPDF
 
 # Handle hadrons
-create Herwig::MRST MRST HwMRST.so
-setup MRST @HERWIG_PDF_DEFAULT@
-newdef MRST:RemnantHandler HadronRemnants
-newdef /Herwig/Particles/p+:PDF MRST
-newdef /Herwig/Particles/pbar-:PDF MRST
+# OLD CHOICE FROM Herwig++ 2.7
+create Herwig::MRST MRST-old HwMRST.so
+setup MRST-old @HERWIG_PDF_DEFAULT@
+newdef MRST-old:RemnantHandler HadronRemnants
 
 # NLO PDFs (needed for NLO matrix elements)
-create Herwig::MRST MRST-NLO HwMRST.so
-newdef MRST-NLO:Interpolation Cubic
-setup MRST-NLO @HERWIG_PDF_NLO@
-newdef MRST-NLO:RemnantHandler HadronRemnants
+create Herwig::MRST MRST-NLO-old HwMRST.so
+newdef MRST-NLO-old:Interpolation Cubic
+setup MRST-NLO-old @HERWIG_PDF_NLO@
+newdef MRST-NLO-old:RemnantHandler HadronRemnants
+
+# photons from leptons in
+# NEW DEFAULT for Hw 7
+library ThePEGLHAPDF.so
+
+create ThePEG::LHAPDF HardLOPDF
+newdef HardLOPDF:RemnantHandler HadronRemnants
+
+create ThePEG::LHAPDF HardNLOPDF
+newdef HardNLOPDF:RemnantHandler HadronRemnants
+
+create ThePEG::LHAPDF ShowerLOPDF
+newdef ShowerLOPDF:RemnantHandler HadronRemnants
+
+create ThePEG::LHAPDF ShowerNLOPDF
+newdef ShowerNLOPDF:RemnantHandler HadronRemnants
+
+create ThePEG::LHAPDF MPIPDF
+newdef MPIPDF:RemnantHandler HadronRemnants
+
+create ThePEG::LHAPDF RemnantPDF
+newdef RemnantPDF:RemnantHandler HadronRemnants
+
+newdef HardLOPDF:PDFName MMHT2014lo68cl
+newdef HardNLOPDF:PDFName MMHT2014nlo68cl
+
+newdef ShowerLOPDF:PDFName MMHT2014lo68cl
+newdef ShowerNLOPDF:PDFName MMHT2014nlo68cl
+
+newdef MPIPDF:PDFName MMHT2014lo68cl
+newdef RemnantPDF:PDFName MMHT2014lo68cl
+
+# set LO PDFS for hard process and can be changed later
+
+newdef /Herwig/Particles/p+:PDF HardLOPDF
+newdef /Herwig/Particles/pbar-:PDF HardLOPDF
 
 # photons from leptons in WW approx
 create ThePEG::WeizsackerWilliamsPDF WWPDF WeizsackerWilliamsPDF.so

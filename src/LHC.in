@@ -2,7 +2,7 @@
 
 ##################################################
 # Example generator based on LHC parameters
-# usage: Herwig++ read LHC.in
+# usage: Herwig read LHC.in
 ##################################################
 
 ##################################################
@@ -22,9 +22,9 @@ set LHCGenerator:MaxErrors 10000
 set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
 
 ########################
-## sqrt(s) = 8000 GeV ##
+## sqrt(s) = 13000 GeV ##
 ########################
-set LHCGenerator:EventHandler:LuminosityFunction:Energy 8000.0
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 13000.0
 
 ##################################################
 # Matrix Elements for hadron-hadron collisions 
@@ -144,7 +144,7 @@ cd /Herwig/Generators
 # set /Herwig/Analysis/HepMCFile:Units GeV_mm
 
 ##################################################
-# Save run for later usage with 'Herwig++ run'
+# Save run for later usage with 'Herwig run'
 ##################################################
 saverun LHC LHCGenerator
 

@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// DipoleSplittingKernel.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// DipoleSplittingKernel.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_DipoleSplittingKernel_H
@@ -16,9 +16,9 @@
 #include "ThePEG/StandardModel/AlphaSBase.h"
 #include "ThePEG/PDF/PDF.h"
 
-#include "Herwig++/DipoleShower/Utility/PDFRatio.h"
-#include "Herwig++/DipoleShower/Base/DipoleSplittingInfo.h"
-#include "Herwig++/DipoleShower/Kinematics/DipoleSplittingKinematics.h"
+#include "Herwig/DipoleShower/Utility/PDFRatio.h"
+#include "Herwig/DipoleShower/Base/DipoleSplittingInfo.h"
+#include "Herwig/DipoleShower/Kinematics/DipoleSplittingKinematics.h"
 
 namespace Herwig {
 

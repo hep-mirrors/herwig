@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// MEPP2QQ.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MEPP2QQ.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -17,11 +17,11 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "Herwig/Models/StandardModel/StandardModel.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/Handlers/StandardXComb.h"
-#include "Herwig++/MatrixElement/HardVertex.h"
+#include "Herwig/MatrixElement/HardVertex.h"
 #include "ThePEG/Repository/EventGenerator.h"
 
 using namespace Herwig;
@@ -72,7 +72,7 @@ void MEPP2QQ::doinit() {
   }
   else throw InitException() 
 	 << "Wrong type of StandardModel object in "
-	 << "MEPP2QQ::doinit() the Herwig++ version must be used" 
+	 << "MEPP2QQ::doinit() the Herwig version must be used" 
 	 << Exception::runerror;
   // get the particle data objects
   _gluon=getParticleData(ParticleID::g);

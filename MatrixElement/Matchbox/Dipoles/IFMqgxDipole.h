@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// IFMqgxDipole.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// IFMqgxDipole.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_IFMqgxDipole_H
@@ -12,7 +12,7 @@
 // This is the declaration of the IFMqgxDipole class.
 //
 
-#include "Herwig++/MatrixElement/Matchbox/Dipoles/SubtractionDipole.h"
+#include "Herwig/MatrixElement/Matchbox/Dipoles/SubtractionDipole.h"
 
 namespace Herwig {
 
@@ -75,6 +75,16 @@ public:
   virtual bool canHandle(const cPDVector& partons,
 			 int emitter, int emission, int spectator) const;
 
+  /**
+   *  How to sample the z-distribution.
+   *  FlatZ = 1
+   *  OneOverZ = 2
+   *  OneOverOneMinusZ = 3
+   *  OneOverZOneMinusZ = 4
+   */
+
+  virtual int samplingZ() const {return 4;}			 
+			 
   /**
    * Return the matrix element for the kinematical configuation
    * previously provided by the last call to setKinematics(), suitably

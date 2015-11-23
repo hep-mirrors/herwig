@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// DipoleMatching.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// DipoleMatching.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -24,7 +24,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-#include "Herwig++/MatrixElement/Matchbox/Dipoles/SubtractionDipole.h"
+#include "Herwig/MatrixElement/Matchbox/Dipoles/SubtractionDipole.h"
 
 using namespace Herwig;
 
@@ -53,7 +53,7 @@ CrossSection DipoleMatching::dSigHatDR() const {
       
    double lnme2=dipole()->underlyingBornME()->largeNME2(theLargeNBasis);
    if(lnme2==0){
-     generator()->log() <<"\nQTildeMatching: ";
+     generator()->log() <<"\nDipoleMatching: ";
      generator()->log() <<"\n  LargeNME2 is ZERO, while largeNColourCorrelatedME2 is not ZERO." ;
      generator()->log() <<"\n  This is too seriuos.\n" ;
      generator()->log() << Exception::runerror;

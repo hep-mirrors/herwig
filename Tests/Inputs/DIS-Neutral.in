@@ -15,7 +15,7 @@ set Model:EW/RunningAlphaEM AlphaEM
 set /Herwig/Analysis/Basics:CheckQuark 0
 cd /Herwig/Partons
 # create Herwig::MRST MRST2 HwMRST.so
-# setup MRST2 /home/richardn/montecarlo/c++/Herwig++/trunk/Herwig++/PDF/mrst/1998/lo05a.dat
+# setup MRST2 /home/richardn/montecarlo/c++/Herwig/trunk/Herwig/PDF/mrst/1998/lo05a.dat
 # set MRST2:RemnantHandler HadronRemnants
 # set /Herwig/Particles/p+:PDF MRST2
 # set /Herwig/Particles/pbar-:PDF MRST2

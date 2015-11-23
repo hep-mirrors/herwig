@@ -3,3 +3,5 @@
 ##################################################
 # underlying event forward rapidities
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1218372
+# underlying event
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2015_I1385107

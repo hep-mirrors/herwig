@@ -7,7 +7,7 @@ cd /Herwig/EventHandlers
 insert EventHandler:PreCascadeHandlers[0] /Herwig/Decays/DecayHandler
 
 set EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
-read snippets/DipoleShowerParameters.in
+read Matchbox/MCatNLO-Dipole-HardAlphaSTune.in
 
 cd /Herwig/Analysis
 
@@ -20,3 +20,7 @@ do c:UnsetHardProcessMass
 do cbar:UnsetHardProcessMass
 set c:NominalMass 0*GeV
 set cbar:NominalMass 0*GeV
+
+cd /Herwig/UnderlyingEvent
+set MEQCD2to2Fast:StrictFlavourScheme On
+

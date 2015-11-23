@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// DipoleSplittingGenerator.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// DipoleSplittingGenerator.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -19,7 +19,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-#include "Herwig++/DipoleShower/DipoleShowerHandler.h"
+#include "Herwig/DipoleShower/DipoleShowerHandler.h"
 
 using namespace Herwig;
 
@@ -360,6 +360,12 @@ double DipoleSplittingGenerator::evaluate(const vector<double>& point) {
   double jac = split.splittingKinematics()->jacobian();
 
   split.lastValue( abs(jac) * kernel );
+
+  if ( isnan(split.lastValue()) || isinf(split.lastValue()) ) {
+    generator()->log() << "DipoleSplittingGenerator:evaluate(): problematic splitting kernel encountered for "
+		       << splittingKernel()->name() << "\n" << flush;
+    split.lastValue(0.0);
+  }
 
   if ( kernel < 0. )
     return 0.;

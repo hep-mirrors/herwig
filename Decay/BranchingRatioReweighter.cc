@@ -14,7 +14,7 @@
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/EventRecord/StandardSelectors.h"
 #include "ThePEG/Handlers/StandardEventHandler.h"
-#include "Herwig++/Utilities/EnumParticles.h"
+#include "Herwig/Utilities/EnumParticles.h"
 
 using namespace Herwig;
 

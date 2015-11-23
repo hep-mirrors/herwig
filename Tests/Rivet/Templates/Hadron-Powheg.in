@@ -5,24 +5,18 @@ cd /Herwig/Generators
 set LHCGenerator:NumberOfEvents 10000000
 set LHCGenerator:RandomNumberGenerator:Seed 31122001
 set LHCGenerator:PrintEvent 10
-set LHCGenerator:MaxErrors 100000
+set LHCGenerator:MaxErrors 1000000
 ##################################################
 #  Need to use an NLO PDF
 ##################################################
-set /Herwig/Particles/p+:PDF    /Herwig/Partons/MRST-NLO
-set /Herwig/Particles/pbar-:PDF /Herwig/Partons/MRST-NLO
-set /Herwig/Shower/ShowerHandler:PDFA /Herwig/Partons/MRST
-set /Herwig/Shower/ShowerHandler:PDFB /Herwig/Partons/MRST
-set /Herwig/Partons/MPIExtractor:FirstPDF  /Herwig/Partons/MRST
-set /Herwig/Partons/MPIExtractor:SecondPDF /Herwig/Partons/MRST
-set /Herwig/Partons/QCDExtractor:FirstPDF  /Herwig/Partons/MRST-NLO
-set /Herwig/Partons/QCDExtractor:SecondPDF /Herwig/Partons/MRST-NLO
-
-##################################################
-#  and strong coupling
-##################################################
-create Herwig::O2AlphaS O2AlphaS 
-set /Herwig/Model:QCD/RunningAlphaS O2AlphaS
+set /Herwig/Particles/p+:PDF    /Herwig/Partons/HardNLOPDF
+set /Herwig/Particles/pbar-:PDF /Herwig/Partons/HardNLOPDF
+set /Herwig/Shower/ShowerHandler:PDFA /Herwig/Partons/ShowerLOPDF
+set /Herwig/Shower/ShowerHandler:PDFB /Herwig/Partons/ShowerLOPDF
+set /Herwig/Partons/MPIExtractor:FirstPDF  /Herwig/Partons/MPIPDF
+set /Herwig/Partons/MPIExtractor:SecondPDF /Herwig/Partons/MPIPDF
+set /Herwig/Partons/QCDExtractor:FirstPDF  /Herwig/Partons/HardNLOPDF
+set /Herwig/Partons/QCDExtractor:SecondPDF /Herwig/Partons/HardNLOPDF
 
 ##################################################
 #  Setup the POWHEG shower
@@ -30,6 +24,7 @@ set /Herwig/Model:QCD/RunningAlphaS O2AlphaS
 cd /Herwig/Shower
 set Evolver:IntrinsicPtGaussian 1.9*GeV
 set Evolver:HardEmissionMode POWHEG
+read Matchbox/Powheg-Default-ShowerAlphaSTune.in
 
 ##################################################
 #  Create the Herwig analysis
@@ -48,7 +43,7 @@ cd /Herwig/Generators
 read ${parameterFile}
 
 ##################################################
-# Save run for later usage with 'Herwig++ run'
+# Save run for later usage with 'Herwig run'
 ##################################################
 cd /Herwig/Generators
 saverun ${runname} EventGenerator

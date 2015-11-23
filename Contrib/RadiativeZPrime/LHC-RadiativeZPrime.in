@@ -66,7 +66,7 @@ insert NewModel:DecayParticles 0 /Herwig/Particles/Z'0
 # set coupling
 set RadiativeZPrime/Model:gZPrime 1.
 
-# use this to get the normal Herwig++ automatic process generation
+# use this to get the normal Herwig automatic process generation
 # incoming particles
 insert ResConstructor:Incoming 0 /Herwig/Particles/d
 insert ResConstructor:Incoming 1 /Herwig/Particles/dbar

@@ -11,7 +11,7 @@
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Utilities/GaussianIntegrator.h"
+#include "Herwig/Utilities/GaussianIntegrator.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 
 using namespace Herwig;

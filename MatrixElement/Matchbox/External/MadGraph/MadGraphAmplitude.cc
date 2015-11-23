@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// MadGraphAmplitude.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MadGraphAmplitude.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -17,7 +17,7 @@
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
-#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
+#include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -53,7 +53,7 @@ extern "C" void MG_Colour                      (int* proc,int* i,int* j ,int* co
 
 MadGraphAmplitude::MadGraphAmplitude()
   : theMGmodel("loop_sm"),keepinputtopmass(false),
-    bindir_(HERWIG_BINDIR), pkgdatadir_(HERWIG_PKGDATADIR), madgraphPrefix_(MADGRAPH_PREFIX)
+    bindir_(HERWIG_BINDIR), includedir_(HERWIG_INCLUDEDIR), pkgdatadir_(HERWIG_PKGDATADIR), madgraphPrefix_(MADGRAPH_PREFIX)
 {}
 
 MadGraphAmplitude::~MadGraphAmplitude() {
@@ -246,11 +246,12 @@ bool MadGraphAmplitude::initializeExternal() {
   params<<"\n$MTA$ "    <<std::setiosflags(ios::scientific)   << getParticleData(ParticleID::tauplus)->hardProcessMass() /GeV <<flush;
 
   
-  string cmd = "python " + bindir_ + "/mg2Matchbox.py ";
+  string cmd = "python " + bindir_ + "/mg2herwig ";
   cmd +=" --buildpath "+mgProcLibPath();
   cmd +=" --model "+theMGmodel;
   cmd +=" --runpath "+factory()->runStorage()+"/MadGraphAmplitudes ";
   cmd +=" --datadir "+pkgdatadir_;
+  cmd +=" --includedir "+includedir_;
   std::stringstream as,aem;
   as << factory()->orderInAlphaS();
   cmd +=" --orderas "+as.str() ;
@@ -285,7 +286,7 @@ bool MadGraphAmplitude::initializeExternal() {
   std::system(cmd.c_str());
   
   
-  cmd = "python " + bindir_ + "/mg2Matchbox.py ";
+  cmd = "python " + bindir_ + "/mg2herwig ";
   cmd +=" --buildpath "+mgProcLibPath();
   cmd +=" --model "+theMGmodel;
   cmd +=" --runpath "+factory()->runStorage()+"/MadGraphAmplitudes ";
@@ -561,6 +562,8 @@ vector<unsigned int> MadGraphAmplitude::physicalHelicities(const vector<int>& he
       res[cross] = (xhel == -1 ? 0 : 1);
     else if ( mePartonData()[cross]->iSpin() == PDT::Spin1 )
       res[cross] = (unsigned int)(xhel + 1);
+    else if ( mePartonData()[cross]->iSpin() == PDT::Spin0 )
+      res[cross] = 0;
     else assert(false);
   }
   return res;
@@ -826,7 +829,7 @@ void MadGraphAmplitude::Init() {
 
   static Parameter<MadGraphAmplitude,string> interfacePKGDATADIR
     ("DataDir",
-     "The location for the installed Herwig++ data files",
+     "The location for the installed Herwig data files",
      &MadGraphAmplitude::pkgdatadir_, string(HERWIG_PKGDATADIR),
      false, false);
     

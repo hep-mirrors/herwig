@@ -5,13 +5,13 @@
 // This is the declaration of the BaryonFactorizedDecayer class.
 //
 
-#include "Herwig++/Decay/DecayIntegrator.h"
-#include "Herwig++/Decay/WeakCurrents/WeakDecayCurrent.h"
-#include "Herwig++/Decay/FormFactors/BaryonFormFactor.h"
+#include "Herwig/Decay/DecayIntegrator.h"
+#include "Herwig/Decay/WeakCurrents/WeakDecayCurrent.h"
+#include "Herwig/Decay/FormFactors/BaryonFormFactor.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
-#include "Herwig++/Decay/DecayPhaseSpaceMode.h"
-#include "Herwig++/Models/StandardModel/StandardCKM.h"
+#include "Herwig/Decay/DecayPhaseSpaceMode.h"
+#include "Herwig/Models/StandardModel/StandardCKM.h"
 #include "ThePEG/Helicity/LorentzRSSpinorBar.h"
 
 namespace Herwig {

@@ -1,14 +1,14 @@
 // -*- C++ -*-
 //
-// PhasespaceHelpers.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// PhasespaceHelpers.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 
 #include "PhasespaceHelpers.h"
-#include "Herwig++/MatrixElement/Matchbox/Phasespace/RandomHelpers.h"
+#include "Herwig/MatrixElement/Matchbox/Phasespace/RandomHelpers.h"
 
 using namespace Herwig;
 using namespace Herwig::PhasespaceHelpers;
@@ -406,7 +406,7 @@ void PhasespaceTree::generateKinematics(PhasespaceInfo& info,
 
     // perform the decay
     Energy4 lambda2 = sqr(mij2-mi2-mj2)-4.*mi2*mj2;
-    if ( lambda2 < ZERO )
+    if ( lambda2 <= ZERO )
       throw Veto();
     Energy2 lambda = sqrt(lambda2);
     double phi = 2.*Constants::pi*info.rnd();
@@ -422,10 +422,8 @@ void PhasespaceTree::generateKinematics(PhasespaceInfo& info,
     children[0].momentum.setY(p*sinPhi*sinTheta);
     children[0].momentum.setZ(p*cosTheta);
     children[0].momentum.rescaleEnergy();
-    if ( momentum.m2() <= ZERO ) {
-      cerr << "cannot boost in decay ... " << (momentum.m2()/GeV2) << "\n";
+    if ( momentum.m2() <= ZERO )
       throw Veto();
-    }
     Boost out = momentum.boostVector();
     if ( out.mag2() > Constants::epsilon ) {
       children[0].momentum.boost(out);

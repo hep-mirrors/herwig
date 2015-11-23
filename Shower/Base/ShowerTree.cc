@@ -1,17 +1,17 @@
 // -*- C++ -*-
 //
-// ShowerTree.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// ShowerTree.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #include "ShowerProgenitor.h"
 #include "ThePEG/EventRecord/MultiColour.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ShowerTree.h"
-#include "Herwig++/Shower/Base/ShowerParticle.h"
-#include "Herwig++/Shower/ShowerHandler.h"
+#include "Herwig/Shower/Base/ShowerParticle.h"
+#include "Herwig/Shower/ShowerHandler.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Handlers/EventHandler.h"
 #include "ThePEG/Handlers/XComb.h"
@@ -1368,11 +1368,13 @@ PPtr findParent(PPtr original, bool & isHard,
 }
 
 void ShowerTree::constructTrees(tSubProPtr subProcess, ShowerTreePtr & hard,
-				ShowerDecayMap & decay, tPVector tagged) {
+				ShowerDecayMap & decay, tPVector tagged,
+				bool splitTrees) {
   // temporary storage of the particles
   set<PPtr> hardParticles;
   // loop over the tagged particles
   bool isHard=false;
+  set<PPtr> outgoingset(tagged.begin(),tagged.end());
   for (tParticleVector::const_iterator taggedP = tagged.begin();
        taggedP != tagged.end(); ++taggedP) {
     // if a remnant don't consider
@@ -1380,22 +1382,22 @@ void ShowerTree::constructTrees(tSubProPtr subProcess, ShowerTreePtr & hard,
       continue;
     // find the parent and whether its a colourless s-channel resonance
     bool isDecayProd=false;
-    tPPtr parent = *taggedP;
-    // check if from s channel decaying colourless particle
-    while(parent&&!parent->parents().empty()&&!isDecayProd) {
-      parent = parent->parents()[0];
-      if(parent == subProcess->incoming().first ||
-  	 parent == subProcess->incoming().second ) break;
-      isDecayProd = decayProduct(subProcess,parent);
-    }
-    set<PPtr> outgoingset(tagged.begin(),tagged.end());
-    // add to list of outgoing hard particles if needed
+    // check if hard
     isHard |=(outgoingset.find(*taggedP) != outgoingset.end());
-    // not sure what the evolver bit was doing here ?
-    // if (isDecayProd && evolver_->_hardEmissionMode<2) 
+    if(splitTrees) {
+      tPPtr parent = *taggedP;
+      // check if from s channel decaying colourless particle
+      while(parent&&!parent->parents().empty()&&!isDecayProd) {
+	parent = parent->parents()[0];
+	if(parent == subProcess->incoming().first ||
+	   parent == subProcess->incoming().second ) break;
+	isDecayProd = decayProduct(subProcess,parent);
+      }
     if (isDecayProd) 
       hardParticles.insert(findParent(parent,isHard,outgoingset,subProcess));
-    else            hardParticles.insert(*taggedP);
+    }
+    if (!isDecayProd) 
+      hardParticles.insert(*taggedP);
   }
   // there must be something to shower
   if(hardParticles.empty()) 
@@ -1447,15 +1449,11 @@ void ShowerTree::checkMomenta() {
 	if(parent==it->first->progenitor()) break;
       }
     }
-    CurrentGenerator::log() << "!!!! IN !!!" << *it->first->progenitor() << "\n"
-			    << *it->second << "\n";
   }
   vector<Lorentz5Momentum> pout;
   for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator it= _outgoingLines.begin();
       it!=_outgoingLines.end();++it) {
     pout.push_back(sumMomenta(it->first->progenitor()));
-    CurrentGenerator::log() << "!!!! OUT !!!" << *it->first->progenitor() << "\n"
-			    << *it->second << "\n";
   }
   Lorentz5Momentum psum;
   for(unsigned int ix=0;ix< pin.size();++ix) {

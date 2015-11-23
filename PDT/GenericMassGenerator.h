@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// GenericMassGenerator.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// GenericMassGenerator.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_GenericMassGenerator_H
@@ -29,12 +29,12 @@ using namespace ThePEG;
 /** \ingroup PDT
  *
  *  The <code>GenericMassGenerator</code> class is a simple class for the
- *  generation of particle masses in Herwig++. It inherits from the 
+ *  generation of particle masses in Herwig. It inherits from the 
  *  <code>MassGenerator</code> class of ThePEG and implements a Breit-Wigner
  *  using the width generator to give the running width. 
  *
  *  In general the width generator will be an instance of the
- *  <code>GenericWidthGenerator</code> class which uses the Herwig++ decayers
+ *  <code>GenericWidthGenerator</code> class which uses the Herwig decayers
  *  based on the <code>DecayIntegrator</code> class to define the shape of the
  *  running width.
  *

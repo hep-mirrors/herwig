@@ -6,7 +6,7 @@
    Definitions moved here from clooptools.h 2011-01-21 dgrell
 */
 
-#include "Herwig++/Looptools/clooptools.h"
+#include "Herwig/Looptools/clooptools.h"
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>

@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// GoSamAmplitude.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// GoSamAmplitude.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -28,7 +28,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Utilities/StringUtils.h"
 
-#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
+#include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
 
 #include <boost/progress.hpp>
 #include <boost/filesystem.hpp>
@@ -150,11 +150,11 @@ bool GoSamAmplitude::startOLP(const map<pair<Process, int>, int>& procs) {
   // Set the path variable (plus file name) where to find the GoSam specific input file
   gosamSetupInFileName = gosamSetupInFileNameInterface == "" ? gosamPath + "/setup.gosam.in" : gosamSetupInFileNameInterface;
 
-  // Use the python script GoSamHelper.py to make replacements in the GoSam 
+  // Use the python script gosam2herwig to make replacements in the GoSam 
   // specific input file at gosamSetupInFileName. If the GoSam input file
   // does not exist yet at gosamSetupInFileName the python script will get 
   // it from src/defaults/ before making the replacements.
-  string cmd = "python "+bindir_+"/GoSamHelper.py ";
+  string cmd = "python "+bindir_+"/gosam2herwig ";
   cmd+=" --usrinfile="+gosamSetupInFileNameInterface;
   cmd+=" --infile="+gosamSetupInFileName+".tbu";
   cmd+=" --definfile="+pkgdatadir_+"/defaults/setup.gosam.in";
@@ -318,6 +318,13 @@ void GoSamAmplitude::startOLP(const string& contract, int& status) {
     OLP_SetParameter((char *)"mass(23)",&in1,&zero,&pStatus);
     OLP_SetParameter((char *)"alpha",&in2,&zero,&pStatus);
     OLP_SetParameter((char *)"sw2",&in3,&zero,&pStatus);
+  } else if ( SM().ewScheme() == 7 ) { // EW/Scheme FeynRulesUFO (uses mZ,GF,alpha(mZ))
+    double in1=getParticleData(ParticleID::Z0)->hardProcessMass()/GeV;
+    double in2=SM().alphaEMMZ();
+    double in3=SM().fermiConstant()*GeV2;
+    OLP_SetParameter((char *)"mass(23)",&in1,&zero,&pStatus);
+    OLP_SetParameter((char *)"alpha",&in2,&zero,&pStatus);
+    OLP_SetParameter((char *)"Gf",&in3,&zero,&pStatus);
   }
 	
   // hand over mass and width of the Higgs
@@ -448,7 +455,7 @@ void GoSamAmplitude::fillOrderFile(const map<pair<Process, int>, int>& procs, st
     maxaewPower = max(maxaewPower, static_cast<int>(t->first.first.orderInAlphaEW));
   }
 
-  orderFile << "# OLP order file created by Herwig++/Matchbox for GoSam\n\n";
+  orderFile << "# OLP order file created by Herwig/Matchbox for GoSam\n\n";
   orderFile << "InterfaceVersion         BLHA2\n";
   orderFile << "MatrixElementSquareType  CHsummed\n";
   orderFile << "CorrectionType           QCD\n";
@@ -532,7 +539,7 @@ void GoSamAmplitude::signOLP(const string& order, const string& contract) {
     string cmd = GoSamPrefix_+"/bin/gosam.py --olp --output-file=" + contract + " --config=" + 
       gosamSetupInFileName+".tbu" + " --destination=" + gosamSourcePath + " " + order + " > " + cwd + folderMatchboxBuild + "gosam-amplitudes.log 2>&1";
     std::system(cmd.c_str());
-    cmd = "python "+bindir_+"/GoSamHelper.py ";
+    cmd = "python "+bindir_+"/gosam2herwig ";
     cmd += " --makelink ";
     cmd += " --makelinkfrom=contract ";
     cmd += " --makelinkto="+factory()->buildStorage() + name() + ".OLPContract.lh";
@@ -676,12 +683,9 @@ void GoSamAmplitude::evalSubProcess() const {
   accuracyFile = factory()->buildStorage() + accuracyFileTitle;
   ofstream accuracyFileStream;
 
-  if ( Debug::level > 1 ) {
-    accuracyFileStream.open(accuracyFile.c_str(),ios::app);
-  }
-
   if ( (olpId()[ProcessType::oneLoopInterference]||olpId()[ProcessType::loopInducedME2]) &&  acc > accuracyTarget ) {
     if ( Debug::level > 1 ) {
+      accuracyFileStream.open(accuracyFile.c_str(),ios::app);
       vector<Lorentz5Momentum> currentpsp = lastXComb().meMomenta();
       time_t rawtime;
       time (&rawtime);
@@ -1047,7 +1051,7 @@ void GoSamAmplitude::Init() {
 
   static Parameter<GoSamAmplitude,string> interfacePKGDATADIR
     ("DataDir",
-     "The location for the installed Herwig++ data files",
+     "The location for the installed Herwig data files",
      &GoSamAmplitude::pkgdatadir_, string(HERWIG_PKGDATADIR),
      false, false);
     

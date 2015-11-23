@@ -19,6 +19,11 @@ cd /Herwig/Shower
 create Herwig::ShowerHandler ShowerHandler
 newdef ShowerHandler:MPIHandler /Herwig/UnderlyingEvent/MPIHandler
 newdef ShowerHandler:RemDecayer /Herwig/Partons/RemnantDecayer
+# use LO PDFs for Shower, can be changed later
+newdef ShowerHandler:PDFA /Herwig/Partons/ShowerLOPDF
+newdef ShowerHandler:PDFB /Herwig/Partons/ShowerLOPDF
+newdef ShowerHandler:PDFARemnant /Herwig/Partons/RemnantPDF
+newdef ShowerHandler:PDFBRemnant /Herwig/Partons/RemnantPDF
 
 #####################################
 # initial setup, don't change these!
@@ -32,7 +37,7 @@ create Herwig::QTildeFinder PartnerFinder
 newdef PartnerFinder:PartnerMethod 1
 newdef PartnerFinder:ScaleChoice 1
 create Herwig::QTildeReconstructor KinematicsReconstructor
-newdef KinematicsReconstructor:ReconstructionOption Colour4
+newdef KinematicsReconstructor:ReconstructionOption Colour3
 newdef KinematicsReconstructor:InitialStateReconOption SofterFraction
 newdef KinematicsReconstructor:InitialInitialBoostOption LongTransBoost
 
@@ -75,6 +80,11 @@ create Herwig::PowhegShowerHandler PowhegShowerHandler
 set PowhegShowerHandler:MPIHandler /Herwig/UnderlyingEvent/MPIHandler
 set PowhegShowerHandler:RemDecayer /Herwig/Partons/RemnantDecayer
 set PowhegShowerHandler:Evolver /Herwig/Shower/Evolver
+newdef PowhegShowerHandler:PDFA /Herwig/Partons/ShowerLOPDF
+newdef PowhegShowerHandler:PDFB /Herwig/Partons/ShowerLOPDF
+newdef PowhegShowerHandler:PDFARemnant /Herwig/Partons/RemnantPDF
+newdef PowhegShowerHandler:PDFBRemnant /Herwig/Partons/RemnantPDF
+
 #############################################################
 
 

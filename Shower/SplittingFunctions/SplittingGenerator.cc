@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// SplittingGenerator.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// SplittingGenerator.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -19,7 +19,7 @@
 #include "ThePEG/Interface/Command.h"
 #include "ThePEG/Utilities/StringUtils.h"
 #include "ThePEG/Repository/Repository.h"
-#include "Herwig++/Shower/Base/ShowerParticle.h"
+#include "Herwig/Shower/Base/ShowerParticle.h"
 #include "ThePEG/Utilities/Rebinder.h"
 #include <cassert>
 #include "ThePEG/Utilities/DescribeClass.h"

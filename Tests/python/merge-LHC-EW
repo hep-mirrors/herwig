@@ -126,6 +126,23 @@ if __name__ == "__main__":
                 if(aopath.find("d01")>0 or aopath.find("d02")>0 or
                    aopath.find("d03")>0 or aopath.find("d04")>0) :
                     outhistos[aopath] = ao
+            elif (aopath.find("CMS_2013_I1209721" )>0 and file.find("-0")>0 ) :
+                outhistos[aopath] = ao
+            elif (aopath.find("ATLAS_2011_I928289")>0) :
+                if(file.find("-e")>=0 and (aopath.find("y01")>=0 or aopath.find("y02")>=0)) :
+                    outhistos[aopath] = ao
+                elif(file.find("-mu")>=0 and (aopath.find("y03")>=0 or aopath.find("y04")>=0)) :
+                    outhistos[aopath] = ao
+            elif (aopath.find("CMS_2013_I1122847")>0) :
+                if(file.find("-mu")>=0 and aopath.find("d01")>=0 ) :
+                    outhistos[aopath] = ao
+                elif(file.find("-e")>=0 and (aopath.find("d02")>=0 or aopath.find("d03")>=0)) :
+                    outhistos[aopath] = ao
+            elif (aopath.find("CMS_2015_I1310737")>0) :
+                if aopath in outhistos :
+                    outhistos[aopath] += ao
+                else :
+                    outhistos[aopath] = ao
             else :
                 outhistos[aopath] = ao
 

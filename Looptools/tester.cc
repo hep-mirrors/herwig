@@ -3,7 +3,7 @@
 #include <iostream>
 #include <complex>
 
-#include "Herwig++/Looptools/clooptools.h"
+#include "Herwig/Looptools/clooptools.h"
 
 namespace LT = Herwig::Looptools;
 using namespace std;

@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// MEqq2gZ2ffPowheg.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MEqq2gZ2ffPowheg.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_MEqq2gZ2ffPowheg_H
@@ -12,7 +12,7 @@
 // This is the declaration of the MEqq2gZ2ffPowheg class.
 //
 
-#include "Herwig++/MatrixElement/Hadron/MEqq2gZ2ff.h"
+#include "Herwig/MatrixElement/Hadron/MEqq2gZ2ff.h"
 #include "ThePEG/PDF/BeamParticleData.h"
 
 namespace Herwig {

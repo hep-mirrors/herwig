@@ -81,7 +81,7 @@ if __name__ == "__main__":
 
 files=["-7-PromptPhoton-1.yoda","-7-PromptPhoton-2.yoda",
        "-7-PromptPhoton-3.yoda","-7-PromptPhoton-4.yoda",
-       "-7-DiPhoton.yoda","-7-GammaGamma.yoda"]
+       "-7-DiPhoton.yoda","-GammaGamma-7.yoda"]
 
 ## Get histos
 inhistos = {}

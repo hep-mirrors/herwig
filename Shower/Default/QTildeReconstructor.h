@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// QTildeReconstructor.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// QTildeReconstructor.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_QTildeReconstructor_H
@@ -12,7 +12,7 @@
 // This is the declaration of the QTildeReconstructor class.
 //
 
-#include "Herwig++/Shower/Base/KinematicsReconstructor.h"
+#include "Herwig/Shower/Base/KinematicsReconstructor.h"
 
 namespace Herwig {
 
@@ -135,7 +135,8 @@ public:
   virtual bool reconstructHardJets(ShowerTreePtr hard,
 				   const map<tShowerProgenitorPtr,
 				   pair<Energy,double> > & pt,
-				   ShowerInteraction::Type type) const;
+				   ShowerInteraction::Type type,
+				   bool switchRecon) const;
 
   /**
    * Given in input a vector of the particles which initiated the showers
@@ -507,10 +508,19 @@ protected:
   /**
    *  Calculate the initial-state rescaling factors
    */
-  vector<double> initialStateRescaling(double x1, double x2, Energy MDY,
-				       vector<Lorentz5Momentum> & p,
-				       vector<Lorentz5Momentum> & pq,
+  vector<double> initialStateRescaling(double x1, double x2, 
+				       const Lorentz5Momentum & pold,
+				       const vector<Lorentz5Momentum> & p,
+				       const vector<Lorentz5Momentum> & pq,
 				       const vector<Energy>& highespts) const;
+
+  /**
+   *  Calculate the inverse of the initial-state rescaling factor
+   */
+  vector<double> inverseInitialStateRescaling(double & x1, double & x2,
+					      const Lorentz5Momentum & pold,
+					      const vector<Lorentz5Momentum> & p,
+					      const vector<Lorentz5Momentum> & pq) const;
 
   /**
    *  Find the colour singlet systems

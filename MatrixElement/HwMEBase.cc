@@ -10,10 +10,10 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Utilities/SimplePhaseSpace.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "Herwig++/PDT/GenericMassGenerator.h"
+#include "Herwig/PDT/GenericMassGenerator.h"
 #include "ThePEG/Cuts/Cuts.h"
-#include "Herwig++/Shower/Base/HardTree.h"
-#include "Herwig++/Shower/Base/Branching.h"
+#include "Herwig/Shower/Base/HardTree.h"
+#include "Herwig/Shower/Base/Branching.h"
 
 using namespace Herwig;
 
@@ -31,7 +31,7 @@ AbstractClassDescription<HwMEBase> HwMEBase::initHwMEBase;
 void HwMEBase::Init() {
 
   static ClassDocumentation<HwMEBase> documentation
-    ("The HwMEBase class is the base class for matrix elements in Herwig++"
+    ("The HwMEBase class is the base class for matrix elements in Herwig"
      " and provides the virtual members for hard radiation corrections in the"
      " shower.");
 
@@ -66,7 +66,7 @@ bool HwMEBase::generateMasses(vector<Energy> & masses, double & mjac,
   int noff(0);
   for(unsigned int ix=0;ix<massOption_.size();++ix) {
     if(massOption_[ix]==1) {
-      masses[ix] = mePartonData()[ix+2]->mass();
+      masses[ix] = mePartonData()[ix+2]->hardProcessMass();
       emin += masses[ix];
     }
     else if (massOption_[ix]==2) {
@@ -96,7 +96,7 @@ bool HwMEBase::generateMasses(vector<Energy> & masses, double & mjac,
       mjac *= jtemp;
     }
     else {
-      Energy mon(mePartonData()[ix+2]->mass());
+      Energy mon(mePartonData()[ix+2]->hardProcessMass());
       Energy width(mePartonData()[ix+2]->width());
       double rhomin = atan2((sqr(mmin)-sqr(mon)), mon*width);
       double rhomax = atan2((sqr(mmax)-sqr(mon)), mon*width);
@@ -197,7 +197,7 @@ bool HwMEBase::generateKinematics(const double * r) {
   tHat(pq*cth + m22 - e0e2);
   uHat(m22 + m32 - sHat() - tHat());
   jacobian((pq/sHat())*Constants::pi*jacobian()*mjac);
-  // compute the rescaled momenta 
+  // compute the rescaled momenta
   return rescaleMomenta(meMomenta(),mePartonData());
 }
 
@@ -213,8 +213,8 @@ bool HwMEBase::rescaleMomenta(const vector<Lorentz5Momentum> & momenta,
     mnew[1] = ZERO;
   }
   else if(rescaleOption_==2) {
-    mnew[0] = data[2]->mass();
-    mnew[1] = data[3]->mass();
+    mnew[0] = data[2]->hardProcessMass();
+    mnew[1] = data[3]->hardProcessMass();
   }
   else if(rescaleOption_==3) {
     if(abs(data[2]->id())!=abs(data[3]->id())) return true;

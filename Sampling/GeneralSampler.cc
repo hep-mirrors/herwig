@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// GeneralSampler.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// GeneralSampler.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -29,9 +29,9 @@
 #include "ThePEG/Handlers/StandardEventHandler.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 
-#include "Herwig++/Utilities/RunDirectories.h"
+#include "Herwig/Utilities/RunDirectories.h"
 
-#include "Herwig++/Utilities/XML/ElementIO.h"
+#include "Herwig/Utilities/XML/ElementIO.h"
 
 #include <boost/progress.hpp>
 #include <boost/filesystem.hpp>
@@ -50,9 +50,9 @@ GeneralSampler::GeneralSampler()
     theGlobalMaximumWeight(true), theFlatSubprocesses(false),
     isSampling(false), theMinSelection(0.01), runCombinationData(false),
     theAlmostUnweighted(false), maximumExceeds(0),
-    maximumExceededBy(0.), didReadGrids(false),
+    maximumExceededBy(0.), correctWeights(0.),theMaxEnhancement(1.05), didReadGrids(false),
     theParallelIntegration(false),
-  theIntegratePerJob(0), theIntegrationJobs(0), theIntegrationJobsCreated(1),
+  theIntegratePerJob(0), theIntegrationJobs(0), theIntegrationJobsCreated(0),
   justAfterIntegrate(false), theWriteGridsOnFinish(false) {}
 
 GeneralSampler::~GeneralSampler() {}
@@ -314,19 +314,22 @@ double GeneralSampler::generate() {
 
   lastSampler(samplers().upper_bound(UseRandom::rnd())->second);
 
+
   double weight = 0.;
 
   while ( true ) {
-
     try {
       weight = 1.0;
       double p = lastSampler()->referenceWeight()/lastSampler()->bias()/theMaxWeight;
       if ( weighted() )
-	weight *= p;
-      else if ( p < UseRandom::rnd() )
-	weight = 0.0;
+        weight *= p;
+      else if ( p < UseRandom::rnd() ){
+        weight = 0.0;
+        // The lastSampler was picked according to the bias of the process.
+        --excptTries;
+      }
       if ( weight != 0.0 )
-	weight *= lastSampler()->generate()/lastSampler()->referenceWeight();
+        weight *= lastSampler()->generate()/lastSampler()->referenceWeight();
     } catch(BinSampler::NextIteration) {
       updateSamplers();
       lastSampler(samplers().upper_bound(UseRandom::rnd())->second);
@@ -355,13 +358,14 @@ double GeneralSampler::generate() {
 
     if ( !eventHandler()->weighted() && !theAlmostUnweighted ) {
       if ( abs(weight) > 1. ) {
-	++maximumExceeds;
-	maximumExceededBy += abs(weight)-1.;
+	      ++maximumExceeds;
+	      maximumExceededBy += abs(weight)-1.;
       }
+      correctWeights+=weight;
       if ( weight > 0.0 )
-	weight = 1.;
+	      weight = 1.;
       else
-	weight = -1.;
+	      weight = -1.;
     }
 
     break;
@@ -437,7 +441,7 @@ void GeneralSampler::updateSamplers() {
       bias *= s->second->averageAbsWeight();
     s->second->bias(bias);
     sumbias += bias;
-    allMax = max(allMax,s->second->maxWeight());
+    allMax = max(allMax,s->second->maxWeight()*theMaxEnhancement);
   }
 
   double nsumbias = 0.0;
@@ -464,14 +468,14 @@ void GeneralSampler::updateSamplers() {
   theMaxWeight = 0.0;
   for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers().begin();
 	s != samplers().end(); ++s ) {
-    double wref = theGlobalMaximumWeight ? allMax : s->second->maxWeight();
+    double wref = theGlobalMaximumWeight ? allMax : 
+                                 s->second->maxWeight()*theMaxEnhancement;
     s->second->referenceWeight(wref);
     theMaxWeight = max(theMaxWeight,wref/s->second->bias());
     if ( (isSampling && s->second == lastSampler()) ||
 	 !isSampling )
       s->second->nextIteration();
   }
-
   map<double,Ptr<BinSampler>::ptr> newSamplers;
   double current = 0.;
 
@@ -584,10 +588,29 @@ void GeneralSampler::dofinish() {
     generator()->log() << "Warning: Some samplers are still in compensating mode.\n" << flush;
   }
   if ( maximumExceeds != 0 ) {
-    generator()->log() << maximumExceeds << " of " << theAttempts
-			    << " attempted points exceeded the guessed maximum weight\n"
-			    << "with an average relative deviation of "
-		       << maximumExceededBy/maximumExceeds << "\n" << flush;
+    //generator()->log() << maximumExceeds << " of " << theAttempts
+		//	    << " attempted points exceeded the guessed maximum weight\n"
+		//	    << "with an average relative deviation of "
+		//       << maximumExceededBy/maximumExceeds << "\n\n" << flush;
+    generator()->log() <<"\n\n\nNote: In this run "<<maximumExceeds<<" of the "<<theAccepts<<" accepted Events\n"
+                       <<"were found with a weight W larger than the exspected Wmax.\n";
+    
+    generator()->log() <<"This correspondes to a cross section change of:\n"
+                       <<"   AlmostUnweighted:  "<< theMaxWeight*correctWeights/theAttempts<< "nb"<<
+                      " (set Sampler:AlmostUnweighted On )\n"
+                       <<"   UnitWeights:       "<< theMaxWeight*theSumWeights/theAttempts<<"nb\n"<<flush;
+
+    generator()->log() <<"The maximum weight determined in the read/integrate step is enhanced by \n"<<
+                         "   set /Herwig/Samplers/Sampler:MaxEnhancement "<< theMaxEnhancement<<
+                         ".\nIf the ratio W/Wmax = "<<(double)maximumExceeds/(double)theAccepts<<
+                         " or the change of the cross section is large,\nyou can try:\n"<<
+                         "Enhance the number of points used in the read/integrate step\n"<<
+                         "   set /Herwig/Samplers/Sampler:BinSampler:InitialPoints ...\n"<<
+                         "or/and enhance reference weight found in the read/integrate step\n"<<  
+                         "   set /Herwig/Samplers/Sampler:MaxEnhancement 1.x\n"<<
+                         "If this does not help (and your process is well defined by cuts)\n"<<
+                         "dont hesitate to contact herwig@projects.hepforge.org.\n\n";
+
   }
 
   if ( runCombinationData ) {
@@ -706,6 +729,7 @@ void GeneralSampler::readGrids() {
   // or in case of an error
   // Check if a globalHerwigGridsFileFound was found and keep messages in a stringstream buffer beforehand
   bool globalHerwigGridsFileFound = false;
+  bool integrationJobCombinationSuccessful = true;
   std::stringstream messageBuffer;  
   
   RunDirectories directories;
@@ -726,7 +750,9 @@ void GeneralSampler::readGrids() {
     }
     else {
       // Check if integrationJob was split and try to merge single integrationJobs together
-      if(integrationJobsCreated() > 1 && runLevel() == RunMode) {
+      // integrationJobsCreated() == 0 indicates that parallel integration has not been
+      // requested, while the parallel integration parameters may well yield a single job
+      if(integrationJobsCreated() >= 1 && runLevel() == RunMode) {
 	messageBuffer << "\n\n* Global HerwigGrids.xml file does not exist yet"
 		      << "\n  and integration jobs were split into " << integrationJobsCreated() << " integration jobs."
 		      << "\n  Trying to combine single integration jobs to a global HerwigGrids.xml file"
@@ -734,8 +760,8 @@ void GeneralSampler::readGrids() {
 
 
 	theGrids = XML::Element(XML::ElementTypes::Element,"Grids");
-	
-	bool integrationJobCombinationSuccessful = true;
+
+	integrationJobCombinationSuccessful = true;
 			    
 	for(unsigned int currentProcessedIntegrationJobNum = 0; currentProcessedIntegrationJobNum < integrationJobsCreated(); ++currentProcessedIntegrationJobNum) {
     ostringstream currentProcessedIntegrationJob;
@@ -761,7 +787,7 @@ void GeneralSampler::readGrids() {
 	  string globalGridFile = directoryName + "HerwigGrids.xml";
 	  ofstream globalGridFileOF(globalGridFile.c_str());
 	  XML::ElementIO::put(theGrids,globalGridFileOF);
-	  messageBuffer << "\n* Global HerwigGrids.xml file was created, the integration jobs 0 to " << integrationJobsCreated() 
+	  messageBuffer << "\n* Global HerwigGrids.xml file was created, the integration jobs 0 to " << integrationJobsCreated()-1 
 			<< " were combined."
 			<< "\n* If previous warnings in regards to the HerwigGrids.xml file occured, these can be safely ignored."
 			<< "\n* Note: This message will occur only in the first run and will be suppressed in further runs.\n" 
@@ -779,7 +805,7 @@ void GeneralSampler::readGrids() {
   }
   
   // Show messages if global HerwigGrids.xml file was not found or first combination run 
-  if (!globalHerwigGridsFileFound)
+  if (!globalHerwigGridsFileFound && (theVerbose || !integrationJobCombinationSuccessful))
     BaseRepository::cout() << messageBuffer.str() << "\n" << flush;
   
   if ( !didReadGrids )
@@ -796,7 +822,8 @@ void GeneralSampler::persistentOutput(PersistentOStream & os) const {
      << theAddUpSamplers << theGlobalMaximumWeight
      << theFlatSubprocesses << isSampling << theMinSelection
      << runCombinationData << theAlmostUnweighted << maximumExceeds
-     << maximumExceededBy << theParallelIntegration
+     << maximumExceededBy << correctWeights << theMaxEnhancement     
+     << theParallelIntegration
      << theIntegratePerJob << theIntegrationJobs 
      << theIntegrationJobsCreated << theWriteGridsOnFinish;
 }
@@ -811,7 +838,8 @@ void GeneralSampler::persistentInput(PersistentIStream & is, int) {
      >> theAddUpSamplers >> theGlobalMaximumWeight
      >> theFlatSubprocesses >> isSampling >> theMinSelection
      >> runCombinationData >> theAlmostUnweighted >> maximumExceeds
-     >> maximumExceededBy >> theParallelIntegration
+     >> maximumExceededBy >> correctWeights >> theMaxEnhancement
+     >> theParallelIntegration
      >> theIntegratePerJob >> theIntegrationJobs 
      >> theIntegrationJobsCreated >> theWriteGridsOnFinish;
 }
@@ -885,6 +913,14 @@ void GeneralSampler::Init() {
      "Off",
      "",
      false);
+
+
+  static Parameter<GeneralSampler,double> interfaceMaxEnhancement
+    ("MaxEnhancement",
+     "Enhance the maximum reference weight found in the read step.",
+     &GeneralSampler::theMaxEnhancement, 1.1, 1.0, 1.5,
+     false, false, Interface::limited);
+
 
   static Switch<GeneralSampler,bool> interfaceFlatSubprocesses
     ("FlatSubprocesses",

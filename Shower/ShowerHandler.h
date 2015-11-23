@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// ShowerHandler.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// ShowerHandler.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_ShowerHandler_H
@@ -14,15 +14,15 @@
 
 #include "ThePEG/Handlers/EventHandler.h"
 #include "ThePEG/Handlers/CascadeHandler.h"
-#include "Herwig++/Shower/UEBase.h" 
-#include "Herwig++/Shower/Base/Evolver.fh"
-#include "Herwig++/Shower/Base/ShowerParticle.fh"
-#include "Herwig++/Shower/Base/ShowerTree.fh"
-#include "Herwig++/Shower/Base/HardTree.fh"
-#include "Herwig++/PDF/HwRemDecayer.fh"
+#include "Herwig/Shower/UEBase.h" 
+#include "Herwig/Shower/Base/Evolver.fh"
+#include "Herwig/Shower/Base/ShowerParticle.fh"
+#include "Herwig/Shower/Base/ShowerTree.fh"
+#include "Herwig/Shower/Base/HardTree.fh"
+#include "Herwig/PDF/HwRemDecayer.fh"
 #include "ThePEG/EventRecord/RemnantParticle.fh"
 #include "ShowerHandler.fh"
-#include "Herwig++/MatrixElement/Matchbox/Matching/HardScaleProfile.h"
+#include "Herwig/MatrixElement/Matchbox/Matching/HardScaleProfile.h"
 
 namespace Herwig {
 
@@ -75,6 +75,12 @@ public:
    * as in e.g. MLM merging.
    */
   virtual bool showerHardProcessVeto() { return false; };
+
+  /**
+   * Return true, if this cascade handler will perform reshuffling from hard
+   * process masses.
+   */
+  virtual bool isReshuffling() const { return true; }
 
 public:
 
@@ -167,12 +173,12 @@ public:
    * The factorization scale factor.
    */
   double factorizationScaleFactor() const { 
-    if ( theScaleFactorOption == 0 || !subProcess_ )
-      return theFactorizationScaleFactor;
-    if ( theScaleFactorOption == 1 )
-      return firstInteraction() ? theFactorizationScaleFactor : 1.0;
-    if ( theScaleFactorOption == 2 )
-      return !firstInteraction() ? theFactorizationScaleFactor : 1.0;
+    if ( scaleFactorOption_ == 0 || !subProcess_ )
+      return factorizationScaleFactor_;
+    if ( scaleFactorOption_ == 1 )
+      return firstInteraction() ? factorizationScaleFactor_ : 1.0;
+    if ( scaleFactorOption_ == 2 )
+      return !firstInteraction() ? factorizationScaleFactor_ : 1.0;
     return 1.0;
   }
 
@@ -180,12 +186,12 @@ public:
    * The renormalization scale factor.
    */
   double renormalizationScaleFactor() const { 
-    if ( theScaleFactorOption == 0 || !subProcess_ )
-      return theRenormalizationScaleFactor;
-    if ( theScaleFactorOption == 1 )
-      return firstInteraction() ? theRenormalizationScaleFactor : 1.0;
-    if ( theScaleFactorOption == 2 )
-      return !firstInteraction() ? theRenormalizationScaleFactor : 1.0;
+    if ( scaleFactorOption_ == 0 || !subProcess_ )
+      return renormalizationScaleFactor_;
+    if ( scaleFactorOption_ == 1 )
+      return firstInteraction() ? renormalizationScaleFactor_ : 1.0;
+    if ( scaleFactorOption_ == 2 )
+      return !firstInteraction() ? renormalizationScaleFactor_ : 1.0;
     return 1.0;
   }
 
@@ -193,35 +199,35 @@ public:
    * The scale factor for the hard scale
    */
   double hardScaleFactor() const { 
-    if ( theScaleFactorOption == 0 || !subProcess_ )
-      return theHardScaleFactor;
-    if ( theScaleFactorOption == 1 )
-      return firstInteraction() ? theHardScaleFactor : 1.0;
-    if ( theScaleFactorOption == 2 )
-      return !firstInteraction() ? theHardScaleFactor : 1.0;
+    if ( scaleFactorOption_ == 0 || !subProcess_ )
+      return hardScaleFactor_;
+    if ( scaleFactorOption_ == 1 )
+      return firstInteraction() ? hardScaleFactor_ : 1.0;
+    if ( scaleFactorOption_ == 2 )
+      return !firstInteraction() ? hardScaleFactor_ : 1.0;
     return 1.0;
   }
 
   /**
    * The option on when to apply the scale factors
    */
-  int scaleFactorOption() const { return theScaleFactorOption; }
+  int scaleFactorOption() const { return scaleFactorOption_; }
 
   /**
    * Return true, if the phase space restrictions of the dipole shower should
    * be applied.
    */
-  bool restrictPhasespace() const { return theRestrictPhasespace; }
+  bool restrictPhasespace() const { return restrictPhasespace_; }
 
   /**
    * Return profile scales
    */
-  Ptr<HardScaleProfile>::tptr profileScales() const { return theHardScaleProfile; }
+  Ptr<HardScaleProfile>::tptr profileScales() const { return hardScaleProfile_; }
 
   /**
    * Return true if maximum pt should be deduced from the factorization scale
    */
-  bool hardScaleIsMuF() const { return maxPtIsMuF; }
+  bool hardScaleIsMuF() const { return maxPtIsMuF_; }
 
 protected:
 
@@ -487,38 +493,43 @@ private:
   /**
    * The factorization scale factor.
    */
-  double theFactorizationScaleFactor;
+  double factorizationScaleFactor_;
 
   /**
    * The renormalization scale factor.
    */
-  double theRenormalizationScaleFactor;
+  double renormalizationScaleFactor_;
 
   /**
    * The scale factor for the hard scale
    */
-  double theHardScaleFactor;
+  double hardScaleFactor_;
 
   /**
    * The option on when to apply the scale factors
    */
-  int theScaleFactorOption;
+  int scaleFactorOption_;
 
   /**
    * True, if the phase space restrictions of the dipole shower should
    * be applied.
    */
-  bool theRestrictPhasespace;
+  bool restrictPhasespace_;
 
   /**
    * True if maximum pt should be deduced from the factorization scale
    */
-  bool maxPtIsMuF;
+  bool maxPtIsMuF_;
 
   /**
    * The profile scales
    */
-  Ptr<HardScaleProfile>::ptr theHardScaleProfile;
+  Ptr<HardScaleProfile>::ptr hardScaleProfile_;
+
+  /**
+   *  Whether or not to split into hard and decay trees
+   */
+  bool splitHardProcess_;
 
 public:
 

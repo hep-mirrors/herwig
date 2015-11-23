@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// SubtractionDipole.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// SubtractionDipole.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_SubtractionDipole_H
@@ -12,15 +12,15 @@
 // This is the declaration of the SubtractionDipole class.
 //
 
-#include "Herwig++/MatrixElement/Matchbox/Dipoles/SubtractionDipole.fh"
-#include "Herwig++/MatrixElement/Matchbox/Phasespace/TildeKinematics.fh"
-#include "Herwig++/MatrixElement/Matchbox/Phasespace/InvertedTildeKinematics.fh"
+#include "Herwig/MatrixElement/Matchbox/Dipoles/SubtractionDipole.fh"
+#include "Herwig/MatrixElement/Matchbox/Phasespace/TildeKinematics.fh"
+#include "Herwig/MatrixElement/Matchbox/Phasespace/InvertedTildeKinematics.fh"
 
 #include "ThePEG/MatrixElement/MEBase.h"
 #include "ThePEG/Handlers/StandardXComb.h"
-#include "Herwig++/MatrixElement/Matchbox/Base/MatchboxMEBase.h"
-#include "Herwig++/MatrixElement/Matchbox/Matching/ShowerApproximation.h"
-#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.fh"
+#include "Herwig/MatrixElement/Matchbox/Base/MatchboxMEBase.h"
+#include "Herwig/MatrixElement/Matchbox/Matching/ShowerApproximation.h"
+#include "Herwig/MatrixElement/Matchbox/MatchboxFactory.fh"
 
 namespace Herwig {
 
@@ -353,10 +353,20 @@ public:
   const DiagramVector& underlyingBornDiagrams(const cPDVector& real) const;
 
   /**
+   * Find the underlying Born diagram for the given real emission diagram
+   */
+  tcDiagPtr underlyingBornDiagram(tcDiagPtr realDiag) const;
+
+  /**
    * Return the real emission diagrams to be considered
    * for the given Born process.
    */
   const DiagramVector& realEmissionDiagrams(const cPDVector& born) const;
+
+  /**
+   * Find the real emission diagram for the given underlying Born diagram
+   */
+  tcDiagPtr realEmissionDiagram(tcDiagPtr bornDiag) const;
 
   /**
    * Add all possible diagrams with the add() function.
@@ -678,6 +688,15 @@ public:
    */
   virtual bool havePDFWeight2() const { return realEmissionME()->havePDFWeight2(); }
 
+  /**
+   *  How to sample the z-distribution.
+   *  FlatZ = 1
+   *  OneOverZ = 2
+   *  OneOverOneMinusZ = 3
+   *  OneOverZOneMinusZ = 4
+   */
+
+  virtual int samplingZ() const {return 4;}
   //@}
 
   /** @name Matrix elements and evaluation */
@@ -1082,6 +1101,16 @@ private:
    * Map Born processes to real emission diagrams
    */
   map<cPDVector,DiagramVector> theRealEmissionDiagrams;
+
+  /**
+   * Map underlying Born diagrams to real emission diagrams.
+   */
+  map<tcDiagPtr,tcDiagPtr> theBornToRealDiagrams;
+
+  /**
+   * Map real emission diagrams to underlying Born diagrams.
+   */
+  map<tcDiagPtr,tcDiagPtr> theRealToBornDiagrams;
 
   /**
    * The last real emission key encountered

@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// HwDecayHandler.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// HwDecayHandler.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -27,7 +27,7 @@
 #include "DecayIntegrator.h"
 #include "DecayPhaseSpaceMode.h"
 #include "ThePEG/PDT/MixedParticleData.h"
-#include "Herwig++/Utilities/EnumParticles.h"
+#include "Herwig/Utilities/EnumParticles.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -196,8 +196,8 @@ ClassDescription<HwDecayHandler> HwDecayHandler::initHwDecayHandler;
 void HwDecayHandler::Init() {
 
   static ClassDocumentation<HwDecayHandler> documentation
-    ("This is the handler for decays in Herwig++.",
-     "Decays in Herwig++ include full spin correlations, based on \\cite{Richardson:2001df}.",
+    ("This is the handler for decays in Herwig.",
+     "Decays in Herwig include full spin correlations, based on \\cite{Richardson:2001df}.",
      "%\\cite{Richardson:2001df}\n"
      "\\bibitem{Richardson:2001df}\n"
      "  P.~Richardson,\n"

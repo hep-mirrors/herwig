@@ -51,6 +51,6 @@ set LEPGenerator:EventHandler:CascadeHandler:MPIHandler NULL
 set /Herwig/Shower/PartnerFinder:QEDPartner IIandFF
 
 ##################################################
-# Save run for later usage with 'Herwig++ run'
+# Save run for later usage with 'Herwig run'
 ##################################################
 saverun ILC-RS LEPGenerator

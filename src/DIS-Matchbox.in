@@ -1,7 +1,7 @@
 # -*- ThePEG-repository -*-
 
 ##################################################
-## Herwig++/Matchbox example input file
+## Herwig/Matchbox example input file
 ##################################################
 
 ##################################################
@@ -19,6 +19,10 @@ set EventHandler:BeamA /Herwig/Particles/e+
 set EventHandler:LuminosityFunction:BeamEMaxA 27.5.*GeV
 set EventHandler:BeamB /Herwig/Particles/p+
 set EventHandler:LuminosityFunction:BeamEMaxB 820.*GeV
+# no pdfs for leptons
+set /Herwig/Shower/ShowerHandler:PDFA /Herwig/Partons/ShowerLOPDF
+set /Herwig/Partons/MPIExtractor:FirstPDF  /Herwig/Partons/MPIPDF
+set /Herwig/Partons/QCDExtractor:FirstPDF  /Herwig/Partons/HardNLOPDF
 
 ##################################################
 ## Process selection
@@ -118,7 +122,7 @@ read Matchbox/MCatNLO-DefaultShower.in
 ##################################################
 
 read Matchbox/FiveFlavourScheme.in
-## required for dipole shower in five flavour scheme
+## required for dipole shower and fixed order in five flavour scheme
 # read Matchbox/FiveFlavourNoBMassScheme.in
 read Matchbox/MMHT2014.in
 

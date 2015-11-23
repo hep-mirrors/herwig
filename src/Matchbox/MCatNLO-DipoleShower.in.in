@@ -17,7 +17,8 @@ cd /Herwig/MatrixElements/Matchbox
 
 set Factory:ShowerApproximation DipoleMatching
 
-read snippets/DipoleShowerParameters.in
+# tunes
+read Matchbox/MCatNLO-Dipole-HardAlphaSTune.in
 
 cd /Herwig/Analysis
 
@@ -30,3 +31,7 @@ do c:UnsetHardProcessMass
 do cbar:UnsetHardProcessMass
 set c:NominalMass 0*GeV
 set cbar:NominalMass 0*GeV
+
+cd /Herwig/UnderlyingEvent
+set MEQCD2to2Fast:StrictFlavourScheme On
+

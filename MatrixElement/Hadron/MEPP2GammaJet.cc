@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// MEPP2GammaJet.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MEPP2GammaJet.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -16,10 +16,10 @@
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Repository/EventGenerator.h"
-#include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "Herwig/Models/StandardModel/StandardModel.h"
 #include "ThePEG/Utilities/SimplePhaseSpace.h"
 #include "ThePEG/Handlers/StandardXComb.h"
-#include "Herwig++/MatrixElement/HardVertex.h"
+#include "Herwig/MatrixElement/HardVertex.h"
 #include "ThePEG/Cuts/Cuts.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -56,7 +56,7 @@ void MEPP2GammaJet::doinit() {
     _photonvertex = hwsm->vertexFFP();
   }
   else throw InitException() << "Wrong type of StandardModel object in "
-			     << "MEPP2GammaJet::doinit() the Herwig++"
+			     << "MEPP2GammaJet::doinit() the Herwig"
 			     << " version must be used" 
 			     << Exception::runerror;
   // call the base class

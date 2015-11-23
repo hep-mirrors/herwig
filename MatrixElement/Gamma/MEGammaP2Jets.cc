@@ -13,7 +13,7 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/Handlers/StandardXComb.h"
-#include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "Herwig/Models/StandardModel/StandardModel.h"
 
 using namespace Herwig;
 
@@ -147,7 +147,7 @@ void MEGammaP2Jets::doinit() {
     _photonvertex = hwsm->vertexFFP();
   }
   else throw InitException() << "Wrong type of StandardModel object in "
-			     << "MEGammaP2Jets::doinit() the Herwig++"
+			     << "MEGammaP2Jets::doinit() the Herwig"
 			     << " version must be used" 
 			     << Exception::runerror;
   // call the base class

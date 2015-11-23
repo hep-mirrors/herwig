@@ -12,7 +12,7 @@
 // This is the declaration of the TraceBasis class.
 //
 
-#include "Herwig++/MatrixElement/Matchbox/Utility/ColourBasis.h"
+#include "Herwig/MatrixElement/Matchbox/Utility/ColourBasis.h"
 #include "Trace_basis.h"
 
 namespace ColorFull {

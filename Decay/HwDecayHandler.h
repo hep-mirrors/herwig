@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// HwDecayHandler.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// HwDecayHandler.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_HwDecayHandler_H
@@ -19,8 +19,8 @@ namespace Herwig {
 using namespace ThePEG;
 
 /** \ingroup Decay
- * The <code>HwDecayHandler</code> is the Herwig++ decay handler which 
- *  administers the decays of unstable particles in Herwig++. It
+ * The <code>HwDecayHandler</code> is the Herwig decay handler which 
+ *  administers the decays of unstable particles in Herwig. It
  * is derived from ThePEG::DecayHandler and includes a different handle
  * method in order to simulate decays including spin correlations.
  *

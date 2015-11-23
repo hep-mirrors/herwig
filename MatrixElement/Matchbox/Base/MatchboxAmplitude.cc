@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// MatchboxAmplitude.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MatchboxAmplitude.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -16,6 +16,7 @@
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Command.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -23,9 +24,9 @@
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/MatrixElement/Matchbox/Utility/SpinorHelicity.h"
-#include "Herwig++/MatrixElement/Matchbox/Utility/SU2Helper.h"
-#include "Herwig++/MatrixElement/Matchbox/MatchboxFactory.h"
+#include "Herwig/MatrixElement/Matchbox/Utility/SpinorHelicity.h"
+#include "Herwig/MatrixElement/Matchbox/Utility/SU2Helper.h"
+#include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
 #include "ThePEG/Utilities/StringUtils.h"
 #include "MatchboxMEBase.h"
 
@@ -39,7 +40,8 @@ using namespace Herwig;
 MatchboxAmplitude::MatchboxAmplitude() 
   : Amplitude(), theCleanupAfter(20), 
     treeLevelHelicityPoints(0),
-    oneLoopHelicityPoints(0) {
+    oneLoopHelicityPoints(0),
+    theTrivialColourLegs(false) {
 }
 
 MatchboxAmplitude::~MatchboxAmplitude() {}
@@ -47,7 +49,7 @@ MatchboxAmplitude::~MatchboxAmplitude() {}
 void MatchboxAmplitude::persistentOutput(PersistentOStream & os) const {
   os << theLastXComb << theColourBasis << theFactory 
      << theCleanupAfter << treeLevelHelicityPoints << oneLoopHelicityPoints
-     << theReshuffleMasses.size();
+     << theTrivialColourLegs << theReshuffleMasses.size();
   if ( !theReshuffleMasses.empty() ) {
     for ( map<long,Energy>::const_iterator r = theReshuffleMasses.begin();
 	  r != theReshuffleMasses.end(); ++r )
@@ -59,7 +61,7 @@ void MatchboxAmplitude::persistentInput(PersistentIStream & is, int) {
   size_t reshuffleSize;
   is >> theLastXComb >> theColourBasis >> theFactory 
      >> theCleanupAfter >> treeLevelHelicityPoints >> oneLoopHelicityPoints
-     >> reshuffleSize;
+     >> theTrivialColourLegs >> reshuffleSize;
   theReshuffleMasses.clear();
   while ( reshuffleSize > 0 ) {
     long id; Energy m;
@@ -106,7 +108,7 @@ Selector<const ColourLines *> MatchboxAmplitude::colourGeometries(tcDiagPtr d) c
 
 void MatchboxAmplitude::olpOrderFileHeader(ostream& os) const {
 
-  os << "# OLP order file created by Herwig++/Matchbox\n\n";
+  os << "# OLP order file created by Herwig/Matchbox\n\n";
 
   os << "InterfaceVersion          BLHA2\n\n";
 
@@ -585,7 +587,11 @@ double MatchboxAmplitude::me2() const {
 double MatchboxAmplitude::largeNME2(Ptr<ColourBasis>::tptr largeNBasis) const {
   if ( !calculateLargeNME2() )
     return lastLargeNME2();
-  double res = largeNBasis->me2(mePartonData(),lastLargeNAmplitudes());
+  double res = 0.; 
+  if ( !trivialColourLegs() )
+    res = largeNBasis->me2(mePartonData(),lastLargeNAmplitudes());
+  else
+    res = me2();
   lastLargeNME2(res);
   return res;
 }
@@ -599,37 +605,77 @@ double MatchboxAmplitude::oneLoopInterference() const {
   return lastOneLoopInterference();
 }
 
-double MatchboxAmplitude::colourCorrelatedME2(pair<int,int> ij) const {
+double MatchboxAmplitude::colourCharge(tcPDPtr data) const {
   double cfac = 1.;
   double Nc = generator()->standardModel()->Nc();
-  if ( mePartonData()[ij.first]->iColour() == PDT::Colour8 ) {
+  if ( data->iColour() == PDT::Colour8 ) {
     cfac = Nc;
-  } else if ( mePartonData()[ij.first]->iColour() == PDT::Colour3 ||
-	      mePartonData()[ij.first]->iColour() == PDT::Colour3bar ) {
+  } else if ( data->iColour() == PDT::Colour3 ||
+	      data->iColour() == PDT::Colour3bar ) {
     cfac = (sqr(Nc)-1.)/(2.*Nc);
   } else assert(false);
+  return cfac;
+}
+
+double MatchboxAmplitude::largeNColourCharge(tcPDPtr data) const {
+  double cfac = 1.;
+  double Nc = generator()->standardModel()->Nc();
+  if ( data->iColour() == PDT::Colour8 ) {
+    cfac = Nc;
+  } else if ( data->iColour() == PDT::Colour3 ||
+	      data->iColour() == PDT::Colour3bar ) {
+    cfac = 0.5*Nc;
+  } else assert(false);
+  return cfac;
+}
+
+double MatchboxAmplitude::colourCorrelatedME2(pair<int,int> ij) const {
+  double cfac = colourCharge(mePartonData()[ij.first]);
   if ( !calculateColourCorrelator(ij) )
     return lastColourCorrelator(ij)/cfac;
-  double res =
-    colourBasis()->colourCorrelatedME2(ij,mePartonData(),lastAmplitudes());
+  double res = 0.;
+  if ( !trivialColourLegs() )
+    res = colourBasis()->colourCorrelatedME2(ij,mePartonData(),lastAmplitudes());
+  else {
+    // two partons TiTj = (-Ti^2-Tj^2)/2
+    // three partons TiTj = (-Ti^2-Tj^2+Tk^2)/2
+    int n = mePartonData().size();
+    for ( int i = 0; i < n; ++i ) {
+      if ( !mePartonData()[i]->coloured() )
+	continue;
+      if ( i == ij.first || i == ij.second )
+	res -= colourCharge(mePartonData()[i])*me2();
+      else
+	res += colourCharge(mePartonData()[i])*me2();
+    }
+    res *= 0.5;
+  }
   lastColourCorrelator(ij,res);
   return res/cfac;
 }
 
 double MatchboxAmplitude::largeNColourCorrelatedME2(pair<int,int> ij,
 						    Ptr<ColourBasis>::tptr largeNBasis) const {
-  double cfac = 1.;
-  double Nc = generator()->standardModel()->Nc();
-  if ( mePartonData()[ij.first]->iColour() == PDT::Colour8 ) {
-    cfac = Nc;
-  } else if ( mePartonData()[ij.first]->iColour() == PDT::Colour3 ||
-	      mePartonData()[ij.first]->iColour() == PDT::Colour3bar ) {
-    cfac = Nc/2.;
-  } else assert(false);
+  double cfac = largeNColourCharge(mePartonData()[ij.first]);
   if ( !calculateLargeNColourCorrelator(ij) )
     return lastLargeNColourCorrelator(ij)/cfac;
-  double res =
-    largeNBasis->colourCorrelatedME2(ij,mePartonData(),lastLargeNAmplitudes());
+  double res = 0.;
+  if ( !trivialColourLegs() )
+    res = largeNBasis->colourCorrelatedME2(ij,mePartonData(),lastLargeNAmplitudes());
+  else {
+    // two partons TiTj = (-Ti^2-Tj^2)/2
+    // three partons TiTj = (-Ti^2-Tj^2+Tk^2)/2
+    int n = mePartonData().size();
+    for ( int i = 0; i < n; ++i ) {
+      if ( !mePartonData()[i]->coloured() )
+	continue;
+      if ( i == ij.first || i == ij.second )
+	res -= largeNColourCharge(mePartonData()[i])*largeNME2(largeNBasis);
+      else
+	res += largeNColourCharge(mePartonData()[i])*largeNME2(largeNBasis);
+    }
+    res *= 0.5;
+  }
   lastLargeNColourCorrelator(ij,res);
   return res/cfac;
 }
@@ -884,6 +930,21 @@ void MatchboxAmplitude::Init() {
     ("ClearReshuffling",
      "Do not perform any reshuffling.",
      &MatchboxAmplitude::doClearReshuffling, false);
+
+  static Switch<MatchboxAmplitude,bool> interfaceTrivialColourLegs
+    ("TrivialColourLegs",
+     "Expert option",
+     &MatchboxAmplitude::theTrivialColourLegs, false, false, false);
+  static SwitchOption interfaceTrivialColourLegsYes
+    (interfaceTrivialColourLegs,
+     "Yes",
+     "",
+     true);
+  static SwitchOption interfaceTrivialColourLegsNo
+    (interfaceTrivialColourLegs,
+     "No",
+     "",
+     false);
 
 }
 

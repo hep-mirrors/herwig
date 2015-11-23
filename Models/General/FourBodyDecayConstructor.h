@@ -7,7 +7,7 @@
 
 #include "NBodyDecayConstructorBase.h"
 #include "ThePEG/Helicity/Vertex/VertexBase.h"
-#include "Herwig++/Decay/General/GeneralFourBodyDecayer.fh"
+#include "Herwig/Decay/General/GeneralFourBodyDecayer.fh"
 #include "PrototypeVertex.h"
 
 namespace Herwig {

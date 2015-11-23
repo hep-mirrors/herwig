@@ -12,7 +12,7 @@
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/PDF/PolarizedBeamParticleData.h"
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
-#include "Herwig++/Utilities/Maths.h"
+#include "Herwig/Utilities/Maths.h"
 
 using namespace Herwig;
 

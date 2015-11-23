@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-import os,sys,glob,errno,shutil,time    #argparse 
+import os,sys,glob,errno,shutil,time,fnmatch    #argparse 
 from optparse import OptionParser
 
 #  helper to replace all sourceText in fileName with replaceText
@@ -27,12 +27,20 @@ def find(name, path):
         if name in files:
             return os.path.join(root, name)      
  
+#  helper to find all file paths which contain file names matching filepattern
+def finddirs(filepattern, path):
+    founddirs = []
+    for root, dirs, files in os.walk(path):
+        if fnmatch.filter(files, filepattern):
+            founddirs.append(root)
+    return founddirs
+ 
 # fill the proc.dat file from BornAmplitudes.dat and VirtAmplitudes.dat.
 def fillprocs(model,oras,orew):
   bornlist=[]
   virtlist=[]
   fileproc=open("proc.dat","w")
-  fileproc.write("set fortran_compiler @FC@\n")
+  fileproc.write("set fortran_compiler @FC@ --no_save\n")
   fileproc.write("import model "+model+"\n")
   borns="BornAmplitudes.dat"
   virts="VirtAmplitudes.dat"
@@ -118,16 +126,16 @@ def fillprocs(model,oras,orew):
 def build_matchbox_tmp(pwd,buildpath):
    cwd=os.getcwd() 
    os.chdir(pwd)
-   mkdir_p(pwd+"/Herwig/MG_tmp/")
+   mkdir_p(pwd+"/Herwig-scratch/MG_tmp/")
    if not buildpath.startswith("/"):
      buildpath=pwd+"/"+buildpath.lstrip("./")
    resources=glob.glob(buildpath +"/MG5/SubProcesses/MadLoop5_resources/*")
    resources+=glob.glob(buildpath +"/MG5/Cards/*")
    resources+=glob.glob(buildpath +"/MG5/Cards/SubProcesses/*")
    for i in resources:
-     if not os.path.isfile( pwd+"/Herwig/MG_tmp/"+os.path.basename(i)) \
-       and not os.path.islink( pwd+"/Herwig/MG_tmp/"+os.path.basename(i)):
-        os.symlink(i, pwd+"/Herwig/MG_tmp/"+os.path.basename(i))
+     if not os.path.isfile( pwd+"/Herwig-scratch/MG_tmp/"+os.path.basename(i)) \
+       and not os.path.islink( pwd+"/Herwig-scratch/MG_tmp/"+os.path.basename(i)):
+        os.symlink(i, pwd+"/Herwig-scratch/MG_tmp/"+os.path.basename(i))
    os.chdir(cwd)    
 
 
@@ -145,6 +153,7 @@ parser.add_option("-e", "--model", dest="model",help="Do not use this script. On
 parser.add_option("-f", "--orderas", dest="orderas",help="Do not use this script. Only for Herwig internal use.")
 parser.add_option("-g", "--orderew", dest="orderew",help="Do not use this script. Only for Herwig internal use.")
 parser.add_option("-i", "--datadir",dest="datadir",help="Do not use this script. Only for Herwig internal use.")
+parser.add_option("-I", "--includedir",dest="includedir",help="Do not use this script. Only for Herwig internal use.")
 
 
 (options, args) = parser.parse_args()
@@ -174,7 +183,7 @@ pwd=os.getcwd()
 
 
 param_card=""
-mkdir_p(pwd+"/Herwig/MG_tmp/")
+mkdir_p(pwd+"/Herwig-scratch/MG_tmp/")
 
 
 
@@ -217,7 +226,7 @@ else:
 
 if not os.path.isdir(options.buildpath):
    print "The MadGraph Install path was not existend. It has been created for you."
-   print "Just start Herwig++ read again.."
+   print "Just start Herwig read again.."
    mkdir_p(options.buildpath)
    exit()
 
@@ -334,6 +343,18 @@ if Virtlist!=[]:
 file.write("\nPROCESS= InterfaceMadGraph.f "+make+"\n\nall:  \n\t @FC@  @FFLAGS@ -w -fbounds-check -ffixed-line-length-132 -fPIC -fno-f2c -shared -s -o  InterfaceMadGraph.so -IMG5/SubProcesses/" )
 if Virtlist!=[]:
   file.write(" -IMG5/lib/golem95_include ")
+  # Find all .mod files also in /usr/include if golem was build there.
+  # There can be an error message in the MadGraph output to add the golem include path to the makefiles.
+  # Usually MadGraph finds the path if its Golem was build in an separate dictionary.
+  # Our bootstrap script installs golem with gosam beside boost. Here MadGraph creates a  link (->errormessage).
+  # If we can find the modfiles easily the user doesn't need to change the makefiles. 
+  moddirs=finddirs('*.mod',options.includedir)
+  for moddir in moddirs:
+    file.write(" -I%s " % moddir)
+  if os.path.isdir("/usr/include"):
+    moddirs=finddirs('*.mod',"/usr/include")
+    for moddir in moddirs:
+      file.write(" -I%s " % moddir)
 
 if coefdir != "":
    file.write(coefdir)
@@ -343,10 +364,10 @@ file.close()
 
 os.chdir(pwd)
 os.chdir(options.buildpath)
-replacetext("MG5/Source/MODEL/lha_read.f", "ident_card.dat","Herwig/MG_tmp/ident_card.dat")
-replacetext("MG5/Source/MODEL/lha_read.f", "param.log","Herwig/MG_tmp/param.log")
+replacetext("MG5/Source/MODEL/lha_read.f", "ident_card.dat","Herwig-scratch/MG_tmp/ident_card.dat")
+replacetext("MG5/Source/MODEL/lha_read.f", "param.log","Herwig-scratch/MG_tmp/param.log")
 if Virtlist!=[]:
-  replacetext("MG5/SubProcesses/MadLoopCommons.f", "PREFIX='./'","PREFIX='./Herwig/MG_tmp/'")
+  replacetext("MG5/SubProcesses/MadLoopCommons.f", "PREFIX='./'","PREFIX='./Herwig-scratch/MG_tmp/'")
 
 os.system("make")
 

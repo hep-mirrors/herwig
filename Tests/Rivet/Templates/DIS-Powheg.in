@@ -1,7 +1,8 @@
 ##################################################
 # Example generator based on DIS parameters
-# usage: Herwig++ read DIS.in
+# usage: Herwig read DIS.in
 ##################################################
+read Matchbox/Powheg-Default-ShowerAlphaSTune.in
 
 set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
@@ -10,12 +11,16 @@ set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting e-->e-,gamma; /Herwig/Shower/LtoLGammaSudakov
 do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting mu-->mu-,gamma; /Herwig/Shower/LtoLGammaSudakov
 do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting tau-->tau-,gamma; /Herwig/Shower/LtoLGammaSudakov
+set /Herwig/Shower/KinematicsReconstructor:ReconstructionOption Colour
 
 ##################################################
 #  Need to use an NLO PDF
 ##################################################
-set /Herwig/Particles/p+:PDF    /Herwig/Partons/MRST-NLO
-set /Herwig/Particles/pbar-:PDF /Herwig/Partons/MRST-NLO
+set /Herwig/Particles/p+:PDF    /Herwig/Partons/HardNLOPDF
+set /Herwig/Particles/pbar-:PDF /Herwig/Partons/HardNLOPDF
+set /Herwig/Shower/ShowerHandler:PDFA /Herwig/Partons/ShowerLOPDF
+set /Herwig/Partons/MPIExtractor:FirstPDF  /Herwig/Partons/MPIPDF
+set /Herwig/Partons/QCDExtractor:FirstPDF  /Herwig/Partons/HardNLOPDF
 
 ##################################################
 #  Setup the POWHEG shower
@@ -23,12 +28,6 @@ set /Herwig/Particles/pbar-:PDF /Herwig/Partons/MRST-NLO
 cd /Herwig/Shower
 set Evolver:IntrinsicPtGaussian 1.9*GeV
 set Evolver:HardEmissionMode POWHEG
-
-##################################################
-#  and strong coupling
-##################################################
-create Herwig::O2AlphaS O2AlphaS 
-set /Herwig/Model:QCD/RunningAlphaS O2AlphaS
 
 cd /Herwig/MatrixElements/
 # Neutral current DIS
@@ -51,7 +50,7 @@ mv /Herwig/Generators/DISGenerator /Herwig/Generators/EventGenerator
 read ${parameterFile}
 
 ##################################################
-# Save run for later usage with 'Herwig++ run'
+# Save run for later usage with 'Herwig run'
 ##################################################
 cd /Herwig/Generators
 saverun ${runname} EventGenerator

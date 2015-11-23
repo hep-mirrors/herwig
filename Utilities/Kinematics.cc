@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// Kinematics.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Kinematics.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -21,6 +21,25 @@
 
 using namespace Herwig;
 using namespace ThePEG;
+
+bool Kinematics::twoBodyDecay(const Lorentz5Momentum & p, 
+           const Energy m1, const Energy m2,
+           const Axis & unitDir1,
+           Lorentz5Momentum & p1, Lorentz5Momentum & p2) {
+      Energy min=p.mass();
+      if ( min >= m1 + m2  &&  m1 >= ZERO  &&  m2 >= ZERO  ) {
+  Momentum3 pstarVector = unitDir1 * pstarTwoBodyDecay(min,m1,m2);
+  p1 = Lorentz5Momentum(m1, pstarVector);
+  p2 = Lorentz5Momentum(m2,-pstarVector);
+  // boost from CM to LAB
+  Boost bv = p.boostVector();
+  double gammarest = p.e()/p.mass();
+  p1.boost( bv, gammarest );
+  p2.boost( bv, gammarest );
+  return true;
+      }
+      return false;
+    }
 
 /*****
  * This function, as the name implies, performs a three body decay. The decay
@@ -59,6 +78,7 @@ bool Kinematics::threeBodyDecay(Lorentz5Momentum p0, Lorentz5Momentum &p1,
   double ww; 
   Energy4 pp,qq,rr;
   // Choose mass of subsystem 23 with prescribed distribution
+  const unsigned int MAXTRY = 100;
   unsigned int ntry=0;
   do {
     // ff is the mass squared of the 23 subsystem
@@ -76,10 +96,10 @@ bool Kinematics::threeBodyDecay(Lorentz5Momentum p0, Lorentz5Momentum &p1,
     rr = ee*ff*UseRandom::rnd();
     ++ntry;
   } 
-  while(pp*qq*ww < rr*rr && ntry < _ntry );
-  if(ntry >= _ntry) {
+  while(pp*qq*ww < rr*rr && ntry < MAXTRY );
+  if(ntry >= MAXTRY) {
     CurrentGenerator::log() << "Kinematics::threeBodyDecay can't generate momenta" 
-			    << " after " << _ntry << " attempts\n";
+			    << " after " << MAXTRY << " attempts\n";
     return false;
   }
 

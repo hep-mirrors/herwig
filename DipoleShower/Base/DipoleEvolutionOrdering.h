@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// DipoleEvolutionOrdering.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// DipoleEvolutionOrdering.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_DipoleEvolutionOrdering_H
@@ -14,9 +14,9 @@
 
 #include "ThePEG/Handlers/HandlerBase.h"
 
-#include "Herwig++/DipoleShower/Base/Dipole.h"
-#include "Herwig++/DipoleShower/Base/DipoleChain.h"
-#include "Herwig++/DipoleShower/Kernels/DipoleSplittingKernel.h"
+#include "Herwig/DipoleShower/Base/Dipole.h"
+#include "Herwig/DipoleShower/Base/DipoleChain.h"
+#include "Herwig/DipoleShower/Kernels/DipoleSplittingKernel.h"
 
 namespace Herwig {
 

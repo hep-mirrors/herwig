@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// MatchboxOLPME.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MatchboxOLPME.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef Herwig_MatchboxOLPME_H
@@ -12,7 +12,7 @@
 // This is the declaration of the MatchboxOLPME class.
 //
 
-#include "Herwig++/MatrixElement/Matchbox/Base/MatchboxAmplitude.h"
+#include "Herwig/MatrixElement/Matchbox/Base/MatchboxAmplitude.h"
 
 namespace Herwig {
 
@@ -116,6 +116,11 @@ public:
    */
   virtual double largeNColourCorrelatedME2(pair<int,int>,
 					   Ptr<ColourBasis>::tptr) const;
+
+  /**
+   * Return the largeN matrix element squared.
+   */
+  virtual double largeNME2(Ptr<ColourBasis>::tptr largeNBasis) const;
 
   /**
    * Return the colour and spin correlated matrix element.

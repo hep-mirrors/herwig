@@ -18,11 +18,11 @@
 #include "ThePEG/PDF/BeamParticleData.h"
 #include "ThePEG/PDF/PDF.h"
 #include "ThePEG/Cuts/Cuts.h"
-#include "Herwig++/PDF/HwRemDecayer.h"
-#include "Herwig++/Shower/Base/Evolver.h"
-#include "Herwig++/Shower/Base/PartnerFinder.h"
-#include "Herwig++/Shower/Base/KinematicsReconstructor.h"
-#include "Herwig++/MatrixElement/Matchbox/Matching/ShowerApproximationGenerator.h"
+#include "Herwig/PDF/HwRemDecayer.h"
+#include "Herwig/Shower/Base/Evolver.h"
+#include "Herwig/Shower/Base/PartnerFinder.h"
+#include "Herwig/Shower/Base/KinematicsReconstructor.h"
+#include "Herwig/MatrixElement/Matchbox/Matching/ShowerApproximationGenerator.h"
 
 using namespace Herwig;
 

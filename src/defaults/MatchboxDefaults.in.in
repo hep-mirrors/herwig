@@ -48,10 +48,20 @@ set CellGridSampler:RemapChannelDimension Yes
 set CellGridSampler:LuminosityMapperBins 20
 set CellGridSampler:GeneralMapperBins 0
 
+set CellGridSampler:HalfPoints No
+set CellGridSampler:MaxNewMax 30
+set CellGridSampler:NonZeroInPresampling Yes
+
 create Herwig::MonacoSampler MonacoSampler
-set MonacoSampler:InitialPoints 10000
+set MonacoSampler:InitialPoints 15000
 set MonacoSampler:NIterations 4
-set MonacoSampler:EnhancementFactor 2
+set MonacoSampler:EnhancementFactor 1.2
+set MonacoSampler:UseAllIterations No
+set MonacoSampler:RemapChannelDimension No
+set MonacoSampler:LuminosityMapperBins 0
+set MonacoSampler:HalfPoints No
+set MonacoSampler:MaxNewMax 30
+set MonacoSampler:NonZeroInPresampling Yes
 
 create Herwig::GeneralSampler Sampler
 set Sampler:UpdateAfter 1000
@@ -65,6 +75,7 @@ set Sampler:MinSelection 0.000001
 set Sampler:AlmostUnweighted Off
 set Sampler:RunCombinationData Off
 set Sampler:WriteGridsOnFinish No
+set Sampler:MaxEnhancement 1.1
 
 ################################################################################
 # Setup the factory object
@@ -388,6 +399,10 @@ set Rambo:CouplingData PhasespaceCouplings
 create Herwig::FlatInvertiblePhasespace InvertiblePhasespace
 set InvertiblePhasespace:CouplingData PhasespaceCouplings
 
+create Herwig::FlatInvertibleLabframePhasespace InvertibleLabframePhasespace
+set InvertibleLabframePhasespace:CouplingData PhasespaceCouplings
+set InvertibleLabframePhasespace:LogSHat False
+
 create Herwig::TreePhasespaceChannels TreePhasespaceChannels
 create Herwig::TreePhasespace TreePhasespace
 set TreePhasespace:ChannelMap TreePhasespaceChannels
@@ -525,10 +540,12 @@ set MEMatching:MaxPtIsMuF Yes
 set MEMatching:FFPtCut 1.0*GeV
 set MEMatching:FIPtCut 1.0*GeV
 set MEMatching:IIPtCut 1.0*GeV
+set MEMatching:SafeCut 0.*GeV
 
 create Herwig::ShowerApproximationGenerator MECorrectionHandler
 set MECorrectionHandler:ShowerApproximation MEMatching
 set MECorrectionHandler:Phasespace /Herwig/MatrixElements/Matchbox/Phasespace/InvertiblePhasespace
+set MECorrectionHandler:PresamplingPoints 50000
 set MECorrectionHandler:FreezeGrid 100000
 
 create Herwig::DipoleMatching DipoleMatching HwDipoleMatching.so
@@ -540,6 +557,7 @@ set DipoleMatching:EmissionScaleInSubtraction BornScale
 set DipoleMatching:FFPtCut 1.0*GeV
 set DipoleMatching:FIPtCut 1.0*GeV
 set DipoleMatching:IIPtCut 1.0*GeV
+set DipoleMatching:SafeCut 4.*GeV
 
 create Herwig::QTildeMatching QTildeMatching HwQTildeMatching.so
 set QTildeMatching:ShowerHandler /Herwig/Shower/ShowerHandler
@@ -547,6 +565,7 @@ set QTildeMatching:BornScaleInSubtraction BornScale
 set QTildeMatching:RealEmissionScaleInSubtraction BornScale
 set QTildeMatching:EmissionScaleInSubtraction BornScale
 set QTildeMatching:QTildeFinder /Herwig/Shower/PartnerFinder
+set QTildeMatching:SafeCut 4.*GeV
 # just a dummy, since SudakovCommonn can't be used
 # it's only used to get the value of the kinCutoffScale
 set QTildeMatching:QTildeSudakov /Herwig/Shower/QtoQGSudakov
@@ -718,60 +737,6 @@ set HTPrimeScale:IncludeMT Yes
 cp LeptonPairMassScale LeptonQ2Scale
 
 set /Herwig/MatrixElements/Matchbox/Factory:ScaleChoice LeptonPairMassScale
-
-################################################################################
-# AlphaS
-################################################################################
-
-cd /Herwig/MatrixElements/Matchbox
-mkdir AlphaS
-cd AlphaS
-
-create Herwig::O2AlphaS NLOAlphaS
-set NLOAlphaS:LambdaType MSBar
-insert NLOAlphaS:QuarkMasses[0] 0.005
-insert NLOAlphaS:QuarkMasses[1] 0.0023
-insert NLOAlphaS:QuarkMasses[2] 0.095
-insert NLOAlphaS:QuarkMasses[3] 1.25
-insert NLOAlphaS:QuarkMasses[4] 4.2
-insert NLOAlphaS:QuarkMasses[5] 174.2
-
-create ThePEG::O1AlphaS LOAlphaS  O1AlphaS.so
-insert LOAlphaS:QuarkMasses[0] 0.005
-insert LOAlphaS:QuarkMasses[1] 0.0023
-insert LOAlphaS:QuarkMasses[2] 0.095
-insert LOAlphaS:QuarkMasses[3] 1.25
-insert LOAlphaS:QuarkMasses[4] 4.2
-insert LOAlphaS:QuarkMasses[5] 174.2
-
-library HwDipoleShowerAlphaS.so
-
-create matchbox::nlo_alpha_s MatchboxNLOAlphaS
-set MatchboxNLOAlphaS:exact_evaluation large_scale
-set MatchboxNLOAlphaS:freezing_scale 0.0*GeV
-set MatchboxNLOAlphaS:min_active_flavours 3
-set MatchboxNLOAlphaS:max_active_flavours 6
-set MatchboxNLOAlphaS:input_scale 91.188*GeV
-set MatchboxNLOAlphaS:input_alpha_s 0.1271103
-insert MatchboxNLOAlphaS:QuarkMasses[0] 0.005
-insert MatchboxNLOAlphaS:QuarkMasses[1] 0.0023
-insert MatchboxNLOAlphaS:QuarkMasses[2] 0.095
-insert MatchboxNLOAlphaS:QuarkMasses[3] 1.25
-insert MatchboxNLOAlphaS:QuarkMasses[4] 4.2
-insert MatchboxNLOAlphaS:QuarkMasses[5] 174.2
-
-create matchbox::lo_alpha_s MatchboxLOAlphaS
-set MatchboxLOAlphaS:freezing_scale 0.0*GeV
-set MatchboxLOAlphaS:min_active_flavours 3
-set MatchboxLOAlphaS:max_active_flavours 6
-set MatchboxLOAlphaS:input_scale 91.188*GeV
-set MatchboxLOAlphaS:input_alpha_s 0.1283827
-insert MatchboxLOAlphaS:QuarkMasses[0] 0.005
-insert MatchboxLOAlphaS:QuarkMasses[1] 0.0023
-insert MatchboxLOAlphaS:QuarkMasses[2] 0.095
-insert MatchboxLOAlphaS:QuarkMasses[3] 1.25
-insert MatchboxLOAlphaS:QuarkMasses[4] 4.2
-insert MatchboxLOAlphaS:QuarkMasses[5] 174.2
 
 ################################################################################
 # Factories for different colliders

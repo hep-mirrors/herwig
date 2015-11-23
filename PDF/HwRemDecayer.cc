@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// HwRemDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// HwRemDecayer.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -22,7 +22,7 @@
 #include "ThePEG/Utilities/SimplePhaseSpace.h"
 #include "ThePEG/Utilities/Throw.h"
 
-#include "Herwig++/Shower/ShowerHandler.h"
+#include "Herwig/Shower/ShowerHandler.h"
 
 using namespace Herwig;
 
@@ -1090,14 +1090,16 @@ void HwRemDecayer::persistentOutput(PersistentOStream & os) const {
   os << ounit(_kinCutoff, GeV) << _range << _zbin << _ybin 
      << _nbinmax << _alphaS << _alphaEM << DISRemnantOpt_
      << maxtrySoft_ << colourDisrupt_ << pomeronStructure_
-     << ounit(mg_,GeV) << ounit(ptmin_,GeV) << ounit(beta_,sqr(InvGeV));
+     << ounit(mg_,GeV) << ounit(ptmin_,GeV) << ounit(beta_,sqr(InvGeV))
+     << allowTop_;
 }
 
 void HwRemDecayer::persistentInput(PersistentIStream & is, int) {
   is >> iunit(_kinCutoff, GeV) >> _range >> _zbin >> _ybin 
      >> _nbinmax >> _alphaS >> _alphaEM >> DISRemnantOpt_
      >> maxtrySoft_ >> colourDisrupt_ >> pomeronStructure_
-     >> iunit(mg_,GeV) >> iunit(ptmin_,GeV) >> iunit(beta_,sqr(InvGeV));
+     >> iunit(mg_,GeV) >> iunit(ptmin_,GeV) >> iunit(beta_,sqr(InvGeV))
+     >> allowTop_;
 }
 
 ClassDescription<HwRemDecayer> HwRemDecayer::initHwRemDecayer;
@@ -1106,7 +1108,7 @@ ClassDescription<HwRemDecayer> HwRemDecayer::initHwRemDecayer;
 void HwRemDecayer::Init() {
 
   static ClassDocumentation<HwRemDecayer> documentation
-    ("The HwRemDecayer class decays the remnant for Herwig++");
+    ("The HwRemDecayer class decays the remnant for Herwig");
 
   static Parameter<HwRemDecayer,double> interfaceZBinSize
     ("ZBinSize",
@@ -1202,11 +1204,36 @@ void HwRemDecayer::Init() {
      " this option is not recommended and is provide for compatiblity with POMWIG",
      1);
 
+  static Switch<HwRemDecayer,bool> interfaceAllowTop
+    ("AllowTop",
+     "Allow top quarks in the hadron",
+     &HwRemDecayer::allowTop_, false, false, false);
+  static SwitchOption interfaceAllowTopNo
+    (interfaceAllowTop,
+     "No",
+     "Don't allow them",
+     false);
+  static SwitchOption interfaceAllowTopYes
+    (interfaceAllowTop,
+     "Yes",
+     "Allow them",
+     true);
+
 }
 
 bool HwRemDecayer::canHandle(tcPDPtr particle, tcPDPtr parton) const {
-  if(!(StandardQCDPartonMatcher::Check(*parton) ||
-       parton->id()==ParticleID::gamma)) return false;
+  if(! (StandardQCDPartonMatcher::Check(*parton) || parton->id()==ParticleID::gamma) ) {
+    if(abs(parton->id())==ParticleID::t) {
+      if(!allowTop_)
+	throw Exception() << "Top is not allow as a parton in the remant handling, please "
+			  << "use a PDF which does not contain top for the remnant"
+			  << " handling (preferred) or allow top in the remnant using\n"
+			  << " set " << fullName() << ":AllowTop Yes\n"
+			  << Exception::runerror;
+    }
+    else
+      return false;
+  }
   return HadronMatcher::Check(*particle) || particle->id()==ParticleID::gamma 
     || particle->id()==ParticleID::pomeron || particle->id()==ParticleID::reggeon;
 }

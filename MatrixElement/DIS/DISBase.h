@@ -5,8 +5,8 @@
 // This is the declaration of the DISBase class.
 //
 
-#include "Herwig++/MatrixElement/HwMEBase.h"
-#include "Herwig++/Shower/Couplings/ShowerAlpha.h"
+#include "Herwig/MatrixElement/HwMEBase.h"
+#include "Herwig/Shower/Couplings/ShowerAlpha.h"
 
 namespace Herwig {
 

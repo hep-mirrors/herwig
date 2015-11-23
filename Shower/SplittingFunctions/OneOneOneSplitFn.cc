@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// OneOneOneSplitFn.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// OneOneOneSplitFn.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -15,7 +15,7 @@
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Utilities/DescribeClass.h"
-#include "Herwig++/Decay/TwoBodyDecayMatrixElement.h"
+#include "Herwig/Decay/TwoBodyDecayMatrixElement.h"
 
 using namespace Herwig;
 
@@ -32,7 +32,7 @@ void OneOneOneSplitFn::Init() {
 double OneOneOneSplitFn::P(const double z, const Energy2,
 			   const IdList & ids, const bool)const {
   // (this is historically important! the first physics - two years
-  // after the birth of the project - in the Herwig++ shower! Alberto
+  // after the birth of the project - in the Herwig shower! Alberto
   // & Stefan, 25/04/2002).
   return colourFactor(ids)*sqr(1.-z*(1.-z))/(z*(1.-z));
 }

@@ -1,16 +1,16 @@
 // -*- C++ -*-
 //
-// UA5Handler.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// UA5Handler.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef HERWIG_UA5_H_
 #define HERWIG_UA5_H_
 
 #include <ThePEG/Handlers/HadronizationHandler.h>
-#include "Herwig++/Hadronization/CluHadConfig.h"
+#include "Herwig/Hadronization/CluHadConfig.h"
 #include <ThePEG/Vectors/LorentzRotation.h>
 
 namespace Herwig {
@@ -23,7 +23,7 @@ using namespace ThePEG;
  *  class is designed to generate an underlying event     
  *  based on the UA5 model. This is intended as a basic   
  *  underlying event model which will be superceded by a  
- *  new model in Herwig++.                                
+ *  new model in Herwig.                                
  *                                                        
  *  This class interfaces with 
  *  the cluster hadronization. To that end there is an    

@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// QTildeReconstructor.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// QTildeReconstructor.cc is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -19,11 +19,11 @@
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/RefVector.h"
-#include "Herwig++/Shower/Base/Evolver.h"
-#include "Herwig++/Shower/Base/PartnerFinder.h"
+#include "Herwig/Shower/Base/Evolver.h"
+#include "Herwig/Shower/Base/PartnerFinder.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Shower/SplittingFunctions/SplittingFunction.h"
+#include "Herwig/Shower/SplittingFunctions/SplittingFunction.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/EventRecord/ColourLine.h"
 #include "ThePEG/Utilities/DescribeClass.h"
@@ -237,9 +237,8 @@ reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent) const {
 	  &&particleJetParent->id()!=ParticleID::gamma
 	  &&_noRescale.find(particleJetParent->dataPtr())==_noRescale.end()) {
 	Lorentz5Momentum dum =  particleJetParent->momentum();
-	if(dm>dum.e()) throw KinematicsReconstructionVeto();
-	dum.setMass(dm); 
-	dum.rescaleRho();
+	dum.setMass(dm);
+	dum.rescaleEnergy();
 	particleJetParent->set5Momentum(dum);
       } 
       else {
@@ -259,7 +258,8 @@ bool QTildeReconstructor::
 reconstructHardJets(ShowerTreePtr hard,
 		    const map<tShowerProgenitorPtr,
 		    pair<Energy,double> > & intrinsic,
-		    ShowerInteraction::Type type) const {
+		    ShowerInteraction::Type type,
+		    bool switchRecon) const {
   _currentTree = hard;
   _intrinsic=intrinsic;
   // extract the particles from the ShowerTree
@@ -274,7 +274,7 @@ reconstructHardJets(ShowerTreePtr hard,
   }
   try {
     // old recon method, using new member functions
-    if(_reconopt == 0 ) {
+    if(_reconopt == 0 || switchRecon ) {
       reconstructGeneralSystem(ShowerHardJets);
     }
     // reconstruction based on coloured systems
@@ -578,6 +578,20 @@ reconstructDecayJets(ShowerTreePtr decay,
     Lorentz5Momentum qt;
     if(!solveDecayKFactor(initial->progenitor()->mass(),nvect,pjet,
 			  jetKinematics,partner,ppartner,k1,k2,qt)) {
+      for(map<tPPtr,vector<LorentzRotation> >::const_iterator bit=_boosts.begin();bit!=_boosts.end();++bit) {
+	for(vector<LorentzRotation>::const_reverse_iterator rit=bit->second.rbegin();rit!=bit->second.rend();++rit) {
+	  LorentzRotation rot = rit->inverse();
+	  bit->first->transform(rot);
+	}
+      }
+      _boosts.clear();
+      for(map<tShowerTreePtr,vector<LorentzRotation> >::const_iterator bit=_treeBoosts.begin();bit!=_treeBoosts.end();++bit) {
+	for(vector<LorentzRotation>::const_reverse_iterator rit=bit->second.rbegin();rit!=bit->second.rend();++rit) {
+	  LorentzRotation rot = rit->inverse();
+	  bit->first->transform(rot,false);
+	}
+      }
+      _treeBoosts.clear();
       _currentTree = tShowerTreePtr();
       return false;
     }
@@ -641,6 +655,12 @@ reconstructDecayJets(ShowerTreePtr decay,
     _treeBoosts.clear();
     _currentTree = tShowerTreePtr();
     return false;
+  }
+  catch (Exception & ex) {
+    _currentTree = tShowerTreePtr();
+    _boosts.clear();
+    _treeBoosts.clear();
+    throw ex;
   }
   _boosts.clear();
   _treeBoosts.clear();
@@ -1286,7 +1306,7 @@ reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
     else {
       pin[0]  +=jets[ix]->progenitor()->momentum();
       if(jets[ix]->progenitor()->showerKinematics()) {
-	pbeam = jets[ix]->progenitor()->x()*jets[ix]->progenitor()->showerKinematics()->getBasis()[0];
+	pbeam = jets[ix]->progenitor()->showerKinematics()->getBasis()[0];
       }
       else {
 	if ( jets[ix]->original()->parents().empty() ) {
@@ -1366,12 +1386,31 @@ reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
     if(jets[ix]->progenitor()->isFinalState()) {
       deepTransform(jets[ix]->progenitor(),rot);
       deepTransform(jets[ix]->progenitor(),solveBoost(pnew[1],qcp));
+      Energy delta = jets[ix]->progenitor()->momentum().m()-jets[ix]->progenitor()->momentum().mass();
+      if ( abs(delta) > MeV ) throw KinematicsReconstructionVeto();
       deepTransform(jets[ix]->progenitor(),rotinv);
     }
     else {
       tPPtr parent;
       boostChain(jets[ix]->progenitor(),rot,parent);
       boostChain(jets[ix]->progenitor(),solveBoostZ(pnew[0],qbp),parent);
+      // check the first boost worked, and if not apply small correction to
+      // fix energy/momentum conservation
+      // this is a kludge but it reduces momentum non-conservation dramatically
+      Lorentz5Momentum pdiff = pnew[0]-jets[ix]->progenitor()->momentum();
+      Energy2 delta = sqr(pdiff.x())+sqr(pdiff.y())+sqr(pdiff.z())+sqr(pdiff.t());
+      unsigned int ntry=0;
+      while(delta>1e-6*GeV2 && ntry<5 ) {
+	ntry +=1;
+	boostChain(jets[ix]->progenitor(),solveBoostZ(pnew[0],jets[ix]->progenitor()->momentum()),parent);
+	pdiff = pnew[0]-jets[ix]->progenitor()->momentum();
+	delta = sqr(pdiff.x())+sqr(pdiff.y())+sqr(pdiff.z())+sqr(pdiff.t());
+      }
+      // apply test in breit-frame
+      Lorentz5Momentum ptest1 = parent->momentum();
+      Lorentz5Momentum ptest2 = rot*pbeam;
+      if(ptest1.z()/ptest2.z()<0. || ptest1.z()/ptest2.z()>1.)
+      	throw KinematicsReconstructionVeto();
       boostChain(jets[ix]->progenitor(),rotinv,parent);
     }
   }
@@ -1480,7 +1519,7 @@ LorentzRotation QTildeReconstructor::solveBoost(const Lorentz5Momentum & q,
 
 LorentzRotation QTildeReconstructor::solveBoostZ(const Lorentz5Momentum & q, 
 						 const Lorentz5Momentum & p ) const {
-  static const double eps = 1e-8;
+  static const double eps = 1e-6;
   LorentzRotation R;
   double beta;
   Energy2 mt2  = p.mass()<ZERO ? -sqr(p.mass())+sqr(p.x())+sqr(p.y()) : sqr(p.mass())+sqr(p.x())+sqr(p.y())  ;
@@ -1490,13 +1529,19 @@ LorentzRotation QTildeReconstructor::solveBoostZ(const Lorentz5Momentum & q,
     Energy2 den = mt2*(erat+1./erat);
     Energy2 num = (q.z()-p.z())*(q.t()+p.t()) + (p.z()+q.z())*(p.t()-q.t());
     beta = num/den;
+    if ( abs(beta) - 1. >= 0. ) throw KinematicsReconstructionVeto();
+    R.boostZ(beta);
   }
   else {
     double er = sqr(p.t()/q.t());
-    beta  = -(p.t()-q.t())*(p.t()+q.t())/(sqr(p.t())+sqr(q.t()))*(1.+ratio+0.125*(er+10.+1./er)*sqr(ratio));
+    double x = ratio+0.125*(er+10.+1./er)*sqr(ratio);
+    beta = -(p.t()-q.t())*(p.t()+q.t())/(sqr(p.t())+sqr(q.t()))*(1.+x);
+    double gamma = (4.*sqr(p.t()*q.t()) +sqr(p.t()-q.t())*sqr(p.t()+q.t())*
+		    (-2.*x+sqr(x)))/sqr(sqr(p.t())+sqr(q.t()));
+    if ( abs(beta) - 1. >= 0. ) throw KinematicsReconstructionVeto();
+    gamma  = 1./sqrt(gamma);
+    R.boost(0.,0.,beta,gamma);
   }
-  if ( abs(beta) - 1. >= 0. ) throw KinematicsReconstructionVeto();
-  R.boostZ(beta);
   Lorentz5Momentum ptest = R*p;
   if(ptest.z()/q.z() < 0. || ptest.t()/q.t() < 0. ) {
     throw KinematicsReconstructionVeto();
@@ -1656,13 +1701,19 @@ reconstructInitialInitialSystem(bool & applyBoost,
   // check if intrinsic pt to be added
   radiated |= !_intrinsic.empty();
   // if no radiation return
-  if(!radiated) return;
+  if(!radiated) {
+    for(unsigned int ix=0;ix<jets.size();++ix) {
+      if(jets[ix]->reconstructed()==ShowerProgenitor::notReconstructed)
+	jets[ix]->reconstructed(ShowerProgenitor::done);
+    }
+    return;
+  }
   // initial state shuffling
   applyBoost=false;
   vector<Lorentz5Momentum> p, pq, p_in;
   vector<Energy> pts;
   for(unsigned int ix=0;ix<jets.size();++ix) {
-    // at momentum to vector
+    // add momentum to vector
     p_in.push_back(jets[ix]->progenitor()->momentum());
     // reconstruct the jet
     if(jets[ix]->reconstructed()==ShowerProgenitor::notReconstructed) {
@@ -1682,8 +1733,7 @@ reconstructInitialInitialSystem(bool & applyBoost,
   }
   double x1 = p_in[0].z()/pq[0].z();
   double x2 = p_in[1].z()/pq[1].z();
-  Energy MDY = (p_in[0] + p_in[1]).m();
-  vector<double> beta=initialStateRescaling(x1,x2,MDY,p,pq,pts);
+  vector<double> beta=initialStateRescaling(x1,x2,p_in[0]+p_in[1],p,pq,pts);
   // if not need don't apply boosts
   if(!(radiated && p.size() == 2 && pq.size() == 2)) return;
   applyBoost=true;
@@ -1709,66 +1759,38 @@ deconstructInitialInitialSystem(bool & applyBoost,
 				HardTreePtr tree,
 				vector<HardBranchingPtr> jets,
 				ShowerInteraction::Type) const {
+  assert(jets.size()==2);
+  // put beam with +z first
+  if(jets[0]->beam()->momentum().z()<ZERO) swap(jets[0],jets[1]);
   // get the momenta of the particles
-  vector<Lorentz5Momentum> pin;
-  vector<Lorentz5Momentum> pq;
-  vector<HardBranchingPtr>::iterator cit;
-  for(cit=jets.begin();cit!=jets.end();++cit) {
-    pin.push_back((*cit)->branchingParticle()->momentum());
-    Energy etemp = (*cit)->beam()->momentum().z();
+  vector<Lorentz5Momentum> pin,pq;
+  for(unsigned int ix=0;ix<jets.size();++ix) {
+    pin.push_back(jets[ix]->branchingParticle()->momentum());
+    Energy etemp = jets[ix]->beam()->momentum().z();
     pq.push_back(Lorentz5Momentum(ZERO, ZERO,etemp, abs(etemp)));
   }
-  bool order = (*tree->incoming().begin())->beam()->momentum().z()/pq[0].z()<0.;
-  assert(pin.size()==2);
-  // decompose the momenta
-  double alpha[2],beta[2];
-  Energy2 p12=pq[0]*pq[1];
-  Lorentz5Momentum pt[2];
-  for(unsigned int ix=0;ix<2;++ix) {
-    alpha[ix] = pin[ix]*pq[1]/p12;
-    beta [ix] = pin[ix]*pq[0]/p12;
-    pt[ix]    = pin[ix]-alpha[ix]*pq[0]-beta[ix]*pq[1];
-  }
-  // parton level centre-of-mass
+  // calculate the rescaling
+  double x[2];
   Lorentz5Momentum pcm=pin[0]+pin[1];
-  pcm.rescaleMass();
-  double rap=pcm.rapidity();
-  // hadron level cmf
-  Energy2 s  = (pq[0] +pq[1] ).m2();
-  // calculate the x values 
   assert(pcm.mass2()>ZERO);
-  double x0 = sqrt(pcm.mass2()/s*exp(2.*rap));
-  double x[2]={x0, pcm.mass2()/s/x0};
-  if(pq[0].z()<ZERO) swap(x[0],x[1]);
-  double k1=alpha[0]/x[0],k2=beta[1]/x[1];
-  double alphanew[2]={alpha[0]/k1,alpha[1]*k2};
-  double betanew [2]={beta [0]*k1,beta [1]/k2};
-  double boost[2];
-  for(unsigned int ix=0;ix<2;++ix) {
-    boost[ix] = getBeta(alpha   [ix]+beta   [ix], alpha[ix]   -beta   [ix], 
-			alphanew[ix]+betanew[ix], alphanew[ix]-betanew[ix]);
-    if (pq[0].z() > ZERO) beta[ix]*=-1.;
-  }
-  // apply the boost the the particles
-  // first incoming particle
-  if(order) swap(pq[0],pq[1]);
-  // now apply the boosts
-  Boost betaboost(0.,0.,-boost[0]);
-  LorentzRotation R;
-  R.boost(betaboost);
+  pcm.rescaleMass();
+  vector<double> boost = inverseInitialStateRescaling(x[0],x[1],pcm,pin,pq);
   set<HardBranchingPtr>::const_iterator cjt=tree->incoming().begin();
-  (*cjt)->pVector(pq[0]);
-  (*cjt)->nVector(pq[1]);
-  (*cjt)->setMomenta(R,1.,Lorentz5Momentum());
-  // second incoming particle
-  betaboost = Boost(0.,0.,-boost[1]);
-  R=LorentzRotation(betaboost);
+  HardBranchingPtr incoming[2];
+  incoming[0] = *cjt;
   ++cjt;
-  (*cjt)->pVector(pq[1]);
-  (*cjt)->nVector(pq[0]);
-  (*cjt)->setMomenta(R,1.,Lorentz5Momentum());
-  jets[0]->showerMomentum(x[0]*jets[0]->pVector());
-  jets[1]->showerMomentum(x[1]*jets[1]->pVector());
+  incoming[1] = *cjt;
+  if((*tree->incoming().begin())->beam()->momentum().z()/pq[0].z()<0.)
+    swap(incoming[0],incoming[1]);
+  // apply the boost the the particles
+  unsigned int iswap[2]={1,0};
+  for(unsigned int ix=0;ix<2;++ix) {
+    LorentzRotation R(0.,0.,-boost[ix]);
+    incoming[ix]->pVector(pq[ix]);
+    incoming[ix]->nVector(pq[iswap[ix]]);
+    incoming[ix]->setMomenta(R,1.,Lorentz5Momentum());
+    jets[ix]->showerMomentum(x[ix]*jets[ix]->pVector());
+  }
   // and calculate the boosts 
   applyBoost=true;
   // do one boost
@@ -1787,7 +1809,7 @@ deconstructInitialInitialSystem(bool & applyBoost,
   else
     assert(false);
   fromRest = LorentzRotation((jets[0]->showerMomentum()+
-			      jets[1]->showerMomentum()).boostVector());
+  			      jets[1]->showerMomentum()).boostVector());
 }
 
 void QTildeReconstructor::
@@ -1796,6 +1818,7 @@ deconstructFinalStateSystem(const LorentzRotation &   toRest,
 			    HardTreePtr tree, vector<HardBranchingPtr> jets,
 			    cEvolverPtr evolver,
 			    ShowerInteraction::Type type) const {
+  LorentzRotation trans = toRest;
   if(jets.size()==1) {
     Lorentz5Momentum pnew = toRest*(jets[0]->branchingParticle()->momentum());
     pnew *= fromRest;
@@ -1843,28 +1866,36 @@ deconstructFinalStateSystem(const LorentzRotation &   toRest,
   vector<HardBranchingPtr>::iterator cit;
   vector<Lorentz5Momentum> pout;
   vector<Energy> mon;
+  Lorentz5Momentum pin;
   for(cit=jets.begin();cit!=jets.end();++cit) {
     pout.push_back((*cit)->branchingParticle()->momentum());
     mon.push_back(findMass(*cit));
+    pin+=pout.back();
   }
-
   // boost all the momenta to the rest frame of the decaying particle
-  Lorentz5Momentum pin;
-  for(unsigned int ix=0;ix<pout.size();++ix) {
-    pout[ix].transform(toRest);
-    pin += pout[ix];
-  }
   pin.rescaleMass();
+  pin *=trans;
+  Boost beta_cm = pin.findBoostToCM();
+  bool gottaBoost(false);
+  if(beta_cm.mag() > 1e-12) {
+    gottaBoost = true;
+    trans.boost(beta_cm);
+    pin.boost(beta_cm);
+  }
+  for(unsigned int ix=0;ix<pout.size();++ix) {
+    pout[ix].transform(trans);
+  }
   // rescaling factor
   double lambda=inverseRescalingFactor(pout,mon,pin.mass());
-  if (lambda< 1.e-10) throw KinematicsReconstructionVeto(); 
+  if (lambda< 1.e-10) throw KinematicsReconstructionVeto();
   // now calculate the p reference vectors 
   for(unsigned int ix=0;ix<jets.size();++ix) {
     Lorentz5Momentum pvect = jets[ix]->branchingParticle()->momentum();
-    pvect.transform(toRest);
+    pvect.transform(trans);
     pvect /= lambda;
     pvect.setMass(mon[ix]);
     pvect.rescaleEnergy();
+    if(gottaBoost) pvect.boost(-beta_cm);
     pvect.transform(fromRest);
     jets[ix]->pVector(pvect);
     jets[ix]->showerMomentum(pvect);
@@ -2158,10 +2189,6 @@ reconstructFinalFirst(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
 void QTildeReconstructor::
 reconstructColourPartner(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
   static const Energy2 minQ2 = 1e-4*GeV2;
-  map<ShowerProgenitorPtr,bool> used;
-  for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
-    used[ShowerHardJets[ix]] = false;
-  }
   // sort the vector by hardness of emission
   std::sort(ShowerHardJets.begin(),ShowerHardJets.end(),sortJets);
   // map between particles and progenitors for easy lookup
@@ -2169,20 +2196,56 @@ reconstructColourPartner(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
   for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
     progenitorMap[ShowerHardJets[ix]->progenitor()] = ShowerHardJets[ix];
   }
+  // check that the IF systems can be reconstructed
+  bool canReconstruct = true;
+  for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
+    tShowerParticlePtr progenitor = ShowerHardJets[ix]->progenitor();
+    tShowerParticlePtr partner    = progenitor->partner();
+    if(!partner) continue;
+    else if((progenitor->isFinalState() &&
+	     !partner->isFinalState()) ||
+	    (!progenitor->isFinalState() &&
+	     partner->isFinalState()) ) {
+      vector<ShowerProgenitorPtr> jets(2);
+      jets[0] = ShowerHardJets[ix];
+      jets[1] = progenitorMap[partner];
+      Lorentz5Momentum psum;
+      for(unsigned int iy=0;iy<jets.size();++iy) {
+	if(jets[iy]->progenitor()->isFinalState())
+	  psum += jets[iy]->progenitor()->momentum();
+	else
+	  psum -= jets[iy]->progenitor()->momentum();
+      }
+      if(-psum.m2()<minQ2) {
+	canReconstruct  = false;
+	break;
+      }
+    }
+  }
+  if(!canReconstruct) {
+    reconstructGeneralSystem(ShowerHardJets);
+    return;
+  }
+  map<ShowerProgenitorPtr,bool> used;
+  for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
+    used[ShowerHardJets[ix]] = false;
+  }
   for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
     // skip jets which have already been handled
     if(ShowerHardJets[ix]->reconstructed()==ShowerProgenitor::done) continue;
     // already reconstructed
     if(used[ShowerHardJets[ix]]) continue; 
     // no partner continue
-    if(!ShowerHardJets[ix]->progenitor()->partner()) {
+    tShowerParticlePtr progenitor = ShowerHardJets[ix]->progenitor();
+    tShowerParticlePtr partner    = progenitor->partner();
+    if(!partner) {
       // check if there's a daughter tree which also needs boosting
-      Lorentz5Momentum porig = ShowerHardJets[ix]->progenitor()->momentum();
+      Lorentz5Momentum porig = progenitor->momentum();
       map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> >::const_iterator tit;
       for(tit  = _currentTree->treelinks().begin();
 	  tit != _currentTree->treelinks().end();++tit) {
 	// if there is, boost it
-	if(tit->second.first && tit->second.second==ShowerHardJets[ix]->progenitor()) {
+	if(tit->second.first && tit->second.second==progenitor) {
 	  Lorentz5Momentum pnew = tit->first->incomingLines().begin()
 	    ->first->progenitor()->momentum();
 	  pnew *=  tit->first->transform();
@@ -2195,16 +2258,17 @@ reconstructColourPartner(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
 	  _treeBoosts[tit->first].push_back(rot);
 	}
       }
+      ShowerHardJets[ix]->reconstructed(ShowerProgenitor::done);
       continue;
     }
     // do the reconstruction
     // final-final
-    if(ShowerHardJets[ix]->progenitor()->isFinalState() &&
-       ShowerHardJets[ix]->progenitor()->partner()->isFinalState() ) {
+    if(progenitor->isFinalState() &&
+       partner->isFinalState() ) {
       LorentzRotation toRest,fromRest;
       vector<ShowerProgenitorPtr> jets(2);
       jets[0] = ShowerHardJets[ix];
-      jets[1] = progenitorMap[ShowerHardJets[ix]->progenitor()->partner()];
+      jets[1] = progenitorMap[partner];
       if(_reconopt==4 && jets[1]->reconstructed()==ShowerProgenitor::notReconstructed)
 	jets[1]->reconstructed(ShowerProgenitor::dontReconstruct);
       reconstructFinalStateSystem(false,toRest,fromRest,jets);
@@ -2214,13 +2278,13 @@ reconstructColourPartner(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
       if(_reconopt==3) used[jets[1]] = true;
     }
     // initial-final
-    else if((ShowerHardJets[ix]->progenitor()->isFinalState() &&
-	     !ShowerHardJets[ix]->progenitor()->partner()->isFinalState()) ||
-	    (!ShowerHardJets[ix]->progenitor()->isFinalState() &&
-	     ShowerHardJets[ix]->progenitor()->partner()->isFinalState()) ) {
+    else if((progenitor->isFinalState() &&
+	     !partner->isFinalState()) ||
+	    (!progenitor->isFinalState() &&
+	     partner->isFinalState()) ) {
       vector<ShowerProgenitorPtr> jets(2);
       jets[0] = ShowerHardJets[ix];
-      jets[1] = progenitorMap[ShowerHardJets[ix]->progenitor()->partner()];
+      jets[1] = progenitorMap[partner];
       if(jets[0]->progenitor()->isFinalState()) swap(jets[0],jets[1]);
       if(jets[0]->original()&&jets[0]->original()->parents().empty()) continue;
       Lorentz5Momentum psum;
@@ -2230,22 +2294,20 @@ reconstructColourPartner(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
 	else
 	  psum -= jets[iy]->progenitor()->momentum();
       }
-      if(-psum.m2()>minQ2) {
-	if(_reconopt==4 && progenitorMap[ShowerHardJets[ix]->progenitor()->partner()]->reconstructed()==ShowerProgenitor::notReconstructed)
-	  progenitorMap[ShowerHardJets[ix]->progenitor()->partner()]->reconstructed(ShowerProgenitor::dontReconstruct);
-	reconstructInitialFinalSystem(jets);
-	if(_reconopt==4 && progenitorMap[ShowerHardJets[ix]->progenitor()->partner()]->reconstructed()==ShowerProgenitor::dontReconstruct)
-	  progenitorMap[ShowerHardJets[ix]->progenitor()->partner()]->reconstructed(ShowerProgenitor::notReconstructed);
-	used[ShowerHardJets[ix]] = true;
-	if(_reconopt==3) used[progenitorMap[ShowerHardJets[ix]->progenitor()->partner()]] = true;
-      }
+      if(_reconopt==4 && progenitorMap[partner]->reconstructed()==ShowerProgenitor::notReconstructed)
+	progenitorMap[partner]->reconstructed(ShowerProgenitor::dontReconstruct);
+      reconstructInitialFinalSystem(jets);
+      if(_reconopt==4 && progenitorMap[partner]->reconstructed()==ShowerProgenitor::dontReconstruct)
+	progenitorMap[partner]->reconstructed(ShowerProgenitor::notReconstructed);
+      used[ShowerHardJets[ix]] = true;
+      if(_reconopt==3) used[progenitorMap[partner]] = true;
     }
     // initial-initial
-    else if(!ShowerHardJets[ix]->progenitor()->isFinalState() &&
-	    !ShowerHardJets[ix]->progenitor()->partner()->isFinalState() ) {
+    else if(!progenitor->isFinalState() &&
+	    !partner->isFinalState() ) {
       ColourSingletSystem in,out;
       in.jets.push_back(ShowerHardJets[ix]);
-      in.jets.push_back(progenitorMap[ShowerHardJets[ix]->progenitor()->partner()]);
+      in.jets.push_back(progenitorMap[partner]);
       for(unsigned int iy=0;iy<ShowerHardJets.size();++iy) {
 	if(ShowerHardJets[iy]->progenitor()->isFinalState())
 	  out.jets.push_back(ShowerHardJets[iy]);
@@ -2629,9 +2691,79 @@ Energy QTildeReconstructor::findMass(HardBranchingPtr branch) const {
 }
 
 vector<double>
-QTildeReconstructor::initialStateRescaling(double x1, double x2, Energy MDY,
-					   vector<Lorentz5Momentum> & p,
-					   vector<Lorentz5Momentum> & pq,
+QTildeReconstructor::inverseInitialStateRescaling(double & x1, double & x2,
+						  const Lorentz5Momentum & pold,
+						  const vector<Lorentz5Momentum> & p,
+						  const vector<Lorentz5Momentum> & pq) const {
+  // hadronic CMS
+  Energy2 s  = (pq[0] +pq[1] ).m2();
+  // partonic CMS
+  Energy MDY = pold.m();
+  // find alpha, beta and pt
+  Energy2 p12=pq[0]*pq[1];
+  double a[2],b[2];
+  Lorentz5Momentum pt[2];
+  for(unsigned int ix=0;ix<2;++ix) {
+    a[ix] = p[ix]*pq[1]/p12;
+    b [ix] = p[ix]*pq[0]/p12;
+    pt[ix]    = p[ix]-a[ix]*pq[0]-b[ix]*pq[1];
+  }
+  // compute kappa
+  // we always want to preserve the mass of the system
+  double k1(1.),k2(1.);
+  if(_initialStateReconOption==0) {
+    double rap=pold.rapidity();
+    x2 = MDY/sqrt(s*exp(2.*rap));
+    x1 = sqr(MDY)/s/x2;
+    k1=a[0]/x1;
+    k2=b[1]/x2;
+  }
+  // longitudinal momentum
+  else if(_initialStateReconOption==1) {
+    double A = 1.;
+    double C = -sqr(MDY)/s;
+    double B = 2.*pold.z()/sqrt(s);
+    if(abs(B)>1e-10) {
+      double discrim = 1.-4.*A*C/sqr(B);
+      if(discrim < 0.) throw KinematicsReconstructionVeto();
+      x1 = B>0. ? 0.5*B/A*(1.+sqrt(discrim)) : 0.5*B/A*(1.-sqrt(discrim));
+    }
+    else {
+      x1 = -C/A;
+      if( x1 <= 0.) throw KinematicsReconstructionVeto();
+      x1 = sqrt(x1);
+    }
+    x2 = sqr(MDY)/s/x1;
+    k1=a[0]/x1;
+    k2=b[1]/x2;
+  }
+  // preserve mass and don't scale the softer system
+  // to reproduce the dipole kinematics
+  else if(_initialStateReconOption==2) {
+    // in this case kp = k1 or k2 depending on who's the harder guy
+    k1 = a[0]*b[1]*s/sqr(MDY);
+    if ( pt[0].perp2() < pt[1].perp2() ) swap(k1,k2);
+    x1 = a[0]/k1;
+    x2 = b[1]/k2;
+  }
+  else
+    assert(false);
+  // decompose the momenta
+  double anew[2] = {a[0]/k1,a[1]*k2};
+  double bnew[2] = {b[0]*k1,b[1]/k2};
+  vector<double> boost(2);
+  for(unsigned int ix=0;ix<2;++ix) {
+    boost[ix] = getBeta(a   [ix]+b   [ix], a[ix]   -b   [ix], 
+			anew[ix]+bnew[ix], anew[ix]-bnew[ix]);
+  }
+  return boost;
+}
+
+vector<double>
+QTildeReconstructor::initialStateRescaling(double x1, double x2, 
+					   const Lorentz5Momentum & pold,
+					   const vector<Lorentz5Momentum> & p,
+					   const vector<Lorentz5Momentum> & pq,
 					   const vector<Energy>& highestpts) const {
   Energy2 S = (pq[0]+pq[1]).m2();
   // find alphas and betas in terms of desired basis
@@ -2642,6 +2774,7 @@ QTildeReconstructor::initialStateRescaling(double x1, double x2, Energy MDY,
   Lorentz5Momentum p2p = p[1] - a[1]*pq[0] - b[1]*pq[1];
   // compute kappa
   // we always want to preserve the mass of the system
+  Energy MDY = pold.m();
   Energy2 A = a[0]*b[1]*S;
   Energy2 B = Energy2(sqr(MDY)) - (a[0]*b[0]+a[1]*b[1])*S - (p1p+p2p).m2();
   Energy2 C = a[1]*b[0]*S;
@@ -2653,7 +2786,8 @@ QTildeReconstructor::initialStateRescaling(double x1, double x2, Energy MDY,
   double k1(0.);
   double k2(0.);
   if(_initialStateReconOption==0) {
-    rad = kp*(b[0]+kp*b[1])/(kp*a[0]+a[1])*(x1/x2);
+    rad = kp*(b[0]+kp*b[1])/(kp*a[0]+a[1]);
+    rad *= pq[0].z()<ZERO ? exp(-2.*pold.rapidity()) : exp(2.*pold.rapidity());
     if(rad <= 0.) throw KinematicsReconstructionVeto();
     k1 = sqrt(rad);
     k2 = kp/k1;

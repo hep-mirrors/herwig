@@ -4,10 +4,10 @@
 //
 // This is the declaration of the SemiLeptonicBaryonDecayer class.
 //
-#include "Herwig++/Decay/DecayIntegrator.h"
-#include "Herwig++/Decay/WeakCurrents/LeptonNeutrinoCurrent.h"
-#include "Herwig++/Decay/FormFactors/BaryonFormFactor.h"
-#include "Herwig++/Decay/DecayPhaseSpaceMode.h"
+#include "Herwig/Decay/DecayIntegrator.h"
+#include "Herwig/Decay/WeakCurrents/LeptonNeutrinoCurrent.h"
+#include "Herwig/Decay/FormFactors/BaryonFormFactor.h"
+#include "Herwig/Decay/DecayPhaseSpaceMode.h"
 #include "ThePEG/Helicity/LorentzRSSpinorBar.h"
 
 namespace Herwig {
