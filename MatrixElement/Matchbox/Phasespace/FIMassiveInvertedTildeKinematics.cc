@@ -135,6 +135,7 @@ Energy FIMassiveInvertedTildeKinematics::ptMax() const {
 
 pair<double,double> FIMassiveInvertedTildeKinematics::zBounds(Energy pt, Energy hardPt) const {
   hardPt = hardPt == ZERO ? ptMax() : min(hardPt,ptMax());
+  if(pt>hardPt) return make_pair(0.5,0.5);
   Energy2 mi2 = sqr(realEmitterData()->hardProcessMass());
   Energy2 m2  = sqr(realEmissionData()->hardProcessMass());
   Energy2 Mi2 = sqr(bornEmitterData()->hardProcessMass());

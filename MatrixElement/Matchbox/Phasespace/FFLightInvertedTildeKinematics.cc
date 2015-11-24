@@ -105,6 +105,7 @@ Energy FFLightInvertedTildeKinematics::ptMax() const {
 
 pair<double,double> FFLightInvertedTildeKinematics::zBounds(Energy pt, Energy hardPt) const {
   hardPt = hardPt == ZERO ? ptMax() : min(hardPt,ptMax());
+  if(pt>hardPt) return make_pair(0.5,0.5);
   double s = sqrt(1.-sqr(pt/hardPt));
   return make_pair(0.5*(1.-s),0.5*(1.+s));
 }
