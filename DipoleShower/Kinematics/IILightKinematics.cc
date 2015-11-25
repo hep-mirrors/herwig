@@ -41,7 +41,8 @@ Energy IILightKinematics::ptMax(Energy dScale,
 				double emX, double specX,
 				const DipoleIndex&,
 				const DipoleSplittingKernel&) const {
-  double tau = emX*specX;
+  double tau = 
+    !theCollinearScheme ? emX*specX : emX;
   return (1.-tau) * dScale / (2.*sqrt(tau));
 }
 
@@ -66,7 +67,10 @@ Energy IILightKinematics::QFromPt(Energy scale, const DipoleSplittingInfo& split
 pair<double,double> IILightKinematics::zBoundaries(Energy pt,
 						   const DipoleSplittingInfo& dInfo,
 						   const DipoleSplittingKernel&) const {
-  double x = dInfo.emitterX()*dInfo.spectatorX();
+  double x = 
+    !theCollinearScheme ?
+    dInfo.emitterX()*dInfo.spectatorX() :
+    dInfo.emitterX();
   double s = sqrt(1.-sqr(pt/dInfo.hardPt()));
   return make_pair(0.5*(1.+x-(1.-x)*s),0.5*(1.+x+(1.-x)*s));
 }
