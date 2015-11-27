@@ -399,6 +399,10 @@ void MRST::Init() {
 }
 
 void MRST::doinitrun() {
+
+  cerr << "Warning: Herwig::MRST is obsolete and will be removed in Herwig 7.1.\n"
+       << "         Please switch to using a PDF set provided by LHAPDF.\n";
+
   PDFBase::doinitrun();
 #ifdef MRST_TESTING
   unsigned int intersave=_inter;
