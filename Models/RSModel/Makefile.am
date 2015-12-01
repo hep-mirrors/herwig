@@ -8,5 +8,5 @@ RSModelFFWGRVertex.cc RSModelFFWGRVertex.h \
 RSModelSSGRVertex.cc  RSModelSSGRVertex.h  \
 RSModelVVGRVertex.cc  RSModelVVGRVertex.h \
 RSModelWWWGRVertex.cc RSModelWWWGRVertex.h\
-RSModelGGGGRVertex.cc RSModelGGGGRVertex.h 
-HwRSModel_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 8:0:0
+RSModelGGGGRVertex.cc RSModelGGGGRVertex.h
+HwRSModel_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 9:0:0

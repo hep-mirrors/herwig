@@ -8,6 +8,6 @@ SextetGGSSVertex.cc SextetGGSSVertex.h \
 SextetGVVVertex.cc  SextetGVVVertex.h  \
 SextetGGVVVertex.cc SextetGGVVVertex.h \
 SextetFFSVertex.cc  SextetFFSVertex.h \
-SextetFFVVertex.cc  SextetFFVVertex.h 
+SextetFFVVertex.cc  SextetFFVVertex.h
 
-HwSextetModel_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 1:1:0
+HwSextetModel_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 2:0:0

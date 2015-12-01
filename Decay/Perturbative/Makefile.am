@@ -7,12 +7,11 @@ HwPerturbativeDecay_la_SOURCES = \
  SMTopPOWHEGDecayer.cc SMTopPOWHEGDecayer.h\
  SMZFermionsPOWHEGDecayer.cc  SMZFermionsPOWHEGDecayer.h\
  SMWFermionsPOWHEGDecayer.cc  SMWFermionsPOWHEGDecayer.h
-HwPerturbativeDecay_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 8:0:0
+HwPerturbativeDecay_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 9:0:0
 
 HwPerturbativeHiggsDecay_la_SOURCES = \
  SMHiggsFermionsDecayer.cc SMHiggsFermionsDecayer.h \
  SMHiggsFermionsPOWHEGDecayer.cc SMHiggsFermionsPOWHEGDecayer.h \
  SMHiggsGGHiggsPPDecayer.cc SMHiggsGGHiggsPPDecayer.h\
- SMHiggsWWDecayer.cc SMHiggsWWDecayer.h 
-HwPerturbativeHiggsDecay_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 8:0:0
-
+ SMHiggsWWDecayer.cc SMHiggsWWDecayer.h
+HwPerturbativeHiggsDecay_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 9:0:0

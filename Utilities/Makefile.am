@@ -1,5 +1,5 @@
 SUBDIRS = XML Statistics
-noinst_LTLIBRARIES = libHwUtils.la 
+noinst_LTLIBRARIES = libHwUtils.la
 pkglib_LTLIBRARIES = libHwRunDirectories.la
 libHwUtils_la_SOURCES = \
 EnumParticles.h \
@@ -16,6 +16,7 @@ GSLBisection.h GSLBisection.tcc GSLHelper.h
 
 libHwRunDirectories_la_SOURCES = \
 RunDirectories.h RunDirectories.cc
+libHwRunDirectories_la_LDFLAGS = $(AM_LDFLAGS) -version-info 1:0:0
 
 libHwUtils_la_LIBADD = \
 XML/libHwXML.la \

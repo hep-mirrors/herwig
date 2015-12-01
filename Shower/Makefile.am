@@ -1,6 +1,6 @@
 SUBDIRS = Matching .
 pkglib_LTLIBRARIES = HwShower.la
-HwShower_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 18:0:0
+HwShower_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 19:0:0
 HwShower_la_LIBADD = \
 $(top_builddir)/PDF/libHwRemDecayer.la \
 $(top_builddir)/PDF/libHwMPIPDF.la

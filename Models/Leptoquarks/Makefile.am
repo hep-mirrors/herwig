@@ -5,6 +5,6 @@ HwLeptoquarkModel_la_SOURCES = \
 LeptoquarkModel.cc  LeptoquarkModel.h LeptoquarkModel.fh \
 LeptoquarkModelSLQSLQGGVertex.h LeptoquarkModelSLQSLQGGVertex.cc \
 LeptoquarkModelSLQFFVertex.h	LeptoquarkModelSLQFFVertex.cc   \
-LeptoquarkModelSLQSLQGVertex.h 	LeptoquarkModelSLQSLQGVertex.cc 
+LeptoquarkModelSLQSLQGVertex.h 	LeptoquarkModelSLQSLQGVertex.cc
 
-HwLeptoquarkModel_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 3:0:1
+HwLeptoquarkModel_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 4:0:0
