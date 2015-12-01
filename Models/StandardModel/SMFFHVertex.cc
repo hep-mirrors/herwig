@@ -13,6 +13,7 @@
 
 #include "SMFFHVertex.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Config/Constants.h"
@@ -35,19 +36,24 @@ SMFFHVertex::SMFFHVertex()  {
   _q2last=ZERO;
   _masslast=ZERO;
   _mw=ZERO;
+  _fermion = 0;
   orderInGem(1);
   orderInGs(0);
 }
 
 void SMFFHVertex::doinit() {
-  // PDG codes for the particles
-  // the quarks
-  for(int ix=1;ix<7;++ix) {
-    addToList(-ix, ix, 25);
-  }
-  // the leptons
-  for(int ix=11;ix<17;ix+=2) {
-    addToList(-ix, ix, 25);
+  if ( !_fermion ) {
+    // PDG codes for the particles
+    // the quarks
+    for(int ix=1;ix<7;++ix) {
+      addToList(-ix, ix, 25);
+    }
+    // the leptons
+    for(int ix=11;ix<17;ix+=2) {
+      addToList(-ix, ix, 25);
+    }
+  } else {
+    addToList(-_fermion,_fermion,25);
   }
   _theSM = dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel());
   if (!_theSM) 
@@ -57,11 +63,11 @@ void SMFFHVertex::doinit() {
 }
 
 void SMFFHVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theSM << ounit(_mw,GeV);
+  os << _theSM << ounit(_mw,GeV) << _fermion;
 }
 
 void SMFFHVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theSM >> iunit(_mw,GeV);
+  is >> _theSM >> iunit(_mw,GeV) >> _fermion;
 }
 
 ClassDescription<SMFFHVertex> 
@@ -74,7 +80,13 @@ void SMFFHVertex::Init() {
     ("The SMFFHVertex class is the implementation"
      " of the helicity amplitude calculation of the Standard Model Higgs"
      " fermion-antiferiom vertex.");
-  
+
+  static Parameter<SMFFHVertex,int> interfaceFermion
+    ("Fermion",
+     "The fermion to couple to. If not set all fermions are considered.",
+     &SMFFHVertex::_fermion, 0, 0, 16,
+     false, false, Interface::limited);
+ 
 }
 
 void SMFFHVertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr, tcPDPtr) {
