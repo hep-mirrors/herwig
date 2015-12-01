@@ -140,6 +140,12 @@ private:
    *  The mass of the \f$W\f$ boson.
    */
   Energy _mw;
+
+  /**
+   * A definite fermion flavour to couple to. All other flavours are ignored,
+   * if this is different from zero.
+   */
+  int _fermion;
   //@}
 };  
 
