@@ -19,6 +19,7 @@ library HwMEGammaGamma.so
 library HwMEGammaHadron.so
 library HwPowhegMEHadron.so
 library HwPowhegMELepton.so
+library JetCuts.so
 library SimpleKTCut.so
 library HwMPI.so
 library HwMRST.so
