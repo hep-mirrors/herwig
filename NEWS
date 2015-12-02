@@ -9,8 +9,8 @@ Herwig News							 -*- outline -*-
    Herwig++ and HERWIG development and therefore constitutes the first major
    release of version 7 of the Herwig event generator family. The new version
    features a number of significant improvements to the event simulation,
-   including: built- in NLO hard process calculation for all Standard Model
-   processes, with matching to both parton shower and dipole shower modules
+   including: built-in NLO hard process calculation for all Standard Model
+   processes, with matching to both angular ordered and dipole shower modules
    via variants of both the MC@NLO and Powheg algorithms; QED radiation and
    spin correlations in the angular ordered shower; a consistent treatment of
    perturbative uncertainties within the hard process and parton showering, as
@@ -18,10 +18,10 @@ Herwig News							 -*- outline -*-
    detailed overview and further references please see the release note
    arXiv:1512:xxxx):
 
-** An unlistable number of improvements and fixes for the Matchbox module
+** A long list of improvements and fixes for the Matchbox module
 *** includes MC@NLO and Powheg matching to both showers with truncated showering
 
-** An unlistable number of improvements and fixes for both of the shower modules
+** A long list of improvements and fixes for both of the shower modules
 *** includes improvements of numerics issues relevant to 100 TeV pp collisions
 
 ** NLO event simulation and Matchbox development
