@@ -19,8 +19,10 @@ Herwig News							 -*- outline -*-
    arXiv:1512:xxxx):
 
 ** An unlistable number of improvements and fixes for the Matchbox module
+*** includes MC@NLO and Powheg matching to both showers with truncated showering
 
 ** An unlistable number of improvements and fixes for both of the shower modules
+*** includes improvements of numerics issues relevant to 100 TeV pp collisions
 
 ** NLO event simulation and Matchbox development
 *** Interfaces to a number of external libraries
@@ -32,9 +34,10 @@ Herwig News							 -*- outline -*-
 *** Spin correlations in the angular ordered shower
 *** New scale choices in gluon branchings
 
-** A unified treatment of shower and matching uncertainties
-
-** New integrator modules
+** Improvements to event generation workflow
+*** Re-organized and streamlined input files for the new NLO development
+*** A unified treatment of shower and matching uncertainties
+*** New integrator modules featuring parallel integration
 
 ** New default tunes for both shower modules
 
