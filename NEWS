@@ -1,36 +1,49 @@
-Herwig++ News							 -*- outline -*-
+Herwig News							 -*- outline -*-
 ================================================================================
 
-* Herwig 7.0.0 (Herwig++ 3.0.0): 2015-12-04
-  A major new release of the Monte Carlo event generator Herwig++ (version
-3.0) is now available. This release marks the end of distinguishing Herwig++
-and HERWIG development and therefore constitutes the first major release of
-version 7 of the Herwig event generator family. The new version features a
-number of significant improvements to the event simulation, including: built-
-in NLO hard process calculation for all Standard Model processes, with
-matching to both parton shower and dipole shower modules via variants of both
-the MC@NLO and Powheg algorithms; QED radiation and spin correlations in the
-angular ordered shower; a consistent treatment of perturbative uncertainties
-within the hard process and parton showering, as well as a vastly improved
-documentation. This version includes amongst other development:
+* Herwig 7.0.0 (Herwig++ 3.0.0) release: 2015-12-04
+
+** Major new release
+   A major new release of the Monte Carlo event generator Herwig++ (version
+   3.0) is now available. This release marks the end of distinguishing
+   Herwig++ and HERWIG development and therefore constitutes the first major
+   release of version 7 of the Herwig event generator family. The new version
+   features a number of significant improvements to the event simulation,
+   including: built- in NLO hard process calculation for all Standard Model
+   processes, with matching to both parton shower and dipole shower modules
+   via variants of both the MC@NLO and Powheg algorithms; QED radiation and
+   spin correlations in the angular ordered shower; a consistent treatment of
+   perturbative uncertainties within the hard process and parton showering, as
+   well as a vastly improved documentation. This version includes (for a more
+   detailed overview and further references please see the release note
+   arXiv:1512:xxxx):
 
 ** An unlistable number of improvements and fixes for the Matchbox module
 
-** An unlistable number of improvements and fixes for the shower modules
+** An unlistable number of improvements and fixes for both of the shower modules
 
-** Interfaces to a number of external libraries
+** NLO event simulation and Matchbox development
+*** Interfaces to a number of external libraries
+*** A new workflow for event generation
+*** Electroweak corrections to VV production
+
+** Parton shower development
+*** QED radiation in the angular ordered shower
+*** Spin correlations in the angular ordered shower
+*** New scale choices in gluon branchings
 
 ** A unified treatment of shower and matching uncertainties
 
-** Spin correlations in the angular ordered shower
-
-** QED radiation in the angular ordered shower
-
-** A new workflow for event generation
-
 ** New integrator modules
 
-** New scale choices in gluon branchings
+** New default tunes for both shower modules
+
+** New contrib modules
+*** Electroweak Higgs plus jets production
+*** FxFx merging support
+*** Higgs boson pair production
+
+
 
 * Herwig++-2.7.1 release: 2014-07-07
 
