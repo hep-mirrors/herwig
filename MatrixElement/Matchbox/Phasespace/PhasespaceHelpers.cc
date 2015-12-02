@@ -145,6 +145,9 @@ Energy PhasespaceInfo::generateMass(tcPDPtr data,
     event = generate(breitWigner(mu,gamma,xlow,xup),r);
   }
 
+  if ( abs(event.first) < xc ) 
+    throw Veto();
+
   weight *= event.second;
 
   Energy res = sqrt(abs(event.first)*sHat);
@@ -171,6 +174,7 @@ Lorentz5Momentum PhasespaceInfo::generateKt(const Lorentz5Momentum& p1,
   bool boost =
     abs((P-Q).vect().mag2()/GeV2) > 1e-8 ||
     abs((P-Q).t()/GeV) > 1e-4;
+  boost &= (P*Q-Q.mass2())/GeV2 > 1e-8;
 
   Lorentz5Momentum inFrame1;
   if ( boost )
