@@ -11,11 +11,12 @@ Herwig News							 -*- outline -*-
    features a number of significant improvements to the event simulation,
    including: built-in NLO hard process calculation for all Standard Model
    processes, with matching to both angular ordered and dipole shower modules
-   via variants of both the MC@NLO and Powheg algorithms; QED radiation and
-   spin correlations in the angular ordered shower; a consistent treatment of
-   perturbative uncertainties within the hard process and parton showering, as
-   well as a vastly improved documentation. This version includes (for a more
-   detailed overview and further references please see the release note
+   via variants of both subtractive (MC@NLO-type) and multiplicative
+   (Powheg-type) algorithms; QED radiation and spin correlations in the
+   angular ordered shower; a consistent treatment of perturbative
+   uncertainties within the hard process and parton showering, as well as a
+   vastly improved documentation. This version includes (for a more detailed
+   overview and further references please see the release note
    arXiv:1512:xxxx):
 
 ** A long list of improvements and fixes for the Matchbox module
