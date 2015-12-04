@@ -17,7 +17,7 @@ Herwig News							 -*- outline -*-
    uncertainties within the hard process and parton showering, as well as a
    vastly improved documentation. This version includes (for a more detailed
    overview and further references please see the release note
-   arXiv:1512:xxxx):
+   arXiv:1512.01178):
 
 ** A long list of improvements and fixes for the Matchbox module
 *** includes MC@NLO and Powheg matching to both showers with truncated showering
