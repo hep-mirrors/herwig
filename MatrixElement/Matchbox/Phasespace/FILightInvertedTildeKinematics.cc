@@ -106,14 +106,10 @@ Energy FILightInvertedTildeKinematics::ptMax() const {
 
 pair<double,double> FILightInvertedTildeKinematics::zBounds(Energy pt, Energy hardPt) const {
   hardPt = hardPt == ZERO ? ptMax() : min(hardPt,ptMax());
+  if(pt>hardPt) return make_pair(0.5,0.5);
   double s = sqrt(1.-sqr(pt/hardPt));
   return make_pair(0.5*(1.-s),0.5*(1.+s));
 }
-
-
-// If needed, insert default implementations of virtual function defined
-// in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
-
 
 void FILightInvertedTildeKinematics::persistentOutput(PersistentOStream &) const {
 }

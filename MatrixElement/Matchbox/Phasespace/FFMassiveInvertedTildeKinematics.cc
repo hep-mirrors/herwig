@@ -187,6 +187,7 @@ Energy FFMassiveInvertedTildeKinematics::ptMax() const {
 pair<double,double> FFMassiveInvertedTildeKinematics::zBounds(Energy pt, Energy hardPt) const {
 
   hardPt = hardPt == ZERO ? ptMax() : min(hardPt,ptMax());
+  if(pt>hardPt) return make_pair(0.5,0.5);
   
   Energy scale = (bornEmitterMomentum()+bornSpectatorMomentum()).m();
   // masses

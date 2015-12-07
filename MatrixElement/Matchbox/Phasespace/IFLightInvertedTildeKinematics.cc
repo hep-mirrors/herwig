@@ -110,6 +110,7 @@ Energy IFLightInvertedTildeKinematics::ptMax() const {
 
 pair<double,double> IFLightInvertedTildeKinematics::zBounds(Energy pt, Energy hardPt) const {
   hardPt = hardPt == ZERO ? ptMax() : min(hardPt,ptMax());
+  if(pt>hardPt) return make_pair(0.5,0.5);
   double s = sqrt(1.-sqr(pt/hardPt));
   double x = emitterX();
   return make_pair(0.5*(1.+x-(1.-x)*s),0.5*(1.+x+(1.-x)*s));

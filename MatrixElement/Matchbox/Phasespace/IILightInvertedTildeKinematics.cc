@@ -111,9 +111,10 @@ Energy IILightInvertedTildeKinematics::ptMax() const {
   return 0.5*(1.-emitterX())/sqrt(emitterX())*lastScale();
 }
 
-pair<double,double> IILightInvertedTildeKinematics::zBounds(Energy pt, Energy) const {
-  double root = sqr(1.-emitterX())-4*emitterX()*sqr(pt/lastScale());
-  root=sqrt(max(root,0.));
+pair<double,double> IILightInvertedTildeKinematics::zBounds(Energy pt, Energy hardPt) const {
+  hardPt = hardPt == ZERO ? ptMax() : min(hardPt,ptMax());
+  if(pt>hardPt) return make_pair(0.5,0.5);
+  double root = (1.-emitterX())*sqrt(1.-sqr(pt/hardPt));
   return make_pair(0.5*( 1.+emitterX() - root),0.5*( 1.+emitterX() + root));
 }
 

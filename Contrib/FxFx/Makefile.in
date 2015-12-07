@@ -12,7 +12,6 @@ GSLINCLUDE     =
 FASTJETINCLUDE = 
 RIVETINCLUDE = -I$(shell rivet-config --includedir --cppflags)
 HEPMCINCLUDE = 
-HERWIGINSTALL=
 # Messy hack, not guaranteed to work:
 FASTJETLIB = `echo $(FASTJETINCLUDE) | sed "s/-I//" | sed "s/ //"`/../lib/
 LDFLAGS = -L$(FASTJETLIB) -lfastjet $(shell rivet-config --ldflags --libs)

@@ -1,7 +1,7 @@
 pkglib_LTLIBRARIES = HwMatchboxScales.la
 
 
-HwMatchboxScales_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 1:0:0
+HwMatchboxScales_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 2:0:0
 
 HwMatchboxScales_la_SOURCES = \
 MatchboxHtScale.h \

@@ -733,8 +733,10 @@ void writeHWPPinFile(string prefix, int ihrd, int unwev,
   hwpp << "# Create a LH reader (set up & assigned below) ...          #\n";
   hwpp << "#############################################################\n";
   hwpp << "cd /Herwig/EventHandlers\n";
-  hwpp << "library BasicLesHouchesFileReader.so\n";
-  hwpp << "create Herwig::BasicLesHouchesFileReader theLHReader\n";
+  hwpp << "#library BasicLesHouchesFileReader.so\n";
+  hwpp << "#create Herwig::BasicLesHouchesFileReader theLHReader\n";
+  hwpp << "library LesHouches.so\n";
+  hwpp << "create ThePEG::LesHouchesFileReader theLHReader\n";
   hwpp << "\n";
   hwpp << "#############################################################\n";
   hwpp << "# Create an AlpGenHandler (set up & assigned below) ...     #\n";
@@ -952,7 +954,7 @@ void writeHWPPinFile(string prefix, int ihrd, int unwev,
   hwpp << "set theLHReader:MomentumTreatment      RescaleEnergy\n";
   hwpp << "# set theLHReader:IgnoreIDPRUP           Yes\n";
   hwpp << "set theLHReader:Cuts  /Herwig/Cuts/NoCuts\n";
-  hwpp << "set theLHReader:OverSampling ForbidOverSampling\n";
+  hwpp << "#set theLHReader:OverSampling ForbidOverSampling\n";
   hwpp << "\n";
   hwpp << "#############################################################\n";
   hwpp << "# Set up the LHAPDF ...                                     #\n";

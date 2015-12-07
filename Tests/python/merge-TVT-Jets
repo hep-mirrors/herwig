@@ -204,7 +204,10 @@ for f in yodafiles:
              aopath.find("3349578")>0 or aopath.find("3541940")>0 or
              aopath.find("3214044")>0 or aopath.find("2952106")>0 or
              aopath.find("NOTE10874")>0 or aopath.find("895662")>0 ) :
-            outhistos[aopath] = ao
+            if( opts.ue ) :
+                outhistos[aopath] = ao
+            elif (aopath.find("NOTE10874")<0) :
+                outhistos[aopath] = ao
         else :
             print aopath
             quit()

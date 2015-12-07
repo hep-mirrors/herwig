@@ -591,11 +591,16 @@ insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFWDiagonalVertex
 
 insert DiagramGenerator:Vertices 0 /Herwig/Vertices/WWHVertex
 insert DiagramGenerator:Vertices 0 /Herwig/Vertices/WWWVertex
-insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFHVertex
 insert DiagramGenerator:Vertices 0 /Herwig/Vertices/HGGVertex
 insert DiagramGenerator:Vertices 0 /Herwig/Vertices/HHHVertex
 
-insert DiagramGenerator:ExcludeInternal 0 /Herwig/Particles/h0
+cp /Herwig/Vertices/FFHVertex /Herwig/Vertices/TTHVertex
+set /Herwig/Vertices/TTHVertex:Fermion 6
+
+insert DiagramGenerator:Vertices 0 /Herwig/Vertices/TTHVertex
+
+cp /Herwig/Vertices/FFHVertex /Herwig/Vertices/BBHVertex
+set /Herwig/Vertices/BBHVertex:Fermion 5
 
 create Herwig::ProcessData ProcessData
 

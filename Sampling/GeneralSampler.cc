@@ -592,24 +592,24 @@ void GeneralSampler::dofinish() {
 		//	    << " attempted points exceeded the guessed maximum weight\n"
 		//	    << "with an average relative deviation of "
 		//       << maximumExceededBy/maximumExceeds << "\n\n" << flush;
-    generator()->log() <<"\n\n\nNote: In this run "<<maximumExceeds<<" of the "<<theAccepts<<" accepted Events\n"
-                       <<"were found with a weight W larger than the exspected Wmax.\n";
+    generator()->log() <<"\n\n\nNote: In this run "<<maximumExceeds<<" of the "<<theAccepts<<" accepted events\n"
+                       <<"were found with a weight W larger than the expected Wmax.\n";
     
-    generator()->log() <<"This correspondes to a cross section change of:\n"
-                       <<"   AlmostUnweighted:  "<< theMaxWeight*correctWeights/theAttempts<< "nb"<<
-                      " (set Sampler:AlmostUnweighted On )\n"
-                       <<"   UnitWeights:       "<< theMaxWeight*theSumWeights/theAttempts<<"nb\n"<<flush;
+generator()->log() <<"This corresponds to a cross section difference between:\n"
+		<<"   UnitWeights:       "<< theMaxWeight*theSumWeights/theAttempts<<"nb\n"
+                       <<"   AlmostUnweighted:  "<< theMaxWeight*correctWeights/theAttempts<< "nb\n"<<
+                      " use 'set Sampler:AlmostUnweighted On' to switch to non-unit weights.\n\n";
 
-    generator()->log() <<"The maximum weight determined in the read/integrate step is enhanced by \n"<<
+    generator()->log() <<"The maximum weight determined in the read/integrate step has been enhanced by \n"<<
                          "   set /Herwig/Samplers/Sampler:MaxEnhancement "<< theMaxEnhancement<<
-                         ".\nIf the ratio W/Wmax = "<<(double)maximumExceeds/(double)theAccepts<<
-                         " or the change of the cross section is large,\nyou can try:\n"<<
+                         ".\nIf the rate of excessions ("<<(double)maximumExceeds*100/(double)theAccepts<<
+                         "%) or the change of the cross section is large,\nyou can try to:\n\n"<<
                          "Enhance the number of points used in the read/integrate step\n"<<
-                         "   set /Herwig/Samplers/Sampler:BinSampler:InitialPoints ...\n"<<
-                         "or/and enhance reference weight found in the read/integrate step\n"<<  
-                         "   set /Herwig/Samplers/Sampler:MaxEnhancement 1.x\n"<<
+                         "   set /Herwig/Samplers/Sampler:BinSampler:InitialPoints ...\n\n"<<
+                         "and/or enhance the reference weight found in the read/integrate step\n"<<  
+                         "   set /Herwig/Samplers/Sampler:MaxEnhancement 1.x\n\n"<<
                          "If this does not help (and your process is well defined by cuts)\n"<<
-                         "dont hesitate to contact herwig@projects.hepforge.org.\n\n";
+                         "don't hesitate to contact herwig@projects.hepforge.org.\n\n";
 
   }
 

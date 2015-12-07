@@ -1,6 +1,6 @@
 pkglib_LTLIBRARIES = HwMatchboxCuts.la
 
-HwMatchboxCuts_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 1:0:0
+HwMatchboxCuts_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 2:0:0
 
 HwMatchboxCuts_la_SOURCES = \
 IdentifiedParticleCut.cc \
@@ -17,4 +17,3 @@ PairPtCut.cc \
 PairPtCut.h \
 PairRapidityCut.cc \
 PairRapidityCut.h
- 

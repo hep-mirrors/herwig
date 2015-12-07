@@ -1,4 +1,4 @@
-CLEANFILES = AllInterfaces.h Herwig++-refman.tag HerwigDefaults.rpo tagfileThePEG.tag doxywarnings.log
+CLEANFILES = AllInterfaces.h Herwig-refman.tag HerwigDefaults.rpo tagfileThePEG.tag doxywarnings.log
 
 docdir = $(pkgdatadir)/Doc
 
@@ -10,12 +10,12 @@ dist_noinst_SCRIPTS = fixinterfaces.pl
 clean-local: html-clean
 
 html-clean:
-	rm -rf refman-html Herwig++-refman.tag tagfileThePEG.tag
+	rm -rf refman-html Herwig-refman.tag tagfileThePEG.tag
 
 html-local: refman-html
 
 AllInterfaces.h: HerwigDefaults.in BSMlibs.in
-	$(top_builddir)/src/Herwig++ init -L$(top_builddir)/lib
+	$(top_builddir)/src/Herwig init -L$(top_builddir)/lib
 
 refman-html: refman.conf refman.h AllInterfaces.h tagfileThePEG.tag
 	$(builddir)/fixinterfaces.pl AllInterfaces.h
@@ -29,9 +29,9 @@ install-data-local:
 	find refman-html -follow -name '*.*' \
           -exec $(install_sh_DATA) \{\} $(DESTDIR)$(docdir)/\{\} \;; \
 	$(install_sh_DATA) tagfileThePEG.tag $(DESTDIR)$(docdir)/tagfileThePEG.tag; \
-	$(install_sh_DATA) Herwig++-refman.tag $(DESTDIR)$(docdir)/Herwig++-refman.tag;fi
+	$(install_sh_DATA) Herwig-refman.tag $(DESTDIR)$(docdir)/Herwig-refman.tag;fi
 
 uninstall-local:
 	rm -rf $(DESTDIR)$(docdir)/refman-html \
 	$(DESTDIR)$(docdir)/tagfileThePEG.tag \
-	$(DESTDIR)$(docdir)/Herwig++-refman.tag
+	$(DESTDIR)$(docdir)/Herwig-refman.tag

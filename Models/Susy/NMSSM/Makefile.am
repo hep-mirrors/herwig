@@ -11,5 +11,5 @@ NMSSMGOGOHVertex.h NMSSMGOGOHVertex.cc \
 NMSSMHHHVertex.h   NMSSMHHHVertex.cc   \
 NMSSMGGHVertex.h   NMSSMGGHVertex.cc \
 NMSSMPPHVertex.h   NMSSMPPHVertex.cc  \
-NMSSMWWHHVertex.h  NMSSMWWHHVertex.cc 
-HwNMSSM_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 3:0:0
+NMSSMWWHHVertex.h  NMSSMWWHHVertex.cc
+HwNMSSM_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 4:0:0

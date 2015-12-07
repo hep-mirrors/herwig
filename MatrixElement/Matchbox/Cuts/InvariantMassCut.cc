@@ -75,8 +75,8 @@ bool InvariantMassCut::passCuts(tcCutsPtr parent, tcPDPtr pitype, tcPDPtr pjtype
 
   Energy minv = (pi+pj).m();
 
-  if ( !parent->isInside<CutTypes::Energy>(minv,minMass(),maxMass(),weight) ) 
-  {
+  if ( minv < ZERO ||
+       !parent->isInside<CutTypes::Energy>(minv,minMass(),maxMass(),weight) ) {
     parent->lastCutWeight(0.0);
     return false;
   }

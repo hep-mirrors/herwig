@@ -1,25 +1,13 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.63])
-AC_INIT([Herwig],[7.0.0],[herwig@projects.hepforge.org],[Herwig])
+AC_INIT([Herwig],[trunk],[herwig@projects.hepforge.org],[Herwig])
 AC_CONFIG_SRCDIR([Utilities/HerwigStrategy.cc])
 AC_CONFIG_AUX_DIR([Config])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([Config/config.h])
 dnl AC_PRESERVE_HELP_ORDER
 AC_CANONICAL_HOST
-
-case "${host}" in
-  *-darwin[[0156]].*) 
-    AC_MSG_ERROR([Herwig++ requires OS X 10.3 or later])
-    ;;
-  *-darwin7.*) 
-    if test "x$MACOSX_DEPLOYMENT_TARGET" != "x10.3"; then 
-      AC_MSG_ERROR(
-      [Please add 'MACOSX_DEPLOYMENT_TARGET=10.3' to the configure line.]) 
-    fi 
-    ;;
-esac
 
 dnl === disable debug symbols by default =====
 if test "x$CXXFLAGS" = "x"; then
@@ -61,7 +49,7 @@ fi
 
 dnl check for POSIX
 AC_CHECK_HEADER([unistd.h],[],
-      [AC_MSG_ERROR([Herwig++ needs "unistd.h". Non-POSIX systems are not supported.])])
+      [AC_MSG_ERROR([Herwig needs "unistd.h". Non-POSIX systems are not supported.])])
 
 dnl Checks for programs.
 AC_PROG_INSTALL
@@ -77,7 +65,7 @@ AC_COMPILE_IFELSE(
    	AC_LANG_PROGRAM([],[      print *[,]"Hello"]),
 	[AC_MSG_RESULT([yes])],
 	[AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([A Fortran compiler is required to build Herwig++.])
+	 AC_MSG_ERROR([A Fortran compiler is required to build Herwig.])
 	]
 )
 AC_LANG_POP([Fortran])

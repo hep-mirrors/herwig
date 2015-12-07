@@ -51,6 +51,6 @@ AlpGenHandlerOL.so : AlpGenHandlerOL.o
 
 clean:
 	rm -f HiggsPair.so MEHiggsPairJet.o MEHiggsPairOL.o scalint.o AlpGenHandlerOL.o
-
+	
 install: 
-	cp *.so $(HERWIGINSTALL)/lib/Herwig++
+	cp *.so $(HERWIGINSTALL)/lib/Herwig

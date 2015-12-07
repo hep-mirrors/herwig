@@ -136,8 +136,8 @@ if test x"$BOOST_ROOT" != x; then
     AC_MSG_NOTICE([Detected BOOST_ROOT=$BOOST_ROOT, but overridden by --with-boost=$with_boost])
   fi
 fi
-AC_SUBST([DISTCHECK_CONFIGURE_FLAGS],
-         ["$DISTCHECK_CONFIGURE_FLAGS '--with-boost=$with_boost'"])dnl
+dnl AC_SUBST([DISTCHECK_CONFIGURE_FLAGS],
+dnl         ["$DISTCHECK_CONFIGURE_FLAGS '--with-boost=$with_boost'"])dnl
 boost_save_CPPFLAGS=$CPPFLAGS
   AC_CACHE_CHECK([for Boost headers version >= $boost_version_req_string],
     [boost_cv_inc_path],
