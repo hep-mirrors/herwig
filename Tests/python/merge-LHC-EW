@@ -36,6 +36,7 @@ if __name__ == "__main__":
     ## Get histos
     outhistos={}
     for file in args:
+        print file
         if not os.access(file, os.R_OK):
             logging.error("%s can not be read" % file)
             break
@@ -99,14 +100,14 @@ if __name__ == "__main__":
                      ( aopath.find("d04")>0 or 
                        ((aopath.find("d01")>0 or aopath.find("d02")>0) and aopath.find("y02")>0))) : 
                     outhistos[aopath] = ao
-            elif (aopath.find("ATLAS_2014_I1312627") >0) :
-                if(file.find("-e")>0) :
-                    outhistos[aopath] = ao
             elif (aopath.find("ATLAS_2014_I1312627_EL") >0) :
                 if(file.find("-e")>0) :
                     outhistos[aopath] = ao
             elif (aopath.find("ATLAS_2014_I1312627_MU") >0) :
-                if(file.find("-mu")>0>0) :
+                if(file.find("-mu")>0) :
+                    outhistos[aopath] = ao
+            elif (aopath.find("ATLAS_2014_I1312627") >0) :
+                if(file.find("-e")>0) :
                     outhistos[aopath] = ao
             elif (aopath.find("CMS_2013_I1224539_WJET" )>0) :
                 if(file.find("-1-e")>0 and (aopath.find("d52")>0 or aopath.find("d53")>0 or aopath.find("d56")>0 or aopath.find("d57")>0 or aopath.find("d60")>0 or aopath.find("d61")>0 or aopath.find("d64")>0 or aopath.find("d65")>0 or aopath.find("d68")>0 or aopath.find("d69")>0 or aopath.find("d72")>0)) :
