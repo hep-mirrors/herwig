@@ -225,8 +225,8 @@ HGVERSION := $(shell hg -R $(top_srcdir) parents --template '{node|short} ({bran
 
 .PHONY: update_hgstamp
 hgstamp: update_hgstamp
-	[ -f $@ ] || touch $@
-	echo '$(HGVERSION)' | cmp -s $@ - || echo '$(HGVERSION)' > $@
+	@[ -f $@ ] || touch $@
+	@echo '$(HGVERSION)' | cmp -s $@ - || echo '$(HGVERSION)' > $@
 
 GENGETOPT = gengetopt
 

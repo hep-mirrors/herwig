@@ -24,8 +24,8 @@ HGVERSION := $(shell hg -R $(top_srcdir) parents --template '"Herwig {node|short
 
 .PHONY: update_hgstamp
 hgstamp.inc: update_hgstamp
-	[ -f $@ ] || touch $@
-	echo '$(HGVERSION)' | cmp -s $@ - || echo '$(HGVERSION)' > $@
+	@[ -f $@ ] || touch $@
+	@echo '$(HGVERSION)' | cmp -s $@ - || echo '$(HGVERSION)' > $@
 
 libHwUtils_la_LIBADD = \
 XML/libHwXML.la \
