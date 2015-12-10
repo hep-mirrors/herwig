@@ -37,12 +37,14 @@ public:
   /**
    * Freeform version string
    */
-  static std::string version;
+  static const std::string version;
 
   /**
    * Version string
    */
-  virtual const std::string versionstring() const;
+  virtual const std::string versionstring() const {
+      return HerwigStrategy::version;
+  }
 
 protected:
 

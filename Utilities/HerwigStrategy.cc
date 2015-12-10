@@ -16,12 +16,9 @@
 
 using namespace Herwig;
 
-const std::string HerwigStrategy::versionstring() const {
-    static const string version = 
+const string HerwigStrategy::version = 
 #include "hgstamp.inc"
-    "";
-    return version;
-}
+"";
 
 IBPtr HerwigStrategy::clone() const {
   return new_ptr(*this);
