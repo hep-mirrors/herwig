@@ -14,10 +14,11 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/PDT/ParticleData.h"
 
-// sets the static version info string 'HerwigStrategy::version'
-#include "versionstring.h"
-
 using namespace Herwig;
+
+const string HerwigStrategy::version = 
+#include "hgstamp.inc"
+"";
 
 IBPtr HerwigStrategy::clone() const {
   return new_ptr(*this);
@@ -33,7 +34,6 @@ void HerwigStrategy::Init() {
   static ClassDocumentation<HerwigStrategy> interfaceDescription
     ("The default strategy for Herwig.",
      "Herwig~\\cite{Bahr:2008pv}", 
-     "%\\cite{Bahr:2008pv}\n"
      "\\bibitem{Bahr:2008pv}\n"
      "  M.~Bahr {\\it et al.},\n"
      "  ``Herwig Physics and Manual,''\n"

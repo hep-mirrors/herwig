@@ -743,14 +743,6 @@ AC_SUBST(GSLLIBS)
 AC_SUBST(GSLPATH)
 ])
 
-AC_DEFUN([HERWIG_VERSIONSTRING],
-[
-if test -d $srcdir/.svn; then
-	AC_CHECK_PROG(have_svnversion,[svnversion],[yes],[no])
-fi
-AM_CONDITIONAL(USE_SVNVERSION,[test "x$have_svnversion" = "xyes"])
-])
-
 dnl ##### COMPILERFLAGS #####
 AC_DEFUN([HERWIG_COMPILERFLAGS],
 [

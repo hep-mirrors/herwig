@@ -14,16 +14,28 @@ Statistic.h HerwigStrategy.cc HerwigStrategy.h \
 GSLIntegrator.h GSLIntegrator.tcc \
 GSLBisection.h GSLBisection.tcc GSLHelper.h
 
-libHwRunDirectories_la_SOURCES = \
-RunDirectories.h RunDirectories.cc
-libHwRunDirectories_la_LDFLAGS = $(AM_LDFLAGS) -version-info 1:0:0
+nodist_libHwUtils_la_SOURCES = hgstamp.inc
+BUILT_SOURCES = hgstamp.inc
+CLEANFILES = hgstamp.inc
+
+AUTOMAKE_OPTIONS = -Wno-portability
+
+HGVERSION := $(shell hg -R $(top_srcdir) parents --template '"Herwig {node|short} ({branch})"' 2> /dev/null || echo \"$(PACKAGE_STRING)\" || true )
+
+.PHONY: update_hgstamp
+hgstamp.inc: update_hgstamp
+	@[ -f $@ ] || touch $@
+	@echo '$(HGVERSION)' | cmp -s $@ - || echo '$(HGVERSION)' > $@
 
 libHwUtils_la_LIBADD = \
 XML/libHwXML.la \
 Statistics/libHwStatistics.la
 
-CLEANFILES=
-include $(srcdir)/Makefile.am.versionstring
+
+libHwRunDirectories_la_SOURCES = \
+RunDirectories.h RunDirectories.cc
+libHwRunDirectories_la_LDFLAGS = $(AM_LDFLAGS) -version-info 1:0:0
+
 
 check_PROGRAMS = utilities_test
 utilities_test_SOURCES = \
