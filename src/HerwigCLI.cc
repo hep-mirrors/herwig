@@ -46,6 +46,14 @@ HerwigCLI::HerwigCLI(int argc, char * argv[])
     return;
   }
 
+  if ( args_info.version_given ) {
+    std::cout << 
+#include "hgstamp.inc"
+"" << std::endl;
+    cmdline_parser_free( &args_info );
+    exit( EXIT_SUCCESS );
+  }
+
   // require one command
   if ( args_info.inputs_num < 1 )
     quitWithHelp();
