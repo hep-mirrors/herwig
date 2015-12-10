@@ -13,4 +13,4 @@ cat << EOF > /dev/stderr
 
 EOF
 sleep 3
-exec Herwig "$@"
+exec @BINDIR@/Herwig "$@"
