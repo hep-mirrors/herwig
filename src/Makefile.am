@@ -10,7 +10,8 @@ Herwig_SOURCES = \
 HerwigMain.cc Herwig.h Herwig.cc HerwigCLI.cc HerwigCLI.h HerwigUI.h \
 herwigopts.c herwigopts.h
 
-BUILT_SOURCES = herwigopts.c herwigopts.h
+BUILT_SOURCES = hgstamp herwigopts.c herwigopts.h
+
 Herwig_LDFLAGS = $(AM_LDFLAGS) -export-dynamic $(THEPEGLDFLAGS) \
 $(BOOST_SYSTEM_LDFLAGS) $(BOOST_FILESYSTEM_LDFLAGS)
 Herwig_LDADD = $(THEPEGLIB) -ldl \
@@ -80,7 +81,8 @@ pkgdata_DATA = Makefile-UserModules
 CLEANFILES = HerwigDefaults.rpo \
   *.run *.log *.out *.tex \
   multi.test *.output probs.test chisq.value \
-  LHC-RS-BR.spc LHC-MSSM-BR.spc LHC-RPV-BR.spc
+  LHC-RS-BR.spc LHC-MSSM-BR.spc LHC-RPV-BR.spc \
+  hgstamp
 
 clean-local:
 	-rm -rf Herwig
@@ -218,8 +220,16 @@ unregister-from-thepeg-repo:
 
 EXTRA_DIST = herwigopts.ggo Herwig++
 
+
+HGVERSION := $(shell hg -R $(top_srcdir) parents --template '{node|short} ({branch})' 2> /dev/null || echo $(PACKAGE_VERSION) || true )
+
+.PHONY: update_hgstamp
+hgstamp: update_hgstamp
+	[ -f $@ ] || touch $@
+	echo '$(HGVERSION)' | cmp -s $@ - || echo '$(HGVERSION)' > $@
+
 GENGETOPT = gengetopt
 
-%opts.h %opts.c : %opts.ggo
-	$(GENGETOPT) < $<
+%opts.h %opts.c : %opts.ggo hgstamp
+	$(GENGETOPT) --set-version='$(HGVERSION)' < $<
 

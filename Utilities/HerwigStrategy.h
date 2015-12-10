@@ -42,7 +42,7 @@ public:
   /**
    * Version string
    */
-  virtual const std::string versionstring() const { return version; }
+  virtual const std::string versionstring() const;
 
 protected:
 

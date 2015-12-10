@@ -1,3 +1,0 @@
-// versionstring.h. Generated from versionstring.h.in by Makefile.am
-// only useful for inclusion in HerwigStrategy.cc
-std::string Herwig::HerwigStrategy::version = "@HERWIGVERSIONSTRING@";
