@@ -47,7 +47,7 @@ Makefile\.in$
 ^include/done-all-links$
 ^libtool$
 \.dirstamp$
-^src/hgstamp$
+^src/hgstamp.inc$
 ^src/herwigopts.h$
 ^src/herwigopts.c$
 ^src/defaults/Analysis.in$
