@@ -51,7 +51,8 @@ DipoleShowerHandler::DipoleShowerHandler()
     theFactorizationScaleFreeze(2.*GeV),
     isMCatNLOSEvent(false),
     isMCatNLOHEvent(false), theDoCompensate(false),
-    theFreezeGrid(500000), maxPt(ZERO) {}
+    theFreezeGrid(500000), maxPt(ZERO),
+    muPt(ZERO) {}
 
 DipoleShowerHandler::~DipoleShowerHandler() {}
 
@@ -287,6 +288,9 @@ void DipoleShowerHandler::hardScales(Energy2 muf) {
     } else {
       maxPt = hardScaleFactor()*sqrt(muf);
     }
+    muPt = maxPt;
+  } else {
+    muPt = hardScaleFactor()*sqrt(muf);
   }
 
   for ( list<DipoleChain>::iterator ch = eventRecord().chains().begin();
@@ -484,7 +488,7 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
     Energy nextScale = evolutionOrdering()->evolutionScale(gen->second->lastSplitting(),*(gen->second->splittingKernel()));
 
     if ( firstInteraction() && profileScales() && nextScale > ircutoff ) {
-      while ( UseRandom::rnd() > profileScales()->hardScaleProfile(maxPt,nextScale) ) {
+      while ( UseRandom::rnd() > profileScales()->hardScaleProfile(muPt,nextScale) ) {
 	candidate.continuesEvolving();
 	Energy nextHardScale = evolutionOrdering()->maxPt(nextScale,candidate,*(gen->second->splittingKernel()));
 	candidate.hardPt(nextHardScale);
@@ -863,7 +867,8 @@ void DipoleShowerHandler::persistentOutput(PersistentOStream & os) const {
      << ounit(theFactorizationScaleFreeze,GeV)
      << isMCatNLOSEvent << isMCatNLOHEvent << theShowerApproximation
      << theDoCompensate << theFreezeGrid
-     << theEventReweight << ounit(maxPt,GeV);
+     << theEventReweight << ounit(maxPt,GeV)
+     << ounit(muPt,GeV);
 }
 
 void DipoleShowerHandler::persistentInput(PersistentIStream & is, int) {
@@ -876,7 +881,8 @@ void DipoleShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> iunit(theFactorizationScaleFreeze,GeV)
      >> isMCatNLOSEvent >> isMCatNLOHEvent >> theShowerApproximation
      >> theDoCompensate >> theFreezeGrid
-     >> theEventReweight >> iunit(maxPt,GeV);
+     >> theEventReweight >> iunit(maxPt,GeV)
+     >> iunit(muPt,GeV);
 }
 
 ClassDescription<DipoleShowerHandler> DipoleShowerHandler::initDipoleShowerHandler;
