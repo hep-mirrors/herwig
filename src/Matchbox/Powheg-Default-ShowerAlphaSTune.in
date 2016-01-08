@@ -30,11 +30,11 @@ set /Herwig/Hadronization/ClusterFissioner:ClPowCharm  2.10
 set /Herwig/Hadronization/ClusterFissioner:PSplitCharm 1.30
 set /Herwig/Hadronization/ClusterDecayer:ClDirCharm 1
 set /Herwig/Hadronization/ClusterDecayer:ClSmrCharm 0.
-set /Herwig/Hadronization/LightClusterDecayer:SingleHadronLimitCharm 0.0
+set /Herwig/Hadronization/HadronSelector:SingleHadronLimitCharm 0.0
 
 set /Herwig/Hadronization/ClusterFissioner:ClMaxBottom  5.60*GeV
 set /Herwig/Hadronization/ClusterFissioner:ClPowBottom  1.01
 set /Herwig/Hadronization/ClusterFissioner:PSplitBottom 0.31
 set /Herwig/Hadronization/ClusterDecayer:ClDirBottom 1
 set /Herwig/Hadronization/ClusterDecayer:ClSmrBottom 0.
-set /Herwig/Hadronization/LightClusterDecayer:SingleHadronLimitBottom 0.12
+set /Herwig/Hadronization/HadronSelector:SingleHadronLimitBottom 0.12
