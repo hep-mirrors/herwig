@@ -47,10 +47,11 @@ public:
    * @param cc Whether this is the charge conjugate of the branching
    * defined.
    * @param enhance The radiation enhancement factor
+   * @param maxQ2 The maximum \f$Q^2\f$ for the emission
    */
   virtual ShoKinPtr generateNextTimeBranching(const Energy startingScale,
 					      const IdList &ids,const bool cc,
-					      double enhance);
+					      double enhance, Energy2 maxQ2);
 
   /**
    * Return the scale of the next space-like decay branching. If there is no 
@@ -212,9 +213,10 @@ protected:
    *  Phase Space veto member to implement the \f$\Theta\f$ function as a veto
    *  so that the emission is within the allowed phase space.
    * @param t  The scale
+   * @param maxQ2 The maximum virtuality
    * @return true if vetoed
    */
-  bool PSVeto(const Energy2 t);
+  bool PSVeto(const Energy2 t,const Energy2 maxQ2);
 
   /**
    * Compute the limits on \f$z\f$ for time-like branching

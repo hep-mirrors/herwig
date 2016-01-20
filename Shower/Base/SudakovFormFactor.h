@@ -155,11 +155,11 @@ public:
    * @param ids The PDG codes of the particles in the splitting
    * @param cc Whether this is the charge conjugate of the branching
    * @param enhance The radiation enhancement factor
-   * defined.
+   * @param maxQ2 The maximum \f$Q^2\f$ for the emission
    */
   virtual ShoKinPtr generateNextTimeBranching(const Energy startingScale,
 					      const IdList &ids,const bool cc,
-					      double enhance)=0;
+					      double enhance, Energy2 maxQ2)=0;
 
   /**
    * Return the scale of the next space-like decay branching. If there is no 

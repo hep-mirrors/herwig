@@ -65,7 +65,8 @@ private:
 public:
   virtual void updateChildren( const tShowerParticlePtr parent, 
 			       const ShowerParticleVector & children,
-			       ShowerPartnerType::Type partnerType) const;
+			       ShowerPartnerType::Type partnerType,
+			       bool massVeto) const;
 
   virtual void resetChildren( const tShowerParticlePtr parent, 
 			      const ShowerParticleVector & children) const;
@@ -77,10 +78,12 @@ public:
    * @param parent   The parent
    * @param children The children
    * @param partnerType The type of evolution partner
+   * @param negativepT Handling of negative \f$p_T\f$ branchings 
    */
   virtual void updateParent(const tShowerParticlePtr parent,
 			    const ShowerParticleVector & children,
-			    ShowerPartnerType::Type partnerType) const;
+			    ShowerPartnerType::Type partnerType,
+			    bool negativepT) const;
 
   /**
    * Update the parent Kinematics from the knowledge of the kinematics
