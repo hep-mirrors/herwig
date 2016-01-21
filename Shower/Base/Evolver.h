@@ -524,6 +524,11 @@ protected:
   void setupMaximumScales(const vector<ShowerProgenitorPtr> &,XCPtr);
 
   /**
+   *  find the relevant hard scales for profile scales. 
+   */
+  void setupHardScales(const vector<ShowerProgenitorPtr> &,XCPtr);
+
+  /**
    *  Convert the HardTree into an extra shower emission 
    */
   void convertHardTree(bool hard,ShowerInteraction::Type type);
