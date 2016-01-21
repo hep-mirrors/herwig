@@ -42,7 +42,7 @@ public:
 		     _thresholds(4), _lambda(4),
 		     _nloop(3),_lambdaopt(false),_thresopt(false),
 		     _lambdain(0.208364*GeV),_alphain(0.118),_inopt(true),_tolerance(1e-10),
-		     _maxtry(100),_alphamin(0.) {}
+		     _maxtry(100),_alphamin(0.),_val0(1.) {}
 
 public:
 
@@ -270,6 +270,11 @@ private:
    *  The minimum value of the coupling
    */
   double _alphamin;
+
+  /**
+   *  Value of \f$\alpha_S\f$ at the minimum scale
+   */
+  double _val0;
 
 };
 
