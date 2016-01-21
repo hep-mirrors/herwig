@@ -99,7 +99,7 @@ void Evolver::persistentOutput(PersistentOStream & os) const {
      << _vetoes << _trunc_Mode << _hardEmissionMode << _reconOpt 
      << _massVetoOption << isMCatNLOSEvent << isMCatNLOHEvent
      << isPowhegSEvent << isPowhegHEvent
-     << theFactorizationScaleFactor << theRenormalizationScaleFactor
+     << theFactorizationScaleFactor << theRenormalizationScaleFactor << ounit(muPt,GeV)
      << interaction_<< interactions_.size();
   for(unsigned int ix=0;ix<interactions_.size();++ix) 
     os << oenum(interactions_[ix]);
@@ -114,7 +114,7 @@ void Evolver::persistentInput(PersistentIStream & is, int) {
      >> _vetoes >> _trunc_Mode >> _hardEmissionMode >> _reconOpt
      >> _massVetoOption >> isMCatNLOSEvent >> isMCatNLOHEvent
      >> isPowhegSEvent >> isPowhegHEvent
-     >> theFactorizationScaleFactor >> theRenormalizationScaleFactor
+     >> theFactorizationScaleFactor >> theRenormalizationScaleFactor >> iunit(muPt,GeV)
      >> interaction_ >> isize;
   interactions_.resize(isize);
   for(unsigned int ix=0;ix<interactions_.size();++ix) 
@@ -561,6 +561,7 @@ void Evolver::setupHardScales(const vector<ShowerProgenitorPtr> & p,
     hardScale *= ShowerHandler::currentHandler()->hardScaleFactor();
     vector<ShowerProgenitorPtr>::const_iterator ckt = p.begin();
     for (; ckt != p.end(); ckt++) (*ckt)->hardScale(hardScale);
+    muPt = hardScale;
   }
 }
 

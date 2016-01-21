@@ -92,6 +92,13 @@ public:
    */
   virtual bool isReshuffling() const { return false; }
 
+  /**
+   * Return the relevant hard scale to be used in the profile scales
+   */
+  virtual Energy hardScale() const {
+    return muPt;
+  }
+
 protected:
 
   typedef multimap<DipoleIndex,Ptr<DipoleSplittingGenerator>::ptr> GeneratorMap;

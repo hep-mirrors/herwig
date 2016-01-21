@@ -72,7 +72,7 @@ public:
 	       interaction_(1), _trunc_Mode(true), _hardEmissionMode(0),
 	      _spinOpt(1), _softOpt(2), _hardPOWHEG(false),
 	      theFactorizationScaleFactor(1.0), 
-	      theRenormalizationScaleFactor(1.0)
+	      theRenormalizationScaleFactor(1.0), muPt(ZERO)
   {}
 
   /**
@@ -529,6 +529,13 @@ protected:
   void setupHardScales(const vector<ShowerProgenitorPtr> &,XCPtr);
 
   /**
+   * Return the relevant hard scale to be used in the profile scales
+   */
+  Energy hardScale() const {
+    return muPt;
+  }
+
+  /**
    *  Convert the HardTree into an extra shower emission 
    */
   void convertHardTree(bool hard,ShowerInteraction::Type type);
@@ -900,6 +907,11 @@ private:
    * have been issued yet
    */
   static bool _missingTruncWarn;
+
+  /**
+   * The relevant hard scale to be used in the profile scales
+   */
+  Energy muPt;
 
 };
 
