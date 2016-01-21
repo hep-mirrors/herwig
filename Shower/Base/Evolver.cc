@@ -544,6 +544,26 @@ void Evolver::setupMaximumScales(const vector<ShowerProgenitorPtr> & p,
   for (; ckt != p.end(); ckt++) (*ckt)->maxHardPt(ptmax);
 }
 
+void Evolver::setupHardScales(const vector<ShowerProgenitorPtr> & p,
+			      XCPtr xcomb) {
+  if ( hardVetoXComb() &&
+       (!hardVetoReadOption() ||
+	ShowerHandler::currentHandler()->firstInteraction()) ) {
+    Energy hardScale = ZERO;
+    if(currentTree()->isHard()) {
+      assert(xcomb);
+      hardScale = sqrt( xcomb->lastCentralScale() );
+    }
+    else {
+      hardScale = currentTree()->incomingLines().begin()->first
+	->progenitor()->momentum().mass(); 
+    }
+    hardScale *= ShowerHandler::currentHandler()->hardScaleFactor();
+    vector<ShowerProgenitorPtr>::const_iterator ckt = p.begin();
+    for (; ckt != p.end(); ckt++) (*ckt)->hardScale(hardScale);
+  }
+}
+
 void Evolver::showerHardProcess(ShowerTreePtr hard, XCPtr xcomb) {
 
 
@@ -1300,11 +1320,11 @@ bool Evolver::timeLikeVetoed(const Branching & fb,
     }
     if(vetoed) return true;
   }
-  if ( ShowerHandler::currentHandler()->profileScales() &&
-       ShowerHandler::currentHandler()->firstInteraction() ) {
+  if ( ShowerHandler::currentHandler()->firstInteraction() &&
+       ShowerHandler::currentHandler()->profileScales() ) {
     double weight = 
       ShowerHandler::currentHandler()->profileScales()->
-      hardScaleProfile(_progenitor->maxHardPt(),fb.kinematics->pT());
+      hardScaleProfile(_progenitor->hardScale(),fb.kinematics->pT());
     if ( UseRandom::rnd() > weight )
       return true;
   }
@@ -1348,11 +1368,11 @@ bool Evolver::spaceLikeVetoed(const Branching & bb,
     }
     if (vetoed) return true;
   }
-  if ( ShowerHandler::currentHandler()->profileScales() &&
-       ShowerHandler::currentHandler()->firstInteraction() ) {
+  if ( ShowerHandler::currentHandler()->firstInteraction() &&
+       ShowerHandler::currentHandler()->profileScales() ) {
     double weight = 
       ShowerHandler::currentHandler()->profileScales()->
-      hardScaleProfile(_progenitor->maxHardPt(),bb.kinematics->pT());
+      hardScaleProfile(_progenitor->hardScale(),bb.kinematics->pT());
     if ( UseRandom::rnd() > weight )
       return true;
   }
@@ -2754,6 +2774,8 @@ void Evolver::doShowering(bool hard,XCPtr xcomb) {
   vector<ShowerProgenitorPtr> particlesToShower(setupShower(hard));
   // setup the maximum scales for the shower
   if (hardVetoOn()) setupMaximumScales(particlesToShower,xcomb);
+  // set the hard scales for the profiles
+  setupHardScales(particlesToShower,xcomb);
   // specific stuff for hard processes and decays
   Energy minmass(ZERO), mIn(ZERO);
   // hard process generate the intrinsic p_T once and for all
