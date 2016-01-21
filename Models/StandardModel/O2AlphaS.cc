@@ -145,12 +145,11 @@ double O2AlphaS::value(Energy2 scale, const StandardModelBase &) const
 {
   Energy rs=sqrt(scale);
   if(scale<sqr(_lambdas[5])) {
-    cerr << "O2AlphaS called with scale less than Lambda QCD "
-	 << "scale = " << rs/MeV << " MeV and "
-	 << "Lambda = " << _lambdas[5]/MeV << " MeV\n";
-    generator()->log() << "O2AlphaS called with scale less than Lambda QCD "
-		       << "scale = " << rs/MeV << " MeV and "
-		       << "Lambda = " << _lambdas[5]/MeV << " MeV\n";
+    generator()->logWarning(Exception()
+			    << "O2AlphaS called with scale less than Lambda QCD "
+			    << "scale = " << rs/MeV << " MeV and "
+			    << "Lambda = " << _lambdas[5]/MeV << " MeV"
+			    << Exception::warning);
     return 0.;
   }
   double rho=2.*log(rs/_lambdas[5]),rat(log(rho)/rho);
@@ -161,7 +160,8 @@ double O2AlphaS::value(Energy2 scale, const StandardModelBase &) const
   else                      rlf=_bcoeff[2]*rho/(1.-_ccoeff[2]*rat)+_match[3];
   // must be possible
   if(rlf<=0.) {
-    generator()->log() << "O2AlphaS coupling less than zero \n";
+    generator()->logWarning(Exception() << "O2AlphaS coupling less than zero"
+			    << Exception::warning) ;
     return 0.;
   }
   return 1./rlf;

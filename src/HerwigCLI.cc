@@ -49,7 +49,8 @@ HerwigCLI::HerwigCLI(int argc, char * argv[])
   if ( args_info.version_given ) {
     std::cout << 
 #include "hgstamp.inc"
-"" << std::endl;
+"" << '\n';
+    std::cout << ThePEG::Repository::version() << std::endl;
     cmdline_parser_free( &args_info );
     exit( EXIT_SUCCESS );
   }

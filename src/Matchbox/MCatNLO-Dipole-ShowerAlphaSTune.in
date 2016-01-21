@@ -20,6 +20,11 @@ set FIgx2ccxDipoleKernel:VirtualitySplittingScale Yes
 set FIgx2ssxDipoleKernel:VirtualitySplittingScale Yes
 set FIgx2bbxDipoleKernel:VirtualitySplittingScale Yes
 
+set IFgx2ggxDipoleKernel:VirtualitySplittingScale Yes
+set IFqx2gqxDipoleKernel:VirtualitySplittingScale Yes
+set IIgx2ggxDipoleKernel:VirtualitySplittingScale Yes
+set IIqx2gqxDipoleKernel:VirtualitySplittingScale Yes
+
 set FFMgx2ddxDipoleKernel:VirtualitySplittingScale Yes
 set FFMgx2uuxDipoleKernel:VirtualitySplittingScale Yes
 set FFMgx2ccxDipoleKernel:VirtualitySplittingScale Yes
@@ -31,6 +36,9 @@ set FIMgx2uuxDipoleKernel:VirtualitySplittingScale Yes
 set FIMgx2ccxDipoleKernel:VirtualitySplittingScale Yes
 set FIMgx2ssxDipoleKernel:VirtualitySplittingScale Yes
 set FIMgx2bbxDipoleKernel:VirtualitySplittingScale Yes
+
+set IFMgx2ggxDipoleKernel:VirtualitySplittingScale Yes
+set IFMqx2gqxDipoleKernel:VirtualitySplittingScale Yes
 
 ##################################################
 ## intrinsic pt

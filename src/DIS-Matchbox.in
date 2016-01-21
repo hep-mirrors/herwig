@@ -45,7 +45,9 @@ do Factory:Process e+ p -> e+ j
 ## enable for on-shell top production
 # read Matchbox/OnShellTopProduction.in
 ## enable for on-shell W, Z or h production
-# read Matchbox/OnShellEWProduction.in
+# read Matchbox/OnShellWProduction.in
+# read Matchbox/OnShellZProduction.in
+# read Matchbox/OnShellHProduction.in
 
 ##################################################
 ## Matrix element library selection

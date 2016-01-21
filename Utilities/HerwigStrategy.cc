@@ -13,12 +13,18 @@
 #include "HerwigStrategy.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/PDT/ParticleData.h"
+#include "ThePEG/Repository/Repository.h"
 
 using namespace Herwig;
 
 const string HerwigStrategy::version = 
 #include "hgstamp.inc"
 "";
+
+const std::string HerwigStrategy::versionstring() const {
+      return HerwigStrategy::version + " / " + Repository::version();
+}
+
 
 IBPtr HerwigStrategy::clone() const {
   return new_ptr(*this);
