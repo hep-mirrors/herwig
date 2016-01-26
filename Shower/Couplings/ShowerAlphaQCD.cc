@@ -39,14 +39,16 @@ void ShowerAlphaQCD::persistentOutput(PersistentOStream & os) const {
   os << _asType << _asMaxNP << ounit(_qmin,GeV) << _nloop << _lambdaopt << _thresopt 
      << ounit(_lambdain,GeV) << _alphain << _inopt
      << _tolerance << _maxtry << _alphamin
-     << ounit(_thresholds,GeV) << ounit(_lambda,GeV);
+     << ounit(_thresholds,GeV) << ounit(_lambda,GeV)
+     << _val0;
 }
 
 void ShowerAlphaQCD::persistentInput(PersistentIStream & is, int) {
   is >> _asType >> _asMaxNP >> iunit(_qmin,GeV) >> _nloop >> _lambdaopt >> _thresopt
      >> iunit(_lambdain,GeV) >> _alphain >> _inopt
      >> _tolerance >> _maxtry >> _alphamin
-     >> iunit(_thresholds,GeV) >> iunit(_lambda,GeV);
+     >> iunit(_thresholds,GeV) >> iunit(_lambda,GeV)
+     >> _val0;
 }
 
 void ShowerAlphaQCD::Init() {
@@ -74,7 +76,8 @@ void ShowerAlphaQCD::Init() {
   // default such that as(qmin) = 1 in the current parametrization.
   // min = Lambda3
   static Parameter<ShowerAlphaQCD,Energy> intQmin
-    ("Qmin", "Q < Qmin is treated with NP parametrization as of (unit [GeV])",
+    ("Qmin", "Q < Qmin is treated with NP parametrization as of (unit [GeV]),"
+     " if negative it is solved for at initialisation such that alpha_S(Qmin)=AlphaMaxNP",
      &ShowerAlphaQCD::_qmin, GeV, 0.630882*GeV, 0.330445*GeV,
      100.0*GeV,false,false,false);
 
@@ -196,11 +199,33 @@ void ShowerAlphaQCD::doinit() {
   // charm threshold
   // compute 3 flavour lambda by matching at charm mass using Newton Raphson
   _lambda[0]=computeLambda(_thresholds[1],alphaS(_thresholds[1],_lambda[1],4),3);
+  // if qmin less than zero solve for alphaS(_qmin) = 1.
+  if(_qmin<ZERO ) {
+    Energy low  = _lambda[0]+MeV;
+    if(value(sqr(low))<_asMaxNP)
+      Throw<InitException>() << "The value of Qmin is less than Lambda_3 in"
+			     << " ShowerAlphaQCD::doinit " << Exception::abortnow;
+    Energy high = 10*GeV;
+    while (value(sqr(high))>_asMaxNP) high *=2.;
+    double as;
+    do {
+      _qmin = 0.5*(low+high);
+      as  = value(sqr(_qmin));
+      if(_asMaxNP>as) high = _qmin;
+      else if(_asMaxNP<as) low = _qmin;
+    }
+    while ( abs(as-_asMaxNP) > _tolerance );
+  }
   // final threshold is qmin
   _thresholds[0]=_qmin;
+  // value of alphaS at threshold
+  pair<short,Energy> nflam = getLamNfTwoLoop(_qmin);
+  _val0 = alphaS(_qmin, nflam.second, nflam.first);
   // compute the maximum value of as 
-  if ( _asType < 5 ) _alphamin = value(sqr(_qmin)+1.0e-8*sqr(MeV)); // approx as = 1
-  else _alphamin = max(_asMaxNP, value(sqr(_qmin)+1.0e-8*sqr(MeV))); 
+  if ( _asType < 5 )
+    _alphamin = _val0;
+  else
+    _alphamin = max(_asMaxNP, _val0);
   // check consistency lambda_3 < qmin
   if(_lambda[0]>_qmin)
     Throw<InitException>() << "The value of Qmin is less than Lambda_3 in"
@@ -208,92 +233,88 @@ void ShowerAlphaQCD::doinit() {
 }
 
 double ShowerAlphaQCD::value(const Energy2 scale) const {
-  pair<short,Energy> nflam;
-  Energy q = sqrt(scale);
+  Energy q = scaleFactor()*sqrt(scale);
   double val(0.);
+  // normal case
+  if (q >= _qmin) {
+    pair<short,Energy> nflam = getLamNfTwoLoop(q);
+    val = alphaS(q, nflam.second, nflam.first);
+  }
   // special handling if the scale is less than Qmin
-  if (q < _qmin) {
-    nflam = getLamNfTwoLoop(_qmin); 
-    double val0 = alphaS(_qmin, nflam.second, nflam.first);
+  else {
     switch (_asType) {
     case 1: 
       // flat, zero; the default type with no NP effects.
       val = 0.; 
-      break; 
+      break;
     case 2: 
       // flat, non-zero alpha_s = alpha_s(q2min).
-      val = val0;
-      break; 
+      val = _val0;
+      break;
     case 3: 
       // linear in q
-      val = val0*q/_qmin;
-      break; 
+      val = _val0*q/_qmin;
+      break;
     case 4:
       // quadratic in q
-      val = val0*sqr(q/_qmin);
-      break; 
+      val = _val0*sqr(q/_qmin);
+      break;
     case 5:
       // quadratic in q, starting off at asMaxNP, ending on as(qmin)
-      val = (val0 - _asMaxNP)*sqr(q/_qmin) + _asMaxNP;
-      break; 
+      val = (_val0 - _asMaxNP)*sqr(q/_qmin) + _asMaxNP;
+      break;
     case 6:
       // just asMaxNP and constant
       val = _asMaxNP;
-      break; 
+      break;
     }
-  } else {
-    // the 'ordinary' case    
-    nflam = getLamNfTwoLoop(q); 
-    val = alphaS(q, nflam.second, nflam.first);
   }
-  return scaleFactor() * val;
+  return val;
 }
 
 double ShowerAlphaQCD::overestimateValue() const {
-  return scaleFactor() * _alphamin; 
+  return _alphamin;
 }
 
 double ShowerAlphaQCD::ratio(const Energy2 scale) const {
-  pair<short,Energy> nflam;
-  Energy q = sqrt(scale);
+  Energy q = scaleFactor()*sqrt(scale);
   double val(0.);
+  // normal case
+  if (q >= _qmin) {
+    pair<short,Energy> nflam = getLamNfTwoLoop(q);
+    val = alphaS(q, nflam.second, nflam.first);
+  }
   // special handling if the scale is less than Qmin
-  if (q < _qmin) {
-    nflam = getLamNfTwoLoop(_qmin); 
-    double val0 = alphaS(_qmin, nflam.second, nflam.first);
+  else {
     switch (_asType) {
-    case 1: 
+    case 1:
       // flat, zero; the default type with no NP effects.
       val = 0.; 
-      break; 
-    case 2: 
+      break;
+    case 2:
       // flat, non-zero alpha_s = alpha_s(q2min).
-      val = val0;
-      break; 
-    case 3: 
+      val = _val0;
+      break;
+    case 3:
       // linear in q
-      val = val0*q/_qmin;
-      break; 
+      val = _val0*q/_qmin;
+      break;
     case 4:
       // quadratic in q
-      val = val0*sqr(q/_qmin);
-      break; 
+      val = _val0*sqr(q/_qmin);
+      break;
     case 5:
       // quadratic in q, starting off at asMaxNP, ending on as(qmin)
-      val = (val0 - _asMaxNP)*sqr(q/_qmin) + _asMaxNP;
-      break; 
+      val = (_val0 - _asMaxNP)*sqr(q/_qmin) + _asMaxNP;
+      break;
     case 6:
       // just asMaxNP and constant
       val = _asMaxNP;
-      break; 
+      break;
     }
-  } else {
-    // the 'ordinary' case    
-    nflam = getLamNfTwoLoop(q); 
-    val = alphaS(q, nflam.second, nflam.first);
   }
   // denominator 
-  return val/_alphamin;  
+  return val/_alphamin;
 }
 
 string ShowerAlphaQCD::value (string scale) {
