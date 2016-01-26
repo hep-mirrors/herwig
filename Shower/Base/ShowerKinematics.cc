@@ -16,7 +16,7 @@ using namespace Herwig;
 
 void ShowerKinematics::updateChildren(const tShowerParticlePtr, 
 				      const ShowerParticleVector &,
-				      ShowerPartnerType::Type) const {
+				      ShowerPartnerType::Type,bool) const {
   throw Exception() << "Base class ShowerKinematics::updateChildren called,"
 		    << " should have been overriden in an inheriting class" 
 		    << Exception::runerror;

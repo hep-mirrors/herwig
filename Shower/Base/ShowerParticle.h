@@ -102,7 +102,8 @@ public:
      *  Constructor
      */
     EvolutionScales() : QED(),QCD_c(),QCD_ac(),
-			QED_noAO(),QCD_c_noAO(),QCD_ac_noAO()
+			QED_noAO(),QCD_c_noAO(),QCD_ac_noAO(),
+			Max_Q2(Constants::MaxEnergy2)
     {}
 
     /**
@@ -135,6 +136,10 @@ public:
      */
     Energy QCD_ac_noAO;
 
+    /**
+     *  Maximum allowed virtuality of the particle
+     */
+    Energy2 Max_Q2;
   };
 
 

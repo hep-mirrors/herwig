@@ -65,7 +65,8 @@ private:
 public:
   virtual void updateChildren( const tShowerParticlePtr parent, 
 			       const ShowerParticleVector & children,
-			       ShowerPartnerType::Type partnerType) const;
+			       ShowerPartnerType::Type partnerType,
+			       bool massVeto ) const;
 
   virtual void resetChildren( const tShowerParticlePtr parent, 
 			      const ShowerParticleVector & children) const;

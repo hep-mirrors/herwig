@@ -29,7 +29,8 @@ using namespace Herwig;
 void IS_QTildeShowerKinematics1to2::
 updateChildren( const tShowerParticlePtr theParent, 
 		const ShowerParticleVector & theChildren,
-		ShowerPartnerType::Type) const {
+		ShowerPartnerType::Type,
+		bool massVeto) const {
   const ShowerParticle::Parameters & parent = theParent->showerParameters();
   ShowerParticle::Parameters & child0 = theChildren[0]->showerParameters();
   ShowerParticle::Parameters & child1 = theChildren[1]->showerParameters();

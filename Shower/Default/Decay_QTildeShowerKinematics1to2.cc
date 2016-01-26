@@ -28,7 +28,8 @@ using namespace Herwig;
 void Decay_QTildeShowerKinematics1to2::
 updateChildren(const tShowerParticlePtr parent, 
 	       const ShowerParticleVector & children,
-	       ShowerPartnerType::Type partnerType) const {
+	       ShowerPartnerType::Type partnerType,
+	       bool massVeto) const {
   assert(children.size() == 2);
   // calculate the scales
   splittingFn()->evaluateDecayScales(partnerType,scale(),z(),parent,
