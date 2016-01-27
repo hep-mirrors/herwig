@@ -785,6 +785,8 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
   Branching fc[2];
   bool setupChildren = true;
   while (ntry<50) {
+    fc[0] = Branching();
+    fc[1] = Branching();
     ++ntry;
     assert(fb.kinematics);
     // has emitted
@@ -869,6 +871,8 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
       // shower the second particle
       if(fc[1].kinematics) timeLikeShower(children[1],type,fc[1],false);
       if(children[1]->spinInfo()) children[1]->spinInfo()->develop();
+      // branching has happened
+      particle->showerKinematics()->updateParent(particle, children,fb.type);
       break;
     }
     // Herwig default
@@ -930,103 +934,25 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
       else {
 	// reset the scales for the children
 	for(unsigned int ix=0;ix<2;++ix) {
-	  if(fc[ix].kinematics) 
+	  if(fc[ix].kinematics)
 	    children[ix]->vetoEmission(fc[ix].type,fc[ix].kinematics->scale());
 	  else
 	    children[ix]->vetoEmission(ShowerPartnerType::QCDColourLine,ZERO);
+	  children[ix]->virtualMass(ZERO);
 	} 
       }
     }
   };
-
-
-
-
-
-
-
-
-
-  //   // generate the emission
-  //   if(!fb.kinematics) 
-  //     fb = selectTimeLikeBranching(particle,type);
-  //   // no emission, return
-  //   if(!fb.kinematics) {
-  //     if(particle->spinInfo()) particle->spinInfo()->develop();
-  //     return false;
-  //   }
-
-
-
-
-
-
-
-
-
-  //   // old recon option
-
-
-
-  //   else if(_reconOpt==2) {
-  //     // cut-off masses for the branching
-  //     const vector<Energy> & virtualMasses = fb.sudakov->virtualMasses(fb.ids);
-  //     // compute the masses of the children
-  //     Energy masses[3];
-  //     for(unsigned int ix=0;ix<2;++ix) {
-  // 	if(fc[ix].kinematics) {
-  // 	  const vector<Energy> & vm = fc[ix].sudakov->virtualMasses(fc[ix].ids);
-  // 	  Energy2 q2 = 
-  // 	    fc[ix].kinematics->z()*(1.-fc[ix].kinematics->z())*sqr(fc[ix].kinematics->scale());
-  // 	  if(fc[ix].ids[0]!=ParticleID::g) q2 += sqr(vm[0]);
-  // 	  masses[ix+1] = sqrt(q2);
-  // 	}
-  // 	else {
-  // 	  masses[ix+1] = virtualMasses[ix+1];
-  // 	}
-  //     }
-  //     masses[0] = fb.ids[0]!=ParticleID::g ? virtualMasses[0] : ZERO;
-  //     double z = fb.kinematics->z();
-  //     Energy2 pt2 = z*(1.-z)*(z*(1.-z)*sqr(fb.kinematics->scale()) 
-  // 			      +sqr(masses[0]))
-  // 	- sqr(masses[1])*(1.-z) - sqr(masses[2])*z;
-  //     if(pt2>=ZERO) {
-  // 	// branching has happened
-  // 	particle->showerKinematics()->
-  // 	  updateParent(particle, children,fb.type);
-  // 	// shower the first  particle
-  // 	if(fc[0].kinematics) timeLikeShower(children[0],type,fc[0],false);
-  // 	if(children[0]->spinInfo()) children[0]->spinInfo()->develop();
-  // 	// shower the second particle
-  // 	if(fc[1].kinematics) timeLikeShower(children[1],type,fc[1],false);
-  // 	if(children[1]->spinInfo()) children[1]->spinInfo()->develop();
-  //     }
-  //     else {
-  // 	particle->showerKinematics(ShoKinPtr());
-  // 	for(unsigned int ix=0;ix<children.size();++ix)
-  // 	  particle->abandonChild(children[ix]);
-  // 	children.clear();
-  // 	if(_massVetoOption==1) particle->vetoEmission(fb.type,fb.kinematics->scale());
-  // 	if(particle->spinInfo()) particle->spinInfo()->decayVertex(VertexPtr());
-  // 	fb = Branching();
-  // 	continue;
-  //     }
-  //   }
-  //   break;
-  // };
-
-
-  // // shower the first  particle
-  // if(fc[0].kinematics) timeLikeShower(children[0],type,fc[0],false);
-  // if(children[0]->spinInfo()) children[0]->spinInfo()->develop();
-  // // shower the second particle
-  // if(fc[1].kinematics) timeLikeShower(children[1],type,fc[1],false);
-  // if(children[1]->spinInfo()) children[1]->spinInfo()->develop();
-  // // branching has happened
-  // if(_reconOpt!=0)
-  //   particle->showerKinematics()->updateParent(particle, children,fb.type);
-
-
+  if(_reconOpt>=2) {
+    // shower the first  particle
+    if(fc[0].kinematics) timeLikeShower(children[0],type,fc[0],false);
+    if(children[0]->spinInfo()) children[0]->spinInfo()->develop();
+    // shower the second particle
+    if(fc[1].kinematics) timeLikeShower(children[1],type,fc[1],false);
+    if(children[1]->spinInfo()) children[1]->spinInfo()->develop();
+    // branching has happened
+      particle->showerKinematics()->updateParent(particle, children,fb.type);
+  }
   if(first&&!children.empty())
     particle->showerKinematics()->resetChildren(particle,children);
   if(particle->spinInfo()) particle->spinInfo()->develop();
