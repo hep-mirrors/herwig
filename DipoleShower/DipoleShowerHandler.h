@@ -436,6 +436,11 @@ private:
    */
   Energy maxPt;
 
+  /**
+   * The shower hard scale for the last event encountered
+   */
+  Energy muPt;
+
 private:
 
   /**

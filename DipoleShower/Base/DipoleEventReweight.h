@@ -51,7 +51,15 @@ public:
    * Return the weight for the given incoming, outgoing coloured and
    * hard colour neutral particles
    */
-  virtual double weight(const PPair& in, const PList& out, const PList& hard,  Ptr<AlphaSBase>::tptr as) const = 0;
+  virtual double weight(const PPair& in, const PList& out, const PList& hard,
+			Ptr<AlphaSBase>::tptr as) const = 0;
+
+  /**
+   * Return the weight for the given incoming, outgoing coloured and
+   * hard colour neutral particles
+   */
+  virtual double weightNoEmission(const PPair& in, const PList& out, const PList& hard,
+				  Ptr<AlphaSBase>::tptr as) const = 0;
 
 public:
 

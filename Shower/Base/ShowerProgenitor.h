@@ -55,7 +55,7 @@ public:
 		   Energy pT=ZERO,bool emitted=false)
     : _original(original), _copy(copy), _perturbative(true),
       _particle(particle), _highestpT(pT), 
-      _maxHardPt(ZERO), _hasEmitted(emitted),
+      _maxHardPt(ZERO), _hardScale(ZERO), _hasEmitted(emitted),
       _reconstructed(notReconstructed) {
     // get the BeamParticleData object
     if ( original->parents().empty() ) {
@@ -153,6 +153,20 @@ public:
   void maxHardPt(Energy in) { _maxHardPt = in; }
 
   /**
+   *  Access the relevant hard scale to be used in profile scales; usually
+   *  this is taken to be the maximum pt, except for other choices such as
+   *  hfact.
+   */
+  Energy hardScale() const { return _hardScale; }
+
+  /**
+   *  Set the relevant hard scale to be used in profile scales; usually
+   *  this is taken to be the maximum pt, except for other choices such as
+   *  hfact.
+   */
+  void hardScale(Energy in) { _hardScale = in; }
+
+  /**
    *  Has this particle radiated
    */
   bool hasEmitted() const { return _hasEmitted; }
@@ -220,6 +234,13 @@ private:
    *  maximum hard \f$p_T\f$ from the hard process
    */
   Energy _maxHardPt;
+
+  /**
+   *  The relevant hard scale to be used in profile scales; usually
+   *  this is taken to be the maximum pt, except for other choices such as
+   *  hfact.
+   */
+  Energy _hardScale;
 
   /**
    *  Has there been radiation

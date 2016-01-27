@@ -42,9 +42,7 @@ public:
   /**
    * Version string
    */
-  virtual const std::string versionstring() const {
-      return HerwigStrategy::version;
-  }
+  virtual const std::string versionstring() const;
 
 protected:
 
