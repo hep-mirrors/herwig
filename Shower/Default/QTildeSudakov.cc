@@ -142,17 +142,39 @@ generateNextSpaceBranching(const Energy startingQ,
   if(cc) {
     if(parton0->CC()) parton0 = parton0->CC();
     if(parton1->CC()) parton1 = parton1->CC();
-  }
+  } 
   // calculate next value of t using veto algorithm
   Energy2 t(tmax),pt2(ZERO);
+  bool alphaRew,PDFRew,zRew,ptRew,SplitRew;
   do {
     if(!guessSpaceLike(t,tmin,x,enhance)) break;
     pt2=sqr(1.-z())*t-z()*masssquared_[2];
-  }
-  while(z() > zLimits().second || 
-	SplittingFnVeto((1.-z())*t/z(),ids,true) || 
-	alphaSVeto(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t) ||
-	PDFVeto(t,x,parton0,parton1,beam) || pt2 < pT2min() );
+    
+    SplitRew=SplittingFnVeto((1.-z())*t/z(),ids,true);
+    ptRew=pt2 < pT2min();
+    zRew=z() > zLimits().second;
+    alphaRew=alphaSVeto(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t);
+    PDFRew=PDFVeto(t,x,parton0,parton1,beam);
+    //Fill reweight vector
+    if(zRew || SplitRew || alphaRew || PDFRew || ptRew){
+      //No Emission
+      cout<<"\n No Emm pdf "<<PDFVetoRatio(t,x,parton0,parton1,beam,1.)<<" "<<PDFVetoRatio(t,x,parton0,parton1,beam,0.5); 
+      cout<<"\n No Emm as  "<<alphaSVetoRatio(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t,1.)<<" "<<alphaSVetoRatio(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t,0.5);
+      cout<<"\n sprat      "<<SplittingFnVetoRatio((1.-z())*t/z(),ids,true);
+       
+    }else{
+      if (t > ZERO && zLimits().first < zLimits().second){
+       //Emission
+      cout<<"\n    Emm "<<PDFVetoRatio(t,x,parton0,parton1,beam,1.)<<" "<<PDFVetoRatio(t,x,parton0,parton1,beam,0.5);
+      cout<<"\n  Emm as  "<<alphaSVetoRatio(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t,1.)<<" "<<alphaSVetoRatio(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t,0.5);
+      cout<<"\n sprat      "<<SplittingFnVetoRatio((1.-z())*t/z(),ids,true);  
+
+    }
+    }
+
+  } 
+  while(zRew || SplitRew || alphaRew ||	PDFRew || ptRew );
+
   if(t > ZERO && zLimits().first < zLimits().second)  q_ = sqrt(t);
   else return ShoKinPtr();
   pT(sqrt(pt2));
