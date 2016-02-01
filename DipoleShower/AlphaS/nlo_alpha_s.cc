@@ -14,7 +14,8 @@
 using namespace matchbox;
 
 nlo_alpha_s::nlo_alpha_s()
-  : alpha_s(), freezing_scale_(1.*GeV), exact_evaluation_(true) {
+  : alpha_s(), freezing_scale_(1.*GeV),
+    exact_evaluation_(true), two_largeq_terms_(true) {
 }
 
 nlo_alpha_s::~nlo_alpha_s() {}
@@ -28,11 +29,13 @@ IBPtr nlo_alpha_s::fullclone() const {
 }
 
 void nlo_alpha_s::persistentOutput(PersistentOStream & os) const {
-  os << ounit(freezing_scale_,GeV) << exact_evaluation_;
+  os << ounit(freezing_scale_,GeV) << exact_evaluation_
+     << two_largeq_terms_;
 }
 
 void nlo_alpha_s::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(freezing_scale_,GeV) >> exact_evaluation_;
+  is >> iunit(freezing_scale_,GeV) >> exact_evaluation_
+     >> two_largeq_terms_;
 }
 
 ClassDescription<nlo_alpha_s> nlo_alpha_s::initnlo_alpha_s;
@@ -64,6 +67,21 @@ void nlo_alpha_s::Init() {
     (interfaceexact_evaluation,
      "large_scale",
      "Perform approximate evaluation for large scales",
+     false);
+
+  static Switch<nlo_alpha_s,bool> interfacetwo_largeq_terms
+    ("two_largeq_terms",
+     "Include two terms in the large q expansion.",
+     &nlo_alpha_s::two_largeq_terms_, true, false, false);
+  static SwitchOption interfacetwo_largeq_termsYes
+    (interfacetwo_largeq_terms,
+     "Yes",
+     "Include two terms.",
+     true);
+  static SwitchOption interfacetwo_largeq_termsNo
+    (interfacetwo_largeq_terms,
+     "No",
+     "Only include one term.",
      false);
 
 }
@@ -98,11 +116,17 @@ double nlo_alpha_s::operator () (Energy2 scale,
   } else {
 
     double slog = log(scale/lambda2);
-	
-    return 
+
+    double res = 
       (1./(beta0*slog))*
-      (1. - (beta1/sqr(beta0)) * log(slog)/slog +
-       sqr(beta1/(sqr(beta0)*slog)) * (sqr(log(slog)-.5) - 5./4.));
+      (1. - (beta1/sqr(beta0)) * log(slog)/slog);
+
+    if ( two_largeq_terms_ )
+      res += 
+	(1./(beta0*slog))*
+	(sqr(beta1/(sqr(beta0)*slog)) * (sqr(log(slog)-.5) - 5./4.));
+
+    return res;
 
   }
 
