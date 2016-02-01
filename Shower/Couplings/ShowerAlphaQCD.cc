@@ -165,6 +165,12 @@ void ShowerAlphaQCD::Init() {
      "",
      &ShowerAlphaQCD::value, false);
 
+  static Command<ShowerAlphaQCD> interfacecheck
+    ("check",
+     "check",
+     &ShowerAlphaQCD::check, false);
+
+
 }
 
 void ShowerAlphaQCD::doinit() {
@@ -206,6 +212,40 @@ void ShowerAlphaQCD::doinit() {
     Throw<InitException>() << "The value of Qmin is less than Lambda_3 in"
 			   << " ShowerAlphaQCD::doinit " << Exception::abortnow;
 }
+
+string ShowerAlphaQCD::check(string args) {
+
+  doinit();
+
+  istringstream argin(args);
+
+  double Q_low, Q_high;
+  long n_steps;
+
+  argin >> Q_low >> Q_high >> n_steps;
+
+  string fname;
+  argin >> fname;
+
+  cout << "checking alpha_s in range [" << Q_low << "," << Q_high << "] GeV in "
+	    << n_steps << " steps.\nResults are written to " << fname << "\n";
+
+  double step_width = (Q_high-Q_low)/n_steps;
+
+  ofstream out (fname.c_str());
+
+  for (long k = 0; k <= n_steps; ++k) {
+
+    Energy Q = Q_low*GeV + k*step_width*GeV;
+
+    out << (Q/GeV) << " " << value(Q*Q) << "\n";
+
+  }
+
+  return "alpha_s check finished";
+
+}
+
 
 double ShowerAlphaQCD::value(const Energy2 scale) const {
   pair<short,Energy> nflam;

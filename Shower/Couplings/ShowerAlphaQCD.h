@@ -80,6 +80,13 @@ public:
    */
   string value(string);
 
+  /**
+   * Match thresholds and write alpha_s
+   * specified file; arguments are
+   * Q_low/GeV Q_high/GeV n_steps filename
+  */
+  string check(string args);
+
   //@}
 
   /**
