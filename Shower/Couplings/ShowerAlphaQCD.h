@@ -42,7 +42,7 @@ public:
 		     _thresholds(4), _lambda(4),
 		     _nloop(3),_lambdaopt(false),_thresopt(false),
 		     _lambdain(0.208364*GeV),_alphain(0.118),_inopt(true),_tolerance(1e-10),
-		     _maxtry(100),_alphamin(0.) {}
+		     _maxtry(100),_alphamin(0.), _optInputScale(ZERO) {}
 
 public:
 
@@ -277,6 +277,12 @@ private:
    *  The minimum value of the coupling
    */
   double _alphamin;
+
+  /**
+   * An optional input scale to be used for the input alphas; if zero MZ will
+   * be used out of the particle data object.
+   */
+  Energy _optInputScale;
 
 };
 

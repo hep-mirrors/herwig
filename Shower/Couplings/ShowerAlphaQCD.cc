@@ -39,14 +39,16 @@ void ShowerAlphaQCD::persistentOutput(PersistentOStream & os) const {
   os << _asType << _asMaxNP << ounit(_qmin,GeV) << _nloop << _lambdaopt << _thresopt 
      << ounit(_lambdain,GeV) << _alphain << _inopt
      << _tolerance << _maxtry << _alphamin
-     << ounit(_thresholds,GeV) << ounit(_lambda,GeV);
+     << ounit(_thresholds,GeV) << ounit(_lambda,GeV)
+     << ounit(_optInputScale,GeV);
 }
 
 void ShowerAlphaQCD::persistentInput(PersistentIStream & is, int) {
   is >> _asType >> _asMaxNP >> iunit(_qmin,GeV) >> _nloop >> _lambdaopt >> _thresopt
      >> iunit(_lambdain,GeV) >> _alphain >> _inopt
      >> _tolerance >> _maxtry >> _alphamin
-     >> iunit(_thresholds,GeV) >> iunit(_lambda,GeV);
+     >> iunit(_thresholds,GeV) >> iunit(_lambda,GeV)
+     >> iunit(_optInputScale,GeV);
 }
 
 void ShowerAlphaQCD::Init() {
@@ -170,6 +172,11 @@ void ShowerAlphaQCD::Init() {
      "check",
      &ShowerAlphaQCD::check, false);
 
+  static Parameter<ShowerAlphaQCD,Energy> interfaceInputScale
+    ("InputScale",
+     "An optional input scale. MZ will be used if not set.",
+     &ShowerAlphaQCD::_optInputScale, GeV, ZERO, ZERO, 0*GeV,
+     false, false, Interface::lowerlim);
 
 }
 
@@ -179,7 +186,10 @@ void ShowerAlphaQCD::doinit() {
   // evaluate the initial
   // value of Lambda from alphas if needed using Newton-Raphson
   if(_inopt) {
-    _lambda[2]=computeLambda(getParticleData(ParticleID::Z0)->mass(),_alphain,5);
+    _lambda[2]=computeLambda(_optInputScale == ZERO ? 
+			     getParticleData(ParticleID::Z0)->mass() :
+			     _optInputScale,
+			     _alphain,5);
   }
   // otherwise it was an input parameter
   else{_lambda[2]=_lambdain;}
