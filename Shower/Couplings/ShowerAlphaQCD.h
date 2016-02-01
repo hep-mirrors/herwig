@@ -99,6 +99,13 @@ public:
     else                     return _lambda[3];
   }
 
+  /**
+   * Return the quark masses to be used; if not empty these masses
+   * should be considered instead of the ones set in the particle data
+   * objects.
+   */
+  const vector<Energy>& quarkMasses() const { return _quarkMasses; }
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -283,6 +290,12 @@ private:
    * be used out of the particle data object.
    */
   Energy _optInputScale;
+
+  /**
+   * The quark masses to be used; if not empty these masses should be
+   * considered instead of the ones set in the particle data objects.
+   */
+  vector<Energy> _quarkMasses;
 
 };
 

@@ -15,6 +15,7 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Command.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -40,7 +41,7 @@ void ShowerAlphaQCD::persistentOutput(PersistentOStream & os) const {
      << ounit(_lambdain,GeV) << _alphain << _inopt
      << _tolerance << _maxtry << _alphamin
      << ounit(_thresholds,GeV) << ounit(_lambda,GeV)
-     << ounit(_optInputScale,GeV);
+     << ounit(_optInputScale,GeV) << ounit(_quarkMasses,GeV);
 }
 
 void ShowerAlphaQCD::persistentInput(PersistentIStream & is, int) {
@@ -48,7 +49,7 @@ void ShowerAlphaQCD::persistentInput(PersistentIStream & is, int) {
      >> iunit(_lambdain,GeV) >> _alphain >> _inopt
      >> _tolerance >> _maxtry >> _alphamin
      >> iunit(_thresholds,GeV) >> iunit(_lambda,GeV)
-     >> iunit(_optInputScale,GeV);
+     >> iunit(_optInputScale,GeV) >> iunit(_quarkMasses,GeV);
 }
 
 void ShowerAlphaQCD::Init() {
@@ -178,6 +179,12 @@ void ShowerAlphaQCD::Init() {
      &ShowerAlphaQCD::_optInputScale, GeV, ZERO, ZERO, 0*GeV,
      false, false, Interface::lowerlim);
 
+  static ParVector<ShowerAlphaQCD,Energy> interfaceQuarkMasses
+    ("QuarkMasses",
+     "The quark masses to be used instead of the masses set in the particle data.",
+     &ShowerAlphaQCD::_quarkMasses, GeV, -1, 0.0*GeV, 0.0*GeV, 0*GeV,
+     false, false, Interface::lowerlim);
+
 }
 
 void ShowerAlphaQCD::doinit() {
@@ -199,10 +206,15 @@ void ShowerAlphaQCD::doinit() {
   // compute the threshold matching
   // top threshold
   for(int ix=1;ix<4;++ix) {
-    if(_thresopt)
-      _thresholds[ix]=getParticleData(ix+3)->mass();
-    else
-      _thresholds[ix]=getParticleData(ix+3)->constituentMass();
+    if ( _quarkMasses.empty() ) {
+      if(_thresopt)
+	_thresholds[ix]=getParticleData(ix+3)->mass();
+      else
+	_thresholds[ix]=getParticleData(ix+3)->constituentMass();
+    } else {
+      // starting at zero rather than one, cf the other alphas's
+      _thresholds[ix] = _quarkMasses[ix+2];
+    }
   }
   // compute 6 flavour lambda by matching at top mass using Newton Raphson
   _lambda[3]=computeLambda(_thresholds[3],alphaS(_thresholds[3],_lambda[2],5),6);
