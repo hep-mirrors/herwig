@@ -60,8 +60,8 @@ newdef ColourReconnector:AnnealingSteps 10
 newdef ColourReconnector:TriesPerStepFactor 0.66
 
 # Clustering parameters for light quarks
-newdef ClusterFissioner:ClMaxLight  4.02*GeV
-newdef ClusterFissioner:ClPowLight  2.14
+newdef ClusterFissioner:ClMaxLight  3.26*GeV
+newdef ClusterFissioner:ClPowLight  1.61
 newdef ClusterFissioner:PSplitLight 0.81
 newdef ClusterDecayer:ClDirLight 1
 newdef ClusterDecayer:ClSmrLight 0.78
@@ -94,10 +94,11 @@ newdef LightClusterDecayer:SingleHadronLimitExotic 0.1
 # 
 newdef HadronSelector:PwtDquark  1.0
 newdef HadronSelector:PwtUquark  1.0
-newdef HadronSelector:PwtSquark  0.59
+newdef HadronSelector:PwtSquark  0.58
 newdef HadronSelector:PwtCquark  1.0
 newdef HadronSelector:PwtBquark  1.0
-newdef HadronSelector:PwtDIquark 0.29
+newdef HadronSelector:PwtDIquark 0.38
 newdef HadronSelector:SngWt      0.74
 newdef HadronSelector:DecWt      0.62
 newdef HadronSelector:Mode 1
+
