@@ -309,8 +309,11 @@ namespace exsample {
 	  throw exponential_regenerate();
 	}
       }
-      if (last_value_/last_cell_->info().overestimate() > rnd_gen_())
+      if (last_value_/last_cell_->info().overestimate() > rnd_gen_()) {
+	function_->accept(last_point_,last_value_,last_cell_->info().overestimate());
 	break;
+      }
+      function_->veto(last_point_,last_value_,last_cell_->info().overestimate());
       if(++n_hit_miss > adaption_info_.maxtry)
 	throw hit_and_miss_maxtry();
     }

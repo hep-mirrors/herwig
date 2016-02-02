@@ -51,6 +51,12 @@ void DipoleSplittingGenerator::wrap(Ptr<DipoleSplittingGenerator>::ptr other) {
   theOtherGenerator = other;
 }
 
+void DipoleSplittingGenerator::resetVariations() {
+  for ( map<string,double>::iterator w = currentWeights.begin();
+	w != currentWeights.end(); ++w )
+    w->second = 1.;
+}
+
 void DipoleSplittingGenerator::prepare(const DipoleSplittingInfo& sp) {
 
   generatedSplitting = sp;
@@ -384,7 +390,8 @@ double DipoleSplittingGenerator::evaluate(const vector<double>& point) {
 
 }
 
-void DipoleSplittingGenerator::doGenerate(Energy optCutoff) {
+void DipoleSplittingGenerator::doGenerate(map<string,double>& variations,
+					  Energy optCutoff) {
 
   assert(!wrapping());
 
@@ -401,6 +408,8 @@ void DipoleSplittingGenerator::doGenerate(Energy optCutoff) {
 						       *splittingKernel());
   }
 
+  resetVariations();
+
   while (true) {
     try {
       if ( optKappaCutoff == 0.0 ) {
@@ -409,6 +418,7 @@ void DipoleSplittingGenerator::doGenerate(Energy optCutoff) {
 	res = theExponentialGenerator->generate(optKappaCutoff);
       }
     } catch (exsample::exponential_regenerate&) {
+      resetVariations();
       generatedSplitting.hardPt(startPt);
       continue;
     } catch (exsample::hit_and_miss_maxtry&) {
@@ -417,6 +427,15 @@ void DipoleSplittingGenerator::doGenerate(Energy optCutoff) {
       throw DipoleShowerHandler::RedoShower();
     }
     break;
+  }
+
+  for ( map<string,double>::const_iterator w = currentWeights.begin();
+	w != currentWeights.end(); ++w ) {
+    map<string,double>::iterator v = variations.find(w->first);
+    if ( v != variations.end() )
+      v->second *= w->second;
+    else
+      variations[w->first] = w->second;
   }
 
   if ( res == 0. ) {
@@ -440,22 +459,24 @@ void DipoleSplittingGenerator::doGenerate(Energy optCutoff) {
 }
 
 Energy DipoleSplittingGenerator::generate(const DipoleSplittingInfo& split,
+					  map<string,double>& variations,
 					  Energy optHardPt,
 					  Energy optCutoff) {
 
   fixParameters(split,optHardPt);
 
   if ( wrapping() ) {
-    return theOtherGenerator->generateWrapped(generatedSplitting,optHardPt,optCutoff);
+    return theOtherGenerator->generateWrapped(generatedSplitting,variations,optHardPt,optCutoff);
   }
 
-  doGenerate(optCutoff);
+  doGenerate(variations,optCutoff);
 
   return generatedSplitting.lastPt();
 
 }
 
 Energy DipoleSplittingGenerator::generateWrapped(DipoleSplittingInfo& split,
+						 map<string,double>& variations,
 						 Energy optHardPt,
 						 Energy optCutoff) {
 
@@ -467,7 +488,7 @@ Energy DipoleSplittingGenerator::generateWrapped(DipoleSplittingInfo& split,
   fixParameters(split,optHardPt);
 
   try {
-    doGenerate(optCutoff);
+    doGenerate(variations,optCutoff);
   } catch (...) {
     split = generatedSplitting;
     generatedSplitting = backup;

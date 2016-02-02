@@ -71,6 +71,8 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr,
 
   prepareCascade(sub);
 
+  currentWeights.clear();
+
   if ( !doFSR && ! doISR )
     return sub->incoming();
 
@@ -249,6 +251,23 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr,
       throw;
     }
 
+  }
+
+  tEventPtr event = eventHandler()->currentEvent();
+
+  if ( event->optionalWeights().empty() ) {
+    event->optionalWeights() = currentWeights;
+  } else {
+    map<string,double> combineMap;
+    for ( map<string,double>::const_iterator w = 
+	    event->optionalWeights().begin();
+	  w != event->optionalWeights().end(); ++w ) {
+      for ( map<string,double>::const_iterator v = currentWeights.begin();
+	    v != currentWeights.end(); ++v ) {
+	combineMap[w->first + "-" + v->first] = w->second*v->second;
+      }
+    }
+    event->optionalWeights() = combineMap;
   }
 
   return eventRecord().fillEventRecord(newStep(),firstInteraction(),didRealign);
@@ -484,7 +503,7 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
       candidate.hardPt(maxPossible);
     }
 
-    gen->second->generate(candidate,optHardPt,optCutoff);
+    gen->second->generate(candidate,currentWeights,optHardPt,optCutoff);
     Energy nextScale = evolutionOrdering()->evolutionScale(gen->second->lastSplitting(),*(gen->second->splittingKernel()));
 
     if ( nextScale > winnerScale ) {

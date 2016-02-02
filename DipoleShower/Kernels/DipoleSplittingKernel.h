@@ -210,6 +210,18 @@ public:
   virtual double evaluate(const DipoleSplittingInfo&) const = 0;
 
   /**
+   * Update the variations vector at the given splitting using the indicated
+   * kernel and overestimate values.
+   */
+  virtual void accept(const DipoleSplittingInfo&, double, double, map<string,double>&) const {}
+
+  /**
+   * Update the variations vector at the given splitting using the indicated
+   * kernel and overestimate values.
+   */
+  virtual void veto(const DipoleSplittingInfo&, double, double, map<string,double>&) const {}
+
+  /**
    * Return true, if this kernel is capable of
    * delivering an overestimate to the kernel, and
    * of inverting the integral over the overestimate

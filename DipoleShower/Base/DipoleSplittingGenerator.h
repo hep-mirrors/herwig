@@ -91,6 +91,11 @@ public:
 public:
 
   /**
+   * Reset the current variations to one
+   */
+  void resetVariations();
+
+  /**
    * Prepare to fill the given splitting.
    */
   void prepare(const DipoleSplittingInfo&);
@@ -101,6 +106,7 @@ public:
    * pt selected for the next splitting.
    */
   Energy generate(const DipoleSplittingInfo&,
+		  map<string,double>& variations,
 		  Energy optHardPt = ZERO,
 		  Energy optCutoff = ZERO);
 
@@ -111,6 +117,7 @@ public:
    * from a wrapping generator.
    */
   Energy generateWrapped(DipoleSplittingInfo&,
+			 map<string,double>& variations,
 			 Energy optHardPt = ZERO,
 			 Energy optCutoff = ZERO);
 
@@ -151,7 +158,8 @@ protected:
    * through fixParameters generate the next
    * splitting.
    */
-  void doGenerate(Energy optCutoff = ZERO);
+  void doGenerate(map<string,double>& variations,
+		  Energy optCutoff = ZERO);
 
 public:
 
@@ -233,6 +241,20 @@ public:
    * Evalute the splitting kernel.
    */
   double evaluate(const vector<double>&);
+
+  /**
+   * Indicate that a veto with the given kernel value and overestimate has occured.
+   */
+  void veto(const vector<double>&, double p, double r) {
+    splittingKernel()->veto(generatedSplitting, p, r, currentWeights);
+  }
+
+  /**
+   * Indicate that an accept with the given kernel value and overestimate has occured.
+   */
+  void accept(const vector<double>&, double p, double r) {
+    splittingKernel()->accept(generatedSplitting, p, r, currentWeights);
+  }
 
   /**
    * True, if sampler should apply compensation
@@ -392,6 +414,11 @@ private:
    * True, if sampler should apply compensation
    */
   bool theDoCompensate;
+
+  /**
+   * The currently used weight map
+   */
+  map<string,double> currentWeights;
 
 private:
 

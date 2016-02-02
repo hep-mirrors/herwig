@@ -192,6 +192,22 @@ public:
   void stopPresampling();
 
   /**
+   * Indicate that a veto with the given kernel value and overestimate has occured.
+   */
+  void veto(const vector<double>&, double, double) {
+    /** use born and real xcombs in here to figure out what we need to reweight;
+	it should have its kinematic variables completed at this step */
+  }
+
+  /**
+   * Indicate that an accept with the given kernel value and overestimate has occured.
+   */
+  void accept(const vector<double>&, double, double) {
+    /** use born and real xcombs in here to figure out what we need to reweight;
+	it should have its kinematic variables completed at this step */
+  }
+
+  /**
    * Return true, if currently being presampled
    */
   bool presampling() const { return thePresampling; }

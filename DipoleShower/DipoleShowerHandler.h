@@ -448,6 +448,11 @@ private:
    */
   Energy muPt;
 
+  /**
+   * The shower variation weights
+   */
+  map<string,double> currentWeights;
+
 private:
 
   /**
