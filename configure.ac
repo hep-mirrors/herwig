@@ -116,6 +116,8 @@ HERWIG_CHECK_OPENLOOPS
 
 HERWIG_CHECK_MADGRAPH
 
+HERWIG_CHECK_EVTGEN
+
 HERWIG_COMPILERFLAGS
 
 HERWIG_LOOPTOOLS
@@ -169,6 +171,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Decay/Partonic/Makefile
 		Decay/General/Makefile	
 		Decay/Radiation/Makefile
+		Decay/EvtGen/Makefile
                 Doc/refman.conf
                 Doc/refman.h
 		PDT/Makefile

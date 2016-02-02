@@ -663,6 +663,56 @@ AC_SUBST([DO_MADGRAPH])
 
 ])
 
+
+dnl ##### EvtGen #####
+AC_DEFUN([HERWIG_CHECK_EVTGEN],
+[
+AC_MSG_CHECKING([for evtgen])
+
+AC_ARG_WITH([evtgen],
+    AS_HELP_STRING([--with-evtgen=DIR], [Installation path of EvtGen]),
+    [],
+    [with_evtgen=no]
+)
+
+AC_MSG_RESULT([$with_evtgen])
+
+AS_IF([test "x$with_evtgen" != "xno"],
+      [AC_CHECK_FILES(
+      ${with_evtgen}/lib/libEvtGen.so,
+      [have_evtgen=lib], [have_evtgen=no])],
+      [have_evtgen=no])
+
+AS_IF([test "x$have_evtgen" = "xlib"],
+      [EVTGENPREFIX=${with_evtgen}
+      AC_SUBST(EVTGENPREFIX)
+      ])
+
+AS_IF([test "x$with_evtgen" != "xno"  -a "x$have_evtgen" = "xno"],
+      [AC_MSG_ERROR([EvtGen requested but not found])])
+
+AM_CONDITIONAL(HAVE_EVTGEN,[test "x$have_evtgen" = "xlib" ])
+
+if test "x$have_evtgen" = "xlib"  ; then
+     	LOAD_EVTGEN="library"
+     	CREATE_EVTGEN="create"
+     	INSERT_EVTGEN="insert"
+     	DO_EVTGEN="do"
+else
+     	LOAD_EVTGEN="# library"
+	CREATE_EVTGEN="# create"
+     	INSERT_EVTGEN="# insert"
+     	DO_EVTGEN="# do"
+fi
+
+AC_SUBST([LOAD_EVTGEN])
+AC_SUBST([CREATE_EVTGEN])
+AC_SUBST([INSERT_EVTGEN])
+AC_SUBST([DO_EVTGEN])
+
+
+])
+
 dnl ##### PDF PATH #####
 AC_DEFUN([HERWIG_PDF_PATH],
 [
@@ -861,6 +911,7 @@ cat << _HW_EOF_ > config.herwig
 *** OpenLoops:		$with_openloops
 *** VBFNLO:		$with_vbfnlo
 ***
+*** EvtGen:		$with_evtgen
 *** GSL:		$with_gsl
 *** boost:              ${BOOST_CPPFLAGS:-system}
 *** Fastjet:		${fjconfig}
