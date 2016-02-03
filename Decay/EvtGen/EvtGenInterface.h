@@ -6,7 +6,6 @@
 //
 
 #include "EvtGenInterface.fh"
-#include "EvtGenRandom.h"
 #include "ThePEG/Interface/Interfaced.h"
 #include "ThePEG/Vectors/Lorentz5Vector.h"
 #include "ThePEG/Helicity/ScalarSpinInfo.h"
@@ -16,6 +15,7 @@
 #include "ThePEG/Helicity/TensorSpinInfo.h"
 #include "ThePEG/EventRecord/Particle.h"
 
+#include "EvtGenRandom.h"
 #include "EvtGen/EvtGen.hh"
 #include "EvtGenBase/EvtParticle.hh"
 #include "EvtGenBase/EvtSpinDensity.hh"
@@ -26,6 +26,10 @@
 #include "EvtGenBase/EvtRaritaSchwinger.hh"
 #include "EvtGenBase/EvtDecayAmp.hh"
 
+namespace Herwig {
+
+using namespace ThePEG;
+
 /**
  * The EvtGenInterface class is the main class for the use of the EvtGen decay
  * package with Herwig.
@@ -33,10 +37,6 @@
  * @see \ref EvtGenInterfaceInterfaces "The interfaces"
  * defined for EvtGenInterface.
  */
-namespace Herwig {
-
-using namespace ThePEG;
-
 class EvtGenInterface: public Interfaced {
 
 public:
@@ -114,7 +114,7 @@ protected:
   EvtVector4R EvtGenMomentum(const Lorentz5Momentum & mom) const {
     return EvtVector4R(mom.t()/GeV,mom.x()/GeV,mom.y()/GeV,mom.z()/GeV);
   }
-  
+
   /**
    * Convert a PDG code from ThePEG into an EvtGen particle id
    * @param id The PDG code
@@ -453,7 +453,7 @@ private:
    */
   EvtRandomEngine * evtrnd_;
 
-  /*
+  /** 
    * Main EvtGen object
    */
   EvtGen * evtgen_;

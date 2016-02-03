@@ -37,8 +37,10 @@
 
 using namespace Herwig;
 
-EvtGenInterface::EvtGenInterface() : decayName_(string(EVTGEN_PREFIX)+"/share/DECAY2010.DEC"),
-				     pdtName_(string(EVTGEN_PREFIX)+"/share/evt.pdl"),
+const string prefix=EVTGEN_PREFIX "";
+
+EvtGenInterface::EvtGenInterface() : decayName_(prefix+"/share/DECAY_2010.DEC"),
+				     pdtName_(prefix+"/share/evt.pdl"),
 				     reDirect_(true),checkConv_(false)
 {}
 
@@ -53,19 +55,21 @@ IBPtr EvtGenInterface::fullclone() const {
 }
 
 void EvtGenInterface::persistentOutput(PersistentOStream & os) const {
-  os << pdtName_ << reDirect_ << userDecays_ << checkConv_ << convID_;
+  os << decayName_ << pdtName_ << reDirect_
+     << userDecays_ << checkConv_ << convID_;
 }
 
 void EvtGenInterface::persistentInput(PersistentIStream & is, int) {
-  is >> pdtName_ >> reDirect_ >> userDecays_ >> checkConv_ >> convID_;
+  is >> decayName_ >> pdtName_ >> reDirect_
+     >> userDecays_ >> checkConv_ >> convID_;
 }
 
 
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeClass<EvtGenInterface,Interfaced>
-  describeHerwigEvtGenInterface("Herwig::EvtGenInterface",
-				"HwEvtGenInterface.so");
+describeHerwigEvtGenInterface("Herwig::EvtGenInterface",
+			      "HwEvtGenInterface.so");
 
 void EvtGenInterface::Init() {
 
@@ -76,13 +80,13 @@ void EvtGenInterface::Init() {
   static Parameter<EvtGenInterface,string> interfaceDecay_File
     ("Decay_File",
      "The name of the file for the EvtGen decays.",
-     &EvtGenInterface::decayName_, string(EVTGEN_PREFIX)+"/share/DECAY2010.DEC",
+     &EvtGenInterface::decayName_, prefix+"/share/DECAY_2010.DEC",
      false, false);
 
   static Parameter<EvtGenInterface,string> interfacePDT_File
     ("PDTFile",
      "The name of the file for the EvtGen particle data.",
-     &EvtGenInterface::pdtName_, string(EVTGEN_PREFIX)+"/share/evt.pdl",
+     &EvtGenInterface::pdtName_, prefix+"/share/evt.pdl",
      false, false);
 
   static Switch<EvtGenInterface,bool> interfaceRedirect
@@ -127,9 +131,8 @@ void EvtGenInterface::Init() {
   static ParVector<EvtGenInterface,string> interfaceUserDecays
     ("UserDecays",
      "List of user decay files to be loaded",
-     &EvtGenInterface::userDecays_, -1, "", 0, 0,
+     &EvtGenInterface::userDecays_, -1, "", "", "",
      false, false, Interface::nolimits);
-
 }
 
 void EvtGenInterface::doinitrun() {
@@ -145,9 +148,9 @@ void EvtGenInterface::doinitrun() {
   generator()->log() << "Initializing EvtGen \n";
   // set up the random number generator for EvtGen
   generator()->log() << "Setting EvtGen random number generator"
-		     << " to the Herwig one.\n";
+  		     << " to the Herwig one.\n";
   evtrnd_ = new EvtGenRandom(const_ptr_cast<Ptr<RandomGenerator>::pointer>
- 			     (&(UseRandom::current())));
+  			     (&(UseRandom::current())));
   EvtRandom::setRandomEngine(evtrnd_);
   // PHOTOS STUFF
   EvtAbsRadCorr* radCorrEngine = 0;
@@ -157,7 +160,7 @@ void EvtGenInterface::doinitrun() {
   extraModels = genList.getListOfModels();
   // Initialize EvtGen
   evtgen_ = new EvtGen(decayName_.c_str(),pdtName_.c_str(),
-		       evtrnd_, radCorrEngine, &extraModels);
+  		       evtrnd_, radCorrEngine, &extraModels);
   // additional user decays
   for(unsigned int ix=0;ix<userDecays_.size();++ix)
     evtgen_->readUDecay(userDecays_[ix].c_str());
@@ -175,6 +178,7 @@ void EvtGenInterface::doinitrun() {
   }
 }
 
+
 ParticleVector EvtGenInterface::decay(const Particle &parent,
 				      bool recursive, const DecayMode & dm) const {
   // redirect cout to the log file
@@ -189,42 +193,41 @@ ParticleVector EvtGenInterface::decay(const Particle &parent,
   ParticleVector output;
   EvtId parID(EvtGenID(parent.id()));
   try {
-    EvtDecayBase *decayer;
+    EvtDecayBase *decayer = NULL;
     // create evtgen particle for the parent
     EvtParticle* particle = EvtGenParticle(parent);
     // simplest case, evtgen selects mode and recursively decays, use their standard mechanism
     if(dm.wildProductMatcher() && recursive) {
       evtgen_->generateDecay(particle);
-      decayer=EvtDecayTable::getInstance()->getDecay(parID.getAlias(),particle->getChannel());
     }
     // otherwise we're in control
     else {
       // select the EvtGen decayer to use
       if(dm.wildProductMatcher()) {
-	decayer = EvtDecayTable::getInstance()->getDecayFunc(particle);
+  	decayer = EvtDecayTable::getInstance()->getDecayFunc(particle);
       }
       // otherwise we should pick one
       else {
-	int imode(EvtGenChannel(dm));
-	decayer = EvtDecayTable::getInstance()->getDecay(parID.getAlias(),imode);
-	particle->setChannel(imode);
+  	int imode(EvtGenChannel(dm));
+  	decayer = EvtDecayTable::getInstance()->getDecay(parID.getAlias(),imode);
+  	particle->setChannel(imode);
       }
       // must be a decayer
       if(!decayer) throw Exception() << "Could find EvtGen decayer in EvtGen::decay()" 
-				     << Exception::runerror;
+  				     << Exception::runerror;
       // masses of the children
       bool massTreeOK(true);
       if ( particle->getNDaug() == 0 ) 
-	massTreeOK = particle->generateMassTree();
+  	massTreeOK = particle->generateMassTree();
       if ( ! massTreeOK ) {
-	// delete the EvtGen particle
-	particle->deleteDaughters();
-	delete particle; 
-	particle = 0;
-	throw Exception() << "EvtGen could not decay " << EvtPDL::name(particle->getId())
-			  <<" with mass "<< particle->mass()
-			  <<" to decay channel number "<< particle->getChannel() << "\n"
-			  << Exception::eventerror;
+  	// delete the EvtGen particle
+  	particle->deleteDaughters();
+  	delete particle;
+  	particle = 0;
+  	throw Exception() << "EvtGen could not decay " << EvtPDL::name(particle->getId())
+  			  <<" with mass "<< particle->mass()
+  			  <<" to decay channel number "<< particle->getChannel() << "\n"
+  			  << Exception::eventerror;
       }
       // mixing ???
       // static EvtId BS0=EvtPDL::getId("B_s0");
@@ -233,7 +236,6 @@ ParticleVector EvtGenInterface::decay(const Particle &parent,
       // static EvtId BDB=EvtPDL::getId("anti-B0"); 
       // // static EvtId D0=EvtPDL::getId("D0");
       // // static EvtId D0B=EvtPDL::getId("anti-D0");
-      
       // EvtId thisId=getId();
       // // remove D0 mixing for now..
       // //  if ( _ndaug==1 &&  (thisId==BS0||thisId==BSB||thisId==BD0||thisId==BDB||thisId==D0||thisId==D0B) ) {
@@ -812,7 +814,6 @@ RhoDMatrix EvtGenInterface::ThePEGSpinDensity(const EvtSpinDensity & rho, int id
   return output;
 }
 
-
 void EvtGenInterface::checkConversion() const {
   // check the translation of particles from ThePEG to EvtGen.
   ParticleMap::const_iterator pit  = generator()->particles().begin();
@@ -946,7 +947,7 @@ void EvtGenInterface::constructVertex(const Particle & parent,
   nstate*=inspin;
   constants[0]=nstate;
   constants[outspin.size()+1]=1;
-  int eind[10];
+  int eind[10]={0,0,0,0,0,0,0,0,0,0};
   unsigned int iloc;
   vector<unsigned int> hind(outspin.size()+1,0);
   DecayMEPtr newME = new_ptr(GeneralDecayMatrixElement(inspin,outspin));

@@ -55,6 +55,7 @@ ParticleVector EvtGenDecayer::decay(const DecayMode & dm,
   return output;
 }
 
+
 IBPtr EvtGenDecayer::clone() const {
   return new_ptr(*this);
 }
@@ -74,7 +75,8 @@ void EvtGenDecayer::persistentInput(PersistentIStream & is, int) {
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeClass<EvtGenDecayer,Decayer>
-  describeThePEGEvtGenDecayer("Herwig::EvtGenDecayer", "HwEvtGenInterface.so");
+describeHerwigEvtGenDecayer("Herwig::EvtGenDecayer",
+			    "HwEvtGenInterface.so");
 
 void EvtGenDecayer::Init() {
 
@@ -138,3 +140,4 @@ void EvtGenDecayer::checkDecay(PPtr in) const {
 				   << " violates charge conservation in "
 				   << "EvtGenDecayer::checkDecay\n";
 }
+

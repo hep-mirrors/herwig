@@ -679,7 +679,7 @@ AC_MSG_RESULT([$with_evtgen])
 
 AS_IF([test "x$with_evtgen" != "xno"],
       [AC_CHECK_FILES(
-      ${with_evtgen}/lib/libEvtGen.so,
+      ${with_evtgen}/lib/libEvtGenExternal.so,
       [have_evtgen=lib], [have_evtgen=no])],
       [have_evtgen=no])
 
@@ -698,17 +698,20 @@ if test "x$have_evtgen" = "xlib"  ; then
      	CREATE_EVTGEN="create"
      	INSERT_EVTGEN="insert"
      	DO_EVTGEN="do"
+	EVTGENLIBS="-L$with_evtgen/lib -lEvtGen -lEvtGenExternal"
 else
      	LOAD_EVTGEN="# library"
 	CREATE_EVTGEN="# create"
      	INSERT_EVTGEN="# insert"
      	DO_EVTGEN="# do"
+	EVTGENLIBS=""
 fi
 
 AC_SUBST([LOAD_EVTGEN])
 AC_SUBST([CREATE_EVTGEN])
 AC_SUBST([INSERT_EVTGEN])
 AC_SUBST([DO_EVTGEN])
+AC_SUBST([EVTGENLIBS])
 
 
 ])
