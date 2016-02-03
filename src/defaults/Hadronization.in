@@ -75,9 +75,9 @@ newdef ClusterDecayer:ClSmrBottom 0.00
 newdef LightClusterDecayer:SingleHadronLimitBottom 0.13
 
 # Clustering parameters for c-quarks
-newdef ClusterFissioner:ClMaxCharm  3.41*GeV
-newdef ClusterFissioner:ClPowCharm  2.03
-newdef ClusterFissioner:PSplitCharm 1.15
+newdef ClusterFissioner:ClMaxCharm  3.55*GeV
+newdef ClusterFissioner:ClPowCharm  2.11
+newdef ClusterFissioner:PSplitCharm 1.20
 newdef ClusterDecayer:ClDirCharm 1
 newdef ClusterDecayer:ClSmrCharm 0.
 newdef LightClusterDecayer:SingleHadronLimitCharm 0.0
