@@ -235,6 +235,8 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		src/Makefile-UserModules
 		src/defaults/Analysis.in
 		src/defaults/MatchboxDefaults.in
+		src/defaults/Decays.in
+		src/defaults/decayers.in
 		src/defaults/setup.gosam.in
 		src/Matchbox/LO-DefaultShower.in
 		src/Matchbox/LO-DipoleShower.in

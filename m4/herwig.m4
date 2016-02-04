@@ -694,23 +694,17 @@ AS_IF([test "x$with_evtgen" != "xno"  -a "x$have_evtgen" = "xno"],
 AM_CONDITIONAL(HAVE_EVTGEN,[test "x$have_evtgen" = "xlib" ])
 
 if test "x$have_evtgen" = "xlib"  ; then
-     	LOAD_EVTGEN="library"
-     	CREATE_EVTGEN="create"
-     	INSERT_EVTGEN="insert"
-     	DO_EVTGEN="do"
+     	LOAD_EVTGEN_DECAYS="read EvtGenBDecays.in"
+     	LOAD_EVTGEN_DECAYER="read EvtGenDecayer.in"
 	EVTGENLIBS="-L$with_evtgen/lib -lEvtGen -lEvtGenExternal"
 else
-     	LOAD_EVTGEN="# library"
-	CREATE_EVTGEN="# create"
-     	INSERT_EVTGEN="# insert"
-     	DO_EVTGEN="# do"
+     	LOAD_EVTGEN_DECAYS="read HerwigBDecays.in"
+     	LOAD_EVTGEN_DECAYER="#read EvtGenDecayer.in"
 	EVTGENLIBS=""
 fi
 
-AC_SUBST([LOAD_EVTGEN])
-AC_SUBST([CREATE_EVTGEN])
-AC_SUBST([INSERT_EVTGEN])
-AC_SUBST([DO_EVTGEN])
+AC_SUBST([LOAD_EVTGEN_DECAYS])
+AC_SUBST([LOAD_EVTGEN_DECAYER])
 AC_SUBST([EVTGENLIBS])
 
 

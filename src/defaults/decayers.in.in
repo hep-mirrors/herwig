@@ -24434,4 +24434,4 @@ newdef RadiativeHyperon:Ntry 500
 newdef RadiativeHyperon:Points 10000
 newdef RadiativeHyperon:GenerateIntermediates 0 
 
-#
+@LOAD_EVTGEN_DECAYER@
