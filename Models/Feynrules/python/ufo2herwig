@@ -189,6 +189,13 @@ for p in FR.all_parameters:
         #parmgetters.append('  %s %s() const { return %s; }' % (typemap(p.type),p.name, text))
         doinit.append('   %s_ = %s;'  % (p.name, text) )
 
+
+    if args.verbose:
+        pprint.pprint((p.name,p.value, value, p.nature))
+
+pcwriter = ParamCardWriter(FR.all_parameters)
+paramcard_output = '\n'.join(pcwriter.output)
+
 ### special treatment
 #    if p.name == 'aS':
 #        expression = '0.25 * sqr(strongCoupling(q2)) / Constants::pi'
@@ -199,9 +206,6 @@ for p in FR.all_parameters:
 #    elif p.name == 'MZ':
 #        expression = 'getParticleData(ThePEG::ParticleID::Z0)->mass() / GeV'
 
-
-    if args.verbose:
-        pprint.pprint((p.name,p.value, value, p.nature))
 
 paramconstructor=': '
 
@@ -237,7 +241,8 @@ parmtextsubs = { 'parmgetters' : '\n'.join(parmgetters),
                  'refs' : '',
                  'parmextinter': ''.join(interfaceDecls),
                  'ModelName': modelname,
-                 'calcfunctions': ''
+                 'calcfunctions': '',
+                 'param_card_data': paramcard_output
                  }
 
 ##################################################
