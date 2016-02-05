@@ -710,6 +710,36 @@ AC_SUBST([EVTGENLIBS])
 
 ])
 
+AC_DEFUN([HERWIG_CHECK_PYTHIA],
+[
+dnl check if a directory is specified for Pythia
+AC_ARG_WITH(pythia,
+            [AC_HELP_STRING([--with-pythia=dir], 
+                            [Assume the given directory for Pythia])])
+
+dnl search for the pythia-config script
+if test "$with_pythia" = ""; then
+   AC_PATH_PROG(pythiaconfig, pythia8-config, no)
+else
+   AC_PATH_PROG(pythiaconfig, pythia8-config, no, ${with_pythia}/bin)
+fi
+
+if test "${pythiaconfig}" = "no"; then
+   AC_MSG_CHECKING(Pythia)
+   AC_MSG_RESULT(no);
+#   $2
+else
+
+   PYTHIA8DATA=`${pythiaconfig} --datadir`/xmldoc
+
+fi
+
+AC_SUBST(PYTHIA8DATA)
+
+])
+
+dnl CHECK PYTHIA END
+
 dnl ##### PDF PATH #####
 AC_DEFUN([HERWIG_PDF_PATH],
 [

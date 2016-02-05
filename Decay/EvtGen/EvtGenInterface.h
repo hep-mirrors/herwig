@@ -446,6 +446,11 @@ private:
    */
   vector<long> convID_;
 
+  /**
+   *  Location of the PYTHIA8 data directory
+   */
+  string p8Data_;
+
 private:
 
   /**

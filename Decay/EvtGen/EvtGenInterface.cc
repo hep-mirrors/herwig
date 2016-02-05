@@ -37,11 +37,17 @@
 
 using namespace Herwig;
 
+namespace {
+
 const string prefix=EVTGEN_PREFIX "";
+const string p8data=PYTHIA8DATA "";
+
+}
 
 EvtGenInterface::EvtGenInterface() : decayName_(prefix+"/share/DECAY_2010.DEC"),
 				     pdtName_(prefix+"/share/evt.pdl"),
-				     reDirect_(true),checkConv_(false)
+				     reDirect_(true), checkConv_(false),
+				     p8Data_(p8data)
 {}
 
 EvtGenInterface::~EvtGenInterface() {}
@@ -56,12 +62,12 @@ IBPtr EvtGenInterface::fullclone() const {
 
 void EvtGenInterface::persistentOutput(PersistentOStream & os) const {
   os << decayName_ << pdtName_ << reDirect_
-     << userDecays_ << checkConv_ << convID_;
+     << userDecays_ << checkConv_ << convID_ << p8Data_;
 }
 
 void EvtGenInterface::persistentInput(PersistentIStream & is, int) {
   is >> decayName_ >> pdtName_ >> reDirect_
-     >> userDecays_ >> checkConv_ >> convID_;
+     >> userDecays_ >> checkConv_ >> convID_ >> p8Data_;
 }
 
 
@@ -133,6 +139,13 @@ void EvtGenInterface::Init() {
      "List of user decay files to be loaded",
      &EvtGenInterface::userDecays_, -1, "", "", "",
      false, false, Interface::nolimits);
+
+  static Parameter<EvtGenInterface,string> interfacePythia8Data
+    ("Pythia8Data",
+     "Location of the Pythia8 data directory",
+     &EvtGenInterface::p8Data_, p8data,
+     false, false);
+
 }
 
 void EvtGenInterface::doinitrun() {
@@ -155,7 +168,7 @@ void EvtGenInterface::doinitrun() {
   // PHOTOS STUFF
   EvtAbsRadCorr* radCorrEngine = 0;
   std::list<EvtDecayBase*> extraModels;
-  EvtExternalGenList genList;
+  EvtExternalGenList genList(true,p8Data_,"gamma",true);
   radCorrEngine = genList.getPhotosModel();
   extraModels = genList.getListOfModels();
   // Initialize EvtGen
@@ -503,9 +516,7 @@ EvtId EvtGenInterface::EvtGenID(int id, bool exception) const {
   }
   // lowest baryon multiplets and diquarks are almost the same
   else if(absid>1000&&absid<6000&&ispin>=1&&ispin<=4) {
-    // special for lambda_c(2625)
-    if(absid==4124) output = EvtPDL::evtIdFromStdHep(isgn*(absid+10000));
-    else            output = EvtPDL::evtIdFromStdHep(id);
+    output = EvtPDL::evtIdFromStdHep(id);
   } 
   // 1 1P1 mesons are the same apart from D_s1
   else if(absid>10100&&absid<10600&&(ispin==3)) {
@@ -743,10 +754,7 @@ int EvtGenInterface::ThePEGID(EvtId eid,bool exception) const {
   // excited baryons
   else if(((absid>10000&&absid<16000)||(absid>20000&&absid<26000)||
 	   (absid>30000&&absid<36000))&&(ispin==2||ispin==4)) {
-    // most cases
-    if(absid!=14124) output=id;
-    // lambda_c(2625)
-    else             output=isgn*(absid-10000);
+    output=id;
   }
   // bottomium
   else if((absid%1000)/10==55) {
@@ -823,12 +831,26 @@ void EvtGenInterface::checkConversion() const {
   for(;pit!=pend;++pit) {
     generator()->log() << pit->first << "     ";
     etemp=EvtGenID(pit->first,false);
+    Energy mass = pit->second->mass();
+    Energy width = pit->second->width();
     if(etemp.getAlias()>=0) {
       generator()->log() << pit->second->PDGName() << "\t becomes " 
 			 << EvtPDL::name(etemp) << "\t " 
 			 << EvtPDL::getStdHep(etemp);
       if(ThePEGID(etemp,false)-pit->first!=0) {
 	generator()->log() << " and converting back to ThePEG fails";
+      }
+      double mass2  = EvtPDL::getMeanMass(etemp);
+      double width2 = EvtPDL::getWidth(etemp);
+      if(mass!=ZERO) {
+	double delta = (mass-mass2*GeV)/mass;
+	if(abs(delta)>1e-6)
+	  generator()->log() << " Mass Difference " << mass/GeV-mass2;
+      }
+      if(width>ZERO) {
+	double delta = (width-width2*GeV)/width;
+	if(abs(delta)>1e-6)
+	  generator()->log() << " Width Difference " << width/GeV-width2;
       }
       generator()->log() << "\n";
     }

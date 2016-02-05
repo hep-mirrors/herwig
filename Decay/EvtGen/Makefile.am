@@ -8,4 +8,5 @@ EvtGenDecayer.cc EvtGenDecayer.h
 HwEvtGenInterface_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 1:0:0
 HwEvtGenInterface_la_LIBADD = $(EVTGENLIBS)
 HwEvtGenInterface_la_CPPFLAGS = $(AM_CPPFLAGS) $(EVTGENINCLUDE) \
--DEVTGEN_PREFIX="\"$(EVTGENPREFIX)\""
+-DEVTGEN_PREFIX="\"$(EVTGENPREFIX)\"" \
+-DPYTHIA8DATA="\"$(PYTHIA8DATA)\""
