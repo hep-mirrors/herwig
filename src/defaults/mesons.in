@@ -32,14 +32,14 @@ create ThePEG::ParticleData Kbar0
 setup Kbar0 -311 Kbar0 0.497648 1.e300  0 0 0 0 1 0 
 makeanti Kbar0 K0
 create ThePEG::ParticleData D0
-setup D0 421 D0 1.8645 1.6042841463415E-12 0 0.123 0 0 1 0 
+setup D0 421 D0 1.86484 1.6042841463415E-12 0 0.123 0 0 1 0
 create ThePEG::ParticleData D+
-setup D+ 411 D+ 1.8693 6.3286385503528E-13 0 0.3118 3 0 1 0 
+setup D+ 411 D+ 1.86962 6.3286385503528E-13 0 0.3118 3 0 1 0
 create ThePEG::ParticleData Dbar0
-setup Dbar0 -421 Dbar0 1.8645 1.6042841463415E-12 0 0.123 0 0 1 0 
+setup Dbar0 -421 Dbar0 1.86484 1.6042841463415E-12 0 0.123 0 0 1 0
 makeanti Dbar0 D0
 create ThePEG::ParticleData D-
-setup D- -411 D- 1.8693 6.3286385503528E-13 0 0.3118 -3 0 1 0 
+setup D- -411 D- 1.86962 6.3286385503528E-13 0 0.3118 -3 0 1 0
 makeanti D- D+
 create ThePEG::ParticleData D_s+
 setup D_s+ 431 D_s+ 1.9682 1.315513E-12 0 0.15 3 0 1 0 
