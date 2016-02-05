@@ -129,6 +129,16 @@ static Parameter<{modelname}, {type}> interface{pname}
    false, false, Interface::nolimits);
 """
 
+massnames = {}
+widthnames = {}
+
+for particle in FR.all_particles:
+    if particle.mass != 'ZERO':
+        massnames[particle.mass] = abs(particle.pdg_code)
+
+    if particle.width != 'ZERO':
+        widthnames[particle.width] = abs(particle.pdg_code)
+
 interfaceDecls = []
 modelparameters = {}
 
@@ -139,21 +149,33 @@ for p in FR.all_parameters:
         assert( value.imag < 1.0e-16 )
         value = value.real
         if p.nature == 'external':
-            interfaceDecls.append( 
-                interfacedecl_T.format(modelname=modelname,
-                                       pname=p.name,
-                                       value=value,
-                                       type=typemap(p.type)) 
-            )
+            if p.name not in massnames and p.name not in widthnames:
+                interfaceDecls.append( 
+                    interfacedecl_T.format(modelname=modelname,
+                                           pname=p.name,
+                                           value=value,
+                                           type=typemap(p.type)) 
+                )
+            else:
+                interfaceDecls.append('\n// no interface for %s. Use particle definition instead.\n' % p.name)
             if hasattr(p,'lhablock'):
                 lhalabel = '{lhablock}_{lhacode}'.format( lhablock=p.lhablock, lhacode='_'.join(map(str,p.lhacode)) )
-                parmmodelconstr.append('set %s:%s ${%s}' % (modelname, p.name, lhalabel))
+                if p.name not in massnames and p.name not in widthnames:
+                    parmmodelconstr.append('set %s:%s ${%s}' % (modelname, p.name, lhalabel))
+                else:
+                    parmmodelconstr.append('# %s is taken from the particle setup' % p.name)
                 modelparameters[lhalabel] = value
                 parmsubs[p.name] = lhalabel
             else:
-                parmmodelconstr.append('set %s:%s %s' % (modelname, p.name, value))
+                if p.name not in massnames and p.name not in widthnames:
+                    parmmodelconstr.append('set %s:%s %s' % (modelname, p.name, value))
+                else:
+                    parmmodelconstr.append('# %s is taken from the particle setup' % p.name)
                 parmsubs[p.name] = value
-            parmconstr.append('%s_(%s)' % (p.name, value))
+            if p.name not in massnames and p.name not in widthnames:
+                parmconstr.append('%s_(%s)' % (p.name, value))
+            else:
+                parmconstr.append('%s_()' % p.name)
         else :
             parmconstr.append('%s_()' % p.name)
             parmsubs[p.name] = value
@@ -186,9 +208,20 @@ for p in FR.all_parameters:
         expression, symbols = py2cpp(p.value)
         text = add_brackets(expression, symbols)
         text=text.replace('()()','()')
-        #parmgetters.append('  %s %s() const { return %s; }' % (typemap(p.type),p.name, text))
         doinit.append('   %s_ = %s;'  % (p.name, text) )
+        if p.name in massnames:
+            doinit.append('   getParticleData(%s)->mass(%s_ * GeV);'  % (massnames[p.name], p.name) )
+        elif p.name in widthnames:
+            doinit.append('   getParticleData(%s)->width(%s_ * GeV);' % (widthnames[p.name], p.name) )
+            doinit.append('   getParticleData(%s)->cTau (%s_ == 0.0 ? ZERO : hbarc/(%s_*GeV));' % (widthnames[p.name], p.name, p.name) )
+            doinit.append('   getParticleData(%s)->widthCut(10. * %s_ * GeV);' % (widthnames[p.name], p.name) )
 
+
+    elif p.nature == 'external':
+        if p.name in massnames:
+            doinit.append('   %s_ = getParticleData(%s)->mass()  / GeV;'  % (p.name, massnames[p.name]) )
+        elif p.name in widthnames:
+            doinit.append('   %s_ = getParticleData(%s)->width() / GeV;'  % (p.name, widthnames[p.name]) )
 
     if args.verbose:
         pprint.pprint((p.name,p.value, value, p.nature))
@@ -203,9 +236,6 @@ paramcard_output = '\n'.join(pcwriter.output)
 #        expression = '4.0 * Constants::pi / sqr(electroMagneticCoupling(q2))'
 #    elif p.name == 'Gf':
 #        expression = 'generator()->standardModel()->fermiConstant() * GeV2'
-#    elif p.name == 'MZ':
-#        expression = 'getParticleData(ThePEG::ParticleID::Z0)->mass() / GeV'
-
 
 paramconstructor=': '
 
