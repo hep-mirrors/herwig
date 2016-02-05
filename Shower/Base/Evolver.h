@@ -300,7 +300,8 @@ protected:
    */
   virtual bool truncatedTimeLikeShower(tShowerParticlePtr particle,
 				       HardBranchingPtr branch,
-				       ShowerInteraction::Type type, bool first);
+				       ShowerInteraction::Type type,
+				       Branching fb, bool first);
  
   /**
    * Truncated shower from a space-like particle
@@ -562,6 +563,13 @@ protected:
    */
   Branching selectTimeLikeBranching(tShowerParticlePtr particle,
 				    ShowerInteraction::Type type);
+
+  /**
+   *   Select the branching for the next time-like emission
+   */
+  Branching selectTruncatedTimeLikeBranching(tShowerParticlePtr particle,
+					     ShowerInteraction::Type type,
+					     HardBranchingPtr branch);
 
   /**
    *  Create the timelike child of a branching

@@ -38,6 +38,16 @@ using namespace ThePEG;
      *  The type of radiation line
      */
     ShowerPartnerType::Type type;
+
+    /**
+     *  Whether or not it keep from forced hard emisson
+     */
+    bool hard;
+
+    /**
+     *  Which of the children is same as incoming
+     */
+    unsigned int iout;
     
     /**
      *  Constructor for the struct
@@ -46,12 +56,12 @@ using namespace ThePEG;
      * @param d The SudakovFormFactor for the branching
      */
     Branching(ShoKinPtr a, IdList c,tSudakovPtr d,ShowerPartnerType::Type t) 
-      : kinematics(a), ids(c), sudakov(d), type(t) {}
+      : kinematics(a), ids(c), sudakov(d), type(t), hard(false), iout(0) {}
     
     /**
      *  Default constructor
      */
-    Branching() {}
+    Branching() : hard(false), iout(0) {}
   };
 
 }
