@@ -3,25 +3,25 @@
 
 # shower
 
-set /Herwig/Shower/QtoQGSudakov:pTmin 1.55
-set /Herwig/Shower/GtoGGSudakov:pTmin 1.55
-set /Herwig/Shower/GtoQQbarSudakov:pTmin 1.55
-set /Herwig/Shower/GtobbbarSudakov:pTmin 1.55
-set /Herwig/Shower/GtoccbarSudakov:pTmin 1.55
-set /Herwig/Shower/QtoGQSudakov:pTmin 1.55
-set /Herwig/Shower/utoGuSudakov:pTmin 1.55
-set /Herwig/Shower/dtoGdSudakov:pTmin 1.55
+set /Herwig/Shower/QtoQGSudakov:pTmin 1.63
+set /Herwig/Shower/GtoGGSudakov:pTmin 1.63
+set /Herwig/Shower/GtoQQbarSudakov:pTmin 1.63
+set /Herwig/Shower/GtobbbarSudakov:pTmin 1.63
+set /Herwig/Shower/GtoccbarSudakov:pTmin 1.63
+set /Herwig/Shower/QtoGQSudakov:pTmin 1.63
+set /Herwig/Shower/utoGuSudakov:pTmin 1.63
+set /Herwig/Shower/dtoGdSudakov:pTmin 1.63
 
 set /Herwig/Shower/AlphaQCD:AlphaMZ 0.135
 
 # hadronization
-set /Herwig/Hadronization/ClusterFissioner:ClMaxLight  3.44*GeV
-set /Herwig/Hadronization/ClusterFissioner:ClPowLight  2.67
+set /Herwig/Hadronization/ClusterFissioner:ClMaxLight  3.46*GeV
+set /Herwig/Hadronization/ClusterFissioner:ClPowLight  2.71
 set /Herwig/Hadronization/ClusterFissioner:PSplitLight 0.82
 set /Herwig/Hadronization/ClusterDecayer:ClDirLight    1
 set /Herwig/Hadronization/ClusterDecayer:ClSmrLight    0.78
-set /Herwig/Hadronization/HadronSelector:PwtSquark     0.58
-set /Herwig/Hadronization/HadronSelector:PwtDIquark    0.41
+set /Herwig/Hadronization/HadronSelector:PwtSquark     0.64
+set /Herwig/Hadronization/HadronSelector:PwtDIquark    0.43
 
 set /Herwig/Hadronization/ClusterFissioner:ClMaxCharm  3.38*GeV
 set /Herwig/Hadronization/ClusterFissioner:ClPowCharm  2.02
