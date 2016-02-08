@@ -234,6 +234,60 @@ public:
    */
   bool hardScaleIsMuF() const { return maxPtIsMuF_; }
 
+  /**
+   * Parse a variation statement
+   */
+  static string parseVariations(string, map<string,double>&);
+
+  /**
+   * Add additional variations.
+   */
+  static void addToVariations(string in, double v, map<string,double>& vars) {
+    vars[in] = v;
+  }
+
+  /**
+   * Add additional variations.
+   */
+  static void addToVariations(const map<string,double>& vin,
+			      map<string,double>& vars) {
+    for ( map<string,double>::const_iterator w = vin.begin();
+	  w != vin.end(); ++w )
+      addToVariations(w->first,w->second,vars);
+  }
+
+  /**
+   * Vary the factorization scale by the indicated values and using the
+   * indicated variation labels.
+   */
+  map<string,double>& renormalizationScaleVariations() { 
+    return renormalizationScaleVariations_;
+  }
+
+  /**
+   * Vary the factorization scale by the indicated values and using the
+   * indicated variation labels.
+   */
+  const map<string,double>& renormalizationScaleVariations() const { 
+    return renormalizationScaleVariations_;
+  }
+
+  /**
+   * Vary the renormalization scale by the indicated values and using the
+   * indicated variation labels.
+   */
+  map<string,double>& factorizationScaleVariations() {
+    return factorizationScaleVariations_;
+  }
+
+  /**
+   * Vary the renormalization scale by the indicated values and using the
+   * indicated variation labels.
+   */
+  const map<string,double>& factorizationScaleVariations() const {
+    return factorizationScaleVariations_;
+  }
+
 protected:
 
   /** @name Clone Methods. */
@@ -535,6 +589,30 @@ private:
    *  Whether or not to split into hard and decay trees
    */
   bool splitHardProcess_;
+
+  /**
+   * Vary the renormalization scale by the indicated values and using the
+   * indicated variation labels.
+   */
+  map<string,double> renormalizationScaleVariations_;
+
+  /**
+   * Command to vary the renormalization scale by the indicated values and using
+   * the indicated variation labels.
+   */
+  string doRenormalizationScaleVariations(string);
+
+  /**
+   * Vary the factorization scale by the indicated values and using the
+   * indicated variation labels.
+   */
+  map<string,double> factorizationScaleVariations_;
+
+  /**
+   * Command to vary the factorization scale by the indicated values and using
+   * the indicated variation labels.
+   */
+  string doFactorizationScaleVariations(string);
 
 public:
 

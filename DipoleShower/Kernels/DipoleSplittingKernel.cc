@@ -20,6 +20,8 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
+#include "Herwig/Shower/ShowerHandler.h"
+
 using namespace Herwig;
 
 DipoleSplittingKernel::DipoleSplittingKernel() 
@@ -48,7 +50,9 @@ void DipoleSplittingKernel::persistentOutput(PersistentOStream & os) const {
      << theRenormalizationScaleFactor
      << ounit(theRenormalizationScaleFreeze,GeV)
      << ounit(theFactorizationScaleFreeze,GeV)
-     << theVirtualitySplittingScale;
+     << theVirtualitySplittingScale
+     << theRenormalizationScaleVariations
+     << theFactorizationScaleVariations;
 }
 
 void DipoleSplittingKernel::persistentInput(PersistentIStream & is, int) {
@@ -59,7 +63,9 @@ void DipoleSplittingKernel::persistentInput(PersistentIStream & is, int) {
      >> theRenormalizationScaleFactor
      >> iunit(theRenormalizationScaleFreeze,GeV)
      >> iunit(theFactorizationScaleFreeze,GeV)
-     >> theVirtualitySplittingScale;
+     >> theVirtualitySplittingScale
+     >> theRenormalizationScaleVariations
+     >> theFactorizationScaleVariations;
 }
 
 double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
@@ -106,6 +112,24 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
 
   return ret;
 
+}
+
+void DipoleSplittingKernel::accept(const DipoleSplittingInfo&,
+				   double, double,
+				   map<string,double>&) const {
+}
+
+void DipoleSplittingKernel::veto(const DipoleSplittingInfo&,
+				 double, double,
+				 map<string,double>&) const {
+}
+
+string DipoleSplittingKernel::doRenormalizationScaleVariations(string in) {
+  return ShowerHandler::parseVariations(in,theRenormalizationScaleVariations);
+}
+
+string DipoleSplittingKernel::doFactorizationScaleVariations(string in) {
+  return ShowerHandler::parseVariations(in,theFactorizationScaleVariations);
 }
 
 AbstractClassDescription<DipoleSplittingKernel> DipoleSplittingKernel::initDipoleSplittingKernel;

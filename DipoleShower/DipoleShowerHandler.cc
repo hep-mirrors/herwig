@@ -854,6 +854,15 @@ void DipoleShowerHandler::doinit() {
   ShowerHandler::doinit();
   if ( theGlobalAlphaS )
     resetAlphaS(theGlobalAlphaS);
+  for ( vector<Ptr<DipoleSplittingKernel>::ptr>::iterator k = kernels.begin();
+	k != kernels.end(); ++k ) {
+    if ( !renormalizationScaleVariations().empty() )
+      addToVariations(renormalizationScaleVariations(),
+		      (**k).renormalizationScaleVariations());
+    if ( !factorizationScaleVariations().empty() )
+      addToVariations(factorizationScaleVariations(),
+		      (**k).factorizationScaleVariations());
+  }
 }
 
 void DipoleShowerHandler::dofinish() {

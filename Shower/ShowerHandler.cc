@@ -111,7 +111,9 @@ void ShowerHandler::persistentOutput(PersistentOStream & os) const {
      << factorizationScaleFactor_ << renormalizationScaleFactor_
      << hardScaleFactor_ << scaleFactorOption_
      << restrictPhasespace_ << maxPtIsMuF_ << hardScaleProfile_
-     << splitHardProcess_;
+     << splitHardProcess_
+     << renormalizationScaleVariations_
+     << factorizationScaleVariations_;
 }
 
 void ShowerHandler::persistentInput(PersistentIStream & is, int) {
@@ -123,7 +125,9 @@ void ShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> factorizationScaleFactor_ >> renormalizationScaleFactor_
      >> hardScaleFactor_ >> scaleFactorOption_
      >> restrictPhasespace_ >> maxPtIsMuF_ >> hardScaleProfile_
-     >> splitHardProcess_;
+     >> splitHardProcess_
+     >> renormalizationScaleVariations_
+     >> factorizationScaleVariations_;
 }
 
 void ShowerHandler::Init() {
@@ -815,3 +819,27 @@ bool ShowerHandler::isResolvedHadron(tPPtr particle) {
 HardTreePtr ShowerHandler::generateCKKW(ShowerTreePtr ) const {
   return HardTreePtr();
 }
+
+string ShowerHandler::parseVariations(string in, map<string,double>& vars) {
+  if ( in.empty() )
+    return "nothing specified";
+  istringstream read(in);
+  string id; double v;
+  while ( read ) {
+    read >> id;
+    if ( !read )
+      return "no value specified for tag '" + id + "'";
+    read >> v;
+    addToVariations(id, v, vars);
+  }
+  return "";
+}
+
+string ShowerHandler::doRenormalizationScaleVariations(string in) {
+  return parseVariations(in,renormalizationScaleVariations_);
+}
+
+string ShowerHandler::doFactorizationScaleVariations(string in) {
+  return parseVariations(in,factorizationScaleVariations_);
+}
+
