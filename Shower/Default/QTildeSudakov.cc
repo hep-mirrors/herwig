@@ -92,6 +92,8 @@ bool QTildeSudakov::PSVeto(const Energy2 t) {
   pT(sqrt(pt2));
   return false;
 }
+
+
  
 ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
 						   const IdList &ids,const bool cc,
@@ -108,13 +110,66 @@ ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
   if(tmax<=tmin) return ShoKinPtr();
   // calculate next value of t using veto algorithm
   Energy2 t(tmax);
+  //tEventPtr event = CurrentGenerator::current().currentEvent();
+  tEventPtr event =ShowerHandler::currentHandler()->eventHandler()->currentEvent();
+
+  bool alphaRew,PSRew,SplitRew;
+  
+  
+  
+    //This should be interfaced
+  vector<pair<string,double> > weightnames;
+  weightnames.push_back(make_pair("var0.5",0.5));
+  weightnames.push_back(make_pair("var2.0",2.0));
+  
+  
+  if(event->optionalWeights().find((*(weightnames.begin())).first)==event->optionalWeights().end())
+    for (vector<pair<string,double> >::const_iterator it=weightnames.begin();
+         it!=weightnames.end();it++)event->optionalWeight((*it).first,1.);
+  
+  vector<double> weights;
+  for (vector<pair<string,double> >::const_iterator it=weightnames.begin();
+       it!=weightnames.end();it++)weights.push_back(event->optionalWeight((*it).first));
+  
+
   do {
     if(!guessTimeLike(t,tmin,enhance)) break;
+
+    SplitRew=SplittingFnVeto(z()*(1.-z())*t,ids,true);
+    alphaRew=alphaSVeto(splittingFn()->angularOrdered() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t);
+    PSRew=PSVeto(t);
+    //Fill reweight vector
+    double factor=alphaSVetoRatio(splittingFn()->angularOrdered() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t,1.)*
+                  SplittingFnVetoRatio(z()*(1.-z())*t,ids,true);
+
+    if(!PSRew &&( SplitRew || alphaRew)){
+      //No Emission
+      vector<pair<string,double> >::const_iterator it=weightnames.begin();
+      for(vector<double>::iterator w=weights.begin();w!=weights.end();w++,it++)
+        *w *=(1.- alphaSVetoRatio(splittingFn()->angularOrdered() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t,(*it).second)*
+              SplittingFnVetoRatio(z()*(1.-z())*t,ids,true))
+              /(1-factor);
+    }else{
+      //Emission
+      q_ = t > ZERO ? Energy(sqrt(t)) : -1.*MeV;
+      if(!PSRew && q_ > ZERO){
+        vector<pair<string,double> >::const_iterator it=weightnames.begin();
+        for(vector<double>::iterator w=weights.begin();w!=weights.end();w++,it++)
+          *w *=alphaSVetoRatio(splittingFn()->angularOrdered() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t,(*it).second)*
+             SplittingFnVetoRatio(z()*(1.-z())*t,ids,true)/factor;
+      }
+    }
   }
-  while(PSVeto(t) || SplittingFnVeto(z()*(1.-z())*t,ids,true) || 
-	alphaSVeto(splittingFn()->angularOrdered() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t));
+  while(PSRew || SplitRew || alphaRew);
+
+
+  vector<pair<string,double> >::const_iterator it=weightnames.begin();
+  for(vector<double>::iterator w=weights.begin();w!=weights.end();w++,it++)
+    event->optionalWeight((*it).first,*w);
+
   q_ = t > ZERO ? Energy(sqrt(t)) : -1.*MeV;
   if(q_ < ZERO) return ShoKinPtr();
+  
   // return the ShowerKinematics object
   return createFinalStateBranching(q_,z(),phi(),pT()); 
 }
@@ -145,6 +200,27 @@ generateNextSpaceBranching(const Energy startingQ,
   } 
   // calculate next value of t using veto algorithm
   Energy2 t(tmax),pt2(ZERO);
+  
+  //tEventPtr event = CurrentGenerator::current().currentEvent();
+  tEventPtr event =ShowerHandler::currentHandler()->eventHandler()->currentEvent();
+
+
+
+  //This should be interfaced
+  vector<pair<string,double> > weightnames;
+  weightnames.push_back(make_pair("var0.5",0.5));
+  weightnames.push_back(make_pair("var2.0",2.0));
+ 
+   
+  if(event->optionalWeights().find((*(weightnames.begin())).first)==event->optionalWeights().end())
+    for (vector<pair<string,double> >::const_iterator it=weightnames.begin();
+         it!=weightnames.end();it++)event->optionalWeight((*it).first,1.);
+
+
+  vector<double> weights;
+  for (vector<pair<string,double> >::const_iterator it=weightnames.begin();
+        it!=weightnames.end();it++)weights.push_back(event->optionalWeight((*it).first));  
+ 
   bool alphaRew,PDFRew,zRew,ptRew,SplitRew;
   do {
     if(!guessSpaceLike(t,tmin,x,enhance)) break;
@@ -155,31 +231,52 @@ generateNextSpaceBranching(const Energy startingQ,
     zRew=z() > zLimits().second;
     alphaRew=alphaSVeto(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t);
     PDFRew=PDFVeto(t,x,parton0,parton1,beam);
+
     //Fill reweight vector
-    if(zRew || SplitRew || alphaRew || PDFRew || ptRew){
+    double factor=PDFVetoRatio(t,x,parton0,parton1,beam,1.)*
+                  alphaSVetoRatio(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t,1.)*
+                  SplittingFnVetoRatio((1.-z())*t/z(),ids,true);
+
+    if( (SplitRew || alphaRew || PDFRew) && !( ptRew || zRew) ){
       //No Emission
-      cout<<"\n No Emm pdf "<<PDFVetoRatio(t,x,parton0,parton1,beam,1.)<<" "<<PDFVetoRatio(t,x,parton0,parton1,beam,0.5); 
-      cout<<"\n No Emm as  "<<alphaSVetoRatio(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t,1.)<<" "<<alphaSVetoRatio(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t,0.5);
-      cout<<"\n sprat      "<<SplittingFnVetoRatio((1.-z())*t/z(),ids,true);
-       
+      vector<pair<string,double> >::const_iterator it=weightnames.begin();
+      for(vector<double>::iterator w=weights.begin();w!=weights.end();w++,it++)
+          *w *=(1.- PDFVetoRatio(t,x,parton0,parton1,beam,(*it).second)*
+                    alphaSVetoRatio(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t,(*it).second)*
+                    SplittingFnVetoRatio((1.-z())*t/z(),ids,true))/(1.-factor);
     }else{
+      if (!( ptRew || zRew))
       if (t > ZERO && zLimits().first < zLimits().second){
        //Emission
-      cout<<"\n    Emm "<<PDFVetoRatio(t,x,parton0,parton1,beam,1.)<<" "<<PDFVetoRatio(t,x,parton0,parton1,beam,0.5);
-      cout<<"\n  Emm as  "<<alphaSVetoRatio(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t,1.)<<" "<<alphaSVetoRatio(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t,0.5);
-      cout<<"\n sprat      "<<SplittingFnVetoRatio((1.-z())*t/z(),ids,true);  
-
-    }
+       vector<pair<string,double> >::const_iterator it=weightnames.begin();
+         for(vector<double>::iterator w=weights.begin();w!=weights.end();w++,it++)
+            *w *=(PDFVetoRatio(t,x,parton0,parton1,beam,(*it).second)*
+                      alphaSVetoRatio(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t,(*it).second)*
+                      SplittingFnVetoRatio((1.-z())*t/z(),ids,true))/(factor);
+      }
     }
 
   } 
   while(zRew || SplitRew || alphaRew ||	PDFRew || ptRew );
-
+ 
+  
+  vector<pair<string,double> >::const_iterator it=weightnames.begin();
+  for(vector<double>::iterator w=weights.begin();w!=weights.end();w++,it++)
+      event->optionalWeight((*it).first,*w);
+  
   if(t > ZERO && zLimits().first < zLimits().second)  q_ = sqrt(t);
   else return ShoKinPtr();
+  
+  
   pT(sqrt(pt2));
   // create the ShowerKinematics and return it
   return createInitialStateBranching(q_,z(),phi(),pT());
+  
+  
+  
+  
+  
+  
 }
 
 void QTildeSudakov::initialize(const IdList & ids, Energy2 & tmin,const bool cc) {
