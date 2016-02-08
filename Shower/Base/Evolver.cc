@@ -1799,13 +1799,12 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
     if(UseRandom::rndbool()) {
       if(!fc[0].kinematics) {
 	// select branching for first particle
-	if( branch->children()[0]->children().empty() ) {
-	  if( ! hardOnly() )
-	    fc[0] = selectTimeLikeBranching(children[0],type,HardBranchingPtr());
-	}
-	else {
+	if(!fb.hard && fb.iout ==1 )
+	  fc[0] = selectTimeLikeBranching(children[0],type,branch);
+	else if(fb.hard && !branch->children()[0]->children().empty() )
 	  fc[0] = selectTimeLikeBranching(children[0],type,branch->children()[0]);
-	}
+	else
+	  fc[0] = selectTimeLikeBranching(children[0],type,HardBranchingPtr());
       }
       // set limits if needed
       if(_reconOpt==4) {
@@ -1830,25 +1829,25 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
       }
       // select branching for the second particle
       if(!fc[1].kinematics) {
-	if( branch->children()[1]->children().empty() ) {
-	  if( ! hardOnly() )
-	    fc[1] = selectTimeLikeBranching(children[1],type,HardBranchingPtr());
-	}
-	else {
+	// select branching for first particle
+	if(!fb.hard && fb.iout ==2 )
+	  fc[1] = selectTimeLikeBranching(children[1],type,branch);
+	else if(fb.hard && !branch->children()[1]->children().empty() )
 	  fc[1] = selectTimeLikeBranching(children[1],type,branch->children()[1]);
-	}
+	else
+	  fc[1] = selectTimeLikeBranching(children[1],type,HardBranchingPtr());
       }
     }
     else {
       // select branching for the second particle
       if(!fc[1].kinematics) {
-	if( branch->children()[1]->children().empty() ) {
-	  if( ! hardOnly() )
-	    fc[1] = selectTimeLikeBranching(children[1],type,HardBranchingPtr());
-	}
-	else {
+	// select branching for first particle
+	if(!fb.hard && fb.iout ==2 )
+	  fc[1] = selectTimeLikeBranching(children[1],type,branch);
+	else if(fb.hard && !branch->children()[1]->children().empty() )
 	  fc[1] = selectTimeLikeBranching(children[1],type,branch->children()[1]);
-	}
+	else
+	  fc[1] = selectTimeLikeBranching(children[1],type,HardBranchingPtr());
       }
       // set limits if needed
       if(_reconOpt==4) {
@@ -1873,13 +1872,13 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
       }
       // select branching for first particle
       if(!fc[0].kinematics) {
-	if( branch->children()[0]->children().empty() ) {
-	  if( ! hardOnly() )
-	    fc[0] = selectTimeLikeBranching(children[0],type,HardBranchingPtr());
-	}
-	else {
+	// select branching for first particle
+	if(!fb.hard && fb.iout ==1 )
+	  fc[0] = selectTimeLikeBranching(children[0],type,branch);
+	else if(fb.hard && !branch->children()[0]->children().empty() )
 	  fc[0] = selectTimeLikeBranching(children[0],type,branch->children()[0]);
-	}
+	else
+	  fc[0] = selectTimeLikeBranching(children[0],type,HardBranchingPtr());
       }
     }
     // old default
@@ -3392,8 +3391,6 @@ Branching Evolver::selectTimeLikeBranching(tShowerParticlePtr particle,
     return fb;
   }
   // otherwise need to return the hard emission
-  fb.hard = true;
-  fb.iout=0;
   // construct the kinematics for the hard emission
   ShoKinPtr showerKin=
     branch->sudakov()->createFinalStateBranching(branch->scale(),
@@ -3406,6 +3403,8 @@ Branching Evolver::selectTimeLikeBranching(tShowerParticlePtr particle,
   idlist[1] = branch->children()[0]->branchingParticle()->id();
   idlist[2] = branch->children()[1]->branchingParticle()->id();
   fb = Branching( showerKin, idlist, branch->sudakov(),branch->type() );
+  fb.hard = true;
+  fb.iout=0;
   // return it
   return fb;
 }
