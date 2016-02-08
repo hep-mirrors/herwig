@@ -3380,17 +3380,16 @@ Branching Evolver::selectTimeLikeBranching(tShowerParticlePtr particle,
     }
     break;
   }
-  // had an emission
+  // normal case
+  if(!branch) {
+    if(fb.kinematics) fb.hard = false;
+    return fb;
+  }
+  // truncated emission
   if(fb.kinematics) {
     fb.hard = false;
-    // normal emission
-    if(!branch)
-      return fb;
-    // had a truncated emission, return it
-    else {
-      fb.iout = iout;
-      return fb;
-    }
+    fb.iout = iout;
+    return fb;
   }
   // otherwise need to return the hard emission
   fb.hard = true;
