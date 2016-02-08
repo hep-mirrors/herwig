@@ -1769,7 +1769,7 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
   // select a branching if we don't have one
   if(!fb.kinematics)
     fb = selectTimeLikeBranching(particle,type,branch);
-  // must be an emission, the force one it not a truncated one
+  // must be an emission, the forced one it not a truncated one
   assert(fb.kinematics);
   ShowerParticleVector children;
   int ntry=0;
@@ -1799,7 +1799,7 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
     if(UseRandom::rndbool()) {
       if(!fc[0].kinematics) {
 	// select branching for first particle
-	if( branch->children()[0]->children().empty() && ! hardOnly() ) {
+	if( branch->children()[0]->children().empty() ) {
 	  if( ! hardOnly() )
 	    fc[0] = selectTimeLikeBranching(children[0],type,HardBranchingPtr());
 	}
@@ -1830,7 +1830,7 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
       }
       // select branching for the second particle
       if(!fc[1].kinematics) {
-	if( branch->children()[1]->children().empty() && ! hardOnly() ) {
+	if( branch->children()[1]->children().empty() ) {
 	  if( ! hardOnly() )
 	    fc[1] = selectTimeLikeBranching(children[1],type,HardBranchingPtr());
 	}
@@ -1842,7 +1842,7 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
     else {
       // select branching for the second particle
       if(!fc[1].kinematics) {
-	if( branch->children()[1]->children().empty() && ! hardOnly() ) {
+	if( branch->children()[1]->children().empty() ) {
 	  if( ! hardOnly() )
 	    fc[1] = selectTimeLikeBranching(children[1],type,HardBranchingPtr());
 	}
@@ -1873,7 +1873,7 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
       }
       // select branching for first particle
       if(!fc[0].kinematics) {
-	if( branch->children()[0]->children().empty() && ! hardOnly() ) {
+	if( branch->children()[0]->children().empty() ) {
 	  if( ! hardOnly() )
 	    fc[0] = selectTimeLikeBranching(children[0],type,HardBranchingPtr());
 	}
