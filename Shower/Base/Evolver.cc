@@ -723,22 +723,6 @@ void Evolver::hardMatrixElementCorrection(bool hard) {
   }
 }
 
-Branching Evolver::selectTimeLikeBranching(tShowerParticlePtr particle,
-					   ShowerInteraction::Type type) {
-  Branching fb;
-  while (true) {
-    fb=_splittingGenerator->chooseForwardBranching(*particle,_finalenhance,type);
-    // no emission return
-    if(!fb.kinematics) return fb;
-    // if emission OK break
-    if(!timeLikeVetoed(fb,particle)) break;
-    // otherwise reset scale and continue - SO IS involved in veto algorithm
-    particle->vetoEmission(fb.type,fb.kinematics->scale());
-    if(particle->spinInfo()) particle->spinInfo()->decayVertex(VertexPtr());
-  }
-  return fb;
-}
-
 ShowerParticleVector Evolver::createTimeLikeChildren(tShowerParticlePtr particle, IdList ids) {
   // Create the ShowerParticle objects for the two children of
   // the emitting particle; set the parent/child relationship
@@ -776,7 +760,7 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
   int ntry=0;
   // generate the emission
   if(!fb.kinematics) 
-    fb = selectTimeLikeBranching(particle,type);
+    fb = selectTimeLikeBranching(particle,type,HardBranchingPtr());
   // no emission, return
   if(!fb.kinematics) {
     if(particle->spinInfo()) particle->spinInfo()->develop();
@@ -815,7 +799,7 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
     }
     // select branchings for children
     if(UseRandom::rndbool()) {
-      fc[0] = selectTimeLikeBranching(children[0],type);
+      fc[0] = selectTimeLikeBranching(children[0],type,HardBranchingPtr());
       if(_reconOpt==4) {
 	const vector<Energy> & virtualMasses = fb.sudakov->virtualMasses(fb.ids);
 	// compute the masses of the children
@@ -836,10 +820,10 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
 	double z = fb.kinematics->z();
 	children[1]->scales().Max_Q2 = (1.-z)*(z*(1.-z)*sqr(fb.kinematics->scale()) + sqr(masses[0])-sqr(masses[1])/z);
       }
-      fc[1] = selectTimeLikeBranching(children[1],type);
+      fc[1] = selectTimeLikeBranching(children[1],type,HardBranchingPtr());
     }
     else {
-      fc[1] = selectTimeLikeBranching(children[1],type);
+      fc[1] = selectTimeLikeBranching(children[1],type,HardBranchingPtr());
       if(_reconOpt==4) {
 	const vector<Energy> & virtualMasses = fb.sudakov->virtualMasses(fb.ids);
 	// compute the masses of the children
@@ -860,7 +844,7 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
 	double z = fb.kinematics->z();
 	children[0]->scales().Max_Q2 = (1.-z)*(z*(1.-z)*sqr(fb.kinematics->scale()) + sqr(masses[0])-sqr(masses[2])/(1.-z));
       }
-      fc[0] = selectTimeLikeBranching(children[0],type);
+      fc[0] = selectTimeLikeBranching(children[0],type,HardBranchingPtr());
     }
     // old default
     if(_reconOpt==0) {
@@ -893,7 +877,7 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
    	if(particle->spinInfo()) particle->spinInfo()->decayVertex(VertexPtr());
 	particle->vetoEmission(fb.type,fb.kinematics->scale());
 	// generate the new emission
-	fb = selectTimeLikeBranching(particle,type);
+	fb = selectTimeLikeBranching(particle,type,HardBranchingPtr());
 	// no emission, return
 	if(!fb.kinematics) {
 	  if(particle->spinInfo()) particle->spinInfo()->develop();
@@ -1784,7 +1768,7 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
 				      Branching fb, bool first) {
   // select a branching if we don't have one
   if(!fb.kinematics)
-    fb = selectTruncatedTimeLikeBranching(particle,type,branch);
+    fb = selectTimeLikeBranching(particle,type,branch);
   // must be an emission, the force one it not a truncated one
   assert(fb.kinematics);
   ShowerParticleVector children;
@@ -1817,10 +1801,10 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
 	// select branching for first particle
 	if( branch->children()[0]->children().empty() && ! hardOnly() ) {
 	  if( ! hardOnly() )
-	    fc[0] = selectTimeLikeBranching(children[0],type);
+	    fc[0] = selectTimeLikeBranching(children[0],type,HardBranchingPtr());
 	}
 	else {
-	  fc[0] = selectTruncatedTimeLikeBranching(children[0],type,branch->children()[0]);
+	  fc[0] = selectTimeLikeBranching(children[0],type,branch->children()[0]);
 	}
       }
       // set limits if needed
@@ -1848,10 +1832,10 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
       if(!fc[1].kinematics) {
 	if( branch->children()[1]->children().empty() && ! hardOnly() ) {
 	  if( ! hardOnly() )
-	    fc[1] = selectTimeLikeBranching(children[1],type);
+	    fc[1] = selectTimeLikeBranching(children[1],type,HardBranchingPtr());
 	}
 	else {
-	  fc[1] = selectTruncatedTimeLikeBranching(children[1],type,branch->children()[1]);
+	  fc[1] = selectTimeLikeBranching(children[1],type,branch->children()[1]);
 	}
       }
     }
@@ -1860,10 +1844,10 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
       if(!fc[1].kinematics) {
 	if( branch->children()[1]->children().empty() && ! hardOnly() ) {
 	  if( ! hardOnly() )
-	    fc[1] = selectTimeLikeBranching(children[1],type);
+	    fc[1] = selectTimeLikeBranching(children[1],type,HardBranchingPtr());
 	}
 	else {
-	  fc[1] = selectTruncatedTimeLikeBranching(children[1],type,branch->children()[1]);
+	  fc[1] = selectTimeLikeBranching(children[1],type,branch->children()[1]);
 	}
       }
       // set limits if needed
@@ -1891,10 +1875,10 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
       if(!fc[0].kinematics) {
 	if( branch->children()[0]->children().empty() && ! hardOnly() ) {
 	  if( ! hardOnly() )
-	    fc[0] = selectTimeLikeBranching(children[0],type);
+	    fc[0] = selectTimeLikeBranching(children[0],type,HardBranchingPtr());
 	}
 	else {
-	  fc[0] = selectTruncatedTimeLikeBranching(children[0],type,branch->children()[0]);
+	  fc[0] = selectTimeLikeBranching(children[0],type,branch->children()[0]);
 	}
       }
     }
@@ -1960,7 +1944,7 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
    	if(particle->spinInfo()) particle->spinInfo()->decayVertex(VertexPtr());
   	particle->vetoEmission(fb.type,fb.kinematics->scale());
    	// generate the new emission
-   	fb = selectTruncatedTimeLikeBranching(particle,type,branch);
+   	fb = selectTimeLikeBranching(particle,type,branch);
 	// must be at least hard emission
 	assert(fb.kinematics);
    	setupChildren = true;
@@ -3327,80 +3311,89 @@ void Evolver:: convertHardTree(bool hard,ShowerInteraction::Type type) {
     setInitialEvolutionScales(particles,!hard,type,!_hardtree);
 }
 
-Branching Evolver::selectTruncatedTimeLikeBranching(tShowerParticlePtr particle,
-	                                            ShowerInteraction::Type type,
-						    HardBranchingPtr branch) {
+Branching Evolver::selectTimeLikeBranching(tShowerParticlePtr particle,
+					   ShowerInteraction::Type type,
+					   HardBranchingPtr branch) {
   Branching fb;
   unsigned int iout=0;
   tcPDPtr pdata[2];
   while (true) {
-    // no truncated shower break
-    if(!isTruncatedShowerON()||hardOnly()) break;
-    // generate emission
-    fb=splittingGenerator()->chooseForwardBranching(*particle,1.,type);
+    // break if doing truncated shower and no truncated shower needed
+    if(branch && (!isTruncatedShowerON()||hardOnly())) break;
+    fb=_splittingGenerator->chooseForwardBranching(*particle,_finalenhance,type);
     // no emission break
     if(!fb.kinematics) break;
-    // check haven't evolved too far
-    if(fb.kinematics->scale() < branch->scale()) {
-      fb=Branching();
-      break;
-    }
-    // get the particle data objects
-    for(unsigned int ix=0;ix<2;++ix) pdata[ix]=getParticleData(fb.ids[ix+1]);
-    if(particle->id()!=fb.ids[0]) {
+    // special for truncated shower
+    if(branch) {
+      // check haven't evolved too far
+      if(fb.kinematics->scale() < branch->scale()) {
+	fb=Branching();
+	break;
+      }
+      // get the particle data objects
+      for(unsigned int ix=0;ix<2;++ix) pdata[ix]=getParticleData(fb.ids[ix+1]);
+      if(particle->id()!=fb.ids[0]) {
     	for(unsigned int ix=0;ix<2;++ix) {
     	  tPDPtr cc(pdata[ix]->CC());
     	  if(cc) pdata[ix]=cc;
     	}
-    }
-    // find the truncated line
-    iout=0;
-    if(pdata[0]->id()!=pdata[1]->id()) {
-      if(pdata[0]->id()==particle->id())       iout=1;
-      else if (pdata[1]->id()==particle->id()) iout=2;
-    }
-    else if(pdata[0]->id()==particle->id()) {
-      if(fb.kinematics->z()>0.5) iout=1;
-      else                       iout=2;
-    }
-    // apply the vetos for the truncated shower
-    // no flavour changing branchings
-    if(iout==0) {
-      particle->vetoEmission(fb.type,fb.kinematics->scale());
-      continue;
-    }
-    double zsplit = iout==1 ? fb.kinematics->z() : 1-fb.kinematics->z();
-    // only if same interaction for forced branching 
-    ShowerInteraction::Type type2 = fb.type==ShowerPartnerType::QED ? 
-    ShowerInteraction::QED : ShowerInteraction::QCD;
-    // and evolution
-    if(type2==branch->sudakov()->interactionType()) {
-      if(zsplit < 0.5 || // hardest line veto
-         fb.kinematics->scale()*zsplit < branch->scale() ) { // angular ordering veto
-        particle->vetoEmission(fb.type,fb.kinematics->scale());
-        continue;
+      }
+      // find the truncated line
+      iout=0;
+      if(pdata[0]->id()!=pdata[1]->id()) {
+	if(pdata[0]->id()==particle->id())       iout=1;
+	else if (pdata[1]->id()==particle->id()) iout=2;
+      }
+      else if(pdata[0]->id()==particle->id()) {
+	if(fb.kinematics->z()>0.5) iout=1;
+	else                       iout=2;
+      }
+      // apply the vetos for the truncated shower
+      // no flavour changing branchings
+      if(iout==0) {
+	particle->vetoEmission(fb.type,fb.kinematics->scale());
+	continue;
+      }
+      double zsplit = iout==1 ? fb.kinematics->z() : 1-fb.kinematics->z();
+      // only if same interaction for forced branching
+      ShowerInteraction::Type type2 = fb.type==ShowerPartnerType::QED ?
+	ShowerInteraction::QED : ShowerInteraction::QCD;
+      // and evolution
+      if(type2==branch->sudakov()->interactionType()) {
+	if(zsplit < 0.5 || // hardest line veto
+	   fb.kinematics->scale()*zsplit < branch->scale() ) { // angular ordering veto
+	  particle->vetoEmission(fb.type,fb.kinematics->scale());
+	  continue;
+	}
+      }
+      // pt veto
+      if(fb.kinematics->pT() > progenitor()->maximumpT(type2)) {
+	particle->vetoEmission(fb.type,fb.kinematics->scale());
+	continue;
       }
     }
-    // pt veto
-    if(fb.kinematics->pT() > progenitor()->maximumpT(type2)) {
-      particle->vetoEmission(fb.type,fb.kinematics->scale());
-      continue;
-    }
-    // should do base class vetos as well
+    // standard vetos for all emissions
     if(timeLikeVetoed(fb,particle)) {
-    	particle->vetoEmission(fb.type,fb.kinematics->scale());
-    	continue;
+      particle->vetoEmission(fb.type,fb.kinematics->scale());
+      if(particle->spinInfo()) particle->spinInfo()->decayVertex(VertexPtr());
+      continue;
     }
     break;
   }
-  // had a truncated emission, return it
+  // had an emission
   if(fb.kinematics) {
-    fb.hard = true;
-    fb.iout = iout;
-    return fb;
+    fb.hard = false;
+    // normal emission
+    if(!branch)
+      return fb;
+    // had a truncated emission, return it
+    else {
+      fb.iout = iout;
+      return fb;
+    }
   }
   // otherwise need to return the hard emission
-  fb.hard = false;
+  fb.hard = true;
   fb.iout=0;
   // construct the kinematics for the hard emission
   ShoKinPtr showerKin=

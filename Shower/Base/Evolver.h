@@ -562,14 +562,8 @@ protected:
    *   Select the branching for the next time-like emission
    */
   Branching selectTimeLikeBranching(tShowerParticlePtr particle,
-				    ShowerInteraction::Type type);
-
-  /**
-   *   Select the branching for the next time-like emission
-   */
-  Branching selectTruncatedTimeLikeBranching(tShowerParticlePtr particle,
-					     ShowerInteraction::Type type,
-					     HardBranchingPtr branch);
+				    ShowerInteraction::Type type,
+				    HardBranchingPtr branch);
 
   /**
    *  Create the timelike child of a branching
