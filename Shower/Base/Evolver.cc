@@ -144,7 +144,7 @@ void Evolver::doinit() {
     interactions_.push_back(ShowerInteraction::Both);
   }
   // calculate max no of FSR vetos
-  _maxFailFSR = max(_maxFailFSR,int(_fracFSR*double(generator()->N())));
+  _maxFailFSR = max(int(_maxFailFSR), int(_fracFSR*double(generator()->N())));
 }
 
 void Evolver::Init() {

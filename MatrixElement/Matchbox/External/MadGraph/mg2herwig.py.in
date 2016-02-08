@@ -105,7 +105,7 @@ def fillprocs(model,oras,orew):
   file = open(virts, "r")
   for line in file:
       addalphas=len(line.split(" "))-minlegs
-      linetmp=line.rstrip()+"  QED="+str(int(orew))+" [ virt=QCD ]"
+      linetmp=line.rstrip()+" QCD="+str(int(oras)+addalphas)+"  QED="+str(int(orew))+" [ virt=QCD ]"
       procnr+=1
       virtlist+=[str(procnr)]
       if first:
@@ -210,6 +210,12 @@ if options.model=="loop_sm" or options.model=="heft":
   params.close()
   file.write(paramcard)
   file.close()   
+elif  options.model.startswith("/"):
+  
+  os.system("python %s/write_param_card.py " % options.model)
+  
+  
+  
 else:
   print "---------------------------------------------------------------"
   print "---------------------------------------------------------------"
