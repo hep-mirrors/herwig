@@ -100,7 +100,7 @@ void Evolver::persistentOutput(PersistentOStream & os) const {
      << _massVetoOption << isMCatNLOSEvent << isMCatNLOHEvent
      << isPowhegSEvent << isPowhegHEvent
      << theFactorizationScaleFactor << theRenormalizationScaleFactor << ounit(muPt,GeV)
-     << interaction_<< interactions_.size();
+     << interaction_ << _maxTryFSR << _maxFailFSR << _fracFSR << interactions_.size();
   for(unsigned int ix=0;ix<interactions_.size();++ix) 
     os << oenum(interactions_[ix]);
 }
@@ -115,7 +115,7 @@ void Evolver::persistentInput(PersistentIStream & is, int) {
      >> _massVetoOption >> isMCatNLOSEvent >> isMCatNLOHEvent
      >> isPowhegSEvent >> isPowhegHEvent
      >> theFactorizationScaleFactor >> theRenormalizationScaleFactor >> iunit(muPt,GeV)
-     >> interaction_ >> isize;
+     >> interaction_ >> _maxTryFSR >> _maxFailFSR >> _fracFSR >> isize;
   interactions_.resize(isize);
   for(unsigned int ix=0;ix<interactions_.size();++ix) 
     is >> ienum(interactions_[ix]);
@@ -143,6 +143,8 @@ void Evolver::doinit() {
   else if(interaction_==4) {
     interactions_.push_back(ShowerInteraction::Both);
   }
+  // calculate max no of FSR vetos
+  _maxFailFSR = max(_maxFailFSR,int(_fracFSR*double(generator()->N())));
 }
 
 void Evolver::Init() {
@@ -447,6 +449,25 @@ void Evolver::Init() {
      "Generate shower from the real emmission configuration",
      true);
 
+  static Parameter<Evolver,unsigned int> interfaceMaxTryFSR
+    ("MaxTryFSR",
+     "The maximum number of attempted FSR emissions in"
+     " the generation of the FSR",
+     &Evolver::_maxTryFSR, 100000, 10, 100000000,
+     false, false, Interface::limited);
+
+  static Parameter<Evolver,unsigned int> interfaceMaxFailFSR
+    ("MaxFailFSR",
+     "Maximum number of failures generating the FSR",
+     &Evolver::_maxFailFSR, 100, 1, 100000000,
+     false, false, Interface::limited);
+
+
+  static Parameter<Evolver,double> interfaceFSRFailureFraction
+    ("FSRFailureFraction",
+     "Maximum fraction of events allowed to fail due to too many FSR emissions",
+     &Evolver::_fracFSR, 0.001, 1e-10, 1,
+     false, false, Interface::limited);
 }
 
 void Evolver::generateIntrinsicpT(vector<ShowerProgenitorPtr> particlesToShower) {
@@ -775,6 +796,18 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
     if(particle->spinInfo()) particle->spinInfo()->develop();
     return false;
   }
+  // too many tries
+  if(_nFSR>=_maxTryFSR) {
+    ++_nFailedFSR;
+    // too many failed events
+    if(_nFailedFSR>=_maxFailFSR)
+      throw Exception() << "Too many events have failed due to too many shower emissions, in\n"
+			<< "Evolver::timeLikeShower(). Terminating run\n"
+			<< Exception::runerror;
+    throw Exception() << "Too many attempted emissions in Evolver::timeLikeShower()\n"
+		      << Exception::eventerror;
+  }
+  // generate the emission
   ShowerParticleVector children;
   int ntry=0;
   while (ntry<50) {
@@ -789,6 +822,7 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
     }
     // has emitted
     // Assign the shower kinematics to the emitting particle.
+    ++_nFSR;
     particle->showerKinematics(fb.kinematics);
     // generate phi
     fb.kinematics->phi(fb.sudakov->generatePhiForward(*particle,fb.ids,fb.kinematics));
@@ -1231,6 +1265,7 @@ void Evolver::updateHistory(tShowerParticlePtr particle) {
 }
 
 bool Evolver::startTimeLikeShower(ShowerInteraction::Type type) {
+  _nFSR = 0;
   if(hardTree()) {
     map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator 
       eit=hardTree()->particles().end(),
@@ -1797,6 +1832,7 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
       idlist[2] = branch->children()[1]->branchingParticle()->id();
       fb = Branching( showerKin, idlist, branch->sudakov(),branch->type() );
       // Assign the shower kinematics to the emitting particle.
+      ++_nFSR;
       particle->showerKinematics( fb.kinematics );
       if(fb.kinematics->pT()>progenitor()->highestpT())
 	progenitor()->highestpT(fb.kinematics->pT());
@@ -1861,6 +1897,7 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
     }
     // has emitted
     // Assign the shower kinematics to the emitting particle.
+    ++_nFSR;
     particle->showerKinematics(fb.kinematics);
     if(fb.kinematics->pT()>progenitor()->highestpT())
       progenitor()->highestpT(fb.kinematics->pT());
