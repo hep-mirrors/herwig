@@ -50,9 +50,7 @@ void DipoleSplittingKernel::persistentOutput(PersistentOStream & os) const {
      << theRenormalizationScaleFactor
      << ounit(theRenormalizationScaleFreeze,GeV)
      << ounit(theFactorizationScaleFreeze,GeV)
-     << theVirtualitySplittingScale
-     << theRenormalizationScaleVariations
-     << theFactorizationScaleVariations;
+     << theVirtualitySplittingScale;
 }
 
 void DipoleSplittingKernel::persistentInput(PersistentIStream & is, int) {
@@ -63,13 +61,15 @@ void DipoleSplittingKernel::persistentInput(PersistentIStream & is, int) {
      >> theRenormalizationScaleFactor
      >> iunit(theRenormalizationScaleFreeze,GeV)
      >> iunit(theFactorizationScaleFreeze,GeV)
-     >> theVirtualitySplittingScale
-     >> theRenormalizationScaleVariations
-     >> theFactorizationScaleVariations;
+     >> theVirtualitySplittingScale;
 }
 
 double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
-				       Energy optScale) const {
+				       Energy optScale,
+				       double rScaleFactor,
+				       double fScaleFactor) const {
+
+  // TODO cache / precalculate the variations
 
   Energy pt = optScale == ZERO ? split.lastPt() : optScale;
 
@@ -80,10 +80,10 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
     scale = sqr(splittingKinematics()->QFromPt(pt,split)) + sqr(theScreeningScale);
   }
 
-  Energy2 rScale = sqr(theRenormalizationScaleFactor)*scale;
+  Energy2 rScale = sqr(theRenormalizationScaleFactor*rScaleFactor)*scale;
   rScale = rScale > sqr(renormalizationScaleFreeze()) ? rScale : sqr(renormalizationScaleFreeze());
 
-  Energy2 fScale = sqr(theFactorizationScaleFactor)*scale;
+  Energy2 fScale = sqr(theFactorizationScaleFactor*fScaleFactor)*scale;
   fScale = fScale > sqr(factorizationScaleFreeze()) ? fScale : sqr(factorizationScaleFreeze());
 
   double ret = alphaS()->value(rScale) / (2.*Constants::pi);
@@ -114,22 +114,14 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
 
 }
 
-void DipoleSplittingKernel::accept(const DipoleSplittingInfo&,
+void DipoleSplittingKernel::accept(const DipoleSplittingInfo& split,
 				   double, double,
-				   map<string,double>&) const {
+				   map<string,double>& vars) const {
 }
 
-void DipoleSplittingKernel::veto(const DipoleSplittingInfo&,
-				 double, double,
-				 map<string,double>&) const {
-}
-
-string DipoleSplittingKernel::doRenormalizationScaleVariations(string in) {
-  return ShowerHandler::parseVariations(in,theRenormalizationScaleVariations);
-}
-
-string DipoleSplittingKernel::doFactorizationScaleVariations(string in) {
-  return ShowerHandler::parseVariations(in,theFactorizationScaleVariations);
+void DipoleSplittingKernel::veto(const DipoleSplittingInfo& split,
+				 double p, double r,
+				 map<string,double>& var) const {
 }
 
 AbstractClassDescription<DipoleSplittingKernel> DipoleSplittingKernel::initDipoleSplittingKernel;

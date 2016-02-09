@@ -235,58 +235,81 @@ public:
   bool hardScaleIsMuF() const { return maxPtIsMuF_; }
 
   /**
-   * Parse a variation statement
+   * A struct identifying a shower variation
    */
-  static string parseVariations(string, map<string,double>&);
+  struct ShowerVariation {
+
+    /**
+     * Vary the renormalization scale by the given factor.
+     */
+    double renormalizationScaleFactor;
+
+    /**
+     * Vary the factorization scale by the given factor.
+     */
+    double factorizationScaleFactor;
+
+    /**
+     * Apply the variation to the first interaction
+     */
+    bool firstInteraction;
+
+    /**
+     * Apply the variation to the secondary interactions
+     */
+    bool secondaryInteractions;
+
+    /**
+     * Default constructor
+     */
+    ShowerVariation()
+      : renormalizationScaleFactor(1.0),
+	factorizationScaleFactor(1.0),
+	firstInteraction(true),
+	secondaryInteractions(false) {}
+
+    /**
+     * Parse from in file command
+     */
+    void fromInFile(const string&);
+
+    /**
+     * Put to persistent stream
+     */
+    void put(PersistentOStream& os) const;
+
+    /**
+     * Get from persistent stream
+     */
+    void get(PersistentIStream& is);
+
+  };
 
   /**
-   * Add additional variations.
+   * Access the shower variations
    */
-  static void addToVariations(string in, double v, map<string,double>& vars) {
-    vars[in] = v;
+  map<string,ShowerVariation>& showerVariations() {
+    return showerVariations_;
   }
 
   /**
-   * Add additional variations.
+   * Return the shower variations
    */
-  static void addToVariations(const map<string,double>& vin,
-			      map<string,double>& vars) {
-    for ( map<string,double>::const_iterator w = vin.begin();
-	  w != vin.end(); ++w )
-      addToVariations(w->first,w->second,vars);
+  const map<string,ShowerVariation>& showerVariations() const {
+    return showerVariations_;
   }
 
-  /**
-   * Vary the factorization scale by the indicated values and using the
-   * indicated variation labels.
-   */
-  map<string,double>& renormalizationScaleVariations() { 
-    return renormalizationScaleVariations_;
-  }
+protected:
 
   /**
-   * Vary the factorization scale by the indicated values and using the
-   * indicated variation labels.
+   * The shower variation weights
    */
-  const map<string,double>& renormalizationScaleVariations() const { 
-    return renormalizationScaleVariations_;
-  }
+  map<string,double> currentWeights_;
 
   /**
-   * Vary the renormalization scale by the indicated values and using the
-   * indicated variation labels.
+   * Combine the variation weights which have been encountered
    */
-  map<string,double>& factorizationScaleVariations() {
-    return factorizationScaleVariations_;
-  }
-
-  /**
-   * Vary the renormalization scale by the indicated values and using the
-   * indicated variation labels.
-   */
-  const map<string,double>& factorizationScaleVariations() const {
-    return factorizationScaleVariations_;
-  }
+  void combineWeights();
 
 protected:
 
@@ -591,28 +614,14 @@ private:
   bool splitHardProcess_;
 
   /**
-   * Vary the renormalization scale by the indicated values and using the
-   * indicated variation labels.
+   * The shower variations
    */
-  map<string,double> renormalizationScaleVariations_;
+  map<string,ShowerVariation> showerVariations_;
 
   /**
-   * Command to vary the renormalization scale by the indicated values and using
-   * the indicated variation labels.
+   * Command to add a shower variation
    */
-  string doRenormalizationScaleVariations(string);
-
-  /**
-   * Vary the factorization scale by the indicated values and using the
-   * indicated variation labels.
-   */
-  map<string,double> factorizationScaleVariations_;
-
-  /**
-   * Command to vary the factorization scale by the indicated values and using
-   * the indicated variation labels.
-   */
-  string doFactorizationScaleVariations(string);
+  string doAddVariation(string);
 
 public:
 
@@ -653,6 +662,14 @@ protected:
   }
 
 };
+
+inline PersistentOStream& operator<<(PersistentOStream& os, const ShowerHandler::ShowerVariation& var) {
+  var.put(os); return os;
+} 
+
+inline PersistentIStream& operator>>(PersistentIStream& is, ShowerHandler::ShowerVariation& var) {
+  var.get(is); return is;
+} 
 
 }
 

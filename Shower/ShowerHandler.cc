@@ -17,6 +17,7 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Switch.h"
+#include "ThePEG/Interface/Command.h"
 #include "ThePEG/PDF/PartonExtractor.h"
 #include "ThePEG/PDF/PartonBinInstance.h"
 #include "Herwig/PDT/StandardMatchers.h"
@@ -111,9 +112,7 @@ void ShowerHandler::persistentOutput(PersistentOStream & os) const {
      << factorizationScaleFactor_ << renormalizationScaleFactor_
      << hardScaleFactor_ << scaleFactorOption_
      << restrictPhasespace_ << maxPtIsMuF_ << hardScaleProfile_
-     << splitHardProcess_
-     << renormalizationScaleVariations_
-     << factorizationScaleVariations_;
+     << splitHardProcess_ << showerVariations_;
 }
 
 void ShowerHandler::persistentInput(PersistentIStream & is, int) {
@@ -125,9 +124,7 @@ void ShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> factorizationScaleFactor_ >> renormalizationScaleFactor_
      >> hardScaleFactor_ >> scaleFactorOption_
      >> restrictPhasespace_ >> maxPtIsMuF_ >> hardScaleProfile_
-     >> splitHardProcess_
-     >> renormalizationScaleVariations_
-     >> factorizationScaleVariations_;
+     >> splitHardProcess_ >> showerVariations_;
 }
 
 void ShowerHandler::Init() {
@@ -339,6 +336,11 @@ void ShowerHandler::Init() {
      "No",
      "Don't split the hard process",
      false);
+
+  static Command<ShowerHandler> interfaceAddVariation
+    ("AddVariation",
+     "Add a shower variation.",
+     &ShowerHandler::doAddVariation, false);
  
 }
 
@@ -581,7 +583,43 @@ void ShowerHandler::fillEventRecord() {
 void ShowerHandler::prepareCascade(tSubProPtr sub) { 
   current_ = currentStep(); 
   subProcess_ = sub;
+  for ( map<string,double>::iterator w = currentWeights_.begin();
+	w != currentWeights_.end(); ++w ) {
+    w->second = 1.0;
+  }
 } 
+
+void ShowerHandler::combineWeights() {
+  tEventPtr event = eventHandler()->currentEvent();
+  for ( map<string,double>::const_iterator w = 
+	  currentWeights_.begin(); w != currentWeights_.end(); ++w ) {
+    map<string,double>::iterator ew = event->optionalWeights().find(w->first);
+    if ( ew != event->optionalWeights().end() )
+      ew->second *= w->second;
+    else
+      event->optionalWeights()[w->first] = w->second;
+  }
+}
+
+void ShowerHandler::ShowerVariation::fromInFile(const string&) {
+  // need agree on a syntax to steer this
+  assert(false && "implementation missing");
+}
+
+void ShowerHandler::ShowerVariation::put(PersistentOStream& os) const {
+  os << renormalizationScaleFactor << factorizationScaleFactor
+     << firstInteraction << secondaryInteractions;
+}
+
+void ShowerHandler::ShowerVariation::get(PersistentIStream& is) {
+  is >> renormalizationScaleFactor >> factorizationScaleFactor
+     >> firstInteraction >> secondaryInteractions;
+}
+
+string ShowerHandler::doAddVariation(string) {
+  // need agree on a syntax to steer this
+  assert(false && "implementation missing");
+}
 
 tPPair ShowerHandler::cascade(tSubProPtr sub,
 			      XCPtr xcomb) {
@@ -818,28 +856,5 @@ bool ShowerHandler::isResolvedHadron(tPPtr particle) {
 
 HardTreePtr ShowerHandler::generateCKKW(ShowerTreePtr ) const {
   return HardTreePtr();
-}
-
-string ShowerHandler::parseVariations(string in, map<string,double>& vars) {
-  if ( in.empty() )
-    return "nothing specified";
-  istringstream read(in);
-  string id; double v;
-  while ( read ) {
-    read >> id;
-    if ( !read )
-      return "no value specified for tag '" + id + "'";
-    read >> v;
-    addToVariations(id, v, vars);
-  }
-  return "";
-}
-
-string ShowerHandler::doRenormalizationScaleVariations(string in) {
-  return parseVariations(in,renormalizationScaleVariations_);
-}
-
-string ShowerHandler::doFactorizationScaleVariations(string in) {
-  return parseVariations(in,factorizationScaleVariations_);
 }
 

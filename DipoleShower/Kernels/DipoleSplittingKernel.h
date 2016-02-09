@@ -266,45 +266,15 @@ public:
    */
   void renormalizationScaleFactor(double f) { theRenormalizationScaleFactor = f; }
 
-  /**
-   * Vary the factorization scale by the indicated values and using the
-   * indicated variation labels.
-   */
-  map<string,double>& renormalizationScaleVariations() { 
-    return theRenormalizationScaleVariations;
-  }
-
-  /**
-   * Vary the factorization scale by the indicated values and using the
-   * indicated variation labels.
-   */
-  const map<string,double>& renormalizationScaleVariations() const { 
-    return theRenormalizationScaleVariations;
-  }
-
-  /**
-   * Vary the renormalization scale by the indicated values and using the
-   * indicated variation labels.
-   */
-  map<string,double>& factorizationScaleVariations() {
-    return theFactorizationScaleVariations;
-  }
-
-  /**
-   * Vary the renormalization scale by the indicated values and using the
-   * indicated variation labels.
-   */
-  const map<string,double>& factorizationScaleVariations() const {
-    return theFactorizationScaleVariations;
-  }
-
 protected:
 
   /**
    * Return the common factor of (alphas/2pi)*(pdf ratio)
    */
   double alphaPDF(const DipoleSplittingInfo&,
-		  Energy optScale = ZERO) const;
+		  Energy optScale = ZERO,
+		  double rScaleFactor = 1.0,
+		  double fScaleFactor = 1.0) const;
 
   /**
    * Return true, if the virtuality of the splitting should be used as the
@@ -426,30 +396,6 @@ private:
    * argument of alphas rather than the pt
    */
   bool theVirtualitySplittingScale;
-
-  /**
-   * Vary the renormalization scale by the indicated values and using the
-   * indicated variation labels.
-   */
-  map<string,double> theRenormalizationScaleVariations;
-
-  /**
-   * Command to vary the renormalization scale by the indicated values and using
-   * the indicated variation labels.
-   */
-  string doRenormalizationScaleVariations(string);
-
-  /**
-   * Vary the factorization scale by the indicated values and using the
-   * indicated variation labels.
-   */
-  map<string,double> theFactorizationScaleVariations;
-
-  /**
-   * Command to vary the factorization scale by the indicated values and using
-   * the indicated variation labels.
-   */
-  string doFactorizationScaleVariations(string);
 
 private:
 
