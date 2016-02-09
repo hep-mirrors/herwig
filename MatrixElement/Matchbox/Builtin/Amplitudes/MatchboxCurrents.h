@@ -1,4 +1,4 @@
-// -*- C++ -*-
+// -*- C++ -*- 
 //
 // MatchboxCurrents.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2012 The Herwig Collaboration
@@ -101,6 +101,12 @@ struct MatchboxCurrents
    */
   void setupLeptons(const int l,    const Lorentz5Momentum& pl,
 		    const int lbar, const Lorentz5Momentum& plbar);
+
+  /**
+   * Setup the quark reference momenta
+   */
+  void setupQuarks(const int q,    const Lorentz5Momentum& pq,
+		   const int qbar, const Lorentz5Momentum& pqbar);
 
   /**
    * Tree level left-handed llbar current
