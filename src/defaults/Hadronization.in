@@ -67,12 +67,12 @@ newdef ClusterDecayer:ClDirLight 1
 newdef ClusterDecayer:ClSmrLight 0.78
 
 # Clustering parameters for b-quarks
-newdef ClusterFissioner:ClMaxBottom  2.61*GeV
-newdef ClusterFissioner:ClPowBottom  0.69
-newdef ClusterFissioner:PSplitBottom 0.56
+newdef ClusterFissioner:ClMaxBottom  3.75*GeV
+newdef ClusterFissioner:ClPowBottom  0.70
+newdef ClusterFissioner:PSplitBottom 0.92
 newdef ClusterDecayer:ClDirBottom 1
 newdef ClusterDecayer:ClSmrBottom 0.00
-newdef LightClusterDecayer:SingleHadronLimitBottom 0.13
+newdef LightClusterDecayer:SingleHadronLimitBottom 0.34
 
 # Clustering parameters for c-quarks
 newdef ClusterFissioner:ClMaxCharm  3.55*GeV
