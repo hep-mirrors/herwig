@@ -24,6 +24,7 @@
 #include "ThePEG/Cuts/Cuts.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Utilities/Throw.h"
+#include "ThePEG/Utilities/StringUtils.h"
 #include "Herwig/Shower/Base/Evolver.h"
 #include "Herwig/Shower/Base/ShowerParticle.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -601,9 +602,22 @@ void ShowerHandler::combineWeights() {
   }
 }
 
-string ShowerHandler::ShowerVariation::fromInFile(const string&) {
-  // need agree on a syntax to steer this
-  assert(false && "implementation missing");
+string ShowerHandler::ShowerVariation::fromInFile(const string& in) {
+  // pretty simple for the moment, just to try
+  // TODO make this better
+  istringstream read(in);
+  string where;
+  read >> renormalizationScaleFactor >> factorizationScaleFactor >> where;
+  if ( !read )
+    return "something went wrong with: " + in;
+  if ( where == "FirstInteraction" || where == "AllInteractions" )
+    firstInteraction = true;
+  else
+    firstInteraction = false;
+  if ( where == "SecondaryInteractions" || where == "AllInteractions" )
+    secondaryInteractions = true;
+  else
+    secondaryInteractions = false;
   return "";
 }
 
@@ -617,9 +631,34 @@ void ShowerHandler::ShowerVariation::get(PersistentIStream& is) {
      >> firstInteraction >> secondaryInteractions;
 }
 
-string ShowerHandler::doAddVariation(string) {
-  // need agree on a syntax to steer this
-  assert(false && "implementation missing");
+string ShowerHandler::doAddVariation(string in) {
+  if ( in.empty() )
+    return "expecting a name and a variation specification";
+  string name = StringUtils::car(in);
+  ShowerVariation var;
+  string res = var.fromInFile(StringUtils::cdr(in));
+  if ( res.empty() ) {
+    if ( !var.firstInteraction && !var.secondaryInteractions ) {
+      // TODO what about decay showers?
+      return "variation does not apply to any shower";
+    }
+    if ( var.renormalizationScaleFactor == 1.0 && 
+	 var.factorizationScaleFactor == 1.0 ) {
+      return "variation does not vary anything";
+    }
+    /*
+    Repository::clog() << "adding a variation with tag '" << name << "' using\nxir = "
+		       << var.renormalizationScaleFactor
+		       << " xif = "
+		       << var.factorizationScaleFactor
+		       << "\napplying to:\n"
+		       << "first interaction = " << var.firstInteraction << " "
+		       << "secondary interactions = " << var.secondaryInteractions << "\n"
+		       << flush;
+    */
+    showerVariations()[name] = var;
+  }
+  return res;
 }
 
 tPPair ShowerHandler::cascade(tSubProPtr sub,
