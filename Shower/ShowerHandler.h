@@ -311,6 +311,11 @@ protected:
    */
   void combineWeights();
 
+  /**
+   * Reset the current weights
+   */
+  void resetWeights();
+
 protected:
 
   /** @name Clone Methods. */

@@ -584,11 +584,14 @@ void ShowerHandler::fillEventRecord() {
 void ShowerHandler::prepareCascade(tSubProPtr sub) { 
   current_ = currentStep(); 
   subProcess_ = sub;
+} 
+
+void ShowerHandler::resetWeights() {
   for ( map<string,double>::iterator w = currentWeights_.begin();
 	w != currentWeights_.end(); ++w ) {
     w->second = 1.0;
   }
-} 
+}
 
 void ShowerHandler::combineWeights() {
   tEventPtr event = eventHandler()->currentEvent();

@@ -70,6 +70,7 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr,
   useMe();
 
   prepareCascade(sub);
+  resetWeights();
 
   if ( !doFSR && ! doISR )
     return sub->incoming();
@@ -237,6 +238,8 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr,
 
     } catch (RedoShower&) {
 
+      resetWeights();
+
       if ( ++nTries > maxtry() )
 	throw ShowerTriesVeto(maxtry());
 
@@ -250,6 +253,8 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr,
     }
 
   }
+
+  combineWeights();
 
   return eventRecord().fillEventRecord(newStep(),firstInteraction(),didRealign);
 
