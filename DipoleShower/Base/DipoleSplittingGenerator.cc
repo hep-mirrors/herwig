@@ -356,6 +356,8 @@ double DipoleSplittingGenerator::evaluate(const vector<double>& point) {
     return 0.;
   }
 
+  if ( !presampling )
+    splittingKernel()->clearAlphaPDFCache();
   double kernel = splittingKernel()->evaluate(split);
   if ( splittingReweight() ) {
     if ( !presampling )

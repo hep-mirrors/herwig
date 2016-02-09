@@ -171,13 +171,17 @@ public:
    * Inform this splitting kernel, that it is being
    * presampled until a call to stopPresampling
    */
-  virtual void startPresampling(const DipoleIndex&) {}
+  virtual void startPresampling(const DipoleIndex&) {
+    presampling = true;
+  }
 
   /**
    * Inform this splitting kernel, that it is not being
    * presampled until a call to startPresampling
    */
-  virtual void stopPresampling(const DipoleIndex&) {}
+  virtual void stopPresampling(const DipoleIndex&) {
+    presampling = false;
+  }
 
   /**
    * Return the number of points to presample this
@@ -208,6 +212,14 @@ public:
    * dipole splitting.
    */
   virtual double evaluate(const DipoleSplittingInfo&) const = 0;
+
+  /**
+   * Clear the alphaPDF cache
+   */
+  void clearAlphaPDFCache() const {
+    theAlphaSCache.clear();
+    thePDFCache.clear();
+  }
 
   /**
    * Update the variations vector at the given splitting using the indicated
@@ -396,6 +408,21 @@ private:
    * argument of alphas rather than the pt
    */
   bool theVirtualitySplittingScale;
+
+  /**
+   * Cache for alphas evaluations
+   */
+  mutable map<double,double> theAlphaSCache;
+
+  /**
+   * Cache for PDF evaluations
+   */
+  mutable map<double,double> thePDFCache;
+
+  /**
+   * True, if we are presampling
+   */
+  bool presampling;
 
 private:
 

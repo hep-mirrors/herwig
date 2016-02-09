@@ -601,9 +601,10 @@ void ShowerHandler::combineWeights() {
   }
 }
 
-void ShowerHandler::ShowerVariation::fromInFile(const string&) {
+string ShowerHandler::ShowerVariation::fromInFile(const string&) {
   // need agree on a syntax to steer this
   assert(false && "implementation missing");
+  return "";
 }
 
 void ShowerHandler::ShowerVariation::put(PersistentOStream& os) const {

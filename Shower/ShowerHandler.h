@@ -271,7 +271,7 @@ public:
     /**
      * Parse from in file command
      */
-    void fromInFile(const string&);
+    string fromInFile(const string&);
 
     /**
      * Put to persistent stream

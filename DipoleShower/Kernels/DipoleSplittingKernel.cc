@@ -33,7 +33,8 @@ DipoleSplittingKernel::DipoleSplittingKernel()
     theRenormalizationScaleFactor(1.0),
     theRenormalizationScaleFreeze(1.*GeV), 
     theFactorizationScaleFreeze(1.*GeV),
-    theVirtualitySplittingScale(false) {}
+    theVirtualitySplittingScale(false),
+    presampling(false) {}
 
 DipoleSplittingKernel::~DipoleSplittingKernel() {}
 
@@ -69,8 +70,6 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
 				       double rScaleFactor,
 				       double fScaleFactor) const {
 
-  // TODO cache / precalculate the variations
-
   Energy pt = optScale == ZERO ? split.lastPt() : optScale;
 
   Energy2 scale = ZERO;
@@ -86,26 +85,56 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
   Energy2 fScale = sqr(theFactorizationScaleFactor*fScaleFactor)*scale;
   fScale = fScale > sqr(factorizationScaleFreeze()) ? fScale : sqr(factorizationScaleFreeze());
 
-  double ret = alphaS()->value(rScale) / (2.*Constants::pi);
+  double alphas = 1.0;
+  double pdf = 1.0;
 
-  if ( split.index().initialStateEmitter() ) {
-    assert(pdfRatio());
-    ret *= 
-      split.lastEmitterZ() * 
-      (*pdfRatio())(split.index().emitterPDF(), fScale,
-		    split.index().emitterData(),split.emitterData(),
-		    split.emitterX(),split.lastEmitterZ());
+  // check if we are potentially reweighting and cache evaluations
+  bool evaluatePDF = true;
+  bool evaluateAlphaS = true;
+  bool variations = !ShowerHandler::currentHandler()->showerVariations().empty();
+  if ( variations ) {
+    map<double,double>::const_iterator pit = thePDFCache.find(fScaleFactor);
+    evaluatePDF = (pit == thePDFCache.end());
+    if ( !evaluatePDF )
+      pdf = pit->second;
+    map<double,double>::const_iterator ait = theAlphaSCache.find(rScaleFactor);
+    evaluateAlphaS = (ait == theAlphaSCache.end());
+    if ( !evaluateAlphaS )
+      alphas = ait->second;
   }
 
-  if ( split.index().initialStateSpectator() ) {
-    assert(pdfRatio());
-    ret *= 
-      split.lastSpectatorZ() * 
-      (*pdfRatio())(split.index().spectatorPDF(), fScale,
-		    split.index().spectatorData(),split.spectatorData(),
-		    split.spectatorX(),split.lastSpectatorZ());
+  if ( evaluateAlphaS )
+    alphas = alphaS()->value(rScale);
+
+  if ( evaluatePDF ) {
+    if ( split.index().initialStateEmitter() ) {
+      assert(pdfRatio());
+      pdf *= 
+	split.lastEmitterZ() * 
+	(*pdfRatio())(split.index().emitterPDF(), fScale,
+		      split.index().emitterData(),split.emitterData(),
+		      split.emitterX(),split.lastEmitterZ());
+    }
+
+    if ( split.index().initialStateSpectator() ) {
+      assert(pdfRatio());
+      pdf *= 
+	split.lastSpectatorZ() * 
+	(*pdfRatio())(split.index().spectatorPDF(), fScale,
+		      split.index().spectatorData(),split.spectatorData(),
+		      split.spectatorX(),split.lastSpectatorZ());
+    }
   }
 
+  if ( evaluatePDF && variations ) {
+    thePDFCache[fScaleFactor] = pdf;
+  }
+
+  if ( evaluateAlphaS && variations ) {
+    theAlphaSCache[rScaleFactor] = alphas;
+  }
+
+  double ret = alphas*pdf / (2.*Constants::pi);
 
   if ( ret < 0. )
     ret = 0.;
@@ -116,12 +145,58 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
 
 void DipoleSplittingKernel::accept(const DipoleSplittingInfo& split,
 				   double, double,
-				   map<string,double>& vars) const {
+				   map<string,double>& weights) const {
+  if ( ShowerHandler::currentHandler()->showerVariations().empty() )
+    return;
+  double reference = alphaPDF(split);
+  assert(reference > 0.);
+  for ( map<string,ShowerHandler::ShowerVariation>::const_iterator var =
+	  ShowerHandler::currentHandler()->showerVariations().begin();
+	var != ShowerHandler::currentHandler()->showerVariations().end(); ++var ) {
+    if ( ( ShowerHandler::currentHandler()->firstInteraction() && var->second.firstInteraction ) ||
+	 ( !ShowerHandler::currentHandler()->firstInteraction() && var->second.secondaryInteractions ) ) {
+      double varied = alphaPDF(split,ZERO,
+			       var->second.renormalizationScaleFactor,
+			       var->second.factorizationScaleFactor);
+      if ( varied != reference ) {
+	map<string,double>::iterator wi = weights.find(var->first);
+	if ( wi != weights.end() )
+	  wi->second *= varied/reference;
+	else
+	  weights[var->first] = varied/reference;
+      }
+    }
+  }
 }
 
 void DipoleSplittingKernel::veto(const DipoleSplittingInfo& split,
 				 double p, double r,
-				 map<string,double>& var) const {
+				 map<string,double>& weights) const {
+  if ( ShowerHandler::currentHandler()->showerVariations().empty() )
+    return;
+  double reference = alphaPDF(split);
+  // this is dangerous, but we have no other choice currently -- need to
+  // carefully check for the effects; the assumption is that if the central
+  // one ius zero, then so will be the variations.
+  if ( reference == 0.0 )
+    return;
+  for ( map<string,ShowerHandler::ShowerVariation>::const_iterator var =
+	  ShowerHandler::currentHandler()->showerVariations().begin();
+	var != ShowerHandler::currentHandler()->showerVariations().end(); ++var ) {
+    if ( ( ShowerHandler::currentHandler()->firstInteraction() && var->second.firstInteraction ) ||
+	 ( !ShowerHandler::currentHandler()->firstInteraction() && var->second.secondaryInteractions ) ) {
+      double varied = alphaPDF(split,ZERO,
+			       var->second.renormalizationScaleFactor,
+			       var->second.factorizationScaleFactor);
+      if ( varied != reference ) {
+	map<string,double>::iterator wi = weights.find(var->first);
+	if ( wi != weights.end() )
+	  wi->second *= (r - varied*p/reference) / (r-p);
+	else
+	  weights[var->first] = (r - varied*p/reference) / (r-p);
+      }
+    }
+  }
 }
 
 AbstractClassDescription<DipoleSplittingKernel> DipoleSplittingKernel::initDipoleSplittingKernel;
