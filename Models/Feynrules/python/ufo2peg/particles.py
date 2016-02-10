@@ -45,6 +45,7 @@ SMPARTICLES = {
 particleT = Template(
 """
 create ThePEG::ParticleData $name
+# values set to 999999 are recalculated later from other model parameters
 setup $name $pdg_code $name $mass $width $wcut $ctau $charge $color $spin 0
 """
 )
@@ -76,7 +77,7 @@ class ParticleConverter:
                 self.mass = self.mass.real
             except:
                 pass
-            self.mass = abs(self.mass)
+            self.mass = 999999. # abs(self.mass)
 
         hbarc = 197.3269631e-15 # GeV mm (I hope ;-) )
         self.width = parmsubs[str(p.width)]
@@ -94,8 +95,9 @@ class ParticleConverter:
 
             self.width = '${%s}' % self.width
         else:
-            self.ctau = (hbarc / self.width) if self.width != 0 else 0
-            self.wcut = 10.0 * self.width
+            self.ctau = 999999. # (hbarc / self.width) if self.width != 0 else 0
+            self.wcut = 999999. #10.0 * self.width
+            self.width = 999999. # was blank line before
 
         self.charge = int(3 * p.charge)
 

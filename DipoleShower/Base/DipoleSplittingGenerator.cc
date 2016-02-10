@@ -359,6 +359,16 @@ double DipoleSplittingGenerator::evaluate(const vector<double>& point) {
   }
   double jac = split.splittingKinematics()->jacobian();
 
+  // multiply in the profile scales when relevant
+  assert(ShowerHandler::currentHandler());
+  if ( ShowerHandler::currentHandler()->firstInteraction() &&
+       ShowerHandler::currentHandler()->profileScales() &&
+       !presampling ) {
+    Energy hard = ShowerHandler::currentHandler()->hardScale();
+    if ( hard > ZERO )
+      kernel *= ShowerHandler::currentHandler()->profileScales()->hardScaleProfile(hard,split.lastPt());
+  }
+
   split.lastValue( abs(jac) * kernel );
 
   if ( isnan(split.lastValue()) || isinf(split.lastValue()) ) {

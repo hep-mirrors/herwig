@@ -255,7 +255,7 @@ struct ClassTraits<Herwig::LEPFourJetsAnalysis>
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the LEPFourJetsAnalysis class and any other class on which it depends
    *  (except the base class). */
-  static string library() { return "libfastjet.so HwLEPJetAnalysis.so"; }
+  static string library() { return "HwLEPJetAnalysis.so"; }
 };
 
 /** @endcond */

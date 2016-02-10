@@ -66,8 +66,9 @@ string MatchboxScale::doFunction(string in) {
   makeFile<< "HERWIG=@prefix@\n" ;
   makeFile<< "INCLUDE=-I $(THEPEG)/include -I $(HERWIG)/include\n" ;
   makeFile<< "LIBPATH=@THEPEGLDFLAGS@\n" ;
+  makeFile<< "SHARED_FLAG=@SHARED_FLAG@ @APPLE_DSO_FLAGS@ \n";
   makeFile<< "all:                                             \n" ;
-  makeFile<< "\tg++ --shared -g3  -fPIC -o "<<scalePath<<"Scale.so $(INCLUDE) $(LIBPATH) @THEPEGLIB@   Scale.cc\n" ;
+  makeFile<< "\tg++ $(SHARED_FLAG)  -g3  -fPIC -o "<<scalePath<<"Scale.so $(INCLUDE) $(LIBPATH) @THEPEGLIB@   Scale.cc\n" ;
   makeFile<< flush ;	  
 
 
@@ -77,6 +78,14 @@ string MatchboxScale::doFunction(string in) {
   return "";
 
 }
+
+
+struct PtLargerMB {
+   inline bool operator()(const LorentzMomentum& a,
+                          const LorentzMomentum& b) const {
+     return a.perp() > b.perp();
+   }
+};
 
 
 
@@ -94,8 +103,6 @@ Energy2 MatchboxScale::renormalizationScale() const {
   vector<Lorentz5Momentum> jet;
   vector<Lorentz5Momentum> lepton;
   vector<Lorentz5Momentum> boson;
-
-  
   
   tcPDVector::const_iterator itpd = pd.begin();
   for (vector<LorentzMomentum>::const_iterator itp = p.begin() ;
@@ -112,8 +119,12 @@ Energy2 MatchboxScale::renormalizationScale() const {
       
        }
 
+
+  std::sort(jet.begin(),jet.end(),PtLargerMB());  
+
+
   if (!loadlib)
-    if ( !DynamicLoader::load(scalePath+"/Scale.so") ) assert(0);
+    if ( !DynamicLoader::load(scalePath+"Scale.so") ) assert(0);
 
   return renScale(jet,lepton,boson);
 }
