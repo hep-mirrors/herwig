@@ -49,7 +49,12 @@ public:
    */
   void persistentInput(PersistentIStream & is, int version);
   //@}
-  
+
+  /**
+   * Write out a UFO param_card.dat that matches the configured values
+   */
+  void writeParamCard() const;
+
   /**
    * Standard Init function used to initialize the interfaces.
    */
@@ -95,6 +100,12 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit();
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
   //@}
 
 private:
