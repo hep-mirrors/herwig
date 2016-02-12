@@ -667,6 +667,7 @@ string ShowerHandler::doAddVariation(string in) {
 tPPair ShowerHandler::cascade(tSubProPtr sub,
 			      XCPtr xcomb) {
   prepareCascade(sub);
+  resetWeights();
   // set the scale variation factors; needs to go after prepareCascade
   // to trigger possible different variations for hard and secondary
   // scatters
@@ -716,11 +717,13 @@ tPPair ShowerHandler::cascade(tSubProPtr sub,
       break;
     }
     catch (KinematicsReconstructionVeto) {
+      resetWeights(); //TODO: Not sure ????
       ++countFailures;
     }
   }
   // if loop exited because of too many tries, throw event away
   if (countFailures >= maxtry_) {
+    resetWeights();
     hard_=ShowerTreePtr();
     decay_.clear();
     done_.clear();
@@ -730,6 +733,8 @@ tPPair ShowerHandler::cascade(tSubProPtr sub,
   }
   //enter the particles in the event record
   fillEventRecord();
+
+  combineWeights();
   // clear storage
   hard_=ShowerTreePtr();
   decay_.clear();

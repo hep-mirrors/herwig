@@ -299,12 +299,24 @@ public:
     return showerVariations_;
   }
 
+
+
+
+ /**
+   * Access the current Weights
+   */
+  map<string,double>& currentWeights() {
+    return currentWeights_;
+  }
+ 
+
+
 protected:
 
   /**
    * The shower variation weights
    */
-  map<string,double> currentWeights_;
+  mutable map<string,double> currentWeights_;
 
   /**
    * Combine the variation weights which have been encountered

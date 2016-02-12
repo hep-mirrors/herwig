@@ -269,7 +269,7 @@ private:
   /**
    *  The minimum value of the coupling
    */
-  double _alphamin;
+  mutable double _alphamin;
 
 };
 
