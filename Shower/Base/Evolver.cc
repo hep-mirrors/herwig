@@ -1141,17 +1141,9 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
 bool Evolver::spaceLikeDecayShower(tShowerParticlePtr particle,
 				   const ShowerParticle::EvolutionScales & maxScales,
 				   Energy minmass,ShowerInteraction::Type type) {
-  Branching fb;
-  while (true) {
-    fb=_splittingGenerator->chooseDecayBranching(*particle,maxScales,minmass,
-						 _initialenhance,type);
-    // return if no radiation
-    if(!fb.kinematics) return false;
-    // if not vetoed break
-    if(!spaceLikeDecayVetoed(fb,particle)) break;
-    // otherwise reset scale and continue
-    particle->vetoEmission(fb.type,fb.kinematics->scale());
-  }
+  Branching fb = selectSpaceLikeDecayBranching(particle,maxScales,minmass,type,
+					       HardBranchingPtr());
+  if(!fb.kinematics) return false;
   // has emitted
   // Assign the shower kinematics to the emitting particle.
   particle->showerKinematics(fb.kinematics);
@@ -3443,5 +3435,23 @@ Branching Evolver::selectTimeLikeBranching(tShowerParticlePtr particle,
   fb.hard = true;
   fb.iout=0;
   // return it
+  return fb;
+}
+
+Branching Evolver::selectSpaceLikeDecayBranching(tShowerParticlePtr particle,
+						 const ShowerParticle::EvolutionScales & maxScales,
+						 Energy minmass,ShowerInteraction::Type type,
+						 HardBranchingPtr branch) {
+  Branching fb;
+  while (true) {
+    fb=_splittingGenerator->chooseDecayBranching(*particle,maxScales,minmass,
+						 _initialenhance,type);
+    // return if no radiation
+    if(!fb.kinematics) return Branching();
+    // if not vetoed break
+    if(!spaceLikeDecayVetoed(fb,particle)) break;
+    // otherwise reset scale and continue
+    particle->vetoEmission(fb.type,fb.kinematics->scale());
+  }
   return fb;
 }

@@ -568,12 +568,19 @@ protected:
 			    Energy minimumMass,ShowerInteraction::Type);
 
   /**
-   *   Select the branching for the next time-like emission
+   * Select the branching for the next time-like emission
    */
   Branching selectTimeLikeBranching(tShowerParticlePtr particle,
 				    ShowerInteraction::Type type,
 				    HardBranchingPtr branch);
 
+  /**
+   * Select the branching for the next space-like emission in a decay
+   */
+  Branching selectSpaceLikeDecayBranching(tShowerParticlePtr particle,
+					  const ShowerParticle::EvolutionScales & maxScales,
+					  Energy minmass,ShowerInteraction::Type type,
+					  HardBranchingPtr branch);
   /**
    *  Create the timelike child of a branching
    */
