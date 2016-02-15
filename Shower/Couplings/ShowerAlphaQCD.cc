@@ -202,8 +202,6 @@ void ShowerAlphaQCD::doinit() {
   if ( _asType < 5 ) _alphamin = value(sqr(_qmin)+1.0e-8*sqr(MeV)); // approx as = 1
   else _alphamin = max(_asMaxNP, value(sqr(_qmin)+1.0e-8*sqr(MeV))); 
   // check consistency lambda_3 < qmin
-  //_alphamin=0.5;
-
   if(_lambda[0]>_qmin)
     Throw<InitException>() << "The value of Qmin is less than Lambda_3 in"
 			   << " ShowerAlphaQCD::doinit " << Exception::abortnow;
@@ -294,11 +292,6 @@ double ShowerAlphaQCD::ratio(const Energy2 scale,double factor) const {
     nflam = getLamNfTwoLoop(q); 
     val = alphaS(q, nflam.second, nflam.first);
   }
-  if(val>_alphamin){
-    _alphamin=val;
-    return 1.;
-  }
-
   // denominator 
   return val/_alphamin;  
 }
