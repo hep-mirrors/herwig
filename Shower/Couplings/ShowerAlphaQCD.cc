@@ -15,6 +15,7 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Command.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -40,7 +41,7 @@ void ShowerAlphaQCD::persistentOutput(PersistentOStream & os) const {
      << ounit(_lambdain,GeV) << _alphain << _inopt
      << _tolerance << _maxtry << _alphamin
      << ounit(_thresholds,GeV) << ounit(_lambda,GeV)
-     << _val0;
+     << _val0 << ounit(_optInputScale,GeV) << ounit(_quarkMasses,GeV);
 }
 
 void ShowerAlphaQCD::persistentInput(PersistentIStream & is, int) {
@@ -48,7 +49,7 @@ void ShowerAlphaQCD::persistentInput(PersistentIStream & is, int) {
      >> iunit(_lambdain,GeV) >> _alphain >> _inopt
      >> _tolerance >> _maxtry >> _alphamin
      >> iunit(_thresholds,GeV) >> iunit(_lambda,GeV)
-     >> _val0;
+     >> _val0 >> iunit(_optInputScale,GeV) >> iunit(_quarkMasses,GeV);
 }
 
 void ShowerAlphaQCD::Init() {
@@ -168,6 +169,23 @@ void ShowerAlphaQCD::Init() {
      "",
      &ShowerAlphaQCD::value, false);
 
+  static Command<ShowerAlphaQCD> interfacecheck
+    ("check",
+     "check",
+     &ShowerAlphaQCD::check, false);
+
+  static Parameter<ShowerAlphaQCD,Energy> interfaceInputScale
+    ("InputScale",
+     "An optional input scale. MZ will be used if not set.",
+     &ShowerAlphaQCD::_optInputScale, GeV, ZERO, ZERO, 0*GeV,
+     false, false, Interface::lowerlim);
+
+  static ParVector<ShowerAlphaQCD,Energy> interfaceQuarkMasses
+    ("QuarkMasses",
+     "The quark masses to be used instead of the masses set in the particle data.",
+     &ShowerAlphaQCD::_quarkMasses, GeV, -1, 0.0*GeV, 0.0*GeV, 0*GeV,
+     false, false, Interface::lowerlim);
+
 }
 
 void ShowerAlphaQCD::doinit() {
@@ -176,7 +194,10 @@ void ShowerAlphaQCD::doinit() {
   // evaluate the initial
   // value of Lambda from alphas if needed using Newton-Raphson
   if(_inopt) {
-    _lambda[2]=computeLambda(getParticleData(ParticleID::Z0)->mass(),_alphain,5);
+    _lambda[2]=computeLambda(_optInputScale == ZERO ? 
+			     getParticleData(ParticleID::Z0)->mass() :
+			     _optInputScale,
+			     _alphain,5);
   }
   // otherwise it was an input parameter
   else{_lambda[2]=_lambdain;}
@@ -186,10 +207,15 @@ void ShowerAlphaQCD::doinit() {
   // compute the threshold matching
   // top threshold
   for(int ix=1;ix<4;++ix) {
-    if(_thresopt)
-      _thresholds[ix]=getParticleData(ix+3)->mass();
-    else
-      _thresholds[ix]=getParticleData(ix+3)->constituentMass();
+    if ( _quarkMasses.empty() ) {
+      if(_thresopt)
+	_thresholds[ix]=getParticleData(ix+3)->mass();
+      else
+	_thresholds[ix]=getParticleData(ix+3)->constituentMass();
+    } else {
+      // starting at zero rather than one, cf the other alphas's
+      _thresholds[ix] = _quarkMasses[ix+2];
+    }
   }
   // compute 6 flavour lambda by matching at top mass using Newton Raphson
   _lambda[3]=computeLambda(_thresholds[3],alphaS(_thresholds[3],_lambda[2],5),6);
@@ -231,6 +257,40 @@ void ShowerAlphaQCD::doinit() {
     Throw<InitException>() << "The value of Qmin is less than Lambda_3 in"
 			   << " ShowerAlphaQCD::doinit " << Exception::abortnow;
 }
+
+string ShowerAlphaQCD::check(string args) {
+
+  doinit();
+
+  istringstream argin(args);
+
+  double Q_low, Q_high;
+  long n_steps;
+
+  argin >> Q_low >> Q_high >> n_steps;
+
+  string fname;
+  argin >> fname;
+
+  cout << "checking alpha_s in range [" << Q_low << "," << Q_high << "] GeV in "
+	    << n_steps << " steps.\nResults are written to " << fname << "\n";
+
+  double step_width = (Q_high-Q_low)/n_steps;
+
+  ofstream out (fname.c_str());
+
+  for (long k = 0; k <= n_steps; ++k) {
+
+    Energy Q = Q_low*GeV + k*step_width*GeV;
+
+    out << (Q/GeV) << " " << value(Q*Q) << "\n";
+
+  }
+
+  return "alpha_s check finished";
+
+}
+
 
 double ShowerAlphaQCD::value(const Energy2 scale) const {
   Energy q = scaleFactor()*sqrt(scale);

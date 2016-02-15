@@ -98,7 +98,6 @@ public:
    * restored in DipoleIOperator.
    */
   virtual Energy2 mu2() const { return lastSHat(); }
-  //virtual Energy2 mu2() const { return 10*GeV2; }
 
   /**
    * Flush all cashes.

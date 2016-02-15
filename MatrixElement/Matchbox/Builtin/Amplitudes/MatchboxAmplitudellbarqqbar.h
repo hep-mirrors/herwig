@@ -87,10 +87,9 @@ public:
   virtual Complex evaluateOneLoop(size_t, const vector<int>&);
 
   /**
-   * Return true, if one loop corrections are given in the conventions
-   * of BDK.
+   * Return true if one loop corrections are given in the conventions of everything expanded - this is currently the only convention available in DipoleMIOperator.cc
    */
-  virtual bool isBDK() const { return true; }
+  virtual bool isExpanded() const { return true; }
 
   /**
    * Return the value of the dimensional regularization

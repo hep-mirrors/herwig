@@ -487,18 +487,6 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
     gen->second->generate(candidate,optHardPt,optCutoff);
     Energy nextScale = evolutionOrdering()->evolutionScale(gen->second->lastSplitting(),*(gen->second->splittingKernel()));
 
-    if ( firstInteraction() && profileScales() && nextScale > ircutoff ) {
-      while ( UseRandom::rnd() > profileScales()->hardScaleProfile(muPt,nextScale) ) {
-	candidate.continuesEvolving();
-	Energy nextHardScale = evolutionOrdering()->maxPt(nextScale,candidate,*(gen->second->splittingKernel()));
-	candidate.hardPt(nextHardScale);
-	gen->second->generate(candidate,optHardPt,optCutoff);
-	nextScale = evolutionOrdering()->evolutionScale(gen->second->lastSplitting(),*(gen->second->splittingKernel()));
-	if ( nextScale <= ircutoff || candidate.stoppedEvolving() )
-	  break;
-      }
-    }
-   
     if ( nextScale > winnerScale ) {
       winner.fill(candidate);
       gen->second->completeSplitting(winner);

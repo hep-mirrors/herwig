@@ -86,6 +86,7 @@ void MadGraphAmplitude::initProcess(const cPDVector& ) {
 
   if (!initializedMad){
     string mstr=(factory()->runStorage()+"MadGraphAmplitudes"+"/param_card"+((theMGmodel=="loop_sm")?"":("_"+theMGmodel))+".dat");
+    if( theMGmodel[0]=='/')mstr="param_card.dat";
     size_t len = mstr.size();
     mginitproc_(const_cast<char*>(mstr.c_str()),len);
     initializedMad=true;

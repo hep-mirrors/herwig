@@ -1,6 +1,10 @@
 Herwig News							 -*- outline -*-
 ================================================================================
 
+* ATTENTION TODO No entries on NEWS between 
+** 64ad0a62f6f4 (tagged Herwig 7.0.0) and
+** 30c7c5d7bf8b on herwig-7-0
+
 * Herwig 7.0.0 (Herwig++ 3.0.0) release: 2015-12-04
 
 ** Major new release
