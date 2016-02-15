@@ -295,7 +295,8 @@ protected:
   virtual bool 
   spaceLikeDecayShower(tShowerParticlePtr particle,
 		       const ShowerParticle::EvolutionScales & maxScales,
-		       Energy minimumMass,ShowerInteraction::Type);
+		       Energy minimumMass,ShowerInteraction::Type,
+		       Branching fb);
 
   /**
    * Truncated shower from a time-like particle
