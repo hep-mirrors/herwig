@@ -254,8 +254,6 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr,
 
   }
 
-  combineWeights();
-
   return eventRecord().fillEventRecord(newStep(),firstInteraction(),didRealign);
 
 }

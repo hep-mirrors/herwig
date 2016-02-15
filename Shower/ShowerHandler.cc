@@ -413,6 +413,8 @@ void ShowerHandler::cascade() {
         !isResolvedHadron(incomingBins.second->particle()))) {
     // boost back to lab if needed
     if(btotal) boostCollision(true);
+    // perform the reweighting for the hard process shower
+    combineWeights();
     // unset the current ShowerHandler
     currentHandler_ = 0;
     return;
@@ -430,6 +432,8 @@ void ShowerHandler::cascade() {
                       << "ShowerHandler::cascade() from primary interaction" 
                       << Exception::eventerror;   
   }
+  // perform the reweighting for the hard process shower
+  combineWeights();
   // if no MPI return
   if( !isMPIOn() ) {
     remDec_->finalize();
@@ -497,6 +501,8 @@ void ShowerHandler::cascade() {
 			  << "ShowerHandler::cascade() for additional scatter" 
 			  << Exception::runerror;
     }
+    // perform the reweighting for the additional hard scatter shower
+    combineWeights();
   }
   // the underlying event processes
   unsigned int ptveto(1), veto(0);
@@ -557,6 +563,8 @@ void ShowerHandler::cascade() {
 			<< Exception::runerror;
     //reset veto counter
     veto = 0;
+    // perform the reweighting for the MPI process shower
+    combineWeights();
   }
   // finalize the remnants
   remDec_->finalize(getMPIHandler()->colourDisrupt(), 
@@ -733,8 +741,6 @@ tPPair ShowerHandler::cascade(tSubProPtr sub,
   }
   //enter the particles in the event record
   fillEventRecord();
-
-  combineWeights();
   // clear storage
   hard_=ShowerTreePtr();
   decay_.clear();
