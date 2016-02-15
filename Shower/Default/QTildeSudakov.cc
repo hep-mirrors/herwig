@@ -246,7 +246,7 @@ if(calcVariations){
         alphaSVeto(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t)||
         PDFVeto(t,x,parton0,parton1,beam));
 }else{
-  bool alphaRew(true),PDFRew(true),zRew(true),PSRew(true),SplitRew(true);
+  bool alphaRew(true),PDFRew(true),ptRew(true),zRew(true),PSRew(true),SplitRew(true);
   
   do {
     if(!guessSpaceLike(t,tmin,x,enhance)) break;

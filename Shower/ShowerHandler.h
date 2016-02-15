@@ -299,24 +299,26 @@ public:
     return showerVariations_;
   }
 
-
-
-
- /**
+  /**
    * Access the current Weights
    */
   map<string,double>& currentWeights() {
     return currentWeights_;
   }
- 
 
+  /**
+   * Return the current Weights
+   */
+  const map<string,double>& currentWeights() const {
+    return currentWeights_;
+  }
 
 protected:
 
   /**
    * The shower variation weights
    */
-  mutable map<string,double> currentWeights_;
+  map<string,double> currentWeights_;
 
   /**
    * Combine the variation weights which have been encountered
@@ -664,7 +666,7 @@ public:
   /**
    *  pointer to "this", the current ShowerHandler.
    */
-  static const ShowerHandler * currentHandler() {
+  static ShowerHandler * currentHandler() {
     assert(currentHandler_);
     return currentHandler_;
   }
