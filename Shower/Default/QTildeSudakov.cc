@@ -246,7 +246,7 @@ if(calcVariations){
         alphaSVeto(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t)||
         PDFVeto(t,x,parton0,parton1,beam));
 }else{
-  bool alphaRew(true),PDFRew(true),ptRew(true),zRew(true),PSRew(true),SplitRew(true);
+  bool alphaRew(true),PDFRew(true),ptRew(true),zRew(true),SplitRew(true);
   
   do {
     if(!guessSpaceLike(t,tmin,x,enhance)) break;
@@ -269,7 +269,7 @@ if(calcVariations){
                   alphaSVetoRatio(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t,1.)*
                   SplittingFnVetoRatio((1.-z())*t/z(),ids,true);
 
-    if( SplitRew || alphaRew){
+    if( PDFRew || SplitRew || alphaRew){
       //No Emission
 
       for ( map<string,ShowerHandler::ShowerVariation>::const_iterator var =
@@ -317,7 +317,7 @@ if(calcVariations){
     }
   }
   }
-  while(PSRew || SplitRew || alphaRew);
+  while( PDFRew || SplitRew || alphaRew);
 }
   
   if(t > ZERO && zLimits().first < zLimits().second)  q_ = sqrt(t);
