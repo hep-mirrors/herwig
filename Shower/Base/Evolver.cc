@@ -1149,40 +1149,22 @@ bool Evolver::spaceLikeDecayShower(tShowerParticlePtr particle,
   particle->showerKinematics(fb.kinematics);
   if(fb.kinematics->pT()>progenitor()->highestpT())
     progenitor()->highestpT(fb.kinematics->pT());
-  // For the time being we are considering only 1->2 branching
-  // Create the ShowerParticle objects for the two children of
-  // the emitting particle; set the parent/child relationship
-  // if same as definition create particles, otherwise create cc
-  tcPDPtr pdata[2];
-  for(unsigned int ix=0;ix<2;++ix) pdata[ix]=getParticleData(fb.ids[ix+1]);
-  if(particle->id()!=fb.ids[0]) {
-    for(unsigned int ix=0;ix<2;++ix) {
-      tPDPtr cc(pdata[ix]->CC());
-      if(cc) pdata[ix]=cc;
-    }
-  }
-  ShowerParticleVector theChildren; 
-  for(unsigned int ix=0;ix<2;++ix) {
-    theChildren.push_back(new_ptr(ShowerParticle(pdata[ix],true)));
-    if(theChildren[ix]->id()==_progenitor->id()&&!pdata[ix]->stable())
-      theChildren[ix]->set5Momentum(Lorentz5Momentum(_progenitor->progenitor()->mass()));
-    else
-      theChildren[ix]->set5Momentum(Lorentz5Momentum(pdata[ix]->mass()));
-  }
+  // create the ShowerParticle objects for the two children
+  ShowerParticleVector children = createTimeLikeChildren(particle,fb.ids);
   // some code moved to updateChildren
   // \todo check this
   particle->showerKinematics()->
-    updateChildren(particle, theChildren, fb.type,false);
+    updateChildren(particle, children, fb.type,false);
   // In the case of splittings which involves coloured particles,
   // set properly the colour flow of the branching.
   // update the history if needed
-  _currenttree->updateInitialStateShowerProduct(_progenitor,theChildren[0]);
-  _currenttree->addInitialStateBranching(particle,theChildren[0],theChildren[1]);
+  _currenttree->updateInitialStateShowerProduct(_progenitor,children[0]);
+  _currenttree->addInitialStateBranching(particle,children[0],children[1]);
   // shower the first  particle
-  spaceLikeDecayShower(theChildren[0],maxScales,minmass,type);
+  spaceLikeDecayShower(children[0],maxScales,minmass,type);
   // shower the second particle
-  timeLikeShower(theChildren[1],type,Branching(),true);
-  updateHistory(theChildren[1]);
+  timeLikeShower(children[1],type,Branching(),true);
+  updateHistory(children[1]);
   // branching has happened
   return true;
 }
