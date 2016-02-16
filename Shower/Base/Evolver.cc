@@ -1402,7 +1402,7 @@ startSpaceLikeDecayShower(const ShowerParticle::EvolutionScales & maxScales,
       HardBranchingPtr branch=mit->second;
       while(branch->parent()) branch=branch->parent();
       return truncatedSpaceLikeDecayShower(progenitor()->progenitor(),maxScales,
-					   minimumMass, branch ,type);
+					   minimumMass, branch ,type, Branching());
     }
   }
   return  hardOnly() ? false :
@@ -2219,168 +2219,274 @@ bool Evolver::
 truncatedSpaceLikeDecayShower(tShowerParticlePtr particle, 
 			      const ShowerParticle::EvolutionScales & maxScales,
 			      Energy minmass, HardBranchingPtr branch,
-			      ShowerInteraction::Type type) {
-  Branching fb;
-  unsigned int iout=0;
-  tcPDPtr pdata[2];
-  while (true) {
-    // no truncated shower break
-    if(!isTruncatedShowerON()||hardOnly()) break;
-    fb=splittingGenerator()->chooseDecayBranching(*particle,maxScales,minmass,1.,type);
-    // return if no radiation
-    if(!fb.kinematics) break;
-    // check haven't evolved too far
-    if(fb.kinematics->scale() < branch->scale()) {
-      fb=Branching();
+			      ShowerInteraction::Type type, Branching fb) {
+  // select a branching if we don't have one
+  if(!fb.kinematics)
+    fb = selectSpaceLikeDecayBranching(particle,maxScales,minmass,type,branch);
+  // must be an emission, the forced one it not a truncated one
+  assert(fb.kinematics);
+  ShowerParticleVector children;
+  int ntry=0;
+  Branching fc[2];
+  bool setupChildren = true;
+  while (ntry<50) {
+    if(!fc[0].hard) fc[0] = Branching();
+    if(!fc[1].hard) fc[1] = Branching();
+    ++ntry;
+    if(setupChildren) {
+      ++_nFSR;
+      // Assign the shower kinematics to the emitting particle.
+      particle->showerKinematics(fb.kinematics);
+      if(fb.kinematics->pT()>progenitor()->highestpT())
+	progenitor()->highestpT(fb.kinematics->pT());
+      // create the ShowerParticle objects for the two children
+      children = createTimeLikeChildren(particle,fb.ids);
+      // updateChildren the children
+      particle->showerKinematics()->
+	updateChildren(particle, children, fb.type,_reconOpt>=3);
+      setupChildren = false;
+    }
+    // select branchings for children
+    if(!fc[0].kinematics) {
+      if(children[0]->id()==particle->id()) {
+	// select branching for first particle
+	if(!fb.hard)
+	  fc[0] = selectSpaceLikeDecayBranching(children[0],maxScales,minmass,type,branch);
+	else if(fb.hard && ! branch->children()[0]->children().empty() )
+	  fc[0] = selectSpaceLikeDecayBranching(children[0],maxScales,minmass,type,
+						branch->children()[0]);
+	else
+	  fc[0] = selectSpaceLikeDecayBranching(children[0],maxScales,minmass,type,
+						HardBranchingPtr());
+      }
+      else {
+	// select branching for first particle
+	if(fb.hard && !branch->children()[0]->children().empty() )
+	  fc[0] = selectTimeLikeBranching(children[0],type,branch->children()[0]);
+	else
+	  fc[0] = selectTimeLikeBranching(children[0],type,HardBranchingPtr());
+      }
+    }
+    // select branching for the second particle
+     if(!fc[1].kinematics) {
+       if(children[1]->id()==particle->id()) {
+	 // select branching for first particle
+	 if(!fb.hard)
+	   fc[1] = selectSpaceLikeDecayBranching(children[1],maxScales,minmass,type,branch);
+	 else if(fb.hard && ! branch->children()[1]->children().empty() )
+	   fc[1] = selectSpaceLikeDecayBranching(children[1],maxScales,minmass,type,
+						 branch->children()[1]);
+	 else
+	   fc[1] = selectSpaceLikeDecayBranching(children[1],maxScales,minmass,type,
+						 HardBranchingPtr());
+       }
+       else {
+	 if(fb.hard && !branch->children()[1]->children().empty() )
+	   fc[1] = selectTimeLikeBranching(children[1],type,branch->children()[1]);
+	 else
+	   fc[1] = selectTimeLikeBranching(children[1],type,HardBranchingPtr());
+       }
+     }
+    // old default
+    if(_reconOpt==0 || (_reconOpt==1 && fb.hard) ) {
+      // update the history if needed
+      currentTree()->updateInitialStateShowerProduct(progenitor(),children[0]);
+      currentTree()->addInitialStateBranching(particle,children[0],children[1]);
+      // shower the first  particle
+      if(fc[0].kinematics) {
+	if(children[0]->id()==particle->id()) {
+	  if(!fb.hard)
+	    truncatedSpaceLikeDecayShower( children[0],maxScales,minmass,
+					   branch,type,fc[0]);
+	  else if(fb.hard && ! branch->children()[0]->children().empty() )
+	    truncatedSpaceLikeDecayShower( children[0],maxScales,minmass,
+					   branch->children()[0],type,fc[0]);
+	  else
+	    spaceLikeDecayShower( children[0],maxScales,minmass,type,fc[0]);
+	}
+	else {
+	  if(fb.hard && !branch->children()[0]->children().empty() )
+	    truncatedTimeLikeShower(children[0],branch->children()[0],type,fc[0],false);
+	  // normal shower
+	  else
+	    timeLikeShower(children[0],type,fc[0],false);
+	}
+      }
+      // shower the second  particle
+      if(fc[1].kinematics) {
+	if(children[0]->id()==particle->id()) {
+	  if(!fb.hard)
+	    truncatedSpaceLikeDecayShower( children[0],maxScales,minmass,
+					   branch,type,fc[1]);
+	  else if(fb.hard && ! branch->children()[0]->children().empty() )
+	    truncatedSpaceLikeDecayShower( children[0],maxScales,minmass,
+					   branch->children()[0],type,fc[1]);
+	  else
+	    spaceLikeDecayShower( children[0],maxScales,minmass,type,fc[1]);
+	}
+	else {
+	  if(fb.hard && !branch->children()[0]->children().empty() )
+	    truncatedTimeLikeShower(children[0],branch->children()[0],type,fc[1],false);
+	  // normal shower
+	  else
+	    timeLikeShower(children[0],type,fc[1],false);
+	}
+      }
+      updateHistory(children[1]);
+      // branching has happened
       break;
     }
-    // get the particle data objects
-    for(unsigned int ix=0;ix<2;++ix) pdata[ix]=getParticleData(fb.ids[ix+1]);
-    if(particle->id()!=fb.ids[0]) {
-      for(unsigned int ix=0;ix<2;++ix) {
-	tPDPtr cc(pdata[ix]->CC());
-	if(cc) pdata[ix]=cc;
+    // H7 default
+    else if(_reconOpt==1) {
+      // update the history if needed
+      currentTree()->updateInitialStateShowerProduct(progenitor(),children[0]);
+      currentTree()->addInitialStateBranching(particle,children[0],children[1]);
+      // shower the first  particle
+      if(fc[0].kinematics) {
+	if(children[0]->id()==particle->id()) {
+	  if(!fb.hard)
+	    truncatedSpaceLikeDecayShower( children[0],maxScales,minmass,
+					   branch,type,fc[0]);
+	  else if(fb.hard && ! branch->children()[0]->children().empty() )
+	    truncatedSpaceLikeDecayShower( children[0],maxScales,minmass,
+					   branch->children()[0],type,fc[0]);
+	  else
+	    spaceLikeDecayShower( children[0],maxScales,minmass,type,fc[0]);
+	}
+	else {
+	  if(fb.hard && !branch->children()[0]->children().empty() )
+	    truncatedTimeLikeShower(children[0],branch->children()[0],type,fc[0],false);
+	  // normal shower
+	  else
+	    timeLikeShower(children[0],type,fc[0],false);
+	}
+      }
+      // shower the second  particle
+      if(fc[1].kinematics) {
+	if(children[0]->id()==particle->id()) {
+	  if(!fb.hard)
+	    truncatedSpaceLikeDecayShower( children[0],maxScales,minmass,
+					   branch,type,fc[1]);
+	  else if(fb.hard && ! branch->children()[0]->children().empty() )
+	    truncatedSpaceLikeDecayShower( children[0],maxScales,minmass,
+					   branch->children()[0],type,fc[1]);
+	  else
+	    spaceLikeDecayShower( children[0],maxScales,minmass,type,fc[1]);
+	}
+	else {
+	  if(fb.hard && !branch->children()[0]->children().empty() )
+	    truncatedTimeLikeShower(children[0],branch->children()[0],type,fc[1],false);
+	  // normal shower
+	  else
+	    timeLikeShower(children[0],type,fc[1],false);
+	}
+      }
+      // clean up the vetoed emission
+      if(particle->virtualMass()==ZERO) {
+   	particle->showerKinematics(ShoKinPtr());
+    	for(unsigned int ix=0;ix<children.size();++ix)
+   	  particle->abandonChild(children[ix]);
+    	children.clear();
+   	particle->vetoEmission(fb.type,fb.kinematics->scale());
+    	// generate the new emission
+   	fb = selectSpaceLikeDecayBranching(particle,maxScales,minmass,type,branch);
+   	// must be at least hard emission
+  	assert(fb.kinematics);
+   	setupChildren = true;
+ 	continue;
+      }
+      else {
+	updateHistory(children[1]);
+  	break;
       }
     }
-    // find the truncated line
-    iout=0;
-    if(pdata[0]->id()!=pdata[1]->id()) {
-      if(pdata[0]->id()==particle->id())       iout=1;
-      else if (pdata[1]->id()==particle->id()) iout=2;
-    }
-    else if(pdata[0]->id()==particle->id()) {
-      if(fb.kinematics->z()>0.5) iout=1;
-      else                       iout=2;
-    }
-    // apply the vetos for the truncated shower
-    // no flavour changing branchings
-    if(iout==0) {
-      particle->vetoEmission(fb.type,fb.kinematics->scale());
-      continue;
-    }
-    ShowerInteraction::Type type2 = fb.type==ShowerPartnerType::QED ? 
-      ShowerInteraction::QED : ShowerInteraction::QCD;
-    double zsplit = iout==1 ? fb.kinematics->z() : 1-fb.kinematics->z();
-    if(type2==branch->sudakov()->interactionType()) {
-      if(zsplit < 0.5 || // hardest line veto
-	 fb.kinematics->scale()*zsplit < branch->scale() ) { // angular ordering veto
-	particle->vetoEmission(fb.type,fb.kinematics->scale());
-	continue;
+    else if(_reconOpt>=2) {
+      // cut-off masses for the branching
+      const vector<Energy> & virtualMasses = fb.sudakov->virtualMasses(fb.ids);
+      // compute the masses of the children
+      Energy masses[3];
+      // space-like children
+      masses[1] = children[0]->virtualMass();
+      // time-like child
+      if(fc[1].kinematics) {
+	const vector<Energy> & vm = fc[1].sudakov->virtualMasses(fc[1].ids);
+	Energy2 q2 = 
+	  fc[1].kinematics->z()*(1.-fc[1].kinematics->z())*sqr(fc[1].kinematics->scale());
+	if(fc[1].ids[0]!=ParticleID::g) q2 += sqr(vm[0]);
+	masses[2] = sqrt(q2);
+      }
+      else {
+	masses[2] = virtualMasses[2];
+      } 
+      masses[0]=particle->virtualMass();
+      double z = fb.kinematics->z();
+      Energy2 pt2 = (1.-z)*(z*sqr(masses[0])-sqr(masses[1])-z/(1.-z)*sqr(masses[2]));
+      if(pt2>=ZERO) {
+  	break;
+      }
+      else {
+  	// reset the scales for the children
+  	for(unsigned int ix=0;ix<2;++ix) {
+  	  if(fc[ix].kinematics)
+  	    children[ix]->vetoEmission(fc[ix].type,fc[ix].kinematics->scale());
+  	  else {
+	    if(ix==0) 
+	      children[ix]->vetoEmission(ShowerPartnerType::QCDColourLine,Constants::MaxEnergy);
+	    else
+	      children[ix]->vetoEmission(ShowerPartnerType::QCDColourLine,ZERO);
+	  }
+   	} 
+	children[0]->virtualMass(_progenitor->progenitor()->mass());
+	children[1]->virtualMass(ZERO);
       }
     }
-    // pt veto
-    if(fb.kinematics->pT() > progenitor()->maximumpT(type2)) {
-      particle->vetoEmission(fb.type,fb.kinematics->scale());
-      continue;
+  };
+  if(_reconOpt>=2) {
+    // update the history if needed
+    currentTree()->updateInitialStateShowerProduct(progenitor(),children[0]);
+    currentTree()->addInitialStateBranching(particle,children[0],children[1]);
+    // shower the first  particle
+    if(fc[0].kinematics) {
+      if(children[0]->id()==particle->id()) {
+	if(!fb.hard)
+	  truncatedSpaceLikeDecayShower( children[0],maxScales,minmass,
+					 branch,type,fc[0]);
+	else if(fb.hard && ! branch->children()[0]->children().empty() )
+	  truncatedSpaceLikeDecayShower( children[0],maxScales,minmass,
+					 branch->children()[0],type,fc[0]);
+	else
+	  spaceLikeDecayShower( children[0],maxScales,minmass,type,fc[0]);
+      }
+      else {
+	if(fb.hard && !branch->children()[0]->children().empty() )
+	  truncatedTimeLikeShower(children[0],branch->children()[0],type,fc[0],false);
+	// normal shower
+	else
+	  timeLikeShower(children[0],type,fc[0],false);
+      }
     }
-    // should do base class vetos as well
-    // if not vetoed break
-    if(!spaceLikeDecayVetoed(fb,particle)) break;
-    // otherwise reset scale and continue
-    particle->vetoEmission(fb.type,fb.kinematics->scale());
+    // shower the second  particle
+    if(fc[1].kinematics) {
+      if(children[0]->id()==particle->id()) {
+	if(!fb.hard)
+	  truncatedSpaceLikeDecayShower( children[0],maxScales,minmass,
+					 branch,type,fc[1]);
+	else if(fb.hard && ! branch->children()[0]->children().empty() )
+	  truncatedSpaceLikeDecayShower( children[0],maxScales,minmass,
+					 branch->children()[0],type,fc[1]);
+	else
+	  spaceLikeDecayShower( children[0],maxScales,minmass,type,fc[1]);
+      }
+      else {
+	if(fb.hard && !branch->children()[0]->children().empty() )
+	  truncatedTimeLikeShower(children[0],branch->children()[0],type,fc[1],false);
+	// normal shower
+	else
+	  timeLikeShower(children[0],type,fc[1],false);
+      }
+    }
+    updateHistory(children[1]);
   }
-  // this may not be currently used but in principle could be
-  // and should be included
- if (!fb.kinematics) {
-   // construct the kinematics for the hard emission
-   ShoKinPtr showerKin=
-     branch->sudakov()->createDecayBranching(branch->scale(),
-					      branch->children()[0]->z(),
-					      branch->phi(),
-					      branch->children()[0]->pT());
-   showerKin->initialize( *particle,PPtr() );
-   IdList idlist(3);
-   idlist[0] = particle->id();
-   idlist[1] = branch->children()[0]->branchingParticle()->id();
-   idlist[2] = branch->children()[1]->branchingParticle()->id();
-   // create the branching
-   fb = Branching( showerKin, idlist, branch->sudakov(),ShowerPartnerType::QCDColourLine  );
-   // Assign the shower kinematics to the emitting particle.
-   particle->showerKinematics( fb.kinematics );
-   if(fb.kinematics->pT()>progenitor()->highestpT())
-     progenitor()->highestpT(fb.kinematics->pT());
-   // Assign the splitting function to the emitting particle. 
-   // For the time being we are considering only 1->2 branching
-   // Create the ShowerParticle objects for the two children of
-   // the emitting particle; set the parent/child relationship
-   // if same as definition create particles, otherwise create cc
-   ShowerParticleVector theChildren;
-   theChildren.push_back(new_ptr(ShowerParticle(branch->children()[0]->
-						 branchingParticle()->dataPtr(),true)));
-   theChildren.push_back(new_ptr(ShowerParticle(branch->children()[1]->
-						 branchingParticle()->dataPtr(),true)));
-   // \todo
-   particle->showerKinematics()->
-     updateChildren(particle, theChildren,fb.type,false);
-   if(theChildren[0]->id()==particle->id()) {
-     // update the history if needed
-     currentTree()->updateInitialStateShowerProduct(progenitor(),theChildren[0]);
-     currentTree()->addInitialStateBranching(particle,theChildren[0],theChildren[1]);
-     // shower the space-like particle
-     if( branch->children()[0]->children().empty() ) {
-       if( ! hardOnly() ) spaceLikeDecayShower(theChildren[0],maxScales,minmass,type,Branching());
-     }
-     else {
-	truncatedSpaceLikeDecayShower( theChildren[0],maxScales,minmass,
-				       branch->children()[0],type);
-     }
-     // shower the second particle
-     if( branch->children()[1]->children().empty() ) {
-       if( ! hardOnly() ) timeLikeShower( theChildren[1] , type,Branching(), true);
-     }
-     else {
-       truncatedTimeLikeShower( theChildren[1],branch->children()[1] ,type,Branching(), true);
-     }
-     updateHistory(theChildren[1]);
-   }
-   else {
-     // update the history if needed
-     currentTree()->updateInitialStateShowerProduct(progenitor(),theChildren[1]);
-     currentTree()->addInitialStateBranching(particle,theChildren[0],theChildren[1]);
-     // shower the space-like particle
-     if( branch->children()[1]->children().empty() ) {
-	if( ! hardOnly() ) spaceLikeDecayShower(theChildren[1],maxScales,minmass,type,Branching());
-     }
-     else {
-	truncatedSpaceLikeDecayShower( theChildren[1],maxScales,minmass,
-				       branch->children()[1],type);
-     }
-     // shower the second particle
-     if( branch->children()[0]->children().empty() ) {
-       if( ! hardOnly() ) timeLikeShower( theChildren[0] , type, Branching(),true);
-     }
-     else {
-       truncatedTimeLikeShower( theChildren[0],branch->children()[0] ,type,Branching(),true);
-     }
-     updateHistory(theChildren[0]);
-   }
-   return true;
- }
-  // has emitted
-  // Assign the shower kinematics to the emitting particle.
-  particle->showerKinematics(fb.kinematics);
-  if(fb.kinematics->pT()>progenitor()->highestpT())
-    progenitor()->highestpT(fb.kinematics->pT());
-  // For the time being we are considering only 1->2 branching
-  // Create the ShowerParticle objects for the two children of
-  // the emitting particle; set the parent/child relationship
-  // if same as definition create particles, otherwise create cc
-  ShowerParticleVector theChildren; 
-  theChildren.push_back(new_ptr(ShowerParticle(pdata[0],true))); 
-  theChildren.push_back(new_ptr(ShowerParticle(pdata[1],true)));
-  // \todo
-  particle->showerKinematics()->updateChildren(particle, theChildren,fb.type,false);
-  // In the case of splittings which involves coloured particles,
-  // set properly the colour flow of the branching.
-  // update the history if needed
-  currentTree()->updateInitialStateShowerProduct(progenitor(),theChildren[0]);
-  currentTree()->addInitialStateBranching(particle,theChildren[0],theChildren[1]);
-  // shower the first  particle
-  truncatedSpaceLikeDecayShower(theChildren[0],maxScales,minmass,branch,type);
-  // shower the second particle
-  timeLikeShower(theChildren[1],type,Branching(),true);
-  updateHistory(theChildren[1]);
-  // branching has happened
   return true;
 }
 
@@ -3427,15 +3533,98 @@ Branching Evolver::selectSpaceLikeDecayBranching(tShowerParticlePtr particle,
 						 Energy minmass,ShowerInteraction::Type type,
 						 HardBranchingPtr branch) {
   Branching fb;
+  unsigned int iout=0;
+  tcPDPtr pdata[2];
   while (true) {
+    // break if doing truncated shower and no truncated shower needed
+    if(branch && (!isTruncatedShowerON()||hardOnly())) break;
+    // select branching
     fb=_splittingGenerator->chooseDecayBranching(*particle,maxScales,minmass,
 						 _initialenhance,type);
     // return if no radiation
-    if(!fb.kinematics) return Branching();
+    if(!fb.kinematics) break;
+    // special for truncated shower
+    if(branch) {
+      // check haven't evolved too far
+      if(fb.kinematics->scale() < branch->scale()) {
+	fb=Branching();
+	break;
+      }
+      // get the particle data objects
+      for(unsigned int ix=0;ix<2;++ix) pdata[ix]=getParticleData(fb.ids[ix+1]);
+      if(particle->id()!=fb.ids[0]) {
+	for(unsigned int ix=0;ix<2;++ix) {
+	  tPDPtr cc(pdata[ix]->CC());
+	  if(cc) pdata[ix]=cc;
+	}
+      }
+      // find the truncated line
+      iout=0;
+      if(pdata[0]->id()!=pdata[1]->id()) {
+	if(pdata[0]->id()==particle->id())       iout=1;
+	else if (pdata[1]->id()==particle->id()) iout=2;
+      }
+      else if(pdata[0]->id()==particle->id()) {
+	if(fb.kinematics->z()>0.5) iout=1;
+	else                       iout=2;
+      }
+      // apply the vetos for the truncated shower
+      // no flavour changing branchings
+      if(iout==0) {
+	particle->vetoEmission(fb.type,fb.kinematics->scale());
+	continue;
+      }
+      ShowerInteraction::Type type2 = fb.type==ShowerPartnerType::QED ?
+	ShowerInteraction::QED : ShowerInteraction::QCD;
+      double zsplit = iout==1 ? fb.kinematics->z() : 1-fb.kinematics->z();
+      if(type2==branch->sudakov()->interactionType()) {
+	if(zsplit < 0.5 || // hardest line veto
+	   fb.kinematics->scale()*zsplit < branch->scale() ) { // angular ordering veto
+	  particle->vetoEmission(fb.type,fb.kinematics->scale());
+	  continue;
+	}
+      }
+      // pt veto
+      if(fb.kinematics->pT() > progenitor()->maximumpT(type2)) {
+	particle->vetoEmission(fb.type,fb.kinematics->scale());
+	continue;
+      }
+    }
     // if not vetoed break
-    if(!spaceLikeDecayVetoed(fb,particle)) break;
-    // otherwise reset scale and continue
-    particle->vetoEmission(fb.type,fb.kinematics->scale());
+    if(spaceLikeDecayVetoed(fb,particle)) {
+      // otherwise reset scale and continue
+      particle->vetoEmission(fb.type,fb.kinematics->scale());
+      continue;
+    }
+    break;
   }
+  // normal case
+  if(!branch) {
+    if(fb.kinematics) fb.hard = false;
+    return fb;
+  }
+  // truncated emission
+  if(fb.kinematics) {
+    fb.hard = false;
+    fb.iout = iout;
+    return fb;
+  }
+  // otherwise need to return the hard emission
+  // construct the kinematics for the hard emission
+  ShoKinPtr showerKin=
+    branch->sudakov()->createDecayBranching(branch->scale(),
+					    branch->children()[0]->z(),
+					    branch->phi(),
+					    branch->children()[0]->pT());
+   showerKin->initialize( *particle,PPtr() );
+   IdList idlist(3);
+   idlist[0] = particle->id();
+   idlist[1] = branch->children()[0]->branchingParticle()->id();
+   idlist[2] = branch->children()[1]->branchingParticle()->id();
+   // create the branching
+   fb = Branching( showerKin, idlist, branch->sudakov(),ShowerPartnerType::QCDColourLine  );
+   fb.hard=true;
+   fb.iout=0;
+   // return it
   return fb;
 }

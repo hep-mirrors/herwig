@@ -319,7 +319,7 @@ protected:
   virtual bool truncatedSpaceLikeDecayShower(tShowerParticlePtr particle,
 					     const ShowerParticle::EvolutionScales & maxScales,
 					     Energy minimumMass, HardBranchingPtr branch,
-					     ShowerInteraction::Type type);
+					     ShowerInteraction::Type type, Branching fb);
   //@}
 
   /**
