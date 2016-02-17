@@ -1,6 +1,6 @@
 pkglib_LTLIBRARIES = HwMatchboxBuiltin.la
 
-HwMatchboxBuiltin_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 2:0:0
+HwMatchboxBuiltin_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 3:0:0
 
 HwMatchboxBuiltin_la_SOURCES = \
 MatchboxCurrents.h MatchboxCurrents.cc \
