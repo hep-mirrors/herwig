@@ -158,6 +158,7 @@ Lorentz5Momentum DipoleSplittingKinematics::getKt(const Lorentz5Momentum& p1,
   bool boost =
     abs((P-Q).vect().mag2()/GeV2) > 1e-10 ||
     abs((P-Q).t()/GeV) > 1e-5;
+  boost &= (P*Q-Q.mass2())/GeV2 > 1e-8;
 
   Lorentz5Momentum inFrame1;
   if ( boost )
