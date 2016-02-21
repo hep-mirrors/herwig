@@ -72,7 +72,9 @@ public:
 	       interaction_(1), _trunc_Mode(true), _hardEmissionMode(0),
 	      _spinOpt(1), _softOpt(2), _hardPOWHEG(false),
 	      theFactorizationScaleFactor(1.0), 
-	      theRenormalizationScaleFactor(1.0), muPt(ZERO)
+	      theRenormalizationScaleFactor(1.0), muPt(ZERO),
+	      _maxTryFSR(100000),_maxFailFSR(100),_fracFSR(0.001),
+              _nFSR(0), _nFailedFSR(0)
   {}
 
   /**
@@ -913,6 +915,30 @@ private:
    */
   Energy muPt;
 
+  /**
+   *  Maximum number of emission attempts for FSR
+   */
+  unsigned int _maxTryFSR;
+
+  /**
+   *  Maximum number of failures for FSR generation
+   */
+  unsigned int _maxFailFSR;
+
+  /**
+   *  Failure fraction for FSR generation
+   */
+  double _fracFSR;
+
+  /**
+   *  Counter for number of FSR emissions
+   */
+  unsigned int _nFSR;
+
+  /**
+   *  Counter for the number of failed events due to FSR emissions
+   */
+  unsigned int _nFailedFSR;
 };
 
 }

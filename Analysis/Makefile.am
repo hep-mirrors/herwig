@@ -40,7 +40,7 @@ CLEOCharmAnalysis.h CLEOCharmAnalysis.cc
 # analysis code which depends on fastjet
 if WANT_LIBFASTJET
 pkglib_LTLIBRARIES += HwLEPJetAnalysis.la
-HwLEPJetAnalysis_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 9:0:0
+HwLEPJetAnalysis_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 9:1:0
 HwLEPJetAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(FASTJETINCLUDE) \
 -I$(FASTJETPATH)
 HwLEPJetAnalysis_la_LIBADD = $(FASTJETLIBS)

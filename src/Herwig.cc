@@ -218,9 +218,13 @@ void HerwigGenericRun(const Herwig::HerwigUI & ui) {
   
   }
   else { // forked jobs
-    pid_t pid;
+    pid_t pid = 0;
 
     const int maxlen = log10(ui.jobs()) + 1;
+
+    // make sure the parent got initialized once so e.g. grid combination is
+    // working
+    eg->initialize(true);
 
     for (int n=0; n<ui.jobs(); n++) {
       ostringstream tmp;

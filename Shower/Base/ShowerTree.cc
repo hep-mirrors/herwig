@@ -698,7 +698,13 @@ void ShowerTree::insertHard(StepPtr pstep, bool ISR, bool) {
 void ShowerTree::addFinalStateShower(PPtr p, StepPtr s) {
   // if endpoint assume doesn't travel
   if(p->children().empty()) {
-    p->setLifeLength(Lorentz5Distance());
+    if(p->dataPtr()->stable()||decaysInShower(p->id()))
+      p->setLifeLength(Lorentz5Distance());
+    else {
+      Length ctau = p->dataPtr()->generateLifeTime(p->mass(), p->dataPtr()->width());
+      Lorentz5Distance lifeLength(ctau,p->momentum().vect()*(ctau/p->mass()));
+      p->setLifeLength(lifeLength);
+    }
     return;
   }
   // set the space-time distance
