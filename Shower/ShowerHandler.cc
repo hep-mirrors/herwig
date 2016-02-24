@@ -338,6 +338,10 @@ void ShowerHandler::Init() {
  
 }
 
+Energy ShowerHandler::hardScale() const {
+  return evolver_->hardScale();
+}
+
 void ShowerHandler::cascade() {
   
   tcPDFPtr first  = firstPDF().pdf();

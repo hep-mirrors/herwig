@@ -4,6 +4,7 @@ AlpGen \
 Analysis2 \
 AnomalousHVV \
 DecayAnalysis \
+FxFx \
 HiggsPair \
 HiggsPairOL \
 LeptonME \

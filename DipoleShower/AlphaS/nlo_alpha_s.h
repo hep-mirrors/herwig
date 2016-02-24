@@ -150,6 +150,8 @@ namespace matchbox {
       return rg_solver_;
     }
 
+    bool two_largeq_terms_;
+
   };
 
 }

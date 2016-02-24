@@ -225,6 +225,11 @@ public:
   Ptr<HardScaleProfile>::tptr profileScales() const { return hardScaleProfile_; }
 
   /**
+   * Return the relevant hard scale to be used in the profile scales
+   */
+  virtual Energy hardScale() const;
+
+  /**
    * Return true if maximum pt should be deduced from the factorization scale
    */
   bool hardScaleIsMuF() const { return maxPtIsMuF_; }

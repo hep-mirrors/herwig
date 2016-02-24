@@ -1267,7 +1267,9 @@ elif(collider=="LHC") :
         elif(parameterName.find("W-b")>=0) :
             parameters["bscheme"]="read Matchbox/FourFlavourScheme.in"
             process += "set /Herwig/Particles/b:HardProcessMass 4.2*GeV\nset /Herwig/Particles/bbar:HardProcessMass 4.2*GeV\n"
-            process += "set Factory:OrderInAlphaS 2\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ nu b bbar\ndo Factory:Process p p e- nu b bbar\n"
+            process += "set Factory:OrderInAlphaS 2\nset Factory:OrderInAlphaEW 2\n"
+            process += "do Factory:Process p p e+  nu b bbar\ndo Factory:Process p p e-  nu b bbar\n"
+            process += "do Factory:Process p p mu+ nu b bbar\ndo Factory:Process p p mu- nu b bbar\n"
             process += "set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 80.4*GeV\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
             process+="set /Herwig/Cuts/Cuts:JetFinder /Herwig/Cuts/JetFinder\n"
             process+="insert  /Herwig/Cuts/Cuts:MultiCuts 0  /Herwig/Cuts/JetCuts\n"
