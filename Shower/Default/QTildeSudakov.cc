@@ -113,7 +113,7 @@ ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
 
   bool calcVariations=!ShowerHandler::currentHandler()->showerVariations().empty();
 
-if(calcVariations){
+if(!calcVariations){
   // Without variations do the usual Veto algorithm
   // No need for more if-statements in this loop.
   do {
@@ -232,7 +232,7 @@ generateNextSpaceBranching(const Energy startingQ,
 
   bool calcVariations=!ShowerHandler::currentHandler()->showerVariations().empty();
 
-if(calcVariations){
+if(!calcVariations){
   // Without variations do the usual Veto algorithm
   // No need for more if-statements in this loop.
   do {
