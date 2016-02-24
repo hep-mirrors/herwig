@@ -50,7 +50,8 @@ public:
   _initTemp(0.1),
   _preco(0.5),
   _triesPerStepFactor(5.0),
-  _maxDistance(1000.*femtometer)
+  _maxDistance(1000.*femtometer),
+  _octetOption(0)
   {}
   //@}
 
@@ -130,58 +131,11 @@ private:
   pair <int,int>
     _shuffle(const PVector & q, const PVector & aq, unsigned maxtries = 10) const;
 
-
-  /** DATA MEMBERS */
-
-  /**
-   * Specifies the colour reconnection algorithm to be used.
-   */
-  int _algorithm;
-
-  /**
-   * The annealing factor is the ratio of two successive temperature steps:
-   * T_n = _annealingFactor * T_(n-1)
-   */
-  double _annealingFactor;
-
-  /**
-   * Number of temperature steps in the statistical annealing algorithm
-   */
-  unsigned _annealingSteps;
-
-  /**
-   * Do we do colour reconnections?
-   */
-  int _clreco;
-
-  /**
-   * Factor used to determine the initial temperature according to
-   * InitialTemperature = _initTemp * median {energy changes in a few random
-   * rearrangements}
-   */
-  double _initTemp;
-
-  /**
-   * Probability that a found reconnection possibility is actually accepted.
-   */
-  double _preco;
-
-  /**
-   * The number of tries per temperature steps is the number of clusters times
-   * this factor.
-   */
-  double _triesPerStepFactor;
-
-  /**
-   *  Maximium distance for reconnections
-   */
-  Length _maxDistance;
-
   /**
    * @return	true, if the two partons are splitting products of the same
    * 		gluon
    */
-  static bool isColour8(cPPtr p, cPPtr q);
+  bool isColour8(cPPtr p, cPPtr q) const;
 
 
 public:
@@ -232,6 +186,58 @@ private:
    */
   ColourReconnector & operator=(const ColourReconnector &);
 
+private:
+
+  /** DATA MEMBERS */
+
+  /**
+   * Specifies the colour reconnection algorithm to be used.
+   */
+  int _algorithm;
+
+  /**
+   * The annealing factor is the ratio of two successive temperature steps:
+   * T_n = _annealingFactor * T_(n-1)
+   */
+  double _annealingFactor;
+
+  /**
+   * Number of temperature steps in the statistical annealing algorithm
+   */
+  unsigned _annealingSteps;
+
+  /**
+   * Do we do colour reconnections?
+   */
+  int _clreco;
+
+  /**
+   * Factor used to determine the initial temperature according to
+   * InitialTemperature = _initTemp * median {energy changes in a few random
+   * rearrangements}
+   */
+  double _initTemp;
+
+  /**
+   * Probability that a found reconnection possibility is actually accepted.
+   */
+  double _preco;
+
+  /**
+   * The number of tries per temperature steps is the number of clusters times
+   * this factor.
+   */
+  double _triesPerStepFactor;
+
+  /**
+   *  Maximium distance for reconnections
+   */
+  Length _maxDistance;
+
+  /**
+   *  Option for handling octets
+   */
+  unsigned int _octetOption;
 
 };
 
