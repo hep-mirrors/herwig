@@ -209,6 +209,12 @@ ParticleVector EvtGenInterface::decay(const Particle &parent,
     EvtDecayBase *decayer = NULL;
     // create evtgen particle for the parent
     EvtParticle* particle = EvtGenParticle(parent);
+    EvtParticle* evtParent = NULL;
+    // special if parent is the same to avoid doing mixing twice
+    if(parent.parents().size()==1 && abs(parent.parents()[0]->id())==abs(parent.id())) {
+      evtParent = EvtGenParticle(*parent.parents()[0]);
+      particle->addDaug(evtParent);
+    }
     // simplest case, evtgen selects mode and recursively decays, use their standard mechanism
     if(dm.wildProductMatcher() && recursive) {
       evtgen_->generateDecay(particle);
@@ -237,25 +243,14 @@ ParticleVector EvtGenInterface::decay(const Particle &parent,
   	particle->deleteDaughters();
   	delete particle;
   	particle = 0;
+	if(evtParent) {
+	  delete evtParent;
+	}
   	throw Exception() << "EvtGen could not decay " << EvtPDL::name(particle->getId())
   			  <<" with mass "<< particle->mass()
   			  <<" to decay channel number "<< particle->getChannel() << "\n"
   			  << Exception::eventerror;
       }
-      // mixing ???
-      // static EvtId BS0=EvtPDL::getId("B_s0");
-      // static EvtId BSB=EvtPDL::getId("anti-B_s0");
-      // static EvtId BD0=EvtPDL::getId("B0");
-      // static EvtId BDB=EvtPDL::getId("anti-B0"); 
-      // // static EvtId D0=EvtPDL::getId("D0");
-      // // static EvtId D0B=EvtPDL::getId("anti-D0");
-      // EvtId thisId=getId();
-      // // remove D0 mixing for now..
-      // //  if ( _ndaug==1 &&  (thisId==BS0||thisId==BSB||thisId==BD0||thisId==BDB||thisId==D0||thisId==D0B) ) {
-      // if ( _ndaug==1 &&  (thisId==BS0||thisId==BSB||thisId==BD0||thisId==BDB) ) {
-      //   p=p->getDaug(0);
-      //   decayer = EvtDecayTable::getInstance()->getDecayFunc(p);
-      // }
       assert(decayer !=0 );
       // perform decay
       decayer->makeDecay(particle,recursive);
@@ -288,6 +283,9 @@ ParticleVector EvtGenInterface::decay(const Particle &parent,
     // delete the EvtGen particle
     particle->deleteDaughters();
     delete particle; 
+    if(evtParent) {
+      delete evtParent;
+    }
     particle = 0;
   }
   catch ( ... ) {
@@ -305,9 +303,9 @@ ParticleVector EvtGenInterface::decay(const Particle &parent,
     string stemp2=stemp.str();
     if(stemp2.length()>0)
       throw Exception() << "EvtGen report error in EvtGen::decay "
-  			<< "killing event\n"
-  			<< "Error was " << stemp2 
-  			<< Exception::eventerror;
+    			<< "killing event\n"
+    			<< "Error was " << stemp2
+    			<< Exception::eventerror;
   }
   // return the decay products
   return output;
