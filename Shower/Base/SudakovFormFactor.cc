@@ -171,7 +171,7 @@ bool SudakovFormFactor::alphaSVeto(Energy2 pt2) const {
 }
 
 double SudakovFormFactor::alphaSVetoRatio(Energy2 pt2,double factor) const {
-  pt2 *= sqr(renormalizationScaleFactor())*factor;
+  pt2 *= sqr(renormalizationScaleFactor()*factor);
   return  ThePEG::Math::powi(alpha_->ratio(pt2,1.),
                                splittingFn_->interactionOrder());
 }
@@ -189,7 +189,7 @@ double SudakovFormFactor::PDFVetoRatio(const Energy2 t, const double x,
         Ptr<BeamParticleData>::transient_const_pointer beam,double factor) const {
   assert(pdf_);
 
-  Energy2 theScale = t * sqr(factorizationScaleFactor())*factor;
+  Energy2 theScale = t * sqr(factorizationScaleFactor()*factor);
   if (theScale < sqr(freeze_)) theScale = sqr(freeze_);
 
   double newpdf(0.0), oldpdf(0.0);
