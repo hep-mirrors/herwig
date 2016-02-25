@@ -1,5 +1,5 @@
 ## args for the gengetopt call in Makefile.am
-args "--file-name=herwigopts --unamed-opts --long-help"
+args "--file-name=herwigopts --unamed-opts --long-help --no-handle-version"
 
 ##################################################
 

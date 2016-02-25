@@ -51,7 +51,8 @@ DipoleShowerHandler::DipoleShowerHandler()
     theFactorizationScaleFreeze(2.*GeV),
     isMCatNLOSEvent(false),
     isMCatNLOHEvent(false), theDoCompensate(false),
-    theFreezeGrid(500000), maxPt(ZERO) {}
+    theFreezeGrid(500000), maxPt(ZERO),
+    muPt(ZERO) {}
 
 DipoleShowerHandler::~DipoleShowerHandler() {}
 
@@ -287,6 +288,9 @@ void DipoleShowerHandler::hardScales(Energy2 muf) {
     } else {
       maxPt = hardScaleFactor()*sqrt(muf);
     }
+    muPt = maxPt;
+  } else {
+    muPt = hardScaleFactor()*sqrt(muf);
   }
 
   for ( list<DipoleChain>::iterator ch = eventRecord().chains().begin();
@@ -483,18 +487,6 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
     gen->second->generate(candidate,optHardPt,optCutoff);
     Energy nextScale = evolutionOrdering()->evolutionScale(gen->second->lastSplitting(),*(gen->second->splittingKernel()));
 
-    if ( firstInteraction() && profileScales() && nextScale > ircutoff ) {
-      while ( UseRandom::rnd() > profileScales()->hardScaleProfile(maxPt,nextScale) ) {
-	candidate.continuesEvolving();
-	Energy nextHardScale = evolutionOrdering()->maxPt(nextScale,candidate,*(gen->second->splittingKernel()));
-	candidate.hardPt(nextHardScale);
-	gen->second->generate(candidate,optHardPt,optCutoff);
-	nextScale = evolutionOrdering()->evolutionScale(gen->second->lastSplitting(),*(gen->second->splittingKernel()));
-	if ( nextScale <= ircutoff || candidate.stoppedEvolving() )
-	  break;
-      }
-    }
-   
     if ( nextScale > winnerScale ) {
       winner.fill(candidate);
       gen->second->completeSplitting(winner);
@@ -581,6 +573,15 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
 
     // pop the chain if no dipole did radiate
     if ( winnerDip == eventRecord().currentChain().dipoles().end() ) {
+      if ( theEventReweight ) {
+	double w = theEventReweight->weightNoEmission(eventRecord().incoming(),
+						      eventRecord().outgoing(),
+						      eventRecord().hard(),theGlobalAlphaS);
+	Ptr<StandardEventHandler>::tptr eh = 
+	  dynamic_ptr_cast<Ptr<StandardEventHandler>::tptr>(eventHandler());
+	assert(eh);
+	eh->reweight(w);
+      }
       eventRecord().popChain();
       continue;
     }
@@ -854,7 +855,8 @@ void DipoleShowerHandler::persistentOutput(PersistentOStream & os) const {
      << ounit(theFactorizationScaleFreeze,GeV)
      << isMCatNLOSEvent << isMCatNLOHEvent << theShowerApproximation
      << theDoCompensate << theFreezeGrid
-     << theEventReweight << ounit(maxPt,GeV);
+     << theEventReweight << ounit(maxPt,GeV)
+     << ounit(muPt,GeV);
 }
 
 void DipoleShowerHandler::persistentInput(PersistentIStream & is, int) {
@@ -867,7 +869,8 @@ void DipoleShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> iunit(theFactorizationScaleFreeze,GeV)
      >> isMCatNLOSEvent >> isMCatNLOHEvent >> theShowerApproximation
      >> theDoCompensate >> theFreezeGrid
-     >> theEventReweight >> iunit(maxPt,GeV);
+     >> theEventReweight >> iunit(maxPt,GeV)
+     >> iunit(muPt,GeV);
 }
 
 ClassDescription<DipoleShowerHandler> DipoleShowerHandler::initDipoleShowerHandler;

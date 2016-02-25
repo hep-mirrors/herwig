@@ -11,6 +11,7 @@ HerwigMain.cc Herwig.h Herwig.cc HerwigCLI.cc HerwigCLI.h HerwigUI.h \
 herwigopts.c herwigopts.h
 
 BUILT_SOURCES = herwigopts.c herwigopts.h
+
 Herwig_LDFLAGS = $(AM_LDFLAGS) -export-dynamic $(THEPEGLDFLAGS) \
 $(BOOST_SYSTEM_LDFLAGS) $(BOOST_FILESYSTEM_LDFLAGS)
 Herwig_LDADD = $(THEPEGLIB) -ldl \
@@ -217,6 +218,17 @@ unregister-from-thepeg-repo:
 	fi
 
 EXTRA_DIST = herwigopts.ggo Herwig++
+
+nodist_Herwig_SOURCES = hgstamp.inc
+BUILT_SOURCES += hgstamp.inc
+CLEANFILES += hgstamp.inc
+
+HGVERSION := $(shell hg -R $(top_srcdir) parents --template '"Herwig {node|short} ({branch})"' 2> /dev/null || echo \"$(PACKAGE_STRING)\" || true )
+
+.PHONY: update_hgstamp
+hgstamp.inc: update_hgstamp
+	@[ -f $@ ] || touch $@
+	@echo '$(HGVERSION)' | cmp -s $@ - || echo '$(HGVERSION)' > $@
 
 GENGETOPT = gengetopt
 
