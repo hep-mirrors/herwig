@@ -392,6 +392,7 @@ void MatchboxMEBase::setScale() const {
   Energy2 ewrscale = renormalizationScaleQED();
   lastXCombPtr()->lastScale(fscale);
   lastXCombPtr()->lastCentralScale(fcscale);
+  lastXCombPtr()->lastShowerScale(showerScale());
   lastMatchboxXComb()->lastRenormalizationScale(rscale);
   if ( !fixedCouplings() ) {
     if ( rscale > lastCuts().scaleMin() )
@@ -440,6 +441,19 @@ Energy2 MatchboxMEBase::renormalizationScaleQED() const {
     return scaleChoice()->renormalizationScaleQED();
   }
   return renormalizationScale();
+}
+
+Energy2 MatchboxMEBase::showerScale() const {
+  if ( scaleChoice() ) {
+    return scaleChoice()->showerScale();
+  }
+
+  throw Exception()
+    << "MatchboxMEBase::showerScale() expects a MatchboxScaleChoice object.\n"
+    << "Please check your setup." << Exception::runerror;
+
+  return ZERO;
+
 }
 
 void MatchboxMEBase::setVetoScales(tSubProPtr) const {}

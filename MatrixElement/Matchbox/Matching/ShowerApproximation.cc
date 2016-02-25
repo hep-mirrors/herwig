@@ -146,7 +146,7 @@ Energy ShowerApproximation::hardScale() const {
     maxPt *= hardScaleFactor();
     return maxPt;
   } else {
-    return hardScaleFactor()*sqrt(bornCXComb()->lastCentralScale());
+    return hardScaleFactor()*sqrt(bornCXComb()->lastShowerScale());
   }
 }
 
