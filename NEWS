@@ -1,9 +1,40 @@
 Herwig News							 -*- outline -*-
 ================================================================================
 
-* ATTENTION TODO No entries on NEWS between 
-** 64ad0a62f6f4 (tagged Herwig 7.0.0) and
-** 30c7c5d7bf8b on herwig-7-0
+* Herwig 7.0.1 release: 2016-01-17
+
+** Version number written to log file
+   The Herwig version number is now included in addition to ThePEG's version.
+
+** Tau lifetimes
+   A bug with lifetimes for hard process Taus is fixed. Thanks to ATLAS
+   for the report!
+
+** Shower FSR retries
+   Rare events could take a long time due to an extremely large number
+   of FSR retries. These are now capped at a configurable number.
+
+** Dipole shower
+   Reweighting for non-radiating events; fixes for shower profile
+   handling; option to downgrade large-Q expansion for alphaS
+
+** Matchbox builtins
+   Added massive currents for q-qbar
+
+** ShowerAlphaQCD
+   can now use user-defined thresholds
+
+** Input snippets
+   W/Z/H on-shell now split into three files; 4-flavour scheme added
+
+** UFO converter
+   The converter now has experimental support for writing out param
+   cards of its current settings.
+
+** LEPJetAnalysis loading fixed
+
+** Contrib
+   HJets++ has moved to a stand-alone project, FxFx has been added
 
 * Herwig 7.0.0 (Herwig++ 3.0.0) release: 2015-12-04
 

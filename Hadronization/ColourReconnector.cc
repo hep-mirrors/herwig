@@ -314,16 +314,43 @@ pair <int,int> ColourReconnector::_shuffle
 }
 
 
-bool ColourReconnector::isColour8(cPPtr p, cPPtr q) {
+bool ColourReconnector::isColour8(cPPtr p, cPPtr q) const {
   bool octet = false;
 
   // make sure we have a triplet and an anti-triplet
   if ( ( p->hasColour() && q->hasAntiColour() ) ||
        ( p->hasAntiColour() && q->hasColour() ) ) {
-    if ( !p->parents().empty() && !q->parents().empty() ) {
-      // true if p and q are originated from a colour octet
-      octet = ( p->parents()[0] == q->parents()[0] ) &&
-              ( p->parents()[0]->data().iColour() == PDT::Colour8 );
+
+    // old simple option
+    if(_octetOption==0) {
+      if ( !p->parents().empty() && !q->parents().empty() ) {
+	// true if p and q are originated from a colour octet
+	octet = ( p->parents()[0] == q->parents()[0] ) &&
+	  ( p->parents()[0]->data().iColour() == PDT::Colour8 );
+      }
+    }
+    // new option handling more octets
+    else {
+      tColinePtr cline,aline;
+      if(p->hasColour() && q->hasAntiColour()) {
+	cline  = p->    colourLine();
+	aline  = q->antiColourLine();
+      }
+      else {
+	cline  = q->    colourLine();
+	aline  = p->antiColourLine();
+      }
+      if ( !p->parents().empty() ) {
+	tPPtr parent = p->parents()[0];
+	while (parent) {
+	  if(parent->data().iColour() == PDT::Colour8) {
+	    octet = (parent->    colourLine()==cline &&
+		     parent->antiColourLine()==aline);
+	  }
+	  if(octet||parent->parents().empty()) break;
+	  parent = parent->parents()[0];
+	}
+      }
     }
   }
 
@@ -333,12 +360,14 @@ bool ColourReconnector::isColour8(cPPtr p, cPPtr q) {
 
 void ColourReconnector::persistentOutput(PersistentOStream & os) const {
   os << _clreco << _preco << _algorithm << _initTemp << _annealingFactor
-     << _annealingSteps << _triesPerStepFactor << ounit(_maxDistance,femtometer);
+     << _annealingSteps << _triesPerStepFactor << ounit(_maxDistance,femtometer)
+     << _octetOption;
 }
 
 void ColourReconnector::persistentInput(PersistentIStream & is, int) {
   is >> _clreco >> _preco >> _algorithm >> _initTemp >> _annealingFactor
-     >> _annealingSteps >> _triesPerStepFactor >> iunit(_maxDistance,femtometer);
+     >> _annealingSteps >> _triesPerStepFactor >> iunit(_maxDistance,femtometer)
+     >> _octetOption;
 }
 
 
@@ -422,5 +451,21 @@ void ColourReconnector::Init() {
      " to avoid colour reconneections of displaced vertices",
      &ColourReconnector::_maxDistance, femtometer, 1000.*femtometer, 0.0*femtometer, 1e100*femtometer,
      false, false, Interface::limited);
+
+  static Switch<ColourReconnector,unsigned int> interfaceOctetTreatment
+    ("OctetTreatment",
+     "Which octets are not allowed to be reconnected",
+     &ColourReconnector::_octetOption, 0, false, false);
+  static SwitchOption interfaceOctetTreatmentFinal
+    (interfaceOctetTreatment,
+     "Final",
+     "Only prevent for the final (usuaslly non-perturbative) g -> q qbar splitting",
+     0);
+  static SwitchOption interfaceOctetTreatmentAll
+    (interfaceOctetTreatment,
+     "All",
+     "Prevent for all octets",
+     1);
+
 
 }

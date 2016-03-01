@@ -32,14 +32,14 @@ create ThePEG::ParticleData Kbar0
 setup Kbar0 -311 Kbar0 0.497648 1.e300  0 0 0 0 1 0 
 makeanti Kbar0 K0
 create ThePEG::ParticleData D0
-setup D0 421 D0 1.8645 1.6042841463415E-12 0 0.123 0 0 1 0 
+setup D0 421 D0 1.86484 1.6042841463415E-12 0 0.123 0 0 1 0
 create ThePEG::ParticleData D+
-setup D+ 411 D+ 1.8693 6.3286385503528E-13 0 0.3118 3 0 1 0 
+setup D+ 411 D+ 1.86962 6.3286385503528E-13 0 0.3118 3 0 1 0
 create ThePEG::ParticleData Dbar0
-setup Dbar0 -421 Dbar0 1.8645 1.6042841463415E-12 0 0.123 0 0 1 0 
+setup Dbar0 -421 Dbar0 1.86484 1.6042841463415E-12 0 0.123 0 0 1 0
 makeanti Dbar0 D0
 create ThePEG::ParticleData D-
-setup D- -411 D- 1.8693 6.3286385503528E-13 0 0.3118 -3 0 1 0 
+setup D- -411 D- 1.86962 6.3286385503528E-13 0 0.3118 -3 0 1 0
 makeanti D- D+
 create ThePEG::ParticleData D_s+
 setup D_s+ 431 D_s+ 1.9682 1.315513E-12 0 0.15 3 0 1 0 
@@ -47,7 +47,7 @@ create ThePEG::ParticleData D_s-
 setup D_s- -431 D_s- 1.9682 1.315513E-12 0 0.15 -3 0 1 0 
 makeanti D_s- D_s+
 create ThePEG::MixedParticleData B0
-setup B0 511 B0 5.2794 4.2897163043478E-13 0 0.46 0 0 1 0
+setup B0 511 B0 5.27953 4.2897163043478E-13 0 0.46 0 0 1 0
 newdef B0:DeltaM 3.337134e-13*GeV
 newdef B0:DeltaGamma 0.*GeV
 newdef B0:PQMagnitude 1.
@@ -55,9 +55,9 @@ newdef B0:PQPhase 1.
 newdef B0:ZMagnitude 0.
 newdef B0:ZPhase 0.
 create ThePEG::ParticleData B+
-setup B+ 521 B+ 5.279 3.9386616766467E-13 0 0.501 3 0 1 0 
+setup B+ 521 B+ 5.27915 3.9386616766467E-13 0 0.501 3 0 1 0 
 create ThePEG::MixedParticleData Bbar0
-setup Bbar0 -511 Bbar0 5.2794 4.2897163043478E-13 0 0.46 0 0 1 0 
+setup Bbar0 -511 Bbar0 5.27953 4.2897163043478E-13 0 0.46 0 0 1 0 
 newdef Bbar0:DeltaM 3.337134e-13*GeV
 newdef Bbar0:DeltaGamma 0.*GeV
 newdef Bbar0:PQMagnitude 1.
@@ -67,11 +67,11 @@ newdef Bbar0:ZPhase 0.
 makeanti Bbar0 B0
 newdef Bbar0:Synchronized 0
 create ThePEG::ParticleData B-
-setup B- -521 B- 5.279 3.9386616766467E-13 0 0.501 -3 0 1 0 
+setup B- -521 B- 5.27915 3.9386616766467E-13 0 0.501 -3 0 1 0 
 makeanti B- B+
 newdef B-:Synchronized 0
 create ThePEG::MixedParticleData B_s0
-setup B_s0 531 B_s0 5.3675 4.5051815068493E-13 0 0.438 0 0 1 0 
+setup B_s0 531 B_s0 5.3663 4.5051815068493E-13 0 0.438 0 0 1 0 
 newdef B_s0:DeltaM 1.169642e-11*GeV
 newdef B_s0:DeltaGamma 6.676243e-14*GeV
 newdef B_s0:PQMagnitude 1.
@@ -79,7 +79,7 @@ newdef B_s0:PQPhase 1.
 newdef B_s0:ZMagnitude 0.
 newdef B_s0:ZPhase 0.
 create ThePEG::MixedParticleData B_sbar0
-setup B_sbar0 -531 B_sbar0 5.3675 4.5051815068493E-13 0 0.438 0 0 1 0 
+setup B_sbar0 -531 B_sbar0 5.3663 4.5051815068493E-13 0 0.438 0 0 1 0 
 newdef B_sbar0:DeltaM 1.169642e-11*GeV
 newdef B_sbar0:DeltaGamma 6.676243e-14*GeV
 newdef B_sbar0:PQMagnitude 1.
