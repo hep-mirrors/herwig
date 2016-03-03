@@ -79,18 +79,23 @@ if __name__ == "__main__":
     (opts, args) = parser.parse_args()
     logging.basicConfig(level=opts.LOGLEVEL, format="%(message)s")
 
+    ## Check args
+    if len(args) < 1:
+        logging.error("Must specify at least the name of the files")
+        sys.exit(1)
+
 files=["-7-PromptPhoton-1.yoda","-7-PromptPhoton-2.yoda",
        "-7-PromptPhoton-3.yoda","-7-PromptPhoton-4.yoda",
-       "-7-DiPhoton.yoda","-GammaGamma-7.yoda"]
+       "-7-DiPhoton-GammaGamma.yoda","-7-DiPhoton-GammaJet.yoda","-GammaGamma-7.yoda"]
 
 ## Get histos
 inhistos = {}
 outhistos={}
 for f in files:
-    file="LHC"+f
+    file=args[0]+f
     if not os.access(file, os.R_OK):
         logging.error("%s can not be read" % file)
-        break
+        continue
     try:
         aos = yoda.read(file)
     except:
@@ -118,8 +123,16 @@ for f in files:
     else : 
         ## Get histos from this YODA file
         for aopath, ao in aos.iteritems() :
-            outhistos[aopath] = ao
-
+            if(aopath.find("XSEC")>=0 or aopath.find("EVTCOUNT")>=0) : continue
+            print aopath
+            if ( aopath in outhistos ) :
+                aotype = type(ao)
+                if aotype in (yoda.Counter, yoda.Histo1D, yoda.Histo2D, yoda.Profile1D, yoda.Profile2D):
+                    outhistos[aopath] += ao
+                else :
+                    quit()
+            else:
+                outhistos[aopath] = ao
 
 for hpath,hsets in inhistos.iteritems():
     if( hpath.find("1263495")>0  or 

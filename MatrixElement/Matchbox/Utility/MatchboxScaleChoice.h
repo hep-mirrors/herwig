@@ -88,6 +88,14 @@ public:
     return mZ*mZ; 
   }
 
+  /**
+   * Return the shower hard scale. This default implementation returns the
+   * factorization scale.
+   */
+  virtual Energy2 showerScale() const {
+    return factorizationScale();
+  }
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
