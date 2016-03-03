@@ -630,7 +630,7 @@ generator()->log() <<"This corresponds to a cross section difference between:\n"
       sqr(theMaxWeight)*(1./theAttempts)*(1./(theAttempts-1.))*
       abs(theSumWeights2 - sqr(theSumWeights)/theAttempts);
       
-    data << setprecision(20);
+    data << setprecision(17);
 
     data << "CrossSectionCombined "
 	 << (integratedXSec()/nanobarn) << " +/- "
