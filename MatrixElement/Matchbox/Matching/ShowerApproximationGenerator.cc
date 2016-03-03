@@ -361,9 +361,9 @@ handle(EventHandler & eh, const tPVector &,
   
   //Hardest emission should be this one.
 
-  winnerKernel->realXComb()->lastCentralScale(sqr(winnerPt));
-  winnerKernel->bornXComb()->lastCentralScale(sqr(winnerPt));
-  lastIncomingXComb->lastCentralScale(sqr(winnerPt));
+  winnerKernel->realXComb()->lastShowerScale(sqr(winnerPt));
+  winnerKernel->bornXComb()->lastShowerScale(sqr(winnerPt));
+  lastIncomingXComb->lastShowerScale(sqr(winnerPt));
 
 
   SubProPtr oldSub = lastIncomingXComb->subProcess();
