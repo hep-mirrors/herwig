@@ -42,7 +42,7 @@ public:
 		     _thresholds(4), _lambda(4),
 		     _nloop(3),_lambdaopt(false),_thresopt(false),
 		     _lambdain(0.208364*GeV),_alphain(0.118),_inopt(true),_tolerance(1e-10),
-		     _maxtry(100),_alphamin(0.), _optInputScale(ZERO) {}
+		     _maxtry(100),_alphamin(0.),_val0(1.), _optInputScale(ZERO) {}
 
 public:
 
@@ -286,6 +286,11 @@ private:
   double _alphamin;
 
   /**
+   *  Value of \f$\alpha_S\f$ at the minimum scale
+   */
+  double _val0;
+
+  /**
    * An optional input scale to be used for the input alphas; if zero MZ will
    * be used out of the particle data object.
    */
@@ -296,7 +301,6 @@ private:
    * considered instead of the ones set in the particle data objects.
    */
   vector<Energy> _quarkMasses;
-
 };
 
 }

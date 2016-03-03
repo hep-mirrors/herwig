@@ -55,11 +55,27 @@ updateParameters(tShowerParticlePtr theParent,
 void FS_QTildeShowerKinematics1to2::
 updateChildren(const tShowerParticlePtr parent, 
 	       const ShowerParticleVector & children,
-	       ShowerPartnerType::Type partnerType) const {
+	       ShowerPartnerType::Type partnerType,
+	       bool massVeto) const {
   assert(children.size()==2);
   // calculate the scales
   splittingFn()->evaluateFinalStateScales(partnerType,scale(),z(),parent,
 					  children[0],children[1]);
+  // set the maximum virtual masses
+  if(massVeto) {
+    Energy2 q2 = z()*(1.-z())*sqr(scale());
+    vector<long> ids(3);
+    ids[0] = parent->id();
+    ids[1] = children[0]->id();
+    ids[2] = children[1]->id();
+    const vector<Energy> & virtualMasses = SudakovFormFactor()->virtualMasses(ids);
+    if(ids[0]!=ParticleID::g && ids[0]!=ParticleID::gamma ) {
+      q2 += sqr(virtualMasses[0]);
+    }
+    // limits on further evolution
+    children[0]->scales().Max_Q2 =     z() *(q2-sqr(virtualMasses[2])/(1.-z()));
+    children[1]->scales().Max_Q2 = (1.-z())*(q2-sqr(virtualMasses[1])/    z() );
+  }
   // update the parameters
   updateParameters(parent, children[0], children[1], true);
   // set up the colour connections

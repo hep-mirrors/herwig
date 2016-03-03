@@ -28,11 +28,23 @@ using namespace Herwig;
 void Decay_QTildeShowerKinematics1to2::
 updateChildren(const tShowerParticlePtr parent, 
 	       const ShowerParticleVector & children,
-	       ShowerPartnerType::Type partnerType) const {
+	       ShowerPartnerType::Type partnerType,
+	       bool massVeto) const {
   assert(children.size() == 2);
   // calculate the scales
   splittingFn()->evaluateDecayScales(partnerType,scale(),z(),parent,
 				     children[0],children[1]);
+  // set the maximum virtual masses
+  vector<long> ids(3);
+  ids[0] = parent->id();
+  ids[1] = children[0]->id();
+  ids[2] = children[1]->id();
+  const vector<Energy> & virtualMasses = SudakovFormFactor()->virtualMasses(ids);
+  Energy2 q2 = sqr(virtualMasses[0])-(1.-z())*sqr(scale());
+  children[0]->virtualMass(sqrt(q2));
+  if(massVeto) {
+    children[1]->scales().Max_Q2 = (1.-z())/z()*(z()*sqr(virtualMasses[0])-q2);
+  }
   // determine alphas of children according to interpretation of z
   const ShowerParticle::Parameters & params = parent->showerParameters();
   ShowerParticle::Parameters & child0 = children[0]->showerParameters();
@@ -62,7 +74,7 @@ updateChildren(const tShowerParticlePtr parent,
 
 void Decay_QTildeShowerKinematics1to2::
 reconstructParent( const tShowerParticlePtr, const ParticleVector &) const {
-  throw Exception() << "Decay_QTildeShowerKinematics1to2::updateParent not implemented"
+  throw Exception() << "Decay_QTildeShowerKinematics1to2::reconstructParent not implemented"
 		    << Exception::abortnow;
 }
 
@@ -108,4 +120,26 @@ void Decay_QTildeShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr
     frame = kin->frame();
   }
   setBasis(p,n,frame);
+}
+
+
+void Decay_QTildeShowerKinematics1to2::updateParent(const tShowerParticlePtr parent, 
+						    const ShowerParticleVector & children,
+						    ShowerPartnerType::Type) const {
+  IdList ids(3);
+  ids[0] = parent->id();
+  ids[1] = children[0]->id();
+  ids[2] = children[1]->id();
+  const vector<Energy> & virtualMasses = SudakovFormFactor()->virtualMasses(ids);
+  children[0]->virtualMass(sqrt(sqr(virtualMasses[0])-(1.-z())*sqr(scale())));
+  if(children[1]->children().empty()) children[1]->virtualMass(virtualMasses[2]);
+  // compute the new pT of the branching
+  Energy2 pt2=(1.-z())*(z()*sqr(virtualMasses[0])-sqr(children[0]->virtualMass()))
+    -z()*sqr(children[1]->virtualMass());
+  if(pt2>ZERO) {
+    pT(sqrt(pt2));
+  }
+  else {
+    parent->virtualMass(ZERO);
+  }
 }

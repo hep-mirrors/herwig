@@ -79,13 +79,17 @@ bool QTildeSudakov::guessSpaceLike(Energy2 &t, Energy2 tmin, const double x,
     return true; 
 } 
 
-bool QTildeSudakov::PSVeto(const Energy2 t) {
+bool QTildeSudakov::PSVeto(const Energy2 t,
+			   const Energy2 maxQ2) {
   // still inside PS, return true if outside
   // check vs overestimated limits
   if(z() < zLimits().first || z() > zLimits().second) return true;
+  Energy2 q2 = z()*(1.-z())*t;
+  if(ids_[0]!=ParticleID::g &&
+     ids_[0]!=ParticleID::gamma ) q2 += masssquared_[0];
+  if(q2>maxQ2) return true;
   // compute the pts
-  Energy2 pt2=sqr(z()*(1.-z()))*t-masssquared_[1]*(1.-z())-masssquared_[2]*z();
-  if(ids_[0]!=ParticleID::g) pt2+=z()*(1.-z())*masssquared_[0];
+  Energy2 pt2 = z()*(1.-z())*q2 - masssquared_[1]*(1.-z()) - masssquared_[2]*z();
   // if pt2<0 veto
   if(pt2<pT2min()) return true;
   // otherwise calculate pt and return
@@ -95,7 +99,7 @@ bool QTildeSudakov::PSVeto(const Energy2 t) {
  
 ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
 						   const IdList &ids,const bool cc,
-						   double enhance) {
+						   double enhance, Energy2 maxQ2) {
   // First reset the internal kinematics variables that can
   // have been eventually set in the previous call to the method.
   q_ = ZERO;
@@ -111,7 +115,7 @@ ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
   do {
     if(!guessTimeLike(t,tmin,enhance)) break;
   }
-  while(PSVeto(t) || SplittingFnVeto(z()*(1.-z())*t,ids,true) || 
+  while(PSVeto(t,maxQ2) || SplittingFnVeto(z()*(1.-z())*t,ids,true) || 
 	alphaSVeto(splittingFn()->angularOrdered() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t));
   q_ = t > ZERO ? Energy(sqrt(t)) : -1.*MeV;
   if(q_ < ZERO) return ShoKinPtr();

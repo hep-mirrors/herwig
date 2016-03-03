@@ -22,11 +22,15 @@ create Herwig::HwDecayHandler DecayHandler
 read decayers.in
 
 cd /Herwig/Particles
+create ThePEG::Matcher<Any> MatchAny
 read quark_decays.in
 read baryon_decays.in
 read boson_decays.in
 read lepton_decays.in
 read meson_decays.in
+# handling of B-decays, can switch to EvtGen if wanted
+read HerwigBDecays.in
+#@LOAD_EVTGEN_DECAYS@
 
 # these must be stable
 set /Herwig/Particles/mu-:Stable   Stable

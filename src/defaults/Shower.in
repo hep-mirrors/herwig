@@ -99,13 +99,13 @@ newdef PowhegShowerHandler:PDFBRemnant /Herwig/Partons/RemnantPDF
 #
 # a few default values
 newdef Evolver:MECorrMode 1
-newdef Evolver:ReconstructionOption OffShell
+newdef Evolver:ReconstructionOption OffShell3
 newdef AlphaQCD:ScaleFactor 1.0
 newdef AlphaQCD:NPAlphaS 2
 newdef AlphaQCD:Qmin 0.935
 newdef AlphaQCD:NumberOfLoops 2
 newdef AlphaQCD:InputOption 1
-newdef AlphaQCD:AlphaMZ 0.132
+newdef AlphaQCD:AlphaMZ 0.134
 #
 #
 # Lets set up all the splittings
@@ -143,7 +143,6 @@ create Herwig::HalfOneHalfSplitFn QtoGammaQSplitFn
 newdef QtoGammaQSplitFn:InteractionType QED
 newdef QtoGammaQSplitFn:ColourStructure ChargedNeutralCharged
 set QtoGammaQSplitFn:AngularOrdered Yes
-
 #
 # Now the Sudakovs
 create Herwig::QTildeSudakov SudakovCommon
@@ -151,7 +150,7 @@ newdef SudakovCommon:Alpha AlphaQCD
 newdef SudakovCommon:cutoffKinScale 0.0*GeV
 newdef SudakovCommon:PDFmax 1.0
 newdef SudakovCommon:CutOffOption pT
-newdef SudakovCommon:pTmin 1.45*GeV
+newdef SudakovCommon:pTmin 1.67*GeV
 
 cp SudakovCommon QtoQGSudakov
 newdef QtoQGSudakov:SplittingFunction QtoQGSplitFn

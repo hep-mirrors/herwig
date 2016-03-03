@@ -53,7 +53,8 @@ public:
    */
   virtual void updateChildren( const tShowerParticlePtr parent, 
 			       const ShowerParticleVector & children,
-			       ShowerPartnerType::Type partnerType) const;
+			       ShowerPartnerType::Type partnerType,
+			       bool massVeto) const;
 
   /**
    * Update the parent Kinematics from the knowledge of the kinematics
@@ -79,6 +80,18 @@ public:
    * @param parent The bema particle for the jet if needed
    */
   virtual void initialize(ShowerParticle & particle,PPtr parent);
+
+  /**
+   * Update the parent Kinematics from the knowledge of the kinematics
+   * of the children. This method will be used by the KinematicsReconstructor.
+   * @param parent   The parent
+   * @param children The children
+   * @param partnerType The type of evolution partner
+   */
+  virtual void updateParent(const tShowerParticlePtr parent,
+			    const ShowerParticleVector & children,
+			    ShowerPartnerType::Type partnerType) const;
+
   //@}
 
 private:

@@ -82,20 +82,35 @@ void TauCorrelationAnalysis::analyze(const tPVector & particles) {
   // Calls analyze() for each particle.
 }
 
+namespace {
+
+tPPtr findTau(tPPtr parent) {
+  for(unsigned int ix=0;ix<parent->children().size();++ix) {
+    if(parent->children()[ix]->id()==parent->id())
+      return findTau(parent->children()[ix]);
+  }
+  return parent;
+}
+
+}
+
 void TauCorrelationAnalysis::analyze(tPPtr part) {
   // check the number of children of the particle
   if(part->children().size()!=2) return;
   // and they are tau's
   if(abs(part->children()[0]->id())!=ParticleID::tauminus||
      abs(part->children()[1]->id())!=ParticleID::tauminus) return;
+  ParticleVector children;
+  for(unsigned int ix=0;ix<part->children().size();++ix)
+    children.push_back(findTau(part->children()[ix]));
   // and number of children
-  if(!((part->children()[0]->children().size()==2||
-	part->children()[0]->children().size()==3)&&
-       (part->children()[1]->children().size()==2||
-	part->children()[1]->children().size()==3))) return;
+  if(!((children[0]->children().size()==2||
+	children[0]->children().size()==3)&&
+       (children[1]->children().size()==2||
+	children[1]->children().size()==3))) return;
   // call rho and pi specific analysis
-  analyzePi(part);
-  analyzeRho(part);
+  analyzePi(part,children);
+  analyzeRho(part,children);
 }
 
 NoPIOClassDescription<TauCorrelationAnalysis> TauCorrelationAnalysis::initTauCorrelationAnalysis;
@@ -109,14 +124,15 @@ void TauCorrelationAnalysis::Init() {
 
 }
 
-void TauCorrelationAnalysis::analyzePi(tPPtr part) {
-  if(part->children()[0]->children().size()!=2||
-     part->children()[1]->children().size()!=2) return;
+void TauCorrelationAnalysis::analyzePi(tPPtr part,
+				       ParticleVector children) {
+  if(children[0]->children().size()!=2||
+     children[1]->children().size()!=2) return;
   // now examine the decay products
   tPPtr taup,taum,pim,pip,nu,nub;
   for(unsigned int ix=0;ix<2;++ix) {
-    if(part->children()[ix]->id()==ParticleID::tauminus) {
-      taum=part->children()[ix];
+    if(children[ix]->id()==ParticleID::tauminus) {
+      taum=children[ix];
       for(unsigned int ix=0;ix<2;++ix) {
 	if(taum->children()[ix]->id()==ParticleID::piminus) {
 	  pim=taum->children()[ix];
@@ -127,7 +143,7 @@ void TauCorrelationAnalysis::analyzePi(tPPtr part) {
       }
     }
     else {
-      taup=part->children()[ix];
+      taup=children[ix];
       for(unsigned int ix=0;ix<2;++ix) {
 	if(taup->children()[ix]->id()==ParticleID::piplus) {
 	  pip=taup->children()[ix];
@@ -153,13 +169,14 @@ void TauCorrelationAnalysis::analyzePi(tPPtr part) {
   *_delta +=ppip.vect().angle(ppim.vect());
 }
 
-void TauCorrelationAnalysis::analyzeRho(tPPtr part) {
+void TauCorrelationAnalysis::analyzeRho(tPPtr part,
+					ParticleVector children) {
   // now examine the decay products
   tPPtr taup,taum,pim,pip,nu,nub,pi0a,pi0b,rhop,rhom;
   int idtemp;
   for(unsigned int ix=0;ix<2;++ix) {
-    if(part->children()[ix]->id()==ParticleID::tauminus) {
-      taum=part->children()[ix];
+    if(children[ix]->id()==ParticleID::tauminus) {
+      taum=children[ix];
       for(unsigned int iz=0;iz<taum->children().size();++iz) {
 	idtemp=taum->children()[iz]->id();
 	if(idtemp==-213||idtemp==-100213||idtemp==-30213) {
@@ -179,7 +196,7 @@ void TauCorrelationAnalysis::analyzeRho(tPPtr part) {
       }
     }
     else {
-      taup=part->children()[ix];
+      taup=children[ix];
       for(unsigned int iz=0;iz<taup->children().size();++iz) {
 	idtemp=taup->children()[iz]->id();
 	if(idtemp==213||idtemp==100213||idtemp==30213) {

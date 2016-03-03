@@ -66,7 +66,7 @@ public:
    */
   Evolver() : _maxtry(100), _meCorrMode(1), _hardVetoMode(1),
 	      _hardVetoRead(0), _reconOpt(0),
-	      _massVetoOption(1), _hardVetoReadOption(false),
+	      _hardVetoReadOption(false),
 	      _iptrms(ZERO), _beta(0.), _gamma(ZERO), _iptmax(),
 	      _limitEmissions(0), _initialenhance(1.), _finalenhance(1.),
 	       interaction_(1), _trunc_Mode(true), _hardEmissionMode(0),
@@ -295,14 +295,16 @@ protected:
   virtual bool 
   spaceLikeDecayShower(tShowerParticlePtr particle,
 		       const ShowerParticle::EvolutionScales & maxScales,
-		       Energy minimumMass,ShowerInteraction::Type);
+		       Energy minimumMass,ShowerInteraction::Type,
+		       Branching fb);
 
   /**
    * Truncated shower from a time-like particle
    */
   virtual bool truncatedTimeLikeShower(tShowerParticlePtr particle,
 				       HardBranchingPtr branch,
-				       ShowerInteraction::Type type, bool first);
+				       ShowerInteraction::Type type,
+				       Branching fb, bool first);
  
   /**
    * Truncated shower from a space-like particle
@@ -317,7 +319,7 @@ protected:
   virtual bool truncatedSpaceLikeDecayShower(tShowerParticlePtr particle,
 					     const ShowerParticle::EvolutionScales & maxScales,
 					     Energy minimumMass, HardBranchingPtr branch,
-					     ShowerInteraction::Type type);
+					     ShowerInteraction::Type type, Branching fb);
   //@}
 
   /**
@@ -567,11 +569,19 @@ protected:
 			    Energy minimumMass,ShowerInteraction::Type);
 
   /**
-   *   Select the branching for the next time-like emission
+   * Select the branching for the next time-like emission
    */
   Branching selectTimeLikeBranching(tShowerParticlePtr particle,
-				    ShowerInteraction::Type type);
+				    ShowerInteraction::Type type,
+				    HardBranchingPtr branch);
 
+  /**
+   * Select the branching for the next space-like emission in a decay
+   */
+  Branching selectSpaceLikeDecayBranching(tShowerParticlePtr particle,
+					  const ShowerParticle::EvolutionScales & maxScales,
+					  Energy minmass,ShowerInteraction::Type type,
+					  HardBranchingPtr branch);
   /**
    *  Create the timelike child of a branching
    */
@@ -717,11 +727,6 @@ private:
    *  Control of the reconstruction option
    */
   unsigned int _reconOpt;
-
-  /**
-   *   Option for inclusion of mass veto
-   */
-  unsigned int _massVetoOption;
 
   /**
    * If hard veto pT scale is being read-in this determines

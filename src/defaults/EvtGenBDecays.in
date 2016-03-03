@@ -1,0 +1,21 @@
+# -*- ThePEG-repository -*-
+
+#
+#  EvtGen decay model for weakly decaying B mesons
+#
+#
+decaymode B0->*MatchAny; 1. 1 /Herwig/Decays/EvtGenDecayer
+decaymode Bbar0->*MatchAny; 1. 1 /Herwig/Decays/EvtGenDecayer
+decaymode B+->*MatchAny; 1. 1 /Herwig/Decays/EvtGenDecayer
+decaymode B-->*MatchAny; 1. 1 /Herwig/Decays/EvtGenDecayer
+decaymode B_s0->*MatchAny; 1. 1 /Herwig/Decays/EvtGenDecayer
+decaymode B_sbar0->*MatchAny; 1. 1 /Herwig/Decays/EvtGenDecayer
+#
+#  EvtGen decay model for weakly decaying D mesons
+#
+decaymode D0->*MatchAny;    1. 1 /Herwig/Decays/EvtGenDecayer
+decaymode Dbar0->*MatchAny; 1. 1 /Herwig/Decays/EvtGenDecayer
+decaymode D+->*MatchAny;    1. 1 /Herwig/Decays/EvtGenDecayer
+decaymode D-->*MatchAny;    1. 1 /Herwig/Decays/EvtGenDecayer
+decaymode D_s+->*MatchAny;  1. 1 /Herwig/Decays/EvtGenDecayer
+decaymode D_s-->*MatchAny;  1. 1 /Herwig/Decays/EvtGenDecayer

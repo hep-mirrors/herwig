@@ -235,7 +235,8 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
       Energy startingScale = angularOrdered ? particle.scales().QED : particle.scales().QED_noAO;
       newKin = cit->second.first->
     	generateNextTimeBranching(startingScale,cit->second.second,
-				  particle.id()!=cit->first,enhance);
+				  particle.id()!=cit->first,enhance,
+				  particle.scales().Max_Q2);
     }
     else if(cit->second.first->interactionType()==ShowerInteraction::QCD) {
       // special for octets
@@ -246,11 +247,13 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
 	  Energy startingScale = angularOrdered ? particle.scales().QCD_c : particle.scales().QCD_c_noAO;
     	  newKin= cit->second.first->
     	    generateNextTimeBranching(startingScale,cit->second.second,
-				      particle.id()!=cit->first,0.5*enhance);
+				      particle.id()!=cit->first,0.5*enhance,
+				      particle.scales().Max_Q2);
 	  startingScale = angularOrdered ? particle.scales().QCD_ac : particle.scales().QCD_ac_noAO;
     	  ShoKinPtr newKin2 = cit->second.first->
 	    generateNextTimeBranching(startingScale,cit->second.second,
-				      particle.id()!=cit->first,0.5*enhance);
+				      particle.id()!=cit->first,0.5*enhance,
+				      particle.scales().Max_Q2);
     	  // pick the one with the highest scale
     	  if( ( newKin && newKin2 && newKin2->scale() > newKin->scale()) ||
     	      (!newKin && newKin2) ) {
@@ -265,7 +268,8 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
 	    max(particle.scales().QCD_c_noAO, particle.scales().QCD_ac_noAO);
     	  newKin= cit->second.first->
     	    generateNextTimeBranching(startingScale, cit->second.second,
-				      particle.id()!=cit->first,enhance);
+				      particle.id()!=cit->first,enhance,
+				      particle.scales().Max_Q2);
     	  type = UseRandom::rndbool() ? 
     	    ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine;
 	}
@@ -283,7 +287,8 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
 	}
 	newKin= cit->second.first->
 	  generateNextTimeBranching(startingScale,cit->second.second,
-				    particle.id()!=cit->first,enhance);
+				    particle.id()!=cit->first,enhance,
+				    particle.scales().Max_Q2);
       }
     }
     // shouldn't be anything else

@@ -1,0 +1,21 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the EvtGenInterface class.
+//
+#ifndef ThePEG_EvtGenInterface_FH
+#define ThePEG_EvtGenInterface_FH
+
+#include "ThePEG/Config/ThePEG.h"
+namespace Herwig {
+
+class EvtGenInterface;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::EvtGenInterface,EvtGenInterfacePtr);
+
+}
+
+#endif

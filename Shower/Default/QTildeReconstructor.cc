@@ -1472,6 +1472,7 @@ solveBoost(const double k, const Lorentz5Momentum & newq,
     else { 
       gamma = 0.25*sqr(Q2)/(kps*qs)*(1. - 0.5*(kps+qs)/(kps*qs)*Q2);
     }
+    if(gamma<=0.) throw KinematicsReconstructionVeto();
     gamma = 1./sqrt(gamma);
   }
   // note that (k/kp)*oldp.vect() = oldp.vect()/oldp.vect().mag() but cheaper. 

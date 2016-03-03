@@ -1,6 +1,10 @@
 SUBDIRS = FormFactors Tau Baryon VectorMeson Perturbative \
 	  WeakCurrents ScalarMeson TensorMeson Partonic General Radiation
 
+if HAVE_EVTGEN
+SUBDIRS += EvtGen
+endif
+
 noinst_LTLIBRARIES = libHwDecay.la
 pkglib_LTLIBRARIES = Hw64Decay.la HwMamboDecay.la
 
