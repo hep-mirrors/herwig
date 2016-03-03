@@ -8,6 +8,7 @@ MEPP2WHPowheg.cc  MEPP2WHPowheg.h \
 MEPP2ZHPowheg.cc  MEPP2ZHPowheg.h \
 MEPP2VVPowheg.cc  MEPP2VVPowheg.h \
 VVKinematics.cc VVKinematics.h \
+MEPP2GammaGammaPowheg.cc  MEPP2GammaGammaPowheg.h \
 MEPP2HiggsVBFPowheg.cc MEPP2HiggsVBFPowheg.h
 
 HwPowhegMELepton_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 1:0:0
