@@ -61,11 +61,12 @@ HerwigCLI::HerwigCLI(int argc, char * argv[])
 
   // Define runMode of program
   std::string tmpRunMode = args_info.inputs[0];
-  if      ( tmpRunMode == "init" )      { runMode_ = RunMode::INIT; }
-  else if ( tmpRunMode == "read" )      { runMode_ = RunMode::READ; }
-  else if ( tmpRunMode == "build" )     { runMode_ = RunMode::BUILD; }
-  else if ( tmpRunMode == "integrate" ) { runMode_ = RunMode::INTEGRATE; }
-  else if ( tmpRunMode == "run" )       { runMode_ = RunMode::RUN; }
+  if      ( tmpRunMode == "init" )       { runMode_ = RunMode::INIT; }
+  else if ( tmpRunMode == "read" )       { runMode_ = RunMode::READ; }
+  else if ( tmpRunMode == "build" )      { runMode_ = RunMode::BUILD; }
+  else if ( tmpRunMode == "integrate" )  { runMode_ = RunMode::INTEGRATE; }
+  else if ( tmpRunMode == "mergegrids" ) { runMode_ = RunMode::MERGEGRIDS; }
+  else if ( tmpRunMode == "run" )        { runMode_ = RunMode::RUN; }
   else {
     runMode_ = RunMode::ERROR;
     quitWithHelp();
