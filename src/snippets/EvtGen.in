@@ -1,0 +1,27 @@
+# -*- ThePEG-repository -*-
+# input file to switch from Herwig to EvtGen for weak bottom and charm meson decays
+# switch the decays
+cd /Herwig/Particles
+read EvtGenBDecays.in
+# tuning parameters
+# hadronization parameters
+cd /Herwig/Hadronization
+set ClusterFissioner:ClMaxLight  3.27*GeV
+set ClusterFissioner:ClPowLight  2.79
+set ClusterFissioner:PSplitLight 0.80
+set ClusterFissioner:ClMaxCharm  3.58*GeV
+set ClusterFissioner:ClPowCharm  2.47
+set ClusterFissioner:PSplitCharm 1.18
+set HadronSelector:SingleHadronLimitCharm 0.08
+set HadronSelector:PwtSquark  0.60
+set HadronSelector:PwtDIquark 0.40
+# shower parameters
+cd /Herwig/Shower
+set /Herwig/Shower/QtoQGSudakov:pTmin 1.62*GeV   
+set /Herwig/Shower/GtoGGSudakov:pTmin 1.62*GeV   
+set /Herwig/Shower/GtoQQbarSudakov:pTmin 1.62*GeV
+set /Herwig/Shower/GtobbbarSudakov:pTmin 1.62*GeV
+set /Herwig/Shower/GtoccbarSudakov:pTmin 1.62*GeV
+set /Herwig/Shower/QtoGQSudakov:pTmin 1.62*GeV   
+set /Herwig/Shower/utoGuSudakov:pTmin 1.62*GeV   
+set /Herwig/Shower/dtoGdSudakov:pTmin 1.62*GeV   
