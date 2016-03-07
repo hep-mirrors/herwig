@@ -27,7 +27,7 @@ do Dbar0:SelectDecayModes none
 do D+:SelectDecayModes none
 do D-:SelectDecayModes none
 do D_s+:SelectDecayModes none
-do D_S-:SelectDecayModes none
+do D_s-:SelectDecayModes none
 # create EvtGen ones
 decaymode D0->*MatchAny;    1. 1 /Herwig/Decays/EvtGenDecayer
 decaymode Dbar0->*MatchAny; 1. 1 /Herwig/Decays/EvtGenDecayer
