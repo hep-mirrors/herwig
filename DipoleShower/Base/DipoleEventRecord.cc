@@ -425,7 +425,7 @@ void DipoleEventRecord::getAll(const ParticleVector& childs,
 
   for ( ParticleVector::const_iterator p = childs.begin();
 	p != childs.end(); ++p ) {
-    if ( ShowerHandler::currentHandler()->eventHandler()->currentCollision()->isRemnant(*p) )
+    if (ShowerHandler::currentHandler()->eventHandler()->currentCollision()&& ShowerHandler::currentHandler()->eventHandler()->currentCollision()->isRemnant(*p) )
       continue;
     if ( (**p).children().empty() ) {
       if ( (**p).coloured() &&
@@ -571,7 +571,7 @@ void DipoleEventRecord::updateColour(PPtr particle) {
 const map<PPtr,PPtr>& 
 DipoleEventRecord::prepare(tSubProPtr subpro,
 			   tStdXCombPtr xc,
-			   const pair<PDF,PDF>& pdf,
+			   const pair<PDF,PDF>& pdf,tPPair beam,
 			   bool dipoles) {
 
   theSubProcess = subpro;
@@ -584,7 +584,6 @@ DipoleEventRecord::prepare(tSubProPtr subpro,
   PPair in = subpro->incoming();
 
   assert(ShowerHandler::currentHandler());
-  tPPair beam = ShowerHandler::currentHandler()->generator()->currentEvent()->incoming();
 
   // don't take these from the XComb as it may be null
   pair<double,double> xs;
@@ -745,6 +744,7 @@ DipoleEventRecord::split(list<Dipole>::iterator dip,
   static DipoleChain empty;
 
   pair<Dipole,Dipole> children = dip->split(dsplit,colourSpectator);
+  lastspliting=dsplit;
 
   list<Dipole>::iterator breakup =
     ch->insertSplitting(dip,children,childIterators);

@@ -24,13 +24,14 @@ using namespace Herwig;
 
 DipoleSplittingKernel::DipoleSplittingKernel() 
   : HandlerBase(), theScreeningScale(0.0*GeV), 
-    thePresamplingPoints(2000), theMaxtry(100000),
+    thePresamplingPoints(50000), theMaxtry(100000),
     theFreezeGrid(500000),
     theStrictLargeN(false), 
     theFactorizationScaleFactor(1.0),
     theRenormalizationScaleFactor(1.0),
     theRenormalizationScaleFreeze(1.*GeV), 
     theFactorizationScaleFreeze(1.*GeV),
+    theKimproved(false),
     theVirtualitySplittingScale(false) {}
 
 DipoleSplittingKernel::~DipoleSplittingKernel() {}
@@ -48,7 +49,7 @@ void DipoleSplittingKernel::persistentOutput(PersistentOStream & os) const {
      << theRenormalizationScaleFactor
      << ounit(theRenormalizationScaleFreeze,GeV)
      << ounit(theFactorizationScaleFreeze,GeV)
-     << theVirtualitySplittingScale;
+     << theVirtualitySplittingScale<<theKimproved;
 }
 
 void DipoleSplittingKernel::persistentInput(PersistentIStream & is, int) {
@@ -59,7 +60,7 @@ void DipoleSplittingKernel::persistentInput(PersistentIStream & is, int) {
      >> theRenormalizationScaleFactor
      >> iunit(theRenormalizationScaleFreeze,GeV)
      >> iunit(theFactorizationScaleFreeze,GeV)
-     >> theVirtualitySplittingScale;
+     >> theVirtualitySplittingScale>>theKimproved;
 }
 
 double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
@@ -74,15 +75,26 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
     scale = sqr(splittingKinematics()->QFromPt(pt,split)) + sqr(theScreeningScale);
   }
 
+  if(split.fixedScale()>0.*GeV){
+    scale=sqr(split.fixedScale());
+  }
+
   Energy2 rScale = sqr(theRenormalizationScaleFactor)*scale;
   rScale = rScale > sqr(renormalizationScaleFreeze()) ? rScale : sqr(renormalizationScaleFreeze());
 
   Energy2 fScale = sqr(theFactorizationScaleFactor)*scale;
   fScale = fScale > sqr(factorizationScaleFreeze()) ? fScale : sqr(factorizationScaleFreeze());
 
-  double ret = alphaS()->value(rScale) / (2.*Constants::pi);
+  double ret;
 
-  if ( split.index().initialStateEmitter() ) {
+  if(split.fixedScale()<0.*GeV){
+    ret = alphaS()->value(rScale) / (2.*Constants::pi)*(theKimproved?(1.+((3.*(67./18.-1./6.*Constants::pi*Constants::pi)-5./9.*5.)*alphaS()->value(rScale)/2./Constants::pi)):1.);  
+  }else{
+    ret=1.; 
+  }
+  
+  
+  if ( split.index().initialStateEmitter()&&split.lastEmitterZ()!=1. ) {
     assert(pdfRatio());
     ret *= 
       split.lastEmitterZ() * 
@@ -91,7 +103,7 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
 		    split.emitterX(),split.lastEmitterZ());
   }
 
-  if ( split.index().initialStateSpectator() ) {
+  if ( split.index().initialStateSpectator()&&split.lastSpectatorZ()!=1. ) {
     assert(pdfRatio());
     ret *= 
       split.lastSpectatorZ() * 
@@ -187,6 +199,22 @@ void DipoleSplittingKernel::Init() {
      false);
 
   interfaceStrictLargeN.rank(-2);
+
+
+
+  static Switch<DipoleSplittingKernel,bool> interfaceKimprove
+    ("Kimprove",
+     "Add the CMW Scheme related Kg expression to the splitting",
+    &DipoleSplittingKernel::theKimproved, false, false, false);
+  static SwitchOption interfaceKimproveOn
+    (interfaceKimprove,"On","", true);
+  static SwitchOption interfaceKimproveOff
+    (interfaceKimprove,"Off","",false);
+
+
+
+
+
 
   static Parameter<DipoleSplittingKernel,double> interfaceFactorizationScaleFactor
     ("FactorizationScaleFactor",

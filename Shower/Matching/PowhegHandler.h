@@ -30,7 +30,7 @@ public:
   /**
    * Perform CKKW reweighting
    */
-  virtual double reweightCKKW(int minMult, int maxMult);
+  virtual double reweightCKKW(int minMult, int maxMult,bool fast);
 
   /**
    *  Generate hard emissions for CKKW etc

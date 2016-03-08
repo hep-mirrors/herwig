@@ -31,6 +31,7 @@
 
 #include "MonacoSampler.h"
 #include "Herwig/Sampling/GeneralSampler.h"
+#include <ctime>
 
 using namespace Herwig;
 
@@ -51,7 +52,9 @@ IBPtr MonacoSampler::fullclone() const {
 }
 
 double MonacoSampler::generate() {
+  
   double w = 1.;
+  double wref=1.;
 //  cout<<"\npoint: ";
   std::valarray<int> upperb(dimension());
   for ( int k = 0; k < dimension(); ++k ) {
@@ -74,10 +77,25 @@ double MonacoSampler::generate() {
     lastPoint()[k] = glower + (div-upperb[k])*gdiff;
     w *= gdiff * theGridDivisions;
   }
-//    cout<<lastPoint()[k]<<" ";
+  double elapsed_secs;
   
+  bool canImprove = sampler()->almostUnweighted();
+  eventHandler()->resetDidEstimate();
   try {
-    w *= eventHandler()->dSigDR(lastPoint()) / nanobarn;
+    /**
+     * For AlmostUnweighted Events we can speed up the calculation. 
+     * 1. Calculate a fast estimate (e.g. Born, analytic CKKW ...)   
+     * 2. If accepted reweight with full/estimate. 
+     *    (Born+Virt, CKKW with sampled sudakovs)
+     **/
+    clock_t begin = clock();
+    
+    
+    wref=eventHandler()->dSigDR(lastPoint(),canImprove) / nanobarn;
+    clock_t end = clock();
+     elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+    
+    w *= wref;
   } catch (Veto&) {
     w = 0.0;
   } catch (...) {
@@ -105,6 +123,30 @@ double MonacoSampler::generate() {
       w = 0.;
     else
       w = sign*max(abs(w),referenceWeight());
+  }
+  
+  
+  
+    //if (eventHandler()->didEstimate())
+        //cout<<"\n"<<canImprove <<" "<<eventHandler()->didEstimate()<<" "<<weighted()<<" "<<initialized()<<" ---------------------------->"<<w;
+  
+  if(canImprove && eventHandler()->didEstimate()
+     && (w!=0.) && ((!weighted()&&initialized())||UseRandom::rnd()<0.01)){
+    
+    
+    double x=elapsed_secs;
+    
+    clock_t begin = clock();
+    
+    
+    double wfull=eventHandler()->dSigDR(lastPoint(),false) / nanobarn;
+    clock_t end = clock();
+    elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+    cout<<"\nwfull/wref: "<<wfull/wref <<" time ratio "<<x/elapsed_secs;
+    
+    
+    w*=abs(wfull/wref);
+    
   }
   select(w);
   if ( w != 0.0 )

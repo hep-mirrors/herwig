@@ -268,7 +268,23 @@ void MatchboxMEBase::setXComb(tStdXCombPtr xc) {
     scaleChoice()->setXComb(xc);
   if ( matchboxAmplitude() )
     matchboxAmplitude()->setXComb(xc);
+  if ( theFirstNode ) 
+    theFirstNode->setXComb(xc, theProjectorStage);
 
+}
+
+void MatchboxMEBase::setKinematics() {
+  MEBase::setKinematics();
+  if ( theFirstNode ) {
+    theFirstNode->setKinematics();
+  }
+}
+
+void MatchboxMEBase::clearKinematics() {
+  MEBase::clearKinematics();
+  if ( theFirstNode ) {
+    theFirstNode->clearKinematics();
+  }
 }
 
 double MatchboxMEBase::generateIncomingPartons(const double* r1, const double* r2) {
@@ -315,7 +331,30 @@ bool MatchboxMEBase::generateKinematics(const double * r) {
     if ( jacobian() == 0.0 )
       return false;
 
-    setScale();
+    setScale();  
+
+
+    if ( theFirstNode ){
+      theFirstNode->firstgenerateKinematics(r, 0,lastXCombPtr()->lastSHat());
+      if (theFirstNode->cutStage()==0 ){
+    	SafeClusterMap temp=theFirstNode->clusterSafe();
+    	for(SafeClusterMap::iterator
+    			it=temp.begin();
+    			it!=temp.end();++it){
+    		if (!it->second.first)return false;
+    		}
+        }
+      if (theFirstNode->cutStage()==1 ){
+    	  SafeClusterMap temp=theFirstNode->clusterSafe();
+    	  for(SafeClusterMap::iterator
+    	      			it=temp.begin();
+    	      			it!=temp.end();++it){
+      		if (!it->second.first && !it->second.second)return false;
+      		}
+      	  }
+      }
+
+      
     logGenerateKinematics(r);
 
     assert(lastMatchboxXComb());
@@ -657,16 +696,27 @@ double MatchboxMEBase::me2Norm(unsigned int addAlphaS) const {
 
 }
 
-CrossSection MatchboxMEBase::dSigHatDR() const {
-
+CrossSection MatchboxMEBase::dSigHatDR(bool fast) const {
   getPDFWeight();
 
-  if ( !lastXCombPtr()->willPassCuts() ) {
+
+  if (theFirstNode) {
+    if(theFirstNode->calculateInNode()){
+      lastMECrossSection(1.0*nanobarn);
+      return lastMECrossSection();
+    }
+  }
+  
+  if (!theFirstNode&&!subNode()&& !lastXCombPtr()->willPassCuts() ) {
+    lastME2(0.0);
     lastMECrossSection(ZERO);
     return lastMECrossSection();
   }
 
   double xme2 = me2();
+  lastME2(xme2);
+
+ 
   
   if (factory()->verboseDia()){
     double diagweightsum = 0.0;
@@ -685,12 +735,20 @@ CrossSection MatchboxMEBase::dSigHatDR() const {
   }
 
   double vme2 = 0.;
-  if ( oneLoop() && !oneLoopNoLoops() )
+  if ( oneLoop() && !oneLoopNoLoops() && !fast){
     vme2 = oneLoopInterference();
+  }else if ( oneLoop() && !oneLoopNoLoops() && fast){
+    Ptr<StandardEventHandler>::ptr eH =
+     dynamic_ptr_cast<Ptr<StandardEventHandler>::ptr>(generator()->eventHandler()); 
+    eH->estimatedDSigRD();
+  }
 
   CrossSection res = ZERO;
 
-  if ( !oneLoopNoBorn() )
+
+  setLastBorndSigHatDR((sqr(hbarc)/(2.*lastSHat())) * jacobian()* lastMEPDFWeight() * xme2/nanobarn);
+   
+  if ( !oneLoopNoBorn() || fast)
     res += 
       (sqr(hbarc)/(2.*lastSHat())) *
       jacobian()* lastMEPDFWeight() * xme2;
@@ -700,7 +758,7 @@ CrossSection MatchboxMEBase::dSigHatDR() const {
       (sqr(hbarc)/(2.*lastSHat())) *
       jacobian()* lastMEPDFWeight() * vme2;
 
-  if ( !onlyOneLoop() ) {
+  if ( !onlyOneLoop() && !fast ) {
     for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator v =
 	    virtuals().begin(); v != virtuals().end(); ++v ) {
       (**v).setXComb(lastXCombPtr());
@@ -708,6 +766,10 @@ CrossSection MatchboxMEBase::dSigHatDR() const {
     }
     if ( checkPoles() && oneLoop() )
       logPoles();
+  }else if (!onlyOneLoop() && fast ) {
+     Ptr<StandardEventHandler>::ptr eH =
+       dynamic_ptr_cast<Ptr<StandardEventHandler>::ptr>(generator()->eventHandler());
+     eH->estimatedDSigRD();
   }
 
   double weight = 0.0;
@@ -1042,9 +1104,18 @@ MatchboxMEBase::getDipoles(const vector<Ptr<SubtractionDipole>::ptr>& dipoles,
 	      if ( nDipole->isSymmetric() )
 		done.insert(make_pair(make_pair(make_pair(emission,emitter),spectator),make_pair(*b,*d)));
 	      ostringstream dname;
-	      dname << fullName() << "." << (**b).name() << "."
-		    << (**d).name() << ".[(" 
-		    << emitter << "," << emission << ")," << spectator << "]";
+              if ( firstNode() ) {
+                dname << fullName();
+                if (theProjectorStage!=0)  dname <<  ".projected." << theProjectorStage << "." ;
+                if (theOneLoopNoBorn)  dname <<  ".projected-virtual." << theProjectorStage << "." ;
+                dname   << (**b).name() << "."
+                        << (**d).name() << ".[("
+                        << emitter << "," << emission << ")," << spectator << "]";
+              } else {
+                dname << fullName() << "." << (**b).name() << "."
+		      << (**d).name() << ".[("
+		      << emitter << "," << emission << ")," << spectator << "]";
+              }
 	      if ( ! (generator()->preinitRegister(nDipole,dname.str()) ) )
 		throw Exception() << "MatchboxMEBase::getDipoles(): Dipole " << dname.str() << " already existing." << Exception::runerror;
 	      if ( !factory()->reweighters().empty() ) {
@@ -1182,6 +1253,48 @@ void MatchboxMEBase::flushCaches() {
     (**v).flushCaches();
   }
 }
+
+void MatchboxMEBase::fillProjectors() {
+  if (!theFirstNode)return;
+  if (theProjectorStage==0)return;
+  for (unsigned int i = 0; i < (theFirstNode->Projector()).size(); ++i) {
+    lastXCombPtr()->projectors().insert(
+					(theFirstNode->Projector())[i].first,
+					(theFirstNode->Projector())[i].second->xcomb());
+  }
+}
+
+const Ptr<ClusterNode>::ptr& MatchboxMEBase::firstNode() const {
+  return theFirstNode;
+}
+
+Ptr<ClusterNode>::ptr& MatchboxMEBase::firstNode() {
+  return theFirstNode;
+}
+
+void MatchboxMEBase::firstNode(Ptr<ClusterNode>::ptr v) {
+  theFirstNode = v;
+}
+
+
+ bool MatchboxMEBase::subNode() const {
+  return theSubNode;
+}
+
+
+
+void MatchboxMEBase::subNode(bool v) {
+  theSubNode = v;
+}
+
+
+pair<bool,bool> MatchboxMEBase::clustersafe(int emit,int emis,int spec){
+
+	if (!firstNode()){
+		return make_pair(true,true);
+	}
+	return firstNode()->clusterSafe().find(make_pair(make_pair(emit,emis),spec))->second;
+ }
 
 void MatchboxMEBase::print(ostream& os) const {
 
@@ -1531,6 +1644,7 @@ void MatchboxMEBase::persistentOutput(PersistentOStream & os) const {
      << theReweights << theSubprocess << theOneLoop 
      << theOneLoopNoBorn << theOneLoopNoLoops
      << epsilonSquarePoleHistograms << epsilonPoleHistograms
+     << theFirstNode <<theSubNode<< theProjectorStage
      << theOLPProcess << theNoCorrelations
      << theHavePDFs << checkedPDFs<<theDiagramWeightVerboseDown<<theDiagramWeightVerboseUp;
 }
@@ -1541,6 +1655,7 @@ void MatchboxMEBase::persistentInput(PersistentIStream & is, int) {
      >> theReweights >> theSubprocess >> theOneLoop 
      >> theOneLoopNoBorn >> theOneLoopNoLoops
      >> epsilonSquarePoleHistograms >> epsilonPoleHistograms
+     >> theFirstNode >> theSubNode >> theProjectorStage
      >> theOLPProcess >> theNoCorrelations
      >> theHavePDFs >> checkedPDFs>>theDiagramWeightVerboseDown>>theDiagramWeightVerboseUp;
   lastMatchboxXComb(theLastXComb);

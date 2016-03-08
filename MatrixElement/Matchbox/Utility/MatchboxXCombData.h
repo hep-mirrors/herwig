@@ -286,6 +286,19 @@ namespace Herwig {
     }
 
     /**
+     * The last tree-level matrix element squared
+     */
+    double lastBorndSigHatDR()  { return theLastBorndSigHatDR; }
+        
+    /**
+     * The last tree-level matrix element squared
+     */
+    void setLastBorndSigHatDR(double v) {
+      theLastBorndSigHatDR = v;
+    }
+
+    
+    /**
      * True, if the one-loop/tree-level interference.
      * be calculated.
      */
@@ -907,6 +920,12 @@ namespace Herwig {
      * The last tree-level matrix element squared
      */
     double theLastLargeNME2;
+    
+    /**
+     * The last dSigHatDR for Born.
+     */
+    double theLastBorndSigHatDR;
+    
 
     /**
      * True, if the one-loop/tree-level interference.

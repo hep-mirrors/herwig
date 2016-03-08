@@ -123,6 +123,26 @@ public:
    * Return the last generated splitting
    */
   const DipoleSplittingInfo& lastSplitting() const { return generatedSplitting; }
+  
+ /**
+   * Sample the Sudakov in a monte carlo
+   */
+  double sudakov(const DipoleSplittingInfo&,Energy down,bool fast=false);
+
+  double dosudakov(const DipoleSplittingInfo&,Energy down,bool fast=false);
+
+  double wrappedSudakov(DipoleSplittingInfo& split,Energy down, bool fast=false);
+  
+  /**
+   * Sample the Sudakov exponent for unlops-like weights
+   */
+
+  double unlops(const DipoleSplittingInfo&,Energy down,Energy fixedScale);
+
+  double dounlops(const DipoleSplittingInfo&,Energy down,Energy fixedScale);
+
+  double wrappedUnlops(DipoleSplittingInfo& split,Energy down,Energy fixedScale);
+
 
 public:
 
@@ -232,7 +252,7 @@ public:
   /**
    * Evalute the splitting kernel.
    */
-  double evaluate(const vector<double>&);
+  double evaluate(const vector<double>&,Energy fixed=-1*GeV);
 
   /**
    * True, if sampler should apply compensation

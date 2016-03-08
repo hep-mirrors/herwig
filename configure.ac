@@ -188,6 +188,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/Matchbox/Dipoles/Makefile
                 MatrixElement/Matchbox/InsertionOperators/Makefile
                 MatrixElement/Matchbox/Matching/Makefile
+                MatrixElement/Matchbox/Mergeing/Makefile
                 MatrixElement/Matchbox/Cuts/Makefile
                 MatrixElement/Matchbox/Scales/Makefile
                 MatrixElement/Matchbox/Scales/MatchboxScale.cc
@@ -214,6 +215,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		DipoleShower/Kinematics/Makefile
 		DipoleShower/Utility/Makefile
 		DipoleShower/AlphaS/Makefile
+		DipoleShower/Merging/Makefile
                 Utilities/Makefile
                 Utilities/XML/Makefile
                 Utilities/Statistics/Makefile
@@ -232,6 +234,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		src/Makefile-UserModules
 		src/defaults/Analysis.in
 		src/defaults/MatchboxDefaults.in
+		src/defaults/MatchboxMergeDefaults.in
 		src/defaults/setup.gosam.in
 		src/Matchbox/LO-DefaultShower.in
 		src/Matchbox/LO-DipoleShower.in

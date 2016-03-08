@@ -23,7 +23,10 @@
 #include "Herwig/DipoleShower/Base/DipoleEventReweight.h"
 #include "Herwig/DipoleShower/Utility/ConstituentReshuffler.h"
 #include "Herwig/DipoleShower/Utility/IntrinsicPtGenerator.h"
+#include "Herwig/DipoleShower/Merging/Merging.fh"
 #include "Herwig/MatrixElement/Matchbox/Matching/ShowerApproximation.h"
+
+
 
 namespace Herwig {
 
@@ -40,6 +43,9 @@ using namespace ThePEG;
  * defined for DipoleShowerHandler.
  */
 class DipoleShowerHandler: public ShowerHandler {
+
+
+ friend class Merging;
 
 public:
 
@@ -94,7 +100,7 @@ public:
 
 protected:
 
-  typedef multimap<DipoleIndex,Ptr<DipoleSplittingGenerator>::ptr> GeneratorMap;
+  typedef multimap<DipoleIndex,Ptr<DipoleSplittingGenerator>::ptr> GeneratorMap2;
 
   /**
    * The main method which manages the showering of a subprocess.
@@ -108,6 +114,10 @@ protected:
    */
   tPPair cascade(tSubProPtr sub, XCPtr xcomb, 
 		 Energy optHardPt, Energy optCutoff);
+  
+  
+  
+  double reweightCKKW(int, int,bool fast=false);
 
   /**
    * Build splitting generators for the given
@@ -135,7 +145,7 @@ protected:
   /**
    * Access the generator map
    */
-  GeneratorMap& generators() { return theGenerators; }
+  GeneratorMap2& generators() { return theGenerators; }
 
   /**
    * Access the event record
@@ -160,7 +170,7 @@ protected:
    */
   bool realign();
 
-private:
+protected:
 
   /**
    * Perform the cascade.
@@ -168,6 +178,15 @@ private:
   void doCascade(unsigned int& emDone,
 		 Energy optHardPt = ZERO,
 		 Energy optCutoff = ZERO);
+
+  /**
+   * Set the number of emissions 
+   **/
+  void setNEmissions(unsigned int n){nEmissions=n;}
+  
+  double as(Energy Q){return theGlobalAlphaS->value(sqr(Q));}
+  
+  double as(Energy Q)const{return theGlobalAlphaS->value(sqr(Q));}
 
   /**
    * Get the winning splitting for the
@@ -361,7 +380,7 @@ private:
    * The splitting generators indexed by the dipole
    * indices they can work on.
    */
-  GeneratorMap theGenerators;
+  GeneratorMap2 theGenerators;
 
   /**
    * The evnt record used.
@@ -440,6 +459,9 @@ private:
    * The shower hard scale for the last event encountered
    */
   Energy muPt;
+  
+  
+  Ptr<Merging>::ptr theMergingHelper;
 
 private:
 

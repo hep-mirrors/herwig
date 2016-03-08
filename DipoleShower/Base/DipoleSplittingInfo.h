@@ -378,6 +378,23 @@ public:
    */
   void lastValue(double v) { theLastValue = v; }
 
+    
+ /**
+   * Hook to calculate the Sudakov with fixed scales.
+   */
+  
+  Energy fixedScale() const{return fixed;}
+  
+ /**
+   * Set the fixed scale.
+   */ 
+
+  void fixedScale(Energy fix){ fixed=fix;}
+  
+  
+  
+  
+  
   /**
    * Set the last splitting parameters.
    */
@@ -603,6 +620,11 @@ private:
    * A pointer to the emitted parton.
    */
   PPtr theEmission;
+
+  /**
+   * Fixed scale for Sudakov evaluation.
+   */
+  Energy fixed;
 
 };
 

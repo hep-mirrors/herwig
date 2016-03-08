@@ -159,6 +159,21 @@ public:
    * Set the order in \f$\alpha_{EM}\f$.
    */
   void orderInAlphaEW(unsigned int o) { theOrderInAlphaEW = o; }
+ 
+  /**
+   * The multiplicity of legs with virtual contributions.
+   */
+  size_t highestVirt() const {return theHighestVirtualSize;}
+
+  /**
+   * Set the highest 
+   **/
+  void setHighestVirt(size_t n){theHighestVirtualSize=n;}
+ 
+  /**
+   * Access the processes vector.
+   */
+   vector<vector<string> > getProcesses() const {return processes;}
 
   /**
    * Return true, if all processes up to a maximum order are considered
@@ -883,6 +898,11 @@ private:
   unsigned int theOrderInAlphaEW;
 
   /**
+   * The maximum number of legs with virtual corrections.
+   **/
+  unsigned int theHighestVirtualSize;
+
+  /**
    * Switch on or off Born contributions
    */
   bool theBornContributions;
@@ -1103,6 +1123,9 @@ private:
    */
   set<PDVector> makeSubProcesses(const vector<string>&) const;
 
+ 
+public: 
+  
   /**
    * Generate matrix element objects for the given process.
    */
@@ -1110,6 +1133,8 @@ private:
 					   unsigned int orderas,
 					   bool virt);
 
+  
+private:
   /**
    * The shower approximation.
    */

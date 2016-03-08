@@ -127,6 +127,7 @@ public:
    * Return true if currently the primary subprocess is showered.
    */
   bool firstInteraction() const {
+    if (!eventHandler()->currentCollision())return true;
     return ( subProcess_ == 
 	     eventHandler()->currentCollision()->primarySubProcess() );
   }

@@ -1,5 +1,5 @@
-SUBDIRS = \
-Base Utility Phasespace \
+SUBDIRS =  \
+Base Mergeing Utility Phasespace \
 Dipoles InsertionOperators Matching \
 Cuts Scales Builtin External Tests \
 ColorFull CVolver
@@ -8,6 +8,7 @@ noinst_LTLIBRARIES = libHwMatchbox.la
 
 libHwMatchbox_la_LIBADD = \
 Base/libHwMatchboxBase.la \
+Mergeing/libHwMatchboxMergeing.la \
 Utility/libHwMatchboxUtility.la \
 Phasespace/libHwMatchboxPhasespace.la \
 Dipoles/libHwMatchboxDipoles.la \

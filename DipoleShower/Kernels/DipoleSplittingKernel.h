@@ -209,6 +209,8 @@ public:
    */
   virtual double evaluate(const DipoleSplittingInfo&) const = 0;
 
+  virtual double estimate(Energy up,Energy down) const = 0;
+
   /**
    * Return true, if this kernel is capable of
    * delivering an overestimate to the kernel, and
@@ -383,6 +385,12 @@ private:
    */
   bool theVirtualitySplittingScale;
 
+
+  /**
+   * Implementing CMW in the kernels.
+   **/
+
+  bool theKimproved;
 private:
 
   /**

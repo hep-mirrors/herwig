@@ -87,7 +87,7 @@ void PowhegHandler::Init() {
 
 }
 
-double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
+double PowhegHandler::reweightCKKW(int minMult, int maxMult,bool) {
   // as not reweighting skip if in initialisation
   if(generator()->state()==InterfacedBase::initializing)
     return 1.;

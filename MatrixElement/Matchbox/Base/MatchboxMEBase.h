@@ -25,6 +25,7 @@
 #include "Herwig/MatrixElement/Matchbox/MatchboxFactory.fh"
 #include "Herwig/MatrixElement/Matchbox/Utility/LastMatchboxXCombInfo.h"
 #include "Herwig/MatrixElement/Matchbox/Utility/MatchboxXComb.h"
+#include "Herwig/MatrixElement/Matchbox/Mergeing/ClusterNode.h"
 
 namespace Herwig {
 
@@ -313,6 +314,21 @@ public:
   virtual bool generateKinematics(const double * r);
 
   /**
+   * Set the typed and momenta of the incoming and outgoing partons to
+   * be used in subsequent calls to me() and colourGeometries()
+   * according to the associated XComb object. If the function is
+   * overridden in a sub class the new function must call the base
+   * class one first.
+   */
+  virtual void setKinematics();
+
+  /**
+   * Clear the information previously provided by a call to
+   * setKinematics(...).
+   */
+  virtual void clearKinematics();
+
+  /**
    * The number of internal degreed of freedom used in the matrix
    * element.
    */
@@ -531,7 +547,14 @@ public:
    * Return the matrix element squared differential in the variables
    * given by the last call to generateKinematics().
    */
-  virtual CrossSection dSigHatDR() const;
+  virtual CrossSection dSigHatDR() const{return dSigHatDR(false);}
+
+
+  /**
+   * Provide a possible faster, approximated dSigHatDR() method.
+   */
+
+  CrossSection dSigHatDR(bool fast) const;
 
   //@}
 
@@ -885,6 +908,51 @@ public:
    */
   vector<Ptr<MatchboxReweightBase>::ptr>& reweights() { return theReweights; }
 
+  /**
+   * Return the theFirstNode.
+   */
+  const Ptr<ClusterNode>::ptr& firstNode() const;
+
+  /**
+   * Return the theFirstNode.
+   */
+  Ptr<ClusterNode>::ptr& firstNode();
+
+  /**
+   * Set the theFirstNode.
+   */
+  void firstNode(Ptr<ClusterNode>::ptr v);
+  
+
+  /**
+   * Return the theSubNode.
+   */
+   bool subNode() const;
+
+  /**
+   * Set the theSubNode.
+   */
+  void subNode(bool v);
+    
+
+  /**
+   * Fill the projectors
+   */  
+  virtual void fillProjectors();
+  
+  /**
+   * Set the projector stage
+   */
+  void projectorStage(int a) { theProjectorStage=a; }
+
+  /**
+   * Set the projector stage
+   */
+  int projectorStage() {return theProjectorStage; }
+  
+
+  pair<bool,bool> clustersafe(int emit,int emis,int spec);
+
   //@}
 
   /** @name Methods used to setup MatchboxMEBase objects */
@@ -1109,6 +1177,23 @@ private:
    */
   mutable double theDiagramWeightVerboseDown, theDiagramWeightVerboseUp;
   
+
+  /**
+   * The first cluster node
+   */
+  Ptr<ClusterNode>::ptr theFirstNode;
+  
+  /**
+   * The first cluster node
+   */
+  bool theSubNode;
+   
+  /**
+   * The projector stage
+   */
+  int theProjectorStage;
+
+
 
 private:
 

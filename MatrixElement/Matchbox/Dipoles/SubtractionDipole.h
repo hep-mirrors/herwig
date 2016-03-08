@@ -769,7 +769,15 @@ public:
    * Return the matrix element squared differential in the variables
    * given by the last call to generateKinematics().
    */
-  virtual CrossSection dSigHatDR() const { return dSigHatDR(ZERO); }  
+  virtual CrossSection dSigHatDR() const { return dSigHatDR(ZERO); }
+      //TODO
+  bool clustersafe() const;
+
+  bool clustersafe();
+      
+  CrossSection ps(Energy2 factorizationScale,Ptr<ColourBasis>::tptr largeNBasis) const;
+
+  CrossSection dipMinusPs(Energy2 factorizationScale,Ptr<ColourBasis>::tptr largeNBasis) const;
 
   //@}
 

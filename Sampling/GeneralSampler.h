@@ -148,6 +148,12 @@ public:
    */
   bool weighted() const { return eventHandler()->weighted(); }
 
+  /**
+   * Almost Unweighted keeps eventweights larger than the overestimate.
+   **/
+  bool almostUnweighted() const { return theAlmostUnweighted;}
+
+
 public:
 
   /**

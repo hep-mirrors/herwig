@@ -327,6 +327,8 @@ public:
 	     DipoleChain*& firstChain, DipoleChain*& secondChain,
 	     bool colourSpectator = true);
 
+  DipoleSplittingInfo lastSpliting(){return lastspliting;}
+  
   /**
    * Let the given dipole take the recoil of 
    * the indicated splitting.
@@ -370,7 +372,7 @@ public:
    */
   const map<PPtr,PPtr>& prepare(tSubProPtr subpro,
 				tStdXCombPtr xc,
-				const pair<PDF,PDF>& pdf,
+				const pair<PDF,PDF>& pdf,tPPair beam,
 				bool dipoles = true);
 
   /**
@@ -493,6 +495,12 @@ private:
    * The dipole chains which ceased evolving.
    */
   list<DipoleChain> theDoneChains;
+
+
+ /**
+   * Get information about the last splitting.
+   */
+  DipoleSplittingInfo lastspliting;
 
 };
 

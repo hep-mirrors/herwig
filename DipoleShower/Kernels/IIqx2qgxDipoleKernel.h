@@ -76,6 +76,10 @@ public:
    * dipole splitting.
    */
   virtual double evaluate(const DipoleSplittingInfo&) const;
+  
+  virtual double estimate(Energy up,Energy down) const {
+    return exp(-1.*0.5*4./3.*(pow(log(up/down),2)-3./4.*log(up/down))*0.2/(2.*3.14));
+  }
 
 public:
 

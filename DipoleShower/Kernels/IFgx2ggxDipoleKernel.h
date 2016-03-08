@@ -76,6 +76,8 @@ public:
    * dipole splitting.
    */
   virtual double evaluate(const DipoleSplittingInfo&) const;
+  
+  virtual double estimate(Energy up,Energy down) const {assert(false);return 1.;}
 
 public:
 
