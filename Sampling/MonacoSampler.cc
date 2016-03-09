@@ -131,7 +131,7 @@ double MonacoSampler::generate() {
         //cout<<"\n"<<canImprove <<" "<<eventHandler()->didEstimate()<<" "<<weighted()<<" "<<initialized()<<" ---------------------------->"<<w;
   
   if(canImprove && eventHandler()->didEstimate()
-     && (w!=0.) && ((!weighted()&&initialized())||UseRandom::rnd()<0.01)){
+     && (w!=0.) && ((!weighted()&&initialized())||UseRandom::rnd()<0.1)){
     
     
     double x=elapsed_secs;
