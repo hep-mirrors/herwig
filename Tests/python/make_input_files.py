@@ -1317,7 +1317,7 @@ elif(collider=="LHC") :
         else :
             logging.error(" Process %s not supported for Matchbox matrix elements" % name)
             sys.exit(1)
-# Star
+# LHC-GammaGamma
 elif(collider=="LHC-GammaGamma" ) :
     if(parameterName.find("-7-")>=0) :
         process="set /Herwig/Generators/EventGenerator:EventHandler:LuminosityFunction:Energy 7000.0\n"
