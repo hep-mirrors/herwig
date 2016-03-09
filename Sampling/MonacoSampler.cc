@@ -142,6 +142,7 @@ double MonacoSampler::generate() {
     double wfull=eventHandler()->dSigDR(lastPoint(),false) / nanobarn;
     clock_t end = clock();
     elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+    if(abs(wfull/wref-1.)>1.)
     cout<<"\nwfull/wref: "<<wfull/wref <<" time ratio "<<x/elapsed_secs;
     
     

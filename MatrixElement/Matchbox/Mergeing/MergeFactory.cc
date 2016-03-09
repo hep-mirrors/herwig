@@ -72,7 +72,7 @@
   theStairFactor(0.),
   theMergePT(2.*GeV),
   theNLOMergePT(2.*GeV),
-  theIRSafePT(1000000.0 * GeV){
+  theIRSafePT(1000000.0 * GeV),ransetup(false){
   }
 
   MergeFactory::~MergeFactory() {
@@ -685,7 +685,11 @@
   }
 
   void MergeFactory::setup() {
-    
+   
+    useMe();
+ 
+    if(!ransetup){
+
     olpProcesses().clear();
     externalAmplitudes().clear();
     setFixedCouplings(true);
@@ -855,6 +859,14 @@
     if(theonlysub!=-1)cout<<" ( "<<theonlysub<<"/"<<onlysubcounter<<" )"<<flush;
     cout<<"\n"<<flush;
     generator()->log() << "process setup finished.\n" << flush;
+ 
+
+
+   ransetup=true;
+
+   }
+
+
   }
 
   void MergeFactory::persistentOutput(PersistentOStream & os) const {
@@ -888,7 +900,8 @@
     << ounit(theNLOMergePT,GeV)
     << ounit(theIRSafePT,GeV)
     << theSubtractionData
-    << theLargeNBasis;
+    << theLargeNBasis
+    << ransetup;
   }
 
   void MergeFactory::persistentInput(PersistentIStream & is, int) {
@@ -922,7 +935,8 @@
     >> iunit(theNLOMergePT,GeV)
     >> iunit(theIRSafePT,GeV)
     >> theSubtractionData
-    >> theLargeNBasis;
+    >> theLargeNBasis
+    >> ransetup;
   }
 
   void MergeFactory::Init() {

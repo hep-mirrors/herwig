@@ -276,7 +276,9 @@ namespace Herwig {
    * kernels.
    */
   Ptr<ColourBasis>::ptr theLargeNBasis;
-    
+
+
+  bool ransetup;    
 
 /*
 
