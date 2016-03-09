@@ -182,7 +182,7 @@ public:
    */
   double lastLargeNColourCorrelator(const pair<int,int>& ij) const { return lastMatchboxXComb()->lastLargeNColourCorrelator(ij); }
 
- double lastBorndSigHatDR(){lastMatchboxXComb()->lastBorndSigHatDR();}
+ double lastBorndSigHatDR(){return lastMatchboxXComb()->lastBorndSigHatDR();}
 
   /**
    * True, if the indexed colour/spin correlated matrix element needs to be

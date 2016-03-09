@@ -64,7 +64,7 @@ bool Merging::sudakov(CNPtr Born, Energy & running, Energy next) {
   theDipoleShowerHandler->eventRecord().clear();
   theDipoleShowerHandler->eventRecord().prepare(sub, dynamic_ptr_cast<tStdXCombPtr>(Born->xcomb()), theDipoleShowerHandler->pdfs(), Born->deepHead()->xcomb()->lastParticles());
   Born->xcomb()->lastCentralScale(running*running);
-  theDipoleShowerHandler->hardScales(running);
+  theDipoleShowerHandler->hardScales(running*running);
   
     //didRadiate = false;//TODO?
     //didRealign = false;//TODO?
@@ -378,7 +378,7 @@ void Merging::CKKW_PrepareSudakov(CNPtr Born,Energy running){
   theDipoleShowerHandler->currentHandler()->remnantDecayer()->setHadronContent(Born->deepHead()->xcomb()->lastParticles());
   theDipoleShowerHandler->eventRecord().clear();
   theDipoleShowerHandler->eventRecord().prepare(sub, dynamic_ptr_cast<tStdXCombPtr>(Born->xcomb()), theDipoleShowerHandler->pdfs(), Born->deepHead()->xcomb()->lastParticles());
-  theDipoleShowerHandler->hardScales(running);
+  theDipoleShowerHandler->hardScales(running*running);
 }
 
 
@@ -1221,11 +1221,11 @@ double Merging::alphasUnlops( Energy next,Energy fixedScale)  {
 
 
 void Merging::persistentOutput(PersistentOStream & os) const {
-  os << MergingScale << theKImproved<<theDipoleShowerHandler<<theMaxLegsLO ;
+  os << ounit(MergingScale,GeV) << theKImproved<<theDipoleShowerHandler<<theMaxLegsLO ;
 }
 
 void Merging::persistentInput(PersistentIStream & is, int) {
-  is >> MergingScale >> theKImproved >>theDipoleShowerHandler>>theMaxLegsLO;
+  is >> iunit(MergingScale,GeV) >> theKImproved >>theDipoleShowerHandler>>theMaxLegsLO;
 }
 
 ClassDescription<Merging> Merging::initMerging;
