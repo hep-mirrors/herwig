@@ -744,6 +744,24 @@ elif(collider=="LHC") :
                 process+="insert SimpleQCD:MatrixElements[0] MEZJet\nset MEZJet:ZDecay Muon\n"
                 process+="set /Herwig/Cuts/ZBosonKtCut:MinKT 35.0*GeV\n"
                 parameterName=parameterName.replace("Z-Jet-0-mu","Z-Jet-mu")
+        elif(parameterName.find("WGamma")>=0) :
+            process+="insert SimpleQCD:MatrixElements[0] MEPP2VGamma\nset MEPP2VGamma:Process 1\nset MEPP2VGamma:MassOption 1\n"
+            process+="set /Herwig/Cuts/PhotonKtCut:MinKT 10.\n"
+            process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
+            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+            if(parameterName.find("-e")>=0) :
+                process+="do /Herwig/Particles/W+:SelectDecayModes W+->nu_e,e+;\n"
+            else :
+                process+="do /Herwig/Particles/W+:SelectDecayModes W+->nu_mu,mu+;\n"
+        elif(parameterName.find("ZGamma")>=0) :
+            process+="insert SimpleQCD:MatrixElements[0] MEPP2VGamma\nset MEPP2VGamma:Process 2\n"
+            process+="set /Herwig/Cuts/PhotonKtCut:MinKT 10.\n"
+            process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
+            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
+            if(parameterName.find("-e")>=0) :
+                process+="do /Herwig/Particles/Z0:SelectDecayModes Z0->e-,e+;\n"
+            else :
+                process+="do /Herwig/Particles/Z0:SelectDecayModes Z0->mu-,mu+;\n"
         else :
             logging.error(" Process %s not supported for internal matrix elements" % name)
             sys.exit(1)
