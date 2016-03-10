@@ -187,7 +187,7 @@ public:
   /**
    * Return true, if bookkeeping did not find a non-trivial setup.
    */
-  bool empty() const { return theSplittingMap.empty(); }
+  bool empty() const { return theSplittingMap.empty()&&theMergingMap.empty(); }
 
   /**
    * Return the emitter as referred to by the real emission
