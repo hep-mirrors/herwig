@@ -101,4 +101,3 @@ newdef HadronSelector:PwtDIquark 0.38
 newdef HadronSelector:SngWt      0.74
 newdef HadronSelector:DecWt      0.62
 newdef HadronSelector:Mode 1
-

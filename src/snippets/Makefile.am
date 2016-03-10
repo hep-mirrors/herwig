@@ -7,7 +7,8 @@ DipoleShowerFiveFlavours.in \
 DipoleShowerFourFlavours.in \
 Particles-SetLonglivedParticlesStable.in \
 PDF-CT10.in \
-PDF-NNPDF30NLO.in
+PDF-NNPDF30NLO.in \
+EvtGenBDecays.in EvtGen.in
 
 dist_snippets_DATA = $(INPUTFILES)
 
