@@ -1096,7 +1096,7 @@ MatchboxMEBase::getDipoles(const vector<Ptr<SubtractionDipole>::ptr>& dipoles,
 	    (**d).realSpectator(spectator);
 	    (**d).realEmissionME(const_cast<MatchboxMEBase*>(this));
 	    (**d).underlyingBornME(*b);
-	    (**d).setupBookkeeping(mergeInfo);
+	    (**d).setupBookkeeping(mergeInfo,slim);
 	    if ( !((**d).empty()) ) {
 	      res.push_back((**d).cloneMe());
 	      Ptr<SubtractionDipole>::tptr nDipole = res.back();

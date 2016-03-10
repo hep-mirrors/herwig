@@ -135,7 +135,7 @@ public:
   /**
    * Setup bookkeeping maps.
    */
-  void setupBookkeeping(const map<Ptr<DiagramBase>::ptr,MergeInfo>& mergeInfo);
+  void setupBookkeeping(const map<Ptr<DiagramBase>::ptr,MergeInfo>& mergeInfo,bool slim);
 
   /**
    * Get bookkeeping information for the given

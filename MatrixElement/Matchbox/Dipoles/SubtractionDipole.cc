@@ -70,7 +70,7 @@ void SubtractionDipole::clearBookkeeping() {
   theRealToBornDiagrams.clear();
 }
 
-void SubtractionDipole::setupBookkeeping(const map<Ptr<DiagramBase>::ptr,SubtractionDipole::MergeInfo>& mergeInfo) {
+void SubtractionDipole::setupBookkeeping(const map<Ptr<DiagramBase>::ptr,SubtractionDipole::MergeInfo>& mergeInfo,bool slim) {
 
   theMergingMap.clear();
   theSplittingMap.clear();
@@ -178,6 +178,14 @@ void SubtractionDipole::setupBookkeeping(const map<Ptr<DiagramBase>::ptr,Subtrac
     theBornToRealDiagrams[*bd] = mit->first;
     theRealToBornDiagrams[mit->first] = *bd;
 
+  }
+  
+  
+  if (slim) {
+    theIndexMap.clear();
+    theSplittingMap.clear();
+    theBornToRealDiagrams.clear();
+    theRealEmissionDiagrams.clear();
   }
 
   if ( theSplittingMap.empty() )
