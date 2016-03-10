@@ -546,13 +546,13 @@ namespace Herwig {
     
     bool theNeedFullOrderedHistory;
     
-    unsigned int theN0;
+    static unsigned int theN0;
     
-    int  theOnlyN;
+    static int  theOnlyN;
     
-    unsigned int theN;
+    static unsigned int theN;
     
-    unsigned int theM;
+    static unsigned int theM;
     
     unsigned int theSudakovSteps;
     

@@ -76,7 +76,10 @@ bool   ClusterNode::isUnitarized(true);
 bool   ClusterNode::isNLOUnitarized(true);
 int    ClusterNode::theChooseHistory(3);
 
-
+unsigned int ClusterNode::theN0(0);
+int  ClusterNode::theOnlyN(-1);
+unsigned int ClusterNode::theN(0); 
+unsigned int ClusterNode::theM(0);
 
 
 
