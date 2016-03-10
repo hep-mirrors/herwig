@@ -222,7 +222,7 @@ void ClusterNode::setXComb(tStdXCombPtr xc, int proStage) {
 }
 
 void ClusterNode::birth(vector<Ptr<MatchboxMEBase>::ptr> vec) {
-  vector<Ptr<SubtractionDipole>::ptr> dipoles = thenodeMEPtr->getDipoles(DipoleRepository::dipoles(thenodeMEPtr->factory()->dipoleSet()), vec);
+  vector<Ptr<SubtractionDipole>::ptr> dipoles = thenodeMEPtr->getDipoles(DipoleRepository::dipoles(thenodeMEPtr->factory()->dipoleSet()), vec,true);
   
   for ( unsigned int j = 0 ; j < dipoles.size() ; ++j ) {
     dipoles[j]->doSubtraction();

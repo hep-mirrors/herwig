@@ -993,7 +993,7 @@ double MatchboxMEBase::oneLoopSinglePole() const {
 
 vector<Ptr<SubtractionDipole>::ptr> 
 MatchboxMEBase::getDipoles(const vector<Ptr<SubtractionDipole>::ptr>& dipoles,
-			   const vector<Ptr<MatchboxMEBase>::ptr>& borns) const {
+			   const vector<Ptr<MatchboxMEBase>::ptr>& borns,bool slim) const {
 
   vector<Ptr<SubtractionDipole>::ptr> res;
 
@@ -1128,7 +1128,7 @@ MatchboxMEBase::getDipoles(const vector<Ptr<SubtractionDipole>::ptr>& dipoles,
 		      rw != factory()->preweighters().end(); ++rw )
 		  nDipole->addPreweighter(*rw);
 	      }
-	      nDipole->cloneDependencies(dname.str());
+	      nDipole->cloneDependencies(dname.str(),slim);
 	    }
 	  }
 	}
@@ -1469,9 +1469,9 @@ void MatchboxMEBase::logDSigHatDR() const {
 
 }
 
-void MatchboxMEBase::cloneDependencies(const std::string& prefix) {
+void MatchboxMEBase::cloneDependencies(const std::string& prefix,bool slim) {
 
-  if ( phasespace() ) {
+  if ( phasespace() && !slim ) {
     Ptr<MatchboxPhasespace>::ptr myPhasespace = phasespace()->cloneMe();
     ostringstream pname;
     pname << (prefix == "" ? fullName() : prefix) << "/" << myPhasespace->name();
@@ -1489,14 +1489,14 @@ void MatchboxMEBase::cloneDependencies(const std::string& prefix) {
     pname << (prefix == "" ? fullName() : prefix) << "/" << myAmplitude->name();
     if ( ! (generator()->preinitRegister(myAmplitude,pname.str()) ) )
       throw Exception() << "MatchboxMEBase::cloneDependencies(): Amplitude " << pname.str() << " already existing." << Exception::runerror;
-    myAmplitude->cloneDependencies(pname.str());
+    myAmplitude->cloneDependencies(pname.str(),slim);
     matchboxAmplitude(myAmplitude);
     amplitude(myAmplitude);
     matchboxAmplitude()->orderInGs(orderInAlphaS());
     matchboxAmplitude()->orderInGem(orderInAlphaEW());
   }
 
-  if ( scaleChoice() ) {
+  if ( scaleChoice() &&!slim ) {
     Ptr<MatchboxScaleChoice>::ptr myScaleChoice = scaleChoice()->cloneMe();
     ostringstream pname;
     pname << (prefix == "" ? fullName() : prefix) << "/" << myScaleChoice->name();

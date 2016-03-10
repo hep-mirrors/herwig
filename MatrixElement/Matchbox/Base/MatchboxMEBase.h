@@ -774,8 +774,9 @@ public:
    */
   vector<Ptr<SubtractionDipole>::ptr> 
   getDipoles(const vector<Ptr<SubtractionDipole>::ptr>&,
-	     const vector<Ptr<MatchboxMEBase>::ptr>&) const;
+	     const vector<Ptr<MatchboxMEBase>::ptr>&,bool slim=false) const;
 
+  
   /**
    * If this matrix element is considered a real emission matrix
    * element, but actually neglecting a subclass of the contributing
@@ -976,7 +977,9 @@ public:
   /**
    * Clone the dependencies, using a given prefix.
    */
-  void cloneDependencies(const std::string& prefix = "");
+  void cloneDependencies(const std::string& prefix = ""){cloneDependencies(prefix,false);};
+
+  void cloneDependencies(const std::string& prefix ,bool slim);
 
   /**
    * Prepare an xcomb

@@ -1117,19 +1117,21 @@ void SubtractionDipole::doinitrun() {
   }
 }
 
-void SubtractionDipole::cloneDependencies(const std::string& prefix) {
+void SubtractionDipole::cloneDependencies(const std::string& prefix,bool slim) {
 
   if ( underlyingBornME() ) {
+    cout<<"\nunderlyingBornME";
     Ptr<MatchboxMEBase>::ptr myUnderlyingBornME = underlyingBornME()->cloneMe();
     ostringstream pname;
     pname << (prefix == "" ? fullName() : prefix) << "/" << myUnderlyingBornME->name();
     if ( ! (generator()->preinitRegister(myUnderlyingBornME,pname.str()) ) )
       throw Exception() << "SubtractionDipole::cloneDependencies(): Matrix element " << pname.str() << " already existing." << Exception::runerror;
-    myUnderlyingBornME->cloneDependencies(pname.str());
+    myUnderlyingBornME->cloneDependencies(pname.str(),slim);
     underlyingBornME(myUnderlyingBornME);
   }
 
-  if ( realEmissionME() ) {
+  if ( realEmissionME()&& !slim ) {
+    cout<<"\nrealEmissionME";
     Ptr<MatchboxMEBase>::ptr myRealEmissionME = realEmissionME()->cloneMe();
     ostringstream pname;
     pname << (prefix == "" ? fullName() : prefix) << "/" << myRealEmissionME->name();
@@ -1140,6 +1142,7 @@ void SubtractionDipole::cloneDependencies(const std::string& prefix) {
   }
 
   if ( tildeKinematics() ) {
+    cout<<"\ntildeKinematics";
     Ptr<TildeKinematics>::ptr myTildeKinematics = tildeKinematics()->cloneMe();
     ostringstream pname;
     pname << (prefix == "" ? fullName() : prefix) << "/" << myTildeKinematics->name();
@@ -1149,7 +1152,8 @@ void SubtractionDipole::cloneDependencies(const std::string& prefix) {
     tildeKinematics(myTildeKinematics);
   }
 
-  if ( invertedTildeKinematics() ) {
+  if ( invertedTildeKinematics()&& !slim ) {
+    cout<<"\ninvertedTildeKinematics";
     Ptr<InvertedTildeKinematics>::ptr myInvertedTildeKinematics = invertedTildeKinematics()->cloneMe();
     ostringstream pname;
     pname << (prefix == "" ? fullName() : prefix) << "/" << myInvertedTildeKinematics->name();

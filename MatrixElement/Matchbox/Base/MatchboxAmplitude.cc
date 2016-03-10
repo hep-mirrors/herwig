@@ -94,7 +94,7 @@ void MatchboxAmplitude::doinitrun() {
     colourBasis()->initrun();
 }
 
-void MatchboxAmplitude::cloneDependencies(const std::string&) {}
+void MatchboxAmplitude::cloneDependencies(const std::string&,bool) {}
 
 Ptr<MatchboxMEBase>::ptr MatchboxAmplitude::makeME(const PDVector&) const {
   return new_ptr(MatchboxMEBase());

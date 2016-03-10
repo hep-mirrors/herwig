@@ -145,7 +145,7 @@ double MatchboxHybridAmplitude::symmetryRatio() const {
 
 }
 
-void MatchboxHybridAmplitude::cloneDependencies(const std::string& prefix) {
+void MatchboxHybridAmplitude::cloneDependencies(const std::string& prefix,bool slim) {
 
   if ( treeLevelAmplitude() ) {
     Ptr<MatchboxAmplitude>::ptr myTreeLevelAmplitude = treeLevelAmplitude()->cloneMe();
@@ -157,7 +157,7 @@ void MatchboxHybridAmplitude::cloneDependencies(const std::string& prefix) {
     treeLevelAmplitude(myTreeLevelAmplitude);
   }
 
-  if ( oneLoopAmplitude() ) {
+  if ( oneLoopAmplitude()&&!slim ) {
     Ptr<MatchboxAmplitude>::ptr myOneLoopAmplitude = oneLoopAmplitude()->cloneMe();
     ostringstream pname;
     pname << (prefix == "" ? fullName() : prefix) << "/" << myOneLoopAmplitude->name();
