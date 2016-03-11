@@ -108,17 +108,17 @@ process=""
 # Bfactory
 if(collider=="BFactory") :
     if(simulation=="") :
-        process = "set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 4"
-        if(parameterName=="10.58") :
-            process += "\ncreate Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so\nset /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)\nset /Herwig/MatrixElements/MEUpsilon:Coupling 0.0004151809\ninsert /Herwig/MatrixElements/SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon"
+        if(parameterName=="10.58-res") :
+            process += "\ncreate Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so\nset /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)\nset /Herwig/MatrixElements/MEUpsilon:Coupling 0.0004151809\nset /Herwig/MatrixElements/SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon"
+        elif(parameterName=="10.58") :
+            process += "\ncreate Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so\nset /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)\nset /Herwig/MatrixElements/MEUpsilon:Coupling 0.0004151809\ninsert /Herwig/MatrixElements/SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon\n"
+            process += "set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 4\n"
+        else :
+            process += "set /Herwig/MatrixElements/MEee2gZ2qq:MaximumFlavour 4\n"
     elif(simulation=="Powheg") :
-        process = "set /Herwig/MatrixElements/PowhegMEee2gZ2qq:MaximumFlavour 4"
-        if(parameterName=="10.58") :
-            process += "\ncreate Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so\nset /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)\nset /Herwig/MatrixElements/MEUpsilon:Coupling 0.0004151809\ninsert /Herwig/MatrixElements/SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon"
+        process = "set /Herwig/MatrixElements/PowhegMEee2gZ2qq:MaximumFlavour 4\n"
     elif(simulation=="Matchbox" ) :
-        process = "do Factory:Process e- e+ -> u ubar\ndo Factory:Process e- e+ -> d dbar\ndo Factory:Process e- e+ -> c cbar\ndo Factory:Process e- e+ -> s sbar"
-        if(parameterName=="10.58") :
-            process += "\ninsert /Herwig/Generators/EventGenerator:EventHandler:SubProcessHandlers 0 /Herwig/MatrixElements/SimpleEE\ncreate Herwig::MEee2VectorMeson /Herwig/MatrixElements/MEUpsilon HwMELepton.so\nset /Herwig/MatrixElements/MEUpsilon:VectorMeson /Herwig/Particles/Upsilon(4S)\nset /Herwig/MatrixElements/MEUpsilon:Coupling 0.0004151809\ninsert /Herwig/MatrixElements/SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEUpsilon\n"
+        process = "do Factory:Process e- e+ -> u ubar\ndo Factory:Process e- e+ -> d dbar\ndo Factory:Process e- e+ -> c cbar\ndo Factory:Process e- e+ -> s sbar\n"
 # DIS
 elif(collider=="DIS") :
     if(simulation=="") :
