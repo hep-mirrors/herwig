@@ -72,6 +72,7 @@ IBPtr ShowerHandler::fullclone() const {
 }
 
 ShowerHandler::ShowerHandler() : 
+  reweight_(1.0),
   pdfFreezingScale_(2.5*GeV),
   maxtry_(10),maxtryMPI_(10),maxtryDP_(10),
   includeSpaceTime_(false), vMin_(0.1*GeV2), subProcess_(),
@@ -599,6 +600,7 @@ void ShowerHandler::resetWeights() {
 	w != currentWeights_.end(); ++w ) {
     w->second = 1.0;
   }
+  reweight_ = 1.0;
 }
 
 void ShowerHandler::combineWeights() {
@@ -610,6 +612,16 @@ void ShowerHandler::combineWeights() {
       ew->second *= w->second;
     else
       event->optionalWeights()[w->first] = w->second;
+  }
+  if ( reweight_ != 1.0 ) {
+    Ptr<StandardEventHandler>::tptr eh = 
+      dynamic_ptr_cast<Ptr<StandardEventHandler>::tptr>(eventHandler());
+    if ( !eh ) {
+      throw Exception() << "ShowerHandler::combineWeights() : Cross section reweighting "
+			<< "through the shower is currently only available with standard "
+			<< "event generators" << Exception::runerror;
+    }
+    eh->reweight(reweight_);
   }
 }
 

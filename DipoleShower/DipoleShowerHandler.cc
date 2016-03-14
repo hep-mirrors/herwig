@@ -576,16 +576,15 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
 
     // pop the chain if no dipole did radiate
     if ( winnerDip == eventRecord().currentChain().dipoles().end() ) {
-      if ( theEventReweight ) {
-	double w = theEventReweight->weightNoEmission(eventRecord().incoming(),
-						      eventRecord().outgoing(),
-						      eventRecord().hard(),theGlobalAlphaS);
-	Ptr<StandardEventHandler>::tptr eh = 
-	  dynamic_ptr_cast<Ptr<StandardEventHandler>::tptr>(eventHandler());
-	assert(eh);
-	eh->reweight(w);
-      }
       eventRecord().popChain();
+      if ( theEventReweight && eventRecord().chains().empty() )
+	if ( (theEventReweight->firstInteraction() && firstInteraction()) ||
+	     (theEventReweight->secondaryInteractions() && !firstInteraction()) ) {
+	  double w = theEventReweight->weightNoEmission(eventRecord().incoming(),
+							eventRecord().outgoing(),
+							eventRecord().hard(),theGlobalAlphaS);
+	  reweight_ *= w;
+	}
       continue;
     }
 
@@ -621,15 +620,14 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
 			 << (*firstChain) << (*secondChain) << flush;
     }
 
-    if ( theEventReweight ) {
-      double w = theEventReweight->weight(eventRecord().incoming(),
-					  eventRecord().outgoing(),
-					  eventRecord().hard(),theGlobalAlphaS);
-      Ptr<StandardEventHandler>::tptr eh = 
-	dynamic_ptr_cast<Ptr<StandardEventHandler>::tptr>(eventHandler());
-      assert(eh);
-      eh->reweight(w);
-    }
+    if ( theEventReweight ) 
+      if ( (theEventReweight->firstInteraction() && firstInteraction()) ||
+	   (theEventReweight->secondaryInteractions() && !firstInteraction()) ) {
+	double w = theEventReweight->weight(eventRecord().incoming(),
+					    eventRecord().outgoing(),
+					    eventRecord().hard(),theGlobalAlphaS);
+	reweight_ *= w;
+      }
     
     if ( nEmissions )
       if ( ++emDone == nEmissions )

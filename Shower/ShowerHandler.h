@@ -313,7 +313,26 @@ public:
     return currentWeights_;
   }
 
+  /**
+   * Access the current reweighting factor
+   */
+  double& reweight() {
+    return reweight_;
+  }
+
+  /**
+   * Return the current reweighting factor
+   */
+  double reweight() const {
+    return reweight_;
+  }
+
 protected:
+
+  /**
+   * A reweighting factor applied by the showering
+   */
+  double reweight_;
 
   /**
    * The shower variation weights
