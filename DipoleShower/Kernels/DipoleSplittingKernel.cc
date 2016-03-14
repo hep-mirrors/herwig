@@ -80,7 +80,18 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
   Energy2 fScale = sqr(theFactorizationScaleFactor)*scale;
   fScale = fScale > sqr(factorizationScaleFreeze()) ? fScale : sqr(factorizationScaleFreeze());
 
-  double ret = alphaS()->value(rScale) / (2.*Constants::pi);
+  unsigned int nf = 5; //just testing ignore thresholds
+  double beta0 = (33.-2.*nf)/(12.*Constants::pi);
+  double as = alphaS()->value(rScale);
+
+  // cancel using full running alphas
+  // as = as*(1.+as*beta0*log(sqr(theRenormalizationScaleFactor)));
+
+  // similar ancellation using the hard alphas
+  double asHard = alphaS()->value(sqr(split.hardPt()));
+  as = as*(1.+asHard*beta0*log(sqr(theRenormalizationScaleFactor)));
+
+  double ret = as / (2.*Constants::pi);
 
   if ( split.index().initialStateEmitter() ) {
     assert(pdfRatio());

@@ -181,7 +181,7 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr,
 
       }
 
-      hardScales(lastXCombPtr()->lastCentralScale());
+      hardScales(lastXCombPtr()->lastShowerScale());
 
       if ( verbosity > 1 ) {
 	generator()->log() << "DipoleShowerHandler starting off:\n";
