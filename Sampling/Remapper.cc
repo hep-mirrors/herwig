@@ -151,7 +151,7 @@ XML::Element Remapper::toXML() const {
   XML::Element bindata(XML::ElementTypes::Element,"BinData");
 
   ostringstream bdata;
-  bdata << setprecision(20);
+  bdata << setprecision(17);
   for ( map<double,double>::const_iterator b = weights.begin();
 	b != weights.end(); ++b )
     bdata << b->first << " " << b->second << " ";
@@ -164,7 +164,7 @@ XML::Element Remapper::toXML() const {
   XML::Element selectordata(XML::ElementTypes::Element,"SelectorData");
 
   ostringstream sdata;
-  sdata << setprecision(20);
+  sdata << setprecision(17);
   for ( map<double,SelectorEntry>::const_iterator b = selector.begin();
 	b != selector.end(); ++b )
     sdata << b->first << " " << b->second.lower << " " 

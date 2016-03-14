@@ -177,6 +177,12 @@ public:
     return theIntegrationJobsCreated;
   }
 
+  /**
+   * An external hook to prepare the sampler for generating events, e.g. by
+   * combining grid files from parallel integration runs.
+   */
+  virtual void prepare();
+
 protected:
 
   /**

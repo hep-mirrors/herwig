@@ -393,19 +393,19 @@ XML::Element CellGrid::toXML() const {
   grid.appendAttribute("dimension",lowerLeft().size());
   grid.appendAttribute("branching",!isLeaf());
   if ( !isLeaf() ) {
-    ostringstream i; i << setprecision(20) << integral();
+    ostringstream i; i << setprecision(17) << integral();
     grid.appendAttribute("integral",i.str());
   } else {
-    ostringstream v; v << setprecision(20) << volume();
+    ostringstream v; v << setprecision(17) << volume();
     grid.appendAttribute("volume",v.str());
-    ostringstream w; w << setprecision(20) << weight();
+    ostringstream w; w << setprecision(17) << weight();
     grid.appendAttribute("weight",w.str());
   }
 
   XML::Element boundaries(XML::ElementTypes::Element,"Boundaries");
 
   ostringstream bdata;
-  bdata << setprecision(20);
+  bdata << setprecision(17);
   for ( size_t k = 0; k < lowerLeft().size(); ++k )
     bdata << lowerLeft()[k] << " " << upperRight()[k] << " "
 	  << upperBoundInclusive()[k] << " ";

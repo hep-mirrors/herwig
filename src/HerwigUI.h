@@ -18,7 +18,7 @@ namespace Herwig {
  * Definition of the possible run modes of Herwig
  */
 namespace RunMode {
-  enum Mode { ERROR, INIT, READ, BUILD, INTEGRATE, RUN };
+  enum Mode { ERROR, INIT, READ, BUILD, INTEGRATE, MERGEGRIDS, RUN };
 }
 
 /**

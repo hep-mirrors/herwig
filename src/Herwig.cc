@@ -93,6 +93,12 @@ void integrate(const HerwigUI & ui) {
   HerwigGenericRun(ui);
 }
 
+void mergegrids(const HerwigUI & ui) {
+  setSearchPaths(ui);
+  SamplerBase::setRunLevel(SamplerBase::RunMode);  
+  HerwigGenericRun(ui);
+}
+
 void run(const HerwigUI & ui) {
   setSearchPaths(ui);
   SamplerBase::setRunLevel(SamplerBase::RunMode);  
@@ -187,15 +193,19 @@ void HerwigGenericRun(const Herwig::HerwigUI & ui) {
   if ( !ui.setupfile().empty() ) eg->addTag("-" + ui.setupfile());
   if ( !ui.tag().empty() ) eg->addTag("-" + ui.tag());
 
-  if ( ui.integrationJob() ) {
+  if ( ui.integrationJob() || ui.runMode() == Herwig::RunMode::MERGEGRIDS ) {
     Ptr<StandardEventHandler>::tptr eh =
       dynamic_ptr_cast<Ptr<StandardEventHandler>::tptr>(eg->eventHandler());
     if ( !eh ) {
-      std::cerr << "Herwig: Cannot set integration mode for a non-standard EventHandler.\n";
+      std::cerr << "Herwig: Cannot enter sampler modes for a non-standard EventHandler.\n";
       ui.quit();
     }
-    if ( !ui.integrationList().empty() )
+    if ( ui.integrationJob() && !ui.integrationList().empty() )
       eh->sampler()->integrationList(ui.integrationList());
+    if ( ui.runMode() == Herwig::RunMode::MERGEGRIDS ) {
+      eh->sampler()->prepare();
+      return;
+    }
   }
 
   if ( ! ui.setupfile().empty() ) {
