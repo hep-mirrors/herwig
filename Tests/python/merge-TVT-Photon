@@ -1,0 +1,65 @@
+#! /usr/bin/env python
+import logging
+import sys
+import os, yoda
+
+"""%prog
+
+Script for merging aida files
+
+"""
+
+if sys.version_info[:3] < (2,4,0):
+    print "rivet scripts require Python version >= 2.4.0... exiting"
+    sys.exit(1)
+
+if __name__ == "__main__":
+    import logging
+    from optparse import OptionParser, OptionGroup
+    parser = OptionParser(usage="%prog aidafile aidafile2 [...]")
+    parser.add_option("-o", "--out", dest="OUTFILE", default="-")
+    verbgroup = OptionGroup(parser, "Verbosity control")
+    verbgroup.add_option("-v", "--verbose", action="store_const", const=logging.DEBUG, dest="LOGLEVEL",
+                         default=logging.INFO, help="print debug (very verbose) messages")
+    verbgroup.add_option("-q", "--quiet", action="store_const", const=logging.WARNING, dest="LOGLEVEL",
+                         default=logging.INFO, help="be very quiet")
+    parser.add_option_group(verbgroup)
+    (opts, args) = parser.parse_args()
+    logging.basicConfig(level=opts.LOGLEVEL, format="%(message)s")
+
+    ## Check args
+    if len(args) < 1:
+        logging.error("Must specify at least the name of the files")
+        sys.exit(1)
+
+files=["-Run-II-PromptPhoton.yoda",
+       "-Run-II-DiPhoton-GammaGamma.yoda","-Run-II-DiPhoton-GammaJet.yoda"]
+
+## Get histos
+inhistos = {}
+outhistos={}
+for f in files:
+    file=args[0]+f
+    if not os.access(file, os.R_OK):
+        logging.error("%s can not be read" % file)
+        continue
+    try:
+        aos = yoda.read(file)
+    except:
+        logging.error("%s can not be parsed as XML" % file)
+        break
+    ## Get histos from this YODA file
+    for aopath, ao in aos.iteritems() :
+        if(aopath.find("XSEC")>=0 or aopath.find("EVTCOUNT")>=0) : continue
+        if ( aopath in outhistos ) :
+            aotype = type(ao)
+            if aotype in (yoda.Counter, yoda.Histo1D, yoda.Histo2D, yoda.Profile1D, yoda.Profile2D):
+                outhistos[aopath] += ao
+            else :
+                quit()
+        else:
+            outhistos[aopath] = ao
+
+# Choose output file
+yoda.writeYODA(outhistos,opts.OUTFILE)
+sys.exit(0)

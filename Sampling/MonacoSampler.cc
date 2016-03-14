@@ -342,7 +342,7 @@ XML::Element MonacoSampler::toXML() const {
     XML::Element gridvector(XML::ElementTypes::Element,"GridVector");
     gridvector.appendAttribute("Index",k);
     ostringstream bdata;
-    bdata << setprecision(20);
+    bdata << setprecision(17);
     for ( size_t l = 0; l < theGridDivisions; ++l )
       bdata << theGrid(k,l) << " ";
 

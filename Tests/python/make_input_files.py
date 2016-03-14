@@ -167,9 +167,14 @@ elif(collider=="TVT") :
         if(parameterName.find("PromptPhoton")>=0) :
             process+="insert SimpleQCD:MatrixElements[0] MEGammaJet\n"
             process+="set /Herwig/Cuts/PhotonKtCut:MinKT 15.\n"
-        elif(parameterName.find("DiPhoton")>=0) :
+        elif(parameterName.find("DiPhoton-GammaGamma")>=0) :
             process+="insert SimpleQCD:MatrixElements[0] MEGammaGamma\n"
             process+="set /Herwig/Cuts/PhotonKtCut:MinKT 5.\n"
+            parameterName=parameterName.replace("-GammaGamma","")
+        elif(parameterName.find("DiPhoton-GammaJet")>=0) :
+            process+="insert SimpleQCD:MatrixElements[0] MEGammaJet\n"
+            process+="set /Herwig/Cuts/PhotonKtCut:MinKT 5.\n"
+            parameterName=parameterName.replace("-GammaJet","")
         elif(parameterName.find("UE")>=0) :
             process += "insert SimpleQCD:MatrixElements[0] MEMinBias\n"
             process += "set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
@@ -269,6 +274,20 @@ elif(collider=="TVT") :
             process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 150*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 600*GeV\n"
         elif(parameterName.find("Run-II-Z-mu")>=0) :
             process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
+        elif(parameterName.find("DiPhoton-GammaGamma")>=0) :
+            process+="insert SimpleQCD:MatrixElements[0] MEGammaGammaPowheg\n"
+            process+="set MEGammaGammaPowheg:Process GammaGamma\n"
+            process+="insert SimpleQCD:MatrixElements[0] MEGammaGamma\n"
+            process+="set MEGammaGamma:Process gg\n"
+            process+="set /Herwig/Cuts/PhotonKtCut:MinKT 5.\n"
+            process+="set /Herwig/Cuts/JetKtCut:MinKT 5.\n"
+            parameterName=parameterName.replace("-GammaGamma","")
+        elif(parameterName.find("DiPhoton-GammaJet")>=0) :
+            process+="insert SimpleQCD:MatrixElements[0] MEGammaGammaPowheg\n"
+            process+="set MEGammaGammaPowheg:Process VJet\n"
+            process+="set /Herwig/Cuts/PhotonKtCut:MinKT 5.\n"
+            process+="set /Herwig/Cuts/JetKtCut:MinKT 5.\n"
+            parameterName=parameterName.replace("-GammaJet","")
     elif(simulation=="Matchbox" ) :
         if(parameterName.find("Jets")>=0) :
             process+="set Factory:OrderInAlphaS 2\nset Factory:OrderInAlphaEW 0\n"
@@ -515,9 +534,14 @@ elif(collider=="LHC") :
                 process+="set /Herwig/Cuts/PhotonKtCut:MinKT 80.\n"
             elif(parameterName.find("PromptPhoton-4")>=0) :
                 process+="set /Herwig/Cuts/PhotonKtCut:MinKT 150.\n"
-        elif(parameterName.find("DiPhoton")>=0) :
+        elif(parameterName.find("DiPhoton-GammaGamma")>=0) :
             process+="insert SimpleQCD:MatrixElements[0] MEGammaGamma\n"
             process+="set /Herwig/Cuts/PhotonKtCut:MinKT 5.\n"
+            parameterName=parameterName.replace("-GammaGamma","")
+        elif(parameterName.find("DiPhoton-GammaJet")>=0) :
+            process+="insert SimpleQCD:MatrixElements[0] MEGammaJet\n"
+            process+="set /Herwig/Cuts/PhotonKtCut:MinKT 5.\n"
+            parameterName=parameterName.replace("-GammaJet","")
         elif(parameterName.find("8-WH")>=0) :
             process+="insert SimpleQCD:MatrixElements[0] MEPP2WH\n"
             process+="set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV\n"
@@ -836,6 +860,20 @@ elif(collider=="LHC") :
         elif(parameterName.find("Z-LowMass-mu")>=0) :
             process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
             process+="set /Herwig/Cuts/QCDCuts:MHatMin 10.*GeV\nset /Herwig/Cuts/MassCut:MinM 10.*GeV\nset /Herwig/Cuts/MassCut:MaxM 70.*GeV\n"
+        elif(parameterName.find("DiPhoton-GammaGamma")>=0) :
+            process+="insert SimpleQCD:MatrixElements[0] MEGammaGammaPowheg\n"
+            process+="set MEGammaGammaPowheg:Process GammaGamma\n"
+            process+="insert SimpleQCD:MatrixElements[0] MEGammaGamma\n"
+            process+="set MEGammaGamma:Process gg\n"
+            process+="set /Herwig/Cuts/PhotonKtCut:MinKT 5.\n"
+            process+="set /Herwig/Cuts/JetKtCut:MinKT 5.\n"
+            parameterName=parameterName.replace("-GammaGamma","")
+        elif(parameterName.find("DiPhoton-GammaJet")>=0) :
+            process+="insert SimpleQCD:MatrixElements[0] MEGammaGammaPowheg\n"
+            process+="set MEGammaGammaPowheg:Process VJet\n"
+            process+="set /Herwig/Cuts/PhotonKtCut:MinKT 5.\n"
+            process+="set /Herwig/Cuts/JetKtCut:MinKT 5.\n"
+            parameterName=parameterName.replace("-GammaJet","")
         else :
             logging.error(" Process %s not supported for internal POWHEG matrix elements" % name)
             sys.exit(1)

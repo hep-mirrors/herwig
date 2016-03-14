@@ -535,7 +535,7 @@ void Evolver::setupMaximumScales(const vector<ShowerProgenitorPtr> & p,
       if (ptmax == generator()->maximumCMEnergy() ) ptmax = pcm.m();
       if(hardVetoXComb()&&hardVetoReadOption()&&
 	 !ShowerHandler::currentHandler()->firstInteraction()) {
-	ptmax=min(ptmax,sqrt(xcomb->lastCentralScale()));
+	ptmax=min(ptmax,sqrt(xcomb->lastShowerScale()));
       }
     } 
     // decay, incoming() is the decaying particle.
@@ -550,7 +550,7 @@ void Evolver::setupMaximumScales(const vector<ShowerProgenitorPtr> & p,
   else {
     if(currentTree()->isHard()) {
       assert(xcomb);
-      ptmax = sqrt( xcomb->lastCentralScale() );
+      ptmax = sqrt( xcomb->lastShowerScale() );
     }
     else {
       ptmax = currentTree()->incomingLines().begin()->first
@@ -573,7 +573,7 @@ void Evolver::setupHardScales(const vector<ShowerProgenitorPtr> & p,
     Energy hardScale = ZERO;
     if(currentTree()->isHard()) {
       assert(xcomb);
-      hardScale = sqrt( xcomb->lastCentralScale() );
+      hardScale = sqrt( xcomb->lastShowerScale() );
     }
     else {
       hardScale = currentTree()->incomingLines().begin()->first
@@ -1542,7 +1542,7 @@ void Evolver::hardestEmission(bool hard) {
      
     
     // Hardest (pt) emission should be the first powheg emission.
-    maxpt=min(sqrt(ShowerHandler::currentHandler()->lastXCombPtr()->lastCentralScale()),maxpt);
+    maxpt=min(sqrt(ShowerHandler::currentHandler()->lastXCombPtr()->lastShowerScale()),maxpt);
 
     // Set maxpt to pT of emission when showering POWHEG real-emission subprocesses
     if (!isPowhegSEvent && !isPowhegHEvent){

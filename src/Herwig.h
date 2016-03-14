@@ -46,6 +46,14 @@ void integrate(const HerwigUI &);
 
 
 /**
+ * Herwig mergegrids mode
+ *
+ *
+ */
+void mergegrids(const HerwigUI &);
+
+
+/**
  * Herwig run mode
  *
  *
