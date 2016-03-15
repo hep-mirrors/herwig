@@ -1,0 +1,8 @@
+# CMS photon radiation in Z decays
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2015_I1346843
+# delete the final-state splittings
+do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting e-->e-,gamma; /Herwig/Shower/LtoLGammaSudakov
+do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting mu-->mu-,gamma; /Herwig/Shower/LtoLGammaSudakov
+do /Herwig/Shower/SplittingGenerator:DeleteFinalSplitting tau-->tau-,gamma; /Herwig/Shower/LtoLGammaSudakov
+# insert SOPHTY
+insert /Herwig/Generators/EventGenerator:EventHandler:PostSubProcessHandlers 0 /Herwig/QEDRadiation/QEDRadiationHandler

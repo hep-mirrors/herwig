@@ -1,0 +1,7 @@
+##################################################
+# select the analyses
+##################################################
+# ATLAS pull in top events
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1376945
+# CMS top 
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2015_I1370682
