@@ -313,7 +313,9 @@ namespace exsample {
 	function_->accept(last_point_,last_value_,last_cell_->info().overestimate());
 	break;
       }
-      function_->veto(last_point_,last_value_,last_cell_->info().overestimate());
+      if ( last_value_ != 0.0 ) {
+	function_->veto(last_point_,last_value_,last_cell_->info().overestimate());
+      }
       if(++n_hit_miss > adaption_info_.maxtry)
 	throw hit_and_miss_maxtry();
     }
