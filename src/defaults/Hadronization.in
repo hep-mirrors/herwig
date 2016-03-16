@@ -72,7 +72,7 @@ newdef ClusterFissioner:ClPowBottom  0.70
 newdef ClusterFissioner:PSplitBottom 0.92
 newdef ClusterDecayer:ClDirBottom 1
 newdef ClusterDecayer:ClSmrBottom 0.00
-newdef LightClusterDecayer:SingleHadronLimitBottom 0.34
+newdef HadronSelector:SingleHadronLimitBottom 0.34
 
 # Clustering parameters for c-quarks
 newdef ClusterFissioner:ClMaxCharm  3.55*GeV
@@ -80,7 +80,7 @@ newdef ClusterFissioner:ClPowCharm  2.11
 newdef ClusterFissioner:PSplitCharm 1.20
 newdef ClusterDecayer:ClDirCharm 1
 newdef ClusterDecayer:ClSmrCharm 0.
-newdef LightClusterDecayer:SingleHadronLimitCharm 0.0
+newdef HadronSelector:SingleHadronLimitCharm 0.0
 
 # Clustering parameters for exotic quarks
 # (e.g. hadronizing Susy particles)
@@ -89,7 +89,7 @@ newdef ClusterFissioner:ClPowExotic  1.46
 newdef ClusterFissioner:PSplitExotic 1.00
 newdef ClusterDecayer:ClDirExotic 1
 newdef ClusterDecayer:ClSmrExotic 0.78
-newdef LightClusterDecayer:SingleHadronLimitExotic 0.1
+newdef HadronSelector:SingleHadronLimitExotic 0.1
 
 # 
 newdef HadronSelector:PwtDquark  1.0
@@ -101,4 +101,3 @@ newdef HadronSelector:PwtDIquark 0.38
 newdef HadronSelector:SngWt      0.74
 newdef HadronSelector:DecWt      0.62
 newdef HadronSelector:Mode 1
-

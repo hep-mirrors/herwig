@@ -54,7 +54,8 @@ if __name__ == "__main__":
 
 # #######################################
 
-yodafiles=["-10.52.yoda","-10.52-sym.yoda","-10.54.yoda","-10.58.yoda","-Upsilon.yoda",
+yodafiles=["-10.52.yoda","-10.52-sym.yoda","-10.54.yoda",
+           "-10.58-res.yoda","-10.58.yoda","-Upsilon.yoda",
            "-Upsilon2.yoda","-Upsilon4.yoda","-10.45.yoda","-Tau.yoda"]
 
 ## Get histos
@@ -105,7 +106,7 @@ for f in yodafiles:
            if not tmpE.has_key(sqrts):
                tmpE[sqrts] = ao
            else:
-                raise Exception("A set with sqrts = %s already exists" % ( sqrts))
+               raise Exception("A set with sqrts = %s already exists" % ( sqrts))
            sqrts=sqrttemp
         else :
             outhistos[aopath] = ao
