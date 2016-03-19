@@ -440,6 +440,15 @@ namespace Herwig {
     int chooseHistory(){
       return theChooseHistory;
     }
+    
+    int numberOfSplittings(){
+      return theNumberOfSplittings;
+    }
+    void numberOfSplittings(int n){
+      theNumberOfSplittings=n;
+    }
+    
+    
     Ptr<MergeFactory>::ptr treefactory();
     
 			 void treefactory(Ptr<MergeFactory>::ptr x);
@@ -572,7 +581,7 @@ namespace Herwig {
     
     bool theCalculateInNode;
     
-    
+    int theNumberOfSplittings; 
     
     bool theSubtractedReal;
     

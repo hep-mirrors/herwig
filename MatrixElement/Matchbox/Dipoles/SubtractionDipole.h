@@ -618,6 +618,9 @@ public:
    * Indicate whether this configuration is in the shower phase space
    */
   void isInShowerPhasespace(bool yes) { theIsInShowerPhasespace = yes; }
+      
+      
+  double jacobianMerging(Energy2,Energy2,int n) const;
 
   /**
    * Return true, if this configuration is above the shower infrared cutoff

@@ -187,6 +187,13 @@
       }
     }
     
+    
+   
+    
+    
+    
+    
+    
       // check the additional insertion operators
     if ( !theVirtualsMap[i].empty() ) haveVirtuals = true;
     for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt = theVirtualsMap[i].begin() ; virt != theVirtualsMap[i].end() ; ++virt ) {
@@ -313,7 +320,7 @@
     
     cout<<"\nmid pushBorn";
     
-    Ptr<ClusterNode>::ptr clusternode = new_ptr(ClusterNode(bornme, i, 0, needFOH));
+    Ptr<ClusterNode>::ptr clusternode = new_ptr(ClusterNode(bornme, i, 1, needFOH));
     clusternode->mergePt(theMergePT);
     clusternode->centralMergePt(theMergePT);
     clusternode->N(theN + getProcesses()[0].size());clusternode->N0( getProcesses()[0].size());
@@ -338,6 +345,7 @@
       for ( unsigned int j = 0 ; j < temp.size() ; j++ ) {
         temp[j]->birth(thePureMEsMap[i - k]);
         for ( unsigned int m = 0 ; m < temp[j]->children().size() ; ++m ) {
+          temp[j]->children()[m]->numberOfSplittings(temp[j]->children()[m]->nodeME()->numberOfSplittings(DipoleRepository::dipoles(dipoleSet()),thePureMEsMap[i - k+1]));
           temp1.push_back(temp[j]->children()[m]);
         }
       }

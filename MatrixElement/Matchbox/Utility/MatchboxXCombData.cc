@@ -28,8 +28,7 @@ MatchboxXCombData::MatchboxXCombData()
     theLastTreeME2(0.0), theCalculateLargeNME2(true), 
     theLastLargeNME2(0.0), theCalculateOneLoopInterference(true), 
     theLastOneLoopInterference(0.0), theCalculateOneLoopPoles(true), 
-    theLastOneLoopPoles(0.0,0.0), 
-    theNLight(0), 
+    theLastOneLoopPoles(0.0,0.0),
     theColourBasisDim(0), theNDimPhasespace(0), 
     theNDimAmplitude(0), theNDimInsertions(0), 
     theSymmetryFactor(0.0), theOLPMomenta(0),
@@ -37,6 +36,12 @@ MatchboxXCombData::MatchboxXCombData()
     theInitialized(false), filledExternalMomenta(false) {
   flushCaches();
 }
+
+unsigned int MatchboxXCombData::theNLight(0);
+vector<int> MatchboxXCombData::theNLightJetVec=vector<int> ();
+vector<int> MatchboxXCombData::theNHeavyJetVec=vector<int>() ;
+vector<int> MatchboxXCombData::theNLightProtonVec=vector<int>() ;
+
 
 MatchboxXCombData::~MatchboxXCombData() {
   if ( theOLPMomenta ) {
@@ -57,7 +62,7 @@ MatchboxXCombData::MatchboxXCombData(tMEPtr newME)
     theLastTreeME2(0.0), theCalculateLargeNME2(true), 
     theLastLargeNME2(0.0), theCalculateOneLoopInterference(true), 
     theLastOneLoopInterference(0.0), theCalculateOneLoopPoles(true), 
-    theLastOneLoopPoles(0.0,0.0), theNLight(0), 
+    theLastOneLoopPoles(0.0,0.0),
     theColourBasisDim(0), theNDimPhasespace(0), 
     theNDimAmplitude(0), theNDimInsertions(0), 
     theSymmetryFactor(0.0), theOLPMomenta(0),

@@ -72,6 +72,19 @@ double FILightTildeKinematics::lastZ() const {
   return subtractionParameters()[1];
 }
 
+double FILightTildeKinematics::jacobian(Energy2 sB,Energy2 sR, int n) const {
+  
+  return 2.*16.*ThePEG::Constants::pi*ThePEG::Constants::pi/(2.*bornEmitterMomentum()*realSpectatorMomentum())*sR;// *pow(sR/sB,n-4);
+  
+  return 16.*ThePEG::Constants::pi*ThePEG::Constants::pi/(2.*realEmitterMomentum()*realSpectatorMomentum())*sR*pow(sR/sB,n-4);
+
+  
+
+  return 16.*ThePEG::Constants::pi*ThePEG::Constants::pi*4.*(1-subtractionParameters()[0]);
+}
+
+
+
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 

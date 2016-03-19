@@ -32,6 +32,8 @@
 #include "Herwig/Utilities/RunDirectories.h"
 #include "Herwig/MatrixElement/ProductionMatrixElement.h"
 #include "Herwig/MatrixElement/HardVertex.h"
+#include "Herwig/MatrixElement/Matchbox/Mergeing/ClusterNode.h"
+
 
 #include <boost/foreach.hpp>
 #include <cctype>
@@ -745,7 +747,7 @@ CrossSection MatchboxMEBase::dSigHatDR(bool fast) const {
 
   CrossSection res = ZERO;
 
-
+ // cout<<"\n()() "<<"name"<<meMomenta().size()<<" "<<lastSHat()/GeV2<<" "<<lastMEPDFWeight()<<" "<<jacobian()<<" "<<me2Norm(); 
   setLastBorndSigHatDR((sqr(hbarc)/(2.*lastSHat())) * jacobian()* lastMEPDFWeight() * xme2/nanobarn);
    
   if ( !oneLoopNoBorn() || fast)
@@ -1145,6 +1147,144 @@ MatchboxMEBase::getDipoles(const vector<Ptr<SubtractionDipole>::ptr>& dipoles,
   return res;
 
 }
+
+
+
+
+
+int
+MatchboxMEBase::numberOfSplittings(const vector<Ptr<SubtractionDipole>::ptr>& dipoles,
+                                   const vector<Ptr<MatchboxMEBase>::ptr>& reals) const {
+  
+        // keep track of the dipoles we already did set up
+    set<pair<pair<pair<int,int>,int>,pair<Ptr<MatchboxMEBase>::tptr,Ptr<SubtractionDipole>::tptr> > > done;
+    
+  int lesssplittings=0;
+  for (vector<Ptr<MatchboxMEBase>::ptr>::const_iterator it=reals.begin(); it!=reals.end(); it++) {
+    
+    
+    
+
+    cPDVector rep = (*it)->diagrams().front()->partons();
+    int nreal = rep.size();
+    
+      // now loop over configs
+    for ( int emitter = 0; emitter < nreal; ++emitter ) {
+      
+      list<Ptr<SubtractionDipole>::ptr> matchDipoles;
+      for ( vector<Ptr<SubtractionDipole>::ptr>::const_iterator d =
+           dipoles.begin(); d != dipoles.end(); ++d ) {
+        if ( !(**d).canHandleEmitter(rep,emitter) )
+          continue;
+        matchDipoles.push_back(*d);
+      }
+      if ( matchDipoles.empty() )
+        continue;
+      
+      for ( int emission = 2; emission < nreal; ++emission ) {
+        if ( emission == emitter )
+          continue;
+        
+        list<Ptr<SubtractionDipole>::ptr> matchDipoles2;
+        for ( list<Ptr<SubtractionDipole>::ptr>::const_iterator d =
+             matchDipoles.begin(); d != matchDipoles.end(); ++d ) {
+          if ( !(**d).canHandleSplitting(rep,emitter,emission) )
+            continue;
+          matchDipoles2.push_back(*d);
+        }
+        if ( matchDipoles2.empty() )
+          continue;
+        
+        map<Ptr<DiagramBase>::ptr,SubtractionDipole::MergeInfo> mergeInfo;
+        
+        for ( DiagramVector::const_iterator d = (*it)->diagrams().begin(); d != (*it)->diagrams().end(); ++d ) {
+          
+          Ptr<Tree2toNDiagram>::ptr check =
+          new_ptr(Tree2toNDiagram(*dynamic_ptr_cast<Ptr<Tree2toNDiagram>::ptr>(*d)));
+          
+          map<int,int> theMergeLegs;
+          
+          for ( unsigned int i = 0; i < check->external().size(); ++i )
+            theMergeLegs[i] = -1;
+          int theEmitter = check->mergeEmission(emitter,emission,theMergeLegs);
+          
+            // no underlying Born
+          if ( theEmitter == -1 )
+            continue;
+          
+          SubtractionDipole::MergeInfo info;
+          info.diagram = check;
+          info.emitter = theEmitter;
+          info.mergeLegs = theMergeLegs;
+          mergeInfo[*d] = info;
+          
+        }
+        
+        if ( mergeInfo.empty() )  continue;
+        for ( int spectator = 0; spectator < nreal; ++spectator ) {
+          if ( spectator == emitter || spectator == emission )continue;
+          list<Ptr<SubtractionDipole>::ptr> matchDipoles3;
+          for ( list<Ptr<SubtractionDipole>::ptr>::const_iterator d =
+               matchDipoles2.begin(); d != matchDipoles2.end(); ++d ) {
+            if ( !(**d).canHandleSpectator(rep,spectator) )
+              continue;
+            matchDipoles3.push_back(*d);
+          }
+          if ( matchDipoles3.empty() ) continue;
+          if ( noDipole(emitter,emission,spectator) ) continue;
+          
+          for ( list<Ptr<SubtractionDipole>::ptr>::const_iterator d =
+               matchDipoles3.begin(); d != matchDipoles3.end(); ++d ) {
+            
+            if ( !(**d).canHandle(rep,emitter,emission,spectator) ) continue;
+            
+            if ( done.find(make_pair(make_pair(make_pair(emitter,emission),spectator),make_pair(*it,*d)))
+                != done.end() ) continue;
+              // now get to work
+            (**d).clearBookkeeping();
+            (**d).factory(factory());
+            (**d).realEmitter(emitter);
+            (**d).realEmission(emission);
+            (**d).realSpectator(spectator);
+            (**d).realEmissionME(*it);
+            (**d).underlyingBornME(const_cast<MatchboxMEBase*>(this));
+            (**d).setupBookkeeping(mergeInfo,true);
+            if ( !((**d).empty()) ) {
+              done.insert(make_pair(make_pair(make_pair(emitter,emission),spectator),make_pair(*it,*d)));
+              if ( (*d)->isSymmetric() ){
+                lesssplittings++;
+                done.insert(make_pair(make_pair(make_pair(emission,emitter),spectator),make_pair(*it,*d)));
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  cout<<"\nNumber of splittings--->>>>" << done.size()<<flush;
+  return int(done.size()-lesssplittings);
+  
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 double MatchboxMEBase::colourCorrelatedME2(pair<int,int> ij) const {
 
@@ -1639,6 +1779,7 @@ StdXCombPtr MatchboxMEBase::makeXComb(tStdXCombPtr newHead,
 }
 
 void MatchboxMEBase::persistentOutput(PersistentOStream & os) const {
+  cout<<"\nMatchboxMEBaseepsilonSquarePoleHistograms "<<epsilonSquarePoleHistograms.size();
   os << theLastXComb << theFactory << thePhasespace 
      << theAmplitude << theScaleChoice << theVirtuals 
      << theReweights << theSubprocess << theOneLoop 

@@ -775,6 +775,10 @@ public:
   vector<Ptr<SubtractionDipole>::ptr> 
   getDipoles(const vector<Ptr<SubtractionDipole>::ptr>&,
 	     const vector<Ptr<MatchboxMEBase>::ptr>&,bool slim=false) const;
+      
+  int
+  numberOfSplittings(const vector<Ptr<SubtractionDipole>::ptr>&,
+                 const vector<Ptr<MatchboxMEBase>::ptr>& reals) const;
 
   
   /**

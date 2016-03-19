@@ -41,6 +41,7 @@ ClusterNode::ClusterNode(Ptr<MatchboxMEBase>::ptr nodeME, int deepprostage, int 
   thesubCorrection=false;
   theclusteredto=0;
   theOnlyN=-1;
+  theNumberOfSplittings=0;
   
 }
 
@@ -61,6 +62,7 @@ ClusterNode::ClusterNode(Ptr<ClusterNode>::ptr deephead, Ptr<ClusterNode>::ptr h
   theclusteredto=0;
   theOnlyN=-1;
   thenodeMEPtr->subNode(true);
+  theNumberOfSplittings=0;
 }
 
 ClusterNode::~ClusterNode() { }
@@ -147,7 +149,7 @@ bool ClusterNode::generateKinematics(const double *r, int stage, Energy2 shat) {
   for ( unsigned int i = 0 ; i < thechildren.size() ; ++i ) {
     thechildren[i]->dipol()->setXComb(thechildren[i]->xcomb());
     if ( !thechildren[i]->dipol()->generateKinematics(r) ) cout << "stop";
-    thechildren[i]->xcomb()->lastSHat(shat);
+    
       // 	if(!thechildren[i]->xcomb()->willPassCuts()){
       // 	  return false;
       // 	}
@@ -156,7 +158,7 @@ bool ClusterNode::generateKinematics(const double *r, int stage, Energy2 shat) {
       deepHead()->setOrderedSteps(stage + 1);
     }
     
-    thechildren[i]->generateKinematics(r, stage + 1, shat);
+    thechildren[i]->generateKinematics(r, stage + 1, thechildren[i]->xcomb()->lastSHat());
     isthissafe = (isthissafe && thechildren[i]->dipol()->lastPt() >=(1+stage*deepHead()->treefactory()->stairfactor())*theDeepHead->mergePt());
   }
   return isthissafe;
@@ -171,7 +173,7 @@ void ClusterNode::firstgenerateKinematics(const double *r, int stage, Energy2 sh
   
     //Set here the new merge Pt for the next phase space point.( Smearing!!!)
   
-  mergePt(centralMergePt()*(1.+(-1.+2.*UseRandom::rnd())*smear()));
+  mergePt(centralMergePt()*(1.+0.*(-1.+2.*UseRandom::rnd())*smear()));
   isOrdered = true;
   
     // if we consider the hard scale to play a role in the steps we must change here to 0.
@@ -185,8 +187,9 @@ void ClusterNode::firstgenerateKinematics(const double *r, int stage, Energy2 sh
     thechildren[i]->dipol()->setXComb(thechildren[i]->xcomb());
     
     if ( !thechildren[i]->dipol()->generateKinematics(r) ) cout << "stop";
-    thechildren[i]->xcomb()->lastSHat(shat);
-    isecond = thechildren[i]->generateKinematics(r, stage + 1, shat);
+    //cout<<"\n child shat "<<thechildren[i]->xcomb()->lastSHat()/GeV2<<" "<<shat/GeV2;
+    //thechildren[i]->xcomb()->lastSHat(shat);
+    isecond = thechildren[i]->generateKinematics(r, stage + 1, thechildren[i]->xcomb()->lastSHat());
     
       //TODO rethink for NLO
     ifirst = (thechildren[i]->dipol()->lastPt() >= theDeepHead->mergePt());
@@ -231,7 +234,11 @@ void ClusterNode::birth(vector<Ptr<MatchboxMEBase>::ptr> vec) {
     dipoles[j]->doSubtraction();
     Ptr<ClusterNode>::ptr node = new_ptr(
                                          ClusterNode(theDeepHead, this, dipoles[j], dipoles[j]->underlyingBornME(), theDeepHead->DeepProStage(), theDeepHead->cutStage()));
+    
+    
     thechildren.push_back(node);
+    
+    
     
   }
 }
@@ -242,6 +249,9 @@ vector<Ptr<ClusterNode>::ptr> ClusterNode::getNextOrderedNodes(bool normal,doubl
   vector<Ptr<ClusterNode>::ptr> res;
   for ( vector<Ptr<ClusterNode>::ptr>::const_iterator it = temp.begin() ; it != temp.end() ; ++it ) {
     if((*it)->deepHead()->mergePt()>(*it)->dipol()->lastPt()){
+      res.clear();
+        // if any of the nodes is below the merging scale return empty vector
+      return res;
       continue;
     }
     if (parent()&& normal){
@@ -350,7 +360,7 @@ Ptr<ClusterNode>::ptr ClusterNode::getLongestHistory_simple(bool normal,double h
   Selector<Ptr<ClusterNode>::ptr> subprosel;
   while (temp.size()!=0){
     for (vector<Ptr<ClusterNode>::ptr>::iterator it=temp.begin();it!=temp.end();it++){
-      if(minpt>=(*it)->dipol()->lastPt()
+         if(minpt>=(*it)->dipol()->lastPt()
          &&
          (*it)->dipol()->underlyingBornME()->largeNColourCorrelatedME2(
                                                                        make_pair((*it)->dipol()->bornEmitter(),(*it)->dipol()->bornSpectator()),
@@ -358,31 +368,28 @@ Ptr<ClusterNode>::ptr ClusterNode::getLongestHistory_simple(bool normal,double h
          ){
         Ptr<AlphaSBase>::transient_pointer alphaS = (*it)->xcomb()->eventHandler().SM().alphaSPtr();
         
-        if((*it)->nodeME()->dSigHatDR()/nanobarn!=0.){
-          
-          subprosel.insert((abs((*it)->dipol()->dSigHatDR() /
+                  if((*it)->nodeME()->dSigHatDR()/nanobarn!=0.){
+           subprosel.insert((abs((*it)->dipol()->dSigHatDR() /
                                 (*it)->nodeME()->dSigHatDR()*alphaS->value(
                                                                            (*it)->dipol()->lastPt()*(*it)->dipol()->lastPt()))), (*it));
-        }
+          }
         
-          //        if(abs(minpt-(*it)->dipol()->lastPt())<=5.*GeV){
-          // 	 subprosel.insert(1., (*it));
-          //        }
-          //        else{
-          // 	 subprosel.clear();
-          // 	 subprosel.insert(1., (*it));
-          // 	 minpt=(*it)->dipol()->lastPt();
-          //        }
-      }
+ 
+             // subprosel.insert(1., (*it));
+        
+        
+        
+        
+        
+        }
     }
       //    cout<<"\n"<<subprosel.size();
     if (subprosel.empty())
       return res;
     minpt=100000.*GeV;
-    
     res = subprosel.select(UseRandom::rnd());
     subprosel.clear();
-    temp = res->getNextOrderedNodes(normal,hardScaleFactor);
+    temp = res->getNextOrderedNodes(true,hardScaleFactor);
   }
   
   
@@ -1017,6 +1024,7 @@ void ClusterNode::persistentOutput(PersistentOStream & os) const {
   ounit(theRunningPt, GeV) <<
   needsVetoedShower <<
   theCalculateInNode <<
+  theNumberOfSplittings <<
   theSubtractedReal <<
   theVirtualContribution <<
   thefiniteDipoles <<
@@ -1062,6 +1070,7 @@ void ClusterNode::persistentInput(PersistentIStream & is, int) {
   iunit(theRunningPt, GeV)>>
   needsVetoedShower>>
   theCalculateInNode>>
+  theNumberOfSplittings>>
   theSubtractedReal>>
   theVirtualContribution>>
   thefiniteDipoles>>

@@ -84,6 +84,15 @@ double IILightTildeKinematics::lastZ() const {
   return x + v;
 }
 
+
+double IILightTildeKinematics::jacobian(Energy2 sB,Energy2 sR, int n) const{
+    //   cout<<"\n-+-+-+-+ "<<sR/GeV2<<" "<<sB/GeV2<<" "<<(2.*bornEmitterMomentum()*bornSpectatorMomentum())/GeV2;
+  2./3.;
+  return 1./2.*16.*ThePEG::Constants::pi*ThePEG::Constants::pi/(2.*realEmitterMomentum()*realSpectatorMomentum())*sR;//*pow(sR/sB,n-4);
+}
+
+
+
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 

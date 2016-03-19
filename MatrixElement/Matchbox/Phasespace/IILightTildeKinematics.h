@@ -77,7 +77,9 @@ public:
    * momentum.
    */
   virtual Lorentz5Momentum transform(const Lorentz5Momentum& p) const;
-
+  
+  double jacobian(Energy2,Energy2,int) const;
+  
 public:
 
   /** @name Functions used by the persistent I/O system. */

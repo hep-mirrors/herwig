@@ -123,6 +123,8 @@ public:
    * mapping. This is used for matching subtractions.
    */
   virtual double jacobianRatio() const { return 1.; }
+  
+  virtual double jacobian(Energy2,Energy2,int) const {return 1.;}
 
 public:
 

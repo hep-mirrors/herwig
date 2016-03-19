@@ -629,7 +629,7 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
     
     
     if (theMergingHelper&&eventHandler()->currentCollision()) {
-      if (theMergingHelper->maxLegsLO()>eventRecord().outgoing().size())
+      if (theMergingHelper->maxLegsLO()>eventRecord().outgoing().size()+eventRecord().hard().size())
         if (theMergingHelper->mergingScale()<winnerScale){
            continue;
         }

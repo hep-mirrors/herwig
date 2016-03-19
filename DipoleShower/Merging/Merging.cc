@@ -37,7 +37,16 @@ using namespace Herwig;
 
 
 Merging::Merging()
-: HandlerBase() {}
+: HandlerBase() {
+  StartingBorn=CNPtr();
+  CNPtr CalcBorn=CNPtr();
+  theNf=5;
+  minusL=false;
+  Unlopsweights=true;
+  theKImproved=true;
+  MergingScale=20.*GeV;
+}
+
 
 Merging::~Merging() {}
 
@@ -345,6 +354,7 @@ bool Merging::projectorStage(CNPtr  Born){
 Energy Merging::CKKW_StartScale(CNPtr Born){
   Energy res=generator()->maximumCMEnergy();;
   if(!Born->children().empty()){
+      // assert(false);
     for (size_t i=0;i<Born->nodeME()->mePartonData().size();i++){
       if (!Born->nodeME()->mePartonData()[i]->coloured())continue;
       for (size_t j=i+1;j<Born->nodeME()->mePartonData().size();j++){
@@ -380,6 +390,200 @@ void Merging::CKKW_PrepareSudakov(CNPtr Born,Energy running){
   theDipoleShowerHandler->eventRecord().prepare(sub, dynamic_ptr_cast<tStdXCombPtr>(Born->xcomb()), theDipoleShowerHandler->pdfs(), Born->deepHead()->xcomb()->lastParticles());
   theDipoleShowerHandler->hardScales(running*running);
 }
+
+
+double Merging::reweightCKKWBorn2(CNPtr Node,bool fast){
+  if(fast||!StartingBorn){
+    fastweight=1.;
+    if( Node->xcomb()->meMomenta().size()-2 == theMaxLegsLO){
+      projectorWeight=Node->setProjectorStage();
+     // assert(false);
+    }
+    else{
+      projectorWeight=-1.;
+      Node->nodeME()->projectorStage(1);
+     // cout<<"\n"<<Node->nodeME()->name()<<" "<<Node->nodeME()->projectorStage();
+    }
+    
+  }
+  //TEST
+ // if(abs(projectorWeight)<1.3)return 0.;
+  if (fast) {
+    assert(!StartingBorn);
+    CalcBorn=CNPtr();
+  }
+  
+  double weight = projectorWeight;
+  double weightCB=abs(projectorWeight);
+  CNPtr Born;
+  CNPtr BornCB;
+  assert(!Node->children().empty());
+  bool inhist=false;
+  int randomIndex =0;
+  if(Node->nodeME()->projectorStage()==1&&!CalcBorn){
+    randomIndex = (int)(UseRandom::rnd() *  Node->children().size());
+    CalcBorn=Node->children()[randomIndex];
+    vector<Ptr<ClusterNode>::ptr> temp2 = CalcBorn->children();
+    for (vector<Ptr<ClusterNode>::ptr>::iterator it = temp2.begin(); it != temp2.end(); it++) {
+       if((*it)->dipol()->lastPt()<Node->mergePt())weightCB= 0.;
+    }
+    
+    
+  }
+  
+  if (StartingBorn) {
+    assert(!fast);
+    Born=StartingBorn;
+    while (Born->parent()) {
+      inhist|=(Born==CalcBorn);
+      Born=Born->parent();
+    }
+    Born=StartingBorn;
+    BornCB =StartingCalcBornBorn;
+  }else{
+    Born   = Node->    getLongestHistory_simple(true,xiQSh);
+    if(CalcBorn)BornCB = CalcBorn->getLongestHistory_simple(false,xiQSh);
+    
+    if(Node->nodeME()->projectorStage()!=1){
+      vector<Ptr<ClusterNode>::ptr> temp2 = Node->children();
+      for (vector<Ptr<ClusterNode>::ptr>::iterator it = temp2.begin(); it != temp2.end(); it++) {
+        if((*it)->dipol()->lastPt()<Node->mergePt())return 0.;
+      }
+    }
+    if(fast){
+      StartingBorn=Born;
+      if(CalcBorn)StartingCalcBornBorn=BornCB;
+      while (Born->parent()) {
+        inhist|=(Born==CalcBorn);
+        Born=Born->parent();
+      }
+      Born=StartingBorn;
+    }else{
+      StartingBorn=CNPtr();
+      StartingCalcBornBorn=CNPtr();
+    }
+  }
+  
+  if(!inhist&&Node->nodeME()->projectorStage()==1){
+    weight=0.;
+  }
+  
+  
+  if (BornCB&&Node->nodeME()->projectorStage()==1&&!BornCB->xcomb()->willPassCuts())weightCB=0.;
+  if (!Born->xcomb()->willPassCuts())weight=0.;
+  
+  if(weight==0.&&weightCB==0.)return 0.;
+  
+  
+  Energy startscale;
+  Energy startscaleCB;
+  if (BornCB&&Node->nodeME()->projectorStage()==1) {
+    startscale=CKKW_StartScale(Born);
+    startscaleCB=CKKW_StartScale(BornCB);
+  }else{
+    startscale=CKKW_StartScale(Born);
+  }
+
+  
+ 
+  Energy running=startscale;
+  Energy runningCB=startscaleCB;
+  Energy prerunning;
+  if(inhist||Node->nodeME()->projectorStage()!=1){
+    fillHistory( running,  Born, Node,fast);
+    weight*=history.back().weight;
+    if (weight==0.&&Node->nodeME()->projectorStage()!=1) return 0.;
+    prerunning=running;
+    if (!fillProjector(prerunning))return 0.;
+    weight*=alphaReweight();
+    weight*=pdfReweight();
+    Node->runningPt(prerunning);
+    if(CalcBorn){
+      prerunning=runningCB;
+      fillHistory( runningCB,  BornCB, CalcBorn,fast);
+      weightCB*=history.back().weight;
+      weightCB*=alphaReweight()*pdfReweight();
+    }
+  }else{
+    assert(CalcBorn);
+    prerunning=runningCB;
+      //cout<<"\nprerun "<<prerunning/GeV<<" "<<BornCB<<" "<<CalcBorn;
+    fillHistory( runningCB,  BornCB, CalcBorn,fast);
+    if (!fillProjector(prerunning))return 0.;
+    weightCB*=history.back().weight;
+    weightCB*=alphaReweight()*pdfReweight();
+  }
+
+  
+  if(weight==0.&&weightCB==0.)return 0.;
+  
+  
+  if(Node->N()==Node->nodeME()->lastMEMomenta().size()&&Node->nodeME()->projectorStage() == 0){
+    Node->vetoPt(prerunning);
+  }else{
+    Node->vetoPt(Node->mergePt());
+  }
+  
+  
+  double res=0; 
+    //theNf=0.;
+  
+
+  
+ 
+  
+  
+  if(inhist&&Node->nodeME()->projectorStage()==1){
+
+  //  cout<<"\ninhist "<<weight<<" "<<weightCB<<" "<<Node->children().size()<<" "<<CalcBorn->numberOfSplittings();
+    
+    double gluemitter=1.;
+    if (CalcBorn->dipol()->bornEmitter()>2&&
+        CalcBorn->xcomb()->mePartonData()[CalcBorn->dipol()->bornEmitter()]->id()
+        ==21) {
+      gluemitter=1.;//2.;
+    }
+    
+    
+    //TEST
+    //double xx1=abs(projectorWeight)>1.1?1.:0.;
+    //double xx2=abs(projectorWeight)<1.1?1.:0.;
+    if (CalcBorn->xcomb()->meMomenta().size()==5||true)
+      res= gluemitter*Node->children().size()/CalcBorn->numberOfSplittings()*
+       weightCB*matrixElementWeight(startscale,CalcBorn)*
+      CalcBorn->dipol()->jacobianMerging(CalcBorn->xcomb()->lastSHat(),Node->xcomb()->lastSHat(),CalcBorn->xcomb()->meMomenta().size());
+    if (Node->xcomb()->meMomenta().size()==5||true)
+      res+= Node->children().size()*weight*matrixElementWeight(startscale,Node);
+    
+    }else if(!inhist&&Node->nodeME()->projectorStage()==1){
+    
+    double gluemitter=1.;
+    if (CalcBorn->dipol()->bornEmitter()>2&&
+        CalcBorn->xcomb()->mePartonData()[CalcBorn->dipol()->bornEmitter()]->id()
+        ==21) {
+      gluemitter=1.;//2.;
+    }
+    if (CalcBorn->xcomb()->meMomenta().size()==5||true)
+    res=gluemitter*Node->children().size()/CalcBorn->numberOfSplittings()*
+        weightCB*
+        CalcBorn->dipol()->jacobianMerging(CalcBorn->xcomb()->lastSHat(),Node->xcomb()->lastSHat(),CalcBorn->xcomb()->meMomenta().size())*
+        matrixElementWeight(startscale,CalcBorn);
+  }else{
+   // cout<<"\nelse "<<weight<<" "<<weightCB;
+   if (Node->xcomb()->meMomenta().size()==5||true)
+    res=weight*matrixElementWeight(startscale,Node);
+  }
+  
+   // cout<<"\n--> "<<res<<" "<<fastweight;
+  if(fast){
+    fastweight=res;
+    return res;
+  }else{
+    return (res);//*fastweight/abs(fastweight);
+  }
+}
+
+
 
 
 double Merging::reweightCKKWBorn(CNPtr Node,bool fast){
@@ -776,7 +980,7 @@ double Merging::reweightCKKWReal(CNPtr Node){
 double Merging::matrixElementWeight(Energy startscale,CNPtr Node){
   double res;
     // The deephead should be calculated here.
-  CNPtr DeepHead=Node->deepHead();
+  CNPtr DeepHead=Node;//->deepHead();
   DeepHead->renormscale(startscale);
   DeepHead->nodeME()->factory()->scaleChoice()->setXComb(DeepHead->xcomb());
   DeepHead->nodeME()->setScale();
@@ -905,6 +1109,8 @@ double Merging::alphaReweight(){
   
   res *= pow(as(Q_R) / SM().alphaS(), history[0].node->nodeME()->orderInAlphaS());
   res *= pow(history[0].node->deepHead()->xcomb()->eventHandler().SM().alphaEMPtr()->value(history[0].node->nodeME()->factory()->scaleChoice()->renormalizationScaleQED())/ SM().alphaEMMZ(), history[0].node->nodeME()->orderInAlphaEW());
+  
+  
   for (Hist::iterator it=history.begin();it!=history.end();it++){
     Hist::iterator ittmp=it;
     ittmp++;
@@ -1135,12 +1341,12 @@ bool Merging::reweightCKKWSingle(Ptr<MatchboxXComb>::ptr SX, double & res,bool f
   
     //cout<<"\nfast ";//<<fast<<" HS "<<history.size()<<" stnode "<<StartingBorn<<" "<<eH->didEstimate();
   
-  if (!eH->didEstimate()) {
+  if (!eH->didEstimate()||fast) {
     history.clear();
     StartingBorn=CNPtr();
   }
   
-  theNf=5;//TODO
+  theNf=2;//TODO
   
   if (!SX) return true;
   assert(SX->eventHandlerPtr());
@@ -1164,7 +1370,7 @@ bool Merging::reweightCKKWSingle(Ptr<MatchboxXComb>::ptr SX, double & res,bool f
   }else if(ME->oneLoopNoBorn()){
     res*=reweightCKKWVirt(Node);
   }else{
-    res*=reweightCKKWBorn(Node,fast);
+    res*=reweightCKKWBorn2(Node,fast);
   }
   
   
@@ -1221,11 +1427,21 @@ double Merging::alphasUnlops( Energy next,Energy fixedScale)  {
 
 
 void Merging::persistentOutput(PersistentOStream & os) const {
-  os << ounit(MergingScale,GeV) << theKImproved<<theDipoleShowerHandler<<theMaxLegsLO ;
+  os <<xiRenME <<xiFacME <<xiRenSh 
+     <<xiFacSh <<xiQSh <<theNf 
+     <<minusL <<Unlopsweights 
+     << theKImproved << ounit(MergingScale,GeV)
+     <<theMaxLegsLO <<theMaxLegsNLO
+     <<theDipoleShowerHandler ;
 }
 
 void Merging::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(MergingScale,GeV) >> theKImproved >>theDipoleShowerHandler>>theMaxLegsLO;
+    is >>xiRenME >>xiFacME >>xiRenSh 
+     >>xiFacSh >>xiQSh >>theNf 
+     >>minusL >>Unlopsweights 
+     >> theKImproved >> iunit(MergingScale,GeV)
+     >>theMaxLegsLO >>theMaxLegsNLO
+     >>theDipoleShowerHandler ;
 }
 
 ClassDescription<Merging> Merging::initMerging;

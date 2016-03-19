@@ -70,6 +70,14 @@ double FFLightTildeKinematics::lastZ() const {
   return subtractionParameters()[1];
 }
 
+double FFLightTildeKinematics::jacobian(Energy2 sB,Energy2 sR, int n) const {
+    //  cout<<"\nsR= "<<sR/GeV2<<" sB "<<sB/GeV2<<" n: "<<n<<"  "<<bornEmitterMomentum()*bornSpectatorMomentum()/GeV2<<" pow(sR/sB,n-4); "<<pow(sR/sB,n-4);;
+
+  
+  return 16.*ThePEG::Constants::pi*ThePEG::Constants::pi/(bornEmitterMomentum()*bornSpectatorMomentum())*sR;//*pow(sR/sB,n-4);
+  
+}
+
 
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).

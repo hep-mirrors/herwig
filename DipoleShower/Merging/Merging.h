@@ -100,6 +100,9 @@ namespace Herwig {
     
     bool   reweightCKKWSingle(Ptr<MatchboxXComb>::ptr SX, double & res,bool fast=false) ;
     double reweightCKKWBorn(CNPtr Node,bool fast=false);
+    double reweightCKKWBorn2(CNPtr Node,bool fast=false);
+
+    
     double reweightCKKWVirt(CNPtr Node);
     double reweightCKKWReal(CNPtr Node);
     double as(Energy q){return theDipoleShowerHandler->as(q);}
@@ -176,20 +179,22 @@ namespace Herwig {
      *
      **/
     
-    double theNf=5;
+    double theNf;
     
-    bool minusL=false;
-    bool Unlopsweights=true;
-    bool theKImproved=true;
-    Energy MergingScale=20.*GeV;
+    bool minusL;
+    bool Unlopsweights;
+    bool theKImproved;
+    Energy MergingScale;
     
     unsigned int theMaxLegsLO;
     unsigned int theMaxLegsNLO;
     double projectorWeight;
+    double fastweight;
     
     Hist history;
-    CNPtr StartingBorn=CNPtr();
-    
+    CNPtr StartingBorn;
+    CNPtr StartingCalcBornBorn;
+    CNPtr CalcBorn;
     
     
     /**

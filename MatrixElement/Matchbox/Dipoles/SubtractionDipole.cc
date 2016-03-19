@@ -200,6 +200,9 @@ void SubtractionDipole::setupBookkeeping(const map<Ptr<DiagramBase>::ptr,Subtrac
 
 }
 
+ double SubtractionDipole::jacobianMerging(Energy2 shatBorn,Energy2 shatReal,int n) const {return theTildeKinematics->jacobian(shatBorn,shatReal,n);}
+
+
 void SubtractionDipole::subtractionBookkeeping() {
   /*
   if ( theMergingMap.empty() )
@@ -514,13 +517,13 @@ bool SubtractionDipole::generateKinematics(const double * r) {
     return true;
   }
   if ( !generateTildeKinematics() )
-    return false;
+  {cout<<"\nxx  1  xx";  return false;}
   if( ! underlyingBornME()->lastXCombPtr()->setIncomingPartons() )
-    return false;
+   {cout<<"\nxx  2  xx";  return false;}
   underlyingBornME()->setScale();
   assert(lastXCombPtr() == underlyingBornME()->lastXCombPtr());
   if( ! underlyingBornME()->lastXCombPtr()->setIncomingPartons() )
-    return false;
+    {cout<<"\nxx  3  xx";  return false;}
   // need to have the scale and x's available for checking shower phase space
   if ( showerApproximation() &&
        lastXCombPtr()->willPassCuts() )

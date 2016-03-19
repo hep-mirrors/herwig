@@ -996,25 +996,25 @@ namespace Herwig {
     /**
      * The number of light flavours to be considered for this process.
      */
-    unsigned int theNLight;
+    static unsigned int theNLight;
 
     /**
      * Vector with the PDG ids of the light quark flavours,
      * which are contained in the jet particle group.
      */
-    vector<int> theNLightJetVec;
+    static vector<int> theNLightJetVec;
 
     /**
      * Vector with the PDG ids of the heavy quark flavours,
      * which are contained in the jet particle group.
      */
-    vector<int> theNHeavyJetVec;
+    static vector<int> theNHeavyJetVec;
 
     /**
      * Vector with the PDG ids of the light quark flavours,
      * which are contained in the proton particle group.
      */
-    vector<int> theNLightProtonVec;
+    static vector<int> theNLightProtonVec;
 
     /**
      * The dimensionality of the colour basis for this process.
