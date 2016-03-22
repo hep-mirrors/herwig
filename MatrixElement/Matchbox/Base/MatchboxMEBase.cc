@@ -747,9 +747,10 @@ CrossSection MatchboxMEBase::dSigHatDR(bool fast) const {
 
   CrossSection res = ZERO;
 
- // cout<<"\n()() "<<"name"<<meMomenta().size()<<" "<<lastSHat()/GeV2<<" "<<lastMEPDFWeight()<<" "<<jacobian()<<" "<<me2Norm(); 
+    //cout<<"\n()() "<<"name"<<meMomenta().size()<<" "<<lastSHat()/GeV2<<" "<<lastMEPDFWeight()<<" "<<jacobian()<<" "<<me2Norm();
   setLastBorndSigHatDR((sqr(hbarc)/(2.*lastSHat())) * jacobian()* lastMEPDFWeight() * xme2/nanobarn);
-   
+
+  
   if ( !oneLoopNoBorn() || fast)
     res += 
       (sqr(hbarc)/(2.*lastSHat())) *
@@ -760,11 +761,15 @@ CrossSection MatchboxMEBase::dSigHatDR(bool fast) const {
       (sqr(hbarc)/(2.*lastSHat())) *
       jacobian()* lastMEPDFWeight() * vme2;
 
-  if ( !onlyOneLoop() && !fast ) {
+  if ( oneLoop() && !onlyOneLoop() && !fast ) {
     for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator v =
 	    virtuals().begin(); v != virtuals().end(); ++v ) {
       (**v).setXComb(lastXCombPtr());
-      res += (**v).dSigHatDR();
+      CrossSection x= (**v).dSigHatDR();
+      
+       // cout<<"\ntheOneLoopNoBorn "<<xme2<<" "<<res<<" "<<x;
+        
+      res += x;
     }
     if ( checkPoles() && oneLoop() )
       logPoles();
@@ -1696,13 +1701,15 @@ void MatchboxMEBase::prepareXComb(MatchboxXCombData& xc) const {
   xc.nDimInsertions(insertionAdd);
 
   xc.nLight(getNLight());
-
+  if(xc.nLightJetVec().empty())
   for (size_t inlv=0; inlv<getNLightJetVec().size(); ++inlv)
     xc.nLightJetVec(getNLightJetVec()[inlv]);
-
+  
+  if(xc.nHeavyJetVec().empty())
   for (size_t inhv=0; inhv<getNHeavyJetVec().size(); ++inhv)
     xc.nHeavyJetVec(getNHeavyJetVec()[inhv]);
 
+  if(xc.nLightProtonVec().empty())
   for (size_t inlpv=0; inlpv<getNLightProtonVec().size(); ++inlpv)
     xc.nLightProtonVec(getNLightProtonVec()[inlpv]);
 
@@ -1779,8 +1786,7 @@ StdXCombPtr MatchboxMEBase::makeXComb(tStdXCombPtr newHead,
 }
 
 void MatchboxMEBase::persistentOutput(PersistentOStream & os) const {
-  cout<<"\nMatchboxMEBaseepsilonSquarePoleHistograms "<<epsilonSquarePoleHistograms.size();
-  os << theLastXComb << theFactory << thePhasespace 
+  os << theLastXComb << theFactory << thePhasespace
      << theAmplitude << theScaleChoice << theVirtuals 
      << theReweights << theSubprocess << theOneLoop 
      << theOneLoopNoBorn << theOneLoopNoLoops

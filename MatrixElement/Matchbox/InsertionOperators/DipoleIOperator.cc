@@ -218,6 +218,7 @@ double DipoleIOperator::me2() const {
   double res = 0.;
 
   int idi = 0; int idj = 0;
+  //cout<<"\n-----------------------------++++++++++++++++++++++ "<<mePartonData().size();
 
   Energy2 mu2 = lastBorn()->mu2();
 
@@ -228,7 +229,7 @@ double DipoleIOperator::me2() const {
       continue;
 
     idj = 0;
-
+   // double test=0.;
     for ( cPDVector::const_iterator j = mePartonData().begin();
 	  j != mePartonData().end(); ++j, ++idj ) {
 
@@ -256,9 +257,13 @@ double DipoleIOperator::me2() const {
 	     (idi > 1 && idj > 1) )
 	  delta +=
 	    ((**i).id() == ParticleID::g ? CA : CF) * sqr(pi) / 2.;
+        
+      // cout<<"\ndelta "<<((**i).id() == ParticleID::g ? xgammaGluon : xgammaQuark)<<" "<<((**i).id() == ParticleID::g ? xgammaGluon : xgammaQuark) *
+       // log(mu2/(2.*(meMomenta()[idi]*meMomenta()[idj])))<<" "<< ((**i).id() == ParticleID::g ? CA : CF) * sqr(pi) / 2.;
       }
 
       if ( isExpanded() ) {
+       // assert(false);
 	assert(!isCS() && !isBDK());
 	double theLog = log(mu2/(2.*(meMomenta()[idi]*meMomenta()[idj])));
 	delta = 
@@ -272,7 +277,10 @@ double DipoleIOperator::me2() const {
 	  ((**i).id() == ParticleID::g ? KGluon : KQuark) +
 	  delta ) *
 	lastBorn()->colourCorrelatedME2(make_pair(idi,idj));
+     //    test+=lastBorn()->colourCorrelatedME2(make_pair(idi,idj));
+        // cout<<"\nlastBorn()->colourCorrelatedME2(make_pair(idi,idj)); "<<lastBorn()->colourCorrelatedME2(make_pair(idi,idj))<<" "<<delta<<" "<<sqrt(mu2/GeV2)<<" "<<sqrt(2.*(meMomenta()[idi]*meMomenta()[idj])/GeV2);
     }
+    //  cout<<"\ntest::::   "<<test<<" "<<lastBorn()->me2()<<" "<<res;
   }
 
   // NOTE: In the following we account for the full scale restoration 
@@ -280,6 +288,7 @@ double DipoleIOperator::me2() const {
   // Note: In the GoSam OLP interface, it is possible to directly set 
   // \mu = \mu_R, via the switch SetMuToMuR (for debugging purposes).
   if ( !lastBorn()->hasRunningAlphaS() ) {
+    
     Energy2 muR2 = 
       lastBorn()->renormalizationScale()*
       sqr(lastBorn()->renormalizationScaleFactor());
@@ -296,10 +305,12 @@ double DipoleIOperator::me2() const {
   // details; this guarantees an expansion in alpha_s^\bar{MS} when
   // using dimensional reduction
   if ( isDR() && isDRbar() ) {
+    assert(false);
     res -= (CA/6.)*lastBorn()->orderInAlphaS()*lastBorn()->me2();
   }
 
   res *= ( - lastBorn()->lastAlphaS() / (2.*pi) );
+  //   cout<<"\n res "<<res<<" "<<lastBorn()->me2();;
 
   return res;
 

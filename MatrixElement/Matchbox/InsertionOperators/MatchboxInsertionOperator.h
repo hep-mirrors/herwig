@@ -77,9 +77,7 @@ public:
    * Return the Born matrix element this class represents 
    * virtual corrections to.
    */
-  Ptr<MatchboxMEBase>::tptr lastBorn() const {
-    return lastMatchboxXComb()->matchboxME();
-  }
+  Ptr<MatchboxMEBase>::tptr lastBorn() const ;
 
   /**
    * Set the XComb object steering the Born matrix

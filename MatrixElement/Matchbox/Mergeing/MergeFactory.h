@@ -62,15 +62,10 @@ namespace Herwig {
 
     void pushB(Ptr<MatchboxMEBase>::ptr,int,bool projected);
 
-    void pushsubCor(Ptr<MatchboxMEBase>::ptr,int,bool projected);
-
     void pushV(Ptr<MatchboxMEBase>::ptr,int,bool projected);
 
     void pushProR(Ptr<MatchboxMEBase>::ptr,int,bool projected,bool);
 
-    void push2ProR(Ptr<MatchboxMEBase>::ptr,int);
-
-    void pushProB(Ptr<MatchboxMEBase>::ptr,int);
 
     void orderOLPs();
     

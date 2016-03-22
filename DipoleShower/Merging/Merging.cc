@@ -38,8 +38,12 @@ using namespace Herwig;
 
 Merging::Merging()
 : HandlerBase() {
-  StartingBorn=CNPtr();
-  CNPtr CalcBorn=CNPtr();
+  StartingBorn0=CNPtr();
+  StartingBorn1=CNPtr();
+  StartingBorn2=CNPtr();
+  CNPtr CalcBorn0=CNPtr();
+  CNPtr CalcBorn1=CNPtr();
+  CNPtr CalcBorn2=CNPtr();
   theNf=5;
   minusL=false;
   Unlopsweights=true;
@@ -199,9 +203,6 @@ bool Merging::dosudakov(Energy & running, Energy next, double& sudakov0_n,bool f
 
 bool Merging::doUNLOPS(Energy  running, Energy next,Energy fixedScale, double& UNLOPS) {
   double unlops=0.;
-  double suda=1.;
-  
-  double addsingle =0.;
   
   for ( list<DipoleChain>::iterator chain = theDipoleShowerHandler->eventRecord().chains().begin() ; chain != theDipoleShowerHandler->eventRecord().chains().end() ; chain++ ) {
     for ( list<Dipole>::iterator dip = (*chain).dipoles().begin() ; dip != (*chain).dipoles().end() ; ++dip ) {
@@ -392,15 +393,797 @@ void Merging::CKKW_PrepareSudakov(CNPtr Born,Energy running){
 }
 
 
+
+
+double Merging::reweightCKKWBorn3(CNPtr CalcBorn2,bool fast){
+  
+  if(fast||!StartingBorn0){
+    if( CalcBorn2->xcomb()->meMomenta().size()-2 == theMaxLegsLO){
+      int stage=(int)(UseRandom::rnd()*3);//needs random number from sampler
+      if (stage==0) {
+          //         Stage  Multi
+        projectorWeight0Born0=0.;
+        projectorWeight1Born0=0.;
+        projectorWeight2Born0=0.;
+        projectorWeight0Born1=0.;
+        projectorWeight1Born1=0.;
+        projectorWeight2Born1=0.;
+        projectorWeight0Born2=3.;
+        projectorWeight1Born2=0.;
+        projectorWeight2Born2=0.;
+        projectorWeight1Real1=0.;
+        projectorWeight2Real1=0.;
+        projectorWeight0Real2=3.;//Theta<
+        projectorWeight1Real2=0.;
+        projectorWeight2Real2=0.;
+        CalcBorn2->nodeME()->projectorStage(0);
+      }else if (stage==1) {
+        projectorWeight0Born0=0.;
+        projectorWeight1Born0=0.;
+        projectorWeight2Born0=0.;
+        projectorWeight0Born1=0.;
+        projectorWeight1Born1=3.;
+        projectorWeight2Born1=0.;
+        projectorWeight0Born2=0.;
+        projectorWeight1Born2=-3.;
+        projectorWeight2Born2=0.;
+        projectorWeight1Real1=3.;//Theta<  theta1=false;
+        projectorWeight2Real1=0.;
+        projectorWeight0Real2=0.;
+        projectorWeight1Real2=3.;//Theta>  theta2=true;
+        projectorWeight2Real2=0.;
+        CalcBorn2->nodeME()->projectorStage(1);
+      }else if (stage==2) {
+        projectorWeight0Born0=0.;
+        projectorWeight1Born0=0.;
+        projectorWeight2Born0=3.;
+        projectorWeight0Born1=0.;
+        projectorWeight1Born1=0.;
+        projectorWeight2Born1=-3.;
+        projectorWeight0Born2=0.;
+        projectorWeight1Born2=0.;
+        projectorWeight2Born2=0.;
+        projectorWeight1Real1=0.;
+        projectorWeight2Real1=3.;//Theta>  theta1=true;
+        projectorWeight0Real2=0.;
+        projectorWeight1Real2=0.;
+        projectorWeight2Real2=-3.;//Theta> theta2=false;
+        CalcBorn2->nodeME()->projectorStage(2);
+      }
+
+    }
+    else{
+      projectorWeight0Born0=0.;
+      projectorWeight1Born0=0.;
+      projectorWeight2Born0=1.;
+      projectorWeight0Born1=0.;
+      projectorWeight1Born1=0.;
+      projectorWeight2Born1=-1.;
+      projectorWeight0Born2=0.;
+      projectorWeight1Born2=0.;
+      projectorWeight2Born2=0.;
+      projectorWeight1Real1=0.;
+      projectorWeight1Real1=0.;
+      projectorWeight2Real1=1.;//Theta>  theta1=true;
+      projectorWeight0Real2=0.;
+      projectorWeight1Real2=0.;
+      projectorWeight2Real2=-1.;//Theta>   theta2=false;
+      CalcBorn2->nodeME()->projectorStage(2);
+    }
+  }
+  
+  if (fast) {
+    assert(!StartingBorn0);
+    CalcBorn0=CNPtr();
+    CalcBorn1=CNPtr();
+  }
+  
+  double weightB00 =projectorWeight0Born0;
+  double weightB10 =projectorWeight1Born0;
+  double weightB20 =projectorWeight2Born0;
+  double weightB01 =projectorWeight0Born1;
+  double weightB11 =projectorWeight1Born1;
+  double weightB21 =projectorWeight2Born1;
+  double weightB02 =projectorWeight0Born2;
+  double weightB12 =projectorWeight1Born2;
+  double weightB22 =projectorWeight2Born2;
+  double weightR11 =projectorWeight1Real1;
+  double weightR21 =projectorWeight2Real1;
+  double weightR02 =projectorWeight0Real2;
+  double weightR12 =projectorWeight1Real2;
+  double weightR22 =projectorWeight2Real2;
+  bool theta1=true;
+  bool theta2=true;
+  bool safetheta1=true;
+  bool safetheta2=true;
+  bool inhist=false;
+  bool inhist2=false;
+  
+  CNPtr Born2;
+  CNPtr Born1;
+  CNPtr Born0;
+  assert(!CalcBorn2->children().empty());
+
+  int randomIndex = 0;
+  if(!CalcBorn1){
+      //Set up the history by random choice
+    randomIndex = (int)(UseRandom::rnd() *  CalcBorn2->children().size());
+    CalcBorn1=CalcBorn2->children()[randomIndex];
+    randomIndex = (int)(UseRandom::rnd() *  CalcBorn1->children().size());
+    CalcBorn0=CalcBorn1->children()[randomIndex];
+  }
+  assert(CalcBorn1&&CalcBorn0);
+
+  vector<Ptr<ClusterNode>::ptr> Children;
+  
+  Children = CalcBorn2->children();
+  for (vector<Ptr<ClusterNode>::ptr>::iterator it = Children.begin(); it != Children.end(); it++) {
+    if((*it)->dipol()->lastPt()<CalcBorn2->mergePt()){
+      weightB10 =0.;
+      weightB20 =0.;
+      weightB21 =0.;
+      weightB02 =0.;
+      weightB12 =0.;
+      weightB22 =0.;
+      weightR11 =0.;
+      weightR21 =0.;
+      weightR12 =0.;
+      theta2=false;
+      if((*it)->dipol()->lastPt()<1.*GeV)safetheta2=false;
+    }
+  }
+  Children = CalcBorn1->children();
+  for (vector<Ptr<ClusterNode>::ptr>::iterator it = Children.begin(); it != Children.end(); it++) {
+    if((*it)->dipol()->lastPt()<CalcBorn2->mergePt()){
+       weightB10 =0.;
+       weightB20 =0.;
+       weightB01 =0.;
+       weightB11 =0.;
+       weightB21 =0.;
+       weightB02 =0.;
+       weightB12 =0.;
+       weightR11 =0.;
+       weightR02 =0.;
+       weightR12 =0.;
+       weightR22 =0.;
+      theta1=false;
+      if((*it)->dipol()->lastPt()<1.*GeV)safetheta1=false;
+    }
+  }
+
+  Children = CalcBorn0->children();
+  for (vector<Ptr<ClusterNode>::ptr>::iterator it = Children.begin(); it != Children.end(); it++) {
+    if((*it)->dipol()->lastPt()<CalcBorn2->mergePt()){
+      weightB00 =0.;
+      weightB10 =0.;
+      weightB20 =0.;
+      weightB01 =0.;
+      weightB11 =0.;
+      weightB21 =0.;
+      weightB02 =0.;
+      weightB12 =0.;
+      weightB22 =0.;
+      weightR11 =0.;
+      weightR21 =0.;
+      weightR02 =0.;
+      weightR12 =0.;
+      weightR22 =0.;
+      assert(false);//More than 2 NLO
+    }
+  }
+  
+
+  
+  
+  
+  
+  if (StartingBorn0) {
+    assert(!fast);
+    Born2=StartingBorn2;
+    Born1=StartingBorn1;
+    Born0=StartingBorn0;
+    while (Born2->parent()) {
+      inhist2|=(Born2==CalcBorn0);
+      Born2=Born2->parent();
+    }
+    Born2=StartingBorn2;
+    
+    while (Born1->parent()) {
+      inhist|=(Born1==CalcBorn0);
+      Born1=Born1->parent();
+    }
+    Born0 = StartingBorn0;
+    Born1 = StartingBorn1;
+    Born2 = StartingBorn2;
+  }else{
+    Born2 = CalcBorn2->getLongestHistory_simple(true,xiQSh);
+    Born1 = CalcBorn1->getLongestHistory_simple(false,xiQSh);
+    Born0 = CalcBorn0->getLongestHistory_simple(false,xiQSh);
+    if(fast){
+      StartingBorn2=Born2;
+      StartingBorn1=Born1;
+      StartingBorn0=Born0;
+      while (Born2->parent()) {
+        inhist2|=(Born2==CalcBorn0);
+        Born2=Born2->parent();
+      }
+      Born2=StartingBorn2;
+      
+      while (Born1->parent()) {
+          inhist|=(Born1==CalcBorn0);
+          Born1=Born1->parent();
+      }
+      
+      Born1=StartingBorn1;
+    }else{
+      StartingBorn0=CNPtr();
+      StartingBorn1=CNPtr();
+      StartingBorn2=CNPtr();
+    }
+  }
+
+  
+  if (!inhist){
+    weightB01 =0.;
+    weightB11 =0.;
+    weightB21 =0.;
+    weightB02 =0.;
+    weightB12 =0.;
+    weightB22 =0.;
+    weightR11 =0.;
+    weightR21 =0.;
+    weightR02 =0.;
+    weightR12 =0.;
+    weightR22 =0.;
+  }
+  if (!inhist2){
+    weightB02 =0.;
+    weightB12 =0.;
+    weightB22 =0.;
+    weightR02 =0.;
+    weightR12 =0.;
+    weightR22 =0.;
+  }
+
+  if (CalcBorn2->nodeME()->projectorStage()==1&&!Born1->xcomb()->willPassCuts()){
+    weightB00 =0.;
+    weightB10 =0.;
+    weightB20 =0.;
+    weightB01 =0.;
+    weightB11 =0.;
+    weightB21 =0.;
+    weightB02 =0.;
+    weightB12 =0.;
+    weightB22 =0.;
+    weightR11 =0.;
+    weightR21 =0.;
+    weightR02 =0.;
+    weightR12 =0.;
+    weightR22 =0.;
+  }
+  if (CalcBorn2->nodeME()->projectorStage()==0&&!Born0->xcomb()->willPassCuts()){
+    weightB00 =0.;
+    weightB10 =0.;
+    weightB20 =0.;
+    weightB01 =0.;
+    weightB11 =0.;
+    weightB21 =0.;
+    weightB02 =0.;
+    weightB12 =0.;
+    weightB22 =0.;
+    weightR11 =0.;
+    weightR21 =0.;
+    weightR02 =0.;
+    weightR12 =0.;
+    weightR22 =0.;
+  }
+  if (CalcBorn2->nodeME()->projectorStage()==2&&!Born0->xcomb()->willPassCuts()){
+    weightB00 =0.;
+    weightB10 =0.;
+    weightB20 =0.;
+    weightB01 =0.;
+    weightB11 =0.;
+    weightB21 =0.;
+    weightB02 =0.;
+    weightB12 =0.;
+    weightB22 =0.;
+    weightR11 =0.;
+    weightR21 =0.;
+    weightR02 =0.;
+    weightR12 =0.;
+    weightR22 =0.;
+  }
+
+if(weightB00 == 0.&&
+   weightB10 == 0.&&
+   weightB20 == 0.&&
+   weightB01 == 0.&&
+   weightB11 == 0.&&
+   weightB21 == 0.&&
+   weightB02 == 0.&&
+   weightB12 == 0.&&
+   weightB22 == 0.&&
+   weightR11 == 0.&&
+   weightR21 == 0.&&
+   weightR02 == 0.&&
+   weightR12 == 0.&&
+   weightR22 == 0.)return 0.;
+
+  
+  Energy startscaleB00=CKKW_StartScale(Born0);
+  Energy startscaleB10=startscaleB00;
+  Energy startscaleB20=startscaleB00;
+  Energy startscaleB01=CKKW_StartScale(Born1);
+  Energy startscaleB11=startscaleB01;
+  Energy startscaleB21=startscaleB01;
+  Energy startscaleB02=CKKW_StartScale(Born2);
+  Energy startscaleB12=startscaleB02;
+  Energy startscaleB22=startscaleB02;
+  Energy startscaleR11=startscaleB00;
+  Energy startscaleR21=startscaleB00;
+  Energy startscaleR02=startscaleB01;
+  Energy startscaleR12=startscaleB01;
+  Energy startscaleR22=startscaleB01;
+
+  
+  double unlopsweightNLO1=0.;
+  double unlopsweightNLO2=0.;
+  
+  
+  Energy running;
+  Energy prerunning;
+  if(CalcBorn2->nodeME()->projectorStage()==0){
+    
+    /**
+     * Relevant history weights:
+     * weightB02
+     * weightR02
+     **/
+    running=startscaleB02;
+    fillHistory( running,  Born2, CalcBorn2,fast);
+    weightB02*=history.back().weight*alphaReweight()*pdfReweight();
+    prerunning=running;
+    if (!fillProjector(running))return 0.;//Actualy no projector
+    CalcBorn2->runningPt(prerunning);
+    if (!theta2&&theta1) {                    //subcorrections
+      running=startscaleR02;
+      assert(CalcBorn1->dipol()->clustersafe());
+      fillHistory( running, Born1 , CalcBorn1,fast);
+      weightR02 *=history.back().weight*alphaReweight()*pdfReweight();
+    }else{
+      weightR02=0.;
+    }
+    
+  }else if(CalcBorn2->nodeME()->projectorStage()==1){
+    
+    /**
+     * Relevant history weights:
+     * weightB12
+     * weightB11
+     * weightR11
+     * weightR12
+     **/
+    running=startscaleB12;
+    if(inhist&&weightB12!=0.){
+      
+      fillHistory( running,  Born2, CalcBorn2,fast);
+      weightB12*=history.back().weight*alphaReweight()*pdfReweight();
+    }else{
+      assert(weightB12==0.);
+    }
+    prerunning=running;
+    running=startscaleB11;
+    fillHistory( running,  Born1, CalcBorn1,fast);
+    weightB11*=history.back().weight*alphaReweight()*pdfReweight();
+      //cout<<"\n.-.-.-.-.-1 "<<weightB11<<flush;
+    if (theta1&&inhist)
+      unlopsweightNLO2-=sumpdfReweightUnlops()+sumalphaReweightUnlops()+sumfillHistoryUnlops();
+    
+    if (!fillProjector(running))return 0.;
+    
+    if (theta2&&theta1) {
+      weightR12=weightB11;
+    }
+    
+    if (!theta1) { //subcorrections
+      running=startscaleR11;
+      fillHistory( running, Born0 , CalcBorn0,fast);
+      prerunning=running;
+      weightR11*=history.back().weight*alphaReweight()*pdfReweight();
+      if (!fillProjector(running))return 0.;
+    }
+    
+  }else{
+    assert(CalcBorn1&&CalcBorn2->nodeME()->projectorStage()==2);
+      /**
+       * Relevant history weights:
+       * weightB22
+       * weightB21
+       * weightB20
+       * weightR22
+       * weightR21
+       **/
+    assert(weightB22==0.);
+    if(inhist&&weightB21!=0.){
+      running=startscaleB21;
+      fillHistory( running,  Born1, CalcBorn1,fast);
+      prerunning=running;
+      weightB21*=history.back().weight*alphaReweight()*pdfReweight();
+        //cout<<"\n.-.-.-.-.-2"<<flush;
+      if (theta1&&inhist)
+        unlopsweightNLO2-=sumpdfReweightUnlops()+sumalphaReweightUnlops()+sumfillHistoryUnlops();
+    }else{
+      assert(weightB21==0.);
+    }
+
+  if (weightB20!=0.) {
+      running=startscaleB20;
+      fillHistory( running,  Born0, CalcBorn0,fast);
+      weightB20*=history.back().weight*alphaReweight()*pdfReweight();
+      //cout<<"\n.-.-.-.-.-3"<<flush;
+      unlopsweightNLO1-=sumpdfReweightUnlops()+sumalphaReweightUnlops()+sumfillHistoryUnlops();
+      if (!fillProjector(running))return 0.;
+    }
+    if (theta1) {
+      weightR21=weightB20;
+      running=startscaleR22;
+      fillHistory( running,  Born1, CalcBorn1,fast);
+      weightR22*=history.back().weight*alphaReweight()*pdfReweight();
+    }else{
+      weightR22*=0.;
+      running=startscaleR21;
+      fillHistory( running,  Born1, CalcBorn1,fast);
+      weightR21*=history.back().weight*alphaReweight()*pdfReweight();
+    }
+  }
+  
+  if(weightB00 == 0.&&
+     weightB10 == 0.&&
+     weightB20 == 0.&&
+     weightB01 == 0.&&
+     weightB11 == 0.&&
+     weightB21 == 0.&&
+     weightB02 == 0.&&
+     weightB12 == 0.&&
+     weightB22 == 0.&&
+     weightR11 == 0.&&
+     weightR21 == 0.&&
+     weightR02 == 0.&&
+     weightR12 == 0.&&
+     weightR22 == 0.)return 0.;
+  
+  
+  if(CalcBorn2->N()==CalcBorn2->nodeME()->lastMEMomenta().size()&&CalcBorn2->nodeME()->projectorStage() == 0){
+    CalcBorn2->vetoPt(prerunning);
+  }else{
+    CalcBorn2->vetoPt(CalcBorn2->mergePt());
+  }
+  
+  
+  double resLO0=0.;
+  double resLO1=0.;
+  double resLO2=0.;
+  double resNLO1R=0.;
+  double resNLO2R=0.;
+  double resNLO1L=0.;
+  double resNLO2L=0.;
+  
+
+
+  if(CalcBorn2->nodeME()->projectorStage()==0){//-----------------------------------------------------------------------------------------
+    /**   
+     * Born with two extra emissions,
+     * weighted with the full history.
+     * weiht is always 0 if random choice of history 
+     * is not the one from the getHistory call.
+     * If right history is choosen reweight with number of posibilities.
+     **/
+    if(!inhist||!inhist2)
+      assert(weightB02==0.);
+    else
+      resLO2+=1.*CalcBorn2->children().size()*
+                 CalcBorn1->children().size()*
+                 weightB02*
+                 matrixElementWeight(startscaleB02,CalcBorn2);
+    
+    
+    if (!theta2&&inhist&&inhist2) {
+      /**
+       * Real emission weighted with history up to the born state.
+       * Multiply with extra Aslpha_s factor
+       * Only calculate if Emission is below the merging scale.
+       **/
+      assert(theta1||weightR02==0.);
+      double real=matrixElementWeight(startscaleR02,CalcBorn2);
+      
+      double sumDipoles=0.;
+      CNPtr selectedNode;
+      Energy minpt;
+      int nDipoles;
+      if (safetheta2)
+        CalcBorn2->psBelowMergeingScale(selectedNode, sumDipoles, minpt, nDipoles);
+      else
+        CalcBorn2->dipBelowMergeingScale(selectedNode, sumDipoles, minpt, nDipoles);
+      
+      if (CalcBorn2->xcomb()->mePartonData()[0]->coloured()){
+        sumDipoles*=CalcBorn2->nodeME()->pdf1(sqr(startscaleR02*xiFacME))/CalcBorn2->nodeME()->pdf1(sqr(10.*GeV));
+      }
+      if (CalcBorn2->xcomb()->mePartonData()[1]->coloured()){
+        sumDipoles *=CalcBorn2->nodeME()->pdf2(sqr(startscaleR02*xiFacME))/CalcBorn2->nodeME()->pdf2(sqr(10.*GeV));
+      }
+      double subtraction=sumDipoles;
+      
+      resNLO2R+=(real-subtraction)*
+               CalcBorn2->children().size()*
+               CalcBorn1->children().size()*
+               weightR02*theDipoleShowerHandler->as(startscaleR02*xiRenSh) / SM().alphaS();
+    }
+    
+    
+    
+  }else
+  if(CalcBorn2->nodeME()->projectorStage()==1){//-----------------------------------------------------------------------------------------
+    if (weightB11!=0.) {
+      assert(theta1);
+    }
+      resLO1+=1.*
+        CalcBorn1->children().size()*
+        CalcBorn2->children().size()/
+        CalcBorn1->numberOfSplittings()*
+        weightB11*
+        matrixElementWeight(startscaleB11,CalcBorn1)*
+        CalcBorn1->dipol()->jacobianMerging(CalcBorn1->xcomb()->lastSHat(),CalcBorn2->xcomb()->lastSHat(),CalcBorn1->xcomb()->meMomenta().size());
+
+      resLO2+=1.*
+           CalcBorn2->children().size()*
+           CalcBorn1->children().size()*
+           weightB12*
+           matrixElementWeight(startscaleB12,CalcBorn2);
+    
+        //NLO 2
+    if (weightB11!=0.) {
+    double NLOME=matrixElementWeightWithLoops(startscaleB11,CalcBorn1);
+    double Bornweight=CalcBorn1->nodeME()->lastBorndSigHatDR()* SM().alphaS()/(2.*ThePEG::Constants::pi);
+    
+    //cout<<"\n "<<matrixElementWeight(startscaleB11,CalcBorn1)<<" "<<NLOME<<" "<<CalcBorn1->nodeME()->lastBorndSigHatDR()<<" unlops: "<<unlopsweightNLO2;
+    
+    if (inhist&&theta1) {
+    resNLO2L+=1.*
+            CalcBorn1->children().size()*
+            CalcBorn2->children().size()/
+            CalcBorn1->numberOfSplittings()*
+            weightB11*
+            (NLOME+unlopsweightNLO2*Bornweight)*
+            CalcBorn1->dipol()->jacobianMerging(CalcBorn1->xcomb()->lastSHat(),CalcBorn2->xcomb()->lastSHat(),CalcBorn1->xcomb()->meMomenta().size())*
+            theDipoleShowerHandler->as(startscaleB11*xiRenSh) / SM().alphaS();
+    }
+    }
+    if (theta2&&theta1&&inhist&&inhist2) {
+      double real= matrixElementWeight(startscaleR12,CalcBorn2);
+      
+      double sumDipoles=1.*CalcBorn1->dipol()->dSigHatDR(sqr(10.*GeV))/nanobarn;
+      
+      if (CalcBorn2->xcomb()->mePartonData()[0]->coloured()){
+        sumDipoles*=CalcBorn2->nodeME()->pdf1(sqr(startscaleR12*xiFacME))/CalcBorn2->nodeME()->pdf1(sqr(10.*GeV));
+      }
+      if (CalcBorn2->xcomb()->mePartonData()[1]->coloured()){
+        sumDipoles *=CalcBorn2->nodeME()->pdf2(sqr(startscaleR12*xiFacME))/CalcBorn2->nodeME()->pdf2(sqr(10.*GeV));
+      }
+      double subtraction=sumDipoles;
+      resNLO2R+=(real-subtraction)*
+                CalcBorn2->children().size()*
+                CalcBorn1->children().size()*
+                weightR12*
+                theDipoleShowerHandler->as(startscaleR12*xiRenSh)/SM().alphaS();;
+    }else{
+        //TODO
+        //diffPsDipBelowMergeingScale()
+    }
+  
+    if (!theta1&&inhist2) {
+      double real=matrixElementWeight(startscaleR11,CalcBorn1);
+      double sumDipoles=0.;
+      CNPtr selectedNode;
+      Energy minpt;
+      int nDipoles;
+      if (safetheta1)CalcBorn1->psBelowMergeingScale(selectedNode, sumDipoles, minpt, nDipoles);
+      else           CalcBorn1->dipBelowMergeingScale(selectedNode, sumDipoles, minpt, nDipoles);
+      if (CalcBorn2->xcomb()->mePartonData()[0]->coloured()){
+        sumDipoles *=CalcBorn1->nodeME()->pdf1(sqr(startscaleR11*xiFacME))/CalcBorn1->nodeME()->pdf1(sqr(10.*GeV));
+      }
+      if (CalcBorn2->xcomb()->mePartonData()[1]->coloured()){
+        sumDipoles *=CalcBorn1->nodeME()->pdf2(sqr(startscaleR11*xiFacME))/CalcBorn1->nodeME()->pdf2(sqr(10.*GeV));
+      }
+      double subtraction=sumDipoles;
+      resNLO1R+=(real-subtraction)*
+               CalcBorn1->children().size()*
+               CalcBorn2->children().size()/
+               CalcBorn1->numberOfSplittings()*
+               weightR11*
+               CalcBorn1->dipol()->jacobianMerging(CalcBorn1->xcomb()->lastSHat(),
+                                                   CalcBorn2->xcomb()->lastSHat(),
+                                                   CalcBorn1->xcomb()->meMomenta().size())*
+               theDipoleShowerHandler->as(startscaleR11*xiRenSh) / SM().alphaS();
+    }
+  }else
+    if(CalcBorn2->nodeME()->projectorStage()==2){  //-----------------------------------------------------------------------------------------
+    if(inhist2){
+        resLO1+=1.* CalcBorn2->children().size()/
+                 CalcBorn1->numberOfSplittings()*
+                 CalcBorn1->children().size()*
+                 weightB21*matrixElementWeight(startscaleB21,CalcBorn1)*
+                 CalcBorn1->dipol()->jacobianMerging(CalcBorn1->xcomb()->lastSHat(),
+                                                     CalcBorn2->xcomb()->lastSHat(),
+                                                     CalcBorn1->xcomb()->meMomenta().size());
+    }
+    if(inhist&&theta1){
+      double NLOME=matrixElementWeightWithLoops(startscaleB11,CalcBorn1);
+      double Bornweight=CalcBorn1->nodeME()->lastBorndSigHatDR()* SM().alphaS()/(2.*ThePEG::Constants::pi);;
+    resNLO2L+=1.*CalcBorn1->children().size()*
+                CalcBorn2->children().size()/
+                CalcBorn1->numberOfSplittings()*
+                weightB22*
+                (NLOME+unlopsweightNLO2*Bornweight)*
+                CalcBorn1->dipol()->jacobianMerging(CalcBorn1->xcomb()->lastSHat(),
+                                                    CalcBorn2->xcomb()->lastSHat(),
+                                                    CalcBorn1->xcomb()->meMomenta().size())*
+                theDipoleShowerHandler->as(startscaleB11*xiRenSh) / SM().alphaS();
+    }
+    
+
+    
+    resLO0+=1.*
+         CalcBorn2->children().size()/
+         CalcBorn1->numberOfSplittings()*
+         CalcBorn1->children().size()/
+         CalcBorn0->numberOfSplittings()*
+         CalcBorn1->dipol()->jacobianMerging(CalcBorn1->xcomb()->lastSHat(),
+                                             CalcBorn2->xcomb()->lastSHat(),
+                                             CalcBorn1->xcomb()->meMomenta().size())*
+         CalcBorn0->dipol()->jacobianMerging(CalcBorn2->xcomb()->lastSHat(),
+                                             CalcBorn1->xcomb()->lastSHat(),
+                                             CalcBorn2->xcomb()->meMomenta().size())*
+         weightB20*matrixElementWeight(startscaleB00,CalcBorn0);
+   
+    
+    double NLOME= matrixElementWeightWithLoops(startscaleB00,CalcBorn0);
+    double Bornweight=CalcBorn0->nodeME()->lastBorndSigHatDR()* SM().alphaS()/(2.*ThePEG::Constants::pi);;
+    
+    resNLO1L+=1.*
+             CalcBorn2->children().size()/
+             CalcBorn1->numberOfSplittings()*
+             CalcBorn1->children().size()/
+             CalcBorn0->numberOfSplittings()*
+             CalcBorn1->dipol()->jacobianMerging(CalcBorn1->xcomb()->lastSHat(),
+                                                 CalcBorn2->xcomb()->lastSHat(),
+                                                 CalcBorn1->xcomb()->meMomenta().size())*
+             CalcBorn0->dipol()->jacobianMerging(CalcBorn2->xcomb()->lastSHat(),
+                                                 CalcBorn1->xcomb()->lastSHat(),
+                                                 CalcBorn2->xcomb()->meMomenta().size())*
+             weightB00*
+             (NLOME+unlopsweightNLO1*Bornweight)*
+             theDipoleShowerHandler->as(startscaleB00*xiRenSh) / SM().alphaS();
+    
+    if (theta1) {
+      double real=matrixElementWeight(startscaleR21,CalcBorn1);
+      
+      double sumDipoles=CalcBorn0->dipol()->dSigHatDR(sqr(10.*GeV))/nanobarn;
+      
+      if (CalcBorn2->xcomb()->mePartonData()[0]->coloured()){
+        sumDipoles*=CalcBorn1->nodeME()->pdf1(sqr(startscaleR21*xiFacME))/
+                    CalcBorn1->nodeME()->pdf1(sqr(10.*GeV));
+      }
+      if (CalcBorn2->xcomb()->mePartonData()[1]->coloured()){
+        sumDipoles *=CalcBorn1->nodeME()->pdf2(sqr(startscaleR21*xiFacME))/
+                     CalcBorn1->nodeME()->pdf2(sqr(10.*GeV));
+      }
+      double subtraction=sumDipoles;
+      resNLO1R+=(real-subtraction)*
+                CalcBorn1->children().size()*
+                CalcBorn2->children().size()/
+                CalcBorn1->numberOfSplittings()*
+                weightR21*
+                CalcBorn1->dipol()->jacobianMerging(CalcBorn1->xcomb()->lastSHat(),
+                                                    CalcBorn2->xcomb()->lastSHat(),
+                                                    CalcBorn1->xcomb()->meMomenta().size())*
+                matrixElementWeight(startscaleR21,CalcBorn1)*
+                theDipoleShowerHandler->as(startscaleR21*xiRenSh) / SM().alphaS();
+    }
+    
+    if (theta2&&theta1) {
+      double real=matrixElementWeight(startscaleR22,CalcBorn2);
+      double subtration=CalcBorn1->dipol()->dSigHatDR(sqr(10.*GeV))/nanobarn;
+      
+      if (CalcBorn2->xcomb()->mePartonData()[0]->coloured()){
+        subtration*=CalcBorn2->nodeME()->pdf1(sqr(startscaleR22*xiFacME))/
+                    CalcBorn2->nodeME()->pdf1(sqr(10.*GeV));
+      }
+      if (CalcBorn2->xcomb()->mePartonData()[1]->coloured()){
+        subtration*=CalcBorn2->nodeME()->pdf2(sqr(startscaleR22*xiFacME))/
+                    CalcBorn2->nodeME()->pdf2(sqr(10.*GeV));
+      }
+      resNLO2R+=(real-subtration)*
+               weightR22*
+               CalcBorn2->children().size()*
+               CalcBorn1->children().size()*
+               theDipoleShowerHandler->as(startscaleR22*xiRenSh) / SM().alphaS();;
+
+    }else{
+      if (!theta2&&theta1&&inhist&&inhist2) {
+        if (!inhist||inhist2) {
+          assert(weightR22==0);
+        }
+        double real=matrixElementWeight(startscaleR22,CalcBorn2);
+        double subtraction=0.;
+        CNPtr selectedNode;
+        Energy minpt;
+        int nDipoles;
+        if (safetheta2)CalcBorn2->psBelowMergeingScale(selectedNode, subtraction, minpt, nDipoles);
+        else           CalcBorn2->dipBelowMergeingScale(selectedNode, subtraction, minpt, nDipoles);
+        if (CalcBorn2->xcomb()->mePartonData()[0]->coloured()){
+          subtraction*=CalcBorn2->nodeME()->pdf1(sqr(startscaleR22*xiFacME))/
+                       CalcBorn2->nodeME()->pdf1(sqr(10.*GeV));
+        }
+        if (CalcBorn2->xcomb()->mePartonData()[1]->coloured()){
+          subtraction *=CalcBorn2->nodeME()->pdf2(sqr(startscaleR22*xiFacME))/
+                        CalcBorn2->nodeME()->pdf2(sqr(10.*GeV));
+        }
+        
+        resNLO2R+=(real-subtraction)*
+                 CalcBorn2->children().size()*
+                 CalcBorn1->children().size()*
+                 weightR22*
+                 theDipoleShowerHandler->as(startscaleR22*xiRenSh) / SM().alphaS();
+      }
+    }
+  }
+
+  
+    //cout<<"\nres "<<resLO0<<" + "<<resLO1<<" + "<<resLO2<<" resNLO1(L+R) "<<resNLO1L<<" + "<<resNLO1R<<" resNLO2 "<<resNLO2L<<" + "<<resNLO2R<<" "<<CalcBorn2->nodeME()->projectorStage();
+  return resLO0+resLO1+resLO2+resNLO1L+resNLO2L+resNLO1R+resNLO2R;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 double Merging::reweightCKKWBorn2(CNPtr Node,bool fast){
-  if(fast||!StartingBorn){
-    fastweight=1.;
+  if(fast||!StartingBorn1){
     if( Node->xcomb()->meMomenta().size()-2 == theMaxLegsLO){
-      projectorWeight=Node->setProjectorStage();
+      projectorWeight0=Node->setProjectorStage();
      // assert(false);
     }
     else{
-      projectorWeight=-1.;
+      projectorWeight0=-1.;
+      projectorWeight1=1.;
       Node->nodeME()->projectorStage(1);
      // cout<<"\n"<<Node->nodeME()->name()<<" "<<Node->nodeME()->projectorStage();
     }
@@ -409,12 +1192,12 @@ double Merging::reweightCKKWBorn2(CNPtr Node,bool fast){
   //TEST
  // if(abs(projectorWeight)<1.3)return 0.;
   if (fast) {
-    assert(!StartingBorn);
+    assert(!StartingBorn1);
     CalcBorn=CNPtr();
   }
   
-  double weight = projectorWeight;
-  double weightCB=abs(projectorWeight);
+  double weight = projectorWeight0;
+  double weightCB=projectorWeight1;
   CNPtr Born;
   CNPtr BornCB;
   assert(!Node->children().empty());
@@ -431,15 +1214,15 @@ double Merging::reweightCKKWBorn2(CNPtr Node,bool fast){
     
   }
   
-  if (StartingBorn) {
+  if (StartingBorn1) {
     assert(!fast);
-    Born=StartingBorn;
+    Born=StartingBorn1;
     while (Born->parent()) {
       inhist|=(Born==CalcBorn);
       Born=Born->parent();
     }
-    Born=StartingBorn;
-    BornCB =StartingCalcBornBorn;
+    Born=StartingBorn1;
+    BornCB =StartingBorn0;
   }else{
     Born   = Node->    getLongestHistory_simple(true,xiQSh);
     if(CalcBorn)BornCB = CalcBorn->getLongestHistory_simple(false,xiQSh);
@@ -451,16 +1234,16 @@ double Merging::reweightCKKWBorn2(CNPtr Node,bool fast){
       }
     }
     if(fast){
-      StartingBorn=Born;
-      if(CalcBorn)StartingCalcBornBorn=BornCB;
+      StartingBorn1=Born;
+      if(CalcBorn)StartingBorn0=BornCB;
       while (Born->parent()) {
         inhist|=(Born==CalcBorn);
         Born=Born->parent();
       }
-      Born=StartingBorn;
+      Born=StartingBorn1;
     }else{
-      StartingBorn=CNPtr();
-      StartingCalcBornBorn=CNPtr();
+      StartingBorn1=CNPtr();
+      StartingBorn0=CNPtr();
     }
   }
   
@@ -475,8 +1258,8 @@ double Merging::reweightCKKWBorn2(CNPtr Node,bool fast){
   if(weight==0.&&weightCB==0.)return 0.;
   
   
-  Energy startscale;
-  Energy startscaleCB;
+  Energy startscale=0.*GeV;
+  Energy startscaleCB=0.*GeV;
   if (BornCB&&Node->nodeME()->projectorStage()==1) {
     startscale=CKKW_StartScale(Born);
     startscaleCB=CKKW_StartScale(BornCB);
@@ -574,13 +1357,7 @@ double Merging::reweightCKKWBorn2(CNPtr Node,bool fast){
     res=weight*matrixElementWeight(startscale,Node);
   }
   
-   // cout<<"\n--> "<<res<<" "<<fastweight;
-  if(fast){
-    fastweight=res;
-    return res;
-  }else{
-    return (res);//*fastweight/abs(fastweight);
-  }
+    return res;//*fastweight/abs(fastweight);  }
 }
 
 
@@ -588,20 +1365,20 @@ double Merging::reweightCKKWBorn2(CNPtr Node,bool fast){
 
 double Merging::reweightCKKWBorn(CNPtr Node,bool fast){
     //cout<<"\nreweightCKKWBorn"<<flush;
-  if(fast||!StartingBorn) projectorWeight=Node->setProjectorStage();
+  if(fast||!StartingBorn1) projectorWeight0=Node->setProjectorStage();
   
-  double weight = projectorWeight;
+  double weight = projectorWeight0;
   CNPtr Born;
   
-  if (StartingBorn) {
+  if (StartingBorn1) {
     assert(!fast);
-    Born = StartingBorn;
+    Born = StartingBorn1;
   }else{
     Born = Node->getLongestHistory_simple(true,xiQSh);
     if(fast){
-      StartingBorn=Born;
+      StartingBorn1=Born;
     }else{
-      StartingBorn=CNPtr();
+      StartingBorn1=CNPtr();
     }
   }
   
@@ -786,8 +1563,7 @@ double Merging::reweightCKKWReal(CNPtr Node){
   bool safeprodthetai=true;
   double numdipcalc=0.;
   vector<CNPtr> children=Node->children();
-  for (vector<CNPtr>::iterator it2 = children.begin();
-       it2 != children.end(); it2++)
+  for (vector<CNPtr>::iterator it2 = children.begin(); it2 != children.end(); it2++)
     if ((*it2)->dipol()->clustersafe()) {
       numdipcalc+=1.;
       prodthetai&=(((*it2)->dipol()->lastPt()>(*it2)->deepHead()->mergePt()));
@@ -986,6 +1762,23 @@ double Merging::matrixElementWeight(Energy startscale,CNPtr Node){
   DeepHead->nodeME()->setScale();
   DeepHead->calculateInNode(false);
   res=DeepHead->nodeME()->dSigHatDR()/nanobarn;
+  DeepHead->calculateInNode(true);
+  DeepHead->renormscale(0.0*GeV);
+  DeepHead->calculateInNode(true);
+  return res;
+}
+
+double Merging::matrixElementWeightWithLoops(Energy startscale,CNPtr Node){
+  double res;
+    // The deephead should be calculated here.
+  CNPtr DeepHead=Node;//->deepHead();
+  DeepHead->renormscale(startscale);
+  DeepHead->nodeME()->factory()->scaleChoice()->setXComb(DeepHead->xcomb());
+  DeepHead->nodeME()->setScale();
+  DeepHead->calculateInNode(false);
+  DeepHead->nodeME()->doOneLoopNoBorn();
+  res=DeepHead->nodeME()->dSigHatDR()/nanobarn;
+  DeepHead->nodeME()->noOneLoopNoBorn();
   DeepHead->calculateInNode(true);
   DeepHead->renormscale(0.0*GeV);
   DeepHead->calculateInNode(true);
@@ -1294,6 +2087,7 @@ double Merging::sumalphaReweightUnlops(){
     if ((*it).node->parent()&&ittmp!=history.end()){//TODO???????
       res +=alphasUnlops((*it).node->dipol()->lastPt()*xiRenSh ,history[0].scale*xiRenME);
         //as((*it).node->dipol()->lastPt())/ SM().alphaS();
+      //cout<<"\nsumalphaReweightUnlops: "<<(*it).node->dipol()->lastPt()/GeV;
     }
   }
   return res;
@@ -1306,7 +2100,7 @@ double Merging::sumfillHistoryUnlops(){
   history[0].node->nodeME()->factory()->scaleChoice()->setXComb(history[0].node->xcomb());
   
   for (Hist::iterator it = history.begin(); it != history.end();it++){
-    if ((*it).node->dipol()) {
+    if ((*it).node!=history.back().node) {
       CKKW_PrepareSudakov((*it).node, (it == history.begin()?xiQSh:1.)*(*it).scale);
       doUNLOPS((it == history.begin()?xiQSh:1.)*(*it).scale , (*it).node->dipol()->lastPt() , history[0].scale, res);
       cleanup((*it).node);
@@ -1343,10 +2137,12 @@ bool Merging::reweightCKKWSingle(Ptr<MatchboxXComb>::ptr SX, double & res,bool f
   
   if (!eH->didEstimate()||fast) {
     history.clear();
-    StartingBorn=CNPtr();
+    StartingBorn0=CNPtr();
+    StartingBorn1=CNPtr();
+    StartingBorn2=CNPtr();
   }
   
-  theNf=2;//TODO
+  theNf=5;//TODO
   
   if (!SX) return true;
   assert(SX->eventHandlerPtr());
@@ -1370,7 +2166,7 @@ bool Merging::reweightCKKWSingle(Ptr<MatchboxXComb>::ptr SX, double & res,bool f
   }else if(ME->oneLoopNoBorn()){
     res*=reweightCKKWVirt(Node);
   }else{
-    res*=reweightCKKWBorn2(Node,fast);
+    res*=reweightCKKWBorn3(Node,fast);
   }
   
   
@@ -1383,7 +2179,7 @@ bool Merging::reweightCKKWSingle(Ptr<MatchboxXComb>::ptr SX, double & res,bool f
   Node->renormscale(0.0*GeV);
   if (res == 0.){
     history.clear();
-    StartingBorn=CNPtr();
+    StartingBorn1=CNPtr();
     return false;
   }
   
@@ -1396,7 +2192,7 @@ bool Merging::reweightCKKWSingle(Ptr<MatchboxXComb>::ptr SX, double & res,bool f
   
   if (!fast) {
     history.clear();
-    StartingBorn=CNPtr();
+    StartingBorn1=CNPtr();
   }
   
   return true;

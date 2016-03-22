@@ -271,54 +271,14 @@
   }
 
   void MergeFactory::pushB(Ptr<MatchboxMEBase>::ptr born, int i, bool projected) {
-    cout<<"\nstart pushBorn";
     Ptr<MatchboxMEBase>::ptr bornme = (*born).cloneMe();
     bornme->maxMultCKKW(1);
     bornme->minMultCKKW(0);
-      //	if ( theonlyk != -1 && theonlyk != i - pro ) {
-      //		Ptr<ReweightNumber>::ptr rw = new_ptr(ReweightNumber(0.0000001));
-      //		bornme->addReweighter(rw);
-      //	}
-      // if ( projected ) {
-      // Ptr<ReweightNumber>::ptr rw1 = new_ptr(ReweightNumber(-1.));
-      // bornme->addReweighter(rw1);
-      // } else {
-      // Ptr<ReweightNumber>::ptr rw1 = new_ptr(ReweightNumber(1.));
-      // bornme->addReweighter(rw1);
-      // }
+
     
     string pname = fullName() + "/" + bornme->name() + ".Born";
     if ( projected ) pname += "pro";
     if ( !(generator()->preinitRegister(bornme, pname)) ) throw InitException() << "Born ME " << pname << " already existing.";
-    
-      //     if ( bornme->isOLPTree() ) {
-      // 	int id = orderOLPProcess(bornme->subProcess(),
-      // 				 (*born).matchboxAmplitude(),
-      // 				 ProcessType::treeME2);
-      // 	bornme->olpProcess(ProcessType::treeME2,id);
-      // 	id = orderOLPProcess(bornme->subProcess(),
-      // 				       (*born).matchboxAmplitude(),
-      // 				       ProcessType::colourCorrelatedME2);
-      // 	bornme->olpProcess(ProcessType::colourCorrelatedME2,id);
-      //
-      // 	bool haveGluon = false;
-      // 	for ( PDVector::const_iterator p = (*born).subProcess().legs.begin();
-      // 	      p != (*born).subProcess().legs.end(); ++p )
-      // 	  if ( (**p).id() == 21 ) {
-      // 	    haveGluon = true;
-      // 	    break;
-      // 	  }
-      // 	if ( haveGluon ) {
-      // 	  id = orderOLPProcess((*born).subProcess(),
-      // 			       (*born).matchboxAmplitude(),
-      // 			       ProcessType::spinColourCorrelatedME2);
-      // 	  (*born).olpProcess(ProcessType::spinColourCorrelatedME2,id);
-      // 	}
-      //
-      //
-      //     }
-    
-    cout<<"\nmid pushBorn";
     
     Ptr<ClusterNode>::ptr clusternode = new_ptr(ClusterNode(bornme, i, 1, needFOH));
     clusternode->mergePt(theMergePT);
@@ -341,11 +301,27 @@
     temp.push_back(bornme->firstNode());
     unsigned int k = 1;
     while (thePureMEsMap[i - k].size() != 0) {
-      cout<<"\nk: "<<k<<" i: "<< i;
       for ( unsigned int j = 0 ; j < temp.size() ; j++ ) {
         temp[j]->birth(thePureMEsMap[i - k]);
         for ( unsigned int m = 0 ; m < temp[j]->children().size() ; ++m ) {
           temp[j]->children()[m]->numberOfSplittings(temp[j]->children()[m]->nodeME()->numberOfSplittings(DipoleRepository::dipoles(dipoleSet()),thePureMEsMap[i - k+1]));
+
+          
+          
+          for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt = DipoleRepository::insertionIOperators(dipoleSet()).begin() ;
+               virt != DipoleRepository::insertionIOperators(dipoleSet()).end() ; ++virt ) {
+            if ( (**virt).apply((*(temp[j]->children()[m]->nodeME())).diagrams().front()->partons()) ) temp[j]->children()[m]->nodeME()->virtuals().push_back(*virt);
+          }
+          for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt = DipoleRepository::insertionPKOperators(dipoleSet()).begin() ;
+               virt != DipoleRepository::insertionPKOperators(dipoleSet()).end() ; ++virt ) {
+            if ( (**virt).apply((*(temp[j]->children()[m]->nodeME())).diagrams().front()->partons()) ) temp[j]->children()[m]->nodeME()->virtuals().push_back(*virt);
+          }
+          
+          
+          temp[j]->children()[m]->nodeME()->noOneLoop();
+          temp[j]->children()[m]->nodeME()->cloneDependencies();
+          
+          
           temp1.push_back(temp[j]->children()[m]);
         }
       }
@@ -362,92 +338,7 @@
     if ( theonlyk == -1  || (theonlyk == i-1 &&unitarized) || theonlyk == i) {
       MEs().push_back(bornme);
     }
-    cout<<"\nend pushBorn";
   }
-
-
-
-  void MergeFactory::pushsubCor(Ptr<MatchboxMEBase>::ptr born, int i, bool projected) {
-    
-    Ptr<MatchboxMEBase>::ptr bornme = (*born).cloneMe();
-    bornme->maxMultCKKW(1);
-    bornme->minMultCKKW(0);
-    
-    string pname = fullName() + "/" + bornme->name() + ".subCor";
-    if ( !(generator()->preinitRegister(bornme, pname)) ) throw InitException() << "subCor ME " << pname << " already existing.";
-    
-      //     if ( bornme->isOLPTree() ) {
-      // 	int id = orderOLPProcess(bornme->subProcess(),
-      // 				 (*born).matchboxAmplitude(),
-      // 				 ProcessType::treeME2);
-      // 	bornme->olpProcess(ProcessType::treeME2,id);
-      // 	id = orderOLPProcess(bornme->subProcess(),
-      // 				       (*born).matchboxAmplitude(),
-      // 				       ProcessType::colourCorrelatedME2);
-      // 	bornme->olpProcess(ProcessType::colourCorrelatedME2,id);
-      //
-      // 	bool haveGluon = false;
-      // 	for ( PDVector::const_iterator p = (*born).subProcess().legs.begin();
-      // 	      p != (*born).subProcess().legs.end(); ++p )
-      // 	  if ( (**p).id() == 21 ) {
-      // 	    haveGluon = true;
-      // 	    break;
-      // 	  }
-      // 	if ( haveGluon ) {
-      // 	  id = orderOLPProcess((*born).subProcess(),
-      // 			       (*born).matchboxAmplitude(),
-      // 			       ProcessType::spinColourCorrelatedME2);
-      // 	  (*born).olpProcess(ProcessType::spinColourCorrelatedME2,id);
-      // 	}
-      //
-      //
-      //     }
-    
-    
-    
-    Ptr<ClusterNode>::ptr clusternode = new_ptr(ClusterNode(bornme, i,1 , needFOH));
-    clusternode->mergePt(theMergePT);
-    clusternode->centralMergePt(theMergePT);
-    clusternode->N(theN + getProcesses()[0].size());clusternode->N0( getProcesses()[0].size());
-    clusternode->M(theM + getProcesses()[0].size());
-    if(theonlyk!=-1)clusternode->onlyN(theonlyk + getProcesses()[0].size());
-    clusternode->unitarized(unitarized);
-    clusternode->NLOunitarized(NLOunitarized);
-    clusternode->subCorrection(true);
-    clusternode->calculateInNode(true);
-    clusternode->treefactory(this);
-    bornme->firstNode(clusternode);
-    if ( projected ) bornme->projectorStage(1);
-    else bornme->projectorStage(0);
-    bornme->firstNode()->deepHead(clusternode);
-    bornme->firstNode()->chooseHistory(theChooseHistory);
-    
-    vector<Ptr<ClusterNode>::ptr> temp;
-    vector<Ptr<ClusterNode>::ptr> temp1;
-    temp.push_back(bornme->firstNode());
-    unsigned int k = 1;
-    while (thePureMEsMap[i - k].size() != 0) {
-      for ( unsigned int j = 0 ; j < temp.size() ; j++ ) {
-        temp[j]->birth(thePureMEsMap[i - k]);
-        for ( unsigned int m = 0 ; m < temp[j]->children().size() ; ++m ) {
-          temp1.push_back(temp[j]->children()[m]);
-        }
-      }
-      temp = temp1;
-      k++;
-    }
-    if(theN>i)
-      bornme->needsCorrelations();
-    else bornme->needsNoCorrelations();
-    bornme->cloneDependencies();
-    if ( theonlyk == -1  || theonlyk == i -1|| theonlyk == i ) {
-      MEs().push_back(bornme);
-    }
-  }
-
-
-
-
 
 
 
@@ -762,25 +653,20 @@
     
     
     for (; i <= max(0, theN) ; ++i ) {
-      cout<<"\ntheonlymulti  "<<theonlymulti<<" N "<<theN<<" "<<theonlyNLOParts<<" "<<theonlyUnlopsweights<<" "<<i<<" "<<thePureMEsMap[i].size();
       if(i==theonlymulti||theonlymulti==-1)
         for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born = thePureMEsMap[i].begin() ; born != thePureMEsMap[i].end() ; ++born ) {
           if (!theonlyNLOParts&&!theonlyUnlopsweights&&( theonlyk == -1  || theonlyk == i -1|| theonlyk == i )){
             if(((theonlysub==-1||theonlysub==onlysubcounter)&&divideSub==-1)||(divideSub!=-1&&onlysubcounter%divideSub==divideSubNumber))
               pushB(*born, i, false);
             onlysubcounter++;
-            cout<<"\n--> "<<i<<" "<<onlysubcounter<<flush;
-            
-            if(i>0&&false){
-              if(((theonlysub==-1||theonlysub==onlysubcounter)&&divideSub==-1)||(divideSub!=-1&&onlysubcounter%divideSub==divideSubNumber))
-                pushsubCor(*born, i, false);
-              onlysubcounter++;
-            }
           }
-        }}
+        }
+    }
     
     cout<<"\nstart filling NLO"<<flush;
-    
+      if (false) {
+        
+      
     i = theonlyabove ;
     for (; i <=max(0, theN); ++i ) {
       if(i==theonlymulti||theonlymulti==-1)
@@ -803,28 +689,7 @@
           }
         }
     }
-    
-      // 	if ( unitarized ) {
-      // 	        i = 1;
-      // 		for (  ; i <= max(0, theN) ; ++i ) {
-      // 			for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born = thePureMEsMap[i].begin() ; born != thePureMEsMap[i].end() ; ++born ) {
-      // 				if (!theonlyNLOParts){
-      // 				  if(theonlysub==-1||theonlysub==onlysubcounter)pushB(*born, i, true);
-      // 				  onlysubcounter++;
-      // 				}
-      // 				if ( i <= theM && !theonlyrealNLOParts && theunitarizeNLOParts){
-      // 				  if(theonlysub==-1||theonlysub==onlysubcounter)pushV(*born, i, true);
-      // 				  onlysubcounter++;
-      // 				}
-      // 				if ( i <= theM + 1 && i > 1 && !theonlyvirtualNLOParts && theunitarizeNLOParts){
-      // 				  if(theonlysub==-1||theonlysub==onlysubcounter)pushProR(*born, i, true);
-      // 				  onlysubcounter++;
-      // 				}
-      // 			}
-      // 		}
-      // 	}
-    
-    
+      }
     
     if ( !externalAmplitudes().empty() ) {
       generator()->log() << "Initializing external amplitudes.\n" << flush;

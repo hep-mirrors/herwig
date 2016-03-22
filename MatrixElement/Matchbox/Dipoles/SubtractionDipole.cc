@@ -826,6 +826,84 @@ CrossSection SubtractionDipole::dSigHatDR(Energy2 factorizationScale) const {
   return lastMECrossSection();
 }
 
+
+
+
+
+
+
+CrossSection SubtractionDipole::ps(Energy2 factorizationScale,Ptr<ColourBasis>::tptr largeNBasis) const {
+  double jac = jacobian();
+  assert( factorizationScale != ZERO );
+  assert (! splitting());
+  if(!theRealEmissionME->clustersafe(realEmitter(),realEmission(),realSpectator()).second || jac == 0.0 ) {
+    lastMECrossSection(ZERO);
+    lastME2(0.0);
+    return ZERO;
+  }
+  double pdfweight = 1.;
+  if ( havePDFWeight1() ) pdfweight *= realEmissionME()->pdf1(factorizationScale);
+  if ( havePDFWeight2() ) pdfweight *= realEmissionME()->pdf2(factorizationScale);
+  
+  double ccme2 =underlyingBornME()->me2()*
+  underlyingBornME()->largeNColourCorrelatedME2(make_pair(bornEmitter(),bornSpectator()),largeNBasis)
+  /underlyingBornME()->largeNME2(largeNBasis);
+  
+    //double ccme2 =underlyingBornME()->colourCorrelatedME2(make_pair(bornEmitter(),bornSpectator()));
+  
+  return -sqr(hbarc) * jac * pdfweight * (me2Avg(ccme2)) /  (2. * realEmissionME()->lastXComb().lastSHat());
+}
+
+
+
+
+CrossSection SubtractionDipole::dipMinusPs(Energy2 factorizationScale,Ptr<ColourBasis>::tptr largeNBasis) const {
+  double jac = jacobian();
+  assert( factorizationScale != ZERO );
+  assert (! splitting());
+  if(!theRealEmissionME->clustersafe(realEmitter(),realEmission(),realSpectator()).second || jac == 0.0 ) {
+    lastMECrossSection(ZERO);
+    lastME2(0.0);
+    return ZERO;
+  }
+  
+  double pdfweight = 1.;
+  if ( havePDFWeight1() ) pdfweight *= realEmissionME()->pdf1(factorizationScale);
+  if ( havePDFWeight2() ) pdfweight *= realEmissionME()->pdf2(factorizationScale);
+  
+  double ccme2 =underlyingBornME()->me2()
+  *
+  underlyingBornME()->largeNColourCorrelatedME2(make_pair(bornEmitter(),bornSpectator()),largeNBasis)
+  /underlyingBornME()->largeNME2(largeNBasis);
+    //	 cout<<"\nln "<<ccme2;
+    //ccme2 =underlyingBornME()->colourCorrelatedME2(make_pair(bornEmitter(),bornSpectator()));
+    // cout<<"\nan "<<ccme2;
+  
+  
+  double ps = me2Avg(ccme2);
+  double dip = me2();
+  
+  
+  return -sqr(hbarc) * jac * pdfweight * (dip-ps) /  (2. * realEmissionME()->lastXComb().lastSHat());
+}
+
+
+
+
+bool SubtractionDipole::clustersafe()const {
+  
+  return (theRealEmissionME->clustersafe(realEmitter(),realEmission(),realSpectator()).second);
+  
+}
+
+
+bool SubtractionDipole::clustersafe(){
+  
+  return (theRealEmissionME->clustersafe(realEmitter(),realEmission(),realSpectator()).second);
+  
+}
+
+
 void SubtractionDipole::print(ostream& os) const {
 
   os << "--- SubtractionDipole setup ----------------------------------------------------\n";

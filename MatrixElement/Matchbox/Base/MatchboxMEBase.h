@@ -730,6 +730,8 @@ public:
    * Instruct this matrix element to include one-loop corrections
    */
   void doOneLoop() { theOneLoop = true; }
+      
+  void noOneLoop() { theOneLoop = false; }
 
   /**
    * Return true, if this matrix element includes one-loop corrections
@@ -741,6 +743,8 @@ public:
    * no Born contributions
    */
   void doOneLoopNoBorn() { theOneLoop = true; theOneLoopNoBorn = true; }
+      
+  void noOneLoopNoBorn() { theOneLoop = false; theOneLoopNoBorn = false; }
 
   /**
    * Return true, if this matrix element includes one-loop corrections

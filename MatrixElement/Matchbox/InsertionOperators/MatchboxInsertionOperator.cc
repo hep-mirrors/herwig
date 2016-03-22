@@ -20,6 +20,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig/MatrixElement/Matchbox/Base/MatchboxMEBase.h"
 #include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
+#include "Herwig/MatrixElement/Matchbox/Dipoles/SubtractionDipole.h"
 
 using namespace Herwig;
 
@@ -43,6 +44,15 @@ CrossSection MatchboxInsertionOperator::dSigHatDR() const {
     lastMEPDFWeight() /
     (2.*lastSHat());
 }
+
+Ptr<MatchboxMEBase>::tptr MatchboxInsertionOperator::lastBorn() const {
+    if(lastMatchboxXComb()->matchboxME()) return lastMatchboxXComb()->matchboxME();
+     else{
+       assert(lastMatchboxXComb()->subtractionDipole());
+       return lastMatchboxXComb()->subtractionDipole()->underlyingBornME();
+     }
+}
+
 
 void MatchboxInsertionOperator::persistentOutput(PersistentOStream & os) const {
   os << theLastXComb << theFactory << theUseDRbar

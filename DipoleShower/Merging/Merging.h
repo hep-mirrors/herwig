@@ -76,6 +76,7 @@ namespace Herwig {
     Energy CKKW_StartScale(CNPtr);
     void   CKKW_PrepareSudakov(CNPtr,Energy);
     double matrixElementWeight(Energy startscale,CNPtr);
+    double matrixElementWeightWithLoops(Energy startscale,CNPtr);
     bool   fillProjector(Energy&);
     void   fillHistory(Energy&, CNPtr, CNPtr ,bool fast=false);
     
@@ -101,7 +102,7 @@ namespace Herwig {
     bool   reweightCKKWSingle(Ptr<MatchboxXComb>::ptr SX, double & res,bool fast=false) ;
     double reweightCKKWBorn(CNPtr Node,bool fast=false);
     double reweightCKKWBorn2(CNPtr Node,bool fast=false);
-
+    double reweightCKKWBorn3(CNPtr Node,bool fast=false);
     
     double reweightCKKWVirt(CNPtr Node);
     double reweightCKKWReal(CNPtr Node);
@@ -188,13 +189,34 @@ namespace Herwig {
     
     unsigned int theMaxLegsLO;
     unsigned int theMaxLegsNLO;
-    double projectorWeight;
-    double fastweight;
+    
+    double projectorWeight0Born0;
+    double projectorWeight1Born0;
+    double projectorWeight2Born0;
+    double projectorWeight0Born1;
+    double projectorWeight1Born1;
+    double projectorWeight2Born1;
+    double projectorWeight0Born2;
+    double projectorWeight1Born2;
+    double projectorWeight2Born2;
+    double projectorWeight1Real1;
+    double projectorWeight2Real1;
+    double projectorWeight0Real2;//Theta<
+    double projectorWeight1Real2;
+    double projectorWeight2Real2;
+    
+    double projectorWeight0;
+    double projectorWeight1;
+    CNPtr CalcBorn;
+    
     
     Hist history;
-    CNPtr StartingBorn;
-    CNPtr StartingCalcBornBorn;
-    CNPtr CalcBorn;
+    CNPtr StartingBorn0;
+    CNPtr StartingBorn1;
+    CNPtr StartingBorn2;
+    CNPtr CalcBorn0;
+    CNPtr CalcBorn1;
+    CNPtr CalcBorn2;
     
     
     /**
