@@ -19,9 +19,24 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Utilities/Throw.h"
 #include "ThePEG/Utilities/Rebinder.h"
+#include "GenericWidthGenerator.h"
 
 using namespace Herwig;
 using namespace ThePEG;
+
+GenericMassGenerator::GenericMassGenerator()
+  : maxWgt_(),BWShape_(0),nGenerate_(100),
+    lowerMass_(),upperMass_(),
+    mass_(),width_(),mass2_(),mWidth_(),
+    nInitial_(1000),
+    initialize_(false), output_(false), widthOpt_(false) {
+}
+
+GenericMassGenerator::~GenericMassGenerator() {
+}
+
+IBPtr GenericMassGenerator::clone() const {return new_ptr(*this);}
+IBPtr GenericMassGenerator::fullclone() const {return new_ptr(*this);}
 
 void GenericMassGenerator::persistentOutput(PersistentOStream & os) const {
   os << particle_
@@ -29,7 +44,8 @@ void GenericMassGenerator::persistentOutput(PersistentOStream & os) const {
      << BWShape_ << nGenerate_ 
      << ounit(mass_,GeV) << ounit(width_,GeV) 
      << ounit(mass2_,GeV2) << ounit(mWidth_,GeV2) 
-     << nInitial_ << initialize_ << output_ << widthGen_ << widthOpt_;
+     << nInitial_ << initialize_ << output_ << widthGen_ << widthGenB_
+     << widthOpt_;
 }
 
 void GenericMassGenerator::persistentInput(PersistentIStream & is, int) {
@@ -38,7 +54,8 @@ void GenericMassGenerator::persistentInput(PersistentIStream & is, int) {
      >> BWShape_ >> nGenerate_ 
      >> iunit(mass_,GeV) >> iunit(width_ ,GeV)
      >> iunit(mass2_,GeV2) >> iunit(mWidth_ ,GeV2)
-     >> nInitial_ >> initialize_ >> output_ >> widthGen_ >> widthOpt_;
+     >> nInitial_ >> initialize_ >> output_ >> widthGen_ >> widthGenB_
+     >> widthOpt_;
 }
 
 ClassDescription<GenericMassGenerator> GenericMassGenerator::initGenericMassGenerator;
@@ -160,7 +177,8 @@ void GenericMassGenerator::doinit() {
   // the width generator
   particle_->init();
   widthGen_=particle_->widthGenerator();
-  if(widthGen_){widthGen_->init();}
+  if(widthGen_) widthGen_->init();
+  widthGenB_ = dynamic_ptr_cast<GenericWidthGeneratorPtr>(widthGen_);
   // local storage of particle properties for speed
   mass_=particle_->mass();
   width_= widthOpt_ ? particle_->generateWidth(mass_) : particle_->width();
@@ -229,4 +247,28 @@ IVector GenericMassGenerator::getReferences() {
   IVector ret = MassGenerator::getReferences();
   ret.push_back(particle_);
   return ret;
+}
+
+pair<Energy,Energy> GenericMassGenerator::width(Energy q,int shape) const {
+  Energy gam;
+  if(shape==3 || BWShape_==1 || !widthGen_ ) {
+    gam = width_;
+  }
+  else if(!widthGenB_) {
+    gam = widthGen_->width(*particle_,q);
+  }
+  else {
+    return widthGenB_->width(q,*particle_);
+  }
+  pair<Energy,Energy> output;
+  output.first  = width_;
+  output.second = width_;
+  // take BR's into account
+  double brSum=0.;
+  for(DecaySet::const_iterator it = particle_->decayModes().begin();
+      it!=particle_->decayModes().end();++it) {
+    if((**it).on()) brSum += (**it).brat();
+  }
+  output.first *= brSum;
+  return output;
 }

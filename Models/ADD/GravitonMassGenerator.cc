@@ -9,6 +9,7 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "Herwig/PDT/GenericWidthGenerator.h"
 #include "ADDModel.h"
 
 using namespace Herwig;
