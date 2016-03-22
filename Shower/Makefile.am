@@ -30,7 +30,8 @@ Base/KinematicsReconstructor.fh \
 Base/ShowerModel.cc Base/ShowerModel.h Base/ShowerModel.fh \
 Base/PartnerFinder.h Base/PartnerFinder.fh Base/PartnerFinder.cc \
 Base/Evolver.h Base/Evolver.fh Base/Evolver.cc \
-Base/ShowerVeto.h Base/ShowerVeto.fh Base/ShowerVeto.cc
+Base/ShowerVeto.h Base/ShowerVeto.fh Base/ShowerVeto.cc \
+Base/FullShowerVeto.h Base/FullShowerVeto.fh Base/FullShowerVeto.cc
 
 noinst_LTLIBRARIES = libHwShower.la
 libHwShower_la_SOURCES = ShowerConfig.h \
