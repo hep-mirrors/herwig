@@ -310,17 +310,29 @@
           
           for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt = DipoleRepository::insertionIOperators(dipoleSet()).begin() ;
                virt != DipoleRepository::insertionIOperators(dipoleSet()).end() ; ++virt ) {
-            if ( (**virt).apply((*(temp[j]->children()[m]->nodeME())).diagrams().front()->partons()) ) temp[j]->children()[m]->nodeME()->virtuals().push_back(*virt);
+            if ( (**virt).apply((*(temp[j]->children()[m]->nodeME())).diagrams().front()->partons()) ){
+              Ptr<MatchboxInsertionOperator>::ptr myIOP = (**virt).cloneMe();
+              ostringstream pname;
+              pname <<  temp[j]->children()[m]->nodeME()->fullName()  << "/" << (**virt).name();
+              if ( ! (generator()->preinitRegister(myIOP,pname.str()) ) )
+                throw Exception() << "MatchboxMEBase::cloneDependencies(): Insertion operator " << pname.str() << " already existing." << Exception::runerror;
+              temp[j]->children()[m]->nodeME()->virtuals().push_back(myIOP);
+            }
           }
           for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt = DipoleRepository::insertionPKOperators(dipoleSet()).begin() ;
                virt != DipoleRepository::insertionPKOperators(dipoleSet()).end() ; ++virt ) {
-            if ( (**virt).apply((*(temp[j]->children()[m]->nodeME())).diagrams().front()->partons()) ) temp[j]->children()[m]->nodeME()->virtuals().push_back(*virt);
+            if ( (**virt).apply((*(temp[j]->children()[m]->nodeME())).diagrams().front()->partons()) ){
+              Ptr<MatchboxInsertionOperator>::ptr myIOP = (**virt).cloneMe();
+              ostringstream pname;
+              pname <<  temp[j]->children()[m]->nodeME()->fullName()  << "/" << (**virt).name();
+              if ( ! (generator()->preinitRegister(myIOP,pname.str()) ) )
+                throw Exception() << "MatchboxMEBase::cloneDependencies(): Insertion operator " << pname.str() << " already existing." << Exception::runerror;
+              temp[j]->children()[m]->nodeME()->virtuals().push_back(myIOP);
+            }
           }
           
           
           temp[j]->children()[m]->nodeME()->noOneLoop();
-          temp[j]->children()[m]->nodeME()->cloneDependencies();
-          
           
           temp1.push_back(temp[j]->children()[m]);
         }

@@ -67,19 +67,15 @@ Complex operator-(const double b, const Complex& a) {
 
 void MatchboxCurrents::setupLeptons(const int l,    const Lorentz5Momentum& pl,
 				    const int lbar, const Lorentz5Momentum& plbar) {
-  cout<<"\nxx1"<<flush;
   Lorentz5Momentum plFlat = pl;
   plFlat.setMass(ZERO); plFlat.rescaleEnergy();
   if ( pl.t() < ZERO )
     plFlat.setT(-plFlat.t());
-  cout<<"\nxx2"<<flush;
   momentum(l,plFlat,true,pl.mass());
   Lorentz5Momentum plbarFlat = plbar;
-  cout<<"\nxx3"<<flush;
   plbarFlat.setMass(ZERO); plbarFlat.rescaleEnergy();
   if ( plbar.t() < ZERO )
     plbarFlat.setT(-plbarFlat.t());
-  cout<<"\nxx4"<<flush;
   momentum(lbar,plbarFlat,true,plbar.mass());
 }
 

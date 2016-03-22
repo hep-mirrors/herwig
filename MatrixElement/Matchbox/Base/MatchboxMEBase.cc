@@ -1632,8 +1632,10 @@ void MatchboxMEBase::cloneDependencies(const std::string& prefix,bool slim) {
     Ptr<MatchboxAmplitude>::ptr myAmplitude = matchboxAmplitude()->cloneMe();
     ostringstream pname;
     pname << (prefix == "" ? fullName() : prefix) << "/" << myAmplitude->name();
-    if ( ! (generator()->preinitRegister(myAmplitude,pname.str()) ) )
+    if ( ! (generator()->preinitRegister(myAmplitude,pname.str()) ) ){
+      assert(false);
       throw Exception() << "MatchboxMEBase::cloneDependencies(): Amplitude " << pname.str() << " already existing." << Exception::runerror;
+    }
     myAmplitude->cloneDependencies(pname.str(),slim);
     matchboxAmplitude(myAmplitude);
     amplitude(myAmplitude);
