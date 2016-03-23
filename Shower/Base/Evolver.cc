@@ -3040,7 +3040,6 @@ void Evolver::doShowering(bool hard,XCPtr xcomb) {
     tStdEHPtr seh = dynamic_ptr_cast<tStdEHPtr>(generator()->currentEventHandler());
     static bool first = true;
     if(seh) {
-      cerr << "testing re weighting " << nTryReWeight << " " << eventWeight << "\n";
       seh->reweight(eventWeight/double(nTryReWeight));
     }
     else if(first) {
