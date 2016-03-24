@@ -16,6 +16,7 @@
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "GenericWidthGenerator.h"
 
 using namespace Herwig;
 

@@ -155,16 +155,6 @@ createDecayMode(vector<NBDiagram> & diagrams,
   }
   tag += ";";
   tDMPtr dm = generator()->findDecayMode(tag);
-  // if mode disabled zero BR and return
-  if( decayConstructor()->disableDecayMode(tag) ) {
-    // If mode alread exists, ie has been read from file, 
-    // disable it
-    if( dm ) {
-      generator()->preinitInterface(dm, "BranchingRatio", "set", "0.0");
-      generator()->preinitInterface(dm, "OnOff", "set", "Off");
-    }
-    return;
-  }
   // create mode if needed
   if( createDecayModes() && (!dm || inpart->id() == ParticleID::h0) ) {
     // create the decayer
