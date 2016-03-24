@@ -157,7 +157,7 @@ void MatchboxHybridAmplitude::cloneDependencies(const std::string& prefix,bool s
     treeLevelAmplitude(myTreeLevelAmplitude);
   }
 
-  if ( oneLoopAmplitude()&&!slim ) {
+  if ( oneLoopAmplitude() ) {
     Ptr<MatchboxAmplitude>::ptr myOneLoopAmplitude = oneLoopAmplitude()->cloneMe();
     ostringstream pname;
     pname << (prefix == "" ? fullName() : prefix) << "/" << myOneLoopAmplitude->name();
