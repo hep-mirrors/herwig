@@ -117,12 +117,12 @@ double MonacoSampler::generate() {
   }
 
   if ( !weighted() && initialized() ) {
-    double p = min(abs(w),0.1*referenceWeight())/(0.1*referenceWeight());
+    double p = min(abs(w),0.01*referenceWeight())/(0.01*referenceWeight());
     double sign = w >= 0. ? 1. : -1.;
     if ( p < 1 && UseRandom::rnd() > p )
       w = 0.;
     else
-      w = sign*max(abs(w),referenceWeight()*0.1);
+      w = sign*max(abs(w),referenceWeight()*0.01);
   }
   
   

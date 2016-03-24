@@ -234,11 +234,7 @@ void ClusterNode::birth(vector<Ptr<MatchboxMEBase>::ptr> vec) {
     dipoles[j]->doSubtraction();
     Ptr<ClusterNode>::ptr node = new_ptr(
                                          ClusterNode(theDeepHead, this, dipoles[j], dipoles[j]->underlyingBornME(), theDeepHead->DeepProStage(), theDeepHead->cutStage()));
-    
-    
     thechildren.push_back(node);
-    
-    
     
   }
 }

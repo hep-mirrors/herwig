@@ -1209,7 +1209,6 @@ void SubtractionDipole::doinitrun() {
 void SubtractionDipole::cloneDependencies(const std::string& prefix,bool slim) {
 
   if ( underlyingBornME() ) {
-    cout<<"\nunderlyingBornME";
     Ptr<MatchboxMEBase>::ptr myUnderlyingBornME = underlyingBornME()->cloneMe();
     ostringstream pname;
     pname << (prefix == "" ? fullName() : prefix) << "/" << myUnderlyingBornME->name();
@@ -1220,7 +1219,6 @@ void SubtractionDipole::cloneDependencies(const std::string& prefix,bool slim) {
   }
 
   if ( realEmissionME()&& !slim ) {
-    cout<<"\nrealEmissionME";
     Ptr<MatchboxMEBase>::ptr myRealEmissionME = realEmissionME()->cloneMe();
     ostringstream pname;
     pname << (prefix == "" ? fullName() : prefix) << "/" << myRealEmissionME->name();
@@ -1231,7 +1229,6 @@ void SubtractionDipole::cloneDependencies(const std::string& prefix,bool slim) {
   }
 
   if ( tildeKinematics() ) {
-    cout<<"\ntildeKinematics";
     Ptr<TildeKinematics>::ptr myTildeKinematics = tildeKinematics()->cloneMe();
     ostringstream pname;
     pname << (prefix == "" ? fullName() : prefix) << "/" << myTildeKinematics->name();
@@ -1242,7 +1239,6 @@ void SubtractionDipole::cloneDependencies(const std::string& prefix,bool slim) {
   }
 
   if ( invertedTildeKinematics()&& !slim ) {
-    cout<<"\ninvertedTildeKinematics";
     Ptr<InvertedTildeKinematics>::ptr myInvertedTildeKinematics = invertedTildeKinematics()->cloneMe();
     ostringstream pname;
     pname << (prefix == "" ? fullName() : prefix) << "/" << myInvertedTildeKinematics->name();

@@ -76,7 +76,7 @@ namespace Herwig {
     Energy CKKW_StartScale(CNPtr);
     void   CKKW_PrepareSudakov(CNPtr,Energy);
     double matrixElementWeight(Energy startscale,CNPtr);
-    double matrixElementWeightWithLoops(Energy startscale,CNPtr);
+    double matrixElementWeightWithLoops(Energy startscale,CNPtr,bool);
     bool   fillProjector(Energy&);
     void   fillHistory(Energy&, CNPtr, CNPtr ,bool fast=false);
     
@@ -190,15 +190,11 @@ namespace Herwig {
     unsigned int theMaxLegsLO;
     unsigned int theMaxLegsNLO;
     
-    double projectorWeight0Born0;
-    double projectorWeight1Born0;
     double projectorWeight2Born0;
-    double projectorWeight0Born1;
     double projectorWeight1Born1;
     double projectorWeight2Born1;
     double projectorWeight0Born2;
     double projectorWeight1Born2;
-    double projectorWeight2Born2;
     double projectorWeight1Real1;
     double projectorWeight2Real1;
     double projectorWeight0Real2;//Theta<

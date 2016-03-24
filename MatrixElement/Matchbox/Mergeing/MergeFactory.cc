@@ -187,13 +187,6 @@
       }
     }
     
-    
-   
-    
-    
-    
-    
-    
       // check the additional insertion operators
     if ( !theVirtualsMap[i].empty() ) haveVirtuals = true;
     for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt = theVirtualsMap[i].begin() ; virt != theVirtualsMap[i].end() ; ++virt ) {

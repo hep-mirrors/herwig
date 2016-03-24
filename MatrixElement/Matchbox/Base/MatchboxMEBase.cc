@@ -747,10 +747,9 @@ CrossSection MatchboxMEBase::dSigHatDR(bool fast) const {
 
   CrossSection res = ZERO;
 
-    //cout<<"\n()() "<<"name"<<meMomenta().size()<<" "<<lastSHat()/GeV2<<" "<<lastMEPDFWeight()<<" "<<jacobian()<<" "<<me2Norm();
-  setLastBorndSigHatDR((sqr(hbarc)/(2.*lastSHat())) * jacobian()* lastMEPDFWeight() * xme2/nanobarn);
 
-  
+  setLastBorndSigHatDR((sqr(hbarc)/(2.*lastSHat())) * jacobian()* lastMEPDFWeight() * xme2/nanobarn);
+   
   if ( !oneLoopNoBorn() || fast)
     res += 
       (sqr(hbarc)/(2.*lastSHat())) *
@@ -766,9 +765,6 @@ CrossSection MatchboxMEBase::dSigHatDR(bool fast) const {
 	    virtuals().begin(); v != virtuals().end(); ++v ) {
       (**v).setXComb(lastXCombPtr());
       CrossSection x= (**v).dSigHatDR();
-      
-       // cout<<"\ntheOneLoopNoBorn "<<xme2<<" "<<res<<" "<<x;
-        
       res += x;
     }
     if ( checkPoles() && oneLoop() )
@@ -1266,7 +1262,7 @@ MatchboxMEBase::numberOfSplittings(const vector<Ptr<SubtractionDipole>::ptr>& di
       }
     }
   }
-  cout<<"\nNumber of splittings--->>>>" << done.size()<<flush;
+
   return int(done.size()-lesssplittings);
   
 }
@@ -1633,7 +1629,6 @@ void MatchboxMEBase::cloneDependencies(const std::string& prefix,bool slim) {
     ostringstream pname;
     pname << (prefix == "" ? fullName() : prefix) << "/" << myAmplitude->name();
     if ( ! (generator()->preinitRegister(myAmplitude,pname.str()) ) ){
-      assert(false);
       throw Exception() << "MatchboxMEBase::cloneDependencies(): Amplitude " << pname.str() << " already existing." << Exception::runerror;
     }
     myAmplitude->cloneDependencies(pname.str(),slim);
