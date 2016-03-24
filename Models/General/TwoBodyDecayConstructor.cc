@@ -245,16 +245,6 @@ createDecayMode(set<TwoBodyDecay> & decays) {
       pc->name() + ";";
     // Does it exist already ?
     tDMPtr dm = generator()->findDecayMode(tag);
-    // Check if tag is one that should be disabled
-    if( decayConstructor()->disableDecayMode(tag) ) {
-      // If mode alread exists, ie has been read from file, 
-      // disable it
-      if( dm ) {
-	generator()->preinitInterface(dm, "BranchingRatio", "set", "0.0");
-	generator()->preinitInterface(dm, "OnOff", "set", "Off");
-      }
-      continue;
-    }
     // now create DecayMode objects that do not already exist      
     if( createDecayModes() && (!dm || inpart->id() == ParticleID::h0) ) {
       tDMPtr ndm = generator()->preinitCreateDecayMode(tag);

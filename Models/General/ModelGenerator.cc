@@ -320,10 +320,6 @@ void ModelGenerator::doinit() {
 	}
       }
 
-      if ( decayOutput_ == 2 )
-	writeDecayModes(ofs, parent);
-      else
-	writeDecayModes(os, parent);
     }
 
     if( parent->massGenerator() ) {
@@ -340,13 +336,36 @@ void ModelGenerator::doinit() {
     }
     if( parent->widthGenerator() ) parent->widthGenerator()->reset();
   }
+  // loop again to initialise mass and width generators
+  // switch off modes and write output
+  for(PDVector::iterator pit = particles_.begin();
+      pit != particles_.end(); ++pit) {
+    tPDPtr parent = *pit;
+    if(parent->widthGenerator())
+      parent->widthGenerator()->init();
+    if(parent->massGenerator())
+      parent->massGenerator()->init();
+    // Now switch off the modes if needed
+    for(DecaySet::const_iterator it=parent->decayModes().begin();
+	it!=parent->decayModes().end();++it) {
+      if( _theDecayConstructor->disableDecayMode((**it).tag()) )
+	generator()->preinitInterface(*it, "OnOff", "set", "Off");
+    }
+    // output the modes if needed
+    if( !parent->decaySelector().empty() ) {
+      if ( decayOutput_ == 2 )
+	writeDecayModes(ofs, parent);
+      else
+	writeDecayModes(os, parent);
+    }
+  }
+
   //Now construct hard processes given that we know which
   //objects have running widths
   for(unsigned int ix=0;ix<hardProcessConstructors_.size();++ix) {
     hardProcessConstructors_[ix]->init();
     hardProcessConstructors_[ix]->constructDiagrams();
   }
-
 }
 
 void ModelGenerator::checkDecays(PDPtr parent) {
@@ -455,23 +474,21 @@ namespace {
 
 void ModelGenerator::writeDecayModes(ostream & os, tcPDPtr parent) const {
   if(decayOutput_==0) return;
-  set<tcDMPtr,DecayModeOrdering> modes;
-  for(set<tDMPtr>::const_iterator dit = parent->decayModes().begin();
-      dit != parent->decayModes().end(); ++dit) {
-    if((**dit).on()) modes.insert((*dit));
-  }
+  set<tcDMPtr,DecayModeOrdering> modes(parent->decayModes().begin(),
+				       parent->decayModes().end());
   if(decayOutput_==1) {
     os << " Parent: " << parent->PDGName() << "  Mass (GeV): " 
        << parent->mass()/GeV << "  Total Width (GeV): " 
        << parent->width()/GeV << endl;
     os << std::left << std::setw(40) << '#' 
        << std::left << std::setw(20) << "Partial Width/GeV"
-       << "BR\n"; 
+       << std::left << std::setw(20) << "BR" << "On/Off\n";
     for(set<tcDMPtr,DecayModeOrdering>::iterator dit=modes.begin();
 	dit!=modes.end();++dit)
       os << std::left << std::setw(40) << (**dit).tag() 
 	 << std::left << std::setw(20) << (**dit).brat()*parent->width()/GeV 
-	 << (**dit).brat() << '\n';
+	 << std::left << std::setw(20)  << (**dit).brat()
+	 << ((**dit).on() ? "On" : "Off" ) << '\n';
     os << "#\n#";
   }
   else if(decayOutput_==2) {
