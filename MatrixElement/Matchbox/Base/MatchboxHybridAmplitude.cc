@@ -167,7 +167,7 @@ void MatchboxHybridAmplitude::cloneDependencies(const std::string& prefix,bool s
     oneLoopAmplitude(myOneLoopAmplitude);
   }
 
-  MatchboxAmplitude::cloneDependencies(prefix);
+  MatchboxAmplitude::cloneDependencies(prefix,slim);
 
 }
 
