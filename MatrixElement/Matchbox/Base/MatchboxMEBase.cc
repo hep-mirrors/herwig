@@ -1092,6 +1092,8 @@ MatchboxMEBase::getDipoles(const vector<Ptr<SubtractionDipole>::ptr>& dipoles,
 		 != done.end() )
 	      continue;
 	    // now get to work
+	   
+	    
 	    (**d).clearBookkeeping();
 	    (**d).factory(factory());
 	    (**d).realEmitter(emitter);
@@ -1159,7 +1161,13 @@ MatchboxMEBase::numberOfSplittings(const vector<Ptr<SubtractionDipole>::ptr>& di
   
         // keep track of the dipoles we already did set up
     set<pair<pair<pair<int,int>,int>,pair<Ptr<MatchboxMEBase>::tptr,Ptr<SubtractionDipole>::tptr> > > done;
-    
+  
+
+  vector<Ptr<MatchboxMEBase>::ptr> filteredreals;
+
+ 
+  cPDVector  bornrep=diagrams().front()->partons();
+  
   int lesssplittings=0;
   for (vector<Ptr<MatchboxMEBase>::ptr>::const_iterator it=reals.begin(); it!=reals.end(); it++) {
     
@@ -1167,8 +1175,19 @@ MatchboxMEBase::numberOfSplittings(const vector<Ptr<SubtractionDipole>::ptr>& di
     
 
     cPDVector rep = (*it)->diagrams().front()->partons();
-    int nreal = rep.size();
     
+    int nreal = rep.size();
+    if(rep[0]->id()!=bornrep[0]->id()&&rep[1]->id()!=bornrep[1]->id())continue;
+    if(rep[0]->id()<=6&&bornrep[0]->id()<=6&&rep[0]->id()!=bornrep[0]->id())continue;
+    if(rep[1]->id()<=6&&bornrep[1]->id()<=6&&rep[1]->id()!=bornrep[1]->id())continue;
+    int matches=0;
+    //cout<<"\nreal: ";
+    for (int born=0; born < int(bornrep.size());born++){
+      for ( int emitter = 0; emitter < nreal; ++emitter ) {
+        if(rep[emitter]->id()==bornrep[born]->id())matches++; 
+      }
+    }
+    if (matches<int(bornrep.size()-1))continue;
       // now loop over configs
     for ( int emitter = 0; emitter < nreal; ++emitter ) {
       
@@ -1256,12 +1275,31 @@ MatchboxMEBase::numberOfSplittings(const vector<Ptr<SubtractionDipole>::ptr>& di
                 lesssplittings++;
                 done.insert(make_pair(make_pair(make_pair(emission,emitter),spectator),make_pair(*it,*d)));
               }
-            }
+            }else{
+ //	      cout<<"\nsetupBookkeeping returned empty";
+//	        for (int born=0; born < int(bornrep.size());born++)
+ //             	    cout<<" " <<bornrep[born]->id();   
+			
+//		cout<<"\nreal:";
+ //               for ( int emitter = 0; emitter < nreal; ++emitter ) 
+  //      	    cout<<" " <<rep[emitter]->id();
+      
+    
+	    }
           }
         }
       }
     }
   }
+
+  if(int(done.size()-lesssplittings)==0){
+    cout<<"\ndone.size "<<done.size()<<" lesssplittings "<<lesssplittings<<"\n";
+    for (int born=0; born < int(bornrep.size());born++)
+                          cout<<" " <<bornrep[born]->id();
+    cout<<"\nreals size "<<reals.size();
+    cout<<"\ndipoles size "<< dipoles.size();
+  }
+
 
   return int(done.size()-lesssplittings);
   

@@ -175,6 +175,25 @@
         
         
       }
+
+
+      if ( (*born)->isOLPLoop() &&  i <= theM) {
+        int id = orderOLPProcess((*born)->subProcess(),
+                                 (*born)->matchboxAmplitude(),
+                                 ProcessType::oneLoopInterference);
+        (*born)->olpProcess(ProcessType::oneLoopInterference,id);
+        if ( !(*born)->onlyOneLoop() && (*born)->needsOLPCorrelators() ) {
+          id = orderOLPProcess((*born)->subProcess(),
+                               (*born)->matchboxAmplitude(),
+                               ProcessType::colourCorrelatedME2);
+          (*born)->olpProcess(ProcessType::colourCorrelatedME2,id);
+        }
+      }
+
+
+
+
+
       
       haveVirtuals &= (**born).haveOneLoop();
       if ( (**born).haveOneLoop() ) {
@@ -295,9 +314,12 @@
     unsigned int k = 1;
     while (thePureMEsMap[i - k].size() != 0) {
       for ( unsigned int j = 0 ; j < temp.size() ; j++ ) {
+        cout<<"\ntemp[j]->children().size() "<<temp[j]->children().size();
         temp[j]->birth(thePureMEsMap[i - k]);
-        for ( unsigned int m = 0 ; m < temp[j]->children().size() ; ++m ) {
-          temp[j]->children()[m]->numberOfSplittings(temp[j]->children()[m]->nodeME()->numberOfSplittings(DipoleRepository::dipoles(dipoleSet()),thePureMEsMap[i - k+1]));
+        for ( unsigned int m = 0 ; m < temp[j]->children().size() ; m++ ) {
+	  int numofsplit=temp[j]->children()[m]->nodeME()->numberOfSplittings(DipoleRepository::dipoles(dipoleSet()),thePureMEsMap[i - k+1]);
+	  cout<<"\nnumofsplit "<<numofsplit<<temp[j]->children()[m]->nodeME()->name()<<" k "<<k<<" j "<<j<<" m "<<m<<" "<<" "<<i;
+          temp[j]->children()[m]->numberOfSplittings(numofsplit);
 
           
           
@@ -305,10 +327,10 @@
                virt != DipoleRepository::insertionIOperators(dipoleSet()).end() ; ++virt ) {
             if ( (**virt).apply((*(temp[j]->children()[m]->nodeME())).diagrams().front()->partons()) ){
               Ptr<MatchboxInsertionOperator>::ptr myIOP = (**virt).cloneMe();
-              ostringstream pname;
-              pname <<  temp[j]->children()[m]->nodeME()->fullName()  << "/" << (**virt).name();
-              if ( ! (generator()->preinitRegister(myIOP,pname.str()) ) )
-                throw Exception() << "MatchboxMEBase::cloneDependencies(): Insertion operator " << pname.str() << " already existing." << Exception::runerror;
+              //ostringstream pname;
+              //pname <<  temp[j]->children()[m]->nodeME()->fullName()  << "/" << (**virt).name();
+              //if ( ! (generator()->preinitRegister(myIOP,pname.str()) ) )
+              //  throw Exception() << "MatchboxMEBase::cloneDependencies(): Insertion operator " << pname.str() << " already existing." << Exception::runerror;
               temp[j]->children()[m]->nodeME()->virtuals().push_back(myIOP);
             }
           }
@@ -316,10 +338,10 @@
                virt != DipoleRepository::insertionPKOperators(dipoleSet()).end() ; ++virt ) {
             if ( (**virt).apply((*(temp[j]->children()[m]->nodeME())).diagrams().front()->partons()) ){
               Ptr<MatchboxInsertionOperator>::ptr myIOP = (**virt).cloneMe();
-              ostringstream pname;
-              pname <<  temp[j]->children()[m]->nodeME()->fullName()  << "/" << (**virt).name();
-              if ( ! (generator()->preinitRegister(myIOP,pname.str()) ) )
-                throw Exception() << "MatchboxMEBase::cloneDependencies(): Insertion operator " << pname.str() << " already existing." << Exception::runerror;
+              //ostringstream pname;
+              //pname <<  temp[j]->children()[m]->nodeME()->fullName()  << "/" << (**virt).name();
+              //if ( ! (generator()->preinitRegister(myIOP,pname.str()) ) )
+              //  throw Exception() << "MatchboxMEBase::cloneDependencies(): Insertion operator " << pname.str() << " already existing." << Exception::runerror;
               temp[j]->children()[m]->nodeME()->virtuals().push_back(myIOP);
             }
           }
@@ -331,6 +353,7 @@
         }
       }
       temp = temp1;
+      temp1.clear();
       k++;
     }
     

@@ -456,7 +456,7 @@ double Merging::reweightCKKWBorn3(CNPtr CalcBorn2,bool fast){
 
     }
     else{
-      assert(false);
+      //assert(false);
 
       
       projectorWeight2Born0=1.;
@@ -514,11 +514,11 @@ double Merging::reweightCKKWBorn3(CNPtr CalcBorn2,bool fast){
     // weightB2K2 =0.;
     // weightB2K1 =0.;
   
-   weightR1K1 =0.;
-   weightR1K0 =0.;
-   weightR2K2 =0.;
-   weightR2K1 =0.;
-   weightR2K0 =0.;
+   //weightR1K1 =0.;
+   //weightR1K0 =0.;
+   //weightR2K2 =0.;
+   //weightR2K1 =0.;
+   //weightR2K0 =0.;
   
   
   
@@ -574,7 +574,7 @@ double Merging::reweightCKKWBorn3(CNPtr CalcBorn2,bool fast){
         //weightR2K2 =0.;
         //weightR2K1 =0.;
         //weightR2K0 =0.;
-      assert(false);//More than 2 NLO
+     // assert(false);//More than 2 NLO
     }
   }
   
