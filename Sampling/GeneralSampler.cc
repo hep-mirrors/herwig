@@ -233,8 +233,9 @@ void GeneralSampler::initialize() {
     Repository::clog() << "integrating subprocesses";
     progressBar = new boost::progress_display(binsToIntegrate.size(),Repository::clog());
   }
-
+  size_t  sub= 1;
   for ( set<int>::const_iterator bit = binsToIntegrate.begin(); bit != binsToIntegrate.end(); ++bit ) {
+    cout<<"\n"<<sub<<"/"<<binsToIntegrate.size();sub++;
     Ptr<BinSampler>::ptr s = theBinSampler->cloneMe();
     s->eventHandler(eventHandler());
     s->sampler(this);

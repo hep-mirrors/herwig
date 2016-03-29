@@ -809,7 +809,7 @@ if(weightB0K0 == 0.&&
     running=startscaleB02;
     fillHistory( running,  Born2, CalcBorn2,fast);
     weightB2K2*=history.back().weight*alphaReweight()*pdfReweight();
-    prerunning=CalcBorn1->dipol()->lastPt();
+      prerunning=history.size()==1?running:CalcBorn1->dipol()->lastPt();
     if (!fillProjector(running)){cout<<"\n"<<"could not find4";return 0.;}//Actualy no projector
     prerunning=running;
     CalcBorn2->runningPt(prerunning);
@@ -849,19 +849,25 @@ if(weightB0K0 == 0.&&
       //cout<<"\n.-.-.-.-.-1 "<<weightB1K1<<flush;
     if (theta1&&weightB1K1!=0.&&!fast)
       unlopsweightNLO2-=sumpdfReweightUnlops()+sumalphaReweightUnlops()+sumfillHistoryUnlops();
-    
-    if (!fillProjector(running)){cout<<"\n"<<"could not find3";return 0.;}
+      //cout<<"\nhist size "<<history.size();
+    fillProjector(running);
     prerunning=running;
     CalcBorn2->runningPt(prerunning);
     if (theta2&&theta1) {
       if(weightR2K1!=0.)weightR2K1*=history.back().weight*alphaReweight()*pdfReweight();;
     }
     
-    if (!theta1&&weightR1K1!=0.) { //subcorrections
+    if (!theta1&&weightR1K1!=0.) {
+        //subcorrections
       running=startscaleR11;
       fillHistory( running, Born0 , CalcBorn0,fast);
       weightR1K1*=history.back().weight*alphaReweight()*pdfReweight();
+      if (!history.begin()->node->deepHead()->xcomb()->lastProjector()) {
+        history.begin()->node->deepHead()->xcomb()->lastProjector(CalcBorn1->xcomb());
+      }
     }
+        
+          if(!history.begin()->node->deepHead()->xcomb()->lastProjector())return 0.;
     
   }else{
     assert(CalcBorn1&&CalcBorn2->nodeME()->projectorStage()==2);
@@ -920,7 +926,7 @@ if(weightB0K0 == 0.&&
   
   
   if(CalcBorn2->N()==CalcBorn2->nodeME()->lastMEMomenta().size()&&CalcBorn2->nodeME()->projectorStage() == 0){
-      // cout<<"\n"<< CalcBorn2->runningPt()/GeV<<" "<< prerunning/GeV<<" "<<CalcBorn2->nodeME()->projectorStage();
+      // cout<<"\n-->"<< CalcBorn2->runningPt()/GeV<<" "<< prerunning/GeV<<" "<<CalcBorn2->nodeME()->projectorStage();
     CalcBorn2->vetoPt(prerunning);
       //cout<<"\ncalc1 dip "<<CalcBorn1->dipol()->lastPt()/GeV<<" "<<CalcBorn0->dipol()->lastPt()/GeV;
   }else{

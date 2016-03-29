@@ -88,6 +88,9 @@ double IILightTildeKinematics::lastZ() const {
 double IILightTildeKinematics::jacobian(Energy2 sB,Energy2 sR, int n) const{
     //   cout<<"\n-+-+-+-+ "<<sR/GeV2<<" "<<sB/GeV2<<" "<<(2.*bornEmitterMomentum()*bornSpectatorMomentum())/GeV2;
   2./3.;
+  assert(subtractionParameters()[0]<=1.&&subtractionParameters()[0]>=0.);
+  assert(subtractionParameters()[1]<=1.&&subtractionParameters()[1]>=0.);
+  assert(subtractionParameters()[0]<=1.&&subtractionParameters()[0]>=0.);
   return 1./2.*16.*ThePEG::Constants::pi*ThePEG::Constants::pi/(2.*realEmitterMomentum()*realSpectatorMomentum())*sR;//*pow(sR/sB,n-4);
 }
 
