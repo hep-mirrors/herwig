@@ -392,7 +392,7 @@ public:
   /**
    * Set scales and alphaS
    */
-  void setScale() const;
+  void setScale(Energy2 ren=ZERO,Energy2 fac=ZERO) const;
 
   /**
    * Indicate that this matrix element is running alphas by itself.

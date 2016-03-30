@@ -400,9 +400,9 @@ double Merging::reweightCKKWBorn3(CNPtr CalcBorn2,bool fast){
   
   if(fast||!StartingBorn0){
     if( CalcBorn2->xcomb()->meMomenta().size()-2 == theMaxLegsLO){
-      double anteil0=3.;
-      double anteil1=1.;
-      double anteil2=1.;
+      double anteil0=4.;
+      double anteil1=2.;
+      double anteil2=2.;
       double anteilsum=(anteil0+anteil1+anteil2);
       double stage=UseRandom::rnd()*anteilsum;//needs random number from sampler
       if (stage<anteil0) {
@@ -545,7 +545,7 @@ double Merging::reweightCKKWBorn3(CNPtr CalcBorn2,bool fast){
       weightR2K1 =0.;
       
       theta2=false;
-      if((*it)->dipol()->lastPt()<1.*GeV)safetheta2=false;
+      if((*it)->dipol()->lastPt()<5.*GeV)safetheta2=false;
     }
   }
   Children = CalcBorn1->children();
@@ -560,7 +560,7 @@ double Merging::reweightCKKWBorn3(CNPtr CalcBorn2,bool fast){
        weightR2K1 =0.;
        weightR2K0 =0.;
       theta1=false;
-      if((*it)->dipol()->lastPt()<1.*GeV)safetheta1=false;
+      if((*it)->dipol()->lastPt()<5.*GeV)safetheta1=false;
     }
   }
 
@@ -1036,6 +1036,16 @@ if(weightB0K0 == 0.&&
         subtraction *=CalcBorn1->nodeME()->pdf2(sqr(startscaleR11*xiFacME))/CalcBorn1->nodeME()->pdf2(sqr(10.*GeV));
       }
 
+    //cout<<"\n"<<CalcBorn0->xcomb()->lastMECouplings()<<" "<<CalcBorn1->xcomb()->lastMECouplings();
+    //cout<<"\n"<<CalcBorn0->xcomb()->jacobian()<<" "<<CalcBorn1->xcomb()->jacobian();
+
+    //cout<<"\n"<<CalcBorn0->xcomb()->lastMEPDFWeight()<<" "<<CalcBorn1->nodeME()->pdf1(sqr(10.*GeV))*CalcBorn1->nodeME()->pdf2(sqr(10.*GeV));
+    //cout<<"\n"<<CalcBorn1->xcomb()->lastMEPDFWeight()<<" "<<CalcBorn1->nodeME()->pdf1(sqr(startscaleR11*xiFacME))*CalcBorn1->nodeME()->pdf2(sqr(startscaleR11*xiFacME));
+
+
+
+     //cout<<"\nweightR1K1 "<<weightR1K1<<" pt "<<CalcBorn0->dipol()->lastPt()/GeV<<" safetheta1 "<<safetheta1<<" "<<real<<" "<<subtraction<<" "<<real/subtraction<<" "<<CalcBorn0->dipol()->realEmissionME()->lastXComb().lastSHat()/CalcBorn0->dipol()->lastXComb().lastSHat();
+
       resNLO1R+=(real-subtraction)*
                 weightR1K1*
                 theDipoleShowerHandler->as(startscaleR11*xiRenSh) / SM().alphaS();
@@ -1081,6 +1091,7 @@ if(weightB0K0 == 0.&&
         subtraction *=CalcBorn1->nodeME()->pdf2(sqr(startscaleR21*xiFacME))/
                      CalcBorn1->nodeME()->pdf2(sqr(10.*GeV));
       }
+      //cout<<"\nallabove calc1 pt: "<<CalcBorn0->dipol()->lastPt()/GeV<<" "<<real<<" ";
       resNLO1R+=(real-subtraction)*
                 weightR1K0*
                 theDipoleShowerHandler->as(startscaleR21*xiRenSh) / SM().alphaS();
@@ -1128,7 +1139,7 @@ if(weightB0K0 == 0.&&
 
   
     //cout<<"\nres "<<resLO0<<" + "<<resLO1<<" + "<<resLO2<<" resNLO1(L+R) "<<resNLO1L<<" + "<<resNLO1R<<" resNLO2 "<<resNLO2L<<" + "<<resNLO2R<<" "<<CalcBorn2->nodeME()->projectorStage();
-  return resLO0+resLO1+resLO2+resNLO1L+resNLO2L+resNLO1R+resNLO2R;
+  return resLO0+resLO1+resLO2+resNLO1L+resNLO1R+resNLO2L+resNLO2R;
 }
 
 
@@ -1743,11 +1754,10 @@ double Merging::reweightCKKWReal(CNPtr Node){
 
 double Merging::matrixElementWeight(Energy startscale,CNPtr Node){
   double res;
-    // The deephead should be calculated here.
   CNPtr DeepHead=Node;//->deepHead();
   DeepHead->renormscale(startscale);
   DeepHead->nodeME()->factory()->scaleChoice()->setXComb(DeepHead->xcomb());
-  DeepHead->nodeME()->setScale();
+  DeepHead->nodeME()->setScale(sqr(startscale),sqr(startscale));
   DeepHead->calculateInNode(false);
   res=DeepHead->nodeME()->dSigHatDR()/nanobarn;
   DeepHead->calculateInNode(true);
@@ -1763,7 +1773,7 @@ double Merging::matrixElementWeightWithLoops(Energy startscale,CNPtr Node,bool f
   CNPtr DeepHead=Node;//->deepHead();
   DeepHead->renormscale(startscale);
   DeepHead->nodeME()->factory()->scaleChoice()->setXComb(DeepHead->xcomb());
-  DeepHead->nodeME()->setScale();
+  DeepHead->nodeME()->setScale(sqr(startscale),sqr(startscale));
   DeepHead->calculateInNode(false);
   DeepHead->nodeME()->doOneLoopNoBorn();
   res=DeepHead->nodeME()->dSigHatDR(fast)/nanobarn;

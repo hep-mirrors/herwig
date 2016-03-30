@@ -423,13 +423,13 @@ int MatchboxMEBase::nDimBorn() const {
 
 }
 
-void MatchboxMEBase::setScale() const {
+void MatchboxMEBase::setScale(Energy2 ren,Energy2 fac) const {
   if ( haveX1X2() ) {
     lastXCombPtr()->lastSHat((meMomenta()[0]+meMomenta()[1]).m2());
   }
-  Energy2 fcscale = factorizationScale();
+  Energy2 fcscale = fac==ZERO?factorizationScale():fac;
   Energy2 fscale = fcscale*sqr(factorizationScaleFactor());
-  Energy2 rscale = renormalizationScale()*sqr(renormalizationScaleFactor());
+  Energy2 rscale = (ren==ZERO?renormalizationScale():ren)*sqr(renormalizationScaleFactor());
   Energy2 ewrscale = renormalizationScaleQED();
   lastXCombPtr()->lastScale(fscale);
   lastXCombPtr()->lastCentralScale(fcscale);

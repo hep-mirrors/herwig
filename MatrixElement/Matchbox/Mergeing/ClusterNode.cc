@@ -924,31 +924,33 @@ bool ClusterNode::dipBelowMergeingScale(Ptr<ClusterNode>::ptr& selectedNode,doub
   vector<Ptr<ClusterNode>::ptr> tmp=children();
   for (vector<Ptr<ClusterNode>::ptr>::iterator it = tmp.begin(); it != tmp.end(); it++) {
     if (
-        (*it)->dipol()->clustersafe() &&
-        (*it)->xcomb()->willPassCuts()) {
-        //       /////////////////////////////////////////////////////////////
-        //       vector<Ptr<ClusterNode>::ptr> tmp3=(*it)->children();
-        //
-        //       bool isInSomePS=false;
-        //       for (vector<Ptr<ClusterNode>::ptr>::iterator it2 = tmp3.begin(); it2 != tmp3.end(); it2++){
-        //         assert(((*it2)->dipol()->lastPt()>deepHead()->mergePt()));
-        //         isInSomePS|=(*it)->inShowerPS((*it2)->dipol()->lastPt());
-        //       }
-        //
-        //       if(!isInSomePS&&!(tmp3.empty()))continue;
-        //       ///////////////////////////////////////////////////////////////
+	true
+       //(*it)->dipol()->clustersafe() &&
+       // (*it)->xcomb()->willPassCuts()
+       ) {
       
-      
-      
-        //&&((*it)->dipol()->lastPt()<deepHead()->mergePt())
-      double Di=-1.* (*it)->dipol()->dSigHatDR(sqr(10.*GeV))/nanobarn;
-      
+      bool calcdip=true;
       vector<Ptr<ClusterNode>::ptr> tmp2=(*it)->children();
-      for (vector<Ptr<ClusterNode>::ptr>::iterator it2 = tmp2.begin(); it2 != tmp2.end(); it2++) assert(((*it2)->dipol()->lastPt()>deepHead()->mergePt()));
-      sum+=Di;
+      for (vector<Ptr<ClusterNode>::ptr>::iterator it2 = tmp2.begin(); it2 != tmp2.end(); it2++){
+	if(((*it2)->dipol()->lastPt()<deepHead()->mergePt())){
+	   if((*it)->dipol()->lastPt()<deepHead()->mergePt()){
+  	     sum=0;
+	     return false;
+	   }
+           calcdip=false;
+        }
+	   
+	}
+      
+      if(calcdip){
+        double Di=-1.* (*it)->dipol()->dSigHatDR(sqr(10.*GeV))/nanobarn;
+      
+        sum+=Di;
+      
       minpt=min(minpt,(*it)->dipol()->lastPt());
       if (Di!=0) {
         first_subpro.insert(1., (*it));
+      }
       }
     }
   }
