@@ -894,7 +894,7 @@ bool ClusterNode::psBelowMergeingScale(Ptr<ClusterNode>::ptr& selectedNode,doubl
       bool isInSomePS=false;
       
       for (vector<Ptr<ClusterNode>::ptr>::iterator it2 = tmp2.begin(); it2 != tmp2.end(); it2++){
-          //   assert(((*it2)->dipol()->lastPt()>deepHead()->mergePt()));
+        assert(((*it2)->dipol()->lastPt()>deepHead()->mergePt())||((*it)->dipol()->lastPt()>deepHead()->mergePt()));
         isInSomePS|=(*it)->inShowerPS((*it2)->dipol()->lastPt());
         
       }
@@ -932,6 +932,7 @@ bool ClusterNode::dipBelowMergeingScale(Ptr<ClusterNode>::ptr& selectedNode,doub
       bool calcdip=true;
       vector<Ptr<ClusterNode>::ptr> tmp2=(*it)->children();
       for (vector<Ptr<ClusterNode>::ptr>::iterator it2 = tmp2.begin(); it2 != tmp2.end(); it2++){
+        assert(((*it2)->dipol()->lastPt()>deepHead()->mergePt())||((*it)->dipol()->lastPt()>deepHead()->mergePt()));
 	if(((*it2)->dipol()->lastPt()<deepHead()->mergePt())){
 	   if((*it)->dipol()->lastPt()<deepHead()->mergePt()){
   	     sum=0;
