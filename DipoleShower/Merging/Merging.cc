@@ -994,7 +994,7 @@ if(weightB0K0 == 0.&&
       double subtraction=0.;
 
       if (safetheta2) {
-        CalcBorn2->psBelowMergeingScale(selectedNode, subtraction, minpt, nDipoles);
+        if(!CalcBorn2->psBelowMergeingScale(selectedNode, subtraction, minpt, nDipoles))cout<<"\nno ps or not clustersafe";
       }else{
         if(!CalcBorn2->dipBelowMergeingScale(selectedNode, subtraction, minpt, nDipoles))cout<<"\nno dip or not clustersafe";
       }
@@ -1057,8 +1057,15 @@ if(weightB0K0 == 0.&&
     if (!theta1&&weightR1K1!=0.) {
       double real=matrixElementWeight(startscaleR1K1,CalcBorn1);
       double subtraction=0.;
-      if (safetheta1)CalcBorn1->psBelowMergeingScale(selectedNode, subtraction, minpt, nDipoles);
-      else           CalcBorn1->dipBelowMergeingScale(selectedNode, subtraction, minpt, nDipoles);
+      if (safetheta1){
+        if (!CalcBorn1->psBelowMergeingScale(selectedNode, subtraction, minpt, nDipoles)) {
+          cout<<"\nCalcBorn1 NoPS";
+        }
+      }else{
+        if (!CalcBorn1->dipBelowMergeingScale(selectedNode, subtraction, minpt, nDipoles)) {
+          cout<<"\nCalcBorn1 NoPS";
+        }
+      }
       if (CalcBorn2->xcomb()->mePartonData()[0]->coloured()){
         subtraction *=CalcBorn1->nodeME()->pdf1(sqr(startscaleR1K1*xiFacME))/CalcBorn1->nodeME()->pdf1(sqr(10.*GeV));
       }
@@ -1130,17 +1137,17 @@ if(weightB0K0 == 0.&&
     if (theta2&&weightR2K0!=0.) {
       assert(theta2);
       double real=matrixElementWeight(startscaleR2K0,CalcBorn2);
-      double subtration=-1.*CalcBorn1->dipol()->dSigHatDR(sqr(10.*GeV))/nanobarn;
+      double subtraction=-1.*CalcBorn1->dipol()->dSigHatDR(sqr(10.*GeV))/nanobarn;
       
       if (CalcBorn2->xcomb()->mePartonData()[0]->coloured()){
-        subtration*=CalcBorn2->nodeME()->pdf1(sqr(startscaleR2K0*xiFacME))/
+        subtraction*=CalcBorn2->nodeME()->pdf1(sqr(startscaleR2K0*xiFacME))/
                     CalcBorn2->nodeME()->pdf1(sqr(10.*GeV));
       }
       if (CalcBorn2->xcomb()->mePartonData()[1]->coloured()){
-        subtration*=CalcBorn2->nodeME()->pdf2(sqr(startscaleR2K0*xiFacME))/
+        subtraction*=CalcBorn2->nodeME()->pdf2(sqr(startscaleR2K0*xiFacME))/
                     CalcBorn2->nodeME()->pdf2(sqr(10.*GeV));
       }
-      resNLO2R+=(real-subtration)*
+      resNLO2R+=(real-subtraction)*
                weightR2K0*
                theDipoleShowerHandler->as(startscaleR2K0*xiRenSh) / SM().alphaS();;
 
@@ -1149,8 +1156,12 @@ if(weightB0K0 == 0.&&
        
         double real=matrixElementWeight(startscaleR2K0,CalcBorn2);
         double subtraction=0.;
-        if (safetheta2)CalcBorn2->psBelowMergeingScale(selectedNode, subtraction, minpt, nDipoles);
-        else           CalcBorn2->dipBelowMergeingScale(selectedNode, subtraction, minpt, nDipoles);
+        if (safetheta2){
+          if(!CalcBorn2->psBelowMergeingScale(selectedNode, subtraction, minpt, nDipoles))cout<<"CalcBorn2: NoPS 1";
+          
+        } else      {
+          if(!CalcBorn2->dipBelowMergeingScale(selectedNode, subtraction, minpt, nDipoles))cout<<"CalcBorn2: NoDip 1";
+        }
         if (CalcBorn2->xcomb()->mePartonData()[0]->coloured()){
           subtraction*=CalcBorn2->nodeME()->pdf1(sqr(startscaleR2K0*xiFacME))/
                        CalcBorn2->nodeME()->pdf1(sqr(10.*GeV));
