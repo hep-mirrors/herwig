@@ -1151,7 +1151,7 @@ if(weightB0K0 == 0.&&
 
   
 
-  return resLO0+resLO1+resLO2;//+resNLO1L+resNLO1R+resNLO2L+resNLO2R;
+  return resLO0+resLO1+resLO2+resNLO1L+resNLO1R+resNLO2L+resNLO2R;
 }
 
 
