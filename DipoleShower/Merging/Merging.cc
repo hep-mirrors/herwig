@@ -491,6 +491,27 @@ double Merging::reweightCKKWBorn3(CNPtr CalcBorn2,bool fast){
   double weightR2K2 =projectorWeight0Real2;
   double weightR2K1 =projectorWeight1Real2;
   double weightR2K0 =projectorWeight2Real2;
+  
+  
+    //TEST
+    // weightB0K0 *=1.;
+    //weightB1K1 =0.*projectorWeight1Born1;
+    //weightB1K0 =0.*projectorWeight2Born1;
+    //weightB2K2 =0.*projectorWeight0Born2;
+    //weightB2K1 =0.*projectorWeight1Born2;
+  
+    //weightR1K1 =0.*projectorWeight1Real1;
+    //weightR1K0 =0.*projectorWeight2Real1;
+    //weightR2K2 =0.*projectorWeight0Real2;
+    //weightR2K1 =0.*projectorWeight1Real2;
+    //weightR2K0 =0.*projectorWeight2Real2;
+  
+  
+  
+  
+  
+  
+  
   double headR1=1.;
   double headR2=1.;
   
@@ -841,11 +862,11 @@ if(weightB0K0 == 0.&&
       weightB2K1*=history.back().weight*alphaReweight()*pdfReweight();
     }
     if(weightB1K1!=0.){
-    prerunning=running;
-    running=startscaleB1K1;
-    fillHistory( running,  Born1, CalcBorn1,fast);
-    prerunning=running;
-    weightB1K1*=history.back().weight*alphaReweight()*pdfReweight();
+      prerunning=running;
+      running=startscaleB1K1;
+      fillHistory( running,  Born1, CalcBorn1,fast);
+      prerunning=running;
+      weightB1K1*=history.back().weight*alphaReweight()*pdfReweight();
     }
       //cout<<"\n.-.-.-.-.-1 "<<weightB1K1<<flush;
     if (theta1&&weightB1K1!=0.&&!fast)
@@ -867,8 +888,8 @@ if(weightB0K0 == 0.&&
         history.begin()->node->deepHead()->xcomb()->lastProjector(CalcBorn1->xcomb());
       }
     }
-        
-          if(!history.begin()->node->deepHead()->xcomb()->lastProjector())return 0.;
+    
+    if(!history.begin()->node->deepHead()->xcomb()->lastProjector())return 0.;
     
   }else{
     assert(CalcBorn1&&CalcBorn2->nodeME()->projectorStage()==2);
@@ -1849,9 +1870,10 @@ double Merging::pdfReweight(){
     //  dynamic_ptr_cast<Ptr<StandardEventHandler>::ptr>(theDipoleShowerHandler->eventHandler());
   
 
-  
+    //cout<<"\nhist size "<<history.size();
   Hist::iterator it=history.begin();
   for (;it!=history.end();it++){
+      //cout<<"\n"<<beam1Scale/GeV<<" "<<beam2Scale/GeV;
     Hist::iterator ittmp=it;
     ittmp++;
     if((*it).node->xcomb()->mePartonData()[0]->coloured()&&(*it).node->nodeME()->lastX1()>0.99){ return 0.;}
@@ -1882,14 +1904,14 @@ double Merging::pdfReweight(){
     }
   }
   if (history[0].node->deepHead()->xcomb()->mePartonData()[0]->coloured()){
-    if(history[0].node->deepHead()->nodeME()->pdf1(sqr(history.back().scale))< 1e-8){return 0.;}
-    res*=history[0].node->deepHead()->nodeME()->pdf1(sqr(beam1Scale))/
-    history[0].node->deepHead()->nodeME()->pdf1(sqr(history[0].scale*xiFacME));
+    if(history.back().node->nodeME()->pdf1(sqr(history.back().scale))< 1e-8){return 0.;}
+    res*=history.back().node->nodeME()->pdf1(sqr(beam1Scale))/
+    history.back().node->nodeME()->pdf1(sqr(history[0].scale*xiFacME));
   }
   if (history[0].node->deepHead()->xcomb()->mePartonData()[1]->coloured()) {
-    if(history[0].node->deepHead()->nodeME()->pdf2(sqr(history.back().scale))< 1e-8){return 0.;}
-    res*=history[0].node->deepHead()->nodeME()->pdf2(sqr(beam2Scale))/
-    history[0].node->deepHead()->nodeME()->pdf2(sqr(history[0].scale*xiFacME));
+    if(history.back().node->nodeME()->pdf2(sqr(history.back().scale))< 1e-8){return 0.;}
+    res*=history.back().node->nodeME()->pdf2(sqr(beam2Scale))/
+    history.back().node->nodeME()->pdf2(sqr(history[0].scale*xiFacME));
   }
   return res;
 }
@@ -2056,9 +2078,9 @@ double Merging::sumpdfReweightUnlops(){
     }
   }
   if (history[0].node->deepHead()->xcomb()->mePartonData()[0]->coloured()){
-    res +=pdfUnlops(history[0].node->deepHead()->nodeME()->lastParticles().first->dataPtr(),
-                    history[0].node->deepHead()->nodeME()->lastPartons().first->dataPtr(),
-                    history[0].node->deepHead()->xcomb()->partonBins().first->pdf(),
+    res +=pdfUnlops(history.back().node->nodeME()->lastParticles().first->dataPtr(),
+                    history.back().node->nodeME()->lastPartons().first->dataPtr(),
+                    history.back().node->xcomb()->partonBins().first->pdf(),
                     beam1Scale,
                     history[0].scale*xiFacME,
                     (history.back()).node->nodeME()->lastX1(),
@@ -2067,9 +2089,9 @@ double Merging::sumpdfReweightUnlops(){
     
   }
   if (history[0].node->deepHead()->xcomb()->mePartonData()[1]->coloured()) {
-    res +=pdfUnlops(history[0].node->deepHead()->nodeME()->lastParticles().second->dataPtr(),
-                    history[0].node->deepHead()->nodeME()->lastPartons().second->dataPtr(),
-                    history[0].node->deepHead()->xcomb()->partonBins().second->pdf(),
+    res +=pdfUnlops(history.back().node->nodeME()->lastParticles().second->dataPtr(),
+                    history.back().node->nodeME()->lastPartons().second->dataPtr(),
+                    history.back().node->xcomb()->partonBins().second->pdf(),
                     beam2Scale,
                     history[0].scale*xiFacME,
                     (history.back()).node->nodeME()->lastX2(),
