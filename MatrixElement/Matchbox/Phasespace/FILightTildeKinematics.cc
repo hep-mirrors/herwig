@@ -74,7 +74,7 @@ double FILightTildeKinematics::lastZ() const {
 
 double FILightTildeKinematics::jacobian(Energy2 sB,Energy2 sR, int n) const {
   
-  return 2.*16.*ThePEG::Constants::pi*ThePEG::Constants::pi/(2.*bornEmitterMomentum()*realSpectatorMomentum())*sR;// *pow(sR/sB,n-4);
+  return 16.*ThePEG::Constants::pi*ThePEG::Constants::pi/(2.*bornEmitterMomentum()*realSpectatorMomentum())*sR;// *pow(sR/sB,n-4);
   
   return 16.*ThePEG::Constants::pi*ThePEG::Constants::pi/(2.*realEmitterMomentum()*realSpectatorMomentum())*sR*pow(sR/sB,n-4);
 

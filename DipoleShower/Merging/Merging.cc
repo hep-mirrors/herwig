@@ -774,20 +774,21 @@ if(weightB0K0 == 0.&&
    weightR2K0 == 0.)return 0.;
 
   
-  Energy startscaleB00=CKKW_StartScale(Born0);
-  Energy startscaleB10=startscaleB00;
-  Energy startscaleB20=startscaleB00;
-  Energy startscaleB01=CKKW_StartScale(Born1);
-  Energy startscaleB11=startscaleB01;
-  Energy startscaleB21=startscaleB01;
-  Energy startscaleB02=CKKW_StartScale(Born2);
-  Energy startscaleB12=startscaleB02;
-  Energy startscaleB22=startscaleB02;
-  Energy startscaleR11=startscaleB00;
-  Energy startscaleR21=startscaleB00;
-  Energy startscaleR02=startscaleB01;
-  Energy startscaleR12=startscaleB01;
-  Energy startscaleR22=startscaleB01;
+  Energy startscaleB0K2=CKKW_StartScale(Born0);
+  Energy startscaleB0K1=startscaleB0K2;
+  Energy startscaleB0K0=startscaleB0K2;
+  Energy startscaleB1K2=CKKW_StartScale(Born1);
+  Energy startscaleB1K1=startscaleB1K2;
+  Energy startscaleB1K0=startscaleB1K2;
+  Energy startscaleB2K0=CKKW_StartScale(Born2);
+  Energy startscaleB2K1=startscaleB2K0;
+  Energy startscaleB2K2=startscaleB2K0;
+  
+  Energy startscaleR1K0=startscaleB0K2;
+  Energy startscaleR1K1=startscaleB0K2;
+  Energy startscaleR2K0=startscaleB1K2;
+  Energy startscaleR2K1=startscaleB1K2;
+  Energy startscaleR2K2=startscaleB1K2;
 
   
   double unlopsweightNLO1=0.;
@@ -806,7 +807,7 @@ if(weightB0K0 == 0.&&
      * weightR2K2
      **/
     if(weightB2K2!=0.){
-    running=startscaleB02;
+    running=startscaleB2K2;
     fillHistory( running,  Born2, CalcBorn2,fast);
     weightB2K2*=history.back().weight*alphaReweight()*pdfReweight();
       prerunning=history.size()==1?running:CalcBorn1->dipol()->lastPt();
@@ -815,7 +816,7 @@ if(weightB0K0 == 0.&&
     CalcBorn2->runningPt(prerunning);
     }
     if (!theta2&&theta1&&weightR2K2!=0.) {                    //subcorrections
-      running=startscaleR02;
+      running=startscaleR2K2;
       assert(CalcBorn1->dipol()->clustersafe());
       fillHistory( running, Born1 , CalcBorn1,fast);
       prerunning=running;
@@ -834,14 +835,14 @@ if(weightB0K0 == 0.&&
      * weightR1K1
      * weightR2K1
      **/
-    running=startscaleB12;
+    running=startscaleB2K1;
     if(weightB2K1!=0.){
       fillHistory( running,  Born2, CalcBorn2,fast);
       weightB2K1*=history.back().weight*alphaReweight()*pdfReweight();
     }
     if(weightB1K1!=0.){
     prerunning=running;
-    running=startscaleB11;
+    running=startscaleB1K1;
     fillHistory( running,  Born1, CalcBorn1,fast);
     prerunning=running;
     weightB1K1*=history.back().weight*alphaReweight()*pdfReweight();
@@ -859,7 +860,7 @@ if(weightB0K0 == 0.&&
     
     if (!theta1&&weightR1K1!=0.) {
         //subcorrections
-      running=startscaleR11;
+      running=startscaleR2K0;
       fillHistory( running, Born0 , CalcBorn0,fast);
       weightR1K1*=history.back().weight*alphaReweight()*pdfReweight();
       if (!history.begin()->node->deepHead()->xcomb()->lastProjector()) {
@@ -879,7 +880,7 @@ if(weightB0K0 == 0.&&
        * weightR1K0
        **/
     if(weightB1K0!=0.){
-      running=startscaleB21;
+      running=startscaleB1K0;
       fillHistory( running,  Born1, CalcBorn1,fast);
       
       weightB1K0*=history.back().weight*alphaReweight()*pdfReweight();
@@ -892,11 +893,11 @@ if(weightB0K0 == 0.&&
     }
 
     if (weightB0K0!=0.) {
-      running=startscaleB20;
+      running=startscaleB0K0;
       fillHistory( running,  Born0, CalcBorn0,fast);
       prerunning=running;
       weightB0K0*=history.back().weight*alphaReweight()*pdfReweight();
-      //cout<<"\n.-.-.-.-.-3 "<<weightB0K0<<" "<<startscaleB20<<flush;
+        //cout<<"\n.-.-.-.-.-3 "<<weightB0K0<<" "<<startscaleB0K0<<" "<<history.back().weight<<" "<<alphaReweight()<<" "<<pdfReweight()<<flush;
       if (fast)
       unlopsweightNLO1-=sumpdfReweightUnlops()+sumalphaReweightUnlops()+sumfillHistoryUnlops();
       if (!fillProjector(running)){cout<<"\n"<<"could not find1";return 0.;}
@@ -906,7 +907,7 @@ if(weightB0K0 == 0.&&
     weightR1K0*=history.back().weight*alphaReweight()*pdfReweight();
     if(weightR2K0!=0.){
       assert(theta1);
-      running=startscaleR22;
+      running=startscaleR2K0;
       fillHistory( running,  Born1, CalcBorn1,fast);
       weightR2K0*=history.back().weight*alphaReweight()*pdfReweight();
     }
@@ -958,7 +959,7 @@ if(weightB0K0 == 0.&&
      * If right history is choosen reweight with number of posibilities.
      **/
     
-    if( weightB2K2!=0.)      resLO2+=1.*weightB2K2* matrixElementWeight(startscaleB02,CalcBorn2);
+    if( weightB2K2!=0.)      resLO2+=1.*weightB2K2* matrixElementWeight(startscaleB2K2,CalcBorn2);
     
     if( weightR2K2 !=0.) {
       /**
@@ -967,7 +968,7 @@ if(weightB0K0 == 0.&&
        * Only calculate if Emission is below the merging scale.
        **/
       
-      double real=matrixElementWeight(startscaleR02,CalcBorn2)*headR2;
+      double real=matrixElementWeight(startscaleR2K2,CalcBorn2)*headR2;
       
       double subtraction=0.;
 
@@ -977,12 +978,12 @@ if(weightB0K0 == 0.&&
         if(!CalcBorn2->dipBelowMergeingScale(selectedNode, subtraction, minpt, nDipoles))cout<<"\nno dip or not clustersafe";
       }
       if (CalcBorn2->xcomb()->mePartonData()[0]->coloured())
-        subtraction*=CalcBorn2->nodeME()->pdf1(sqr(startscaleR02*xiFacME))/CalcBorn2->nodeME()->pdf1(sqr(10.*GeV));
+        subtraction*=CalcBorn2->nodeME()->pdf1(sqr(startscaleR2K2*xiFacME))/CalcBorn2->nodeME()->pdf1(sqr(10.*GeV));
       if (CalcBorn2->xcomb()->mePartonData()[1]->coloured())
-        subtraction *=CalcBorn2->nodeME()->pdf2(sqr(startscaleR02*xiFacME))/CalcBorn2->nodeME()->pdf2(sqr(10.*GeV));
+        subtraction *=CalcBorn2->nodeME()->pdf2(sqr(startscaleR2K2*xiFacME))/CalcBorn2->nodeME()->pdf2(sqr(10.*GeV));
       
         //cout<<"\nweightR2K2 "<<weightR1K1<<" pt "<<CalcBorn1->dipol()->lastPt()/GeV<<" safetheta1 "<<safetheta1<<" "<<real<<" "<<subtraction<<" "<<real/subtraction;;
-      resNLO2R+=(real-subtraction)*weightR2K2*theDipoleShowerHandler->as(startscaleR02*xiRenSh) / SM().alphaS();
+      resNLO2R+=(real-subtraction)*weightR2K2*theDipoleShowerHandler->as(startscaleR2K2*xiRenSh) / SM().alphaS();
     }
     
     
@@ -991,40 +992,40 @@ if(weightB0K0 == 0.&&
   if(CalcBorn2->nodeME()->projectorStage()==1){//-----------------------------------------------------------------------------------------
    
     if (weightB1K1!=0.)
-      resLO1+= weightB1K1* matrixElementWeight(startscaleB11,CalcBorn1);
+      resLO1+= weightB1K1* matrixElementWeight(startscaleB1K1,CalcBorn1);
     
     if (weightB2K1!=0.)
-      resLO2+= weightB2K1* matrixElementWeight(startscaleB12,CalcBorn2);
+      resLO2+= weightB2K1* matrixElementWeight(startscaleB2K1,CalcBorn2);
     
         //NLO 2
     if (weightB1K1!=0.) {
-    double NLOME=matrixElementWeightWithLoops(startscaleB11,CalcBorn1,fast);
+    double NLOME=matrixElementWeightWithLoops(startscaleB1K1,CalcBorn1,fast);
     double Bornweight=CalcBorn1->nodeME()->lastBorndSigHatDR()* SM().alphaS()/(2.*ThePEG::Constants::pi);
     
-    //cout<<"\n "<<matrixElementWeight(startscaleB11,CalcBorn1)<<" "<<NLOME<<" "<<CalcBorn1->nodeME()->lastBorndSigHatDR()<<" unlops: "<<unlopsweightNLO2;
+    //cout<<"\n "<<matrixElementWeight(startscaleB1K1,CalcBorn1)<<" "<<NLOME<<" "<<CalcBorn1->nodeME()->lastBorndSigHatDR()<<" unlops: "<<unlopsweightNLO2;
     resNLO2L+=1.*
             weightB1K1*
             (NLOME+unlopsweightNLO2*Bornweight)*
-            theDipoleShowerHandler->as(startscaleB11*xiRenSh) / SM().alphaS();
+            theDipoleShowerHandler->as(startscaleB1K1*xiRenSh) / SM().alphaS();
     }
     
     assert(! (resLO1!=0.&&resNLO2L==0.&&!fast) );
     
     if (weightR2K1!=0.) {
       assert(theta1&&theta2);
-      double real= matrixElementWeight(startscaleR12,CalcBorn2)*headR2;
+      double real= matrixElementWeight(startscaleR2K1,CalcBorn2)*headR2;
       
       double subtraction=-1.*CalcBorn1->dipol()->dSigHatDR(sqr(10.*GeV))/nanobarn;
       
       if (CalcBorn2->xcomb()->mePartonData()[0]->coloured()){
-        subtraction*=CalcBorn2->nodeME()->pdf1(sqr(startscaleR12*xiFacME))/CalcBorn2->nodeME()->pdf1(sqr(10.*GeV));
+        subtraction*=CalcBorn2->nodeME()->pdf1(sqr(startscaleR2K1*xiFacME))/CalcBorn2->nodeME()->pdf1(sqr(10.*GeV));
       }
       if (CalcBorn2->xcomb()->mePartonData()[1]->coloured()){
-        subtraction *=CalcBorn2->nodeME()->pdf2(sqr(startscaleR12*xiFacME))/CalcBorn2->nodeME()->pdf2(sqr(10.*GeV));
+        subtraction *=CalcBorn2->nodeME()->pdf2(sqr(startscaleR2K1*xiFacME))/CalcBorn2->nodeME()->pdf2(sqr(10.*GeV));
       }
       resNLO2R+=(real-subtraction)*
                 weightR2K1*
-                theDipoleShowerHandler->as(startscaleR12*xiRenSh)/SM().alphaS();;
+                theDipoleShowerHandler->as(startscaleR2K1*xiRenSh)/SM().alphaS();;
       
       
     }else{
@@ -1033,15 +1034,15 @@ if(weightB0K0 == 0.&&
     }
   
     if (!theta1&&weightR1K1!=0.) {
-      double real=matrixElementWeight(startscaleR11,CalcBorn1);
+      double real=matrixElementWeight(startscaleR1K1,CalcBorn1);
       double subtraction=0.;
       if (safetheta1)CalcBorn1->psBelowMergeingScale(selectedNode, subtraction, minpt, nDipoles);
       else           CalcBorn1->dipBelowMergeingScale(selectedNode, subtraction, minpt, nDipoles);
       if (CalcBorn2->xcomb()->mePartonData()[0]->coloured()){
-        subtraction *=CalcBorn1->nodeME()->pdf1(sqr(startscaleR11*xiFacME))/CalcBorn1->nodeME()->pdf1(sqr(10.*GeV));
+        subtraction *=CalcBorn1->nodeME()->pdf1(sqr(startscaleR1K1*xiFacME))/CalcBorn1->nodeME()->pdf1(sqr(10.*GeV));
       }
       if (CalcBorn2->xcomb()->mePartonData()[1]->coloured()){
-        subtraction *=CalcBorn1->nodeME()->pdf2(sqr(startscaleR11*xiFacME))/CalcBorn1->nodeME()->pdf2(sqr(10.*GeV));
+        subtraction *=CalcBorn1->nodeME()->pdf2(sqr(startscaleR1K1*xiFacME))/CalcBorn1->nodeME()->pdf2(sqr(10.*GeV));
       }
 
     //cout<<"\n"<<CalcBorn0->xcomb()->lastMECouplings()<<" "<<CalcBorn1->xcomb()->lastMECouplings();
@@ -1056,91 +1057,91 @@ if(weightB0K0 == 0.&&
 
       resNLO1R+=(real-subtraction)*
                 weightR1K1*
-                theDipoleShowerHandler->as(startscaleR11*xiRenSh) / SM().alphaS();
+                theDipoleShowerHandler->as(startscaleR1K1*xiRenSh) / SM().alphaS();
     }
   }else
     if(CalcBorn2->nodeME()->projectorStage()==2){  //-----------------------------------------------------------------------------------------
-      if(weightB1K0!=0.) resLO1+=1.* weightB1K0*matrixElementWeight(startscaleB21,CalcBorn1);
+      if(weightB1K0!=0.) resLO1+=1.* weightB1K0*matrixElementWeight(startscaleB1K0,CalcBorn1);
       
     if(weightB1K0!=0.){
-      double NLOME=matrixElementWeightWithLoops(startscaleB11,CalcBorn1,fast);
+      double NLOME=matrixElementWeightWithLoops(startscaleB1K0,CalcBorn1,fast);
       double Bornweight=CalcBorn1->nodeME()->lastBorndSigHatDR()* SM().alphaS()/(2.*ThePEG::Constants::pi);;
     resNLO2L+=1.*weightB1K0*
                 (NLOME+unlopsweightNLO2*Bornweight)*
-                theDipoleShowerHandler->as(startscaleB11*xiRenSh) / SM().alphaS();
+                theDipoleShowerHandler->as(startscaleB1K0*xiRenSh) / SM().alphaS();
     }
       
       
 
-    if (weightB0K0!=0.)  resLO0+= weightB0K0*matrixElementWeight(startscaleB20,CalcBorn0);
+    if (weightB0K0!=0.)  resLO0+= weightB0K0*matrixElementWeight(startscaleB0K0,CalcBorn0);
 
     if (weightB0K0!=0.){
     
-      double NLOME= matrixElementWeightWithLoops(startscaleB00,CalcBorn0,fast);
+      double NLOME= matrixElementWeightWithLoops(startscaleB0K0,CalcBorn0,fast);
       double Bornweight=CalcBorn0->nodeME()->lastBorndSigHatDR()* SM().alphaS()/(2.*ThePEG::Constants::pi);;
     
       resNLO1L+= weightB0K0*
                  (NLOME+unlopsweightNLO1*Bornweight)*
-                 theDipoleShowerHandler->as(startscaleB20*xiRenSh) / SM().alphaS();
+                 theDipoleShowerHandler->as(startscaleB0K0*xiRenSh) / SM().alphaS();
     }
       
       
     
     if (weightR1K0!=0.) {
-      double real=matrixElementWeight(startscaleR21,CalcBorn1);
+      double real=matrixElementWeight(startscaleR1K0,CalcBorn1);
       
       double subtraction=-1*CalcBorn0->dipol()->dSigHatDR(sqr(10.*GeV))/nanobarn;
       
       if (CalcBorn2->xcomb()->mePartonData()[0]->coloured()){
-        subtraction*=CalcBorn1->nodeME()->pdf1(sqr(startscaleR21*xiFacME))/
+        subtraction*=CalcBorn1->nodeME()->pdf1(sqr(startscaleR1K0*xiFacME))/
                     CalcBorn1->nodeME()->pdf1(sqr(10.*GeV));
       }
       if (CalcBorn2->xcomb()->mePartonData()[1]->coloured()){
-        subtraction *=CalcBorn1->nodeME()->pdf2(sqr(startscaleR21*xiFacME))/
+        subtraction *=CalcBorn1->nodeME()->pdf2(sqr(startscaleR1K0*xiFacME))/
                      CalcBorn1->nodeME()->pdf2(sqr(10.*GeV));
       }
         //cout<<"\nweightR1K0 "<<weightR1K0<<" allabove calc1 pt: "<<CalcBorn0->dipol()->lastPt()/GeV<<" "<<real<<" "<<subtraction;
       resNLO1R+=(real-subtraction)*
                 weightR1K0*
-                theDipoleShowerHandler->as(startscaleR21*xiRenSh) / SM().alphaS();
+                theDipoleShowerHandler->as(startscaleR1K0*xiRenSh) / SM().alphaS();
     }
     
     if (theta2&&weightR2K0!=0.) {
       assert(theta2);
-      double real=matrixElementWeight(startscaleR22,CalcBorn2);
+      double real=matrixElementWeight(startscaleR2K0,CalcBorn2);
       double subtration=-1.*CalcBorn1->dipol()->dSigHatDR(sqr(10.*GeV))/nanobarn;
       
       if (CalcBorn2->xcomb()->mePartonData()[0]->coloured()){
-        subtration*=CalcBorn2->nodeME()->pdf1(sqr(startscaleR22*xiFacME))/
+        subtration*=CalcBorn2->nodeME()->pdf1(sqr(startscaleR2K0*xiFacME))/
                     CalcBorn2->nodeME()->pdf1(sqr(10.*GeV));
       }
       if (CalcBorn2->xcomb()->mePartonData()[1]->coloured()){
-        subtration*=CalcBorn2->nodeME()->pdf2(sqr(startscaleR22*xiFacME))/
+        subtration*=CalcBorn2->nodeME()->pdf2(sqr(startscaleR2K0*xiFacME))/
                     CalcBorn2->nodeME()->pdf2(sqr(10.*GeV));
       }
       resNLO2R+=(real-subtration)*
                weightR2K0*
-               theDipoleShowerHandler->as(startscaleR22*xiRenSh) / SM().alphaS();;
+               theDipoleShowerHandler->as(startscaleR2K0*xiRenSh) / SM().alphaS();;
 
     }else{
       if (!theta2&&weightR2K0!=0.) {
        
-        double real=matrixElementWeight(startscaleR22,CalcBorn2);
+        double real=matrixElementWeight(startscaleR2K0,CalcBorn2);
         double subtraction=0.;
         if (safetheta2)CalcBorn2->psBelowMergeingScale(selectedNode, subtraction, minpt, nDipoles);
         else           CalcBorn2->dipBelowMergeingScale(selectedNode, subtraction, minpt, nDipoles);
         if (CalcBorn2->xcomb()->mePartonData()[0]->coloured()){
-          subtraction*=CalcBorn2->nodeME()->pdf1(sqr(startscaleR22*xiFacME))/
+          subtraction*=CalcBorn2->nodeME()->pdf1(sqr(startscaleR2K0*xiFacME))/
                        CalcBorn2->nodeME()->pdf1(sqr(10.*GeV));
         }
         if (CalcBorn2->xcomb()->mePartonData()[1]->coloured()){
-          subtraction *=CalcBorn2->nodeME()->pdf2(sqr(startscaleR22*xiFacME))/
+          subtraction *=CalcBorn2->nodeME()->pdf2(sqr(startscaleR2K0*xiFacME))/
                         CalcBorn2->nodeME()->pdf2(sqr(10.*GeV));
         }
         
         resNLO2R+=(real-subtraction)*
                  weightR2K0*
-                 theDipoleShowerHandler->as(startscaleR22*xiRenSh) / SM().alphaS();
+                 theDipoleShowerHandler->as(startscaleR2K0*xiRenSh) / SM().alphaS();
         
           // cout<<"\nweightR2K0 "<<weightR1K1<<" pt "<<CalcBorn0->dipol()->lastPt()/GeV<<" safetheta1 "<<safetheta1<<" "<<real<<" "<<subtraction<<" "<<real/subtraction;;
       }
@@ -1150,7 +1151,7 @@ if(weightB0K0 == 0.&&
 
   
 
-  return resLO0+resLO1+resLO2+resNLO1L+resNLO1R+resNLO2L+resNLO2R;
+  return resLO0+resLO1+resLO2;//+resNLO1L+resNLO1R+resNLO2L+resNLO2R;
 }
 
 
