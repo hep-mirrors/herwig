@@ -89,6 +89,7 @@ void DipoleSplittingGenerator::prepare(const DipoleSplittingInfo& sp) {
   theExponentialGenerator->sampling_parameters().maxtry = maxtry();
   theExponentialGenerator->sampling_parameters().presampling_points = presamplingPoints();
   theExponentialGenerator->sampling_parameters().freeze_grid = freezeGrid();
+  theExponentialGenerator->detuning(detuning());
 
   theExponentialGenerator->docompensate(theDoCompensate);
   theExponentialGenerator->function(this);

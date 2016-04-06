@@ -208,6 +208,16 @@ public:
   void freezeGrid(unsigned long n) { theFreezeGrid = n; }
 
   /**
+   * Set a detuning factor to be applied to the sampling overestimate kernel
+   */
+  void detuning(double d) { theDetuning = d; }
+
+  /**
+   * Return the detuning factor applied to the sampling overestimate kernel
+   */
+  double detuning() const { return theDetuning; }
+
+  /**
    * Evaluate this splitting kernel for the given
    * dipole splitting.
    */
@@ -365,6 +375,11 @@ private:
    * be frozen
    */
   unsigned long theFreezeGrid;
+
+  /**
+   * The detuning factor applied to the sampling overestimate kernel
+   */
+  double theDetuning;
 
   /**
    * The flavour produced, if this cannot

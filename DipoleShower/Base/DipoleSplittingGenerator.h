@@ -220,6 +220,11 @@ public:
   unsigned long freezeGrid() const { return splittingKernel()->freezeGrid(); }
 
   /**
+   * Return the detuning factor applied to the sampling overestimate kernel
+   */
+  double detuning() const { return splittingKernel()->detuning(); }
+
+  /**
    * Return true, if this splitting generator
    * is able to deliver an overestimate to the sampled
    * kernel.

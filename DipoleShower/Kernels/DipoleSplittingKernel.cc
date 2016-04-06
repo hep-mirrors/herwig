@@ -28,6 +28,7 @@ DipoleSplittingKernel::DipoleSplittingKernel()
   : HandlerBase(), theScreeningScale(0.0*GeV), 
     thePresamplingPoints(2000), theMaxtry(100000),
     theFreezeGrid(500000),
+    theDetuning(1.0),
     theStrictLargeN(false), 
     theFactorizationScaleFactor(1.0),
     theRenormalizationScaleFactor(1.0),
@@ -45,7 +46,7 @@ DipoleSplittingKernel::~DipoleSplittingKernel() {}
 
 void DipoleSplittingKernel::persistentOutput(PersistentOStream & os) const {
   os << theAlphaS << ounit(theScreeningScale,GeV) << theSplittingKinematics << thePDFRatio
-     << thePresamplingPoints << theMaxtry << theFreezeGrid
+     << thePresamplingPoints << theMaxtry << theFreezeGrid << theDetuning
      << theFlavour << theMCCheck << theStrictLargeN
      << theFactorizationScaleFactor
      << theRenormalizationScaleFactor
@@ -56,7 +57,7 @@ void DipoleSplittingKernel::persistentOutput(PersistentOStream & os) const {
 
 void DipoleSplittingKernel::persistentInput(PersistentIStream & is, int) {
   is >> theAlphaS >> iunit(theScreeningScale,GeV) >> theSplittingKinematics >> thePDFRatio
-     >> thePresamplingPoints >> theMaxtry >> theFreezeGrid
+     >> thePresamplingPoints >> theMaxtry >> theFreezeGrid >> theDetuning
      >> theFlavour >> theMCCheck >> theStrictLargeN
      >> theFactorizationScaleFactor
      >> theRenormalizationScaleFactor
@@ -357,6 +358,12 @@ void DipoleSplittingKernel::Init() {
      "No",
      "Use transverse momentum.",
      false);
+
+  static Parameter<DipoleSplittingKernel,double> interfaceDetuning
+    ("Detuning",
+     "A value to detune the overestimate kernel.",
+     &DipoleSplittingKernel::theDetuning, 1.0, 1.0, 0,
+     false, false, Interface::lowerlim);
 
 }
 
