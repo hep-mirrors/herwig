@@ -78,6 +78,7 @@ public:
       _interactionOrder(b), 
       _colourStructure(Undefined), _colourFactor(-1.),
       angularOrdered_(true) {}
+
 public:
 
   /**

@@ -1122,7 +1122,7 @@ deconstructColourSinglets(HardTreePtr tree,cEvolverPtr evolver,
 	deconstructInitialInitialSystem(applyBoost,toRest,fromRest,tree,
 					systems[ix].jets,type);
     }
-    if(type==ShowerInteraction::QED||type==ShowerInteraction::Both) {
+    if(type!=ShowerInteraction::QCD) {
       combineFinalState(systems);
       general=false;
     }
@@ -1147,7 +1147,7 @@ deconstructColourSinglets(HardTreePtr tree,cEvolverPtr evolver,
     toRest = LorentzRotation(ptotal.findBoostToCM());
     fromRest = toRest;
     fromRest.invert();
-    if(type==ShowerInteraction::QED||type==ShowerInteraction::Both) {
+    if(type!=ShowerInteraction::QCD) {
       combineFinalState(systems);
       general=false;
     }
@@ -2851,8 +2851,7 @@ reconstructColourSinglets(vector<ShowerProgenitorPtr> & ShowerHardJets,
 	reconstructInitialInitialSystem(applyBoost,toRest,fromRest,
 					systems[ix].jets);
     }
-    if(type==ShowerInteraction::QED||
-       type==ShowerInteraction::Both) {
+    if(type!=ShowerInteraction::QCD) {
       combineFinalState(systems);
       general=false;
     }
@@ -2891,7 +2890,7 @@ reconstructColourSinglets(vector<ShowerProgenitorPtr> & ShowerHardJets,
   }
   // e+e- type
   else if(nnun==0&&nnii==0&&nnif==0&&nnf>0&&nni==2) {
-    general = type==ShowerInteraction::QED || type == ShowerInteraction::Both;
+    general = type !=ShowerInteraction::QCD;
   }
   // general type
   else {

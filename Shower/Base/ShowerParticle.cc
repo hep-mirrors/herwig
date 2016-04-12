@@ -37,6 +37,7 @@ void ShowerParticle::vetoEmission(ShowerPartnerType::Type, Energy scale) {
   scales_.QCD_c_noAO  = min(scale,scales_.QCD_c_noAO );
   scales_.QCD_ac      = min(scale,scales_.QCD_ac     );
   scales_.QCD_ac_noAO = min(scale,scales_.QCD_ac_noAO);
+  scales_.EW          = min(scale,scales_.EW         );
 }
 
 void ShowerParticle::addPartner(EvolutionPartner in ) {

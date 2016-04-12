@@ -102,7 +102,7 @@ public:
      *  Constructor
      */
     EvolutionScales() : QED(),QCD_c(),QCD_ac(),
-			QED_noAO(),QCD_c_noAO(),QCD_ac_noAO(),
+			QED_noAO(),QCD_c_noAO(),QCD_ac_noAO(),EW(),
 			Max_Q2(Constants::MaxEnergy2)
     {}
 
@@ -135,6 +135,11 @@ public:
      *  QCD anticolour scale
      */
     Energy QCD_ac_noAO;
+
+    /**
+     *   EW scale
+     */
+    Energy EW;
 
     /**
      *  Maximum allowed virtuality of the particle

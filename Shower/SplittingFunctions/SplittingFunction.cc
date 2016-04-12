@@ -90,6 +90,9 @@ void SplittingFunction::Init() {
   static SwitchOption interfaceInteractionTypeQED
     (interfaceInteractionType,
      "QED","QED",ShowerInteraction::QED);
+  static SwitchOption interfaceInteractionTypeEW
+    (interfaceInteractionType,
+     "EW","EW",ShowerInteraction::EW);
 
   static Switch<SplittingFunction,bool> interfaceAngularOrdered
     ("AngularOrdered",
@@ -500,7 +503,8 @@ void SplittingFunction::doinit() {
   Interfaced::doinit();
   assert(_interactionType!=ShowerInteraction::UNDEFINED);
   assert((_colourStructure>0&&_interactionType==ShowerInteraction::QCD) ||
-	 (_colourStructure<0&&_interactionType==ShowerInteraction::QED) );
+	 (_colourStructure<0&&(_interactionType==ShowerInteraction::QED ||
+			       _interactionType==ShowerInteraction::EW)) );
   if(_colourFactor>0.) return;
   // compute the colour factors if need
   if(_colourStructure==TripletTripletOctet) {
@@ -678,7 +682,8 @@ void SplittingFunction::evaluateFinalStateScales(ShowerPartnerType::Type partner
     }
   }
   // QCD
-  else {
+  else if (partnerType==ShowerPartnerType::QCDColourLine ||
+	   partnerType==ShowerPartnerType::QCDAntiColourLine) {
    // normal case eg q -> q g and g -> g g
     if(!bosonSplitting) {
       emitter->scales().QED         = min(scale,parent->scales().QED     );
@@ -725,6 +730,8 @@ void SplittingFunction::evaluateFinalStateScales(ShowerPartnerType::Type partner
       emitted->scales().QCD_ac_noAO =          scale;
     }
   }
+  else
+    assert(false);
 }
 
 void SplittingFunction::evaluateInitialStateScales(ShowerPartnerType::Type partnerType,
@@ -796,7 +803,8 @@ void SplittingFunction::evaluateInitialStateScales(ShowerPartnerType::Type partn
     }
   }
   // QCD
-  else {
+  else if (partnerType==ShowerPartnerType::QCDColourLine ||
+	   partnerType==ShowerPartnerType::QCDAntiColourLine) {
     // timelike 
     if(timelike->dataPtr()->charged()) {
       timelike->scales().QED         = AOScale;
@@ -833,6 +841,8 @@ void SplittingFunction::evaluateInitialStateScales(ShowerPartnerType::Type partn
       }
     }
   }
+  else
+    assert(false);
 }
 
 void SplittingFunction::evaluateDecayScales(ShowerPartnerType::Type partnerType,
@@ -857,7 +867,8 @@ void SplittingFunction::evaluateDecayScales(ShowerPartnerType::Type partnerType,
     spacelike->scales().QED_noAO    =   scale;
   }
   // QCD
-  else {
+  else if(partnerType==ShowerPartnerType::QCDColourLine ||
+	  partnerType==ShowerPartnerType::QCDAntiColourLine) {
     // timelike 
     timelike->scales().QED         = ZERO;
     timelike->scales().QED_noAO    = ZERO;
@@ -869,6 +880,8 @@ void SplittingFunction::evaluateDecayScales(ShowerPartnerType::Type partnerType,
     spacelike->scales().QED         = max(scale,parent->scales().QED        );
     spacelike->scales().QED_noAO    = max(scale,parent->scales().QED_noAO   );
   }
+  else
+    assert(false);
   spacelike->scales().QCD_c       = max(scale,parent->scales().QCD_c      );
   spacelike->scales().QCD_c_noAO  = max(scale,parent->scales().QCD_c_noAO );
   spacelike->scales().QCD_ac      = max(scale,parent->scales().QCD_ac     );

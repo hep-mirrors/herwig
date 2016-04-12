@@ -26,6 +26,24 @@
 
 using namespace Herwig;
 
+namespace {
+
+bool checkInteraction(ShowerInteraction::Type allowed,
+		      ShowerInteraction::Type splitting) {
+  if(allowed==ShowerInteraction::ALL)
+    return true;
+  else if(allowed==ShowerInteraction::QEDQCD &&
+	  (splitting==ShowerInteraction::QED ||
+	   splitting==ShowerInteraction::QCD ))
+    return true;
+  else if(allowed == splitting)
+    return true;
+  else
+    return false;
+}
+
+}
+
 DescribeClass<SplittingGenerator,Interfaced>
 describeSplittingGenerator ("Herwig::SplittingGenerator","");
 
@@ -36,7 +54,6 @@ IBPtr SplittingGenerator::clone() const {
 IBPtr SplittingGenerator::fullclone() const {
   return new_ptr(*this);
 }
-
 
 void SplittingGenerator::persistentOutput(PersistentOStream & os) const {
   os << _isr_Mode << _fsr_Mode << _bbranchings << _fbranchings;
@@ -223,8 +240,7 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
   for(BranchingList::const_iterator cit = _fbranchings.lower_bound(index); 
       cit != _fbranchings.upper_bound(index); ++cit) {
     // check either right interaction or doing both
-    if(type != cit->second.first->interactionType() &&
-       type != ShowerInteraction::Both ) continue;
+    if(!checkInteraction(type,cit->second.first->interactionType())) continue;
     // whether or not this interaction should be angular ordered
     bool angularOrdered = cit->second.first->splittingFn()->angularOrdered();
     ShoKinPtr newKin;
@@ -291,6 +307,14 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
 				    particle.scales().Max_Q2);
       }
     }
+    else if(cit->second.first->interactionType()==ShowerInteraction::EW) {
+      type = ShowerPartnerType::EW;
+      Energy startingScale = particle.scales().EW;
+      newKin = cit->second.first->
+    	generateNextTimeBranching(startingScale,cit->second.second,
+				  particle.id()!=cit->first,enhance,
+				  particle.scales().Max_Q2);
+    }
     // shouldn't be anything else
     else
       assert(false);
@@ -335,8 +359,7 @@ chooseDecayBranching(ShowerParticle &particle,
     // check interaction doesn't change flavour
     if(cit->second.second[1]!=index&&cit->second.second[2]!=index) continue;
     // check either right interaction or doing both
-    if(interaction != cit->second.first->interactionType() &&
-       interaction != ShowerInteraction::Both ) continue;
+    if(!checkInteraction(interaction,cit->second.first->interactionType())) continue;
     // whether or not this interaction should be angular ordered
     bool angularOrdered = cit->second.first->splittingFn()->angularOrdered();
     ShoKinPtr newKin;
@@ -407,6 +430,16 @@ chooseDecayBranching(ShowerParticle &particle,
 	}
       }
     }
+    else if(cit->second.first->interactionType()==ShowerInteraction::EW) {
+      type = ShowerPartnerType::EW;
+      Energy stoppingScale = stoppingScales.EW;
+      Energy startingScale = particle.scales().EW;
+      if(startingScale < stoppingScale ) { 
+    	newKin = cit->second.first->
+    	  generateNextDecayBranching(startingScale,stoppingScale,minmass,cit->second.second,
+    				     particle.id()!=cit->first,enhance);
+      }
+    }
     // shouldn't be anything else
     else
       assert(false);
@@ -451,8 +484,7 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr beamparticle,
   for(BranchingList::const_iterator cit = _bbranchings.lower_bound(index); 
       cit != _bbranchings.upper_bound(index); ++cit ) {
     // check either right interaction or doing both
-    if(type != cit->second.first->interactionType() &&
-       type != ShowerInteraction::Both ) continue;
+    if(!checkInteraction(type,cit->second.first->interactionType())) continue;
     // setup the PDF
     cit->second.first->setPDF(pdf,freeze);
     // whether or not this interaction should be angular ordered
@@ -513,6 +545,13 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr beamparticle,
     	  generateNextSpaceBranching(startingScale,cit->second.second, particle.x(),
     				     particle.id()!=cit->first,enhance,beam);
       }
+    }
+    else if(cit->second.first->interactionType()==ShowerInteraction::EW) {
+      type = ShowerPartnerType::EW;
+      Energy startingScale = particle.scales().EW;
+      newKin=cit->second.first->
+    	generateNextSpaceBranching(startingScale,cit->second.second, particle.x(),
+    				   particle.id()!=cit->first,enhance,beam);
     }
     // shouldn't be anything else
     else

@@ -63,14 +63,26 @@ using namespace ThePEG;
     /**
      *  Enum for the type of interaction
      */
-    enum Type { UNDEFINED=-1, QCD, QED, Both };
+    enum Type { UNDEFINED=-1, QCD, QED, QEDQCD, EW, ALL };
   }
 
   namespace ShowerPartnerType {
     /**
      *  Enum for the type of shower partner
      */
-    enum Type {Undefined,QCDColourLine,QCDAntiColourLine,QED};
+    enum Type {Undefined,QCDColourLine,QCDAntiColourLine,QED,EW};
+  }
+
+  inline ShowerInteraction::Type convertInteraction(ShowerPartnerType::Type partner) {
+    if(partner==ShowerPartnerType::QCDColourLine ||
+       partner==ShowerPartnerType::QCDAntiColourLine)
+      return ShowerInteraction::QCD;
+    else if(ShowerPartnerType::QED)
+      return ShowerInteraction::QED;
+    else if(ShowerPartnerType::EW)
+      return ShowerInteraction::EW;
+    else
+      return ShowerInteraction::UNDEFINED;
   }
 
   /**

@@ -1641,7 +1641,8 @@ generateHardest(ShowerTreePtr tree,
       QEDAllowed = true;
     else if(interactions[ix]==ShowerInteraction::QCD)
       QCDAllowed = true;
-    else if(interactions[ix]==ShowerInteraction::Both) {
+    else if(interactions[ix]==ShowerInteraction::QEDQCD ||
+	    interactions[ix]==ShowerInteraction::ALL ) {
       QEDAllowed = true;
       QCDAllowed = true;
     }

@@ -147,6 +147,7 @@ void PartnerFinder::setInitialEvolutionScales(const ShowerParticleVector &partic
     setInitialQCDEvolutionScales(particles,isDecayCase,setPartners);
     setInitialQEDEvolutionScales(particles,isDecayCase,false);
   }
+  // \todo EW scales here
   // print out for debugging
   if(Debug::level>=10) {
     for(ShowerParticleVector::const_iterator cit = particles.begin();
