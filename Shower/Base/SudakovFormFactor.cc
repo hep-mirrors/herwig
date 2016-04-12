@@ -683,3 +683,32 @@ const vector<Energy> & SudakovFormFactor::virtualMasses(const IdList & ids) {
   }
   return output;
 }
+
+RhoDMatrix SudakovFormFactor::extractRhoMatrix(ShowerParticle & particle,
+					       ShoKinPtr kinematics,bool forward) {
+  // get the spin density matrix and the mapping
+  RhoDMatrix mapping;
+  SpinPtr inspin;
+  bool needMapping = getMapping(inspin,mapping,particle,kinematics);
+  // set the decayed flag
+  inspin->decay();
+  // get the spin density matrix
+  RhoDMatrix rho = forward ? inspin->rhoMatrix() : inspin->DMatrix();
+  // map to the shower basis if needed
+  if(needMapping) {
+    RhoDMatrix rhop(rho.iSpin(),false);
+    for(int ixa=0;ixa<rho.iSpin();++ixa) {
+  	for(int ixb=0;ixb<rho.iSpin();++ixb) {
+  	  for(int iya=0;iya<rho.iSpin();++iya) {
+  	    for(int iyb=0;iyb<rho.iSpin();++iyb) {
+  	      rhop(ixa,ixb) += rho(iya,iyb)*mapping(iya,ixa)*conj(mapping(iyb,ixb));
+  	    }
+  	  }
+  	}
+    }
+    rhop.normalize();
+    rho = rhop;
+  }
+  return rho;
+}
+

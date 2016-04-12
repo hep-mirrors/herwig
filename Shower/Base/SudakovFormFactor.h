@@ -460,6 +460,9 @@ protected:
   bool getMapping(SpinPtr &, RhoDMatrix & map,
 		  ShowerParticle & particle,ShoKinPtr showerkin);
 
+  RhoDMatrix extractRhoMatrix(ShowerParticle & particle,
+			      ShoKinPtr kinematics, bool forward);
+
 public:
 
   /**

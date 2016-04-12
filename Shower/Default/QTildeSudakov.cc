@@ -546,29 +546,7 @@ double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
   // if spin correlations
   vector<pair<int,Complex> > wgts;     
   if(ShowerHandler::currentHandler()->evolver()->spinCorrelations()) {
-    // get the spin density matrix and the mapping
-    RhoDMatrix mapping;
-    SpinPtr inspin;
-    bool needMapping = getMapping(inspin,mapping,particle,kinematics);
-    // set the decayed flag
-    inspin->decay();
-    // get the spin density matrix
-    RhoDMatrix rho=inspin->rhoMatrix();
-    // map to the shower basis if needed
-    if(needMapping) {
-      RhoDMatrix rhop(rho.iSpin(),false);
-      for(int ixa=0;ixa<rho.iSpin();++ixa) {
-	for(int ixb=0;ixb<rho.iSpin();++ixb) {
-	  for(int iya=0;iya<rho.iSpin();++iya) {
-	    for(int iyb=0;iyb<rho.iSpin();++iyb) {
-	      rhop(ixa,ixb) += rho(iya,iyb)*mapping(iya,ixa)*conj(mapping(iyb,ixb));
-	    }
-	  }
-	}
-      }
-      rhop.normalize();
-      rho = rhop;
-    }
+    RhoDMatrix rho = extractRhoMatrix(particle,kinematics,true);
     // calculate the weights
     wgts = splittingFn()->generatePhiForward(z,t,ids,rho);
   }
@@ -721,28 +699,8 @@ double QTildeSudakov::generatePhiBackward(ShowerParticle & particle,
   vector<pair<int,Complex> > wgts;
   if(ShowerHandler::currentHandler()->evolver()->spinCorrelations()) {
     // get the spin density matrix and the mapping
-    RhoDMatrix mapping;
-    SpinPtr inspin;
-    bool needMapping = getMapping(inspin,mapping,particle,kinematics);
-    // set the decayed flag (counterintuitive but going backward)
-    inspin->decay();
-    // get the spin density matrix
-    RhoDMatrix rho=inspin->DMatrix();
-    // map to the shower basis if needed
-    if(needMapping) {
-      RhoDMatrix rhop(rho.iSpin(),false);
-      for(int ixa=0;ixa<rho.iSpin();++ixa) {
-	for(int ixb=0;ixb<rho.iSpin();++ixb) {
-	  for(int iya=0;iya<rho.iSpin();++iya) {
-	    for(int iyb=0;iyb<rho.iSpin();++iyb) {
-	      rhop(ixa,ixb) += rho(iya,iyb)*mapping(iya,ixa)*conj(mapping(iyb,ixb));
-	    }
-	  }
-	}
-      }
-      rhop.normalize();
-      rho = rhop;
-    }
+    RhoDMatrix rho = extractRhoMatrix(particle,kinematics,false);
+    // get the weights
     wgts = splittingFn()->generatePhiBackward(z,t,ids,rho);
   }
   else {
