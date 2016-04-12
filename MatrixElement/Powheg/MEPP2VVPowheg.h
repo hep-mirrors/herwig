@@ -42,7 +42,7 @@ public:
    *  Apply the POWHEG style correction
    */
   virtual HardTreePtr generateHardest(ShowerTreePtr,
-				      vector<ShowerInteraction::Type> inter);
+				      ShowerInteraction::Type inter);
   //@}
 
 public:

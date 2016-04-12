@@ -49,7 +49,7 @@ newdef ShowerModel:PartnerFinder PartnerFinder
 newdef ShowerModel:KinematicsReconstructor KinematicsReconstructor
 newdef Evolver:ShowerModel ShowerModel
 newdef Evolver:SplittingGenerator SplittingGenerator
-newdef Evolver:Interactions BothAtOnce
+newdef Evolver:Interaction QEDQCD
 newdef Evolver:SpinCorrelations Yes
 newdef Evolver:SoftCorrelations Singular
 

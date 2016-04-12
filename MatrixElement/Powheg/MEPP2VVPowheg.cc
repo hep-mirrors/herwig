@@ -3750,12 +3750,11 @@ double MEPP2VVPowheg::lo_me() const {
 }
 
 HardTreePtr MEPP2VVPowheg::generateHardest(ShowerTreePtr tree,
-					   vector<ShowerInteraction::Type> inter) {
-  // check QCD emission switched on
-  bool QCD=false;
-  for(unsigned int ix=0;ix<inter.size();++ix) 
-    QCD |= inter[ix]==ShowerInteraction::QCD;
-  if(!QCD) return HardTreePtr();
+					   ShowerInteraction::Type inter) {
+  // check if generating QCD radiation
+  if(inter!=ShowerInteraction::QCD && inter!=ShowerInteraction::QEDQCD &&
+     inter!=ShowerInteraction::ALL)
+    return HardTreePtr();
   // Now we want to set these data vectors according to the particles we've
   // received from the current 2->2 hard collision:
   vector<ShowerProgenitorPtr> particlesToShower;

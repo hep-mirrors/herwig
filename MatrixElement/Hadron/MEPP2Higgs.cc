@@ -878,13 +878,11 @@ bool MEPP2Higgs::softMatrixElementVeto(ShowerProgenitorPtr initial,
 }
 
 HardTreePtr MEPP2Higgs::generateHardest(ShowerTreePtr tree,
-					vector<ShowerInteraction::Type> inter) {
-  bool found = false;
+					ShowerInteraction::Type inter) {
   // check if generating QCD radiation
-  for(unsigned int ix=0;ix<inter.size();++ix) {
-    found |= inter[ix]==ShowerInteraction::QCD;
-  }
-  if(!found) return HardTreePtr();
+  if(inter!=ShowerInteraction::QCD && inter!=ShowerInteraction::QEDQCD &&
+     inter!=ShowerInteraction::ALL)
+    return HardTreePtr();
   if(tree->incomingLines().begin()->second->id()!=ParticleID::g) 
     return HardTreePtr();
   useMe();

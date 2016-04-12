@@ -69,7 +69,7 @@ public:
 	      _hardVetoReadOption(false),
 	      _iptrms(ZERO), _beta(0.), _gamma(ZERO), _iptmax(),
 	      _limitEmissions(0), _initialenhance(1.), _finalenhance(1.),
-	       interaction_(1), _trunc_Mode(true), _hardEmissionMode(0),
+	      interaction_(ShowerInteraction::QEDQCD), _trunc_Mode(true), _hardEmissionMode(0),
 	      _spinOpt(1), _softOpt(2), _hardPOWHEG(false),
 	      theFactorizationScaleFactor(1.0), 
 	      theRenormalizationScaleFactor(1.0), muPt(ZERO),
@@ -608,35 +608,6 @@ protected:
    */
   bool hardOnly() const {return _limitEmissions==3;}
 
-  /**
-   *  Members to construct the HardTree from the shower if needed
-   */
-  //@{
-  /**
-   *  Construct the tree for a scattering process
-   */
-  bool constructHardTree(vector<ShowerProgenitorPtr> & particlesToShower,
-			 ShowerInteraction::Type inter);
-
-  /**
-   *  Construct the tree for a decay process
-   */  
-  bool constructDecayTree(vector<ShowerProgenitorPtr> & particlesToShower,
-			  ShowerInteraction::Type inter);
-
-  /**
-   *  Construct a time-like line
-   */
-  void constructTimeLikeLine(tHardBranchingPtr branch,tShowerParticlePtr particle);
-
-  /**
-   *  Construct a space-like line
-   */
-  void constructSpaceLikeLine(tShowerParticlePtr particle,
-			      HardBranchingPtr & first, HardBranchingPtr & last,
-			      SudakovPtr sud,PPtr beam);
-  //@}
-
 public:
 
   /** @name MC@NLO diagnostics */
@@ -831,12 +802,7 @@ private:
   /**
    *  The option for wqhich interactions to use
    */
-  unsigned int interaction_;
-
-  /**
-   *  Interactions allowed in the shower
-   */
-  vector<ShowerInteraction::Type> interactions_;
+  ShowerInteraction::Type interaction_;
 
  /**
    *  Truncated shower switch

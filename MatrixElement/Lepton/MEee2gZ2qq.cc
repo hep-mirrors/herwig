@@ -382,8 +382,7 @@ void MEee2gZ2qq::initializeMECorrection(ShowerTreePtr , double &  initial,
 void MEee2gZ2qq::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
   vector<Lorentz5Momentum> emission;
   unsigned int iemit,ispect;
-  generateHard(tree,emission,iemit,ispect,true,
-	       vector<ShowerInteraction::Type>(1,ShowerInteraction::QCD));
+  generateHard(tree,emission,iemit,ispect,true,ShowerInteraction::QCD);
   if(emission.empty()) return;
   // get the quark and antiquark
   ParticleVector qq; 
@@ -576,8 +575,17 @@ pair<Energy,ShowerInteraction::Type>
 MEee2gZ2qq::generateHard(ShowerTreePtr tree, 
 			 vector<Lorentz5Momentum> & emmision,
 			 unsigned int & iemit, unsigned int & ispect,
-			 bool applyVeto,
-			 vector<ShowerInteraction::Type> inter) {
+			 bool applyVeto,ShowerInteraction::Type type) {
+  vector<ShowerInteraction::Type> inter;
+  if(type==ShowerInteraction::QCD)
+    inter.push_back(ShowerInteraction::QCD);
+  else if(type==ShowerInteraction::QED)
+    inter.push_back(ShowerInteraction::QED);
+  else if(type==ShowerInteraction::QEDQCD ||
+	  type==ShowerInteraction::ALL) {
+    inter.push_back(ShowerInteraction::QCD);
+    inter.push_back(ShowerInteraction::QED);
+  }
   // get the momenta of the incoming and outgoing partons 
   // incoming
   ShowerProgenitorPtr 
@@ -830,7 +838,7 @@ MEee2gZ2qq::generateHard(ShowerTreePtr tree,
 }
 
 HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree,
-					vector<ShowerInteraction::Type> inter) {
+					ShowerInteraction::Type inter) {
   // generate the momenta for the hard emission
   vector<Lorentz5Momentum> emmision;
   unsigned int iemit,ispect;
@@ -850,22 +858,32 @@ HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree,
   if(qkProgenitor->id()<0) swap(qkProgenitor,qbProgenitor);
   // maximum pT of emission
   if(emmision.empty()) {
-    for(unsigned int ix=0;ix<inter.size();++ix) {
-      if(inter[ix]==ShowerInteraction::QCD) {
-	qkProgenitor->maximumpT(pTminQCD_,inter[ix]);
-	qbProgenitor->maximumpT(pTminQCD_,inter[ix]);
-      }
-      else {
-	qkProgenitor->maximumpT(pTminQED_,inter[ix]);
-	qbProgenitor->maximumpT(pTminQED_,inter[ix]);
-      }
+    if(inter==ShowerInteraction::QCD ||
+       inter==ShowerInteraction::QEDQCD ||
+       inter==ShowerInteraction::ALL) {
+      qkProgenitor->maximumpT(pTminQCD_,ShowerInteraction::QCD);
+      qbProgenitor->maximumpT(pTminQCD_,ShowerInteraction::QCD);
+    }
+    if(inter==ShowerInteraction::QED ||
+       inter==ShowerInteraction::QEDQCD ||
+       inter==ShowerInteraction::ALL) {
+      qkProgenitor->maximumpT(pTminQED_,ShowerInteraction::QED);
+      qbProgenitor->maximumpT(pTminQED_,ShowerInteraction::QED);
     }
     return HardTreePtr();
   }
   else {
-    for(unsigned int ix=0;ix<inter.size();++ix) {
-      qkProgenitor->maximumpT(pTveto,inter[ix]);
-      qbProgenitor->maximumpT(pTveto,inter[ix]);
+    if(inter==ShowerInteraction::QCD ||
+       inter==ShowerInteraction::QEDQCD ||
+       inter==ShowerInteraction::ALL) {
+      qkProgenitor->maximumpT(pTveto,ShowerInteraction::QCD);
+      qbProgenitor->maximumpT(pTveto,ShowerInteraction::QCD);
+    }
+    if(inter==ShowerInteraction::QED ||
+       inter==ShowerInteraction::QEDQCD ||
+       inter==ShowerInteraction::ALL) {
+      qkProgenitor->maximumpT(pTveto,ShowerInteraction::QED);
+      qbProgenitor->maximumpT(pTveto,ShowerInteraction::QED);
     }
   }
   // perform final check to ensure energy greater than constituent mass

@@ -100,13 +100,10 @@ void Evolver::persistentOutput(PersistentOStream & os) const {
      << isMCatNLOSEvent << isMCatNLOHEvent
      << isPowhegSEvent << isPowhegHEvent
      << theFactorizationScaleFactor << theRenormalizationScaleFactor << ounit(muPt,GeV)
-     << interaction_ << _maxTryFSR << _maxFailFSR << _fracFSR << interactions_.size();
-  for(unsigned int ix=0;ix<interactions_.size();++ix) 
-    os << oenum(interactions_[ix]);
+     << oenum(interaction_) << _maxTryFSR << _maxFailFSR << _fracFSR;
 }
 
 void Evolver::persistentInput(PersistentIStream & is, int) {
-  unsigned int isize;
   is >> _model >> _splittingGenerator >> _maxtry 
      >> _meCorrMode >> _hardVetoMode >> _hardVetoRead >> _hardVetoReadOption
      >> _limitEmissions >> _spinOpt >> _softOpt >> _hardPOWHEG
@@ -115,34 +112,11 @@ void Evolver::persistentInput(PersistentIStream & is, int) {
      >> isMCatNLOSEvent >> isMCatNLOHEvent
      >> isPowhegSEvent >> isPowhegHEvent
      >> theFactorizationScaleFactor >> theRenormalizationScaleFactor >> iunit(muPt,GeV)
-     >> interaction_ >> _maxTryFSR >> _maxFailFSR >> _fracFSR >> isize;
-  interactions_.resize(isize);
-  for(unsigned int ix=0;ix<interactions_.size();++ix) 
-    is >> ienum(interactions_[ix]);
+     >> ienum(interaction_) >> _maxTryFSR >> _maxFailFSR >> _fracFSR;
 }
 
 void Evolver::doinit() {
   Interfaced::doinit();
-  // interactions may have been changed through a setup file so we
-  // clear it up here
-  interactions_.clear();
-  if(interaction_==0) {
-    interactions_.push_back(ShowerInteraction::QCD);
-    interactions_.push_back(ShowerInteraction::QED);
-  }
-  else if(interaction_==1) {
-    interactions_.push_back(ShowerInteraction::QCD);
-  }
-  else if(interaction_==2) {
-    interactions_.push_back(ShowerInteraction::QED);
-    interactions_.push_back(ShowerInteraction::QCD);
-  }
-  else if(interaction_==3) {
-    interactions_.push_back(ShowerInteraction::QED);
-  }
-  else if(interaction_==4) {
-    interactions_.push_back(ShowerInteraction::QEDQCD);
-  }
   // calculate max no of FSR vetos
   _maxFailFSR = max(int(_maxFailFSR), int(_fracFSR*double(generator()->N())));
 }
@@ -332,35 +306,25 @@ void Evolver::Init() {
      "and decays using internal matrix elements",
      3);
 
-  static Switch<Evolver,unsigned int > interfaceInteractions
-    ("Interactions",
+  static Switch<Evolver,ShowerInteraction::Type > interfaceInteraction
+    ("Interaction",
      "The interactions to be used in the shower",
-     &Evolver::interaction_, 1, false, false);
-  static SwitchOption interfaceInteractionsQCDFirst
-    (interfaceInteractions,
-     "QCDFirst",
-     "QCD first then QED",
-     0);
-  static SwitchOption interfaceInteractionsQCDOnly
-    (interfaceInteractions,
+     &Evolver::interaction_, ShowerInteraction::QEDQCD, false, false);
+  static SwitchOption interfaceInteractionQCD
+    (interfaceInteraction,
      "QCDOnly",
      "Only QCD",
-     1);
-  static SwitchOption interfaceInteractionsQEDFirst
-    (interfaceInteractions,
-     "QEDFirst",
-     "QED first then QCD",
-     2);
-  static SwitchOption interfaceInteractionsQEDOnly
-    (interfaceInteractions,
+     ShowerInteraction::QCD);
+  static SwitchOption interfaceInteractionQEDOnly
+    (interfaceInteraction,
      "QEDOnly",
      "Only QED",
-     3);
-  static SwitchOption interfaceInteractionsBothAtOnce
-    (interfaceInteractions,
-     "BothAtOnce",
-     "Generate both at the same time",
-     4);
+     ShowerInteraction::QED);
+  static SwitchOption interfaceInteractionBothAtOnce
+    (interfaceInteraction,
+     "QEDQCD",
+     "QED and QCD",
+     ShowerInteraction::QEDQCD);
 
   static Switch<Evolver,unsigned int> interfaceReconstructionOption
     ("ReconstructionOption",
@@ -1241,7 +1205,7 @@ bool Evolver::spaceLikeDecayShower(tShowerParticlePtr particle,
 vector<ShowerProgenitorPtr> Evolver::setupShower(bool hard) {
   // generate POWHEG hard emission if needed
   if(_hardEmissionMode>0) hardestEmission(hard);
-  ShowerInteraction::Type inter = interactions_[0];
+  ShowerInteraction::Type inter = interaction_;
   if(_hardtree&&inter!=ShowerInteraction::QEDQCD && inter!=ShowerInteraction::ALL) {
     inter = _hardtree->interaction();
   }
@@ -1255,7 +1219,7 @@ vector<ShowerProgenitorPtr> Evolver::setupShower(bool hard) {
     currentTree()->extractProgenitors();
   // remake the colour partners if needed
   if(_currenttree->hardMatrixElementCorrection()) {
-    setEvolutionPartners(hard,interactions_[0],true);
+    setEvolutionPartners(hard,interaction_,true);
     _currenttree->resetShowerProducts();
   }
   // return the answer
@@ -1550,15 +1514,7 @@ void Evolver::hardestEmission(bool hard) {
        ( _decayme && _decayme->hasPOWHEGCorrection()!=0  && _hardEmissionMode!=2) ) {
     if(_hardme) {
       assert(hard);
-      if(interaction_==4) {
-	vector<ShowerInteraction::Type> inter(2);
-	inter[0] = ShowerInteraction::QCD;
-	inter[1] = ShowerInteraction::QED;
-	_hardtree =  _hardme->generateHardest( currentTree(),inter         );
-      }
-      else {
-	_hardtree =  _hardme->generateHardest( currentTree(),interactions_ );
-      }
+      _hardtree =  _hardme->generateHardest( currentTree(),interaction_);
     }
     else {
       assert(!hard);
@@ -2489,354 +2445,6 @@ truncatedSpaceLikeDecayShower(tShowerParticlePtr particle,
   return true;
 }
 
-bool Evolver::constructDecayTree(vector<ShowerProgenitorPtr> & particlesToShower,
-				 ShowerInteraction::Type inter) {
-  Energy ptmax(-GeV);
-  // get the maximum pt is all ready a hard tree
-  if(hardTree()) {
-    for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
-      if(particlesToShower[ix]->maximumpT(inter)>ptmax&&
-	 particlesToShower[ix]->progenitor()->isFinalState()) 
-	ptmax = particlesToShower[ix]->maximumpT(inter);
-    }
-  }
-  vector<HardBranchingPtr> spaceBranchings,allBranchings;
-  for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
-    if(particlesToShower[ix]->progenitor()->isFinalState()) {
-      HardBranchingPtr newBranch;
-      if(particlesToShower[ix]->hasEmitted()) {
-	newBranch = 
-	  new_ptr(HardBranching(particlesToShower[ix]->progenitor(),
-				particlesToShower[ix]->progenitor()->
-				showerKinematics()->SudakovFormFactor(),
-				HardBranchingPtr(),HardBranching::Outgoing));
-	constructTimeLikeLine(newBranch,particlesToShower[ix]->progenitor());
-      }
-      else {
-	newBranch = 
-	  new_ptr(HardBranching(particlesToShower[ix]->progenitor(),
-				SudakovPtr(),HardBranchingPtr(),
-				HardBranching::Outgoing));
-      }
-      allBranchings.push_back(newBranch);
-    }
-    else {
-      HardBranchingPtr newBranch;
-      if(particlesToShower[ix]->hasEmitted()) {
-	newBranch = 
-	  new_ptr(HardBranching(particlesToShower[ix]->progenitor(),
-				particlesToShower[ix]->progenitor()->
-				showerKinematics()->SudakovFormFactor(),
-				HardBranchingPtr(),HardBranching::Decay));
-	constructTimeLikeLine(newBranch,particlesToShower[ix]->progenitor());
-	HardBranchingPtr last=newBranch;
-	do {
-	  for(unsigned int ix=0;ix<last->children().size();++ix) {
-	    if(last->children()[ix]->branchingParticle()->id()==
-	       particlesToShower[ix]->id()) {
-	      last = last->children()[ix];
-	      continue;
-	    }
-	  }
-	}
-	while(!last->children().empty());
-	last->status(HardBranching::Incoming);
-	spaceBranchings.push_back(newBranch);
-	allBranchings  .push_back(last);
-      }
-      else {
-	newBranch = 
-	  new_ptr(HardBranching(particlesToShower[ix]->progenitor(),
-				SudakovPtr(),HardBranchingPtr(),
-				HardBranching::Incoming));
-	spaceBranchings.push_back(newBranch);
-	allBranchings  .push_back(newBranch);
-      }
-    }
-  }
-  HardTreePtr QCDTree = new_ptr(HardTree(allBranchings,spaceBranchings,inter));
-  // set the charge partners
-  ShowerParticleVector particles;
-  particles.push_back(spaceBranchings.back()->branchingParticle());
-  for(set<HardBranchingPtr>::iterator cit=QCDTree->branchings().begin();
-      cit!=QCDTree->branchings().end();++cit) {
-    if((*cit)->status()==HardBranching::Outgoing)
-      particles.push_back((*cit)->branchingParticle());
-  }
-  // get the partners
-  showerModel()->partnerFinder()->setInitialEvolutionScales(particles,true,inter,true);
-  // do the inverse recon
-  if(!showerModel()->kinematicsReconstructor()->
-     deconstructDecayJets(QCDTree,this,inter)) {
-    return false;
-  }
-  // clear the old shower
-  currentTree()->clear();
-  // set the hard tree
-  hardTree(QCDTree);
-  // set the charge partners
-  setEvolutionPartners(false,inter,false);
-  // get the particles to be showered
-  map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator cit;
-  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
-  particlesToShower.clear();
-  // incoming particles
-  for(cit=currentTree()->incomingLines().begin();
-      cit!=currentTree()->incomingLines().end();++cit)
-    particlesToShower.push_back(((*cit).first));
-  assert(particlesToShower.size()==1);
-  // outgoing particles
-  for(cjt=currentTree()->outgoingLines().begin();
-      cjt!=currentTree()->outgoingLines().end();++cjt) {
-    particlesToShower.push_back(((*cjt).first));
-    if(ptmax>ZERO) particlesToShower.back()->maximumpT(ptmax,inter);
-  }
-  for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
-    map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator 
-      eit=hardTree()->particles().end(),
-      mit = hardTree()->particles().find(particlesToShower[ix]->progenitor());
-    if( mit != eit) {
-      if(mit->second->status()==HardBranching::Outgoing)
-	particlesToShower[ix]->progenitor()->set5Momentum(mit->second->pVector());
-    }
-  }
-  return true;
-}
-
-bool Evolver::constructHardTree(vector<ShowerProgenitorPtr> & particlesToShower,
-				ShowerInteraction::Type inter) {
-  bool noEmission = true;
-  vector<HardBranchingPtr> spaceBranchings,allBranchings;
-  for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
-    if(particlesToShower[ix]->progenitor()->isFinalState()) {
-      HardBranchingPtr newBranch;
-      if(particlesToShower[ix]->hasEmitted()) {
-	noEmission = false;
-	newBranch = 
-	  new_ptr(HardBranching(particlesToShower[ix]->progenitor(),
-				particlesToShower[ix]->progenitor()->
-				showerKinematics()->SudakovFormFactor(),
-				HardBranchingPtr(),HardBranching::Outgoing));
-	constructTimeLikeLine(newBranch,particlesToShower[ix]->progenitor());
-      }
-      else {
-	newBranch = 
-	  new_ptr(HardBranching(particlesToShower[ix]->progenitor(),
-				SudakovPtr(),HardBranchingPtr(),
-				HardBranching::Outgoing));
-      }
-      allBranchings.push_back(newBranch);
-    }
-    else {
-      HardBranchingPtr first,last;
-      if(!particlesToShower[ix]->progenitor()->parents().empty()) {
-	noEmission = false;
-	constructSpaceLikeLine(particlesToShower[ix]->progenitor(),
-			       first,last,SudakovPtr(),
-			       particlesToShower[ix]->original()->parents()[0]);
-      }
-      else {
-	first = new_ptr(HardBranching(particlesToShower[ix]->progenitor(),
-				      SudakovPtr(),HardBranchingPtr(),
-				      HardBranching::Incoming));
-	if(particlesToShower[ix]->original()->parents().empty())
-	  first->beam(particlesToShower[ix]->original());
-	else
-	  first->beam(particlesToShower[ix]->original()->parents()[0]);
-	last = first;
-      }
-      spaceBranchings.push_back(first);
-      allBranchings.push_back(last);
-    }
-  }
-  if(!noEmission) {
-    HardTreePtr QCDTree = new_ptr(HardTree(allBranchings,spaceBranchings,
-					   inter));
-    // set the charge partners
-    ShowerParticleVector particles;
-    for(set<HardBranchingPtr>::iterator cit=QCDTree->branchings().begin();
-	cit!=QCDTree->branchings().end();++cit) {
-      particles.push_back((*cit)->branchingParticle());
-    }
-    // get the partners
-    showerModel()->partnerFinder()->setInitialEvolutionScales(particles,false,
-							      inter,true);
-    // do the inverse recon
-    if(!showerModel()->kinematicsReconstructor()->
-       deconstructHardJets(QCDTree,this,inter))
-      throw Exception() << "Can't to shower deconstruction for QED shower in"
-			<< "QEDEvolver::showerHard" << Exception::eventerror;
-    // set the hard tree
-    hardTree(QCDTree);
-  }
-  // clear the old shower
-  currentTree()->clear();
-  // set the charge partners
-  setEvolutionPartners(true,inter,false);
-  // get the particles to be showered
-  particlesToShower = currentTree()->extractProgenitors();
-  // reset momenta
-  if(hardTree()) {
-    for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
-      map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator 
-	eit=hardTree()->particles().end(),
-	mit = hardTree()->particles().find(particlesToShower[ix]->progenitor());
-      if( mit != eit) {
-	particlesToShower[ix]->progenitor()->set5Momentum(mit->second->showerMomentum());
-      }
-    }
-  }
-  return true;
-}
-
-void Evolver::constructTimeLikeLine(tHardBranchingPtr branch,
-				    tShowerParticlePtr particle) {
-  for(unsigned int ix=0;ix<particle->children().size();++ix) {
-    HardBranching::Status status = branch->status();
-    tShowerParticlePtr child = 
-      dynamic_ptr_cast<ShowerParticlePtr>(particle->children()[ix]);
-    if(child->children().empty()) {
-      HardBranchingPtr newBranch = 
-	new_ptr(HardBranching(child,SudakovPtr(),branch,status));
-      branch->addChild(newBranch);
-    }
-    else {
-      HardBranchingPtr newBranch = 
-	new_ptr(HardBranching(child,child->showerKinematics()->SudakovFormFactor(),
-			      branch,status));
-      constructTimeLikeLine(newBranch,child);
-      branch->addChild(newBranch);
-    }
-  }
-  // \todo add EW
-  // sort out the type of interaction
-  if(!branch->children().empty()) {
-    if(branch->branchingParticle()->id()==ParticleID::gamma ||
-       branch->children()[0]->branchingParticle()->id()==ParticleID::gamma ||
-       branch->children()[1]->branchingParticle()->id()==ParticleID::gamma)
-      branch->type(ShowerPartnerType::QED);
-    else {
-      if(branch->branchingParticle()->id()==
-	 branch->children()[0]->branchingParticle()->id()) {
-	if(branch->branchingParticle()->dataPtr()->iColour()==PDT::Colour8) {
-	  tShowerParticlePtr emittor = 
-	    branch->branchingParticle()->showerKinematics()->z()>0.5 ?
-	    branch->children()[0]->branchingParticle() : 
-	    branch->children()[1]->branchingParticle();
-	  if(branch->branchingParticle()->colourLine()==emittor->colourLine())
-	    branch->type(ShowerPartnerType::QCDAntiColourLine);
-	  else if(branch->branchingParticle()->antiColourLine()==emittor->antiColourLine())
-	    branch->type(ShowerPartnerType::QCDColourLine);
-	  else
-	    assert(false);
-	}
-	else if(branch->branchingParticle()->colourLine()) {
-	  branch->type(ShowerPartnerType::QCDColourLine);
-	}
-	else if(branch->branchingParticle()->antiColourLine()) {
-	  branch->type(ShowerPartnerType::QCDAntiColourLine);
-	}
-	else
-	  assert(false);
-      }
-      else if(branch->branchingParticle()->id()==ParticleID::g &&
-	      branch->children()[0]->branchingParticle()->id()== 
-	      -branch->children()[1]->branchingParticle()->id()) {
-	if(branch->branchingParticle()->showerKinematics()->z()>0.5)
-	  branch->type(ShowerPartnerType::QCDAntiColourLine);
-	else
-	  branch->type(ShowerPartnerType::QCDColourLine);
-	
-      }
-      else
-	assert(false);
-    }
-  }
-}
-
-void Evolver::constructSpaceLikeLine(tShowerParticlePtr particle,
-				     HardBranchingPtr & first,
-				     HardBranchingPtr & last,
-				     SudakovPtr sud,PPtr beam) {
-  if(!particle) return;
-  if(!particle->parents().empty()) {
-    tShowerParticlePtr parent = 
-      dynamic_ptr_cast<ShowerParticlePtr>(particle->parents()[0]);
-    SudakovPtr newSud=particle->showerKinematics()->SudakovFormFactor();
-    constructSpaceLikeLine(parent,first,last,newSud,beam);
-  }
-  HardBranchingPtr newBranch = 
-    new_ptr(HardBranching(particle,sud,last,HardBranching::Incoming));
-  newBranch->beam(beam);
-  if(!first) {
-    first=newBranch;
-    last =newBranch;
-    return;
-  }
-  last->addChild(newBranch);
-  tShowerParticlePtr timeChild = 
-    dynamic_ptr_cast<ShowerParticlePtr>(particle->parents()[0]->children()[1]);
-  HardBranchingPtr timeBranch;
-  if(!timeChild->children().empty()) {
-    timeBranch = 
-      new_ptr(HardBranching(timeChild,
-			    timeChild->showerKinematics()->SudakovFormFactor(),
-			    last,HardBranching::Outgoing));
-    constructTimeLikeLine(timeBranch,timeChild);
-  }
-  else {
-    timeBranch = 
-      new_ptr(HardBranching(timeChild,SudakovPtr(),last,HardBranching::Outgoing));
-  }
-  last->addChild(timeBranch);
-  // \todo add EW
-  // sort out the type
-  if(last->branchingParticle()      ->id() == ParticleID::gamma ||
-     newBranch->branchingParticle() ->id() == ParticleID::gamma ||
-     timeBranch->branchingParticle()->id() == ParticleID::gamma) {
-    last->type(ShowerPartnerType::QED);
-  }
-  else if(last->branchingParticle()->id()==newBranch->branchingParticle()->id()) {
-    if(last->branchingParticle()->id()==ParticleID::g) {
-      if(last->branchingParticle()->colourLine()==
-	 newBranch->branchingParticle()->colourLine()) {
-	last->type(ShowerPartnerType::QCDAntiColourLine);
-      }
-      else {
-	last->type(ShowerPartnerType::QCDColourLine);
-      }
-    }
-    else if(last->branchingParticle()->hasColour()) {
-      last->type(ShowerPartnerType::QCDColourLine);
-    }
-    else if(last->branchingParticle()->hasAntiColour()) {
-      last->type(ShowerPartnerType::QCDAntiColourLine);
-    }
-    else
-      assert(false);
-  }
-  else if(newBranch->branchingParticle()->id()==ParticleID::g) { 
-    if(last->branchingParticle()->hasColour()) {
-      last->type(ShowerPartnerType::QCDAntiColourLine);
-    }
-    else if(last->branchingParticle()->hasAntiColour()) {
-      last->type(ShowerPartnerType::QCDColourLine);
-    }
-    else
-      assert(false);
-  }
-  else if(newBranch->branchingParticle()->hasColour()) {
-    last->type(ShowerPartnerType::QCDColourLine);
-  }
-  else if(newBranch->branchingParticle()->hasAntiColour()) {
-    last->type(ShowerPartnerType::QCDAntiColourLine);
-  }
-  else {
-    assert(false);
-  }
-  last=newBranch;
-}
-
 void Evolver::connectTrees(ShowerTreePtr showerTree, 
 			   HardTreePtr hardTree, bool hard ) {
   ShowerParticleVector particles;
@@ -3008,8 +2616,6 @@ void Evolver::connectTrees(ShowerTreePtr showerTree,
 }
 
 void Evolver::doShowering(bool hard,XCPtr xcomb) {
-  // order of the interactions
-  bool showerOrder(true);
   // zero number of emissions
   _nis = _nfs = 0;
   // if MC@NLO H event and limited emissions
@@ -3049,141 +2655,120 @@ void Evolver::doShowering(bool hard,XCPtr xcomb) {
 			<< Exception::eventerror;
     }
   }
-  // check if interactions in right order
-  if(hardTree() && interaction_!=4 && 
-     hardTree()->interaction()!=interactions_[0]) {
-    assert(interactions_.size()==2);
-    showerOrder = false;
-    swap(interactions_[0],interactions_[1]);
+  // create random particle vector
+  vector<ShowerProgenitorPtr> tmp;
+  unsigned int nColouredIncoming = 0;
+  while(particlesToShower.size()>0){
+    unsigned int xx=UseRandom::irnd(particlesToShower.size());
+    tmp.push_back(particlesToShower[xx]);
+    particlesToShower.erase(particlesToShower.begin()+xx);
   }
-  // loop over possible interactions
-  for(unsigned int inter=0;inter<interactions_.size();++inter) {
-    // set up for second pass if required
-    if(inter!=0) {
-      // zero intrinsic pt so only added first time round
-      intrinsicpT().clear();
-      // construct the tree and throw veto if not possible
-      if(!(hard ? 
-	   constructHardTree (particlesToShower,interactions_[inter]) :
-	   constructDecayTree(particlesToShower,interactions_[inter]))) 
-	throw InteractionVeto();
+  particlesToShower=tmp;
+  for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
+    if(!particlesToShower[ix]->progenitor()->isFinalState() &&
+       particlesToShower[ix]->progenitor()->coloured()) ++nColouredIncoming;
+  }
+  bool switchRecon = hard && nColouredIncoming !=1;
+  // main shower loop
+  unsigned int ntry(0);
+  bool reconstructed = false;
+  do {
+    // clear results of last attempt if needed
+    if(ntry!=0) {
+      currentTree()->clear();
+      setEvolutionPartners(hard,interaction_,true);
+      _nis = _nfs = 0;
+      // if MC@NLO H event and limited emissions
+      // indicate both final and initial state emission
+      if ( isMCatNLOHEvent && _limitEmissions != 0 ) {
+	_nis = _nfs = 1;
+      }
+      for(unsigned int ix=0; ix<particlesToShower.size();++ix) {
+	SpinPtr spin = particlesToShower[ix]->progenitor()->spinInfo();
+	if(spin && spin->decayVertex() &&
+	   dynamic_ptr_cast<tcSVertexPtr>(spin->decayVertex())) {
+	  spin->decayVertex(VertexPtr());
+	}
+      }
     }
-    // create random particle vector (only need to do once)
-    vector<ShowerProgenitorPtr> tmp;
-    unsigned int nColouredIncoming = 0;
-    while(particlesToShower.size()>0){
-      unsigned int xx=UseRandom::irnd(particlesToShower.size());
-      tmp.push_back(particlesToShower[xx]);
-      particlesToShower.erase(particlesToShower.begin()+xx);
-    }
-    particlesToShower=tmp;
+    // loop over particles
     for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
-      if(!particlesToShower[ix]->progenitor()->isFinalState() &&
-	 particlesToShower[ix]->progenitor()->coloured()) ++nColouredIncoming;
-    }
-    bool switchRecon = hard && nColouredIncoming !=1;
-    // main shower loop
-    unsigned int ntry(0);
-    bool reconstructed = false;
-    do {
-      // clear results of last attempt if needed
-      if(ntry!=0) {
-	currentTree()->clear();
-	setEvolutionPartners(hard,interactions_[inter],true);
-	_nis = _nfs = 0;
-	// if MC@NLO H event and limited emissions
-	// indicate both final and initial state emission
-	if ( isMCatNLOHEvent && _limitEmissions != 0 ) {
-	  _nis = _nfs = 1;
-	}
-	for(unsigned int ix=0; ix<particlesToShower.size();++ix) {
-	  SpinPtr spin = particlesToShower[ix]->progenitor()->spinInfo();
-	  if(spin && spin->decayVertex() &&
-	     dynamic_ptr_cast<tcSVertexPtr>(spin->decayVertex())) {
-	    spin->decayVertex(VertexPtr());
-	  }
-	}
+      // extract the progenitor
+      progenitor(particlesToShower[ix]);
+      // final-state radiation
+      if(progenitor()->progenitor()->isFinalState()) {
+	if(!isFSRadiationON()) continue;
+	// perform shower
+	progenitor()->hasEmitted(startTimeLikeShower(interaction_));
       }
-      // loop over particles
-      for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
-	// extract the progenitor
-	progenitor(particlesToShower[ix]);
-	// final-state radiation
-	if(progenitor()->progenitor()->isFinalState()) {
-	  if(!isFSRadiationON()) continue;
-	  // perform shower
-	  progenitor()->hasEmitted(startTimeLikeShower(interactions_[inter]));
+      // initial-state radiation
+      else {
+	if(!isISRadiationON()) continue;
+	// hard process
+	if(hard) {
+	  // get the PDF
+	  setBeamParticle(_progenitor->beam());
+	  assert(beamParticle());
+	  // perform the shower
+	  // set the beam particle
+	  tPPtr beamparticle=progenitor()->original();
+	  if(!beamparticle->parents().empty()) 
+	    beamparticle=beamparticle->parents()[0];
+	  // generate the shower
+	  progenitor()->hasEmitted(startSpaceLikeShower(beamparticle,
+							interaction_));
 	}
-	// initial-state radiation
+	// decay
 	else {
-	  if(!isISRadiationON()) continue;
-	  // hard process
-	  if(hard) {
-	    // get the PDF
-	    setBeamParticle(_progenitor->beam());
-	    assert(beamParticle());
-	    // perform the shower
-	    // set the beam particle
-	    tPPtr beamparticle=progenitor()->original();
-	    if(!beamparticle->parents().empty()) 
-	      beamparticle=beamparticle->parents()[0];
-	    // generate the shower
-	    progenitor()->hasEmitted(startSpaceLikeShower(beamparticle,
-							  interactions_[inter]));
+	  // skip colour and electrically neutral particles
+	  if(!progenitor()->progenitor()->dataPtr()->coloured() &&
+	     !progenitor()->progenitor()->dataPtr()->charged()) {
+	    progenitor()->hasEmitted(false);
+	    continue;
 	  }
-	  // decay
-	  else {
-	    // skip colour and electrically neutral particles
-	    if(!progenitor()->progenitor()->dataPtr()->coloured() &&
-	       !progenitor()->progenitor()->dataPtr()->charged()) {
-	      progenitor()->hasEmitted(false);
-	      continue;
-	    }
- 	    // perform shower
- 	    // set the scales correctly. The current scale is the maximum scale for
- 	    // emission not the starting scale
-	    ShowerParticle::EvolutionScales maxScales(progenitor()->progenitor()->scales());
-	    progenitor()->progenitor()->scales() = ShowerParticle::EvolutionScales();
-	    if(progenitor()->progenitor()->dataPtr()->charged()) {
-	      progenitor()->progenitor()->scales().QED      = progenitor()->progenitor()->mass();
-	      progenitor()->progenitor()->scales().QED_noAO = progenitor()->progenitor()->mass();
-	    }
-	    if(progenitor()->progenitor()->hasColour()) {
-	      progenitor()->progenitor()->scales().QCD_c       = progenitor()->progenitor()->mass();
-	      progenitor()->progenitor()->scales().QCD_c_noAO  = progenitor()->progenitor()->mass();
-	    }
-	    if(progenitor()->progenitor()->hasAntiColour()) {
-	      progenitor()->progenitor()->scales().QCD_ac      = progenitor()->progenitor()->mass();
-	      progenitor()->progenitor()->scales().QCD_ac_noAO = progenitor()->progenitor()->mass();
-	    }
-	    // perform the shower
-	    progenitor()->hasEmitted(startSpaceLikeDecayShower(maxScales,minmass,
-							       interactions_[inter]));
+	  // perform shower
+	  // set the scales correctly. The current scale is the maximum scale for
+	  // emission not the starting scale
+	  ShowerParticle::EvolutionScales maxScales(progenitor()->progenitor()->scales());
+	  progenitor()->progenitor()->scales() = ShowerParticle::EvolutionScales();
+	  if(progenitor()->progenitor()->dataPtr()->charged()) {
+	    progenitor()->progenitor()->scales().QED      = progenitor()->progenitor()->mass();
+	    progenitor()->progenitor()->scales().QED_noAO = progenitor()->progenitor()->mass();
 	  }
+	  if(progenitor()->progenitor()->hasColour()) {
+	    progenitor()->progenitor()->scales().QCD_c       = progenitor()->progenitor()->mass();
+	    progenitor()->progenitor()->scales().QCD_c_noAO  = progenitor()->progenitor()->mass();
+	  }
+	  if(progenitor()->progenitor()->hasAntiColour()) {
+	    progenitor()->progenitor()->scales().QCD_ac      = progenitor()->progenitor()->mass();
+	    progenitor()->progenitor()->scales().QCD_ac_noAO = progenitor()->progenitor()->mass();
+	  }
+	  // perform the shower
+	  progenitor()->hasEmitted(startSpaceLikeDecayShower(maxScales,minmass,
+							     interaction_));
 	}
       }
-      // do the kinematic reconstruction, checking if it worked
-      reconstructed = hard ?
-	showerModel()->kinematicsReconstructor()->
-	reconstructHardJets (currentTree(),intrinsicpT(),interactions_[inter],
-			     switchRecon && ntry>maximumTries()/2) :
-	showerModel()->kinematicsReconstructor()->
-	reconstructDecayJets(currentTree(),interactions_[inter]);
     }
-    while(!reconstructed&&maximumTries()>++ntry);
-    // check if failed to generate the shower
-    if(ntry==maximumTries()) {
-      if(hard)
-	throw ShowerHandler::ShowerTriesVeto(ntry);
-      else
-	throw Exception() << "Failed to generate the shower after "
-			  << ntry << " attempts in Evolver::showerDecay()"
-			  << Exception::eventerror;
-    }
+    // do the kinematic reconstruction, checking if it worked
+    reconstructed = hard ?
+      showerModel()->kinematicsReconstructor()->
+      reconstructHardJets (currentTree(),intrinsicpT(),interaction_,
+			   switchRecon && ntry>maximumTries()/2) :
+      showerModel()->kinematicsReconstructor()->
+      reconstructDecayJets(currentTree(),interaction_);
+  }
+  while(!reconstructed&&maximumTries()>++ntry);
+  // check if failed to generate the shower
+  if(ntry==maximumTries()) {
+    if(hard)
+      throw ShowerHandler::ShowerTriesVeto(ntry);
+    else
+      throw Exception() << "Failed to generate the shower after "
+			<< ntry << " attempts in Evolver::showerDecay()"
+			<< Exception::eventerror;
   }
   // tree has now showered
   _currenttree->hasShowered(true);
-  if(!showerOrder) swap(interactions_[0],interactions_[1]);
   hardTree(HardTreePtr());
 }
 

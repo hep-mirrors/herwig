@@ -356,13 +356,11 @@ void MEPP2HiggsVBF::Init() {
 }
 
 HardTreePtr MEPP2HiggsVBF::generateHardest(ShowerTreePtr tree,
-					   vector<ShowerInteraction::Type> inter) {
-  bool found = false;
+					   ShowerInteraction::Type inter) {
   // check if generating QCD radiation
-  for(unsigned int ix=0;ix<inter.size();++ix) {
-    found |= inter[ix]==ShowerInteraction::QCD;
-  }
-  if(!found) return HardTreePtr();
+  if(inter!=ShowerInteraction::QCD && inter!=ShowerInteraction::QEDQCD &&
+     inter!=ShowerInteraction::ALL)
+    return HardTreePtr();
   pair<    tShowerParticlePtr,    tShowerParticlePtr> first,second;
   pair<tcBeamPtr,tcBeamPtr> beams;
   pair<tPPtr,tPPtr> hadrons;
