@@ -546,7 +546,7 @@ double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
   // if spin correlations
   vector<pair<int,Complex> > wgts;     
   if(ShowerHandler::currentHandler()->evolver()->spinCorrelations()) {
-    RhoDMatrix rho = extractRhoMatrix(particle,kinematics,true);
+    RhoDMatrix rho = particle.extractRhoMatrix(kinematics,true);
     // calculate the weights
     wgts = splittingFn()->generatePhiForward(z,t,ids,rho);
   }
@@ -699,7 +699,7 @@ double QTildeSudakov::generatePhiBackward(ShowerParticle & particle,
   vector<pair<int,Complex> > wgts;
   if(ShowerHandler::currentHandler()->evolver()->spinCorrelations()) {
     // get the spin density matrix and the mapping
-    RhoDMatrix rho = extractRhoMatrix(particle,kinematics,false);
+    RhoDMatrix rho = particle.extractRhoMatrix(kinematics,false);
     // get the weights
     wgts = splittingFn()->generatePhiBackward(z,t,ids,rho);
   }

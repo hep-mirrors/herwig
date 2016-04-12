@@ -449,20 +449,6 @@ protected:
    */
   const vector<IdList> & particles() const { return particles_; }
 
-  /**
-   * For a particle which came from the hard process get the spin density and
-   * the mapping required to the basis used in the Shower
-   * @param rho The \f$\rho\f$ matrix
-   * @param mapping The mapping
-   * @param particle The particle
-   * @param showerkin The ShowerKinematics object
-   */
-  bool getMapping(SpinPtr &, RhoDMatrix & map,
-		  ShowerParticle & particle,ShoKinPtr showerkin);
-
-  RhoDMatrix extractRhoMatrix(ShowerParticle & particle,
-			      ShoKinPtr kinematics, bool forward);
-
 public:
 
   /**
