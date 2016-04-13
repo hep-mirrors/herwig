@@ -63,8 +63,3 @@ void ShowerKinematics::updateLast(const tShowerParticlePtr,
 		    << " should have been overriden in an inheriting class"
 		    << Exception::runerror;
 }
-
-void ShowerKinematics::transform(const LorentzRotation & ) {
-  throw Exception() << "Base class ShowerKinematics::transform called "
-		    << Exception::runerror;
-}

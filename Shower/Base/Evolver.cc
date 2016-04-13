@@ -1326,6 +1326,8 @@ void Evolver::updateHistory(tShowerParticlePtr particle) {
 
 bool Evolver::startTimeLikeShower(ShowerInteraction::Type type) {
   _nFSR = 0;
+  // initialize basis vectors etc
+  progenitor()->progenitor()->initializeFinalState();
   if(hardTree()) {
     map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator 
       eit=hardTree()->particles().end(),
@@ -1337,8 +1339,6 @@ bool Evolver::startTimeLikeShower(ShowerInteraction::Type type) {
       return output;
     }
   }
-  // initialize basis vectors etc
-  progenitor()->progenitor()->initializeFinalState();
   // do the shower
   bool output = hardOnly() ? false :
     timeLikeShower(progenitor()->progenitor() ,type,Branching(),true) ;
@@ -1347,6 +1347,8 @@ bool Evolver::startTimeLikeShower(ShowerInteraction::Type type) {
 }
 
 bool Evolver::startSpaceLikeShower(PPtr parent, ShowerInteraction::Type type) {
+  // initialise the basis vectors
+  progenitor()->progenitor()->initializeInitialState(parent);
   if(hardTree()) {
     map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator 
       eit =hardTree()->particles().end(),
@@ -1356,8 +1358,6 @@ bool Evolver::startSpaceLikeShower(PPtr parent, ShowerInteraction::Type type) {
 				       parent, mit->second->parent(), type );
     } 
   }
-  // initialise the basis vectors
-  progenitor()->progenitor()->initializeInitialState(parent);
   // perform the shower
   return  hardOnly() ? false :
     spaceLikeShower(progenitor()->progenitor(),parent,type);
@@ -1367,6 +1367,8 @@ bool Evolver::
 startSpaceLikeDecayShower(const ShowerParticle::EvolutionScales & maxScales,
 			  Energy minimumMass,ShowerInteraction::Type type) {
   _nFSR = 0;
+  // set up the particle basis vectors
+  progenitor()->progenitor()->initializeDecay();
   if(hardTree()) {
     map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator 
       eit =hardTree()->particles().end(),
@@ -1378,8 +1380,6 @@ startSpaceLikeDecayShower(const ShowerParticle::EvolutionScales & maxScales,
 					   minimumMass, branch ,type, Branching());
     }
   }
-  // set up the particle basis vectors
-  progenitor()->progenitor()->initializeDecay();
   // perform the shower
   return  hardOnly() ? false :
     spaceLikeDecayShower(progenitor()->progenitor(),maxScales,minimumMass,type,Branching());

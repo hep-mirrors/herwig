@@ -464,9 +464,9 @@ void ShowerParticle::constructSpinInfo(bool timeLike) {
 void ShowerParticle::initializeDecay() {
   Lorentz5Momentum p, n, ppartner, pcm;
   assert(perturbative()!=1);
-  ShowerBasisPtr newBasis;
   // this is for the initial decaying particle
   if(perturbative()==2) {
+    ShowerBasisPtr newBasis;
     p = momentum();
     Lorentz5Momentum ppartner(partner()->momentum());
     // removed to make inverse recon work properly
@@ -478,22 +478,21 @@ void ShowerParticle::initializeDecay() {
     n.boost( -boost);
     newBasis = new_ptr(ShowerBasis());
     newBasis->setBasis(p,n,ShowerBasis::Rest);
+    showerBasis(newBasis,false);
   }
   else {
-    newBasis = dynamic_ptr_cast<ShowerParticlePtr>(parents()[0])->showerBasis();
+    showerBasis(dynamic_ptr_cast<ShowerParticlePtr>(parents()[0])->showerBasis(),true);
   }
-  assert(newBasis);
-  showerBasis(newBasis);
 }
 
 void ShowerParticle::initializeInitialState(PPtr parent) {
   // For the time being we are considering only 1->2 branching
   Lorentz5Momentum p, n, pthis, pcm;
   assert(perturbative()!=2);
-  ShowerBasisPtr newBasis;
   if(perturbative()==1) {
+    ShowerBasisPtr newBasis;
     // find the partner and its momentum
-    assert(partner());
+    if(!partner()) return;
     if(partner()->isFinalState()) {
       Lorentz5Momentum pa = -momentum()+partner()->momentum();
       Lorentz5Momentum pb =  momentum();
@@ -525,20 +524,20 @@ void ShowerParticle::initializeInitialState(PPtr parent) {
     }
     newBasis = new_ptr(ShowerBasis());
     newBasis->setBasis(p,n,ShowerBasis::BackToBack);
+    showerBasis(newBasis,false);
   } 
   else {
-    newBasis = dynamic_ptr_cast<ShowerParticlePtr>(children()[0])->showerBasis();
+    showerBasis(dynamic_ptr_cast<ShowerParticlePtr>(children()[0])->showerBasis(),true);
   }
-  assert(newBasis);
-  showerBasis(newBasis);
 }
 
 void ShowerParticle::initializeFinalState() {
   // set the basis vectors
   Lorentz5Momentum p,n;
-  ShowerBasisPtr newBasis;
   if(perturbative()!=0) {
+    ShowerBasisPtr newBasis;
     // find the partner() and its momentum
+    if(!partner()) return;
     Lorentz5Momentum ppartner(partner()->momentum());
     // momentum of the emitting particle
     p = momentum();
@@ -570,15 +569,14 @@ void ShowerParticle::initializeFinalState() {
     }
     newBasis = new_ptr(ShowerBasis());
     newBasis->setBasis(p,n,ShowerBasis::BackToBack);
+    showerBasis(newBasis,false);
   }
   else if(initiatesTLS()) {
-    newBasis = dynamic_ptr_cast<ShowerParticlePtr>(parents()[0]->children()[0])->showerBasis();
+    showerBasis(dynamic_ptr_cast<ShowerParticlePtr>(parents()[0]->children()[0])->showerBasis(),true);
   }
   else  {
-    newBasis = dynamic_ptr_cast<ShowerParticlePtr>(parents()[0])->showerBasis();
+    showerBasis(dynamic_ptr_cast<ShowerParticlePtr>(parents()[0])->showerBasis(),true);
   }
-  assert(newBasis);
-  showerBasis(newBasis);
 }
 
 void ShowerParticle::setShowerMomentum(bool timeLike) {

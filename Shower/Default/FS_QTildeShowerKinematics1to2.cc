@@ -86,7 +86,7 @@ updateChildren(const tShowerParticlePtr parent,
   // set the momenta of the children
   for(ShowerParticleVector::const_iterator pit=children.begin();
       pit!=children.end();++pit) {
-    (**pit).showerBasis(parent->showerBasis());
+    (**pit).showerBasis(parent->showerBasis(),true);
     (**pit).setShowerMomentum(true);
   }
   // sort out the helicity stuff 

@@ -229,11 +229,6 @@ public:
   void SudakovFormFactor(const tSudakovPtr sud) { _sudakov=sud; }
   //@}
 
-  /**
-   *  Transform the shower kinematics (usually the reference vectors)
-   */
-  virtual void transform(const LorentzRotation & r);
-
 private:
 
   /**

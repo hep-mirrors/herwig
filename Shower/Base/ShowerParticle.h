@@ -274,7 +274,14 @@ public:
   /**
    * Set the ShowerBasis object.
    */
-  void showerBasis(const ShowerBasisPtr in) { _showerBasis = in; }
+  void showerBasis(const ShowerBasisPtr in, bool copy) {
+    if(!copy) 
+      _showerBasis = in;
+    else {
+      _showerBasis = new_ptr(ShowerBasis());
+      _showerBasis->setBasis(in->pVector(),in->nVector(),in->frame());
+    } 
+  }
   //@}
 
   /**

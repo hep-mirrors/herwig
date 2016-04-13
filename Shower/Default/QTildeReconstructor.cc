@@ -2582,8 +2582,8 @@ void QTildeReconstructor::deepTransform(PPtr particle,
   particle->transform(r);
   // transform the p and n vectors
   ShowerParticlePtr sparticle = dynamic_ptr_cast<ShowerParticlePtr>(particle);
-  if(sparticle && sparticle->showerKinematics()) {
-    sparticle->showerKinematics()->transform(r);
+  if(sparticle && sparticle->showerBasis()) {
+    sparticle->showerBasis()->transform(r);
   }
   if ( particle->next() ) deepTransform(particle->next(),r,match,original);
   if(!match) return;

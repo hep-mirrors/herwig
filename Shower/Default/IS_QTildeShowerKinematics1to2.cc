@@ -72,8 +72,8 @@ updateParent(const tShowerParticlePtr parent,
   children[1]->showerParameters().ptx   = - cos(phi()) * pT();
   children[1]->showerParameters().pty   = - sin(phi()) * pT();
   children[1]->showerParameters().pt    = pT();
-  parent     ->showerBasis(children[0]->showerBasis());
-  children[1]->showerBasis(children[0]->showerBasis());
+  parent     ->showerBasis(children[0]->showerBasis(),true);
+  children[1]->showerBasis(children[0]->showerBasis(),true);
   parent     ->setShowerMomentum(false);
   children[1]->setShowerMomentum(true);
   if(! ShowerHandler::currentHandler()->evolver()->correlations()) return;
