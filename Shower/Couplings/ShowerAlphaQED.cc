@@ -14,6 +14,7 @@
 #include "ShowerAlphaQED.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/Repository/EventGenerator.h"
+#include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -35,6 +36,12 @@ void ShowerAlphaQED::Init() {
 
   static ClassDocumentation<ShowerAlphaQED> documentation
     ("This (concrete) class describes the QED alpha running.");
+
+  static Parameter<ShowerAlphaQED,double> interfaceAlpha
+    ("Alpha",
+     "The value of alpha_EM",
+     &ShowerAlphaQED::_alpha, 1./137., 0., 1.,
+     false, false, Interface::limited);
 
 }
 
