@@ -515,7 +515,7 @@ reconstructDecayJets(ShowerTreePtr decay,
     // get the n reference vector
     if(partner) {
       if(initial->progenitor()->showerKinematics()) {
-	nvect = initial->progenitor()->showerKinematics()->getBasis()[1];
+	nvect = initial->progenitor()->showerBasis()->getBasis()[1];
       }
       else {
 	Lorentz5Momentum ppartner=initial->progenitor()->partner()->momentum();
@@ -1306,7 +1306,7 @@ reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
     else {
       pin[0]  +=jets[ix]->progenitor()->momentum();
       if(jets[ix]->progenitor()->showerKinematics()) {
-	pbeam = jets[ix]->progenitor()->showerKinematics()->getBasis()[0];
+	pbeam = jets[ix]->progenitor()->showerBasis()->getBasis()[0];
       }
       else {
 	if ( jets[ix]->original()->parents().empty() ) {

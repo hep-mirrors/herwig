@@ -68,7 +68,8 @@ updateChildren(const tShowerParticlePtr parent,
   // set the momenta of the children
   for(ShowerParticleVector::const_iterator pit=children.begin();
       pit!=children.end();++pit) {
-    setMomentum(*pit,true);
+    (**pit).showerBasis(parent->showerBasis());
+    (**pit).setShowerMomentum(true);
   }
 }
 
@@ -82,46 +83,17 @@ void Decay_QTildeShowerKinematics1to2::
 reconstructLast(const tShowerParticlePtr last, Energy mass) const {
   // set beta component and consequently all missing data from that,
   // using the nominal (i.e. PDT) mass.
-  Energy theMass = mass>ZERO ? mass : last->data().constituentMass(); 
+  Energy theMass = mass > ZERO ? mass : last->data().constituentMass(); 
   last->showerParameters().beta=
     (sqr(theMass) + sqr(last->showerParameters().pt)
-     - sqr( last->showerParameters().alpha )*pVector().m2())
-    / ( 2.*last->showerParameters().alpha*p_dot_n() );   
+     - sqr( last->showerParameters().alpha )*last->showerBasis()->pVector().m2())
+    / ( 2.*last->showerParameters().alpha*last->showerBasis()->p_dot_n() );   
   // set that new momentum  
-  last->set5Momentum( sudakov2Momentum( last->showerParameters().alpha, 
-					last->showerParameters().beta, 
-					last->showerParameters().ptx,
-					last->showerParameters().pty) );
+  last->set5Momentum( last->showerBasis()->sudakov2Momentum( last->showerParameters().alpha, 
+							     last->showerParameters().beta, 
+							     last->showerParameters().ptx,
+							     last->showerParameters().pty) );
 }
-
-void Decay_QTildeShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr) {
-  Lorentz5Momentum p, n, ppartner, pcm;
-  Frame frame;
-  assert(particle.perturbative()!=1);
-  // this is for the initial decaying particle
-  if(particle.perturbative()==2) {
-    p = particle.momentum();
-    ShowerParticlePtr partner=particle.partner();
-    Lorentz5Momentum ppartner(partner->momentum());
-    // removed to make inverse recon work properly
-    //if(partner->thePEGBase()) ppartner=partner->thePEGBase()->momentum();
-    pcm=ppartner;
-    Boost boost(p.findBoostToCM());
-    pcm.boost(boost);
-    n = Lorentz5Momentum( ZERO,0.5*p.mass()*pcm.vect().unit()); 
-    n.boost( -boost);
-    frame = Rest;
-  }
-  else {
-    tShoKinPtr kin=dynamic_ptr_cast<ShowerParticlePtr>(particle.parents()[0])
-      ->showerKinematics();
-    p = kin->getBasis()[0];
-    n = kin->getBasis()[1];
-    frame = kin->frame();
-  }
-  setBasis(p,n,frame);
-}
-
 
 void Decay_QTildeShowerKinematics1to2::updateParent(const tShowerParticlePtr parent, 
 						    const ShowerParticleVector & children,

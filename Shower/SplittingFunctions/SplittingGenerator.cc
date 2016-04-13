@@ -332,8 +332,6 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
   // return empty branching if nothing happened
   if(!kinematics)  return Branching(ShoKinPtr(), IdList(),SudakovPtr(),
 				    ShowerPartnerType::Undefined);
-  // If a branching has been selected initialize it
-  kinematics->initialize(particle,PPtr());
   // and return it
   return Branching(kinematics, ids,sudakov,partnerType);
 }
@@ -456,8 +454,6 @@ chooseDecayBranching(ShowerParticle &particle,
   // return empty branching if nothing happened
   if(!kinematics)  return Branching(ShoKinPtr(), IdList(),SudakovPtr(),
 				    ShowerPartnerType::Undefined);
-  // initialize the branching
-  kinematics->initialize(particle,PPtr());
   // and generate phi
   kinematics->phi(sudakov->generatePhiDecay(particle,ids,kinematics));
   // and return it
@@ -465,7 +461,7 @@ chooseDecayBranching(ShowerParticle &particle,
 }
 
 Branching SplittingGenerator::
-chooseBackwardBranching(ShowerParticle &particle,PPtr beamparticle,
+chooseBackwardBranching(ShowerParticle &particle,PPtr,
 			double enhance,
 			Ptr<BeamParticleData>::transient_const_pointer beam,
 			ShowerInteraction::Type type,
@@ -572,7 +568,6 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr beamparticle,
 				   ShowerPartnerType::Undefined);
   // initialize the ShowerKinematics 
   // and return it
-  kinematics->initialize(particle,beamparticle);
   // and generate phi
   kinematics->phi(sudakov->generatePhiBackward(particle,ids,kinematics));
   // return the answer

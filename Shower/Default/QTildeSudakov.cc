@@ -446,13 +446,13 @@ double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
     double zFact = !swapOrder ? (1.-z) : z;
     // compute the transforms to the shower reference frame
     // first the boost
-    vector<Lorentz5Momentum> basis = kinematics->getBasis();
-    Lorentz5Momentum pVect = basis[0], nVect = basis[1];
+    Lorentz5Momentum pVect = particle.showerBasis()->pVector();
+    Lorentz5Momentum nVect = particle.showerBasis()->nVector();
     Boost beta_bb;
-    if(kinematics->frame()==ShowerKinematics::BackToBack) {
+    if(particle.showerBasis()->frame()==ShowerBasis::BackToBack) {
       beta_bb = -(pVect + nVect).boostVector();
     }
-    else if(kinematics->frame()==ShowerKinematics::Rest) {
+    else if(particle.showerBasis()->frame()==ShowerBasis::Rest) {
       beta_bb = -pVect.boostVector();
     }
     else
@@ -460,10 +460,10 @@ double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
     pVect.boost(beta_bb);
     nVect.boost(beta_bb);
     Axis axis;
-    if(kinematics->frame()==ShowerKinematics::BackToBack) {
+    if(particle.showerBasis()->frame()==ShowerBasis::BackToBack) {
       axis = pVect.vect().unit();
     }
-    else if(kinematics->frame()==ShowerKinematics::Rest) {
+    else if(particle.showerBasis()->frame()==ShowerBasis::Rest) {
       axis = nVect.vect().unit();
     }
     else
@@ -546,7 +546,7 @@ double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
   // if spin correlations
   vector<pair<int,Complex> > wgts;     
   if(ShowerHandler::currentHandler()->evolver()->spinCorrelations()) {
-    RhoDMatrix rho = particle.extractRhoMatrix(kinematics,true);
+    RhoDMatrix rho = particle.extractRhoMatrix(true);
     // calculate the weights
     wgts = splittingFn()->generatePhiForward(z,t,ids,rho);
   }
@@ -636,10 +636,9 @@ double QTildeSudakov::generatePhiBackward(ShowerParticle & particle,
     double zFact = (1.-z);
     // compute the transforms to the shower reference frame
     // first the boost
-    vector<Lorentz5Momentum> basis = kinematics->getBasis();
-    Lorentz5Momentum pVect = basis[0];
-    Lorentz5Momentum nVect = basis[1];
-    assert(kinematics->frame()==ShowerKinematics::BackToBack);
+    Lorentz5Momentum pVect = particle.showerBasis()->pVector();
+    Lorentz5Momentum nVect = particle.showerBasis()->nVector();
+    assert(particle.showerBasis()->frame()==ShowerBasis::BackToBack);
     Boost beta_bb = -(pVect + nVect).boostVector();
     pVect.boost(beta_bb);
     nVect.boost(beta_bb);
@@ -699,7 +698,7 @@ double QTildeSudakov::generatePhiBackward(ShowerParticle & particle,
   vector<pair<int,Complex> > wgts;
   if(ShowerHandler::currentHandler()->evolver()->spinCorrelations()) {
     // get the spin density matrix and the mapping
-    RhoDMatrix rho = particle.extractRhoMatrix(kinematics,false);
+    RhoDMatrix rho = particle.extractRhoMatrix(false);
     // get the weights
     wgts = splittingFn()->generatePhiBackward(z,t,ids,rho);
   }
@@ -774,12 +773,11 @@ double QTildeSudakov::generatePhiDecay(ShowerParticle & particle,
   // find the partner for the soft correlations
   tShowerParticlePtr partner = findCorrelationPartner(particle,true,splittingFn()->interactionType());
   double zFact(1.-z);
-  vector<Lorentz5Momentum> basis = kinematics->getBasis();
   // compute the transforms to the shower reference frame
   // first the boost
-  Lorentz5Momentum pVect = basis[0];
-  Lorentz5Momentum nVect = basis[1];
-  assert(kinematics->frame()==ShowerKinematics::Rest);
+  Lorentz5Momentum pVect = particle.showerBasis()->pVector();
+  Lorentz5Momentum nVect = particle.showerBasis()->nVector();
+  assert(particle.showerBasis()->frame()==ShowerBasis::Rest);
   Boost beta_bb = -pVect.boostVector();
   pVect.boost(beta_bb);
   nVect.boost(beta_bb);

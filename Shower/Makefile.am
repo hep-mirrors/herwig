@@ -20,8 +20,6 @@ Default/Decay_QTildeShowerKinematics1to2.cc \
 Default/Decay_QTildeShowerKinematics1to2.h  \
 Default/IS_QTildeShowerKinematics1to2.cc    Default/IS_QTildeShowerKinematics1to2.h  \
 Default/FS_QTildeShowerKinematics1to2.cc    Default/FS_QTildeShowerKinematics1to2.h  \
-Default/QTildeShowerKinematics1to2.cc Default/QTildeShowerKinematics1to2.fh\
-Default/QTildeShowerKinematics1to2.h  \
 Default/QTildeFinder.cc Default/QTildeFinder.h\
 Default/QTildeReconstructor.cc Default/QTildeReconstructor.h Default/QTildeReconstructor.tcc \
 Base/KinematicsReconstructor.cc \
@@ -37,6 +35,7 @@ libHwShower_la_SOURCES = ShowerConfig.h \
 Base/Branching.h \
 Base/ShowerParticle.cc  Base/ShowerParticle.fh  Base/ShowerParticle.h \
 Base/ShowerKinematics.fh  Base/ShowerKinematics.h Base/ShowerKinematics.cc \
+Base/ShowerBasis.fh  Base/ShowerBasis.h Base/ShowerBasis.cc \
 Base/ShowerTree.h Base/ShowerTree.fh Base/ShowerTree.cc \
 Base/ShowerProgenitor.fh Base/ShowerProgenitor.h \
 Base/HardTree.h Base/HardTree.fh Base/HardTree.cc\

@@ -12,7 +12,7 @@
 // This is the declaration of the FS_QTildeShowerKinematics1to2 class.
 //
 
-#include "QTildeShowerKinematics1to2.h"
+#include "Herwig/Shower/Base/ShowerKinematics.h"
 
 namespace Herwig {
 
@@ -23,12 +23,12 @@ using namespace ThePEG;
  *  This (concrete) class provides the specific Final State shower
  *  kinematics information.
  *
- *  @see QTildeShowerKinematics1to2
+ *  @see ShowerKinematics
  *  @see IS_QTildeShowerKinematics1to2
  *  @see Decay_QTildeShowerKinematics1to2
  *  @see KinematicsReconstructor
  */
-class FS_QTildeShowerKinematics1to2: public QTildeShowerKinematics1to2 {
+class FS_QTildeShowerKinematics1to2: public ShowerKinematics {
 
 public:
 
@@ -100,13 +100,6 @@ public:
    * @param mass The mass to be used, if less than zero on-shell
    */
   virtual void reconstructLast(const tShowerParticlePtr last, Energy mass=-1.*GeV) const;
-
-  /**
-   *  Perform any initial calculations needed after the branching has been selected
-   * @param particle The branching particle
-   * @param parent The bema particle for the jet if needed
-   */
-  virtual void initialize(ShowerParticle & particle,PPtr parent);
   //@}
 
 private:

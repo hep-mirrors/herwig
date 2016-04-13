@@ -1337,6 +1337,9 @@ bool Evolver::startTimeLikeShower(ShowerInteraction::Type type) {
       return output;
     }
   }
+  // initialize basis vectors etc
+  progenitor()->progenitor()->initializeFinalState();
+  // do the shower
   bool output = hardOnly() ? false :
     timeLikeShower(progenitor()->progenitor() ,type,Branching(),true) ;
   if(output) updateHistory(progenitor()->progenitor());
@@ -1353,6 +1356,9 @@ bool Evolver::startSpaceLikeShower(PPtr parent, ShowerInteraction::Type type) {
 				       parent, mit->second->parent(), type );
     } 
   }
+  // initialise the basis vectors
+  progenitor()->progenitor()->initializeInitialState(parent);
+  // perform the shower
   return  hardOnly() ? false :
     spaceLikeShower(progenitor()->progenitor(),parent,type);
 }
@@ -1372,6 +1378,9 @@ startSpaceLikeDecayShower(const ShowerParticle::EvolutionScales & maxScales,
 					   minimumMass, branch ,type, Branching());
     }
   }
+  // set up the particle basis vectors
+  progenitor()->progenitor()->initializeDecay();
+  // perform the shower
   return  hardOnly() ? false :
     spaceLikeDecayShower(progenitor()->progenitor(),maxScales,minimumMass,type,Branching());
 }
@@ -2070,7 +2079,6 @@ bool Evolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr beam,
     ShoKinPtr kinematics =
       branch->sudakov()->createInitialStateBranching( branch->scale(), z, branch->phi(),
     						      branch->children()[0]->pT() );
-    kinematics->initialize( *particle, beam );
     // assign the splitting function and shower kinematics
     particle->showerKinematics( kinematics );
     if(kinematics->pT()>progenitor()->highestpT())
@@ -3101,7 +3109,6 @@ Branching Evolver::selectTimeLikeBranching(tShowerParticlePtr particle,
 	                                         branch->children()[0]->z(),
 	                                         branch->phi(),
 						 branch->children()[0]->pT());
-  showerKin->initialize( *particle,PPtr() );
   IdList idlist(3);
   idlist[0] = particle->id();
   idlist[1] = branch->children()[0]->branchingParticle()->id();
@@ -3200,7 +3207,6 @@ Branching Evolver::selectSpaceLikeDecayBranching(tShowerParticlePtr particle,
 					    branch->children()[0]->z(),
 					    branch->phi(),
 					    branch->children()[0]->pT());
-   showerKin->initialize( *particle,PPtr() );
    IdList idlist(3);
    idlist[0] = particle->id();
    idlist[1] = branch->children()[0]->branchingParticle()->id();

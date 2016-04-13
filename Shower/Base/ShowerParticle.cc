@@ -51,16 +51,14 @@ void ShowerParticle::addPartner(EvolutionPartner in ) {
 
 namespace {
 
-LorentzRotation boostToShower(const vector<Lorentz5Momentum> & basis,
-			      ShowerKinematics::Frame frame,
-			      Lorentz5Momentum & porig) {
-  LorentzRotation output;
-  if(frame==ShowerKinematics::BackToBack) {
+LorentzRotation boostToShower(Lorentz5Momentum & porig, tShowerBasisPtr basis) {
+  LorentzRotation output; 
+  if(basis->frame()==ShowerBasis::BackToBack) {
     // we are doing the evolution in the back-to-back frame
     // work out the boostvector
-    Boost boostv(-(basis[0]+basis[1]).boostVector());
+    Boost boostv(-(basis->pVector()+basis->nVector()).boostVector());
     // momentum of the parton
-    Lorentz5Momentum ptest(basis[0]);
+    Lorentz5Momentum ptest(basis->pVector());
     // construct the Lorentz boost
     output = LorentzRotation(boostv);
     ptest *= output;
@@ -73,13 +71,13 @@ LorentzRotation boostToShower(const vector<Lorentz5Momentum> & basis,
     else if(axis.z()<0.) {
       output.rotate(Constants::pi,Axis(1.,0.,0.));
     }
-    porig = output*basis[0];
+    porig = output*basis->pVector();
     porig.setX(ZERO);
     porig.setY(ZERO);
   }
   else {
-    output = LorentzRotation(-basis[0].boostVector());
-    porig = output*basis[0];
+    output = LorentzRotation(-basis->pVector().boostVector());
+    porig = output*basis->pVector();
     porig.setX(ZERO);
     porig.setY(ZERO);
     porig.setZ(ZERO);
@@ -225,11 +223,11 @@ VectorSpinPtr createVectorSpinInfo(ShowerParticle & particle,
 }
 }
 
-RhoDMatrix ShowerParticle::extractRhoMatrix(ShoKinPtr kinematics,bool forward) {
+RhoDMatrix ShowerParticle::extractRhoMatrix(bool forward) {
   // get the spin density matrix and the mapping
   RhoDMatrix mapping;
   SpinPtr inspin;
-  bool needMapping = getMapping(inspin,mapping,kinematics);
+  bool needMapping = getMapping(inspin,mapping);
   // set the decayed flag
   inspin->decay();
   // get the spin density matrix
@@ -252,8 +250,7 @@ RhoDMatrix ShowerParticle::extractRhoMatrix(ShoKinPtr kinematics,bool forward) {
   return rho;
 }
 
-bool ShowerParticle::getMapping(SpinPtr & output, RhoDMatrix & mapping,
-				ShoKinPtr showerkin) {
+bool ShowerParticle::getMapping(SpinPtr & output, RhoDMatrix & mapping) {
   // if the particle is not from the hard process
   if(!this->perturbative()) {
     // mapping is the identity
@@ -264,7 +261,7 @@ bool ShowerParticle::getMapping(SpinPtr & output, RhoDMatrix & mapping,
     }
     else {
       Lorentz5Momentum porig;
-      LorentzRotation rot = boostToShower(showerkin->getBasis(),showerkin->frame(),porig);
+      LorentzRotation rot = boostToShower(porig,showerBasis());
       Helicity::Direction dir = this->isFinalState() ? outgoing : incoming;
       if(this->dataPtr()->iSpin()==PDT::Spin0) {
 	assert(false);
@@ -286,7 +283,7 @@ bool ShowerParticle::getMapping(SpinPtr & output, RhoDMatrix & mapping,
     assert(this->perturbative()==1 || this->perturbative()==2);
     // get transform to shower frame
     Lorentz5Momentum porig;
-    LorentzRotation rot = boostToShower(showerkin->getBasis(),showerkin->frame(),porig);
+    LorentzRotation rot = boostToShower(porig,showerBasis());
     // the rest depends on the spin of the particle
     PDT::Spin spin(this->dataPtr()->iSpin());
     mapping=RhoDMatrix(spin,false);
@@ -335,7 +332,7 @@ bool ShowerParticle::getMapping(SpinPtr & output, RhoDMatrix & mapping,
     // get the basis vectors
     // get transform to shower frame
     Lorentz5Momentum porig;
-    LorentzRotation rot = boostToShower(showerkin->getBasis(),showerkin->frame(),porig);
+    LorentzRotation rot = boostToShower(porig,showerBasis());
     porig *= this->x();
     // the rest depends on the spin of the particle
     PDT::Spin spin(this->dataPtr()->iSpin());
@@ -381,8 +378,7 @@ bool ShowerParticle::getMapping(SpinPtr & output, RhoDMatrix & mapping,
   else if(this->perturbative() == 2 && !this->isFinalState()) { 
     // get the basis vectors
     Lorentz5Momentum porig;
-    LorentzRotation rot=boostToShower(showerkin->getBasis(),
-				      showerkin->frame(),porig);
+    LorentzRotation rot=boostToShower(porig,showerBasis());
     // the rest depends on the spin of the particle
     PDT::Spin spin(this->dataPtr()->iSpin());
     mapping=RhoDMatrix(spin);
@@ -428,4 +424,172 @@ bool ShowerParticle::getMapping(SpinPtr & output, RhoDMatrix & mapping,
   else
     assert(false);
   return true;
+}
+
+void ShowerParticle::constructSpinInfo(bool timeLike) {
+  // now construct the required spininfo and calculate the basis states
+  PDT::Spin spin(dataPtr()->iSpin());
+  if(spin==PDT::Spin0) {
+    ScalarWaveFunction::constructSpinInfo(this,outgoing,timeLike);
+  }
+  // calculate the basis states and construct the SpinInfo for a spin-1/2 particle
+  else if(spin==PDT::Spin1Half) {
+    // outgoing particle
+    if(id()>0) {
+      vector<LorentzSpinorBar<SqrtEnergy> > stemp;
+      SpinorBarWaveFunction::calculateWaveFunctions(stemp,this,outgoing);
+      SpinorBarWaveFunction::constructSpinInfo(stemp,this,outgoing,timeLike);
+    }
+    // outgoing antiparticle
+    else {
+      vector<LorentzSpinor<SqrtEnergy> > stemp;
+      SpinorWaveFunction::calculateWaveFunctions(stemp,this,outgoing);
+      SpinorWaveFunction::constructSpinInfo(stemp,this,outgoing,timeLike);
+    }
+  }
+  // calculate the basis states and construct the SpinInfo for a spin-1 particle
+  else if(spin==PDT::Spin1) {
+    bool massless(id()==ParticleID::g||id()==ParticleID::gamma);
+    vector<Helicity::LorentzPolarizationVector> vtemp;
+    VectorWaveFunction::calculateWaveFunctions(vtemp,this,outgoing,massless);
+    VectorWaveFunction::constructSpinInfo(vtemp,this,outgoing,timeLike,massless);
+  }
+  else {
+    throw Exception() << "Spins higher than 1 are not yet implemented in " 
+		      << "FS_QtildaShowerKinematics1to2::constructVertex() "
+		      << Exception::runerror;
+  }
+}
+
+void ShowerParticle::initializeDecay() {
+  Lorentz5Momentum p, n, ppartner, pcm;
+  assert(perturbative()!=1);
+  ShowerBasisPtr newBasis;
+  // this is for the initial decaying particle
+  if(perturbative()==2) {
+    p = momentum();
+    Lorentz5Momentum ppartner(partner()->momentum());
+    // removed to make inverse recon work properly
+    //if(partner->thePEGBase()) ppartner=partner->thePEGBase()->momentum();
+    pcm=ppartner;
+    Boost boost(p.findBoostToCM());
+    pcm.boost(boost);
+    n = Lorentz5Momentum( ZERO,0.5*p.mass()*pcm.vect().unit()); 
+    n.boost( -boost);
+    newBasis = new_ptr(ShowerBasis());
+    newBasis->setBasis(p,n,ShowerBasis::Rest);
+  }
+  else {
+    newBasis = dynamic_ptr_cast<ShowerParticlePtr>(parents()[0])->showerBasis();
+  }
+  assert(newBasis);
+  showerBasis(newBasis);
+}
+
+void ShowerParticle::initializeInitialState(PPtr parent) {
+  // For the time being we are considering only 1->2 branching
+  Lorentz5Momentum p, n, pthis, pcm;
+  assert(perturbative()!=2);
+  ShowerBasisPtr newBasis;
+  if(perturbative()==1) {
+    // find the partner and its momentum
+    assert(partner());
+    if(partner()->isFinalState()) {
+      Lorentz5Momentum pa = -momentum()+partner()->momentum();
+      Lorentz5Momentum pb =  momentum();
+      Energy scale=parent->momentum().t();
+      Lorentz5Momentum pbasis(ZERO,parent->momentum().vect().unit()*scale);
+      Axis axis(pa.vect().unit());
+      LorentzRotation rot;
+      double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
+      if(axis.perp2()>1e-20) {
+	rot.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+	rot.rotateX(Constants::pi);
+      }
+      if(abs(1.-pa.e()/pa.vect().mag())>1e-6) rot.boostZ( pa.e()/pa.vect().mag());
+      pb *= rot;
+      if(pb.perp2()/GeV2>1e-20) {
+	Boost trans = -1./pb.e()*pb.vect();
+	trans.setZ(0.);
+	rot.boost(trans);
+      }
+      pbasis *=rot;
+      rot.invert();
+      n = rot*Lorentz5Momentum(ZERO,-pbasis.vect());
+      p = rot*Lorentz5Momentum(ZERO, pbasis.vect());
+    }
+    else {
+      pcm = parent->momentum();
+      p = Lorentz5Momentum(ZERO, pcm.vect());
+      n = Lorentz5Momentum(ZERO, -pcm.vect());
+    }
+    newBasis = new_ptr(ShowerBasis());
+    newBasis->setBasis(p,n,ShowerBasis::BackToBack);
+  } 
+  else {
+    newBasis = dynamic_ptr_cast<ShowerParticlePtr>(children()[0])->showerBasis();
+  }
+  assert(newBasis);
+  showerBasis(newBasis);
+}
+
+void ShowerParticle::initializeFinalState() {
+  // set the basis vectors
+  Lorentz5Momentum p,n;
+  ShowerBasisPtr newBasis;
+  if(perturbative()!=0) {
+    // find the partner() and its momentum
+    Lorentz5Momentum ppartner(partner()->momentum());
+    // momentum of the emitting particle
+    p = momentum();
+    Lorentz5Momentum pcm;
+    // if the partner is a final-state particle then the reference
+    // vector is along the partner in the rest frame of the pair
+    if(partner()->isFinalState()) {
+      Boost boost=(p + ppartner).findBoostToCM();
+      pcm = ppartner;
+      pcm.boost(boost);
+      n = Lorentz5Momentum(ZERO,pcm.vect());
+      n.boost( -boost);
+    }
+    else if(!partner()->isFinalState()) {
+      // if the partner is an initial-state particle then the reference
+      // vector is along the partner which should be massless
+      if(perturbative()==1) {
+	n = Lorentz5Momentum(ZERO,ppartner.vect());
+      }
+      // if the partner is an initial-state decaying particle then the reference
+      // vector is along the backwards direction in rest frame of decaying particle
+      else {
+	Boost boost=ppartner.findBoostToCM();
+	pcm = p;
+	pcm.boost(boost);
+	n = Lorentz5Momentum( ZERO, -pcm.vect()); 
+	n.boost( -boost);
+      } 
+    }
+    newBasis = new_ptr(ShowerBasis());
+    newBasis->setBasis(p,n,ShowerBasis::BackToBack);
+  }
+  else if(initiatesTLS()) {
+    newBasis = dynamic_ptr_cast<ShowerParticlePtr>(parents()[0]->children()[0])->showerBasis();
+  }
+  else  {
+    newBasis = dynamic_ptr_cast<ShowerParticlePtr>(parents()[0])->showerBasis();
+  }
+  assert(newBasis);
+  showerBasis(newBasis);
+}
+
+void ShowerParticle::setShowerMomentum(bool timeLike) {
+  Energy m = this->mass() > ZERO ? this->mass() : this->data().mass();
+  // calculate the momentum of the assuming on-shell
+  Energy2 pt2 = sqr(this->showerParameters().pt);
+  double alpha = timeLike ? this->showerParameters().alpha : this->x();
+  double beta = 0.5*(sqr(m) + pt2 - sqr(alpha)*showerBasis()->pVector().m2())/(alpha*showerBasis()->p_dot_n());
+  Lorentz5Momentum porig=showerBasis()->sudakov2Momentum(alpha,beta,
+							 this->showerParameters().ptx,
+							 this->showerParameters().pty);
+  porig.setMass(m);
+  this->set5Momentum(porig);
 }

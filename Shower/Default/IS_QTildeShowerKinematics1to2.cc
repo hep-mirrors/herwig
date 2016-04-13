@@ -30,7 +30,7 @@ void IS_QTildeShowerKinematics1to2::
 updateChildren( const tShowerParticlePtr theParent, 
 		const ShowerParticleVector & theChildren,
 		ShowerPartnerType::Type,
-		bool massVeto) const {
+		bool) const {
   const ShowerParticle::Parameters & parent = theParent->showerParameters();
   ShowerParticle::Parameters & child0 = theChildren[0]->showerParameters();
   ShowerParticle::Parameters & child1 = theChildren[1]->showerParameters();
@@ -72,8 +72,10 @@ updateParent(const tShowerParticlePtr parent,
   children[1]->showerParameters().ptx   = - cos(phi()) * pT();
   children[1]->showerParameters().pty   = - sin(phi()) * pT();
   children[1]->showerParameters().pt    = pT();
-  setMomentum(parent,false);
-  setMomentum(children[1],true);
+  parent     ->showerBasis(children[0]->showerBasis());
+  children[1]->showerBasis(children[0]->showerBasis());
+  parent     ->setShowerMomentum(false);
+  children[1]->setShowerMomentum(true);
   if(! ShowerHandler::currentHandler()->evolver()->correlations()) return;
   SpinPtr pspin(children[0]->spinInfo());
   if(!pspin ||  !ShowerHandler::currentHandler()->evolver()->spinCorrelations() ) return;
@@ -91,18 +93,18 @@ updateParent(const tShowerParticlePtr parent,
   // (in reality the first child as going backwards)
   pspin->decayVertex(vertex);
   // construct the spin infos
-  constructSpinInfo(parent,false);
-  constructSpinInfo(children[1],true);
+  parent     ->constructSpinInfo(false);
+  children[1]->constructSpinInfo(true);
   // connect the spinInfo objects to the vertex
   parent     ->spinInfo()->productionVertex(vertex);
   children[1]->spinInfo()->productionVertex(vertex);
 }
 
 void IS_QTildeShowerKinematics1to2::
-reconstructParent(const tShowerParticlePtr theParent, 
-		  const ParticleVector & theChildren ) const {
-  PPtr c1 = theChildren[0];
-  ShowerParticlePtr c2 = dynamic_ptr_cast<ShowerParticlePtr>(theChildren[1]);
+reconstructParent(const tShowerParticlePtr parent, 
+		  const ParticleVector & children ) const {
+  PPtr c1 = children[0];
+  ShowerParticlePtr c2 = dynamic_ptr_cast<ShowerParticlePtr>(children[1]);
   ShowerParticle::Parameters & c2param = c2->showerParameters();
   // get shower variables from 1st child in order to keep notation
   // parent->(c1, c2) clean even though the splitting was initiated
@@ -110,85 +112,36 @@ reconstructParent(const tShowerParticlePtr theParent,
   // timelike branching though.
   // on-shell child
   c2param.beta = 0.5*( sqr(c2->data().constituentMass()) + sqr(c2param.pt) )
-    / ( c2param.alpha * p_dot_n() );
-  Lorentz5Momentum pnew = sudakov2Momentum(c2param.alpha, c2param.beta, 
-					   c2param.ptx  , c2param.pty);
+    / ( c2param.alpha * parent->showerBasis()->p_dot_n() );
+  Lorentz5Momentum pnew = parent->showerBasis()->
+    sudakov2Momentum(c2param.alpha, c2param.beta, 
+		     c2param.ptx  , c2param.pty);
   pnew.setMass(c2->data().constituentMass());
   pnew.rescaleEnergy();
   c2->set5Momentum( pnew );
   // spacelike child
-  Lorentz5Momentum pc1(theParent->momentum() - c2->momentum());
+  Lorentz5Momentum pc1(parent->momentum() - c2->momentum());
   pc1.rescaleMass();
   c1->set5Momentum(pc1);
 }
 
 void IS_QTildeShowerKinematics1to2::
 updateLast( const tShowerParticlePtr theLast,Energy px,Energy py) const {
-  if(theLast->isFinalState()) return;
+  if(theLast->isFinalState()) return; 
+  Lorentz5Momentum pVector = theLast->showerBasis()->pVector();
   ShowerParticle::Parameters & last = theLast->showerParameters();
   Energy2 pt2 = sqr(px) + sqr(py);
   last.alpha = theLast->x();
-  last.beta  = 0.5 * pt2 / last.alpha / p_dot_n();
+  last.beta  = 0.5 * pt2 / last.alpha / theLast->showerBasis()->p_dot_n();
   last.ptx   = ZERO;
   last.pty   = ZERO;
   last.pt    = ZERO;
   // momentum
-  Lorentz5Momentum ntemp = Lorentz5Momentum(ZERO,-pVector().vect());
-  double beta = 0.5 * pt2 / last.alpha / (pVector() * ntemp);
+  Lorentz5Momentum ntemp = Lorentz5Momentum(ZERO,-pVector.vect());
+  double beta = 0.5 * pt2 / last.alpha / ( pVector * ntemp);
   Lorentz5Momentum plast = 
-    Lorentz5Momentum( (pVector().z()>ZERO ? px : -px), py, ZERO, ZERO)
-    + theLast->x() * pVector() + beta * ntemp;
+    Lorentz5Momentum( (pVector.z()>ZERO ? px : -px), py, ZERO, ZERO)
+    + theLast->x() * pVector + beta * ntemp;
   plast.rescaleMass();
   theLast->set5Momentum(plast);
-}
- 
-void IS_QTildeShowerKinematics1to2::initialize(ShowerParticle & particle, PPtr parent) {
-  // For the time being we are considering only 1->2 branching
-  Lorentz5Momentum p, n, pthis, pcm;
-  assert(particle.perturbative()!=2);
-  Frame frame;
-  if(particle.perturbative()==1) {
-    // find the partner and its momentum
-    ShowerParticlePtr partner=particle.partner();
-    assert(partner);
-    if(partner->isFinalState()) {
-      Lorentz5Momentum pa = -particle.momentum()+partner->momentum();
-      Lorentz5Momentum pb =  particle.momentum();
-      Energy scale=parent->momentum().t();
-      Lorentz5Momentum pbasis(ZERO,parent->momentum().vect().unit()*scale);
-      Axis axis(pa.vect().unit());
-      LorentzRotation rot;
-      double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
-      if(axis.perp2()>1e-20) {
-	rot.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
-	rot.rotateX(Constants::pi);
-      }
-      if(abs(1.-pa.e()/pa.vect().mag())>1e-6) rot.boostZ( pa.e()/pa.vect().mag());
-      pb *= rot;
-      if(pb.perp2()/GeV2>1e-20) {
-	Boost trans = -1./pb.e()*pb.vect();
-	trans.setZ(0.);
-	rot.boost(trans);
-      }
-      pbasis *=rot;
-      rot.invert();
-      n = rot*Lorentz5Momentum(ZERO,-pbasis.vect());
-      p = rot*Lorentz5Momentum(ZERO, pbasis.vect());
-    }
-    else {
-      pcm = parent->momentum();
-      p = Lorentz5Momentum(ZERO, pcm.vect());
-      n = Lorentz5Momentum(ZERO, -pcm.vect());
-    }
-    frame = BackToBack;
-  } 
-  else {
-    p = dynamic_ptr_cast<ShowerParticlePtr>(particle.children()[0])
-      ->showerKinematics()->getBasis()[0];
-    n = dynamic_ptr_cast<ShowerParticlePtr>(particle.children()[0])
-      ->showerKinematics()->getBasis()[1];
-    frame = dynamic_ptr_cast<ShowerParticlePtr>(particle.children()[0])
-      ->showerKinematics()->frame();
-  }
-  setBasis(p,n,frame);
 }

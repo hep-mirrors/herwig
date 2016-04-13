@@ -15,6 +15,7 @@
 #include "ThePEG/EventRecord/Particle.h"
 #include "Herwig/Shower/SplittingFunctions/SplittingFunction.fh"
 #include "Herwig/Shower/ShowerConfig.h"
+#include "ShowerBasis.h"
 #include "ShowerKinematics.h"
 #include "ShowerParticle.fh"
 #include <iosfwd>
@@ -180,6 +181,32 @@ public:
 public:
 
   /**
+   *  Set a preliminary momentum for the particle
+   */
+  void setShowerMomentum(bool timelike);
+
+  /**
+   *  Construct the spin info object for a shower particle
+   */
+  void constructSpinInfo(bool timelike);
+
+  /**
+   * Perform any initial calculations needed after the branching has been selected
+   */
+  void initializeDecay();
+
+  /**
+   * Perform any initial calculations needed after the branching has been selected
+   * @param parent The beam particle
+   */
+  void initializeInitialState(PPtr parent);
+
+  /**
+   * Perform any initial calculations needed after the branching has been selected
+   */
+  void initializeFinalState();
+
+  /**
    *   Access/Set various flags about the state of the particle
    */
   //@{
@@ -232,6 +259,22 @@ public:
    * Set the ShowerKinematics object.
    */
   void showerKinematics(const ShoKinPtr in) { _showerKinematics = in; }
+  //@}
+
+  /**
+   * Set/Get methods for the ShowerBasis objects
+   */
+  //@{
+  /**
+   * Access/ the ShowerBasis object.
+   */
+  const ShowerBasisPtr & showerBasis() const { return _showerBasis; }
+
+
+  /**
+   * Set the ShowerBasis object.
+   */
+  void showerBasis(const ShowerBasisPtr in) { _showerBasis = in; }
   //@}
 
   /**
@@ -332,7 +375,7 @@ public:
   /**
    *  Extract the rho matrix including mapping needed in the shower
    */
-  RhoDMatrix extractRhoMatrix(ShoKinPtr kinematics, bool forward);
+  RhoDMatrix extractRhoMatrix(bool forward);
 
 protected:
 
@@ -343,7 +386,7 @@ protected:
    * @param mapping The mapping
    * @param showerkin The ShowerKinematics object
    */
-  bool getMapping(SpinPtr &, RhoDMatrix & map, ShoKinPtr showerkin);
+  bool getMapping(SpinPtr &, RhoDMatrix & map);
 
 
 protected:
@@ -403,6 +446,11 @@ private:
    *  The shower kinematics for the particle
    */
   ShoKinPtr _showerKinematics;
+
+  /**
+   *  The shower basis for the particle
+   */
+  ShowerBasisPtr _showerBasis;
 
   /**
    *  Storage of the evolution scales
