@@ -31,6 +31,8 @@ newdef ShowerHandler:PDFBRemnant /Herwig/Partons/RemnantPDF
 create Herwig::SplittingGenerator SplittingGenerator
 create Herwig::ShowerAlphaQCD AlphaQCD
 create Herwig::ShowerAlphaQED AlphaQED
+create Herwig::ShowerAlphaQED AlphaEW
+newdef AlphaEW:Alpha 0.0078125
 create Herwig::Evolver Evolver
 create Herwig::QTildeModel ShowerModel
 create Herwig::QTildeFinder PartnerFinder
@@ -143,6 +145,10 @@ create Herwig::HalfOneHalfSplitFn QtoGammaQSplitFn
 newdef QtoGammaQSplitFn:InteractionType QED
 newdef QtoGammaQSplitFn:ColourStructure ChargedNeutralCharged
 set QtoGammaQSplitFn:AngularOrdered Yes
+
+create Herwig::HalfHalfOneEWSplitFn QtoQWZSplitFn
+newdef QtoQWZSplitFn:InteractionType EW
+newdef QtoQWZSplitFn:ColourStructure EW
 #
 # Now the Sudakovs
 create Herwig::QTildeSudakov SudakovCommon
@@ -162,6 +168,13 @@ set QtoQGammaSudakov:Alpha AlphaQED
 set QtoQGammaSudakov:PDFmax 1.9
 
 cp QtoQGammaSudakov LtoLGammaSudakov
+
+cp SudakovCommon QtoQWZSudakov
+set QtoQWZSudakov:SplittingFunction QtoQWZSplitFn
+set QtoQWZSudakov:Alpha AlphaQED
+set QtoQWZSudakov:PDFmax 1.9
+
+cp QtoQWZSudakov LtoLWZSudakov
 
 cp SudakovCommon GtoGGSudakov
 newdef GtoGGSudakov:SplittingFunction GtoGGSplitFn
@@ -290,3 +303,30 @@ do SplittingGenerator:AddInitialSplitting ubar->gamma,ubar; QtoGammaQSudakov
 do SplittingGenerator:AddInitialSplitting sbar->gamma,sbar; QtoGammaQSudakov
 do SplittingGenerator:AddInitialSplitting cbar->gamma,cbar; QtoGammaQSudakov
 do SplittingGenerator:AddInitialSplitting bbar->gamma,bbar; QtoGammaQSudakov
+
+#
+#  Electroweak
+#
+do SplittingGenerator:AddFinalSplitting u->u,Z0; QtoQWZSudakov
+do SplittingGenerator:AddFinalSplitting d->d,Z0; QtoQWZSudakov
+do SplittingGenerator:AddFinalSplitting s->s,Z0; QtoQWZSudakov
+do SplittingGenerator:AddFinalSplitting c->c,Z0; QtoQWZSudakov
+do SplittingGenerator:AddFinalSplitting b->b,Z0; QtoQWZSudakov
+do SplittingGenerator:AddFinalSplitting t->t,Z0; QtoQWZSudakov
+do SplittingGenerator:AddInitialSplitting u->u,Z0; QtoQWZSudakov
+do SplittingGenerator:AddInitialSplitting d->d,Z0; QtoQWZSudakov
+do SplittingGenerator:AddInitialSplitting s->s,Z0; QtoQWZSudakov
+do SplittingGenerator:AddInitialSplitting c->c,Z0; QtoQWZSudakov
+do SplittingGenerator:AddInitialSplitting b->b,Z0; QtoQWZSudakov
+do SplittingGenerator:AddInitialSplitting t->t,Z0; QtoQWZSudakov
+
+do SplittingGenerator:AddFinalSplitting u->d,W+; QtoQWZSudakov
+do SplittingGenerator:AddFinalSplitting c->s,W+; QtoQWZSudakov
+do SplittingGenerator:AddFinalSplitting d->u,W-; QtoQWZSudakov
+do SplittingGenerator:AddFinalSplitting s->c,W-; QtoQWZSudakov
+do SplittingGenerator:AddInitialSplitting u->d,W+; QtoQWZSudakov
+do SplittingGenerator:AddInitialSplitting c->s,W+; QtoQWZSudakov
+do SplittingGenerator:AddInitialSplitting d->u,W-; QtoQWZSudakov
+do SplittingGenerator:AddInitialSplitting s->c,W-; QtoQWZSudakov
+
+

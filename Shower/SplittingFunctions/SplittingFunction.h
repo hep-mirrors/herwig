@@ -34,7 +34,7 @@ using namespace ThePEG;
 			OctetTripletTriplet  = 3,TripletOctetTriplet=4,
 			SextetSextetOctet    = 5,
 			ChargedChargedNeutral=-1,ChargedNeutralCharged=-2,
-			NeutralChargedCharged=-3};
+			NeutralChargedCharged=-3,EW=-4};
 
 /** \ingroup Shower
  *

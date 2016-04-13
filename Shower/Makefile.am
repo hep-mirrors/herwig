@@ -10,6 +10,7 @@ Couplings/ShowerAlphaQCD.h Couplings/ShowerAlphaQCD.cc \
 Couplings/ShowerAlphaQED.h Couplings/ShowerAlphaQED.cc\
 ShowerHandler.h ShowerHandler.fh ShowerHandler.cc \
 SplittingFunctions/HalfHalfOneSplitFn.h SplittingFunctions/HalfHalfOneSplitFn.cc\
+SplittingFunctions/HalfHalfOneEWSplitFn.h SplittingFunctions/HalfHalfOneEWSplitFn.cc\
 SplittingFunctions/OneOneOneSplitFn.h SplittingFunctions/OneOneOneSplitFn.cc\
 SplittingFunctions/ZeroZeroOneSplitFn.h SplittingFunctions/ZeroZeroOneSplitFn.cc\
 SplittingFunctions/OneHalfHalfSplitFn.h SplittingFunctions/OneHalfHalfSplitFn.cc\
