@@ -103,7 +103,7 @@ void Decay_QTildeShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr
     p = particle.momentum();
     ShowerParticlePtr partner=particle.partner();
     Lorentz5Momentum ppartner(partner->momentum());
-    // reomved to make inverse recon work properly
+    // removed to make inverse recon work properly
     //if(partner->thePEGBase()) ppartner=partner->thePEGBase()->momentum();
     pcm=ppartner;
     Boost boost(p.findBoostToCM());
