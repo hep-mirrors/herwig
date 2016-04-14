@@ -143,10 +143,20 @@ void PartnerFinder::setInitialEvolutionScales(const ShowerParticleVector &partic
   else if(type==ShowerInteraction::QED) {
     setInitialQEDEvolutionScales(particles,isDecayCase,setPartners);
   }
-  else {
+  else if(type==ShowerInteraction::EW) {
+    setInitialEWEvolutionScales(particles,isDecayCase,false);
+  }
+  else if(type==ShowerInteraction::QEDQCD) {
     setInitialQCDEvolutionScales(particles,isDecayCase,setPartners);
     setInitialQEDEvolutionScales(particles,isDecayCase,false);
   }
+  else if(type==ShowerInteraction::ALL) {
+    setInitialQCDEvolutionScales(particles,isDecayCase,setPartners);
+    setInitialQEDEvolutionScales(particles,isDecayCase,false);
+    setInitialEWEvolutionScales(particles,isDecayCase,false);
+  }
+  else
+    assert(false);
   // \todo EW scales here
   // print out for debugging
   if(Debug::level>=10) {
@@ -336,7 +346,7 @@ void PartnerFinder::setInitialQEDEvolutionScales(const ShowerParticleVector &par
     // find the potential partners
     vector<pair<double,tShowerParticlePtr> > partners = findQEDPartners(*cit,particles,isDecayCase);
     if(partners.empty()) {
-      throw Exception() << "Failed to partner in " 
+      throw Exception() << "Failed to find partner in "
 			<< "PartnerFinder::setQEDInitialEvolutionScales"
 			<< (**cit) << Exception::eventerror;
     }
@@ -371,7 +381,7 @@ void PartnerFinder::setInitialQEDEvolutionScales(const ShowerParticleVector &par
       }
     }
     // must have a partner
-    if(position<0) throw Exception() << "Failed to partner in " 
+    if(position<0) throw Exception() << "Failed to find partner in "
 				 << "PartnerFinder::setQEDInitialEvolutionScales"
 				 << (**cit) << Exception::eventerror; 
     // Calculate the evolution scales for all possible pairs of of particles
@@ -411,7 +421,7 @@ calculateInitialEvolutionScales(const ShowerPPair &particlePair,
     return calculateInitialInitialScales(particlePair);
 }
 
-vector< pair<ShowerPartnerType::Type, tShowerParticlePtr> > 
+vector< pair<ShowerPartnerType::Type, tShowerParticlePtr> >
 PartnerFinder::findQCDPartners(tShowerParticlePtr particle,
 			       const ShowerParticleVector &particles) {
   vector< pair<ShowerPartnerType::Type, tShowerParticlePtr> > partners;
@@ -503,7 +513,7 @@ PartnerFinder::findQCDPartners(tShowerParticlePtr particle,
   return partners;
 }
 
-vector< pair<double, tShowerParticlePtr> > 
+vector< pair<double, tShowerParticlePtr> >
 PartnerFinder::findQEDPartners(tShowerParticlePtr particle,
 			       const ShowerParticleVector &particles,
 			       const bool isDecayCase) {
@@ -523,6 +533,91 @@ PartnerFinder::findQEDPartners(tShowerParticlePtr particle,
     }
     // only keep positive dipoles
     if(charge<0.) partners.push_back(make_pair(-charge,*cjt));
+  }
+  return partners;
+}
+
+void PartnerFinder::setInitialEWEvolutionScales(const ShowerParticleVector &particles,
+						const bool isDecayCase,
+						const bool setPartners) {
+  // loop over all the particles
+  for(ShowerParticleVector::const_iterator cit = particles.begin();
+      cit != particles.end(); ++cit) {
+    // if not weakly interacting continue
+    if( !weaklyInteracting( (**cit).dataPtr()))
+      continue;
+    // find the potential partners
+    vector<pair<double,tShowerParticlePtr> > partners = findEWPartners(*cit,particles,isDecayCase);
+    if(partners.empty()) {
+      throw Exception() << "Failed to find partner in "
+  			<< "PartnerFinder::setEWInitialEvolutionScales"
+  			<< (**cit) << Exception::eventerror;
+    }
+    // calculate the probabilities
+    double prob(0.);
+    for(unsigned int ix=0;ix<partners.size();++ix) prob += partners[ix].first;
+    // normalise
+    for(unsigned int ix=0;ix<partners.size();++ix) partners[ix].first /= prob;
+    // set the partner if required
+    int position(-1);
+    // use QCD partner if set
+    if(!setPartners&&(*cit)->partner()) {
+      for(unsigned int ix=0;ix<partners.size();++ix) {
+  	if((*cit)->partner()==partners[ix].second) {
+  	  position = ix;
+  	  break;
+  	}
+      }
+    }
+    // set the partner
+    if(setPartners||!(*cit)->partner()||position<0) {
+      prob = UseRandom::rnd();
+      for(unsigned int ix=0;ix<partners.size();++ix) {
+  	if(partners[ix].first>prob) {
+  	  position = ix;
+  	  break;
+  	}
+  	prob -= partners[ix].first;
+      }
+      if(position>=0&&(setPartners||!(*cit)->partner())) {
+  	(*cit)->partner(partners[position].second);
+      }
+    }
+    // must have a partner
+    if(position<0) throw Exception() << "Failed to find partner in "
+  				 << "PartnerFinder::setEWInitialEvolutionScales"
+  				 << (**cit) << Exception::eventerror;
+    // Calculate the evolution scales for all possible pairs of of particles
+    vector<pair<Energy,Energy> > scales;
+    for(unsigned int ix=0;ix< partners.size();++ix) {
+      scales.push_back(calculateInitialEvolutionScales(ShowerPPair(*cit,partners[ix].second),
+  						       isDecayCase));
+    }
+    // store all the possible partners
+    for(unsigned int ix=0;ix<partners.size();++ix) {
+      (**cit).addPartner(ShowerParticle::EvolutionPartner(partners[ix].second,
+  							  partners[ix].first,
+  							  ShowerPartnerType::EW,
+  							  scales[ix].first));
+    }
+    // set scales
+    (**cit).scales().EW      = scales[position].first;
+    (**cit).scales().EW_noAO = scales[position].first;
+  }
+}
+
+vector< pair<double, tShowerParticlePtr> >
+PartnerFinder::findEWPartners(tShowerParticlePtr particle,
+			       const ShowerParticleVector &particles,
+			       const bool ) {
+  vector< pair<double, tShowerParticlePtr> > partners;
+  ShowerParticleVector::const_iterator cjt;
+  for(cjt = particles.begin(); cjt != particles.end(); ++cjt) {
+    if(!weaklyInteracting((*cjt)->dataPtr()) ||
+       particle == *cjt) continue;
+    double charge = 1.;
+    // only keep positive dipoles
+    if(charge>0.) partners.push_back(make_pair(charge,*cjt));
   }
   return partners;
 }

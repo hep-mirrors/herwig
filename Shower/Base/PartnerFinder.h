@@ -12,6 +12,7 @@
 // This is the declaration of the PartnerFinder class.
 //
 #include "Herwig/Shower/ShowerConfig.h"
+#include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/Interface/Interfaced.h"
 #include "Evolver.fh"
 #include "PartnerFinder.fh"
@@ -126,6 +127,13 @@ protected:
   virtual void setInitialQEDEvolutionScales(const ShowerParticleVector &particles,
 					    const bool isDecayCase,
 					    const bool setPartners=true);
+
+  /**
+   *  Set initial scales for a EW interaction
+   */
+  virtual void setInitialEWEvolutionScales(const ShowerParticleVector &particles,
+					   const bool isDecayCase,
+					   const bool setPartners=true);
   //@}
 
   /**
@@ -133,7 +141,7 @@ protected:
    * @param particle The particle to find the partners for
    * @param particles The full set of particles to search
    */
-  vector< pair<ShowerPartnerType::Type, tShowerParticlePtr> > 
+  vector< pair<ShowerPartnerType::Type, tShowerParticlePtr> >
   findQCDPartners(tShowerParticlePtr particle, const ShowerParticleVector &particles);
 
   /**
@@ -141,9 +149,18 @@ protected:
    * @param particle The particle to find the partners for
    * @param particles The full set of particles to search
    */
-  vector< pair<double, tShowerParticlePtr> > 
+  vector< pair<double, tShowerParticlePtr> >
   findQEDPartners(tShowerParticlePtr particle, const ShowerParticleVector &particles,
 		  const bool isDecayCase);
+
+  /**
+   *  Find the EW partners
+   * @param particle The particle to find the partners for
+   * @param particles The full set of particles to search
+   */
+  vector< pair<double, tShowerParticlePtr> >
+  findEWPartners(tShowerParticlePtr particle, const ShowerParticleVector &particles,
+		 const bool isDecayCase);
 
   /**
    * Given a pair of particles, supposedly partners w.r.t. an interaction,
@@ -177,6 +194,16 @@ protected:
   virtual pair<Energy,Energy> calculateInitialFinalScales(const ShowerPPair &,
 							  const bool isDecayCase)=0;
   //@}
+
+protected:
+
+  /**
+   *  Find weakling interacting particles
+   */
+  bool weaklyInteracting(tcPDPtr pd) {
+    long id = abs(pd->id());
+    return ( id==ParticleID::Wplus || id ==ParticleID::Z0 || (id>=1 && id<=6 ) || (id>=11 && id<=16));
+  }
 
 private:
 

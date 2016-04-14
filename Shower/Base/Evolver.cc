@@ -320,11 +320,16 @@ void Evolver::Init() {
      "QEDOnly",
      "Only QED",
      ShowerInteraction::QED);
-  static SwitchOption interfaceInteractionBothAtOnce
+  static SwitchOption interfaceInteractionQEDQCD
     (interfaceInteraction,
      "QEDQCD",
      "QED and QCD",
      ShowerInteraction::QEDQCD);
+  static SwitchOption interfaceInteractionALL
+    (interfaceInteraction,
+     "ALL",
+     "QED, QCD and EW",
+     ShowerInteraction::ALL);
 
   static Switch<Evolver,unsigned int> interfaceReconstructionOption
     ("ReconstructionOption",

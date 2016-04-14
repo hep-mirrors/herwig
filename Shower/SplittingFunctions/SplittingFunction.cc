@@ -678,6 +678,8 @@ void SplittingFunction::evaluateFinalStateScales(ShowerPartnerType::Type partner
       emitter->scales().QCD_c_noAO  = min(scale,parent->scales().QCD_c_noAO );
       emitter->scales().QCD_ac      = min(scale,parent->scales().QCD_ac     );
       emitter->scales().QCD_ac_noAO = min(scale,parent->scales().QCD_ac_noAO);
+      emitter->scales().EW          = min(scale,parent->scales().EW         );
+      emitter->scales().EW_noAO     = min(scale,parent->scales().EW_noAO    );
       // emitted 
       emitted->scales().QED         = zEmitted*scale;
       emitted->scales().QED_noAO    =          scale;
@@ -685,13 +687,15 @@ void SplittingFunction::evaluateFinalStateScales(ShowerPartnerType::Type partner
       emitted->scales().QCD_c_noAO  = ZERO;
       emitted->scales().QCD_ac      = ZERO;
       emitted->scales().QCD_ac_noAO = ZERO;
+      emitted->scales().EW          = min(scale,parent->scales().EW         );
+      emitted->scales().EW_noAO     = min(scale,parent->scales().EW_noAO    );
     }
     // gamma -> f fbar
     else {
       assert(colourStructure()==NeutralChargedCharged );
       // emitter
-      emitter->scales().QED         = zEmitter*scale;
-      emitter->scales().QED_noAO    =          scale;
+      emitter->scales().QED           = zEmitter*scale;
+      emitter->scales().QED_noAO      =          scale;
       if(hasColour(emitter)) {
 	emitter->scales().QCD_c       = zEmitter*scale;
 	emitter->scales().QCD_c_noAO  =          scale;
@@ -700,9 +704,11 @@ void SplittingFunction::evaluateFinalStateScales(ShowerPartnerType::Type partner
 	emitter->scales().QCD_ac      = zEmitter*scale;
 	emitter->scales().QCD_ac_noAO =          scale;
       }
+      emitter->scales().EW            = zEmitter*scale;
+      emitter->scales().EW_noAO       =          scale;
       // emitted 
-      emitted->scales().QED         = zEmitted*scale;
-      emitted->scales().QED_noAO    =          scale;
+      emitted->scales().QED           = zEmitted*scale;
+      emitted->scales().QED_noAO      =          scale;
       if(hasColour(emitted)) {
 	emitted->scales().QCD_c       = zEmitted*scale;
 	emitted->scales().QCD_c_noAO  =          scale;
@@ -711,6 +717,8 @@ void SplittingFunction::evaluateFinalStateScales(ShowerPartnerType::Type partner
 	emitted->scales().QCD_ac      = zEmitted*scale;
 	emitted->scales().QCD_ac_noAO =          scale;
       }
+      emitted->scales().EW            = zEmitted*scale;
+      emitted->scales().EW_noAO       =          scale;
     }
   }
   // QCD
@@ -720,6 +728,8 @@ void SplittingFunction::evaluateFinalStateScales(ShowerPartnerType::Type partner
     if(!bosonSplitting) {
       emitter->scales().QED         = min(scale,parent->scales().QED     );
       emitter->scales().QED_noAO    = min(scale,parent->scales().QED_noAO);
+      emitter->scales().EW          = min(scale,parent->scales().EW     );
+      emitter->scales().EW_noAO     = min(scale,parent->scales().EW_noAO);
       if(partnerType==ShowerPartnerType::QCDColourLine) {
 	emitter->scales().QCD_c       = zEmitter*scale;
 	emitter->scales().QCD_c_noAO  =          scale;
@@ -739,6 +749,8 @@ void SplittingFunction::evaluateFinalStateScales(ShowerPartnerType::Type partner
       emitted->scales().QCD_c_noAO  =          scale;
       emitted->scales().QCD_ac      = zEmitted*scale;
       emitted->scales().QCD_ac_noAO =          scale;
+      emitted->scales().EW          = min(scale,parent->scales().EW     );
+      emitted->scales().EW_noAO     = min(scale,parent->scales().EW_noAO);
     }
     // g -> q qbar
     else {
@@ -747,39 +759,55 @@ void SplittingFunction::evaluateFinalStateScales(ShowerPartnerType::Type partner
 	emitter->scales().QED         = zEmitter*scale;
 	emitter->scales().QED_noAO    =          scale;
       }
-      emitter->scales().QCD_c       = zEmitter*scale;
-      emitter->scales().QCD_c_noAO  =          scale;
-      emitter->scales().QCD_ac      = zEmitter*scale;
-      emitter->scales().QCD_ac_noAO =          scale;
+      emitter->scales().EW            = zEmitter*scale;
+      emitter->scales().EW_noAO       =          scale;
+      emitter->scales().QCD_c         = zEmitter*scale;
+      emitter->scales().QCD_c_noAO    =          scale;
+      emitter->scales().QCD_ac        = zEmitter*scale;
+      emitter->scales().QCD_ac_noAO   =          scale;
       // emitted 
       if(emitted->dataPtr()->charged()) {
 	emitted->scales().QED         = zEmitted*scale;
 	emitted->scales().QED_noAO    =          scale;
       }
-      emitted->scales().QCD_c       = zEmitted*scale;
-      emitted->scales().QCD_c_noAO  =          scale;
-      emitted->scales().QCD_ac      = zEmitted*scale;
-      emitted->scales().QCD_ac_noAO =          scale;
+      emitted->scales().EW            = zEmitted*scale;
+      emitted->scales().EW_noAO       =          scale;
+      emitted->scales().QCD_c         = zEmitted*scale;
+      emitted->scales().QCD_c_noAO    =          scale;
+      emitted->scales().QCD_ac        = zEmitted*scale;
+      emitted->scales().QCD_ac_noAO   =          scale;
     }
   }
   else if(partnerType==ShowerPartnerType::EW) {
-    assert(false);
-    // // emitter
-    // emitter->scales().QED         = min(scale,parent->scales().QED     );
-    // emitter->scales().QED_noAO    = min(scale,parent->scales().QED_noAO);
-    // emitter->scales().QCD_c       = min(scale,parent->scales().QCD_c      );
-    // emitter->scales().QCD_c_noAO  = min(scale,parent->scales().QCD_c_noAO );
-    // emitter->scales().QCD_ac      = min(scale,parent->scales().QCD_ac     );
-    // emitter->scales().QCD_ac_noAO = min(scale,parent->scales().QCD_ac_noAO);
-    // // emitted 
-    // emitter->scales().QED         = zEmitter*scale;
-    // emitter->scales().QED_noAO    =          scale;
-    // emitted->scales().QED         = zEmitted*scale;
-    // emitted->scales().QED_noAO    =          scale;
-    // emitted->scales().QCD_c       = ZERO;
-    // emitted->scales().QCD_c_noAO  = ZERO;
-    // emitted->scales().QCD_ac      = ZERO;
-    // emitted->scales().QCD_ac_noAO = ZERO;
+    // EW
+    emitter->scales().EW          = zEmitter*scale;
+    emitter->scales().EW_noAO     =          scale;
+    emitted->scales().EW          = zEmitted*scale;
+    emitted->scales().EW_noAO     =          scale;
+    // QED
+    // W radiation AO
+    if(emitted->dataPtr()->charged()) {
+      emitter->scales().QED       = zEmitter*scale;
+      emitter->scales().QED_noAO  =          scale;
+      emitted->scales().QED       = zEmitted*scale;
+      emitted->scales().QED_noAO  =          scale;
+    }
+    // Z don't
+    else {
+      emitter->scales().QED         = min(scale,parent->scales().QED     );
+      emitter->scales().QED_noAO    = min(scale,parent->scales().QED_noAO);
+      emitted->scales().QED         = ZERO;
+      emitted->scales().QED_noAO    = ZERO;
+    }
+    // QCD
+    emitter->scales().QCD_c       = min(scale,parent->scales().QCD_c      );
+    emitter->scales().QCD_c_noAO  = min(scale,parent->scales().QCD_c_noAO );
+    emitter->scales().QCD_ac      = min(scale,parent->scales().QCD_ac     );
+    emitter->scales().QCD_ac_noAO = min(scale,parent->scales().QCD_ac_noAO);
+    emitted->scales().QCD_c       = ZERO;
+    emitted->scales().QCD_c_noAO  = ZERO;
+    emitted->scales().QCD_ac      = ZERO;
+    emitted->scales().QCD_ac_noAO = ZERO;
   }
   else
     assert(false);

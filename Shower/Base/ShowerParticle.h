@@ -143,6 +143,11 @@ public:
     Energy EW;
 
     /**
+     *   EW scale
+     */
+    Energy EW_noAO;
+
+    /**
      *  Maximum allowed virtuality of the particle
      */
     Energy2 Max_Q2;

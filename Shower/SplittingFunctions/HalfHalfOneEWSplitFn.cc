@@ -44,9 +44,7 @@ void HalfHalfOneEWSplitFn::Init() {
 }
 
 void HalfHalfOneEWSplitFn::doinit() {
-  cerr << "testing in do init\n";
   SplittingFunction::doinit();
-  cerr << "testing in do init\n";
   tcSMPtr sm = generator()->standardModel();
   double sw2 = sm->sin2ThetaW();
   // left-handled W coupling
