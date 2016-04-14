@@ -974,9 +974,13 @@ void SplittingFunction::evaluateDecayScales(ShowerPartnerType::Type partnerType,
     timelike->scales().QCD_c_noAO  =    ZERO;
     timelike->scales().QCD_ac      =    ZERO;
     timelike->scales().QCD_ac_noAO =    ZERO;
+    timelike->scales().EW          = ZERO;
+    timelike->scales().EW_noAO     = ZERO;
     // spacelike
     spacelike->scales().QED         =   scale;
     spacelike->scales().QED_noAO    =   scale;
+    spacelike->scales().EW          = max(scale,parent->scales().EW         );
+    spacelike->scales().EW_noAO     = max(scale,parent->scales().EW_noAO    );
   }
   // QCD
   else if(partnerType==ShowerPartnerType::QCDColourLine ||
@@ -988,13 +992,35 @@ void SplittingFunction::evaluateDecayScales(ShowerPartnerType::Type partnerType,
     timelike->scales().QCD_c_noAO  =   scale;
     timelike->scales().QCD_ac      = AOScale;
     timelike->scales().QCD_ac_noAO =   scale;
+    timelike->scales().EW          = ZERO;
+    timelike->scales().EW_noAO     = ZERO;
     // spacelike
     spacelike->scales().QED         = max(scale,parent->scales().QED        );
     spacelike->scales().QED_noAO    = max(scale,parent->scales().QED_noAO   );
+    spacelike->scales().EW          = max(scale,parent->scales().EW         );
+    spacelike->scales().EW_noAO     = max(scale,parent->scales().EW_noAO    );
   }
-  else {
+  else if(partnerType==ShowerPartnerType::EW) {
+    // EW
+    timelike->scales().EW           = AOScale;
+    timelike->scales().EW_noAO      =   scale;
+    spacelike->scales().EW          = max(scale,parent->scales().EW         );
+    spacelike->scales().EW_noAO     = max(scale,parent->scales().EW_noAO    );
+    // QCD
+    timelike->scales().QCD_c       =    ZERO;
+    timelike->scales().QCD_c_noAO  =    ZERO;
+    timelike->scales().QCD_ac      =    ZERO;
+    timelike->scales().QCD_ac_noAO =    ZERO;
+    timelike->scales().EW          = ZERO;
+    timelike->scales().EW_noAO     = ZERO;
+    // QED
+    timelike->scales().QED         = ZERO;
+    timelike->scales().QED_noAO    = ZERO;
+    spacelike->scales().QED         = max(scale,parent->scales().QED        );
+    spacelike->scales().QED_noAO    = max(scale,parent->scales().QED_noAO   );
+  }
+  else 
     assert(false);
-  }
   spacelike->scales().QCD_c       = max(scale,parent->scales().QCD_c      );
   spacelike->scales().QCD_c_noAO  = max(scale,parent->scales().QCD_c_noAO );
   spacelike->scales().QCD_ac      = max(scale,parent->scales().QCD_ac     );

@@ -2756,6 +2756,8 @@ void Evolver::doShowering(bool hard,XCPtr xcomb) {
 	    progenitor()->progenitor()->scales().QCD_ac      = progenitor()->progenitor()->mass();
 	    progenitor()->progenitor()->scales().QCD_ac_noAO = progenitor()->progenitor()->mass();
 	  }
+	  progenitor()->progenitor()->scales().EW      = progenitor()->progenitor()->mass();
+	  progenitor()->progenitor()->scales().EW_noAO = progenitor()->progenitor()->mass();
 	  // perform the shower
 	  progenitor()->hasEmitted(startSpaceLikeDecayShower(maxScales,minmass,
 							     interaction_));

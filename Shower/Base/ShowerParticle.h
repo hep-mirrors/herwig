@@ -500,9 +500,11 @@ inline ostream & operator<<(ostream & os, const ShowerParticle::EvolutionScales 
   os << "Scales: QED=" << es.QED / GeV
      << " QCD_c=" << es.QCD_c / GeV
      << " QCD_ac=" << es.QCD_ac / GeV
+     << " EW=" << es.EW / GeV
      << " QED_noAO=" << es.QED_noAO / GeV
      << " QCD_c_noAO=" << es.QCD_c_noAO / GeV
      << " QCD_ac_noAO=" << es.QCD_ac_noAO / GeV
+     << " EW_noAO=" << es.EW_noAO / GeV
      << '\n';
   return os;
 }

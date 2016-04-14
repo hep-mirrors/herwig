@@ -251,8 +251,8 @@ void SudakovFormFactor::removeSplitting(const IdList & in) {
 }
 
 Energy2 SudakovFormFactor::guesst(Energy2 t1,unsigned int iopt,
-					 const IdList &ids,
-					 double enhance,bool ident) const {
+				  const IdList &ids,
+				  double enhance,bool ident) const {
   unsigned int pdfopt = iopt!=1 ? 0 : pdffactor_;
   double c =
     1./((splittingFn_->integOverP(zlimits_.second,ids,pdfopt) -
