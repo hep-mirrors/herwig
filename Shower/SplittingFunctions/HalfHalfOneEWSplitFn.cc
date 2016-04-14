@@ -186,22 +186,31 @@ HalfHalfOneEWSplitFn::generatePhiBackward(const double, const Energy2, const IdL
 
 DecayMEPtr HalfHalfOneEWSplitFn::matrixElement(const double z, const Energy2 t, 
                                              const IdList & ids, const double phi,
-                                             bool timeLike) {
-//   // calculate the kernal
-//   DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin1)));
-//   Energy m = !timeLike ? ZERO : getParticleData(ids[0])->mass();
-//   double mt = m/sqrt(t);
-//   double root = sqrt(1.-(1.-z)*sqr(m)/z/t);
-//   double romz = sqrt(1.-z); 
-//   double rz   = sqrt(z);
-//   Complex phase = exp(Complex(0.,1.)*phi);
-//   (*kernal)(0,0,0) = -root/romz*phase;
-//   (*kernal)(1,1,2) =  -conj((*kernal)(0,0,0));
-//   (*kernal)(0,0,2) =  root/romz*z/phase;
-//   (*kernal)(1,1,0) = -conj((*kernal)(0,0,2));
-//   (*kernal)(1,0,2) =  mt*(1.-z)/rz;
-//   (*kernal)(0,1,0) =  conj((*kernal)(1,0,2));
-//   (*kernal)(0,1,2) =  0.;
-//   (*kernal)(1,0,0) =  0.;
-//   return kernal;
+                                             bool) {
+  // calculate the kernal
+  DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin1)));
+  Energy m = getParticleData(ids[2])->mass();
+  double gL(0.),gR(0.);
+  getCouplings(gL,gR,ids);
+  double mt = m/sqrt(t);
+  double root = sqrt(1.-sqr(m)/t/(1-z));
+  double romz = sqrt(1.-z);
+  double rz   = sqrt(z);
+  double r2   = sqrt(2.);
+  Complex phase  = exp(Complex(0.,1.)*phi);
+  Complex cphase = conj(phase);
+  (*kernal)(0,0,0) = -phase*root*gL/romz;
+  (*kernal)(1,1,2) = cphase*root*gR/romz;
+  (*kernal)(0,0,2) = cphase*z*root*gL/romz;
+  (*kernal)(1,1,0) = -phase*z*root*gR/romz;
+  // long terms
+  (*kernal)(1,1,1) =-gR*mt*r2*rz/(1-z);
+  (*kernal)(0,0,1) =-gL*mt*r2*rz/(1-z);
+  // +- -+ terms zero due quark mass
+  for(unsigned int ix=0;ix<3;++ix) {
+    (*kernal)(1,0,ix) =  0.;
+    (*kernal)(0,1,ix) =  0.;
+  }
+  // return the answer
+  return kernal;
 }
