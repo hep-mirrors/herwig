@@ -78,7 +78,7 @@ void HalfHalfOneEWSplitFn::getCouplings(double & gL, double & gR, const IdList &
 }
 
 double HalfHalfOneEWSplitFn::P(const double z, const Energy2 t,
-			       const IdList &ids, const bool mass) const {
+			       const IdList &ids, const bool mass, const RhoDMatrix & rho) const {
   double gL(0.),gR(0.);
   getCouplings(gL,gR,ids);
   double val = (1. + sqr(z))/(1.-z);
@@ -86,7 +86,7 @@ double HalfHalfOneEWSplitFn::P(const double z, const Energy2 t,
     Energy m = getParticleData(ids[2])->mass();  
     val -= sqr(m)/t;
   }
-  val *= (sqr(gL)+sqr(gR));
+  val *= (sqr(gL)*norm(rho(0,0))+sqr(gR)*norm(rho(1,1)));
   return colourFactor(ids)*val;
 }
 
@@ -99,7 +99,7 @@ double HalfHalfOneEWSplitFn::overestimateP(const double z,
 }
 
 double HalfHalfOneEWSplitFn::ratioP(const double z, const Energy2 t,
-				  const IdList & ids, const bool mass) const {
+				  const IdList & ids, const bool mass, const RhoDMatrix & rho) const {
   double gL(0.),gR(0.);
   getCouplings(gL,gR,ids);
   double val = 1. + sqr(z);
@@ -107,7 +107,7 @@ double HalfHalfOneEWSplitFn::ratioP(const double z, const Energy2 t,
     Energy m = getParticleData(ids[2])->mass();  
     val -= (1.-z)*sqr(m)/t;
   }
-  val *= 0.5*(sqr(gL)+sqr(gR))/sqr(max(gL,gR));
+  val *= (sqr(gL)*norm(rho(0,0))+sqr(gR)*norm(rho(1,1)));
   return val;
 } 
 

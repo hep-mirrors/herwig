@@ -226,6 +226,7 @@ void SplittingGenerator::deleteFromMap(const IdList &ids,
 Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
 						     double enhance,
 						     ShowerInteraction::Type type) const {
+  RhoDMatrix rho = particle.extractRhoMatrix(true);
   Energy newQ = ZERO;
   ShoKinPtr kinematics = ShoKinPtr();
   ShowerPartnerType::Type partnerType(ShowerPartnerType::Undefined);
@@ -251,7 +252,7 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
       Energy startingScale = angularOrdered ? particle.scales().QED : particle.scales().QED_noAO;
       newKin = cit->second.first->
     	generateNextTimeBranching(startingScale,cit->second.second,
-				  particle.id()!=cit->first,enhance,
+				  particle.id()!=cit->first,rho,enhance,
 				  particle.scales().Max_Q2);
     }
     else if(cit->second.first->interactionType()==ShowerInteraction::QCD) {
@@ -263,12 +264,12 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
 	  Energy startingScale = angularOrdered ? particle.scales().QCD_c : particle.scales().QCD_c_noAO;
     	  newKin= cit->second.first->
     	    generateNextTimeBranching(startingScale,cit->second.second,
-				      particle.id()!=cit->first,0.5*enhance,
+				      particle.id()!=cit->first,rho,0.5*enhance,
 				      particle.scales().Max_Q2);
 	  startingScale = angularOrdered ? particle.scales().QCD_ac : particle.scales().QCD_ac_noAO;
     	  ShoKinPtr newKin2 = cit->second.first->
 	    generateNextTimeBranching(startingScale,cit->second.second,
-				      particle.id()!=cit->first,0.5*enhance,
+				      particle.id()!=cit->first,rho,0.5*enhance,
 				      particle.scales().Max_Q2);
     	  // pick the one with the highest scale
     	  if( ( newKin && newKin2 && newKin2->scale() > newKin->scale()) ||
@@ -284,7 +285,7 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
 	    max(particle.scales().QCD_c_noAO, particle.scales().QCD_ac_noAO);
     	  newKin= cit->second.first->
     	    generateNextTimeBranching(startingScale, cit->second.second,
-				      particle.id()!=cit->first,enhance,
+				      particle.id()!=cit->first,rho,enhance,
 				      particle.scales().Max_Q2);
     	  type = UseRandom::rndbool() ? 
     	    ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine;
@@ -303,7 +304,7 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
 	}
 	newKin= cit->second.first->
 	  generateNextTimeBranching(startingScale,cit->second.second,
-				    particle.id()!=cit->first,enhance,
+				    particle.id()!=cit->first,rho,enhance,
 				    particle.scales().Max_Q2);
       }
     }
@@ -312,7 +313,7 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
       Energy startingScale = particle.scales().EW;
       newKin = cit->second.first->
     	generateNextTimeBranching(startingScale,cit->second.second,
-				  particle.id()!=cit->first,enhance,
+				  particle.id()!=cit->first,rho,enhance,
 				  particle.scales().Max_Q2);
     }
     // shouldn't be anything else
@@ -332,6 +333,9 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
   // return empty branching if nothing happened
   if(!kinematics)  return Branching(ShoKinPtr(), IdList(),SudakovPtr(),
 				    ShowerPartnerType::Undefined);
+  // and generate phi
+  // if not hard generate phi
+  kinematics->phi(sudakov->generatePhiForward(particle,ids,kinematics,rho));
   // and return it
   return Branching(kinematics, ids,sudakov,partnerType);
 }
@@ -341,6 +345,7 @@ chooseDecayBranching(ShowerParticle &particle,
 		     const ShowerParticle::EvolutionScales & stoppingScales,
 		     Energy minmass, double enhance,
 		     ShowerInteraction::Type interaction) const {
+  RhoDMatrix rho(particle.dataPtr()->iSpin());
   Energy newQ = Constants::MaxEnergy;
   ShoKinPtr kinematics;
   SudakovPtr sudakov;
@@ -370,7 +375,7 @@ chooseDecayBranching(ShowerParticle &particle,
       if(startingScale < stoppingScale ) { 
     	newKin = cit->second.first->
     	  generateNextDecayBranching(startingScale,stoppingScale,minmass,cit->second.second,
-    				     particle.id()!=cit->first,enhance);
+    				     particle.id()!=cit->first,rho,enhance);
       }
     }
     else if(cit->second.first->interactionType()==ShowerInteraction::QCD) {
@@ -387,14 +392,14 @@ chooseDecayBranching(ShowerParticle &particle,
 	    newKin= cit->second.first->	
 	      generateNextDecayBranching(startingColour,stoppingColour,minmass,
 					 cit->second.second,
-					 particle.id()!=cit->first,0.5*enhance);
+					 particle.id()!=cit->first,rho,0.5*enhance);
 	  }
 	  ShoKinPtr newKin2; 
 	  if(startingAnti<stoppingAnti) {
 	    newKin2 = cit->second.first->
 	      generateNextDecayBranching(startingAnti,stoppingAnti,minmass,
 					 cit->second.second,
-					 particle.id()!=cit->first,0.5*enhance);
+					 particle.id()!=cit->first,rho,0.5*enhance);
 	  }
 	  // pick the one with the lowest scale
 	  if( (newKin&&newKin2&&newKin2->scale()<newKin->scale()) ||
@@ -424,7 +429,7 @@ chooseDecayBranching(ShowerParticle &particle,
 	if(startingScale < stoppingScale ) { 
 	  newKin = cit->second.first->
 	    generateNextDecayBranching(startingScale,stoppingScale,minmass,cit->second.second,
-				       particle.id()!=cit->first,enhance);
+				       particle.id()!=cit->first,rho,enhance);
 	}
       }
     }
@@ -435,7 +440,7 @@ chooseDecayBranching(ShowerParticle &particle,
       if(startingScale < stoppingScale ) { 
     	newKin = cit->second.first->
     	  generateNextDecayBranching(startingScale,stoppingScale,minmass,cit->second.second,
-    				     particle.id()!=cit->first,enhance);
+    				     particle.id()!=cit->first,rho,enhance);
       }
     }
     // shouldn't be anything else
@@ -455,7 +460,7 @@ chooseDecayBranching(ShowerParticle &particle,
   if(!kinematics)  return Branching(ShoKinPtr(), IdList(),SudakovPtr(),
 				    ShowerPartnerType::Undefined);
   // and generate phi
-  kinematics->phi(sudakov->generatePhiDecay(particle,ids,kinematics));
+  kinematics->phi(sudakov->generatePhiDecay(particle,ids,kinematics,rho));
   // and return it
   return Branching(kinematics, ids,sudakov,partnerType);
 }
@@ -466,6 +471,7 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr,
 			Ptr<BeamParticleData>::transient_const_pointer beam,
 			ShowerInteraction::Type type,
 			tcPDFPtr pdf, Energy freeze) const {
+  RhoDMatrix rho = particle.extractRhoMatrix(false);
   Energy newQ=ZERO;
   ShoKinPtr kinematics=ShoKinPtr();
   ShowerPartnerType::Type partnerType(ShowerPartnerType::Undefined);
@@ -492,7 +498,7 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr,
       Energy startingScale = angularOrdered ? particle.scales().QED : particle.scales().QED_noAO;
       newKin=cit->second.first->
     	generateNextSpaceBranching(startingScale,cit->second.second, particle.x(),
-    				   particle.id()!=cit->first,enhance,beam);
+    				   particle.id()!=cit->first,rho,enhance,beam);
     }
     else if(cit->second.first->interactionType()==ShowerInteraction::QCD) { 
       // special for octets
@@ -503,11 +509,11 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr,
 	  Energy startingScale = angularOrdered ? particle.scales().QCD_c : particle.scales().QCD_c_noAO;
 	  newKin = cit->second.first->
 	    generateNextSpaceBranching(startingScale,cit->second.second, particle.x(),
-				       particle.id()!=cit->first,0.5*enhance,beam);
+				       particle.id()!=cit->first,rho,0.5*enhance,beam);
 	  startingScale = angularOrdered ? particle.scales().QCD_ac : particle.scales().QCD_ac_noAO;
 	  ShoKinPtr newKin2 = cit->second.first->
 	    generateNextSpaceBranching(startingScale,cit->second.second, particle.x(),
-				       particle.id()!=cit->first,0.5*enhance,beam);
+				       particle.id()!=cit->first,rho,0.5*enhance,beam);
 	  // pick the one with the highest scale
 	  if( (newKin&&newKin2&&newKin2->scale()>newKin->scale()) ||
 	      (!newKin&&newKin2) ) {
@@ -523,7 +529,7 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr,
 	    ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine;
 	  newKin=cit->second.first->
 	    generateNextSpaceBranching(startingScale,cit->second.second, particle.x(),
-				       particle.id()!=cit->first,enhance,beam);
+				       particle.id()!=cit->first,rho,enhance,beam);
 	}
       }
       // everything else
@@ -539,7 +545,7 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr,
 	}
     	newKin=cit->second.first->
     	  generateNextSpaceBranching(startingScale,cit->second.second, particle.x(),
-    				     particle.id()!=cit->first,enhance,beam);
+    				     particle.id()!=cit->first,rho,enhance,beam);
       }
     }
     else if(cit->second.first->interactionType()==ShowerInteraction::EW) {
@@ -547,7 +553,7 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr,
       Energy startingScale = particle.scales().EW;
       newKin=cit->second.first->
     	generateNextSpaceBranching(startingScale,cit->second.second, particle.x(),
-    				   particle.id()!=cit->first,enhance,beam);
+    				   particle.id()!=cit->first,rho,enhance,beam);
     }
     // shouldn't be anything else
     else
@@ -569,7 +575,7 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr,
   // initialize the ShowerKinematics 
   // and return it
   // and generate phi
-  kinematics->phi(sudakov->generatePhiBackward(particle,ids,kinematics));
+  kinematics->phi(sudakov->generatePhiBackward(particle,ids,kinematics,rho));
   // return the answer
   return Branching(kinematics, ids,sudakov,partnerType);
 }

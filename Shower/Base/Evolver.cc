@@ -775,8 +775,6 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
     if(setupChildren) {
       ++_nFSR;
       particle->showerKinematics(fb.kinematics);
-      // generate phi
-      fb.kinematics->phi(fb.sudakov->generatePhiForward(*particle,fb.ids,fb.kinematics));
       // check highest pT
       if(fb.kinematics->pT()>progenitor()->highestpT())
 	progenitor()->highestpT(fb.kinematics->pT());
@@ -1836,9 +1834,6 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
       particle->showerKinematics(fb.kinematics);
       if(fb.kinematics->pT()>progenitor()->highestpT())
 	progenitor()->highestpT(fb.kinematics->pT());
-      // if not hard generate phi
-      if(!fb.hard)
-	fb.kinematics->phi(fb.sudakov->generatePhiForward(*particle,fb.ids,fb.kinematics));
       // create the children
       children = createTimeLikeChildren(particle,fb.ids);
       // update the children

@@ -30,7 +30,7 @@ void OneHalfHalfSplitFn::Init() {
 }
 
 double OneHalfHalfSplitFn::P(const double z, const Energy2 t, 
-			  const IdList &ids, const bool mass) const {
+			     const IdList &ids, const bool mass, const RhoDMatrix &) const {
   double zz = z*(1.-z);
   double val=1.-2.*zz;
   if(mass) {
@@ -46,7 +46,7 @@ double OneHalfHalfSplitFn::overestimateP(const double,
 }
 
 double OneHalfHalfSplitFn::ratioP(const double z, const Energy2 t, 
-			       const IdList &ids, const bool mass) const {
+				  const IdList &ids, const bool mass, const RhoDMatrix &) const {
   double zz = z*(1.-z);
   double val = 1.-2.*zz;
   if(mass) {

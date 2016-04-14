@@ -99,6 +99,7 @@ bool QTildeSudakov::PSVeto(const Energy2 t,
  
 ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
 						   const IdList &ids,const bool cc,
+						   const RhoDMatrix & rho,
 						   double enhance, Energy2 maxQ2) {
   // First reset the internal kinematics variables that can
   // have been eventually set in the previous call to the method.
@@ -115,7 +116,7 @@ ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
   do {
     if(!guessTimeLike(t,tmin,enhance)) break;
   }
-  while(PSVeto(t,maxQ2) || SplittingFnVeto(z()*(1.-z())*t,ids,true) || 
+  while(PSVeto(t,maxQ2) || SplittingFnVeto(z()*(1.-z())*t,ids,true,rho) || 
 	alphaSVeto(splittingFn()->angularOrdered() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t));
   q_ = t > ZERO ? Energy(sqrt(t)) : -1.*MeV;
   if(q_ < ZERO) return ShoKinPtr();
@@ -127,6 +128,7 @@ ShoKinPtr QTildeSudakov::
 generateNextSpaceBranching(const Energy startingQ,
 			   const IdList &ids,
 			   double x,bool cc,
+			   const RhoDMatrix & rho,
 			   double enhance,
 			   Ptr<BeamParticleData>::transient_const_pointer beam) {
   // First reset the internal kinematics variables that can
@@ -154,7 +156,7 @@ generateNextSpaceBranching(const Energy startingQ,
     pt2=sqr(1.-z())*t-z()*masssquared_[2];
   }
   while(z() > zLimits().second || 
-	SplittingFnVeto((1.-z())*t/z(),ids,true) || 
+	SplittingFnVeto((1.-z())*t/z(),ids,true,rho) || 
 	alphaSVeto(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t) ||
 	PDFVeto(t,x,parton0,parton1,beam) || pt2 < pT2min() );
   if(t > ZERO && zLimits().first < zLimits().second)  q_ = sqrt(t);
@@ -181,11 +183,12 @@ void QTildeSudakov::initialize(const IdList & ids, Energy2 & tmin,const bool cc)
 }
 
 ShoKinPtr QTildeSudakov::generateNextDecayBranching(const Energy startingScale,
-						 const Energy stoppingScale,
-						 const Energy minmass,
-						 const IdList &ids,
-						 const bool cc, 
-						 double enhance) {
+						    const Energy stoppingScale,
+						    const Energy minmass,
+						    const IdList &ids,
+						    const bool cc,
+						    const RhoDMatrix & rho,
+						    double enhance) {
   // First reset the internal kinematics variables that can
   // have been eventually set in the previous call to this method.
   q_ = Constants::MaxEnergy;
@@ -203,7 +206,7 @@ ShoKinPtr QTildeSudakov::generateNextDecayBranching(const Energy startingScale,
     if(!guessDecay(t,tmax,minmass,enhance)) break;
     pt2 = sqr(1.-z())*(t-masssquared_[0])-z()*masssquared_[2];
   }
-  while(SplittingFnVeto((1.-z())*t/z(),ids,true)|| 
+  while(SplittingFnVeto((1.-z())*t/z(),ids,true,rho)|| 
 	alphaSVeto(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t ) ||
 	pt2<pT2min() ||
 	t*(1.-z())>masssquared_[0]-sqr(minmass));
@@ -419,7 +422,8 @@ pair<double,double> softPhiMin(double phi0, double phi1, double A, double B, dou
 
 double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
 					 const IdList & ids,
-					 ShoKinPtr kinematics) {
+					 ShoKinPtr kinematics,
+					 const RhoDMatrix & rho) {
   // no correlations, return flat phi
   if(! ShowerHandler::currentHandler()->evolver()->correlations())
     return Constants::twopi*UseRandom::rnd();
@@ -546,7 +550,6 @@ double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
   // if spin correlations
   vector<pair<int,Complex> > wgts;     
   if(ShowerHandler::currentHandler()->evolver()->spinCorrelations()) {
-    RhoDMatrix rho = particle.extractRhoMatrix(true);
     // calculate the weights
     wgts = splittingFn()->generatePhiForward(z,t,ids,rho);
   }
@@ -615,7 +618,8 @@ double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
 
 double QTildeSudakov::generatePhiBackward(ShowerParticle & particle,
 					  const IdList & ids,
-					  ShoKinPtr kinematics) {
+					  ShoKinPtr kinematics,
+					  const RhoDMatrix & rho) {
   // no correlations, return flat phi
   if(! ShowerHandler::currentHandler()->evolver()->correlations())
     return Constants::twopi*UseRandom::rnd();
@@ -698,7 +702,6 @@ double QTildeSudakov::generatePhiBackward(ShowerParticle & particle,
   vector<pair<int,Complex> > wgts;
   if(ShowerHandler::currentHandler()->evolver()->spinCorrelations()) {
     // get the spin density matrix and the mapping
-    RhoDMatrix rho = particle.extractRhoMatrix(false);
     // get the weights
     wgts = splittingFn()->generatePhiBackward(z,t,ids,rho);
   }
@@ -760,7 +763,8 @@ double QTildeSudakov::generatePhiBackward(ShowerParticle & particle,
 
 double QTildeSudakov::generatePhiDecay(ShowerParticle & particle,
 				       const IdList & ids,
-				       ShoKinPtr kinematics) {
+				       ShoKinPtr kinematics,
+				       const RhoDMatrix &) {
   // only soft correlations in this case
   // no correlations, return flat phi
   if( !(ShowerHandler::currentHandler()->evolver()->softCorrelations() &&

@@ -31,7 +31,7 @@ void ZeroZeroOneSplitFn::Init() {
 }
 
 double ZeroZeroOneSplitFn::P(const double z, const Energy2 t,
-			   const IdList &ids, const bool mass) const {
+			     const IdList &ids, const bool mass, const RhoDMatrix &) const {
   double val = z/(1.-z);
   if(mass) {
     Energy m = getParticleData(ids[0])->mass();
@@ -46,7 +46,7 @@ double ZeroZeroOneSplitFn::overestimateP(const double z,
 }
 
 double ZeroZeroOneSplitFn::ratioP(const double z, const Energy2 t,
-				const IdList &ids,const bool mass) const { 
+				  const IdList &ids,const bool mass, const RhoDMatrix &) const { 
   double val = z;
   if(mass) {
     Energy m = getParticleData(ids[0])->mass();

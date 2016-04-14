@@ -146,9 +146,10 @@ public:
    * @param t   The scale \f$t=2p_j\cdot p_k\f$.
    * @param ids The PDG codes for the particles in the splitting.
    * @param mass Whether or not to include the mass dependent terms
+   * @param rho The spin density matrix
    */
   virtual double P(const double z, const Energy2 t, const IdList & ids,
-		   const bool mass) const = 0;
+		   const bool mass, const RhoDMatrix & rho) const = 0;
 
   /**
    * Purely virtual method which should return
@@ -168,9 +169,10 @@ public:
    * @param t   The scale \f$t=2p_j\cdot p_k\f$.
    * @param ids The PDG codes for the particles in the splitting.
    * @param mass Whether or not to include the mass dependent terms
+   * @param rho The spin density matrix
    */
   virtual double ratioP(const double z, const Energy2 t, const IdList & ids,
-			const bool mass) const = 0;
+			const bool mass, const RhoDMatrix & rho) const = 0;
 
   /**
    * Purely virtual method which should return the indefinite integral of the 

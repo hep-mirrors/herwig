@@ -51,6 +51,7 @@ public:
    */
   virtual ShoKinPtr generateNextTimeBranching(const Energy startingScale,
 					      const IdList &ids,const bool cc,
+					      const RhoDMatrix & rho,
 					      double enhance, Energy2 maxQ2);
 
   /**
@@ -65,11 +66,12 @@ public:
    * @param enhance The radiation enhancement factor
    */
   virtual ShoKinPtr generateNextDecayBranching(const Energy startingScale,
-					    const Energy stoppingScale,
-					    const Energy minmass,
-					    const IdList &ids,
-					    const bool cc,
-					    double enhance);
+					       const Energy stoppingScale,
+					       const Energy minmass,
+					       const IdList &ids,
+					       const bool cc,
+					       const RhoDMatrix & rho,
+					       double enhance);
 
   /**
    * Return the scale of the next space-like branching. If there is no 
@@ -84,7 +86,9 @@ public:
    */
   virtual ShoKinPtr generateNextSpaceBranching(const Energy startingScale,
 					       const IdList &ids,double x,
-					       const bool cc, double enhance,
+					       const bool cc,
+					       const RhoDMatrix & rho,
+					       double enhance,
 					       tcBeamPtr beam);
   //@}
 
@@ -95,7 +99,8 @@ public:
    * @param The Shower kinematics
    */
   virtual double generatePhiForward(ShowerParticle & particle,const IdList & ids,
-				    ShoKinPtr kinematics);
+				    ShoKinPtr kinematics,
+				    const RhoDMatrix & rho);
 
   /**
    * Generate the azimuthal angle of the branching for backward branching
@@ -104,7 +109,8 @@ public:
    * @param The Shower kinematics
    */
   virtual double generatePhiBackward(ShowerParticle & particle,const IdList & ids,
-				    ShoKinPtr kinematics);
+				    ShoKinPtr kinematics,
+				     const RhoDMatrix & rho);
 
   /**
    *  Generate the azimuthal angle of the branching for ISR in decays
@@ -113,7 +119,8 @@ public:
    * @param The Shower kinematics
    */
   virtual double generatePhiDecay(ShowerParticle & particle,const IdList & ids,
-				  ShoKinPtr kinematics);
+				  ShoKinPtr kinematics,
+				  const RhoDMatrix & rho);
 
   /**
    *  Method to return the evolution scale given the

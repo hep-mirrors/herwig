@@ -31,7 +31,7 @@ void HalfOneHalfSplitFn::Init() {
 }
 
 double HalfOneHalfSplitFn::P(const double z, const Energy2 t,
-		       const IdList &ids, const bool mass) const {
+			     const IdList &ids, const bool mass, const RhoDMatrix & ) const {
   double val=(2.*(1.-z)+sqr(z))/z;
   if(mass) {
     Energy m = getParticleData(ids[0])->mass();
@@ -46,7 +46,7 @@ double HalfOneHalfSplitFn::overestimateP(const double z,
 }
 
 double HalfOneHalfSplitFn::ratioP(const double z, const Energy2 t,
-				  const IdList &ids,const bool mass) const {
+				  const IdList &ids,const bool mass, const RhoDMatrix & ) const {
   double val=2.*(1.-z)+sqr(z);
   if(mass) {
     Energy m=getParticleData(ids[0])->mass();

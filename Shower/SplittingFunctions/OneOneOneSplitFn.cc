@@ -30,7 +30,7 @@ void OneOneOneSplitFn::Init() {
 }
 
 double OneOneOneSplitFn::P(const double z, const Energy2,
-			   const IdList & ids, const bool)const {
+			   const IdList & ids, const bool, const RhoDMatrix &)const {
   // (this is historically important! the first physics - two years
   // after the birth of the project - in the Herwig shower! Alberto
   // & Stefan, 25/04/2002).
@@ -44,7 +44,7 @@ double OneOneOneSplitFn::overestimateP(const double z,
 
 
 double OneOneOneSplitFn::ratioP(const double z, const Energy2,
-				const IdList & , const bool) const {
+				const IdList & , const bool, const RhoDMatrix &) const {
   return sqr(1.-z*(1.-z));
 }
 

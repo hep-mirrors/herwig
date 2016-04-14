@@ -159,6 +159,7 @@ public:
    */
   virtual ShoKinPtr generateNextTimeBranching(const Energy startingScale,
 					      const IdList &ids,const bool cc,
+					      const RhoDMatrix & rho,
 					      double enhance, Energy2 maxQ2)=0;
 
   /**
@@ -177,6 +178,7 @@ public:
 					       const Energy minmass,
 					       const IdList &ids,
 					       const bool cc,
+					       const RhoDMatrix & rho,
 					       double enhance)=0;
 
   /**
@@ -192,7 +194,9 @@ public:
    */
   virtual ShoKinPtr generateNextSpaceBranching(const Energy startingScale,
 					       const IdList &ids,double x,
-					       const bool cc,double enhance,
+					       const bool cc,
+					       const RhoDMatrix & rho,
+					       double enhance,
 					       tcBeamPtr beam)=0;
   //@}
 
@@ -203,7 +207,8 @@ public:
    * @param The Shower kinematics
    */
   virtual double generatePhiForward(ShowerParticle & particle,const IdList & ids,
-				    ShoKinPtr kinematics)=0;
+				    ShoKinPtr kinematics,
+				    const RhoDMatrix & rho)=0;
 
   /**
    *  Generate the azimuthal angle of the branching for backward evolution
@@ -212,7 +217,8 @@ public:
    * @param The Shower kinematics
    */
   virtual double generatePhiBackward(ShowerParticle & particle,const IdList & ids,
-				     ShoKinPtr kinematics)=0;
+				     ShoKinPtr kinematics,
+				     const RhoDMatrix & rho)=0;
 
   /**
    *  Generate the azimuthal angle of the branching for ISR in decays
@@ -221,7 +227,8 @@ public:
    * @param The Shower kinematics
    */
   virtual double generatePhiDecay(ShowerParticle & particle,const IdList & ids,
-				  ShoKinPtr kinematics)=0;
+				  ShoKinPtr kinematics,
+				  const RhoDMatrix & rho)=0;
 
   /**
    *  Methods to provide public access to the private member variables
@@ -387,8 +394,9 @@ protected:
    */
   bool SplittingFnVeto(const Energy2 t, 
 		       const IdList &ids, 
-		       const bool mass) const {
-    return UseRandom::rnd()>splittingFn_->ratioP(z_, t, ids,mass);
+		       const bool mass,
+		       const RhoDMatrix & rho) const {
+    return UseRandom::rnd()>splittingFn_->ratioP(z_, t, ids,mass,rho);
   }
 
   /**

@@ -61,9 +61,10 @@ public:
    * @param t   The scale.
    * @param ids The PDG codes for the particles in the splitting.
    * @param mass Whether or not to include the mass dependent terms
+   * @param rho The spin density matrix
    */
   virtual double P(const double z, const Energy2 t, const IdList & ids,
-		   bool mass) const;
+		   bool mass, const RhoDMatrix & rho) const;
 
   /**
    * The concrete implementation of the overestimate of the splitting function,
@@ -81,9 +82,10 @@ public:
    * @param t   The scale.
    * @param ids The PDG codes for the particles in the splitting.
    * @param mass Whether or not to include the mass dependent terms
+   * @param rho The spin density matrix
    */
   virtual double ratioP(const double z, const Energy2 t, const IdList & ids,
-			bool mass) const;
+			bool mass, const RhoDMatrix & rho) const;
 
   /**
    * The concrete implementation of the indefinite integral of the 
