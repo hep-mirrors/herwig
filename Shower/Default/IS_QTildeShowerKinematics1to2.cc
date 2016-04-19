@@ -81,9 +81,9 @@ updateParent(const tShowerParticlePtr parent,
   if(!pspin ||  !ShowerHandler::currentHandler()->evolver()->spinCorrelations() ) return;
   // compute the matrix element for spin correlations
   IdList ids;
-  ids.push_back(parent->id());
-  ids.push_back(children[0]->id());
-  ids.push_back(children[1]->id());
+  ids.push_back(parent->dataPtr());
+  ids.push_back(children[0]->dataPtr());
+  ids.push_back(children[1]->dataPtr());
   Energy2 t = (1.-z())*sqr(scale())/z();
   // create the vertex
   SVertexPtr vertex(new_ptr(ShowerVertex()));

@@ -1533,7 +1533,7 @@ bool MEPP2HiggsVBF::softMatrixElementVeto(ShowerProgenitorPtr initial,
     double xperp = sqrt(4.*(1.-xp)*(1.-zp)*zp/xp);
     double x1 = -1./xp, x2 = 1.-(1.-zp)/xp, x3 = 2.+x1-x2;
     // compton
-    if(br.ids[0]!=ParticleID::g) {
+    if(br.ids[0]->id()!=ParticleID::g) {
       vector<double> azicoeff = ComptonME(xp,x2,xperp,l_,m_);
       wgt = (azicoeff[0]+0.5*azicoeff[2]+0.5*azicoeff[4])*
 	xp*(1.-z)/(1.-xp)/(1.+sqr(z))/(1.-zp+xp-2.*xp*(1.-zp));

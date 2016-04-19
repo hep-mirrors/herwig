@@ -12,8 +12,11 @@
 // This is the declaration of the ShowerConfig class.
 
 #include "ThePEG/Config/ThePEG.h"
+#include "ThePEG/PDT/ParticleData.h"
 #include "Base/ShowerParticle.fh"
 #include "Base/SudakovFormFactor.fh"
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
 
 namespace Herwig { 
 using namespace ThePEG;
@@ -57,7 +60,7 @@ using namespace ThePEG;
   /**
    *  Definition of the IdList for branchings
    */
-  typedef vector<long> IdList;
+  typedef vector<tcPDPtr> IdList;
 
   namespace ShowerInteraction {
     /**
@@ -88,7 +91,38 @@ using namespace ThePEG;
   /**
    *  typedef to pair the SudakovFormFactor and the particles in a branching
    */
-  typedef pair<SudakovPtr,IdList> BranchingElement;
+  struct BranchingElement {
+
+    /**
+     *  Constructor
+     */ 
+    BranchingElement();
+
+    /**
+     *  Constructor
+     */ 
+    BranchingElement(SudakovPtr sud, IdList part);
+
+    /**
+     * Destructor
+     */
+    ~BranchingElement();
+
+    /**
+    *   Access to the Sudakov
+    */
+    SudakovPtr sudakov;
+
+    /**
+     *   Access to the particles
+     */
+    IdList particles;
+
+    /**
+     *  Access to the charge conjugate particles
+     */
+    IdList conjugateParticles;
+  };
 
   /**
    *  typedef to pair the PDG code of the particle and the BranchingElement
@@ -99,6 +133,22 @@ using namespace ThePEG;
    *  typedef to create a structure which can be inserted into a BranchingList
    */
   typedef pair<long, BranchingElement> BranchingInsert;
+
+}
+
+namespace ThePEG {
+
+  /** 
+   * Output operator to allow the structure
+   */
+  PersistentOStream & operator << (PersistentOStream & os, 
+				   const Herwig::BranchingElement  & x);
+
+  /** 
+   * Input operator to allow the structure
+   */
+  PersistentIStream & operator >> (PersistentIStream & is, 
+				   Herwig::BranchingElement  & x);
 
 }
 

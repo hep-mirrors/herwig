@@ -713,25 +713,17 @@ void Evolver::hardMatrixElementCorrection(bool hard) {
   }
 }
 
-ShowerParticleVector Evolver::createTimeLikeChildren(tShowerParticlePtr particle, IdList ids) {
+ShowerParticleVector Evolver::createTimeLikeChildren(tShowerParticlePtr, IdList ids) {
   // Create the ShowerParticle objects for the two children of
   // the emitting particle; set the parent/child relationship
   // if same as definition create particles, otherwise create cc
-  tcPDPtr pdata[2];
-  for(unsigned int ix=0;ix<2;++ix) pdata[ix]=getParticleData(ids[ix+1]);
-  if(particle->id()!=ids[0]) {
-    for(unsigned int ix=0;ix<2;++ix) {
-      tPDPtr cc(pdata[ix]->CC());
-      if(cc) pdata[ix]=cc;
-    }
-  }
   ShowerParticleVector children;
   for(unsigned int ix=0;ix<2;++ix) {
-    children.push_back(new_ptr(ShowerParticle(pdata[ix],true)));
-    if(children[ix]->id()==_progenitor->id()&&!pdata[ix]->stable())
+    children.push_back(new_ptr(ShowerParticle(ids[ix+1],true)));
+    if(children[ix]->id()==_progenitor->id()&&!ids[ix+1]->stable())
       children[ix]->set5Momentum(Lorentz5Momentum(_progenitor->progenitor()->mass()));
     else
-      children[ix]->set5Momentum(Lorentz5Momentum(pdata[ix]->mass()));
+      children[ix]->set5Momentum(Lorentz5Momentum(ids[ix+1]->mass()));
   }
   return children;
 }
@@ -853,14 +845,14 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
    	  const vector<Energy> & vm = fc[ix].sudakov->virtualMasses(fc[ix].ids);
    	  Energy2 q2 = 
    	    fc[ix].kinematics->z()*(1.-fc[ix].kinematics->z())*sqr(fc[ix].kinematics->scale());
-   	  if(fc[ix].ids[0]!=ParticleID::g) q2 += sqr(vm[0]);
+   	  if(fc[ix].ids[0]->id()!=ParticleID::g) q2 += sqr(vm[0]);
    	  masses[ix+1] = sqrt(q2);
    	}
    	else {
    	  masses[ix+1] = virtualMasses[ix+1];
    	}
       }
-      masses[0] = fb.ids[0]!=ParticleID::g ? virtualMasses[0] : ZERO;
+      masses[0] = fb.ids[0]->id()!=ParticleID::g ? virtualMasses[0] : ZERO;
       double z = fb.kinematics->z();
       Energy2 pt2 = z*(1.-z)*(z*(1.-z)*sqr(fb.kinematics->scale()) + sqr(masses[0]))
    	- sqr(masses[1])*(1.-z) - sqr(masses[2])*z;
@@ -938,15 +930,10 @@ Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
     progenitor()->highestpT(bb.kinematics->pT());
   // For the time being we are considering only 1->2 branching
   // particles as in Sudakov form factor
-  tcPDPtr part[2]={getParticleData(bb.ids[0]),
-		   getParticleData(bb.ids[2])};
-  if(particle->id()!=bb.ids[1]) {
-    if(part[0]->CC()) part[0]=part[0]->CC();
-    if(part[1]->CC()) part[1]=part[1]->CC();
-  }
+  tcPDPtr part[2]={bb.ids[0],bb.ids[2]};
   // Now create the actual particles, make the otherChild a final state
   // particle, while the newParent is not
-  ShowerParticlePtr newParent=new_ptr(ShowerParticle(part[0],false));
+  ShowerParticlePtr newParent  = new_ptr(ShowerParticle(part[0],false));
   ShowerParticlePtr otherChild = new_ptr(ShowerParticle(part[1],true,true));
   ShowerParticleVector theChildren;
   theChildren.push_back(particle); 
@@ -1163,7 +1150,7 @@ bool Evolver::spaceLikeDecayShower(tShowerParticlePtr particle,
 	const vector<Energy> & vm = fc[1].sudakov->virtualMasses(fc[1].ids);
 	Energy2 q2 = 
 	  fc[1].kinematics->z()*(1.-fc[1].kinematics->z())*sqr(fc[1].kinematics->scale());
-	if(fc[1].ids[0]!=ParticleID::g) q2 += sqr(vm[0]);
+	if(fc[1].ids[0]->id()!=ParticleID::g) q2 += sqr(vm[0]);
 	masses[2] = sqrt(q2);
       }
       else {
@@ -1947,14 +1934,14 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
    	  const vector<Energy> & vm = fc[ix].sudakov->virtualMasses(fc[ix].ids);
    	  Energy2 q2 = 
    	    fc[ix].kinematics->z()*(1.-fc[ix].kinematics->z())*sqr(fc[ix].kinematics->scale());
-   	  if(fc[ix].ids[0]!=ParticleID::g) q2 += sqr(vm[0]);
+   	  if(fc[ix].ids[0]->id()!=ParticleID::g) q2 += sqr(vm[0]);
    	  masses[ix+1] = sqrt(q2);
    	}
    	else {
    	  masses[ix+1] = virtualMasses[ix+1];
    	}
       }
-      masses[0] = fb.ids[0]!=ParticleID::g ? virtualMasses[0] : ZERO;
+      masses[0] = fb.ids[0]->id()!=ParticleID::g ? virtualMasses[0] : ZERO;
       double z = fb.kinematics->z();
       Energy2 pt2 = z*(1.-z)*(z*(1.-z)*sqr(fb.kinematics->scale()) + sqr(masses[0]))
    	- sqr(masses[1])*(1.-z) - sqr(masses[2])*z;
@@ -2047,14 +2034,8 @@ bool Evolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr beam,
 	break;
       }
       // particles as in Sudakov form factor
-      part[0] = getParticleData( bb.ids[0] );
-      part[1] = getParticleData( bb.ids[2] );
-      
-      //is emitter anti-particle
-      if( particle->id() != bb.ids[1]) {
-	if( part[0]->CC() ) part[0] = part[0]->CC();
-	if( part[1]->CC() ) part[1] = part[1]->CC();
-      }
+      part[0] = bb.ids[0];
+      part[1] = bb.ids[2];
       double zsplit = bb.kinematics->z();
       // apply the vetos for the truncated shower
       // if doesn't carry most of momentum
@@ -2380,7 +2361,7 @@ truncatedSpaceLikeDecayShower(tShowerParticlePtr particle,
 	const vector<Energy> & vm = fc[1].sudakov->virtualMasses(fc[1].ids);
 	Energy2 q2 = 
 	  fc[1].kinematics->z()*(1.-fc[1].kinematics->z())*sqr(fc[1].kinematics->scale());
-	if(fc[1].ids[0]!=ParticleID::g) q2 += sqr(vm[0]);
+	if(fc[1].ids[0]->id()!=ParticleID::g) q2 += sqr(vm[0]);
 	masses[2] = sqrt(q2);
       }
       else {
@@ -2467,7 +2448,7 @@ void Evolver::connectTrees(ShowerTreePtr showerTree,
     // Sudakovs for ISR
     if((**cit).parent()&&(**cit).status()==HardBranching::Incoming) {
       ++_nis;
-      IdList br(3);
+      vector<long> br(3);
       br[0] = (**cit).parent()->branchingParticle()->id();
       br[1] = (**cit).          branchingParticle()->id();
       br[2] = (**cit).parent()->children()[0]==*cit ?
@@ -2486,9 +2467,9 @@ void Evolver::connectTrees(ShowerTreePtr showerTree,
       SudakovPtr sudakov;
       for(BranchingList::const_iterator cjt = branchings.lower_bound(index); 
 	  cjt != branchings.upper_bound(index); ++cjt ) {
-	IdList ids = cjt->second.second;
-	if(ids[0]==br[0]&&ids[1]==br[1]&&ids[2]==br[2]) {
-	  sudakov=cjt->second.first;
+	IdList ids = cjt->second.particles;
+	if(ids[0]->id()==br[0]&&ids[1]->id()==br[1]&&ids[2]->id()==br[2]) {
+	  sudakov=cjt->second.sudakov;
 	  break;
 	}
       }
@@ -2500,7 +2481,7 @@ void Evolver::connectTrees(ShowerTreePtr showerTree,
     // Sudakovs for FSR
     else if(!(**cit).children().empty()) {
       ++_nfs;
-      IdList br(3);
+      vector<long> br(3);
       br[0] = (**cit)               .branchingParticle()->id();
       br[1] = (**cit).children()[0]->branchingParticle()->id();
       br[2] = (**cit).children()[1]->branchingParticle()->id();
@@ -2514,9 +2495,9 @@ void Evolver::connectTrees(ShowerTreePtr showerTree,
       SudakovPtr sudakov;
       for(BranchingList::const_iterator cjt = branchings.lower_bound(index); 
 	  cjt != branchings.upper_bound(index); ++cjt ) {
-	IdList ids = cjt->second.second;
-	if(ids[0]==br[0]&&ids[1]==br[1]&&ids[2]==br[2]) {
-	  sudakov=cjt->second.first;
+	IdList ids = cjt->second.particles;
+	if(ids[0]->id()==br[0]&&ids[1]->id()==br[1]&&ids[2]->id()==br[2]) {
+	  sudakov=cjt->second.sudakov;
 	  break;
 	}
       }
@@ -3035,7 +3016,6 @@ Branching Evolver::selectTimeLikeBranching(tShowerParticlePtr particle,
 					   HardBranchingPtr branch) {
   Branching fb;
   unsigned int iout=0;
-  tcPDPtr pdata[2];
   while (true) {
     // break if doing truncated shower and no truncated shower needed
     if(branch && (!isTruncatedShowerON()||hardOnly())) break;
@@ -3049,21 +3029,13 @@ Branching Evolver::selectTimeLikeBranching(tShowerParticlePtr particle,
 	fb=Branching();
 	break;
       }
-      // get the particle data objects
-      for(unsigned int ix=0;ix<2;++ix) pdata[ix]=getParticleData(fb.ids[ix+1]);
-      if(particle->id()!=fb.ids[0]) {
-    	for(unsigned int ix=0;ix<2;++ix) {
-    	  tPDPtr cc(pdata[ix]->CC());
-    	  if(cc) pdata[ix]=cc;
-    	}
-      }
       // find the truncated line
       iout=0;
-      if(pdata[0]->id()!=pdata[1]->id()) {
-	if(pdata[0]->id()==particle->id())       iout=1;
-	else if (pdata[1]->id()==particle->id()) iout=2;
+      if(fb.ids[1]->id()!=fb.ids[2]->id()) {
+	if(fb.ids[1]->id()==particle->id())       iout=1;
+	else if (fb.ids[2]->id()==particle->id()) iout=2;
       }
-      else if(pdata[0]->id()==particle->id()) {
+      else if(fb.ids[1]->id()==particle->id()) {
 	if(fb.kinematics->z()>0.5) iout=1;
 	else                       iout=2;
       }
@@ -3117,9 +3089,9 @@ Branching Evolver::selectTimeLikeBranching(tShowerParticlePtr particle,
 	                                         branch->phi(),
 						 branch->children()[0]->pT());
   IdList idlist(3);
-  idlist[0] = particle->id();
-  idlist[1] = branch->children()[0]->branchingParticle()->id();
-  idlist[2] = branch->children()[1]->branchingParticle()->id();
+  idlist[0] = particle->dataPtr();
+  idlist[1] = branch->children()[0]->branchingParticle()->dataPtr();
+  idlist[2] = branch->children()[1]->branchingParticle()->dataPtr();
   fb = Branching( showerKin, idlist, branch->sudakov(),branch->type() );
   fb.hard = true;
   fb.iout=0;
@@ -3133,7 +3105,6 @@ Branching Evolver::selectSpaceLikeDecayBranching(tShowerParticlePtr particle,
 						 HardBranchingPtr branch) {
   Branching fb;
   unsigned int iout=0;
-  tcPDPtr pdata[2];
   while (true) {
     // break if doing truncated shower and no truncated shower needed
     if(branch && (!isTruncatedShowerON()||hardOnly())) break;
@@ -3149,21 +3120,13 @@ Branching Evolver::selectSpaceLikeDecayBranching(tShowerParticlePtr particle,
 	fb=Branching();
 	break;
       }
-      // get the particle data objects
-      for(unsigned int ix=0;ix<2;++ix) pdata[ix]=getParticleData(fb.ids[ix+1]);
-      if(particle->id()!=fb.ids[0]) {
-	for(unsigned int ix=0;ix<2;++ix) {
-	  tPDPtr cc(pdata[ix]->CC());
-	  if(cc) pdata[ix]=cc;
-	}
-      }
       // find the truncated line
       iout=0;
-      if(pdata[0]->id()!=pdata[1]->id()) {
-	if(pdata[0]->id()==particle->id())       iout=1;
-	else if (pdata[1]->id()==particle->id()) iout=2;
+      if(fb.ids[1]->id()!=fb.ids[2]->id()) {
+	if(fb.ids[1]->id()==particle->id())       iout=1;
+	else if (fb.ids[2]->id()==particle->id()) iout=2;
       }
-      else if(pdata[0]->id()==particle->id()) {
+      else if(fb.ids[1]->id()==particle->id()) {
 	if(fb.kinematics->z()>0.5) iout=1;
 	else                       iout=2;
       }
@@ -3215,9 +3178,9 @@ Branching Evolver::selectSpaceLikeDecayBranching(tShowerParticlePtr particle,
 					    branch->phi(),
 					    branch->children()[0]->pT());
    IdList idlist(3);
-   idlist[0] = particle->id();
-   idlist[1] = branch->children()[0]->branchingParticle()->id();
-   idlist[2] = branch->children()[1]->branchingParticle()->id();
+   idlist[0] = particle->dataPtr();
+   idlist[1] = branch->children()[0]->branchingParticle()->dataPtr();
+   idlist[2] = branch->children()[1]->branchingParticle()->dataPtr();
    // create the branching
    fb = Branching( showerKin, idlist, branch->sudakov(),ShowerPartnerType::QCDColourLine  );
    fb.hard=true;

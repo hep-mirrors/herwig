@@ -109,12 +109,10 @@ public:
     else if(_colourStructure<0) {
       if(_colourStructure==ChargedChargedNeutral ||
 	 _colourStructure==ChargedNeutralCharged) {
-	tPDPtr part=getParticleData(ids[0]);
-	return sqr(double(part->iCharge())/3.);
+	return sqr(double(ids[0]->iCharge())/3.);
       }
       else {
-	tPDPtr part=getParticleData(ids[1]);
-	return sqr(double(part->iCharge())/3.);
+	return sqr(double(ids[1]->iCharge())/3.);
       }
     }
     else

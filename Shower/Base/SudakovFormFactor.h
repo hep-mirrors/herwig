@@ -153,12 +153,11 @@ public:
    * branching then it returns ZERO.
    * @param startingScale starting scale for the evolution
    * @param ids The PDG codes of the particles in the splitting
-   * @param cc Whether this is the charge conjugate of the branching
    * @param enhance The radiation enhancement factor
    * @param maxQ2 The maximum \f$Q^2\f$ for the emission
    */
   virtual ShoKinPtr generateNextTimeBranching(const Energy startingScale,
-					      const IdList &ids,const bool cc,
+					      const IdList &ids,
 					      const RhoDMatrix & rho,
 					      double enhance, Energy2 maxQ2)=0;
 
@@ -169,7 +168,6 @@ public:
    * @param stoppingScale stopping scale for the evolution
    * @param minmass The minimum mass allowed for the spake-like particle.
    * @param ids The PDG codes of the particles in the splitting
-   * @param cc Whether this is the charge conjugate of the branching
    * defined.
    * @param enhance The radiation enhancement factor
    */
@@ -177,7 +175,6 @@ public:
 					       const Energy stoppingScale,
 					       const Energy minmass,
 					       const IdList &ids,
-					       const bool cc,
 					       const RhoDMatrix & rho,
 					       double enhance)=0;
 
@@ -187,14 +184,12 @@ public:
    * @param startingScale starting scale for the evolution
    * @param ids The PDG codes of the particles in the splitting
    * @param x The fraction of the beam momentum
-   * @param cc Whether this is the charge conjugate of the branching
    * defined.
    * @param beam The beam particle
    * @param enhance The radiation enhancement factor
    */
   virtual ShoKinPtr generateNextSpaceBranching(const Energy startingScale,
 					       const IdList &ids,double x,
-					       const bool cc,
 					       const RhoDMatrix & rho,
 					       double enhance,
 					       tcBeamPtr beam)=0;

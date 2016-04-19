@@ -64,12 +64,12 @@ updateChildren(const tShowerParticlePtr parent,
   // set the maximum virtual masses
   if(massVeto) {
     Energy2 q2 = z()*(1.-z())*sqr(scale());
-    vector<long> ids(3);
-    ids[0] = parent->id();
-    ids[1] = children[0]->id();
-    ids[2] = children[1]->id();
+    IdList ids(3);
+    ids[0] = parent->dataPtr();
+    ids[1] = children[0]->dataPtr();
+    ids[2] = children[1]->dataPtr();
     const vector<Energy> & virtualMasses = SudakovFormFactor()->virtualMasses(ids);
-    if(ids[0]!=ParticleID::g && ids[0]!=ParticleID::gamma ) {
+    if(ids[0]->id()!=ParticleID::g && ids[0]->id()!=ParticleID::gamma ) {
       q2 += sqr(virtualMasses[0]);
     }
     // limits on further evolution
@@ -95,9 +95,9 @@ updateChildren(const tShowerParticlePtr parent,
   if(!pspin ||  !ShowerHandler::currentHandler()->evolver()->spinCorrelations() ) return;
   Energy2 t = sqr(scale())*z()*(1.-z());
   IdList ids;
-  ids.push_back(parent->id());
-  ids.push_back(children[0]->id());
-  ids.push_back(children[1]->id());
+  ids.push_back(parent->dataPtr());
+  ids.push_back(children[0]->dataPtr());
+  ids.push_back(children[1]->dataPtr());
   // create the vertex
   SVertexPtr vertex(new_ptr(ShowerVertex()));
   // set the matrix element
@@ -161,9 +161,9 @@ void FS_QTildeShowerKinematics1to2::updateParent(const tShowerParticlePtr parent
 						 const ShowerParticleVector & children,
 						 ShowerPartnerType::Type) const {
   IdList ids(3);
-  ids[0] = parent->id();
-  ids[1] = children[0]->id();
-  ids[2] = children[1]->id();
+  ids[0] = parent->dataPtr();
+  ids[1] = children[0]->dataPtr();
+  ids[2] = children[1]->dataPtr();
   const vector<Energy> & virtualMasses = SudakovFormFactor()->virtualMasses(ids);
   if(children[0]->children().empty()) children[0]->virtualMass(virtualMasses[1]);
   if(children[1]->children().empty()) children[1]->virtualMass(virtualMasses[2]);
@@ -171,7 +171,7 @@ void FS_QTildeShowerKinematics1to2::updateParent(const tShowerParticlePtr parent
   Energy2 pt2=sqr(z()*(1.-z()))*sqr(scale())
     - sqr(children[0]->virtualMass())*(1.-z())
     - sqr(children[1]->virtualMass())*    z() ;
-  if(ids[0]!=ParticleID::g) pt2 += z()*(1.-z())*sqr(virtualMasses[0]);
+  if(ids[0]->id()!=ParticleID::g) pt2 += z()*(1.-z())*sqr(virtualMasses[0]);
   if(pt2>ZERO) {
     Energy2 q2 = 
       sqr(children[0]->virtualMass())/z() + 

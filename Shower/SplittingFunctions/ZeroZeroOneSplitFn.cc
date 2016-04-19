@@ -34,7 +34,7 @@ double ZeroZeroOneSplitFn::P(const double z, const Energy2 t,
 			     const IdList &ids, const bool mass, const RhoDMatrix &) const {
   double val = z/(1.-z);
   if(mass) {
-    Energy m = getParticleData(ids[0])->mass();
+    Energy m = ids[0]->mass();
     val-=  sqr(m)/t;
   }
   return 2.*colourFactor(ids)*val;
@@ -49,7 +49,7 @@ double ZeroZeroOneSplitFn::ratioP(const double z, const Energy2 t,
 				  const IdList &ids,const bool mass, const RhoDMatrix &) const { 
   double val = z;
   if(mass) {
-    Energy m = getParticleData(ids[0])->mass();
+    Energy m = ids[0]->mass();
     val-=sqr(m)*(1.-z)/t;
   }
   return val;
@@ -86,10 +86,8 @@ double ZeroZeroOneSplitFn::invIntegOverP(const double r, const IdList & ids,
 bool ZeroZeroOneSplitFn::accept(const IdList &ids) const {
   if(ids.size()!=3) return false;
   if(ids[0]!=ids[1]) return false;
-  tcPDPtr q=getParticleData(ids[0]);
-  tcPDPtr g=getParticleData(ids[2]);
-  if(q->iSpin()!=PDT::Spin0 ||
-     g->iSpin()!=PDT::Spin1) return false;
+  if(ids[0]->iSpin()!=PDT::Spin0 ||
+     ids[2]->iSpin()!=PDT::Spin1) return false;
   return checkColours(ids);
 }
 
@@ -113,7 +111,7 @@ DecayMEPtr ZeroZeroOneSplitFn::matrixElement(const double z, const Energy2 t,
                                              bool timeLike) {
   // calculate the kernal
   DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin1)));
-  Energy m = timeLike ? getParticleData(ids[0])->mass() : ZERO;
+  Energy m = timeLike ? ids[0]->mass() : ZERO;
   (*kernal)(0,0,0) = -exp(Complex(0.,1.)*phi)*sqrt(1.-(1.-z)*sqr(m)/z/t)*sqrt(z/(1.-z));
   (*kernal)(0,0,2) = -conj((*kernal)(0,0,0));
   return kernal;

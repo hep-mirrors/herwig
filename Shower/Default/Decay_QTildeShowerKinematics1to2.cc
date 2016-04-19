@@ -35,10 +35,10 @@ updateChildren(const tShowerParticlePtr parent,
   splittingFn()->evaluateDecayScales(partnerType,scale(),z(),parent,
 				     children[0],children[1]);
   // set the maximum virtual masses
-  vector<long> ids(3);
-  ids[0] = parent->id();
-  ids[1] = children[0]->id();
-  ids[2] = children[1]->id();
+  IdList ids(3);
+  ids[0] = parent->dataPtr();
+  ids[1] = children[0]->dataPtr();
+  ids[2] = children[1]->dataPtr();
   const vector<Energy> & virtualMasses = SudakovFormFactor()->virtualMasses(ids);
   Energy2 q2 = sqr(virtualMasses[0])-(1.-z())*sqr(scale());
   children[0]->virtualMass(sqrt(q2));
@@ -99,9 +99,9 @@ void Decay_QTildeShowerKinematics1to2::updateParent(const tShowerParticlePtr par
 						    const ShowerParticleVector & children,
 						    ShowerPartnerType::Type) const {
   IdList ids(3);
-  ids[0] = parent->id();
-  ids[1] = children[0]->id();
-  ids[2] = children[1]->id();
+  ids[0] = parent->dataPtr();
+  ids[1] = children[0]->dataPtr();
+  ids[2] = children[1]->dataPtr();
   const vector<Energy> & virtualMasses = SudakovFormFactor()->virtualMasses(ids);
   children[0]->virtualMass(sqrt(sqr(virtualMasses[0])-(1.-z())*sqr(scale())));
   if(children[1]->children().empty()) children[1]->virtualMass(virtualMasses[2]);

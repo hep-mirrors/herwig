@@ -81,8 +81,7 @@ double OneOneOneSplitFn::integOverP(const double z, const IdList & ids,
 bool OneOneOneSplitFn::accept(const IdList & ids) const {
   if(ids.size()!=3) return false;
   for(unsigned int ix=0;ix<ids.size();++ix) {
-    tcPDPtr part = getParticleData(ids[ix]);
-    if(part->iSpin()!=PDT::Spin1) return false;
+    if(ids[0]->iSpin()!=PDT::Spin1) return false;
   }
   return checkColours(ids);
 }

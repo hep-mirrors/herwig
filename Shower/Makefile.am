@@ -32,7 +32,7 @@ Base/Evolver.h Base/Evolver.fh Base/Evolver.cc \
 Base/ShowerVeto.h Base/ShowerVeto.fh Base/ShowerVeto.cc
 
 noinst_LTLIBRARIES = libHwShower.la
-libHwShower_la_SOURCES = ShowerConfig.h \
+libHwShower_la_SOURCES = ShowerConfig.h  ShowerConfig.cc \
 Base/Branching.h \
 Base/ShowerParticle.cc  Base/ShowerParticle.fh  Base/ShowerParticle.h \
 Base/ShowerKinematics.fh  Base/ShowerKinematics.h Base/ShowerKinematics.cc \

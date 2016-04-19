@@ -301,7 +301,7 @@ const vector<Energy> & SudakovFormFactor::virtualMasses(const IdList & ids) {
   output.clear();
   if(cutOffOption() == 0) {
     for(unsigned int ix=0;ix<ids.size();++ix)
-      output.push_back(getParticleData(ids[ix])->mass());
+      output.push_back(ids[ix]->mass());
     Energy kinCutoff=
       kinematicCutOff(kinScale(),*std::max_element(output.begin(),output.end()));
     for(unsigned int ix=0;ix<output.size();++ix)
@@ -309,13 +309,13 @@ const vector<Energy> & SudakovFormFactor::virtualMasses(const IdList & ids) {
   }
   else if(cutOffOption() == 1) {
     for(unsigned int ix=0;ix<ids.size();++ix) {
-      output.push_back(getParticleData(ids[ix])->mass());
-      output.back() += ids[ix]==ParticleID::g ? vgCut() : vqCut();
+      output.push_back(ids[ix]->mass());
+      output.back() += ids[ix]->id()==ParticleID::g ? vgCut() : vqCut();
     }
   }
   else if(cutOffOption() == 2) {
     for(unsigned int ix=0;ix<ids.size();++ix) 
-      output.push_back(getParticleData(ids[ix])->mass());
+      output.push_back(ids[ix]->mass());
   }
   else {
     throw Exception() << "Unknown option for the cut-off"

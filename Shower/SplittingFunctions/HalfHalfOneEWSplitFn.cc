@@ -64,13 +64,13 @@ void HalfHalfOneEWSplitFn::doinit() {
 }
 
 void HalfHalfOneEWSplitFn::getCouplings(double & gL, double & gR, const IdList & ids) const {
-  if(ids[2]==ParticleID::Z0) {
-    map<long,pair<double,double> >::const_iterator it = gZ_.find(abs(ids[0]));
+  if(ids[2]->id()==ParticleID::Z0) {
+    map<long,pair<double,double> >::const_iterator it = gZ_.find(abs(ids[0]->id()));
     assert(it!=gZ_.end());
     gL = it->second.first ;
     gR = it->second.second;
   }
-  else if(abs(ids[2])==ParticleID::Wplus) {
+  else if(abs(ids[2]->id())==ParticleID::Wplus) {
     gL = gWL_;
   }
   else
@@ -83,7 +83,7 @@ double HalfHalfOneEWSplitFn::P(const double z, const Energy2 t,
   getCouplings(gL,gR,ids);
   double val = (1. + sqr(z))/(1.-z);
   if(mass) {
-    Energy m = getParticleData(ids[2])->mass();  
+    Energy m = ids[2]->mass();  
     val -= sqr(m)/t;
   }
   val *= (sqr(gL)*norm(rho(0,0))+sqr(gR)*norm(rho(1,1)));
@@ -104,7 +104,7 @@ double HalfHalfOneEWSplitFn::ratioP(const double z, const Energy2 t,
   getCouplings(gL,gR,ids);
   double val = 1. + sqr(z);
   if(mass) {
-    Energy m = getParticleData(ids[2])->mass();  
+    Energy m = ids[2]->mass();  
     val -= (1.-z)*sqr(m)/t;
   }
   val *= (sqr(gL)*norm(rho(0,0))+sqr(gR)*norm(rho(1,1)));
@@ -152,16 +152,16 @@ double HalfHalfOneEWSplitFn::invIntegOverP(const double r, const IdList & ids,
 
 bool HalfHalfOneEWSplitFn::accept(const IdList &ids) const {
   if(ids.size()!=3) return false;
-  if(ids[2]==ParticleID::Z0) {
-    if(ids[0]==ids[1] && 
-       ((ids[0]>=1 && ids[0]<=6) || (ids[0]>=11&&ids[0]<=16) )) return true;
+  if(ids[2]->id()==ParticleID::Z0) {
+    if(ids[0]->id()==ids[1]->id() && 
+       ((ids[0]->id()>=1 && ids[0]->id()<=6) || (ids[0]->id()>=11&&ids[0]->id()<=16) )) return true;
   }
-  else if(abs(ids[2])==ParticleID::Wplus) {
-    if(!((ids[0]>=1 && ids[0]<=6) || (ids[0]>=11&&ids[0]<=16) )) return false;
-    if(!((ids[1]>=1 && ids[1]<=6) || (ids[1]>=11&&ids[1]<=16) )) return false;
-    if(ids[0]+1!=ids[1] && ids[0]-1!=ids[1]) return false;
-    int out = getParticleData(ids[1])->iCharge()+getParticleData(ids[2])->iCharge();
-    if(getParticleData(ids[0])->iCharge()==out) return true;
+  else if(abs(ids[2]->id())==ParticleID::Wplus) {
+    if(!((ids[0]->id()>=1 && ids[0]->id()<=6) || (ids[0]->id()>=11&&ids[0]->id()<=16) )) return false;
+    if(!((ids[1]->id()>=1 && ids[1]->id()<=6) || (ids[1]->id()>=11&&ids[1]->id()<=16) )) return false;
+    if(ids[0]->id()+1!=ids[1]->id() && ids[0]->id()-1!=ids[1]->id()) return false;
+    int out = ids[1]->iCharge()+ids[2]->iCharge();
+    if(ids[0]->iCharge()==out) return true;
   }
   return false;
 }
@@ -187,7 +187,7 @@ DecayMEPtr HalfHalfOneEWSplitFn::matrixElement(const double z, const Energy2 t,
                                              bool) {
   // calculate the kernal
   DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin1)));
-  Energy m = getParticleData(ids[2])->mass();
+  Energy m = ids[2]->mass();
   double gL(0.),gR(0.);
   getCouplings(gL,gR,ids);
   double mt = m/sqrt(t);

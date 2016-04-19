@@ -770,8 +770,8 @@ bool SMZDecayer::
 softMatrixElementVeto(ShowerProgenitorPtr initial,ShowerParticlePtr parent,Branching br) {
   // check we should be applying the veto
   if(parent->id()!=initial->progenitor()->id()||
-     br.ids[0]!=br.ids[1]||
-     br.ids[2]!=ParticleID::g) return false;
+     br.ids[0]->id()!=br.ids[1]->id()||
+     br.ids[2]->id()!=ParticleID::g) return false;
   // calculate pt
   double d_z = br.kinematics->z();
   Energy d_qt = br.kinematics->scale();
