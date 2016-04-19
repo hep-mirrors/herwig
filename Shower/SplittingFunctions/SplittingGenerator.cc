@@ -226,7 +226,8 @@ void SplittingGenerator::deleteFromMap(const IdList &ids,
 Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
 						     double enhance,
 						     ShowerInteraction::Type type) const {
-  RhoDMatrix rho = particle.extractRhoMatrix(true);
+  RhoDMatrix rho;
+  bool rhoCalc(false);
   Energy newQ = ZERO;
   ShoKinPtr kinematics = ShoKinPtr();
   ShowerPartnerType::Type partnerType(ShowerPartnerType::Undefined);
@@ -242,6 +243,10 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
       cit != _fbranchings.upper_bound(index); ++cit) {
     // check either right interaction or doing both
     if(!checkInteraction(type,cit->second.sudakov->interactionType())) continue;
+    if(!rhoCalc) {
+      rho = particle.extractRhoMatrix(true);
+      rhoCalc = true;
+    }
     // whether or not this interaction should be angular ordered
     bool angularOrdered = cit->second.sudakov->splittingFn()->angularOrdered();
     ShoKinPtr newKin;
@@ -462,7 +467,8 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr,
 			Ptr<BeamParticleData>::transient_const_pointer beam,
 			ShowerInteraction::Type type,
 			tcPDFPtr pdf, Energy freeze) const {
-  RhoDMatrix rho = particle.extractRhoMatrix(false);
+  RhoDMatrix rho;
+  bool rhoCalc(false);
   Energy newQ=ZERO;
   ShoKinPtr kinematics=ShoKinPtr();
   ShowerPartnerType::Type partnerType(ShowerPartnerType::Undefined);
@@ -480,6 +486,11 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr,
     if(!checkInteraction(type,cit->second.sudakov->interactionType())) continue;
     // setup the PDF
     cit->second.sudakov->setPDF(pdf,freeze);
+    //calc rho as needed
+    if(!rhoCalc) {
+      rho = particle.extractRhoMatrix(false);
+      rhoCalc = true;
+    }
     // whether or not this interaction should be angular ordered
     bool angularOrdered = cit->second.sudakov->splittingFn()->angularOrdered();
     ShoKinPtr newKin;
