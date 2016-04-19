@@ -609,12 +609,20 @@ void PartnerFinder::setInitialEWEvolutionScales(const ShowerParticleVector &part
 vector< pair<double, tShowerParticlePtr> >
 PartnerFinder::findEWPartners(tShowerParticlePtr particle,
 			       const ShowerParticleVector &particles,
-			       const bool ) {
+			       const bool isDecayCase ) {
   vector< pair<double, tShowerParticlePtr> > partners;
   ShowerParticleVector::const_iterator cjt;
   for(cjt = particles.begin(); cjt != particles.end(); ++cjt) {
     if(!weaklyInteracting((*cjt)->dataPtr()) ||
        particle == *cjt) continue;
+    if( QEDPartner_ != 0 && !isDecayCase ) {
+      // only include II and FF as requested
+      if( QEDPartner_ == 1 && FS(particle) != FS(*cjt) )
+	continue;
+      // only include IF is requested
+      else if(QEDPartner_ == 2 && FS(particle) == FS(*cjt) )
+	continue;
+    }
     double charge = 1.;
     // only keep positive dipoles
     if(charge>0.) partners.push_back(make_pair(charge,*cjt));
