@@ -53,6 +53,7 @@ namespace {
 
 LorentzRotation boostToShower(Lorentz5Momentum & porig, tShowerBasisPtr basis) {
   LorentzRotation output; 
+  assert(basis);
   if(basis->frame()==ShowerBasis::BackToBack) {
     // we are doing the evolution in the back-to-back frame
     // work out the boostvector
