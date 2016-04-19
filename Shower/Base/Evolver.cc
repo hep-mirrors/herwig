@@ -320,6 +320,11 @@ void Evolver::Init() {
      "QEDOnly",
      "Only QED",
      ShowerInteraction::QED);
+  static SwitchOption interfaceInteractionEWOnly
+    (interfaceInteraction,
+     "EWOnly",
+     "Only EW",
+     ShowerInteraction::EW);
   static SwitchOption interfaceInteractionQEDQCD
     (interfaceInteraction,
      "QEDQCD",
