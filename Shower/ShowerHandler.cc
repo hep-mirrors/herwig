@@ -352,6 +352,11 @@ Energy ShowerHandler::hardScale() const {
 
 void ShowerHandler::cascade() {
   
+  // Initialise the weights in the event object
+  // so that any variations are output regardless of
+  // whether showering occurs for the given event
+  initializeWeights();
+
   tcPDFPtr first  = firstPDF().pdf();
   tcPDFPtr second = secondPDF().pdf();
 
@@ -594,6 +599,24 @@ void ShowerHandler::prepareCascade(tSubProPtr sub) {
   current_ = currentStep(); 
   subProcess_ = sub;
 } 
+
+void ShowerHandler::initializeWeights() {
+  if ( !showerVariations().empty() ) {
+
+    tEventPtr event = eventHandler()->currentEvent();
+
+    for ( map<string,ShowerHandler::ShowerVariation>::const_iterator var =
+	    showerVariations().begin();
+	  var != showerVariations().end(); ++var ) {
+
+      // Check that this is behaving as intended
+      //map<string,double>::iterator wi = event->optionalWeights().find(var->first);
+      //assert(wi == event->optionalWeights().end() ); 
+
+      event->optionalWeights()[var->first] = 1.0;
+    }
+  }
+}
 
 void ShowerHandler::resetWeights() {
   for ( map<string,double>::iterator w = currentWeights_.begin();

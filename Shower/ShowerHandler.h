@@ -344,6 +344,11 @@ protected:
    */
   void combineWeights();
 
+ /**
+   * Initialise the weights in currentEvent()
+   */
+  void initializeWeights();
+
   /**
    * Reset the current weights
    */
