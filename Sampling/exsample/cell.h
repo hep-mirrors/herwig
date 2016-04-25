@@ -81,13 +81,14 @@ namespace exsample {
     /// the efficiency histogram by a trial unweighting
     template<class Random, class Function, class SlaveStatistics>
     void explore(Random&, const adaption_info&, Function*, statistics*,
-		 SlaveStatistics& opt);
+		 SlaveStatistics& opt, double detuning = 1.0);
 
     /// explore this cell in a more refined way, which
     /// is however not suited for already calculating integrals
     /// and stuff
     template<class Random, class Function>
-    void explore(Random&, const adaption_info&, Function*);
+    void explore(Random&, const adaption_info&, Function*,
+		 double detuning = 1.0);
 
   public:
 
@@ -229,7 +230,8 @@ namespace exsample {
 			       Function* f,
 			       const adaption_info& ainfo,
 			       const std::vector<bool>& sampled = 
-			       std::vector<bool>());
+			       std::vector<bool>(),
+			       double detuning = 1.0);
 
   public:
 

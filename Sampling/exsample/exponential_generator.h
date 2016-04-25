@@ -43,7 +43,7 @@ namespace exsample {
         integral_accessor_(), missing_accessor_(),
 	parametric_selector_(), exponent_selector_(),
 	parametric_sampler_(), attempts_(0), accepts_(0),
-      splits_(0), docompensate_(false) {}
+      splits_(0), docompensate_(false), detuning_(1.0) {}
 
   public:
 
@@ -105,6 +105,9 @@ namespace exsample {
 
     /// indicate, if compensation should be applied
     void docompensate(bool yes = true) { docompensate_ = yes; }
+
+    /// set the detuning parameter
+    void detuning(double val) { detuning_ = val; }
 
   public:
 
@@ -233,6 +236,9 @@ namespace exsample {
 
     /// true, if compensation should be applied
     bool docompensate_;
+
+    /// a detuning factor to be applied to the overestimate
+    double detuning_;
 
   };
 

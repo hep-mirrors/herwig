@@ -234,6 +234,121 @@ public:
    */
   bool hardScaleIsMuF() const { return maxPtIsMuF_; }
 
+  /**
+   * A struct identifying a shower variation
+   */
+  struct ShowerVariation {
+
+    /**
+     * Vary the renormalization scale by the given factor.
+     */
+    double renormalizationScaleFactor;
+
+    /**
+     * Vary the factorization scale by the given factor.
+     */
+    double factorizationScaleFactor;
+
+    /**
+     * Apply the variation to the first interaction
+     */
+    bool firstInteraction;
+
+    /**
+     * Apply the variation to the secondary interactions
+     */
+    bool secondaryInteractions;
+
+    /**
+     * Default constructor
+     */
+    ShowerVariation()
+      : renormalizationScaleFactor(1.0),
+	factorizationScaleFactor(1.0),
+	firstInteraction(true),
+	secondaryInteractions(false) {}
+
+    /**
+     * Parse from in file command
+     */
+    string fromInFile(const string&);
+
+    /**
+     * Put to persistent stream
+     */
+    void put(PersistentOStream& os) const;
+
+    /**
+     * Get from persistent stream
+     */
+    void get(PersistentIStream& is);
+
+  };
+
+  /**
+   * Access the shower variations
+   */
+  map<string,ShowerVariation>& showerVariations() {
+    return showerVariations_;
+  }
+
+  /**
+   * Return the shower variations
+   */
+  const map<string,ShowerVariation>& showerVariations() const {
+    return showerVariations_;
+  }
+
+  /**
+   * Access the current Weights
+   */
+  map<string,double>& currentWeights() {
+    return currentWeights_;
+  }
+
+  /**
+   * Return the current Weights
+   */
+  const map<string,double>& currentWeights() const {
+    return currentWeights_;
+  }
+
+  /**
+   * Access the current reweighting factor
+   */
+  double& reweight() {
+    return reweight_;
+  }
+
+  /**
+   * Return the current reweighting factor
+   */
+  double reweight() const {
+    return reweight_;
+  }
+
+protected:
+
+  /**
+   * A reweighting factor applied by the showering
+   */
+  double reweight_;
+
+  /**
+   * The shower variation weights
+   */
+  map<string,double> currentWeights_;
+
+  /**
+   * Combine the variation weights which have been encountered
+   */
+  void combineWeights();
+
+  /**
+   * Reset the current weights
+   */
+  void resetWeights();
+
 protected:
 
   /** @name Clone Methods. */
@@ -536,6 +651,16 @@ private:
    */
   bool splitHardProcess_;
 
+  /**
+   * The shower variations
+   */
+  map<string,ShowerVariation> showerVariations_;
+
+  /**
+   * Command to add a shower variation
+   */
+  string doAddVariation(string);
+
 public:
 
   /** 
@@ -560,7 +685,7 @@ public:
   /**
    *  pointer to "this", the current ShowerHandler.
    */
-  static const ShowerHandler * currentHandler() {
+  static ShowerHandler * currentHandler() {
     assert(currentHandler_);
     return currentHandler_;
   }
@@ -575,6 +700,14 @@ protected:
   }
 
 };
+
+inline PersistentOStream& operator<<(PersistentOStream& os, const ShowerHandler::ShowerVariation& var) {
+  var.put(os); return os;
+} 
+
+inline PersistentIStream& operator>>(PersistentIStream& is, ShowerHandler::ShowerVariation& var) {
+  var.get(is); return is;
+} 
 
 }
 

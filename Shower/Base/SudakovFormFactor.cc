@@ -166,31 +166,43 @@ void SudakovFormFactor::Init() {
 }
 
 bool SudakovFormFactor::alphaSVeto(Energy2 pt2) const {
-  pt2 *= sqr(renormalizationScaleFactor());
-  return UseRandom::rnd() > ThePEG::Math::powi(alpha_->ratio(pt2),
-					       splittingFn_->interactionOrder());
+  double ratio=alphaSVetoRatio(pt2,1.);
+  return UseRandom::rnd() > ratio;
 }
 
-bool SudakovFormFactor::
-PDFVeto(const Energy2 t, const double x,
+double SudakovFormFactor::alphaSVetoRatio(Energy2 pt2,double factor) const {
+  pt2 *= sqr(renormalizationScaleFactor()*factor);
+  return  ThePEG::Math::powi(alpha_->ratio(pt2,1.),
+                               splittingFn_->interactionOrder());
+}
+
+
+bool SudakovFormFactor::PDFVeto(const Energy2 t, const double x,
 	const tcPDPtr parton0, const tcPDPtr parton1,
 	Ptr<BeamParticleData>::transient_const_pointer beam) const {
+  double ratio=PDFVetoRatio(t,x,parton0,parton1,beam,1.);
+  return UseRandom::rnd() > ratio;
+}
+
+double SudakovFormFactor::PDFVetoRatio(const Energy2 t, const double x,
+        const tcPDPtr parton0, const tcPDPtr parton1,
+        Ptr<BeamParticleData>::transient_const_pointer beam,double factor) const {
   assert(pdf_);
 
-  Energy2 theScale = t * sqr(factorizationScaleFactor());
+  Energy2 theScale = t * sqr(factorizationScaleFactor()*factor);
   if (theScale < sqr(freeze_)) theScale = sqr(freeze_);
 
   double newpdf(0.0), oldpdf(0.0);
-  //different treatment of MPI ISR is done via CascadeHandler::resetPDFs()
+
   newpdf=pdf_->xfx(beam,parton0,theScale,x/z());
   oldpdf=pdf_->xfx(beam,parton1,theScale,x);
 
+  if(newpdf<=0.) return 0.;
+  if(oldpdf<=0.) return 1.;
   
-  if(newpdf<=0.) return true;
-  if(oldpdf<=0.) return false;
   double ratio = newpdf/oldpdf;
-
   double maxpdf(pdfmax_);
+
   switch (pdffactor_) {
   case 1:
     maxpdf /= z();
@@ -203,16 +215,22 @@ PDFVeto(const Energy2 t, const double x,
     break;
   }
 
-  // ratio / PDFMax must be a probability <= 1.0
   if (ratio > maxpdf) {
-    generator()->log() << "PDFVeto warning: Ratio > " << name() 
-		       << ":PDFmax (by a factor of "
-		       << ratio/maxpdf <<") for " 
-		       << parton0->PDGName() << " to " 
-		       << parton1->PDGName() << "\n";
+    generator()->log() << "PDFVeto warning: Ratio > " << name()
+                       << ":PDFmax (by a factor of "
+                       << ratio/maxpdf <<") for "
+                       << parton0->PDGName() << " to "
+                       << parton1->PDGName() << "\n";
   }
-  return ratio < UseRandom::rnd()*maxpdf;
+  return ratio/maxpdf ;
 }
+
+
+
+
+
+
+
 
 void SudakovFormFactor::addSplitting(const IdList & in) {
   bool add=true;
