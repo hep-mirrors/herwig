@@ -656,11 +656,13 @@ string ShowerHandler::ShowerVariation::fromInFile(const string& in) {
   read >> renormalizationScaleFactor >> factorizationScaleFactor >> where;
   if ( !read )
     return "something went wrong with: " + in;
-  if ( where == "FirstInteraction" || where == "AllInteractions" )
+  if ( where != "Hard" && where != "All" && where!= "Secondary" )
+    return "The specified process for reweighting does not exist.\nOptions are: Hard, Secondary, All.";
+  if ( where == "Hard" || where == "All" )
     firstInteraction = true;
   else
     firstInteraction = false;
-  if ( where == "SecondaryInteractions" || where == "AllInteractions" )
+  if ( where == "Secondary" || where == "All" )
     secondaryInteractions = true;
   else
     secondaryInteractions = false;
