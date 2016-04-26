@@ -378,7 +378,7 @@ protected:
 	       const tcPDPtr parton0, const tcPDPtr parton1,
 	       tcBeamPtr beam) const;
   /**
-   * The corresponding ratio
+   * The PDF veto ratio
    */
   double PDFVetoRatio(const Energy2 t, const double x,
                const tcPDPtr parton0, const tcPDPtr parton1,
@@ -398,7 +398,7 @@ protected:
   }
   
   /**
-   * The corresponding ratio
+   * The Splitting function veto ratio
    */
   
   double SplittingFnVetoRatio(const Energy2 t,
@@ -415,7 +415,7 @@ protected:
   bool alphaSVeto(Energy2 pt2) const;
 
   /**
-   * The corresponding ratio
+   * The alpha S veto ratio
    */
    
   double alphaSVetoRatio(Energy2 pt2,double factor) const;

@@ -616,6 +616,7 @@ void ShowerHandler::initializeWeights() {
       event->optionalWeights()[var->first] = 1.0;
     }
   }
+  reweight_ = 1.0;
 }
 
 void ShowerHandler::resetWeights() {
@@ -633,8 +634,10 @@ void ShowerHandler::combineWeights() {
     map<string,double>::iterator ew = event->optionalWeights().find(w->first);
     if ( ew != event->optionalWeights().end() )
       ew->second *= w->second;
-    else
-      event->optionalWeights()[w->first] = w->second;
+    else {
+      assert(false && "Weight name unknown.");
+      //event->optionalWeights()[w->first] = w->second;
+    }
   }
   if ( reweight_ != 1.0 ) {
     Ptr<StandardEventHandler>::tptr eh = 
@@ -762,7 +765,7 @@ tPPair ShowerHandler::cascade(tSubProPtr sub,
       break;
     }
     catch (KinematicsReconstructionVeto) {
-      resetWeights(); //TODO: Not sure ????
+      resetWeights();
       ++countFailures;
     }
   }
