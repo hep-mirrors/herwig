@@ -163,7 +163,6 @@ double DipoleSplittingKinematics::generateZ(double r, Energy pt, int sampling,
     }
   }
 
-  std::cerr << "TEST 1, in DSK.cc\n";
   weight = 0.0;
   return 0.0;
 
