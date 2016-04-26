@@ -74,7 +74,7 @@ public:
    * Hook to allow vetoing of event after showering hard sub-process
    * as in e.g. MLM merging.
    */
-  virtual bool showerHardProcessVeto() { return false; };
+  virtual bool showerHardProcessVeto() const { return false; }
 
   /**
    * Return true, if this cascade handler will perform reshuffling from hard
@@ -89,7 +89,7 @@ public:
   /**
    * Get the PDF freezing scale
    */
-  Energy pdfFreezingScale() const {return pdfFreezingScale_;}
+  Energy pdfFreezingScale() const { return pdfFreezingScale_; }
   //@}
 
 public:
@@ -314,10 +314,10 @@ public:
   }
 
   /**
-   * Access the current reweighting factor
+   * Change the current reweighting factor
    */
-  double& reweight() {
-    return reweight_;
+  void reweight(double w) {
+    reweight_ = w;
   }
 
   /**

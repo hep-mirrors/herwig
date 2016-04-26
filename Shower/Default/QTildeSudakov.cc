@@ -133,48 +133,44 @@ ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
       double factor=alphaSVetoRatio(splittingFn()->angularOrdered() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t,1.)*
                     SplittingFnVetoRatio(z()*(1.-z())*t,ids,true);
 
-      if( SplitRew || alphaRew){
-        //No Emission
-        for ( map<string,ShowerHandler::ShowerVariation>::const_iterator var =
-	          ShowerHandler::currentHandler()->showerVariations().begin();
-	          var != ShowerHandler::currentHandler()->showerVariations().end(); ++var ) {
-          if ( ( ShowerHandler::currentHandler()->firstInteraction() && var->second.firstInteraction ) ||
-	           ( !ShowerHandler::currentHandler()->firstInteraction() && var->second.secondaryInteractions ) ) {
-            double varied =(1.-
-                           alphaSVetoRatio(splittingFn()->angularOrdered() ?
-                           sqr(z()*(1.-z()))*t :
-                           z()*(1.-z())*t,var->second.renormalizationScaleFactor)
-                           *SplittingFnVetoRatio(z()*(1.-z())*t,ids,true))
-                           /(1-factor);
+      ShowerHandlerPtr ch = ShowerHandler::currentHandler();
 
-            map<string,double>::iterator wi = ShowerHandler::currentHandler()->currentWeights().find(var->first);
-	        if ( wi != ShowerHandler::currentHandler()->currentWeights().end() )
-	          wi->second *= varied;
-	        else ShowerHandler::currentHandler()->currentWeights()[var->first] = varied;
-	      }
-        }
-      }else{
+      if( !(SplitRew || alphaRew) ) {
         //Emission
         q_ = t > ZERO ? Energy(sqrt(t)) : -1.*MeV;
-        if(q_ > ZERO){
-          for ( map<string,ShowerHandler::ShowerVariation>::const_iterator var =
-	            ShowerHandler::currentHandler()->showerVariations().begin();
-	            var != ShowerHandler::currentHandler()->showerVariations().end(); ++var ) {
-            if ( ( ShowerHandler::currentHandler()->firstInteraction() && var->second.firstInteraction ) ||
-	             ( !ShowerHandler::currentHandler()->firstInteraction() && var->second.secondaryInteractions ) ) {
-              double varied =
-                     (alphaSVetoRatio(splittingFn()->angularOrdered() ?
-                      sqr(z()*(1.-z()))*t : z()*(1.-z())*t,var->second.renormalizationScaleFactor)
-                      *SplittingFnVetoRatio(z()*(1.-z())*t,ids,true))
-                      /(factor);
-              map<string,double>::iterator wi = ShowerHandler::currentHandler()->currentWeights().find(var->first);
-	          if ( wi != ShowerHandler::currentHandler()->currentWeights().end() )
-	            wi->second *= varied;
-	          else  ShowerHandler::currentHandler()->currentWeights()[var->first] = varied;
-            }
-          }
-        }
+        if (q_ <= ZERO) break;
       }
+
+        for ( map<string,ShowerHandler::ShowerVariation>::const_iterator var =
+	          ch->showerVariations().begin();
+	          var != ch->showerVariations().end(); ++var ) {
+          if ( ( ch->firstInteraction() && var->second.firstInteraction ) ||
+	           ( !ch->firstInteraction() && var->second.secondaryInteractions ) ) {
+
+                double newfactor = alphaSVetoRatio(splittingFn()->angularOrdered() ?
+                                        sqr(z()*(1.-z()))*t :
+                                        z()*(1.-z())*t,var->second.renormalizationScaleFactor)
+                                   * SplittingFnVetoRatio(z()*(1.-z())*t,ids,true);
+
+                double varied;
+                if ( SplitRew || alphaRew ) {
+                  // No Emission
+                  varied = (1. - newfactor) / (1. - factor);
+                } else {
+                  // Emission
+                  varied = newfactor / factor;
+                }
+
+                map<string,double>::iterator wi = ch->currentWeights().find(var->first);
+	        if ( wi != ch->currentWeights().end() )
+	          wi->second *= varied;
+	        else {
+                  assert(false);
+                  ch->currentWeights()[var->first] = varied;
+                }
+	  }
+        }
+      
     }
     while(PSRew || SplitRew || alphaRew);
   }
@@ -246,44 +242,48 @@ generateNextSpaceBranching(const Energy startingQ,
       double factor=PDFVetoRatio(t,x,parton0,parton1,beam,1.)*
                     alphaSVetoRatio(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t,1.)*
                     SplittingFnVetoRatio((1.-z())*t/z(),ids,true);
-      if( PDFRew || SplitRew || alphaRew){
-        //No Emission
-        for ( map<string,ShowerHandler::ShowerVariation>::const_iterator var =
-	          ShowerHandler::currentHandler()->showerVariations().begin();
-	          var != ShowerHandler::currentHandler()->showerVariations().end(); ++var ) {
-          if ( ( ShowerHandler::currentHandler()->firstInteraction() && var->second.firstInteraction ) ||
-	           ( !ShowerHandler::currentHandler()->firstInteraction() && var->second.secondaryInteractions ) ) {
-            double varied =(1.- PDFVetoRatio(t,x,parton0,parton1,beam,var->second.factorizationScaleFactor)*
-                           alphaSVetoRatio(splittingFn()->angularOrdered() ?
-                           sqr(1.-z())*t : (1.-z())*t,var->second.renormalizationScaleFactor)
-                           *SplittingFnVetoRatio((1.-z())*t/z(),ids,true))/(1.-factor);
-            map<string,double>::iterator wi = ShowerHandler::currentHandler()->currentWeights().find(var->first);
-            if ( wi != ShowerHandler::currentHandler()->currentWeights().end() )
-	          wi->second *= varied;
-	        else ShowerHandler::currentHandler()->currentWeights()[var->first] = varied;
-	      }
-        }
-      }else{
+
+      ShowerHandlerPtr ch = ShowerHandler::currentHandler();
+
+      if( !(PDFRew || SplitRew || alphaRew) ) {
         //Emission
         q_ = t > ZERO ? Energy(sqrt(t)) : -1.*MeV;
-        if(q_ > ZERO){
-          for ( map<string,ShowerHandler::ShowerVariation>::const_iterator var =
-                ShowerHandler::currentHandler()->showerVariations().begin();
-	            var != ShowerHandler::currentHandler()->showerVariations().end(); ++var ) {
-            if ( ( ShowerHandler::currentHandler()->firstInteraction() && var->second.firstInteraction ) ||
-	             ( !ShowerHandler::currentHandler()->firstInteraction() && var->second.secondaryInteractions ) ) {
-              double varied =(PDFVetoRatio(t,x,parton0,parton1,beam,var->second.factorizationScaleFactor)*
-                      alphaSVetoRatio(splittingFn()->angularOrdered() ?
-                      sqr(1.-z())*t : (1.-z())*t,var->second.renormalizationScaleFactor)
-                      *SplittingFnVetoRatio((1.-z())*t/z(),ids,true))/(factor);
-              map<string,double>::iterator wi = ShowerHandler::currentHandler()->currentWeights().find(var->first);
-	          if ( wi != ShowerHandler::currentHandler()->currentWeights().end() )
-	            wi->second *= varied;
-              else  ShowerHandler::currentHandler()->currentWeights()[var->first] = varied;
-            }
-          }
-        }
+        if (q_ <= ZERO) break;
       }
+
+        for ( map<string,ShowerHandler::ShowerVariation>::const_iterator var =
+	          ch->showerVariations().begin();
+	          var != ch->showerVariations().end(); ++var ) {
+          if ( ( ch->firstInteraction() && var->second.firstInteraction ) ||
+	           ( !ch->firstInteraction() && var->second.secondaryInteractions ) ) {
+
+
+
+            double newfactor = PDFVetoRatio(t,x,parton0,parton1,beam,var->second.factorizationScaleFactor)*
+                           alphaSVetoRatio(splittingFn()->angularOrdered() ?
+                           sqr(1.-z())*t : (1.-z())*t,var->second.renormalizationScaleFactor)
+                           *SplittingFnVetoRatio((1.-z())*t/z(),ids,true);
+
+            double varied;
+            if( PDFRew || SplitRew || alphaRew) {
+                // No Emission
+                varied = (1. - newfactor) / (1. - factor);
+            } else {
+                // Emission
+                varied = newfactor / factor;
+            }
+
+
+            map<string,double>::iterator wi = ch->currentWeights().find(var->first);
+            if ( wi != ch->currentWeights().end() )
+	          wi->second *= varied;
+	    else {
+                assert(false);
+                ch->currentWeights()[var->first] = varied;
+            }
+	  }
+        }
+      
     }
     while( PDFRew || SplitRew || alphaRew);
   }
