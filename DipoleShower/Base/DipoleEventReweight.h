@@ -55,8 +55,8 @@ public:
 			Ptr<AlphaSBase>::tptr as) const = 0;
 
   /**
-   * Return the weight for the given incoming, outgoing coloured and
-   * hard colour neutral particles, if no emission has been generated
+   * Return the weight which is applied to a cascade only once even if there was
+   * no emission from the cascade at all. 
    */
   virtual double weightCascade(const PPair& in, const PList& out, const PList& hard,
 				  Ptr<AlphaSBase>::tptr as) const = 0;
