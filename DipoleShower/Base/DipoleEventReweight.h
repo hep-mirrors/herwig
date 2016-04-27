@@ -58,7 +58,7 @@ public:
    * Return the weight for the given incoming, outgoing coloured and
    * hard colour neutral particles, if no emission has been generated
    */
-  virtual double weightNoEmission(const PPair& in, const PList& out, const PList& hard,
+  virtual double weightCascade(const PPair& in, const PList& out, const PList& hard,
 				  Ptr<AlphaSBase>::tptr as) const = 0;
 
   /**

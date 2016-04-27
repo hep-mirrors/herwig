@@ -580,7 +580,7 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
       if ( theEventReweight && eventRecord().chains().empty() )
 	if ( (theEventReweight->firstInteraction() && firstInteraction()) ||
 	     (theEventReweight->secondaryInteractions() && !firstInteraction()) ) {
-	  double w = theEventReweight->weightNoEmission(eventRecord().incoming(),
+	  double w = theEventReweight->weightCascade(eventRecord().incoming(),
 							eventRecord().outgoing(),
 							eventRecord().hard(),theGlobalAlphaS);
 	  reweight_ *= w;
