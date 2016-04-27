@@ -166,7 +166,7 @@ ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
 	          wi->second *= varied;
 	        else {
                   assert(false);
-                  ch->currentWeights()[var->first] = varied;
+                  //ch->currentWeights()[var->first] = varied;
                 }
 	  }
         }
@@ -278,8 +278,8 @@ generateNextSpaceBranching(const Energy startingQ,
             if ( wi != ch->currentWeights().end() )
 	          wi->second *= varied;
 	    else {
-                assert(false);
-                ch->currentWeights()[var->first] = varied;
+	      assert(false);
+	      //ch->currentWeights()[var->first] = varied;
             }
 	  }
         }

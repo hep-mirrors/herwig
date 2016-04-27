@@ -614,6 +614,7 @@ void ShowerHandler::initializeWeights() {
       //assert(wi == event->optionalWeights().end() ); 
 
       event->optionalWeights()[var->first] = 1.0;
+      currentWeights_[var->first] = 1.0;
     }
   }
   reweight_ = 1.0;
