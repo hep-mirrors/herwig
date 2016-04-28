@@ -31,8 +31,9 @@ newdef ShowerHandler:PDFBRemnant /Herwig/Partons/RemnantPDF
 create Herwig::SplittingGenerator SplittingGenerator
 create Herwig::ShowerAlphaQCD AlphaQCD
 create Herwig::ShowerAlphaQED AlphaQED
+set AlphaQED:CouplingSource Thompson
 create Herwig::ShowerAlphaQED AlphaEW
-newdef AlphaEW:Alpha 0.0078125
+set AlphaEW:CouplingSource MZ
 create Herwig::Evolver Evolver
 create Herwig::QTildeModel ShowerModel
 create Herwig::QTildeFinder PartnerFinder
@@ -171,7 +172,7 @@ cp QtoQGammaSudakov LtoLGammaSudakov
 
 cp SudakovCommon QtoQWZSudakov
 set QtoQWZSudakov:SplittingFunction QtoQWZSplitFn
-set QtoQWZSudakov:Alpha AlphaQED
+set QtoQWZSudakov:Alpha AlphaEW
 set QtoQWZSudakov:PDFmax 1.9
 
 cp QtoQWZSudakov LtoLWZSudakov

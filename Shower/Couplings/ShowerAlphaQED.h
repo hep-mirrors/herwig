@@ -40,7 +40,8 @@ public:
   /**
    * The default constructor.
    */
-  inline ShowerAlphaQED() : ShowerAlpha(), _alpha(1./137.) {}
+  ShowerAlphaQED() : ShowerAlpha(), _alpha(1./137.), couplingSource_(1)
+  {}
   //@}
 
 public:
@@ -145,6 +146,11 @@ private:
    *  this is always \f$\alpha(q^2=0)\f$.
    */
   double _alpha; 
+
+  /**
+   * Source of coupling value
+   */
+  unsigned int couplingSource_;
 };
 
 }

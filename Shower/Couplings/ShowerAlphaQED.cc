@@ -15,6 +15,7 @@
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -22,11 +23,11 @@
 using namespace Herwig;
 
 void ShowerAlphaQED::persistentOutput(PersistentOStream & os) const {
-  os << _alpha;
+  os << _alpha << couplingSource_;
 }
 
 void ShowerAlphaQED::persistentInput(PersistentIStream & is, int) {
-  is >> _alpha;
+  is >> _alpha >> couplingSource_;
 }
 
 ClassDescription<ShowerAlphaQED> ShowerAlphaQED::initShowerAlphaQED;
@@ -43,14 +44,35 @@ void ShowerAlphaQED::Init() {
      &ShowerAlphaQED::_alpha, 1./137., 0., 1.,
      false, false, Interface::limited);
 
+
+  static Switch<ShowerAlphaQED,unsigned int> interfaceCouplingSource
+    ("CouplingSource",
+     "Where to get the coupling from",
+     &ShowerAlphaQED::couplingSource_, 0, false, false);
+  static SwitchOption interfaceCouplingSourceLocal
+    (interfaceCouplingSource,
+     "Local",
+     "Use the local value",
+     0);
+  static SwitchOption interfaceCouplingSourceThompson
+    (interfaceCouplingSource,
+     "Thompson",
+     "Use the Thompson value from the StamdardModel object",
+     1);
+  static SwitchOption interfaceCouplingSourceMZ
+    (interfaceCouplingSource,
+     "MZ",
+     "Use the value at MZ from the StandardModel object",
+     2);
+
 }
 
 double ShowerAlphaQED::value(const Energy2) const {
-  return scaleFactor()*_alpha;
+  return _alpha;
 }
 
 double ShowerAlphaQED::overestimateValue() const {
-  return scaleFactor()*_alpha;
+  return _alpha;
 }
 
 double ShowerAlphaQED::ratio(const Energy2) const {
@@ -59,5 +81,8 @@ double ShowerAlphaQED::ratio(const Energy2) const {
 
 void ShowerAlphaQED::doinit() throw(InitException) {
   ShowerAlpha::doinit();
-  _alpha=generator()->standardModel()->alphaEM();
+  if(couplingSource_==1)
+    _alpha=generator()->standardModel()->alphaEM();
+  else if(couplingSource_==2)
+    _alpha=generator()->standardModel()->alphaEMMZ();
 }
