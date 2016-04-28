@@ -75,6 +75,7 @@ void HalfHalfOneEWSplitFn::getCouplings(double & gL, double & gR, const IdList &
   }
   else
     assert(false);
+  if(ids[0]->id()<0) swap(gL,gR);
 }
 
 double HalfHalfOneEWSplitFn::P(const double z, const Energy2 t,
@@ -95,11 +96,12 @@ double HalfHalfOneEWSplitFn::overestimateP(const double z,
 					   const IdList & ids) const {
   double gL(0.),gR(0.);
   getCouplings(gL,gR,ids);
-  return 2.*sqr(max(gL,gR))*colourFactor(ids)/(1.-z); 
+  return 2.*max(sqr(gL),sqr(gR))*colourFactor(ids)/(1.-z); 
 }
 
 double HalfHalfOneEWSplitFn::ratioP(const double z, const Energy2 t,
-				  const IdList & ids, const bool mass, const RhoDMatrix & rho) const {
+				    const IdList & ids, const bool mass,
+				    const RhoDMatrix & rho) const {
   double gL(0.),gR(0.);
   getCouplings(gL,gR,ids);
   double val = 1. + sqr(z);
@@ -107,8 +109,8 @@ double HalfHalfOneEWSplitFn::ratioP(const double z, const Energy2 t,
     Energy m = ids[2]->mass();  
     val -= (1.-z)*sqr(m)/t;
   }
-  val *= (sqr(gL)*norm(rho(0,0))+sqr(gR)*norm(rho(1,1)));
-  return val;
+  val *= (sqr(gL)*abs(rho(0,0))+sqr(gR)*abs(rho(1,1)))/max(sqr(gL),sqr(gR));
+  return 0.5*val;
 } 
 
 double HalfHalfOneEWSplitFn::integOverP(const double z,
@@ -116,7 +118,7 @@ double HalfHalfOneEWSplitFn::integOverP(const double z,
 				      unsigned int PDFfactor) const {
   double gL(0.),gR(0.);
   getCouplings(gL,gR,ids);
-  double pre = colourFactor(ids)*sqr(max(gL,gR));
+  double pre = colourFactor(ids)*max(sqr(gL),sqr(gR));
   switch (PDFfactor) {
   case 0:
     return -2.*pre*Math::log1m(z);
@@ -135,7 +137,7 @@ double HalfHalfOneEWSplitFn::invIntegOverP(const double r, const IdList & ids,
 					   unsigned int PDFfactor) const {
   double gL(0.),gR(0.);
   getCouplings(gL,gR,ids);
-  double pre = colourFactor(ids)*sqr(max(gL,gR));
+  double pre = colourFactor(ids)*max(sqr(gL),sqr(gR));
   switch (PDFfactor) {
   case 0:
     return 1. - exp(- 0.5*r/pre); 
