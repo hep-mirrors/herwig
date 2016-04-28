@@ -341,8 +341,9 @@ void PartnerFinder::setInitialQEDEvolutionScales(const ShowerParticleVector &par
   // loop over all the particles
   for(ShowerParticleVector::const_iterator cit = particles.begin();
       cit != particles.end(); ++cit) {
-    // not charge continue
-    if(!(**cit).dataPtr()->charged()) continue;
+    // not charged or photon continue
+    if(!(**cit).dataPtr()->charged() &&
+       (**cit).id()!=ParticleID::gamma) continue;
     // find the potential partners
     vector<pair<double,tShowerParticlePtr> > partners = findQEDPartners(*cit,particles,isDecayCase);
     if(partners.empty()) {
@@ -519,9 +520,10 @@ PartnerFinder::findQEDPartners(tShowerParticlePtr particle,
 			       const bool isDecayCase) {
   vector< pair<double, tShowerParticlePtr> > partners;
   ShowerParticleVector::const_iterator cjt;
+  double pcharge = particle->id()==ParticleID::gamma ? 1 : double(particle->data().iCharge());
   for(cjt = particles.begin(); cjt != particles.end(); ++cjt) {
     if(!(*cjt)->data().charged() || particle == *cjt) continue;
-    double charge = double(particle->data().iCharge()*(*cjt)->data().iCharge());
+    double charge = pcharge*double((*cjt)->data().iCharge());
     if( FS(particle) != FS(*cjt) ) charge *=-1.;
     if( QEDPartner_ != 0 && !isDecayCase ) {
       // only include II and FF as requested
@@ -531,6 +533,7 @@ PartnerFinder::findQEDPartners(tShowerParticlePtr particle,
       else if(QEDPartner_ == 2 && FS(particle) == FS(*cjt) )
 	continue;
     }
+    if(particle->id()==ParticleID::gamma) charge = -abs(charge);
     // only keep positive dipoles
     if(charge<0.) partners.push_back(make_pair(-charge,*cjt));
   }
