@@ -111,9 +111,14 @@ public:
 	 _colourStructure==ChargedNeutralCharged) {
 	return sqr(double(ids[0]->iCharge())/3.);
       }
-      else {
+      else if(_colourStructure==NeutralChargedCharged) {
 	return sqr(double(ids[1]->iCharge())/3.);
       }
+      else if(_colourStructure==EW) {
+	return 1.;
+      }
+      else
+	assert(false);
     }
     else
       assert(false);
