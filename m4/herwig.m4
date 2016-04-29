@@ -846,7 +846,7 @@ fi
 
 dnl -Wfloat-equal -fvisibility-inlines-hidden -Wctor-dtor-privacy -Weffc++
 if test -n "$GCC"; then
-	warnflags="-ansi -pedantic -Wall -Wextra -Wno-overloaded-virtual"
+	warnflags="-pedantic -Wall -Wextra -Wno-overloaded-virtual"
 
 	if test "x$enable_debug" = "xslow"; then
 		debugflags="$debugflags -fno-inline"
@@ -865,10 +865,10 @@ esac
 
 case "${ax_cv_cxx_compiler_vendor}" in
      gnu)
-        AM_CXXFLAGS="-ansi -pedantic -Wall -W"
+        AM_CXXFLAGS="-pedantic -Wall -W"
         ;;
      clang)
-        AM_CXXFLAGS="-ansi -pedantic -Wall -Wno-overloaded-virtual -Wno-unused-function"
+        AM_CXXFLAGS="-pedantic -Wall -Wno-overloaded-virtual -Wno-unused-function"
 dnl  -Wno-unneeded-internal-declaration
         ;;
      intel)
