@@ -78,7 +78,7 @@ ShowerHandler::ShowerHandler() :
   includeSpaceTime_(false), vMin_(0.1*GeV2), subProcess_(),
   factorizationScaleFactor_(1.0),
   renormalizationScaleFactor_(1.0),
-  hardScaleFactor_(1.0), scaleFactorOption_(0),
+  hardScaleFactor_(1.0),
   restrictPhasespace_(true), maxPtIsMuF_(false),
   splitHardProcess_(true) {
   inputparticlesDecayInShower_.push_back( 6  ); //  top 
@@ -112,7 +112,7 @@ void ShowerHandler::persistentOutput(PersistentOStream & os) const {
      << PDFARemnant_ << PDFBRemnant_
      << includeSpaceTime_ << ounit(vMin_,GeV2)
      << factorizationScaleFactor_ << renormalizationScaleFactor_
-     << hardScaleFactor_ << scaleFactorOption_
+     << hardScaleFactor_
      << restrictPhasespace_ << maxPtIsMuF_ << hardScaleProfile_
      << splitHardProcess_ << showerVariations_;
 }
@@ -124,7 +124,7 @@ void ShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> PDFARemnant_ >> PDFBRemnant_
      >> includeSpaceTime_ >> iunit(vMin_,GeV2)
      >> factorizationScaleFactor_ >> renormalizationScaleFactor_
-     >> hardScaleFactor_ >> scaleFactorOption_
+     >> hardScaleFactor_
      >> restrictPhasespace_ >> maxPtIsMuF_ >> hardScaleProfile_
      >> splitHardProcess_ >> showerVariations_;
 }
@@ -267,26 +267,6 @@ void ShowerHandler::Init() {
      "The hard scale factor.",
      &ShowerHandler::hardScaleFactor_, 1.0, 0.0, 0,
      false, false, Interface::lowerlim);
-
-  static Switch<ShowerHandler,int> interfaceScaleFactorOption
-    ("ScaleFactorOption",
-     "Where to apply scale factors.",
-     &ShowerHandler::scaleFactorOption_, 0, false, false);
-  static SwitchOption interfaceScaleFactorOptionAll
-    (interfaceScaleFactorOption,
-     "All",
-     "Apply in first and secondary scatterings.",
-     0);
-  static SwitchOption interfaceScaleFactorOptionHard
-    (interfaceScaleFactorOption,
-     "Hard",
-     "Only apply for the hard process.",
-     1);
-  static SwitchOption interfaceScaleFactorOptionSecondary
-    (interfaceScaleFactorOption,
-     "Secondary",
-     "Only apply to secondary scatterings.",
-     2);
 
   static Reference<ShowerHandler,HardScaleProfile> interfaceHardScaleProfile
     ("HardScaleProfile",
