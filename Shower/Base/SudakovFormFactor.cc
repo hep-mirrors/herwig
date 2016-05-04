@@ -170,9 +170,9 @@ bool SudakovFormFactor::alphaSVeto(Energy2 pt2) const {
   return UseRandom::rnd() > ratio;
 }
 
-double SudakovFormFactor::alphaSVetoRatio(Energy2 pt2,double factor) const {
-  pt2 *= sqr(renormalizationScaleFactor()*factor);
-  return  ThePEG::Math::powi(alpha_->ratio(pt2,1.),
+double SudakovFormFactor::alphaSVetoRatio(Energy2 pt2, double factor) const {
+  factor *= renormalizationScaleFactor();
+  return  ThePEG::Math::powi(alpha_->ratio(pt2, factor),
                                splittingFn_->interactionOrder());
 }
 
@@ -201,7 +201,7 @@ double SudakovFormFactor::PDFVetoRatio(const Energy2 t, const double x,
   if(oldpdf<=0.) return 1.;
   
   double ratio = newpdf/oldpdf;
-  double maxpdf(pdfmax_);
+  double maxpdf = pdfmax_;
 
   switch (pdffactor_) {
   case 1:

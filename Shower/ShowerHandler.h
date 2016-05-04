@@ -74,7 +74,7 @@ public:
    * Hook to allow vetoing of event after showering hard sub-process
    * as in e.g. MLM merging.
    */
-  virtual bool showerHardProcessVeto() { return false; };
+  virtual bool showerHardProcessVeto() const { return false; }
 
   /**
    * Return true, if this cascade handler will perform reshuffling from hard
@@ -89,7 +89,7 @@ public:
   /**
    * Get the PDF freezing scale
    */
-  Energy pdfFreezingScale() const {return pdfFreezingScale_;}
+  Energy pdfFreezingScale() const { return pdfFreezingScale_; }
   //@}
 
 public:
@@ -173,45 +173,22 @@ public:
    * The factorization scale factor.
    */
   double factorizationScaleFactor() const { 
-    if ( scaleFactorOption_ == 0 || !subProcess_ )
       return factorizationScaleFactor_;
-    if ( scaleFactorOption_ == 1 )
-      return firstInteraction() ? factorizationScaleFactor_ : 1.0;
-    if ( scaleFactorOption_ == 2 )
-      return !firstInteraction() ? factorizationScaleFactor_ : 1.0;
-    return 1.0;
   }
 
   /**
    * The renormalization scale factor.
    */
-  double renormalizationScaleFactor() const { 
-    if ( scaleFactorOption_ == 0 || !subProcess_ )
-      return renormalizationScaleFactor_;
-    if ( scaleFactorOption_ == 1 )
-      return firstInteraction() ? renormalizationScaleFactor_ : 1.0;
-    if ( scaleFactorOption_ == 2 )
-      return !firstInteraction() ? renormalizationScaleFactor_ : 1.0;
-    return 1.0;
+  double renormalizationScaleFactor() const {
+    return renormalizationScaleFactor_ ;
   }
 
   /**
    * The scale factor for the hard scale
    */
-  double hardScaleFactor() const { 
-    if ( scaleFactorOption_ == 0 || !subProcess_ )
-      return hardScaleFactor_;
-    if ( scaleFactorOption_ == 1 )
-      return firstInteraction() ? hardScaleFactor_ : 1.0;
-    if ( scaleFactorOption_ == 2 )
-      return !firstInteraction() ? hardScaleFactor_ : 1.0;
-    return 1.0;
+  double hardScaleFactor() const {
+    return hardScaleFactor_;
   }
-
-  /**
-   * The option on when to apply the scale factors
-   */
-  int scaleFactorOption() const { return scaleFactorOption_; }
 
   /**
    * Return true, if the phase space restrictions of the dipole shower should
@@ -314,10 +291,10 @@ public:
   }
 
   /**
-   * Access the current reweighting factor
+   * Change the current reweighting factor
    */
-  double& reweight() {
-    return reweight_;
+  void reweight(double w) {
+    reweight_ = w;
   }
 
   /**
@@ -629,11 +606,6 @@ private:
    * The scale factor for the hard scale
    */
   double hardScaleFactor_;
-
-  /**
-   * The option on when to apply the scale factors
-   */
-  int scaleFactorOption_;
 
   /**
    * True, if the phase space restrictions of the dipole shower should

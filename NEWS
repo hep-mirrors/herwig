@@ -1,6 +1,31 @@
 Herwig News							 -*- outline -*-
 ================================================================================
 
+* Herwig 7.0.2 release: 2016-04-29
+
+** Event reweighting
+  New option of calculating the weights for the effect of varying the scale used in both the default and dipole showers. This will be described in a forthcoming publication.
+
+** mergegrids mode
+  A main mode for the Herwig executable has been added which merges the integration grids from parallel runs.
+
+** NLO Diphoton production
+  The NLO matrix elements in the POWHEG approach for diphoton production as described in JHEP 1202 (2012) 130, arXiv:1106.3939 have been included as MEPP2GammaGammaPowheg.
+
+** BSM Hard process constructor
+  A missing Feynman diagram with a t-channel vector boson has been added to the matrix element for vv2ss
+
+** BSM Decay Modes calculation
+  The behaviour of the option to disable decay modes in BSM Models has been changed so that the partial width for the ignored modes is now calculated and included in the total width, but the branching ratio is set to zero. This is more physical than the previous option where the mode was totally ignored and hence not included in the calculation of the width.
+
+** Mass Generation
+  The behaviour of the GenericMassGenerator has been changed so that modes which have been disabled are only included in the calculation of the total width and not in the partial width used in the numerator of the weight used to select the off-shell mass.
+
+** Boost detection
+  Boost could not detect the compiler version for gcc-5.3 and gcc-6.1
+
+
+
 * Herwig 7.0.1 release: 2016-01-17
 
 ** Version number written to log file

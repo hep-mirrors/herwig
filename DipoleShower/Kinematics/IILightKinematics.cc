@@ -119,6 +119,11 @@ bool IILightKinematics::generateSplitting(double kappa, double xi, double rphi,
     }
   }
 
+  if ( weight == 0. && z == -1. ) {
+    jacobian(0.0);
+    return false;
+  }
+
   double ratio = sqr(pt/info.scale());
 
   double x = z*(1.-z)/(1.-z+ratio);

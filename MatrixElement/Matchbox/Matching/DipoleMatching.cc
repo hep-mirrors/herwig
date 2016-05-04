@@ -106,11 +106,9 @@ void DipoleMatching::persistentInput(PersistentIStream & is, int) {
 void DipoleMatching::doinit() {
   ShowerApproximation::doinit();
   if ( theShowerHandler ) {
-    if ( theShowerHandler->scaleFactorOption() < 2 ) {
-      hardScaleFactor(theShowerHandler->hardScaleFactor());
-      factorizationScaleFactor(theShowerHandler->factorizationScaleFactor());
-      renormalizationScaleFactor(theShowerHandler->renormalizationScaleFactor());
-    }
+    hardScaleFactor(theShowerHandler->hardScaleFactor());
+    factorizationScaleFactor(theShowerHandler->factorizationScaleFactor());
+    renormalizationScaleFactor(theShowerHandler->renormalizationScaleFactor());
     profileScales(theShowerHandler->profileScales());
     restrictPhasespace(theShowerHandler->restrictPhasespace());
     hardScaleIsMuF(theShowerHandler->hardScaleIsMuF());
