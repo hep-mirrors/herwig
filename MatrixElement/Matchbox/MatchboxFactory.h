@@ -1223,8 +1223,45 @@ private:
    * True, if spin correlation information should be provided, if possible.
    */
   bool theSpinCorrelations;
-  
+
+  /**
+   * The alpha parameter to be used for the dipole subtraction
+   */  
   double theAlphaParameter;
+
+  /**
+   * Wether or not charge conservation should be enforced for the processes
+   * constructed.
+   */
+  bool theEnforceChargeConservation;
+
+  /**
+   * Wether or not colour conservation should be enforced for the processes
+   * constructed.
+   */
+  bool theEnforceColourConservation;
+
+  /**
+   * Wether or not lepton number conservation should be enforced for the processes
+   * constructed.
+   */
+  bool theEnforceLeptonNumberConservation;
+
+  /**
+   * Wether or not quark number conservation should be enforced for the processes
+   * constructed.
+   */
+  bool theEnforceQuarkNumberConservation;
+
+  /**
+   * Assume flavour diagonal lepton interactions
+   */
+  bool theLeptonFlavourDiagonal;
+
+  /**
+   * Assume flavour diagonal quark interactions
+   */
+  bool theQuarkFlavourDiagonal;
 
   /**
    * Command for production mode
