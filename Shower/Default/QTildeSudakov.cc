@@ -113,11 +113,72 @@ ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
   if(tmax<=tmin) return ShoKinPtr();
   // calculate next value of t using veto algorithm
   Energy2 t(tmax);
-  do {
-    if(!guessTimeLike(t,tmin,enhance)) break;
+  // no shower variations to calculate
+
+
+
+  if(ShowerHandler::currentHandler()->showerVariations().empty()){
+    // Without variations do the usual Veto algorithm
+    // No need for more if-statements in this loop.
+    do {
+      if(!guessTimeLike(t,tmin,enhance)) break;
+    }
+    while(PSVeto(t,maxQ2) ||
+	  SplittingFnVeto(z()*(1.-z())*t,ids,true,rho) || 
+        alphaSVeto(splittingFn()->angularOrdered() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t));
   }
-  while(PSVeto(t,maxQ2) || SplittingFnVeto(z()*(1.-z())*t,ids,true,rho) || 
-	alphaSVeto(splittingFn()->angularOrdered() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t));
+  else{
+    bool alphaRew(true),PSRew(true),SplitRew(true);
+    do {
+      if(!guessTimeLike(t,tmin,enhance)) break;
+      PSRew=PSVeto(t,maxQ2);
+      if (PSRew) continue;
+      SplitRew=SplittingFnVeto(z()*(1.-z())*t,ids,true,rho);
+      alphaRew=alphaSVeto(splittingFn()->angularOrdered() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t);
+      double factor=alphaSVetoRatio(splittingFn()->angularOrdered() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t,1.)*
+	SplittingFnVetoRatio(z()*(1.-z())*t,ids,true,rho);
+
+      ShowerHandlerPtr ch = ShowerHandler::currentHandler();
+
+      if( !(SplitRew || alphaRew) ) {
+        //Emission
+        q_ = t > ZERO ? Energy(sqrt(t)) : -1.*MeV;
+        if (q_ <= ZERO) break;
+      }
+
+        for ( map<string,ShowerHandler::ShowerVariation>::const_iterator var =
+	          ch->showerVariations().begin();
+	          var != ch->showerVariations().end(); ++var ) {
+          if ( ( ch->firstInteraction() && var->second.firstInteraction ) ||
+	           ( !ch->firstInteraction() && var->second.secondaryInteractions ) ) {
+
+                double newfactor = alphaSVetoRatio(splittingFn()->angularOrdered() ?
+						   sqr(z()*(1.-z()))*t :
+						   z()*(1.-z())*t,var->second.renormalizationScaleFactor)
+		  * SplittingFnVetoRatio(z()*(1.-z())*t,ids,true,rho);
+
+                double varied;
+                if ( SplitRew || alphaRew ) {
+                  // No Emission
+                  varied = (1. - newfactor) / (1. - factor);
+                } else {
+                  // Emission
+                  varied = newfactor / factor;
+                }
+
+                map<string,double>::iterator wi = ch->currentWeights().find(var->first);
+	        if ( wi != ch->currentWeights().end() )
+	          wi->second *= varied;
+	        else {
+                  assert(false);
+                  //ch->currentWeights()[var->first] = varied;
+                }
+	  }
+        }
+      
+    }
+    while(PSRew || SplitRew || alphaRew);
+  }
   q_ = t > ZERO ? Energy(sqrt(t)) : -1.*MeV;
   if(q_ < ZERO) return ShoKinPtr();
   // return the ShowerKinematics object
@@ -143,14 +204,81 @@ generateNextSpaceBranching(const Energy startingQ,
   if(tmax<=tmin) return ShoKinPtr();
   // calculate next value of t using veto algorithm
   Energy2 t(tmax),pt2(ZERO);
-  do {
-    if(!guessSpaceLike(t,tmin,x,enhance)) break;
-    pt2=sqr(1.-z())*t-z()*masssquared_[2];
+  // no shower variations
+  if(ShowerHandler::currentHandler()->showerVariations().empty()) {
+    // Without variations do the usual Veto algorithm
+    // No need for more if-statements in this loop.
+    do {
+      if(!guessSpaceLike(t,tmin,x,enhance)) break;
+      pt2=sqr(1.-z())*t-z()*masssquared_[2];
+    }
+    while(pt2 < pT2min()||
+	  z() > zLimits().second||
+	  SplittingFnVeto((1.-z())*t/z(),ids,true,rho)||
+	  alphaSVeto(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t)||
+	  PDFVeto(t,x,ids[0],ids[1],beam));
   }
-  while(z() > zLimits().second || 
-	SplittingFnVeto((1.-z())*t/z(),ids,true,rho) || 
-	alphaSVeto(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t) ||
-	PDFVeto(t,x,ids[0],ids[1],beam) || pt2 < pT2min() );
+  // shower variations
+  else{
+    bool alphaRew(true),PDFRew(true),ptRew(true),zRew(true),SplitRew(true);
+    do {
+      if(!guessSpaceLike(t,tmin,x,enhance)) break;
+      pt2=sqr(1.-z())*t-z()*masssquared_[2];
+      ptRew=pt2 < pT2min();
+      zRew=z() > zLimits().second;
+      if (ptRew||zRew) continue;
+      SplitRew=SplittingFnVeto((1.-z())*t/z(),ids,true,rho);
+      alphaRew=alphaSVeto(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t);
+      PDFRew=PDFVeto(t,x,ids[0],ids[1],beam);
+      double factor=PDFVetoRatio(t,x,ids[0],ids[1],beam,1.)*
+	alphaSVetoRatio(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t,1.)*
+	SplittingFnVetoRatio((1.-z())*t/z(),ids,true,rho);
+
+      ShowerHandlerPtr ch = ShowerHandler::currentHandler();
+
+      if( !(PDFRew || SplitRew || alphaRew) ) {
+        //Emission
+        q_ = t > ZERO ? Energy(sqrt(t)) : -1.*MeV;
+        if (q_ <= ZERO) break;
+      }
+
+        for ( map<string,ShowerHandler::ShowerVariation>::const_iterator var =
+	          ch->showerVariations().begin();
+	          var != ch->showerVariations().end(); ++var ) {
+          if ( ( ch->firstInteraction() && var->second.firstInteraction ) ||
+	           ( !ch->firstInteraction() && var->second.secondaryInteractions ) ) {
+
+
+
+            double newfactor = PDFVetoRatio(t,x,ids[0],ids[1],beam,var->second.factorizationScaleFactor)*
+                           alphaSVetoRatio(splittingFn()->angularOrdered() ?
+                           sqr(1.-z())*t : (1.-z())*t,var->second.renormalizationScaleFactor)
+	      *SplittingFnVetoRatio((1.-z())*t/z(),ids,true,rho);
+
+            double varied;
+            if( PDFRew || SplitRew || alphaRew) {
+                // No Emission
+                varied = (1. - newfactor) / (1. - factor);
+            } else {
+                // Emission
+                varied = newfactor / factor;
+            }
+
+
+            map<string,double>::iterator wi = ch->currentWeights().find(var->first);
+            if ( wi != ch->currentWeights().end() )
+	          wi->second *= varied;
+	    else {
+	      assert(false);
+	      //ch->currentWeights()[var->first] = varied;
+            }
+	  }
+        }
+      
+    }
+    while( PDFRew || SplitRew || alphaRew);
+  }
+
   if(t > ZERO && zLimits().first < zLimits().second)  q_ = sqrt(t);
   else return ShoKinPtr();
   pT(sqrt(pt2));

@@ -70,6 +70,7 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr,
   useMe();
 
   prepareCascade(sub);
+  resetWeights();
 
   if ( !doFSR && ! doISR )
     return sub->incoming();
@@ -236,6 +237,8 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr,
       break;
 
     } catch (RedoShower&) {
+
+      resetWeights();
 
       if ( ++nTries > maxtry() )
 	throw ShowerTriesVeto(maxtry());
@@ -484,7 +487,7 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
       candidate.hardPt(maxPossible);
     }
 
-    gen->second->generate(candidate,optHardPt,optCutoff);
+    gen->second->generate(candidate,currentWeights_,optHardPt,optCutoff);
     Energy nextScale = evolutionOrdering()->evolutionScale(gen->second->lastSplitting(),*(gen->second->splittingKernel()));
 
     if ( nextScale > winnerScale ) {
@@ -573,16 +576,15 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
 
     // pop the chain if no dipole did radiate
     if ( winnerDip == eventRecord().currentChain().dipoles().end() ) {
-      if ( theEventReweight ) {
-	double w = theEventReweight->weightNoEmission(eventRecord().incoming(),
-						      eventRecord().outgoing(),
-						      eventRecord().hard(),theGlobalAlphaS);
-	Ptr<StandardEventHandler>::tptr eh = 
-	  dynamic_ptr_cast<Ptr<StandardEventHandler>::tptr>(eventHandler());
-	assert(eh);
-	eh->reweight(w);
-      }
       eventRecord().popChain();
+      if ( theEventReweight && eventRecord().chains().empty() )
+	if ( (theEventReweight->firstInteraction() && firstInteraction()) ||
+	     (theEventReweight->secondaryInteractions() && !firstInteraction()) ) {
+	  double w = theEventReweight->weightCascade(eventRecord().incoming(),
+							eventRecord().outgoing(),
+							eventRecord().hard(),theGlobalAlphaS);
+	  reweight_ *= w;
+	}
       continue;
     }
 
@@ -618,15 +620,14 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
 			 << (*firstChain) << (*secondChain) << flush;
     }
 
-    if ( theEventReweight ) {
-      double w = theEventReweight->weight(eventRecord().incoming(),
-					  eventRecord().outgoing(),
-					  eventRecord().hard(),theGlobalAlphaS);
-      Ptr<StandardEventHandler>::tptr eh = 
-	dynamic_ptr_cast<Ptr<StandardEventHandler>::tptr>(eventHandler());
-      assert(eh);
-      eh->reweight(w);
-    }
+    if ( theEventReweight ) 
+      if ( (theEventReweight->firstInteraction() && firstInteraction()) ||
+	   (theEventReweight->secondaryInteractions() && !firstInteraction()) ) {
+	double w = theEventReweight->weight(eventRecord().incoming(),
+					    eventRecord().outgoing(),
+					    eventRecord().hard(),theGlobalAlphaS);
+	reweight_ *= w;
+      }
     
     if ( nEmissions )
       if ( ++emDone == nEmissions )

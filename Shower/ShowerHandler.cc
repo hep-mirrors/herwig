@@ -17,12 +17,14 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Switch.h"
+#include "ThePEG/Interface/Command.h"
 #include "ThePEG/PDF/PartonExtractor.h"
 #include "ThePEG/PDF/PartonBinInstance.h"
 #include "Herwig/PDT/StandardMatchers.h"
 #include "ThePEG/Cuts/Cuts.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Utilities/Throw.h"
+#include "ThePEG/Utilities/StringUtils.h"
 #include "Herwig/Shower/Base/Evolver.h"
 #include "Herwig/Shower/Base/ShowerParticle.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -70,12 +72,13 @@ IBPtr ShowerHandler::fullclone() const {
 }
 
 ShowerHandler::ShowerHandler() : 
+  reweight_(1.0),
   pdfFreezingScale_(2.5*GeV),
   maxtry_(10),maxtryMPI_(10),maxtryDP_(10),
   includeSpaceTime_(false), vMin_(0.1*GeV2), subProcess_(),
   factorizationScaleFactor_(1.0),
   renormalizationScaleFactor_(1.0),
-  hardScaleFactor_(1.0), scaleFactorOption_(0),
+  hardScaleFactor_(1.0),
   restrictPhasespace_(true), maxPtIsMuF_(false),
   splitHardProcess_(true) {
   inputparticlesDecayInShower_.push_back( 6  ); //  top 
@@ -109,9 +112,9 @@ void ShowerHandler::persistentOutput(PersistentOStream & os) const {
      << PDFARemnant_ << PDFBRemnant_
      << includeSpaceTime_ << ounit(vMin_,GeV2)
      << factorizationScaleFactor_ << renormalizationScaleFactor_
-     << hardScaleFactor_ << scaleFactorOption_
+     << hardScaleFactor_
      << restrictPhasespace_ << maxPtIsMuF_ << hardScaleProfile_
-     << splitHardProcess_;
+     << splitHardProcess_ << showerVariations_;
 }
 
 void ShowerHandler::persistentInput(PersistentIStream & is, int) {
@@ -121,9 +124,9 @@ void ShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> PDFARemnant_ >> PDFBRemnant_
      >> includeSpaceTime_ >> iunit(vMin_,GeV2)
      >> factorizationScaleFactor_ >> renormalizationScaleFactor_
-     >> hardScaleFactor_ >> scaleFactorOption_
+     >> hardScaleFactor_
      >> restrictPhasespace_ >> maxPtIsMuF_ >> hardScaleProfile_
-     >> splitHardProcess_;
+     >> splitHardProcess_ >> showerVariations_;
 }
 
 void ShowerHandler::Init() {
@@ -265,26 +268,6 @@ void ShowerHandler::Init() {
      &ShowerHandler::hardScaleFactor_, 1.0, 0.0, 0,
      false, false, Interface::lowerlim);
 
-  static Switch<ShowerHandler,int> interfaceScaleFactorOption
-    ("ScaleFactorOption",
-     "Where to apply scale factors.",
-     &ShowerHandler::scaleFactorOption_, 0, false, false);
-  static SwitchOption interfaceScaleFactorOptionAll
-    (interfaceScaleFactorOption,
-     "All",
-     "Apply in first and secondary scatterings.",
-     0);
-  static SwitchOption interfaceScaleFactorOptionHard
-    (interfaceScaleFactorOption,
-     "Hard",
-     "Only apply for the hard process.",
-     1);
-  static SwitchOption interfaceScaleFactorOptionSecondary
-    (interfaceScaleFactorOption,
-     "Secondary",
-     "Only apply to secondary scatterings.",
-     2);
-
   static Reference<ShowerHandler,HardScaleProfile> interfaceHardScaleProfile
     ("HardScaleProfile",
      "The hard scale profile to use.",
@@ -335,6 +318,11 @@ void ShowerHandler::Init() {
      "No",
      "Don't split the hard process",
      false);
+
+  static Command<ShowerHandler> interfaceAddVariation
+    ("AddVariation",
+     "Add a shower variation.",
+     &ShowerHandler::doAddVariation, false);
  
 }
 
@@ -344,6 +332,11 @@ Energy ShowerHandler::hardScale() const {
 
 void ShowerHandler::cascade() {
   
+  // Initialise the weights in the event object
+  // so that any variations are output regardless of
+  // whether showering occurs for the given event
+  initializeWeights();
+
   tcPDFPtr first  = firstPDF().pdf();
   tcPDFPtr second = secondPDF().pdf();
 
@@ -406,6 +399,8 @@ void ShowerHandler::cascade() {
         !isResolvedHadron(incomingBins.second->particle()))) {
     // boost back to lab if needed
     if(btotal) boostCollision(true);
+    // perform the reweighting for the hard process shower
+    combineWeights();
     // unset the current ShowerHandler
     currentHandler_ = 0;
     return;
@@ -423,6 +418,8 @@ void ShowerHandler::cascade() {
                       << "ShowerHandler::cascade() from primary interaction" 
                       << Exception::eventerror;   
   }
+  // perform the reweighting for the hard process shower
+  combineWeights();
   // if no MPI return
   if( !isMPIOn() ) {
     remDec_->finalize();
@@ -490,6 +487,8 @@ void ShowerHandler::cascade() {
 			  << "ShowerHandler::cascade() for additional scatter" 
 			  << Exception::runerror;
     }
+    // perform the reweighting for the additional hard scatter shower
+    combineWeights();
   }
   // the underlying event processes
   unsigned int ptveto(1), veto(0);
@@ -550,6 +549,8 @@ void ShowerHandler::cascade() {
 			<< Exception::runerror;
     //reset veto counter
     veto = 0;
+    // perform the reweighting for the MPI process shower
+    combineWeights();
   }
   // finalize the remnants
   remDec_->finalize(getMPIHandler()->colourDisrupt(), 
@@ -579,9 +580,123 @@ void ShowerHandler::prepareCascade(tSubProPtr sub) {
   subProcess_ = sub;
 } 
 
+void ShowerHandler::initializeWeights() {
+  if ( !showerVariations().empty() ) {
+
+    tEventPtr event = eventHandler()->currentEvent();
+
+    for ( map<string,ShowerHandler::ShowerVariation>::const_iterator var =
+	    showerVariations().begin();
+	  var != showerVariations().end(); ++var ) {
+
+      // Check that this is behaving as intended
+      //map<string,double>::iterator wi = event->optionalWeights().find(var->first);
+      //assert(wi == event->optionalWeights().end() ); 
+
+      event->optionalWeights()[var->first] = 1.0;
+      currentWeights_[var->first] = 1.0;
+    }
+  }
+  reweight_ = 1.0;
+}
+
+void ShowerHandler::resetWeights() {
+  for ( map<string,double>::iterator w = currentWeights_.begin();
+	w != currentWeights_.end(); ++w ) {
+    w->second = 1.0;
+  }
+  reweight_ = 1.0;
+}
+
+void ShowerHandler::combineWeights() {
+  tEventPtr event = eventHandler()->currentEvent();
+  for ( map<string,double>::const_iterator w = 
+	  currentWeights_.begin(); w != currentWeights_.end(); ++w ) {
+    map<string,double>::iterator ew = event->optionalWeights().find(w->first);
+    if ( ew != event->optionalWeights().end() )
+      ew->second *= w->second;
+    else {
+      assert(false && "Weight name unknown.");
+      //event->optionalWeights()[w->first] = w->second;
+    }
+  }
+  if ( reweight_ != 1.0 ) {
+    Ptr<StandardEventHandler>::tptr eh = 
+      dynamic_ptr_cast<Ptr<StandardEventHandler>::tptr>(eventHandler());
+    if ( !eh ) {
+      throw Exception() << "ShowerHandler::combineWeights() : Cross section reweighting "
+			<< "through the shower is currently only available with standard "
+			<< "event generators" << Exception::runerror;
+    }
+    eh->reweight(reweight_);
+  }
+}
+
+string ShowerHandler::ShowerVariation::fromInFile(const string& in) {
+  // pretty simple for the moment, just to try
+  // TODO make this better
+  istringstream read(in);
+  string where;
+  read >> renormalizationScaleFactor >> factorizationScaleFactor >> where;
+  if ( !read )
+    return "something went wrong with: " + in;
+  if ( where != "Hard" && where != "All" && where!= "Secondary" )
+    return "The specified process for reweighting does not exist.\nOptions are: Hard, Secondary, All.";
+  if ( where == "Hard" || where == "All" )
+    firstInteraction = true;
+  else
+    firstInteraction = false;
+  if ( where == "Secondary" || where == "All" )
+    secondaryInteractions = true;
+  else
+    secondaryInteractions = false;
+  return "";
+}
+
+void ShowerHandler::ShowerVariation::put(PersistentOStream& os) const {
+  os << renormalizationScaleFactor << factorizationScaleFactor
+     << firstInteraction << secondaryInteractions;
+}
+
+void ShowerHandler::ShowerVariation::get(PersistentIStream& is) {
+  is >> renormalizationScaleFactor >> factorizationScaleFactor
+     >> firstInteraction >> secondaryInteractions;
+}
+
+string ShowerHandler::doAddVariation(string in) {
+  if ( in.empty() )
+    return "expecting a name and a variation specification";
+  string name = StringUtils::car(in);
+  ShowerVariation var;
+  string res = var.fromInFile(StringUtils::cdr(in));
+  if ( res.empty() ) {
+    if ( !var.firstInteraction && !var.secondaryInteractions ) {
+      // TODO what about decay showers?
+      return "variation does not apply to any shower";
+    }
+    if ( var.renormalizationScaleFactor == 1.0 && 
+	 var.factorizationScaleFactor == 1.0 ) {
+      return "variation does not vary anything";
+    }
+    /*
+    Repository::clog() << "adding a variation with tag '" << name << "' using\nxir = "
+		       << var.renormalizationScaleFactor
+		       << " xif = "
+		       << var.factorizationScaleFactor
+		       << "\napplying to:\n"
+		       << "first interaction = " << var.firstInteraction << " "
+		       << "secondary interactions = " << var.secondaryInteractions << "\n"
+		       << flush;
+    */
+    showerVariations()[name] = var;
+  }
+  return res;
+}
+
 tPPair ShowerHandler::cascade(tSubProPtr sub,
 			      XCPtr xcomb) {
   prepareCascade(sub);
+  resetWeights();
   // set the scale variation factors; needs to go after prepareCascade
   // to trigger possible different variations for hard and secondary
   // scatters
@@ -631,11 +746,13 @@ tPPair ShowerHandler::cascade(tSubProPtr sub,
       break;
     }
     catch (KinematicsReconstructionVeto) {
+      resetWeights();
       ++countFailures;
     }
   }
   // if loop exited because of too many tries, throw event away
   if (countFailures >= maxtry_) {
+    resetWeights();
     hard_=ShowerTreePtr();
     decay_.clear();
     done_.clear();
@@ -815,3 +932,4 @@ bool ShowerHandler::isResolvedHadron(tPPtr particle) {
 HardTreePtr ShowerHandler::generateCKKW(ShowerTreePtr ) const {
   return HardTreePtr();
 }
+

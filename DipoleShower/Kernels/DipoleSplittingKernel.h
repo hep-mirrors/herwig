@@ -171,13 +171,17 @@ public:
    * Inform this splitting kernel, that it is being
    * presampled until a call to stopPresampling
    */
-  virtual void startPresampling(const DipoleIndex&) {}
+  virtual void startPresampling(const DipoleIndex&) {
+    presampling = true;
+  }
 
   /**
    * Inform this splitting kernel, that it is not being
    * presampled until a call to startPresampling
    */
-  virtual void stopPresampling(const DipoleIndex&) {}
+  virtual void stopPresampling(const DipoleIndex&) {
+    presampling = false;
+  }
 
   /**
    * Return the number of points to presample this
@@ -204,10 +208,40 @@ public:
   void freezeGrid(unsigned long n) { theFreezeGrid = n; }
 
   /**
+   * Set a detuning factor to be applied to the sampling overestimate kernel
+   */
+  void detuning(double d) { theDetuning = d; }
+
+  /**
+   * Return the detuning factor applied to the sampling overestimate kernel
+   */
+  double detuning() const { return theDetuning; }
+
+  /**
    * Evaluate this splitting kernel for the given
    * dipole splitting.
    */
   virtual double evaluate(const DipoleSplittingInfo&) const = 0;
+
+  /**
+   * Clear the alphaPDF cache
+   */
+  void clearAlphaPDFCache() const {
+    theAlphaSCache.clear();
+    thePDFCache.clear();
+  }
+
+  /**
+   * Update the variations vector at the given splitting using the indicated
+   * kernel and overestimate values.
+   */
+  virtual void accept(const DipoleSplittingInfo&, double, double, map<string,double>&) const;
+
+  /**
+   * Update the variations vector at the given splitting using the indicated
+   * kernel and overestimate values.
+   */
+  virtual void veto(const DipoleSplittingInfo&, double, double, map<string,double>&) const;
 
   /**
    * Return true, if this kernel is capable of
@@ -260,7 +294,9 @@ protected:
    * Return the common factor of (alphas/2pi)*(pdf ratio)
    */
   double alphaPDF(const DipoleSplittingInfo&,
-		  Energy optScale = ZERO) const;
+		  Energy optScale = ZERO,
+		  double rScaleFactor = 1.0,
+		  double fScaleFactor = 1.0) const;
 
   /**
    * Return true, if the virtuality of the splitting should be used as the
@@ -341,6 +377,11 @@ private:
   unsigned long theFreezeGrid;
 
   /**
+   * The detuning factor applied to the sampling overestimate kernel
+   */
+  double theDetuning;
+
+  /**
    * The flavour produced, if this cannot
    * be determined from the dipole.
    */
@@ -382,6 +423,21 @@ private:
    * argument of alphas rather than the pt
    */
   bool theVirtualitySplittingScale;
+
+  /**
+   * Cache for alphas evaluations
+   */
+  mutable map<double,double> theAlphaSCache;
+
+  /**
+   * Cache for PDF evaluations
+   */
+  mutable map<double,double> thePDFCache;
+
+  /**
+   * True, if we are presampling
+   */
+  bool presampling;
 
 private:
 

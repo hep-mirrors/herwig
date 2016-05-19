@@ -49,17 +49,27 @@ public:
 
   /**
    * Return the weight for the given incoming, outgoing coloured and
-   * hard colour neutral particles
+   * hard colour neutral particles, after an emission was generated
    */
   virtual double weight(const PPair& in, const PList& out, const PList& hard,
 			Ptr<AlphaSBase>::tptr as) const = 0;
 
   /**
-   * Return the weight for the given incoming, outgoing coloured and
-   * hard colour neutral particles
+   * Return the weight which is applied to a cascade only once even if there was
+   * no emission from the cascade at all. 
    */
-  virtual double weightNoEmission(const PPair& in, const PList& out, const PList& hard,
+  virtual double weightCascade(const PPair& in, const PList& out, const PList& hard,
 				  Ptr<AlphaSBase>::tptr as) const = 0;
+
+  /**
+   * Return true, if the event reweight should be applied to the hard scattering
+   */
+  virtual bool firstInteraction() const = 0;
+
+  /**
+   * Return true, if the event reweight should be applied to secondary interactions
+   */
+  virtual bool secondaryInteractions() const = 0;
 
 public:
 

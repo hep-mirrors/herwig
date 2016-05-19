@@ -26,6 +26,7 @@ void MEvv2ss::doinit() {
   GeneralHardME::doinit();
   scalar1_.resize(numberOfDiags());
   scalar2_.resize(numberOfDiags());
+  scalar3_.resize(numberOfDiags());
   vector_ .resize(numberOfDiags()); 
   tensor_ .resize(numberOfDiags());
   initializeMatrixElements(PDT::Spin1, PDT::Spin1, 
@@ -36,11 +37,22 @@ void MEvv2ss::doinit() {
       contact_ = dynamic_ptr_cast<AbstractVVSSVertexPtr>(dg.vertices.first);
     }
     else if(dg.channelType == HPDiagram::tChannel) {
-      AbstractVSSVertexPtr vss1 = 
-	dynamic_ptr_cast<AbstractVSSVertexPtr>(dg.vertices.first);
-      AbstractVSSVertexPtr vss2 =
-	dynamic_ptr_cast<AbstractVSSVertexPtr>(dg.vertices.second);
-      scalar2_[i] = make_pair(vss1, vss2);
+      if (dg.intermediate->iSpin() == PDT::Spin0 ) {
+	AbstractVSSVertexPtr vss1 = 
+	  dynamic_ptr_cast<AbstractVSSVertexPtr>(dg.vertices.first);
+	AbstractVSSVertexPtr vss2 =
+	  dynamic_ptr_cast<AbstractVSSVertexPtr>(dg.vertices.second);
+	scalar2_[i] = make_pair(vss1, vss2);
+      }
+      else if( dg.intermediate->iSpin() == PDT::Spin1 ) {
+	AbstractVVSVertexPtr vvs1 = 
+	  dynamic_ptr_cast<AbstractVVSVertexPtr>(dg.vertices.first);
+	AbstractVVSVertexPtr vvs2 =
+	  dynamic_ptr_cast<AbstractVVSVertexPtr>(dg.vertices.second);
+	scalar3_[i] = make_pair(vvs1, vvs2);
+      }
+      else
+	assert(false);
     }
     else {
       if( dg.intermediate->iSpin() == PDT::Spin0 ) {
@@ -116,15 +128,29 @@ MEvv2ss::vv2ssME(const VBVector & v1, const VBVector & v2,
 	else {
 	  tcPDPtr offshell = current.intermediate;
 	  if(current.channelType == HPDiagram::tChannel) {
-	    if(current.ordered.second) {
-	      ScalarWaveFunction interS = scalar2_[ix].first->
-		evaluate(m2, 3, offshell, v1[iv1], sca1, masst);
-	      diag = scalar2_[ix].second->evaluate(m2, v2[iv2], interS, sca2);
+	    if(offshell->iSpin() == PDT::Spin0) {
+	      if(current.ordered.second) {
+		ScalarWaveFunction interS = scalar2_[ix].first->
+		  evaluate(m2, 3, offshell, v1[iv1], sca1, masst);
+		diag = scalar2_[ix].second->evaluate(m2, v2[iv2], interS, sca2);
+	      }
+	      else {
+		ScalarWaveFunction interS = scalar2_[ix].first->
+		  evaluate(m2, 3, offshell, v1[iv1], sca2, massu);
+		diag = scalar2_[ix].second->evaluate(m2, v2[iv2], interS, sca1);
+	      }
 	    }
 	    else {
-	      ScalarWaveFunction interS = scalar2_[ix].first->
-		evaluate(m2, 3, offshell, v1[iv1], sca2, massu);
-	      diag = scalar2_[ix].second->evaluate(m2, v2[iv2], interS, sca1);
+	      if(current.ordered.second) {
+		VectorWaveFunction interV = scalar3_[ix].first->
+		  evaluate(m2, 3, offshell, v1[iv1], sca1);
+		diag = scalar3_[ix].second->evaluate(m2, v2[iv2], interV, sca2);
+	      }
+	      else {
+		VectorWaveFunction interV = scalar3_[ix].first->
+		  evaluate(m2, 3, offshell, v1[iv1], sca2);
+		diag = scalar3_[ix].second->evaluate(m2, v2[iv2], interV, sca1);
+	      }
 	    }
 	  }
 	  else if(current.channelType == HPDiagram::sChannel) {
@@ -176,11 +202,11 @@ MEvv2ss::vv2ssME(const VBVector & v1, const VBVector & v2,
 }
 
 void MEvv2ss::persistentOutput(PersistentOStream & os) const {
-  os << scalar1_ << scalar2_ << vector_ << tensor_ << contact_;
+  os << scalar1_ << scalar2_ << scalar3_ << vector_ << tensor_ << contact_;
 }
 
 void MEvv2ss::persistentInput(PersistentIStream & is, int) {
-  is >> scalar1_ >> scalar2_ >> vector_ >> tensor_ >> contact_;
+  is >> scalar1_ >> scalar2_ >> scalar3_ >> vector_ >> tensor_ >> contact_;
   initializeMatrixElements(PDT::Spin1, PDT::Spin1, 
 			   PDT::Spin0, PDT::Spin0);
 }

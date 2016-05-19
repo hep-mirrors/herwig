@@ -379,6 +379,12 @@ protected:
   bool PDFVeto(const Energy2 t, const double x,
 	       const tcPDPtr parton0, const tcPDPtr parton1,
 	       tcBeamPtr beam) const;
+  /**
+   * The PDF veto ratio
+   */
+  double PDFVetoRatio(const Energy2 t, const double x,
+               const tcPDPtr parton0, const tcPDPtr parton1,
+               tcBeamPtr beam,double factor) const;
 
   /**
    *  The veto on the splitting function.
@@ -393,6 +399,17 @@ protected:
 		       const RhoDMatrix & rho) const {
     return UseRandom::rnd()>splittingFn_->ratioP(z_, t, ids,mass,rho);
   }
+  
+  /**
+   * The Splitting function veto ratio
+   */
+  
+  double SplittingFnVetoRatio(const Energy2 t,
+			      const IdList &ids,
+			      const bool mass,
+			      const RhoDMatrix & rho) const {
+    return splittingFn_->ratioP(z_, t, ids,mass,rho);
+  }
 
   /**
    *  The veto on the coupling constant
@@ -400,6 +417,14 @@ protected:
    * @return true if vetoed
    */
   bool alphaSVeto(Energy2 pt2) const;
+
+  /**
+   * The alpha S veto ratio
+   */
+   
+  double alphaSVetoRatio(Energy2 pt2,double factor) const;
+
+
   //@}
 
   /**

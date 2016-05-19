@@ -336,8 +336,8 @@ double ShowerAlphaQCD::overestimateValue() const {
   return _alphamin;
 }
 
-double ShowerAlphaQCD::ratio(const Energy2 scale) const {
-  Energy q = scaleFactor()*sqrt(scale);
+double ShowerAlphaQCD::ratio(const Energy2 scale, double factor) const {
+  Energy q = scaleFactor()*factor*sqrt(scale);
   double val(0.);
   // normal case
   if (q >= _qmin) {

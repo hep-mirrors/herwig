@@ -114,6 +114,11 @@ bool IFLightKinematics::generateSplitting(double kappa, double xi, double rphi,
     }
   }
 
+  if ( weight == 0. && z == -1. ) {
+    jacobian(0.0);
+    return false;
+  }
+
   double ratio = sqr(pt/info.scale());
 
   double rho = 1. - 4.*ratio*z*(1.-z)/sqr(1.-z+ratio);

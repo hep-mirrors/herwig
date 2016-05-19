@@ -353,7 +353,11 @@ void HardProcessConstructor::uChannelCF(HPDiagram & diag) {
   PDT::Colour outb = getParticleData(diag.outgoing.second)->iColour();
   vector<CFPair> cfv(1, make_pair(1, 1.));
   if(offshell == PDT::Colour8) {
-    if( outa != outb ) {
+    if(outa == PDT::Colour0 &&
+       outb == PDT::Colour0) {
+      cfv[0].first = 0;
+    }
+    else if( outa != outb ) {
       if(outa == PDT::Colour0 || 
 	 outb == PDT::Colour0) {
 	cfv[0].first = 0;

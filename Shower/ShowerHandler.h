@@ -74,7 +74,7 @@ public:
    * Hook to allow vetoing of event after showering hard sub-process
    * as in e.g. MLM merging.
    */
-  virtual bool showerHardProcessVeto() { return false; };
+  virtual bool showerHardProcessVeto() const { return false; }
 
   /**
    * Return true, if this cascade handler will perform reshuffling from hard
@@ -89,7 +89,7 @@ public:
   /**
    * Get the PDF freezing scale
    */
-  Energy pdfFreezingScale() const {return pdfFreezingScale_;}
+  Energy pdfFreezingScale() const { return pdfFreezingScale_; }
   //@}
 
 public:
@@ -173,45 +173,22 @@ public:
    * The factorization scale factor.
    */
   double factorizationScaleFactor() const { 
-    if ( scaleFactorOption_ == 0 || !subProcess_ )
       return factorizationScaleFactor_;
-    if ( scaleFactorOption_ == 1 )
-      return firstInteraction() ? factorizationScaleFactor_ : 1.0;
-    if ( scaleFactorOption_ == 2 )
-      return !firstInteraction() ? factorizationScaleFactor_ : 1.0;
-    return 1.0;
   }
 
   /**
    * The renormalization scale factor.
    */
-  double renormalizationScaleFactor() const { 
-    if ( scaleFactorOption_ == 0 || !subProcess_ )
-      return renormalizationScaleFactor_;
-    if ( scaleFactorOption_ == 1 )
-      return firstInteraction() ? renormalizationScaleFactor_ : 1.0;
-    if ( scaleFactorOption_ == 2 )
-      return !firstInteraction() ? renormalizationScaleFactor_ : 1.0;
-    return 1.0;
+  double renormalizationScaleFactor() const {
+    return renormalizationScaleFactor_ ;
   }
 
   /**
    * The scale factor for the hard scale
    */
-  double hardScaleFactor() const { 
-    if ( scaleFactorOption_ == 0 || !subProcess_ )
-      return hardScaleFactor_;
-    if ( scaleFactorOption_ == 1 )
-      return firstInteraction() ? hardScaleFactor_ : 1.0;
-    if ( scaleFactorOption_ == 2 )
-      return !firstInteraction() ? hardScaleFactor_ : 1.0;
-    return 1.0;
+  double hardScaleFactor() const {
+    return hardScaleFactor_;
   }
-
-  /**
-   * The option on when to apply the scale factors
-   */
-  int scaleFactorOption() const { return scaleFactorOption_; }
 
   /**
    * Return true, if the phase space restrictions of the dipole shower should
@@ -233,6 +210,126 @@ public:
    * Return true if maximum pt should be deduced from the factorization scale
    */
   bool hardScaleIsMuF() const { return maxPtIsMuF_; }
+
+  /**
+   * A struct identifying a shower variation
+   */
+  struct ShowerVariation {
+
+    /**
+     * Vary the renormalization scale by the given factor.
+     */
+    double renormalizationScaleFactor;
+
+    /**
+     * Vary the factorization scale by the given factor.
+     */
+    double factorizationScaleFactor;
+
+    /**
+     * Apply the variation to the first interaction
+     */
+    bool firstInteraction;
+
+    /**
+     * Apply the variation to the secondary interactions
+     */
+    bool secondaryInteractions;
+
+    /**
+     * Default constructor
+     */
+    ShowerVariation()
+      : renormalizationScaleFactor(1.0),
+	factorizationScaleFactor(1.0),
+	firstInteraction(true),
+	secondaryInteractions(false) {}
+
+    /**
+     * Parse from in file command
+     */
+    string fromInFile(const string&);
+
+    /**
+     * Put to persistent stream
+     */
+    void put(PersistentOStream& os) const;
+
+    /**
+     * Get from persistent stream
+     */
+    void get(PersistentIStream& is);
+
+  };
+
+  /**
+   * Access the shower variations
+   */
+  map<string,ShowerVariation>& showerVariations() {
+    return showerVariations_;
+  }
+
+  /**
+   * Return the shower variations
+   */
+  const map<string,ShowerVariation>& showerVariations() const {
+    return showerVariations_;
+  }
+
+  /**
+   * Access the current Weights
+   */
+  map<string,double>& currentWeights() {
+    return currentWeights_;
+  }
+
+  /**
+   * Return the current Weights
+   */
+  const map<string,double>& currentWeights() const {
+    return currentWeights_;
+  }
+
+  /**
+   * Change the current reweighting factor
+   */
+  void reweight(double w) {
+    reweight_ = w;
+  }
+
+  /**
+   * Return the current reweighting factor
+   */
+  double reweight() const {
+    return reweight_;
+  }
+
+protected:
+
+  /**
+   * A reweighting factor applied by the showering
+   */
+  double reweight_;
+
+  /**
+   * The shower variation weights
+   */
+  map<string,double> currentWeights_;
+
+  /**
+   * Combine the variation weights which have been encountered
+   */
+  void combineWeights();
+
+ /**
+   * Initialise the weights in currentEvent()
+   */
+  void initializeWeights();
+
+  /**
+   * Reset the current weights
+   */
+  void resetWeights();
 
 protected:
 
@@ -511,11 +608,6 @@ private:
   double hardScaleFactor_;
 
   /**
-   * The option on when to apply the scale factors
-   */
-  int scaleFactorOption_;
-
-  /**
    * True, if the phase space restrictions of the dipole shower should
    * be applied.
    */
@@ -535,6 +627,16 @@ private:
    *  Whether or not to split into hard and decay trees
    */
   bool splitHardProcess_;
+
+  /**
+   * The shower variations
+   */
+  map<string,ShowerVariation> showerVariations_;
+
+  /**
+   * Command to add a shower variation
+   */
+  string doAddVariation(string);
 
 public:
 
@@ -560,7 +662,7 @@ public:
   /**
    *  pointer to "this", the current ShowerHandler.
    */
-  static const ShowerHandler * currentHandler() {
+  static ShowerHandler * currentHandler() {
     assert(currentHandler_);
     return currentHandler_;
   }
@@ -575,6 +677,14 @@ protected:
   }
 
 };
+
+inline PersistentOStream& operator<<(PersistentOStream& os, const ShowerHandler::ShowerVariation& var) {
+  var.put(os); return os;
+} 
+
+inline PersistentIStream& operator>>(PersistentIStream& is, ShowerHandler::ShowerVariation& var) {
+  var.get(is); return is;
+} 
 
 }
 

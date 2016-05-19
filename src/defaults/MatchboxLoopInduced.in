@@ -48,9 +48,9 @@ cd /Herwig/Vertices/
 #set genericSVVVertex5:OrderInAlphaEW 0
 #set genericSVVVertex6:OrderInAlphaS 0
 #set genericSVVVertex6:OrderInAlphaEW 0
-#insert /Herwig/MatrixElements/Matchbox/PPFactory:DiagramGenerator:Vertices 0 genericSVVVertex4
-#insert /Herwig/MatrixElements/Matchbox/PPFactory:DiagramGenerator:Vertices 0 genericSVVVertex5
-#insert /Herwig/MatrixElements/Matchbox/PPFactory:DiagramGenerator:Vertices 0 genericSVVVertex6
+#insert /Herwig/MatrixElements/Matchbox/Factory:DiagramGenerator:Vertices 0 genericSVVVertex4
+#insert /Herwig/MatrixElements/Matchbox/Factory:DiagramGenerator:Vertices 0 genericSVVVertex5
+#insert /Herwig/MatrixElements/Matchbox/Factory:DiagramGenerator:Vertices 0 genericSVVVertex6
 
 # splits of loop particles to (g,g), (gamma,gamma) or (gamma,g)
 # (g,g,nLP), (gamma,gamma,nLP), (gamma,g,cLP)
@@ -66,9 +66,9 @@ set genericSVVVertex2:OrderInAlphaS 0
 set genericSVVVertex2:OrderInAlphaEW 2
 set genericSVVVertex3:OrderInAlphaS 1
 set genericSVVVertex3:OrderInAlphaEW 1
-insert /Herwig/MatrixElements/Matchbox/PPFactory:DiagramGenerator:Vertices 0 genericSVVVertex1
-insert /Herwig/MatrixElements/Matchbox/PPFactory:DiagramGenerator:Vertices 0 genericSVVVertex2
-insert /Herwig/MatrixElements/Matchbox/PPFactory:DiagramGenerator:Vertices 0 genericSVVVertex3
+insert /Herwig/MatrixElements/Matchbox/Factory:DiagramGenerator:Vertices 0 genericSVVVertex1
+insert /Herwig/MatrixElements/Matchbox/Factory:DiagramGenerator:Vertices 0 genericSVVVertex2
+insert /Herwig/MatrixElements/Matchbox/Factory:DiagramGenerator:Vertices 0 genericSVVVertex3
 
 # single radiation of gamma or g off loop particles
 # (nLP,nLP,gamma), (cLP,cLP,g), (cLP,cLP,gamma), (cLP,nLP,g)
@@ -88,10 +88,10 @@ set genericSVVVertex9:OrderInAlphaS 0
 set genericSVVVertex9:OrderInAlphaEW 1
 set genericSVVVertex10:OrderInAlphaS 1
 set genericSVVVertex10:OrderInAlphaEW 0
-insert /Herwig/MatrixElements/Matchbox/PPFactory:DiagramGenerator:Vertices 0 genericSVVVertex7
-insert /Herwig/MatrixElements/Matchbox/PPFactory:DiagramGenerator:Vertices 0 genericSVVVertex8
-insert /Herwig/MatrixElements/Matchbox/PPFactory:DiagramGenerator:Vertices 0 genericSVVVertex9
-insert /Herwig/MatrixElements/Matchbox/PPFactory:DiagramGenerator:Vertices 0 genericSVVVertex10
+insert /Herwig/MatrixElements/Matchbox/Factory:DiagramGenerator:Vertices 0 genericSVVVertex7
+insert /Herwig/MatrixElements/Matchbox/Factory:DiagramGenerator:Vertices 0 genericSVVVertex8
+insert /Herwig/MatrixElements/Matchbox/Factory:DiagramGenerator:Vertices 0 genericSVVVertex9
+insert /Herwig/MatrixElements/Matchbox/Factory:DiagramGenerator:Vertices 0 genericSVVVertex10
 
 # splits of loop particles to two vector bosons, 
 # with at least one charged vector boson
@@ -108,9 +108,9 @@ set genericSVVVertex21:OrderInAlphaS 1
 set genericSVVVertex21:OrderInAlphaEW 1
 set genericSVVVertex31:OrderInAlphaS 1
 set genericSVVVertex31:OrderInAlphaEW 1
-insert /Herwig/MatrixElements/Matchbox/PPFactory:DiagramGenerator:Vertices 0 genericSVVVertex11
-insert /Herwig/MatrixElements/Matchbox/PPFactory:DiagramGenerator:Vertices 0 genericSVVVertex21
-insert /Herwig/MatrixElements/Matchbox/PPFactory:DiagramGenerator:Vertices 0 genericSVVVertex31
+insert /Herwig/MatrixElements/Matchbox/Factory:DiagramGenerator:Vertices 0 genericSVVVertex11
+insert /Herwig/MatrixElements/Matchbox/Factory:DiagramGenerator:Vertices 0 genericSVVVertex21
+insert /Herwig/MatrixElements/Matchbox/Factory:DiagramGenerator:Vertices 0 genericSVVVertex31
 
 # single radiation of W+ off loop particles
 # (cLP,ccLP-,W+)
@@ -118,7 +118,7 @@ insert /Herwig/MatrixElements/Matchbox/PPFactory:DiagramGenerator:Vertices 0 gen
 #do genericSVVVertex41:pids 200001 -200004 24
 #set genericSVVVertex41:OrderInAlphaS 0
 #set genericSVVVertex41:OrderInAlphaEW 0
-#insert /Herwig/MatrixElements/Matchbox/PPFactory:DiagramGenerator:Vertices 0 genericSVVVertex41
+#insert /Herwig/MatrixElements/Matchbox/Factory:DiagramGenerator:Vertices 0 genericSVVVertex41
 
 
 ##########
@@ -133,7 +133,7 @@ insert /Herwig/MatrixElements/Matchbox/PPFactory:DiagramGenerator:Vertices 0 gen
 #set genericVVVVertex51:OrderInAlphaEW 1
 #set genericVVVVertex61:OrderInAlphaS 2
 #set genericVVVVertex61:OrderInAlphaEW 1
-#insert /Herwig/MatrixElements/Matchbox/PPFactory:DiagramGenerator:Vertices 0 genericVVVVertex51
-#insert /Herwig/MatrixElements/Matchbox/PPFactory:DiagramGenerator:Vertices 0 genericVVVVertex61
+#insert /Herwig/MatrixElements/Matchbox/Factory:DiagramGenerator:Vertices 0 genericVVVVertex51
+#insert /Herwig/MatrixElements/Matchbox/Factory:DiagramGenerator:Vertices 0 genericVVVVertex61
 
 
