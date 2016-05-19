@@ -159,7 +159,7 @@ public:
    */
   virtual ShoKinPtr generateNextTimeBranching(const Energy startingScale,
 					      const IdList &ids,const bool cc,
-					      double enhance)=0;
+					      double enhance, double detuning)=0;
 
   /**
    * Return the scale of the next space-like decay branching. If there is no 
@@ -177,7 +177,8 @@ public:
 					       const Energy minmass,
 					       const IdList &ids,
 					       const bool cc,
-					       double enhance)=0;
+					       double enhance,
+					       double detuning)=0;
 
   /**
    * Return the scale of the next space-like branching. If there is no 
@@ -193,7 +194,8 @@ public:
   virtual ShoKinPtr generateNextSpaceBranching(const Energy startingScale,
 					       const IdList &ids,double x,
 					       const bool cc,double enhance,
-					       tcBeamPtr beam)=0;
+					       tcBeamPtr beam,
+					       double detuning)=0;
   //@}
 
   /**
@@ -362,7 +364,7 @@ protected:
    * @param identical Whether or not the outgoing particles are identical
    */
   Energy2 guesst (Energy2 t1,unsigned int iopt, const IdList &ids,
-		  double enhance, bool identical) const;
+		  double enhance, bool identical, const double & detune) const;
 
   /**
    * Veto on the PDF for the initial-state shower
@@ -393,8 +395,9 @@ protected:
    */
   bool SplittingFnVeto(const Energy2 t, 
 		       const IdList &ids, 
-		       const bool mass) const {
-    return UseRandom::rnd()>splittingFn_->ratioP(z_, t, ids,mass);
+		       const bool mass,
+		       const double & detune) const {
+    return UseRandom::rnd()>SplittingFnVetoRatio(t,ids,mass,detune);
   }
   
   /**
@@ -402,9 +405,10 @@ protected:
    */
   
   double SplittingFnVetoRatio(const Energy2 t,
-                       const IdList &ids,
-                       const bool mass) const {
-    return splittingFn_->ratioP(z_, t, ids,mass);
+			      const IdList &ids,
+			      const bool mass,
+			      const double & detune) const {
+    return splittingFn_->ratioP(z_, t, ids,mass)/detune;
   }
 
   /**
