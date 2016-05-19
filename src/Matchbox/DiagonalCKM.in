@@ -1,0 +1,8 @@
+# -*- ThePEG-repository -*-
+
+set /Herwig/MatrixElements/Matchbox/Factory:QuarkFlavourDiagonal Yes
+
+cd /Herwig/MatrixElements/Matchbox/Utility
+
+insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFWDiagonalVertex
+
