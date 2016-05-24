@@ -2,7 +2,5 @@
 
 set /Herwig/MatrixElements/Matchbox/Factory:QuarkFlavourDiagonal No
 
-cd /Herwig/MatrixElements/Matchbox/Utility
-
-insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFWVertex
+set /Herwig/Vertices/FFWVertex:Diagonal No
 

@@ -585,11 +585,7 @@ insert DiagramGenerator:Vertices 0 /Herwig/Vertices/GGGVertex
 insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFPVertex
 insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFZVertex
 
-cp /Herwig/Vertices/FFWVertex /Herwig/Vertices/FFWDiagonalVertex
-set /Herwig/Vertices/FFWDiagonalVertex:Diagonal Yes
-
-# see {Non,}DiagonalCKM.in 
-# insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFWDiagonalVertex
+insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFWVertex
 
 insert DiagramGenerator:Vertices 0 /Herwig/Vertices/WWHVertex
 insert DiagramGenerator:Vertices 0 /Herwig/Vertices/WWWVertex
