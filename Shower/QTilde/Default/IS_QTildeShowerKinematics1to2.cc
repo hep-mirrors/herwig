@@ -17,7 +17,6 @@
 #include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
 #include "ThePEG/Utilities/Debug.h"
 #include "Herwig/Shower/QTilde/QTildeShowerHandler.h"
-#include "Herwig/Shower/QTilde/Base/Evolver.h"
 #include "Herwig/Shower/QTilde/Base/PartnerFinder.h"
 #include "Herwig/Shower/QTilde/Base/ShowerModel.h"
 #include "Herwig/Shower/QTilde/Base/KinematicsReconstructor.h"
@@ -29,8 +28,7 @@ using namespace Herwig;
 void IS_QTildeShowerKinematics1to2::
 updateChildren( const tShowerParticlePtr theParent, 
 		const ShowerParticleVector & theChildren,
-		ShowerPartnerType::Type,
-		bool massVeto) const {
+		ShowerPartnerType::Type, bool ) const {
   const ShowerParticle::Parameters & parent = theParent->showerParameters();
   ShowerParticle::Parameters & child0 = theChildren[0]->showerParameters();
   ShowerParticle::Parameters & child1 = theChildren[1]->showerParameters();
@@ -74,9 +72,9 @@ updateParent(const tShowerParticlePtr parent,
   children[1]->showerParameters().pt    = pT();
   setMomentum(parent,false);
   setMomentum(children[1],true);
-  if(! dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->evolver()->correlations()) return;
+  if(! dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->correlations()) return;
   SpinPtr pspin(children[0]->spinInfo());
-  if(!pspin ||  !dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->evolver()->spinCorrelations() ) return;
+  if(!pspin ||  !dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->spinCorrelations() ) return;
   // compute the matrix element for spin correlations
   IdList ids;
   ids.push_back(parent->id());

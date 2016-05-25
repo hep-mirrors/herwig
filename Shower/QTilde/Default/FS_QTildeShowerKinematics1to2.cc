@@ -17,7 +17,6 @@
 #include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
 #include "ThePEG/Utilities/Debug.h"
 #include "Herwig/Shower/QTilde/QTildeShowerHandler.h"
-#include "Herwig/Shower/QTilde/Base/Evolver.h"
 #include "Herwig/Shower/QTilde/Base/PartnerFinder.h"
 #include "Herwig/Shower/QTilde/Base/ShowerModel.h"
 #include "Herwig/Shower/QTilde/Base/KinematicsReconstructor.h"
@@ -89,9 +88,9 @@ updateChildren(const tShowerParticlePtr parent,
     setMomentum(*pit,true);
   }
   // sort out the helicity stuff 
-  if(! dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->evolver()->correlations()) return;
+  if(! dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->correlations()) return;
   SpinPtr pspin(parent->spinInfo());
-  if(!pspin ||  !dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->evolver()->spinCorrelations() ) return;
+  if(!pspin ||  !dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->spinCorrelations() ) return;
   Energy2 t = sqr(scale())*z()*(1.-z());
   IdList ids;
   ids.push_back(parent->id());

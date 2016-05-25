@@ -163,16 +163,14 @@ public:
    *  as a shower reconstruct the variables used to generate the 
    * shower
    */
-  virtual bool deconstructDecayJets(HardTreePtr, cEvolverPtr,
-				    ShowerInteraction::Type) const;
+  virtual bool deconstructDecayJets(HardTreePtr,ShowerInteraction::Type) const;
 
   /**
    *  Given the particles, with a history which we wish to interpret
    *  as a shower reconstruct the variables used to generate the shower
    *  for a hard process
    */
-  virtual bool deconstructHardJets(HardTreePtr, cEvolverPtr,
-				   ShowerInteraction::Type) const;
+  virtual bool deconstructHardJets(HardTreePtr,ShowerInteraction::Type) const;
   //@}
 
 public:
@@ -305,7 +303,6 @@ protected:
 				   const LorentzRotation & fromRest,
 				   HardTreePtr,
 				   vector<HardBranchingPtr>,
-				   cEvolverPtr,
 				   ShowerInteraction::Type) const;
   
   /**
@@ -325,16 +322,15 @@ protected:
    */
   void deconstructInitialFinalSystem(HardTreePtr,
 				     vector<HardBranchingPtr>,
-				     cEvolverPtr,
 				     ShowerInteraction::Type ) const;
 
-  bool deconstructGeneralSystem(HardTreePtr, cEvolverPtr,
+  bool deconstructGeneralSystem(HardTreePtr,
 				ShowerInteraction::Type) const;
 
-  bool deconstructColourSinglets(HardTreePtr, cEvolverPtr,
+  bool deconstructColourSinglets(HardTreePtr,
 				 ShowerInteraction::Type) const;
 
-  bool deconstructColourPartner(HardTreePtr, cEvolverPtr,
+  bool deconstructColourPartner(HardTreePtr,
 				ShowerInteraction::Type) const;
   //@}
 

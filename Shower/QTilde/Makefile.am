@@ -25,5 +25,4 @@ Base/KinematicsReconstructor.h \
 Base/KinematicsReconstructor.fh \
 Base/ShowerModel.cc Base/ShowerModel.h Base/ShowerModel.fh \
 Base/PartnerFinder.h Base/PartnerFinder.fh Base/PartnerFinder.cc \
-Base/Evolver.h Base/Evolver.fh Base/Evolver.cc \
 Base/ShowerVeto.h Base/ShowerVeto.fh Base/ShowerVeto.cc

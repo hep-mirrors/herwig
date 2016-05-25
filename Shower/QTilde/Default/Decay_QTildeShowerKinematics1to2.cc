@@ -17,10 +17,6 @@
 #include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
 #include <cassert>
 #include "Herwig/Shower/ShowerHandler.h"
-#include "Herwig/Shower/QTilde/Base/Evolver.h"
-#include "Herwig/Shower/QTilde/Base/PartnerFinder.h"
-#include "Herwig/Shower/QTilde/Base/ShowerModel.h"
-#include "Herwig/Shower/QTilde/Base/KinematicsReconstructor.h"
 #include "Herwig/Shower/QTilde/Base/ShowerVertex.h"
 
 using namespace Herwig;

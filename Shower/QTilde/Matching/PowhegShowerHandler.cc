@@ -24,7 +24,6 @@
 #include "ThePEG/Utilities/DescribeClass.h"
 
 // include theses to have complete types
-#include "Herwig/Shower/QTilde/Base/Evolver.h"
 #include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
 #include "Herwig/PDF/MPIPDF.h"
 #include "Herwig/PDF/MinBiasPDF.h"
@@ -445,7 +444,7 @@ PotentialTree PowhegShowerHandler::doClustering(tSubProPtr real,ShowerTreePtr sh
     if(!matched) continue;
     // find the colour partners
     try {
-      evolver()->showerModel()->partnerFinder()
+      showerModel()->partnerFinder()
 	->setInitialEvolutionScales(branchingParticles,false,
 				    ShowerInteraction::QCD,true);
     }
@@ -502,8 +501,8 @@ PotentialTree PowhegShowerHandler::doClustering(tSubProPtr real,ShowerTreePtr sh
     // check the emitter and the spectator some how
     if(iemitter!=emitter_) continue;
     //do inverse momentum reconstruction
-    if( !evolver()->showerModel()->kinematicsReconstructor()
-	->deconstructHardJets( newTree.tree(), evolver(), ShowerInteraction::QCD ) ) continue;
+    if( !showerModel()->kinematicsReconstructor()
+	->deconstructHardJets( newTree.tree(), ShowerInteraction::QCD ) ) continue;
     newTree.tree()->findNodes();
     newTree.weight(1.);
     hardTrees_.push_back( make_pair( newTree, 1. ) );
@@ -1018,8 +1017,8 @@ void PowhegShowerHandler::doinit() {
   // extract the allowed branchings
   // final-state
   for(BranchingList::const_iterator 
-	it = evolver()->splittingGenerator()->finalStateBranchings().begin();
-      it != evolver()->splittingGenerator()->finalStateBranchings().end(); ++it) {
+	it = splittingGenerator()->finalStateBranchings().begin();
+      it != splittingGenerator()->finalStateBranchings().end(); ++it) {
     pair<long,long> prod(make_pair(it->second.second[1],it->second.second[2]));
     allowedFinal_.insert(make_pair(prod,it->second));
     swap(prod.first,prod.second);
@@ -1027,8 +1026,8 @@ void PowhegShowerHandler::doinit() {
   }
   // initial-state
   for(BranchingList::const_iterator 
-	it = evolver()->splittingGenerator()->initialStateBranchings().begin();
-      it != evolver()->splittingGenerator()->initialStateBranchings().end(); ++it) {
+	it = splittingGenerator()->initialStateBranchings().begin();
+      it != splittingGenerator()->initialStateBranchings().end(); ++it) {
     allowedInitial_.insert(make_pair(it->second.second[0],it->second));
   }
 

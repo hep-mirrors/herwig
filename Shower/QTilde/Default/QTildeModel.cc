@@ -17,7 +17,6 @@
 #include "QTildeFinder.h"
 #include "QTildeSudakov.h"
 #include "ThePEG/Utilities/Throw.h"
-#include "Herwig/Shower/QTilde/Base/Evolver.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace Herwig;

@@ -27,7 +27,6 @@
 #include "Herwig/Shower/QTilde/Base/ShowerVertex.h"
 #include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
 #include "Herwig/Shower/QTilde/QTildeShowerHandler.h"
-#include "Herwig/Shower/QTilde/Base/Evolver.h"
 #include "Herwig/Shower/QTilde/Base/PartnerFinder.h"
 #include "Herwig/Shower/QTilde/Base/ShowerModel.h"
 #include "Herwig/Shower/QTilde/Base/KinematicsReconstructor.h"
@@ -553,7 +552,7 @@ double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
 					 const IdList & ids,
 					 ShoKinPtr kinematics) {
   // no correlations, return flat phi
-  if(! dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->evolver()->correlations())
+  if(! dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->correlations())
     return Constants::twopi*UseRandom::rnd();
   // get the kinematic variables
   double  z = kinematics->z();
@@ -568,7 +567,7 @@ double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
   Energy Ei,Ej;
   Energy2 m12(ZERO),m22(ZERO);
   InvEnergy2 aziMax(ZERO);
-  bool softAllowed = dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->evolver()->softCorrelations()&&
+  bool softAllowed = dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()&&
     (canBeSoft[0] || canBeSoft[1]);
   if(softAllowed) {
     // find the partner for the soft correlations
@@ -660,10 +659,10 @@ double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
     if(xi_min>xi_max) swap(xi_min,xi_max);
     if(xi_min>xi_ij) softAllowed = false;
     Energy2 mag = sqrt(sqr(pjk[1])+sqr(pjk[2]));
-    if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->evolver()->softCorrelations()==1) {
+    if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()==1) {
       aziMax = -m12/sqr(pik) -m22/sqr(pjk[0]+mag) +2.*pipj/pik/(pjk[0]-mag);
     }
-    else if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->evolver()->softCorrelations()==2) {
+    else if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()==2) {
       double A = (pipj*Ek[0]- Ej*pik)/Ej/sqr(Ej);
       double B = -sqrt(sqr(pipj)*(sqr(Ek[1])+sqr(Ek[2])))/Ej/sqr(Ej);
       double C = pjk[0]/sqr(Ej);
@@ -677,7 +676,7 @@ double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
   }
   // if spin correlations
   vector<pair<int,Complex> > wgts;     
-  if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->evolver()->spinCorrelations()) {
+  if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->spinCorrelations()) {
     // get the spin density matrix and the mapping
     RhoDMatrix mapping;
     SpinPtr inspin;
@@ -736,10 +735,10 @@ double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
       Energy2 dot = pjk[0]+pjk[1]*cos(phi)+pjk[2]*sin(phi);
       Energy  Eg  = Ek[0]+Ek[1]*cos(phi)+Ek[2]*sin(phi);
       if(pipj*Eg>pik*Ej) {
-	if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->evolver()->softCorrelations()==1) {
+	if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()==1) {
 	  aziWgt = (-m12/sqr(pik) -m22/sqr(dot) +2.*pipj/pik/dot)/aziMax;
 	}
-	else if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->evolver()->softCorrelations()==2) {
+	else if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()==2) {
 	  aziWgt = max(ZERO,0.5/pik/Eg*(Ei-m12*Eg/pik  + (pipj*Eg - Ej*pik)/dot)/aziMax);
 	}
 	if(aziWgt-1.>1e-10||aziWgt<-1e-10) {
@@ -771,14 +770,14 @@ double QTildeSudakov::generatePhiBackward(ShowerParticle & particle,
 					  const IdList & ids,
 					  ShoKinPtr kinematics) {
   // no correlations, return flat phi
-  if(! dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->evolver()->correlations())
+  if(! dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->correlations())
     return Constants::twopi*UseRandom::rnd();
   // get the kinematic variables
   double z = kinematics->z();
   Energy2 t = (1.-z)*sqr(kinematics->scale())/z;
   Energy pT = kinematics->pT();
   // if soft correlations 
-  bool softAllowed = dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->evolver()->softCorrelations() &&
+  bool softAllowed = dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations() &&
     (ids[2]==ParticleID::g || ids[2]==ParticleID::gamma);
   Energy2 pipj,pik,m12(ZERO),m22(ZERO);
   vector<Energy2> pjk(3,ZERO);
@@ -831,10 +830,10 @@ double QTildeSudakov::generatePhiBackward(ShowerParticle & particle,
     m12 = ZERO;
     m22 = sqr(partner->dataPtr()->mass());
     Energy2 mag = sqrt(sqr(pjk[1])+sqr(pjk[2]));
-    if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->evolver()->softCorrelations()==1) {
+    if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()==1) {
       aziMax = -m12/sqr(pik) -m22/sqr(pjk[0]+mag) +2.*pipj/pik/(pjk[0]-mag);
     }
-    else if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->evolver()->softCorrelations()==2) {
+    else if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()==2) {
       Ek = alpha0*zFact/(1.-zFact)*pVect.t()+beta2*nVect.t();
       Ei = alpha0*pVect.t()+beta0*nVect.t();
       Ej = pj.t();
@@ -846,12 +845,12 @@ double QTildeSudakov::generatePhiBackward(ShowerParticle & particle,
       }
     }
     else {
-      assert(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->evolver()->softCorrelations()==0);
+      assert(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()==0);
     }
   }
   // if spin correlations
   vector<pair<int,Complex> > wgts;
-  if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->evolver()->spinCorrelations()) {
+  if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->spinCorrelations()) {
     // get the spin density matrix and the mapping
     RhoDMatrix mapping;
     SpinPtr inspin;
@@ -906,10 +905,10 @@ double QTildeSudakov::generatePhiBackward(ShowerParticle & particle,
     double aziWgt = 1.;
     if(softAllowed) {
       Energy2 dot = pjk[0]+pjk[1]*cos(phi)+pjk[2]*sin(phi);
-      if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->evolver()->softCorrelations()==1) {
+      if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()==1) {
 	aziWgt = (-m12/sqr(pik) -m22/sqr(dot) +2.*pipj/pik/dot)/aziMax;
       }
-      else if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->evolver()->softCorrelations()==2) {
+      else if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()==2) {
 	aziWgt = max(ZERO,0.5/pik/Ek*(Ei-m12*Ek/pik  + pipj*Ek/dot - Ej*pik/dot)/aziMax);
       }
       if(aziWgt-1.>1e-10||aziWgt<-1e-10) {
@@ -938,7 +937,7 @@ double QTildeSudakov::generatePhiDecay(ShowerParticle & particle,
 				       ShoKinPtr kinematics) {
   // only soft correlations in this case
   // no correlations, return flat phi
-  if( !(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->evolver()->softCorrelations() &&
+  if( !(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations() &&
 	(ids[2]==ParticleID::g || ids[2]==ParticleID::gamma )))
     return Constants::twopi*UseRandom::rnd();
   // get the kinematic variables
@@ -1000,10 +999,10 @@ double QTildeSudakov::generatePhiDecay(ShowerParticle & particle,
   InvEnergy2 aziMax;
   vector<Energy> Ek(3,ZERO);
   Energy Ei,Ej;
-  if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->evolver()->softCorrelations()==1) {
+  if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()==1) {
     aziMax = -m12/sqr(pik) -m22/sqr(pjk[0]+mag) +2.*pipj/pik/(pjk[0]-mag);
   }
-  else if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->evolver()->softCorrelations()==2) {
+  else if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()==2) {
     Ek[0] = zFact*(alpha0*pVect.t()+-0.5*nVect.t()/pn*(alpha0*m2-sqr(particle.showerParameters().pt)/alpha0))
       +0.5*sqr(pT)*nVect.t()/pn/zFact/alpha0;
     Ek[1] = -nVect.t()/alpha0/pn*qperp0.x()*pT;
@@ -1014,7 +1013,7 @@ double QTildeSudakov::generatePhiDecay(ShowerParticle & particle,
     aziMax = 0.5/pik/(Ek[0]-mag2)*(Ei-m12*(Ek[0]-mag2)/pik  + pipj*(Ek[0]+mag2)/(pjk[0]-mag) - Ej*pik/(pjk[0]-mag) );
   }
   else
-    assert(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->evolver()->softCorrelations()==0);
+    assert(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()==0);
   // generate the azimuthal angle
   double phi,wgt(0.);
   unsigned int ntry(0);
@@ -1022,10 +1021,10 @@ double QTildeSudakov::generatePhiDecay(ShowerParticle & particle,
   do {
     phi = Constants::twopi*UseRandom::rnd();
     Energy2 dot = pjk[0]+pjk[1]*cos(phi)+pjk[2]*sin(phi);
-    if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->evolver()->softCorrelations()==1) {
+    if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()==1) {
       wgt = (-m12/sqr(pik) -m22/sqr(dot) +2.*pipj/pik/dot)/aziMax;
     }
-    else if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->evolver()->softCorrelations()==2) {
+    else if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations()==2) {
       if(qperp0.m2()==ZERO) {
 	wgt = 1.;
       }

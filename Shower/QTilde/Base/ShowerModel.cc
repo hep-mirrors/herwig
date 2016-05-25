@@ -19,7 +19,6 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "KinematicsReconstructor.h"
 #include "PartnerFinder.h"
-#include "Evolver.h"
 #include "SudakovFormFactor.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 

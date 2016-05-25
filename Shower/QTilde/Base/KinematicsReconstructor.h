@@ -17,7 +17,6 @@
 #include "ShowerProgenitor.h"
 #include "ShowerTree.h"
 #include "HardTree.h"
-#include "Evolver.fh"
 #include "KinematicsReconstructor.fh"
 #include <cassert>
 
@@ -99,16 +98,14 @@ public:
    *  as a shower reconstruct the variables used to generate the 
    * shower for a decay process
    */
-  virtual bool deconstructDecayJets(HardTreePtr decay,cEvolverPtr,
-				    ShowerInteraction::Type) const=0;
+  virtual bool deconstructDecayJets(HardTreePtr decay,ShowerInteraction::Type) const=0;
 
   /**
    *  Given the particles, with a history which we wish to interpret
    *  as a shower reconstruct the variables used to generate the shower
    *  for a hard process
    */
-  virtual bool deconstructHardJets(HardTreePtr hard,cEvolverPtr,
-				   ShowerInteraction::Type) const=0;
+  virtual bool deconstructHardJets(HardTreePtr hard,ShowerInteraction::Type) const=0;
   //@}
 
 public:

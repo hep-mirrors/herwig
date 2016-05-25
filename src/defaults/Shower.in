@@ -31,7 +31,6 @@ newdef ShowerHandler:PDFBRemnant /Herwig/Partons/RemnantPDF
 create Herwig::SplittingGenerator SplittingGenerator
 create Herwig::ShowerAlphaQCD AlphaQCD
 create Herwig::ShowerAlphaQED AlphaQED
-create Herwig::Evolver Evolver
 create Herwig::QTildeModel ShowerModel
 create Herwig::QTildeFinder PartnerFinder
 newdef PartnerFinder:PartnerMethod 1
@@ -44,14 +43,13 @@ newdef KinematicsReconstructor:InitialInitialBoostOption LongTransBoost
 newdef /Herwig/Partons/RemnantDecayer:AlphaS  AlphaQCD
 newdef /Herwig/Partons/RemnantDecayer:AlphaEM AlphaQED
 
-newdef ShowerHandler:Evolver Evolver
 newdef ShowerModel:PartnerFinder PartnerFinder
 newdef ShowerModel:KinematicsReconstructor KinematicsReconstructor
-newdef Evolver:ShowerModel ShowerModel
-newdef Evolver:SplittingGenerator SplittingGenerator
-newdef Evolver:Interactions BothAtOnce
-newdef Evolver:SpinCorrelations Yes
-newdef Evolver:SoftCorrelations Singular
+newdef ShowerHandler:ShowerModel ShowerModel
+newdef ShowerHandler:SplittingGenerator SplittingGenerator
+newdef ShowerHandler:Interactions BothAtOnce
+newdef ShowerHandler:SpinCorrelations Yes
+newdef ShowerHandler:SoftCorrelations Singular
 
 ##################################################################
 # Intrinsic pT
@@ -63,10 +61,10 @@ newdef Evolver:SoftCorrelations Singular
 #
 # Set all parameters to 0 to disable
 ##################################################################
-newdef Evolver:IntrinsicPtGaussian 1.3*GeV
-newdef Evolver:IntrinsicPtBeta  	0
-newdef Evolver:IntrinsicPtGamma 	0*GeV
-newdef Evolver:IntrinsicPtIptmax   0*GeV
+newdef ShowerHandler:IntrinsicPtGaussian 1.3*GeV
+newdef ShowerHandler:IntrinsicPtBeta  	0
+newdef ShowerHandler:IntrinsicPtGamma 	0*GeV
+newdef ShowerHandler:IntrinsicPtIptmax   0*GeV
 #############################################################
 # Main control switches for the parton shower.
 #############################################################
@@ -79,7 +77,6 @@ newdef SplittingGenerator:FSR Yes
 create Herwig::PowhegShowerHandler PowhegShowerHandler
 set PowhegShowerHandler:MPIHandler /Herwig/UnderlyingEvent/MPIHandler
 set PowhegShowerHandler:RemDecayer /Herwig/Partons/RemnantDecayer
-set PowhegShowerHandler:Evolver /Herwig/Shower/Evolver
 newdef PowhegShowerHandler:PDFA /Herwig/Partons/ShowerLOPDF
 newdef PowhegShowerHandler:PDFB /Herwig/Partons/ShowerLOPDF
 newdef PowhegShowerHandler:PDFARemnant /Herwig/Partons/RemnantPDF
@@ -98,8 +95,8 @@ newdef PowhegShowerHandler:PDFBRemnant /Herwig/Partons/RemnantPDF
 #############################################################
 #
 # a few default values
-newdef Evolver:MECorrMode 1
-newdef Evolver:ReconstructionOption OffShell3
+newdef ShowerHandler:MECorrMode 1
+newdef ShowerHandler:ReconstructionOption OffShell3
 newdef AlphaQCD:ScaleFactor 1.0
 newdef AlphaQCD:NPAlphaS 2
 newdef AlphaQCD:Qmin 0.935

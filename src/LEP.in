@@ -34,7 +34,7 @@ insert SimpleEE:MatrixElements 0 MEee2gZ2qq
 ##################################################
 # NLO powheg processes
 ##################################################
-#set /Herwig/Shower/Evolver:HardEmissionMode POWHEG
+#set /Herwig/Shower/ShowerHandler:HardEmissionMode POWHEG
 #read Matchbox/Powheg-Default-ShowerAlphaSTune.in
 #insert SimpleEE:MatrixElements 0 PowhegMEee2gZ2qq
 #insert SimpleEE:MatrixElements 0 PowhegMEee2gZ2ll

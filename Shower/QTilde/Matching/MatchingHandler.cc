@@ -19,7 +19,6 @@
 #include "ThePEG/PDF/PDF.h"
 #include "ThePEG/Cuts/Cuts.h"
 #include "Herwig/PDF/HwRemDecayer.h"
-#include "Herwig/Shower/QTilde/Base/Evolver.h"
 #include "Herwig/Shower/QTilde/Base/PartnerFinder.h"
 #include "Herwig/Shower/QTilde/Base/KinematicsReconstructor.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
@@ -153,8 +152,8 @@ void MatchingHandler::doinit() {
   // extract the allowed branchings
   // final-state
   for(BranchingList::const_iterator 
-	it = evolver()->splittingGenerator()->finalStateBranchings().begin();
-      it != evolver()->splittingGenerator()->finalStateBranchings().end(); ++it) {
+	it = splittingGenerator()->finalStateBranchings().begin();
+      it != splittingGenerator()->finalStateBranchings().end(); ++it) {
     pair<long,long> prod(make_pair(it->second.second[1],it->second.second[2]));
     allowedFinal_.insert(make_pair(prod,it->second));
     swap(prod.first,prod.second);
@@ -162,8 +161,8 @@ void MatchingHandler::doinit() {
   }
   // initial-state
   for(BranchingList::const_iterator 
-	it = evolver()->splittingGenerator()->initialStateBranchings().begin();
-      it != evolver()->splittingGenerator()->initialStateBranchings().end(); ++it) {
+	it = splittingGenerator()->initialStateBranchings().begin();
+      it != splittingGenerator()->initialStateBranchings().end(); ++it) {
     allowedInitial_.insert(make_pair(it->second.second[0],it->second));
   }
 }
@@ -548,7 +547,7 @@ double MatchingHandler::getDiagram(PotentialTree & tree) {
     branchingMap.insert(make_pair((**it).branchingParticle(),*it));
   }
   // find the colour partners
-  evolver()->showerModel()->partnerFinder()
+  showerModel()->partnerFinder()
     ->setInitialEvolutionScales(branchingParticles,false,
 				ShowerInteraction::QCD,true);
   for(unsigned int ix=0;ix<branchingParticles.size();++ix) {
@@ -960,7 +959,7 @@ PotentialTree MatchingHandler::doClustering() {
       br->beam( beams.second );
     }
     // do inverse momentum reconstruction
-    if( !evolver()->showerModel()->kinematicsReconstructor()
+    if( !showerModel()->kinematicsReconstructor()
     	->deconstructHardJets( newTree.tree(), evolver(), ShowerInteraction::QCD ) )
       continue;
     newTree.tree()->findNodes();

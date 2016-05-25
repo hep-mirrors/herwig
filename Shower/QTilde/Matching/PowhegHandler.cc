@@ -19,7 +19,6 @@
 #include "ThePEG/PDF/PDF.h"
 #include "ThePEG/Cuts/Cuts.h"
 #include "Herwig/PDF/HwRemDecayer.h"
-#include "Herwig/Shower/QTilde/Base/Evolver.h"
 #include "Herwig/Shower/QTilde/Base/PartnerFinder.h"
 #include "Herwig/Shower/QTilde/Base/KinematicsReconstructor.h"
 #include "Herwig/MatrixElement/Matchbox/Matching/ShowerApproximationGenerator.h"

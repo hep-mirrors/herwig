@@ -19,7 +19,6 @@
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/RefVector.h"
-#include "Herwig/Shower/QTilde/Base/Evolver.h"
 #include "Herwig/Shower/QTilde/Base/PartnerFinder.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -27,6 +26,7 @@
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/EventRecord/ColourLine.h"
 #include "ThePEG/Utilities/DescribeClass.h"
+#include "Herwig/Shower/QTilde/QTildeShowerHandler.h"
 #include <cassert>
 
 using namespace Herwig;
@@ -746,8 +746,7 @@ solveDecayKFactor(Energy mb,
 }
 
 bool QTildeReconstructor::
-deconstructDecayJets(HardTreePtr decay, cEvolverPtr,
-		     ShowerInteraction::Type) const {
+deconstructDecayJets(HardTreePtr decay,ShowerInteraction::Type) const {
   // extract the momenta of the particles
   vector<Lorentz5Momentum> pin;
   vector<Lorentz5Momentum> pout;
@@ -878,16 +877,6 @@ deconstructDecayJets(HardTreePtr decay, cEvolverPtr,
       (*cit)->showerMomentum(pvect);
     }
   }
-//   // find the evolution partners
-//   ShowerParticleVector particles;
-//   particles.push_back((**decay->incoming().begin()).branchingParticle());
-//   for(cit=branchings.begin();cit!=branchings.end();++cit) {
-//     if((**cit).status()==HardBranching::Outgoing)
-//       particles.push_back((*cit)->branchingParticle());
-//   }
-//   // partners should
-//   evolver->showerModel()->partnerFinder()
-//     ->setInitialEvolutionScales(particles,true,type,false);
   // For initial-state if needed
   if(initial) {
     tShowerParticlePtr newPartner=initial->branchingParticle()->partner();
@@ -1048,7 +1037,6 @@ inverseRescalingFactor(vector<Lorentz5Momentum> pout,
 
 bool QTildeReconstructor::
 deconstructGeneralSystem(HardTreePtr tree,
-			 cEvolverPtr evolver,
 			 ShowerInteraction::Type type) const {
   // extract incoming and outgoing particles
   ColourSingletShower in,out;
@@ -1064,7 +1052,7 @@ deconstructGeneralSystem(HardTreePtr tree,
 				  tree,in.jets,type);
   // do the final-state reconstruction
   deconstructFinalStateSystem(toRest,fromRest,tree,
-			      out.jets,evolver,type);
+			      out.jets,type);
   // only at this point that we can be sure all the reference vectors
   // are correct
   for(set<HardBranchingPtr>::const_iterator it=tree->branchings().begin();
@@ -1081,14 +1069,13 @@ deconstructGeneralSystem(HardTreePtr tree,
 }
 
 bool QTildeReconstructor::deconstructHardJets(HardTreePtr tree,
-					      cEvolverPtr evolver,
 					      ShowerInteraction::Type type) const {
   // inverse of old recon method
   if(_reconopt == 0) {
-    return deconstructGeneralSystem(tree,evolver,type);
+    return deconstructGeneralSystem(tree,type);
   }
   else if(_reconopt == 1) {
-    return deconstructColourSinglets(tree,evolver,type);
+    return deconstructColourSinglets(tree,type);
   }
   else if(_reconopt == 2) {
     throw Exception() << "Inverse reconstruction is not currently supported for ReconstructionOption Colour2 "
@@ -1096,15 +1083,15 @@ bool QTildeReconstructor::deconstructHardJets(HardTreePtr tree,
 		      << Exception::runerror;
   }
   else if(_reconopt == 3 || _reconopt == 4 ) {
-    return deconstructColourPartner(tree,evolver,type);
+    return deconstructColourPartner(tree,type);
   }
   else
     assert(false);
 }
 
 bool QTildeReconstructor::
-deconstructColourSinglets(HardTreePtr tree,cEvolverPtr evolver,
-			    ShowerInteraction::Type type) const {
+deconstructColourSinglets(HardTreePtr tree,
+			  ShowerInteraction::Type type) const {
   // identify the colour singlet systems
   unsigned int nnun(0),nnii(0),nnif(0),nnf(0),nni(0);
   vector<ColourSingletShower> 
@@ -1132,7 +1119,7 @@ deconstructColourSinglets(HardTreePtr tree,cEvolverPtr evolver,
 			     (nnif==2&&       nni==0))) {
     for(unsigned int ix=0;ix<systems.size();++ix) {
       if(systems[ix].type==IF)
-	deconstructInitialFinalSystem(tree,systems[ix].jets,evolver,type);
+	deconstructInitialFinalSystem(tree,systems[ix].jets,type);
     }
   }
   // e+e- type
@@ -1161,7 +1148,7 @@ deconstructColourSinglets(HardTreePtr tree,cEvolverPtr evolver,
     for(unsigned int ix=0;ix<systems.size();++ix) {
       if(systems[ix].type==F)
 	deconstructFinalStateSystem(toRest,fromRest,tree,
-				    systems[ix].jets,evolver,type);
+				    systems[ix].jets,type);
     }
     // only at this point that we can be sure all the reference vectors
     // are correct
@@ -1178,13 +1165,13 @@ deconstructColourSinglets(HardTreePtr tree,cEvolverPtr evolver,
     return true;
   }
   else {
-    return deconstructGeneralSystem(tree,evolver,type);
+    return deconstructGeneralSystem(tree,type);
   }
   return true;
 }
 
 bool QTildeReconstructor::
-deconstructColourPartner(HardTreePtr tree,cEvolverPtr evolver,
+deconstructColourPartner(HardTreePtr tree,
 			 ShowerInteraction::Type type) const {
   Lorentz5Momentum ptotal;
   HardBranchingPtr emitter;
@@ -1238,7 +1225,7 @@ deconstructColourPartner(HardTreePtr tree,cEvolverPtr evolver,
     else
       findInitialBoost(ptotal,ptotal,toRest,fromRest);
     deconstructFinalStateSystem(toRest,fromRest,tree,
-				system.jets,evolver,type);
+				system.jets,type);
   }
   else if (emitter->status()                  == HardBranching::Incoming &&
 	   emitter->colourPartner()->status() == HardBranching::Incoming) {
@@ -1246,7 +1233,7 @@ deconstructColourPartner(HardTreePtr tree,cEvolverPtr evolver,
     deconstructInitialInitialSystem(applyBoost,toRest,fromRest,tree,system.jets,type);
     // make sure the recoil gets applied
     deconstructFinalStateSystem(toRest,fromRest,tree,
-				outgoingShower.jets,evolver,type);
+				outgoingShower.jets,type);
   }
   else if ((emitter->status()                  == HardBranching::Outgoing &&
 	    emitter->colourPartner()->status() == HardBranching::Incoming ) || 
@@ -1256,7 +1243,7 @@ deconstructColourPartner(HardTreePtr tree,cEvolverPtr evolver,
     // enusre incoming first
     if(system.jets[0]->status() == HardBranching::Outgoing)
       swap(system.jets[0],system.jets[1]);
-    deconstructInitialFinalSystem(tree,system.jets,evolver,type);
+    deconstructInitialFinalSystem(tree,system.jets,type);
   }
   else {
     throw Exception() << "Unknown type of system in "
@@ -1817,7 +1804,6 @@ void QTildeReconstructor::
 deconstructFinalStateSystem(const LorentzRotation &   toRest,
 			    const LorentzRotation & fromRest,
 			    HardTreePtr tree, vector<HardBranchingPtr> jets,
-			    cEvolverPtr evolver,
 			    ShowerInteraction::Type type) const {
   LorentzRotation trans = toRest;
   if(jets.size()==1) {
@@ -1834,7 +1820,7 @@ deconstructFinalStateSystem(const LorentzRotation &   toRest,
       (**cjt).branchingParticle()->set5Momentum((**cjt).showerMomentum());
       particles.push_back((**cjt).branchingParticle());
     }
-    evolver->showerModel()->partnerFinder()
+    dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->showerModel()->partnerFinder()
       ->setInitialEvolutionScales(particles,false,type,false);
     // calculate the reference vectors
     unsigned int iloc(0);
@@ -1910,7 +1896,7 @@ deconstructFinalStateSystem(const LorentzRotation &   toRest,
     (**cjt).branchingParticle()->set5Momentum((**cjt).showerMomentum());
     particles.push_back((**cjt).branchingParticle());
   }
-  evolver->showerModel()->partnerFinder()
+  dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->showerModel()->partnerFinder()
     ->setInitialEvolutionScales(particles,false,type,false);
   // calculate the reference vectors
   unsigned int iloc(0);
@@ -2382,7 +2368,6 @@ inverseDecayRescalingFactor(vector<Lorentz5Momentum> pout,
 
 void QTildeReconstructor::
 deconstructInitialFinalSystem(HardTreePtr tree,vector<HardBranchingPtr> jets,
-			      cEvolverPtr evolver,
 			      ShowerInteraction::Type type) const {
   HardBranchingPtr incoming;
   Lorentz5Momentum pin[2],pout[2],pbeam;
@@ -2478,7 +2463,7 @@ deconstructInitialFinalSystem(HardTreePtr tree,vector<HardBranchingPtr> jets,
     (**cjt).branchingParticle()->set5Momentum((**cjt).showerMomentum());
     particles.push_back((**cjt).branchingParticle());
   }
-  evolver->showerModel()->partnerFinder()
+  dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->showerModel()->partnerFinder()
     ->setInitialEvolutionScales(particles,false,type,false);
   unsigned int iloc(0);
   for(cjt=tree->branchings().begin();cjt!=tree->branchings().end();++cjt) {
