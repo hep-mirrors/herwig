@@ -516,11 +516,6 @@ void ShowerHandler::cascade() {
   getMPIHandler()->clean();
 }
 
-void ShowerHandler::prepareCascade(tSubProPtr sub) { 
-  current_ = currentStep(); 
-  subProcess_ = sub;
-} 
-
 void ShowerHandler::initializeWeights() {
   if ( !showerVariations().empty() ) {
 
@@ -602,6 +597,12 @@ string ShowerHandler::doAddVariation(string in) {
   }
   return res;
 }
+
+void ShowerHandler::prepareCascade(tSubProPtr sub) { 
+  current_ = currentStep(); 
+  subProcess_ = sub;
+} 
+
 
 tPPair ShowerHandler::cascade(tSubProPtr, XCPtr) {
   assert(false);
@@ -755,8 +756,3 @@ bool ShowerHandler::isResolvedHadron(tPPtr particle) {
   }
   return false;
 }
-
-HardTreePtr ShowerHandler::generateCKKW(ShowerTreePtr ) const {
-  return HardTreePtr();
-}
-

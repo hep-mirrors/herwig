@@ -31,7 +31,7 @@
 #include "PartnerFinder.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/PDT/DecayMode.h"
-#include "Herwig/Shower/ShowerHandler.h" 
+#include "Herwig/Shower/QTilde/QTildeShowerHandler.h" 
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ShowerVertex.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
@@ -1603,7 +1603,8 @@ void Evolver::hardestEmission(bool hard) {
     }
 
     // Generate hardtree from born and real emission subprocesses
-    _hardtree = ShowerHandler::currentHandler()->generateCKKW(currentTree());
+    _hardtree = dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->
+      generateCKKW(currentTree());
 
     // Find transverse momentum of hardest emission
     if (_hardtree){
@@ -1693,7 +1694,8 @@ void Evolver::hardestEmission(bool hard) {
     }  
   }
   else 
-    _hardtree = ShowerHandler::currentHandler()->generateCKKW(currentTree());
+    _hardtree = dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())
+      ->generateCKKW(currentTree());
 
   // if hard me doesn't have a FSR powheg 
   // correction use decay powheg correction

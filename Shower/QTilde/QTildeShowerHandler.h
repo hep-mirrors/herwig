@@ -57,6 +57,11 @@ public:
    */
   virtual Energy hardScale() const;
 
+  /**
+   *  Generate hard emissions for CKKW etc
+   */
+  virtual HardTreePtr generateCKKW(ShowerTreePtr tree) const;
+
 public:
 
   /** @name Functions used by the persistent I/O system. */

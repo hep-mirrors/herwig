@@ -161,11 +161,6 @@ public:
   //@}
 
   /**
-   *  Generate hard emissions for CKKW etc
-   */
-  virtual HardTreePtr generateCKKW(ShowerTreePtr tree) const;
-
-  /**
    * Return true, if the shower handler can generate a truncated 
    * shower for POWHEG style events generated using Matchbox
    */

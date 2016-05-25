@@ -105,7 +105,6 @@ void QTildeShowerHandler::Init() {
 
 }
 
-
 tPPair QTildeShowerHandler::cascade(tSubProPtr sub,
 				    XCPtr xcomb) {
   prepareCascade(sub);
@@ -209,3 +208,8 @@ void QTildeShowerHandler::fillEventRecord() {
 Energy QTildeShowerHandler::hardScale() const {
   return evolver_->hardScale();
 }
+
+HardTreePtr QTildeShowerHandler::generateCKKW(ShowerTreePtr ) const {
+  return HardTreePtr();
+}
+
