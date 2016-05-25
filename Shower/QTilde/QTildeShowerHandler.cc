@@ -85,8 +85,7 @@ bool QTildeShowerHandler::_missingTruncWarn = true;
 
 QTildeShowerHandler::QTildeShowerHandler() :
   splitHardProcess_(true),
-  _maxtry(100), _meCorrMode(1), _hardVetoMode(1),
-  _hardVetoRead(0), _reconOpt(0),
+  _maxtry(100), _meCorrMode(1), _reconOpt(0),
   _hardVetoReadOption(false),
   _iptrms(ZERO), _beta(0.), _gamma(ZERO), _iptmax(),
   _limitEmissions(0), _initialenhance(1.), _finalenhance(1.),
@@ -108,7 +107,7 @@ IBPtr QTildeShowerHandler::fullclone() const {
 
 void QTildeShowerHandler::persistentOutput(PersistentOStream & os) const {
   os << splitHardProcess_ << _model << _splittingGenerator << _maxtry 
-     << _meCorrMode << _hardVetoMode << _hardVetoRead << _hardVetoReadOption
+     << _meCorrMode << _hardVetoReadOption
      << _limitEmissions << _spinOpt << _softOpt << _hardPOWHEG
      << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << ounit(_iptmax,GeV) 
      << _vetoes << _trunc_Mode << _hardEmissionMode << _reconOpt 
@@ -123,7 +122,7 @@ void QTildeShowerHandler::persistentOutput(PersistentOStream & os) const {
 void QTildeShowerHandler::persistentInput(PersistentIStream & is, int) {
   unsigned int isize;
   is >> splitHardProcess_ >> _model >> _splittingGenerator >> _maxtry 
-     >> _meCorrMode >> _hardVetoMode >> _hardVetoRead >> _hardVetoReadOption
+     >> _meCorrMode >> _hardVetoReadOption
      >> _limitEmissions >> _spinOpt >> _softOpt >> _hardPOWHEG
      >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> iunit(_iptmax,GeV)
      >> _vetoes >> _trunc_Mode >> _hardEmissionMode >> _reconOpt
@@ -616,7 +615,7 @@ void QTildeShowerHandler::setupMaximumScales(const vector<ShowerProgenitorPtr> &
     return;
   }
   // return if no vetos
-  if (!hardVetoOn()) return; 
+  if (!restrictPhasespace()) return; 
   // find out if hard partonic subprocess.
   bool isPartonic(false); 
   map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator 
@@ -632,9 +631,7 @@ void QTildeShowerHandler::setupMaximumScales(const vector<ShowerProgenitorPtr> &
   // be transverse mass.
   Energy ptmax = generator()->maximumCMEnergy();
   // general case calculate the scale  
-  if (!hardVetoXComb()||
-      (hardVetoReadOption()&&
-       !firstInteraction())) {
+  if ( !hardScaleIsMuF() || (hardVetoReadOption()&&!firstInteraction()) ) {
     // scattering process
     if(currentTree()->isHard()) {
       assert(xcomb);
@@ -648,7 +645,7 @@ void QTildeShowerHandler::setupMaximumScales(const vector<ShowerProgenitorPtr> &
 	}
       }
       if (ptmax == generator()->maximumCMEnergy() ) ptmax = pcm.m();
-      if(hardVetoXComb()&&hardVetoReadOption()&&
+      if(hardScaleIsMuF()&&hardVetoReadOption()&&
 	 !firstInteraction()) {
 	ptmax=min(ptmax,sqrt(xcomb->lastShowerScale()));
       }
@@ -682,7 +679,7 @@ void QTildeShowerHandler::setupMaximumScales(const vector<ShowerProgenitorPtr> &
 
 void QTildeShowerHandler::setupHardScales(const vector<ShowerProgenitorPtr> & p,
 					  XCPtr xcomb) {
-  if ( hardVetoXComb() &&
+  if ( hardScaleIsMuF() &&
        (!hardVetoReadOption() || firstInteraction()) ) {
     Energy hardScale = ZERO;
     if(currentTree()->isHard()) {
@@ -1537,7 +1534,7 @@ bool QTildeShowerHandler::timeLikeVetoed(const Branching & fb,
   ShowerInteraction::Type type = fb.type==ShowerPartnerType::QED ? 
     ShowerInteraction::QED : ShowerInteraction::QCD;
   // check whether emission was harder than largest pt of hard subprocess
-  if ( hardVetoFS() && fb.kinematics->pT() > _progenitor->maxHardPt() ) 
+  if ( restrictPhasespace() && fb.kinematics->pT() > _progenitor->maxHardPt() ) 
     return true;
   // soft matrix element correction veto
   if( softMEC()) {
@@ -1589,7 +1586,7 @@ bool QTildeShowerHandler::spaceLikeVetoed(const Branching & bb,
   ShowerInteraction::Type type = bb.type==ShowerPartnerType::QED ? 
     ShowerInteraction::QED : ShowerInteraction::QCD;
   // check whether emission was harder than largest pt of hard subprocess
-  if (hardVetoIS() && bb.kinematics->pT() > _progenitor->maxHardPt())
+  if (restrictPhasespace() && bb.kinematics->pT() > _progenitor->maxHardPt())
     return true;
   // apply the soft correction
   if( softMEC() && _hardme && _hardme->hasMECorrection() ) {
@@ -3141,7 +3138,7 @@ void QTildeShowerHandler::doShowering(bool hard,XCPtr xcomb) {
   // extract particles to shower
   vector<ShowerProgenitorPtr> particlesToShower(setupShower(hard));
   // setup the maximum scales for the shower
-  if (hardVetoOn()) setupMaximumScales(particlesToShower,xcomb);
+  if (restrictPhasespace()) setupMaximumScales(particlesToShower,xcomb);
   // set the hard scales for the profiles
   setupHardScales(particlesToShower,xcomb);
   // specific stuff for hard processes and decays

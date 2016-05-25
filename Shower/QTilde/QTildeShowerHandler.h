@@ -130,25 +130,6 @@ public:
    */
   int hardEmissionMode() const {return _hardEmissionMode;}
 
-  /**
-   * Switch on or off hard vetoes
-   */
-  void restrictPhasespace(bool yes) {
-    if ( yes )
-      _hardVetoMode = 1;
-    else
-      _hardVetoMode = 0;
-  }
-
-  /**
-   * Switch on or off hard veto scale from muF
-   */
-  void hardScaleIsMuF(bool yes) {
-    if ( yes )
-      _hardVetoRead = 1;
-    else
-      _hardVetoRead = 0;
-  }
   //@}
 
   /**
@@ -350,26 +331,6 @@ protected:
    *  Switches for vetoing hard emissions
    */
   //@{
-  /**
-   * Vetos on? 
-   */
-  bool hardVetoOn() const { return _hardVetoMode > 0; }
-
-  /**
-   * veto hard emissions in IS shower?
-   */
-  bool hardVetoIS() const { return _hardVetoMode == 1 || _hardVetoMode == 2; }
-
-  /**
-   * veto hard emissions in FS shower?
-   */
-  bool hardVetoFS() const { return _hardVetoMode == 1 || _hardVetoMode > 2; }
-
-  /**
-   * veto hard emissions according to lastScale from XComb? 
-   */
-  bool hardVetoXComb() const {return (_hardVetoRead == 1);}
-
   /**
    * Returns true if the hard veto read-in is to be applied to only
    * the primary collision and false otherwise.
@@ -722,17 +683,7 @@ private :
   /**
    * Matrix element correction switch
    */
-  unsigned int _meCorrMode; 
-
-  /**
-   * Hard emission veto switch
-   */
-  unsigned int _hardVetoMode; 
-
-  /**
-   * Hard veto to be read switch
-   */
-  unsigned int _hardVetoRead; 
+  unsigned int _meCorrMode;
 
   /**
    *  Control of the reconstruction option
