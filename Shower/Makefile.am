@@ -7,6 +7,7 @@ $(top_builddir)/PDF/libHwRemDecayer.la
 
 libHwShower_la_SOURCES =  \
 ShowerHandler.h ShowerHandler.fh ShowerHandler.cc \
+ShowerVariation.h ShowerVariation.cc \
 UEBase.h UEBase.cc UEBase.fh \
 QTilde/ShowerConfig.h \
 QTilde/Base/Branching.h \

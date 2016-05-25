@@ -15,6 +15,7 @@
 #include "ThePEG/Handlers/EventHandler.h"
 #include "ThePEG/Handlers/CascadeHandler.h"
 #include "Herwig/Shower/UEBase.h"
+#include "ShowerVariation.h"
 #include "Herwig/Shower/QTilde/Base/ShowerParticle.fh"
 #include "Herwig/Shower/QTilde/Base/ShowerTree.fh"
 #include "Herwig/Shower/QTilde/Base/HardTree.fh"
@@ -211,57 +212,6 @@ public:
    * Return true if maximum pt should be deduced from the factorization scale
    */
   bool hardScaleIsMuF() const { return maxPtIsMuF_; }
-
-  /**
-   * A struct identifying a shower variation
-   */
-  struct ShowerVariation {
-
-    /**
-     * Vary the renormalization scale by the given factor.
-     */
-    double renormalizationScaleFactor;
-
-    /**
-     * Vary the factorization scale by the given factor.
-     */
-    double factorizationScaleFactor;
-
-    /**
-     * Apply the variation to the first interaction
-     */
-    bool firstInteraction;
-
-    /**
-     * Apply the variation to the secondary interactions
-     */
-    bool secondaryInteractions;
-
-    /**
-     * Default constructor
-     */
-    ShowerVariation()
-      : renormalizationScaleFactor(1.0),
-	factorizationScaleFactor(1.0),
-	firstInteraction(true),
-	secondaryInteractions(false) {}
-
-    /**
-     * Parse from in file command
-     */
-    string fromInFile(const string&);
-
-    /**
-     * Put to persistent stream
-     */
-    void put(PersistentOStream& os) const;
-
-    /**
-     * Get from persistent stream
-     */
-    void get(PersistentIStream& is);
-
-  };
 
   /**
    * Access the shower variations
@@ -644,14 +594,6 @@ protected:
   }
 
 };
-
-inline PersistentOStream& operator<<(PersistentOStream& os, const ShowerHandler::ShowerVariation& var) {
-  var.put(os); return os;
-} 
-
-inline PersistentIStream& operator>>(PersistentIStream& is, ShowerHandler::ShowerVariation& var) {
-  var.get(is); return is;
-} 
 
 }
 

@@ -143,7 +143,7 @@ ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
         if (q_ <= ZERO) break;
       }
 
-        for ( map<string,ShowerHandler::ShowerVariation>::const_iterator var =
+        for ( map<string,ShowerVariation>::const_iterator var =
 	          ch->showerVariations().begin();
 	          var != ch->showerVariations().end(); ++var ) {
           if ( ( ch->firstInteraction() && var->second.firstInteraction ) ||
@@ -252,7 +252,7 @@ generateNextSpaceBranching(const Energy startingQ,
         if (q_ <= ZERO) break;
       }
 
-        for ( map<string,ShowerHandler::ShowerVariation>::const_iterator var =
+        for ( map<string,ShowerVariation>::const_iterator var =
 	          ch->showerVariations().begin();
 	          var != ch->showerVariations().end(); ++var ) {
           if ( ( ch->firstInteraction() && var->second.firstInteraction ) ||

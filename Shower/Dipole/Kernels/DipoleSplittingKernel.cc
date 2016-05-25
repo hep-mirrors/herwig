@@ -169,7 +169,7 @@ void DipoleSplittingKernel::accept(const DipoleSplittingInfo& split,
     return;
   double reference = alphaPDF(split);
   assert(reference > 0.);
-  for ( map<string,ShowerHandler::ShowerVariation>::const_iterator var =
+  for ( map<string,ShowerVariation>::const_iterator var =
 	  ShowerHandler::currentHandler()->showerVariations().begin();
 	var != ShowerHandler::currentHandler()->showerVariations().end(); ++var ) {
     if ( ( ShowerHandler::currentHandler()->firstInteraction() && var->second.firstInteraction ) ||
@@ -208,7 +208,7 @@ void DipoleSplittingKernel::veto(const DipoleSplittingInfo& split,
   // one ius zero, then so will be the variations.
   if ( reference == 0.0 )
     return;
-  for ( map<string,ShowerHandler::ShowerVariation>::const_iterator var =
+  for ( map<string,ShowerVariation>::const_iterator var =
 	  ShowerHandler::currentHandler()->showerVariations().begin();
 	var != ShowerHandler::currentHandler()->showerVariations().end(); ++var ) {
     if ( ( ShowerHandler::currentHandler()->firstInteraction() && var->second.firstInteraction ) ||

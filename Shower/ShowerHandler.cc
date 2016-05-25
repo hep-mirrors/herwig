@@ -526,7 +526,7 @@ void ShowerHandler::initializeWeights() {
 
     tEventPtr event = eventHandler()->currentEvent();
 
-    for ( map<string,ShowerHandler::ShowerVariation>::const_iterator var =
+    for ( map<string,ShowerVariation>::const_iterator var =
 	    showerVariations().begin();
 	  var != showerVariations().end(); ++var ) {
 
@@ -571,37 +571,6 @@ void ShowerHandler::combineWeights() {
     }
     eh->reweight(reweight_);
   }
-}
-
-string ShowerHandler::ShowerVariation::fromInFile(const string& in) {
-  // pretty simple for the moment, just to try
-  // TODO make this better
-  istringstream read(in);
-  string where;
-  read >> renormalizationScaleFactor >> factorizationScaleFactor >> where;
-  if ( !read )
-    return "something went wrong with: " + in;
-  if ( where != "Hard" && where != "All" && where!= "Secondary" )
-    return "The specified process for reweighting does not exist.\nOptions are: Hard, Secondary, All.";
-  if ( where == "Hard" || where == "All" )
-    firstInteraction = true;
-  else
-    firstInteraction = false;
-  if ( where == "Secondary" || where == "All" )
-    secondaryInteractions = true;
-  else
-    secondaryInteractions = false;
-  return "";
-}
-
-void ShowerHandler::ShowerVariation::put(PersistentOStream& os) const {
-  os << renormalizationScaleFactor << factorizationScaleFactor
-     << firstInteraction << secondaryInteractions;
-}
-
-void ShowerHandler::ShowerVariation::get(PersistentIStream& is) {
-  is >> renormalizationScaleFactor >> factorizationScaleFactor
-     >> firstInteraction >> secondaryInteractions;
 }
 
 string ShowerHandler::doAddVariation(string in) {
