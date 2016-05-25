@@ -13,10 +13,10 @@
 //
 
 #include "ThePEG/PDT/Decayer.h"
-#include "Herwig/Shower/Base/ShowerParticle.fh"
-#include "Herwig/Shower/Base/ShowerProgenitor.fh"
-#include "Herwig/Shower/Base/ShowerTree.fh"
-#include "Herwig/Shower/Base/HardTree.fh"
+#include "Herwig/Shower/QTilde/Base/ShowerParticle.fh"
+#include "Herwig/Shower/QTilde/Base/ShowerProgenitor.fh"
+#include "Herwig/Shower/QTilde/Base/ShowerTree.fh"
+#include "Herwig/Shower/QTilde/Base/HardTree.fh"
 #include "HwDecayerBase.fh"
 
 namespace Herwig {

@@ -14,11 +14,10 @@
 
 #include "ThePEG/Handlers/EventHandler.h"
 #include "ThePEG/Handlers/CascadeHandler.h"
-#include "Herwig/Shower/UEBase.h" 
-#include "Herwig/Shower/Base/Evolver.fh"
-#include "Herwig/Shower/Base/ShowerParticle.fh"
-#include "Herwig/Shower/Base/ShowerTree.fh"
-#include "Herwig/Shower/Base/HardTree.fh"
+#include "Herwig/Shower/UEBase.h"
+#include "Herwig/Shower/QTilde/Base/ShowerParticle.fh"
+#include "Herwig/Shower/QTilde/Base/ShowerTree.fh"
+#include "Herwig/Shower/QTilde/Base/HardTree.fh"
 #include "Herwig/PDF/HwRemDecayer.fh"
 #include "ThePEG/EventRecord/RemnantParticle.fh"
 #include "ShowerHandler.fh"
@@ -140,6 +139,13 @@ public:
   }
 
   /**
+   *  Access to the incoming beam particles
+   */
+  tPPair incomingBeams() const {
+    return incoming_;
+  }
+
+  /**
    * Return true if multiple parton interactions are switched on 
    * and can be used for this beam setup.
    */
@@ -152,11 +158,6 @@ public:
    */
   tHwRemDecPtr remnantDecayer() const { return remDec_; }
   //@}
-
-  /**
-   *  Access to the Evolver
-   */
-  tEvolverPtr evolver() const {return evolver_;}
 
   /**
    *  Generate hard emissions for CKKW etc
@@ -367,15 +368,6 @@ protected:
   unsigned int maxtry() const { return maxtry_; }
 
   /**
-   * At the end of the Showering, transform ShowerParticle objects
-   * into ThePEG particles and fill the event record with them.
-   * Notice that the parent/child relationships and the 
-   * transformation from ShowerColourLine objects into ThePEG
-   * ColourLine ones must be properly handled.
-   */
-  void fillEventRecord();
-
-  /**
    * Find the parton extracted from the incoming particle after ISR
    */
   PPtr findFirstParton(tPPtr seed) const;
@@ -463,11 +455,6 @@ private:
   UEBasePtr MPIHandler_;
 
   /**
-   *  Pointer to the evolver
-   */
-  EvolverPtr evolver_;
-
-  /**
    *  Pointer to the HwRemDecayer
    */
   HwRemDecPtr remDec_;
@@ -538,24 +525,9 @@ private:
   Energy2 vMin_;
 
   /**
-   *  The ShowerTree for the hard process
-   */
-  ShowerTreePtr hard_;
-
-  /**
    *  The incoming beam particles for the current collision
    */
   tPPair incoming_;
-
-  /**
-   *  The ShowerTree for the decays
-   */
-  ShowerDecayMap decay_;
-
-  /**
-   *  The ShowerTrees for which the initial shower 
-   */
-  vector<ShowerTreePtr> done_;
 
   /**
    *  Const pointer to the current step
@@ -622,11 +594,6 @@ private:
    * The profile scales
    */
   Ptr<HardScaleProfile>::ptr hardScaleProfile_;
-
-  /**
-   *  Whether or not to split into hard and decay trees
-   */
-  bool splitHardProcess_;
 
   /**
    * The shower variations

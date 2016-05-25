@@ -6,7 +6,7 @@
 //
 
 #include "HardProcessConstructor.h"
-#include "Herwig/Shower/Couplings/ShowerAlpha.h"
+#include "Herwig/Shower/QTilde/Couplings/ShowerAlpha.h"
 
 namespace Herwig {
 

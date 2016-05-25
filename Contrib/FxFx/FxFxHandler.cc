@@ -9,11 +9,11 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig/Shower/Base/PartnerFinder.h"
+#include "Herwig/Shower/QTilde/Base/PartnerFinder.h"
 #include "Herwig/PDF/HwRemDecayer.h"
 #include <queue>
 #include "ThePEG/Utilities/Throw.h"
-#include "Herwig/Shower/Base/KinematicsReconstructor.h"
+#include "Herwig/Shower/QTilde/Base/KinematicsReconstructor.h"
 #include "fastjet/PseudoJet.hh"
 #include "fastjet/ClusterSequence.hh"
 #include "gsl/gsl_rng.h"

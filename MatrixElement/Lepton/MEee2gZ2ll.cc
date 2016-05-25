@@ -26,11 +26,11 @@
 #include "ThePEG/PDF/PolarizedBeamParticleData.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include <numeric>
-#include "Herwig/Shower/Base/ShowerTree.h"
-#include "Herwig/Shower/Base/ShowerProgenitor.h"
-#include "Herwig/Shower/Base/ShowerParticle.h"
-#include "Herwig/Shower/Base/Branching.h"
-#include "Herwig/Shower/Base/HardTree.h"
+#include "Herwig/Shower/QTilde/Base/ShowerTree.h"
+#include "Herwig/Shower/QTilde/Base/ShowerProgenitor.h"
+#include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
+#include "Herwig/Shower/QTilde/Base/Branching.h"
+#include "Herwig/Shower/QTilde/Base/HardTree.h"
 
 using namespace Herwig;
 

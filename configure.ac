@@ -191,13 +191,14 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Sampling/Makefile
 		Sampling/CellGrids/Makefile
                 Shower/Makefile
-		Shower/Matching/Makefile
-		DipoleShower/Makefile
-		DipoleShower/Base/Makefile
-		DipoleShower/Kernels/Makefile
-		DipoleShower/Kinematics/Makefile
-		DipoleShower/Utility/Makefile
-		DipoleShower/AlphaS/Makefile
+		Shower/QTilde/Makefile
+		Shower/QTilde/Matching/Makefile
+		Shower/Dipole/Makefile
+		Shower/Dipole/Base/Makefile
+		Shower/Dipole/Kernels/Makefile
+		Shower/Dipole/Kinematics/Makefile
+		Shower/Dipole/Utility/Makefile
+		Shower/Dipole/AlphaS/Makefile
                 Utilities/Makefile
                 Utilities/XML/Makefile
                 Utilities/Statistics/Makefile

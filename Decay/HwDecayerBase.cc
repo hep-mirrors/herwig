@@ -18,8 +18,8 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
-#include "Herwig/Shower/Base/HardTree.h"
-#include "Herwig/Shower/Base/Branching.h"
+#include "Herwig/Shower/QTilde/Base/HardTree.h"
+#include "Herwig/Shower/QTilde/Base/Branching.h"
 
 using namespace Herwig;
 

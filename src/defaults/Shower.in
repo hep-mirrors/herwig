@@ -16,7 +16,7 @@ library HwMatching.so
 mkdir /Herwig/Shower
 cd /Herwig/Shower
 
-create Herwig::ShowerHandler ShowerHandler
+create Herwig::QTildeShowerHandler ShowerHandler
 newdef ShowerHandler:MPIHandler /Herwig/UnderlyingEvent/MPIHandler
 newdef ShowerHandler:RemDecayer /Herwig/Partons/RemnantDecayer
 # use LO PDFs for Shower, can be changed later
