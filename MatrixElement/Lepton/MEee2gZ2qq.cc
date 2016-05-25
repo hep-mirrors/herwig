@@ -22,9 +22,8 @@
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "Herwig/MatrixElement/HardVertex.h"
-#include "Herwig/Shower/QTilde/Base/Evolver.h"
-#include "Herwig/Shower/QTilde/Base/KinematicsReconstructor.h"
-#include "Herwig/Shower/QTilde/Base/PartnerFinder.h"
+#include "Herwig/Shower/QTilde/Base/Branching.h"
+#include "Herwig/Shower/QTilde/Base/HardTree.h"
 #include "ThePEG/PDF/PolarizedBeamParticleData.h"
 #include <numeric>
 #include "ThePEG/Utilities/DescribeClass.h"

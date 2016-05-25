@@ -22,13 +22,6 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-// include theses to have complete types
-#include "Herwig/Shower/QTilde/Base/Evolver.h"
-#include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
-#include "Herwig/Shower/QTilde/Base/ShowerTree.h"
-#include "Herwig/Shower/QTilde/Base/KinematicsReconstructor.h"
-#include "Herwig/Shower/QTilde/Base/PartnerFinder.h"
-
 #include "Herwig/PDF/MPIPDF.h"
 #include "Herwig/PDF/MinBiasPDF.h"
 #include "Herwig/PDF/HwRemDecayer.h"

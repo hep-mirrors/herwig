@@ -25,8 +25,6 @@
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Utilities/Throw.h"
 #include "ThePEG/Utilities/StringUtils.h"
-#include "Herwig/Shower/QTilde/Base/Evolver.h"
-#include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -35,9 +33,6 @@
 #include "Herwig/PDF/MinBiasPDF.h"
 #include "ThePEG/Handlers/EventHandler.h"
 #include "Herwig/Shower/QTilde/Base/ShowerTree.h"
-#include "Herwig/Shower/QTilde/Base/HardTree.h"
-#include "Herwig/Shower/QTilde/Base/KinematicsReconstructor.h"
-#include "Herwig/Shower/QTilde/Base/PartnerFinder.h"
 #include "Herwig/PDF/HwRemDecayer.h"
 #include <cassert>
 #include "ThePEG/Utilities/DescribeClass.h"
