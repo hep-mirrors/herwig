@@ -217,28 +217,6 @@ void QTildeShowerHandler::Init() {
   static SwitchOption soft
     (ifaceMECorrMode,"Soft","only soft on", 3);
 
-  static Switch<QTildeShowerHandler, unsigned int> ifaceHardVetoMode
-    ("HardVetoMode",
-     "Choice of the Hard Veto Mode",
-     &QTildeShowerHandler::_hardVetoMode, 1, false, false);
-  static SwitchOption HVoff
-    (ifaceHardVetoMode,"No","hard vetos off", 0);
-  static SwitchOption HVon
-    (ifaceHardVetoMode,"Yes","hard vetos on", 1);
-  static SwitchOption HVIS
-    (ifaceHardVetoMode,"Initial", "only IS emissions vetoed", 2);
-  static SwitchOption HVFS
-    (ifaceHardVetoMode,"Final","only FS emissions vetoed", 3);
-
-  static Switch<QTildeShowerHandler, unsigned int> ifaceHardVetoRead
-    ("HardVetoScaleSource",
-     "If hard veto scale is to be read",
-     &QTildeShowerHandler::_hardVetoRead, 0, false, false);
-  static SwitchOption HVRcalc
-    (ifaceHardVetoRead,"Calculate","Calculate from hard process", 0);
-  static SwitchOption HVRread
-    (ifaceHardVetoRead,"Read","Read from XComb->lastScale", 1);
-
   static Switch<QTildeShowerHandler, bool> ifaceHardVetoReadOption
     ("HardVetoReadOption",
      "Apply read-in scale veto to all collisions or just the primary one?",
@@ -611,7 +589,7 @@ void QTildeShowerHandler::generateIntrinsicpT(vector<ShowerProgenitorPtr> partic
   _intrinsic.clear();
   if ( !ipTon() || !isISRadiationON() ) return;
   // don't do anything for the moment for secondary scatters
-  if( !ShowerHandler::currentHandler()->firstInteraction() ) return;
+  if( !firstInteraction() ) return;
   // generate intrinsic pT
   for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
     // only consider initial-state particles
@@ -656,7 +634,7 @@ void QTildeShowerHandler::setupMaximumScales(const vector<ShowerProgenitorPtr> &
   // general case calculate the scale  
   if (!hardVetoXComb()||
       (hardVetoReadOption()&&
-       !ShowerHandler::currentHandler()->firstInteraction())) {
+       !firstInteraction())) {
     // scattering process
     if(currentTree()->isHard()) {
       assert(xcomb);
@@ -671,7 +649,7 @@ void QTildeShowerHandler::setupMaximumScales(const vector<ShowerProgenitorPtr> &
       }
       if (ptmax == generator()->maximumCMEnergy() ) ptmax = pcm.m();
       if(hardVetoXComb()&&hardVetoReadOption()&&
-	 !ShowerHandler::currentHandler()->firstInteraction()) {
+	 !firstInteraction()) {
 	ptmax=min(ptmax,sqrt(xcomb->lastShowerScale()));
       }
     } 
@@ -703,10 +681,9 @@ void QTildeShowerHandler::setupMaximumScales(const vector<ShowerProgenitorPtr> &
 }
 
 void QTildeShowerHandler::setupHardScales(const vector<ShowerProgenitorPtr> & p,
-			      XCPtr xcomb) {
+					  XCPtr xcomb) {
   if ( hardVetoXComb() &&
-       (!hardVetoReadOption() ||
-	ShowerHandler::currentHandler()->firstInteraction()) ) {
+       (!hardVetoReadOption() || firstInteraction()) ) {
     Energy hardScale = ZERO;
     if(currentTree()->isHard()) {
       assert(xcomb);
@@ -777,7 +754,7 @@ void QTildeShowerHandler::showerHardProcess(ShowerTreePtr hard, XCPtr xcomb) {
 			<< "Cannot generate POWHEG matching with MC@NLO shower "
 			<< "approximation.  Add 'set Evolver:HardEmissionMode 0' to input file."
 			<< Exception::runerror;
-    if ( ShowerHandler::currentHandler()->canHandleMatchboxTrunc())
+    if ( canHandleMatchboxTrunc())
       throw Exception() << error
 			<< "Cannot use truncated qtilde shower with MC@NLO shower "
 			<< "approximation.  Set LHCGenerator:EventHandler"
@@ -787,7 +764,7 @@ void QTildeShowerHandler::showerHardProcess(ShowerTreePtr hard, XCPtr xcomb) {
   }
   else if ( ((isPowhegSEvent || isPowhegHEvent) || dipme) &&
 	    _hardEmissionMode < 2){
-    if ( ShowerHandler::currentHandler()->canHandleMatchboxTrunc())
+    if ( canHandleMatchboxTrunc())
       throw Exception() << error
 			<< "Unmatched events requested for POWHEG shower "
 			<< "approximation.  Set Evolver:HardEmissionMode to "
@@ -806,7 +783,7 @@ void QTildeShowerHandler::showerHardProcess(ShowerTreePtr hard, XCPtr xcomb) {
 
   if ( isPowhegSEvent || isPowhegHEvent) {
     if (theShowerApproximation->needsTruncatedShower() &&
-	!ShowerHandler::currentHandler()->canHandleMatchboxTrunc() )
+	!canHandleMatchboxTrunc() )
       throw Exception() << error
 			<< "Current shower handler cannot generate truncated shower.  "
 			<< "Set Generator:EventHandler:CascadeHandler to "
@@ -822,7 +799,7 @@ void QTildeShowerHandler::showerHardProcess(ShowerTreePtr hard, XCPtr xcomb) {
 		      << Exception::warning;   
   }
   else if ( !dipme && _hardEmissionMode > 1 && 
-	    ShowerHandler::currentHandler()->firstInteraction())
+	    firstInteraction())
     throw Exception() << error
 		      << "POWHEG matching requested for LO events.  Include "
 		      << "'set Factory:ShowerApproximation MEMatching' in input file."
@@ -1075,11 +1052,11 @@ QTildeShowerHandler::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
   //modified pdf's are used for the secondary interactions via 
   //CascadeHandler::resetPDFs(...)
   tcPDFPtr pdf;
-  if(ShowerHandler::currentHandler()->firstPDF().particle() == _beam)
-    pdf = ShowerHandler::currentHandler()->firstPDF().pdf();
-  if(ShowerHandler::currentHandler()->secondPDF().particle() == _beam)
-    pdf = ShowerHandler::currentHandler()->secondPDF().pdf();
-  Energy freeze = ShowerHandler::currentHandler()->pdfFreezingScale();
+  if(firstPDF().particle() == _beam)
+    pdf = firstPDF().pdf();
+  if(secondPDF().particle() == _beam)
+    pdf = secondPDF().pdf();
+  Energy freeze = pdfFreezingScale();
   // don't do anything if not needed
   if(_limitEmissions == 2  || hardOnly() ||
      ( _limitEmissions == 1 && _nis != 0 ) ||
@@ -1595,10 +1572,10 @@ bool QTildeShowerHandler::timeLikeVetoed(const Branching & fb,
     }
     if(vetoed) return true;
   }
-  if ( ShowerHandler::currentHandler()->firstInteraction() &&
-       ShowerHandler::currentHandler()->profileScales() ) {
+  if ( firstInteraction() &&
+       profileScales() ) {
     double weight = 
-      ShowerHandler::currentHandler()->profileScales()->
+      profileScales()->
       hardScaleProfile(_progenitor->hardScale(),fb.kinematics->pT());
     if ( UseRandom::rnd() > weight )
       return true;
@@ -1643,10 +1620,10 @@ bool QTildeShowerHandler::spaceLikeVetoed(const Branching & bb,
     }
     if (vetoed) return true;
   }
-  if ( ShowerHandler::currentHandler()->firstInteraction() &&
-       ShowerHandler::currentHandler()->profileScales() ) {
+  if ( firstInteraction() &&
+       profileScales() ) {
     double weight = 
-      ShowerHandler::currentHandler()->profileScales()->
+      profileScales()->
       hardScaleProfile(_progenitor->hardScale(),bb.kinematics->pT());
     if ( UseRandom::rnd() > weight )
       return true;
@@ -1782,7 +1759,7 @@ void QTildeShowerHandler::hardestEmission(bool hard) {
      
     
     // Hardest (pt) emission should be the first powheg emission.
-    maxpt=min(sqrt(ShowerHandler::currentHandler()->lastXCombPtr()->lastShowerScale()),maxpt);
+    maxpt=min(sqrt(lastXCombPtr()->lastShowerScale()),maxpt);
 
     // Set maxpt to pT of emission when showering POWHEG real-emission subprocesses
     if (!isPowhegSEvent && !isPowhegHEvent){
@@ -2195,11 +2172,11 @@ bool QTildeShowerHandler::truncatedSpaceLikeShower(tShowerParticlePtr particle, 
 				       HardBranchingPtr branch,
 				       ShowerInteraction::Type type) {
   tcPDFPtr pdf;
-  if(ShowerHandler::currentHandler()->firstPDF().particle()  == beamParticle())
-    pdf = ShowerHandler::currentHandler()->firstPDF().pdf();
-  if(ShowerHandler::currentHandler()->secondPDF().particle() == beamParticle())
-    pdf = ShowerHandler::currentHandler()->secondPDF().pdf();
-  Energy freeze = ShowerHandler::currentHandler()->pdfFreezingScale();
+  if(firstPDF().particle()  == beamParticle())
+    pdf = firstPDF().pdf();
+  if(secondPDF().particle() == beamParticle())
+    pdf = secondPDF().pdf();
+  Energy freeze = pdfFreezingScale();
   Branching bb;
   // parameters of the force branching
   double z(0.);
