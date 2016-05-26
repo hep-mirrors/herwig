@@ -519,35 +519,6 @@ protected:
    */
   bool hardOnly() const {return _limitEmissions==3;}
 
-  /**
-   *  Members to construct the HardTree from the shower if needed
-   */
-  //@{
-  /**
-   *  Construct the tree for a scattering process
-   */
-  bool constructHardTree(vector<ShowerProgenitorPtr> & particlesToShower,
-			 ShowerInteraction::Type inter);
-
-  /**
-   *  Construct the tree for a decay process
-   */  
-  bool constructDecayTree(vector<ShowerProgenitorPtr> & particlesToShower,
-			  ShowerInteraction::Type inter);
-
-  /**
-   *  Construct a time-like line
-   */
-  void constructTimeLikeLine(tHardBranchingPtr branch,tShowerParticlePtr particle);
-
-  /**
-   *  Construct a space-like line
-   */
-  void constructSpaceLikeLine(tShowerParticlePtr particle,
-			      HardBranchingPtr & first, HardBranchingPtr & last,
-			      SudakovPtr sud,PPtr beam);
-  //@}
-
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -776,14 +747,9 @@ private :
   /**
    *  The option for wqhich interactions to use
    */
-  unsigned int interaction_;
+  ShowerInteraction::Type interaction_;
 
   /**
-   *  Interactions allowed in the shower
-   */
-  vector<ShowerInteraction::Type> interactions_;
-
- /**
    *  Truncated shower switch
    */
   bool _trunc_Mode;

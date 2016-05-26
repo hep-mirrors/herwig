@@ -381,8 +381,7 @@ void MEee2gZ2qq::initializeMECorrection(ShowerTreePtr , double &  initial,
 void MEee2gZ2qq::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
   vector<Lorentz5Momentum> emission;
   unsigned int iemit,ispect;
-  generateHard(tree,emission,iemit,ispect,true,
-	       vector<ShowerInteraction::Type>(1,ShowerInteraction::QCD));
+  generateHard(tree,emission,iemit,ispect,true,ShowerInteraction::QCD);
   if(emission.empty()) return;
   // get the quark and antiquark
   ParticleVector qq; 
@@ -575,8 +574,14 @@ pair<Energy,ShowerInteraction::Type>
 MEee2gZ2qq::generateHard(ShowerTreePtr tree, 
 			 vector<Lorentz5Momentum> & emmision,
 			 unsigned int & iemit, unsigned int & ispect,
-			 bool applyVeto,
-			 vector<ShowerInteraction::Type> inter) {
+			 bool applyVeto,ShowerInteraction::Type inter) {
+  vector<ShowerInteraction::Type> interactions;
+  if(inter==ShowerInteraction::Both) {
+    interactions.push_back(ShowerInteraction::QED);
+    interactions.push_back(ShowerInteraction::QCD);
+  }
+  else
+    interactions.push_back(inter);
   // get the momenta of the incoming and outgoing partons 
   // incoming
   ShowerProgenitorPtr 
@@ -624,10 +629,10 @@ MEee2gZ2qq::generateHard(ShowerTreePtr tree,
   vector<Energy> pTemit;
   vector<vector<Lorentz5Momentum> > emittedMomenta;;
   vector<unsigned int> iemitter,ispectater;
-  for(unsigned int iinter=0;iinter<inter.size();++iinter) {
+  for(unsigned int iinter=0;iinter<interactions.size();++iinter) {
     Energy pTmin(ZERO);
     double a,ymax;
-    if(inter[iinter]==ShowerInteraction::QCD) {
+    if(interactions[iinter]==ShowerInteraction::QCD) {
       pTmin = pTminQCD_;
       ymax = acosh(pTmax/pTmin);
       partons_[4] = gluon_;
@@ -757,9 +762,9 @@ MEee2gZ2qq::generateHard(ShowerTreePtr tree,
 	  contrib[ix][iy] = 0.5*pT[ix]/J/preFactor_/lambda;
 	  // matrix element piece
 	  contrib[ix][iy] *= meRatio(partons_,realMomenta[ix][iy],
-				     ix,inter[iinter],false);
+				     ix,interactions[iinter],false);
 	  // coupling piece
-	  if(inter[iinter]==ShowerInteraction::QCD)
+	  if(interactions[iinter]==ShowerInteraction::QCD)
 	    contrib[ix][iy] *= alphaQCD_->ratio(sqr(pT[ix]));
 	  else
 	    contrib[ix][iy] *= alphaQED_->ratio(sqr(pT[ix]));
@@ -810,7 +815,7 @@ MEee2gZ2qq::generateHard(ShowerTreePtr tree,
   // select the type of emission
   int iselect=-1;
   pTmax = ZERO;
-  for(unsigned int ix=0;ix<inter.size();++ix) {
+  for(unsigned int ix=0;ix<interactions.size();++ix) {
     if(pTemit[ix]>pTmax) {
       iselect = ix;
       pTmax = pTemit[ix];
@@ -820,16 +825,15 @@ MEee2gZ2qq::generateHard(ShowerTreePtr tree,
   if(iselect<0) {
     return make_pair(ZERO,ShowerInteraction::QCD);
   }
-  partons_[4] = inter[iselect]==ShowerInteraction::QCD ? gluon_ : gamma_;
+  partons_[4] = interactions[iselect]==ShowerInteraction::QCD ? gluon_ : gamma_;
   iemit  = iemitter[iselect];
   ispect = ispectater[iselect];
   emmision = emittedMomenta[iselect];
   // return pT of emission
-  return make_pair(pTmax,inter[iselect]);
+  return make_pair(pTmax,interactions[iselect]);
 }
 
-HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree,
-					vector<ShowerInteraction::Type> inter) {
+HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree, ShowerInteraction::Type inter) {
   // generate the momenta for the hard emission
   vector<Lorentz5Momentum> emmision;
   unsigned int iemit,ispect;
@@ -849,23 +853,17 @@ HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree,
   if(qkProgenitor->id()<0) swap(qkProgenitor,qbProgenitor);
   // maximum pT of emission
   if(emmision.empty()) {
-    for(unsigned int ix=0;ix<inter.size();++ix) {
-      if(inter[ix]==ShowerInteraction::QCD) {
-	qkProgenitor->maximumpT(pTminQCD_,inter[ix]);
-	qbProgenitor->maximumpT(pTminQCD_,inter[ix]);
-      }
-      else {
-	qkProgenitor->maximumpT(pTminQED_,inter[ix]);
-	qbProgenitor->maximumpT(pTminQED_,inter[ix]);
-      }
-    }
+    qkProgenitor->maximumpT(pTminQCD_,ShowerInteraction::QCD);
+    qbProgenitor->maximumpT(pTminQCD_,ShowerInteraction::QCD);
+    qkProgenitor->maximumpT(pTminQED_,ShowerInteraction::QED);
+    qbProgenitor->maximumpT(pTminQED_,ShowerInteraction::QED);
     return HardTreePtr();
   }
   else {
-    for(unsigned int ix=0;ix<inter.size();++ix) {
-      qkProgenitor->maximumpT(pTveto,inter[ix]);
-      qbProgenitor->maximumpT(pTveto,inter[ix]);
-    }
+    qkProgenitor->maximumpT(pTveto,ShowerInteraction::QCD);
+    qbProgenitor->maximumpT(pTveto,ShowerInteraction::QCD);
+    qkProgenitor->maximumpT(pTveto,ShowerInteraction::QED);
+    qbProgenitor->maximumpT(pTveto,ShowerInteraction::QED);
   }
   // perform final check to ensure energy greater than constituent mass
   if (emmision[2].e() < qkProgenitor->progenitor()->data().constituentMass()) return HardTreePtr();

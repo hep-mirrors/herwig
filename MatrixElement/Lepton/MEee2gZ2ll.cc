@@ -328,13 +328,9 @@ IVector MEee2gZ2ll::getReferences() {
   return ret;
 }
 
-HardTreePtr MEee2gZ2ll::generateHardest(ShowerTreePtr tree,
-					vector<ShowerInteraction::Type> inter) {
+HardTreePtr MEee2gZ2ll::generateHardest(ShowerTreePtr tree,ShowerInteraction::Type inter) {
   // check if QED switched on
-  bool QEDon=false;
-  for(unsigned int ix=0;ix<inter.size();++ix) 
-    QEDon |= inter[ix] == ShowerInteraction::QED;
-  if(!QEDon) return HardTreePtr();
+  if(inter==ShowerInteraction::QCD) return HardTreePtr();
   // generate the momenta for the hard emission
   vector<Lorentz5Momentum> emmision;
   unsigned int iemit,ispect;
@@ -349,17 +345,17 @@ HardTreePtr MEee2gZ2ll::generateHardest(ShowerTreePtr tree,
     return HardTreePtr();
   // maximum pT of emission
   if(pTveto<=ZERO) {
-    for(unsigned int ix=0;ix<inter.size();++ix) {
-      qkProgenitor->maximumpT(pTmin_,inter[ix]);
-      qbProgenitor->maximumpT(pTmin_,inter[ix]);
-    }
+    qkProgenitor->maximumpT(pTmin_,ShowerInteraction::QCD);
+    qbProgenitor->maximumpT(pTmin_,ShowerInteraction::QCD);
+    qkProgenitor->maximumpT(pTmin_,ShowerInteraction::QED);
+    qbProgenitor->maximumpT(pTmin_,ShowerInteraction::QED);
     return HardTreePtr();
   }
   else {
-    for(unsigned int ix=0;ix<inter.size();++ix) {
-      qkProgenitor->maximumpT(pTveto,inter[ix]);
-      qbProgenitor->maximumpT(pTveto,inter[ix]);
-    }
+    qkProgenitor->maximumpT(pTveto,ShowerInteraction::QCD);
+    qbProgenitor->maximumpT(pTveto,ShowerInteraction::QCD);
+    qkProgenitor->maximumpT(pTveto,ShowerInteraction::QED);
+    qbProgenitor->maximumpT(pTveto,ShowerInteraction::QED);
   }
   // Make the particles for the hard tree
   ShowerParticleVector hardParticles;

@@ -1632,20 +1632,11 @@ void MEPP2GammaGammaPowheg::doinit() {
 
 HardTreePtr MEPP2GammaGammaPowheg::
 generateHardest(ShowerTreePtr tree,
-		vector<ShowerInteraction::Type> interactions) {
+		ShowerInteraction::Type inter) {
   beams_.clear();
   partons_.clear();
-  bool QCDAllowed(false),QEDAllowed(false);
-  for(unsigned int ix=0;ix<interactions.size();++ix) {
-    if(interactions[ix]==ShowerInteraction::QED)
-      QEDAllowed = true;
-    else if(interactions[ix]==ShowerInteraction::QCD)
-      QCDAllowed = true;
-    else if(interactions[ix]==ShowerInteraction::Both) {
-      QEDAllowed = true;
-      QCDAllowed = true;
-    }
-  }
+  bool QCDAllowed = inter !=ShowerInteraction::QED;
+  bool QEDAllowed = inter !=ShowerInteraction::QCD;
   // find the incoming particles
   ShowerParticleVector incoming;
   // get the particles to be showered

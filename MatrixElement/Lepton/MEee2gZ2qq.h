@@ -88,8 +88,7 @@ public:
   /**
    *  Apply the POWHEG style correction
    */
-  virtual HardTreePtr generateHardest(ShowerTreePtr,
-				      vector<ShowerInteraction::Type>);
+  virtual HardTreePtr generateHardest(ShowerTreePtr,ShowerInteraction::Type);
   //@}
 
   /** @name Virtual functions required by the MEBase class. */
@@ -293,8 +292,7 @@ private:
   generateHard(ShowerTreePtr tree, 
 	       vector<Lorentz5Momentum> & emission,
 	       unsigned int & iemit, unsigned int & ispect,
-	       bool applyVeto,
-	       vector<ShowerInteraction::Type>);
+	       bool applyVeto,ShowerInteraction::Type);
 
   /**
    *  Calculate \f$\tilde{\kappa}\f$.

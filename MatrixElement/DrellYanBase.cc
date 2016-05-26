@@ -649,14 +649,8 @@ bool DrellYanBase::softMatrixElementVeto(ShowerProgenitorPtr initial,
   return true;
 }
 
-HardTreePtr DrellYanBase::generateHardest(ShowerTreePtr tree,
-					  vector<ShowerInteraction::Type> inter) {
-  bool found = false;
-  // check if generating QCD radiation
-  for(unsigned int ix=0;ix<inter.size();++ix) {
-    found |= inter[ix]==ShowerInteraction::QCD;
-  }
-  if(!found) return HardTreePtr();
+HardTreePtr DrellYanBase::generateHardest(ShowerTreePtr tree,ShowerInteraction::Type inter) {
+  if(inter==ShowerInteraction::QED) return HardTreePtr();
   useMe();
   // get the particles to be showered
   _beams.clear();

@@ -47,7 +47,6 @@ newdef ShowerModel:PartnerFinder PartnerFinder
 newdef ShowerModel:KinematicsReconstructor KinematicsReconstructor
 newdef ShowerHandler:ShowerModel ShowerModel
 newdef ShowerHandler:SplittingGenerator SplittingGenerator
-newdef ShowerHandler:Interactions BothAtOnce
 newdef ShowerHandler:SpinCorrelations Yes
 newdef ShowerHandler:SoftCorrelations Singular
 
