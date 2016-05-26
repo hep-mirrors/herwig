@@ -550,23 +550,6 @@ protected:
 
 public:
 
-  /** @name MC@NLO diagnostics */
-  //@{
-
-  /**
-   * True, if Matchbox MC@NLO S-event
-   */
-  bool wasMCatNLOSEvent() const { return isMCatNLOSEvent; }
-
-  /**
-   * True, if matchbox MC@NLO H-event
-   */
-  bool wasMCatNLOHEvent() const { return isMCatNLOHEvent; }
-
-  //@}
-
-public:
-
   /** @name Functions used by the persistent I/O system. */
   //@{
   /**
@@ -831,16 +814,6 @@ private :
   bool _hardPOWHEG;
 
   /**
-   * True, if Matchbox MC@NLO S-event
-   */
-  bool isMCatNLOSEvent;
-
-  /**
-   * True, if matchbox MC@NLO H-event
-   */
-  bool isMCatNLOHEvent;
-
-  /**
    * True, if Matchbox Powheg S-event
    */
   bool isPowhegSEvent;
@@ -854,16 +827,6 @@ private :
    * The shower approximation to provide the hard scale profile
    */
   Ptr<ShowerApproximation>::tptr theShowerApproximation;
-
-  /**
-   * The factorization scale factor.
-   */
-  double theFactorizationScaleFactor;
-
-  /**
-   * The renormalization scale factor.
-   */
-  double theRenormalizationScaleFactor;
 
   /**
    * True if no warnings about incorrect hard emission

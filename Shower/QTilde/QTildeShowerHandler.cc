@@ -111,9 +111,7 @@ void QTildeShowerHandler::persistentOutput(PersistentOStream & os) const {
      << _limitEmissions << _spinOpt << _softOpt << _hardPOWHEG
      << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << ounit(_iptmax,GeV) 
      << _vetoes << _trunc_Mode << _hardEmissionMode << _reconOpt 
-     << isMCatNLOSEvent << isMCatNLOHEvent
-     << isPowhegSEvent << isPowhegHEvent
-     << theFactorizationScaleFactor << theRenormalizationScaleFactor << ounit(muPt,GeV)
+     << isPowhegSEvent << isPowhegHEvent << ounit(muPt,GeV)
      << interaction_ << _maxTryFSR << _maxFailFSR << _fracFSR << interactions_.size();
   for(unsigned int ix=0;ix<interactions_.size();++ix) 
     os << oenum(interactions_[ix]);
@@ -126,9 +124,7 @@ void QTildeShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> _limitEmissions >> _spinOpt >> _softOpt >> _hardPOWHEG
      >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> iunit(_iptmax,GeV)
      >> _vetoes >> _trunc_Mode >> _hardEmissionMode >> _reconOpt
-     >> isMCatNLOSEvent >> isMCatNLOHEvent
-     >> isPowhegSEvent >> isPowhegHEvent
-     >> theFactorizationScaleFactor >> theRenormalizationScaleFactor >> iunit(muPt,GeV)
+     >> isPowhegSEvent >> isPowhegHEvent >> iunit(muPt,GeV)
      >> interaction_ >> _maxTryFSR >> _maxFailFSR >> _fracFSR >> isize;
   interactions_.resize(isize);
   for(unsigned int ix=0;ix<interactions_.size();++ix) 
@@ -700,8 +696,8 @@ void QTildeShowerHandler::setupHardScales(const vector<ShowerProgenitorPtr> & p,
 void QTildeShowerHandler::showerHardProcess(ShowerTreePtr hard, XCPtr xcomb) {
 
 
-  isMCatNLOSEvent = false;
-  isMCatNLOHEvent = false;
+  isMCatNLOSEvent(false);
+  isMCatNLOHEvent(false);
   isPowhegSEvent  = false;
   isPowhegHEvent  = false;
 
@@ -723,9 +719,9 @@ void QTildeShowerHandler::showerHardProcess(ShowerTreePtr hard, XCPtr xcomb) {
       // separate MCatNLO and POWHEG-type corrections
       if ( !subme->showerApproximation()->needsSplittingGenerator() ) {
 	if ( subme->realShowerSubtraction() )
-	  isMCatNLOHEvent = true;
+	  isMCatNLOHEvent(true);
 	else if ( subme->virtualShowerSubtraction() )
-	  isMCatNLOSEvent = true;
+	  isMCatNLOSEvent(true);
       }
       else {
   	if ( subme->realShowerSubtraction() )
@@ -738,14 +734,14 @@ void QTildeShowerHandler::showerHardProcess(ShowerTreePtr hard, XCPtr xcomb) {
     if ( me->factory()->showerApproximation() ) {
       theShowerApproximation = me->factory()->showerApproximation();
       if ( !me->factory()->showerApproximation()->needsSplittingGenerator() ) 
-	isMCatNLOSEvent = true;
+	isMCatNLOSEvent(true);
       else
   	isPowhegSEvent = true;
     }
   }
 
   string error = "Inconsistent hard emission set-up in QTildeShowerHandler::showerHardProcess(). "; 
-  if ( ( isMCatNLOSEvent || isMCatNLOHEvent ) ){
+  if ( ( isMCatNLOSEvent() || isMCatNLOHEvent() ) ){
     if (_hardEmissionMode > 1)
       throw Exception() << error
 			<< "Cannot generate POWHEG matching with MC@NLO shower "
@@ -3132,7 +3128,7 @@ void QTildeShowerHandler::doShowering(bool hard,XCPtr xcomb) {
   _nis = _nfs = 0;
   // if MC@NLO H event and limited emissions
   // indicate both final and initial state emission
-  if ( isMCatNLOHEvent && _limitEmissions != 0 ) {
+  if ( isMCatNLOHEvent() && _limitEmissions != 0 ) {
     _nis = _nfs = 1;
   }
   // extract particles to shower
@@ -3211,7 +3207,7 @@ void QTildeShowerHandler::doShowering(bool hard,XCPtr xcomb) {
 	_nis = _nfs = 0;
 	// if MC@NLO H event and limited emissions
 	// indicate both final and initial state emission
-	if ( isMCatNLOHEvent && _limitEmissions != 0 ) {
+	if ( isMCatNLOHEvent() && _limitEmissions != 0 ) {
 	  _nis = _nfs = 1;
 	}
 	for(unsigned int ix=0; ix<particlesToShower.size();++ix) {

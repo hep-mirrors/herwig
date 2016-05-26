@@ -403,16 +403,6 @@ private:
   Energy theFactorizationScaleFreeze;
 
   /**
-   * True, if we are showering on a MC@NLO S event
-   */
-  bool isMCatNLOSEvent;
-
-  /**
-   * True, if we are showering on a MC@NLO H event
-   */
-  bool isMCatNLOHEvent;
-
-  /**
    * The matching subtraction, if appropriate
    */
   Ptr<ShowerApproximation>::tptr theShowerApproximation;

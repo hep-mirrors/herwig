@@ -277,6 +277,31 @@ protected:
    */
   void resetWeights();
 
+public:
+
+  /** @name MC@NLO diagnostics */
+  //@{
+  /**
+   * True, if Matchbox MC@NLO S-event
+   */
+  bool isMCatNLOSEvent() const { return isMCatNLOSEvent_; }
+
+  /**
+   * True, if matchbox MC@NLO H-event
+   */
+  bool isMCatNLOHEvent() const { return isMCatNLOHEvent_; }
+
+  /**
+   * True, if Matchbox MC@NLO S-event
+   */
+  void isMCatNLOSEvent(bool in) { isMCatNLOSEvent_ = in; }
+
+  /**
+   * True, if matchbox MC@NLO H-event
+   */
+  void isMCatNLOHEvent(bool in) { isMCatNLOHEvent_ = in; }
+  //@}
+
 protected:
 
   /** @name Clone Methods. */
@@ -549,6 +574,16 @@ private:
    * Command to add a shower variation
    */
   string doAddVariation(string);
+
+  /**
+   * True, if we are showering on a MC@NLO S event
+   */
+  bool isMCatNLOSEvent_;
+
+  /**
+   * True, if we are showering on a MC@NLO H event
+   */
+  bool isMCatNLOHEvent_;
 
 public:
 

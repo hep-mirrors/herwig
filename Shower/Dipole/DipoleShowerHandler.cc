@@ -42,9 +42,7 @@ DipoleShowerHandler::DipoleShowerHandler()
     verbosity(0), printEvent(0), nTries(0), 
     didRadiate(false), didRealign(false),
     theRenormalizationScaleFreeze(1.*GeV), 
-    theFactorizationScaleFreeze(2.*GeV),
-    isMCatNLOSEvent(false),
-    isMCatNLOHEvent(false), theDoCompensate(false),
+    theFactorizationScaleFreeze(2.*GeV), theDoCompensate(false),
     theFreezeGrid(500000), maxPt(ZERO),
     muPt(ZERO) {}
 
@@ -88,8 +86,8 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr,
       didRadiate = false;
       didRealign = false;
 
-      isMCatNLOSEvent = false;
-      isMCatNLOHEvent = false;
+      isMCatNLOSEvent(false);
+      isMCatNLOHEvent(false);
 
       if ( eventRecord().xcombPtr() ) {
 
@@ -107,16 +105,16 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr,
 	    if ( !subme->showerApproximation()->needsSplittingGenerator() ) {
 	      theShowerApproximation = subme->showerApproximation();
 	      if ( subme->realShowerSubtraction() )
-		isMCatNLOHEvent = true;
+		isMCatNLOHEvent(true);
 	      else if ( subme->virtualShowerSubtraction() )
-		isMCatNLOSEvent = true;
+		isMCatNLOSEvent(true);
 	    }
 	  }
 	} else if ( me ) {
 	  if ( me->factory()->showerApproximation() ) {
 	    if ( !me->factory()->showerApproximation()->needsSplittingGenerator() ) {
 	      theShowerApproximation = me->factory()->showerApproximation();
-	      isMCatNLOSEvent = true;
+	      isMCatNLOSEvent(true);
 	    }
 	  }
 	}
@@ -150,7 +148,7 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr,
 
       if ( firstMCatNLOEmission ) {
 
-        if ( !isMCatNLOHEvent )
+        if ( !isMCatNLOHEvent() )
 	  nEmissions = 1;
 	else
 	  nEmissions = 0;
@@ -548,8 +546,8 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
 
     didRadiate = true;
 
-    isMCatNLOSEvent = false;
-    isMCatNLOHEvent = false;
+    isMCatNLOSEvent(false);
+    isMCatNLOHEvent(false);
 
     pair<list<Dipole>::iterator,list<Dipole>::iterator> children;
 
@@ -810,7 +808,7 @@ void DipoleShowerHandler::persistentOutput(PersistentOStream & os) const {
      << realignmentScheme << verbosity << printEvent
      << ounit(theRenormalizationScaleFreeze,GeV)
      << ounit(theFactorizationScaleFreeze,GeV)
-     << isMCatNLOSEvent << isMCatNLOHEvent << theShowerApproximation
+     << theShowerApproximation
      << theDoCompensate << theFreezeGrid
      << theEventReweight << ounit(maxPt,GeV)
      << ounit(muPt,GeV);
@@ -824,7 +822,7 @@ void DipoleShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> realignmentScheme >> verbosity >> printEvent
      >> iunit(theRenormalizationScaleFreeze,GeV)
      >> iunit(theFactorizationScaleFreeze,GeV)
-     >> isMCatNLOSEvent >> isMCatNLOHEvent >> theShowerApproximation
+     >> theShowerApproximation
      >> theDoCompensate >> theFreezeGrid
      >> theEventReweight >> iunit(maxPt,GeV)
      >> iunit(muPt,GeV);
