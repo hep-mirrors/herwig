@@ -527,57 +527,54 @@ void SplittingFunction::doinit() {
 }
 
 bool SplittingFunction::checkColours(const IdList & ids) const {
-  tcPDPtr pd[3]={getParticleData(ids[0]),
-                 getParticleData(ids[1]),
-                 getParticleData(ids[2])};
   if(_colourStructure==TripletTripletOctet) {
     if(ids[0]!=ids[1]) return false;
-    if((pd[0]->iColour()==PDT::Colour3||pd[0]->iColour()==PDT::Colour3bar) &&
-       pd[2]->iColour()==PDT::Colour8) return true;
+    if((ids[0]->iColour()==PDT::Colour3||ids[0]->iColour()==PDT::Colour3bar) &&
+       ids[2]->iColour()==PDT::Colour8) return true;
     return false;
   }
   else if(_colourStructure==OctetOctetOctet) {
     for(unsigned int ix=0;ix<3;++ix) {
-      if(pd[ix]->iColour()!=PDT::Colour8) return false;
+      if(ids[ix]->iColour()!=PDT::Colour8) return false;
     }
     return true;
   }
   else if(_colourStructure==OctetTripletTriplet) {
-    if(pd[0]->iColour()!=PDT::Colour8) return false;
-    if(pd[1]->iColour()==PDT::Colour3&&pd[2]->iColour()==PDT::Colour3bar)
+    if(ids[0]->iColour()!=PDT::Colour8) return false;
+    if(ids[1]->iColour()==PDT::Colour3&&ids[2]->iColour()==PDT::Colour3bar)
       return true;
-    if(pd[1]->iColour()==PDT::Colour3bar&&pd[2]->iColour()==PDT::Colour3)
+    if(ids[1]->iColour()==PDT::Colour3bar&&ids[2]->iColour()==PDT::Colour3)
       return true;
     return false;
   }
   else if(_colourStructure==TripletOctetTriplet) {
     if(ids[0]!=ids[2]) return false;
-    if((pd[0]->iColour()==PDT::Colour3||pd[0]->iColour()==PDT::Colour3bar) &&
-       pd[1]->iColour()==PDT::Colour8) return true;
+    if((ids[0]->iColour()==PDT::Colour3||ids[0]->iColour()==PDT::Colour3bar) &&
+       ids[1]->iColour()==PDT::Colour8) return true;
     return false;
   }
   else if(_colourStructure==SextetSextetOctet) {
     if(ids[0]!=ids[1]) return false;
-    if((pd[0]->iColour()==PDT::Colour6 || pd[0]->iColour()==PDT::Colour6bar) &&
-       pd[2]->iColour()==PDT::Colour8) return true;
+    if((ids[0]->iColour()==PDT::Colour6 || ids[0]->iColour()==PDT::Colour6bar) &&
+       ids[2]->iColour()==PDT::Colour8) return true;
     return false;
   }
   else if(_colourStructure==ChargedChargedNeutral) {
     if(ids[0]!=ids[1]) return false;
-    if(pd[2]->iCharge()!=0) return false;
-    if(pd[0]->iCharge()==pd[1]->iCharge()) return true;
+    if(ids[2]->iCharge()!=0) return false;
+    if(ids[0]->iCharge()==ids[1]->iCharge()) return true;
     return false;
   }
   else if(_colourStructure==ChargedNeutralCharged) {
     if(ids[0]!=ids[2]) return false;
-    if(pd[1]->iCharge()!=0) return false;
-    if(pd[0]->iCharge()==pd[2]->iCharge()) return true;
+    if(ids[1]->iCharge()!=0) return false;
+    if(ids[0]->iCharge()==ids[2]->iCharge()) return true;
     return false;
   }
   else if(_colourStructure==NeutralChargedCharged) {
-    if(ids[1]!=-ids[2]) return false;
-    if(pd[0]->iCharge()!=0) return false;
-    if(pd[1]->iCharge()==-pd[2]->iCharge()) return true;
+    if(ids[1]->id()!=-ids[2]->id()) return false;
+    if(ids[0]->iCharge()!=0) return false;
+    if(ids[1]->iCharge()==-ids[2]->iCharge()) return true;
     return false;
   }
   else {

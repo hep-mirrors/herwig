@@ -15,6 +15,7 @@
 #include "ThePEG/EventRecord/Particle.h"
 #include "Herwig/Shower/QTilde/SplittingFunctions/SplittingFunction.fh"
 #include "Herwig/Shower/ShowerConfig.h"
+#include "ShowerBasis.h"
 #include "ShowerKinematics.h"
 #include "ShowerParticle.fh"
 #include <iosfwd>
@@ -175,6 +176,32 @@ public:
 public:
 
   /**
+   *  Set a preliminary momentum for the particle
+   */
+  void setShowerMomentum(bool timelike);
+
+  /**
+   *  Construct the spin info object for a shower particle
+   */
+  void constructSpinInfo(bool timelike);
+
+  /**
+   * Perform any initial calculations needed after the branching has been selected
+   */
+  void initializeDecay();
+
+  /**
+   * Perform any initial calculations needed after the branching has been selected
+   * @param parent The beam particle
+   */
+  void initializeInitialState(PPtr parent);
+
+  /**
+   * Perform any initial calculations needed after the branching has been selected
+   */
+  void initializeFinalState();
+
+  /**
    *   Access/Set various flags about the state of the particle
    */
   //@{
@@ -230,6 +257,29 @@ public:
   //@}
 
   /**
+   * Set/Get methods for the ShowerBasis objects
+   */
+  //@{
+  /**
+   * Access/ the ShowerBasis object.
+   */
+  const ShowerBasisPtr & showerBasis() const { return _showerBasis; }
+
+
+  /**
+   * Set the ShowerBasis object.
+   */
+  void showerBasis(const ShowerBasisPtr in, bool copy) {
+    if(!copy) 
+      _showerBasis = in;
+    else {
+      _showerBasis = new_ptr(ShowerBasis());
+      _showerBasis->setBasis(in->pVector(),in->nVector(),in->frame());
+    } 
+  }
+  //@}
+
+  /**    
    *  Members relating to the initial evolution scale and partner for the particle
    */
   //@{
@@ -321,6 +371,24 @@ public:
    *  it came from
    */
   const tcPPtr thePEGBase() const { return _thePEGBase; }
+ 
+public:
+
+  /**
+   *  Extract the rho matrix including mapping needed in the shower
+   */
+  RhoDMatrix extractRhoMatrix(bool forward);
+
+protected:
+
+  /**
+   * For a particle which came from the hard process get the spin density and
+   * the mapping required to the basis used in the Shower
+   * @param rho The \f$\rho\f$ matrix
+   * @param mapping The mapping
+   * @param showerkin The ShowerKinematics object
+   */
+  bool getMapping(SpinPtr &, RhoDMatrix & map);
 
 protected:
 
@@ -379,6 +447,11 @@ private:
    *  The shower kinematics for the particle
    */
   ShoKinPtr _showerKinematics;
+
+  /**
+   *  The shower basis for the particle
+   */
+  ShowerBasisPtr _showerBasis;
 
   /**
    *  Storage of the evolution scales

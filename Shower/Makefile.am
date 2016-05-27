@@ -9,10 +9,11 @@ libHwShower_la_SOURCES =  \
 ShowerHandler.h ShowerHandler.fh ShowerHandler.cc \
 ShowerVariation.h ShowerVariation.cc \
 UEBase.h UEBase.cc UEBase.fh \
-QTilde/ShowerConfig.h \
+ShowerConfig.h ShowerConfig.cc \
 QTilde/Base/Branching.h \
 QTilde/Base/ShowerParticle.cc  QTilde/Base/ShowerParticle.fh  QTilde/Base/ShowerParticle.h \
 QTilde/Base/ShowerKinematics.fh  QTilde/Base/ShowerKinematics.h QTilde/Base/ShowerKinematics.cc \
+QTilde/Base/ShowerBasis.fh  QTilde/Base/ShowerBasis.h QTilde/Base/ShowerBasis.cc \
 QTilde/Base/ShowerTree.h QTilde/Base/ShowerTree.fh QTilde/Base/ShowerTree.cc \
 QTilde/Base/ShowerProgenitor.fh QTilde/Base/ShowerProgenitor.h \
 QTilde/Base/HardTree.h QTilde/Base/HardTree.fh QTilde/Base/HardTree.cc\

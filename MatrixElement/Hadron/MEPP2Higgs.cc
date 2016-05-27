@@ -832,7 +832,7 @@ bool MEPP2Higgs::softMatrixElementVeto(ShowerProgenitorPtr initial,
   // must have started as a gluon
   if(id[0]!=ParticleID::g) return false;
   // must be a gluon going into the hard process
-  if(br.ids[1]!=ParticleID::g) return false;
+  if(br.ids[1]->id()!=ParticleID::g) return false;
   // get the pT
   Energy pT=br.kinematics->pT();
   // check if hardest so far
@@ -843,17 +843,17 @@ bool MEPP2Higgs::softMatrixElementVeto(ShowerProgenitorPtr initial,
   // check which type of process
   Energy2 me;
   // g g
-  if(br.ids[0]==ParticleID::g&&br.ids[2]==ParticleID::g) {
+  if(br.ids[0]->id()==ParticleID::g&&br.ids[2]->id()==ParticleID::g) {
     double split = 6.*(z/(1.-z)+(1.-z)/z+z*(1.-z));
     me = ggME(shat,that,uhat)/split;
   }
   // q g
-  else if(br.ids[0] >=  1 && br.ids[0] <=  5 && br.ids[2]==br.ids[0]) {
+  else if(br.ids[0]->id() >=  1 && br.ids[0]->id() <=  5 && br.ids[2]->id()==br.ids[0]->id()) {
     double split = 4./3./z*(1.+sqr(1.-z));
     me = qgME(shat,uhat,that)/split;
   }
   // qbar g
-  else if(br.ids[0] <= -1 && br.ids[0] >= -5 && br.ids[2]==br.ids[0]) {
+  else if(br.ids[0]->id() <= -1 && br.ids[0]->id() >= -5 && br.ids[2]->id()==br.ids[0]->id()) {
     double split = 4./3./z*(1.+sqr(1.-z));
     me = qbargME(shat,uhat,that)/split;
   }
@@ -868,8 +868,8 @@ bool MEPP2Higgs::softMatrixElementVeto(ShowerProgenitorPtr initial,
 					<< " sbar = " << shat/mh2_ 
 					<< " tbar = " << that/mh2_ 
 					<< "weight = " << wgt << " for "
-					<< br.ids[0] << " " << br.ids[1] << " "
-					<< br.ids[2] << "\n";
+					<< br.ids[0]->id() << " " << br.ids[1]->id() << " "
+					<< br.ids[2]->id() << "\n";
   // if not vetoed
   if(UseRandom::rndbool(wgt)) return false;
   // otherwise

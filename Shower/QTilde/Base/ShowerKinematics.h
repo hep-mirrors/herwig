@@ -47,13 +47,6 @@ class ShowerKinematics: public Base {
 public:
 
   /**
-   *   enum for the frame definition
-   */
-  enum Frame {BackToBack,Rest};
-
-public:
-
-  /**
    * The default constructor.
    */
   ShowerKinematics() : Base(), _isTheJetStartingPoint( false ),
@@ -143,13 +136,6 @@ public:
    * @param mass The mass to be used, if less than zero on-shell
    */
   virtual void reconstructLast(const tShowerParticlePtr last, Energy mass=-1.*GeV) const;
-
-  /**
-   *  Perform any initial calculations needed after the branching has been selected
-   * @param particle The branching particle
-   * @param parent The bema particle for the jet if needed
-   */
-  virtual void initialize(ShowerParticle & particle,PPtr parent);
   //@}
 
 public:
@@ -170,20 +156,6 @@ public:
    */
   bool isTheJetStartingPoint() const;
   //@}
-
-  /**
-   * Virtual function to return a set of basis vectors, specific to
-   * the type of evolution. This function will be used by the
-   * ForwardShowerEvolver in order to access \f$p\f$ and \f$n\f$, 
-   * which in turn are members of the concrete class QTildeShowerKinematics1to2.
-   */
-  virtual vector<Lorentz5Momentum> getBasis() const = 0;
-  
-  /**
-   * Access to the frame definition
-   */
-  Frame frame() const {return _frame;}
-
 
   /**
    *  Set/Get methods for the kinematic variables
@@ -257,18 +229,6 @@ public:
   void SudakovFormFactor(const tSudakovPtr sud) { _sudakov=sud; }
   //@}
 
-  /**
-   *  Transform the shower kinematics (usually the reference vectors)
-   */
-  virtual void transform(const LorentzRotation & r);
-
-protected:
-  
-  /**
-   *  Set the frame definition
-   */
-  void frame(Frame frame) {_frame = frame;}
-
 private:
 
   /**
@@ -308,11 +268,6 @@ private:
    *  The splitting function for the branching of the particle
    */
   tSudakovPtr _sudakov;
-
-  /**
-   *  The frame in which the basis vectors are defined
-   */
-  Frame _frame;
 
 };
 

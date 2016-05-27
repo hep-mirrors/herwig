@@ -33,9 +33,9 @@ void HardBranching::setMomenta(LorentzRotation R,double aparent,
   // calculate the evolution scale and phi
   if(!_children.empty()) {
     IdList ids(3);
-    ids[0]=_particle->id();
-    ids[1]=_children[0]->_particle->id();
-    ids[2]=_children[1]->_particle->id();
+    ids[0]=_particle->dataPtr();
+    ids[1]=_children[0]->_particle->dataPtr();
+    ids[2]=_children[1]->_particle->dataPtr();
     double z;
     Energy pt;
     Lorentz5Momentum vect;

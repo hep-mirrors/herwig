@@ -756,13 +756,11 @@ tProtoBranchingPtr PowhegShowerHandler::getCluster( tProtoBranchingPtr b1,
   else            theBranching = allowedInitialStateBranching( b1, b2 );
 
   //if branching is not allowed return null ProtoBrancing
-  if( !theBranching.first )
-    return ProtoBranchingPtr();
+  if( !theBranching.sudakov ) return ProtoBranchingPtr();
 
   // get the ParticleData object for the new branching
-  tcPDPtr particle_data = incoming ?
-    getParticleData( theBranching.second[1] ) : getParticleData( theBranching.second[0] );
-
+  tcPDPtr particle_data = incoming ? theBranching.particles[1] : theBranching.particles[0];
+ 
   // create clustered ProtoBranching
   ProtoBranchingPtr clusteredBranch;
 
@@ -771,7 +769,7 @@ tProtoBranchingPtr PowhegShowerHandler::getCluster( tProtoBranchingPtr b1,
     Lorentz5Momentum pairMomentum = b1->momentum() + b2->momentum(); 
     pairMomentum.setMass(ZERO);
     clusteredBranch = new_ptr(ProtoBranching(particle_data,HardBranching::Outgoing,
-					     pairMomentum, theBranching.first));
+					     pairMomentum, theBranching.sudakov));
     if(particle_data->iColour()==PDT::Colour0)
       return ProtoBranchingPtr();
     else if(particle_data->iColour()==PDT::Colour3) {
@@ -853,12 +851,12 @@ tProtoBranchingPtr PowhegShowerHandler::getCluster( tProtoBranchingPtr b1,
     pairMomentum.setMass( ZERO );
     // check for CC
     if( particle_data->CC() &&
-	( b1->id() != theBranching.second[0] ||
-	  b2->id() != theBranching.second[2] ) ) {
+	( b1->id() != theBranching.particles[0]->id() ||
+	  b2->id() != theBranching.particles[2]->id() ) ) {
       particle_data = particle_data->CC();
     }
     clusteredBranch = new_ptr(ProtoBranching(particle_data,HardBranching::Incoming,
-					     pairMomentum,theBranching.first));
+					     pairMomentum,theBranching.sudakov));
     // work out the type of branching
     if(b1->particle()->iColour()==PDT::Colour3) {
       b1->type(ShowerPartnerType::QCDColourLine);
@@ -949,10 +947,10 @@ BranchingElement PowhegShowerHandler::
 allowedFinalStateBranching( tProtoBranchingPtr & b1, tProtoBranchingPtr & b2) const {
   // check with normal ID's
   pair< long, long > ptest = make_pair( b1->id(), b2->id() );
-  map< pair< long, long >, pair< SudakovPtr, IdList > >::const_iterator 
+  map< pair< long, long >, BranchingElement >::const_iterator 
     split = allowedFinal_.find(ptest);
   if( split != allowedFinal_.end() ) {
-    if(  split->second.second[1] != ptest.first ) swap( b1, b2 );
+    if(  split->second.particles[1]->id() != ptest.first ) swap( b1, b2 );
     return split->second;
   }
   // check with CC
@@ -962,14 +960,12 @@ allowedFinalStateBranching( tProtoBranchingPtr & b1, tProtoBranchingPtr & b2) co
   if( split != allowedFinal_.end() ) {
     // cc the idlist only be for qbar g clusterings
     BranchingElement ccBranch = split->second;
-    if( getParticleData( ccBranch.second[0] )->CC() ) ccBranch.second[0] *= -1;
-    if( getParticleData( ccBranch.second[1] )->CC() ) ccBranch.second[1] *= -1;
-    if( getParticleData( ccBranch.second[2] )->CC() ) ccBranch.second[2] *= -1;
-    if( split->second.second[1] !=  ptest.first ) swap( b1, b2);
+    swap(ccBranch.particles,ccBranch.conjugateParticles);
+    if( split->second.particles[1]->id() !=  ptest.first ) swap( b1, b2);
     return ccBranch;
   }
   // not found found null pointer
-  return make_pair( SudakovPtr(), IdList() );
+  return BranchingElement();
 }
 
 BranchingElement PowhegShowerHandler::allowedInitialStateBranching( tProtoBranchingPtr & b1,
@@ -978,16 +974,13 @@ BranchingElement PowhegShowerHandler::allowedInitialStateBranching( tProtoBranch
   // is initial parton an antiparticle
   bool cc = b1->id() < 0;
   //gives range of allowedInitial_ with matching first abs( id )
-  pair< multimap< long, pair< SudakovPtr, IdList > >::const_iterator,
-    multimap< long, pair< SudakovPtr, IdList > >::const_iterator >
+  pair< multimap< long, BranchingElement >::const_iterator,
+	multimap< long, BranchingElement >::const_iterator >
     location = allowedInitial_.equal_range( abs( b1->id() ) );
   //iterates over this range
-  for( multimap< long, pair< SudakovPtr, IdList> >::const_iterator it = location.first;
+  for( multimap< long, BranchingElement >::const_iterator it = location.first;
        it != location.second; ++it ) {
-    //test id for second particle in pair
-    long idtest = it->second.second[2];
-    //if it is antiparticle *= -1
-    if( cc && getParticleData( idtest )->CC() ) idtest *= -1;
+    long idtest = cc ?  it->second.conjugateParticles[2]->id() : it->second.particles[2]->id();
     // does second id match the test
     if( idtest == b2->id() ) return it->second;
     //if the the IS parton is a gluon and charge conjugate of second parton mathes accept
@@ -995,7 +988,7 @@ BranchingElement PowhegShowerHandler::allowedInitialStateBranching( tProtoBranch
         ! b1->particle()->CC() ) return it->second;
   }
   // not found found null pointer
-  return make_pair(SudakovPtr(),IdList());
+  return BranchingElement();
 }
 
 bool PowhegShowerHandler::fuzzyEqual(Lorentz5Momentum  a, 
@@ -1019,7 +1012,8 @@ void PowhegShowerHandler::doinit() {
   for(BranchingList::const_iterator 
 	it = splittingGenerator()->finalStateBranchings().begin();
       it != splittingGenerator()->finalStateBranchings().end(); ++it) {
-    pair<long,long> prod(make_pair(it->second.second[1],it->second.second[2]));
+    pair<long,long> prod(make_pair(it->second.particles[1]->id(),
+				   it->second.particles[2]->id()));
     allowedFinal_.insert(make_pair(prod,it->second));
     swap(prod.first,prod.second);
     allowedFinal_.insert(make_pair(prod,it->second));
@@ -1028,7 +1022,7 @@ void PowhegShowerHandler::doinit() {
   for(BranchingList::const_iterator 
 	it = splittingGenerator()->initialStateBranchings().begin();
       it != splittingGenerator()->initialStateBranchings().end(); ++it) {
-    allowedInitial_.insert(make_pair(it->second.second[0],it->second));
+    allowedInitial_.insert(make_pair(it->second.particles[0]->id(),it->second));
   }
 
 }

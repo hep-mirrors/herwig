@@ -63,7 +63,7 @@ public:
    * @param mass Whether or not to include the mass dependent terms
    */
   virtual double P(const double z, const Energy2 t, const IdList & ids,
-		   bool mass) const;
+		   bool mass, const RhoDMatrix & rho) const;
 
   /**
    * The concrete implementation of the overestimate of the splitting function,
@@ -83,7 +83,7 @@ public:
    * @param mass Whether or not to include the mass dependent terms
    */
   virtual double ratioP(const double z, const Energy2 t, const IdList & ids,
-			bool mass) const;
+			bool mass, const RhoDMatrix & rho) const;
 
   /**
    * The concrete implementation of the indefinite integral of the 

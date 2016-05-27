@@ -108,13 +108,13 @@ public:
     else if(_colourStructure<0) {
       if(_colourStructure==ChargedChargedNeutral ||
 	 _colourStructure==ChargedNeutralCharged) {
-	tPDPtr part=getParticleData(ids[0]);
-	return sqr(double(part->iCharge())/3.);
+	return sqr(double(ids[0]->iCharge())/3.);
       }
-      else {
-	tPDPtr part=getParticleData(ids[1]);
-	return sqr(double(part->iCharge())/3.);
+      else if(_colourStructure==NeutralChargedCharged) {
+	return sqr(double(ids[1]->iCharge())/3.);
       }
+      else
+	assert(false);
     }
     else
       assert(false);
@@ -147,7 +147,7 @@ public:
    * @param mass Whether or not to include the mass dependent terms
    */
   virtual double P(const double z, const Energy2 t, const IdList & ids,
-		   const bool mass) const = 0;
+		   const bool mass, const RhoDMatrix & rho) const = 0;
 
   /**
    * Purely virtual method which should return
@@ -169,7 +169,7 @@ public:
    * @param mass Whether or not to include the mass dependent terms
    */
   virtual double ratioP(const double z, const Energy2 t, const IdList & ids,
-			const bool mass) const = 0;
+			const bool mass, const RhoDMatrix & rho) const = 0;
 
   /**
    * Purely virtual method which should return the indefinite integral of the 

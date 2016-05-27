@@ -84,8 +84,8 @@ bool QTildeSudakov::PSVeto(const Energy2 t,
   // check vs overestimated limits
   if(z() < zLimits().first || z() > zLimits().second) return true;
   Energy2 q2 = z()*(1.-z())*t;
-  if(ids_[0]!=ParticleID::g &&
-     ids_[0]!=ParticleID::gamma ) q2 += masssquared_[0];
+  if(ids_[0]->id()!=ParticleID::g &&
+     ids_[0]->id()!=ParticleID::gamma ) q2 += masssquared_[0];
   if(q2>maxQ2) return true;
   // compute the pts
   Energy2 pt2 = z()*(1.-z())*q2 - masssquared_[1]*(1.-z()) - masssquared_[2]*z();
@@ -97,7 +97,8 @@ bool QTildeSudakov::PSVeto(const Energy2 t,
 }
  
 ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
-						   const IdList &ids,const bool cc,
+						   const IdList &ids,
+						   const RhoDMatrix & rho,
 						   double enhance, Energy2 maxQ2) {
   // First reset the internal kinematics variables that can
   // have been eventually set in the previous call to the method.
@@ -106,33 +107,32 @@ ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
   phi(0.); 
   // perform initialization
   Energy2 tmax(sqr(startingScale)),tmin;
-  initialize(ids,tmin,cc);
+  initialize(ids,tmin);
   // check max > min
   if(tmax<=tmin) return ShoKinPtr();
   // calculate next value of t using veto algorithm
   Energy2 t(tmax);
-
-  bool calcVariations=!ShowerHandler::currentHandler()->showerVariations().empty();
-
-  if(!calcVariations){
+  // no shower variations to calculate
+  if(ShowerHandler::currentHandler()->showerVariations().empty()){
     // Without variations do the usual Veto algorithm
     // No need for more if-statements in this loop.
     do {
       if(!guessTimeLike(t,tmin,enhance)) break;
     }
     while(PSVeto(t,maxQ2) ||
-        SplittingFnVeto(z()*(1.-z())*t,ids,true) || 
+	  SplittingFnVeto(z()*(1.-z())*t,ids,true,rho) || 
         alphaSVeto(splittingFn()->angularOrdered() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t));
-  }else{
+  }
+  else {
     bool alphaRew(true),PSRew(true),SplitRew(true);
     do {
       if(!guessTimeLike(t,tmin,enhance)) break;
       PSRew=PSVeto(t,maxQ2);
       if (PSRew) continue;
-      SplitRew=SplittingFnVeto(z()*(1.-z())*t,ids,true);
+      SplitRew=SplittingFnVeto(z()*(1.-z())*t,ids,true,rho);
       alphaRew=alphaSVeto(splittingFn()->angularOrdered() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t);
       double factor=alphaSVetoRatio(splittingFn()->angularOrdered() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t,1.)*
-                    SplittingFnVetoRatio(z()*(1.-z())*t,ids,true);
+	SplittingFnVetoRatio(z()*(1.-z())*t,ids,true,rho);
 
       ShowerHandlerPtr ch = ShowerHandler::currentHandler();
 
@@ -151,7 +151,7 @@ ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
                 double newfactor = alphaSVetoRatio(splittingFn()->angularOrdered() ?
                                         sqr(z()*(1.-z()))*t :
                                         z()*(1.-z())*t,var->second.renormalizationScaleFactor)
-                                   * SplittingFnVetoRatio(z()*(1.-z())*t,ids,true);
+                 		  * SplittingFnVetoRatio(z()*(1.-z())*t,ids,true,rho);
 
                 double varied;
                 if ( SplitRew || alphaRew ) {
@@ -175,8 +175,6 @@ ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
     }
     while(PSRew || SplitRew || alphaRew);
   }
-
-  
   q_ = t > ZERO ? Energy(sqrt(t)) : -1.*MeV;
   if(q_ < ZERO) return ShoKinPtr();
   // return the ShowerKinematics object
@@ -186,7 +184,8 @@ ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
 ShoKinPtr QTildeSudakov::
 generateNextSpaceBranching(const Energy startingQ,
 			   const IdList &ids,
-			   double x,bool cc,
+			   double x,
+			   const RhoDMatrix & rho,
 			   double enhance,
 			   Ptr<BeamParticleData>::transient_const_pointer beam) {
   // First reset the internal kinematics variables that can
@@ -196,27 +195,13 @@ generateNextSpaceBranching(const Energy startingQ,
   phi(0.);
   // perform the initialization
   Energy2 tmax(sqr(startingQ)),tmin;
-  initialize(ids,tmin,cc);
+  initialize(ids,tmin);
   // check max > min
   if(tmax<=tmin) return ShoKinPtr();
-  // extract the partons which are needed for the PDF veto
-  // Different order, incoming parton is id =  1, outgoing are id=0,2
-  tcPDPtr parton0 = getParticleData(ids[0]);
-  tcPDPtr parton1 = getParticleData(ids[1]);
-  if(cc) {
-    if(parton0->CC()) parton0 = parton0->CC();
-    if(parton1->CC()) parton1 = parton1->CC();
-  }
   // calculate next value of t using veto algorithm
   Energy2 t(tmax),pt2(ZERO);
-
-
-
-
-
-  bool calcVariations=!ShowerHandler::currentHandler()->showerVariations().empty();
-
-  if(!calcVariations){
+  // no shower variations
+  if(ShowerHandler::currentHandler()->showerVariations().empty()){
     // Without variations do the usual Veto algorithm
     // No need for more if-statements in this loop.
     do {
@@ -225,10 +210,13 @@ generateNextSpaceBranching(const Energy startingQ,
     }
     while(pt2 < pT2min()||
         z() > zLimits().second||
-        SplittingFnVeto((1.-z())*t/z(),ids,true)||
+	  SplittingFnVeto((1.-z())*t/z(),ids,true,rho)||
         alphaSVeto(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t)||
-        PDFVeto(t,x,parton0,parton1,beam));
-  }else{
+        PDFVeto(t,x,ids[0],ids[1],beam));
+  }
+  // shower variations
+  else
+    {
     bool alphaRew(true),PDFRew(true),ptRew(true),zRew(true),SplitRew(true);
     do {
       if(!guessSpaceLike(t,tmin,x,enhance)) break;
@@ -236,12 +224,12 @@ generateNextSpaceBranching(const Energy startingQ,
       ptRew=pt2 < pT2min();
       zRew=z() > zLimits().second;
       if (ptRew||zRew) continue;
-      SplitRew=SplittingFnVeto((1.-z())*t/z(),ids,true);
+      SplitRew=SplittingFnVeto((1.-z())*t/z(),ids,true,rho);
       alphaRew=alphaSVeto(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t);
-      PDFRew=PDFVeto(t,x,parton0,parton1,beam);
-      double factor=PDFVetoRatio(t,x,parton0,parton1,beam,1.)*
+      PDFRew=PDFVeto(t,x,ids[0],ids[1],beam);
+      double factor=PDFVetoRatio(t,x,ids[0],ids[1],beam,1.)*
                     alphaSVetoRatio(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t,1.)*
-                    SplittingFnVetoRatio((1.-z())*t/z(),ids,true);
+	            SplittingFnVetoRatio((1.-z())*t/z(),ids,true,rho);
 
       ShowerHandlerPtr ch = ShowerHandler::currentHandler();
 
@@ -259,10 +247,10 @@ generateNextSpaceBranching(const Energy startingQ,
 
 
 
-            double newfactor = PDFVetoRatio(t,x,parton0,parton1,beam,var->second.factorizationScaleFactor)*
+            double newfactor = PDFVetoRatio(t,x,ids[0],ids[1],beam,var->second.factorizationScaleFactor)*
                            alphaSVetoRatio(splittingFn()->angularOrdered() ?
                            sqr(1.-z())*t : (1.-z())*t,var->second.renormalizationScaleFactor)
-                           *SplittingFnVetoRatio((1.-z())*t/z(),ids,true);
+	                    *SplittingFnVetoRatio((1.-z())*t/z(),ids,true,rho);
 
             double varied;
             if( PDFRew || SplitRew || alphaRew) {
@@ -287,7 +275,6 @@ generateNextSpaceBranching(const Energy startingQ,
     }
     while( PDFRew || SplitRew || alphaRew);
   }
-  
   if(t > ZERO && zLimits().first < zLimits().second)  q_ = sqrt(t);
   else return ShoKinPtr();
   pT(sqrt(pt2));
@@ -295,13 +282,8 @@ generateNextSpaceBranching(const Energy startingQ,
   return createInitialStateBranching(q_,z(),phi(),pT());
 }
 
-void QTildeSudakov::initialize(const IdList & ids, Energy2 & tmin,const bool cc) {
+void QTildeSudakov::initialize(const IdList & ids, Energy2 & tmin) {
   ids_=ids;
-  if(cc) {
-    for(unsigned int ix=0;ix<ids.size();++ix) {
-      if(getParticleData(ids[ix])->CC()) ids_[ix]*=-1;
-    }
-  }
   tmin = cutOffOption() != 2 ? ZERO : 4.*pT2min();
   masses_ = virtualMasses(ids);
   masssquared_.clear();
@@ -312,11 +294,11 @@ void QTildeSudakov::initialize(const IdList & ids, Energy2 & tmin,const bool cc)
 }
 
 ShoKinPtr QTildeSudakov::generateNextDecayBranching(const Energy startingScale,
-						 const Energy stoppingScale,
-						 const Energy minmass,
-						 const IdList &ids,
-						 const bool cc, 
-						 double enhance) {
+						    const Energy stoppingScale,
+						    const Energy minmass,
+						    const IdList &ids,
+						    const RhoDMatrix & rho, 
+						    double enhance) {
   // First reset the internal kinematics variables that can
   // have been eventually set in the previous call to this method.
   q_ = Constants::MaxEnergy;
@@ -324,7 +306,7 @@ ShoKinPtr QTildeSudakov::generateNextDecayBranching(const Energy startingScale,
   phi(0.); 
   // perform initialisation
   Energy2 tmax(sqr(stoppingScale)),tmin;
-  initialize(ids,tmin,cc);
+  initialize(ids,tmin);
   tmin=sqr(startingScale);
   // check some branching possible
   if(tmax<=tmin) return ShoKinPtr();
@@ -334,7 +316,7 @@ ShoKinPtr QTildeSudakov::generateNextDecayBranching(const Energy startingScale,
     if(!guessDecay(t,tmax,minmass,enhance)) break;
     pt2 = sqr(1.-z())*(t-masssquared_[0])-z()*masssquared_[2];
   }
-  while(SplittingFnVeto((1.-z())*t/z(),ids,true)|| 
+  while(SplittingFnVeto((1.-z())*t/z(),ids,true,rho)|| 
 	alphaSVeto(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t ) ||
 	pt2<pT2min() ||
 	t*(1.-z())>masssquared_[0]-sqr(minmass));
@@ -398,7 +380,7 @@ bool QTildeSudakov::computeTimeLikeLimits(Energy2 & t) {
   }
   // special case for gluon radiating
   pair<double,double> limits;
-  if(ids_[0]==ParticleID::g||ids_[0]==ParticleID::gamma) {
+  if(ids_[0]->id()==ParticleID::g||ids_[0]->id()==ParticleID::gamma) {
     // no emission possible
     if(t<16.*(masssquared_[1]+pT2min())) {
       t=-1.*GeV2;
@@ -409,11 +391,11 @@ bool QTildeSudakov::computeTimeLikeLimits(Energy2 & t) {
     limits.second = 1.-limits.first;
   }
   // special case for radiated particle is gluon 
-  else if(ids_[2]==ParticleID::g||ids_[2]==ParticleID::gamma) {
+  else if(ids_[2]->id()==ParticleID::g||ids_[2]->id()==ParticleID::gamma) {
     limits.first  =    sqrt((masssquared_[1]+pT2min())/t);
     limits.second = 1.-sqrt((masssquared_[2]+pT2min())/t);
   }
-  else if(ids_[1]==ParticleID::g||ids_[1]==ParticleID::gamma) {
+  else if(ids_[1]->id()==ParticleID::g||ids_[1]->id()==ParticleID::gamma) {
     limits.second  =    sqrt((masssquared_[2]+pT2min())/t);
     limits.first   = 1.-sqrt((masssquared_[1]+pT2min())/t);
   }
@@ -550,7 +532,8 @@ pair<double,double> softPhiMin(double phi0, double phi1, double A, double B, dou
 
 double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
 					 const IdList & ids,
-					 ShoKinPtr kinematics) {
+					 ShoKinPtr kinematics,
+					 const RhoDMatrix & rho) {
   // no correlations, return flat phi
   if(! dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->correlations())
     return Constants::twopi*UseRandom::rnd();
@@ -560,8 +543,8 @@ double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
   Energy pT = kinematics->pT();
   // if soft correlations
   Energy2 pipj,pik;
-  bool canBeSoft[2] = {ids[1]==ParticleID::g || ids[1]==ParticleID::gamma,
-		       ids[2]==ParticleID::g || ids[2]==ParticleID::gamma };
+  bool canBeSoft[2] = {ids[1]->id()==ParticleID::g || ids[1]->id()==ParticleID::gamma,
+		       ids[2]->id()==ParticleID::g || ids[2]->id()==ParticleID::gamma };
   vector<Energy2> pjk(3,ZERO);
   vector<Energy> Ek(3,ZERO);
   Energy Ei,Ej;
@@ -577,13 +560,13 @@ double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
     double zFact = !swapOrder ? (1.-z) : z;
     // compute the transforms to the shower reference frame
     // first the boost
-    vector<Lorentz5Momentum> basis = kinematics->getBasis();
-    Lorentz5Momentum pVect = basis[0], nVect = basis[1];
+    Lorentz5Momentum pVect = particle.showerBasis()->pVector();
+    Lorentz5Momentum nVect = particle.showerBasis()->nVector();
     Boost beta_bb;
-    if(kinematics->frame()==ShowerKinematics::BackToBack) {
+    if(particle.showerBasis()->frame()==ShowerBasis::BackToBack) {
       beta_bb = -(pVect + nVect).boostVector();
     }
-    else if(kinematics->frame()==ShowerKinematics::Rest) {
+    else if(particle.showerBasis()->frame()==ShowerBasis::Rest) {
       beta_bb = -pVect.boostVector();
     }
     else
@@ -591,10 +574,10 @@ double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
     pVect.boost(beta_bb);
     nVect.boost(beta_bb);
     Axis axis;
-    if(kinematics->frame()==ShowerKinematics::BackToBack) {
+    if(particle.showerBasis()->frame()==ShowerBasis::BackToBack) {
       axis = pVect.vect().unit();
     }
-    else if(kinematics->frame()==ShowerKinematics::Rest) {
+    else if(particle.showerBasis()->frame()==ShowerBasis::Rest) {
       axis = nVect.vect().unit();
     }
     else
@@ -677,29 +660,6 @@ double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
   // if spin correlations
   vector<pair<int,Complex> > wgts;     
   if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->spinCorrelations()) {
-    // get the spin density matrix and the mapping
-    RhoDMatrix mapping;
-    SpinPtr inspin;
-    bool needMapping = getMapping(inspin,mapping,particle,kinematics);
-    // set the decayed flag
-    inspin->decay();
-    // get the spin density matrix
-    RhoDMatrix rho=inspin->rhoMatrix();
-    // map to the shower basis if needed
-    if(needMapping) {
-      RhoDMatrix rhop(rho.iSpin(),false);
-      for(int ixa=0;ixa<rho.iSpin();++ixa) {
-	for(int ixb=0;ixb<rho.iSpin();++ixb) {
-	  for(int iya=0;iya<rho.iSpin();++iya) {
-	    for(int iyb=0;iyb<rho.iSpin();++iyb) {
-	      rhop(ixa,ixb) += rho(iya,iyb)*mapping(iya,ixa)*conj(mapping(iyb,ixb));
-	    }
-	  }
-	}
-      }
-      rhop.normalize();
-      rho = rhop;
-    }
     // calculate the weights
     wgts = splittingFn()->generatePhiForward(z,t,ids,rho);
   }
@@ -724,7 +684,7 @@ double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
     wgt = spinWgt.real();
     if(wgt-1.>1e-10) {
       generator()->log() << "Forward spin weight problem " << wgt << " " << wgt-1. 
-  	   << " " << ids[0] << " " << ids[1] << " " << ids[2] << " " << " " << phi << "\n";
+			 << " " << ids[0]->id() << " " << ids[1]->id() << " " << ids[2]->id() << " " << " " << phi << "\n";
       generator()->log() << "Weights \n";
       for(unsigned int ix=0;ix<wgts.size();++ix)
 	generator()->log() << wgts[ix].first << " " << wgts[ix].second << "\n";
@@ -743,7 +703,7 @@ double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
 	}
 	if(aziWgt-1.>1e-10||aziWgt<-1e-10) {
 	  generator()->log() << "Forward soft weight problem " << aziWgt << " " << aziWgt-1. 
-			     << " " << ids[0] << " " << ids[1] << " " << ids[2] << " " << " " << phi << "\n";
+			     << " " << ids[0]->id() << " " << ids[1]->id() << " " << ids[2]->id() << " " << " " << phi << "\n";
 	}
       }
       else {
@@ -768,7 +728,8 @@ double QTildeSudakov::generatePhiForward(ShowerParticle & particle,
 
 double QTildeSudakov::generatePhiBackward(ShowerParticle & particle,
 					  const IdList & ids,
-					  ShoKinPtr kinematics) {
+					  ShoKinPtr kinematics,
+					  const RhoDMatrix & rho) {
   // no correlations, return flat phi
   if(! dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->correlations())
     return Constants::twopi*UseRandom::rnd();
@@ -778,7 +739,7 @@ double QTildeSudakov::generatePhiBackward(ShowerParticle & particle,
   Energy pT = kinematics->pT();
   // if soft correlations 
   bool softAllowed = dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations() &&
-    (ids[2]==ParticleID::g || ids[2]==ParticleID::gamma);
+    (ids[2]->id()==ParticleID::g || ids[2]->id()==ParticleID::gamma);
   Energy2 pipj,pik,m12(ZERO),m22(ZERO);
   vector<Energy2> pjk(3,ZERO);
   Energy Ei,Ej,Ek;
@@ -789,10 +750,9 @@ double QTildeSudakov::generatePhiBackward(ShowerParticle & particle,
     double zFact = (1.-z);
     // compute the transforms to the shower reference frame
     // first the boost
-    vector<Lorentz5Momentum> basis = kinematics->getBasis();
-    Lorentz5Momentum pVect = basis[0];
-    Lorentz5Momentum nVect = basis[1];
-    assert(kinematics->frame()==ShowerKinematics::BackToBack);
+    Lorentz5Momentum pVect = particle.showerBasis()->pVector();
+    Lorentz5Momentum nVect = particle.showerBasis()->nVector();
+    assert(particle.showerBasis()->frame()==ShowerBasis::BackToBack);
     Boost beta_bb = -(pVect + nVect).boostVector();
     pVect.boost(beta_bb);
     nVect.boost(beta_bb);
@@ -851,29 +811,7 @@ double QTildeSudakov::generatePhiBackward(ShowerParticle & particle,
   // if spin correlations
   vector<pair<int,Complex> > wgts;
   if(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->spinCorrelations()) {
-    // get the spin density matrix and the mapping
-    RhoDMatrix mapping;
-    SpinPtr inspin;
-    bool needMapping = getMapping(inspin,mapping,particle,kinematics);
-    // set the decayed flag (counterintuitive but going backward)
-    inspin->decay();
-    // get the spin density matrix
-    RhoDMatrix rho=inspin->DMatrix();
-    // map to the shower basis if needed
-    if(needMapping) {
-      RhoDMatrix rhop(rho.iSpin(),false);
-      for(int ixa=0;ixa<rho.iSpin();++ixa) {
-	for(int ixb=0;ixb<rho.iSpin();++ixb) {
-	  for(int iya=0;iya<rho.iSpin();++iya) {
-	    for(int iyb=0;iyb<rho.iSpin();++iyb) {
-	      rhop(ixa,ixb) += rho(iya,iyb)*mapping(iya,ixa)*conj(mapping(iyb,ixb));
-	    }
-	  }
-	}
-      }
-      rhop.normalize();
-      rho = rhop;
-    }
+    // get the weights
     wgts = splittingFn()->generatePhiBackward(z,t,ids,rho);
   }
   else {
@@ -896,7 +834,7 @@ double QTildeSudakov::generatePhiBackward(ShowerParticle & particle,
     wgt = spinWgt.real();
     if(wgt-1.>1e-10) {
       generator()->log() << "Backward weight problem " << wgt << " " << wgt-1. 
-  	   << " " << ids[0] << " " << ids[1] << " " << ids[2] << " " << " " << z << " " << phi << "\n";
+			 << " " << ids[0]->id() << " " << ids[1]->id() << " " << ids[2]->id() << " " << " " << z << " " << phi << "\n";
       generator()->log() << "Weights \n";
       for(unsigned int ix=0;ix<wgts.size();++ix)
   	generator()->log() << wgts[ix].first << " " << wgts[ix].second << "\n";
@@ -913,7 +851,7 @@ double QTildeSudakov::generatePhiBackward(ShowerParticle & particle,
       }
       if(aziWgt-1.>1e-10||aziWgt<-1e-10) {
  	generator()->log() << "Backward soft weight problem " << aziWgt << " " << aziWgt-1. 
- 			   << " " << ids[0] << " " << ids[1] << " " << ids[2] << " " << " " << phi << "\n";
+ 			   << " " << ids[0]->id() << " " << ids[1]->id() << " " << ids[2]->id() << " " << " " << phi << "\n";
       }
     }
     wgt *= aziWgt;
@@ -934,11 +872,12 @@ double QTildeSudakov::generatePhiBackward(ShowerParticle & particle,
 
 double QTildeSudakov::generatePhiDecay(ShowerParticle & particle,
 				       const IdList & ids,
-				       ShoKinPtr kinematics) {
+				       ShoKinPtr kinematics,
+				       const RhoDMatrix &) {
   // only soft correlations in this case
   // no correlations, return flat phi
   if( !(dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->softCorrelations() &&
-	(ids[2]==ParticleID::g || ids[2]==ParticleID::gamma )))
+	(ids[2]->id()==ParticleID::g || ids[2]->id()==ParticleID::gamma )))
     return Constants::twopi*UseRandom::rnd();
   // get the kinematic variables
   double  z = kinematics->z();
@@ -947,12 +886,11 @@ double QTildeSudakov::generatePhiDecay(ShowerParticle & particle,
   // find the partner for the soft correlations
   tShowerParticlePtr partner = findCorrelationPartner(particle,true,splittingFn()->interactionType());
   double zFact(1.-z);
-  vector<Lorentz5Momentum> basis = kinematics->getBasis();
   // compute the transforms to the shower reference frame
   // first the boost
-  Lorentz5Momentum pVect = basis[0];
-  Lorentz5Momentum nVect = basis[1];
-  assert(kinematics->frame()==ShowerKinematics::Rest);
+  Lorentz5Momentum pVect = particle.showerBasis()->pVector();
+  Lorentz5Momentum nVect = particle.showerBasis()->nVector();
+  assert(particle.showerBasis()->frame()==ShowerBasis::Rest);
   Boost beta_bb = -pVect.boostVector();
   pVect.boost(beta_bb);
   nVect.boost(beta_bb);
@@ -1035,7 +973,7 @@ double QTildeSudakov::generatePhiDecay(ShowerParticle & particle,
     }
     if(wgt-1.>1e-10||wgt<-1e-10) {
       generator()->log() << "Decay soft weight problem " << wgt << " " << wgt-1. 
-			 << " " << ids[0] << " " << ids[1] << " " << ids[2] << " " << " " << phi << "\n";
+			 << " " << ids[0]->id() << " " << ids[1]->id() << " " << ids[2]->id() << " " << " " << phi << "\n";
     }
     if(wgt>wgtMax) {
       phiMax = phi;
@@ -1056,11 +994,11 @@ double QTildeSudakov::generatePhiDecay(ShowerParticle & particle,
 Energy QTildeSudakov::calculateScale(double zin, Energy pt, IdList ids,
 				     unsigned int iopt) {
   Energy2 tmin;
-  initialize(ids,tmin,false);
+  initialize(ids,tmin);
   // final-state branching
   if(iopt==0) {
     Energy2 scale=(sqr(pt)+masssquared_[1]*(1.-zin)+masssquared_[2]*zin);
-    if(ids[0]!=ParticleID::g) scale -= zin*(1.-zin)*masssquared_[0];
+    if(ids[0]->id()!=ParticleID::g) scale -= zin*(1.-zin)*masssquared_[0];
     scale /= sqr(zin*(1-zin));
     return scale<=ZERO ? sqrt(tmin) : sqrt(scale);
   }

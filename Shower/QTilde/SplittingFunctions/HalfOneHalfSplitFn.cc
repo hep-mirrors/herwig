@@ -31,10 +31,10 @@ void HalfOneHalfSplitFn::Init() {
 }
 
 double HalfOneHalfSplitFn::P(const double z, const Energy2 t,
-		       const IdList &ids, const bool mass) const {
+			     const IdList &ids, const bool mass, const RhoDMatrix & ) const {
   double val=(2.*(1.-z)+sqr(z))/z;
   if(mass) {
-    Energy m = getParticleData(ids[0])->mass();
+    Energy m = ids[0]->mass();
     val-=2.*sqr(m)/t;
   }
   return colourFactor(ids)*val;
@@ -46,10 +46,10 @@ double HalfOneHalfSplitFn::overestimateP(const double z,
 }
 
 double HalfOneHalfSplitFn::ratioP(const double z, const Energy2 t,
-				  const IdList &ids,const bool mass) const {
+				  const IdList &ids,const bool mass, const RhoDMatrix & ) const {
   double val=2.*(1.-z)+sqr(z);
   if(mass) {
-    Energy m=getParticleData(ids[0])->mass();
+    Energy m=ids[0]->mass();
     val -=2.*sqr(m)*z/t;
   }
   return 0.5*val;
@@ -91,10 +91,8 @@ double HalfOneHalfSplitFn::invIntegOverP(const double r,
 bool HalfOneHalfSplitFn::accept(const IdList &ids) const {
   // 3 particles and in and out fermion same
   if(ids.size()!=3 || ids[0]!=ids[2]) return false;
-  tcPDPtr q=getParticleData(ids[0]);
-  tcPDPtr g=getParticleData(ids[1]);
-  if(q->iSpin()!=PDT::Spin1Half ||
-     g->iSpin()!=PDT::Spin1) return false;
+  if(ids[0]->iSpin()!=PDT::Spin1Half ||
+     ids[1]->iSpin()!=PDT::Spin1) return false;
   return checkColours(ids);
 }
 
@@ -111,7 +109,7 @@ vector<pair<int, Complex> >
 HalfOneHalfSplitFn::generatePhiBackward(const double z, const Energy2 t, const IdList & ids,
 					const RhoDMatrix & rho) {
   assert(rho.iSpin()==PDT::Spin1);
-  double mt = sqr(getParticleData(ids[0])->mass())/t;
+  double mt = sqr(ids[0]->mass())/t;
   double diag = (1.+sqr(1.-z))/z - 2.*mt;
   double off  = 2.*(1.-z)/z*(1.-mt*z/(1.-z));
   double max = diag+2.*abs(rho(0,2))*off;
@@ -127,7 +125,7 @@ DecayMEPtr HalfOneHalfSplitFn::matrixElement(const double z, const Energy2 t,
                                              bool timeLike) {
   // calculate the kernal
   DecayMEPtr kernal(new_ptr(TwoBodyDecayMatrixElement(PDT::Spin1Half,PDT::Spin1,PDT::Spin1Half)));
-  Energy m = !timeLike ? ZERO : getParticleData(ids[0])->mass();
+  Energy m = !timeLike ? ZERO : ids[0]->mass();
   double mt = m/sqrt(t);
   double root = sqrt(1.-z*sqr(m)/(1.-z)/t);
   double romz = sqrt(1.-z); 

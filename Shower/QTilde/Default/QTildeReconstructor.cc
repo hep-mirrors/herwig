@@ -515,7 +515,7 @@ reconstructDecayJets(ShowerTreePtr decay,
     // get the n reference vector
     if(partner) {
       if(initial->progenitor()->showerKinematics()) {
-	nvect = initial->progenitor()->showerKinematics()->getBasis()[1];
+	nvect = initial->progenitor()->showerBasis()->getBasis()[1];
       }
       else {
 	Lorentz5Momentum ppartner=initial->progenitor()->partner()->momentum();
@@ -1109,7 +1109,7 @@ deconstructColourSinglets(HardTreePtr tree,
 	deconstructInitialInitialSystem(applyBoost,toRest,fromRest,tree,
 					systems[ix].jets,type);
     }
-    if(type==ShowerInteraction::QED||type==ShowerInteraction::Both) {
+    if(type!=ShowerInteraction::QCD) {
       combineFinalState(systems);
       general=false;
     }
@@ -1134,7 +1134,7 @@ deconstructColourSinglets(HardTreePtr tree,
     toRest = LorentzRotation(ptotal.findBoostToCM());
     fromRest = toRest;
     fromRest.invert();
-    if(type==ShowerInteraction::QED||type==ShowerInteraction::Both) {
+    if(type!=ShowerInteraction::QCD) {
       combineFinalState(systems);
       general=false;
     }
@@ -1293,7 +1293,7 @@ reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
     else {
       pin[0]  +=jets[ix]->progenitor()->momentum();
       if(jets[ix]->progenitor()->showerKinematics()) {
-	pbeam = jets[ix]->progenitor()->showerKinematics()->getBasis()[0];
+	pbeam = jets[ix]->progenitor()->showerBasis()->getBasis()[0];
       }
       else {
 	if ( jets[ix]->original()->parents().empty() ) {
@@ -2567,8 +2567,8 @@ void QTildeReconstructor::deepTransform(PPtr particle,
   particle->transform(r);
   // transform the p and n vectors
   ShowerParticlePtr sparticle = dynamic_ptr_cast<ShowerParticlePtr>(particle);
-  if(sparticle && sparticle->showerKinematics()) {
-    sparticle->showerKinematics()->transform(r);
+  if(sparticle && sparticle->showerBasis()) {
+    sparticle->showerBasis()->transform(r);
   }
   if ( particle->next() ) deepTransform(particle->next(),r,match,original);
   if(!match) return;
@@ -2836,8 +2836,7 @@ reconstructColourSinglets(vector<ShowerProgenitorPtr> & ShowerHardJets,
 	reconstructInitialInitialSystem(applyBoost,toRest,fromRest,
 					systems[ix].jets);
     }
-    if(type==ShowerInteraction::QED||
-       type==ShowerInteraction::Both) {
+    if(type!=ShowerInteraction::QCD) {
       combineFinalState(systems);
       general=false;
     }
@@ -2876,7 +2875,7 @@ reconstructColourSinglets(vector<ShowerProgenitorPtr> & ShowerHardJets,
   }
   // e+e- type
   else if(nnun==0&&nnii==0&&nnif==0&&nnf>0&&nni==2) {
-    general = type==ShowerInteraction::QED || type == ShowerInteraction::Both;
+    general = type!=ShowerInteraction::QCD;
   }
   // general type
   else {

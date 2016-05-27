@@ -30,7 +30,7 @@ void OneOneOneSplitFn::Init() {
 }
 
 double OneOneOneSplitFn::P(const double z, const Energy2,
-			   const IdList & ids, const bool)const {
+			   const IdList & ids, const bool, const RhoDMatrix &)const {
   // (this is historically important! the first physics - two years
   // after the birth of the project - in the Herwig shower! Alberto
   // & Stefan, 25/04/2002).
@@ -44,7 +44,7 @@ double OneOneOneSplitFn::overestimateP(const double z,
 
 
 double OneOneOneSplitFn::ratioP(const double z, const Energy2,
-				const IdList & , const bool) const {
+				const IdList & , const bool, const RhoDMatrix &) const {
   return sqr(1.-z*(1.-z));
 }
 
@@ -81,8 +81,7 @@ double OneOneOneSplitFn::integOverP(const double z, const IdList & ids,
 bool OneOneOneSplitFn::accept(const IdList & ids) const {
   if(ids.size()!=3) return false;
   for(unsigned int ix=0;ix<ids.size();++ix) {
-    tcPDPtr part = getParticleData(ids[ix]);
-    if(part->iSpin()!=PDT::Spin1) return false;
+    if(ids[0]->iSpin()!=PDT::Spin1) return false;
   }
   return checkColours(ids);
 }

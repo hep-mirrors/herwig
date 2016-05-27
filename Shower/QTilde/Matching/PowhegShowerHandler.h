@@ -196,12 +196,12 @@ private:
   /**
    *  The allowed final-state branchings
    */
-  mutable map<pair<long,long>,pair<SudakovPtr,IdList> > allowedFinal_;
+  mutable map<pair<long,long>,BranchingElement > allowedFinal_;
 
   /**
    *  The allowed initial-state branchings
    */
-  mutable multimap<long, pair<SudakovPtr,IdList> > allowedInitial_;
+  mutable multimap<long, BranchingElement > allowedInitial_;
   //@}
 
 public:

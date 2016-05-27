@@ -808,25 +808,17 @@ void QTildeShowerHandler::hardMatrixElementCorrection(bool hard) {
   }
 }
 
-ShowerParticleVector QTildeShowerHandler::createTimeLikeChildren(tShowerParticlePtr particle, IdList ids) {
+ShowerParticleVector QTildeShowerHandler::createTimeLikeChildren(tShowerParticlePtr, IdList ids) {
   // Create the ShowerParticle objects for the two children of
   // the emitting particle; set the parent/child relationship
   // if same as definition create particles, otherwise create cc
-  tcPDPtr pdata[2];
-  for(unsigned int ix=0;ix<2;++ix) pdata[ix]=getParticleData(ids[ix+1]);
-  if(particle->id()!=ids[0]) {
-    for(unsigned int ix=0;ix<2;++ix) {
-      tPDPtr cc(pdata[ix]->CC());
-      if(cc) pdata[ix]=cc;
-    }
-  }
   ShowerParticleVector children;
   for(unsigned int ix=0;ix<2;++ix) {
-    children.push_back(new_ptr(ShowerParticle(pdata[ix],true)));
-    if(children[ix]->id()==_progenitor->id()&&!pdata[ix]->stable())
+    children.push_back(new_ptr(ShowerParticle(ids[ix],true)));
+    if(children[ix]->id()==_progenitor->id()&&!ids[ix]->stable())
       children[ix]->set5Momentum(Lorentz5Momentum(_progenitor->progenitor()->mass()));
     else
-      children[ix]->set5Momentum(Lorentz5Momentum(pdata[ix]->mass()));
+      children[ix]->set5Momentum(Lorentz5Momentum(ids[ix]->mass()));
   }
   return children;
 }
@@ -875,8 +867,6 @@ bool QTildeShowerHandler::timeLikeShower(tShowerParticlePtr particle,
     if(setupChildren) {
       ++_nFSR;
       particle->showerKinematics(fb.kinematics);
-      // generate phi
-      fb.kinematics->phi(fb.sudakov->generatePhiForward(*particle,fb.ids,fb.kinematics));
       // check highest pT
       if(fb.kinematics->pT()>progenitor()->highestpT())
 	progenitor()->highestpT(fb.kinematics->pT());
@@ -950,14 +940,14 @@ bool QTildeShowerHandler::timeLikeShower(tShowerParticlePtr particle,
    	  const vector<Energy> & vm = fc[ix].sudakov->virtualMasses(fc[ix].ids);
    	  Energy2 q2 = 
    	    fc[ix].kinematics->z()*(1.-fc[ix].kinematics->z())*sqr(fc[ix].kinematics->scale());
-   	  if(fc[ix].ids[0]!=ParticleID::g) q2 += sqr(vm[0]);
+   	  if(fc[ix].ids[0]->id()!=ParticleID::g) q2 += sqr(vm[0]);
    	  masses[ix+1] = sqrt(q2);
    	}
    	else {
    	  masses[ix+1] = virtualMasses[ix+1];
    	}
       }
-      masses[0] = fb.ids[0]!=ParticleID::g ? virtualMasses[0] : ZERO;
+      masses[0] = fb.ids[0]->id()!=ParticleID::g ? virtualMasses[0] : ZERO;
       double z = fb.kinematics->z();
       Energy2 pt2 = z*(1.-z)*(z*(1.-z)*sqr(fb.kinematics->scale()) + sqr(masses[0]))
    	- sqr(masses[1])*(1.-z) - sqr(masses[2])*z;
@@ -1035,15 +1025,10 @@ QTildeShowerHandler::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
     progenitor()->highestpT(bb.kinematics->pT());
   // For the time being we are considering only 1->2 branching
   // particles as in Sudakov form factor
-  tcPDPtr part[2]={getParticleData(bb.ids[0]),
-		   getParticleData(bb.ids[2])};
-  if(particle->id()!=bb.ids[1]) {
-    if(part[0]->CC()) part[0]=part[0]->CC();
-    if(part[1]->CC()) part[1]=part[1]->CC();
-  }
+  tcPDPtr part[2]={bb.ids[0],bb.ids[2]};
   // Now create the actual particles, make the otherChild a final state
   // particle, while the newParent is not
-  ShowerParticlePtr newParent=new_ptr(ShowerParticle(part[0],false));
+  ShowerParticlePtr newParent  = new_ptr(ShowerParticle(part[0],false));
   ShowerParticlePtr otherChild = new_ptr(ShowerParticle(part[1],true,true));
   ShowerParticleVector theChildren;
   theChildren.push_back(particle); 
@@ -1260,7 +1245,7 @@ bool QTildeShowerHandler::spaceLikeDecayShower(tShowerParticlePtr particle,
 	const vector<Energy> & vm = fc[1].sudakov->virtualMasses(fc[1].ids);
 	Energy2 q2 = 
 	  fc[1].kinematics->z()*(1.-fc[1].kinematics->z())*sqr(fc[1].kinematics->scale());
-	if(fc[1].ids[0]!=ParticleID::g) q2 += sqr(vm[0]);
+	if(fc[1].ids[0]->id()!=ParticleID::g) q2 += sqr(vm[0]);
 	masses[2] = sqrt(q2);
       }
       else {
@@ -1315,7 +1300,7 @@ vector<ShowerProgenitorPtr> QTildeShowerHandler::setupShower(bool hard) {
     inter = _hardtree->interaction();
   }
   // set the initial colour partners
-  setEvolutionPartners(hard,inter,false);
+  setEvolutionPartners(hard,interaction_,false);
   // generate hard me if needed
   if(_hardEmissionMode==0 ||
      (!hard && _hardEmissionMode==-1)) hardMatrixElementCorrection(hard);
@@ -1428,6 +1413,8 @@ void QTildeShowerHandler::updateHistory(tShowerParticlePtr particle) {
 
 bool QTildeShowerHandler::startTimeLikeShower(ShowerInteraction::Type type) {
   _nFSR = 0;
+  // initialize basis vectors etc
+  progenitor()->progenitor()->initializeFinalState();
   if(hardTree()) {
     map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator 
       eit=hardTree()->particles().end(),
@@ -1439,6 +1426,7 @@ bool QTildeShowerHandler::startTimeLikeShower(ShowerInteraction::Type type) {
       return output;
     }
   }
+  // do the shower
   bool output = hardOnly() ? false :
     timeLikeShower(progenitor()->progenitor() ,type,Branching(),true) ;
   if(output) updateHistory(progenitor()->progenitor());
@@ -1446,6 +1434,8 @@ bool QTildeShowerHandler::startTimeLikeShower(ShowerInteraction::Type type) {
 }
 
 bool QTildeShowerHandler::startSpaceLikeShower(PPtr parent, ShowerInteraction::Type type) {
+  // initialise the basis vectors
+  progenitor()->progenitor()->initializeInitialState(parent);
   if(hardTree()) {
     map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator 
       eit =hardTree()->particles().end(),
@@ -1455,6 +1445,7 @@ bool QTildeShowerHandler::startSpaceLikeShower(PPtr parent, ShowerInteraction::T
 				       parent, mit->second->parent(), type );
     } 
   }
+  // perform the shower
   return  hardOnly() ? false :
     spaceLikeShower(progenitor()->progenitor(),parent,type);
 }
@@ -1463,6 +1454,8 @@ bool QTildeShowerHandler::
 startSpaceLikeDecayShower(const ShowerParticle::EvolutionScales & maxScales,
 			  Energy minimumMass,ShowerInteraction::Type type) {
   _nFSR = 0;
+  // set up the particle basis vectors
+  progenitor()->progenitor()->initializeDecay();
   if(hardTree()) {
     map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator 
       eit =hardTree()->particles().end(),
@@ -1474,6 +1467,7 @@ startSpaceLikeDecayShower(const ShowerParticle::EvolutionScales & maxScales,
 					   minimumMass, branch ,type, Branching());
     }
   }
+  // perform the shower
   return  hardOnly() ? false :
     spaceLikeDecayShower(progenitor()->progenitor(),maxScales,minimumMass,type,Branching());
 }
@@ -1481,8 +1475,7 @@ startSpaceLikeDecayShower(const ShowerParticle::EvolutionScales & maxScales,
 bool QTildeShowerHandler::timeLikeVetoed(const Branching & fb,
 			     ShowerParticlePtr particle) {
   // work out type of interaction
-  ShowerInteraction::Type type = fb.type==ShowerPartnerType::QED ? 
-    ShowerInteraction::QED : ShowerInteraction::QCD;
+  ShowerInteraction::Type type = convertInteraction(fb.type);
   // check whether emission was harder than largest pt of hard subprocess
   if ( restrictPhasespace() && fb.kinematics->pT() > _progenitor->maxHardPt() ) 
     return true;
@@ -1533,8 +1526,7 @@ bool QTildeShowerHandler::timeLikeVetoed(const Branching & fb,
 bool QTildeShowerHandler::spaceLikeVetoed(const Branching & bb,
 			      ShowerParticlePtr particle) {
   // work out type of interaction
-  ShowerInteraction::Type type = bb.type==ShowerPartnerType::QED ? 
-    ShowerInteraction::QED : ShowerInteraction::QCD;
+  ShowerInteraction::Type type = convertInteraction(bb.type);
   // check whether emission was harder than largest pt of hard subprocess
   if (restrictPhasespace() && bb.kinematics->pT() > _progenitor->maxHardPt())
     return true;
@@ -1581,8 +1573,7 @@ bool QTildeShowerHandler::spaceLikeVetoed(const Branching & bb,
 bool QTildeShowerHandler::spaceLikeDecayVetoed( const Branching & fb,
 				    ShowerParticlePtr particle) {
   // work out type of interaction
-  ShowerInteraction::Type type = fb.type==ShowerPartnerType::QED ? 
-    ShowerInteraction::QED : ShowerInteraction::QCD;
+  ShowerInteraction::Type type = convertInteraction(fb.type);
   // apply the soft correction
   if( softMEC() && _decayme && _decayme->hasMECorrection() ) {
     if(_decayme->softMatrixElementVeto(_progenitor,particle,fb))
@@ -1929,9 +1920,6 @@ bool QTildeShowerHandler::truncatedTimeLikeShower(tShowerParticlePtr particle,
       particle->showerKinematics(fb.kinematics);
       if(fb.kinematics->pT()>progenitor()->highestpT())
 	progenitor()->highestpT(fb.kinematics->pT());
-      // if not hard generate phi
-      if(!fb.hard)
-	fb.kinematics->phi(fb.sudakov->generatePhiForward(*particle,fb.ids,fb.kinematics));
       // create the children
       children = createTimeLikeChildren(particle,fb.ids);
       // update the children
@@ -2040,14 +2028,14 @@ bool QTildeShowerHandler::truncatedTimeLikeShower(tShowerParticlePtr particle,
    	  const vector<Energy> & vm = fc[ix].sudakov->virtualMasses(fc[ix].ids);
    	  Energy2 q2 = 
    	    fc[ix].kinematics->z()*(1.-fc[ix].kinematics->z())*sqr(fc[ix].kinematics->scale());
-   	  if(fc[ix].ids[0]!=ParticleID::g) q2 += sqr(vm[0]);
+   	  if(fc[ix].ids[0]->id()!=ParticleID::g) q2 += sqr(vm[0]);
    	  masses[ix+1] = sqrt(q2);
    	}
    	else {
    	  masses[ix+1] = virtualMasses[ix+1];
    	}
       }
-      masses[0] = fb.ids[0]!=ParticleID::g ? virtualMasses[0] : ZERO;
+      masses[0] = fb.ids[0]->id()!=ParticleID::g ? virtualMasses[0] : ZERO;
       double z = fb.kinematics->z();
       Energy2 pt2 = z*(1.-z)*(z*(1.-z)*sqr(fb.kinematics->scale()) + sqr(masses[0]))
    	- sqr(masses[1])*(1.-z) - sqr(masses[2])*z;
@@ -2140,19 +2128,12 @@ bool QTildeShowerHandler::truncatedSpaceLikeShower(tShowerParticlePtr particle, 
 	break;
       }
       // particles as in Sudakov form factor
-      part[0] = getParticleData( bb.ids[0] );
-      part[1] = getParticleData( bb.ids[2] );
-      
-      //is emitter anti-particle
-      if( particle->id() != bb.ids[1]) {
-	if( part[0]->CC() ) part[0] = part[0]->CC();
-	if( part[1]->CC() ) part[1] = part[1]->CC();
-      }
+      part[0] = bb.ids[0];
+      part[1] = bb.ids[2];
       double zsplit = bb.kinematics->z();
       // apply the vetos for the truncated shower
       // if doesn't carry most of momentum
-      ShowerInteraction::Type type2 = bb.type==ShowerPartnerType::QED ? 
-	ShowerInteraction::QED : ShowerInteraction::QCD;
+      ShowerInteraction::Type type2 = convertInteraction(bb.type);
       if(type2==branch->sudakov()->interactionType() &&
 	 zsplit < 0.5) {
 	particle->vetoEmission(bb.type,bb.kinematics->scale());
@@ -2178,7 +2159,6 @@ bool QTildeShowerHandler::truncatedSpaceLikeShower(tShowerParticlePtr particle, 
     ShoKinPtr kinematics =
       branch->sudakov()->createInitialStateBranching( branch->scale(), z, branch->phi(),
     						      branch->children()[0]->pT() );
-    kinematics->initialize( *particle, beam );
     // assign the splitting function and shower kinematics
     particle->showerKinematics( kinematics );
     if(kinematics->pT()>progenitor()->highestpT())
@@ -2475,7 +2455,7 @@ truncatedSpaceLikeDecayShower(tShowerParticlePtr particle,
 	const vector<Energy> & vm = fc[1].sudakov->virtualMasses(fc[1].ids);
 	Energy2 q2 = 
 	  fc[1].kinematics->z()*(1.-fc[1].kinematics->z())*sqr(fc[1].kinematics->scale());
-	if(fc[1].ids[0]!=ParticleID::g) q2 += sqr(vm[0]);
+	if(fc[1].ids[0]->id()!=ParticleID::g) q2 += sqr(vm[0]);
 	masses[2] = sqrt(q2);
       }
       else {
@@ -2562,7 +2542,7 @@ void QTildeShowerHandler::connectTrees(ShowerTreePtr showerTree,
     // Sudakovs for ISR
     if((**cit).parent()&&(**cit).status()==HardBranching::Incoming) {
       ++_nis;
-      IdList br(3);
+      vector<long> br(3);
       br[0] = (**cit).parent()->branchingParticle()->id();
       br[1] = (**cit).          branchingParticle()->id();
       br[2] = (**cit).parent()->children()[0]==*cit ?
@@ -2581,9 +2561,9 @@ void QTildeShowerHandler::connectTrees(ShowerTreePtr showerTree,
       SudakovPtr sudakov;
       for(BranchingList::const_iterator cjt = branchings.lower_bound(index); 
 	  cjt != branchings.upper_bound(index); ++cjt ) {
-	IdList ids = cjt->second.second;
-	if(ids[0]==br[0]&&ids[1]==br[1]&&ids[2]==br[2]) {
-	  sudakov=cjt->second.first;
+	IdList ids = cjt->second.particles;
+	if(ids[0]->id()==br[0]&&ids[1]->id()==br[1]&&ids[2]->id()==br[2]) {
+	  sudakov=cjt->second.sudakov;
 	  break;
 	}
       }
@@ -2595,7 +2575,7 @@ void QTildeShowerHandler::connectTrees(ShowerTreePtr showerTree,
     // Sudakovs for FSR
     else if(!(**cit).children().empty()) {
       ++_nfs;
-      IdList br(3);
+      vector<long> br(3);
       br[0] = (**cit)               .branchingParticle()->id();
       br[1] = (**cit).children()[0]->branchingParticle()->id();
       br[2] = (**cit).children()[1]->branchingParticle()->id();
@@ -2609,9 +2589,9 @@ void QTildeShowerHandler::connectTrees(ShowerTreePtr showerTree,
       SudakovPtr sudakov;
       for(BranchingList::const_iterator cjt = branchings.lower_bound(index); 
 	  cjt != branchings.upper_bound(index); ++cjt ) {
-	IdList ids = cjt->second.second;
-	if(ids[0]==br[0]&&ids[1]==br[1]&&ids[2]==br[2]) {
-	  sudakov=cjt->second.first;
+	IdList ids = cjt->second.particles;
+	if(ids[0]->id()==br[0]&&ids[1]->id()==br[1]&&ids[2]->id()==br[2]) {
+	  sudakov=cjt->second.sudakov;
 	  break;
 	}
       }
@@ -3126,7 +3106,6 @@ Branching QTildeShowerHandler::selectTimeLikeBranching(tShowerParticlePtr partic
 					   HardBranchingPtr branch) {
   Branching fb;
   unsigned int iout=0;
-  tcPDPtr pdata[2];
   while (true) {
     // break if doing truncated shower and no truncated shower needed
     if(branch && (!isTruncatedShowerON()||hardOnly())) break;
@@ -3140,21 +3119,13 @@ Branching QTildeShowerHandler::selectTimeLikeBranching(tShowerParticlePtr partic
 	fb=Branching();
 	break;
       }
-      // get the particle data objects
-      for(unsigned int ix=0;ix<2;++ix) pdata[ix]=getParticleData(fb.ids[ix+1]);
-      if(particle->id()!=fb.ids[0]) {
-    	for(unsigned int ix=0;ix<2;++ix) {
-    	  tPDPtr cc(pdata[ix]->CC());
-    	  if(cc) pdata[ix]=cc;
-    	}
-      }
       // find the truncated line
       iout=0;
-      if(pdata[0]->id()!=pdata[1]->id()) {
-	if(pdata[0]->id()==particle->id())       iout=1;
-	else if (pdata[1]->id()==particle->id()) iout=2;
+      if(fb.ids[1]->id()!=fb.ids[2]->id()) {
+	if(fb.ids[1]->id()==particle->id())       iout=1;
+	else if (fb.ids[2]->id()==particle->id()) iout=2;
       }
-      else if(pdata[0]->id()==particle->id()) {
+      else if(fb.ids[1]->id()==particle->id()) {
 	if(fb.kinematics->z()>0.5) iout=1;
 	else                       iout=2;
       }
@@ -3166,8 +3137,7 @@ Branching QTildeShowerHandler::selectTimeLikeBranching(tShowerParticlePtr partic
       }
       double zsplit = iout==1 ? fb.kinematics->z() : 1-fb.kinematics->z();
       // only if same interaction for forced branching
-      ShowerInteraction::Type type2 = fb.type==ShowerPartnerType::QED ?
-	ShowerInteraction::QED : ShowerInteraction::QCD;
+      ShowerInteraction::Type type2 = convertInteraction(fb.type);
       // and evolution
       if(type2==branch->sudakov()->interactionType()) {
 	if(zsplit < 0.5 || // hardest line veto
@@ -3208,11 +3178,10 @@ Branching QTildeShowerHandler::selectTimeLikeBranching(tShowerParticlePtr partic
 	                                         branch->children()[0]->z(),
 	                                         branch->phi(),
 						 branch->children()[0]->pT());
-  showerKin->initialize( *particle,PPtr() );
   IdList idlist(3);
-  idlist[0] = particle->id();
-  idlist[1] = branch->children()[0]->branchingParticle()->id();
-  idlist[2] = branch->children()[1]->branchingParticle()->id();
+  idlist[0] = particle->dataPtr();
+  idlist[1] = branch->children()[0]->branchingParticle()->dataPtr();
+  idlist[2] = branch->children()[1]->branchingParticle()->dataPtr();
   fb = Branching( showerKin, idlist, branch->sudakov(),branch->type() );
   fb.hard = true;
   fb.iout=0;
@@ -3226,7 +3195,6 @@ Branching QTildeShowerHandler::selectSpaceLikeDecayBranching(tShowerParticlePtr 
 						 HardBranchingPtr branch) {
   Branching fb;
   unsigned int iout=0;
-  tcPDPtr pdata[2];
   while (true) {
     // break if doing truncated shower and no truncated shower needed
     if(branch && (!isTruncatedShowerON()||hardOnly())) break;
@@ -3242,21 +3210,13 @@ Branching QTildeShowerHandler::selectSpaceLikeDecayBranching(tShowerParticlePtr 
 	fb=Branching();
 	break;
       }
-      // get the particle data objects
-      for(unsigned int ix=0;ix<2;++ix) pdata[ix]=getParticleData(fb.ids[ix+1]);
-      if(particle->id()!=fb.ids[0]) {
-	for(unsigned int ix=0;ix<2;++ix) {
-	  tPDPtr cc(pdata[ix]->CC());
-	  if(cc) pdata[ix]=cc;
-	}
-      }
       // find the truncated line
       iout=0;
-      if(pdata[0]->id()!=pdata[1]->id()) {
-	if(pdata[0]->id()==particle->id())       iout=1;
-	else if (pdata[1]->id()==particle->id()) iout=2;
+      if(fb.ids[1]->id()!=fb.ids[2]->id()) {
+	if(fb.ids[1]->id()==particle->id())       iout=1;
+	else if (fb.ids[2]->id()==particle->id()) iout=2;
       }
-      else if(pdata[0]->id()==particle->id()) {
+      else if(fb.ids[1]->id()==particle->id()) {
 	if(fb.kinematics->z()>0.5) iout=1;
 	else                       iout=2;
       }
@@ -3266,8 +3226,7 @@ Branching QTildeShowerHandler::selectSpaceLikeDecayBranching(tShowerParticlePtr 
 	particle->vetoEmission(fb.type,fb.kinematics->scale());
 	continue;
       }
-      ShowerInteraction::Type type2 = fb.type==ShowerPartnerType::QED ?
-	ShowerInteraction::QED : ShowerInteraction::QCD;
+      ShowerInteraction::Type type2 = convertInteraction(fb.type);
       double zsplit = iout==1 ? fb.kinematics->z() : 1-fb.kinematics->z();
       if(type2==branch->sudakov()->interactionType()) {
 	if(zsplit < 0.5 || // hardest line veto
@@ -3308,11 +3267,10 @@ Branching QTildeShowerHandler::selectSpaceLikeDecayBranching(tShowerParticlePtr 
 					    branch->children()[0]->z(),
 					    branch->phi(),
 					    branch->children()[0]->pT());
-   showerKin->initialize( *particle,PPtr() );
    IdList idlist(3);
-   idlist[0] = particle->id();
-   idlist[1] = branch->children()[0]->branchingParticle()->id();
-   idlist[2] = branch->children()[1]->branchingParticle()->id();
+   idlist[0] = particle->dataPtr();
+   idlist[1] = branch->children()[0]->branchingParticle()->dataPtr();
+   idlist[2] = branch->children()[1]->branchingParticle()->dataPtr();
    // create the branching
    fb = Branching( showerKin, idlist, branch->sudakov(),ShowerPartnerType::QCDColourLine  );
    fb.hard=true;
