@@ -814,18 +814,18 @@ ShowerParticleVector QTildeShowerHandler::createTimeLikeChildren(tShowerParticle
   // if same as definition create particles, otherwise create cc
   ShowerParticleVector children;
   for(unsigned int ix=0;ix<2;++ix) {
-    children.push_back(new_ptr(ShowerParticle(ids[ix],true)));
-    if(children[ix]->id()==_progenitor->id()&&!ids[ix]->stable())
+    children.push_back(new_ptr(ShowerParticle(ids[ix+1],true)));
+    if(children[ix]->id()==_progenitor->id()&&!ids[ix+1]->stable())
       children[ix]->set5Momentum(Lorentz5Momentum(_progenitor->progenitor()->mass()));
     else
-      children[ix]->set5Momentum(Lorentz5Momentum(ids[ix]->mass()));
+      children[ix]->set5Momentum(Lorentz5Momentum(ids[ix+1]->mass()));
   }
   return children;
 }
 
 bool QTildeShowerHandler::timeLikeShower(tShowerParticlePtr particle, 
-			     ShowerInteraction::Type type,
-			     Branching fb, bool first) {
+					 ShowerInteraction::Type type,
+					 Branching fb, bool first) {
   // don't do anything if not needed
   if(_limitEmissions == 1 || hardOnly() || 
      ( _limitEmissions == 2 && _nfs != 0) ||
@@ -3102,8 +3102,8 @@ void QTildeShowerHandler:: convertHardTree(bool hard,ShowerInteraction::Type typ
 }
 
 Branching QTildeShowerHandler::selectTimeLikeBranching(tShowerParticlePtr particle,
-					   ShowerInteraction::Type type,
-					   HardBranchingPtr branch) {
+						       ShowerInteraction::Type type,
+						       HardBranchingPtr branch) {
   Branching fb;
   unsigned int iout=0;
   while (true) {
@@ -3154,6 +3154,28 @@ Branching QTildeShowerHandler::selectTimeLikeBranching(tShowerParticlePtr partic
     }
     // standard vetos for all emissions
     if(timeLikeVetoed(fb,particle)) {
+      particle->vetoEmission(fb.type,fb.kinematics->scale());
+      if(particle->spinInfo()) particle->spinInfo()->decayVertex(VertexPtr());
+      continue;
+    }
+    // special for already decayed particles
+    // don't allow flavour changing branchings
+    bool vetoDecay = false;
+    for(map<tShowerTreePtr,pair<tShowerProgenitorPtr,
+	  tShowerParticlePtr> >::const_iterator tit  = currentTree()->treelinks().begin();
+	tit != currentTree()->treelinks().end();++tit) {
+      if(tit->second.first == progenitor()) {
+	map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator 
+	  it = currentTree()->outgoingLines().find(progenitor());
+	if(it!=currentTree()->outgoingLines().end() && particle == it->second &&
+	   fb.ids[0]!=fb.ids[1] && fb.ids[1]!=fb.ids[2]) {
+	  vetoDecay = true;
+	  break;
+	}
+      }
+    }
+    if(vetoDecay) {
+      cerr << "testing veto\n";
       particle->vetoEmission(fb.type,fb.kinematics->scale());
       if(particle->spinInfo()) particle->spinInfo()->decayVertex(VertexPtr());
       continue;
