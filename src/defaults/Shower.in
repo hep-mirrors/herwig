@@ -67,8 +67,8 @@ newdef ShowerHandler:IntrinsicPtIptmax   0*GeV
 #############################################################
 # Main control switches for the parton shower.
 #############################################################
-newdef SplittingGenerator:ISR Yes
-newdef SplittingGenerator:FSR Yes
+newdef ShowerHandler:DoISR Yes
+newdef ShowerHandler:DoFSR Yes
 #############################################################
 # Set up truncated shower handler.
 #############################################################

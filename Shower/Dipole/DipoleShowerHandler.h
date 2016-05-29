@@ -330,16 +330,6 @@ private:
   bool firstMCatNLOEmission;
 
   /**
-   * Switch on or off final state radiation.
-   */
-  bool doFSR;
-
-  /**
-   * Switch on or off initial state radiation.
-   */
-  bool doISR;
-
-  /**
    * The realignment scheme
    */
   int realignmentScheme;

@@ -518,7 +518,7 @@ void QTildeShowerHandler::fillEventRecord() {
   assert(done_[0]->isHard());
   // insert the steps
   for(unsigned int ix=0;ix<done_.size();++ix) {
-    done_[ix]->fillEventRecord(pstep,isISRadiationON(),isFSRadiationON());
+    done_[ix]->fillEventRecord(pstep,doISR(),doFSR());
   }
 }
 
@@ -536,7 +536,7 @@ void QTildeShowerHandler::doinit() {
 
 void QTildeShowerHandler::generateIntrinsicpT(vector<ShowerProgenitorPtr> particlesToShower) {
   _intrinsic.clear();
-  if ( !ipTon() || !isISRadiationON() ) return;
+  if ( !ipTon() || !doISR() ) return;
   // don't do anything for the moment for secondary scatters
   if( !firstInteraction() ) return;
   // generate intrinsic pT
@@ -2783,13 +2783,13 @@ void QTildeShowerHandler::doShowering(bool hard,XCPtr xcomb) {
       progenitor(particlesToShower[ix]);
       // final-state radiation
       if(progenitor()->progenitor()->isFinalState()) {
-	if(!isFSRadiationON()) continue;
+	if(!doFSR()) continue;
 	// perform shower
 	progenitor()->hasEmitted(startTimeLikeShower(interaction_));
       }
       // initial-state radiation
       else {
-	if(!isISRadiationON()) continue;
+	if(!doISR()) continue;
 	// hard process
 	if(hard) {
 	  // get the PDF

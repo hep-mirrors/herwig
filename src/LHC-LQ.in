@@ -43,11 +43,6 @@ insert HPConstructor:Outgoing 1 /Herwig/Particles/S0bar
 
 # Intrinsic pT tune extrapolated to LHC energy
 set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
-
-
-cd /Herwig/Shower
-set SplittingGenerator:ISR Yes
-set SplittingGenerator:FSR Yes                              
  
 # Cuts
 cd /Herwig/Cuts

@@ -101,21 +101,6 @@ public:
    */
   //@{
   /**
-   *  Is there any showering switched on
-   */
-  bool showeringON() const { return isISRadiationON() || isFSRadiationON(); }
-
-  /**
-   * It returns true/false if the initial-state radiation is on/off.
-   */
-  bool isISRadiationON() const { return _splittingGenerator->isISRadiationON(); }
-
-  /**
-   * It returns true/false if the final-state radiation is on/off.
-   */
-  bool isFSRadiationON() const { return _splittingGenerator->isFSRadiationON(); }
-
-  /**
    *  Get the ShowerModel
    */ 
   ShowerModelPtr showerModel() const {return _model;}
@@ -129,7 +114,6 @@ public:
    * Mode for hard emissions
    */
   int hardEmissionMode() const {return _hardEmissionMode;}
-
   //@}
 
   /**

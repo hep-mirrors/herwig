@@ -61,7 +61,7 @@ public:
   /**
    * The default constructor.
    */
-  SplittingGenerator() : _isr_Mode(1), _fsr_Mode(1) {}
+  SplittingGenerator() {}
   //@}
 
 public:
@@ -139,21 +139,6 @@ public:
   //@}
 
 public:
-
-  /**
-   *  Access to the switches
-   */
-  //@{
-  /**
-   * It returns true/false if the initial-state radiation is on/off.
-   */
-  bool isISRadiationON() const { return _isr_Mode; }
-
-  /**
-   * It returns true/false if the final-state radiation is on/off.
-   */
-  bool isFSRadiationON() const { return _fsr_Mode; }
-  //@}
 
   /**
    *  Methods to parse the information from the input files to create the 
@@ -323,21 +308,6 @@ private:
   SplittingGenerator & operator=(const SplittingGenerator &);
 
 private:
-
-  /**
-   *  Switches to control the radiation
-   */
-  //@{
-  /**
-   *  Is inqitial-state radiation on/off
-   */
-  bool _isr_Mode;
-
-  /**
-   *  Is final-state radiation on/off
-   */
-  bool _fsr_Mode;
-  //@}
 
   /**
    *  List of the branchings and the appropriate Sudakovs for forward branchings

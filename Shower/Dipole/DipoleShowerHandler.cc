@@ -38,7 +38,7 @@ bool DipoleShowerHandler::firstWarn = true;
 DipoleShowerHandler::DipoleShowerHandler() 
   : ShowerHandler(), chainOrderVetoScales(true),
     nEmissions(0), discardNoEmissions(false), firstMCatNLOEmission(false),
-    doFSR(true), doISR(true), realignmentScheme(0),
+    realignmentScheme(0),
     verbosity(0), printEvent(0), nTries(0), 
     didRadiate(false), didRealign(false),
     theRenormalizationScaleFreeze(1.*GeV), 
@@ -64,17 +64,17 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr,
   prepareCascade(sub);
   resetWeights();
 
-  if ( !doFSR && ! doISR )
+  if ( !doFSR() && ! doISR() )
     return sub->incoming();
 
   eventRecord().clear();
   eventRecord().prepare(sub,dynamic_ptr_cast<tStdXCombPtr>(lastXCombPtr()),pdfs());
 
-  if ( eventRecord().outgoing().empty() && !doISR )
+  if ( eventRecord().outgoing().empty() && !doISR() )
     return sub->incoming();
   if ( !eventRecord().incoming().first->coloured() &&
        !eventRecord().incoming().second->coloured() &&
-       !doFSR )
+       !doFSR() )
     return sub->incoming();
 
   nTries = 0;
@@ -358,13 +358,13 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
 				      Energy optCutoff) {
 
   if ( !index.initialStateEmitter() &&
-       !doFSR ) {
+       !doFSR() ) {
     winner.didStopEvolving();
     return 0.0*GeV;
   }
 
   if ( index.initialStateEmitter() &&
-       !doISR ) {
+       !doISR() ) {
     winner.didStopEvolving();
     return 0.0*GeV;
   }
@@ -804,7 +804,7 @@ void DipoleShowerHandler::persistentOutput(PersistentOStream & os) const {
   os << kernels << theEvolutionOrdering 
      << constituentReshuffler << intrinsicPtGenerator
      << theGlobalAlphaS << chainOrderVetoScales
-     << nEmissions << discardNoEmissions << firstMCatNLOEmission << doFSR << doISR
+     << nEmissions << discardNoEmissions << firstMCatNLOEmission
      << realignmentScheme << verbosity << printEvent
      << ounit(theRenormalizationScaleFreeze,GeV)
      << ounit(theFactorizationScaleFreeze,GeV)
@@ -818,7 +818,7 @@ void DipoleShowerHandler::persistentInput(PersistentIStream & is, int) {
   is >> kernels >> theEvolutionOrdering 
      >> constituentReshuffler >> intrinsicPtGenerator
      >> theGlobalAlphaS >> chainOrderVetoScales
-     >> nEmissions >> discardNoEmissions >> firstMCatNLOEmission >> doFSR >> doISR
+     >> nEmissions >> discardNoEmissions >> firstMCatNLOEmission
      >> realignmentScheme >> verbosity >> printEvent
      >> iunit(theRenormalizationScaleFreeze,GeV)
      >> iunit(theFactorizationScaleFreeze,GeV)
@@ -879,37 +879,6 @@ void DipoleShowerHandler::Init() {
     ("GlobalAlphaS",
      "Set a global strong coupling for all splitting kernels.",
      &DipoleShowerHandler::theGlobalAlphaS, false, false, true, true, false);
-
-
-  static Switch<DipoleShowerHandler,bool> interfaceDoFSR
-    ("DoFSR",
-     "Switch on or off final state radiation.",
-     &DipoleShowerHandler::doFSR, true, false, false);
-  static SwitchOption interfaceDoFSROn
-    (interfaceDoFSR,
-     "On",
-     "Switch on final state radiation.",
-     true);
-  static SwitchOption interfaceDoFSROff
-    (interfaceDoFSR,
-     "Off",
-     "Switch off final state radiation.",
-     false);
-
-  static Switch<DipoleShowerHandler,bool> interfaceDoISR
-    ("DoISR",
-     "Switch on or off initial state radiation.",
-     &DipoleShowerHandler::doISR, true, false, false);
-  static SwitchOption interfaceDoISROn
-    (interfaceDoISR,
-     "On",
-     "Switch on initial state radiation.",
-     true);
-  static SwitchOption interfaceDoISROff
-    (interfaceDoISR,
-     "Off",
-     "Switch off initial state radiation.",
-     false);
 
   static Switch<DipoleShowerHandler,int> interfaceRealignmentScheme
     ("RealignmentScheme",

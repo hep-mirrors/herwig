@@ -20,6 +20,7 @@
 #include "ThePEG/Utilities/StringUtils.h"
 #include "ThePEG/Repository/Repository.h"
 #include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
+#include "Herwig/Shower/ShowerHandler.h"
 #include "ThePEG/Utilities/Rebinder.h"
 #include <cassert>
 #include "ThePEG/Utilities/DescribeClass.h"
@@ -53,11 +54,11 @@ IBPtr SplittingGenerator::fullclone() const {
 
 
 void SplittingGenerator::persistentOutput(PersistentOStream & os) const {
-  os << _isr_Mode << _fsr_Mode << _bbranchings << _fbranchings;
+  os << _bbranchings << _fbranchings;
 }
 
 void SplittingGenerator::persistentInput(PersistentIStream & is, int) {
-  is >>	_isr_Mode >> _fsr_Mode >> _bbranchings >> _fbranchings;
+  is >> _bbranchings >> _fbranchings;
 }
 
 void SplittingGenerator::Init() {
@@ -65,24 +66,6 @@ void SplittingGenerator::Init() {
   static ClassDocumentation<SplittingGenerator> documentation
     ("There class is responsible for initializing the Sudakov form factors ",
      "and generating splittings.");
-
-  static Switch<SplittingGenerator, bool> interfaceISRMode
-    ("ISR",
-     "Include initial-state radiation?",
-     &SplittingGenerator::_isr_Mode, 1, false, false);
-  static SwitchOption interfaceISRMode0
-    (interfaceISRMode,"No","ISR (Initial State Radiation) is OFF", 0);
-  static SwitchOption interfaceISRMode1
-    (interfaceISRMode,"Yes","ISR (Initial State Radiation) is ON", 1);
-
-  static Switch<SplittingGenerator, bool> interfaceFSRMode
-    ("FSR",
-     "Include final-state radiation?",
-     &SplittingGenerator::_fsr_Mode, 1, false, false);
-  static SwitchOption interfaceFSRMode0
-    (interfaceFSRMode,"No","FSR (Final State Radiation) is OFF", 0);
-  static SwitchOption interfaceFSRMode1
-    (interfaceFSRMode,"Yes","FSR (Final State Radiation) is ON", 1);
 
   static Command<SplittingGenerator> interfaceAddSplitting
     ("AddFinalSplitting",
@@ -180,11 +163,11 @@ string SplittingGenerator::deleteSplitting(string arg, bool final) {
 }
 
 void SplittingGenerator::addToMap(const IdList &ids, const SudakovPtr &s, bool final) {
-  if(isISRadiationON() && !final) {
+  if(!final) {
     _bbranchings.insert(BranchingInsert(abs(ids[1]->id()),BranchingElement(s,ids)));
     s->addSplitting(ids);
   }
-  if(isFSRadiationON() &&  final) {
+  else {
     _fbranchings.insert(BranchingInsert(abs(ids[0]->id()),BranchingElement(s,ids)));
     s->addSplitting(ids);
   }
@@ -192,7 +175,7 @@ void SplittingGenerator::addToMap(const IdList &ids, const SudakovPtr &s, bool f
 
 void SplittingGenerator::deleteFromMap(const IdList &ids, 
 				       const SudakovPtr &s, bool final) {
-  if(isISRadiationON() && !final) {
+  if(!final) {
     pair<BranchingList::iterator,BranchingList::iterator> 
       range = _bbranchings.equal_range(abs(ids[1]->id()));
     for(BranchingList::iterator it=range.first;
@@ -205,7 +188,7 @@ void SplittingGenerator::deleteFromMap(const IdList &ids,
     }
     s->removeSplitting(ids);
   }
-  if(isFSRadiationON() &&  final) {
+  else {
     pair<BranchingList::iterator,BranchingList::iterator> 
       range = _fbranchings.equal_range(abs(ids[0]->id()));
     for(BranchingList::iterator it=range.first;

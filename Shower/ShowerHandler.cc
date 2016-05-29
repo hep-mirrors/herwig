@@ -68,13 +68,14 @@ IBPtr ShowerHandler::fullclone() const {
 
 ShowerHandler::ShowerHandler() : 
   reweight_(1.0),
-  pdfFreezingScale_(2.5*GeV),
   maxtry_(10),maxtryMPI_(10),maxtryDP_(10),
   includeSpaceTime_(false), vMin_(0.1*GeV2), subProcess_(),
+  pdfFreezingScale_(2.5*GeV),
   factorizationScaleFactor_(1.0),
   renormalizationScaleFactor_(1.0),
   hardScaleFactor_(1.0),
-  restrictPhasespace_(true), maxPtIsMuF_(false) {
+  restrictPhasespace_(true), maxPtIsMuF_(false),
+  doFSR_(true), doISR_(true) {
   inputparticlesDecayInShower_.push_back( 6  ); //  top 
   inputparticlesDecayInShower_.push_back( 23 ); // Z0
   inputparticlesDecayInShower_.push_back( 24 ); // W+/-
@@ -108,7 +109,7 @@ void ShowerHandler::persistentOutput(PersistentOStream & os) const {
      << factorizationScaleFactor_ << renormalizationScaleFactor_
      << hardScaleFactor_
      << restrictPhasespace_ << maxPtIsMuF_ << hardScaleProfile_
-     << showerVariations_;
+     << showerVariations_ << doFSR_ << doISR_;
 }
 
 void ShowerHandler::persistentInput(PersistentIStream & is, int) {
@@ -120,7 +121,7 @@ void ShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> factorizationScaleFactor_ >> renormalizationScaleFactor_
      >> hardScaleFactor_
      >> restrictPhasespace_ >> maxPtIsMuF_ >> hardScaleProfile_
-     >> showerVariations_;
+     >> showerVariations_ >> doFSR_ >> doISR_;
 }
 
 void ShowerHandler::Init() {
@@ -272,6 +273,36 @@ void ShowerHandler::Init() {
     ("AddVariation",
      "Add a shower variation.",
      &ShowerHandler::doAddVariation, false);
+ 
+  static Switch<ShowerHandler,bool> interfaceDoFSR
+    ("DoFSR",
+     "Switch on or off final state radiation.",
+     &ShowerHandler::doFSR_, true, false, false);
+  static SwitchOption interfaceDoFSROn
+    (interfaceDoFSR,
+     "Yes",
+     "Switch on final state radiation.",
+     true);
+  static SwitchOption interfaceDoFSROff
+    (interfaceDoFSR,
+     "No",
+     "Switch off final state radiation.",
+     false);
+
+  static Switch<ShowerHandler,bool> interfaceDoISR
+    ("DoISR",
+     "Switch on or off initial state radiation.",
+     &ShowerHandler::doISR_, true, false, false);
+  static SwitchOption interfaceDoISROn
+    (interfaceDoISR,
+     "Yes",
+     "Switch on initial state radiation.",
+     true);
+  static SwitchOption interfaceDoISROff
+    (interfaceDoISR,
+     "No",
+     "Switch off initial state radiation.",
+     false);
  
 }
 

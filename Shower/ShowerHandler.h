@@ -208,6 +208,30 @@ public:
    */
   bool hardScaleIsMuF() const { return maxPtIsMuF_; }
 
+public:
+
+  /**
+   * @name Switched for initial- and final-state radiation
+   */
+  //@{
+  /**
+   *  Switch for any radiation
+   */
+  bool doRadiation() const {return doFSR_ || doISR_;}
+
+  /**
+   * Switch on or off final state radiation.
+   */
+  bool doFSR() const { return doFSR_;}
+  
+  /**
+   * Switch on or off initial state radiation.
+   */
+  bool doISR() const { return doISR_;}
+  //@}
+
+public:
+
   /**
    * Access the shower variations
    */
@@ -430,31 +454,6 @@ private:
   HwRemDecPtr remDec_;
 
   /**
-   * The PDF for beam particle A. Overrides the particle's own PDF setting.
-   */
-  PDFPtr PDFA_;
-
-  /**
-   * The PDF for beam particle B. Overrides the particle's own PDF setting.
-   */
-  PDFPtr PDFB_;
-
-  /**
-   * The PDF for beam particle A for remnant splitting. Overrides the particle's own PDF setting.
-   */
-  PDFPtr PDFARemnant_;
-
-  /**
-   * The PDF for beam particle B for remnant splitting. Overrides the particle's own PDF setting.
-   */
-  PDFPtr PDFBRemnant_;
-
-  /**
-   * The PDF freezing scale
-   */
-  Energy pdfFreezingScale_;
-
-  /**
    *  Maximum number of attempts for the
    *   main showering loop
    */
@@ -520,6 +519,35 @@ private:
   LorentzRotation boost_;
 
   /**
+   * PDFs to be used for the various stages and related parameters
+   */
+  //@{
+  /**
+   * The PDF freezing scale
+   */
+  Energy pdfFreezingScale_;
+
+  /**
+   * The PDF for beam particle A. Overrides the particle's own PDF setting.
+   */
+  PDFPtr PDFA_;
+
+  /**
+   * The PDF for beam particle B. Overrides the particle's own PDF setting.
+   */
+  PDFPtr PDFB_;
+
+  /**
+   * The PDF for beam particle A for remnant splitting. Overrides the particle's own PDF setting.
+   */
+  PDFPtr PDFARemnant_;
+
+  /**
+   * The PDF for beam particle B for remnant splitting. Overrides the particle's own PDF setting.
+   */
+  PDFPtr PDFBRemnant_;
+
+  /**
    * The MPI PDF's to be used for secondary scatters.
    */
   pair <PDFPtr, PDFPtr> mpipdfs_;
@@ -533,6 +561,9 @@ private:
    * The MPI PDF's to be used for secondary scatters.
    */
   pair <PDFPtr, PDFPtr> remmpipdfs_;
+  //@}
+
+private:
 
   /**
    * The factorization scale factor.
@@ -559,6 +590,23 @@ private:
    * True if maximum pt should be deduced from the factorization scale
    */
   bool maxPtIsMuF_;
+
+private:
+
+  /**
+   * @name Parameters for initial- and final-state radiation
+   */
+  //@{
+  /**
+   * Switch on or off final state radiation.
+   */
+  bool doFSR_;
+
+  /**
+   * Switch on or off initial state radiation.
+   */
+  bool doISR_;
+  //@}
 
   /**
    * The profile scales
