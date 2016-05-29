@@ -54,9 +54,9 @@ MatchboxFactory::MatchboxFactory()
   theMECorrectionsOnly(false), theLoopSimCorrections(false), ranSetup(false),
   theFirstPerturbativePDF(true), theSecondPerturbativePDF(true),
   inProductionMode(false), theSpinCorrelations(false),theAlphaParameter(1.),
-  theEnforceChargeConservation(true), theEnforceColourConservation(true),
-  theEnforceLeptonNumberConservation(true), theEnforceQuarkNumberConservation(true),
-  theLeptonFlavourDiagonal(true), theQuarkFlavourDiagonal(true) {}
+  theEnforceChargeConservation(true), theEnforceColourConservation(false),
+  theEnforceLeptonNumberConservation(false), theEnforceQuarkNumberConservation(false),
+  theLeptonFlavourDiagonal(false), theQuarkFlavourDiagonal(false) {}
 
 MatchboxFactory::~MatchboxFactory() {}
 
@@ -2026,7 +2026,7 @@ void MatchboxFactory::Init() {
   static Switch<MatchboxFactory,bool> interfaceEnforceColourConservation
     ("EnforceColourConservation",
      "Enforce colour conservation while generating the hard process.",
-     &MatchboxFactory::theEnforceColourConservation, true, false, false);
+     &MatchboxFactory::theEnforceColourConservation, false, false, false);
   static SwitchOption interfaceEnforceColourConservationYes
     (interfaceEnforceColourConservation,
      "Yes",
@@ -2041,7 +2041,7 @@ void MatchboxFactory::Init() {
   static Switch<MatchboxFactory,bool> interfaceEnforceLeptonNumberConservation
     ("EnforceLeptonNumberConservation",
      "Enforce lepton number conservation while generating the hard process.",
-     &MatchboxFactory::theEnforceLeptonNumberConservation, true, false, false);
+     &MatchboxFactory::theEnforceLeptonNumberConservation, false, false, false);
   static SwitchOption interfaceEnforceLeptonNumberConservationYes
     (interfaceEnforceLeptonNumberConservation,
      "Yes",
@@ -2056,7 +2056,7 @@ void MatchboxFactory::Init() {
   static Switch<MatchboxFactory,bool> interfaceEnforceQuarkNumberConservation
     ("EnforceQuarkNumberConservation",
      "Enforce quark number conservation while generating the hard process.",
-     &MatchboxFactory::theEnforceQuarkNumberConservation, true, false, false);
+     &MatchboxFactory::theEnforceQuarkNumberConservation, false, false, false);
   static SwitchOption interfaceEnforceQuarkNumberConservationYes
     (interfaceEnforceQuarkNumberConservation,
      "Yes",
@@ -2071,7 +2071,7 @@ void MatchboxFactory::Init() {
   static Switch<MatchboxFactory,bool> interfaceLeptonFlavourDiagonal
     ("LeptonFlavourDiagonal",
      "Assume that lepton interactions are flavour diagonal while generating the hard process.",
-     &MatchboxFactory::theLeptonFlavourDiagonal, true, false, false);
+     &MatchboxFactory::theLeptonFlavourDiagonal, false, false, false);
   static SwitchOption interfaceLeptonFlavourDiagonalYes
     (interfaceLeptonFlavourDiagonal,
      "Yes",
@@ -2086,7 +2086,7 @@ void MatchboxFactory::Init() {
   static Switch<MatchboxFactory,bool> interfaceQuarkFlavourDiagonal
     ("QuarkFlavourDiagonal",
      "Assume that quark interactions are flavour diagonal while generating the hard process.",
-     &MatchboxFactory::theQuarkFlavourDiagonal, true, false, false);
+     &MatchboxFactory::theQuarkFlavourDiagonal, false, false, false);
   static SwitchOption interfaceQuarkFlavourDiagonalYes
     (interfaceQuarkFlavourDiagonal,
      "Yes",
