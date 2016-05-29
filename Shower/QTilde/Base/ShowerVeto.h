@@ -14,7 +14,7 @@
 
 #include "ThePEG/Interface/Interfaced.h"
 #include "ShowerVeto.fh"
-#include "Herwig/Shower/ShowerConfig.h"
+#include "Herwig/Shower/QTilde/ShowerConfig.h"
 #include "ShowerParticle.fh"
 #include "ShowerProgenitor.fh"
 

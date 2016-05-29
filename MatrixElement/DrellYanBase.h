@@ -6,7 +6,6 @@
 //
 
 #include "HwMEBase.h"
-#include "Herwig/Shower/ShowerConfig.h"
 #include "Herwig/Shower/QTilde/Couplings/ShowerAlpha.h"
 
 namespace Herwig {

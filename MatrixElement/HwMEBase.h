@@ -10,7 +10,7 @@
 #include "Herwig/Shower/QTilde/Base/ShowerProgenitor.fh"
 #include "Herwig/Shower/QTilde/Base/ShowerTree.fh"
 #include "Herwig/Shower/QTilde/Base/HardTree.fh"
-#include "Herwig/Shower/ShowerConfig.h"
+#include "Herwig/Shower/QTilde/ShowerConfig.h"
 #include "ThePEG/PDF/BeamParticleData.h"
 #include "HwMEBase.fh"
 

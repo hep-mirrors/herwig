@@ -14,7 +14,7 @@
 
 #include "ThePEG/EventRecord/Particle.h"
 #include "Herwig/Shower/QTilde/SplittingFunctions/SplittingFunction.fh"
-#include "Herwig/Shower/ShowerConfig.h"
+#include "Herwig/Shower/QTilde/ShowerConfig.h"
 #include "ShowerBasis.h"
 #include "ShowerKinematics.h"
 #include "ShowerParticle.fh"
