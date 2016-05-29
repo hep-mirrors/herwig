@@ -173,6 +173,15 @@ public:
   //@}
 
   /**
+   *  Check if a particle decays in the shower
+   * @param id The PDG code for the particle
+   */
+  bool decaysInShower(long id) const {
+    return ( particlesDecayInShower_.find( abs(id) ) != 
+	     particlesDecayInShower_.end() ); 
+  }
+
+  /**
    * Return true, if the shower handler can generate a truncated 
    * shower for POWHEG style events generated using Matchbox
    */

@@ -23,8 +23,6 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-set<long> ShowerTree::_decayInShower = set<long>();
-
 bool ShowerTree::_spaceTime = false;
 
 Energy2 ShowerTree::_vmin2 = 0.1*GeV2;
@@ -100,7 +98,7 @@ ShowerTree::ShowerTree(const PPair incoming, const ParticleVector & out,
       findDecayProducts(orig,original,copy,decay,trees);
     }
     else if(!orig->children().empty()||
-	    (decaysInShower(orig->id())&&!orig->dataPtr()->stable())) {
+	    (ShowerHandler::currentHandler()->decaysInShower(orig->id())&&!orig->dataPtr()->stable())) {
       ShowerTreePtr newtree=new_ptr(ShowerTree(orig,decay));
       newtree->setParents();
       trees.insert(make_pair(orig,newtree));
@@ -178,7 +176,7 @@ void ShowerTree::findDecayProducts(PPtr in, vector<PPtr> & original, vector<PPtr
       findDecayProducts(orig,original,copy,decay,trees);
     }
     else if(!orig->children().empty()||
-	    (decaysInShower(orig->id())&&!orig->dataPtr()->stable())) {
+	    (ShowerHandler::currentHandler()->decaysInShower(orig->id())&&!orig->dataPtr()->stable())) {
       ShowerTreePtr newtree=new_ptr(ShowerTree(orig,decay));
       trees.insert(make_pair(orig,newtree));
       Energy width=orig->dataPtr()->generateWidth(orig->mass());
@@ -235,14 +233,14 @@ ShowerTree::ShowerTree(PPtr in,
 	}
 	// finally assume all non-decaying particles are in this class
 	if(!radiates) {
-	  radiates = !decaysInShower(orig->id());
+	  radiates = !ShowerHandler::currentHandler()->decaysInShower(orig->id());
 	}
       }
       if(radiates) {
 	findDecayProducts(orig,original,copy,decay,trees);
       }
       else if(!orig->children().empty()||
-	      (decaysInShower(orig->id())&&!orig->dataPtr()->stable())) {
+	      (ShowerHandler::currentHandler()->decaysInShower(orig->id())&&!orig->dataPtr()->stable())) {
 	ShowerTreePtr newtree=new_ptr(ShowerTree(orig,decay));
 	trees.insert(make_pair(orig,newtree));
 	Energy width=orig->dataPtr()->generateWidth(orig->mass());
@@ -698,7 +696,7 @@ void ShowerTree::insertHard(StepPtr pstep, bool ISR, bool) {
 void ShowerTree::addFinalStateShower(PPtr p, StepPtr s) {
   // if endpoint assume doesn't travel
   if(p->children().empty()) {
-    if(p->dataPtr()->stable()||decaysInShower(p->id()))
+    if(p->dataPtr()->stable()||ShowerHandler::currentHandler()->decaysInShower(p->id()))
       p->setLifeLength(Lorentz5Distance());
     else {
       Length ctau = p->dataPtr()->generateLifeTime(p->mass(), p->dataPtr()->width());
@@ -903,7 +901,7 @@ void ShowerTree::decay(ShowerDecayMap & decay) {
     parent->abandonChild(orig);
     // if particle has children or decays in shower
     if(!orig->children().empty()||
-       (decaysInShower(orig->id())&&!orig->dataPtr()->stable())) {
+       (ShowerHandler::currentHandler()->decaysInShower(orig->id())&&!orig->dataPtr()->stable())) {
       ShowerTreePtr newtree=new_ptr(ShowerTree(orig,decay));
       trees.insert(make_pair(orig,newtree));
       Energy width=orig->dataPtr()->generateWidth(orig->mass());
@@ -1147,7 +1145,7 @@ void ShowerTree::updateAfterShower(ShowerDecayMap & decay) {
   // shower but didn't come from the hard process
   set<tShowerParticlePtr>::const_iterator cit;
   for(cit=_forward.begin();cit!=_forward.end();++cit) {
-    if((decaysInShower((**cit).id())&&!(**cit).dataPtr()->stable())&&
+    if((ShowerHandler::currentHandler()->decaysInShower((**cit).id())&&!(**cit).dataPtr()->stable())&&
        hard.find(*cit)==hard.end()) {
       ShowerTreePtr newtree=new_ptr(ShowerTree(*cit,decay));
       newtree->setParents();

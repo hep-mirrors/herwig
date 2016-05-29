@@ -438,11 +438,6 @@ private:
 private:
 
   /**
-   *  Copy of decay in shower from ShowerHandler
-   */
-  static set<long> _decayInShower;
-
-  /**
    *  Whether or not to include space-time distances
    */
   static bool _spaceTime;
@@ -451,15 +446,6 @@ private:
    *  Minimum virtuality for the space-time model
    */
   static Energy2 _vmin2;
-
-  /**
-   *  Check if a particle decays in the shower
-   * @param id The PDG code for the particle
-   */
-  static bool decaysInShower(long id) {
-    return ( _decayInShower.find( abs(id) ) != 
-	     _decayInShower.end() ); 
-  }
 
 };
 }

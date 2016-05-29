@@ -53,7 +53,6 @@ void ShowerHandler::doinit() {
   if ( particlesDecayInShower_.empty() )
     particlesDecayInShower_.insert(inputparticlesDecayInShower_.begin(),
 				   inputparticlesDecayInShower_.end());
-  ShowerTree::_decayInShower = particlesDecayInShower_;
   ShowerTree::_vmin2 = vMin_;
   ShowerTree::_spaceTime = includeSpaceTime_;
 }
@@ -85,12 +84,11 @@ ShowerHandler::ShowerHandler() :
 void ShowerHandler::doinitrun(){
   CascadeHandler::doinitrun();
   //can't use isMPIOn here, because the EventHandler is not set at that stage
-  if(MPIHandler_){ 
+  if(MPIHandler_) { 
     MPIHandler_->initialize();
     if(MPIHandler_->softInt())
       remDec_->initSoftInteractions(MPIHandler_->Ptmin(), MPIHandler_->beta());
   }
-  ShowerTree::_decayInShower = particlesDecayInShower_;
   ShowerTree::_vmin2 = vMin_;
   ShowerTree::_spaceTime = includeSpaceTime_;
 }
