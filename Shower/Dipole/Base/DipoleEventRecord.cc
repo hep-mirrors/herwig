@@ -574,9 +574,9 @@ DipoleEventRecord::prepare(tSubProPtr subpro,
 			   const pair<PDF,PDF>& pdf,
 			   bool dipoles) {
 
-  theSubProcess = subpro;
+  subProcess(subpro);
 
-  theOutgoing.clear();
+  outgoing().clear();
   theHard.clear();
   theColourLines.clear();
   theOriginals.clear();
@@ -588,14 +588,14 @@ DipoleEventRecord::prepare(tSubProPtr subpro,
 
   // don't take these from the XComb as it may be null
   pair<double,double> xs;
-  Direction<0> dir(true);
+  ThePEG::Direction<0> dir(true);
   xs.first = in.first->momentum().dirPlus()/beam.first->momentum().dirPlus();
   dir.reverse();
   xs.second = in.second->momentum().dirPlus()/beam.second->momentum().dirPlus();
 
-  theXComb = xc;
-  thePDFs = pdf;
-  theFractions = xs;
+  xcombPtr(xc);
+  pdfs() = pdf;
+  fractions() = xs;
 
   set<PPtr> allHard;
   set<PPtr> allOutgoing;
@@ -617,17 +617,17 @@ DipoleEventRecord::prepare(tSubProPtr subpro,
 
   colourIsolate(original,copies);
 
-  theIncoming.first = copies[0];
-  ParticleVector children = theIncoming.first->children();
+  incoming().first = copies[0];
+  ParticleVector children = incoming().first->children();
   for ( ParticleVector::const_iterator c = children.begin();
 	c != children.end(); ++c )
-    theIncoming.first->abandonChild(*c);
-  theIncoming.second = copies[1];
-  children = theIncoming.second->children();
+    incoming().first->abandonChild(*c);
+  incoming().second = copies[1];
+  children = incoming().second->children();
   for ( ParticleVector::const_iterator c = children.begin();
 	c != children.end(); ++c )
-    theIncoming.second->abandonChild(*c);
-  copy(copies.begin()+2,copies.end(),back_inserter(theOutgoing));
+    incoming().second->abandonChild(*c);
+  copy(copies.begin()+2,copies.end(),back_inserter(outgoing()));
 
   for ( set<PPtr>::const_iterator p = allHard.begin(); p != allHard.end(); ++p ) {
     PPtr copy = new_ptr(Particle(**p));
@@ -646,8 +646,8 @@ DipoleEventRecord::prepare(tSubProPtr subpro,
     XFirst = theHard.begin();
     XLast = theHard.end();
   } else {
-    XFirst = theOutgoing.begin();
-    XLast = theOutgoing.end();
+    XFirst = outgoing().begin();
+    XLast = outgoing().end();
   }
 
   thePX = (**XFirst).momentum();
@@ -660,12 +660,12 @@ DipoleEventRecord::prepare(tSubProPtr subpro,
 }
 
 void DipoleEventRecord::clear() {
-  theSubProcess = SubProPtr();
-  theXComb = StdXCombPtr();
-  thePDFs = pair<PDF,PDF>();
-  theIncoming = PPair();
-  theOutgoing.clear();
-  theIntermediates.clear();
+  subProcess(SubProPtr());
+  XComb(StdXCombPtr());
+  pdfs() = pair<PDF,PDF>();
+  incoming() = PPair();
+  outgoing().clear();
+  intermediates().clear();
   theHard.clear();
   theChains.clear();
   theDoneChains.clear();
@@ -676,45 +676,45 @@ void DipoleEventRecord::clear() {
 void DipoleEventRecord::update(DipoleSplittingInfo& dsplit) {
 
   if ( incoming().first == dsplit.emitter() ) {
-    theIntermediates.push_back(dsplit.emitter());
-    theIncoming.first = dsplit.splitEmitter();
-    theFractions.first /= dsplit.lastEmitterZ();
+    intermediates().push_back(dsplit.emitter());
+    incoming().first = dsplit.splitEmitter();
+    fractions().first /= dsplit.lastEmitterZ();
   } else if ( incoming().first == dsplit.spectator() ) {
-    theIntermediates.push_back(dsplit.spectator());
-    theIncoming.first = dsplit.splitSpectator();
-    theFractions.first /= dsplit.lastSpectatorZ();    
+    intermediates().push_back(dsplit.spectator());
+    incoming().first = dsplit.splitSpectator();
+    fractions().first /= dsplit.lastSpectatorZ();    
   }
 
   if ( incoming().second == dsplit.emitter() ) {
-    theIntermediates.push_back(dsplit.emitter());
-    theIncoming.second = dsplit.splitEmitter();
-    theFractions.second /= dsplit.lastEmitterZ();
+    intermediates().push_back(dsplit.emitter());
+    incoming().second = dsplit.splitEmitter();
+    fractions().second /= dsplit.lastEmitterZ();
   } else if ( incoming().second == dsplit.spectator() ) {
-    theIntermediates.push_back(dsplit.spectator());
-    theIncoming.second = dsplit.splitSpectator();
-    theFractions.second /= dsplit.lastSpectatorZ();    
+    intermediates().push_back(dsplit.spectator());
+    incoming().second = dsplit.splitSpectator();
+    fractions().second /= dsplit.lastSpectatorZ();    
   }
 
   PList::iterator pos;
 
-  pos = find(theOutgoing.begin(), theOutgoing.end(), dsplit.emitter());
-  if (pos != theOutgoing.end()) {
-    theIntermediates.push_back(*pos);
+  pos = find(outgoing().begin(), outgoing().end(), dsplit.emitter());
+  if (pos != outgoing().end()) {
+    intermediates().push_back(*pos);
     *pos = dsplit.splitEmitter();
   }
 
-  pos = find(theOutgoing.begin(), theOutgoing.end(), dsplit.spectator());
-  if (pos != theOutgoing.end()) {
-    theIntermediates.push_back(*pos);
+  pos = find(outgoing().begin(), outgoing().end(), dsplit.spectator());
+  if (pos != outgoing().end()) {
+    intermediates().push_back(*pos);
     *pos = dsplit.splitSpectator();
   }
 
-  theOutgoing.push_back(dsplit.emission());
+  outgoing().push_back(dsplit.emission());
 
   if (dsplit.splittingKinematics()->doesTransform()) {
 
-    for (PList::iterator p = theIntermediates.begin();
-	 p != theIntermediates.end(); ++p) {
+    for (PList::iterator p = intermediates().begin();
+	 p != intermediates().end(); ++p) {
       (**p).set5Momentum(dsplit.splittingKinematics()->transform((**p).momentum()));
     }
 
@@ -723,8 +723,8 @@ void DipoleEventRecord::update(DipoleSplittingInfo& dsplit) {
       (**h).set5Momentum(dsplit.splittingKinematics()->transform((**h).momentum()));
     }
 
-    for (PList::iterator p = theOutgoing.begin();
-	 p != theOutgoing.end(); ++p)
+    for (PList::iterator p = outgoing().begin();
+	 p != outgoing().end(); ++p)
       if ((*p) != dsplit.splitEmitter() &&
 	  (*p) != dsplit.splitSpectator() &&
 	  (*p) != dsplit.emission())
@@ -824,8 +824,8 @@ void DipoleEventRecord::transform(const SpinOneLorentzRotation& rot) {
 
   Lorentz5Momentum tmp;
 
-  for (PList::iterator p = theIntermediates.begin();
-       p != theIntermediates.end(); ++p) {
+  for (PList::iterator p = intermediates().begin();
+       p != intermediates().end(); ++p) {
     tmp = (**p).momentum(); tmp = rot * tmp;
     (**p).set5Momentum(tmp);
   }
@@ -836,8 +836,8 @@ void DipoleEventRecord::transform(const SpinOneLorentzRotation& rot) {
     (**h).set5Momentum(tmp);
   }
 
-  for (PList::iterator p = theOutgoing.begin();
-       p != theOutgoing.end(); ++p) {
+  for (PList::iterator p = outgoing().begin();
+       p != outgoing().end(); ++p) {
     tmp = (**p).momentum(); tmp = rot * tmp;
     (**p).set5Momentum(tmp);
   }
@@ -860,8 +860,8 @@ tPPair DipoleEventRecord::fillEventRecord(StepPtr step, bool firstInteraction, b
   inParton->addChild(inSubPro);
   if ( inParticle != inSubPro )
     inParticle->addChild(incoming().first);
-  theIntermediates.push_back(inSubPro);
-  theIntermediates.push_back(inParton);
+  intermediates().push_back(inSubPro);
+  intermediates().push_back(inParton);
 
   inSubPro = subProcess()->incoming().second;
   if ( !(inSubPro->parents().empty()) )
@@ -876,8 +876,8 @@ tPPair DipoleEventRecord::fillEventRecord(StepPtr step, bool firstInteraction, b
   inParton->addChild(inSubPro);
   if ( inParticle != inSubPro )
     inParticle->addChild(incoming().second);
-  theIntermediates.push_back(inSubPro);
-  theIntermediates.push_back(inParton);
+  intermediates().push_back(inSubPro);
+  intermediates().push_back(inParton);
 
   while ( !theOriginals.empty() ) {
     PPtr outSubPro = theOriginals.begin()->first;
@@ -891,13 +891,13 @@ tPPair DipoleEventRecord::fillEventRecord(StepPtr step, bool firstInteraction, b
     theOriginals.erase(beg);
     updateColour(outParton);
     outSubPro->addChild(outParton);
-    theIntermediates.push_back(outSubPro);
+    intermediates().push_back(outSubPro);
   }
 
-  step->addIntermediates(theIntermediates.begin(),theIntermediates.end());
+  step->addIntermediates(intermediates().begin(),intermediates().end());
 
-  for (PList::const_iterator p = theOutgoing.begin();
-       p != theOutgoing.end(); ++p)
+  for (PList::const_iterator p = outgoing().begin();
+       p != outgoing().end(); ++p)
     step->addDecayProduct(*p);
 
   for (PList::const_iterator p = theHard.begin();
@@ -905,15 +905,15 @@ tPPair DipoleEventRecord::fillEventRecord(StepPtr step, bool firstInteraction, b
     step->addDecayProduct(*p);
 
   if ( firstInteraction &&
-       (theIncoming.first->coloured() ||
-	theIncoming.second->coloured() ) ) {
-      ShowerHandler::currentHandler()->lastExtractor()->newRemnants(theSubProcess->incoming(),theIncoming,step);
+       (incoming().first->coloured() ||
+	incoming().second->coloured() ) ) {
+      ShowerHandler::currentHandler()->lastExtractor()->newRemnants(subProcess()->incoming(),incoming(),step);
   }
 
-  step->addIntermediate(theIncoming.first);
-  step->addIntermediate(theIncoming.second);
+  step->addIntermediate(incoming().first);
+  step->addIntermediate(incoming().second);
 
-  return theIncoming;
+  return incoming();
 
 }
 
@@ -924,10 +924,10 @@ void DipoleEventRecord::debugLastEvent(ostream& os) const {
   os << "--- DipoleEventRecord ----------------------------------------------------------\n";
 
   os << " the " << (first ? "hard" : "secondary") << " subprocess is:\n"
-     << (*theSubProcess);
+     << (*subProcess());
 
-  os << " using PDF's " << thePDFs.first.pdf() << " and " 
-     << thePDFs.second.pdf() << "\n";
+  os << " using PDF's " << pdfs().first.pdf() << " and " 
+     << pdfs().second.pdf() << "\n";
 
   os << " chains showering currently:\n";
 

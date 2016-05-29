@@ -12,6 +12,7 @@
 // This is the declaration of the DipoleEventRecord class.
 //
 
+#include "Herwig/Shower/ShowerEventRecord.h"
 #include "ThePEG/PDF/PDF.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "Dipole.h"
@@ -125,7 +126,7 @@ private:
  * \brief The DipoleEventRecord class is 
  * used internally by the dipole shower.
  */
-class DipoleEventRecord {
+class DipoleEventRecord : public ShowerEventRecord {
 
 public:
 
@@ -142,42 +143,6 @@ public:
 public:
 
   /**
-   * Return the incoming partons at the current 
-   * stage of the evolution.
-   */
-  PPair& incoming() { return theIncoming; }
-
-  /**
-   * Return the incoming partons at the current 
-   * stage of the evolution.
-   */
-  const PPair& incoming() const { return theIncoming; }
-
-  /**
-   * Return the outgoing partons at the current
-   * stage of the evolution.
-   */
-  PList& outgoing() { return theOutgoing; }
-
-  /**
-   * Return the outgoing partons at the current
-   * stage of the evolution.
-   */
-  const PList& outgoing() const { return theOutgoing; }
-
-  /**
-   * Return the intermediate particles at the current
-   * stage of the evolution.
-   */
-  PList& intermediates() { return theIntermediates; }
-
-  /**
-   * Return the intermediate particles at the current
-   * stage of the evolution.
-   */
-  const PList& intermediates() const { return theIntermediates; }
-
-  /**
    * Return any non-coloured outgoing particles in the
    * current subprocess.
    */
@@ -188,31 +153,6 @@ public:
    * current subprocess.
    */
   const PList& hard() const { return theHard; }
-
-  /**
-   * Return the subprocess currently showered
-   */
-  tSubProPtr subProcess() const { return theSubProcess; }
-
-  /**
-   * Return the XComb describing the hard process.
-   */
-  tStdXCombPtr xcombPtr() const { return theXComb; }
-
-  /**
-   * Return the XComb describing the hard process.
-   */
-  const StandardXComb& xcomb() const { return *theXComb; }
-
-  /**
-   * Return the momentum fractions.
-   */
-  const pair<double,double>& fractions() const { return theFractions; }
-
-  /**
-   * Return the PDFs
-   */
-  const pair<PDF,PDF>& pdfs() const { return thePDFs; }
 
   /**
    * Return the momentum of the hard system
@@ -426,47 +366,9 @@ private:
   };
 
   /**
-   * The subprocess currently showered.
-   */
-  SubProPtr theSubProcess;
-
-  /**
-   * Pointer to the XComb which generated the hard process.
-   */
-  StdXCombPtr theXComb;
-
-  /**
-   * The PDFs to be considered.
-   */
-  pair<PDF,PDF> thePDFs;
-
-  /**
    * The momentum of the hard system
    */
   Lorentz5Momentum thePX;
-
-  /**
-   * Momentum fractions of the incoming partons.
-   */
-  pair<double,double> theFractions;
-
-  /**
-   * The incoming partons at the current
-   * stage of the evolution.
-   */
-  PPair theIncoming;
-
-  /**
-   * The outgoing partons at the current
-   * stage of the evolution.
-   */
-  PList theOutgoing;
-
-  /**
-   * The intermediate particles at the current
-   * stage of the evolution.
-   */
-  PList theIntermediates;
 
   /**
    * Any non-coloured outgoing particles in the
