@@ -14,13 +14,14 @@
 
 #include "ThePEG/Handlers/EventHandler.h"
 #include "ThePEG/Handlers/CascadeHandler.h"
-#include "Herwig/Shower/UEBase.h"
 #include "ShowerVariation.h"
 #include "Herwig/Shower/QTilde/Base/ShowerParticle.fh"
 #include "Herwig/Shower/QTilde/Base/ShowerTree.fh"
 #include "Herwig/Shower/QTilde/Base/HardTree.fh"
 #include "Herwig/PDF/HwRemDecayer.fh"
 #include "ThePEG/EventRecord/RemnantParticle.fh"
+#include "UEBase.h"
+#include "PerturbativeProcess.h"
 #include "ShowerHandler.fh"
 #include "Herwig/MatrixElement/Matchbox/Matching/HardScaleProfile.h"
 
@@ -69,6 +70,17 @@ public:
    * the shower by calling cascade(sub, lastXC).
    */
   virtual void cascade();
+
+
+  /**
+   *  pointer to "this", the current ShowerHandler.
+   */
+  static ShowerHandler * currentHandler() {
+    assert(currentHandler_);
+    return currentHandler_;
+  }
+
+public:
 
   /**
    * Hook to allow vetoing of event after showering hard sub-process
@@ -653,14 +665,6 @@ public:
     /** constructor */
     ShowerTriesVeto(int t) : tries(t) {}
   };
-
-  /**
-   *  pointer to "this", the current ShowerHandler.
-   */
-  static ShowerHandler * currentHandler() {
-    assert(currentHandler_);
-    return currentHandler_;
-  }
 
 protected:
 
