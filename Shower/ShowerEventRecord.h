@@ -188,6 +188,40 @@ public:
    */
   void identifyEventType();
 
+protected:
+
+  /**
+   *  Map of colour lines used to reset colours when inserted into the event
+   */
+  map<ColinePtr,ColinePtr> & colourLines() {return colourLines_;}
+
+  /**
+   * Isolate the colour of the process from the rest of the event.
+   * Called in the constructor
+   */
+  void colourIsolate(const vector<PPtr> & original, const vector<PPtr> & copy);
+
+  /**
+   * Update the colour information of a particle prior to insertion into the
+   * event record.
+   */
+  void updateColour(PPtr particle, bool recursive);
+
+  /**
+   *  Map the colours for a given particle
+   */
+  void mapColour(PPtr original, PPtr copy);
+
+private:
+ 
+  /**
+   *  Isolate a specific colour line
+   */
+  void isolateLine(vector<PPair>::const_iterator cit,
+		   vector<PPair> & particles,
+		   tcColinePtr oldline,
+		   tColinePtr newline);
+
 private:
 
   /**
@@ -266,6 +300,11 @@ private:
    * The shower approximation to provide the hard scale profile
    */
   Ptr<ShowerApproximation>::tptr showerApproximation_;
+
+  /**
+   *  Map of colour lines used to reset colours when inserted into the event
+   */
+  map<ColinePtr,ColinePtr> colourLines_;
 
   /**
    *  Whether or ont needs truncated shower

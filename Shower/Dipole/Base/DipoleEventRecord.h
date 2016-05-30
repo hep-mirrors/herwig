@@ -345,18 +345,6 @@ protected:
 	      set<PPtr>& hardSet,
 	      set<PPtr>& outgoingSet);
 
-  /**
-   * Isolate the colour of the process from the rest of the event.
-   * Called in the constructor
-   */
-  void colourIsolate(const vector<PPtr> & original, const vector<PPtr> & copy);
-
-  /**
-   * Update the colour information of a particle prior to insertion into the
-   * event record.
-   */
-  void updateColour(PPtr particle);
-
 private:
 
   struct getMomentum {
@@ -380,11 +368,6 @@ private:
    * Map originals to copies.
    */
   map<PPtr,PPtr> theOriginals;
-
-  /**
-   * Map colour lines from copies to originals.
-   */
-  map<ColinePtr,ColinePtr> theColourLines;
 
   /**
    * The dipole chains currently showered.

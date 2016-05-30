@@ -441,133 +441,6 @@ void DipoleEventRecord::getAll(const ParticleVector& childs,
 
 }
 
-// shamelessly stolen from ShowerTree
-void DipoleEventRecord::colourIsolate(const vector<PPtr> & original,
-				      const vector<PPtr> & copy) {
-  // vectors must have same size
-  assert(original.size()==copy.size());
-  // create a temporary map with all the particles to make looping easier
-  vector<PPair> particles;
-  particles.reserve(original.size());
-  for(unsigned int ix=0;ix<original.size();++ix)
-    particles.push_back(make_pair(copy[ix],original[ix]));
-  // reset the colour of the copies
-  vector<PPair>::const_iterator cit,cjt;
-  for(cit=particles.begin();cit!=particles.end();++cit)
-    if((*cit).first->colourInfo()) (*cit).first->colourInfo(new_ptr(ColourBase()));
-  map<tColinePtr,tColinePtr> cmap;
-  // make the colour connections of the copies
-  for(cit=particles.begin();cit!=particles.end();++cit) {
-    ColinePtr c1,newline;
-    // if particle has a colour line
-    if((*cit).second->colourLine()&&!(*cit).first->colourLine()) {
-      c1=(*cit).second->colourLine();
-      newline=ColourLine::create((*cit).first);
-      cmap[c1]=newline;
-      for(cjt=particles.begin();cjt!=particles.end();++cjt) {
-	if(cjt==cit) continue;
-	if((*cjt).second->colourLine()==c1)
-	  newline->addColoured((*cjt).first);
-	else if((*cjt).second->antiColourLine()==c1)
-	  newline->addColoured((*cjt).first,true);
-      }
-    }
-    // if anticolour line
-    if((*cit).second->antiColourLine()&&!(*cit).first->antiColourLine()) {
-      c1=(*cit).second->antiColourLine();
-      newline=ColourLine::create((*cit).first,true);
-      cmap[c1]=newline;
-      for(cjt=particles.begin();cjt!=particles.end();++cjt) {
-	if(cjt==cit) continue;
-	if((*cjt).second->colourLine()==c1)
-	  newline->addColoured((*cjt).first);
-	else if((*cjt).second->antiColourLine()==c1)
-	  newline->addColoured((*cjt).first,true);
-      }
-    }
-  }
-  for ( map<tColinePtr,tColinePtr>::const_iterator c = cmap.begin();
-	c != cmap.end(); ++c ) {
-    theColourLines[c->second] = c->first;
-  }
-  // sort out sinks and sources
-  for(cit=particles.begin();cit!=particles.end();++cit) {
-    tColinePtr cline[2];
-    tColinePair cpair;
-    for(unsigned int ix=0;ix<4;++ix) {
-      cline[0] = ix<2 ? cit->second->colourLine() : cit->second->antiColourLine();
-      cline[1] = ix<2 ? cit->first ->colourLine() : cit->first ->antiColourLine();
-      if(cline[0]) {
-	switch (ix) {
-	case 0: case 2:
- 	  cpair = cline[0]->sinkNeighbours();
-	  break;
-	case 1: case 3:
-	  cpair = cline[0]->sourceNeighbours();
-	  break;
-	};
-      }
-      else {
-	cpair = make_pair(tColinePtr(),tColinePtr());
-      }
-      if(cline[0]&&cpair.first) {
- 	map<tColinePtr,tColinePtr>::const_iterator 
-	  mit[2] = {cmap.find(cpair.first),cmap.find(cpair.second)};
-	if(mit[0]!=cmap.end()&&mit[1]!=cmap.end()) {
-	  if(ix==0||ix==2) {
-	    cline[1]->setSinkNeighbours(mit[0]->second,mit[1]->second);
-	  }
-	  else {
-	    cline[1]->setSourceNeighbours(mit[0]->second,mit[1]->second);
-	  }
-	}
-      }
-    }
-  }
-}
-
-// shamelessly stolen from ShowerTree
-void DipoleEventRecord::updateColour(PPtr particle) {
-  // if attached to a colour line
-  if(particle->colourLine()) {
-    bool reset=false;
-    // if colour line from hard process reconnect
-    if(theColourLines.find(particle->colourLine())!=theColourLines.end()) {
-      ColinePtr c1=particle->colourLine();
-      c1->removeColoured(particle);
-      theColourLines[c1]->addColoured(particle);
-      reset=true;
-    }
-    // ensure properly connected to the line
-    if(!reset) {
-      ColinePtr c1=particle->colourLine();
-      c1->removeColoured(particle);
-      c1->addColoured(particle);
-    }
-  }
-  // if attached to an anticolour line
-  if(particle->antiColourLine()) {
-    bool reset=false;
-    // if anti colour line from hard process reconnect
-    if(theColourLines.find(particle->antiColourLine())!=theColourLines.end()) {
-      ColinePtr c1=particle->antiColourLine();
-      c1->removeColoured(particle,true);
-      theColourLines[c1]->addColoured(particle,true);
-      reset=true;
-    }
-    if(!reset) {
-      ColinePtr c1=particle->antiColourLine();
-      c1->removeColoured(particle,true);
-      c1->addColoured(particle,true);
-    }
-  }
-  for ( ParticleVector::const_iterator c = particle->children().begin();
-	c != particle->children().end(); ++c ) {
-    updateColour(*c);
-  }
-}
-
-
 const map<PPtr,PPtr>& 
 DipoleEventRecord::prepare(tSubProPtr subpro,
 			   tStdXCombPtr xc,
@@ -578,7 +451,6 @@ DipoleEventRecord::prepare(tSubProPtr subpro,
 
   outgoing().clear();
   theHard.clear();
-  theColourLines.clear();
   theOriginals.clear();
 
   PPair in = subpro->incoming();
@@ -665,7 +537,6 @@ void DipoleEventRecord::clear() {
   theChains.clear();
   theDoneChains.clear();
   theOriginals.clear();
-  theColourLines.clear();
 }
 
 void DipoleEventRecord::update(DipoleSplittingInfo& dsplit) {
@@ -849,7 +720,7 @@ tPPair DipoleEventRecord::fillEventRecord(StepPtr step, bool firstInteraction, b
     inParticle = inSubPro;
   PPtr inParton = theOriginals[inSubPro];
   theOriginals.erase(inSubPro);
-  updateColour(incoming().first);
+  updateColour(incoming().first,true);
   if ( inParticle != inSubPro )
     inParticle->abandonChild(inSubPro);
   inParton->addChild(inSubPro);
@@ -865,7 +736,7 @@ tPPair DipoleEventRecord::fillEventRecord(StepPtr step, bool firstInteraction, b
     inParticle = inSubPro;
   inParton = theOriginals[inSubPro];
   theOriginals.erase(inSubPro);
-  updateColour(incoming().second);
+  updateColour(incoming().second,true);
   if ( inParticle != inSubPro )
     inParticle->abandonChild(inSubPro);
   inParton->addChild(inSubPro);
@@ -884,7 +755,7 @@ tPPair DipoleEventRecord::fillEventRecord(StepPtr step, bool firstInteraction, b
     map<PPtr,PPtr>::iterator beg = theOriginals.begin();
 #endif
     theOriginals.erase(beg);
-    updateColour(outParton);
+    updateColour(outParton,true);
     outSubPro->addChild(outParton);
     intermediates().push_back(outSubPro);
   }

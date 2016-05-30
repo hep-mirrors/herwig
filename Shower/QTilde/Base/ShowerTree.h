@@ -329,36 +329,8 @@ protected:
    */
   void addInitialStateShower(PPtr particle, PPtr hadron,
 			     StepPtr step, bool addchildren=true);
-
-  /**
-   * Update the colour information of a particle prior to insertion into the
-   * event record.
-   * @param particle The particle for which the colour is updated.
-   */
-  void updateColour(PPtr particle);
-
-  /**
-   *  Map the colours for a given particle
-   */
-  void mapColour(PPtr original, PPtr copy);
   //@}
 
-  /**
-   * Isolate the colour of the process from the rest of the event.
-   * Called in the constructor
-   * @param original The original particles
-   * @param copy The colour isolated copies
-   */
-  void colourIsolate(const vector<PPtr> & original, const vector<PPtr> & copy);
- 
-  /**
-   *  Isolate a specific colour line
-   */
-  void isolateLine(vector<PPair>::const_iterator cit,
-		   vector<PPair> & particles,
-		   tcColinePtr oldline,
-		   tColinePtr newline);
- 
   /**
    *  After the creatation of a ShowerParticle make sure it is properly attached 
    *  to its ColourLine
@@ -409,11 +381,6 @@ private:
    *  Was this a scattering process or a decay
    */
   bool _wasHard;
-
-  /**
-   *  Map of colour lines used to reset colours when inserted into the event
-   */
-  map<ColinePtr,ColinePtr> _colour;
 
   /**
    *  Map of particles in this Tree which are the initial particles in other
