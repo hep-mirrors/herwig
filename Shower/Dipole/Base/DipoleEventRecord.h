@@ -317,7 +317,7 @@ public:
    * Clear the event record: Give up ownership
    * on any object involved in the evolution.
    */
-  void clear();
+  virtual void clear();
 
 public:
 

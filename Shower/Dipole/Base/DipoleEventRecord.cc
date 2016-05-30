@@ -654,18 +654,13 @@ DipoleEventRecord::prepare(tSubProPtr subpro,
   ++XFirst;
   for ( ; XFirst != XLast; ++XFirst )
     thePX += (**XFirst).momentum();
-
+  identifyEventType();
   return theOriginals;
 
 }
 
 void DipoleEventRecord::clear() {
-  subProcess(SubProPtr());
-  XComb(StdXCombPtr());
-  pdfs() = pair<PDF,PDF>();
-  incoming() = PPair();
-  outgoing().clear();
-  intermediates().clear();
+  ShowerEventRecord::clear();
   theHard.clear();
   theChains.clear();
   theDoneChains.clear();

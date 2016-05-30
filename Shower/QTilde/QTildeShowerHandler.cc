@@ -99,7 +99,7 @@ void QTildeShowerHandler::persistentOutput(PersistentOStream & os) const {
      << _limitEmissions << _spinOpt << _softOpt << _hardPOWHEG
      << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << ounit(_iptmax,GeV) 
      << _vetoes << _trunc_Mode << _hardEmissionMode << _reconOpt 
-     << isPowhegSEvent << isPowhegHEvent << ounit(muPt,GeV)
+     << ounit(muPt,GeV)
      << oenum(interaction_) << _maxTryFSR << _maxFailFSR << _fracFSR;
 }
 
@@ -109,7 +109,7 @@ void QTildeShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> _limitEmissions >> _spinOpt >> _softOpt >> _hardPOWHEG
      >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> iunit(_iptmax,GeV)
      >> _vetoes >> _trunc_Mode >> _hardEmissionMode >> _reconOpt
-     >> isPowhegSEvent >> isPowhegHEvent >> iunit(muPt,GeV)
+     >> iunit(muPt,GeV)
      >> ienum(interaction_) >> _maxTryFSR >> _maxFailFSR >> _fracFSR;
 }
 
@@ -648,110 +648,6 @@ void QTildeShowerHandler::setupHardScales(const vector<ShowerProgenitorPtr> & p,
 }
 
 void QTildeShowerHandler::showerHardProcess(ShowerTreePtr hard, XCPtr xcomb) {
-
-
-  isMCatNLOSEvent(false);
-  isMCatNLOHEvent(false);
-  isPowhegSEvent  = false;
-  isPowhegHEvent  = false;
-
-  Ptr<SubtractedME>::tptr subme;
-  Ptr<MatchboxMEBase>::tptr me;
-  Ptr<SubtractionDipole>::tptr dipme;
-
-  Ptr<StandardXComb>::ptr sxc = dynamic_ptr_cast<Ptr<StandardXComb>::ptr>(xcomb);
-
-  if ( sxc ) {
-    subme = dynamic_ptr_cast<Ptr<SubtractedME>::tptr>(sxc->matrixElement());
-    me = dynamic_ptr_cast<Ptr<MatchboxMEBase>::tptr>(sxc->matrixElement());
-    dipme = dynamic_ptr_cast<Ptr<SubtractionDipole>::tptr>(sxc->matrixElement());
-  }
-
-  if ( subme ) {
-    if ( subme->showerApproximation() ) {
-      theShowerApproximation = subme->showerApproximation();
-      // separate MCatNLO and POWHEG-type corrections
-      if ( !subme->showerApproximation()->needsSplittingGenerator() ) {
-	if ( subme->realShowerSubtraction() )
-	  isMCatNLOHEvent(true);
-	else if ( subme->virtualShowerSubtraction() )
-	  isMCatNLOSEvent(true);
-      }
-      else {
-  	if ( subme->realShowerSubtraction() )
-  	  isPowhegHEvent = true;
-  	else if ( subme->virtualShowerSubtraction() ||  subme->loopSimSubtraction() )
-  	  isPowhegSEvent = true;
-      }
-    }
-  } else if ( me ) {
-    if ( me->factory()->showerApproximation() ) {
-      theShowerApproximation = me->factory()->showerApproximation();
-      if ( !me->factory()->showerApproximation()->needsSplittingGenerator() ) 
-	isMCatNLOSEvent(true);
-      else
-  	isPowhegSEvent = true;
-    }
-  }
-
-  string error = "Inconsistent hard emission set-up in QTildeShowerHandler::showerHardProcess(). "; 
-  if ( ( isMCatNLOSEvent() || isMCatNLOHEvent() ) ){
-    if (_hardEmissionMode > 1)
-      throw Exception() << error
-			<< "Cannot generate POWHEG matching with MC@NLO shower "
-			<< "approximation.  Add 'set Evolver:HardEmissionMode 0' to input file."
-			<< Exception::runerror;
-    if ( canHandleMatchboxTrunc())
-      throw Exception() << error
-			<< "Cannot use truncated qtilde shower with MC@NLO shower "
-			<< "approximation.  Set LHCGenerator:EventHandler"
-			<< ":CascadeHandler to '/Herwig/Shower/ShowerHandler' or "
-			<< "'/Herwig/Shower/Dipole/DipoleShowerHandler'."
-			<< Exception::runerror;
-  }
-  else if ( ((isPowhegSEvent || isPowhegHEvent) || dipme) &&
-	    _hardEmissionMode < 2){
-    if ( canHandleMatchboxTrunc())
-      throw Exception() << error
-			<< "Unmatched events requested for POWHEG shower "
-			<< "approximation.  Set Evolver:HardEmissionMode to "
-			<< "'MatchboxPOWHEG' or 'FullPOWHEG'."
-			<< Exception::runerror;
-    else if (_hardEmissionModeWarn){
-      _hardEmissionModeWarn = false;
-      _hardEmissionMode+=2;
-      throw Exception() << error
-			<< "Unmatched events requested for POWHEG shower "
-			<< "approximation. Changing Evolver:HardEmissionMode from "
-			<< _hardEmissionMode-2 << " to " << _hardEmissionMode
-			<< Exception::warning;
-    }
-  }
-
-  if ( isPowhegSEvent || isPowhegHEvent) {
-    if (theShowerApproximation->needsTruncatedShower() &&
-	!canHandleMatchboxTrunc() )
-      throw Exception() << error
-			<< "Current shower handler cannot generate truncated shower.  "
-			<< "Set Generator:EventHandler:CascadeHandler to "
-			<< "'/Herwig/Shower/PowhegShowerHandler'."
-			<< Exception::runerror;
-  }
-  else if ( dipme && _missingTruncWarn){
-    _missingTruncWarn=false;
-    throw Exception() << "Warning: POWHEG shower approximation used without "
-		      << "truncated shower.  Set Generator:EventHandler:"
-		      << "CascadeHandler to '/Herwig/Shower/PowhegShowerHandler' and "
-		      << "'MEMatching:TruncatedShower Yes'."
-		      << Exception::warning;   
-  }
-  else if ( !dipme && _hardEmissionMode > 1 && 
-	    firstInteraction())
-    throw Exception() << error
-		      << "POWHEG matching requested for LO events.  Include "
-		      << "'set Factory:ShowerApproximation MEMatching' in input file."
-		      << Exception::runerror;
-
   _hardme = HwMEBasePtr();
   // extract the matrix element
   tStdXCombPtr lastXC = dynamic_ptr_cast<tStdXCombPtr>(xcomb);
@@ -762,6 +658,10 @@ void QTildeShowerHandler::showerHardProcess(ShowerTreePtr hard, XCPtr xcomb) {
   // set the current tree
   currentTree(hard);
   hardTree(HardTreePtr());
+  // work out the type of event
+  currentTree()->xcombPtr(dynamic_ptr_cast<StdXCombPtr>(xcomb));
+  currentTree()->identifyEventType();
+  checkFlags();
   // number of attempts if more than one interaction switched on
   unsigned int interactionTry=0;
   do {
@@ -1074,6 +974,9 @@ QTildeShowerHandler::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
 }
 
 void QTildeShowerHandler::showerDecay(ShowerTreePtr decay) {
+  // work out the type of event
+  currentTree()->xcombPtr(StdXCombPtr());
+  currentTree()->identifyEventType();
   _decayme = HwDecayerBasePtr();
   _hardme  = HwMEBasePtr();
   // find the decayer
@@ -1637,26 +1540,25 @@ void QTildeShowerHandler::hardestEmission(bool hard) {
       if( ! it->second->coloured() ) colouredIn+=1;
     }
 
-    if ( theShowerApproximation ){
-      if ( theShowerApproximation->ffPtCut() == theShowerApproximation->fiPtCut() &&
-	   theShowerApproximation->ffPtCut() == theShowerApproximation->iiPtCut() ) 
-	maxpt = theShowerApproximation->ffPtCut();
+    if ( currentTree()->showerApproximation() ){
+      if ( currentTree()->showerApproximation()->ffPtCut() == currentTree()->showerApproximation()->fiPtCut() &&
+	   currentTree()->showerApproximation()->ffPtCut() == currentTree()->showerApproximation()->iiPtCut() ) 
+	maxpt = currentTree()->showerApproximation()->ffPtCut();
       else if ( colouredIn == 2 && colouredOut == 0 )
-	maxpt = theShowerApproximation->iiPtCut();
+	maxpt = currentTree()->showerApproximation()->iiPtCut();
       else if ( colouredIn == 0 && colouredOut > 1 )
-	maxpt = theShowerApproximation->ffPtCut();
+	maxpt = currentTree()->showerApproximation()->ffPtCut();
       else if ( colouredIn == 2 && colouredOut == 1 )
-	maxpt = min(theShowerApproximation->iiPtCut(), theShowerApproximation->fiPtCut());
+	maxpt = min(currentTree()->showerApproximation()->iiPtCut(), currentTree()->showerApproximation()->fiPtCut());
       else if ( colouredIn == 1 && colouredOut > 1 )
-	maxpt = min(theShowerApproximation->ffPtCut(), theShowerApproximation->fiPtCut());
+	maxpt = min(currentTree()->showerApproximation()->ffPtCut(), currentTree()->showerApproximation()->fiPtCut());
       else 
-	maxpt = min(min(theShowerApproximation->iiPtCut(), theShowerApproximation->fiPtCut()), 
-		    theShowerApproximation->ffPtCut());
+	maxpt = min(min(currentTree()->showerApproximation()->iiPtCut(), currentTree()->showerApproximation()->fiPtCut()), 
+		    currentTree()->showerApproximation()->ffPtCut());
     }
 
     // Generate hardtree from born and real emission subprocesses
-    _hardtree = dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())->
-      generateCKKW(currentTree());
+    _hardtree = generateCKKW(currentTree());
 
     // Find transverse momentum of hardest emission
     if (_hardtree){
@@ -1692,7 +1594,7 @@ void QTildeShowerHandler::hardestEmission(bool hard) {
     maxpt=min(sqrt(lastXCombPtr()->lastShowerScale()),maxpt);
 
     // Set maxpt to pT of emission when showering POWHEG real-emission subprocesses
-    if (!isPowhegSEvent && !isPowhegHEvent){
+    if (!currentTree()->isPowhegSEvent() && !currentTree()->isPowhegHEvent()){
       vector<int> outGluon;
       vector<int> outQuark;
       map< ShowerProgenitorPtr, tShowerParticlePtr >::iterator it;
@@ -1730,7 +1632,7 @@ void QTildeShowerHandler::hardestEmission(bool hard) {
     } 
 
     // set maximum pT for subsequent emissions from S events
-    if ( isPowhegSEvent  || (!isPowhegSEvent && !isPowhegHEvent)){
+    if ( currentTree()->isPowhegSEvent()  || (!currentTree()->isPowhegSEvent() && !currentTree()->isPowhegHEvent())){
       for( map< ShowerProgenitorPtr, tShowerParticlePtr >::iterator it
 	     = currentTree()->outgoingLines().begin(); 
 	   it != currentTree()->outgoingLines().end(); ++it ) {
@@ -1746,8 +1648,7 @@ void QTildeShowerHandler::hardestEmission(bool hard) {
     }  
   }
   else 
-    _hardtree = dynamic_ptr_cast<tcQTildeShowerHandlerPtr>(ShowerHandler::currentHandler())
-      ->generateCKKW(currentTree());
+    _hardtree = generateCKKW(currentTree());
 
   // if hard me doesn't have a FSR powheg 
   // correction use decay powheg correction
@@ -2706,7 +2607,7 @@ void QTildeShowerHandler::doShowering(bool hard,XCPtr xcomb) {
   _nis = _nfs = 0;
   // if MC@NLO H event and limited emissions
   // indicate both final and initial state emission
-  if ( isMCatNLOHEvent() && _limitEmissions != 0 ) {
+  if ( currentTree()->isMCatNLOHEvent() && _limitEmissions != 0 ) {
     _nis = _nfs = 1;
   }
   // extract particles to shower
@@ -2766,7 +2667,7 @@ void QTildeShowerHandler::doShowering(bool hard,XCPtr xcomb) {
       _nis = _nfs = 0;
       // if MC@NLO H event and limited emissions
       // indicate both final and initial state emission
-      if ( isMCatNLOHEvent() && _limitEmissions != 0 ) {
+      if ( currentTree()->isMCatNLOHEvent() && _limitEmissions != 0 ) {
 	_nis = _nfs = 1;
       }
       for(unsigned int ix=0; ix<particlesToShower.size();++ix) {
@@ -3299,4 +3200,64 @@ Branching QTildeShowerHandler::selectSpaceLikeDecayBranching(tShowerParticlePtr 
    fb.iout=0;
    // return it
   return fb;
+}
+
+void QTildeShowerHandler::checkFlags() {
+  string error = "Inconsistent hard emission set-up in QTildeShowerHandler::showerHardProcess(). "; 
+  if ( ( currentTree()->isMCatNLOSEvent() || currentTree()->isMCatNLOHEvent() ) ){
+    if (_hardEmissionMode > 1)
+      throw Exception() << error
+			<< "Cannot generate POWHEG matching with MC@NLO shower "
+			<< "approximation.  Add 'set Evolver:HardEmissionMode 0' to input file."
+			<< Exception::runerror;
+    if ( canHandleMatchboxTrunc() )
+      throw Exception() << error
+			<< "Cannot use truncated qtilde shower with MC@NLO shower "
+			<< "approximation.  Set LHCGenerator:EventHandler"
+			<< ":CascadeHandler to '/Herwig/Shower/ShowerHandler' or "
+			<< "'/Herwig/Shower/Dipole/DipoleShowerHandler'."
+			<< Exception::runerror;
+  }
+  else if ( ((currentTree()->isPowhegSEvent() || currentTree()->isPowhegHEvent()) ) &&
+	    _hardEmissionMode < 2){
+    if ( canHandleMatchboxTrunc())
+      throw Exception() << error
+			<< "Unmatched events requested for POWHEG shower "
+			<< "approximation.  Set Evolver:HardEmissionMode to "
+			<< "'MatchboxPOWHEG' or 'FullPOWHEG'."
+			<< Exception::runerror;
+    else if (_hardEmissionModeWarn){
+      _hardEmissionModeWarn = false;
+      _hardEmissionMode+=2;
+      throw Exception() << error
+			<< "Unmatched events requested for POWHEG shower "
+			<< "approximation. Changing Evolver:HardEmissionMode from "
+			<< _hardEmissionMode-2 << " to " << _hardEmissionMode
+			<< Exception::warning;
+    }
+  }
+
+  if ( currentTree()->isPowhegSEvent() || currentTree()->isPowhegHEvent()) {
+    if (currentTree()->showerApproximation()->needsTruncatedShower() &&
+	!canHandleMatchboxTrunc() )
+      throw Exception() << error
+			<< "Current shower handler cannot generate truncated shower.  "
+			<< "Set Generator:EventHandler:CascadeHandler to "
+			<< "'/Herwig/Shower/PowhegShowerHandler'."
+			<< Exception::runerror;
+  }
+  else if ( currentTree()->truncatedShower() && _missingTruncWarn) {
+    _missingTruncWarn=false;
+    throw Exception() << "Warning: POWHEG shower approximation used without "
+		      << "truncated shower.  Set Generator:EventHandler:"
+		      << "CascadeHandler to '/Herwig/Shower/PowhegShowerHandler' and "
+		      << "'MEMatching:TruncatedShower Yes'."
+		      << Exception::warning;   
+  }
+  // else if ( !dipme && _hardEmissionMode > 1 && 
+  // 	    firstInteraction())
+  //   throw Exception() << error
+  // 		      << "POWHEG matching requested for LO events.  Include "
+  // 		      << "'set Factory:ShowerApproximation MEMatching' in input file."
+  // 		      << Exception::runerror;
 }

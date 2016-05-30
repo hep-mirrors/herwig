@@ -47,6 +47,11 @@ public:
   tStdXCombPtr xcombPtr() const { return XComb_; }
 
   /**
+   * Set the XComb describing the hard process.
+   */
+  void xcombPtr(tStdXCombPtr in) { XComb_ = in; }
+
+  /**
    * Return the XComb describing the hard process.
    */
   const StandardXComb& xcomb() const { return *XComb_; }
@@ -144,7 +149,25 @@ public:
   Ptr<ShowerApproximation>::tptr showerApproximation() {
     return showerApproximation_;
   }
+
+  /**
+   *  True if truncated shower required
+   */
+  bool truncatedShower() const { return truncatedShower_; }
+
+  /**
+   *  True if truncated shower required
+   */
+  void truncatedShower(bool in) { truncatedShower_=in; }
   //@}
+
+public:
+
+  /**
+   * Clear the event record: Give up ownership
+   * on any object involved in the evolution.
+   */
+  virtual void clear();
 
 protected:
 
@@ -154,14 +177,16 @@ protected:
   void subProcess(tSubProPtr in) { subProcess_ = in; }
 
   /**
-   * Set the XComb describing the hard process.
-   */
-  void xcombPtr(tStdXCombPtr in) { XComb_ = in; }
-
-  /**
    * Return the PDFs
    */
   pair<PDF,PDF>& pdfs() { return PDFs_; }
+
+public:
+
+  /**
+   *  Identify the type of event
+   */
+  void identifyEventType();
 
 private:
 
@@ -241,6 +266,11 @@ private:
    * The shower approximation to provide the hard scale profile
    */
   Ptr<ShowerApproximation>::tptr showerApproximation_;
+
+  /**
+   *  Whether or ont needs truncated shower
+   */
+  bool truncatedShower_;
   //@}
 
 };

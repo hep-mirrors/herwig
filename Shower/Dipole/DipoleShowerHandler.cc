@@ -86,54 +86,11 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr,
       didRadiate = false;
       didRealign = false;
 
-      isMCatNLOSEvent(false);
-      isMCatNLOHEvent(false);
-
-      if ( eventRecord().xcombPtr() ) {
-
-	Ptr<SubtractedME>::tptr subme =
-	  dynamic_ptr_cast<Ptr<SubtractedME>::tptr>(eventRecord().xcombPtr()->matrixElement());
-	Ptr<MatchboxMEBase>::tptr me =
-	  dynamic_ptr_cast<Ptr<MatchboxMEBase>::tptr>(eventRecord().xcombPtr()->matrixElement());
-	Ptr<SubtractionDipole>::tptr dipme =  
-	  dynamic_ptr_cast<Ptr<SubtractionDipole>::tptr>(eventRecord().xcombPtr()->matrixElement());
-
-
-	if ( subme ) {
-	  if ( subme->showerApproximation() ) {
-	    // don't do this for POWHEG-type corrections
-	    if ( !subme->showerApproximation()->needsSplittingGenerator() ) {
-	      theShowerApproximation = subme->showerApproximation();
-	      if ( subme->realShowerSubtraction() )
-		isMCatNLOHEvent(true);
-	      else if ( subme->virtualShowerSubtraction() )
-		isMCatNLOSEvent(true);
-	    }
-	  }
-	} else if ( me ) {
-	  if ( me->factory()->showerApproximation() ) {
-	    if ( !me->factory()->showerApproximation()->needsSplittingGenerator() ) {
-	      theShowerApproximation = me->factory()->showerApproximation();
-	      isMCatNLOSEvent(true);
-	    }
-	  }
-	}
-	string error = "Inconsistent hard emission set-up in DipoleShowerHandler::cascade. ";
-	if (me && me->factory()->showerApproximation()){
-	  if(me->factory()->showerApproximation()->needsTruncatedShower())
-	    throw Exception() << error
-			      << "No truncated shower needed with DipoleShowerHandler.  Add "
-			      << "'set MEMatching:TruncatedShower No' to input file."
-			      << Exception::runerror;
-	}
-	else if (subme && subme->factory()->showerApproximation()){
-	  if(subme->factory()->showerApproximation()->needsTruncatedShower())
-	    throw Exception() << error
-			      << "No truncated shower needed with DipoleShowerHandler.  Add "
-			      << "'set MEMatching:TruncatedShower No' to input file."
-			      << Exception::runerror;
-	}
-
+      if ( eventRecord().truncatedShower() ) {
+	throw Exception() << "Inconsistent hard emission set-up in DipoleShowerHandler::cascade. "
+			  << "No truncated shower needed with DipoleShowerHandler.  Add "
+			  << "'set MEMatching:TruncatedShower No' to input file."
+			  << Exception::runerror;
       }
 
       hardScales(lastXCombPtr()->lastShowerScale());
@@ -148,7 +105,7 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr,
 
       if ( firstMCatNLOEmission ) {
 
-        if ( !isMCatNLOHEvent() )
+        if ( !eventRecord().isMCatNLOHEvent() )
 	  nEmissions = 1;
 	else
 	  nEmissions = 0;
@@ -546,8 +503,8 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
 
     didRadiate = true;
 
-    isMCatNLOSEvent(false);
-    isMCatNLOHEvent(false);
+    eventRecord().isMCatNLOSEvent(false);
+    eventRecord().isMCatNLOHEvent(false);
 
     pair<list<Dipole>::iterator,list<Dipole>::iterator> children;
 

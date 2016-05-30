@@ -503,6 +503,11 @@ protected:
    */
   bool hardOnly() const {return _limitEmissions==3;}
 
+  /**
+   *  Check the flags
+   */
+  void checkFlags();
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -762,21 +767,6 @@ private :
    *  Option for hard radiation in POWHEG events
    */
   bool _hardPOWHEG;
-
-  /**
-   * True, if Matchbox Powheg S-event
-   */
-  bool isPowhegSEvent;
-
-  /**
-   * True, if matchbox Powheg H-event
-   */
-  bool isPowhegHEvent;
-
-  /**
-   * The shower approximation to provide the hard scale profile
-   */
-  Ptr<ShowerApproximation>::tptr theShowerApproximation;
 
   /**
    * True if no warnings about incorrect hard emission

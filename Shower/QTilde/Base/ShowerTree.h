@@ -11,6 +11,7 @@
 
 #include "ThePEG/Config/ThePEG.h"
 #include "Herwig/Shower/ShowerHandler.fh"
+#include "Herwig/Shower/ShowerEventRecord.h"
 #include "Herwig/Shower/QTilde/ShowerConfig.h"
 #include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
 #include "ShowerProgenitor.h"
@@ -34,7 +35,7 @@ using namespace ThePEG;
  *  needs to be showered.
  *
  */
-class ShowerTree : public Base {
+class ShowerTree : public ShowerEventRecord {
 
   friend class ShowerHandler;
 
