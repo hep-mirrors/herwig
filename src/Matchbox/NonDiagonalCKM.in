@@ -2,5 +2,5 @@
 
 set /Herwig/MatrixElements/Matchbox/Factory:QuarkFlavourDiagonal No
 
-set /Herwig/Vertices/FFWVertex:Diagonal No
+set /Herwig/Vertices/FFWMatchboxVertex:Diagonal No
 
