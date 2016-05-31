@@ -12,8 +12,8 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "Herwig/PDT/GenericMassGenerator.h"
 #include "ThePEG/Cuts/Cuts.h"
-#include "Herwig/Shower/Base/HardTree.h"
-#include "Herwig/Shower/Base/Branching.h"
+#include "Herwig/Shower/QTilde/Base/HardTree.h"
+#include "Herwig/Shower/QTilde/Base/Branching.h"
 
 using namespace Herwig;
 

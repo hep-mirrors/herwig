@@ -7,7 +7,7 @@
 
 #include "SMHiggsFermionsDecayer.h"
 #include "Herwig/Utilities/Maths.h"
-#include "Herwig/Shower/Couplings/ShowerAlpha.fh"
+#include "Herwig/Shower/QTilde/Couplings/ShowerAlpha.fh"
 
 namespace Herwig {
 

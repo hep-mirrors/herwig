@@ -25,10 +25,10 @@
 #include "Herwig/MatrixElement/HardVertex.h"
 #include "Herwig/Models/StandardModel/StandardModel.h"
 #include "Herwig/Utilities/Maths.h"
-#include "Herwig/Shower/Base/ShowerProgenitor.h"
-#include "Herwig/Shower/Base/ShowerTree.h"
-#include "Herwig/Shower/Base/Branching.h"
-#include "Herwig/Shower/Base/HardTree.h"
+#include "Herwig/Shower/QTilde/Base/ShowerProgenitor.h"
+#include "Herwig/Shower/QTilde/Base/ShowerTree.h"
+#include "Herwig/Shower/QTilde/Base/Branching.h"
+#include "Herwig/Shower/QTilde/Base/HardTree.h"
 
 using namespace Herwig;
 

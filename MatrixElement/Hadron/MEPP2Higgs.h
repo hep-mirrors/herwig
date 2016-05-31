@@ -21,7 +21,7 @@
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
 #include "Herwig/PDT/GenericMassGenerator.h"
 #include "Herwig/MatrixElement/ProductionMatrixElement.h"
-#include "Herwig/Shower/Couplings/ShowerAlpha.h"
+#include "Herwig/Shower/QTilde/Couplings/ShowerAlpha.h"
 
 namespace Herwig {
 using namespace ThePEG;

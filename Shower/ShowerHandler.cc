@@ -25,8 +25,6 @@
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Utilities/Throw.h"
 #include "ThePEG/Utilities/StringUtils.h"
-#include "Herwig/Shower/Base/Evolver.h"
-#include "Herwig/Shower/Base/ShowerParticle.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -34,10 +32,7 @@
 #include "Herwig/PDF/MPIPDF.h"
 #include "Herwig/PDF/MinBiasPDF.h"
 #include "ThePEG/Handlers/EventHandler.h"
-#include "Herwig/Shower/Base/ShowerTree.h"
-#include "Herwig/Shower/Base/HardTree.h"
-#include "Herwig/Shower/Base/KinematicsReconstructor.h"
-#include "Herwig/Shower/Base/PartnerFinder.h"
+#include "Herwig/Shower/QTilde/Base/ShowerTree.h"
 #include "Herwig/PDF/HwRemDecayer.h"
 #include <cassert>
 #include "ThePEG/Utilities/DescribeClass.h"
@@ -79,8 +74,7 @@ ShowerHandler::ShowerHandler() :
   factorizationScaleFactor_(1.0),
   renormalizationScaleFactor_(1.0),
   hardScaleFactor_(1.0),
-  restrictPhasespace_(true), maxPtIsMuF_(false),
-  splitHardProcess_(true) {
+  restrictPhasespace_(true), maxPtIsMuF_(false) {
   inputparticlesDecayInShower_.push_back( 6  ); //  top 
   inputparticlesDecayInShower_.push_back( 23 ); // Z0
   inputparticlesDecayInShower_.push_back( 24 ); // W+/-
@@ -106,7 +100,7 @@ void ShowerHandler::dofinish(){
 }
 
 void ShowerHandler::persistentOutput(PersistentOStream & os) const {
-  os << evolver_ << remDec_ << ounit(pdfFreezingScale_,GeV) << maxtry_ 
+  os << remDec_ << ounit(pdfFreezingScale_,GeV) << maxtry_ 
      << maxtryMPI_ << maxtryDP_ << inputparticlesDecayInShower_
      << particlesDecayInShower_ << MPIHandler_ << PDFA_ << PDFB_
      << PDFARemnant_ << PDFBRemnant_
@@ -114,11 +108,11 @@ void ShowerHandler::persistentOutput(PersistentOStream & os) const {
      << factorizationScaleFactor_ << renormalizationScaleFactor_
      << hardScaleFactor_
      << restrictPhasespace_ << maxPtIsMuF_ << hardScaleProfile_
-     << splitHardProcess_ << showerVariations_;
+     << showerVariations_;
 }
 
 void ShowerHandler::persistentInput(PersistentIStream & is, int) {
-  is >> evolver_ >> remDec_ >> iunit(pdfFreezingScale_,GeV) >> maxtry_ 
+  is >> remDec_ >> iunit(pdfFreezingScale_,GeV) >> maxtry_ 
      >> maxtryMPI_ >> maxtryDP_ >> inputparticlesDecayInShower_
      >> particlesDecayInShower_ >> MPIHandler_ >> PDFA_ >> PDFB_
      >> PDFARemnant_ >> PDFBRemnant_
@@ -126,42 +120,13 @@ void ShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> factorizationScaleFactor_ >> renormalizationScaleFactor_
      >> hardScaleFactor_
      >> restrictPhasespace_ >> maxPtIsMuF_ >> hardScaleProfile_
-     >> splitHardProcess_ >> showerVariations_;
+     >> showerVariations_;
 }
 
 void ShowerHandler::Init() {
 
   static ClassDocumentation<ShowerHandler> documentation
-    ("Main driver class for the showering.",
-     "The Shower evolution was performed using an algorithm described in "
-     "\\cite{Marchesini:1983bm,Marchesini:1987cf,Gieseke:2003rz,Bahr:2008pv}.",
-     "%\\cite{Marchesini:1983bm}\n"
-     "\\bibitem{Marchesini:1983bm}\n"
-     "  G.~Marchesini and B.~R.~Webber,\n"
-     "  ``Simulation Of QCD Jets Including Soft Gluon Interference,''\n"
-     "  Nucl.\\ Phys.\\  B {\\bf 238}, 1 (1984).\n"
-     "  %%CITATION = NUPHA,B238,1;%%\n"
-     "%\\cite{Marchesini:1987cf}\n"
-     "\\bibitem{Marchesini:1987cf}\n"
-     "  G.~Marchesini and B.~R.~Webber,\n"
-     "   ``Monte Carlo Simulation of General Hard Processes with Coherent QCD\n"
-     "  Radiation,''\n"
-     "  Nucl.\\ Phys.\\  B {\\bf 310}, 461 (1988).\n"
-     "  %%CITATION = NUPHA,B310,461;%%\n"
-     "%\\cite{Gieseke:2003rz}\n"
-     "\\bibitem{Gieseke:2003rz}\n"
-     "  S.~Gieseke, P.~Stephens and B.~Webber,\n"
-     "  ``New formalism for QCD parton showers,''\n"
-     "  JHEP {\\bf 0312}, 045 (2003)\n"
-     "  [arXiv:hep-ph/0310083].\n"
-     "  %%CITATION = JHEPA,0312,045;%%\n"
-     );
-
-  static Reference<ShowerHandler,Evolver> 
-    interfaceEvolver("Evolver", 
-		     "A reference to the Evolver object", 
-		     &Herwig::ShowerHandler::evolver_,
-		     false, false, true, false);
+    ("Main driver class for the showering.");
 
   static Reference<ShowerHandler,HwRemDecayer> 
     interfaceRemDecayer("RemDecayer", 
@@ -303,22 +268,6 @@ void ShowerHandler::Init() {
      "Do not perform phasespace restrictions",
      false);
 
-
-  static Switch<ShowerHandler,bool> interfaceSplitHardProcess
-    ("SplitHardProcess",
-     "Whether or not to try and split the hard process into production and decay processes",
-     &ShowerHandler::splitHardProcess_, true, false, false);
-  static SwitchOption interfaceSplitHardProcessYes
-    (interfaceSplitHardProcess,
-     "Yes",
-     "Split the hard process",
-     true);
-  static SwitchOption interfaceSplitHardProcessNo
-    (interfaceSplitHardProcess,
-     "No",
-     "Don't split the hard process",
-     false);
-
   static Command<ShowerHandler> interfaceAddVariation
     ("AddVariation",
      "Add a shower variation.",
@@ -327,7 +276,7 @@ void ShowerHandler::Init() {
 }
 
 Energy ShowerHandler::hardScale() const {
-  return evolver_->hardScale();
+  assert(false);
 }
 
 void ShowerHandler::cascade() {
@@ -562,30 +511,12 @@ void ShowerHandler::cascade() {
   getMPIHandler()->clean();
 }
 
-void ShowerHandler::fillEventRecord() {
-  // create a new step 
-  StepPtr pstep = newStep();
-  assert(!done_.empty());
-  assert(done_[0]->isHard());
-  // insert the steps
-  for(unsigned int ix=0;ix<done_.size();++ix) {
-    done_[ix]->fillEventRecord(pstep,
-			       evolver_->isISRadiationON(),
-			       evolver_->isFSRadiationON());
-  }
-}
-
-void ShowerHandler::prepareCascade(tSubProPtr sub) { 
-  current_ = currentStep(); 
-  subProcess_ = sub;
-} 
-
 void ShowerHandler::initializeWeights() {
   if ( !showerVariations().empty() ) {
 
     tEventPtr event = eventHandler()->currentEvent();
 
-    for ( map<string,ShowerHandler::ShowerVariation>::const_iterator var =
+    for ( map<string,ShowerVariation>::const_iterator var =
 	    showerVariations().begin();
 	  var != showerVariations().end(); ++var ) {
 
@@ -632,37 +563,6 @@ void ShowerHandler::combineWeights() {
   }
 }
 
-string ShowerHandler::ShowerVariation::fromInFile(const string& in) {
-  // pretty simple for the moment, just to try
-  // TODO make this better
-  istringstream read(in);
-  string where;
-  read >> renormalizationScaleFactor >> factorizationScaleFactor >> where;
-  if ( !read )
-    return "something went wrong with: " + in;
-  if ( where != "Hard" && where != "All" && where!= "Secondary" )
-    return "The specified process for reweighting does not exist.\nOptions are: Hard, Secondary, All.";
-  if ( where == "Hard" || where == "All" )
-    firstInteraction = true;
-  else
-    firstInteraction = false;
-  if ( where == "Secondary" || where == "All" )
-    secondaryInteractions = true;
-  else
-    secondaryInteractions = false;
-  return "";
-}
-
-void ShowerHandler::ShowerVariation::put(PersistentOStream& os) const {
-  os << renormalizationScaleFactor << factorizationScaleFactor
-     << firstInteraction << secondaryInteractions;
-}
-
-void ShowerHandler::ShowerVariation::get(PersistentIStream& is) {
-  is >> renormalizationScaleFactor >> factorizationScaleFactor
-     >> firstInteraction >> secondaryInteractions;
-}
-
 string ShowerHandler::doAddVariation(string in) {
   if ( in.empty() )
     return "expecting a name and a variation specification";
@@ -693,91 +593,14 @@ string ShowerHandler::doAddVariation(string in) {
   return res;
 }
 
-tPPair ShowerHandler::cascade(tSubProPtr sub,
-			      XCPtr xcomb) {
-  prepareCascade(sub);
-  resetWeights();
-  // set the scale variation factors; needs to go after prepareCascade
-  // to trigger possible different variations for hard and secondary
-  // scatters
-  evolver()->renormalizationScaleFactor(renormalizationScaleFactor());
-  evolver()->factorizationScaleFactor(factorizationScaleFactor());
-  evolver()->restrictPhasespace(restrictPhasespace());
-  evolver()->hardScaleIsMuF(hardScaleIsMuF());
-  // start of the try block for the whole showering process
-  unsigned int countFailures=0;
-  while (countFailures<maxtry_) {
-    try {
-      decay_.clear();
-      done_.clear();
-      ShowerTree::constructTrees(currentSubProcess(),hard_,decay_,
-				 firstInteraction() ? tagged() :
-				 tPVector(currentSubProcess()->outgoing().begin(),
-					  currentSubProcess()->outgoing().end()),
-				 splitHardProcess_);
-      // if no hard process
-      if(!hard_)  throw Exception() << "Shower starting with a decay"
-				    << "is not implemented" 
-				    << Exception::runerror;
-      // perform the shower for the hard process
-      evolver_->showerHardProcess(hard_,xcomb);
-      done_.push_back(hard_);
-      hard_->updateAfterShower(decay_);
-      // if no decaying particles to shower break out of the loop
-      if(decay_.empty()) break;
-      // shower the decay products
-      while(!decay_.empty()) {
-	// find particle whose production process has been showered
-	ShowerDecayMap::iterator dit = decay_.begin();
-	while(!dit->second->parent()->hasShowered() && dit!=decay_.end()) ++dit;
-	assert(dit!=decay_.end());
-	// get the particle
-	ShowerTreePtr decayingTree = dit->second;
-	// remove it from the multimap
-	decay_.erase(dit);
-	// make sure the particle has been decayed
-	decayingTree->decay(decay_);
-	// now shower the decay
-	evolver_->showerDecay(decayingTree);
-	done_.push_back(decayingTree);
-	decayingTree->updateAfterShower(decay_);
-      }
-      // suceeded break out of the loop
-      break;
-    }
-    catch (KinematicsReconstructionVeto) {
-      resetWeights();
-      ++countFailures;
-    }
-  }
-  // if loop exited because of too many tries, throw event away
-  if (countFailures >= maxtry_) {
-    resetWeights();
-    hard_=ShowerTreePtr();
-    decay_.clear();
-    done_.clear();
-    throw Exception() << "Too many tries for main while loop "
-		      << "in ShowerHandler::cascade()." 
-		      << Exception::eventerror; 	
-  }
-  //enter the particles in the event record
-  fillEventRecord();
-  // clear storage
-  hard_=ShowerTreePtr();
-  decay_.clear();
-  done_.clear();
-  // non hadronic case return
-  if (!isResolvedHadron(incoming_.first ) && 
-      !isResolvedHadron(incoming_.second) )
-    return incoming_;
-  // remake the remnants (needs to be after the colours are sorted
-  //                       out in the insertion into the event record)
-  if ( firstInteraction() ) return remakeRemnant(sub->incoming());
-  //Return the new pair of incoming partons. remakeRemnant is not
-  //necessary here, because the secondary interactions are not yet
-  //connected to the remnants.
-  return make_pair(findFirstParton(sub->incoming().first ),
-		   findFirstParton(sub->incoming().second));
+void ShowerHandler::prepareCascade(tSubProPtr sub) { 
+  current_ = currentStep(); 
+  subProcess_ = sub;
+} 
+
+
+tPPair ShowerHandler::cascade(tSubProPtr, XCPtr) {
+  assert(false);
 }
 
 ShowerHandler::RemPair 
@@ -928,8 +751,3 @@ bool ShowerHandler::isResolvedHadron(tPPtr particle) {
   }
   return false;
 }
-
-HardTreePtr ShowerHandler::generateCKKW(ShowerTreePtr ) const {
-  return HardTreePtr();
-}
-

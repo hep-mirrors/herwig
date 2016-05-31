@@ -12,8 +12,8 @@
 // This is the declaration of the ShowerConfig class.
 
 #include "ThePEG/Config/ThePEG.h"
-#include "Base/ShowerParticle.fh"
-#include "Base/SudakovFormFactor.fh"
+#include "QTilde/Base/ShowerParticle.fh"
+#include "QTilde/Base/SudakovFormFactor.fh"
 
 namespace Herwig { 
 using namespace ThePEG;
