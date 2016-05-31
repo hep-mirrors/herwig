@@ -11,6 +11,7 @@
 
 #include "ThePEG/Config/ThePEG.h"
 #include "Herwig/Shower/ShowerHandler.fh"
+#include "Herwig/Shower/PerturbativeProcess.h"
 #include "Herwig/Shower/ShowerEventRecord.h"
 #include "Herwig/Shower/QTilde/ShowerConfig.h"
 #include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
@@ -42,25 +43,10 @@ class ShowerTree : public ShowerEventRecord {
 public:
 
   /**
-   *  Constructors and Destructors
+   * Constructor from a perturbative process
+   * @param process The perturbative process
    */
-  //@{
-  /**
-   * Constructor for a scattering process
-   * @param incoming The incoming particles
-   * @param out The outgoing particles
-   * @param decay Map into which the trees for any unstable particles are inserted
-   */
-  ShowerTree(const PPair incoming, const ParticleVector & out,
-	     ShowerDecayMap & decay);
-  
-  /**
-   *  Constructor for a decay
-   * @param in The decaying particle
-   * @param decay Map into which the trees for any unstable particles are inserted
-   */
-  ShowerTree(PPtr in, ShowerDecayMap & decay);
-  //@}
+  ShowerTree(PerturbativeProcessPtr process);
 
   /**
    * Calculate the space-time displacement
@@ -70,15 +56,15 @@ public:
 
   /**
    *  Construct the trees from the hard process
+   * @param hardTree The output ShowerTree for the hard process
+   * @param decayTrees The output ShowerTrees for any decays.
    * @param hard The output ShowerTree for the hard process
    * @param decay The output ShowerTrees for any decays.
-   * @param decay Map for the decay trees
-   * @param tagged The tagged particles
-   * @param splitTrees Whether or not to split the process
    */
-  static void constructTrees(tSubProPtr subProcess, ShowerTreePtr & hard,
-			     ShowerDecayMap & decay, tPVector tagged,
-			     bool splitTrees);
+  static void constructTrees(ShowerTreePtr & hardTree,
+			     ShowerDecayMap & decayTrees,
+			     PerturbativeProcessPtr hard,
+			     DecayProcessMap decay);
 
 public:
 
@@ -101,13 +87,6 @@ public:
    * This needs to be run after the constructor.
    */
   void setParents();
-
-  /**
-   *  Perform the decay for a tree starting with an unstable particle
-   * @param decay The map of widths and ShowerTrees for the decays so that
-   * any unstable decay products can be added.
-   */
-  void decay(ShowerDecayMap & decay);
 
   /**
    * Access methods for the type of interaction
@@ -196,12 +175,12 @@ public:
 				ShowerParticlePtr newParent,
 				ShowerParticlePtr otherChild);
 
-  /**
-   *  Member called at the end of the shower of a tree to perform a number of
-   *  updates.
-   *  @param decay The map of widths and ShowerTrees for the decays so that
-   *  any unstable decay products can be added.
-   */
+  // /**
+  //  *  Member called at the end of the shower of a tree to perform a number of
+  //  *  updates.
+  //  *  @param decay The map of widths and ShowerTrees for the decays so that
+  //  *  any unstable decay products can be added.
+  //  */
   void updateAfterShower(ShowerDecayMap & decay);
 
   /**
@@ -291,6 +270,11 @@ public:
    */
   void checkMomenta();
 
+  /**
+   *  Update tree after the parent has been decayed.
+   */
+  void update(PerturbativeProcessPtr newProcess);
+
 protected:
 
   /**
@@ -337,9 +321,6 @@ protected:
    * @param part The particle
    */
   void fixColour(tShowerParticlePtr part);
-
-  void findDecayProducts(PPtr in, vector<PPtr> & original, vector<PPtr> & copy,
-			 ShowerDecayMap& decay, map<PPtr,ShowerTreePtr> & trees);
 
 private:
 

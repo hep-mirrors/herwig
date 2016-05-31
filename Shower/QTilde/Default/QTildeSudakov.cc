@@ -134,7 +134,7 @@ ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
       double factor=alphaSVetoRatio(splittingFn()->angularOrdered() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t,1.)*
 	SplittingFnVetoRatio(z()*(1.-z())*t,ids,true,rho);
 
-      ShowerHandlerPtr ch = ShowerHandler::currentHandler();
+      tShowerHandlerPtr ch = ShowerHandler::currentHandler();
 
       if( !(SplitRew || alphaRew) ) {
         //Emission
@@ -231,7 +231,7 @@ generateNextSpaceBranching(const Energy startingQ,
                     alphaSVetoRatio(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t,1.)*
 	            SplittingFnVetoRatio((1.-z())*t/z(),ids,true,rho);
 
-      ShowerHandlerPtr ch = ShowerHandler::currentHandler();
+      tShowerHandlerPtr ch = ShowerHandler::currentHandler();
 
       if( !(PDFRew || SplitRew || alphaRew) ) {
         //Emission
@@ -264,7 +264,7 @@ generateNextSpaceBranching(const Energy startingQ,
 
             map<string,double>::iterator wi = ch->currentWeights().find(var->first);
             if ( wi != ch->currentWeights().end() )
-	          wi->second *= varied;
+	      wi->second *= varied;
 	    else {
 	      assert(false);
 	      //ch->currentWeights()[var->first] = varied;

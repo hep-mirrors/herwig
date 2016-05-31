@@ -398,7 +398,7 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
       candidate.hardPt(maxPossible);
     }
 
-    gen->second->generate(candidate,currentWeights_,optHardPt,optCutoff);
+    gen->second->generate(candidate,currentWeights(),optHardPt,optCutoff);
     Energy nextScale = evolutionOrdering()->evolutionScale(gen->second->lastSplitting(),*(gen->second->splittingKernel()));
 
     if ( nextScale > winnerScale ) {
@@ -494,7 +494,7 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
 	  double w = theEventReweight->weightCascade(eventRecord().incoming(),
 							eventRecord().outgoing(),
 							eventRecord().hard(),theGlobalAlphaS);
-	  reweight_ *= w;
+	  reweight(reweight()*w);
 	}
       continue;
     }
@@ -537,7 +537,7 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
 	double w = theEventReweight->weight(eventRecord().incoming(),
 					    eventRecord().outgoing(),
 					    eventRecord().hard(),theGlobalAlphaS);
-	reweight_ *= w;
+	reweight(reweight()*w);
       }
     
     if ( nEmissions )

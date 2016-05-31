@@ -28,6 +28,7 @@
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "Herwig/MatrixElement/Matchbox/Base/SubtractedME.h"
 #include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
+#include "ThePEG/PDF/PartonExtractor.h"
 
 using namespace Herwig;
 
@@ -71,7 +72,6 @@ bool QTildeShowerHandler::_hardEmissionModeWarn = true;
 bool QTildeShowerHandler::_missingTruncWarn = true;
 
 QTildeShowerHandler::QTildeShowerHandler() :
-  splitHardProcess_(true),
   _maxtry(100), _meCorrMode(1), _reconOpt(0),
   _hardVetoReadOption(false),
   _iptrms(ZERO), _beta(0.), _gamma(ZERO), _iptmax(),
@@ -94,7 +94,7 @@ IBPtr QTildeShowerHandler::fullclone() const {
 }
 
 void QTildeShowerHandler::persistentOutput(PersistentOStream & os) const {
-  os << splitHardProcess_ << _model << _splittingGenerator << _maxtry 
+  os << _model << _splittingGenerator << _maxtry 
      << _meCorrMode << _hardVetoReadOption
      << _limitEmissions << _spinOpt << _softOpt << _hardPOWHEG
      << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << ounit(_iptmax,GeV) 
@@ -104,7 +104,7 @@ void QTildeShowerHandler::persistentOutput(PersistentOStream & os) const {
 }
 
 void QTildeShowerHandler::persistentInput(PersistentIStream & is, int) {
-  is >> splitHardProcess_ >> _model >> _splittingGenerator >> _maxtry 
+  is >> _model >> _splittingGenerator >> _maxtry 
      >> _meCorrMode >> _hardVetoReadOption
      >> _limitEmissions >> _spinOpt >> _softOpt >> _hardPOWHEG
      >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> iunit(_iptmax,GeV)
@@ -147,21 +147,6 @@ void QTildeShowerHandler::Init() {
      "  [arXiv:hep-ph/0310083].\n"
      "  %%CITATION = JHEPA,0312,045;%%\n"
      );
-
-  static Switch<QTildeShowerHandler,bool> interfaceSplitHardProcess
-    ("SplitHardProcess",
-     "Whether or not to try and split the hard process into production and decay processes",
-     &QTildeShowerHandler::splitHardProcess_, true, false, false);
-  static SwitchOption interfaceSplitHardProcessYes
-    (interfaceSplitHardProcess,
-     "Yes",
-     "Split the hard process",
-     true);
-  static SwitchOption interfaceSplitHardProcessNo
-    (interfaceSplitHardProcess,
-     "No",
-     "Don't split the hard process",
-     false);
 
   static Reference<QTildeShowerHandler,SplittingGenerator> 
     interfaceSplitGen("SplittingGenerator", 
@@ -433,19 +418,27 @@ void QTildeShowerHandler::Init() {
 
 tPPair QTildeShowerHandler::cascade(tSubProPtr sub,
 				    XCPtr xcomb) {
+  // use me for reference in tex file etc
+  useMe();
   prepareCascade(sub);
+  // set things up in the base class
   resetWeights();
+  // check if anything needs doing
+  if ( !doFSR() && ! doISR() )
+    return sub->incoming();
   // start of the try block for the whole showering process
   unsigned int countFailures=0;
   while (countFailures<maxtry()) {
     try {
       decay_.clear();
       done_.clear();
-      ShowerTree::constructTrees(currentSubProcess(),hard_,decay_,
-				 firstInteraction() ? tagged() :
-				 tPVector(currentSubProcess()->outgoing().begin(),
-					  currentSubProcess()->outgoing().end()),
-				 splitHardProcess_);
+      PerturbativeProcessPtr hard;
+      DecayProcessMap decay;
+      splitHardProcess(firstInteraction() ? tagged() :
+      		       tPVector(currentSubProcess()->outgoing().begin(),
+      				currentSubProcess()->outgoing().end()),
+      		       hard,decay);
+      ShowerTree::constructTrees(hard_,decay_,hard,decay);
       // if no hard process
       if(!hard_)  throw Exception() << "Shower starting with a decay"
 				    << "is not implemented" 
@@ -467,7 +460,7 @@ tPPair QTildeShowerHandler::cascade(tSubProPtr sub,
 	// remove it from the multimap
 	decay_.erase(dit);
 	// make sure the particle has been decayed
-	decayingTree->decay(decay_);
+	QTildeShowerHandler::decay(decayingTree,decay_);
 	// now shower the decay
 	showerDecay(decayingTree);
 	done_.push_back(decayingTree);
@@ -1696,7 +1689,9 @@ void QTildeShowerHandler::hardestEmission(bool hard) {
     // generate the hardest emission
     ShowerDecayMap decay;
     PPtr in = new_ptr(*inter[0]);
-    ShowerTreePtr decayTree = new_ptr(ShowerTree(in, decay));
+    PerturbativeProcessPtr newProcess(new_ptr(PerturbativeProcess()));
+    newProcess->incoming().push_back(make_pair(in,PerturbativeProcessPtr()));
+    ShowerTreePtr decayTree = new_ptr(ShowerTree(newProcess));
     HardTreePtr     FSRTree = decayer->generateHardest(decayTree); 
     if (!FSRTree) {
       if(_hardtree) connectTrees(currentTree(),_hardtree,hard);
@@ -3260,4 +3255,52 @@ void QTildeShowerHandler::checkFlags() {
   // 		      << "POWHEG matching requested for LO events.  Include "
   // 		      << "'set Factory:ShowerApproximation MEMatching' in input file."
   // 		      << Exception::runerror;
+}
+
+
+tPPair QTildeShowerHandler::remakeRemnant(tPPair oldp){
+  // get the parton extractor
+  PartonExtractor & pex = *lastExtractor();
+  // get the new partons
+  tPPair newp = make_pair(findFirstParton(oldp.first ), 
+			  findFirstParton(oldp.second));
+  // if the same do nothing
+  if(newp == oldp) return oldp;
+  // Creates the new remnants and returns the new PartonBinInstances
+  // ATTENTION Broken here for very strange configuration
+  PBIPair newbins = pex.newRemnants(oldp, newp, newStep());
+  newStep()->addIntermediate(newp.first);
+  newStep()->addIntermediate(newp.second);
+  // return the new partons
+  return newp;
+}
+
+PPtr QTildeShowerHandler::findFirstParton(tPPtr seed) const{
+  if(seed->parents().empty()) return seed;
+  tPPtr parent = seed->parents()[0];
+  //if no parent there this is a loose end which will 
+  //be connected to the remnant soon.
+  if(!parent || parent == incomingBeams().first || 
+     parent == incomingBeams().second ) return seed;
+  else return findFirstParton(parent);
+}
+
+void QTildeShowerHandler::decay(ShowerTreePtr tree, ShowerDecayMap & decay) {
+  // must be one incoming particle
+  assert(tree->incomingLines().size()==1);
+  // apply any transforms
+  tree->applyTransforms();
+  // if already decayed return
+  if(!tree->outgoingLines().empty()) return;
+  // now we need to replace the particle with a new copy after the shower
+  // find particle after the shower
+  map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> >::const_iterator
+    tit = tree->parent()->treelinks().find(tree);
+  assert(tit!=tree->parent()->treelinks().end());
+  ShowerParticlePtr newparent=tit->second.second;
+  PerturbativeProcessPtr newProcess =  new_ptr(PerturbativeProcess());
+  newProcess->incoming().push_back(make_pair(newparent,PerturbativeProcessPtr()));
+  DecayProcessMap decayMap;
+  ShowerHandler::decay(newProcess,decayMap);
+  ShowerTree::constructTrees(tree,decay,newProcess,decayMap);
 }

@@ -442,6 +442,17 @@ protected:
 protected:
 
   /**
+   * Find the parton extracted from the incoming particle after ISR
+   */
+  PPtr findFirstParton(tPPtr seed) const;
+
+  /**
+   * Fix Remnant connections after ISR
+   */
+  tPPair remakeRemnant(tPPair oldp); 
+protected:
+
+  /**
    *  Start the shower of a timelike particle
    */
   virtual bool startTimeLikeShower(ShowerInteraction::Type);
@@ -541,6 +552,11 @@ protected:
    */
   virtual tPPair cascade(tSubProPtr sub, XCPtr xcomb);
 
+  /**
+   *  Decay a ShowerTree
+   */
+  void decay(ShowerTreePtr tree, ShowerDecayMap & decay);
+
 protected:
 
   /** @name Clone Methods. */
@@ -585,10 +601,6 @@ private:
    *  Stuff from the ShowerHandler
    */
   //@{
-  /**
-   *  Whether or not to split into hard and decay trees
-   */
-  bool splitHardProcess_;
 
   /**
    *  The ShowerTree for the hard process

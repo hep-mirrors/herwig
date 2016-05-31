@@ -43,247 +43,69 @@ namespace {
   }
 }
 
-// constructor from hard process
-ShowerTree::ShowerTree(const PPair incoming, const ParticleVector & out,
-		       ShowerDecayMap& decay) 
-  : _hardMECorrection(false), _wasHard(true),
+ShowerTree::ShowerTree(PerturbativeProcessPtr process) 
+  : _hardMECorrection(false),
     _parent(), _hasShowered(false) {
-  tPPair beam = CurrentGenerator::current().currentEvent()->incoming();
-  findBeam(beam.first ,incoming.first );
-  findBeam(beam.second,incoming.second);
-  _incoming = incoming;
-  double x1(_incoming.first ->momentum().rho()/beam.first ->momentum().rho());
-  double x2(_incoming.second->momentum().rho()/beam.second->momentum().rho());
-  // must have two incoming particles
-  assert(_incoming.first && _incoming.second);
-  // set the parent tree
-  _parent=ShowerTreePtr();
-  // temporary vectors to contain all the particles before insertion into
-  // the data structure
+  // get the incoming and outgoing particles and make copies
   vector<PPtr> original,copy;
-  vector<ShowerParticlePtr> shower;
-  // create copies of ThePEG particles for the incoming particles
-  original.push_back(_incoming.first);
-  copy.push_back(new_ptr(Particle(*_incoming.first)));
-  original.push_back(_incoming.second);
-  copy.push_back(new_ptr(Particle(*_incoming.second)));
-  // and same for outgoing
-  map<PPtr,ShowerTreePtr> trees;
-  for (ParticleVector::const_iterator it = out.begin();
-       it != out.end(); ++it) {
-    // if decayed or should be decayed in shower make the tree
-    PPtr orig = *it;
-    bool radiates = false;
-    if(!orig->children().empty()) {
-      // remove d,u,s,c,b quarks and leptons other than on-shell taus
-      if(StandardQCDPartonMatcher::Check(orig->id())||
-	 (LeptonMatcher::Check(orig->id())&& !(abs(orig->id())==ParticleID::tauminus && abs(orig->mass()-orig->dataPtr()->mass())<MeV))) {
-	radiates = true;
-      }
-      else {
-	bool foundParticle(false),foundGauge(false);
-	for(unsigned int iy=0;iy<orig->children().size();++iy) {
-	  if(orig->children()[iy]->id()==orig->id()) {
-	    foundParticle = true;
-	  }
-	  else if(orig->children()[iy]->id()==ParticleID::g ||
-		  orig->children()[iy]->id()==ParticleID::gamma) {
-	    foundGauge = true;
-	  }
-	}
-	radiates = foundParticle && foundGauge;
-      }
-    }
-    if(radiates) {
-      findDecayProducts(orig,original,copy,decay,trees);
-    }
-    else if(!orig->children().empty()||
-	    (ShowerHandler::currentHandler()->decaysInShower(orig->id())&&!orig->dataPtr()->stable())) {
-      ShowerTreePtr newtree=new_ptr(ShowerTree(orig,decay));
-      newtree->setParents();
-      trees.insert(make_pair(orig,newtree));
-      Energy width=orig->dataPtr()->generateWidth(orig->mass());
-      decay.insert(make_pair(width,newtree));
-      original.push_back(orig);
-      copy.push_back(new_ptr(Particle(*orig)));
-    }
-    else { 
-      original.push_back(orig);
-      copy.push_back(new_ptr(Particle(*orig)));
-    }
+  for(unsigned int ix=0;ix<process->incoming().size();++ix) {
+    original.push_back(process->incoming()[ix].first);
+    copy    .push_back(new_ptr(Particle(*original.back())));
   }
-  // colour isolate the hard process
-  colourIsolate(original,copy);
-  // now create the Shower particles
-  // create ShowerParticles for the incoming particles
-  assert(original.size() == copy.size());
-  for(unsigned int ix=0;ix<original.size();++ix) {
-    ShowerParticlePtr temp=new_ptr(ShowerParticle(*copy[ix],1,ix>=2));
-    fixColour(temp);
-    // incoming
-    if(ix<2) {
-      temp->x(ix==0 ? x1 : x2);
-      _incomingLines.insert(make_pair(new_ptr(ShowerProgenitor(original[ix],
-							       copy[ix],temp)),temp));
-      _backward.insert(temp);
-    }
-    // outgoing
-    else {
-      _outgoingLines.insert(make_pair(new_ptr(ShowerProgenitor(original[ix],
-							       copy[ix],temp)),temp));
-      _forward.insert(temp);
-    }
+  for(unsigned int ix=0;ix<process->outgoing().size();++ix) {
+    original.push_back(process->outgoing()[ix].first);
+    copy    .push_back(new_ptr(Particle(*original.back())));
   }
-  // set up the map of daughter trees
-  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator mit;
-  for(mit=_outgoingLines.begin();mit!=_outgoingLines.end();++mit) {
-    map<PPtr,ShowerTreePtr>::const_iterator tit=trees.find(mit->first->original());
-    if(tit!=trees.end())
-      _treelinks.insert(make_pair(tit->second,
-				  make_pair(mit->first,mit->first->progenitor())));
-  }
-}
-
-void ShowerTree::findDecayProducts(PPtr in, vector<PPtr> & original, vector<PPtr> & copy,
-				   ShowerDecayMap& decay, map<PPtr,ShowerTreePtr> & trees) {
-  ParticleVector children=in->children();
-  for(unsigned int ix=0;ix<children.size();++ix) {
-    // if decayed or should be decayed in shower make the tree
-    PPtr orig=children[ix];
-    // in->abandonChild(orig);
-    bool radiates = false;
-    if(!orig->children().empty()) {
-      // remove d,u,s,c,b quarks and leptons other than on-shell taus
-      if(StandardQCDPartonMatcher::Check(orig->id())||
-	 (LeptonMatcher::Check(orig->id())&& !(abs(orig->id())==ParticleID::tauminus && abs(orig->mass()-orig->dataPtr()->mass())<MeV))) {
-	radiates = true;
-      }
-      else {
-	bool foundParticle(false),foundGauge(false);
-	for(unsigned int iy=0;iy<orig->children().size();++iy) {
-	  if(orig->children()[iy]->id()==orig->id()) {
-	    foundParticle = true;
-	  }
-	  else if(orig->children()[iy]->id()==ParticleID::g ||
-		  orig->children()[iy]->id()==ParticleID::gamma) {
-	    foundGauge = true;
-	  }
-	}
-	radiates = foundParticle && foundGauge;
-      }
-    }
-    if(radiates) {
-      findDecayProducts(orig,original,copy,decay,trees);
-    }
-    else if(!orig->children().empty()||
-	    (ShowerHandler::currentHandler()->decaysInShower(orig->id())&&!orig->dataPtr()->stable())) {
-      ShowerTreePtr newtree=new_ptr(ShowerTree(orig,decay));
-      trees.insert(make_pair(orig,newtree));
-      Energy width=orig->dataPtr()->generateWidth(orig->mass());
-      decay.insert(make_pair(width,newtree));
-      newtree->setParents();
-      newtree->_parent=this;
-      original.push_back(orig);
-      copy.push_back(new_ptr(Particle(*orig)));
-    }
-    else { 
-      original.push_back(orig);
-      copy.push_back(new_ptr(Particle(*orig)));
-    }
-  }
-}
-
-ShowerTree::ShowerTree(PPtr in,
-		       ShowerDecayMap& decay)
-  : _hardMECorrection(false), _wasHard(false), _hasShowered(false) {
-  // there must be an incoming particle
-  assert(in);
-  // temporary vectors to contain all the particles before insertion into
-  // the data structure
-  vector<PPtr> original,copy;
-  // insert place holder for incoming particle
-  original.push_back(in);
-  copy.push_back(PPtr());
-  // we need to deal with the decay products if decayed
-  map<PPtr,ShowerTreePtr> trees;
-  if(!in->children().empty()) {
-    ParticleVector children=in->children();
-    for(unsigned int ix=0;ix<children.size();++ix) {
-      // if decayed or should be decayed in shower make the tree
-      PPtr orig=children[ix];
-      in->abandonChild(orig);
-      bool radiates = false;
-      if(!orig->children().empty()) {
-	if(StandardQCDPartonMatcher::Check(orig->id())||
-	   (LeptonMatcher::Check(orig->id())&& !(abs(orig->id())==ParticleID::tauminus && abs(orig->mass()-orig->dataPtr()->mass())<MeV))) {
-	  radiates = true;
-	}
-	else {
-	  bool foundParticle(false),foundGauge(false);
-	  for(unsigned int iy=0;iy<orig->children().size();++iy) {
-	    if(orig->children()[iy]->id()==orig->id()) {
-	      foundParticle = true;
-	    }
-	    else if(orig->children()[iy]->id()==ParticleID::g ||
-		    orig->children()[iy]->id()==ParticleID::gamma) {
-	      foundGauge = true;
-	    }
-	  }
-	  radiates = foundParticle && foundGauge;
-	}
-	// finally assume all non-decaying particles are in this class
-	if(!radiates) {
-	  radiates = !ShowerHandler::currentHandler()->decaysInShower(orig->id());
-	}
-      }
-      if(radiates) {
-	findDecayProducts(orig,original,copy,decay,trees);
-      }
-      else if(!orig->children().empty()||
-	      (ShowerHandler::currentHandler()->decaysInShower(orig->id())&&!orig->dataPtr()->stable())) {
-	ShowerTreePtr newtree=new_ptr(ShowerTree(orig,decay));
-	trees.insert(make_pair(orig,newtree));
-	Energy width=orig->dataPtr()->generateWidth(orig->mass());
-	decay.insert(make_pair(width,newtree));
-	newtree->setParents();
-	newtree->_parent=this;
-	original.push_back(orig);
-	copy.push_back(new_ptr(Particle(*orig)));
-      }
-      else {
-	original.push_back(orig);
-	copy.push_back(new_ptr(Particle(*orig)));
-      }
-    }
-  }
-  // create the incoming particle
-  copy[0]     = new_ptr(Particle(*in));
   // isolate the colour
   colourIsolate(original,copy);
-  // create the parent
-  ShowerParticlePtr sparent(new_ptr(ShowerParticle(*copy[0],2,false)));
-  fixColour(sparent);
-  _incomingLines.insert(make_pair(new_ptr(ShowerProgenitor(original[0],copy[0],sparent))
-				  ,sparent));
-  // return if not decayed
-  if(original.size()==1) return;
+  // hard process
+  unsigned int itype(1);
+  if(process->incoming().size()==2) {
+    _wasHard = true;
+    // set the beams and incoming particles 
+    tPPair beam = CurrentGenerator::current().currentEvent()->incoming();
+    findBeam(beam.first ,process->incoming()[0].first);
+    findBeam(beam.second,process->incoming()[1].first);
+    _incoming = make_pair(process->incoming()[0].first,
+			  process->incoming()[1].first);
+    double x1(_incoming.first ->momentum().rho()/beam.first ->momentum().rho());
+    double x2(_incoming.second->momentum().rho()/beam.second->momentum().rho());
+    // must have two incoming particles
+    assert(_incoming.first && _incoming.second);
+    // set the parent tree
+    _parent=ShowerTreePtr();
+    for(unsigned int ix=0;ix<2;++ix) {
+      ShowerParticlePtr temp=new_ptr(ShowerParticle(*copy[ix],itype,false));
+      fixColour(temp);
+      temp->x(ix==0 ? x1 : x2);
+      _incomingLines.insert(make_pair(new_ptr(ShowerProgenitor(original[ix],
+ 							       copy[ix],temp)),temp));
+      _backward.insert(temp);
+    }
+  }
+  // decay process
+  else if(process->incoming().size()==1) {
+    _wasHard = false;
+    itype=2;
+    // create the parent shower particle
+    ShowerParticlePtr sparent(new_ptr(ShowerParticle(*copy[0],itype,false)));
+    fixColour(sparent);
+    _incomingLines.insert(make_pair(new_ptr(ShowerProgenitor(original[0],copy[0],sparent))
+				    ,sparent));
+    // return if not decayed
+    if(original.size()==1) return;
+  }
+  else
+    assert(false);
   // create the children
   assert(copy.size() == original.size());
-  for (unsigned int ix=1;ix<original.size();++ix) {
-    ShowerParticlePtr stemp= new_ptr(ShowerParticle(*copy[ix],2,true));
+  for (unsigned int ix=process->incoming().size();ix<original.size();++ix) {
+    ShowerParticlePtr stemp= new_ptr(ShowerParticle(*copy[ix],itype,true));
     fixColour(stemp);
     _outgoingLines.insert(make_pair(new_ptr(ShowerProgenitor(original[ix],copy[ix],
-							     stemp)),
-				    stemp));
+ 							     stemp)),
+ 				    stemp));
     _forward.insert(stemp);
-  } 
-  // set up the map of daughter trees
-  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator mit;
-  for(mit=_outgoingLines.begin();mit!=_outgoingLines.end();++mit) {
-    map<PPtr,ShowerTreePtr>::const_iterator tit=trees.find(mit->first->original());
-    if(tit!=trees.end())
-      _treelinks.insert(make_pair(tit->second,
-				  make_pair(mit->first,mit->first->progenitor())));
   }
 }
 
@@ -532,21 +354,21 @@ void ShowerTree::addInitialStateShower(PPtr p, PPtr hadron,
   }
 }
 
-void ShowerTree::decay(ShowerDecayMap & decay) {
+void ShowerTree::update(PerturbativeProcessPtr newProcess) {
   // must be one incoming particle
   assert(_incomingLines.size()==1);
-  // otherwise decay it
-  applyTransforms();
-  // if already decayed return
-  if(!_outgoingLines.empty()) return;
-  // now we need to replace the particle with a new copy after the shower
-  // find particle after the shower
-  ShowerParticlePtr newparent=_parent->_treelinks[this].second;
-  // now make the new progenitor
+  colourLines().clear();
+  // copy the particles and isolate the colour
   vector<PPtr> original,copy;
-  original.push_back(newparent);
-  copy.push_back(new_ptr(Particle(*newparent)));
-  // reisolate the colour
+  for(unsigned int ix=0;ix<newProcess->incoming().size();++ix) {
+    original.push_back(newProcess->incoming()[ix].first);
+    copy    .push_back(new_ptr(Particle(*original.back())));
+  }
+  for(unsigned int ix=0;ix<newProcess->outgoing().size();++ix) {
+    original.push_back(newProcess->outgoing()[ix].first);
+    copy    .push_back(new_ptr(Particle(*original.back())));
+  }
+  // isolate the colour
   colourIsolate(original,copy);
   // make the new progenitor
   ShowerParticlePtr stemp=new_ptr(ShowerParticle(*copy[0],2,false));
@@ -554,78 +376,15 @@ void ShowerTree::decay(ShowerDecayMap & decay) {
   ShowerProgenitorPtr newprog=new_ptr(ShowerProgenitor(original[0],copy[0],stemp));
   _incomingLines.clear();
   _incomingLines.insert(make_pair(newprog,stemp));
-  // now we need to decay the copy
-  PPtr parent=copy[0];
-  if(parent->spinInfo()) parent->spinInfo()->decay(true);
-  unsigned int ntry = 0;
-  while (true) {
-    // exit if fails
-    if (++ntry>=200)
-      throw Exception() << "Failed to perform decay in ShowerTree::decay()"
-			<< " after " << 200
-			<< " attempts for " << parent->PDGName() 
-			<< Exception::eventerror;
-    // select decay mode
-    tDMPtr dm(parent->data().selectMode(*parent));
-    if(!dm) 
-      throw Exception() << "Failed to select decay  mode in ShowerTree::decay()"
-			<< "for " << newparent->PDGName()
-			<< Exception::eventerror;
-    if(!dm->decayer()) 
-      throw Exception() << "No Decayer for selected decay mode "
-			<< " in ShowerTree::decay()"
-			<< Exception::runerror;
-    // start of try block
-    try {
-      ParticleVector children = dm->decayer()->decay(*dm, *parent);
-      // if no children have another go
-      if(children.empty()) continue;
-      // set up parent
-      parent->decayMode(dm);
-      // add children
-      for (unsigned int i = 0, N = children.size(); i < N; ++i ) {
-	children[i]->setLabVertex(parent->labDecayVertex());
-	parent->addChild(children[i]);
-	parent->scale(ZERO);
-      }
-      // if succeeded break out of loop
-      break;
-    }
-    catch(KinematicsReconstructionVeto) {}
-  }
-  // insert the trees from the children
-  ParticleVector children=parent->children();
-  map<PPtr,ShowerTreePtr> trees;
-  for(unsigned int ix=0;ix<children.size();++ix) {
-    PPtr orig=children[ix];
-    parent->abandonChild(orig);
-    // if particle has children or decays in shower
-    if(!orig->children().empty()||
-       (ShowerHandler::currentHandler()->decaysInShower(orig->id())&&!orig->dataPtr()->stable())) {
-      ShowerTreePtr newtree=new_ptr(ShowerTree(orig,decay));
-      trees.insert(make_pair(orig,newtree));
-      Energy width=orig->dataPtr()->generateWidth(orig->mass());
-      decay.insert(make_pair(width,newtree));
-    }
-    // now create the shower progenitors
-    PPtr ncopy=new_ptr(Particle(*orig));
-    //copy[0]->addChild(ncopy);
-    ShowerParticlePtr nshow=new_ptr(ShowerParticle(*ncopy,2,true));
-    fixColour(nshow);
-    ShowerProgenitorPtr prog=new_ptr(ShowerProgenitor(children[ix],
-						      ncopy,nshow));
-    _outgoingLines.insert(make_pair(prog,nshow));
-  }
-  // set up the map of daughter trees
-  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator mit;
-  for(mit=_outgoingLines.begin();mit!=_outgoingLines.end();++mit) {
-    map<PPtr,ShowerTreePtr>::const_iterator tit=trees.find(mit->first->original());
-    if(tit!=trees.end()) {
-      _treelinks.insert(make_pair(tit->second,
-				  make_pair(mit->first,
-					    mit->first->progenitor())));
-      tit->second->_parent=this;
-    }
+  // create the children
+  assert(copy.size() == original.size());
+  for (unsigned int ix=newProcess->incoming().size();ix<original.size();++ix) {
+    ShowerParticlePtr stemp= new_ptr(ShowerParticle(*copy[ix],2,true));
+    fixColour(stemp);
+    _outgoingLines.insert(make_pair(new_ptr(ShowerProgenitor(original[ix],copy[ix],
+ 							     stemp)),
+ 				    stemp));
+    _forward.insert(stemp);
   }
 }
 
@@ -845,9 +604,12 @@ void ShowerTree::updateAfterShower(ShowerDecayMap & decay) {
   // shower but didn't come from the hard process
   set<tShowerParticlePtr>::const_iterator cit;
   for(cit=_forward.begin();cit!=_forward.end();++cit) {
-    if((ShowerHandler::currentHandler()->decaysInShower((**cit).id())&&!(**cit).dataPtr()->stable())&&
+    if((ShowerHandler::currentHandler()->decaysInShower((**cit).id())&&
+	!(**cit).dataPtr()->stable()) &&
        hard.find(*cit)==hard.end()) {
-      ShowerTreePtr newtree=new_ptr(ShowerTree(*cit,decay));
+      PerturbativeProcessPtr newProcess(new_ptr(PerturbativeProcess()));
+      newProcess->incoming().push_back(make_pair(*cit,PerturbativeProcessPtr()));
+      ShowerTreePtr newtree=new_ptr(ShowerTree(newProcess));
       newtree->setParents();
       newtree->_parent=this;
       Energy width=(**cit).dataPtr()->generateWidth((**cit).mass());
@@ -1021,101 +783,45 @@ Lorentz5Distance ShowerTree::spaceTimeDistance(tPPtr particle) {
   return output;
 }
 
-namespace {
-
-bool decayProduct(tSubProPtr subProcess,
-		  tPPtr particle) {
-  // must be time-like and not incoming
-  if(particle->momentum().m2()<=ZERO||
-     particle == subProcess->incoming().first||
-     particle == subProcess->incoming().second) return false;
-  // if only 1 outgoing and this is it
-  if(subProcess->outgoing().size()==1 &&
-     subProcess->outgoing()[0]==particle) return true;
-  // must not be the s-channel intermediate otherwise
-  if(find(subProcess->incoming().first->children().begin(),
-	  subProcess->incoming().first->children().end(),particle)!=
-     subProcess->incoming().first->children().end()&&
-     find(subProcess->incoming().second->children().begin(),
-	  subProcess->incoming().second->children().end(),particle)!=
-     subProcess->incoming().second->children().end()&&
-     subProcess->incoming().first ->children().size()==1&&
-     subProcess->incoming().second->children().size()==1)
-    return false;
-  // if non-coloured this is enough
-  if(!particle->dataPtr()->coloured()) return true;
-  // if coloured must be unstable
-  if(particle->dataPtr()->stable()) return false;
-  // must not have same particle type as a child
-  int id = particle->id();
-  for(unsigned int ix=0;ix<particle->children().size();++ix)
-    if(particle->children()[ix]->id()==id) return false;
-  // otherwise its a decaying particle
-  return true;
-}
-
-PPtr findParent(PPtr original, bool & isHard, 
-			       set<PPtr> outgoingset,
-			       tSubProPtr subProcess) {
-  PPtr parent=original;
-  isHard |=(outgoingset.find(original) != outgoingset.end());
-  if(!original->parents().empty()) {
-    PPtr orig=original->parents()[0];
-    if(CurrentGenerator::current().currentEventHandler()->currentStep()->
-       find(orig)&&decayProduct(subProcess,orig)) {
-      parent=findParent(orig,isHard,outgoingset,subProcess);
-    }
+void ShowerTree::constructTrees(ShowerTreePtr & hardTree,
+				ShowerDecayMap & decayTrees,
+				PerturbativeProcessPtr hard,
+				DecayProcessMap decay) {
+  map<PerturbativeProcessPtr,ShowerTreePtr> treeMap;
+  // convert the hard process
+  if(hardTree) {
+    hardTree->update(hard);
   }
-  return parent;
-}
-
-}
-
-void ShowerTree::constructTrees(tSubProPtr subProcess, ShowerTreePtr & hard,
-				ShowerDecayMap & decay, tPVector tagged,
-				bool splitTrees) {
-  // temporary storage of the particles
-  set<PPtr> hardParticles;
-  // loop over the tagged particles
-  bool isHard=false;
-  set<PPtr> outgoingset(tagged.begin(),tagged.end());
-  for (tParticleVector::const_iterator taggedP = tagged.begin();
-       taggedP != tagged.end(); ++taggedP) {
-    // if a remnant don't consider
-    if(CurrentGenerator::current().currentEventHandler()->currentCollision()->isRemnant(*taggedP))
-      continue;
-    // find the parent and whether its a colourless s-channel resonance
-    bool isDecayProd=false;
-    // check if hard
-    isHard |=(outgoingset.find(*taggedP) != outgoingset.end());
-    if(splitTrees) {
-      tPPtr parent = *taggedP;
-      // check if from s channel decaying colourless particle
-      while(parent&&!parent->parents().empty()&&!isDecayProd) {
-	parent = parent->parents()[0];
-	if(parent == subProcess->incoming().first ||
-	   parent == subProcess->incoming().second ) break;
-	isDecayProd = decayProduct(subProcess,parent);
+  else {
+    hardTree = new_ptr(ShowerTree(hard));
+  }
+  treeMap.insert(make_pair(hard,hardTree));
+  for(DecayProcessMap::const_iterator it=decay.begin();it!=decay.end();++it) {
+    ShowerTreePtr newTree = new_ptr(ShowerTree(it->second));
+    treeMap.insert(make_pair(it->second,newTree));
+    decayTrees.insert(make_pair(it->first,newTree));
+  }
+  // set up the links between the trees
+  for(map<PerturbativeProcessPtr,ShowerTreePtr>::const_iterator it=treeMap.begin();
+      it!=treeMap.end();++it) {
+    // links to daughter trees
+    map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator mit;
+    for(mit=it->second->_outgoingLines.begin();
+	mit!=it->second->_outgoingLines.end();++mit) {
+      unsigned int iloc=0;
+      for(;iloc<it->first->outgoing().size();++iloc) {
+	if(it->first->outgoing()[iloc].first==mit->first->original())
+	  break;
       }
-    if (isDecayProd) 
-      hardParticles.insert(findParent(parent,isHard,outgoingset,subProcess));
+      if(it->first->outgoing()[iloc].second)
+	it->second->_treelinks.insert(make_pair(treeMap[it->first->outgoing()[iloc].second],
+						make_pair(mit->first,mit->first->progenitor())));
     }
-    if (!isDecayProd) 
-      hardParticles.insert(*taggedP);
+    // links to parent trees
+    if(it->first->incoming()[0].second) {
+      it->second->_parent = treeMap[it->first->incoming()[0].second];
+    }
   }
-  // there must be something to shower
-  if(hardParticles.empty()) 
-    throw Exception() << "No particles to shower in "
-  		      << "ShowerTree::constructTrees()" 
-  		      << Exception::eventerror;
-  if(!isHard)
-    throw Exception() << "Starting on decay not yet implemented in "
-  		      << "ShowerTree::constructTrees()" 
-  		      << Exception::runerror;
-  // create the hard process ShowerTree
-  ParticleVector out(hardParticles.begin(),hardParticles.end());
-  hard=new_ptr(ShowerTree(subProcess->incoming(),out, decay));
-  hard->setParents();
 }
 
 namespace {

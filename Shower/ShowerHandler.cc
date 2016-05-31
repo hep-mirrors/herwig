@@ -44,7 +44,7 @@ describeShowerHandler ("Herwig::ShowerHandler","HwShower.so");
 
 ShowerHandler::~ShowerHandler() {}
 
-ShowerHandler * ShowerHandler::currentHandler_ = 0;
+tShowerHandlerPtr ShowerHandler::currentHandler_ = tShowerHandlerPtr();
 
 void ShowerHandler::doinit() {
   CascadeHandler::doinit();
@@ -66,15 +66,16 @@ IBPtr ShowerHandler::fullclone() const {
 }
 
 ShowerHandler::ShowerHandler() : 
-  reweight_(1.0),
   maxtry_(10),maxtryMPI_(10),maxtryDP_(10),
-  includeSpaceTime_(false), vMin_(0.1*GeV2), subProcess_(),
-  pdfFreezingScale_(2.5*GeV),
   factorizationScaleFactor_(1.0),
   renormalizationScaleFactor_(1.0),
   hardScaleFactor_(1.0),
-  restrictPhasespace_(true), maxPtIsMuF_(false),
-  doFSR_(true), doISR_(true) {
+  restrictPhasespace_(true), maxPtIsMuF_(false), 
+  pdfFreezingScale_(2.5*GeV),
+  doFSR_(true), doISR_(true),
+  splitHardProcess_(true),
+  includeSpaceTime_(false), vMin_(0.1*GeV2),
+  reweight_(1.0) {
   inputparticlesDecayInShower_.push_back( 6  ); //  top 
   inputparticlesDecayInShower_.push_back( 23 ); // Z0
   inputparticlesDecayInShower_.push_back( 24 ); // W+/-
@@ -107,7 +108,7 @@ void ShowerHandler::persistentOutput(PersistentOStream & os) const {
      << factorizationScaleFactor_ << renormalizationScaleFactor_
      << hardScaleFactor_
      << restrictPhasespace_ << maxPtIsMuF_ << hardScaleProfile_
-     << showerVariations_ << doFSR_ << doISR_;
+     << showerVariations_ << doFSR_ << doISR_ << splitHardProcess_;
 }
 
 void ShowerHandler::persistentInput(PersistentIStream & is, int) {
@@ -119,7 +120,7 @@ void ShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> factorizationScaleFactor_ >> renormalizationScaleFactor_
      >> hardScaleFactor_
      >> restrictPhasespace_ >> maxPtIsMuF_ >> hardScaleProfile_
-     >> showerVariations_ >> doFSR_ >> doISR_;
+     >> showerVariations_ >> doFSR_ >> doISR_ >> splitHardProcess_;
 }
 
 void ShowerHandler::Init() {
@@ -302,6 +303,20 @@ void ShowerHandler::Init() {
      "Switch off initial state radiation.",
      false);
  
+  static Switch<ShowerHandler,bool> interfaceSplitHardProcess
+    ("SplitHardProcess",
+     "Whether or not to try and split the hard process into production and decay processes",
+     &ShowerHandler::splitHardProcess_, true, false, false);
+  static SwitchOption interfaceSplitHardProcessYes
+    (interfaceSplitHardProcess,
+     "Yes",
+     "Split the hard process",
+     true);
+  static SwitchOption interfaceSplitHardProcessNo
+    (interfaceSplitHardProcess,
+     "No",
+     "Don't split the hard process",
+     false);
 }
 
 Energy ShowerHandler::hardScale() const {
@@ -309,25 +324,20 @@ Energy ShowerHandler::hardScale() const {
 }
 
 void ShowerHandler::cascade() {
-  
+  useMe();
   // Initialise the weights in the event object
   // so that any variations are output regardless of
   // whether showering occurs for the given event
   initializeWeights();
-
-  tcPDFPtr first  = firstPDF().pdf();
-  tcPDFPtr second = secondPDF().pdf();
-
-  if ( PDFA_ ) first  = PDFA_;
-  if ( PDFB_ ) second = PDFB_;
-
+  // get the PDF's from ThePEG (if locally overridden use the local versions)
+  tcPDFPtr first  = PDFA_ ? tcPDFPtr(PDFA_) : firstPDF().pdf();
+  tcPDFPtr second = PDFB_ ? tcPDFPtr(PDFB_) : secondPDF().pdf();
   resetPDFs(make_pair(first,second));
-
+  // set the PDFs for the remnant
   if( ! rempdfs_.first)
     rempdfs_.first  = PDFARemnant_ ? PDFPtr(PDFARemnant_) : const_ptr_cast<PDFPtr>(first);
   if( ! rempdfs_.second)
     rempdfs_.second = PDFBRemnant_ ? PDFPtr(PDFBRemnant_) : const_ptr_cast<PDFPtr>(second);
-
   // get the incoming partons
   tPPair  incomingPartons = 
     eventHandler()->currentCollision()->primarySubProcess()->incoming();
@@ -356,9 +366,8 @@ void ShowerHandler::cascade() {
     boostCollision(false);
   }
   // set the current ShowerHandler
-  currentHandler_ = this;
+  setCurrentHandler();
   // first shower the hard process
-  useMe();
   try {
     SubProPtr sub = eventHandler()->currentCollision()->primarySubProcess();
     incomingPartons = cascade(sub,lastXCombPtr());
@@ -380,16 +389,16 @@ void ShowerHandler::cascade() {
     // perform the reweighting for the hard process shower
     combineWeights();
     // unset the current ShowerHandler
-    currentHandler_ = 0;
+    unSetCurrentHandler();
     return;
   }
   // get the remnants for hadronic collision
   pair<tRemPPtr,tRemPPtr> remnants(getRemnants(incomingBins));
   // set the starting scale of the forced splitting to the PDF freezing scale
-  remDec_->initialize(remnants, incoming_, *currentStep(), pdfFreezingScale());
+  remnantDecayer()->initialize(remnants, incoming_, *currentStep(), pdfFreezingScale());
   // do the first forcedSplitting
   try {
-    remDec_->doSplit(incomingPartons, make_pair(rempdfs_.first,rempdfs_.second), true);
+    remnantDecayer()->doSplit(incomingPartons, make_pair(rempdfs_.first,rempdfs_.second), true);
   }
   catch (ExtraScatterVeto) {
     throw Exception() << "Remnant extraction failed in "
@@ -404,7 +413,7 @@ void ShowerHandler::cascade() {
     // boost back to lab if needed
     if(btotal) boostCollision(true);
     // unset the current ShowerHandler
-    currentHandler_ = 0;
+    unSetCurrentHandler();
     return;
   }
   // generate the multiple scatters use modified pdf's now:
@@ -445,7 +454,7 @@ void ShowerHandler::cascade() {
       }
       try {
 	// do the forcedSplitting
-	remDec_->doSplit(incomingPartons, make_pair(remmpipdfs_.first,remmpipdfs_.second), false);
+	remnantDecayer()->doSplit(incomingPartons, make_pair(remmpipdfs_.first,remmpipdfs_.second), false);
       } 
       catch(ExtraScatterVeto){
 	//remove all particles associated with the subprocess
@@ -536,7 +545,7 @@ void ShowerHandler::cascade() {
   // boost back to lab if needed
   if(btotal) boostCollision(true);
   // unset the current ShowerHandler
-  currentHandler_ = 0;
+  unSetCurrentHandler();
   getMPIHandler()->clean();
 }
 
@@ -622,12 +631,6 @@ string ShowerHandler::doAddVariation(string in) {
   return res;
 }
 
-void ShowerHandler::prepareCascade(tSubProPtr sub) { 
-  current_ = currentStep(); 
-  subProcess_ = sub;
-} 
-
-
 tPPair ShowerHandler::cascade(tSubProPtr, XCPtr) {
   assert(false);
 }
@@ -672,34 +675,6 @@ ShowerHandler::getRemnants(PBIPair incomingBins) {
   assert(remnants.first || remnants.second);
   return remnants;
 }
-
-tPPair ShowerHandler::remakeRemnant(tPPair oldp){
-  // get the parton extractor
-  PartonExtractor & pex = *lastExtractor();
-  // get the new partons
-  tPPair newp = make_pair(findFirstParton(oldp.first ), 
-			  findFirstParton(oldp.second));
-  // if the same do nothing
-  if(newp == oldp) return oldp;
-  // Creates the new remnants and returns the new PartonBinInstances
-  // ATTENTION Broken here for very strange configuration
-  PBIPair newbins = pex.newRemnants(oldp, newp, newStep());
-  newStep()->addIntermediate(newp.first);
-  newStep()->addIntermediate(newp.second);
-  // return the new partons
-  return newp;
-}
-
-PPtr ShowerHandler::findFirstParton(tPPtr seed) const{
-  if(seed->parents().empty()) return seed;
-  tPPtr parent = seed->parents()[0];
-  //if no parent there this is a loose end which will 
-  //be connected to the remnant soon.
-  if(!parent || parent == incoming_.first || 
-     parent == incoming_.second ) return seed;
-  else return findFirstParton(parent);
-}
-
 
 namespace {
 
@@ -779,4 +754,289 @@ bool ShowerHandler::isResolvedHadron(tPPtr particle) {
     if(particle->children()[ix]->id()==ParticleID::Remnant) return true;
   }
   return false;
+}
+
+namespace {
+
+bool decayProduct(tSubProPtr subProcess,
+		  tPPtr particle) {
+  // must be time-like and not incoming
+  if(particle->momentum().m2()<=ZERO||
+     particle == subProcess->incoming().first||
+     particle == subProcess->incoming().second) return false;
+  // if only 1 outgoing and this is it
+  if(subProcess->outgoing().size()==1 &&
+     subProcess->outgoing()[0]==particle) return true;
+  // must not be the s-channel intermediate otherwise
+  if(find(subProcess->incoming().first->children().begin(),
+	  subProcess->incoming().first->children().end(),particle)!=
+     subProcess->incoming().first->children().end()&&
+     find(subProcess->incoming().second->children().begin(),
+	  subProcess->incoming().second->children().end(),particle)!=
+     subProcess->incoming().second->children().end()&&
+     subProcess->incoming().first ->children().size()==1&&
+     subProcess->incoming().second->children().size()==1)
+    return false;
+  // if non-coloured this is enough
+  if(!particle->dataPtr()->coloured()) return true;
+  // if coloured must be unstable
+  if(particle->dataPtr()->stable()) return false;
+  // must not have same particle type as a child
+  int id = particle->id();
+  for(unsigned int ix=0;ix<particle->children().size();++ix)
+    if(particle->children()[ix]->id()==id) return false;
+  // otherwise its a decaying particle
+  return true;
+}
+
+PPtr findParent(PPtr original, bool & isHard, 
+			       set<PPtr> outgoingset,
+			       tSubProPtr subProcess) {
+  PPtr parent=original;
+  isHard |=(outgoingset.find(original) != outgoingset.end());
+  if(!original->parents().empty()) {
+    PPtr orig=original->parents()[0];
+    if(CurrentGenerator::current().currentEventHandler()->currentStep()->
+       find(orig)&&decayProduct(subProcess,orig)) {
+      parent=findParent(orig,isHard,outgoingset,subProcess);
+    }
+  }
+  return parent;
+}
+}
+
+void ShowerHandler::findDecayProducts(PPtr in,PerturbativeProcessPtr hard,
+				      DecayProcessMap decay) const {
+  ParticleVector children=in->children();
+  for(ParticleVector::const_iterator it=children.begin(); it!=children.end();++it) {
+    // if decayed or should be decayed in shower make the PerturbaitveProcess
+    bool radiates = false;
+    if(!(**it).children().empty()) {
+      // remove d,u,s,c,b quarks and leptons other than on-shell taus
+      if( StandardQCDPartonMatcher::Check((**it).id()) ||
+	  ( LeptonMatcher::Check((**it).id()) && !(abs((**it).id())==ParticleID::tauminus &&
+						   abs((**it).mass()-(**it).dataPtr()->mass())<MeV))) {
+	radiates = true;
+      }
+      else {
+ 	bool foundParticle(false),foundGauge(false);
+ 	for(unsigned int iy=0;iy<(**it).children().size();++iy) {
+ 	  if((**it).children()[iy]->id()==(**it).id()) {
+	    foundParticle = true;
+	  }
+	  else if((**it).children()[iy]->id()==ParticleID::g ||
+		  (**it).children()[iy]->id()==ParticleID::gamma) {
+	    foundGauge = true;
+	  }
+ 	}
+ 	radiates = foundParticle && foundGauge;
+      }
+    }
+    if(radiates) {
+      findDecayProducts(*it,hard,decay);
+    }
+    else if(!(**it).children().empty()||
+ 	    (decaysInShower((**it).id())&&!(**it).dataPtr()->stable())) {
+      createDecayProcess(in,hard,decay);
+    }
+    else {
+      hard->outgoing().push_back(make_pair(*it,PerturbativeProcessPtr()));
+    }
+  }
+}
+
+void ShowerHandler::splitHardProcess(tPVector tagged, PerturbativeProcessPtr & hard,
+				     DecayProcessMap & decay) const {
+  // temporary storage of the particles
+  set<PPtr> hardParticles;
+  // tagged particles in a set
+  set<PPtr> outgoingset(tagged.begin(),tagged.end());
+  bool isHard=false;
+  // loop over the tagged particles
+  for (tParticleVector::const_iterator taggedP = tagged.begin();
+       taggedP != tagged.end(); ++taggedP) {
+    // skip remnants
+    if(eventHandler()->currentCollision()->isRemnant(*taggedP)) continue;
+    // find the parent and whether its a decaying particle
+    bool isDecayProd=false;
+    // check if hard
+    isHard |=(outgoingset.find(*taggedP) != outgoingset.end());
+    if(splitHardProcess_) {
+      tPPtr parent = *taggedP;
+      // check if from s channel decaying colourless particle
+      while(parent&&!parent->parents().empty()&&!isDecayProd) {
+	parent = parent->parents()[0];
+ 	if(parent == subProcess_->incoming().first ||
+ 	   parent == subProcess_->incoming().second ) break;
+ 	isDecayProd = decayProduct(subProcess_,parent);
+      }
+      if (isDecayProd) 
+	hardParticles.insert(findParent(parent,isHard,outgoingset,subProcess_));
+    }
+    if (!isDecayProd) 
+      hardParticles.insert(*taggedP);
+  }
+  // there must be something to shower
+  if(hardParticles.empty()) 
+    throw Exception() << "No particles to shower in "
+		      << "ShowerHandler::splitHardProcess()" 
+		      << Exception::eventerror;
+  // must be a hard process
+  if(!isHard)
+    throw Exception() << "Starting on decay not yet implemented in "
+		      << "ShowerHandler::splitHardProcess()" 
+		      << Exception::runerror;
+  // create the hard process
+  hard = new_ptr(PerturbativeProcess());
+  // incoming particles
+  hard->incoming().push_back(make_pair(subProcess_->incoming().first ,PerturbativeProcessPtr()));
+  hard->incoming().push_back(make_pair(subProcess_->incoming().second,PerturbativeProcessPtr()));
+  // outgoing particles
+  for(set<PPtr>::const_iterator it=hardParticles.begin();it!=hardParticles.end();++it) {
+    // if decayed or should be decayed in shower make the tree
+    PPtr orig = *it;
+    bool radiates = false;
+    if(!orig->children().empty()) {
+      // remove d,u,s,c,b quarks and leptons other than on-shell taus
+      if( StandardQCDPartonMatcher::Check(orig->id()) ||
+	  ( LeptonMatcher::Check(orig->id()) && 
+	    !(abs(orig->id())==ParticleID::tauminus && abs(orig->mass()-orig->dataPtr()->mass())<MeV))) {
+	radiates = true;
+      }
+      else {
+	bool foundParticle(false),foundGauge(false);
+	for(unsigned int iy=0;iy<orig->children().size();++iy) {
+	  if(orig->children()[iy]->id()==orig->id()) {
+	    foundParticle = true;
+	  }
+	  else if(orig->children()[iy]->id()==ParticleID::g ||
+		  orig->children()[iy]->id()==ParticleID::gamma) {
+	    foundGauge = true;
+	  }
+	}
+	radiates = foundParticle && foundGauge;
+      }
+    }
+    if(radiates) {
+      findDecayProducts(orig,hard,decay);
+    }
+    else if(!(**it).children().empty()||
+ 	    (decaysInShower((**it).id())&&!(**it).dataPtr()->stable())) {
+      createDecayProcess(*it,hard,decay);
+    }
+    else {
+      hard->outgoing().push_back(make_pair(*it,PerturbativeProcessPtr()));
+    }
+  }
+}
+
+void ShowerHandler::createDecayProcess(PPtr in,PerturbativeProcessPtr hard, DecayProcessMap & decay) const {
+  // there must be an incoming particle
+  assert(in);
+  // create the new process and connect with the parent
+  PerturbativeProcessPtr newDecay=new_ptr(PerturbativeProcess());
+  newDecay->incoming().push_back(make_pair(in,hard));
+  Energy width=in->dataPtr()->generateWidth(in->mass());
+  decay.insert(make_pair(width,newDecay));
+  hard->outgoing().push_back(make_pair(in,newDecay));
+  // we need to deal with the decay products if decayed
+  ParticleVector children = in->children();
+  if(!children.empty()) {
+    for(ParticleVector::const_iterator it = children.begin();
+	it!= children.end(); ++it) {
+      // if decayed or should be decayed in shower make the tree
+      in->abandonChild(*it);
+      bool radiates = false;
+      if(!(**it).children().empty()) {
+ 	if(StandardQCDPartonMatcher::Check((**it).id())||
+ 	   (LeptonMatcher::Check((**it).id())&& !(abs((**it).id())==ParticleID::tauminus &&
+						  abs((**it).mass()-(**it).dataPtr()->mass())<MeV))) {
+ 	  radiates = true;
+ 	}
+ 	else {
+ 	  bool foundParticle(false),foundGauge(false);
+ 	  for(unsigned int iy=0;iy<(**it).children().size();++iy) {
+ 	    if((**it).children()[iy]->id()==(**it).id()) {
+ 	      foundParticle = true;
+ 	    }
+ 	    else if((**it).children()[iy]->id()==ParticleID::g ||
+ 		    (**it).children()[iy]->id()==ParticleID::gamma) {
+ 	      foundGauge = true;
+ 	    }
+ 	  }
+ 	  radiates = foundParticle && foundGauge;
+ 	}
+  	// finally assume all non-decaying particles are in this class
+	// pr 27/11/15 not sure about this bit
+   	// if(!radiates) {
+   	//   radiates = !decaysInShower((**it).id());
+   	// }
+      }
+      if(radiates) {
+ 	findDecayProducts(*it,newDecay,decay);
+      }
+      else if(!(**it).children().empty()||
+	      (decaysInShower((**it).id())&&!(**it).dataPtr()->stable())) {
+	createDecayProcess(*it,newDecay,decay);
+      }
+      else {
+	newDecay->outgoing().push_back(make_pair(*it,PerturbativeProcessPtr()));
+      }
+    }
+  }
+}
+
+void ShowerHandler::decay(PerturbativeProcessPtr process,
+			  DecayProcessMap & decayMap) const {
+  PPtr parent = process->incoming()[0].first;
+  assert(parent);
+  if(parent->spinInfo()) parent->spinInfo()->decay(true);
+  unsigned int ntry = 0;
+  ParticleVector children;
+  while (true) {
+    // exit if fails
+    if (++ntry>=maxtryDecay_)
+      throw Exception() << "Failed to perform decay in ShowerHandler::decay()"
+ 			<< " after " << maxtryDecay_
+ 			<< " attempts for " << parent->PDGName() 
+ 			<< Exception::eventerror;
+    // select decay mode
+    tDMPtr dm(parent->data().selectMode(*parent));
+    if(!dm) 
+      throw Exception() << "Failed to select decay  mode in ShowerHandler::decay()"
+			<< "for " << parent->PDGName()
+			<< Exception::eventerror;
+    if(!dm->decayer()) 
+      throw Exception() << "No Decayer for selected decay mode "
+ 			<< " in ShowerHandler::decay()"
+ 			<< Exception::runerror;
+    // start of try block
+    try {
+      children = dm->decayer()->decay(*dm, *parent);
+      // if no children have another go
+      if(children.empty()) continue;
+      // set up parent
+      parent->decayMode(dm);
+       // add children
+      for (unsigned int i = 0, N = children.size(); i < N; ++i ) {
+  	children[i]->setLabVertex(parent->labDecayVertex());
+	//parent->addChild(children[i]);
+      }
+      // if succeeded break out of loop
+      break;
+    }
+    catch(Veto) {
+    }
+  }
+  assert(!children.empty());
+  for(ParticleVector::const_iterator it = children.begin();
+      it!= children.end(); ++it) {
+    if(!(**it).children().empty()||
+       (decaysInShower((**it).id())&&!(**it).dataPtr()->stable())) {
+      createDecayProcess(*it,process,decayMap);
+    }
+    else {
+      process->outgoing().push_back(make_pair(*it,PerturbativeProcessPtr()));
+    }
+  }
 }
