@@ -909,6 +909,9 @@ elif(collider=="LHC") :
             process+="set /Herwig/Particles/h0:HardProcessWidth 0.\n"
             process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 125.7\n"
+            if(parameterName.find("GammaGamma")>=0) :
+               process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
+               process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
         elif(parameterName.find("VBF")>=0) :
             process+="do /Herwig/Particles/h0:SelectDecayModes h0->tau-,tau+;\n"
             process+="set /Herwig/Particles/tau-:Stable Stable\n"
@@ -943,6 +946,9 @@ elif(collider=="LHC") :
             process+="do Factory:Process p p h0\n"
             process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 125.7\n"
+            if(parameterName.find("GammaGamma")>=0) :
+               process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
+               process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
         elif(parameterName.find("ggH")>=0) :
             parameters["nlo"] = "read Matchbox/MadGraph-GoSam.in\nread Matchbox/HiggsEffective.in\n"
             process+="do /Herwig/Particles/h0:SelectDecayModes h0->tau-,tau+;\n"
@@ -960,6 +966,9 @@ elif(collider=="LHC") :
             process+="set /Herwig/Particles/W+:HardProcessWidth 0.\n"
             process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 125.7\n"
+            if(parameterName.find("GammaGamma")>=0) :
+               process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
+               process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
         elif(parameterName.find("8-ZH")>=0) :
             process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\n"
             process+="set /Herwig/Particles/h0:HardProcessWidth 0.\n"
@@ -967,6 +976,9 @@ elif(collider=="LHC") :
             process+="do Factory:Process p p Z0 h0\n"
             process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 125.7\n"
+            if(parameterName.find("GammaGamma")>=0) :
+               process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
+               process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
         elif(parameterName.find("WH")>=0) :
             process+="do /Herwig/Particles/h0:SelectDecayModes h0->b,bbar;\n"
             process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 3\n"

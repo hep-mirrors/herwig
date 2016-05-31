@@ -47283,7 +47283,7 @@ create Herwig::GenericWidthGenerator  hWidth
 newdef hWidth:Particle /Herwig/Particles/h0 
 newdef hWidth:Prefactor 0.302206
 newdef hWidth:BRNormalize 1
-newdef hWidth:BRMinimum 0.01
+newdef hWidth:BRMinimum 0.0001
 newdef hWidth:Points 50
 newdef hWidth:InterpolationOrder 1
 insert hWidth:MEtype 0 1
@@ -47322,10 +47322,10 @@ insert hWidth:ModeOn 2 1
 insert hWidth:ModeOn 3 1
 insert hWidth:ModeOn 4 1
 insert hWidth:ModeOn 5 1
-insert hWidth:ModeOn 6 0
-insert hWidth:ModeOn 7 0
+insert hWidth:ModeOn 6 1
+insert hWidth:ModeOn 7 1
 insert hWidth:ModeOn 8 0
-insert hWidth:ModeOn 9 0
+insert hWidth:ModeOn 9 1
 insert hWidth:MinimumMasses 0 8.4
 insert hWidth:MinimumMasses 1 117.986
 insert hWidth:MinimumMasses 2 3.55398
