@@ -17,14 +17,9 @@
 #include "Herwig/MatrixElement/HwMEBase.h"
 #include "Herwig/Decay/HwDecayerBase.h"
 #include "Herwig/MatrixElement/Matchbox/Matching/ShowerApproximation.h"
+#include "Herwig/Shower/RealEmissionProcess.h"
 
 namespace Herwig {
-
-/**\ingroup Shower
- * Exception class
- * used to communicate failure of QED shower
- */
-struct InteractionVeto {};
 
 using namespace ThePEG;
 
@@ -113,7 +108,7 @@ public:
   /**
    * Mode for hard emissions
    */
-  int hardEmissionMode() const {return _hardEmissionMode;}
+  int hardEmission() const {return _hardEmission;}
   //@}
 
   /**
@@ -157,12 +152,17 @@ protected:
   /**
    *  Generate the hard matrix element correction
    */
-  virtual void hardMatrixElementCorrection(bool);
+  virtual RealEmissionProcessPtr hardMatrixElementCorrection(bool);
 
   /**
    *  Generate the hardest emission
    */
   virtual void hardestEmission(bool hard);
+
+  /**
+   *  Set up for applying a matrix element correction
+   */
+  void setupMECorrection(RealEmissionProcessPtr real);
 
   /**
    * Extract the particles to be showered, set the evolution scales
@@ -251,28 +251,22 @@ protected:
   /**
    * Any ME correction?   
    */
-  bool MECOn(bool hard) const {
-    return ( _hardEmissionMode == 0 ||
-	     (!hard && _hardEmissionMode ==-1) ) &&
-      _meCorrMode > 0;
+  bool MECOn() const { 
+    return _hardEmission == 1;
   }
 
   /**
    * Any hard ME correction? 
    */
-  bool hardMEC(bool hard) const {
-    return ( _hardEmissionMode == 0 ||
-	     (!hard && _hardEmissionMode ==-1) ) &&
-      (_meCorrMode == 1 || _meCorrMode == 2);
+  bool hardMEC() const {
+    return _hardEmission == 1 && (_meCorrMode == 1 || _meCorrMode == 2);
   }
 
   /**
    * Any soft ME correction? 
    */
   bool softMEC() const {
-    return ( _hardEmissionMode == 0 ||
-	     (_currenttree->isDecay() && _hardEmissionMode ==-1) ) &&
-      (_meCorrMode == 1 || _meCorrMode > 2);
+    return _hardEmission == 1 && (_meCorrMode == 1 || _meCorrMode > 2);
   }
   //@}
 
@@ -763,7 +757,7 @@ private :
   /**
    *  Mode for the hard emissions
    */
-  int _hardEmissionMode;
+  int _hardEmission;
 
   /**
    *  Option to include spin correlations
@@ -784,7 +778,7 @@ private :
    * True if no warnings about incorrect hard emission
    * mode setting have been issued yet
    */
-  static bool _hardEmissionModeWarn;
+  static bool _hardEmissionWarn;
 
   /**
    * True if no warnings about missing truncated shower 

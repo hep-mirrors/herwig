@@ -45,7 +45,8 @@ namespace {
 
 ShowerTree::ShowerTree(PerturbativeProcessPtr process) 
   : _hardMECorrection(false),
-    _parent(), _hasShowered(false) {
+    _parent(), _hasShowered(false),
+    _perturbativeProcess(process) {
   // get the incoming and outgoing particles and make copies
   vector<PPtr> original,copy;
   for(unsigned int ix=0;ix<process->incoming().size();++ix) {
@@ -358,6 +359,7 @@ void ShowerTree::update(PerturbativeProcessPtr newProcess) {
   // must be one incoming particle
   assert(_incomingLines.size()==1);
   colourLines().clear();
+  _perturbativeProcess = newProcess;
   // copy the particles and isolate the colour
   vector<PPtr> original,copy;
   for(unsigned int ix=0;ix<newProcess->incoming().size();++ix) {

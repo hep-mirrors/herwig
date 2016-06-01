@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// ShowerTree.h is a part of Herwig - A multi-purpose Monte Carlo event generator
+// PerturbativeProcess.h is a part of Herwig - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2011 The Herwig Collaboration
 //
 // Herwig is licenced under version 2 of the GPL, see COPYING for details.
@@ -40,7 +40,7 @@ public:
     return outgoing_;
   }
 
-private:
+protected:
 
   /**
    *  The incoming particles

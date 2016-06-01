@@ -10,6 +10,7 @@ ShowerHandler.h ShowerHandler.fh ShowerHandler.cc \
 ShowerVariation.h ShowerVariation.cc \
 ShowerEventRecord.h ShowerEventRecord.cc \
 PerturbativeProcess.h PerturbativeProcess.fh \
+RealEmissionProcess.h RealEmissionProcess.fh \
 UEBase.h UEBase.cc UEBase.fh \
 QTilde/ShowerConfig.h QTilde/ShowerConfig.cc \
 QTilde/Base/Branching.h \

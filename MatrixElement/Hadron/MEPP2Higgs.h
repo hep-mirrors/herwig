@@ -22,6 +22,8 @@
 #include "Herwig/PDT/GenericMassGenerator.h"
 #include "Herwig/MatrixElement/ProductionMatrixElement.h"
 #include "Herwig/Shower/QTilde/Couplings/ShowerAlpha.h"
+#include "Herwig/Shower/QTilde/Base/ShowerTree.fh"
+#include "Herwig/Shower/QTilde/Base/HardTree.fh"
 
 namespace Herwig {
 using namespace ThePEG;

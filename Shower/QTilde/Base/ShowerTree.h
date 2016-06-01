@@ -275,6 +275,11 @@ public:
    */
   void update(PerturbativeProcessPtr newProcess);
 
+  /**
+   *  The perturbative process
+   */
+  PerturbativeProcessPtr perturbativeProcess() {return _perturbativeProcess;}
+
 protected:
 
   /**
@@ -383,6 +388,11 @@ private:
    *  The transforms which still need to be applied
    */
   LorentzRotation _transforms;
+
+  /**
+   *  The perturbative process
+   */
+  PerturbativeProcessPtr _perturbativeProcess;
 
 private:
 

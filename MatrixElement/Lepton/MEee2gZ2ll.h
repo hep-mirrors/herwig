@@ -19,6 +19,8 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "Herwig/Shower/QTilde/Couplings/ShowerAlpha.h"
+#include "Herwig/Shower/QTilde/Base/ShowerTree.fh"
+#include "Herwig/Shower/QTilde/Base/HardTree.fh"
 
 namespace Herwig {
 

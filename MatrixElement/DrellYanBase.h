@@ -7,6 +7,9 @@
 
 #include "HwMEBase.h"
 #include "Herwig/Shower/QTilde/Couplings/ShowerAlpha.h"
+#include "Herwig/Shower/QTilde/Base/ShowerTree.fh"
+#include "Herwig/Shower/QTilde/Base/HardTree.fh"
+
 
 namespace Herwig {
 
