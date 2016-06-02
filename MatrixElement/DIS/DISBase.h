@@ -48,13 +48,13 @@ public:
   /**
    *  Initialize the ME correction
    */
-  virtual void initializeMECorrection(ShowerTreePtr, double &,
+  virtual void initializeMECorrection(PerturbativeProcessPtr, double &,
 				      double & );
 
   /**
    *  Apply the hard matrix element correction to a given hard process or decay
    */
-  virtual void applyHardMatrixElementCorrection(ShowerTreePtr);
+  virtual RealEmissionProcessPtr applyHardMatrixElementCorrection(PerturbativeProcessPtr);
 
   /**
    * Apply the soft matrix element correction
@@ -80,7 +80,8 @@ public:
   /**
    *  Apply the POWHEG style correction
    */
-  virtual HardTreePtr generateHardest(ShowerTreePtr,ShowerInteraction::Type);
+  virtual RealEmissionProcessPtr generateHardest(PerturbativeProcessPtr,
+						 ShowerInteraction::Type);
   //@}
 
 public:
