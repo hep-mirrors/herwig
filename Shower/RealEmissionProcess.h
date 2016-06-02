@@ -80,6 +80,30 @@ public:
    */
   void emitted  (unsigned int in) {emitted_=in;}
 
+public:
+
+  /**
+   *  Lorentz Rotation to final-state for II dipoles
+   */ 
+  LorentzRotation transformation() const { return trans_;}
+
+  /**
+   *  Lorentz Rotation to final-state for II dipoles
+   */ 
+  void transformation(LorentzRotation in) {trans_=in;}
+
+public:
+
+  /**
+   *  Get the x values
+   */
+  pair<double,double> x() const {return x_;}
+    
+  /**
+   *  Set the x values
+   */
+  void x(pair<double,double> in) {x_=in;}
+
 private:
 
   /**
@@ -106,6 +130,15 @@ private:
    */
   vector<pair<PPtr, PerturbativeProcessPtr> > bornOutgoing_;
 
+  /**
+   *  Lorentz transformation for spectators in II
+   */
+  LorentzRotation trans_;
+
+  /**
+   *  x values
+   */
+  pair<double,double> x_;
 };
 
 }

@@ -21,7 +21,7 @@ cd /Herwig/Shower
 
 set PowhegShowerHandler:Factory /Herwig/MatrixElements/Matchbox/Factory
 
-set ShowerHandler:HardEmissionMode FullPOWHEG
+set ShowerHandler:HardEmission POWHEG
 
 # tunes
 read Matchbox/Powheg-Default-HardAlphaSTune.in

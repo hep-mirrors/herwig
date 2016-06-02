@@ -36,7 +36,7 @@ set /Herwig/Partons/QCDExtractor:SecondPDF /Herwig/Partons/HardNLOPDF
 #  Setup the POWHEG shower
 ##################################################
 cd /Herwig/Shower
-set ShowerHandler:HardEmissionMode POWHEG
+set ShowerHandler:HardEmission POWHEG
 read Matchbox/Powheg-Default-ShowerAlphaSTune.in
 
 ##################################################

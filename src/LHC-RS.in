@@ -13,7 +13,7 @@
 ###################################################
 
 # Set emission to POWHEG for radiation in decays
-set /Herwig/Shower/ShowerHandler:HardEmissionMode POWHEG
+set /Herwig/Shower/ShowerHandler:HardEmission POWHEG
 
 read RS.model
 cd /Herwig/NewPhysics

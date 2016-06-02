@@ -7,9 +7,6 @@
 
 #include "HwMEBase.h"
 #include "Herwig/Shower/QTilde/Couplings/ShowerAlpha.h"
-#include "Herwig/Shower/QTilde/Base/ShowerTree.fh"
-#include "Herwig/Shower/QTilde/Base/HardTree.fh"
-
 
 namespace Herwig {
 
@@ -48,7 +45,7 @@ public:
   /**
    *  Initialize the ME correction
    */
-  virtual void initializeMECorrection(ShowerTreePtr, double & initial,
+  virtual void initializeMECorrection(PerturbativeProcessPtr, double & initial,
 				      double & final) {
     final   = 1.;
     initial = 1.;
@@ -57,7 +54,7 @@ public:
   /**
    *  Apply the hard matrix element correction to a given hard process or decay
    */
-  virtual void applyHardMatrixElementCorrection(ShowerTreePtr);
+  virtual RealEmissionProcessPtr applyHardMatrixElementCorrection(PerturbativeProcessPtr);
 
   /**
    * Apply the soft matrix element correction
@@ -74,7 +71,7 @@ public:
   /**
    *  Apply the POWHEG style correction
    */
-  virtual HardTreePtr generateHardest(ShowerTreePtr,ShowerInteraction::Type);
+  //virtual RealEmissionProcessPtr generateHardest(PerturbativeProcessPtr,ShowerInteraction::Type);
 
   /**
    * Set the typed and momenta of the incoming and outgoing partons to
@@ -102,7 +99,7 @@ protected:
    * @param xnew The new values of the momentuym fractions
    * @return Whether or not the matrix element correction needs to be applied
    */
-  bool applyHard(ShowerParticleVector quarks,
+  bool applyHard(ParticleVector & quarks,
 		 vector<tcBeamPtr> beams,
 		 Lorentz5Momentum boson,unsigned int & iemit,
 		 unsigned int & itype,vector<Lorentz5Momentum> & pnew,

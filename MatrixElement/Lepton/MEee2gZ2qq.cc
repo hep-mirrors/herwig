@@ -28,7 +28,6 @@
 #include <numeric>
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "Herwig/Shower/RealEmissionProcess.h"
-#include "Herwig/Shower/QTilde/Base/ShowerTree.h"
 
 using namespace Herwig;
 
