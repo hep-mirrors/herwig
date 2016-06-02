@@ -66,7 +66,7 @@ IBPtr ShowerHandler::fullclone() const {
 }
 
 ShowerHandler::ShowerHandler() : 
-  maxtry_(10),maxtryMPI_(10),maxtryDP_(10),
+  maxtry_(10),maxtryMPI_(10),maxtryDP_(10),maxtryDecay_(100),
   factorizationScaleFactor_(1.0),
   renormalizationScaleFactor_(1.0),
   hardScaleFactor_(1.0),

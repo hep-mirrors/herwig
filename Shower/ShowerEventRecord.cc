@@ -15,7 +15,10 @@
 
 using namespace Herwig;
 
-ShowerEventRecord::ShowerEventRecord() {}
+ShowerEventRecord::ShowerEventRecord() 
+  : isMCatNLOSEvent_(false),isMCatNLOHEvent_(false),
+    isPowhegSEvent_ (false),isPowhegHEvent_ (false)
+{}
 
 ShowerEventRecord::~ShowerEventRecord() {}
 

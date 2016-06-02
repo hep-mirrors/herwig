@@ -556,7 +556,7 @@ applyHardMatrixElementCorrection(PerturbativeProcessPtr born) {
   for(unsigned int ix=0;ix<born->incoming().size();++ix) {
     real->incoming().push_back(born->incoming()[ix]);
   }
-  if(order) {
+  if(!order) {
     real->outgoing().push_back(make_pair(newq,PerturbativeProcessPtr()));
     real->outgoing().push_back(make_pair(newa,PerturbativeProcessPtr()));
     real->outgoing().push_back(make_pair(newg,PerturbativeProcessPtr()));
@@ -578,6 +578,7 @@ applyHardMatrixElementCorrection(PerturbativeProcessPtr born) {
     real->emitter(2);
     real->spectator(1);
   }
+  real->emitted(3);
   return real;
 }
 

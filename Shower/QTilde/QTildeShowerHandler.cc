@@ -668,7 +668,7 @@ RealEmissionProcessPtr QTildeShowerHandler::hardMatrixElementCorrection(bool har
       _decayme->initializeMECorrection(_currenttree->perturbativeProcess(),
    				       _initialenhance,_finalenhance);
       if(hardMEC())
-   	_decayme->applyHardMatrixElementCorrection(_currenttree->perturbativeProcess());
+   	real = _decayme->applyHardMatrixElementCorrection(_currenttree->perturbativeProcess());
     }
   }
   return real;
@@ -3304,11 +3304,12 @@ namespace {
   }
 
   void fixSpectatorColours(PPtr newSpect,ShowerProgenitorPtr oldSpect,
-			   ColinePair & cline,ColinePair & aline) {
+			   ColinePair & cline,ColinePair & aline, bool reconnect) {
     cline.first  = oldSpect->progenitor()->colourLine();
     cline.second = newSpect->colourLine();
     aline.first  = oldSpect->progenitor()->antiColourLine();
     aline.second = newSpect->antiColourLine();
+    if(!reconnect) return;
     if(cline.first) {
       cline.first ->removeColoured(oldSpect->copy());
       cline.first ->removeColoured(oldSpect->progenitor());
@@ -3522,7 +3523,7 @@ void QTildeShowerHandler::setupMECorrection(RealEmissionProcessPtr real) {
 				     real->bornIncoming()[ispect].first->momentum());
     // sort out the colours
     ColinePair cline,aline;
-    fixSpectatorColours(real->incoming()[ispect].first,spectator,cline,aline);
+    fixSpectatorColours(real->incoming()[ispect].first,spectator,cline,aline,true);
     // update the spectator
     spectator->copy(real->incoming()[ispect].first);
     ShowerParticlePtr sp(new_ptr(ShowerParticle(*real->incoming()[ispect].first,1,false)));
@@ -3537,7 +3538,7 @@ void QTildeShowerHandler::setupMECorrection(RealEmissionProcessPtr real) {
   // FF emission
   else if(real->emitter()   >= real->incoming().size() &&
 	  real->spectator() >= real->incoming().size()) {
-    assert(real->outgoing()[real->emitted()-2].first->id()==ParticleID::g);
+    assert(real->outgoing()[real->emitted()-real->incoming().size()].first->id()==ParticleID::g);
     // find the emitter and spectator in the shower tree
     ShowerProgenitorPtr emitter,spectator;
     int iemit = int(real->emitter())-int(real->incoming().size());
@@ -3557,7 +3558,7 @@ void QTildeShowerHandler::setupMECorrection(RealEmissionProcessPtr real) {
     }
     // sort out the colours
     ColinePair cline,aline;
-    fixSpectatorColours(real->outgoing()[ispect].first,spectator,cline,aline);
+    fixSpectatorColours(real->outgoing()[ispect].first,spectator,cline,aline,true);
     // update the spectator
     spectator->copy(real->outgoing()[ispect].first);
     ShowerParticlePtr sp(new_ptr(ShowerParticle(*real->outgoing()[ispect].first,1,true)));
@@ -3577,7 +3578,6 @@ void QTildeShowerHandler::setupMECorrection(RealEmissionProcessPtr real) {
   else {
     // scattering process
     if(real->incoming().size()==2) {
-      map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> >::const_iterator tit;
       ShowerProgenitorPtr emitter,spectator;
       unsigned int iemit  = real->emitter();
       unsigned int ispect = real->spectator();
@@ -3588,7 +3588,7 @@ void QTildeShowerHandler::setupMECorrection(RealEmissionProcessPtr real) {
 	spectator = findInitialStateLine(currentTree(),
 					 real->bornIncoming()[ispect].first->id(),
 					 real->bornIncoming()[ispect].first->momentum());
-	fixSpectatorColours(real->incoming()[ispect].first,spectator,cline,aline);
+	fixSpectatorColours(real->incoming()[ispect].first,spectator,cline,aline,true);
 	// update the spectator
 	spectator->copy(real->incoming()[ispect].first);
 	ShowerParticlePtr sp(new_ptr(ShowerParticle(*real->incoming()[ispect].first,1,false)));
@@ -3600,17 +3600,18 @@ void QTildeShowerHandler::setupMECorrection(RealEmissionProcessPtr real) {
       // outgoing spectator
       else {
 	spectator = findFinalStateLine(currentTree(),
-				       real->bornOutgoing()[ispect-2].first->id(),
-				       real->bornOutgoing()[ispect-2].first->momentum());
+				       real->bornOutgoing()[ispect-real->incoming().size()].first->id(),
+				       real->bornOutgoing()[ispect-real->incoming().size()].first->momentum());
 	// special case if decayed
+	map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> >::const_iterator tit;
 	for(tit  = currentTree()->treelinks().begin(); tit != currentTree()->treelinks().end();++tit) {
 	  if(tit->second.first && tit->second.second==spectator->progenitor())
 	    break;
 	}
-	fixSpectatorColours(real->outgoing()[ispect-2].first,spectator,cline,aline);
+	fixSpectatorColours(real->outgoing()[ispect-real->incoming().size()].first,spectator,cline,aline,true);
 	// update the spectator
-	spectator->copy(real->outgoing()[ispect-2].first);
-	ShowerParticlePtr sp(new_ptr(ShowerParticle(*real->outgoing()[ispect-2].first,1,true)));
+	spectator->copy(real->outgoing()[ispect-real->incoming().size()].first);
+	ShowerParticlePtr sp(new_ptr(ShowerParticle(*real->outgoing()[ispect-real->incoming().size()].first,1,true)));
 	spectator->progenitor(sp);
 	currentTree()->outgoingLines()[spectator]=sp;
 	spectator->perturbative(true);
@@ -3629,16 +3630,39 @@ void QTildeShowerHandler::setupMECorrection(RealEmissionProcessPtr real) {
       // outgoing emitter
       else {
 	emitter = findFinalStateLine(currentTree(),
-				     real->bornOutgoing()[iemit-2].first->id(),
-				     real->bornOutgoing()[iemit-2].first->momentum());
-	fixFinalStateEmitter(currentTree(),real->outgoing()[iemit-2].first,
+				     real->bornOutgoing()[iemit-real->incoming().size()].first->id(),
+				     real->bornOutgoing()[iemit-real->incoming().size()].first->momentum());
+	fixFinalStateEmitter(currentTree(),real->outgoing()[iemit-real->incoming().size()].first,
 			     real->outgoing()[ig].first,emitter,aline,cline);
       }
     }
     // decay process
     else {
-      cerr << "Decay IF dipole\n";
-      assert(false);
+      assert(real->spectator()==0);
+      unsigned int iemit  = real->emitter()-real->incoming().size();
+      int ig = int(real->emitted())-int(real->incoming().size());
+      ColinePair cline,aline;
+      // incoming spectator
+      ShowerProgenitorPtr spectator = findInitialStateLine(currentTree(),
+							   real->bornIncoming()[0].first->id(),
+							   real->bornIncoming()[0].first->momentum());
+      fixSpectatorColours(real->incoming()[0].first,spectator,cline,aline,false);
+      // find the emitter
+      ShowerProgenitorPtr emitter = 
+	findFinalStateLine(currentTree(),
+			   real->bornOutgoing()[iemit].first->id(),
+			   real->bornOutgoing()[iemit].first->momentum());
+      // recoiling system
+      for( map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator 
+	     cjt= currentTree()->outgoingLines().begin();
+	   cjt != currentTree()->outgoingLines().end();++cjt ) {
+	if(cjt->first==emitter) continue;
+	cjt->first->progenitor()->transform(real->transformation());
+	cjt->first->copy()->transform(real->transformation());
+      }
+      // sort out the emitter
+      fixFinalStateEmitter(currentTree(),real->outgoing()[iemit].first,
+			   real->outgoing()[ig].first,emitter,aline,cline);
     }
   }
   // clean up the shower tree
