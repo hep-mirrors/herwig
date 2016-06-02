@@ -17,6 +17,10 @@
 #include "ThePEG/Helicity/Vertex/VertexBase.h"
 #include "GeneralTwoBodyDecayer.fh"
 #include "Herwig/Shower/QTilde/Couplings/ShowerAlpha.h"
+#include "Herwig/Shower/QTilde/Base/ShowerParticle.fh"
+#include "Herwig/Shower/QTilde/Base/ShowerTree.fh"
+#include "Herwig/Shower/QTilde/Base/HardTree.fh"
+#include "Herwig/Shower/QTilde/Base/ShowerProgenitor.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -124,6 +128,7 @@ public:
    *  Member to generate the hardest emission in the POWHEG scheme
    */
   virtual HardTreePtr generateHardest(ShowerTreePtr);
+
 
   /**
    *  Three-body matrix element including additional QCD radiation

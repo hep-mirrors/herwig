@@ -10,8 +10,7 @@
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig/Shower/QTilde/Base/ShowerTree.h"
-#include "Herwig/Shower/QTilde/Base/HardTree.h"
+#include "Herwig/Shower/RealEmissionProcess.h"
 #include "Herwig/Shower/QTilde/Base/ShowerProgenitor.h"
 #include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
 #include "Herwig/Shower/QTilde/Base/Branching.h"
@@ -62,125 +61,127 @@ void SMHiggsFermionsPOWHEGDecayer::Init() {
 
 }
 
-HardTreePtr SMHiggsFermionsPOWHEGDecayer::
-generateHardest(ShowerTreePtr tree) {
-  // Get the progenitors: Q and Qbar.
-  ShowerProgenitorPtr 
-    QProgenitor    = tree->outgoingLines().begin()->first,
-    QbarProgenitor = tree->outgoingLines().rbegin()->first;
-  if(QProgenitor->id()<0) swap( QProgenitor, QbarProgenitor );
-  partons_.resize(2);
-  partons_[0] = QProgenitor->progenitor()   ->dataPtr();
-  partons_[1] = QbarProgenitor->progenitor()->dataPtr();
-  if(!partons_[0]->coloured()) return HardTreePtr();
-  // momentum of the partons
-  quark_.resize(2);
-  quark_[0] = QProgenitor   ->copy()->momentum();
-  quark_[1] = QbarProgenitor->copy()->momentum();
-  // Set the existing mass entries in partons 5 vectors with the
-  // once and for all.
-  quark_[0].setMass(partons_[0]->mass());
-  quark_[1].setMass(partons_[1]->mass());
-  gauge_.setMass(0.*MeV);
-  // Get the Higgs boson.
-  higgs_ = tree->incomingLines().begin()->first->copy();
-  // Get the Higgs boson mass.
-  mh2_ = (quark_[0] + quark_[1]).m2();
-  mHiggs_ = sqrt(mh2_);
-  aS_ = SM().alphaS(sqr(mHiggs_));
-  Energy particleMass = QProgenitor   ->copy()->dataPtr()->mass();
-  mu_  = particleMass/mHiggs_;
-  mu2_ = sqr(mu_);
-  // Generate emission and set _quark[0,1] and _gauge to be the 
-  // momenta of q, qbar and g after the hardest emission:
-  if(!getEvent()) {
-    QProgenitor   ->maximumpT(pTmin_,ShowerInteraction::QCD);
-    QbarProgenitor->maximumpT(pTmin_,ShowerInteraction::QCD);
-    return HardTreePtr();
-  }
-  // Ensure the energies are greater than the constituent masses:
-  for (int i=0; i<2; i++) {
-    if (quark_[i].e() < partons_[i]->constituentMass()) return HardTreePtr();
-    if (gauge_.e()    < gluon_     ->constituentMass()) return HardTreePtr();
-  }
-  // set masses
-  quark_[0].setMass( partons_[0]->mass() );
-  quark_[1].setMass( partons_[1]->mass() );
-  gauge_   .setMass( ZERO );
-  // assign the emitter based on evolution scales
-  unsigned int iemitter   = quark_[0]*gauge_ > quark_[1]*gauge_ ? 1 : 0;
-  unsigned int ispectator = iemitter==1                         ? 0 : 1;
-  // Make the particles for the HardTree:
-  ShowerParticlePtr emitter  (new_ptr(ShowerParticle(partons_[iemitter  ],true)));
-  ShowerParticlePtr spectator(new_ptr(ShowerParticle(partons_[ispectator],true)));
-  ShowerParticlePtr gauge    (new_ptr(ShowerParticle(gluon_,true)));
-  ShowerParticlePtr hboson   (new_ptr(ShowerParticle(higgs_->dataPtr(),false)));
-  ShowerParticlePtr parent   (new_ptr(ShowerParticle(partons_[iemitter  ],true)));
-  emitter  ->set5Momentum(quark_[iemitter  ]); 
-  spectator->set5Momentum(quark_[ispectator]);  
-  gauge    ->set5Momentum(gauge_); 
-  hboson->set5Momentum(higgs_->momentum());  
-  Lorentz5Momentum parentMomentum(quark_[iemitter]+gauge_);
-  parentMomentum.rescaleMass();
-  parent->set5Momentum(parentMomentum);
-  // Create the vectors of HardBranchings to create the HardTree:
-  vector<HardBranchingPtr> spaceBranchings,allBranchings;
-  // Incoming boson:
-  spaceBranchings.push_back(new_ptr(HardBranching(hboson,SudakovPtr(),
-						  HardBranchingPtr(),
-						  HardBranching::Incoming)));
-  // Outgoing particles from hard emission:
-  HardBranchingPtr spectatorBranch(new_ptr(HardBranching(spectator,SudakovPtr(),
-							 HardBranchingPtr(),
-							 HardBranching::Outgoing)));
-  HardBranchingPtr emitterBranch(new_ptr(HardBranching(parent,SudakovPtr(),
-						       HardBranchingPtr(),
-						       HardBranching::Outgoing)));
-  emitterBranch->addChild(new_ptr(HardBranching(emitter,SudakovPtr(),
-						HardBranchingPtr(),
-						HardBranching::Outgoing)));
-  emitterBranch->addChild(new_ptr(HardBranching(gauge,SudakovPtr(),
-						HardBranchingPtr(),
-						HardBranching::Outgoing)));
-  emitterBranch->type(emitterBranch->branchingParticle()->id()>0 ? 
-		      ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine);
-  allBranchings.push_back(emitterBranch);
-  allBranchings.push_back(spectatorBranch);
-  if(iemitter==1) swap(allBranchings[0],allBranchings[1]);
-  // Add incoming boson to allBranchings
-  allBranchings.push_back( spaceBranchings.back() );
-  // Make the HardTree from the HardBranching vectors.
-  HardTreePtr hardtree = new_ptr(HardTree(allBranchings,spaceBranchings,
-					   ShowerInteraction::QCD));
-  // Set the maximum pt for all other emissions
-  Energy ptveto(pT_);
-  QProgenitor   ->maximumpT(ptveto,ShowerInteraction::QCD);
-  QbarProgenitor->maximumpT(ptveto,ShowerInteraction::QCD);
-  // Connect the particles with the branchings in the HardTree
-  hardtree->connect( QProgenitor->progenitor(), allBranchings[0] );
-  hardtree->connect( QbarProgenitor->progenitor(), allBranchings[1] );
-  // colour flow
-  ColinePtr newline=new_ptr(ColourLine());
-  for(set<HardBranchingPtr>::const_iterator cit=hardtree->branchings().begin();
-      cit!=hardtree->branchings().end();++cit) {
-    if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3)
-      newline->addColoured((**cit).branchingParticle());
-    else if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3bar)
-      newline->addAntiColoured((**cit).branchingParticle());
-  }
-  ColinePtr newLine2=new_ptr(ColourLine());
-  if(emitterBranch->branchingParticle()->dataPtr()->iColour()==PDT::Colour3) {
-    emitterBranch->branchingParticle()->colourLine()->addColoured(gauge);
-    newLine2->addColoured(emitter);
-    newLine2->addAntiColoured(gauge);
-  }
-  else {
-    emitterBranch->branchingParticle()->antiColourLine()->addAntiColoured(gauge);
-    newLine2->addAntiColoured(emitter);
-    newLine2->addColoured(gauge);
-  }
-  // return the tree
-  return hardtree;
+RealEmissionProcessPtr SMHiggsFermionsPOWHEGDecayer::
+generateHardest(PerturbativeProcessPtr tree) {
+  assert(false);
+  return RealEmissionProcessPtr();
+  // // Get the progenitors: Q and Qbar.
+  // ShowerProgenitorPtr 
+  //   QProgenitor    = tree->outgoingLines().begin()->first,
+  //   QbarProgenitor = tree->outgoingLines().rbegin()->first;
+  // if(QProgenitor->id()<0) swap( QProgenitor, QbarProgenitor );
+  // partons_.resize(2);
+  // partons_[0] = QProgenitor->progenitor()   ->dataPtr();
+  // partons_[1] = QbarProgenitor->progenitor()->dataPtr();
+  // if(!partons_[0]->coloured()) return HardTreePtr();
+  // // momentum of the partons
+  // quark_.resize(2);
+  // quark_[0] = QProgenitor   ->copy()->momentum();
+  // quark_[1] = QbarProgenitor->copy()->momentum();
+  // // Set the existing mass entries in partons 5 vectors with the
+  // // once and for all.
+  // quark_[0].setMass(partons_[0]->mass());
+  // quark_[1].setMass(partons_[1]->mass());
+  // gauge_.setMass(0.*MeV);
+  // // Get the Higgs boson.
+  // higgs_ = tree->incomingLines().begin()->first->copy();
+  // // Get the Higgs boson mass.
+  // mh2_ = (quark_[0] + quark_[1]).m2();
+  // mHiggs_ = sqrt(mh2_);
+  // aS_ = SM().alphaS(sqr(mHiggs_));
+  // Energy particleMass = QProgenitor   ->copy()->dataPtr()->mass();
+  // mu_  = particleMass/mHiggs_;
+  // mu2_ = sqr(mu_);
+  // // Generate emission and set _quark[0,1] and _gauge to be the 
+  // // momenta of q, qbar and g after the hardest emission:
+  // if(!getEvent()) {
+  //   QProgenitor   ->maximumpT(pTmin_,ShowerInteraction::QCD);
+  //   QbarProgenitor->maximumpT(pTmin_,ShowerInteraction::QCD);
+  //   return HardTreePtr();
+  // }
+  // // Ensure the energies are greater than the constituent masses:
+  // for (int i=0; i<2; i++) {
+  //   if (quark_[i].e() < partons_[i]->constituentMass()) return HardTreePtr();
+  //   if (gauge_.e()    < gluon_     ->constituentMass()) return HardTreePtr();
+  // }
+  // // set masses
+  // quark_[0].setMass( partons_[0]->mass() );
+  // quark_[1].setMass( partons_[1]->mass() );
+  // gauge_   .setMass( ZERO );
+  // // assign the emitter based on evolution scales
+  // unsigned int iemitter   = quark_[0]*gauge_ > quark_[1]*gauge_ ? 1 : 0;
+  // unsigned int ispectator = iemitter==1                         ? 0 : 1;
+  // // Make the particles for the HardTree:
+  // ShowerParticlePtr emitter  (new_ptr(ShowerParticle(partons_[iemitter  ],true)));
+  // ShowerParticlePtr spectator(new_ptr(ShowerParticle(partons_[ispectator],true)));
+  // ShowerParticlePtr gauge    (new_ptr(ShowerParticle(gluon_,true)));
+  // ShowerParticlePtr hboson   (new_ptr(ShowerParticle(higgs_->dataPtr(),false)));
+  // ShowerParticlePtr parent   (new_ptr(ShowerParticle(partons_[iemitter  ],true)));
+  // emitter  ->set5Momentum(quark_[iemitter  ]); 
+  // spectator->set5Momentum(quark_[ispectator]);  
+  // gauge    ->set5Momentum(gauge_); 
+  // hboson->set5Momentum(higgs_->momentum());  
+  // Lorentz5Momentum parentMomentum(quark_[iemitter]+gauge_);
+  // parentMomentum.rescaleMass();
+  // parent->set5Momentum(parentMomentum);
+  // // Create the vectors of HardBranchings to create the HardTree:
+  // vector<HardBranchingPtr> spaceBranchings,allBranchings;
+  // // Incoming boson:
+  // spaceBranchings.push_back(new_ptr(HardBranching(hboson,SudakovPtr(),
+  // 						  HardBranchingPtr(),
+  // 						  HardBranching::Incoming)));
+  // // Outgoing particles from hard emission:
+  // HardBranchingPtr spectatorBranch(new_ptr(HardBranching(spectator,SudakovPtr(),
+  // 							 HardBranchingPtr(),
+  // 							 HardBranching::Outgoing)));
+  // HardBranchingPtr emitterBranch(new_ptr(HardBranching(parent,SudakovPtr(),
+  // 						       HardBranchingPtr(),
+  // 						       HardBranching::Outgoing)));
+  // emitterBranch->addChild(new_ptr(HardBranching(emitter,SudakovPtr(),
+  // 						HardBranchingPtr(),
+  // 						HardBranching::Outgoing)));
+  // emitterBranch->addChild(new_ptr(HardBranching(gauge,SudakovPtr(),
+  // 						HardBranchingPtr(),
+  // 						HardBranching::Outgoing)));
+  // emitterBranch->type(emitterBranch->branchingParticle()->id()>0 ? 
+  // 		      ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine);
+  // allBranchings.push_back(emitterBranch);
+  // allBranchings.push_back(spectatorBranch);
+  // if(iemitter==1) swap(allBranchings[0],allBranchings[1]);
+  // // Add incoming boson to allBranchings
+  // allBranchings.push_back( spaceBranchings.back() );
+  // // Make the HardTree from the HardBranching vectors.
+  // HardTreePtr hardtree = new_ptr(HardTree(allBranchings,spaceBranchings,
+  // 					   ShowerInteraction::QCD));
+  // // Set the maximum pt for all other emissions
+  // Energy ptveto(pT_);
+  // QProgenitor   ->maximumpT(ptveto,ShowerInteraction::QCD);
+  // QbarProgenitor->maximumpT(ptveto,ShowerInteraction::QCD);
+  // // Connect the particles with the branchings in the HardTree
+  // hardtree->connect( QProgenitor->progenitor(), allBranchings[0] );
+  // hardtree->connect( QbarProgenitor->progenitor(), allBranchings[1] );
+  // // colour flow
+  // ColinePtr newline=new_ptr(ColourLine());
+  // for(set<HardBranchingPtr>::const_iterator cit=hardtree->branchings().begin();
+  //     cit!=hardtree->branchings().end();++cit) {
+  //   if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3)
+  //     newline->addColoured((**cit).branchingParticle());
+  //   else if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3bar)
+  //     newline->addAntiColoured((**cit).branchingParticle());
+  // }
+  // ColinePtr newLine2=new_ptr(ColourLine());
+  // if(emitterBranch->branchingParticle()->dataPtr()->iColour()==PDT::Colour3) {
+  //   emitterBranch->branchingParticle()->colourLine()->addColoured(gauge);
+  //   newLine2->addColoured(emitter);
+  //   newLine2->addAntiColoured(gauge);
+  // }
+  // else {
+  //   emitterBranch->branchingParticle()->antiColourLine()->addAntiColoured(gauge);
+  //   newLine2->addAntiColoured(emitter);
+  //   newLine2->addColoured(gauge);
+  // }
+  // // return the tree
+  // return hardtree;
 }
 
 double SMHiggsFermionsPOWHEGDecayer::

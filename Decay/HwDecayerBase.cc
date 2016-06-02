@@ -18,8 +18,9 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
-#include "Herwig/Shower/QTilde/Base/HardTree.h"
 #include "Herwig/Shower/QTilde/Base/Branching.h"
+#include "Herwig/Shower/PerturbativeProcess.h"
+#include "Herwig/Shower/RealEmissionProcess.h"
 
 using namespace Herwig;
 
@@ -135,6 +136,16 @@ bool HwDecayerBase::softMatrixElementVeto(ShowerProgenitorPtr,
   return false;
 }
 
-HardTreePtr HwDecayerBase::generateHardest(ShowerTreePtr) {
-  return HardTreePtr();
+RealEmissionProcessPtr HwDecayerBase::generateHardest(PerturbativeProcessPtr) {
+  return RealEmissionProcessPtr();
+}
+
+void HwDecayerBase::initializeMECorrection(PerturbativeProcessPtr , double & ,
+			    double & ) {
+  assert(false);
+}
+
+RealEmissionProcessPtr HwDecayerBase::applyHardMatrixElementCorrection(PerturbativeProcessPtr) {
+  assert(false);
+  return RealEmissionProcessPtr();
 }

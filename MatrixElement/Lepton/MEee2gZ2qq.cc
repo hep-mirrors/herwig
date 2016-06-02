@@ -410,8 +410,6 @@ RealEmissionProcessPtr MEee2gZ2qq::applyHardMatrixElementCorrection(Perturbative
   }
   // create the output real emission process
   RealEmissionProcessPtr output(new_ptr(RealEmissionProcess(born)));
-  cerr << "testing A " << born->incoming().size() << " "
-       << output->incoming().size() << "\n";
   for(unsigned int ix=0;ix<born->incoming().size();++ix) {
     output->incoming().push_back(born->incoming()[ix]);
   }

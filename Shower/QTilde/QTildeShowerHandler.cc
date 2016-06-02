@@ -667,12 +667,12 @@ RealEmissionProcessPtr QTildeShowerHandler::hardMatrixElementCorrection(bool har
     }
   }
   else {
-    // if(_decayme&&_decayme->hasMECorrection()) {
-    //   _decayme->initializeMECorrection(_currenttree,
-    // 				       _initialenhance,_finalenhance);
-    //   if(hardMEC())
-    // 	_decayme->applyHardMatrixElementCorrection(_currenttree);
-    // }
+    if(_decayme&&_decayme->hasMECorrection()) {
+      _decayme->initializeMECorrection(_currenttree->perturbativeProcess(),
+   				       _initialenhance,_finalenhance);
+      if(hardMEC())
+   	_decayme->applyHardMatrixElementCorrection(_currenttree->perturbativeProcess());
+    }
   }
   return real;
 }
@@ -1470,7 +1470,7 @@ void QTildeShowerHandler::hardestEmission(bool hard) {
     }
     else {
       assert(!hard);
-      _hardtree = _decayme->generateHardest( currentTree() );
+      // _hardtree = _decayme->generateHardest( currentTree()->perturbativeProcess() );
     }
     // store initial state POWHEG radiation
     if(_hardtree && _hardme && _hardme->hasPOWHEGCorrection()==1) 
@@ -1651,7 +1651,8 @@ void QTildeShowerHandler::hardestEmission(bool hard) {
     PerturbativeProcessPtr newProcess(new_ptr(PerturbativeProcess()));
     newProcess->incoming().push_back(make_pair(in,PerturbativeProcessPtr()));
     ShowerTreePtr decayTree = new_ptr(ShowerTree(newProcess));
-    HardTreePtr     FSRTree = decayer->generateHardest(decayTree); 
+    HardTreePtr     FSRTree; 
+    //HardTreePtr     FSRTree = decayer->generateHardest(decayTree); 
     if (!FSRTree) {
       if(_hardtree) connectTrees(currentTree(),_hardtree,hard);
       return;

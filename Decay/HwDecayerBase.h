@@ -15,8 +15,8 @@
 #include "ThePEG/PDT/Decayer.h"
 #include "Herwig/Shower/QTilde/Base/ShowerParticle.fh"
 #include "Herwig/Shower/QTilde/Base/ShowerProgenitor.fh"
-#include "Herwig/Shower/QTilde/Base/ShowerTree.fh"
-#include "Herwig/Shower/QTilde/Base/HardTree.fh"
+#include "Herwig/Shower/PerturbativeProcess.fh"
+#include "Herwig/Shower/RealEmissionProcess.fh"
 #include "HwDecayerBase.fh"
 
 namespace Herwig {
@@ -93,13 +93,13 @@ public:
   /**
    *  Initialize the ME correction
    */
-  virtual void initializeMECorrection(ShowerTreePtr , double & ,
-				      double & ) {}
+  virtual void initializeMECorrection(PerturbativeProcessPtr , double & ,
+				      double & );
 
   /**
    *  Apply the hard matrix element correction to a given hard process or decay
    */
-  virtual void applyHardMatrixElementCorrection(ShowerTreePtr) {}
+  virtual RealEmissionProcessPtr applyHardMatrixElementCorrection(PerturbativeProcessPtr);
 
   /**
    * Apply the soft matrix element correction
@@ -116,7 +116,7 @@ public:
   /**
    *  Apply the POWHEG style correction
    */
-  virtual HardTreePtr generateHardest(ShowerTreePtr);
+  virtual RealEmissionProcessPtr generateHardest(PerturbativeProcessPtr);
   //@}
 
 protected:

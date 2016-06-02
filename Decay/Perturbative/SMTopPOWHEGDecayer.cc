@@ -13,8 +13,7 @@
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig/Shower/QTilde/Base/HardTree.h"
-#include "Herwig/Shower/QTilde/Base/ShowerTree.h"
+#include "Herwig/Shower/RealEmissionProcess.h"
 #include "Herwig/Shower/QTilde/Base/ShowerProgenitor.h"
 #include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
 #include "Herwig/Shower/QTilde/Base/Branching.h"
@@ -61,126 +60,128 @@ void SMTopPOWHEGDecayer::Init() {
 }
 
 
-HardTreePtr SMTopPOWHEGDecayer::generateHardest(ShowerTreePtr tree) {
+RealEmissionProcessPtr SMTopPOWHEGDecayer::generateHardest(PerturbativeProcessPtr born) {
+  assert(false);
+  return RealEmissionProcessPtr();
 
-  // get the bottom and W
-  assert(tree->outgoingLines().size()==2);
-  ShowerProgenitorPtr 
-    bProgenitor = tree->outgoingLines(). begin()->first,
-    WProgenitor = tree->outgoingLines().rbegin()->first;
-  if(abs(WProgenitor->id())!=ParticleID::Wplus) 
-    swap(bProgenitor,WProgenitor);
-  // Get the top quark
-  ShowerProgenitorPtr topProgenitor = tree->incomingLines().begin()->first;
-  // masses of the particles
-  mt_ = topProgenitor->progenitor()->momentum().mass();
-  w_  = WProgenitor  ->progenitor()->momentum().mass() / mt_;
-  b_  = bProgenitor  ->progenitor()->momentum().mass() / mt_; 
-  w2_ = sqr(w_);
-  b2_ = sqr(b_);
+  // // get the bottom and W
+  // assert(tree->outgoingLines().size()==2);
+  // ShowerProgenitorPtr 
+  //   bProgenitor = tree->outgoingLines(). begin()->first,
+  //   WProgenitor = tree->outgoingLines().rbegin()->first;
+  // if(abs(WProgenitor->id())!=ParticleID::Wplus) 
+  //   swap(bProgenitor,WProgenitor);
+  // // Get the top quark
+  // ShowerProgenitorPtr topProgenitor = tree->incomingLines().begin()->first;
+  // // masses of the particles
+  // mt_ = topProgenitor->progenitor()->momentum().mass();
+  // w_  = WProgenitor  ->progenitor()->momentum().mass() / mt_;
+  // b_  = bProgenitor  ->progenitor()->momentum().mass() / mt_; 
+  // w2_ = sqr(w_);
+  // b2_ = sqr(b_);
 
 
-  // find rotation fgrom lab to frame with W along -z
-  LorentzRotation eventFrame( topProgenitor->progenitor()->momentum().findBoostToCM() );
-  Lorentz5Momentum pspectator = eventFrame*WProgenitor->progenitor()->momentum();
-  eventFrame.rotateZ( -pspectator.phi() );
-  eventFrame.rotateY( -pspectator.theta() - Constants::pi );
+  // // find rotation fgrom lab to frame with W along -z
+  // LorentzRotation eventFrame( topProgenitor->progenitor()->momentum().findBoostToCM() );
+  // Lorentz5Momentum pspectator = eventFrame*WProgenitor->progenitor()->momentum();
+  // eventFrame.rotateZ( -pspectator.phi() );
+  // eventFrame.rotateY( -pspectator.theta() - Constants::pi );
 
-  //invert it
-  eventFrame.invert();
-  //generate the hard emission
-  vector<Lorentz5Momentum> momenta = hardMomenta();
+  // //invert it
+  // eventFrame.invert();
+  // //generate the hard emission
+  // vector<Lorentz5Momentum> momenta = hardMomenta();
 
-  // if no emission return
-  if(momenta.empty()) {
-    topProgenitor->maximumpT(pTmin_,ShowerInteraction::QCD);
-    bProgenitor  ->maximumpT(pTmin_,ShowerInteraction::QCD);    
-    return HardTreePtr();
-  }
+  // // if no emission return
+  // if(momenta.empty()) {
+  //   topProgenitor->maximumpT(pTmin_,ShowerInteraction::QCD);
+  //   bProgenitor  ->maximumpT(pTmin_,ShowerInteraction::QCD);    
+  //   return HardTreePtr();
+  // }
   
-  // rotate momenta back to the lab
-  for(unsigned int ix=0;ix<momenta.size();++ix) {
-    momenta[ix] *= eventFrame;  
-  }
+  // // rotate momenta back to the lab
+  // for(unsigned int ix=0;ix<momenta.size();++ix) {
+  //   momenta[ix] *= eventFrame;  
+  // }
 
-  // get ParticleData objects
-  tcPDPtr top    = topProgenitor->progenitor()->dataPtr();
-  tcPDPtr bottom = bProgenitor  ->progenitor()->dataPtr();
-  tcPDPtr Wboson = WProgenitor  ->progenitor()->dataPtr();
-  tcPDPtr gluon  = getParticleData(ParticleID::g);
-  // create new ShowerParticles
-  ShowerParticlePtr emitter  (new_ptr(ShowerParticle(bottom,true )));
-  ShowerParticlePtr spectator(new_ptr(ShowerParticle(Wboson,true )));
-  ShowerParticlePtr gauge    (new_ptr(ShowerParticle(gluon ,true )));
-  ShowerParticlePtr incoming (new_ptr(ShowerParticle(top   ,false)));
-  ShowerParticlePtr parent   (new_ptr(ShowerParticle(bottom,true )));
-  // set momenta
-  emitter  ->set5Momentum(momenta[1]); 
-  spectator->set5Momentum(momenta[2]);  
-  gauge    ->set5Momentum(momenta[3]); 
-  incoming ->set5Momentum(topProgenitor->progenitor()->momentum());  
-  Lorentz5Momentum parentMomentum(momenta[1]+momenta[3]);
-  parentMomentum.rescaleMass();
-  parent->set5Momentum(parentMomentum);
-  // Create the vectors of HardBranchings to create the HardTree:
-  vector<HardBranchingPtr> spaceBranchings,allBranchings;
-  // Incoming top quark
-  spaceBranchings.push_back(new_ptr(HardBranching(incoming,SudakovPtr(),
-						  HardBranchingPtr(),
-						  HardBranching::Incoming)));
-  // Outgoing particles from hard emission:
-  HardBranchingPtr spectatorBranch(new_ptr(HardBranching(spectator,SudakovPtr(),
-							 HardBranchingPtr(),
-							 HardBranching::Outgoing)));
-  HardBranchingPtr emitterBranch(new_ptr(HardBranching(parent,SudakovPtr(),
-						       HardBranchingPtr(),
-						       HardBranching::Outgoing)));
-  emitterBranch->addChild(new_ptr(HardBranching(emitter,SudakovPtr(),
-						HardBranchingPtr(),
-						HardBranching::Outgoing)));
-  emitterBranch->addChild(new_ptr(HardBranching(gauge,SudakovPtr(),
-						HardBranchingPtr(),
-						HardBranching::Outgoing)));
-  emitterBranch->type(emitterBranch->branchingParticle()->id()>0 ? 
-		      ShowerPartnerType::QCDColourLine : 
-		      ShowerPartnerType::QCDAntiColourLine);
-  allBranchings.push_back(spaceBranchings[0]);
-  allBranchings.push_back(emitterBranch);
-  allBranchings.push_back(spectatorBranch);
-  // Make the HardTree from the HardBranching vectors.
-  HardTreePtr hardtree = new_ptr(HardTree(allBranchings,spaceBranchings,
-					  ShowerInteraction::QCD));
-  // Set the maximum pt for all other emissions
-  topProgenitor->maximumpT(pT_,ShowerInteraction::QCD);
-  bProgenitor  ->maximumpT(pT_,ShowerInteraction::QCD);
-  // Connect the particles with the branchings in the HardTree
-  hardtree->connect( topProgenitor->progenitor(), spaceBranchings[0] );
-  hardtree->connect(   bProgenitor->progenitor(),   allBranchings[1] );
-  hardtree->connect(   WProgenitor->progenitor(),   allBranchings[2] );
-  // colour flow
-  ColinePtr newline=new_ptr(ColourLine());
-  for(set<HardBranchingPtr>::const_iterator cit=hardtree->branchings().begin();
-      cit!=hardtree->branchings().end();++cit) {
+  // // get ParticleData objects
+  // tcPDPtr top    = topProgenitor->progenitor()->dataPtr();
+  // tcPDPtr bottom = bProgenitor  ->progenitor()->dataPtr();
+  // tcPDPtr Wboson = WProgenitor  ->progenitor()->dataPtr();
+  // tcPDPtr gluon  = getParticleData(ParticleID::g);
+  // // create new ShowerParticles
+  // ShowerParticlePtr emitter  (new_ptr(ShowerParticle(bottom,true )));
+  // ShowerParticlePtr spectator(new_ptr(ShowerParticle(Wboson,true )));
+  // ShowerParticlePtr gauge    (new_ptr(ShowerParticle(gluon ,true )));
+  // ShowerParticlePtr incoming (new_ptr(ShowerParticle(top   ,false)));
+  // ShowerParticlePtr parent   (new_ptr(ShowerParticle(bottom,true )));
+  // // set momenta
+  // emitter  ->set5Momentum(momenta[1]); 
+  // spectator->set5Momentum(momenta[2]);  
+  // gauge    ->set5Momentum(momenta[3]); 
+  // incoming ->set5Momentum(topProgenitor->progenitor()->momentum());  
+  // Lorentz5Momentum parentMomentum(momenta[1]+momenta[3]);
+  // parentMomentum.rescaleMass();
+  // parent->set5Momentum(parentMomentum);
+  // // Create the vectors of HardBranchings to create the HardTree:
+  // vector<HardBranchingPtr> spaceBranchings,allBranchings;
+  // // Incoming top quark
+  // spaceBranchings.push_back(new_ptr(HardBranching(incoming,SudakovPtr(),
+  // 						  HardBranchingPtr(),
+  // 						  HardBranching::Incoming)));
+  // // Outgoing particles from hard emission:
+  // HardBranchingPtr spectatorBranch(new_ptr(HardBranching(spectator,SudakovPtr(),
+  // 							 HardBranchingPtr(),
+  // 							 HardBranching::Outgoing)));
+  // HardBranchingPtr emitterBranch(new_ptr(HardBranching(parent,SudakovPtr(),
+  // 						       HardBranchingPtr(),
+  // 						       HardBranching::Outgoing)));
+  // emitterBranch->addChild(new_ptr(HardBranching(emitter,SudakovPtr(),
+  // 						HardBranchingPtr(),
+  // 						HardBranching::Outgoing)));
+  // emitterBranch->addChild(new_ptr(HardBranching(gauge,SudakovPtr(),
+  // 						HardBranchingPtr(),
+  // 						HardBranching::Outgoing)));
+  // emitterBranch->type(emitterBranch->branchingParticle()->id()>0 ? 
+  // 		      ShowerPartnerType::QCDColourLine : 
+  // 		      ShowerPartnerType::QCDAntiColourLine);
+  // allBranchings.push_back(spaceBranchings[0]);
+  // allBranchings.push_back(emitterBranch);
+  // allBranchings.push_back(spectatorBranch);
+  // // Make the HardTree from the HardBranching vectors.
+  // HardTreePtr hardtree = new_ptr(HardTree(allBranchings,spaceBranchings,
+  // 					  ShowerInteraction::QCD));
+  // // Set the maximum pt for all other emissions
+  // topProgenitor->maximumpT(pT_,ShowerInteraction::QCD);
+  // bProgenitor  ->maximumpT(pT_,ShowerInteraction::QCD);
+  // // Connect the particles with the branchings in the HardTree
+  // hardtree->connect( topProgenitor->progenitor(), spaceBranchings[0] );
+  // hardtree->connect(   bProgenitor->progenitor(),   allBranchings[1] );
+  // hardtree->connect(   WProgenitor->progenitor(),   allBranchings[2] );
+  // // colour flow
+  // ColinePtr newline=new_ptr(ColourLine());
+  // for(set<HardBranchingPtr>::const_iterator cit=hardtree->branchings().begin();
+  //     cit!=hardtree->branchings().end();++cit) {
 
-    if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3)
-      newline->addColoured((**cit).branchingParticle());
-    else if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3bar)
-      newline->addAntiColoured((**cit).branchingParticle());
-  }
+  //   if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3)
+  //     newline->addColoured((**cit).branchingParticle());
+  //   else if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3bar)
+  //     newline->addAntiColoured((**cit).branchingParticle());
+  // }
 
-  ColinePtr newLine2=new_ptr(ColourLine());
-  if(emitter->dataPtr()->iColour()==PDT::Colour3) {
-    allBranchings[1]->branchingParticle()->colourLine()->addColoured(gauge);
-    newLine2->addColoured(emitter);
-    newLine2->addAntiColoured(gauge);
-  }
-  else {
-    allBranchings[1]->branchingParticle()->antiColourLine()->addAntiColoured(gauge);
-    newLine2->addAntiColoured(emitter);
-    newLine2->addColoured(gauge);
-  }
-  //return the tree
-  return hardtree;
+  // ColinePtr newLine2=new_ptr(ColourLine());
+  // if(emitter->dataPtr()->iColour()==PDT::Colour3) {
+  //   allBranchings[1]->branchingParticle()->colourLine()->addColoured(gauge);
+  //   newLine2->addColoured(emitter);
+  //   newLine2->addAntiColoured(gauge);
+  // }
+  // else {
+  //   allBranchings[1]->branchingParticle()->antiColourLine()->addAntiColoured(gauge);
+  //   newLine2->addAntiColoured(emitter);
+  //   newLine2->addColoured(gauge);
+  // }
+  // //return the tree
+  // return hardtree;
 }
 
 vector<Lorentz5Momentum>  SMTopPOWHEGDecayer::hardMomenta() {
