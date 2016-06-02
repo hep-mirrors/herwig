@@ -147,14 +147,6 @@ RealEmissionProcessPtr DrellYanBase::applyHardMatrixElementCorrection(Perturbati
   unsigned int iemit,itype;
   vector<Lorentz5Momentum> pnew;
   LorentzRotation trans;
-
-
-  cerr << *incoming[0] << "\n";
-  cerr << *incoming[1] << "\n";
-  cerr << beams[0]->fullName() << " " << beams[1]->fullName() << "\n";
-  cerr << pboson/GeV << "\n";
-  cerr << xnew.first << " " << xnew.second << "\n";
-
   // if not accepted return
   if(!applyHard(incoming,beams,pboson,iemit,itype,pnew,trans,xnew)) return RealEmissionProcessPtr();
   // process to be returned
@@ -168,7 +160,6 @@ RealEmissionProcessPtr DrellYanBase::applyHardMatrixElementCorrection(Perturbati
     Lorentz5Momentum pnew = trans*(born->outgoing()[ix].first->momentum());
     real->outgoing().push_back(make_pair(born->outgoing()[ix].first->dataPtr()->produceParticle(pnew),
 					   PerturbativeProcessPtr()));
-    cerr << "outgoing " << *real->outgoing()[ix].first << "\n"; 
   }
   // then emitter, spectator and emitted
   // emission of a final-state gluon
