@@ -117,20 +117,16 @@ void DrellYanBase::dofinish() {
 		     << " the largest was " << _maxwgt << "\n";
 }
 
-RealEmissionProcessPtr DrellYanBase::applyHardMatrixElementCorrection(PerturbativeProcessPtr born) {
+RealEmissionProcessPtr DrellYanBase::applyHardMatrixElementCorrection(RealEmissionProcessPtr born) {
   // get the quark,antiquark
   ParticleVector incoming;
   vector<tcBeamPtr> beams;
-  pair<double,double> xnew;
-  for(unsigned int ix=0;ix<born->incoming().size();++ix) {
-    incoming.push_back(born->incoming()[ix].first);
-    tPPtr beam = incoming.back()->parents()[0];
+  for(unsigned int ix=0;ix<born->bornIncoming().size();++ix) {
+    incoming.push_back(born->bornIncoming()[ix]);
+    tPPtr beam = born->hadrons()[ix];
     beams.push_back(dynamic_ptr_cast<tcBeamPtr>(beam->dataPtr()));
-    if(ix==0)
-      xnew.first  = incoming[ix]->momentum().rho()/beam->momentum().rho();
-    else
-      xnew.second = incoming[ix]->momentum().rho()/beam->momentum().rho(); 
   }
+  pair<double,double> xnew = born->x();
   // ensure that the quark is first
   if(incoming[0]->id()<incoming[1]->id()) {
     swap(incoming[0],incoming[1]);
@@ -139,8 +135,8 @@ RealEmissionProcessPtr DrellYanBase::applyHardMatrixElementCorrection(Perturbati
   } 
   // and the gauge boson
   Lorentz5Momentum pboson;
-  for(unsigned int ix=0;ix<born->outgoing().size();++ix) {
-    pboson += born->outgoing()[ix].first->momentum();
+  for(unsigned int ix=0;ix<born->bornOutgoing().size();++ix) {
+    pboson += born->bornOutgoing()[ix]->momentum();
   }
   pboson.rescaleMass();
   // calculate the momenta
@@ -149,17 +145,14 @@ RealEmissionProcessPtr DrellYanBase::applyHardMatrixElementCorrection(Perturbati
   LorentzRotation trans;
   // if not accepted return
   if(!applyHard(incoming,beams,pboson,iemit,itype,pnew,trans,xnew)) return RealEmissionProcessPtr();
-  // process to be returned
-  RealEmissionProcessPtr real(new_ptr(RealEmissionProcess(born)));
   // if applying ME correction create the new particles
   // first the final-state particles
   Boost boostv=pboson.findBoostToCM();
   trans *=LorentzRotation(boostv);
-  real->transformation(trans);
-  for(unsigned int ix=0;ix<born->outgoing().size();++ix) {
-    Lorentz5Momentum pnew = trans*(born->outgoing()[ix].first->momentum());
-    real->outgoing().push_back(make_pair(born->outgoing()[ix].first->dataPtr()->produceParticle(pnew),
-					   PerturbativeProcessPtr()));
+  born->transformation(trans);
+  for(unsigned int ix=0;ix<born->bornOutgoing().size();++ix) {
+    Lorentz5Momentum pnew = trans*(born->bornOutgoing()[ix]->momentum());
+    born->outgoing().push_back(born->bornOutgoing()[ix]->dataPtr()->produceParticle(pnew));
   }
   // then emitter, spectator and emitted
   // emission of a final-state gluon
@@ -172,40 +165,35 @@ RealEmissionProcessPtr DrellYanBase::applyHardMatrixElementCorrection(Perturbati
     if(ptest.boost(-(pquark+panti).boostVector()).e() < 
        getParticleData(ParticleID::g)->constituentMass()) return RealEmissionProcessPtr();
     // outgoing gluon
-    real->outgoing().push_back(make_pair(getParticleData(ParticleID::g)->produceParticle(pgluon),
-					 PerturbativeProcessPtr()));
+    born->outgoing().push_back(getParticleData(ParticleID::g)->produceParticle(pgluon));
     // incoming particles
-    if(born->incoming()[0].first->id()>0) {
+    if(born->bornIncoming()[0]->id()>0) {
       if(iemit==1) {
-	real->emitter(0);
-	real->spectator(1);
+  	born->emitter(0);
+  	born->spectator(1);
       }
       else {
-	real->emitter(1);
-	real->spectator(0);
+  	born->emitter(1);
+  	born->spectator(0);
       }
-      real->incoming().push_back(make_pair(born->incoming()[0].first->dataPtr()->produceParticle(pquark),
-					   PerturbativeProcessPtr()));
-      real->incoming().push_back(make_pair(born->incoming()[1].first->dataPtr()->produceParticle(panti),
-					   PerturbativeProcessPtr()));
-      real->outgoing().back().first->incomingColour(real->incoming()[0].first);
-      real->outgoing().back().first->incomingAntiColour(real->incoming()[1].first);
+      born->incoming().push_back(born->bornIncoming()[0]->dataPtr()->produceParticle(pquark));
+      born->incoming().push_back(born->bornIncoming()[1]->dataPtr()->produceParticle(panti));
+      born->outgoing().back()->incomingColour(born->incoming()[0]);
+      born->outgoing().back()->incomingAntiColour(born->incoming()[1]);
     }
     else {
       if(iemit==1) {
-	real->emitter(1);
-	real->spectator(0);
+  	born->emitter(1);
+  	born->spectator(0);
       }
       else {
-	real->emitter(0);
-	real->spectator(1);
+  	born->emitter(0);
+  	born->spectator(1);
       }
-      real->incoming().push_back(make_pair(born->incoming()[0].first->dataPtr()->produceParticle(panti),
-					   PerturbativeProcessPtr()));
-      real->incoming().push_back(make_pair(born->incoming()[1].first->dataPtr()->produceParticle(pquark),
-					   PerturbativeProcessPtr()));
-      real->outgoing().back().first->incomingColour(real->incoming()[1].first);
-      real->outgoing().back().first->incomingAntiColour(real->incoming()[0].first);
+      born->incoming().push_back(born->bornIncoming()[0]->dataPtr()->produceParticle(panti));
+      born->incoming().push_back(born->bornIncoming()[1]->dataPtr()->produceParticle(pquark));
+      born->outgoing().back()->incomingColour(born->incoming()[1]);
+      born->outgoing().back()->incomingAntiColour(born->incoming()[0]);
     }
   }
   else if(itype==1) {
@@ -224,19 +212,19 @@ RealEmissionProcessPtr DrellYanBase::applyHardMatrixElementCorrection(Perturbati
     // colours
     newout->incomingColour(newg);
     newin->antiColourNeighbour(newg);
-    if(born->incoming()[0].first->id()>0) {
-      real->emitter  (1);
-      real->spectator(0);
-      real->incoming().push_back(make_pair(newin,PerturbativeProcessPtr()));
-      real->incoming().push_back(make_pair(newg,PerturbativeProcessPtr()));
+    if(born->bornIncoming()[0]->id()>0) {
+      born->emitter  (1);
+      born->spectator(0);
+      born->incoming().push_back(newin);
+      born->incoming().push_back(newg );
     }
     else {
-      real->emitter  (0);
-      real->spectator(1);
-      real->incoming().push_back(make_pair(newg ,PerturbativeProcessPtr()));
-      real->incoming().push_back(make_pair(newin,PerturbativeProcessPtr()));
+      born->emitter  (0);
+      born->spectator(1);
+      born->incoming().push_back(newg );
+      born->incoming().push_back(newin);
     }
-    real->outgoing().push_back(make_pair(newout,PerturbativeProcessPtr()));
+    born->outgoing().push_back(newout);
   }
   else if(itype==2) {
     Lorentz5Momentum pin(pnew[0]),pout(pnew[1]),pgluon(pnew[2]);
@@ -254,28 +242,28 @@ RealEmissionProcessPtr DrellYanBase::applyHardMatrixElementCorrection(Perturbati
     // colours
     newout->incomingAntiColour(newg);
     newin->colourNeighbour(newg);
-    if(born->incoming()[0].first->id()>0) {
-      real->emitter  (0);
-      real->spectator(1);
-      real->incoming().push_back(make_pair(newg ,PerturbativeProcessPtr()));
-      real->incoming().push_back(make_pair(newin,PerturbativeProcessPtr()));
+    if(born->bornIncoming()[0]->id()>0) {
+      born->emitter  (0);
+      born->spectator(1);
+      born->incoming().push_back(newg );
+      born->incoming().push_back(newin);
     }
     else {
-      real->emitter  (1);
-      real->spectator(0);
-      real->incoming().push_back(make_pair(newin,PerturbativeProcessPtr()));
-      real->incoming().push_back(make_pair(newg ,PerturbativeProcessPtr()));
+      born->emitter  (1);
+      born->spectator(0);
+      born->incoming().push_back(newin);
+      born->incoming().push_back(newg );
     }
-    real->outgoing().push_back(make_pair(newout,PerturbativeProcessPtr()));
+    born->outgoing().push_back(newout);
   }
   else
     assert(false);
-  real->emitted(real->outgoing().size()+1);
-  if(born->incoming()[0].first->id()>0) {
+  born->emitted(born->outgoing().size()+1);
+  if(born->bornIncoming()[0]->id()>0) {
     swap(xnew.first,xnew.second);
   }
-  real->x(xnew);
-  return real;
+  born->x(xnew);
+  return born;
 }
 
 bool DrellYanBase::applyHard(ParticleVector & quarks, 

@@ -45,8 +45,7 @@ namespace {
 
 ShowerTree::ShowerTree(PerturbativeProcessPtr process) 
   : _hardMECorrection(false),
-    _parent(), _hasShowered(false),
-    _perturbativeProcess(process) {
+    _parent(), _hasShowered(false) {
   // get the incoming and outgoing particles and make copies
   vector<PPtr> original,copy;
   for(unsigned int ix=0;ix<process->incoming().size();++ix) {
@@ -359,7 +358,6 @@ void ShowerTree::update(PerturbativeProcessPtr newProcess) {
   // must be one incoming particle
   assert(_incomingLines.size()==1);
   colourLines().clear();
-  _perturbativeProcess = newProcess;
   // copy the particles and isolate the colour
   vector<PPtr> original,copy;
   for(unsigned int ix=0;ix<newProcess->incoming().size();++ix) {
@@ -880,4 +878,29 @@ void ShowerTree::checkMomenta() {
   }
   CurrentGenerator::log() << "Out total " << psum2/GeV << " " << psum2.m()/GeV << "\n";
   CurrentGenerator::log() << "Total " << (psum-psum2)/GeV << "\n";
+}
+
+RealEmissionProcessPtr ShowerTree::perturbativeProcess() {
+  RealEmissionProcessPtr output(new_ptr(RealEmissionProcess()));
+  // add the incoming particles
+  unsigned int ix=0;
+  pair<double,double> x;
+  for(map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator it=_incomingLines.begin();
+      it!=_incomingLines.end();++it) {
+    output->bornIncoming().push_back(it->first->progenitor());
+    if(!it->first->original()->parents().empty())
+      output->hadrons().push_back(it->first->original()->parents()[0]);
+    else
+      output->hadrons().push_back(PPtr());
+    if(ix==0) x.first  = it->second->x();
+    else      x.second = it->second->x();
+    ++ix;
+  }
+  output->x(x);
+  // add the outgoing particles
+  for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator it= _outgoingLines.begin();
+      it!=_outgoingLines.end();++it) {
+    output->bornOutgoing().push_back(it->first->progenitor());
+  }
+  return output;
 }

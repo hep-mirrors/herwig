@@ -12,6 +12,7 @@
 #include "ThePEG/Config/ThePEG.h"
 #include "Herwig/Shower/ShowerHandler.fh"
 #include "Herwig/Shower/PerturbativeProcess.h"
+#include "Herwig/Shower/RealEmissionProcess.h"
 #include "Herwig/Shower/ShowerEventRecord.h"
 #include "Herwig/Shower/QTilde/ShowerConfig.h"
 #include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
@@ -278,7 +279,7 @@ public:
   /**
    *  The perturbative process
    */
-  PerturbativeProcessPtr perturbativeProcess() {return _perturbativeProcess;}
+  RealEmissionProcessPtr perturbativeProcess();
 
 protected:
 
@@ -388,11 +389,6 @@ private:
    *  The transforms which still need to be applied
    */
   LorentzRotation _transforms;
-
-  /**
-   *  The perturbative process
-   */
-  PerturbativeProcessPtr _perturbativeProcess;
 
 private:
 

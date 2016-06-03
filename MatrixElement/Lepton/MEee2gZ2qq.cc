@@ -362,7 +362,7 @@ IVector MEee2gZ2qq::getReferences() {
   return ret;
 }
 
-void MEee2gZ2qq::initializeMECorrection(PerturbativeProcessPtr,
+void MEee2gZ2qq::initializeMECorrection(RealEmissionProcessPtr,
 					double & initial,
 					double & final) {
   d_Q_ = sqrt(sHat());
@@ -380,14 +380,14 @@ void MEee2gZ2qq::initializeMECorrection(PerturbativeProcessPtr,
   final   = 1.;
 }
 
-RealEmissionProcessPtr MEee2gZ2qq::applyHardMatrixElementCorrection(PerturbativeProcessPtr born) {
+RealEmissionProcessPtr MEee2gZ2qq::applyHardMatrixElementCorrection(RealEmissionProcessPtr born) {
   vector<Lorentz5Momentum> emission;
   unsigned int iemit,ispect;
   generateHard(born,emission,iemit,ispect,true,ShowerInteraction::QCD);
   if(emission.empty()) return RealEmissionProcessPtr();
   // get the quark and antiquark
   ParticleVector qq;
-  for(unsigned int ix=0;ix<2;++ix) qq.push_back(born->outgoing()[ix].first);
+  for(unsigned int ix=0;ix<2;++ix) qq.push_back(born->bornOutgoing()[ix]);
   bool order = qq[0]->id()>0;
   if(!order) swap(qq[0],qq[1]);
   // perform final check to ensure energy greater than constituent mass
@@ -409,30 +409,29 @@ RealEmissionProcessPtr MEee2gZ2qq::applyHardMatrixElementCorrection(Perturbative
   else {
   }
   // create the output real emission process
-  RealEmissionProcessPtr output(new_ptr(RealEmissionProcess(born)));
-  for(unsigned int ix=0;ix<born->incoming().size();++ix) {
-    output->incoming().push_back(born->incoming()[ix]);
+  for(unsigned int ix=0;ix<born->bornIncoming().size();++ix) {
+    born->incoming().push_back(born->bornIncoming()[ix]);
   }
   if(order) {
-    output->outgoing().push_back(make_pair(newq,PerturbativeProcessPtr()));
-    output->outgoing().push_back(make_pair(newa,PerturbativeProcessPtr()));
-    output->outgoing().push_back(make_pair(newg,PerturbativeProcessPtr()));
+    born->outgoing().push_back(newq);
+    born->outgoing().push_back(newa);
+    born->outgoing().push_back(newg);
   }
   else {
-    output->outgoing().push_back(make_pair(newa,PerturbativeProcessPtr()));
-    output->outgoing().push_back(make_pair(newq,PerturbativeProcessPtr()));
-    output->outgoing().push_back(make_pair(newg,PerturbativeProcessPtr()));
+    born->outgoing().push_back(newa);
+    born->outgoing().push_back(newq);
+    born->outgoing().push_back(newg);
     swap(iemit,ispect);
   }
   // set emitter and spectator
-  output->emitter   (iemit);
-  output->spectator(ispect);
-  output->emitted(4);
+  born->emitter   (iemit);
+  born->spectator(ispect);
+  born->emitted(4);
   // make colour connections
   newg->colourNeighbour(newq);
   newa->colourNeighbour(newg);
   // return output
-  return output;
+  return born;
 }
 
 bool MEee2gZ2qq::softMatrixElementVeto(ShowerProgenitorPtr initial,
@@ -527,7 +526,7 @@ double MEee2gZ2qq::PS(double x, double xbar) {
 }
 
 pair<Energy,ShowerInteraction::Type>
-MEee2gZ2qq::generateHard(PerturbativeProcessPtr born, 
+MEee2gZ2qq::generateHard(RealEmissionProcessPtr born, 
 			 vector<Lorentz5Momentum> & emmision,
 			 unsigned int & iemit, unsigned int & ispect,
 			 bool applyVeto,ShowerInteraction::Type inter) {
@@ -539,12 +538,12 @@ MEee2gZ2qq::generateHard(PerturbativeProcessPtr born,
   else
     interactions.push_back(inter);
   // incoming particles
-  tPPtr em = born->incoming()[0].first;
-  tPPtr ep = born->incoming()[1].first;
+  tPPtr em = born->bornIncoming()[0];
+  tPPtr ep = born->bornIncoming()[1];
   if(em->id()<0) swap(em,ep);
   // outgoing particles
-  tPPtr qk = born->outgoing()[0].first;
-  tPPtr qb = born->outgoing()[1].first;
+  tPPtr qk = born->bornOutgoing()[0];
+  tPPtr qb = born->bornOutgoing()[1];
   if(qk->id()<0) swap(qk,qb);
   // extract the momenta 
   loMomenta_.clear();
@@ -590,14 +589,14 @@ MEee2gZ2qq::generateHard(PerturbativeProcessPtr born,
       partons_[4] = gluon_;
       // prefactor for the overestimate of the Sudakov
       a = 4./3.*alphaQCD_->overestimateValue()/Constants::twopi*
-	2.*ymax*preFactor_;
+  	2.*ymax*preFactor_;
     }
     else {
       pTmin = pTminQED_;
       ymax = acosh(pTmax/pTmin);
       partons_[4] = gamma_;
       a =       alphaQED_->overestimateValue()/Constants::twopi*
-	2.*ymax*preFactor_*sqr(double(mePartonData()[2]->iCharge())/3.);
+  	2.*ymax*preFactor_*sqr(double(mePartonData()[2]->iCharge())/3.);
     }
     // variables for the emission
     Energy pT[2];
@@ -609,130 +608,130 @@ MEee2gZ2qq::generateHard(PerturbativeProcessPtr born,
        {vector<Lorentz5Momentum>(5),vector<Lorentz5Momentum>(5)}};
     for(unsigned int ix=0;ix<2;++ix)
       for(unsigned int iy=0;iy<2;++iy)
-	for(unsigned int iz=0;iz<2;++iz)
-	  realMomenta[ix][iy][iz] = loMomenta_[iz];
+  	for(unsigned int iz=0;iz<2;++iz)
+  	  realMomenta[ix][iy][iz] = loMomenta_[iz];
     // generate the emission
     for(unsigned int ix=0;ix<2;++ix) {
       if(ix==1) {
-	swap(mu1 ,mu2 );
-	swap(mu12,mu22);
+  	swap(mu1 ,mu2 );
+  	swap(mu12,mu22);
       }
       pT[ix] = pTmax;
       y [ix] = 0.;
       bool reject = true;
       do {
-	// generate pT
-	pT[ix] *= pow(UseRandom::rnd(),1./a);
-	if(pT[ix]<pTmin) {
-	  pT[ix] = -GeV;
-	  break;
-	}
-	// generate y
-	y[ix] = -ymax+2.*UseRandom::rnd()*ymax;
-	// generate phi
-	phi[ix] = UseRandom::rnd()*Constants::twopi;
-	// calculate x3 and check in allowed region
-	x3[ix] = 2.*pT[ix]*cosh(y[ix])/M;
-	if(x3[ix] < 0. || x3[ix] > 1. -sqr( mu1 + mu2 ) ) continue;
-	// find the possible solutions for x1
-	double xT2 = sqr(2./M*pT[ix]);
-	double root = (-sqr(x3[ix])+xT2)*
-	  (xT2*mu22+2.*x3[ix]-sqr(mu12)+2.*mu22+2.*mu12-sqr(x3[ix])-1.
-	   +2.*mu12*mu22-sqr(mu22)-2.*mu22*x3[ix]-2.*mu12*x3[ix]);
-	double c1=2.*sqr(x3[ix])-4.*mu22-6.*x3[ix]+4.*mu12-xT2*x3[ix]
-	  +2.*xT2-2.*mu12*x3[ix]+2.*mu22*x3[ix]+4.;
-	if(root<0.) continue;
-	x1[ix][0] = 1./(4.-4.*x3[ix]+xT2)*(c1-2.*sqrt(root));
-	x1[ix][1] = 1./(4.-4.*x3[ix]+xT2)*(c1+2.*sqrt(root));
-	// change sign of y if 2nd particle emits
-	if(ix==1) y[ix] *=-1.;
-	// loop over the solutions
-	for(unsigned int iy=0;iy<2;++iy) {
-	  contrib[ix][iy]=0.;
-	  // check x1 value allowed
-	  if(x1[ix][iy]<2.*mu1||x1[ix][iy]>1.+mu12-mu22) continue;
-	  // calculate x2 value and check allowed
-	  x2[ix][iy] = 2.-x3[ix]-x1[ix][iy];
-	  double root = max(0.,sqr(x1[ix][iy])-4.*mu12);
-	  root = sqrt(root);
-	  double x2min = 1.+mu22-mu12
-	    -0.5*(1.-x1[ix][iy]+mu12-mu22)/(1.-x1[ix][iy]+mu12)*(x1[ix][iy]-2.*mu12+root);
-	  double x2max = 1.+mu22-mu12
-	    -0.5*(1.-x1[ix][iy]+mu12-mu22)/(1.-x1[ix][iy]+mu12)*(x1[ix][iy]-2.*mu12-root);
-	  if(x2[ix][iy]<x2min||x2[ix][iy]>x2max) continue;
-	  // check the z components
-	  double z1 =  sqrt(sqr(x1[ix][iy])-4.*mu12-xT2);
-	  double z2 = -sqrt(sqr(x2[ix][iy])-4.*mu22);
-	  double z3 =  pT[ix]*sinh(y[ix])*2./M;
-	  if(ix==1) z3 *=-1.;
-	  if(abs(-z1+z2+z3)<1e-9) z1 *= -1.;
-	  if(abs(z1+z2+z3)>1e-5) continue;
-	  // if using as an ME correction the veto
-	  if(applyVeto) {
-	    double xb = x1[ix][iy], xc = x2[ix][iy];
-	    double b  = mu12, c = mu22;
-	    double r = 0.5*(1.+b/(1.+c-xc));
-	    double z1  = r + (xb-(2.-xc)*r)/sqrt(sqr(xc)-4.*c);
-	    double kt1 = (1.-b+c-xc)/z1/(1.-z1);
-	    r = 0.5*(1.+c/(1.+b-xb));
-	    double z2  = r + (xc-(2.-xb)*r)/sqrt(sqr(xb)-4.*b);
-	    double kt2 = (1.-c+b-xb)/z2/(1.-z2);
-	    if(ix==1) {
-	      swap(z1 ,z2);
-	      swap(kt1,kt2);
-	    }
-	    // veto the shower region
-	    if( kt1 < d_kt1_ || kt2 < d_kt2_ ) continue;
-	  }
-	  // construct the momenta
-	  realMomenta[ix][iy][4] =
-	    Lorentz5Momentum(pT[ix]*cos(phi[ix]),pT[ix]*sin(phi[ix]),
-			     pT[ix]*sinh(y[ix]) ,pT[ix]*cosh(y[ix]),ZERO);
-	  if(ix==0) {
-	    realMomenta[ix][iy][2] =
-	      Lorentz5Momentum(-pT[ix]*cos(phi[ix]),-pT[ix]*sin(phi[ix]),
-			       z1*0.5*M,x1[ix][iy]*0.5*M,M*mu1);
-	    realMomenta[ix][iy][3] =
-	      Lorentz5Momentum(ZERO,ZERO, z2*0.5*M,x2[ix][iy]*0.5*M,M*mu2);
-	  }
-	  else {
-	    realMomenta[ix][iy][2] =
-	      Lorentz5Momentum(ZERO,ZERO,-z2*0.5*M,x2[ix][iy]*0.5*M,M*mu2);
-	    realMomenta[ix][iy][3] =
-	      Lorentz5Momentum(-pT[ix]*cos(phi[ix]),-pT[ix]*sin(phi[ix]),
-			       -z1*0.5*M,x1[ix][iy]*0.5*M,M*mu1);
-	  }
-	  // boost the momenta back to the lab
-	  for(unsigned int iz=2;iz<5;++iz)
-	  realMomenta[ix][iy][iz] *= eventFrame;
-	  // jacobian and prefactors for the weight
-	  Energy J = M/sqrt(xT2)*abs(-x1[ix][iy]*x2[ix][iy]+2.*mu22*x1[ix][iy]
-				     +x2[ix][iy]+x2[ix][iy]*mu12+mu22*x2[ix][iy]
-				     -sqr(x2[ix][iy]))
-	    /pow(sqr(x2[ix][iy])-4.*mu22,1.5);
-	  // prefactors etc
-	  contrib[ix][iy] = 0.5*pT[ix]/J/preFactor_/lambda;
-	  // matrix element piece
-	  contrib[ix][iy] *= meRatio(partons_,realMomenta[ix][iy],
-				     ix,interactions[iinter],false);
-	  // coupling piece
-	  if(interactions[iinter]==ShowerInteraction::QCD)
-	    contrib[ix][iy] *= alphaQCD_->ratio(sqr(pT[ix]));
-	  else
-	    contrib[ix][iy] *= alphaQED_->ratio(sqr(pT[ix]));
-	}
- 	if(contrib[ix][0]+contrib[ix][1]>1.) {
-	  ostringstream s;
-	  s << "MEee2gZ2qq::generateHardest weight for channel " << ix
-	    << "is " << contrib[ix][0]+contrib[ix][1] 
-	    << " which is greater than 1";
-	  generator()->logWarning( Exception(s.str(), Exception::warning) );
-	}
-	reject =  UseRandom::rnd() > contrib[ix][0] + contrib[ix][1];
+  	// generate pT
+  	pT[ix] *= pow(UseRandom::rnd(),1./a);
+  	if(pT[ix]<pTmin) {
+  	  pT[ix] = -GeV;
+  	  break;
+  	}
+  	// generate y
+  	y[ix] = -ymax+2.*UseRandom::rnd()*ymax;
+  	// generate phi
+  	phi[ix] = UseRandom::rnd()*Constants::twopi;
+  	// calculate x3 and check in allowed region
+  	x3[ix] = 2.*pT[ix]*cosh(y[ix])/M;
+  	if(x3[ix] < 0. || x3[ix] > 1. -sqr( mu1 + mu2 ) ) continue;
+  	// find the possible solutions for x1
+  	double xT2 = sqr(2./M*pT[ix]);
+  	double root = (-sqr(x3[ix])+xT2)*
+  	  (xT2*mu22+2.*x3[ix]-sqr(mu12)+2.*mu22+2.*mu12-sqr(x3[ix])-1.
+  	   +2.*mu12*mu22-sqr(mu22)-2.*mu22*x3[ix]-2.*mu12*x3[ix]);
+  	double c1=2.*sqr(x3[ix])-4.*mu22-6.*x3[ix]+4.*mu12-xT2*x3[ix]
+  	  +2.*xT2-2.*mu12*x3[ix]+2.*mu22*x3[ix]+4.;
+  	if(root<0.) continue;
+  	x1[ix][0] = 1./(4.-4.*x3[ix]+xT2)*(c1-2.*sqrt(root));
+  	x1[ix][1] = 1./(4.-4.*x3[ix]+xT2)*(c1+2.*sqrt(root));
+  	// change sign of y if 2nd particle emits
+  	if(ix==1) y[ix] *=-1.;
+  	// loop over the solutions
+  	for(unsigned int iy=0;iy<2;++iy) {
+  	  contrib[ix][iy]=0.;
+  	  // check x1 value allowed
+  	  if(x1[ix][iy]<2.*mu1||x1[ix][iy]>1.+mu12-mu22) continue;
+  	  // calculate x2 value and check allowed
+  	  x2[ix][iy] = 2.-x3[ix]-x1[ix][iy];
+  	  double root = max(0.,sqr(x1[ix][iy])-4.*mu12);
+  	  root = sqrt(root);
+  	  double x2min = 1.+mu22-mu12
+  	    -0.5*(1.-x1[ix][iy]+mu12-mu22)/(1.-x1[ix][iy]+mu12)*(x1[ix][iy]-2.*mu12+root);
+  	  double x2max = 1.+mu22-mu12
+  	    -0.5*(1.-x1[ix][iy]+mu12-mu22)/(1.-x1[ix][iy]+mu12)*(x1[ix][iy]-2.*mu12-root);
+  	  if(x2[ix][iy]<x2min||x2[ix][iy]>x2max) continue;
+  	  // check the z components
+  	  double z1 =  sqrt(sqr(x1[ix][iy])-4.*mu12-xT2);
+  	  double z2 = -sqrt(sqr(x2[ix][iy])-4.*mu22);
+  	  double z3 =  pT[ix]*sinh(y[ix])*2./M;
+  	  if(ix==1) z3 *=-1.;
+  	  if(abs(-z1+z2+z3)<1e-9) z1 *= -1.;
+  	  if(abs(z1+z2+z3)>1e-5) continue;
+  	  // if using as an ME correction the veto
+  	  if(applyVeto) {
+  	    double xb = x1[ix][iy], xc = x2[ix][iy];
+  	    double b  = mu12, c = mu22;
+  	    double r = 0.5*(1.+b/(1.+c-xc));
+  	    double z1  = r + (xb-(2.-xc)*r)/sqrt(sqr(xc)-4.*c);
+  	    double kt1 = (1.-b+c-xc)/z1/(1.-z1);
+  	    r = 0.5*(1.+c/(1.+b-xb));
+  	    double z2  = r + (xc-(2.-xb)*r)/sqrt(sqr(xb)-4.*b);
+  	    double kt2 = (1.-c+b-xb)/z2/(1.-z2);
+  	    if(ix==1) {
+  	      swap(z1 ,z2);
+  	      swap(kt1,kt2);
+  	    }
+  	    // veto the shower region
+  	    if( kt1 < d_kt1_ || kt2 < d_kt2_ ) continue;
+  	  }
+  	  // construct the momenta
+  	  realMomenta[ix][iy][4] =
+  	    Lorentz5Momentum(pT[ix]*cos(phi[ix]),pT[ix]*sin(phi[ix]),
+  			     pT[ix]*sinh(y[ix]) ,pT[ix]*cosh(y[ix]),ZERO);
+  	  if(ix==0) {
+  	    realMomenta[ix][iy][2] =
+  	      Lorentz5Momentum(-pT[ix]*cos(phi[ix]),-pT[ix]*sin(phi[ix]),
+  			       z1*0.5*M,x1[ix][iy]*0.5*M,M*mu1);
+  	    realMomenta[ix][iy][3] =
+  	      Lorentz5Momentum(ZERO,ZERO, z2*0.5*M,x2[ix][iy]*0.5*M,M*mu2);
+  	  }
+  	  else {
+  	    realMomenta[ix][iy][2] =
+  	      Lorentz5Momentum(ZERO,ZERO,-z2*0.5*M,x2[ix][iy]*0.5*M,M*mu2);
+  	    realMomenta[ix][iy][3] =
+  	      Lorentz5Momentum(-pT[ix]*cos(phi[ix]),-pT[ix]*sin(phi[ix]),
+  			       -z1*0.5*M,x1[ix][iy]*0.5*M,M*mu1);
+  	  }
+  	  // boost the momenta back to the lab
+  	  for(unsigned int iz=2;iz<5;++iz)
+  	  realMomenta[ix][iy][iz] *= eventFrame;
+  	  // jacobian and prefactors for the weight
+  	  Energy J = M/sqrt(xT2)*abs(-x1[ix][iy]*x2[ix][iy]+2.*mu22*x1[ix][iy]
+  				     +x2[ix][iy]+x2[ix][iy]*mu12+mu22*x2[ix][iy]
+  				     -sqr(x2[ix][iy]))
+  	    /pow(sqr(x2[ix][iy])-4.*mu22,1.5);
+  	  // prefactors etc
+  	  contrib[ix][iy] = 0.5*pT[ix]/J/preFactor_/lambda;
+  	  // matrix element piece
+  	  contrib[ix][iy] *= meRatio(partons_,realMomenta[ix][iy],
+  				     ix,interactions[iinter],false);
+  	  // coupling piece
+  	  if(interactions[iinter]==ShowerInteraction::QCD)
+  	    contrib[ix][iy] *= alphaQCD_->ratio(sqr(pT[ix]));
+  	  else
+  	    contrib[ix][iy] *= alphaQED_->ratio(sqr(pT[ix]));
+  	}
+  	if(contrib[ix][0]+contrib[ix][1]>1.) {
+  	  ostringstream s;
+  	  s << "MEee2gZ2qq::generateHardest weight for channel " << ix
+  	    << "is " << contrib[ix][0]+contrib[ix][1] 
+  	    << " which is greater than 1";
+  	  generator()->logWarning( Exception(s.str(), Exception::warning) );
+  	}
+  	reject =  UseRandom::rnd() > contrib[ix][0] + contrib[ix][1];
       }
       while (reject);
       if(pT[ix]<pTmin)
-	pT[ix] = -GeV;
+  	pT[ix] = -GeV;
     }
     // pt of emission
     if(pT[0]<ZERO && pT[1]<ZERO) {
@@ -749,18 +748,18 @@ MEee2gZ2qq::generateHard(PerturbativeProcessPtr born,
       ispectator.push_back(3);
       pTemit.push_back(pT[0]);
       if(UseRandom::rnd()<contrib[0][0]/(contrib[0][0]+contrib[0][1]))
-	emission = realMomenta[0][0];
+  	emission = realMomenta[0][0];
       else
-	emission = realMomenta[0][1];
+  	emission = realMomenta[0][1];
     }
     else {
       iemitter  .push_back(3);
       ispectator.push_back(2);
       pTemit.push_back(pT[1]);
       if(UseRandom::rnd()<contrib[1][0]/(contrib[1][0]+contrib[1][1]))
-	emission = realMomenta[1][0];
+  	emission = realMomenta[1][0];
       else
-	emission = realMomenta[1][1];
+  	emission = realMomenta[1][1];
     }
     emittedMomenta.push_back(emission);
   }

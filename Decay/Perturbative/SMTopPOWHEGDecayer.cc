@@ -60,7 +60,7 @@ void SMTopPOWHEGDecayer::Init() {
 }
 
 
-RealEmissionProcessPtr SMTopPOWHEGDecayer::generateHardest(PerturbativeProcessPtr born) {
+RealEmissionProcessPtr SMTopPOWHEGDecayer::generateHardest(RealEmissionProcessPtr born) {
   assert(false);
   return RealEmissionProcessPtr();
 

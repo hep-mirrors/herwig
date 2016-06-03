@@ -471,12 +471,12 @@ Energy6 SMTopDecayer::dGammaIntegrand(Energy2 mffb2, Energy2 mbf2, Energy mt,
 		   + 12 * mw2 * mb2 * mfb4           +  12 * mw2 * mb4 * mfb2) /mw4 / 3.;
 }
 
-void SMTopDecayer::initializeMECorrection(PerturbativeProcessPtr born, double & initial,
+void SMTopDecayer::initializeMECorrection(RealEmissionProcessPtr born, double & initial,
 					  double & final) {
   // check the outgoing particles
   PPtr part[2];
-  for(unsigned int ix=0;ix<born->outgoing().size();++ix) {
-    part[ix]= born->outgoing()[ix].first;
+  for(unsigned int ix=0;ix<born->bornOutgoing().size();++ix) {
+    part[ix]= born->bornOutgoing()[ix];
   }
   // check the final-state particles and get the masses
   if(abs(part[0]->id())==ParticleID::Wplus&&abs(part[1]->id())==ParticleID::b) {
@@ -491,7 +491,7 @@ void SMTopDecayer::initializeMECorrection(PerturbativeProcessPtr born, double & 
     return;
   }
   // set the top mass
-  _mt=born->incoming()[0].first->mass();
+  _mt=born->bornIncoming()[0]->mass();
   // set the gluon mass
   _mg=getParticleData(ParticleID::g)->constituentMass();
   // set the radiation enhancement factors
@@ -507,13 +507,13 @@ void SMTopDecayer::initializeMECorrection(PerturbativeProcessPtr born, double & 
   useMe();
 }
 
-RealEmissionProcessPtr SMTopDecayer::applyHardMatrixElementCorrection(PerturbativeProcessPtr born) {
+RealEmissionProcessPtr SMTopDecayer::applyHardMatrixElementCorrection(RealEmissionProcessPtr born) {
   // Get b and a and put them in particle vector ba in that order...
   ParticleVector ba; 
-  for(unsigned int ix=0;ix<born->outgoing().size();++ix)
-    ba.push_back(born->outgoing()[ix].first);
+  for(unsigned int ix=0;ix<born->bornOutgoing().size();++ix)
+    ba.push_back(born->bornOutgoing()[ix]);
   if(abs(ba[0]->id())!=5) swap(ba[0],ba[1]);
-  assert(born->incoming().size()==1);
+  assert(born->bornIncoming().size()==1);
   // Now decide if we get an emission into the dead region.
   // If there is an emission newfs stores momenta for a,c,g 
   // according to NLO decay matrix element. 
@@ -538,30 +538,29 @@ RealEmissionProcessPtr SMTopDecayer::applyHardMatrixElementCorrection(Perturbati
   PPtr newg = gluondata->produceParticle(newfs[2]);
   PPtr newc = ba[0]->data().produceParticle(newfs[0]);
   PPtr newa = ba[1]->data().produceParticle(newfs[1]);
-  RealEmissionProcessPtr real(new_ptr(RealEmissionProcess(born)));
-  real->spectator(0);
-  real->emitted(3);
+  born->spectator(0);
+  born->emitted(3);
   // decaying particle
-  real->incoming().push_back(make_pair(born->incoming()[0].first->dataPtr()->produceParticle(born->incoming()[0].first->momentum()),
-				       PerturbativeProcessPtr()));
+  born->incoming().push_back(born->bornIncoming()[0]->dataPtr()->
+			     produceParticle(born->bornIncoming()[0]->momentum()));
   // colour flow
-  newg->incomingColour(real->incoming()[0].first,ba[0]->id()<0);
-  newg->colourConnect(newc                      ,ba[0]->id()<0);
-  if(born->outgoing()[0].first->id()==newc->id()) {
-    real->outgoing().push_back(make_pair(newc,PerturbativeProcessPtr()));
-    real->outgoing().push_back(make_pair(newa,PerturbativeProcessPtr()));
-    real->emitter(1);
+  newg->incomingColour(born->incoming()[0],ba[0]->id()<0);
+  newg->colourConnect(newc                ,ba[0]->id()<0);
+  if(born->bornOutgoing()[0]->id()==newc->id()) {
+    born->outgoing().push_back(newc);
+    born->outgoing().push_back(newa);
+    born->emitter(1);
   }
   else {
-    real->outgoing().push_back(make_pair(newa,PerturbativeProcessPtr()));
-    real->outgoing().push_back(make_pair(newc,PerturbativeProcessPtr()));
-    real->emitter(2);
+    born->outgoing().push_back(newa);
+    born->outgoing().push_back(newc);
+    born->emitter(2);
   }
-  real->outgoing().push_back(make_pair(newg,PerturbativeProcessPtr()));
+  born->outgoing().push_back(newg);
   // boost for the W
   LorentzRotation trans(ba[1]->momentum().findBoostToCM());
   trans.boost(newfs[1].boostVector());
-  real->transformation(trans);
+  born->transformation(trans);
   if(!inTheDeadRegion(_xg,_xa,_ktb,_ktc)) {
     generator()->log()
       << "SMTopDecayer::applyHardMatrixElementCorrection()\n"
@@ -569,7 +568,7 @@ RealEmissionProcessPtr SMTopDecayer::applyHardMatrixElementCorrection(Perturbati
       << "   _xg: " << _xg << "   _xa: " << _xa 
       << "   newfs.size(): " << newfs.size() << endl;
   }
-  return real;
+  return born;
 }
 
 vector<Lorentz5Momentum> SMTopDecayer::

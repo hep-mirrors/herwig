@@ -351,30 +351,30 @@ void DISBase::doinit() {
   gluon_ = getParticleData(ParticleID::g);
 }
 
-void DISBase::initializeMECorrection(PerturbativeProcessPtr born, double & initial,
+void DISBase::initializeMECorrection(RealEmissionProcessPtr born, double & initial,
 				     double & final) {
   initial = initial_;
   final   = final_;
   // incoming particles
-  for(unsigned int ix=0;ix<born->incoming().size();++ix) {
-      if(QuarkMatcher::Check(born->incoming()[ix].first->data())) {
-      partons_[0] = born->incoming()[ix].first->dataPtr();
-      pq_[0] = born->incoming()[ix].first->momentum();
+  for(unsigned int ix=0;ix<born->bornIncoming().size();++ix) {
+      if(QuarkMatcher::Check(born->bornIncoming()[ix]->data())) {
+      partons_[0] = born->bornIncoming()[ix]->dataPtr();
+      pq_[0] = born->bornIncoming()[ix]->momentum();
     }
-    else if(LeptonMatcher::Check(born->incoming()[ix].first->data())) {
-      leptons_[0] = born->incoming()[ix].first->dataPtr();
-      pl_[0] = born->incoming()[ix].first->momentum();
+    else if(LeptonMatcher::Check(born->bornIncoming()[ix]->data())) {
+      leptons_[0] = born->bornIncoming()[ix]->dataPtr();
+      pl_[0] = born->bornIncoming()[ix]->momentum();
     }
   }
   // outgoing particles
-  for(unsigned int ix=0;ix<born->outgoing().size();++ix) {
-    if(QuarkMatcher::Check(born->outgoing()[ix].first->data())) {
-      partons_[1] = born->outgoing()[ix].first->dataPtr();
-      pq_[1] = born->outgoing()[ix].first->momentum();
+  for(unsigned int ix=0;ix<born->bornOutgoing().size();++ix) {
+    if(QuarkMatcher::Check(born->bornOutgoing()[ix]->data())) {
+      partons_[1] = born->bornOutgoing()[ix]->dataPtr();
+      pq_[1] = born->bornOutgoing()[ix]->momentum();
     }
-    else if(LeptonMatcher::Check(born->outgoing()[ix].first->data())) {
-      leptons_[1] = born->outgoing()[ix].first->dataPtr();
-      pl_[1] = born->outgoing()[ix].first->momentum();
+    else if(LeptonMatcher::Check(born->bornOutgoing()[ix]->data())) {
+      leptons_[1] = born->bornOutgoing()[ix]->dataPtr();
+      pl_[1] = born->bornOutgoing()[ix]->momentum();
     }
   }
   // extract the born variables
@@ -384,38 +384,38 @@ void DISBase::initializeMECorrection(PerturbativeProcessPtr born, double & initi
   l_ = 2./yB-1.;
   // calculate the A coefficient for the correlations
   acoeff_ = A(leptons_[0],leptons_[1],
-	      partons_[0],partons_[1],q2_);
+  	      partons_[0],partons_[1],q2_);
 }
 
-RealEmissionProcessPtr DISBase::applyHardMatrixElementCorrection(PerturbativeProcessPtr born) {
+RealEmissionProcessPtr DISBase::applyHardMatrixElementCorrection(RealEmissionProcessPtr born) {
   static const double eps=1e-6;
   // find the incoming and outgoing quarks and leptons
   PPtr quark[2],lepton[2];
   PPtr hadron;
   unsigned int iqIn(0),iqOut(0);
   // incoming particles
-  for(unsigned int ix=0;ix<born->incoming().size();++ix) {
-    if(QuarkMatcher::Check(born->incoming()[ix].first->data())) {
+  for(unsigned int ix=0;ix<born->bornIncoming().size();++ix) {
+    if(QuarkMatcher::Check(born->bornIncoming()[ix]->data())) {
       iqIn=ix;
-      quark[0] = born->incoming()[ix].first;
-      hadron   = quark[0]->parents()[0];     
+      quark[0] = born->bornIncoming()[ix];
+      hadron   = born->hadrons()[ix];     
       beam_    = dynamic_ptr_cast<tcBeamPtr>(hadron->dataPtr());
       xB_ = quark[0]->momentum().rho()/hadron->momentum().rho();
     }
-    else if(LeptonMatcher::Check(born->incoming()[ix].first->data())) {
-      lepton[0] = born->incoming()[ix].first;
+    else if(LeptonMatcher::Check(born->bornIncoming()[ix]->data())) {
+      lepton[0] = born->bornIncoming()[ix];
     }
   }
   pdf_ = beam_->pdf();
   assert(beam_&&pdf_&&quark[0]&&lepton[0]);
   // outgoing particles
-  for(unsigned int ix=0;ix<born->outgoing().size();++ix) {
-    if(QuarkMatcher::Check(born->outgoing()[ix].first->data())) {
+  for(unsigned int ix=0;ix<born->bornOutgoing().size();++ix) {
+    if(QuarkMatcher::Check(born->bornOutgoing()[ix]->data())) {
       iqOut=ix;
-      quark [1] = born->outgoing()[ix].first;
+      quark [1] = born->bornOutgoing()[ix];
     }
-    else if(LeptonMatcher::Check(born->outgoing()[ix].first->data())) {
-      lepton[1] = born->outgoing()[ix].first;
+    else if(LeptonMatcher::Check(born->bornOutgoing()[ix]->data())) {
+      lepton[1] = born->bornOutgoing()[ix];
     }
   }
   // momentum fraction
@@ -525,19 +525,16 @@ RealEmissionProcessPtr DISBase::applyHardMatrixElementCorrection(PerturbativePro
     if(p2.e()<quark[0]->dataPtr()->CC()->constituentMass()) return RealEmissionProcessPtr();
   }
   // create the new particles and real emission process
-  RealEmissionProcessPtr real(new_ptr(RealEmissionProcess(born)));
   bool isQuark = quark[0]->colourLine();
   bool FSR = false;
   // incoming lepton if first
   if(iqIn==1)
-    real->incoming().push_back(make_pair(born->incoming()[0].first->dataPtr()->
-					 produceParticle(born->incoming()[0].first->momentum()),
-					 PerturbativeProcessPtr()));
+    born->incoming().push_back(born->bornIncoming()[0]->dataPtr()->
+			       produceParticle(born->bornIncoming()[0]->momentum()));
   // outgoing lepton if first
   if(iqOut==1)
-    real->outgoing().push_back(make_pair(born->outgoing()[0].first->dataPtr()->
-					 produceParticle(born->outgoing()[0].first->momentum()),
-					 PerturbativeProcessPtr()));
+    born->outgoing().push_back(born->bornOutgoing()[0]->dataPtr()->
+			       produceParticle(born->bornOutgoing()[0]->momentum()));
   PPtr newin,newout,emitted;
   // radiating system
   if(!BGF) {
@@ -558,35 +555,33 @@ RealEmissionProcessPtr DISBase::applyHardMatrixElementCorrection(PerturbativePro
   }
   // set x
   double x(xB_/xp);
-  if(real->incoming().size()==0)
-    real->x(make_pair(x,1.));
+  if(born->incoming().size()==0)
+    born->x(make_pair(x,1.));
   else
-    real->x(make_pair(1.,x));
+    born->x(make_pair(1.,x));
   if(FSR) {
-    real->emitter(real->outgoing().size()+2);
-    real->spectator(real->incoming().size());
+    born->emitter(born->outgoing().size()+2);
+    born->spectator(born->incoming().size());
   }
   else {
-    real->emitter(real->incoming().size());
-    real->spectator(real->outgoing().size()+2);
+    born->emitter(born->incoming().size());
+    born->spectator(born->outgoing().size()+2);
   }
-  real->emitted(4);
+  born->emitted(4);
   // radiating particles
-  real->incoming().push_back(make_pair(newin ,PerturbativeProcessPtr()));
-  real->outgoing().push_back(make_pair(newout,PerturbativeProcessPtr()));
+  born->incoming().push_back(newin );
+  born->outgoing().push_back(newout);
   // incoming lepton if second
   if(iqIn==0)
-    real->incoming().push_back(make_pair(born->incoming()[1].first->dataPtr()->
-					 produceParticle(born->incoming()[1].first->momentum()),
-					 PerturbativeProcessPtr()));
+    born->incoming().push_back(born->bornIncoming()[1]->dataPtr()->
+			       produceParticle(born->bornIncoming()[1]->momentum()));
   // outgoing lepton if second
   if(iqOut==0)
-    real->outgoing().push_back(make_pair(born->outgoing()[1].first->dataPtr()->
-					 produceParticle(born->outgoing()[1].first->momentum()),
-					 PerturbativeProcessPtr()));
+    born->outgoing().push_back(born->bornOutgoing()[1]->dataPtr()->
+			       produceParticle(born->bornOutgoing()[1]->momentum()));
   // radiated particle
-  real->outgoing().push_back(make_pair(emitted,PerturbativeProcessPtr()));
-  return real;
+  born->outgoing().push_back(emitted);
+  return born;
 }
 
 bool DISBase::softMatrixElementVeto(ShowerProgenitorPtr initial,
@@ -772,7 +767,7 @@ vector<double> DISBase::BGFME(double xp, double x2, double x3,
   return output;
 }
 
-RealEmissionProcessPtr DISBase::generateHardest(PerturbativeProcessPtr tree,
+RealEmissionProcessPtr DISBase::generateHardest(RealEmissionProcessPtr tree,
 						ShowerInteraction::Type inter) {
   assert(false);
   return RealEmissionProcessPtr();

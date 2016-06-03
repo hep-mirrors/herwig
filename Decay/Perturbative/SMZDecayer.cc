@@ -500,12 +500,12 @@ double SMZDecayer::oneLoopVirtualME(unsigned int,
 
 
 void SMZDecayer::
-initializeMECorrection(PerturbativeProcessPtr born, double & initial,
+initializeMECorrection(RealEmissionProcessPtr born, double & initial,
 		       double & final) {
   // get the quark and antiquark
   ParticleVector qq; 
-  for(unsigned int ix=0;ix<born->outgoing().size();++ix)
-    qq.push_back(born->outgoing()[ix].first);
+  for(unsigned int ix=0;ix<born->bornOutgoing().size();++ix)
+    qq.push_back(born->bornOutgoing()[ix]);
   // ensure quark first
   if(qq[0]->id()<0) swap(qq[0],qq[1]);
   // centre of mass energy
@@ -521,11 +521,11 @@ initializeMECorrection(PerturbativeProcessPtr born, double & initial,
 }
 
 RealEmissionProcessPtr SMZDecayer::
-applyHardMatrixElementCorrection(PerturbativeProcessPtr born) {
+applyHardMatrixElementCorrection(RealEmissionProcessPtr born) {
   // get the quark and antiquark
   ParticleVector qq; 
-  for(unsigned int ix=0;ix<born->outgoing().size();++ix)
-    qq.push_back(born->outgoing()[ix].first);
+  for(unsigned int ix=0;ix<born->bornOutgoing().size();++ix)
+    qq.push_back(born->bornOutgoing()[ix]);
   if(!qq[0]->dataPtr()->coloured()) return RealEmissionProcessPtr();
   // ensure quark first
   bool order = qq[0]->id()<0;
@@ -552,34 +552,33 @@ applyHardMatrixElementCorrection(PerturbativeProcessPtr born) {
   PPtr newq = qq[0]->dataPtr()->produceParticle(newfs[0]);
   PPtr newa = qq[1]->dataPtr()->produceParticle(newfs[1]);
   // create the output real emission process
-  RealEmissionProcessPtr real(new_ptr(RealEmissionProcess(born)));
-  for(unsigned int ix=0;ix<born->incoming().size();++ix) {
-    real->incoming().push_back(born->incoming()[ix]);
+  for(unsigned int ix=0;ix<born->bornIncoming().size();++ix) {
+    born->incoming().push_back(born->bornIncoming()[ix]);
   }
   if(!order) {
-    real->outgoing().push_back(make_pair(newq,PerturbativeProcessPtr()));
-    real->outgoing().push_back(make_pair(newa,PerturbativeProcessPtr()));
-    real->outgoing().push_back(make_pair(newg,PerturbativeProcessPtr()));
+    born->outgoing().push_back(newq);
+    born->outgoing().push_back(newa);
+    born->outgoing().push_back(newg);
   }
   else {
-    real->outgoing().push_back(make_pair(newa,PerturbativeProcessPtr()));
-    real->outgoing().push_back(make_pair(newq,PerturbativeProcessPtr()));
-    real->outgoing().push_back(make_pair(newg,PerturbativeProcessPtr()));
+    born->outgoing().push_back(newa);
+    born->outgoing().push_back(newq);
+    born->outgoing().push_back(newg);
     firstEmits = !firstEmits;
   }
   // make colour connections
   newg->colourNeighbour(newq);
   newa->colourNeighbour(newg);
   if(firstEmits) {
-    real->emitter(1);
-    real->spectator(2);
+    born->emitter(1);
+    born->spectator(2);
   }
   else {
-    real->emitter(2);
-    real->spectator(1);
+    born->emitter(2);
+    born->spectator(1);
   }
-  real->emitted(3);
-  return real;
+  born->emitted(3);
+  return born;
 }
 
 vector<Lorentz5Momentum> SMZDecayer::

@@ -36,7 +36,7 @@ public:
   /**
    *  Apply the POWHEG style correction
    */
-  virtual RealEmissionProcessPtr generateHardest(PerturbativeProcessPtr);
+  virtual RealEmissionProcessPtr generateHardest(RealEmissionProcessPtr);
   
   /**
    *  Virtual members to be overridden by inheriting classes

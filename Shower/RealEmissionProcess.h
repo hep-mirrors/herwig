@@ -9,7 +9,11 @@
 #ifndef HERWIG_RealEmissionProcess_H
 #define HERWIG_RealEmissionProcess_H
 
-#include "PerturbativeProcess.h"
+#include "ThePEG/Config/ThePEG.h"
+#include "ThePEG/EventRecord/Particle.h"
+#include "ThePEG/EventRecord/SubProcess.h"
+#include "ThePEG/Handlers/XComb.h"
+#include "ThePEG/Config/Pointers.h"
 #include "RealEmissionProcess.fh"
 
 namespace Herwig {
@@ -18,36 +22,47 @@ using namespace ThePEG;
 /**
  *  Simple struct for hard processes and decays
  */
-class RealEmissionProcess : public PerturbativeProcess {
+class RealEmissionProcess : public Base {
+
+public:
+
+  /**
+   *  The incoming particles
+   */
+  ParticleVector & incoming() {
+    return incoming_;
+  }
+
+  /**
+   *  The outgoing particles
+   */
+  ParticleVector & outgoing() {
+    return outgoing_;
+  }
 
 public:
   
   /**
-   *  Constructor
-   */
-  RealEmissionProcess(PerturbativeProcessPtr born) {
-    for(vector<pair<PPtr,tPerturbativeProcessPtr> >::iterator it=born->incoming().begin();
-	it!=born->incoming().end();++it)
-      bornIncoming().push_back(*it);
-    for(vector<pair<PPtr, PerturbativeProcessPtr> >::iterator it=born->outgoing().begin();
-	it!=born->outgoing().end();++it)
-      bornOutgoing().push_back(*it);
-  }
-  
-  /**
    *  The incoming particles
    */
-  vector<pair<PPtr,tPerturbativeProcessPtr> > & bornIncoming() {
+  ParticleVector & bornIncoming() {
     return bornIncoming_;
   }
   
   /**
    *  The outgoing particles
    */
-  vector<pair<PPtr, PerturbativeProcessPtr> > & bornOutgoing() {
+  ParticleVector & bornOutgoing() {
     return bornOutgoing_;
   }
   
+  /**
+   *  The hadrons
+   */
+  ParticleVector & hadrons() {
+    return hadrons_;
+  }
+
 public:
 
   /**
@@ -120,15 +135,38 @@ private:
    */
   unsigned int emitted_;
 
+private:
+
+  /**
+   *  The incoming particles
+   */
+  ParticleVector incoming_;
+
+  /*
+   *   The outgoing particles
+   */
+  ParticleVector outgoing_;
+
+private:
+
+  /**
+   *  The hadrons
+   */
+  ParticleVector hadrons_;
+
+private:
+
   /**
    *  Incoming for the Born process
    */
-  vector<pair<PPtr,tPerturbativeProcessPtr> > bornIncoming_;
+  ParticleVector bornIncoming_;
 
   /**
    *  Outgoing for the Born process
    */
-  vector<pair<PPtr, PerturbativeProcessPtr> > bornOutgoing_;
+  ParticleVector bornOutgoing_;
+
+private:
 
   /**
    *  Lorentz transformation for spectators in II

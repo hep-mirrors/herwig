@@ -8,7 +8,6 @@
 #include "ThePEG/MatrixElement/MEBase.h"
 #include "Herwig/Shower/QTilde/Base/ShowerParticle.fh"
 #include "Herwig/Shower/QTilde/Base/ShowerProgenitor.fh"
-#include "Herwig/Shower/PerturbativeProcess.fh"
 #include "Herwig/Shower/RealEmissionProcess.fh"
 #include "Herwig/Shower/QTilde/ShowerConfig.h"
 #include "ThePEG/PDF/BeamParticleData.h"
@@ -102,13 +101,13 @@ public:
   /**
    *  Initialize the ME correction
    */
-  virtual void initializeMECorrection(PerturbativeProcessPtr , double & ,
+  virtual void initializeMECorrection(RealEmissionProcessPtr , double & ,
 				      double & );
 
   /**
    *  Apply the hard matrix element correction to a given hard process or decay
    */
-  virtual RealEmissionProcessPtr applyHardMatrixElementCorrection(PerturbativeProcessPtr);
+  virtual RealEmissionProcessPtr applyHardMatrixElementCorrection(RealEmissionProcessPtr);
 
   /**
    * Apply the soft matrix element correction
@@ -125,7 +124,7 @@ public:
   /**
    *  Apply the POWHEG style correction
    */
-  virtual RealEmissionProcessPtr generateHardest(PerturbativeProcessPtr,ShowerInteraction::Type);
+  virtual RealEmissionProcessPtr generateHardest(RealEmissionProcessPtr,ShowerInteraction::Type);
   //@}
 
 public:

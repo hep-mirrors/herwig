@@ -65,13 +65,13 @@ public:
   /**
    *  Initialize the ME correction
    */
-  virtual void initializeMECorrection(PerturbativeProcessPtr, double &,
+  virtual void initializeMECorrection(RealEmissionProcessPtr, double &,
 				      double & );
 
   /**
    *  Apply the hard matrix element correction to a given hard process or decay
    */
-  virtual RealEmissionProcessPtr applyHardMatrixElementCorrection(PerturbativeProcessPtr);
+  virtual RealEmissionProcessPtr applyHardMatrixElementCorrection(RealEmissionProcessPtr);
 
   /**
    * Apply the soft matrix element correction
@@ -88,7 +88,7 @@ public:
   // /**
   //  *  Apply the POWHEG style correction
   //  */
-  // virtual RealEmissionProcessPtr generateHardest(PerturbativeProcessPtr,ShowerInteraction::Type);
+  // virtual RealEmissionProcessPtr generateHardest(RealEmissionProcessPtr,ShowerInteraction::Type);
   //@}
 
   /** @name Virtual functions required by the MEBase class. */
@@ -289,7 +289,7 @@ private:
    *  Generate the momenta for a hard configuration
    */
   pair<Energy,ShowerInteraction::Type> 
-  generateHard(PerturbativeProcessPtr, 
+  generateHard(RealEmissionProcessPtr, 
   	       vector<Lorentz5Momentum> & emission,
   	       unsigned int & iemit, unsigned int & ispect,
   	       bool applyVeto,ShowerInteraction::Type);

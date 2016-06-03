@@ -354,7 +354,7 @@ void MEPP2HiggsVBF::Init() {
 
 }
 
-RealEmissionProcessPtr MEPP2HiggsVBF::generateHardest(PerturbativeProcessPtr tree,
+RealEmissionProcessPtr MEPP2HiggsVBF::generateHardest(RealEmissionProcessPtr tree,
 						      ShowerInteraction::Type inter) {
   assert(false);
   return RealEmissionProcessPtr();
@@ -1097,43 +1097,43 @@ Energy4 MEPP2HiggsVBF::loMatrixElement(const Lorentz5Momentum &p1,
   return G1*(p1*p2)*(q1*q2) + G2*(p1*q2)*(q1*p2);
 }
   
-void MEPP2HiggsVBF::initializeMECorrection(PerturbativeProcessPtr born,
+void MEPP2HiggsVBF::initializeMECorrection(RealEmissionProcessPtr born,
 					   double & initial,
 					   double & final) {
   systems_.clear();
-  for(unsigned int ix=0;ix<born->incoming().size();++ix) {
-    if(QuarkMatcher::Check(born->incoming()[ix].first->data())) {
+  for(unsigned int ix=0;ix<born->bornIncoming().size();++ix) {
+    if(QuarkMatcher::Check(born->bornIncoming()[ix]->data())) {
       systems_.push_back(tChannelPair());
-      systems_.back().hadron   = born->incoming()[ix].first->parents()[0];
+      systems_.back().hadron   = born->hadrons()[ix];
       systems_.back().beam     = dynamic_ptr_cast<tcBeamPtr>(systems_.back().hadron->dataPtr());
-      systems_.back().incoming = born->incoming()[ix].first;
+      systems_.back().incoming = born->bornIncoming()[ix];
       systems_.back().pdf      = systems_.back().beam->pdf();
     }
   }
   vector<PPtr> outgoing;
-  for(unsigned int ix=0;ix<born->outgoing().size();++ix) {
-    if(born->outgoing()[ix].first->id()==ParticleID::h0) 
-      higgs_ = born->outgoing()[ix].first;
-    else if(QuarkMatcher::Check(born->outgoing()[ix].first->data()))
-      outgoing.push_back(born->outgoing()[ix].first);
+  for(unsigned int ix=0;ix<born->bornOutgoing().size();++ix) {
+    if(born->bornOutgoing()[ix]->id()==ParticleID::h0) 
+      higgs_ = born->bornOutgoing()[ix];
+    else if(QuarkMatcher::Check(born->bornOutgoing()[ix]->data()))
+      outgoing.push_back(born->bornOutgoing()[ix]);
   }
   assert(outgoing.size()==2&&higgs_);
   // match up the quarks
   for(unsigned int ix=0;ix<systems_.size();++ix) {
     if(systems_[ix].incoming->colourLine()) {
       for(unsigned int iy=0;iy<outgoing.size();++iy) {
-	if(outgoing[iy]->colourLine()==systems_[ix].incoming->colourLine()) {
-	  systems_[ix].outgoing=outgoing[iy];
-	  break;
-	}
+  	if(outgoing[iy]->colourLine()==systems_[ix].incoming->colourLine()) {
+  	  systems_[ix].outgoing=outgoing[iy];
+  	  break;
+  	}
       }
     }
     else {
       for(unsigned int iy=0;iy<outgoing.size();++iy) {
-	if(outgoing[iy]->antiColourLine()==systems_[ix].incoming->antiColourLine()) {
-	  systems_[ix].outgoing=outgoing[iy];
-	  break;
-	}
+  	if(outgoing[iy]->antiColourLine()==systems_[ix].incoming->antiColourLine()) {
+  	  systems_[ix].outgoing=outgoing[iy];
+  	  break;
+  	}
       }
     }
   }
@@ -1143,7 +1143,7 @@ void MEPP2HiggsVBF::initializeMECorrection(PerturbativeProcessPtr born,
   final   = final_;
 }
 
-RealEmissionProcessPtr MEPP2HiggsVBF::applyHardMatrixElementCorrection(PerturbativeProcessPtr born) {
+RealEmissionProcessPtr MEPP2HiggsVBF::applyHardMatrixElementCorrection(RealEmissionProcessPtr born) {
   static const double eps = 1e-6;
   // select emitting line
   if(UseRandom::rndbool()) swap(systems_[0],systems_[1]);
@@ -1291,7 +1291,6 @@ RealEmissionProcessPtr MEPP2HiggsVBF::applyHardMatrixElementCorrection(Perturbat
     else     maxwgt_.second = max(maxwgt_.second,wgt);
   }
   // create the new particles and add to ShowerTree
-  RealEmissionProcessPtr real(new_ptr(RealEmissionProcess(born)));
   bool isQuark = systems_[0].incoming->colourLine();
   bool FSR= false;
   PPtr newin,newout,emitted;
@@ -1313,37 +1312,37 @@ RealEmissionProcessPtr MEPP2HiggsVBF::applyHardMatrixElementCorrection(Perturbat
   }
   pair<double,double> x;
   pair<unsigned int,unsigned int> radiators;
-  if(born->incoming()[0].first!=systems_[0].incoming) {
-    real->incoming().push_back(born->incoming()[0]);
-    real->incoming().push_back(make_pair(newin,PerturbativeProcessPtr()));
-    x.first  = born->incoming()[0].first->momentum().rho()/born->incoming()[0].first->parents()[0]->momentum().rho();
+  if(born->bornIncoming()[0]!=systems_[0].incoming) {
+    born->incoming().push_back(born->bornIncoming()[0]);
+    born->incoming().push_back(newin);
+    x.first  = born->bornIncoming()[0]->momentum().rho()/born->hadrons()[0]->momentum().rho();
     x.second = x.first = xB_[0]/xp;
     radiators.first = 1;
   }
   else {
-    real->incoming().push_back(make_pair(newin,PerturbativeProcessPtr()));
-    real->incoming().push_back(born->incoming()[1]);
+    born->incoming().push_back(newin);
+    born->incoming().push_back(born->bornIncoming()[1]);
     x.first  = xB_[0]/xp;
-    x.second = born->incoming()[1].first->momentum().rho()/born->incoming()[1].first->parents()[0]->momentum().rho();
+    x.second = born->bornIncoming()[1]->momentum().rho()/born->hadrons()[1]->momentum().rho();
     radiators.first = 0;
   }
-  real->x(x);
-  for(unsigned int ix=0;ix<born->outgoing().size();++ix) {
-    if(born->outgoing()[ix].first!=systems_[0].outgoing) {
-      real->outgoing().push_back(born->outgoing()[ix]);
+  born->x(x);
+  for(unsigned int ix=0;ix<born->bornOutgoing().size();++ix) {
+    if(born->bornOutgoing()[ix]!=systems_[0].outgoing) {
+      born->outgoing().push_back(born->bornOutgoing()[ix]);
     }
     else {
-      radiators.second = real->outgoing().size()+2;
-      real->outgoing().push_back(make_pair(newout,PerturbativeProcessPtr()));
+      radiators.second = born->outgoing().size()+2;
+      born->outgoing().push_back(newout);
     }
   }
   if(FSR) swap(radiators.first,radiators.second);
-  real->emitter  (radiators.first );
-  real->spectator(radiators.second);
-  real->emitted(real->outgoing().size()+2);
+  born->emitter  (radiators.first );
+  born->spectator(radiators.second);
+  born->emitted(born->outgoing().size()+2);
   // radiated particle
-  real->outgoing().push_back(make_pair(emitted,PerturbativeProcessPtr()));
-  return real;
+  born->outgoing().push_back(emitted);
+  return born;
 }
 
 double MEPP2HiggsVBF::A(tcPDPtr qin1, tcPDPtr qout1,

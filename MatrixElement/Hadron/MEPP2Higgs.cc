@@ -560,24 +560,20 @@ double MEPP2Higgs::qqME(vector<SpinorWaveFunction> & fin,
   return me2/12.;
 }
 
-RealEmissionProcessPtr MEPP2Higgs::applyHardMatrixElementCorrection(PerturbativeProcessPtr born) {
+RealEmissionProcessPtr MEPP2Higgs::applyHardMatrixElementCorrection(RealEmissionProcessPtr born) {
   useMe();
-  assert(born->outgoing().size()==1);
-  if(born->incoming()[0].first->id()!=ParticleID::g) return RealEmissionProcessPtr();
+  assert(born->bornOutgoing().size()==1);
+  if(born->bornIncoming()[0]->id()!=ParticleID::g) 
+    return RealEmissionProcessPtr();
   // get gluons and Higgs
   // get the gluons
   ParticleVector incoming;
   vector<tcBeamPtr> beams;
-  pair<double,double> xnew;
-  for(unsigned int ix=0;ix<born->incoming().size();++ix) {
-    incoming.push_back(born->incoming()[ix].first);
-    tPPtr beam = incoming.back()->parents()[0];
-    beams.push_back(dynamic_ptr_cast<tcBeamPtr>(beam->dataPtr()));
-    if(ix==0)
-      xnew.first  = incoming[ix]->momentum().rho()/beam->momentum().rho();
-    else
-      xnew.second = incoming[ix]->momentum().rho()/beam->momentum().rho(); 
+  for(unsigned int ix=0;ix<born->bornIncoming().size();++ix) {
+    incoming.push_back(born->bornIncoming()[ix]);
+    beams.push_back(dynamic_ptr_cast<tcBeamPtr>(born->hadrons()[ix]->dataPtr()));
   }
+  pair<double,double> xnew=born->x();
   if(incoming[0]->momentum().z()<ZERO) {
     swap(incoming[0],incoming[1]);
     swap(beams[0],beams[1]);
@@ -585,23 +581,20 @@ RealEmissionProcessPtr MEPP2Higgs::applyHardMatrixElementCorrection(Perturbative
   }
   // get the Higgs
   PPtr higgs;
-  higgs=born->outgoing()[0].first;
+  higgs=born->bornOutgoing()[0];
   // calculate the momenta
   unsigned int iemit,itype;
   vector<Lorentz5Momentum> pnew;
   // if not accepted return
   tPDPtr out;
   if(!applyHard(incoming,beams,higgs,iemit,itype,pnew,xnew,out)) return RealEmissionProcessPtr();
-  // process to be returned
-  RealEmissionProcessPtr real(new_ptr(RealEmissionProcess(born)));
   // fix the momentum of the higgs
-  Boost boostv=born->outgoing()[0].first->momentum().findBoostToCM();
+  Boost boostv=born->bornOutgoing()[0]->momentum().findBoostToCM();
   LorentzRotation trans(pnew[3].boostVector());
   trans *=LorentzRotation(boostv);
-  real->transformation(trans);
-  real->outgoing().push_back(make_pair(born->outgoing()[0].first->dataPtr()->produceParticle(pnew[3]),
-				       PerturbativeProcessPtr()));
-  real->emitted(3);
+  born->transformation(trans);
+  born->outgoing().push_back(born->bornOutgoing()[0]->dataPtr()->produceParticle(pnew[3]));
+  born->emitted(3);
   // if applying ME correction create the new particles
   if(itype==0) {
     // ensure gluon can be put on shell
@@ -613,35 +606,35 @@ RealEmissionProcessPtr MEPP2Higgs::applyHardMatrixElementCorrection(Perturbative
     PPtr newg1 = incoming[0]->dataPtr()->produceParticle(pnew[0]);
     PPtr newg2 = incoming[1]->dataPtr()->produceParticle(pnew[1]);
     // set emitter and spectator
-    if(born->incoming()[0].first->momentum().z()>ZERO) {
-      real->incoming().push_back(make_pair(newg1,PerturbativeProcessPtr()));
-      real->incoming().push_back(make_pair(newg2,PerturbativeProcessPtr()));
+    if(born->bornIncoming()[0]->momentum().z()>ZERO) {
+      born->incoming().push_back(newg1);
+      born->incoming().push_back(newg2);
       if(iemit==0) {
-	real->emitter(0);
-	real->spectator(1);
+  	born->emitter(0);
+  	born->spectator(1);
       }
       else {
-	real->emitter(1);
-	real->spectator(0);
+  	born->emitter(1);
+  	born->spectator(0);
       }
     }
     else {
-      real->incoming().push_back(make_pair(newg2,PerturbativeProcessPtr()));
-      real->incoming().push_back(make_pair(newg1,PerturbativeProcessPtr()));
+      born->incoming().push_back(newg2);
+      born->incoming().push_back(newg1);
       if(iemit==0) {
-	real->emitter(1);
-	real->spectator(0);
+  	born->emitter(1);
+  	born->spectator(0);
       }
       else {
-	real->emitter(0);
-	real->spectator(1);
+  	born->emitter(0);
+  	born->spectator(1);
       }
     }
     bool colour = UseRandom::rndbool();
     newg ->incomingColour(newg1,!colour);
     newg ->incomingColour(newg2, colour);
     newg1->colourConnect(newg2,!colour);
-    real->outgoing().push_back(make_pair(newg ,PerturbativeProcessPtr()));
+    born->outgoing().push_back(newg);
   }
   else if(itype==1) {
     // ensure outgoing quark can be put on-shell
@@ -661,20 +654,20 @@ RealEmissionProcessPtr MEPP2Higgs::applyHardMatrixElementCorrection(Perturbative
     }
     newqout->incomingColour(newg);
     newg->colourConnect(newqin);
-    if((born->incoming()[0].first->momentum().z()>ZERO && iemit==0) ||
-       (born->incoming()[0].first->momentum().z()<ZERO && iemit==1)) {
-      real->incoming().push_back(make_pair(newqin,PerturbativeProcessPtr()));
-      real->incoming().push_back(make_pair(newg  ,PerturbativeProcessPtr()));
-      real->emitter(0);
-      real->spectator(1);
+    if((born->bornIncoming()[0]->momentum().z()>ZERO && iemit==0) ||
+       (born->bornIncoming()[0]->momentum().z()<ZERO && iemit==1)) {
+      born->incoming().push_back(newqin);
+      born->incoming().push_back(newg  );
+      born->emitter(0);
+      born->spectator(1);
     }
     else {
-      real->incoming().push_back(make_pair(newg  ,PerturbativeProcessPtr()));
-      real->incoming().push_back(make_pair(newqin,PerturbativeProcessPtr()));
-      real->emitter(1);
-      real->spectator(0);
+      born->incoming().push_back(newg  );
+      born->incoming().push_back(newqin);
+      born->emitter(1);
+      born->spectator(0);
     }
-    real->outgoing().push_back(make_pair(newqout,PerturbativeProcessPtr()));
+    born->outgoing().push_back(newqout);
   }
   else if(itype==2) {
     // ensure outgoing antiquark can be put on-shell
@@ -694,26 +687,26 @@ RealEmissionProcessPtr MEPP2Higgs::applyHardMatrixElementCorrection(Perturbative
     }
     newqout->incomingAntiColour(newg);
     newg->colourConnect(newqin,true);
-    if((born->incoming()[0].first->momentum().z()>ZERO && iemit==0) ||
-       (born->incoming()[0].first->momentum().z()<ZERO && iemit==1)) {
-      real->incoming().push_back(make_pair(newqin,PerturbativeProcessPtr()));
-      real->incoming().push_back(make_pair(newg  ,PerturbativeProcessPtr()));
-      real->emitter(0);
-      real->spectator(1);
+    if((born->bornIncoming()[0]->momentum().z()>ZERO && iemit==0) ||
+       (born->bornIncoming()[0]->momentum().z()<ZERO && iemit==1)) {
+      born->incoming().push_back(newqin);
+      born->incoming().push_back(newg  );
+      born->emitter(0);
+      born->spectator(1);
     }
     else {
-      real->incoming().push_back(make_pair(newg  ,PerturbativeProcessPtr()));
-      real->incoming().push_back(make_pair(newqin,PerturbativeProcessPtr()));
-      real->emitter(1);
-      real->spectator(0);
+      born->incoming().push_back(newg  );
+      born->incoming().push_back(newqin);
+      born->emitter(1);
+      born->spectator(0);
     }
-    real->outgoing().push_back(make_pair(newqout,PerturbativeProcessPtr()));
+    born->outgoing().push_back(newqout);
   }
-  if(born->incoming()[0].first->momentum().z()<ZERO) {
+  if(born->bornIncoming()[0]->momentum().z()<ZERO) {
     swap(xnew.first,xnew.second);
   }
-  real->x(xnew);
-  return real;
+  born->x(xnew);
+  return born;
 }
 
 bool MEPP2Higgs::softMatrixElementVeto(ShowerProgenitorPtr initial,
@@ -1505,9 +1498,9 @@ double MEPP2Higgs::getResult(int emis_type, Energy pt, double yj,
   return alpha_->ratio(scale)/8./sqr(Constants::pi)*mh2_/sh*GeV*pt*res;
 }
 
-void MEPP2Higgs::initializeMECorrection(PerturbativeProcessPtr born, double & initial,
+void MEPP2Higgs::initializeMECorrection(RealEmissionProcessPtr born, double & initial,
 					double & final) {
   final   = 1.;
-  initial = born->incoming()[0].first->id()==ParticleID::g ?
+  initial = born->bornIncoming()[0]->id()==ParticleID::g ?
     enhance_ : 1.;
 }

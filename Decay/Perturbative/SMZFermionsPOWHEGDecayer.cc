@@ -58,7 +58,7 @@ void SMZFermionsPOWHEGDecayer::Init() {
 }
 
 RealEmissionProcessPtr SMZFermionsPOWHEGDecayer::
-generateHardest(PerturbativeProcessPtr tree) {
+generateHardest(RealEmissionProcessPtr tree) {
   assert(false);
   return RealEmissionProcessPtr();
   // // Get the progenitors: Q and Qbar.

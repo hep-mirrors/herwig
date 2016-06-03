@@ -13,7 +13,6 @@
 #include "Herwig/PDT/GenericMassGenerator.h"
 #include "ThePEG/Cuts/Cuts.h"
 #include "Herwig/Shower/QTilde/Base/Branching.h"
-#include "Herwig/Shower/PerturbativeProcess.h"
 #include "Herwig/Shower/RealEmissionProcess.h"
 
 using namespace Herwig;
@@ -286,17 +285,17 @@ bool HwMEBase::softMatrixElementVeto(ShowerProgenitorPtr,
   return false;
 }
 
-RealEmissionProcessPtr HwMEBase::generateHardest(PerturbativeProcessPtr,ShowerInteraction::Type) {
+RealEmissionProcessPtr HwMEBase::generateHardest(RealEmissionProcessPtr,ShowerInteraction::Type) {
   assert(false);
   return RealEmissionProcessPtr();
 }
 
-RealEmissionProcessPtr HwMEBase::applyHardMatrixElementCorrection(PerturbativeProcessPtr) {
+RealEmissionProcessPtr HwMEBase::applyHardMatrixElementCorrection(RealEmissionProcessPtr) {
   assert(false);
   return RealEmissionProcessPtr();
 }
 
-void HwMEBase::initializeMECorrection(PerturbativeProcessPtr , double & ,
+void HwMEBase::initializeMECorrection(RealEmissionProcessPtr , double & ,
 				      double & ) {
   assert(false);
 }
