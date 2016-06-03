@@ -9,7 +9,7 @@
 #include "Herwig/Shower/QTilde/Base/ShowerParticle.fh"
 #include "Herwig/Shower/QTilde/Base/ShowerProgenitor.fh"
 #include "Herwig/Shower/RealEmissionProcess.fh"
-#include "Herwig/Shower/QTilde/ShowerConfig.h"
+#include "Herwig/Shower/QTilde/ShowerInteraction.h"
 #include "ThePEG/PDF/BeamParticleData.h"
 #include "HwMEBase.fh"
 
@@ -124,7 +124,8 @@ public:
   /**
    *  Apply the POWHEG style correction
    */
-  virtual RealEmissionProcessPtr generateHardest(RealEmissionProcessPtr,ShowerInteraction::Type);
+  virtual RealEmissionProcessPtr generateHardest(RealEmissionProcessPtr,
+						 ShowerInteraction::Type);
   //@}
 
 public:

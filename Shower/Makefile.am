@@ -12,7 +12,7 @@ ShowerEventRecord.h ShowerEventRecord.cc \
 PerturbativeProcess.h PerturbativeProcess.fh \
 RealEmissionProcess.h RealEmissionProcess.fh \
 UEBase.h UEBase.cc UEBase.fh \
-QTilde/ShowerConfig.h QTilde/ShowerConfig.cc \
+QTilde/ShowerInteraction.h QTilde/ShowerConfig.h QTilde/ShowerConfig.cc \
 QTilde/Base/Branching.h \
 QTilde/Base/ShowerParticle.cc  QTilde/Base/ShowerParticle.fh  QTilde/Base/ShowerParticle.h \
 QTilde/Base/ShowerKinematics.fh  QTilde/Base/ShowerKinematics.h QTilde/Base/ShowerKinematics.cc \

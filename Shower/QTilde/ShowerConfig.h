@@ -17,6 +17,7 @@
 #include "Herwig/Shower/QTilde/Base/SudakovFormFactor.fh"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "ShowerInteraction.h"
 
 namespace Herwig { 
 using namespace ThePEG;
@@ -61,20 +62,6 @@ using namespace ThePEG;
    *  Definition of the IdList for branchings
    */
   typedef vector<tcPDPtr> IdList;
-
-  namespace ShowerInteraction {
-    /**
-     *  Enum for the type of interaction
-     */
-    enum Type { UNDEFINED=-1, QCD, QED, Both };
-  }
-
-  namespace ShowerPartnerType {
-    /**
-     *  Enum for the type of shower partner
-     */
-    enum Type {Undefined,QCDColourLine,QCDAntiColourLine,QED};
-  }
   
   inline ShowerInteraction::Type convertInteraction(ShowerPartnerType::Type partner) {
     if(partner==ShowerPartnerType::QCDColourLine ||
