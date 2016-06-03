@@ -19,8 +19,6 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "Herwig/Shower/QTilde/Couplings/ShowerAlpha.h"
-#include "Herwig/Shower/QTilde/Base/ShowerTree.fh"
-#include "Herwig/Shower/QTilde/Base/HardTree.fh"
 
 namespace Herwig {
 
@@ -63,7 +61,8 @@ public:
   /**
    *  Apply the POWHEG style correction
    */
-  virtual HardTreePtr generateHardest(ShowerTreePtr,ShowerInteraction::Type);
+  virtual RealEmissionProcessPtr generateHardest(RealEmissionProcessPtr,
+						 ShowerInteraction::Type);
   //@}
 
 public:
@@ -259,7 +258,7 @@ protected:
   /**
    *  Generate the momenta for a hard configuration
    */
-  Energy generateHard(ShowerTreePtr tree, 
+  Energy generateHard(RealEmissionProcessPtr tree, 
 		      vector<Lorentz5Momentum> & emission,
 		      unsigned int & iemit, unsigned int & ispect,
 		      bool applyVeto);
