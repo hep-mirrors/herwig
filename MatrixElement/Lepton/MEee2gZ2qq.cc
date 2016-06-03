@@ -381,10 +381,24 @@ void MEee2gZ2qq::initializeMECorrection(RealEmissionProcessPtr,
 }
 
 RealEmissionProcessPtr MEee2gZ2qq::applyHardMatrixElementCorrection(RealEmissionProcessPtr born) {
+  return calculateRealEmission(born,true,ShowerInteraction::QCD);
+}
+
+RealEmissionProcessPtr MEee2gZ2qq::calculateRealEmission(RealEmissionProcessPtr born, bool veto,
+							 ShowerInteraction::Type inter) {
   vector<Lorentz5Momentum> emission;
   unsigned int iemit,ispect;
-  generateHard(born,emission,iemit,ispect,true,ShowerInteraction::QCD);
-  if(emission.empty()) return RealEmissionProcessPtr();
+  pair<Energy,ShowerInteraction::Type> output =
+    generateHard(born,emission,iemit,ispect,veto,inter);
+  if(emission.empty()) {
+    if(inter!=ShowerInteraction::QCD) born->pT()[ShowerInteraction::QED] = pTminQED_;
+    if(inter!=ShowerInteraction::QED) born->pT()[ShowerInteraction::QCD] = pTminQCD_;
+    return born;
+  }
+  // generate the momenta for the hard emission
+  Energy pTveto = output.first;
+  ShowerInteraction::Type force = output.second;
+  born->interaction(force);
   // get the quark and antiquark
   ParticleVector qq;
   for(unsigned int ix=0;ix<2;++ix) qq.push_back(born->bornOutgoing()[ix]);
@@ -395,7 +409,8 @@ RealEmissionProcessPtr MEee2gZ2qq::applyHardMatrixElementCorrection(RealEmission
     if (emission[i+2].e() < qq[i]->data().constituentMass())
       return RealEmissionProcessPtr();
   }
-  if (emission[4].e() < gluon_->constituentMass())
+  if(force!=ShowerInteraction::QED && 
+     emission[4].e() < gluon_->constituentMass())
     return RealEmissionProcessPtr();
   // set masses
   for (int i=0; i<2; i++) emission[i+2].setMass(qq[i]->mass());
@@ -403,34 +418,38 @@ RealEmissionProcessPtr MEee2gZ2qq::applyHardMatrixElementCorrection(RealEmission
   // create the new quark, antiquark and gluon
   PPtr newq = qq[0]->dataPtr()->produceParticle(emission[2]);
   PPtr newa = qq[1]->dataPtr()->produceParticle(emission[3]);
-  PPtr newg = gluon_->produceParticle(emission[4]);
-  if(iemit==2) {
-  }
-  else {
-  }
+  PPtr newg;
+  if(force==ShowerInteraction::QCD)
+    newg  = gluon_->produceParticle(emission[4]);
+  else
+    newg  = gamma_->produceParticle(emission[4]);
   // create the output real emission process
   for(unsigned int ix=0;ix<born->bornIncoming().size();++ix) {
-    born->incoming().push_back(born->bornIncoming()[ix]);
+    born->incoming().push_back(born->bornIncoming()[ix]->dataPtr()->
+			       produceParticle(born->bornIncoming()[ix]->momentum()));
   }
   if(order) {
     born->outgoing().push_back(newq);
     born->outgoing().push_back(newa);
-    born->outgoing().push_back(newg);
   }
   else {
     born->outgoing().push_back(newa);
     born->outgoing().push_back(newq);
-    born->outgoing().push_back(newg);
     swap(iemit,ispect);
   }
+  born->outgoing().push_back(newg);
   // set emitter and spectator
   born->emitter   (iemit);
   born->spectator(ispect);
   born->emitted(4);
   // make colour connections
-  newg->colourNeighbour(newq);
-  newa->colourNeighbour(newg);
-  // return output
+  if(force==ShowerInteraction::QCD) {
+    newg->colourNeighbour(newq);
+    newa->colourNeighbour(newg);
+  }
+  else {
+    newa->colourNeighbour(newq);
+  }
   return born;
 }
 
@@ -784,147 +803,10 @@ MEee2gZ2qq::generateHard(RealEmissionProcessPtr born,
   return make_pair(pTmax,interactions[iselect]);
 }
 
-// HardTreePtr MEee2gZ2qq::generateHardest(ShowerTreePtr tree, ShowerInteraction::Type inter) {
-//   // generate the momenta for the hard emission
-//   vector<Lorentz5Momentum> emmision;
-//   unsigned int iemit,ispect;
-//   pair<Energy,ShowerInteraction::Type> output 
-//     = generateHard(tree,emmision,iemit,ispect,false,inter);
-//   Energy pTveto = output.first;
-//   ShowerInteraction::Type force = output.second;
-//   // incoming progenitors
-//   ShowerProgenitorPtr 
-//     ePProgenitor = tree->incomingLines().begin() ->first,
-//     eMProgenitor = tree->incomingLines().rbegin()->first;
-//   if(eMProgenitor->id()<0) swap(eMProgenitor,ePProgenitor);
-//   // outgoing progenitors
-//   ShowerProgenitorPtr 
-//     qkProgenitor = tree->outgoingLines().begin() ->first,
-//     qbProgenitor = tree->outgoingLines().rbegin()->first;
-//   if(qkProgenitor->id()<0) swap(qkProgenitor,qbProgenitor);
-//   // maximum pT of emission
-//   if(emmision.empty()) {
-//     qkProgenitor->maximumpT(pTminQCD_,ShowerInteraction::QCD);
-//     qbProgenitor->maximumpT(pTminQCD_,ShowerInteraction::QCD);
-//     qkProgenitor->maximumpT(pTminQED_,ShowerInteraction::QED);
-//     qbProgenitor->maximumpT(pTminQED_,ShowerInteraction::QED);
-//     return HardTreePtr();
-//   }
-//   else {
-//     qkProgenitor->maximumpT(pTveto,ShowerInteraction::QCD);
-//     qbProgenitor->maximumpT(pTveto,ShowerInteraction::QCD);
-//     qkProgenitor->maximumpT(pTveto,ShowerInteraction::QED);
-//     qbProgenitor->maximumpT(pTveto,ShowerInteraction::QED);
-//   }
-//   // perform final check to ensure energy greater than constituent mass
-//   if (emmision[2].e() < qkProgenitor->progenitor()->data().constituentMass()) return HardTreePtr();
-//   if (emmision[3].e() < qbProgenitor->progenitor()->data().constituentMass()) return HardTreePtr();
-//   if(force!=ShowerInteraction::QED &&
-//      emmision[4].e() < gluon_->constituentMass()) return HardTreePtr();
-
-//   // Make the particles for the hard tree
-//   ShowerParticleVector hardParticles;
-//   for(unsigned int ix=0;ix<partons_.size();++ix) {
-//     hardParticles.push_back(new_ptr(ShowerParticle(partons_[ix],ix>=2)));
-//     hardParticles.back()->set5Momentum(emmision[ix]);
-//   }
-//   ShowerParticlePtr parent(new_ptr(ShowerParticle(partons_[iemit],true)));
-//   Lorentz5Momentum parentMomentum(emmision[iemit]+emmision[4]);
-//   parentMomentum.setMass(partons_[iemit]->mass());
-//   parent->set5Momentum(parentMomentum);
-//   // Create the vectors of HardBranchings to create the HardTree:
-//   vector<HardBranchingPtr> spaceBranchings,allBranchings;
-//   // Incoming boson:
-//   for(unsigned int ix=0;ix<2;++ix) {
-//     spaceBranchings.push_back(new_ptr(HardBranching(hardParticles[ix],SudakovPtr(),
-// 						    HardBranchingPtr(),
-// 						    HardBranching::Incoming)));
-//     allBranchings.push_back(spaceBranchings.back());
-//   }
-//   // Outgoing particles from hard emission:
-//   HardBranchingPtr spectatorBranch(new_ptr(HardBranching(hardParticles[ispect],
-//  							 SudakovPtr(),HardBranchingPtr(),
-//  							 HardBranching::Outgoing)));
-//   HardBranchingPtr emitterBranch(new_ptr(HardBranching(parent,SudakovPtr(),
-// 						       HardBranchingPtr(),
-// 						       HardBranching::Outgoing)));
-//   if(force==ShowerInteraction::QED) {
-//     emitterBranch->type(ShowerPartnerType::QED);
-//   }
-//   else {
-//     emitterBranch->type(emitterBranch->branchingParticle()->id()>0 ? 
-// 			ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine);
-//   }
-//   emitterBranch->addChild(new_ptr(HardBranching(hardParticles[iemit], 
-//  						SudakovPtr(),HardBranchingPtr(),
-//  						HardBranching::Outgoing)));
-//   emitterBranch->addChild(new_ptr(HardBranching(hardParticles[4],
-//  						SudakovPtr(),HardBranchingPtr(),
-//  						HardBranching::Outgoing)));
-//   if(iemit==0) {
-//     allBranchings.push_back(emitterBranch);
-//     allBranchings.push_back(spectatorBranch);
-//   } 
-//   else {
-//     allBranchings.push_back( spectatorBranch );
-//     allBranchings.push_back( emitterBranch );
-//   }
-//   emitterBranch  ->branchingParticle()->partner(spectatorBranch->branchingParticle());
-//   spectatorBranch->branchingParticle()->partner(emitterBranch  ->branchingParticle());
-//   if(force==ShowerInteraction::QED) {
-//     spaceBranchings[0]->branchingParticle()->partner(spaceBranchings[1]->branchingParticle());
-//     spaceBranchings[1]->branchingParticle()->partner(spaceBranchings[0]->branchingParticle());
-//   }
-//   // Make the HardTree from the HardBranching vectors.
-//   HardTreePtr hardtree = new_ptr(HardTree(allBranchings,spaceBranchings,
-// 					  force));
-//   hardtree->partnersSet(true);
-//   // Connect the particles with the branchings in the HardTree
-//   hardtree->connect( eMProgenitor->progenitor(), allBranchings[0] );
-//   tPPtr beam = eMProgenitor->original();
-//   if(!beam->parents().empty()) beam = beam->parents()[0];
-//   allBranchings[0]->beam(beam);
-//   hardtree->connect( ePProgenitor->progenitor(), allBranchings[1] );
-//   beam = ePProgenitor->original();
-//   if(!beam->parents().empty()) beam = beam->parents()[0];
-//   allBranchings[1]->beam(beam);
-//   hardtree->connect( qkProgenitor->progenitor(), allBranchings[2] );
-//   hardtree->connect( qbProgenitor->progenitor(), allBranchings[3] );
-//   // colour flow
-//   ColinePtr newline=new_ptr(ColourLine());
-//   for(set<HardBranchingPtr>::const_iterator cit=hardtree->branchings().begin();
-//       cit!=hardtree->branchings().end();++cit) {
-//     if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3)
-//       newline->addColoured((**cit).branchingParticle());
-//     else if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3bar)
-//       newline->addAntiColoured((**cit).branchingParticle());
-//   }
-//   allBranchings[2]->colourPartner(allBranchings[3]);
-//   allBranchings[3]->colourPartner(allBranchings[2]);
-//   if(hardParticles[4]->dataPtr()->iColour()==PDT::Colour8) {
-//     ColinePtr newLine2=new_ptr(ColourLine());
-//     if(emitterBranch->branchingParticle()->dataPtr()->iColour()==PDT::Colour3) {
-//       emitterBranch->branchingParticle()->colourLine()->addColoured(hardParticles[4]);
-//       newLine2->addColoured(hardParticles[iemit]);
-//       newLine2->addAntiColoured(hardParticles[4]);
-//     }
-//     else {
-//       emitterBranch->branchingParticle()->antiColourLine()->addAntiColoured(hardParticles[4]);
-//       newLine2->addAntiColoured(hardParticles[iemit]);
-//       newLine2->addColoured(hardParticles[4]);
-//     }
-//   }
-//   else {
-//     if(emitterBranch->branchingParticle()->dataPtr()->iColour()==PDT::Colour3) {
-//       emitterBranch->branchingParticle()->colourLine()->addColoured(hardParticles[iemit]);
-//     }
-//     else {
-//       emitterBranch->branchingParticle()->antiColourLine()->addAntiColoured(hardParticles[iemit]);
-//     }
-//   }
-//   // Return the HardTree
-//   return hardtree;
-// }
+RealEmissionProcessPtr MEee2gZ2qq::generateHardest(RealEmissionProcessPtr born,
+						   ShowerInteraction::Type inter) {
+  return calculateRealEmission(born,false,inter);
+}
 
 double MEee2gZ2qq::meRatio(vector<cPDPtr> partons, 
 			   vector<Lorentz5Momentum> momenta,

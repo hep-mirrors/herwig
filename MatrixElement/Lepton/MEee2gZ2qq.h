@@ -85,10 +85,10 @@ public:
 				     ShowerParticlePtr parent,
 				     Branching br);
 
-  // /**
-  //  *  Apply the POWHEG style correction
-  //  */
-  // virtual RealEmissionProcessPtr generateHardest(RealEmissionProcessPtr,ShowerInteraction::Type);
+  /**
+   *  Apply the POWHEG style correction
+   */
+  virtual RealEmissionProcessPtr generateHardest(RealEmissionProcessPtr,ShowerInteraction::Type);
   //@}
 
   /** @name Virtual functions required by the MEBase class. */
@@ -293,6 +293,12 @@ private:
   	       vector<Lorentz5Momentum> & emission,
   	       unsigned int & iemit, unsigned int & ispect,
   	       bool applyVeto,ShowerInteraction::Type);
+
+  /**
+   *  Calculate the reall emission
+   */
+  RealEmissionProcessPtr calculateRealEmission(RealEmissionProcessPtr born, bool veto,
+					       ShowerInteraction::Type inter);
 
   /**
    *  Calculate \f$\tilde{\kappa}\f$.
