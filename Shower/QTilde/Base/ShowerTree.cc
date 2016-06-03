@@ -891,7 +891,7 @@ RealEmissionProcessPtr ShowerTree::perturbativeProcess() {
     if(!it->first->original()->parents().empty())
       output->hadrons().push_back(it->first->original()->parents()[0]);
     else
-      output->hadrons().push_back(PPtr());
+      output->hadrons().push_back(it->first->progenitor());
     if(ix==0) x.first  = it->second->x();
     else      x.second = it->second->x();
     ++ix;
