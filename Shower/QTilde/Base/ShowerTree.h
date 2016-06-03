@@ -217,6 +217,11 @@ public:
   void resetShowerProducts();
 
   /**
+   *  Set maximum Emission scales
+   */
+  void setVetoes(const map<ShowerInteraction::Type,Energy> & pTs);
+
+  /**
    *  Extract the progenitors for the reconstruction
    */
   vector<ShowerProgenitorPtr> extractProgenitors();

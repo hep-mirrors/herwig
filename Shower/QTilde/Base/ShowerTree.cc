@@ -904,3 +904,16 @@ RealEmissionProcessPtr ShowerTree::perturbativeProcess() {
   }
   return output;
 }
+
+void ShowerTree::setVetoes(const map<ShowerInteraction::Type,Energy> & pTs) {
+  for(map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator it=_incomingLines.begin();
+      it!=_incomingLines.end();++it) {
+    for(map<ShowerInteraction::Type,Energy>::const_iterator jt=pTs.begin();jt!=pTs.end();++jt)
+      it->first->maximumpT(jt->second,jt->first);
+  }
+  for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator it= _outgoingLines.begin();
+      it!=_outgoingLines.end();++it) {
+    for(map<ShowerInteraction::Type,Energy>::const_iterator jt=pTs.begin();jt!=pTs.end();++jt)
+      it->first->maximumpT(jt->second,jt->first);
+  }
+}

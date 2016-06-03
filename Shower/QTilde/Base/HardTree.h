@@ -9,6 +9,7 @@
 #include "Herwig/Shower/QTilde/Base/ShowerProgenitor.h"
 #include "Herwig/Shower/QTilde/Base/ShowerTree.h"
 #include "Herwig/Shower/QTilde/Base/SudakovFormFactor.h"
+#include "Herwig/Shower/RealEmissionProcess.fh"
 #include "HardBranching.h"
 #include "HardTree.fh"
 
@@ -32,6 +33,11 @@ public:
    * The default constructor.
    */
   HardTree(vector<HardBranchingPtr>, vector<HardBranchingPtr>, ShowerInteraction::Type);
+
+  /**
+   *  Contructor from Real emission process
+   */
+  HardTree(RealEmissionProcessPtr real);
 
   /**
    *  Match particles in the ShowerTree to branchings in the HardTree

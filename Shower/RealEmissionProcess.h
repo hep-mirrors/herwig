@@ -15,6 +15,7 @@
 #include "ThePEG/Handlers/XComb.h"
 #include "ThePEG/Config/Pointers.h"
 #include "RealEmissionProcess.fh"
+#include "Herwig/Shower/QTilde/ShowerInteraction.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -119,6 +120,23 @@ public:
    */
   void x(pair<double,double> in) {x_=in;}
 
+public:
+
+  /**
+   *  Type of interaction
+   */
+  ShowerInteraction::Type interaction() {return interaction_;}
+
+  /**
+   *  Type of interaction
+   */
+  void interaction(ShowerInteraction::Type in) {interaction_ = in;}
+
+  /**
+   *  Emission scales
+   */
+  map<ShowerInteraction::Type,Energy> & pT() {return pT_;}
+
 private:
 
   /**
@@ -177,6 +195,18 @@ private:
    *  x values
    */
   pair<double,double> x_;
+
+private:
+
+  /**
+   *  Type of interaction
+   */
+  ShowerInteraction::Type interaction_;
+
+  /**
+   *  Emission scales
+   */
+  map<ShowerInteraction::Type,Energy> pT_;
 };
 
 }

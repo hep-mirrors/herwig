@@ -395,8 +395,12 @@ RealEmissionProcessPtr MEee2gZ2qq::calculateRealEmission(RealEmissionProcessPtr 
     if(inter!=ShowerInteraction::QED) born->pT()[ShowerInteraction::QCD] = pTminQCD_;
     return born;
   }
+  else {
+    Energy pTveto = output.first;
+    if(inter!=ShowerInteraction::QCD) born->pT()[ShowerInteraction::QED] = pTveto;
+    if(inter!=ShowerInteraction::QED) born->pT()[ShowerInteraction::QCD] = pTveto;
+  }
   // generate the momenta for the hard emission
-  Energy pTveto = output.first;
   ShowerInteraction::Type force = output.second;
   born->interaction(force);
   // get the quark and antiquark

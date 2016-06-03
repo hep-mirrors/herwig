@@ -1152,7 +1152,7 @@ vector<ShowerProgenitorPtr> QTildeShowerHandler::setupShower(bool hard) {
   // generate hard me if needed
   if(_hardEmission==1) {
     real = hardMatrixElementCorrection(hard);
-    if(real) setupMECorrection(real);
+    if(real&&!real->outgoing().empty()) setupMECorrection(real);
   }
   // generate POWHEG hard emission if needed
   else if(_hardEmission==2) 
@@ -1458,22 +1458,29 @@ bool QTildeShowerHandler::spaceLikeDecayVetoed( const Branching & fb,
 
 void QTildeShowerHandler::hardestEmission(bool hard) {
   HardTreePtr ISRTree;
-  if( _hardEmission ==2 && 
-      (( _hardme  &&  _hardme->hasPOWHEGCorrection()!=0 ) ||
+  if( (( _hardme  &&  _hardme->hasPOWHEGCorrection()!=0 ) ||
        ( _decayme && _decayme->hasPOWHEGCorrection()!=0 ) ) ) {
+    RealEmissionProcessPtr real;
     if(_hardme) {
       assert(hard);
-      //_hardtree =  _hardme->generateHardest( currentTree(),interaction_);
+      real = _hardme->generateHardest( currentTree()->perturbativeProcess(),
+				       interaction_);
     }
     else {
       assert(!hard);
-      // _hardtree = _decayme->generateHardest( currentTree()->perturbativeProcess() );
+      real = _decayme->generateHardest( currentTree()->perturbativeProcess() );
+    }
+    if(real) {
+      // set up ther hard tree
+      if(!real->outgoing().empty()) _hardtree = new_ptr(HardTree(real));
+      // set up the vetos
+      currentTree()->setVetoes(real->pT());
     }
     // store initial state POWHEG radiation
     if(_hardtree && _hardme && _hardme->hasPOWHEGCorrection()==1) 
-      ISRTree=_hardtree;
+      ISRTree = _hardtree;
   }
-  else if (_hardEmission==2 && hard) {
+  else if (hard) {
     // Get minimum pT cutoff used in shower approximation
     Energy maxpt = 1.*GeV;
     int colouredIn  = 0;
@@ -1744,7 +1751,7 @@ void QTildeShowerHandler::hardestEmission(bool hard) {
       _hardtree = ISRTree;
     }
   }
-  if(_hardtree){
+  if(_hardtree) {
     connectTrees(currentTree(),_hardtree,hard); 
   }
 }
@@ -2387,7 +2394,7 @@ truncatedSpaceLikeDecayShower(tShowerParticlePtr particle,
 }
 
 void QTildeShowerHandler::connectTrees(ShowerTreePtr showerTree, 
-			   HardTreePtr hardTree, bool hard ) {
+				       HardTreePtr hardTree, bool hard ) {
   ShowerParticleVector particles;
   // find the Sudakovs
   for(set<HardBranchingPtr>::iterator cit=hardTree->branchings().begin();
@@ -2448,9 +2455,11 @@ void QTildeShowerHandler::connectTrees(ShowerTreePtr showerTree,
 	  break;
 	}
       }
-      if(!sudakov) throw Exception() << "Can't find Sudakov for the hard emission in "
-				     << "QTildeShowerHandler::connectTrees()" 
-				     << Exception::runerror;
+      if(!sudakov) {
+	throw Exception() << "Can't find Sudakov for the hard emission in "
+			  << "QTildeShowerHandler::connectTrees()" 
+			  << Exception::runerror;
+      }
       (**cit).sudakov(sudakov);
     }
   }
