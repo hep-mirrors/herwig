@@ -27,7 +27,7 @@ set /Herwig/Partons/QCDExtractor:FirstPDF  /Herwig/Partons/HardNLOPDF
 ##################################################
 cd /Herwig/Shower
 set ShowerHandler:IntrinsicPtGaussian 1.9*GeV
-set ShowerHandler:HardEmissionMode POWHEG
+set ShowerHandler:HardEmission POWHEG
 
 cd /Herwig/MatrixElements/
 # Neutral current DIS
