@@ -133,17 +133,14 @@ HardTree::HardTree(RealEmissionProcessPtr real)
   }
   // create the branching for the radiating particle
   HardBranchingPtr emitterBranch;
-  // II
-  if(real->emitter()   < real->incoming().size() &&
-     real->spectator() < real->incoming().size()) {
+  // inital-state emitter
+  if(real->emitter() < real->incoming().size()) {
     assert(false);
   }
-  // FF
-  else if(real->emitter()   >= real->incoming().size() &&
-	  real->spectator() >= real->incoming().size()) {
+  // final-state emitter
+  else {
     unsigned int iemitter = real->emitter()  -real->incoming().size();
     unsigned int iemitted = real->emitted()  -real->incoming().size();
-    unsigned int ispect   = real->spectator()-real->incoming().size();
     ShowerParticlePtr parent(new_ptr(ShowerParticle(real->bornOutgoing()[iemitter]->dataPtr(),true)));
     Lorentz5Momentum parentMomentum = 
       real->outgoing()[iemitter]->momentum() +
@@ -185,15 +182,22 @@ HardTree::HardTree(RealEmissionProcessPtr real)
     }
     emitterBranch->addChild(timeBranchings[iemitter]);
     emitterBranch->addChild(timeBranchings[iemitted]);
-    // set partners
-    emitterBranch         ->colourPartner(timeBranchings[ispect]);
-    timeBranchings[ispect]->colourPartner(emitterBranch);
-    emitterBranch         ->branchingParticle()->partner(timeBranchings[ispect]->branchingParticle());
-    timeBranchings[ispect]->branchingParticle()->partner(emitterBranch         ->branchingParticle());
-  }
-  // IF
-  else {
-    assert(false);
+    if(real->spectator()< real->incoming().size()) {
+      unsigned int ispect   = real->spectator();
+      // set partners
+      emitterBranch          ->colourPartner(spaceBranchings[ispect]);
+      spaceBranchings[ispect]->colourPartner(emitterBranch);
+      emitterBranch          ->branchingParticle()->partner(spaceBranchings[ispect]->branchingParticle());
+      spaceBranchings[ispect]->branchingParticle()->partner(emitterBranch         ->branchingParticle());
+    }
+    else {
+      unsigned int ispect   = real->spectator()-real->incoming().size();
+      // set partners
+      emitterBranch         ->colourPartner(timeBranchings[ispect]);
+      timeBranchings[ispect]->colourPartner(emitterBranch);
+      emitterBranch         ->branchingParticle()->partner(timeBranchings[ispect]->branchingParticle());
+      timeBranchings[ispect]->branchingParticle()->partner(emitterBranch         ->branchingParticle());
+    }
   }
   assert(emitterBranch);
   spacelike_=set<HardBranchingPtr>(spaceBranchings.begin(),spaceBranchings.end());
