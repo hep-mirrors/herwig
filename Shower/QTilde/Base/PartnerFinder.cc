@@ -327,6 +327,10 @@ void PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &par
 void PartnerFinder::setInitialQEDEvolutionScales(const ShowerParticleVector &particles,
 						 const bool isDecayCase,
 						 const bool setPartners) {
+  for(ShowerParticleVector::const_iterator cit = particles.begin();
+      cit != particles.end(); ++cit) {
+    generator()->log() << "testing in QED " << **cit << "\n";
+  }
   // loop over all the particles
   for(ShowerParticleVector::const_iterator cit = particles.begin();
       cit != particles.end(); ++cit) {

@@ -2576,6 +2576,19 @@ void QTildeShowerHandler::doShowering(bool hard,XCPtr xcomb) {
   }
   // extract particles to shower
   vector<ShowerProgenitorPtr> particlesToShower(setupShower(hard));
+  // check if we should shower
+  bool colCharge = false;
+  for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
+    if(particlesToShower[ix]->progenitor()->dataPtr()->coloured() ||
+       particlesToShower[ix]->progenitor()->dataPtr()->charged()) {
+      colCharge = true;
+      break;
+    }
+  }
+  if(!colCharge) {
+    _currenttree->hasShowered(true);
+    return;
+  }
   // setup the maximum scales for the shower
   if (restrictPhasespace()) setupMaximumScales(particlesToShower,xcomb);
   // set the hard scales for the profiles
