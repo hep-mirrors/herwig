@@ -93,8 +93,8 @@ generateHardest(RealEmissionProcessPtr born) {
   // Ensure the energies are greater than the constituent masses:
   for (int i=0; i<2; i++) {
     if (quark_[i].e() < partons_[i]->constituentMass()) return RealEmissionProcessPtr();
-    if (gauge_.e()    < gluon_     ->constituentMass()) return RealEmissionProcessPtr();
   }
+  if (gauge_.e()    < gluon_     ->constituentMass()) return RealEmissionProcessPtr();
   // set masses
   quark_[0].setMass( partons_[0]->mass() );
   quark_[1].setMass( partons_[1]->mass() );
