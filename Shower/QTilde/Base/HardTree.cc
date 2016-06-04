@@ -115,9 +115,10 @@ HardTree::HardTree(RealEmissionProcessPtr real)
   for(unsigned int ix=0;ix<real->incoming().size();++ix) {
     unsigned int type = ix!=real->emitter() ? pType : 0;
     ShowerParticlePtr part(new_ptr(ShowerParticle(*real->incoming()[ix],type,false)));
-    incoming.push_back(part);
+   incoming.push_back(part);
     spaceBranchings.push_back(new_ptr(HardBranching(part,SudakovPtr(),HardBranchingPtr(),
 						    HardBranching::Incoming)));
+    spaceBranchings.back()->beam(real->hadrons()[ix]);
   }
   // create the outgoing particles
   ShowerParticleVector outgoing;
@@ -135,7 +136,85 @@ HardTree::HardTree(RealEmissionProcessPtr real)
   HardBranchingPtr emitterBranch;
   // inital-state emitter
   if(real->emitter() < real->incoming().size()) {
-    assert(false);
+    unsigned int iemitter = real->emitter();
+    unsigned int iemitted = real->emitted()  -real->incoming().size();
+    ShowerParticlePtr parent(new_ptr(ShowerParticle(real->bornIncoming()[iemitter]->dataPtr(),false)));
+    Lorentz5Momentum parentMomentum = 
+      real->incoming()[iemitter]->momentum() -
+      real->outgoing()[iemitted]->momentum();
+    parentMomentum.setMass(real->bornIncoming()[iemitter]->dataPtr()->mass());
+    parent->set5Momentum(parentMomentum);
+    emitterBranch = new_ptr(HardBranching(parent,SudakovPtr(),HardBranchingPtr(),
+    					  HardBranching::Incoming));
+    // QED radiation
+    if(real->interaction()==ShowerInteraction::QED) {
+      spaceBranchings[iemitter]->type(ShowerPartnerType::QED);
+      if(parent->id()!=ParticleID::gamma) {
+    	if(spaceBranchings[iemitter]->branchingParticle()->    colourLine())
+    	  spaceBranchings[iemitter]->branchingParticle()->    colourLine()->addColoured(parent);
+    	if(spaceBranchings[iemitter]->branchingParticle()->antiColourLine())
+    	  spaceBranchings[iemitter]->branchingParticle()->antiColourLine()->addAntiColoured(parent);
+      }
+    }
+    else {
+      if(real->outgoing()[iemitted]->dataPtr()->iColour()==PDT::Colour8) {
+    	// g -> g g 
+    	if(real->incoming()[iemitter]->dataPtr()->iColour()==PDT::Colour8) {
+	  if(real->incoming()[iemitter]->colourLine()==real->outgoing()[iemitted]->colourLine()) {
+	    real->incoming()[iemitter]->antiColourLine()->addAntiColoured(parent);
+	    real->outgoing()[iemitted]->antiColourLine()->    addColoured(parent);
+	  }
+	  else if(real->incoming()[iemitter]->antiColourLine()==real->outgoing()[iemitted]->antiColourLine()) {
+	    real->incoming()[iemitter]->colourLine()->    addColoured(parent);
+	    real->outgoing()[iemitted]->colourLine()->addAntiColoured(parent);
+	  }
+	  else 
+	    assert(false);
+    	}
+    	// q -> q g 
+     	else if(real->incoming()[iemitter]->dataPtr()->iColour()==PDT::Colour3) {
+    	  timeBranchings[iemitted]->branchingParticle()->antiColourLine()->addColoured(parent);
+	  spaceBranchings[iemitter]->type(ShowerPartnerType::QCDColourLine);
+     	}
+     	// qbar -> qbar g
+     	else if(real->incoming()[iemitter]->dataPtr()->iColour()==PDT::Colour3bar) {
+     	  timeBranchings[iemitted]->branchingParticle()->colourLine()->addAntiColoured(parent);
+	  spaceBranchings[iemitter]->type(ShowerPartnerType::QCDAntiColourLine);
+     	}
+      }
+      else if(real->outgoing()[iemitted]->dataPtr()->iColour()==PDT::Colour3) {
+	assert(real->incoming()[iemitter]->dataPtr()->iColour()==PDT::Colour8);
+	real->incoming()[iemitter]->antiColourLine()->addAntiColoured(parent);
+	spaceBranchings[iemitter]->type(ShowerPartnerType::QCDAntiColourLine);
+      }
+      else if(real->outgoing()[iemitted]->dataPtr()->iColour()==PDT::Colour3bar) {
+	assert(real->incoming()[iemitter]->dataPtr()->iColour()==PDT::Colour8);
+	real->incoming()[iemitter]->colourLine()->addColoured(parent);
+	spaceBranchings[iemitter]->type(ShowerPartnerType::QCDColourLine);
+      }
+      else
+    	assert(false);
+    }
+    emitterBranch           ->parent(spaceBranchings[iemitter]);
+    timeBranchings[iemitted]->parent(spaceBranchings[iemitter]);
+    spaceBranchings[iemitter]->addChild(emitterBranch);
+    spaceBranchings[iemitter]->addChild(timeBranchings[iemitted]);
+    if(real->spectator()< real->incoming().size()) {
+      unsigned int ispect   = real->spectator();
+      // set partners
+      emitterBranch          ->colourPartner(spaceBranchings[ispect]);
+      spaceBranchings[ispect]->colourPartner(emitterBranch);
+      emitterBranch          ->branchingParticle()->partner(spaceBranchings[ispect]->branchingParticle());
+      spaceBranchings[ispect]->branchingParticle()->partner(emitterBranch         ->branchingParticle());
+    }
+    else {
+      unsigned int ispect   = real->spectator()-real->incoming().size();
+      // set partners
+      emitterBranch         ->colourPartner(timeBranchings[ispect]);
+      timeBranchings[ispect]->colourPartner(emitterBranch);
+      emitterBranch         ->branchingParticle()->partner(timeBranchings[ispect]->branchingParticle());
+      timeBranchings[ispect]->branchingParticle()->partner(emitterBranch         ->branchingParticle());
+    }
   }
   // final-state emitter
   else {
@@ -163,19 +242,39 @@ HardTree::HardTree(RealEmissionProcessPtr real)
       if(real->outgoing()[iemitted]->dataPtr()->iColour()==PDT::Colour8) {
 	// g -> g g 
 	if(real->outgoing()[iemitter]->dataPtr()->iColour()==PDT::Colour8) {
-	  cerr << "g to gg\n";
-	  assert(false);
+	  if(real->outgoing()[iemitter]->colourLine()==real->outgoing()[iemitted]->antiColourLine()) {
+	    real->outgoing()[iemitter]->antiColourLine()->addAntiColoured(parent);
+	    real->outgoing()[iemitted]->    colourLine()->    addColoured(parent);
+	  }
+	  else if(real->outgoing()[iemitter]->antiColourLine()==real->outgoing()[iemitted]->colourLine()) {
+	    real->outgoing()[iemitter]->    colourLine()->    addColoured(parent);
+	    real->outgoing()[iemitted]->antiColourLine()->addAntiColoured(parent);
+	  }
+	  else 
+	    assert(false);
 	}
 	// q -> q g 
 	else if(real->outgoing()[iemitter]->dataPtr()->iColour()==PDT::Colour3) {
 	  timeBranchings[iemitted]->branchingParticle()->colourLine()->addColoured(parent);
-      emitterBranch->type(ShowerPartnerType::QCDColourLine);
+	  emitterBranch->type(ShowerPartnerType::QCDColourLine);
 	}
 	// qbar -> qbar g
 	else if(real->outgoing()[iemitter]->dataPtr()->iColour()==PDT::Colour3bar) {
 	  timeBranchings[iemitted]->branchingParticle()->antiColourLine()->addAntiColoured(parent);
 	  emitterBranch->type(ShowerPartnerType::QCDAntiColourLine);
 	}
+      }
+      else if(real->outgoing()[iemitter]->dataPtr()->iColour()==PDT::Colour3 &&
+	      real->outgoing()[iemitted]->dataPtr()->iColour()==PDT::Colour3bar) {
+	timeBranchings[iemitter]->branchingParticle()->    colourLine()->    addColoured(parent);
+	timeBranchings[iemitted]->branchingParticle()->antiColourLine()->addAntiColoured(parent);
+	emitterBranch->type(ShowerPartnerType::QCDColourLine);
+      }
+      else if(real->outgoing()[iemitter]->dataPtr()->iColour()==PDT::Colour3bar &&
+	      real->outgoing()[iemitted]->dataPtr()->iColour()==PDT::Colour3) {
+	timeBranchings[iemitter]->branchingParticle()->antiColourLine()->addAntiColoured(parent);
+	timeBranchings[iemitted]->branchingParticle()->    colourLine()->    addColoured(parent);
+	emitterBranch->type(ShowerPartnerType::QCDAntiColourLine);
       }
       else
 	assert(false);
@@ -222,27 +321,3 @@ HardTree::HardTree(RealEmissionProcessPtr real)
       branchings_.insert(timeBranchings[ix]);
   }
 }
-
-  // incoming progenitors
-//   ShowerProgenitorPtr 
-//     ePProgenitor = tree->incomingLines().begin() ->first,
-//     eMProgenitor = tree->incomingLines().rbegin()->first;
-//   if(eMProgenitor->id()<0) swap(eMProgenitor,ePProgenitor);
-//   // outgoing progenitors
-//   ShowerProgenitorPtr 
-//     qkProgenitor = tree->outgoingLines().begin() ->first,
-//     qbProgenitor = tree->outgoingLines().rbegin()->first;
-
-//   if(force==ShowerInteraction::QED) {
-//     spaceBranchings[0]->branchingParticle()->partner(spaceBranchings[1]->branchingParticle());
-//     spaceBranchings[1]->branchingParticle()->partner(spaceBranchings[0]->branchingParticle());
-//   }
-//   // Make the HardTree from the HardBranching vectors.
-//   HardTreePtr hardtree = new_ptr(HardTree(allBranchings,spaceBranchings,
-// 					  force));
-//   hardtree->partnersSet(true);
-//   // Connect the particles with the branchings in the HardTree
-//   hardtree->connect( eMProgenitor->progenitor(), allBranchings[0] );
-//   hardtree->connect( ePProgenitor->progenitor(), allBranchings[1] );
-//   hardtree->connect( qkProgenitor->progenitor(), allBranchings[2] );
-//   hardtree->connect( qbProgenitor->progenitor(), allBranchings[3] );
