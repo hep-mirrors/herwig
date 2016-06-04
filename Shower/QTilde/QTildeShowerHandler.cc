@@ -411,6 +411,9 @@ tPPair QTildeShowerHandler::cascade(tSubProPtr sub,
   prepareCascade(sub);
   // set things up in the base class
   resetWeights();
+  hard_=ShowerTreePtr();
+  decay_.clear();
+  done_.clear();
   // check if anything needs doing
   if ( !doFSR() && ! doISR() )
     return sub->incoming();
