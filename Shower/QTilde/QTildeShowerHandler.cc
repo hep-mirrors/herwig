@@ -3500,31 +3500,8 @@ namespace {
 }
 
 void QTildeShowerHandler::setupMECorrection(RealEmissionProcessPtr real) {
-  for(map<ShowerProgenitorPtr,ShowerParticlePtr>::iterator it=currentTree()->incomingLines().begin();
-      it!=currentTree()->incomingLines().end();++it) {
-    cerr << "BEFORE INCOMING " 
-	 << it->first->progenitor()->colourLine() << " " << it->first->progenitor()->antiColourLine() 
-	 << *it->first->progenitor() << "\n";
-  }
-  for(map<ShowerProgenitorPtr,tShowerParticlePtr>::iterator it=currentTree()->outgoingLines().begin();
-      it!=currentTree()->outgoingLines().end();++it) {
-    cerr << "BEFORE OUTGOING "
-	 << it->first->progenitor()->colourLine() << " " << it->first->progenitor()->antiColourLine() 
-	 << *it->first->progenitor() << "\n";
-  }
   assert(real);
   currentTree()->hardMatrixElementCorrection(true);
-  cerr << "testing emitter and specator " 
-       << real->emitter  () << " "  
-       << real->spectator() << " " << real->incoming().size() << "\n";
-  for(unsigned int ix=0;ix<real->incoming().size();++ix)
-    cerr << real->incoming()[ix]->    colourLine() << " "
-	 << real->incoming()[ix]->antiColourLine() << " "
-	 << *real->incoming()[ix] << "\n";
-  for(unsigned int ix=0;ix<real->outgoing().size();++ix)
-    cerr << real->outgoing()[ix]->    colourLine() << " "
-	 << real->outgoing()[ix]->antiColourLine() << " "
-	 << *real->outgoing()[ix] << "\n";
   // II emission
   if(real->emitter()   < real->incoming().size() &&
      real->spectator() < real->incoming().size()) {
@@ -3692,17 +3669,4 @@ void QTildeShowerHandler::setupMECorrection(RealEmissionProcessPtr real) {
   }
   // clean up the shower tree
   _currenttree->resetShowerProducts();
-   
-  for(map<ShowerProgenitorPtr,ShowerParticlePtr>::iterator it=currentTree()->incomingLines().begin();
-      it!=currentTree()->incomingLines().end();++it) {
-    cerr << "AFTER INCOMING " 
-	 << it->first->progenitor()->colourLine() << " " << it->first->progenitor()->antiColourLine() 
-	 << *it->first->progenitor() << "\n";
-  }
-  for(map<ShowerProgenitorPtr,tShowerParticlePtr>::iterator it=currentTree()->outgoingLines().begin();
-      it!=currentTree()->outgoingLines().end();++it) {
-    cerr << "AFTER OUTGOING "
-	 << it->first->progenitor()->colourLine() << " " << it->first->progenitor()->antiColourLine() 
-	 << *it->first->progenitor() << "\n";
-  }
 }
