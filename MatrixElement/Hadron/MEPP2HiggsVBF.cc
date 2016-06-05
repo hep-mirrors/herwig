@@ -354,325 +354,205 @@ void MEPP2HiggsVBF::Init() {
 
 }
 
-RealEmissionProcessPtr MEPP2HiggsVBF::generateHardest(RealEmissionProcessPtr tree,
+RealEmissionProcessPtr MEPP2HiggsVBF::generateHardest(RealEmissionProcessPtr born,
 						      ShowerInteraction::Type inter) {
-  assert(false);
-  return RealEmissionProcessPtr();
-  // if(inter==ShowerInteraction::QED) return HardTreePtr();
-  // pair<    tShowerParticlePtr,    tShowerParticlePtr> first,second;
-  // pair<tcBeamPtr,tcBeamPtr> beams;
-  // pair<tPPtr,tPPtr> hadrons;
-  // // get the incoming particles
-  // for(map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator 
-  // 	cit=tree->incomingLines().begin();cit!=tree->incomingLines().end();++cit) {
-  //   if(!first.first) {
-  //     first.first    = cit->first->progenitor();
-  //     beams.first    = cit->first->beam();
-  //     hadrons.first  = cit->first->original()->parents()[0];
-  //   }
-  //   else {
-  //     second.first   = cit->first->progenitor();
-  //     beams.second   = cit->first->beam();
-  //     hadrons.second = cit->first->original()->parents()[0];
-  //   }
-  // }
-  // // and the outgoing
-  // for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator 
-  // 	cjt=tree->outgoingLines().begin();cjt!=tree->outgoingLines().end();++cjt) {
-  //   if(cjt->first->progenitor()->id()==ParticleID::h0) {
-  //     higgs_ = cjt->first->progenitor();
-  //   }
-  //   else {
-  //     if(abs(cjt->first->progenitor()->id())>5) continue;
-  //     if(cjt->first->progenitor()->colourLine()&&
-  // 	 cjt->first->progenitor()->colourLine()==first.first->colourLine()) {
-  // 	first.second = cjt->first->progenitor();
-  // 	continue;
-  //     }
-  //     if(cjt->first->progenitor()->antiColourLine()&&
-  // 	 cjt->first->progenitor()->antiColourLine()==first.first->antiColourLine()) {
-  // 	first.second = cjt->first->progenitor();
-  // 	continue;
-  //     }
-  //     if(cjt->first->progenitor()->colourLine()&&
-  // 	 cjt->first->progenitor()->colourLine()==second.first->colourLine()) {
-  // 	second.second = cjt->first->progenitor();
-  // 	continue;
-  //     }
-  //     if(cjt->first->progenitor()->antiColourLine()&&
-  // 	 cjt->first->progenitor()->antiColourLine()==second.first->antiColourLine()) {
-  // 	second.second = cjt->first->progenitor();
-  // 	continue;
-  //     }
-  //   }
-  // }
-  // // loop over the two possible emitting systems
-  // q_ [0] = first .second->momentum()-first .first->momentum();
-  // q2_[0] = -q_[0].m2();
-  // q_ [1] = second.second->momentum()-second.first->momentum();
-  // q2_[1] = -q_[1].m2();
-  // for(unsigned int ix=0;ix<2;++ix) {
-  //   if(ix==1) {
-  //     swap(first,second);
-  //     swap(beams.first,beams.second);
-  //   }
-  //   // check beam, all particles
-  //   assert(beams.first  && higgs_ &&
-  // 	   first .first &&  first.second && 
-  // 	   second.first && second.second);
-  //   // beam and pdf
-  //   beam_[ix] = beams.first;
-  //   pdf_ [ix] = beam_[ix]->pdf();
-  //   assert(beam_[ix] && pdf_[ix] );
-  //   // Particle data objects
-  //   partons_[ix][0] =  first. first->dataPtr();
-  //   partons_[ix][1] =  first.second->dataPtr();
-  //   partons_[ix][2] = second. first->dataPtr();
-  //   partons_[ix][3] = second.second->dataPtr();
-  //   // extract the born variables
-  //   xB_[ix] = first.first->x();
-  //   Lorentz5Momentum pb     = first.first->momentum();
-  //   Axis axis(q_[ix].vect().unit());
-  //   double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
-  //   rot_[ix] = LorentzRotation();
-  //   if(axis.perp2()>1e-20) {
-  //     rot_[ix].setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
-  //     rot_[ix].rotateX(Constants::pi);
-  //   }
-  //   if(abs(1.-q_[ix].e()/q_[ix].vect().mag())>1e-6) 
-  //     rot_[ix].boostZ( q_[ix].e()/q_[ix].vect().mag());
-  //   pb *= rot_[ix];
-  //   if(pb.perp2()/GeV2>1e-20) {
-  //     Boost trans = -1./pb.e()*pb.vect();
-  //     trans.setZ(0.);
-  //     rot_[ix].boost(trans);
-  //   }
-  //   // momenta of the particles
-  //   phiggs_ [ix]    = rot_[ix]*higgs_->momentum();
-  //   pother_ [ix][0] = rot_[ix]*second. first->momentum();
-  //   pother_ [ix][1] = rot_[ix]*second.second->momentum();
-  //   psystem_[ix][0] = rot_[ix]* first. first->momentum();
-  //   psystem_[ix][1] = rot_[ix]* first.second->momentum();
-  //   q_[ix] *= rot_[ix];
-  //   pTCompton_[ix] = pTBGF_[ix] = ZERO;
-  //   // generate a compton point
-  //   generateCompton(ix);
-  //   // generate a BGF point
-  //   generateBGF(ix);
-  // }
-  // // no valid emissions, return
-  // if(pTCompton_[0]<ZERO && pTCompton_[1]<ZERO&&
-  //    pTBGF_    [0]<ZERO && pTBGF_    [1]<ZERO) {
-  //   for(map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator 
-  // 	  cit=tree->incomingLines().begin();cit!=tree->incomingLines().end();++cit) {
-  //     if(QuarkMatcher::Check(cit->first->progenitor()->data()))
-  // 	cit->first->maximumpT(pTmin_,ShowerInteraction::QCD);
-  //   }
-  //   for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator 
-  // 	  cit=tree->outgoingLines().begin();cit!=tree->outgoingLines().end();++cit) {
-  //     if(QuarkMatcher::Check(cit->first->progenitor()->data()))
-  // 	cit->first->maximumpT(pTmin_,ShowerInteraction::QCD);
-  //   }
-  //   return HardTreePtr();
-  // }
-  // // find the maximum pT emission
-  // unsigned int system = 0;
-  // bool isCompton = false;
-  // Energy pTmax = -GeV;
-  // for(unsigned int ix=0;ix<2;++ix) {
-  //   if(pTCompton_[ix]>pTmax) {
-  //     pTmax = pTCompton_[ix];
-  //     isCompton = true;
-  //     system = ix;
-  //   }
-  //   if(pTBGF_[ix]>pTmax) {
-  //     pTmax = pTBGF_[ix];
-  //     isCompton = false;
-  //     system = ix;
-  //   }
-  // }
-  // if(system==0) {
-  //   swap(first,second);
-  //   swap(beams.first,beams.second);
-  // }
-  // // add the non emitting particles
-  // vector<HardBranchingPtr> spaceBranchings,allBranchings;
-  // spaceBranchings.push_back(new_ptr(HardBranching(second.first,SudakovPtr(),
-  // 						  HardBranchingPtr(),
-  // 						  HardBranching::Incoming)));
-  // allBranchings.push_back(spaceBranchings.back());
-  // allBranchings.push_back(new_ptr(HardBranching(second.second,SudakovPtr(),
-  // 						HardBranchingPtr(),
-  // 						HardBranching::Outgoing)));
-  // allBranchings.push_back(new_ptr(HardBranching(higgs_,SudakovPtr(),
-  // 						HardBranchingPtr(),
-  // 						HardBranching::Outgoing)));
-  // allBranchings[0]->colourPartner(allBranchings[1]);
-  // allBranchings[1]->colourPartner(allBranchings[0]);
-  // rot_[system].invert();
-  // // compton hardest
-  // if(isCompton) {
-  //   for(unsigned int ix=0;ix<ComptonMomenta_[system].size();++ix) {
-  //     ComptonMomenta_[system][ix].transform(rot_[system]);
-  //   }
-  //   ShowerParticlePtr newqout (new_ptr(ShowerParticle(partons_[system][1],true)));
-  //   newqout->set5Momentum(ComptonMomenta_[system][1]);
-  //   ShowerParticlePtr newg(new_ptr(ShowerParticle(gluon_,true)));
-  //   newg->set5Momentum(ComptonMomenta_[system][2]);
-  //   ShowerParticlePtr newqin   (new_ptr(ShowerParticle(partons_[system][0],false )));
-  //   newqin->set5Momentum(ComptonMomenta_[system][0]);
-  //   if(ComptonISFS_[system]) {
-  //     ShowerParticlePtr newspace(new_ptr(ShowerParticle(partons_[system][0],false)));
-  //     newspace->set5Momentum(ComptonMomenta_[system][0]-ComptonMomenta_[system][2]);
-  //     HardBranchingPtr spaceBranch(new_ptr(HardBranching(newqin,SudakovPtr(),
-  // 							 HardBranchingPtr(),
-  // 							 HardBranching::Incoming)));
-  //     HardBranchingPtr offBranch(new_ptr(HardBranching(newspace,SudakovPtr(),
-  // 						       spaceBranch,
-  // 						       HardBranching::Incoming)));
-  //     spaceBranch->addChild(offBranch);
-  //     HardBranchingPtr g(new_ptr(HardBranching(newg,SudakovPtr(),spaceBranch,
-  // 					       HardBranching::Outgoing)));
-  //     spaceBranch->addChild(g);
-  //     spaceBranch->type(offBranch->branchingParticle()->id()>0 ? 
-  // 			ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine);
-  //     HardBranchingPtr outBranch(new_ptr(HardBranching(newqout,SudakovPtr(),
-  // 						       HardBranchingPtr(),
-  // 						       HardBranching::Outgoing)));
-  //     spaceBranchings.push_back(spaceBranch);
-  //     allBranchings.push_back(offBranch);
-  //     allBranchings.push_back(outBranch);
-  //     ColinePtr newin(new_ptr(ColourLine())),newout(new_ptr(ColourLine()));
-  //     newin ->addColoured(newqin  ,newspace->dataPtr()->iColour()!=PDT::Colour3);
-  //     newin ->addColoured(newg    ,newspace->dataPtr()->iColour()!=PDT::Colour3);
-  //     newout->addColoured(newspace,newspace->dataPtr()->iColour()!=PDT::Colour3);
-  //     newout->addColoured(newqout ,newspace->dataPtr()->iColour()!=PDT::Colour3);
-  //     newout->addColoured(newg    ,newspace->dataPtr()->iColour()==PDT::Colour3);
-  //   }
-  //   else {
-  //     ShowerParticlePtr newtime(new_ptr(ShowerParticle(partons_[system][1],true)));
-  //     newtime->set5Momentum(ComptonMomenta_[system][1]+ComptonMomenta_[system][2]);
-  //     HardBranchingPtr spaceBranch(new_ptr(HardBranching(newqin,SudakovPtr(),
-  // 							 HardBranchingPtr(),
-  // 							 HardBranching::Incoming)));
-  //     HardBranchingPtr offBranch(new_ptr(HardBranching(newtime,SudakovPtr(),
-  // 						       HardBranchingPtr(),
-  // 						       HardBranching::Outgoing)));
-  //     HardBranchingPtr g(new_ptr(HardBranching(newg,SudakovPtr(),offBranch,
-  // 					       HardBranching::Outgoing)));
-  //     HardBranchingPtr outBranch(new_ptr(HardBranching(newqout,SudakovPtr(),offBranch,
-  // 						       HardBranching::Outgoing)));
-  //     offBranch->addChild(outBranch);
-  //     offBranch->addChild(g);
-  //     offBranch->type(offBranch->branchingParticle()->id()>0 ? 
-  // 		       ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine);
-  //     spaceBranchings.push_back(spaceBranch);
-  //     allBranchings.push_back(spaceBranch);
-  //     allBranchings.push_back(offBranch);
-
-  //     ColinePtr newin(new_ptr(ColourLine())),newout(new_ptr(ColourLine()));
-  //     newin ->addColoured(newqin  ,newqin->dataPtr()->iColour()!=PDT::Colour3);
-  //     newin ->addColoured(newtime ,newqin->dataPtr()->iColour()!=PDT::Colour3);
-  //     newin ->addColoured(newg    ,newqin->dataPtr()->iColour()!=PDT::Colour3);
-  //     newout->addColoured(newg    ,newqin->dataPtr()->iColour()==PDT::Colour3);
-  //     newout->addColoured(newqout ,newqin->dataPtr()->iColour()!=PDT::Colour3);
-  //   }
-  // }
-  // // BGF hardest
-  // else {
-  //   for(unsigned int ix=0;ix<BGFMomenta_[system].size();++ix) {
-  //     BGFMomenta_[system][ix].transform(rot_[system]);
-  //   }
-  //   ShowerParticlePtr newq   (new_ptr(ShowerParticle(partons_[system][1],true)));
-  //   newq->set5Momentum(BGFMomenta_[system][1]);
-  //   ShowerParticlePtr newqbar(new_ptr(ShowerParticle(partons_[system][0]->CC(),true)));
-  //   newqbar->set5Momentum(BGFMomenta_[system][2]);
-  //   ShowerParticlePtr newg   (new_ptr(ShowerParticle(gluon_,false)));
-  //   newg->set5Momentum(BGFMomenta_[system][0]);
-  //   ShowerParticlePtr newspace(new_ptr(ShowerParticle(partons_[system][0],false)));
-  //   newspace->set5Momentum(BGFMomenta_[system][0]-BGFMomenta_[system][2]);
-  //   HardBranchingPtr spaceBranch(new_ptr(HardBranching(newg,SudakovPtr(),HardBranchingPtr(),
-  // 						       HardBranching::Incoming)));
-  //   HardBranchingPtr offBranch(new_ptr(HardBranching(newspace,SudakovPtr(),spaceBranch,
-  // 						     HardBranching::Incoming)));
-  //   HardBranchingPtr qbar(new_ptr(HardBranching(newqbar,SudakovPtr(),spaceBranch,
-  // 						HardBranching::Outgoing)));
-  //   spaceBranch->addChild(offBranch);
-  //   spaceBranch->addChild(qbar);
-  //   spaceBranch->type(offBranch->branchingParticle()->id()>0 ? 
-  // 		     ShowerPartnerType::QCDColourLine : ShowerPartnerType::QCDAntiColourLine);
-  //   HardBranchingPtr outBranch(new_ptr(HardBranching(newq,SudakovPtr(),
-  // 						     HardBranchingPtr(),
-  // 						     HardBranching::Outgoing)));
-  //   spaceBranchings.push_back(spaceBranch);
-  //   allBranchings.push_back(offBranch);
-  //   allBranchings.push_back(outBranch);
-
-  //   ColinePtr newin(new_ptr(ColourLine())),newout(new_ptr(ColourLine()));
-  //   newout->addColoured(newspace,newspace->dataPtr()->iColour()!=PDT::Colour3);
-  //   newout->addColoured(newq    ,newspace->dataPtr()->iColour()!=PDT::Colour3);
-  //   newout->addColoured(newg    ,newspace->dataPtr()->iColour()!=PDT::Colour3);
-  //   newin ->addColoured(newg    ,newspace->dataPtr()->iColour()==PDT::Colour3);
-  //   newin ->addColoured(newqbar ,newspace->dataPtr()->iColour()==PDT::Colour3);
-  // }
-  // allBranchings[3]->colourPartner(allBranchings[4]);
-  // allBranchings[4]->colourPartner(allBranchings[3]);
-  // HardTreePtr newTree(new_ptr(HardTree(allBranchings,spaceBranchings,
-  // 				       ShowerInteraction::QCD)));
-  // // Set the maximum pt for all other emissions and connect hard and shower tree
-  // Energy pT = isCompton ? pTCompton_[system] : pTBGF_[system];
-  // // incoming particles
-  // for(map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator 
-  // 	cit=tree->incomingLines().begin();cit!=tree->incomingLines().end();++cit) {
-  //   // set maximum pT
-  //   if(QuarkMatcher::Check(cit->first->progenitor()->data()))
-  //     cit->first->maximumpT(pT,ShowerInteraction::QCD);
-  //   set<HardBranchingPtr>::iterator cjt=newTree->branchings().begin();
-  //   if(cit->first->progenitor()==first.first) {
-  //     ++cjt;++cjt;++cjt;
-  //   }
-  //   newTree->connect(cit->first->progenitor(),*cjt);
-  //   tPPtr beam =cit->first->original();
-  //   if(!beam->parents().empty()) beam=beam->parents()[0];
-  //   (*cjt)->beam(beam);
-  //   HardBranchingPtr parent=(*cjt)->parent();
-  //   while(parent) {
-  //     parent->beam(beam);
-  //     parent=parent->parent();
-  //   };
-  // }
-  // // outgoing particles
-  // for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator 
-  // 	cit=tree->outgoingLines().begin();cit!=tree->outgoingLines().end();++cit) {
-  //   // set maximum pT
-  //   if(QuarkMatcher::Check(cit->first->progenitor()->data()))
-  //     cit->first->maximumpT(pT,ShowerInteraction::QCD);
-  //   for(set<HardBranchingPtr>::iterator cjt=newTree->branchings().begin();
-  // 	cjt!=newTree->branchings().end();++cjt) {
-  //     if((*cjt)->branchingParticle()->isFinalState()&&
-  // 	 (*cjt)->branchingParticle()->id()==cit->first->progenitor()->id()) {
-  // 	newTree->connect(cit->first->progenitor(),*cjt);
-  //     }
-  //   }
-  // }
-  // // set the evolution partners and scales
-  // ShowerParticleVector particles;
-  // for(set<HardBranchingPtr>::iterator cit=newTree->branchings().begin();
-  //     cit!=newTree->branchings().end();++cit) {
-  //   particles.push_back((*cit)->branchingParticle());
-  // }
-  // for(set<HardBranchingPtr>::iterator cjt=newTree->branchings().begin();
-  //     cjt!=newTree->branchings().end();++cjt) {
-  //   if(cjt==newTree->branchings().begin()) {
-  //     (**cjt).showerMomentum((**cjt).branchingParticle()->momentum());
-  //     ++cjt;
-  //     (**cjt).showerMomentum((**cjt).branchingParticle()->momentum());
-  //     ++cjt;
-  //     (**cjt).showerMomentum((**cjt).branchingParticle()->momentum());
-  //     ++cjt;
-  //   }
-  // }
-  // return newTree;
+  if(inter==ShowerInteraction::QED) return RealEmissionProcessPtr();
+  pair<tPPtr,tPPtr> first,second;
+  pair<tcBeamPtr,tcBeamPtr> beams;
+  pair<tPPtr,tPPtr> hadrons;
+  // get the incoming particles
+  for(unsigned int ix=0;ix<born->bornIncoming().size();++ix) {
+    if(!first.first) {
+      first.first    = born->bornIncoming()[ix];
+      hadrons.first  = born->hadrons()[ix];
+      beams.first    = dynamic_ptr_cast<tcBeamPtr>(born->hadrons()[ix]->dataPtr());
+    }
+    else {
+      second.first   = born->bornIncoming()[ix];
+      hadrons.second = born->hadrons()[ix];
+      beams.second   = dynamic_ptr_cast<tcBeamPtr>(born->hadrons()[ix]->dataPtr());
+    }
+  }
+  // and the outgoing
+  for(unsigned int ix=0;ix<born->bornOutgoing().size();++ix) {
+    if(born->bornOutgoing()[ix]->id()==ParticleID::h0) {
+      higgs_ = born->bornOutgoing()[ix];
+    }
+    else {
+      if(abs(born->bornOutgoing()[ix]->id())>5) continue;
+      if(born->bornOutgoing()[ix]->colourLine()&&
+  	 born->bornOutgoing()[ix]->colourLine()==first.first->colourLine()) {
+  	first.second = born->bornOutgoing()[ix];
+  	continue;
+      }
+      if(born->bornOutgoing()[ix]->antiColourLine()&&
+  	 born->bornOutgoing()[ix]->antiColourLine()==first.first->antiColourLine()) {
+  	first.second = born->bornOutgoing()[ix];
+  	continue;
+      }
+      if(born->bornOutgoing()[ix]->colourLine()&&
+  	 born->bornOutgoing()[ix]->colourLine()==second.first->colourLine()) {
+  	second.second = born->bornOutgoing()[ix];
+  	continue;
+      }
+      if(born->bornOutgoing()[ix]->antiColourLine()&&
+  	 born->bornOutgoing()[ix]->antiColourLine()==second.first->antiColourLine()) {
+  	second.second = born->bornOutgoing()[ix];
+  	continue;
+      }
+    }
+  }
+  // loop over the two possible emitting systems
+  q_ [0] = first .second->momentum()-first .first->momentum();
+  q2_[0] = -q_[0].m2();
+  q_ [1] = second.second->momentum()-second.first->momentum();
+  q2_[1] = -q_[1].m2();
+  for(unsigned int ix=0;ix<2;++ix) {
+    if(ix==1) {
+      swap(first,second);
+      swap(beams.first,beams.second);
+      swap(hadrons.first,hadrons.second);
+    }
+    // check beam, all particles
+    assert(beams.first  && higgs_ &&
+  	   first .first &&  first.second && 
+  	   second.first && second.second);
+    // beam and pdf
+    beam_[ix] = beams.first;
+    pdf_ [ix] = beam_[ix]->pdf();
+    assert(beam_[ix] && pdf_[ix] );
+    // Particle data objects
+    partons_[ix][0] =  first. first->dataPtr();
+    partons_[ix][1] =  first.second->dataPtr();
+    partons_[ix][2] = second. first->dataPtr();
+    partons_[ix][3] = second.second->dataPtr();
+    // extract the born variables
+    xB_[ix] = first.first->momentum().rho()/hadrons.first->momentum().rho();
+    Lorentz5Momentum pb     = first.first->momentum();
+    Axis axis(q_[ix].vect().unit());
+    double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
+    rot_[ix] = LorentzRotation();
+    if(axis.perp2()>1e-20) {
+      rot_[ix].setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+      rot_[ix].rotateX(Constants::pi);
+    }
+    if(abs(1.-q_[ix].e()/q_[ix].vect().mag())>1e-6) 
+      rot_[ix].boostZ( q_[ix].e()/q_[ix].vect().mag());
+    pb *= rot_[ix];
+    if(pb.perp2()/GeV2>1e-20) {
+      Boost trans = -1./pb.e()*pb.vect();
+      trans.setZ(0.);
+      rot_[ix].boost(trans);
+    }
+    // momenta of the particles
+    phiggs_ [ix]    = rot_[ix]*higgs_->momentum();
+    pother_ [ix][0] = rot_[ix]*second. first->momentum();
+    pother_ [ix][1] = rot_[ix]*second.second->momentum();
+    psystem_[ix][0] = rot_[ix]* first. first->momentum();
+    psystem_[ix][1] = rot_[ix]* first.second->momentum();
+    q_[ix] *= rot_[ix];
+    pTCompton_[ix] = pTBGF_[ix] = ZERO;
+    // generate a compton point
+    generateCompton(ix);
+    // generate a BGF point
+    generateBGF(ix);
+  }
+  // no valid emissions, return
+  if(pTCompton_[0]<ZERO && pTCompton_[1]<ZERO&&
+     pTBGF_    [0]<ZERO && pTBGF_    [1]<ZERO) {
+    born->pT()[ShowerInteraction::QCD] = pTmin_;
+    return born;
+  }
+  // find the maximum pT emission
+  unsigned int system = 0;
+  bool isCompton = false;
+  Energy pTmax = -GeV;
+  for(unsigned int ix=0;ix<2;++ix) {
+    if(pTCompton_[ix]>pTmax) {
+      pTmax = pTCompton_[ix];
+      isCompton = true;
+      system = ix;
+    }
+    if(pTBGF_[ix]>pTmax) {
+      pTmax = pTBGF_[ix];
+      isCompton = false;
+      system = ix;
+    }
+  }
+  if(system==0) {
+    swap(first,second);
+    swap(beams.first,beams.second);
+    swap(hadrons.first,hadrons.second);
+  }
+  // the non emitting particles
+  PPtr spectin =second.first ->dataPtr()->produceParticle(second.first ->momentum());
+  PPtr spectout=second.second->dataPtr()->produceParticle(second.second->momentum());
+  spectout->incomingColour(spectin,spectout->id()<0);
+  PPtr higgs = higgs_->dataPtr()->produceParticle(higgs_->momentum());
+  rot_[system].invert();
+  PPtr newout,newin,emitted;
+  bool FSR = false;
+  bool isQuark = first.first->colourLine();
+  // compton hardest
+  if(isCompton) {
+    for(unsigned int ix=0;ix<ComptonMomenta_[system].size();++ix) {
+      ComptonMomenta_[system][ix].transform(rot_[system]);
+    }
+    newout  = partons_[system][1]->produceParticle(ComptonMomenta_[system][1]);
+    emitted = gluon_             ->produceParticle(ComptonMomenta_[system][2]);
+    newin   = partons_[system][0]->produceParticle(ComptonMomenta_[system][0]);
+    FSR = !ComptonISFS_[system];
+    emitted->incomingColour(newin,!isQuark);
+    emitted->colourConnect(newout,!isQuark);
+  }
+  // BGF hardest
+  else {
+    for(unsigned int ix=0;ix<BGFMomenta_[system].size();++ix) {
+      BGFMomenta_[system][ix].transform(rot_[system]);
+    }
+    FSR = false;
+    newin   = gluon_                   ->produceParticle(BGFMomenta_[system][0]);
+    emitted = partons_[system][0]->CC()->produceParticle(BGFMomenta_[system][2]);
+    newout  = partons_[system][1]      ->produceParticle(BGFMomenta_[system][1]);
+    emitted->incomingColour(newin, isQuark);
+    newout ->incomingColour(newin,!isQuark);
+  }
+  pair<double,double> x;
+  pair<unsigned int,unsigned int> radiators;
+  if(born->bornIncoming()[0]!=first.first) {
+    born->incoming().push_back(spectin);
+    born->incoming().push_back(newin);
+    x.first  = born->bornIncoming()[0]->momentum().rho()/born->hadrons()[0]->momentum().rho();
+    x.second = newin                  ->momentum().rho()/born->hadrons()[1]->momentum().rho();
+    radiators.first = 1;
+  }
+  else {
+    born->incoming().push_back(newin);
+    born->incoming().push_back(spectin);
+    x.first  = newin                  ->momentum().rho()/born->hadrons()[0]->momentum().rho();
+    x.second = born->bornIncoming()[1]->momentum().rho()/born->hadrons()[1]->momentum().rho();
+    radiators.first = 0;
+  }
+  born->x(x);
+  for(unsigned int ix=0;ix<born->bornOutgoing().size();++ix) {
+    if(born->bornOutgoing()[ix]==second.second) {
+      born->outgoing().push_back(spectout);
+    }
+    else if(born->bornOutgoing()[ix]==first.second) {
+      radiators.second = born->outgoing().size()+2;
+      born->outgoing().push_back(newout);
+    }
+    else
+      born->outgoing().push_back(higgs);
+  }
+  if(FSR) swap(radiators.first,radiators.second);
+  born->emitter  (radiators.first );
+  born->spectator(radiators.second);
+  born->emitted(born->outgoing().size()+2);
+  // radiated particle
+  born->outgoing().push_back(emitted);
+  born->pT()[ShowerInteraction::QCD] = isCompton ? pTCompton_[system] : pTBGF_[system];
+  return born;
 }
 
 void MEPP2HiggsVBF::generateCompton(unsigned int system) {
@@ -715,7 +595,7 @@ void MEPP2HiggsVBF::generateCompton(unsigned int system) {
     double me = 4./3.*alpha_->ratio(0.25*q2_[system]*sqr(xT))*
       (azicoeff[0]+0.5*azicoeff[2]+0.5*azicoeff[4]);
     wgt *= me;
-    if(wgt>1.||wgt<0.) {
+    if(wgt>1.||wgt<-1e-8) {
       ostringstream wstring;
       wstring << "MEPP2HiggsVBF::generateCompton() "
 	      << "Weight greater than one or less than zero"
@@ -920,7 +800,7 @@ void MEPP2HiggsVBF::generateBGF(unsigned int system) {
     double me = 0.5*alpha_->ratio(0.25*q2_[system]*sqr(xT))*
       (azicoeff[0]+0.5*azicoeff[2]+0.5*azicoeff[4]);
     wgt *= me;
-    if(wgt>1.||wgt<0.) {
+    if(wgt>1.||wgt<-1e-8) {
       ostringstream wstring;
       wstring << "MEPP2HiggsVBF::generateBGF() "
 	      << "Weight greater than one or less than zero"
