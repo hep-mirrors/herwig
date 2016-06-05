@@ -163,10 +163,12 @@ HardTree::HardTree(RealEmissionProcessPtr real)
 	  if(real->incoming()[iemitter]->colourLine()==real->outgoing()[iemitted]->colourLine()) {
 	    real->incoming()[iemitter]->antiColourLine()->addAntiColoured(parent);
 	    real->outgoing()[iemitted]->antiColourLine()->    addColoured(parent);
+	    spaceBranchings[iemitter]->type(ShowerPartnerType::QCDColourLine);
 	  }
 	  else if(real->incoming()[iemitter]->antiColourLine()==real->outgoing()[iemitted]->antiColourLine()) {
 	    real->incoming()[iemitter]->colourLine()->    addColoured(parent);
 	    real->outgoing()[iemitted]->colourLine()->addAntiColoured(parent);
+	    spaceBranchings[iemitter]->type(ShowerPartnerType::QCDAntiColourLine);
 	  }
 	  else 
 	    assert(false);
@@ -183,14 +185,30 @@ HardTree::HardTree(RealEmissionProcessPtr real)
      	}
       }
       else if(real->outgoing()[iemitted]->dataPtr()->iColour()==PDT::Colour3) {
-	assert(real->incoming()[iemitter]->dataPtr()->iColour()==PDT::Colour8);
-	real->incoming()[iemitter]->antiColourLine()->addAntiColoured(parent);
-	spaceBranchings[iemitter]->type(ShowerPartnerType::QCDAntiColourLine);
+	if(real->incoming()[iemitter]->dataPtr()->iColour()==PDT::Colour8) {
+	  real->incoming()[iemitter]->antiColourLine()->addAntiColoured(parent);
+	  spaceBranchings[iemitter]->type(ShowerPartnerType::QCDAntiColourLine);
+	}
+	else if(real->incoming()[iemitter]->dataPtr()->iColour()==PDT::Colour3) {
+     	  timeBranchings [iemitted]->branchingParticle()->colourLine()->addAntiColoured(parent);
+	  spaceBranchings[iemitter]->branchingParticle()->colourLine()->    addColoured(parent);
+	  spaceBranchings[iemitter]->type(ShowerPartnerType::QCDColourLine);
+	}
+	else
+	  assert(false);
       }
       else if(real->outgoing()[iemitted]->dataPtr()->iColour()==PDT::Colour3bar) {
-	assert(real->incoming()[iemitter]->dataPtr()->iColour()==PDT::Colour8);
-	real->incoming()[iemitter]->colourLine()->addColoured(parent);
-	spaceBranchings[iemitter]->type(ShowerPartnerType::QCDColourLine);
+	if(real->incoming()[iemitter]->dataPtr()->iColour()==PDT::Colour8) {
+	  real->incoming()[iemitter]->colourLine()->addColoured(parent);
+	  spaceBranchings[iemitter]->type(ShowerPartnerType::QCDColourLine);
+	}
+	else if(real->incoming()[iemitter]->dataPtr()->iColour()==PDT::Colour3bar) {
+     	  timeBranchings[iemitted ]->branchingParticle()->antiColourLine()->    addColoured(parent);
+	  spaceBranchings[iemitter]->branchingParticle()->antiColourLine()->addAntiColoured(parent);
+	  spaceBranchings[iemitter]->type(ShowerPartnerType::QCDAntiColourLine);
+	}
+	else
+	  assert(false);
       }
       else
     	assert(false);
@@ -245,10 +263,12 @@ HardTree::HardTree(RealEmissionProcessPtr real)
 	  if(real->outgoing()[iemitter]->colourLine()==real->outgoing()[iemitted]->antiColourLine()) {
 	    real->outgoing()[iemitter]->antiColourLine()->addAntiColoured(parent);
 	    real->outgoing()[iemitted]->    colourLine()->    addColoured(parent);
+	    emitterBranch->type(ShowerPartnerType::QCDColourLine);
 	  }
 	  else if(real->outgoing()[iemitter]->antiColourLine()==real->outgoing()[iemitted]->colourLine()) {
 	    real->outgoing()[iemitter]->    colourLine()->    addColoured(parent);
 	    real->outgoing()[iemitted]->antiColourLine()->addAntiColoured(parent);
+	    emitterBranch->type(ShowerPartnerType::QCDAntiColourLine);
 	  }
 	  else 
 	    assert(false);

@@ -98,10 +98,11 @@ public:
 				     ShowerParticlePtr parent,
 				     Branching br);
 
-  // /**
-  //  *  Apply the POWHEG style correction
-  //  */
-  // virtual HardTreePtr generateHardest(ShowerTreePtr,ShowerInteraction::Type);
+  /**
+   *  Apply the POWHEG style correction
+   */
+  virtual RealEmissionProcessPtr generateHardest(RealEmissionProcessPtr,
+						 ShowerInteraction::Type);
   //@}
 
 public:
