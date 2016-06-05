@@ -19,11 +19,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Utilities/Exception.h"
-#include "Herwig/Shower/QTilde/Base/HardTree.h"
-#include "Herwig/Shower/QTilde/Base/ShowerTree.h"
-#include "Herwig/Shower/QTilde/Base/ShowerProgenitor.h"
-#include "Herwig/Shower/QTilde/Base/ShowerParticle.h"
-#include "Herwig/Shower/QTilde/Base/Branching.h"
+#include "Herwig/Shower/RealEmissionProcess.h"
 
 using namespace Herwig;
 
@@ -508,44 +504,46 @@ void GeneralTwoBodyDecayer::setDecayInfo(PDPtr incoming,PDPair outgoing,
 
 }
 
-HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
+RealEmissionProcessPtr GeneralTwoBodyDecayer::generateHardest(RealEmissionProcessPtr born) {
+  // check one incoming
+  assert(born->bornIncoming().size()==1);
+  // check exactly two outgoing particles
+  assert(born->bornOutgoing().size()==2);
   // ignore effective vertices
   if (vertex_ && (vertex_->orderInGem()+vertex_->orderInGs())>1) 
-    return HardTreePtr();
+    return RealEmissionProcessPtr();
   // search for coloured particles
-  bool colouredParticles=false;
-  vector<ShowerProgenitorPtr> Progenitors = tree->extractProgenitors();
-  for (unsigned int it=0; it<Progenitors.size(); ++it){
-    if (Progenitors[it]->progenitor()->dataPtr()->coloured()){
-      colouredParticles=true;
-      break;
+  bool colouredParticles=born->bornIncoming()[0]->dataPtr()->coloured();
+  if(!colouredParticles) {
+    for(unsigned int ix=0;ix<born->bornOutgoing().size();++ix) {
+      if(born->bornOutgoing()[ix]->dataPtr()->coloured()) {
+	colouredParticles=true;
+	break;
+      }
     }
   }
   // if no coloured particles return
-  if ( !colouredParticles ) return HardTreePtr();
-  // check exactly two outgoing particles
-  if (tree->outgoingLines().size()!=2) 
-    assert(false);
+  if ( !colouredParticles ) return RealEmissionProcessPtr();
   // for decay b -> a c 
   // set progenitors
-  ShowerProgenitorPtr 
-    cProgenitor = tree->outgoingLines(). begin()->first,
-    aProgenitor = tree->outgoingLines().rbegin()->first;
+  PPtr cProgenitor = born->bornOutgoing()[0];
+  PPtr aProgenitor = born->bornOutgoing()[1];
   // get the decaying particle
-  ShowerProgenitorPtr bProgenitor = tree->incomingLines().begin()->first;
+  PPtr bProgenitor = born->bornIncoming()[0];
 
   // identify which dipoles are required
   vector<dipoleType> dipoles;
   if(!identifyDipoles(dipoles,aProgenitor,bProgenitor,cProgenitor)) {
-    return HardTreePtr();
+    return RealEmissionProcessPtr();
   }
 
   Energy trialpT = pTmin_;
   LorentzRotation eventFrame;
   vector<Lorentz5Momentum> momenta;
   vector<Lorentz5Momentum> trialMomenta(4);
-  ShowerProgenitorPtr finalEmitter, finalSpectator;
-  ShowerProgenitorPtr trialEmitter, trialSpectator;
+  PPtr finalEmitter, finalSpectator;
+  PPtr trialEmitter, trialSpectator;
+  dipoleType finalType(FFa);
 
   for (int i=0; i<int(dipoles.size()); ++i){
 
@@ -560,10 +558,8 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
     }
 
     // find rotation from lab to frame with the spectator along -z
-    LorentzRotation trialEventFrame = ( bProgenitor->progenitor()->momentum()
-					.findBoostToCM() );
-    Lorentz5Momentum pspectator = (trialEventFrame*
-				   trialSpectator->progenitor()->momentum());
+    LorentzRotation trialEventFrame(bProgenitor->momentum().findBoostToCM());
+    Lorentz5Momentum pspectator = (trialEventFrame*trialSpectator->momentum());
     trialEventFrame.rotateZ( -pspectator.phi() );
     trialEventFrame.rotateY( -pspectator.theta() - Constants::pi );
     // invert it
@@ -573,14 +569,15 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
     pT_ = pTmin_;
     vector<Lorentz5Momentum> trialMomenta 
       = hardMomenta(bProgenitor, trialEmitter, trialSpectator, dipoles, i);
-    
+  
     // select dipole which gives highest pT emission
-    if(pT_>trialpT){
+    if(pT_>trialpT) {
       trialpT        = pT_;
       momenta        = trialMomenta;
       eventFrame     = trialEventFrame;
       finalEmitter   = trialEmitter;
       finalSpectator = trialSpectator;
+      finalType      = dipoles[i];
 
       if (dipoles[i]==FFc || dipoles[i]==FFa ) {
       	if((momenta[3]+momenta[1]).m2()-momenta[1].m2()>(momenta[3]+momenta[2]).m2()-momenta[2].m2()) {
@@ -593,10 +590,8 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
   pT_ = trialpT;
   // if no emission return
   if(momenta.empty()) {
-    bProgenitor->maximumpT(pTmin_,ShowerInteraction::QCD);
-    aProgenitor->maximumpT(pTmin_,ShowerInteraction::QCD);
-    cProgenitor->maximumpT(pTmin_,ShowerInteraction::QCD);
-    return HardTreePtr();
+    born->pT()[ShowerInteraction::QCD] = pTmin_;
+    return born;
   }
 
   // rotate momenta back to the lab
@@ -605,83 +600,43 @@ HardTreePtr GeneralTwoBodyDecayer::generateHardest(ShowerTreePtr tree) {
   }
  
   // set maximum pT for subsequent branchings
-  bProgenitor   ->maximumpT(pT_,ShowerInteraction::QCD);
-  finalEmitter  ->maximumpT(pT_,ShowerInteraction::QCD);
-  finalSpectator->maximumpT(pT_,ShowerInteraction::QCD);
+  born->pT()[ShowerInteraction::QCD] = pT_;
 
   // get ParticleData objects
-  tcPDPtr b = bProgenitor   ->progenitor()->dataPtr();
-  tcPDPtr e = finalEmitter  ->progenitor()->dataPtr();
-  tcPDPtr s = finalSpectator->progenitor()->dataPtr();
+  tcPDPtr b = bProgenitor   ->dataPtr();
+  tcPDPtr e = finalEmitter  ->dataPtr();
+  tcPDPtr s = finalSpectator->dataPtr();
   tcPDPtr gluon  = getParticleData(ParticleID::g);
 
   // create new ShowerParticles
-  ShowerParticlePtr emitter  (new_ptr(ShowerParticle(e,     true )));
-  ShowerParticlePtr spectator(new_ptr(ShowerParticle(s,     true )));
-  ShowerParticlePtr gauge    (new_ptr(ShowerParticle(gluon, true )));
-  ShowerParticlePtr incoming (new_ptr(ShowerParticle(b,     false)));
-  ShowerParticlePtr parent   (new_ptr(ShowerParticle(e,     true )));
+  PPtr emitter   = e    ->produceParticle(momenta[1]);
+  PPtr spectator = s    ->produceParticle(momenta[2]);
+  PPtr gauge     = gluon->produceParticle(momenta[3]);
+  PPtr incoming  = b    ->produceParticle(bProgenitor->momentum());
 
-  // set momenta
-  emitter  ->set5Momentum(momenta[1]); 
-  spectator->set5Momentum(momenta[2]);  
-  gauge    ->set5Momentum(momenta[3]); 
-  incoming ->set5Momentum(bProgenitor->progenitor()->momentum());  
-  Lorentz5Momentum parentMomentum(momenta[1]+momenta[3]);
-  parentMomentum.rescaleMass();
-  parent->set5Momentum(parentMomentum);
-
-  // create the vectors of HardBranchings to create the HardTree:
-  vector<HardBranchingPtr> spaceBranchings,allBranchings;
-  // incoming particle b
-  spaceBranchings.push_back(new_ptr(HardBranching(incoming,SudakovPtr(),
-						  HardBranchingPtr(),
-						  HardBranching::Incoming)));
-  // outgoing particles from hard emission:
-  HardBranchingPtr spectatorBranch(new_ptr(HardBranching(spectator,SudakovPtr(),
-							 HardBranchingPtr(),
-							 HardBranching::Outgoing)));
-  HardBranchingPtr emitterBranch(new_ptr(HardBranching(parent,SudakovPtr(),
-						       HardBranchingPtr(),
-						       HardBranching::Outgoing)));
-  emitterBranch->addChild(new_ptr(HardBranching(emitter,SudakovPtr(),
-						HardBranchingPtr(),
-						HardBranching::Outgoing)));
-  emitterBranch->addChild(new_ptr(HardBranching(gauge,SudakovPtr(),
-						HardBranchingPtr(),
-						HardBranching::Outgoing)));
-
-  if (emitterBranch->branchingParticle()->dataPtr()->hasColour()
-      && (! emitterBranch->branchingParticle()->dataPtr()->hasAntiColour())) {
-    emitterBranch->type(ShowerPartnerType::QCDColourLine);
+  // insert the particles
+  born->incoming().push_back(incoming);
+  unsigned int iemit(0),ispect(0);
+  for(unsigned int ix=0;ix<born->bornOutgoing().size();++ix) {
+    if(born->bornOutgoing()[ix]==finalEmitter) {
+      born->outgoing().push_back(emitter);
+      iemit = born->outgoing().size();
+    }
+    else if(born->bornOutgoing()[ix]==finalSpectator) {
+      born->outgoing().push_back(spectator);
+      ispect = born->outgoing().size();
+    }
   }
-  else if (emitterBranch->branchingParticle()->dataPtr()->hasAntiColour()
-	   && (! emitterBranch->branchingParticle()->dataPtr()->hasColour())) {
-    emitterBranch->type(ShowerPartnerType::QCDAntiColourLine);
-  }
-  else
-    emitterBranch->type(UseRandom::rndbool() ? 
-			ShowerPartnerType::QCDColourLine : 
-			ShowerPartnerType::QCDAntiColourLine);
-
-  allBranchings.push_back(spaceBranchings[0]);
-  allBranchings.push_back(emitterBranch);
-  allBranchings.push_back(spectatorBranch);
-  // make the HardTree from the HardBranching vectors.
-  HardTreePtr hardtree = new_ptr(HardTree(allBranchings,spaceBranchings,
-					  ShowerInteraction::QCD));
-
-  // connect the particles with the branchings in the HardTree
-  hardtree->connect( bProgenitor   ->progenitor(), spaceBranchings[0] );
-  hardtree->connect( finalEmitter  ->progenitor(),   allBranchings[1] );
-  hardtree->connect( finalSpectator->progenitor(),   allBranchings[2] );
-
+  born->outgoing().push_back(gauge);
+  if(!spectator->dataPtr()->coloured() ||
+     (finalType != FFa && finalType!=FFc) ) ispect = 0;
+  born->emitter(iemit);
+  born->spectator(ispect);
+  born->emitted(3);
   // set up colour lines
-  vector<ColinePtr> newline;
-  getColourLines(newline, hardtree, bProgenitor);
-
+  getColourLines(born);
   // return the tree
-  return hardtree;
+  return born;
 }
 
 double GeneralTwoBodyDecayer::threeBodyME(const int , const Particle &,
@@ -692,9 +647,9 @@ double GeneralTwoBodyDecayer::threeBodyME(const int , const Particle &,
   return 0.;
 }
 
-vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta(const ShowerProgenitorPtr &in, 
-							     const ShowerProgenitorPtr &emitter, 
-							     const ShowerProgenitorPtr &spectator, 
+vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta(const PPtr &in, 
+							     const PPtr &emitter, 
+							     const PPtr &spectator, 
 							     const vector<dipoleType>  &dipoles, 
 							     int i) {
   double C    = 6.3;
@@ -702,9 +657,9 @@ vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta(const ShowerProgeni
   double ymin = -ymax;
 
   // get masses of the particles
-  mb_  = in       ->progenitor()->momentum().mass();
-  e_   = emitter  ->progenitor()->momentum().mass()/mb_;
-  s_   = spectator->progenitor()->momentum().mass()/mb_;
+  mb_  = in       ->momentum().mass();
+  e_   = emitter  ->momentum().mass()/mb_;
+  s_   = spectator->momentum().mass()/mb_;
   e2_  = sqr(e_);
   s2_  = sqr(s_);
   
@@ -746,18 +701,18 @@ vector<Lorentz5Momentum>  GeneralTwoBodyDecayer::hardMomenta(const ShowerProgeni
 	continue;
    
       // decay products for 3 body decay
-      PPtr inpart   = in        ->progenitor()->dataPtr()->produceParticle(particleMomenta[0]);     
+      PPtr inpart   = in        ->dataPtr()->produceParticle(particleMomenta[0]);     
       ParticleVector decay3;
-      decay3.push_back(emitter  ->progenitor()->dataPtr()->produceParticle(particleMomenta[1]));
-      decay3.push_back(spectator->progenitor()->dataPtr()->produceParticle(particleMomenta[2]));
+      decay3.push_back(emitter  ->dataPtr()->produceParticle(particleMomenta[1]));
+      decay3.push_back(spectator->dataPtr()->produceParticle(particleMomenta[2]));
       decay3.push_back(getParticleData(ParticleID::g    )->produceParticle(particleMomenta[3]));
       
       // decay products for 2 body decay
       Lorentz5Momentum p1(ZERO,ZERO, lambda/2./mb_,(mb_/2.)*(1.+e2_-s2_),mb_*e_);
       Lorentz5Momentum p2(ZERO,ZERO,-lambda/2./mb_,(mb_/2.)*(1.+s2_-e2_),mb_*s_);
       ParticleVector decay2;
-      decay2.push_back(emitter  ->progenitor()->dataPtr()->produceParticle(p1));
-      decay2.push_back(spectator->progenitor()->dataPtr()->produceParticle(p2));
+      decay2.push_back(emitter  ->dataPtr()->produceParticle(p1));
+      decay2.push_back(spectator->dataPtr()->produceParticle(p2));
       if (decay2[0]->dataPtr()->iSpin()!=PDT::Spin1Half &&
 	  decay2[1]->dataPtr()->iSpin()==PDT::Spin1Half) swap(decay2[0], decay2[1]);
   
@@ -1134,13 +1089,13 @@ const vector<DVector> & GeneralTwoBodyDecayer::getColourFactors(const Particle &
 
 
 bool GeneralTwoBodyDecayer::identifyDipoles(vector<dipoleType>  & dipoles,
-					    ShowerProgenitorPtr & aProgenitor,
-					    ShowerProgenitorPtr & bProgenitor,
-					    ShowerProgenitorPtr & cProgenitor) const {
+					    PPtr & aProgenitor,
+					    PPtr & bProgenitor,
+					    PPtr & cProgenitor) const {
 
-  PDT::Colour bColour = bProgenitor->progenitor()->dataPtr()->iColour();
-  PDT::Colour cColour = cProgenitor->progenitor()->dataPtr()->iColour();
-  PDT::Colour aColour = aProgenitor->progenitor()->dataPtr()->iColour();
+  PDT::Colour bColour = bProgenitor->dataPtr()->iColour();
+  PDT::Colour cColour = cProgenitor->dataPtr()->iColour();
+  PDT::Colour aColour = aProgenitor->dataPtr()->iColour();
 
   // decaying colour singlet
   if    (bColour==PDT::Colour0 ) {
@@ -1307,124 +1262,112 @@ GeneralTwoBodyDecayer::colourFlows(const Particle & inpart,
   return *retval;
 }
 
-void GeneralTwoBodyDecayer::getColourLines(vector<ColinePtr> & newline,
-					   const HardTreePtr & hardtree, 
-					   const ShowerProgenitorPtr & bProgenitor){
-  // set up the colour lines
-  vector<ShowerParticlePtr> branchingPart;
-  for(set<HardBranchingPtr>::const_iterator cit=hardtree->branchings().begin();
-      cit!=hardtree->branchings().end();++cit)
-    branchingPart.push_back((**cit).branchingParticle());
+void GeneralTwoBodyDecayer::getColourLines(RealEmissionProcessPtr real) {
+  // extract the particles
+  vector<PPtr> branchingPart;
+  branchingPart.push_back(real->incoming()[0]);
+  for(unsigned int ix=0;ix<real->outgoing().size();++ix)
+    branchingPart.push_back(real->outgoing()[ix]);
 
-  static vector<int> sing,trip,atrip,oct;
-  sing.clear(); trip.clear(); atrip.clear(); oct.clear();
-  for (size_t ib=0;ib<branchingPart.size();++ib){
+  vector<unsigned int> sing,trip,atrip,oct;
+  for (size_t ib=0;ib<branchingPart.size()-1;++ib) {
     if     (branchingPart[ib]->dataPtr()->iColour()==PDT::Colour0   ) sing. push_back(ib);
     else if(branchingPart[ib]->dataPtr()->iColour()==PDT::Colour3   ) trip. push_back(ib);
     else if(branchingPart[ib]->dataPtr()->iColour()==PDT::Colour3bar) atrip.push_back(ib);
     else if(branchingPart[ib]->dataPtr()->iColour()==PDT::Colour8   ) oct.  push_back(ib);
   }
   // decaying colour singlet
-  if (bProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour0){
-    if (trip.size()==1 && atrip.size()==1){    
-      newline.push_back(new_ptr(ColourLine()));
-      newline[0]->addColoured    (branchingPart[trip [0]]);
-      newline[0]->addAntiColoured(branchingPart[atrip[0]]);
+  if (branchingPart[0]->dataPtr()->iColour()==PDT::Colour0) {
+    // 0 -> 3 3bar
+    if (trip.size()==1 && atrip.size()==1) {
+      branchingPart[atrip[0]]->colourConnect(branchingPart[   3   ]);
+      branchingPart[    3   ]->colourConnect(branchingPart[trip[0]]);
     }
-    else if (oct.size()==2){
-      newline.push_back(new_ptr(ColourLine()));
-      newline.push_back(new_ptr(ColourLine()));
-      newline[0]->addColoured    (branchingPart[oct[0]]);
-      newline[0]->addAntiColoured(branchingPart[oct[1]]);
-      newline[1]->addColoured    (branchingPart[oct[1]]);
-      newline[1]->addAntiColoured(branchingPart[oct[0]]);
+    // 0 -> 8 8
+    else if (oct.size()==2 ) {
+      bool col = UseRandom::rndbool();
+      branchingPart[oct[0]]->colourConnect(branchingPart[   3  ],col);
+      branchingPart[   3  ]->colourConnect(branchingPart[oct[1]],col);
+      branchingPart[oct[1]]->colourConnect(branchingPart[oct[0]],col);
     }
+    else 
+      assert(false);
   }
   // decaying colour triplet
-  else if (bProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3 ){
-    if (trip.size()==2 && sing.size()==1){      
-      newline.push_back(new_ptr(ColourLine()));	
-      newline[0]->addColoured(branchingPart[trip[0]]);
-      newline[0]->addColoured(branchingPart[trip[1]]);
+  else if (branchingPart[0]->dataPtr()->iColour()==PDT::Colour3 ){
+    // 3 -> 3 0
+    if (trip.size()==2 && sing.size()==1) {
+      branchingPart[3]->incomingColour(branchingPart[trip[0]]);
+      branchingPart[3]-> colourConnect(branchingPart[trip[1]]);
     }
-    else if (trip.size()==2 && oct.size()==1){
-      newline.push_back(new_ptr(ColourLine()));
-      newline.push_back(new_ptr(ColourLine()));
-      if (branchingPart[trip[0]]->id()==bProgenitor->progenitor()->id()){
-	newline[0]->addColoured(branchingPart[trip[0]]);
-	newline[1]->addColoured(branchingPart[trip[1]]);      
+    // 3 -> 3 8
+    else if (trip.size()==2 && oct.size()==1) {
+      // 8 emit incoming partner
+      if(real->emitter()==oct[0]&&real->spectator()==0) {
+	branchingPart[  3   ]->incomingColour(branchingPart[trip[0]]);
+	branchingPart[  3   ]-> colourConnect(branchingPart[oct[0] ]);
+	branchingPart[oct[0]]-> colourConnect(branchingPart[trip[1]]);
       }
+      // 8 emit final spectator or vice veras
       else {
-	newline[0]->addColoured(branchingPart[trip[1]]);
-	newline[1]->addColoured(branchingPart[trip[0]]);
+	branchingPart[oct[0]]->incomingColour(branchingPart[trip[0]]);
+	branchingPart[oct[0]]-> colourConnect(branchingPart[   3   ]);
+	branchingPart[   3  ]-> colourConnect(branchingPart[trip[1]]);
       }
-      newline[0]->addColoured    (branchingPart[ oct[0]]);
-      newline[1]->addAntiColoured(branchingPart[ oct[0]]);
     }
+    else
+      assert(false);
   }
   // decaying colour anti-triplet
-  else if (bProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour3bar){
-    if (atrip.size()==2 && sing.size()==1){      
-      newline.push_back(new_ptr(ColourLine()));
-      newline[0]->addAntiColoured(branchingPart[atrip[0]]);
-      newline[0]->addAntiColoured(branchingPart[atrip[1]]);
+  else if (branchingPart[0]->dataPtr()->iColour()==PDT::Colour3bar) {
+    // 3bar -> 3bar 0
+    if (atrip.size()==2 && sing.size()==1) {      
+      branchingPart[3]->incomingColour(branchingPart[atrip[0]],true);
+      branchingPart[3]-> colourConnect(branchingPart[atrip[1]],true);
     }
+    // 3 -> 3 8
     else if (atrip.size()==2 && oct.size()==1){
-      newline.push_back(new_ptr(ColourLine()));
-      newline.push_back(new_ptr(ColourLine()));
-      if (branchingPart[atrip[0]]->id()==bProgenitor->progenitor()->id()){
-	newline[0]->addAntiColoured(branchingPart[atrip[0]]);
-	newline[1]->addAntiColoured(branchingPart[atrip[1]]);      
+      // 8 emit incoming partner
+      if(real->emitter()==oct[0]&&real->spectator()==0) {
+	branchingPart[   3  ]->incomingColour(branchingPart[atrip[0]],true);
+	branchingPart[   3  ]-> colourConnect(branchingPart[oct[0]  ],true);
+	branchingPart[oct[0]]-> colourConnect(branchingPart[atrip[1]],true);
       }
+      // 8 emit final spectator or vice veras
       else {
-	newline[0]->addAntiColoured(branchingPart[atrip[1]]);
-	newline[1]->addAntiColoured(branchingPart[atrip[0]]);
+	branchingPart[oct[0]]->incomingColour(branchingPart[atrip[0]],true);
+	branchingPart[oct[0]]-> colourConnect(branchingPart[   3    ],true);
+	branchingPart[3]-> colourConnect(branchingPart[atrip[1]]     ,true);
       }
-      newline[0]->addAntiColoured(branchingPart[ oct[0]]);
-      newline[1]->addColoured    (branchingPart[ oct[0]]);
     }
+    else
+      assert(false);
   }
   // decaying colour octet
-  else if(bProgenitor->progenitor()->dataPtr()->iColour()==PDT::Colour8 ){
+  else if(branchingPart[0]->dataPtr()->iColour()==PDT::Colour8 ) {
+    // 8 -> 3 3bar
     if (trip.size()==1 && atrip.size()==1) {
-      newline.push_back(new_ptr(ColourLine()));
-      newline.push_back(new_ptr(ColourLine()));
-      newline[0]->addColoured    (branchingPart[  oct[0]]);
-      newline[1]->addAntiColoured(branchingPart[  oct[0]]);
-      newline[0]->addColoured    (branchingPart[ trip[0]]);
-      newline[1]->addAntiColoured(branchingPart[atrip[0]]);
+      // 3 emits
+      if(trip[0]==real->emitter()) {
+	branchingPart[3]       ->incomingColour(branchingPart[oct[0]] );
+	branchingPart[3]       -> colourConnect(branchingPart[trip[0]]);
+	branchingPart[atrip[0]]->incomingColour(branchingPart[oct[0]],true);
+      }
+      // 3bar emits
+      else {
+	branchingPart[3]       ->incomingColour(branchingPart[oct[0]]  ,true);
+	branchingPart[3]       -> colourConnect(branchingPart[atrip[0]],true);
+	branchingPart[trip[0]]->incomingColour(branchingPart[oct[0]]  );
+      }
     }
-    else if (sing.size()==1 && oct.size()==2){
-      newline.push_back(new_ptr(ColourLine()));
-      newline.push_back(new_ptr(ColourLine()));
-      newline[0]->addColoured    (branchingPart[oct[0]]);
-      newline[0]->addColoured    (branchingPart[oct[1]]);
-      newline[1]->addAntiColoured(branchingPart[oct[0]]);
-      newline[1]->addAntiColoured(branchingPart[oct[1]]);
+    // 8 -> 8 0 
+    else if (sing.size()==1 && oct.size()==2) {
+      bool col = UseRandom::rndbool();
+      branchingPart[   3  ]->colourConnect (branchingPart[oct[1]], col);
+      branchingPart[   3  ]->incomingColour(branchingPart[oct[0]], col);
+      branchingPart[oct[1]]->incomingColour(branchingPart[oct[0]],!col);
     }
-  }
-  // finally sort out the emitted particles
-  for(set<HardBranchingPtr>::const_iterator cit=hardtree->branchings().begin();
-      cit!=hardtree->branchings().end();++cit) {
-    if((**cit).children().empty()) continue;
-    tPPtr emitter = (**cit).children()[0]->branchingParticle();
-    tPPtr gauge   = (**cit).children()[1]->branchingParticle();
-    if(emitter->id()!=(**cit).branchingParticle()->id()) swap(emitter,gauge);
-    if((**cit).type()==ShowerPartnerType::QCDColourLine) {
-      (**cit).branchingParticle()->colourLine()->addColoured(gauge);
-      ColinePtr newline(new_ptr(ColourLine()));
-      newline->    addColoured(emitter);
-      newline->addAntiColoured(gauge  );
-      if((**cit).branchingParticle()->antiColourLine())
-	(**cit).branchingParticle()->antiColourLine()->addAntiColoured(emitter);
-    }
-    else {
-      (**cit).branchingParticle()->antiColourLine()->addAntiColoured(gauge);
-      ColinePtr newline(new_ptr(ColourLine()));
-      newline->addAntiColoured(emitter);
-      newline->    addColoured(gauge  );
-      if((**cit).branchingParticle()->colourLine())
-	(**cit).branchingParticle()->colourLine()->addColoured(emitter);
-    }
+    else
+      assert(false);
   }
 }

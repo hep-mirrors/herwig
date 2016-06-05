@@ -17,10 +17,6 @@
 #include "ThePEG/Helicity/Vertex/VertexBase.h"
 #include "GeneralTwoBodyDecayer.fh"
 #include "Herwig/Shower/QTilde/Couplings/ShowerAlpha.h"
-#include "Herwig/Shower/QTilde/Base/ShowerParticle.fh"
-#include "Herwig/Shower/QTilde/Base/ShowerTree.fh"
-#include "Herwig/Shower/QTilde/Base/HardTree.fh"
-#include "Herwig/Shower/QTilde/Base/ShowerProgenitor.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -127,7 +123,7 @@ public:
   /**
    *  Member to generate the hardest emission in the POWHEG scheme
    */
-  virtual HardTreePtr generateHardest(ShowerTreePtr);
+  virtual RealEmissionProcessPtr generateHardest(RealEmissionProcessPtr);
 
 
   /**
@@ -221,9 +217,9 @@ protected:
   /**
    *  Return the momenta including the hard emission
    */
-  vector<Lorentz5Momentum> hardMomenta(const ShowerProgenitorPtr &in, 
-				       const ShowerProgenitorPtr &emitter, 
-				       const ShowerProgenitorPtr &spectator, 
+  vector<Lorentz5Momentum> hardMomenta(const PPtr &in, 
+				       const PPtr &emitter, 
+				       const PPtr &spectator, 
 				       const vector<dipoleType>  &dipoles, int i);
 
   /**
@@ -241,15 +237,14 @@ protected:
    *  Work out the type of process
    */
   bool identifyDipoles(vector<dipoleType> & dipoles,
-		       ShowerProgenitorPtr & aProgenitor,
-		       ShowerProgenitorPtr & bProgenitor,
-		       ShowerProgenitorPtr & cProgenitor) const;
-
+		       PPtr & aProgenitor,
+		       PPtr & bProgenitor,
+		       PPtr & cProgenitor) const;
+  
   /**
    * Set up the colour lines
    */
-  void getColourLines(vector<ColinePtr> & newline, const HardTreePtr & hardtree, 
-		      const ShowerProgenitorPtr & bProgenitor);
+  void getColourLines(RealEmissionProcessPtr real);
 
 
   /**
