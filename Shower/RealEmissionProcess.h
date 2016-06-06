@@ -25,6 +25,8 @@ using namespace ThePEG;
  */
 class RealEmissionProcess : public Base {
 
+  friend ostream & operator<<(ostream & os, const RealEmissionProcess & proc);
+
 public:
 
   /**
@@ -208,6 +210,35 @@ private:
    */
   map<ShowerInteraction::Type,Energy> pT_;
 };
+
+/**
+ * Output to a stream
+ */
+inline ostream & operator<<(ostream & os, const RealEmissionProcess & proc) {
+  os << "REAL EMISSION "
+     << proc.emitter_   << " "
+     << proc.spectator_ << " "
+     << proc.emitted_   << "\n";
+  os << "BORN\n";
+  for(unsigned int ix=0;ix<proc.bornIncoming_.size();++ix)
+    os << proc.bornIncoming_[ix]->colourLine() << " "
+       << proc.bornIncoming_[ix]->antiColourLine() << " "
+       << *proc.bornIncoming_[ix] << "\n";
+  for(unsigned int ix=0;ix<proc.bornOutgoing_.size();++ix)
+    os << proc.bornOutgoing_[ix]->colourLine() << " "
+       << proc.bornOutgoing_[ix]->antiColourLine() << " "
+       << *proc.bornOutgoing_[ix] << "\n";
+  os << "REAL\n";
+  for(unsigned int ix=0;ix<proc.incoming_.size();++ix)
+    os << proc.incoming_[ix]->colourLine() << " "
+       << proc.incoming_[ix]->antiColourLine() << " "
+       << *proc.incoming_[ix] << "\n";
+  for(unsigned int ix=0;ix<proc.outgoing_.size();++ix)
+    os << proc.outgoing_[ix]->colourLine() << " "
+       << proc.outgoing_[ix]->antiColourLine() << " "
+       << *proc.outgoing_[ix] << "\n";
+  return os;
+}
 
 }
 
