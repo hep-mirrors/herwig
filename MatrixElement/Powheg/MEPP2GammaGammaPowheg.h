@@ -9,8 +9,6 @@
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 #include "Herwig/MatrixElement/ProductionMatrixElement.h"
 #include "Herwig/Shower/QTilde/Couplings/ShowerAlpha.h"
-#include "Herwig/Shower/QTilde/Base/ShowerTree.fh"
-#include "Herwig/Shower/QTilde/Base/HardTree.fh"
 
 namespace Herwig {
 
@@ -49,7 +47,8 @@ public:
   /**
    *  Apply the POWHEG style correction
    */
-  virtual HardTreePtr generateHardest(ShowerTreePtr,ShowerInteraction::Type);
+  virtual RealEmissionProcessPtr generateHardest(RealEmissionProcessPtr,
+						 ShowerInteraction::Type);
   //@}
 
 public:
@@ -256,12 +255,16 @@ protected:
   /**
    *  Generate hard QCD emission
    */
-  HardTreePtr hardQCDEmission(vector<ShowerProgenitorPtr>);
+  RealEmissionProcessPtr hardQCDEmission(RealEmissionProcessPtr,
+					 ParticleVector,
+					 pair<double,double>);
 
   /**
    *  Generate hard QED emission 
    */
-  HardTreePtr hardQEDEmission(vector<ShowerProgenitorPtr>);
+  RealEmissionProcessPtr hardQEDEmission(RealEmissionProcessPtr,
+					 ParticleVector,
+					 pair<double,double>);
 
   /**
    *  The supression function
