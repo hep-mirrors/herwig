@@ -1160,8 +1160,6 @@ vector<ShowerProgenitorPtr> QTildeShowerHandler::setupShower(bool hard) {
   // generate POWHEG hard emission if needed
   else if(_hardEmission==2) 
     hardestEmission(hard);
-
-
   // set the initial colour partners
   setEvolutionPartners(hard,interaction_,false);
   // get the particles to be showered
@@ -1172,7 +1170,7 @@ vector<ShowerProgenitorPtr> QTildeShowerHandler::setupShower(bool hard) {
 }
 
 void QTildeShowerHandler::setEvolutionPartners(bool hard,ShowerInteraction::Type type,
-				   bool clear) {
+					       bool clear) {
   // match the particles in the ShowerTree and hardTree
   if(hardTree() && !hardTree()->connect(currentTree()))
     throw Exception() << "Can't match trees in "
@@ -1192,13 +1190,15 @@ void QTildeShowerHandler::setEvolutionPartners(bool hard,ShowerInteraction::Type
   if(hardTree()) {
     // find the partner
     for(unsigned int ix=0;ix<particles.size();++ix) {
-      tHardBranchingPtr partner = 
-	hardTree()->particles()[particles[ix]]->colourPartner();
+      tShowerParticlePtr partner = hardTree()->particles()[particles[ix]]->branchingParticle()->partner();
       if(!partner) continue;
       for(map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator
 	    it=hardTree()->particles().begin();
 	  it!=hardTree()->particles().end();++it) {
-	if(it->second==partner) particles[ix]->partner(it->first);
+	if(it->second->branchingParticle()==partner) {
+	  particles[ix]->partner(it->first);
+	  break;
+	}
       }
       if(!particles[ix]->partner()) 
 	throw Exception() << "Can't match partners in "
@@ -1206,9 +1206,10 @@ void QTildeShowerHandler::setEvolutionPartners(bool hard,ShowerInteraction::Type
 			  << Exception::eventerror;
     }
   }
+
   // Set the initial evolution scales
   showerModel()->partnerFinder()->
-    setInitialEvolutionScales(particles,!hard,type,!_hardtree);
+    setInitialEvolutionScales(particles,!hard,interaction_,!_hardtree);
   if(hardTree() && _hardPOWHEG) {
     bool tooHard=false;
     map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator 
@@ -1461,14 +1462,17 @@ bool QTildeShowerHandler::spaceLikeDecayVetoed( const Branching & fb,
 
 void QTildeShowerHandler::hardestEmission(bool hard) {
   HardTreePtr ISRTree;
+  // internal POWHEG in production or decay
   if( (( _hardme  &&  _hardme->hasPOWHEGCorrection()!=0 ) ||
        ( _decayme && _decayme->hasPOWHEGCorrection()!=0 ) ) ) {
     RealEmissionProcessPtr real;
+    // production
     if(_hardme) {
       assert(hard);
       real = _hardme->generateHardest( currentTree()->perturbativeProcess(),
 				       interaction_);
     }
+    // decay
     else {
       assert(!hard);
       real = _decayme->generateHardest( currentTree()->perturbativeProcess() );
@@ -1754,6 +1758,7 @@ void QTildeShowerHandler::hardestEmission(bool hard) {
       _hardtree = ISRTree;
     }
   }
+  // connect the trees
   if(_hardtree) {
     connectTrees(currentTree(),_hardtree,hard); 
   }
@@ -2472,28 +2477,18 @@ void QTildeShowerHandler::connectTrees(ShowerTreePtr showerTree,
     particles.push_back((*cit)->branchingParticle());
   }
   showerModel()->partnerFinder()->
-    setInitialEvolutionScales(particles,!hard,hardTree->interaction(),
-			      !hardTree->partnersSet());
+    setInitialEvolutionScales(particles,!hard,interaction_,true);
   hardTree->partnersSet(true);
   // inverse reconstruction
   if(hard) {
     showerModel()->kinematicsReconstructor()->
-      deconstructHardJets(hardTree,hardTree->interaction());
+      deconstructHardJets(hardTree,interaction_);
   }
   else
     showerModel()->kinematicsReconstructor()->
-      deconstructDecayJets(hardTree,hardTree->interaction());
+      deconstructDecayJets(hardTree,interaction_);
   // now reset the momenta of the showering particles
-  vector<ShowerProgenitorPtr> particlesToShower;
-  for(map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator
-	cit=showerTree->incomingLines().begin();
-      cit!=showerTree->incomingLines().end();++cit )
-    particlesToShower.push_back(cit->first);
-  // extract the showering particles
-  for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator
-	  cit=showerTree->outgoingLines().begin();
-	cit!=showerTree->outgoingLines().end();++cit )
-    particlesToShower.push_back(cit->first);
+  vector<ShowerProgenitorPtr> particlesToShower=showerTree->extractProgenitors();
   // match them
   map<ShowerProgenitorPtr,HardBranchingPtr> partners;
   for(set<HardBranchingPtr>::const_iterator bit=hardTree->branchings().begin();
