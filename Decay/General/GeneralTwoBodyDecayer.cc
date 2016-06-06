@@ -636,6 +636,7 @@ RealEmissionProcessPtr GeneralTwoBodyDecayer::generateHardest(RealEmissionProces
   // set up colour lines
   getColourLines(born);
   // return the tree
+  born->interaction(ShowerInteraction::QCD);
   return born;
 }
 

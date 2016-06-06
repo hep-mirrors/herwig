@@ -568,6 +568,7 @@ RealEmissionProcessPtr SMTopDecayer::applyHardMatrixElementCorrection(RealEmissi
       << "   _xg: " << _xg << "   _xa: " << _xa 
       << "   newfs.size(): " << newfs.size() << endl;
   }
+  born->interaction(ShowerInteraction::QCD);
   return born;
 }
 

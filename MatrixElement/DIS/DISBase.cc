@@ -581,6 +581,7 @@ RealEmissionProcessPtr DISBase::applyHardMatrixElementCorrection(RealEmissionPro
 			       produceParticle(born->bornOutgoing()[1]->momentum()));
   // radiated particle
   born->outgoing().push_back(emitted);
+  born->interaction(ShowerInteraction::QCD);
   return born;
 }
 
@@ -918,6 +919,7 @@ RealEmissionProcessPtr DISBase::generateHardest(RealEmissionProcessPtr born,
 			       produceParticle(born->bornOutgoing()[1]->momentum()));
   // radiated particle
   born->outgoing().push_back(emitted);
+  born->interaction(ShowerInteraction::QCD);
   return born;
 }
 

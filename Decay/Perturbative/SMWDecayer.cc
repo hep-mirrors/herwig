@@ -315,6 +315,7 @@ applyHardMatrixElementCorrection(RealEmissionProcessPtr born) {
     born->spectator(1);
   }
   born->emitted(3);
+  born->interaction(ShowerInteraction::QCD);
   return born;
 }
 

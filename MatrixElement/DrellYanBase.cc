@@ -263,6 +263,7 @@ RealEmissionProcessPtr DrellYanBase::applyHardMatrixElementCorrection(RealEmissi
     swap(xnew.first,xnew.second);
   }
   born->x(xnew);
+  born->interaction(ShowerInteraction::QCD);
   return born;
 }
 
@@ -664,6 +665,7 @@ RealEmissionProcessPtr DrellYanBase::generateHardest(RealEmissionProcessPtr born
   }
   born->x(xnew);
   born->pT()[ShowerInteraction::QCD] = _pt;
+  born->interaction(ShowerInteraction::QCD);
   return born;
 }
 

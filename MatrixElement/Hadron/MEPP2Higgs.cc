@@ -706,6 +706,7 @@ RealEmissionProcessPtr MEPP2Higgs::applyHardMatrixElementCorrection(RealEmission
     swap(xnew.first,xnew.second);
   }
   born->x(xnew);
+  born->interaction(ShowerInteraction::QCD);
   return born;
 }
 
@@ -858,6 +859,7 @@ RealEmissionProcessPtr MEPP2Higgs::generateHardest(RealEmissionProcessPtr born,
   for(unsigned int ix=0;ix<2;++ix) 
     born->outgoing().push_back(newparticles[ix+2]);
   // return the answer
+  born->interaction(ShowerInteraction::QCD);
   return born;
 }
 

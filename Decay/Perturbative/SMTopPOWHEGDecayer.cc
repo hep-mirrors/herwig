@@ -119,6 +119,7 @@ RealEmissionProcessPtr SMTopPOWHEGDecayer::generateHardest(RealEmissionProcessPt
   born->spectator(0);
   born->emitted(3);
   born->pT()[ShowerInteraction::QCD] = pT_;
+  born->interaction(ShowerInteraction::QCD);
   return born;
 }
 

@@ -552,6 +552,7 @@ RealEmissionProcessPtr MEPP2HiggsVBF::generateHardest(RealEmissionProcessPtr bor
   // radiated particle
   born->outgoing().push_back(emitted);
   born->pT()[ShowerInteraction::QCD] = isCompton ? pTCompton_[system] : pTBGF_[system];
+  born->interaction(ShowerInteraction::QCD);
   return born;
 }
 
@@ -1222,6 +1223,7 @@ RealEmissionProcessPtr MEPP2HiggsVBF::applyHardMatrixElementCorrection(RealEmiss
   born->emitted(born->outgoing().size()+2);
   // radiated particle
   born->outgoing().push_back(emitted);
+  born->interaction(ShowerInteraction::QCD);
   return born;
 }
 

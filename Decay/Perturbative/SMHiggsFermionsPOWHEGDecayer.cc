@@ -129,6 +129,7 @@ generateHardest(RealEmissionProcessPtr born) {
   born->emitted  (3);
   born->pT()[ShowerInteraction::QCD] = pT_;
   // return process
+  born->interaction(ShowerInteraction::QCD);
   return born;
 }
 
