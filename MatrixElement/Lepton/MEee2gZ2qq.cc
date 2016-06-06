@@ -23,11 +23,13 @@
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "Herwig/MatrixElement/HardVertex.h"
 #include "Herwig/Shower/QTilde/Base/Branching.h"
-#include "Herwig/Shower/QTilde/Base/HardTree.h"
 #include "ThePEG/PDF/PolarizedBeamParticleData.h"
 #include <numeric>
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "Herwig/Shower/RealEmissionProcess.h"
+#include "Herwig/Shower/QTilde/Base/ShowerProgenitor.h"
+#include "Herwig/Shower/QTilde/Base/Branching.h"
+
 
 using namespace Herwig;
 
