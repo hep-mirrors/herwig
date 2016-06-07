@@ -51,8 +51,8 @@ DipoleShowerHandler::DipoleShowerHandler()
     theFactorizationScaleFreeze(2.*GeV),
     isMCatNLOSEvent(false),
     isMCatNLOHEvent(false), theDoCompensate(false),
-    theFreezeGrid(500000), maxPt(ZERO),
-    muPt(ZERO) {}
+    theFreezeGrid(500000), theDetuning(1.0),
+    maxPt(ZERO), muPt(ZERO) {}
 
 DipoleShowerHandler::~DipoleShowerHandler() {}
 
@@ -777,6 +777,7 @@ void DipoleShowerHandler::getGenerators(const DipoleIndex& ind,
       nGenerator->splittingKernel()->renormalizationScaleFactor(renormalizationScaleFactor());
       nGenerator->splittingKernel()->factorizationScaleFactor(factorizationScaleFactor());
       nGenerator->splittingKernel()->freezeGrid(theFreezeGrid);
+      nGenerator->splittingKernel()->detuning(theDetuning);
 
       GeneratorMap::const_iterator equivalent = generators().end();
 
@@ -855,7 +856,7 @@ void DipoleShowerHandler::persistentOutput(PersistentOStream & os) const {
      << ounit(theRenormalizationScaleFreeze,GeV)
      << ounit(theFactorizationScaleFreeze,GeV)
      << isMCatNLOSEvent << isMCatNLOHEvent << theShowerApproximation
-     << theDoCompensate << theFreezeGrid
+     << theDoCompensate << theFreezeGrid << theDetuning
      << theEventReweight << ounit(maxPt,GeV)
      << ounit(muPt,GeV);
 }
@@ -869,7 +870,7 @@ void DipoleShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> iunit(theRenormalizationScaleFreeze,GeV)
      >> iunit(theFactorizationScaleFreeze,GeV)
      >> isMCatNLOSEvent >> isMCatNLOHEvent >> theShowerApproximation
-     >> theDoCompensate >> theFreezeGrid
+     >> theDoCompensate >> theFreezeGrid >> theDetuning
      >> theEventReweight >> iunit(maxPt,GeV)
      >> iunit(muPt,GeV);
 }
@@ -1088,6 +1089,12 @@ void DipoleShowerHandler::Init() {
     ("FreezeGrid",
      "",
      &DipoleShowerHandler::theFreezeGrid, 500000, 1, 0,
+     false, false, Interface::lowerlim);
+
+  static Parameter<DipoleShowerHandler,double> interfaceDetuning
+    ("Detuning",
+     "A value to detune the overestimate kernel.",
+     &DipoleShowerHandler::theDetuning, 1.0, 1.0, 0,
      false, false, Interface::lowerlim);
 
   static Reference<DipoleShowerHandler,DipoleEventReweight> interfaceEventReweight

@@ -145,7 +145,7 @@ namespace exsample {
     if (!did_split_ || !docompensate_) {
       assert(did_split_ || last_cell_ == root_cell_.begin());
       exponents_.clear();
-      last_cell_->info().overestimate(last_value_,last_point_);
+      last_cell_->info().overestimate(last_value_,last_point_,detuning_);
       last_cell_->integral(last_cell_->info().volume() * last_cell_->info().overestimate());
       last_point_ = function_->parameter_point();
       get_exponent();
@@ -162,7 +162,7 @@ namespace exsample {
     std::map<bit_container<parameter_hash_bits>,linear_interpolator >
       old_exponents = exponents_;
     double old_oe = last_cell_->info().overestimate();
-    last_cell_->info().overestimate(last_value_,themaxpoint);
+    last_cell_->info().overestimate(last_value_,themaxpoint,detuning_);
     last_cell_->integral(last_cell_->info().volume() * last_cell_->info().overestimate());
     exponents_.clear();
     for ( std::set<std::vector<double> >::const_iterator id =
