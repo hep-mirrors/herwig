@@ -444,6 +444,7 @@ protected:
    * Fix Remnant connections after ISR
    */
   tPPair remakeRemnant(tPPair oldp); 
+
 protected:
 
   /**
@@ -512,6 +513,12 @@ protected:
    *  Check the flags
    */
   void checkFlags();
+
+  /**
+   *
+   */
+  void addFSRUsingDecayPOWHEG(HardTreePtr ISRTree,
+			      bool hard);
 
 public:
 
