@@ -1466,22 +1466,25 @@ void QTildeShowerHandler::hardestEmission(bool hard) {
   if( (( _hardme  &&  _hardme->hasPOWHEGCorrection()!=0 ) ||
        ( _decayme && _decayme->hasPOWHEGCorrection()!=0 ) ) ) {
     RealEmissionProcessPtr real;
+    unsigned int type(0);
     // production
     if(_hardme) {
       assert(hard);
       real = _hardme->generateHardest( currentTree()->perturbativeProcess(),
 				       interaction_);
+      type = _hardme->hasPOWHEGCorrection();
     }
     // decay
     else {
       assert(!hard);
       real = _decayme->generateHardest( currentTree()->perturbativeProcess() );
+      type = _decayme->hasPOWHEGCorrection();
     }
     if(real) {
       // set up ther hard tree
       if(!real->outgoing().empty()) _hardtree = new_ptr(HardTree(real));
       // set up the vetos
-      currentTree()->setVetoes(real->pT());
+      currentTree()->setVetoes(real->pT(),type);
     }
     // store initial state POWHEG radiation
     if(_hardtree && _hardme && _hardme->hasPOWHEGCorrection()==1) 
@@ -1616,7 +1619,7 @@ void QTildeShowerHandler::hardestEmission(bool hard) {
   // if hard me doesn't have a FSR powheg 
   // correction use decay powheg correction
   if (_hardme && _hardme->hasPOWHEGCorrection()<2) {
-    addFSRUsingDecayPOWHEG(ISRTree,hard);
+    addFSRUsingDecayPOWHEG(ISRTree);
   }
   // connect the trees
   if(_hardtree) {
@@ -1624,25 +1627,22 @@ void QTildeShowerHandler::hardestEmission(bool hard) {
   }
 }
 
-void QTildeShowerHandler::addFSRUsingDecayPOWHEG(HardTreePtr ISRTree,bool hard) {      
+void QTildeShowerHandler::addFSRUsingDecayPOWHEG(HardTreePtr ISRTree) {
   // check for intermediate colour singlet resonance
   const ParticleVector inter =  _hardme->subProcess()->intermediates();
-  if (inter.size()!=1 || 
-      inter[0]->momentum().m2()/GeV2 < 0 || 
-      inter[0]->dataPtr()->iColour()!=PDT::Colour0){
-    if(_hardtree) connectTrees(currentTree(),_hardtree,hard);
+  if (inter.size()!=1 || inter[0]->momentum().m2()/GeV2 < 0 || 
+      inter[0]->dataPtr()->iColour()!=PDT::Colour0) {
     return;
   }
    
-  map<ShowerProgenitorPtr, tShowerParticlePtr > out = currentTree()->outgoingLines();
   // ignore cases where outgoing particles are not coloured
-  if (out.size()!=2 ||
+  map<ShowerProgenitorPtr, tShowerParticlePtr > out = currentTree()->outgoingLines();
+  if (out.size() != 2 ||
       out. begin()->second->dataPtr()->iColour()==PDT::Colour0 ||
       out.rbegin()->second->dataPtr()->iColour()==PDT::Colour0) {
-    if(_hardtree) connectTrees(currentTree(),_hardtree,hard);
     return;
   }
-    
+
   // look up decay mode
   tDMPtr dm;
   string tag;
@@ -1660,23 +1660,26 @@ void QTildeShowerHandler::addFSRUsingDecayPOWHEG(HardTreePtr ISRTree,bool hard) 
   HwDecayerBasePtr decayer;   
   if(dm) decayer = dynamic_ptr_cast<HwDecayerBasePtr>(dm->decayer());
   // check if decayer has a FSR POWHEG correction 
-  if (!decayer || decayer->hasPOWHEGCorrection()<2){
-    if(_hardtree) connectTrees(currentTree(),_hardtree,hard);
+  if (!decayer || decayer->hasPOWHEGCorrection()<2) {
     return;
   }
-  
   // generate the hardest emission
-  ShowerDecayMap decay;
+  // create RealEmissionProcess
   PPtr in = new_ptr(*inter[0]);
-  PerturbativeProcessPtr newProcess(new_ptr(PerturbativeProcess()));
-  newProcess->incoming().push_back(make_pair(in,PerturbativeProcessPtr()));
-  ShowerTreePtr decayTree = new_ptr(ShowerTree(newProcess));
-  HardTreePtr     FSRTree; 
-  //HardTreePtr     FSRTree = decayer->generateHardest(decayTree); 
-  if (!FSRTree) {
-    if(_hardtree) connectTrees(currentTree(),_hardtree,hard);
-    return;
+  RealEmissionProcessPtr newProcess(new_ptr(RealEmissionProcess()));
+  newProcess->bornIncoming().push_back(in);
+  newProcess->bornOutgoing().push_back(out.begin ()->first->progenitor());
+  newProcess->bornOutgoing().push_back(out.rbegin()->first->progenitor());
+  // generate the FSR
+  newProcess = decayer->generateHardest(newProcess);
+  HardTreePtr FSRTree;
+  if(newProcess) {
+    // set up ther hard tree
+    if(!newProcess->outgoing().empty()) FSRTree = new_ptr(HardTree(newProcess));
+    // set up the vetos
+    currentTree()->setVetoes(newProcess->pT(),2);
   }
+  if(!FSRTree) return;
   
   // if there is no ISRTree make _hardtree from FSRTree
   if (!ISRTree){
@@ -1707,7 +1710,7 @@ void QTildeShowerHandler::addFSRUsingDecayPOWHEG(HardTreePtr ISRTree,bool hard) 
   }
   
   // Otherwise modify the ISRTree to include the emission in FSRTree
-  else {    
+  else {
     vector<tShowerParticlePtr> FSROut, ISROut;   
     set<HardBranchingPtr>::iterator itFSR, itISR;
     // get outgoing particles 

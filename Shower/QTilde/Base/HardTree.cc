@@ -115,10 +115,13 @@ HardTree::HardTree(RealEmissionProcessPtr real)
   for(unsigned int ix=0;ix<real->incoming().size();++ix) {
     unsigned int type = ix!=real->emitter() ? pType : 0;
     ShowerParticlePtr part(new_ptr(ShowerParticle(*real->incoming()[ix],type,false)));
-   incoming.push_back(part);
+    incoming.push_back(part);
     spaceBranchings.push_back(new_ptr(HardBranching(part,SudakovPtr(),HardBranchingPtr(),
 						    HardBranching::Incoming)));
-    spaceBranchings.back()->beam(real->hadrons()[ix]);
+    if(real->incoming().size()==2) {
+      assert(real->hadrons()[ix]);
+      spaceBranchings.back()->beam(real->hadrons()[ix]);
+    }
   }
   // create the outgoing particles
   ShowerParticleVector outgoing;
@@ -327,7 +330,8 @@ HardTree::HardTree(RealEmissionProcessPtr real)
       inBranch = emitterBranch;
     else
       inBranch = spaceBranchings[ix];
-    inBranch->beam(real->hadrons()[ix]);
+    if(real->incoming().size()==2)
+      inBranch->beam(real->hadrons()[ix]);
     branchings_.insert(inBranch);
   }
   // and the outgoing ones

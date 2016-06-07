@@ -517,8 +517,7 @@ protected:
   /**
    *
    */
-  void addFSRUsingDecayPOWHEG(HardTreePtr ISRTree,
-			      bool hard);
+  void addFSRUsingDecayPOWHEG(HardTreePtr ISRTree);
 
 public:
 
