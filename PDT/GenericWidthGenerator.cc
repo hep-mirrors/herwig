@@ -238,7 +238,7 @@ void GenericWidthGenerator::Init() {
 Energy GenericWidthGenerator::width(const ParticleData &, Energy m) const {
   Energy gamma= ZERO;
   for(unsigned int ix =0;ix<MEcoupling_.size();++ix) {
-    if(modeOn_[ix]) gamma +=partialWidth(ix,m);
+    if(modeOn_[ix]) gamma += partialWidth(ix,m);
   }
   return gamma*prefactor_;
 }
@@ -320,11 +320,11 @@ void GenericWidthGenerator::doinit() {
 	part1=*pit;++pit;
 	part2=*pit;
 	// mass generators
-	if( part1->stable() || part1->massGenerator())
+	if( part1->massGenerator() )
 	  massgen1=dynamic_ptr_cast<tGenericMassGeneratorPtr>(part1->massGenerator());
 	else
 	  massgen1=tGenericMassGeneratorPtr();
-	if(part2->stable() || part2->massGenerator())
+	if( part2->massGenerator() )
 	  massgen2=dynamic_ptr_cast<tGenericMassGeneratorPtr>(part2->massGenerator());
 	else
 	  massgen2=tGenericMassGeneratorPtr();
@@ -817,7 +817,7 @@ Energy GenericWidthGenerator::partial2BodyWidth(int imode, Energy q,Energy m1,
   // calcluate the decay momentum
   Energy2 q2(q*q),m02(mass_*mass_),m12(m1*m1),m22(m2*m2),
     pcm2(0.25*(q2*(q2-2.*m12-2.*m22)+(m12-m22)*(m12-m22))/q2);
-  if(MEcode_[imode]==-1) return q/mass_*particle_->width();
+  if(MEcode_[imode]==-1) return q/mass_*sqr(MEcoupling_[imode])*particle_->width();
   Energy  pcm(sqrt(pcm2));
   double gam(0.);
   switch(MEcode_[imode]) {
