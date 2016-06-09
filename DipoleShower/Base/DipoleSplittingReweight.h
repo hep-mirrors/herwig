@@ -49,12 +49,7 @@ public:
 public:
 
   /**
-   * Return the range of reweight factors for the given dipole type.
-   */
-  virtual pair<double,double> reweightBounds(const DipoleIndex&) const = 0;
-
-  /**
-   * Return the reweight factor for the given splitting type.
+   * Return the reweighting factor for the given splitting type.
    */
   virtual double evaluate(const DipoleSplittingInfo&) const = 0;
 

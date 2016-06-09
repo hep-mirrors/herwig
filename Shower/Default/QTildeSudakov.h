@@ -51,7 +51,9 @@ public:
    */
   virtual ShoKinPtr generateNextTimeBranching(const Energy startingScale,
 					      const IdList &ids,const bool cc,
-					      double enhance, Energy2 maxQ2);
+					      double enhance,
+					      double detuning,
+					      Energy2 maxQ2);
 
   /**
    * Return the scale of the next space-like decay branching. If there is no 
@@ -65,11 +67,12 @@ public:
    * @param enhance The radiation enhancement factor
    */
   virtual ShoKinPtr generateNextDecayBranching(const Energy startingScale,
-					    const Energy stoppingScale,
-					    const Energy minmass,
-					    const IdList &ids,
-					    const bool cc,
-					    double enhance);
+					       const Energy stoppingScale,
+					       const Energy minmass,
+					       const IdList &ids,
+					       const bool cc,
+					       double enhance,
+					       double detuning);
 
   /**
    * Return the scale of the next space-like branching. If there is no 
@@ -85,7 +88,8 @@ public:
   virtual ShoKinPtr generateNextSpaceBranching(const Energy startingScale,
 					       const IdList &ids,double x,
 					       const bool cc, double enhance,
-					       tcBeamPtr beam);
+					       tcBeamPtr beam,
+					       double detuning);
   //@}
 
   /**
@@ -178,7 +182,7 @@ protected:
    * @param enhance The radiation enhancement factor
    * @return False if scale less than minimum, true otherwise
    */
-  bool guessTimeLike(Energy2 &t, Energy2 tmin, double enhance);
+  bool guessTimeLike(Energy2 &t, Energy2 tmin, double enhance, const double & detune);
 
   /**
    * Value of the energy fraction and scale for time-like branching
@@ -188,7 +192,7 @@ protected:
    * @param enhance The radiation enhancement factor
    */
   bool guessDecay(Energy2 &t, Energy2 tmax,Energy minmass,
-		  double enhance);
+		  double enhance, const double & detune);
 
   /**
    * Value of the energy fraction and scale for space-like branching
@@ -198,7 +202,7 @@ protected:
    * @param enhance The radiation enhancement factor
    */
   bool guessSpaceLike(Energy2 &t, Energy2 tmin, const double x,
-		      double enhance);
+		      double enhance, const double & detune);
   //@}
 
   /**

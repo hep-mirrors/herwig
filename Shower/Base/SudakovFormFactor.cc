@@ -628,13 +628,14 @@ void SudakovFormFactor::removeSplitting(const IdList & in) {
 }
 
 Energy2 SudakovFormFactor::guesst(Energy2 t1,unsigned int iopt,
-					 const IdList &ids,
-					 double enhance,bool ident) const {
+				  const IdList &ids,
+				  double enhance,bool ident,
+				  const double & detune) const {
   unsigned int pdfopt = iopt!=1 ? 0 : pdffactor_;
   double c =
     1./((splittingFn_->integOverP(zlimits_.second,ids,pdfopt) -
 	 splittingFn_->integOverP(zlimits_.first ,ids,pdfopt))* 
-	alpha_->overestimateValue()/Constants::twopi*enhance);
+	alpha_->overestimateValue()/Constants::twopi*enhance*detune);
   assert(iopt<=2);
   if(iopt==1) {
     c/=pdfmax_;

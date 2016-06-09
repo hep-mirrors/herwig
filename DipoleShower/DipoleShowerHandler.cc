@@ -497,6 +497,8 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
       winnerScale = nextScale;
     }
 
+    reweight_ *= gen->second->splittingWeight();
+
   }
 
   if ( winnerGen == generators().end() ) {
