@@ -1415,6 +1415,7 @@ bool QTildeShowerHandler::startTimeLikeShower(ShowerInteraction::Type type) {
   _nFSR = 0;
   // initialize basis vectors etc
   progenitor()->progenitor()->initializeFinalState();
+  if(!progenitor()->progenitor()->partner()) return false;
   if(hardTree()) {
     map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator 
       eit=hardTree()->particles().end(),
@@ -1436,6 +1437,7 @@ bool QTildeShowerHandler::startTimeLikeShower(ShowerInteraction::Type type) {
 bool QTildeShowerHandler::startSpaceLikeShower(PPtr parent, ShowerInteraction::Type type) {
   // initialise the basis vectors
   progenitor()->progenitor()->initializeInitialState(parent);
+  if(!progenitor()->progenitor()->partner()) return false;
   if(hardTree()) {
     map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator 
       eit =hardTree()->particles().end(),
@@ -1456,6 +1458,7 @@ startSpaceLikeDecayShower(const ShowerParticle::EvolutionScales & maxScales,
   _nFSR = 0;
   // set up the particle basis vectors
   progenitor()->progenitor()->initializeDecay();
+  if(!progenitor()->progenitor()->partner()) return false;
   if(hardTree()) {
     map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator 
       eit =hardTree()->particles().end(),
