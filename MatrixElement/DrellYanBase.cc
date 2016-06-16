@@ -530,9 +530,10 @@ bool DrellYanBase::softMatrixElementVeto(ShowerProgenitorPtr initial,
     wgt=mb2_/(shat+uhat)*(sqr(mb2_-uhat)+sqr(mb2_-that))/(sqr(shat)+sqr(shat+uhat));
   else if(id[0]<0&&br.ids[0]->id()==ParticleID::g)
     wgt=mb2_/(shat+uhat)*(sqr(mb2_-that)+sqr(mb2_-shat))/(sqr(shat+uhat)+sqr(uhat));
-  else if(id[0]<0&&br.ids[0]->id()==-id[0])
+  else if(id[0]<0&&br.ids[0]->id()==id[0])
     wgt=mb2_/(shat+uhat)*(sqr(mb2_-uhat)+sqr(mb2_-that))/(sqr(shat)+sqr(shat+uhat));
-  else return false;
+  else 
+    return false;
   if(wgt<.0||wgt>1.) generator()->log() << "Soft ME correction weight too large or "
 					<< "negative in DrellYanBase::"
 					<< "softMatrixElementVeto()soft weight " 
