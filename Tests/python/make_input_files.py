@@ -123,7 +123,7 @@ if(collider=="BFactory") :
 elif(collider=="DIS") :
     if(simulation=="") :
         if(parameterName.find("NoME")>=0) :
-            process = "set /Herwig/Shower/Evolver:MECorrMode 0"
+            process = "set /Herwig/Shower/ShowerHandler:MECorrMode 0"
             parameterName=parameterName.replace("NoME-","")
         else :
             process = ""
