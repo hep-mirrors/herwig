@@ -128,7 +128,7 @@ yodafiles=["-7-Jets-1.yoda","-7-Jets-2.yoda",
            "-7-Bottom-3.yoda","-7-Bottom-4.yoda","-7-Bottom-5.yoda",
            "-7-Charm-1.yoda","-7-Charm-2.yoda",
            "-7-Charm-3.yoda","-7-Charm-4.yoda","-7-Charm-5.yoda",
-           "-7-Top-SL.yoda","-7-Top-L.yoda","-7-Top-All.yoda"]
+           "-7-Top-SL.yoda","-7-Top-L.yoda","-7-Top-All.yoda","-8-Top-All.yoda"]
 
 if(opts.ue) :
     yodafiles += ["-7-Jets-0.yoda","-900-UE.yoda"   ,"-2360-UE.yoda"    ,"-2760-UE.yoda"    ,
@@ -248,9 +248,6 @@ for f in yodafiles:
            else:
                tmpE[sqrts][ptmin] += ao
                #raise Exception("A set with ptmin = %s already exists" % ( ptmin))
-
-
-
         else :
             if(aopath.find("I1243871")>0) :
                 if(aopath.find("x01")>0 and file.find("-7-Top-L.yoda")>0 ) :

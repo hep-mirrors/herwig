@@ -756,7 +756,6 @@ elif(collider=="LHC") :
         elif(parameterName.find("ZGamma")>=0) :
             process+="insert SimpleQCD:MatrixElements[0] MEPP2VGamma\nset MEPP2VGamma:Process 2\n"
             process+="set /Herwig/Cuts/PhotonKtCut:MinKT 10.\n"
-            process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
             if(parameterName.find("-e")>=0) :
                 process+="do /Herwig/Particles/Z0:SelectDecayModes Z0->e-,e+;\n"
