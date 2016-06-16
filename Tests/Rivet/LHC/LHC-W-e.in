@@ -13,7 +13,7 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1217867
 # W DPI
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1216670
 # W +b 
-insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1219109
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2013_I1219109_EL
 # ATLAS W
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2011_I928289_W
 # ATLAS W+jets
