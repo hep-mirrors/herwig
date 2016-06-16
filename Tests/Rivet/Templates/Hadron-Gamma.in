@@ -1,3 +1,4 @@
+# -*- ThePEG-repository -*-
 ##################################################
 # Technical parameters for this run
 ##################################################
@@ -17,6 +18,8 @@ set /Herwig/Particles/p+:PDF    /Herwig/Partons/BudnevPDF
 set /Herwig/Particles/pbar-:PDF /Herwig/Partons/BudnevPDF
 set /Herwig/Partons/QCDExtractor:FirstPDF  /Herwig/Partons/BudnevPDF
 set /Herwig/Partons/QCDExtractor:SecondPDF /Herwig/Partons/BudnevPDF
+set /Herwig/Shower/ShowerHandler:PDFA NULL
+set /Herwig/Shower/ShowerHandler:PDFB NULL
 # No MPI
 set LHCGenerator:EventHandler:CascadeHandler:MPIHandler NULL
 
