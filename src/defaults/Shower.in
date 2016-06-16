@@ -91,6 +91,7 @@ newdef PowhegShowerHandler:IntrinsicPtGaussian 1.3*GeV
 newdef PowhegShowerHandler:IntrinsicPtBeta  	0
 newdef PowhegShowerHandler:IntrinsicPtGamma 	0*GeV
 newdef PowhegShowerHandler:IntrinsicPtIptmax   0*GeV
+newdef PowhegShowerHandler:ReconstructionOption OffShell3
 
 #############################################################
 # End of interesting user servicable section.
