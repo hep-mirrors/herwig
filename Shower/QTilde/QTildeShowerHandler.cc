@@ -172,7 +172,7 @@ void QTildeShowerHandler::Init() {
      "Choice of the ME Correction Mode",
      &QTildeShowerHandler::_meCorrMode, 1, false, false);
   static SwitchOption on
-    (ifaceMECorrMode,"Yes","hard+soft on", 1);
+    (ifaceMECorrMode,"HardPlusSoft","hard+soft on", 1);
   static SwitchOption hard
     (ifaceMECorrMode,"Hard","only hard on", 2);
   static SwitchOption soft
