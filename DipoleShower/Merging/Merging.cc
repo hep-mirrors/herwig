@@ -213,7 +213,7 @@ double Merging::reweightCKKWRealBelowSubReal(CNPtr Node,bool fast){
   Node->runningPt(projectedscale);
   weight*=history.back().weight*alphaReweight()*pdfReweight();
   if(weight==0.)return 0.;
-  bool maxMulti=CLNode->xcomb()->meMomenta().size()-2 == theMaxLegsNLO;
+  bool maxMulti=HistNode->xcomb()->meMomenta().size()-2 == theMaxLegsNLO;
   Node->vetoPt((projected&&maxMulti)?Node->mergePt():history.back().scale);
   
   double sumPS=0;
