@@ -42,3 +42,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1188891
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2015_I1387176
 # CMS Jets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1208923
+# CMS event shapes
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2014_I1305624
