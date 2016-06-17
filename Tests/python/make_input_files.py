@@ -123,7 +123,7 @@ if(collider=="BFactory") :
 elif(collider=="DIS") :
     if(simulation=="") :
         if(parameterName.find("NoME")>=0) :
-            process = "set /Herwig/Shower/ShowerHandler:MECorrMode 0"
+            process = "set /Herwig/Shower/ShowerHandler:HardEmission None"
             parameterName=parameterName.replace("NoME-","")
         else :
             process = ""
@@ -756,7 +756,6 @@ elif(collider=="LHC") :
         elif(parameterName.find("ZGamma")>=0) :
             process+="insert SimpleQCD:MatrixElements[0] MEPP2VGamma\nset MEPP2VGamma:Process 2\n"
             process+="set /Herwig/Cuts/PhotonKtCut:MinKT 10.\n"
-            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
             if(parameterName.find("-e")>=0) :
                 process+="do /Herwig/Particles/Z0:SelectDecayModes Z0->e-,e+;\n"
             else :
@@ -802,6 +801,11 @@ elif(collider=="LHC") :
         elif(parameterName.find("WZ")>=0) :
             process+="create Herwig::HwDecayHandler /Herwig/NewPhysics/DecayHandler\n"
             process+="set /Herwig/NewPhysics/DecayHandler:NewStep No\n"
+            process+="set /Herwig/Shower/ShowerHandler:SplitHardProcess No\n";
+            process+="set /Herwig/Decays/ZDecayer:PhotonGenerator /Herwig/QEDRadiation/SOPHTY\n";
+            process+="set /Herwig/Decays/ZPowhegDecayer:PhotonGenerator /Herwig/QEDRadiation/SOPHTY\n";
+            process+="set /Herwig/Decays/WDecayer:PhotonGenerator /Herwig/QEDRadiation/SOPHTY\n";
+            process+="set /Herwig/Decays/WPowhegDecayer:PhotonGenerator /Herwig/QEDRadiation/SOPHTY\n";
             process+="insert /Herwig/NewPhysics/DecayHandler:Excluded 0 /Herwig/Particles/tau-\n"
             process+="insert /Herwig/NewPhysics/DecayHandler:Excluded 1 /Herwig/Particles/tau+\n"
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PreCascadeHandlers 0 /Herwig/NewPhysics/DecayHandler\n"
@@ -814,6 +818,11 @@ elif(collider=="LHC") :
         elif(parameterName.find("WW-emu")>=0) :
             process+="create Herwig::HwDecayHandler /Herwig/NewPhysics/DecayHandler\n"
             process+="set /Herwig/NewPhysics/DecayHandler:NewStep No\n"
+            process+="set /Herwig/Shower/ShowerHandler:SplitHardProcess No\n";
+            process+="set /Herwig/Decays/ZDecayer:PhotonGenerator /Herwig/QEDRadiation/SOPHTY\n";
+            process+="set /Herwig/Decays/ZPowhegDecayer:PhotonGenerator /Herwig/QEDRadiation/SOPHTY\n";
+            process+="set /Herwig/Decays/WDecayer:PhotonGenerator /Herwig/QEDRadiation/SOPHTY\n";
+            process+="set /Herwig/Decays/WPowhegDecayer:PhotonGenerator /Herwig/QEDRadiation/SOPHTY\n";
             process+="insert /Herwig/NewPhysics/DecayHandler:Excluded 0 /Herwig/Particles/tau-\n"
             process+="insert /Herwig/NewPhysics/DecayHandler:Excluded 1 /Herwig/Particles/tau+\n"
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PreCascadeHandlers 0 /Herwig/NewPhysics/DecayHandler\n"
@@ -827,6 +836,11 @@ elif(collider=="LHC") :
         elif(parameterName.find("WW-ll")>=0) :
             process+="create Herwig::HwDecayHandler /Herwig/NewPhysics/DecayHandler\n"
             process+="set /Herwig/NewPhysics/DecayHandler:NewStep No\n"
+            process+="set /Herwig/Shower/ShowerHandler:SplitHardProcess No\n";
+            process+="set /Herwig/Decays/ZDecayer:PhotonGenerator /Herwig/QEDRadiation/SOPHTY\n";
+            process+="set /Herwig/Decays/ZPowhegDecayer:PhotonGenerator /Herwig/QEDRadiation/SOPHTY\n";
+            process+="set /Herwig/Decays/WDecayer:PhotonGenerator /Herwig/QEDRadiation/SOPHTY\n";
+            process+="set /Herwig/Decays/WPowhegDecayer:PhotonGenerator /Herwig/QEDRadiation/SOPHTY\n";
             process+="insert /Herwig/NewPhysics/DecayHandler:Excluded 0 /Herwig/Particles/tau-\n"
             process+="insert /Herwig/NewPhysics/DecayHandler:Excluded 1 /Herwig/Particles/tau+\n"
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PreCascadeHandlers 0 /Herwig/NewPhysics/DecayHandler\n"
@@ -837,6 +851,11 @@ elif(collider=="LHC") :
         elif(parameterName.find("ZZ-ll")>=0) :
             process+="create Herwig::HwDecayHandler /Herwig/NewPhysics/DecayHandler\n"
             process+="set /Herwig/NewPhysics/DecayHandler:NewStep No\n"
+            process+="set /Herwig/Shower/ShowerHandler:SplitHardProcess No\n";
+            process+="set /Herwig/Decays/ZDecayer:PhotonGenerator /Herwig/QEDRadiation/SOPHTY\n";
+            process+="set /Herwig/Decays/ZPowhegDecayer:PhotonGenerator /Herwig/QEDRadiation/SOPHTY\n";
+            process+="set /Herwig/Decays/WDecayer:PhotonGenerator /Herwig/QEDRadiation/SOPHTY\n";
+            process+="set /Herwig/Decays/WPowhegDecayer:PhotonGenerator /Herwig/QEDRadiation/SOPHTY\n";
             process+="insert /Herwig/NewPhysics/DecayHandler:Excluded 0 /Herwig/Particles/tau-\n"
             process+="insert /Herwig/NewPhysics/DecayHandler:Excluded 1 /Herwig/Particles/tau+\n"
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PreCascadeHandlers 0 /Herwig/NewPhysics/DecayHandler\n"
@@ -847,6 +866,11 @@ elif(collider=="LHC") :
         elif(parameterName.find("ZZ-lv")>=0) :
             process+="create Herwig::HwDecayHandler /Herwig/NewPhysics/DecayHandler\n"
             process+="set /Herwig/NewPhysics/DecayHandler:NewStep No\n"
+            process+="set /Herwig/Shower/ShowerHandler:SplitHardProcess No\n";
+            process+="set /Herwig/Decays/ZDecayer:PhotonGenerator /Herwig/QEDRadiation/SOPHTY\n";
+            process+="set /Herwig/Decays/ZPowhegDecayer:PhotonGenerator /Herwig/QEDRadiation/SOPHTY\n";
+            process+="set /Herwig/Decays/WDecayer:PhotonGenerator /Herwig/QEDRadiation/SOPHTY\n";
+            process+="set /Herwig/Decays/WPowhegDecayer:PhotonGenerator /Herwig/QEDRadiation/SOPHTY\n";
             process+="insert /Herwig/NewPhysics/DecayHandler:Excluded 0 /Herwig/Particles/tau-\n"
             process+="insert /Herwig/NewPhysics/DecayHandler:Excluded 1 /Herwig/Particles/tau+\n"
             process+="insert /Herwig/Generators/EventGenerator:EventHandler:PreCascadeHandlers 0 /Herwig/NewPhysics/DecayHandler\n"
