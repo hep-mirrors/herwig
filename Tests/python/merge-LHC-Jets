@@ -237,7 +237,8 @@ for f in yodafiles:
            aopath.find("I1298810")>0 or
            aopath.find("CMS_2012_PAS_QCD_11_010")>0 or
            aopath.find("CMS_2013_I1208923")>0 or
-           aopath.find("ATLAS_2014_I1298811")>0) :
+           aopath.find("ATLAS_2014_I1298811")>0 or
+           aopath.find("CMS_2014_I1305624")>0) :
            if not inhistos_pt.has_key(aopath):
                inhistos_pt[aopath] = {}
            tmpE = inhistos_pt[aopath]
@@ -1290,6 +1291,14 @@ for i in range(1,19) :
         mergeByPt("/CMS_2014_I1298810/d0"+str(i)+"-x01-y01", "7000")
     else :
         mergeByPt("/CMS_2014_I1298810/d"+str(i)+"-x01-y01", "7000")
+
+logging.info("Processing CMS_2014_I1305624")
+for x in range(1,6) :
+    useOnePt( "/CMS_2014_I1305624/d01-x%02d-y01" % x,  "7000", "110" )
+    useOnePt( "/CMS_2014_I1305624/d01-x%02d-y02" % x,  "7000", "110" )
+    useOnePt( "/CMS_2014_I1305624/d01-x%02d-y03" % x,  "7000", "260" )
+    useOnePt( "/CMS_2014_I1305624/d01-x%02d-y04" % x,  "7000", "260" )
+    useOnePt( "/CMS_2014_I1305624/d01-x%02d-y05" % x,  "7000", "400" )
 
 # Choose output file
 name = args[0]+"-Jets.yoda"
