@@ -82,6 +82,7 @@ double TreePhasespace::generateTwoToNKinematics(const double* random,
   lastPhasespaceInfo.weight = 1.;
 
   size_t nchannels = lastXComb().diagrams().size();
+  
   bool doMirror = (random[0] < 0.5) && theIncludeMirrored;
   map<Ptr<Tree2toNDiagram>::ptr,
       pair <PhasespaceHelpers::PhasespaceTree, PhasespaceHelpers::PhasespaceTree> >::iterator ds =

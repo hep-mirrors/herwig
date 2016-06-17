@@ -22,6 +22,7 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Utilities/StringUtils.h"
+#include "Herwig/MatrixElement/Matchbox/Utility/DiagramDrawer.h"
 
 using namespace Herwig;
 
@@ -87,8 +88,9 @@ generate(const PDVector& legs,
       map<tcPDPtr,int> counts;
       int all = diag.allPartons().size();
       for ( int k = diag.nSpace(); k < all; ++k ) {
-	if ( diag.children(k).first < 0 )
+	if ( diag.children(k).empty() )
 	  continue;
+	assert(diag.children(k)[0]>=0);
 	if ( counts.find(diag.allPartons()[k]) != counts.end() ) {
 	  counts[diag.allPartons()[k]] += 1;
 	} else {
@@ -139,17 +141,22 @@ generate(const PDVector& legs,
       map<int,int> checkPermutation;
       if ( diag.isSame(*d,checkPermutation) ) {
 	gotit = true;
+//        cout<<"\nis same:\n";
+//         DiagramDrawer::drawDiag(cout,diag);
 	for ( map<int,int>::const_iterator p = checkPermutation.begin();
-	      p != checkPermutation.end(); ++p )
+	      p != checkPermutation.end(); ++p ){
 	  if ( p->first != p->second )
 	    gotit = false;
+        }
 	if ( gotit )
 	  break;
       }
     }
-    if ( !gotit ) {
+    if ( !gotit && diag.external().size()==legs.size()) {
       res.push_back(new_ptr(diag));
       ++count;
+    }else if(!gotit){
+      cout<<"\n external "<<diag.external().size()<<" legs "<<legs.size();
     }
   }
 
@@ -165,6 +172,8 @@ cluster(const vector<Tree2toNGenerator::Vertex>& children,
   list<vector<Vertex> > res;
 
   bool externalCluster = children[1].externalId != -1;
+  bool externalCluster2 = children[2].externalId != -1;
+ 
 
   if ( children.size() == 3 ) {
       for ( VertexVector::const_iterator v = theVertices.begin();
@@ -214,8 +223,81 @@ cluster(const vector<Tree2toNGenerator::Vertex>& children,
       }
       return res;
   }
-
-  // spacelike clusterings (cluster on second one)
+  
+  
+  if ( children.size() == 4 ) {
+    for ( VertexVector::const_iterator v = theVertices.begin();
+         v != theVertices.end(); ++v ) {
+      if ( (**v).getNpoint() != 4 )
+        continue;
+      assert(false);
+      if ( find(theExcludeVertices.begin(), theExcludeVertices.end(), *v) !=
+          theExcludeVertices.end() )
+        continue;
+      bool noMatch =
+      (**v).orderInGs() != orderInGs ||
+      (**v).orderInGem() != orderInGem ||
+      !(**v).isIncoming(children[0].parent);
+      cout<<"\nwhat1";
+      long idijk = children[0].parent->id();
+      long idi  = children[3].parent->id();
+      long idj  = children[2].parent->id();
+      long idk  = children[1].parent->id();
+      if ( externalCluster && children[1].parent->CC() )
+        idk = -idk;
+      if ( externalCluster2 && children[2].parent->CC() )
+        idj = -idj;
+      if ( children[0].parent->CC() )
+        idijk = -idijk;
+      cout<<"\nwhat2";
+      if ( !externalCluster )
+        noMatch |=
+        !(**v).isOutgoing(children[1].parent) ||
+        !(**v).isOutgoing(children[2].parent) ||
+        !(**v).isOutgoing(children[3].parent);
+      else
+        noMatch |=
+        !((**v).allowed(idijk,idi,idj,idk) ||
+          (**v).allowed(idijk,idi,idk,idj) ||
+          (**v).allowed(idijk,idj,idi,idk) ||
+          (**v).allowed(idijk,idj,idk,idi) ||
+          (**v).allowed(idijk,idk,idi,idj) ||
+          (**v).allowed(idijk,idk,idj,idi) ||
+          (**v).allowed(idi,idijk,idj,idk) ||
+          (**v).allowed(idi,idijk,idk,idj) ||
+          (**v).allowed(idi,idj,idijk,idk) ||
+          (**v).allowed(idi,idj,idk,idijk) ||
+          (**v).allowed(idi,idk,idijk,idj) ||
+          (**v).allowed(idi,idk,idj,idijk) ||
+          (**v).allowed(idj,idijk,idi,idk) ||
+          (**v).allowed(idj,idijk,idk,idi) ||
+          (**v).allowed(idj,idi,idijk,idk) ||
+          (**v).allowed(idj,idi,idk,idijk) ||
+          (**v).allowed(idj,idk,idijk,idi) ||
+          (**v).allowed(idj,idk,idi,idijk) ||
+          (**v).allowed(idk,idijk,idi,idj) ||
+          (**v).allowed(idk,idijk,idj,idi) ||
+          (**v).allowed(idk,idi,idijk,idj) ||
+          (**v).allowed(idk,idi,idj,idijk) ||
+          (**v).allowed(idk,idj,idijk,idi) ||
+          (**v).allowed(idk,idj,idi,idijk) );
+      if ( noMatch )
+        continue;
+      cout<<"\nfound one";
+      Vertex last;
+      last.spacelike = true;
+      last.parent = children[0].parent;
+      last.externalId = 0;
+      last.children.push_back(children[1]);
+      last.children.push_back(children[2]);
+      last.children.push_back(children[3]);
+      res.push_back(vector<Vertex>(1,last));
+        // only one possible
+      break;
+    }
+  }
+  
+    // spacelike clusterings (cluster on second one)
   for ( size_t i = 2; i < children.size(); ++i ) {
     for ( VertexVector::const_iterator v = theVertices.begin();
 	  v != theVertices.end(); ++v ) {
@@ -272,8 +354,68 @@ cluster(const vector<Tree2toNGenerator::Vertex>& children,
       }
     }
   }
-
-  // timelike clusterings
+  
+    // spacelike clusterings (cluster on second one)  for 4 point functions
+  if (children.size() != 4)
+    for ( size_t i = 2; i < children.size(); ++i ) {
+      for ( size_t j = i+1; j < children.size(); ++j ) {
+        for ( VertexVector::const_iterator v = theVertices.begin();
+             v != theVertices.end(); ++v ) {
+          if ( (**v).getNpoint() != 4 )
+            continue;
+          assert(false);
+          if ( find(theExcludeVertices.begin(), theExcludeVertices.end(), *v) !=
+              theExcludeVertices.end() )
+            continue;
+          bool noMatch = false;
+          noMatch |= (**v).orderInGs() != orderInGs ||        (**v).orderInGem() != orderInGem;
+          if ( !externalCluster )
+            noMatch |=
+            !(**v).isOutgoing(children[1].parent) ||          !(**v).isOutgoing(children[i].parent)||
+            !(**v).isOutgoing(children[j].parent);
+          else
+            noMatch |=
+            !(**v).isIncoming(children[1].parent) ||          !(**v).isOutgoing(children[i].parent) ||
+            !(**v).isOutgoing(children[j].parent);
+          if ( noMatch )
+            continue;
+          long idi = children[i].parent->id();
+          long idj = children[j].parent->id();
+          long idk = children[1].parent->id();
+          if ( externalCluster && children[1].parent->CC() )
+            idk = -idk;
+          for ( set<tPDPtr>::const_iterator pijk =
+               (**v).outgoing().begin(); pijk != (**v).outgoing().end() ; ++pijk ) {
+            long idijk = (**pijk).id();
+            if ( ((**v).allowed(idijk,idi,idj,idk) || (**v).allowed(idijk,idi,idk,idj) || (**v).allowed(idijk,idj,idi,idk) || (**v).allowed(idijk,idj,idk,idi) || (**v).allowed(idijk,idk,idi,idj) || (**v).allowed(idijk,idk,idj,idi) || (**v).allowed(idi,idijk,idj,idk) || (**v).allowed(idi,idijk,idk,idj) || (**v).allowed(idi,idj,idijk,idk) || (**v).allowed(idi,idj,idk,idijk) || (**v).allowed(idi,idk,idijk,idj) ||  (**v).allowed(idi,idk,idj,idijk) || (**v).allowed(idj,idijk,idi,idk) || (**v).allowed(idj,idijk,idk,idi) || (**v).allowed(idj,idi,idijk,idk) || (**v).allowed(idj,idi,idk,idijk) || (**v).allowed(idj,idk,idijk,idi) || (**v).allowed(idj,idk,idi,idijk) ||  (**v).allowed(idk,idijk,idi,idj) ||  (**v).allowed(idk,idijk,idj,idi) ||
+                  (**v).allowed(idk,idi,idijk,idj) ||  (**v).allowed(idk,idi,idj,idijk) || (**v).allowed(idk,idj,idijk,idi) || (**v).allowed(idk,idj,idi,idijk) ) ) {
+              PDPtr dijk = (**pijk).CC() ? (**pijk).CC() : *pijk;
+              vector<Vertex> cled;
+              for ( size_t l = 0; l < children.size(); ++l ) {
+                if ( l != 1 && l != i && l != j )
+                  cled.push_back(children[l]);
+                if ( l == 1 ) {
+                  Vertex merge;
+                  merge.children.push_back(children[1]);
+                  merge.children.push_back(children[i]);
+                  merge.children.push_back(children[j]);
+                  merge.parent = dijk;
+                  merge.spacelike = true;
+                  cled.push_back(merge);
+                }
+                if ( l == i ||l == j)
+                  continue;
+              }
+              cout<<"\nwhat55 no";
+              res.push_back(cled);
+            }
+          }
+        }
+      }
+    }
+  
+  
+    // timelike clusterings
   for ( size_t i = 2; i < children.size(); ++i ) {
     for ( size_t j = i+1; j < children.size(); ++j ) {
       for ( VertexVector::const_iterator v = theVertices.begin();
@@ -321,7 +463,66 @@ cluster(const vector<Tree2toNGenerator::Vertex>& children,
       }
     }
   }
-
+  
+  
+    // timelike clusterings  4 points
+  for ( size_t i = 2; i < children.size(); ++i ) {
+    for ( size_t j = i+1; j < children.size(); ++j ) {
+      for ( size_t k = j+1; k < children.size(); ++k ) {
+        for ( VertexVector::const_iterator v = theVertices.begin();
+             v != theVertices.end(); ++v ) {
+          if ( (**v).getNpoint() != 4 )
+            continue;
+          assert(false);
+          if ( find(theExcludeVertices.begin(), theExcludeVertices.end(), *v) !=
+              theExcludeVertices.end() )
+            continue;
+          if ( (**v).orderInGs() != orderInGs ||
+              (**v).orderInGem() != orderInGem ||
+              !(**v).isOutgoing(children[i].parent) ||
+              !(**v).isOutgoing(children[j].parent) ||
+              !(**v).isOutgoing(children[k].parent))
+            continue;
+          long idi = children[i].parent->id();
+          long idj = children[j].parent->id();
+          long idk = children[k].parent->id();
+          for ( set<tPDPtr>::const_iterator pijk =
+               (**v).outgoing().begin(); pijk != (**v).outgoing().end() ; ++pijk ) {
+            long idijk = (**pijk).id();
+            if ( ((**v).allowed(idijk,idi,idj,idk) ||                  (**v).allowed(idijk,idi,idk,idj) ||                  (**v).allowed(idijk,idj,idi,idk) ||                  (**v).allowed(idijk,idj,idk,idi) ||
+                  (**v).allowed(idijk,idk,idi,idj) ||                  (**v).allowed(idijk,idk,idj,idi) ||                  (**v).allowed(idi,idijk,idj,idk) ||                  (**v).allowed(idi,idijk,idk,idj) ||
+                  (**v).allowed(idi,idj,idijk,idk) ||                  (**v).allowed(idi,idj,idk,idijk) ||                  (**v).allowed(idi,idk,idijk,idj) ||                  (**v).allowed(idi,idk,idj,idijk) ||
+                  (**v).allowed(idj,idijk,idi,idk) ||                  (**v).allowed(idj,idijk,idk,idi) ||                  (**v).allowed(idj,idi,idijk,idk) ||                  (**v).allowed(idj,idi,idk,idijk) ||
+                  (**v).allowed(idj,idk,idijk,idi) ||                  (**v).allowed(idj,idk,idi,idijk) ||                  (**v).allowed(idk,idijk,idi,idj) ||                  (**v).allowed(idk,idijk,idj,idi) ||
+                  (**v).allowed(idk,idi,idijk,idj) ||                  (**v).allowed(idk,idi,idj,idijk) ||                  (**v).allowed(idk,idj,idijk,idi) ||                  (**v).allowed(idk,idj,idi,idijk) ) ) {
+              PDPtr dijk = (**pijk).CC() ? (**pijk).CC() : *pijk;
+              vector<Vertex> cled;
+              for ( size_t l = 0; l < children.size(); ++l ) {
+                if ( l != i && l != j && l != k )
+                  cled.push_back(children[l]);
+                if ( l == i ) {
+                  Vertex merge;
+                  merge.children.push_back(children[i]);
+                  merge.children.push_back(children[j]);
+                  merge.children.push_back(children[k]);
+                  merge.parent = dijk;
+                  merge.spacelike = false;
+                  cled.push_back(merge);
+                }
+                if ( k == j ||k == i )
+                  continue;
+              }
+              
+              cout<<"\nwhat666 no";
+              res.push_back(cled);
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  
   return res;
 
 }
@@ -511,5 +712,100 @@ void Tree2toNGenerator::Init() {
      "Clear the container of lines to be considered for restrictions.",
      &Tree2toNGenerator::doClearRestrictLines, false);
 
+}
+
+
+
+/**
+ * Update diagram returning a map of external ids to diagram id
+ * parents.
+ */
+void Tree2toNGenerator::Vertex::update(Tree2toNDiagram& diag,
+                                       map<int,pair<int,PDPtr> >& outgoing,
+                                       int& lastUsed) {
+  if ( externalId == 0 ) {
+    assert(lastUsed==0);
+    ++lastUsed;
+    diag.operator,(parent);
+    children[0].parentId = lastUsed;
+    children[1].parentId = lastUsed;
+    if (children.size()==3)children[2].parentId = lastUsed;
+    children[0].update(diag,outgoing,lastUsed);
+    children[1].update(diag,outgoing,lastUsed);
+    if (children.size()==3)children[2].update(diag,outgoing,lastUsed);
+    for ( map<int,pair<int,PDPtr> >::iterator out =
+         outgoing.begin(); out != outgoing.end(); ++out ) {
+      diag.operator,(out->second.first);
+      diag.operator,(out->second.second);
+    }
+    return;
+  }
+
+
+
+
+
+
+
+
+  if ( spacelike ) {
+    ++lastUsed;
+    diag.operator,(parent);
+    if ( externalId == 1 )
+      return;
+    children[0].parentId = lastUsed;
+    children[1].parentId = lastUsed;
+    if (children.size()==3)children[2].parentId = lastUsed;
+    children[0].update(diag,outgoing,lastUsed);
+    children[1].update(diag,outgoing,lastUsed);
+    if (children.size()==3)children[2].update(diag,outgoing,lastUsed);
+    return;
+  }
+  if ( children.empty() ) {
+    outgoing[externalId] =
+    make_pair(parentId,parent);
+    return;
+  }
+  diag.operator,(parentId);
+  diag.operator,(parent);
+  ++lastUsed; 
+  children[0].parentId = lastUsed;
+  children[1].parentId = lastUsed;
+  if (children.size()==3)children[2].parentId = lastUsed;
+  children[0].update(diag,outgoing,lastUsed);
+  children[1].update(diag,outgoing,lastUsed);
+  if (children.size()==3)children[2].update(diag,outgoing,lastUsed);
+}
+
+/**
+ * Generate a diagram of given id.
+ */
+Tree2toNDiagram Tree2toNGenerator::Vertex::generate(int id) {
+  int nsp = nspace();
+  Tree2toNDiagram res(nsp);
+  int diagid = 0;
+  map<int,pair<int,PDPtr> > out;
+  update(res,out,diagid);
+  res.operator,(-id);
+  return res;
+}
+
+
+
+
+
+void Tree2toNGenerator::Vertex::print(ostream& os, const string& prefix ) const {
+  os << prefix << parent->PDGName()
+	 << "[" << (spacelike ? "s" : "t") << "] (";
+  if ( externalId < 0 )
+    os << "x)\n";
+  else
+    os << externalId << ")\n";
+  if ( !children.empty() ) {
+    os << prefix << "|__\n";
+    children[0].print(os,prefix + "|  ");
+    os << prefix << "|__\n";
+    children[1].print(os,prefix + "|  ");
+  }
 }
 

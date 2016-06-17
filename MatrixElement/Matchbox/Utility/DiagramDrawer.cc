@@ -78,16 +78,16 @@ vector<string> merge(tcPDPtr data, int id,
 // draw timelike branch
 vector<string> drawTimeLike(const Tree2toNDiagram& d,int line) {
 
-  pair<int,int> children = d.children(line);
-  if ( children.first == -1 ) {
+  vector<int> children = d.children(line);
+  if ( children.empty() ) {
     ostringstream lines("");
     lines << "--[" << d.allPartons()[line]->PDGName() << "," << line << "]--("
 	  << d.externalId(line) << ")";
     return vector<string>(1,lines.str());
   }
 
-  vector<string> left = drawTimeLike(d,children.first);
-  vector<string> right = drawTimeLike(d,children.second);
+  vector<string> left = drawTimeLike(d,children[0]);
+  vector<string> right = drawTimeLike(d,children[1]);
 
   return merge(d.allPartons()[line],line,left,right);
 
@@ -97,12 +97,14 @@ vector<string> drawTimeLike(const Tree2toNDiagram& d,int line) {
 vector<vector<string> > timeBlocks(const Tree2toNDiagram& d) {
 
   vector<vector<string> > res;
-  pair<int,int> children(0,0);
+  vector<int> children;
+  //children.push_back(0);
+  //children.push_back(0);
 
   do {
-    children = d.children(children.first);
-    res.push_back(drawTimeLike(d,children.second));
-  } while ( children.first != d.nSpace() - 1 );
+    children = d.children(children[0]);
+    res.push_back(drawTimeLike(d,children[1]));
+  } while ( children[0] != d.nSpace() - 1 );
 
   size_t maxLength = 0;
   for ( vector<vector<string> >::const_iterator b = res.begin();
@@ -149,18 +151,21 @@ void DiagramDrawer::drawDiag(ostream& os,const Tree2toNDiagram& d) {
   vector<vector<string> > blocks = timeBlocks(d);
 
   os << " (0)\n";
-  pair<int,int> children(0,0);
+  vector<int> children;
+  children.push_back(0);
+  //children.push_back(0);
+
   vector<vector<string> >::const_iterator b = blocks.begin();
   do {
     os << "  |\n"
-       << "[" << d.allPartons()[children.first]->PDGName() << "," << children.first << "]\n"
+       << "[" << d.allPartons()[children[0]]->PDGName() << "," << children[0] << "]\n"
        << "  |\n";
     for ( vector<string>::const_iterator l = b->begin();
 	  l != b->end(); ++l )
       os << *l << "\n";
-    children = d.children(children.first);
+    children = d.children(children[0]);
     ++b;
-  } while ( children.first != d.nSpace() - 1 );
+  } while ( children[0] != d.nSpace() - 1 );
 
   os << "  |\n"
      << "[" << d.allPartons()[d.nSpace()-1]->PDGName() << "," << (d.nSpace()-1) << "]\n"

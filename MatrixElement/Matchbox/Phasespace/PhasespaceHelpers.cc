@@ -214,7 +214,7 @@ void PhasespaceTree::setup(const Tree2toNDiagram& diag,
 			   int pos) {
   doMirror = false;
 
-  pair<int,int> dchildren =
+  vector<int> dchildren =
     diag.children(pos);
 
   data = diag.allPartons()[pos];
@@ -224,16 +224,16 @@ void PhasespaceTree::setup(const Tree2toNDiagram& diag,
   if ( pos == 0 )
     externalId = 0;
 
-  if ( dchildren.first == -1 ) {
+  if ( dchildren.empty() ) {
     externalId = diag.externalId(pos);
     leafs.insert(externalId);
     return;
   }
 
   children.push_back(PhasespaceTree());
-  children.back().setup(diag,dchildren.first);
+  children.back().setup(diag,dchildren[0]);
   children.push_back(PhasespaceTree());
-  children.back().setup(diag,dchildren.second);
+  children.back().setup(diag,dchildren[1]);
 
   if ( !children[0].children.empty() &&
        children[1].children.empty() &&
@@ -257,23 +257,23 @@ void PhasespaceTree::setupMirrored(const Tree2toNDiagram& diag,
 
   spacelike = pos < diag.nSpace();
 
-  pair<int,int> dchildren;
-  if (pos != 0 && spacelike)
-    dchildren =
-      make_pair(diag.parent(pos), diag.children(diag.parent(pos)).second);
+  vector<int> dchildren;
+  if (pos != 0 && spacelike){
+    dchildren.push_back(diag.parent(pos));
+    dchildren.push_back( diag.children(diag.parent(pos))[1]);
+  }
   else if ( !spacelike )
     dchildren =
       diag.children(pos);
-  else 
-    dchildren =
-      make_pair(-1,-1);
-
+  else {
+    dchildren.clear();
+  }
   data = diag.allPartons()[pos];
 
   if ( pos == diag.nSpace() - 1 )
     externalId = 1;
 
-  if ( dchildren.first == -1 ) {
+  if ( dchildren.empty() ) {
     externalId = diag.externalId(pos);
     leafs.insert(externalId);
     return;
@@ -282,9 +282,9 @@ void PhasespaceTree::setupMirrored(const Tree2toNDiagram& diag,
 
 
   children.push_back(PhasespaceTree());
-  children.back().setupMirrored(diag,dchildren.first);
+  children.back().setupMirrored(diag,dchildren[0]);
   children.push_back(PhasespaceTree());
-  children.back().setupMirrored(diag,dchildren.second);
+  children.back().setupMirrored(diag,dchildren[1]);
 
   if ( !children[0].children.empty() &&
        children[1].children.empty() &&

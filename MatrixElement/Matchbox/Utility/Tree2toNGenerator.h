@@ -149,21 +149,8 @@ public:
     /**
      * Debug printout.
      */
-    void print(ostream& os, const string& prefix = "") const {
-      os << prefix << parent->PDGName()
-	 << "[" << (spacelike ? "s" : "t") << "] (";
-      if ( externalId < 0 )
-	os << "x)\n";
-      else
-	os << externalId << ")\n";
-      if ( !children.empty() ) {
-	os << prefix << "|__\n";
-	children[0].print(os,prefix + "|  ");
-	os << prefix << "|__\n";
-	children[1].print(os,prefix + "|  ");
-      }
-    }
-
+    void print(ostream& os, const string& prefix = "") const;
+    
     /**
      * Count the number of spacelike lines
      */
@@ -181,60 +168,12 @@ public:
      */
     void update(Tree2toNDiagram& diag,
 		map<int,pair<int,PDPtr> >& outgoing,
-		int& lastUsed) {
-      if ( externalId == 0 ) {
-	assert(lastUsed==0);
-	++lastUsed;
-	diag.operator,(parent);
-	children[0].parentId = lastUsed;
-	children[1].parentId = lastUsed;
-	children[0].update(diag,outgoing,lastUsed);
-	children[1].update(diag,outgoing,lastUsed);
-	for ( map<int,pair<int,PDPtr> >::iterator out =
-		outgoing.begin(); out != outgoing.end(); ++out ) {
-	  diag.operator,(out->second.first);
-	  diag.operator,(out->second.second);
-	}
-	return;
-      }
-      if ( spacelike ) {
-	++lastUsed;
-	diag.operator,(parent);
-	if ( externalId == 1 )
-	  return;
-	children[0].parentId = lastUsed;
-	children[1].parentId = lastUsed;
-	children[0].update(diag,outgoing,lastUsed);
-	children[1].update(diag,outgoing,lastUsed);
-	return;
-      }
-      if ( children.empty() ) {
-	outgoing[externalId] =
-	  make_pair(parentId,parent);
-	return;
-      }
-      diag.operator,(parentId);
-      diag.operator,(parent);
-      ++lastUsed;
-      children[0].parentId = lastUsed;
-      children[1].parentId = lastUsed;
-      children[0].update(diag,outgoing,lastUsed);
-      children[1].update(diag,outgoing,lastUsed);
-    }
-
+                int& lastUsed);
     /**
      * Generate a diagram of given id.
      */
-    Tree2toNDiagram generate(int id) {
-      int nsp = nspace();
-      Tree2toNDiagram res(nsp);
-      int diagid = 0;
-      map<int,pair<int,PDPtr> > out;
-      update(res,out,diagid);
-      res.operator,(-id);
-      return res;
-    }
-
+    Tree2toNDiagram generate(int id);
+    
   };
 
   /**

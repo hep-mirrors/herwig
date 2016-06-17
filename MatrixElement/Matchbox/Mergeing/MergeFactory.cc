@@ -292,7 +292,7 @@
     if ( projected ) pname += "pro";
     if ( !(generator()->preinitRegister(bornme, pname)) ) throw InitException() << "Born ME " << pname << " already existing.";
     
-    Ptr<ClusterNode>::ptr clusternode = new_ptr(ClusterNode(bornme, i, 1, needFOH));
+    Ptr<ClusterNode>::ptr clusternode = new_ptr(ClusterNode(bornme, i, 0, needFOH));
     clusternode->mergePt(theMergePT);
     clusternode->centralMergePt(theMergePT);
     clusternode->N(theN + getProcesses()[0].size());clusternode->N0( getProcesses()[0].size());
@@ -321,11 +321,11 @@
 	  cout<<"\nnumofsplit "<<numofsplit<<temp[j]->children()[m]->nodeME()->name()<<" k "<<k<<" j "<<j<<" m "<<m<<" "<<" "<<i;
           temp[j]->children()[m]->numberOfSplittings(numofsplit);
 
-          
-          
+          if ( i <= theM ) {
           for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt = DipoleRepository::insertionIOperators(dipoleSet()).begin() ;
                virt != DipoleRepository::insertionIOperators(dipoleSet()).end() ; ++virt ) {
             if ( (**virt).apply((*(temp[j]->children()[m]->nodeME())).diagrams().front()->partons()) ){
+              cout<<"\nMatchboxInsertionOperator"<<flush;
               Ptr<MatchboxInsertionOperator>::ptr myIOP = (**virt).cloneMe();
               //ostringstream pname;
               //pname <<  temp[j]->children()[m]->nodeME()->fullName()  << "/" << (**virt).name();
@@ -348,7 +348,7 @@
           
           
           temp[j]->children()[m]->nodeME()->noOneLoop();
-          
+          }
           temp1.push_back(temp[j]->children()[m]);
         }
       }
@@ -679,7 +679,9 @@
     
     cout<<"\nstart filling LO "<<i<<" "<<theonlymulti<<flush;
     
-    
+      if (true) {
+        
+      
     for (; i <= max(0, theN) ; ++i ) {
       if(i==theonlymulti||theonlymulti==-1)
         for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born = thePureMEsMap[i].begin() ; born != thePureMEsMap[i].end() ; ++born ) {
@@ -690,9 +692,10 @@
           }
         }
     }
+      }
     
     cout<<"\nstart filling NLO"<<flush;
-      if (false) {
+     
         
       
     i = theonlyabove ;
@@ -717,7 +720,7 @@
           }
         }
     }
-      }
+      
     
     if ( !externalAmplitudes().empty() ) {
       generator()->log() << "Initializing external amplitudes.\n" << flush;

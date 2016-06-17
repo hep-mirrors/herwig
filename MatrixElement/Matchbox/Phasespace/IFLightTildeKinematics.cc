@@ -79,7 +79,10 @@ double IFLightTildeKinematics::jacobian(Energy2 sB,Energy2 sR, int n) const {
    assert(subtractionParameters()[1]<=1.&&subtractionParameters()[1]>=0.); 
    assert(subtractionParameters()[0]<=1.&&subtractionParameters()[0]>=0.);
   
-  return  16.*ThePEG::Constants::pi*ThePEG::Constants::pi/(2.*realEmitterMomentum()*bornSpectatorMomentum())*sR;//*pow(sR/sB,n-4);
+  
+  assert(false);
+  
+  return  16.*ThePEG::Constants::pi*ThePEG::Constants::pi/(2.*realEmitterMomentum()*bornSpectatorMomentum())*sB;//*pow(sR/sB,n-4);
 
   return 16.*ThePEG::Constants::pi*ThePEG::Constants::pi/(2.*realEmitterMomentum()*realSpectatorMomentum())*sR*pow(sR/sB,n-4);
 

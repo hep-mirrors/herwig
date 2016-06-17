@@ -91,7 +91,38 @@ double IILightTildeKinematics::jacobian(Energy2 sB,Energy2 sR, int n) const{
   assert(subtractionParameters()[0]<=1.&&subtractionParameters()[0]>=0.);
   assert(subtractionParameters()[1]<=1.&&subtractionParameters()[1]>=0.);
   assert(subtractionParameters()[0]<=1.&&subtractionParameters()[0]>=0.);
-  return 1./2.*16.*ThePEG::Constants::pi*ThePEG::Constants::pi/(2.*realEmitterMomentum()*realSpectatorMomentum())*sR;//*pow(sR/sB,n-4);
+  
+  if (1.<subtractionParameters()[1]/(1.-subtractionParameters()[0])) {
+    cout<<"\ncut"<<flush;
+    return 0.;
+  }
+    // cout<<"\n"<<sR/sB<<" "<<1/subtractionParameters()[0];
+  
+  double x = subtractionParameters()[0];
+  
+    //cout<<"\n"<<x<<" "<<lastRealX();
+  
+  
+  
+  double v = subtractionParameters()[1];
+  double z=x+v;
+  
+    // cout<<"\n"<<lastRealX1()<<" "<<lastRealX2()<<" "<<lastBornX1()<<" "<<lastBornX2();
+  
+  
+    // cout<<"\nx= "<<x<<" sB "<<sB/GeV2<<" sR "<<sR/GeV2;
+    // cout<<"\n"<<1./(1.-dipole()->realEmitter()==0?lastBornX1():lastBornX2());
+  
+  return 1./(dipole()->realEmitter()==0?lastBornX1():lastBornX2());
+  
+  
+  pow((1.-v),3)*exp(lastBornX1()/lastBornX2())*exp(-lastRealX1()/lastRealX2());//pow(sB/sR,12)
+            //*(1-v)*(1-v)*pow(4*ThePEG::Constants::pi,n-4)*pow(sB/sR,n-3)*(16.*ThePEG::Constants::pi*ThePEG::Constants::pi);//pow(4*ThePEG::Constants::pi,n-4)*
+  
+  
+  //x*v*(16.*ThePEG::Constants::pi*ThePEG::Constants::pi)/(realEmitterMomentum()*realSpectatorMomentum())*sB*pow(sB/sR,n-4);
+  return (16.*ThePEG::Constants::pi*ThePEG::Constants::pi)/(realEmitterMomentum()*realSpectatorMomentum())*sB*pow(sB/sR,n-4)*x/z*x/z*3.;
+    //sR*v*2./3.;//*(x+v)/x;//*pow(sR/sB,n-4);*x
 }
 
 

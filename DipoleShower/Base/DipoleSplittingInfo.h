@@ -174,6 +174,20 @@ public:
    * Destructor
    */
   virtual ~DipoleSplittingInfo() {}
+  
+  /**
+   * A constructor.
+   */
+  DipoleSplittingInfo(DipoleIndex ind,pair<bool,bool> conf,double emitX,
+                      double spectX,tPPtr emit,tPPtr spect){
+    theIndex =ind;
+    theConfiguration = conf;
+    theEmitterX= emitX;
+    theSpectatorX=spectX;
+    theEmitter=emit;
+    theSpectator=spect;
+  }
+  
 
 public:
 

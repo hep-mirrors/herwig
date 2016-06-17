@@ -139,7 +139,8 @@ namespace Herwig {
     bool dipBelowMergeingScale(Ptr<ClusterNode>::ptr& selectedNode,double & sum,Energy& minpt,int& number);
     
     
-    
+    double calcPsMinusDip(Energy scale);
+    double calcPs(Energy scale);
     
     /** recursive flush caches and clean up XCombs. */
     
@@ -179,6 +180,14 @@ namespace Herwig {
     vector< Ptr<ClusterNode>::ptr > children() {
       return thechildren;
     }
+    
+    Ptr<ClusterNode>::ptr  randomChild();
+    
+    
+    bool allAbove(Energy pt);
+    
+    bool isInHistoryOf(Ptr<ClusterNode>::ptr other);
+    
     
     /** set the first node (godfather). only use in factory*/
     

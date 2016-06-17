@@ -79,7 +79,7 @@ double MonacoSampler::generate() {
   }
   double elapsed_secs;
   
-  bool canImprove = sampler()->almostUnweighted();
+  bool canImprove = sampler()->almostUnweighted()&&false;
   eventHandler()->resetDidEstimate();
   try {
     /**

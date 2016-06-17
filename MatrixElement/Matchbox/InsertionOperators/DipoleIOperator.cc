@@ -281,7 +281,6 @@ double DipoleIOperator::me2() const {
   // \mu = \mu_R, via the switch SetMuToMuR (for debugging purposes).
   if ( !lastBorn()->hasRunningAlphaS() ) {
     Energy2 muR2 = lastMatchboxXComb()->lastRenormalizationScale(); 
-    cout<<"\nIOperator "<<sqrt(muR2/GeV2);
       //lastBorn()->renormalizationScale()*
       //sqr(lastBorn()->renormalizationScaleFactor());
     if ( muR2 != mu2 ) {

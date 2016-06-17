@@ -102,6 +102,29 @@ Ptr<MatchboxMEBase>::ptr ClusterNode::nodeME() {
 }
 
 
+Ptr<ClusterNode>::ptr  ClusterNode::randomChild() {
+  return thechildren[(int)(UseRandom::rnd() *  thechildren.size())];
+}
+
+bool ClusterNode::allAbove(Energy pt){
+  for (vector<Ptr<ClusterNode>::ptr>::iterator it = thechildren.begin(); it != thechildren.end(); it++) {
+    if((*it)->dipol()->lastPt()<pt)return false;
+  }
+  return true;
+}
+
+
+
+bool ClusterNode::isInHistoryOf(Ptr<ClusterNode>::ptr other){
+  while (other->parent()) {
+    if(other==this)return true;
+    other=other->parent();
+  }
+  return false;
+}
+
+
+
 void ClusterNode::flushCaches() {
   this->theProjectors.clear();
   for ( unsigned int i = 0 ; i < thechildren.size() ; ++i ) {
@@ -804,7 +827,13 @@ bool ClusterNode::DipolesAboveMergeingScale(Ptr<ClusterNode>::ptr& selectedNode,
 
 
 
+double ClusterNode::calcPsMinusDip(Energy scale){
+  return -1.* dipol()->dipMinusPs(sqr(scale),deepHead()->treefactory()->largeNBasis())/nanobarn;
+}
 
+double ClusterNode::calcPs(Energy scale){
+  return dipol()->ps(sqr(scale),deepHead()->treefactory()->largeNBasis())/nanobarn;
+}
 
 
 

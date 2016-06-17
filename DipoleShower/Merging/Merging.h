@@ -24,8 +24,17 @@ namespace Herwig {
   using namespace ThePEG;
   
   typedef Ptr<ClusterNode>::ptr CNPtr;
-  
+  typedef vector<Ptr<ClusterNode>::ptr> CNPtrVec;
   struct HistStep {
+    
+    HistStep(){}
+    
+    HistStep(CNPtr cn,double w ,Energy sc){
+      node=cn;
+      weight=w;
+      scale=sc;
+    }
+    
     CNPtr node;
     double weight;
     Energy scale;
@@ -63,11 +72,12 @@ namespace Herwig {
     
   public:
     
-    bool   sudakov(CNPtr Born, Energy & running, Energy next);
-    double singlesudakov(list<Dipole>::iterator,Energy,Energy,pair<bool,bool>,bool fast=false);
-    bool   dosudakov(Energy & running, Energy next, double& sudakov0_n,bool fast=false);
-    bool   dosudakovold(CNPtr, Energy&, Energy, double&);
     
+    double singlesudakov(list<Dipole>::iterator,Energy,Energy,pair<bool,bool>,bool fast=false);
+    bool   dosudakov(CNPtr Born,Energy  running, Energy next, double& sudakov0_n,bool fast=false);
+  
+    //bool   dosudakovold(CNPtr, Energy, Energy, double&);
+    //bool   sudakov(CNPtr Born, Energy  running, Energy next);
     
     
     void   cleanup(CNPtr);
@@ -78,7 +88,7 @@ namespace Herwig {
     double matrixElementWeight(Energy startscale,CNPtr);
     double matrixElementWeightWithLoops(Energy startscale,CNPtr,bool);
     bool   fillProjector(Energy&);
-    void   fillHistory(Energy&, CNPtr, CNPtr ,bool fast=false);
+    void   fillHistory(Energy, CNPtr, CNPtr ,bool fast=false);
     
     
     double sumpdfReweightUnlops();
@@ -94,20 +104,29 @@ namespace Herwig {
     double alphasUnlops( Energy next,Energy fixedScale);
     double pdfUnlops(tcPDPtr,tcPDPtr,tcPDFPtr,Energy,Energy,double,int,Energy);
     double singleUNLOPS(list<Dipole>::iterator,Energy,Energy,Energy,pair<bool,bool>);
-    bool   doUNLOPS(Energy  running, Energy next,Energy fixedScale, double& UNLOPS);
+    bool   doUNLOPS(CNPtr Born,Energy  running, Energy next,Energy fixedScale, double& UNLOPS);
     
     
     
     
     bool   reweightCKKWSingle(Ptr<MatchboxXComb>::ptr SX, double & res,bool fast=false) ;
-    double reweightCKKWBorn(CNPtr Node,bool fast=false);
-    double reweightCKKWBorn2(CNPtr Node,bool fast=false);
-    double reweightCKKWBorn3(CNPtr Node,bool fast=false);
+      // double reweightCKKWBorn(CNPtr Node,bool fast=false);
+      //double reweightCKKWBorn2(CNPtr Node,bool fast=false);
+      // double reweightCKKWBorn3(CNPtr Node,bool fast=false);
+    double reweightCKKWBornStandard(CNPtr Node,bool fast=false);
+    double reweightCKKWVirtualStandard(CNPtr Node,bool fast=false);
     
-    double reweightCKKWVirt(CNPtr Node);
-    double reweightCKKWReal(CNPtr Node);
+    double reweightCKKWRealStandard(CNPtr Node,bool fast=false);
+    double reweightCKKWRealAllAbove(CNPtr Node,bool fast=false);
+    
+    double reweightCKKWRealBelowSubReal(CNPtr Node,bool fast=false);
+    double reweightCKKWRealBelowSubInt(CNPtr Node,bool fast=false);
+    
+    
+      //double reweightCKKWVirt(CNPtr Node);
+      //double reweightCKKWReal(CNPtr Node);
     double as(Energy q){return theDipoleShowerHandler->as(q);}
-    
+    Ptr<DipoleShowerHandler>::ptr DSH(){return theDipoleShowerHandler;}
     
     Energy mergingScale()const {return MergingScale;}
     
@@ -204,6 +223,10 @@ namespace Herwig {
     double projectorWeight0;
     double projectorWeight1;
     CNPtr CalcBorn;
+    
+    bool projected;
+    double weight,weightCB;
+    
     
     
     Hist history;

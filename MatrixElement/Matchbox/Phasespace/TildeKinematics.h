@@ -178,6 +178,16 @@ public:
    * Return the relevant dipole scale
    */
   virtual Energy lastScale() const;
+  
+  double lastRealX() const{
+    return theDipole->realEmitter()==0?(theBornXComb->lastX1()/theRealXComb->lastX1()):(theBornXComb->lastX2()/theRealXComb->lastX2());
+  }
+
+
+  double lastRealX1() const{    return theRealXComb->lastX1(); }
+  double lastRealX2() const{    return theRealXComb->lastX2(); }
+  double lastBornX1() const{    return theBornXComb->lastX1(); }
+  double lastBornX2() const{    return theBornXComb->lastX2(); }
 
   /**
    * Return the particle type of the emitter in the real emission process
