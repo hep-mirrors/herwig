@@ -31,7 +31,7 @@ DipoleSplittingKernel::DipoleSplittingKernel()
     theRenormalizationScaleFactor(1.0),
     theRenormalizationScaleFreeze(1.*GeV), 
     theFactorizationScaleFreeze(1.*GeV),
-    theKimproved(false),
+    theKimproved(true),
     theVirtualitySplittingScale(false) {}
 
 DipoleSplittingKernel::~DipoleSplittingKernel() {}

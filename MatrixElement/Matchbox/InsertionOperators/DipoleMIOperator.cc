@@ -257,9 +257,9 @@ double DipoleMIOperator::me2() const {
   // NOTE: In the following we account for the full scale restoration 
   // if \mu of the OLP differs from \mu_R.
   if ( !lastBorn()->hasRunningAlphaS() ) {
-    Energy2 muR2 = lastMatchboxXComb()->lastRenormalizationScale(); 
-      //lastBorn()->renormalizationScale()*
-      //sqr(lastBorn()->renormalizationScaleFactor());
+    Energy2 muR2 = 
+      lastBorn()->renormalizationScale()*
+      sqr(lastBorn()->renormalizationScaleFactor());
     if ( muR2 != mu2 ) {
       res -=
         betaZero *

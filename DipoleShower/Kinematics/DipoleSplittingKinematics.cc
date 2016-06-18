@@ -105,27 +105,62 @@ double DipoleSplittingKinematics::generateZ(double r, Energy pt, int sampling,
 
   if ( sampling == FlatZ ) {
     pair<double,double> kw = generate(flat(zLims.first,zLims.second),r);
-    weight *= kw.second;
-    return kw.first;
+
+    if ( kw.second != 0. ) {
+      weight *= kw.second;
+      return kw.first;
+    }
+    else {
+      assert( kw.first < zLims.first || kw.first > zLims.second );
+      weight *= kw.second;
+      return -1.;
+    }
+
   }
 
   if ( sampling == OneOverZ ) {
     pair<double,double> kw = generate(inverse(0.0,zLims.first,zLims.second),r);
-    weight *= kw.second;
-    return kw.first;
+
+    if ( kw.second != 0. ) {
+      weight *= kw.second;
+      return kw.first;
+    }
+    else {
+      assert( kw.first < zLims.first || kw.first > zLims.second );
+      weight *= kw.second;
+      return -1.;
+    }
+
   }
 
   if ( sampling == OneOverOneMinusZ ) {
     pair<double,double> kw = generate(inverse(1.0,zLims.first,zLims.second),r);
-    weight *= kw.second;
-    return kw.first;
+
+    if ( kw.second != 0. ) {
+      weight *= kw.second;
+      return kw.first;
+    }
+    else {
+      assert( kw.first < zLims.first || kw.first > zLims.second );
+      weight *= kw.second;
+      return -1.;
+    }
+
   }
 
   if ( sampling == OneOverZOneMinusZ ) {
     pair<double,double> kw = generate(inverse(0.0,zLims.first,zLims.second) + 
 				      inverse(1.0,zLims.first,zLims.second),r);
-    weight *= kw.second;
-    return kw.first;
+
+    if ( kw.second != 0. ) {
+      weight *= kw.second;
+      return kw.first;
+    }
+    else {
+      assert( kw.first < zLims.first || kw.first > zLims.second );
+      weight *= kw.second;
+      return -1.;
+    }
   }
 
   weight = 0.0;
@@ -158,6 +193,7 @@ Lorentz5Momentum DipoleSplittingKinematics::getKt(const Lorentz5Momentum& p1,
   bool boost =
     abs((P-Q).vect().mag2()/GeV2) > 1e-10 ||
     abs((P-Q).t()/GeV) > 1e-5;
+  boost &= (P*Q-Q.mass2())/GeV2 > 1e-8;
 
   Lorentz5Momentum inFrame1;
   if ( boost )

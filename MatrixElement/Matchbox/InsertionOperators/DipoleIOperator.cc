@@ -280,9 +280,9 @@ double DipoleIOperator::me2() const {
   // Note: In the GoSam OLP interface, it is possible to directly set 
   // \mu = \mu_R, via the switch SetMuToMuR (for debugging purposes).
   if ( !lastBorn()->hasRunningAlphaS() ) {
-    Energy2 muR2 = lastMatchboxXComb()->lastRenormalizationScale(); 
-      //lastBorn()->renormalizationScale()*
-      //sqr(lastBorn()->renormalizationScaleFactor());
+    Energy2 muR2 = 
+      lastBorn()->renormalizationScale()*
+      sqr(lastBorn()->renormalizationScaleFactor());
     if ( muR2 != mu2 ) {
       res -=
 	betaZero *

@@ -222,7 +222,7 @@ double Merging::reweightCKKWRealBelowSubReal(CNPtr Node,bool fast){
     if ((*child)->allAbove(Node->mergePt()))
       sumPS-=(*child)->calcPs(startscale*xiFacME);
   }
-  double me=matrixElementWeight(startscale,Node);
+    //double me=matrixElementWeight(startscale,Node);
     //cout<<"\nreweightCKKWRealBelowSubReal "<<me<<" "<<sumPS<<" "<<me/sumPS;
   return weight*DSH()->as(startscale*xiRenSh)/SM().alphaS()*
   (matrixElementWeight(startscale,Node)-sumPS);
