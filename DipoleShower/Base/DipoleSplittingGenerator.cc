@@ -60,8 +60,11 @@ void DipoleSplittingGenerator::resetVariations() {
 void DipoleSplittingGenerator::veto(const vector<double>&, double p, double r) {
   double factor = 1.;
   if ( splittingReweight() ) {
-    factor = splittingReweight()->evaluate(generatedSplitting);
-    theSplittingWeight *= (r-factor*p)/(r-p);
+    if ( ( ShowerHandler::currentHandler()->firstInteraction() && splittingReweight()->firstInteraction() ) ||
+	 ( !ShowerHandler::currentHandler()->firstInteraction() && splittingReweight()->secondaryInteractions() ) ) {
+      factor = splittingReweight()->evaluate(generatedSplitting);
+      theSplittingWeight *= (r-factor*p)/(r-p);
+    }
   }
   splittingKernel()->veto(generatedSplitting, factor*p, r, currentWeights);
 }
@@ -69,8 +72,11 @@ void DipoleSplittingGenerator::veto(const vector<double>&, double p, double r) {
 void DipoleSplittingGenerator::accept(const vector<double>&, double p, double r) {
   double factor = 1.;
   if ( splittingReweight() ) {
-    factor = splittingReweight()->evaluate(generatedSplitting);
-    theSplittingWeight *= factor;
+    if ( ( ShowerHandler::currentHandler()->firstInteraction() && splittingReweight()->firstInteraction() ) ||
+	 ( !ShowerHandler::currentHandler()->firstInteraction() && splittingReweight()->secondaryInteractions() ) ) {
+      factor = splittingReweight()->evaluate(generatedSplitting);
+      theSplittingWeight *= factor;
+    }
   }
   splittingKernel()->accept(generatedSplitting, factor*p, r, currentWeights);
 }

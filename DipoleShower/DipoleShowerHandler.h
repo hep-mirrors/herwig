@@ -439,6 +439,11 @@ private:
   Ptr<DipoleEventReweight>::ptr theEventReweight;
 
   /**
+   * A pointer to a global dipole splitting reweight
+   */
+  Ptr<DipoleSplittingReweight>::ptr theSplittingReweight;
+
+  /**
    * True if no warnings have been issued yet
    */
   static bool firstWarn;
