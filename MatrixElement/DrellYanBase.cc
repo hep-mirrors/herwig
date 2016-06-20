@@ -259,7 +259,7 @@ RealEmissionProcessPtr DrellYanBase::applyHardMatrixElementCorrection(RealEmissi
   else
     assert(false);
   born->emitted(born->outgoing().size()+1);
-  if(born->bornIncoming()[0]->id()>0) {
+  if(born->bornIncoming()[0]->id()<0) {
     swap(xnew.first,xnew.second);
   }
   born->x(xnew);
