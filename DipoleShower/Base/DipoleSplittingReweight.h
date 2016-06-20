@@ -49,6 +49,18 @@ public:
 public:
 
   /**
+   * Return true, if the reweighting should be applied to the first
+   * interaction
+   */
+  virtual bool firstInteraction() const { return true; }
+
+  /**
+   * Return true, if the reweighting should be applied to the secondary
+   * interactions
+   */
+  virtual bool secondaryInteractions() const { return false; }
+
+  /**
    * Return the reweighting factor for the given splitting type.
    */
   virtual double evaluate(const DipoleSplittingInfo&) const = 0;
