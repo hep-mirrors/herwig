@@ -541,7 +541,8 @@ void GoSamAmplitude::signOLP(const string& order, const string& contract) {
     std::system(cmd.c_str());
     cmd = "python "+bindir_+"/gosam2herwig ";
     cmd += " --makelink ";
-    cmd += " --makelinkfrom=contract ";
+    // cmd += " --makelinkfrom=contract ";
+    cmd += " --makelinkfrom="+gosamPath+"/"+name()+".OLPContract.lh";
     cmd += " --makelinkto="+factory()->buildStorage() + name() + ".OLPContract.lh";
     std::system(cmd.c_str());
   }
