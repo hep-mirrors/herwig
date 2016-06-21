@@ -853,7 +853,7 @@ bool QTildeShowerHandler::timeLikeShower(tShowerParticlePtr particle,
 
 bool 
 QTildeShowerHandler::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
-			 ShowerInteraction::Type type) {
+				     ShowerInteraction::Type type) {
   //using the pdf's associated with the ShowerHandler assures, that
   //modified pdf's are used for the secondary interactions via 
   //CascadeHandler::resetPDFs(...)
@@ -1496,22 +1496,22 @@ void QTildeShowerHandler::hardestEmission(bool hard) {
   else if (hard) {
     // Get minimum pT cutoff used in shower approximation
     Energy maxpt = 1.*GeV;
-    int colouredIn  = 0;
-    int colouredOut = 0;
-    for( map< ShowerProgenitorPtr, tShowerParticlePtr >::iterator it
-	   = currentTree()->outgoingLines().begin(); 
-	 it != currentTree()->outgoingLines().end(); ++it ) {
-      if( it->second->coloured() ) colouredOut+=1;
-    }  
-    for( map< ShowerProgenitorPtr, ShowerParticlePtr >::iterator it
-	   = currentTree()->incomingLines().begin(); 
-	 it != currentTree()->incomingLines().end(); ++it ) {
-      if( ! it->second->coloured() ) colouredIn+=1;
-    }
 
-    if ( currentTree()->showerApproximation() ){
+    if ( currentTree()->showerApproximation() ) {
+      int colouredIn  = 0;
+      int colouredOut = 0;
+      for( map< ShowerProgenitorPtr, tShowerParticlePtr >::iterator it
+	     = currentTree()->outgoingLines().begin();
+	   it != currentTree()->outgoingLines().end(); ++it ) {
+	if( it->second->coloured() ) ++colouredOut;
+      }
+      for( map< ShowerProgenitorPtr, ShowerParticlePtr >::iterator it
+	     = currentTree()->incomingLines().begin();
+	   it != currentTree()->incomingLines().end(); ++it ) {
+	if( it->second->coloured() ) ++colouredIn;
+      }
       if ( currentTree()->showerApproximation()->ffPtCut() == currentTree()->showerApproximation()->fiPtCut() &&
-	   currentTree()->showerApproximation()->ffPtCut() == currentTree()->showerApproximation()->iiPtCut() ) 
+	   currentTree()->showerApproximation()->ffPtCut() == currentTree()->showerApproximation()->iiPtCut() )
 	maxpt = currentTree()->showerApproximation()->ffPtCut();
       else if ( colouredIn == 2 && colouredOut == 0 )
 	maxpt = currentTree()->showerApproximation()->iiPtCut();
@@ -1521,7 +1521,7 @@ void QTildeShowerHandler::hardestEmission(bool hard) {
 	maxpt = min(currentTree()->showerApproximation()->iiPtCut(), currentTree()->showerApproximation()->fiPtCut());
       else if ( colouredIn == 1 && colouredOut > 1 )
 	maxpt = min(currentTree()->showerApproximation()->ffPtCut(), currentTree()->showerApproximation()->fiPtCut());
-      else 
+      else
 	maxpt = min(min(currentTree()->showerApproximation()->iiPtCut(), currentTree()->showerApproximation()->fiPtCut()), 
 		    currentTree()->showerApproximation()->ffPtCut());
     }
@@ -1562,46 +1562,8 @@ void QTildeShowerHandler::hardestEmission(bool hard) {
     // Hardest (pt) emission should be the first powheg emission.
     maxpt=min(sqrt(lastXCombPtr()->lastShowerScale()),maxpt);
 
-    // Set maxpt to pT of emission when showering POWHEG real-emission subprocesses
-    if (!currentTree()->isPowhegSEvent() && !currentTree()->isPowhegHEvent()){
-      vector<int> outGluon;
-      vector<int> outQuark;
-      map< ShowerProgenitorPtr, tShowerParticlePtr >::iterator it;
-      for( it = currentTree()->outgoingLines().begin(); 
-	   it != currentTree()->outgoingLines().end(); ++it ) {
-	if ( abs(it->second->id())< 6) outQuark.push_back(it->second->id());
-	if ( it->second->id()==21 )    outGluon.push_back(it->second->id());
-      } 
-      if (outGluon.size() + outQuark.size() == 1){
-	for( it = currentTree()->outgoingLines().begin(); 
-	     it != currentTree()->outgoingLines().end(); ++it ) {
-	  if ( abs(it->second->id())< 6 || it->second->id()==21 )
-	    maxpt = it->second->momentum().perp();
-	}
-      }
-      else if (outGluon.size() + outQuark.size() > 1){
-	// assume qqbar pair from a Z/gamma
-	if (outGluon.size()==1 && outQuark.size() == 2 && outQuark[0]==-outQuark[1]){
-	  for( it = currentTree()->outgoingLines().begin(); 
-	       it != currentTree()->outgoingLines().end(); ++it ) {
-	    if ( it->second->id()==21 )
-	      maxpt = it->second->momentum().perp();
-	  }
-	}
-	// otherwise take the lowest pT avoiding born DY events
-	else {
-	  maxpt = generator()->maximumCMEnergy();
-	  for( it = currentTree()->outgoingLines().begin(); 
-	       it != currentTree()->outgoingLines().end(); ++it ) {
-	    if ( abs(it->second->id())< 6 || it->second->id()==21 )
-	      maxpt = min(maxpt,it->second->momentum().perp());
-	  }
-	}
-      }
-    } 
-
     // set maximum pT for subsequent emissions from S events
-    if ( currentTree()->isPowhegSEvent()  || (!currentTree()->isPowhegSEvent() && !currentTree()->isPowhegHEvent())){
+    if ( currentTree()->isPowhegSEvent() ) {
       for( map< ShowerProgenitorPtr, tShowerParticlePtr >::iterator it
 	     = currentTree()->outgoingLines().begin(); 
 	   it != currentTree()->outgoingLines().end(); ++it ) {
@@ -1614,7 +1576,7 @@ void QTildeShowerHandler::hardestEmission(bool hard) {
 	if( ! it->second->coloured() ) continue;
 	it->first->maximumpT(maxpt, ShowerInteraction::QCD );
       }
-    }  
+    }
   }
   else 
     _hardtree = generateCKKW(currentTree());
