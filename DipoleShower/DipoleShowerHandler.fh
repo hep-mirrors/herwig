@@ -1,0 +1,13 @@
+// -*- C++ -*-
+// This is the forward declaration of the DipoleShowerHandler class
+
+#ifndef HERWIG_DipoleShowerHandler_FH
+#define HERWIG_DipoleShowerHandler_FH
+
+namespace Herwig {
+
+class DipoleShowerHandler;
+
+}
+
+#endif // HERWIG_DipoleShowerHandler_FH
