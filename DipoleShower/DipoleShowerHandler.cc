@@ -1106,5 +1106,10 @@ void DipoleShowerHandler::Init() {
      "",
      &DipoleShowerHandler::theEventReweight, false, false, true, true, false);
 
+  static Reference<DipoleShowerHandler,DipoleSplittingReweight> interfaceSplittingReweight
+    ("SplittingReweight",
+     "Set the splitting reweight.",
+     &DipoleShowerHandler::theSplittingReweight, false, false, true, true, false);
+
 }
 
