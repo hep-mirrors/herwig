@@ -14,6 +14,8 @@
 
 #include "Herwig/Shower/ShowerHandler.h"
 
+#include "Herwig/DipoleShower/DipoleShowerHandler.fh"
+
 #include "Herwig/DipoleShower/Base/DipoleSplittingInfo.h"
 #include "Herwig/DipoleShower/Base/DipoleSplittingReweight.h"
 #include "Herwig/DipoleShower/Kernels/DipoleSplittingKernel.h"
