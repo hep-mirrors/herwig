@@ -49,12 +49,19 @@ public:
 public:
 
   /**
-   * Return the range of reweight factors for the given dipole type.
+   * Return true, if the reweighting should be applied to the first
+   * interaction
    */
-  virtual pair<double,double> reweightBounds(const DipoleIndex&) const = 0;
+  virtual bool firstInteraction() const { return true; }
 
   /**
-   * Return the reweight factor for the given splitting type.
+   * Return true, if the reweighting should be applied to the secondary
+   * interactions
+   */
+  virtual bool secondaryInteractions() const { return false; }
+
+  /**
+   * Return the reweighting factor for the given splitting type.
    */
   virtual double evaluate(const DipoleSplittingInfo&) const = 0;
 

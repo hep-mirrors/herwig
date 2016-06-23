@@ -497,6 +497,8 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
       winnerScale = nextScale;
     }
 
+    reweight_ *= gen->second->splittingWeight();
+
   }
 
   if ( winnerGen == generators().end() ) {
@@ -837,6 +839,8 @@ void DipoleShowerHandler::doinit() {
   ShowerHandler::doinit();
   if ( theGlobalAlphaS )
     resetAlphaS(theGlobalAlphaS);
+  if ( theSplittingReweight )
+    resetReweight(theSplittingReweight);
 }
 
 void DipoleShowerHandler::dofinish() {
@@ -857,7 +861,7 @@ void DipoleShowerHandler::persistentOutput(PersistentOStream & os) const {
      << ounit(theFactorizationScaleFreeze,GeV)
      << isMCatNLOSEvent << isMCatNLOHEvent << theShowerApproximation
      << theDoCompensate << theFreezeGrid << theDetuning
-     << theEventReweight << ounit(maxPt,GeV)
+     << theEventReweight << theSplittingReweight << ounit(maxPt,GeV)
      << ounit(muPt,GeV);
 }
 
@@ -871,7 +875,7 @@ void DipoleShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> iunit(theFactorizationScaleFreeze,GeV)
      >> isMCatNLOSEvent >> isMCatNLOHEvent >> theShowerApproximation
      >> theDoCompensate >> theFreezeGrid >> theDetuning
-     >> theEventReweight >> iunit(maxPt,GeV)
+     >> theEventReweight >> theSplittingReweight >> iunit(maxPt,GeV)
      >> iunit(muPt,GeV);
 }
 
