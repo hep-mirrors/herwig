@@ -429,9 +429,19 @@ private:
   unsigned long theFreezeGrid;
 
   /**
+   * The detuning factor applied to the sampling overestimate kernel
+   */
+  double theDetuning;
+
+  /**
    * A pointer to the dipole event reweight object
    */
   Ptr<DipoleEventReweight>::ptr theEventReweight;
+
+  /**
+   * A pointer to a global dipole splitting reweight
+   */
+  Ptr<DipoleSplittingReweight>::ptr theSplittingReweight;
 
   /**
    * True if no warnings have been issued yet

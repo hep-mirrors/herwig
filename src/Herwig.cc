@@ -180,14 +180,15 @@ void HerwigGenericRun(const Herwig::HerwigUI & ui) {
     Herwig::RunDirectories::pushRunId(ui.setupfile());
   if ( !ui.tag().empty() )
     Herwig::RunDirectories::pushRunId(ui.tag());
-  if ( !ui.integrationList().empty() )
-    Herwig::RunDirectories::pushRunId(ui.integrationList());
 
   if ( ui.seed() > 0 ) {
     ostringstream sseed;
     sseed << ui.seed();
     Herwig::RunDirectories::pushRunId(sseed.str());
   }
+
+  if ( !ui.integrationList().empty() )
+    Herwig::RunDirectories::pushRunId(ui.integrationList());
 
   if ( ui.seed() > 0 ) eg->setSeed(ui.seed());
   if ( !ui.setupfile().empty() ) eg->addTag("-" + ui.setupfile());

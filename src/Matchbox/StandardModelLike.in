@@ -1,0 +1,10 @@
+# -*- ThePEG-repository -*-
+
+set /Herwig/MatrixElements/Matchbox/Factory:EnforceChargeConservation Yes
+set /Herwig/MatrixElements/Matchbox/Factory:EnforceColourConservation Yes
+
+set /Herwig/MatrixElements/Matchbox/Factory:EnforceLeptonNumberConservation Yes
+set /Herwig/MatrixElements/Matchbox/Factory:EnforceQuarkNumberConservation Yes
+
+set /Herwig/MatrixElements/Matchbox/Factory:LeptonFlavourDiagonal Yes
+
