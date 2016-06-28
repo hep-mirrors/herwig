@@ -43,6 +43,14 @@ public:
    */
   virtual double weight() const;
 
+  /**
+   *
+   */
+  static tEWCouplingsPtr coupling() {
+    assert(staticEWCouplings_);
+    return staticEWCouplings_;
+  }
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -100,6 +108,11 @@ private:
    *  The Electroweak Couplings
    */
   EWCouplingsPtr EWCouplings_;
+
+  /**
+   *  The couplings to allow global access
+   */
+  static tEWCouplingsPtr staticEWCouplings_;
 
 };
 

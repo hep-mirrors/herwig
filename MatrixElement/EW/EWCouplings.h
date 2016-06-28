@@ -71,7 +71,7 @@ public:
   /**
    *  Whether or not to include EW running
    */
-  bool isEWon() { return includeEW_;}
+  bool EW() { return includeEW_;}
    
   /**
    *  alpha for the U1 gauge coupling at energy mu (in GeV):

@@ -41,6 +41,7 @@ EWCouplings::EWCouplings(unsigned int loops, unsigned int steps, Energy highScal
 void EWCouplings::initialize() {
   using Constants::pi;
   if(initialized_) return;
+  initialized_ = true;
   // set the particle masses
   if(massChoice_) {
     mZ_ = getParticleData(ParticleID::Z0   )->mass();
@@ -72,7 +73,7 @@ void EWCouplings::initialize() {
   // Use 4th order runge-kutta to integrate to highScale
   int steps = highSteps_;
   while (steps > 0) {
-//      _RK4(y,dydx,x,stepsize,yout,_loops);
+    RK4(y,dydx,x,stepsize,yout);
 
     // Advance x and calculate derivatives at new starting point
     for(unsigned int j=0; j<N; j++) {
@@ -90,8 +91,8 @@ void EWCouplings::initialize() {
     steps--;
     counter++;
   }
-   
-//    _LowInit(); // Initialize couplings at mu < 91.1876 GeV
+  // Initialize couplings at mu < 91.1876 GeV
+  initializeLow();
 }
 
 EWCouplings::~EWCouplings() {}
@@ -316,13 +317,13 @@ void EWCouplings::betaGauge(const double x, vector<Complex> &y, vector<Complex> 
   B = B1 - Ng*B2 - B3;
   Cu[0] = 17.0/10.0;
   Cu[1] = 3.0/2.0;
-  Cu[1] = 2.0;
+  Cu[2] = 2.0;
   Cd[0] = 1.0/2.0;
   Cd[1] = 3.0/2.0;
-  Cd[1] = 2.0;
+  Cd[2] = 2.0;
   Ce[0] = 3.0/2.0;
   Ce[1] = 1.0/2.0;
-  Ce[1] = 0.0;
+  Ce[2] = 0.0;
   for (int i=0; i<3; i++) {
     g2(i) = pow(gauge(i),2);
   }
@@ -334,7 +335,7 @@ void EWCouplings::betaGauge(const double x, vector<Complex> &y, vector<Complex> 
       dydx[l] += -b(l)*pow(gauge(l),3)/(16.0*pow(pi,2));
     }
     if (loops_ >= 2) {
-      boost::numeric::ublas::matrix<Complex> temp;
+      boost::numeric::ublas::matrix<Complex> temp(3,3);
       axpy_prod(herm(Yuk_u),Yuk_u,temp);
       Complex tr1 = trace(temp);
       axpy_prod(herm(Yuk_d),Yuk_d,temp);
@@ -389,7 +390,8 @@ void EWCouplings::betaYukawa(const double x, vector< Complex > &y, vector<Comple
   for(unsigned int l=0; l<3; l++) gauge[l] = y[l];
   Complex lambda = y[30];
   // traces of yukawa matrices
-  boost::numeric::ublas::matrix<Complex> mTemp,MUU,MDD,MLL,MUU2,MDD2,MLL2,MUUDD,MDDUU;
+  boost::numeric::ublas::matrix<Complex> mTemp(3,3),MUU(3,3),MDD(3,3),MLL(3,3),
+    MUU2(3,3),MDD2(3,3),MLL2(3,3),MUUDD(3,3),MDDUU(3,3);
   axpy_prod(herm(Yuk_u),Yuk_u,MUU);
   Complex trU  = trace( MUU);
   axpy_prod(MUU,MUU,MUU2);
@@ -427,14 +429,18 @@ void EWCouplings::betaYukawa(const double x, vector< Complex > &y, vector<Comple
     dYuk_ddx += (1.0/(16.0*pow(pi,2)))*mTemp;
     axpy_prod(Yuk_e,beta1_e,mTemp);
     dYuk_edx += (1.0/(16.0*pow(pi,2)))*mTemp;
-      
+    
     if (loops_ >= 2) {
+      Complex l2=sqr(lambda);
       beta2_u = 3.0/2.0*MUU2 - MUUDD - 1.0/4.0*MDDUU + 11.0/4.0*MDD2 + Y2*(5.0/4.0*MDD - 9.0/4.0*MUU) +
-	(-chi4 + 3.0/2.0*pow(lambda,2))*Id - 2.0*lambda*(3.0*MUU + MDD) + (223.0/80.0*g02 + 135.0/16.0*g12 + 16.0*g22)*(MUU) 
-	- (43.0/80.0*g02 - 9.0/16.0*g12 + 16.0*g22)*(MDD) + 5.0/2.0*Y4*Id + 
-	((9.0/200.0 + 29.0/45.0*Ng)*pow(gauge[0],4) - 9.0/20.0*pow(gauge[0]*gauge[1],2) + 19.0/15.0*pow(gauge[0]*gauge[2],2) - (35.0/4.0 - Ng)*pow(gauge[1],4) + 9.0*pow(gauge[1]*gauge[2],2) - (404.0/3.0 - 80.0/9.0*Ng)*pow(gauge[2],4))*Id;
-      beta2_d = 3.0/2.0*MDD2 - MDDUU - 1.0/4.0*MUUDD + 11.0/4.0*MUU2 + Y2*(5.0/4.0*MUU - 9.0/4.0*MDD) + (-chi4 + 3.0/2.0*pow(lambda,2))*Id - 2.0*lambda*(3.0*MDD + MUU) + (187.0/80.0*g02 + 135.0/16.0*g12 + 16.0*g22)*(MDD) - (79.0/80.0*g02 - 9.0/16.0*g12 + 16.0*g22)*(MUU) + 5.0/2.0*Y4*Id - ((29.0/200.0 + 1.0/45.0*Ng)*pow(gauge[0],4) - 27.0/20.0*pow(gauge[0]*gauge[1],2) + 31.0/15.0*pow(gauge[0]*gauge[2],2) - (35.0/4.0 - Ng)*pow(gauge[1],4) + 9.0*pow(gauge[1]*gauge[2],2) - (404.0/3.0 - 80.0/9.0*Ng)*pow(gauge[2],4))*Id;
-      beta2_e = 3.0/2.0*MLL2 - 9.0/4.0*Y2*MLL + (-chi4 + 3.0/2.0*pow(lambda,2))*Id - 6.0*lambda*(MLL) + (387.0/80.0*g02 + 135.0/15.0*g12)*(MLL) + 5.0/2.0*Y4*Id + ((51.0/200.0 + 11.0/5.0*Ng)*pow(gauge[0],4) + 27.0/20.0*pow(gauge[0]*gauge[1],2) - (35.0/4.0 - Ng)*pow(gauge[1],4))*Id;
+	(-chi4 + 3.0/2.0*l2)*Id - 2.0*lambda*(3.0*MUU + MDD) +
+	(223.0/80.0*g02 + 135.0/16.0*g12 + 16.0*g22)*(MUU) -
+	(43.0/80.0*g02 - 9.0/16.0*g12 + 16.0*g22)*(MDD) + 5.0/2.0*Y4*Id + 
+	((9.0/200.0 + 29.0/45.0*Ng)*pow(gauge[0],4) - 9.0/20.0*pow(gauge[0]*gauge[1],2) +
+	 19.0/15.0*pow(gauge[0]*gauge[2],2) - (35.0/4.0 - Ng)*pow(gauge[1],4) + 9.0*pow(gauge[1]*gauge[2],2) - 
+	 (404.0/3.0 - 80.0/9.0*Ng)*pow(gauge[2],4))*Id;
+      beta2_d = 3.0/2.0*MDD2 - MDDUU - 1.0/4.0*MUUDD + 11.0/4.0*MUU2 + Y2*(5.0/4.0*MUU - 9.0/4.0*MDD) + (-chi4 + 3.0/2.0*l2)*Id - 2.0*lambda*(3.0*MDD + MUU) + (187.0/80.0*g02 + 135.0/16.0*g12 + 16.0*g22)*(MDD) - (79.0/80.0*g02 - 9.0/16.0*g12 + 16.0*g22)*(MUU) + 5.0/2.0*Y4*Id - ((29.0/200.0 + 1.0/45.0*Ng)*pow(gauge[0],4) - 27.0/20.0*pow(gauge[0]*gauge[1],2) + 31.0/15.0*pow(gauge[0]*gauge[2],2) - (35.0/4.0 - Ng)*pow(gauge[1],4) + 9.0*pow(gauge[1]*gauge[2],2) - (404.0/3.0 - 80.0/9.0*Ng)*pow(gauge[2],4))*Id;
+      beta2_e = 3.0/2.0*MLL2 - 9.0/4.0*Y2*MLL + (-chi4 + 3.0/2.0*l2)*Id - 6.0*lambda*(MLL) + (387.0/80.0*g02 + 135.0/15.0*g12)*(MLL) + 5.0/2.0*Y4*Id + ((51.0/200.0 + 11.0/5.0*Ng)*pow(gauge[0],4) + 27.0/20.0*pow(gauge[0]*gauge[1],2) - (35.0/4.0 - Ng)*pow(gauge[1],4))*Id;
          
       axpy_prod(Yuk_u,beta2_u,mTemp);
       dYuk_udx += (1.0/pow(16.0*pow(pi,2),2))*mTemp;
@@ -479,7 +485,7 @@ void EWCouplings::betaHiggs(const double x, vector<Complex> &y,
   Complex beta1_lambda(0.), beta2_lambda(0.), gamma1_vev(0.), gamma2_vev(0.),
     Y2(0.), H(0.), Y4(0.), chi4(0.);
   // traces of yukawa matrices
-  boost::numeric::ublas::matrix<Complex> temp,temp2,MUU,MDD,MLL;
+  boost::numeric::ublas::matrix<Complex> temp(3,3),temp2(3,3),MUU(3,3),MDD(3,3),MLL(3,3);
   axpy_prod(herm(Yuk_u),Yuk_u,MUU);
   Complex trU  = trace( MUU);
   axpy_prod(MUU,MUU,temp);
@@ -507,24 +513,36 @@ void EWCouplings::betaHiggs(const double x, vector<Complex> &y,
   Complex g02 = sqr(gauge[0]);
   Complex g12 = sqr(gauge[1]);
   Complex g22 = sqr(gauge[2]);
+  Complex g04 = sqr(g02);
+  Complex g14 = sqr(g12);
+  double pi2 = sqr(pi);
   Y2 = 3.0*trU+3.0*trD + trL;
   Y4 = (17.0/20.0*g02 + 9.0/4.0*g12 + 8.0*g22)*(trU) + (1.0/4.0*g02 + 9.0/4.0*g12 + 8.0*g22)*(trD) + 3.0/4.0*(g02 + g12)*(trL);
   chi4 = 27.0/4.0*trUU + 27.0/4.0*trDD + 9.0/4.0*trLL - 6.0/4.0*trUD;
   H = 3.0*trUU + 3.0*trDD + trLL;
    
   if(loops_ >= 1) {
-    beta1_lambda = 12.0*pow(lambda,2) - (9.0/5.0*g02 + 9.0*g12)*lambda + 9.0/4.0*(3.0/25.0*pow(gauge[0],4)+2.0/5.0*pow(gauge[0]*gauge[1],2) + pow(gauge[1],4)) + 4.0*Y2*lambda - 4.0*H;
+    Complex l2=sqr(lambda);
+    beta1_lambda = 12.0*l2 - (9.0/5.0*g02 + 9.0*g12)*lambda + 9.0/4.0*(3.0/25.0*g04+2.0/5.0*g02*g12 + g14) + 4.0*Y2*lambda - 4.0*H;
     gamma1_vev = 9.0/4.0*(1.0/5.0*g02+g12)-Y2;
       
-    dydx[30] += 1.0/(16.0*pow(pi,2))*beta1_lambda;
-    dydx[31] += vev/(16.0*pow(pi,2))*gamma1_vev/GeV;
+    dydx[30] += 1.0/(16.0*pi2)*beta1_lambda;
+    dydx[31] += vev/(16.0*pi2)*gamma1_vev/GeV;
     
     if (loops_ >= 2) {
-      beta2_lambda = -78.0*pow(lambda,3) + 18.0*(3.0/5.0*g02 + 3.0*g12)*pow(lambda,2) - ( (313.0/8.0 - 10.0*Ng)*pow(gauge[1],4) - 117.0/20.0*pow(gauge[0]*gauge[1],2) + 9.0/25.0*(229.0/4.0+50.0/9.0*Ng)*pow(gauge[0],4) )*lambda + (497.0/8.0 - 8.0*Ng)*pow(gauge[1],6) - 3.0/5.0*(97.0/24.0 + 8.0/3.0*Ng)*g02*pow(gauge[1],4) - 9.0/25.0*(239.0/24.0 + 40.0/9.0*Ng)*pow(gauge[0],4)*g12 - 27.0/125.0*(59.0/24.0 + 40.0/9.0*Ng)*pow(gauge[0],6) - 64.0*g22*(trUU + trDD) - 8.0/5.0*g02*(2.0*trUU - trDD + 3.0*trLL) - 3.0/2.0*pow(gauge[1],4)*Y4 + 10.0*lambda*( (17.0/20.0*g02 + 9.0/4.0*g12 + 8.0*g22)*trU + (1.0/4.0*g02 + 9.0/4.0*g12 + 8.0*g22)*trD + 3.0/4.0*(g02 + g12)*trL ) + 3.0/5.0*g02*( (-57.0/10.0*g02 + 21.0*g12 )*trU + (3.0/2.0*g02 + 9.0*g12)*trD + (-15.0/2.0*g02 + 11.0*g12)*trL ) - 24.0*pow(lambda,2)*Y2 - lambda*H + 6.0*lambda*trUD + 20.0*(3.0*trUUU + 3.0*trDDD + trLLL) - 12.0*trUUDD;
-      gamma2_vev = -3.0/2.0*pow(lambda,2) - 5.0/2.0*Y4 + chi4 - 27.0/80.0*pow(gauge[0]*gauge[1],2) - (93.0/800.0 + 1.0/2.0*Ng)*pow(gauge[0],4) + (511.0/32.0 - 5.0/2.0*Ng)*pow(gauge[1],4);
+      beta2_lambda = -78.0*lambda*l2 + 18.0*(3.0/5.0*g02 + 3.0*g12)*l2 - 
+	( (313.0/8.0 - 10.0*Ng)*g14 - 117.0/20.0*g02*g12 + 9.0/25.0*(229.0/4.0+50.0/9.0*Ng)*g04 )*lambda + 
+	(497.0/8.0 - 8.0*Ng)*g14*g12 - 3.0/5.0*(97.0/24.0 + 8.0/3.0*Ng)*g02*g14 - 
+	9.0/25.0*(239.0/24.0 + 40.0/9.0*Ng)*g04*g12 - 27.0/125.0*(59.0/24.0 + 40.0/9.0*Ng)*g04*g02 - 
+	64.0*g22*(trUU + trDD) - 8.0/5.0*g02*(2.0*trUU - trDD + 3.0*trLL) - 3.0/2.0*g14*Y4 + 
+	10.0*lambda*( (17.0/20.0*g02 + 9.0/4.0*g12 + 8.0*g22)*trU + (1.0/4.0*g02 + 9.0/4.0*g12 + 8.0*g22)*trD + 3.0/4.0*(g02 + g12)*trL ) + 
+	3.0/5.0*g02*( (-57.0/10.0*g02 + 21.0*g12 )*trU + (3.0/2.0*g02 + 9.0*g12)*trD + (-15.0/2.0*g02 + 11.0*g12)*trL ) - 24.0*l2*Y2 - lambda*H + 
+	6.0*lambda*trUD + 20.0*(3.0*trUUU + 3.0*trDDD + trLLL) - 12.0*trUUDD;
+      gamma2_vev = -3.0/2.0*l2 - 5.0/2.0*Y4 + chi4 - 27.0/80.0*g02*g12 - 
+	(93.0/800.0 + 1.0/2.0*Ng)*g04 + (511.0/32.0 - 5.0/2.0*Ng)*g14;
          
-      dydx[30] += 1.0/pow(16.0*pow(pi,2),2)*beta2_lambda;
-      dydx[31] += vev/pow(16.0*pow(pi,2),2)*gamma2_vev/GeV;
+      dydx[30] += 1.0/pow(16.0*pi2,2)*beta2_lambda;
+      dydx[31] += vev/pow(16.0*pi2,2)*gamma2_vev/GeV;
     }
   }
 }
@@ -589,13 +607,11 @@ double EWCouplings::interpolateLow(double t, int paramIndex) {
   }
 	
   int numSteps = (int)((lowTable_(0,0)-t)/stepsize);
-   
   // Linear Interpolation:
   double x1 = lowTable_(numSteps,0);
   double y1 = lowTable_(numSteps,paramIndex);
   double x2 = lowTable_(numSteps+1,0);
   double y2 = lowTable_(numSteps+1,paramIndex);
-  
   return y1+((y2-y1)/(x2-x1))*(t-x1);
 }
 

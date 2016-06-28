@@ -9,22 +9,43 @@
 //
 #ifndef HERWIG_GroupInvariants_H
 #define HERWIG_GroupInvariants_H
+#include "ThePEG/Config/ThePEG.h"
+#include "ThePEG/Config/Unitsystem.h"
+#include <cassert>
 
 namespace Herwig {
-// //////////////////////////////////////////////////////////////////////////
-// // Function header file for Group Theory Invariants                     //
-// // Brian Shotwell (bshotwell@ucsd.edu)                                  //
-// //                                                                      //
-// // This file is a collection of group theory invariants for SU(N)/U(1). //
-// // It includes separate namespaces for high and low scales, and for     //
-// // whether the Fermions are to be treated as Dirac or Weyl.             //
-// //                                                                      //
-// // These factors include appropriate "generalizations" to U(1), and     //
-// // they include a factor of 5/3 (high scale) or 20/3 (low scale) for    //
-// // T_F for U(1).                                                        //
-// //////////////////////////////////////////////////////////////////////////
+using namespace ThePEG;
 
 namespace GroupInvariants {
+
+  /**
+   *  Simple struct for storing the different gauge contributions
+   */
+  struct GaugeContributions {
+
+    /**
+     *  Default Constructor
+     */
+    GaugeContributions(double inSU3=0.,
+		       double inSU2=0., double inU1=0.) 
+      : SU3(inSU3),SU2(inSU2),U1(inU1)
+    {}
+    /**
+     * \f$SU(3)\f$
+     */
+    double SU3;
+
+    /**
+     *  \f$SU(2)\f$
+     */
+    double SU2;
+
+    /**
+     * \f$U(1)\f$
+     */
+    double U1;
+  };
+
 
   /**
    *  The \f$SU(N)\f$ \f$C_A\f$ 
@@ -37,7 +58,7 @@ namespace GroupInvariants {
    *  The \f$SU(N)\f$ \f$C_F\f$ 
    */
   double C_F(unsigned int N) {
-    return N !=1 0.5*(double(N*N))-1.)/double(N) ? : 1.;
+    return N !=1 ? 0.5*(double(N*N)-1.)/double(N) : 1.;
   }
 
   /*
@@ -54,6 +75,89 @@ namespace GroupInvariants {
     double N2(N*N);
     return 0.25*(N2-1.0)/N2;
   }
+
+  /**
+   *  \f$T_F\f$
+   */
+  double T_F(unsigned int N, bool high) {
+    if(high) {
+      return N !=1 ? 0.5 : 5.0/3.0;
+    }
+    else {
+      return N !=1 ? 0.5 : 20.0/3.0;
+    }
+  }
+
+  /** 
+   *   \f$t_S\f$
+   */
+  double t_S(unsigned int, bool ) {
+    return 0.5;
+  }
+
+  /**
+   * / Number of complex scalars in the fundamental rep. of SU(N)/U(1)
+   */
+  double n_S(unsigned int N, bool high) {
+    if(high) {
+      if(N==2 || N==1) return 1.0;
+      else if(N==3)    return 0.0;
+      else assert(false);
+    }
+    else {
+      if(N>=1&&N<=3) return 0.;
+      else assert(false);
+    }
+  }
+
+  /**
+   * Number of Dirac Fermions in the fund. rep. of SU(N) (or U(1) for N==1)
+   */
+  double n_F(unsigned int N, bool high) {
+    if(high) {
+      if(N==1) return 3.0;
+      else if(N==2 || N==3) return 6.0;
+      else assert(false);
+    }
+    else {
+      if(N==1) return 1.0;
+      else if(N==2) return 0.0;
+      else if(N==3) return 5.0;
+      else assert(false);
+    }
+  } 
+  
+  /**
+   * Find K_i for gauge group N. high=false for running at mu<mZ
+   */
+  double K_Factor(unsigned int i,unsigned int N, bool high);
+
+  /**
+   *   Find B_i for gauge group N, high energy
+   */
+  double B_Factor(int i, int N, bool fermion, bool longitudinal);
+
+  /**
+   *   Find B_i for gauge group N, low  energy
+   */
+  double B_Factor_Low(int i, int N, bool fermion, double boostFactor);
+
+  /**
+   * Contributions to the Cusps
+   */
+  GaugeContributions cuspContributions(Energy mu, int K_ORDER, bool high);
+
+  /**
+   * Contributions to B, high energy
+   */
+  GaugeContributions BContributions(Energy mu, int B_ORDER,
+				    bool fermion, bool longitudinal);
+
+  /**
+   * Contributions to B, low  energy
+   */
+  GaugeContributions BContributionsLow(Energy mu, int B_ORDER,
+				       bool fermion, double boostFactor);
 }
 
 
@@ -61,39 +165,10 @@ namespace GroupInvariants {
 // namespace DiracHigh {
 
 
-//     double n_S(int N) { // Number of complex scalars in the fundamental rep. of SU(N)/U(1)
-//         if(N==2 || N==1) return 1.0;
-//         if(N==3) return 0.0;
-//         std::cout << "Error! SU(N), N != (1, 2 or 3) used for n_S in ";
-//         std::cout << "GroupInvariants.h but not defined." << std::endl;
-//         return 0.0;
-//     }
-
-//     double n_F(int N) { // Number of Dirac Fermions in the fund. rep. of SU(N) (or U(1) for N==1)
-// 		if(N==1) return 3.0;
-//         //if(N==1) return 6.0;
-//         if(N==2) return 6.0;
-//         if(N==3) return 6.0;
-//         std::cout << "Error! SU(N), N != (1, 2 or 3) used for n_F in ";
-//         std::cout << "GroupInvariants.h but not defined." << std::endl;
-//         return 0.0;
-//     }
-
 //     double n_g() { // Number of fermion generations (only used in gauge boson HighCMatching)
 //         return 3.0;
 //     }
 
-//     double T_F(int N) { 
-//         if (N==1) {
-//             return 5.0/3.0;
-// 			//return 1.0;
-//         }
-        
-//         return 0.5; // I believe T(N) is such that tr(t^a t^b) = T delta(ab)
-//     }
-
-//     double t_S(int N) { return 0.5+0.0*N; } // Analog of T_F but for scalars.
-//                                             // 0.0*N included to stop receiving a stupid warning.
 
 // }
 
@@ -124,42 +199,6 @@ namespace GroupInvariants {
 // 	// 0.0*N included to stop receiving a stupid warning.
 	
 // }
-
-
-// namespace DiracLow {
-    
-    
-//     double n_S(int N) { // Number of complex scalars in the fundamental rep. of SU(3) or U(1) 
-//         if(N==1) return 0.0;
-//         if(N==2) return 0.0;
-//         if(N==3) return 0.0;
-//         std::cout << "Error! SU(N), N != (1, 2 or 3) used for n_S in ";
-//         std::cout << "GroupInvariants.h but not defined." << std::endl;
-//         return 0.0;
-//     }
-    
-//     double n_F(int N) { // Number of Dirac Fermions in the fund. rep. of SU(3) or U(1)
-// 		if(N==3) return 5.0;
-//         if(N==2) return 0.0;
-// 		if(N==1) return 1.0;
-//         std::cout << "Error! SU(N), N != (1, 2 or 3) used for n_F in ";
-//         std::cout << "GroupInvariants.h but not defined." << std::endl;
-//         return 0.0;
-//     }
-    
-//     double T_F(int N) {
-//         if (N==1) {
-//             return 20.0/3.0;
-//         }
-        
-//         return 0.5+0.0*N; // 0.0*N included to stop receiving a stupid warning.
-//     }
-    
-//     double t_S(int N) { return 0.5+0.0*N; } // Analog of T_F but for scalars.
-//     // 0.0*N included to stop receiving a stupid warning.
-    
-// }
-
 
 // namespace WeylLow {
 	

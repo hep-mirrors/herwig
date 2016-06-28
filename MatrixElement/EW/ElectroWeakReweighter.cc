@@ -56,6 +56,34 @@ void ElectroWeakReweighter::Init() {
 
 double ElectroWeakReweighter::weight() const {
   EWCouplings_->initialize();
+  staticEWCouplings_ = EWCouplings_;
+  cerr << "aEM\n";
+  for(Energy scale=10.*GeV; scale<10*TeV; scale *= 1.1) {
+    cerr << scale/GeV << " " 
+  	 << EWCouplings_->aEM(scale) << "\n";
+  }
+  cerr << "aS\n";
+  for(Energy scale=10.*GeV; scale<10*TeV; scale *= 1.4) {
+    cerr << scale/GeV << " " 
+  	 << EWCouplings_->aS(scale) << "\n";
+  }
+  cerr << "y_t\n";
+  for(Energy scale=10.*GeV; scale<10*TeV; scale *= 1.4) {
+    cerr << scale/GeV << " " 
+  	 << EWCouplings_->y_t(scale) << "\n";
+  }
+  cerr << "lambda\n";
+  for(Energy scale=91.2*GeV; scale<10*TeV; scale *= 1.4) {
+    cerr << scale/GeV << " " 
+  	 << EWCouplings_->lambda(scale) << "\n";
+  }
+  cerr << "vev\n";
+  for(Energy scale=91.2*GeV; scale<10*TeV; scale *= 1.4) {
+    cerr << scale/GeV << " " 
+  	 << EWCouplings_->vev(scale)/GeV << "\n";
+  }
+
+
   cerr << "testing got here ???\n";
   cerr <<  subProcess() << "\n";
   cerr << *subProcess() << "\n";
@@ -63,4 +91,5 @@ double ElectroWeakReweighter::weight() const {
   cerr << subProcess()->outgoing()[0]->spinInfo() << "\n";
   cerr << subProcess()->outgoing()[0]->spinInfo()->productionVertex() << "\n";
   assert(false);
+  staticEWCouplings_ = tEWCouplingsPtr();
 }
