@@ -8,6 +8,8 @@
 //
 #include <iostream>
 #include "Maths.h"
+#include "ThePEG/Config/Constants.h"
+
 namespace Herwig {
 namespace Math {
 using ThePEG::Complex;
@@ -38,71 +40,57 @@ inline long double Li2Prod(long double y,long double y2)
   }
 }
 
-
-Complex Li2(Complex x)
-{
+Complex Li2(Complex x) {
+  using ThePEG::Constants::zeta2;
   Complex z;
-  static double zeta2= 1.644934066848226e0;
   double xr(real(x)),xi(imag(x)),r2(xr*xr+xi*xi);
-  if(r2>1.&&xr/r2>0.5)
-    {
-      z=-log(1./x);
-      return Li2Prod(z,z*z)+zeta2-log(x)*log(1.-x)+0.5*log(x)*log(x);
-    }
-  else if (r2>1.&&(xr/r2)<=0.5) 
-    {
-      z=-log(1.-1./x);
+  if(r2>1.&&xr/r2>0.5) {
+    z=-log(1./x);
+    return Li2Prod(z,z*z)+zeta2-log(x)*log(1.-x)+0.5*log(x)*log(x);
+  }
+  else if (r2>1.&&(xr/r2)<=0.5) {
+    z=-log(1.-1./x);
     return -Li2Prod(z,z*z)-zeta2-0.5*pow(log(-x),2);
-    }
-  else if(r2==1.&&xi==0.)
-    {
-      if(xr>0){return zeta2;}
-      else{return -0.5*zeta2;}
-    }
-  else if(r2<=1.&&xr>0.5)
-    {
-      z=-log(x);
-      return -Li2Prod(z,z*z)+zeta2-log(x)*log(1.-x);
-    }
-  else
-    {
-      z=-log(1.-x);
-      return Li2Prod(z,z*z);
-    }
+  }
+  else if(r2==1.&&xi==0.) {
+    if(xr>0){return zeta2;}
+    else{return -0.5*zeta2;}
+  }
+  else if(r2<=1.&&xr>0.5) {
+    z=-log(x);
+    return -Li2Prod(z,z*z)+zeta2-log(x)*log(1.-x);
+  }
+  else {
+    z=-log(1.-x);
+    return Li2Prod(z,z*z);
+  }
 }
 
-long double ReLi2(long double x)
-{
+long double ReLi2(long double x) {
+  using ThePEG::Constants::zeta2;
   long double z;
-  static long double zeta2= 1.644934066848226e0;
   long double output;
-  if(x>1.&&x<2.)
-    {
-      z=-log(1./x);
-      output= Li2Prod(z,z*z)+zeta2-log(x)*log(x-1.)+0.5*log(x)*log(x);
-    }
-  else if (x>1.||x<-1.) 
-    {
-      z=-log(1.-1./x);
-      if(x<-1){output= -Li2Prod(z,z*z)-zeta2-0.5*pow(log(-x),2);}
-      else{output= -Li2Prod(z,z*z)-0.5*pow(log(x),2)+2.*zeta2;}
-    }
+  if(x>1.&&x<2.) {
+    z=-log(1./x);
+    output= Li2Prod(z,z*z)+zeta2-log(x)*log(x-1.)+0.5*log(x)*log(x);
+  }
+  else if (x>1.||x<-1.) {
+    z=-log(1.-1./x);
+    if(x<-1){output= -Li2Prod(z,z*z)-zeta2-0.5*pow(log(-x),2);}
+    else{output= -Li2Prod(z,z*z)-0.5*pow(log(x),2)+2.*zeta2;}
+  }
   else if(x== 1.){output= zeta2;}
   else if(x==-1.){output= -0.5*zeta2;}
-  else if(x>0.5)
-    {
-      z=-log(x);
-      output= -Li2Prod(z,z*z)+zeta2-log(x)*log(1.-x);
-    }
-  else
-    {
-      z=-log(1.-x);
-      output= Li2Prod(z,z*z);
-    }
+  else if(x>0.5) {
+    z=-log(x);
+    output= -Li2Prod(z,z*z)+zeta2-log(x)*log(1.-x);
+  }
+  else {
+    z=-log(1.-x);
+    output= Li2Prod(z,z*z);
+  }
   return output;
 }
-
-
 
 }
 }
