@@ -367,7 +367,7 @@ protected:
    * @param identical Whether or not the outgoing particles are identical
    */
   Energy2 guesst (Energy2 t1,unsigned int iopt, const IdList &ids,
-		  double enhance, bool identical, const double & detune) const;
+		  double enhance, bool identical, double detune) const;
 
   /**
    * Veto on the PDF for the initial-state shower
@@ -400,7 +400,7 @@ protected:
 		       const IdList &ids, 
 		       const bool mass,
 		       const RhoDMatrix & rho,
-		       const double & detune) const {
+		       double detune) const {
     return UseRandom::rnd()>SplittingFnVetoRatio(t,ids,mass,rho,detune);
   }
   
@@ -412,7 +412,7 @@ protected:
 			      const IdList &ids,
 			      const bool mass,
 			      const RhoDMatrix & rho,
-			      const double & detune) const {
+			      double detune) const {
     return splittingFn_->ratioP(z_, t, ids,mass,rho)/detune;
   }
 

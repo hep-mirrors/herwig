@@ -1992,7 +1992,7 @@ deconstructFinalStateSystem(const LorentzRotation &   toRest,
   }
 }
 
-Energy QTildeReconstructor::momConsEq(const double & k, 
+Energy QTildeReconstructor::momConsEq(double k, 
 				      const Energy & root_s, 
 				      const JetKinVect & jets) const {
   static const Energy2 eps=1e-8*GeV2;

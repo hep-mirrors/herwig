@@ -464,7 +464,7 @@ protected:
    * @param root_s The centre-of-mass energy
    * @param jets The jets
    */
-  Energy momConsEq(const double & k, const Energy & root_s,
+  Energy momConsEq(double k, const Energy & root_s,
 		   const JetKinVect & jets) const;
 
 

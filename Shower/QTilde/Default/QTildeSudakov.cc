@@ -44,7 +44,7 @@ void QTildeSudakov::Init() {
 }
 
 bool QTildeSudakov::guessTimeLike(Energy2 &t,Energy2 tmin,double enhance,
-				  const double & detune) {
+				  double detune) {
   Energy2 told = t;
   // calculate limits on z and if lower>upper return
   if(!computeTimeLikeLimits(t)) return false;
@@ -63,7 +63,7 @@ bool QTildeSudakov::guessTimeLike(Energy2 &t,Energy2 tmin,double enhance,
 
 bool QTildeSudakov::guessSpaceLike(Energy2 &t, Energy2 tmin, const double x,
 				   double enhance,
-				   const double & detune) {
+				   double detune) {
   Energy2 told = t;
   // calculate limits on z if lower>upper return
   if(!computeSpaceLikeLimits(t,x)) return false;
@@ -341,7 +341,7 @@ ShoKinPtr QTildeSudakov::generateNextDecayBranching(const Energy startingScale,
 }
 
 bool QTildeSudakov::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
-			       double enhance, const double & detune) {
+			       double enhance, double detune) {
   // previous scale
   Energy2 told = t;
   // overestimated limits on z

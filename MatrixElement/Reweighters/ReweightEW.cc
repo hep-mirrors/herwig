@@ -62,7 +62,7 @@ double ReweightEW::weight() const{
   }
 }
 
-void ReweightEW::setSTK(const double &s, const double &t, const double &K) {
+void ReweightEW::setSTK(double s, double t, double K) {
   thelasts = s;
   thelastt = t; 
   thelastk = K; 

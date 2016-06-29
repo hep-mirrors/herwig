@@ -175,7 +175,7 @@ protected:
    * Set integration weight
    * @param wgt Maximum integration weight 
    */
-  void setWeight(const double & wgt) { _maxweight = wgt; }
+  void setWeight(double wgt) { _maxweight = wgt; }
 
   /**
    * Set colour connections

@@ -23,9 +23,9 @@ namespace Statistics {
     /**
      * Construct an eventContribution with given width
      */
-    EventContribution(const double& newCentralValue,
-		      const double& newWeight,
-		      const double& newWidth = 0.0)
+    EventContribution(double newCentralValue,
+		      double newWeight,
+		      double newWidth = 0.0)
       : theCentralValue(newCentralValue),
 	theSupport(newCentralValue - newWidth/2.,
 		   newCentralValue + newWidth/2.),
@@ -36,7 +36,7 @@ namespace Statistics {
     /**
      * Return the central value
      */
-    const double& centralValue() const { return theCentralValue; }
+    double centralValue() const { return theCentralValue; }
 
     /**
      * Return the support

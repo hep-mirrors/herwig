@@ -183,7 +183,7 @@ protected:
    * @param enhance The radiation enhancement factor
    * @return False if scale less than minimum, true otherwise
    */
-  bool guessTimeLike(Energy2 &t, Energy2 tmin, double enhance, const double & detune);
+  bool guessTimeLike(Energy2 &t, Energy2 tmin, double enhance, double detune);
 
   /**
    * Value of the energy fraction and scale for time-like branching
@@ -193,7 +193,7 @@ protected:
    * @param enhance The radiation enhancement factor
    */
   bool guessDecay(Energy2 &t, Energy2 tmax,Energy minmass,
-		  double enhance, const double & detune);
+		  double enhance, double detune);
 
   /**
    * Value of the energy fraction and scale for space-like branching
@@ -203,7 +203,7 @@ protected:
    * @param enhance The radiation enhancement factor
    */
   bool guessSpaceLike(Energy2 &t, Energy2 tmin, const double x,
-		      double enhance, const double & detune);
+		      double enhance, double detune);
   //@}
 
   /**

@@ -189,7 +189,7 @@ protected:
    * @param low The lower limit for the inner integral.
    * @param upp The upper limit for the inner integral.
    */
-  void outerVariables(const double & x, Energy2 & low, Energy2 & upp) const;
+  void outerVariables(double x, Energy2 & low, Energy2 & upp) const;
 
 private:
 
