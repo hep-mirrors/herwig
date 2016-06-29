@@ -61,7 +61,7 @@ public:
   /**
    * The default constructor.
    */
-  SplittingGenerator() {}
+  SplittingGenerator() : _deTuning(1.) {}
   //@}
 
 public:
@@ -318,6 +318,11 @@ private:
    * Lists of the branchings and the appropriate Sudakovs for backward branchings.
    */
   BranchingList _bbranchings;
+
+  /**
+   *   The detuning parameter
+   */
+  double _deTuning;
 };
 
 }

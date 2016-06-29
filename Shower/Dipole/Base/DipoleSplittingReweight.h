@@ -15,6 +15,8 @@
 #include "ThePEG/Handlers/HandlerBase.h"
 #include "DipoleSplittingInfo.h"
 
+#include "Herwig/Shower/Dipole/DipoleShowerHandler.fh"
+
 namespace Herwig {
 
 using namespace ThePEG;
@@ -49,12 +51,29 @@ public:
 public:
 
   /**
-   * Return the range of reweight factors for the given dipole type.
+   * Return true, if the reweighting should be applied to the first
+   * interaction
    */
-  virtual pair<double,double> reweightBounds(const DipoleIndex&) const = 0;
+  virtual bool firstInteraction() const { return true; }
 
   /**
-   * Return the reweight factor for the given splitting type.
+   * Return true, if the reweighting should be applied to the secondary
+   * interactions
+   */
+  virtual bool secondaryInteractions() const { return false; }
+
+  /**
+   * Update the pointer to the currently active dipole shower handler object.
+   */
+  void updateCurrentHandler();
+
+  /**
+   * Return the pointer to the currently active dipole shower handler object.
+   */
+  Ptr<DipoleShowerHandler>::tptr currentHandler() const;
+
+  /**
+   * Return the reweighting factor for the given splitting type.
    */
   virtual double evaluate(const DipoleSplittingInfo&) const = 0;
 
@@ -100,6 +119,11 @@ private:
    * In fact, it should not even be implemented.
    */
   DipoleSplittingReweight & operator=(const DipoleSplittingReweight &);
+
+  /**
+   * A pointer to the currently active dipole shower handler object.
+   */
+  Ptr<DipoleShowerHandler>::tptr theCurrentHandler;
 
 };
 

@@ -26,7 +26,7 @@ using namespace Herwig;
 DipoleSplittingGenerator::DipoleSplittingGenerator() 
   : HandlerBase(),
     theExponentialGenerator(0), prepared(false), presampling(false),
-    theDoCompensate(false) {
+    theDoCompensate(false), theSplittingWeight(1.) {
   if ( ShowerHandler::currentHandler() )
     setGenerator(ShowerHandler::currentHandler()->generator());
 }
@@ -55,6 +55,30 @@ void DipoleSplittingGenerator::resetVariations() {
   for ( map<string,double>::iterator w = currentWeights.begin();
 	w != currentWeights.end(); ++w )
     w->second = 1.;
+}
+
+void DipoleSplittingGenerator::veto(const vector<double>&, double p, double r) {
+  double factor = 1.;
+  if ( splittingReweight() ) {
+    if ( ( ShowerHandler::currentHandler()->firstInteraction() && splittingReweight()->firstInteraction() ) ||
+	 ( !ShowerHandler::currentHandler()->firstInteraction() && splittingReweight()->secondaryInteractions() ) ) {
+      factor = splittingReweight()->evaluate(generatedSplitting);
+      theSplittingWeight *= (r-factor*p)/(r-p);
+    }
+  }
+  splittingKernel()->veto(generatedSplitting, factor*p, r, currentWeights);
+}
+
+void DipoleSplittingGenerator::accept(const vector<double>&, double p, double r) {
+  double factor = 1.;
+  if ( splittingReweight() ) {
+    if ( ( ShowerHandler::currentHandler()->firstInteraction() && splittingReweight()->firstInteraction() ) ||
+	 ( !ShowerHandler::currentHandler()->firstInteraction() && splittingReweight()->secondaryInteractions() ) ) {
+      factor = splittingReweight()->evaluate(generatedSplitting);
+      theSplittingWeight *= factor;
+    }
+  }
+  splittingKernel()->accept(generatedSplitting, factor*p, r, currentWeights);
 }
 
 void DipoleSplittingGenerator::prepare(const DipoleSplittingInfo& sp) {
@@ -145,11 +169,6 @@ void DipoleSplittingGenerator::fixParameters(const DipoleSplittingInfo& sp,
     ++shift;
   }
 
-  if ( splittingReweight() ) {
-    parameters[shift] = splittingReweight()->evaluate(sp);
-    ++shift;
-  }
-
   if ( splittingKernel()->nDimAdditional() )
     copy(sp.lastSplittingParameters().begin(),sp.lastSplittingParameters().end(),parameters.begin()+shift);
 
@@ -175,9 +194,6 @@ int DipoleSplittingGenerator::nDim() const {
   if ( generatedSplitting.index().spectatorPDF().pdf() ) {
     ++ret;
   }  
-
-  if ( splittingReweight() )
-    ++ret;
 
   ret += splittingKernel()->nDimAdditional();
 
@@ -218,19 +234,6 @@ const pair<vector<double>,vector<double> >& DipoleSplittingGenerator::support() 
 
   upper[0] = kSupport.second;
   upper[1] = xSupport.second;
-
-  if ( splittingReweight() ) {
-    pair<double,double> bounds = splittingReweight()->reweightBounds(generatedSplitting.index());
-    int pos = 4;
-    if ( generatedSplitting.index().emitterPDF().pdf() ) {
-      ++pos;
-    }  
-    if ( generatedSplitting.index().spectatorPDF().pdf() ) {
-      ++pos;
-    }  
-    lower[pos] = bounds.first;
-    upper[pos] = bounds.second;
-  }
 
   theSupport.first = lower;
   theSupport.second = upper;
@@ -278,8 +281,7 @@ bool DipoleSplittingGenerator::overestimate(const vector<double>& point) {
 
   return 
     ( generatedSplitting.splittingKinematics()->jacobianOverestimate() * 
-      splittingKernel()->overestimate(generatedSplitting) *
-      (splittingReweight() ? splittingReweight()->evaluate(generatedSplitting) : 1.) );
+      splittingKernel()->overestimate(generatedSplitting) );
 
 }
 
@@ -331,9 +333,6 @@ double DipoleSplittingGenerator::evaluate(const vector<double>& point) {
       ++shift;
     }
 
-    if ( splittingReweight() )
-      ++shift;
-
     if ( splittingKernel()->nDimAdditional() )
       copy(point.begin()+shift,point.end(),split.splittingParameters().begin());
 
@@ -360,12 +359,6 @@ double DipoleSplittingGenerator::evaluate(const vector<double>& point) {
   if ( !presampling )
     splittingKernel()->clearAlphaPDFCache();
   double kernel = splittingKernel()->evaluate(split);
-  if ( splittingReweight() ) {
-    if ( !presampling )
-      kernel *= splittingReweight()->evaluate(split);
-    else
-      kernel *= point[shift-1];
-  }
   double jac = split.splittingKinematics()->jacobian();
 
   // multiply in the profile scales when relevant
@@ -412,6 +405,7 @@ void DipoleSplittingGenerator::doGenerate(map<string,double>& variations,
   }
 
   resetVariations();
+  theSplittingWeight = 1.;
 
   while (true) {
     try {
@@ -422,6 +416,7 @@ void DipoleSplittingGenerator::doGenerate(map<string,double>& variations,
       }
     } catch (exsample::exponential_regenerate&) {
       resetVariations();
+      theSplittingWeight = 1.;
       generatedSplitting.hardPt(startPt);
       continue;
     } catch (exsample::hit_and_miss_maxtry&) {

@@ -585,9 +585,8 @@ insert DiagramGenerator:Vertices 0 /Herwig/Vertices/GGGVertex
 insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFPVertex
 insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFZVertex
 
-cp /Herwig/Vertices/FFWVertex /Herwig/Vertices/FFWDiagonalVertex
-set /Herwig/Vertices/FFWDiagonalVertex:Diagonal Yes
-insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFWDiagonalVertex
+cp /Herwig/Vertices/FFWVertex /Herwig/Vertices/FFWMatchboxVertex
+insert DiagramGenerator:Vertices 0 /Herwig/Vertices/FFWMatchboxVertex
 
 insert DiagramGenerator:Vertices 0 /Herwig/Vertices/WWHVertex
 insert DiagramGenerator:Vertices 0 /Herwig/Vertices/WWWVertex
