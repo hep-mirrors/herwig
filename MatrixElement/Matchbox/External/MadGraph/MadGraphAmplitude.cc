@@ -249,6 +249,7 @@ bool MadGraphAmplitude::initializeExternal() {
   
   string cmd = "python " + bindir_ + "/mg2herwig ";
   cmd +=" --buildpath "+mgProcLibPath();
+  cmd += !theProcessPath.empty() ? " --absolute-links" : "";
   cmd +=" --model "+theMGmodel;
   cmd +=" --runpath "+factory()->runStorage()+"/MadGraphAmplitudes ";
   cmd +=" --datadir "+pkgdatadir_;

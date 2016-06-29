@@ -54,7 +54,9 @@ void VBFNLOAmplitude::signOLP(const string& order, const string& contract) {
   OLP_Order(const_cast<char*>(order.c_str()),
 	    const_cast<char*>(contract.c_str()),&status);
   if ( status != 1 )
-    throw Exception() << "VBFNLOAmplitude: Failed to sign contract with VBFNLO"
+    throw Exception() << "VBFNLOAmplitude: Failed to sign contract with VBFNLO.\n"
+                      << "The BLHA contract file " << contract << "\n"
+                      << "may contain further details about the error."
 		      << Exception::runerror;
 }
 

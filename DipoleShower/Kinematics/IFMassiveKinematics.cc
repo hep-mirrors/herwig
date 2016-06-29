@@ -275,12 +275,12 @@ void IFMassiveKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 
-void IFMassiveKinematics::persistentOutput(PersistentOStream & os) const {
-  os << theCollinearScheme;
+void IFMassiveKinematics::persistentOutput(PersistentOStream &) const {
+  //os << theCollinearScheme;
 }
 
-void IFMassiveKinematics::persistentInput(PersistentIStream & is, int) {
-  is >> theCollinearScheme;
+void IFMassiveKinematics::persistentInput(PersistentIStream &, int) {
+  //is >> theCollinearScheme;
 }
 
 ClassDescription<IFMassiveKinematics> IFMassiveKinematics::initIFMassiveKinematics;
@@ -292,7 +292,7 @@ void IFMassiveKinematics::Init() {
     ("IFMassiveKinematics implements massless splittings "
      "off a initial-final dipole.");
 
-
+  /*
   static Switch<IFMassiveKinematics,bool> interfaceCollinearScheme
     ("CollinearScheme",
      "[experimental] Switch on or off the collinear scheme",
@@ -309,6 +309,7 @@ void IFMassiveKinematics::Init() {
      false);
 
   interfaceCollinearScheme.rank(-1);
+  */
 
 }
 

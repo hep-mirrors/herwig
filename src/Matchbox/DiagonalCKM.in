@@ -1,0 +1,6 @@
+# -*- ThePEG-repository -*-
+
+set /Herwig/MatrixElements/Matchbox/Factory:QuarkFlavourDiagonal Yes
+
+set /Herwig/Vertices/FFWMatchboxVertex:Diagonal Yes
+

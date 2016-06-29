@@ -11,4 +11,4 @@ HwDipoleShower_la_LIBADD = \
 	Utility/libHwDipoleShowerUtility.la
 
 HwDipoleShower_la_SOURCES =  \
-	DipoleShowerHandler.h DipoleShowerHandler.cc
+	DipoleShowerHandler.h DipoleShowerHandler.fh DipoleShowerHandler.cc

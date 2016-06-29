@@ -55,7 +55,10 @@ MCatNLO-Default-ShowerAlphaSTune.in \
 Powheg-Default-HardAlphaSTune.in \
 Powheg-Default-ShowerAlphaSTune.in \
 MCatNLO-Dipole-HardAlphaSTune.in \
-MCatNLO-Dipole-ShowerAlphaSTune.in
+MCatNLO-Dipole-ShowerAlphaSTune.in \
+StandardModelLike.in \
+DiagonalCKM.in \
+NonDiagonalCKM.in
 
 dist_Matchbox_DATA = $(INPUTFILES)
 

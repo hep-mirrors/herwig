@@ -61,7 +61,7 @@ public:
   /**
    * The default constructor.
    */
-  SplittingGenerator() : _isr_Mode(1), _fsr_Mode(1) {}
+  SplittingGenerator() : _isr_Mode(1), _fsr_Mode(1), _deTuning(1.) {}
   //@}
 
 public:
@@ -348,6 +348,11 @@ private:
    * Lists of the branchings and the appropriate Sudakovs for backward branchings.
    */
   BranchingList _bbranchings;
+
+  /**
+   *   The detuning parameter
+   */
+  double _deTuning;
 };
 
 }

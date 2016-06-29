@@ -250,15 +250,20 @@ public:
   /**
    * Indicate that a veto with the given kernel value and overestimate has occured.
    */
-  void veto(const vector<double>&, double p, double r) {
-    splittingKernel()->veto(generatedSplitting, p, r, currentWeights);
-  }
+  void veto(const vector<double>&, double p, double r);
 
   /**
    * Indicate that an accept with the given kernel value and overestimate has occured.
    */
-  void accept(const vector<double>&, double p, double r) {
-    splittingKernel()->accept(generatedSplitting, p, r, currentWeights);
+  void accept(const vector<double>&, double p, double r);
+
+  /**
+   * Return the weight associated to the currently generated splitting
+   */
+  double splittingWeight() const {
+    if ( wrapping() )
+      return theOtherGenerator->splittingWeight();
+    return theSplittingWeight;
   }
 
   /**
@@ -424,6 +429,11 @@ private:
    * The currently used weight map
    */
   map<string,double> currentWeights;
+
+  /**
+   * The weight associated to the currently generated splitting
+   */
+  double theSplittingWeight;
 
 private:
 
