@@ -420,9 +420,11 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
   candidate.configuration(conf);
   candidate.emitterX(emitterX);
   candidate.spectatorX(spectatorX);
+  candidate.emitter(emitter);
+  candidate.spectator(spectator);
 
   if ( generators().find(candidate.index()) == generators().end() )
-    getGenerators(candidate.index());
+    getGenerators(candidate.index(),theSplittingReweight);
 
   //
   // NOTE -- needs proper fixing at some point
@@ -735,7 +737,8 @@ void DipoleShowerHandler::resetAlphaS(Ptr<AlphaSBase>::tptr as) {
 
   for ( vector<Ptr<DipoleSplittingKernel>::ptr>::iterator k = kernels.begin();
 	k != kernels.end(); ++k ) {
-    (**k).alphaS(as);
+    if ( !(**k).alphaS() )
+      (**k).alphaS(as);
     (**k).renormalizationScaleFreeze(theRenormalizationScaleFreeze);
     (**k).factorizationScaleFreeze(theFactorizationScaleFreeze);
   }
@@ -776,8 +779,12 @@ void DipoleShowerHandler::getGenerators(const DipoleIndex& ind,
 	new_ptr(DipoleSplittingGenerator());
       nGenerator->doCompensate(theDoCompensate);
       nGenerator->splittingKernel(*k);
-      nGenerator->splittingKernel()->renormalizationScaleFactor(renormalizationScaleFactor());
-      nGenerator->splittingKernel()->factorizationScaleFactor(factorizationScaleFactor());
+      if ( renormalizationScaleFactor() != 1. )
+	nGenerator->splittingKernel()->renormalizationScaleFactor(renormalizationScaleFactor());
+      if ( factorizationScaleFactor() != 1. )
+	nGenerator->splittingKernel()->factorizationScaleFactor(factorizationScaleFactor());
+      if ( !nGenerator->splittingReweight() )
+	nGenerator->splittingReweight(rw);
       nGenerator->splittingKernel()->freezeGrid(theFreezeGrid);
       nGenerator->splittingKernel()->detuning(theDetuning);
 
@@ -811,7 +818,6 @@ void DipoleShowerHandler::getGenerators(const DipoleIndex& ind,
 
       DipoleSplittingInfo dummy;
       dummy.index(ind);
-      nGenerator->splittingReweight(rw);
       nGenerator->prepare(dummy);
 
       generators().insert(make_pair(ind,nGenerator));
@@ -839,8 +845,6 @@ void DipoleShowerHandler::doinit() {
   ShowerHandler::doinit();
   if ( theGlobalAlphaS )
     resetAlphaS(theGlobalAlphaS);
-  if ( theSplittingReweight )
-    resetReweight(theSplittingReweight);
 }
 
 void DipoleShowerHandler::dofinish() {
