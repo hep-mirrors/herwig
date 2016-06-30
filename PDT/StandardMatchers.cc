@@ -21,12 +21,13 @@ namespace {
 void dummy() {
 
   static MatchPhoton m00;
-  static MatchTop    m01;
-  static MatchHadron m02;
-  static MatchWBoson m03;
-  static MatchZBoson m04;
-  static MatchHiggsBoson m05;
-  static MatchChargedLepton m06;
+  static MatchBottom m01;
+  static MatchTop    m02;
+  static MatchHadron m03;
+  static MatchWBoson m04;
+  static MatchZBoson m05;
+  static MatchHiggsBoson m06;
+  static MatchChargedLepton m07;
 }
 
 }

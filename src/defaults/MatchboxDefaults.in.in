@@ -675,6 +675,9 @@ set LeptonCut:Matcher /Herwig/Matchers/Lepton
 cp IdentifiedParticleCut ChargedLeptonCut
 set ChargedLeptonCut:Matcher /Herwig/Matchers/ChargedLepton
 
+cp IdentifiedParticleCut BottomQuarkCut
+set BottomQuarkCut:Matcher /Herwig/Matchers/Bottom
+
 cp IdentifiedParticleCut TopQuarkCut
 set TopQuarkCut:Matcher /Herwig/Matchers/Top
 
@@ -715,6 +718,8 @@ set ChargedLeptonPairMassCut:SecondMatcher /Herwig/Matchers/ChargedLepton
 
 create Herwig::MissingPtCut MissingPtCut
 set MissingPtCut:Matcher /Herwig/Matchers/Neutrino
+
+
 
 ################################################################################
 # Setup scale choices
