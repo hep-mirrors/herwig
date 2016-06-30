@@ -420,6 +420,8 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
   candidate.configuration(conf);
   candidate.emitterX(emitterX);
   candidate.spectatorX(spectatorX);
+  candidate.emitter(emitter);
+  candidate.spectator(spectator);
 
   if ( generators().find(candidate.index()) == generators().end() )
     getGenerators(candidate.index(),theSplittingReweight);
