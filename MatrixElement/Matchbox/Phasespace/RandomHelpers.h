@@ -182,7 +182,11 @@ template<class Density>
 pair<double,double> generate(const Generator<Density>& gen,
 			     double r) {
   double x = gen(r);
-  return make_pair(x,gen.normalization()/gen.value(x));
+
+  if ( gen.value(x) != 0. )
+    return make_pair(x,gen.normalization()/gen.value(x));
+  else
+    return make_pair(x,0.);
 }
 
 /**

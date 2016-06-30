@@ -37,7 +37,8 @@ namespace exsample {
   void cell_info::explore(Random& rnd_gen,
 			  const adaption_info& ainfo,
 			  Function* function, statistics* stats,
-			  SlaveStatistics& opt) {
+			  SlaveStatistics& opt,
+			  double detuning) {
     function->start_presampling();
     unsigned long n_sampled = 0;
     std::vector<double> ll = lower_left_;
@@ -50,7 +51,7 @@ namespace exsample {
       std::transform(ll.begin(),ll.end(),
 		     ur.begin(),pos.begin(),
 		     rnd_gen);
-      val = function->evaluate(pos);
+      val = function->evaluate(pos) * detuning;
       vals.push_back( std::pair<double,std::vector<double> > (val,pos) );
       if ( val != 0 ) ivalnonzero++;
       ++n_sampled;
@@ -97,7 +98,8 @@ namespace exsample {
 
   template<class Random, class Function>
   void cell_info::explore (Random& rnd_gen,
-			   const adaption_info& ainfo, Function* function) {
+			   const adaption_info& ainfo, Function* function,
+			   double detuning) {
     function->start_presampling();
     unsigned long n_sampled = 0;
     std::vector<double> ll = lower_left_;
@@ -109,7 +111,7 @@ namespace exsample {
       std::transform(ll.begin(),ll.end(),
 		     ur.begin(),pos.begin(),
 		     rnd_gen);
-      val = function->evaluate(pos);
+      val = function->evaluate(pos) * detuning;
       if ( std::abs(val) > 0 )
         vals.push_back( std::pair<double,std::vector<double> > (std::abs(val),pos) );
       ++n_sampled;
@@ -228,7 +230,8 @@ namespace exsample {
 	       Random& rnd_gen,
 	       Function* function,
 	       const adaption_info& ainfo,
-	       const std::vector<bool>& sampled) {
+	       const std::vector<bool>& sampled,
+	       double detuning) {
     assert(!missing_events() && !info().parametric_compensating());
     split_dimension_ = split_d.first;
     split_point_ = split_d.second;
@@ -246,11 +249,11 @@ namespace exsample {
       children = std::pair<cell,cell> (cell(lower_left1,upper_right1,sampled,ainfo),
 				       cell(lower_left2,upper_right2,sampled,ainfo));
     if (info().last_max_position()[split_dimension_] <= split_point_) {
-      children.first.info().overestimate(info().overestimate(),info().last_max_position());
-      children.second.info().explore(rnd_gen,ainfo,function);
+      children.first.info().overestimate(info().overestimate(),info().last_max_position(),1.0);
+      children.second.info().explore(rnd_gen,ainfo,function,detuning);
     } else {
-      children.second.info().overestimate(info().overestimate(),info().last_max_position());
-      children.first.info().explore(rnd_gen,ainfo,function);
+      children.second.info().overestimate(info().overestimate(),info().last_max_position(),1.0);
+      children.first.info().explore(rnd_gen,ainfo,function,detuning);
     }
     cell_info_.reset(0);
     children.first.integral(children.first.info().volume() * children.first.info().overestimate());

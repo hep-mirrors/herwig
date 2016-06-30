@@ -9,10 +9,11 @@ set MatchboxJetMatcher:Factory /Herwig/MatrixElements/Matchbox/Factory
 insert Cuts:OneCuts[0] PhotonCut
 insert Cuts:OneCuts[1] LeptonCut
 insert Cuts:OneCuts[2] TopQuarkCut
-insert Cuts:OneCuts[3] WBosonCut
-insert Cuts:OneCuts[4] ZBosonCut
-insert Cuts:OneCuts[5] HiggsBosonCut
-insert Cuts:OneCuts[6] ChargedLeptonCut
+insert Cuts:OneCuts[3] BottomQuarkCut
+insert Cuts:OneCuts[4] WBosonCut
+insert Cuts:OneCuts[5] ZBosonCut
+insert Cuts:OneCuts[6] HiggsBosonCut
+insert Cuts:OneCuts[7] ChargedLeptonCut
 insert Cuts:TwoCuts[0] LeptonPairMassCut
 insert Cuts:TwoCuts[1] ChargedLeptonPairMassCut
 insert Cuts:TwoCuts[2] LeptonDeltaRCut

@@ -18,6 +18,7 @@ create ThePEG::Matcher<LightAntiQuark> LightAntiQuark
 create ThePEG::Matcher<StandardQCDParton> StandardQCDParton
 create ThePEG::Matcher<Photon> Photon
 create ThePEG::Matcher<Top> Top
+create ThePEG::Matcher<Bottom> Bottom
 create ThePEG::Matcher<WBoson> WBoson
 create ThePEG::Matcher<ZBoson> ZBoson
 create ThePEG::Matcher<HiggsBoson> HiggsBoson

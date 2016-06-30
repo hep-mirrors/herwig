@@ -91,6 +91,11 @@ public:
 public:
 
   /**
+   * Reset the current variations to one
+   */
+  void resetVariations();
+
+  /**
    * Prepare to fill the given splitting.
    */
   void prepare(const DipoleSplittingInfo&);
@@ -101,6 +106,7 @@ public:
    * pt selected for the next splitting.
    */
   Energy generate(const DipoleSplittingInfo&,
+		  map<string,double>& variations,
 		  Energy optHardPt = ZERO,
 		  Energy optCutoff = ZERO);
 
@@ -111,6 +117,7 @@ public:
    * from a wrapping generator.
    */
   Energy generateWrapped(DipoleSplittingInfo&,
+			 map<string,double>& variations,
 			 Energy optHardPt = ZERO,
 			 Energy optCutoff = ZERO);
 
@@ -151,7 +158,8 @@ protected:
    * through fixParameters generate the next
    * splitting.
    */
-  void doGenerate(Energy optCutoff = ZERO);
+  void doGenerate(map<string,double>& variations,
+		  Energy optCutoff = ZERO);
 
 public:
 
@@ -212,6 +220,11 @@ public:
   unsigned long freezeGrid() const { return splittingKernel()->freezeGrid(); }
 
   /**
+   * Return the detuning factor applied to the sampling overestimate kernel
+   */
+  double detuning() const { return splittingKernel()->detuning(); }
+
+  /**
    * Return true, if this splitting generator
    * is able to deliver an overestimate to the sampled
    * kernel.
@@ -233,6 +246,25 @@ public:
    * Evalute the splitting kernel.
    */
   double evaluate(const vector<double>&);
+
+  /**
+   * Indicate that a veto with the given kernel value and overestimate has occured.
+   */
+  void veto(const vector<double>&, double p, double r);
+
+  /**
+   * Indicate that an accept with the given kernel value and overestimate has occured.
+   */
+  void accept(const vector<double>&, double p, double r);
+
+  /**
+   * Return the weight associated to the currently generated splitting
+   */
+  double splittingWeight() const {
+    if ( wrapping() )
+      return theOtherGenerator->splittingWeight();
+    return theSplittingWeight;
+  }
 
   /**
    * True, if sampler should apply compensation
@@ -392,6 +424,16 @@ private:
    * True, if sampler should apply compensation
    */
   bool theDoCompensate;
+
+  /**
+   * The currently used weight map
+   */
+  map<string,double> currentWeights;
+
+  /**
+   * The weight associated to the currently generated splitting
+   */
+  double theSplittingWeight;
 
 private:
 

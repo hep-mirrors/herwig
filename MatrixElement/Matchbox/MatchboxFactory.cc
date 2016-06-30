@@ -53,7 +53,10 @@ MatchboxFactory::MatchboxFactory()
     thePoleData(""), theRealEmissionScales(false), theAllProcesses(false),
   theMECorrectionsOnly(false), theLoopSimCorrections(false), ranSetup(false),
   theFirstPerturbativePDF(true), theSecondPerturbativePDF(true),
-  inProductionMode(false), theSpinCorrelations(false),theAlphaParameter(1.) {}
+  inProductionMode(false), theSpinCorrelations(false),theAlphaParameter(1.),
+  theEnforceChargeConservation(true), theEnforceColourConservation(false),
+  theEnforceLeptonNumberConservation(false), theEnforceQuarkNumberConservation(false),
+  theLeptonFlavourDiagonal(false), theQuarkFlavourDiagonal(false) {}
 
 MatchboxFactory::~MatchboxFactory() {}
 
@@ -1274,7 +1277,10 @@ void MatchboxFactory::persistentOutput(PersistentOStream & os) const {
      << theDipoleSet << theReweighters << thePreweighters
      << theMECorrectionsOnly<< theLoopSimCorrections<<theHighestVirtualsize << ranSetup
      << theIncoming << theFirstPerturbativePDF << theSecondPerturbativePDF 
-     << inProductionMode << theSpinCorrelations<<theAlphaParameter;
+     << inProductionMode << theSpinCorrelations << theAlphaParameter
+     << theEnforceChargeConservation << theEnforceColourConservation
+     << theEnforceLeptonNumberConservation << theEnforceQuarkNumberConservation
+     << theLeptonFlavourDiagonal << theQuarkFlavourDiagonal;
 }
 
 void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
@@ -1303,7 +1309,10 @@ void MatchboxFactory::persistentInput(PersistentIStream & is, int) {
      >> theDipoleSet >> theReweighters >> thePreweighters
      >> theMECorrectionsOnly>> theLoopSimCorrections>>theHighestVirtualsize >> ranSetup
      >> theIncoming >> theFirstPerturbativePDF >> theSecondPerturbativePDF
-     >> inProductionMode >> theSpinCorrelations>>theAlphaParameter;
+     >> inProductionMode >> theSpinCorrelations >> theAlphaParameter
+     >> theEnforceChargeConservation >> theEnforceColourConservation
+     >> theEnforceLeptonNumberConservation >> theEnforceQuarkNumberConservation
+     >> theLeptonFlavourDiagonal >> theQuarkFlavourDiagonal;
 }
 
 string MatchboxFactory::startParticleGroup(string name) {
@@ -1362,6 +1371,15 @@ struct SortPID {
   }
 };
 
+//
+// @TODO
+//
+// SP: After improving this for standard model process building this should
+// actually got into a separate process builder class or something along these
+// lines to have it better factored for use with BSM models.
+//
+//
+
 set<PDVector> MatchboxFactory::
 makeSubProcesses(const vector<string>& proc) const {
 
@@ -1386,38 +1404,68 @@ makeSubProcesses(const vector<string>& proc) const {
 
   set<PDVector> allProcs;
 
-  /*
-  cerr << "using the groups:\n";
-  for ( size_t k = 0; k < groups.size(); ++k ) {
-    cerr << k << " : ";
-    for ( PDVector::const_iterator p = groups[k].begin();
-	  p != groups[k].end(); ++p )
-      cerr << (**p).PDGName() << " ";
-    cerr << "\n" << flush;
-  }
-  */
-
   while ( true ) {
 
     for ( size_t k = 0; k < groups.size(); ++k )
       proto[k] = groups[k][counts[k]];
 
-    /*
-    cerr << "trying : ";
-    for ( vector<size_t>::const_iterator c = counts.begin();
-	  c != counts.end(); ++c )
-      cerr << *c << " ";
-    cerr << "\n" << flush;
-    for ( size_t k = 0; k < groups.size(); ++k )
-      cerr << groups[k][counts[k]]->PDGName() << " ";
-    cerr << "\n" << flush;
-    */
+    int charge = 0;
+    int colour = 0;
+    int nleptons = 0;
+    int nquarks = 0;
+    int ncolour = 0;
 
-    int charge = -proto[0]->iCharge() -proto[1]->iCharge();
-    for ( size_t k = 2; k < proto.size(); ++k )
-      charge += proto[k]->iCharge();
+    int nleptonsGen[4];
+    int nquarksGen[4];
+    for ( size_t i = 0; i < 4; ++i ) {
+      nleptonsGen[i] = 0;
+      nquarksGen[i] = 0;
+    }
 
-    if ( charge == 0 ) {
+    for ( size_t k = 0; k < proto.size(); ++k ) {
+      int sign = k > 1 ? 1 : -1;
+      charge += sign * proto[k]->iCharge();
+      colour += sign * proto[k]->iColour();
+      if ( abs(proto[k]->id()) <= 8 ) {
+	int generation = (abs(proto[k]->id()) - 1)/2;
+	nquarks += sign * ( proto[k]->id() < 0 ? -1 : 1);
+	nquarksGen[generation] += sign * ( proto[k]->id() < 0 ? -1 : 1);
+      }
+      if ( abs(proto[k]->id()) > 10 &&
+	   abs(proto[k]->id()) <= 18 ) {
+	int generation = (abs(proto[k]->id()) - 11)/2;
+	nleptons += sign * ( proto[k]->id() < 0 ? -1 : 1);
+	nleptonsGen[generation] += sign * ( proto[k]->id() < 0 ? -1 : 1);
+      }
+      if ( proto[k]->coloured() )
+	++ncolour;
+    }
+
+    bool pass = true;
+
+    if ( theEnforceChargeConservation )
+      pass &= (charge == 0);
+
+    if ( theEnforceColourConservation )
+      pass &= (colour % 8 == 0) && (ncolour > 1);
+
+    if ( theEnforceLeptonNumberConservation ) {
+      pass &= (nleptons == 0);
+      if ( theLeptonFlavourDiagonal ) {
+	for ( size_t i = 0; i < 4; ++i )
+	  pass &= (nleptonsGen[i] == 0);
+      }
+    }
+
+    if ( theEnforceQuarkNumberConservation ) {
+      pass &= (nquarks == 0);
+      if ( theQuarkFlavourDiagonal ) {
+	for ( size_t i = 0; i < 4; ++i )
+	  pass &= (nquarksGen[i] == 0);
+      }
+    }
+
+    if ( pass ) {
       for ( int i = 0; i < 2; ++i ) {
 	if ( proto[i]->coloured() &&
 	     proto[i]->hardProcessMass() != ZERO )
@@ -1953,12 +2001,102 @@ void MatchboxFactory::Init() {
      "",
      false);
   
-  
   static Parameter<MatchboxFactory,double> interfaceAlphaParameter
   ("AlphaParameter",
    "Nagy-AlphaParameter.",
    &MatchboxFactory::theAlphaParameter, 1.0, 0.0, 0,
    false, false, Interface::lowerlim);
+
+
+  static Switch<MatchboxFactory,bool> interfaceEnforceChargeConservation
+    ("EnforceChargeConservation",
+     "Enforce charge conservation while generating the hard process.",
+     &MatchboxFactory::theEnforceChargeConservation, true, false, false);
+  static SwitchOption interfaceEnforceChargeConservationYes
+    (interfaceEnforceChargeConservation,
+     "Yes",
+     "Enforce charge conservation.",
+     true);
+  static SwitchOption interfaceEnforceChargeConservationNo
+    (interfaceEnforceChargeConservation,
+     "No",
+     "Do not enforce charge conservation.",
+     false);
+
+  static Switch<MatchboxFactory,bool> interfaceEnforceColourConservation
+    ("EnforceColourConservation",
+     "Enforce colour conservation while generating the hard process.",
+     &MatchboxFactory::theEnforceColourConservation, false, false, false);
+  static SwitchOption interfaceEnforceColourConservationYes
+    (interfaceEnforceColourConservation,
+     "Yes",
+     "Enforce colour conservation.",
+     true);
+  static SwitchOption interfaceEnforceColourConservationNo
+    (interfaceEnforceColourConservation,
+     "No",
+     "Do not enforce colour conservation.",
+     false);
+
+  static Switch<MatchboxFactory,bool> interfaceEnforceLeptonNumberConservation
+    ("EnforceLeptonNumberConservation",
+     "Enforce lepton number conservation while generating the hard process.",
+     &MatchboxFactory::theEnforceLeptonNumberConservation, false, false, false);
+  static SwitchOption interfaceEnforceLeptonNumberConservationYes
+    (interfaceEnforceLeptonNumberConservation,
+     "Yes",
+     "Enforce lepton number conservation.",
+     true);
+  static SwitchOption interfaceEnforceLeptonNumberConservationNo
+    (interfaceEnforceLeptonNumberConservation,
+     "No",
+     "Do not enforce lepton number conservation.",
+     false);
+
+  static Switch<MatchboxFactory,bool> interfaceEnforceQuarkNumberConservation
+    ("EnforceQuarkNumberConservation",
+     "Enforce quark number conservation while generating the hard process.",
+     &MatchboxFactory::theEnforceQuarkNumberConservation, false, false, false);
+  static SwitchOption interfaceEnforceQuarkNumberConservationYes
+    (interfaceEnforceQuarkNumberConservation,
+     "Yes",
+     "Enforce quark number conservation.",
+     true);
+  static SwitchOption interfaceEnforceQuarkNumberConservationNo
+    (interfaceEnforceQuarkNumberConservation,
+     "No",
+     "Do not enforce quark number conservation.",
+     false);
+
+  static Switch<MatchboxFactory,bool> interfaceLeptonFlavourDiagonal
+    ("LeptonFlavourDiagonal",
+     "Assume that lepton interactions are flavour diagonal while generating the hard process.",
+     &MatchboxFactory::theLeptonFlavourDiagonal, false, false, false);
+  static SwitchOption interfaceLeptonFlavourDiagonalYes
+    (interfaceLeptonFlavourDiagonal,
+     "Yes",
+     "Assume that lepton interactions are flavour diagonal.",
+     true);
+  static SwitchOption interfaceLeptonFlavourDiagonalNo
+    (interfaceLeptonFlavourDiagonal,
+     "No",
+     "Do not assume that lepton interactions are flavour diagonal.",
+     false);
+
+  static Switch<MatchboxFactory,bool> interfaceQuarkFlavourDiagonal
+    ("QuarkFlavourDiagonal",
+     "Assume that quark interactions are flavour diagonal while generating the hard process.",
+     &MatchboxFactory::theQuarkFlavourDiagonal, false, false, false);
+  static SwitchOption interfaceQuarkFlavourDiagonalYes
+    (interfaceQuarkFlavourDiagonal,
+     "Yes",
+     "Assume that quark interactions are flavour diagonal.",
+     true);
+  static SwitchOption interfaceQuarkFlavourDiagonalNo
+    (interfaceQuarkFlavourDiagonal,
+     "No",
+     "Do not assume that quark interactions are flavour diagonal.",
+     false);
 
 }
 

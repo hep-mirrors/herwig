@@ -29,7 +29,7 @@ using namespace Herwig;
 
 MatchboxHtScale::MatchboxHtScale() 
   : theIncludeMT(false), theHTFactor(1.0),
-    theMTFactor(1.0) {}
+    theMTFactor(1.0),theScalePtCut(15.*GeV) {}
 
 MatchboxHtScale::~MatchboxHtScale() {}
 
@@ -63,7 +63,10 @@ Energy2 MatchboxHtScale::renormalizationScale() const {
   tcPDVector::const_iterator pdata = pd.begin();
   vector<LorentzMomentum>::const_iterator mom = p.begin();
   for ( ; mom != p.end(); ++pdata, ++mom ) {
-    if ( theJetFinder->unresolvedMatcher()->check(**pdata) ) {
+    
+    if ( theJetFinder->unresolvedMatcher()->check(**pdata)&&  
+        mom->perp()>theScalePtCut){
+      //abs(mom->rapidity()+(!lastXCombPtr()->head()?lastXCombPtr()->lastY():lastXCombPtr()->head()->lastY()))<5.01
       gotone = true;
       ptJetSum += jetPtWeight(*mom)*mom->perp();
     } else if ( theIncludeMT ) {
@@ -73,8 +76,11 @@ Energy2 MatchboxHtScale::renormalizationScale() const {
 
   if ( !gotone && lastXCombPtr()->willPassCuts() )
     throw Exception() << "MatchboxHtScale::renormalizationScale(): "
-		      << "No jets could be found. Check your setup."
-		      << Exception::runerror;
+                      << "No jets could be found. Check your setup."
+                      << "\nHint: The HT scale is defined with a PtMin cut on jets. (default:) "
+                      << "\n set /Herwig/MatrixElements/Matchbox/ScalesHTScale:JetPtCut 15.*GeV "
+		              << Exception::runerror;
+  
 
   Energy mtNonJetSum = 
     sqrt(nonJetMomentum.perp2() + nonJetMomentum.m2());
@@ -95,11 +101,11 @@ Energy2 MatchboxHtScale::factorizationScale() const {
 
 
 void MatchboxHtScale::persistentOutput(PersistentOStream & os) const {
-  os << theJetFinder << theIncludeMT << theHTFactor << theMTFactor;
+  os << theJetFinder << theIncludeMT << theHTFactor << theMTFactor << ounit(theScalePtCut,GeV);
 }
 
 void MatchboxHtScale::persistentInput(PersistentIStream & is, int) {
-  is >> theJetFinder >> theIncludeMT >> theHTFactor >> theMTFactor;
+  is >> theJetFinder >> theIncludeMT >> theHTFactor >> theMTFactor >> iunit(theScalePtCut,GeV);
 }
 
 
@@ -146,6 +152,12 @@ void MatchboxHtScale::Init() {
     ("MTFactor",
      "A factor to scale the MT contribution.",
      &MatchboxHtScale::theMTFactor, 1.0, 0.0, 0,
+     false, false, Interface::lowerlim);
+
+  static Parameter<MatchboxHtScale,Energy> interfaceScalePtCut
+    ("JetPtCut",
+     "The Pt cut to define jets in the sum.",
+     &MatchboxHtScale::theScalePtCut, 15.*GeV, 0.*GeV, 0.*GeV,
      false, false, Interface::lowerlim);
 
 }

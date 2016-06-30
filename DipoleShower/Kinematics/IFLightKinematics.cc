@@ -25,7 +25,7 @@
 using namespace Herwig;
 
 IFLightKinematics::IFLightKinematics() 
-  : DipoleSplittingKinematics(), theCollinearScheme(false) {}
+  : DipoleSplittingKinematics(), theCollinearScheme(true) {}
 
 IFLightKinematics::~IFLightKinematics() {}
 
@@ -114,6 +114,11 @@ bool IFLightKinematics::generateSplitting(double kappa, double xi, double rphi,
     }
   }
 
+  if ( weight == 0. && z == -1. ) {
+    jacobian(0.0);
+    return false;
+  }
+
   double ratio = sqr(pt/info.scale());
 
   double rho = 1. - 4.*ratio*z*(1.-z)/sqr(1.-z+ratio);
@@ -170,6 +175,8 @@ void IFLightKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
   if ( !theCollinearScheme &&
        x > u && (1.-x)/(x-u) < 1. ) {
 
+    assert(false);
+
     em =
       ((1.-u)/(x-u))*pEmitter + ((u/x)*(1.-x)/(x-u))*pSpectator - kt/(x-u);
     em.setMass(0.*GeV);
@@ -209,12 +216,12 @@ void IFLightKinematics::generateKinematics(const Lorentz5Momentum& pEmitter,
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
 
-void IFLightKinematics::persistentOutput(PersistentOStream & os) const {
-  os << theCollinearScheme;
+void IFLightKinematics::persistentOutput(PersistentOStream &) const {
+  //os << theCollinearScheme;
 }
 
-void IFLightKinematics::persistentInput(PersistentIStream & is, int) {
-  is >> theCollinearScheme;
+void IFLightKinematics::persistentInput(PersistentIStream &, int) {
+  //is >> theCollinearScheme;
 }
 
 ClassDescription<IFLightKinematics> IFLightKinematics::initIFLightKinematics;
@@ -226,7 +233,7 @@ void IFLightKinematics::Init() {
     ("IFLightKinematics implements massless splittings "
      "off a initial-final dipole.");
 
-
+  /*
   static Switch<IFLightKinematics,bool> interfaceCollinearScheme
     ("CollinearScheme",
      "[experimental] Switch on or off the collinear scheme",
@@ -243,6 +250,7 @@ void IFLightKinematics::Init() {
      false);
 
   interfaceCollinearScheme.rank(-1);
+  */
 
 }
 

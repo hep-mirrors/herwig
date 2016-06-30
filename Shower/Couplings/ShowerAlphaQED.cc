@@ -46,7 +46,7 @@ double ShowerAlphaQED::overestimateValue() const {
   return scaleFactor()*_alpha;
 }
 
-double ShowerAlphaQED::ratio(const Energy2) const {
+double ShowerAlphaQED::ratio(const Energy2,double ) const {
   return 1.;
 }
 

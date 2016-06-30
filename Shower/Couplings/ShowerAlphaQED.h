@@ -69,7 +69,7 @@ public:
   /**
    *  Return the ratio of the coupling at the scale to the overestimated value
    */
-  virtual double ratio(const Energy2 scale) const;
+  virtual double ratio(const Energy2 scale,double factor=1.) const;
   //@}
   
 public:
