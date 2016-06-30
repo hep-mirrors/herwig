@@ -7,6 +7,7 @@
 
 #include "ThePEG/MatrixElement/ReweightBase.h"
 #include "EWCouplings.h"
+#include "CollinearSudakov.h"
 
 namespace Herwig {
 
@@ -108,6 +109,11 @@ private:
    *  The Electroweak Couplings
    */
   EWCouplingsPtr EWCouplings_;
+
+  /**
+   *  The Collinear Sudakov
+   */
+  CollinearSudakovPtr collinearSudakov_;
 
   /**
    *  The couplings to allow global access

@@ -16,6 +16,9 @@
 
 using namespace Herwig;
 
+tEWCouplingsPtr ElectroWeakReweighter::staticEWCouplings_ = tEWCouplingsPtr();
+
+
 ElectroWeakReweighter::ElectroWeakReweighter() {}
 
 ElectroWeakReweighter::~ElectroWeakReweighter() {}
@@ -29,11 +32,11 @@ IBPtr ElectroWeakReweighter::fullclone() const {
 }
 
 void ElectroWeakReweighter::persistentOutput(PersistentOStream & os) const {
-  os << EWCouplings_;
+  os << EWCouplings_ << collinearSudakov_;
 }
 
 void ElectroWeakReweighter::persistentInput(PersistentIStream & is, int) {
-  is >> EWCouplings_;
+  is >> EWCouplings_ >> collinearSudakov_;
 }
 
 
@@ -51,6 +54,11 @@ void ElectroWeakReweighter::Init() {
     ("EWCouplings",
      "The object to calculate the electroweak couplings",
      &ElectroWeakReweighter::EWCouplings_, false, false, true, false, false);
+
+  static Reference<ElectroWeakReweighter,CollinearSudakov> interfaceCollinearSudakov
+    ("CollinearSudakov",
+     "The collinear Sudakov",
+     &ElectroWeakReweighter::collinearSudakov_, false, false, true, false, false);
 
 }
 
@@ -82,14 +90,14 @@ double ElectroWeakReweighter::weight() const {
     cerr << scale/GeV << " " 
   	 << EWCouplings_->vev(scale)/GeV << "\n";
   }
+  collinearSudakov_->makePlots();
 
-
-  cerr << "testing got here ???\n";
-  cerr <<  subProcess() << "\n";
-  cerr << *subProcess() << "\n";
-  cerr << subProcess()->outgoing()[0] << *subProcess()->outgoing()[0] << "\n";
-  cerr << subProcess()->outgoing()[0]->spinInfo() << "\n";
-  cerr << subProcess()->outgoing()[0]->spinInfo()->productionVertex() << "\n";
+  // cerr << "testing got here ???\n";
+  // cerr <<  subProcess() << "\n";
+  // cerr << *subProcess() << "\n";
+  // cerr << subProcess()->outgoing()[0] << *subProcess()->outgoing()[0] << "\n";
+  // cerr << subProcess()->outgoing()[0]->spinInfo() << "\n";
+  // cerr << subProcess()->outgoing()[0]->spinInfo()->productionVertex() << "\n";
   assert(false);
   staticEWCouplings_ = tEWCouplingsPtr();
 }

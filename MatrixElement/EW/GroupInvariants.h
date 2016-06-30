@@ -50,28 +50,28 @@ namespace GroupInvariants {
   /**
    *  The \f$SU(N)\f$ \f$C_A\f$ 
    */
-  double C_A(unsigned int N) {
+  inline double C_A(unsigned int N) {
     return N !=1 ? double(N) : 0.;
   }
 
   /**
    *  The \f$SU(N)\f$ \f$C_F\f$ 
    */
-  double C_F(unsigned int N) {
+  inline double C_F(unsigned int N) {
     return N !=1 ? 0.5*(double(N*N)-1.)/double(N) : 1.;
   }
 
   /*
    *  The \f$SU(N)\f$ \f$C_d\f$
    */
-  double C_d(unsigned int N) {
+  inline double C_d(unsigned int N) {
     return (double(N*N)-4.)/double(N);
   }
 
   /**
    *  The \f$SU(N)\f$\f$C_1\f$ 
    */
-  double C_1(unsigned int N) {
+  inline double C_1(unsigned int N) {
     double N2(N*N);
     return 0.25*(N2-1.0)/N2;
   }
@@ -79,7 +79,7 @@ namespace GroupInvariants {
   /**
    *  \f$T_F\f$
    */
-  double T_F(unsigned int N, bool high) {
+  inline double T_F(unsigned int N, bool high) {
     if(high) {
       return N !=1 ? 0.5 : 5.0/3.0;
     }
@@ -91,14 +91,14 @@ namespace GroupInvariants {
   /** 
    *   \f$t_S\f$
    */
-  double t_S(unsigned int, bool ) {
+  inline double t_S(unsigned int, bool ) {
     return 0.5;
   }
 
   /**
    * / Number of complex scalars in the fundamental rep. of SU(N)/U(1)
    */
-  double n_S(unsigned int N, bool high) {
+  inline double n_S(unsigned int N, bool high) {
     if(high) {
       if(N==2 || N==1) return 1.0;
       else if(N==3)    return 0.0;
@@ -113,7 +113,7 @@ namespace GroupInvariants {
   /**
    * Number of Dirac Fermions in the fund. rep. of SU(N) (or U(1) for N==1)
    */
-  double n_F(unsigned int N, bool high) {
+  inline double n_F(unsigned int N, bool high) {
     if(high) {
       if(N==1) return 3.0;
       else if(N==2 || N==3) return 6.0;
@@ -158,6 +158,26 @@ namespace GroupInvariants {
    */
   GaugeContributions BContributionsLow(Energy mu, int B_ORDER,
 				       bool fermion, double boostFactor);
+
+  inline Complex PlusLog(double arg) {
+    static const Complex I(0,1.0);
+    if (arg>0.0) 
+      return log(arg);
+    else if (arg<0.0)
+      return log(-arg)+I*Constants::pi;
+    else 
+      assert(false);
+  }
+
+  inline Complex MinusLog(double arg) {
+    static const Complex I(0,1.0);
+    if (arg>0.0) 
+      return log(arg);
+    else if (arg<0.0)
+      return log(-arg)-I*Constants::pi;
+    else 
+      assert(false);
+  }
 }
 
 

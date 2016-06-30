@@ -35,6 +35,7 @@ EWCouplings::EWCouplings(unsigned int loops, unsigned int steps, Energy highScal
     includeSU3_(true), includeEW_(true), initialized_(false), massChoice_(false),
     mZ_(91.1876*GeV), mW_(80.399*GeV), 
     mT_(173.1*GeV), // 179.08045 (should be this?)
+    mH_(125.0*GeV),
     loops_(loops), highSteps_(steps), lowSteps_(steps)
 {}
 
