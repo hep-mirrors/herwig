@@ -178,77 +178,92 @@ namespace GroupInvariants {
     else 
       assert(false);
   }
+
+  /**
+   * Number of fermion generations (only used in gauge boson HighCMatching)
+   */
+  inline double n_g() { return 3.0; }
+
+  /**
+   * Number of complex scalars in the fundamental rep. of SU(N)
+   */
+  inline double nSWeyl(unsigned int N, bool high) {
+    if(high) {
+      if(N==2 || N==1) return 1.0;
+      else if   (N==3) return 0.0;
+      else assert(false);
+    }
+    else {
+      if( N==1 || N==3 ) return 0.0;
+      else assert(false);
+    }
+  }
+
+  /**
+   * Number of Weyl Fermions in the fundamental rep. of SU(N)
+   */
+  inline double nFWeyl(unsigned int N, bool high) {
+    if(high) {
+      if(N==2 || N==3) return 12.0;
+      else assert(false);
+    }
+    else {
+      if(N==3)      return 10.0;
+      else if(N==1) return  2.0;
+      else assert(false);
+    }
+  }
+
+  inline double TFWeyl(unsigned int) {
+    return 0.5;
+  }
+
+  inline double tSWeyl(unsigned int) {
+    return 0.5;
+  }
+
+  inline Complex WFunction(Energy mu, Energy2 s) {
+    using Constants::pi;
+    assert(abs(s)>ZERO);
+    Complex ln = MinusLog(-s/(mu*mu));
+    return (-1.0*ln*ln + 3.0*ln+pi*pi/6.0-8.0);
+  }
+
+  /**
+   * \fX_N\f% function, v is either t or u
+   */
+  inline Complex XNFunction(unsigned int N, Energy mu, Energy2 s, Energy2 v) {
+    using Constants::pi;
+    assert(abs(s)>ZERO);
+    Complex ls = MinusLog(-s/(mu*mu));
+    return (2.0*C_F(N)*WFunction(mu,s) + 
+  	    C_A(N)*(2.0*ls*ls - 2.0*MinusLog((s+v)/(mu*mu))*ls - 
+  		   11.0/3.0*ls + pi*pi + 85.0/9.0) + 
+  	    (2.0/3.0*ls - 10.0/9.0) * TFWeyl(N) * nFWeyl(N,true) + 
+  	    (1.0/3.0*ls - 8.0/9.0) * TFWeyl(N) * nSWeyl(N,true));
+  }
+
+  /**
+   *  \f$\Pi_1\f$ function
+   */
+  inline Complex PI1_function(Energy mu, Energy2 s) {
+    assert(abs(s)>ZERO);
+    return ((41.0/6.0)*MinusLog(-s/(mu*mu))-104.0/9.0);
+  }
+
+  /**
+   *  \f$\tilde{f}\f$ function, v is either t or u
+   */
+  inline Complex fTildeFunction(Energy mu, Energy2 s, Energy2 v) {
+    using Constants::pi;
+    assert(abs(s)>ZERO);
+    Complex ls  = MinusLog(-s/GeV2), lv = MinusLog(-v/GeV2);
+    Complex lsv = MinusLog((s+v)/GeV2);
+    return (-2.0*double(s/(s+v))*(lv-ls) + 
+   	    double(s*(s+2.0*v)/((s+v)*(s+v))) * ((lv-ls)*(lv-ls) + pi*pi) + 
+  	    4.0*MinusLog(-s/(mu*mu))*(lv-lsv));
+  }
 }
-
-
-
-// namespace DiracHigh {
-
-
-//     double n_g() { // Number of fermion generations (only used in gauge boson HighCMatching)
-//         return 3.0;
-//     }
-
-
-// }
-
-
-// namespace WeylHigh {
-	
-// 	double n_S(int N) { // Number of complex scalars in the fundamental rep. of SU(N)/U(1)
-// 		if(N==2 || N==1) return 1.0;
-// 		if(N==3) return 0.0;
-// 		std::cout << "Error! SU(N), N != (1, 2 or 3) used for n_S in ";
-//         std::cout << "GroupInvariants.h but not defined." << std::endl;
-// 		return 0.0;
-// 	}
-// 	double n_F(int N) { // Number of Weyl Fermions in the fundamental rep. of SU(N)
-// 		if(N==2) return 12.0;
-// 		if(N==3) return 12.0;
-// 		std::cout << "Error! SU(N), N != (2 or 3) used for n_F in ";
-//         std::cout << "GroupInvariants.h but not defined." << std::endl;
-// 		return 0.0;
-// 	}
-//     double n_g() { // Number of fermion generations (only used in gauge boson HighCMatching)
-//         return 3.0;
-//     }
-// 	double T_F(int N) { return 0.5+0.0*N; } // I believe T(N) is such that tr(t^a t^b) = T delta(ab)
-// 	// 0.0*N included to stop receiving a stupid warning.
-	
-// 	double t_S(int N) { return 0.5+0.0*N; } // Analog of T_F but for scalars.
-// 	// 0.0*N included to stop receiving a stupid warning.
-	
-// }
-
-// namespace WeylLow {
-	
-// 	double n_S(int N) { // Number of complex scalars in the fundamental rep. of SU(N)
-//         if(N==1) return 0.0;
-//         if(N==3) return 0.0;
-//         std::cout << "Error! SU(N), N != (1 or 3) used for n_S in ";
-//         std::cout << "GroupInvariants.h but not defined." << std::endl;
-//         return 0.0;
-// 	}
-// 	double n_F(int N) { // Number of Weyl Fermions in the fundamental rep. of SU(N)
-// 		if(N==3) return 10.0;
-// 		if(N==1) return 2.0;
-//         std::cout << "Error! SU(N), N != (1 or 3) used for n_F in ";
-//         std::cout << "GroupInvariants.h but not defined." << std::endl;
-//         return 0.0;
-// 	}
-// 	double T_F(int N) { return 0.5+0.0*N; } // I believe T(N) is such that tr(t^a t^b) = T delta(ab)
-// 	// 0.0*N included to stop receiving a stupid warning.
-	
-// 	double t_S(int N) { return 0.5+0.0*N; } // Analog of T_F but for scalars.
-// 	// 0.0*N included to stop receiving a stupid warning.
-	
-// }
-
-
-// #endif // GROUP_INVARIANTS_H
-
-
-
 }
 
 #endif // HERWIG_GroupInvariants_H 
