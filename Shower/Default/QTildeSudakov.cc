@@ -229,7 +229,7 @@ generateNextSpaceBranching(const Energy startingQ,
     }
     while(pt2 < pT2min()||
         z() > zLimits().second||
-	  SplittingFnVeto((1.-z())*t/z(),ids,true,detuning)||
+	  SplittingFnVeto((1.-z())*t/z(),ids,false,detuning)||
         alphaSVeto(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t)||
         PDFVeto(t,x,parton0,parton1,beam));
   }else{
@@ -240,12 +240,12 @@ generateNextSpaceBranching(const Energy startingQ,
       ptRew=pt2 < pT2min();
       zRew=z() > zLimits().second;
       if (ptRew||zRew) continue;
-      SplitRew=SplittingFnVeto((1.-z())*t/z(),ids,true,detuning);
+      SplitRew=SplittingFnVeto((1.-z())*t/z(),ids,false,detuning);
       alphaRew=alphaSVeto(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t);
       PDFRew=PDFVeto(t,x,parton0,parton1,beam);
       double factor=PDFVetoRatio(t,x,parton0,parton1,beam,1.)*
                     alphaSVetoRatio(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t,1.)*
-	SplittingFnVetoRatio((1.-z())*t/z(),ids,true,detuning);
+	SplittingFnVetoRatio((1.-z())*t/z(),ids,false,detuning);
 
       ShowerHandlerPtr ch = ShowerHandler::currentHandler();
 
@@ -266,7 +266,7 @@ generateNextSpaceBranching(const Energy startingQ,
             double newfactor = PDFVetoRatio(t,x,parton0,parton1,beam,var->second.factorizationScaleFactor)*
                            alphaSVetoRatio(splittingFn()->angularOrdered() ?
                            sqr(1.-z())*t : (1.-z())*t,var->second.renormalizationScaleFactor)
-	      *SplittingFnVetoRatio((1.-z())*t/z(),ids,true,detuning);
+	      *SplittingFnVetoRatio((1.-z())*t/z(),ids,false,detuning);
 
             double varied;
             if( PDFRew || SplitRew || alphaRew) {
