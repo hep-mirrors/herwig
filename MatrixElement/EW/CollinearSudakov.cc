@@ -1184,9 +1184,547 @@ CollinearSudakov::electroWeakMatching(Energy EWScale, Energy2 s,
   // Only include the following for the FO calculation:
   for (unsigned int i=0; i<result.size1(); i++) {
     for (unsigned int j=0; j<result.size2(); j++) {
-      result(i,j) = 1.0 + std::log(result(i,j));
+      result(i,j) = 1.0 + log(result(i,j));
     }
   }
   
   return result;
+}
+
+boost::numeric::ublas::matrix<Complex>
+CollinearSudakov::highEnergyRunning(Energy highScale, Energy EWScale, Energy2 s,
+				    Herwig::EWProcess::Process process,
+				    bool fixedOrder) {
+  using namespace EWProcess;
+  // perform the calculation
+  evaluateHighScale(highScale,EWScale,s);
+  Complex colW(highColW_);
+  Complex colB(highColB_); 
+  Complex colG(highColG_);
+  Complex colQ(highColQ_);
+  Complex colQt(highColQt_);
+  Complex colU(highColU_);
+  Complex coltR(highColtR_);
+  Complex colD(highColD_);
+  Complex colL(highColL_);
+  Complex colE(highColE_);
+  Complex colPhi(highColPhi_);
+  if (fixedOrder) {
+    /* colX not necessarily positive for s = (1000TeV)^2 for the following:
+       colW = log(colW.real());
+       colB = log(colB.real());
+       colPhi = log(colPhi.real());
+    */
+    colG = log(colG.real());
+    colQ = log(colQ.real());
+    colQt = log(colQt.real());
+    colU = log(colU.real());
+    coltR = log(coltR.real());
+    colD = log(colD.real());
+    colL = log(colL.real());
+    colE = log(colE.real());
+  }
+  // set up the matrix
+  boost::numeric::ublas::matrix<Complex> result;
+  unsigned int numGauge(0);
+  switch (process) {
+         
+      case QQQQ:
+      case QQQQiden:
+      case QtQtQQ:
+         numGauge = 4;
+         result = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+         if (process!=QtQtQQ) {
+            for (unsigned int i=0; i<numGauge; i++) {
+               if (fixedOrder) {
+                  result(i,i) = 1.0+colQ+colQ+colQ+colQ;
+               }
+               else {
+                  result(i,i) = colQ*colQ*colQ*colQ;
+               }
+            }
+         }
+         else {
+            for (unsigned int i=0; i<numGauge; i++) {
+               if (fixedOrder) {
+                  result(i,i) = 1.0+colQt+colQt+colQ+colQ;
+               }
+               else {
+                  result(i,i) = colQt*colQt*colQ*colQ;
+               }
+            }
+         }
+         break;
+         
+      case QQUU:
+      case QtQtUU:
+      case QQtRtR:
+         numGauge = 2;
+         result = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+         if (process==QQUU) {
+            for (unsigned int i=0; i<numGauge; i++) {
+               if (fixedOrder) {
+                  result(i,i) = 1.0+colQ+colQ+colU+colU;
+               }
+               else {
+                  result(i,i) = colQ*colQ*colU*colU;
+               }
+            }
+         }
+         else if (process==QtQtUU) {
+            for (unsigned int i=0; i<numGauge; i++) {
+               if (fixedOrder) {
+                  result(i,i) = 1.0+colQt+colQt+colU+colU;
+               }
+               else {
+                  result(i,i) = colQt*colQt*colU*colU;
+               }
+            }
+         }
+         else if (process==QQtRtR) {
+            for (unsigned int i=0; i<numGauge; i++) {
+               if (fixedOrder) {
+                  result(i,i) = 1.0+colQ+colQ+coltR+coltR;
+               }
+               else {
+                  result(i,i) = colQ*colQ*coltR*coltR;
+               }
+            }
+         }
+         break;
+         
+      case QQDD:
+      case QtQtDD:
+         numGauge = 2;
+         result = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+         if (process==QQDD) {
+            for (unsigned int i=0; i<numGauge; i++) {
+               if (fixedOrder) {
+                  result(i,i) = 1.0+colQ+colQ+colD+colD;
+               }
+               else {
+                  result(i,i) = colQ*colQ*colD*colD;
+               }
+            }
+         }
+         else {
+            for (unsigned int i=0; i<numGauge; i++) {
+               if (fixedOrder) {
+                  result(i,i) = 1.0+colQt+colQt+colD+colD;
+               }
+               else {
+                  result(i,i) = colQt*colQt*colD*colD;
+               }
+            }
+         }
+         break;
+         
+      case QQLL:
+         numGauge = 2;
+         result = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+         for (unsigned int i=0; i<numGauge; i++) {
+   	   if (fixedOrder) {
+   	     result(i,i) = 1.0+colQ+colQ+colL+colL;
+   	   }
+   	   else {
+   	     result(i,i) = colQ*colQ*colL*colL;
+   	   }
+         }
+         break;
+         
+   case QQEE:
+     numGauge = 1;
+     result = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+     for (unsigned int i=0; i<numGauge; i++) {
+       if (fixedOrder) {
+   	 result(i,i) = 1.0+colQ+colQ+colE+colE;
+       }
+       else {
+   	 result(i,i) = colQ*colQ*colE*colE;
+       }
+     }
+     break;
+     
+   case UUUU:
+   case UUUUiden:
+   case tRtRUU:
+     numGauge = 2;
+     result = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+     if (process!=tRtRUU) {
+       for (unsigned int i=0; i<numGauge; i++) {
+   	 if (fixedOrder) {
+   	   result(i,i) = 1.0+colU+colU+colU+colU;
+   	 }
+   	 else {
+   	   result(i,i) = colU*colU*colU*colU;
+   	 }
+       }
+     }
+     else {
+       for (unsigned int i=0; i<numGauge; i++) {
+   	 if (fixedOrder) {
+   	   result(i,i) = 1.0+coltR+coltR+colU+colU;
+   	 }
+   	 else {
+   	   result(i,i) = coltR*coltR*colU*colU;
+   	 }
+       }
+     }
+     break;
+     
+   case UUDD:
+   case tRtRDD:
+     numGauge = 2;
+     result = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+     if (process==UUDD) {
+       for (unsigned int i=0; i<numGauge; i++) {
+   	 if (fixedOrder) {
+   	   result(i,i) = 1.0+colU+colU+colD+colD;
+   	 }
+   	 else {
+   	   result(i,i) = colU*colU*colD*colD;
+   	 }
+       }
+     }
+     else {
+       for (unsigned int i=0; i<numGauge; i++) {
+   	 if (fixedOrder) {
+   	   result(i,i) = 1.0+coltR+coltR+colD+colD;
+   	 }
+   	 else {
+   	   result(i,i) = coltR*coltR*colD*colD;
+   	 }
+       }
+     }
+     break;
+     
+   case UULL:
+     numGauge = 1;
+     result = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+     for (unsigned int i=0; i<numGauge; i++) {
+       if (fixedOrder) {
+   	 result(i,i) = 1.0+colU+colU+colL+colL;
+       }
+       else {
+   	 result(i,i) = colU*colU*colL*colL;
+       }
+     }
+     break;
+     
+   case UUEE:
+     numGauge = 1;
+     result = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+     for (unsigned int i=0; i<numGauge; i++) {
+       if (fixedOrder) {
+   	 result(i,i) = 1.0+colU+colU+colE+colE;
+       }
+       else {
+   	 result(i,i) = colU*colU*colE*colE;
+       }
+     }
+     break;
+     
+   case DDDD:
+   case DDDDiden:
+     numGauge = 2;
+     result = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+     for (unsigned int i=0; i<numGauge; i++) {
+       if (fixedOrder) {
+   	 result(i,i) = 1.0+colD+colD+colD+colD;
+       }
+       else {
+   	 result(i,i) = colD*colD*colD*colD;
+       }
+     }
+     break;
+     
+   case DDLL:
+     numGauge = 1;
+     result = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+     for (unsigned int i=0; i<numGauge; i++) {
+       if (fixedOrder) {
+   	 result(i,i) = 1.0+colD+colD+colL+colL;
+       }
+       else {
+   	 result(i,i) = colD*colD*colL*colL;
+            }
+         }
+         break;
+         
+      case DDEE:
+         numGauge = 1;
+         result = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+         for (unsigned int i=0; i<numGauge; i++) {
+            if (fixedOrder) {
+               result(i,i) = 1.0+colD+colD+colE+colE;
+            }
+            else {
+               result(i,i) = colD*colD*colE*colE;
+            }
+         }
+         break;
+         
+      case LLLL:
+      case LLLLiden:
+         numGauge = 2;
+         result = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+         for (unsigned int i=0; i<numGauge; i++) {
+            if (fixedOrder) {
+               result(i,i) = 1.0+colL+colL+colL+colL;
+            }
+            else {
+               result(i,i) = colL*colL*colL*colL;
+            }
+         }
+         break;
+         
+      case LLEE:
+         numGauge = 1;
+         result = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+         for (unsigned int i=0; i<numGauge; i++) {
+            if (fixedOrder) {
+               result(i,i) = 1.0+colL+colL+colE+colE;
+            }
+            else {
+               result(i,i) = colL*colL*colE*colE;
+            }
+         }
+         break;
+         
+      case EEEE:
+      case EEEEiden:
+         numGauge = 1;
+         result = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+         for (unsigned int i=0; i<numGauge; i++) {
+            if (fixedOrder) {
+               result(i,i) = 1.0+colE+colE+colE+colE;
+            }
+            else {
+               result(i,i) = colE*colE*colE*colE;
+            }
+         }
+         break;
+         
+      case QQWW:
+         numGauge = 5;
+         result = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+         if (fixedOrder) {
+            result(0,0) = result(1,1) = 1.0+colQ+colQ+colW+colW;
+            result(2,2) = result(3,3) = 1.0+colQ+colQ+colW+colB;
+            result(4,4) = 1.0+colQ+colQ+colB+colB;
+         }
+         else {
+            result(0,0) = result(1,1) = colQ*colQ*colW*colW;
+            result(2,2) = result(3,3) = colQ*colQ*colW*colB;
+            result(4,4) = colQ*colQ*colB*colB;
+         }
+         break;
+         
+      case QQPhiPhi:
+         numGauge = 2;
+         result = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+         if (fixedOrder) {
+            result(0,0) = result(1,1) = 1.0+colQ+colQ+colPhi+colPhi;
+         }
+         else {
+            result(0,0) = result(1,1) = colQ*colQ*colPhi*colPhi;
+         }
+         break;
+         
+      case QQWG:
+         numGauge = 1;
+         result = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+         if (fixedOrder) {
+            result(0,0) = 1.0+colQ+colQ+colW+colG;
+         }
+         else {
+            result(0,0) = colQ*colQ*colW*colG;
+         }
+         break;
+         
+      case QQBG:
+         numGauge = 1;
+         result = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+         if (fixedOrder) {
+            result(0,0) = 1.0+colQ+colQ+colB+colG;
+         }
+         else {
+            result(0,0) = colQ*colQ*colB*colG;
+         }
+         break;
+         
+      case QQGG:
+      case QtQtGG:
+         numGauge = 3;
+         result = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+         if (process==QQGG) {
+            if (fixedOrder) {
+               result(0,0) = result(1,1) = result(2,2) = 1.0+colQ+colQ+colG+colG;
+            }
+            else {
+               result(0,0) = result(1,1) = result(2,2) = colQ*colQ*colG*colG;
+            }
+         }
+         else {
+            if (fixedOrder) {
+               result(0,0) = result(1,1) = result(2,2) = 1.0+colQt+colQt+colG+colG;
+            }
+            else {
+               result(0,0) = result(1,1) = result(2,2) = colQt*colQt*colG*colG;
+            }
+         }
+         break;
+         
+      case LLWW:
+         numGauge = 5;
+         result = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+         if (fixedOrder) {
+            result(0,0) = result(1,1) = 1.0+colL+colL+colW+colW;
+            result(2,2) = result(3,3) = 1.0+colL+colL+colW+colB;
+            result(4,4) = 1.0+colL+colL+colB+colB;
+         }
+         else {
+            result(0,0) = result(1,1) = colL*colL*colW*colW;
+            result(2,2) = result(3,3) = colL*colL*colW*colB;
+            result(4,4) = colL*colL*colB*colB;
+         }
+         break;
+         
+      case LLPhiPhi:
+         numGauge = 2;
+         result = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+         if (fixedOrder) {
+            result(0,0) = result(1,1) = 1.0+colL+colL+colPhi+colPhi;
+         }
+         else {
+            result(0,0) = result(1,1) = colL*colL*colPhi*colPhi;
+         }
+         break;
+         
+      case UUBB:
+         numGauge = 1;
+         result = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+         if (fixedOrder) {
+            result(0,0) = 1.0+colU+colU+colB+colB;
+         }
+         else {
+            result(0,0) = colU*colU*colB*colB;
+         }
+         break;
+         
+      case UUPhiPhi:
+         numGauge = 1;
+         result = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+         if (fixedOrder) {
+            result(0,0) = 1.0+colU+colU+colPhi+colPhi;
+         }
+         else {
+            result(0,0) = colU*colU*colPhi*colPhi;
+         }
+         break;
+         
+      case UUBG:
+         numGauge = 1;
+         result = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+         if (fixedOrder) {
+            result(0,0) = 1.0+colU+colU+colB+colG;
+         }
+         else {
+            result(0,0) = colU*colU*colB*colG;
+         }
+         break;
+         
+      case UUGG:
+      case tRtRGG:
+         numGauge = 3;
+         result = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+         if (process==UUGG) {
+            if (fixedOrder) {
+               result(0,0) = result(1,1) = result(2,2) = 1.0+colU+colU+colG+colG;
+            }
+            else {
+               result(0,0) = result(1,1) = result(2,2) = colU*colU*colG*colG;
+            }
+         }
+         else {
+            if (fixedOrder) {
+               result(0,0) = result(1,1) = result(2,2) = 1.0+coltR+coltR+colG+colG;
+            }
+            else {
+               result(0,0) = result(1,1) = result(2,2) = coltR*coltR*colG*colG;
+            }
+         }
+         break;
+         
+      case DDBB:
+         numGauge = 1;
+         result = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+         if (fixedOrder) {
+            result(0,0) = 1.0+colD+colD+colB+colB;
+         }
+         else {
+            result(0,0) = colD*colD*colB*colB;
+         }
+         break;
+         
+      case DDPhiPhi:
+         numGauge = 1;
+         result = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+         if (fixedOrder) {
+            result(0,0) = 1.0+colD+colD+colPhi+colPhi;
+         }
+         else {
+            result(0,0) = colD*colD*colPhi*colPhi;
+         }
+         break;
+         
+      case DDBG:
+         numGauge = 1;
+         result = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+         if (fixedOrder) {
+            result(0,0) = 1.0+colD+colD+colB+colG;
+         }
+         else {
+            result(0,0) = colD*colD*colB*colG;
+         }
+         break;
+         
+      case DDGG:
+         numGauge = 3;
+         result = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+         if (fixedOrder) {
+            result(0,0) = result(1,1) = result(2,2) = 1.0+colD+colD+colG+colG;
+         }
+         else {
+            result(0,0) = result(1,1) = result(2,2) = colD*colD*colG*colG;
+         }
+         break;
+         
+      case EEBB:
+         numGauge = 1;
+         result = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+         if (fixedOrder) {
+            result(0,0) = 1.0+colE+colE+colB+colB;
+         }
+         else {
+            result(0,0) = colE*colE*colB*colB;
+         }
+         break;
+         
+      case EEPhiPhi:
+         numGauge = 1;
+         result = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+         if (fixedOrder) {
+            result(0,0) = 1.0+colE+colE+colPhi+colPhi;
+         }
+         else {
+            result(0,0) = colE*colE*colPhi*colPhi;
+         }
+         break;
+         
+  default:
+    assert(false);
+  }
+   
+   return result;
 }

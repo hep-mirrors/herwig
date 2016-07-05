@@ -221,6 +221,23 @@ namespace GroupInvariants {
     return output;
   }
 
+  inline Complex Gamma1(double hypercharge) {
+    Complex I(0,1.0);
+    return -I*Constants::pi*(hypercharge*hypercharge);
+  }
+  
+  inline Complex Gamma1(double y1, double y2, Complex T, Complex U) {
+    Complex I(0,1.0);
+    return -I*Constants::pi*(y1*y1+y2*y2) + 2.0*y1*y2*(T-U);
+  }
+  
+  inline Complex Gamma1(double y1, double y2, double y3, double y4,
+			Complex T, Complex U) {
+    Complex I(0,1.0);
+    return -I*Constants::pi*(y1*y1+y2*y2+y3*y3+y4*y4)/2.0 + 
+      (y1*y4+y2*y3)*T - (y1*y3+y2*y4)*U;
+  }
+
   /**
    * Number of fermion generations (only used in gauge boson HighCMatching)
    */

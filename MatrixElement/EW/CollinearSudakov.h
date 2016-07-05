@@ -94,12 +94,20 @@ public:
 public:
   
   /**
-   *  Evalaute the electroweka matching as a matrix
+   *  Evalaute the electroweak matching as a matrix
    */
   boost::numeric::ublas::matrix<Complex>
   electroWeakMatching(Energy EWScale, Energy2 s,
 		      Herwig::EWProcess::Process process,
 		      bool oneLoop);
+
+  /**
+   *  Evalaute the high energy running as a matrix
+   */
+  boost::numeric::ublas::matrix<Complex>
+  highEnergyRunning(Energy highScale, Energy EWScale, Energy2 s,
+		    Herwig::EWProcess::Process process,
+		    bool fixedOrder);
 
 public:
 
