@@ -4,5 +4,6 @@ ElectroWeakReweigter.h ElectroWeakReweighter.cc \
 SoftSudakov.h SoftSudakov.cc \
 CollinearSudakov.h CollinearSudakov.cc \
 HighEnergyMatching.h HighEnergyMatching.cc \
+ElectroWeakMatching.h ElectroWeakMatching.cc \
 EWCouplings.h EWCouplings.fh EWCouplings.cc
 HwMEEW_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 1:0:0
