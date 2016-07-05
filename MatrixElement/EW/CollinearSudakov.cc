@@ -1728,3 +1728,357 @@ CollinearSudakov::highEnergyRunning(Energy highScale, Energy EWScale, Energy2 s,
    
    return result;
 }
+
+boost::numeric::ublas::matrix<Complex>
+CollinearSudakov::lowEnergyRunning(Energy EWScale, Energy lowScale, Energy2 s,
+				   Herwig::EWProcess::Process process) {
+  using namespace EWProcess;
+  // evaluate the running
+  evaluateLowScale(EWScale,lowScale,s);
+
+  Complex colUL = lowColU_;
+  Complex colDL = lowColD_;
+  Complex colUR = lowColU_;
+  Complex colDR = lowColD_;
+  
+  Complex coltL = lowColt_;
+  Complex coltR = lowColt_;
+  Complex colbL = lowColD_;
+  
+  Complex colnuL = 1.0;
+  Complex colEL = lowColE_;
+  Complex colER = lowColE_;
+  
+  Complex colW = lowColW_;
+  Complex colZ = 1.0;
+  Complex colA = lowColA_;
+  
+  Complex colPhi = lowColW_;
+  Complex colPhi3 = 1.0;
+  Complex colH = 1.0;
+  
+  Complex colG = lowColG_;
+  
+  // calculate the matrix
+  boost::numeric::ublas::matrix<Complex> result;
+  unsigned int numBrokenGauge;
+  switch (process) {
+  case QQQQ:
+  case QQQQiden:
+    numBrokenGauge = 12;
+    result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    result(0,0) = result(6,6) = colUL*colUL*colUL*colUL;
+    result(3,3) = result(9,9) = colDL*colDL*colDL*colDL;
+    for (unsigned int i=0; i<12; i++) {
+      if (i!=0 && i!=3 && i!=6 && i!=9) {
+	result(i,i) = colUL*colUL*colDL*colDL;
+      }
+    }
+    break;
+  case QtQtQQ:
+    numBrokenGauge = 12;
+    result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    result(0,0) = result(6,6) = colUL*colUL*coltL*coltL;
+    result(3,3) = result(9,9) = colDL*colDL*colbL*colbL;
+    for (unsigned int i=0; i<12; i++) {
+      if (i==4 || i==5 || i==10 || i==11) {
+	result(i,i) = colUL*coltL*colDL*colbL;
+      }
+      else if (i==1 || i==7) {
+	result(i,i) = colDL*colDL*coltL*coltL;
+      }
+      else if (i==2 || i==8) {
+	result(i,i) = colUL*colUL*colbL*colbL;
+      }
+    }
+    break;
+  case QQUU:
+    numBrokenGauge = 4;
+    result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    result(0,0) = result(2,2) = colUL*colUL*colUR*colUR;
+    result(1,1) = result(3,3) = colDL*colDL*colUR*colUR;
+    break;
+  case QtQtUU:
+    numBrokenGauge = 4;
+    result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    result(0,0) = result(2,2) = coltL*coltL*colUR*colUR;
+    result(1,1) = result(3,3) = colbL*colbL*colUR*colUR;
+    break;
+  case QQtRtR:
+    numBrokenGauge = 4;
+    result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    result(0,0) = result(2,2) = colUL*colUL*coltR*coltR;
+    result(1,1) = result(3,3) = colDL*colDL*coltR*coltR;
+    break;
+  case QQDD:
+    numBrokenGauge = 4;
+    result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    result(0,0) = result(2,2) = colUL*colUL*colDR*colDR;
+    result(1,1) = result(3,3) = colDL*colDL*colDR*colDR;
+    break;
+  case QtQtDD:
+    numBrokenGauge = 4;
+    result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    result(0,0) = result(2,2) = coltL*coltL*colDR*colDR;
+    result(1,1) = result(3,3) = colbL*colbL*colDR*colDR;
+    break;
+  case QQLL:
+    numBrokenGauge = 6;
+    result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    result(0,0) = colnuL*colnuL*colUL*colUL;
+    result(1,1) = colnuL*colnuL*colDL*colDL;
+    result(2,2) = colEL*colEL*colUL*colUL;
+    result(3,3) = colEL*colEL*colDL*colDL;
+    result(4,4) = result(5,5) = colnuL*colEL*colUL*colDL;
+    break;
+  case QQEE:
+    numBrokenGauge = 2;
+    result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    result(0,0) = colUL*colUL*colER*colER;
+    result(1,1) = colDL*colDL*colER*colER;
+    break;
+  case UUUU:
+  case UUUUiden:
+    numBrokenGauge = 2;
+    result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    result(0,0) = result(1,1) = colUR*colUR*colUR*colUR;
+    break;
+  case tRtRUU:
+    numBrokenGauge = 2;
+    result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    result(0,0) = result(1,1) = coltR*coltR*colUR*colUR;
+    break;
+  case UUDD:
+    numBrokenGauge = 2;
+    result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    result(0,0) = result(1,1) = colUR*colUR*colDR*colDR;
+    break;
+  case tRtRDD:
+    numBrokenGauge = 2;
+    result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    result(0,0) = result(1,1) = coltR*coltR*colDR*colDR;
+    break;
+  case UULL:
+    numBrokenGauge = 2;
+    result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    result(0,0) = colnuL*colnuL*colUR*colUR;
+    result(1,1) = colEL*colEL*colUR*colUR;
+    break;
+  case UUEE:
+    numBrokenGauge = 1;
+    result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    result(0,0) = colUR*colUR*colER*colER;
+    break;
+  case DDDD:
+  case DDDDiden:
+    numBrokenGauge = 2;
+    result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    result(0,0) = result(1,1) = colDR*colDR*colDR*colDR;
+    break;
+  case DDLL:
+    numBrokenGauge = 2;
+    result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    result(0,0) = colnuL*colnuL*colDR*colDR;
+    result(1,1) = colEL*colEL*colDR*colDR;
+    break;
+  case DDEE:
+    numBrokenGauge = 1;
+    result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    result(0,0) = colDR*colDR*colER*colER;
+    break;
+  case LLLL:
+  case LLLLiden:
+    numBrokenGauge = 6;
+    result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    result(0,0) = colnuL*colnuL*colnuL*colnuL;
+    result(1,1) = colnuL*colnuL*colEL*colEL;
+    result(2,2) = colEL*colEL*colnuL*colnuL;
+    result(3,3) = colEL*colEL*colEL*colEL;
+    result(4,4) = result(5,5) = colnuL*colEL*colnuL*colEL;
+    break;
+  case LLEE:
+    numBrokenGauge = 2;
+    result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    result(0,0) = colnuL*colnuL*colER*colER;
+    result(1,1) = colEL*colEL*colER*colER;
+    break;
+  case EEEE:
+  case EEEEiden:
+    numBrokenGauge = 1;
+    result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    result(0,0) = colER*colER*colER*colER;
+    break;
+  case QQWW:
+  case LLWW:
+    numBrokenGauge = 20;
+    result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    for (unsigned int row = 0; row < result.size1(); row++) {
+      // Boson Collinear Corrections:
+      if (row==0 || row==1 || row==6 || row==7) result(row,row) = (colW*colW);
+      else if (row==2 || row==8) result(row,row) = (colZ*colZ);
+      else if (row==3 || row==4 || row==9 || row==10) result(row,row) = (colZ*colA);
+      else if (row==5 || row==11) result(row,row) = (colA*colA);
+      else if (row==12 || row==14) result(row,row) = (colW*colZ);
+      else if (row==13 || row==15) result(row,row) = (colW*colA);
+      else if (row==16 || row==18) result(row,row) = (colW*colZ);
+      else if (row==17 || row==19) result(row,row) = (colW*colA);
+      
+      // Particle Collinear Corrections:
+      if (process==QQWW) {
+	if (row<6) result(row,row) *= (colUL*colUL);
+	if ((row>=6)&&(row<12)) result(row,row) *= (colDL*colDL);
+	if (row>=12) result(row,row) *= (colUL*colDL);
+      }
+      else if (process==LLWW) {
+	if (row<6) result(row,row) *= (colnuL*colnuL);
+	if ((row>=6)&&(row<12)) result(row,row) *= (colEL*colEL);
+	if (row>=12) result(row,row) *= (colnuL*colEL);
+      }
+    }
+    break;
+  case QQPhiPhi:
+  case LLPhiPhi:
+    numBrokenGauge = 14;
+    result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    for (unsigned int row = 0; row < result.size1(); row++) {
+      
+      // Boson Colinear Corrections:
+      if (row==0 || row==5) result(row,row) = (colPhi*colPhi);
+      else if (row==1 || row==6) result(row,row) = (colPhi3*colPhi3);
+      else if (row==2 || row==3 || row==7 || row==8) result(row,row) = (colPhi3*colH);
+      else if (row==4 || row==9) result(row,row) = (colH*colH);
+      else if (row==10) result(row,row) = (colPhi*colPhi3);
+      else if (row==11) result(row,row) = (colPhi*colH);
+      else if (row==12) result(row,row) = (colPhi*colPhi3);
+      else if (row==13) result(row,row) = (colPhi*colH);
+      
+      // Particle Colinear Corrections:
+      if (process==QQPhiPhi) {
+	if (row<5) result(row,row) *= (colUL*colUL);
+	if ((row>=5)&&(row<10)) result(row,row) *= (colDL*colDL);
+	if (row>=10) result(row,row) *= (colUL*colDL);
+      }
+      else if (process==LLPhiPhi) {
+	if (row<5) result(row,row) *= (colnuL*colnuL);
+	if ((row>=5)&&(row<10)) result(row,row) *= (colEL*colEL);
+	if (row>=10) result(row,row) *= (colnuL*colEL);
+      }
+    }
+    break;
+  case QQWG:
+    numBrokenGauge = 6;
+    result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    result(0,0) = result(1,1) = colUL*colDL*colG*colW;
+    result(2,2) = colUL*colUL*colG*colZ;
+    result(3,3) = colUL*colUL*colG*colA;
+    result(4,4) = colDL*colDL*colG*colZ;
+    result(5,5) = colDL*colDL*colG*colA;
+    break;
+  case QQBG:
+    numBrokenGauge = 4;
+    result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    result(0,0) = colUL*colUL*colG*colZ;
+    result(1,1) = colUL*colUL*colG*colA;
+    result(2,2) = colDL*colDL*colG*colZ;
+    result(3,3) = colDL*colDL*colG*colA;
+    break;
+  case QQGG:
+    numBrokenGauge = 6;
+    result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    result(0,0) = result(1,1) = result(2,2) = colUL*colUL*colG*colG;
+    result(3,3) = result(4,4) = result(5,5) = colDL*colDL*colG*colG;
+    break;
+  case QtQtGG:
+    numBrokenGauge = 6;
+    result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    result(0,0) = result(1,1) = result(2,2) = coltL*coltL*colG*colG;
+    result(3,3) = result(4,4) = result(5,5) = colbL*colbL*colG*colG;
+    break;
+      case UUBB:
+	numBrokenGauge = 4;
+	result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+	result(0,0) = colUR*colUR*colZ*colZ;
+	result(1,1) = colUR*colUR*colZ*colA;
+	result(2,2) = colUR*colUR*colA*colZ;
+	result(3,3) = colUR*colUR*colA*colA;
+	break;
+  case UUPhiPhi:
+    numBrokenGauge = 5;
+    result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    result(0,0) = colUR*colUR*colPhi*colPhi;
+    result(1,1) = colUR*colUR*colPhi3*colPhi3;
+    result(2,2) = colUR*colUR*colH*colPhi3;
+    result(3,3) = colUR*colUR*colPhi3*colH;
+    result(4,4) = colUR*colUR*colH*colH;
+    break;
+  case UUBG:
+    numBrokenGauge = 2;
+    result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    result(0,0) = colUR*colUR*colG*colZ;
+    result(1,1) = colUR*colUR*colG*colA;
+    break;
+  case UUGG:
+    numBrokenGauge = 3;
+    result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    result(0,0) = result(1,1) = result(2,2) = colUR*colUR*colG*colG;
+    break;
+  case tRtRGG:
+    numBrokenGauge = 3;
+    result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    result(0,0) = result(1,1) = result(2,2) = coltR*coltR*colG*colG;
+    break;
+  case DDBB:
+    numBrokenGauge = 4;
+    result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    result(0,0) = colDR*colDR*colZ*colZ;
+    result(1,1) = colDR*colDR*colZ*colA;
+    result(2,2) = colDR*colDR*colA*colZ;
+    result(3,3) = colDR*colDR*colA*colA;
+    break;
+  case DDPhiPhi:
+    numBrokenGauge = 5;
+    result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    result(0,0) = colDR*colDR*colPhi*colPhi;
+    result(1,1) = colDR*colDR*colPhi3*colPhi3;
+    result(2,2) = colDR*colDR*colH*colPhi3;
+    result(3,3) = colDR*colDR*colPhi3*colH;
+    result(4,4) = colDR*colDR*colH*colH;
+    break;
+  case DDBG:
+    numBrokenGauge = 2;
+    result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    result(0,0) = colDR*colDR*colG*colZ;
+    result(1,1) = colDR*colDR*colG*colA;
+    break;
+    
+  case DDGG:
+    numBrokenGauge = 3;
+    result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    result(0,0) = result(1,1) = result(2,2) = colDR*colDR*colG*colG;
+    break;
+  case EEBB:
+    numBrokenGauge = 4;
+    result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    result(0,0) = colER*colER*colZ*colZ;
+    result(1,1) = colER*colER*colZ*colA;
+    result(2,2) = colER*colER*colA*colZ;
+    result(3,3) = colER*colER*colA*colA;
+    break;
+  case EEPhiPhi:
+    numBrokenGauge = 5;
+    result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    result(0,0) = colER*colER*colPhi*colPhi;
+    result(1,1) = colER*colER*colPhi3*colPhi3;
+    result(2,2) = colER*colER*colH*colPhi3;
+    result(3,3) = colER*colER*colPhi3*colH;
+    result(4,4) = colER*colER*colH*colH;
+    break;
+  default:
+    assert(false);
+  }
+  return result;
+}
+
+
+
+

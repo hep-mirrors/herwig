@@ -109,6 +109,12 @@ public:
 		    Herwig::EWProcess::Process process,
 		    bool fixedOrder);
 
+  /**
+   *  Evaluate the low energy running as a matrix
+   */
+  boost::numeric::ublas::matrix<Complex>
+  lowEnergyRunning(Energy EWScale, Energy lowScale, Energy2 s,
+		   Herwig::EWProcess::Process process);
 public:
 
   /**
