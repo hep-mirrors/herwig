@@ -7,6 +7,8 @@
 
 #include "ThePEG/Interface/Interfaced.h"
 #include "Herwig/Utilities/GSLIntegrator.h"
+#include <boost/numeric/ublas/matrix.hpp>
+#include "EWProcess.h"
 #include "CollinearSudakov.fh"
 
 namespace Herwig {
@@ -90,6 +92,23 @@ public:
   //@}
 
 public:
+  
+  /**
+   *  Evalaute the electroweka matching as a matrix
+   */
+  boost::numeric::ublas::matrix<Complex>
+  electroWeakMatching(Energy EWScale, Energy2 s,
+		      Herwig::EWProcess::Process process,
+		      bool oneLoop);
+
+public:
+
+  /**
+   *  Make plots for tests
+   */
+  void makePlots();
+
+protected:
 
   /**
    *   Evaluate the high scale contributions
@@ -105,11 +124,6 @@ public:
    *  Evaluate the matching
    */
   void evaluateMatching(Energy EWScale,Energy2 S);
-
-  /**
-   *  Make plots for tests
-   */
-  void makePlots();
 
 public:
 

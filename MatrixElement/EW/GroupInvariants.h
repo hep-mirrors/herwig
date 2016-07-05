@@ -12,6 +12,7 @@
 #include "ThePEG/Config/ThePEG.h"
 #include "ThePEG/Config/Unitsystem.h"
 #include <cassert>
+#include <boost/numeric/ublas/matrix.hpp>
 
 namespace Herwig {
 using namespace ThePEG;
@@ -177,6 +178,47 @@ namespace GroupInvariants {
       return log(-arg)-I*Constants::pi;
     else 
       assert(false);
+  }
+
+  inline Complex getT(Energy2 s, Energy2 t) {
+    return MinusLog(-t/GeV2) - MinusLog(-s/GeV2);
+  }
+  
+  inline Complex getU(Energy2 s, Energy2 u) {
+    return MinusLog(-u/GeV2) - MinusLog(-s/GeV2);
+  }
+
+  inline boost::numeric::ublas::matrix<Complex> Gamma2(Complex U, Complex T) {
+    boost::numeric::ublas::matrix<Complex> output(2,2);
+    static const Complex I(0,1.0);
+    using Constants::pi;
+    output(0,0) = (-3.0/2.0)*I*pi + (T+U);
+    output(1,1) = (-3.0/2.0)*I*pi;
+    output(0,1) = 2.0*(T-U);
+    output(1,0) = (3.0/8.0)*(T-U);
+    return output;
+  }
+
+  inline boost::numeric::ublas::matrix<Complex> Gamma2w(Complex U, Complex T) {
+    boost::numeric::ublas::matrix<Complex> output =  boost::numeric::ublas::zero_matrix<Complex>(5,5);
+    static const Complex I(0,1.0);
+    using Constants::pi;
+    output(0,0) += -I*pi*11.0/4.0;
+    output(0,1) += U-T;
+    output(1,0) += 2.0*(U-T);
+    output(1,1) += -I*pi*11.0/4.0 + (T+U);
+    output(2,2) += -7.0/4.0*I*pi + (U+T);
+    output(3,3) += -7.0/4.0*I*pi + (U+T);
+    output(4,4) += -3.0/4.0*I*pi;
+    return output;
+  }
+
+  inline boost::numeric::ublas::matrix<Complex> Gamma2Singlet() {
+    boost::numeric::ublas::matrix<Complex> output =  boost::numeric::ublas::zero_matrix<Complex>(2,2);
+    static const Complex I(0,1.0);
+    using Constants::pi;
+    output(0,0) = output(1,1) = -3.0/4.0*I*pi;
+    return output;
   }
 
   /**

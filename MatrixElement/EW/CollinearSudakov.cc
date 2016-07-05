@@ -17,6 +17,18 @@
 
 using namespace Herwig;
 
+namespace {
+
+void DuplicateColumn0(boost::numeric::ublas::matrix<Complex> &orig) {
+  for (unsigned int i=0; i<orig.size1(); i++) {
+    for (unsigned int j=1; j<orig.size2(); j++) {
+      orig(i,j) = orig(i,0);
+    }
+  }
+}
+
+}
+
 CollinearSudakov::CollinearSudakov() : K_ORDER_(3),
 				       B_ORDER_(2)
 {}
@@ -654,4 +666,527 @@ void CollinearSudakov::makePlots() {
   writeLine(fig4b,np,g30,"/g30","g $(\\mu_f=30\\,\\mathrm{GeV})$","green" ,"dotted" );
   writeLine(fig4b,np,g50,"/g50","g $(\\mu_f=50\\,\\mathrm{GeV})$","blue","dotdashed");
   fig4b.close();
+}
+
+boost::numeric::ublas::matrix<Complex>
+CollinearSudakov::electroWeakMatching(Energy EWScale, Energy2 s,
+				      Herwig::EWProcess::Process process,
+				      bool oneLoop) {
+  using namespace EWProcess;
+  // calculate the matching coefficients
+  evaluateMatching(EWScale,s);
+  // fill the matrix
+  boost::numeric::ublas::matrix<Complex> result(1,1);
+  switch (process) {         
+  case QQQQ:
+  case QQQQiden: 
+    {
+      unsigned int numGauge = 4, numBrokenGauge = 12;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge);
+      result(0,0) = result(6,0) = ULcollinearCorr_*ULcollinearCorr_*ULcollinearCorr_*ULcollinearCorr_;
+      result(3,0) = result(9,0) = DLcollinearCorr_*DLcollinearCorr_*DLcollinearCorr_*DLcollinearCorr_;
+      for (int i=0; i<12; i++) {
+	if (i!=0 && i!=3 && i!=6 && i!=9) {
+	  result(i,0) = ULcollinearCorr_*ULcollinearCorr_*DLcollinearCorr_*DLcollinearCorr_;
+	}
+      }
+      DuplicateColumn0(result);
+    }
+    break;
+  case QtQtQQ:
+    {
+      unsigned int numGauge = 4, numBrokenGauge = 12;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge);
+      result(0,0) = result(6,0) = ULcollinearCorr_*ULcollinearCorr_*tLcollinearCorr_*tLcollinearCorr_;
+      result(3,0) = result(9,0) = DLcollinearCorr_*DLcollinearCorr_*bLcollinearCorr_*bLcollinearCorr_;
+      for (int i=0; i<12; i++) {
+	if (i==4 || i==5 || i==10 || i==11) {
+	  result(i,0) = ULcollinearCorr_*tLcollinearCorr_*DLcollinearCorr_*bLcollinearCorr_;
+	}
+	else if (i==1 || i==7) {
+	  result(i,0) = DLcollinearCorr_*DLcollinearCorr_*tLcollinearCorr_*tLcollinearCorr_;
+	}
+	else if (i==2 || i==8) {
+	  result(i,0) = ULcollinearCorr_*ULcollinearCorr_*bLcollinearCorr_*bLcollinearCorr_;
+	}
+      }
+      DuplicateColumn0(result);
+    }
+    break;
+  case QQUU:
+    {
+      unsigned int numGauge = 2;
+      unsigned int numBrokenGauge = 4;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge); result *= 0.0;
+      result(0,0) = result(2,0) = ULcollinearCorr_*ULcollinearCorr_*URcollinearCorr_*URcollinearCorr_;
+      result(1,0) = result(3,0) = DLcollinearCorr_*DLcollinearCorr_*URcollinearCorr_*URcollinearCorr_;
+      DuplicateColumn0(result);
+    }
+    break;
+  case QtQtUU:
+    {
+      unsigned int numGauge = 2;
+      unsigned int numBrokenGauge = 4;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge); result *= 0.0;
+      result(0,0) = result(2,0) = tLcollinearCorr_*tLcollinearCorr_*URcollinearCorr_*URcollinearCorr_;
+      result(1,0) = result(3,0) = bLcollinearCorr_*bLcollinearCorr_*URcollinearCorr_*URcollinearCorr_;
+      DuplicateColumn0(result);
+    }
+    break;
+  case QQtRtR:
+    {
+      unsigned int numGauge = 2;
+      unsigned int numBrokenGauge = 4;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge); result *= 0.0;
+      result(0,0) = result(2,0) = ULcollinearCorr_*ULcollinearCorr_*tRcollinearCorr_*tRcollinearCorr_;
+      result(1,0) = result(3,0) = DLcollinearCorr_*DLcollinearCorr_*tRcollinearCorr_*tRcollinearCorr_;
+      DuplicateColumn0(result);
+    }
+    break;
+  case QQDD:
+    {
+      unsigned int numGauge = 2;
+      unsigned int numBrokenGauge = 4;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge); result *= 0.0;
+      result(0,0) = result(2,0) = ULcollinearCorr_*ULcollinearCorr_*DRcollinearCorr_*DRcollinearCorr_;
+      result(1,0) = result(3,0) = DLcollinearCorr_*DLcollinearCorr_*DRcollinearCorr_*DRcollinearCorr_;
+      DuplicateColumn0(result);
+    }
+    break;
+  case QtQtDD:
+    {
+      unsigned int numGauge = 2;
+      unsigned int numBrokenGauge = 4;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge); result *= 0.0;
+      result(0,0) = result(2,0) = tLcollinearCorr_*tLcollinearCorr_*DRcollinearCorr_*DRcollinearCorr_;
+      result(1,0) = result(3,0) = bLcollinearCorr_*bLcollinearCorr_*DRcollinearCorr_*DRcollinearCorr_;
+      DuplicateColumn0(result);
+    }
+    break;
+  case QQLL:
+    {
+      unsigned int numGauge = 2;
+      unsigned int numBrokenGauge = 6;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge); result *= 0.0;
+      result(0,0) = nuLcollinearCorr_*nuLcollinearCorr_*ULcollinearCorr_*ULcollinearCorr_;
+      result(1,0) = nuLcollinearCorr_*nuLcollinearCorr_*DLcollinearCorr_*DLcollinearCorr_;
+      result(2,0) = ELcollinearCorr_*ELcollinearCorr_*ULcollinearCorr_*ULcollinearCorr_;
+      result(3,0) = ELcollinearCorr_*ELcollinearCorr_*DLcollinearCorr_*DLcollinearCorr_;
+      result(4,0) = result(5,0) = nuLcollinearCorr_*ELcollinearCorr_*ULcollinearCorr_*DLcollinearCorr_;
+      DuplicateColumn0(result);
+    }
+    break;
+  case QQEE:
+    {
+      unsigned int numGauge = 1;
+      unsigned int numBrokenGauge = 2;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge); result *= 0.0;
+      result(0,0) = ULcollinearCorr_*ULcollinearCorr_*ERcollinearCorr_*ERcollinearCorr_;
+      result(1,0) = DLcollinearCorr_*DLcollinearCorr_*ERcollinearCorr_*ERcollinearCorr_;
+      DuplicateColumn0(result);
+    }
+    break;
+  case UUUU:
+  case UUUUiden:
+    {
+      unsigned int numGauge = 2;
+      unsigned int numBrokenGauge = 2;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge); result *= 0.0;
+      result(0,0) = result(1,0) = URcollinearCorr_*URcollinearCorr_*URcollinearCorr_*URcollinearCorr_;
+      DuplicateColumn0(result);
+    }
+    break;
+  case tRtRUU:
+    {
+      unsigned int numGauge = 2;
+      unsigned int numBrokenGauge = 2;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge); result *= 0.0;
+      result(0,0) = result(1,0) = tRcollinearCorr_*tRcollinearCorr_*URcollinearCorr_*URcollinearCorr_;
+      DuplicateColumn0(result);
+    }
+    break;
+  case UUDD:
+    {
+      unsigned int numGauge = 2;
+      unsigned int numBrokenGauge = 2;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge); result *= 0.0;
+      result(0,0) = result(1,0) = URcollinearCorr_*URcollinearCorr_*DRcollinearCorr_*DRcollinearCorr_;
+      DuplicateColumn0(result);
+    }
+    break;
+  case tRtRDD:
+    {
+      unsigned int numGauge = 2;
+      unsigned int numBrokenGauge = 2;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge); result *= 0.0;
+      result(0,0) = result(1,0) = tRcollinearCorr_*tRcollinearCorr_*DRcollinearCorr_*DRcollinearCorr_;
+      DuplicateColumn0(result);
+    }
+    break;
+  case UULL:
+    {
+      unsigned int numGauge = 1;
+      unsigned int numBrokenGauge = 2;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge); result *= 0.0;
+      result(0,0) = nuLcollinearCorr_*nuLcollinearCorr_*URcollinearCorr_*URcollinearCorr_;
+      result(1,0) = ELcollinearCorr_*ELcollinearCorr_*URcollinearCorr_*URcollinearCorr_;
+      DuplicateColumn0(result);
+    }
+    break;
+  case UUEE:
+    {
+      unsigned int numGauge = 1;
+      unsigned int numBrokenGauge = 1;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge); result *= 0.0;
+      result(0,0) = URcollinearCorr_*URcollinearCorr_*ERcollinearCorr_*ERcollinearCorr_;
+      DuplicateColumn0(result);
+    }
+    break;
+  case DDDD:
+  case DDDDiden:
+    {
+      unsigned int numGauge = 2;
+      unsigned int numBrokenGauge = 2;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge); result *= 0.0;
+      result(0,0) = result(1,0) = DRcollinearCorr_*DRcollinearCorr_*DRcollinearCorr_*DRcollinearCorr_;
+      DuplicateColumn0(result);
+    }
+    break;
+  case DDLL:
+    {
+      unsigned int numGauge = 1;
+      unsigned int numBrokenGauge = 2;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge); result *= 0.0;
+      result(0,0) = nuLcollinearCorr_*nuLcollinearCorr_*DRcollinearCorr_*DRcollinearCorr_;
+      result(1,0) = ELcollinearCorr_*ELcollinearCorr_*DRcollinearCorr_*DRcollinearCorr_;
+      DuplicateColumn0(result);
+    }
+    break;
+  case DDEE:
+    {
+      unsigned int numGauge = 1;
+      unsigned int numBrokenGauge = 1;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge); result *= 0.0;
+      result(0,0) = DRcollinearCorr_*DRcollinearCorr_*ERcollinearCorr_*ERcollinearCorr_;
+      DuplicateColumn0(result);
+    }
+    break;
+  case LLLL:
+  case LLLLiden:
+    {
+      unsigned int numGauge = 2;
+      unsigned int numBrokenGauge = 6;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge); result *= 0.0;
+      result(0,0) = nuLcollinearCorr_*nuLcollinearCorr_*nuLcollinearCorr_*nuLcollinearCorr_;
+      result(1,0) = nuLcollinearCorr_*nuLcollinearCorr_*ELcollinearCorr_*ELcollinearCorr_;
+      result(2,0) = ELcollinearCorr_*ELcollinearCorr_*nuLcollinearCorr_*nuLcollinearCorr_;
+      result(3,0) = ELcollinearCorr_*ELcollinearCorr_*ELcollinearCorr_*ELcollinearCorr_;
+      result(4,0) = result(5,0) = nuLcollinearCorr_*ELcollinearCorr_*nuLcollinearCorr_*ELcollinearCorr_;
+      DuplicateColumn0(result);
+    }
+    break;
+  case LLEE:
+    {
+      unsigned int numGauge = 1;
+      unsigned int numBrokenGauge = 2;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge); result *= 0.0;
+      result(0,0) = nuLcollinearCorr_*nuLcollinearCorr_*ERcollinearCorr_*ERcollinearCorr_;
+      result(1,0) = ELcollinearCorr_*ELcollinearCorr_*ERcollinearCorr_*ERcollinearCorr_;
+      DuplicateColumn0(result);
+    }
+    break;
+  case EEEE:
+  case EEEEiden:
+    {
+      unsigned int numGauge = 1;
+      unsigned int numBrokenGauge = 1;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge); result *= 0.0;
+      result(0,0) = ERcollinearCorr_*ERcollinearCorr_*ERcollinearCorr_*ERcollinearCorr_;
+      DuplicateColumn0(result);
+    }
+    break;
+  case QQWW:
+  case LLWW:
+    {
+      unsigned int numGauge = 5;
+      unsigned int numBrokenGauge = 20;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge); result *= 0.0;
+      for (unsigned int row = 0; row < result.size1(); row++) {
+	for (unsigned int col = 0; col < result.size2(); col++) {
+	  
+	  // Boson Collinear Corr_ections:
+	  if (col==0 || col==1) {
+	    if (row==0 || row==1 || row==6 || row==7) result(row,col) = (WtoWcollinearCorr_*WtoWcollinearCorr_);
+	    if (row==2 || row==8) result(row,col) = (WtoZcollinearCorr_*WtoZcollinearCorr_);
+	    if (row==3 || row==4 || row==9 || row==10) result(row,col) = (WtoZcollinearCorr_*WtoAcollinearCorr_);
+	    if (row==5 || row==11) result(row,col) = (WtoAcollinearCorr_*WtoAcollinearCorr_);
+	    if (row==12 || row==14) result(row,col) = (WtoWcollinearCorr_*WtoZcollinearCorr_);
+	    if (row==13 || row==15) result(row,col) = (WtoWcollinearCorr_*WtoAcollinearCorr_);
+	    if (row==16 || row==18) result(row,col) = (WtoWcollinearCorr_*WtoZcollinearCorr_);
+	    if (row==17 || row==19) result(row,col) = (WtoWcollinearCorr_*WtoAcollinearCorr_);
+	  }
+	  if (col==2) {
+	    if (row==2 || row==8) result(row,col) = (WtoZcollinearCorr_*BtoZcollinearCorr_);
+	    if (row==3 || row==9) result(row,col) = (WtoZcollinearCorr_*BtoAcollinearCorr_);
+	    if (row==4 || row==10) result(row,col) = (WtoAcollinearCorr_*BtoZcollinearCorr_);
+	    if (row==5 || row==11) result(row,col) = (WtoAcollinearCorr_*BtoAcollinearCorr_);
+	    if (row==14) result(row,col) = (WtoWcollinearCorr_*BtoZcollinearCorr_);
+	    if (row==15) result(row,col) = (WtoWcollinearCorr_*BtoAcollinearCorr_);
+	    if (row==16) result(row,col) = (WtoWcollinearCorr_*BtoZcollinearCorr_);
+	    if (row==17) result(row,col) = (WtoWcollinearCorr_*BtoAcollinearCorr_);
+	  }
+	  if (col==3) {
+	    if (row==2 || row==8) result(row,col) = (WtoZcollinearCorr_*BtoZcollinearCorr_);
+	    if (row==3 || row==9) result(row,col) = (WtoAcollinearCorr_*BtoZcollinearCorr_);
+	    if (row==4 || row==10) result(row,col) = (WtoZcollinearCorr_*BtoAcollinearCorr_);
+	    if (row==5 || row==11) result(row,col) = (WtoAcollinearCorr_*BtoAcollinearCorr_);
+	    if (row==12) result(row,col) = (WtoWcollinearCorr_*BtoZcollinearCorr_);
+	    if (row==13) result(row,col) = (WtoWcollinearCorr_*BtoAcollinearCorr_);
+	    if (row==18) result(row,col) = (WtoWcollinearCorr_*BtoZcollinearCorr_);
+	    if (row==19) result(row,col) = (WtoWcollinearCorr_*BtoAcollinearCorr_);
+	  }
+	  if (col==4) {
+	    if (row==2 || row==8) result(row,col) = (BtoZcollinearCorr_*BtoZcollinearCorr_);
+	    if (row==3 || row==4 || row==9 || row==10) result(row,col) = (BtoZcollinearCorr_*BtoAcollinearCorr_);
+	    if (row==5 || row==11) result(row,col) = (BtoAcollinearCorr_*BtoAcollinearCorr_);
+	  }
+          
+	  // Particle Collinear Corr_ections:
+	  if (process==QQWW) {
+	    if (row<6) result(row,col) *= (ULcollinearCorr_*ULcollinearCorr_);
+	    if ((row>=6)&&(row<12)) result(row,col) *= (DLcollinearCorr_*DLcollinearCorr_);
+	    if (row>=12) result(row,col) *= (ULcollinearCorr_*DLcollinearCorr_);
+	  }
+	  else if (process==LLWW) {
+	    if (row<6) result(row,col) *= (nuLcollinearCorr_*nuLcollinearCorr_);
+	    if ((row>=6)&&(row<12)) result(row,col) *= (ELcollinearCorr_*ELcollinearCorr_);
+	    if (row>=12) result(row,col) *= (nuLcollinearCorr_*ELcollinearCorr_);
+	  }
+	}
+      }
+    }
+    break;
+  case QQPhiPhi:
+  case LLPhiPhi:
+    {
+      unsigned int numGauge = 2;
+      unsigned int numBrokenGauge = 14;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge); result *= 0.0;
+      for (unsigned int row = 0; row < result.size1(); row++) {
+	
+	// Boson Colinear Corr_ections:
+	if (row==0 || row==5) result(row,0) = (PhitoWcollinearCorr_*PhitoWcollinearCorr_);
+	if (row==1 || row==6) result(row,0) = (PhitoZcollinearCorr_*PhitoZcollinearCorr_);
+	if (row==2 || row==3 || row==7 || row==8) result(row,0) = (PhitoZcollinearCorr_*PhitoHcollinearCorr_);
+	if (row==4 || row==9) result(row,0) = (PhitoHcollinearCorr_*PhitoHcollinearCorr_);
+	if (row==10) result(row,0) = (PhitoWcollinearCorr_*PhitoZcollinearCorr_);
+	if (row==11) result(row,0) = (PhitoWcollinearCorr_*PhitoHcollinearCorr_);
+	if (row==12) result(row,0) = (PhitoWcollinearCorr_*PhitoZcollinearCorr_);
+	if (row==13) result(row,0) = (PhitoWcollinearCorr_*PhitoHcollinearCorr_);
+        
+	// Particle Colinear Corr_ections:
+	if (process==QQPhiPhi) {
+	  if (row<5) result(row,0) *= (ULcollinearCorr_*ULcollinearCorr_);
+	  if ((row>=5)&&(row<10)) result(row,0) *= (DLcollinearCorr_*DLcollinearCorr_);
+	  if (row>=10) result(row,0) *= (ULcollinearCorr_*DLcollinearCorr_);
+	}
+	else if (process==LLPhiPhi) {
+	  if (row<5) result(row,0) *= (nuLcollinearCorr_*nuLcollinearCorr_);
+	  if ((row>=5)&&(row<10)) result(row,0) *= (ELcollinearCorr_*ELcollinearCorr_);
+	  if (row>=10) result(row,0) *= (nuLcollinearCorr_*ELcollinearCorr_);
+	}
+      }
+      DuplicateColumn0(result);
+    }
+    break;
+  case QQWG:
+    {
+      unsigned int numGauge = 1;
+      unsigned int numBrokenGauge = 6;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge); result *= 0.0;
+      result(0,0) = result(1,0) = ULcollinearCorr_*DLcollinearCorr_*GcollinearCorr_*WtoWcollinearCorr_;
+      result(2,0) = ULcollinearCorr_*ULcollinearCorr_*GcollinearCorr_*WtoZcollinearCorr_;
+      result(3,0) = ULcollinearCorr_*ULcollinearCorr_*GcollinearCorr_*WtoAcollinearCorr_;
+      result(4,0) = DLcollinearCorr_*DLcollinearCorr_*GcollinearCorr_*WtoZcollinearCorr_;
+      result(5,0) = DLcollinearCorr_*DLcollinearCorr_*GcollinearCorr_*WtoAcollinearCorr_;
+      DuplicateColumn0(result);
+    }
+    break;
+  case QQBG:
+    {
+      unsigned int numGauge = 1;
+      unsigned int numBrokenGauge = 4;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge); result *= 0.0;
+      result(0,0) = ULcollinearCorr_*ULcollinearCorr_*GcollinearCorr_*BtoZcollinearCorr_;
+      result(1,0) = ULcollinearCorr_*ULcollinearCorr_*GcollinearCorr_*BtoAcollinearCorr_;
+      result(2,0) = DLcollinearCorr_*DLcollinearCorr_*GcollinearCorr_*BtoZcollinearCorr_;
+      result(3,0) = DLcollinearCorr_*DLcollinearCorr_*GcollinearCorr_*BtoAcollinearCorr_;
+      DuplicateColumn0(result);
+    }
+    break;
+  case QQGG:
+    {
+      unsigned int numGauge = 3;
+      unsigned int numBrokenGauge = 6;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge); result *= 0.0;
+      result(0,0) = result(1,0) = result(2,0) = ULcollinearCorr_*ULcollinearCorr_*GcollinearCorr_*GcollinearCorr_;
+      result(3,0) = result(4,0) = result(5,0) = DLcollinearCorr_*DLcollinearCorr_*GcollinearCorr_*GcollinearCorr_;
+      DuplicateColumn0(result);
+    }
+    break;
+  case QtQtGG:
+    {
+      unsigned int numGauge = 3;
+      unsigned int numBrokenGauge = 6;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge); result *= 0.0;
+      result(0,0) = result(1,0) = result(2,0) = tLcollinearCorr_*tLcollinearCorr_*GcollinearCorr_*GcollinearCorr_;
+      result(3,0) = result(4,0) = result(5,0) = bLcollinearCorr_*bLcollinearCorr_*GcollinearCorr_*GcollinearCorr_;
+      DuplicateColumn0(result);
+    }
+    break;
+  case UUBB:
+    {
+      unsigned int numGauge = 1;
+      unsigned int numBrokenGauge = 4;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge); result *= 0.0;
+      result(0,0) = URcollinearCorr_*URcollinearCorr_*BtoZcollinearCorr_*BtoZcollinearCorr_;
+      result(1,0) = URcollinearCorr_*URcollinearCorr_*BtoZcollinearCorr_*BtoAcollinearCorr_;
+      result(2,0) = URcollinearCorr_*URcollinearCorr_*BtoAcollinearCorr_*BtoZcollinearCorr_;
+      result(3,0) = URcollinearCorr_*URcollinearCorr_*BtoAcollinearCorr_*BtoAcollinearCorr_;
+      DuplicateColumn0(result);
+    }
+    break;
+  case UUPhiPhi:
+    {
+      unsigned int numGauge = 1;
+      unsigned int numBrokenGauge = 5;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge); result *= 0.0;
+      result(0,0) = URcollinearCorr_*URcollinearCorr_*PhitoWcollinearCorr_*PhitoWcollinearCorr_;
+      result(1,0) = URcollinearCorr_*URcollinearCorr_*PhitoZcollinearCorr_*PhitoZcollinearCorr_;
+      result(2,0) = URcollinearCorr_*URcollinearCorr_*PhitoHcollinearCorr_*PhitoZcollinearCorr_;
+      result(3,0) = URcollinearCorr_*URcollinearCorr_*PhitoZcollinearCorr_*PhitoHcollinearCorr_;
+      result(4,0) = URcollinearCorr_*URcollinearCorr_*PhitoHcollinearCorr_*PhitoHcollinearCorr_;
+      DuplicateColumn0(result);
+    }
+    break;
+  case UUBG:
+    {
+      unsigned int numGauge = 1;
+      unsigned int numBrokenGauge = 2;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge); result *= 0.0;
+      result(0,0) = URcollinearCorr_*URcollinearCorr_*GcollinearCorr_*BtoZcollinearCorr_;
+      result(1,0) = URcollinearCorr_*URcollinearCorr_*GcollinearCorr_*BtoAcollinearCorr_;
+      DuplicateColumn0(result);
+    }
+    break;
+  case UUGG:
+    {
+      unsigned int numGauge = 3;
+      unsigned int numBrokenGauge = 3;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge); result *= 0.0;
+      result(0,0) = result(1,0) = result(2,0) = URcollinearCorr_*URcollinearCorr_*GcollinearCorr_*GcollinearCorr_;
+      DuplicateColumn0(result);
+    }
+    break;
+  case tRtRGG:
+    {
+      unsigned int numGauge = 3;
+      unsigned int numBrokenGauge = 3;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge); result *= 0.0;
+      result(0,0) = result(1,0) = result(2,0) = tRcollinearCorr_*tRcollinearCorr_*GcollinearCorr_*GcollinearCorr_;
+      DuplicateColumn0(result);
+    }
+    break;
+  case DDBB:
+    {
+      unsigned int numGauge = 1;
+      unsigned int numBrokenGauge = 4;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge); result *= 0.0;
+      result(0,0) = DRcollinearCorr_*DRcollinearCorr_*BtoZcollinearCorr_*BtoZcollinearCorr_;
+      result(1,0) = DRcollinearCorr_*DRcollinearCorr_*BtoZcollinearCorr_*BtoAcollinearCorr_;
+      result(2,0) = DRcollinearCorr_*DRcollinearCorr_*BtoAcollinearCorr_*BtoZcollinearCorr_;
+      result(3,0) = DRcollinearCorr_*DRcollinearCorr_*BtoAcollinearCorr_*BtoAcollinearCorr_;
+      DuplicateColumn0(result);
+    }
+    break;
+  case DDPhiPhi:
+    {
+      unsigned int numGauge = 1;
+      unsigned int numBrokenGauge = 5;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge); result *= 0.0;
+      result(0,0) = DRcollinearCorr_*DRcollinearCorr_*PhitoWcollinearCorr_*PhitoWcollinearCorr_;
+      result(1,0) = DRcollinearCorr_*DRcollinearCorr_*PhitoZcollinearCorr_*PhitoZcollinearCorr_;
+      result(2,0) = DRcollinearCorr_*DRcollinearCorr_*PhitoHcollinearCorr_*PhitoZcollinearCorr_;
+      result(3,0) = DRcollinearCorr_*DRcollinearCorr_*PhitoZcollinearCorr_*PhitoHcollinearCorr_;
+      result(4,0) = DRcollinearCorr_*DRcollinearCorr_*PhitoHcollinearCorr_*PhitoHcollinearCorr_;
+      DuplicateColumn0(result);
+    }
+    break;      
+  case DDBG:
+    {
+      unsigned int numGauge = 1;
+      unsigned int numBrokenGauge = 2;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge); result *= 0.0;
+      result(0,0) = DRcollinearCorr_*DRcollinearCorr_*GcollinearCorr_*BtoZcollinearCorr_;
+      result(1,0) = DRcollinearCorr_*DRcollinearCorr_*GcollinearCorr_*BtoAcollinearCorr_;
+      DuplicateColumn0(result);
+    }
+    break;
+  case DDGG:
+    {
+      unsigned int numGauge = 3;
+      unsigned int numBrokenGauge = 3;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge); result *= 0.0;
+      result(0,0) = result(1,0) = result(2,0) = DRcollinearCorr_*DRcollinearCorr_*GcollinearCorr_*GcollinearCorr_;
+      DuplicateColumn0(result);
+    }
+    break;
+  case EEBB:
+    {
+      unsigned int numGauge = 1;
+      unsigned int numBrokenGauge = 4;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge); result *= 0.0;
+      result(0,0) = ERcollinearCorr_*ERcollinearCorr_*BtoZcollinearCorr_*BtoZcollinearCorr_;
+      result(1,0) = ERcollinearCorr_*ERcollinearCorr_*BtoZcollinearCorr_*BtoAcollinearCorr_;
+      result(2,0) = ERcollinearCorr_*ERcollinearCorr_*BtoAcollinearCorr_*BtoZcollinearCorr_;
+      result(3,0) = ERcollinearCorr_*ERcollinearCorr_*BtoAcollinearCorr_*BtoAcollinearCorr_;
+      DuplicateColumn0(result);
+    }
+    break;
+  case EEPhiPhi:
+    {
+      unsigned int numGauge = 1;
+      unsigned int numBrokenGauge = 5;
+      result = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge); result *= 0.0;
+      result(0,0) = ERcollinearCorr_*ERcollinearCorr_*PhitoWcollinearCorr_*PhitoWcollinearCorr_;
+      result(1,0) = ERcollinearCorr_*ERcollinearCorr_*PhitoZcollinearCorr_*PhitoZcollinearCorr_;
+      result(2,0) = ERcollinearCorr_*ERcollinearCorr_*PhitoHcollinearCorr_*PhitoZcollinearCorr_;
+      result(3,0) = ERcollinearCorr_*ERcollinearCorr_*PhitoZcollinearCorr_*PhitoHcollinearCorr_;
+      result(4,0) = ERcollinearCorr_*ERcollinearCorr_*PhitoHcollinearCorr_*PhitoHcollinearCorr_;
+      DuplicateColumn0(result);
+    }
+    break;
+  default:
+    assert(false);
+  }
+
+  // This is done at the end instead of the beginning for result.size1() and cols()
+  if (!oneLoop) { 
+    boost::numeric::ublas::matrix<Complex> OnesMatrix(result.size1(),result.size2());
+    for (unsigned int i=0; i<OnesMatrix.size1(); i++) {
+      for (unsigned int j=0; j<OnesMatrix.size2(); j++) {
+	OnesMatrix(i,j) = 1.0;
+      }
+    }
+    return OnesMatrix;
+  }
+   
+  // Only include the following for the FO calculation:
+  for (unsigned int i=0; i<result.size1(); i++) {
+    for (unsigned int j=0; j<result.size2(); j++) {
+      result(i,j) = 1.0 + std::log(result(i,j));
+    }
+  }
+  
+  return result;
 }
