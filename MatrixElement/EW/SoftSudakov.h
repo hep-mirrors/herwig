@@ -8,6 +8,7 @@
 #include "ThePEG/Interface/Interfaced.h"
 #include "Herwig/Utilities/GSLIntegrator.h"
 #include <boost/numeric/ublas/matrix.hpp>
+#include "EWProcess.h"
 #include "SoftSudakov.fh"
 
 namespace Herwig {
@@ -38,9 +39,27 @@ public:
   //@}
 
 public:
+
+  /**
+   *  Low energy soft evolution
+   */
+  boost::numeric::ublas::matrix<Complex>
+  lowEnergyRunning(Energy EWScale, Energy lowScale, 
+		   Energy2 s, Energy2 t, Energy2 u,
+		   Herwig::EWProcess::Process process);
+
+  /**
+   *  Evalaute the high energy running as a matrix
+   */
+  boost::numeric::ublas::matrix<Complex>
+  highEnergyRunning(Energy highScale, Energy EWScale,
+		    Energy2 s, Energy2 t, Energy2 u,
+		    Herwig::EWProcess::Process process);
+
+protected:
       
   /**
-   *  Evaluate bthe soft evolution 
+   *  Evaluate the soft evolution 
    */
   boost::numeric::ublas::matrix<Complex> evaluateSoft(boost::numeric::ublas::matrix<Complex> & G3,
 						      boost::numeric::ublas::matrix<Complex> & G2,

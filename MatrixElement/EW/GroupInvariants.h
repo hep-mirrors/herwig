@@ -238,6 +238,42 @@ namespace GroupInvariants {
       (y1*y4+y2*y3)*T - (y1*y3+y2*y4)*U;
   }
 
+  inline boost::numeric::ublas::matrix<Complex> Gamma3(Complex U, Complex T) {
+    boost::numeric::ublas::matrix<Complex> output =  boost::numeric::ublas::zero_matrix<Complex>(2,2);
+    static const Complex I(0,1.0);
+    using Constants::pi;
+    output(0,0) = -(8.0/3.0)*I*pi;
+    output(1,1) = -(8.0/3.0)*I*pi;
+    output(0,0) += (7.0/3.0)*T + (2.0/3.0)*U;
+    output(0,1) = 2.0*(T-U);
+    output(1,0) = (4.0/9.0)*(T-U);
+    return output;
+  }
+
+  inline boost::numeric::ublas::matrix<Complex> Gamma3g(Complex U, Complex T) {
+    boost::numeric::ublas::matrix<Complex> output =  boost::numeric::ublas::zero_matrix<Complex>(3,3);
+    static const Complex I(0,1.0);
+    using Constants::pi;
+    output(0,2) = U-T;
+    output(1,1) = 3.0/2.0*(T+U);
+    output(1,2) = 3.0/2.0*(U-T);
+    output(2,0) = 2.0*(U-T);
+    output(2,1) = 5.0/6.0*(U-T);
+    output(2,2) = 3.0/2.0*(T+U);
+    for (unsigned int i=0; i<3; i++) {
+      output(i,i) += -13.0/3.0*I*pi;
+    }
+    return output;
+  }
+
+  inline boost::numeric::ublas::matrix<Complex> Gamma3Singlet() {
+    boost::numeric::ublas::matrix<Complex> output =  boost::numeric::ublas::zero_matrix<Complex>(2,2);
+    static const Complex I(0,1.0);
+    using Constants::pi;
+    output(0,0) = output(1,1) = -4.0/3.0*I*pi;
+    return output;
+  }
+
   /**
    * Number of fermion generations (only used in gauge boson HighCMatching)
    */
