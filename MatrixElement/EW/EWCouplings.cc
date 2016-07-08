@@ -196,7 +196,6 @@ void EWCouplings::initializeLow() {
      }
      x += stepsize;
      derivatives(x,y,dydx);
-		
      lowTable_(counter,0) = x;
      for (unsigned int i=1; i<=N; i++) {
        lowTable_(counter,i) = (y[i-1].real()*y[i-1].real())/(4.0*pi);
@@ -493,7 +492,7 @@ void EWCouplings::betaHiggs(const double x, vector<Complex> &y,
   axpy_prod(MUU,temp,temp2);
   Complex trUUU = trace(temp2);
   axpy_prod(herm(Yuk_d),Yuk_d,MDD);
-  Complex trD  = trace( MUU);
+  Complex trD  = trace( MDD);
   axpy_prod(MDD,MDD,temp);
   Complex trDD = trace(temp);
   axpy_prod(MDD,temp,temp2);
