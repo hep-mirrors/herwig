@@ -13,11 +13,12 @@
 #include "GroupInvariants.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "expm-1.h"
 
 using namespace Herwig;
 using namespace GroupInvariants;
 
-SoftSudakov::SoftSudakov() : K_ORDER_(3) {}
+SoftSudakov::SoftSudakov() : K_ORDER_(3), integrator_(0.,1e-5,1000) {}
 
 SoftSudakov::~SoftSudakov() {}
 
@@ -79,16 +80,19 @@ SoftSudakov::evaluateSoft(boost::numeric::ublas::matrix<Complex> & G3,
   boost::numeric::ublas::matrix<Complex> gamma(NN,NN);
   for(row_=0;row_<NN;++row_) {
     for(col_=0;col_<NN;++col_) {
-      real_ = true;
-      gamma(row_,col_).real(integrator_.value(*this,mu_h,mu_l));
-      real_ = false;
-      gamma(row_,col_).imag(integrator_.value(*this,mu_h,mu_l));
+      if(G3_(row_,col_) == 0. && G2_(row_,col_) == 0. && G1_(row_,col_) == 0.) {
+	gamma(row_,col_) = 0.;
+      }
+      else {
+	real_ = true;
+	gamma(row_,col_).real(integrator_.value(*this,mu_h,mu_l));
+	real_ = false;
+	gamma(row_,col_).imag(integrator_.value(*this,mu_h,mu_l));
+      }
     }
   }
   // Resummed:
-  //return gamma.exp();
-  // Fixed Order:
-  return boost::numeric::ublas::identity_matrix<Complex>(NN,NN) + gamma;
+  return boost::numeric::ublas::expm_pad(gamma,7);
 }
 
 boost::numeric::ublas::matrix<Complex>
@@ -556,7 +560,7 @@ SoftSudakov::lowEnergyRunning(Energy EWScale, Energy lowScale,
   default:
     assert(false);
   }
-   
+  // return the answer
   if (EWScale==lowScale) {
     return boost::numeric::ublas::identity_matrix<Complex>(G1.size1());
   }
@@ -766,7 +770,7 @@ SoftSudakov::highEnergyRunning(Energy highScale, Energy EWScale,
       G1 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
       G2 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
       G3 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-      G3 = Gamma3g(T,U);
+      G3 = Gamma3g(U,T);
       Complex gam2s = Gamma2Singlet()(0,0);
       for (unsigned int i=0; i<3; i++) {
 	G2(i,i) = gam2s;

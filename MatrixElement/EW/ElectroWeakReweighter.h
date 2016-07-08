@@ -8,6 +8,7 @@
 #include "ThePEG/MatrixElement/ReweightBase.h"
 #include "EWCouplings.h"
 #include "CollinearSudakov.h"
+#include "SoftSudakov.h"
 
 namespace Herwig {
 
@@ -80,6 +81,13 @@ public:
 
 protected:
 
+  /**
+   *  Check the evolution for a fixed s,t,u
+   */
+  void testEvolution(Energy2 s,Energy2 t, Energy2 u) const;
+
+protected:
+
   /** @name Clone Methods. */
   //@{
   /**
@@ -114,6 +122,11 @@ private:
    *  The Collinear Sudakov
    */
   CollinearSudakovPtr collinearSudakov_;
+
+  /**
+   *  The Soft Sudakov
+   */
+  SoftSudakovPtr softSudakov_;
 
   /**
    *  The couplings to allow global access

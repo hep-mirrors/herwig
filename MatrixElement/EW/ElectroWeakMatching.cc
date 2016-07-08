@@ -51,10 +51,10 @@ ElectroWeakMatching::electroWeakMatching(Energy mu,
    case QtQtQQ:
      {
        unsigned int numGauge = 4, numBrokenGauge = 12;
-       boost::numeric::ublas::matrix<Complex> R0=boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge);
-       boost::numeric::ublas::matrix<Complex> G2=boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-       boost::numeric::ublas::matrix<Complex> Dw=boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-       boost::numeric::ublas::matrix<Complex> Dz=boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+       R0=boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge);
+       G2=boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+       Dw=boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+       Dz=boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
        R0(0,1) = R0(1,1) = R0(2,1) = R0(3,1) = 1.0;
        R0(0,0) = R0(3,0) = 0.25;
        R0(1,0) = R0(2,0) = -0.25;
@@ -577,11 +577,11 @@ ElectroWeakMatching::electroWeakMatching(Energy mu,
        
        if (oneLoop) {
 	 double g1(0.),g2(0.);
-	 if (process==QQWW) {
+	 if (process==QQPhiPhi) {
 	   g1 = g_Lu;
 	   g2 = g_Ld;
 	 }
-	 else if (process==LLWW) {
+	 else if (process==LLPhiPhi) {
 	   g1 = g_Lnu;
 	   g2 = g_Le;
 	 }
@@ -835,6 +835,7 @@ ElectroWeakMatching::electroWeakMatching(Energy mu,
        G2 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
        Dw = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
        Dz = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+       R0(0,0) = R0(1,1) = R0(2,2) = 1.0;
        if (oneLoop) {
 	 double g1(0.);
 	 if ((process==UUGG)||(process==tRtRGG)) {
@@ -862,13 +863,14 @@ ElectroWeakMatching::electroWeakMatching(Energy mu,
    
    if (!oneLoop) {
       return R0;
-   } 
+   }
+   boost::numeric::ublas::matrix<Complex> output(R0);
    boost::numeric::ublas::matrix<Complex> temp(R0.size1(),R0.size2());
    boost::numeric::ublas::axpy_prod(R0,G2,temp);
-   R0+=aW/(4.0*pi)*4.0*log(mW/mu)*temp;
+   output+=aW/(4.0*pi)*4.0*log(mW/mu)*temp;
    boost::numeric::ublas::axpy_prod(Dw,R0,temp);
-   R0+=aW/(4.0*pi)*4.0*log(mW/mu)*temp;
+   output+=aW/(4.0*pi)*4.0*log(mW/mu)*temp;
    boost::numeric::ublas::axpy_prod(Dz,R0,temp);
-   R0+=aZ/(4.0*pi)*4.0*log(mZ/mu)*temp;
-   return R0;
+   output+=aZ/(4.0*pi)*4.0*log(mZ/mu)*temp;
+   return output;
 }

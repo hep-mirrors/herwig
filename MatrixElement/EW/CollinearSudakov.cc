@@ -593,8 +593,6 @@ void CollinearSudakov::makePlots() {
   writeLine(fig6a,np,WT,"/WT","$W_T$","red"  ,"solid");
   writeLine(fig6a,np,WL,"/WL","$W_L$","blue" ,"dashed" );
   fig6a.close();
-
-
   ofstream fig6b("fig6b.dat");
   fig6b << "#BEGIN PLOT\n";
   fig6b << "LegendOnly=/WZT /BZT /ZL /H\n";
@@ -1179,13 +1177,6 @@ CollinearSudakov::electroWeakMatching(Energy EWScale, Energy2 s,
       }
     }
     return OnesMatrix;
-  }
-   
-  // Only include the following for the FO calculation:
-  for (unsigned int i=0; i<result.size1(); i++) {
-    for (unsigned int j=0; j<result.size2(); j++) {
-      result(i,j) = 1.0 + log(result(i,j));
-    }
   }
   
   return result;
