@@ -240,7 +240,6 @@ void EWCouplings::initializeCouplings(vector<Complex> & y) {
   y[0] = 0.461531463;     // g1 = Sqrt[5/3] * Sqrt[4*pi*a1] with a1(Mz) = 0.01017054
   y[1] = 0.651547066;     // g2 = Sqrt[4*pi*a2] with a2(Mz) = 0.03378168
   y[2] = 1.215650108;     // g3 = Sqrt[4*pi*as] with as(Mz) = 0.1176
-  
   // Note lambda_t = sqrt(2.0)*mt/vev only valid for mt(mt); need mt(mZ) here
   // Top Yukawa lambda from Manohar
   //Complex lambda_t = 1.02858; 
@@ -329,11 +328,11 @@ void EWCouplings::betaGauge(const double x, vector<Complex> &y, vector<Complex> 
     g2(i) = pow(gauge(i),2);
   }
   // gc = trans(g2) * B
-  axpy_prod(B, g2, gc, true);
+  axpy_prod(g2, B, gc, true);
   // compute the answer
   if(loops_ >= 1) {
     for(int l=0; l<3; l++) {
-      dydx[l] += -b(l)*pow(gauge(l),3)/(16.0*pow(pi,2));
+      dydx[l] = -b(l)*pow(gauge(l),3)/(16.0*pow(pi,2));
     }
     if (loops_ >= 2) {
       boost::numeric::ublas::matrix<Complex> temp(3,3);
@@ -398,7 +397,7 @@ void EWCouplings::betaYukawa(const double x, vector< Complex > &y, vector<Comple
   axpy_prod(MUU,MUU,MUU2);
   Complex trUU = trace(MUU2);
   axpy_prod(herm(Yuk_d),Yuk_d,MDD);
-  Complex trD  = trace( MUU);
+  Complex trD  = trace( MDD);
   axpy_prod(MDD,MDD,MDD2);
   Complex trDD = trace(MDD2);
   axpy_prod(MUU,MDD,MUUDD);
