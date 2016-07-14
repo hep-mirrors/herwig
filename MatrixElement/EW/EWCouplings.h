@@ -30,7 +30,7 @@ public:
    * The default constructor.
    */
   EWCouplings(unsigned int loops=2, unsigned int steps=200,
-	      Energy highScale=10.*TeV, Energy lowScale=10.*GeV);
+	      Energy highScale=14.*TeV, Energy lowScale=10.*GeV);
 
   /**
    * The destructor.
