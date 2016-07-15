@@ -56,6 +56,16 @@ public:
 		    Energy2 s, Energy2 t, Energy2 u,
 		    Herwig::EWProcess::Process process);
 
+  /**
+   *  Number of operators for the broken theory at low energy
+   */
+  unsigned int numberBrokenGauge(Herwig::EWProcess::Process process);
+
+  /**
+   *  Number of operators for the unbroken theory at high energy
+   */
+  unsigned int numberGauge(Herwig::EWProcess::Process process);
+
 protected:
       
   /**

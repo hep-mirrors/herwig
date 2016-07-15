@@ -190,7 +190,6 @@ SoftSudakov::lowEnergyRunning(Energy EWScale, Energy lowScale,
       G1 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
       G2 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
       G3 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-      G1 *= 0.0; G2 *= 0.0; G3 *= 0.0;
       Complex gam3s = Gamma3Singlet()(0,0);
       for (unsigned int i=0; i<2; i++) {
 	G3(i,i) += gam3s;
@@ -206,7 +205,6 @@ SoftSudakov::lowEnergyRunning(Energy EWScale, Energy lowScale,
     G1 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
     G2 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
     G3 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G1 *= 0.0; G2 *= 0.0; G3 *= 0.0;
     G3 = Gamma3(U,T);
     G1(0,0) = G1(1,1) = Gamma1(2.0/3.0,2.0/3.0,T,U);
     break;
@@ -427,7 +425,6 @@ SoftSudakov::lowEnergyRunning(Energy EWScale, Energy lowScale,
     G1 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
     G2 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
     G3 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G1 *= 0.0; G2 *= 0.0; G3 *= 0.0;
     G1(0,0) = Gamma1(0.,0.,1.,1.,T,U);
     G1(1,1) = Gamma1(0.,0.,0.,0.,T,U);
     G1(2,2) = Gamma1(0.,0.,0.,0.,T,U);
@@ -882,4 +879,172 @@ SoftSudakov::highEnergyRunning(Energy highScale, Energy EWScale,
     assert(false);
   }
   return evaluateSoft(G3,G2,G1,highScale,EWScale,true);
+}
+
+unsigned int SoftSudakov::numberGauge(Herwig::EWProcess::Process process) {
+  using namespace EWProcess;
+  switch (process) {
+  case QQQQ:
+  case QQQQiden:
+  case QtQtQQ:
+    return 4;
+  case QQUU:
+  case QtQtUU:
+  case QQtRtR:
+    return 2;
+  case QQDD:
+  case QtQtDD:
+    return 2;
+  case QQLL:
+    return 2;
+  case QQEE:
+    return 1;
+  case UUUU:
+  case UUUUiden:
+  case tRtRUU:
+    return 2;
+  case UUDD:
+  case tRtRDD:
+    return 2;
+  case UULL:
+    return 1;
+  case UUEE:
+    return 1;
+  case DDDD:
+  case DDDDiden:
+    return 2;
+  case DDLL:
+    return 1;
+  case DDEE:
+    return 1;
+  case LLLL:
+  case LLLLiden:
+    return 2;
+  case LLEE:
+    return 1;
+  case EEEE:
+  case EEEEiden:
+    return 1;
+  case QQWW:
+    return 5;
+  case QQPhiPhi:
+    return 2;
+  case QQWG:
+    return 1;
+  case QQBG:
+    return 1;
+  case QQGG:
+  case QtQtGG:
+    return 3;
+  case LLWW:
+    return 5;
+  case LLPhiPhi:
+    return 2;
+  case UUBB:
+    return 1;
+  case UUPhiPhi:
+    return 1;
+  case UUBG:
+    return 1;
+  case UUGG:
+  case tRtRGG:
+    return 3;
+  case DDBB:
+    return 1;
+  case DDPhiPhi:
+    return 1;
+  case DDBG:
+    return 1;
+  case DDGG:
+    return 3;
+  case EEBB:
+    return 1;
+  case EEPhiPhi:
+    return 1;
+  default:
+    assert(false);
+  }
+}
+
+unsigned int SoftSudakov::numberBrokenGauge(Herwig::EWProcess::Process process) {
+  using namespace EWProcess;
+  switch (process) {
+  case QQQQ:
+  case QQQQiden:
+  case QtQtQQ:
+    return 12;
+  case QQUU:
+  case QtQtUU:
+  case QQtRtR:
+    return 4;
+  case QQDD:
+  case QtQtDD:
+    return 4;
+  case QQLL:
+    return 6;
+  case QQEE:
+    return 2;
+  case UUUU:
+  case UUUUiden:
+  case tRtRUU:
+    return 2;
+  case UUDD:
+  case tRtRDD:
+    return 2;
+  case UULL:
+    return 2;
+  case UUEE:
+    return 1;
+  case DDDD:
+  case DDDDiden:
+    return 2;
+  case DDLL:
+    return 2;
+  case DDEE:
+    return 1;
+  case LLLL:
+  case LLLLiden:
+    return 6;
+  case EEEE:
+  case EEEEiden:
+    return 1;
+  case QQWW:
+    return 20;
+  case QQPhiPhi:
+    return 14;
+  case QQWG:
+    return 6;
+  case QQBG:
+    return 4;
+  case QQGG:
+  case QtQtGG:
+    return 6;
+  case LLWW:
+    return 20;
+  case LLPhiPhi:
+    return 14;
+  case UUBB:
+    return 4;
+  case UUPhiPhi:
+    return 5;
+  case UUBG:
+    return 2;
+  case UUGG:
+  case tRtRGG:
+    return 3;
+  case DDBB:
+    return 4;
+  case DDPhiPhi:
+    return 5;
+  case DDBG:
+    return 2;
+  case DDGG:
+    return 3;
+  case EEBB:
+    return 4;
+  case EEPhiPhi:
+    return 5;
+  default:
+    assert(false);
+  }
 }
