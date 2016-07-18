@@ -442,10 +442,11 @@ double ElectroWeakReweighter::reweightqqbargg() const {
 	  axpy_prod_local(bornRRGGweights,M,Cborn);
 	  axpy_prod_local(EWRRGGweights  ,M,CEW  );
 	}
+	unsigned int ioff = (Cborn.size()==6 && q->id()%2!=0) ? 3 : 0;
 	for(unsigned int ix=0;ix<3;++ix) {
 	  for(unsigned int iy=0;iy<3;++iy) {
-	    bornME(ix,iy) += Cborn(ix)*conj(Cborn(iy));
-	    EWME  (ix,iy) += CEW  (ix)*conj(CEW  (iy));
+	    bornME(ix,iy) += Cborn(ix+ioff)*conj(Cborn(iy+ioff));
+	    EWME  (ix,iy) += CEW  (ix+ioff)*conj(CEW  (iy+ioff));
 	    // testME  (ix,iy) += Ctest  (ix)*conj(Ctest  (iy));
 	  }
 	}
@@ -644,10 +645,11 @@ double ElectroWeakReweighter::reweightggqqbar() const {
   	  axpy_prod_local(bornRRGGweights,M,Cborn);
   	  axpy_prod_local(EWRRGGweights  ,M,CEW  );
   	}
+	unsigned int ioff = (Cborn.size()==6 && q->id()%2!=0) ? 3 : 0;
   	for(unsigned int ix=0;ix<3;++ix) {
   	  for(unsigned int iy=0;iy<3;++iy) {
-  	    bornME(ix,iy) += Cborn(ix)*conj(Cborn(iy));
-  	    EWME  (ix,iy) += CEW  (ix)*conj(CEW  (iy));
+  	    bornME(ix,iy) += Cborn(ix+ioff)*conj(Cborn(iy+ioff));
+  	    EWME  (ix,iy) += CEW  (ix+ioff)*conj(CEW  (iy+ioff));
   	  }
   	}
       }
