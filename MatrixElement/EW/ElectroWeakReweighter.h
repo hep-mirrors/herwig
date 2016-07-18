@@ -94,6 +94,16 @@ protected:
    *  Reweight \f$q\bar{q}\to g g\f$
    */
   double reweightqqbargg() const;
+
+  /**
+   *  Reweight \f$q g\to qg\f$
+   */
+  double reweightqgqg() const;
+
+  /**
+   *  Reweight \f$q g\to qg\f$
+   */
+  double reweightqbargqbarg() const;
   //@}
 
 protected:
@@ -108,7 +118,8 @@ protected:
    */
   boost::numeric::ublas::matrix<complex<InvEnergy2> >
   evaluateRunning(EWProcess::Process process, Energy2 s,
-		  Energy2 t, Energy2 u, bool born) const;
+		  Energy2 t, Energy2 u, bool born,
+		  unsigned int iswap) const;
 
 protected:
 

@@ -46,15 +46,17 @@ public:
   boost::numeric::ublas::matrix<Complex>
   lowEnergyRunning(Energy EWScale, Energy lowScale, 
 		   Energy2 s, Energy2 t, Energy2 u,
-		   Herwig::EWProcess::Process process);
-
+		   Herwig::EWProcess::Process process,
+		   unsigned int iswap);
+  
   /**
    *  Evalaute the high energy running as a matrix
    */
   boost::numeric::ublas::matrix<Complex>
   highEnergyRunning(Energy highScale, Energy EWScale,
 		    Energy2 s, Energy2 t, Energy2 u,
-		    Herwig::EWProcess::Process process);
+		    Herwig::EWProcess::Process process,
+		    unsigned int iswap);
 
   /**
    *  Number of operators for the broken theory at low energy

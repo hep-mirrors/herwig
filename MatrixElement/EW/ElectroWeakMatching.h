@@ -23,36 +23,9 @@ namespace ElectroWeakMatching {
    *  The high energy matching
    */
   boost::numeric::ublas::matrix<Complex>
-    electroWeakMatching(Energy mu,
-			Energy2 s, Energy2 t, Energy2 u,
-			Herwig::EWProcess::Process process,
-			bool oneLoop);
-  
-  /* /\** */
-  /*  *  Spin\f$\frac12\f$ */
-  /*  *\/ */
-  /* boost::numeric::ublas::matrix<complex<InvEnergy2> >  */
-  /*   SpinHalfMatching(Energy highScale,  */
-  /* 		     Energy2 s, Energy2 t, Energy2 u, */
-  /* 		     EWProcess::Process process, */
-  /* 		     bool oneLoop, bool includeAlphaS2); */
-  
-  /* /\** */
-  /*  *  Spin\f$1\f$ */
-  /*  *\/ */
-  /* boost::numeric::ublas::matrix<complex<InvEnergy2> >  */
-  /*   Spin1HighMatching(Energy highScale,  */
-  /* 		      Energy2 s, Energy2 t, Energy2 u, */
-  /* 		      EWProcess::Process process, */
-  /* 		      bool oneLoop, bool includeAlphaS2); */
-  /* /\** */
-  /*  *  Spin\f$0\f$ */
-  /*  *\/ */
-  /* boost::numeric::ublas::matrix<complex<InvEnergy2> >  */
-  /*   Spin0HighMatching(Energy highScale,  */
-  /* 		      Energy2 s, Energy2 t, Energy2 u, */
-  /* 		      EWProcess::Process process, */
-  /* 		      bool oneLoop, bool includeAlphaS2); */
+  electroWeakMatching(Energy mu, Energy2 s, Energy2 t, Energy2 u,
+		      Herwig::EWProcess::Process process,
+		      bool oneLoop,unsigned int iswap);
 }
 }
 

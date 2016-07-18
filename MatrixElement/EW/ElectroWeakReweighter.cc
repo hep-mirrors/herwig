@@ -167,6 +167,7 @@ double ElectroWeakReweighter::weight() const {
   cerr << subProcess()->outgoing()[0]->spinInfo()->productionVertex() << "\n";
   if(subProcess()->outgoing().size()!=2)
     return 1.;
+  // processes with gg initial-state
   if(subProcess()->incoming().first->id()==ParticleID::g &&
      subProcess()->incoming().second->id()==ParticleID::g) {
     if(subProcess()->outgoing()[0]->id()==ParticleID::g &&
@@ -179,6 +180,7 @@ double ElectroWeakReweighter::weight() const {
     else
       assert(false);
   }
+  // processes with q qbar initial-state
   else if(abs(subProcess()->incoming().first->id())<=5 &&
 	  subProcess()->incoming().first->id()==-subProcess()->incoming().second->id()) {
     if(subProcess()->outgoing()[0]->id()==ParticleID::g &&
@@ -187,6 +189,43 @@ double ElectroWeakReweighter::weight() const {
     else
       assert(false);
   }
+  // processes with q g initial-state
+  else if((subProcess()->incoming().first ->id()> 0 &&
+	   subProcess()->incoming().first ->id()<=5 &&
+	   subProcess()->incoming().second->id()==ParticleID::g) ||
+	  (subProcess()->incoming().second->id()> 0 &&
+	   subProcess()->incoming().second->id()<=5 &&
+	   subProcess()->incoming().first ->id()==ParticleID::g)) {
+    // qg -> qg
+    if((subProcess()->outgoing()[0]->id()> 0 &&
+	subProcess()->outgoing()[0]->id()<=5 &&
+	subProcess()->outgoing()[1]->id()==ParticleID::g) ||
+       (subProcess()->outgoing()[1]->id()> 0 &&
+	subProcess()->outgoing()[1]->id()<=5 &&
+	subProcess()->outgoing()[0]->id()==ParticleID::g))
+      return reweightqgqg();
+    // unknown
+    else
+      assert(false);
+  }
+  // processes with qbar g initial-state
+  else if((subProcess()->incoming().first ->id()>=-5 &&
+	   subProcess()->incoming().first ->id()<  0 &&
+	   subProcess()->incoming().second->id()==ParticleID::g) ||
+	  (subProcess()->incoming().second->id()>=-5 &&
+	   subProcess()->incoming().second->id()<  0 &&
+	   subProcess()->incoming().first ->id()==ParticleID::g)) {
+    if((subProcess()->outgoing()[0]->id()>=-5 &&
+	subProcess()->outgoing()[0]->id()<  0 &&
+	subProcess()->outgoing()[1]->id()==ParticleID::g) ||
+       (subProcess()->outgoing()[1]->id()>=-5 &&
+	subProcess()->outgoing()[1]->id()<  0 &&
+	subProcess()->outgoing()[0]->id()==ParticleID::g))
+      return reweightqbargqbarg();
+    else
+      assert(false);
+  }
+  // unknown initial-state
   else
     assert(false);
   assert(false);
@@ -204,11 +243,11 @@ void ElectroWeakReweighter::testEvolution(Energy2 s,Energy2 t, Energy2 u) const 
     boost::numeric::ublas::matrix<complex<InvEnergy2> > highMatch_val 
       = HighEnergyMatching::highEnergyMatching(highScale,s,t,u,process,true,true);
     boost::numeric::ublas::matrix<Complex> highRunning_val
-      = softSudakov_->highEnergyRunning(highScale,ewScale,s,t,u,process);
+      = softSudakov_->highEnergyRunning(highScale,ewScale,s,t,u,process,0);
     boost::numeric::ublas::matrix<Complex> ewMatch_val = 
-      ElectroWeakMatching::electroWeakMatching(ewScale,s,t,u,process,true);
+      ElectroWeakMatching::electroWeakMatching(ewScale,s,t,u,process,true,0);
     boost::numeric::ublas::matrix<Complex> lowRunning_val = 
-      softSudakov_->lowEnergyRunning(ewScale,lowScale,s,t,u,process);
+      softSudakov_->lowEnergyRunning(ewScale,lowScale,s,t,u,process,0);
     boost::numeric::ublas::matrix<Complex> collinearHighRunning_val =
       collinearSudakov_->highEnergyRunning(highScale,ewScale,s,process,false);
     boost::numeric::ublas::matrix<Complex> collinearEWMatch_val =
@@ -281,6 +320,64 @@ void SackGluonPolarizations(Lorentz5Momentum &p1,
     eps4.push_back(sqrt(0.5)*(eps4Para+I*eps4Perp));
     eps4.push_back(sqrt(0.5)*(eps4Para-I*eps4Perp));
   }
+  else if(iopt==2) {
+    // rotation into the 2,3 Breit frame
+    Lorentz5Momentum pa = p3-p2;
+    Axis axis(pa.vect().unit());
+    LorentzRotation rot;
+    double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
+    if ( sinth > 1.e-9 )
+      rot.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+    rot.rotateX(Constants::pi);
+    rot.boostZ( pa.e()/pa.vect().mag());
+    Lorentz5Momentum ptemp=rot*p2;
+    Boost trans = -1./ptemp.e()*ptemp.vect();
+    trans.setZ(0.);
+    rot.boost(trans);
+    LorentzVector<Complex> eps3Para( 1., 0.,0.,0.);
+    LorentzVector<Complex> eps3Perp( 0.,-1.,0.,0.);
+    LorentzVector<Complex> eps4Para(-1.,0.,0., 0.);
+    LorentzVector<Complex> eps4Perp( 0., 1.,0.,0.);
+    eps3.push_back(sqrt(0.5)*(eps3Para+I*eps3Perp));
+    eps3.push_back(sqrt(0.5)*(eps3Para-I*eps3Perp));
+    eps4.push_back(sqrt(0.5)*(eps4Para+I*eps4Perp));
+    eps4.push_back(sqrt(0.5)*(eps4Para-I*eps4Perp));
+    rot = rot.invert();
+    for(unsigned int ix=0;ix<2;++ix) {
+      eps3[ix] *=rot;
+      eps4[ix] *=rot;
+    }
+  }
+  else if(iopt==3) {
+    // rotation into the 1,4 Breit frame
+    Lorentz5Momentum pa = p4-p1;
+    Axis axis(pa.vect().unit());
+    LorentzRotation rot;
+    double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
+    if ( sinth > 1.e-9 )
+      rot.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+    rot.rotateX(Constants::pi);
+    rot.boostZ( pa.e()/pa.vect().mag());
+    Lorentz5Momentum ptemp=rot*p1;
+    Boost trans = -1./ptemp.e()*ptemp.vect();
+    trans.setZ(0.);
+    rot.boost(trans);
+    LorentzVector<Complex> eps3Para( 1., 0.,0.,0.);
+    LorentzVector<Complex> eps3Perp( 0.,-1.,0.,0.);
+    LorentzVector<Complex> eps4Para(-1.,0.,0., 0.);
+    LorentzVector<Complex> eps4Perp( 0., 1.,0.,0.);
+    eps3.push_back(sqrt(0.5)*(eps3Para+I*eps3Perp));
+    eps3.push_back(sqrt(0.5)*(eps3Para-I*eps3Perp));
+    eps4.push_back(sqrt(0.5)*(eps4Para+I*eps4Perp));
+    eps4.push_back(sqrt(0.5)*(eps4Para-I*eps4Perp));
+    rot = rot.invert();
+    for(unsigned int ix=0;ix<2;++ix) {
+      eps3[ix] *=rot;
+      eps4[ix] *=rot;
+    }
+  }
+  else
+    assert(false);
 }
 
 }
@@ -301,71 +398,41 @@ double ElectroWeakReweighter::reweightqqbargg() const {
   Energy2 s = (p1+p2).m2();
   Energy2 t = (p1-p4).m2();
   Energy2 u = (p1-p3).m2();
-  // // boost to partonci rest frame
-  // Lorentz5Momentum psum=p1+p2;
-  // LorentzRotation boost(-psum.boostVector());
-  // p1 *= boost;
-  // p2 *= boost;
-  // p3 *= boost;
-  // p4 *= boost;
-  // cerr << "testing momenta in reweight A " << p1/GeV << "\n";
-  // cerr << "testing momenta in reweight B " << p2/GeV << "\n";
-  // cerr << "testing momenta in reweight C " << p3/GeV << "\n";
-  // cerr << "testing momenta in reweight D " << p4/GeV << "\n";
-  // LO matrix element coefficents
+  // boost to partonci rest frame
+  Lorentz5Momentum psum=p1+p2;
+  LorentzRotation boost(-psum.boostVector());
+  p1 *= boost;
+  p2 *= boost;
+  p3 *= boost;
+  p4 *= boost;
+  // LO and EW corrected matrix element coefficients
   boost::numeric::ublas::matrix<complex<InvEnergy2> >
-    bornQQGGweights,bornRRGGweights;
+    bornQQGGweights,bornRRGGweights,EWQQGGweights,EWRRGGweights;
   // quark left doublet
   if(q->id()!=5) {
-    bornQQGGweights = evaluateRunning(EWProcess::QQGG,s,t,u,true);
+    bornQQGGweights = evaluateRunning(EWProcess::QQGG,s,t,u,true ,0);
+    EWQQGGweights   = evaluateRunning(EWProcess::QQGG,s,t,u,false,0);
   }
   else {
-    bornQQGGweights = evaluateRunning(EWProcess::QtQtGG,s,t,u,true);
+    bornQQGGweights = evaluateRunning(EWProcess::QtQtGG,s,t,u,true ,0);
+    EWQQGGweights   = evaluateRunning(EWProcess::QtQtGG,s,t,u,false,0);
   }
   // quark right singlet
-  if(abs(subProcess()->incoming().first->id())%2==0)
-    bornRRGGweights = evaluateRunning(EWProcess::UUGG,s,t,u,true);
-  else
-    bornRRGGweights = evaluateRunning(EWProcess::DDGG,s,t,u,true);
-  // EW corrected matrix element coefficients
-  boost::numeric::ublas::matrix<complex<InvEnergy2> >
-    EWQQGGweights,EWRRGGweights;
-  // quark left doublet
-  if(q->id()!=5) {
-    EWQQGGweights = evaluateRunning(EWProcess::QQGG,s,t,u,false);
+  if(abs(subProcess()->incoming().first->id())%2==0) {
+    bornRRGGweights = evaluateRunning(EWProcess::UUGG,s,t,u,true ,0);
+    EWRRGGweights   = evaluateRunning(EWProcess::UUGG,s,t,u,false,0);
   }
   else {
-    EWQQGGweights = evaluateRunning(EWProcess::QtQtGG,s,t,u,false);
+    bornRRGGweights = evaluateRunning(EWProcess::DDGG,s,t,u,true ,0);
+    EWRRGGweights   = evaluateRunning(EWProcess::DDGG,s,t,u,false,0);
   }
-  // quakr right singlet
-  if(abs(subProcess()->incoming().first->id())%2==0)
-    EWRRGGweights = evaluateRunning(EWProcess::UUGG,s,t,u,false);
-  else
-    EWRRGGweights = evaluateRunning(EWProcess::DDGG,s,t,u,false);
-  // cerr << "testing matrices\n";
-  // for(unsigned int ix=0;ix<bornRRGGweights.size1();++ix) {
-  //   for(unsigned int iy=0;iy<bornRRGGweights.size2();++iy) {
-  //     cerr << bornRRGGweights(ix,iy)*GeV2 << " ";
-  //   }
-  //   cerr << "\n";
-  // }
-  // for(unsigned int ix=0;ix<bornQQGGweights.size1();++ix) {
-  //   for(unsigned int iy=0;iy<bornQQGGweights.size2();++iy) {
-  //     cerr << bornQQGGweights(ix,iy)*GeV2 << " ";
-  //   }
-  //   cerr << "\n";
-  // }
-
   SpinorWaveFunction       qw(p1,q   ,incoming);
   SpinorBarWaveFunction qbarw(p2,qbar,incoming);
-  // VectorWaveFunction      g1w(p3,getParticleData(ParticleID::g),outgoing);
-  // VectorWaveFunction      g2w(p4,getParticleData(ParticleID::g),outgoing);
   vector<LorentzVector<Complex> > eps3,eps4;
   SackGluonPolarizations(p1,p2,p3,p4,s,t,u,ZERO,eps3,eps4,0);
   boost::numeric::ublas::matrix<Complex>
     bornME = boost::numeric::ublas::zero_matrix<Complex>(3,3),
     EWME   = boost::numeric::ublas::zero_matrix<Complex>(3,3);
-    // testME = boost::numeric::ublas::zero_matrix<Complex>(3,3);
   for(unsigned int iq=0;iq<2;++iq) {
     if(iq==0) {
       qw.reset   (0);
@@ -389,34 +456,6 @@ double ElectroWeakReweighter::reweightqqbargg() const {
 	// M0 in paper
 	M(0) = qw.dimensionedWave().slash(eps3[i1])
 	  .slash(p4-p2).vectorCurrent(qbarw.dimensionedWave()).dot(eps4[i2]);
-
-	// // really t channel
-	// Complex MEU = -Complex(0.,1.)*qw.dimensionedWave().slash(g1w.wave())
-	//   .slash(p4-p2).vectorCurrent(qbarw.dimensionedWave()).dot(g2w.wave())/u;
-	// // really u channel
-	// Complex MET = -Complex(0.,1.)*qw.dimensionedWave().slash(g2w.wave())
-	//   .slash(p3-p2).vectorCurrent(qbarw.dimensionedWave()).dot(g1w.wave())/t;
-	// // s channel
-	// Complex MES = -Complex(0.,1.)*(current.dot(p3-p4)*g1w.wave().dot(g2w.wave())
-	// 			       -2.*current.dot(g1w.wave())*(g2w.wave().dot(p3))
-	// 			       -2.*current.dot(g2w.wave())*(g1w.wave().dot(p4)))/s;
-
-	// // really t channel
-	// Complex MEU = -Complex(0.,1.)*qw.dimensionedWave().slash(eps3[i1])
-	//   .slash(p4-p2).vectorCurrent(qbarw.dimensionedWave()).dot(eps4[i2])/u;
-	// // really u channel
-	// Complex MET = -Complex(0.,1.)*qw.dimensionedWave().slash(eps4[i2])
-	//   .slash(p3-p2).vectorCurrent(qbarw.dimensionedWave()).dot(eps3[i1])/t;
-	// // s channel
-	// Complex MES = -Complex(0.,1.)*(current.dot(p3-p4)*eps3[i1].dot(eps4[i2])
-	// 			       -2.*current.dot(eps3[i1])*(eps4[i2].dot(p3))
-	// 			       -2.*current.dot(eps4[i2])*(eps3[i1].dot(p4)))/s;
-	// cerr << "NEW flows " << MEU+MES << " " << MET-MES << "\n";
-
-
-
-
-	// cerr << "testing new U " << MET << "\n";
 	// M4 in paper
 	M(2) =  current.dot(eps4[i2])*d31;
 	// M5 in paper
@@ -447,7 +486,6 @@ double ElectroWeakReweighter::reweightqqbargg() const {
 	  for(unsigned int iy=0;iy<3;++iy) {
 	    bornME(ix,iy) += Cborn(ix+ioff)*conj(Cborn(iy+ioff));
 	    EWME  (ix,iy) += CEW  (ix+ioff)*conj(CEW  (iy+ioff));
-	    // testME  (ix,iy) += Ctest  (ix)*conj(Ctest  (iy));
 	  }
 	}
       }
@@ -455,19 +493,13 @@ double ElectroWeakReweighter::reweightqqbargg() const {
   }
   double born = 24.*real(bornME(0,0))+20./3.*real(bornME(1,1))+12.*real(bornME(2,2));
   double EW   = 24.*real(EWME(0,0))+20./3.*real(EWME(1,1))+12.*real(EWME(2,2));
-  // double test = 24.*real(testME(0,0))+20./3.*real(testME(1,1))+12.*real(testME(2,2));
-  
-  // double gs2 = 4.*Constants::pi*ElectroWeakReweighter::coupling()->a3(sqrt(s));
-
-  // cerr << "testing born A " << 0.125*born/sqr(gs2)/9. << "\n";
-  // cerr << "testing born B " << 0.125*test/9. << "\n";
-
   return EW/born;
 }
 
 boost::numeric::ublas::matrix<complex<InvEnergy2> > 
 ElectroWeakReweighter::evaluateRunning(EWProcess::Process process, Energy2 s,
-				       Energy2 t, Energy2 u, bool born) const {
+				       Energy2 t, Energy2 u, bool born,
+				       unsigned int iswap) const {
   using namespace boost::numeric::ublas;
   bool SU3save = coupling()->SU3();
   bool EWsave  = coupling()-> EW();
@@ -475,27 +507,36 @@ ElectroWeakReweighter::evaluateRunning(EWProcess::Process process, Energy2 s,
   Energy   ewScale = coupling()->mZ();
   Energy  lowScale = ewScale;
   // result for all EW and QCD SCET contributions:
+  // MATCHING CONTRIBUTIONS
   // high energy matching
-  matrix<complex<InvEnergy2> > highMatch_val 
-    = HighEnergyMatching::highEnergyMatching(highScale,s,t,u,process,!born,false);
+  matrix<complex<InvEnergy2> > highMatch_val;
+  if(iswap==0) 
+    highMatch_val = HighEnergyMatching::highEnergyMatching(highScale,s,t,u,process,!born,false);
+  else if(iswap==1)
+    highMatch_val = HighEnergyMatching::highEnergyMatching(highScale,t,s,u,process,!born,false);
+  else
+    assert(false);
   // low energy matching
   matrix<Complex> 
-    ewMatch_val = ElectroWeakMatching::electroWeakMatching(ewScale,s,t,u,process,!born);
+    ewMatch_val = ElectroWeakMatching::electroWeakMatching(ewScale,s,t,u,process,!born,iswap);
   matrix<Complex> collinearEWMatch_val =
     collinearSudakov_->electroWeakMatching(ewScale,s,process,!born);
+  // EVOLUTION
   matrix<Complex> highRunning_val,lowRunning_val,
     collinearHighRunning_val,collinearLowRunning_val;
+  // born process
   if(born) {
     highRunning_val = identity_matrix<Complex>(softSudakov_->numberGauge(process));
     lowRunning_val  = identity_matrix<Complex>(softSudakov_->numberBrokenGauge(process));
     collinearHighRunning_val = identity_matrix<Complex>(softSudakov_->numberGauge(process));
     collinearLowRunning_val  = identity_matrix<Complex>(softSudakov_->numberBrokenGauge(process));
   }
+  // EW corrected
   else {
     coupling()->SU3(false);
     coupling()-> EW( true);
-    highRunning_val = softSudakov_->highEnergyRunning(highScale,ewScale,s,t,u,process);
-    lowRunning_val = softSudakov_->lowEnergyRunning(ewScale,lowScale,s,t,u,process);
+    highRunning_val = softSudakov_->highEnergyRunning(highScale, ewScale,s,t,u,process,iswap);
+    lowRunning_val  = softSudakov_->lowEnergyRunning (  ewScale,lowScale,s,t,u,process,iswap);
     collinearHighRunning_val = collinearSudakov_->highEnergyRunning(highScale,ewScale,s,process,false);
     collinearLowRunning_val = collinearSudakov_->lowEnergyRunning(ewScale,lowScale,s,process);
   };
@@ -517,12 +558,6 @@ ElectroWeakReweighter::evaluateRunning(EWProcess::Process process, Energy2 s,
   axpy_prod(temp3,temp,temp2);
   matrix<complex<InvEnergy2> >  result(temp2.size1(),highMatch_val.size2());
   axpy_prod_local(temp2,highMatch_val,result);
-  // for(unsigned int ix=0;ix<result.size1();++ix) {
-  //   for(unsigned int iy=0;iy<result.size2();++iy) {
-  // 	cerr << s*result(ix,iy) << " ";
-  //   }
-  //   cerr << "\n";
-  // }
   // reset the couplings
   coupling()->SU3(SU3save);
   coupling()-> EW( EWsave);
@@ -558,44 +593,33 @@ double ElectroWeakReweighter::reweightggqqbar() const {
   p3.rescaleRho();
   p4.setMass(ZERO);
   p4.rescaleRho();
-  // LO matrix element coefficents
+  // LO and EW matrix element coefficents
   boost::numeric::ublas::matrix<complex<InvEnergy2> >
-    bornQQGGweights,bornRRGGweights;
+    bornQQGGweights,bornRRGGweights,EWQQGGweights,EWRRGGweights;
   // quark left doublet
   if(q->id()<5) {
-    bornQQGGweights = evaluateRunning(EWProcess::QQGG,s,t,u,true);
+    bornQQGGweights = evaluateRunning(EWProcess::QQGG,s,t,u,true ,0);
+    EWQQGGweights   = evaluateRunning(EWProcess::QQGG,s,t,u,false,0);
   }
   else {
-    bornQQGGweights = evaluateRunning(EWProcess::QtQtGG,s,t,u,true);
+    bornQQGGweights = evaluateRunning(EWProcess::QtQtGG,s,t,u,true ,0);
+    EWQQGGweights   = evaluateRunning(EWProcess::QtQtGG,s,t,u,false,0);
   }
   // quark right singlet
   if(q->id()==0) {
-    if(q->id()==6)
-      bornRRGGweights = evaluateRunning(EWProcess::tRtRGG,s,t,u,true);
-    else
-      bornRRGGweights = evaluateRunning(EWProcess::UUGG,s,t,u,true);
-  }
-  else
-    bornRRGGweights = evaluateRunning(EWProcess::DDGG,s,t,u,true);
-  // EW corrected matrix element coefficients
-  boost::numeric::ublas::matrix<complex<InvEnergy2> >
-    EWQQGGweights,EWRRGGweights;
-  // quark left doublet
-  if(q->id()<5) {
-    EWQQGGweights = evaluateRunning(EWProcess::QQGG,s,t,u,false);
+    if(q->id()==6) {
+      bornRRGGweights = evaluateRunning(EWProcess::tRtRGG,s,t,u,true ,0);
+      EWRRGGweights   = evaluateRunning(EWProcess::tRtRGG,s,t,u,false,0);
+    }
+    else {
+      bornRRGGweights = evaluateRunning(EWProcess::UUGG,s,t,u,true ,0);
+      EWRRGGweights   = evaluateRunning(EWProcess::UUGG,s,t,u,false,0);
+    }
   }
   else {
-    EWQQGGweights = evaluateRunning(EWProcess::QtQtGG,s,t,u,false);
+    bornRRGGweights = evaluateRunning(EWProcess::DDGG,s,t,u,true ,0);
+    EWRRGGweights   = evaluateRunning(EWProcess::DDGG,s,t,u,false,0);
   }
-  // quark right singlet
-  if(q->id()%2==0) {
-    if(q->id()==6)
-      EWRRGGweights = evaluateRunning(EWProcess::tRtRGG,s,t,u,false);
-    else
-      EWRRGGweights = evaluateRunning(EWProcess::UUGG,s,t,u,false);
-  }
-  else
-    EWRRGGweights = evaluateRunning(EWProcess::DDGG,s,t,u,false);
   SpinorWaveFunction       qw(p4,qbar,incoming);
   SpinorBarWaveFunction qbarw(p3,q   ,incoming);
   vector<LorentzVector<Complex> > eps1,eps2;
@@ -652,6 +676,228 @@ double ElectroWeakReweighter::reweightggqqbar() const {
   	    EWME  (ix,iy) += CEW  (ix+ioff)*conj(CEW  (iy+ioff));
   	  }
   	}
+      }
+    }
+  }
+  double born = 24.*real(bornME(0,0))+20./3.*real(bornME(1,1))+12.*real(bornME(2,2));
+  double EW   = 24.*real(EWME(0,0))+20./3.*real(EWME(1,1))+12.*real(EWME(2,2));
+  return EW/born;
+}
+
+double ElectroWeakReweighter::reweightqgqg() const {
+  // momenta and invariants
+  Lorentz5Momentum p1   = subProcess()->incoming().first ->momentum();
+  Lorentz5Momentum p2   = subProcess()->incoming().second->momentum();
+  tcPDPtr q;
+  if(subProcess()->incoming().first->id()!=ParticleID::g) {
+    q = subProcess()->incoming().first ->dataPtr();
+  }
+  else {
+    q = subProcess()->incoming().second->dataPtr();
+    swap(p1,p2);
+  }
+  Lorentz5Momentum p3 = subProcess()->outgoing()[0]->momentum();
+  Lorentz5Momentum p4 = subProcess()->outgoing()[1]->momentum();
+  if(subProcess()->outgoing()[0]->id()!=ParticleID::g)
+    swap(p3,p4);
+  Energy2 s = (p1+p2).m2();
+  Energy2 t = (p1-p4).m2();
+  Energy2 u = (p1-p3).m2();
+  // boost to partonic rest frame
+  Lorentz5Momentum psum=p1+p2;
+  LorentzRotation boost(-psum.boostVector());
+  p1 *= boost;
+  p2 *= boost;
+  p3 *= boost;
+  p4 *= boost;
+  // LO and EW corrected matrix element coefficients
+  boost::numeric::ublas::matrix<complex<InvEnergy2> >
+    bornQQGGweights,bornRRGGweights,EWQQGGweights,EWRRGGweights;
+  // quark left doublet
+  if(q->id()!=5) {
+    bornQQGGweights = evaluateRunning(EWProcess::QQGG,s,t,u,true ,1);
+    EWQQGGweights   = evaluateRunning(EWProcess::QQGG,s,t,u,false,1);
+  }
+  else {
+    bornQQGGweights = evaluateRunning(EWProcess::QtQtGG,s,t,u,true ,1);
+    EWQQGGweights   = evaluateRunning(EWProcess::QtQtGG,s,t,u,false,1);
+  }
+  // quark right singlet
+  if(abs(q->id())%2==0) {
+    bornRRGGweights = evaluateRunning(EWProcess::UUGG,s,t,u,true ,1);
+    EWRRGGweights   = evaluateRunning(EWProcess::UUGG,s,t,u,false,1);
+  }
+  else {
+    bornRRGGweights = evaluateRunning(EWProcess::DDGG,s,t,u,true ,1);
+    EWRRGGweights   = evaluateRunning(EWProcess::DDGG,s,t,u,false,1);
+  }
+  SpinorWaveFunction       qw(p1,q,incoming);
+  SpinorBarWaveFunction qbarw(p4,q,outgoing);
+  vector<LorentzVector<Complex> > eps2,eps3;
+  SackGluonPolarizations(p1,p2,p3,p4,s,t,u,ZERO,eps2,eps3,2);
+  // compute the matrix elements
+  boost::numeric::ublas::matrix<Complex>
+    bornME = boost::numeric::ublas::zero_matrix<Complex>(3,3),
+    EWME   = boost::numeric::ublas::zero_matrix<Complex>(3,3),
+    testME = boost::numeric::ublas::zero_matrix<Complex>(3,3);
+  for(unsigned int iq=0;iq<2;++iq) {
+    if(iq==0) {
+      qw.reset   (0);
+      qbarw.reset(0);
+    }
+    else {
+      qw.reset   (1);
+      qbarw.reset(1);
+    }
+    LorentzVector<complex<Energy> > current  = iq==0 ?
+      qw.dimensionedWave(). leftCurrent(qbarw.dimensionedWave()) :
+      qw.dimensionedWave().rightCurrent(qbarw.dimensionedWave());
+    for(unsigned int i1=0;i1<2;++i1) {
+      complex<Energy> d31 = eps3[i1].dot(p1);
+      for(unsigned int i2=0;i2<2;++i2) {
+  	boost::numeric::ublas::vector<complex<Energy2> > M(5);
+   	Complex         d34 = eps3[i1].dot(eps2[i2]);
+   	complex<Energy> d42 = eps2[i2].dot(p4);
+   	// M0 in paper
+  	M(0) = qw.dimensionedWave().slash(eps3[i1])
+   	  .slash(p2-p4).vectorCurrent(qbarw.dimensionedWave()).dot(eps2[i2]);
+  	// M4 in paper
+  	M(2) =  current.dot(eps2[i2])*d31;
+  	// M5 in paper
+  	M(3) = -current.dot(eps3[i1])*d42;
+  	// M1 in paper (missing factor)
+  	M(1) =  current.dot(p2);
+ 	// M6 in paper
+ 	M(4) = M(1)*d31*d42/GeV2;
+ 	// M1 final factor
+ 	M(1) *= d34;
+ 	// coefficient of different contributions
+ 	boost::numeric::ublas::vector<Complex> Cborn(3),CEW(3);
+  	if(iq==0) {
+  	  axpy_prod_local(bornQQGGweights,M,Cborn);
+  	  axpy_prod_local(EWQQGGweights  ,M,CEW  );
+  	}
+  	else {
+  	  axpy_prod_local(bornRRGGweights,M,Cborn);
+  	  axpy_prod_local(EWRRGGweights  ,M,CEW  );
+  	}
+   	unsigned int ioff = (Cborn.size()==6 && q->id()%2!=0) ? 3 : 0;
+  	for(unsigned int ix=0;ix<3;++ix) {
+  	  for(unsigned int iy=0;iy<3;++iy) {
+  	    bornME(ix,iy) += Cborn(ix+ioff)*conj(Cborn(iy+ioff));
+  	    EWME  (ix,iy) += CEW  (ix+ioff)*conj(CEW  (iy+ioff));
+  	  }
+  	}
+      }
+    }
+  }
+  double born = 24.*real(bornME(0,0))+20./3.*real(bornME(1,1))+12.*real(bornME(2,2));
+  double EW   = 24.*real(EWME(0,0))+20./3.*real(EWME(1,1))+12.*real(EWME(2,2));
+  return EW/born;
+}
+
+double ElectroWeakReweighter::reweightqbargqbarg() const {
+  // momenta and invariants
+  Lorentz5Momentum p1   = subProcess()->incoming().first ->momentum();
+  Lorentz5Momentum p2   = subProcess()->incoming().second->momentum();
+  tcPDPtr          qbar;
+  if(subProcess()->incoming().first->id()==ParticleID::g) {
+    qbar = subProcess()->incoming().second->dataPtr();
+  }
+  else {
+    qbar = subProcess()->incoming().first ->dataPtr();
+    swap(p1,p2);
+  }
+  Lorentz5Momentum p3 = subProcess()->outgoing()[0]->momentum();
+  Lorentz5Momentum p4 = subProcess()->outgoing()[1]->momentum();
+  if(subProcess()->outgoing()[0]->id()==ParticleID::g)
+    swap(p3,p4);
+  Energy2 s = (p1+p2).m2();
+  Energy2 t = (p1-p4).m2();
+  Energy2 u = (p1-p3).m2();
+  // boost to partonci rest frame
+  Lorentz5Momentum psum=p1+p2;
+  LorentzRotation boost(-psum.boostVector());
+  p1 *= boost;
+  p2 *= boost;
+  p3 *= boost;
+  p4 *= boost;
+  // LO and EW corrected matrix element coefficients
+  boost::numeric::ublas::matrix<complex<InvEnergy2> >
+    bornQQGGweights,bornRRGGweights,EWQQGGweights,EWRRGGweights;
+  // quark left doublet
+  if(qbar->id()!=-5) {
+    bornQQGGweights = evaluateRunning(EWProcess::QQGG,s,t,u,true ,1);
+    EWQQGGweights   = evaluateRunning(EWProcess::QQGG,s,t,u,false,1);
+  }
+  else {
+    bornQQGGweights = evaluateRunning(EWProcess::QtQtGG,s,t,u,true ,1);
+    EWQQGGweights   = evaluateRunning(EWProcess::QtQtGG,s,t,u,false,1);
+  }
+  // quark right singlet
+  if(abs(qbar->id())%2==0) {
+    bornRRGGweights = evaluateRunning(EWProcess::UUGG,s,t,u,true ,1);
+    EWRRGGweights   = evaluateRunning(EWProcess::UUGG,s,t,u,false,1);
+  }
+  else {
+    bornRRGGweights = evaluateRunning(EWProcess::DDGG,s,t,u,true ,1);
+    EWRRGGweights   = evaluateRunning(EWProcess::DDGG,s,t,u,false,1);
+  }
+  SpinorWaveFunction       qw(p3,qbar,outgoing);
+  SpinorBarWaveFunction qbarw(p2,qbar,incoming);
+  vector<LorentzVector<Complex> > eps1,eps4;
+  SackGluonPolarizations(p1,p2,p3,p4,s,t,u,ZERO,eps1,eps4,3);
+  boost::numeric::ublas::matrix<Complex>
+    bornME = boost::numeric::ublas::zero_matrix<Complex>(3,3),
+    EWME   = boost::numeric::ublas::zero_matrix<Complex>(3,3);
+  for(unsigned int iq=0;iq<2;++iq) {
+    if(iq==0) {
+      qw.reset   (1);
+      qbarw.reset(1);
+    }
+    else {
+      qw.reset   (0);
+      qbarw.reset(0);
+    }
+    LorentzVector<complex<Energy> > current  = iq==0 ?
+      qw.dimensionedWave(). leftCurrent(qbarw.dimensionedWave()) :
+      qw.dimensionedWave().rightCurrent(qbarw.dimensionedWave());
+    for(unsigned int i1=0;i1<2;++i1) {
+      complex<Energy> d31 = eps1[i1].dot(p3);
+      for(unsigned int i2=0;i2<2;++i2) {
+   	boost::numeric::ublas::vector<complex<Energy2> > M(5);
+   	Complex         d34 = eps1[i1].dot(eps4[i2]);
+   	complex<Energy> d42 = eps4[i2].dot(p2);
+  	// M0 in paper
+  	M(0) = qw.dimensionedWave().slash(eps1[i1])
+  	  .slash(p4-p2).vectorCurrent(qbarw.dimensionedWave()).dot(eps4[i2]);
+   	// M4 in paper
+   	M(2) =  current.dot(eps4[i2])*d31;
+  	// M5 in paper
+  	M(3) = -current.dot(eps1[i1])*d42;
+  	// M1 in paper (missing factor)
+  	M(1) =  current.dot(p4);
+  	// M6 in paper
+  	M(4) = M(1)*d31*d42/GeV2;
+  	// M1 final factor
+  	M(1) *= d34;
+  	// coefficient of different contributions
+  	boost::numeric::ublas::vector<Complex> Cborn(3),CEW(3);
+  	if(iq==0) {
+  	  axpy_prod_local(bornQQGGweights,M,Cborn);
+  	  axpy_prod_local(EWQQGGweights  ,M,CEW  );
+  	}
+  	else {
+  	  axpy_prod_local(bornRRGGweights,M,Cborn);
+  	  axpy_prod_local(EWRRGGweights  ,M,CEW  );
+  	}
+  	unsigned int ioff = (Cborn.size()==6 && abs(qbar->id())%2!=0) ? 3 : 0;
+  	for(unsigned int ix=0;ix<3;++ix) {
+  	  for(unsigned int iy=0;iy<3;++iy) {
+  	    bornME(ix,iy) += Cborn(ix+ioff)*conj(Cborn(iy+ioff));
+  	    EWME  (ix,iy) += CEW  (ix+ioff)*conj(CEW  (iy+ioff));
+ 	  }
+ 	}
       }
     }
   }

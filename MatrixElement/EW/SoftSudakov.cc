@@ -98,23 +98,26 @@ SoftSudakov::evaluateSoft(boost::numeric::ublas::matrix<Complex> & G3,
 boost::numeric::ublas::matrix<Complex>
 SoftSudakov::lowEnergyRunning(Energy EWScale, Energy lowScale, 
 			      Energy2 s, Energy2 t, Energy2 u, 
-			      Herwig::EWProcess::Process process) {
+			      Herwig::EWProcess::Process process,
+			      unsigned int iswap) {
   using namespace EWProcess;
+  using namespace boost::numeric::ublas;
   using Constants::pi;
   static const Complex I(0,1.0);
   Complex T = getT(s,t), U = getU(s,u);
-  boost::numeric::ublas::matrix<Complex> G1, G2, G3;
+  matrix<Complex> G1, G2, G3;
   unsigned int numBrokenGauge;
   switch (process) {
   case QQQQ:
   case QQQQiden:
   case QtQtQQ:
     {
+      assert(iswap==0);
       numBrokenGauge = 12;
-      G1 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-      G2 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-      G3 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-      boost::numeric::ublas::matrix<Complex> gam3 = Gamma3(U,T);
+      G1 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G2 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G3 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      matrix<Complex> gam3 = Gamma3(U,T);
       for (unsigned int i=0; i<numBrokenGauge/2; i++) {
 	G3(i,i)     += gam3(0,0);
 	G3(i,i+6)   += gam3(0,1);
@@ -133,11 +136,12 @@ SoftSudakov::lowEnergyRunning(Energy EWScale, Energy lowScale,
   case QtQtUU:
   case QQtRtR:
     {
+      assert(iswap==0);
       numBrokenGauge = 4;
-      G1 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-      G2 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-      G3 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-      boost::numeric::ublas::matrix<Complex> gam3 = Gamma3(U,T);
+      G1 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G2 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G3 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      matrix<Complex> gam3 = Gamma3(U,T);
       for (unsigned int i=0; i<numBrokenGauge/2; i++) {
 	G3(i,i)     += gam3(0,0);
 	G3(i,i+2)   += gam3(0,1);
@@ -151,11 +155,12 @@ SoftSudakov::lowEnergyRunning(Energy EWScale, Energy lowScale,
   case QQDD:
   case QtQtDD:
     {
+      assert(iswap==0);
       numBrokenGauge = 4;
-      G1 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-      G2 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-      G3 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-      boost::numeric::ublas::matrix<Complex> gam3 = Gamma3(U,T);
+      G1 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G2 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G3 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      matrix<Complex> gam3 = Gamma3(U,T);
       for (unsigned int i=0; i<numBrokenGauge/2; i++) {
 	G3(i,i) += gam3(0,0);
 	G3(i,i+2) += gam3(0,1);
@@ -168,10 +173,11 @@ SoftSudakov::lowEnergyRunning(Energy EWScale, Energy lowScale,
     break;
   case QQLL:
     {
+      assert(iswap==0);
       numBrokenGauge = 6;
-      G1 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-      G2 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-      G3 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G1 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G2 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G3 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
       Complex gam3s = Gamma3Singlet()(0,0);
       for (unsigned int i=0; i<numBrokenGauge; i++) {
             G3(i,i) = gam3s;
@@ -186,10 +192,11 @@ SoftSudakov::lowEnergyRunning(Energy EWScale, Energy lowScale,
     break;
   case QQEE:
     {
+      assert(iswap==0);
       numBrokenGauge = 2;
-      G1 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-      G2 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-      G3 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G1 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G2 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G3 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
       Complex gam3s = Gamma3Singlet()(0,0);
       for (unsigned int i=0; i<2; i++) {
 	G3(i,i) += gam3s;
@@ -201,71 +208,79 @@ SoftSudakov::lowEnergyRunning(Energy EWScale, Energy lowScale,
   case UUUU:
   case UUUUiden:
   case tRtRUU:
+    assert(iswap==0);
     numBrokenGauge = 2;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G3 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G1 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G2 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G3 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
     G3 = Gamma3(U,T);
     G1(0,0) = G1(1,1) = Gamma1(2.0/3.0,2.0/3.0,T,U);
     break;
   case UUDD:
   case tRtRDD:
+    assert(iswap==0);
     numBrokenGauge = 2;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G3 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G1 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G2 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G3 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
     G3 = Gamma3(U,T);
     G1(0,0) = G1(1,1) = Gamma1(-1.0/3.0,2.0/3.0,T,U);
     break;
   case UULL:
+    assert(iswap==0);
     numBrokenGauge = 2;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G3 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G1 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G2 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G3 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
     G3(0,0) = G3(1,1) = Gamma3Singlet()(0,0);
     G1(0,0) = Gamma1(2.0/3.0,0.0,T,U);
     G1(1,1) = Gamma1(2.0/3.0,-1.0,T,U);
     break;
   case UUEE:
+    assert(iswap==0);
     numBrokenGauge = 1;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G3 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G1 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G2 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G3 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
     G3(0,0) = Gamma3Singlet()(0,0);
     G1(0,0) = Gamma1(2.0/3.0,-1.0,T,U);
     break;
   case DDDD:
   case DDDDiden:
+    assert(iswap==0);
     numBrokenGauge = 2;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G3 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G1 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G2 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G3 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
     G3 = Gamma3(U,T);
     G1(0,0) = G1(1,1) = Gamma1(-1.0/3.0,-1.0/3.0,T,U);
     break;
   case DDLL:
+    assert(iswap==0);
     numBrokenGauge = 2;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G3 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G1 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G2 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G3 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
     G3(0,0) = G3(1,1) = Gamma3Singlet()(0,0);
     G1(0,0) = Gamma1(-1.0/3.0,0.0,T,U);
     G1(1,1) = Gamma1(-1.0/3.0,-1.0,T,U);
     break;
   case DDEE:
+    assert(iswap==0);
     numBrokenGauge = 1;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G3 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G1 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G2 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G3 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
     G3(0,0) = Gamma3Singlet()(0,0);
     G1(0,0) = Gamma1(-1.0/3.0,-1.0,T,U);
     break;
   case LLLL:
   case LLLLiden:
+    assert(iswap==0);
     numBrokenGauge = 6;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G3 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G1 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G2 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G3 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
     G1(0,0) = Gamma1(0.0,0.0,0.0,0.0,T,U);
     G1(1,1) = Gamma1(-1.0,-1.0,0.0,0.0,T,U);
     G1(2,2) = Gamma1(0.0,0.0,-1.0,-1.0,T,U);
@@ -275,27 +290,30 @@ SoftSudakov::lowEnergyRunning(Energy EWScale, Energy lowScale,
     break;
     
   case LLEE:
+    assert(iswap==0);
     numBrokenGauge = 2;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G3 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G1 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G2 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G3 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
     G1(0,0) = Gamma1(0.0,-1.0,T,U);
     G1(1,1) = Gamma1(-1.0,-1.0,T,U);
     break;
   case EEEE:
   case EEEEiden:
+    assert(iswap==0);
     numBrokenGauge = 1;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G3 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G1 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G2 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G3 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
     G1(0,0) = Gamma1(-1.0,-1.0,T,U);
     break;
   case QQWW:
     {
+      assert(iswap==0);
       numBrokenGauge = 20;
-      G1 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-      G2 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-      G3 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G1 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G2 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G3 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
       Complex gam3s = Gamma3Singlet()(0,0);
       for (unsigned int i=0; i<numBrokenGauge; i++) {
 	G3(i,i) = gam3s;
@@ -324,10 +342,11 @@ SoftSudakov::lowEnergyRunning(Energy EWScale, Energy lowScale,
     break;
   case QQPhiPhi:
     {
+      assert(iswap==0);
       numBrokenGauge = 14;
-      G1 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-      G2 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-      G3 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G1 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G2 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G3 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
       Complex gam3s = Gamma3Singlet()(0,0);
       for (unsigned int i=0; i<numBrokenGauge; i++) {
 	G3(i,i) = gam3s;
@@ -349,10 +368,11 @@ SoftSudakov::lowEnergyRunning(Energy EWScale, Energy lowScale,
     }
     break;
   case QQWG:
+    assert(iswap==0);
     numBrokenGauge = 6;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G3 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G1 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G2 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G3 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
     for (unsigned int i=0; i<numBrokenGauge; i++) {
       G3(i,i) = -17.0/6.0*I*pi + 3.0/2.0*(U+T);
     }
@@ -364,10 +384,11 @@ SoftSudakov::lowEnergyRunning(Energy EWScale, Energy lowScale,
     G1(5,5) = Gamma1(-1./3.,-1./3.,0.,0.,T,U);
     break;
   case QQBG:
+    assert(iswap==0);
     numBrokenGauge = 4;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G3 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G1 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G2 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G3 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
     for (unsigned int i=0; i<numBrokenGauge; i++) {
       G3(i,i) = -4.0/3.0*I*pi + 3.0/2.0*(U+T-I*pi);
     }
@@ -380,25 +401,39 @@ SoftSudakov::lowEnergyRunning(Energy EWScale, Energy lowScale,
   case QtQtGG:
     {
       numBrokenGauge = 6;
-      G1 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-      G2 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-      G3 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-      boost::numeric::ublas::matrix<Complex> gam3g = Gamma3g(U,T);
+      G1 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G2 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G3 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      matrix<Complex> gam3g;
+      Complex gam1a(0.),gam1b(0.);
+      if(iswap==0) {
+	gam3g = Gamma3g(U,T);
+	gam1a = Gamma1( 2./3.,0.,T,U);
+	gam1b = Gamma1(-1./3.,0.,T,U);
+      }
+      else if(iswap==1) {
+	gam3g = Gamma3gST(U,T);
+	gam1a = Gamma1ST( 2./3.,0.,T,U);
+	gam1b = Gamma1ST(-1./3.,0.,T,U);
+      }
+      else
+	assert(false);
       for(unsigned int ix=0;ix<3;++ix) {
 	for(unsigned int iy=0;iy<3;++iy) {
 	  G3(ix  ,iy  ) = gam3g(ix,iy);
 	  G3(ix+3,iy+3) = gam3g(ix,iy);
 	}
       }
-      G1(0,0) = G1(1,1) = G1(2,2) = Gamma1(2./3.,0.,T,U);
-      G1(3,3) = G1(4,4) = G1(5,5) = Gamma1(-1./3.,0.,T,U);
+      G1(0,0) = G1(1,1) = G1(2,2) = gam1a;
+      G1(3,3) = G1(4,4) = G1(5,5) = gam1b;
     }
     break;
   case LLWW:
+    assert(iswap==0);
     numBrokenGauge = 20;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G3 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G1 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G2 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G3 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
     G1(0,0) = Gamma1(0.,0.,-1.,-1.,T,U);
     G1(1,1) = Gamma1(0.,0.,1.,1.,T,U);
     G1(2,2) = Gamma1(0.,0.,0.,0.,T,U);
@@ -421,10 +456,11 @@ SoftSudakov::lowEnergyRunning(Energy EWScale, Energy lowScale,
     G1(19,19) = Gamma1(0.,-1.,0.,1.,T,U);
     break;
   case LLPhiPhi:
+    assert(iswap==0);
     numBrokenGauge = 14;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G3 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G1 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G2 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G3 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
     G1(0,0) = Gamma1(0.,0.,1.,1.,T,U);
     G1(1,1) = Gamma1(0.,0.,0.,0.,T,U);
     G1(2,2) = Gamma1(0.,0.,0.,0.,T,U);
@@ -442,10 +478,11 @@ SoftSudakov::lowEnergyRunning(Energy EWScale, Energy lowScale,
     break;
   case UUBB:
     {
+      assert(iswap==0);
       numBrokenGauge = 4;
-      G1 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-      G2 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-      G3 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G1 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G2 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G3 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
       Complex gam3s = Gamma3Singlet()(0,0);
       for (unsigned int i=0; i<numBrokenGauge; i++) {
 	G3(i,i) = gam3s;
@@ -455,10 +492,11 @@ SoftSudakov::lowEnergyRunning(Energy EWScale, Energy lowScale,
     break;
   case UUPhiPhi:
     {
+      assert(iswap==0);
       numBrokenGauge = 5;
-      G1 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-      G2 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-      G3 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G1 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G2 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G3 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
       Complex gam3s = Gamma3Singlet()(0,0);
       for (unsigned int i=0; i<numBrokenGauge; i++) {
 	G3(i,i) = gam3s;
@@ -469,10 +507,11 @@ SoftSudakov::lowEnergyRunning(Energy EWScale, Energy lowScale,
     break;
   case UUBG:
     {
+      assert(iswap==0);
       numBrokenGauge = 2;
-      G1 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-      G2 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-      G3 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G1 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G2 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G3 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
       Complex gam1 = Gamma1(2./3.,0.,T,U);
       for (unsigned int i=0; i<numBrokenGauge; i++) {
 	G3(i,i) = -4.0/3.0*I*pi + 3.0/2.0*(U+T-I*pi);
@@ -480,21 +519,35 @@ SoftSudakov::lowEnergyRunning(Energy EWScale, Energy lowScale,
       }
     }
     break;
+  case DDGG:
   case UUGG:
   case tRtRGG:
-    numBrokenGauge = 3;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G3 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G3 = Gamma3g(U,T);
-    G1(0,0) = G1(1,1) = G1(2,2) = Gamma1(2./3.,0.,T,U);
+    {
+      numBrokenGauge = 3;
+      G1 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G2 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      Complex gam1(0.);
+      double Y = process==DDGG ? -1./3. : 2./3.;
+      if(iswap==0) {
+	G3   = Gamma3g(U,T);
+	gam1 = Gamma1(Y,0.,T,U);
+      }
+      else if(iswap==1) {
+	G3   = Gamma3gST(U,T);
+	gam1 = Gamma1ST(Y,0.,T,U);
+      }
+      else
+	assert(false);    
+      G1(0,0) = G1(1,1) = G1(2,2) = gam1;
+    }
     break;
   case DDBB:
     {
+      assert(iswap==0);
       numBrokenGauge = 4;
-      G1 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-      G2 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-      G3 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G1 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G2 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G3 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
       Complex gam3s = Gamma3Singlet()(0,0);
       Complex gam1  = Gamma1(-1./3.,0.,T,U);
       for (unsigned int i=0; i<numBrokenGauge; i++) {
@@ -505,10 +558,11 @@ SoftSudakov::lowEnergyRunning(Energy EWScale, Energy lowScale,
     break;
   case DDPhiPhi:
     {
+      assert(iswap==0);
       numBrokenGauge = 5;
-      G1 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-      G2 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-      G3 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G1 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G2 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G3 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
       Complex gam3s = Gamma3Singlet()(0,0);
       for (unsigned int i=0; i<numBrokenGauge; i++) {
 	G3(i,i) = gam3s;
@@ -518,28 +572,23 @@ SoftSudakov::lowEnergyRunning(Energy EWScale, Energy lowScale,
     }
     break;
   case DDBG:
+    assert(iswap==0);
     numBrokenGauge = 2;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G3 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G1 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G2 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G3 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
     for (unsigned int i=0; i<numBrokenGauge; i++) {
       G3(i,i) = -4.0/3.0*I*pi + 3.0/2.0*(U+T-I*pi);
     }
     G1(0,0) = G1(1,1) = Gamma1(-1./3.,0.,T,U);
     break;
-  case DDGG:
-    numBrokenGauge = 3;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G3 = Gamma3g(U,T);
-    G1(0,0) = G1(1,1) = G1(2,2) = Gamma1(-1./3.,0.,T,U);
-    break;
   case EEBB:
     {
+      assert(iswap==0);
       numBrokenGauge = 4;
-      G1 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-      G2 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-      G3 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G1 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G2 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+      G3 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
       Complex gam1 = Gamma1(-1.,0.,T,U);
       for (unsigned int i=0; i<numBrokenGauge; i++) {
 	G1(i,i) = gam1;
@@ -547,10 +596,11 @@ SoftSudakov::lowEnergyRunning(Energy EWScale, Energy lowScale,
     }
     break;
   case EEPhiPhi:
+    assert(iswap==0);
     numBrokenGauge = 5;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G3 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G1 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G2 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
+    G3 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
     G1(0,0) = Gamma1(-1.,1.,T,U);
     G1(1,1) = G1(2,2) = G1(3,3) = G1(4,4) = Gamma1(-1.,0.,T,U);
     break;         
@@ -559,7 +609,7 @@ SoftSudakov::lowEnergyRunning(Energy EWScale, Energy lowScale,
   }
   // return the answer
   if (EWScale==lowScale) {
-    return boost::numeric::ublas::identity_matrix<Complex>(G1.size1());
+    return identity_matrix<Complex>(G1.size1());
   }
   else {
     return evaluateSoft(G3,G2,G1,EWScale,lowScale,false);
@@ -569,23 +619,26 @@ SoftSudakov::lowEnergyRunning(Energy EWScale, Energy lowScale,
 boost::numeric::ublas::matrix<Complex>
 SoftSudakov::highEnergyRunning(Energy highScale, Energy EWScale,
 			       Energy2 s, Energy2 t, Energy2 u,
-			       Herwig::EWProcess::Process process) {
+			       Herwig::EWProcess::Process process,
+			       unsigned int iswap) {
   using namespace EWProcess;
+  using namespace boost::numeric::ublas;
   using Constants::pi;
   static const Complex I(0,1.0);
   Complex T = getT(s,t), U = getU(s,u);
-  boost::numeric::ublas::matrix<Complex> G1,G2,G3;
+  matrix<Complex> G1,G2,G3;
   unsigned int numGauge;
   switch (process) {
   case QQQQ:
   case QQQQiden:
   case QtQtQQ:
     {
+      assert(iswap==0);
       numGauge = 4;
-      G1 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-      G2 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-      G3 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-      boost::numeric::ublas::matrix<Complex> gam3 = Gamma3(U,T);
+      G1 = zero_matrix<Complex>(numGauge,numGauge);
+      G2 = zero_matrix<Complex>(numGauge,numGauge);
+      G3 = zero_matrix<Complex>(numGauge,numGauge);
+      matrix<Complex> gam3 = Gamma3(U,T);
       G3(0,0) += gam3(0,0);
       G3(0,2) += gam3(0,1);
       G3(2,0) += gam3(1,0);
@@ -594,7 +647,7 @@ SoftSudakov::highEnergyRunning(Energy highScale, Energy EWScale,
       G3(1,3) += gam3(0,1);
       G3(3,1) += gam3(1,0);
       G3(3,3) += gam3(1,1);
-      boost::numeric::ublas::matrix<Complex> gam2 = Gamma2(U,T);
+      matrix<Complex> gam2 = Gamma2(U,T);
       G2(0,0) += gam2(0,0);
       G2(0,1) += gam2(0,1);
       G2(1,0) += gam2(1,0);
@@ -609,32 +662,36 @@ SoftSudakov::highEnergyRunning(Energy highScale, Energy EWScale,
   case QQUU:
   case QtQtUU:
   case QQtRtR:
+    assert(iswap==0);
     numGauge = 2;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+    G1 = zero_matrix<Complex>(numGauge,numGauge);
     G3 = Gamma3(U,T);
     G2 = Gamma2Singlet();
     G1(0,0) = G1(1,1) = Gamma1(2.0/3.0,1.0/6.0,T,U);
     break;
   case QQDD:
   case QtQtDD:
+    assert(iswap==0);
     numGauge = 2;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+    G1 = zero_matrix<Complex>(numGauge,numGauge);
     G3 = Gamma3(U,T);
     G2 = Gamma2Singlet();
     G1(0,0) = G1(1,1) = Gamma1(-1.0/3.0,1.0/6.0,T,U);
     break;
   case QQLL:
+    assert(iswap==0);
     numGauge = 2;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+    G1 = zero_matrix<Complex>(numGauge,numGauge);
     G3 = Gamma3Singlet();
     G2 = Gamma2(U,T);
     G1(0,0) = G1(1,1) = Gamma1(-1.0/2.0,1.0/6.0,T,U);
     break;
   case QQEE:
+    assert(iswap==0);
     numGauge = 1;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge); 
-    G3 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+    G1 = zero_matrix<Complex>(numGauge,numGauge);
+    G2 = zero_matrix<Complex>(numGauge,numGauge); 
+    G3 = zero_matrix<Complex>(numGauge,numGauge);
     G3(0,0) = Gamma3Singlet()(0,0);
     G2(0,0) = Gamma2Singlet()(0,0);
     G1(0,0) = Gamma1(-1.0,1.0/6.0,T,U);
@@ -642,91 +699,102 @@ SoftSudakov::highEnergyRunning(Energy highScale, Energy EWScale,
   case UUUU:
   case UUUUiden:
   case tRtRUU:
+    assert(iswap==0);
     numGauge = 2;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+    G1 = zero_matrix<Complex>(numGauge,numGauge);
+    G2 = zero_matrix<Complex>(numGauge,numGauge);
     G3 = Gamma3(U,T);
     G1(0,0) = G1(1,1) = Gamma1(2.0/3.0,2.0/3.0,T,U);
     break;
   case UUDD:
   case tRtRDD:
+    assert(iswap==0);
     numGauge = 2;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+    G1 = zero_matrix<Complex>(numGauge,numGauge);
+    G2 = zero_matrix<Complex>(numGauge,numGauge);
     G3 = Gamma3(U,T);
     G1(0,0) = G1(1,1) = Gamma1(-1.0/3.0,2.0/3.0,T,U);
     break;
   case UULL:
+    assert(iswap==0);
     numGauge = 1;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G3 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+    G1 = zero_matrix<Complex>(numGauge,numGauge);
+    G2 = zero_matrix<Complex>(numGauge,numGauge);
+    G3 = zero_matrix<Complex>(numGauge,numGauge);
     G3(0,0) = Gamma3Singlet()(0,0);
     G2(0,0) = Gamma2Singlet()(0,0);
     G1(0,0) = Gamma1(-1.0/2.0,2.0/3.0,T,U);
     break;
   case UUEE:
+    assert(iswap==0);
     numGauge = 1;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G3 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+    G1 = zero_matrix<Complex>(numGauge,numGauge);
+    G2 = zero_matrix<Complex>(numGauge,numGauge);
+    G3 = zero_matrix<Complex>(numGauge,numGauge);
     G3(0,0) = Gamma3Singlet()(0,0);
     G1(0,0) = Gamma1(-1.0,2.0/3.0,T,U);
     break;
   case DDDD:
   case DDDDiden:
+    assert(iswap==0);
     numGauge = 2;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+    G1 = zero_matrix<Complex>(numGauge,numGauge);
+    G2 = zero_matrix<Complex>(numGauge,numGauge);
     G3 = Gamma3(U,T);
     G1(0,0) = G1(1,1) = Gamma1(-1.0/3.0,-1.0/3.0,T,U);
     break;
   case DDLL:
+    assert(iswap==0);
     numGauge = 1;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G3 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+    G1 = zero_matrix<Complex>(numGauge,numGauge);
+    G2 = zero_matrix<Complex>(numGauge,numGauge);
+    G3 = zero_matrix<Complex>(numGauge,numGauge);
     G3(0,0) = Gamma3Singlet()(0,0);
     G2(0,0) = Gamma2Singlet()(0,0);
     G1(0,0) = Gamma1(-1.0/2.0,-1.0/3.0,T,U);
     break;
   case DDEE:
+    assert(iswap==0);
     numGauge = 1;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G3 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+    G1 = zero_matrix<Complex>(numGauge,numGauge);
+    G2 = zero_matrix<Complex>(numGauge,numGauge);
+    G3 = zero_matrix<Complex>(numGauge,numGauge);
     G3(0,0) = Gamma3Singlet()(0,0);
     G1(0,0) = Gamma1(-1.0,-1.0/3.0,T,U);
     break;
   case LLLL:
   case LLLLiden:
+    assert(iswap==0);
     numGauge = 2;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G3 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+    G1 = zero_matrix<Complex>(numGauge,numGauge);
+    G3 = zero_matrix<Complex>(numGauge,numGauge);
     G2 = Gamma2(U,T);
     G1(0,0) = G1(1,1) = Gamma1(-1.0/2.0,-1.0/2.0,T,U);
     break;
   case LLEE:
+    assert(iswap==0);
     numGauge = 1;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G3 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+    G1 = zero_matrix<Complex>(numGauge,numGauge);
+    G2 = zero_matrix<Complex>(numGauge,numGauge);
+    G3 = zero_matrix<Complex>(numGauge,numGauge);
     G2(0,0) = Gamma2Singlet()(0,0);
     G1(0,0) = Gamma1(-1.0,-1.0/2.0,T,U);
     break;
   case EEEE:
   case EEEEiden:
+    assert(iswap==0);
     numGauge = 1;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G3 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+    G1 = zero_matrix<Complex>(numGauge,numGauge);
+    G2 = zero_matrix<Complex>(numGauge,numGauge);
+    G3 = zero_matrix<Complex>(numGauge,numGauge);
     G1(0,0) = Gamma1(-1.0,-1.0,T,U);
     break;
   case QQWW:
     {
+      assert(iswap==0);
       numGauge = 5;
-      G1 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-      G3 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+      G1 = zero_matrix<Complex>(numGauge,numGauge);
+      G3 = zero_matrix<Complex>(numGauge,numGauge);
       Complex gam3s = Gamma3Singlet()(0,0);
       for (unsigned int i=0; i<5; i++) {
 	G3(i,i) = gam3s;
@@ -736,26 +804,29 @@ SoftSudakov::highEnergyRunning(Energy highScale, Energy EWScale,
     }
     break;
   case QQPhiPhi:
+    assert(iswap==0);
     numGauge = 2;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+    G1 = zero_matrix<Complex>(numGauge,numGauge);
     G3 = Gamma3Singlet();
     G2 = Gamma2(U,T);
     G1(0,0) = G1(1,1) = Gamma1(1.0/2.0,1.0/6.0,T,U);
     break;
   case QQWG:
+    assert(iswap==0);
     numGauge = 1;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G3 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+    G1 = zero_matrix<Complex>(numGauge,numGauge);
+    G2 = zero_matrix<Complex>(numGauge,numGauge);
+    G3 = zero_matrix<Complex>(numGauge,numGauge);
     G3(0,0) = -17.0/6.0*I*pi + 3.0/2.0*(U+T);
     G2(0,0) = -7.0/4.0*I*pi + (U+T);
     G1(0,0) = Gamma1(1.0/6.0);
     break;
   case QQBG:
+    assert(iswap==0);
     numGauge = 1;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G3 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+    G1 = zero_matrix<Complex>(numGauge,numGauge);
+    G2 = zero_matrix<Complex>(numGauge,numGauge);
+    G3 = zero_matrix<Complex>(numGauge,numGauge);
     G3(0,0) = -4.0/3.0*I*pi + 3.0/2.0*(U+T-I*pi);
     G2(0,0) = -3.0/4.0*I*pi;
     G1(0,0) = Gamma1(1.0/6.0);
@@ -764,114 +835,139 @@ SoftSudakov::highEnergyRunning(Energy highScale, Energy EWScale,
   case QtQtGG:
     {
       numGauge = 3;
-      G1 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-      G2 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-      G3 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-      G3 = Gamma3g(U,T);
-      Complex gam2s = Gamma2Singlet()(0,0);
+      G1 = zero_matrix<Complex>(numGauge,numGauge);
+      G2 = zero_matrix<Complex>(numGauge,numGauge);
+      Complex gam2s,gam1;
+      if(iswap==0) {
+	G3    = Gamma3g(U,T);
+	gam2s = Gamma2Singlet()(0,0);
+	gam1  = Gamma1(1.0/6.0);
+      }
+      else if(iswap==1) {
+	G3 = Gamma3gST(U,T);
+	gam2s = Gamma2SingletST(T)(0,0);
+	gam1  = Gamma1ST(1.0/6.0,T);
+      }
+      else
+	assert(false);
       for (unsigned int i=0; i<3; i++) {
 	G2(i,i) = gam2s;
-	G1(i,i) = Gamma1(1.0/6.0);
+	G1(i,i) = gam1;
       }
     }
     break;
   case LLWW:
+    assert(iswap==0);
     numGauge = 5;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G3 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+    G1 = zero_matrix<Complex>(numGauge,numGauge);
+    G3 = zero_matrix<Complex>(numGauge,numGauge);
     for (unsigned int i=0; i<5; i++) {
       G1(i,i) = Gamma1(-1.0/2.0);
     }
     G2 = Gamma2w(U,T);
     break;
   case LLPhiPhi:
+    assert(iswap==0);
     numGauge = 2;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G3 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+    G1 = zero_matrix<Complex>(numGauge,numGauge);
+    G3 = zero_matrix<Complex>(numGauge,numGauge);
     G2 = Gamma2(U,T);
     G1(0,0) = G1(1,1) = Gamma1(1.0/2.0,-1.0/2.0,T,U);
     break;
   case UUBB:
+    assert(iswap==0);
     numGauge = 1;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G3 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+    G1 = zero_matrix<Complex>(numGauge,numGauge);
+    G2 = zero_matrix<Complex>(numGauge,numGauge);
+    G3 = zero_matrix<Complex>(numGauge,numGauge);
     G3(0,0) = Gamma3Singlet()(0,0);
     G1(0,0) = Gamma1(2.0/3.0);
     break;
   case UUPhiPhi:
+    assert(iswap==0);
     numGauge = 1;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G3 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+    G1 = zero_matrix<Complex>(numGauge,numGauge);
+    G2 = zero_matrix<Complex>(numGauge,numGauge);
+    G3 = zero_matrix<Complex>(numGauge,numGauge);
     G3(0,0) = Gamma3Singlet()(0,0);
     G2(0,0) = Gamma2Singlet()(0,0);
     G1(0,0) = Gamma1(1.0/2.0,2.0/3.0,T,U);
     break;
   case UUBG:
+    assert(iswap==0);
     numGauge = 1;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G3 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+    G1 = zero_matrix<Complex>(numGauge,numGauge);
+    G2 = zero_matrix<Complex>(numGauge,numGauge);
+    G3 = zero_matrix<Complex>(numGauge,numGauge);
     G3(0,0) = -4.0/3.0*I*pi + 3.0/2.0*(U+T-I*pi);
     G1(0,0) = Gamma1(2.0/3.0);
     break;
+  case DDGG:
   case UUGG:
-  case tRtRGG:
-    numGauge = 3;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G3 = Gamma3g(U,T);
-    for (unsigned int i=0; i<3; i++) {
-      G1(i,i) = Gamma1(2.0/3.0);
+  case tRtRGG: 
+    {
+      numGauge = 3;
+      G1 = zero_matrix<Complex>(numGauge,numGauge);
+      G2 = zero_matrix<Complex>(numGauge,numGauge);
+      double Y = process==DDGG ? -1./3. : 2./3.;
+      Complex gam1(0.);
+      if(iswap==0) {
+	G3 = Gamma3g(U,T);
+	gam1 = Gamma1(Y);
+      }
+      else if(iswap==1) {
+	G3 = Gamma3gST(U,T);
+	gam1 = Gamma1ST(Y,T);
+      }
+      else
+	assert(false);
+      for (unsigned int i=0; i<3; i++) {
+	G1(i,i) = gam1;
+      }
     }
     break;
   case DDBB:
+    assert(iswap==0);
     numGauge = 1;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G3 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+    G1 = zero_matrix<Complex>(numGauge,numGauge);
+    G2 = zero_matrix<Complex>(numGauge,numGauge);
+    G3 = zero_matrix<Complex>(numGauge,numGauge);
     G3(0,0) = Gamma3Singlet()(0,0);
     G1(0,0) = Gamma1(-1.0/3.0);
     break;
   case DDPhiPhi:
+    assert(iswap==0);
     numGauge = 1;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G3 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+    G1 = zero_matrix<Complex>(numGauge,numGauge);
+    G2 = zero_matrix<Complex>(numGauge,numGauge);
+    G3 = zero_matrix<Complex>(numGauge,numGauge);
     G3(0,0) = Gamma3Singlet()(0,0);
     G2(0,0) = Gamma2Singlet()(0,0);
     G1(0,0) = Gamma1(1.0/2.0,-1.0/3.0,T,U);
     break;
   case DDBG:
+    assert(iswap==0);
     numGauge = 1;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G3 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+    G1 = zero_matrix<Complex>(numGauge,numGauge);
+    G2 = zero_matrix<Complex>(numGauge,numGauge);
+    G3 = zero_matrix<Complex>(numGauge,numGauge);
     G3(0,0) = -4.0/3.0*I*pi + 3.0/2.0*(U+T-I*pi);
     G1(0,0) = Gamma1(-1.0/3.0);
     break;
-  case DDGG:
-    numGauge = 3;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge); 
-    G3 = Gamma3g(U,T);
-    for (unsigned int i=0; i<3; i++) {
-      G1(i,i) = Gamma1(-1.0/3.0);
-    }
-    break;
   case EEBB:
+    assert(iswap==0);
     numGauge = 1;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G3 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+    G1 = zero_matrix<Complex>(numGauge,numGauge);
+    G2 = zero_matrix<Complex>(numGauge,numGauge);
+    G3 = zero_matrix<Complex>(numGauge,numGauge);
     G1(0,0) = Gamma1(-1.0);
     break;
   case EEPhiPhi:
+    assert(iswap==0);
     numGauge = 1;
-    G1 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G2 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
-    G3 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
+    G1 = zero_matrix<Complex>(numGauge,numGauge);
+    G2 = zero_matrix<Complex>(numGauge,numGauge);
+    G3 = zero_matrix<Complex>(numGauge,numGauge);
     G2(0,0) = Gamma2Singlet()(0,0);
     G1(0,0) = Gamma1(1.0/2.0,-1.0,T,U);
     break;
