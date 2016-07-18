@@ -82,9 +82,33 @@ public:
 protected:
 
   /**
+   *  Functions to reweight specific processes
+   */
+  //@{
+  /**
+   *  Reweight \f$g g\to q\bar{q}\f$
+   */
+  double reweightggqqbar() const;
+
+  /**
+   *  Reweight \f$q\bar{q}\to g g\f$
+   */
+  double reweightqqbargg() const;
+  //@}
+
+protected:
+
+  /**
    *  Check the evolution for a fixed s,t,u
    */
   void testEvolution(Energy2 s,Energy2 t, Energy2 u) const;
+
+  /**
+   *  Evalaute the running
+   */
+  boost::numeric::ublas::matrix<complex<InvEnergy2> >
+  evaluateRunning(EWProcess::Process process, Energy2 s,
+		  Energy2 t, Energy2 u, bool born) const;
 
 protected:
 
