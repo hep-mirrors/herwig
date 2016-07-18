@@ -123,25 +123,28 @@ def fillprocs(model,oras,orew):
   fileproc.close()
   return bornlist,virtlist
 
-def build_matchbox_tmp(pwd,buildpath):
+def build_matchbox_tmp(pwd,buildpath,absolute_links):
    cwd=os.getcwd() 
    os.chdir(pwd)
    mkdir_p(pwd+"/Herwig-scratch/MG_tmp/")
    if not buildpath.startswith("/"):
      buildpath=pwd+"/"+buildpath.lstrip("./")
-   resources=glob.glob(buildpath +"/MG5/SubProcesses/MadLoop5_resources/*")
-   resources+=glob.glob(buildpath +"/MG5/Cards/*")
-   resources+=glob.glob(buildpath +"/MG5/Cards/SubProcesses/*")
+   if not buildpath.endswith("/"):
+     buildpath=buildpath + "/"
+   resources=glob.glob(buildpath +"MG5/SubProcesses/MadLoop5_resources/*")
+   resources+=glob.glob(buildpath +"MG5/Cards/*")
+   resources+=glob.glob(buildpath +"MG5/Cards/SubProcesses/*")
    for i in resources:
      if not os.path.isfile( pwd+"/Herwig-scratch/MG_tmp/"+os.path.basename(i)) \
        and not os.path.islink( pwd+"/Herwig-scratch/MG_tmp/"+os.path.basename(i)):
-        os.symlink(i, pwd+"/Herwig-scratch/MG_tmp/"+os.path.basename(i))
+         if not absolute_links:
+             source=os.path.dirname(i)
+             dest=pwd+"/Herwig-scratch/MG_tmp/"
+             os.chdir(dest)
+             os.symlink(os.path.relpath(source,dest)+"/"+os.path.basename(i),"./" + os.path.basename(i))
+         else:
+             os.symlink(i, pwd+"/Herwig-scratch/MG_tmp/"+os.path.basename(i))
    os.chdir(cwd)    
-
-
-
-
-
 
 
 parser = OptionParser()
@@ -154,6 +157,8 @@ parser.add_option("-f", "--orderas", dest="orderas",help="Do not use this script
 parser.add_option("-g", "--orderew", dest="orderew",help="Do not use this script. Only for Herwig internal use.")
 parser.add_option("-i", "--datadir",dest="datadir",help="Do not use this script. Only for Herwig internal use.")
 parser.add_option("-I", "--includedir",dest="includedir",help="Do not use this script. Only for Herwig internal use.")
+parser.add_option("-l", "--absolute-links",action="store_true", dest="absolute_links", default=False,\
+                  help="Do not use this script. Only for Herwig internal use.")
 
 
 (options, args) = parser.parse_args()
@@ -238,7 +243,7 @@ if not os.path.isdir(options.buildpath):
 
 os.chdir(options.buildpath)
 if os.path.isfile("InterfaceMadGraph.so"):
-  build_matchbox_tmp(pwd,options.buildpath)
+  build_matchbox_tmp(pwd,options.buildpath,options.absolute_links)
   exit()
  
 Bornlist,Virtlist=fillprocs(options.model,options.orderas,options.orderew)
@@ -378,5 +383,5 @@ if Virtlist!=[]:
 os.system("make")
 
 
-build_matchbox_tmp(pwd,options.buildpath)
+build_matchbox_tmp(pwd,options.buildpath,options.absolute_links)
 

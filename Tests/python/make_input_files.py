@@ -714,6 +714,38 @@ elif(collider=="LHC") :
         elif(parameterName.find("Z-LowMass-mu")>=0) :
             process+="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
             process+="set /Herwig/Cuts/QCDCuts:MHatMin 10.*GeV\nset /Herwig/Cuts/MassCut:MinM 10.*GeV\nset /Herwig/Cuts/MassCut:MaxM 70.*GeV\n"
+        elif(parameterName.find("Z-Mass1")>=0) :
+            process+="set /Herwig/Cuts/QCDCuts:MHatMin 10.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MinM 10.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MaxM 35.*GeV\n"
+            if(parameterName.find("-e")>=0) :
+                process+="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
+            else :
+                process+="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
+        elif(parameterName.find("Z-Mass2")>=0) :
+            process+="set /Herwig/Cuts/QCDCuts:MHatMin 25.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MinM 25.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MaxM 70.*GeV\n"
+            if(parameterName.find("-e")>=0) :
+                process+="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
+            else :
+                process+="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
+        elif(parameterName.find("Z-Mass3")>=0) :
+            process+="set /Herwig/Cuts/QCDCuts:MHatMin 60.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MinM 60.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MaxM 120.*GeV\n"
+            if(parameterName.find("-e")>=0) :
+                process+="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
+            else :
+                process+="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
+        elif(parameterName.find("Z-Mass4")>=0) :
+            process+="set /Herwig/Cuts/QCDCuts:MHatMin 110.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MinM 110.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MaxM 8000.*GeV\n"
+            if(parameterName.find("-e")>=0) :
+                process+="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Electron\n"
+            else :
+                process+="insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff\nset MEqq2gZ2ff:Process Muon\n"
         elif(parameterName.find("W-Jet")>=0) :
             process+="insert SimpleQCD:MatrixElements[0] MEWJet\nset MEWJet:WDecay Electron\n"
             if(parameterName.find("W-Jet-1-e")>=0) :
@@ -756,8 +788,6 @@ elif(collider=="LHC") :
         elif(parameterName.find("ZGamma")>=0) :
             process+="insert SimpleQCD:MatrixElements[0] MEPP2VGamma\nset MEPP2VGamma:Process 2\n"
             process+="set /Herwig/Cuts/PhotonKtCut:MinKT 10.\n"
-            process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
-            process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
             if(parameterName.find("-e")>=0) :
                 process+="do /Herwig/Particles/Z0:SelectDecayModes Z0->e-,e+;\n"
             else :
@@ -878,6 +908,38 @@ elif(collider=="LHC") :
         elif(parameterName.find("Z-LowMass-mu")>=0) :
             process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
             process+="set /Herwig/Cuts/QCDCuts:MHatMin 10.*GeV\nset /Herwig/Cuts/MassCut:MinM 10.*GeV\nset /Herwig/Cuts/MassCut:MaxM 70.*GeV\n"
+        elif(parameterName.find("Z-Mass1")>=0) :
+            process+="set /Herwig/Cuts/QCDCuts:MHatMin 10.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MinM 10.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MaxM 35.*GeV\n"
+            if(parameterName.find("-e")>=0) :
+                process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
+            else :
+                process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
+        elif(parameterName.find("Z-Mass2")>=0) :
+            process+="set /Herwig/Cuts/QCDCuts:MHatMin 25.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MinM 25.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MaxM 70.*GeV\n"
+            if(parameterName.find("-e")>=0) :
+                process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
+            else :
+                process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
+        elif(parameterName.find("Z-Mass3")>=0) :
+            process+="set /Herwig/Cuts/QCDCuts:MHatMin 60.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MinM 60.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MaxM 120.*GeV\n"
+            if(parameterName.find("-e")>=0) :
+                process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
+            else :
+                process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
+        elif(parameterName.find("Z-Mass4")>=0) :
+            process+="set /Herwig/Cuts/QCDCuts:MHatMin 110.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MinM 110.*GeV\n"
+            process+="set /Herwig/Cuts/MassCut:MaxM 8000.*GeV\n"
+            if(parameterName.find("-e")>=0) :
+                process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Electron\n"
+            else :
+                process+="insert SimpleQCD:MatrixElements[0] PowhegMEqq2gZ2ff\nset PowhegMEqq2gZ2ff:Process Muon\n"
         elif(parameterName.find("DiPhoton-GammaGamma")>=0) :
             process+="insert SimpleQCD:MatrixElements[0] MEGammaGammaPowheg\n"
             process+="set MEGammaGammaPowheg:Process GammaGamma\n"
@@ -909,6 +971,9 @@ elif(collider=="LHC") :
             process+="set /Herwig/Particles/h0:HardProcessWidth 0.\n"
             process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 125.7\n"
+            if(parameterName.find("GammaGamma")>=0) :
+               process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
+               process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
         elif(parameterName.find("VBF")>=0) :
             process+="do /Herwig/Particles/h0:SelectDecayModes h0->tau-,tau+;\n"
             process+="set /Herwig/Particles/tau-:Stable Stable\n"
@@ -943,6 +1008,9 @@ elif(collider=="LHC") :
             process+="do Factory:Process p p h0\n"
             process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 125.7\n"
+            if(parameterName.find("GammaGamma")>=0) :
+               process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
+               process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
         elif(parameterName.find("ggH")>=0) :
             parameters["nlo"] = "read Matchbox/MadGraph-GoSam.in\nread Matchbox/HiggsEffective.in\n"
             process+="do /Herwig/Particles/h0:SelectDecayModes h0->tau-,tau+;\n"
@@ -960,6 +1028,9 @@ elif(collider=="LHC") :
             process+="set /Herwig/Particles/W+:HardProcessWidth 0.\n"
             process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 125.7\n"
+            if(parameterName.find("GammaGamma")>=0) :
+               process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
+               process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
         elif(parameterName.find("8-ZH")>=0) :
             process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\n"
             process+="set /Herwig/Particles/h0:HardProcessWidth 0.\n"
@@ -967,6 +1038,9 @@ elif(collider=="LHC") :
             process+="do Factory:Process p p Z0 h0\n"
             process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/FixedScale\n"
             process+="set /Herwig/MatrixElements/Matchbox/Scales/FixedScale:FixedScale 125.7\n"
+            if(parameterName.find("GammaGamma")>=0) :
+               process+="create Herwig::BranchingRatioReweighter /Herwig/Generators/BRReweighter\n"
+               process+="insert /Herwig/Generators/EventGenerator:EventHandler:PostHadronizationHandlers 0 /Herwig/Generators/BRReweighter\n"
         elif(parameterName.find("WH")>=0) :
             process+="do /Herwig/Particles/h0:SelectDecayModes h0->b,bbar;\n"
             process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 3\n"
@@ -1246,14 +1320,49 @@ elif(collider=="LHC") :
             process+="set /Herwig/Cuts/SecondJet:PtMin 30.*GeV\n"
             process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
         elif(parameterName.find("Z-LowMass-e")>=0) :
-            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ e-\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
+            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ e-\n"
+            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
             process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 20*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 70*GeV\n"
         elif(parameterName.find("Z-MedMass-e")>=0) :
-            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ e-\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
+            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ e-\n"
+            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
             process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 40*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 130*GeV\n"
         elif(parameterName.find("Z-LowMass-mu")>=0) :
-            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p mu+ mu-\nset Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
+            process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p mu+ mu-\n"
+            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
             process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 10*GeV\nset /Herwig/Cuts/LeptonPairMassCut:MaxMass 70*GeV\n"
+        elif(parameterName.find("Z-Mass1")>=0) :
+            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
+            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 10*GeV\n"
+            process+="set /Herwig/Cuts/LeptonPairMassCut:MaxMass 35*GeV\n"
+            if(parameterName.find("-e")>=0) :
+                process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ e-\n"
+            else :
+                process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p mu+ mu-\n"
+        elif(parameterName.find("Z-Mass2")>=0) :
+            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
+            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 25*GeV\n"
+            process+="set /Herwig/Cuts/LeptonPairMassCut:MaxMass 70*GeV\n"
+            if(parameterName.find("-e")>=0) :
+                process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ e-\n"
+            else :
+                process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p mu+ mu-\n"
+        elif(parameterName.find("Z-Mass3")>=0) :
+            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
+            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV\n"
+            process+="set /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV\n"
+            if(parameterName.find("-e")>=0) :
+                process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ e-\n"
+            else :
+                process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p mu+ mu-\n"
+        elif(parameterName.find("Z-Mass4")>=0) :
+            process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassScale\n"
+            process+="set /Herwig/Cuts/LeptonPairMassCut:MinMass 115*GeV\n"
+            process+="set /Herwig/Cuts/LeptonPairMassCut:MaxMass 8000*GeV\n"
+            if(parameterName.find("-e")>=0) :
+                process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ e-\n"
+            else :
+                process+="set Factory:OrderInAlphaS 0\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p mu+ mu-\n"
         elif(parameterName.find("W-Jet")>=0) :
             process+="set Factory:OrderInAlphaS 1\nset Factory:OrderInAlphaEW 2\ndo Factory:Process p p e+ nu j\ndo Factory:Process p p e- nu j\n\n"
             process+="set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/HTScale\n"

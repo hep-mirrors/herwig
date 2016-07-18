@@ -51,8 +51,8 @@ DipoleShowerHandler::DipoleShowerHandler()
     theFactorizationScaleFreeze(2.*GeV),
     isMCatNLOSEvent(false),
     isMCatNLOHEvent(false), theDoCompensate(false),
-    theFreezeGrid(500000), maxPt(ZERO),
-    muPt(ZERO) {}
+    theFreezeGrid(500000), theDetuning(1.0),
+    maxPt(ZERO), muPt(ZERO) {}
 
 DipoleShowerHandler::~DipoleShowerHandler() {}
 
@@ -420,9 +420,11 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
   candidate.configuration(conf);
   candidate.emitterX(emitterX);
   candidate.spectatorX(spectatorX);
+  candidate.emitter(emitter);
+  candidate.spectator(spectator);
 
   if ( generators().find(candidate.index()) == generators().end() )
-    getGenerators(candidate.index());
+    getGenerators(candidate.index(),theSplittingReweight);
 
   //
   // NOTE -- needs proper fixing at some point
@@ -496,6 +498,8 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
       winnerGen = gen;
       winnerScale = nextScale;
     }
+
+    reweight_ *= gen->second->splittingWeight();
 
   }
 
@@ -733,7 +737,8 @@ void DipoleShowerHandler::resetAlphaS(Ptr<AlphaSBase>::tptr as) {
 
   for ( vector<Ptr<DipoleSplittingKernel>::ptr>::iterator k = kernels.begin();
 	k != kernels.end(); ++k ) {
-    (**k).alphaS(as);
+    if ( !(**k).alphaS() )
+      (**k).alphaS(as);
     (**k).renormalizationScaleFreeze(theRenormalizationScaleFreeze);
     (**k).factorizationScaleFreeze(theFactorizationScaleFreeze);
   }
@@ -774,9 +779,14 @@ void DipoleShowerHandler::getGenerators(const DipoleIndex& ind,
 	new_ptr(DipoleSplittingGenerator());
       nGenerator->doCompensate(theDoCompensate);
       nGenerator->splittingKernel(*k);
-      nGenerator->splittingKernel()->renormalizationScaleFactor(renormalizationScaleFactor());
-      nGenerator->splittingKernel()->factorizationScaleFactor(factorizationScaleFactor());
+      if ( renormalizationScaleFactor() != 1. )
+	nGenerator->splittingKernel()->renormalizationScaleFactor(renormalizationScaleFactor());
+      if ( factorizationScaleFactor() != 1. )
+	nGenerator->splittingKernel()->factorizationScaleFactor(factorizationScaleFactor());
+      if ( !nGenerator->splittingReweight() )
+	nGenerator->splittingReweight(rw);
       nGenerator->splittingKernel()->freezeGrid(theFreezeGrid);
+      nGenerator->splittingKernel()->detuning(theDetuning);
 
       GeneratorMap::const_iterator equivalent = generators().end();
 
@@ -808,7 +818,6 @@ void DipoleShowerHandler::getGenerators(const DipoleIndex& ind,
 
       DipoleSplittingInfo dummy;
       dummy.index(ind);
-      nGenerator->splittingReweight(rw);
       nGenerator->prepare(dummy);
 
       generators().insert(make_pair(ind,nGenerator));
@@ -855,8 +864,8 @@ void DipoleShowerHandler::persistentOutput(PersistentOStream & os) const {
      << ounit(theRenormalizationScaleFreeze,GeV)
      << ounit(theFactorizationScaleFreeze,GeV)
      << isMCatNLOSEvent << isMCatNLOHEvent << theShowerApproximation
-     << theDoCompensate << theFreezeGrid
-     << theEventReweight << ounit(maxPt,GeV)
+     << theDoCompensate << theFreezeGrid << theDetuning
+     << theEventReweight << theSplittingReweight << ounit(maxPt,GeV)
      << ounit(muPt,GeV);
 }
 
@@ -869,8 +878,8 @@ void DipoleShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> iunit(theRenormalizationScaleFreeze,GeV)
      >> iunit(theFactorizationScaleFreeze,GeV)
      >> isMCatNLOSEvent >> isMCatNLOHEvent >> theShowerApproximation
-     >> theDoCompensate >> theFreezeGrid
-     >> theEventReweight >> iunit(maxPt,GeV)
+     >> theDoCompensate >> theFreezeGrid >> theDetuning
+     >> theEventReweight >> theSplittingReweight >> iunit(maxPt,GeV)
      >> iunit(muPt,GeV);
 }
 
@@ -1090,10 +1099,21 @@ void DipoleShowerHandler::Init() {
      &DipoleShowerHandler::theFreezeGrid, 500000, 1, 0,
      false, false, Interface::lowerlim);
 
+  static Parameter<DipoleShowerHandler,double> interfaceDetuning
+    ("Detuning",
+     "A value to detune the overestimate kernel.",
+     &DipoleShowerHandler::theDetuning, 1.0, 1.0, 0,
+     false, false, Interface::lowerlim);
+
   static Reference<DipoleShowerHandler,DipoleEventReweight> interfaceEventReweight
     ("EventReweight",
      "",
      &DipoleShowerHandler::theEventReweight, false, false, true, true, false);
+
+  static Reference<DipoleShowerHandler,DipoleSplittingReweight> interfaceSplittingReweight
+    ("SplittingReweight",
+     "Set the splitting reweight.",
+     &DipoleShowerHandler::theSplittingReweight, false, false, true, true, false);
 
 }
 

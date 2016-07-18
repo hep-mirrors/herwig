@@ -428,9 +428,23 @@ protected:
     }
 
     /**
+     * Calculate deltaZ^* -- normalized deltaY^*
+     */
+    static double dZstar(const LorentzMomentum& a,
+		         const LorentzMomentum& b,
+                         const LorentzMomentum& c){
+      return dYstar(a,b,c)*2./abs(a.rapidity()-b.rapidity());
+    }
+
+    /**
      * Delta y^*
      */
     Statistics::Histogram deltaYstar;
+
+    /**
+     * Delta z^*
+     */
+    Statistics::Histogram deltaZstar;
 
     /**
      * Default constructor
@@ -443,7 +457,8 @@ protected:
      */
     TripleProperties(const string& name, Energy ecm)
       : ObjectProperties(name,ecm),
-	deltaYstar(name + "DeltaYstar",Statistics::Histogram::regularBinEdges(-6,6,120),true,false) {}
+	deltaYstar(name + "DeltaYstar",Statistics::Histogram::regularBinEdges(-6,6,120),true,false),
+	deltaZstar(name + "DeltaZstar",Statistics::Histogram::regularBinEdges(-3,3,120),true,false) {}
 
     /**
      * Count given momentum, weight and id
@@ -452,6 +467,7 @@ protected:
                double weight, unsigned int id) {
       ObjectProperties::count(p+q+r,weight,id);
       deltaYstar.count(Statistics::EventContribution(dYstar(p,q,r),weight,0.1),id);
+      deltaZstar.count(Statistics::EventContribution(dZstar(p,q,r),weight,0.05),id);
     }
 
     /**
@@ -460,6 +476,7 @@ protected:
     void finalize(XML::Element& elem) {
       ObjectProperties::finalize(elem);
       deltaYstar.finalize(); elem.append(deltaYstar.toXML());
+      deltaZstar.finalize(); elem.append(deltaZstar.toXML());
     }
 
   };

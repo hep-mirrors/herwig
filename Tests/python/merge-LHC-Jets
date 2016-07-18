@@ -128,7 +128,7 @@ yodafiles=["-7-Jets-1.yoda","-7-Jets-2.yoda",
            "-7-Bottom-3.yoda","-7-Bottom-4.yoda","-7-Bottom-5.yoda",
            "-7-Charm-1.yoda","-7-Charm-2.yoda",
            "-7-Charm-3.yoda","-7-Charm-4.yoda","-7-Charm-5.yoda",
-           "-7-Top-SL.yoda","-7-Top-L.yoda","-7-Top-All.yoda"]
+           "-7-Top-SL.yoda","-7-Top-L.yoda","-7-Top-All.yoda","-8-Top-All.yoda"]
 
 if(opts.ue) :
     yodafiles += ["-7-Jets-0.yoda","-900-UE.yoda"   ,"-2360-UE.yoda"    ,"-2760-UE.yoda"    ,
@@ -237,7 +237,8 @@ for f in yodafiles:
            aopath.find("I1298810")>0 or
            aopath.find("CMS_2012_PAS_QCD_11_010")>0 or
            aopath.find("CMS_2013_I1208923")>0 or
-           aopath.find("ATLAS_2014_I1298811")>0) :
+           aopath.find("ATLAS_2014_I1298811")>0 or
+           aopath.find("CMS_2014_I1305624")>0) :
            if not inhistos_pt.has_key(aopath):
                inhistos_pt[aopath] = {}
            tmpE = inhistos_pt[aopath]
@@ -248,9 +249,6 @@ for f in yodafiles:
            else:
                tmpE[sqrts][ptmin] += ao
                #raise Exception("A set with ptmin = %s already exists" % ( ptmin))
-
-
-
         else :
             if(aopath.find("I1243871")>0) :
                 if(aopath.find("x01")>0 and file.find("-7-Top-L.yoda")>0 ) :
@@ -1293,6 +1291,14 @@ for i in range(1,19) :
         mergeByPt("/CMS_2014_I1298810/d0"+str(i)+"-x01-y01", "7000")
     else :
         mergeByPt("/CMS_2014_I1298810/d"+str(i)+"-x01-y01", "7000")
+
+logging.info("Processing CMS_2014_I1305624")
+for x in range(1,6) :
+    useOnePt( "/CMS_2014_I1305624/d01-x%02d-y01" % x,  "7000", "110" )
+    useOnePt( "/CMS_2014_I1305624/d01-x%02d-y02" % x,  "7000", "110" )
+    useOnePt( "/CMS_2014_I1305624/d01-x%02d-y03" % x,  "7000", "260" )
+    useOnePt( "/CMS_2014_I1305624/d01-x%02d-y04" % x,  "7000", "260" )
+    useOnePt( "/CMS_2014_I1305624/d01-x%02d-y05" % x,  "7000", "400" )
 
 # Choose output file
 name = args[0]+"-Jets.yoda"
