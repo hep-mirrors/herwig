@@ -135,6 +135,11 @@ private:
    * An ovewrall scaling factor for the non-jet contribution
    */
   double theMTFactor;
+  
+  /**
+   * We define jets as clustered objects with a minimum pT
+   */
+  Energy theScalePtCut;
 
 // If needed, insert declarations of virtual function defined in the
 // InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
