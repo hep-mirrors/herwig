@@ -64,7 +64,11 @@ public:
    * Return the momentum fraction associated to the last splitting.
    */
   virtual double lastZ() const;
-
+  
+  
+  virtual double lastRealR() const;
+  
+  virtual double lastBornR() const;
   /**
    * Return true, if this TildeKinematics object needs to transform
    * all other particles in the process except the emitter and spectator

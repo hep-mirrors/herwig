@@ -554,6 +554,7 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
   if ( nEmissions )
     if ( emDone == nEmissions )
       return;
+  //int side=-1;
   
   DipoleSplittingInfo winner;
   DipoleSplittingInfo dipoleWinner;
@@ -580,6 +581,7 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
         winnerScale = nextLeftScale;
         winner = dipoleWinner;
         winnerDip = dip;
+      //  side=1;
       }
       
       nextRightScale = getWinner(dipoleWinner,*dip,make_pair(false,true),optHardPt,optCutoff);
@@ -588,6 +590,7 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
         winnerScale = nextRightScale;
         winner = dipoleWinner;
         winnerDip = dip;
+   //     side=2;
       }
       
       if ( evolutionOrdering()->independentDipoles() ) {
@@ -631,9 +634,31 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
     if (theMergingHelper&&eventHandler()->currentCollision()) {
       if (theMergingHelper->maxLegsLO()>eventRecord().outgoing().size()+eventRecord().hard().size())
         if (theMergingHelper->mergingScale()<winnerScale){
-          optHardPt=winnerScale;
+          bool transparent=true;
+          
+          if (transparent) {
+           pair<list<Dipole>::iterator,list<Dipole>::iterator> tmpchildren;
+           DipoleSplittingInfo tmpwinner=winner;
+           DipoleChain* tmpfirstChain = 0;
+           DipoleChain* tmpsecondChain = 0;
+           
+           PVector New=eventRecord().tmpsplit(winnerDip,tmpwinner,tmpchildren,tmpfirstChain,tmpsecondChain);
+           /*cout<<"\n ";
+           for (PVector::iterator p=New.begin(); p!=New.end(); p++) {
+               cout<<"\n   "<<(*p)->momentum()/GeV<<flush;
+           }
+            */
+            
+          if (theMergingHelper->treefactory()->matrixElementRegion(New,winnerScale,theMergingHelper->mergingScale())) {
+             optHardPt=winnerScale;
            continue;
-        }
+          }
+          }else{
+            optHardPt=winnerScale;
+            continue;
+          
+          }
+      }
     }
     
     
@@ -646,9 +671,27 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
     
     DipoleChain* firstChain = 0;
     DipoleChain* secondChain = 0;
+   /* if (emDone==0&&false) {
+      
     
+      cout<<"\nSH "<<(winnerDip->emitterX(side==1?make_pair(true,false):make_pair(false,true))<1.?"I":"F")<<" "<<
+      (winnerDip->spectatorX(side==1?make_pair(true,false):make_pair(false,true))<1.?"I":"F")<<" "<<
+               winnerScale/GeV<<" "<<
+               winner.lastZ()<<" "<<
+               eventRecord().incoming().first->momentum().z()/3500./GeV<<" "<<
+               eventRecord().incoming().second->momentum().z()/3500./GeV;
+    }
+    */
     eventRecord().split(winnerDip,winner,children,firstChain,secondChain);
     
+/*
+    if (emDone==0&&false) {
+    
+    cout<<" "<<eventRecord().incoming().first->momentum().z()/3500./GeV<<" "<<
+    eventRecord().incoming().second->momentum().z()/3500./GeV;
+    }
+*/  
+  
     assert(firstChain && secondChain);
     
     evolutionOrdering()->setEvolutionScale(winnerScale,winner,*firstChain,children);
@@ -677,6 +720,7 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
       eh->reweight(w);
     }
     
+//    if ( nEmissions )
     if ( nEmissions )
       if ( ++emDone == nEmissions )
         return;

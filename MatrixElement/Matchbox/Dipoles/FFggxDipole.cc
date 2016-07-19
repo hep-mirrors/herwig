@@ -77,6 +77,9 @@ double FFggxDipole::me2Avg(double ccme2) const {
 
 }
 
+
+bool FFggxDipole::aboveAlpha() const{return alpha()<subtractionParameters()[0];}
+
 double FFggxDipole::me2() const {
 
   if ( jacobian() == 0.0 )

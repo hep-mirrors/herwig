@@ -13,6 +13,7 @@
 //
 
 #include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
+#include "Herwig/DipoleShower/Merging/Merging.h"
 //#include "ThePEG/MatrixElement/ReweightConstant.h"
 
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -78,7 +79,11 @@ namespace Herwig {
 
     double smear(){return theMergePTsmearing;}
     
+    int onlymulti()const {return theonlymulti==-1?-1:(theonlymulti+processMap.find(0)->second.size());}
+    
     bool onlyUnlopsweights() const {return theonlyUnlopsweights;}
+    
+    Ptr<Merging>::ptr mergingHelper(){return theMergingHelper;};
     
 
     /**
@@ -96,6 +101,14 @@ namespace Herwig {
     map<int, vector<Ptr<MatchboxMEBase>::ptr> >& pureMEsMap() {
       return thePureMEsMap;
     }
+    
+    
+    
+    bool matrixElementRegion(PVector particles,Energy winnerScale=0.*GeV,Energy cutscale=0.*GeV);
+    
+    bool MERegionByJetAlg(){return defMERegionByJetAlg;}
+    
+    double gamma()const{return theGamma;}
 
     /**
      * Return the produced subtracted matrix elements
@@ -175,6 +188,7 @@ namespace Herwig {
     bool unitarized;
     bool NLOunitarized;
     bool theonlyUnlopsweights;
+    bool defMERegionByJetAlg;
     int theonlyk;
     int theonlymulti;
     int divideSub;
@@ -190,8 +204,17 @@ namespace Herwig {
     Energy theMergePT;
     Energy theNLOMergePT;
     Energy theIRSafePT;
+    
 
-
+    /**
+     * Reference to the jet finder
+     */
+    Ptr<JetFinder>::ptr theMergingJetFinder;
+    CutsPtr theCuts;
+    
+    double ee_ycut;
+    
+    double pp_dcut;
 
     /**
      * Prefix for subtraction data
@@ -271,9 +294,15 @@ namespace Herwig {
    * kernels.
    */
   Ptr<ColourBasis>::ptr theLargeNBasis;
+    
+    
+    Ptr<Merging>::ptr theMergingHelper;
 
 
-  bool ransetup;    
+  bool ransetup;
+    
+    
+    double theGamma;
 
 /*
 

@@ -326,6 +326,27 @@ public:
 	     pair<list<Dipole>::iterator,list<Dipole>::iterator>& childIterators,
 	     DipoleChain*& firstChain, DipoleChain*& secondChain,
 	     bool colourSpectator = true);
+  
+  /**
+   * As split, but not touching the acctual event record.
+   */
+  
+  PVector tmpsplit(list<Dipole>::iterator dip,
+             DipoleSplittingInfo& dsplit,
+             pair<list<Dipole>::iterator,list<Dipole>::iterator>& childIterators,
+             DipoleChain*& firstChain, DipoleChain*& secondChain) {
+    return tmpsplit(dip,theChains.begin(),dsplit,childIterators,firstChain,secondChain,false);
+  }
+  
+  /**
+   * As split, but not touching the acctual event record.
+   */
+  PVector tmpsplit(list<Dipole>::iterator dip,
+             list<DipoleChain>::iterator ch,
+             DipoleSplittingInfo& dsplit,
+             pair<list<Dipole>::iterator,list<Dipole>::iterator>& childIterators,
+             DipoleChain*& firstChain, DipoleChain*& secondChain,
+             bool colourSpectator = true);
 
   DipoleSplittingInfo lastSpliting(){return lastspliting;}
   
@@ -349,6 +370,11 @@ public:
    * given splitting.
    */
   void update(DipoleSplittingInfo& dsplit);
+  
+  /**
+   * As update, but not touching the acctual event record.
+   */
+  PVector tmpupdate(DipoleSplittingInfo& dsplit);
 
   /**
    * Return the dipole(s) containing the incoming

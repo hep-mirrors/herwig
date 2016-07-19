@@ -173,6 +173,14 @@ public:
    * Return the momentum fraction associated to the last splitting.
    */
   virtual double lastZ() const = 0;
+  
+  
+  virtual double lastRealR() const {return -1.;};
+  
+  
+  virtual double lastBornR() const {return -1.;};
+  
+  
 
   /**
    * Return the relevant dipole scale

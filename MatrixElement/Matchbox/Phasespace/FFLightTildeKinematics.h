@@ -64,6 +64,11 @@ public:
    * Return the momentum fraction associated to the last splitting.
    */
   virtual double lastZ() const;
+  
+  
+  virtual double lastRealR() const;
+  
+  virtual double lastBornR() const;
 
   
   virtual double jacobian(Energy2,Energy2,int) const ;

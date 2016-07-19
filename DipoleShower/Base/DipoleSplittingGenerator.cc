@@ -547,7 +547,7 @@ double DipoleSplittingGenerator::dosudakov(const DipoleSplittingInfo& ,Energy do
 	 if(k%50==0.)var=  exp(-(res)/(1.0*k)+varx)-exp(-(res)/(1.0*k)-varx);
      
     }
-    if (abs(est/exp(-res/(1.0*k))-1.)>0.6) {
+    if (abs(est/exp(-res/(1.0*k))-1.)>0.6&&false) {
       cout<<"\n"<<splittingKernel()->name()<<" "<<generatedSplitting.scale()/GeV<<" "<<down/GeV<<" "<<est<<" "<<exp(-res/(1.0*k))<<" "<<est/exp(-res/(1.0*k));
     }
   

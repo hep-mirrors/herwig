@@ -17,6 +17,9 @@
 #include "Herwig/DipoleShower/DipoleShowerHandler.h"
 #include "Herwig/DipoleShower/Base/DipoleSplittingGenerator.h"
 #include "Herwig/MatrixElement/Matchbox/Mergeing/ClusterNode.h"
+#include "ThePEG/Cuts/JetFinder.h"
+#include "ThePEG/Cuts/Cuts.h"
+#include "Herwig/MatrixElement/Matchbox/Mergeing/MergeFactory.h"
 
 
 namespace Herwig {
@@ -85,7 +88,7 @@ namespace Herwig {
     bool   projectorStage(CNPtr);
     Energy CKKW_StartScale(CNPtr);
     void   CKKW_PrepareSudakov(CNPtr,Energy);
-    double matrixElementWeight(Energy startscale,CNPtr);
+    double matrixElementWeight(Energy startscale,CNPtr,double diffalpha=1.);
     double matrixElementWeightWithLoops(Energy startscale,CNPtr,bool);
     bool   fillProjector(Energy&);
     void   fillHistory(Energy, CNPtr, CNPtr ,bool fast=false);
@@ -133,6 +136,12 @@ namespace Herwig {
     
     unsigned int maxLegsLO() const {return theMaxLegsLO;}
     unsigned int maxLegsNLO()const {return theMaxLegsNLO;}
+    
+    
+    
+    Ptr<MergeFactory>::ptr treefactory(){return theTreeFactory;}
+    
+    
     
     
     
@@ -242,8 +251,14 @@ namespace Herwig {
      * The mean of the Gaussian distribution for
      * the intrinsic pt of sea partons.
      */
+    
     Ptr<DipoleShowerHandler>::ptr theDipoleShowerHandler;
     
+    
+    Ptr<MergeFactory>::ptr theTreeFactory;
+    
+    
+
   private:
     
     /**

@@ -84,6 +84,26 @@ double IILightTildeKinematics::lastZ() const {
   return x + v;
 }
 
+double IILightTildeKinematics::lastRealR() const {
+  double deta2 = sqr(realEmitterMomentum().eta() - realEmissionMomentum().eta());
+  double dphi = 0.;//  abs(realEmitterMomentum().phi() - realEmissionMomentum().phi());
+  if ( dphi > Constants::pi ) dphi = 2.0*Constants::pi - dphi;
+  double dr = sqrt(deta2 + sqr(dphi));
+  return  dr;
+}
+
+
+double IILightTildeKinematics::lastBornR() const {
+  double deta2 = sqr(bornEmitterMomentum().eta() - bornSpectatorMomentum().eta());
+  double dphi =0.;//pi??  abs(bornEmitterMomentum().phi() - bornSpectatorMomentum().phi());
+  if ( dphi > Constants::pi ) dphi = 2.0*Constants::pi - dphi;
+  double dr = sqrt(deta2 + sqr(dphi));
+  return  dr;
+}
+
+
+
+
 
 double IILightTildeKinematics::jacobian(Energy2 sB,Energy2 sR, int n) const{
     //   cout<<"\n-+-+-+-+ "<<sR/GeV2<<" "<<sB/GeV2<<" "<<(2.*bornEmitterMomentum()*bornSpectatorMomentum())/GeV2;

@@ -27,6 +27,7 @@
 #include "Herwig/MatrixElement/Matchbox/Utility/MatchboxXComb.h"
 #include "Herwig/MatrixElement/Matchbox/Mergeing/ClusterNode.h"
 
+
 namespace Herwig {
 
 using namespace ThePEG;
@@ -554,7 +555,7 @@ public:
    * Provide a possible faster, approximated dSigHatDR() method.
    */
 
-  CrossSection dSigHatDR(bool fast) const;
+  CrossSection dSigHatDR(bool fast,double diffAlpha=1.) const;
 
   //@}
 

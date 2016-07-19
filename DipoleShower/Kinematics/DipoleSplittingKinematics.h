@@ -236,6 +236,14 @@ public:
    * generateSplitting()
    */
   void prepareSplitting(DipoleSplittingInfo& dInfo);
+  
+  /*
+   * Use the Dipole scale instead of hardpt for z-boundaries.
+   */
+  
+  bool useScaleForZ()const{return theUseScaleForZ;}
+  
+  
 
 public:
 
@@ -443,6 +451,10 @@ private:
    * The spectator's momentum after the splitting.
    */
   Lorentz5Momentum theSpectatorMomentum;
+  
+  
+  bool theUseScaleForZ;
+  
 
 protected:
 

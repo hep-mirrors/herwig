@@ -33,6 +33,8 @@
 #include "Herwig/MatrixElement/ProductionMatrixElement.h"
 #include "Herwig/MatrixElement/HardVertex.h"
 #include "Herwig/MatrixElement/Matchbox/Mergeing/ClusterNode.h"
+#include "Herwig/DipoleShower/Merging/Merging.h"
+#include "Herwig/MatrixElement/Matchbox/Mergeing/MergeFactory.h"
 
 
 #include <boost/foreach.hpp>
@@ -339,11 +341,37 @@ bool MatchboxMEBase::generateKinematics(const double * r) {
     if ( theFirstNode ){
       theFirstNode->firstgenerateKinematics(r, 0,lastXCombPtr()->lastSHat());
       if (theFirstNode->cutStage()==0 ){
+        
+        /*if (theFirstNode->treefactory()->MERegionByJetAlg()) {
+          PVector particles;
+        for (size_t i=0;i<mePartonData().size();i++){
+          Ptr<ThePEG::Particle>::ptr p =mePartonData()[i]->produceParticle(meMomenta()[i]);
+          particles.push_back(p);
+        }
+        
+        
+        return theFirstNode->treefactory()->matrixElementRegion( particles);
+          
+        }*/
+        
+        bool inAlphaPS=false;
+        
+        CNPtrVec children=theFirstNode->children();
+        for (CNPtrVec::iterator child = children.begin();
+             child != children.end(); child++){
+          double gamma=theFirstNode->treefactory()->gamma();;
+          factory()->setAlphaParameter(gamma);
+          inAlphaPS|=(*child)->dipol()->aboveAlpha();
+          factory()->setAlphaParameter(1.);
+        }
+          // cout<<"\n"<<(inAlphaPS?"Yes":"No")<<flush;
+
+        
     	SafeClusterMap temp=theFirstNode->clusterSafe();
     	for(SafeClusterMap::iterator
     			it=temp.begin();
     			it!=temp.end();++it){
-    		if (!it->second.first)return false;
+    		if (!it->second.first&&!inAlphaPS)return false;
     		}
         }
       if (theFirstNode->cutStage()==1 ){
@@ -698,7 +726,7 @@ double MatchboxMEBase::me2Norm(unsigned int addAlphaS) const {
 
 }
 
-CrossSection MatchboxMEBase::dSigHatDR(bool fast) const {
+CrossSection MatchboxMEBase::dSigHatDR(bool fast,double diffAlpha) const {
   getPDFWeight();
 
 
@@ -760,12 +788,26 @@ CrossSection MatchboxMEBase::dSigHatDR(bool fast) const {
       (sqr(hbarc)/(2.*lastSHat())) *
       jacobian()* lastMEPDFWeight() * vme2;
 
-  if ( oneLoop() && !onlyOneLoop() && !fast ) {
+  if ( (oneLoop() && !onlyOneLoop() && !fast)||diffAlpha!=1. ) {
     for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator v =
 	    virtuals().begin(); v != virtuals().end(); ++v ) {
       (**v).setXComb(lastXCombPtr());
-      CrossSection x= (**v).dSigHatDR();
-      res += x;
+      if (diffAlpha==1.) {
+        CrossSection x= (**v).dSigHatDR();
+        res += x;
+      }else  {
+        CrossSection x= (**v).dSigHatDR();
+        factory()->setAlphaParameter(diffAlpha);
+        (**v).setXComb(lastXCombPtr());
+        x  -= (**v).dSigHatDR();
+        factory()->setAlphaParameter(1.);
+        
+          // cout<<"\n"<<diffAlpha<<" "<<x/nanobarn<<" "<<(**v).name();
+        
+          // cout<<"\n"<<lastAlphaS()/SM().alphaS();
+        res -=x*lastAlphaS()/SM().alphaS();
+      
+      }
     }
     if ( checkPoles() && oneLoop() )
       logPoles();

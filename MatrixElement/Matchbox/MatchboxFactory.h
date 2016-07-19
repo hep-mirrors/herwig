@@ -781,7 +781,7 @@ public:
   /**
    *  set the alpha parameter (needed for massive PK-Operator)
    */
-  void setAlphaParameter(double a) { theAlphaParameter = a; }
+  void setAlphaParameter(double a)const { theAlphaParameter = a; }
   
   //@}
 
@@ -1249,7 +1249,7 @@ private:
    */
   bool theSpinCorrelations;
   
-  double theAlphaParameter;
+  mutable double theAlphaParameter;
 
   /**
    * Command for production mode

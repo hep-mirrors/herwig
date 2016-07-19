@@ -264,6 +264,7 @@ void ClusterNode::birth(vector<Ptr<MatchboxMEBase>::ptr> vec) {
 
 
 vector<Ptr<ClusterNode>::ptr> ClusterNode::getNextOrderedNodes(bool normal,double hardScaleFactor) {
+    //cout<<"\ngetNextOrderedNodes";
   vector<Ptr<ClusterNode>::ptr> temp = children();
   vector<Ptr<ClusterNode>::ptr> res;
   for ( vector<Ptr<ClusterNode>::ptr>::const_iterator it = temp.begin() ; it != temp.end() ; ++it ) {
@@ -279,6 +280,7 @@ vector<Ptr<ClusterNode>::ptr> ClusterNode::getNextOrderedNodes(bool normal,doubl
       }
     }
     if ( (*it)->children().size() != 0 ){
+      
       vector<Ptr<ClusterNode>::ptr> tempdown = (*it)->children();
       for ( vector<Ptr<ClusterNode>::ptr>::const_iterator itd = tempdown.begin() ; itd != tempdown.end() ; ++itd ) {
         if( (*itd)->dipol()->lastPt() > (*it)->dipol()->lastPt()&&(*it)->inShowerPS((*itd)->dipol()->lastPt()) ){
@@ -290,7 +292,7 @@ vector<Ptr<ClusterNode>::ptr> ClusterNode::getNextOrderedNodes(bool normal,doubl
     }
     else {
       (*it)->nodeME()->factory()->scaleChoice()->setXComb((*it)->xcomb());
-      
+        //cout<<"\n"<<sqrt((*it)->nodeME()->factory()->scaleChoice()->renormalizationScale())/GeV<<" "<<(*it)->dipol()->lastPt()/GeV<<" "<<(*it)->dipol()->name();
       if ( sqr(hardScaleFactor)*(*it)->nodeME()->factory()->scaleChoice()->renormalizationScale()
           >= (*it)->dipol()->lastPt() * (*it)->dipol()->lastPt()&&
           (*it)->inShowerPS(hardScaleFactor*sqrt((*it)->nodeME()->factory()->scaleChoice()->renormalizationScale()))) {
@@ -302,10 +304,16 @@ vector<Ptr<ClusterNode>::ptr> ClusterNode::getNextOrderedNodes(bool normal,doubl
 }
 
 bool ClusterNode::inShowerPS(Energy hardpT){
+  //return true;
   assert(deepHead()->treefactory()->largeNBasis());
   
   double x=0.;
   double z_=dipol()->lastZ();
+  
+    // if (dipol()->lastPt()>50*GeV) {
+    //  return false;
+    // }
+  
   string type;
     // II
   if( dipol()->bornEmitter()<2&&dipol()->bornSpectator()<2){
@@ -316,12 +324,15 @@ bool ClusterNode::inShowerPS(Energy hardpT){
     double v = ratio*z_ /(1.-z_+ratio);
     if (dipol()->lastPt()>(1.-x) * dipol()->lastDipoleScale()/ (2.*sqrt(x)))return false;
     assert(v< 1.-x__&&x > 0. && x < 1. && v > 0.);
+      //return true;
+    
   }
     // IF
   if( dipol()->bornEmitter()<2&&dipol()->bornSpectator()>=2){
     type="IF";
     x =dipol()->bornEmitter()==0?xcomb()->lastX1():xcomb()->lastX2();
     if (dipol()->lastPt()>dipol()->lastDipoleScale()* sqrt((1.- x)/x) /2.)return false;
+      //return true;
   }
     // FI
   if( dipol()->bornEmitter()>=2&&dipol()->bornSpectator()<2){
@@ -334,12 +345,27 @@ bool ClusterNode::inShowerPS(Energy hardpT){
     type="FF";
     if (dipol()->lastPt()>dipol()->lastDipoleScale()/2.)return false;
       // cout<<"\n "<<dipol()->bornEmitter()<<" "<<dipol()->bornSpectator()<<" "<<dipol()->lastPt()/GeV<<" "<<hardpT/GeV<<" " << sqrt(1-sqr(dipol()->lastPt()/hardpT))<<" "<<z_;
+    
+    
   }
+  
+    //return true;
   double kappa=sqr(dipol()->lastPt()/hardpT);
+    //kappa=sqr(dipol()->lastPt()/dipol()->lastDipoleScale());
   double s = sqrt(1.-kappa);
   pair<double,double> zbounds= make_pair(0.5*(1.+x-(1.-x)*s),0.5*(1.+x+(1.-x)*s));
     //if(zbounds.first<z_&&z_<zbounds.second)cout<<"\n "<<type<<" "<<dipol()->lastPt()/GeV<<" "<<hardpT/GeV;
     //else cout<<"\n XX "<<type<<" "<<dipol()->lastPt()/GeV<<" "<<hardpT/GeV;;
+  
+  if (false&&dipol()->lastBornR()<dipol()->lastRealR()&&(zbounds.first<z_&&z_<zbounds.second)) {
+    cout<<"\n"<<dipol()->name()<<" pt "<<dipol()->lastPt()/GeV<<" bR "<<dipol()->lastBornR()<<" rR "<<dipol()->lastRealR();
+  }
+  
+  if (theChooseHistory==-1) {
+    
+    return (zbounds.first<z_&&z_<zbounds.second)&&dipol()->lastBornR()>dipol()->lastRealR();
+  }
+    //dipol()->lastBornR()>dipol()->lastRealR()&&
   return (zbounds.first<z_&&z_<zbounds.second);
 }
 
@@ -378,10 +404,12 @@ Ptr<ClusterNode>::ptr ClusterNode::getLongestHistory_simple(bool normal,double h
   Energy minpt=100000.*GeV;
   Selector<Ptr<ClusterNode>::ptr> subprosel;
   while (temp.size()!=0){
+    minpt=100000.*GeV;
+    subprosel.clear();
     for (vector<Ptr<ClusterNode>::ptr>::iterator it=temp.begin();it!=temp.end();it++){
-         if(minpt>=(*it)->dipol()->lastPt()
-         &&
-         (*it)->dipol()->underlyingBornME()->largeNColourCorrelatedME2(
+     
+      
+         if( (*it)->dipol()->underlyingBornME()->largeNColourCorrelatedME2(
                                                                        make_pair((*it)->dipol()->bornEmitter(),(*it)->dipol()->bornSpectator()),
                                                                        (*it)->deepHead()->treefactory()->largeNBasis())!=0.
          ){
@@ -391,6 +419,7 @@ Ptr<ClusterNode>::ptr ClusterNode::getLongestHistory_simple(bool normal,double h
            subprosel.insert((abs((*it)->dipol()->dSigHatDR() /
                                 (*it)->nodeME()->dSigHatDR()*alphaS->value(
                                                                            (*it)->dipol()->lastPt()*(*it)->dipol()->lastPt()))), (*it));
+              minpt=min(minpt,(*it)->dipol()->lastPt());
           }
         
  
@@ -405,12 +434,66 @@ Ptr<ClusterNode>::ptr ClusterNode::getLongestHistory_simple(bool normal,double h
       //    cout<<"\n"<<subprosel.size();
     if (subprosel.empty())
       return res;
-    minpt=100000.*GeV;
+    
     res = subprosel.select(UseRandom::rnd());
-    subprosel.clear();
+    
     temp = res->getNextOrderedNodes(true,hardScaleFactor);
   }
   
+  if (res->parent()&&minpt>50.*GeV) {
+    Energy mmmm=minpt;
+    Ptr<ClusterNode>::ptr xxxx;
+    vector<Ptr<ClusterNode>::ptr> tempch =children();
+    
+    for (vector<Ptr<ClusterNode>::ptr>::iterator it=tempch.begin();it!=tempch.end();it++){
+      if (mmmm>(*it)->dipol()->lastPt()) {
+        
+      
+      mmmm=min(mmmm,(*it)->dipol()->lastPt());
+      xxxx=*it;
+      }
+    }
+    if(false&&mmmm*3.<minpt){
+        // return res->parent();
+      cout<<"\n\ncluster to "<<minpt/GeV<<" dipole:  "<<res->dipol()->name()<<" "<<res->dipol()->lastPt()/GeV;
+      cout<<"\n"<<res->xcomb()->meMomenta()[2].perp()/GeV<<"  mom "<<res->xcomb()->meMomenta()[2]/GeV;
+      cout<<"\n"<<res->xcomb()->meMomenta()[3].perp()/GeV<<"  mom "<<res->xcomb()->meMomenta()[3]/GeV;
+      
+      cout<<"\n but "<<mmmm/GeV<<" with "<<xxxx->dipol()->name()<<" "<<xxxx->dipol()->lastPt()/GeV;
+      cout<<"\n"<<xxxx->xcomb()->meMomenta()[2].perp()/GeV<<"  mom "<<xxxx->xcomb()->meMomenta()[2]/GeV;
+      cout<<"\n"<<xxxx->xcomb()->meMomenta()[3].perp()/GeV<<"  mom "<<xxxx->xcomb()->meMomenta()[3]/GeV;
+      
+      cout<<"\norig";
+      cout<<"\n"<<xcomb()->meMomenta()[2].perp()/GeV<<"  mom "<<xcomb()->meMomenta()[2]/GeV;
+      cout<<"\n"<<xcomb()->meMomenta()[3].perp()/GeV<<"  mom "<<xcomb()->meMomenta()[3]/GeV;
+      cout<<"\n"<<xcomb()->meMomenta()[4].perp()/GeV<<"  mom "<<xcomb()->meMomenta()[4]/GeV;
+      
+      cout<<"\n cl bornR "<<res->dipol()->lastBornR()<<" realR "<<res->dipol()->lastRealR();
+      cout<<"\n sm bornR "<<xxxx->dipol()->lastBornR()<<" realR "<<xxxx->dipol()->lastRealR();
+      
+      
+      double deta2 = sqr(xcomb()->meMomenta()[2].eta() - xcomb()->meMomenta()[3].eta());
+      double dphi = abs(xcomb()->meMomenta()[2].phi() - xcomb()->meMomenta()[3].phi());
+      if ( dphi > Constants::pi ) dphi = 2.0*Constants::pi - dphi;
+      double dr = sqrt(deta2 + sqr(dphi));
+      cout<<"\nR_23 = "<<dr<<" "<<sqrt(deta2)<<" "<<dphi;
+      
+      deta2 = sqr(xcomb()->meMomenta()[2].eta() - xcomb()->meMomenta()[4].eta());
+      dphi = abs(xcomb()->meMomenta()[2].phi() - xcomb()->meMomenta()[4].phi());
+      if ( dphi > Constants::pi ) dphi = 2.0*Constants::pi - dphi;
+      dr = sqrt(deta2 + sqr(dphi));
+      cout<<"\nR_24 = "<<dr<<" "<<sqrt(deta2)<<" "<<dphi;
+      
+      deta2 = sqr(xcomb()->meMomenta()[3].eta() - xcomb()->meMomenta()[4].eta());
+      dphi = abs(xcomb()->meMomenta()[3].phi() - xcomb()->meMomenta()[4].phi());
+      if ( dphi > Constants::pi ) dphi = 2.0*Constants::pi - dphi;
+      dr = sqrt(deta2 + sqr(dphi));
+      cout<<"\nR_34 = "<<dr<<" "<<sqrt(deta2)<<" "<<dphi;
+      
+      
+      
+    }
+  }
   
   
   return res;

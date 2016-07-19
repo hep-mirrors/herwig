@@ -8,4 +8,4 @@ libHwMatchboxMergeing_la_SOURCES = \
 	MatchboxMergeScale.h \
 	MergeFactory.cc \
 	MergeFactory.fh  \
-	MergeFactory.h
+	MergeFactory.h  

@@ -216,6 +216,13 @@ public:
 			     bool colourSpectator) const;
 
   /**
+   * As split without spliting
+   */
+  void tmpsplit (DipoleSplittingInfo& dsplit,
+                             bool colourSpectator) const;
+
+
+  /**
    * Produce a new spectator according to the
    * given splitting.
    */

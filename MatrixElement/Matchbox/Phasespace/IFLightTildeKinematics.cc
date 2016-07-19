@@ -74,6 +74,24 @@ double IFLightTildeKinematics::lastZ() const {
   return 1. - (1.-x)*(1.-u);
 }
 
+double IFLightTildeKinematics::lastRealR() const {
+  double deta2 = sqr(realEmitterMomentum().eta() - realEmissionMomentum().eta());
+  double dphi = 0.;//  abs(realEmitterMomentum().phi() - realEmissionMomentum().phi());
+  if ( dphi > Constants::pi ) dphi = 2.0*Constants::pi - dphi;
+  double dr = sqrt(deta2 + sqr(dphi));
+  return  dr;
+}
+
+
+double IFLightTildeKinematics::lastBornR() const {
+  double deta2 = sqr(bornEmitterMomentum().eta() - bornSpectatorMomentum().eta());
+  double dphi =0.;//pi??  abs(bornEmitterMomentum().phi() - bornSpectatorMomentum().phi());
+  if ( dphi > Constants::pi ) dphi = 2.0*Constants::pi - dphi;
+  double dr = sqrt(deta2 + sqr(dphi));
+  return  dr;
+}
+
+
 
 double IFLightTildeKinematics::jacobian(Energy2 sB,Energy2 sR, int n) const {
    assert(subtractionParameters()[1]<=1.&&subtractionParameters()[1]>=0.); 

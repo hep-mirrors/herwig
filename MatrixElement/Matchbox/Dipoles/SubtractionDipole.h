@@ -553,6 +553,15 @@ public:
   double lastZ() const {
     return splitting() ? theLastSplittingZ : theLastSubtractionZ;
   }
+      
+      
+      double lastRealR() const{
+        return theLastRealR;
+      }
+      
+      double lastBornR() const{
+        return theLastBornR;
+      }
 
   /**
    * Return true, if this dipole acts in splitting mode.
@@ -958,7 +967,13 @@ public:
    * (http://arxiv.org/pdf/hep-ph/0307268v2.pdf) to restrict dipole
    * phase space
    */
-  double alpha() const;
+   double alpha() const;
+      
+   /*
+    * True if phase space point is above the alpha cut for this dipole.
+    */
+      
+   virtual bool aboveAlpha() const{return true;}
 
   //@}
 
@@ -1181,6 +1196,9 @@ private:
    * The last z as generated from the splitting mapping
    */
   double theLastSplittingZ;
+      
+      double theLastRealR;
+      double theLastBornR;
 
   /**
    * The shower approximation.

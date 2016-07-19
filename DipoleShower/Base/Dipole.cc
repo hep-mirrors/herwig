@@ -232,6 +232,63 @@ pair<Dipole,Dipole> Dipole::split(DipoleSplittingInfo& dsplit,
 
 }
 
+void Dipole::tmpsplit(DipoleSplittingInfo& dsplit,
+                                  bool colourSpectator) const {
+  
+    // generate full kinematics
+     dsplit.splittingKinematics()->generateKinematics(emitter(dsplit.configuration())->momentum(),
+                                                   spectator(dsplit.configuration())->momentum(),
+                                                   dsplit);
+  
+  tPPtr oldSpectator = spectator(dsplit.configuration());
+  PPtr newSpectator;
+  
+    // get a new spectator
+  if ( !colourSpectator ) {
+      newSpectator =
+      dsplit.spectatorData()->produceParticle(dsplit.splittingKinematics()->lastSpectatorMomentum());
+      // DipolePartonSplitter::change(oldSpectator,newSpectator,spectatorPDF(dsplit.configuration()).pdf());
+    dsplit.spectator(oldSpectator);
+    dsplit.splitSpectator(newSpectator);
+  } else {
+    newSpectator = oldSpectator;
+  }
+  
+    // perform the splitting
+  tPPtr oldEmitter = emitter(dsplit.configuration());
+    PPtr newEmitter =
+    dsplit.emitterData()->produceParticle(dsplit.splittingKinematics()->lastEmitterMomentum());
+    PPtr newEmission =
+    dsplit.emissionData()->produceParticle(dsplit.splittingKinematics()->lastEmissionMomentum());
+  
+ /* newEmitter->scale(sqr(dsplit.lastPt()));
+  newEmission->scale(sqr(dsplit.lastPt()));
+  newSpectator->scale(oldSpectator->scale());
+  */
+    // DipolePartonSplitter::split(oldEmitter,newEmitter,newEmission,
+    //                         oldSpectator,emitterPDF(dsplit.configuration()).pdf());
+  
+    dsplit.emitter(oldEmitter);
+    dsplit.splitEmitter(newEmitter);
+    dsplit.emission(newEmission);
+  
+  
+  
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void Dipole::recoil (DipoleSplittingInfo& dsplit) {
 
   // check contracts

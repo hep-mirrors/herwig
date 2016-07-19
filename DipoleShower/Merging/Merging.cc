@@ -30,6 +30,7 @@
 #include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
 
 #include "Herwig/MatrixElement/Matchbox/Mergeing/MergeFactory.h"
+#include "fastjet/ClusterSequence.hh"
 
 
 using namespace Herwig;
@@ -71,15 +72,116 @@ IBPtr Merging::fullclone() const {
 
 
 
+double Merging::reweightCKKWBornStandard(CNPtr Node,bool fast){
+  
+  double weightCL=0.;
+  weight=1.;
+  
+  if (!Node->children().empty()) {
+    PVector particles;
+    for (size_t i=0;i<Node->nodeME()->mePartonData().size();i++){
+      Ptr<ThePEG::Particle>::ptr p =Node->nodeME()->mePartonData()[i]->produceParticle(Node->nodeME()->lastMEMomenta()[i]);
+      particles.push_back(p);
+    }
+    if(!Node->treefactory()->matrixElementRegion(particles, Node->children()[0]->dipol()->lastPt(), MergingScale))weight*= 0.;
+  }
+  
+  CNPtr Born= Node-> getLongestHistory_simple(true,xiQSh);//Longest irreführend
+  CNPtr CLNode;
+  CNPtr BornCL;
+  
+  
+  if( !Node->children().empty()){
+    if (UseRandom::rnd()<.5){
+      CLNode= Node->randomChild();
+      bool inhist=CLNode->isInHistoryOf(Born);
+      weight*=inhist?(-2.*int(Node->children().size())):0.;
+      projected=true;Node->nodeME()->projectorStage(1);
+      weightCL=2.*int(Node->children().size());
+      BornCL=CLNode-> getLongestHistory_simple(false,xiQSh);
+    }else{
+      weight=2.;projected=false;Node->nodeME()->projectorStage(0);
+    }
+  }else{
+    weight=1.;projected=false;Node->nodeME()->projectorStage(0);
+  }
+  
+  if (Node->treefactory()->onlymulti()!=-1&&
+      Node->treefactory()->onlymulti()!=Node->xcomb()->mePartonData().size()-Node->nodeME()->projectorStage())
+    return 0.;
+  
+  if(!Node->allAbove(Node->mergePt()-0.1*GeV))weight=0.;
+  if(CLNode&&!CLNode->allAbove(Node->mergePt()-0.1*GeV))weightCL=0.;
+  if (!Born->xcomb()->willPassCuts()){
+    
+    if (Born->parent()) {
+        //cout<<"\n parent not pass";
+    }
+    return 0.;
+    
+  }
+  Energy startscale=CKKW_StartScale(Born);
+  Energy projectedscale=startscale;
+  fillHistory( startscale,  Born, Node,fast);
+  if (!fillProjector(projectedscale))weight=0.;
+  Node->runningPt(projectedscale);
+  weight*=history.back().weight*alphaReweight()*pdfReweight();
+  if(weight==0.&&weightCL==0.)return 0.;
+  bool maxMulti=Node->xcomb()->meMomenta().size()-2 == theMaxLegsLO;
+  Node->vetoPt((projected&&maxMulti)?Node->mergePt():history.back().scale);
+  
+  
+  double gamma=Node->treefactory()->gamma();
+  
+  double res=weight*matrixElementWeight(startscale,Node,(!maxMulti&&!projected)?gamma:1.);
+  
+  if(CLNode){
+    
+    startscale=CKKW_StartScale(BornCL);
+    projectedscale=startscale;
+    fillHistory( startscale,  BornCL, CLNode,fast);
+    if (!fillProjector(projectedscale))return 0.;
+    Node->runningPt(projectedscale);
+    weightCL*=history.back().weight*alphaReweight()*pdfReweight();
+    double diff=0;
+    Node->nodeME()->factory()->setAlphaParameter(1.);
+    diff-=weightCL*CLNode->dipol()->dSigHatDR(sqr(startscale*xiFacME))/nanobarn;
+    Node->nodeME()->factory()->setAlphaParameter(gamma);
+    
+    string alp=(CLNode->dipol()->aboveAlpha()?"Above":"Below");
+    
+    diff+=weightCL*CLNode->dipol()->dSigHatDR(sqr(startscale*xiFacME))/nanobarn;
+    Node->nodeME()->factory()->setAlphaParameter(1.);
+    
+      //cout<<"\ndiff  "<<diff<<" "<<history.back().weight<<" "<<alphaReweight()<<" "<<alp;
+    res+=diff;
+  }
+  
+  
+  return res;
+}
 
 
 
 
-
+/*
 
 double Merging::reweightCKKWBornStandard(CNPtr Node,bool fast){
-  CNPtr Born= Node-> getLongestHistory_simple(true,xiQSh);
+  
+
+  
+  if (!Node->children().empty()) {
+    PVector particles;
+    for (size_t i=0;i<Node->nodeME()->mePartonData().size();i++){
+      Ptr<ThePEG::Particle>::ptr p =Node->nodeME()->mePartonData()[i]->produceParticle(Node->nodeME()->lastMEMomenta()[i]);
+      particles.push_back(p);
+    }
+    if(!Node->treefactory()->matrixElementRegion(particles, Node->children()[0]->dipol()->lastPt(), MergingScale))return 0.;
+  }
+  
+  CNPtr Born= Node-> getLongestHistory_simple(true,xiQSh);//Longest irreführend
   if( Born!= Node){
+    
     if (UseRandom::rnd()<.5){
       weight=-2.;projected=true;Node->nodeME()->projectorStage(1);
     }else{
@@ -88,21 +190,36 @@ double Merging::reweightCKKWBornStandard(CNPtr Node,bool fast){
   }else{
     weight=1.;projected=false;Node->nodeME()->projectorStage(0);
   }
+  
+  if (Node->treefactory()->onlymulti()!=-1&&
+      Node->treefactory()->onlymulti()!=Node->xcomb()->mePartonData().size()-Node->nodeME()->projectorStage())
+    return 0.;
+  
   assert(Node->allAbove(Node->mergePt()-0.1*GeV));
-  if (!Born->xcomb()->willPassCuts())return 0.;
+  if (!Born->xcomb()->willPassCuts()){
+  
+    if (Born->parent()) {
+        //cout<<"\n parent not pass";
+    }
+  return 0.;
+  
+  }
+  
+  
   Energy startscale=CKKW_StartScale(Born);
   Energy projectedscale=startscale;
   fillHistory( startscale,  Born, Node,fast);
   if (!fillProjector(projectedscale))return 0.;
   Node->runningPt(projectedscale);
   weight*=history.back().weight*alphaReweight()*pdfReweight();
+  
   if(weight==0.)return 0.;
   bool maxMulti=Node->xcomb()->meMomenta().size()-2 == theMaxLegsLO;
   Node->vetoPt((projected&&maxMulti)?Node->mergePt():history.back().scale);
-  return weight*matrixElementWeight(startscale,Node);
+  return weight*matrixElementWeight(startscale,Node,1.);
 }
 
-
+*/
 
 double Merging::reweightCKKWVirtualStandard(CNPtr Node,bool fast){
   CNPtr Born= Node-> getLongestHistory_simple(true,xiQSh);
@@ -119,6 +236,9 @@ double Merging::reweightCKKWVirtualStandard(CNPtr Node,bool fast){
   Energy startscale=CKKW_StartScale(Born);
   Energy projectedscale=startscale;
   fillHistory( startscale,  Born, Node,fast);
+  if (history.size()==1&&Node->children().size()!=0) {
+    cout<<"\n1-->"<<startscale/GeV<<" "<<weight;
+  }
   if (!fillProjector(projectedscale))return 0.;
   Node->runningPt(projectedscale);
   weight*=history.back().weight*alphaReweight()*pdfReweight();
@@ -129,12 +249,19 @@ double Merging::reweightCKKWVirtualStandard(CNPtr Node,bool fast){
   double matrixElement=matrixElementWeight(startscale,Node);
   double Bornweight=Node->nodeME()->lastBorndSigHatDR();
   
+ 
+  
+  
   double unlopsweight =(-sumpdfReweightUnlops()
                         -sumalphaReweightUnlops()
                         -sumfillHistoryUnlops())
                        *Bornweight
                        *SM().alphaS()/(2.*ThePEG::Constants::pi);
-  
+    //assert(unlopsweight==0.||history.size()!=1);
+  if (history.size()==1&&Node->children().size()!=0) {
+    cout<<"\n unlopsweight "<<unlopsweight<<" "<<matrixElement;
+  }
+ 
   return weight*
          DSH()->as(startscale*xiRenSh)/SM().alphaS()*
          (matrixElement+unlopsweight);
@@ -272,14 +399,14 @@ double Merging::reweightCKKWRealBelowSubInt(CNPtr Node,bool fast){
 
 
 
-double Merging::matrixElementWeight(Energy startscale,CNPtr Node){
+double Merging::matrixElementWeight(Energy startscale,CNPtr Node,double diffAlpha){
   double res;
   CNPtr DeepHead=Node;//->deepHead();
   DeepHead->renormscale(startscale);
   DeepHead->nodeME()->factory()->scaleChoice()->setXComb(DeepHead->xcomb());
   DeepHead->nodeME()->setScale(sqr(startscale),sqr(startscale));
   DeepHead->calculateInNode(false);
-  res=DeepHead->nodeME()->dSigHatDR()/nanobarn;
+  res=DeepHead->nodeME()->dSigHatDR(false,diffAlpha)/nanobarn;
   DeepHead->calculateInNode(true);
   DeepHead->renormscale(0.0*GeV);
   DeepHead->calculateInNode(true);
@@ -954,7 +1081,7 @@ void Merging::persistentOutput(PersistentOStream & os) const {
   <<minusL <<Unlopsweights
   << theKImproved << ounit(MergingScale,GeV)
   <<theMaxLegsLO <<theMaxLegsNLO
-  <<theDipoleShowerHandler ;
+  <<theDipoleShowerHandler<<theTreeFactory ;
 }
 
 void Merging::persistentInput(PersistentIStream & is, int) {
@@ -963,7 +1090,7 @@ void Merging::persistentInput(PersistentIStream & is, int) {
   >>minusL >>Unlopsweights
   >> theKImproved >> iunit(MergingScale,GeV)
   >>theMaxLegsLO >>theMaxLegsNLO
-  >>theDipoleShowerHandler ;
+  >>theDipoleShowerHandler>>theTreeFactory;
 }
 
 ClassDescription<Merging> Merging::initMerging;
@@ -1005,6 +1132,12 @@ void Merging::Init() {
   static SwitchOption interfacetheKImprovedNo
   (interfacetheKImproved,"No","",false);
   
+
+
+  
+  
+  
+  
   
   static Parameter<Merging,Energy> interfaceMergingScale
   ("MergingScale",
@@ -1028,6 +1161,11 @@ void Merging::Init() {
   
   
   
+  
+  static Reference<Merging,MergeFactory> interfaceMergingHelper
+  ("MergingFactory",
+   "",
+   &Merging::theTreeFactory, false, false, true, true, false);
   
   
   

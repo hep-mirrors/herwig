@@ -35,6 +35,9 @@
   #include "Herwig/MatrixElement/Matchbox/Base/DipoleRepository.h"
   #include "Herwig/MatrixElement/Matchbox/Utility/SU2Helper.h"
 
+#include "ThePEG/Cuts/JetFinder.h"
+  #include "fastjet/ClusterSequence.hh"
+
   #include <boost/progress.hpp>
 
   #include <iterator>
@@ -72,7 +75,8 @@
   theStairFactor(0.),
   theMergePT(2.*GeV),
   theNLOMergePT(2.*GeV),
-  theIRSafePT(1000000.0 * GeV),ransetup(false){
+  theIRSafePT(1000000.0 * GeV),ransetup(false),defMERegionByJetAlg(false),
+  theGamma(1.){
   }
 
   MergeFactory::~MergeFactory() {
@@ -85,6 +89,203 @@
   IBPtr MergeFactory::fullclone() const {
     return new_ptr(*this);
   }
+
+
+
+
+
+
+bool MergeFactory::matrixElementRegion(PVector particles,Energy winnerScale,Energy cutscale){
+  
+    //cout<<"\nparticles s"<<particles.size()<<" "<<particles[0]<<" "<<particles[1]<<flush;
+  /*
+  if (defMERegionByJetAlg && !particles[0]->coloured()&& !particles[1]->coloured()) {
+    assert(false);
+    vector<fastjet::PseudoJet> input_particles;
+    for(size_t em=2; em < particles.size();em++){
+      input_particles.push_back(fastjet::PseudoJet(particles[em]->momentum().x()/GeV,
+                                                   particles[em]->momentum().y()/GeV,
+                                                   particles[em]->momentum().z()/GeV,
+                                                   particles[em]->momentum().e()/GeV));
+    }
+    fastjet::JetDefinition jet_def(fastjet::ee_kt_algorithm);
+    fastjet::ClusterSequence clust_seq(input_particles, jet_def);
+    size_t n = particles.size()-2;
+    vector<fastjet::PseudoJet> exclusive_jets = clust_seq.exclusive_jets_ycut(ee_ycut);
+    return n==exclusive_jets.size();
+  }
+  
+  
+  if (defMERegionByJetAlg ) {
+    assert(false);
+    size_t noncol=0;
+    vector<fastjet::PseudoJet> input_particles;
+    for(size_t em=2; em < particles.size();em++){
+      if (particles[em]->coloured())
+        input_particles.push_back(fastjet::PseudoJet(particles[em]->momentum().x()/GeV,
+                                                     particles[em]->momentum().y()/GeV,
+                                                     particles[em]->momentum().z()/GeV,
+                                                     particles[em]->momentum().e()/GeV));
+      else
+        noncol++;
+    }
+    double Rparam = 1.0;
+    fastjet::Strategy strategy = fastjet::Best;
+    fastjet::RecombinationScheme recomb_scheme = fastjet::E_scheme;
+    fastjet::JetDefinition jet_def(fastjet::kt_algorithm, Rparam, recomb_scheme, strategy);
+    
+    fastjet::ClusterSequence clust_seq(input_particles, jet_def);
+    size_t n = particles.size()-2-noncol;
+    vector<fastjet::PseudoJet> exclusive_jets = clust_seq.exclusive_jets(pp_dcut);
+    
+      // cout<<"\nn= "<<n<<" jets= "<<exclusive_jets.size();
+      //for (size_t i=0; i<exclusive_jets.size(); i++) {
+      //cout<<"\nn= "<<n<<" jetspt= "<<exclusive_jets[i].perp();
+      //}
+    
+    return n==exclusive_jets.size();
+  }
+  
+  */
+  
+    //assert(false);
+  
+  
+  
+  Energy ptx=1000000.*GeV;
+  bool foundwinnerpt=false;
+  
+    //FF
+  for(size_t em=2; em < particles.size();em++){
+    for(size_t emm=2; emm < particles.size();emm++){
+      if (em==emm) continue;
+      for(size_t spe=2; spe < particles.size();spe++){
+        if (em==spe||emm==spe) continue;
+        if (!(particles[em]->id()==-particles[emm]->id()||particles[emm]->id()>6))continue;
+        Lorentz5Momentum emittermom = particles[em]->momentum();
+        Lorentz5Momentum emissionmom = particles[emm]->momentum();
+        Lorentz5Momentum spectatormom = particles[spe]->momentum();
+        Energy scale = sqrt(2.*(emissionmom*emittermom + emissionmom*spectatormom + emittermom*spectatormom));
+        double y = emissionmom*emittermom / (emissionmom*emittermom + emissionmom*spectatormom + emittermom*spectatormom);
+        double z = emittermom*spectatormom / (emittermom*spectatormom + emissionmom*spectatormom);
+        if (abs(scale * sqrt(y*z*(1.-z))-winnerScale)<0.0001*GeV) {
+          foundwinnerpt=true;
+        }
+          //          if(scale * sqrt(y*z*(1.-z))<optVeto&&winnerScale>optVeto)cout<<"\nFF "<<(scale * sqrt(y*z*(1.-z))/GeV);
+        ptx =min(ptx,scale * sqrt(y*z*(1.-z)));
+      }
+    }
+  }
+  
+    //FI
+  for(size_t spe=0; spe < 2;spe++){
+    if (!particles[spe]->coloured()) continue;
+    for(size_t em=2; em < particles.size();em++){
+      if (!particles[em]->coloured()) continue;
+      for(size_t emm=2; emm < particles.size();emm++){
+        if (!particles[emm]->coloured()) continue;
+        if (em==emm) continue;
+        if (!(particles[em]->id()==-particles[emm]->id()||particles[emm]->id()>6))continue;
+          //assert(false);
+        Lorentz5Momentum emittermom = particles[em]->momentum();
+        Lorentz5Momentum emissionmom = particles[emm]->momentum();
+        Lorentz5Momentum spectatormom = particles[spe]->momentum();
+        Lorentz5Momentum Emsp=emittermom+emissionmom-spectatormom;
+        Energy scale = sqrt(-1.*Emsp*Emsp);
+        double x = (- emissionmom*emittermom + emissionmom*spectatormom + emittermom*spectatormom) /(emittermom*spectatormom + emissionmom*spectatormom);
+        double z = emittermom*spectatormom / (emittermom*spectatormom + emissionmom*spectatormom);
+          //          if(scale * sqrt(z*(1.-z)*(1.-x)/x)<optVeto&&winnerScale>optVeto)cout<<"\nFI "<<(scale * sqrt(z*(1.-z)*(1.-x)/x)/GeV);
+        
+        if (abs(scale *sqrt(z*(1.-z)*(1.-x)/x)-winnerScale)<0.0001*GeV) {
+          foundwinnerpt=true;
+        }
+        
+        if((z*(1.-z)*(1.-x)/x)>0.)
+          ptx =min(ptx,scale * sqrt(z*(1.-z)*(1.-x)/x));
+      }
+    }
+  }
+  
+    //IF
+  for(size_t em=0; em < 2;em++){
+    if (!particles[em]->coloured()) continue;
+    for(size_t emm=2; emm < particles.size();emm++){
+      if (!particles[emm]->coloured()) continue;
+      for(size_t spe=2; spe < particles.size();spe++){
+        if (!particles[spe]->coloured()) continue;
+        
+        if (emm==spe) continue;
+        if (!(particles[em]->id()>6|| particles[em]->id()==particles[emm]->id() ||particles[emm]->id()>6))continue;
+          //assert(false);
+        Lorentz5Momentum emittermom = particles[em]->momentum();
+        Lorentz5Momentum emissionmom = particles[emm]->momentum();
+        Lorentz5Momentum spectatormom = particles[spe]->momentum();
+        Lorentz5Momentum Emsp=-emittermom+emissionmom+spectatormom;
+        Energy scale = sqrt(-1.*Emsp*Emsp);
+        double x = (-emissionmom*spectatormom + emittermom*spectatormom + emittermom*emissionmom) /(emittermom*emissionmom + emittermom*spectatormom);
+        double u = emittermom*emissionmom / (emittermom*emissionmom + emittermom*spectatormom);
+        if (abs(scale *sqrt(u*(1.-u)*(1.-x)/x)-winnerScale)<0.0001*GeV) {
+          foundwinnerpt=true;
+        }
+        if((u*(1.-u)*(1.-x)/x)>0.)
+          ptx =min(ptx,scale * sqrt(u*(1.-u)*(1.-x)/x));
+      }
+    }
+  }
+  
+    //II
+  for(size_t em=0; em < 2;em++){
+    if (!particles[em]->coloured()) continue;
+    for(size_t spe=0; spe < 2;spe++){
+      if (!particles[spe]->coloured()) continue;
+      for(size_t emm=2; emm < particles.size();emm++){
+        if (!particles[emm]->coloured()) continue;
+        if (em==spe) continue;
+        if (!(particles[em]->id()>6||
+              particles[em]->id()==particles[emm]->id() ||
+              particles[emm]->id()>6))continue;
+          //assert(false);
+        Lorentz5Momentum emittermom = particles[em]->momentum();
+        Lorentz5Momentum emissionmom = particles[emm]->momentum();
+        Lorentz5Momentum spectatormom = particles[spe]->momentum();
+        Lorentz5Momentum Emsp=emittermom-emissionmom+spectatormom;
+        Energy scale = sqrt(Emsp*Emsp);
+        double x = (emittermom*spectatormom - emittermom*emissionmom - spectatormom*emissionmom)/(emittermom*spectatormom);
+        double v = (emittermom*emissionmom)/(emittermom*spectatormom);
+        if (abs(scale * sqrt(v*(1.-x-v)/x)-winnerScale)<0.0001*GeV) {
+          foundwinnerpt=true;
+        }
+        if ((v*(1.-x-v)/x)>0.)
+          ptx =min(ptx, scale * sqrt(v*(1.-x-v)/x));
+      }
+    }
+  }
+  
+    // cout<<"\n"<<cutscale/GeV<< " "<<foundwinnerpt<<" "<<ptx/GeV;
+  
+  
+  
+  assert(foundwinnerpt);
+  
+  return (ptx>cutscale) ;
+  
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   void MergeFactory::fill_amplitudes() {
     
@@ -172,11 +373,7 @@
                                ProcessType::spinColourCorrelatedME2);
           (*born)->olpProcess(ProcessType::spinColourCorrelatedME2,id);
         }
-        
-        
       }
-
-
       if ( (*born)->isOLPLoop() &&  i <= theM) {
         int id = orderOLPProcess((*born)->subProcess(),
                                  (*born)->matchboxAmplitude(),
@@ -234,7 +431,8 @@
     }
     
       // prepare dipole insertion operators
-    if ( i <= theM ) {
+      // Need them for alpha-improvement
+      //if ( i <= theM ) {
       for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt
            = DipoleRepository::insertionIOperators(dipoleSet()).begin();
            virt != DipoleRepository::insertionIOperators(dipoleSet()).end(); ++virt ) {
@@ -271,7 +469,7 @@
           (**virt).useExpanded();
       }
       
-    }
+      //}
     thevirtualsAreExpandedMap[i] = virtualsAreExpanded;
     
   }
@@ -291,6 +489,29 @@
     string pname = fullName() + "/" + bornme->name() + ".Born";
     if ( projected ) pname += "pro";
     if ( !(generator()->preinitRegister(bornme, pname)) ) throw InitException() << "Born ME " << pname << " already existing.";
+    
+    
+    
+    bornme->virtuals().clear();
+    for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt = theVirtualsMap[i].begin() ; virt != theVirtualsMap[i].end() ; ++virt ) {
+        if ( (**virt).apply((*born).diagrams().front()->partons()) ) bornme->virtuals().push_back(*virt);
+    }
+    for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt = DipoleRepository::insertionIOperators(dipoleSet()).begin() ;
+           virt != DipoleRepository::insertionIOperators(dipoleSet()).end() ; ++virt ) {
+        if ( (**virt).apply((*born).diagrams().front()->partons()) ) bornme->virtuals().push_back(*virt);
+    }
+    for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt = DipoleRepository::insertionPKOperators(dipoleSet()).begin() ;
+           virt != DipoleRepository::insertionPKOperators(dipoleSet()).end() ; ++virt ) {
+        if ( (**virt).apply((*born).diagrams().front()->partons()) ) bornme->virtuals().push_back(*virt);
+    }
+    
+    
+    
+    
+    
+    
+    
+    
     
     Ptr<ClusterNode>::ptr clusternode = new_ptr(ClusterNode(bornme, i, 0, needFOH));
     clusternode->mergePt(theMergePT);
@@ -314,12 +535,12 @@
     unsigned int k = 1;
     while (thePureMEsMap[i - k].size() != 0) {
       for ( unsigned int j = 0 ; j < temp.size() ; j++ ) {
-        cout<<"\ntemp[j]->children().size() "<<temp[j]->children().size();
+        //cout<<"\ntemp[j]->children().size() "<<temp[j]->children().size();
         temp[j]->birth(thePureMEsMap[i - k]);
         for ( unsigned int m = 0 ; m < temp[j]->children().size() ; m++ ) {
-	  int numofsplit=temp[j]->children()[m]->nodeME()->numberOfSplittings(DipoleRepository::dipoles(dipoleSet()),thePureMEsMap[i - k+1]);
-	  cout<<"\nnumofsplit "<<numofsplit<<temp[j]->children()[m]->nodeME()->name()<<" k "<<k<<" j "<<j<<" m "<<m<<" "<<" "<<i;
-          temp[j]->children()[m]->numberOfSplittings(numofsplit);
+	  //int numofsplit=temp[j]->children()[m]->nodeME()->numberOfSplittings(DipoleRepository::dipoles(dipoleSet()),thePureMEsMap[i - k+1]);
+	  //cout<<"\nnumofsplit "<<numofsplit<<temp[j]->children()[m]->nodeME()->name()<<" k "<<k<<" j "<<j<<" m "<<m<<" "<<" "<<i;
+          //temp[j]->children()[m]->numberOfSplittings(numofsplit);
 
           if ( i <= theM ) {
           for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt = DipoleRepository::insertionIOperators(dipoleSet()).begin() ;
@@ -709,6 +930,7 @@
             onlysubcounter++;
           }
         }}
+      if (false) {
     i = theonlyabove ;
     for (; i <= max(0, theN) ; ++i ) {
       if((i)==theonlymulti+1||theonlymulti==-1)
@@ -720,6 +942,7 @@
           }
         }
     }
+      }
       
     
     if ( !externalAmplitudes().empty() ) {
@@ -805,7 +1028,15 @@
     << ounit(theIRSafePT,GeV)
     << theSubtractionData
     << theLargeNBasis
-    << ransetup;
+    << ransetup
+    << processMap
+    
+    <<defMERegionByJetAlg
+    <<theCuts
+    <<theMergingJetFinder
+    <<pp_dcut
+    <<ee_ycut
+    <<theGamma;
   }
 
   void MergeFactory::persistentInput(PersistentIStream & is, int) {
@@ -840,7 +1071,15 @@
     >> iunit(theIRSafePT,GeV)
     >> theSubtractionData
     >> theLargeNBasis
-    >> ransetup;
+    >> ransetup
+    >> processMap
+    
+    >>defMERegionByJetAlg
+    >> theCuts
+    >>theMergingJetFinder
+    >>pp_dcut
+    >>ee_ycut
+    >>theGamma;
   }
 
   void MergeFactory::Init() {
@@ -998,6 +1237,55 @@
     ("LargeNBasis",
      "Set the large-N colour basis implementation.",
      &MergeFactory::theLargeNBasis, false, false, true, true, false);
+    
+    
+    
+    
+    
+    
+    static Switch<MergeFactory,bool>
+    interfacedefMERegionByJetAlg ("MERegionByJetAlg","",&MergeFactory::defMERegionByJetAlg, false, false, false);
+    
+    static SwitchOption interfacedefMERegionByJetAlgYes
+    (interfacedefMERegionByJetAlg,"Yes","",true);
+    static SwitchOption interfacedefMERegionByJetAlgNo
+    (interfacedefMERegionByJetAlg,"No","",false);
+    
+    
+    static Reference<MergeFactory,JetFinder> interfaceMergingJetFinder
+    ("MergingJetFinder",
+     "A reference to the jet finder used in Merging.",
+     &MergeFactory::theMergingJetFinder, false, false, true, false, false);
+    
+    static Reference<MergeFactory,Cuts> interfaceCuts
+    ("Cuts",
+     "A reference to the Cuts.",
+     &MergeFactory::theCuts, false, false, true, false, false);
+    
+    static Parameter<MergeFactory,double> interfacedcut
+    ("pp_dcut",
+     "The MergingScale.",
+     &MergeFactory::pp_dcut, 5.0, 0.0, 0,
+     false, false, Interface::lowerlim);
+    
+    static Parameter<MergeFactory,double> interfaceycut
+    ("ee_ycut",
+     "The MergingScale.",
+     &MergeFactory::ee_ycut, 0.2, 0.0, 0,
+     false, false, Interface::lowerlim);
+    
+    static Parameter<MergeFactory,double> interfacegamma
+    ("gamma",
+     "gamma parameter.",
+     &MergeFactory::theGamma, 1.0, 0.0, 0,
+     false, false, Interface::lowerlim);
+    
+    
+    
+    
+    
+    
+    
     
     
   }

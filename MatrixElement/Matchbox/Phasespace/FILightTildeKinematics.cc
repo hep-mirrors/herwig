@@ -72,6 +72,25 @@ double FILightTildeKinematics::lastZ() const {
   return subtractionParameters()[1];
 }
 
+double FILightTildeKinematics::lastRealR() const {
+  double deta2 = sqr(realEmitterMomentum().eta() - realEmissionMomentum().eta());
+  double dphi =  abs(realEmitterMomentum().phi() - realEmissionMomentum().phi());
+  if ( dphi > Constants::pi ) dphi = 2.0*Constants::pi - dphi;
+  double dr = sqrt(deta2 + sqr(dphi));
+  return  dr;
+}
+
+
+double FILightTildeKinematics::lastBornR() const {
+  double deta2 = sqr(bornEmitterMomentum().eta() - bornSpectatorMomentum().eta());
+  double dphi =0.;//pi??  abs(bornEmitterMomentum().phi() - bornSpectatorMomentum().phi());
+  if ( dphi > Constants::pi ) dphi = 2.0*Constants::pi - dphi;
+  double dr = sqrt(deta2 + sqr(dphi));
+  return  dr;
+}
+
+
+
 double FILightTildeKinematics::jacobian(Energy2 sB,Energy2 sR, int n) const {
   
   

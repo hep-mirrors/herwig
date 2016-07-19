@@ -88,7 +88,7 @@ bool DipoleIOperator::apply(tcPDPtr pd) const {
 
 void DipoleIOperator::setXComb(tStdXCombPtr xc) {
   MatchboxInsertionOperator::setXComb(xc);
-  if ( CA < 0. ) {
+    //if ( CA < 0. ) {
     CA = SM().Nc();
     CF = (SM().Nc()*SM().Nc()-1.0)/(2.*SM().Nc());
     gammaQuark = (3./2.)*CF;
@@ -103,13 +103,13 @@ void DipoleIOperator::setXComb(tStdXCombPtr xc) {
       // KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*NLightJetVec().size();
     KGluon = (67./18.-sqr(pi)/6.)*CA-(5./9.)*lastBorn()->nLightJetVec().size();
     KGluon +=-CA*sqr(log(alpha))+gammaGluon*(alpha-1-log(alpha));
-                                            
-                                            
+  
+  
     if ( isDR() ) {
       gammaQuark -= CF/2.;
       gammaGluon -= CA/6.;
     }
-  }
+    //}
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -300,6 +300,7 @@ double DipoleIOperator::me2() const {
   }
 
   res *= ( - lastBorn()->lastAlphaS() / (2.*pi) );
+    //cout<<"\nlastBorn()->lastAlphaS()"<<lastBorn()->lastAlphaS();
 
   return res;
 

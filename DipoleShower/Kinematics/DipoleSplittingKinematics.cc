@@ -16,6 +16,7 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Switch.h"
 
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -31,16 +32,16 @@ DipoleSplittingKinematics::DipoleSplittingKinematics()
     theXMin(1.e-5), theJacobian(0.0),
     theLastPt(0.0*GeV), theLastZ(0.0), theLastPhi(0.0),
     theLastEmitterZ(1.0), theLastSpectatorZ(1.0),
-    theLastSplittingParameters() {}
+    theLastSplittingParameters(),theUseScaleForZ(false) {}
 
 DipoleSplittingKinematics::~DipoleSplittingKinematics() {}
 
 void DipoleSplittingKinematics::persistentOutput(PersistentOStream & os) const {
-  os << ounit(theIRCutoff,GeV) << theXMin << theMCCheck;
+  os << ounit(theIRCutoff,GeV) << theXMin << theMCCheck<<theUseScaleForZ;
 }
 
 void DipoleSplittingKinematics::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(theIRCutoff,GeV) >> theXMin >> theMCCheck;
+  is >> iunit(theIRCutoff,GeV) >> theXMin >> theMCCheck>>theUseScaleForZ;
 }
 
 void DipoleSplittingKinematics::prepareSplitting(DipoleSplittingInfo& dInfo) {
@@ -141,7 +142,10 @@ double DipoleSplittingKinematics::generateZ(double r, Energy pt, int sampling,
       return kw.first;
     }
     else {
+      if (!(kw.first < zLims.first || kw.first > zLims.second)) {
+        cout<<"\n"<<name();
       assert( kw.first < zLims.first || kw.first > zLims.second );
+      }
       weight *= kw.second;
       return -1.;
     }
@@ -157,7 +161,10 @@ double DipoleSplittingKinematics::generateZ(double r, Energy pt, int sampling,
       return kw.first;
     }
     else {
+      if (!(kw.first < zLims.first || kw.first > zLims.second)) {
+        cout<<"\n"<<name();
       assert( kw.first < zLims.first || kw.first > zLims.second );
+      }
       weight *= kw.second;
       return -1.;
     }
@@ -262,13 +269,22 @@ void DipoleSplittingKinematics::Init() {
      &DipoleSplittingKinematics::theXMin, 1.0e-5, 0.0, 1.0,
      false, false, Interface::limited);
 
-
+  
   static Reference<DipoleSplittingKinematics,DipoleMCCheck> interfaceMCCheck
-    ("MCCheck",
-     "[debug option] MCCheck",
-     &DipoleSplittingKinematics::theMCCheck, false, false, true, true, false);
-
+  ("MCCheck",
+   "[debug option] MCCheck",
+   &DipoleSplittingKinematics::theMCCheck, false, false, true, true, false);
+  
   interfaceMCCheck.rank(-1);
-
+  
+  static Switch<DipoleSplittingKinematics,bool> interfaceScaleZ
+  ("UseScaleForZ",   "",
+  &DipoleSplittingKinematics::theUseScaleForZ, false, false, false);
+  static SwitchOption interfaceScaleZYes
+  (interfaceScaleZ,   "Yes",   "",   true);
+  static SwitchOption interfaceScaleZNo
+  (interfaceScaleZ,   "No",   "",   false);
+  
+  
 }
 
