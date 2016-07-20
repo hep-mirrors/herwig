@@ -343,7 +343,7 @@ double MEQCD2to2::qg2qgME(vector<SpinorWaveFunction> & qin,
   }
   // test code vs me from ESW
   //Energy2 u(uHat()),t(tHat()),s(sHat());
-  // double alphas(4.*pi*SM().alphaS(mt));
+  //double alphas(4.*pi*SM().alphaS(mt));
   //cerr << "testing matrix element "
   //     << 18./output*(-4./9./s/u+1./t/t)*(s*s+u*u)*sqr(alphas) << endl;
   //select a colour flow
@@ -466,8 +466,7 @@ double MEQCD2to2::qbarg2qbargME(vector<SpinorBarWaveFunction> & qin,
   }
   // test code vs me from ESW
   //Energy2 u(uHat()),t(tHat()),s(sHat());
-  using Constants::pi;
-  double alphas(4.*pi*SM().alphaS(mt));
+  //double alphas(4.*pi*SM().alphaS(mt));
   //cerr << "testing matrix element "
   //     << 18./output*(-4./9./s/u+1./t/t)*(s*s+u*u)*sqr(alphas) << endl;
   //select a colour flow
@@ -475,7 +474,6 @@ double MEQCD2to2::qbarg2qbargME(vector<SpinorBarWaveFunction> & qin,
   // select a diagram ensuring it is one of those in the selected colour flow
   sumdiag[_flow%2]=0.;
   _diagram=13+UseRandom::rnd3(sumdiag[0],sumdiag[1],sumdiag[2]);
-  cerr << "testing ME " << output/18./sqr(alphas) << "\n";
   // final part of colour and spin factors
   return output/18.;
 }
