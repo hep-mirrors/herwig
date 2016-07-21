@@ -38,11 +38,6 @@ public:
    * Access to the frame definition
    */
   Frame frame() const {return frame_;}
-  
-  /**
-   *  Set the frame definition
-   */
-  void frame(Frame frame) {frame_ = frame;}
 
   /**
    * Implementation of the virtual function returning a set of basis vectors, specific to

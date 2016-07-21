@@ -25,7 +25,7 @@ void ShowerBasis::setBasis(const Lorentz5Momentum & p,
 			   Frame inframe) {
   pVector_ = p;
   nVector_ = n;
-  frame(inframe);
+  frame_ = inframe;
   Boost beta_bb;
   if(frame()==BackToBack) {
     beta_bb = -(pVector_ + nVector_).boostVector();
