@@ -173,7 +173,7 @@ double ElectroWeakReweighter::weight() const {
     if(subProcess()->outgoing()[0]->id()==ParticleID::g &&
        subProcess()->outgoing()[1]->id()==ParticleID::g)
       return 1.;
-    else if(abs(subProcess()->outgoing()[0]->id())<=5 &&
+    else if(abs(subProcess()->outgoing()[0]->id())<=6 &&
 	    subProcess()->outgoing()[0]->id()==-subProcess()->outgoing()[1]->id()) {
       return reweightggqqbar();
     }
@@ -197,7 +197,7 @@ double ElectroWeakReweighter::weight() const {
 	return reweightqqbargg();
       // q qbar -> q' q'bar
       else if(subProcess()->outgoing()[0]->id() == -subProcess()->outgoing()[1]->id() &&
-	      abs(subProcess()->outgoing()[0]->id())<=5)
+	      abs(subProcess()->outgoing()[0]->id())<=6)
 	return reweightqqbarqqbarS();
     }
     // different flavour q qbar
