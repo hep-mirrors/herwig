@@ -620,7 +620,7 @@ elif(collider=="LHC") :
                 process+="set MECharm:QuarkType Charm\n"
                 process+="insert SimpleQCD:MatrixElements[0] MECharm\n"
             process+="set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
-            if(parameterName.find("7-Heavy-0")>=0) :
+            if(parameterName.find("-0")>=0) :
                 if(parameterName.find("7-Bottom")>=0) :
                     process+="set MEBottom:Process Pair\n" 
                 process+="set /Herwig/Cuts/JetKtCut:MinKT 0.\n"

@@ -27,12 +27,12 @@ using namespace Herwig;
 
 void IS_QTildeShowerKinematics1to2::
 updateChildren( const tShowerParticlePtr theParent, 
-		const ShowerParticleVector & theChildren,
+		const ShowerParticleVector & children,
 		ShowerPartnerType::Type,
 		bool ) const {
   const ShowerParticle::Parameters & parent = theParent->showerParameters();
-  ShowerParticle::Parameters & child0 = theChildren[0]->showerParameters();
-  ShowerParticle::Parameters & child1 = theChildren[1]->showerParameters();
+  ShowerParticle::Parameters & child0 = children[0]->showerParameters();
+  ShowerParticle::Parameters & child1 = children[1]->showerParameters();
   double cphi = cos(phi());
   double sphi = sin(phi());
 
@@ -46,6 +46,10 @@ updateChildren( const tShowerParticlePtr theParent,
   child0.beta  = parent.beta  - child1.beta;
   child0.ptx   = parent.ptx   - child1.ptx;
   child0.pty   = parent.pty   - child1.pty;
+  if(massVeto) {
+    Energy2 q2 = (1.-z())*sqr(scale());
+    children[1]->scales().Max_Q2 = (1.-z())*q2/z();
+  }
 }
 
 

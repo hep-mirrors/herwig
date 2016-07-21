@@ -332,6 +332,12 @@ void QTildeShowerHandler::Init() {
      "Use the off-shell masses in the calculation veto the emissions from the children."
      " veto in generation of emissions from children using cut-off for second parton",
      3);
+  static SwitchOption interfaceReconstructionOptionOffShell4
+    (interfaceReconstructionOption,
+     "OffShell4",
+     "Ass OffShell3 but with a restriction on the mass of final-state"
+     " jets produced via backward evolution.",
+     4);
 
   static Switch<QTildeShowerHandler,unsigned int> interfaceSpinCorrelations
     ("SpinCorrelations",
@@ -928,7 +934,7 @@ QTildeShowerHandler::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
     }
   }
   particle->showerKinematics()->
-    updateChildren(newParent, theChildren,bb.type,false);
+    updateChildren(newParent, theChildren,bb.type,_reconOpt>=4);
   if(_limitEmissions!=0) {
     if(particle->spinInfo()) particle->spinInfo()->develop();
     return true;
