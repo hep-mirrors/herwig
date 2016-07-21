@@ -6,6 +6,7 @@
 
 #include "EWCouplings.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
@@ -29,20 +30,22 @@ Complex trace(boost::numeric::ublas::matrix<Complex> M) {
 }
 
 
-EWCouplings::EWCouplings(unsigned int loops, unsigned int steps, Energy highScale,
+EWCouplings::EWCouplings(unsigned int loops, unsigned int steps,
 			 Energy lowScale) 
-  : ewScale_(91.1876*GeV), highScale_(highScale), lowScale_(lowScale),
+  : ewScale_(91.1876*GeV), highScale_(14.*TeV), lowScale_(lowScale),
     includeSU3_(true), includeEW_(true), initialized_(false), massChoice_(false),
     mZ_(91.1876*GeV), mW_(80.399*GeV), 
     mT_(173.1*GeV), // 179.08045 (should be this?)
     mH_(125.0*GeV),
-    loops_(loops), highSteps_(steps), lowSteps_(steps)
+    loops_(loops), highSteps_(steps), lowSteps_(steps),
+    a1MZ_(0.01017054),a2MZ_(0.03378168),aSMZ_(0.1176),lambdat_(0.991172)
 {}
 
 void EWCouplings::initialize() {
   using Constants::pi;
   if(initialized_) return;
   initialized_ = true;
+  highScale_=generator()->maximumCMEnergy();
   // set the particle masses
   if(massChoice_) {
     mZ_ = getParticleData(ParticleID::Z0   )->mass();
@@ -107,15 +110,38 @@ IBPtr EWCouplings::fullclone() const {
 }
 
 void EWCouplings::persistentOutput(PersistentOStream & os) const {
-  os << ounit(ewScale_,GeV) <<  ounit(highScale_,GeV) <<  ounit(lowScale_,GeV)
+  os << ounit(ewScale_,GeV) << ounit(highScale_,GeV) <<  ounit(lowScale_,GeV)
      << includeSU3_ << includeEW_ << ounit(mZ_,GeV) << ounit(mW_,GeV)
-     << ounit(mT_,GeV) << ounit(mH_,GeV) << massChoice_ << initialized_;
+     << ounit(mT_,GeV) << ounit(mH_,GeV) << massChoice_ << initialized_
+     << loops_ << highSteps_ << lowSteps_
+     << a1MZ_ << a2MZ_ << aSMZ_ << lambdat_;
+  os << table_.size1() << table_.size2();
+  for(unsigned int ix=0;ix<table_.size1();++ix)
+    for(unsigned int iy=0;iy<table_.size2();++iy)
+      os << table_(ix,iy);
+  os << lowTable_.size1() << lowTable_.size2();
+  for(unsigned int ix=0;ix<lowTable_.size1();++ix)
+    for(unsigned int iy=0;iy<lowTable_.size2();++iy)
+      os << lowTable_(ix,iy);
 }
 
 void EWCouplings::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(ewScale_,GeV) >>  iunit(highScale_,GeV) >> iunit(lowScale_,GeV)
+  is >> iunit(ewScale_,GeV) >> iunit(highScale_,GeV) >> iunit(lowScale_,GeV)
      >> includeSU3_ >> includeEW_ >> iunit(mZ_,GeV) >> iunit(mW_,GeV) 
-     >> iunit(mT_,GeV) >> iunit(mH_,GeV) >> massChoice_ >> initialized_;
+     >> iunit(mT_,GeV) >> iunit(mH_,GeV) >> massChoice_ >> initialized_
+     >> loops_ >> highSteps_ >> lowSteps_
+     >> a1MZ_ >> a2MZ_ >> aSMZ_ >> lambdat_;
+  unsigned int size1,size2;
+  is >> size1 >> size2;
+  table_.resize(size1,size2);
+  for(unsigned int ix=0;ix<table_.size1();++ix)
+    for(unsigned int iy=0;iy<table_.size2();++iy)
+      is >> table_(ix,iy);
+  is >> size1 >> size2;
+  lowTable_.resize(size1,size2);
+  for(unsigned int ix=0;ix<lowTable_.size1();++ix)
+    for(unsigned int iy=0;iy<lowTable_.size2();++iy)
+      is >> lowTable_(ix,iy);
 }
 
 
@@ -143,6 +169,84 @@ void EWCouplings::Init() {
      "ParticleData",
      "Get the values from the ParticleData object",
      true);
+
+  static Parameter<EWCouplings,Energy> interfaceEWScale
+    ("EWScale",
+     "The electroweak scale for matching between high and low energy running",
+     &EWCouplings::ewScale_, GeV, 91.1876*GeV, 10.0*GeV, 10000.0*GeV,
+     false, false, Interface::limited);
+
+  static Parameter<EWCouplings,Energy> interfaceLowScale
+    ("LowScale",
+     "The low energy scale at which to stop the running",
+     &EWCouplings::lowScale_, GeV, 10.*GeV, 1.0*GeV, 100.0*GeV,
+     false, false, Interface::limited);
+
+  static Parameter<EWCouplings,Energy> interfacemZ
+    ("mZ",
+     "The mass of the Z boson",
+     &EWCouplings::mZ_, 91.1876*GeV, 90.*GeV, 92.*GeV,
+     false, false, Interface::limited);
+
+  static Parameter<EWCouplings,Energy> interfacemW
+    ("mW",
+     "The mass of the W boson",
+     &EWCouplings::mW_, 80.399*GeV, 75.*GeV, 85.*GeV,
+     false, false, Interface::limited);
+
+  static Parameter<EWCouplings,Energy> interfacemT
+    ("mT",
+     "The mass of the top quark",
+     &EWCouplings::mT_, 173.1*GeV, 100.*GeV, 1000.*GeV,
+     false, false, Interface::limited);
+
+  static Parameter<EWCouplings,Energy> interfacemH
+    ("mH",
+     "The mass of the Higgs boson",
+     &EWCouplings::mH_, 125.*GeV, 100.*GeV, 1000.*GeV,
+     false, false, Interface::limited);
+
+  static Parameter<EWCouplings,unsigned int> interfaceLoops
+    ("Loops",
+     "The number of loops",
+     &EWCouplings::loops_, 2, 1, 3,
+     false, false, Interface::limited);
+
+  static Parameter<EWCouplings,unsigned int> interfaceHighSteps
+    ("HighSteps",
+     "The number of steps for the Runga-Kutta and interpolation of the couplings above mZ",
+     &EWCouplings::highSteps_, 200, 10, 1000000,
+     false, false, Interface::limited);
+
+  static Parameter<EWCouplings,unsigned int> interfaceLowSteps
+    ("LowSteps",
+     "The number of steps for the Runga-Kutta and interpolation of the couplings below mZ",
+     &EWCouplings::lowSteps_, 200, 10, 1000000,
+     false, false, Interface::limited);
+
+  static Parameter<EWCouplings,double> interfacea1MZ
+    ("Alpha1MZ",
+     "The value of a1(MZ)",
+     &EWCouplings::a1MZ_, 0.01017054, 0.0, 1.,
+     false, false, Interface::limited);
+
+  static Parameter<EWCouplings,double> interfacea2MZ
+    ("Alpha2MZ",
+     "The value of a2(MZ)",
+     &EWCouplings::a2MZ_, 0.03378168, 0.0, 1.,
+     false, false, Interface::limited);
+
+  static Parameter<EWCouplings,double> interfaceasMZ
+    ("AlphasMZ",
+     "The value of as(MZ)",
+     &EWCouplings::aSMZ_, 0.1176, 0.0, 1.,
+     false, false, Interface::limited);
+
+  static Parameter<EWCouplings,double> interfaceLambdaT
+    ("LambdaT",
+     "The top quark Yukawa at the matching scale",
+     &EWCouplings::lambdat_, 0.991172, 0.5, 2.0,
+     false, false, Interface::limited);
 
 }
 
@@ -232,18 +336,19 @@ void EWCouplings::RK4(vector<Complex> &y, vector<Complex> &dydx,
 
 
 void EWCouplings::initializeCouplings(vector<Complex> & y) {
+  using Constants::pi;
   // \todo make these values parameters so they can be changed
   InvEnergy2 gFermi = 1.16637*pow(10.0,-5)/GeV2;
   Energy vev = 1.0/(sqrt(sqrt(2.0)*gFermi)); // vev = 246.221
   
-  y[0] = 0.461531463;     // g1 = Sqrt[5/3] * Sqrt[4*pi*a1] with a1(Mz) = 0.01017054
-  y[1] = 0.651547066;     // g2 = Sqrt[4*pi*a2] with a2(Mz) = 0.03378168
-  y[2] = 1.215650108;     // g3 = Sqrt[4*pi*as] with as(Mz) = 0.1176
+  y[0] = sqrt(5./3.*4.*pi*a1MZ_); // g1 = Sqrt[5/3] * Sqrt[4*pi*a1]
+  y[1] = sqrt(4.*pi*a2MZ_);     // g2 = Sqrt[4*pi*a2]
+  y[2] = sqrt(4.*pi*aSMZ_);     // g3 = Sqrt[4*pi*as]
   // Note lambda_t = sqrt(2.0)*mt/vev only valid for mt(mt); need mt(mZ) here
   // Top Yukawa lambda from Manohar
   //Complex lambda_t = 1.02858; 
   // Top Yukawa lambda from Sascha          
-  double lambda_t = 0.991172;  
+  double lambda_t =lambdat_;
   // Quartic coupling lambda (need to multiply by a factor of 2 when accessing the quartic coupling)
   double lambda = (mH_/vev)*(mH_/vev);
   y[29] = lambda_t;

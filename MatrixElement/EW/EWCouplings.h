@@ -29,8 +29,7 @@ public:
   /**
    * The default constructor.
    */
-  EWCouplings(unsigned int loops=2, unsigned int steps=200,
-	      Energy highScale=14.*TeV, Energy lowScale=10.*GeV);
+  EWCouplings(unsigned int loops=2, unsigned int steps=200, Energy lowScale=10.*GeV);
 
   /**
    * The destructor.
@@ -441,6 +440,31 @@ private:
    *  This will hold only aEM and a3 at mu<ewScale
    */
   boost::numeric::ublas::matrix<double> lowTable_;
+
+  /**
+   *  Input values of the couplings
+   */
+  //@{
+  /**
+   *   \f%\alpha_1(M_Z)\f$
+   */
+  double a1MZ_;
+
+  /**
+   *   \f%\alpha_2(M_Z)\f$
+   */
+  double a2MZ_;
+
+  /**
+   *   \f%\alpha_S(M_Z)\f$
+   */
+  double aSMZ_;
+
+  /**
+   *  \f$\lambda_t\f$
+   */
+  double lambdat_;
+  //@}
 
 };
 
