@@ -29,7 +29,7 @@ void IS_QTildeShowerKinematics1to2::
 updateChildren( const tShowerParticlePtr theParent, 
 		const ShowerParticleVector & children,
 		ShowerPartnerType::Type,
-		bool ) const {
+		bool massVeto) const {
   const ShowerParticle::Parameters & parent = theParent->showerParameters();
   ShowerParticle::Parameters & child0 = children[0]->showerParameters();
   ShowerParticle::Parameters & child1 = children[1]->showerParameters();
