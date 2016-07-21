@@ -199,6 +199,28 @@ namespace GroupInvariants {
     return output;
   }
 
+  inline boost::numeric::ublas::matrix<Complex> Gamma2ST(Complex U, Complex T) {
+    boost::numeric::ublas::matrix<Complex> output(2,2);
+    static const Complex I(0,1.0);
+    using Constants::pi;
+    output(0,0) = 3./2.*(T-I*pi) + U -2.*T;
+    output(1,1) = 3./2.*(T-I*pi);
+    output(0,1) = -2.0*U;
+    output(1,0) = -(3.0/8.0)*U;
+    return output;
+  }
+
+  inline boost::numeric::ublas::matrix<Complex> Gamma2SU(Complex U, Complex T) {
+    boost::numeric::ublas::matrix<Complex> output(2,2);
+    static const Complex I(0,1.0);
+    using Constants::pi;
+    output(0,0) = 3./2.*(U-I*pi) + T - 2.*U;
+    output(1,1) = 3./2.*(U-I*pi);
+    output(0,1) = 2.0*T;
+    output(1,0) = (3.0/8.0)*T;
+    return output;
+  }
+
   inline boost::numeric::ublas::matrix<Complex> Gamma2w(Complex U, Complex T) {
     boost::numeric::ublas::matrix<Complex> output =  boost::numeric::ublas::zero_matrix<Complex>(5,5);
     static const Complex I(0,1.0);
@@ -231,6 +253,15 @@ namespace GroupInvariants {
     return output;
   }
 
+  inline boost::numeric::ublas::matrix<Complex> Gamma2SingletSU(Complex U) {
+    using namespace boost::numeric::ublas;
+    matrix<Complex> output = zero_matrix<Complex>(2,2);
+    static const Complex I(0,1.0);
+    using Constants::pi;
+    output(0,0) = output(1,1) = 0.75*(U-I*pi);
+    return output;
+  }
+
   inline Complex Gamma1(double hypercharge) {
     Complex I(0,1.0);
     return -I*Constants::pi*sqr(hypercharge);
@@ -239,6 +270,11 @@ namespace GroupInvariants {
   inline Complex Gamma1ST(double hypercharge,Complex T) {
     Complex I(0,1.0);
     return (T-I*Constants::pi)*sqr(hypercharge);
+  }
+
+  inline Complex Gamma1SU(double hypercharge,Complex U) {
+    Complex I(0,1.0);
+    return (U-I*Constants::pi)*sqr(hypercharge);
   }
   
   inline Complex Gamma1(double y1, double y2, Complex T, Complex U) {
@@ -249,6 +285,11 @@ namespace GroupInvariants {
   inline Complex Gamma1ST(double y1, double y2, Complex T, Complex U) {
     Complex I(0,1.0);
     return (T-I*Constants::pi)*(y1*y1+y2*y2) - 2.0*y1*y2*U;
+  }
+  
+  inline Complex Gamma1SU(double y1, double y2, Complex T, Complex U) {
+    Complex I(0,1.0);
+    return (U-I*Constants::pi)*(y1*y1+y2*y2) + 2.0*y1*y2*T;
   }
   
   inline Complex Gamma1(double y1, double y2, double y3, double y4,
@@ -264,6 +305,13 @@ namespace GroupInvariants {
     return (T-I*Constants::pi)*(y1*y1+y2*y2+y3*y3+y4*y4)/2.0 - 
       (y1*y4+y2*y3)*T - (y1*y3+y2*y4)*(U-T);
   }
+  
+  inline Complex Gamma1SU(double y1, double y2, double y3, double y4,
+			  Complex T, Complex U) {
+    Complex I(0,1.0);
+    return (U-I*Constants::pi)*(y1*y1+y2*y2+y3*y3+y4*y4)/2.0 + 
+      (y1*y4+y2*y3)*(T-U) + (y1*y3+y2*y4)*U;
+  }
 
   inline boost::numeric::ublas::matrix<Complex> Gamma3(Complex U, Complex T) {
     boost::numeric::ublas::matrix<Complex> output =  boost::numeric::ublas::zero_matrix<Complex>(2,2);
@@ -274,6 +322,30 @@ namespace GroupInvariants {
     output(0,0) += (7.0/3.0)*T + (2.0/3.0)*U;
     output(0,1) = 2.0*(T-U);
     output(1,0) = (4.0/9.0)*(T-U);
+    return output;
+  }
+
+  inline boost::numeric::ublas::matrix<Complex> Gamma3ST(Complex U, Complex T) {
+    boost::numeric::ublas::matrix<Complex> output =  boost::numeric::ublas::zero_matrix<Complex>(2,2);
+    static const Complex I(0,1.0);
+    using Constants::pi;
+    output(0,0)  =  8./3.*(T-I*pi);
+    output(1,1)  =  8./3.*(T-I*pi);
+    output(0,0) += -3.*T + 2./3.*U;
+    output(0,1)  = -2.*U;
+    output(1,0)  = -4./9.*U;
+    return output;
+  }
+
+  inline boost::numeric::ublas::matrix<Complex> Gamma3SU(Complex U, Complex T) {
+    boost::numeric::ublas::matrix<Complex> output =  boost::numeric::ublas::zero_matrix<Complex>(2,2);
+    static const Complex I(0,1.0);
+    using Constants::pi;
+    output(0,0) = 8./3.*(U-I*pi);
+    output(1,1) = 8./3.*(U-I*pi);
+    output(0,0) += 7./3.*T -3.*U;
+    output(0,1) = 2.*T;
+    output(1,0) = 4./9.*T;
     return output;
   }
 
@@ -305,6 +377,22 @@ namespace GroupInvariants {
     output(2,2) = 3.0/2.0*(U-2.*T);
     for (unsigned int i=0; i<3; i++) {
       output(i,i) += 13.0/3.0*(T-I*pi);
+    }
+    return output;
+  }
+
+  inline boost::numeric::ublas::matrix<Complex> Gamma3gSU(Complex U, Complex T) {
+    boost::numeric::ublas::matrix<Complex> output =  boost::numeric::ublas::zero_matrix<Complex>(3,3);
+    static const Complex I(0,1.0);
+    using Constants::pi;
+    output(0,2) = -T;
+    output(1,1) = 3./2.*(T-2.*U);
+    output(1,2) = -3./2.*T;
+    output(2,0) = -2.0*T;
+    output(2,1) =-5./6.*T;
+    output(2,2) = 3./2.*(T-2.*U);
+    for (unsigned int i=0; i<3; i++) {
+      output(i,i) += 13./3.*(U-I*pi);
     }
     return output;
   }

@@ -160,11 +160,11 @@ double ElectroWeakReweighter::weight() const {
 
 
 
-  cerr <<  subProcess() << "\n";
-  cerr << *subProcess() << "\n";
-  cerr << subProcess()->outgoing()[0] << *subProcess()->outgoing()[0] << "\n";
-  cerr << subProcess()->outgoing()[0]->spinInfo() << "\n";
-  cerr << subProcess()->outgoing()[0]->spinInfo()->productionVertex() << "\n";
+  // cerr <<  subProcess() << "\n";
+  // cerr << *subProcess() << "\n";
+  // cerr << subProcess()->outgoing()[0] << *subProcess()->outgoing()[0] << "\n";
+  // cerr << subProcess()->outgoing()[0]->spinInfo() << "\n";
+  // cerr << subProcess()->outgoing()[0]->spinInfo()->productionVertex() << "\n";
   if(subProcess()->outgoing().size()!=2)
     return 1.;
   // processes with gg initial-state
@@ -181,13 +181,40 @@ double ElectroWeakReweighter::weight() const {
       assert(false);
   }
   // processes with q qbar initial-state
-  else if(abs(subProcess()->incoming().first->id())<=5 &&
-	  subProcess()->incoming().first->id()==-subProcess()->incoming().second->id()) {
-    if(subProcess()->outgoing()[0]->id()==ParticleID::g &&
-       subProcess()->outgoing()[1]->id()==ParticleID::g)
-      return reweightqqbargg();
-    else
-      assert(false);
+  else if((subProcess()->incoming().first ->id() > 0 &&
+	   subProcess()->incoming().first ->id()<= 5 &&
+	   subProcess()->incoming().second->id() < 0 &&
+	   subProcess()->incoming().second->id()>=-5) ||
+	  (subProcess()->incoming().second->id() > 0 &&
+	   subProcess()->incoming().second->id()<= 5 &&
+	   subProcess()->incoming().first ->id() < 0 &&
+	   subProcess()->incoming().first ->id()>=-5)) {
+    // identical flavour q qbar
+    if(subProcess()->incoming().first ->id() == -subProcess()->incoming().second->id()) {
+      // q qbar -> gg
+      if(subProcess()->outgoing()[0]->id()==ParticleID::g &&
+	 subProcess()->outgoing()[1]->id()==ParticleID::g)
+	return reweightqqbargg();
+      // q qbar -> q' q'bar
+      else if(subProcess()->outgoing()[0]->id() == -subProcess()->outgoing()[1]->id() &&
+	      abs(subProcess()->outgoing()[0]->id())<=5)
+	return reweightqqbarqqbarS();
+    }
+    // different flavour q qbar
+    else {
+      if((subProcess()->outgoing()[0]->id() > 0 &&
+	  subProcess()->outgoing()[0]->id()<= 5 &&
+	  subProcess()->outgoing()[1]->id() < 0 &&
+	  subProcess()->outgoing()[1]->id()>=-5) ||
+	 (subProcess()->outgoing()[1]->id() > 0 &&
+	  subProcess()->outgoing()[1]->id()<= 5 &&
+	  subProcess()->outgoing()[0]->id() < 0 &&
+	  subProcess()->outgoing()[0]->id()>=-5)) {
+	return reweightqqbarqqbarT();
+      }
+      else
+	assert(false);
+    }
   }
   // processes with q g initial-state
   else if((subProcess()->incoming().first ->id()> 0 &&
@@ -222,6 +249,32 @@ double ElectroWeakReweighter::weight() const {
 	subProcess()->outgoing()[1]->id()<  0 &&
 	subProcess()->outgoing()[0]->id()==ParticleID::g))
       return reweightqbargqbarg();
+    else
+      assert(false);
+  }
+  // processes with q q initial-state
+  else if( subProcess()->incoming().first ->id()> 0 &&
+	   subProcess()->incoming().first ->id()<=5 &&
+	   subProcess()->incoming().second->id()> 0 &&
+	   subProcess()->incoming().second->id()<=5 ) {
+    if(subProcess()->outgoing()[0]->id()> 0 &&
+       subProcess()->outgoing()[0]->id()<=5 &&
+       subProcess()->outgoing()[1]->id()> 0 &&
+       subProcess()->outgoing()[1]->id()<=5)
+      return reweightqqqq();
+    else
+      assert(false);
+  }
+  // processes with qbar qbar initial-state
+  else if( subProcess()->incoming().first ->id()<   0 &&
+	   subProcess()->incoming().first ->id()>= -5 &&
+	   subProcess()->incoming().second->id()<   0 &&
+	   subProcess()->incoming().second->id()>= -5 ) {
+    if(subProcess()->outgoing()[0]->id()<   0 &&
+       subProcess()->outgoing()[0]->id()>= -5 &&
+       subProcess()->outgoing()[1]->id()<   0 &&
+       subProcess()->outgoing()[1]->id()>= -5)
+      return reweightqbarqbarqbarqbar();
     else
       assert(false);
   }
@@ -514,6 +567,8 @@ ElectroWeakReweighter::evaluateRunning(EWProcess::Process process, Energy2 s,
     highMatch_val = HighEnergyMatching::highEnergyMatching(highScale,s,t,u,process,!born,false);
   else if(iswap==1)
     highMatch_val = HighEnergyMatching::highEnergyMatching(highScale,t,s,u,process,!born,false);
+  else if(iswap==2)
+    highMatch_val = HighEnergyMatching::highEnergyMatching(highScale,u,t,s,process,!born,false);
   else
     assert(false);
   // low energy matching
@@ -903,5 +958,967 @@ double ElectroWeakReweighter::reweightqbargqbarg() const {
   }
   double born = 24.*real(bornME(0,0))+20./3.*real(bornME(1,1))+12.*real(bornME(2,2));
   double EW   = 24.*real(EWME(0,0))+20./3.*real(EWME(1,1))+12.*real(EWME(2,2));
+  return EW/born;
+}
+
+double ElectroWeakReweighter::reweightqqbarqqbarS() const {
+  // momenta and invariants
+  Lorentz5Momentum p1    = subProcess()->incoming().first ->momentum();
+  tcPDPtr          q1    = subProcess()->incoming().first ->dataPtr();
+  Lorentz5Momentum p2    = subProcess()->incoming().second->momentum();
+  tcPDPtr          q1bar = subProcess()->incoming().second->dataPtr();
+  if(q1->id()<0) {
+    swap(p1,p2    );
+    swap(q1 ,q1bar);
+  }
+  Lorentz5Momentum p3    = subProcess()->outgoing()[0]->momentum();
+  tcPDPtr          q2bar = subProcess()->outgoing()[0]->dataPtr();
+  Lorentz5Momentum p4    = subProcess()->outgoing()[1]->momentum();
+  tcPDPtr          q2    = subProcess()->outgoing()[1]->dataPtr();
+  if(q2bar->id()>0) {
+    swap(p3,p4    );
+    swap(q2 ,q2bar);
+  }
+  Energy2 s = (p1+p2).m2();
+  Energy2 t = (p1-p4).m2();
+  Energy2 u = (p1-p3).m2();
+  // boost to partonci rest frame
+  Lorentz5Momentum psum=p1+p2;
+  LorentzRotation boost(-psum.boostVector());
+  p1 *= boost;
+  p2 *= boost;
+  p3 *= boost;
+  p4 *= boost;
+  p3.setMass(ZERO);
+  p3.rescaleRho();
+  p4.setMass(ZERO);
+  p4.rescaleRho();
+  // LO and EW corrected matrix element coefficients
+  boost::numeric::ublas::matrix<complex<InvEnergy2> >
+    bornLLLLWeights,bornLLRRWeights,bornRRLLWeights,bornRRRRWeights,
+    EWLLLLWeights,EWLLRRWeights,EWRRLLWeights,EWRRRRWeights;
+  bool ident = q1->id()==q2->id();
+  // LL -> LL
+  if((q1->id()<=4&& q2->id()<=4)|| (q1->id()==5 && q2->id()==5)) {
+    if(!ident) {
+      bornLLLLWeights = evaluateRunning(EWProcess::QQQQ,s,t,u,true ,0);
+      EWLLLLWeights   = evaluateRunning(EWProcess::QQQQ,s,t,u,false,0);
+    }
+    else {
+      bornLLLLWeights = evaluateRunning(EWProcess::QQQQiden,s,t,u,true ,0);
+      EWLLLLWeights   = evaluateRunning(EWProcess::QQQQiden,s,t,u,false,0);
+    }
+  }
+  else if(q1->id()==5 || q2->id()>=5) {
+    bornLLLLWeights = evaluateRunning(EWProcess::QtQtQQ,s,t,u,true ,0);
+    EWLLLLWeights   = evaluateRunning(EWProcess::QtQtQQ,s,t,u,false,0);
+  }
+  else
+    assert(false);
+  // RR -> LL
+  if(q1->id()%2==0) {
+    if(q2->id()<5) {
+      bornRRLLWeights = evaluateRunning(EWProcess::QQUU,s,t,u,true ,0);
+      EWRRLLWeights   = evaluateRunning(EWProcess::QQUU,s,t,u,false,0);
+    }
+    else {
+      bornRRLLWeights = evaluateRunning(EWProcess::QtQtUU,s,t,u,true ,0);
+      EWRRLLWeights   = evaluateRunning(EWProcess::QtQtUU,s,t,u,false,0);
+    }
+  }
+  else {
+    if(q2->id()<5) {
+      bornRRLLWeights = evaluateRunning(EWProcess::QQDD,s,t,u,true ,0);
+      EWRRLLWeights   = evaluateRunning(EWProcess::QQDD,s,t,u,false,0);
+    }
+    else {
+      bornRRLLWeights = evaluateRunning(EWProcess::QtQtDD,s,t,u,true ,0);
+      EWRRLLWeights   = evaluateRunning(EWProcess::QtQtDD,s,t,u,false,0);
+    }
+  }
+  // LL -> RR
+  if(q1->id()<=4) {
+    if(q2->id()%2!=0) {
+      bornLLRRWeights = evaluateRunning(EWProcess::QQDD,s,t,u,true ,0);
+      EWLLRRWeights   = evaluateRunning(EWProcess::QQDD,s,t,u,false,0);
+    }
+    else if (q2->id()==6) {
+      bornLLRRWeights = evaluateRunning(EWProcess::QQtRtR,s,t,u,true ,0);
+      EWLLRRWeights   = evaluateRunning(EWProcess::QQtRtR,s,t,u,false,0);
+    }
+    else {
+      bornLLRRWeights = evaluateRunning(EWProcess::QQUU,s,t,u,true ,0);
+      EWLLRRWeights   = evaluateRunning(EWProcess::QQUU,s,t,u,false,0);
+    }
+  }
+  else {
+    if(q2->id()%2!=0) {
+      bornLLRRWeights = evaluateRunning(EWProcess::QtQtDD,s,t,u,true ,0);
+      EWLLRRWeights   = evaluateRunning(EWProcess::QtQtDD,s,t,u,false,0);
+    }
+    else {
+      bornLLRRWeights = evaluateRunning(EWProcess::QtQtUU,s,t,u,true ,0);
+      EWLLRRWeights   = evaluateRunning(EWProcess::QtQtUU,s,t,u,false,0);
+    }
+  }
+  // RR -> RR
+  if(q1->id()%2==0) {
+    if(q2->id()==6) {
+      bornRRRRWeights = evaluateRunning(EWProcess::tRtRUU,s,t,u,true ,0);
+      EWRRRRWeights   = evaluateRunning(EWProcess::tRtRUU,s,t,u,false,0);
+    }
+    else if(q2->id()%2==0) {
+      if(ident) {
+	bornRRRRWeights = evaluateRunning(EWProcess::UUUUiden,s,t,u,true ,0);
+	EWRRRRWeights   = evaluateRunning(EWProcess::UUUUiden,s,t,u,false,0);
+      }
+      else {
+	bornRRRRWeights = evaluateRunning(EWProcess::UUUU,s,t,u,true ,0);
+	EWRRRRWeights   = evaluateRunning(EWProcess::UUUU,s,t,u,false,0);
+      }
+    }
+    else {
+      bornRRRRWeights = evaluateRunning(EWProcess::UUDD,s,t,u,true ,0);
+      EWRRRRWeights   = evaluateRunning(EWProcess::UUDD,s,t,u,false,0);
+    }
+  }
+  else {
+    if(q2->id()==6) {
+      bornRRRRWeights = evaluateRunning(EWProcess::tRtRDD,s,t,u,true ,0);
+      EWRRRRWeights   = evaluateRunning(EWProcess::tRtRDD,s,t,u,false,0);
+    }
+    else if(q2->id()%2==0) {
+      bornRRRRWeights = evaluateRunning(EWProcess::UUDD,s,t,u,true ,0);
+      EWRRRRWeights   = evaluateRunning(EWProcess::UUDD,s,t,u,false,0);
+    }
+    else {
+      if(ident) {
+	bornRRRRWeights = evaluateRunning(EWProcess::DDDDiden,s,t,u,true ,0);
+	EWRRRRWeights   = evaluateRunning(EWProcess::DDDDiden,s,t,u,false,0);
+      }
+      else {
+	bornRRRRWeights = evaluateRunning(EWProcess::DDDD,s,t,u,true ,0);
+	EWRRRRWeights   = evaluateRunning(EWProcess::DDDD,s,t,u,false,0);
+      }
+    }
+  }
+  // extra terms for identical particles
+  boost::numeric::ublas::matrix<complex<InvEnergy2> >
+    borntChannelWeights,EWtChannelWeights;
+  if(ident) {
+    if(q1->id()%2==0) {
+      borntChannelWeights = evaluateRunning(EWProcess::QQUU,s,t,u,true ,1);
+      EWtChannelWeights   = evaluateRunning(EWProcess::QQUU,s,t,u,false,1);
+    }
+    else if(q1->id()==5) {
+      borntChannelWeights = evaluateRunning(EWProcess::QtQtDD,s,t,u,true ,1);
+      EWtChannelWeights   = evaluateRunning(EWProcess::QtQtDD,s,t,u,false,1);
+    }
+    else {
+      borntChannelWeights = evaluateRunning(EWProcess::QQDD,s,t,u,true ,1);
+      EWtChannelWeights   = evaluateRunning(EWProcess::QQDD,s,t,u,false,1);
+    }
+  }
+  SpinorWaveFunction       q1w(p1,q1   ,incoming);
+  SpinorBarWaveFunction q1barw(p2,q1bar,incoming);
+  SpinorWaveFunction    q2barw(p3,q2bar,outgoing);
+  SpinorBarWaveFunction    q2w(p4,q2   ,outgoing);
+  boost::numeric::ublas::matrix<Complex>
+    bornME = boost::numeric::ublas::zero_matrix<Complex>(2,2),
+    EWME   = boost::numeric::ublas::zero_matrix<Complex>(2,2);
+  for(unsigned int iq1=0;iq1<2;++iq1) {
+    if(iq1==0) {
+      q1w.reset   (0);
+      q1barw.reset(1);
+    }
+    else {
+      q1w.reset   (1);
+      q1barw.reset(0);
+    }
+    LorentzVector<complex<Energy> > current1 =
+      q1w.dimensionedWave().vectorCurrent(q1barw.dimensionedWave());
+    for(unsigned int iq2=0;iq2<2;++iq2) {
+      if(iq2==0) {
+	q2w.reset   (0);
+	q2barw.reset(1);
+      }
+      else {
+	q2w.reset   (1);
+	q2barw.reset(0);
+      }
+      LorentzVector<complex<Energy> > current2 =
+	q2barw.dimensionedWave().vectorCurrent(q2w.dimensionedWave());
+      complex<Energy2> amp = current1.dot(current2);
+      vector<Complex> Cborn(2),CEW(2);
+      // amplitudes
+      if(iq1==0) {
+	// LL
+	if(iq2==0) {
+	  unsigned int ioff;
+	  if(q1->id()%2==0) {
+	    ioff = q2->id()%2==0 ? 0 : 2;
+	  }
+	  else {
+	    ioff = q2->id()%2==0 ? 1 : 3;
+	  }
+	  for(unsigned int ix=0;ix<2;++ix) {
+	    Cborn[ix] = amp*bornLLLLWeights(6*ix+ioff,0);
+	    CEW  [ix] = amp*  EWLLLLWeights(6*ix+ioff,0);
+	  }
+	}
+	// LR
+	else {
+	  unsigned int ioff =  q1->id()%2==0 ? 0 : 1;
+	  for(unsigned int ix=0;ix<2;++ix) {
+	    Cborn[ix] = amp*bornLLRRWeights(2*ix+ioff,0);
+	    CEW  [ix] = amp*  EWLLRRWeights(2*ix+ioff,0);
+	  }
+	}
+      }
+      else {
+	if(iq2==0) {
+	  unsigned int ioff=q2->id()%2==0 ? 0 : 1;
+	  for(unsigned int ix=0;ix<2;++ix) {
+	    Cborn[ix] = amp*bornRRLLWeights(2*ix+ioff,0);
+	    CEW  [ix] = amp*  EWRRLLWeights(2*ix+ioff,0);
+	  }
+	}
+	else {
+	  for(unsigned int ix=0;ix<2;++ix) {
+	    Cborn[ix] = amp*bornRRRRWeights(ix,0);
+	    CEW  [ix] = amp*  EWRRRRWeights(ix,0);
+	  }
+	}
+      }
+      // square
+      for(unsigned int ix=0;ix<2;++ix) {
+	for(unsigned int iy=0;iy<2;++iy) {
+	  bornME(ix,iy) += Cborn[ix]*conj(Cborn[iy]);
+	  EWME  (ix,iy) += CEW  [ix]*conj(CEW  [iy]);
+	}
+      }
+    }
+  }
+  // extra t-channel pieces if identical flavours
+  if(ident) {
+    for(unsigned int iq1=0;iq1<2;++iq1) {
+      q1w.reset(iq1);
+      q2w.reset(iq1);
+      LorentzVector<complex<Energy> > current1 =
+	q1w.dimensionedWave().vectorCurrent(q2w.dimensionedWave());
+      q1barw.reset(iq1);
+      q2barw.reset(iq1);
+      LorentzVector<complex<Energy> > current2 =
+	q2barw.dimensionedWave().vectorCurrent(q1barw.dimensionedWave());
+      complex<Energy2> amp = current1.dot(current2);
+      vector<Complex> Cborn(2),CEW(2);
+      unsigned int ioff =  q1->id()%2==0 ? 0 : 1;
+      for(unsigned int ix=0;ix<2;++ix) {
+	Cborn[ix] = amp*borntChannelWeights(2*ix+ioff,0);
+	CEW  [ix] = amp*  EWtChannelWeights(2*ix+ioff,0);
+      }
+      // square
+      for(unsigned int ix=0;ix<2;++ix) {
+	for(unsigned int iy=0;iy<2;++iy) {
+	  bornME(ix,iy) += Cborn[ix]*conj(Cborn[iy]);
+	  EWME  (ix,iy) += CEW  [ix]*conj(CEW  [iy]);
+	}
+      }
+    }
+  }
+  // colour factors
+  double born = 2.*real(bornME(0,0))+9.*real(bornME(1,1));
+  double EW   = 2.*real(  EWME(0,0))+9.*real(  EWME(1,1));
+  return EW/born;
+}
+
+double ElectroWeakReweighter::reweightqqbarqqbarT() const {
+  // momenta and invariants
+  Lorentz5Momentum p1    = subProcess()->incoming().first ->momentum();
+  tcPDPtr          q1    = subProcess()->incoming().first ->dataPtr();
+  Lorentz5Momentum p2    = subProcess()->incoming().second->momentum();
+  tcPDPtr          q1bar = subProcess()->incoming().second->dataPtr();
+  if(q1->id()<0) {
+    swap(p1,p2    );
+    swap(q1 ,q1bar);
+  }
+  Lorentz5Momentum p3    = subProcess()->outgoing()[0]->momentum();
+  tcPDPtr          q2bar = subProcess()->outgoing()[0]->dataPtr();
+  Lorentz5Momentum p4    = subProcess()->outgoing()[1]->momentum();
+  tcPDPtr          q2    = subProcess()->outgoing()[1]->dataPtr();
+  if(q2bar->id()>0) {
+    swap(p3,p4    );
+    swap(q2 ,q2bar);
+  }
+  Energy2 s = (p1+p2).m2();
+  Energy2 t = (p1-p4).m2();
+  Energy2 u = (p1-p3).m2();
+  // boost to partonci rest frame
+  Lorentz5Momentum psum=p1+p2;
+  LorentzRotation boost(-psum.boostVector());
+  p1 *= boost;
+  p2 *= boost;
+  p3 *= boost;
+  p4 *= boost;
+  p3.setMass(ZERO);
+  p3.rescaleRho();
+  p4.setMass(ZERO);
+  p4.rescaleRho();
+  assert(q1==q2 && q1bar==q2bar);
+  assert( q1->id() != -q1bar->id() && q2->id() != -q2bar->id() );
+  // LO and EW corrected matrix element coefficients
+  boost::numeric::ublas::matrix<complex<InvEnergy2> >
+    bornLLLLWeights,bornLLRRWeights,bornRRLLWeights,bornRRRRWeights,
+    EWLLLLWeights,EWLLRRWeights,EWRRLLWeights,EWRRRRWeights;
+  // LL
+  if( q1->id()    == ParticleID::b || 
+      q1bar->id() == ParticleID::bbar ) {
+    bornLLLLWeights = evaluateRunning(EWProcess::QtQtQQ,s,t,u,true ,1);
+    EWLLLLWeights   = evaluateRunning(EWProcess::QtQtQQ,s,t,u,false,1);
+  }
+  else {
+    bornLLLLWeights = evaluateRunning(EWProcess::QQQQ,s,t,u,true ,1);
+    EWLLLLWeights   = evaluateRunning(EWProcess::QQQQ,s,t,u,false,1);
+  }
+  // RR -> LL
+  if(q1->id()%2==0) {
+    if(q1bar->id()==ParticleID::bbar) {
+      bornRRLLWeights = evaluateRunning(EWProcess::QtQtUU,s,t,u,true ,1);
+      EWRRLLWeights   = evaluateRunning(EWProcess::QtQtUU,s,t,u,false,1);
+    }
+    else {
+      bornRRLLWeights = evaluateRunning(EWProcess::QQUU,s,t,u,true ,1);
+      EWRRLLWeights   = evaluateRunning(EWProcess::QQUU,s,t,u,false,1);
+    }
+  }
+  else {
+    if(q1bar->id()==ParticleID::bbar) {
+      bornRRLLWeights = evaluateRunning(EWProcess::QtQtDD,s,t,u,true ,1);
+      EWRRLLWeights   = evaluateRunning(EWProcess::QtQtDD,s,t,u,false,1);
+    }
+    else {
+      bornRRLLWeights = evaluateRunning(EWProcess::QQDD,s,t,u,true ,1);
+      EWRRLLWeights   = evaluateRunning(EWProcess::QQDD,s,t,u,false,1);
+    }
+  }
+  // LL -> RR
+  if(abs(q1bar->id())%2==0) {
+    if(q1->id()==ParticleID::b) {
+      bornLLRRWeights = evaluateRunning(EWProcess::QtQtUU,s,t,u,true ,1);
+      EWLLRRWeights   = evaluateRunning(EWProcess::QtQtUU,s,t,u,false,1);
+    }
+    else {
+      bornLLRRWeights = evaluateRunning(EWProcess::QQUU,s,t,u,true ,1);
+      EWLLRRWeights   = evaluateRunning(EWProcess::QQUU,s,t,u,false,1);
+    }
+  }
+  else {
+    if(q1->id()==ParticleID::b) {
+      bornLLRRWeights = evaluateRunning(EWProcess::QtQtDD,s,t,u,true ,1);
+      EWLLRRWeights   = evaluateRunning(EWProcess::QtQtDD,s,t,u,false,1);
+    }
+    else {
+      bornLLRRWeights = evaluateRunning(EWProcess::QQDD,s,t,u,true ,1);
+      EWLLRRWeights   = evaluateRunning(EWProcess::QQDD,s,t,u,false,1);
+    }
+  }
+  // RR -> RR
+  if(q1->id()%2==0) {
+    if(abs(q1bar->id())%2==0) {
+      bornRRRRWeights = evaluateRunning(EWProcess::UUUU,s,t,u,true ,1);
+      EWRRRRWeights   = evaluateRunning(EWProcess::UUUU,s,t,u,false,1);
+    }
+    else {
+      bornRRRRWeights = evaluateRunning(EWProcess::UUDD,s,t,u,true ,1);
+      EWRRRRWeights   = evaluateRunning(EWProcess::UUDD,s,t,u,false,1);
+    }
+  }
+  else {
+    if(abs(q1bar->id())%2==0) {
+      bornRRRRWeights = evaluateRunning(EWProcess::UUDD,s,t,u,true ,1);
+      EWRRRRWeights   = evaluateRunning(EWProcess::UUDD,s,t,u,false,1);
+    }
+    else {
+      bornRRRRWeights = evaluateRunning(EWProcess::DDDD,s,t,u,true ,1);
+      EWRRRRWeights   = evaluateRunning(EWProcess::DDDD,s,t,u,false,1);
+    }
+  }
+  // calculate the spinors
+  SpinorWaveFunction       q1w(p1,q1   ,incoming);
+  SpinorBarWaveFunction q1barw(p2,q1bar,incoming);
+  SpinorWaveFunction    q2barw(p3,q2bar,outgoing);
+  SpinorBarWaveFunction    q2w(p4,q2   ,outgoing);
+  boost::numeric::ublas::matrix<Complex>
+    bornME = boost::numeric::ublas::zero_matrix<Complex>(2,2),
+    EWME   = boost::numeric::ublas::zero_matrix<Complex>(2,2);
+  for(unsigned int iq1=0;iq1<2;++iq1) {
+    q1w.reset(iq1);
+    q2w.reset(iq1);
+    LorentzVector<complex<Energy> > current1 =
+      q1w.dimensionedWave().vectorCurrent(q2w.dimensionedWave());
+    for(unsigned int iq2=0;iq2<2;++iq2) {
+      q1barw.reset(iq2);
+      q2barw.reset(iq2);
+      LorentzVector<complex<Energy> > current2 =
+	q2barw.dimensionedWave().vectorCurrent(q1barw.dimensionedWave());
+      // calculate the amplitude
+      complex<Energy2> amp = current1.dot(current2);
+      vector<Complex> Cborn(2),CEW(2);
+      if(iq1==0) {
+	// LL RR
+	if(iq2==0) {
+	  unsigned int ioff =  q1->id()%2==0 ? 0 : 1;
+	  for(unsigned int ix=0;ix<2;++ix) {
+	    Cborn[ix] = amp*bornLLRRWeights(2*ix+ioff,0);
+	    CEW  [ix] = amp*  EWLLRRWeights(2*ix+ioff,0);
+	  }
+	}
+	// LL LL
+	else {
+	  unsigned int ioff;
+	  if(q1->id()%2==0) {
+	    ioff = abs(q1bar->id())%2==0 ? 0 : 2;
+	  }
+	  else {
+	    ioff = abs(q1bar->id())%2==0 ? 1 : 3;
+	  }
+	  for(unsigned int ix=0;ix<2;++ix) {
+	    Cborn[ix] = amp*bornLLLLWeights(6*ix+ioff,0);
+	    CEW  [ix] = amp*  EWLLLLWeights(6*ix+ioff,0);
+ 	  }
+	}
+      }
+      else {
+	// RR RR
+	if(iq2==0) {
+	  for(unsigned int ix=0;ix<2;++ix) {
+	    Cborn[ix] = amp*bornRRRRWeights(ix,0);
+	    CEW  [ix] = amp*  EWRRRRWeights(ix,0);
+	  }
+	}
+	// RR LL
+	else {
+	  unsigned int ioff=abs(q1bar->id())%2==0 ? 0 : 1;
+	  for(unsigned int ix=0;ix<2;++ix) {
+	    Cborn[ix] = amp*bornRRLLWeights(2*ix+ioff,0);
+	    CEW  [ix] = amp*  EWRRLLWeights(2*ix+ioff,0);
+	  }
+	}
+      }
+      // square
+      for(unsigned int ix=0;ix<2;++ix) {
+	for(unsigned int iy=0;iy<2;++iy) {
+	  bornME(ix,iy) += Cborn[ix]*conj(Cborn[iy]);
+	  EWME  (ix,iy) += CEW  [ix]*conj(CEW  [iy]);
+	}
+      }
+    }
+  }
+  // colour factors
+  double born = 2.*real(bornME(0,0))+9.*real(bornME(1,1));
+  double EW   = 2.*real(  EWME(0,0))+9.*real(  EWME(1,1));
+  return EW/born;
+}
+
+double ElectroWeakReweighter::reweightqqqq() const {
+  // momenta and invariants
+  Lorentz5Momentum p1 = subProcess()->incoming().first ->momentum();
+  tcPDPtr          q1 = subProcess()->incoming().first ->dataPtr();
+  Lorentz5Momentum p2 = subProcess()->incoming().second->momentum();
+  tcPDPtr          q2 = subProcess()->incoming().second->dataPtr();
+  Lorentz5Momentum p3 = subProcess()->outgoing()[0]    ->momentum();
+  tcPDPtr          q3 = subProcess()->outgoing()[0]    ->dataPtr();
+  Lorentz5Momentum p4 = subProcess()->outgoing()[1]    ->momentum();
+  tcPDPtr          q4 = subProcess()->outgoing()[1]    ->dataPtr();
+  if(q1->id()!=q3->id()) {
+    swap(q3,q4);
+    swap(p3,p4);
+  }
+  assert(q1->id()==q3->id());
+  assert(q2->id()==q4->id());
+  Energy2 s = (p1+p2).m2();
+  Energy2 t = (p1-p4).m2();
+  Energy2 u = (p1-p3).m2();
+  // boost to partonci rest frame
+  Lorentz5Momentum psum=p1+p2;
+  LorentzRotation boost(-psum.boostVector());
+  p1 *= boost;
+  p2 *= boost;
+  p3 *= boost;
+  p4 *= boost;
+  p3.setMass(ZERO);
+  p3.rescaleRho();
+  p4.setMass(ZERO);
+  p4.rescaleRho();
+  // LO and EW corrected matrix element coefficients
+  boost::numeric::ublas::matrix<complex<InvEnergy2> >
+    bornLLLLWeights,bornLLRRWeights,bornRRLLWeights,bornRRRRWeights,
+    EWLLLLWeights,EWLLRRWeights,EWRRLLWeights,EWRRRRWeights;
+  bool ident = q1->id()==q2->id();
+  // LL -> LL
+  if((q1->id()<=4&& q2->id()<=4)|| (q1->id()==5 && q2->id()==5)) {
+    if(!ident) {
+      bornLLLLWeights = evaluateRunning(EWProcess::QQQQ,s,t,u,true ,2);
+      EWLLLLWeights   = evaluateRunning(EWProcess::QQQQ,s,t,u,false,2);
+    }
+    else {
+      bornLLLLWeights = evaluateRunning(EWProcess::QQQQiden,s,t,u,true ,2);
+      EWLLLLWeights   = evaluateRunning(EWProcess::QQQQiden,s,t,u,false,2);
+    }
+  }
+  else if(q1->id()==5 || q2->id()==5) {
+    bornLLLLWeights = evaluateRunning(EWProcess::QtQtQQ,s,t,u,true ,2);
+    EWLLLLWeights   = evaluateRunning(EWProcess::QtQtQQ,s,t,u,false,2);
+  }
+  else
+    assert(false);
+  // RR -> LL
+  if(q1->id()%2==0) {
+    if(q2->id()<5) {
+      bornRRLLWeights = evaluateRunning(EWProcess::QQUU,s,t,u,true ,2);
+      EWRRLLWeights   = evaluateRunning(EWProcess::QQUU,s,t,u,false,2);
+    }
+    else {
+      bornRRLLWeights = evaluateRunning(EWProcess::QtQtUU,s,t,u,true ,2);
+      EWRRLLWeights   = evaluateRunning(EWProcess::QtQtUU,s,t,u,false,2);
+    }
+  }
+  else {
+    if(q2->id()<5) {
+      bornRRLLWeights = evaluateRunning(EWProcess::QQDD,s,t,u,true ,2);
+      EWRRLLWeights   = evaluateRunning(EWProcess::QQDD,s,t,u,false,2);
+    }
+    else {
+      bornRRLLWeights = evaluateRunning(EWProcess::QtQtDD,s,t,u,true ,2);
+      EWRRLLWeights   = evaluateRunning(EWProcess::QtQtDD,s,t,u,false,2);
+    }
+  }
+  // LL -> RR
+  if(q1->id()<=4) {
+    if(q2->id()%2!=0) {
+      bornLLRRWeights = evaluateRunning(EWProcess::QQDD,s,t,u,true ,2);
+      EWLLRRWeights   = evaluateRunning(EWProcess::QQDD,s,t,u,false,2);
+    }
+    else {
+      bornLLRRWeights = evaluateRunning(EWProcess::QQUU,s,t,u,true ,2);
+      EWLLRRWeights   = evaluateRunning(EWProcess::QQUU,s,t,u,false,2);
+    }
+  }
+  else {
+    if(q2->id()%2!=0) {
+      bornLLRRWeights = evaluateRunning(EWProcess::QtQtDD,s,t,u,true ,2);
+      EWLLRRWeights   = evaluateRunning(EWProcess::QtQtDD,s,t,u,false,2);
+    }
+    else {
+      bornLLRRWeights = evaluateRunning(EWProcess::QtQtUU,s,t,u,true ,2);
+      EWLLRRWeights   = evaluateRunning(EWProcess::QtQtUU,s,t,u,false,2);
+    }
+  }
+  // RR -> RR
+  if(q1->id()%2==0) {
+    if(q2->id()%2==0) {
+      if(ident) {
+  	bornRRRRWeights = evaluateRunning(EWProcess::UUUUiden,s,t,u,true ,2);
+  	EWRRRRWeights   = evaluateRunning(EWProcess::UUUUiden,s,t,u,false,2);
+      }
+      else {
+  	bornRRRRWeights = evaluateRunning(EWProcess::UUUU,s,t,u,true ,2);
+  	EWRRRRWeights   = evaluateRunning(EWProcess::UUUU,s,t,u,false,2);
+      }
+    }
+    else {
+      bornRRRRWeights = evaluateRunning(EWProcess::UUDD,s,t,u,true ,2);
+      EWRRRRWeights   = evaluateRunning(EWProcess::UUDD,s,t,u,false,2);
+    }
+  }
+  else {
+    if(q2->id()%2==0) {
+      bornRRRRWeights = evaluateRunning(EWProcess::UUDD,s,t,u,true ,2);
+      EWRRRRWeights   = evaluateRunning(EWProcess::UUDD,s,t,u,false,2);
+    }
+    else {
+      if(ident) {
+  	bornRRRRWeights = evaluateRunning(EWProcess::DDDDiden,s,t,u,true ,2);
+  	EWRRRRWeights   = evaluateRunning(EWProcess::DDDDiden,s,t,u,false,2);
+      }
+      else {
+  	bornRRRRWeights = evaluateRunning(EWProcess::DDDD,s,t,u,true ,2);
+  	EWRRRRWeights   = evaluateRunning(EWProcess::DDDD,s,t,u,false,2);
+      }
+    }
+  }
+  // extra terms for identical particles
+  boost::numeric::ublas::matrix<complex<InvEnergy2> >
+    borntChannelWeights,EWtChannelWeights;
+  if(ident) {
+    if(q1->id()%2==0) {
+      borntChannelWeights = evaluateRunning(EWProcess::QQUU,s,u,t,true ,2);
+      EWtChannelWeights   = evaluateRunning(EWProcess::QQUU,s,u,t,false,2);
+    }
+    else if(q1->id()==5) {
+      borntChannelWeights = evaluateRunning(EWProcess::QtQtDD,s,u,t,true ,2);
+      EWtChannelWeights   = evaluateRunning(EWProcess::QtQtDD,s,u,t,false,2);
+    }
+    else {
+      borntChannelWeights = evaluateRunning(EWProcess::QQDD,s,u,t,true ,2);
+      EWtChannelWeights   = evaluateRunning(EWProcess::QQDD,s,u,t,false,2);
+    }
+  }
+  SpinorWaveFunction    q1w(p1,q1,incoming);
+  SpinorWaveFunction    q2w(p2,q2,incoming);
+  SpinorBarWaveFunction q3w(p3,q3,outgoing);
+  SpinorBarWaveFunction q4w(p4,q4,outgoing);
+  boost::numeric::ublas::matrix<Complex>
+    bornME = boost::numeric::ublas::zero_matrix<Complex>(2,2),
+    EWME   = boost::numeric::ublas::zero_matrix<Complex>(2,2);
+  for(unsigned int iq1=0;iq1<2;++iq1) {
+    q1w.reset(iq1);
+    q3w.reset(iq1);
+    LorentzVector<complex<Energy> > current1 =
+      q1w.dimensionedWave().vectorCurrent(q3w.dimensionedWave());
+    for(unsigned int iq2=0;iq2<2;++iq2) {
+      q2w.reset(iq2);
+      q4w.reset(iq2);
+      LorentzVector<complex<Energy> > current2 =
+  	q2w.dimensionedWave().vectorCurrent(q4w.dimensionedWave());
+      complex<Energy2> amp = current1.dot(current2);
+      vector<Complex> Cborn(2),CEW(2);
+      // amplitudes
+      if(iq1==0) {
+ 	// LL
+ 	if(iq2==0) {
+ 	  unsigned int ioff;
+ 	  if(q1->id()%2==0) {
+ 	    ioff = q2->id()%2==0 ? 0 : 2;
+ 	  }
+ 	  else {
+ 	    ioff = q2->id()%2==0 ? 1 : 3;
+ 	  }
+ 	  for(unsigned int ix=0;ix<2;++ix) {
+ 	    Cborn[ix] = amp*bornLLLLWeights(6*ix+ioff,0);
+ 	    CEW  [ix] = amp*  EWLLLLWeights(6*ix+ioff,0);
+ 	  }
+ 	}
+ 	// LR
+ 	else {
+ 	  unsigned int ioff =  q1->id()%2==0 ? 0 : 1;
+ 	  for(unsigned int ix=0;ix<2;++ix) {
+ 	    Cborn[ix] = amp*bornLLRRWeights(2*ix+ioff,0);
+ 	    CEW  [ix] = amp*  EWLLRRWeights(2*ix+ioff,0);
+ 	  }
+ 	}
+      }
+      else {
+  	if(iq2==0) {
+  	  unsigned int ioff=q2->id()%2==0 ? 0 : 1;
+  	  for(unsigned int ix=0;ix<2;++ix) {
+  	    Cborn[ix] = amp*bornRRLLWeights(2*ix+ioff,0);
+  	    CEW  [ix] = amp*  EWRRLLWeights(2*ix+ioff,0);
+  	  }
+  	}
+  	else {
+  	  for(unsigned int ix=0;ix<2;++ix) {
+  	    Cborn[ix] = amp*bornRRRRWeights(ix,0);
+  	    CEW  [ix] = amp*  EWRRRRWeights(ix,0);
+  	  }
+  	}
+      }
+      // square
+      for(unsigned int ix=0;ix<2;++ix) {
+  	for(unsigned int iy=0;iy<2;++iy) {
+  	  bornME(ix,iy) += Cborn[ix]*conj(Cborn[iy]);
+  	  EWME  (ix,iy) += CEW  [ix]*conj(CEW  [iy]);
+  	}
+      }
+    }
+  }
+  // extra u-channel pieces if identical flavours
+  if(ident) {
+    for(unsigned int iq1=0;iq1<2;++iq1) {
+      q1w.reset(iq1);
+      q4w.reset(iq1);
+      LorentzVector<complex<Energy> > current1 =
+	q1w.dimensionedWave().vectorCurrent(q4w.dimensionedWave());
+      if(iq1==0) {
+	q2w.reset(1);
+	q3w.reset(1);
+      }
+      else {
+	q2w.reset(0);
+	q3w.reset(0);
+      }
+      LorentzVector<complex<Energy> > current2 =
+	q2w.dimensionedWave().vectorCurrent(q3w.dimensionedWave());
+      complex<Energy2> amp = current1.dot(current2);
+      vector<Complex> Cborn(2),CEW(2);
+      unsigned int ioff =  q1->id()%2==0 ? 0 : 1;
+      for(unsigned int ix=0;ix<2;++ix) {
+  	Cborn[ix] = amp*borntChannelWeights(2*ix+ioff,0);
+   	CEW  [ix] = amp*  EWtChannelWeights(2*ix+ioff,0);
+      }
+      // square
+      for(unsigned int ix=0;ix<2;++ix) {
+  	for(unsigned int iy=0;iy<2;++iy) {
+  	  bornME(ix,iy) += Cborn[ix]*conj(Cborn[iy]);
+  	  EWME  (ix,iy) += CEW  [ix]*conj(CEW  [iy]);
+ 	}
+      }
+    }
+  }
+  // colour factors
+  double born = 2.*real(bornME(0,0))+9.*real(bornME(1,1));
+  double EW   = 2.*real(  EWME(0,0))+9.*real(  EWME(1,1));
+  return EW/born;
+}
+
+double ElectroWeakReweighter::reweightqbarqbarqbarqbar() const {
+  // momenta and invariants
+  Lorentz5Momentum p1    = subProcess()->incoming().first ->momentum();
+  tcPDPtr          qbar1 = subProcess()->incoming().first ->dataPtr();
+  Lorentz5Momentum p2    = subProcess()->incoming().second->momentum();
+  tcPDPtr          qbar2 = subProcess()->incoming().second->dataPtr();
+  Lorentz5Momentum p3    = subProcess()->outgoing()[0]    ->momentum();
+  tcPDPtr          qbar3 = subProcess()->outgoing()[0]    ->dataPtr();
+  Lorentz5Momentum p4    = subProcess()->outgoing()[1]    ->momentum();
+  tcPDPtr          qbar4 = subProcess()->outgoing()[1]    ->dataPtr();
+  if(qbar1->id()!=qbar3->id()) {
+    swap(qbar3,qbar4);
+    swap(p3,p4);
+  }
+  assert(qbar1->id()==qbar3->id());
+  assert(qbar2->id()==qbar4->id());
+  Energy2 s = (p1+p2).m2();
+  Energy2 t = (p1-p4).m2();
+  Energy2 u = (p1-p3).m2();
+  // boost to partonic rest frame
+  Lorentz5Momentum psum=p1+p2;
+  LorentzRotation boost(-psum.boostVector());
+  p1 *= boost;
+  p2 *= boost;
+  p3 *= boost;
+  p4 *= boost;
+  p3.setMass(ZERO);
+  p3.rescaleRho();
+  p4.setMass(ZERO);
+  p4.rescaleRho();
+  // LO and EW corrected matrix element coefficients
+  boost::numeric::ublas::matrix<complex<InvEnergy2> >
+    bornLLLLWeights,bornLLRRWeights,bornRRLLWeights,bornRRRRWeights,
+    EWLLLLWeights,EWLLRRWeights,EWRRLLWeights,EWRRRRWeights;
+  bool ident = qbar1->id()==qbar2->id();
+  // LL -> LL
+  if((abs(qbar1->id())<=4 && abs(qbar2->id())<=4) ||
+     (abs(qbar1->id())==5 && abs(qbar2->id())==5)) {
+    if(!ident) {
+      bornLLLLWeights = evaluateRunning(EWProcess::QQQQ,s,t,u,true ,2);
+      EWLLLLWeights   = evaluateRunning(EWProcess::QQQQ,s,t,u,false,2);
+    }
+    else {
+      bornLLLLWeights = evaluateRunning(EWProcess::QQQQiden,s,t,u,true ,2);
+      EWLLLLWeights   = evaluateRunning(EWProcess::QQQQiden,s,t,u,false,2);
+    }
+  }
+  else if(abs(qbar1->id())==5 || abs(qbar2->id())==5) {
+    bornLLLLWeights = evaluateRunning(EWProcess::QtQtQQ,s,t,u,true ,2);
+    EWLLLLWeights   = evaluateRunning(EWProcess::QtQtQQ,s,t,u,false,2);
+  }
+  else
+    assert(false);
+  // RR -> LL
+  if(abs(qbar1->id())%2==0) {
+    if(abs(qbar2->id())<5) {
+      bornRRLLWeights = evaluateRunning(EWProcess::QQUU,s,t,u,true ,2);
+      EWRRLLWeights   = evaluateRunning(EWProcess::QQUU,s,t,u,false,2);
+    }
+    else {
+      bornRRLLWeights = evaluateRunning(EWProcess::QtQtUU,s,t,u,true ,2);
+      EWRRLLWeights   = evaluateRunning(EWProcess::QtQtUU,s,t,u,false,2);
+    }
+  }
+  else {
+    if(abs(qbar2->id())<5) {
+      bornRRLLWeights = evaluateRunning(EWProcess::QQDD,s,t,u,true ,2);
+      EWRRLLWeights   = evaluateRunning(EWProcess::QQDD,s,t,u,false,2);
+    }
+    else {
+      bornRRLLWeights = evaluateRunning(EWProcess::QtQtDD,s,t,u,true ,2);
+      EWRRLLWeights   = evaluateRunning(EWProcess::QtQtDD,s,t,u,false,2);
+    }
+  }
+  // LL -> RR
+  if(abs(qbar1->id())<=4) {
+    if(abs(qbar2->id())%2!=0) {
+      bornLLRRWeights = evaluateRunning(EWProcess::QQDD,s,t,u,true ,2);
+      EWLLRRWeights   = evaluateRunning(EWProcess::QQDD,s,t,u,false,2);
+    }
+    else {
+      bornLLRRWeights = evaluateRunning(EWProcess::QQUU,s,t,u,true ,2);
+      EWLLRRWeights   = evaluateRunning(EWProcess::QQUU,s,t,u,false,2);
+    }
+  }
+  else {
+    if(abs(qbar2->id())%2!=0) {
+      bornLLRRWeights = evaluateRunning(EWProcess::QtQtDD,s,t,u,true ,2);
+      EWLLRRWeights   = evaluateRunning(EWProcess::QtQtDD,s,t,u,false,2);
+    }
+    else {
+      bornLLRRWeights = evaluateRunning(EWProcess::QtQtUU,s,t,u,true ,2);
+      EWLLRRWeights   = evaluateRunning(EWProcess::QtQtUU,s,t,u,false,2);
+    }
+  }
+  // RR -> RR
+  if(abs(qbar1->id())%2==0) {
+    if(abs(qbar2->id())%2==0) {
+      if(ident) {
+  	bornRRRRWeights = evaluateRunning(EWProcess::UUUUiden,s,t,u,true ,2);
+  	EWRRRRWeights   = evaluateRunning(EWProcess::UUUUiden,s,t,u,false,2);
+      }
+      else {
+  	bornRRRRWeights = evaluateRunning(EWProcess::UUUU,s,t,u,true ,2);
+  	EWRRRRWeights   = evaluateRunning(EWProcess::UUUU,s,t,u,false,2);
+      }
+    }
+    else {
+      bornRRRRWeights = evaluateRunning(EWProcess::UUDD,s,t,u,true ,2);
+      EWRRRRWeights   = evaluateRunning(EWProcess::UUDD,s,t,u,false,2);
+    }
+  }
+  else {
+    if(abs(qbar2->id())%2==0) {
+      bornRRRRWeights = evaluateRunning(EWProcess::UUDD,s,t,u,true ,2);
+      EWRRRRWeights   = evaluateRunning(EWProcess::UUDD,s,t,u,false,2);
+    }
+    else {
+      if(ident) {
+  	bornRRRRWeights = evaluateRunning(EWProcess::DDDDiden,s,t,u,true ,2);
+  	EWRRRRWeights   = evaluateRunning(EWProcess::DDDDiden,s,t,u,false,2);
+      }
+      else {
+  	bornRRRRWeights = evaluateRunning(EWProcess::DDDD,s,t,u,true ,2);
+  	EWRRRRWeights   = evaluateRunning(EWProcess::DDDD,s,t,u,false,2);
+      }
+    }
+  }
+  // extra terms for identical particles
+  boost::numeric::ublas::matrix<complex<InvEnergy2> >
+    borntChannelWeights,EWtChannelWeights;
+  if(ident) {
+    if(abs(qbar1->id())%2==0) {
+      borntChannelWeights = evaluateRunning(EWProcess::QQUU,s,u,t,true ,2);
+      EWtChannelWeights   = evaluateRunning(EWProcess::QQUU,s,u,t,false,2);
+    }
+    else if(abs(qbar1->id())==5) {
+      borntChannelWeights = evaluateRunning(EWProcess::QtQtDD,s,u,t,true ,2);
+      EWtChannelWeights   = evaluateRunning(EWProcess::QtQtDD,s,u,t,false,2);
+    }
+    else {
+      borntChannelWeights = evaluateRunning(EWProcess::QQDD,s,u,t,true ,2);
+      EWtChannelWeights   = evaluateRunning(EWProcess::QQDD,s,u,t,false,2);
+    }
+  }
+  SpinorBarWaveFunction qbar1w(p1,qbar1,incoming);
+  SpinorBarWaveFunction qbar2w(p2,qbar2,incoming);
+  SpinorWaveFunction    qbar3w(p3,qbar3,outgoing);
+  SpinorWaveFunction    qbar4w(p4,qbar4,outgoing);
+  boost::numeric::ublas::matrix<Complex>
+    bornME = boost::numeric::ublas::zero_matrix<Complex>(2,2),
+    EWME   = boost::numeric::ublas::zero_matrix<Complex>(2,2);
+  for(unsigned int iq1=0;iq1<2;++iq1) {
+    qbar1w.reset(iq1);
+    qbar3w.reset(iq1);
+    LorentzVector<complex<Energy> > current1 =
+      qbar3w.dimensionedWave().vectorCurrent(qbar1w.dimensionedWave());
+    for(unsigned int iq2=0;iq2<2;++iq2) {
+      qbar2w.reset(iq2);
+      qbar4w.reset(iq2);
+      LorentzVector<complex<Energy> > current2 =
+  	qbar4w.dimensionedWave().vectorCurrent(qbar2w.dimensionedWave());
+      complex<Energy2> amp = current1.dot(current2);
+      vector<Complex> Cborn(2),CEW(2);
+      // amplitudes
+      if(iq1==1) {
+ 	// LL
+ 	if(iq2==1) {
+ 	  unsigned int ioff;
+ 	  if(abs(qbar1->id())%2==0) {
+ 	    ioff = abs(qbar2->id())%2==0 ? 0 : 2;
+ 	  }
+ 	  else {
+ 	    ioff = abs(qbar2->id())%2==0 ? 1 : 3;
+ 	  }
+ 	  for(unsigned int ix=0;ix<2;++ix) {
+ 	    Cborn[ix] = amp*bornLLLLWeights(6*ix+ioff,0);
+ 	    CEW  [ix] = amp*  EWLLLLWeights(6*ix+ioff,0);
+ 	  }
+ 	}
+ 	// LR
+ 	else {
+ 	  unsigned int ioff =  abs(qbar1->id())%2==0 ? 0 : 1;
+ 	  for(unsigned int ix=0;ix<2;++ix) {
+ 	    Cborn[ix] = amp*bornLLRRWeights(2*ix+ioff,0);
+ 	    CEW  [ix] = amp*  EWLLRRWeights(2*ix+ioff,0);
+ 	  }
+ 	}
+      }
+      else {
+  	if(iq2==1) {
+  	  unsigned int ioff=abs(qbar2->id())%2==0 ? 0 : 1;
+  	  for(unsigned int ix=0;ix<2;++ix) {
+  	    Cborn[ix] = amp*bornRRLLWeights(2*ix+ioff,0);
+  	    CEW  [ix] = amp*  EWRRLLWeights(2*ix+ioff,0);
+  	  }
+  	}
+  	else {
+  	  for(unsigned int ix=0;ix<2;++ix) {
+  	    Cborn[ix] = amp*bornRRRRWeights(ix,0);
+  	    CEW  [ix] = amp*  EWRRRRWeights(ix,0);
+  	  }
+  	}
+      }
+      // square
+      for(unsigned int ix=0;ix<2;++ix) {
+ 	for(unsigned int iy=0;iy<2;++iy) {
+ 	  bornME(ix,iy) += Cborn[ix]*conj(Cborn[iy]);
+ 	  EWME  (ix,iy) += CEW  [ix]*conj(CEW  [iy]);
+ 	}
+      }
+    }
+  }
+  // extra u-channel pieces if identical flavours
+  if(ident) {
+    for(unsigned int iq1=0;iq1<2;++iq1) {
+      qbar1w.reset(iq1);
+      qbar4w.reset(iq1);
+      LorentzVector<complex<Energy> > current1 =
+	qbar4w.dimensionedWave().vectorCurrent(qbar1w.dimensionedWave());
+      if(iq1==0) {
+	qbar2w.reset(1);
+	qbar3w.reset(1);
+      }
+      else {
+	qbar2w.reset(0);
+	qbar3w.reset(0);
+      }
+      LorentzVector<complex<Energy> > current2 =
+	qbar3w.dimensionedWave().vectorCurrent(qbar2w.dimensionedWave());
+      complex<Energy2> amp = current1.dot(current2);
+      vector<Complex> Cborn(2),CEW(2);
+      unsigned int ioff =  abs(qbar1->id())%2==0 ? 0 : 1;
+      for(unsigned int ix=0;ix<2;++ix) {
+  	Cborn[ix] = amp*borntChannelWeights(2*ix+ioff,0);
+   	CEW  [ix] = amp*  EWtChannelWeights(2*ix+ioff,0);
+      }
+      // square
+      for(unsigned int ix=0;ix<2;++ix) {
+  	for(unsigned int iy=0;iy<2;++iy) {
+  	  bornME(ix,iy) += Cborn[ix]*conj(Cborn[iy]);
+  	  EWME  (ix,iy) += CEW  [ix]*conj(CEW  [iy]);
+ 	}
+      }
+    }
+  }
+  // colour factors
+  double born = 2.*real(bornME(0,0))+9.*real(bornME(1,1));
+  double EW   = 2.*real(  EWME(0,0))+9.*real(  EWME(1,1));
   return EW/born;
 }

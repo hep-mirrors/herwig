@@ -104,6 +104,26 @@ protected:
    *  Reweight \f$q g\to qg\f$
    */
   double reweightqbargqbarg() const;
+
+  /**
+   *  Reweight \f$q\bar{q}\to q'\bar{q'}\f$ (s-channel)
+   */
+  double reweightqqbarqqbarS() const;
+
+  /**
+   *  Reweight \f$q\bar{q}\to q'\bar{q'}\f$ (t-channel)
+   */
+  double reweightqqbarqqbarT() const;
+
+  /**
+   *  Reweight \f$qq \to qq\f$
+   */
+  double reweightqqqq() const;
+
+  /**
+   *  Reweight \f$\bar{q}\bar{q} \to \bar{q}\bar{q}\f$
+   */
+  double reweightqbarqbarqbarqbar() const;
   //@}
 
 protected:

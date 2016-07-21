@@ -112,63 +112,114 @@ SoftSudakov::lowEnergyRunning(Energy EWScale, Energy lowScale,
   case QQQQiden:
   case QtQtQQ:
     {
-      assert(iswap==0);
       numBrokenGauge = 12;
       G1 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
       G2 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
       G3 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-      matrix<Complex> gam3 = Gamma3(U,T);
+      matrix<Complex> gam3;
+      if(iswap==0) {
+	gam3 = Gamma3(U,T);
+	G1(0,0) = G1(6,6)   = Gamma1(2.0/3.0,2.0/3.0,2.0/3.0,2.0/3.0,T,U);
+	G1(1,1) = G1(7,7)   = Gamma1(-1.0/3.0,-1.0/3.0,2.0/3.0,2.0/3.0,T,U);
+	G1(2,2) = G1(8,8)   = Gamma1(2.0/3.0,2.0/3.0,-1.0/3.0,-1.0/3.0,T,U);
+	G1(3,3) = G1(9,9)   = Gamma1(-1.0/3.0,-1.0/3.0,-1.0/3.0,-1.0/3.0,T,U);
+	G1(4,4) = G1(10,10) = Gamma1(-1.0/3.0,2.0/3.0,2.0/3.0,-1.0/3.0,T,U);
+	G1(5,5) = G1(11,11) = Gamma1(2.0/3.0,-1.0/3.0,-1.0/3.0,2.0/3.0,T,U);
+      }
+      else if(iswap==1) {
+	gam3 = Gamma3ST(U,T);
+	G1(0,0) = G1(6,6)   = Gamma1ST(2.0/3.0,2.0/3.0,2.0/3.0,2.0/3.0,T,U);
+	G1(1,1) = G1(7,7)   = Gamma1ST(-1.0/3.0,-1.0/3.0,2.0/3.0,2.0/3.0,T,U);
+	G1(2,2) = G1(8,8)   = Gamma1ST(2.0/3.0,2.0/3.0,-1.0/3.0,-1.0/3.0,T,U);
+	G1(3,3) = G1(9,9)   = Gamma1ST(-1.0/3.0,-1.0/3.0,-1.0/3.0,-1.0/3.0,T,U);
+	G1(4,4) = G1(10,10) = Gamma1ST(-1.0/3.0,2.0/3.0,2.0/3.0,-1.0/3.0,T,U);
+	G1(5,5) = G1(11,11) = Gamma1ST(2.0/3.0,-1.0/3.0,-1.0/3.0,2.0/3.0,T,U);
+      }
+      else if(iswap==2) {
+	gam3 = Gamma3SU(U,T);
+	G1(0,0) = G1(6,6)   = Gamma1SU( 2.0/3.0,2.0/3.0,2.0/3.0,2.0/3.0,T,U);
+	G1(1,1) = G1(7,7)   = Gamma1SU(-1.0/3.0,-1.0/3.0,2.0/3.0,2.0/3.0,T,U);
+	G1(2,2) = G1(8,8)   = Gamma1SU( 2.0/3.0,2.0/3.0,-1.0/3.0,-1.0/3.0,T,U);
+	G1(3,3) = G1(9,9)   = Gamma1SU(-1.0/3.0,-1.0/3.0,-1.0/3.0,-1.0/3.0,T,U);
+	G1(4,4) = G1(10,10) = Gamma1SU(-1.0/3.0,2.0/3.0,2.0/3.0,-1.0/3.0,T,U);
+	G1(5,5) = G1(11,11) = Gamma1SU( 2.0/3.0,-1.0/3.0,-1.0/3.0,2.0/3.0,T,U);
+      }
+      else
+	assert(false);
       for (unsigned int i=0; i<numBrokenGauge/2; i++) {
 	G3(i,i)     += gam3(0,0);
 	G3(i,i+6)   += gam3(0,1);
 	G3(i+6,i)   += gam3(1,0);
 	G3(i+6,i+6) += gam3(1,1);
       }
-      G1(0,0) = G1(6,6)   = Gamma1(2.0/3.0,2.0/3.0,2.0/3.0,2.0/3.0,T,U);
-      G1(1,1) = G1(7,7)   = Gamma1(-1.0/3.0,-1.0/3.0,2.0/3.0,2.0/3.0,T,U);
-      G1(2,2) = G1(8,8)   = Gamma1(2.0/3.0,2.0/3.0,-1.0/3.0,-1.0/3.0,T,U);
-      G1(3,3) = G1(9,9)   = Gamma1(-1.0/3.0,-1.0/3.0,-1.0/3.0,-1.0/3.0,T,U);
-      G1(4,4) = G1(10,10) = Gamma1(-1.0/3.0,2.0/3.0,2.0/3.0,-1.0/3.0,T,U);
-      G1(5,5) = G1(11,11) = Gamma1(2.0/3.0,-1.0/3.0,-1.0/3.0,2.0/3.0,T,U);
     }
     break;
   case QQUU:
   case QtQtUU:
   case QQtRtR:
     {
-      assert(iswap==0);
       numBrokenGauge = 4;
       G1 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
       G2 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
       G3 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-      matrix<Complex> gam3 = Gamma3(U,T);
+      matrix<Complex> gam3;
+      if(iswap==0) {
+	gam3 = Gamma3(U,T);
+	G1(0,0) = G1(2,2) = Gamma1(2.0/3.0,2.0/3.0,T,U);
+	G1(1,1) = G1(3,3) = Gamma1(2.0/3.0,-1.0/3.0,T,U);
+      }
+      else if(iswap==1) {
+	gam3 = Gamma3ST(U,T);
+	G1(0,0) = G1(2,2) = Gamma1ST(2.0/3.0,2.0/3.0,T,U);
+	G1(1,1) = G1(3,3) = Gamma1ST(2.0/3.0,-1.0/3.0,T,U);
+      }
+      else if(iswap==2) {
+	gam3 = Gamma3SU(U,T);
+	G1(0,0) = G1(2,2) = Gamma1SU(2.0/3.0,2.0/3.0,T,U);
+	G1(1,1) = G1(3,3) = Gamma1SU(2.0/3.0,-1.0/3.0,T,U);
+      }
+      else
+	assert(false);
+		    
       for (unsigned int i=0; i<numBrokenGauge/2; i++) {
 	G3(i,i)     += gam3(0,0);
 	G3(i,i+2)   += gam3(0,1);
 	G3(i+2,i)   += gam3(1,0);
 	G3(i+2,i+2) += gam3(1,1);
       }
-      G1(0,0) = G1(2,2) = Gamma1(2.0/3.0,2.0/3.0,T,U);
-      G1(1,1) = G1(3,3) = Gamma1(2.0/3.0,-1.0/3.0,T,U);
     }
     break;
   case QQDD:
   case QtQtDD:
     {
-      assert(iswap==0);
       numBrokenGauge = 4;
       G1 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
       G2 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
       G3 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-      matrix<Complex> gam3 = Gamma3(U,T);
+      matrix<Complex> gam3;
+      if(iswap==0) {
+	gam3 = Gamma3(U,T);
+	G1(0,0) = G1(2,2) = Gamma1(-1.0/3.0,2.0/3.0,T,U);
+	G1(1,1) = G1(3,3) = Gamma1(-1.0/3.0,-1.0/3.0,T,U);
+      }
+      else if(iswap==1) {
+	gam3 = Gamma3ST(U,T);
+	G1(0,0) = G1(2,2) = Gamma1ST(-1.0/3.0,2.0/3.0,T,U);
+	G1(1,1) = G1(3,3) = Gamma1ST(-1.0/3.0,-1.0/3.0,T,U);
+      }
+      else if(iswap==2) {
+	gam3 = Gamma3SU(U,T);
+	G1(0,0) = G1(2,2) = Gamma1SU(-1.0/3.0,2.0/3.0,T,U);
+	G1(1,1) = G1(3,3) = Gamma1SU(-1.0/3.0,-1.0/3.0,T,U);
+      }
+      else
+	assert(false);
       for (unsigned int i=0; i<numBrokenGauge/2; i++) {
 	G3(i,i) += gam3(0,0);
 	G3(i,i+2) += gam3(0,1);
 	G3(i+2,i) += gam3(1,0);
 	G3(i+2,i+2) += gam3(1,1);
       }
-      G1(0,0) = G1(2,2) = Gamma1(-1.0/3.0,2.0/3.0,T,U);
-      G1(1,1) = G1(3,3) = Gamma1(-1.0/3.0,-1.0/3.0,T,U);
     }
     break;
   case QQLL:
@@ -208,23 +259,45 @@ SoftSudakov::lowEnergyRunning(Energy EWScale, Energy lowScale,
   case UUUU:
   case UUUUiden:
   case tRtRUU:
-    assert(iswap==0);
     numBrokenGauge = 2;
     G1 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
     G2 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
     G3 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G3 = Gamma3(U,T);
-    G1(0,0) = G1(1,1) = Gamma1(2.0/3.0,2.0/3.0,T,U);
+    if(iswap==0) {
+      G3 = Gamma3(U,T);
+      G1(0,0) = G1(1,1) = Gamma1(2.0/3.0,2.0/3.0,T,U);
+    }
+    else if(iswap==1) {
+      G3 = Gamma3ST(U,T);
+      G1(0,0) = G1(1,1) = Gamma1ST(2.0/3.0,2.0/3.0,T,U);
+    }
+    else if(iswap==2) {
+      G3 = Gamma3SU(U,T);
+      G1(0,0) = G1(1,1) = Gamma1SU(2.0/3.0,2.0/3.0,T,U);
+    }
+    else
+      assert(false);
     break;
   case UUDD:
   case tRtRDD:
-    assert(iswap==0);
     numBrokenGauge = 2;
     G1 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
     G2 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
     G3 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G3 = Gamma3(U,T);
-    G1(0,0) = G1(1,1) = Gamma1(-1.0/3.0,2.0/3.0,T,U);
+    if(iswap==0) {
+      G3 = Gamma3(U,T);
+      G1(0,0) = G1(1,1) = Gamma1(-1.0/3.0,2.0/3.0,T,U);
+    }
+    else if(iswap==1) {
+      G3 = Gamma3ST(U,T);
+      G1(0,0) = G1(1,1) = Gamma1ST(-1.0/3.0,2.0/3.0,T,U);
+    }
+    else if(iswap==2) {
+      G3 = Gamma3SU(U,T);
+      G1(0,0) = G1(1,1) = Gamma1SU(-1.0/3.0,2.0/3.0,T,U);
+    }
+    else
+      assert(false);
     break;
   case UULL:
     assert(iswap==0);
@@ -247,13 +320,24 @@ SoftSudakov::lowEnergyRunning(Energy EWScale, Energy lowScale,
     break;
   case DDDD:
   case DDDDiden:
-    assert(iswap==0);
     numBrokenGauge = 2;
     G1 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
     G2 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
     G3 = zero_matrix<Complex>(numBrokenGauge,numBrokenGauge);
-    G3 = Gamma3(U,T);
-    G1(0,0) = G1(1,1) = Gamma1(-1.0/3.0,-1.0/3.0,T,U);
+    if(iswap==0) {
+      G3 = Gamma3(U,T);
+      G1(0,0) = G1(1,1) = Gamma1(-1.0/3.0,-1.0/3.0,T,U);
+    }
+    else if(iswap==1) {
+      G3 = Gamma3ST(U,T);
+      G1(0,0) = G1(1,1) = Gamma1ST(-1.0/3.0,-1.0/3.0,T,U);
+    }
+    else if(iswap==2) {
+      G3 = Gamma3SU(U,T);
+      G1(0,0) = G1(1,1) = Gamma1SU(-1.0/3.0,-1.0/3.0,T,U);
+    }
+    else
+      assert(false);
     break;
   case DDLL:
     assert(iswap==0);
@@ -416,6 +500,11 @@ SoftSudakov::lowEnergyRunning(Energy EWScale, Energy lowScale,
 	gam1a = Gamma1ST( 2./3.,0.,T,U);
 	gam1b = Gamma1ST(-1./3.,0.,T,U);
       }
+      else if(iswap==2) {
+	gam3g = Gamma3gSU(U,T);
+	gam1a = Gamma1SU( 2./3.,0.,T,U);
+	gam1b = Gamma1SU(-1./3.,0.,T,U);
+      }
       else
 	assert(false);
       for(unsigned int ix=0;ix<3;++ix) {
@@ -536,6 +625,10 @@ SoftSudakov::lowEnergyRunning(Energy EWScale, Energy lowScale,
 	G3   = Gamma3gST(U,T);
 	gam1 = Gamma1ST(Y,0.,T,U);
       }
+      else if(iswap==2) {
+	G3   = Gamma3gSU(U,T);
+	gam1 = Gamma1SU(Y,0.,T,U);
+      } 
       else
 	assert(false);    
       G1(0,0) = G1(1,1) = G1(2,2) = gam1;
@@ -633,12 +726,28 @@ SoftSudakov::highEnergyRunning(Energy highScale, Energy EWScale,
   case QQQQiden:
   case QtQtQQ:
     {
-      assert(iswap==0);
       numGauge = 4;
       G1 = zero_matrix<Complex>(numGauge,numGauge);
       G2 = zero_matrix<Complex>(numGauge,numGauge);
       G3 = zero_matrix<Complex>(numGauge,numGauge);
-      matrix<Complex> gam3 = Gamma3(U,T);
+      matrix<Complex> gam3,gam2;
+      if(iswap==0) {
+	gam3 = Gamma3(U,T);
+	gam2 = Gamma2(U,T);
+	G1(0,0) = G1(1,1) = G1(2,2) = G1(3,3) = Gamma1(1.0/6.0,1.0/6.0,T,U);
+      }
+      else if(iswap==1) {
+	gam3 = Gamma3ST(U,T);
+	gam2 = Gamma2ST(U,T);
+	G1(0,0) = G1(1,1) = G1(2,2) = G1(3,3) = Gamma1ST(1.0/6.0,1.0/6.0,T,U);
+      }
+      else if(iswap==2) {
+	gam3 = Gamma3SU(U,T);
+	gam2 = Gamma2SU(U,T);
+	G1(0,0) = G1(1,1) = G1(2,2) = G1(3,3) = Gamma1SU(1.0/6.0,1.0/6.0,T,U);
+      }
+      else
+	assert(false);
       G3(0,0) += gam3(0,0);
       G3(0,2) += gam3(0,1);
       G3(2,0) += gam3(1,0);
@@ -647,7 +756,6 @@ SoftSudakov::highEnergyRunning(Energy highScale, Energy EWScale,
       G3(1,3) += gam3(0,1);
       G3(3,1) += gam3(1,0);
       G3(3,3) += gam3(1,1);
-      matrix<Complex> gam2 = Gamma2(U,T);
       G2(0,0) += gam2(0,0);
       G2(0,1) += gam2(0,1);
       G2(1,0) += gam2(1,0);
@@ -656,27 +764,52 @@ SoftSudakov::highEnergyRunning(Energy highScale, Energy EWScale,
       G2(2,3) += gam2(0,1);
       G2(3,2) += gam2(1,0);
       G2(3,3) += gam2(1,1);
-      G1(0,0) = G1(1,1) = G1(2,2) = G1(3,3) = Gamma1(1.0/6.0,1.0/6.0,T,U);
     }
     break;
   case QQUU:
   case QtQtUU:
   case QQtRtR:
-    assert(iswap==0);
     numGauge = 2;
     G1 = zero_matrix<Complex>(numGauge,numGauge);
-    G3 = Gamma3(U,T);
-    G2 = Gamma2Singlet();
-    G1(0,0) = G1(1,1) = Gamma1(2.0/3.0,1.0/6.0,T,U);
+    if(iswap==0) {
+      G3 = Gamma3(U,T);
+      G2 = Gamma2Singlet();
+      G1(0,0) = G1(1,1) = Gamma1(2.0/3.0,1.0/6.0,T,U);
+    }
+    else if(iswap==1) {
+      G3 = Gamma3ST(U,T);
+      G2 = Gamma2SingletST(T);
+      G1(0,0) = G1(1,1) = Gamma1ST(2.0/3.0,1.0/6.0,T,U);
+    }
+    else if(iswap==2) {
+      G3 = Gamma3SU(U,T);
+      G2 = Gamma2SingletSU(U);
+      G1(0,0) = G1(1,1) = Gamma1SU(2.0/3.0,1.0/6.0,T,U);
+    }
+    else
+      assert(false);
     break;
   case QQDD:
   case QtQtDD:
-    assert(iswap==0);
     numGauge = 2;
     G1 = zero_matrix<Complex>(numGauge,numGauge);
-    G3 = Gamma3(U,T);
-    G2 = Gamma2Singlet();
-    G1(0,0) = G1(1,1) = Gamma1(-1.0/3.0,1.0/6.0,T,U);
+    if(iswap==0) {
+      G3 = Gamma3(U,T);
+      G2 = Gamma2Singlet();
+      G1(0,0) = G1(1,1) = Gamma1(-1.0/3.0,1.0/6.0,T,U);
+    }
+    else if(iswap==1) {
+      G3 = Gamma3ST(U,T);
+      G2 = Gamma2SingletST(T);
+      G1(0,0) = G1(1,1) = Gamma1ST(-1.0/3.0,1.0/6.0,T,U);
+    }
+    else if(iswap==2) {
+      G3 = Gamma3SU(U,T);
+      G2 = Gamma2SingletSU(U);
+      G1(0,0) = G1(1,1) = Gamma1SU(-1.0/3.0,1.0/6.0,T,U);
+    }
+    else
+      assert(false);
     break;
   case QQLL:
     assert(iswap==0);
@@ -699,21 +832,43 @@ SoftSudakov::highEnergyRunning(Energy highScale, Energy EWScale,
   case UUUU:
   case UUUUiden:
   case tRtRUU:
-    assert(iswap==0);
     numGauge = 2;
     G1 = zero_matrix<Complex>(numGauge,numGauge);
     G2 = zero_matrix<Complex>(numGauge,numGauge);
-    G3 = Gamma3(U,T);
-    G1(0,0) = G1(1,1) = Gamma1(2.0/3.0,2.0/3.0,T,U);
+    if(iswap==0) {
+      G3 = Gamma3(U,T);
+      G1(0,0) = G1(1,1) = Gamma1(2.0/3.0,2.0/3.0,T,U);
+    }
+    else if(iswap==1) {
+      G3 = Gamma3ST(U,T);
+      G1(0,0) = G1(1,1) = Gamma1ST(2.0/3.0,2.0/3.0,T,U);
+    }
+    else if(iswap==2) {
+      G3 = Gamma3SU(U,T);
+      G1(0,0) = G1(1,1) = Gamma1SU(2.0/3.0,2.0/3.0,T,U);
+    }
+    else
+      assert(false);
     break;
   case UUDD:
   case tRtRDD:
-    assert(iswap==0);
     numGauge = 2;
     G1 = zero_matrix<Complex>(numGauge,numGauge);
     G2 = zero_matrix<Complex>(numGauge,numGauge);
-    G3 = Gamma3(U,T);
-    G1(0,0) = G1(1,1) = Gamma1(-1.0/3.0,2.0/3.0,T,U);
+    if(iswap==0) {
+      G3 = Gamma3(U,T);
+      G1(0,0) = G1(1,1) = Gamma1(-1.0/3.0,2.0/3.0,T,U);
+    }
+    else if(iswap==1) {
+      G3 = Gamma3ST(U,T);
+      G1(0,0) = G1(1,1) = Gamma1ST(-1.0/3.0,2.0/3.0,T,U);
+    }
+    else if(iswap==2) {
+      G3 = Gamma3SU(U,T);
+      G1(0,0) = G1(1,1) = Gamma1SU(-1.0/3.0,2.0/3.0,T,U);
+    }
+    else
+      assert(false);
     break;
   case UULL:
     assert(iswap==0);
@@ -736,12 +891,23 @@ SoftSudakov::highEnergyRunning(Energy highScale, Energy EWScale,
     break;
   case DDDD:
   case DDDDiden:
-    assert(iswap==0);
     numGauge = 2;
     G1 = zero_matrix<Complex>(numGauge,numGauge);
     G2 = zero_matrix<Complex>(numGauge,numGauge);
-    G3 = Gamma3(U,T);
-    G1(0,0) = G1(1,1) = Gamma1(-1.0/3.0,-1.0/3.0,T,U);
+    if(iswap==0) {
+      G3 = Gamma3(U,T);
+      G1(0,0) = G1(1,1) = Gamma1(-1.0/3.0,-1.0/3.0,T,U);
+    }
+    else if(iswap==1) {
+      G3 = Gamma3ST(U,T);
+      G1(0,0) = G1(1,1) = Gamma1ST(-1.0/3.0,-1.0/3.0,T,U);
+    }
+    else if(iswap==2) {
+      G3 = Gamma3SU(U,T);
+      G1(0,0) = G1(1,1) = Gamma1SU(-1.0/3.0,-1.0/3.0,T,U);
+    }
+    else
+      assert(false);
     break;
   case DDLL:
     assert(iswap==0);
@@ -848,6 +1014,11 @@ SoftSudakov::highEnergyRunning(Energy highScale, Energy EWScale,
 	gam2s = Gamma2SingletST(T)(0,0);
 	gam1  = Gamma1ST(1.0/6.0,T);
       }
+      else if(iswap==2) {
+	G3    = Gamma3gSU(U,T);
+	gam2s = Gamma2SingletSU(U)(0,0);
+	gam1  = Gamma1SU(1.0/6.0,U);
+      }
       else
 	assert(false);
       for (unsigned int i=0; i<3; i++) {
@@ -918,6 +1089,10 @@ SoftSudakov::highEnergyRunning(Energy highScale, Energy EWScale,
       else if(iswap==1) {
 	G3 = Gamma3gST(U,T);
 	gam1 = Gamma1ST(Y,T);
+      }
+      else if(iswap==2) {
+	G3 = Gamma3gSU(U,T);
+	gam1 = Gamma1SU(Y,U);
       }
       else
 	assert(false);

@@ -50,7 +50,6 @@ ElectroWeakMatching::electroWeakMatching(Energy mu,
   case QQQQiden:
   case QtQtQQ:
     {
-      assert(iswap==0);
       unsigned int numGauge = 4, numBrokenGauge = 12;
       R0=boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge);
       G2=boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
@@ -69,11 +68,51 @@ ElectroWeakMatching::electroWeakMatching(Energy mu,
 	double g12 = g_Ld;
 	double g21 = g_Lu;
 	double g22 = g_Ld;
-	for(unsigned int ix=0;ix<numBrokenGauge;++ix) {
-	  Dw(ix,ix) = 0.5*I*pi;
+	Complex w0(0.),w1(0.),w2(0.);
+	Complex z1(0.),z2(0.),z3(0.),z4(0.),z5(0.);
+	boost::numeric::ublas::matrix<Complex> gam2;
+	if(iswap==0) {
+	  w0 = 0.5*I*pi;
+	  w1 = -0.5*(T-U);
+	  w2 = -0.5*(T+U);
+	  z1 = 2.0*g11*g21*(T-U) - I*pi*(g11*g11+g21*g21);
+	  z2 = 2.0*g21*g12*(T-U) - I*pi*(g21*g21+g12*g12);
+	  z3 = 2.0*g22*g11*(T-U) - I*pi*(g22*g22+g11*g11);
+	  z4 = 2.0*g12*g22*(T-U) - I*pi*(g12*g12+g22*g22);
+	  z5 = (g11*g21+g12*g22)*T - (g21*g12+g11*g22)*U 
+	    - 0.5*I*pi*(g11*g11+g12*g12+g21*g21+g22*g22);
+	  gam2 = Gamma2(U,T);
 	}
-	Complex w1 = -0.5*(T-U);
-	Complex w2 = -0.5*(T+U);
+	else if(iswap==1) {
+	  w0 = -0.5*(T-I*pi);
+	  w1 =  0.5*U;
+	  w2 = -0.5*(U-2.*T);
+	  z1 = 2.0*g11*g21*(-U) + ( T- I*pi)*(g11*g11+g21*g21);
+	  z2 = 2.0*g21*g12*(-U) + ( T- I*pi)*(g21*g21+g12*g12);
+	  z3 = 2.0*g22*g11*(-U) + ( T- I*pi)*(g22*g22+g11*g11);
+	  z4 = 2.0*g12*g22*(-U) + ( T- I*pi)*(g12*g12+g22*g22);
+	  z5 = -(g11*g21+g12*g22)*T - (g21*g12+g11*g22)*(U-T) 
+	    + 0.5*(T-I*pi)*(g11*g11+g12*g12+g21*g21+g22*g22);
+	  gam2 = Gamma2ST(U,T);
+	}
+	else if(iswap==2) {
+	  w0 = -0.5*(U-I*pi);
+	  w1 = -0.5*T;
+	  w2 = -0.5*(T-2.*U);
+	  z1 = 2.0*g11*g21*T +(U-I*pi)*(g11*g11+g21*g21);
+	  z2 = 2.0*g21*g12*T +(U-I*pi)*(g21*g21+g12*g12);
+	  z3 = 2.0*g22*g11*T +(U-I*pi)*(g22*g22+g11*g11);
+	  z4 = 2.0*g12*g22*T +(U-I*pi)*(g12*g12+g22*g22);
+	  z5 = (g11*g21+g12*g22)*(T-U) + (g21*g12+g11*g22)*U 
+	    + 0.5*(U-I*pi)*(g11*g11+g12*g12+g21*g21+g22*g22);
+	  gam2 = Gamma2SU(U,T);
+	}
+	else
+	  assert(false);
+	// Dw
+	for(unsigned int ix=0;ix<numBrokenGauge;++ix) {
+	  Dw(ix,ix) = w0;
+	}
 	for(unsigned int ix=0;ix<numBrokenGauge;ix+=6) {
 	  Dw(ix+0,ix+0) += w1;
 	  Dw(ix+3,ix+3) += w1;
@@ -82,12 +121,7 @@ ElectroWeakMatching::electroWeakMatching(Energy mu,
 	  Dw(ix+4,ix+4) += w2; 
 	  Dw(ix+5,ix+5) += w2;
 	}
-	Complex z1 = 2.0*g11*g21*(T-U) - I*pi*(g11*g11+g21*g21);
-	Complex z2 = 2.0*g21*g12*(T-U) - I*pi*(g21*g21+g12*g12);
-	Complex z3 = 2.0*g22*g11*(T-U) - I*pi*(g22*g22+g11*g11);
-	Complex z4 = 2.0*g12*g22*(T-U) - I*pi*(g12*g12+g22*g22);
-	Complex z5 = (g11*g21+g12*g22)*T - (g21*g12+g11*g22)*U 
-	  - 0.5*I*pi*(g11*g11+g12*g12+g21*g21+g22*g22);
+	// DZ
 	for(unsigned int ix=0;ix<numBrokenGauge;ix+=6) {
 	  Dz(ix+0,ix+0) = z1;
 	  Dz(ix+1,ix+1) = z2;
@@ -96,7 +130,7 @@ ElectroWeakMatching::electroWeakMatching(Energy mu,
 	  Dz(ix+4,ix+4) = z5;
 	  Dz(ix+5,ix+5) = z5;
 	}  
-	boost::numeric::ublas::matrix<Complex> gam2 = Gamma2(U,T);
+	// G2
 	G2(0,0) += gam2(0,0);
 	G2(0,1) += gam2(0,1);
 	G2(1,0) += gam2(1,0);
@@ -112,7 +146,6 @@ ElectroWeakMatching::electroWeakMatching(Energy mu,
   case QtQtUU:
   case QQtRtR:
     {
-      assert(iswap==0);
       unsigned int numGauge = 2, numBrokenGauge = 4;
       R0 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge);
       G2 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
@@ -124,24 +157,39 @@ ElectroWeakMatching::electroWeakMatching(Energy mu,
 	double g12 = g_Ld;
 	//double g21 = g_Ru;
 	double g22 = g_Ru;
-        
-	Complex w1 = 0.25*I*pi;
+	Complex w1(0.),z1(0.),z2(0.);
+	if(iswap==0) {
+	  w1 = 0.25*I*pi;
+	  z1 = 2.0*g11*g22*(T-U) - I*pi*(g11*g11+g22*g22);
+	  z2 = 2.0*g12*g22*(T-U) - I*pi*(g12*g12+g22*g22);
+	  G2 = Gamma2Singlet();
+	}
+	else if(iswap==1) {
+	  w1 = -0.25*(T-I*pi);
+	  z1 = -2.0*g11*g22*U +(T-I*pi)*(g11*g11+g22*g22);
+	  z2 = -2.0*g12*g22*U +(T-I*pi)*(g12*g12+g22*g22);
+	  G2 = Gamma2SingletST(T);
+	}
+	else if(iswap==2) {
+	  w1 = -0.25*(U-I*pi);
+	  z1 = 2.0*g11*g22*T +(U-I*pi)*(g11*g11+g22*g22);
+	  z2 = 2.0*g12*g22*T +(U-I*pi)*(g12*g12+g22*g22);
+	  G2 = Gamma2SingletSU(U);
+	}
+	else
+	  assert(false);
 	for(unsigned int ix=0;ix<numBrokenGauge;++ix) Dw(ix,ix) = w1;
 	
-	Complex z1 = 2.0*g11*g22*(T-U) - I*pi*(g11*g11+g22*g22);
-	Complex z2 = 2.0*g12*g22*(T-U) - I*pi*(g12*g12+g22*g22);
 	for(unsigned int ix=0;ix<numBrokenGauge;ix+=2) {
 	  Dz(ix+0,ix+0) = z1;
 	  Dz(ix+1,ix+1) = z2;
 	}
-	G2 = Gamma2Singlet();
       }
     }
     break;
   case QQDD:
   case QtQtDD:
     {
-      assert(iswap==0);
       unsigned int numGauge = 2, numBrokenGauge = 4;
       R0 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge);
       G2 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
@@ -153,17 +201,32 @@ ElectroWeakMatching::electroWeakMatching(Energy mu,
 	double g12 = g_Ld;
 	//double g21 = g_Rd;
 	double g22 = g_Rd;
-        
-	Complex w1 = 0.25*I*pi;
+	Complex w1(0.),z1(0.),z2(0.);
+        if(iswap==0) {
+	  w1 = 0.25*I*pi;
+	  z1 = 2.0*g11*g22*(T-U) - I*pi*(g11*g11+g22*g22);
+	  z2 = 2.0*g12*g22*(T-U) - I*pi*(g12*g12+g22*g22);
+	  G2 = Gamma2Singlet();
+	}
+	else if(iswap==1) {
+	  w1 =-0.25*(T-I*pi);
+	  z1 =-2.0*g11*g22*U + (T-I*pi)*(g11*g11+g22*g22);
+	  z2 =-2.0*g12*g22*U + (T-I*pi)*(g12*g12+g22*g22);
+	  G2 = Gamma2SingletST(T);
+	}
+        else if(iswap==2) {
+	  w1 =-0.25*(U-I*pi);
+	  z1 = 2.0*g11*g22*T + (U-I*pi)*(g11*g11+g22*g22);
+	  z2 = 2.0*g12*g22*T + (U-I*pi)*(g12*g12+g22*g22);
+	  G2 = Gamma2Singlet();
+	}
+	else
+	  assert(false);
 	for(unsigned int ix=0;ix<numBrokenGauge;++ix) Dw(ix,ix) = w1;
-        
-	Complex z1 = 2.0*g11*g22*(T-U) - I*pi*(g11*g11+g22*g22);
-	Complex z2 = 2.0*g12*g22*(T-U) - I*pi*(g12*g12+g22*g22);
 	for(unsigned int ix=0;ix<numBrokenGauge;ix+=2) {
 	  Dz(ix+0,ix+0) = z1;
 	  Dz(ix+1,ix+1) = z2;
 	}
-	G2 = Gamma2Singlet();
       }
     }
     break;
@@ -244,7 +307,6 @@ ElectroWeakMatching::electroWeakMatching(Energy mu,
   case UUUUiden:
   case tRtRUU:
     {
-      assert(iswap==0);
       unsigned int numGauge = 2, numBrokenGauge = 2;
       R0 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge);
       G2 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
@@ -257,7 +319,16 @@ ElectroWeakMatching::electroWeakMatching(Energy mu,
 	//double g21 = g_Ru;
 	double g22 = g_Ru;
 	// There is no Dw contribution for two SU(2) singlets.
-	Complex z1 = 2.0*g11*g22*(T-U) - I*pi*(g11*g11+g22*g22);
+	Complex z1(0.);
+	if(iswap==0) {
+	  z1 = 2.0*g11*g22*(T-U) - I*pi*(g11*g11+g22*g22);
+	}
+	else if(iswap==1) {
+	  z1 =-2.0*g11*g22*U + (T-I*pi)*(g11*g11+g22*g22);
+	}
+	else if(iswap==2) {
+	  z1 = 2.0*g11*g22*T + (U-I*pi)*(g11*g11+g22*g22);
+	}
 	Dz(0,0) = Dz(1,1) = z1;
       }
     }
@@ -265,7 +336,6 @@ ElectroWeakMatching::electroWeakMatching(Energy mu,
   case UUDD:
   case tRtRDD:
     {
-      assert(iswap==0);
       unsigned int numGauge = 2, numBrokenGauge = 2;
       R0 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge);
       G2 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
@@ -278,7 +348,18 @@ ElectroWeakMatching::electroWeakMatching(Energy mu,
 	//double g21 = g_Rd;
 	double g22 = g_Rd;
 	// There is no Dw contribution for two SU(2) singlets.
-	Complex z1 = 2.0*g11*g22*(T-U) - I*pi*(g11*g11+g22*g22);
+	Complex z1(0.);
+	if(iswap==0) {
+	  z1 = 2.0*g11*g22*(T-U) - I*pi*(g11*g11+g22*g22);
+	}
+	else if(iswap==1) {
+	  z1 =-2.0*g11*g22*U + (T-I*pi)*(g11*g11+g22*g22);
+	}
+	else if(iswap==2) {
+	  z1 = 2.0*g11*g22*T + (U-I*pi)*(g11*g11+g22*g22);
+	}
+	else
+	  assert(false);
 	Dz(0,0) = Dz(1,1) = z1;
       }
     }
@@ -333,7 +414,6 @@ ElectroWeakMatching::electroWeakMatching(Energy mu,
   case DDDD:
   case DDDDiden:
     {
-      assert(iswap==0);
       unsigned int numGauge = 2, numBrokenGauge = 2;
       R0 = boost::numeric::ublas::zero_matrix<Complex>(numBrokenGauge,numGauge);
       G2 = boost::numeric::ublas::zero_matrix<Complex>(numGauge,numGauge);
@@ -346,7 +426,18 @@ ElectroWeakMatching::electroWeakMatching(Energy mu,
 	//double g21 = g_Rd;
 	double g22 = g_Rd;
 	// There is no Dw contribution for two SU(2) singlets.
-	Complex z1 = 2.0*g11*g22*(T-U) - I*pi*(g11*g11+g22*g22);
+	Complex z1(0.);
+	if(iswap==0) {
+	  z1 = 2.0*g11*g22*(T-U) - I*pi*(g11*g11+g22*g22);
+	}
+	else if(iswap==1) {
+	  z1 =-2.0*g11*g22*U +(T-I*pi)*(g11*g11+g22*g22);
+	}
+	else if(iswap==2) {
+	  z1 = 2.0*g11*g22*T +(U-I*pi)*(g11*g11+g22*g22);
+	}
+	else
+	  assert(false);
 	Dz(0,0) = Dz(1,1) = z1;
       }
     }
@@ -747,6 +838,12 @@ ElectroWeakMatching::electroWeakMatching(Energy mu,
 	  z4 = (T-I*pi)*sqr(g2);
 	  G2(0,0) = G2(1,1) = G2(2,2) = Gamma2SingletST(T)(0,0);
 	}
+	else if(iswap==2) {
+	  w2 = 0.25*(-U+I*pi);
+	  z3 = (U-I*pi)*g1*g1;
+	  z4 = (U-I*pi)*g2*g2;
+	  G2(0,0) = G2(1,1) = G2(2,2) = Gamma2SingletSU(U)(0,0);
+	}
 	else
 	  assert(false);
 	Dw(0,0) = Dw(1,1) = Dw(2,2) = Dw(3,3) = Dw(4,4) = Dw(5,5) = w2;
@@ -884,6 +981,9 @@ ElectroWeakMatching::electroWeakMatching(Energy mu,
 	}
 	else if(iswap==1) {
 	  z1 = (T-I*pi)*sqr(g1);
+	}
+	else if(iswap==2) {
+	  z1 = (U-I*pi)*sqr(g1);
 	}
 	else
 	  assert(false);
