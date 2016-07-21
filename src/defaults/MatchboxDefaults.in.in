@@ -675,6 +675,9 @@ set LeptonCut:Matcher /Herwig/Matchers/Lepton
 cp IdentifiedParticleCut ChargedLeptonCut
 set ChargedLeptonCut:Matcher /Herwig/Matchers/ChargedLepton
 
+cp IdentifiedParticleCut BottomQuarkCut
+set BottomQuarkCut:Matcher /Herwig/Matchers/Bottom
+
 cp IdentifiedParticleCut TopQuarkCut
 set TopQuarkCut:Matcher /Herwig/Matchers/Top
 
@@ -716,6 +719,8 @@ set ChargedLeptonPairMassCut:SecondMatcher /Herwig/Matchers/ChargedLepton
 create Herwig::MissingPtCut MissingPtCut
 set MissingPtCut:Matcher /Herwig/Matchers/Neutrino
 
+
+
 ################################################################################
 # Setup scale choices
 ################################################################################
@@ -736,8 +741,10 @@ create Herwig::MatchboxTopMassScale TopPairMassScale
 create Herwig::MatchboxTopMTScale TopPairMTScale
 set HTScale:JetFinder /Herwig/Cuts/JetFinder
 set HTScale:IncludeMT No
+set HTScale:JetPtCut 15.*GeV
 cp HTScale HTPrimeScale
 set HTPrimeScale:IncludeMT Yes
+set HTPrimeScale:JetPtCut 15.*GeV
 cp LeptonPairMassScale LeptonQ2Scale
 
 set /Herwig/MatrixElements/Matchbox/Factory:ScaleChoice LeptonPairMassScale
