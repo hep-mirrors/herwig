@@ -13,6 +13,7 @@
 #include <vector>
 #include "ThePEG/Config/Complex.h"
 #include "ThePEG/Utilities/Maths.h"
+#include "ThePEG/Config/TemplateTools.h"
 
 namespace Herwig {
 using ThePEG::Complex;

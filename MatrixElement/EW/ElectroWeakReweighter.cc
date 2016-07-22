@@ -129,7 +129,7 @@ void axpy_prod_local(const boost::numeric::ublas::matrix<Complex> & A,
 }
 
 void axpy_prod_local(const boost::numeric::ublas::matrix<Complex> & A,
-		     const boost::numeric::ublas::matrix<Complex> & B,
+		     const boost::numeric::ublas::vector<Complex> & B,
 		     boost::numeric::ublas::vector<Complex> & C) {
   axpy_prod(A,B,C);
 }
