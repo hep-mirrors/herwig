@@ -122,9 +122,9 @@ void axpy_prod_local(const boost::numeric::ublas::matrix<complex<InvEnergy2> > &
 }
 
 #else
-void axpy_prod_local(const boost::numeric::ublas::matrix<Complex> > & A,
+void axpy_prod_local(const boost::numeric::ublas::matrix<Complex> & A,
 		     const boost::numeric::ublas::matrix<Complex> & B,
-		     boost::numeric::ublas::matrix<Complex> > & C) {
+		     boost::numeric::ublas::matrix<Complex> & C) {
   axpy_prod(A,B,C);
 }
 #endif
