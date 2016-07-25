@@ -1,37 +1,58 @@
 // -*- C++ -*-
-#ifndef Herwig_QTildeShowerHandler_H
-#define Herwig_QTildeShowerHandler_H
 //
-// This is the declaration of the QTildeShowerHandler class.
+// Evolver.h is a part of Herwig - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2011 The Herwig Collaboration
+//
+// Herwig is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+#ifndef HERWIG_Evolver_H
+#define HERWIG_Evolver_H
+//
+// This is the declaration of the Evolver class.
 //
 
-#include "QTildeShowerHandler.fh"
-#include "Herwig/Shower/ShowerHandler.h"
-#include "Herwig/Shower/QTilde/Base/ShowerModel.h"
-#include "Herwig/Shower/QTilde/SplittingFunctions/SplittingGenerator.h"
-#include "Herwig/Shower/QTilde/Base/ShowerTree.h"
-#include "Herwig/Shower/QTilde/Base/ShowerProgenitor.fh"
-#include "Herwig/Shower/QTilde/Base/HardTree.h"
-#include "Herwig/Shower/QTilde/Base/Branching.h"
-#include "Herwig/Shower/QTilde/Base/ShowerVeto.h"
-#include "Herwig/Shower/QTilde/Base/FullShowerVeto.h"
+#include "ThePEG/Interface/Interfaced.h"
+#include "Herwig/Shower/SplittingFunctions/SplittingGenerator.h"
+#include "ShowerModel.h"
+#include "ThePEG/PDF/BeamParticleData.h"
+#include "ShowerTree.h"
+#include "ShowerProgenitor.fh"
+#include "Herwig/Shower/ShowerHandler.fh"
+#include "Branching.h"
+#include "ShowerVeto.h"
+#include "FullShowerVeto.h"
+#include "HardTree.h"
+#include "ThePEG/Handlers/XComb.h"
+#include "Evolver.fh"
 #include "Herwig/MatrixElement/HwMEBase.h"
 #include "Herwig/Decay/HwDecayerBase.h"
 #include "Herwig/MatrixElement/Matchbox/Matching/ShowerApproximation.h"
-#include "Herwig/Shower/RealEmissionProcess.h"
 #include "Herwig/Utilities/Statistic.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
-/**
- * The QTildeShowerHandler class.
- *
- * @see \ref QTildeShowerHandlerInterfaces "The interfaces"
- * defined for QTildeShowerHandler.
+/**\ingroup Shower
+ * Exception class
+ * used to communicate failure of QED shower
  */
-class QTildeShowerHandler: public ShowerHandler {
+struct InteractionVeto {};
+
+/** \ingroup Shower
+ * The Evolver class class performs the sohwer evolution of hard scattering 
+ * and decay processes in Herwig.
+ *
+ * @see \ref EvolverInterfaces "The interfaces"
+ * defined for Evolver.
+ */
+class Evolver: public Interfaced {
+
+/**
+ *  The ShowerHandler is a friend to set some parameters at initialisation
+ */
+friend class ShowerHandler;
 
 public:
   
@@ -42,41 +63,22 @@ public:
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
-   * The default constructor.
+   *  Default Constructor
    */
-  QTildeShowerHandler();
-
-  /**
-   * The destructor.
-   */
-  virtual ~QTildeShowerHandler();
-  //@}
-
-public:
-
-  /**
-   * At the end of the Showering, transform ShowerParticle objects
-   * into ThePEG particles and fill the event record with them.
-   * Notice that the parent/child relationships and the 
-   * transformation from ShowerColourLine objects into ThePEG
-   * ColourLine ones must be properly handled.
-   */
-  void fillEventRecord();
-  
-  /**
-   * Return the relevant hard scale to be used in the profile scales
-   */
-  virtual Energy hardScale() const {
-    return muPt;
-  }
-
-  /**
-   *  Generate hard emissions for CKKW etc
-   */
-  virtual HardTreePtr generateCKKW(ShowerTreePtr tree) const;
+  Evolver() : _maxtry(100), _meCorrMode(1), _hardVetoMode(1),
+	      _hardVetoRead(0), _reconOpt(0),
+	      _hardVetoReadOption(false),
+	      _iptrms(ZERO), _beta(0.), _gamma(ZERO), _iptmax(),
+	      _limitEmissions(0), _initialenhance(1.), _finalenhance(1.),
+	      _nReWeight(100), _reWeight(false),
+	       interaction_(1), _trunc_Mode(true), _hardEmissionMode(0),
+	      _spinOpt(1), _softOpt(2), _hardPOWHEG(false),
+	      theFactorizationScaleFactor(1.0), 
+	      theRenormalizationScaleFactor(1.0), muPt(ZERO),
+	      _maxTryFSR(100000),_maxFailFSR(100),_fracFSR(0.001),
+              _nFSR(0), _nFailedFSR(0)
+  {}
 
   /**
    *  Members to perform the shower
@@ -98,6 +100,21 @@ public:
    */
   //@{
   /**
+   *  Is there any showering switched on
+   */
+  bool showeringON() const { return isISRadiationON() || isFSRadiationON(); }
+
+  /**
+   * It returns true/false if the initial-state radiation is on/off.
+   */
+  bool isISRadiationON() const { return _splittingGenerator->isISRadiationON(); }
+
+  /**
+   * It returns true/false if the final-state radiation is on/off.
+   */
+  bool isFSRadiationON() const { return _splittingGenerator->isFSRadiationON(); }
+
+  /**
    *  Get the ShowerModel
    */ 
   ShowerModelPtr showerModel() const {return _model;}
@@ -110,7 +127,27 @@ public:
   /**
    * Mode for hard emissions
    */
-  int hardEmission() const {return _hardEmission;}
+  int hardEmissionMode() const {return _hardEmissionMode;}
+
+  /**
+   * Switch on or off hard vetoes
+   */
+  void restrictPhasespace(bool yes) {
+    if ( yes )
+      _hardVetoMode = 1;
+    else
+      _hardVetoMode = 0;
+  }
+
+  /**
+   * Switch on or off hard veto scale from muF
+   */
+  void hardScaleIsMuF(bool yes) {
+    if ( yes )
+      _hardVetoRead = 1;
+    else
+      _hardVetoRead = 0;
+  }
   //@}
 
   /**
@@ -144,6 +181,53 @@ public:
   }
   //@}
 
+
+  /**
+   * Set the factorization scale factor
+   */
+  void factorizationScaleFactor(double f) { 
+    if ( f == theFactorizationScaleFactor )
+      return;
+    theFactorizationScaleFactor = f;
+    splittingGenerator()->factorizationScaleFactor(f);
+  }
+
+  /**
+   * Set the renormalization scale factor
+   */
+  void renormalizationScaleFactor(double f) {
+    if ( f == theRenormalizationScaleFactor )
+      return;
+    theRenormalizationScaleFactor = f;
+    splittingGenerator()->renormalizationScaleFactor(f);
+  }
+
+public:
+
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
+
+  /**
+   * The standard Init function used to initialize the interfaces.
+   * Called exactly once for each class by the class description system
+   * before the main function starts or
+   * when this class is dynamically loaded.
+   */
+  static void Init();
+
 protected:
 
   /**
@@ -154,17 +238,12 @@ protected:
   /**
    *  Generate the hard matrix element correction
    */
-  virtual RealEmissionProcessPtr hardMatrixElementCorrection(bool);
+  virtual void hardMatrixElementCorrection(bool);
 
   /**
    *  Generate the hardest emission
    */
   virtual void hardestEmission(bool hard);
-
-  /**
-   *  Set up for applying a matrix element correction
-   */
-  void setupMECorrection(RealEmissionProcessPtr real);
 
   /**
    * Extract the particles to be showered, set the evolution scales
@@ -253,22 +332,28 @@ protected:
   /**
    * Any ME correction?   
    */
-  bool MECOn() const { 
-    return _hardEmission == 1;
+  bool MECOn(bool hard) const {
+    return ( _hardEmissionMode == 0 ||
+	     (!hard && _hardEmissionMode ==-1) ) &&
+      _meCorrMode > 0;
   }
 
   /**
    * Any hard ME correction? 
    */
-  bool hardMEC() const {
-    return _hardEmission == 1 && (_meCorrMode == 1 || _meCorrMode == 2);
+  bool hardMEC(bool hard) const {
+    return ( _hardEmissionMode == 0 ||
+	     (!hard && _hardEmissionMode ==-1) ) &&
+      (_meCorrMode == 1 || _meCorrMode == 2);
   }
 
   /**
    * Any soft ME correction? 
    */
   bool softMEC() const {
-    return _hardEmission == 1 && (_meCorrMode == 1 || _meCorrMode > 2);
+    return ( _hardEmissionMode == 0 ||
+	     (_currenttree->isDecay() && _hardEmissionMode ==-1) ) &&
+      (_meCorrMode == 1 || _meCorrMode > 2);
   }
   //@}
 
@@ -311,6 +396,26 @@ protected:
    *  Switches for vetoing hard emissions
    */
   //@{
+  /**
+   * Vetos on? 
+   */
+  bool hardVetoOn() const { return _hardVetoMode > 0; }
+
+  /**
+   * veto hard emissions in IS shower?
+   */
+  bool hardVetoIS() const { return _hardVetoMode == 1 || _hardVetoMode == 2; }
+
+  /**
+   * veto hard emissions in FS shower?
+   */
+  bool hardVetoFS() const { return _hardVetoMode == 1 || _hardVetoMode > 2; }
+
+  /**
+   * veto hard emissions according to lastScale from XComb? 
+   */
+  bool hardVetoXComb() const {return (_hardVetoRead == 1);}
+
   /**
    * Returns true if the hard veto read-in is to be applied to only
    * the primary collision and false otherwise.
@@ -431,21 +536,16 @@ protected:
   void setupHardScales(const vector<ShowerProgenitorPtr> &,XCPtr);
 
   /**
+   * Return the relevant hard scale to be used in the profile scales
+   */
+  Energy hardScale() const {
+    return muPt;
+  }
+
+  /**
    *  Convert the HardTree into an extra shower emission 
    */
   void convertHardTree(bool hard,ShowerInteraction::Type type);
-
-protected:
-
-  /**
-   * Find the parton extracted from the incoming particle after ISR
-   */
-  PPtr findFirstParton(tPPtr seed) const;
-
-  /**
-   * Fix Remnant connections after ISR
-   */
-  tPPair remakeRemnant(tPPair oldp); 
 
 protected:
 
@@ -512,52 +612,50 @@ protected:
   bool hardOnly() const {return _limitEmissions==3;}
 
   /**
-   *  Check the flags
+   *  Members to construct the HardTree from the shower if needed
    */
-  void checkFlags();
+  //@{
+  /**
+   *  Construct the tree for a scattering process
+   */
+  bool constructHardTree(vector<ShowerProgenitorPtr> & particlesToShower,
+			 ShowerInteraction::Type inter);
 
   /**
-   *
+   *  Construct the tree for a decay process
+   */  
+  bool constructDecayTree(vector<ShowerProgenitorPtr> & particlesToShower,
+			  ShowerInteraction::Type inter);
+
+  /**
+   *  Construct a time-like line
    */
-  void addFSRUsingDecayPOWHEG(HardTreePtr ISRTree);
+  void constructTimeLikeLine(tHardBranchingPtr branch,tShowerParticlePtr particle);
+
+  /**
+   *  Construct a space-like line
+   */
+  void constructSpaceLikeLine(tShowerParticlePtr particle,
+			      HardBranchingPtr & first, HardBranchingPtr & last,
+			      SudakovPtr sud,PPtr beam);
+  //@}
 
 public:
 
-  /** @name Functions used by the persistent I/O system. */
+  /** @name MC@NLO diagnostics */
   //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
 
   /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
+   * True, if Matchbox MC@NLO S-event
    */
-  void persistentInput(PersistentIStream & is, int version);
+  bool wasMCatNLOSEvent() const { return isMCatNLOSEvent; }
+
+  /**
+   * True, if matchbox MC@NLO H-event
+   */
+  bool wasMCatNLOHEvent() const { return isMCatNLOHEvent; }
+
   //@}
-
-  /**
-   * The standard Init function used to initialize the interfaces.
-   * Called exactly once for each class by the class description system
-   * before the main function starts or
-   * when this class is dynamically loaded.
-   */
-  static void Init();
-
-protected:
-
-  /**
-   * The main method which manages the showering of a subprocess.
-   */
-  virtual tPPair cascade(tSubProPtr sub, XCPtr xcomb);
-
-  /**
-   *  Decay a ShowerTree
-   */
-  void decay(ShowerTreePtr tree, ShowerDecayMap & decay);
 
 protected:
 
@@ -574,7 +672,7 @@ protected:
    * @return a pointer to the new object.
    */
   virtual IBPtr fullclone() const;
-  //@}
+  //@} 
 
 protected:
   
@@ -594,33 +692,9 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  QTildeShowerHandler & operator=(const QTildeShowerHandler &);
+  Evolver & operator=(const Evolver &);
 
 private:
-
-
-  /**
-   *  Stuff from the ShowerHandler
-   */
-  //@{
-
-  /**
-   *  The ShowerTree for the hard process
-   */
-  ShowerTreePtr hard_;
-
-  /**
-   *  The ShowerTree for the decays
-   */
-  ShowerDecayMap decay_;
-
-  /**
-   *  The ShowerTrees for which the initial shower 
-   */
-  vector<ShowerTreePtr> done_;
-  //@}
-
-private :
 
   /**
    *  Pointer to the model for the shower evolution model
@@ -640,7 +714,17 @@ private :
   /**
    * Matrix element correction switch
    */
-  unsigned int _meCorrMode;
+  unsigned int _meCorrMode; 
+
+  /**
+   * Hard emission veto switch
+   */
+  unsigned int _hardVetoMode; 
+
+  /**
+   * Hard veto to be read switch
+   */
+  unsigned int _hardVetoRead; 
 
   /**
    *  Control of the reconstruction option
@@ -765,9 +849,14 @@ private :
   /**
    *  The option for wqhich interactions to use
    */
-  ShowerInteraction::Type interaction_;
+  unsigned int interaction_;
 
   /**
+   *  Interactions allowed in the shower
+   */
+  vector<ShowerInteraction::Type> interactions_;
+
+ /**
    *  Truncated shower switch
    */
   bool _trunc_Mode;
@@ -780,7 +869,7 @@ private :
   /**
    *  Mode for the hard emissions
    */
-  int _hardEmission;
+  int _hardEmissionMode;
 
   /**
    *  Option to include spin correlations
@@ -798,10 +887,45 @@ private :
   bool _hardPOWHEG;
 
   /**
+   * True, if Matchbox MC@NLO S-event
+   */
+  bool isMCatNLOSEvent;
+
+  /**
+   * True, if matchbox MC@NLO H-event
+   */
+  bool isMCatNLOHEvent;
+
+  /**
+   * True, if Matchbox Powheg S-event
+   */
+  bool isPowhegSEvent;
+
+  /**
+   * True, if matchbox Powheg H-event
+   */
+  bool isPowhegHEvent;
+
+  /**
+   * The shower approximation to provide the hard scale profile
+   */
+  Ptr<ShowerApproximation>::tptr theShowerApproximation;
+
+  /**
+   * The factorization scale factor.
+   */
+  double theFactorizationScaleFactor;
+
+  /**
+   * The renormalization scale factor.
+   */
+  double theRenormalizationScaleFactor;
+
+  /**
    * True if no warnings about incorrect hard emission
    * mode setting have been issued yet
    */
-  static bool _hardEmissionWarn;
+  static bool _hardEmissionModeWarn;
 
   /**
    * True if no warnings about missing truncated shower 
@@ -838,9 +962,8 @@ private :
    *  Counter for the number of failed events due to FSR emissions
    */
   unsigned int _nFailedFSR;
-
 };
 
 }
 
-#endif /* Herwig_QTildeShowerHandler_H */
+#endif /* HERWIG_Evolver_H */

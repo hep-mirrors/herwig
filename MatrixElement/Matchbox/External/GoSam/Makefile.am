@@ -1,5 +1,5 @@
 pkglib_LTLIBRARIES = HwMatchboxGoSam.la
-HwMatchboxGoSam_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 12:0:0
+HwMatchboxGoSam_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 13:0:0
 
 HwMatchboxGoSam_la_SOURCES = \
 GoSamAmplitude.h GoSamAmplitude.cc

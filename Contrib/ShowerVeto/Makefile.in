@@ -9,28 +9,28 @@
 #
 
 # location of include files
-THEPEGINCLUDE=
-HERWIGINCLUDE=
-GSLINCLUDE=
-LDFLAGS = 
-SHARED_FLAG = 
-INCLUDE = $(THEPEGINCLUDE) $(HERWIGINCLUDE) $(GSLINCLUDE)
+THEPEGINCLUDE =
+GSLINCLUDE  =
+HERWIGINCLUDE =
+INCLUDE = $(THEPEGINCLUDE) $(GSLINCLUDE) $(HERWIGINCLUDE)
 #
 # C++ flags
 # 
 CXX = 
 CXXFLAGS = 
+LDFLAGS = 
+SHARED_FLAG = 
 
 ALLCCFILES=$(shell echo *.cc)
 
-default : LeptonME.so
+default : HwShowerVeto.so
 
 %.o : %.cc %.h
 	$(CXX) -fPIC $(CPPFLAGS) $(INCLUDE) $(CXXFLAGS) -c -shared $< -o $@  
 
-LeptonME.so: MEee2Higgs2SM.o MEee2Z.o
+HwShowerVeto.so: NonBShowerVeto.o
 	$(CXX) -fPIC $(CPPFLAGS) $(INCLUDE) $(CXXFLAGS) \
-	MEee2Higgs2SM.o MEee2Z.o $(SHARED_FLAG) $(LDFLAGS) -o LeptonME.so
+		NonBShowerVeto.o $(SHARED_FLAG) $(LDFLAGS)  -o HwShowerVeto.so
 
 clean:
-	rm -f $(ALLCCFILES:.cc=.o) LeptonME.so
+	rm -f $(ALLCCFILES:.cc=.o) HwShowerVeto.so

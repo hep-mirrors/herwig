@@ -1,0 +1,62 @@
+# -*- ThePEG-repository -*-
+
+##################################################
+# Example generator based on LHC parameters
+# usage: Herwig read LHC.in
+##################################################
+
+##################################################
+# Technical parameters for this run
+##################################################
+cd /Herwig/Generators
+set LHCGenerator:NumberOfEvents 10000000
+set LHCGenerator:RandomNumberGenerator:Seed 31122001
+set LHCGenerator:PrintEvent 10000
+set LHCGenerator:MaxErrors 10000
+
+##################################################
+# LHC physics parameters (override defaults here) 
+##################################################
+
+# Intrinsic pT tune extrapolated to LHC energy
+set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
+
+########################
+## sqrt(s) = 13000 GeV ##
+########################
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 13000.0
+
+##################################################
+# Matrix Elements for hadron-hadron collisions 
+# (by default only gamma/Z switched on)
+##################################################
+cd /Herwig/MatrixElements/
+
+#
+#  QCD and gamma processes
+#
+# QCD 2-2 scattering
+insert SimpleQCD:MatrixElements[0] MEQCD2to2
+set MEQCD2to2:Process 1
+
+cd /Herwig/Shower
+# setup to reweight events ensuring b quarks after shower
+create Herwig::NonBShowerVeto NonBShowerVeto HwShowerVeto.so
+insert Evolver:FullShowerVetoes 0 NonBShowerVeto
+set NonBShowerVeto:Type Primary
+# reweighting, change for other behaviour
+set NonBShowerVeto:Behaviour ShowerReweight
+# or to veto events which don't have b quarks after shower
+# set NonBShowerVeto:Behaviour Event
+set Evolver:MaxTry 1000
+
+
+cd /Herwig/Generators
+##################################################
+# Save run for later usage with 'Herwig run'
+##################################################
+set /Herwig/Analysis/Basics:CheckQuark 0
+set /Herwig/Shower/ShowerHandler:MPIHandler NULL
+set LHCGenerator:EventHandler:DecayHandler NULL
+set LHCGenerator:EventHandler:HadronizationHandler NULL
+saverun LHC LHCGenerator

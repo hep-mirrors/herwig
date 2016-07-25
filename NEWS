@@ -1,7 +1,17 @@
 Herwig News							 -*- outline -*-
 ================================================================================
 
-* Herwig 7.0.3 release: 2016-xx-xx
+* Herwig 7.0.3 release: 2016-07-21
+
+** subprocess generation filters
+   A number of filters has been implemented to speed up process and diagram
+   generation for the case of Standard Model like processes; this is
+   particularly helpful for processes involving a large number of electroweak
+   combinatorics. See the documentation for more details.
+
+** fix to directory hierarchy
+   A bug in the Herwig-scratch directory hierarchy when integrating with
+   different seeds has been fixed.
 
 ** fix for relocating MadGraph generated amplitudes
    The directory and symbolic link structure for MadGraph-built amplitudes has
@@ -12,20 +22,14 @@ Herwig News							 -*- outline -*-
    The builtin LeptonsJetsAnalysis has been extented to include the normalized
    relative rapidity z*
 
-** fix to directory hierarchy
-   A bug in the Herwig-scratch directory hierarchy when integrating with
-   different seeds has been fixed.
-
 ** detuning parameter for shower reweighting
    An efficiency tweak when using the shower reweighting facilities has been
    introduced for the veto algorithms in both the QTilde and the Dipole
    shower. See the documentation for more details.
 
-** subprocess generation filters
-   A number of filters has been implemented to speed up process and diagram
-   generation for the case of Standard Model like processes; this is
-   particularly helpful for processes involving a large number of electroweak
-   combinatorics. See the documentation for more details.
+** BaryonThreeQuarkModelFormFactor
+   A scaling bug in the form factor series expansion was fixed.
+
 
 * Herwig 7.0.2 release: 2016-04-29
 

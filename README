@@ -2,17 +2,13 @@
 Herwig 7
 ========
 
-This is the release of Herwig 7.0.2, a multi purpose event
+This is the release of Herwig 7.0.3, a multi purpose event
 generator for high energy physics.
 
 The Herwig++ distribution contains an adapted version of LoopTools 2.6
 <http://www.feynarts.de/looptools/>. 
 
-Please contact <herwig@projects.hepforge.org> to be added to our
-list of users. This will allow you to make full use of the Wiki and
-bug tracker at http://projects.hepforge.org/herwig/trac/
-
 BUILD AND INSTALL
 =================
-Please refer to https://herwig.hepforge.org/tutorials/index.html
-for detailed instructions.
+Please refer to https://herwig.hepforge.org/tutorials/ for detailed 
+instructions.

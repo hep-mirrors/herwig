@@ -1,7 +1,7 @@
 pkglib_LTLIBRARIES = Herwig.la
 Herwig_la_SOURCES =
 Herwig_la_LIBTOOLFLAGS = --tag=CXX
-Herwig_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 18:0:0
+Herwig_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 19:0:0
 Herwig_la_LDFLAGS += $(THEPEGLDFLAGS) $(BOOST_SYSTEM_LDFLAGS) $(BOOST_FILESYSTEM_LDFLAGS) $(FCLIBS)
 Herwig_la_LIBADD = \
 $(top_builddir)/Hadronization/libHwHadronization.la \
