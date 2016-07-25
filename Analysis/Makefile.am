@@ -18,7 +18,7 @@ ParallelRunAnalysis.h ParallelRunAnalysis.cc \
 DrellYanPT.h DrellYanPT.cc
 
 pkglib_LTLIBRARIES += HwJetsAnalysis.la
-HwJetsAnalysis_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 2:0:0
+HwJetsAnalysis_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 3:0:0
 HwJetsAnalysis_la_SOURCES = \
 LeptonsJetsAnalysis.h LeptonsJetsAnalysis.cc \
 JetsPlusAnalysis.h JetsPlusAnalysis.cc \

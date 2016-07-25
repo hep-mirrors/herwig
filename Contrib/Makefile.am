@@ -11,7 +11,8 @@ LeptonME \
 PGSInterface \
 RadiativeZPrime \
 TauAnalysis \
-MultiWeight
+MultiWeight \
+ShowerVeto
 
 dist-hook:
 	rm -rf `find $(distdir) -name '.svn' -or -name 'Makefile' -or -name '.hg'`

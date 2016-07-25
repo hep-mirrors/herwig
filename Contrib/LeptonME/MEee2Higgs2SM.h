@@ -37,7 +37,7 @@ public:
   /**
    * The default constructor.
    */
-  inline MEee2Higgs2SM() : _allowed(0) {}
+  inline MEee2Higgs2SM() : allowed_(0) {}
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -186,6 +186,19 @@ private:
 				     vector<SpinorBarWaveFunction> ain,
 				     vector<SpinorBarWaveFunction> fout,
 				     vector<SpinorWaveFunction> aout,double& me) const;
+  /**
+   *  \f$H\to gg\f$ matrix element
+   * @param fin The incoming spinor wavefunction
+   * @param ain The incoming spinorbar wavefunction
+   * @param g1 Outgoing gluon wavefunction
+   * @param g2 Outgoing gluon wavefunction
+   * @param me The spin averaged matrix element
+   */
+  ProductionMatrixElement ggME(vector<SpinorWaveFunction> fin,
+			       vector<SpinorBarWaveFunction> ain,
+			       vector<VectorWaveFunction> g1,
+			       vector<VectorWaveFunction> g2, 
+			       double & me) const;
   
 private:
 
@@ -204,19 +217,24 @@ private:
 private:
 
   /**
-   *  Pointer to the Higgs vertex
+   *  Pointer to the Higgs fermion-antifermion vertex
    */
-  AbstractFFSVertexPtr _theFFHVertex;
+  AbstractFFSVertexPtr FFHVertex_;
+
+  /**
+   *  Pointer to Higgs-gluon-gluon vertex
+   */
+  AbstractVVSVertexPtr HGGVertex_;
 
   /**
    * Allowed outgoing particles
    */
-  int _allowed;
+  int allowed_;
 
   /**
    *  Pointer to the Higgs ParticleData object
    */
-  PDPtr _h0;
+  PDPtr h0_;
 };
 
 }
