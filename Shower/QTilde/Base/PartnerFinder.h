@@ -13,7 +13,6 @@
 //
 #include "Herwig/Shower/QTilde/ShowerConfig.h"
 #include "ThePEG/Interface/Interfaced.h"
-#include "Evolver.fh"
 #include "PartnerFinder.fh"
 
 namespace Herwig {
