@@ -32,7 +32,7 @@ set /Herwig/Partons/QCDExtractor:SecondPDF /Herwig/Partons/HardNLOPDF
 #  Setup the POWHEG shower
 ##################################################
 cd /Herwig/Shower
-set Evolver:HardEmissionMode POWHEG
+set ShowerHandler:HardEmission POWHEG
 read Matchbox/Powheg-Default-ShowerAlphaSTune.in
 
 ##################################################
@@ -42,7 +42,7 @@ cd /Herwig/Generators
 set LHCGenerator:EventHandler:LuminosityFunction:Energy 13000.0
 
 # Intrinsic pT tune extrapolated to LHC energy
-set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
+set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
 
 ##################################################
 # Matrix Elements for hadron-hadron collisions 

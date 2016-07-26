@@ -12,8 +12,8 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "Herwig/PDT/GenericMassGenerator.h"
 #include "ThePEG/Cuts/Cuts.h"
-#include "Herwig/Shower/Base/HardTree.h"
-#include "Herwig/Shower/Base/Branching.h"
+#include "Herwig/Shower/QTilde/Base/Branching.h"
+#include "Herwig/Shower/RealEmissionProcess.h"
 
 using namespace Herwig;
 
@@ -281,9 +281,21 @@ double HwMEBase::getCosTheta(double ctmin, double ctmax, const double r) {
 
 bool HwMEBase::softMatrixElementVeto(ShowerProgenitorPtr,
 				     ShowerParticlePtr,Branching) {
+  assert(false);
   return false;
 }
 
-HardTreePtr HwMEBase::generateHardest(ShowerTreePtr,ShowerInteraction::Type) {
-  return HardTreePtr();
+RealEmissionProcessPtr HwMEBase::generateHardest(RealEmissionProcessPtr,ShowerInteraction::Type) {
+  assert(false);
+  return RealEmissionProcessPtr();
+}
+
+RealEmissionProcessPtr HwMEBase::applyHardMatrixElementCorrection(RealEmissionProcessPtr) {
+  assert(false);
+  return RealEmissionProcessPtr();
+}
+
+void HwMEBase::initializeMECorrection(RealEmissionProcessPtr , double & ,
+				      double & ) {
+  assert(false);
 }

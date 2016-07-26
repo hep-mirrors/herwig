@@ -13,7 +13,7 @@
 ###################################################
 
 # Set emission to POWHEG for radiation in decays
-set /Herwig/Shower/Evolver:HardEmissionMode POWHEG
+set /Herwig/Shower/ShowerHandler:HardEmission POWHEG
 
 # read model
 read TTBA.model
@@ -47,7 +47,7 @@ cd /Herwig/Generators
 ##################################################
 
 # Intrinsic pT tune extrapolated to LHC energy
-set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
+set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
 
 ##################################################
 #
@@ -80,10 +80,6 @@ insert HPConstructor:Outgoing 1 /Herwig/Particles/tbar
 #This is available for comparison to the LO Hw++ result
 #cd /Herwig/MatrixElements	
 #insert SimpleQCD:MatrixElements[0] MEHeavyQuark
-
-cd /Herwig/Shower
-set SplittingGenerator:ISR Yes
-set SplittingGenerator:FSR Yes                              
 
 cd /Herwig/EventHandlers
 #set LHCHandler:CascadeHandler NULL                                         

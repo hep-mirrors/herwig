@@ -28,6 +28,7 @@ Makefile\.in$
 ^Config/stamp-h1$
 ^Config/ar-lib$
 ^Contrib/make_makefiles.sh$
+^Contrib/.*/.*\.(log|out|tex|run)$
 ^Utilities/hgstamp.inc$
 ^Doc/HerwigDefaults.in$
 ^Doc/refman-html$

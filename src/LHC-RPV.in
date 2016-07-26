@@ -12,7 +12,7 @@
 ###################################################
 
 # Set emission to POWHEG for radiation in decays
-set /Herwig/Shower/Evolver:HardEmissionMode POWHEG
+set /Herwig/Shower/ShowerHandler:HardEmission POWHEG
 
 # read model
 # trilinear RPV
@@ -73,7 +73,7 @@ erase DecayConstructor:NBodyDecayConstructors 1
 
 
 # Intrinsic pT tune extrapolated to LHC energy
-set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
+set /Herwig/Shower/ShowerHandler:IntrinsicPtGaussian 2.2*GeV
 
 # Other parameters for run
 cd /Herwig/Generators

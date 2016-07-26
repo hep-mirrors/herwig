@@ -251,7 +251,7 @@ namespace CVolver {
      */
     void addColourCrossing(const std::size_t& leg,
 			   std::size_t& count,
-			   const double& sign) {
+			   double sign) {
       theColourMap[count] = leg;
       theColourCrossingSigns[count] = sign;
       theReverseColourMap[leg] = count;
@@ -263,7 +263,7 @@ namespace CVolver {
      */
     void addAntiColourCrossing(const std::size_t& leg,
 			       std::size_t& count,
-			       const double& sign) {
+			       double sign) {
       theAntiColourMap[count] = leg;
       theAntiColourCrossingSigns[count] = sign;
       theReverseAntiColourMap[leg] = count;

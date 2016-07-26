@@ -34,7 +34,7 @@ public:
   /**
    *  Apply the POWHEG style correction
    */
-  virtual HardTreePtr generateHardest(ShowerTreePtr);
+  virtual RealEmissionProcessPtr generateHardest(RealEmissionProcessPtr);
 
   /** @name Functions used by the persistent I/O system. */
   //@{

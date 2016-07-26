@@ -6,7 +6,7 @@
 //
 
 #include "Herwig/MatrixElement/MEfftoffH.h"
-#include "Herwig/Shower/Couplings/ShowerAlpha.h"
+#include "Herwig/Shower/QTilde/Couplings/ShowerAlpha.h"
 
 namespace Herwig {
 
@@ -40,12 +40,12 @@ class MEPP2HiggsVBF: public MEfftoffH {
     /**
      *  The incoming particle
      */
-    ShowerParticlePtr incoming;
+    PPtr incoming;
     
     /**
      *  The outgoing particle
      */
-    ShowerParticlePtr outgoing;
+    PPtr outgoing;
     
     /**
      *  The PDF
@@ -87,13 +87,13 @@ public:
   /**
    *  Initialize the ME correction
    */
-  virtual void initializeMECorrection(ShowerTreePtr , double & ,
+  virtual void initializeMECorrection(RealEmissionProcessPtr, double &,
 				      double & );
 
   /**
    *  Apply the hard matrix element correction to a given hard process or decay
    */
-  virtual void applyHardMatrixElementCorrection(ShowerTreePtr);
+  virtual RealEmissionProcessPtr applyHardMatrixElementCorrection(RealEmissionProcessPtr);
 
   /**
    * Apply the soft matrix element correction
@@ -109,7 +109,8 @@ public:
   /**
    *  Apply the POWHEG style correction
    */
-  virtual HardTreePtr generateHardest(ShowerTreePtr, ShowerInteraction::Type);
+  virtual RealEmissionProcessPtr generateHardest(RealEmissionProcessPtr,
+						 ShowerInteraction::Type);
   //@}
 
 public:
@@ -416,7 +417,7 @@ private:
   /**
    *  Higgs boson
    */
-  ShowerParticlePtr higgs_;
+  PPtr higgs_;
   //@}
 
   /**

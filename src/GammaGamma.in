@@ -10,6 +10,8 @@
 ##################################################
 set /Herwig/Particles/e+:PDF /Herwig/Partons/WWPDF
 set /Herwig/Particles/e-:PDF /Herwig/Partons/WWPDF
+set /Herwig/Shower/ShowerHandler:PDFA NULL
+set /Herwig/Shower/ShowerHandler:PDFB NULL
 
 ##################################################
 # Selected the hard process

@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the PerturbativeProcess class.
+//
+#ifndef HERWIG_PerturbativeProcess_FH
+#define HERWIG_PerturbativeProcess_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class PerturbativeProcess;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::PerturbativeProcess,PerturbativeProcessPtr);
+
+}
+
+#endif

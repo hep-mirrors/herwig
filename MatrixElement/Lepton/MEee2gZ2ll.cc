@@ -26,11 +26,7 @@
 #include "ThePEG/PDF/PolarizedBeamParticleData.h"
 #include "ThePEG/Utilities/DescribeClass.h"
 #include <numeric>
-#include "Herwig/Shower/Base/ShowerTree.h"
-#include "Herwig/Shower/Base/ShowerProgenitor.h"
-#include "Herwig/Shower/Base/ShowerParticle.h"
-#include "Herwig/Shower/Base/Branching.h"
-#include "Herwig/Shower/Base/HardTree.h"
+#include "Herwig/Shower/RealEmissionProcess.h"
 
 using namespace Herwig;
 
@@ -328,89 +324,56 @@ IVector MEee2gZ2ll::getReferences() {
   return ret;
 }
 
-HardTreePtr MEee2gZ2ll::generateHardest(ShowerTreePtr tree,ShowerInteraction::Type inter) {
+RealEmissionProcessPtr MEee2gZ2ll::generateHardest(RealEmissionProcessPtr born,
+						   ShowerInteraction::Type inter) {
   // check if generating QCD radiation
   if(inter!=ShowerInteraction::QED && inter!=ShowerInteraction::QEDQCD &&
      inter!=ShowerInteraction::ALL)
-    return HardTreePtr();
+    return RealEmissionProcessPtr();
   // generate the momenta for the hard emission
-  vector<Lorentz5Momentum> emmision;
+  vector<Lorentz5Momentum> emission;
   unsigned int iemit,ispect;
-  Energy pTveto = generateHard(tree,emmision,iemit,ispect,false);
-  // outgoing progenitors
-  ShowerProgenitorPtr 
-    qkProgenitor = tree->outgoingLines().begin() ->first,
-    qbProgenitor = tree->outgoingLines().rbegin()->first;
-  if(qkProgenitor->id()<0) swap(qkProgenitor,qbProgenitor);
+  Energy pTveto = generateHard(born,emission,iemit,ispect,false);
   // check if charged
-  if(!qkProgenitor->progenitor()->dataPtr()->charged())
-    return HardTreePtr();
+  if(!partons_[2]->charged()) return RealEmissionProcessPtr();
   // maximum pT of emission
   if(pTveto<=ZERO) {
-    qkProgenitor->maximumpT(pTmin_,ShowerInteraction::QED);
-    qbProgenitor->maximumpT(pTmin_,ShowerInteraction::QED);
-    return HardTreePtr();
+    born->pT()[ShowerInteraction::QED] = pTmin_;
+    return born;
   }
   else {
-    qkProgenitor->maximumpT(pTveto,ShowerInteraction::QED);
-    qbProgenitor->maximumpT(pTveto,ShowerInteraction::QED);
+    born->pT()[ShowerInteraction::QED] = pTveto;
   }
-  // Make the particles for the hard tree
-  ShowerParticleVector hardParticles;
-  for(unsigned int ix=0;ix<partons_.size();++ix) {
-    hardParticles.push_back(new_ptr(ShowerParticle(partons_[ix],ix>=2)));
-    hardParticles.back()->set5Momentum(emmision[ix]);
+  born->interaction(ShowerInteraction::QED);
+  // get the quark and antiquark
+  ParticleVector qq;
+  for(unsigned int ix=0;ix<2;++ix) qq.push_back(born->bornOutgoing()[ix]);
+  bool order = qq[0]->id()>0;
+  if(!order) swap(qq[0],qq[1]);
+  // create the new quark, antiquark and gluon
+  PPtr newq = qq[0]->dataPtr()->produceParticle(emission[2]);
+  PPtr newa = qq[1]->dataPtr()->produceParticle(emission[3]);
+  PPtr newg = gamma_->produceParticle(emission[4]);
+  // create the output real emission process
+  for(unsigned int ix=0;ix<born->bornIncoming().size();++ix) {
+    born->incoming().push_back(born->bornIncoming()[ix]->dataPtr()->
+			       produceParticle(born->bornIncoming()[ix]->momentum()));
   }
-  ShowerParticlePtr parent(new_ptr(ShowerParticle(partons_[iemit],true)));
-  Lorentz5Momentum parentMomentum(emmision[iemit]+emmision[4]);
-  parentMomentum.setMass(partons_[iemit]->mass());
-  parent->set5Momentum(parentMomentum);
-  // Create the vectors of HardBranchings to create the HardTree:
-  vector<HardBranchingPtr> spaceBranchings,allBranchings;
-  // Incoming boson:
-  for(unsigned int ix=0;ix<2;++ix) {
-    spaceBranchings.push_back(new_ptr(HardBranching(hardParticles[ix],SudakovPtr(),
-						    HardBranchingPtr(),
-						    HardBranching::Incoming)));
-    allBranchings.push_back(spaceBranchings.back());
+  if(order) {
+    born->outgoing().push_back(newq);
+    born->outgoing().push_back(newa);
   }
-  // Outgoing particles from hard emission:
-  HardBranchingPtr spectatorBranch(new_ptr(HardBranching(hardParticles[ispect],
- 							 SudakovPtr(),HardBranchingPtr(),
- 							 HardBranching::Outgoing)));
-  HardBranchingPtr emitterBranch(new_ptr(HardBranching(parent,SudakovPtr(),
-						       HardBranchingPtr(),
-						       HardBranching::Outgoing)));
-  emitterBranch->addChild(new_ptr(HardBranching(hardParticles[iemit], 
- 						SudakovPtr(),HardBranchingPtr(),
- 						HardBranching::Outgoing)));
-  emitterBranch->addChild(new_ptr(HardBranching(hardParticles[4],
- 						SudakovPtr(),HardBranchingPtr(),
- 						HardBranching::Outgoing)));
-  emitterBranch->type(ShowerPartnerType::QED);
-  if(iemit==0) {
-    allBranchings.push_back(emitterBranch);
-    allBranchings.push_back(spectatorBranch);
-  } 
   else {
-    allBranchings.push_back( spectatorBranch );
-    allBranchings.push_back( emitterBranch );
+    born->outgoing().push_back(newa);
+    born->outgoing().push_back(newq);
+    swap(iemit,ispect);
   }
-  emitterBranch  ->branchingParticle()->partner(spectatorBranch->branchingParticle());
-  spectatorBranch->branchingParticle()->partner(emitterBranch  ->branchingParticle());
-  spaceBranchings[0]->branchingParticle()->partner(spaceBranchings[1]->branchingParticle());
-  spaceBranchings[1]->branchingParticle()->partner(spaceBranchings[0]->branchingParticle());
-  // Make the HardTree from the HardBranching vectors.
-  HardTreePtr hardtree = new_ptr(HardTree(allBranchings,spaceBranchings,
-					  ShowerInteraction::QED));
-  hardtree->partnersSet(true);
-  // Connect the particles with the branchings in the HardTree
-  hardtree->connect( qkProgenitor->progenitor(), allBranchings[2] );
-  hardtree->connect( qbProgenitor->progenitor(), allBranchings[3] );
-  // colour flow
-  ColinePtr newline=new_ptr(ColourLine());
-  // Return the HardTree
-  return hardtree;
+  born->outgoing().push_back(newg);
+  // set emitter and spectator
+  born->emitter   (iemit);
+  born->spectator(ispect);
+  born->emitted(4);
+  return born;
 }
 
 double MEee2gZ2ll::meRatio(vector<cPDPtr> partons, 
@@ -543,34 +506,31 @@ InvEnergy2 MEee2gZ2ll::realME(const vector<cPDPtr> & partons,
   return total*UnitRemoval::InvE2;
 }
 
-Energy MEee2gZ2ll::generateHard(ShowerTreePtr tree, 
+Energy MEee2gZ2ll::generateHard(RealEmissionProcessPtr born, 
 				vector<Lorentz5Momentum> & emmision,
 				unsigned int & iemit, unsigned int & ispect,
 				bool applyVeto) {
   // get the momenta of the incoming and outgoing particles 
   // incoming
-  ShowerProgenitorPtr 
-    emProgenitor = tree->incomingLines().begin() ->first,
-    epProgenitor = tree->incomingLines().rbegin()->first; 
+  tPPtr em = born->bornIncoming()[0];
+  tPPtr ep = born->bornIncoming()[1];
+  if(em->id()<0) swap(em,ep);
   // outgoing
-  ShowerProgenitorPtr 
-    qkProgenitor = tree->outgoingLines().begin() ->first,
-    qbProgenitor = tree->outgoingLines().rbegin()->first;
-  // get the order right 
-  if(emProgenitor->id()<0) swap(emProgenitor,epProgenitor);
-  if(qkProgenitor->id()<0) swap(qkProgenitor,qbProgenitor);
-  loMomenta_.resize(0);
+  tPPtr qk = born->bornOutgoing()[0];
+  tPPtr qb = born->bornOutgoing()[1];
+  if(qk->id()<0) swap(qk,qb);
   // extract the momenta 
-  loMomenta_.push_back(emProgenitor->progenitor()->momentum());
-  loMomenta_.push_back(epProgenitor->progenitor()->momentum());
-  loMomenta_.push_back(qkProgenitor->progenitor()->momentum());
-  loMomenta_.push_back(qbProgenitor->progenitor()->momentum());
+  loMomenta_.clear();
+  loMomenta_.push_back(em->momentum());
+  loMomenta_.push_back(ep->momentum());
+  loMomenta_.push_back(qk->momentum());
+  loMomenta_.push_back(qb->momentum());
   // and ParticleData objects
   partons_.resize(5);
-  partons_[0]=emProgenitor->progenitor()->dataPtr();
-  partons_[1]=epProgenitor->progenitor()->dataPtr();
-  partons_[2]=qkProgenitor->progenitor()->dataPtr();
-  partons_[3]=qbProgenitor->progenitor()->dataPtr();
+  partons_[0]=em->dataPtr();
+  partons_[1]=ep->dataPtr();
+  partons_[2]=qk->dataPtr();
+  partons_[3]=qb->dataPtr();
   partons_[4]=gamma_;
   // boost from lab to CMS frame with outgoing particles
   // along the z axis

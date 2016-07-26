@@ -392,7 +392,7 @@ private:
   /**
    * The eigenvector of @param T to a given eigenvalue @param lam 
    */
-  Axis eigenvector(const double T[3][3], const double &lam);
+  Axis eigenvector(const double T[3][3], double lam);
 
   /**
    * The eigenvectors of @param T corresponding to the eigenvectors

@@ -14,8 +14,8 @@
 
 #include "Herwig/MatrixElement/Matchbox/Matching/ShowerApproximation.h"
 #include "Herwig/Shower/ShowerHandler.h"
-#include "Herwig/Shower/Default/QTildeFinder.h"
-#include "Herwig/Shower/Default/QTildeSudakov.h"
+#include "Herwig/Shower/QTilde/Default/QTildeFinder.h"
+#include "Herwig/Shower/QTilde/Default/QTildeSudakov.h"
 
 namespace Herwig {
 

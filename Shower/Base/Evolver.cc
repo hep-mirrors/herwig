@@ -24,6 +24,7 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Handlers/EventHandler.h"
+#include "ThePEG/Handlers/StandardEventHandler.h"
 #include "ThePEG/Utilities/Throw.h"
 #include "ShowerTree.h"
 #include "ShowerProgenitor.h"
@@ -96,7 +97,8 @@ void Evolver::persistentOutput(PersistentOStream & os) const {
      << _meCorrMode << _hardVetoMode << _hardVetoRead << _hardVetoReadOption
      << _limitEmissions << _spinOpt << _softOpt << _hardPOWHEG
      << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << ounit(_iptmax,GeV) 
-     << _vetoes << _trunc_Mode << _hardEmissionMode << _reconOpt 
+     << _vetoes << _fullShowerVetoes << _nReWeight << _reWeight
+     << _trunc_Mode << _hardEmissionMode << _reconOpt 
      << isMCatNLOSEvent << isMCatNLOHEvent
      << isPowhegSEvent << isPowhegHEvent
      << theFactorizationScaleFactor << theRenormalizationScaleFactor << ounit(muPt,GeV)
@@ -108,7 +110,8 @@ void Evolver::persistentInput(PersistentIStream & is, int) {
      >> _meCorrMode >> _hardVetoMode >> _hardVetoRead >> _hardVetoReadOption
      >> _limitEmissions >> _spinOpt >> _softOpt >> _hardPOWHEG
      >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> iunit(_iptmax,GeV)
-     >> _vetoes >> _trunc_Mode >> _hardEmissionMode >> _reconOpt
+     >> _vetoes >> _fullShowerVetoes >> _nReWeight >> _reWeight
+     >> _trunc_Mode >> _hardEmissionMode >> _reconOpt
      >> isMCatNLOSEvent >> isMCatNLOHEvent
      >> isPowhegSEvent >> isPowhegHEvent
      >> theFactorizationScaleFactor >> theRenormalizationScaleFactor >> iunit(muPt,GeV)
@@ -119,6 +122,22 @@ void Evolver::doinit() {
   Interfaced::doinit();
   // calculate max no of FSR vetos
   _maxFailFSR = max(int(_maxFailFSR), int(_fracFSR*double(generator()->N())));
+  // check on the reweighting
+  for(unsigned int ix=0;ix<_fullShowerVetoes.size();++ix) {
+    if(_fullShowerVetoes[ix]->behaviour()==1) {
+      _reWeight = true;
+      break;
+    }
+  }
+  if(_reWeight && maximumTries()<_nReWeight) {
+    throw Exception() << "Reweight being performed in the shower but the number of attempts for the"
+		      << "shower is less than that for the reweighting.\n"
+		      << "Maximum number of attempt for the shower "
+		      << fullName() << ":MaxTry is " << maximumTries() << "\nand for reweighting is "
+		      << fullName() << ":NReWeight is " << _nReWeight << "\n"
+		      << "we recommend the number of attempts is 10 times the number for reweighting\n"
+		      << Exception::runerror;
+  }
 }
 
 void Evolver::Init() {
@@ -151,7 +170,13 @@ void Evolver::Init() {
     ("MaxTry",
      "The maximum number of attempts to generate the shower from a"
      " particular ShowerTree",
-     &Evolver::_maxtry, 100, 1, 1000,
+     &Evolver::_maxtry, 100, 1, 100000,
+     false, false, Interface::limited);
+
+  static Parameter<Evolver,unsigned int> interfaceNReWeight
+    ("NReWeight",
+     "The number of attempts for the shower when reweighting",
+     &Evolver::_nReWeight, 100, 10, 10000,
      false, false, Interface::limited);
 
   static Switch<Evolver, unsigned int> ifaceMECorrMode
@@ -236,6 +261,11 @@ void Evolver::Init() {
      "The vetoes to be checked during showering",
      &Evolver::_vetoes, -1,
      false,false,true,true,false);
+
+  static RefVector<Evolver,FullShowerVeto> interfaceFullShowerVetoes
+    ("FullShowerVetoes",
+     "The vetos to be appliede on the full final state of the shower",
+     &Evolver::_fullShowerVetoes, -1, false, false, true, false, false);
 
   static Switch<Evolver,unsigned int> interfaceLimitEmissions
     ("LimitEmissions",
@@ -2655,6 +2685,9 @@ void Evolver::doShowering(bool hard,XCPtr xcomb) {
 			<< Exception::eventerror;
     }
   }
+  bool reWeighting = _reWeight && hard && ShowerHandler::currentHandler()->firstInteraction();
+  double eventWeight=0.;
+  unsigned int nTryReWeight(0);
   // create random particle vector
   vector<ShowerProgenitorPtr> tmp;
   unsigned int nColouredIncoming = 0;
@@ -2750,6 +2783,43 @@ void Evolver::doShowering(bool hard,XCPtr xcomb) {
 							     interaction_));
 	}
       }
+      // do the kinematic reconstruction, checking if it worked
+      reconstructed = hard ?
+	showerModel()->kinematicsReconstructor()->
+	reconstructHardJets (currentTree(),intrinsicpT(),interactions_[inter],
+			     switchRecon && ntry>maximumTries()/2) :
+	showerModel()->kinematicsReconstructor()->
+	reconstructDecayJets(currentTree(),interactions_[inter]);
+      if(!reconstructed) continue;
+      // apply vetos on the full shower
+      for(vector<FullShowerVetoPtr>::const_iterator it=_fullShowerVetoes.begin();
+	  it!=_fullShowerVetoes.end();++it) {
+	int veto = (**it).applyVeto(currentTree());
+	if(veto<0) continue;
+	// veto the shower
+	if(veto==0) {
+	  reconstructed = false;
+	  break;
+	}
+	// veto the shower and reweight
+	else if(veto==1) {
+	  reconstructed = false;
+	  break;
+	}
+	// veto the event
+	else if(veto==2) {
+	  throw Veto();
+	}
+      }
+      if(reWeighting) {
+	if(reconstructed) eventWeight += 1.;
+	reconstructed=false;
+	++nTryReWeight;
+	if(nTryReWeight==_nReWeight) {
+	  reWeighting = false;
+	  if(eventWeight==0.) throw Veto();
+	}
+      }
     }
     // do the kinematic reconstruction, checking if it worked
     reconstructed = hard ?
@@ -2768,6 +2838,20 @@ void Evolver::doShowering(bool hard,XCPtr xcomb) {
       throw Exception() << "Failed to generate the shower after "
 			<< ntry << " attempts in Evolver::showerDecay()"
 			<< Exception::eventerror;
+  }
+  // handle the weights and apply any reweighting required
+  if(nTryReWeight>0) {
+    tStdEHPtr seh = dynamic_ptr_cast<tStdEHPtr>(generator()->currentEventHandler());
+    static bool first = true;
+    if(seh) {
+      seh->reweight(eventWeight/double(nTryReWeight));
+    }
+    else if(first) {
+      generator()->log() << "Reweighting the shower only works with internal Herwig7 processes"
+    			 << "Presumably you are showering Les Houches Events. These will not be"
+    			 << "reweighted\n";
+      first = false;
+    }
   }
   // tree has now showered
   _currenttree->hasShowered(true);

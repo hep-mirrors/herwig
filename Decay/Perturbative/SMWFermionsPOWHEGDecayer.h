@@ -41,7 +41,7 @@ public:
   /**
    *  Apply the POWHEG style correction
    */
-  virtual HardTreePtr generateHardest(ShowerTreePtr);
+  virtual RealEmissionProcessPtr generateHardest(RealEmissionProcessPtr);
   //@}
 
   virtual double me2(const int ichan, const Particle & part,

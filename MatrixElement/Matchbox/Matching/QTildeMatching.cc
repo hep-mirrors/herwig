@@ -368,7 +368,7 @@ void QTildeMatching::calculateShowerVariables() const {
 
 double QTildeMatching::splitFn(const pair<Energy2,double>& vars) const {
   const Energy2& qtilde2 = vars.first;
-  const double& z = vars.second;
+  const double z = vars.second;
   double Nc = SM().Nc();
 
   // final state branching
