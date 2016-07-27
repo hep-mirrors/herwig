@@ -45,7 +45,7 @@ namespace matchbox {
 				unsigned int nf) const;
 
     /// return the number of loops which determine this running
-    virtual unsigned int nloops () const { return 1; }
+    virtual unsigned int nloops () const { return 2; }
 
   public:
 
