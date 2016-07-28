@@ -11,10 +11,12 @@
 
 #include "Herwig/MatrixElement/Matchbox/Utility/SpinorHelicity.h"
 #include "ThePEG/Config/algorithm.h"
+#include <array>
 
 namespace Herwig {
 
 using namespace ThePEG;
+using std::array;
 
 namespace SpinorHelicity {
 
@@ -25,11 +27,16 @@ namespace SpinorHelicity {
  * \brief Caching for amplitudes using spinor helicity techniques.
  *
  */
-template<class AmplitudeKey>
+template<typename AmplitudeKey>
 class AmplitudeCache {
 
   typedef map<AmplitudeKey,pair<bool,Complex> > AmplitudeCacheMap;
   typedef map<AmplitudeKey,pair<bool,LorentzVector<Complex> > > CurrentCacheMap;
+
+  /**
+   * Maximum N we can handle, SYM_N is storage size for a symmetric matrix of N * N elements
+   */
+  enum { MAX_N = 6, SYM_N = MAX_N*(MAX_N+1)/2 };
 
   /**
    * The number of points
@@ -45,57 +52,57 @@ class AmplitudeCache {
   /**
    * Masses indexed by partons
    */
-  mutable vector<double> theMasses;
+  mutable array<double,MAX_N> theMasses;
 
   /**
    * Momenta indexed by partons
    */
-  mutable vector<LorentzMomentum> theMomenta;
+  mutable array<LorentzMomentum,MAX_N> theMomenta;
 
   /**
    * Crossing signs indexed by partons
    */
-  mutable vector<int> theCrossingSigns;
+  mutable array<int,MAX_N> theCrossingSigns;
 
   /**
    * Plus spinors indexed by partons
    */
-  mutable vector<PlusSpinor> thePlusSpinors;
+  mutable array<PlusSpinor,MAX_N> thePlusSpinors;
 
   /**
    * Plus conjugate spinors indexed by partons
    */
-  mutable vector<PlusConjugateSpinor> thePlusConjugateSpinors;
+  mutable array<PlusConjugateSpinor,MAX_N> thePlusConjugateSpinors;
 
   /**
    * Invariants indexed by partons
    */
-  mutable vector<vector<double> > theInvariants;
+  mutable array<double,SYM_N> theInvariants;
 
   /**
    * Flag products to be recalculated
    */
-  mutable vector<vector<bool> > getInvariant;
+  mutable array<bool,SYM_N> getInvariant;
 
   /**
    * Spinor products indexed by partons
    */
-  mutable vector<vector<Complex> > thePlusProducts;
+  mutable array<Complex,SYM_N> thePlusProducts;
 
   /**
    * Flag products to be recalculated
    */
-  mutable vector<vector<bool> > getPlusProduct;
+  mutable array<bool,SYM_N> getPlusProduct;
 
   /**
    * Spinor currents indexed by partons
    */
-  mutable vector<vector<LorentzVector<Complex> > > thePlusCurrents;
+  mutable array<LorentzVector<Complex>,SYM_N> thePlusCurrents;
 
   /**
    * Flag currents to be recalculated
    */
-  mutable vector<vector<bool> > getPlusCurrent;
+  mutable array<bool,SYM_N> getPlusCurrent;
 
   /**
    * Cache intermediate amplitudes by index
@@ -118,12 +125,17 @@ class AmplitudeCache {
   mutable typename CurrentCacheMap::iterator theLastCurrent;
 
   /**
+   * Helper function to index symmetric arrays, assumes i <= j.
+   * Usual indexing function (N*i + j) corrected by triangle number for i-th row.
+   */
+  inline size_t idx(size_t i, size_t j) const {
+    return MAX_N * i - (i + 1) * i / 2 + j;
+  }
+
+  /**
    * Helper to reset flags
    */
   struct boolResetter {
-    void operator()(vector<bool>::reference flag) const {
-      flag = true;
-    }
     void operator()(pair<const AmplitudeKey,pair<bool,Complex> >& flag) const {
       flag.second.first = true;
     }
@@ -132,22 +144,12 @@ class AmplitudeCache {
     }
   };
 
-  /**
-   * Helper to reset flags
-   */
-  struct boolVectorResetter {
-    void operator()(vector<bool>& flags) const {
-      for_each(flags.begin(),flags.end(),boolResetter());
-    }
-  };
-
 public:
 
   /**
    * Constructor
    */
-  AmplitudeCache()
-    : theNPoints(0) {}
+  AmplitudeCache() : theNPoints(0) {}
 
   /**
    * Prepare for n-point amplitude
@@ -214,15 +216,13 @@ public:
    * Return (ij)
    */
   double invariant(int i, int j) const {
-    if ( i== j )
-      return 0.;
-    if ( i > j )
-      swap(i,j);
-    if ( getInvariant[i][j] ) {
-      getInvariant[i][j] = false;
-      theInvariants[i][j] = 2.*(momentum(i)*momentum(j));
+    if ( i == j ) return 0.;
+    if ( i > j  ) swap(i,j);
+    if ( getInvariant[idx(i,j)] ) {
+      getInvariant[idx(i,j)] = false;
+      theInvariants[idx(i,j)] = 2.*(momentum(i)*momentum(j));
     }
-    return theInvariants[i][j];
+    return theInvariants[idx(i,j)];
   }
 
   /**
@@ -234,13 +234,13 @@ public:
     bool swapij = (i > j);
     if ( swapij )
       swap(i,j);
-    if ( getPlusProduct[i][j] ) {
-      getPlusProduct[i][j] = false;
-      thePlusProducts[i][j] = 
+    if ( getPlusProduct[idx(i,j)] ) {
+      getPlusProduct[idx(i,j)] = false;
+      thePlusProducts[idx(i,j)] = 
 	PlusSpinorProduct(thePlusConjugateSpinors[i],
 			  thePlusSpinors[j]).eval() / theScale;
     }
-    return swapij ? -thePlusProducts[i][j] : thePlusProducts[i][j];
+    return swapij ? -thePlusProducts[idx(i,j)] : thePlusProducts[idx(i,j)];
   }
 
   /**
@@ -259,17 +259,17 @@ public:
     bool swapij = (i > j);
     if ( swapij )
       swap(i,j);
-    if ( getPlusCurrent[i][j] ) {
-      getPlusCurrent[i][j] = false;
+    if ( getPlusCurrent[idx(i,j)] ) {
+      getPlusCurrent[idx(i,j)] = false;
       if ( i != j ) {
-	thePlusCurrents[i][j] = 
+	thePlusCurrents[idx(i,j)] = 
 	  PlusSpinorCurrent(thePlusConjugateSpinors[i],
 			    MinusSpinor(theMomenta[j])).eval() / theScale;
       } else {
-	thePlusCurrents[i][j] = 2.*momentum(i);
+	thePlusCurrents[idx(i,j)] = 2.*momentum(i);
       }
     }
-    return swapij ? crossingSign(i,j)*thePlusCurrents[i][j].conjugate() : thePlusCurrents[i][j];
+    return swapij ? crossingSign(i,j)*thePlusCurrents[idx(i,j)].conjugate() : thePlusCurrents[idx(i,j)];
   }
 
   /**
