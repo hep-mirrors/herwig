@@ -152,6 +152,15 @@ private:
   double theAlpha;
 
    /**
+    * In the AlmostUnweighted mode we do not need to unweight 
+    * the events to the reference weight. 
+    * Kappa reduces effectivly the reference weight.
+    * This can be used for processes, where unweighting 
+    * is hardly feasable.
+    */
+  double theKappa;
+
+   /**
     * Number of grid divisions per dimension
     */
   size_t theGridDivisions;
