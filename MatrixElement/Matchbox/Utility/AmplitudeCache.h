@@ -36,7 +36,7 @@ class AmplitudeCache {
   /**
    * Maximum N we can handle, SYM_N is storage size for a symmetric matrix of N * N elements
    */
-  enum { MAX_N = 6, SYM_N = MAX_N*(MAX_N+1)/2 };
+  enum { MAX_N = 7, SYM_N = MAX_N*(MAX_N+1)/2 };
 
   /**
    * The number of points
