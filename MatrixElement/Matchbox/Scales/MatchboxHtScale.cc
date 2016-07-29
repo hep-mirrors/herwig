@@ -157,7 +157,7 @@ void MatchboxHtScale::Init() {
   static Parameter<MatchboxHtScale,Energy> interfaceScalePtCut
     ("JetPtCut",
      "The Pt cut to define jets in the sum.",
-     &MatchboxHtScale::theScalePtCut, 15.*GeV, 0.*GeV, 0.*GeV,
+     &MatchboxHtScale::theScalePtCut, GeV, 15.*GeV, 0.*GeV, 0.*GeV,
      false, false, Interface::lowerlim);
 
 }

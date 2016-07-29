@@ -54,7 +54,8 @@ BinSampler::BinSampler()
     theRemapperMinSelection(0.00001),
     theIntegrated(false),
     theRemappersFilled(false),
-    theHasGrids(false) {}
+    theHasGrids(false),
+    theKappa(1.){}
 
 BinSampler::~BinSampler() {}
 
@@ -161,16 +162,17 @@ double BinSampler::generate() {
   }
  
   if ( !weighted() && initialized() ) {
-    double p = min(abs(w),referenceWeight())/referenceWeight();
+    double p = min(abs(w),kappa()*referenceWeight())/(kappa()*referenceWeight());
     double sign = w >= 0. ? 1. : -1.;
     if ( p < 1 && UseRandom::rnd() > p )
       w = 0.;
     else
-      w = sign*max(abs(w),referenceWeight());
+      w = sign*max(abs(w),referenceWeight()*kappa());
   }
   select(w);
   if ( w != 0.0 )
     accept();
+  assert(kappa()==1.||sampler()->almostUnweighted());
   return w;
 }
 
@@ -585,7 +587,7 @@ void BinSampler::persistentOutput(PersistentOStream & os) const {
      << theBin << theInitialized << theLastPoint
      << theEventHandler << theSampler << theRandomNumbers
      << theRemapperPoints << theRemapChannelDimension
-     << theLuminosityMapperBins << theGeneralMapperBins;
+     << theLuminosityMapperBins << theGeneralMapperBins << theKappa;
 }
 
 void BinSampler::persistentInput(PersistentIStream & is, int) {
@@ -596,7 +598,7 @@ void BinSampler::persistentInput(PersistentIStream & is, int) {
      >> theBin >> theInitialized >> theLastPoint
      >> theEventHandler >> theSampler >> theRandomNumbers
      >> theRemapperPoints >> theRemapChannelDimension
-     >> theLuminosityMapperBins >> theGeneralMapperBins;
+     >> theLuminosityMapperBins >> theGeneralMapperBins >> theKappa;
 }
 
 
@@ -712,6 +714,15 @@ void BinSampler::Init() {
      "The minimum bin selection probability for remappers.",
      &BinSampler::theRemapperMinSelection, 0.00001, 0.0, 1.0,
      false, false, Interface::limited);
+
+
+  static Parameter<BinSampler,double> interfaceKappa
+    ("Kappa",
+     "In AllmostUnweighted mode unweight to Kappa ReferenceWeight.",
+     &BinSampler::theKappa, 1., 0.000001, 1.0,
+     false, false, Interface::limited);
+
+
 
 }
 

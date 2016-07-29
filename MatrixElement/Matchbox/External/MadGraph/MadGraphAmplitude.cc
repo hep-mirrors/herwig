@@ -150,7 +150,12 @@ bool MadGraphAmplitude::checkAmplitudes(){
   }
   
   if (!foundallborns||!foundallvirts)
-  throw Exception() << "MadGraphAmplitude: One amplitude has no externalId. Please remove the MadGraphAmplitude-folder and rebuild.\n"     << Exception::runerror;
+
+  throw Exception() << "MadGraphAmplitude: The MadGraph amplitudes did not match the process.\n" 
+                    << "                   Please remove:"<<mgProcLibPath()<< "\n" 
+                    << "                   or set a process path via the interface:\n"
+                    << "                   set /Herwig/MatrixElements/Matchbox/Amplitudes/MadGraph:ProcessPath ..."
+    << Exception::runerror;
   
   return foundallborns && foundallvirts;
   
