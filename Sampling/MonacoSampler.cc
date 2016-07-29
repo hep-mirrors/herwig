@@ -37,7 +37,6 @@ using namespace Herwig;
 MonacoSampler::MonacoSampler() 
   : BinSampler(),
     theAlpha(0.875),
-    theKappa(1.),
     theGridDivisions(48),
     theIterationPoints(0) {}
 
@@ -100,15 +99,15 @@ double MonacoSampler::generate() {
   }
 
   if ( !weighted() && initialized() ) {
-    double p = min(abs(w),theKappa*referenceWeight())/(theKappa*referenceWeight());
+    double p = min(abs(w),kappa()*referenceWeight())/(kappa()*referenceWeight());
     double sign = w >= 0. ? 1. : -1.;
     if ( p < 1 && UseRandom::rnd() > p )
       w = 0.;
     else
-      w = sign*max(abs(w),theKappa*referenceWeight());
+      w = sign*max(abs(w),kappa()*referenceWeight());
   }
   select(w);
-  assert(theKappa==1.||sampler()->almostUnweighted());
+  assert(kappa()==1.||sampler()->almostUnweighted());
   if ( w != 0.0 )
     accept();
   return w;
@@ -363,12 +362,12 @@ XML::Element MonacoSampler::toXML() const {
 
 void MonacoSampler::persistentOutput(PersistentOStream & os) const {
   BinSampler::put(os);
-  os << theAlpha << theKappa << theGridDivisions;
+  os << theAlpha << theGridDivisions;
 }
 
 void MonacoSampler::persistentInput(PersistentIStream & is, int) {
   BinSampler::get(is);
-  is >> theAlpha >> theKappa >> theGridDivisions;
+  is >> theAlpha >> theGridDivisions;
 }
 
 
@@ -390,12 +389,6 @@ void MonacoSampler::Init() {
      "Rate of grid modification (0 for no modification).",
      &MonacoSampler::theAlpha, 0.875, 0.0, 0,
      false, false, Interface::lowerlim);
-
-  static Parameter<MonacoSampler,double> interfaceKappa
-    ("Kappa",
-     "In AllmostUnweighted mode unweight to Kappa ReferenceWeight.",
-     &MonacoSampler::theKappa, 1., 0.0001, 1.0,
-     false, false, Interface::limited);
 
   static Parameter<MonacoSampler,size_t> interfaceGridDivisions
     ("GridDivisions",

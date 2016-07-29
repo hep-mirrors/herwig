@@ -61,16 +61,17 @@ double CellGridSampler::generate() {
 				    !weighted() && initialized() && theUnweightCells, 
 				    !initialized());
   if ( !weighted() && initialized() ) {
-    double p = min(abs(w),referenceWeight())/referenceWeight();
+    double p = min(abs(w),kappa()*referenceWeight())/(kappa()*referenceWeight());
     double sign = w >= 0. ? 1. : -1.;
     if ( p < 1 && UseRandom::rnd() > p )
       w = 0.;
     else
-      w = sign*max(abs(w),referenceWeight());
+      w = sign*max(abs(w),referenceWeight()*kappa());
   }
   select(w);
   if ( w != 0.0 )
     accept();
+  assert(kappa()==1.||sampler()->almostUnweighted());
   return w;
 }
 
