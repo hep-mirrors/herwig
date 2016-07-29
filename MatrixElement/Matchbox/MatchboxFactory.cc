@@ -1217,6 +1217,118 @@ void MatchboxFactory::print(ostream& os) const {
 
 }
 
+void MatchboxFactory::summary(ostream& os) const {
+  os << "\n\n================================================================================\n"
+     << " Matchbox hard process summary\n"
+     << "================================================================================\n\n";
+
+  os << " Electro-weak parameter summary:\n"
+     << "--------------------------------------------------------------------------------\n\n";
+
+  os << " Electro-weak scheme : ";
+  switch ( SM().ewScheme() ) {
+
+  case 0: os << "Default"; break;
+  case 1: os << "GMuScheme"; break;
+  case 2: os << "alphaMZScheme"; break;
+  case 3: os << "NoMass"; break;
+  case 4: os << "mW"; break;
+  case 5: os << "mZ"; break;
+  case 6: os << "Independent"; break;
+  case 7: os << "FeynRulesUFO"; break;
+  default: assert(false);
+
+  }
+
+  os << "\n";
+
+  os << " alphaEM is "
+     << (SM().ewScheme() == 0 && !theFixedQEDCouplings ? "running" : "fixed at alphaEM(m(Z))") << "\n";
+
+  if ( SM().ewScheme() == 0 && !theFixedQEDCouplings )
+    os << " alphaEM is running at " << SM().alphaEMPtr()->nloops()
+       << " loops\n\n";
+  else
+    os << "\n";
+
+  os << (SM().ewScheme() != 0 ? " Tree level relations " : " Best values ")
+     << "yield:\n\n"
+     << " m(Z)/GeV       = "
+     << getParticleData(ParticleID::Z0)->hardProcessMass()/GeV
+     << "\n"
+     << " g(Z)/GeV       = "
+     << getParticleData(ParticleID::Z0)->hardProcessWidth()/GeV
+     << "\n"
+     << " m(W)/GeV       = "
+     << getParticleData(ParticleID::Wplus)->hardProcessMass()/GeV
+     << "\n"
+     << " g(W)/GeV       = "
+     << getParticleData(ParticleID::Wplus)->hardProcessWidth()/GeV
+     << "\n"
+     << " m(H)/GeV       = "
+     << getParticleData(ParticleID::h0)->hardProcessMass()/GeV
+     << "\n"
+     << " g(H)/GeV       = "
+     << getParticleData(ParticleID::h0)->hardProcessWidth()/GeV
+     << "\n"
+     << " alphaEM(m(Z))  = "
+     << SM().alphaEMME(sqr(getParticleData(ParticleID::Z0)->hardProcessMass())) << "\n"
+     << " sin^2(theta)   = " << SM().sin2ThetaW()
+     << "\n"
+     << " GeV^2 GF       = " << GeV2*SM().fermiConstant()
+     << "\n\n";
+
+  os << " Quark masses and widths are:\n"
+     << "--------------------------------------------------------------------------------\n\n"
+     << " m(u)/GeV       = " << getParticleData(ParticleID::u)->hardProcessMass()/GeV << "\n"
+     << " m(d)/GeV       = " << getParticleData(ParticleID::d)->hardProcessMass()/GeV << "\n"
+     << " m(c)/GeV       = " << getParticleData(ParticleID::c)->hardProcessMass()/GeV << "\n"
+     << " m(s)/GeV       = " << getParticleData(ParticleID::s)->hardProcessMass()/GeV << "\n"
+     << " m(t)/GeV       = " << getParticleData(ParticleID::t)->hardProcessMass()/GeV << "\n"
+     << " g(t)/GeV       = " << getParticleData(ParticleID::t)->hardProcessWidth()/GeV << "\n"
+     << " m(b)/GeV       = " << getParticleData(ParticleID::b)->hardProcessMass()/GeV << "\n\n";
+
+  os << " Lepton masses and widths are:\n"
+     << "--------------------------------------------------------------------------------\n\n"
+     << " m(n_e)/GeV     = " << getParticleData(ParticleID::nu_e)->hardProcessMass()/GeV << "\n"
+     << " m(e)/GeV       = " << getParticleData(ParticleID::eminus)->hardProcessMass()/GeV << "\n"
+     << " m(n_mu)/GeV    = " << getParticleData(ParticleID::nu_mu)->hardProcessMass()/GeV << "\n"
+     << " m(mu)/GeV      = " << getParticleData(ParticleID::muminus)->hardProcessMass()/GeV << "\n"
+     << " m(nu_tau)/GeV  = " << getParticleData(ParticleID::nu_tau)->hardProcessMass()/GeV << "\n"
+     << " m(tau)/GeV     = " << getParticleData(ParticleID::tauminus)->hardProcessMass()/GeV << "\n\n";
+
+
+  os << " Strong coupling summary:\n"
+     << "--------------------------------------------------------------------------------\n\n";
+
+  os << " alphaS is";
+  if ( !theFixedCouplings ) {
+    os << " running at " << SM().alphaSPtr()->nloops()
+       << " loops with\n"
+       << " alphaS(m(Z))   = " << SM().alphaSPtr()->value(sqr(getParticleData(ParticleID::Z0)->mass()))
+       << "\n\n";
+  } else {
+    os << " fixed at "
+       << SM().alphaS()
+       << "\n\n";
+  }
+
+  if ( !theFixedCouplings ) {
+    os << " flavour thresholds are matched at\n";
+    for ( long id = 1; id <= 6; ++id ) {
+      os << " m(" << id << ")/GeV       = " 
+	 << (SM().alphaSPtr()->quarkMasses().empty() ?
+	     getParticleData(id)->mass()/GeV : 
+	     SM().alphaSPtr()->quarkMasses()[id-1]/GeV)
+	 << "\n";
+    }
+  }
+
+  os << "\n\n" << flush;
+
+}
+
+
 void MatchboxFactory::doinit() {
   theIsMatchboxRun() = true;
   if ( RunDirectories::empty() )
@@ -1229,6 +1341,11 @@ void MatchboxFactory::doinit() {
   Ptr<StandardEventHandler>::tptr eh =
     dynamic_ptr_cast<Ptr<StandardEventHandler>::tptr>(generator()->eventHandler());
   assert(eh);
+  if ( initVerbose() && !ranSetup ) {
+    assert(standardModel());
+    standardModel()->init();
+    summary(Repository::clog());
+  }
   SubProcessHandler::doinit();
 }
 
