@@ -9,6 +9,8 @@
 #ifndef SRC_HERWIG_H
 #define SRC_HERWIG_H
 
+#include "ThePEG/Repository/EventGenerator.h"
+
 namespace Herwig {
 
 class HerwigUI;
@@ -23,51 +25,50 @@ class HerwigUI;
  */
 namespace API {
 
-/**
- * Herwig read mode. Prepares a generator .run file.
- */
-void read(const HerwigUI &);
+  /**
+   * Herwig read mode. Prepares a generator .run file. If an input file is not
+   * supplied through HerwigUI::inputfile() repository commands will be read
+   * from HerwigUI::inStream() instead.
+   */
+  void read(const HerwigUI &);
 
+  /**
+   * Herwig build mode. Prepares a generator .run file and integration jobs,
+   * if desired. If an input file is not supplied through
+   * HerwigUI::inputfile() repository commands will be read from
+   * HerwigUI::inStream() instead.
+   */
+  void build(const HerwigUI &);
 
-/**
- * Herwig build mode
- *
- *
- */
-void build(const HerwigUI &);
+  /**
+   * Herwig integrate mode
+   */
+  void integrate(const HerwigUI &);
 
+  /**
+   * Herwig mergegrids mode
+   */
+  void mergegrids(const HerwigUI &);
 
-/**
- * Herwig integrate mode
- *
- *
- */
-void integrate(const HerwigUI &);
+  /**
+   * Prepare Herwig run mode; prepare the event generator and return a pointer
+   * to it; it can then be used to generate single events.
+   */
+  ThePEG::EGPtr prepareRun(const HerwigUI &);
 
+  /**
+   * Herwig run mode; prepare the event generator and run a given number of
+   * events
+   */
+  void run(const HerwigUI &);
 
-/**
- * Herwig mergegrids mode
- *
- *
- */
-void mergegrids(const HerwigUI &);
-
-
-/**
- * Herwig run mode
- *
- *
- */
-void run(const HerwigUI &);
-
-
-/**
- * Herwig init mode. Creates a new default repository. 
- *
- * Usually, the default repo created during the Herwig installation
- * is fine and external users will not need this mode.
- */
-void init(const HerwigUI &);
+  /**
+   * Herwig init mode. Creates a new default repository. 
+   *
+   * Usually, the default repo created during the Herwig installation
+   * is fine and external users will not need this mode.
+   */
+  void init(const HerwigUI &);
 
 }
 
