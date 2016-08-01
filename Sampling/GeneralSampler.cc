@@ -82,13 +82,6 @@ void GeneralSampler::initialize() {
   if ( runLevel() == ReadMode ||
        runLevel() == IntegrationMode ) {
     assert(theSamplers.empty());
-    if ( !theGrids.children().empty() )
-      Repository::clog()
-	<< "--------------------------------------------------------------------------------\n\n"
-	<< "Using an existing grid. Please consider re-running the grid adaption\n"
-	<< "when there have been significant changes to parameters, cuts, etc.\n\n"
-	<< "--------------------------------------------------------------------------------\n"
-	<< flush;
   }
 
   if ( theParallelIntegration ) {
@@ -235,7 +228,10 @@ void GeneralSampler::initialize() {
     Repository::clog() << "integrating subprocesses";
     progressBar = new boost::progress_display(binsToIntegrate.size(),Repository::clog());
   }
+
   int count=0;
+  bool reuseGrid = false;
+  bool missingGrid = false;
   for ( set<int>::const_iterator bit = binsToIntegrate.begin(); bit != binsToIntegrate.end(); ++bit ) {
     count++;
     if(theVerbose&&
@@ -251,6 +247,8 @@ void GeneralSampler::initialize() {
     s->setupRemappers(theVerbose);
     if ( justAfterIntegrate )
       s->readIntegrationData();
+    reuseGrid = reuseGrid || s->existsGrid();
+    missingGrid = missingGrid || ( ! s->existsGrid() );
     s->initialize(theVerbose);
     samplers()[*bit] = s;
     if ( !theVerbose && !justAfterIntegrate )
@@ -268,7 +266,27 @@ void GeneralSampler::initialize() {
     progressBar = 0;
   }
 
-  if ( runLevel() == IntegrationMode ) {
+  if ( missingGrid && runLevel() == RunMode )
+    generator()->log()
+      << "\n--------------------------------------------------------------------------------\n\n"
+      << "Warning:No grid file could be found at the start of this run.\n\n"
+      << "* For a read/run setup intented to be used with --setupfile please consider\n"
+      << "  using the build/integrate/run setup.\n"
+      << "* For a build/integrate/run setup to be used with --setupfile please ensure\n"
+      << "  that the same setupfile is provided to both the integrate and run steps.\n\n"
+      << "--------------------------------------------------------------------------------\n" << flush;
+
+  if ( runLevel() == ReadMode ||
+       runLevel() == IntegrationMode ) {
+    if ( reuseGrid )
+      Repository::clog()
+        << "--------------------------------------------------------------------------------\n\n"
+        << "Re-using an existing grid as starting point for grid optimization. \n"
+        << "Please consider removing the grid files and re-running the grid adaption\n"
+        << "when there have been significant changes to parameters, cuts, etc.\n\n"
+        << "--------------------------------------------------------------------------------\n"
+        << flush;
+
     theGrids = XML::Element(XML::ElementTypes::Element,"Grids");
     for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers().begin();
 	  s != samplers().end(); ++s ) {
@@ -554,7 +572,11 @@ void GeneralSampler::doinit() {
     theIntegrationJobs = integrationJobs();
   }
   readGrids();
-  if ( theGrids.children().empty() && runLevel() == RunMode )
+  bool missingGrid = false;
+  for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers().begin();
+	s != samplers().end(); ++s ) 
+    missingGrid = missingGrid || ( ! s->second->existsGrid() );
+  if ( missingGrid && runLevel() == RunMode )
     generator()->log()
       << "\n--------------------------------------------------------------------------------\n\n"
       << "Warning: No grid file could be found at the start of this run.\n\n"
@@ -675,16 +697,6 @@ generator()->log() <<"This corresponds to a cross section difference between:\n"
 void GeneralSampler::doinitrun() {
   readGrids();
 
-  if ( theGrids.children().empty() && !didReadGrids )
-    generator()->log()
-      << "\n--------------------------------------------------------------------------------\n\n"
-      << "Warning:No grid file could be found at the start of this run.\n\n"
-      << "* For a read/run setup intented to be used with --setupfile please consider\n"
-      << "  using the build/integrate/run setup.\n"
-      << "* For a build/integrate/run setup to be used with --setupfile please ensure\n"
-      << "  that the same setupfile is provided to both, the integrate and run steps.\n\n"
-      << "--------------------------------------------------------------------------------\n" << flush;
-
   if ( samplers().empty() ) {
     justAfterIntegrate = true;
     if ( !hasSetupFile() )
@@ -698,6 +710,21 @@ void GeneralSampler::doinitrun() {
       s->second->initialize(theVerbose);
     }
   }
+
+  bool missingGrid = false;
+  for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers().begin();
+	s != samplers().end(); ++s ) 
+    missingGrid = missingGrid || ( ! s->second->existsGrid() );
+  if ( missingGrid && !didReadGrids )
+    generator()->log()
+      << "\n--------------------------------------------------------------------------------\n\n"
+      << "Warning:No grid file could be found at the start of this run.\n\n"
+      << "* For a read/run setup intented to be used with --setupfile please consider\n"
+      << "  using the build/integrate/run setup.\n"
+      << "* For a build/integrate/run setup to be used with --setupfile please ensure\n"
+      << "  that the same setupfile is provided to both the integrate and run steps.\n\n"
+      << "--------------------------------------------------------------------------------\n" << flush;
+
   isSampling = true;
   SamplerBase::doinitrun();
 }

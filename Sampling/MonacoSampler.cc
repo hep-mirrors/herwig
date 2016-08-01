@@ -119,6 +119,21 @@ void MonacoSampler::saveGrid() const {
   sampler()->grids().append(grid);
 }
 
+bool MonacoSampler::existsGrid() const {
+  list<XML::Element>::iterator git = sampler()->grids().children().begin();
+  for ( ; git != sampler()->grids().children().end(); ++git ) {
+    if ( git->type() != XML::ElementTypes::Element )
+      continue;
+    if ( git->name() != "Monaco" )
+      continue;
+    string proc;
+    git->getFromAttribute("process",proc);
+    if ( proc == id() ) 
+      return true;
+  }
+  return false;
+}
+
 void MonacoSampler::initialize(bool progress) {
 
 //read in grid
