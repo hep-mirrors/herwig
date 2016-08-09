@@ -7,6 +7,7 @@
 #include "ElectroWeakReweighter.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Reference.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -22,13 +23,17 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/epsilon.h"
+#include "Herwig/MatrixElement/Matchbox/Base/SubtractedME.h"
+#include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
+#include "ThePEG/Handlers/StandardXComb.h"
 
 using namespace Herwig;
 
 tEWCouplingsPtr ElectroWeakReweighter::staticEWCouplings_ = tEWCouplingsPtr();
 
 
-ElectroWeakReweighter::ElectroWeakReweighter() {}
+ElectroWeakReweighter::ElectroWeakReweighter() : testing_(false)
+{}
 
 ElectroWeakReweighter::~ElectroWeakReweighter() {}
 
@@ -41,18 +46,18 @@ IBPtr ElectroWeakReweighter::fullclone() const {
 }
 
 void ElectroWeakReweighter::persistentOutput(PersistentOStream & os) const {
-  os << EWCouplings_ << collinearSudakov_ << softSudakov_;
+  os << EWCouplings_ << collinearSudakov_ << softSudakov_ << testing_;
 }
 
 void ElectroWeakReweighter::persistentInput(PersistentIStream & is, int) {
-  is >> EWCouplings_ >> collinearSudakov_ >> softSudakov_;
+  is >> EWCouplings_ >> collinearSudakov_ >> softSudakov_ >> testing_;
 }
 
 
 // The following static variable is needed for the type
 // description system in ThePEG.
 DescribeClass<ElectroWeakReweighter,ReweightBase>
-  describeHerwigElectroWeakReweighter("Herwig::ElectroWeakReweighter", "HwMEEW.so");
+describeHerwigElectroWeakReweighter("Herwig::ElectroWeakReweighter", "HwMEEW.so");
 
 void ElectroWeakReweighter::Init() {
 
@@ -74,6 +79,57 @@ void ElectroWeakReweighter::Init() {
      "The soft Sudakov",
      &ElectroWeakReweighter::softSudakov_, false, false, true, false, false);
 
+  static Switch<ElectroWeakReweighter,bool> interfaceTesting
+    ("Testing",
+     "Whether or not to output testing information",
+     &ElectroWeakReweighter::testing_, false, false, false);
+  static SwitchOption interfaceTestingYes
+    (interfaceTesting,
+     "Yes",
+     "Output the information",
+     true);
+  static SwitchOption interfaceTestingNo
+    (interfaceTesting,
+     "No",
+     "Don't output the information",
+     false);
+
+}
+
+void ElectroWeakReweighter::doinit() {
+  ReweightBase::doinit();
+  if(!testing_) return;
+  // testing output
+  cerr << "aEM\n";
+  for(Energy scale=10.*GeV; scale<10*TeV; scale *= 1.1) {
+    cerr << scale/GeV << " " 
+  	 << EWCouplings_->aEM(scale) << "\n";
+  }
+  cerr << "aS\n";
+  for(Energy scale=10.*GeV; scale<10*TeV; scale *= 1.4) {
+    cerr << scale/GeV << " " 
+  	 << EWCouplings_->aS(scale) << "\n";
+  }
+  cerr << "y_t\n";
+  for(Energy scale=10.*GeV; scale<10*TeV; scale *= 1.4) {
+    cerr << scale/GeV << " " 
+  	 << EWCouplings_->y_t(scale) << "\n";
+  }
+  cerr << "lambda\n";
+  for(Energy scale=91.2*GeV; scale<10*TeV; scale *= 1.4) {
+    cerr << scale/GeV << " " 
+  	 << EWCouplings_->lambda(scale) << "\n";
+  }
+  cerr << "vev\n";
+  for(Energy scale=91.2*GeV; scale<10*TeV; scale *= 1.4) {
+    cerr << scale/GeV << " " 
+  	 << EWCouplings_->vev(scale)/GeV << "\n";
+  }
+  collinearSudakov_->makePlots();
+  Energy2 s = sqr(5000.*GeV);
+  Energy2 t = -0.25*s;
+  Energy2 u = -0.75*s;
+  testEvolution(s,t,u);
 }
 
 namespace {
@@ -140,47 +196,38 @@ void axpy_prod_local(const boost::numeric::ublas::matrix<Complex> & A,
 double ElectroWeakReweighter::weight() const {
   EWCouplings_->initialize();
   staticEWCouplings_ = EWCouplings_;
-  // cerr << "aEM\n";
-  // for(Energy scale=10.*GeV; scale<10*TeV; scale *= 1.1) {
-  //   cerr << scale/GeV << " " 
-  // 	 << EWCouplings_->aEM(scale) << "\n";
-  // }
-  // cerr << "aS\n";
-  // for(Energy scale=10.*GeV; scale<10*TeV; scale *= 1.4) {
-  //   cerr << scale/GeV << " " 
-  // 	 << EWCouplings_->aS(scale) << "\n";
-  // }
-  // cerr << "y_t\n";
-  // for(Energy scale=10.*GeV; scale<10*TeV; scale *= 1.4) {
-  //   cerr << scale/GeV << " " 
-  // 	 << EWCouplings_->y_t(scale) << "\n";
-  // }
-  // cerr << "lambda\n";
-  // for(Energy scale=91.2*GeV; scale<10*TeV; scale *= 1.4) {
-  //   cerr << scale/GeV << " " 
-  // 	 << EWCouplings_->lambda(scale) << "\n";
-  // }
-  // cerr << "vev\n";
-  // for(Energy scale=91.2*GeV; scale<10*TeV; scale *= 1.4) {
-  //   cerr << scale/GeV << " " 
-  // 	 << EWCouplings_->vev(scale)/GeV << "\n";
-  // }
-  // collinearSudakov_->makePlots();
-  // Energy2 s = sqr(5000.*GeV);
-  // Energy2 t = -0.25*s;
-  // Energy2 u = -0.75*s;
-  // testEvolution(s,t,u);
-
-
-
-
+  // cast the XComb
+  Ptr<StandardXComb>::ptr sxc = dynamic_ptr_cast<Ptr<StandardXComb>::ptr>(lastXCombPtr());
+  // if the Herwig XComb
+  if(sxc) {
+    // get information about the type of event
+    Ptr<SubtractedME>::tptr      subme = dynamic_ptr_cast<Ptr<SubtractedME>::tptr>(sxc->matrixElement());
+    Ptr<MatchboxMEBase>::tptr       me = dynamic_ptr_cast<Ptr<MatchboxMEBase>::tptr>(sxc->matrixElement());
+    Ptr<SubtractionDipole>::tptr dipme = dynamic_ptr_cast<Ptr<SubtractionDipole>::tptr>(sxc->matrixElement());
+    bool isHEvent(false),isSEvent(false);
+    if(subme) {
+      if ( subme->realShowerSubtraction() )
+	isHEvent = true;
+      else if ( subme->virtualShowerSubtraction() ||  subme->loopSimSubtraction() )
+	isSEvent = true;
+    }
+    // H or S event of virtual return 1.
+    if(isHEvent || isSEvent || (me && me->oneLoopNoBorn()))
+      return 1.;
+    // cerr << "testing after type check\n";
+    // cerr << "testing pointers " << subme << " " << me << " " << dipme << "\n";
+    // cerr << "testing event type " << isHEvent << " " << isSEvent << " " << "\n";
+    // if(subme) cerr << subme->fullName() << "\n";
+    // if(   me) {
+    //   cerr <<    me->fullName() << "\n";
+    //   cerr << me->oneLoopNoBorn() << " " << me->oneLoopNoLoops() << "\n";
+    // }
+    // if(dipme) cerr << dipme->fullName() << "\n";
+  }
   // cerr <<  subProcess() << "\n";
   // cerr << *subProcess() << "\n";
-  // cerr << subProcess()->outgoing()[0] << *subProcess()->outgoing()[0] << "\n";
-  // cerr << subProcess()->outgoing()[0]->spinInfo() << "\n";
-  // cerr << subProcess()->outgoing()[0]->spinInfo()->productionVertex() << "\n";
-  if(subProcess()->outgoing().size()!=2)
-    return 1.;
+  // only 2->2 processes
+  if(subProcess()->outgoing().size()!=2) return 1.;
   // processes with gg initial-state
   if(subProcess()->incoming().first->id()==ParticleID::g &&
      subProcess()->incoming().second->id()==ParticleID::g) {

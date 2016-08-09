@@ -143,6 +143,18 @@ protected:
 
 protected:
 
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+  //@}
+
+protected:
+
   /** @name Clone Methods. */
   //@{
   /**
@@ -187,6 +199,11 @@ private:
    *  The couplings to allow global access
    */
   static tEWCouplingsPtr staticEWCouplings_;
+
+  /**
+   *  Whether or not to output testing information
+   */
+  bool testing_;
 
 };
 
