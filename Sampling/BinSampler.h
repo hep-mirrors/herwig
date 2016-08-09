@@ -378,6 +378,15 @@ public:
    */
   string randomNumberString() const {return theRandomNumbers;}
 
+  /**
+   * In the AlmostUnweighted mode we do not need to unweight 
+   * the events to the reference weight. 
+   * Kappa reduces effectivly the reference weight.
+   * This can be used for processes, where unweighting 
+   * is hardly feasable.
+   */
+  double kappa() const {return theKappa;}
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -551,6 +560,17 @@ private:
    * True, if this sampler has already read grid data.
    */
   bool theHasGrids;
+
+
+
+  /**
+   * In the AlmostUnweighted mode we do not need to unweight 
+   * the events to the reference weight. 
+   * Kappa reduces effectivly the reference weight.
+   * This can be used for processes, where unweighting 
+   * is hardly feasable.
+   */
+  double theKappa;
 
 private:
 

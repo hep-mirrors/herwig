@@ -164,6 +164,8 @@ void GeneralSampler::initialize() {
       << "Wrote " << jobCount << " integration jobs\n"
       << "Please submit integration jobs with the\nintegrate --jobid=x\ncommand for job ids "
       << "from 0 to " << (jobCount-1) << "\n\n"
+      << "e.g.:\n\n"
+      << " for i in $(seq 0 "<< (jobCount-1) <<");do Herwig integrate --jobid=$i "<<generator()->runName()<<".run & done\n\n"
       << "--------------------------------------------------------------------------------\n"
       << flush;
 
@@ -233,8 +235,13 @@ void GeneralSampler::initialize() {
     Repository::clog() << "integrating subprocesses";
     progressBar = new boost::progress_display(binsToIntegrate.size(),Repository::clog());
   }
-
+  int count=0;
   for ( set<int>::const_iterator bit = binsToIntegrate.begin(); bit != binsToIntegrate.end(); ++bit ) {
+    count++;
+    if(theVerbose&&
+       (runLevel() == ReadMode ||
+        runLevel() == IntegrationMode))
+       cout<<"\nIntegrate "<< count <<" of "<<binsToIntegrate.size() <<":\n"<<flush;
     Ptr<BinSampler>::ptr s = theBinSampler->cloneMe();
     s->eventHandler(eventHandler());
     s->sampler(this);

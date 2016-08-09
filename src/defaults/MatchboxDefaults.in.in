@@ -407,7 +407,7 @@ create Herwig::TreePhasespaceChannels TreePhasespaceChannels
 create Herwig::TreePhasespace TreePhasespace
 set TreePhasespace:ChannelMap TreePhasespaceChannels
 set TreePhasespace:M0 0.0001*GeV
-set TreePhasespace:MC 0.000001*GeV
+set TreePhasespace:MC 0.00005*GeV
 set TreePhasespace:CouplingData PhasespaceCouplings
 
 do TreePhasespace:SetPhysicalCoupling 21 -1 1 0.059

@@ -44,6 +44,9 @@ namespace matchbox {
 				Energy2 lambda2,
 				unsigned int nf) const;
 
+    /// return the number of loops which determine this running
+    virtual unsigned int nloops () const { return 2; }
+
   public:
 
     /** @name Functions used by the persistent I/O system. */

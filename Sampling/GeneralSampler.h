@@ -148,6 +148,13 @@ public:
    */
   bool weighted() const { return eventHandler()->weighted(); }
 
+
+  /** 
+   * True if the sampler runs in Allmostunweighted mode.
+   */ 
+
+  bool almostUnweighted() const { return theAlmostUnweighted; }
+
 public:
 
   /**
