@@ -65,7 +65,7 @@ public:
   /**
    * The default constructor.
    */
-  HwRemDecayer() : allowTop_(false),ptmin_(-1.*GeV), beta_(ZERO),
+  HwRemDecayer() : allowTop_(false),multiPeriph_(false),ptmin_(-1.*GeV), beta_(ZERO),
 		   maxtrySoft_(10), 
 		   colourDisrupt_(1.0), 
 		   _kinCutoff(0.75*GeV), 
@@ -435,7 +435,23 @@ private:
   /**
    * Create N soft gluon interactions
    */
-  void doSoftInteractions(unsigned int N);
+  void doSoftInteractions(unsigned int N){
+  	if(!multiPeriph_){
+  		doSoftInteractions_old(N);}
+  	else{
+  		doSoftInteractions_multiPeriph(N);
+  	}
+  }
+  
+  /**
+   * Create N soft gluon interactions (old version)
+   */
+  void doSoftInteractions_old(unsigned int N);
+  
+  /**
+   * Create N soft gluon interactions - multiperhpheral kinematics
+   */
+  void doSoftInteractions_multiPeriph(unsigned int N);
 
   /**
    * Method to add a particle to the step
@@ -503,6 +519,11 @@ private:
    *  Switch to control handling of top quarks in proton
    */
   bool allowTop_;
+  
+  /**
+   *  Switch to control using multiperipheral kinemaics
+   */
+  bool multiPeriph_;
 
   /** @name Soft interaction variables. */
   //@{
