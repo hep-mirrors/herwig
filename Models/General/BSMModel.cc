@@ -317,7 +317,15 @@ void BSMModel::readDecay(CFileLineReader & cfile,
   }
   if(nmode>0) {
     inpart->update();
-    if(inpart->CC()) inpart->CC()->update();
+    inpart->reset();
+    if(inpart->CC()) {
+      inpart->CC()->update();
+      inpart->CC()->reset();
+    }
+    if(inpart->massGenerator())
+      inpart->massGenerator()->reset();
+    if(inpart->widthGenerator())
+      inpart->widthGenerator()->reset();
   }
 }
 
