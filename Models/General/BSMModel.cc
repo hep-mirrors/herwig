@@ -22,6 +22,16 @@
 
 using namespace Herwig;
 
+namespace {
+struct ParticleOrdering {
+  bool operator()(tcPDPtr p1, tcPDPtr p2) {
+    return abs(p1->id()) > abs(p2->id()) ||
+      ( abs(p1->id()) == abs(p2->id()) && p1->id() > p2->id() ) ||
+      ( p1->id() == p2->id() && p1->fullName() > p2->fullName() );
+  }
+};
+}
+
 BSMModel::BSMModel() : decayFile_(), readDecays_(true),
 		       topModesFromFile_(false),
 		       tolerance_(1e-6)
@@ -157,6 +167,13 @@ void BSMModel::readDecay(CFileLineReader & cfile,
   string dummy;
   iss >> dummy >> parent >> iunit(width, GeV);
   PDPtr inpart = getBSMParticleData(parent);
+  // check this ain't a SM particle
+  if(abs(parent)<=5||abs(parent)==23||abs(parent)==24||
+     (abs(parent)>=11&&abs(parent)<=16))
+    cerr << "BSMModel::readDecay() Resetting width of " 
+	   << inpart->PDGName() << " using SLHA "
+	   << "file,\nthis can affect parts of the Standard Model simulation and"
+	   << " is strongly discouraged.\n";
   if(!topModesFromFile_&&abs(parent)==ParticleID::t) {
     cfile.readline();
     return;
@@ -194,6 +211,7 @@ void BSMModel::readDecay(CFileLineReader & cfile,
     vector<tcPDPtr> products,bosons;
     Energy mout(ZERO),moutnoWZ(ZERO);
     string tag = prefix;
+    multiset<tcPDPtr,ParticleOrdering> outgoing;
     int charge = -inpart->iCharge();
     while( true ) {
       long t;
@@ -215,7 +233,7 @@ void BSMModel::readDecay(CFileLineReader & cfile,
       }
       charge += p->iCharge();
       ++npr;
-      tag += p->name() + ",";
+      outgoing.insert(p);
       Energy mass =  p->mass();
       mout += mass;
       if(abs(p->id())==ParticleID::Wplus||p->id()==ParticleID::Z0) {
@@ -235,77 +253,105 @@ void BSMModel::readDecay(CFileLineReader & cfile,
  	<< "file is correct.\n"
  	<< Exception::warning;
     }
-    if( npr > 1 ) {
-      tag.replace(tag.size() - 1, 1, ";");
-      if(charge!=0) {
+
+    // must be at least two decay products
+    if(npr<=1) continue;
+
+    // create the tag
+    for(multiset<tcPDPtr,ParticleOrdering>::iterator it=outgoing.begin();
+	it!=outgoing.end();++it)
+      tag += (**it).name() + ",";
+    tag.replace(tag.size() - 1, 1, ";");
+    if(charge!=0) {
+      cerr << "BSMModel::readDecay() "
+	   << "Decay mode " << tag << " read from SLHA file does not conserve charge,"
+	   << "\nare you really sure you want to do this?\n";
+    }
+    ++nmode;
+    if(nmode==1) {
+      if(abs(parent)<=5||abs(parent)==23||abs(parent)==24||
+	 (abs(parent)>=11&&abs(parent)<=16)) {
+	cerr << "BSMModel::readDecay() Resetting the decays of " 
+	     << inpart->PDGName() << " using SLHA "
+	     << "file,\nthis can affect parts of the Standard Model simulation,"
+	     << " give unexpected results and"
+	     << " is strongly discouraged.\n";
+	cerr << "Switching off all the internal modes so only those from the SLHA file "
+	     << "are used, this may have unintended consequences\n";
+	for(DecaySet::iterator it=inpart->decayModes().begin();
+	    it!=inpart->decayModes().end();++it) {
+	  generator()->preinitInterface(*it, "OnOff", "set", "Off");
+	}
+	if(inpart->CC()) {
+	  for(DecaySet::iterator it=inpart->CC()->decayModes().begin();
+	      it!=inpart->CC()->decayModes().end();++it) {
+	    generator()->preinitInterface(*it, "OnOff", "set", "Off");
+	  }
+	}
+      }
+    }
+    // normal option
+    if(mout<=inMass) {
+      inpart->stable(false);
+      brsum += brat;
+      createDecayMode(tag, brat);
+    }
+    // no possible off-shell gauge bosons throw it away
+    else if(bosons.empty() || bosons.size()>2 ||
+	    moutnoWZ>=inMass) {
+      cerr << "BSMModel::readDecay() "
+	   << "The decay " << tag << " cannot proceed for on-shell "
+	   << "particles, skipping it.\n";
+    }
+    else {
+      Energy maxMass = inMass - moutnoWZ;
+      string newTag = prefix;
+      for(unsigned int ix=0;ix<products.size();++ix)
+	newTag += products[ix]->name() + ",";
+      if(bosons.size()==1) {
 	cerr << "BSMModel::readDecay() "
-	     << "Decay mode " << tag << " read from SLHA file does not conserve charge,"
-	     << "\nare you really sure you want to do this?\n";
+	     << "The decay " << tag << " cannot proceed for on-shell\n"
+	     << "particles, replacing gauge boson with its decay products\n";
+	vector<pair<double,string> > modes = 
+	  createWZDecayModes(newTag,brat,bosons[0],maxMass);
+	for(unsigned int ix=0;ix<modes.size();++ix) {
+	  modes[ix].second.replace(modes[ix].second.size() - 1, 1, ";");
+	  createDecayMode(modes[ix].second,modes[ix].first);
+	  brsum += modes[ix].first;
+	}
       }
-      ++nmode;
-      // normal option
-      if(mout<=inMass) {
-  	inpart->stable(false);
-  	brsum += brat;
-  	createDecayMode(tag, brat);
-      }
-      // no possible off-shell gauge bosons throw it away
-      else if(bosons.empty() || bosons.size()>2 ||
-  	      moutnoWZ>=inMass) {
-  	cerr << "BSMModel::readDecay() "
-  	     << "The decay " << tag << " cannot proceed for on-shell "
-  	     << "particles, skipping it.\n";
+      else if(bosons.size()==2) {
+	bool identical = bosons[0]->id()==bosons[1]->id();
+	if(maxMass>bosons[0]->mass()&&maxMass>bosons[1]->mass()) {
+	  cerr << "BSMModel::readDecay() "
+	       << "The decay " << tag << " cannot proceed for on-shell\n"
+	       << "particles, replacing one of the gauge bosons"
+	       << " with its decay products\n";
+	  unsigned int imax = identical ? 1 : 2;
+	  if(imax==2) brat *= 0.5;
+	  for(unsigned int ix=0;ix<imax;++ix) {
+	    string newTag2 = newTag+bosons[ix]->name()+',';
+	    unsigned int iother = ix==0 ? 1 : 0;
+	    vector<pair<double,string> > modes = 
+	      createWZDecayModes(newTag2,brat,bosons[iother],maxMass);
+	    for(unsigned int ix=0;ix<modes.size();++ix) {
+	      modes[ix].second.replace(modes[ix].second.size() - 1, 1, ";");
+	      createDecayMode(modes[ix].second,modes[ix].first);
+	      brsum += modes[ix].first;
+	    }
+	  }
+	}
+	else {
+	  cerr << "BSMModel::readDecay() "
+	       << "The decay " << tag << " cannot proceed for on-shell\n"
+	       << "particles, and has too many off-shell gauge bosons,"
+	       << " skipping it.\n";
+	}
       }
       else {
-  	Energy maxMass = inMass - moutnoWZ;
-  	string newTag = prefix;
-  	for(unsigned int ix=0;ix<products.size();++ix)
-  	  newTag += products[ix]->name() + ",";
-  	if(bosons.size()==1) {
-  	  cerr << "BSMModel::readDecay() "
-  	       << "The decay " << tag << " cannot proceed for on-shell\n"
-  	       << "particles, replacing gauge boson with its decay products\n";
-  	  vector<pair<double,string> > modes = 
-  	    createWZDecayModes(newTag,brat,bosons[0],maxMass);
-  	  for(unsigned int ix=0;ix<modes.size();++ix) {
-  	    modes[ix].second.replace(modes[ix].second.size() - 1, 1, ";");
-  	    createDecayMode(modes[ix].second,modes[ix].first);
-  	    brsum += modes[ix].first;
-  	  }
-  	}
-  	else if(bosons.size()==2) {
-  	  bool identical = bosons[0]->id()==bosons[1]->id();
-  	  if(maxMass>bosons[0]->mass()&&maxMass>bosons[1]->mass()) {
-  	    cerr << "BSMModel::readDecay() "
-  		 << "The decay " << tag << " cannot proceed for on-shell\n"
-  		 << "particles, replacing one of the gauge bosons"
-  		 << " with its decay products\n";
-  	    unsigned int imax = identical ? 1 : 2;
-  	    if(imax==2) brat *= 0.5;
-  	    for(unsigned int ix=0;ix<imax;++ix) {
-  	      string newTag2 = newTag+bosons[ix]->name()+',';
-  	      unsigned int iother = ix==0 ? 1 : 0;
-  	      vector<pair<double,string> > modes = 
-  	        createWZDecayModes(newTag2,brat,bosons[iother],maxMass);
-  	      for(unsigned int ix=0;ix<modes.size();++ix) {
-  		modes[ix].second.replace(modes[ix].second.size() - 1, 1, ";");
-  		createDecayMode(modes[ix].second,modes[ix].first);
-  		brsum += modes[ix].first;
-  	      }
-  	    }
-  	  }
-  	  else {
-  	    cerr << "BSMModel::readDecay() "
-  		 << "The decay " << tag << " cannot proceed for on-shell\n"
-  		 << "particles, and has too many off-shell gauge bosons,"
-  		 << " skipping it.\n";
-  	  }
-  	}
-  	else {
-  	  cerr << "BSMModel::readDecay() "
-  	       << "The decay " << tag << " cannot proceed for on-shell\n"
-  	       << "particles, and has too many outgoing gauge bosons skipping it.\n";
-  	}
+	cerr << "BSMModel::readDecay() "
+	     << "The decay " << tag << " cannot proceed for on-shell\n"
+	     << "particles, and has too many outgoing gauge bosons skipping it.\n";
       }
     }
   }
@@ -331,9 +377,7 @@ void BSMModel::readDecay(CFileLineReader & cfile,
 
 void BSMModel::createDecayMode(string tag, double brat) const {
   tDMPtr dm = generator()->findDecayMode(tag);
-  if(!dm) {
-    dm = generator()->preinitCreateDecayMode(tag);
-  }
+  if(!dm) dm = generator()->preinitCreateDecayMode(tag);
   generator()->preinitInterface(dm, "OnOff", "set", "On");
   generator()->preinitInterface(dm, "Decayer", "set","/Herwig/Decays/Mambo");
   ostringstream brf;
