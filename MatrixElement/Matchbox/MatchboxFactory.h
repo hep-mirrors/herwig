@@ -772,6 +772,13 @@ public:
 
 public:
 
+  /**
+   * Print a summary of the parameters used
+   */
+  void summary(ostream&) const;
+
+public:
+
   /** @name Functions used by the persistent I/O system. */
   //@{
   /**

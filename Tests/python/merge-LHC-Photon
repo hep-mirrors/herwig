@@ -86,6 +86,8 @@ if __name__ == "__main__":
 
 files=["-7-PromptPhoton-1.yoda","-7-PromptPhoton-2.yoda",
        "-7-PromptPhoton-3.yoda","-7-PromptPhoton-4.yoda",
+       "-8-PromptPhoton-1.yoda","-8-PromptPhoton-2.yoda",
+       "-8-PromptPhoton-3.yoda","-8-PromptPhoton-4.yoda",
        "-7-DiPhoton-GammaGamma.yoda","-7-DiPhoton-GammaJet.yoda","-GammaGamma-7.yoda"]
 
 ## Get histos
@@ -102,13 +104,13 @@ for f in files:
         logging.error("%s can not be parsed as XML" % file)
         break
     if(file.find("PromptPhoton")>=0) :
-        if(file.find("-7-PromptPhoton-1")>0) :
+        if(file.find("PromptPhoton-1")>0) :
             ptmin=0.
-        elif(file.find("-7-PromptPhoton-2")>0) :
+        elif(file.find("PromptPhoton-2")>0) :
             ptmin=35.
-        elif(file.find("-7-PromptPhoton-3")>0) :
+        elif(file.find("PromptPhoton-3")>0) :
             ptmin=90.
-        elif(file.find("-7-PromptPhoton-4")>0) :
+        elif(file.find("PromptPhoton-4")>0) :
             ptmin=170.
         ## Get histos from this YODA file
         for aopath, ao in aos.iteritems() :
@@ -139,7 +141,8 @@ for hpath,hsets in inhistos.iteritems():
         hpath.find("1093738")>0 or 
         hpath.find("921594")>0 or 
         hpath.find("8914702")>0 or 
-        hpath.find("1244522")>0 ) :
+        hpath.find("1244522")>0 or 
+        hpath.find("1457605")>0 ) :
         if(type(hsets.values()[0])==yoda.core.Scatter2D) :
             outhistos[hpath] = yoda.core.Scatter2D(hsets.values()[0].path,
                                                    hsets.values()[0].title)
@@ -201,6 +204,12 @@ useOnePt("/ATLAS_2013_I1244522/d04-x01-y01", "35" )
 useOnePt("/ATLAS_2013_I1244522/d05-x01-y01", "35" )
 useOnePt("/ATLAS_2013_I1244522/d06-x01-y01", "35" )
 useOnePt("/ATLAS_2013_I1244522/d07-x01-y01", "35" )
+
+logging.info("Processing ATLAS_2016_I1457605")
+mergeByPt("/ATLAS_2016_I1457605/d01-x01-y01")
+mergeByPt("/ATLAS_2016_I1457605/d02-x01-y01")
+mergeByPt("/ATLAS_2016_I1457605/d03-x01-y01")
+mergeByPt("/ATLAS_2016_I1457605/d04-x01-y01")
 
 logging.info("Processing /MC_PHOTONJETS")
 useOnePt("/MC_PHOTONJETS/jet_HT","0")
