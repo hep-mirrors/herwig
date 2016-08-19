@@ -60,6 +60,7 @@ do /Herwig/MatrixElements/Matchbox/Factory:ProductionMode
 # This is for testing only
 set /Herwig/Samplers/Sampler:BinSampler /Herwig/Samplers/FlatBinSampler
 set /Herwig/Samplers/Sampler:Verbose On
+set /Herwig/EventHandlers/EventHandler:Weighted On
 
 cd /Herwig/Generators
 saverun OpenLoops EventGenerator
