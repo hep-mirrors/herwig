@@ -524,6 +524,11 @@ private:
    *  Switch to control using multiperipheral kinemaics
    */
   bool multiPeriph_;
+  
+  /**
+   *  True if kinematics is to be calculated for quarks
+   */
+  bool quarkPair_;
 
   /** @name Soft interaction variables. */
   //@{

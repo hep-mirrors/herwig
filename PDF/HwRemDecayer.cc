@@ -835,9 +835,17 @@ void HwRemDecayer::softKinematics(Lorentz5Momentum &r1, Lorentz5Momentum &r2,
 
   ig1 = x_g1*P1;
   ig2 = x_g2*P2;
-
-  ig1.setMass(mg_);
-  ig2.setMass(mg_);
+  //new
+  //parton mass
+  Energy mp;
+  if(quarkPair_){
+  	mp = getParticleData(ParticleID::u)->constituentMass();
+  }else{
+  	mp = mg_;
+  }
+  
+  ig1.setMass(mp);
+  ig2.setMass(mp);
   ig1.rescaleEnergy();
   ig2.rescaleEnergy();
 
@@ -846,15 +854,15 @@ void HwRemDecayer::softKinematics(Lorentz5Momentum &r1, Lorentz5Momentum &r2,
   Boost boostv(cmf.boostVector());
 
   //outgoing gluons in cmf
-  g1.setMass(mg_);
-  g2.setMass(mg_);
+  g1.setMass(mp);
+  g2.setMass(mp);
 
   g1.setX(pt*cos(phi));
   g2.setX(-pt*cos(phi));
   g1.setY(pt*sin(phi));
   g2.setY(-pt*sin(phi));
   
-  pz2 = cmf.m2()/4 - sqr(mg_) - sqr(pt);
+  pz2 = cmf.m2()/4 - sqr(mp) - sqr(pt);
 
   if(pz2/GeV2 < 0.0){
     if(dbg)
@@ -986,6 +994,7 @@ void HwRemDecayer::doSoftInteractions_old(unsigned int N) {
 }
 
 void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {	
+  if(N == 0) return;
   ///////////////////////
   int Nmpi = N;
   if(N==0) return;
@@ -993,17 +1002,8 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
   for(j=0;j<Nmpi;j++){
   ///////////////////////
   
-  //new
-  //N=N+4;
-  //int avgN = ceil(1.5*N);
-  //int avgN = N;
-  //int avgN = floor(1.5*N);
-  //int avgN = (1/log(2))*ceil(log((softRems_.first->momentum()+softRems_.second->momentum()).m()/GeV))+1;
   int avgN = floor(1.0*log((softRems_.first->momentum()+softRems_.second->momentum()).m()/(sqrt(sqr(ptmin_)+sqr(mg_)))));
-  //N=avgN;
-  //N=floor(4.0*N);
-  //int avgN = floor(4.0*N);
-  
+    
   //generate poisson distribution	
   double L = exp(-double(avgN));
   int k = 0;
@@ -1013,10 +1013,8 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
       p *= UseRandom::rnd();
   } while( p > L);
   N=k-1;
-  //cout<<"N: "<<N<<endl;
-  //
-  
   if(N == 0) return;
+  
   if(!softRems_.first || !softRems_.second)
     throw Exception() << "HwRemDecayer::doSoftInteractions: no "
                       << "Remnants available."
@@ -1027,17 +1025,17 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
                       << "code has not been called! call initSoftInteractions."
                       << Exception::runerror; 
 
-  Lorentz5Momentum g1, g2;
+  Lorentz5Momentum g1, g2, q1, q2;
   //new
   Lorentz5Momentum gint1, gint2;
-  PPair firstrems = softRems_;
+  //PPair firstrems = softRems_;
   PPair oldgluons;
   vector< pair<Lorentz5Momentum,Lorentz5Momentum> > gluonMomPairs;
   
   Lorentz5Momentum r1(softRems_.first->momentum()), r2(softRems_.second->momentum());
   unsigned int tries(1), i(0);
 
-  for(i=0; i<N; i++){
+  for(i=0; i<=N; i++){
     //check how often this scattering has been regenerated
     if(tries > maxtrySoft_) break;
 
@@ -1049,10 +1047,14 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
       //softKinematics(r1, r2, g1, g2);
       //new
       if(i==0){
+      	quarkPair_ = true;
+      	softKinematics(r1, r2, q1, q2);
+      }else if(i==1){
         //first splitting; remnant -> remnant + gluon
-      	softKinematics(r1, r2, g1, g2);
+      	//softKinematics(r1, r2, g1, g2);
+      	quarkPair_ = false;
+      	softKinematics(q1, q2, g1, g2);
       	gluonMomPairs.push_back(make_pair(g1,g2));
-      
       	
       }else{
       	//consequent splittings gluon -> gluon+gluon
@@ -1060,14 +1062,12 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
       	
       	//Lorentz5Momentum oldg1(g1), oldg2(g2);
       	//Lorentz5Momentum oldg1(gluonMomPairs.back().first), oldg2(gluonMomPairs.back().second);
-      	
+      	quarkPair_ = false;
       	//save first the previous gluon momentum
       	g1=gluonMomPairs.back().first;
       	g2=gluonMomPairs.back().second;
-      	
       	//split gluon momentum
       	softKinematics(g1, g2, gint1, gint2);
-      	
       	//erase the last entry
       	//gluonMomPairs.erase(std::remove(gluonMomPairs.begin(), gluonMomPairs.end(), make_pair(oldg1,oldg2)), gluonMomPairs.end());
       	gluonMomPairs.pop_back();
@@ -1075,6 +1075,8 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
       	//add new gluons
       	gluonMomPairs.push_back(make_pair(g1,g2));
       	gluonMomPairs.push_back(make_pair(gint1,gint2));
+      	
+      	
       }
       
       
@@ -1093,64 +1095,77 @@ void HwRemDecayer::doSoftInteractions_multiPeriph(unsigned int N) {
     //reset counter
     tries = 1;
   }
-      
-
+  
   if(dbg)
     cerr << "generated " << i << "th soft scatters\n";
+    				      
+  PPair quarks;
+  pair<bool, bool> anti_q;
   
-  
-  //double side = UseRandom::rnd();
-  for(i=0; i<gluonMomPairs.size(); i++){
-    //cout<<i<<" g1 mass: "<<gluonMomPairs[i].first.m()/GeV<<" g2 mass: "<<gluonMomPairs[i].second.m()/GeV<<endl;
+  if(gluonMomPairs.size()==0) return;
+  for(i=0; i<=gluonMomPairs.size(); i++){
     
     PPair oldrems = softRems_;
-    PPair gluons = make_pair(addParticle(softRems_.first, ParticleID::g, gluonMomPairs[i].first), 
-			     addParticle(softRems_.second, ParticleID::g, gluonMomPairs[i].second));
+    PPair gluons;
+    
+    //add quarks
+    if(i==0){
+    	quarks = make_pair(addParticle(softRems_.first, ParticleID::u, q1), 
+    			     addParticle(softRems_.second, ParticleID::ubar, q2));
+    	anti_q = make_pair(quarks.first->hasAntiColour(),
+    				      quarks.second->hasAntiColour());
+    }
+    			     
+    
+    
+    if(i>0){
+    	
+    	gluons = make_pair(addParticle(softRems_.first, ParticleID::g, gluonMomPairs[i-1].first), 
+			     addParticle(softRems_.second, ParticleID::g, gluonMomPairs[i-1].second));
+    }
+    
     //now reset the remnants with the new ones
     softRems_.first = addParticle(softRems_.first, softRems_.first->id(), r1);
     softRems_.second = addParticle(softRems_.second, softRems_.second->id(), r2);
+    
     
     //do the colour connections
     pair<bool, bool> anti = make_pair(oldrems.first->hasAntiColour(),
     				      oldrems.second->hasAntiColour());
     
+    
+    
     ColinePtr cl1 = new_ptr(ColourLine());
     ColinePtr cl2 = new_ptr(ColourLine());
-    if( UseRandom::rnd() < colourDisrupt_ ){//this is the member variable, i.e. SOFT colour disruption
-      //connect the remnants independent of the gluons
-      oldrems.first->colourLine(anti.first)->addColoured(softRems_.first, anti.first);
-      oldrems.second->colourLine(anti.second)->addColoured(softRems_.second, anti.second);
-      //connect the gluons to each other
-      cl1->addColoured(gluons.first);
-      cl1->addAntiColoured(gluons.second);
-      cl2->addColoured(gluons.second);
-      cl2->addAntiColoured(gluons.first);	
-    }else{
     //new
-    
       if(i==0){
-      		cl1->addColoured(softRems_.first, anti.first);
-      		cl1->addColoured(gluons.first, !anti.first);
-      		cl2->addColoured(softRems_.second, anti.second);
-      		cl2->addColoured(gluons.second, !anti.second);	
+      		oldrems.first->colourLine(anti.first)->addColoured(softRems_.first, anti.first);
+      		oldrems.second->colourLine(anti.second)->addColoured(softRems_.second, anti.second);	
       }
       if(i!=0){
       		oldrems.first->colourLine(anti.first)->addColoured(softRems_.first, anti.first);
       		oldrems.second->colourLine(anti.second)->addColoured(softRems_.second, anti.second);
-      		cl1->addColoured(oldgluons.first, anti.first);
-      		cl1->addColoured(gluons.first, !anti.first);
-      		cl2->addColoured(oldgluons.second, anti.second);
-      		cl2->addColoured(gluons.second, !anti.second);
+      		if(i==1){
+      			cl1->addColoured(quarks.first, anti_q.first);
+      			cl1->addColoured(gluons.first, anti.first);
+      			cl2->addColoured(quarks.second, anti_q.second);
+      			cl2->addColoured(gluons.second, !anti.second);
+      		}else{
+      			cl1->addColoured(oldgluons.first, !anti.first);
+      			cl1->addColoured(gluons.first, anti.first);
+      			cl2->addColoured(oldgluons.second, anti.second);
+      			cl2->addColoured(gluons.second, !anti.second);
+      		}
+      		
       } 
-      if(i==gluonMomPairs.size()-1){
-      		firstrems.first->colourLine(anti.first)->addColoured(gluons.second, anti.second);
-      		firstrems.second->colourLine(anti.second)->addColoured(gluons.first, anti.first);
-      		//firstrems.first->colourLine(anti.first)->addColoured(gluons.first, anti.second);
-      		//firstrems.second->colourLine(anti.second)->addColoured(gluons.second, anti.first);
+      if(i==gluonMomPairs.size()){
+      		ColinePtr clg = new_ptr(ColourLine());
+      		clg->addColoured(gluons.first, !anti.first);
+      		clg->addColoured(gluons.second, anti.second);
       }
       
       
-    }
+    
     oldgluons = gluons;
   }
   ////////
