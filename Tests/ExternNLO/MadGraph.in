@@ -27,8 +27,8 @@ do Factory:Process p p -> e+ nu j
 
 read Matchbox/MadGraph-MadGraph.in
 
-set /Herwig/Cuts/ChargedLeptonPairMassCut:MinMass 60*GeV
-set /Herwig/Cuts/ChargedLeptonPairMassCut:MaxMass 120*GeV
+set /Herwig/Cuts/LeptonPairMassCut:MinMass 60*GeV
+set /Herwig/Cuts/LeptonPairMassCut:MaxMass 120*GeV
 
 read Matchbox/DefaultPPJets.in
 

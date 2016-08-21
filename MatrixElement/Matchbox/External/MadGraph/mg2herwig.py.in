@@ -339,7 +339,7 @@ make=" "
 fortanfiles=glob.glob('*/*/*.f')+glob.glob('*/*/*/*.f')
 
 for i in fortanfiles:
-  if "check_sa" not in i:
+  if "check_sa" not in i and "f2py_wrapper" not in i:
     if not os.path.islink(i):
        make += " "+i+"\\\n                  "
 
