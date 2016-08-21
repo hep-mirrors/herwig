@@ -386,7 +386,10 @@ if Virtlist!=[]:
   replacetext("MG5/SubProcesses/MadLoopCommons.f", "PREFIX='./'","PREFIX='./Herwig-scratch/MG_tmp/'")
 
 os.system("make")
-
+if not os.path.isfile("InterfaceMadGraph.so"):
+   print "Second trial to make MadGraph Interface. "
+   print "Needed if new .mod files are produced by make." 
+   os.system("make")
 
 build_matchbox_tmp(pwd,options.buildpath,options.absolute_links)
 
