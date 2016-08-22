@@ -72,11 +72,13 @@ IBPtr Merging::fullclone() const {
 
 
 
-double Merging::reweightCKKWBornStandard(CNPtr Node,bool fast){
+double Merging::reweightCKKWBornGamma(CNPtr Node,bool fast){
   
   double weightCL=0.;
   weight=1.;
-  
+
+
+ 
   if (!Node->children().empty()) {
     PVector particles;
     for (size_t i=0;i<Node->nodeME()->mePartonData().size();i++){
@@ -105,10 +107,12 @@ double Merging::reweightCKKWBornStandard(CNPtr Node,bool fast){
   }else{
     weight=1.;projected=false;Node->nodeME()->projectorStage(0);
   }
-  
+
+ 
   if (Node->treefactory()->onlymulti()!=-1&&
-      Node->treefactory()->onlymulti()!=Node->xcomb()->mePartonData().size()-Node->nodeME()->projectorStage())
+      Node->treefactory()->onlymulti()!=int(Node->xcomb()->mePartonData().size()-Node->nodeME()->projectorStage()))
     return 0.;
+  
   
   if(!Node->allAbove(Node->mergePt()-0.1*GeV))weight=0.;
   if(CLNode&&!CLNode->allAbove(Node->mergePt()-0.1*GeV))weightCL=0.;
@@ -120,6 +124,12 @@ double Merging::reweightCKKWBornStandard(CNPtr Node,bool fast){
     return 0.;
     
   }
+
+  double res=0.;
+  bool maxMulti=Node->xcomb()->meMomenta().size()-2 == theMaxLegsLO;
+  double gamma=Node->treefactory()->gamma();
+
+  if(weight!=0.){
   Energy startscale=CKKW_StartScale(Born);
   Energy projectedscale=startscale;
   fillHistory( startscale,  Born, Node,fast);
@@ -127,18 +137,21 @@ double Merging::reweightCKKWBornStandard(CNPtr Node,bool fast){
   Node->runningPt(projectedscale);
   weight*=history.back().weight*alphaReweight()*pdfReweight();
   if(weight==0.&&weightCL==0.)return 0.;
-  bool maxMulti=Node->xcomb()->meMomenta().size()-2 == theMaxLegsLO;
-  Node->vetoPt((projected&&maxMulti)?Node->mergePt():history.back().scale);
+  //Node->vetoPt((projected&&maxMulti)?Node->mergePt():history.back().scale);
+ 
+  res+=weight*matrixElementWeight(startscale,Node,(!maxMulti&&!projected)?gamma:1.); 
+  }
   
   
-  double gamma=Node->treefactory()->gamma();
+ 
+  //cout<<"\n"<<((!maxMulti&&!projected)?gamma:1.)
+  //<<history.back().weight<<" "<<alphaReweight()<<" "<<pdfReweight();; 
   
-  double res=weight*matrixElementWeight(startscale,Node,(!maxMulti&&!projected)?gamma:1.);
   
-  if(CLNode){
-    
-    startscale=CKKW_StartScale(BornCL);
-    projectedscale=startscale;
+  if(CLNode&&gamma!=1.){
+    //assert(false);    
+    Energy startscale=CKKW_StartScale(BornCL);
+    Energy projectedscale=startscale;
     fillHistory( startscale,  BornCL, CLNode,fast);
     if (!fillProjector(projectedscale))return 0.;
     Node->runningPt(projectedscale);
@@ -152,7 +165,7 @@ double Merging::reweightCKKWBornStandard(CNPtr Node,bool fast){
     
     diff+=weightCL*CLNode->dipol()->dSigHatDR(sqr(startscale*xiFacME))/nanobarn;
     Node->nodeME()->factory()->setAlphaParameter(1.);
-    
+    //cout<<"\n diff "<<diff;    
       //cout<<"\ndiff  "<<diff<<" "<<history.back().weight<<" "<<alphaReweight()<<" "<<alp;
     res+=diff;
   }
@@ -164,7 +177,7 @@ double Merging::reweightCKKWBornStandard(CNPtr Node,bool fast){
 
 
 
-/*
+
 
 double Merging::reweightCKKWBornStandard(CNPtr Node,bool fast){
   
@@ -192,7 +205,7 @@ double Merging::reweightCKKWBornStandard(CNPtr Node,bool fast){
   }
   
   if (Node->treefactory()->onlymulti()!=-1&&
-      Node->treefactory()->onlymulti()!=Node->xcomb()->mePartonData().size()-Node->nodeME()->projectorStage())
+      Node->treefactory()->onlymulti()!=int(Node->xcomb()->mePartonData().size()-Node->nodeME()->projectorStage()))
     return 0.;
   
   assert(Node->allAbove(Node->mergePt()-0.1*GeV));
@@ -219,7 +232,7 @@ double Merging::reweightCKKWBornStandard(CNPtr Node,bool fast){
   return weight*matrixElementWeight(startscale,Node,1.);
 }
 
-*/
+ 
 
 double Merging::reweightCKKWVirtualStandard(CNPtr Node,bool fast){
   CNPtr Born= Node-> getLongestHistory_simple(true,xiQSh);
@@ -758,7 +771,10 @@ bool Merging::reweightCKKWSingle(Ptr<MatchboxXComb>::ptr SX, double & res,bool f
     res*=reweightCKKWRealStandard(Node);
   }else if(ME->oneLoopNoBorn()){
     res*=reweightCKKWVirtualStandard(Node);
+  }else if(Node->treefactory()->gamma()!=1.){
+    res*=reweightCKKWBornGamma(Node,fast);
   }else{
+    
     res*=reweightCKKWBornStandard(Node,fast);
   }
   

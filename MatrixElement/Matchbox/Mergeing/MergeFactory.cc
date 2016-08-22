@@ -157,11 +157,15 @@ bool MergeFactory::matrixElementRegion(PVector particles,Energy winnerScale,Ener
   
     //FF
   for(size_t em=2; em < particles.size();em++){
+    if (!particles[em]->coloured()) continue;
     for(size_t emm=2; emm < particles.size();emm++){
+      if (!particles[emm]->coloured()) continue;
       if (em==emm) continue;
       for(size_t spe=2; spe < particles.size();spe++){
+	if (!particles[spe]->coloured()) continue;
         if (em==spe||emm==spe) continue;
         if (!(particles[em]->id()==-particles[emm]->id()||particles[emm]->id()>6))continue;
+      //  assert(false);
         Lorentz5Momentum emittermom = particles[em]->momentum();
         Lorentz5Momentum emissionmom = particles[emm]->momentum();
         Lorentz5Momentum spectatormom = particles[spe]->momentum();
@@ -186,7 +190,7 @@ bool MergeFactory::matrixElementRegion(PVector particles,Energy winnerScale,Ener
         if (!particles[emm]->coloured()) continue;
         if (em==emm) continue;
         if (!(particles[em]->id()==-particles[emm]->id()||particles[emm]->id()>6))continue;
-          //assert(false);
+        //  assert(false);
         Lorentz5Momentum emittermom = particles[em]->momentum();
         Lorentz5Momentum emissionmom = particles[emm]->momentum();
         Lorentz5Momentum spectatormom = particles[spe]->momentum();
@@ -216,7 +220,7 @@ bool MergeFactory::matrixElementRegion(PVector particles,Energy winnerScale,Ener
         
         if (emm==spe) continue;
         if (!(particles[em]->id()>6|| particles[em]->id()==particles[emm]->id() ||particles[emm]->id()>6))continue;
-          //assert(false);
+         // assert(false);
         Lorentz5Momentum emittermom = particles[em]->momentum();
         Lorentz5Momentum emissionmom = particles[emm]->momentum();
         Lorentz5Momentum spectatormom = particles[spe]->momentum();
@@ -904,7 +908,7 @@ bool MergeFactory::matrixElementRegion(PVector particles,Energy winnerScale,Ener
         
       
     for (; i <= max(0, theN) ; ++i ) {
-      if(i==theonlymulti||theonlymulti==-1)
+      //if(i==theonlymulti||theonlymulti==-1)
         for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born = thePureMEsMap[i].begin() ; born != thePureMEsMap[i].end() ; ++born ) {
           if (!theonlyNLOParts&&!theonlyUnlopsweights&&( theonlyk == -1  || theonlyk == i -1|| theonlyk == i )){
             if(((theonlysub==-1||theonlysub==onlysubcounter)&&divideSub==-1)||(divideSub!=-1&&onlysubcounter%divideSub==divideSubNumber))
@@ -921,7 +925,7 @@ bool MergeFactory::matrixElementRegion(PVector particles,Energy winnerScale,Ener
       
     i = theonlyabove ;
     for (; i <=max(0, theN); ++i ) {
-      if(i==theonlymulti||theonlymulti==-1)
+     // if(i==theonlymulti||theonlymulti==-1)
         for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born = thePureMEsMap[i].begin() ; born != thePureMEsMap[i].end() ; ++born ) {
           
           if ( i <= theM  && !theonlyrealNLOParts&&( theonlyk == -1  || theonlyk == i -1|| theonlyk == i )){
@@ -933,7 +937,7 @@ bool MergeFactory::matrixElementRegion(PVector particles,Energy winnerScale,Ener
       if (false) {
     i = theonlyabove ;
     for (; i <= max(0, theN) ; ++i ) {
-      if((i)==theonlymulti+1||theonlymulti==-1)
+      //if((i)==theonlymulti+1||theonlymulti==-1)
         for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born = thePureMEsMap[i].begin() ; born != thePureMEsMap[i].end() ; ++born ) {
           if ( i <= theM + 1 && i > 0 && !theonlyvirtualNLOParts&&!theonlyUnlopsweights&&( theonlyk == -1  || theonlyk == i -2|| theonlyk == i-1 )){
             if(((theonlysub==-1||theonlysub==onlysubcounter)&&divideSub==-1)||(divideSub!=-1&&onlysubcounter%divideSub==divideSubNumber))

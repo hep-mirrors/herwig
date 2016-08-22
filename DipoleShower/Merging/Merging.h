@@ -117,6 +117,8 @@ namespace Herwig {
       //double reweightCKKWBorn2(CNPtr Node,bool fast=false);
       // double reweightCKKWBorn3(CNPtr Node,bool fast=false);
     double reweightCKKWBornStandard(CNPtr Node,bool fast=false);
+    double reweightCKKWBornGamma(CNPtr Node,bool fast=false);
+
     double reweightCKKWVirtualStandard(CNPtr Node,bool fast=false);
     
     double reweightCKKWRealStandard(CNPtr Node,bool fast=false);
