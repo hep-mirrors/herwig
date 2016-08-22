@@ -393,8 +393,3 @@ if not os.path.isfile("InterfaceMadGraph.so"):
 
 build_matchbox_tmp(pwd,options.buildpath,options.absolute_links)
 
-<<<<<<< local
-build_matchbox_tmp(pwd,options.buildpath,options.absolute_links)
-
-=======
->>>>>>> other

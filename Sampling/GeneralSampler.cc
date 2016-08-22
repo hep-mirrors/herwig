@@ -228,24 +228,16 @@ void GeneralSampler::initialize() {
     Repository::clog() << "integrating subprocesses";
     progressBar = new boost::progress_display(binsToIntegrate.size(),Repository::clog());
   }
-<<<<<<< local
-  size_t  sub= 1;
-=======
 
   int count=0;
   bool reuseGrid = false;
   bool missingGrid = false;
->>>>>>> other
   for ( set<int>::const_iterator bit = binsToIntegrate.begin(); bit != binsToIntegrate.end(); ++bit ) {
-<<<<<<< local
-    cout<<"\n"<<sub<<"/"<<binsToIntegrate.size();sub++;
-=======
     count++;
     if(theVerbose&&
        (runLevel() == ReadMode ||
         runLevel() == IntegrationMode))
        cout<<"\nIntegrate "<< count <<" of "<<binsToIntegrate.size() <<":\n"<<flush;
->>>>>>> other
     Ptr<BinSampler>::ptr s = theBinSampler->cloneMe();
     s->eventHandler(eventHandler());
     s->sampler(this);

@@ -148,14 +148,6 @@ public:
    */
   bool weighted() const { return eventHandler()->weighted(); }
 
-<<<<<<< local
-  /**
-   * Almost Unweighted keeps eventweights larger than the overestimate.
-   **/
-  bool almostUnweighted() const { return theAlmostUnweighted;}
-
-
-=======
 
   /** 
    * True if the sampler runs in Allmostunweighted mode.
@@ -163,7 +155,6 @@ public:
 
   bool almostUnweighted() const { return theAlmostUnweighted; }
 
->>>>>>> other
 public:
 
   /**

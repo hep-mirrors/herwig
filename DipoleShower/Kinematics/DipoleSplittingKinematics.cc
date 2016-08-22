@@ -32,16 +32,16 @@ DipoleSplittingKinematics::DipoleSplittingKinematics()
     theXMin(1.e-5), theJacobian(0.0),
     theLastPt(0.0*GeV), theLastZ(0.0), theLastPhi(0.0),
     theLastEmitterZ(1.0), theLastSpectatorZ(1.0),
-    theLastSplittingParameters(),theUseScaleForZ(false) {}
+    theLastSplittingParameters() {}
 
 DipoleSplittingKinematics::~DipoleSplittingKinematics() {}
 
 void DipoleSplittingKinematics::persistentOutput(PersistentOStream & os) const {
-  os << ounit(theIRCutoff,GeV) << theXMin << theMCCheck<<theUseScaleForZ;
+  os << ounit(theIRCutoff,GeV) << theXMin << theMCCheck;
 }
 
 void DipoleSplittingKinematics::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(theIRCutoff,GeV) >> theXMin >> theMCCheck>>theUseScaleForZ;
+  is >> iunit(theIRCutoff,GeV) >> theXMin >> theMCCheck;
 }
 
 void DipoleSplittingKinematics::prepareSplitting(DipoleSplittingInfo& dInfo) {
@@ -136,22 +136,6 @@ double DipoleSplittingKinematics::generateZ(double r, Energy pt, int sampling,
 
   if ( sampling == OneOverOneMinusZ ) {
     pair<double,double> kw = generate(inverse(1.0,zLims.first,zLims.second),r);
-<<<<<<< local
-
-    if ( kw.second != 0. ) {
-      weight *= kw.second;
-      return kw.first;
-    }
-    else {
-      if (!(kw.first < zLims.first || kw.first > zLims.second)) {
-        cout<<"\n"<<name();
-      assert( kw.first < zLims.first || kw.first > zLims.second );
-      }
-      weight *= kw.second;
-      return -1.;
-    }
-
-=======
 
     if ( kw.second != 0. ) {
       weight *= kw.second;
@@ -163,27 +147,11 @@ double DipoleSplittingKinematics::generateZ(double r, Energy pt, int sampling,
       return -1.;
     }
 
->>>>>>> other
   }
 
   if ( sampling == OneOverZOneMinusZ ) {
     pair<double,double> kw = generate(inverse(0.0,zLims.first,zLims.second) + 
 				      inverse(1.0,zLims.first,zLims.second),r);
-<<<<<<< local
-
-    if ( kw.second != 0. ) {
-      weight *= kw.second;
-      return kw.first;
-    }
-    else {
-      if (!(kw.first < zLims.first || kw.first > zLims.second)) {
-        cout<<"\n"<<name();
-      assert( kw.first < zLims.first || kw.first > zLims.second );
-      }
-      weight *= kw.second;
-      return -1.;
-    }
-=======
 
     if ( kw.second != 0. ) {
       weight *= kw.second;
@@ -194,7 +162,6 @@ double DipoleSplittingKinematics::generateZ(double r, Energy pt, int sampling,
       weight *= kw.second;
       return -1.;
     }
->>>>>>> other
   }
 
   weight = 0.0;
@@ -296,22 +263,13 @@ void DipoleSplittingKinematics::Init() {
      &DipoleSplittingKinematics::theXMin, 1.0e-5, 0.0, 1.0,
      false, false, Interface::limited);
 
-  
+
   static Reference<DipoleSplittingKinematics,DipoleMCCheck> interfaceMCCheck
-  ("MCCheck",
-   "[debug option] MCCheck",
-   &DipoleSplittingKinematics::theMCCheck, false, false, true, true, false);
-  
+    ("MCCheck",
+     "[debug option] MCCheck",
+     &DipoleSplittingKinematics::theMCCheck, false, false, true, true, false);
+
   interfaceMCCheck.rank(-1);
-  
-  static Switch<DipoleSplittingKinematics,bool> interfaceScaleZ
-  ("UseScaleForZ",   "",
-  &DipoleSplittingKinematics::theUseScaleForZ, false, false, false);
-  static SwitchOption interfaceScaleZYes
-  (interfaceScaleZ,   "Yes",   "",   true);
-  static SwitchOption interfaceScaleZNo
-  (interfaceScaleZ,   "No",   "",   false);
-  
-  
+
 }
 

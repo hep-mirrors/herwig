@@ -26,7 +26,7 @@ using namespace Herwig;
 
 DipoleSplittingKernel::DipoleSplittingKernel() 
   : HandlerBase(), theScreeningScale(0.0*GeV), 
-    thePresamplingPoints(50000), theMaxtry(100000),
+    thePresamplingPoints(2000), theMaxtry(100000),
     theFreezeGrid(500000),
     theDetuning(1.0),
     theStrictLargeN(false), 
@@ -34,13 +34,9 @@ DipoleSplittingKernel::DipoleSplittingKernel()
     theRenormalizationScaleFactor(1.0),
     theRenormalizationScaleFreeze(1.*GeV), 
     theFactorizationScaleFreeze(1.*GeV),
-<<<<<<< local
     theKimproved(true),
-    theVirtualitySplittingScale(false) {}
-=======
     theVirtualitySplittingScale(false),
     presampling(false) {}
->>>>>>> other
 
 DipoleSplittingKernel::~DipoleSplittingKernel() {}
 
@@ -85,43 +81,19 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
     scale = sqr(splittingKinematics()->QFromPt(pt,split)) + sqr(theScreeningScale);
   }
 
-<<<<<<< local
   if(split.fixedScale()>0.*GeV){
     scale=sqr(split.fixedScale());
   }
-
-  Energy2 rScale = sqr(theRenormalizationScaleFactor)*scale;
-=======
+ 
   Energy2 rScale = sqr(theRenormalizationScaleFactor*rScaleFactor)*scale;
->>>>>>> other
   rScale = rScale > sqr(renormalizationScaleFreeze()) ? rScale : sqr(renormalizationScaleFreeze());
 
   Energy2 fScale = sqr(theFactorizationScaleFactor*fScaleFactor)*scale;
   fScale = fScale > sqr(factorizationScaleFreeze()) ? fScale : sqr(factorizationScaleFreeze());
 
-<<<<<<< local
-  double ret;
-=======
   double alphas = 1.0;
   double pdf = 1.0;
->>>>>>> other
 
-<<<<<<< local
-  if(split.fixedScale()<0.*GeV){
-    ret = alphaS()->value(rScale) / (2.*Constants::pi)*(theKimproved?(1.+((3.*(67./18.-1./6.*Constants::pi*Constants::pi)-5./9.*5.)*alphaS()->value(rScale)/2./Constants::pi)):1.);  
-  }else{
-    ret=1.; 
-  }
-  
-  
-  if ( split.index().initialStateEmitter()&&split.lastEmitterZ()!=1. ) {
-    assert(pdfRatio());
-    ret *= 
-      split.lastEmitterZ() * 
-      (*pdfRatio())(split.index().emitterPDF(), fScale,
-		    split.index().emitterData(),split.emitterData(),
-		    split.emitterX(),split.lastEmitterZ());
-=======
   // check if we are potentially reweighting and cache evaluations
   bool evaluatePDF = true;
   bool evaluateAlphaS = true;
@@ -151,18 +123,8 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
       alphas = ait->second;
       //cerr << alphas << "\n" << flush;
     }
->>>>>>> other
   }
 
-<<<<<<< local
-  if ( split.index().initialStateSpectator()&&split.lastSpectatorZ()!=1. ) {
-    assert(pdfRatio());
-    ret *= 
-      split.lastSpectatorZ() * 
-      (*pdfRatio())(split.index().spectatorPDF(), fScale,
-		    split.index().spectatorData(),split.spectatorData(),
-		    split.spectatorX(),split.lastSpectatorZ());
-=======
   if ( evaluateAlphaS )
     alphas = alphaS()->value(rScale);
 
@@ -184,7 +146,6 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
 		      split.index().spectatorData(),split.spectatorData(),
 		      split.spectatorX(),split.lastSpectatorZ());
     }
->>>>>>> other
   }
 
   if ( evaluatePDF && variations ) {
@@ -197,7 +158,15 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
     theAlphaSCache[rScaleFactor] = alphas;
   }
 
-  double ret = alphas*pdf / (2.*Constants::pi);
+  double ret = pdf;
+
+  if(split.fixedScale()<0.*GeV){
+    ret *= alphas / (2.*Constants::pi)*(theKimproved?(1.+((3.*(67./18.-1./6.*Constants::pi*Constants::pi)-5./9.*5.)*alphaS()->value(rScale)/2./Constants::pi)):1.);  
+  }else{
+    ret *=1.; 
+  }
+  
+
 
   if ( ret < 0. )
     ret = 0.;

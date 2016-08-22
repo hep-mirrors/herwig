@@ -31,7 +31,6 @@
 
 #include "MonacoSampler.h"
 #include "Herwig/Sampling/GeneralSampler.h"
-#include <ctime>
 
 using namespace Herwig;
 
@@ -52,9 +51,7 @@ IBPtr MonacoSampler::fullclone() const {
 }
 
 double MonacoSampler::generate() {
-  
   double w = 1.;
-  double wref=1.;
 //  cout<<"\npoint: ";
   std::valarray<int> upperb(dimension());
   for ( int k = 0; k < dimension(); ++k ) {
@@ -77,25 +74,10 @@ double MonacoSampler::generate() {
     lastPoint()[k] = glower + (div-upperb[k])*gdiff;
     w *= gdiff * theGridDivisions;
   }
-  double elapsed_secs;
+//    cout<<lastPoint()[k]<<" ";
   
-  bool canImprove = sampler()->almostUnweighted()&&false;
-  eventHandler()->resetDidEstimate();
   try {
-    /**
-     * For AlmostUnweighted Events we can speed up the calculation. 
-     * 1. Calculate a fast estimate (e.g. Born, analytic CKKW ...)   
-     * 2. If accepted reweight with full/estimate. 
-     *    (Born+Virt, CKKW with sampled sudakovs)
-     **/
-    clock_t begin = clock();
-    
-    
-    wref=eventHandler()->dSigDR(lastPoint(),canImprove) / nanobarn;
-    clock_t end = clock();
-     elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-    
-    w *= wref;
+    w *= eventHandler()->dSigDR(lastPoint()) / nanobarn;
   } catch (Veto&) {
     w = 0.0;
   } catch (...) {
@@ -117,45 +99,12 @@ double MonacoSampler::generate() {
   }
 
   if ( !weighted() && initialized() ) {
-<<<<<<< local
-    double p = min(abs(w),0.01*referenceWeight())/(0.01*referenceWeight());
-=======
     double p = min(abs(w),kappa()*referenceWeight())/(kappa()*referenceWeight());
->>>>>>> other
     double sign = w >= 0. ? 1. : -1.;
     if ( p < 1 && UseRandom::rnd() > p )
       w = 0.;
     else
-<<<<<<< local
-      w = sign*max(abs(w),referenceWeight()*0.01);
-  }
-  
-  
-  
-    //if (eventHandler()->didEstimate())
-        //cout<<"\n"<<canImprove <<" "<<eventHandler()->didEstimate()<<" "<<weighted()<<" "<<initialized()<<" ---------------------------->"<<w;
-  
-  if(canImprove && eventHandler()->didEstimate()
-     && (w!=0.) && ((!weighted()&&initialized())||UseRandom::rnd()<0.1)){
-    
-    
-    double x=elapsed_secs;
-    
-    clock_t begin = clock();
-    
-    
-    double wfull=eventHandler()->dSigDR(lastPoint(),false) / nanobarn;
-    clock_t end = clock();
-    elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-   // if(abs(wfull/wref-1.)>1.)
-    //cout<<"\nwfull/wref: "<<wfull/wref <<" time ratio "<<x/elapsed_secs;
-    
-    
-    w*=wfull/wref;
-    
-=======
       w = sign*max(abs(w),kappa()*referenceWeight());
->>>>>>> other
   }
   select(w);
   assert(kappa()==1.||sampler()->almostUnweighted());

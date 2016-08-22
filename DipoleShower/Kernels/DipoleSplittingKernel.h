@@ -426,14 +426,14 @@ private:
    */
   bool theVirtualitySplittingScale;
 
-<<<<<<< local
+
 
   /**
    * Implementing CMW in the kernels.
    **/
 
   bool theKimproved;
-=======
+
   /**
    * Cache for alphas evaluations
    */
@@ -449,7 +449,6 @@ private:
    */
   bool presampling;
 
->>>>>>> other
 private:
 
   /**

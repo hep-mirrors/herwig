@@ -1255,16 +1255,11 @@ private:
    * True, if spin correlation information should be provided, if possible.
    */
   bool theSpinCorrelations;
-<<<<<<< local
-  
-  mutable double theAlphaParameter;
-=======
 
   /**
    * The alpha parameter to be used for the dipole subtraction
    */  
-  double theAlphaParameter;
->>>>>>> other
+  mutable double theAlphaParameter;
 
   /**
    * Wether or not charge conservation should be enforced for the processes

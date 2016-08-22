@@ -1,13 +1,8 @@
 pkglib_LTLIBRARIES = Herwig.la
 Herwig_la_SOURCES =
 Herwig_la_LIBTOOLFLAGS = --tag=CXX
-<<<<<<< local
-Herwig_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 16:0:0
-Herwig_la_LDFLAGS += $(THEPEGLDFLAGS) $(BOOST_SYSTEM_LDFLAGS) $(BOOST_FILESYSTEM_LDFLAGS) $(FCLIBS) $(FASTJETINCLUDE) $(FASTJETLIBS) 
-=======
 Herwig_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 19:0:0
-Herwig_la_LDFLAGS += $(THEPEGLDFLAGS) $(BOOST_SYSTEM_LDFLAGS) $(BOOST_FILESYSTEM_LDFLAGS) $(FCLIBS)
->>>>>>> other
+Herwig_la_LDFLAGS += $(THEPEGLDFLAGS) $(BOOST_SYSTEM_LDFLAGS) $(BOOST_FILESYSTEM_LDFLAGS) $(FCLIBS) $(FASTJETINCLUDE) $(FASTJETLIBS) 
 Herwig_la_LIBADD = \
 $(top_builddir)/Hadronization/libHwHadronization.la \
 $(top_builddir)/Models/StandardModel/libHwStandardModel.la \

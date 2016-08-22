@@ -28,8 +28,6 @@
 #include "Herwig/DipoleShower/Merging/Merging.fh"
 #include "Herwig/MatrixElement/Matchbox/Matching/ShowerApproximation.h"
 
-
-
 namespace Herwig {
 
 using namespace ThePEG;

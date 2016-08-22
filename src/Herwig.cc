@@ -176,41 +176,10 @@ namespace {
     // debugging breakpoint
     breakThePEG();
 
-<<<<<<< local
-    eg->go( ui.resume() ? -1 : 1, ui.N(), ui.tics() );
-    if ( ui.tics() ) std::cout << '\n';
-  
-  }
-  else { // forked jobs
-    pid_t pid;
-
-    const int maxlen = log10(ui.jobs()) + 1;
-
-    for (int n=0; n<ui.jobs(); n++) {
-      ostringstream tmp;
-      tmp << std::setfill('0') << std::setw(maxlen) << n+1;
-      const string nstr = tmp.str();
-
-      pid = fork();
-      if (pid == -1) { // fork failed
-        std::perror("Herwig: fork");
-        ui.quit();
-      }
-      else if ( pid == 0 ) { // we're the child
-        if ( ui.tics() ) std::cout << "Forked child " << n << ", PID " << getpid() << std::endl;
-        eg->setSeed( ui.seed() + n );
-        eg->addTag( "-" + nstr );
-	Herwig::RunDirectories::pushRunId( nstr );
-        eg->go( ui.resume() ? -1 : 1, ui.N() / ui.jobs() ,ui.tics());
-        break; // avoid sub-forks
-      }
-      // nothing to do here if we're the parent
-=======
     if ( !eg ) {
       ui.errStream() << "Herwig: EventGenerator not available.\n"
 		     << "Check if '" << runname << "' is a valid run file.\n";
       ui.quit();
->>>>>>> other
     }
 
     Herwig::RunDirectories::pushRunId(eg->runName());
