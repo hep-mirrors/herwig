@@ -45,8 +45,8 @@ read Matchbox/MMHT2014.in
 
 cd /Herwig/Analysis
 insert Rivet:Analyses 0 MC_XS
-insert Rivet:Analyses 0 MC_WINC
-insert Rivet:Analyses 0 MC_WJETS
+insert Rivet:Analyses 0 MC_ZINC
+insert Rivet:Analyses 0 MC_ZJETS
 insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 Rivet
 
 ##################################################
@@ -57,6 +57,7 @@ do /Herwig/MatrixElements/Matchbox/Factory:ProductionMode
 
 # This is for testing only
 set /Herwig/Samplers/Sampler:BinSampler /Herwig/Samplers/FlatBinSampler
+set /Herwig/Samplers/Sampler:FlatSubprocesses On
 set /Herwig/Samplers/Sampler:Verbose On
 set /Herwig/EventHandlers/EventHandler:Weighted On
 

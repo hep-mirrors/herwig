@@ -23,7 +23,7 @@ set Factory:OrderInAlphaEW 2
 
 ## Select the process
 ## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
-do Factory:Process p p -> e+ nu j
+do Factory:Process p p -> e+ e- j
 
 read Matchbox/OpenLoops-OpenLoops.in
 
@@ -40,13 +40,13 @@ set Factory:ScaleChoice /Herwig/MatrixElements/Matchbox/Scales/LeptonPairMassSca
 read Matchbox/NLO-NoShower.in
 # read Matchbox/LO-NoShower.in
 
-read Matchbox/FiveFlavourScheme.in
+read Matchbox/FiveFlavourNoBMassScheme.in
 read Matchbox/MMHT2014.in
 
 cd /Herwig/Analysis
 insert Rivet:Analyses 0 MC_XS
-insert Rivet:Analyses 0 MC_WINC
-insert Rivet:Analyses 0 MC_WJETS
+insert Rivet:Analyses 0 MC_ZINC
+insert Rivet:Analyses 0 MC_ZJETS
 insert /Herwig/Generators/EventGenerator:AnalysisHandlers 0 Rivet
 
 ##################################################
@@ -59,6 +59,7 @@ do /Herwig/MatrixElements/Matchbox/Factory:ProductionMode
 
 # This is for testing only
 set /Herwig/Samplers/Sampler:BinSampler /Herwig/Samplers/FlatBinSampler
+set /Herwig/Samplers/Sampler:FlatSubprocesses On
 set /Herwig/Samplers/Sampler:Verbose On
 set /Herwig/EventHandlers/EventHandler:Weighted On
 
