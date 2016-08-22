@@ -445,11 +445,9 @@ void QTildeMatching::doinit() {
   theShowerHandler->init();
   theQTildeFinder->init();
   theQTildeSudakov->init();
-  if ( theShowerHandler->scaleFactorOption() < 2 ) {
-    hardScaleFactor(theShowerHandler->hardScaleFactor());
-    factorizationScaleFactor(theShowerHandler->factorizationScaleFactor());
-    renormalizationScaleFactor(theShowerHandler->renormalizationScaleFactor());
-  }
+  hardScaleFactor(theShowerHandler->hardScaleFactor());
+  factorizationScaleFactor(theShowerHandler->factorizationScaleFactor());
+  renormalizationScaleFactor(theShowerHandler->renormalizationScaleFactor());
   profileScales(theShowerHandler->profileScales());
   restrictPhasespace(theShowerHandler->restrictPhasespace());
   hardScaleIsMuF(theShowerHandler->hardScaleIsMuF());

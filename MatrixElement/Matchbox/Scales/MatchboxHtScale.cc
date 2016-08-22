@@ -83,6 +83,7 @@ Energy2 MatchboxHtScale::renormalizationScale() const {
 
   if ( !gotone && lastXCombPtr()->willPassCuts() )
     throw Exception() << "MatchboxHtScale::renormalizationScale(): "
+<<<<<<< local
                       << "No jets could be found. Check your setup."
                       << "\nHint: The HT scale is defined with a PtMin cut on jets. (default:) "
                       << "\n set /Herwig/MatrixElements/Matchbox/ScalesHTScale:JetPtCut 15.*GeV "
@@ -92,6 +93,14 @@ Energy2 MatchboxHtScale::renormalizationScale() const {
     return diJetMomentum*diJetMomentum;
   }
   
+=======
+                      << "No jets could be found. Check your setup."
+                      << "\nHint: The HT scale is defined with a PtMin cut on jets. (default:) "
+                      << "\n set /Herwig/MatrixElements/Matchbox/ScalesHTScale:JetPtCut 15.*GeV "
+		              << Exception::runerror;
+  
+
+>>>>>>> other
   Energy mtNonJetSum = 
     sqrt(nonJetMomentum.perp2() + nonJetMomentum.m2());
 
@@ -164,11 +173,20 @@ void MatchboxHtScale::Init() {
      &MatchboxHtScale::theMTFactor, 1.0, 0.0, 0,
      false, false, Interface::lowerlim);
 
+<<<<<<< local
   static Parameter<MatchboxHtScale,Energy> interfaceScalePtCut
     ("JetPtCut",
      "The Pt cut to define jets in the sum.",
      &MatchboxHtScale::theScalePtCut, 15.*GeV, 0.*GeV, 0.*GeV,
      false, false, Interface::lowerlim);
 
+=======
+  static Parameter<MatchboxHtScale,Energy> interfaceScalePtCut
+    ("JetPtCut",
+     "The Pt cut to define jets in the sum.",
+     &MatchboxHtScale::theScalePtCut, GeV, 15.*GeV, 0.*GeV, 0.*GeV,
+     false, false, Interface::lowerlim);
+
+>>>>>>> other
 }
 

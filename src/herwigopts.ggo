@@ -8,12 +8,13 @@ for particle physics. See arXiv:0803.0883 for a detailed manual, \
 or arXiv:1101.2599 for a more general description of the physics \
 behind MC event generation."
 
-usage " (read|build|integrate|run) [OPTIONS]... [FILE]" 
+usage " (read|build|integrate|mergegrids|run) [OPTIONS]... [FILE]" 
 
-description "One of the commands 'read', 'build', 'integrate' or 'run' is required:
+description "One of the commands 'read', 'build', 'integrate', 'mergegrids' or 'run' is required:
     read - reads an input file and creates a run file,
     build - reads an input file and creates matrix elements,
     integrate - integrate subprocesses after running `build',
+    mergegrids - combine integration grids from parallel adaption,
     run  - reads a run file and generates events."
 
 section "Event generation options"

@@ -272,7 +272,7 @@ struct ClassTraits<Herwig::LEPJetAnalysis>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "libfastjet.so HwLEPJetAnalysis.so"; }
+  static string library() { return "HwLEPJetAnalysis.so"; }
 };
 
 /** @endcond */

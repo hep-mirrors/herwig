@@ -1,7 +1,11 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.63])
+<<<<<<< local
 AC_INIT([Herwig],[trunk],[herwig@projects.hepforge.org],[Herwig])
+=======
+AC_INIT([Herwig],[7.0.3],[herwig@projects.hepforge.org],[Herwig])
+>>>>>>> other
 AC_CONFIG_SRCDIR([Utilities/HerwigStrategy.cc])
 AC_CONFIG_AUX_DIR([Config])
 AC_CONFIG_MACRO_DIR([m4])
@@ -39,7 +43,7 @@ AC_ARG_ENABLE(stdcxx11,
 if test "x$enable_stdcxx11" = "xyes"; then
 AC_MSG_RESULT([yes])
 dnl remove the wrapper if block and "optional" once we decide to have C++11 always on
-AX_CXX_COMPILE_STDCXX_11([noext],[optional])
+AX_CXX_COMPILE_STDCXX([11],[noext],[optional])
 if test "x$HAVE_CXX11" != "x1"; then
 AC_MSG_ERROR([compiler does not recognize requested c++11 option])
 fi

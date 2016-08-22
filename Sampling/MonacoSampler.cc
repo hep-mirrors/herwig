@@ -117,11 +117,16 @@ double MonacoSampler::generate() {
   }
 
   if ( !weighted() && initialized() ) {
+<<<<<<< local
     double p = min(abs(w),0.01*referenceWeight())/(0.01*referenceWeight());
+=======
+    double p = min(abs(w),kappa()*referenceWeight())/(kappa()*referenceWeight());
+>>>>>>> other
     double sign = w >= 0. ? 1. : -1.;
     if ( p < 1 && UseRandom::rnd() > p )
       w = 0.;
     else
+<<<<<<< local
       w = sign*max(abs(w),referenceWeight()*0.01);
   }
   
@@ -148,8 +153,12 @@ double MonacoSampler::generate() {
     
     w*=wfull/wref;
     
+=======
+      w = sign*max(abs(w),kappa()*referenceWeight());
+>>>>>>> other
   }
   select(w);
+  assert(kappa()==1.||sampler()->almostUnweighted());
   if ( w != 0.0 )
     accept();
   return w;
@@ -159,6 +168,21 @@ void MonacoSampler::saveGrid() const {
   XML::Element grid = toXML();
   grid.appendAttribute("process",id());
   sampler()->grids().append(grid);
+}
+
+bool MonacoSampler::existsGrid() const {
+  list<XML::Element>::iterator git = sampler()->grids().children().begin();
+  for ( ; git != sampler()->grids().children().end(); ++git ) {
+    if ( git->type() != XML::ElementTypes::Element )
+      continue;
+    if ( git->name() != "Monaco" )
+      continue;
+    string proc;
+    git->getFromAttribute("process",proc);
+    if ( proc == id() ) 
+      return true;
+  }
+  return false;
 }
 
 void MonacoSampler::initialize(bool progress) {
@@ -385,7 +409,7 @@ XML::Element MonacoSampler::toXML() const {
     XML::Element gridvector(XML::ElementTypes::Element,"GridVector");
     gridvector.appendAttribute("Index",k);
     ostringstream bdata;
-    bdata << setprecision(20);
+    bdata << setprecision(17);
     for ( size_t l = 0; l < theGridDivisions; ++l )
       bdata << theGrid(k,l) << " ";
 

@@ -44,6 +44,9 @@ namespace matchbox {
 				Energy2 lambda2,
 				unsigned int nf) const;
 
+    /// return the number of loops which determine this running
+    virtual unsigned int nloops () const { return 2; }
+
   public:
 
     /** @name Functions used by the persistent I/O system. */
@@ -149,6 +152,8 @@ namespace matchbox {
       static gsl::bisection_root_solver<rg_solution,100> rg_solver_(rg());
       return rg_solver_;
     }
+
+    bool two_largeq_terms_;
 
   };
 

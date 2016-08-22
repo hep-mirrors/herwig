@@ -68,6 +68,15 @@ public:
 
   void quit() const;
 
+   /// Return the standard out stream to be used
+  virtual std::ostream& outStream() const { return std::cout; }
+
+   /// Return the standard err stream to be used
+  virtual std::ostream& errStream() const { return std::cerr; }
+
+  /// Return the standard in stream to be used
+  virtual std::istream& inStream() const { return std::cin; }
+
 private:
 
   RunMode::Mode runMode_;

@@ -254,6 +254,11 @@ public:
   bool remappersFilled() const { return theRemappersFilled; }
 
   /**
+   * Return true, if grid data exists for this sampler.
+   */
+  virtual bool existsGrid() const { return false; }
+
+  /**
    * Return true, if this sampler has already read grid data.
    */
   bool hasGrids() const { return theHasGrids; }
@@ -377,6 +382,15 @@ public:
    * Return the folder for the random number plots.
    */
   string randomNumberString() const {return theRandomNumbers;}
+
+  /**
+   * In the AlmostUnweighted mode we do not need to unweight 
+   * the events to the reference weight. 
+   * Kappa reduces effectivly the reference weight.
+   * This can be used for processes, where unweighting 
+   * is hardly feasable.
+   */
+  double kappa() const {return theKappa;}
 
 public:
 
@@ -551,6 +565,17 @@ private:
    * True, if this sampler has already read grid data.
    */
   bool theHasGrids;
+
+
+
+  /**
+   * In the AlmostUnweighted mode we do not need to unweight 
+   * the events to the reference weight. 
+   * Kappa reduces effectivly the reference weight.
+   * This can be used for processes, where unweighting 
+   * is hardly feasable.
+   */
+  double theKappa;
 
 private:
 

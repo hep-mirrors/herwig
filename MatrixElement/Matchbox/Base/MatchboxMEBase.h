@@ -445,6 +445,11 @@ public:
   virtual Energy2 renormalizationScaleQED() const;
 
   /**
+   * Return the shower scale for the last generated phasespace point.
+   */
+  virtual Energy2 showerScale() const;
+
+  /**
    * Set veto scales on the particles at the given
    * SubProcess which has been generated using this
    * matrix element.

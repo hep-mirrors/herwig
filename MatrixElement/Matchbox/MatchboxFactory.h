@@ -787,6 +787,13 @@ public:
 
 public:
 
+  /**
+   * Print a summary of the parameters used
+   */
+  void summary(ostream&) const;
+
+public:
+
   /** @name Functions used by the persistent I/O system. */
   //@{
   /**
@@ -1248,8 +1255,50 @@ private:
    * True, if spin correlation information should be provided, if possible.
    */
   bool theSpinCorrelations;
+<<<<<<< local
   
   mutable double theAlphaParameter;
+=======
+
+  /**
+   * The alpha parameter to be used for the dipole subtraction
+   */  
+  double theAlphaParameter;
+>>>>>>> other
+
+  /**
+   * Wether or not charge conservation should be enforced for the processes
+   * constructed.
+   */
+  bool theEnforceChargeConservation;
+
+  /**
+   * Wether or not colour conservation should be enforced for the processes
+   * constructed.
+   */
+  bool theEnforceColourConservation;
+
+  /**
+   * Wether or not lepton number conservation should be enforced for the processes
+   * constructed.
+   */
+  bool theEnforceLeptonNumberConservation;
+
+  /**
+   * Wether or not quark number conservation should be enforced for the processes
+   * constructed.
+   */
+  bool theEnforceQuarkNumberConservation;
+
+  /**
+   * Assume flavour diagonal lepton interactions
+   */
+  bool theLeptonFlavourDiagonal;
+
+  /**
+   * Assume flavour diagonal quark interactions
+   */
+  bool theQuarkFlavourDiagonal;
 
   /**
    * Command for production mode

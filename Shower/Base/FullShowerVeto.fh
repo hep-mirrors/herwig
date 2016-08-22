@@ -1,0 +1,21 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the FullShowerVeto class.
+//
+#ifndef Herwig_FullShowerVeto_FH
+#define Herwig_FullShowerVeto_FH
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace Herwig {
+
+class FullShowerVeto;
+
+}
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::FullShowerVeto,FullShowerVetoPtr);
+
+}
+
+#endif

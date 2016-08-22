@@ -21,12 +21,14 @@
 #include "Herwig/Shower/ShowerHandler.fh"
 #include "Branching.h"
 #include "ShowerVeto.h"
+#include "FullShowerVeto.h"
 #include "HardTree.h"
 #include "ThePEG/Handlers/XComb.h"
 #include "Evolver.fh"
 #include "Herwig/MatrixElement/HwMEBase.h"
 #include "Herwig/Decay/HwDecayerBase.h"
 #include "Herwig/MatrixElement/Matchbox/Matching/ShowerApproximation.h"
+#include "Herwig/Utilities/Statistic.h"
 
 namespace Herwig {
 
@@ -69,10 +71,13 @@ public:
 	      _massVetoOption(1), _hardVetoReadOption(false),
 	      _iptrms(ZERO), _beta(0.), _gamma(ZERO), _iptmax(),
 	      _limitEmissions(0), _initialenhance(1.), _finalenhance(1.),
+	      _nReWeight(100), _reWeight(false),
 	       interaction_(1), _trunc_Mode(true), _hardEmissionMode(0),
 	      _spinOpt(1), _softOpt(2), _hardPOWHEG(false),
 	      theFactorizationScaleFactor(1.0), 
-	      theRenormalizationScaleFactor(1.0)
+	      theRenormalizationScaleFactor(1.0), muPt(ZERO),
+	      _maxTryFSR(100000),_maxFailFSR(100),_fracFSR(0.001),
+              _nFSR(0), _nFailedFSR(0)
   {}
 
   /**
@@ -529,6 +534,13 @@ protected:
   void setupHardScales(const vector<ShowerProgenitorPtr> &,XCPtr);
 
   /**
+   * Return the relevant hard scale to be used in the profile scales
+   */
+  Energy hardScale() const {
+    return muPt;
+  }
+
+  /**
    *  Convert the HardTree into an extra shower emission 
    */
   void convertHardTree(bool hard,ShowerInteraction::Type type);
@@ -805,6 +817,21 @@ private:
   vector<ShowerVetoPtr> _vetoes;
 
   /**
+   *  Full Shower Vetoes
+   */
+  vector<FullShowerVetoPtr> _fullShowerVetoes;
+
+  /**
+   *  Number of iterations for reweighting
+   */
+  unsigned int _nReWeight;
+
+  /**
+   *  Whether or not we are reweighting
+   */
+  bool _reWeight;
+
+  /**
    *  number of IS emissions
    */
   unsigned int _nis;
@@ -901,6 +928,35 @@ private:
    */
   static bool _missingTruncWarn;
 
+  /**
+   * The relevant hard scale to be used in the profile scales
+   */
+  Energy muPt;
+
+  /**
+   *  Maximum number of emission attempts for FSR
+   */
+  unsigned int _maxTryFSR;
+
+  /**
+   *  Maximum number of failures for FSR generation
+   */
+  unsigned int _maxFailFSR;
+
+  /**
+   *  Failure fraction for FSR generation
+   */
+  double _fracFSR;
+
+  /**
+   *  Counter for number of FSR emissions
+   */
+  unsigned int _nFSR;
+
+  /**
+   *  Counter for the number of failed events due to FSR emissions
+   */
+  unsigned int _nFailedFSR;
 };
 
 }

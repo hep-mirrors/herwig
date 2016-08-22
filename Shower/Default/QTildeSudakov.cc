@@ -44,12 +44,13 @@ void QTildeSudakov::Init() {
      " qtilde");
 }
 
-bool QTildeSudakov::guessTimeLike(Energy2 &t,Energy2 tmin,double enhance) {
+bool QTildeSudakov::guessTimeLike(Energy2 &t,Energy2 tmin,double enhance,
+				  const double & detune) {
   Energy2 told = t;
   // calculate limits on z and if lower>upper return
   if(!computeTimeLikeLimits(t)) return false;
   // guess values of t and z
-  t = guesst(told,0,ids_,enhance,ids_[1]==ids_[2]);
+  t = guesst(told,0,ids_,enhance,ids_[1]==ids_[2],detune);
   z(guessz(0,ids_)); 
   // actual values for z-limits
   if(!computeTimeLikeLimits(t)) return false;
@@ -62,12 +63,13 @@ bool QTildeSudakov::guessTimeLike(Energy2 &t,Energy2 tmin,double enhance) {
 } 
 
 bool QTildeSudakov::guessSpaceLike(Energy2 &t, Energy2 tmin, const double x,
-				   double enhance) {
+				   double enhance,
+				   const double & detune) {
   Energy2 told = t;
   // calculate limits on z if lower>upper return
   if(!computeSpaceLikeLimits(t,x)) return false;
   // guess values of t and z
-  t = guesst(told,1,ids_,enhance,ids_[1]==ids_[2]); 
+  t = guesst(told,1,ids_,enhance,ids_[1]==ids_[2],detune); 
   z(guessz(1,ids_)); 
   // actual values for z-limits
   if(!computeSpaceLikeLimits(t,x)) return false;
@@ -92,10 +94,13 @@ bool QTildeSudakov::PSVeto(const Energy2 t) {
   pT(sqrt(pt2));
   return false;
 }
+
+
  
 ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
 						   const IdList &ids,const bool cc,
-						   double enhance) {
+						   double enhance,
+						   double detuning) {
   // First reset the internal kinematics variables that can
   // have been eventually set in the previous call to the method.
   q_ = ZERO;
@@ -108,13 +113,75 @@ ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
   if(tmax<=tmin) return ShoKinPtr();
   // calculate next value of t using veto algorithm
   Energy2 t(tmax);
-  do {
-    if(!guessTimeLike(t,tmin,enhance)) break;
+
+  bool calcVariations=!ShowerHandler::currentHandler()->showerVariations().empty();
+
+  if(!calcVariations){
+    // Without variations do the usual Veto algorithm
+    // No need for more if-statements in this loop.
+    do {
+      if(!guessTimeLike(t,tmin,enhance,detuning)) break;
+    }
+    while(PSVeto(t) ||
+        SplittingFnVeto(z()*(1.-z())*t,ids,true,detuning) || 
+        alphaSVeto(splittingFn()->pTScale() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t));
+  }else{
+    bool alphaRew(true),PSRew(true),SplitRew(true);
+    do {
+      if(!guessTimeLike(t,tmin,enhance,detuning)) break;
+      PSRew=PSVeto(t);
+      if (PSRew) continue;
+      SplitRew=SplittingFnVeto(z()*(1.-z())*t,ids,true,detuning);
+      alphaRew=alphaSVeto(splittingFn()->pTScale() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t);
+      double factor=alphaSVetoRatio(splittingFn()->pTScale() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t,1.)*
+                    SplittingFnVetoRatio(z()*(1.-z())*t,ids,true,detuning);
+
+      ShowerHandlerPtr ch = ShowerHandler::currentHandler();
+
+      if( !(SplitRew || alphaRew) ) {
+        //Emission
+        q_ = t > ZERO ? Energy(sqrt(t)) : -1.*MeV;
+        if (q_ <= ZERO) break;
+      }
+
+        for ( map<string,ShowerHandler::ShowerVariation>::const_iterator var =
+	          ch->showerVariations().begin();
+	          var != ch->showerVariations().end(); ++var ) {
+          if ( ( ch->firstInteraction() && var->second.firstInteraction ) ||
+	           ( !ch->firstInteraction() && var->second.secondaryInteractions ) ) {
+
+                double newfactor = alphaSVetoRatio(splittingFn()->pTScale() ?
+                                        sqr(z()*(1.-z()))*t :
+                                        z()*(1.-z())*t,var->second.renormalizationScaleFactor)
+		  * SplittingFnVetoRatio(z()*(1.-z())*t,ids,true,detuning);
+
+                double varied;
+                if ( SplitRew || alphaRew ) {
+                  // No Emission
+                  varied = (1. - newfactor) / (1. - factor);
+                } else {
+                  // Emission
+                  varied = newfactor / factor;
+                }
+
+                map<string,double>::iterator wi = ch->currentWeights().find(var->first);
+	        if ( wi != ch->currentWeights().end() )
+	          wi->second *= varied;
+	        else {
+                  assert(false);
+                  //ch->currentWeights()[var->first] = varied;
+                }
+	  }
+        }
+      
+    }
+    while(PSRew || SplitRew || alphaRew);
   }
-  while(PSVeto(t) || SplittingFnVeto(z()*(1.-z())*t,ids,true) || 
-	alphaSVeto(splittingFn()->angularOrdered() ? sqr(z()*(1.-z()))*t : z()*(1.-z())*t));
+
+  
   q_ = t > ZERO ? Energy(sqrt(t)) : -1.*MeV;
   if(q_ < ZERO) return ShoKinPtr();
+  
   // return the ShowerKinematics object
   return createFinalStateBranching(q_,z(),phi(),pT()); 
 }
@@ -124,7 +191,8 @@ generateNextSpaceBranching(const Energy startingQ,
 			   const IdList &ids,
 			   double x,bool cc,
 			   double enhance,
-			   Ptr<BeamParticleData>::transient_const_pointer beam) {
+			   Ptr<BeamParticleData>::transient_const_pointer beam,
+			   double detuning) {
   // First reset the internal kinematics variables that can
   // have been eventually set in the previous call to the method.
   q_ = ZERO;
@@ -142,19 +210,91 @@ generateNextSpaceBranching(const Energy startingQ,
   if(cc) {
     if(parton0->CC()) parton0 = parton0->CC();
     if(parton1->CC()) parton1 = parton1->CC();
-  }
+  } 
   // calculate next value of t using veto algorithm
   Energy2 t(tmax),pt2(ZERO);
-  do {
-    if(!guessSpaceLike(t,tmin,x,enhance)) break;
-    pt2=sqr(1.-z())*t-z()*masssquared_[2];
+
+
+
+
+
+  bool calcVariations=!ShowerHandler::currentHandler()->showerVariations().empty();
+
+  if(!calcVariations){
+    // Without variations do the usual Veto algorithm
+    // No need for more if-statements in this loop.
+    do {
+      if(!guessSpaceLike(t,tmin,x,enhance,detuning)) break;
+      pt2=sqr(1.-z())*t-z()*masssquared_[2];
+    }
+    while(pt2 < pT2min()||
+        z() > zLimits().second||
+	  SplittingFnVeto((1.-z())*t/z(),ids,false,detuning)||
+        alphaSVeto(splittingFn()->pTScale() ? sqr(1.-z())*t : (1.-z())*t)||
+        PDFVeto(t,x,parton0,parton1,beam));
+  }else{
+    bool alphaRew(true),PDFRew(true),ptRew(true),zRew(true),SplitRew(true);
+    do {
+      if(!guessSpaceLike(t,tmin,x,enhance,detuning)) break;
+      pt2=sqr(1.-z())*t-z()*masssquared_[2];
+      ptRew=pt2 < pT2min();
+      zRew=z() > zLimits().second;
+      if (ptRew||zRew) continue;
+      SplitRew=SplittingFnVeto((1.-z())*t/z(),ids,false,detuning);
+      alphaRew=alphaSVeto(splittingFn()->pTScale() ? sqr(1.-z())*t : (1.-z())*t);
+      PDFRew=PDFVeto(t,x,parton0,parton1,beam);
+      double factor=PDFVetoRatio(t,x,parton0,parton1,beam,1.)*
+                    alphaSVetoRatio(splittingFn()->pTScale() ? sqr(1.-z())*t : (1.-z())*t,1.)*
+	SplittingFnVetoRatio((1.-z())*t/z(),ids,false,detuning);
+
+      ShowerHandlerPtr ch = ShowerHandler::currentHandler();
+
+      if( !(PDFRew || SplitRew || alphaRew) ) {
+        //Emission
+        q_ = t > ZERO ? Energy(sqrt(t)) : -1.*MeV;
+        if (q_ <= ZERO) break;
+      }
+
+        for ( map<string,ShowerHandler::ShowerVariation>::const_iterator var =
+	          ch->showerVariations().begin();
+	          var != ch->showerVariations().end(); ++var ) {
+          if ( ( ch->firstInteraction() && var->second.firstInteraction ) ||
+	           ( !ch->firstInteraction() && var->second.secondaryInteractions ) ) {
+
+
+
+            double newfactor = PDFVetoRatio(t,x,parton0,parton1,beam,var->second.factorizationScaleFactor)*
+                           alphaSVetoRatio(splittingFn()->pTScale() ?
+                           sqr(1.-z())*t : (1.-z())*t,var->second.renormalizationScaleFactor)
+	      *SplittingFnVetoRatio((1.-z())*t/z(),ids,false,detuning);
+
+            double varied;
+            if( PDFRew || SplitRew || alphaRew) {
+                // No Emission
+                varied = (1. - newfactor) / (1. - factor);
+            } else {
+                // Emission
+                varied = newfactor / factor;
+            }
+
+
+            map<string,double>::iterator wi = ch->currentWeights().find(var->first);
+            if ( wi != ch->currentWeights().end() )
+	          wi->second *= varied;
+	    else {
+	      assert(false);
+	      //ch->currentWeights()[var->first] = varied;
+            }
+	  }
+        }
+      
+    }
+    while( PDFRew || SplitRew || alphaRew);
   }
-  while(z() > zLimits().second || 
-	SplittingFnVeto((1.-z())*t/z(),ids,true) || 
-	alphaSVeto(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t) ||
-	PDFVeto(t,x,parton0,parton1,beam) || pt2 < pT2min() );
+  
   if(t > ZERO && zLimits().first < zLimits().second)  q_ = sqrt(t);
   else return ShoKinPtr();
+  
   pT(sqrt(pt2));
   // create the ShowerKinematics and return it
   return createInitialStateBranching(q_,z(),phi(),pT());
@@ -177,11 +317,12 @@ void QTildeSudakov::initialize(const IdList & ids, Energy2 & tmin,const bool cc)
 }
 
 ShoKinPtr QTildeSudakov::generateNextDecayBranching(const Energy startingScale,
-						 const Energy stoppingScale,
-						 const Energy minmass,
-						 const IdList &ids,
-						 const bool cc, 
-						 double enhance) {
+						    const Energy stoppingScale,
+						    const Energy minmass,
+						    const IdList &ids,
+						    const bool cc, 
+						    double enhance,
+						    double detuning) {
   // First reset the internal kinematics variables that can
   // have been eventually set in the previous call to this method.
   q_ = Constants::MaxEnergy;
@@ -196,11 +337,11 @@ ShoKinPtr QTildeSudakov::generateNextDecayBranching(const Energy startingScale,
   // perform the evolution
   Energy2 t(tmin),pt2(-MeV2);
   do {
-    if(!guessDecay(t,tmax,minmass,enhance)) break;
+    if(!guessDecay(t,tmax,minmass,enhance,detuning)) break;
     pt2 = sqr(1.-z())*(t-masssquared_[0])-z()*masssquared_[2];
   }
-  while(SplittingFnVeto((1.-z())*t/z(),ids,true)|| 
-	alphaSVeto(splittingFn()->angularOrdered() ? sqr(1.-z())*t : (1.-z())*t ) ||
+  while(SplittingFnVeto((1.-z())*t/z(),ids,true,detuning)|| 
+	alphaSVeto(splittingFn()->pTScale() ? sqr(1.-z())*t : (1.-z())*t ) ||
 	pt2<pT2min() ||
 	t*(1.-z())>masssquared_[0]-sqr(minmass));
   if(t > ZERO) {
@@ -214,7 +355,7 @@ ShoKinPtr QTildeSudakov::generateNextDecayBranching(const Energy startingScale,
 }
 
 bool QTildeSudakov::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
-			       double enhance) {
+			       double enhance, const double & detune) {
   // previous scale
   Energy2 told = t;
   // overestimated limits on z
@@ -234,7 +375,7 @@ bool QTildeSudakov::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
     return false;
   }
   // guess values of t and z
-  t = guesst(told,2,ids_,enhance,ids_[1]==ids_[2]);
+  t = guesst(told,2,ids_,enhance,ids_[1]==ids_[2],detune);
   z(guessz(2,ids_)); 
   // actual values for z-limits
   if(t<masssquared_[0])  {

@@ -250,6 +250,11 @@ Bornlist,Virtlist=fillprocs(options.model,options.orderas,options.orderew)
 
 if not options.madgraph and not os.path.isfile("InterfaceMadGraph.so"):
   print "*** warning *** MadGraph build failed, check logfile for details"
+  print "Known issue: If this is your first NLO calculation with pure Madgraph Amplitudes"
+  print "             the CutTools compilation can result in a non usable configuration."
+  print "             Please open $HERWIG_ENV/opt/madgraph/vendor/CutTools/makefile"
+  print "             and add a \\ after FC=gfortran... in the ARGS variable."
+  print "             Then run make clean && make in the CutTools folder. " 
   exit()
 
 os.system("python "+options.madgraph+"/mg5_aMC proc.dat")
@@ -334,7 +339,7 @@ make=" "
 fortanfiles=glob.glob('*/*/*.f')+glob.glob('*/*/*/*.f')
 
 for i in fortanfiles:
-  if "check_sa" not in i:
+  if "check_sa" not in i and "f2py_wrapper" not in i:
     if not os.path.islink(i):
        make += " "+i+"\\\n                  "
 
@@ -381,7 +386,15 @@ if Virtlist!=[]:
   replacetext("MG5/SubProcesses/MadLoopCommons.f", "PREFIX='./'","PREFIX='./Herwig-scratch/MG_tmp/'")
 
 os.system("make")
-
+if not os.path.isfile("InterfaceMadGraph.so"):
+   print "Second trial to make MadGraph Interface. "
+   print "Needed if new .mod files are produced by make." 
+   os.system("make")
 
 build_matchbox_tmp(pwd,options.buildpath,options.absolute_links)
 
+<<<<<<< local
+build_matchbox_tmp(pwd,options.buildpath,options.absolute_links)
+
+=======
+>>>>>>> other

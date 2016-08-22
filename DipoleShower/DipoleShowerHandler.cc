@@ -42,6 +42,7 @@ using namespace Herwig;
 
 bool DipoleShowerHandler::firstWarn = true;
 
+<<<<<<< local
 DipoleShowerHandler::DipoleShowerHandler()
 : ShowerHandler(), chainOrderVetoScales(true),
 nEmissions(0), discardNoEmissions(false), firstMCatNLOEmission(false),
@@ -54,6 +55,20 @@ isMCatNLOSEvent(false),
 isMCatNLOHEvent(false), theDoCompensate(false),
 theFreezeGrid(500000), maxPt(ZERO),
 muPt(ZERO) {}
+=======
+DipoleShowerHandler::DipoleShowerHandler() 
+  : ShowerHandler(), chainOrderVetoScales(true),
+    nEmissions(0), discardNoEmissions(false), firstMCatNLOEmission(false),
+    doFSR(true), doISR(true), realignmentScheme(0),
+    verbosity(0), printEvent(0), nTries(0), 
+    didRadiate(false), didRealign(false),
+    theRenormalizationScaleFreeze(1.*GeV), 
+    theFactorizationScaleFreeze(2.*GeV),
+    isMCatNLOSEvent(false),
+    isMCatNLOHEvent(false), theDoCompensate(false),
+    theFreezeGrid(500000), theDetuning(1.0),
+    maxPt(ZERO), muPt(ZERO) {}
+>>>>>>> other
 
 DipoleShowerHandler::~DipoleShowerHandler() {}
 
@@ -96,7 +111,12 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr,
   useMe();
   
   prepareCascade(sub);
+<<<<<<< local
   
+=======
+  resetWeights();
+
+>>>>>>> other
   if ( !doFSR && ! doISR )
     return sub->incoming();
   
@@ -206,9 +226,15 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr,
           << Exception::runerror;
         
       }
+<<<<<<< local
       
       hardScales(lastXCombPtr()->lastCentralScale());
       
+=======
+
+      hardScales(lastXCombPtr()->lastShowerScale());
+
+>>>>>>> other
       if ( verbosity > 1 ) {
         generator()->log() << "DipoleShowerHandler starting off:\n";
         eventRecord().debugLastEvent(generator()->log());
@@ -262,7 +288,13 @@ tPPair DipoleShowerHandler::cascade(tSubProPtr sub, XCPtr,
       break;
       
     } catch (RedoShower&) {
+<<<<<<< local
       
+=======
+
+      resetWeights();
+
+>>>>>>> other
       if ( ++nTries > maxtry() )
         throw ShowerTriesVeto(maxtry());
       
@@ -444,8 +476,15 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
   candidate.configuration(conf);
   candidate.emitterX(emitterX);
   candidate.spectatorX(spectatorX);
+<<<<<<< local
   
+=======
+  candidate.emitter(emitter);
+  candidate.spectator(spectator);
+
+>>>>>>> other
   if ( generators().find(candidate.index()) == generators().end() )
+<<<<<<< local
     getGenerators(candidate.index());
   
     //
@@ -465,6 +504,27 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
   pair<GeneratorMap2::iterator,GeneratorMap2::iterator> gens
   = generators().equal_range(candidate.index());
   
+=======
+    getGenerators(candidate.index(),theSplittingReweight);
+
+  //
+  // NOTE -- needs proper fixing at some point
+  //
+  // For some very strange reason, equal_range gives back
+  // key ranges it hasn't been asked for. This particularly
+  // happens e.g. for FI dipoles of the same kind, but different
+  // PDF (hard vs MPI PDF). I can't see a reason for this,
+  // as DipoleIndex properly implements comparison for equality
+  // and (lexicographic) ordering; for the time being, we
+  // use equal_range, extented by an explicit check for wether
+  // the key is indeed what we wanted. See line after (*) comment
+  // below.
+  //
+
+  pair<GeneratorMap::iterator,GeneratorMap::iterator> gens
+    = generators().equal_range(candidate.index());
+
+>>>>>>> other
   Energy winnerScale = 0.0*GeV;
   GeneratorMap2::iterator winnerGen = generators().end();
   
@@ -510,9 +570,15 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
       hardScale = maxPossible;
       candidate.hardPt(maxPossible);
     }
+<<<<<<< local
     
     gen->second->generate(candidate,optHardPt,optCutoff);
+=======
+
+    gen->second->generate(candidate,currentWeights_,optHardPt,optCutoff);
+>>>>>>> other
     Energy nextScale = evolutionOrdering()->evolutionScale(gen->second->lastSplitting(),*(gen->second->splittingKernel()));
+<<<<<<< local
     
     if ( firstInteraction() && profileScales() && nextScale > ircutoff ) {
       while ( UseRandom::rnd() > profileScales()->hardScaleProfile(muPt,nextScale) ) {
@@ -526,13 +592,22 @@ Energy DipoleShowerHandler::getWinner(DipoleSplittingInfo& winner,
       }
     }
     
+=======
+
+>>>>>>> other
     if ( nextScale > winnerScale ) {
       winner.fill(candidate);
       gen->second->completeSplitting(winner);
       winnerGen = gen;
       winnerScale = nextScale;
     }
+<<<<<<< local
     
+=======
+
+    reweight_ *= gen->second->splittingWeight();
+
+>>>>>>> other
   }
   
   if ( winnerGen == generators().end() ) {
@@ -615,6 +690,7 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
     
       // pop the chain if no dipole did radiate
     if ( winnerDip == eventRecord().currentChain().dipoles().end() ) {
+<<<<<<< local
       if ( theEventReweight ) {
         double w = theEventReweight->weightNoEmission(eventRecord().incoming(),
                                                       eventRecord().outgoing(),
@@ -624,7 +700,17 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
         assert(eh);
         eh->reweight(w);
       }
+=======
+>>>>>>> other
       eventRecord().popChain();
+      if ( theEventReweight && eventRecord().chains().empty() )
+	if ( (theEventReweight->firstInteraction() && firstInteraction()) ||
+	     (theEventReweight->secondaryInteractions() && !firstInteraction()) ) {
+	  double w = theEventReweight->weightCascade(eventRecord().incoming(),
+							eventRecord().outgoing(),
+							eventRecord().hard(),theGlobalAlphaS);
+	  reweight_ *= w;
+	}
       continue;
     }
     
@@ -709,6 +795,7 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
       << "DipoleShowerHandler encountered the following chains:\n"
       << (*firstChain) << (*secondChain) << flush;
     }
+<<<<<<< local
     
     if ( theEventReweight ) {
       double w = theEventReweight->weight(eventRecord().incoming(),
@@ -719,6 +806,17 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
       assert(eh);
       eh->reweight(w);
     }
+=======
+
+    if ( theEventReweight ) 
+      if ( (theEventReweight->firstInteraction() && firstInteraction()) ||
+	   (theEventReweight->secondaryInteractions() && !firstInteraction()) ) {
+	double w = theEventReweight->weight(eventRecord().incoming(),
+					    eventRecord().outgoing(),
+					    eventRecord().hard(),theGlobalAlphaS);
+	reweight_ *= w;
+      }
+>>>>>>> other
     
 //    if ( nEmissions )
     if ( nEmissions )
@@ -824,8 +922,14 @@ bool DipoleShowerHandler::realign() {
 void DipoleShowerHandler::resetAlphaS(Ptr<AlphaSBase>::tptr as) {
   
   for ( vector<Ptr<DipoleSplittingKernel>::ptr>::iterator k = kernels.begin();
+<<<<<<< local
        k != kernels.end(); ++k ) {
     (**k).alphaS(as);
+=======
+	k != kernels.end(); ++k ) {
+    if ( !(**k).alphaS() )
+      (**k).alphaS(as);
+>>>>>>> other
     (**k).renormalizationScaleFreeze(theRenormalizationScaleFreeze);
     (**k).factorizationScaleFreeze(theFactorizationScaleFreeze);
   }
@@ -866,9 +970,14 @@ void DipoleShowerHandler::getGenerators(const DipoleIndex& ind,
       new_ptr(DipoleSplittingGenerator());
       nGenerator->doCompensate(theDoCompensate);
       nGenerator->splittingKernel(*k);
-      nGenerator->splittingKernel()->renormalizationScaleFactor(renormalizationScaleFactor());
-      nGenerator->splittingKernel()->factorizationScaleFactor(factorizationScaleFactor());
+      if ( renormalizationScaleFactor() != 1. )
+	nGenerator->splittingKernel()->renormalizationScaleFactor(renormalizationScaleFactor());
+      if ( factorizationScaleFactor() != 1. )
+	nGenerator->splittingKernel()->factorizationScaleFactor(factorizationScaleFactor());
+      if ( !nGenerator->splittingReweight() )
+	nGenerator->splittingReweight(rw);
       nGenerator->splittingKernel()->freezeGrid(theFreezeGrid);
+<<<<<<< local
       
       GeneratorMap2::const_iterator equivalent = generators().end();
       
@@ -892,6 +1001,32 @@ void DipoleShowerHandler::getGenerators(const DipoleIndex& ind,
             break;
             
           }
+=======
+      nGenerator->splittingKernel()->detuning(theDetuning);
+
+      GeneratorMap::const_iterator equivalent = generators().end();
+
+      for ( GeneratorMap::const_iterator eq = generators().begin();
+	    eq != generators().end(); ++eq ) {
+	if ( !eq->second->wrapping() )
+	  if ( (**k).canHandleEquivalent(ind,*(eq->second->splittingKernel()),eq->first) ) {
+
+	    equivalent = eq;
+
+	    if ( verbosity > 0 ) {
+	      generator()->log() << "The dipole configuration "
+				 << ind
+				 << " can equivalently be handled by the existing\n"
+				 << "generator for configuration "
+				 << eq->first << " using the kernel '"
+				 << eq->second->splittingKernel()->name()
+				 << "'\n" << flush;
+	    }
+
+	    break;
+
+	  }
+>>>>>>> other
       }
       
       if ( equivalent != generators().end() ) {
@@ -900,7 +1035,6 @@ void DipoleShowerHandler::getGenerators(const DipoleIndex& ind,
       
       DipoleSplittingInfo dummy;
       dummy.index(ind);
-      nGenerator->splittingReweight(rw);
       nGenerator->prepare(dummy);
       
       generators().insert(make_pair(ind,nGenerator));
@@ -939,6 +1073,7 @@ void DipoleShowerHandler::doinitrun() {
 }
 
 void DipoleShowerHandler::persistentOutput(PersistentOStream & os) const {
+<<<<<<< local
   os << kernels << theEvolutionOrdering
   << constituentReshuffler << intrinsicPtGenerator
   << theGlobalAlphaS << chainOrderVetoScales
@@ -950,9 +1085,23 @@ void DipoleShowerHandler::persistentOutput(PersistentOStream & os) const {
   << theDoCompensate << theFreezeGrid
   << theEventReweight << ounit(maxPt,GeV)
   << ounit(muPt,GeV)<< theMergingHelper;
+=======
+  os << kernels << theEvolutionOrdering 
+     << constituentReshuffler << intrinsicPtGenerator
+     << theGlobalAlphaS << chainOrderVetoScales
+     << nEmissions << discardNoEmissions << firstMCatNLOEmission << doFSR << doISR
+     << realignmentScheme << verbosity << printEvent
+     << ounit(theRenormalizationScaleFreeze,GeV)
+     << ounit(theFactorizationScaleFreeze,GeV)
+     << isMCatNLOSEvent << isMCatNLOHEvent << theShowerApproximation
+     << theDoCompensate << theFreezeGrid << theDetuning
+     << theEventReweight << theSplittingReweight << ounit(maxPt,GeV)
+     << ounit(muPt,GeV);
+>>>>>>> other
 }
 
 void DipoleShowerHandler::persistentInput(PersistentIStream & is, int) {
+<<<<<<< local
   is >> kernels >> theEvolutionOrdering
   >> constituentReshuffler >> intrinsicPtGenerator
   >> theGlobalAlphaS >> chainOrderVetoScales
@@ -964,6 +1113,19 @@ void DipoleShowerHandler::persistentInput(PersistentIStream & is, int) {
   >> theDoCompensate >> theFreezeGrid
   >> theEventReweight >> iunit(maxPt,GeV)
   >> iunit(muPt,GeV)>>theMergingHelper;
+=======
+  is >> kernels >> theEvolutionOrdering 
+     >> constituentReshuffler >> intrinsicPtGenerator
+     >> theGlobalAlphaS >> chainOrderVetoScales
+     >> nEmissions >> discardNoEmissions >> firstMCatNLOEmission >> doFSR >> doISR
+     >> realignmentScheme >> verbosity >> printEvent
+     >> iunit(theRenormalizationScaleFreeze,GeV)
+     >> iunit(theFactorizationScaleFreeze,GeV)
+     >> isMCatNLOSEvent >> isMCatNLOHEvent >> theShowerApproximation
+     >> theDoCompensate >> theFreezeGrid >> theDetuning
+     >> theEventReweight >> theSplittingReweight >> iunit(maxPt,GeV)
+     >> iunit(muPt,GeV);
+>>>>>>> other
 }
 
 ClassDescription<DipoleShowerHandler> DipoleShowerHandler::initDipoleShowerHandler;
@@ -1187,11 +1349,241 @@ void DipoleShowerHandler::Init() {
    "",
    &DipoleShowerHandler::theEventReweight, false, false, true, true, false);
 
+<<<<<<< local
   
   static Reference<DipoleShowerHandler,Merging> interfaceMergingHelper
   ("MergingHelper",
    "",
    &DipoleShowerHandler::theMergingHelper, false, false, true, true, false);
   
+=======
+  static ClassDocumentation<DipoleShowerHandler> documentation
+    ("The DipoleShowerHandler class manages the showering using "
+     "the dipole shower algorithm.",
+     "The shower evolution was performed using the algorithm described in "
+     "\\cite{Platzer:2009jq} and \\cite{Platzer:2011bc}.",
+     "%\\cite{Platzer:2009jq}\n"
+     "\\bibitem{Platzer:2009jq}\n"
+     "S.~Platzer and S.~Gieseke,\n"
+     "``Coherent Parton Showers with Local Recoils,''\n"
+     "  JHEP {\\bf 1101}, 024 (2011)\n"
+     "arXiv:0909.5593 [hep-ph].\n"
+     "%%CITATION = ARXIV:0909.5593;%%\n"
+     "%\\cite{Platzer:2011bc}\n"
+     "\\bibitem{Platzer:2011bc}\n"
+     "S.~Platzer and S.~Gieseke,\n"
+     "``Dipole Showers and Automated NLO Matching in Herwig,''\n"
+     "arXiv:1109.6256 [hep-ph].\n"
+     "%%CITATION = ARXIV:1109.6256;%%");
+
+  static RefVector<DipoleShowerHandler,DipoleSplittingKernel> interfaceKernels
+    ("Kernels",
+     "Set the splitting kernels to be used by the dipole shower.",
+     &DipoleShowerHandler::kernels, -1, false, false, true, false, false);
+
+
+  static Reference<DipoleShowerHandler,DipoleEvolutionOrdering> interfaceEvolutionOrdering
+    ("EvolutionOrdering",
+     "Set the evolution ordering to be used.",
+     &DipoleShowerHandler::theEvolutionOrdering, false, false, true, false, false);
+
+
+  static Reference<DipoleShowerHandler,ConstituentReshuffler> interfaceConstituentReshuffler
+    ("ConstituentReshuffler",
+     "The object to be used to reshuffle partons to their constitutent mass shells.",
+     &DipoleShowerHandler::constituentReshuffler, false, false, true, true, false);
+
+
+  static Reference<DipoleShowerHandler,IntrinsicPtGenerator> interfaceIntrinsicPtGenerator
+    ("IntrinsicPtGenerator",
+     "Set the object in charge to generate intrinsic pt for incoming partons.",
+     &DipoleShowerHandler::intrinsicPtGenerator, false, false, true, true, false);
+
+  static Reference<DipoleShowerHandler,AlphaSBase> interfaceGlobalAlphaS
+    ("GlobalAlphaS",
+     "Set a global strong coupling for all splitting kernels.",
+     &DipoleShowerHandler::theGlobalAlphaS, false, false, true, true, false);
+
+
+  static Switch<DipoleShowerHandler,bool> interfaceDoFSR
+    ("DoFSR",
+     "Switch on or off final state radiation.",
+     &DipoleShowerHandler::doFSR, true, false, false);
+  static SwitchOption interfaceDoFSROn
+    (interfaceDoFSR,
+     "On",
+     "Switch on final state radiation.",
+     true);
+  static SwitchOption interfaceDoFSROff
+    (interfaceDoFSR,
+     "Off",
+     "Switch off final state radiation.",
+     false);
+
+  static Switch<DipoleShowerHandler,bool> interfaceDoISR
+    ("DoISR",
+     "Switch on or off initial state radiation.",
+     &DipoleShowerHandler::doISR, true, false, false);
+  static SwitchOption interfaceDoISROn
+    (interfaceDoISR,
+     "On",
+     "Switch on initial state radiation.",
+     true);
+  static SwitchOption interfaceDoISROff
+    (interfaceDoISR,
+     "Off",
+     "Switch off initial state radiation.",
+     false);
+
+  static Switch<DipoleShowerHandler,int> interfaceRealignmentScheme
+    ("RealignmentScheme",
+     "The realignment scheme to use.",
+     &DipoleShowerHandler::realignmentScheme, 0, false, false);
+  static SwitchOption interfaceRealignmentSchemePreserveRapidity
+    (interfaceRealignmentScheme,
+     "PreserveRapidity",
+     "Preserve the rapidity of non-coloured outgoing system.",
+     0);
+  static SwitchOption interfaceRealignmentSchemeEvolutionFractions
+    (interfaceRealignmentScheme,
+     "EvolutionFractions",
+     "Use momentum fractions as generated by the evolution.",
+     1);
+  static SwitchOption interfaceRealignmentSchemeCollisionFrame
+    (interfaceRealignmentScheme,
+     "CollisionFrame",
+     "Determine realignment from collision frame.",
+     2);
+
+
+  static Switch<DipoleShowerHandler,bool> interfaceChainOrderVetoScales
+    ("ChainOrderVetoScales",
+     "[experimental] Switch on or off the chain ordering for veto scales.",
+     &DipoleShowerHandler::chainOrderVetoScales, true, false, false);
+  static SwitchOption interfaceChainOrderVetoScalesOn
+    (interfaceChainOrderVetoScales,
+     "On",
+     "Switch on chain ordering for veto scales.",
+     true);
+  static SwitchOption interfaceChainOrderVetoScalesOff
+    (interfaceChainOrderVetoScales,
+     "Off",
+     "Switch off chain ordering for veto scales.",
+     false);
+
+  interfaceChainOrderVetoScales.rank(-1);
+
+
+  static Parameter<DipoleShowerHandler,unsigned int> interfaceNEmissions
+    ("NEmissions",
+     "[debug option] Limit the number of emissions to be generated. Zero does not limit the number of emissions.",
+     &DipoleShowerHandler::nEmissions, 0, 0, 0,
+     false, false, Interface::lowerlim);
+
+  interfaceNEmissions.rank(-1);
+
+
+  static Switch<DipoleShowerHandler,bool> interfaceDiscardNoEmissions
+    ("DiscardNoEmissions",
+     "[debug option] Discard events without radiation.",
+     &DipoleShowerHandler::discardNoEmissions, false, false, false);
+  static SwitchOption interfaceDiscardNoEmissionsOn
+    (interfaceDiscardNoEmissions,
+     "On",
+     "Discard events without radiation.",
+     true);
+  static SwitchOption interfaceDiscardNoEmissionsOff 
+    (interfaceDiscardNoEmissions,
+     "Off",
+     "Do not discard events without radiation.",
+     false);
+
+  interfaceDiscardNoEmissions.rank(-1);
+
+  static Switch<DipoleShowerHandler,bool> interfaceFirstMCatNLOEmission
+    ("FirstMCatNLOEmission",
+     "[debug option] Only perform the first MC@NLO emission.",
+     &DipoleShowerHandler::firstMCatNLOEmission, false, false, false);
+  static SwitchOption interfaceFirstMCatNLOEmissionOn
+    (interfaceFirstMCatNLOEmission,
+     "On",
+     "",
+     true);
+  static SwitchOption interfaceFirstMCatNLOEmissionOff 
+    (interfaceFirstMCatNLOEmission,
+     "Off",
+     "",
+     false);
+
+  interfaceFirstMCatNLOEmission.rank(-1);
+
+
+  static Parameter<DipoleShowerHandler,int> interfaceVerbosity
+    ("Verbosity",
+     "[debug option] Set the level of debug information provided.",
+     &DipoleShowerHandler::verbosity, 0, 0, 0,
+     false, false, Interface::lowerlim);
+
+  interfaceVerbosity.rank(-1);
+
+
+  static Parameter<DipoleShowerHandler,int> interfacePrintEvent
+    ("PrintEvent",
+     "[debug option] The number of events for which debugging information should be provided.",
+     &DipoleShowerHandler::printEvent, 0, 0, 0,
+     false, false, Interface::lowerlim);
+
+  interfacePrintEvent.rank(-1);
+
+  static Parameter<DipoleShowerHandler,Energy> interfaceRenormalizationScaleFreeze
+    ("RenormalizationScaleFreeze",
+     "The freezing scale for the renormalization scale.",
+     &DipoleShowerHandler::theRenormalizationScaleFreeze, GeV, 1.0*GeV, 0.0*GeV, 0*GeV,
+     false, false, Interface::lowerlim);
+
+  static Parameter<DipoleShowerHandler,Energy> interfaceFactorizationScaleFreeze
+    ("FactorizationScaleFreeze",
+     "The freezing scale for the factorization scale.",
+     &DipoleShowerHandler::theFactorizationScaleFreeze, GeV, 2.0*GeV, 0.0*GeV, 0*GeV,
+     false, false, Interface::lowerlim);
+
+  static Switch<DipoleShowerHandler,bool> interfaceDoCompensate
+    ("DoCompensate",
+     "",
+     &DipoleShowerHandler::theDoCompensate, false, false, false);
+  static SwitchOption interfaceDoCompensateYes
+    (interfaceDoCompensate,
+     "Yes",
+     "",
+     true);
+  static SwitchOption interfaceDoCompensateNo
+    (interfaceDoCompensate,
+     "No",
+     "",
+     false);
+
+  static Parameter<DipoleShowerHandler,unsigned long> interfaceFreezeGrid
+    ("FreezeGrid",
+     "",
+     &DipoleShowerHandler::theFreezeGrid, 500000, 1, 0,
+     false, false, Interface::lowerlim);
+
+  static Parameter<DipoleShowerHandler,double> interfaceDetuning
+    ("Detuning",
+     "A value to detune the overestimate kernel.",
+     &DipoleShowerHandler::theDetuning, 1.0, 1.0, 0,
+     false, false, Interface::lowerlim);
+
+  static Reference<DipoleShowerHandler,DipoleEventReweight> interfaceEventReweight
+    ("EventReweight",
+     "",
+     &DipoleShowerHandler::theEventReweight, false, false, true, true, false);
+
+  static Reference<DipoleShowerHandler,DipoleSplittingReweight> interfaceSplittingReweight
+    ("SplittingReweight",
+     "Set the splitting reweight.",
+     &DipoleShowerHandler::theSplittingReweight, false, false, true, true, false);
+
+>>>>>>> other
 }
 

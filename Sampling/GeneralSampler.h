@@ -148,12 +148,22 @@ public:
    */
   bool weighted() const { return eventHandler()->weighted(); }
 
+<<<<<<< local
   /**
    * Almost Unweighted keeps eventweights larger than the overestimate.
    **/
   bool almostUnweighted() const { return theAlmostUnweighted;}
 
 
+=======
+
+  /** 
+   * True if the sampler runs in Allmostunweighted mode.
+   */ 
+
+  bool almostUnweighted() const { return theAlmostUnweighted; }
+
+>>>>>>> other
 public:
 
   /**
@@ -182,6 +192,12 @@ public:
   unsigned int integrationJobsCreated() {
     return theIntegrationJobsCreated;
   }
+
+  /**
+   * An external hook to prepare the sampler for generating events, e.g. by
+   * combining grid files from parallel integration runs.
+   */
+  virtual void prepare();
 
 protected:
 

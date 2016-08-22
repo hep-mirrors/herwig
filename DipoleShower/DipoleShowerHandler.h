@@ -14,6 +14,8 @@
 
 #include "Herwig/Shower/ShowerHandler.h"
 
+#include "Herwig/DipoleShower/DipoleShowerHandler.fh"
+
 #include "Herwig/DipoleShower/Base/DipoleSplittingInfo.h"
 #include "Herwig/DipoleShower/Base/DipoleSplittingReweight.h"
 #include "Herwig/DipoleShower/Kernels/DipoleSplittingKernel.h"
@@ -98,9 +100,16 @@ public:
    */
   virtual bool isReshuffling() const { return false; }
 
+  /**
+   * Return the relevant hard scale to be used in the profile scales
+   */
+  virtual Energy hardScale() const {
+    return muPt;
+  }
+
 protected:
 
-  typedef multimap<DipoleIndex,Ptr<DipoleSplittingGenerator>::ptr> GeneratorMap2;
+  typedef multimap<DipoleIndex,Ptr<DipoleSplittingGenerator>::ptr> GeneratorMap;
 
   /**
    * The main method which manages the showering of a subprocess.
@@ -145,7 +154,7 @@ protected:
   /**
    * Access the generator map
    */
-  GeneratorMap2& generators() { return theGenerators; }
+  GeneratorMap& generators() { return theGenerators; }
 
   /**
    * Access the event record
@@ -380,7 +389,7 @@ private:
    * The splitting generators indexed by the dipole
    * indices they can work on.
    */
-  GeneratorMap2 theGenerators;
+  GeneratorMap theGenerators;
 
   /**
    * The evnt record used.
@@ -441,9 +450,19 @@ private:
   unsigned long theFreezeGrid;
 
   /**
+   * The detuning factor applied to the sampling overestimate kernel
+   */
+  double theDetuning;
+
+  /**
    * A pointer to the dipole event reweight object
    */
   Ptr<DipoleEventReweight>::ptr theEventReweight;
+
+  /**
+   * A pointer to a global dipole splitting reweight
+   */
+  Ptr<DipoleSplittingReweight>::ptr theSplittingReweight;
 
   /**
    * True if no warnings have been issued yet

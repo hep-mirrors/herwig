@@ -85,7 +85,7 @@ public:
    * @param scale The scale
    * @return The ratio
    */
-  virtual double ratio(const Energy2 scale) const = 0;
+  virtual double ratio(const Energy2 scale,double factor=1.) const = 0;
 
   /**
    * It returns the factor that multiplies the 

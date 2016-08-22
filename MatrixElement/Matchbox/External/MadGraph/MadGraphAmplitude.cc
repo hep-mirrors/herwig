@@ -86,6 +86,7 @@ void MadGraphAmplitude::initProcess(const cPDVector& ) {
 
   if (!initializedMad){
     string mstr=(factory()->runStorage()+"MadGraphAmplitudes"+"/param_card"+((theMGmodel=="loop_sm")?"":("_"+theMGmodel))+".dat");
+    if( theMGmodel[0]=='/')mstr="param_card.dat";
     size_t len = mstr.size();
     mginitproc_(const_cast<char*>(mstr.c_str()),len);
     initializedMad=true;
@@ -149,7 +150,12 @@ bool MadGraphAmplitude::checkAmplitudes(){
   }
   
   if (!foundallborns||!foundallvirts)
-  throw Exception() << "MadGraphAmplitude: One amplitude has no externalId. Please remove the MadGraphAmplitude-folder and rebuild.\n"     << Exception::runerror;
+
+  throw Exception() << "MadGraphAmplitude: The MadGraph amplitudes did not match the process.\n" 
+                    << "                   Please remove:"<<mgProcLibPath()<< "\n" 
+                    << "                   or set a process path via the interface:\n"
+                    << "                   set /Herwig/MatrixElements/Matchbox/Amplitudes/MadGraph:ProcessPath ..."
+    << Exception::runerror;
   
   return foundallborns && foundallvirts;
   

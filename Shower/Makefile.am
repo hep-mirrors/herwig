@@ -1,6 +1,6 @@
 SUBDIRS = Matching .
 pkglib_LTLIBRARIES = HwShower.la
-HwShower_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 19:0:0
+HwShower_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 22:0:0
 HwShower_la_LIBADD = \
 $(top_builddir)/PDF/libHwRemDecayer.la \
 $(top_builddir)/PDF/libHwMPIPDF.la
@@ -30,7 +30,8 @@ Base/KinematicsReconstructor.fh \
 Base/ShowerModel.cc Base/ShowerModel.h Base/ShowerModel.fh \
 Base/PartnerFinder.h Base/PartnerFinder.fh Base/PartnerFinder.cc \
 Base/Evolver.h Base/Evolver.fh Base/Evolver.cc \
-Base/ShowerVeto.h Base/ShowerVeto.fh Base/ShowerVeto.cc
+Base/ShowerVeto.h Base/ShowerVeto.fh Base/ShowerVeto.cc \
+Base/FullShowerVeto.h Base/FullShowerVeto.fh Base/FullShowerVeto.cc
 
 noinst_LTLIBRARIES = libHwShower.la
 libHwShower_la_SOURCES = ShowerConfig.h \

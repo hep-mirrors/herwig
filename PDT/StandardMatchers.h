@@ -72,6 +72,26 @@ struct TopMatcher: public MatcherType {
 typedef Matcher<TopMatcher> MatchTop;
 
 /**
+ * A Matcher class which matches bottom quarks
+ */
+struct BottomMatcher: public MatcherType {
+  /** Typedef the class matching the complex conjugate particles. */
+  typedef BottomMatcher CC;
+  /** The main static function to check if a given particle type \a pd
+      matches. */
+  static bool Check(const ParticleData & pd) {
+    return abs(pd.id())==ParticleID::b;
+  }
+  /** A simplified but unique class name. */
+  static string className() { return "Bottom"; }
+};
+
+/**
+ * Gives a MatcherBase class based on BottomMatcher. 
+ */
+typedef Matcher<BottomMatcher> MatchBottom;
+
+/**
  * A Matcher class which matches any hadron.
  */
 struct HadronMatcher: public MatcherType {

@@ -81,13 +81,14 @@ namespace exsample {
     /// the efficiency histogram by a trial unweighting
     template<class Random, class Function, class SlaveStatistics>
     void explore(Random&, const adaption_info&, Function*, statistics*,
-		 SlaveStatistics& opt);
+		 SlaveStatistics& opt, double detuning);
 
     /// explore this cell in a more refined way, which
     /// is however not suited for already calculating integrals
     /// and stuff
     template<class Random, class Function>
-    void explore(Random&, const adaption_info&, Function*);
+    void explore(Random&, const adaption_info&, Function*,
+		 double detuning);
 
   public:
 
@@ -98,8 +99,9 @@ namespace exsample {
     const std::vector<double>& last_max_position() const { return last_max_position_; }
 
     /// set the current overestimate and maximum position
-    void overestimate(double v, const std::vector<double>& pos) { 
-      overestimate_ = v;
+    void overestimate(double v, const std::vector<double>& pos,
+		      double detuning) { 
+      overestimate_ = detuning * v;
       last_max_position_ = pos;
     }
 
@@ -229,7 +231,8 @@ namespace exsample {
 			       Function* f,
 			       const adaption_info& ainfo,
 			       const std::vector<bool>& sampled = 
-			       std::vector<bool>());
+			       std::vector<bool>(),
+			       double detuning = 1.0);
 
   public:
 

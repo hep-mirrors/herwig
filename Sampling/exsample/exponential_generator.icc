@@ -41,7 +41,7 @@ namespace exsample {
 			     adaption_info_.upper_right,
 			     sample_other_variables_,
 			     adaption_info_));
-    root_cell_.value().info().explore(rnd_gen_,adaption_info_,function_);
+    root_cell_.value().info().explore(rnd_gen_,adaption_info_,function_,detuning_);
     root_cell_.value().integral(root_cell_.value().info().volume() * root_cell_.value().info().overestimate());
     last_exponent_integrand_.resize(1);
     check_events_ = adaption_info_.presampling_points;
@@ -63,7 +63,8 @@ namespace exsample {
     if (splits_ == parameter_hash_bits/2)
       return false;
     ++splits_;
-    last_cell_.node().split((*last_cell_).split(sp,rnd_gen_,function_,adaption_info_,sample_other_variables_));
+    last_cell_.node().split((*last_cell_).split(sp,rnd_gen_,function_,adaption_info_,
+						sample_other_variables_,detuning_));
     if ( !sample_other_variables_[sp.first] ) {
       if ( std::find(parameter_splits_[sp.first].begin(),parameter_splits_[sp.first].end(),sp.second)
 	   == parameter_splits_[sp.first].end() ) {
@@ -144,7 +145,7 @@ namespace exsample {
     if (!did_split_ || !docompensate_) {
       assert(did_split_ || last_cell_ == root_cell_.begin());
       exponents_.clear();
-      last_cell_->info().overestimate(last_value_,last_point_);
+      last_cell_->info().overestimate(last_value_,last_point_,detuning_);
       last_cell_->integral(last_cell_->info().volume() * last_cell_->info().overestimate());
       last_point_ = function_->parameter_point();
       get_exponent();
@@ -161,7 +162,7 @@ namespace exsample {
     std::map<bit_container<parameter_hash_bits>,linear_interpolator >
       old_exponents = exponents_;
     double old_oe = last_cell_->info().overestimate();
-    last_cell_->info().overestimate(last_value_,themaxpoint);
+    last_cell_->info().overestimate(last_value_,themaxpoint,detuning_);
     last_cell_->integral(last_cell_->info().volume() * last_cell_->info().overestimate());
     exponents_.clear();
     for ( std::set<std::vector<double> >::const_iterator id =
@@ -309,8 +310,13 @@ namespace exsample {
 	  throw exponential_regenerate();
 	}
       }
-      if (last_value_/last_cell_->info().overestimate() > rnd_gen_())
+      if (last_value_/last_cell_->info().overestimate() > rnd_gen_()) {
+	function_->accept(last_point_,last_value_,last_cell_->info().overestimate());
 	break;
+      }
+      if ( last_value_ != 0.0 ) {
+	function_->veto(last_point_,last_value_,last_cell_->info().overestimate());
+      }
       if(++n_hit_miss > adaption_info_.maxtry)
 	throw hit_and_miss_maxtry();
     }

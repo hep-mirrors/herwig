@@ -2,7 +2,7 @@ SUBDIRS = CellGrids
 
 pkglib_LTLIBRARIES = HwSampling.la
 
-HwSampling_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 2:0:0
+HwSampling_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 4:0:0
 HwSampling_la_SOURCES = \
 GeneralStatistics.h GeneralStatistics.cc \
 MultiIterationStatistics.h MultiIterationStatistics.cc \

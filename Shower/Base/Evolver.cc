@@ -24,6 +24,7 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Handlers/EventHandler.h"
+#include "ThePEG/Handlers/StandardEventHandler.h"
 #include "ThePEG/Utilities/Throw.h"
 #include "ShowerTree.h"
 #include "ShowerProgenitor.h"
@@ -96,11 +97,12 @@ void Evolver::persistentOutput(PersistentOStream & os) const {
      << _meCorrMode << _hardVetoMode << _hardVetoRead << _hardVetoReadOption
      << _limitEmissions << _spinOpt << _softOpt << _hardPOWHEG
      << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << ounit(_iptmax,GeV) 
-     << _vetoes << _trunc_Mode << _hardEmissionMode << _reconOpt 
+     << _vetoes << _fullShowerVetoes << _nReWeight << _reWeight
+     << _trunc_Mode << _hardEmissionMode << _reconOpt
      << _massVetoOption << isMCatNLOSEvent << isMCatNLOHEvent
      << isPowhegSEvent << isPowhegHEvent
-     << theFactorizationScaleFactor << theRenormalizationScaleFactor
-     << interaction_<< interactions_.size();
+     << theFactorizationScaleFactor << theRenormalizationScaleFactor << ounit(muPt,GeV)
+     << interaction_ << _maxTryFSR << _maxFailFSR << _fracFSR << interactions_.size();
   for(unsigned int ix=0;ix<interactions_.size();++ix) 
     os << oenum(interactions_[ix]);
 }
@@ -111,11 +113,12 @@ void Evolver::persistentInput(PersistentIStream & is, int) {
      >> _meCorrMode >> _hardVetoMode >> _hardVetoRead >> _hardVetoReadOption
      >> _limitEmissions >> _spinOpt >> _softOpt >> _hardPOWHEG
      >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> iunit(_iptmax,GeV)
-     >> _vetoes >> _trunc_Mode >> _hardEmissionMode >> _reconOpt
+     >> _vetoes >> _fullShowerVetoes >> _nReWeight >> _reWeight
+     >> _trunc_Mode >> _hardEmissionMode >> _reconOpt
      >> _massVetoOption >> isMCatNLOSEvent >> isMCatNLOHEvent
      >> isPowhegSEvent >> isPowhegHEvent
-     >> theFactorizationScaleFactor >> theRenormalizationScaleFactor
-     >> interaction_ >> isize;
+     >> theFactorizationScaleFactor >> theRenormalizationScaleFactor >> iunit(muPt,GeV)
+     >> interaction_ >> _maxTryFSR >> _maxFailFSR >> _fracFSR >> isize;
   interactions_.resize(isize);
   for(unsigned int ix=0;ix<interactions_.size();++ix) 
     is >> ienum(interactions_[ix]);
@@ -142,6 +145,24 @@ void Evolver::doinit() {
   }
   else if(interaction_==4) {
     interactions_.push_back(ShowerInteraction::Both);
+  }
+  // calculate max no of FSR vetos
+  _maxFailFSR = max(int(_maxFailFSR), int(_fracFSR*double(generator()->N())));
+  // check on the reweighting
+  for(unsigned int ix=0;ix<_fullShowerVetoes.size();++ix) {
+    if(_fullShowerVetoes[ix]->behaviour()==1) {
+      _reWeight = true;
+      break;
+    }
+  }
+  if(_reWeight && maximumTries()<_nReWeight) {
+    throw Exception() << "Reweight being performed in the shower but the number of attempts for the"
+		      << "shower is less than that for the reweighting.\n"
+		      << "Maximum number of attempt for the shower "
+		      << fullName() << ":MaxTry is " << maximumTries() << "\nand for reweighting is "
+		      << fullName() << ":NReWeight is " << _nReWeight << "\n"
+		      << "we recommend the number of attempts is 10 times the number for reweighting\n"
+		      << Exception::runerror;
   }
 }
 
@@ -175,7 +196,13 @@ void Evolver::Init() {
     ("MaxTry",
      "The maximum number of attempts to generate the shower from a"
      " particular ShowerTree",
-     &Evolver::_maxtry, 100, 1, 1000,
+     &Evolver::_maxtry, 100, 1, 100000,
+     false, false, Interface::limited);
+
+  static Parameter<Evolver,unsigned int> interfaceNReWeight
+    ("NReWeight",
+     "The number of attempts for the shower when reweighting",
+     &Evolver::_nReWeight, 100, 10, 10000,
      false, false, Interface::limited);
 
   static Switch<Evolver, unsigned int> ifaceMECorrMode
@@ -260,6 +287,11 @@ void Evolver::Init() {
      "The vetoes to be checked during showering",
      &Evolver::_vetoes, -1,
      false,false,true,true,false);
+
+  static RefVector<Evolver,FullShowerVeto> interfaceFullShowerVetoes
+    ("FullShowerVetoes",
+     "The vetos to be appliede on the full final state of the shower",
+     &Evolver::_fullShowerVetoes, -1, false, false, true, false, false);
 
   static Switch<Evolver,unsigned int> interfaceLimitEmissions
     ("LimitEmissions",
@@ -447,6 +479,25 @@ void Evolver::Init() {
      "Generate shower from the real emmission configuration",
      true);
 
+  static Parameter<Evolver,unsigned int> interfaceMaxTryFSR
+    ("MaxTryFSR",
+     "The maximum number of attempted FSR emissions in"
+     " the generation of the FSR",
+     &Evolver::_maxTryFSR, 100000, 10, 100000000,
+     false, false, Interface::limited);
+
+  static Parameter<Evolver,unsigned int> interfaceMaxFailFSR
+    ("MaxFailFSR",
+     "Maximum number of failures generating the FSR",
+     &Evolver::_maxFailFSR, 100, 1, 100000000,
+     false, false, Interface::limited);
+
+
+  static Parameter<Evolver,double> interfaceFSRFailureFraction
+    ("FSRFailureFraction",
+     "Maximum fraction of events allowed to fail due to too many FSR emissions",
+     &Evolver::_fracFSR, 0.001, 1e-10, 1,
+     false, false, Interface::limited);
 }
 
 void Evolver::generateIntrinsicpT(vector<ShowerProgenitorPtr> particlesToShower) {
@@ -514,7 +565,7 @@ void Evolver::setupMaximumScales(const vector<ShowerProgenitorPtr> & p,
       if (ptmax == generator()->maximumCMEnergy() ) ptmax = pcm.m();
       if(hardVetoXComb()&&hardVetoReadOption()&&
 	 !ShowerHandler::currentHandler()->firstInteraction()) {
-	ptmax=min(ptmax,sqrt(xcomb->lastCentralScale()));
+	ptmax=min(ptmax,sqrt(xcomb->lastShowerScale()));
       }
     } 
     // decay, incoming() is the decaying particle.
@@ -529,7 +580,7 @@ void Evolver::setupMaximumScales(const vector<ShowerProgenitorPtr> & p,
   else {
     if(currentTree()->isHard()) {
       assert(xcomb);
-      ptmax = sqrt( xcomb->lastCentralScale() );
+      ptmax = sqrt( xcomb->lastShowerScale() );
     }
     else {
       ptmax = currentTree()->incomingLines().begin()->first
@@ -552,7 +603,7 @@ void Evolver::setupHardScales(const vector<ShowerProgenitorPtr> & p,
     Energy hardScale = ZERO;
     if(currentTree()->isHard()) {
       assert(xcomb);
-      hardScale = sqrt( xcomb->lastCentralScale() );
+      hardScale = sqrt( xcomb->lastShowerScale() );
     }
     else {
       hardScale = currentTree()->incomingLines().begin()->first
@@ -561,6 +612,7 @@ void Evolver::setupHardScales(const vector<ShowerProgenitorPtr> & p,
     hardScale *= ShowerHandler::currentHandler()->hardScaleFactor();
     vector<ShowerProgenitorPtr>::const_iterator ckt = p.begin();
     for (; ckt != p.end(); ckt++) (*ckt)->hardScale(hardScale);
+    muPt = hardScale;
   }
 }
 
@@ -774,6 +826,18 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
     if(particle->spinInfo()) particle->spinInfo()->develop();
     return false;
   }
+  // too many tries
+  if(_nFSR>=_maxTryFSR) {
+    ++_nFailedFSR;
+    // too many failed events
+    if(_nFailedFSR>=_maxFailFSR)
+      throw Exception() << "Too many events have failed due to too many shower emissions, in\n"
+			<< "Evolver::timeLikeShower(). Terminating run\n"
+			<< Exception::runerror;
+    throw Exception() << "Too many attempted emissions in Evolver::timeLikeShower()\n"
+		      << Exception::eventerror;
+  }
+  // generate the emission
   ShowerParticleVector children;
   int ntry=0;
   while (ntry<50) {
@@ -788,6 +852,7 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
     }
     // has emitted
     // Assign the shower kinematics to the emitting particle.
+    ++_nFSR;
     particle->showerKinematics(fb.kinematics);
     // generate phi
     fb.kinematics->phi(fb.sudakov->generatePhiForward(*particle,fb.ids,fb.kinematics));
@@ -1230,6 +1295,7 @@ void Evolver::updateHistory(tShowerParticlePtr particle) {
 }
 
 bool Evolver::startTimeLikeShower(ShowerInteraction::Type type) {
+  _nFSR = 0;
   if(hardTree()) {
     map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator 
       eit=hardTree()->particles().end(),
@@ -1506,7 +1572,7 @@ void Evolver::hardestEmission(bool hard) {
      
     
     // Hardest (pt) emission should be the first powheg emission.
-    maxpt=min(sqrt(ShowerHandler::currentHandler()->lastXCombPtr()->lastCentralScale()),maxpt);
+    maxpt=min(sqrt(ShowerHandler::currentHandler()->lastXCombPtr()->lastShowerScale()),maxpt);
 
     // Set maxpt to pT of emission when showering POWHEG real-emission subprocesses
     if (!isPowhegSEvent && !isPowhegHEvent){
@@ -1796,6 +1862,7 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
       idlist[2] = branch->children()[1]->branchingParticle()->id();
       fb = Branching( showerKin, idlist, branch->sudakov(),branch->type() );
       // Assign the shower kinematics to the emitting particle.
+      ++_nFSR;
       particle->showerKinematics( fb.kinematics );
       if(fb.kinematics->pT()>progenitor()->highestpT())
 	progenitor()->highestpT(fb.kinematics->pT());
@@ -1860,6 +1927,7 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
     }
     // has emitted
     // Assign the shower kinematics to the emitting particle.
+    ++_nFSR;
     particle->showerKinematics(fb.kinematics);
     if(fb.kinematics->pT()>progenitor()->highestpT())
       progenitor()->highestpT(fb.kinematics->pT());
@@ -2810,6 +2878,9 @@ void Evolver::doShowering(bool hard,XCPtr xcomb) {
     swap(interactions_[0],interactions_[1]);
   }
   // loop over possible interactions
+  bool reWeighting = _reWeight && hard && ShowerHandler::currentHandler()->firstInteraction();
+  double eventWeight=0.;
+  unsigned int nTryReWeight(0);
   for(unsigned int inter=0;inter<interactions_.size();++inter) {
     // set up for second pass if required
     if(inter!=0) {
@@ -2922,6 +2993,36 @@ void Evolver::doShowering(bool hard,XCPtr xcomb) {
 			     switchRecon && ntry>maximumTries()/2) :
 	showerModel()->kinematicsReconstructor()->
 	reconstructDecayJets(currentTree(),interactions_[inter]);
+      if(!reconstructed) continue;
+      // apply vetos on the full shower
+      for(vector<FullShowerVetoPtr>::const_iterator it=_fullShowerVetoes.begin();
+	  it!=_fullShowerVetoes.end();++it) {
+	int veto = (**it).applyVeto(currentTree());
+	if(veto<0) continue;
+	// veto the shower
+	if(veto==0) {
+	  reconstructed = false;
+	  break;
+	}
+	// veto the shower and reweight
+	else if(veto==1) {
+	  reconstructed = false;
+	  break;
+	}
+	// veto the event
+	else if(veto==2) {
+	  throw Veto();
+	}
+      }
+      if(reWeighting) {
+	if(reconstructed) eventWeight += 1.;
+	reconstructed=false;
+	++nTryReWeight;
+	if(nTryReWeight==_nReWeight) {
+	  reWeighting = false;
+	  if(eventWeight==0.) throw Veto();
+	}
+      }
     }
     while(!reconstructed&&maximumTries()>++ntry);
     // check if failed to generate the shower
@@ -2932,6 +3033,20 @@ void Evolver::doShowering(bool hard,XCPtr xcomb) {
 	throw Exception() << "Failed to generate the shower after "
 			  << ntry << " attempts in Evolver::showerDecay()"
 			  << Exception::eventerror;
+    }
+  }
+  // handle the weights and apply any reweighting required
+  if(nTryReWeight>0) {
+    tStdEHPtr seh = dynamic_ptr_cast<tStdEHPtr>(generator()->currentEventHandler());
+    static bool first = true;
+    if(seh) {
+      seh->reweight(eventWeight/double(nTryReWeight));
+    }
+    else if(first) {
+      generator()->log() << "Reweighting the shower only works with internal Herwig7 processes"
+    			 << "Presumably you are showering Les Houches Events. These will not be"
+    			 << "reweighted\n";
+      first = false;
     }
   }
   // tree has now showered

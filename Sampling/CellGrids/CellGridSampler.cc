@@ -61,16 +61,17 @@ double CellGridSampler::generate() {
 				    !weighted() && initialized() && theUnweightCells, 
 				    !initialized());
   if ( !weighted() && initialized() ) {
-    double p = min(abs(w),referenceWeight())/referenceWeight();
+    double p = min(abs(w),kappa()*referenceWeight())/(kappa()*referenceWeight());
     double sign = w >= 0. ? 1. : -1.;
     if ( p < 1 && UseRandom::rnd() > p )
       w = 0.;
     else
-      w = sign*max(abs(w),referenceWeight());
+      w = sign*max(abs(w),referenceWeight()*kappa());
   }
   select(w);
   if ( w != 0.0 )
     accept();
+  assert(kappa()==1.||sampler()->almostUnweighted());
   return w;
 }
 
@@ -88,6 +89,21 @@ void CellGridSampler::saveGrid() const {
   XML::Element grid = SimpleCellGrid::toXML();
   grid.appendAttribute("process",id());
   sampler()->grids().append(grid);
+}
+
+bool CellGridSampler::existsGrid() const {
+  list<XML::Element>::iterator git = sampler()->grids().children().begin();
+  for ( ; git != sampler()->grids().children().end(); ++git ) {
+    if ( git->type() != XML::ElementTypes::Element )
+      continue;
+    if ( git->name() != "CellGrid" )
+      continue;
+    string proc;
+    git->getFromAttribute("process",proc);
+    if ( proc == id() ) 
+      return true;
+  }
+  return false;
 }
 
 void CellGridSampler::initialize(bool progress) {

@@ -2,9 +2,6 @@
 
 read Matchbox/LO.in
 
-set /Herwig/DipoleShower/Kinematics/IFLightKinematics:CollinearScheme On
-set /Herwig/DipoleShower/Kinematics/IILightKinematics:CollinearScheme On
-
 cd /Herwig/EventHandlers
 
 insert EventHandler:PreCascadeHandlers[0] /Herwig/Decays/DecayHandler

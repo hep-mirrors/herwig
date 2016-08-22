@@ -25,6 +25,10 @@ set EventHandler:LuminosityFunction:Energy 13000*GeV
 ## been found.  Coupling orders are with respect to the Born process,
 ## i.e. NLO QCD does not require an additional power of alphas.
 
+## Model assumptions
+read Matchbox/StandardModelLike.in
+read Matchbox/DiagonalCKM.in
+
 ## Set the order of the couplings
 cd /Herwig/MatrixElements/Matchbox
 set Factory:OrderInAlphaS 0

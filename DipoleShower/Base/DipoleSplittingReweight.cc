@@ -29,6 +29,18 @@ DipoleSplittingReweight::DipoleSplittingReweight()
 
 DipoleSplittingReweight::~DipoleSplittingReweight() {}
 
+void DipoleSplittingReweight::updateCurrentHandler() {
+  if ( ShowerHandler::currentHandler() != theCurrentHandler ) {
+    Ptr<ShowerHandler>::tptr sptr = ShowerHandler::currentHandler();
+    theCurrentHandler = 
+      dynamic_ptr_cast<Ptr<DipoleShowerHandler>::tptr>(sptr);
+  }
+}
+
+Ptr<DipoleShowerHandler>::tptr DipoleSplittingReweight::currentHandler() const {
+  return theCurrentHandler;
+}
+
 
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).

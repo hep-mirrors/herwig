@@ -14,8 +14,9 @@
 #include "ThePEG/PDT/MassGenerator.h" 
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/PDT/ParticleData.h"
-#include "ThePEG/PDT/WidthGenerator.h"
 #include "GenericMassGenerator.fh"
+#include "ThePEG/PDT/WidthGenerator.h"
+#include "GenericWidthGenerator.fh"
 #include "ThePEG/Repository/CurrentGenerator.h"
 
 namespace Herwig {
@@ -64,12 +65,12 @@ public:
   /**
    * Default constructor
    */
-  GenericMassGenerator()
-    : maxWgt_(),BWShape_(0),nGenerate_(100),
-      lowerMass_(),upperMass_(),
-      mass_(),width_(),mass2_(),mWidth_(),
-      nInitial_(1000),
-      initialize_(false), output_(false), widthOpt_(false) {}
+  GenericMassGenerator();
+
+  /**
+   *  Destructor
+   */
+  virtual ~GenericMassGenerator();
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -191,10 +192,7 @@ public:
    * @param q The mass for the calculation of the running width
    * @return The running width.
    */
-  Energy width(Energy q) const {
-    return (BWShape_==1||!widthGen_) ? 
-      width_ : widthGen_->width(*particle_,q);
-  }
+  pair<Energy,Energy> width(Energy q,int shape) const;
 
   /**
    * Lower limit on the mass
@@ -264,13 +262,13 @@ protected:
   inline virtual double weight(Energy q, int shape) const {
     Energy2 q2 = q*q;
     Energy4 sq=sqr(q2-mass2_);
-    Energy gam=width(q);
+    pair<Energy,Energy> gam=width(q,shape);
     // finish the calculation of the width
     Energy2 num;
-    if(shape==2)      num = mass_*gam;
-    else if(shape==3) num = mass_*width_;
-    else              num = q*gam;
-    Energy4 den = (shape==2) ? sq+mass2_*gam*gam : sq+q2*gam*gam;
+    if(shape==2)      num = mass_*gam.first;
+    else if(shape==3) num = mass_*gam.first;
+    else              num = q    *gam.first;
+    Energy4 den = (shape==2) ? sq+mass2_*gam.second*gam.second : sq+q2*gam.second*gam.second;
     return num/den*(sq+mWidth_*mWidth_)/Constants::pi/mWidth_;
   }
 
@@ -280,13 +278,13 @@ protected:
   virtual InvEnergy2 BreitWignerWeight(Energy q, int shape) const {
     Energy2 q2 = q*q;
     Energy4 sq=sqr(q2-mass2_);
-    Energy gam=width(q);
+    pair<Energy,Energy> gam=width(q,shape);
     // finish the calculation of the width
     Energy2 num;
-    if(shape==2)      num = mass_*gam;
-    else if(shape==3) num = mass_*width_;
-    else              num = q*gam;
-    Energy4 den = (shape==2) ? sq+mass2_*gam*gam : sq+q2*gam*gam;
+    if(shape==2)      num = mass_*gam.first;
+    else if(shape==3) num = mass_*gam.first;
+    else              num = q    *gam.first;
+    Energy4 den = (shape==2) ? sq+mass2_*gam.second*gam.second : sq+q2*gam.second*gam.second;
     return num/den/Constants::pi;
   }
 
@@ -308,13 +306,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const;
   //@}
 
 protected:
@@ -451,6 +449,11 @@ private:
    * Pointer to the width generator
    */
   WidthGeneratorPtr widthGen_;
+
+  /**
+   * Pointer to the width generator
+   */
+  GenericWidthGeneratorPtr widthGenB_;
 
   /**
    *  Option for the treatment of the width

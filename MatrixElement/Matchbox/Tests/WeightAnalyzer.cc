@@ -133,7 +133,7 @@ void WeightAnalyzer::dofinish() {
 
   ofstream data(dataName.c_str());
 
-  data << setprecision(20)
+  data << setprecision(17)
        << "# --------------------------------------------------------------------------------\n"
        << "# WeightAnalyzer information\n"
        << "# --------------------------------------------------------------------------------\n"

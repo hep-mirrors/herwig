@@ -2,8 +2,12 @@ SUBDIRS = Base Merging Kernels Kinematics Utility AlphaS
 
 pkglib_LTLIBRARIES = HwDipoleShower.la
 
+<<<<<<< local
 
 HwDipoleShower_la_LDFLAGS = $(AM_LDFLAGS) $(FASTJETINCLUDE) $(FASTJETLIBS)  -module -version-info 4:0:0
+=======
+HwDipoleShower_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 7:0:0
+>>>>>>> other
 
 HwDipoleShower_la_LIBADD = \
 	Base/libHwDipoleShowerBase.la \
@@ -14,4 +18,4 @@ HwDipoleShower_la_LIBADD = \
         $(FASTJETLIBS)
 
 HwDipoleShower_la_SOURCES =  \
-	DipoleShowerHandler.h DipoleShowerHandler.cc
+	DipoleShowerHandler.h DipoleShowerHandler.fh DipoleShowerHandler.cc

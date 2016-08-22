@@ -1,5 +1,5 @@
 pkglib_LTLIBRARIES = HwMatchboxMadGraph.la
-HwMatchboxMadGraph_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 2:0:0
+HwMatchboxMadGraph_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 3:0:0
 
 HwMatchboxMadGraph_la_SOURCES = \
 MadGraphAmplitude.h MadGraphAmplitude.cc

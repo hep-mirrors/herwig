@@ -177,6 +177,11 @@ private:
   vector<pair<AbstractVSSVertexPtr, AbstractVSSVertexPtr> > scalar2_;
 
   /**
+   * Intermediate t-channel scalar
+   */
+  vector<pair<AbstractVVSVertexPtr, AbstractVVSVertexPtr> > scalar3_;
+
+  /**
    * Intermediate s-channel vector
    */
   vector<pair<AbstractVVVVertexPtr, AbstractVSSVertexPtr> > vector_;

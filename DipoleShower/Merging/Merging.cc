@@ -781,9 +781,11 @@ bool Merging::reweightCKKWSingle(Ptr<MatchboxXComb>::ptr SX, double & res,bool f
   
   
   SX->lastCentralScale(sqr(Node->runningPt()));
-  if(SX->lastProjector())
+  SX->lastShowerScale(sqr(Node->runningPt()));
+  if(SX->lastProjector()){
     SX->lastProjector()->lastCentralScale(sqr(Node->runningPt()));
-  
+    SX->lastProjector()->lastShowerScale(sqr(Node->runningPt()));
+  }
   
   Node->renormscale(0.0*GeV);
   if (res == 0.){

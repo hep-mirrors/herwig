@@ -136,6 +136,7 @@ double DipoleSplittingKinematics::generateZ(double r, Energy pt, int sampling,
 
   if ( sampling == OneOverOneMinusZ ) {
     pair<double,double> kw = generate(inverse(1.0,zLims.first,zLims.second),r);
+<<<<<<< local
 
     if ( kw.second != 0. ) {
       weight *= kw.second;
@@ -150,11 +151,25 @@ double DipoleSplittingKinematics::generateZ(double r, Energy pt, int sampling,
       return -1.;
     }
 
+=======
+
+    if ( kw.second != 0. ) {
+      weight *= kw.second;
+      return kw.first;
+    }
+    else {
+      assert( kw.first < zLims.first || kw.first > zLims.second );
+      weight *= kw.second;
+      return -1.;
+    }
+
+>>>>>>> other
   }
 
   if ( sampling == OneOverZOneMinusZ ) {
     pair<double,double> kw = generate(inverse(0.0,zLims.first,zLims.second) + 
 				      inverse(1.0,zLims.first,zLims.second),r);
+<<<<<<< local
 
     if ( kw.second != 0. ) {
       weight *= kw.second;
@@ -168,6 +183,18 @@ double DipoleSplittingKinematics::generateZ(double r, Energy pt, int sampling,
       weight *= kw.second;
       return -1.;
     }
+=======
+
+    if ( kw.second != 0. ) {
+      weight *= kw.second;
+      return kw.first;
+    }
+    else {
+      assert( kw.first < zLims.first || kw.first > zLims.second );
+      weight *= kw.second;
+      return -1.;
+    }
+>>>>>>> other
   }
 
   weight = 0.0;
