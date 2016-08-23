@@ -90,7 +90,8 @@ void MFactory::fill_amplitudes() {
   processMap[0] = getProcesses()[0];
   if(MH()->M()>=0)
     setHighestVirt(processMap[0].size()+MH()->M());
-  
+ 
+  MH()->N0(processMap[0].size());
   for ( int i = 1 ; i <= MH()->N() ; ++i ) {
     processMap[i] = processMap[i - 1];
     processMap[i].push_back("j");
@@ -274,6 +275,10 @@ void MFactory::pushB(Ptr<MatchboxMEBase>::ptr born, int i) {
   theMergingHelper->firstNodeMap(bornme,clusternode);
   bornme->factory(this);
   bornme->merger(theMergingHelper);
+  clusternode->MH(theMergingHelper);
+  clusternode->deepHead(clusternode);
+  
+  
   
   vector<Ptr<Node>::ptr> temp;
   vector<Ptr<Node>::ptr> temp1;
@@ -355,6 +360,8 @@ void MFactory::pushV(Ptr<MatchboxMEBase>::ptr born, int i) {
   clusternode->virtualContribution(true);
   theMergingHelper->firstNodeMap(nlo,clusternode);
   nlo->merger(theMergingHelper);
+  clusternode->deepHead(clusternode);
+  clusternode->MH(theMergingHelper);
   
   vector<Ptr<Node>::ptr> temp;
   vector<Ptr<Node>::ptr> temp1;
@@ -402,6 +409,8 @@ void MFactory::pushProR(Ptr<MatchboxMEBase>::ptr born, int i) {
   clusternode->subtractedReal(true);
   theMergingHelper->firstNodeMap(bornme,clusternode);
   bornme->merger(theMergingHelper);
+  clusternode->deepHead(clusternode);
+  clusternode->MH(theMergingHelper);
   
   vector<Ptr<Node>::ptr> temp;
   vector<Ptr<Node>::ptr> temp1;
@@ -590,6 +599,8 @@ void MFactory::setup() {
 }
 
 void MFactory::persistentOutput(PersistentOStream & os) const {
+  
+  
   os
   << calc_born            << calc_virtual       << calc_real
   << theonlyUnlopsweights << theonlyk           << theonlymulti
@@ -727,4 +738,4 @@ void MFactory::Init() {
   // are correct (the class and its base class), and that the constructor
   // arguments are correct (the class name and the name of the dynamically
   // loadable library where the class implementation can be found).
-DescribeClass<MFactory, MatchboxFactory> describeHerwigMFactory("Herwig::MFactory", "HwDipoleShower.so");
+DescribeClass<MFactory, Herwig::MatchboxFactory> describeHerwigMFactory("Herwig::MFactory", "HwDipoleShower.so");

@@ -138,11 +138,10 @@ namespace Herwig {
     double as(Energy q){return DSH()->as(q);}
     Ptr<DipoleShowerHandler>::ptr DSH(){return theDipoleShowerHandler;}
     
-    Energy mergingScale()const {return MergingScale;}
     
     
-    size_t maxLegsLO() const {return theMaxLegsLO;}
-    size_t maxLegsNLO()const {return theMaxLegsNLO;}
+    size_t maxLegsLO() const {return N0()+N();}
+    size_t maxLegsNLO()const {return N0()+M()+1;}
     
     
     
@@ -176,6 +175,9 @@ namespace Herwig {
     }
     
     
+    Energy mergingScale()const{
+      return theMergePt;
+    }
     
     Energy mergePt() {
       return theMergePt;
@@ -220,9 +222,71 @@ namespace Herwig {
     
     int M()const{return theM;}
     
-    int N()const{return theM;}
+    int N()const{return theN;}
+    
+    int N0()const{return theN0;}
+    void N0(int n){ theN0=n;}
     
     
+  private:
+    
+    /**
+     * Variations
+     */
+    bool minusL;
+    bool Unlopsweights;
+    bool theKImproved;
+    bool projected;
+    bool isUnitarized;
+     bool isNLOUnitarized;
+    bool defMERegionByJetAlg;
+     int theChooseHistory;
+    int theN0;
+     int  theOnlyN;
+    int theN;
+    int theM;
+    double   xiRenME;
+    double   xiFacME;
+    double   xiRenSh;
+    double   xiFacSh;
+    double   xiQSh;
+    double theNf;
+    double weight,weightCB;
+    double theGamma;
+    double ee_ycut;
+    double pp_dcut;
+     double theSmearing;
+    
+    
+    Energy therenormscale;
+    /**
+     * If any clustering below the CutStage has a lower pT than the MergePt
+     * the phase space point has to be thrown away.
+     */
+    Energy theIRSafePT;
+     Energy theMergePt;
+     Energy theCentralMergePt;
+
+    History history;
+    Ptr<JetFinder>::ptr theMergingJetFinder;
+    Ptr<ColourBasis>::ptr theLargeNBasis;
+    
+    
+
+    
+    /**
+     * The mean of the Gaussian distribution for
+     * the intrinsic pt of sea partons.
+     */
+    
+    Ptr<DipoleShowerHandler>::ptr theDipoleShowerHandler;
+    
+    
+    Ptr<MFactory>::ptr theTreeFactory;
+    map<Ptr<MatchboxMEBase>::ptr,NPtr> theFirstNodeMap;
+    
+    
+  
     
   public:
     
@@ -270,139 +334,11 @@ namespace Herwig {
     
       // If needed, insert declarations of virtual function defined in the
       // InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
-    
-  private:
-    
-    /**
-     * Variations
-     */
-    double   xiRenME;
-    double   xiFacME;
-    double   xiRenSh;
-    double   xiFacSh;
-    double   xiQSh;
-    
-    
-    /**
-     *
-     **/
-    
-    double theNf;
-    
-    bool minusL;
-    bool Unlopsweights;
-    bool theKImproved;
-    Energy MergingScale;
-    
-    unsigned int theMaxLegsLO;
-    unsigned int theMaxLegsNLO;
-    
-    double projectorWeight2Born0;
-    double projectorWeight1Born1;
-    double projectorWeight2Born1;
-    double projectorWeight0Born2;
-    double projectorWeight1Born2;
-    double projectorWeight1Real1;
-    double projectorWeight2Real1;
-    double projectorWeight0Real2;//Theta<
-    double projectorWeight1Real2;
-    double projectorWeight2Real2;
-    
-    double projectorWeight0;
-    double projectorWeight1;
-    NPtr CalcBorn;
-    
-    bool projected;
-    double weight,weightCB;
-    
-    
-    
-    History history;
-    NPtr StartingBorn0;
-    NPtr StartingBorn1;
-    NPtr StartingBorn2;
-    NPtr CalcBorn0;
-    NPtr CalcBorn1;
-    NPtr CalcBorn2;
-    
-    
-    
-    Energy therenormscale;
-    
-    /**
-     * If any clustering below the CutStage has a lower pT than the MergePt
-     * the phase space point has to be thrown away.
-     */
-    
-    Energy theIRSafePT;
-    
-    
-    double theGamma;
-    
 
-    
-    
-    
-     int theChooseHistory;
-    
-  
-    
-     Energy theMergePt;
-    
-    double ee_ycut;
-    
-    double pp_dcut;
-    
-    
-     Energy theCentralMergePt;
-    
-     double theSmearing;
-    
-    int theN0;
-    
-     int  theOnlyN;
-    
-    int theN;
-    
-    int theM;
-    
-     bool isUnitarized;
-    
-     bool isNLOUnitarized;
-    
-    
-    bool defMERegionByJetAlg;
-    
-    
-    
-    Ptr<JetFinder>::ptr theMergingJetFinder;
-    
-    Ptr<ColourBasis>::ptr theLargeNBasis;
-    
-    
-
-    
-    /**
-     * The mean of the Gaussian distribution for
-     * the intrinsic pt of sea partons.
-     */
-    
-    Ptr<DipoleShowerHandler>::ptr theDipoleShowerHandler;
-    
-    
-    Ptr<MFactory>::ptr theTreeFactory;
-    map<Ptr<MatchboxMEBase>::ptr,NPtr> theFirstNodeMap;
-    
-    
-  
 
   private:
     
-    /**
-     * The static object used to initialize the description of this class.
-     * Indicates that this is a concrete class with persistent data.
-     */
-    static ClassDescription<Merger> initMerger;
+
     
     /**
      * The assignment operator is private and must never be called.

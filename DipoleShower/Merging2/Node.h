@@ -37,25 +37,7 @@ namespace Herwig {
   
   
   
-  
-  template <typename T>
-  struct Nodecounter
-  {
-    Nodecounter()
-    {
-      objects_created++;
-      objects_alive++;
-    }
-    
-    virtual ~Nodecounter()
-    {
-      --objects_alive;
-    }
-    static int objects_created;
-    static int objects_alive;
-  };
-  template <typename T> int Nodecounter<T>::objects_created( 0 );
-  template <typename T> int Nodecounter<T>::objects_alive( 0 );
+ 
   
   
   
@@ -63,9 +45,7 @@ namespace Herwig {
   
   
   
-  
-  
-  class Node : public Interfaced,Nodecounter<Node> {
+  class Node : public Interfaced {
 		public:
     
     /** @name Standard constructors and destructors. */
@@ -89,33 +69,6 @@ namespace Herwig {
      */
     virtual ~Node();
       //@}
-    
-		public:
-    
-    /** @name Functions used by the persistent I/O system. */
-      //@{
-    /**
-     * Function used to write out object persistently.
-     * @param os the persistent output stream written to.
-     */
-    void persistentOutput(PersistentOStream & os) const;
-    
-    /**
-     * Function used to read in object persistently.
-     * @param is the persistent input stream read from.
-     * @param version the version number of the object when written.
-     */
-    void persistentInput(PersistentIStream & is, int version);
-      //@}
-    
-    /**
-     * The standard Init function used to initialize the interfaces.
-     * Called exactly once for each class by the class description system
-     * before the main function starts or
-     * when this class is dynamically loaded.
-     */
-    static void Init();
-    
     
 		public:
     
@@ -205,7 +158,12 @@ namespace Herwig {
     /** insert nodes to projector vector */
     
     void Projector(double a, Ptr<Node>::ptr pro) {
-      theProjectors.push_back(make_pair(a,pro));
+      pair<double,Ptr<Node>::ptr> p;
+      p.first  = a;
+      p.second = pro;
+      theProjectors.push_back(p);
+      
+        //theProjectors.push_back(make_pair(a,pro));
     }
     
     /** insert nodes to projector vector */
@@ -312,9 +270,9 @@ namespace Herwig {
       theVirtualContribution = x;
     }
     
-    Ptr<Merger>::ptr MH(){return theMergingHelper;};
+    Ptr<Merger>::ptr MH()const{return theMergingHelper;}
     
-    
+     void MH(Ptr<Merger>::ptr a){theMergingHelper=a;}
     
 
     
@@ -402,6 +360,36 @@ namespace Herwig {
     
     
      Ptr<Merger>::ptr theMergingHelper;
+    
+    
+    
+		public:
+    
+    /** @name Functions used by the persistent I/O system. */
+      //@{
+    /**
+     * Function used to write out object persistently.
+     * @param os the persistent output stream written to.
+     */
+    void persistentOutput(PersistentOStream & os) const;
+    
+    /**
+     * Function used to read in object persistently.
+     * @param is the persistent input stream read from.
+     * @param version the version number of the object when written.
+     */
+    void persistentInput(PersistentIStream & is, int version);
+      //@}
+    
+    /**
+     * The standard Init function used to initialize the interfaces.
+     * Called exactly once for each class by the class description system
+     * before the main function starts or
+     * when this class is dynamically loaded.
+     */
+    static void Init();
+    
+    
     
     
 		protected:

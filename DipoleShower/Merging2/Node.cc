@@ -144,7 +144,7 @@ bool Node::generateKinematics(const double *r, int stage, Energy2 shat) {
       deepHead()->setOrderedSteps(stage + 1);
     }
     thechildren[i]->generateKinematics(r, stage + 1, thechildren[i]->xcomb()->lastSHat());
-    isthissafe = (isthissafe && thechildren[i]->dipol()->lastPt() >=MH()->mergePt());
+    isthissafe = (isthissafe && thechildren[i]->dipol()->lastPt() >=deepHead()->MH()->mergePt());
   }
   return isthissafe;
 }
@@ -153,14 +153,18 @@ void Node::firstgenerateKinematics(const double *r, int stage, Energy2 shat) {
   flushCaches();
   
   
+  
     //Set here the new merge Pt for the next phase space point.( Smearing!!!)
   
   MH()->smeareMergePt();
   isOrdered = true;
   
+  
     // if we consider the hard scale to play a role in the steps we must change here to 0.
   setOrderedSteps(1);
   this->orderedSteps();
+  
+  
   
   clustersafer.clear();
   for ( unsigned int i = 0 ; i < thechildren.size() ; ++i ) {
@@ -171,7 +175,7 @@ void Node::firstgenerateKinematics(const double *r, int stage, Energy2 shat) {
     if ( !thechildren[i]->dipol()->generateKinematics(r) ) cout << "stop";
     
     isecond = thechildren[i]->generateKinematics(r, stage + 1, thechildren[i]->xcomb()->lastSHat());
-    ifirst = (thechildren[i]->dipol()->lastPt() >= MH()->mergePt());
+    ifirst = (thechildren[i]->dipol()->lastPt() >= deepHead()->MH()->mergePt());
 
     pair<pair<int, int>, int> EmitEmisSpec = make_pair(make_pair(thechildren[i]->dipol()->realEmitter(), thechildren[i]->dipol()->realEmission()),
                                                        thechildren[i]->dipol()->realSpectator());
@@ -227,7 +231,7 @@ vector<Ptr<Node>::ptr> Node::getNextOrderedNodes(bool normal,double hardScaleFac
   vector<Ptr<Node>::ptr> temp = children();
   vector<Ptr<Node>::ptr> res;
   for ( vector<Ptr<Node>::ptr>::const_iterator it = temp.begin() ; it != temp.end() ; ++it ) {
-    if(MH()->mergePt()>(*it)->dipol()->lastPt()){
+    if(deepHead()->MH()->mergePt()>(*it)->dipol()->lastPt()){
       res.clear();
         // if any of the nodes is below the merging scale return empty vector
       return res;
@@ -263,7 +267,7 @@ vector<Ptr<Node>::ptr> Node::getNextOrderedNodes(bool normal,double hardScaleFac
 
 bool Node::inShowerPS(Energy hardpT){
 
-  assert(MH()->largeNBasis());
+  assert(deepHead()->MH()->largeNBasis());
   
   double x=0.;
   double z_=dipol()->lastZ();
@@ -325,12 +329,12 @@ Ptr<Node>::ptr Node::getLongestHistory_simple(bool normal,double hardScaleFactor
     for (vector<Ptr<Node>::ptr>::iterator it=temp.begin();it!=temp.end();it++){
        if( (*it)->dipol()->underlyingBornME()->largeNColourCorrelatedME2(
                         make_pair((*it)->dipol()->bornEmitter(),(*it)->dipol()->bornSpectator()),
-                                  MH()->largeNBasis())!=0.
+                                  deepHead()->MH()->largeNBasis())!=0.
          ){
          
           if((*it)->nodeME()->dSigHatDR()/nanobarn!=0.){
              subprosel.insert((abs((*it)->dipol()->dSigHatDR() /
-              (*it)->nodeME()->dSigHatDR()*MH()->as((*it)->dipol()->lastPt()))), (*it));
+              (*it)->nodeME()->dSigHatDR()*deepHead()->MH()->as((*it)->dipol()->lastPt()))), (*it));
               minpt=min(minpt,(*it)->dipol()->lastPt());
           }
         
@@ -354,7 +358,7 @@ bool Node::headContribution(double hardScaleFactor){
   bool allabove=true;
   vector<Ptr<Node>::ptr> temp2 = children();
   for (vector<Ptr<Node>::ptr>::iterator it = temp2.begin(); it != temp2.end(); it++) {
-    allabove&=(*it)->dipol()->lastPt()>MH()->mergePt();
+    allabove&=(*it)->dipol()->lastPt()>deepHead()->MH()->mergePt();
   }
   if(allabove){
     Ptr<Node>::ptr tmpBorn = getLongestHistory_simple(true,hardScaleFactor);
@@ -396,11 +400,11 @@ bool Node::DipolesAboveMergeingScale(Ptr<Node>::ptr& selectedNode,double & sum,E
 
 
 double Node::calcPsMinusDip(Energy scale){
-  return -1.* dipol()->dipMinusPs(sqr(scale),MH()->largeNBasis())/nanobarn;
+  return -1.* dipol()->dipMinusPs(sqr(scale),deepHead()->MH()->largeNBasis())/nanobarn;
 }
 
 double Node::calcPs(Energy scale){
-  return dipol()->ps(sqr(scale),MH()->largeNBasis())/nanobarn;
+  return dipol()->ps(sqr(scale),deepHead()->MH()->largeNBasis())/nanobarn;
 }
 
 
@@ -424,7 +428,7 @@ bool Node::diffPsDipBelowMergeingScale(Ptr<Node>::ptr& selectedNode,double & sum
     double Di=0.;
     if(isInSomePS||(tmp2.empty())){
     
-      Di=-1.* (*it)->dipol()->dipMinusPs(sqr(10.*GeV),MH()->largeNBasis())/nanobarn;
+      Di=-1.* (*it)->dipol()->dipMinusPs(sqr(10.*GeV),deepHead()->MH()->largeNBasis())/nanobarn;
     }else{
       Di=-1.* (*it)->dipol()->dSigHatDR(sqr(10.*GeV))/nanobarn;
     }
@@ -432,7 +436,7 @@ bool Node::diffPsDipBelowMergeingScale(Ptr<Node>::ptr& selectedNode,double & sum
     
     if ((Di!=0.)&&(*it)->xcomb()->willPassCuts()){//&&((*it)->dipol()->lastPt()<MH()->mergePt())) {
       vector<Ptr<Node>::ptr> tmp2=(*it)->children();
-      for (vector<Ptr<Node>::ptr>::iterator it2 = tmp2.begin(); it2 != tmp2.end(); it2++) assert(((*it2)->dipol()->lastPt()>MH()->mergePt()));
+      for (vector<Ptr<Node>::ptr>::iterator it2 = tmp2.begin(); it2 != tmp2.end(); it2++) assert(((*it2)->dipol()->lastPt()>deepHead()->MH()->mergePt()));
       
       
       
@@ -457,7 +461,7 @@ bool Node::diffPsDipBelowMergeingScale(Ptr<Node>::ptr& selectedNode,double & sum
     
     
     if((isInSomePS||(tmp2.empty()))){//selectedNode->dipol()->lastPt()<MH()->mergePt()&&
-      sum=-1.* selectedNode->dipol()->dipMinusPs(sqr(10.*GeV),MH()->largeNBasis())/nanobarn;
+      sum=-1.* selectedNode->dipol()->dipMinusPs(sqr(10.*GeV),deepHead()->MH()->largeNBasis())/nanobarn;
     }else{
       sum=-1.* selectedNode->dipol()->dSigHatDR(sqr(10.*GeV))/nanobarn;
     }
@@ -476,14 +480,14 @@ bool Node::psBelowMergeingScale(Ptr<Node>::ptr& selectedNode,double & sum,Energy
   Selector<Ptr<Node>::ptr> first_subpro;
   vector<Ptr<Node>::ptr> tmp=children();
   for (vector<Ptr<Node>::ptr>::iterator it = tmp.begin(); it != tmp.end(); it++) {
-    double Di=-1.* (*it)->dipol()->ps(sqr(10.*GeV),MH()->largeNBasis())/nanobarn;
+    double Di=-1.* (*it)->dipol()->ps(sqr(10.*GeV),deepHead()->MH()->largeNBasis())/nanobarn;
     if ((Di!=0)&&(*it)->xcomb()->willPassCuts()){//&&((*it)->dipol()->lastPt()<MH()->mergePt())) {
       vector<Ptr<Node>::ptr> tmp2=(*it)->children();
       
       bool isInSomePS=false;
       
       for (vector<Ptr<Node>::ptr>::iterator it2 = tmp2.begin(); it2 != tmp2.end(); it2++){
-        assert(((*it2)->dipol()->lastPt()>MH()->mergePt())||((*it)->dipol()->lastPt()>MH()->mergePt()));
+        assert(((*it2)->dipol()->lastPt()>deepHead()->MH()->mergePt())||((*it)->dipol()->lastPt()>deepHead()->MH()->mergePt()));
         isInSomePS|=(*it)->inShowerPS((*it2)->dipol()->lastPt());
         
       }
@@ -520,9 +524,9 @@ bool Node::dipBelowMergeingScale(Ptr<Node>::ptr& selectedNode,double & sum,Energ
       bool calcdip=true;
       vector<Ptr<Node>::ptr> tmp2=(*it)->children();
       for (vector<Ptr<Node>::ptr>::iterator it2 = tmp2.begin(); it2 != tmp2.end(); it2++){
-        assert(((*it2)->dipol()->lastPt()>MH()->mergePt())||((*it)->dipol()->lastPt()>MH()->mergePt()));
-	if(((*it2)->dipol()->lastPt()<MH()->mergePt())){
-	   if((*it)->dipol()->lastPt()<MH()->mergePt()){
+        assert(((*it2)->dipol()->lastPt()>deepHead()->MH()->mergePt())||((*it)->dipol()->lastPt()>deepHead()->MH()->mergePt()));
+	if(((*it2)->dipol()->lastPt()<deepHead()->MH()->mergePt())){
+	   if((*it)->dipol()->lastPt()<deepHead()->MH()->mergePt()){
   	     sum=0;
 	     return false;
 	   }
@@ -566,11 +570,12 @@ IBPtr Node::fullclone() const {
 void Node::persistentOutput(PersistentOStream & os) const {
   os <<
   theheadxcomb             <<  thexcomb          <<  thenodeMEPtr <<
-  thedipol                 <<  thechildren       <<  theparent <<
-  theProjectors            <<  theDeepHead       <<  theCutStage <<
+  thedipol                 <<  thechildren   <<theparent <<
+            theDeepHead       <<  theCutStage <<
   theDeepProStage          <<  clustersafer      <<  ounit(theVetoPt, GeV) <<
-  ounit(theRunningPt, GeV) <<  theSubtractedReal <<  theVirtualContribution
-  <<theMergingHelper;
+  ounit(theRunningPt, GeV) <<  theSubtractedReal <<  theVirtualContribution<<theMergingHelper;
+  
+  
   
     // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
 }
@@ -579,8 +584,7 @@ void Node::persistentInput(PersistentIStream & is, int) {
   
   is >>
   theheadxcomb             >>  thexcomb          >>  thenodeMEPtr >>
-  thedipol                 >>  thechildren       >>  theparent >>
-  theProjectors            >>  theDeepHead       >>  theCutStage >>
+  thedipol                 >>  thechildren       >>  theparent >>  theDeepHead       >>  theCutStage >>
   theDeepProStage          >>  clustersafer      >>  iunit(theVetoPt, GeV) >>
   iunit(theRunningPt, GeV) >>  theSubtractedReal >>  theVirtualContribution
   >>theMergingHelper;

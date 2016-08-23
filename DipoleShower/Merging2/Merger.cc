@@ -42,18 +42,29 @@ using namespace Herwig;
 
 Merger::Merger()
 : MergerBase() {
-  StartingBorn0=NPtr();
-  StartingBorn1=NPtr();
-  StartingBorn2=NPtr();
-  NPtr CalcBorn0=NPtr();
-  NPtr CalcBorn1=NPtr();
-  NPtr CalcBorn2=NPtr();
   theNf=5;
   minusL=false;
   Unlopsweights=true;
   theKImproved=true;
-  MergingScale=20.*GeV;
-  theDipoleShowerHandler=Ptr<DipoleShowerHandler>::ptr();
+  theSmearing=0.;
+  theDipoleShowerHandler=
+  Ptr<DipoleShowerHandler>::ptr();
+  isUnitarized=true;
+  isNLOUnitarized=true;
+  defMERegionByJetAlg=false;
+  theChooseHistory=8;
+  xiRenME=1.;
+  xiFacME=1.;
+  xiRenSh=1.;
+  xiFacSh=1.;
+  xiQSh=1.;
+  theGamma=1.;
+  ee_ycut=1000000;
+  pp_dcut=1000000;
+  therenormscale=0.*GeV;
+  theIRSafePT=1.*GeV;
+  theMergePt=3.*GeV;
+  theCentralMergePt=3.*GeV;
 }
 
 
@@ -89,7 +100,7 @@ double Merger::reweightCKKWBornGamma(NPtr Node,bool fast){
       Ptr<ThePEG::Particle>::ptr p =Node->nodeME()->mePartonData()[i]->produceParticle(Node->nodeME()->lastMEMomenta()[i]);
       particles.push_back(p);
     }
-    if(!matrixElementRegion(particles, Node->children()[0]->dipol()->lastPt(), MergingScale))weight*= 0.;
+    if(!matrixElementRegion(particles, Node->children()[0]->dipol()->lastPt(), theMergePt))weight*= 0.;
   }
   
   NPtr Born= Node-> getLongestHistory_simple(true,xiQSh);//Longest irreführend
@@ -130,7 +141,7 @@ double Merger::reweightCKKWBornGamma(NPtr Node,bool fast){
   }
 
   double res=0.;
-  bool maxMulti=Node->xcomb()->meMomenta().size()-2 == theMaxLegsLO;
+  bool maxMulti=Node->xcomb()->meMomenta().size() == maxLegsNLO();
 
 
   if(weight!=0.){
@@ -192,7 +203,7 @@ double Merger::reweightCKKWBornStandard(NPtr Node,bool fast){
       Ptr<ThePEG::Particle>::ptr p =Node->nodeME()->mePartonData()[i]->produceParticle(Node->nodeME()->lastMEMomenta()[i]);
       particles.push_back(p);
     }
-    if(!matrixElementRegion(particles, Node->children()[0]->dipol()->lastPt(), MergingScale))return 0.;
+    if(!matrixElementRegion(particles, Node->children()[0]->dipol()->lastPt(), theMergePt))return 0.;
   }
   
   NPtr Born= Node-> getLongestHistory_simple(true,xiQSh);//Longest irreführend
@@ -233,7 +244,7 @@ double Merger::reweightCKKWBornStandard(NPtr Node,bool fast){
   weight*=history.back().weight*alphaReweight()*pdfReweight();
   
   if(weight==0.)return 0.;
-  bool maxMulti=Node->xcomb()->meMomenta().size()-2 == theMaxLegsLO;
+  bool maxMulti=Node->xcomb()->meMomenta().size() == maxLegsLO();
   Node->vetoPt((projected&&maxMulti)?mergePt():history.back().scale);
   return weight*matrixElementWeight(startscale,Node,1.);
 }
@@ -262,7 +273,7 @@ double Merger::reweightCKKWVirtualStandard(NPtr Node,bool fast){
   Node->runningPt(projectedscale);
   weight*=history.back().weight*alphaReweight()*pdfReweight();
   if(weight==0.)return 0.;
-  bool maxMulti=Node->xcomb()->meMomenta().size()-2 == theMaxLegsNLO;
+  bool maxMulti=Node->xcomb()->meMomenta().size() == maxLegsNLO();
   Node->vetoPt((projected&&maxMulti)?mergePt():history.back().scale);
   
   double matrixElement=matrixElementWeight(startscale,Node);
@@ -317,7 +328,7 @@ double Merger::reweightCKKWRealAllAbove(NPtr Node,bool fast){
   Node->runningPt(projectedscale);
   weight*=history.back().weight*alphaReweight()*pdfReweight();
   if(weight==0.)return 0.;
-  bool maxMulti=CLNode->xcomb()->meMomenta().size()-2 == theMaxLegsNLO;
+  bool maxMulti=CLNode->xcomb()->meMomenta().size() == maxLegsNLO();
   Node->vetoPt((projected&&maxMulti)?mergePt():history.back().scale);
   
   double res= weight*as(startscale*xiRenSh)/SM().alphaS()*
@@ -359,7 +370,7 @@ double Merger::reweightCKKWRealBelowSubReal(NPtr Node,bool fast){
   Node->runningPt(projectedscale);
   weight*=history.back().weight*alphaReweight()*pdfReweight();
   if(weight==0.)return 0.;
-  bool maxMulti=HistNode->xcomb()->meMomenta().size()-2 == theMaxLegsNLO;
+  bool maxMulti=HistNode->xcomb()->meMomenta().size() == maxLegsNLO();
   Node->vetoPt((projected&&maxMulti)?mergePt():history.back().scale);
   
   double sumPS=0;
@@ -396,7 +407,7 @@ double Merger::reweightCKKWRealBelowSubInt(NPtr Node,bool fast){
   Node->runningPt(projectedscale);
   weight*=history.back().weight*alphaReweight()*pdfReweight();
   if(weight==0.)return 0.;
-  bool maxMulti=CLNode->xcomb()->meMomenta().size()-2 == theMaxLegsNLO;
+  bool maxMulti=CLNode->xcomb()->meMomenta().size() == maxLegsNLO();
   Node->vetoPt((projected&&maxMulti)?mergePt():history.back().scale);
   
   double res=0.;
@@ -514,7 +525,7 @@ void Merger::fillHistory(Energy scale, NPtr Begin, NPtr EndNode,bool fast){
     
     Energy notunirunning=scale;
     
-    if (!isUnitarized&&N() > Begin->deepHead()->nodeME()->lastMEMomenta().size()) {
+    if (!isUnitarized&&N()+N0() > Begin->deepHead()->nodeME()->lastMEMomenta().size()) {
       if (!dosudakov(Begin,notunirunning,mergePt(),sudakov0_n,fast)){
         history.back().weight=0.;
       }else{
@@ -740,9 +751,6 @@ bool Merger::reweightCKKWSingle(Ptr<MatchboxXComb>::ptr SX, double & res,bool fa
   
   if (!eH->didEstimate()||fast) {
     history.clear();
-    StartingBorn0=NPtr();
-    StartingBorn1=NPtr();
-    StartingBorn2=NPtr();
   }
   
   theNf=5;//TODO
@@ -798,9 +806,6 @@ bool Merger::reweightCKKWSingle(Ptr<MatchboxXComb>::ptr SX, double & res,bool fa
   renormscale(0.0*GeV);
   if (res == 0.){
     history.clear();
-    StartingBorn0=NPtr();
-    StartingBorn1=NPtr();
-    StartingBorn2=NPtr();
     return false;
   }
   
@@ -812,9 +817,6 @@ bool Merger::reweightCKKWSingle(Ptr<MatchboxXComb>::ptr SX, double & res,bool fa
   
   if (!fast) {
     history.clear();
-    StartingBorn0=NPtr();
-    StartingBorn1=NPtr();
-    StartingBorn2=NPtr();
   }
   
   return true;
@@ -1301,21 +1303,33 @@ bool Merger::matrixElementRegion(PVector particles,Energy winnerScale,Energy cut
 
 
 void Merger::persistentOutput(PersistentOStream & os) const {
-  os <<xiRenME <<xiFacME <<xiRenSh
-  <<xiFacSh <<xiQSh <<theNf
-  <<minusL <<Unlopsweights
-  << theKImproved << ounit(MergingScale,GeV)
-  <<theMaxLegsLO <<theMaxLegsNLO
-  <<theDipoleShowerHandler<<theTreeFactory<<theFirstNodeMap ;
+  
+  os << minusL<<  Unlopsweights<<
+  theKImproved<<   projected<<
+  isUnitarized<<   isNLOUnitarized<<
+  defMERegionByJetAlg<<
+  theChooseHistory<<
+  theN0<<    theOnlyN<<
+  theN<<   theM<<
+  xiRenME<<     xiFacME<<
+  xiRenSh<<     xiFacSh<<
+  xiQSh<<   theNf<<
+  weight<<weightCB<<theGamma<<ee_ycut<<pp_dcut<<theSmearing<<ounit(therenormscale, GeV)<<ounit(theIRSafePT, GeV)<<ounit(theMergePt, GeV)<<ounit(theCentralMergePt, GeV)<<theMergingJetFinder<<theLargeNBasis<<theDipoleShowerHandler<< theTreeFactory<<theFirstNodeMap ;
+  
 }
 
 void Merger::persistentInput(PersistentIStream & is, int) {
-  is >>xiRenME >>xiFacME >>xiRenSh
-  >>xiFacSh >>xiQSh >>theNf
-  >>minusL >>Unlopsweights
-  >> theKImproved >> iunit(MergingScale,GeV)
-  >>theMaxLegsLO >>theMaxLegsNLO
-  >>theDipoleShowerHandler>>theTreeFactory>>theFirstNodeMap;
+  is >> minusL>>  Unlopsweights>>
+  theKImproved>>   projected>>
+  isUnitarized>>   isNLOUnitarized>>
+  defMERegionByJetAlg>>
+  theChooseHistory>>
+  theN0>>    theOnlyN>>
+  theN>>   theM>>
+  xiRenME>>     xiFacME>>
+  xiRenSh>>     xiFacSh>>
+  xiQSh>>   theNf>>
+  weight>>weightCB>>theGamma>>ee_ycut>>pp_dcut>>theSmearing>>iunit(therenormscale, GeV)>>iunit(theIRSafePT, GeV)>>iunit(theMergePt, GeV)>>iunit(theCentralMergePt, GeV)>>theMergingJetFinder>>theLargeNBasis>>theDipoleShowerHandler>> theTreeFactory>>theFirstNodeMap ;
 }
 
   // *** Attention *** The following static variable is needed for the type
@@ -1323,7 +1337,8 @@ void Merger::persistentInput(PersistentIStream & is, int) {
   // are correct (the class and its base class), and that the constructor
   // arguments are correct (the class name and the name of the dynamically
   // loadable library where the class implementation can be found).
-DescribeClass<Merger, MergerBase> describeHerwigMerger("Herwig::Merger", "HwDipoleShower.so");
+DescribeClass<Merger, Herwig::MergerBase>
+describeHerwigMerger("Herwig::Merger", "HwDipoleShower.so");
 
   //ClassDescription<Merger> Merger::initMerger;
   // Definition of the static class description member.
@@ -1373,23 +1388,12 @@ void Merger::Init() {
   static Parameter<Merger,Energy> interfaceMergerScale
   ("MergingScale",
    "The MergingScale.",
-   &Merger::MergingScale, GeV, 20.0*GeV, 0.0*GeV, 0*GeV,
+   &Merger::theCentralMergePt, GeV, 20.0*GeV, 0.0*GeV, 0*GeV,
    false, false, Interface::lowerlim);
   
   
   
-  static Parameter<Merger,unsigned int> interfaceMaxLegsLO
-  ("MaxLegsLO",
-   ".",
-   &Merger::theMaxLegsLO, 0, 0, 0,
-   false, false, Interface::lowerlim);
-  
-  static Parameter<Merger,unsigned int> interfaceMaxLegsNLO
-  ("MaxLegsNLO",
-   ".",
-   &Merger::theMaxLegsNLO, 0, 0, 0,
-   false, false, Interface::lowerlim);
-  
+
   
   
   

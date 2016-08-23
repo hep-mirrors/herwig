@@ -49,5 +49,5 @@ void MergerBase::Init() {
 // arguments are correct (the class name and the name of the dynamically
 // loadable library where the class implementation can be found).
 DescribeAbstractClass<MergerBase,HandlerBase>
-describeMergerBase("Herwig::MergerBase", "Herwig.so");
+describeHerwigMergerBase("Herwig::MergerBase", "Herwig.so");
 

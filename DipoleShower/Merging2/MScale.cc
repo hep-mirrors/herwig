@@ -83,7 +83,7 @@ void MScale::persistentInput(PersistentIStream & is, int) {
   // are correct (the class and its base class), and that the constructor
   // arguments are correct (the class name and the name of the dynamically
   // loadable library where the class implementation can be found).
-DescribeClass<MScale,MatchboxScaleChoice>
+DescribeClass<MScale,Herwig::MatchboxScaleChoice>
 describeHerwigMScale("Herwig::MScale", "HwDipoleShower.so");
 
 void MScale::Init() {
