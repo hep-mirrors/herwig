@@ -229,7 +229,7 @@ Rivet-inputfiles: $(shell echo Rivet/LEP{,-Powheg,-Matchbox,-Dipole,-Matchbox-Po
                   $(shell echo Rivet/LHC-7-{W,Z}Gamma-{e,mu}.in) \
 	          $(shell echo Rivet/LHC{,-Matchbox,-Matchbox-Powheg,-Dipole}-{7-W-Jet-{1..3}-e,7-Z-Jet-{0..3}-e,7-Z-Jet-0-mu}.in) \
 	          $(shell echo Rivet/LHC{-Matchbox,-Matchbox-Powheg,-Dipole}-{Z-b,Z-bb,W-b,8-Z-jj}.in) \
-                  $(shell echo Rivet/LHC-7-PromptPhoton-{1..4}.in) Rivet/LHC-GammaGamma-7.in \
+                  $(shell echo Rivet/LHC-{7,8}-PromptPhoton-{1..4}.in) Rivet/LHC-GammaGamma-7.in \
 	          $(shell echo Rivet/LHC{,-Powheg}-7-{DiPhoton-GammaGamma,DiPhoton-GammaJet}.in) \
                   $(shell echo Rivet/LHC{,-Powheg,-Matchbox,-Matchbox-Powheg,-Dipole}-{ggH,VBF,WH,ZH}.in) \
                   $(shell echo Rivet/LHC{,-Powheg,-Matchbox,-Matchbox-Powheg,-Dipole}-8-{ggH,VBF,WH,ZH}{,-GammaGamma}.in) \
@@ -326,7 +326,7 @@ Rivet-LHC-EW: $(shell echo Rivet-LHC{,-Matchbox,-Powheg,-Dipole}-{13-Z-{e,mu},8-
                                      LHC-Matchbox-Z-bb.yoda:Hw++-Matchbox-Zbb LHC-Matchbox-W-b.yoda:Hw++-Matchbox-W-bb LHC-Dipole-EW.yoda:Hw++-Dipole \
                                      LHC-Dipole-Z-b.yoda:Hw++-Dipole-Zb LHC-Dipole-Z-bb.yoda:Hw++-Dipole-Zbb LHC-Dipole-W-b.yoda:Hw++-Dipole-W-bb \
                                      LHC-Z-mu-SOPHTY.yoda:Hw++ LHC-Powheg-Z-mu-SOPHTY.yoda:Hw++-Powheg LHC-Matchbox-Z-mu-SOPHTY.yoda:Hw++-Matchbox
-Rivet-LHC-Photon: $(shell echo Rivet-LHC-7-PromptPhoton-{1..4}) Rivet-LHC-GammaGamma-7 \
+Rivet-LHC-Photon: $(shell echo Rivet-LHC-{7,8}-PromptPhoton-{1..4}) Rivet-LHC-GammaGamma-7 \
 	          $(shell echo Rivet-LHC{,-Powheg}-7-{DiPhoton-GammaGamma,DiPhoton-GammaJet})
 	rm -rf Rivet-LHC-Photon
 	python/merge-LHC-Photon LHC -o LHC-Photon.yoda
