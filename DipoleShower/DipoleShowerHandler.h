@@ -26,6 +26,7 @@
 #include "Herwig/DipoleShower/Utility/ConstituentReshuffler.h"
 #include "Herwig/DipoleShower/Utility/IntrinsicPtGenerator.h"
 #include "Herwig/DipoleShower/Merging/Merging.fh"
+#include "Herwig/MatrixElement/Matchbox/Base/MergerBase.fh"
 #include "Herwig/MatrixElement/Matchbox/Matching/ShowerApproximation.h"
 
 namespace Herwig {
@@ -46,6 +47,7 @@ class DipoleShowerHandler: public ShowerHandler {
 
 
  friend class Merging;
+ friend class Merger;
 
 public:
 
@@ -479,6 +481,10 @@ private:
   
   
   Ptr<Merging>::ptr theMergingHelper;
+  
+  Ptr<MergerBase>::ptr theMergingHelper2;
+  
+  
 
 private:
 

@@ -1,0 +1,13 @@
+// -*- C++ -*-
+// This is the forward declaration of the Node class
+
+#ifndef HERWIG_Node_FH
+#define HERWIG_Node_FH
+
+namespace Herwig {
+
+class Node;
+
+}
+
+#endif // HERWIG_Node_FH

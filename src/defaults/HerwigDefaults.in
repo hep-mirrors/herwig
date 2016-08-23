@@ -205,7 +205,7 @@ read MatchboxDefaults.in
 # setup the merging framework
 ##########################################
 read MatchboxMergeDefaults.in
-
+read MatchboxMergingDefaults.in
 ##########################################
 # setup the dipole shower
 ##########################################

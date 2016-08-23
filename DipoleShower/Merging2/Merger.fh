@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the Merger class.
+//
+#ifndef HERWIG_Merger_FH
+#define HERWIG_Merger_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+using namespace ThePEG;
+
+class Merger;
+ThePEG_DECLARE_POINTERS(Merger,MergerPtr);
+
+}
+
+#endif

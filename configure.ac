@@ -216,7 +216,8 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		DipoleShower/Utility/Makefile
 		DipoleShower/AlphaS/Makefile
 		DipoleShower/Merging/Makefile
-                Utilities/Makefile
+                DipoleShower/Merging2/Makefile
+		Utilities/Makefile
                 Utilities/XML/Makefile
                 Utilities/Statistics/Makefile
                 Hadronization/Makefile
@@ -235,6 +236,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		src/defaults/Analysis.in
 		src/defaults/MatchboxDefaults.in
 		src/defaults/MatchboxMergeDefaults.in
+		src/defaults/MatchboxMergingDefaults.in
 		src/defaults/setup.gosam.in
 		src/Matchbox/LO-DefaultShower.in
 		src/Matchbox/LO-DipoleShower.in

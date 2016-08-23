@@ -26,6 +26,7 @@
 #include "Herwig/MatrixElement/Matchbox/Utility/LastMatchboxXCombInfo.h"
 #include "Herwig/MatrixElement/Matchbox/Utility/MatchboxXComb.h"
 #include "Herwig/MatrixElement/Matchbox/Mergeing/ClusterNode.h"
+#include "MergerBase.h"
 
 
 namespace Herwig {
@@ -924,6 +925,21 @@ public:
   vector<Ptr<MatchboxReweightBase>::ptr>& reweights() { return theReweights; }
 
   /**
+   * Return the theMerger.
+   */
+  const Ptr<MergerBase>::ptr& merger() const;
+    
+  /**
+   * Return the theMerger.
+   */
+  Ptr<MergerBase>::ptr& merger() ;
+      
+  /**
+   * Set the theMerger.
+   */
+  void merger(Ptr<MergerBase>::ptr v);
+      
+  /**
    * Return the theFirstNode.
    */
   const Ptr<ClusterNode>::ptr& firstNode() const;
@@ -1199,6 +1215,11 @@ private:
    * The first cluster node
    */
   Ptr<ClusterNode>::ptr theFirstNode;
+      
+  /**
+   * The first cluster node
+   */
+  Ptr<MergerBase>::ptr theMerger;
   
   /**
    * The first cluster node

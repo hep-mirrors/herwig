@@ -34,6 +34,7 @@
 
 #include "Herwig/DipoleShower/Utility/DipolePartonSplitter.h"
 #include "Herwig/DipoleShower/Merging/Merging.h"
+#include "Herwig/MatrixElement/Matchbox/Base/MergerBase.fh"
 
 #include "Herwig/MatrixElement/Matchbox/Base/SubtractedME.h"
 #include "Herwig/MatrixElement/Matchbox/MatchboxFactory.h"
@@ -77,11 +78,17 @@ double DipoleShowerHandler::reweightCKKW(int, int,bool fast) {
    if (!firstInteraction()) return 1.;
   
   double res = 1.;
-  if (!theMergingHelper) {
-    return res;
+  if (theMergingHelper) {
+    if (!theMergingHelper->reweightCKKWSingle(dynamic_ptr_cast<Ptr<MatchboxXComb>::ptr>(lastXCombPtr()), res,fast))
+      return 0.;
   }
-  if (!theMergingHelper->reweightCKKWSingle(dynamic_ptr_cast<Ptr<MatchboxXComb>::ptr>(lastXCombPtr()), res,fast))
-    return 0.;
+  
+  
+  if (theMergingHelper2) {
+    if (!theMergingHelper2->reweightCKKWSingle(dynamic_ptr_cast<Ptr<MatchboxXComb>::ptr>(lastXCombPtr()), res,fast))
+      return 0.;
+  }
+  
   
   return res;
 }
@@ -627,28 +634,60 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
           bool transparent=true;
           
           if (transparent) {
-           pair<list<Dipole>::iterator,list<Dipole>::iterator> tmpchildren;
-           DipoleSplittingInfo tmpwinner=winner;
-           DipoleChain* tmpfirstChain = 0;
-           DipoleChain* tmpsecondChain = 0;
-           
-           PVector New=eventRecord().tmpsplit(winnerDip,tmpwinner,tmpchildren,tmpfirstChain,tmpsecondChain);
-           /*cout<<"\n ";
-           for (PVector::iterator p=New.begin(); p!=New.end(); p++) {
-               cout<<"\n   "<<(*p)->momentum()/GeV<<flush;
-           }
-            */
+            pair<list<Dipole>::iterator,list<Dipole>::iterator> tmpchildren;
+            DipoleSplittingInfo tmpwinner=winner;
+            DipoleChain* tmpfirstChain = 0;
+            DipoleChain* tmpsecondChain = 0;
             
-          if (theMergingHelper->treefactory()->matrixElementRegion(New,winnerScale,theMergingHelper->mergingScale())) {
-             optHardPt=winnerScale;
-           continue;
-          }
+            PVector New=eventRecord().tmpsplit(winnerDip,tmpwinner,tmpchildren,tmpfirstChain,tmpsecondChain);
+            /*cout<<"\n ";
+             for (PVector::iterator p=New.begin(); p!=New.end(); p++) {
+             cout<<"\n   "<<(*p)->momentum()/GeV<<flush;
+             }
+             */
+            
+            if (theMergingHelper->treefactory()->matrixElementRegion(New,winnerScale,theMergingHelper->mergingScale())) {
+              optHardPt=winnerScale;
+              continue;
+            }
           }else{
             optHardPt=winnerScale;
             continue;
-          
+            
           }
-      }
+        }
+    }
+    
+    
+    
+    if (theMergingHelper2&&eventHandler()->currentCollision()) {
+      if (theMergingHelper2->maxLegsLO()>eventRecord().outgoing().size()+eventRecord().hard().size())
+        if (theMergingHelper2->mergingScale()<winnerScale){
+          bool transparent=true;
+          
+          if (transparent) {
+            pair<list<Dipole>::iterator,list<Dipole>::iterator> tmpchildren;
+            DipoleSplittingInfo tmpwinner=winner;
+            DipoleChain* tmpfirstChain = 0;
+            DipoleChain* tmpsecondChain = 0;
+            
+            PVector New=eventRecord().tmpsplit(winnerDip,tmpwinner,tmpchildren,tmpfirstChain,tmpsecondChain);
+            /*cout<<"\n ";
+             for (PVector::iterator p=New.begin(); p!=New.end(); p++) {
+             cout<<"\n   "<<(*p)->momentum()/GeV<<flush;
+             }
+             */
+            
+            if (theMergingHelper2->matrixElementRegion(New,winnerScale,theMergingHelper2->mergingScale())) {
+              optHardPt=winnerScale;
+              continue;
+            }
+          }else{
+            optHardPt=winnerScale;
+            continue;
+            
+          }
+        }
     }
     
     
@@ -924,7 +963,7 @@ void DipoleShowerHandler::persistentOutput(PersistentOStream & os) const {
      << isMCatNLOSEvent << isMCatNLOHEvent << theShowerApproximation
      << theDoCompensate << theFreezeGrid << theDetuning
      << theEventReweight << theSplittingReweight << ounit(maxPt,GeV)
-     << ounit(muPt,GeV)<< theMergingHelper;
+     << ounit(muPt,GeV)<< theMergingHelper<< theMergingHelper2;
 }
 
 void DipoleShowerHandler::persistentInput(PersistentIStream & is, int) {
@@ -938,7 +977,7 @@ void DipoleShowerHandler::persistentInput(PersistentIStream & is, int) {
      >> isMCatNLOSEvent >> isMCatNLOHEvent >> theShowerApproximation
      >> theDoCompensate >> theFreezeGrid >> theDetuning
      >> theEventReweight >> theSplittingReweight >> iunit(maxPt,GeV)
-     >> iunit(muPt,GeV)>>theMergingHelper;
+     >> iunit(muPt,GeV)>>theMergingHelper>>theMergingHelper2;
 
 }
 
@@ -1175,8 +1214,14 @@ void DipoleShowerHandler::Init() {
      &DipoleShowerHandler::theSplittingReweight, false, false, true, true, false);
 
   static Reference<DipoleShowerHandler,Merging> interfaceMergingHelper
-    ("MergingHelper",
-     "",
-     &DipoleShowerHandler::theMergingHelper, false, false, true, true, false);
+  ("MergingHelper",
+   "",
+   &DipoleShowerHandler::theMergingHelper, false, false, true, true, false);
+  
+  static Reference<DipoleShowerHandler,MergerBase> interfaceMergingHelper2
+  ("MergingHelper2",
+   "",
+   &DipoleShowerHandler::theMergingHelper2, false, false, true, true, false);
+  
 }
 

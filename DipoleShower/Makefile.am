@@ -1,4 +1,4 @@
-SUBDIRS = Base Merging Kernels Kinematics Utility AlphaS
+SUBDIRS = Base Merging Merging2  Kernels Kinematics Utility AlphaS
 
 pkglib_LTLIBRARIES = HwDipoleShower.la
 
@@ -10,6 +10,7 @@ HwDipoleShower_la_LIBADD = \
 	Kernels/libHwDipoleShowerKernels.la \
 	Kinematics/libHwDipoleShowerKinematics.la \
         Merging/libHwDipoleShowerMerging.la \
+        Merging2/libHwDipoleShowerMerging2.la \
 	Utility/libHwDipoleShowerUtility.la \
         $(FASTJETLIBS)
 

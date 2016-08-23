@@ -1,0 +1,14 @@
+// -*- C++ -*-
+// This is the forward declaration of the MergerBase class
+
+#ifndef HERWIG_MergerBase_FH
+#define HERWIG_MergerBase_FH
+
+namespace Herwig {
+
+class MergerBase;
+class MatchboxAmplitude;
+
+}
+
+#endif // HERWIG_MergerBase_FH

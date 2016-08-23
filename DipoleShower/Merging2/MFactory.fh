@@ -1,0 +1,13 @@
+// -*- C++ -*-
+// This is the forward declaration of the MFactory class
+
+#ifndef HERWIG_MFactory_FH
+#define HERWIG_MFactory_FH
+
+namespace Herwig {
+
+class MFactory;
+
+}
+
+#endif // HERWIG_MFactory_FH
