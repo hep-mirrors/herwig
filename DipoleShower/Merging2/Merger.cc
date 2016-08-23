@@ -103,7 +103,7 @@ double Merger::reweightCKKWBornGamma(NPtr Node,bool fast){
     if(!matrixElementRegion(particles, Node->children()[0]->dipol()->lastPt(), theMergePt))weight*= 0.;
   }
   
-  NPtr Born= Node-> getLongestHistory_simple(true,xiQSh);//Longest irreführend
+  NPtr Born= Node-> getHistory(true,xiQSh);
   NPtr CLNode;
   NPtr BornCL;
   
@@ -115,7 +115,7 @@ double Merger::reweightCKKWBornGamma(NPtr Node,bool fast){
       weight*=inhist?(-2.*int(Node->children().size())):0.;
       projected=true;Node->nodeME()->projectorStage(1);
       weightCL=2.*int(Node->children().size());
-      BornCL=CLNode-> getLongestHistory_simple(false,xiQSh);
+      BornCL=CLNode-> getHistory(false,xiQSh);
     }else{
       weight=2.;projected=false;Node->nodeME()->projectorStage(0);
     }
@@ -152,19 +152,11 @@ double Merger::reweightCKKWBornGamma(NPtr Node,bool fast){
   Node->runningPt(projectedscale);
   weight*=history.back().weight*alphaReweight()*pdfReweight();
   if(weight==0.&&weightCL==0.)return 0.;
-  //Node->vetoPt((projected&&maxMulti)?mergePt():history.back().scale);
  
   res+=weight*matrixElementWeight(startscale,Node,(!maxMulti&&!projected)?theGamma:1.);
   }
   
-  
- 
-  //cout<<"\n"<<((!maxMulti&&!projected)?gamma:1.)
-  //<<history.back().weight<<" "<<alphaReweight()<<" "<<pdfReweight();; 
-  
-  
   if(CLNode&&theGamma!=1.){
-    //assert(false);    
     Energy startscale=CKKW_StartScale(BornCL);
     Energy projectedscale=startscale;
     fillHistory( startscale,  BornCL, CLNode,fast);
@@ -180,8 +172,7 @@ double Merger::reweightCKKWBornGamma(NPtr Node,bool fast){
     
     diff+=weightCL*CLNode->dipol()->dSigHatDR(sqr(startscale*xiFacME))/nanobarn;
     Node->nodeME()->factory()->setAlphaParameter(1.);
-    //cout<<"\n diff "<<diff;    
-      //cout<<"\ndiff  "<<diff<<" "<<history.back().weight<<" "<<alphaReweight()<<" "<<alp;
+    
     res+=diff;
   }
   
@@ -206,7 +197,7 @@ double Merger::reweightCKKWBornStandard(NPtr Node,bool fast){
     if(!matrixElementRegion(particles, Node->children()[0]->dipol()->lastPt(), theMergePt))return 0.;
   }
   
-  NPtr Born= Node-> getLongestHistory_simple(true,xiQSh);//Longest irreführend
+  NPtr Born= Node-> getHistory(true,xiQSh);
   if( Born!= Node){
     
     if (UseRandom::rnd()<.5){
@@ -227,12 +218,7 @@ double Merger::reweightCKKWBornStandard(NPtr Node,bool fast){
 
   
   if (!Born->xcomb()->willPassCuts()){
-  
-    if (Born->parent()) {
-        //cout<<"\n parent not pass";
-    }
-  return 0.;
-  
+    return 0.;
   }
   
   
@@ -252,7 +238,7 @@ double Merger::reweightCKKWBornStandard(NPtr Node,bool fast){
  
 
 double Merger::reweightCKKWVirtualStandard(NPtr Node,bool fast){
-  NPtr Born= Node-> getLongestHistory_simple(true,xiQSh);
+  NPtr Born= Node-> getHistory(true,xiQSh);
   if( Born!= Node){
     if (UseRandom::rnd()<.5){
       weight=-2.;projected=true;Node->nodeME()->projectorStage(1);
@@ -307,10 +293,10 @@ double Merger::reweightCKKWRealStandard(NPtr Node,bool fast){
 }
 
 double Merger::reweightCKKWRealAllAbove(NPtr Node,bool fast){
-  NPtr Born= Node-> getLongestHistory_simple(true,xiQSh);
+  NPtr Born= Node-> getHistory(true,xiQSh);
   NPtr CLNode= Node->randomChild();
   bool inhist=CLNode->isInHistoryOf(Born);
-  Born=CLNode-> getLongestHistory_simple(false,xiQSh);
+  Born=CLNode-> getHistory(false,xiQSh);
   if( Born!= CLNode){
     if (UseRandom::rnd()<.5){
       weight=-2.; projected=true;  Node->nodeME()->projectorStage(2);}
@@ -351,7 +337,7 @@ double Merger::reweightCKKWRealBelowSubReal(NPtr Node,bool fast){
     }
   }
   NPtr HistNode=HistNodeSel.select(UseRandom::rnd());
-  NPtr Born=HistNode-> getLongestHistory_simple(false,xiQSh);
+  NPtr Born=HistNode-> getHistory(false,xiQSh);
   
   if( Born!= HistNode){
     if (UseRandom::rnd()<.5){
@@ -389,7 +375,7 @@ double Merger::reweightCKKWRealBelowSubReal(NPtr Node,bool fast){
 
 double Merger::reweightCKKWRealBelowSubInt(NPtr Node,bool fast){
   NPtr CLNode= Node->randomChild();
-  NPtr Born=CLNode-> getLongestHistory_simple(false,xiQSh);
+  NPtr Born=CLNode-> getHistory(false,xiQSh);
   if( Born!= CLNode){
     if (UseRandom::rnd()<.5){
       weight=-2.; projected=true;  Node->nodeME()->projectorStage(2);}
@@ -746,8 +732,6 @@ bool Merger::reweightCKKWSingle(Ptr<MatchboxXComb>::ptr SX, double & res,bool fa
   Ptr<StandardEventHandler>::ptr eH =
   dynamic_ptr_cast<Ptr<StandardEventHandler>::ptr>(generator()->eventHandler());
   
-  
-    //cout<<"\nfast ";//<<fast<<" HS "<<history.size()<<" stnode "<<StartingBorn<<" "<<eH->didEstimate();
   
   if (!eH->didEstimate()||fast) {
     history.clear();

@@ -318,7 +318,7 @@ bool Node::inShowerPS(Energy hardpT){
 
 
 
-Ptr<Node>::ptr Node::getLongestHistory_simple(bool normal,double hardScaleFactor) {
+Ptr<Node>::ptr Node::getHistory(bool normal,double hardScaleFactor) {
   Ptr<Node>::ptr res=this;
   vector<Ptr<Node>::ptr> temp = getNextOrderedNodes(normal,hardScaleFactor);
   Energy minpt=100000.*GeV;
@@ -361,7 +361,7 @@ bool Node::headContribution(double hardScaleFactor){
     allabove&=(*it)->dipol()->lastPt()>deepHead()->MH()->mergePt();
   }
   if(allabove){
-    Ptr<Node>::ptr tmpBorn = getLongestHistory_simple(true,hardScaleFactor);
+    Ptr<Node>::ptr tmpBorn = getHistory(true,hardScaleFactor);
     if(!tmpBorn->parent())return false;
   }
   return true;

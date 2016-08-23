@@ -252,7 +252,7 @@ namespace Herwig {
     
     bool hasFullHistory();
     
-    Ptr<Node>::ptr getLongestHistory_simple(bool normal=true,double hardscalefactor=1.);
+    Ptr<Node>::ptr getHistory(bool normal=true,double hardscalefactor=1.);
     
     bool subtractedReal() {
       return theSubtractedReal;
