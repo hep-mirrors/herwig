@@ -6,6 +6,7 @@
   //
   //#include "Node.fh"
 #include "MFactory.fh"
+#include "Merger.h"
 
 
 #include "ThePEG/Interface/Interfaced.h"
@@ -75,10 +76,13 @@ namespace Herwig {
      */
     Node();
     
-    Node(Ptr<MatchboxMEBase>::ptr nodeME,  int deepprostage,int cutstage, bool nFOH);
+    Node(Ptr<MatchboxMEBase>::ptr nodeME,  int deepprostage,int cutstage);
     
-    Node(Ptr<Node>::ptr deephead, Ptr<Node>::ptr head, Ptr<SubtractionDipole>::ptr dipol, Ptr<MatchboxMEBase>::ptr nodeME,
-                int deepprostage, int cutstage);
+    Node(Ptr<Node>::ptr deephead,
+         Ptr<Node>::ptr head,
+         Ptr<SubtractionDipole>::ptr dipol,
+         Ptr<MatchboxMEBase>::ptr nodeME,
+         int deepprostage, int cutstage);
     
     /**
      * The destructor.
@@ -124,10 +128,6 @@ namespace Herwig {
     
     void setXComb(tStdXCombPtr xc, int proStage);
     
-    
-    
-    
-    double setProjectorStage(bool fast=false);
     
     bool headContribution(double hardscalefactor);
     
@@ -205,10 +205,7 @@ namespace Herwig {
     /** insert nodes to projector vector */
     
     void Projector(double a, Ptr<Node>::ptr pro) {
-      pair<double,Ptr<Node>::ptr> p;
-      p.first  = a;
-      p.second = pro;
-      theProjectors.push_back(p);
+      theProjectors.push_back(make_pair(a,pro));
     }
     
     /** insert nodes to projector vector */
@@ -243,23 +240,7 @@ namespace Herwig {
       return theheadxcomb;
     }
     
-    Energy mergePt() {
-      return theMergePt;
-    }
-    
-    void mergePt(Energy x) {
-      theMergePt = x;
-    }
-    
-    Energy centralMergePt() {
-      return theCentralMergePt;
-    }
-    
-    void centralMergePt(Energy x) {
-      theCentralMergePt = x;
-    }
-    
-    double smear();
+
     
     Energy vetoPt() const {
       return theVetoPt;
@@ -277,63 +258,12 @@ namespace Herwig {
     int cutStage() const {
       return theCutStage;
     }
-    
-    void N(unsigned int N) {
-      theN = N;
-    }
-    
-    void N0(unsigned int N) {
-      theN0 = N;
-    }
-    
-    
-    void onlyN( int N) {
-      theOnlyN = N;
-    }
-    int onlyN( ) {
-      return theOnlyN ;
-    }
-    
-    
-    
-    unsigned int N() const {
-      return theN;
-    }
-    
-    unsigned int N0() const {
-      return theN0;
-    }
-    
-    void M(unsigned int M) {
-      theM = M;
-    }
-    unsigned int M() const {
-      return theM;
-    }
-    
-    unsigned int sudakovSteps() const {
-      return theSudakovSteps;
-    }
-    
+
     unsigned int DeepProStage() const {
       return theDeepProStage;
     }
     
-    void irsavePt(Energy x) {
-      theIRsafePt = x;
-    }
-    
-    Energy irsavePt() {
-      return theIRsafePt;
-    }
-    
-    void irsaveRatio(double x) {
-      theIRCsafeRatio = x;
-    }
-    
-    double irsaveRatio() {
-      return theIRCsafeRatio;
-    }
+  
     
     SafeClusterMap clusterSafe() const {
       return clustersafer;
@@ -359,47 +289,13 @@ namespace Herwig {
     
     bool inShowerPS(Energy hardpt);
     
-    Energy newHardPt();
     
     vector<Ptr<Node>::ptr> getNextFullOrderedNodes();
     
     bool hasFullHistory();
     
-    bool unitarized() const {
-      return isUnitarized;
-    }
-    void unitarized(bool is) {
-      isUnitarized = is;
-    }
-    
-    bool NLOunitarized() const {
-      return isNLOUnitarized;
-    }
-    void NLOunitarized(bool is) {
-      isNLOUnitarized = is;
-    }
-    
-    bool needFullOrderedHistory() {
-      return theNeedFullOrderedHistory;
-    }
-    
-    Ptr<Node>::ptr getLongestHistory(bool normal=true);
     Ptr<Node>::ptr getLongestHistory_simple(bool normal=true,double hardscalefactor=1.);
     
-    
-    tSubProPtr showeredSub(){return theShoweredSub;}
-    
-    void showeredSub( tSubProPtr x){theShoweredSub=x;}
-    
-    DipoleEventRecord& eventRec(){return theEventRec;}
-    void eventRec(DipoleEventRecord& x){theEventRec=x;}
-    
-    bool VetoedShower(){return needsVetoedShower;}
-    void VetoedShower(bool x){needsVetoedShower = x;}
-    bool calculateInNode(){return theCalculateInNode;}
-    void calculateInNode(bool x) {
-      theCalculateInNode = x;
-    }
     bool subtractedReal() {
       return theSubtractedReal;
     }
@@ -416,50 +312,11 @@ namespace Herwig {
       theVirtualContribution = x;
     }
     
+    Ptr<Merger>::ptr MH(){return theMergingHelper;};
     
-    bool finiteDipoles() {
-      return thefiniteDipoles;
-    }
-    void finiteDipoles(bool x) {
-      thefiniteDipoles = x;
-    }
-    
-    
-    
-    bool subCorrection() {
-      return thesubCorrection;
-    }
-    void subCorrection(bool x) {
-      thesubCorrection = x;
-    }
     
     
 
-    
-    void chooseHistory(int x){
-      theChooseHistory=x;
-    }
-    
-    int chooseHistory(){
-      return theChooseHistory;
-    }
-    
-    int numberOfSplittings(){
-      return theNumberOfSplittings;
-    }
-    void numberOfSplittings(int n){
-      theNumberOfSplittings=n;
-    }
-    
-    
-    Ptr<MFactory>::ptr treefactory();
-    
-			 void treefactory(Ptr<MFactory>::ptr x);
-			 
-			 
-			 void addclusternumber(){theclusteredto++;}
-    int  clusternumber(){return theclusteredto;}
-    
     
 		private:
     StdXCombPtr theheadxcomb;
@@ -503,36 +360,11 @@ namespace Herwig {
     
     
     /**
-     * If any clustering below the CutStage has a lower pT than the MergePt
-     * the phase space point has to be thrown away.
-     */
-    
-    static Energy theMergePt;
-    
-    
-    static Energy theCentralMergePt;
-    
-    static double smearing;
-    
-    /**
      * all nodes downstream have pt over merged pt.
      */
     
     bool isthissafe;
-    
-    /**
-     * If any clustering below the CutStage has a lower pT than the MergePt
-     * the phase space point has to be thrown away.
-     */
-    
-    static Energy theIRsafePt;
-    
-    /**
-     * If any clustering below the CutStage has a lower (pT/shat)^2 than this value
-     * the phase space point has to be thrown away.
-     */
-    
-    static double theIRCsafeRatio;
+
     
     
     
@@ -558,56 +390,18 @@ namespace Herwig {
     
     bool theNeedFullOrderedHistory;
     
-    static unsigned int theN0;
-    
-    static int  theOnlyN;
-    
-    static unsigned int theN;
-    
-    static unsigned int theM;
-    
     unsigned int theSudakovSteps;
-    
-    static bool isUnitarized;
-    
-    static bool isNLOUnitarized;
     
     Energy theVetoPt;
     
     Energy theRunningPt;
     
-    tSubProPtr theShoweredSub;
-    
-    DipoleEventRecord theEventRec;
-    
-    bool needsVetoedShower;
-    
-    bool theCalculateInNode;
-    
-    int theNumberOfSplittings; 
-    
     bool theSubtractedReal;
     
     bool theVirtualContribution;
     
-    bool thefiniteDipoles;
     
-    bool thesubCorrection;
-    
-    int theclusteredto;
-    
-    
-    
-    
-    Ptr<MFactory>::ptr theTreeFactory;
-    
-    
-      // 1 == always take one of the smallest Pts.
-      // 2 == always take one of the highest  Pts.
-      // 3 == choose correspondingly to the dipolweight.
-    
-    static int theChooseHistory;
-    
+     Ptr<Merger>::ptr theMergingHelper;
     
     
 		protected:

@@ -113,13 +113,13 @@ double Merger::reweightCKKWBornGamma(NPtr Node,bool fast){
   }
 
  
-  if (Node->treefactory()->onlymulti()!=-1&&
-      Node->treefactory()->onlymulti()!=int(Node->xcomb()->mePartonData().size()-Node->nodeME()->projectorStage()))
+  if (treefactory()->onlymulti()!=-1&&
+      treefactory()->onlymulti()!=int(Node->xcomb()->mePartonData().size()-Node->nodeME()->projectorStage()))
     return 0.;
   
   
-  if(!Node->allAbove(Node->mergePt()-0.1*GeV))weight=0.;
-  if(CLNode&&!CLNode->allAbove(Node->mergePt()-0.1*GeV))weightCL=0.;
+  if(!Node->allAbove(mergePt()-0.1*GeV))weight=0.;
+  if(CLNode&&!CLNode->allAbove(mergePt()-0.1*GeV))weightCL=0.;
   if (!Born->xcomb()->willPassCuts()){
     
     if (Born->parent()) {
@@ -131,7 +131,7 @@ double Merger::reweightCKKWBornGamma(NPtr Node,bool fast){
 
   double res=0.;
   bool maxMulti=Node->xcomb()->meMomenta().size()-2 == theMaxLegsLO;
-  double gamma=Node->treefactory()->gamma();
+
 
   if(weight!=0.){
   Energy startscale=CKKW_StartScale(Born);
@@ -141,9 +141,9 @@ double Merger::reweightCKKWBornGamma(NPtr Node,bool fast){
   Node->runningPt(projectedscale);
   weight*=history.back().weight*alphaReweight()*pdfReweight();
   if(weight==0.&&weightCL==0.)return 0.;
-  //Node->vetoPt((projected&&maxMulti)?Node->mergePt():history.back().scale);
+  //Node->vetoPt((projected&&maxMulti)?mergePt():history.back().scale);
  
-  res+=weight*matrixElementWeight(startscale,Node,(!maxMulti&&!projected)?gamma:1.); 
+  res+=weight*matrixElementWeight(startscale,Node,(!maxMulti&&!projected)?theGamma:1.);
   }
   
   
@@ -152,7 +152,7 @@ double Merger::reweightCKKWBornGamma(NPtr Node,bool fast){
   //<<history.back().weight<<" "<<alphaReweight()<<" "<<pdfReweight();; 
   
   
-  if(CLNode&&gamma!=1.){
+  if(CLNode&&theGamma!=1.){
     //assert(false);    
     Energy startscale=CKKW_StartScale(BornCL);
     Energy projectedscale=startscale;
@@ -163,7 +163,7 @@ double Merger::reweightCKKWBornGamma(NPtr Node,bool fast){
     double diff=0;
     Node->nodeME()->factory()->setAlphaParameter(1.);
     diff-=weightCL*CLNode->dipol()->dSigHatDR(sqr(startscale*xiFacME))/nanobarn;
-    Node->nodeME()->factory()->setAlphaParameter(gamma);
+    Node->nodeME()->factory()->setAlphaParameter(theGamma);
     
     string alp=(CLNode->dipol()->aboveAlpha()?"Above":"Below");
     
@@ -177,7 +177,6 @@ double Merger::reweightCKKWBornGamma(NPtr Node,bool fast){
   
   return res;
 }
-
 
 
 
@@ -208,11 +207,11 @@ double Merger::reweightCKKWBornStandard(NPtr Node,bool fast){
     weight=1.;projected=false;Node->nodeME()->projectorStage(0);
   }
   
-  if (Node->treefactory()->onlymulti()!=-1&&
-      Node->treefactory()->onlymulti()!=int(Node->xcomb()->mePartonData().size()-Node->nodeME()->projectorStage()))
+  if (treefactory()->onlymulti()!=-1&&
+      treefactory()->onlymulti()!=int(Node->xcomb()->mePartonData().size()-Node->nodeME()->projectorStage()))
     return 0.;
   
-  assert(Node->allAbove(Node->mergePt()-0.1*GeV));
+  assert(Node->allAbove(mergePt()-0.1*GeV));
   
 
   
@@ -235,7 +234,7 @@ double Merger::reweightCKKWBornStandard(NPtr Node,bool fast){
   
   if(weight==0.)return 0.;
   bool maxMulti=Node->xcomb()->meMomenta().size()-2 == theMaxLegsLO;
-  Node->vetoPt((projected&&maxMulti)?Node->mergePt():history.back().scale);
+  Node->vetoPt((projected&&maxMulti)?mergePt():history.back().scale);
   return weight*matrixElementWeight(startscale,Node,1.);
 }
 
@@ -264,7 +263,7 @@ double Merger::reweightCKKWVirtualStandard(NPtr Node,bool fast){
   weight*=history.back().weight*alphaReweight()*pdfReweight();
   if(weight==0.)return 0.;
   bool maxMulti=Node->xcomb()->meMomenta().size()-2 == theMaxLegsNLO;
-  Node->vetoPt((projected&&maxMulti)?Node->mergePt():history.back().scale);
+  Node->vetoPt((projected&&maxMulti)?mergePt():history.back().scale);
   
   double matrixElement=matrixElementWeight(startscale,Node);
   double Bornweight=Node->nodeME()->lastBorndSigHatDR();
@@ -289,7 +288,7 @@ double Merger::reweightCKKWVirtualStandard(NPtr Node,bool fast){
 
 
 double Merger::reweightCKKWRealStandard(NPtr Node,bool fast){
-  bool allAbove=Node->allAbove(Node->mergePt());
+  bool allAbove=Node->allAbove(mergePt());
   if (allAbove)return reweightCKKWRealAllAbove(Node, fast);
   if (UseRandom::rnd()<.5)
     return 2.*reweightCKKWRealBelowSubReal( Node, fast);
@@ -309,7 +308,7 @@ double Merger::reweightCKKWRealAllAbove(NPtr Node,bool fast){
   }else{
       weight=1.;  projected=false; Node->nodeME()->projectorStage(1);
   }
-  if (!CLNode->allAbove(Node->mergePt()))return 0.;
+  if (!CLNode->allAbove(mergePt()))return 0.;
   if (!Born->xcomb()->willPassCuts())return 0.;
   Energy startscale=CKKW_StartScale(Born);
   Energy projectedscale=startscale;
@@ -319,7 +318,7 @@ double Merger::reweightCKKWRealAllAbove(NPtr Node,bool fast){
   weight*=history.back().weight*alphaReweight()*pdfReweight();
   if(weight==0.)return 0.;
   bool maxMulti=CLNode->xcomb()->meMomenta().size()-2 == theMaxLegsNLO;
-  Node->vetoPt((projected&&maxMulti)?Node->mergePt():history.back().scale);
+  Node->vetoPt((projected&&maxMulti)?mergePt():history.back().scale);
   
   double res= weight*as(startscale*xiRenSh)/SM().alphaS()*
          (double)Node->children().size()*
@@ -361,12 +360,12 @@ double Merger::reweightCKKWRealBelowSubReal(NPtr Node,bool fast){
   weight*=history.back().weight*alphaReweight()*pdfReweight();
   if(weight==0.)return 0.;
   bool maxMulti=HistNode->xcomb()->meMomenta().size()-2 == theMaxLegsNLO;
-  Node->vetoPt((projected&&maxMulti)?Node->mergePt():history.back().scale);
+  Node->vetoPt((projected&&maxMulti)?mergePt():history.back().scale);
   
   double sumPS=0;
   for (NPtrVec::iterator child = children.begin();
        child != children.end(); child++){
-    if ((*child)->allAbove(Node->mergePt()))
+    if ((*child)->allAbove(mergePt()))
       sumPS-=(*child)->calcPs(startscale*xiFacME);
   }
     //double me=matrixElementWeight(startscale,Node);
@@ -388,7 +387,7 @@ double Merger::reweightCKKWRealBelowSubInt(NPtr Node,bool fast){
   }else{
     weight=1.;  projected=false; Node->nodeME()->projectorStage(1);
   }
-  if (!CLNode->allAbove(Node->mergePt()))return 0.;
+  if (!CLNode->allAbove(mergePt()))return 0.;
   if (!Born->xcomb()->willPassCuts())return 0.;
   Energy startscale=CKKW_StartScale(Born);
   Energy projectedscale=startscale;
@@ -398,7 +397,7 @@ double Merger::reweightCKKWRealBelowSubInt(NPtr Node,bool fast){
   weight*=history.back().weight*alphaReweight()*pdfReweight();
   if(weight==0.)return 0.;
   bool maxMulti=CLNode->xcomb()->meMomenta().size()-2 == theMaxLegsNLO;
-  Node->vetoPt((projected&&maxMulti)?Node->mergePt():history.back().scale);
+  Node->vetoPt((projected&&maxMulti)?mergePt():history.back().scale);
   
   double res=0.;
   if (Born==CLNode&&!CLNode->children().empty())
@@ -503,7 +502,7 @@ void Merger::fillHistory(Energy scale, NPtr Begin, NPtr EndNode,bool fast){
   history.push_back(HistoryStep(Begin,sudakov0_n,scale));
   
   scale*=xiQSh;
-  if (Begin->parent()||!Begin->deepHead()->unitarized()) {
+  if (Begin->parent()||!isUnitarized) {
     while (Begin->parent() && (Begin != EndNode)) {
       if (!dosudakov(Begin,scale, Begin->dipol()->lastPt(),sudakov0_n,fast)){
         history.push_back(HistoryStep(Begin->parent(),0.,scale));
@@ -515,8 +514,8 @@ void Merger::fillHistory(Energy scale, NPtr Begin, NPtr EndNode,bool fast){
     
     Energy notunirunning=scale;
     
-    if (!Begin->deepHead()->unitarized()&&Begin->deepHead()->N() > Begin->deepHead()->nodeME()->lastMEMomenta().size()) {
-      if (!dosudakov(Begin,notunirunning,Begin->deepHead()->mergePt(),sudakov0_n,fast)){
+    if (!isUnitarized&&N() > Begin->deepHead()->nodeME()->lastMEMomenta().size()) {
+      if (!dosudakov(Begin,notunirunning,mergePt(),sudakov0_n,fast)){
         history.back().weight=0.;
       }else{
         history.back().weight=sudakov0_n;
@@ -780,7 +779,7 @@ bool Merger::reweightCKKWSingle(Ptr<MatchboxXComb>::ptr SX, double & res,bool fa
     res*=reweightCKKWRealStandard(Node);
   }else if(ME->oneLoopNoBorn()){
     res*=reweightCKKWVirtualStandard(Node);
-  }else if(Node->treefactory()->gamma()!=1.){
+  }else if(theGamma!=1.){
     res*=reweightCKKWBornGamma(Node,fast);
   }else{
     
@@ -810,7 +809,6 @@ bool Merger::reweightCKKWSingle(Ptr<MatchboxXComb>::ptr SX, double & res,bool fa
   cleanup(Node);
   DSH()->eventRecord().clear();
   SX->subProcess(SubProPtr());
-  Node->VetoedShower(true);
   
   if (!fast) {
     history.clear();
@@ -1056,8 +1054,8 @@ bool Merger::generateKinematics(Ptr<MatchboxMEBase>::ptr me,const double * r){
       NPtrVec children=theFirstNodeMap[me]->children();
       for (NPtrVec::iterator child = children.begin();
            child != children.end(); child++){
-        double gamma=treefactory()->gamma();;
-        treefactory()->setAlphaParameter(gamma);
+       
+        treefactory()->setAlphaParameter(theGamma);
         inAlphaPS|=(*child)->dipol()->aboveAlpha();
         treefactory()->setAlphaParameter(1.);
       }
@@ -1402,8 +1400,83 @@ void Merger::Init() {
   
   
   
+  
+  
+  static Parameter<Merger,double> interfacedcut
+  ("pp_dcut",
+   "The MergingScale.",
+   &Merger::pp_dcut, 5.0, 0.0, 0,
+   false, false, Interface::lowerlim);
+  
+  static Parameter<Merger,double> interfaceycut
+  ("ee_ycut",
+   "The MergingScale.",
+   &Merger::ee_ycut, 0.2, 0.0, 0,
+   false, false, Interface::lowerlim);
+  
+  static Parameter<Merger,double> interfacegamma
+  ("gamma",
+   "gamma parameter.",
+   &Merger::theGamma, 1.0, 0.0, 0,
+   false, false, Interface::lowerlim);
+  
+  
+  static Reference<Merger,JetFinder> interfaceMergingJetFinder
+  ("MergingJetFinder",
+   "A reference to the jet finder used in Merging.",
+   &Merger::theMergingJetFinder, false, false, true, false, false);
+  
+  
+  
+  static Reference<Merger,ColourBasis> interfaceLargeNBasis
+  ("LargeNBasis",
+   "Set the large-N colour basis implementation.",
+   &Merger::theLargeNBasis, false, false, true, true, false);
+  
+  
+  
+  
+  
+  
+  static Switch<Merger,bool>
+  interfacedefMERegionByJetAlg ("MERegionByJetAlg","",&Merger::defMERegionByJetAlg, false, false, false);
+  
+  static SwitchOption interfacedefMERegionByJetAlgYes
+  (interfacedefMERegionByJetAlg,"Yes","",true);
+  static SwitchOption interfacedefMERegionByJetAlgNo
+  (interfacedefMERegionByJetAlg,"No","",false);
+  
+  
+  
+  
+  
+  static Parameter<Merger, Energy> interfaceIRSafePT("IRSafePT", "Set the pt for which a matrix element should be treated as IR-safe.",
+                                                       &Merger::theIRSafePT, GeV, 0.0 * GeV, ZERO, Constants::MaxEnergy, true, false, Interface::limited);
+  interfaceIRSafePT.setHasDefault(false);
+  
+  
+  
+  static Parameter<Merger, double> interfacemergePtsmearing("MergingScaleSmearing", "Set the percentage the merging pt should be smeared.",
+                                                              &Merger::theSmearing, 0., 0.,
+                                                              0.0, 0.5, true, false, Interface::limited);
+  
+  
+  
+  static Parameter<Merger, int> interfacechooseHistory("chooseHistory", "different ways of choosing the history", &Merger::theChooseHistory, 3, -1, 0,
+                                                         false, false, Interface::lowerlim);
+  
+  
+  
+  static Parameter<Merger, int> interfaceadditionalN("additionalN", "Set the number of additional jets to consider.", &Merger::theN, 0, 0,
+                                                       0, false, false, Interface::lowerlim);
+  
+  static Parameter<Merger, int> interfacevirtualM("virtualM",
+                                                    "Set the number of virtual corrections to consider. -1 is default for no virtual correction.", &Merger::theM, -1, -1, 0, false, false,
+                                                    Interface::lowerlim);
+  
+  
 }
-          
+
 
 
 

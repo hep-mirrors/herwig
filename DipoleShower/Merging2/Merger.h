@@ -12,7 +12,7 @@
   // This is the declaration of the Merger class.
   //
 #include "MFactory.fh"
-#include "Node.h"
+#include "Node.fh"
 
 
 
@@ -177,13 +177,50 @@ namespace Herwig {
     
     
     
+    Energy mergePt() {
+      return theMergePt;
+    }
+    
+    void mergePt(Energy x) {
+      theMergePt = x;
+    }
+    
+    Energy centralMergePt() {
+      return theCentralMergePt;
+    }
+    
+    void centralMergePt(Energy x) {
+      theCentralMergePt = x;
+    }
+    
+    
     
     void firstNodeMap(Ptr<MatchboxMEBase>::ptr,NPtr);
    
 
     
+    void smeareMergePt(){theMergePt=centralMergePt()*(1.+0.*(-1.+2.*UseRandom::rnd())*smear());}
     
     
+    double gamma()const{return theGamma;}
+    
+    
+    
+    
+    double smear()const{return theSmearing;}
+    
+    
+    bool MERegionByJetAlg(){return defMERegionByJetAlg;}
+    
+    
+    Ptr<ColourBasis>::ptr largeNBasis(){return theLargeNBasis;}
+    
+    
+    void largeNBasis(Ptr<ColourBasis>::ptr x){theLargeNBasis=x;}
+    
+    int M()const{return theM;}
+    
+    int N()const{return theM;}
     
     
     
@@ -292,6 +329,58 @@ namespace Herwig {
     
     Energy therenormscale;
     
+    /**
+     * If any clustering below the CutStage has a lower pT than the MergePt
+     * the phase space point has to be thrown away.
+     */
+    
+    Energy theIRSafePT;
+    
+    
+    double theGamma;
+    
+
+    
+    
+    
+     int theChooseHistory;
+    
+  
+    
+     Energy theMergePt;
+    
+    double ee_ycut;
+    
+    double pp_dcut;
+    
+    
+     Energy theCentralMergePt;
+    
+     double theSmearing;
+    
+    int theN0;
+    
+     int  theOnlyN;
+    
+    int theN;
+    
+    int theM;
+    
+     bool isUnitarized;
+    
+     bool isNLOUnitarized;
+    
+    
+    bool defMERegionByJetAlg;
+    
+    
+    
+    Ptr<JetFinder>::ptr theMergingJetFinder;
+    
+    Ptr<ColourBasis>::ptr theLargeNBasis;
+    
+    
+
     
     /**
      * The mean of the Gaussian distribution for
@@ -304,6 +393,8 @@ namespace Herwig {
     Ptr<MFactory>::ptr theTreeFactory;
     map<Ptr<MatchboxMEBase>::ptr,NPtr> theFirstNodeMap;
     
+    
+  
 
   private:
     
