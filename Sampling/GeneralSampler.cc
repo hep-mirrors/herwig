@@ -286,7 +286,9 @@ void GeneralSampler::initialize() {
         << "when there have been significant changes to parameters, cuts, etc.\n\n"
         << "--------------------------------------------------------------------------------\n"
         << flush;
+  }
 
+  if ( runLevel() == IntegrationMode ) {
     theGrids = XML::Element(XML::ElementTypes::Element,"Grids");
     for ( map<double,Ptr<BinSampler>::ptr>::iterator s = samplers().begin();
 	  s != samplers().end(); ++s ) {
