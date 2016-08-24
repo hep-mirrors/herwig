@@ -23,7 +23,7 @@ set Factory:OrderInAlphaEW 2
 
 ## Select the process
 ## You may use identifiers such as p, pbar, j, l, mu+, h0 etc.
-do Factory:Process p p -> e+ nu j
+do Factory:Process p p -> e+ e- j
 
 read Matchbox/GoSam-GoSam.in
 
