@@ -214,7 +214,7 @@ namespace Herwig {
     
     bool minusL;
     bool Unlopsweights;
-    bool theKImproved;
+    bool theCMWScheme;
     Energy MergingScale;
     
     unsigned int theMaxLegsLO;

@@ -1,0 +1,199 @@
+
+cd /Herwig/Hadronization
+
+
+set /Herwig/Particles/d:NominalMass 0*GeV
+set /Herwig/Particles/dbar:NominalMass 0*GeV
+set /Herwig/Particles/u:NominalMass 0*GeV
+set /Herwig/Particles/ubar:NominalMass 0*GeV
+set /Herwig/Particles/s:NominalMass 0*GeV
+set /Herwig/Particles/sbar:NominalMass 0*GeV
+set /Herwig/Particles/c:NominalMass 0*GeV
+set /Herwig/Particles/cbar:NominalMass 0*GeV
+set /Herwig/Particles/b:NominalMass 0*GeV
+set /Herwig/Particles/bbar:NominalMass 0*GeV
+
+
+set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
+set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
+
+
+set /Herwig/DipoleShower/Kinematics/FFLightKinematics:IRCutoff  0.78
+set /Herwig/Couplings/NLOAlphaS:min_active_flavours 4
+set /Herwig/Couplings/NLOAlphaS:input_alpha_s 0.118
+set /Herwig/Model:QCD/RunningAlphaS /Herwig/Couplings/NLOAlphaS
+set /Herwig/DipoleShower/DipoleShowerHandler:GlobalAlphaS /Herwig/Couplings/NLOAlphaS
+
+
+
+cd /Herwig/Merging
+create Herwig::Merger Merger 
+
+set Merger:DipoleShowerHandler /Herwig/DipoleShower/DipoleShowerHandler
+set /Herwig/DipoleShower/DipoleShowerHandler:MergingHelper2 Merger
+
+
+cd /Herwig/DipoleShower/Kernels
+clear  /Herwig/DipoleShower/DipoleShowerHandler:Kernels 
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FFgx2ggxDipoleKernel
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FFqx2qgxDipoleKernel
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FFgx2ddxDipoleKernel
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FFgx2uuxDipoleKernel
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FFgx2ccxDipoleKernel
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FFgx2ssxDipoleKernel
+insert /Herwig/DipoleShower/DipoleShowerHandler:Kernels 0 FFgx2bbxDipoleKernel
+
+
+cd /Herwig/EventHandlers
+set /Herwig/Generators/LEPGenerator:EventHandler:LuminosityFunction:Energy   91.2*GeV
+
+cd /Herwig/Merging
+insert /Herwig/Generators/LEPGenerator:EventHandler:SubProcessHandlers[0] EEMFactory
+
+set EEMFactory:OrderInAlphaS 0
+set EEMFactory:OrderInAlphaEW 2
+do EEMFactory:Process e- e+ j j 
+
+
+create ColorFull::TraceBasis LargeNColourBasis
+set LargeNColourBasis:LargeN On
+set /Herwig/Merging/Merger:LargeNBasis LargeNColourBasis
+cd /Herwig/Generators
+set LEPGenerator:EventHandler:CascadeHandler /Herwig/DipoleShower/DipoleShowerHandler
+set LEPGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+set LEPGenerator:EventHandler:MultipleInteractionHandler NULL
+
+set /Herwig/Samplers/Sampler:Verbose On
+set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
+set /Herwig/Generators/LEPGenerator:EventHandler:CollisionCuts Off
+
+
+
+create Herwig::MonacoSampler /Herwig/Samplers/Monaco
+
+set /Herwig/Samplers/Sampler:BinSampler /Herwig/Samplers/Monaco
+cd /Herwig/MatrixElements/Matchbox/Phasespace
+
+set TreePhasespace:M0 0.001*GeV
+set TreePhasespace:MC 0.00001*GeV
+set /Herwig/Merging/EEMFactory:Phasespace TreePhasespace
+
+
+cd /Herwig/EventHandlers
+
+set LEPHandler:Weighted On
+set LEPHandler:Sampler  /Herwig/Samplers/Sampler
+set LEPHandler:Weighted On
+
+
+cd /Herwig/MatrixElements/Matchbox
+cd Utility
+insert DiagramGenerator:ExcludeInternal 0 /Herwig/Particles/gamma
+
+
+
+cd /Herwig/Samplers
+
+
+
+
+set Monaco:EnhancementFactor 1.2
+set Monaco:InitialPoints 1000
+set Monaco:LuminosityMapperBins 0
+set Monaco:NIterations 4
+set Monaco:RemapChannelDimension Yes
+set Monaco:RemapperMinSelection 0.0001
+set Monaco:RemapperPoints 1000
+set Monaco:UseAllIterations No
+
+
+
+
+
+cd /Herwig/EventHandlers
+
+
+set /Herwig/EventHandlers/LEPHandler:Weighted On
+
+
+
+
+cd /Herwig/Samplers
+set Sampler:UpdateAfter 3000
+set Sampler:AddUpSamplers Off
+set Sampler:GlobalMaximumWeight Off
+set Sampler:FlatSubprocesses Off
+set Sampler:MinSelection 0.00001
+set Sampler:AlmostUnweighted On
+set Sampler:RunCombinationData Off
+set Sampler:Verbose On
+
+set /Herwig/EventHandlers/LEPHandler:Sampler  /Herwig/Samplers/Sampler
+
+
+cd /Herwig/MatrixElements/Matchbox/Scales/
+
+set  /Herwig/Merging/MScale:ScaleChoice FixedScale
+set FixedScale:FixedScale 91.2*GeV
+
+
+cd /Herwig/Generators
+#set LEPGenerator:EventHandler:DecayHandler NULL
+#set LEPGenerator:EventHandler:HadronizationHandler NULL
+#set /Herwig/DipoleShower/DipoleShowerHandler:ConstituentReshuffler NULL
+
+
+
+
+
+set /Herwig/DipoleShower/DipoleShowerHandler:RenormalizationScaleFactor 1.
+set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleFactor 1.
+set /Herwig/Merging/EEMFactory:RenormalizationScaleFactor 1.
+
+
+cd /Herwig/Analysis
+clear /Herwig/Generators/LEPGenerator:AnalysisHandlers
+
+create ThePEG::RivetAnalysis Rivet RivetAnalysis.so
+insert /Herwig/Generators/LEPGenerator:AnalysisHandlers 0 Rivet
+
+
+insert Rivet:Analyses 0 ALEPH_2004_S5765862 
+insert Rivet:Analyses 0 ALEPH_1991_S2435284 
+insert Rivet:Analyses 0 ALEPH_1996_S3486095 
+
+insert Rivet:Analyses 0 DELPHI_1995_S3137023 
+insert Rivet:Analyses 0 DELPHI_1996_S3430090 
+insert Rivet:Analyses 0 ALEPH_2001_S4656318 
+insert Rivet:Analyses 0 DELPHI_2002_069_CONF_603 
+insert Rivet:Analyses 0 JADE_OPAL_2000_S4300807 
+insert Rivet:Analyses 0 OPAL_1998_S3780481 
+insert Rivet:Analyses 0 OPAL_2001_S4553896 
+insert Rivet:Analyses 0 OPAL_2002_S5361494 
+insert Rivet:Analyses 0 OPAL_2004_S6132243 
+insert Rivet:Analyses 0 SLD_1996_S3398250
+insert Rivet:Analyses 0 MC_XS
+
+
+cd /Herwig/Generators
+set /Herwig/Generators/LEPGenerator:IntermediateOutput Yes 
+set /Herwig/Generators/LEPGenerator:EventHandler /Herwig/EventHandlers/LEPHandler
+set /Herwig/DipoleShower/DipoleShowerHandler:MaxPtIsMuF Yes 
+
+
+cd /Herwig/Cuts
+
+create ThePEG::Cuts Cuts
+set Cuts:Fuzzy FuzzyTheta
+set MatchboxJetMatcher:Factory /Herwig/Merging/EEMFactory
+cd /Herwig/Merging
+set EEMFactory:MergingHelper Merger
+set Merger:MFactory EEMFactory
+set MScale:MergingHelper Merger
+set Merger:MergingJetFinder /Herwig/Cuts/JetFinder
+
+
+cd /Herwig/Generators
+set LEPGenerator:DebugLevel 1
+set LEPGenerator:PrintEvent 10
+set /Herwig/DipoleShower/DipoleShowerHandler:MergingHelper2:minusL No

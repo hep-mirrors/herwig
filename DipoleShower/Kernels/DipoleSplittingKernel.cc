@@ -34,7 +34,7 @@ DipoleSplittingKernel::DipoleSplittingKernel()
     theRenormalizationScaleFactor(1.0),
     theRenormalizationScaleFreeze(1.*GeV), 
     theFactorizationScaleFreeze(1.*GeV),
-    theKimproved(true),
+    theCMWScheme(true),
     theVirtualitySplittingScale(false),
     presampling(false) {}
 
@@ -53,7 +53,7 @@ void DipoleSplittingKernel::persistentOutput(PersistentOStream & os) const {
      << theRenormalizationScaleFactor
      << ounit(theRenormalizationScaleFreeze,GeV)
      << ounit(theFactorizationScaleFreeze,GeV)
-     << theVirtualitySplittingScale<<theKimproved;
+     << theVirtualitySplittingScale<<theCMWScheme;
 }
 
 void DipoleSplittingKernel::persistentInput(PersistentIStream & is, int) {
@@ -64,7 +64,7 @@ void DipoleSplittingKernel::persistentInput(PersistentIStream & is, int) {
      >> theRenormalizationScaleFactor
      >> iunit(theRenormalizationScaleFreeze,GeV)
      >> iunit(theFactorizationScaleFreeze,GeV)
-     >> theVirtualitySplittingScale>>theKimproved;
+     >> theVirtualitySplittingScale>>theCMWScheme;
 }
 
 double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
@@ -161,7 +161,7 @@ double DipoleSplittingKernel::alphaPDF(const DipoleSplittingInfo& split,
   double ret = pdf;
 
   if(split.fixedScale()<0.*GeV){
-    ret *= alphas / (2.*Constants::pi)*(theKimproved?(1.+((3.*(67./18.-1./6.*Constants::pi*Constants::pi)-5./9.*5.)*alphaS()->value(rScale)/2./Constants::pi)):1.);  
+    ret *= alphas / (2.*Constants::pi)*(theCMWScheme?(1.+((3.*(67./18.-1./6.*Constants::pi*Constants::pi)-5./9.*5.)*alphaS()->value(rScale)/2./Constants::pi)):1.);  
   }else{
     ret *=1.; 
   }
@@ -331,14 +331,14 @@ void DipoleSplittingKernel::Init() {
 
 
 
-  static Switch<DipoleSplittingKernel,bool> interfaceKimprove
-    ("Kimprove",
+  static Switch<DipoleSplittingKernel,bool> interfaceCMWScheme
+    ("CMWScheme",
      "Add the CMW Scheme related Kg expression to the splitting",
-    &DipoleSplittingKernel::theKimproved, false, false, false);
-  static SwitchOption interfaceKimproveOn
-    (interfaceKimprove,"On","", true);
-  static SwitchOption interfaceKimproveOff
-    (interfaceKimprove,"Off","",false);
+    &DipoleSplittingKernel::theCMWScheme, false, false, false);
+  static SwitchOption interfaceCMWSchemeOn
+    (interfaceCMWScheme,"On","", true);
+  static SwitchOption interfaceCMWSchemeOff
+    (interfaceCMWScheme,"Off","",false);
 
 
 

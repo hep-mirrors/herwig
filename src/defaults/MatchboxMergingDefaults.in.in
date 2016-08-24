@@ -28,8 +28,8 @@ set Sampler:MaxEnhancement 1.1
 # Setup the factory object for merging
 ################################################################################
 
-mkdir /Herwig/MatrixElements/Matchbox
-cd /Herwig/MatrixElements/Matchbox
+mkdir /Herwig/Merging
+cd /Herwig/Merging
 
 
 create Herwig::MFactory MFactory HwDipoleShower.so 
@@ -194,16 +194,16 @@ do MFactory:EndParticleGroup
 
 cd /Herwig/MatrixElements/Matchbox/Amplitudes/Builtin
 
-insert /Herwig/MatrixElements/Matchbox/MFactory:Amplitudes 0 Amplitudellbarqqbar
-insert /Herwig/MatrixElements/Matchbox/MFactory:Amplitudes 0 Amplitudellbarqqbarg
-insert /Herwig/MatrixElements/Matchbox/MFactory:Amplitudes 0 Amplitudellbarqqbargg
-insert /Herwig/MatrixElements/Matchbox/MFactory:Amplitudes 0 Amplitudellbarqqbarqqbar
-insert /Herwig/MatrixElements/Matchbox/MFactory:Amplitudes 0 Amplitudelnuqqbar
-insert /Herwig/MatrixElements/Matchbox/MFactory:Amplitudes 0 Amplitudelnuqqbarg
-insert /Herwig/MatrixElements/Matchbox/MFactory:Amplitudes 0 Amplitudelnuqqbargg
-insert /Herwig/MatrixElements/Matchbox/MFactory:Amplitudes 0 Amplitudelnuqqbarqqbar
-insert /Herwig/MatrixElements/Matchbox/MFactory:Amplitudes 0 Amplitudehgg
-insert /Herwig/MatrixElements/Matchbox/MFactory:Amplitudes 0 Amplitudehggg
+insert /Herwig/Merging/MFactory:Amplitudes 0 Amplitudellbarqqbar
+insert /Herwig/Merging/MFactory:Amplitudes 0 Amplitudellbarqqbarg
+insert /Herwig/Merging/MFactory:Amplitudes 0 Amplitudellbarqqbargg
+insert /Herwig/Merging/MFactory:Amplitudes 0 Amplitudellbarqqbarqqbar
+insert /Herwig/Merging/MFactory:Amplitudes 0 Amplitudelnuqqbar
+insert /Herwig/Merging/MFactory:Amplitudes 0 Amplitudelnuqqbarg
+insert /Herwig/Merging/MFactory:Amplitudes 0 Amplitudelnuqqbargg
+insert /Herwig/Merging/MFactory:Amplitudes 0 Amplitudelnuqqbarqqbar
+insert /Herwig/Merging/MFactory:Amplitudes 0 Amplitudehgg
+insert /Herwig/Merging/MFactory:Amplitudes 0 Amplitudehggg
 
 ################################################################################
 # Setup utilities for process generation
@@ -211,8 +211,8 @@ insert /Herwig/MatrixElements/Matchbox/MFactory:Amplitudes 0 Amplitudehggg
 
 cd /Herwig/MatrixElements/Matchbox
 cd Utility
-set /Herwig/MatrixElements/Matchbox/MFactory:DiagramGenerator DiagramGenerator
-set /Herwig/MatrixElements/Matchbox/MFactory:ProcessData ProcessData 
+set /Herwig/Merging/MFactory:DiagramGenerator DiagramGenerator
+set /Herwig/Merging/MFactory:ProcessData ProcessData 
 
 ################################################################################
 # Setup phasespace generators
@@ -220,24 +220,21 @@ set /Herwig/MatrixElements/Matchbox/MFactory:ProcessData ProcessData
 
 cd /Herwig/MatrixElements/Matchbox
 cd Phasespace
-set /Herwig/MatrixElements/Matchbox/MFactory:Phasespace TreePhasespace
+set /Herwig/Merging/MFactory:Phasespace TreePhasespace
 
 ################################################################################
 # Setup scale choices
 ################################################################################
 
-cd /Herwig/MatrixElements/Matchbox
-cd Scales
+cd /Herwig/Merging
 create Herwig::MScale MScale 
-set /Herwig/MatrixElements/Matchbox/MFactory:ScaleChoice MScale
+set MFactory:ScaleChoice MScale
 
 
 
 ################################################################################
 # Factories for different colliders
 ################################################################################
-
-cd /Herwig/MatrixElements/Matchbox
 
 cp MFactory EEMFactory
 set EEMFactory:PartonExtractor /Herwig/Partons/EEExtractor

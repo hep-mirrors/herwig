@@ -45,7 +45,7 @@ Merger::Merger()
   theNf=5;
   minusL=false;
   Unlopsweights=true;
-  theKImproved=true;
+  theCMWScheme=true;
   theSmearing=0.;
   theDipoleShowerHandler=
   Ptr<DipoleShowerHandler>::ptr();
@@ -486,7 +486,7 @@ double Merger::alphaReweight(){
     if ((*it).node->parent()){
       Energy q_i=xiRenSh* (*it).node->dipol()->lastPt();
       res *= as(q_i)/ SM().alphaS()
-      *(theKImproved?(1.+((3.*(67./18.-1./6.*Constants::pi*Constants::pi)-5./9.*5.)*as(q_i))/2./Constants::pi):1.);
+      *(theCMWScheme?(1.+((3.*(67./18.-1./6.*Constants::pi*Constants::pi)-5./9.*5.)*as(q_i))/2./Constants::pi):1.);
     }
   }
   return res;
@@ -864,7 +864,7 @@ Energy Merger::CKKW_StartScale(NPtr Born){
 double Merger::alphasUnlops( Energy next,Energy fixedScale)  {
   double betaZero =  (11./6.)*SM().Nc() - (1./3.)*theNf;
   return (betaZero*log(sqr(fixedScale/next)))+
-  (theKImproved?(((3.*(67./18.-1./6.*Constants::pi*Constants::pi)-5./9.*theNf))):0.);
+  (theCMWScheme?(((3.*(67./18.-1./6.*Constants::pi*Constants::pi)-5./9.*theNf))):0.);
 }
 
 
@@ -1289,7 +1289,7 @@ bool Merger::matrixElementRegion(PVector particles,Energy winnerScale,Energy cut
 void Merger::persistentOutput(PersistentOStream & os) const {
   
   os << minusL<<  Unlopsweights<<
-  theKImproved<<   projected<<
+  theCMWScheme<<   projected<<
   isUnitarized<<   isNLOUnitarized<<
   defMERegionByJetAlg<<
   theChooseHistory<<
@@ -1304,7 +1304,7 @@ void Merger::persistentOutput(PersistentOStream & os) const {
 
 void Merger::persistentInput(PersistentIStream & is, int) {
   is >> minusL>>  Unlopsweights>>
-  theKImproved>>   projected>>
+  theCMWScheme>>   projected>>
   isUnitarized>>   isNLOUnitarized>>
   defMERegionByJetAlg>>
   theChooseHistory>>
@@ -1356,11 +1356,11 @@ void Merger::Init() {
   (interfaceUnlopsweights,"No","",false);
   
   static Switch<Merger,bool>
-  interfacetheKImproved ("KImproved","",&Merger::theKImproved, false, false, false);
-  static SwitchOption interfacetheKImprovedYes
-  (interfacetheKImproved,"Yes","",true);
-  static SwitchOption interfacetheKImprovedNo
-  (interfacetheKImproved,"No","",false);
+  interfacetheCMWScheme ("CMWScheme","",&Merger::theCMWScheme, false, false, false);
+  static SwitchOption interfacetheCMWSchemeYes
+  (interfacetheCMWScheme,"Yes","",true);
+  static SwitchOption interfacetheCMWSchemeNo
+  (interfacetheCMWScheme,"No","",false);
   
 
 

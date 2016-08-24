@@ -432,7 +432,7 @@ private:
    * Implementing CMW in the kernels.
    **/
 
-  bool theKimproved;
+  bool theCMWScheme;
 
   /**
    * Cache for alphas evaluations

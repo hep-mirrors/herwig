@@ -235,7 +235,7 @@ namespace Herwig {
      */
     bool minusL;
     bool Unlopsweights;
-    bool theKImproved;
+    bool theCMWScheme;
     bool projected;
     bool isUnitarized;
      bool isNLOUnitarized;

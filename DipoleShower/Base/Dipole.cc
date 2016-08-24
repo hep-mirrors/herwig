@@ -270,23 +270,8 @@ void Dipole::tmpsplit(DipoleSplittingInfo& dsplit,
   
     dsplit.emitter(oldEmitter);
     dsplit.splitEmitter(newEmitter);
-    dsplit.emission(newEmission);
-  
-  
-  
+    dsplit.emission(newEmission);  
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 void Dipole::recoil (DipoleSplittingInfo& dsplit) {

@@ -48,7 +48,7 @@ Merging::Merging()
   theNf=5;
   minusL=false;
   Unlopsweights=true;
-  theKImproved=true;
+  theCMWScheme=true;
   MergingScale=20.*GeV;
 }
 
@@ -488,7 +488,7 @@ double Merging::alphaReweight(){
     if ((*it).node->parent()){
       Energy q_i=xiRenSh* (*it).node->dipol()->lastPt();
       res *= as(q_i)/ SM().alphaS()
-      *(theKImproved?(1.+((3.*(67./18.-1./6.*Constants::pi*Constants::pi)-5./9.*5.)*as(q_i))/2./Constants::pi):1.);
+      *(theCMWScheme?(1.+((3.*(67./18.-1./6.*Constants::pi*Constants::pi)-5./9.*5.)*as(q_i))/2./Constants::pi):1.);
     }
   }
   return res;
@@ -871,7 +871,7 @@ Energy Merging::CKKW_StartScale(CNPtr Born){
 double Merging::alphasUnlops( Energy next,Energy fixedScale)  {
   double betaZero =  (11./6.)*SM().Nc() - (1./3.)*theNf;
   return (betaZero*log(sqr(fixedScale/next)))+
-  (theKImproved?(((3.*(67./18.-1./6.*Constants::pi*Constants::pi)-5./9.*theNf))):0.);
+  (theCMWScheme?(((3.*(67./18.-1./6.*Constants::pi*Constants::pi)-5./9.*theNf))):0.);
 }
 
 
@@ -1097,7 +1097,7 @@ void Merging::persistentOutput(PersistentOStream & os) const {
   os <<xiRenME <<xiFacME <<xiRenSh
   <<xiFacSh <<xiQSh <<theNf
   <<minusL <<Unlopsweights
-  << theKImproved << ounit(MergingScale,GeV)
+  << theCMWScheme << ounit(MergingScale,GeV)
   <<theMaxLegsLO <<theMaxLegsNLO
   <<theDipoleShowerHandler<<theTreeFactory ;
 }
@@ -1106,7 +1106,7 @@ void Merging::persistentInput(PersistentIStream & is, int) {
   is >>xiRenME >>xiFacME >>xiRenSh
   >>xiFacSh >>xiQSh >>theNf
   >>minusL >>Unlopsweights
-  >> theKImproved >> iunit(MergingScale,GeV)
+  >> theCMWScheme >> iunit(MergingScale,GeV)
   >>theMaxLegsLO >>theMaxLegsNLO
   >>theDipoleShowerHandler>>theTreeFactory;
 }
@@ -1144,11 +1144,11 @@ void Merging::Init() {
   (interfaceUnlopsweights,"No","",false);
   
   static Switch<Merging,bool>
-  interfacetheKImproved ("KImproved","",&Merging::theKImproved, false, false, false);
-  static SwitchOption interfacetheKImprovedYes
-  (interfacetheKImproved,"Yes","",true);
-  static SwitchOption interfacetheKImprovedNo
-  (interfacetheKImproved,"No","",false);
+  interfacetheCMWScheme ("CMWScheme","",&Merging::theCMWScheme, false, false, false);
+  static SwitchOption interfacetheCMWSchemeYes
+  (interfacetheCMWScheme,"Yes","",true);
+  static SwitchOption interfacetheCMWSchemeNo
+  (interfacetheCMWScheme,"No","",false);
   
 
 

@@ -227,6 +227,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		src/defaults/Makefile
 		src/snippets/Makefile
 		src/Matchbox/Makefile
+		src/Merging/Makefile
 		src/herwig-config
 		Doc/Makefile
 		Doc/HerwigDefaults.in
