@@ -622,7 +622,7 @@ void DipoleShowerHandler::doCascade(unsigned int& emDone,
     
     
     if (theMergingHelper&&eventHandler()->currentCollision()) {
-      if (theMergingHelper->maxLegsLO()>eventRecord().outgoing().size()+eventRecord().hard().size()+2)
+      if (theMergingHelper->maxLegs()>eventRecord().outgoing().size()+eventRecord().hard().size()+2)
         if (theMergingHelper->mergingScale()<winnerScale){
           bool transparent=true;
           

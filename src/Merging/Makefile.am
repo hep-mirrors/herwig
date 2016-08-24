@@ -4,6 +4,7 @@ Matchboxdir = ${pkgdatadir}/Merging
 
 INPUTFILES = \
 2LO-LEP.in \
+2LO-1NLO-LEP.in \
 2LO-LHC-Z.in \
 3LO-LHC-Z.in \
 4LO-LHC-Z.in \

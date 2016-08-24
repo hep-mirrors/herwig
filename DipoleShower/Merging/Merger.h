@@ -139,7 +139,7 @@ namespace Herwig {
     Ptr<DipoleShowerHandler>::ptr DSH(){return theDipoleShowerHandler;}
     
     
-    
+    size_t maxLegs() const {return theCurrentMaxLegs;}
     size_t maxLegsLO() const {return N0()+N();}
     size_t maxLegsNLO()const {return N0()+M()+1;}
     
@@ -245,6 +245,7 @@ namespace Herwig {
      int  theOnlyN;
     int theN;
     int theM;
+    size_t theCurrentMaxLegs;
     double   xiRenME;
     double   xiFacME;
     double   xiRenSh;

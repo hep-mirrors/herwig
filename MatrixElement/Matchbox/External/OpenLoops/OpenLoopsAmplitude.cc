@@ -81,8 +81,8 @@ void OpenLoopsAmplitude::startOLP(const string& contract, int& status) {
 		DynamicLoader::load(OpenLoopsPrefix_+"/lib/libopenloops.so") ||
 		DynamicLoader::load("libopenloops.so") ||
 		DynamicLoader::load(OpenLoopsLibs_+"/libopenloops.dylib") ||
-		DynamicLoader::load(OpenLoopsPrefix_+"/lib/libopenloops.dylib") ||
-		DynamicLoader::load("libopenloops.dylib") ) ) {
+                DynamicLoader::load("libopenloops.dylib")||
+		DynamicLoader::load(OpenLoopsPrefix_+"/lib/libopenloops.dylib")  ) ) {
 	  throw Exception() << "OpenLoopsAmplitude::startOLP(): Failed to load libopenloops.so/dylib\n"
 			    << DynamicLoader::lastErrorMessage
 			    << Exception::runerror;

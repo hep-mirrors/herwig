@@ -769,13 +769,16 @@ bool Merger::reweightCKKWSingle(Ptr<MatchboxXComb>::ptr SX, double & res,bool fa
   
   if(Node->deepHead()->subtractedReal()){
     res*=reweightCKKWRealStandard(Node);
+    theCurrentMaxLegs=maxLegsNLO();
   }else if(ME->oneLoopNoBorn()){
     res*=reweightCKKWVirtualStandard(Node);
+    theCurrentMaxLegs=maxLegsNLO();
   }else if(theGamma!=1.){
     res*=reweightCKKWBornGamma(Node,fast);
+    theCurrentMaxLegs=maxLegsLO();
   }else{
-    
     res*=reweightCKKWBornStandard(Node,fast);
+    theCurrentMaxLegs=maxLegsNLO();
   }
   
   

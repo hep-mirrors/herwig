@@ -236,6 +236,10 @@ set MFactory:ScaleChoice MScale
 # Factories for different colliders
 ################################################################################
 
+
+set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
+
+
 cp MFactory EEMFactory
 set EEMFactory:PartonExtractor /Herwig/Partons/EEExtractor
 set EEMFactory:Cuts /Herwig/Cuts/EECuts

@@ -56,7 +56,7 @@ public:
   virtual void fillProjectors(Ptr<MatchboxMEBase>::ptr)=0;
   virtual pair<bool,bool> clusterSafe(Ptr<MatchboxMEBase>::ptr,int,int,int)=0;
   
-  virtual size_t maxLegsLO() const=0;
+  virtual size_t maxLegs() const=0;
   virtual Energy mergingScale() const=0;
   virtual bool matrixElementRegion(PVector particles,Energy winnerScale=0.*GeV,Energy cutscale=0.*GeV)=0;
   
