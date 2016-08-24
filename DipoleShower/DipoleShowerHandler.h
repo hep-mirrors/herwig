@@ -25,7 +25,6 @@
 #include "Herwig/DipoleShower/Base/DipoleEventReweight.h"
 #include "Herwig/DipoleShower/Utility/ConstituentReshuffler.h"
 #include "Herwig/DipoleShower/Utility/IntrinsicPtGenerator.h"
-#include "Herwig/DipoleShower/Merging/Merging.fh"
 #include "Herwig/MatrixElement/Matchbox/Base/MergerBase.fh"
 #include "Herwig/MatrixElement/Matchbox/Matching/ShowerApproximation.h"
 
@@ -46,7 +45,6 @@ using namespace ThePEG;
 class DipoleShowerHandler: public ShowerHandler {
 
 
- friend class Merging;
  friend class Merger;
 
 public:
@@ -227,6 +225,11 @@ protected:
 		   Energy startScale,
 		   Energy optHardPt = ZERO,
 		   Energy optCutoff = ZERO);
+
+
+
+
+
 
 public:
 
@@ -480,9 +483,8 @@ private:
   Energy muPt;
   
   
-  Ptr<Merging>::ptr theMergingHelper;
   
-  Ptr<MergerBase>::ptr theMergingHelper2;
+  Ptr<MergerBase>::ptr theMergingHelper;
   
   
 

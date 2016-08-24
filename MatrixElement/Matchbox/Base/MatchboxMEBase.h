@@ -25,7 +25,6 @@
 #include "Herwig/MatrixElement/Matchbox/MatchboxFactory.fh"
 #include "Herwig/MatrixElement/Matchbox/Utility/LastMatchboxXCombInfo.h"
 #include "Herwig/MatrixElement/Matchbox/Utility/MatchboxXComb.h"
-#include "Herwig/MatrixElement/Matchbox/Mergeing/ClusterNode.h"
 #include "MergerBase.h"
 
 
@@ -940,22 +939,6 @@ public:
   void merger(Ptr<MergerBase>::ptr v);
       
   /**
-   * Return the theFirstNode.
-   */
-  const Ptr<ClusterNode>::ptr& firstNode() const;
-
-  /**
-   * Return the theFirstNode.
-   */
-  Ptr<ClusterNode>::ptr& firstNode();
-
-  /**
-   * Set the theFirstNode.
-   */
-  void firstNode(Ptr<ClusterNode>::ptr v);
-  
-
-  /**
    * Return the theSubNode.
    */
    bool subNode() const;
@@ -1211,11 +1194,6 @@ private:
   mutable double theDiagramWeightVerboseDown, theDiagramWeightVerboseUp;
   
 
-  /**
-   * The first cluster node
-   */
-  Ptr<ClusterNode>::ptr theFirstNode;
-      
   /**
    * The first cluster node
    */

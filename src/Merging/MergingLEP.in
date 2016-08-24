@@ -1,5 +1,4 @@
 
-cd /Herwig/Hadronization
 
 
 set /Herwig/Particles/d:NominalMass 0*GeV
@@ -132,7 +131,6 @@ set /Herwig/EventHandlers/LEPHandler:Sampler  /Herwig/Samplers/Sampler
 
 
 cd /Herwig/MatrixElements/Matchbox/Scales/
-
 set  /Herwig/Merging/MScale:ScaleChoice FixedScale
 set FixedScale:FixedScale 91.2*GeV
 
@@ -140,15 +138,10 @@ set FixedScale:FixedScale 91.2*GeV
 cd /Herwig/Generators
 #set LEPGenerator:EventHandler:DecayHandler NULL
 #set LEPGenerator:EventHandler:HadronizationHandler NULL
-#set /Herwig/DipoleShower/DipoleShowerHandler:ConstituentReshuffler NULL
 
 
 
 
-
-set /Herwig/DipoleShower/DipoleShowerHandler:RenormalizationScaleFactor 1.
-set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleFactor 1.
-set /Herwig/Merging/EEMFactory:RenormalizationScaleFactor 1.
 
 
 cd /Herwig/Analysis
@@ -196,4 +189,4 @@ set Merger:MergingJetFinder /Herwig/Cuts/JetFinder
 cd /Herwig/Generators
 set LEPGenerator:DebugLevel 1
 set LEPGenerator:PrintEvent 10
-set /Herwig/DipoleShower/DipoleShowerHandler:MergingHelper2:minusL No
+set /Herwig/DipoleShower/DipoleShowerHandler:MergingHelper:minusL No

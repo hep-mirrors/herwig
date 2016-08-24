@@ -1,0 +1,33 @@
+read Merging/MergingLHC.in
+
+
+cd /Herwig/Merging
+
+set /Herwig/DipoleShower/DipoleShowerHandler:RenormalizationScaleFactor 1.
+set /Herwig/DipoleShower/DipoleShowerHandler:FactorizationScaleFactor 1.
+set /Herwig/DipoleShower/DipoleShowerHandler:HardScaleFactor 1.
+set PPMFactory:RenormalizationScaleFactor 1.
+set PPMFactory:FactorizationScaleFactor 1.
+
+set PPMFactory:onlyabove 0
+
+set Merger:chooseHistory 8
+set Merger:addNLOLegs -1
+set Merger:addLOLegs 2
+set Merger:MergingScale 10.*GeV
+set Merger:MergingScaleSmearing 0.1
+set Merger:gamma 1.
+
+cd /Herwig/Merging
+set PPMFactory:OrderInAlphaS 0
+set PPMFactory:OrderInAlphaEW 2
+do PPMFactory:Process p p e+ nu
+
+clear /Herwig/Analysis/Rivet:Analyses
+insert /Herwig/Analysis/Rivet:Analyses 0 MC_WJETS
+insert /Herwig/Analysis/Rivet:Analyses 0 MC_WINC
+insert /Herwig/Analysis/Rivet:Analyses 0 MC_XS
+
+
+cd /Herwig/Generators
+saverun 3LO-LHC-W LHCGenerator

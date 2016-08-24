@@ -3,9 +3,16 @@ BUILT_SOURCES = done-all-links
 Matchboxdir = ${pkgdatadir}/Merging
 
 INPUTFILES = \
-3LO-LEP.in \
 2LO-LEP.in \
-MergingLEP.in 
+2LO-LHC-Z.in \
+3LO-LHC-Z.in \
+4LO-LHC-Z.in \
+2LO-LHC-W.in \
+3LO-LHC-W.in \
+3LO-LEP.in \
+MergingLEP.in \
+MergingLHC.in
+
 
 
 dist_Matchbox_DATA = $(INPUTFILES)

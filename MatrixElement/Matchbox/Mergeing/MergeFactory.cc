@@ -1088,10 +1088,10 @@ bool MergeFactory::matrixElementRegion(PVector particles,Energy winnerScale,Ener
 
   void MergeFactory::Init() {
     
-    static Parameter<MergeFactory, int> interfaceadditionalN("additionalN", "Set the number of additional jets to consider.", &MergeFactory::theN, 0, 0,
+    static Parameter<MergeFactory, int> interfaceaddLOLegs("addLOLegs", "Set the number of additional jets to consider.", &MergeFactory::theN, 0, 0,
                                                              0, false, false, Interface::lowerlim);
     
-    static Parameter<MergeFactory, int> interfacevirtualM("virtualM",
+    static Parameter<MergeFactory, int> interfaceaddNLOLegs("addNLOLegs",
                                                           "Set the number of virtual corrections to consider. -1 is default for no virtual correction.", &MergeFactory::theM, -1, -1, 0, false, false,
                                                           Interface::lowerlim);
     

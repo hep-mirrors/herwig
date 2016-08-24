@@ -32,8 +32,6 @@
 #include "Herwig/Utilities/RunDirectories.h"
 #include "Herwig/MatrixElement/ProductionMatrixElement.h"
 #include "Herwig/MatrixElement/HardVertex.h"
-#include "Herwig/MatrixElement/Matchbox/Mergeing/ClusterNode.h"
-#include "Herwig/DipoleShower/Merging/Merging.h"
 
 
 #include <boost/foreach.hpp>
@@ -271,8 +269,6 @@ void MatchboxMEBase::setXComb(tStdXCombPtr xc) {
     scaleChoice()->setXComb(xc);
   if ( matchboxAmplitude() )
     matchboxAmplitude()->setXComb(xc);
-  if ( theFirstNode ) 
-    theFirstNode->setXComb(xc, theProjectorStage);
   if (theMerger) {
     theMerger->setXComb(this,xc, theProjectorStage);
   }
@@ -281,9 +277,6 @@ void MatchboxMEBase::setXComb(tStdXCombPtr xc) {
 
 void MatchboxMEBase::setKinematics() {
   MEBase::setKinematics();
-  if ( theFirstNode ) {
-    theFirstNode->setKinematics();
-  }
   if ( theMerger ) {
     theMerger->setKinematics(this);
   }
@@ -291,9 +284,6 @@ void MatchboxMEBase::setKinematics() {
 
 void MatchboxMEBase::clearKinematics() {
   MEBase::clearKinematics();
-  if ( theFirstNode ) {
-    theFirstNode->clearKinematics();
-  }
   if ( theMerger ) {
     theMerger->clearKinematics(this);
   }
@@ -348,39 +338,6 @@ bool MatchboxMEBase::generateKinematics(const double * r) {
 
     if (theMerger&&!theMerger->generateKinematics(this,r))
       return false;
-
-    if ( theFirstNode ){
-      theFirstNode->firstgenerateKinematics(r, 0,lastXCombPtr()->lastSHat());
-      if (theFirstNode->cutStage()==0 ){
-        
-        bool inAlphaPS=false;
-        CNPtrVec children=theFirstNode->children();
-        for (CNPtrVec::iterator child = children.begin();
-             child != children.end(); child++){
-          double gamma=theFirstNode->treefactory()->gamma();;
-          factory()->setAlphaParameter(gamma);
-          inAlphaPS|=(*child)->dipol()->aboveAlpha();
-          factory()->setAlphaParameter(1.);
-        }
-          // cout<<"\n"<<(inAlphaPS?"Yes":"No")<<flush;
-
-        
-    	SafeClusterMap temp=theFirstNode->clusterSafe();
-    	for(SafeClusterMap::iterator
-    			it=temp.begin();
-    			it!=temp.end();++it){
-    		if (!it->second.first&&!inAlphaPS)return false;
-    		}
-        }
-      if (theFirstNode->cutStage()==1 ){
-    	  SafeClusterMap temp=theFirstNode->clusterSafe();
-    	  for(SafeClusterMap::iterator
-    	      			it=temp.begin();
-    	      			it!=temp.end();++it){
-      		if (!it->second.first && !it->second.second)return false;
-      		}
-      	  }
-      }
 
       
     logGenerateKinematics(r);
@@ -742,20 +699,13 @@ CrossSection MatchboxMEBase::dSigHatDR(bool fast,double diffAlpha) const {
   getPDFWeight();
 
 
-  if (theFirstNode) {
-    if(theFirstNode->calculateInNode()){
-      lastMECrossSection(1.0*nanobarn);
-      return lastMECrossSection();
-    }
-  }
-  
   if (theMerger&&theMerger->calculateInNode()) {
     lastMECrossSection(1.0*nanobarn);
     return lastMECrossSection();
   }
   
   
-  if (!theMerger&&!theFirstNode&&!subNode()&& !lastXCombPtr()->willPassCuts() ) {
+  if (!theMerger&&!subNode()&& !lastXCombPtr()->willPassCuts() ) {
     lastME2(0.0);
     lastMECrossSection(ZERO);
     return lastMECrossSection();
@@ -1169,7 +1119,7 @@ MatchboxMEBase::getDipoles(const vector<Ptr<SubtractionDipole>::ptr>& dipoles,
 	      if ( nDipole->isSymmetric() )
 		done.insert(make_pair(make_pair(make_pair(emission,emitter),spectator),make_pair(*b,*d)));
 	      ostringstream dname;
-              if ( firstNode() ||theMerger) {
+              if ( theMerger) {
                 dname << fullName();
                 if (theProjectorStage!=0)  dname <<  ".projected." << theProjectorStage << "." ;
                 if (theOneLoopNoBorn)  dname <<  ".projected-virtual." << theProjectorStage << "." ;
@@ -1494,32 +1444,15 @@ void MatchboxMEBase::flushCaches() {
 }
 
 void MatchboxMEBase::fillProjectors() {
-  if (!theFirstNode&&!theMerger)return;
+  if (!theMerger)return;
   if (theProjectorStage==0)return;
-  if (theFirstNode) {
-  for (unsigned int i = 0; i < (theFirstNode->Projector()).size(); ++i) {
-    lastXCombPtr()->projectors().insert(
-					(theFirstNode->Projector())[i].first,
-					(theFirstNode->Projector())[i].second->xcomb());
-    }
-  }
   if (theMerger) {
     theMerger->fillProjectors(this);
   }
   
 }
 
-const Ptr<ClusterNode>::ptr& MatchboxMEBase::firstNode() const {
-  return theFirstNode;
-}
 
-Ptr<ClusterNode>::ptr& MatchboxMEBase::firstNode() {
-  return theFirstNode;
-}
-
-void MatchboxMEBase::firstNode(Ptr<ClusterNode>::ptr v) {
-  theFirstNode = v;
-}
 
 
 const Ptr<MergerBase>::ptr& MatchboxMEBase::merger() const {
@@ -1548,10 +1481,6 @@ void MatchboxMEBase::subNode(bool v) {
 
 
 pair<bool,bool> MatchboxMEBase::clustersafe(int emit,int emis,int spec){
-  
-  if (theFirstNode) {
-    return firstNode()->clusterSafe().find(make_pair(make_pair(emit,emis),spec))->second;
-  }
   
   if (theMerger) {
     return theMerger->clusterSafe(this, emit, emis, spec);
@@ -1927,7 +1856,7 @@ void MatchboxMEBase::persistentOutput(PersistentOStream & os) const {
      << theReweights << theSubprocess << theOneLoop 
      << theOneLoopNoBorn << theOneLoopNoLoops
      << epsilonSquarePoleHistograms << epsilonPoleHistograms
-     << theFirstNode <<theSubNode<< theProjectorStage
+     << theSubNode<< theProjectorStage
      << theMerger
      << theOLPProcess << theNoCorrelations
      << theHavePDFs << checkedPDFs<<theDiagramWeightVerboseDown<<theDiagramWeightVerboseUp;
@@ -1939,7 +1868,7 @@ void MatchboxMEBase::persistentInput(PersistentIStream & is, int) {
      >> theReweights >> theSubprocess >> theOneLoop 
      >> theOneLoopNoBorn >> theOneLoopNoLoops
      >> epsilonSquarePoleHistograms >> epsilonPoleHistograms
-     >> theFirstNode >> theSubNode >> theProjectorStage
+     >> theSubNode >> theProjectorStage
      >> theMerger
      >> theOLPProcess >> theNoCorrelations
      >> theHavePDFs >> checkedPDFs>>theDiagramWeightVerboseDown>>theDiagramWeightVerboseUp;

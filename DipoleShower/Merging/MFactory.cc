@@ -272,10 +272,10 @@ void MFactory::pushB(Ptr<MatchboxMEBase>::ptr born, int i) {
   
   
   Ptr<Node>::ptr clusternode = new_ptr(Node(bornme, i, 0));
-  theMergingHelper->firstNodeMap(bornme,clusternode);
+  MH()->firstNodeMap(bornme,clusternode);
   bornme->factory(this);
-  bornme->merger(theMergingHelper);
-  clusternode->MH(theMergingHelper);
+  bornme->merger(MH());
+  clusternode->MH(MH());
   clusternode->deepHead(clusternode);
   
   
@@ -358,10 +358,10 @@ void MFactory::pushV(Ptr<MatchboxMEBase>::ptr born, int i) {
     ////////////////////////////////////NLO///////////////////////////
   Ptr<Node>::ptr clusternode = new_ptr(Node(nlo, i, 0));
   clusternode->virtualContribution(true);
-  theMergingHelper->firstNodeMap(nlo,clusternode);
-  nlo->merger(theMergingHelper);
+  MH()->firstNodeMap(nlo,clusternode);
+  nlo->merger(MH());
   clusternode->deepHead(clusternode);
-  clusternode->MH(theMergingHelper);
+  clusternode->MH(MH());
   
   vector<Ptr<Node>::ptr> temp;
   vector<Ptr<Node>::ptr> temp1;
@@ -407,10 +407,10 @@ void MFactory::pushProR(Ptr<MatchboxMEBase>::ptr born, int i) {
   
   Ptr<Node>::ptr clusternode = new_ptr(Node(bornme, i - 2, 1));
   clusternode->subtractedReal(true);
-  theMergingHelper->firstNodeMap(bornme,clusternode);
-  bornme->merger(theMergingHelper);
+  MH()->firstNodeMap(bornme,clusternode);
+  bornme->merger(MH());
   clusternode->deepHead(clusternode);
-  clusternode->MH(theMergingHelper);
+  clusternode->MH(MH());
   
   vector<Ptr<Node>::ptr> temp;
   vector<Ptr<Node>::ptr> temp1;
@@ -482,7 +482,7 @@ void MFactory::setup() {
          = amplitudes().begin(); amp != amplitudes().end(); ++amp )
       (**amp).factory(this);
     
-    theMergingHelper->largeNBasis()->factory(this);
+    MH()->largeNBasis()->factory(this);
     
     assert(!(divideSub!=-1&&divideSubNumber==-1)||!(divideSub==-1&&divideSubNumber!=-1));
     assert(!subProcessGroups());

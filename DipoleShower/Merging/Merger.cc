@@ -927,7 +927,7 @@ bool Merger::doUNLOPS(NPtr Born,Energy  running, Energy next,Energy fixedScale, 
 
 
 bool Merger::projectorStage(NPtr  Born){
-  Born->deepHead()->nodeME()->mePartonData().size();
+  
   return	(Born->deepHead()->nodeME()->projectorStage() ==
              int((Born->deepHead()->nodeME()->mePartonData().size()
                   - Born->nodeME()->mePartonData().size())));
@@ -1455,10 +1455,10 @@ void Merger::Init() {
   
   
   
-  static Parameter<Merger, int> interfaceadditionalN("additionalN", "Set the number of additional jets to consider.", &Merger::theN, 0, 0,
+  static Parameter<Merger, int> interfaceaddLOLegs("addLOLegs", "Set the number of additional jets to consider.", &Merger::theN, 0, 0,
                                                        0, false, false, Interface::lowerlim);
   
-  static Parameter<Merger, int> interfacevirtualM("virtualM",
+  static Parameter<Merger, int> interfaceaddNLOLegs("addNLOLegs",
                                                     "Set the number of virtual corrections to consider. -1 is default for no virtual correction.", &Merger::theM, -1, -1, 0, false, false,
                                                     Interface::lowerlim);
   
