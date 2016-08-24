@@ -65,9 +65,13 @@ public:
   /**
    * The default constructor.
    */
-  HwRemDecayer() : allowTop_(false),multiPeriph_(false),ptmin_(-1.*GeV), beta_(ZERO),
+  HwRemDecayer() : allowTop_(false),quarkPair_(false),multiPeriph_(false),
+                   ptmin_(-1.*GeV), beta_(ZERO),
 		   maxtrySoft_(10), 
-		   colourDisrupt_(1.0), 
+		   colourDisrupt_(1.0),
+		   ladderMult_(1.0),
+		   valOfN_(0), 
+		   initTotRap_(0),
 		   _kinCutoff(0.75*GeV), 
 		   _forcedSplitScale(2.5*GeV),
 		   _range(1.1), _zbin(0.05),_ybin(0.),
@@ -559,6 +563,24 @@ private:
    * connections to additional soft subprocesses.
    */
   double colourDisrupt_;
+  
+  /**
+   * Variable to store the multiplicity factor of the 
+   multiperipheral ladder.
+   */
+  double ladderMult_;
+  
+  /**
+   * Variable to store the current total multiplicity 
+   of a ladder.
+   */
+  double valOfN_;
+  
+  /**
+   * Variable to store the initial total rapidity between 
+   of the remnants.
+   */
+  double initTotRap_;
 
   //@}
 
