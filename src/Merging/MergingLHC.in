@@ -225,6 +225,8 @@ insert /Herwig/Generators/LHCGenerator:AnalysisHandlers 0 Rivet
 
 insert /Herwig/Analysis/Rivet:Analyses 0 MC_ZJETS
 insert /Herwig/Analysis/Rivet:Analyses 0 MC_ZINC
+insert /Herwig/Analysis/Rivet:Analyses 0 MC_WJETS
+insert /Herwig/Analysis/Rivet:Analyses 0 MC_WJETS
 insert /Herwig/Analysis/Rivet:Analyses 0 MC_XS
 insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2011_I945498
 insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2011_S9131140
@@ -233,6 +235,10 @@ insert /Herwig/Analysis/Rivet:Analyses 0 MC_ZKTSPLITTINGS
 insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2013_I1258128
 insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2013_I1230812_EL
 insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2012_I1204784
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2014_I1319490
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2011_I925932
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2013_I1217867
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2014_I1303894
 
 
 cd /Herwig/Generators

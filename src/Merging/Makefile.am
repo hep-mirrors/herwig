@@ -11,13 +11,16 @@ INPUTFILES = \
 2LO-0NLO-LHC-Z.in \
 2LO-1NLO-LEP.in \
 2LO-1NLO-LHC-Z.in \
+2LO-1NLO-LHC-W.in \
 3LO-0NLO-LEP.in \
 3LO-0NLO-LHC-W.in \
 3LO-0NLO-LHC-Z.in \
 3LO-1NLO-LEP.in \
 3LO-1NLO-LHC-Z.in \
+3LO-1NLO-LHC-W.in \
 3LO-2NLO-LEP.in \
 3LO-2NLO-LHC-Z.in \
+3LO-2NLO-LHC-W.in \
 4LO-0NLO-LHC-Z.in \
 MergingLEP.in \
 MergingLHC.in
