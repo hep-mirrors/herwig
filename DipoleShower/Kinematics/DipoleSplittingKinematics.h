@@ -241,7 +241,7 @@ public:
    * Use the Dipole scale instead of hardpt for z-boundaries.
    */
   
-  bool useScaleForZ()const{return theUseScaleForZ;}
+  bool openInitialState()const{return theOpenInintialStateZ;}
   
   
 
@@ -312,6 +312,7 @@ protected:
    * Set the last generated momentum fraction.
    */
   void lastZ(double z) { theLastZ = z; }
+  
 
   /**
    * Set the last generated azimuthal angle.
@@ -453,7 +454,7 @@ private:
   Lorentz5Momentum theSpectatorMomentum;
   
   
-  bool theUseScaleForZ;
+  bool theOpenInintialStateZ;
   
 
 protected:

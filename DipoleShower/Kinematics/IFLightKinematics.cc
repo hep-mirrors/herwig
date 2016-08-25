@@ -66,7 +66,11 @@ pair<double,double> IFLightKinematics::zBoundaries(Energy pt,
 						   const DipoleSplittingInfo& dInfo,
 						   const DipoleSplittingKernel&) const {
   double x = dInfo.emitterX();
-  double s = sqrt(1.-sqr(pt/dInfo.hardPt()));
+  
+  double s = sqrt(1.-sqr(pt/(
+            openInitialState()?
+            (dInfo.scale() * sqrt((1.-x)/x) /2.)
+            :dInfo.hardPt())));
   return make_pair(0.5*(1.+x-(1.-x)*s),0.5*(1.+x+(1.-x)*s));
 }
 

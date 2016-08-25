@@ -52,6 +52,7 @@ Merger::Merger()
   isUnitarized=true;
   isNLOUnitarized=true;
   defMERegionByJetAlg=false;
+  theOpenInintialStateZ=false;
   theChooseHistory=8;
   xiRenME=1.;
   xiFacME=1.;
@@ -1294,7 +1295,7 @@ void Merger::persistentOutput(PersistentOStream & os) const {
   os << minusL<<  Unlopsweights<<
   theCMWScheme<<   projected<<
   isUnitarized<<   isNLOUnitarized<<
-  defMERegionByJetAlg<<
+  defMERegionByJetAlg<<theOpenInintialStateZ<<
   theChooseHistory<<
   theN0<<    theOnlyN<<
   theN<<   theM<<
@@ -1309,7 +1310,7 @@ void Merger::persistentInput(PersistentIStream & is, int) {
   is >> minusL>>  Unlopsweights>>
   theCMWScheme>>   projected>>
   isUnitarized>>   isNLOUnitarized>>
-  defMERegionByJetAlg>>
+  defMERegionByJetAlg>>theOpenInintialStateZ>>
   theChooseHistory>>
   theN0>>    theOnlyN>>
   theN>>   theM>>
@@ -1430,7 +1431,8 @@ void Merger::Init() {
   
   
   static Switch<Merger,bool>
-  interfacedefMERegionByJetAlg ("MERegionByJetAlg","",&Merger::defMERegionByJetAlg, false, false, false);
+  interfacedefMERegionByJetAlg
+  ("MERegionByJetAlg","",&Merger::defMERegionByJetAlg, false, false, false);
   
   static SwitchOption interfacedefMERegionByJetAlgYes
   (interfacedefMERegionByJetAlg,"Yes","",true);
@@ -1438,11 +1440,28 @@ void Merger::Init() {
   (interfacedefMERegionByJetAlg,"No","",false);
   
   
+  static Switch<Merger,bool>
+  interfaceOpenInitialSateZ
+  ("OpenInitialSateZ","",&Merger::theOpenInintialStateZ, false, false, false);
+  
+  static SwitchOption interfaceOpenInitialSateZYes
+  (interfaceOpenInitialSateZ,"Yes","",true);
+  static SwitchOption interfaceOpenInitialSateZNo
+  (interfaceOpenInitialSateZ,"No","",false);
   
   
   
-  static Parameter<Merger, Energy> interfaceIRSafePT("IRSafePT", "Set the pt for which a matrix element should be treated as IR-safe.",
-                                                       &Merger::theIRSafePT, GeV, 0.0 * GeV, ZERO, Constants::MaxEnergy, true, false, Interface::limited);
+  
+  
+  
+  
+  
+  static Parameter<Merger, Energy>
+  interfaceIRSafePT
+  ("IRSafePT", "Set the pt for which a matrixelement should be treated as IR-safe.",
+   
+   &Merger::theIRSafePT,
+   GeV, 0.0 * GeV, ZERO, Constants::MaxEnergy, true, false, Interface::limited);
   interfaceIRSafePT.setHasDefault(false);
   
   
