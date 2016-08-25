@@ -23,6 +23,21 @@ set PPMFactory:OrderInAlphaS 2
 set PPMFactory:OrderInAlphaEW 0
 do PPMFactory:Process p p j j
 
+cd /Herwig/MatrixElements/Matchbox/Scales/
+set  /Herwig/Merging/MScale:ScaleChoice MaxJetPtScale
+
+cd /Herwig/Cuts
+create ThePEG::Cuts Cuts
+insert JetCuts:JetRegions 0 FirstJet
+insert Cuts:MultiCuts 0 JetCuts
+set Cuts:JetFinder JetFinder
+set Cuts:ScaleMin 2.0*GeV
+set Cuts:X1Min 1.0e-5
+set Cuts:X2Min 1.0e-5
+
+
+
+
 cd /Herwig/MatrixElements/Matchbox/Amplitudes
 clear /Herwig/Merging/PPMFactory:Amplitudes
 insert /Herwig/Merging/PPMFactory:Amplitudes 0 MadGraph
