@@ -23,11 +23,6 @@ set PPMFactory:OrderInAlphaS 0
 set PPMFactory:OrderInAlphaEW 2
 do PPMFactory:Process p p e+ nu
 
-clear /Herwig/Analysis/Rivet:Analyses
-insert /Herwig/Analysis/Rivet:Analyses 0 MC_WJETS
-insert /Herwig/Analysis/Rivet:Analyses 0 MC_WINC
-insert /Herwig/Analysis/Rivet:Analyses 0 MC_XS
-
 
 cd /Herwig/Generators
 saverun 3LO-2NLO-LHC-W LHCGenerator
