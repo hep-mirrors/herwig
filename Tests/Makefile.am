@@ -216,7 +216,8 @@ Rivet-inputfiles: $(shell echo Rivet/LEP{,-Powheg,-Matchbox,-Dipole,-Matchbox-Po
                   $(shell echo Rivet/TVT{,-Dipole,-Matchbox,-Matchbox-Powheg}-{Run-II-Jets-{0..11},Run-I-Jets-{1..8}}.in ) \
 	          $(shell echo Rivet/TVT{,-Dipole,-Matchbox,-Matchbox-Powheg}-{630-Jets-{1..3},300-Jets-1,900-Jets-1}.in ) \
                   $(shell echo Rivet/TVT-{Run-I,Run-II,300,630,900}-UE.in) \
-                  $(shell echo Rivet/LHC{,-Dipole,-Matchbox,-Matchbox-Powheg}-7-Jets-{0..15}.in ) \
+                  $(shell echo Rivet/LHC{,-Dipole,-Matchbox,-Matchbox-Powheg}-7-DiJets-{1..7}.in ) \
+                  $(shell echo Rivet/LHC{,-Dipole,-Matchbox,-Matchbox-Powheg}-{7,8}-Jets-{0..8}.in ) \
 	          $(shell echo Rivet/LHC-{900,2360,2760,7,8,13}-UE.in ) \
 	          $(shell echo Rivet/LHC-{900,7}-UE-Long.in ) \
 		  $(shell echo Rivet/LHC{,-Dipole,-Matchbox,-Matchbox-Powheg}-7-Charm-{1..5}.in) \
@@ -291,7 +292,8 @@ Rivet-TVT-Jets:  $(shell echo Rivet-TVT-{Run-II-Jets-{0..11},Run-I-Jets-{1..8}} 
 	python/merge-TVT-Jets TVT
 	rivet-mkhtml -o Rivet-TVT-Jets TVT-Jets.yoda:Hw++
 
-Rivet-LHC-Jets: $(shell echo Rivet-LHC-7-Jets-{0..15} ) \
+Rivet-LHC-Jets: $(shell echo Rivet-LHC-7-DiJets-{1..7} ) \
+	        $(shell echo Rivet-LHC-{7,8}-Jets-{0..8} ) \
 	        $(shell echo Rivet-LHC-{900,2360,2760,7,8,13}-UE ) \
 	        $(shell echo Rivet-LHC-{900,7}-UE-Long ) \
 		$(shell echo Rivet-LHC-7-Charm-{1..5}) \
