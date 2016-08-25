@@ -191,9 +191,6 @@ cd /Herwig/EventHandlers
 
 set /Herwig/EventHandlers/LHCHandler:LuminosityFunction:Energy 7000.0*GeV
 
-cd /Herwig/Merging
-insert /Herwig/Generators/LHCGenerator:EventHandler:SubProcessHandlers[0] PPMFactory
-
 
 
 cd /Herwig/MatrixElements/Matchbox/Scales/
