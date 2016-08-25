@@ -65,6 +65,9 @@ Makefile\.in$
 ^src/tests/.*\.(time|mult|Bmult|chisq)$
 ^src/Merging/test/*yoda
 ^src/Merging/test/Herwig*
+^src/Merging/test/L*
+^src/Merging/test/done-all-links
+^src/Merging/done-all-links
 ^Tests/.*/.*\.(top|ps|pyc|info|dat|pdf|png)$
 ^Tests/.*\.(top|ps|pyc|info|dat|pdf|png|log|out)$
 ^Tests/.*\.(top|run|tex|mult|Bmult|aida|yoda)$
