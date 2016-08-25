@@ -41,5 +41,8 @@ $(NAME): build$(NAME) integrate$(NAME) run$(NAME) mergeyodas$(NAME) tar$(NAME)
 	rm -fr $(LO)LO-$(NLO)NLO-$(NAME)
 
 
-
+plots:
+	rivet-mkhtml *LEP.yoda  -o LEP
+	rivet-mkhtml *LHC-Z.yoda -o LHC-Z
+	rivet-mkhtml *LHC-W.yoda -o LHC-W
 

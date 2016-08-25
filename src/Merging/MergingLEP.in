@@ -80,9 +80,7 @@ set /Herwig/Merging/EEMFactory:Phasespace TreePhasespace
 
 cd /Herwig/EventHandlers
 
-set LEPHandler:Weighted On
 set LEPHandler:Sampler  /Herwig/Samplers/Sampler
-set LEPHandler:Weighted On
 
 
 cd /Herwig/MatrixElements/Matchbox
@@ -112,7 +110,6 @@ set Monaco:UseAllIterations No
 cd /Herwig/EventHandlers
 
 
-set /Herwig/EventHandlers/LEPHandler:Weighted On
 
 
 
@@ -124,6 +121,7 @@ set Sampler:GlobalMaximumWeight Off
 set Sampler:FlatSubprocesses Off
 set Sampler:MinSelection 0.00001
 set Sampler:AlmostUnweighted On
+set Sampler:BinSampler:Kappa 0.001
 set Sampler:RunCombinationData Off
 set Sampler:Verbose On
 
