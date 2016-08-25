@@ -225,7 +225,7 @@ insert /Herwig/Generators/LHCGenerator:AnalysisHandlers 0 Rivet
 
 insert /Herwig/Analysis/Rivet:Analyses 0 MC_ZJETS
 insert /Herwig/Analysis/Rivet:Analyses 0 MC_ZINC
-insert /Herwig/Analysis/Rivet:Analyses 0 MC_WJETS
+insert /Herwig/Analysis/Rivet:Analyses 0 MC_WINC
 insert /Herwig/Analysis/Rivet:Analyses 0 MC_WJETS
 insert /Herwig/Analysis/Rivet:Analyses 0 MC_XS
 insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2011_I945498
