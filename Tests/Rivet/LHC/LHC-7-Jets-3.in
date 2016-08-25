@@ -42,3 +42,5 @@ insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1188891
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2012_I1082009
 # CMS Jets
 insert /Herwig/Analysis/RivetAnalysis:Analyses 0 CMS_2013_I1208923
+# atlas double parton
+insert /Herwig/Analysis/RivetAnalysis:Analyses 0 ATLAS_2016_I1479760

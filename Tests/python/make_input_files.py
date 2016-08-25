@@ -589,7 +589,9 @@ elif(collider=="LHC") :
             process+="insert SimpleQCD:MatrixElements[0] MEQCD2to2\n"
             process+="set MEQCD2to2:MaximumFlavour 5\n"
             process+="set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
-            if(parameterName.find("Jets-0")>=0) :
+            if(parameterName.find("Jets-10")>=0) :
+                process+="set /Herwig/Cuts/JetKtCut:MinKT 1800.\n"
+            elif(parameterName.find("Jets-0")>=0) :
                 process+="set /Herwig/Cuts/JetKtCut:MinKT 5.\n"
             elif(parameterName.find("Jets-1")>=0) :
                 process+="set /Herwig/Cuts/JetKtCut:MinKT 10.\n"
@@ -607,6 +609,8 @@ elif(collider=="LHC") :
                 process+="set /Herwig/Cuts/JetKtCut:MinKT 300.\n"
             elif(parameterName.find("Jets-8")>=0) :
                 process+="set /Herwig/Cuts/JetKtCut:MinKT 500.\n"
+            elif(parameterName.find("Jets-9")>=0) :
+                process+="set /Herwig/Cuts/JetKtCut:MinKT 800.\n"
         elif(parameterName.find("7-Charm")>=0 or \
              parameterName.find("7-Bottom")>=0) :
             if(parameterName.find("7-Bottom")>=0) :
@@ -1122,7 +1126,9 @@ elif(collider=="LHC") :
             process+="insert  /Herwig/Cuts/Cuts:MultiCuts 0  /Herwig/Cuts/JetCuts\n"
             process+="insert  /Herwig/Cuts/JetCuts:JetRegions 0  /Herwig/Cuts/FirstJet\n"
             process+="set /Herwig/UnderlyingEvent/MPIHandler:IdenticalToUE 0\n"
-            if(parameterName.find("Jets-0")>=0) :
+            if(parameterName.find("Jets-10")>=0) :
+                process+="set /Herwig/Cuts/FirstJet:PtMin 1800.\n"
+            elif(parameterName.find("Jets-0")>=0) :
                 process+="set /Herwig/Cuts/FirstJet:PtMin 5.\n"
             elif(parameterName.find("Jets-1")>=0) :
                 process+="set /Herwig/Cuts/FirstJet:PtMin 10.\n"
@@ -1140,6 +1146,8 @@ elif(collider=="LHC") :
                 process+="set /Herwig/Cuts/FirstJet:PtMin 300.\n"
             elif(parameterName.find("Jets-8")>=0) :
                 process+="set /Herwig/Cuts/FirstJet:PtMin 500.\n"
+            elif(parameterName.find("Jets-9")>=0) :
+                process+="set /Herwig/Cuts/FirstJet:PtMin 800.\n"
         elif(parameterName.find("7-Charm")>=0 or \
              parameterName.find("7-Bottom")>=0) :
             parameters["bscheme"]="read Matchbox/FourFlavourScheme.in"
