@@ -12,8 +12,8 @@ set PPMFactory:FactorizationScaleFactor 1.
 set PPMFactory:onlyabove 0
 
 set Merger:chooseHistory 8
-set Merger:addNLOLegs -1
-set Merger:addLOLegs 1
+set Merger:addNLOLegs 0
+set Merger:addLOLegs 2
 set Merger:MergingScale 10.*GeV
 set Merger:MergingScaleSmearing 0.1
 set Merger:gamma 1.
@@ -25,4 +25,4 @@ do PPMFactory:Process p p e+ e-
 
 
 cd /Herwig/Generators
-saverun 2LO-LHC-Z LHCGenerator
+saverun 3LO-1NLO-LHC-Z LHCGenerator

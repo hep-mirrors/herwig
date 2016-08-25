@@ -12,11 +12,11 @@ set EEMFactory:FactorizationScaleFactor 1.
 set EEMFactory:onlyabove 0
 
 set Merger:chooseHistory 8
-set Merger:addNLOLegs 0
-set Merger:addLOLegs 1
+set Merger:addNLOLegs 1
+set Merger:addLOLegs 2
 set Merger:MergingScale 4.*GeV
 set Merger:MergingScaleSmearing 0.1
 set Merger:gamma 1.
 
 cd /Herwig/Generators
-saverun 2LO-1NLO-LEP LEPGenerator
+saverun 3LO-2NLO-LEP LEPGenerator

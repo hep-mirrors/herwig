@@ -63,6 +63,8 @@ Makefile\.in$
 ^src/Herwig$
 ^src/Herwig-scratch$
 ^src/tests/.*\.(time|mult|Bmult|chisq)$
+^src/Merging/test/*yoda
+^src/Merging/test/Herwig*
 ^Tests/.*/.*\.(top|ps|pyc|info|dat|pdf|png)$
 ^Tests/.*\.(top|ps|pyc|info|dat|pdf|png|log|out)$
 ^Tests/.*\.(top|run|tex|mult|Bmult|aida|yoda)$
@@ -90,6 +92,8 @@ Makefile\.in$
 ^src/Matchbox/NLO-NoShower.in$
 ^src/Matchbox/Powheg-DefaultShower.in$
 ^src/Matchbox/Powheg-DipoleShower.in$
+^src/defaults/MatchboxMergeDefaults.in
+^src/defaults/MatchboxMergingDefaults.in
 ^src/Matchbox/done-all-links$
 ^src/snippets/done-all-links$
 ^Utilities/XML/xml_test$

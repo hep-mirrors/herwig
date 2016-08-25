@@ -247,7 +247,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		src/Matchbox/NLO-NoShower.in
 		src/Matchbox/Powheg-DefaultShower.in
 		src/Matchbox/Powheg-DipoleShower.in
-		src/Merging/4LO-LHC-Z.in
+		src/Merging/4LO-0NLO-LHC-Z.in
 		Contrib/Makefile
 		Contrib/make_makefiles.sh
 		Tests/Makefile

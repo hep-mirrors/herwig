@@ -13,7 +13,7 @@ set PPMFactory:onlyabove 0
 
 set Merger:chooseHistory 8
 set Merger:addNLOLegs -1
-set Merger:addLOLegs 2
+set Merger:addLOLegs 0
 set Merger:MergingScale 10.*GeV
 set Merger:MergingScaleSmearing 0.1
 set Merger:gamma 1.
@@ -30,4 +30,4 @@ insert /Herwig/Analysis/Rivet:Analyses 0 MC_XS
 
 
 cd /Herwig/Generators
-saverun 3LO-LHC-W LHCGenerator
+saverun 1LO-0NLO-LHC-W LHCGenerator

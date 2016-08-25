@@ -262,7 +262,7 @@ namespace {
 	  eg->setSeed( ui.seed() + n );
 	  eg->addTag( "-" + nstr );
 	  Herwig::RunDirectories::pushRunId( nstr );
-	  eg->go( ui.resume() ? -1 : 1, ui.N() / ui.jobs(), false );
+	  eg->go( ui.resume() ? -1 : 1, ui.N() / ui.jobs(), ui.tics() );
 	  break; // avoid sub-forks
 	}
 	// nothing to do here if we're the parent

@@ -55,6 +55,15 @@ cd /Herwig/Cuts
 set MassCut:MinM 66*GeV
 set MassCut:MaxM 116*GeV
 get QCDCuts:X1Min
+set /Herwig/Generators/LHCGenerator:EventHandler:CollisionCuts Off
+
+
+cd /Herwig/MatrixElements/Matchbox/Phasespace
+
+set TreePhasespace:M0 0.01*GeV
+set TreePhasespace:MC 0.0001*GeV
+
+
 
 set /Herwig/Generators/LHCGenerator:MaxErrors 10000
 cd /Herwig/EventHandlers
@@ -160,6 +169,7 @@ set Sampler:GlobalMaximumWeight Off
 set Sampler:FlatSubprocesses Off
 set Sampler:MinSelection 0.000001
 set Sampler:AlmostUnweighted On
+set Sampler:BinSampler:Kappa 0.001
 set Sampler:RunCombinationData Off
 set Sampler:Verbose On
 
@@ -213,16 +223,16 @@ create ThePEG::RivetAnalysis Rivet RivetAnalysis.so
 insert /Herwig/Generators/LHCGenerator:AnalysisHandlers 0 Rivet
 
 
-#insert /Herwig/Analysis/Rivet:Analyses 0 MC_ZJETS
-#insert /Herwig/Analysis/Rivet:Analyses 0 MC_ZINC
+insert /Herwig/Analysis/Rivet:Analyses 0 MC_ZJETS
+insert /Herwig/Analysis/Rivet:Analyses 0 MC_ZINC
 insert /Herwig/Analysis/Rivet:Analyses 0 MC_XS
-#insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2011_I945498
-#insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2011_S9131140
-#insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2013_I1224539_ZJET
-#insert /Herwig/Analysis/Rivet:Analyses 0 MC_ZKTSPLITTINGS
-#insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2013_I1258128
-#insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2013_I1230812_EL
-#insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2012_I1204784
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2011_I945498
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2011_S9131140
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2013_I1224539_ZJET
+insert /Herwig/Analysis/Rivet:Analyses 0 MC_ZKTSPLITTINGS
+insert /Herwig/Analysis/Rivet:Analyses 0 CMS_2013_I1258128
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2013_I1230812_EL
+insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2012_I1204784
 
 
 cd /Herwig/Generators

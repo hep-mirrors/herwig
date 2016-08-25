@@ -3,19 +3,27 @@ BUILT_SOURCES = done-all-links
 Matchboxdir = ${pkgdatadir}/Merging
 
 INPUTFILES = \
-2LO-LEP.in \
+1LO-0NLO-LEP.in \
+1LO-0NLO-LHC-W.in \
+1LO-0NLO-LHC-Z.in \
+2LO-0NLO-LEP.in \
+2LO-0NLO-LHC-W.in \
+2LO-0NLO-LHC-Z.in \
 2LO-1NLO-LEP.in \
-2LO-LHC-Z.in \
-3LO-LHC-Z.in \
-4LO-LHC-Z.in \
-2LO-LHC-W.in \
-3LO-LHC-W.in \
-3LO-LEP.in \
+2LO-1NLO-LHC-Z.in \
+3LO-0NLO-LEP.in \
+3LO-0NLO-LHC-W.in \
+3LO-0NLO-LHC-Z.in \
+3LO-1NLO-LEP.in \
+3LO-1NLO-LHC-Z.in \
+3LO-2NLO-LEP.in \
+3LO-2NLO-LHC-Z.in \
+4LO-0NLO-LHC-Z.in \
 MergingLEP.in \
 MergingLHC.in
 
 
-
+ 
 dist_Matchbox_DATA = $(INPUTFILES)
 
 CLEANFILES = done-all-links

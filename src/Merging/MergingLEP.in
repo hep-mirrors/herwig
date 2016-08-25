@@ -29,7 +29,7 @@ cd /Herwig/Merging
 create Herwig::Merger Merger 
 
 set Merger:DipoleShowerHandler /Herwig/DipoleShower/DipoleShowerHandler
-set /Herwig/DipoleShower/DipoleShowerHandler:MergingHelper2 Merger
+set /Herwig/DipoleShower/DipoleShowerHandler:MergingHelper Merger
 
 
 cd /Herwig/DipoleShower/Kernels
