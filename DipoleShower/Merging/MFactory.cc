@@ -106,12 +106,6 @@ void MFactory::fill_amplitudes() {
 void MFactory::prepare_BV(int i) {
     // check if we have virtual contributions
   bool haveVirtuals = true;
-  bool virtualsAreDR = false;
-  bool virtualsAreDRbar = false;
-  bool virtualsAreCDR = false;
-  bool virtualsAreCS = false;
-  bool virtualsAreBDK = false;
-  bool virtualsAreExpanded = false;
   for ( vector<Ptr<MatchboxMEBase>::ptr>::iterator born = pureMEsMap()[i].begin() ; born != pureMEsMap()[i].end() ; ++born ) {
     
     prepareME(*born);
@@ -160,38 +154,17 @@ void MFactory::prepare_BV(int i) {
     
     
     haveVirtuals &= (**born).haveOneLoop();
-    if ( (**born).haveOneLoop() ) {
-      virtualsAreDR |= (**born).isDR();
-      virtualsAreCDR |= !(**born).isDR();
-      virtualsAreDRbar |= (**born).isDRbar();
-      virtualsAreCS |= (**born).isCS();
-      virtualsAreBDK |= (**born).isBDK();
-      virtualsAreExpanded |= (**born).isExpanded();
-    }
   }
   
     // check the additional insertion operators
   if ( !theVirtualsMap[i].empty() ) haveVirtuals = true;
   for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt = theVirtualsMap[i].begin() ; virt != theVirtualsMap[i].end() ; ++virt ) {
     (**virt).factory(this);
-    virtualsAreDR |= (**virt).isDR();
-    virtualsAreDRbar |= (**virt).isDRbar();
-    virtualsAreCDR |= !(**virt).isDR();
-    virtualsAreCS |= (**virt).isCS();
-    virtualsAreBDK |= (**virt).isBDK();
-    virtualsAreExpanded |= (**virt).isExpanded();
   }
   
   
     // check for consistent conventions on virtuals, if we are to include MH()->M()
   if ( i <= MH()->M() ) {
-    if ( virtualsAreDR && virtualsAreCDR ) {
-      throw InitException() << "Virtual corrections use inconsistent regularization schemes.\n";
-    }
-    if ( (virtualsAreCS && virtualsAreBDK) || (virtualsAreCS && virtualsAreExpanded) || (virtualsAreBDK && virtualsAreExpanded)
-        || (!virtualsAreCS && !virtualsAreBDK && !virtualsAreExpanded) ) {
-      throw InitException() << "Virtual corrections use inconsistent conventions on finite terms.\n";
-    }
     if ( !haveVirtuals ) {
       throw InitException() << "Could not find amplitudes for all virtual contributions needed.\n";
     }
@@ -204,40 +177,15 @@ void MFactory::prepare_BV(int i) {
        = DipoleRepository::insertionIOperators(dipoleSet()).begin();
        virt != DipoleRepository::insertionIOperators(dipoleSet()).end(); ++virt ) {
     (**virt).factory(this);
-    if ( virtualsAreDRbar )
-      (**virt).useDRbar();
-    if ( virtualsAreDR )
-      (**virt).useDR();
-    else
-      (**virt).useCDR();
-    if ( virtualsAreCS )
-      (**virt).useCS();
-    if ( virtualsAreBDK )
-      (**virt).useBDK();
-    if ( virtualsAreExpanded )
-      (**virt).useExpanded();
   }
   for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt
        = DipoleRepository::insertionPKOperators(dipoleSet()).begin();
        virt != DipoleRepository::insertionPKOperators(dipoleSet()).end(); ++virt ) {
     
     (**virt).factory(this);
-    if ( virtualsAreDRbar )
-      (**virt).useDRbar();
-    if ( virtualsAreDR )
-      (**virt).useDR();
-    else
-      (**virt).useCDR();
-    if ( virtualsAreCS )
-      (**virt).useCS();
-    if ( virtualsAreBDK )
-      (**virt).useBDK();
-    if ( virtualsAreExpanded )
-      (**virt).useExpanded();
   }
   
     //}
-  thevirtualsAreExpandedMap[i] = virtualsAreExpanded;
   
 }
 
@@ -348,11 +296,6 @@ void MFactory::pushV(Ptr<MatchboxMEBase>::ptr born, int i) {
       if ( (**virt).apply((*born).diagrams().front()->partons()) ) nlo->virtuals().push_back(*virt);
     }
     if ( nlo->virtuals().empty() ) throw InitException() << "No insertion operators have been found for " << (*born).name() << "\n";
-    if ( checkPoles() ) {
-      if ( !thevirtualsAreExpandedMap[i] ) {
-        throw InitException() << "Cannot check epsilon poles if virtuals are not in `expanded' convention.\n";
-      }
-    }
   }
   nlo->doOneLoopNoBorn();
     ////////////////////////////////////NLO///////////////////////////

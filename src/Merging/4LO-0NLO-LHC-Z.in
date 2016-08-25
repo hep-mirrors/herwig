@@ -29,7 +29,7 @@ clear /Herwig/Merging/PPMFactory:Amplitudes
 set GenericProcesses:TreeLevelAmplitude MadGraph
 set GenericProcesses:OneLoopAmplitude OpenLoops
 insert /Herwig/Merging/PPMFactory:Amplitudes 0 GenericProcesses
-set OpenLoops:OpenLoopsPrefix /mt/home/jbellm/Physik/opt/opt/OpenLoops/
+set OpenLoops:OpenLoopsPrefix /Users/johannes/Physik/Bootstrap/build/opt/OpenLoops/
 
 
 

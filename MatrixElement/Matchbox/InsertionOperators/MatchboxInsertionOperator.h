@@ -15,6 +15,7 @@
 #include "ThePEG/Handlers/HandlerBase.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Handlers/LastXCombInfo.h"
+#include "Herwig/MatrixElement/Matchbox/InsertionOperators/MatchboxInsertionOperator.fh"
 #include "Herwig/MatrixElement/Matchbox/Utility/LastMatchboxXCombInfo.h"
 #include "Herwig/MatrixElement/Matchbox/Base/MatchboxMEBase.fh"
 #include "Herwig/MatrixElement/Matchbox/MatchboxFactory.fh"
@@ -99,67 +100,33 @@ public:
   /** @name Conventions */
   //@{
 
-  /**
-   * Change from MSbar to DRbar
-   */
-  virtual void useDRbar() { theUseDRbar = true; }
-
-  /**
-   * Change from CDR to DR
-   */
-  virtual void useDR() { theUseDR = true; }
-
-  /**
-   * Change from DR to CDR
-   */
-  virtual void useCDR() { theUseDR = false; }
-
-  /**
-   * Change to the CS conventions
-   */
-  virtual void useCS() { theUseCS = true; }
-
-  /**
-   * Change to the BDK conventions
-   */
-  virtual void useBDK() { theUseBDK = true; }
-
-  /**
-   * Change to the Expanded conventions
-   */
-  virtual void useExpanded() { theUseExpanded = true; }
 
   /**
    * Return true, if the amplitude is DRbar renormalized, otherwise
    * MSbar is assumed.
    */
-  virtual bool isDRbar() const { return theUseDRbar; }
-
+      virtual bool isDRbar() const;
   /**
    * Return true, if this virtual correction
    * has been calculated using dimensional reduction.
    * CDR is assumed otherwise.
    */
-  virtual bool isDR() const { return theUseDR; }
-
+      virtual bool isDR() const;
   /**
    * Return true, if the virtual correction has been calculated in the
    * dipole convention.
    */
-  virtual bool isCS() const { return theUseCS; }
-
+      virtual bool isCS() const;
   /**
    * Return true, if the virtual correction has been calculated in the
    * BDK convention.
    */
-  virtual bool isBDK() const { return theUseBDK; }
-
+      virtual bool isBDK() const;
   /**
    * Return true, if the virtual correction has been calculated in the
    * expanded convention.
    */
-  virtual bool isExpanded() const { return theUseExpanded; }
-
+      virtual bool isExpanded() const;
   /**
    * If defined, return the coefficient of the pole in epsilon^2
    */
@@ -252,35 +219,6 @@ private:
    */
   Ptr<MatchboxFactory>::tptr theFactory;
 
-  /**
-   * Change from MSbar to DRbar
-   */
-  bool theUseDRbar;
-
-  /**
-   * True, if this virtual correction
-   * has been calculated using dimensional reduction.
-   * CDR is assumed otherwise.
-   */
-  bool theUseDR;
-
-  /**
-   * True, if the virtual correction has been calculated in the
-   * dipole convention.
-   */
-  bool theUseCS;
-
-  /**
-   * True, if the virtual correction has been calculated in the
-   * BDK convention.
-   */
-  bool theUseBDK;
-
-  /**
-   * True, if the virtual correction has been calculated in the
-   * expanded convention.
-   */
-  bool theUseExpanded;
 
 private:
 

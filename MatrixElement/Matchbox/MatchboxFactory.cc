@@ -568,35 +568,11 @@ void MatchboxFactory::setup() {
 		= DipoleRepository::insertionIOperators(dipoleSet()).begin(); 
 	      virt != DipoleRepository::insertionIOperators(dipoleSet()).end(); ++virt ) {
 	  (**virt).factory(this);
-	  if ( virtualsAreDRbar )
-	    (**virt).useDRbar();
-	  if ( virtualsAreDR )
-	    (**virt).useDR();
-	  else
-	    (**virt).useCDR();
-	  if ( virtualsAreCS )
-	    (**virt).useCS();
-	  if ( virtualsAreBDK )
-	    (**virt).useBDK();
-	  if ( virtualsAreExpanded )
-	    (**virt).useExpanded();
 	}
 	for ( vector<Ptr<MatchboxInsertionOperator>::ptr>::const_iterator virt
 		= DipoleRepository::insertionPKOperators(dipoleSet()).begin(); 
 	      virt != DipoleRepository::insertionPKOperators(dipoleSet()).end(); ++virt ) {
 	  (**virt).factory(this);
-	  if ( virtualsAreDRbar )
-	    (**virt).useDRbar();
-	  if ( virtualsAreDR )
-	    (**virt).useDR();
-	  else
-	    (**virt).useCDR();
-	  if ( virtualsAreCS )
-	    (**virt).useCS();
-	  if ( virtualsAreBDK )
-	    (**virt).useBDK();
-	  if ( virtualsAreExpanded )
-	    (**virt).useExpanded();
 	}
       }
 
