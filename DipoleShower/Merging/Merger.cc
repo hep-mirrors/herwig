@@ -778,7 +778,7 @@ bool Merger::reweightCKKWSingle(Ptr<MatchboxXComb>::ptr SX, double & res,bool fa
     theCurrentMaxLegs=maxLegsLO();
   }else{
     res*=reweightCKKWBornStandard(Node,fast);
-    theCurrentMaxLegs=maxLegsNLO();
+    theCurrentMaxLegs=maxLegsLO();
   }
   
   
