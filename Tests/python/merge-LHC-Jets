@@ -120,18 +120,20 @@ if __name__ == "__main__":
     if len(args) < 1:
         logging.error("Must specify at least the name of the files")
         sys.exit(1)
- 
-yodafiles=["-7-Jets-1.yoda","-7-Jets-2.yoda",
-           "-7-Jets-3.yoda","-7-Jets-4.yoda","-7-Jets-5.yoda",
-           "-7-Jets-6.yoda","-7-Jets-7.yoda","-7-Jets-8.yoda",
-           "-7-Bottom-0.yoda","-7-Bottom-1.yoda","-7-Bottom-2.yoda",
+yodafiles=["-7-Bottom-0.yoda","-7-Bottom-1.yoda","-7-Bottom-2.yoda",
            "-7-Bottom-3.yoda","-7-Bottom-4.yoda","-7-Bottom-5.yoda",
            "-7-Charm-1.yoda","-7-Charm-2.yoda",
            "-7-Charm-3.yoda","-7-Charm-4.yoda","-7-Charm-5.yoda",
-           "-7-Top-SL.yoda","-7-Top-L.yoda","-7-Top-All.yoda","-8-Top-All.yoda"]
+           "-7-Top-SL.yoda","-7-Top-L.yoda","-7-Top-All.yoda",
+           "-8-Top-All.yoda"]
+
+for i in range(1,9) :
+    yodafiles.append("-7-Jets-%1.1i.yoda" % i)
+    yodafiles.append("-8-Jets-%1.1i.yoda" % i)
 
 if(opts.ue) :
-    yodafiles += ["-7-Jets-0.yoda","-900-UE.yoda"   ,"-2360-UE.yoda"    ,"-2760-UE.yoda"    ,
+    yodafiles += ["-7-Jets-0.yoda","-8-Jets-0.yoda",
+                  "-900-UE.yoda"   ,"-2360-UE.yoda"    ,"-2760-UE.yoda"    ,
                   "-7-UE.yoda"     ,"-900-UE-Long.yoda","-8-UE.yoda",
                   "-7-UE-Long.yoda","-13-UE.yoda"]
 ## Get histos
@@ -141,56 +143,59 @@ outhistos={}
 weights = {}
 for f in yodafiles:
     file=args[0]+f
+    ptmin=0.
     sqrts=7000
-    if(file.find("-900-UE")>0) :
+    # CMS energy
+    if(file.find("-900-")>0) :
         sqrts=900
-        ptmin=0.
-    elif(file.find("-2360-UE")>0) :
+    elif(file.find("-2360-")>0) :
         sqrts=2360
-        ptmin=0.
-    elif(file.find("-2760-UE")>0) :
+    elif(file.find("-2760-")>0) :
         sqrts=2760
-        ptmin=0.
-    elif(file.find("-7-UE")>0) :
-        ptmin=0.
-    elif(file.find("-13-UE")>0) :
-        ptmin=0.
+    elif(file.find("-7-")>=0) :
+        sqrts=7000
+    elif(file.find("-8-")>=0) :
+        sqrts=8000
+    elif(file.find("-13-")>0) :
         sqrts=13000
-    elif(file.find("-7-Jets-0")>0) :
+    # pT min
+    if(file.find("UE")>0) :
+        ptmin=0.
+    elif(file.find("Jets-0")>0) :
         ptmin=4.
-    elif(file.find("-7-Jets-1")>0) :
+    elif(file.find("Jets-1")>0) :
         if( not opts.ue) :
             ptmin = 10.
         else :
             ptmin = 20.
-    elif(file.find("-7-Jets-2")>0) :
+    elif(file.find("Jets-2")>0) :
         ptmin=40.
-    elif(file.find("-7-Jets-3")>0) :
+    elif(file.find("Jets-3")>0) :
         ptmin=80.
-    elif(file.find("-7-Jets-4")>0) :
+    elif(file.find("Jets-4")>0) :
         ptmin=110.
-    elif(file.find("-7-Jets-5")>0) :
+    elif(file.find("Jets-5")>0) :
         ptmin=210.
-    elif(file.find("-7-Jets-6")>0) :
+    elif(file.find("Jets-6")>0) :
         ptmin=260.
-    elif(file.find("-7-Jets-7")>0) :
+    elif(file.find("Jets-7")>0) :
         ptmin=400.
-    elif(file.find("-7-Jets-8")>0) :
+    elif(file.find("Jets-8")>0) :
         ptmin=600.
-    elif(file.find("-7-Bottom-0")>0) :
+    elif(file.find("Bottom-0")>0) :
         ptmin=0.
-    elif(file.find("-7-Bottom-1")>0 or file.find("-7-Charm-1")>0) :
+    elif(file.find("Bottom-1")>0 or file.find("Charm-1")>0) :
         ptmin=10.
-    elif(file.find("-7-Bottom-2")>0 or file.find("-7-Charm-2")>0) :
+    elif(file.find("Bottom-2")>0 or file.find("Charm-2")>0) :
         ptmin=30.
-    elif(file.find("-7-Bottom-3")>0 or file.find("-7-Charm-3")>0) :
+    elif(file.find("Bottom-3")>0 or file.find("Charm-3")>0) :
         ptmin=70.
-    elif(file.find("-7-Bottom-4")>0 or file.find("-7-Charm-4")>0) :
+    elif(file.find("Bottom-4")>0 or file.find("Charm-4")>0) :
         ptmin=100.
-    elif(file.find("-7-Bottom-5")>0 or file.find("-7-Charm-5")>0) :
+    elif(file.find("Bottom-5")>0 or file.find("Charm-5")>0) :
         ptmin=130.
-    elif(file.find("-7-Top-SL.yoda")>0 or file.find("-7-Top-L.yoda")>0 or \
-         file.find("-7-Top-All.yoda")>0):
+    elif(file.find("Top-SL.yoda")>0 or file.find("Top-L.yoda")>0 or \
+         file.find("Top-All.yoda")>0):
         ptmin=0.
     if not os.access(file, os.R_OK):
         logging.error("%s can not be read" % file)
@@ -202,43 +207,26 @@ for f in yodafiles:
         continue
     ## Get histos from this YODA file
     for aopath, ao in aos.iteritems() :
-        if(aopath.find("S8924791")>0 or 
-           aopath.find("S8971293")>0 or 
-           aopath.find("S8817804")>0 or 
-           aopath.find("I1082936")>0 or 
-           aopath.find("S8994773")>0 or 
-           aopath.find("S8918562")>0 or 
-           aopath.find("S8624100")>0 or 
-           aopath.find("S8625980")>0 or 
-           aopath.find("S8894728")>0 or 
-           aopath.find("S8957746")>0 or 
-           aopath.find("S9126244")>0 or 
-           aopath.find("S9120041")>0 or 
-           aopath.find("S8950903")>0 or 
-           aopath.find("S9086218")>0 or 
-           aopath.find("S9088458")>0 or 
-           aopath.find("I919017" )>0 or
-           aopath.find("I926145" )>0 or
-           aopath.find("S8941262")>0 or
-           aopath.find("S8973270")>0 or
-           aopath.find("I1118269")>0 or
-           aopath.find("I1188891")>0 or
-           aopath.find("I1082009")>0 or
-           aopath.find("I1087342")>0 or
-           aopath.find("S9035664")>0 or
-           aopath.find("I1125575")>0 or
-           aopath.find("I1094564")>0 or
-           aopath.find("I930220")>0 or
-           aopath.find("I1224539")>0 or
-           aopath.find("I1273574")>0 or
-           aopath.find("I1261026")>0 or
-           aopath.find("I1307243")>0 or
-           aopath.find("I1325553")>0 or
-           aopath.find("I1298810")>0 or
-           aopath.find("CMS_2012_PAS_QCD_11_010")>0 or
-           aopath.find("CMS_2013_I1208923")>0 or
-           aopath.find("ATLAS_2014_I1298811")>0 or
-           aopath.find("CMS_2014_I1305624")>0) :
+        if(aopath.find("S8924791")>0 or aopath.find("S8971293")>0 or
+           aopath.find("S8817804")>0 or aopath.find("I1082936")>0 or
+           aopath.find("S8994773")>0 or aopath.find("S8918562")>0 or
+           aopath.find("S8624100")>0 or aopath.find("S8625980")>0 or
+           aopath.find("S8894728")>0 or aopath.find("S8957746")>0 or
+           aopath.find("S9126244")>0 or aopath.find("S9120041")>0 or
+           aopath.find("S8950903")>0 or aopath.find("S9086218")>0 or
+           aopath.find("S9088458")>0 or aopath.find("I919017" )>0 or
+           aopath.find("I926145" )>0 or aopath.find("S8941262")>0 or
+           aopath.find("S8973270")>0 or aopath.find("I1118269")>0 or
+           aopath.find("I1188891")>0 or aopath.find("I1082009")>0 or
+           aopath.find("I1087342")>0 or aopath.find("S9035664")>0 or
+           aopath.find("I1125575")>0 or aopath.find("I1094564")>0 or
+           aopath.find("I930220" )>0 or aopath.find("I1224539")>0 or
+           aopath.find("I1273574")>0 or aopath.find("I1261026")>0 or
+           aopath.find("I1307243")>0 or aopath.find("I1325553")>0 or
+           aopath.find("I1298810")>0 or aopath.find("I1298811")>0 or
+           aopath.find("I1208923")>0 or aopath.find("I1305624")>0 or
+           aopath.find("I1419070")>0 or
+           aopath.find("CMS_2012_PAS_QCD_11_010")>0) :
            if not inhistos_pt.has_key(aopath):
                inhistos_pt[aopath] = {}
            tmpE = inhistos_pt[aopath]
@@ -258,44 +246,51 @@ for f in yodafiles:
             else :
                 outhistos[aopath] = ao
 
-yodafiles=["-7-Jets-1.yoda" ,"-7-Jets-9.yoda" ,"-7-Jets-10.yoda",
-           "-7-Jets-11.yoda","-7-Jets-12.yoda","-7-Jets-13.yoda",
-           "-7-Jets-14.yoda","-7-Jets-15.yoda",
-           "-7-Bottom-6.yoda","-7-Bottom-7.yoda","-7-Bottom-8.yoda"]
+
+
+yodafiles=["-7-Bottom-6.yoda","-7-Bottom-7.yoda","-7-Bottom-8.yoda"]
+for i in range(1,8) :
+    yodafiles.append("-7-DiJets-%1.1i-A.yoda" % i)
+    yodafiles.append("-7-DiJets-%1.1i-B.yoda" % i)
+    yodafiles.append("-7-DiJets-%1.1i-C.yoda" % i)
 
 for f in yodafiles:
+    print file
     file=args[0]+f
-    if(file.find("-7-Jets-1.yoda")>0) :
+    if(file.find("-7-Jets-1")>0) :
         sqrts=7000
         mass=0
-    if(file.find("-7-Jets-9.yoda")>0) :
+    if(file.find("-7-DiJets-1")>0) :
         sqrts=7000
         mass=100
-    elif(file.find("-7-Jets-10.yoda")>0) :
+    elif(file.find("-7-DiJets-2")>0) :
         sqrts=7000
         mass=250
-    elif(file.find("-7-Jets-11.yoda")>0) :
+    elif(file.find("-7-DiJets-3")>0) :
         sqrts=7000
-        mass=650
-    elif(file.find("-7-Jets-12.yoda")>0) :
+        mass=500
+    elif(file.find("-7-DiJets-4")>0) :
         sqrts=7000
-        mass=1100
-    elif(file.find("-7-Jets-13.yoda")>0) :
+        mass=800
+    elif(file.find("-7-DiJets-5")>0) :
         sqrts=7000
-        mass=1700
-    elif(file.find("-7-Jets-14.yoda")>0) :
+        mass=1000
+    elif(file.find("-7-DiJets-6")>0) :
         sqrts=7000
-        mass=2300
-    elif(file.find("-7-Jets-15.yoda")>0) :
+        mass=1600
+    elif(file.find("-7-DiJets-7")>0) :
         sqrts=7000
-        mass=2900
-    elif(file.find("-7-Bottom-6.yoda")>0) :
+        mass=2200
+    elif(file.find("-7-DiJets-8")>0) :
+        sqrts=7000
+        mass=2800
+    elif(file.find("-7-Bottom-6")>0) :
         sqrts=7000
         mass=110
-    elif(file.find("-7-Bottom-7.yoda")>0) :
+    elif(file.find("-7-Bottom-7")>0) :
         sqrts=7000
         mass=370
-    elif(file.find("-7-Bottom-8.yoda")>0) :
+    elif(file.find("-7-Bottom-8")>0) :
         sqrts=7000
         mass=550
     if not os.access(file, os.R_OK):
@@ -325,7 +320,8 @@ for f in yodafiles:
            if not tmpP.has_key(mass):
                tmpP[mass] = ao
            else:
-                raise Exception("A set with mass = %s already exists" % ( mass))
+               print aopath
+               raise Exception("A set with mass = %s already exists" % ( mass))
 
 ## Make empty output histos if needed
 for hpath,hsets in inhistos_pt.iteritems():
@@ -356,6 +352,7 @@ for hpath,hsets in inhistos_pt.iteritems():
         hpath.find("I1325553"  )>0 or
         hpath.find("I1298810"  )>0 or
         hpath.find("1307243"   )>0 or
+        hpath.find("I1419070")>0 or
         hpath.find("CMS_2013_I1208923"   )>0) :
         if(type(hsets.values()[0].values()[0])==yoda.core.Scatter2D) :
             outhistos[hpath] = yoda.core.Scatter2D(hsets.values()[0].values()[0].path,
@@ -1291,6 +1288,14 @@ mergeByPt("/ATLAS_2014_I1325553/d02-x01-y03", "7000")
 mergeByPt("/ATLAS_2014_I1325553/d02-x01-y04", "7000")
 mergeByPt("/ATLAS_2014_I1325553/d02-x01-y05", "7000")
 mergeByPt("/ATLAS_2014_I1325553/d02-x01-y06", "7000")
+
+logging.info("Processing ATLAS_2016_I1419070")
+for i in range(1,13) :
+    if(i<10) :
+        mergeByPt("/ATLAS_2016_I1419070/d0%s-x01-y01" % i, "8000")
+    else :
+        mergeByPt("/ATLAS_2016_I1419070/d%s-x01-y01"  % i, "8000")
+
 
 logging.info("Processing CMS_2013_I1208923")
 for i in range(1,6) :
