@@ -33,12 +33,15 @@ set  /Herwig/Merging/MScale:ScaleChoice MaxJetPtScale
 
 cd /Herwig/Cuts
 insert JetCuts:JetRegions 0 FirstJet
-insert Cuts:MultiCuts 0 JetCuts
-set Cuts:JetFinder JetFinder
-set Cuts:ScaleMin 2.0*GeV
-set Cuts:X1Min 1.0e-5
-set Cuts:X2Min 1.0e-5
 
+insert QCDCuts:MultiCuts 0 JetCuts
+set QCDCuts:JetFinder JetFinder
+set FirstJet:PtMin 20*GeV
+set QCDCuts:ScaleMin 2.0*GeV
+set QCDCuts:X1Min 1.0e-5
+set QCDCuts:X2Min 1.0e-5
+set MatchboxJetMatcher:Factory /Herwig/Merging/PPMFactory
+#set /Herwig/Generators/LHCGenerator:EventHandler:Cuts /Herwig/Cuts/Cuts
 
 
 
@@ -59,4 +62,4 @@ insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2014_I1325553
 insert /Herwig/Analysis/Rivet:Analyses 0 ATLAS_2014_I1307243
 
 cd /Herwig/Generators
-saverun 2LO-0NLO-LHC_J LHCGenerator
+saverun 2LO-0NLO-LHC-J LHCGenerator

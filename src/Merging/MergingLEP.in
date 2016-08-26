@@ -175,8 +175,8 @@ set /Herwig/DipoleShower/DipoleShowerHandler:MaxPtIsMuF Yes
 
 cd /Herwig/Cuts
 
-create ThePEG::Cuts Cuts
-set Cuts:Fuzzy FuzzyTheta
+
+set EECuts:Fuzzy FuzzyTheta
 set MatchboxJetMatcher:Factory /Herwig/Merging/EEMFactory
 cd /Herwig/Merging
 set EEMFactory:MergingHelper Merger

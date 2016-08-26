@@ -54,7 +54,6 @@ set nu_taubar:HardProcessMass 0*GeV
 cd /Herwig/Cuts
 set MassCut:MinM 66*GeV
 set MassCut:MaxM 116*GeV
-get QCDCuts:X1Min
 set /Herwig/Generators/LHCGenerator:EventHandler:CollisionCuts Off
 
 
@@ -249,8 +248,7 @@ set /Herwig/DipoleShower/DipoleShowerHandler:MaxPtIsMuF Yes
 
 cd /Herwig/Cuts
 
-create ThePEG::Cuts Cuts
-set Cuts:Fuzzy FuzzyTheta
+set QCDCuts:Fuzzy FuzzyTheta
 set MatchboxJetMatcher:Factory /Herwig/Merging/PPMFactory
 cd /Herwig/Merging
 set PPMFactory:MergingHelper Merger
