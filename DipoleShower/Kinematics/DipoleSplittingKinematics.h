@@ -241,7 +241,7 @@ public:
    * Use the Dipole scale instead of hardpt for z-boundaries.
    */
   
-  bool openInitialState()const{return theOpenInintialStateZ;}
+  bool openInitialState()const{return theOpenInitialStateZ;}
   
   
 
@@ -454,7 +454,7 @@ private:
   Lorentz5Momentum theSpectatorMomentum;
   
   
-  bool theOpenInintialStateZ;
+  bool theOpenInitialStateZ;
   
 
 protected:

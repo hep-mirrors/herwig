@@ -52,7 +52,7 @@ Merger::Merger()
   isUnitarized=true;
   isNLOUnitarized=true;
   defMERegionByJetAlg=false;
-  theOpenInintialStateZ=false;
+  theOpenInitialStateZ=false;
   theChooseHistory=8;
   xiRenME=1.;
   xiFacME=1.;
@@ -1295,7 +1295,7 @@ void Merger::persistentOutput(PersistentOStream & os) const {
   os << minusL<<  Unlopsweights<<
   theCMWScheme<<   projected<<
   isUnitarized<<   isNLOUnitarized<<
-  defMERegionByJetAlg<<theOpenInintialStateZ<<
+  defMERegionByJetAlg<<theOpenInitialStateZ<<
   theChooseHistory<<
   theN0<<    theOnlyN<<
   theN<<   theM<<
@@ -1310,7 +1310,7 @@ void Merger::persistentInput(PersistentIStream & is, int) {
   is >> minusL>>  Unlopsweights>>
   theCMWScheme>>   projected>>
   isUnitarized>>   isNLOUnitarized>>
-  defMERegionByJetAlg>>theOpenInintialStateZ>>
+  defMERegionByJetAlg>>theOpenInitialStateZ>>
   theChooseHistory>>
   theN0>>    theOnlyN>>
   theN>>   theM>>
@@ -1442,7 +1442,7 @@ void Merger::Init() {
   
   static Switch<Merger,bool>
   interfaceOpenInitialSateZ
-  ("OpenInitialSateZ","",&Merger::theOpenInintialStateZ, false, false, false);
+  ("OpenInitialStateZ","",&Merger::theOpenInitialStateZ, false, false, false);
   
   static SwitchOption interfaceOpenInitialSateZYes
   (interfaceOpenInitialSateZ,"Yes","",true);

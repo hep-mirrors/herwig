@@ -45,7 +45,7 @@ plots:
 	rivet-mkhtml *LEP.yoda  -o LEP
 	rivet-mkhtml *LHC-Z.yoda -o LHC-Z
 	rivet-mkhtml *LHC-W.yoda -o LHC-W
-
+	rivet-mkhtml *LHC-J.yoda  -o LHC-J
 
 
 

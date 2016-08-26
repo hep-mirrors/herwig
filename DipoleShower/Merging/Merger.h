@@ -227,7 +227,7 @@ namespace Herwig {
     int N0()const{return theN0;}
     void N0(int n){ theN0=n;}
     
-    bool openInintialStateZ(){return theOpenInintialStateZ;}
+    bool openInitialStateZ(){return theOpenInitialStateZ;}
     
     
   private:
@@ -242,7 +242,7 @@ namespace Herwig {
     bool isUnitarized;
      bool isNLOUnitarized;
     bool defMERegionByJetAlg;
-    bool theOpenInintialStateZ;
+    bool theOpenInitialStateZ;
      int theChooseHistory;
     int theN0;
      int  theOnlyN;

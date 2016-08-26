@@ -32,16 +32,16 @@ DipoleSplittingKinematics::DipoleSplittingKinematics()
     theXMin(1.e-5), theJacobian(0.0),
     theLastPt(0.0*GeV), theLastZ(0.0), theLastPhi(0.0),
     theLastEmitterZ(1.0), theLastSpectatorZ(1.0),
-    theLastSplittingParameters(),theOpenInintialStateZ(false) {}
+    theLastSplittingParameters(),theOpenInitialStateZ(false) {}
 
 DipoleSplittingKinematics::~DipoleSplittingKinematics() {}
 
 void DipoleSplittingKinematics::persistentOutput(PersistentOStream & os) const {
-  os << ounit(theIRCutoff,GeV) << theXMin << theMCCheck<<theOpenInintialStateZ;
+  os << ounit(theIRCutoff,GeV) << theXMin << theMCCheck<<theOpenInitialStateZ;
 }
 
 void DipoleSplittingKinematics::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(theIRCutoff,GeV) >> theXMin >> theMCCheck>>theOpenInintialStateZ;
+  is >> iunit(theIRCutoff,GeV) >> theXMin >> theMCCheck>>theOpenInitialStateZ;
 }
 
 void DipoleSplittingKinematics::prepareSplitting(DipoleSplittingInfo& dInfo) {
@@ -273,8 +273,8 @@ void DipoleSplittingKinematics::Init() {
   
   
   static Switch<DipoleSplittingKinematics,bool> interfaceOpenInintialStateZ
-  ("OpenInintialStateZ",   "",
-   &DipoleSplittingKinematics::theOpenInintialStateZ, false, false, false);
+  ("OpenInitialStateZ",   "",
+   &DipoleSplittingKinematics::theOpenInitialStateZ, false, false, false);
   static SwitchOption interfaceOpenInintialStateZYes
   (interfaceOpenInintialStateZ,   "Yes",   "",   true);
   static SwitchOption interfaceOpenInintialStateZNo

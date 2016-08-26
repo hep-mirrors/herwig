@@ -286,7 +286,7 @@ bool Node::inShowerPS(Energy hardpT){
     double v = ratio*z_ /(1.-z_+ratio);
     if (dipol()->lastPt()>(1.-x) * dipol()->lastDipoleScale()/ (2.*sqrt(x)))return false;
     assert(v< 1.-x__&&x > 0. && x < 1. && v > 0.);
-    if (deepHead()->MH()->openInintialStateZ()) {
+    if (deepHead()->MH()->openInitialStateZ()) {
       return true;
     }
   }
@@ -295,7 +295,7 @@ bool Node::inShowerPS(Energy hardpT){
     type="IF";
     x =dipol()->bornEmitter()==0?xcomb()->lastX1():xcomb()->lastX2();
     if (dipol()->lastPt()>dipol()->lastDipoleScale()* sqrt((1.- x)/x) /2.)return false;
-    if (deepHead()->MH()->openInintialStateZ()) {
+    if (deepHead()->MH()->openInitialStateZ()) {
       return true;
     }
   }
