@@ -11,4 +11,6 @@ libHwDipoleShowerMerging_la_SOURCES = \
 	MFactory.h \
 	Merger.fh\
 	Merger.h\
-	Merger.cc
+	Merger.cc \
+    MergingReweight.h \
+    MergingReweight.cc
